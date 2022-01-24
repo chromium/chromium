@@ -28,7 +28,7 @@ namespace {
 const char kNotifierCellularSetup[] = "ash.cellular-setup";
 
 // Delay after OOBE until notification should be shown.
-constexpr base::TimeDelta kNotificationDelay = base::TimeDelta::FromMinutes(15);
+constexpr base::TimeDelta kNotificationDelay = base::Minutes(15);
 
 bool DoesCellularDeviceExist(
     const std::vector<

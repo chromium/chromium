@@ -20,6 +20,12 @@ class AshWindowTreeHostMirroringUnified : public AshWindowTreeHostPlatform {
       const gfx::Rect& initial_bounds,
       int64_t mirroring_display_id,
       AshWindowTreeHostMirroringDelegate* delegate);
+
+  AshWindowTreeHostMirroringUnified(const AshWindowTreeHostMirroringUnified&) =
+      delete;
+  AshWindowTreeHostMirroringUnified& operator=(
+      const AshWindowTreeHostMirroringUnified&) = delete;
+
   ~AshWindowTreeHostMirroringUnified() override;
 
   // aura::WindowTreeHost:
@@ -39,8 +45,6 @@ class AshWindowTreeHostMirroringUnified : public AshWindowTreeHostPlatform {
   AshWindowTreeHostMirroringDelegate* delegate_;  // Not owned.
 
   bool is_shutting_down_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AshWindowTreeHostMirroringUnified);
 };
 
 }  // namespace ash

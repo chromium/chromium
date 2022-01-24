@@ -9,6 +9,7 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/android/autofill/save_card_controller_metrics_android.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_utils_mobile.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -16,7 +17,7 @@
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
-#include "components/prefs/pref_service.h"
+#include "components/messages/android/messages_feature.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,7 +29,6 @@ SaveCardMessageControllerAndroid::SaveCardMessageControllerAndroid() {}
 
 SaveCardMessageControllerAndroid::~SaveCardMessageControllerAndroid() {
   DismissMessage();
-  web_contents_ = nullptr;
 }
 
 void SaveCardMessageControllerAndroid::Show(
@@ -47,8 +47,6 @@ void SaveCardMessageControllerAndroid::Show(
     DismissMessage();
   }
   web_contents_ = web_contents;
-  pref_service_ = Profile::FromBrowserContext(web_contents->GetBrowserContext())
-                      ->GetPrefs();
   options_ = options;
   inferred_name_ = inferred_name;
 
@@ -77,33 +75,169 @@ void SaveCardMessageControllerAndroid::Show(
           : is_upload_ ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3
                        : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL));
 
-  message_->SetDescription(card.CardIdentifierStringForAutofillDisplay());
+  card_label_ = card.CardIdentifierStringForAutofillDisplay();
+  std::u16string expiry_date =
+      card.AbbreviatedExpirationDateForDisplay(/*with_prefix=*/false);
+  message_->SetDescription(
+      expiry_date.empty() ? card_label_ : card_label_ + u"   " + expiry_date);
 
-  message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
-      GetSaveCardIconId(IsGooglePayBrandingEnabled())));
+  bool use_gpay_icon =
+      IsGooglePayBrandingEnabled() && messages::UseGPayIconForSaveCardMessage();
 
-  if (IsGooglePayBrandingEnabled()) {
+  message_->SetIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(GetSaveCardIconId(use_gpay_icon)));
+
+  if (use_gpay_icon) {
     // Do not tint image; otherwise, the image will lose its original color and
     // be filled with a tint color.
     message_->DisableIconTint();
   }
 
   // Client won't request both name and expiration date at the same time.
-  promo_continue_ = options.should_request_name_from_user ||
-                    options.should_request_expiration_date_from_user;
+  request_more_info_ = options.should_request_name_from_user ||
+                       options.should_request_expiration_date_from_user;
+
+  // Show "continue" when uploading no matter if more info is requested, because
+  // legal terms must be displayed in dialogs when uploading.
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
-      promo_continue_ ? IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE
-                      : IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
-  if (is_upload_ && !promo_continue_) {
-    expiration_date_year_ = card.expiration_year();
-    expiration_date_month_ = card.expiration_month();
-  }
+      request_more_info_ || is_upload_
+          ? (messages::UseFollowupButtonTextForSaveCardMessage()
+                 ? IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_PROMPT_SAVE_FOLLOW_UP
+                 : IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE)
+          : IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
 
   // Web_contents scope: show message along with the tab. Auto-dismissed when
   // tab is closed or time is up.
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS,
       messages::MessagePriority::kNormal);
+
+  LogAutofillCreditCardMessageMetrics(MessageMetrics::kShown, is_upload_,
+                                      options_);
+}
+
+void SaveCardMessageControllerAndroid::OnWebContentsFocused() {
+  // User should not be able to leave page by clicking on
+  // links in the legal messages.
+  if (reprompt_required_) {
+    MaybeShowDialog();
+  }
+}
+
+// Called when message is dismissed. Message is dismissed when primary action
+// is called, when page is closed while message is still on screen, or when
+// it is auto dismissed.
+void SaveCardMessageControllerAndroid::HandleMessageDismiss(
+    messages::DismissReason dismiss_reason) {
+  if (dismiss_reason != messages::DismissReason::PRIMARY_ACTION &&
+      !HadUserInteraction()) {
+    // Gesture: users explicitly swipe the UI to dismiss the message
+    bool gesture_dismiss = dismiss_reason == messages::DismissReason::GESTURE;
+    OnPromptCompleted(gesture_dismiss
+                          ? AutofillClient::SaveCardOfferUserDecision::kDeclined
+                          : AutofillClient::SaveCardOfferUserDecision::kIgnored,
+                      /*user_provided_details=*/{});
+  }
+  // Reset all if we won't show dialogs in the next steps
+  if (HadUserInteraction()) {
+    ResetInternal();
+  }
+  message_.reset();
+}
+
+void SaveCardMessageControllerAndroid::HandleMessageAction() {
+  MaybeShowDialog();
+}
+
+void SaveCardMessageControllerAndroid::DismissMessage() {
+  if (message_) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        message_.get(), messages::DismissReason::UNKNOWN);
+  }
+}
+
+void SaveCardMessageControllerAndroid::MaybeShowDialog() {
+  reprompt_required_ = false;
+  if (is_upload_ && !request_more_info_) {
+    // If we already know all the info, confirm save card to show other info
+    // such as legal terms, and then run callback after user confirms.
+    ConfirmSaveCard();
+  } else if (options_.should_request_name_from_user) {
+    FixName(inferred_name_);
+  } else if (options_.should_request_expiration_date_from_user) {
+    FixDate();
+  } else {
+    OnPromptCompleted(AutofillClient::SaveCardOfferUserDecision::kAccepted, {});
+  }
+}
+
+// --- Confirm card save, including date or name if necessary ---
+
+void SaveCardMessageControllerAndroid::FixName(
+    const std::u16string& inferred_cardholder_name) {
+  save_card_message_confirm_controller_->FixName(inferred_cardholder_name,
+                                                 card_label_);
+  is_name_confirmed_for_testing_ = true;
+}
+
+void SaveCardMessageControllerAndroid::FixDate() {
+  save_card_message_confirm_controller_->FixDate(card_label_);
+  is_date_confirmed_for_testing_ = true;
+}
+
+void SaveCardMessageControllerAndroid::ConfirmSaveCard() {
+  save_card_message_confirm_controller_->ConfirmSaveCard(card_label_);
+  is_save_card_confirmed_for_testing_ = true;
+}
+
+// --- On card save, cardholder name, or date confirmed ---
+
+void SaveCardMessageControllerAndroid::OnNameConfirmed(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& name) {
+  OnPromptCompleted(AutofillClient::SaveCardOfferUserDecision::kAccepted,
+                    {base::android::ConvertJavaStringToUTF16(name),
+                     std::u16string(), std::u16string()});
+}
+
+void SaveCardMessageControllerAndroid::OnDateConfirmed(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& month,
+    const base::android::JavaParamRef<jstring>& year) {
+  OnPromptCompleted(
+      AutofillClient::SaveCardOfferUserDecision::kAccepted,
+      {std::u16string(), base::android::ConvertJavaStringToUTF16(month),
+       base::android::ConvertJavaStringToUTF16(year)});
+}
+
+void SaveCardMessageControllerAndroid::OnSaveCardConfirmed(JNIEnv* env) {
+  OnPromptCompleted(AutofillClient::SaveCardOfferUserDecision::kAccepted, {});
+}
+
+// --- Dialog Dismissed ---
+
+void SaveCardMessageControllerAndroid::DialogDismissed(JNIEnv* env) {
+  if (reprompt_required_) {
+    return;
+  }
+  if (!HadUserInteraction()) {
+    OnPromptCompleted(AutofillClient::SaveCardOfferUserDecision::kDeclined,
+                      /*user_provided_details=*/{});
+  }
+  ResetInternal();
+}
+
+void SaveCardMessageControllerAndroid::OnLegalMessageLinkClicked(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& url) {
+  reprompt_required_ = true;
+  // Temporarily dismiss the dialog and then re-prompt when user returns to
+  // the page.
+  save_card_message_confirm_controller_->DismissDialog();
+  web_contents_->OpenURL(content::OpenURLParams(
+      GURL(base::android::ConvertJavaStringToUTF16(url)), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      false));
 }
 
 bool SaveCardMessageControllerAndroid::IsGooglePayBrandingEnabled() const {
@@ -114,53 +248,27 @@ bool SaveCardMessageControllerAndroid::IsGooglePayBrandingEnabled() const {
 #endif
 }
 
-void SaveCardMessageControllerAndroid::HandleMessageAction() {
-  MaybeShowDialog();
-}
-
-void SaveCardMessageControllerAndroid::HandleMessageDismiss(
-    messages::DismissReason dismiss_reason) {
-  if (!HadUserInteraction()) {
-    RunSaveCardPromptCallback(AutofillClient::DECLINED,
-                              /*user_provided_details=*/{});
-  }
-  message_.reset();
-}
-
-void SaveCardMessageControllerAndroid::DismissMessage() {
-  if (message_) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), web_contents_, messages::DismissReason::UNKNOWN);
-  }
-}
-
-void SaveCardMessageControllerAndroid::RunSaveCardPromptCallback(
+void SaveCardMessageControllerAndroid::OnPromptCompleted(
     AutofillClient::SaveCardOfferUserDecision user_decision,
     AutofillClient::UserProvidedCardDetails user_provided_details) {
-  UpdateAutofillAcceptSaveCreditCardPromptState(
-      pref_service_, user_decision == AutofillClient::ACCEPTED);
+  MessageMetrics message_state;
+  switch (user_decision) {
+    case AutofillClient::SaveCardOfferUserDecision::kAccepted:
+      message_state = MessageMetrics::kAccepted;
+      break;
+    case AutofillClient::SaveCardOfferUserDecision::kDeclined:
+      message_state = MessageMetrics::kDenied;
+      break;
+    case AutofillClient::SaveCardOfferUserDecision::kIgnored:
+      message_state = MessageMetrics::kIgnored;
+      break;
+  }
+  LogAutofillCreditCardMessageMetrics(message_state, is_upload_, options_);
   if (is_upload_) {
     std::move(upload_save_card_prompt_callback_)
         .Run(user_decision, user_provided_details);
   } else {
     std::move(local_save_card_prompt_callback_).Run(user_decision);
-  }
-}
-
-void SaveCardMessageControllerAndroid::MaybeShowDialog() {
-  if (is_upload_ && !promo_continue_) {
-    // If we already know all the info, confirm the date to show
-    // other info such as legal terms,
-    // and then run callback after user confirms
-    ConfirmDate(expiration_date_month_, expiration_date_year_);
-  } else {
-    if (options_.should_request_name_from_user) {
-      ConfirmName(inferred_name_);
-    } else if (options_.should_request_expiration_date_from_user) {
-      ConfirmDate();
-    } else {
-      RunSaveCardPromptCallback(AutofillClient::ACCEPTED, {});
-    }
   }
 }
 
@@ -170,75 +278,11 @@ bool SaveCardMessageControllerAndroid::HadUserInteraction() {
          !local_save_card_prompt_callback_;
 }
 
-// --- Confirm date ---
-
-void SaveCardMessageControllerAndroid::ConfirmDate() {
-  save_card_message_confirm_controller_->ConfirmDate(
-      message_->GetDescription()  // card label
-  );
-  is_date_confirmed_for_testing_ = true;
-}
-
-void SaveCardMessageControllerAndroid::ConfirmDate(const int month,
-                                                   const int year) {
-  save_card_message_confirm_controller_->ConfirmDate(
-      base::StringPrintf("%d", month), base::StringPrintf("%d", year),
-      message_->GetDescription()  // card label
-  );
-  is_date_confirmed_for_testing_ = true;
-}
-
-void SaveCardMessageControllerAndroid::OnDateConfirmed(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jstring>& month,
-    const base::android::JavaParamRef<jstring>& year) {
-  RunSaveCardPromptCallback(
-      AutofillClient::ACCEPTED,
-      {std::u16string(), base::android::ConvertJavaStringToUTF16(month),
-       base::android::ConvertJavaStringToUTF16(year)});
-}
-
-// --- Confirm name ---
-
-void SaveCardMessageControllerAndroid::ConfirmName(
-    const std::u16string& inferred_cardholder_name) {
-  save_card_message_confirm_controller_->ConfirmName(
-      inferred_cardholder_name,
-      message_->GetDescription()  // card label
-  );
-  is_name_confirmed_for_testing_ = true;
-}
-
-void SaveCardMessageControllerAndroid::OnNameConfirmed(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jstring>& name) {
-  RunSaveCardPromptCallback(AutofillClient::ACCEPTED,
-                            {base::android::ConvertJavaStringToUTF16(name),
-                             std::u16string(), std::u16string()});
-}
-
-// --- Dismiss callbacks ---
-
-void SaveCardMessageControllerAndroid::PromptDismissed(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
-  if (!HadUserInteraction()) {
-    RunSaveCardPromptCallback(AutofillClient::DECLINED,
-                              /*user_provided_details=*/{});
-  }
+void SaveCardMessageControllerAndroid::ResetInternal() {
+  message_.reset();
+  reprompt_required_ = false;
+  web_contents_ = nullptr;
   save_card_message_confirm_controller_.reset();
-}
-
-void SaveCardMessageControllerAndroid::OnLegalMessageLinkClicked(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jstring>& url) {
-  web_contents_->OpenURL(content::OpenURLParams(
-      GURL(base::android::ConvertJavaStringToUTF16(url)), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      false));
 }
 
 }  // namespace autofill

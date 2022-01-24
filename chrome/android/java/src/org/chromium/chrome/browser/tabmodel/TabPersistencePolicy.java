@@ -91,6 +91,14 @@ public interface TabPersistencePolicy {
     void cleanupUnusedFiles(Callback<List<String>> filesToDelete);
 
     /**
+     * Clean up the persistent state for a given instance.
+     * @param index ID of an instance whose state will be deleted.
+     * @param filesToDelete Callback that is triggered with the filenames to delete.  These files
+     *                      need to reside in {@link #getOrCreateStateDirectory()}.
+     */
+    default void cleanupInstanceState(int index, Callback<List<String>> filesToDelete) {}
+
+    /**
      * Sets the {@link TabContentManager} to use.
      * @param cache The {@link TabContentManager} to use.
      */

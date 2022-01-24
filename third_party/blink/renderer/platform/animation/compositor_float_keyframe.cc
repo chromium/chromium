@@ -12,10 +12,10 @@ CompositorFloatKeyframe::CompositorFloatKeyframe(
     double time,
     float value,
     const TimingFunction& timing_function)
-    : float_keyframe_(
-          gfx::FloatKeyframe::Create(base::TimeDelta::FromSecondsD(time),
-                                     value,
-                                     timing_function.CloneToCC())) {}
+    : float_keyframe_(gfx::FloatKeyframe::Create(base::Seconds(time),
+                                                 value,
+                                                 timing_function.CloneToCC())) {
+}
 
 CompositorFloatKeyframe::CompositorFloatKeyframe(
     std::unique_ptr<gfx::FloatKeyframe> float_keyframe)
@@ -23,8 +23,8 @@ CompositorFloatKeyframe::CompositorFloatKeyframe(
 
 CompositorFloatKeyframe::~CompositorFloatKeyframe() = default;
 
-double CompositorFloatKeyframe::Time() const {
-  return float_keyframe_->Time().InSecondsF();
+base::TimeDelta CompositorFloatKeyframe::Time() const {
+  return float_keyframe_->Time();
 }
 
 const gfx::TimingFunction* CompositorFloatKeyframe::CcTimingFunction() const {

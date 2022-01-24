@@ -1,0 +1,23 @@
+<!--
+@DEFAULT-ACTION-ON:Fruit
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<select aria-label="Fruit" autofocus>
+  <optgroup label="Citrus">
+    <option selected>Lemon</option>
+    <option>Orange</option>
+  </optgroup>
+  <optgroup label="Other">
+    <option>Apple</option>
+    <option>Banana</option>
+  </optgroup>
+</select>
+<script>
+function go() {
+  document.querySelector('select').selectedIndex = 1;
+}
+</script>
+</body>
+</html>

@@ -11,8 +11,12 @@
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
+#include "chromeos/ui/base/window_pin_type.h"
+#include "components/favicon_base/favicon_callback.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/bluetooth_system.mojom-forward.h"
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
@@ -23,20 +27,29 @@ namespace aura {
 class Window;
 }
 
+namespace base {
+class CancelableTaskTracker;
+}
+
 namespace ui {
 class OSExchangeData;
 }
 
-namespace full_restore {
+namespace app_restore {
 struct AppLaunchInfo;
+}
+
+namespace desks_storage {
+class DeskModel;
 }
 
 namespace ash {
 
 class AccessibilityDelegate;
-class CaptureModeDelegate;
-class BackGestureContextualNudgeDelegate;
 class BackGestureContextualNudgeController;
+class BackGestureContextualNudgeDelegate;
+class CaptureModeDelegate;
+class DeskTemplate;
 class NearbyShareController;
 class NearbyShareDelegate;
 
@@ -88,12 +101,6 @@ class ASH_EXPORT ShellDelegate {
   // dragged out of it.
   virtual int GetBrowserWebUITabStripHeight() = 0;
 
-  // Drops tab in a new browser window. |drop_data| must be from a tab
-  // drag as determined by IsTabDrag() above.
-  virtual aura::Window* CreateBrowserForTabDrop(
-      aura::Window* source_window,
-      const ui::OSExchangeData& drop_data);
-
   // Binds a BluetoothSystemFactory receiver if possible.
   virtual void BindBluetoothSystemFactory(
       mojo::PendingReceiver<device::mojom::BluetoothSystemFactory> receiver) {}
@@ -115,6 +122,9 @@ class ASH_EXPORT ShellDelegate {
 
   // Returns if window browser sessions are restoring.
   virtual bool IsSessionRestoreInProgress() const = 0;
+
+  // Adjust system configuration for a Locked Fullscreen window.
+  virtual void SetUpEnvironmentForLockedFullscreen(bool locked) = 0;
 
   // Ui Dev Tools control.
   virtual bool IsUiDevToolsStarted() const;
@@ -139,8 +149,35 @@ class ASH_EXPORT ShellDelegate {
   // data can be constructed, which can happen if the |window| does not have
   // an app id associated with it, or we're not in the primary active user
   // session.
-  virtual std::unique_ptr<full_restore::AppLaunchInfo>
+  virtual std::unique_ptr<app_restore::AppLaunchInfo>
   GetAppLaunchDataForDeskTemplate(aura::Window* window) const = 0;
+
+  // Returns either the local desk storage backend or Chrome sync desk storage
+  // backend depending on the feature flag DeskTemplateSync.
+  virtual desks_storage::DeskModel* GetDeskModel();
+
+  // Fetches the favicon for `page_url` and returns it via the provided
+  // `callback`. `callback` may be called synchronously.
+  virtual void GetFaviconForUrl(const std::string& page_url,
+                                int desired_icon_size,
+                                favicon_base::FaviconRawBitmapCallback callback,
+                                base::CancelableTaskTracker* teacker) const = 0;
+
+  // Fetches the icon for the app with `app_id` and returns it via the provided
+  // `callback`. `callback` may be called synchronously.
+  virtual void GetIconForAppId(
+      const std::string& app_id,
+      int desired_icon_size,
+      base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
+      const = 0;
+
+  // Launches apps into the active desk. Ran immediately after a desk is created
+  // for a template.
+  virtual void LaunchAppsFromTemplate(
+      std::unique_ptr<DeskTemplate> desk_template) = 0;
+
+  // Checks whether `window` is supported in the desks templates feature.
+  virtual bool IsWindowSupportedForDeskTemplate(aura::Window* window) const = 0;
 };
 
 }  // namespace ash

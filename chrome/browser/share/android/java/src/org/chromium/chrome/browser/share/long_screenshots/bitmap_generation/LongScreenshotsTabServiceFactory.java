@@ -21,4 +21,6 @@ public class LongScreenshotsTabServiceFactory {
     interface Natives {
         LongScreenshotsTabService getServiceInstanceForCurrentProfile();
     }
+
+    private LongScreenshotsTabServiceFactory() {}
 }

@@ -47,7 +47,7 @@ class BspTreePerfTest : public cc::LayerTreeTest {
  public:
   BspTreePerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   void SetupTree() override {
@@ -98,8 +98,8 @@ class BspTreePerfTest : public cc::LayerTreeTest {
     do {
       base::circular_deque<std::unique_ptr<DrawPolygon>> test_list;
       for (int i = 0; i < num_duplicates_; i++) {
-        for (size_t i = 0; i < polygon_list.size(); i++) {
-          test_list.push_back(polygon_list[i]->CreateCopy());
+        for (size_t j = 0; j < polygon_list.size(); j++) {
+          test_list.push_back(polygon_list[j]->CreateCopy());
         }
       }
       BspTree bsp_tree(&test_list);

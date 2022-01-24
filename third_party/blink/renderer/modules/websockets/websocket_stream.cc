@@ -448,12 +448,11 @@ WebSocketStream::~WebSocketStream() = default;
 
 ScriptPromise WebSocketStream::connection(ScriptState* script_state) const {
   return ScriptPromise(script_state,
-                       connection_.NewLocal(script_state->GetIsolate()));
+                       connection_.Get(script_state->GetIsolate()));
 }
 
 ScriptPromise WebSocketStream::closed(ScriptState* script_state) const {
-  return ScriptPromise(script_state,
-                       closed_.NewLocal(script_state->GetIsolate()));
+  return ScriptPromise(script_state, closed_.Get(script_state->GetIsolate()));
 }
 
 void WebSocketStream::close(WebSocketCloseInfo* info,

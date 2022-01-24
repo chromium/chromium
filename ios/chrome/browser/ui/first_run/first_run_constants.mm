@@ -22,4 +22,7 @@ NSString* const kFirstRunSignInScreenAccessibilityIdentifier =
 NSString* const kFirstRunSyncScreenAccessibilityIdentifier =
     @"firstRunSyncScreenAccessibilityIdentifier";
 
+NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier =
+    @"firstRunDefaultBrowserScreenAccessibilityIdentifier";
+
 }  // first_run

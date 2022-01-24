@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/chromeos/ime_keymap.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/ime_keymap.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -27,7 +27,7 @@ namespace {
 // Android.
 // TODO(yhanada): Implement a way to observe an IME operation completion and
 // send the current text input state right after the IME operation completion.
-constexpr base::TimeDelta kStateUpdateTimeout = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kStateUpdateTimeout = base::Seconds(1);
 
 // Characters which should be sent as a KeyEvent and attributes of generated
 // KeyEvent.
@@ -69,7 +69,7 @@ ui::KeyEvent CreateKeyEvent(ui::EventType type,
 }  // namespace
 
 InputConnectionImpl::InputConnectionImpl(
-    chromeos::InputMethodEngine* ime_engine,
+    ash::input_method::InputMethodEngine* ime_engine,
     ArcInputMethodManagerBridge* imm_bridge,
     int input_context_id)
     : ime_engine_(ime_engine),
@@ -231,7 +231,7 @@ void InputConnectionImpl::SetComposingText(
   if (!ime_engine_->SetComposition(
           input_context_id_, base::UTF16ToUTF8(text).c_str(), selection_start,
           selection_end, new_cursor_pos,
-          std::vector<chromeos::InputMethodEngineBase::SegmentInfo>(),
+          std::vector<ash::input_method::InputMethodEngineBase::SegmentInfo>(),
           &error)) {
     LOG(ERROR) << "SetComposingText failed: pos=" << new_cursor_pos
                << ", error=\"" << error << "\"";
@@ -287,14 +287,16 @@ void InputConnectionImpl::SetCompositionRange(
 
   const int before = selection_range.start() - new_composition_range.start();
   const int after = new_composition_range.end() - selection_range.end();
-  chromeos::InputMethodEngineBase::SegmentInfo segment_info;
+  ash::input_method::InputMethodEngineBase::SegmentInfo segment_info;
   segment_info.start = 0;
   segment_info.end = new_composition_range.length();
-  segment_info.style = chromeos::InputMethodEngineBase::SEGMENT_STYLE_UNDERLINE;
+  segment_info.style =
+      ash::input_method::InputMethodEngineBase::SEGMENT_STYLE_UNDERLINE;
 
   std::string error;
-  if (!ime_engine_->chromeos::InputMethodEngineBase::SetCompositionRange(
-          input_context_id_, before, after, {segment_info}, &error)) {
+  if (!ime_engine_
+           ->ash::input_method::InputMethodEngineBase::SetCompositionRange(
+               input_context_id_, before, after, {segment_info}, &error)) {
     LOG(ERROR) << "SetCompositionRange failed: range="
                << new_composition_range.ToString() << ", error=\"" << error
                << "\"";

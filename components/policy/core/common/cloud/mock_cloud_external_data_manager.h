@@ -29,8 +29,10 @@ class MockCloudExternalDataManager : public CloudExternalDataManager {
   MOCK_METHOD0(OnPolicyStoreLoaded, void(void));
   MOCK_METHOD1(Connect, void(scoped_refptr<network::SharedURLLoaderFactory>));
   MOCK_METHOD0(Disconnect, void(void));
-  MOCK_METHOD2(Fetch,
-               void(const std::string&, ExternalDataFetcher::FetchCallback));
+  MOCK_METHOD3(Fetch,
+               void(const std::string&,
+                    const std::string&,
+                    ExternalDataFetcher::FetchCallback));
 
   std::unique_ptr<ExternalDataFetcher> CreateExternalDataFetcher(
       const std::string& policy);

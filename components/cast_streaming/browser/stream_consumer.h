@@ -24,7 +24,7 @@ namespace cast_streaming {
 // usage. Receiving new buffers is delayed until the pipe has free memory again.
 // The Open Screen library takes care of discarding buffers that are too old and
 // requesting new key frames as needed.
-class StreamConsumer : public openscreen::cast::Receiver::Consumer {
+class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
  public:
   using FrameReceivedCB =
       base::RepeatingCallback<void(media::mojom::DecoderBufferPtr)>;
@@ -38,7 +38,7 @@ class StreamConsumer : public openscreen::cast::Receiver::Consumer {
                  mojo::ScopedDataPipeProducerHandle data_pipe,
                  FrameReceivedCB frame_received_cb,
                  base::RepeatingClosure on_new_frame);
-  ~StreamConsumer() final;
+  ~StreamConsumer() override;
 
   StreamConsumer(const StreamConsumer&) = delete;
   StreamConsumer& operator=(const StreamConsumer&) = delete;
@@ -55,7 +55,7 @@ class StreamConsumer : public openscreen::cast::Receiver::Consumer {
   void OnPipeWritable(MojoResult result);
 
   // openscreen::cast::Receiver::Consumer implementation.
-  void OnFramesReady(int next_frame_buffer_size) final;
+  void OnFramesReady(int next_frame_buffer_size) override;
 
   openscreen::cast::Receiver* const receiver_;
   mojo::ScopedDataPipeProducerHandle data_pipe_;

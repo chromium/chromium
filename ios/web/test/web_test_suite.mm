@@ -49,7 +49,7 @@ void WebTestSuite::Initialize() {
   resources_pack_path =
       resources_pack_path.Append(FILE_PATH_LITERAL("resources.pak"));
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      resources_pack_path, ui::SCALE_FACTOR_NONE);
+      resources_pack_path, ui::kScaleFactorNone);
 }
 
 void WebTestSuite::Shutdown() {

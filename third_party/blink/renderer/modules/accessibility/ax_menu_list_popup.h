@@ -40,6 +40,9 @@ class AXMenuListPopup final : public AXMockObject {
  public:
   explicit AXMenuListPopup(AXObjectCacheImpl&);
 
+  AXMenuListPopup(const AXMenuListPopup&) = delete;
+  AXMenuListPopup& operator=(const AXMenuListPopup&) = delete;
+
   AXRestriction Restriction() const override;
   bool IsOffScreen() const override;
 
@@ -63,8 +66,6 @@ class AXMenuListPopup final : public AXMockObject {
 
   // Note that this may be -1 if nothing is selected.
   int active_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXMenuListPopup);
 };
 
 template <>

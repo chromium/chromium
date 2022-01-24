@@ -49,7 +49,7 @@ InvalidUrlTabHelper::~InvalidUrlTabHelper() = default;
 
 void InvalidUrlTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   if (IsUrlRequestValid(request)) {
     return std::move(callback).Run(PolicyDecision::Allow());

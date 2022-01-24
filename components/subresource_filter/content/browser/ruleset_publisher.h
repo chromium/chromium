@@ -9,7 +9,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 
 namespace subresource_filter {

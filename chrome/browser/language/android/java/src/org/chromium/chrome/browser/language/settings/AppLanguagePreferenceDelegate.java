@@ -77,7 +77,7 @@ public class AppLanguagePreferenceDelegate {
      */
     public void startLanguageSplitDownload(String code) {
         assert mActivity != null : "mActivity must be set to start language split download";
-        assert mPreference != null : "mPreference must be set to start langauge split download";
+        assert mPreference != null : "mPreference must be set to start language split download";
         // Set language text and initial downloading summary.
         mPreference.setLanguageItem(code);
         CharSequence nativeName = mPreference.getLanguageItem().getNativeDisplayName();
@@ -109,7 +109,6 @@ public class AppLanguagePreferenceDelegate {
         mPreference.setEnabled(true);
 
         makeAndShowRestartSnackbar();
-        // TODO (https://crbug.com/1196144): Add logging.
     }
 
     /**
@@ -121,8 +120,6 @@ public class AppLanguagePreferenceDelegate {
                 mActivity.getResources().getString(R.string.languages_split_failed, nativeName);
         mPreference.setSummary(summary);
         mPreference.setEnabled(true);
-
-        // TODO (https://crbug.com/1196144): Add logging.
     }
 
     /**

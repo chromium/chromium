@@ -26,6 +26,9 @@ class GFX_EXPORT RenderingWindowManager {
   // The first call to GetInstance() should happen on the UI thread.
   static RenderingWindowManager* GetInstance();
 
+  RenderingWindowManager(const RenderingWindowManager&) = delete;
+  RenderingWindowManager& operator=(const RenderingWindowManager&) = delete;
+
   void RegisterParent(HWND parent);
   // Registers |child| as child window for |parent|. Allows the GPU process to
   // draw into the |child| HWND instead of |parent|. This will fail and do
@@ -49,8 +52,6 @@ class GFX_EXPORT RenderingWindowManager {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   // Map from registered parent HWND to child HWND.
   base::flat_map<HWND, HWND> registered_hwnds_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderingWindowManager);
 };
 
 }  // namespace gfx

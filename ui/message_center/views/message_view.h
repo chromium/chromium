@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -78,12 +77,25 @@ class MESSAGE_CENTER_EXPORT MessageView
   };
 
   explicit MessageView(const Notification& notification);
+
+  MessageView(const MessageView&) = delete;
+  MessageView& operator=(const MessageView&) = delete;
+
   ~MessageView() override;
 
   // Updates this view with an additional grouped notification. If the view
   // wasn't previously grouped it also takes care of converting the view to
   // the grouped notification state.
-  virtual void AddGroupedNotification(const Notification& notification);
+  virtual void AddGroupNotification(const Notification& notification,
+                                    bool newest_first) {}
+
+  // Populates this view with a list of grouped notifications, this is intended
+  // to be used for initializing of grouped notifications so it does not
+  // explicitly update the size of the view unlike `AddGroupNotification`.
+  virtual void PopulateGroupNotifications(
+      const std::vector<const Notification*>& notifications) {}
+
+  virtual void RemoveGroupNotification(const std::string& notification_id) {}
 
   // Updates this view with the new data contained in the notification.
   virtual void UpdateWithNotification(const Notification& notification);
@@ -162,8 +174,13 @@ class MESSAGE_CENTER_EXPORT MessageView
   void SetSlideButtonWidth(int coutrol_button_width);
 
   void set_scroller(views::ScrollView* scroller) { scroller_ = scroller; }
+  void set_notification_id(const std::string& notification_id) {
+    notification_id_ = notification_id;
+  }
   std::string notification_id() const { return notification_id_; }
   NotifierId notifier_id() const { return notifier_id_; }
+
+  bool is_active() const { return is_active_; }
 
  protected:
   class HighlightPathGenerator : public views::HighlightPathGenerator {
@@ -248,8 +265,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   // shape of the notification.
   int top_radius_ = 0;
   int bottom_radius_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageView);
 };
 
 }  // namespace message_center

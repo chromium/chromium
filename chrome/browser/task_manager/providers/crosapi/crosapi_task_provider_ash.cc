@@ -23,7 +23,7 @@ CrosapiTaskProviderAsh::CrosapiTaskProviderAsh() {
 
 CrosapiTaskProviderAsh::~CrosapiTaskProviderAsh() {
   // When user signs out from ash, CrospaiManager instance owned by
-  // ChromeBrowserMainPartsChromeos is destroyed before TaskManagerImpl
+  // `ChromeBrowserMainPartsAsh` is destroyed before `TaskManagerImpl`
   // instance, which is a lazy instance. We should always make sure
   // CrosapiManager::IsInitialized  before accessing it.
   if (crosapi::CrosapiManager::IsInitialized()) {
@@ -69,7 +69,7 @@ const TaskIdList& CrosapiTaskProviderAsh::GetSortedTaskIds() {
 
 void CrosapiTaskProviderAsh::StartUpdating() {
   refresh_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(1),
+      FROM_HERE, base::Seconds(1),
       base::BindRepeating(&CrosapiTaskProviderAsh::GetCrosapiTaskManagerTasks,
                           base::Unretained(this)));
 }

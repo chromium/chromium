@@ -29,23 +29,32 @@ import java.util.List;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class PageInfoPermissionsControllerUnitTest {
     private static PermissionObject createPermission(
-            String name, boolean allowed, int warningResId) {
+            String name, String nameMidSentence, boolean allowed, int warningResId) {
         PermissionObject permission = new PermissionObject();
         permission.name = name;
+        permission.nameMidSentence = nameMidSentence;
         permission.allowed = allowed;
         permission.warningTextResource = warningResId;
         return permission;
     }
-    private static final PermissionObject LOCATION_OS_WARNING =
-            createPermission("Location", true, R.string.page_info_android_location_blocked);
-    private static final PermissionObject LOCATION_ALLOWED = createPermission("Location", true, 0);
-    private static final PermissionObject LOCATION_BLOCKED = createPermission("Location", false, 0);
-    private static final PermissionObject SOUND_ALLOWED = createPermission("Sound", true, 0);
-    private static final PermissionObject SOUND_BLOCKED = createPermission("Sound", false, 0);
-    private static final PermissionObject VR_ALLOWED = createPermission("VR", true, 0);
-    private static final PermissionObject VR_BLOCKED = createPermission("VR", false, 0);
-    private static final PermissionObject AR_ALLOWED = createPermission("AR", true, 0);
-    private static final PermissionObject AR_BLOCKED = createPermission("AR", false, 0);
+    private static final PermissionObject LOCATION_OS_WARNING = createPermission(
+            "Location", "location", true, R.string.page_info_android_location_blocked);
+    private static final PermissionObject LOCATION_ALLOWED =
+            createPermission("Location", "location", true, 0);
+    private static final PermissionObject LOCATION_BLOCKED =
+            createPermission("Location", "location", false, 0);
+    private static final PermissionObject SOUND_ALLOWED =
+            createPermission("Sound", "sound", true, 0);
+    private static final PermissionObject SOUND_BLOCKED =
+            createPermission("Sound", "sound", false, 0);
+    private static final PermissionObject VR_ALLOWED =
+            createPermission("Virtual reality", "virtual reality", true, 0);
+    private static final PermissionObject VR_BLOCKED =
+            createPermission("Virtual reality", "virtual reality", false, 0);
+    private static final PermissionObject AR_ALLOWED =
+            createPermission("Augmented reality", "augmented reality", true, 0);
+    private static final PermissionObject AR_BLOCKED =
+            createPermission("Augmented reality", "augmented reality", false, 0);
 
     private Context mContext;
     private String mTestName;
@@ -68,32 +77,32 @@ public class PageInfoPermissionsControllerUnitTest {
                 {"One Permission Allowed", Arrays.asList(LOCATION_ALLOWED), "Location allowed"},
                 {"One Permission Blocked", Arrays.asList(LOCATION_BLOCKED), "Location blocked"},
                 {"Two Permissions Allowed", Arrays.asList(LOCATION_ALLOWED, SOUND_ALLOWED),
-                        "Location and Sound allowed"},
+                        "Location and sound allowed"},
                 {"Two Permissions Blocked", Arrays.asList(LOCATION_BLOCKED, SOUND_BLOCKED),
-                        "Location and Sound blocked"},
+                        "Location and sound blocked"},
                 {"Two Permissions Mixed", Arrays.asList(LOCATION_ALLOWED, SOUND_BLOCKED),
-                        "Location allowed, Sound blocked"},
+                        "Location allowed, sound blocked"},
                 {"Two Permissions Mixed Reverse Order",
                         Arrays.asList(LOCATION_BLOCKED, SOUND_ALLOWED),
-                        "Sound allowed, Location blocked"},
+                        "Sound allowed, location blocked"},
                 {"Multiple Permissions Allowed",
                         Arrays.asList(LOCATION_ALLOWED, SOUND_ALLOWED, VR_ALLOWED),
-                        "Location, Sound, and 1 more allowed"},
+                        "Location, sound, and 1 more allowed"},
                 {"Multiple Permissions Allowed 2",
                         Arrays.asList(LOCATION_ALLOWED, SOUND_ALLOWED, VR_ALLOWED, AR_ALLOWED),
-                        "Location, Sound, and 2 more allowed"},
+                        "Location, sound, and 2 more allowed"},
                 {"Multiple Permissions Blocked",
                         Arrays.asList(LOCATION_BLOCKED, SOUND_BLOCKED, VR_BLOCKED),
-                        "Location, Sound, and 1 more blocked"},
+                        "Location, sound, and 1 more blocked"},
                 {"Multiple Permissions Blocked 2",
                         Arrays.asList(LOCATION_BLOCKED, SOUND_BLOCKED, VR_BLOCKED, AR_BLOCKED),
-                        "Location, Sound, and 2 more blocked"},
+                        "Location, sound, and 2 more blocked"},
                 {"Multiple Permissions Mixed",
                         Arrays.asList(LOCATION_ALLOWED, SOUND_BLOCKED, VR_BLOCKED),
-                        "Location, Sound, and 1 more"},
+                        "Location, sound, and 1 more"},
                 {"Multiple Permissions Mixed 2",
                         Arrays.asList(LOCATION_ALLOWED, SOUND_BLOCKED, VR_BLOCKED, AR_BLOCKED),
-                        "Location, Sound, and 2 more"}});
+                        "Location, sound, and 2 more"}});
     }
 
     @Test

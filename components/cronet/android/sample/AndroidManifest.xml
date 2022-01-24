@@ -30,6 +30,7 @@
             android:authorities="org.chromium.cronet_sample_apk.androidx-startup"
             android:name="androidx.startup.InitializationProvider"
             android:exported="false"
+            tools:replace="android:authorities"
             tools:node="remove">
         </provider>
     </application>

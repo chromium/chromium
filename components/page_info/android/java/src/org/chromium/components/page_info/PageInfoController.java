@@ -32,13 +32,14 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -55,6 +56,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -98,7 +100,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     private boolean mIsInternalPage;
 
     // The security level of the page (a valid ConnectionSecurityLevel).
-    private int mSecurityLevel;
+    private @ConnectionSecurityLevel int mSecurityLevel;
 
     // Observer for dismissing dialog if web contents get destroyed, navigate etc.
     private WebContentsObserver mWebContentsObserver;
@@ -125,8 +127,13 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     // The controller for the cookies section of the page info.
     private PageInfoCookiesController mCookiesController;
 
-    // The controller for the history portions of page info.
-    private PageInfoSubpageController mHistoryController;
+    // The controller for the page zoom section of the page info. Instantiated only when
+    // {@link ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM} is enabled.
+    @Nullable
+    private PageInfoPageZoomController mPageZoomController;
+
+    // Additional controllers defined by the delegate.
+    private Collection<PageInfoSubpageController> mAdditionalControllers;
 
     // Dialog which is opened when clicking on forget site button.
     private Dialog mForgetSiteDialog;
@@ -143,8 +150,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
      *                                 NO_HIGHLIGHTED_PERMISSION for no highlight.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public PageInfoController(WebContents webContents, int securityLevel, String publisher,
-            PageInfoControllerDelegate delegate,
+    public PageInfoController(WebContents webContents, @ConnectionSecurityLevel int securityLevel,
+            String publisher, PageInfoControllerDelegate delegate,
             @ContentSettingsType int highlightedPermission) {
         mWebContents = webContents;
         mSecurityLevel = securityLevel;
@@ -250,21 +257,36 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         // Create Subcontrollers.
         mConnectionController = new PageInfoConnectionController(this, mView.getConnectionRowView(),
                 mWebContents, mDelegate, publisher, mIsInternalPage);
-        mPermissionsController =
-                new PageInfoPermissionsController(this, mView.getPermissionsRowView(), mDelegate,
-                        mFullUrl.getSpec(), highlightedPermission);
-        mCookiesController = new PageInfoCookiesController(
-                this, mView.getCookiesRowView(), mDelegate, mFullUrl.getSpec());
-        if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
-            mHistoryController = mDelegate.createHistoryController(
-                    this, mView.getHistoryRowView(), mFullUrl.getHost());
-            // TODO(crbug.com/1173154): Setup forget this site button after history delete is
-            // implemented.
-            // setupForgetSiteButton(mView.getForgetSiteButton());
+        mPermissionsController = new PageInfoPermissionsController(
+                this, mView.getPermissionsRowView(), mDelegate, highlightedPermission);
+        mCookiesController =
+                new PageInfoCookiesController(this, mView.getCookiesRowView(), mDelegate);
+
+        // Only create the controller for Page Zoom if feature flag is enabled.
+        if (ContentFeatureList.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
+            mPageZoomController = new PageInfoPageZoomController(this, mView.getPageZoomRowView(),
+                    mWebContents, new PageInfoPageZoomController.PageZoomControllerObserver() {
+                        @Override
+                        public void onSubpageCreated() {
+                            mDialog.reduceWindowDim();
+                        }
+
+                        @Override
+                        public void onSubpageRemoved() {
+                            mDialog.resetWindowDimToDefault();
+                        }
+                    });
         }
+
+        // TODO(crbug.com/1173154): Setup forget this site button after history delete is
+        // implemented.
+        // setupForgetSiteButton(mView.getForgetSiteButton());
 
         mPermissionParamsListBuilder = new PermissionParamsListBuilder(mContext, mWindowAndroid);
         mNativePageInfoController = PageInfoControllerJni.get().init(this, mWebContents);
+
+        // Additional controllers should be created after native is initialized.
+        mAdditionalControllers = mDelegate.createAdditionalRowViews(this, mView.getRowWrapper());
 
         mWebContentsObserver = new WebContentsObserver(webContents) {
             @Override
@@ -302,12 +324,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         mDialog.show();
     }
 
-    private void dismiss() {
-        if (mDialog != null) {
-            mDialog.dismiss(true);
-        }
-    }
-
     private void destroy() {
         if (mDialog != null) {
             mDialog.destroy();
@@ -343,20 +359,28 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         recordAction(PageInfoAction.PAGE_INFO_FORGET_SITE_CLEARED);
         if (mCookiesController != null) mCookiesController.clearData();
         if (mPermissionsController != null) mPermissionsController.clearData();
-        if (mHistoryController != null) mHistoryController.clearData();
+
+        if (mAdditionalControllers != null) {
+            for (PageInfoSubpageController controller : mAdditionalControllers) {
+                controller.clearData();
+            }
+        }
     }
 
     /**
      * Adds a new row for the given permission.
      *
      * @param name The title of the permission to display to the user.
+     * @param nameMidSentence The title of the permission to display to the user when used
+     *         mid-sentence.
      * @param type The ContentSettingsType of the permission.
      * @param currentSettingValue The ContentSetting value of the currently selected setting.
      */
     @CalledByNative
-    private void addPermissionSection(
-            String name, int type, @ContentSettingValues int currentSettingValue) {
-        mPermissionParamsListBuilder.addPermissionEntry(name, type, currentSettingValue);
+    private void addPermissionSection(String name, String nameMidSentence, int type,
+            @ContentSettingValues int currentSettingValue) {
+        mPermissionParamsListBuilder.addPermissionEntry(
+                name, nameMidSentence, type, currentSettingValue);
     }
 
     /**
@@ -397,7 +421,9 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     /**
      * Dismiss the popup, and then run a task after the animation has completed (if there is one).
      */
-    private void runAfterDismiss(Runnable task) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public void runAfterDismiss(Runnable task) {
+        assert mPendingRunAfterDismissTask == null;
         mPendingRunAfterDismissTask = task;
         mDialog.dismiss(true);
     }
@@ -408,10 +434,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         assert mNativePageInfoController != 0;
-        if (mPendingRunAfterDismissTask != null) {
-            mPendingRunAfterDismissTask.run();
-            mPendingRunAfterDismissTask = null;
-        }
         if (mSubpageController != null) {
             mSubpageController.onSubpageRemoved();
             mSubpageController = null;
@@ -421,13 +443,27 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         PageInfoControllerJni.get().destroy(mNativePageInfoController, PageInfoController.this);
         mNativePageInfoController = 0;
         mContext = null;
+        if (mPendingRunAfterDismissTask != null) {
+            mPendingRunAfterDismissTask.run();
+            mPendingRunAfterDismissTask = null;
+        }
     }
 
     @Override
     public void recordAction(@PageInfoAction int action) {
+        assert mNativePageInfoController != 0;
         if (mNativePageInfoController != 0) {
             PageInfoControllerJni.get().recordPageInfoAction(
                     mNativePageInfoController, PageInfoController.this, action);
+        }
+    }
+
+    @Override
+    public void setAboutThisSiteShown(boolean wasAboutThisSiteShown) {
+        assert mNativePageInfoController != 0;
+        if (mNativePageInfoController != 0) {
+            PageInfoControllerJni.get().setAboutThisSiteShown(
+                    mNativePageInfoController, PageInfoController.this, wasAboutThisSiteShown);
         }
     }
 
@@ -438,6 +474,11 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             PageInfoControllerJni.get().updatePermissions(
                     mNativePageInfoController, PageInfoController.this);
         }
+    }
+
+    @Override
+    public @ConnectionSecurityLevel int getSecurityLevel() {
+        return mSecurityLevel;
     }
 
     private boolean isSheet(Context context) {
@@ -472,6 +513,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             final String contentPublisher, @OpenedFromSource int source,
             PageInfoControllerDelegate delegate,
             @ContentSettingsType int highlightedPermission) {
+        // Don't show the dialog if this tab doesn't have an activity. See https://crbug.com/1267383
+        if (activity == null) return;
         // If the activity's decor view is not attached to window, we don't show the dialog because
         // the window manager might have revoked the window token for this activity. See
         // https://crbug.com/921450.
@@ -505,6 +548,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         void destroy(long nativePageInfoControllerAndroid, PageInfoController caller);
         void recordPageInfoAction(
                 long nativePageInfoControllerAndroid, PageInfoController caller, int action);
+        void setAboutThisSiteShown(long nativePageInfoControllerAndroid, PageInfoController caller,
+                boolean wasAboutThisSiteShown);
         void updatePermissions(long nativePageInfoControllerAndroid, PageInfoController caller);
     }
 
@@ -538,6 +583,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             // In that case mSubpageController will already be null.
             if (mSubpageController == null) return;
             mSubpageController.onSubpageRemoved();
+            mSubpageController.updateRowIfNeeded();
             mSubpageController = null;
         });
     }
@@ -546,5 +592,18 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     @Nullable
     public Activity getActivity() {
         return mWindowAndroid.getActivity().get();
+    }
+
+    @Override
+    public GURL getURL() {
+        return mFullUrl;
+    }
+
+    /** Dismiss the page info dialog. */
+    @Override
+    public void dismiss() {
+        if (mDialog != null) {
+            mDialog.dismiss(true);
+        }
     }
 }

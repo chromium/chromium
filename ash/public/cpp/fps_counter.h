@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_FPS_COUNTER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor_observer.h"
 
@@ -24,6 +23,10 @@ namespace ash {
 class ASH_PUBLIC_EXPORT FpsCounter : public ui::CompositorObserver {
  public:
   explicit FpsCounter(ui::Compositor* compositor);
+
+  FpsCounter(const FpsCounter&) = delete;
+  FpsCounter& operator=(const FpsCounter&) = delete;
+
   ~FpsCounter() override;
 
   // Comptues smoothness based on the updated frame number in compositor and the
@@ -42,8 +45,6 @@ class ASH_PUBLIC_EXPORT FpsCounter : public ui::CompositorObserver {
   ui::Compositor* compositor_ = nullptr;
   int start_frame_number_ = 0;
   base::TimeTicks start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(FpsCounter);
 };
 
 }  // namespace ash

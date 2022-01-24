@@ -19,6 +19,12 @@ namespace web {
 class SessionCertificatePolicyCacheImpl : public SessionCertificatePolicyCache {
  public:
   SessionCertificatePolicyCacheImpl(BrowserState* browser_state);
+
+  SessionCertificatePolicyCacheImpl(const SessionCertificatePolicyCacheImpl&) =
+      delete;
+  SessionCertificatePolicyCacheImpl& operator=(
+      const SessionCertificatePolicyCacheImpl&) = delete;
+
   ~SessionCertificatePolicyCacheImpl() override;
 
   // SessionCertificatePolicyCache:
@@ -36,8 +42,6 @@ class SessionCertificatePolicyCacheImpl : public SessionCertificatePolicyCache {
  private:
   // An set of CRWSessionCertificateStorages representing allowed certs.
   NSMutableSet* allowed_certs_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionCertificatePolicyCacheImpl);
 };
 
 }  // namespace web

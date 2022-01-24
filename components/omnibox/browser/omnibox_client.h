@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
@@ -46,13 +47,6 @@ class OmniboxClient {
   // Returns an AutocompleteProviderClient specific to the embedder context.
   virtual std::unique_ptr<AutocompleteProviderClient>
   CreateAutocompleteProviderClient() = 0;
-
-  // Returns an OmniboxNavigationObserver specific to the embedder context. May
-  // return null if the embedder has no need to observe omnibox navigations.
-  virtual std::unique_ptr<OmniboxNavigationObserver>
-  CreateOmniboxNavigationObserver(const std::u16string& text,
-                                  const AutocompleteMatch& match,
-                                  const AutocompleteMatch& alternate_nav_match);
 
   // Returns whether there is any associated current page.  For example, during
   // startup or shutdown, the omnibox may exist but have no attached page.
@@ -111,10 +105,10 @@ class OmniboxClient {
   // that was created by CreateOmniboxNavigationObserver() for |match|; in some
   // embedding contexts, processing an extension keyword involves invoking
   // action on this observer.
-  virtual bool ProcessExtensionKeyword(const TemplateURL* template_url,
+  virtual bool ProcessExtensionKeyword(const std::u16string& text,
+                                       const TemplateURL* template_url,
                                        const AutocompleteMatch& match,
-                                       WindowOpenDisposition disposition,
-                                       OmniboxNavigationObserver* observer);
+                                       WindowOpenDisposition disposition);
 
   // Called to notify clients that the omnibox input state has changed.
   virtual void OnInputStateChanged() {}
@@ -166,18 +160,6 @@ class OmniboxClient {
 
   // Discards the state for all pending and transient navigations.
   virtual void DiscardNonCommittedNavigations() {}
-
-  // Opens and shows a new incognito browser window.
-  virtual void NewIncognitoWindow() {}
-
-  // Opens an Incognito clear browsing data dialog.
-  virtual void OpenIncognitoClearBrowsingDataDialog() {}
-
-  // Closes incognito browser windows.
-  virtual void CloseIncognitoWindows() {}
-
-  // Presents translation prompt for current tab web contents.
-  virtual void PromptPageTranslation() {}
 
   // Presents prompt to update Chrome.
   virtual void OpenUpdateChromeDialog() {}

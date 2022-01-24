@@ -1,0 +1,9 @@
+sqrt1.AXMathRootRadicand.count=4
+sqrt1.AXMathRootRadicand[0].AXChildren[0].AXValue='1'
+sqrt1.AXMathRootRadicand[1].AXChildren[0].AXValue='2'
+sqrt1.AXMathRootRadicand[2].AXChildren[0].AXValue='3'
+sqrt1.AXMathRootRadicand[3].AXChildren[0].AXValue='4'
+sqrt2.AXMathRootRadicand.count=0
+root1.AXMathRootRadicand.count=1
+root1.AXMathRootRadicand[0].AXChildren[0].AXValue='1'
+root2.AXMathRootRadicand=NULL

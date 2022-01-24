@@ -37,7 +37,7 @@ public class ContactsPickerDialog
             ContactsPickerListener listener, boolean allowMultiple, boolean includeNames,
             boolean includeEmails, boolean includeTel, boolean includeAddresses,
             boolean includeIcons, String formattedOrigin) {
-        super(windowAndroid.getContext().get(), R.style.Theme_Chromium_Fullscreen);
+        super(windowAndroid.getContext().get(), R.style.ThemeOverlay_BrowserUI_Fullscreen);
 
         // Initialize the main content view.
         mCategoryView = new PickerCategoryView(windowAndroid, adapter, allowMultiple, includeNames,

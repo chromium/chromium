@@ -46,7 +46,7 @@ AutofillProfileValidator::ValidationRequest::ValidationRequest(
                              weak_factory_.GetWeakPtr()));
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, on_timeout_.callback(),
-      base::TimeDelta::FromSeconds(kRulesLoadingTimeoutSeconds));
+      base::Seconds(kRulesLoadingTimeoutSeconds));
 }
 
 AutofillProfileValidator::ValidationRequest::~ValidationRequest() {

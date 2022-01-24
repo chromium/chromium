@@ -56,43 +56,6 @@ std::string ToString(network::mojom::CrossOriginOpenerPolicyValue coop_value) {
   }
 }
 
-absl::optional<blink::FrameToken> GetFrameToken(FrameTreeNode* frame,
-                                                SiteInstance* site_instance) {
-  RenderFrameHostImpl* rfh = frame->current_frame_host();
-  if (rfh->GetSiteInstance() == site_instance)
-    return rfh->GetFrameToken();
-
-  RenderFrameProxyHost* proxy =
-      frame->render_manager()->GetRenderFrameProxyHost(site_instance);
-  if (proxy)
-    return proxy->GetFrameToken();
-
-  return absl::nullopt;
-}
-
-// Find all the related windows that might try to access the new document in
-// |frame|, but are in a different virtual browsing context group.
-std::vector<FrameTreeNode*> CollectOtherWindowForCoopAccess(
-    FrameTreeNode* frame) {
-  DCHECK(frame->IsMainFrame());
-  int virtual_browsing_context_group =
-      frame->current_frame_host()->virtual_browsing_context_group();
-
-  std::vector<FrameTreeNode*> out;
-  for (RenderFrameHostImpl* rfh :
-       frame->current_frame_host()
-           ->delegate()
-           ->GetActiveTopLevelDocumentsInBrowsingContextGroup(
-               frame->current_frame_host())) {
-    // Filter out windows from the same virtual browsing context group.
-    if (rfh->virtual_browsing_context_group() == virtual_browsing_context_group)
-      continue;
-
-    out.push_back(rfh->frame_tree_node());
-  }
-  return out;
-}
-
 FrameTreeNode* TopLevelOpener(FrameTreeNode* frame) {
   FrameTreeNode* opener = frame->original_opener();
   return opener ? opener->frame_tree()->root() : nullptr;
@@ -142,15 +105,79 @@ CrossOriginOpenerPolicyReporter::CrossOriginOpenerPolicyReporter(
     const base::UnguessableToken& reporting_source,
     const net::NetworkIsolationKey& network_isolation_key)
     : storage_partition_(storage_partition),
+      reporting_source_(reporting_source),
       context_url_(context_url),
       context_referrer_url_(SanitizedURL(context_referrer_url)),
       coop_(coop),
-      reporting_source_(reporting_source),
       network_isolation_key_(network_isolation_key) {
   DCHECK(!reporting_source_.is_empty());
 }
 
 CrossOriginOpenerPolicyReporter::~CrossOriginOpenerPolicyReporter() = default;
+
+network::mojom::CrossOriginOpenerPolicyReporterParamsPtr
+CrossOriginOpenerPolicyReporter::CreateReporterParams(
+    bool access_from_coop_page,
+    FrameTreeNode* accessing_node,
+    FrameTreeNode* accessed_node) {
+  bool endpoint_defined =
+      coop_.report_only_reporting_endpoint || coop_.reporting_endpoint;
+
+  using network::mojom::CoopAccessReportType;
+  CoopAccessReportType report_type;
+  if (access_from_coop_page) {
+    if (accessing_node == TopLevelOpener(accessed_node))
+      report_type = CoopAccessReportType::kAccessFromCoopPageToOpenee;
+    else if (accessed_node == TopLevelOpener(accessing_node))
+      report_type = CoopAccessReportType::kAccessFromCoopPageToOpener;
+    else
+      report_type = CoopAccessReportType::kAccessFromCoopPageToOther;
+  } else {
+    if (accessed_node == TopLevelOpener(accessing_node))
+      report_type = CoopAccessReportType::kAccessToCoopPageFromOpenee;
+    else if (accessing_node == TopLevelOpener(accessed_node))
+      report_type = CoopAccessReportType::kAccessToCoopPageFromOpener;
+    else
+      report_type = CoopAccessReportType::kAccessToCoopPageFromOther;
+  }
+
+  RenderFrameHostImpl* accessing_rfh = accessing_node->current_frame_host();
+  RenderFrameHostImpl* accessed_rfh = accessed_node->current_frame_host();
+  bool same_origin = accessing_rfh->GetLastCommittedOrigin().IsSameOriginWith(
+      accessed_rfh->GetLastCommittedOrigin());
+  RenderFrameHostImpl* reported_rfh =
+      access_from_coop_page ? accessed_rfh : accessing_rfh;
+  RenderFrameHostImpl* reporting_rfh =
+      access_from_coop_page ? accessing_rfh : accessed_rfh;
+  std::string reported_window_url =
+      same_origin ? SanitizedURL(reported_rfh->GetLastCommittedURL()) : "";
+
+  // If the COOP window is the opener, and the other window's popup creator is
+  // same-origin with the COOP document, the openee' initial popup URL is
+  // reported.
+  std::string reported_initial_popup_url;
+  if (report_type == CoopAccessReportType::kAccessFromCoopPageToOpenee ||
+      report_type == CoopAccessReportType::kAccessToCoopPageFromOpenee) {
+    if (reporting_rfh->GetLastCommittedOrigin().IsSameOriginWith(
+            reported_rfh->frame_tree_node()->popup_creator_origin())) {
+      reported_initial_popup_url =
+          SanitizedURL(reported_rfh->frame_tree_node()->initial_popup_url());
+    }
+  }
+
+  // Warning: Do not send cross-origin sensitive data. They will be read from:
+  // 1) A potentially compromised renderer (the accessing window).
+  // 2) A network server (defined from the reporter).
+  mojo::PendingRemote<network::mojom::CrossOriginOpenerPolicyReporter>
+      remote_reporter;
+  receiver_set_.Add(
+      std::make_unique<Receiver>(this, reported_initial_popup_url),
+      remote_reporter.InitWithNewPipeAndPassReceiver());
+
+  return network::mojom::CrossOriginOpenerPolicyReporterParams::New(
+      report_type, std::move(remote_reporter), endpoint_defined,
+      reported_window_url);
+}
 
 void CrossOriginOpenerPolicyReporter::QueueNavigationToCOOPReport(
     const GURL& previous_url,
@@ -206,7 +233,7 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
   const std::string& endpoint = coop_.report_only_reporting_endpoint.value();
 
   DCHECK(base::FeatureList::IsEnabled(
-      network::features::kCrossOriginOpenerPolicyAccessReporting));
+      network::features::kCrossOriginOpenerPolicy));
 
   base::DictionaryValue body;
   body.SetStringPath(kType, network::CoopAccessReportTypeToString(report_type));
@@ -244,145 +271,8 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
   }
 
   storage_partition_->GetNetworkContext()->QueueReport(
-      "coop", endpoint, context_url_, network_isolation_key_, absl::nullopt,
-      std::move(body));
-}
-
-// static
-void CrossOriginOpenerPolicyReporter::InstallAccessMonitorsIfNeeded(
-    FrameTreeNode* frame) {
-  if (!frame->IsMainFrame())
-    return;
-
-  // The function centralize all the CoopAccessMonitor being added. Checking the
-  // flag here ensures the feature to be properly disabled everywhere.
-  if (!base::FeatureList::IsEnabled(
-          network::features::kCrossOriginOpenerPolicyAccessReporting)) {
-    return;
-  }
-
-  // TODO(arthursonzogni): It is too late to update the SiteInstance of the new
-  // document. Ideally, this should be split into two parts:
-  // - CommitNavigation: Update the new document's SiteInstance.
-  // - DidCommitNavigation: Update the other SiteInstances.
-
-  // Find all the related windows that might try to access the new document,
-  // but are from a different virtual browsing context group.
-  std::vector<FrameTreeNode*> other_main_frames =
-      CollectOtherWindowForCoopAccess(frame);
-
-  CrossOriginOpenerPolicyReporter* reporter_frame =
-      frame->current_frame_host()->coop_reporter();
-
-  for (FrameTreeNode* other : other_main_frames) {
-    CrossOriginOpenerPolicyReporter* reporter_other =
-        other->current_frame_host()->coop_reporter();
-
-    // If the current frame has a reporter, install the access monitors to
-    // monitor the accesses between this frame and the other frame.
-    if (reporter_frame) {
-      reporter_frame->MonitorAccesses(frame, other);
-      reporter_frame->MonitorAccesses(other, frame);
-    }
-
-    // If the other frame has a reporter, install the access monitors to monitor
-    // the accesses between this frame and the other frame.
-    if (reporter_other) {
-      reporter_other->MonitorAccesses(frame, other);
-      reporter_other->MonitorAccesses(other, frame);
-    }
-  }
-}
-
-void CrossOriginOpenerPolicyReporter::MonitorAccesses(
-    FrameTreeNode* accessing_node,
-    FrameTreeNode* accessed_node) {
-  DCHECK_NE(accessing_node, accessed_node);
-  DCHECK(accessing_node->current_frame_host()->coop_reporter() == this ||
-         accessed_node->current_frame_host()->coop_reporter() == this);
-
-  // TODO(arthursonzogni): DCHECK same browsing context group.
-  // TODO(arthursonzogni): DCHECK different virtual browsing context group.
-
-  // Accesses are made either from the main frame or its same-origin iframes.
-  // Accesses from the cross-origin ones aren't reported.
-  //
-  // It means all the accessed from the first window are made from documents
-  // inside the same SiteInstance. Only one SiteInstance has to be updated.
-
-  RenderFrameHostImpl* accessing_rfh = accessing_node->current_frame_host();
-  RenderFrameHostImpl* accessed_rfh = accessed_node->current_frame_host();
-  SiteInstance* site_instance = accessing_rfh->GetSiteInstance();
-
-  absl::optional<blink::FrameToken> accessed_window_token =
-      GetFrameToken(accessed_node, site_instance);
-  if (!accessed_window_token)
-    return;
-
-  bool access_from_coop_page =
-      this == accessing_node->current_frame_host()->coop_reporter();
-
-  using network::mojom::CoopAccessReportType;
-  CoopAccessReportType report_type;
-  if (access_from_coop_page) {
-    if (accessing_node == TopLevelOpener(accessed_node))
-      report_type = CoopAccessReportType::kAccessFromCoopPageToOpenee;
-    else if (accessed_node == TopLevelOpener(accessing_node))
-      report_type = CoopAccessReportType::kAccessFromCoopPageToOpener;
-    else
-      report_type = CoopAccessReportType::kAccessFromCoopPageToOther;
-  } else {
-    if (accessed_node == TopLevelOpener(accessing_node))
-      report_type = CoopAccessReportType::kAccessToCoopPageFromOpenee;
-    else if (accessing_node == TopLevelOpener(accessed_node))
-      report_type = CoopAccessReportType::kAccessToCoopPageFromOpener;
-    else
-      report_type = CoopAccessReportType::kAccessToCoopPageFromOther;
-  }
-
-  bool same_origin = accessing_rfh->GetLastCommittedOrigin().IsSameOriginWith(
-      accessed_rfh->GetLastCommittedOrigin());
-  RenderFrameHostImpl* reported_rfh =
-      access_from_coop_page ? accessed_rfh : accessing_rfh;
-  RenderFrameHostImpl* reporting_rfh =
-      access_from_coop_page ? accessing_rfh : accessed_rfh;
-  std::string reported_window_url =
-      same_origin ? SanitizedURL(reported_rfh->GetLastCommittedURL()) : "";
-
-  bool endpoint_defined =
-      coop_.report_only_reporting_endpoint || coop_.reporting_endpoint;
-
-  // If the COOP window is the opener, and the other window's popup creator is
-  // same-origin with the COOP document, the openee' initial popup URL is
-  // reported.
-  std::string reported_initial_popup_url;
-  if (report_type == CoopAccessReportType::kAccessFromCoopPageToOpenee ||
-      report_type == CoopAccessReportType::kAccessToCoopPageFromOpenee) {
-    if (reporting_rfh->GetLastCommittedOrigin().IsSameOriginWith(
-            reported_rfh->frame_tree_node()->popup_creator_origin())) {
-      reported_initial_popup_url =
-          SanitizedURL(reported_rfh->frame_tree_node()->initial_popup_url());
-    }
-  }
-
-  mojo::PendingRemote<network::mojom::CrossOriginOpenerPolicyReporter>
-      remote_reporter;
-  receiver_set_.Add(
-      std::make_unique<Receiver>(this, reported_initial_popup_url),
-      remote_reporter.InitWithNewPipeAndPassReceiver());
-
-  // Warning: Do not send cross-origin sensitive data. They will be read from:
-  // 1) A potentially compromised renderer (the accessing window).
-  // 2) A network server (defined from the reporter).
-  accessing_rfh->GetAssociatedLocalMainFrame()->InstallCoopAccessMonitor(
-      report_type, *accessed_window_token, std::move(remote_reporter),
-      endpoint_defined, std::move(reported_window_url));
-}
-
-// static
-int CrossOriginOpenerPolicyReporter::NextVirtualBrowsingContextGroup() {
-  static int id = -1;
-  return ++id;
+      "coop", endpoint, context_url_, reporting_source_, network_isolation_key_,
+      absl::nullopt, std::move(body));
 }
 
 void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
@@ -395,7 +285,7 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
       kEffectivePolicy,
       ToString(is_report_only ? coop_.report_only_value : coop_.value));
   storage_partition_->GetNetworkContext()->QueueReport(
-      "coop", endpoint, context_url_, network_isolation_key_,
+      "coop", endpoint, context_url_, reporting_source_, network_isolation_key_,
       /*user_agent=*/absl::nullopt, std::move(body));
 }
 

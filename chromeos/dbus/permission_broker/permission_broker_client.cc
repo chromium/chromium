@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
 #include "dbus/bus.h"
@@ -45,6 +44,11 @@ PermissionBrokerClient* g_instance = nullptr;
 class PermissionBrokerClientImpl : public PermissionBrokerClient {
  public:
   PermissionBrokerClientImpl() = default;
+
+  PermissionBrokerClientImpl(const PermissionBrokerClientImpl&) = delete;
+  PermissionBrokerClientImpl& operator=(const PermissionBrokerClientImpl&) =
+      delete;
+
   ~PermissionBrokerClientImpl() override = default;
 
   void CheckPathAccess(const std::string& path,
@@ -268,8 +272,6 @@ class PermissionBrokerClientImpl : public PermissionBrokerClient {
   // first, invalidating its weak pointers, before the other members are
   // destroyed.
   base::WeakPtrFactory<PermissionBrokerClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionBrokerClientImpl);
 };
 
 PermissionBrokerClient::PermissionBrokerClient() {

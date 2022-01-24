@@ -8,14 +8,10 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "chromeos/services/libassistant/assistant_client_observer.h"
+#include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/timer_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-namespace assistant_client {
-class AlarmTimerManager;
-}  // namespace assistant_client
 
 namespace chromeos {
 namespace libassistant {
@@ -47,9 +43,10 @@ class TimerController : public mojom::TimerController,
 
   // Created when Libassistant is running, and destroyed when it stops.
   std::unique_ptr<TimerListener> timer_listener_;
+
   // Owned by |ServiceController|, set in OnAssistantClientRunning() and reset
   // in OnDestroyingAssistantClient().
-  assistant_client::AlarmTimerManager* alarm_timer_manager_ = nullptr;
+  AssistantClient* assistant_client_ = nullptr;
 
   mojo::Receiver<mojom::TimerController> receiver_{this};
   mojo::Remote<mojom::TimerDelegate> delegate_;

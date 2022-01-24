@@ -57,16 +57,29 @@ void ClearBlockingObserverForCurrentThread() {
 IOJankMonitoringWindow::ScopedMonitoredCall::ScopedMonitoredCall()
     : call_start_(TimeTicks::Now()),
       assigned_jank_window_(MonitorNextJankWindowIfNecessary(call_start_)) {
-  if (assigned_jank_window_) {
-    // TimeTicks using a monotonic clock and MonitorNextJankWindowIfNecessary
-    // synchronizing via a lock to return |assigned_jank_window_| guarantees
-    // that |call_start_| is either equal or beyond
-    // |assigned_jank_window_->start_time_|. Breaking the assumption of a
-    // monotonic clock could result in negative indexing and OOB-writes in
-    // AddJank(). Some fuzzers have been able to break this under non-production
-    // conditions : crbug.com/1209622. Make sure this is not possible in
-    // production.
-    CHECK_GE(call_start_, assigned_jank_window_->start_time_);
+  if (assigned_jank_window_ &&
+      call_start_ < assigned_jank_window_->start_time_) {
+    // Sampling |call_start_| and being assigned an IOJankMonitoringWindow is
+    // racy. It is possible that |call_start_| is sampled near the very end of
+    // the current window; meanwhile, another ScopedMonitoredCall on another
+    // thread samples a |call_start_| which lands in the next window. If that
+    // thread beats this one to MonitorNextJankWindowIfNecessary(), this thread
+    // will incorrectly be assigned that window (in the future w.r.t. to its
+    // |call_start_|). To avoid OOB-indexing in AddJank(), crbug.com/1209622, it
+    // is necessary to correct this by bumping |call_start_| to the received
+    // window's |start_time_|.
+    //
+    // Note: The alternate approach of getting |assigned_jank_window_| before
+    // |call_start_| has the opposite problem where |call_start_| can be more
+    // than kNumIntervals ahead of |start_time_| when sampling across the window
+    // boundary, resulting in OOB-indexing the other way. To solve that a loop
+    // would be required (re-getting the latest window and re-sampling
+    // |call_start_| until the condition holds). The loopless solution is thus
+    // preferred.
+    //
+    // A lock covering this entire constructor is also undesired because of the
+    // lock-free logic at the end of MonitorNextJankWindowIfNecessary().
+    call_start_ = assigned_jank_window_->start_time_;
   }
 }
 
@@ -199,6 +212,11 @@ IOJankMonitoringWindow::~IOJankMonitoringWindow() NO_THREAD_SAFETY_ANALYSIS {
 
 void IOJankMonitoringWindow::OnBlockingCallCompleted(TimeTicks call_start,
                                                      TimeTicks call_end) {
+  // Confirm we never hit a case of TimeTicks going backwards on the same thread
+  // nor of TimeTicks rolling over the int64_t boundary (which would break
+  // comparison operators).
+  DCHECK_LE(call_start, call_end);
+
   if (call_end - call_start < kIOJankInterval)
     return;
 

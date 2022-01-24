@@ -11,11 +11,23 @@ import {RoutineResult, RoutineResultInfo, RoutineRunnerInterface, RoutineRunnerR
  * Represents the execution progress of a test routine.
  * @enum {number}
  */
-export let ExecutionProgress = {
+export const ExecutionProgress = {
   kNotStarted: 0,
   kRunning: 1,
   kCompleted: 2,
   kCancelled: 3,
+  kSkipped: 4,
+  kWarning: 5,
+};
+
+/**
+ * Represents the status of the test suite.
+ * @enum {number}
+ */
+export const TestSuiteStatus = {
+  kNotRunning: 0,
+  kRunning: 1,
+  kCompleted: 2,
 };
 
 /**
@@ -33,7 +45,7 @@ export class ResultStatusItem {
     /** @type {?RoutineResult} */
     this.result = null;
   }
-};
+}
 
 /**
  * The type of the status callback function.
@@ -138,7 +150,7 @@ export class RoutineListExecutor {
           if (info !== null) {
             assert(info.type === name);
             progress = ExecutionProgress.kCompleted;
-            result = info.result
+            result = info.result;
           }
 
           const status = new ResultStatusItem(name, progress);

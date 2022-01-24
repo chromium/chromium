@@ -225,6 +225,12 @@ enum ProcessedActionStatusProto {
   // is not rendered (display: none) or simply empty.
   ELEMENT_POSITION_NOT_FOUND = 33;
 
+  // The requested client memory key was not available.
+  CLIENT_MEMORY_KEY_NOT_AVAILABLE = 34;
+
+  // The requested value expression resulted in an empty string.
+  EMPTY_VALUE_EXPRESSION_RESULT = 35;
+
   reserved 15, 23, 25, 32;
 }
 

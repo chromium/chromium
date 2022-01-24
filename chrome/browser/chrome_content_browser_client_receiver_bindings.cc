@@ -17,20 +17,28 @@
 #include "chrome/browser/content_settings/content_settings_manager_delegate.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
+#include "chrome/browser/headless/headless_mode_util.h"
+#include "chrome/browser/lite_video/lite_video_observer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/net_benchmarking.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/subresource_redirect/subresource_redirect_observer.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
+#include "chrome/common/buildflags.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/metrics/call_stack_profile_collector.h"
+#include "components/offline_pages/buildflags/buildflags.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -40,6 +48,8 @@
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "pdf/buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
@@ -49,9 +59,13 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
-#include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy.h"
+#include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "components/performance_manager/public/performance_manager.h"
+#if defined(ARCH_CPU_X86_64)
+#include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
+#endif  // defined(ARCH_CPU_X86_64)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_lacros.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -82,10 +96,33 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/badging/badge_manager.h"
+#include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
+#include "chrome/browser/ui/search/search_tab_helper.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_web_contents_helper.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/printing/print_view_manager_basic.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_manager.h"
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/printing/print_view_manager.h"
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#endif  // BUILDFLAG(ENABLE_PRINTING)
+
 #if BUILDFLAG(ENABLE_PLUGINS)
+#include "chrome/browser/guest_view/web_view/chrome_web_view_permission_helper_delegate.h"
 #include "chrome/browser/plugins/plugin_observer.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
+#endif
+
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+#include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #endif
 
 namespace {
@@ -229,15 +266,14 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
       ui_task_runner);
 #endif
 #if defined(OS_ANDROID)
-  Profile* profile =
-      Profile::FromBrowserContext(render_process_host->GetBrowserContext());
   registry->AddInterface(
       base::BindRepeating(&android::AvailableOfflineContentProvider::Create,
-                          profile),
+                          render_process_host->GetID()),
       content::GetUIThreadTaskRunner({}));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_64)
   if (performance_manager::mechanism::userspace_swap::
           UserspaceSwapInitializationImpl::UserspaceSwapSupportedAndEnabled()) {
     registry->AddInterface(
@@ -246,7 +282,8 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
                             render_process_host->GetID()),
         performance_manager::PerformanceManager::GetTaskRunner());
   }
-#endif
+#endif  // defined(ARCH_CPU_X86_64)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   for (auto* ep : extra_parts_) {
     ep->ExposeInterfacesToRenderer(registry, associated_registry,
@@ -303,6 +340,11 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
 #endif
 }
 
+void ChromeContentBrowserClient::RegisterWebUIInterfaceBrokers(
+    content::WebUIBrowserInterfaceBrokerRegistry& registry) {
+  chrome::internal::PopulateChromeWebUIFrameInterfaceBrokers(registry);
+}
+
 void ChromeContentBrowserClient::
     RegisterBrowserInterfaceBindersForServiceWorker(
         mojo::BinderMapWithContext<
@@ -339,6 +381,27 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
             render_frame_host);
     return true;
   }
+  if (interface_name == chrome::mojom::NetworkDiagnostics::Name_) {
+    chrome_browser_net::NetErrorTabHelper::BindNetworkDiagnostics(
+        mojo::PendingAssociatedReceiver<chrome::mojom::NetworkDiagnostics>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+  if (interface_name == chrome::mojom::NetworkEasterEgg::Name_) {
+    chrome_browser_net::NetErrorTabHelper::BindNetworkEasterEgg(
+        mojo::PendingAssociatedReceiver<chrome::mojom::NetworkEasterEgg>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+  if (interface_name == chrome::mojom::NetErrorPageSupport::Name_) {
+    chrome_browser_net::NetErrorTabHelper::BindNetErrorPageSupport(
+        mojo::PendingAssociatedReceiver<chrome::mojom::NetErrorPageSupport>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
   if (interface_name ==
       chrome::mojom::OpenSearchDescriptionDocumentHandler::Name_) {
     SearchEngineTabHelper::BindOpenSearchDescriptionDocumentHandler(
@@ -349,10 +412,26 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
     return true;
   }
 #if BUILDFLAG(ENABLE_PLUGINS)
+  if (interface_name == chrome::mojom::PluginAuthHost::Name_) {
+    extensions::ChromeWebViewPermissionHelperDelegate::BindPluginAuthHost(
+        mojo::PendingAssociatedReceiver<chrome::mojom::PluginAuthHost>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
   if (interface_name == chrome::mojom::PluginHost::Name_) {
     PluginObserver::BindPluginHost(
         mojo::PendingAssociatedReceiver<chrome::mojom::PluginHost>(
             std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
+#if !defined(OS_ANDROID)
+  if (interface_name == chrome::mojom::SyncEncryptionKeysExtension::Name_) {
+    SyncEncryptionKeysTabHelper::BindSyncEncryptionKeysExtension(
+        mojo::PendingAssociatedReceiver<
+            chrome::mojom::SyncEncryptionKeysExtension>(std::move(*handle)),
         render_frame_host);
     return true;
   }
@@ -364,7 +443,85 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
         render_frame_host);
     return true;
   }
-
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (interface_name == extensions::mojom::LocalFrameHost::Name_) {
+    extensions::ExtensionWebContentsObserver::BindLocalFrameHost(
+        mojo::PendingAssociatedReceiver<extensions::mojom::LocalFrameHost>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
+  if (interface_name == lite_video::mojom::LiteVideoService::Name_) {
+    LiteVideoObserver::BindLiteVideoService(
+        mojo::PendingAssociatedReceiver<lite_video::mojom::LiteVideoService>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+  if (interface_name == offline_pages::mojom::MhtmlPageNotifier::Name_) {
+    offline_pages::OfflinePageTabHelper::BindHtmlPageNotifier(
+        mojo::PendingAssociatedReceiver<
+            offline_pages::mojom::MhtmlPageNotifier>(std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
+  if (interface_name == page_load_metrics::mojom::PageLoadMetrics::Name_) {
+    page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
+        mojo::PendingAssociatedReceiver<
+            page_load_metrics::mojom::PageLoadMetrics>(std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#if BUILDFLAG(ENABLE_PDF)
+  if (interface_name == pdf::mojom::PdfService::Name_) {
+    pdf::PDFWebContentsHelper::BindPdfService(
+        mojo::PendingAssociatedReceiver<pdf::mojom::PdfService>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
+#if !defined(OS_ANDROID)
+  if (interface_name == search::mojom::EmbeddedSearchConnector::Name_) {
+    SearchTabHelper::BindEmbeddedSearchConnecter(
+        mojo::PendingAssociatedReceiver<search::mojom::EmbeddedSearchConnector>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
+#if BUILDFLAG(ENABLE_PRINTING)
+  if (interface_name == printing::mojom::PrintManagerHost::Name_) {
+    mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost> receiver(
+        std::move(*handle));
+    if (headless::IsChromeNativeHeadless()) {
+      print_to_pdf::PdfPrintManager::BindPrintManagerHost(std::move(receiver),
+                                                          render_frame_host);
+    } else {
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+      printing::PrintViewManager::BindPrintManagerHost(std::move(receiver),
+                                                       render_frame_host);
+#else
+      printing::PrintViewManagerBasic::BindPrintManagerHost(std::move(receiver),
+                                                            render_frame_host);
+#endif
+    }
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_PRINTING)
+  if (interface_name ==
+      security_interstitials::mojom::InterstitialCommands::Name_) {
+    security_interstitials::SecurityInterstitialTabHelper::
+        BindInterstitialCommands(
+            mojo::PendingAssociatedReceiver<
+                security_interstitials::mojom::InterstitialCommands>(
+                std::move(*handle)),
+            render_frame_host);
+    return true;
+  }
   if (interface_name ==
       subresource_filter::mojom::SubresourceFilterHost::Name_) {
     subresource_filter::ContentSubresourceFilterThrottleManager::BindReceiver(
@@ -374,6 +531,25 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
         render_frame_host);
     return true;
   }
+  if (interface_name ==
+      subresource_redirect::mojom::SubresourceRedirectService::Name_) {
+    subresource_redirect::SubresourceRedirectObserver::
+        BindSubresourceRedirectService(
+            mojo::PendingAssociatedReceiver<
+                subresource_redirect::mojom::SubresourceRedirectService>(
+                std::move(*handle)),
+            render_frame_host);
+    return true;
+  }
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  if (interface_name == supervised_user::mojom::SupervisedUserCommands::Name_) {
+    SupervisedUserNavigationObserver::BindSupervisedUserCommands(
+        mojo::PendingAssociatedReceiver<
+            supervised_user::mojom::SupervisedUserCommands>(std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
 
   return false;
 }
@@ -386,9 +562,12 @@ void ChromeContentBrowserClient::BindGpuHostReceiver(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (auto r = receiver.As<chromeos::cdm::mojom::CdmFactoryDaemon>())
-    chromeos::CdmFactoryDaemonProxy::Create(std::move(r));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>())
+    chromeos::CdmFactoryDaemonProxyAsh::Create(std::move(r));
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>())
+    chromeos::CdmFactoryDaemonProxyLacros::Create(std::move(r));
+#endif
 }
 
 void ChromeContentBrowserClient::BindUtilityHostReceiver(

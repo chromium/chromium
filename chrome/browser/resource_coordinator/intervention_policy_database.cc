@@ -8,8 +8,8 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/values.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 
@@ -43,7 +43,7 @@ InterventionPolicyDatabase::GetFreezingPolicy(const url::Origin& origin) const {
 void InterventionPolicyDatabase::InitializeDatabaseWithProtoFile(
     const base::FilePath& proto_location,
     const base::Version& version,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   // TODO(sebmarchand): Validate the version and the manifest?
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,

@@ -11,8 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/deferred_sequenced_task_runner.h"
-#include "base/macros.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 
@@ -41,6 +40,10 @@ class ChromeBookmarkClient : public bookmarks::BookmarkClient {
       Profile* profile,
       bookmarks::ManagedBookmarkService* managed_bookmark_service,
       sync_bookmarks::BookmarkSyncService* bookmark_sync_service);
+
+  ChromeBookmarkClient(const ChromeBookmarkClient&) = delete;
+  ChromeBookmarkClient& operator=(const ChromeBookmarkClient&) = delete;
+
   ~ChromeBookmarkClient() override;
 
   // bookmarks::BookmarkClient:
@@ -83,8 +86,6 @@ class ChromeBookmarkClient : public bookmarks::BookmarkClient {
   std::unique_ptr<offline_pages::OfflinePageBookmarkObserver>
       offline_page_observer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBookmarkClient);
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_CHROME_BOOKMARK_CLIENT_H_

@@ -36,9 +36,7 @@
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
 #include "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #include "ios/chrome/common/channel_info.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/omaha/omaha_service_provider.h"
-#include "ios/public/provider/chrome/browser/omaha/omaha_xml_writer.h"
+#include "ios/public/provider/chrome/browser/omaha/omaha_api.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/base/backoff_entry.h"
@@ -74,42 +72,73 @@ NSString* const kLastSentTimeKey = @"ChromeOmahaServiceLastSentTime";
 NSString* const kRetryRequestIdKey = @"ChromeOmahaServiceRetryRequestId";
 NSString* const kLastServerDateKey = @"ChromeOmahaServiceLastServerDate";
 
-class XmlWrapper : public OmahaXmlWriter {
+class XmlElement {
+ public:
+  XmlElement(XmlWriter& writer, const std::string& name)
+      : writer_(&writer), name_(name) {
+    const bool ok = writer_->StartElement(name_);
+    DCHECK(ok);
+
+    ios::provider::SetOmahaExtraAttributes(
+        name_,
+        base::BindRepeating(&XmlElement::AddAttribute, base::Unretained(this)));
+  }
+
+  ~XmlElement() {
+    if (writer_) {
+      const bool ok = writer_->EndElement();
+      DCHECK(ok);
+    }
+
+    writer_ = nullptr;
+  }
+
+  XmlElement(const XmlElement&) = delete;
+  XmlElement& operator=(const XmlElement&) = delete;
+
+  XmlElement(XmlElement&& other) : writer_(nullptr), name_(other.name_) {
+    std::swap(writer_, other.writer_);
+  }
+
+  XmlElement& operator=(XmlElement&&) = delete;
+
+  XmlElement AddElement(const std::string& name) {
+    return XmlElement(*writer_, name);
+  }
+
+  void AddAttribute(const std::string& name, const std::string& value) {
+    const bool ok = writer_->AddAttribute(name, value);
+    DCHECK(ok);
+  }
+
+ private:
+  XmlWriter* writer_ = nullptr;
+  const std::string name_;
+};
+
+class XmlWrapper {
  public:
   XmlWrapper() {
     writer_.StartWriting();
     writer_.StopIndenting();
   }
 
-  ~XmlWrapper() override = default;
+  ~XmlWrapper() = default;
 
-  void StartElement(const char* name) override {
-    DCHECK(name);
-    bool ok = writer_.StartElement(name);
-    DCHECK(ok);
+  XmlWrapper(const XmlWrapper&) = delete;
+  XmlWrapper& operator=(const XmlWrapper&) = delete;
+
+  XmlElement AddElement(const std::string& name) {
+    return XmlElement(writer_, name);
   }
 
-  void EndElement() override {
-    bool ok = writer_.EndElement();
-    DCHECK(ok);
-  }
-
-  void WriteAttribute(const char* name, const char* value) override {
-    DCHECK(name);
-    bool ok = writer_.AddAttribute(name, value);
-    DCHECK(ok);
-  }
-
-  void Finalize() override { writer_.StopWriting(); }
-
-  std::string GetContentAsString() override {
+  std::string GetContentAsString() {
+    writer_.StopWriting();
     return writer_.GetWrittenString();
   }
 
  private:
   XmlWriter writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(XmlWrapper);
 };
 
 }  // namespace
@@ -124,7 +153,6 @@ class XmlWrapper : public OmahaXmlWriter {
   BOOL _updateCheckIsParsed;
   BOOL _urlIsParsed;
   BOOL _manifestIsParsed;
-  BOOL _pingIsParsed;
   BOOL _eventIsParsed;
   BOOL _dayStartIsParsed;
   NSString* _appId;
@@ -159,9 +187,9 @@ class XmlWrapper : public OmahaXmlWriter {
 }
 
 - (BOOL)isCorrect {
-  // A response should have either a ping ACK or an event ACK, depending on the
-  // contents of the request.
-  return !_hasError && (_pingIsParsed || _eventIsParsed);
+  // A response should have either an updatecheck ACK or an event ACK,
+  // depending on the contents of the request.
+  return !_hasError && (_updateCheckIsParsed || _eventIsParsed);
 }
 
 - (UpgradeRecommendedDetails*)upgradeRecommendedDetails {
@@ -211,7 +239,7 @@ class XmlWrapper : public OmahaXmlWriter {
 
   // Array of uninteresting tags in the Omaha xml response.
   NSArray* ignoredTagNames =
-      @[ @"action", @"actions", @"package", @"packages", @"urls" ];
+      @[ @"action", @"actions", @"package", @"packages", @"ping", @"urls" ];
   if ([ignoredTagNames containsObject:elementName])
     return;
 
@@ -289,13 +317,6 @@ class XmlWrapper : public OmahaXmlWriter {
       DCHECK(_updateInformation);
       _updateInformation->next_version =
           base::SysNSStringToUTF8([attributeDict valueForKey:@"version"]);
-    } else {
-      _hasError = YES;
-    }
-  } else if (!_pingIsParsed) {
-    if ([elementName isEqualToString:@"ping"] &&
-        [[attributeDict valueForKey:@"status"] isEqualToString:@"ok"]) {
-      _pingIsParsed = YES;
     } else {
       _hasError = YES;
     }
@@ -399,9 +420,6 @@ void OmahaService::StartInternal() {
   }
   started_ = true;
 
-  // Start the provider at the same time as the rest of the service.
-  ios::GetChromeBrowserProvider().GetOmahaServiceProvider()->Start();
-
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   next_tries_time_ = base::Time::FromCFAbsoluteTime(
       [defaults doubleForKey:kNextTriesTimesKey]);
@@ -450,17 +468,15 @@ void OmahaService::StartInternal() {
   // If the |next_tries_time_| is more than kHoursBetweenRequests hours away,
   // there is a possibility that the clock has been tampered with. Reschedule
   // the ping to be the usual interval after the last successful one.
-  if (next_tries_time_ - now >
-      base::TimeDelta::FromHours(kHoursBetweenRequests)) {
-    next_tries_time_ =
-        last_sent_time_ + base::TimeDelta::FromHours(kHoursBetweenRequests);
+  if (next_tries_time_ - now > base::Hours(kHoursBetweenRequests)) {
+    next_tries_time_ = last_sent_time_ + base::Hours(kHoursBetweenRequests);
     persist_again = true;
   }
 
   // Fire a ping as early as possible if the version changed.
   const base::Version& current_version = version_info::GetVersion();
   if (last_sent_version_ < current_version) {
-    next_tries_time_ = base::Time::Now() - base::TimeDelta::FromSeconds(1);
+    next_tries_time_ = base::Time::Now() - base::Seconds(1);
     number_of_tries_ = 0;
     persist_again = true;
   }
@@ -473,8 +489,6 @@ void OmahaService::StopInternal() {
   if (!started_) {
     return;
   }
-
-  ios::GetChromeBrowserProvider().GetOmahaServiceProvider()->Stop();
 }
 
 // static
@@ -523,95 +537,91 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
                                          const std::string& channelName,
                                          const base::Time& installationTime,
                                          PingContent pingContent) {
-  OmahaServiceProvider* provider =
-      ios::GetChromeBrowserProvider().GetOmahaServiceProvider();
-
   XmlWrapper xml_wrapper;
-  xml_wrapper.StartElement("request");
-  xml_wrapper.WriteAttribute("protocol", "3.0");
-  xml_wrapper.WriteAttribute("updater", "iOS");
-  xml_wrapper.WriteAttribute("updaterversion", versionName.c_str());
-  xml_wrapper.WriteAttribute("updaterchannel", channelName.c_str());
-  xml_wrapper.WriteAttribute("ismachine", "1");
-  xml_wrapper.WriteAttribute("requestid", requestId.c_str());
-  xml_wrapper.WriteAttribute("sessionid", sessionId.c_str());
-  provider->AppendExtraAttributes("request", &xml_wrapper);
-  xml_wrapper.WriteAttribute("hardware_class",
-                             ios::device_util::GetPlatform().c_str());
-  // Set up <os platform="ios"... />
-  xml_wrapper.StartElement("os");
-  xml_wrapper.WriteAttribute("platform", "ios");
-  xml_wrapper.WriteAttribute("version",
-                             base::SysInfo::OperatingSystemVersion().c_str());
-  xml_wrapper.WriteAttribute("arch", arch_util::kCurrentArch);
-  xml_wrapper.EndElement();
 
-  bool is_first_install =
-      pingContent == INSTALL_EVENT &&
-      last_sent_version_ == base::Version(kDefaultLastSentVersion);
+  {
+    // Set up <request... />
+    XmlElement request_element = xml_wrapper.AddElement("request");
+    request_element.AddAttribute("protocol", "3.0");
+    request_element.AddAttribute("updater", "iOS");
+    request_element.AddAttribute("updaterversion", versionName);
+    request_element.AddAttribute("updaterchannel", channelName);
+    request_element.AddAttribute("ismachine", "1");
+    request_element.AddAttribute("requestid", requestId);
+    request_element.AddAttribute("sessionid", sessionId);
+    request_element.AddAttribute("hardware_class",
+                                 ios::device_util::GetPlatform());
 
-  // Set up <app version="" ...>
-  xml_wrapper.StartElement("app");
-  if (pingContent == INSTALL_EVENT) {
-    std::string previous_version =
-        is_first_install ? "" : last_sent_version_.GetString();
-    xml_wrapper.WriteAttribute("version", previous_version.c_str());
-    xml_wrapper.WriteAttribute("nextversion", versionName.c_str());
-  } else {
-    xml_wrapper.WriteAttribute("version", versionName.c_str());
-    xml_wrapper.WriteAttribute("nextversion", "");
-  }
-  xml_wrapper.WriteAttribute("ap", channelName.c_str());
-  xml_wrapper.WriteAttribute("lang", locale_lang_.c_str());
-  xml_wrapper.WriteAttribute("brand", provider->GetBrandCode().c_str());
-  xml_wrapper.WriteAttribute("client", "");
-  std::string application_id = provider->GetApplicationID();
-  xml_wrapper.WriteAttribute("appid", application_id.c_str());
-  std::string install_age;
-  if (is_first_install) {
-    install_age = "-1";
-  } else if (!installationTime.is_null() &&
-             installationTime.ToTimeT() !=
-                 install_time_util::kUnknownInstallDate) {
-    install_age = base::StringPrintf(
-        "%d", (base::Time::Now() - installationTime).InDays());
-  }
-  provider->AppendExtraAttributes("app", &xml_wrapper);
-  // If the install date is unknown, send nothing.
-  if (!install_age.empty())
-    xml_wrapper.WriteAttribute("installage", install_age.c_str());
-
-  if (pingContent == INSTALL_EVENT) {
-    // Add an install complete event.
-    xml_wrapper.StartElement("event");
-    if (is_first_install) {
-      xml_wrapper.WriteAttribute("eventtype", "2");  // install
-    } else {
-      xml_wrapper.WriteAttribute("eventtype", "3");  // update
+    {
+      // Set up <os platform="ios"... />
+      XmlElement os_element = request_element.AddElement("os");
+      os_element.AddAttribute("platform", "ios");
+      os_element.AddAttribute("version",
+                              base::SysInfo::OperatingSystemVersion());
+      os_element.AddAttribute("arch", arch_util::kCurrentArch);
     }
-    xml_wrapper.WriteAttribute("eventresult", "1");  // succeeded
-    xml_wrapper.EndElement();
-  } else {
-    // Set up <updatecheck/>
-    xml_wrapper.StartElement("updatecheck");
-    xml_wrapper.EndElement();
+
+    const bool is_first_install =
+        pingContent == INSTALL_EVENT &&
+        last_sent_version_ == base::Version(kDefaultLastSentVersion);
+
+    {
+      // Set up <app version="" ...>
+      XmlElement app_element = request_element.AddElement("app");
+      if (pingContent == INSTALL_EVENT) {
+        const std::string previous_version =
+            is_first_install ? "" : last_sent_version_.GetString();
+        app_element.AddAttribute("version", previous_version);
+        app_element.AddAttribute("nextversion", versionName);
+      } else {
+        app_element.AddAttribute("version", versionName);
+        app_element.AddAttribute("nextversion", "");
+      }
+      app_element.AddAttribute("ap", channelName);
+      app_element.AddAttribute("lang", locale_lang_);
+      app_element.AddAttribute("client", "");
+
+      std::string install_age;
+      if (is_first_install) {
+        install_age = "-1";
+      } else if (!installationTime.is_null() &&
+                 installationTime.ToTimeT() !=
+                     install_time_util::kUnknownInstallDate) {
+        install_age = base::StringPrintf(
+            "%d", (base::Time::Now() - installationTime).InDays());
+      }
+
+      // If the install date is unknown, send nothing.
+      if (!install_age.empty())
+        app_element.AddAttribute("installage", install_age);
+
+      if (pingContent == INSTALL_EVENT) {
+        // Add an install complete event.
+        XmlElement event_element = app_element.AddElement("event");
+        if (is_first_install) {
+          event_element.AddAttribute("eventtype", "2");  // install
+        } else {
+          event_element.AddAttribute("eventtype", "3");  // update
+        }
+        event_element.AddAttribute("eventresult", "1");  // succeeded
+      } else {
+        // Set up <updatecheck/>
+        app_element.AddElement("updatecheck");
+      }
+
+      {
+        // Set up <ping ... />
+        const std::string last_server_date =
+            base::StringPrintf("%d", last_server_date_);
+
+        XmlElement ping_element = app_element.AddElement("ping");
+        ping_element.AddAttribute("active", "1");
+        ping_element.AddAttribute("ad", last_server_date);
+        ping_element.AddAttribute("rd", last_server_date);
+      }
+    }
   }
 
-  // Set up <ping ... />
-  const std::string last_server_date =
-      base::StringPrintf("%d", last_server_date_);
-  xml_wrapper.StartElement("ping");
-  xml_wrapper.WriteAttribute("active", "1");
-  xml_wrapper.WriteAttribute("ad", last_server_date.c_str());
-  xml_wrapper.WriteAttribute("rd", last_server_date.c_str());
-  xml_wrapper.EndElement();
-
-  // End app.
-  xml_wrapper.EndElement();
-  // End request.
-  xml_wrapper.EndElement();
-
-  xml_wrapper.Finalize();
   return xml_wrapper.GetContentAsString();
 }
 
@@ -640,9 +650,7 @@ void OmahaService::SendPing() {
   // Check that no request is in progress.
   DCHECK(!url_loader_);
 
-  GURL url(ios::GetChromeBrowserProvider()
-               .GetOmahaServiceProvider()
-               ->GetUpdateServerURL());
+  const GURL url = ios::provider::GetOmahaUpdateServerURL();
   if (!url.is_valid()) {
     return;
   }
@@ -732,9 +740,7 @@ void OmahaService::OnURLLoadComplete(
   NSData* xml = [NSData dataWithBytes:response_body->data()
                                length:response_body->length()];
   NSXMLParser* parser = [[NSXMLParser alloc] initWithData:xml];
-  const std::string application_id = ios::GetChromeBrowserProvider()
-                                         .GetOmahaServiceProvider()
-                                         ->GetApplicationID();
+  const std::string application_id = ios::provider::GetOmahaApplicationId();
   ResponseParser* delegate = [[ResponseParser alloc]
       initWithAppId:base::SysUTF8ToNSString(application_id)];
   parser.delegate = delegate;
@@ -748,10 +754,10 @@ void OmahaService::OnURLLoadComplete(
   number_of_tries_ = 0;
   // Schedule the next request. If requset that just finished was an install
   // notification, send an active ping immediately.
-  next_tries_time_ = sending_install_event_
-                         ? base::Time::Now()
-                         : base::Time::Now() + base::TimeDelta::FromHours(
-                                                   kHoursBetweenRequests);
+  next_tries_time_ =
+      sending_install_event_
+          ? base::Time::Now()
+          : base::Time::Now() + base::Hours(kHoursBetweenRequests);
   current_ping_time_ = next_tries_time_;
   last_sent_time_ = base::Time::Now();
   last_sent_version_ = version_info::GetVersion();

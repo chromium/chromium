@@ -12,7 +12,6 @@
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -176,9 +175,6 @@ void MediaRouterContextualMenu::ToggleMediaRemoting() {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void MediaRouterContextualMenu::ReportIssue() {
-  if (!base::FeatureList::IsEnabled(media_router::kCastFeedbackDialog)) {
-    return;
-  }
   ShowSingletonTab(
       browser_,
       GURL(base::StrCat({"chrome://", chrome::kChromeUICastFeedbackHost})));

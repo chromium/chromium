@@ -40,9 +40,9 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Arrays;
@@ -135,11 +135,15 @@ public class GeolocationHeaderUnitTest {
         GeolocationHeader.setAppPermissionGrantedForTesting(true);
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getWebContents()).thenReturn(mWebContentsMock);
-        when(mWebsitePreferenceBridgeJniMock.getSettingForOrigin(any(BrowserContextHandle.class),
-                     eq(ContentSettingsType.GEOLOCATION), anyString(), anyString()))
+        when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
+                     any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
+                     anyString(), anyString()))
                 .thenReturn(ContentSettingValues.ALLOW);
         when(mWebsitePreferenceBridgeJniMock.isPermissionControlledByDSE(
                      any(BrowserContextHandle.class), anyInt(), anyString()))
+                .thenReturn(true);
+        when(mWebsitePreferenceBridgeJniMock.isDSEOrigin(
+                     any(BrowserContextHandle.class), anyString()))
                 .thenReturn(true);
         when(mUrlUtilitiesJniMock.isGoogleSearchUrl(anyString())).thenReturn(true);
         when(mProfileJniMock.fromWebContents(any(WebContents.class))).thenReturn(mProfileMock);

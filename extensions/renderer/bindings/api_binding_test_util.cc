@@ -11,7 +11,6 @@
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "gin/converter.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
@@ -205,6 +204,22 @@ std::string GetStringPropertyFromObject(v8::Local<v8::Object> object,
                                         v8::Local<v8::Context> context,
                                         base::StringPiece key) {
   return V8ToString(GetPropertyFromObject(object, context, key), context);
+}
+
+bool ValueTypeChecker<v8::Function>::IsType(v8::Local<v8::Value> value) {
+  return value->IsFunction();
+}
+
+bool ValueTypeChecker<v8::Object>::IsType(v8::Local<v8::Value> value) {
+  return value->IsObject();
+}
+
+bool ValueTypeChecker<v8::Promise>::IsType(v8::Local<v8::Value> value) {
+  return value->IsPromise();
+}
+
+bool ValueTypeChecker<v8::Array>::IsType(v8::Local<v8::Value> value) {
+  return value->IsArray();
 }
 
 }  // namespace extensions

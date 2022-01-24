@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_TIME_CLAMPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_TIME_CLAMPER_H_
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"

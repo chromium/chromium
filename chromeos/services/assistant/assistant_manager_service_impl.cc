@@ -444,6 +444,7 @@ void AssistantManagerServiceImpl::InitAssistant(
   bootup_config->hotword_enabled = assistant_state()->hotword_enabled().value();
   bootup_config->locale = assistant_state()->locale().value();
   bootup_config->spoken_feedback_enabled = spoken_feedback_enabled_;
+  bootup_config->dark_mode_enabled = dark_mode_enabled_;
 
   service_controller().Initialize(std::move(bootup_config),
                                   BindURLLoaderFactory());
@@ -462,9 +463,6 @@ void AssistantManagerServiceImpl::OnServiceStarted() {
   UMA_HISTOGRAM_TIMES("Assistant.ServiceStartTime", time_since_started);
 
   SetStateAndInformObservers(State::STARTED);
-
-  if (base::FeatureList::IsEnabled(assistant::features::kAssistantAppSupport))
-    scoped_app_list_event_subscriber_.Observe(device_actions());
 }
 
 bool AssistantManagerServiceImpl::IsServiceStarted() const {
@@ -509,10 +507,15 @@ void AssistantManagerServiceImpl::OnServiceRunning() {
 
   if (assistant_state()->arc_play_store_enabled().has_value())
     SetArcPlayStoreEnabled(assistant_state()->arc_play_store_enabled().value());
+
+  if (base::FeatureList::IsEnabled(assistant::features::kAssistantAppSupport))
+    scoped_app_list_event_subscriber_.Observe(device_actions());
 }
 
 void AssistantManagerServiceImpl::OnAndroidAppListRefreshed(
     const std::vector<AndroidAppInfo>& apps_info) {
+  DCHECK(GetState() == State::RUNNING);
+
   std::vector<AndroidAppInfo> filtered_apps_info;
   for (const auto& app_info : apps_info) {
     // TODO(b/146355799): Remove the special handling for Android settings app.
@@ -535,6 +538,16 @@ void AssistantManagerServiceImpl::OnAccessibilityStatusChanged(
   // options to turn on/off A11Y features in LibAssistant.
   if (IsServiceStarted())
     settings_controller().SetSpokenFeedbackEnabled(spoken_feedback_enabled_);
+}
+
+void AssistantManagerServiceImpl::OnColorModeChanged(bool dark_mode_enabled) {
+  if (dark_mode_enabled_ == dark_mode_enabled)
+    return;
+
+  dark_mode_enabled_ = dark_mode_enabled;
+
+  if (IsServiceStarted())
+    settings_controller().SetDarkModeEnabled(dark_mode_enabled_);
 }
 
 void AssistantManagerServiceImpl::OnDeviceAppsEnabled(bool enabled) {

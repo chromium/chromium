@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -50,6 +49,10 @@ class WaitableMessageLoopEvent {
  public:
   WaitableMessageLoopEvent();
   explicit WaitableMessageLoopEvent(base::TimeDelta timeout);
+
+  WaitableMessageLoopEvent(const WaitableMessageLoopEvent&) = delete;
+  WaitableMessageLoopEvent& operator=(const WaitableMessageLoopEvent&) = delete;
+
   ~WaitableMessageLoopEvent();
 
   // Returns a thread-safe closure that will signal |this| when executed.
@@ -79,49 +82,49 @@ class WaitableMessageLoopEvent {
   const base::TimeDelta timeout_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableMessageLoopEvent);
 };
 
 // Provides pre-canned VideoDecoderConfig. These types are used for tests that
 // don't care about detailed parameters of the config.
 class TestVideoConfig {
  public:
+  TestVideoConfig(const TestVideoConfig&) = delete;
+  TestVideoConfig& operator=(const TestVideoConfig&) = delete;
+
   // Returns a configuration that is invalid.
   static VideoDecoderConfig Invalid();
 
-  static VideoDecoderConfig Normal(VideoCodec codec = kCodecVP8);
+  static VideoDecoderConfig Normal(VideoCodec codec = VideoCodec::kVP8);
   static VideoDecoderConfig NormalWithColorSpace(
       VideoCodec codec,
       const VideoColorSpace& color_space);
   static VideoDecoderConfig NormalH264(VideoCodecProfile = H264PROFILE_MIN);
   static VideoDecoderConfig NormalCodecProfile(
-      VideoCodec codec = kCodecVP8,
+      VideoCodec codec = VideoCodec::kVP8,
       VideoCodecProfile profile = VP8PROFILE_MIN);
-  static VideoDecoderConfig NormalEncrypted(VideoCodec codec = kCodecVP8,
+  static VideoDecoderConfig NormalEncrypted(VideoCodec codec = VideoCodec::kVP8,
                                             VideoCodecProfile = VP8PROFILE_MIN);
   static VideoDecoderConfig NormalRotated(VideoRotation rotation);
 
   // Returns a configuration that is larger in dimensions than Normal().
-  static VideoDecoderConfig Large(VideoCodec codec = kCodecVP8);
-  static VideoDecoderConfig LargeEncrypted(VideoCodec codec = kCodecVP8);
+  static VideoDecoderConfig Large(VideoCodec codec = VideoCodec::kVP8);
+  static VideoDecoderConfig LargeEncrypted(VideoCodec codec = VideoCodec::kVP8);
 
   // Returns a configuration that is larger in dimensions that Large().
-  static VideoDecoderConfig ExtraLarge(VideoCodec codec = kCodecVP8);
-  static VideoDecoderConfig ExtraLargeEncrypted(VideoCodec codec = kCodecVP8);
+  static VideoDecoderConfig ExtraLarge(VideoCodec codec = VideoCodec::kVP8);
+  static VideoDecoderConfig ExtraLargeEncrypted(
+      VideoCodec codec = VideoCodec::kVP8);
 
   static VideoDecoderConfig Custom(gfx::Size size,
-                                   VideoCodec codec = kCodecVP8);
-  static VideoDecoderConfig CustomEncrypted(gfx::Size size,
-                                            VideoCodec codec = kCodecVP8);
+                                   VideoCodec codec = VideoCodec::kVP8);
+  static VideoDecoderConfig CustomEncrypted(
+      gfx::Size size,
+      VideoCodec codec = VideoCodec::kVP8);
 
   // Returns coded size for Normal and Large config.
   static gfx::Size NormalCodedSize();
   static gfx::Size LargeCodedSize();
   static gfx::Size ExtraLargeCodedSize();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestVideoConfig);
 };
 
 // Provides pre-canned AudioDecoderConfig. These types are used for tests that
@@ -143,10 +146,10 @@ class TestAudioConfig {
 // Provides pre-canned AudioParameters objects.
 class TestAudioParameters {
  public:
-  static AudioParameters Normal();
+  TestAudioParameters(const TestAudioParameters&) = delete;
+  TestAudioParameters& operator=(const TestAudioParameters&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestAudioParameters);
+  static AudioParameters Normal();
 };
 
 // Create an AudioBuffer containing |frames| frames of data, where each sample

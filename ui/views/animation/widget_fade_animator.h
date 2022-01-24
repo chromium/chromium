@@ -94,7 +94,7 @@ class VIEWS_EXPORT WidgetFadeAnimator : public AnimationDelegateViews,
   void AnimationEnded(const gfx::Animation* animation) override;
 
   // WidgetObserver:
-  void OnWidgetClosing(Widget* widget) override;
+  void OnWidgetDestroying(Widget* widget) override;
 
   Widget* widget_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
@@ -103,11 +103,11 @@ class VIEWS_EXPORT WidgetFadeAnimator : public AnimationDelegateViews,
 
   // Duration for fade-in animations. The default should be visually pleasing
   // for most applications.
-  base::TimeDelta fade_in_duration_ = base::TimeDelta::FromMilliseconds(200);
+  base::TimeDelta fade_in_duration_ = base::Milliseconds(200);
 
   // Duration for fade-out animations. The default should be visually pleasing
   // for most applications.
-  base::TimeDelta fade_out_duration_ = base::TimeDelta::FromMilliseconds(150);
+  base::TimeDelta fade_out_duration_ = base::Milliseconds(150);
 
   // The tween type to use. The default value should be pleasing for most
   // applications.

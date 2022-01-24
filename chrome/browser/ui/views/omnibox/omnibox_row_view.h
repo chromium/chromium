@@ -10,7 +10,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-class OmniboxPopupModel;
+class OmniboxEditModel;
 class OmniboxResultView;
 class PrefService;
 
@@ -25,7 +25,7 @@ class OmniboxRowView : public views::View {
  public:
   METADATA_HEADER(OmniboxRowView);
   OmniboxRowView(size_t line,
-                 OmniboxPopupModel* popup_model,
+                 OmniboxEditModel* model,
                  std::unique_ptr<OmniboxResultView> result_view,
                  PrefService* pref_service);
 
@@ -54,8 +54,8 @@ class OmniboxRowView : public views::View {
   // Line number of this row.
   const size_t line_;
 
-  // Non-owning pointer to the backing popup model.
-  OmniboxPopupModel* const popup_model_;
+  // Non-owning pointer to the backing model.
+  OmniboxEditModel* const model_;
 
   // Non-owning pointer to the header view for this row. This is initially
   // nullptr, and lazily created when a header is first set for this row.

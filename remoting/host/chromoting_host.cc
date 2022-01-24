@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "jingle/glue/thread_wrapper.h"
 #include "remoting/base/constants.h"
@@ -22,6 +22,8 @@
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/input_injector.h"
+#include "remoting/host/ipc_constants.h"
+#include "remoting/host/mojo_ipc/mojo_ipc_server.h"
 #include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/host_stub.h"
 #include "remoting/protocol/ice_connection_to_client.h"
@@ -112,6 +114,16 @@ void ChromotingHost::Start(const std::string& host_owner_email) {
 
   session_manager_->AcceptIncoming(base::BindRepeating(
       &ChromotingHost::OnIncomingSession, base::Unretained(this)));
+}
+
+void ChromotingHost::StartChromotingHostServices() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!ipc_server_);
+
+  ipc_server_ = std::make_unique<MojoIpcServer<mojom::ChromotingHostServices>>(
+      GetChromotingHostServicesServerName(), this);
+  ipc_server_->StartServer();
+  HOST_LOG << "ChromotingHostServices IPC server has been started.";
 }
 
 void ChromotingHost::AddExtension(std::unique_ptr<HostExtension> extension) {
@@ -214,6 +226,18 @@ void ChromotingHost::OnSessionRouteChange(
     observer.OnClientRouteChange(session->client_jid(), channel_name, route);
 }
 
+void ChromotingHost::BindWebAuthnProxy(
+    mojo::PendingReceiver<mojom::WebAuthnProxy> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ClientSession* connected_client = GetConnectedClientSession();
+  if (!connected_client) {
+    LOG(WARNING) << "No connected client is found. Binding request rejected.";
+    return;
+  }
+  connected_client->BindWebAuthnProxy(std::move(receiver));
+}
+
 void ChromotingHost::OnIncomingSession(
       protocol::Session* session,
       protocol::SessionManager::IncomingSessionResponse* response) {
@@ -237,8 +261,7 @@ void ChromotingHost::OnIncomingSession(
   if (session->config().protocol() ==
       protocol::SessionConfig::Protocol::WEBRTC) {
     connection = std::make_unique<protocol::WebrtcConnectionToClient>(
-        base::WrapUnique(session), transport_context_,
-        video_encode_task_runner_, audio_task_runner_);
+        base::WrapUnique(session), transport_context_, audio_task_runner_);
   } else {
     connection = std::make_unique<protocol::IceConnectionToClient>(
         base::WrapUnique(session), transport_context_,
@@ -253,6 +276,20 @@ void ChromotingHost::OnIncomingSession(
       this, std::move(connection), desktop_environment_factory_,
       desktop_environment_options_, max_session_duration_, pairing_registry_,
       extension_ptrs));
+}
+
+ClientSession* ChromotingHost::GetConnectedClientSession() const {
+  ClientSession* connected_client = nullptr;
+  for (auto& client : clients_) {
+    if (client->channels_connected()) {
+      if (connected_client) {
+        LOG(DFATAL) << "More than one connected client is found.";
+        return nullptr;
+      }
+      connected_client = client.get();
+    }
+  }
+  return connected_client;
 }
 
 }  // namespace remoting

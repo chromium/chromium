@@ -14,7 +14,9 @@ namespace ui {
 
 // A struct represents a fragment of grammar edit suggestion.
 struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) GrammarFragment {
-  GrammarFragment(const gfx::Range& range, const std::string& suggestion);
+  GrammarFragment(const gfx::Range& range,
+                  const std::string& suggestion,
+                  const std::string& original_text = std::string());
   GrammarFragment(const GrammarFragment& other);
   ~GrammarFragment();
 
@@ -27,6 +29,9 @@ struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) GrammarFragment {
 
   // The replacement text suggested by the grammar model.
   std::string suggestion;
+
+  // The original text to be replaced.
+  std::string original_text;
 };
 
 }  // namespace ui

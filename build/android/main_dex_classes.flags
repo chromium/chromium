@@ -29,11 +29,6 @@
   *;
 }
 
-# Used by tests for secondary dex extraction.
--keep class android.support.v4.content.ContextCompat {
-  *;
-}
-
 # The following are based on $SDK_BUILD_TOOLS/mainDexClasses.rules
 # Ours differ in that:
 # 1. It omits -keeps for application / instrumentation / backupagents (these are

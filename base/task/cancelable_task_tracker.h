@@ -46,12 +46,11 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/small_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/post_task_and_reply_with_result_internal.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/post_task_and_reply_with_result_internal.h"
 
 namespace base {
 
@@ -68,6 +67,9 @@ class BASE_EXPORT CancelableTaskTracker {
   using IsCanceledCallback = RepeatingCallback<bool()>;
 
   CancelableTaskTracker();
+
+  CancelableTaskTracker(const CancelableTaskTracker&) = delete;
+  CancelableTaskTracker& operator=(const CancelableTaskTracker&) = delete;
 
   // Cancels all tracked tasks.
   ~CancelableTaskTracker();
@@ -160,8 +162,6 @@ class BASE_EXPORT CancelableTaskTracker {
   // TODO(https://crbug.com/1009795): Remove once crasher is resolved.
   base::WeakPtr<CancelableTaskTracker> weak_this_;
   base::WeakPtrFactory<CancelableTaskTracker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CancelableTaskTracker);
 };
 
 }  // namespace base

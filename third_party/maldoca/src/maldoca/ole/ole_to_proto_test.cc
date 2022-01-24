@@ -14,19 +14,18 @@
 
 #include "maldoca/ole/ole_to_proto.h"
 
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/string_view.h"
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
+#include "maldoca/base/testing/test_utils.h"
 #include "maldoca/base/status.h"
 #include "maldoca/base/testing/protocol-buffer-matchers.h"
 #include "maldoca/base/testing/status_matchers.h"
 
 namespace {
-
 using ::maldoca::ole::OleFile;
 using ::maldoca::ole::OleToProtoSettings;
 using ::maldoca::testing::EqualsProto;
@@ -37,14 +36,13 @@ using ::testing::SizeIs;
 using ::testing::StrEq;
 
 std::string TestFilename(absl::string_view filename) {
-  return maldoca::file::JoinPath(
-      maldoca::GetRunfilesDir(),
-      absl::StrCat("maldoca/ole/testdata/ole/", filename));
+  return maldoca::testing::OleTestFilename(filename, "ole/");
 }
 
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status =
+      maldoca::testing::GetTestContents(TestFilename(filename), &content);
   MALDOCA_EXPECT_OK(status) << status;
   return content;
 }
@@ -138,28 +136,30 @@ TEST_P(OleToProtoTest, Samples) {
 INSTANTIATE_TEST_SUITE_P(
     OleToProtoTestSamples, OleToProtoTest,
     ::testing::Values(
-        std::make_tuple(
-            "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
-            "all", true, true, true, true, true, true, false, true),
-        std::make_tuple(
-            "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
-            "with_strings", true, true, true, true, true, true, true, true),
-        std::make_tuple(
-            "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
-            "nodirs", true, true, /*include_dirs*/ false, true, true, true,
-            false, true),
-        std::make_tuple(
-            "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
-            "novba",
-            /*include_vba*/ false, true, true, true, true, true, false, true),
-        std::make_tuple(
-            "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
-            "nosummary", true, true, true, /*include_summary*/ false, true,
-            true, false, true),
-        std::make_tuple(
-            "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431",
-            "nohashes", true, /*include_hashes*/ false, true, true, true, true,
-            false, true)
+        std::make_tuple("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3"
+                        "df2ffb2431_xor_0x42_encoded",
+                        "all", true, true, true, true, true, true, false, true),
+        std::make_tuple("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3"
+                        "df2ffb2431_xor_0x42_encoded",
+                        "with_strings", true, true, true, true, true, true,
+                        true, true),
+        std::make_tuple("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3"
+                        "df2ffb2431_xor_0x42_encoded",
+                        "nodirs", true, true, /*include_dirs*/ false, true,
+                        true, true, false, true),
+        std::make_tuple("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3"
+                        "df2ffb2431_xor_0x42_encoded",
+                        "novba",
+                        /*include_vba*/ false, true, true, true, true, true,
+                        false, true),
+        std::make_tuple("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3"
+                        "df2ffb2431_xor_0x42_encoded",
+                        "nosummary", true, true, true,
+                        /*include_summary*/ false, true, true, false, true),
+        std::make_tuple("ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3"
+                        "df2ffb2431_xor_0x42_encoded",
+                        "nohashes", true, /*include_hashes*/ false, true, true,
+                        true, true, false, true)
 #ifndef MALDOCA_CHROME
             ,
         std::make_tuple("name.xls", "excel4", false, false,
@@ -228,8 +228,9 @@ TEST(OleToProtoTest, OlePidHlinks) {
 
 TEST(OleToProtoTest, OleHwpSummaryInfo) {
   OleFile ole_file = GetOleProto(
-      "7050af905f1696b2b8cdb4c6e6805a618addf5acfbd4edc3fc807a663016ab26", true,
-      true, true, true, false, false, false, false);
+      "7050af905f1696b2b8cdb4c6e6805a618addf5acfbd4edc3fc807a663016ab26_xor_"
+      "0x42_encoded",
+      true, true, true, true, false, false, false, false);
 
   static constexpr int kNumberOfProperties = 13;
 
@@ -252,8 +253,9 @@ TEST(OleToProtoTest, OleHwpSummaryInfo) {
 
 TEST(OleToProtoTest, OleNativeEmbedded) {
   OleFile ole_file = GetOleProto(
-      "f674740dfdf4fd4ded529c339160c8255cdd971c4a00180c9e3fc3f3e7b53799", false,
-      false, false, false, true, true, false, false);
+      "f674740dfdf4fd4ded529c339160c8255cdd971c4a00180c9e3fc3f3e7b53799_xor_"
+      "0x42_encoded",
+      false, false, false, false, true, true, false, false);
 
   EXPECT_THAT(ole_file.has_olenative_embedded(), IsTrue());
 
@@ -309,3 +311,12 @@ TEST(OleToProtoTest, StatusPayload) {
   LOG(INFO) << "StatusPayload_status" << status_or.status();
 }
 }  // namespace
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+#ifdef MALDOCA_CHROME
+  // mini_chromium needs InitLogging
+  maldoca::InitLogging();
+#endif
+  return RUN_ALL_TESTS();
+}

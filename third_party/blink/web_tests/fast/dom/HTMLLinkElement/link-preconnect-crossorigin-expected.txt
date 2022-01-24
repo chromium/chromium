@@ -1,9 +1,9 @@
-CONSOLE DEBUG: line 10: Preconnect triggered for http://prefetch.wut.com.test/
-CONSOLE DEBUG: line 10: Preconnect CORS setting is anonymous
-CONSOLE DEBUG: line 11: Preconnect triggered for http://prefetch.anon.wut.com.test/
-CONSOLE DEBUG: line 11: Preconnect CORS setting is anonymous
-CONSOLE DEBUG: line 12: Preconnect triggered for http://prefetch.whatever.wut.com.test/
-CONSOLE DEBUG: line 12: Preconnect CORS setting is anonymous
-CONSOLE DEBUG: line 13: Preconnect triggered for http://prefetch.credentials.wut.com.test/
-CONSOLE DEBUG: line 13: Preconnect CORS setting is use-credentials
+CONSOLE DEBUG: Preconnect triggered for http://prefetch.wut.com.test/
+CONSOLE DEBUG: Preconnect CORS setting is anonymous
+CONSOLE DEBUG: Preconnect triggered for http://prefetch.anon.wut.com.test/
+CONSOLE DEBUG: Preconnect CORS setting is anonymous
+CONSOLE DEBUG: Preconnect triggered for http://prefetch.whatever.wut.com.test/
+CONSOLE DEBUG: Preconnect CORS setting is anonymous
+CONSOLE DEBUG: Preconnect triggered for http://prefetch.credentials.wut.com.test/
+CONSOLE DEBUG: Preconnect CORS setting is use-credentials
 This test verifies that a DNS prefetch request is sent and logged.

@@ -305,8 +305,12 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   EXPECT_TRUE(NavigateToURL(tab, PublicUrl()));
   EXPECT_EQ(PublicUrl(), tab->GetLastCommittedURL());
 
-  // Navigate to about:blank to put policies to navigation entry.
-  EXPECT_TRUE(NavigateToURLFromRenderer(root_frame_host(), AboutBlankUrl()));
+  // Navigate by doing a client-redirect (through renderer-initiated
+  // replacement) to about:blank to put policies to navigation entry.
+  TestNavigationObserver navigation_observer(shell()->web_contents());
+  EXPECT_TRUE(
+      ExecJs(root_frame_host(), "window.location.replace('about:blank');"));
+  navigation_observer.WaitForNavigationFinished();
   EXPECT_EQ(AboutBlankUrl(), tab->GetLastCommittedURL());
 
   // Now reload to original url and ensure that history entry policies stored

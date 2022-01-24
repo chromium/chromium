@@ -7,7 +7,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +25,11 @@
 class LauncherDragClamshellModeTest : public UIPerformanceTest {
  public:
   LauncherDragClamshellModeTest() = default;
+
+  LauncherDragClamshellModeTest(const LauncherDragClamshellModeTest&) = delete;
+  LauncherDragClamshellModeTest& operator=(
+      const LauncherDragClamshellModeTest&) = delete;
+
   ~LauncherDragClamshellModeTest() override = default;
 
   // UIPerformanceTest:
@@ -37,8 +41,7 @@ class LauncherDragClamshellModeTest : public UIPerformanceTest {
     int warmup_seconds = base::SysInfo::IsRunningOnChromeOS() ? 5 : 1;
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromSeconds(warmup_seconds));
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(warmup_seconds));
     run_loop.Run();
   }
 
@@ -53,9 +56,6 @@ class LauncherDragClamshellModeTest : public UIPerformanceTest {
         ->GetDisplayNearestWindow(window)
         .bounds();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LauncherDragClamshellModeTest);
 };
 
 // Drag to open the launcher from shelf. In tablet mode, swiping up from shelf
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(LauncherDragClamshellModeTest, Open) {
   end_point.set_y(10);
   auto generator = ui_test_utils::DragEventGenerator::CreateForTouch(
       std::make_unique<ui_test_utils::InterpolatedProducer>(
-          start_point, end_point, base::TimeDelta::FromMilliseconds(1000)));
+          start_point, end_point, base::Milliseconds(1000)));
   generator->Wait();
 
   shell_test_api.WaitForLauncherAnimationState(
@@ -94,6 +94,10 @@ class LauncherDragTest : public LauncherDragClamshellModeTest,
                                         {chromeos::features::kShelfHotseat});
     }
   }
+
+  LauncherDragTest(const LauncherDragTest&) = delete;
+  LauncherDragTest& operator=(const LauncherDragTest&) = delete;
+
   ~LauncherDragTest() override = default;
 
   // UIPerformanceTest:
@@ -115,8 +119,6 @@ class LauncherDragTest : public LauncherDragClamshellModeTest,
  private:
   bool tablet_mode_ = false;
   base::test::ScopedFeatureList scoped_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(LauncherDragTest);
 };
 
 IN_PROC_BROWSER_TEST_P(LauncherDragTest, Close) {
@@ -138,7 +140,7 @@ IN_PROC_BROWSER_TEST_P(LauncherDragTest, Close) {
                   ash::ShelfConfig::Get()->shelf_size() / 2);
   auto generator = ui_test_utils::DragEventGenerator::CreateForTouch(
       std::make_unique<ui_test_utils::InterpolatedProducer>(
-          start_point, end_point, base::TimeDelta::FromMilliseconds(1000)));
+          start_point, end_point, base::Milliseconds(1000)));
   generator->Wait();
 
   shell_test_api.WaitForLauncherAnimationState(ash::AppListViewState::kClosed);

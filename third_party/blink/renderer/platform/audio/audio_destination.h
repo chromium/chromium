@@ -32,21 +32,17 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_io_callback.h"
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
-
-namespace absl {
-template <typename>
-class optional;
-}
+#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -96,7 +92,7 @@ class PLATFORM_EXPORT AudioDestination
   // The actual render function (WebAudioDevice::RenderCallback) isochronously
   // invoked by the media renderer. This is never called after Stop() is called.
   void Render(const WebVector<float*>& destination_data,
-              size_t number_of_frames,
+              uint32_t number_of_frames,
               double delay,
               double delay_timestamp,
               size_t prior_frames_skipped) override;

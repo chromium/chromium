@@ -42,6 +42,11 @@ class TCPEndpointServerSocketFactory : public content::DevToolsSocketFactory {
     }
   }
 
+  TCPEndpointServerSocketFactory(const TCPEndpointServerSocketFactory&) =
+      delete;
+  TCPEndpointServerSocketFactory& operator=(
+      const TCPEndpointServerSocketFactory&) = delete;
+
  private:
   // This function, and the logic below that uses it, is copied from
   // chrome/browser/devtools/remote_debugging_server.cc
@@ -74,8 +79,6 @@ class TCPEndpointServerSocketFactory : public content::DevToolsSocketFactory {
   }
 
   net::HostPortPair endpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPEndpointServerSocketFactory);
 };
 
 #if defined(OS_POSIX)
@@ -84,6 +87,10 @@ class TCPAdoptServerSocketFactory : public content::DevToolsSocketFactory {
   // Construct a factory to use an already-open, already-listening socket.
   explicit TCPAdoptServerSocketFactory(const size_t socket_fd)
       : socket_fd_(socket_fd) {}
+
+  TCPAdoptServerSocketFactory(const TCPAdoptServerSocketFactory&) = delete;
+  TCPAdoptServerSocketFactory& operator=(const TCPAdoptServerSocketFactory&) =
+      delete;
 
  private:
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
@@ -104,8 +111,6 @@ class TCPAdoptServerSocketFactory : public content::DevToolsSocketFactory {
   }
 
   size_t socket_fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPAdoptServerSocketFactory);
 };
 #else   // defined(OS_POSIX)
 
@@ -113,6 +118,10 @@ class TCPAdoptServerSocketFactory : public content::DevToolsSocketFactory {
 class DummyTCPServerSocketFactory : public content::DevToolsSocketFactory {
  public:
   explicit DummyTCPServerSocketFactory() {}
+
+  DummyTCPServerSocketFactory(const DummyTCPServerSocketFactory&) = delete;
+  DummyTCPServerSocketFactory& operator=(const DummyTCPServerSocketFactory&) =
+      delete;
 
  private:
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
@@ -123,8 +132,6 @@ class DummyTCPServerSocketFactory : public content::DevToolsSocketFactory {
       std::string* out_name) override {
     return nullptr;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(DummyTCPServerSocketFactory);
 };
 #endif  // defined(OS_POSIX)
 

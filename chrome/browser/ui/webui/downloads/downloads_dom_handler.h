@@ -10,7 +10,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom-forward.h"
@@ -41,16 +40,22 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
       mojo::PendingRemote<downloads::mojom::Page> page,
       content::DownloadManager* download_manager,
       content::WebUI* web_ui);
+
+  DownloadsDOMHandler(const DownloadsDOMHandler&) = delete;
+  DownloadsDOMHandler& operator=(const DownloadsDOMHandler&) = delete;
+
   ~DownloadsDOMHandler() override;
 
   // WebContentsObserver implementation.
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   // downloads::mojom::PageHandler:
   void GetDownloads(const std::vector<std::string>& search_terms) override;
   void OpenFileRequiringGesture(const std::string& id) override;
   void Drag(const std::string& id) override;
   void SaveDangerousRequiringGesture(const std::string& id) override;
+  void AcceptIncognitoWarning(const std::string& id) override;
   void DiscardDangerous(const std::string& id) override;
   void RetryDownload(const std::string& id) override;
   void Show(const std::string& id) override;
@@ -130,8 +135,6 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   mojo::Receiver<downloads::mojom::PageHandler> receiver_;
 
   base::WeakPtrFactory<DownloadsDOMHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadsDOMHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DOWNLOADS_DOWNLOADS_DOM_HANDLER_H_

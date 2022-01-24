@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -35,6 +35,8 @@
 namespace extensions {
 
 namespace {
+
+using testing::NiceMock;
 
 std::unique_ptr<base::Value> RunGetReferrerChainFunction(Browser* browser,
                                                          int tab_id) {
@@ -70,9 +72,14 @@ std::unique_ptr<content::WebContents> CreateWebContentsWithHistory(
 }  // namespace
 
 class SafeBrowsingPrivateApiUnitTest : public ExtensionServiceTestBase {
+ public:
+  SafeBrowsingPrivateApiUnitTest(SafeBrowsingPrivateApiUnitTest&) = delete;
+  SafeBrowsingPrivateApiUnitTest& operator=(SafeBrowsingPrivateApiUnitTest&) =
+      delete;
+
  protected:
-  SafeBrowsingPrivateApiUnitTest() {}
-  ~SafeBrowsingPrivateApiUnitTest() override {}
+  SafeBrowsingPrivateApiUnitTest() = default;
+  ~SafeBrowsingPrivateApiUnitTest() override = default;
 
   Browser* browser() { return browser_.get(); }
 
@@ -82,8 +89,6 @@ class SafeBrowsingPrivateApiUnitTest : public ExtensionServiceTestBase {
 
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingPrivateApiUnitTest);
 };
 
 void SafeBrowsingPrivateApiUnitTest::SetUp() {
@@ -99,14 +104,16 @@ void SafeBrowsingPrivateApiUnitTest::SetUp() {
   PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
       profile(),
       base::BindRepeating(
-          &password_manager::BuildPasswordStore<
-              content::BrowserContext, password_manager::MockPasswordStore>));
+          &password_manager::BuildPasswordStoreInterface<
+              content::BrowserContext,
+              NiceMock<password_manager::MockPasswordStoreInterface>>));
 
   AccountPasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
       profile(),
       base::BindRepeating(
-          &password_manager::BuildPasswordStore<
-              content::BrowserContext, password_manager::MockPasswordStore>));
+          &password_manager::BuildPasswordStoreInterface<
+              content::BrowserContext,
+              NiceMock<password_manager::MockPasswordStoreInterface>>));
 
   // Initialize Safe Browsing service.
   safe_browsing::TestSafeBrowsingServiceFactory sb_service_factory;

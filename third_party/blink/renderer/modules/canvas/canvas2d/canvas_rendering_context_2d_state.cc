@@ -151,7 +151,7 @@ void CanvasRenderingContext2DState::Trace(Visitor* visitor) const {
 }
 
 void CanvasRenderingContext2DState::SetLineDashOffset(double offset) {
-  line_dash_offset_ = clampTo<float>(offset);
+  line_dash_offset_ = ClampTo<float>(offset);
   line_dash_dirty_ = true;
 }
 
@@ -163,7 +163,7 @@ void CanvasRenderingContext2DState::SetLineDash(const Vector<double>& dash) {
     line_dash_.AppendVector(dash);
   // clamp the double values to float
   std::transform(line_dash_.begin(), line_dash_.end(), line_dash_.begin(),
-                 [](double d) { return clampTo<float>(d); });
+                 [](double d) { return ClampTo<float>(d); });
 
   line_dash_dirty_ = true;
 }
@@ -477,23 +477,6 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
   return resolved_filter_;
 }
 
-bool CanvasRenderingContext2DState::HasFilterForOffscreenCanvas(
-    IntSize canvas_size,
-    BaseRenderingContext2D* context) {
-  // Checking for a non-null m_filterValue isn't sufficient, since this value
-  // might refer to a non-existent filter.
-  return !!GetFilterForOffscreenCanvas(canvas_size, context);
-}
-
-bool CanvasRenderingContext2DState::HasFilter(
-    Element* style_resolution_host,
-    IntSize canvas_size,
-    CanvasRenderingContext2D* context) {
-  // Checking for a non-null m_filterValue isn't sufficient, since this value
-  // might refer to a non-existent filter.
-  return !!GetFilter(style_resolution_host, canvas_size, context);
-}
-
 void CanvasRenderingContext2DState::ClearResolvedFilter() {
   resolved_filter_.reset();
   filter_state_ = (canvas_filter_ || css_filter_value_)
@@ -513,7 +496,7 @@ sk_sp<SkDrawLooper>& CanvasRenderingContext2DState::ShadowOnlyDrawLooper()
     const {
   if (!shadow_only_draw_looper_) {
     DrawLooperBuilder draw_looper_builder;
-    draw_looper_builder.AddShadow(shadow_offset_, clampTo<float>(shadow_blur_),
+    draw_looper_builder.AddShadow(shadow_offset_, ClampTo<float>(shadow_blur_),
                                   shadow_color_,
                                   DrawLooperBuilder::kShadowIgnoresTransforms,
                                   DrawLooperBuilder::kShadowRespectsAlpha);
@@ -526,7 +509,7 @@ sk_sp<SkDrawLooper>&
 CanvasRenderingContext2DState::ShadowAndForegroundDrawLooper() const {
   if (!shadow_and_foreground_draw_looper_) {
     DrawLooperBuilder draw_looper_builder;
-    draw_looper_builder.AddShadow(shadow_offset_, clampTo<float>(shadow_blur_),
+    draw_looper_builder.AddShadow(shadow_offset_, ClampTo<float>(shadow_blur_),
                                   shadow_color_,
                                   DrawLooperBuilder::kShadowIgnoresTransforms,
                                   DrawLooperBuilder::kShadowRespectsAlpha);
@@ -542,7 +525,7 @@ sk_sp<PaintFilter>& CanvasRenderingContext2DState::ShadowOnlyImageFilter()
   if (!shadow_only_image_filter_) {
     const auto sigma = BlurRadiusToStdDev(shadow_blur_);
     shadow_only_image_filter_ = sk_make_sp<DropShadowPaintFilter>(
-        shadow_offset_.Width(), shadow_offset_.Height(), sigma, sigma,
+        shadow_offset_.width(), shadow_offset_.height(), sigma, sigma,
         shadow_color_, ShadowMode::kDrawShadowOnly, nullptr);
   }
   return shadow_only_image_filter_;
@@ -554,7 +537,7 @@ CanvasRenderingContext2DState::ShadowAndForegroundImageFilter() const {
   if (!shadow_and_foreground_image_filter_) {
     const auto sigma = BlurRadiusToStdDev(shadow_blur_);
     shadow_and_foreground_image_filter_ = sk_make_sp<DropShadowPaintFilter>(
-        shadow_offset_.Width(), shadow_offset_.Height(), sigma, sigma,
+        shadow_offset_.width(), shadow_offset_.height(), sigma, sigma,
         shadow_color_, ShadowMode::kDrawShadowAndForeground, nullptr);
   }
   return shadow_and_foreground_image_filter_;
@@ -568,17 +551,17 @@ void CanvasRenderingContext2DState::ShadowParameterChanged() {
 }
 
 void CanvasRenderingContext2DState::SetShadowOffsetX(double x) {
-  shadow_offset_.SetWidth(clampTo<float>(x));
+  shadow_offset_.set_width(ClampTo<float>(x));
   ShadowParameterChanged();
 }
 
 void CanvasRenderingContext2DState::SetShadowOffsetY(double y) {
-  shadow_offset_.SetHeight(clampTo<float>(y));
+  shadow_offset_.set_height(ClampTo<float>(y));
   ShadowParameterChanged();
 }
 
 void CanvasRenderingContext2DState::SetShadowBlur(double shadow_blur) {
-  shadow_blur_ = clampTo<float>(shadow_blur);
+  shadow_blur_ = ClampTo<float>(shadow_blur);
   ShadowParameterChanged();
 }
 
@@ -662,11 +645,6 @@ void CanvasRenderingContext2DState::UpdateFilterQuality(
   image_flags_.setFilterQuality(filter_quality);
 }
 
-bool CanvasRenderingContext2DState::ShouldDrawShadows() const {
-  return AlphaChannel(shadow_color_) &&
-         (shadow_blur_ || !shadow_offset_.IsZero());
-}
-
 const PaintFlags* CanvasRenderingContext2DState::GetFlags(
     PaintType paint_type,
     ShadowMode shadow_mode,
@@ -739,9 +717,8 @@ bool CanvasRenderingContext2DState::PatternIsAccelerated(
   return Style(paint_type)->GetCanvasPattern()->GetPattern()->IsTextureBacked();
 }
 
-void CanvasRenderingContext2DState::SetTextLetterSpacing(
-    float letter_spacing,
-    FontSelector* selector) {
+void CanvasRenderingContext2DState::SetLetterSpacing(float letter_spacing,
+                                                     FontSelector* selector) {
   DCHECK(realized_font_);
   FontDescription font_description(GetFontDescription());
   font_description.SetLetterSpacing(letter_spacing);
@@ -749,8 +726,8 @@ void CanvasRenderingContext2DState::SetTextLetterSpacing(
   SetFont(font_description, selector);
 }
 
-void CanvasRenderingContext2DState::SetTextWordSpacing(float word_spacing,
-                                                       FontSelector* selector) {
+void CanvasRenderingContext2DState::SetWordSpacing(float word_spacing,
+                                                   FontSelector* selector) {
   DCHECK(realized_font_);
   FontDescription font_description(GetFontDescription());
   font_description.SetWordSpacing(word_spacing);

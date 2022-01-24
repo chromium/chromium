@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
 #include "base/command_line.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -25,9 +27,11 @@
 using base::UserMetricsAction;
 
 TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+                           TabMenuModelDelegate* tab_menu_model_delegate,
                            TabStripModel* tab_strip,
                            int index)
-    : ui::SimpleMenuModel(delegate) {
+    : ui::SimpleMenuModel(delegate),
+      tab_menu_model_delegate_(tab_menu_model_delegate) {
   Build(tab_strip, index);
 }
 
@@ -45,8 +49,10 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
 
   int num_tabs = indices.size();
   AddItemWithStringId(TabStripModel::CommandNewTabToRight,
-                      IDS_TAB_CXMENU_NEWTABTORIGHT);
-  if (reading_list::switches::IsReadingListEnabled()) {
+                      base::i18n::IsRTL() ? IDS_TAB_CXMENU_NEWTABTOLEFT
+                                          : IDS_TAB_CXMENU_NEWTABTORIGHT);
+  if (reading_list::switches::IsReadingListEnabled() &&
+      !tab_strip->profile()->IsGuestSession()) {
     AddItem(
         TabStripModel::CommandAddToReadLater,
         l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_READ_LATER, num_tabs));
@@ -70,6 +76,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     AddItem(TabStripModel::CommandAddToNewGroup,
             l10n_util::GetPluralStringFUTF16(
                 IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_tabs));
+    SetElementIdentifierAt(GetItemCount() - 1, kAddToNewGroupItemIdentifier);
     if (base::FeatureList::IsEnabled(features::kTabGroupsNewBadgePromo))
       SetIsNewFeatureAt(GetItemCount() - 1, true);
   }
@@ -84,9 +91,8 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
 
   if (ExistingWindowSubMenuModel::ShouldShowSubmenu(tab_strip->profile())) {
     // Create submenu with existing windows
-    add_to_existing_window_submenu_ =
-        std::make_unique<ExistingWindowSubMenuModel>(delegate(), tab_strip,
-                                                     index);
+    add_to_existing_window_submenu_ = ExistingWindowSubMenuModel::Create(
+        delegate(), tab_menu_model_delegate_, tab_strip, index);
     AddSubMenu(TabStripModel::CommandMoveToExistingWindow,
                l10n_util::GetPluralStringFUTF16(
                    IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),
@@ -154,5 +160,9 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   AddItemWithStringId(TabStripModel::CommandCloseOtherTabs,
                       IDS_TAB_CXMENU_CLOSEOTHERTABS);
   AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
-                      IDS_TAB_CXMENU_CLOSETABSTORIGHT);
+                      base::i18n::IsRTL() ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
+                                          : IDS_TAB_CXMENU_CLOSETABSTORIGHT);
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel,
+                                      kAddToNewGroupItemIdentifier);

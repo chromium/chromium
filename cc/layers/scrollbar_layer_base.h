@@ -24,7 +24,8 @@ class CC_EXPORT ScrollbarLayerBase : public Layer {
     return is_left_side_vertical_scrollbar_;
   }
 
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state) override;
 
   enum ScrollbarLayerType {
     kSolidColor,

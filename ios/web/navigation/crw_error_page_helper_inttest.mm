@@ -7,6 +7,7 @@
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
+#import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/test/web_int_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -100,8 +101,10 @@ TEST_F(CRWErrorPageHelperIntTest, InjectHTMLAndReload) {
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), kInitialBody));
 
   // Inject the HTML and check that it is replacing the content.
-  ExecuteJavaScript([helper scriptForInjectingHTML:GetInjectedHtml()
-                                addAutomaticReload:YES]);
+  web::test::ExecuteJavaScript(
+      web_state(),
+      base::SysNSStringToUTF8([helper scriptForInjectingHTML:GetInjectedHtml()
+                                          addAutomaticReload:YES]));
 
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), kInjectedBody));
   ASSERT_TRUE(test::WaitForWebViewNotContainingText(web_state(), kInitialBody));
@@ -130,8 +133,10 @@ TEST_F(CRWErrorPageHelperIntTest, InjectHTMLWithoutReload) {
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), kInitialBody));
 
   // Inject the HTML and check that it is replacing the content.
-  ExecuteJavaScript([helper scriptForInjectingHTML:GetInjectedHtml()
-                                addAutomaticReload:NO]);
+  web::test::ExecuteJavaScript(
+      web_state(),
+      base::SysNSStringToUTF8([helper scriptForInjectingHTML:GetInjectedHtml()
+                                          addAutomaticReload:NO]));
 
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), kInjectedBody));
   ASSERT_TRUE(test::WaitForWebViewNotContainingText(web_state(), kInitialBody));

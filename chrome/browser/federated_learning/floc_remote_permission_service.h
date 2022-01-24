@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -58,6 +57,11 @@ class FlocRemotePermissionService : public KeyedService {
 
   FlocRemotePermissionService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  FlocRemotePermissionService(const FlocRemotePermissionService&) = delete;
+  FlocRemotePermissionService& operator=(const FlocRemotePermissionService&) =
+      delete;
+
   ~FlocRemotePermissionService() override;
 
   // Queries floc related permission settings - specifically the bit swaa, nac,
@@ -99,8 +103,6 @@ class FlocRemotePermissionService : public KeyedService {
       pending_floc_permission_requests_;
 
   base::WeakPtrFactory<FlocRemotePermissionService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FlocRemotePermissionService);
 };
 
 }  // namespace federated_learning

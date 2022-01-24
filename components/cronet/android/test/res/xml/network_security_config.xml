@@ -26,6 +26,8 @@
   <domain-config cleartextTrafficPermitted="true">
     <!-- Used as the base URL by native test server (net::EmbeddedTestServer) -->
     <domain includeSubdomains="true">127.0.0.1</domain>
+    <!-- Used by CronetHttpURLConnectionTest#testIOExceptionInterruptRethrown -->
+    <domain includeSubdomains="true">localhost</domain>
     <!-- Used by CronetHttpURLConnectionTest#testBadIP -->
     <domain includeSubdomains="true">0.0.0.0</domain>
     <!-- Used by CronetHttpURLConnectionTest#testSetUseCachesFalse -->

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/view.h"
@@ -28,6 +27,10 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   // layout managers that size to preferred size.
   explicit ProgressBar(int preferred_height = 5,
                        bool allow_round_corner = true);
+
+  ProgressBar(const ProgressBar&) = delete;
+  ProgressBar& operator=(const ProgressBar&) = delete;
+
   ~ProgressBar() override;
 
   // View:
@@ -78,8 +81,6 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   std::unique_ptr<gfx::LinearAnimation> indeterminate_bar_animation_;
 
   int last_announced_percentage_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgressBar);
 };
 
 }  // namespace views

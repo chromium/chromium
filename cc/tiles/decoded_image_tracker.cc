@@ -96,7 +96,7 @@ void DecodedImageTracker::OnTimeoutImages() {
     return;
 
   auto now = tick_clock_->NowTicks();
-  auto timeout = base::TimeDelta::FromMilliseconds(kTimeoutDurationMs);
+  auto timeout = base::Milliseconds(kTimeoutDurationMs);
   for (auto it = locked_images_.begin(); it != locked_images_.end();) {
     auto& image = it->second;
     if (now - image->lock_time() < timeout) {
@@ -120,7 +120,7 @@ void DecodedImageTracker::EnqueueTimeout() {
       FROM_HERE,
       base::BindOnce(&DecodedImageTracker::OnTimeoutImages,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kTimeoutDurationMs));
+      base::Milliseconds(kTimeoutDurationMs));
 }
 
 }  // namespace cc

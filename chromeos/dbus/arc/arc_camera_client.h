@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 
@@ -32,6 +31,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcCameraClient {
   // Returns the global instance if initialized. May return null.
   static ArcCameraClient* Get();
 
+  ArcCameraClient(const ArcCameraClient&) = delete;
+  ArcCameraClient& operator=(const ArcCameraClient&) = delete;
+
   // Starts a new service process and establishes Mojo connection with the given
   // token and FD.
   virtual void StartService(int fd,
@@ -42,9 +44,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcCameraClient {
   // Initialize() should be used instead.
   ArcCameraClient();
   virtual ~ArcCameraClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcCameraClient);
 };
 
 }  // namespace chromeos

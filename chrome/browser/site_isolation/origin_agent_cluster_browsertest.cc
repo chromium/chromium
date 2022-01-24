@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -31,6 +30,11 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
  public:
   OriginAgentClusterBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  OriginAgentClusterBrowserTest(const OriginAgentClusterBrowserTest&) = delete;
+  OriginAgentClusterBrowserTest& operator=(
+      const OriginAgentClusterBrowserTest&) = delete;
+
   ~OriginAgentClusterBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -76,8 +80,6 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
 
   net::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginAgentClusterBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest, Navigations) {
@@ -94,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest, Navigations) {
   web_feature_waiter->AddWebFeatureExpectation(
       blink::mojom::WebFeature::kOriginAgentClusterHeader);
 
-  ui_test_utils::NavigateToURL(browser(), start_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
 
   EXPECT_FALSE(web_feature_waiter->DidObserveWebFeature(
       blink::mojom::WebFeature::kOriginAgentClusterHeader));

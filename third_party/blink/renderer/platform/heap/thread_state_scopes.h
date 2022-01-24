@@ -5,16 +5,43 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_THREAD_STATE_SCOPES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_THREAD_STATE_SCOPES_H_
 
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
-
-#if BUILDFLAG(USE_V8_OILPAN)
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_state_scopes.h"
-#else  // !USE_V8_OILPAN
-#include "third_party/blink/renderer/platform/heap/impl/thread_state_scopes.h"
-#endif  // !USE_V8_OILPAN
+#include "v8/include/cppgc/heap-consistency.h"
 
 namespace blink {
+
+// The NoAllocationScope class is used in debug mode to catch unwanted
+// allocations. E.g. allocations during GC.
+class ThreadState::NoAllocationScope final {
+  STACK_ALLOCATED();
+
+ public:
+  explicit NoAllocationScope(ThreadState* state)
+      : disallow_gc_(state->cpp_heap().GetHeapHandle()) {}
+
+  NoAllocationScope(const NoAllocationScope&) = delete;
+  NoAllocationScope& operator=(const NoAllocationScope&) = delete;
+
+ private:
+  const cppgc::subtle::DisallowGarbageCollectionScope disallow_gc_;
+};
+
+// The GCForbiddenScope class is used to prevent GC finalization
+// when it is not safe to do so.
+class ThreadState::GCForbiddenScope final {
+  STACK_ALLOCATED();
+
+ public:
+  explicit GCForbiddenScope(ThreadState* state)
+      : no_gc_(state->cpp_heap().GetHeapHandle()) {}
+
+  GCForbiddenScope(const NoAllocationScope&) = delete;
+  GCForbiddenScope& operator=(const NoAllocationScope&) = delete;
+
+ private:
+  const cppgc::subtle::NoGarbageCollectionScope no_gc_;
+};
 
 #if defined(LEAK_SANITIZER)
 class LsanDisabledScope final {

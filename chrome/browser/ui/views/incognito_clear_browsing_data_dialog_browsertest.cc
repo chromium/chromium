@@ -26,7 +26,9 @@ class IncognitoClearBrowsingDataDialogBrowserTest
         BrowserView::GetBrowserViewForBrowser(incognito_browser_)
             ->toolbar_button_provider()
             ->GetAvatarToolbarButton());
-    IncognitoClearBrowsingDataDialog::Show(view, incognito_browser_->profile());
+    IncognitoClearBrowsingDataDialog::Show(
+        view, incognito_browser_->profile(),
+        IncognitoClearBrowsingDataDialog::Type::kDefaultBubble);
     EXPECT_TRUE(IncognitoClearBrowsingDataDialog::IsShowing());
   }
 
@@ -129,4 +131,70 @@ IN_PROC_BROWSER_TEST_P(IncognitoClearBrowsingDataTest,
     EXPECT_EQ(u"chrome://settings/clearBrowserData", current_tab_title);
     ASSERT_FALSE(IncognitoClearBrowsingDataDialog::IsShowing());
   }
+}
+
+class IncognitoHistoryDisclaimerDialogBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  void OpenDialog() {
+    incognito_browser_ = CreateIncognitoBrowser(browser()->profile());
+    views::View* view = static_cast<views::View*>(
+        BrowserView::GetBrowserViewForBrowser(incognito_browser_)
+            ->toolbar_button_provider()
+            ->GetAvatarToolbarButton());
+    IncognitoClearBrowsingDataDialog::Show(
+        view, incognito_browser_->profile(),
+        IncognitoClearBrowsingDataDialog::Type::kHistoryDisclaimerBubble);
+    EXPECT_TRUE(IncognitoClearBrowsingDataDialog::IsShowing());
+  }
+
+  Browser* GetIncognitoBrowser() { return incognito_browser_; }
+
+  IncognitoClearBrowsingDataDialog* GetDialogView() {
+    return IncognitoClearBrowsingDataDialog::
+        GetIncognitoClearBrowsingDataDialogForTesting();
+  }
+
+ private:
+  Browser* incognito_browser_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(IncognitoHistoryDisclaimerDialogBrowserTest,
+                       TestDialogIsShown) {
+  OpenDialog();
+  auto* incognito_cbd_dialog_view = GetDialogView();
+
+  ASSERT_TRUE(IncognitoClearBrowsingDataDialog::IsShowing());
+  ASSERT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
+            incognito_cbd_dialog_view->GetDialogButtons());
+  ASSERT_TRUE(
+      incognito_cbd_dialog_view->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  ASSERT_TRUE(incognito_cbd_dialog_view->IsDialogButtonEnabled(
+      ui::DIALOG_BUTTON_CANCEL));
+}
+
+IN_PROC_BROWSER_TEST_F(IncognitoHistoryDisclaimerDialogBrowserTest,
+                       TestCloseIncognitoButton) {
+  OpenDialog();
+
+  GetDialogView()->CancelDialog();
+  ui_test_utils::WaitForBrowserToClose(GetIncognitoBrowser());
+  ASSERT_EQ(0UL, BrowserList::GetIncognitoBrowserCount());
+  ASSERT_TRUE(GetDialogView() == nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(IncognitoHistoryDisclaimerDialogBrowserTest,
+                       TestGotItButton) {
+  OpenDialog();
+
+  base::RunLoop run_loop;
+  GetDialogView()->SetDestructorCallbackForTesting(
+      base::BindLambdaForTesting([&]() {
+        run_loop.Quit();
+        ASSERT_FALSE(IncognitoClearBrowsingDataDialog::IsShowing());
+        ASSERT_TRUE(GetDialogView() == nullptr);
+      }));
+
+  GetDialogView()->AcceptDialog();
+  run_loop.Run();
 }

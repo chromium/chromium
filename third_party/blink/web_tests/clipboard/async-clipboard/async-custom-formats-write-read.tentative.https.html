@@ -13,7 +13,6 @@
 'use strict';
 
 promise_test(async t => {
-  // TODO(crbug.com/106449): Enable after implementing custom formats read/write.
   await PermissionsHelper.setPermission('clipboard-read-write', 'granted');
   await PermissionsHelper.setPermission('clipboard-sanitized-write',
                                         'granted');

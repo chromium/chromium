@@ -14,8 +14,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -644,7 +644,7 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckDomain() {
   }
 
   if (domain_ != policy_domain) {
-    LOG(ERROR) << "Invalid user name " << policy_data_->username();
+    LOG(ERROR) << "Invalid domain name " << policy_domain << " - " << domain_;
     return VALIDATION_BAD_USER;
   }
 

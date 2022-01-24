@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_SELECT_MENU_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
-#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 
 namespace blink {
 
@@ -20,7 +20,8 @@ class Document;
 // --enable-blink-features=HTMLSelectMenuElement. See
 // https://groups.google.com/u/1/a/chromium.org/g/blink-dev/c/9TcfjaOs5zg/m/WAiv6WpUAAAJ
 // for more details.
-class HTMLSelectMenuElement final : public HTMLElement {
+class CORE_EXPORT HTMLSelectMenuElement final
+    : public HTMLFormControlElementWithState {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -32,6 +33,17 @@ class HTMLSelectMenuElement final : public HTMLElement {
 
   void Trace(Visitor*) const override;
 
+  enum class PartType { kNone, kButton, kListBox, kOption };
+
+  // If node is a flat tree descendant of an HTMLSelectMenuElement
+  // and is registered as a part of that HTMLSelectMenuElement,
+  // returns that HTMLSelectMenuElement. Else returns null.
+  static HTMLSelectMenuElement* OwnerSelectMenu(Node* node);
+
+  PartType AssignedPartType(Node* node) const;
+
+  Element* ButtonPart() const { return button_part_; }
+
  private:
   class SelectMutationCallback;
 
@@ -40,26 +52,45 @@ class HTMLSelectMenuElement final : public HTMLElement {
   void CloseListbox();
   void UpdatePartElements();
 
-  Element* FirstOptionPart() const;
+  HTMLOptionElement* FirstOptionPart() const;
+  Element* FirstValidButtonPart() const;
+  Element* FirstValidListboxPart() const;
+  Element* FirstValidSelectedValuePart() const;
   void EnsureSelectedOptionIsValid();
   Element* SelectedOption();
-  void SetSelectedOption(Element* selected_option);
+  void SetSelectedOption(HTMLOptionElement* selected_option);
+  void SelectNextOption();
+  void SelectPreviousOption();
   void UpdateSelectedValuePartContents();
 
   void ButtonPartInserted(Element*);
   void ButtonPartRemoved(Element*);
+  void UpdateButtonPart();
   void SelectedValuePartInserted(Element*);
   void SelectedValuePartRemoved(Element*);
+  void UpdateSelectedValuePart();
   void ListboxPartInserted(Element*);
   void ListboxPartRemoved(Element*);
-  void OptionPartInserted(Element*);
-  void OptionPartRemoved(Element*);
+  void UpdateListboxPart();
+  void OptionPartInserted(HTMLOptionElement*);
+  void OptionPartRemoved(HTMLOptionElement*);
+  void ResetOptionParts();
 
-  bool IsValidButtonPart(const Element* part, bool show_warning) const;
-  bool IsValidListboxPart(const Element* part, bool show_warning) const;
-  bool IsValidOptionPart(const Element* part, bool show_warning) const;
+  bool IsValidButtonPart(const Node* node, bool show_warning) const;
+  bool IsValidListboxPart(const Node* node, bool show_warning) const;
+  bool IsValidOptionPart(const Node* node, bool show_warning) const;
 
-  void SetListboxPart(HTMLPopupElement* listbox_part);
+  void SetButtonPart(Element* new_button_part);
+  void SetListboxPart(HTMLPopupElement* new_listbox_part);
+
+  // HTMLFormControlElementWithState overrides:
+  const AtomicString& FormControlType() const override;
+  bool MayTriggerVirtualKeyboard() const override;
+  bool AlwaysCreateUserAgentShadowRoot() const override { return false; }
+  void AppendToFormData(FormData&) override;
+  bool SupportsFocus() const override { return HTMLElement::SupportsFocus(); }
+  FormControlState SaveFormControlState() const override;
+  void RestoreFormControlState(const FormControlState&) override;
 
   class ButtonPartEventListener : public NativeEventListener {
    public:
@@ -94,7 +125,6 @@ class HTMLSelectMenuElement final : public HTMLElement {
   static constexpr char kButtonPartName[] = "button";
   static constexpr char kSelectedValuePartName[] = "selected-value";
   static constexpr char kListboxPartName[] = "listbox";
-  static constexpr char kOptionPartName[] = "option";
 
   Member<ButtonPartEventListener> button_part_listener_;
   Member<OptionPartEventListener> option_part_listener_;
@@ -104,8 +134,10 @@ class HTMLSelectMenuElement final : public HTMLElement {
   Member<Element> button_part_;
   Member<Element> selected_value_part_;
   Member<HTMLPopupElement> listbox_part_;
-  HeapLinkedHashSet<Member<Element>> option_parts_;
-  Member<Element> selected_option_;
+  HeapLinkedHashSet<Member<HTMLOptionElement>> option_parts_;
+  Member<HTMLSlotElement> button_slot_;
+  Member<HTMLSlotElement> listbox_slot_;
+  Member<HTMLOptionElement> selected_option_;
 };
 
 }  // namespace blink

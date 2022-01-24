@@ -14,7 +14,7 @@ FAIL canonicalize('c:/foo') should be . Was file:///C:/foo.
 FAIL canonicalize('c:\\foo') should be . Was file:///C:/foo.
 PASS canonicalize('/z:/bar') is 'file:///Z:/bar'
 PASS canonicalize('/bar') is 'file:///C:/bar'
-FAIL canonicalize('/bar') should be file://localhost/C:/bar. Was file:///C:/bar.
+PASS canonicalize('/bar') is 'file:///C:/bar'
 PASS canonicalize('/bar') is 'file:///C:/bar'
 PASS canonicalize('//somehost/path') is 'file://somehost/path'
 PASS canonicalize('/\\//somehost/path') is 'file://somehost/path'

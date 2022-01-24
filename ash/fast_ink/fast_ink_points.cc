@@ -163,9 +163,8 @@ void FastInkPoints::Predict(const FastInkPoints& real_points,
   const float kPredictionIntervalMs = 5.0f;
   const float kMaxPointIntervalMs = 10.0f;
   base::TimeDelta prediction_interval =
-      base::TimeDelta::FromMilliseconds(kPredictionIntervalMs);
-  base::TimeDelta max_point_interval =
-      base::TimeDelta::FromMilliseconds(kMaxPointIntervalMs);
+      base::Milliseconds(kPredictionIntervalMs);
+  base::TimeDelta max_point_interval = base::Milliseconds(kMaxPointIntervalMs);
   const FastInkPoint newest_real_point = real_points.GetNewest();
   base::TimeTicks last_point_time = newest_real_point.time;
   gfx::PointF last_point_location =

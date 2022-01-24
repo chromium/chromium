@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_surface.h"
@@ -25,6 +24,10 @@ class GLOzoneEglCast : public GLOzoneEGL {
  public:
   explicit GLOzoneEglCast(
       std::unique_ptr<chromecast::CastEglPlatform> egl_platform);
+
+  GLOzoneEglCast(const GLOzoneEglCast&) = delete;
+  GLOzoneEglCast& operator=(const GLOzoneEglCast&) = delete;
+
   ~GLOzoneEglCast() override;
 
   // GLOzoneEGL implementation:
@@ -50,8 +53,6 @@ class GLOzoneEglCast : public GLOzoneEGL {
   void* window_ = 0;
   gfx::Size display_size_;
   std::unique_ptr<chromecast::CastEglPlatform> egl_platform_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEglCast);
 };
 
 }  // namespace ui

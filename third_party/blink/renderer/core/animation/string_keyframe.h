@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class CSSPropertyName;
 class StyleSheetContents;
 
 // An implementation of Keyframe used for CSS Animations, web-animations, and
@@ -41,7 +42,7 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
       const String& value,
       SecureContextMode,
       StyleSheetContents*);
-  void SetCSSPropertyValue(const CSSProperty&, const CSSValue&);
+  void SetCSSPropertyValue(const CSSPropertyName&, const CSSValue&);
   void RemoveCustomCSSProperty(const PropertyHandle& property);
 
   void SetPresentationAttributeValue(const CSSProperty&,
@@ -119,6 +120,7 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
 
     bool IsNeutral() const final { return !value_; }
     bool IsRevert() const final;
+    bool IsRevertLayer() const final;
     Keyframe::PropertySpecificKeyframe* NeutralKeyframe(
         double offset,
         scoped_refptr<TimingFunction> easing) const final;
@@ -156,6 +158,7 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
 
     bool IsNeutral() const final { return value_.IsNull(); }
     bool IsRevert() const final { return false; }
+    bool IsRevertLayer() const final { return false; }
     PropertySpecificKeyframe* NeutralKeyframe(
         double offset,
         scoped_refptr<TimingFunction> easing) const final;

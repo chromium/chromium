@@ -71,8 +71,8 @@ void DecodeImageData(SharedBuffer* data, ImageMeta* image) {
     DecodeFailure(image);
 
   image->time += std::chrono::duration<double>(end - start).count();
-  image->width = decoder->Size().Width();
-  image->height = decoder->Size().Height();
+  image->width = decoder->Size().width();
+  image->height = decoder->Size().height();
   image->frames = frame_count;
 }
 

@@ -46,8 +46,9 @@ std::string GetChannelName(WithExtendedStable with_extended_stable) {
     default:
       return "unknown";
   }
-#endif
+#else
   return std::string();
+#endif
 }
 
 version_info::Channel GetChannel() {

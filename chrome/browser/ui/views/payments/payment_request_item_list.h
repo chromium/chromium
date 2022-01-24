@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/payments/payment_request_row_view.h"
 
 namespace views {
@@ -41,6 +40,10 @@ class PaymentRequestItemList {
          bool selected,
          bool clickable,
          bool show_edit_button);
+
+    Item(const Item&) = delete;
+    Item& operator=(const Item&) = delete;
+
     ~Item() override;
 
     bool selected() const { return selected_; }
@@ -114,12 +117,14 @@ class PaymentRequestItemList {
     std::u16string accessible_item_description_;
     bool selected_;
     bool show_edit_button_;
-
-    DISALLOW_COPY_AND_ASSIGN(Item);
   };
 
   explicit PaymentRequestItemList(
       base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  PaymentRequestItemList(const PaymentRequestItemList&) = delete;
+  PaymentRequestItemList& operator=(const PaymentRequestItemList&) = delete;
+
   virtual ~PaymentRequestItemList();
 
   // Adds an item to this list. |item->list()| should return this object.
@@ -147,8 +152,6 @@ class PaymentRequestItemList {
   std::vector<std::unique_ptr<Item>> items_;
   Item* selected_item_;
   base::WeakPtr<PaymentRequestDialogView> dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestItemList);
 };
 
 }  // namespace payments

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,6 +33,10 @@ namespace {
 class AutofillCounterTest : public InProcessBrowserTest {
  public:
   AutofillCounterTest() {}
+
+  AutofillCounterTest(const AutofillCounterTest&) = delete;
+  AutofillCounterTest& operator=(const AutofillCounterTest&) = delete;
+
   ~AutofillCounterTest() override {}
 
   void SetUpOnMainThread() override {
@@ -191,8 +194,6 @@ class AutofillCounterTest : public InProcessBrowserTest {
   browsing_data::BrowsingDataCounter::ResultInt num_suggestions_;
   browsing_data::BrowsingDataCounter::ResultInt num_credit_cards_;
   browsing_data::BrowsingDataCounter::ResultInt num_addresses_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillCounterTest);
 };
 
 // Tests that we count the correct number of autocomplete suggestions.
@@ -348,14 +349,14 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
   AddAddress("John", "Doe", "Main Street 12345");
   base::ThreadPoolInstance::Get()->FlushForTesting();
 
-  const base::Time kTime2 = kTime1 + base::TimeDelta::FromSeconds(10);
+  const base::Time kTime2 = kTime1 + base::Seconds(10);
   test_clock.SetNow(kTime2);
   AddCreditCard("0123-4567-8910-1112", "10", "2015", "1");
   AddAddress("Jane", "Smith", "Main Street 12346");
   AddAddress("John", "Smith", "Side Street 47");
   base::ThreadPoolInstance::Get()->FlushForTesting();
 
-  const base::Time kTime3 = kTime2 + base::TimeDelta::FromSeconds(10);
+  const base::Time kTime3 = kTime2 + base::Seconds(10);
   test_clock.SetNow(kTime3);
   AddAutocompleteSuggestion("tel", "+987654321");
   AddCreditCard("1211-1098-7654-3210", "10", "2030", "1");

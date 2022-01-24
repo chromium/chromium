@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -31,8 +32,10 @@ class GURL;
 
 namespace autofill {
 
+struct CreditCardArtImage;
+
 using CardArtImagesFetchedCallback = base::OnceCallback<void(
-    const std::map<std::string, gfx::Image>& card_art_images)>;
+    std::vector<std::unique_ptr<CreditCardArtImage>> card_art_images)>;
 
 // The image fetching operation instance. It tracks the state of the paired
 // request. Will be created when the AutofillImageFetcher receives a request to
@@ -45,8 +48,7 @@ class ImageFetchOperation : public base::RefCounted<ImageFetchOperation> {
   ImageFetchOperation& operator=(const ImageFetchOperation&) = delete;
 
   // Invoked when an image fetch is complete and data is returned.
-  void ImageFetched(const std::string& card_server_id,
-                    const gfx::Image& card_art_image);
+  void ImageFetched(const GURL& card_art_url, const gfx::Image& card_art_image);
 
  private:
   friend class base::RefCounted<ImageFetchOperation>;
@@ -56,8 +58,8 @@ class ImageFetchOperation : public base::RefCounted<ImageFetchOperation> {
   // The number of images that should be fetched before completion.
   size_t pending_request_count_ = 0;
 
-  // The mapping of each credit card's server id to its card art image.
-  std::map<std::string, gfx::Image> fetched_card_art_images_;
+  // The vector of the fetched CreditCardArtImages.
+  std::vector<std::unique_ptr<CreditCardArtImage>> fetched_card_art_images_;
 
   // Callback function to be invoked when fetching is finished.
   CardArtImagesFetchedCallback all_fetches_complete_callback_;
@@ -74,21 +76,19 @@ class AutofillImageFetcher : public KeyedService {
   AutofillImageFetcher& operator=(const AutofillImageFetcher&) = delete;
 
   // Once invoked, the |image_fetcher_| will start fetching images based on the
-  // urls. |card_server_ids_and_art_urls| is a map with credit cards' server id
-  // as the key and its card art image url as the value. |callback| will be
-  // invoked when all the requests have been completed. The callback will
-  // receive a map of card server IDs to images, for (only) those cards for
-  // which the AutofillImageFetcher could successfully fetch the image.
-  void FetchImagesForUrls(
-      const std::map<std::string, GURL>& card_server_ids_and_art_urls,
-      CardArtImagesFetchedCallback callback);
+  // urls. |card_art_urls| is a vector with credit cards' card art image url.
+  // |callback| will be invoked when all the requests have been completed. The
+  // callback will receive a vector of CreditCardArtImage, for (only) those
+  // cards for which the AutofillImageFetcher could successfully fetch the
+  // image.
+  void FetchImagesForUrls(const std::vector<GURL>& card_art_urls,
+                          CardArtImagesFetchedCallback callback);
 
  protected:
-  // Helper function to fetch art image for card with |card_server_id| given the
-  // |card_art_url|, for the specific |operation| instance.
+  // Helper function to fetch art image for card given the |card_art_url|, for
+  // the specific |operation| instance.
   virtual void FetchImageForUrl(
       const scoped_refptr<ImageFetchOperation>& operation,
-      const std::string& card_server_id,
       const GURL& card_art_url);
 
   // The image fetcher implementation.
@@ -100,7 +100,7 @@ class AutofillImageFetcher : public KeyedService {
   // Called when an image is fetched for the |operation| instance.
   static void OnCardArtImageFetched(
       const scoped_refptr<ImageFetchOperation>& operation,
-      const std::string& card_server_id,
+      const GURL& card_art_url,
       const gfx::Image& card_art_image,
       const image_fetcher::RequestMetadata& metadata);
 };

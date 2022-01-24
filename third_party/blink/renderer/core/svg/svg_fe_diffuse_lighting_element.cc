@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/svg/svg_fe_light_element.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_diffuse_lighting.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
+#include "third_party/blink/renderer/platform/graphics/filters/light_source.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -87,36 +88,12 @@ bool SVGFEDiffuseLightingElement::SetFilterEffectAttribute(
     return diffuse_lighting->SetDiffuseConstant(
         diffuse_constant_->CurrentValue()->Value());
 
-  LightSource* light_source =
-      const_cast<LightSource*>(diffuse_lighting->GetLightSource());
-  const SVGFELightElement* light_element =
-      SVGFELightElement::FindLightElement(*this);
-  DCHECK(light_source);
-  DCHECK(light_element);
-  DCHECK(effect->GetFilter());
-
-  if (attr_name == svg_names::kAzimuthAttr)
-    return light_source->SetAzimuth(
-        light_element->azimuth()->CurrentValue()->Value());
-  if (attr_name == svg_names::kElevationAttr)
-    return light_source->SetElevation(
-        light_element->elevation()->CurrentValue()->Value());
-  if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
-      attr_name == svg_names::kZAttr)
-    return light_source->SetPosition(
-        effect->GetFilter()->Resolve3dPoint(light_element->GetPosition()));
-  if (attr_name == svg_names::kPointsAtXAttr ||
-      attr_name == svg_names::kPointsAtYAttr ||
-      attr_name == svg_names::kPointsAtZAttr)
-    return light_source->SetPointsAt(
-        effect->GetFilter()->Resolve3dPoint(light_element->PointsAt()));
-  if (attr_name == svg_names::kSpecularExponentAttr)
-    return light_source->SetSpecularExponent(
-        light_element->specularExponent()->CurrentValue()->Value());
-  if (attr_name == svg_names::kLimitingConeAngleAttr)
-    return light_source->SetLimitingConeAngle(
-        light_element->limitingConeAngle()->CurrentValue()->Value());
-
+  if (const auto* light_element = SVGFELightElement::FindLightElement(*this)) {
+    absl::optional<bool> light_source_update =
+        light_element->SetLightSourceAttribute(diffuse_lighting, attr_name);
+    if (light_source_update)
+      return *light_source_update;
+  }
   return SVGFilterPrimitiveStandardAttributes::SetFilterEffectAttribute(
       effect, attr_name);
 }

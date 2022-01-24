@@ -23,11 +23,9 @@ FakeBluetoothInstance::GattDBResult::~GattDBResult() {}
 FakeBluetoothInstance::LEDeviceFoundData::LEDeviceFoundData(
     mojom::BluetoothAddressPtr addr,
     int32_t rssi,
-    std::vector<mojom::BluetoothAdvertisingDataPtr> adv_data,
     const std::vector<uint8_t>& eir)
     : addr_(std::move(addr)),
       rssi_(rssi),
-      adv_data_(std::move(adv_data)),
       eir_(std::move(eir)) {}
 
 FakeBluetoothInstance::LEDeviceFoundData::~LEDeviceFoundData() {}
@@ -96,20 +94,11 @@ void FakeBluetoothInstance::OnConnectionStateChanged(
                                                    device_type, connected));
 }
 
-void FakeBluetoothInstance::OnLEDeviceFoundForN(
-    mojom::BluetoothAddressPtr addr,
-    int32_t rssi,
-    std::vector<mojom::BluetoothAdvertisingDataPtr> adv_data) {
-  le_device_found_data_.push_back(std::make_unique<LEDeviceFoundData>(
-      std::move(addr), rssi, std::move(adv_data), std::vector<uint8_t>()));
-}
-
 void FakeBluetoothInstance::OnLEDeviceFound(mojom::BluetoothAddressPtr addr,
                                             int32_t rssi,
                                             const std::vector<uint8_t>& eir) {
-  le_device_found_data_.push_back(std::make_unique<LEDeviceFoundData>(
-      std::move(addr), rssi, std::vector<mojom::BluetoothAdvertisingDataPtr>(),
-      eir));
+  le_device_found_data_.push_back(
+      std::make_unique<LEDeviceFoundData>(std::move(addr), rssi, eir));
 }
 
 void FakeBluetoothInstance::OnLEConnectionStateChange(

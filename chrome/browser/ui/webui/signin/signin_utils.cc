@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -69,9 +70,7 @@ void SetInitializedModalHeight(Browser* browser,
   if (!browser)
     return;
 
-  double height;
-  const bool success = args->GetDouble(0, &height);
-  DCHECK(success);
+  double height = args->GetList()[0].GetDouble();
   browser->signin_view_controller()->SetModalSigninHeight(
       static_cast<int>(height));
 }

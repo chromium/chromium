@@ -18,7 +18,7 @@ source_set("virtual_keyboard") {
     "//extensions/browser/api/virtual_keyboard_private",
     "//extensions/common",
     "//extensions/common/api",
-    "//ui/base/ime/chromeos",
+    "//ui/base/ime/ash",
   ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]

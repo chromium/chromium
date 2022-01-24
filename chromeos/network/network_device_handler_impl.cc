@@ -17,9 +17,9 @@
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -237,8 +237,10 @@ void NetworkDeviceHandlerImpl::ChangePin(
 }
 
 void NetworkDeviceHandlerImpl::SetCellularAllowRoaming(
-    const bool allow_roaming) {
+    const bool allow_roaming,
+    const bool policy_allow_roaming) {
   cellular_allow_roaming_ = allow_roaming;
+  cellular_policy_allow_roaming_ = policy_allow_roaming;
   ApplyCellularAllowRoamingToShill();
 }
 
@@ -290,19 +292,9 @@ void NetworkDeviceHandlerImpl::ApplyCellularAllowRoamingToShill() {
   }
   for (NetworkStateHandler::DeviceStateList::const_iterator it = list.begin();
        it != list.end(); ++it) {
-    const DeviceState* device_state = *it;
-
-    // If roaming is required by the provider, always try to set to true.
-    bool new_device_value =
-        device_state->provider_requires_roaming() || cellular_allow_roaming_;
-
     SetDevicePropertyInternal(
-        device_state->path(),
-        base::FeatureList::IsEnabled(
-            ash::features::kCellularAllowPerNetworkRoaming)
-            ? shill::kCellularPolicyAllowRoamingProperty
-            : shill::kCellularAllowRoamingProperty,
-        base::Value(new_device_value), base::DoNothing(),
+        (*it)->path(), shill::kCellularPolicyAllowRoamingProperty,
+        base::Value(cellular_policy_allow_roaming_), base::DoNothing(),
         network_handler::ErrorCallback());
   }
 }

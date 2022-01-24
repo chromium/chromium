@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 
 namespace base {
 class SingleThreadTaskRunner;

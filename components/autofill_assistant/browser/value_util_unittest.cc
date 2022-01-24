@@ -387,7 +387,8 @@ TEST_F(ValueUtilTest, TestGetNthValue) {
 }
 
 TEST_F(ValueUtilTest, TestContainsClientOnlyValues) {
-  ValueProto value_a = SimpleValue(std::string("test"));
+  ValueProto value_a =
+      SimpleValue(std::string("test"), /* is_client_side_only = */ false);
   ValueProto value_b = value_a;
   ValueProto value_c = value_a;
   EXPECT_FALSE(ContainsClientOnlyValue({}));

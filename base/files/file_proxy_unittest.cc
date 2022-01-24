@@ -238,7 +238,7 @@ TEST_F(FileProxyTest, CreateTemporary) {
       deleted_temp_file = true;
     else
       // Wait one second and then try again
-      PlatformThread::Sleep(TimeDelta::FromSeconds(1));
+      PlatformThread::Sleep(Seconds(1));
   }
   EXPECT_TRUE(deleted_temp_file);
 }
@@ -371,8 +371,8 @@ TEST_F(FileProxyTest, MAYBE_SetTimes) {
       File::FLAG_CREATE | File::FLAG_WRITE | File::FLAG_WRITE_ATTRIBUTES,
       &proxy);
 
-  Time last_accessed_time = Time::Now() - TimeDelta::FromDays(12345);
-  Time last_modified_time = Time::Now() - TimeDelta::FromHours(98765);
+  Time last_accessed_time = Time::Now() - Days(12345);
+  Time last_modified_time = Time::Now() - Hours(98765);
 
   RunLoop run_loop;
   proxy.SetTimes(last_accessed_time, last_modified_time,

@@ -18,13 +18,12 @@
 #include "components/session_manager/session_manager_types.h"
 
 namespace ash {
-
 namespace {
 
-constexpr base::TimeDelta kExpireAfterOnboarding = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kExpireAfterOnboarding = base::Days(1);
 
 bool IsExpiredAfterOnboarding(PrefService* prefs) {
-  return prefs->HasPrefPath(chromeos::prefs::kOobeOnboardingTime) &&
+  return prefs->HasPrefPath(prefs::kOobeOnboardingTime) &&
          base::Time::Now() - prefs->GetTime(prefs::kOobeOnboardingTime) >
              kExpireAfterOnboarding;
 }
@@ -77,28 +76,28 @@ void OnboardingUserActivityCounter::SetActiveState(bool active) {
   if (timer_.IsRunning()) {
     const base::TimeDelta activity_time_left =
         timer_.desired_run_time() - tick_clock_->NowTicks();
-    DCHECK(activity_time_left > base::TimeDelta());
+    DCHECK(activity_time_left.is_positive());
     const base::TimeDelta current_activity_time =
         required_activity_time_ - activity_time_left;
-    DCHECK(current_activity_time > base::TimeDelta());
-    prefs_->SetTimeDelta(chromeos::prefs::kActivityTimeAfterOnboarding,
+    DCHECK(current_activity_time.is_positive());
+    prefs_->SetTimeDelta(prefs::kActivityTimeAfterOnboarding,
                          current_activity_time);
     timer_.Stop();
     return;
   }
 
   if (IsExpiredAfterOnboarding(prefs_)) {
-    prefs_->ClearPref(chromeos::prefs::kActivityTimeAfterOnboarding);
+    prefs_->ClearPref(prefs::kActivityTimeAfterOnboarding);
     StopObserving();
     return;
   }
 
   // Switch to active.
   const base::TimeDelta current_activity_time =
-      prefs_->GetTimeDelta(chromeos::prefs::kActivityTimeAfterOnboarding);
+      prefs_->GetTimeDelta(prefs::kActivityTimeAfterOnboarding);
   const base::TimeDelta activity_time_left =
       required_activity_time_ - current_activity_time;
-  if (activity_time_left < base::TimeDelta()) {
+  if (activity_time_left.is_negative()) {
     ReportResult();
     return;
   }
@@ -109,7 +108,7 @@ void OnboardingUserActivityCounter::SetActiveState(bool active) {
 void OnboardingUserActivityCounter::ReportResult() {
   timer_.Stop();
   StopObserving();
-  prefs_->ClearPref(chromeos::prefs::kActivityTimeAfterOnboarding);
+  prefs_->ClearPref(prefs::kActivityTimeAfterOnboarding);
   if (IsExpiredAfterOnboarding(prefs_))
     return;
   std::move(closure_).Run();
@@ -122,7 +121,7 @@ OnboardingUserActivityCounter::~OnboardingUserActivityCounter() {
 
 void OnboardingUserActivityCounter::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterTimeDeltaPref(chromeos::prefs::kActivityTimeAfterOnboarding,
+  registry->RegisterTimeDeltaPref(prefs::kActivityTimeAfterOnboarding,
                                   base::TimeDelta());
 }
 
@@ -132,19 +131,19 @@ void OnboardingUserActivityCounter::MaybeMarkForStart(Profile* profile) {
   if (profile->IsChild() || profile->GetProfilePolicyConnector()->IsManaged())
     return;
 
-  profile->GetPrefs()->SetTimeDelta(
-      chromeos::prefs::kActivityTimeAfterOnboarding, base::TimeDelta());
+  profile->GetPrefs()->SetTimeDelta(prefs::kActivityTimeAfterOnboarding,
+                                    base::TimeDelta());
 }
 
 // static
 bool OnboardingUserActivityCounter::ShouldStart(PrefService* prefs) {
   if (IsExpiredAfterOnboarding(prefs)) {
     // Skip if the day has passed since user went through Oobe onboarding.
-    prefs->ClearPref(chromeos::prefs::kActivityTimeAfterOnboarding);
+    prefs->ClearPref(prefs::kActivityTimeAfterOnboarding);
     return false;
   }
 
-  return prefs->HasPrefPath(chromeos::prefs::kActivityTimeAfterOnboarding);
+  return prefs->HasPrefPath(prefs::kActivityTimeAfterOnboarding);
 }
 
 void OnboardingUserActivityCounter::StopObserving() {

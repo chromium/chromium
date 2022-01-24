@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview goog.editor plugin to handle splitting block quotes.
@@ -45,6 +37,7 @@ goog.require('goog.log');
  */
 goog.editor.plugins.Blockquote = function(
     requiresClassNameToSplit, opt_className) {
+  'use strict';
   goog.editor.Plugin.call(this);
 
   /**
@@ -94,6 +87,7 @@ goog.editor.plugins.Blockquote.prototype.logger =
 
 /** @override */
 goog.editor.plugins.Blockquote.prototype.getTrogClassId = function() {
+  'use strict';
   return goog.editor.plugins.Blockquote.CLASS_ID;
 };
 
@@ -119,6 +113,7 @@ goog.editor.plugins.Blockquote.prototype.isSilentCommand = goog.functions.TRUE;
  */
 goog.editor.plugins.Blockquote.prototype.isSplittableBlockquote = function(
     node) {
+  'use strict';
   if (/** @type {!Element} */ (node).tagName != goog.dom.TagName.BLOCKQUOTE) {
     return false;
   }
@@ -139,6 +134,7 @@ goog.editor.plugins.Blockquote.prototype.isSplittableBlockquote = function(
  *     name applied.
  */
 goog.editor.plugins.Blockquote.prototype.isSetupBlockquote = function(node) {
+  'use strict';
   return /** @type {!Element} */ (node).tagName ==
       goog.dom.TagName.BLOCKQUOTE &&
       goog.dom.classlist.contains(
@@ -153,6 +149,7 @@ goog.editor.plugins.Blockquote.prototype.isSetupBlockquote = function(node) {
  *     class name applied.
  */
 goog.editor.plugins.Blockquote.prototype.isUnsetupBlockquote = function(node) {
+  'use strict';
   return /** @type {!Element} */ (node).tagName ==
       goog.dom.TagName.BLOCKQUOTE &&
       !this.isSetupBlockquote(node);
@@ -164,6 +161,7 @@ goog.editor.plugins.Blockquote.prototype.isUnsetupBlockquote = function(node) {
  * @return {string} The blockquote class name.
  */
 goog.editor.plugins.Blockquote.prototype.getBlockquoteClassName = function() {
+  'use strict';
   return this.className_;
 };
 
@@ -179,7 +177,9 @@ goog.editor.plugins.Blockquote.prototype.getBlockquoteClassName = function() {
  */
 goog.editor.plugins.Blockquote.findAndRemoveSingleChildAncestor_ = function(
     node, root) {
+  'use strict';
   var predicateFunc = function(parentNode) {
+    'use strict';
     return parentNode != root && parentNode.childNodes.length == 1;
   };
   var ancestor =
@@ -197,6 +197,7 @@ goog.editor.plugins.Blockquote.findAndRemoveSingleChildAncestor_ = function(
  * @private
  */
 goog.editor.plugins.Blockquote.removeAllWhiteSpaceNodes_ = function(nodes) {
+  'use strict';
   for (var i = 0; i < nodes.length; ++i) {
     if (goog.editor.node.isEmpty(nodes[i], true)) {
       goog.dom.removeNode(nodes[i]);
@@ -208,6 +209,7 @@ goog.editor.plugins.Blockquote.removeAllWhiteSpaceNodes_ = function(nodes) {
 /** @override */
 goog.editor.plugins.Blockquote.prototype.isSupportedCommand = function(
     command) {
+  'use strict';
   return command == goog.editor.plugins.Blockquote.SPLIT_COMMAND;
 };
 
@@ -227,6 +229,7 @@ goog.editor.plugins.Blockquote.prototype.isSupportedCommand = function(
  */
 goog.editor.plugins.Blockquote.prototype.execCommandInternal = function(
     command, var_args) {
+  'use strict';
   var pos = arguments[1];
   if (command == goog.editor.plugins.Blockquote.SPLIT_COMMAND && pos &&
       (this.className_ || !this.requiresClassNameToSplit_)) {
@@ -246,6 +249,7 @@ goog.editor.plugins.Blockquote.prototype.execCommandInternal = function(
  */
 goog.editor.plugins.Blockquote.prototype.splitQuotedBlockW3C_ = function(
     anchorPos) {
+  'use strict';
   var cursorNode = anchorPos.node;
   var quoteNode = goog.editor.node.findTopMostEditableAncestor(
       cursorNode.parentNode, goog.bind(this.isSplittableBlockquote, this));
@@ -322,7 +326,7 @@ goog.editor.plugins.Blockquote.prototype.splitQuotedBlockW3C_ = function(
                         goog.editor.Command.DEFAULT_TAG) ||
       goog.dom.TagName.DIV;
   var container = dh.createElement(/** @type {string} */ (tagToInsert));
-  container.innerHTML = '&nbsp;';  // Prevent the div from collapsing.
+  container.textContent = '\xA0';  // Prevent the div from collapsing.
   quoteNode.parentNode.insertBefore(container, secondHalf);
   dh.getWindow().getSelection().collapse(container, 0);
 
@@ -349,6 +353,7 @@ goog.editor.plugins.Blockquote.prototype.splitQuotedBlockW3C_ = function(
  */
 goog.editor.plugins.Blockquote.prototype.insertEmptyTextNodeBeforeRange_ =
     function() {
+  'use strict';
   var range = this.getFieldObject().getRange();
   var node = this.getFieldDomHelper().createTextNode('');
   range.insertNode(node, true);
@@ -364,6 +369,7 @@ goog.editor.plugins.Blockquote.prototype.insertEmptyTextNodeBeforeRange_ =
  */
 goog.editor.plugins.Blockquote.prototype.splitQuotedBlockIE_ = function(
     splitNode) {
+  'use strict';
   var dh = this.getFieldDomHelper();
   var quoteNode = goog.editor.node.findTopMostEditableAncestor(
       splitNode.parentNode, goog.bind(this.isSplittableBlockquote, this));
@@ -396,7 +402,7 @@ goog.editor.plugins.Blockquote.prototype.splitQuotedBlockIE_ = function(
 
   // The div needs non-whitespace contents in order for the insertion point
   // to get correctly inserted.
-  div.innerHTML = '&nbsp;';
+  div.textContent = '\xA0';
 
   // Moving the range 1 char isn't enough when you have markup.
   // This moves the range to the end of the nbsp.

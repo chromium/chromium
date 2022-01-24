@@ -201,7 +201,6 @@ void V8DetailedMemoryRequestOneShotAnySeq::OnMeasurementAvailable(
       base::Unretained(&all_frame_data)));
 
   sequence_bound_callback.PostTaskWithThisObject(
-      FROM_HERE,
       base::BindOnce(
           [](RenderProcessHostId process_id,
              const V8DetailedMemoryProcessData& process_data,

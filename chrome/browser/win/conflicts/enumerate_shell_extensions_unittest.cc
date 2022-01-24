@@ -21,6 +21,11 @@ namespace {
 class EnumerateShellExtensionsTest : public testing::Test {
  public:
   EnumerateShellExtensionsTest() = default;
+
+  EnumerateShellExtensionsTest(const EnumerateShellExtensionsTest&) = delete;
+  EnumerateShellExtensionsTest& operator=(const EnumerateShellExtensionsTest&) =
+      delete;
+
   ~EnumerateShellExtensionsTest() override = default;
 
   // Override all registry hives so that real shell extensions don't mess up
@@ -40,8 +45,6 @@ class EnumerateShellExtensionsTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   registry_util::RegistryOverrideManager registry_override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnumerateShellExtensionsTest);
 };
 
 // Adds a fake shell extension entry to the registry that should be found by

@@ -38,8 +38,7 @@ constexpr BYTE kKeyPressedFlag = 0x80;
 
 constexpr int kKeyboardStateLength = 256;
 
-constexpr base::TimeDelta kReapplyResolutionPeriod =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kReapplyResolutionPeriod = base::Milliseconds(250);
 
 // We want to try to reapply resolution changes for ~5 seconds (20 * 250ms).
 constexpr int kMaxResolutionReapplyAttempts = 20;
@@ -104,6 +103,9 @@ class RdpClientWindow::WindowHook
  public:
   static scoped_refptr<WindowHook> Create();
 
+  WindowHook(const WindowHook&) = delete;
+  WindowHook& operator=(const WindowHook&) = delete;
+
  private:
   friend class base::RefCounted<WindowHook>;
 
@@ -114,8 +116,6 @@ class RdpClientWindow::WindowHook
       int code, WPARAM wparam, LPARAM lparam);
 
   HHOOK hook_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowHook);
 };
 
 RdpClientWindow::RdpClientWindow(const net::IPEndPoint& server_endpoint,

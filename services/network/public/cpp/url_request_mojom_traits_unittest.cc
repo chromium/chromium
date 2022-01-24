@@ -10,6 +10,9 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/isolation_info.h"
 #include "net/filter/source_stream.h"
+#include "net/log/net_log.h"
+#include "net/log/net_log_source.h"
+#include "net/log/net_log_source_type.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/http_request_headers_mojom_traits.h"
 #include "services/network/public/cpp/network_ipc_param_traits.h"
@@ -84,12 +87,25 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.do_not_prompt_for_login = true;
   original.is_main_frame = true;
   original.transition_type = 0;
-  original.report_raw_headers = true;
   original.previews_state = 0;
   original.upgrade_if_insecure = true;
   original.is_revalidating = false;
   original.throttling_profile_id = base::UnguessableToken::Create();
   original.fetch_window_id = base::UnguessableToken::Create();
+  original.web_bundle_token_params =
+      absl::make_optional(ResourceRequest::WebBundleTokenParams(
+          GURL("https://bundle.test/"), base::UnguessableToken::Create(),
+          mojo::PendingRemote<network::mojom::WebBundleHandle>()));
+  original.net_log_create_info = absl::make_optional(net::NetLogSource(
+      net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID()));
+  original.net_log_reference_info = absl::make_optional(net::NetLogSource(
+      net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID()));
+  original.devtools_accepted_stream_types =
+      std::vector<net::SourceStream::SourceType>(
+          {net::SourceStream::SourceType::TYPE_BROTLI,
+           net::SourceStream::SourceType::TYPE_GZIP,
+           net::SourceStream::SourceType::TYPE_DEFLATE});
+  original.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
 
   original.trusted_params = ResourceRequest::TrustedParams();
   original.trusted_params->isolation_info = net::IsolationInfo::Create(
@@ -108,15 +124,6 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       mojom::TrustTokenSignRequestData::kInclude;
   original.trust_token_params->additional_signed_headers.push_back(
       "some_header");
-  original.web_bundle_token_params =
-      absl::make_optional(ResourceRequest::WebBundleTokenParams(
-          GURL("https://bundle.test/"), base::UnguessableToken::Create(),
-          mojo::PendingRemote<network::mojom::WebBundleHandle>()));
-  original.devtools_accepted_stream_types =
-      std::vector<net::SourceStream::SourceType>(
-          {net::SourceStream::SourceType::TYPE_BROTLI,
-           net::SourceStream::SourceType::TYPE_GZIP,
-           net::SourceStream::SourceType::TYPE_DEFLATE});
 
   network::ResourceRequest copied;
   EXPECT_TRUE(
@@ -194,9 +201,8 @@ TEST_F(DataElementDeserializationTest, Bytes) {
 
 TEST_F(DataElementDeserializationTest, File) {
   const base::FilePath kPath = base::FilePath::FromUTF8Unsafe("foobar");
-  DataElement src(DataElementFile(
-      kPath, /*offset=*/3, /*length=*/8,
-      base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(2)));
+  DataElement src(DataElementFile(kPath, /*offset=*/3, /*length=*/8,
+                                  base::Time::UnixEpoch() + base::Minutes(2)));
   DataElement dest;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::DataElement>(src, dest));

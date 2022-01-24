@@ -6,7 +6,6 @@
 #define COMPONENTS_SEARCH_ENGINES_ANDROID_TEMPLATE_URL_SERVICE_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 
@@ -16,6 +15,11 @@
 class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
  public:
   explicit TemplateUrlServiceAndroid(TemplateURLService* template_url_service);
+
+  TemplateUrlServiceAndroid(const TemplateUrlServiceAndroid&) = delete;
+  TemplateUrlServiceAndroid& operator=(const TemplateUrlServiceAndroid&) =
+      delete;
+
   ~TemplateUrlServiceAndroid() override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
@@ -121,8 +125,6 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   TemplateURLService* template_url_service_;
 
   base::CallbackListSubscription template_url_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateUrlServiceAndroid);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_ANDROID_TEMPLATE_URL_SERVICE_ANDROID_H_

@@ -21,8 +21,6 @@
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/voice/voice_search_notification_names.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 
@@ -777,12 +775,9 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
   switch (self.overscrollState) {
     case OverscrollState::NO_PULL_STARTED: {
       [self.overscrollActionView removeFromSuperview];
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-      CGRect statusBarFrame = [UIApplication sharedApplication].statusBarFrame;
-#else
       CGRect statusBarFrame =
           [self scrollView].window.windowScene.statusBarManager.statusBarFrame;
-#endif
+
       SetViewFrameHeight(self.overscrollActionView,
                          self.initialContentInset + statusBarFrame.size.height,
                          0);

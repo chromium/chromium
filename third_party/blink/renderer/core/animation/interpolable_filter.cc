@@ -19,13 +19,13 @@ double ClampParameter(double value, FilterOperation::OperationType type) {
     case FilterOperation::BRIGHTNESS:
     case FilterOperation::CONTRAST:
     case FilterOperation::SATURATE:
-      return clampTo<double>(value, 0);
+      return ClampTo<double>(value, 0);
 
     case FilterOperation::GRAYSCALE:
     case FilterOperation::INVERT:
     case FilterOperation::OPACITY:
     case FilterOperation::SEPIA:
-      return clampTo<double>(value, 0, 1);
+      return ClampTo<double>(value, 0, 1);
 
     case FilterOperation::HUE_ROTATE:
       return value;
@@ -190,7 +190,7 @@ FilterOperation* InterpolableFilter::CreateFilterOperation(
 
     case FilterOperation::BLUR: {
       Length std_deviation = To<InterpolableLength>(*value_).CreateLength(
-          state.CssToLengthConversionData(), kValueRangeNonNegative);
+          state.CssToLengthConversionData(), Length::ValueRange::kNonNegative);
       return MakeGarbageCollected<BlurFilterOperation>(std_deviation);
     }
 

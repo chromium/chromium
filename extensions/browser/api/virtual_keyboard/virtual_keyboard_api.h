@@ -15,6 +15,11 @@ class VirtualKeyboardRestrictFeaturesFunction : public ExtensionFunction {
  public:
   VirtualKeyboardRestrictFeaturesFunction();
 
+  VirtualKeyboardRestrictFeaturesFunction(
+      const VirtualKeyboardRestrictFeaturesFunction&) = delete;
+  VirtualKeyboardRestrictFeaturesFunction& operator=(
+      const VirtualKeyboardRestrictFeaturesFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("virtualKeyboard.restrictFeatures",
                              VIRTUALKEYBOARD_RESTRICTFEATURES)
 
@@ -22,9 +27,6 @@ class VirtualKeyboardRestrictFeaturesFunction : public ExtensionFunction {
   ~VirtualKeyboardRestrictFeaturesFunction() override = default;
   // ExtensionFunction override:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardRestrictFeaturesFunction);
 };
 
 }  // namespace extensions

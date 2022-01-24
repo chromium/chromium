@@ -4,6 +4,7 @@
 
 #include "components/content_creation/notes/core/server/note_data.h"
 
+#include "components/shared_highlighting/core/common/text_fragments_utils.h"
 #include "url/gurl.h"
 
 namespace content_creation {
@@ -18,7 +19,12 @@ NoteData::NoteData(std::string comment,
       highlight_directive(std::move(highlight_directive)) {}
 
 NoteData::NoteData(std::string quote, std::string full_url)
-    : quote(std::move(quote)), webpage_url(GURL(full_url)) {}
+    : quote(std::move(quote)) {
+  if (!shared_highlighting::SplitUrlTextFragmentDirective(
+          full_url, &webpage_url, &highlight_directive)) {
+    webpage_url = GURL(full_url);
+  }
+}
 
 NoteData::NoteData(NoteData const& note_data) = default;
 

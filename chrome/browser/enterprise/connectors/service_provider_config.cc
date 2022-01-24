@@ -122,9 +122,9 @@ ServiceProviderConfig::ServiceProvider::ServiceProvider(
         if (!tag.is_dict())
           continue;
 
-        const std::string* name = tag.FindStringKey(kKeyName);
-        if (name)
-          analysis_tags_.emplace(*name, tag);
+        const std::string* name_str = tag.FindStringKey(kKeyName);
+        if (name_str)
+          analysis_tags_.emplace(*name_str, tag);
       }
     }
   }

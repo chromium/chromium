@@ -25,12 +25,11 @@
 #include <memory>
 #include <utility>
 
+#include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/public/platform/web_client_hints_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -172,9 +171,6 @@ void ImageLoader::Dispose() {
       << ", has pending error event=" << pending_error_event_.IsActive();
 
   if (image_content_) {
-    image_content_->RemoveObserver(this);
-    image_content_ = nullptr;
-    image_content_for_image_document_ = nullptr;
     delay_until_image_notify_finished_ = nullptr;
   }
 }
@@ -278,6 +274,7 @@ void ImageLoader::Trace(Visitor* visitor) const {
   visitor->Trace(image_content_for_image_document_);
   visitor->Trace(element_);
   visitor->Trace(decode_requests_);
+  ImageResourceObserver::Trace(visitor);
 }
 
 void ImageLoader::SetImageForTest(ImageResourceContent* new_image) {
@@ -384,10 +381,13 @@ static void ConfigureRequest(
   }
 
   auto* html_image_element = DynamicTo<HTMLImageElement>(element);
-  if (client_hints_preferences.ShouldSend(
-          network::mojom::WebClientHintsType::kResourceWidth) &&
-      html_image_element)
+  if ((client_hints_preferences.ShouldSend(
+           network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED) ||
+       client_hints_preferences.ShouldSend(
+           network::mojom::WebClientHintsType::kResourceWidth)) &&
+      html_image_element) {
     params.SetResourceWidth(html_image_element->GetResourceWidth());
+  }
 }
 
 inline void ImageLoader::DispatchErrorEvent() {
@@ -814,15 +814,6 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
     LazyImageHelper::RecordMetricsOnLoadFinished(html_image_element);
 
   if (content->ErrorOccurred()) {
-    // Record the image fail metric if the `html_image_element` is part of paste
-    // data.
-    if (html_image_element) {
-      const auto& document = GetElement()->GetDocument();
-      LocalFrame* frame = document.GetFrame();
-      if (frame && document.IsPageVisible())
-        frame->GetSystemClipboard()->RecordImageLoadError(
-            html_image_element->ImageSourceURL().GetString());
-    }
     pending_load_event_.Cancel();
 
     absl::optional<ResourceError> error = content->GetResourceError();

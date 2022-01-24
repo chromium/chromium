@@ -39,7 +39,7 @@ void RecordDecodingIdentifiabilityMetric(ExecutionContext* context,
                                          IdentifiableToken output_token) {
   DCHECK(IsDecodingInfoTypeAllowed());
   IdentifiabilityMetricBuilder(context->UkmSourceID())
-      .Set(IdentifiableSurface::FromTypeAndToken(
+      .Add(IdentifiableSurface::FromTypeAndToken(
                IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo,
                input_token),
            output_token)
@@ -56,26 +56,33 @@ IdentifiableToken ComputeToken(const VideoConfiguration* configuration) {
   IdentifiableTokenBuilder builder;
   builder
       .AddToken(IdentifiabilityBenignStringToken(configuration->contentType()))
-      .AddToken(
-          IdentifiabilityBenignStringToken(configuration->hdrMetadataType()))
-      .AddToken(IdentifiabilityBenignStringToken(configuration->colorGamut()))
-      .AddToken(
-          IdentifiabilityBenignStringToken(configuration->transferFunction()));
+      .AddValue(configuration->width())
+      .AddValue(configuration->height())
+      .AddValue(configuration->bitrate())
+      .AddValue(configuration->framerate());
 
-  // While the strings above will be null if not present, we need to check
-  // the presence of numerical types explicitly.
-  builder.AddValue(configuration->hasWidth())
-      .AddValue(configuration->hasHeight())
-      .AddValue(configuration->hasBitrate())
-      .AddValue(configuration->hasFramerate());
-  if (configuration->hasWidth())
-    builder.AddValue(configuration->width());
-  if (configuration->hasHeight())
-    builder.AddValue(configuration->height());
-  if (configuration->hasBitrate())
-    builder.AddValue(configuration->bitrate());
-  if (configuration->hasFramerate())
-    builder.AddValue(configuration->framerate());
+  // While the above are always present, we need to check the other properties'
+  // presence explicitly.
+  builder.AddValue(configuration->hasHdrMetadataType())
+      .AddValue(configuration->hasColorGamut())
+      .AddValue(configuration->hasTransferFunction())
+      .AddValue(configuration->hasScalabilityMode());
+  if (configuration->hasHdrMetadataType()) {
+    builder.AddToken(
+        IdentifiabilityBenignStringToken(configuration->hdrMetadataType()));
+  }
+  if (configuration->hasColorGamut()) {
+    builder.AddToken(
+        IdentifiabilityBenignStringToken(configuration->colorGamut()));
+  }
+  if (configuration->hasTransferFunction()) {
+    builder.AddToken(
+        IdentifiabilityBenignStringToken(configuration->transferFunction()));
+  }
+  if (configuration->hasScalabilityMode()) {
+    builder.AddToken(
+        IdentifiabilityBenignStringToken(configuration->scalabilityMode()));
+  }
   return builder.GetToken();
 }
 
@@ -85,14 +92,18 @@ IdentifiableToken ComputeToken(const AudioConfiguration* configuration) {
     return IdentifiableToken();
 
   IdentifiableTokenBuilder builder;
-  builder
-      .AddToken(IdentifiabilityBenignStringToken(configuration->contentType()))
-      .AddToken(IdentifiabilityBenignStringToken(configuration->channels()));
+  builder.AddToken(
+      IdentifiabilityBenignStringToken(configuration->contentType()));
 
   // While the strings above will be null if not present, we need to check
   // the presence of numerical types explicitly.
-  builder.AddValue(configuration->hasBitrate())
+  builder.AddValue(configuration->hasChannels())
+      .AddValue(configuration->hasBitrate())
       .AddValue(configuration->hasSamplerate());
+  if (configuration->hasChannels()) {
+    builder.AddToken(
+        IdentifiabilityBenignStringToken(configuration->channels()));
+  }
   if (configuration->hasBitrate())
     builder.AddValue(configuration->bitrate());
   if (configuration->hasSamplerate())
@@ -189,13 +200,19 @@ IdentifiableToken ComputeToken(
       .AddToken(IdentifiabilityBenignStringToken(configuration->initDataType()))
       .AddToken(IdentifiabilityBenignStringToken(
           configuration->distinctiveIdentifier()))
+      .AddToken(
+          IdentifiabilityBenignStringToken(configuration->persistentState()))
       .AddValue(configuration->hasSessionTypes())
-      .AddToken(ComputeToken(configuration->audio()))
-      .AddToken(ComputeToken(configuration->video()));
+      .AddValue(configuration->hasAudio())
+      .AddValue(configuration->hasVideo());
   if (configuration->hasSessionTypes()) {
     builder.AddToken(
         IdentifiabilityBenignStringVectorToken(configuration->sessionTypes()));
   }
+  if (configuration->hasAudio())
+    builder.AddToken(ComputeToken(configuration->audio()));
+  if (configuration->hasVideo())
+    builder.AddToken(ComputeToken(configuration->video()));
   return builder.GetToken();
 }
 
@@ -207,9 +224,15 @@ IdentifiableToken ComputeToken(
 
   IdentifiableTokenBuilder builder;
   builder.AddToken(IdentifiabilityBenignStringToken(configuration->type()))
-      .AddToken(ComputeToken(configuration->keySystemConfiguration()))
-      .AddToken(ComputeToken(configuration->video()))
-      .AddToken(ComputeToken(configuration->audio()));
+      .AddValue(configuration->hasKeySystemConfiguration())
+      .AddValue(configuration->hasAudio())
+      .AddValue(configuration->hasVideo());
+  if (configuration->hasKeySystemConfiguration())
+    builder.AddToken(ComputeToken(configuration->keySystemConfiguration()));
+  if (configuration->hasAudio())
+    builder.AddToken(ComputeToken(configuration->audio()));
+  if (configuration->hasVideo())
+    builder.AddToken(ComputeToken(configuration->video()));
   return builder.GetToken();
 }
 

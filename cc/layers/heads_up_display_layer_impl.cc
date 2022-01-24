@@ -15,8 +15,8 @@
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -24,8 +24,10 @@
 #include "cc/debug/debug_colors.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/paint/display_item_list.h"
+#include "cc/paint/image_provider.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_shader.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "cc/paint/skia_paint_canvas.h"
@@ -61,7 +63,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/trace_util.h"
 
 namespace cc {
@@ -307,6 +309,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       } else if (gpu_raster) {
         flags |= gpu::SHARED_IMAGE_USAGE_GLES2 |
                  gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+      } else {
+        flags |= gpu::SHARED_IMAGE_USAGE_GLES2;
       }
       if (backing->overlay_candidate)
         flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
@@ -516,12 +520,12 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       // to reuse. In this case, only use the part of the texture that is within
       // the bounds.
       gfx::PointF uv_bottom_right(1.f, 1.f);
-      if (in_flight_resource_.size() != bounds()) {
+      if (in_flight_resource_.size() != internal_content_bounds_) {
         uv_bottom_right.set_x(
-            static_cast<double>(bounds().width()) /
+            static_cast<double>(internal_content_bounds_.width()) /
             static_cast<double>(in_flight_resource_.size().width()));
         uv_bottom_right.set_y(
-            static_cast<double>(bounds().height()) /
+            static_cast<double>(internal_content_bounds_.height()) /
             static_cast<double>(in_flight_resource_.size().height()));
       }
       const float vertex_opacity[] = {1.f, 1.f, 1.f, 1.f};

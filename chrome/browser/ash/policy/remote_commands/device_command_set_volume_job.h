@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace policy {
@@ -15,6 +14,11 @@ namespace policy {
 class DeviceCommandSetVolumeJob : public RemoteCommandJob {
  public:
   DeviceCommandSetVolumeJob();
+
+  DeviceCommandSetVolumeJob(const DeviceCommandSetVolumeJob&) = delete;
+  DeviceCommandSetVolumeJob& operator=(const DeviceCommandSetVolumeJob&) =
+      delete;
+
   ~DeviceCommandSetVolumeJob() override;
 
   // RemoteCommandJob:
@@ -29,8 +33,6 @@ class DeviceCommandSetVolumeJob : public RemoteCommandJob {
  private:
   // New volume level to be set, value in range [0,100].
   int volume_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandSetVolumeJob);
 };
 
 }  // namespace policy

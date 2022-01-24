@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -76,6 +75,10 @@ content::WebUIDataSource* CreateSystemInfoUIDataSource() {
 class SystemInfoHandler : public WebUIMessageHandler {
  public:
   SystemInfoHandler();
+
+  SystemInfoHandler(const SystemInfoHandler&) = delete;
+  SystemInfoHandler& operator=(const SystemInfoHandler&) = delete;
+
   ~SystemInfoHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -91,7 +94,6 @@ class SystemInfoHandler : public WebUIMessageHandler {
  private:
   std::string callback_id_;
   base::WeakPtrFactory<SystemInfoHandler> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SystemInfoHandler);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +111,7 @@ void SystemInfoHandler::OnJavascriptDisallowed() {
 }
 
 void SystemInfoHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestSystemInfo",
       base::BindRepeating(&SystemInfoHandler::HandleRequestSystemInfo,
                           base::Unretained(this)));

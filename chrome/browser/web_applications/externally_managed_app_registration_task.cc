@@ -6,12 +6,14 @@
 
 #include "base/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/components/web_app_url_loader.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace web_app {
@@ -43,14 +45,14 @@ ExternallyManagedAppRegistrationTask::ExternallyManagedAppRegistrationTask(
   service_worker_context_->AddObserver(this);
 
   registration_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(registration_timeout_in_seconds_),
+      FROM_HERE, base::Seconds(registration_timeout_in_seconds_),
       base::BindOnce(
           &ExternallyManagedAppRegistrationTask::OnRegistrationTimeout,
           weak_ptr_factory_.GetWeakPtr()));
 
   // Check to see if there is already a service worker for the install url.
   service_worker_context_->CheckHasServiceWorker(
-      install_url,
+      install_url, blink::StorageKey(url::Origin::Create(install_url)),
       base::BindOnce(
           &ExternallyManagedAppRegistrationTask::OnDidCheckHasServiceWorker,
           weak_ptr_factory_.GetWeakPtr()));

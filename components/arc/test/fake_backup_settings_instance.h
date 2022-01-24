@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_TEST_FAKE_BACKUP_SETTINGS_INSTANCE_H_
 #define COMPONENTS_ARC_TEST_FAKE_BACKUP_SETTINGS_INSTANCE_H_
 
-#include "base/macros.h"
 #include "components/arc/mojom/backup_settings.mojom.h"
 
 namespace arc {
@@ -13,6 +12,11 @@ namespace arc {
 class FakeBackupSettingsInstance : public mojom::BackupSettingsInstance {
  public:
   FakeBackupSettingsInstance();
+
+  FakeBackupSettingsInstance(const FakeBackupSettingsInstance&) = delete;
+  FakeBackupSettingsInstance& operator=(const FakeBackupSettingsInstance&) =
+      delete;
+
   ~FakeBackupSettingsInstance() override;
 
   // mojom::BackupSettingsInstance overrides:
@@ -28,8 +32,6 @@ class FakeBackupSettingsInstance : public mojom::BackupSettingsInstance {
   int set_backup_enabled_count_ = 0;
   bool enabled_ = false;
   bool managed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBackupSettingsInstance);
 };
 
 }  // namespace arc

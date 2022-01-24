@@ -19,8 +19,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "components/url_formatter/url_fixer.h"
@@ -184,7 +184,7 @@ ChromeRequireCTDelegate::IsCTRequiredForHost(
   // Compute >= 2018-05-01, rather than deal with possible fractional
   // seconds.
   const base::Time kMay_1_2018 =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1525132800);
+      base::Time::UnixEpoch() + base::Seconds(1525132800);
   if (chain->valid_start() >= kMay_1_2018)
     return CTRequirementLevel::REQUIRED;
 

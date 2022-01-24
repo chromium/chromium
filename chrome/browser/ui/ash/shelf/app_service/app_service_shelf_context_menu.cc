@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcuts_menu_builder.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -124,6 +125,8 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
   switch (command_id) {
     case ash::SHOW_APP_INFO:
       ShowAppInfo();
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(
+          controller()->profile());
       break;
 
     case ash::MENU_NEW_WINDOW:
@@ -132,16 +135,24 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       } else if (app_type_ == apps::mojom::AppType::kStandaloneBrowser) {
         crosapi::BrowserManager::Get()->NewWindow(/*incongnito=*/false);
       } else {
-        ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
+        ash::NewWindowDelegate::GetInstance()->NewWindow(
+            /*incognito=*/false,
+            /*should_trigger_session_restore=*/false);
       }
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(
+          controller()->profile());
       break;
 
     case ash::MENU_NEW_INCOGNITO_WINDOW:
       if (app_type_ == apps::mojom::AppType::kStandaloneBrowser) {
         crosapi::BrowserManager::Get()->NewWindow(/*incognito=*/true);
       } else {
-        ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/true);
+        ash::NewWindowDelegate::GetInstance()->NewWindow(
+            /*incognito=*/true,
+            /*should_trigger_session_restore=*/false);
       }
+      ash::full_restore::FullRestoreService::MaybeCloseNotification(
+          controller()->profile());
       break;
 
     case ash::SHUTDOWN_GUEST_OS:
@@ -183,8 +194,11 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
     }
 
     case ash::SETTINGS:
-      if (item().id.app_id == crostini::kCrostiniTerminalSystemAppId)
+      if (item().id.app_id == crostini::kCrostiniTerminalSystemAppId) {
         crostini::LaunchTerminalSettings(controller()->profile(), display_id());
+        ash::full_restore::FullRestoreService::MaybeCloseNotification(
+            controller()->profile());
+      }
       return;
 
     default:
@@ -325,7 +339,9 @@ void AppServiceShelfContextMenu::OnGetMenuModel(
     return;
   }
 
-  if (app_type_ == apps::mojom::AppType::kWeb) {
+  if (app_type_ == apps::mojom::AppType::kWeb ||
+      app_type_ == apps::mojom::AppType::kSystemWeb ||
+      app_type_ == apps::mojom::AppType::kCrostini) {
     BuildAppShortcutsMenu(std::move(menu_items), std::move(menu_model),
                           std::move(callback), shortcut_index);
     return;
@@ -452,7 +468,7 @@ void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
   switch (app_type_) {
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb: {
-      // Web apps can only toggle between kWindow and kBrowser.
+      // Web apps can only toggle between kWindow, kTabbed and kBrowser.
       apps::mojom::WindowMode user_window_mode =
           ConvertLaunchTypeCommandToWindowMode(command_id);
       if (user_window_mode != apps::mojom::WindowMode::kUnknown) {
@@ -550,6 +566,7 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
       return show_in_launcher;
     }
     case apps::mojom::AppType::kCrostini:
+    case apps::mojom::AppType::kBorealis:
     case apps::mojom::AppType::kExtension:
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
@@ -564,7 +581,6 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
       return false;
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kRemote:
-    case apps::mojom::AppType::kBorealis:
       NOTREACHED() << "Type " << app_type_ << " should not appear in shelf.";
       return false;
   }

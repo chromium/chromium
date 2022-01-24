@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"

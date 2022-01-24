@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/account_hover_list_model.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
@@ -20,6 +19,12 @@ class AuthenticatorSelectAccountSheetView
  public:
   explicit AuthenticatorSelectAccountSheetView(
       std::unique_ptr<AuthenticatorSelectAccountSheetModel> model);
+
+  AuthenticatorSelectAccountSheetView(
+      const AuthenticatorSelectAccountSheetView&) = delete;
+  AuthenticatorSelectAccountSheetView& operator=(
+      const AuthenticatorSelectAccountSheetView&) = delete;
+
   ~AuthenticatorSelectAccountSheetView() override;
 
  private:
@@ -34,8 +39,6 @@ class AuthenticatorSelectAccountSheetView
 
   // AccountHoverListModel::Delegate:
   void OnItemSelected(int index) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorSelectAccountSheetView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_SELECT_ACCOUNT_SHEET_VIEW_H_

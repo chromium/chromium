@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 
@@ -24,6 +23,10 @@ class ImageFetcherServiceFactory : public SimpleKeyedServiceFactory {
   static image_fetcher::ImageFetcherService* GetForKey(SimpleFactoryKey* key);
   static ImageFetcherServiceFactory* GetInstance();
 
+  ImageFetcherServiceFactory(const ImageFetcherServiceFactory&) = delete;
+  ImageFetcherServiceFactory& operator=(const ImageFetcherServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ImageFetcherServiceFactory>;
 
@@ -35,8 +38,6 @@ class ImageFetcherServiceFactory : public SimpleKeyedServiceFactory {
       SimpleFactoryKey* key) const override;
 
   SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_IMAGE_FETCHER_IMAGE_FETCHER_SERVICE_FACTORY_H_

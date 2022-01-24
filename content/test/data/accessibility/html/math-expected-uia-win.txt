@@ -1,13 +1,16 @@
 Document
 ++Group IsControlElement=false
-++++Group Name='%F0%9D%90%B4 2 + %F0%9D%90%B5 2'
+++++Group IsControlElement=false
 ++++++Group IsControlElement=false
-++++++++Text Name='%F0%9D%90%B4'
-++++++Group IsControlElement=false
-++++++++Text Name='2'
-++++++Group IsControlElement=false
-++++++++Text Name='+'
-++++++Group IsControlElement=false
-++++++++Text Name='%F0%9D%90%B5'
-++++++Group IsControlElement=false
-++++++++Text Name='2'
+++++++++Group IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='%F0%9D%90%B4'
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='2'
+++++++++Group IsControlElement=false
+++++++++++Text Name='+'
+++++++++Group IsControlElement=false
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='%F0%9D%90%B5'
+++++++++++Group IsControlElement=false
+++++++++++++Text Name='2'

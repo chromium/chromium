@@ -5,7 +5,7 @@
 #include "remoting/base/oauth_token_getter_proxy.h"
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 

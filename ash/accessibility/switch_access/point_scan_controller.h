@@ -6,6 +6,7 @@
 #define ASH_ACCESSIBILITY_SWITCH_ACCESS_POINT_SCAN_CONTROLLER_H_
 
 #include "ash/accessibility/switch_access/point_scan_layer_animation_info.h"
+#include "ash/accessibility/ui/accessibility_animation_one_shot.h"
 #include "ash/accessibility/ui/accessibility_layer.h"
 #include "ash/ash_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -56,11 +57,10 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
  private:
   // AccessibilityLayerDelegate implementation:
   void OnDeviceScaleFactorChanged() override;
-  bool OnAnimationStep(base::TimeTicks timestamp) override;
 
   void UpdateTimeInfo(PointScanLayerAnimationInfo* animation_info,
                       base::TimeTicks timestamp);
-  void AnimateLine(base::TimeTicks timestamp);
+  bool AnimateLine(base::TimeTicks timestamp);
 
   PointScanLayerAnimationInfo horizontal_range_layer_info_;
   std::unique_ptr<PointScanLayer> horizontal_range_layer_;
@@ -70,6 +70,7 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
   std::unique_ptr<PointScanLayer> vertical_range_layer_;
   PointScanLayerAnimationInfo vertical_line_layer_info_;
   std::unique_ptr<PointScanLayer> vertical_line_layer_;
+  std::unique_ptr<AccessibilityAnimationOneShot> point_scan_animation_;
 
   PointScanState state_ = PointScanState::kOff;
 };

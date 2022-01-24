@@ -58,22 +58,23 @@ ResourceRequestHead::WebBundleTokenParams::WebBundleTokenParams(
 ResourceRequestHead::WebBundleTokenParams::WebBundleTokenParams(
     const KURL& bundle_url,
     const base::UnguessableToken& web_bundle_token,
-    mojo::PendingRemote<network::mojom::WebBundleHandle> web_bundle_handle)
+    mojo::PendingRemote<network::mojom::blink::WebBundleHandle>
+        web_bundle_handle)
     : bundle_url(bundle_url),
       token(web_bundle_token),
       handle(std::move(web_bundle_handle)) {}
 
-mojo::PendingRemote<network::mojom::WebBundleHandle>
+mojo::PendingRemote<network::mojom::blink::WebBundleHandle>
 ResourceRequestHead::WebBundleTokenParams::CloneHandle() const {
   if (!handle)
     return mojo::NullRemote();
-  mojo::Remote<network::mojom::WebBundleHandle> remote(std::move(
-      const_cast<mojo::PendingRemote<network::mojom::WebBundleHandle>&>(
+  mojo::Remote<network::mojom::blink::WebBundleHandle> remote(std::move(
+      const_cast<mojo::PendingRemote<network::mojom::blink::WebBundleHandle>&>(
           handle)));
-  mojo::PendingRemote<network::mojom::WebBundleHandle> new_remote;
+  mojo::PendingRemote<network::mojom::blink::WebBundleHandle> new_remote;
   remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
-  const_cast<mojo::PendingRemote<network::mojom::WebBundleHandle>&>(handle) =
-      remote.Unbind();
+  const_cast<mojo::PendingRemote<network::mojom::blink::WebBundleHandle>&>(
+      handle) = remote.Unbind();
   return new_remote;
 }
 
@@ -88,18 +89,17 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       http_method_(http_names::kGET),
       allow_stored_credentials_(true),
       report_upload_progress_(false),
-      report_raw_headers_(false),
       has_user_gesture_(false),
       has_text_fragment_token_(false),
       download_to_blob_(false),
       use_stream_on_response_(false),
       keepalive_(false),
-      should_reset_app_cache_(false),
       allow_stale_response_(false),
       cache_mode_(mojom::FetchCacheMode::kDefault),
       skip_service_worker_(false),
       download_to_cache_only_(false),
       site_for_cookies_set_(false),
+      initial_priority_(ResourceLoadPriority::kUnresolved),
       priority_(ResourceLoadPriority::kUnresolved),
       intra_priority_value_(0),
       previews_state_(PreviewsTypes::kPreviewsUnspecified),
@@ -198,7 +198,6 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetDownloadToBlob(DownloadToBlob());
   request->SetUseStreamOnResponse(UseStreamOnResponse());
   request->SetRequestContext(GetRequestContext());
-  request->SetShouldResetAppCache(ShouldResetAppCache());
   request->SetMode(GetMode());
   request->SetCredentialsMode(GetCredentialsMode());
   request->SetKeepalive(GetKeepalive());
@@ -346,6 +345,10 @@ void ResourceRequestHead::SetAllowStoredCredentials(bool allow_credentials) {
   allow_stored_credentials_ = allow_credentials;
 }
 
+ResourceLoadPriority ResourceRequestHead::InitialPriority() const {
+  return initial_priority_;
+}
+
 ResourceLoadPriority ResourceRequestHead::Priority() const {
   return priority_;
 }
@@ -360,6 +363,8 @@ bool ResourceRequestHead::PriorityHasBeenSet() const {
 
 void ResourceRequestHead::SetPriority(ResourceLoadPriority priority,
                                       int intra_priority_value) {
+  if (!PriorityHasBeenSet())
+    initial_priority_ = priority;
   priority_ = priority;
   intra_priority_value_ = intra_priority_value;
 }

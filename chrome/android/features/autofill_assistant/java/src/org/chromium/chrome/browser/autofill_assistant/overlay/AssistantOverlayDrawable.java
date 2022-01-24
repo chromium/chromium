@@ -94,6 +94,17 @@ class AssistantOverlayDrawable extends Drawable
     /** The {@link WebContents} this Autofill Assistant is currently associated with. */
     private WebContents mWebContents;
 
+    /**
+     * Coordinates of the visual viewport within the page, if known, in CSS pixels relative to the
+     * origin of the page.
+     *
+     * The visual viewport includes the portion of the page that is really visible, excluding any
+     * area not fully visible because of the current zoom value.
+     *
+     * Only relevant in partial mode, when the transparent area is non-empty.
+     */
+    private final RectF mVisualViewport = new RectF();
+
     private final List<Box> mTransparentArea = new ArrayList<>();
     private List<AssistantOverlayRect> mRestrictedArea = Collections.emptyList();
 
@@ -214,6 +225,11 @@ class AssistantOverlayDrawable extends Drawable
         invalidateSelf();
     }
 
+    void setVisualViewport(RectF visualViewport) {
+        mVisualViewport.set(visualViewport);
+        invalidateSelf();
+    }
+
     /** Set or updates the transparent area. */
     void setTransparentArea(List<AssistantOverlayRect> transparentArea) {
         // Add or update boxes for each rectangle in the area.
@@ -325,8 +341,9 @@ class AssistantOverlayDrawable extends Drawable
         RenderCoordinatesImpl renderCoordinates =
                 RenderCoordinatesImpl.fromWebContents(mWebContents);
 
-        float left = renderCoordinates.getScrollX();
-        float top = renderCoordinates.getScrollY();
+        // TODO(b/195482173): Use renderCoordinates to get left and top, remove mVisualViewport.
+        float left = mVisualViewport.left;
+        float top = mVisualViewport.top;
 
         // Don't draw on top of the restricted area.
         for (AssistantOverlayRect rect : mRestrictedArea) {
@@ -387,7 +404,7 @@ class AssistantOverlayDrawable extends Drawable
 
     @Override
     public void onScrollOffsetOrExtentChanged(int scrollOffsetY, int scrollExtentY) {
-        invalidateSelf();
+        // TODO(b/195482173): call invalidateSelf once the visual viewport is removed.
     }
 
     /**

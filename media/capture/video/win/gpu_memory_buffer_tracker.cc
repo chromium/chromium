@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/base/win/mf_helpers.h"
@@ -92,6 +93,7 @@ bool GpuMemoryBufferTracker::CreateBufferInternal() {
   gfx::GpuMemoryBufferHandle buffer_handle;
   buffer_handle.dxgi_handle =
       CreateNV12Texture(d3d_device_.Get(), buffer_size_);
+  buffer_handle.dxgi_token = gfx::DXGIHandleToken();
 
   buffer_ = gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
       std::move(buffer_handle), buffer_size_,

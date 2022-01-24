@@ -12,7 +12,6 @@
 
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
@@ -65,6 +64,10 @@ class ExpireHistoryBackend {
   ExpireHistoryBackend(HistoryBackendNotifier* notifier,
                        HistoryBackendClient* backend_client,
                        scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  ExpireHistoryBackend(const ExpireHistoryBackend&) = delete;
+  ExpireHistoryBackend& operator=(const ExpireHistoryBackend&) = delete;
+
   ~ExpireHistoryBackend();
 
   // Completes initialization by setting the databases that this class will use.
@@ -303,8 +306,6 @@ class ExpireHistoryBackend {
   // Used to generate runnable methods to do timers on this class. They will be
   // automatically canceled when this class is deleted.
   base::WeakPtrFactory<ExpireHistoryBackend> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExpireHistoryBackend);
 };
 
 }  // namespace history

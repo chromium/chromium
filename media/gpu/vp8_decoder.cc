@@ -18,11 +18,13 @@ VP8Decoder::VP8Accelerator::VP8Accelerator() {}
 
 VP8Decoder::VP8Accelerator::~VP8Accelerator() {}
 
-VP8Decoder::VP8Decoder(std::unique_ptr<VP8Accelerator> accelerator)
+VP8Decoder::VP8Decoder(std::unique_ptr<VP8Accelerator> accelerator,
+                       const VideoColorSpace& container_color_space)
     : state_(kNeedStreamMetadata),
       curr_frame_start_(nullptr),
       frame_size_(0),
-      accelerator_(std::move(accelerator)) {
+      accelerator_(std::move(accelerator)),
+      container_color_space_(container_color_space) {
   DCHECK(accelerator_);
 }
 
@@ -140,6 +142,10 @@ bool VP8Decoder::DecodeAndOutputCurrentFrame(scoped_refptr<VP8Picture> pic) {
 
   pic->set_visible_rect(gfx::Rect(pic_size_));
   pic->set_bitstream_id(stream_id_);
+  if (container_color_space_.IsSpecified())
+    pic->set_colorspace(container_color_space_);
+  else
+    pic->set_colorspace(VideoColorSpace::REC601());
 
   if (curr_frame_hdr_->IsKeyframe()) {
     horizontal_scale_ = curr_frame_hdr_->horizontal_scale;

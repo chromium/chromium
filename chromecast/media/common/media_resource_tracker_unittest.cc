@@ -19,6 +19,10 @@ namespace media {
 class MediaResourceTrackerTest : public ::testing::Test {
  public:
   MediaResourceTrackerTest() {}
+
+  MediaResourceTrackerTest(const MediaResourceTrackerTest&) = delete;
+  MediaResourceTrackerTest& operator=(const MediaResourceTrackerTest&) = delete;
+
   ~MediaResourceTrackerTest() override {}
 
  protected:
@@ -39,8 +43,6 @@ class MediaResourceTrackerTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestMediaResourceTracker* resource_tracker_;
   std::unique_ptr<MediaResourceTrackerTestMocks> test_mocks_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaResourceTrackerTest);
 };
 
 TEST_F(MediaResourceTrackerTest, BasicLifecycle) {

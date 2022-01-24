@@ -11,12 +11,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/security_token_pin/constants.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host_popup_impl.h"
-#include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -1,0 +1,51 @@
+From 4e98b3ca801fdc0f3ef7229f57eee31b26a58a72 Mon Sep 17 00:00:00 2001
+From: Olabode Anise <anise@chromium.org>
+Date: Thu, 26 Aug 2021 00:33:27 +0000
+Subject: [PATCH] fixing function call and include
+
+---
+ third_party/maldoca/src/maldoca/ole/dir.cc | 8 ++++----
+ third_party/maldoca/src/maldoca/ole/mso.cc | 1 +
+ 2 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/third_party/maldoca/src/maldoca/ole/dir.cc b/third_party/maldoca/src/maldoca/ole/dir.cc
+index 472ca11da960..96c944734ef6 100644
+--- a/third_party/maldoca/src/maldoca/ole/dir.cc
++++ b/third_party/maldoca/src/maldoca/ole/dir.cc
+@@ -250,8 +250,8 @@ bool IsValidSectorIndex(uint32_t sector_index,
+   return true;
+ }
+ 
+-CleanUpDirectory(std::vector<OLEDirectoryEntry *> *dir_entries,
+-                 uint32_t sector_index) {
++void CleanUpDirectory(std::vector<OLEDirectoryEntry *> *dir_entries,
++                      uint32_t sector_index) {
+   (*dir_entries)[sector_index] = nullptr;
+ }
+ 
+@@ -272,8 +272,8 @@ static bool BuildDirectoryTreeElement(
+ 
+   auto child = absl::make_unique<OLEDirectoryEntry>();
+ #ifdef MALDOCA_IN_CHROMIUM
+-  auto cleanup = ScopedClosureRunner(
+-      base::BindOnce(CleanUpDirectory, &dir_entries, sector_index));
++  auto cleanup = base::ScopedClosureRunner(
++      base::BindOnce(CleanUpDirectory, dir_entries, sector_index));
+ #else
+   auto cleanup = MakeCleanup(
+       [dir_entries, sector_index] { (*dir_entries)[sector_index] = nullptr; });
+diff --git a/third_party/maldoca/src/maldoca/ole/mso.cc b/third_party/maldoca/src/maldoca/ole/mso.cc
+index 038007311d9d..d160a597b4b5 100644
+--- a/third_party/maldoca/src/maldoca/ole/mso.cc
++++ b/third_party/maldoca/src/maldoca/ole/mso.cc
+@@ -17,6 +17,7 @@
+ #include "maldoca/ole/mso.h"
+ 
+ #include <iomanip>
++#include <map>
+ #include <memory>
+ #include <string>
+ 
+-- 
+2.33.0.rc2.250.ged5fa647cd-goog
+

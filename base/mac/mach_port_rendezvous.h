@@ -86,6 +86,9 @@ class BASE_EXPORT MachPortRendezvousServer {
   // namespace.
   static MachPortRendezvousServer* GetInstance();
 
+  MachPortRendezvousServer(const MachPortRendezvousServer&) = delete;
+  MachPortRendezvousServer& operator=(const MachPortRendezvousServer&) = delete;
+
   // Registers a collection of Mach ports |ports| to be acquirable by the
   // process known by |pid|. This cannot be called again for the same |pid|
   // until the process known by |pid| has either acquired the ports or died.
@@ -153,8 +156,6 @@ class BASE_EXPORT MachPortRendezvousServer {
   Lock lock_;
   // Association of pid-to-ports.
   std::map<pid_t, ClientData> client_data_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(MachPortRendezvousServer);
 };
 
 // Client class for accessing the memory object exposed by the
@@ -167,6 +168,9 @@ class BASE_EXPORT MachPortRendezvousClient {
   // if the server is not available, this returns null. Acquiring zero ports
   // from the exchange is not considered a failure.
   static MachPortRendezvousClient* GetInstance();
+
+  MachPortRendezvousClient(const MachPortRendezvousClient&) = delete;
+  MachPortRendezvousClient& operator=(const MachPortRendezvousClient&) = delete;
 
   // Returns the Mach send right that was registered with |key|. If no such
   // right exists, or it was already taken, returns an invalid right. Safe to
@@ -209,8 +213,6 @@ class BASE_EXPORT MachPortRendezvousClient {
   Lock lock_;
   // The collection of ports that was acquired.
   MachPortsForRendezvous ports_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(MachPortRendezvousClient);
 };
 
 }  // namespace base

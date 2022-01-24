@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import 'chrome://resources/js/load_time_data.m.js';
+import 'chrome://resources/js/load_time_data.m.js';
 
 suite('LoadTimeDataModuleTest', function() {
   const loadTimeData = window.loadTimeData;
@@ -13,9 +13,8 @@ suite('LoadTimeDataModuleTest', function() {
   });
 
   test('getStringPieces', function() {
-    const assertSubstitutedPieces = function(expected, var_args) {
-      var var_args = Array.prototype.slice.call(arguments, 1);
-      var pieces =
+    const assertSubstitutedPieces = function(expected, ...var_args) {
+      const pieces =
           loadTimeData.getSubstitutedStringPieces.apply(loadTimeData, var_args);
       assertDeepEquals(expected, pieces);
 

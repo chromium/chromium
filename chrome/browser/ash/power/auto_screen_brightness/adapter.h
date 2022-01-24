@@ -7,11 +7,10 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/als_reader.h"
@@ -75,8 +74,7 @@ class Adapter : public AlsReader::Observer,
     // Average ambient value is calculated over the past
     // |auto_brightness_als_horizon|. This is only used for brightness update,
     // which can be different from the horizon used in model training.
-    base::TimeDelta auto_brightness_als_horizon =
-        base::TimeDelta::FromSeconds(4);
+    base::TimeDelta auto_brightness_als_horizon = base::Seconds(4);
 
     UserAdjustmentEffect user_adjustment_effect =
         UserAdjustmentEffect::kPauseAuto;
@@ -139,6 +137,7 @@ class Adapter : public AlsReader::Observer,
   struct AdapterDecision {
     AdapterDecision();
     AdapterDecision(const AdapterDecision& decision);
+    AdapterDecision& operator=(const AdapterDecision& decision);
     // If |no_brightness_change_cause| is not nullopt, then brightness
     // should not be changed.
     // If |brightness_change_cause| is not nullopt, then brightness should be
@@ -158,6 +157,10 @@ class Adapter : public AlsReader::Observer,
           Modeller* modeller,
           ModelConfigLoader* model_config_loader,
           MetricsReporter* metrics_reporter);
+
+  Adapter(const Adapter&) = delete;
+  Adapter& operator=(const Adapter&) = delete;
+
   ~Adapter() override;
 
   // Must be called before the Adapter is used.
@@ -405,9 +408,7 @@ class Adapter : public AlsReader::Observer,
   // ALS data that arrives soon after lid is reopened tends to be inaccurate.
   // Hence we do not store any ALS data that arrives less than
   // |lid_open_delay_time_| from |lid_reopen_time_|.
-  base::TimeDelta lid_open_delay_time_ = base::TimeDelta::FromSeconds(2);
-
-  DISALLOW_COPY_AND_ASSIGN(Adapter);
+  base::TimeDelta lid_open_delay_time_ = base::Seconds(2);
 };
 
 }  // namespace auto_screen_brightness

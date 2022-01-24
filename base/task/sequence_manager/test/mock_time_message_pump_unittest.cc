@@ -37,11 +37,11 @@ MessagePump::Delegate::NextWorkInfo NextWorkInfo(TimeTicks delayed_run_time) {
 
 TEST(MockMessagePumpTest, KeepsRunningIfNotAllowedToAdvanceTime) {
   SimpleTestTickClock mock_clock;
-  mock_clock.Advance(TimeDelta::FromHours(42));
+  mock_clock.Advance(Hours(42));
   StrictMock<MockMessagePumpDelegate> delegate;
   MockTimeMessagePump pump(&mock_clock);
   const auto kStartTime = mock_clock.NowTicks();
-  const auto kFutureTime = kStartTime + TimeDelta::FromSeconds(42);
+  const auto kFutureTime = kStartTime + Seconds(42);
 
   EXPECT_CALL(delegate, DoWork)
       .WillOnce(Return(NextWorkInfo(TimeTicks())))
@@ -59,16 +59,16 @@ TEST(MockMessagePumpTest, KeepsRunningIfNotAllowedToAdvanceTime) {
 
 TEST(MockMessagePumpTest, AdvancesTimeAsAllowed) {
   SimpleTestTickClock mock_clock;
-  mock_clock.Advance(TimeDelta::FromHours(42));
+  mock_clock.Advance(Hours(42));
   StrictMock<MockMessagePumpDelegate> delegate;
   MockTimeMessagePump pump(&mock_clock);
   const auto kStartTime = mock_clock.NowTicks();
-  const auto kEndTime = kStartTime + TimeDelta::FromSeconds(2);
+  const auto kEndTime = kStartTime + Seconds(2);
 
   pump.SetAllowTimeToAutoAdvanceUntil(kEndTime);
   pump.SetStopWhenMessagePumpIsIdle(true);
   EXPECT_CALL(delegate, DoWork).Times(3).WillRepeatedly(Invoke([&]() {
-    return NextWorkInfo(mock_clock.NowTicks() + TimeDelta::FromSeconds(1));
+    return NextWorkInfo(mock_clock.NowTicks() + Seconds(1));
   }));
   EXPECT_CALL(delegate, DoIdleWork).Times(3).WillRepeatedly(Return(false));
 
@@ -79,7 +79,7 @@ TEST(MockMessagePumpTest, AdvancesTimeAsAllowed) {
 
 TEST(MockMessagePumpTest, CanQuitAfterMaybeDoWork) {
   SimpleTestTickClock mock_clock;
-  mock_clock.Advance(TimeDelta::FromHours(42));
+  mock_clock.Advance(Hours(42));
   StrictMock<MockMessagePumpDelegate> delegate;
   MockTimeMessagePump pump(&mock_clock);
 
@@ -91,12 +91,12 @@ TEST(MockMessagePumpTest, CanQuitAfterMaybeDoWork) {
 
 TEST(MockMessagePumpTest, AdvancesUntilAllowedTime) {
   SimpleTestTickClock mock_clock;
-  mock_clock.Advance(TimeDelta::FromHours(42));
+  mock_clock.Advance(Hours(42));
   StrictMock<MockMessagePumpDelegate> delegate;
   MockTimeMessagePump pump(&mock_clock);
   const auto kStartTime = mock_clock.NowTicks();
-  const auto kEndTime = kStartTime + TimeDelta::FromSeconds(2);
-  const auto kNextDelayedWorkTime = kEndTime + TimeDelta::FromSeconds(2);
+  const auto kEndTime = kStartTime + Seconds(2);
+  const auto kNextDelayedWorkTime = kEndTime + Seconds(2);
 
   pump.SetAllowTimeToAutoAdvanceUntil(kEndTime);
   pump.SetStopWhenMessagePumpIsIdle(true);
@@ -116,7 +116,7 @@ TEST(MockMessagePumpTest, StoresNextWakeUpTime) {
   MockTimeMessagePump pump(&mock_clock);
   const auto kStartTime = mock_clock.NowTicks();
   const auto kEndTime = kStartTime;
-  const auto kNextDelayedWorkTime = kEndTime + TimeDelta::FromSeconds(2);
+  const auto kNextDelayedWorkTime = kEndTime + Seconds(2);
 
   pump.SetAllowTimeToAutoAdvanceUntil(kEndTime);
   pump.SetStopWhenMessagePumpIsIdle(true);
@@ -133,8 +133,7 @@ TEST(MockMessagePumpTest, StoresNextWakeUpTimeInScheduleDelayedWork) {
   SimpleTestTickClock mock_clock;
   StrictMock<MockMessagePumpDelegate> delegate;
   MockTimeMessagePump pump(&mock_clock);
-  const auto kNextDelayedWorkTime =
-      mock_clock.NowTicks() + TimeDelta::FromSeconds(2);
+  const auto kNextDelayedWorkTime = mock_clock.NowTicks() + Seconds(2);
 
   pump.ScheduleDelayedWork(kNextDelayedWorkTime);
 
@@ -143,11 +142,11 @@ TEST(MockMessagePumpTest, StoresNextWakeUpTimeInScheduleDelayedWork) {
 
 TEST(MockMessagePumpTest, NextDelayedWorkTimeInThePastKeepsRunning) {
   SimpleTestTickClock mock_clock;
-  mock_clock.Advance(TimeDelta::FromHours(42));
+  mock_clock.Advance(Hours(42));
   StrictMock<MockMessagePumpDelegate> delegate;
   MockTimeMessagePump pump(&mock_clock);
   const auto kNextDelayedWorkTime = mock_clock.NowTicks();
-  mock_clock.Advance(TimeDelta::FromHours(2));
+  mock_clock.Advance(Hours(2));
 
   pump.SetStopWhenMessagePumpIsIdle(true);
 
@@ -163,11 +162,10 @@ TEST(MockMessagePumpTest, NextDelayedWorkTimeInThePastKeepsRunning) {
 TEST(MockMessagePumpTest,
      AdvancesUntilAllowedTimeWhenNextDelayedWorkTimeIsMax) {
   SimpleTestTickClock mock_clock;
-  mock_clock.Advance(TimeDelta::FromHours(42));
+  mock_clock.Advance(Hours(42));
   StrictMock<MockMessagePumpDelegate> delegate;
   MockTimeMessagePump pump(&mock_clock);
-  const auto kAdvanceUntil =
-      mock_clock.NowTicks() + TimeDelta::FromSeconds(123);
+  const auto kAdvanceUntil = mock_clock.NowTicks() + Seconds(123);
 
   pump.SetStopWhenMessagePumpIsIdle(true);
   pump.SetAllowTimeToAutoAdvanceUntil(kAdvanceUntil);

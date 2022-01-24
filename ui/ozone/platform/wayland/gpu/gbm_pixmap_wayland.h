@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ui {
@@ -23,6 +23,9 @@ class WaylandBufferManagerGpu;
 class GbmPixmapWayland : public gfx::NativePixmap {
  public:
   explicit GbmPixmapWayland(WaylandBufferManagerGpu* buffer_manager);
+
+  GbmPixmapWayland(const GbmPixmapWayland&) = delete;
+  GbmPixmapWayland& operator=(const GbmPixmapWayland&) = delete;
 
   // Creates a buffer object and initializes the pixmap buffer.
   // |visible_area_size| represents a 'visible size', i.e., a buffer
@@ -38,6 +41,15 @@ class GbmPixmapWayland : public gfx::NativePixmap {
       gfx::BufferUsage usage,
       absl::optional<gfx::Size> visible_area_size = absl::nullopt);
 
+  // Creates a buffer object from native pixmap handle and initializes the
+  // pixmap buffer. If |widget| is provided, browser side wl_buffer is also
+  // created. Otherwise, this pixmap behaves as a staging pixmap and mustn't be
+  // scheduled as an overlay.
+  bool InitializeBufferFromHandle(gfx::AcceleratedWidget widget,
+                                  gfx::Size size,
+                                  gfx::BufferFormat format,
+                                  gfx::NativePixmapHandle handle);
+
   // gfx::NativePixmap overrides:
   bool AreDmaBufFdsValid() const override;
   int GetDmaBufFd(size_t plane) const override;
@@ -50,11 +62,7 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   gfx::Size GetBufferSize() const override;
   uint32_t GetUniqueId() const override;
   bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int plane_z_order,
-                            gfx::OverlayTransform plane_transform,
-                            const gfx::Rect& display_bounds,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
+                            const gfx::OverlayPlaneData& overlay_plane_data,
                             std::vector<gfx::GpuFence> acquire_fences,
                             std::vector<gfx::GpuFence> release_fences) override;
   gfx::NativePixmapHandle ExportHandle() override;
@@ -77,15 +85,8 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   // A unique ID to identify the buffer for this pixmap.
   const uint32_t buffer_id_;
 
-  // Represents the z-axis order of the wayland surface this buffer is attach
-  // to.
-  int32_t z_order_ = 0;
-  bool z_order_set_ = false;
-
   // Size of the visible area of the buffer.
   gfx::Size visible_area_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(GbmPixmapWayland);
 };
 
 }  // namespace ui

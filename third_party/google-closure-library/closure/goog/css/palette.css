@@ -7,9 +7,9 @@
 
 /*
  * Standard styling for palettes created by goog.ui.PaletteRenderer.
- *
- * @provide {goog.css.palette}
  */
+
+@provide 'goog.css.palette';
 
 .goog-palette {
   cursor: default;

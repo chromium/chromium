@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -40,6 +39,10 @@ enum class ScreenshotResult {
 class SNAPSHOT_EXPORT ScreenshotGrabber {
  public:
   ScreenshotGrabber();
+
+  ScreenshotGrabber(const ScreenshotGrabber&) = delete;
+  ScreenshotGrabber& operator=(const ScreenshotGrabber&) = delete;
+
   ~ScreenshotGrabber();
 
   // Callback for the new system, which ignores the observer crud.
@@ -75,8 +78,6 @@ class SNAPSHOT_EXPORT ScreenshotGrabber {
 #endif
 
   base::WeakPtrFactory<ScreenshotGrabber> factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenshotGrabber);
 };
 
 }  // namespace ui

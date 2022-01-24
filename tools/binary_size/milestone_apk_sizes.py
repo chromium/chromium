@@ -37,7 +37,7 @@ _KEYSTORE_PASSWORD = 'chromium'
 _KEYSTORE_ALIAS = 'chromiumdebugkey'
 
 
-class _Artifact(object):
+class _Artifact:
   def __init__(self, prefix, name, staging_dir):
     self.name = name
     self._gs_url = posixpath.join(prefix, name)

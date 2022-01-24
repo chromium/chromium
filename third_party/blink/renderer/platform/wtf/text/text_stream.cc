@@ -98,6 +98,11 @@ TextStream& TextStream::operator<<(const void* p) {
   return *this << buffer;
 }
 
+TextStream& TextStream::operator<<(const std::string& string) {
+  text_.Append(string.data(), string.length());
+  return *this;
+}
+
 TextStream& TextStream::operator<<(const String& string) {
   text_.Append(string);
   return *this;

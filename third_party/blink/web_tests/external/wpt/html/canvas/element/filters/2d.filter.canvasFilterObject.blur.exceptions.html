@@ -19,10 +19,9 @@
 var t = async_test("Test exceptions on CanvasFilter() blur.object");
 _addTest(function(canvas, ctx) {
 
-assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({blur: null}); });
-assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({blur: {}}); });
-assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({blur: {stdDevation: null}}); });
-assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({blur: {stdDeviation: "foo"}}); });
+assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({filter: "gaussianBlur"}); });
+assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDevation: null}); });
+assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: "foo"}); });
 
 
 });

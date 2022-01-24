@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_GPU_GPU_INTERNALS_UI_H_
 #define CONTENT_BROWSER_GPU_GPU_INTERNALS_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 namespace content {
@@ -14,8 +13,8 @@ class GpuInternalsUI : public WebUIController {
  public:
   explicit GpuInternalsUI(WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GpuInternalsUI);
+  GpuInternalsUI(const GpuInternalsUI&) = delete;
+  GpuInternalsUI& operator=(const GpuInternalsUI&) = delete;
 };
 
 }  // namespace content

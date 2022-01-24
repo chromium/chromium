@@ -17,17 +17,19 @@ namespace password_manager {
 class MockCredentialsCleaner : public CredentialsCleaner {
  public:
   MockCredentialsCleaner() = default;
+  MockCredentialsCleaner(const MockCredentialsCleaner&) = delete;
+  MockCredentialsCleaner& operator=(const MockCredentialsCleaner&) = delete;
   ~MockCredentialsCleaner() override = default;
   MOCK_METHOD0(NeedsCleaning, bool());
   MOCK_METHOD1(StartCleaning, void(Observer* observer));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCredentialsCleaner);
 };
 
 class CredentialsCleanerRunnerTest : public ::testing::Test {
  public:
   CredentialsCleanerRunnerTest() = default;
+  CredentialsCleanerRunnerTest(const CredentialsCleanerRunnerTest&) = delete;
+  CredentialsCleanerRunnerTest& operator=(const CredentialsCleanerRunnerTest&) =
+      delete;
   ~CredentialsCleanerRunnerTest() override = default;
 
  protected:
@@ -35,8 +37,6 @@ class CredentialsCleanerRunnerTest : public ::testing::Test {
 
  private:
   CredentialsCleanerRunner cleaning_tasks_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialsCleanerRunnerTest);
 };
 
 // In this test we check that credential clean-ups runner executes the clean-up

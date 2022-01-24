@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_capture_info.h"
@@ -24,6 +23,9 @@ class ThumbnailScheduler;
 class ThumbnailTabHelper
     : public content::WebContentsUserData<ThumbnailTabHelper> {
  public:
+  ThumbnailTabHelper(const ThumbnailTabHelper&) = delete;
+  ThumbnailTabHelper& operator=(const ThumbnailTabHelper&) = delete;
+
   ~ThumbnailTabHelper() override;
 
   scoped_refptr<ThumbnailImage> thumbnail() const { return thumbnail_; }
@@ -34,7 +36,6 @@ class ThumbnailTabHelper
 
   // Metrics enums and helper functions:
   enum class CaptureType;
-  static void RecordCaptureType(CaptureType type);
 
   explicit ThumbnailTabHelper(content::WebContents* contents);
 
@@ -95,8 +96,6 @@ class ThumbnailTabHelper
 
   base::WeakPtrFactory<ThumbnailTabHelper>
       weak_factory_for_thumbnail_on_tab_hidden_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThumbnailTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_TAB_HELPER_H_

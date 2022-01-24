@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 
+#include "base/metrics/metrics_hashes.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -78,7 +79,7 @@ TEST_F(SignalStorageConfigTest,
 
   // Add a user action feature to the both models.
   proto::Feature* feature = metadata.add_features();
-  uint64_t name_hash = 234;
+  uint64_t name_hash = base::HashMetricName("some user action");
   feature->set_type(proto::SignalType::USER_ACTION);
   feature->set_name_hash(name_hash);
   feature->set_bucket_count(1);
@@ -110,8 +111,7 @@ TEST_F(SignalStorageConfigTest,
   proto::SignalStorageConfig signal_config = config.signals(0);
   EXPECT_EQ(name_hash, signal_config.name_hash());
   EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
-  EXPECT_EQ(base::TimeDelta::FromDays(2).InSeconds(),
-            signal_config.storage_length_s());
+  EXPECT_EQ(base::Days(2).InSeconds(), signal_config.storage_length_s());
   EXPECT_NE(0, signal_config.collection_start_time_s());
 
   // Add the second model. It should do a overwrite of previous value.
@@ -127,8 +127,7 @@ TEST_F(SignalStorageConfigTest,
   signal_config = config.signals(0);
   EXPECT_EQ(name_hash, signal_config.name_hash());
   EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
-  EXPECT_EQ(base::TimeDelta::FromDays(6).InSeconds(),
-            signal_config.storage_length_s());
+  EXPECT_EQ(base::Days(6).InSeconds(), signal_config.storage_length_s());
   EXPECT_NE(0, signal_config.collection_start_time_s());
 
   // Signal collection shouldn't satisfy.
@@ -137,7 +136,7 @@ TEST_F(SignalStorageConfigTest,
 
   // Advance clock by 1 day. Start collection. Signal collection still won't
   // satisfy.
-  test_clock_.Advance(base::TimeDelta::FromDays(1));
+  test_clock_.Advance(base::Days(1));
   EXPECT_FALSE(
       signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
   EXPECT_FALSE(
@@ -146,7 +145,7 @@ TEST_F(SignalStorageConfigTest,
 
   // Advance clock by 2 days. Signal collection should be sufficient for the
   // first model.
-  test_clock_.Advance(base::TimeDelta::FromDays(2));
+  test_clock_.Advance(base::Days(2));
   EXPECT_TRUE(
       signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
   EXPECT_NE(0, signal_config.collection_start_time_s());
@@ -157,7 +156,7 @@ TEST_F(SignalStorageConfigTest,
 
   // Advance clock by 3 days. Signal collection should be sufficient for second
   // model as well.
-  test_clock_.Advance(base::TimeDelta::FromDays(3));
+  test_clock_.Advance(base::Days(3));
   EXPECT_TRUE(
       signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
   EXPECT_TRUE(
@@ -168,8 +167,7 @@ TEST_F(SignalStorageConfigTest,
   signal_config = config.signals(0);
   EXPECT_EQ(name_hash, signal_config.name_hash());
   EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
-  EXPECT_EQ(base::TimeDelta::FromDays(6).InSeconds(),
-            signal_config.storage_length_s());
+  EXPECT_EQ(base::Days(6).InSeconds(), signal_config.storage_length_s());
   EXPECT_NE(0, signal_config.collection_start_time_s());
 }
 
@@ -181,33 +179,30 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
 
   // Expired.
   proto::SignalStorageConfig* signal1 = config.add_signals();
-  signal1->set_name_hash(1);
+  signal1->set_name_hash(base::HashMetricName("1"));
   signal1->set_signal_type(proto::SignalType::HISTOGRAM_VALUE);
-  signal1->set_collection_start_time_s(
-      (test_clock_.Now() - base::TimeDelta::FromDays(3))
-          .ToDeltaSinceWindowsEpoch()
-          .InSeconds());
-  signal1->set_storage_length_s(base::TimeDelta::FromDays(2).InSeconds());
+  signal1->set_collection_start_time_s((test_clock_.Now() - base::Days(3))
+                                           .ToDeltaSinceWindowsEpoch()
+                                           .InSeconds());
+  signal1->set_storage_length_s(base::Days(2).InSeconds());
 
   // Unknown.
   proto::SignalStorageConfig* signal2 = config.add_signals();
-  signal2->set_name_hash(2);
+  signal2->set_name_hash(base::HashMetricName("2"));
   signal2->set_signal_type(proto::SignalType::HISTOGRAM_VALUE);
-  signal2->set_collection_start_time_s(
-      (test_clock_.Now() - base::TimeDelta::FromDays(3))
-          .ToDeltaSinceWindowsEpoch()
-          .InSeconds());
-  signal2->set_storage_length_s(base::TimeDelta::FromDays(5).InSeconds());
+  signal2->set_collection_start_time_s((test_clock_.Now() - base::Days(3))
+                                           .ToDeltaSinceWindowsEpoch()
+                                           .InSeconds());
+  signal2->set_storage_length_s(base::Days(5).InSeconds());
 
   // Known.
   proto::SignalStorageConfig* signal3 = config.add_signals();
-  signal3->set_name_hash(3);
+  signal3->set_name_hash(base::HashMetricName("3"));
   signal3->set_signal_type(proto::SignalType::HISTOGRAM_VALUE);
-  signal3->set_collection_start_time_s(
-      (test_clock_.Now() - base::TimeDelta::FromDays(3))
-          .ToDeltaSinceWindowsEpoch()
-          .InSeconds());
-  signal3->set_storage_length_s(base::TimeDelta::FromDays(5).InSeconds());
+  signal3->set_collection_start_time_s((test_clock_.Now() - base::Days(3))
+                                           .ToDeltaSinceWindowsEpoch()
+                                           .InSeconds());
+  signal3->set_storage_length_s(base::Days(5).InSeconds());
 
   // Initialize non-empty DB.
   db_entries_.insert({kDatabaseKey, config});
@@ -223,16 +218,20 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
   std::vector<std::tuple<uint64_t, proto::SignalType, base::Time>> result;
   signal_storage_config_->GetSignalsForCleanup(known_signals, result);
   EXPECT_EQ(1u, result.size());
-  EXPECT_EQ(1u, std::get<0>(result[0]));
+  // The first element in result tuple is the name hash.
+  EXPECT_EQ(base::HashMetricName("1"), std::get<0>(result[0]));
   EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE, std::get<1>(result[0]));
 
   // Run cleanup to find expired and unknown signals.
   result.clear();
-  known_signals.insert({1, proto::SignalType::HISTOGRAM_VALUE});
-  known_signals.insert({3, proto::SignalType::HISTOGRAM_VALUE});
+  known_signals.insert(
+      {base::HashMetricName("1"), proto::SignalType::HISTOGRAM_VALUE});
+  known_signals.insert(
+      {base::HashMetricName("3"), proto::SignalType::HISTOGRAM_VALUE});
   signal_storage_config_->GetSignalsForCleanup(known_signals, result);
   EXPECT_EQ(2u, result.size());
-  EXPECT_EQ(2u, std::get<0>(result[1]));
+  // The first element in result tuple is the name hash.
+  EXPECT_EQ(base::HashMetricName("2"), std::get<0>(result[1]));
   EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE, std::get<1>(result[1]));
 
   // Cleanup the signals from this DB. The collection start time should be
@@ -240,7 +239,7 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
   signal_storage_config_->UpdateSignalsForCleanup(result);
   db_->UpdateCallback(true);
   auto signal = db_entries_[kDatabaseKey].signals(0);
-  EXPECT_EQ((test_clock_.Now() - base::TimeDelta::FromDays(2))
+  EXPECT_EQ((test_clock_.Now() - base::Days(2))
                 .ToDeltaSinceWindowsEpoch()
                 .InSeconds(),
             signal.collection_start_time_s());

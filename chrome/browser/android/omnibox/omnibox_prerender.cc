@@ -46,7 +46,7 @@ void OmniboxPrerender::Clear(JNIEnv* env,
     return;
   AutocompleteActionPredictor* action_predictor =
       AutocompleteActionPredictorFactory::GetForProfile(profile);
-  action_predictor->ClearTransitionalMatches();
+  action_predictor->UpdateDatabaseFromTransitionalMatches(GURL());
   action_predictor->CancelPrerender();
 }
 
@@ -130,11 +130,9 @@ void OmniboxPrerender::DoPrerender(const AutocompleteMatch& match,
   if (!web_contents)
     return;
   gfx::Rect container_bounds = web_contents->GetContainerBounds();
-  predictors::AutocompleteActionPredictorFactory::GetForProfile(profile)->
-      StartPrerendering(
-          match.destination_url,
-          web_contents->GetController().GetDefaultSessionStorageNamespace(),
-          container_bounds.size());
+  predictors::AutocompleteActionPredictorFactory::GetForProfile(profile)
+      ->StartPrerendering(match.destination_url, *web_contents,
+                          container_bounds.size());
 }
 
 void OmniboxPrerender::DoPreconnect(const AutocompleteMatch& match,

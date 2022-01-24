@@ -8,13 +8,18 @@
 #include <windows.h>
 
 #include "base/win/atl.h"
-#include "chrome/updater/win/ui/constants.h"
+#include "chrome/updater/win/ui/ui_constants.h"
 
 // These headers must be included after base/win/atl.h.
 #include "./atlapp.h"
+#include "./atltypes.h"
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-but-set-variable"
+#pragma clang diagnostic ignored "-Wmissing-braces"
 #include "./atlctrls.h"
 #include "./atlframe.h"
-#include "./atltypes.h"
+#pragma clang diagnostic pop
 
 namespace updater {
 namespace ui {

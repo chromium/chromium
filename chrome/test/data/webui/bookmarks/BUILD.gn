@@ -1,0 +1,63 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_bookmarks"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "bookmarks"
+}
+
+ts_library("build_ts") {
+  root_dir = "./"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://bookmarks/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/bookmarks/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = [
+    "actions_test.ts",
+    "app_test.js",
+    "bookmarks_focus_test.js",
+    "command_manager_test.js",
+    "dialog_focus_manager_test.js",
+    "dnd_manager_test.js",
+    "edit_dialog_test.ts",
+    "extension_api_test.js",
+    "extension_api_test_edit_disabled.js",
+    "folder_node_focus_test.js",
+    "folder_node_test.ts",
+    "item_test.ts",
+    "list_focus_test.js",
+    "list_test.js",
+    "policy_test.ts",
+    "reducers_test.ts",
+    "router_test.js",
+    "store_test.js",
+    "test_browser_proxy.ts",
+    "test_command_manager.ts",
+    "test_store.ts",
+    "test_timer_proxy.js",
+    "test_util.ts",
+    "toolbar_test.ts",
+    "util_test.ts",
+  ]
+  deps = [ "//chrome/browser/resources/bookmarks:build_ts" ]
+  definitions = [
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+  ]
+  extra_deps = [ "..:generate_definitions" ]
+}

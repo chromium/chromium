@@ -54,8 +54,7 @@ class ScopedEvaluateRequestTimer {
   ~ScopedEvaluateRequestTimer() {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Extensions.DeclarativeNetRequest.EvaluateRequestTime.AllExtensions3",
-        timer_.Elapsed(), base::TimeDelta::FromMicroseconds(1),
-        base::TimeDelta::FromMilliseconds(50), 50);
+        timer_.Elapsed(), base::Microseconds(1), base::Milliseconds(50), 50);
   }
 
  private:
@@ -364,62 +363,38 @@ std::vector<RequestAction> RulesetManager::EvaluateRequestInternal(
 
   ScopedEvaluateRequestTimer timer;
 
-  const RequestParams params(request);
-  const int tab_id = request.frame_data.tab_id;
-
-  // |crosses_incognito| is used to ensure that a split mode extension process
-  // can't intercept requests from a cross browser context. Since declarative
-  // net request API doesn't use event listeners in a background process, it is
-  // irrelevant here.
-  const bool crosses_incognito = false;
-
   // Filter the rulesets to evaluate along with their host permissions based
   // page access for the current request being evaluated.
   std::vector<RulesetAndPageAccess> rulesets_to_evaluate;
   for (const ExtensionRulesetData& ruleset : rulesets_) {
-    if (!ShouldEvaluateRulesetForRequest(ruleset, request,
-                                         is_incognito_context)) {
+    PageAccess host_permission_access = PageAccess::kDenied;
+    if (!ShouldEvaluateRulesetForRequest(ruleset, request, is_incognito_context,
+                                         host_permission_access)) {
       continue;
     }
 
-    // If the extension doesn't have permission to the request, then skip this
-    // ruleset. Note: we are not checking for host permissions here.
-    // DO_NOT_CHECK_HOST is strictly less restrictive than
-    // REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR.
-    PageAccess page_access = WebRequestPermissions::CanExtensionAccessURL(
-        permission_helper_, ruleset.extension_id, request.url, tab_id,
-        crosses_incognito, WebRequestPermissions::DO_NOT_CHECK_HOST,
-        request.initiator, request.web_request_type);
-    DCHECK_NE(PageAccess::kWithheld, page_access);
-    if (page_access != PageAccess::kAllowed)
-      continue;
-
-    // Precompute the host permissions access the extension has for this
-    // request.
-    PageAccess host_permissions_access =
-        WebRequestPermissions::CanExtensionAccessURL(
-            permission_helper_, ruleset.extension_id, request.url, tab_id,
-            crosses_incognito,
-            WebRequestPermissions::
-                REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
-            request.initiator, request.web_request_type);
-
-    rulesets_to_evaluate.push_back(
-        std::make_pair(&ruleset, host_permissions_access));
+    rulesets_to_evaluate.emplace_back(&ruleset, host_permission_access);
   }
 
-  // If the request is blocked/allowed/redirected, no further modifications can
-  // happen. A new request will be created and subsequently evaluated.
-  absl::optional<RequestAction> action =
+  const RequestParams params(request);
+  absl::optional<RequestAction> before_request_action =
       GetBeforeRequestAction(rulesets_to_evaluate, request, params);
-  if (action) {
-    actions.push_back(std::move(std::move(*action)));
-    return actions;
+
+  if (before_request_action) {
+    bool is_request_modifying_action =
+        !before_request_action->IsAllowOrAllowAllRequests();
+    actions.push_back(std::move(*before_request_action));
+
+    // If the request is blocked/redirected, no further modifications can
+    // happen.
+    if (is_request_modifying_action)
+      return actions;
   }
 
+  // This returns any matching modifyHeaders rules with priority greater than
+  // matching allow/allowAllRequests rules.
   std::vector<RequestAction> modify_headers_actions =
       GetModifyHeadersActions(rulesets_to_evaluate, request, params);
-
   if (!modify_headers_actions.empty())
     return modify_headers_actions;
 
@@ -446,12 +421,59 @@ bool RulesetManager::ShouldEvaluateRequest(
 bool RulesetManager::ShouldEvaluateRulesetForRequest(
     const ExtensionRulesetData& ruleset,
     const WebRequestInfo& request,
-    bool is_incognito_context) const {
+    bool is_incognito_context,
+    PageAccess& host_permission_access) const {
   // Only extensions enabled in incognito should have access to requests in an
   // incognito context.
   if (is_incognito_context &&
       !util::IsIncognitoEnabled(ruleset.extension_id, browser_context_)) {
     return false;
+  }
+
+  const int tab_id = request.frame_data.tab_id;
+
+  // `crosses_incognito` is used to ensure that a split mode extension process
+  // can't intercept requests from a cross browser context. Since declarative
+  // net request API doesn't use event listeners in a background process, it
+  // is irrelevant here.
+  const bool crosses_incognito = false;
+
+  switch (ruleset.matcher->host_permissions_always_required()) {
+    case HostPermissionsAlwaysRequired::kTrue: {
+      PageAccess access = WebRequestPermissions::CanExtensionAccessURL(
+          permission_helper_, ruleset.extension_id, request.url, tab_id,
+          crosses_incognito,
+          WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
+          request.initiator, request.web_request_type);
+      if (access == PageAccess::kDenied)
+        return false;
+
+      host_permission_access = access;
+      break;
+    }
+
+    case HostPermissionsAlwaysRequired::kFalse: {
+      // Some requests should not be visible to extensions even if the extension
+      // doesn't require host permissions for them. Note: we are not checking
+      // for host permissions here.
+      // DO_NOT_CHECK_HOST is strictly less restrictive than
+      // REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR.
+      PageAccess do_not_check_host_access =
+          WebRequestPermissions::CanExtensionAccessURL(
+              permission_helper_, ruleset.extension_id, request.url, tab_id,
+              crosses_incognito, WebRequestPermissions::DO_NOT_CHECK_HOST,
+              request.initiator, request.web_request_type);
+      DCHECK_NE(PageAccess::kWithheld, do_not_check_host_access);
+      if (do_not_check_host_access == PageAccess::kDenied)
+        return false;
+
+      host_permission_access = WebRequestPermissions::CanExtensionAccessURL(
+          permission_helper_, ruleset.extension_id, request.url, tab_id,
+          crosses_incognito,
+          WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
+          request.initiator, request.web_request_type);
+      break;
+    }
   }
 
   return true;

@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/notreached.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -53,7 +54,7 @@ class CallbackCookieSettings : public CookieSettingsBase {
   }
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const GURL& site_for_cookies) const override {
+      const net::SiteForCookies& site_for_cookies) const override {
     NOTREACHED();
     return false;
   }

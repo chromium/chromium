@@ -26,6 +26,11 @@ namespace ash {
 class AlwaysOnTopControllerTest : public AshTestBase {
  public:
   AlwaysOnTopControllerTest() = default;
+
+  AlwaysOnTopControllerTest(const AlwaysOnTopControllerTest&) = delete;
+  AlwaysOnTopControllerTest& operator=(const AlwaysOnTopControllerTest&) =
+      delete;
+
   ~AlwaysOnTopControllerTest() override = default;
 
   void SetUp() override {
@@ -33,9 +38,6 @@ class AlwaysOnTopControllerTest : public AshTestBase {
         keyboard::switches::kEnableVirtualKeyboard);
     AshTestBase::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AlwaysOnTopControllerTest);
 };
 
 class TestLayoutManager : public WorkspaceLayoutManager {
@@ -43,6 +45,9 @@ class TestLayoutManager : public WorkspaceLayoutManager {
   explicit TestLayoutManager(aura::Window* window)
       : WorkspaceLayoutManager(window),
         keyboard_displacing_bounds_changed_(false) {}
+
+  TestLayoutManager(const TestLayoutManager&) = delete;
+  TestLayoutManager& operator=(const TestLayoutManager&) = delete;
 
   ~TestLayoutManager() override = default;
 
@@ -57,7 +62,6 @@ class TestLayoutManager : public WorkspaceLayoutManager {
 
  private:
   bool keyboard_displacing_bounds_changed_;
-  DISALLOW_COPY_AND_ASSIGN(TestLayoutManager);
 };
 
 // Verifies that the always on top controller is notified of keyboard bounds

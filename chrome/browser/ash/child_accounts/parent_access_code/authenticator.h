@@ -9,7 +9,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "crypto/hmac.h"
@@ -43,6 +42,10 @@ class AccessCodeConfig {
                    base::TimeDelta clock_drift_tolerance);
   AccessCodeConfig(AccessCodeConfig&&);
   AccessCodeConfig& operator=(AccessCodeConfig&&);
+
+  AccessCodeConfig(const AccessCodeConfig&) = delete;
+  AccessCodeConfig& operator=(const AccessCodeConfig&) = delete;
+
   ~AccessCodeConfig();
 
   // Secret shared between child and parent devices.
@@ -63,8 +66,6 @@ class AccessCodeConfig {
   std::string shared_secret_;
   base::TimeDelta code_validity_;
   base::TimeDelta clock_drift_tolerance_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessCodeConfig);
 };
 
 // Parent access code that can be used to authorize various actions on child
@@ -109,10 +110,13 @@ class Authenticator {
  public:
   // Granularity of which generation and verification of access code are carried
   // out. Should not exceed code validity period.
-  static constexpr base::TimeDelta kAccessCodeGranularity =
-      base::TimeDelta::FromMinutes(1);
+  static constexpr base::TimeDelta kAccessCodeGranularity = base::Minutes(1);
 
   explicit Authenticator(AccessCodeConfig config);
+
+  Authenticator(const Authenticator&) = delete;
+  Authenticator& operator=(const Authenticator&) = delete;
+
   ~Authenticator();
 
   // Generates parent access code from the given |timestamp|. Returns the code
@@ -140,8 +144,6 @@ class Authenticator {
 
   // Keyed-hash message authentication generator.
   crypto::HMAC hmac_{crypto::HMAC::SHA1};
-
-  DISALLOW_COPY_AND_ASSIGN(Authenticator);
 };
 
 }  // namespace parent_access

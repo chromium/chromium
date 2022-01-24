@@ -9,9 +9,8 @@
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
-
 namespace {
 
 // A waiter that blocks until the target login screen is reached.
@@ -44,4 +43,4 @@ void ShowUserAddingScreen() {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

@@ -6,12 +6,16 @@
 #define CHROME_BROWSER_UI_ASH_ACCESSIBILITY_FAKE_ACCESSIBILITY_CONTROLLER_H_
 
 #include "ash/public/cpp/accessibility_controller.h"
-#include "base/macros.h"
 
 // Fake implementation of ash's mojo AccessibilityController interface.
 class FakeAccessibilityController : ash::AccessibilityController {
  public:
   FakeAccessibilityController();
+
+  FakeAccessibilityController(const FakeAccessibilityController&) = delete;
+  FakeAccessibilityController& operator=(const FakeAccessibilityController&) =
+      delete;
+
   ~FakeAccessibilityController() override;
 
   bool was_client_set() const { return was_client_set_; }
@@ -45,6 +49,9 @@ class FakeAccessibilityController : ash::AccessibilityController {
   void SetPointScanSpeedDipsPerSecond(
       int point_scan_speed_dips_per_second) override;
   void ToggleDictationFromSource(ash::DictationToggleSource source) override;
+  void ShowDictationLanguageUpgradedNudge(
+      const std::string& dictation_locale,
+      const std::string& application_locale) override;
   void HandleAutoclickScrollableBoundsFound(
       gfx::Rect& bounds_in_screen) override;
   std::u16string GetBatteryDescription() const override;
@@ -55,11 +62,14 @@ class FakeAccessibilityController : ash::AccessibilityController {
   bool IsAccessibilityFeatureVisibleInTrayMenu(
       const std::string& path) override;
   void DisableSwitchAccessDisableConfirmationDialogTesting() override;
+  void UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
+      int download_progress) override;
+  void ShowSpeechRecognitionDownloadNotificationForDictation(
+      bool succeeded,
+      const std::u16string& display_language) override;
 
  private:
   bool was_client_set_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAccessibilityController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ACCESSIBILITY_FAKE_ACCESSIBILITY_CONTROLLER_H_

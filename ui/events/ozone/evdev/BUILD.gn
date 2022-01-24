@@ -33,6 +33,16 @@ if (use_evdev_gestures) {
   }
 }
 
+if (use_libinput) {
+  pkg_config("libinput") {
+    packages = [ "libinput" ]
+  }
+
+  config("libinput_config") {
+    defines = [ "USE_LIBINPUT" ]
+  }
+}
+
 component("evdev") {
   output_name = "events_ozone_evdev"
 
@@ -123,6 +133,14 @@ component("evdev") {
     "//ui/ozone:ozone_base",
   ]
 
+  if (is_chromeos_ash) {
+    sources += [
+      "numberpad_metrics.cc",
+      "numberpad_metrics.h",
+    ]
+    deps += [ "//chromeos/components/feature_usage" ]
+  }
+
   public_configs = [ ":evdev_config" ]
 
   if (use_evdev_gestures) {
@@ -153,6 +171,16 @@ component("evdev") {
     public_configs += [ ":evdev_gestures_config" ]
   }
 
+  if (use_libinput) {
+    configs += [ ":libinput" ]
+    public_configs += [ ":libinput_config" ]
+
+    sources += [
+      "libinput_event_converter.cc",
+      "libinput_event_converter.h",
+    ]
+  }
+
   visibility += [
     "//ui/chromeos/*",
     "//ui/ozone/*",
@@ -160,18 +188,18 @@ component("evdev") {
 }
 
 source_set("event_device_info") {
-  sources = [
-    "event_device_info.cc",
-    "event_device_info.h",
-  ]
+  public = [ "event_device_info.h" ]
+  sources = [ "event_device_info.cc" ]
 
   deps = [
     "//base",
     "//ui/events/devices",
+    "//ui/events/ozone",
   ]
 
   visibility += [
     "//ash/webui/diagnostics_ui/backend:*",
+    "//chromeos/services/cros_healthd/*",
     "//ui/chromeos/*",
   ]
 }
@@ -235,6 +263,11 @@ source_set("unittests") {
     "//ui/events/ozone/layout",
     "//ui/gfx/geometry",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [ "numberpad_metrics_unittest.cc" ]
+    deps += [ "//chromeos/components/feature_usage" ]
+  }
 
   visibility += [ "//ui/events/ozone:unittests" ]
 }

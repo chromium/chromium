@@ -65,11 +65,6 @@
 @end
 
 id FakeSceneWithIdentifier(NSString* identifier) {
-  if (@available(ios 13, *)) {
-    return
-        [[FakeScene alloc] initWithSession:[[FakeSceneSession alloc]
-                                               initWithIdentifier:identifier]];
-  }
-
-  return nil;
+  return [[FakeScene alloc]
+      initWithSession:[[FakeSceneSession alloc] initWithIdentifier:identifier]];
 }

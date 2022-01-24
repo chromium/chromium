@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_INPUT_EVENTS_BLOCKER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
@@ -17,15 +16,16 @@ namespace ash {
 class InputEventsBlocker : public ui::EventHandler {
  public:
   InputEventsBlocker();
+
+  InputEventsBlocker(const InputEventsBlocker&) = delete;
+  InputEventsBlocker& operator=(const InputEventsBlocker&) = delete;
+
   ~InputEventsBlocker() override;
 
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputEventsBlocker);
 };
 
 }  // namespace ash

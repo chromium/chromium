@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
@@ -14,6 +15,11 @@
 
 namespace storage {
 
+// Snapshot of a bucket's information in the quota database.
+//
+// Properties that can be updated by the Storage Buckets API, like
+// `expiration` and `quota`, may get out of sync with the database. The
+// database is the source of truth.
 struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
   BucketInfo();
   BucketInfo(BucketId bucket_id,
@@ -35,6 +41,13 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
 
   COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
   friend bool operator!=(const BucketInfo& lhs, const BucketInfo& rhs);
+
+  COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
+  friend bool operator<(const BucketInfo& lhs, const BucketInfo& rhs);
+
+  BucketLocator ToBucketLocator() const {
+    return BucketLocator(id, storage_key, type, name == kDefaultBucketName);
+  }
 
   bool is_default() const { return name == kDefaultBucketName; }
 

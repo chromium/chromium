@@ -114,10 +114,10 @@ TEST_F(SOCKSClientSocketTest, CompleteHandshake) {
     MockRead data_reads[] = {
         MockRead(ASYNC, kSOCKS4OkReply, kSOCKS4OkReplyLength),
         MockRead(ASYNC, payload_read.data(), payload_read.size())};
-    RecordingTestNetLog log;
+    RecordingNetLogObserver log_observer;
 
     user_sock_ = BuildMockSocket(data_reads, data_writes, host_resolver_.get(),
-                                 "localhost", 80, &log);
+                                 "localhost", 80, NetLog::Get());
 
     // At this state the TCP connection is completed but not the SOCKS
     // handshake.
@@ -127,7 +127,7 @@ TEST_F(SOCKSClientSocketTest, CompleteHandshake) {
     int rv = user_sock_->Connect(callback_.callback());
     EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-    auto entries = log.GetEntries();
+    auto entries = log_observer.GetEntries();
     EXPECT_TRUE(
         LogContainsBeginEvent(entries, 0, NetLogEventType::SOCKS_CONNECT));
     EXPECT_FALSE(user_sock_->IsConnected());
@@ -135,7 +135,7 @@ TEST_F(SOCKSClientSocketTest, CompleteHandshake) {
     rv = callback_.WaitForResult();
     EXPECT_THAT(rv, IsOk());
     EXPECT_TRUE(user_sock_->IsConnected());
-    entries = log.GetEntries();
+    entries = log_observer.GetEntries();
     EXPECT_TRUE(
         LogContainsEndEvent(entries, -1, NetLogEventType::SOCKS_CONNECT));
 
@@ -226,22 +226,22 @@ TEST_F(SOCKSClientSocketTest, HandshakeFailures) {
   };
 
   //---------------------------------------
-
+  host_resolver_->rules()->AddRule("socks.test", "127.0.0.1");
   for (const auto& test : tests) {
     MockWrite data_writes[] = {
         MockWrite(SYNCHRONOUS, kSOCKS4OkRequestLocalHostPort80,
                   kSOCKS4OkRequestLocalHostPort80Length)};
     MockRead data_reads[] = {
         MockRead(SYNCHRONOUS, test.fail_reply, base::size(test.fail_reply))};
-    RecordingTestNetLog log;
+    RecordingNetLogObserver log_observer;
 
     user_sock_ = BuildMockSocket(data_reads, data_writes, host_resolver_.get(),
-                                 "localhost", 80, &log);
+                                 "socks.test", 80, NetLog::Get());
 
     int rv = user_sock_->Connect(callback_.callback());
     EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-    auto entries = log.GetEntries();
+    auto entries = log_observer.GetEntries();
     EXPECT_TRUE(
         LogContainsBeginEvent(entries, 0, NetLogEventType::SOCKS_CONNECT));
 
@@ -249,7 +249,7 @@ TEST_F(SOCKSClientSocketTest, HandshakeFailures) {
     EXPECT_EQ(test.fail_code, rv);
     EXPECT_FALSE(user_sock_->IsConnected());
     EXPECT_TRUE(tcp_sock_->IsConnected());
-    entries = log.GetEntries();
+    entries = log_observer.GetEntries();
     EXPECT_TRUE(
         LogContainsEndEvent(entries, -1, NetLogEventType::SOCKS_CONNECT));
   }
@@ -266,21 +266,21 @@ TEST_F(SOCKSClientSocketTest, PartialServerReads) {
   MockRead data_reads[] = {
       MockRead(ASYNC, kSOCKSPartialReply1, base::size(kSOCKSPartialReply1)),
       MockRead(ASYNC, kSOCKSPartialReply2, base::size(kSOCKSPartialReply2))};
-  RecordingTestNetLog log;
+  RecordingNetLogObserver log_observer;
 
   user_sock_ = BuildMockSocket(data_reads, data_writes, host_resolver_.get(),
-                               "localhost", 80, &log);
+                               "localhost", 80, NetLog::Get());
 
   int rv = user_sock_->Connect(callback_.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-  auto entries = log.GetEntries();
+  auto entries = log_observer.GetEntries();
   EXPECT_TRUE(
       LogContainsBeginEvent(entries, 0, NetLogEventType::SOCKS_CONNECT));
 
   rv = callback_.WaitForResult();
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(user_sock_->IsConnected());
-  entries = log.GetEntries();
+  entries = log_observer.GetEntries();
   EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SOCKS_CONNECT));
 }
 
@@ -300,21 +300,21 @@ TEST_F(SOCKSClientSocketTest, PartialClientWrites) {
   };
   MockRead data_reads[] = {
       MockRead(ASYNC, kSOCKS4OkReply, kSOCKS4OkReplyLength)};
-  RecordingTestNetLog log;
+  RecordingNetLogObserver log_observer;
 
   user_sock_ = BuildMockSocket(data_reads, data_writes, host_resolver_.get(),
-                               "localhost", 80, &log);
+                               "localhost", 80, NetLog::Get());
 
   int rv = user_sock_->Connect(callback_.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-  auto entries = log.GetEntries();
+  auto entries = log_observer.GetEntries();
   EXPECT_TRUE(
       LogContainsBeginEvent(entries, 0, NetLogEventType::SOCKS_CONNECT));
 
   rv = callback_.WaitForResult();
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(user_sock_->IsConnected());
-  entries = log.GetEntries();
+  entries = log_observer.GetEntries();
   EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SOCKS_CONNECT));
 }
 
@@ -327,21 +327,21 @@ TEST_F(SOCKSClientSocketTest, FailedSocketRead) {
       MockRead(ASYNC, kSOCKS4OkReply, kSOCKS4OkReplyLength - 2),
       // close connection unexpectedly
       MockRead(SYNCHRONOUS, 0)};
-  RecordingTestNetLog log;
+  RecordingNetLogObserver log_observer;
 
   user_sock_ = BuildMockSocket(data_reads, data_writes, host_resolver_.get(),
-                               "localhost", 80, &log);
+                               "localhost", 80, NetLog::Get());
 
   int rv = user_sock_->Connect(callback_.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-  auto entries = log.GetEntries();
+  auto entries = log_observer.GetEntries();
   EXPECT_TRUE(
       LogContainsBeginEvent(entries, 0, NetLogEventType::SOCKS_CONNECT));
 
   rv = callback_.WaitForResult();
   EXPECT_THAT(rv, IsError(ERR_CONNECTION_CLOSED));
   EXPECT_FALSE(user_sock_->IsConnected());
-  entries = log.GetEntries();
+  entries = log_observer.GetEntries();
   EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SOCKS_CONNECT));
 }
 
@@ -352,14 +352,15 @@ TEST_F(SOCKSClientSocketTest, FailedDNS) {
 
   host_resolver_->rules()->AddSimulatedTimeoutFailure(hostname);
 
-  RecordingTestNetLog log;
+  RecordingNetLogObserver log_observer;
 
-  user_sock_ = BuildMockSocket(base::span<MockRead>(), base::span<MockWrite>(),
-                               host_resolver_.get(), hostname, 80, &log);
+  user_sock_ =
+      BuildMockSocket(base::span<MockRead>(), base::span<MockWrite>(),
+                      host_resolver_.get(), hostname, 80, NetLog::Get());
 
   int rv = user_sock_->Connect(callback_.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-  auto entries = log.GetEntries();
+  auto entries = log_observer.GetEntries();
   EXPECT_TRUE(
       LogContainsBeginEvent(entries, 0, NetLogEventType::SOCKS_CONNECT));
 
@@ -368,7 +369,7 @@ TEST_F(SOCKSClientSocketTest, FailedDNS) {
   EXPECT_THAT(user_sock_->GetResolveErrorInfo().error,
               IsError(ERR_DNS_TIMED_OUT));
   EXPECT_FALSE(user_sock_->IsConnected());
-  entries = log.GetEntries();
+  entries = log_observer.GetEntries();
   EXPECT_TRUE(LogContainsEndEvent(entries, -1, NetLogEventType::SOCKS_CONNECT));
 }
 
@@ -428,10 +429,9 @@ TEST_F(SOCKSClientSocketTest, NoIPv6RealResolver) {
 
 TEST_F(SOCKSClientSocketTest, Tag) {
   StaticSocketDataProvider data;
-  RecordingTestNetLog log;
   MockTaggingStreamSocket* tagging_sock =
       new MockTaggingStreamSocket(std::unique_ptr<StreamSocket>(
-          new MockTCPClientSocket(address_list_, &log, &data)));
+          new MockTCPClientSocket(address_list_, NetLog::Get(), &data)));
 
   std::unique_ptr<ClientSocketHandle> connection(new ClientSocketHandle);
   // |connection| takes ownership of |tagging_sock|, but keep a
@@ -454,11 +454,12 @@ TEST_F(SOCKSClientSocketTest, SetSecureDnsPolicy) {
   for (auto secure_dns_policy :
        {SecureDnsPolicy::kAllow, SecureDnsPolicy::kDisable}) {
     StaticSocketDataProvider data;
-    RecordingTestNetLog log;
     MockHostResolver host_resolver;
+    host_resolver.rules()->AddRule("doh.test", "127.0.0.1");
     SOCKSClientSocket socket(
-        std::make_unique<MockTCPClientSocket>(address_list_, &log, &data),
-        HostPortPair("localhost", 80), NetworkIsolationKey(), DEFAULT_PRIORITY,
+        std::make_unique<MockTCPClientSocket>(address_list_, NetLog::Get(),
+                                              &data),
+        HostPortPair("doh.test", 80), NetworkIsolationKey(), DEFAULT_PRIORITY,
         &host_resolver, secure_dns_policy, TRAFFIC_ANNOTATION_FOR_TESTS);
 
     EXPECT_EQ(ERR_IO_PENDING, socket.Connect(callback_.callback()));

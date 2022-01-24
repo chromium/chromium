@@ -49,7 +49,7 @@ int Main(MainParams params
   content_params.argv = argv;
 #endif
 
-  return content::ContentMain(content_params);
+  return content::ContentMain(std::move(content_params));
 }
 #endif  // !defined(OS_ANDROID)
 

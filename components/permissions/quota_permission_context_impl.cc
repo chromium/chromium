@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
@@ -49,6 +48,9 @@ class QuotaPermissionRequest : public PermissionRequest {
       bool is_large_quota_request,
       content::QuotaPermissionContext::PermissionCallback callback);
 
+  QuotaPermissionRequest(const QuotaPermissionRequest&) = delete;
+  QuotaPermissionRequest& operator=(const QuotaPermissionRequest&) = delete;
+
   ~QuotaPermissionRequest() override;
 
   // PermissionRequest:
@@ -64,8 +66,6 @@ class QuotaPermissionRequest : public PermissionRequest {
   const scoped_refptr<QuotaPermissionContextImpl> context_;
   const bool is_large_quota_request_;
   content::QuotaPermissionContext::PermissionCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaPermissionRequest);
 };
 
 QuotaPermissionRequest::QuotaPermissionRequest(

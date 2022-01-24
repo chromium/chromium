@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/search_engines/template_url.h"
@@ -43,11 +42,8 @@ void TemplateURLTableModel::Reload() {
     } else if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) {
       extension_entries.push_back(template_url);
     } else if (OmniboxFieldTrial::IsActiveSearchEnginesEnabled() &&
-               (!template_url->safe_for_autoreplace() ||
-                template_url->usage_count() > 0)) {
-      // An entry is "active" if it has ever been used or manually
-      // added/modified. |safe_for_autoreplace| is false if the entry has been
-      // modified.
+               (template_url->is_active() ==
+                TemplateURLData::ActiveStatus::kTrue)) {
       active_entries.push_back(template_url);
     } else {
       other_entries.push_back(template_url);
@@ -119,6 +115,7 @@ void TemplateURLTableModel::Add(int index,
   data.SetShortName(short_name);
   data.SetKeyword(keyword);
   data.SetURL(url);
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
   template_url_service_->Add(std::make_unique<TemplateURL>(data));
 }
 
@@ -169,6 +166,13 @@ void TemplateURLTableModel::MakeDefaultTemplateURL(int index) {
     return;
 
   template_url_service_->SetUserSelectedDefaultSearchProvider(keyword);
+}
+
+void TemplateURLTableModel::SetIsActiveTemplateURL(int index, bool is_active) {
+  DCHECK(index >= 0 && index <= RowCount());
+  TemplateURL* keyword = GetTemplateURL(index);
+
+  template_url_service_->SetIsActiveTemplateURL(keyword, is_active);
 }
 
 void TemplateURLTableModel::OnTemplateURLServiceChanged() {

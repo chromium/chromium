@@ -19,6 +19,10 @@
 - (void)unifiedConsentCoordinatorDidTapSettingsLink:
     (UnifiedConsentCoordinator*)coordinator;
 
+// Called when the user taps on the 'Learn More' link.
+- (void)unifiedConsentCoordinatorDidTapLearnMoreLink:
+    (UnifiedConsentCoordinator*)coordinator;
+
 // Called when the user scrolls down to the bottom (or when the view controller
 // is loaded with no scroll needed).
 - (void)unifiedConsentCoordinatorDidReachBottom:
@@ -62,6 +66,10 @@
 @property(nonatomic, readonly) BOOL settingsLinkWasTapped;
 // If YES, the UI elements are disabled.
 @property(nonatomic, assign, getter=isUIDisabled) BOOL uiDisabled;
+// Returns true if there are policies disabling Sync for at least one data type.
+@property(nonatomic, readonly) BOOL hasManagedSyncDataType;
+// Returns true if there are account restrictions.
+@property(nonatomic, readonly) BOOL hasAccountRestrictions;
 
 // List of string ids used for the user consent. The string ids order matches
 // the way they appear on the screen.

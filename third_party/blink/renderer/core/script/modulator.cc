@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/script/document_modulator_impl.h"
+#include "third_party/blink/renderer/core/script/import_map.h"
 #include "third_party/blink/renderer/core/script/worker_modulator_impl.h"
 #include "third_party/blink/renderer/core/script/worklet_modulator_impl.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -77,6 +78,10 @@ void Modulator::ClearModulator(ScriptState* script_state) {
   V8PerContextData* per_context_data = script_state->PerContextData();
   DCHECK(per_context_data);
   per_context_data->ClearData(kPerContextDataKey);
+}
+
+void Modulator::Trace(Visitor* visitor) const {
+  visitor->Trace(import_map_);
 }
 
 }  // namespace blink

@@ -1,8 +1,8 @@
-CONSOLE ERROR: line 9: This test relies on dumping data via `window.internals`.
-CONSOLE DEBUG: line 13: Preconnect triggered for http://1.should.preconnect.test/
-CONSOLE DEBUG: line 15: Preconnect triggered for http://2.should.preconnect.test/
-CONSOLE DEBUG: line 20: DNS prefetch triggered for 1.should.dns-prefetch.test
-CONSOLE DEBUG: line 22: DNS prefetch triggered for 2.should.dns-prefetch.test
+CONSOLE ERROR: This test relies on dumping data via `window.internals`.
+CONSOLE DEBUG: Preconnect triggered for http://1.should.preconnect.test/
+CONSOLE DEBUG: Preconnect triggered for http://2.should.preconnect.test/
+CONSOLE DEBUG: DNS prefetch triggered for 1.should.dns-prefetch.test
+CONSOLE DEBUG: DNS prefetch triggered for 2.should.dns-prefetch.test
 This is a testharness.js-based test.
 PASS Prefetch: /resources/square.png?1
 PASS Prefetch: /resources/squ\nare.png?2

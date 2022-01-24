@@ -80,18 +80,20 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCerts) {
 
   ASSERT_TRUE(trust_cert_1 =
                   ParseCertFromFile(kCertDirPath, kCertInStoreFile1));
-  trust_store_chrome->GetTrust(trust_cert_1, &trust, /*debug_data=*/nullptr);
+  trust =
+      trust_store_chrome->GetTrust(trust_cert_1.get(), /*debug_data=*/nullptr);
   EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
 
   ASSERT_TRUE(trust_cert_2 =
                   ParseCertFromFile(kCertDirPath, kCertInStoreFile2));
-  trust_store_chrome->GetTrust(trust_cert_2, &trust, /*debug_data=*/nullptr);
+  trust =
+      trust_store_chrome->GetTrust(trust_cert_2.get(), /*debug_data=*/nullptr);
   EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
 
   ASSERT_TRUE(trust_cert_missing =
                   ParseCertFromFile(kCertDirPath, kCertNotInStoreFile));
-  trust_store_chrome->GetTrust(trust_cert_missing, &trust,
-                               /*debug_data=*/nullptr);
+  trust = trust_store_chrome->GetTrust(trust_cert_missing.get(),
+                                       /*debug_data=*/nullptr);
   EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
 }
 

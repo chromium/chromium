@@ -18,6 +18,10 @@ namespace content {
 class WebContents;
 }
 
+namespace subresource_filter {
+class ContentSubresourceFilterThrottleManager;
+}
+
 namespace weblayer {
 
 // A base class for //weblayer browsertests that directly test or rely on
@@ -49,6 +53,14 @@ class SubresourceFilterBrowserTest : public WebLayerBrowserTest {
   // embedded test server themselves should override this method to return
   // false.
   virtual bool StartEmbeddedTestServerAutomatically();
+
+  // The ContentSubresourceFilterthrottleManager class is per-page, meaning
+  // each Page object will create its own instance. This method returns the
+  // throttle manager associated with the currently primary Page in the
+  // web_contents() (i.e. the one the user is currently seeing and interacting
+  // with, as opposed to a prerendering or BFCached page).
+  subresource_filter::ContentSubresourceFilterThrottleManager*
+  GetPrimaryPageThrottleManager();
 
  private:
   subresource_filter::testing::TestRulesetCreator test_ruleset_creator_;

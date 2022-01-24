@@ -28,6 +28,10 @@ class FakePacketSocketFactory : public rtc::PacketSocketFactory,
  public:
   // |dispatcher| must outlive the factory.
   explicit FakePacketSocketFactory(FakeNetworkDispatcher* dispatcher);
+
+  FakePacketSocketFactory(const FakePacketSocketFactory&) = delete;
+  FakePacketSocketFactory& operator=(const FakePacketSocketFactory&) = delete;
+
   ~FakePacketSocketFactory() override;
 
   void OnSocketDestroyed(int port);
@@ -72,7 +76,7 @@ class FakePacketSocketFactory : public rtc::PacketSocketFactory,
       const rtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port) override;
-  rtc::AsyncPacketSocket* CreateServerTcpSocket(
+  rtc::AsyncListenSocket* CreateServerTcpSocket(
       const rtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port,
@@ -140,8 +144,6 @@ class FakePacketSocketFactory : public rtc::PacketSocketFactory,
   base::TimeDelta max_buffer_delay_;
 
   base::WeakPtrFactory<FakePacketSocketFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakePacketSocketFactory);
 };
 
 }  // namespace remoting

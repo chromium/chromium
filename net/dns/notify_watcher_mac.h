@@ -22,6 +22,9 @@ class NotifyWatcherMac {
 
   NotifyWatcherMac();
 
+  NotifyWatcherMac(const NotifyWatcherMac&) = delete;
+  NotifyWatcherMac& operator=(const NotifyWatcherMac&) = delete;
+
   // When deleted, automatically cancels.
   virtual ~NotifyWatcherMac();
 
@@ -40,8 +43,6 @@ class NotifyWatcherMac {
   int notify_token_;
   CallbackType callback_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotifyWatcherMac);
 };
 
 }  // namespace net

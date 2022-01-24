@@ -2,31 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
+#include "base/memory/raw_ptr.h"
 
 class SomeClass;
 
 class MyClass {
   MyClass() : ptr_field3_(nullptr), ptr_field7_(nullptr) {}
 
-  // Expected rewrite: CheckedPtr<const SomeClass> ptr_field1_;
-  CheckedPtr<const SomeClass> ptr_field1_;
+  // Expected rewrite: raw_ptr<const SomeClass> ptr_field1_;
+  raw_ptr<const SomeClass> ptr_field1_;
 
-  // Expected rewrite: CheckedPtr<volatile SomeClass> ptr_field2_;
-  CheckedPtr<volatile SomeClass> ptr_field2_;
+  // Expected rewrite: raw_ptr<volatile SomeClass> ptr_field2_;
+  raw_ptr<volatile SomeClass> ptr_field2_;
 
-  // Expected rewrite: const CheckedPtr<SomeClass> ptr_field3_;
-  const CheckedPtr<SomeClass> ptr_field3_;
+  // Expected rewrite: const raw_ptr<SomeClass> ptr_field3_;
+  const raw_ptr<SomeClass> ptr_field3_;
 
-  // Expected rewrite: mutable CheckedPtr<SomeClass> ptr_field4_;
-  mutable CheckedPtr<SomeClass> ptr_field4_;
+  // Expected rewrite: mutable raw_ptr<SomeClass> ptr_field4_;
+  mutable raw_ptr<SomeClass> ptr_field4_;
 
-  // Expected rewrite: CheckedPtr<const SomeClass> ptr_field5_;
-  CheckedPtr<const SomeClass> ptr_field5_;
+  // Expected rewrite: raw_ptr<const SomeClass> ptr_field5_;
+  raw_ptr<const SomeClass> ptr_field5_;
 
-  // Expected rewrite: volatile CheckedPtr<const SomeClass> ptr_field6_;
-  volatile CheckedPtr<const SomeClass> ptr_field6_;
+  // Expected rewrite: volatile raw_ptr<const SomeClass> ptr_field6_;
+  volatile raw_ptr<const SomeClass> ptr_field6_;
 
-  // Expected rewrite: const CheckedPtr<const SomeClass> ptr_field7_;
-  const CheckedPtr<const SomeClass> ptr_field7_;
+  // Expected rewrite: const raw_ptr<const SomeClass> ptr_field7_;
+  const raw_ptr<const SomeClass> ptr_field7_;
 };

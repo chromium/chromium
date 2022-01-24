@@ -111,7 +111,10 @@ DevToolsEmulator::DevToolsEmulator(WebViewImpl* web_view)
       scrollbars_hidden_(false),
       embedder_cookie_enabled_(
           web_view->GetPage()->GetSettings().GetCookieEnabled()),
-      document_cookie_disabled_(false) {}
+      document_cookie_disabled_(false),
+      embedder_force_dark_mode_enabled_(
+          web_view->GetPage()->GetSettings().GetForceDarkModeEnabled()),
+      auto_dark_overriden_(false) {}
 
 void DevToolsEmulator::Trace(Visitor* visitor) const {}
 
@@ -443,15 +446,15 @@ void DevToolsEmulator::ApplyViewportOverride(TransformationMatrix* transform) {
 
   // Translate while taking into account current scroll offset.
   // TODO(lukasza): https://crbug.com/734201: Add OOPIF support.
-  gfx::ScrollOffset scroll_offset =
+  gfx::Vector2dF scroll_offset =
       web_view_->MainFrame()->IsWebLocalFrame()
           ? web_view_->MainFrame()->ToWebLocalFrame()->GetScrollOffset()
-          : gfx::ScrollOffset();
+          : gfx::Vector2dF();
   gfx::PointF visual_offset = web_view_->VisualViewportOffset();
   float scroll_x = scroll_offset.x() + visual_offset.x();
   float scroll_y = scroll_offset.y() + visual_offset.y();
-  transform->Translate(-viewport_override_->position.X() + scroll_x,
-                       -viewport_override_->position.Y() + scroll_y);
+  transform->Translate(-viewport_override_->position.x() + scroll_x,
+                       -viewport_override_->position.y() + scroll_y);
 
   // First, reverse page scale, so we don't have to take it into account for
   // calculation of the translation.
@@ -537,6 +540,23 @@ void DevToolsEmulator::SetDocumentCookieDisabled(bool disabled) {
   document_cookie_disabled_ = disabled;
   web_view_->GetPage()->GetSettings().SetCookieEnabled(
       document_cookie_disabled_ ? false : embedder_cookie_enabled_);
+}
+
+void DevToolsEmulator::SetAutoDarkModeOverride(bool enabled) {
+  if (!auto_dark_overriden_) {
+    auto_dark_overriden_ = true;
+    embedder_force_dark_mode_enabled_ =
+        web_view_->GetPage()->GetSettings().GetForceDarkModeEnabled();
+  }
+  web_view_->GetPage()->GetSettings().SetForceDarkModeEnabled(enabled);
+}
+
+void DevToolsEmulator::ResetAutoDarkModeOverride() {
+  if (auto_dark_overriden_) {
+    web_view_->GetPage()->GetSettings().SetForceDarkModeEnabled(
+        embedder_force_dark_mode_enabled_);
+    auto_dark_overriden_ = false;
+  }
 }
 
 }  // namespace blink

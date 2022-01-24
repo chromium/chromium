@@ -6,14 +6,11 @@
 
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -40,13 +37,27 @@ const gfx::VectorIcon& GetPermissionIconId(
   DCHECK(delegate);
   auto requests = delegate->Requests();
   if (requests.size() == 1)
-    return permissions::GetIconId(requests[0]->request_type());
+    return requests[0]->GetIconForChip();
 
   // When we have two requests, it must be microphone & camera. Then we need to
   // use the icon from the camera request.
   return IsCameraPermission(requests[0]->request_type())
-             ? permissions::GetIconId(requests[0]->request_type())
-             : permissions::GetIconId(requests[1]->request_type());
+             ? requests[0]->GetIconForChip()
+             : requests[1]->GetIconForChip();
+}
+
+const gfx::VectorIcon& GetBlockedPermissionIconId(
+    permissions::PermissionPrompt::Delegate* delegate) {
+  DCHECK(delegate);
+  auto requests = delegate->Requests();
+  if (requests.size() == 1)
+    return requests[0]->GetBlockedIconForChip();
+
+  // When we have two requests, it must be microphone & camera. Then we need to
+  // use the icon from the camera request.
+  return IsCameraPermission(requests[0]->request_type())
+             ? requests[0]->GetBlockedIconForChip()
+             : requests[1]->GetBlockedIconForChip();
 }
 
 std::u16string GetPermissionMessage(
@@ -56,7 +67,7 @@ std::u16string GetPermissionMessage(
   auto requests = delegate->Requests();
 
   return requests.size() == 1
-             ? requests[0]->GetChipText().value()
+             ? requests[0]->GetRequestChipText().value()
              : l10n_util::GetStringUTF16(
                    IDS_MEDIA_CAPTURE_VIDEO_AND_AUDIO_PERMISSION_CHIP);
 }
@@ -78,45 +89,16 @@ void VerifyCameraAndMicRequest(
   }
 }
 
-bool ShouldBubbleStartOpen(permissions::PermissionPrompt::Delegate* delegate) {
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionChipGestureSensitive)) {
-    auto requests = delegate->Requests();
-    const bool has_gesture =
-        std::any_of(requests.begin(), requests.end(), [](auto* request) {
-          return request->GetGestureType() ==
-                 permissions::PermissionRequestGestureType::GESTURE;
-        });
-    if (has_gesture)
-      return true;
-  }
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionChipRequestTypeSensitive)) {
-    // Notifications and geolocation are targeted here because they are usually
-    // not necessary for the website to function correctly, so they can safely
-    // be given less prominence.
-    auto requests = delegate->Requests();
-    const bool is_geolocation_or_notifications =
-        std::any_of(requests.begin(), requests.end(), [](auto* request) {
-          auto request_type = request->request_type();
-          return request_type == permissions::RequestType::kNotifications ||
-                 request_type == permissions::RequestType::kGeolocation;
-        });
-    if (!is_geolocation_or_notifications)
-      return true;
-  }
-  return false;
-}
-
 }  // namespace
 
 PermissionRequestChip::PermissionRequestChip(
     Browser* browser,
-    permissions::PermissionPrompt::Delegate* delegate)
+    permissions::PermissionPrompt::Delegate* delegate,
+    bool should_bubble_start_open)
     : PermissionChip(
           delegate,
-          {GetPermissionIconId(delegate), GetPermissionMessage(delegate),
-           ShouldBubbleStartOpen(delegate),
+          {GetPermissionIconId(delegate), GetBlockedPermissionIconId(delegate),
+           GetPermissionMessage(delegate), should_bubble_start_open,
            base::FeatureList::IsEnabled(
                permissions::features::kPermissionChipIsProminentStyle),
            OmniboxChipButton::Theme::kBlue, /*should_expand=*/true}),
@@ -125,46 +107,31 @@ PermissionRequestChip::PermissionRequestChip(
   VerifyCameraAndMicRequest(delegate);
 }
 
-PermissionRequestChip::~PermissionRequestChip() {
-  if (prompt_bubble_) {
-    views::Widget* widget = prompt_bubble_->GetWidget();
-    widget->RemoveObserver(this);
-    widget->Close();
-  }
-}
+PermissionRequestChip::~PermissionRequestChip() = default;
 
-void PermissionRequestChip::OpenBubble() {
-  // The prompt bubble is either not opened yet or already closed on
-  // deactivation.
-  DCHECK(!prompt_bubble_);
-
+views::View* PermissionRequestChip::CreateBubble() {
   PermissionPromptBubbleView* prompt_bubble = new PermissionPromptBubbleView(
       browser_, delegate(), chip_shown_time_, PermissionPromptStyle::kChip);
+  prompt_bubble->SetOnBubbleDismissedByUserCallback(base::BindOnce(
+      &PermissionRequestChip::OnPromptBubbleDismissed, base::Unretained(this)));
   prompt_bubble->Show();
   prompt_bubble->GetWidget()->AddObserver(this);
-  prompt_bubble_ = prompt_bubble;
 
   RecordChipButtonPressed();
-}
 
-views::BubbleDialogDelegateView*
-PermissionRequestChip::GetPermissionPromptBubbleForTest() {
-  return prompt_bubble_;
-}
-
-void PermissionRequestChip::OnWidgetClosing(views::Widget* widget) {
-  DCHECK_EQ(widget, prompt_bubble_->GetWidget());
-  PermissionChip::OnWidgetClosing(widget);
-  prompt_bubble_ = nullptr;
-}
-
-bool PermissionRequestChip::IsBubbleShowing() const {
-  return prompt_bubble_;
+  return prompt_bubble;
 }
 
 void PermissionRequestChip::Collapse(bool allow_restart) {
   PermissionChip::Collapse(allow_restart);
-  ShowBlockedBadge();
+  if (!IsBubbleShowing()) {
+    ShowBlockedIcon();
+  }
+}
+
+void PermissionRequestChip::OnPromptBubbleDismissed() {
+  PermissionChip::OnPromptBubbleDismissed();
+  ShowBlockedIcon();
 }
 
 void PermissionRequestChip::RecordChipButtonPressed() {

@@ -33,7 +33,6 @@ class CORE_EXPORT CSSTokenizer {
   wtf_size_t Offset() const { return input_.Offset(); }
   wtf_size_t PreviousOffset() const { return prev_offset_; }
   StringView StringRangeAt(wtf_size_t start, wtf_size_t length) const;
-  wtf_size_t BlockStackDepth() const;
 
  private:
   CSSParserToken TokenizeSingle();

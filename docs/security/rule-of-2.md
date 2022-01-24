@@ -179,9 +179,11 @@ You can 'defang' a potentially-malicious input by transforming it into a
 _normal_ or _minimal_ form, usually by first transforming it into a format with
 a simpler grammar. We say that all data, file, and wire formats are defined by a
 _grammar_, even if that grammar is implicit or only partially-specified (as is
-so often the case). A file format with a particularly simple grammar is
-[Farbfeld](https://tools.suckless.org/farbfeld/). (The grammar is represented in
-the table at the top.)
+so often the case). A data format with a particularly simple grammar is
+[`SkPixmap`](https://source.chromium.org/chromium/chromium/src/+/3df9ac8e76132c586e888d1ddc7d2217574f17b0:third_party/skia/include/core/SkPixmap.h;l=712).
+(The 'grammar' is represented by the private data fields: a region of raw pixel
+data, the size of that region, and simple metadata (`SkImageInfo`) about how to
+interpret the pixels.)
 
 It's rare to find such a simple grammar for input formats, however.
 
@@ -251,7 +253,7 @@ are Java (on Android only) and JavaScript or WebAssembly (although we don't
 currently use them in high-privilege processes like the browser). One can
 imagine Swift on iOS or Kotlin on Android, too, although they are not currently
 used in Chromium. (Some of us on Security Team aspire to get more of Chromium in
-safer languages, but that's a long-term, heavy lift.)
+safer languages, and you may be able to [help with our experiments](rust-toolchain.md).)
 
 For an example of image processing, we have the pure-Java class
 [BaseGifImage](https://cs.chromium.org/chromium/src/third_party/gif_player/src/jp/tomorrowkey/android/gifplayer/BaseGifImage.java?rcl=27febd503d1bab047d73df26db83184fff8d6620&l=27).
@@ -269,6 +271,12 @@ implementation. A canonical example of this is the
 class, which is a Java wrapper [around C++
 Skia](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/libs/hwui/jni/BitmapFactory.cpp;l=586;drc=864d304156d1ef8985ee39c3c1858349b133b365).
 These APIs are therefore not considered memory-safe under the rule.
+
+Regular expressions ([re2](https://cs.chromium.org/chromium/src/third_party/re2/README.chromium))
+using trustworthy patterns can be used at high privilege to match on
+untrustworthy input strings. This does not automatically turn the matched text
+or captured groups into safe values.
+
 
 ## Safe Types
 

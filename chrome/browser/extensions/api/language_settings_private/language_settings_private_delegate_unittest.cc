@@ -55,7 +55,7 @@ class LanguageSettingsPrivateDelegateTest
 #endif  // defined(OS_WIN)
 
     base::ListValue language_codes;
-    language_codes.AppendString("fr");
+    language_codes.Append("fr");
     profile()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
                                language_codes);
 

@@ -24,6 +24,10 @@ struct CredentialInfo;
 class ContentCredentialManager : public blink::mojom::CredentialManager {
  public:
   explicit ContentCredentialManager(PasswordManagerClient* client);
+
+  ContentCredentialManager(const ContentCredentialManager&) = delete;
+  ContentCredentialManager& operator=(const ContentCredentialManager&) = delete;
+
   ~ContentCredentialManager() override;
 
   void BindRequest(
@@ -43,8 +47,6 @@ class ContentCredentialManager : public blink::mojom::CredentialManager {
   CredentialManagerImpl impl_;
 
   mojo::Receiver<blink::mojom::CredentialManager> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentCredentialManager);
 };
 
 }  // namespace password_manager

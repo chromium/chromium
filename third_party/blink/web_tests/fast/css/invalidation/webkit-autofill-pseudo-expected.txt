@@ -1,0 +1,12 @@
+Use descendant invalidation set for :-webkit-autofill pseudo class.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS [object Internals] is defined.
+PASS getComputedStyle(text, '').textDecorationLine is 'none'
+PASS internals.updateStyleAndReturnAffectedElementCount() is 1
+PASS getComputedStyle(text, '').textDecorationLine is 'underline'
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -14,6 +14,10 @@ namespace base {
 namespace test {
 
 class PowerMonitorTest : public testing::Test {
+ public:
+  PowerMonitorTest(const PowerMonitorTest&) = delete;
+  PowerMonitorTest& operator=(const PowerMonitorTest&) = delete;
+
  protected:
   PowerMonitorTest() = default;
 
@@ -26,8 +30,6 @@ class PowerMonitorTest : public testing::Test {
  private:
   TaskEnvironment task_environment_;
   absl::optional<ScopedPowerMonitorTestSource> power_monitor_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorTest);
 };
 
 // PowerMonitorSource is tightly coupled with the PowerMonitor, so this test
@@ -83,6 +85,14 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   // Repeated indications the device is off battery power should be suppressed.
   source().GeneratePowerStateEvent(false);
   EXPECT_EQ(observers[0].power_state_changes(), 2);
+
+  // Send speed limit change notifications.
+  source().GenerateSpeedLimitEvent(666);
+  EXPECT_EQ(observers[0].speed_limit_changes(), 1);
+  EXPECT_EQ(observers[0].last_speed_limit(), 666);
+  source().GenerateSpeedLimitEvent(777);
+  EXPECT_EQ(observers[0].speed_limit_changes(), 2);
+  EXPECT_EQ(observers[0].last_speed_limit(), 777);
 
   EXPECT_EQ(observers[0].thermal_state_changes(), 0);
 

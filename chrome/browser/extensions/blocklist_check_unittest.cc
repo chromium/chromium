@@ -54,8 +54,8 @@ TEST_F(BlocklistCheckTest, BlocklistedMalware) {
   BlocklistCheck check(blocklist(), extension_);
   runner_.RunUntilComplete(&check);
 
-  EXPECT_THAT(runner_.errors(),
-              testing::UnorderedElementsAre(PreloadCheck::BLOCKLISTED_ID));
+  EXPECT_THAT(runner_.errors(), testing::UnorderedElementsAre(
+                                    PreloadCheck::Error::kBlocklistedId));
   EXPECT_TRUE(check.GetErrorMessage().empty());
 }
 

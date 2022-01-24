@@ -16,7 +16,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -46,6 +45,12 @@ class ASH_EXPORT AssistantScreenContextControllerImpl
 
   explicit AssistantScreenContextControllerImpl(
       AssistantControllerImpl* assistant_controller);
+
+  AssistantScreenContextControllerImpl(
+      const AssistantScreenContextControllerImpl&) = delete;
+  AssistantScreenContextControllerImpl& operator=(
+      const AssistantScreenContextControllerImpl&) = delete;
+
   ~AssistantScreenContextControllerImpl() override;
 
   // Provides a pointer to the |assistant| owned by AssistantService.
@@ -109,8 +114,6 @@ class ASH_EXPORT AssistantScreenContextControllerImpl
 
   base::WeakPtrFactory<AssistantScreenContextControllerImpl> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantScreenContextControllerImpl);
 };
 
 }  // namespace ash

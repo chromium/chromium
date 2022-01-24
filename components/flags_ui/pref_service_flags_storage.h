@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FLAGS_UI_PREF_SERVICE_FLAGS_STORAGE_H_
 #define COMPONENTS_FLAGS_UI_PREF_SERVICE_FLAGS_STORAGE_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/flags_ui/flags_storage.h"
@@ -24,6 +23,10 @@ namespace flags_ui {
 class PrefServiceFlagsStorage : public FlagsStorage {
  public:
   explicit PrefServiceFlagsStorage(PrefService* prefs);
+
+  PrefServiceFlagsStorage(const PrefServiceFlagsStorage&) = delete;
+  PrefServiceFlagsStorage& operator=(const PrefServiceFlagsStorage&) = delete;
+
   ~PrefServiceFlagsStorage() override;
 
   std::set<std::string> GetFlags() const override;
@@ -42,8 +45,6 @@ class PrefServiceFlagsStorage : public FlagsStorage {
 
  private:
   PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefServiceFlagsStorage);
 };
 
 }  // namespace flags_ui

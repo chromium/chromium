@@ -6,12 +6,11 @@
 #define CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_ALS_FILE_READER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/als_reader.h"
 
@@ -28,14 +27,17 @@ class AlsFileReader : public LightProviderInterface {
   // ALS file location may not be ready immediately, so we retry every
   // |kAlsFileCheckingInterval| until |kMaxInitialAttempts| is reached, then
   // we give up.
-  static constexpr base::TimeDelta kAlsFileCheckingInterval =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kAlsFileCheckingInterval = base::Seconds(1);
   static constexpr int kMaxInitialAttempts = 20;
 
   static constexpr base::TimeDelta kAlsPollInterval =
-      base::TimeDelta::FromSecondsD(1.0 / AlsReader::kAlsPollFrequency);
+      base::Seconds(1.0 / AlsReader::kAlsPollFrequency);
 
   explicit AlsFileReader(AlsReader* als_reader);
+
+  AlsFileReader(const AlsFileReader&) = delete;
+  AlsFileReader& operator=(const AlsFileReader&) = delete;
+
   ~AlsFileReader() override;
 
   // Checks if an ALS is enabled, and if the config is valid . Also
@@ -86,8 +88,6 @@ class AlsFileReader : public LightProviderInterface {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AlsFileReader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AlsFileReader);
 };
 
 }  // namespace auto_screen_brightness

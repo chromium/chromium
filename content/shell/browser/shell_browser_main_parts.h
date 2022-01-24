@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
@@ -23,14 +22,20 @@ class ShellPlatformDelegate;
 
 class ShellBrowserMainParts : public BrowserMainParts {
  public:
-  explicit ShellBrowserMainParts(const MainFunctionParams& parameters);
+  explicit ShellBrowserMainParts(MainFunctionParams parameters);
+
+  ShellBrowserMainParts(const ShellBrowserMainParts&) = delete;
+  ShellBrowserMainParts& operator=(const ShellBrowserMainParts&) = delete;
+
   ~ShellBrowserMainParts() override;
 
   // BrowserMainParts overrides.
   int PreEarlyInitialization() override;
   int PreCreateThreads() override;
-  void PostCreateThreads() override;
+#if defined(OS_MAC)
   void PreCreateMainMessageLoop() override;
+#endif
+  void PostCreateThreads() override;
   void PostCreateMainMessageLoop() override;
   void ToolkitInitialized() override;
   int PreMainMessageLoopRun() override;
@@ -63,13 +68,10 @@ class ShellBrowserMainParts : public BrowserMainParts {
   std::unique_ptr<ShellBrowserContext> off_the_record_browser_context_;
 
   // For running content_browsertests.
-  const MainFunctionParams parameters_;
-  bool run_message_loop_;
+  MainFunctionParams parameters_;
 
   std::unique_ptr<performance_manager::PerformanceManagerLifetime>
       performance_manager_lifetime_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellBrowserMainParts);
 };
 
 }  // namespace content

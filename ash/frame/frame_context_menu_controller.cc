@@ -4,8 +4,8 @@
 
 #include "ash/frame/frame_context_menu_controller.h"
 
-#include "ash/public/cpp/move_to_desks_menu_delegate.h"
-#include "chromeos/ui/frame/move_to_desks_menu_model.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -22,8 +22,10 @@ void FrameContextMenuController::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
-  if (!MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu())
+  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
+          frame_->GetNativeWindow())) {
     return;
+  }
 
   DCHECK(delegate_);
   if (!delegate_->ShouldShowContextMenu(source, point))
@@ -32,7 +34,7 @@ void FrameContextMenuController::ShowContextMenuForViewImpl(
   if (!move_to_desks_menu_model_) {
     move_to_desks_menu_model_ =
         std::make_unique<chromeos::MoveToDesksMenuModel>(
-            std::make_unique<MoveToDesksMenuDelegate>(frame_),
+            std::make_unique<chromeos::MoveToDesksMenuDelegate>(frame_),
             /*add_title=*/true);
   }
 

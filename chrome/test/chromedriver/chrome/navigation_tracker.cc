@@ -152,8 +152,7 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
     // content and the server hasn't responded at all, a dummy page is created
     // for the new window. In such case, the baseURL will be 'about:blank'.
     base::DictionaryValue empty_params;
-    std::unique_ptr<base::DictionaryValue> result;
-    Status status = client_->SendCommandAndGetResultWithTimeout(
+    status = client_->SendCommandAndGetResultWithTimeout(
         "DOM.getDocument", empty_params, timeout, &result);
     std::string base_url;
     std::string doc_url;
@@ -364,11 +363,11 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
     *loading_state_ = kUnknown;
     base::DictionaryValue params;
     params.SetString("expression", "document.URL");
-    std::unique_ptr<base::DictionaryValue> result;
+    std::unique_ptr<base::DictionaryValue> result_dict;
     Status status(kOk);
     for (int attempt = 0; attempt < 3; attempt++) {
       status = client_->SendCommandAndGetResultWithTimeout(
-          "Runtime.evaluate", params, &command_timeout, &result);
+          "Runtime.evaluate", params, &command_timeout, &result_dict);
       if (status.code() == kUnknownError &&
           status.message().find(kTargetClosedMessage) != std::string::npos) {
         continue;
@@ -378,7 +377,7 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
     }
 
     std::string url;
-    if (status.IsError() || !result->GetString("result.value", &url))
+    if (status.IsError() || !result_dict->GetString("result.value", &url))
       return MakeNavigationCheckFailedStatus(status);
     if (loadingState() == kUnknown && url.empty())
       *loading_state_ = kLoading;

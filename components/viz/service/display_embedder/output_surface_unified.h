@@ -24,6 +24,10 @@ class OutputSurfaceUnified : public OutputSurface {
  public:
   // TODO(kylechar): Add test that uses OutputSurfaceUnified.
   OutputSurfaceUnified();
+
+  OutputSurfaceUnified(const OutputSurfaceUnified&) = delete;
+  OutputSurfaceUnified& operator=(const OutputSurfaceUnified&) = delete;
+
   ~OutputSurfaceUnified() override;
 
   // OutputSurface implementation.
@@ -47,9 +51,6 @@ class OutputSurfaceUnified : public OutputSurface {
       UpdateVSyncParametersCallback callback) override {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
   gfx::OverlayTransform GetDisplayTransform() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OutputSurfaceUnified);
 };
 
 }  // namespace viz

@@ -155,7 +155,7 @@ RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
   subframe_created_observer.Wait();
   if (wait_for_navigation)
     subframe_nav_observer.Wait();
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   return root->child_at(root->child_count() - 1)->current_frame_host();
 }
 
@@ -195,7 +195,7 @@ CollectAllRenderFrameHostsIncludingSpeculative(WebContentsImpl* web_contents) {
 }
 
 Shell* OpenBlankWindow(WebContentsImpl* web_contents) {
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   ShellAddedObserver new_shell_observer;
   EXPECT_TRUE(ExecJs(root, "last_opened_window = window.open()"));
   Shell* new_shell = new_shell_observer.GetShell();
@@ -206,7 +206,7 @@ Shell* OpenBlankWindow(WebContentsImpl* web_contents) {
 }
 
 Shell* OpenWindow(WebContentsImpl* web_contents, const GURL& url) {
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   ShellAddedObserver new_shell_observer;
   EXPECT_TRUE(
       ExecJs(root, JsReplace("last_opened_window = window.open($1)", url)));
@@ -306,9 +306,11 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
         line = "  |--";
       else
         line = "  +--";
-      for (FrameTreeNode* up = node->parent()->frame_tree_node(); up != root;
-           up = FrameTreeNode::From(up->parent())) {
-        if (up->parent()->child_at(up->parent()->child_count() - 1) != up)
+      for (RenderFrameHostImpl* up = node->parent();
+           up != root->current_frame_host(); up = up->GetParent()) {
+        if (up->GetParent()
+                ->child_at(up->GetParent()->child_count() - 1)
+                ->current_frame_host() != up)
           line = "  |  " + line;
         else
           line = "     " + line;
@@ -474,12 +476,10 @@ bool FrameTestNavigationManager::ShouldMonitorNavigation(
 
 UrlCommitObserver::UrlCommitObserver(FrameTreeNode* frame_tree_node,
                                      const GURL& url)
-    : content::WebContentsObserver(frame_tree_node->current_frame_host()
-                                       ->delegate()
-                                       ->GetAsWebContents()),
+    : content::WebContentsObserver(WebContents::FromRenderFrameHost(
+          frame_tree_node->current_frame_host())),
       frame_tree_node_id_(frame_tree_node->frame_tree_node_id()),
-      url_(url) {
-}
+      url_(url) {}
 
 UrlCommitObserver::~UrlCommitObserver() {}
 
@@ -548,8 +548,10 @@ blink::mojom::PopupWidgetHost* ShowPopupWidgetWaiter::GetForwardingInterface() {
 }
 
 void ShowPopupWidgetWaiter::ShowPopup(const gfx::Rect& initial_rect,
+                                      const gfx::Rect& initial_anchor_rect,
                                       ShowPopupCallback callback) {
-  GetForwardingInterface()->ShowPopup(initial_rect, std::move(callback));
+  GetForwardingInterface()->ShowPopup(initial_rect, initial_anchor_rect,
+                                      std::move(callback));
   initial_rect_ = initial_rect;
   run_loop_.Quit();
 }
@@ -747,7 +749,7 @@ void DevToolsInspectorLogWatcher::FlushAndStopWatching() {
 
 FrameNavigateParamsCapturer::FrameNavigateParamsCapturer(FrameTreeNode* node)
     : WebContentsObserver(
-          node->current_frame_host()->delegate()->GetAsWebContents()),
+          WebContents::FromRenderFrameHost(node->current_frame_host())),
       frame_tree_node_id_(node->frame_tree_node_id()) {}
 
 FrameNavigateParamsCapturer::~FrameNavigateParamsCapturer() = default;
@@ -829,13 +831,13 @@ BackForwardCache::DisabledReason RenderFrameHostDisabledForTestingReason() {
   return reason;
 }
 
-void DisableForRenderFrameHostForTesting(
+void DisableBFCacheForRFHForTesting(
     content::RenderFrameHost* render_frame_host) {
   content::BackForwardCache::DisableForRenderFrameHost(
       render_frame_host, RenderFrameHostDisabledForTestingReason());
 }
 
-void DisableForRenderFrameHostForTesting(content::GlobalRenderFrameHostId id) {
+void DisableBFCacheForRFHForTesting(content::GlobalRenderFrameHostId id) {
   content::BackForwardCache::DisableForRenderFrameHost(
       id, RenderFrameHostDisabledForTestingReason());
 }

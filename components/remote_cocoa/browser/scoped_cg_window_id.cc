@@ -69,7 +69,6 @@ base::WeakPtr<ScopedCGWindowID> ScopedCGWindowID::Get(uint32_t cg_window_id) {
   DCHECK_CALLED_ON_VALID_THREAD(found->second->thread_checker_);
 
   return found->second->weak_factory_.GetWeakPtr();
-  return nullptr;
 }
 
 }  // namespace remote_cocoa

@@ -162,8 +162,8 @@ export class EarconEngine {
         this.onPopUpButton();
         return;
 
-      // TODO(dmazzoni): decide if we want new earcons for these
-      // or not. We may choose to not have earcons for some of these.
+      // These had earcons in previous versions of ChromeVox but
+      // they're currently unused / unassigned.
       case Earcon.LIST_ITEM:
       case Earcon.LONG_DESC:
       case Earcon.MATH:

@@ -28,6 +28,7 @@ class CORE_EXPORT TextDecorationOffset : public TextDecorationOffsetBase {
 
   int ComputeUnderlineOffsetForUnder(const Length& style_underline_offset,
                                      float computed_font_size,
+                                     const SimpleFontData* font_data,
                                      float text_decoration_thickness,
                                      FontVerticalPositionType) const override;
 

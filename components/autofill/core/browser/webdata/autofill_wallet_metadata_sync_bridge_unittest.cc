@@ -31,10 +31,14 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/entity_data.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/data_batch.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,7 +95,7 @@ const char kDefaultCacheGuid[] = "CacheGuid";
 
 base::Time UseDateFromProtoValue(int64_t use_date_proto_value) {
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(use_date_proto_value));
+      base::Microseconds(use_date_proto_value));
 }
 
 const base::Time kDefaultTime = UseDateFromProtoValue(100);
@@ -283,6 +287,12 @@ MATCHER_P(HasSpecifics, expected, "") {
 class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
  public:
   AutofillWalletMetadataSyncBridgeTest() {}
+
+  AutofillWalletMetadataSyncBridgeTest(
+      const AutofillWalletMetadataSyncBridgeTest&) = delete;
+  AutofillWalletMetadataSyncBridgeTest& operator=(
+      const AutofillWalletMetadataSyncBridgeTest&) = delete;
+
   ~AutofillWalletMetadataSyncBridgeTest() override {}
 
   void SetUp() override {
@@ -451,7 +461,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   }
 
   void AdvanceTestClockByTwoYears() {
-    test_clock_.Advance(base::TimeDelta::FromDays(365 * 2));
+    test_clock_.Advance(base::Days(365 * 2));
   }
 
   AutofillWalletMetadataSyncBridge* bridge() { return bridge_.get(); }
@@ -479,8 +489,6 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
   std::unique_ptr<AutofillWalletMetadataSyncBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillWalletMetadataSyncBridgeTest);
 };
 
 // The following 2 tests make sure client tags stay stable.
@@ -1167,6 +1175,12 @@ class AutofillWalletMetadataSyncBridgeRemoteChangesTest
       public AutofillWalletMetadataSyncBridgeTest {
  public:
   AutofillWalletMetadataSyncBridgeRemoteChangesTest() {}
+
+  AutofillWalletMetadataSyncBridgeRemoteChangesTest(
+      const AutofillWalletMetadataSyncBridgeRemoteChangesTest&) = delete;
+  AutofillWalletMetadataSyncBridgeRemoteChangesTest& operator=(
+      const AutofillWalletMetadataSyncBridgeRemoteChangesTest&) = delete;
+
   ~AutofillWalletMetadataSyncBridgeRemoteChangesTest() override {}
 
   void ResetBridgeWithPotentialInitialSync(
@@ -1186,9 +1200,6 @@ class AutofillWalletMetadataSyncBridgeRemoteChangesTest
       ReceiveUpdates(remote_data);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillWalletMetadataSyncBridgeRemoteChangesTest);
 };
 
 // No upstream communication or local DB change happens if the server sends an

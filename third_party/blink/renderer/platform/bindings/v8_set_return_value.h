@@ -85,9 +85,9 @@ PLATFORM_EXPORT v8::Local<v8::Object> CreatePropertyDescriptorObject(
     v8::Isolate* isolate,
     const v8::PropertyDescriptor& desc);
 
-PLATFORM_EXPORT inline void V8SetReturnValue(
-    const v8::PropertyCallbackInfo<v8::Value>& info,
-    const v8::PropertyDescriptor& value) {
+template <typename CallbackInfo>
+void V8SetReturnValue(const CallbackInfo& info,
+                      const v8::PropertyDescriptor& value) {
   info.GetReturnValue().Set(
       CreatePropertyDescriptorObject(info.GetIsolate(), value));
 }

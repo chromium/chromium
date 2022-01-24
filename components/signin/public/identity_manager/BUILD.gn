@@ -24,7 +24,6 @@ source_set("identity_manager") {
     "accounts_in_cookie_jar_info.cc",
     "accounts_in_cookie_jar_info.h",
     "accounts_mutator.h",
-    "consent_level.h",
     "device_accounts_synchronizer.h",
     "diagnostics_provider.h",
     "identity_manager.cc",
@@ -88,12 +87,6 @@ source_set("identity_manager") {
   ]
 }
 
-if (is_android) {
-  java_cpp_enum("identity_manager_enum_javagen") {
-    sources = [ "consent_level.h" ]
-  }
-}
-
 source_set("unit_tests") {
   testonly = true
 
@@ -138,8 +131,15 @@ source_set("unit_tests") {
     deps += [ "//components/signin/public/identity_manager/ios:test_support" ]
   }
 
-  if (is_chromeos_lacros) {
-    deps += [ "//components/account_manager_core" ]
+  if (is_chromeos) {
+    deps += [
+      "//components/account_manager_core",
+      "//components/account_manager_core:test_support",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/components/account_manager" ]
   }
 }
 

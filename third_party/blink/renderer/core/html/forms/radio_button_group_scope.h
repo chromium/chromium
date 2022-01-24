@@ -46,6 +46,8 @@ class RadioButtonGroupScope {
   unsigned GroupSizeFor(const HTMLInputElement*) const;
 
  private:
+  RadioButtonGroup* FindGroupByName(const AtomicString&) const;
+
   using NameToGroupMap = HeapHashMap<AtomicString, Member<RadioButtonGroup>>;
   Member<NameToGroupMap> name_to_group_map_;
 };

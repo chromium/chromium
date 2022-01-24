@@ -12,11 +12,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -61,6 +59,10 @@ class WebApkInstallService : public KeyedService {
   static WebApkInstallService* Get(content::BrowserContext* browser_context);
 
   explicit WebApkInstallService(content::BrowserContext* browser_context);
+
+  WebApkInstallService(const WebApkInstallService&) = delete;
+  WebApkInstallService& operator=(const WebApkInstallService&) = delete;
+
   ~WebApkInstallService() override;
 
   // Returns whether an install for |web_manifest_url| is in progress.
@@ -83,18 +85,8 @@ class WebApkInstallService : public KeyedService {
                    FinishCallback finish_callback);
 
  private:
-  // Observes the lifetime of a WebContents.
-  class LifetimeObserver : public content::WebContentsObserver {
-   public:
-    explicit LifetimeObserver(content::WebContents* web_contents)
-        : WebContentsObserver(web_contents) {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(LifetimeObserver);
-  };
-
   // Called once the install/update completed or failed.
-  void OnFinishedInstall(std::unique_ptr<LifetimeObserver> observer,
+  void OnFinishedInstall(base::WeakPtr<content::WebContents> web_contents,
                          const webapps::ShortcutInfo& shortcut_info,
                          const SkBitmap& primary_icon,
                          bool is_priamry_icon_maskable,
@@ -122,8 +114,6 @@ class WebApkInstallService : public KeyedService {
 
   // Used to get |weak_ptr_|.
   base::WeakPtrFactory<WebApkInstallService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebApkInstallService);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INSTALL_SERVICE_H_

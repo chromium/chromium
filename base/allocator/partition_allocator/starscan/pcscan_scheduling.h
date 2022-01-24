@@ -8,10 +8,10 @@
 #include <atomic>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -43,6 +43,13 @@ class BASE_EXPORT PCScanSchedulingBackend {
   PCScanSchedulingBackend(const PCScanSchedulingBackend&) = delete;
   PCScanSchedulingBackend& operator=(const PCScanSchedulingBackend&) = delete;
 
+  void DisableScheduling();
+  void EnableScheduling();
+
+  bool is_scheduling_enabled() const {
+    return scheduling_enabled_.load(std::memory_order_relaxed);
+  }
+
   inline QuarantineData& GetQuarantineData();
 
   // Invoked when the limit in PCScanScheduler is reached. Returning true
@@ -62,7 +69,12 @@ class BASE_EXPORT PCScanSchedulingBackend {
   virtual TimeDelta UpdateDelayedSchedule();
 
  protected:
+  inline bool SchedulingDisabled() const;
+
+  virtual bool NeedsToImmediatelyScan() = 0;
+
   PCScanScheduler& scheduler_;
+  std::atomic<bool> scheduling_enabled_{true};
 };
 
 // Scheduling backend that just considers a single hard limit.
@@ -74,6 +86,9 @@ class BASE_EXPORT LimitBackend final : public PCScanSchedulingBackend {
 
   bool LimitReached() final;
   void UpdateScheduleAfterScan(size_t, base::TimeDelta, size_t) final;
+
+ private:
+  bool NeedsToImmediatelyScan() final;
 };
 
 // Task based backend that is aware of a target mutator utilization that
@@ -108,10 +123,12 @@ class BASE_EXPORT MUAwareTaskBasedBackend final
   // memory management in scan.
   static constexpr double kTargetMutatorUtilizationPercent = 0.90;
 
+  bool NeedsToImmediatelyScan() final;
+
   // Callback to schedule a delayed scan.
   const base::RepeatingCallback<void(TimeDelta)> schedule_delayed_scan_;
 
-  base::Lock scheduler_lock_;
+  PartitionLock scheduler_lock_;
   size_t hard_limit_ GUARDED_BY(scheduler_lock_){0};
   base::TimeTicks earliest_next_scan_time_ GUARDED_BY(scheduler_lock_);
 

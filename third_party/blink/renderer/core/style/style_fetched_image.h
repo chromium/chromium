@@ -37,7 +37,6 @@ class Document;
 // url(...) function.)
 class StyleFetchedImage final : public StyleImage,
                                 public ImageResourceObserver {
-  USING_PRE_FINALIZER(StyleFetchedImage, Dispose);
 
  public:
   StyleFetchedImage(ImageResourceContent* image,
@@ -82,7 +81,6 @@ class StyleFetchedImage final : public StyleImage,
 
  private:
   bool IsEqual(const StyleImage&) const override;
-  void Dispose();
 
   // ImageResourceObserver overrides
   void ImageNotifyFinished(ImageResourceContent*) override;

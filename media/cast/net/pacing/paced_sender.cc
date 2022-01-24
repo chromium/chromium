@@ -334,7 +334,7 @@ void PacedSender::SendStoredPackets() {
   if (now >= burst_end_ || previous_state == State_BurstFull) {
     // Start a new burst.
     current_burst_size_ = 0;
-    burst_end_ = now + base::TimeDelta::FromMilliseconds(kPacingIntervalMs);
+    burst_end_ = now + base::Milliseconds(kPacingIntervalMs);
 
     // The goal here is to try to send out the queued packets over the next
     // three bursts, while trying to keep the burst size below 10 if possible.

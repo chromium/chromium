@@ -40,6 +40,8 @@ enum class DismissReason {
   ACTIVITY_DESTROYED = 7,
   // A message was dismissed due to the destruction of the corresponding scopes.
   SCOPE_DESTROYED = 8,
+  // A message was dismissed explicitly in feature code.
+  DISMISSED_BY_FEATURE = 9,
 
   // Insert new values before this line.
   COUNT
@@ -63,14 +65,14 @@ enum class MessageScopeType { WINDOW = 0, WEB_CONTENTS = 1, NAVIGATION = 2 };
 // When adding a new message identifier, make corresponding changes in the
 // following locations:
 // - tools/metrics/histograms/enums.xml: <enum name="MessageIdentifier">
-// - tools/metrics/histograms/histograms_xml/android/histograms.xml:
+// - tools/metrics/histograms/metadata/android/histograms.xml:
 //       <variants name="MessageIdentifiers">
 // - MessagesMetrics.java: #messageIdentifierToHistogramSuffix()
 //
 // A Java counterpart is generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
 enum class MessageIdentifier {
-  TEST_MESSAGE = 0,
+  INVALID_MESSAGE = 0,
   SAVE_PASSWORD = 1,
   UPDATE_PASSWORD = 2,
   GENERATED_PASSWORD_SAVED = 3,
@@ -83,8 +85,16 @@ enum class MessageIdentifier {
   READER_MODE = 10,
   CHROME_SURVEY = 11,
   SAVE_CARD = 12,
-  GROUPED_PERMISSION = 13,
+  NOTIFICATION_BLOCKED = 13,
   PERMISSION_UPDATE = 14,
+  ADS_BLOCKED = 15,
+  DOWNLOAD_PROGRESS = 16,
+  SYNC_ERROR = 17,
+  SHARED_HIGHLIGHTING = 18,
+  NEAR_OOM_REDUCTION = 19,
+  INSTALLABLE_AMBIENT_BADGE = 20,
+  AUTO_DARK_WEB_CONTENTS = 21,
+  TEST_MESSAGE = 22,
 
   // Insert new values before this line.
   COUNT

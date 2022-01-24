@@ -7,7 +7,7 @@ import {FittingType} from 'chrome://print/pdf/constants.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
 
 window.pdf_zoom_toolbar_test = {};
 pdf_zoom_toolbar_test.suiteName = 'PdfToolbarManagerTest';

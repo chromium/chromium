@@ -34,13 +34,15 @@ class TestJSRunner : public JSRunner {
   class Scope {
    public:
     Scope(std::unique_ptr<JSRunner> runner);
+
+    Scope(const Scope&) = delete;
+    Scope& operator=(const Scope&) = delete;
+
     ~Scope();
 
    private:
     std::unique_ptr<JSRunner> runner_;
     JSRunner* old_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(Scope);
   };
 
   // A scoped object that allows errors to be thrown from running JS functions.
@@ -49,10 +51,11 @@ class TestJSRunner : public JSRunner {
   class AllowErrors {
    public:
     AllowErrors();
-    ~AllowErrors();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(AllowErrors);
+    AllowErrors(const AllowErrors&) = delete;
+    AllowErrors& operator=(const AllowErrors&) = delete;
+
+    ~AllowErrors();
   };
 
   // A scoped object that suspends script execution through the JSRunner. While
@@ -63,15 +66,20 @@ class TestJSRunner : public JSRunner {
   class Suspension {
    public:
     Suspension();
-    ~Suspension();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Suspension);
+    Suspension(const Suspension&) = delete;
+    Suspension& operator=(const Suspension&) = delete;
+
+    ~Suspension();
   };
 
   TestJSRunner();
   // Provides a callback to be called just before JS will be executed.
   explicit TestJSRunner(const base::RepeatingClosure& will_call_js);
+
+  TestJSRunner(const TestJSRunner&) = delete;
+  TestJSRunner& operator=(const TestJSRunner&) = delete;
+
   ~TestJSRunner() override;
 
   // JSRunner:
@@ -106,8 +114,6 @@ class TestJSRunner : public JSRunner {
 
   base::RepeatingClosure will_call_js_;
   std::vector<PendingCall> pending_calls_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestJSRunner);
 };
 
 }  // namespace extensions

@@ -132,6 +132,17 @@ class ModelTest(unittest.TestCase):
         test_json[0],
         'path/to/redundant_default_attribute.json')
 
+  def testReturnsAsyncMissingParametersKey(self):
+    test_json = CachedLoad('test/returns_async_missing_parameters_key.json')
+    self.assertRaisesRegexp(
+        ValueError,
+        'parameters key not specified on returns_async: '
+        'returnsAsyncMissingParametersKey.asyncNoParametersKey in '
+        'path/to/returns_async_missing_parameters_key.json',
+        self.model.AddNamespace,
+        test_json[0],
+        'path/to/returns_async_missing_parameters_key.json')
+
   def testDescription(self):
     self.assertFalse(
         self.permissions.functions['contains'].params[0].description)

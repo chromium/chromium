@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_IMPL_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
@@ -13,14 +12,6 @@
 #include "components/permissions/permission_prompt.h"
 
 class Browser;
-
-namespace views {
-class BubbleDialogDelegateView;
-}
-
-namespace permissions {
-class PermissionRequestManager;
-}
 
 namespace content {
 class WebContents;
@@ -35,6 +26,10 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
   PermissionPromptImpl(Browser* browser,
                        content::WebContents* web_contents,
                        Delegate* delegate);
+
+  PermissionPromptImpl(const PermissionPromptImpl&) = delete;
+  PermissionPromptImpl& operator=(const PermissionPromptImpl&) = delete;
+
   ~PermissionPromptImpl() override;
 
   // permissions::PermissionPrompt:
@@ -43,11 +38,7 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
 
-  views::BubbleDialogDelegateView* prompt_bubble_for_testing() {
-    if (prompt_bubble_)
-      return prompt_bubble_;
-    return chip_ ? chip_->GetPermissionPromptBubbleForTest() : nullptr;
-  }
+  views::Widget* GetPromptBubbleWidgetForTesting();
 
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;
@@ -81,11 +72,6 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
   Browser* browser_;
 
   base::TimeTicks permission_requested_time_;
-
-  // PermissionRequestManager owns `this` and outlives `PermissionPromptImpl`.
-  permissions::PermissionRequestManager* manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionPromptImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_IMPL_H_

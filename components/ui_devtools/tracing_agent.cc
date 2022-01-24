@@ -463,7 +463,7 @@ void TracingAgent::SetupTimer(double usage_reporting_interval) {
     usage_reporting_interval = kMinimumReportingInterval;
 
   base::TimeDelta interval =
-      base::TimeDelta::FromMilliseconds(std::ceil(usage_reporting_interval));
+      base::Milliseconds(std::ceil(usage_reporting_interval));
   buffer_usage_poll_timer_ = std::make_unique<base::RepeatingTimer>();
   buffer_usage_poll_timer_->Start(
       FROM_HERE, interval,

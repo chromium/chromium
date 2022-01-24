@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "net/url_request/redirect_info.h"
@@ -25,6 +24,12 @@ namespace content {
 class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
  public:
   TestNavigationURLLoaderDelegate();
+
+  TestNavigationURLLoaderDelegate(const TestNavigationURLLoaderDelegate&) =
+      delete;
+  TestNavigationURLLoaderDelegate& operator=(
+      const TestNavigationURLLoaderDelegate&) = delete;
+
   ~TestNavigationURLLoaderDelegate() override;
 
   const net::RedirectInfo& redirect_info() const { return redirect_info_; }
@@ -69,8 +74,8 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
       EarlyHints early_hints) override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
-  absl::optional<url::Origin> CreateURLLoaderFactoryForEarlyHintsPreload(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+  absl::optional<NavigationEarlyHintsManagerParams>
+  CreateNavigationEarlyHintsManagerParams(
       const network::mojom::EarlyHints& early_hints) override;
 
  private:
@@ -87,8 +92,6 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
   std::unique_ptr<base::RunLoop> request_redirected_;
   std::unique_ptr<base::RunLoop> response_started_;
   std::unique_ptr<base::RunLoop> request_failed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNavigationURLLoaderDelegate);
 };
 
 }  // namespace content

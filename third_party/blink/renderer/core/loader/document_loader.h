@@ -35,14 +35,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
-#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
@@ -69,12 +70,14 @@
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -84,8 +87,8 @@ class TickClock;
 
 namespace blink {
 
-class ApplicationCacheHostForFrame;
 class ContentSecurityPolicy;
+class CodeCacheHost;
 class Document;
 class DocumentParser;
 class Frame;
@@ -137,7 +140,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   const AtomicString& MimeType() const;
 
-  const KURL& OriginalUrl() const;
   const Referrer& OriginalReferrer() const;
 
   MHTMLArchive* Archive() const { return archive_.Get(); }
@@ -155,6 +157,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   const KURL& UrlForHistory() const;
   const AtomicString& HttpMethod() const;
   const Referrer& GetReferrer() const;
+  const SecurityOrigin* GetRequestorOrigin() const;
   const KURL& UnreachableURL() const;
   const absl::optional<blink::mojom::FetchCacheMode>& ForceFetchCacheMode()
       const;
@@ -166,7 +169,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps
   void RunURLAndHistoryUpdateSteps(
       const KURL&,
-      SameDocumentNavigationSource same_document_navigation_source,
+      mojom::blink::SameDocumentNavigationType,
       scoped_refptr<SerializedScriptValue>,
       WebFrameLoadType = WebFrameLoadType::kReplaceCurrentItem,
       mojom::blink::ScrollRestorationType =
@@ -175,11 +178,12 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // |is_synchronously_committed| is described in comment for
   // CommitSameDocumentNavigation.
   void UpdateForSameDocumentNavigation(const KURL&,
-                                       SameDocumentNavigationSource,
+                                       mojom::blink::SameDocumentNavigationType,
                                        scoped_refptr<SerializedScriptValue>,
                                        mojom::blink::ScrollRestorationType,
                                        WebFrameLoadType,
                                        const SecurityOrigin* initiator_origin,
+                                       bool is_browser_initiated,
                                        bool is_synchronously_committed);
 
   const ResourceResponse& GetResponse() const { return response_; }
@@ -218,8 +222,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // same document navigation in that frame. Returns false if the navigation
   // cannot commit, true otherwise.
   // |initiator_origin| is the origin of the document or script that initiated
-  // the navigation or nullptr if the navigation is browser-initiated (e.g.
-  // typed in omnibox).
+  // the navigation or nullptr if the navigation is initiated via browser UI
+  // (e.g. typed in omnibox), or a history traversal to a previous navigation
+  // via browser UI.
   // |is_synchronously_committed| is true if the navigation is synchronously
   // committed from within Blink, rather than being driven by the browser's
   // navigation stack.
@@ -232,15 +237,12 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       const SecurityOrigin* initiator_origin,
       bool is_synchronously_committed,
       mojom::blink::TriggeringEventInfo,
+      bool is_browser_initiated,
       std::unique_ptr<WebDocumentLoader::ExtraData>);
 
   void SetDefersLoading(LoaderFreezeMode);
 
   DocumentLoadTiming& GetTiming() { return document_load_timing_; }
-
-  ApplicationCacheHostForFrame* GetApplicationCacheHost() const {
-    return application_cache_host_.Get();
-  }
 
   PreviewsState GetPreviewsState() const { return previews_state_; }
 
@@ -293,8 +295,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void BlockParser();
   void ResumeParser();
 
-  bool IsListingFtpDirectory() const { return listing_ftp_directory_; }
-
   UseCounterImpl& GetUseCounter() { return use_counter_; }
   Dactyloscoper& GetDactyloscoper() { return dactyloscoper_; }
 
@@ -302,10 +302,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // UseCounter
   void CountUse(mojom::WebFeature) override;
-
-  void SetApplicationCacheHostForTesting(ApplicationCacheHostForFrame* host) {
-    application_cache_host_ = host;
-  }
+  void CountDeprecation(mojom::WebFeature) override;
 
   void SetCommitReason(CommitReason reason) { commit_reason_ = reason; }
 
@@ -358,13 +355,18 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // activated.
   void NotifyPrerenderingDocumentActivated(base::TimeTicks activation_start);
 
-  blink::mojom::CodeCacheHost* GetCodeCacheHost();
-  void OnCodeCacheHostClosed();
+  CodeCacheHost* GetCodeCacheHost();
   void SetCodeCacheHost(
       mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host);
   static void DisableCodeCacheForTesting();
 
+  mojo::PendingRemote<blink::mojom::CodeCacheHost> CreateWorkerCodeCacheHost();
+
   HashSet<KURL> GetEarlyHintsPreloadedResources();
+
+  const absl::optional<Vector<KURL>>& AdAuctionComponents() const {
+    return ad_auction_components_;
+  }
 
  protected:
   // Based on its MIME type, if the main document's response corresponds to an
@@ -409,10 +411,11 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       const KURL&,
       WebFrameLoadType,
       HistoryItem*,
-      SameDocumentNavigationSource,
+      mojom::blink::SameDocumentNavigationType,
       ClientRedirectPolicy,
       bool has_transient_user_activation,
       const SecurityOrigin* initiator_origin,
+      bool is_browser_initiated,
       bool is_synchronously_committed,
       mojom::blink::TriggeringEventInfo,
       std::unique_ptr<WebDocumentLoader::ExtraData>);
@@ -482,6 +485,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Computes and creates CSP for this document.
   ContentSecurityPolicy* CreateCSP();
 
+  // Whether the isolated code cache should be used for this document.
+  bool UseIsolatedCodeCache();
+
   // Params are saved in constructor and are cleared after StartLoading().
   // TODO(dgozman): remove once StartLoading is merged with constructor.
   std::unique_ptr<WebNavigationParams> params_;
@@ -519,9 +525,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   Member<SubresourceFilter> subresource_filter_;
 
-  // A reference to actual request's url and referrer used to
-  // inititate this load.
-  KURL original_url_;
   const Referrer original_referrer_;
 
   ResourceResponse response_;
@@ -537,14 +540,13 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       content_security_notifier_;
 
   const scoped_refptr<SecurityOrigin> origin_to_commit_;
+  blink::BlinkStorageKey storage_key_;
   const network::mojom::WebSandboxFlags sandbox_flags_;
   WebNavigationType navigation_type_;
 
   DocumentLoadTiming document_load_timing_;
 
   base::TimeTicks time_of_last_data_received_;
-
-  Member<ApplicationCacheHostForFrame> application_cache_host_;
 
   std::unique_ptr<WebServiceWorkerNetworkProvider>
       service_worker_network_provider_;
@@ -596,8 +598,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // See WebNavigationParams for definition.
   const bool was_discarded_ = false;
 
-  bool listing_ftp_directory_ = false;
-
   // True when loading the main document from the MHTML archive. It implies an
   // |archive_| to be created. Nested documents will also inherit from the same
   // |archive_|, but won't have |loading_main_document_from_mhtml_archive_| set.
@@ -644,9 +644,14 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // This is the interface that handles generated code cache
   // requests to fetch code cache when loading resources.
-  mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host_;
+  std::unique_ptr<CodeCacheHost> code_cache_host_;
 
   HashSet<KURL> early_hints_preloaded_resources_;
+
+  // If this is a navigation to fenced frame from an interest group auction,
+  // contains URNs to the ad components returned by the winning bid. Null,
+  // otherwise.
+  absl::optional<Vector<KURL>> ad_auction_components_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

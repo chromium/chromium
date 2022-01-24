@@ -43,7 +43,7 @@
 #include "services/network/public/mojom/network_quality_estimator_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
-#include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -81,6 +81,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
                  mojo::PendingReceiver<mojom::NetworkService> receiver =
                      mojo::NullReceiver(),
                  bool delay_initialization_until_set_client = false);
+
+  NetworkService(const NetworkService&) = delete;
+  NetworkService& operator=(const NetworkService&) = delete;
 
   ~NetworkService() override;
 
@@ -204,6 +207,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void BindTestInterface(
       mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) override;
   void SetFirstPartySets(const std::string& raw_sets) override;
+  void SetPersistedFirstPartySetsAndGetCurrentSets(
+      const std::string& persisted_sets,
+      mojom::NetworkService::SetPersistedFirstPartySetsAndGetCurrentSetsCallback
+          callback) override;
   void SetExplicitlyAllowedPorts(const std::vector<uint16_t>& ports) override;
 
   // Returns an HttpAuthHandlerFactory for the given NetworkContext.
@@ -388,8 +395,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // that renderer process (the renderer will proxy requests from PPAPI - such
   // requests should have their initiator origin within the set stored here).
   std::map<int, std::set<url::Origin>> plugin_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkService);
 };
 
 }  // namespace network

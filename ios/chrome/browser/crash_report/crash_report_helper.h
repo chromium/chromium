@@ -12,7 +12,6 @@
 
 
 namespace breadcrumbs {
-class BreadcrumbManager;
 class BreadcrumbManagerKeyedService;
 }
 
@@ -56,15 +55,6 @@ void StopMonitoringTabStateForWebStateList(WebStateList* web_state_list);
 // Clear any state about the urls loaded in the given WebStateList; this should
 // be called when the WebStateList is deactivated.
 void ClearStateForWebStateList(WebStateList* web_state_list);
-
-// Starts listening for breadcrumbs logged to |breadcrumb_manager|. Collected
-// breadcrumbs will be attached to crash reports.
-void MonitorBreadcrumbManager(
-    breadcrumbs::BreadcrumbManager* breadcrumb_manager);
-
-// Stops listening for breadcrumbs logged to |breadcrumb_manager|.
-void StopMonitoringBreadcrumbManager(
-    breadcrumbs::BreadcrumbManager* breadcrumb_manager);
 
 // Starts listening for breadcrumbs logged to |breadcrumb_manager_service|.
 // Collected breadcrumbs will be attached to crash reports.

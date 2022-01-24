@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/arc_payment_app_bridge_test_support.h"
 #include "components/arc/test/test_browser_context.h"
 #include "content/public/test/browser_task_environment.h"

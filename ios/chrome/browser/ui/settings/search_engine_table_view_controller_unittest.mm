@@ -252,17 +252,13 @@ TEST_F(SearchEngineTableViewControllerTest,
   AddPriorSearchEngine(kEngineP2Name, kEngineP2Url, 1002, true);
 
   AddCustomSearchEngine(kEngineC4Name, kEngineC4Url,
-                        base::Time::Now() - base::TimeDelta::FromDays(10),
-                        false);
+                        base::Time::Now() - base::Days(10), false);
   AddCustomSearchEngine(kEngineC1Name, kEngineC1Url,
-                        base::Time::Now() - base::TimeDelta::FromSeconds(10),
-                        false);
+                        base::Time::Now() - base::Seconds(10), false);
   AddCustomSearchEngine(kEngineC3Name, kEngineC3Url,
-                        base::Time::Now() - base::TimeDelta::FromHours(10),
-                        false);
+                        base::Time::Now() - base::Hours(10), false);
   AddCustomSearchEngine(kEngineC2Name, kEngineC2Url,
-                        base::Time::Now() - base::TimeDelta::FromMinutes(10),
-                        false);
+                        base::Time::Now() - base::Minutes(10), false);
 
   CreateController();
   CheckController();
@@ -304,17 +300,13 @@ TEST_F(SearchEngineTableViewControllerTest,
   AddPriorSearchEngine(kEngineP2Name, kEngineP2Url, 1002, false);
 
   AddCustomSearchEngine(kEngineC4Name, kEngineC4Url,
-                        base::Time::Now() - base::TimeDelta::FromDays(10),
-                        false);
+                        base::Time::Now() - base::Days(10), false);
   AddCustomSearchEngine(kEngineC1Name, kEngineC1Url,
-                        base::Time::Now() - base::TimeDelta::FromSeconds(10),
-                        false);
+                        base::Time::Now() - base::Seconds(10), false);
   AddCustomSearchEngine(kEngineC3Name, kEngineC3Url,
-                        base::Time::Now() - base::TimeDelta::FromHours(10),
-                        false);
+                        base::Time::Now() - base::Hours(10), false);
   AddCustomSearchEngine(kEngineC2Name, kEngineC2Url,
-                        base::Time::Now() - base::TimeDelta::FromMinutes(10),
-                        true);
+                        base::Time::Now() - base::Minutes(10), true);
 
   CreateController();
   CheckController();
@@ -402,8 +394,7 @@ TEST_F(SearchEngineTableViewControllerTest, TestChangeProvider) {
   TemplateURL* url_c1 = AddCustomSearchEngine(kEngineC1Name, kEngineC1Url,
                                               base::Time::Now(), false);
   AddCustomSearchEngine(kEngineC2Name, kEngineC2Url,
-                        base::Time::Now() - base::TimeDelta::FromSeconds(10),
-                        false);
+                        base::Time::Now() - base::Seconds(10), false);
 
   CreateController();
   CheckController();
@@ -516,11 +507,9 @@ TEST_F(SearchEngineTableViewControllerTest, EditingMode) {
   EXPECT_TRUE([searchEngineController shouldHideToolbar]);
 
   AddCustomSearchEngine(kEngineC2Name, kEngineC2Url,
-                        base::Time::Now() - base::TimeDelta::FromMinutes(10),
-                        false);
+                        base::Time::Now() - base::Minutes(10), false);
   AddCustomSearchEngine(kEngineC1Name, kEngineC1Url,
-                        base::Time::Now() - base::TimeDelta::FromSeconds(10),
-                        false);
+                        base::Time::Now() - base::Seconds(10), false);
 
   EXPECT_TRUE([searchEngineController editButtonEnabled]);
   EXPECT_TRUE([searchEngineController shouldHideToolbar]);
@@ -591,17 +580,14 @@ TEST_F(SearchEngineTableViewControllerTest, DeleteItems) {
   AddPriorSearchEngine(kEngineP2Name, kEngineP2Url, 1002, false);
 
   AddCustomSearchEngine(kEngineC4Name, kEngineC4Url,
-                        base::Time::Now() - base::TimeDelta::FromDays(1),
-                        false);
+                        base::Time::Now() - base::Days(1), false);
   AddCustomSearchEngine(kEngineC1Name, kEngineC1Url,
-                        base::Time::Now() - base::TimeDelta::FromSeconds(10),
-                        false);
+                        base::Time::Now() - base::Seconds(10), false);
   AddCustomSearchEngine(kEngineC3Name, kEngineC3Url,
-                        base::Time::Now() - base::TimeDelta::FromHours(10),
-                        true);
-  TemplateURL* url_c2 = AddCustomSearchEngine(
-      kEngineC2Name, kEngineC2Url,
-      base::Time::Now() - base::TimeDelta::FromMinutes(10), false);
+                        base::Time::Now() - base::Hours(10), true);
+  TemplateURL* url_c2 =
+      AddCustomSearchEngine(kEngineC2Name, kEngineC2Url,
+                            base::Time::Now() - base::Minutes(10), false);
 
   CreateController();
   CheckController();

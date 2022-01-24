@@ -41,6 +41,10 @@ class RulesetMatcher {
   RulesetMatcher(std::string ruleset_data,
                  RulesetID id,
                  const ExtensionId& extension_id);
+
+  RulesetMatcher(const RulesetMatcher&) = delete;
+  RulesetMatcher& operator=(const RulesetMatcher&) = delete;
+
   ~RulesetMatcher();
 
   absl::optional<RequestAction> GetBeforeRequestAction(
@@ -83,8 +87,6 @@ class RulesetMatcher {
 
   // Underlying matcher for regex rules.
   RegexRulesMatcher regex_matcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetMatcher);
 };
 
 }  // namespace declarative_net_request

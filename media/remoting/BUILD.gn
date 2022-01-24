@@ -14,16 +14,22 @@ source_set("rpc") {
     "proto_enum_utils.h",
     "proto_utils.cc",
     "proto_utils.h",
-    "rpc_broker.cc",
-    "rpc_broker.h",
   ]
+
+  public_configs =
+      [ "//third_party/openscreen/src/build:openscreen_include_dirs" ]
 
   deps = [
     "//base",
+    "//components/openscreen_platform:openscreen_platform",
+    "//components/openscreen_platform:openscreen_platform_network_service",
     "//media",
   ]
 
-  public_deps = [ "//third_party/openscreen/src/cast/streaming:remoting_proto" ]
+  public_deps = [
+    "//third_party/openscreen/src/cast/streaming:common",
+    "//third_party/openscreen/src/cast/streaming:remoting_proto",
+  ]
 }
 
 source_set("remoting_sender") {
@@ -46,6 +52,8 @@ source_set("remoting_sender") {
     "//url",
   ]
 
+  public_deps = []
+
   if (enable_media_remoting_rpc) {
     sources += [
       "courier_renderer.cc",
@@ -55,7 +63,9 @@ source_set("remoting_sender") {
       "triggers.h",
     ]
 
-    deps += [ ":rpc" ]
+    # Consumers of the CourierRenderer implicitly take a dependency on the
+    # generated remoting.pb.h file.
+    public_deps += [ ":rpc" ]
   }
 }
 
@@ -81,6 +91,10 @@ source_set("remoting_renderer") {
     "//media/mojo/common:common",
     "//media/mojo/mojom:remoting",
   ]
+
+  # Consumers of the ReceiverController implicitly take a dependency on the
+  # generated remoting.pb.h file.
+  public_deps = [ ":rpc" ]
 }
 
 source_set("media_remoting_tests") {
@@ -122,7 +136,6 @@ source_set("media_remoting_tests") {
       "integration_test.cc",
       "metrics_unittest.cc",
       "proto_utils_unittest.cc",
-      "rpc_broker_unittest.cc",
     ]
 
     deps += [

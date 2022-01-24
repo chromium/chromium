@@ -20,6 +20,10 @@ class NET_EXPORT TraceNetLogObserver
       public base::trace_event::TraceLog::AsyncEnabledStateObserver {
  public:
   TraceNetLogObserver();
+
+  TraceNetLogObserver(const TraceNetLogObserver&) = delete;
+  TraceNetLogObserver& operator=(const TraceNetLogObserver&) = delete;
+
   ~TraceNetLogObserver() override;
 
   // net::NetLog::ThreadSafeObserver implementation:
@@ -42,8 +46,6 @@ class NET_EXPORT TraceNetLogObserver
  private:
   NetLog* net_log_to_watch_;
   base::WeakPtrFactory<TraceNetLogObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TraceNetLogObserver);
 };
 
 }  // namespace net

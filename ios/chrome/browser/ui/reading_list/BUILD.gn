@@ -39,7 +39,6 @@ source_set("reading_list") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",
-    "//ios/chrome/browser/main",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/policy:policy_util",
@@ -60,7 +59,6 @@ source_set("reading_list") {
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/side_swipe",
     "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/browser/ui/table_view:presentation",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
@@ -87,11 +85,13 @@ source_set("reading_list_javascript_feature") {
   ]
   deps = [
     ":distiller_js",
+    ":features",
     "//base",
     "//components/dom_distiller/core",
     "//components/infobars/core",
     "//components/prefs",
     "//components/reading_list/core",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/infobars",
@@ -100,6 +100,7 @@ source_set("reading_list_javascript_feature") {
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/web/public",
     "//ios/web/public/js_messaging:js_messaging",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -149,8 +150,6 @@ js_compile_bundle("distiller_js") {
 source_set("reading_list_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "empty_reading_list_message_util.h",
-    "empty_reading_list_message_util.mm",
     "number_badge_view.h",
     "number_badge_view.mm",
     "reading_list_data_sink.h",
@@ -175,10 +174,10 @@ source_set("reading_list_ui") {
     ":reading_list_constants",
     "resources:reading_list_empty",
     "resources:reading_list_empty_state",
-    "resources:reading_list_tools_icon",
     "//base",
     "//base:i18n",
     "//components/prefs",
+    "//components/prefs/ios",
     "//components/reading_list/core",
     "//components/strings",
     "//components/url_formatter",
@@ -245,7 +244,6 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -254,6 +252,7 @@ source_set("eg2_tests") {
   sources = [ "reading_list_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
+    ":features",
     ":reading_list_constants",
     "//base",
     "//base/test:test_support",
@@ -275,7 +274,6 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -295,7 +293,6 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",

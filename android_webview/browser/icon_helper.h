@@ -39,6 +39,10 @@ class IconHelper : public content::WebContentsObserver {
   };
 
   explicit IconHelper(content::WebContents* web_contents);
+
+  IconHelper(const IconHelper&) = delete;
+  IconHelper& operator=(const IconHelper&) = delete;
+
   ~IconHelper() override;
 
   void SetListener(Listener* listener);
@@ -65,8 +69,6 @@ class IconHelper : public content::WebContentsObserver {
 
   using MissingFaviconURLHash = size_t;
   std::unordered_set<MissingFaviconURLHash> missing_favicon_urls_;
-
-  DISALLOW_COPY_AND_ASSIGN(IconHelper);
 };
 
 }  // namespace android_webview

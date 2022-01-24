@@ -16,6 +16,7 @@ import "third_party/blink/public/mojom/worker/worker_main_script_load_params.moj
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom";
 import "url/mojom/url.mojom";
 
 // The name of the InterfaceProviderSpec in service manifests used by the
@@ -60,7 +61,12 @@ interface DedicatedWorkerHostFactoryClient {
 
       // Used to make fetches from the worker go through the controller service
       // worker. This is null when there're no controller service worker.
-      ControllerServiceWorkerInfo? controller_info);
+      ControllerServiceWorkerInfo? controller_info,
+
+      // Used to notify feature usages that might affect back-forward cache
+      // usages.
+      pending_remote<BackForwardCacheControllerHost>
+      back_forward_cache_controller_host);
 
   // Called when the worker host fails to start loading the main worker script.
   // This is called after OnWorkerHostCreated(). This is never called when

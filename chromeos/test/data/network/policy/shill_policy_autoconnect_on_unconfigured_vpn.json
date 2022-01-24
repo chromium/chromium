@@ -9,8 +9,6 @@
   "Provider": {
     "Host": "vpn.my.domain.com",
     "OpenVPN.Password": "some password",
-    "OpenVPN.Pkcs11.ID": "",
-    "OpenVPN.Pkcs11.PIN": "",
     "OpenVPN.Port": "443",
     "OpenVPN.Proto": "udp",
     "OpenVPN.RemoteCertKU": "",

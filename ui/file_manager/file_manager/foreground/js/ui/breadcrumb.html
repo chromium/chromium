@@ -23,7 +23,7 @@
     -webkit-mask-image: url(../../images/files/ui/arrow_right.svg);
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
-    background-color: currentColor;
+    background-color: var(--cros-icon-color-secondary);
     display: inline-flex;
     height: 20px;
     min-width: 20px;
@@ -40,7 +40,7 @@
     background-color: unset;
     border: 1px solid transparent;
     border-radius: 4px;
-    color: var(--google-grey-700);
+    color: var(--cros-text-color-primary);
     cursor: pointer;
     display: inline-block;
 
@@ -63,7 +63,7 @@
   }
 
   button[disabled] {
-    color: var(--google-grey-900);
+    color: var(--cros-text-color-primary);
     cursor: default;
     font-weight: 500;
     margin-inline-end: 4px;
@@ -74,7 +74,7 @@
     -webkit-mask-image: url(../../images/files/ui/menu_ng.svg);
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
-    background-color: currentColor;
+    background-color: var(--cros-icon-color-primary);
     height: 48px;
     margin-inline-start: var(--tap-target-shift);
     margin-top: var(--tap-target-shift);
@@ -99,7 +99,7 @@
   }
 
   :host-context(:root.pointer-active) button.dropdown-item:active {
-    background-color: rgba(0, 0, 0, 4%);
+    background-color: var(--cros-menu-item-background-hover);
   }
 
   :host-context(:root:not(.pointer-active)) button.dropdown-item > paper-ripple {
@@ -107,12 +107,12 @@
   }
 
   button.dropdown-item > paper-ripple {
-    --paper-ripple-opacity: 8%;
-    color: black;
+    --paper-ripple-opacity: 100%;
+    color: var(--cros-menu-item-background-hover);
   }
 
   button:not([disabled]):not(:active):hover {
-    background-color: rgba(0, 0, 0, 4%);
+    background-color: var(--cros-ripple-color);
   }
 
   :host-context(:root.pointer-active) button:not(:active):hover {
@@ -122,20 +122,24 @@
 
   :host-context(:root.focus-outline-visible) > button:focus {
     background-color: unset;
-    border: 1px solid var(--google-blue-600);
+    border: 1px solid var(--cros-icon-color-prominent);
   }
 
   :host([checked]) button[elider] {
-    background-color: rgba(0, 0, 0, 12%);
+    background: linear-gradient(var(--cros-ripple-color),
+                                var(--cros-ripple-color)),
+                var(--cros-ripple-color);
   }
 
   button:active {
-    background-color: rgba(0, 0, 0, 12%);
+    background: linear-gradient(var(--cros-ripple-color),
+                                var(--cros-ripple-color)),
+                var(--cros-ripple-color);
   }
 
   #elider-menu button {
     border: unset;
-    color: rgb(51, 51, 51);
+    color: var(--cros-menu-label-color);
     display: block;
     font-family: 'Roboto';
     font-size: 13px;
@@ -150,7 +154,12 @@
   }
 
   :host-context(:root.focus-outline-visible) #elider-menu button:focus {
-    background-color: rgba(0, 0, 0, 4%);
+    background-color: var(--cros-menu-item-background-hover);
+  }
+
+  cr-action-menu {
+    --cr-menu-background-color: var(--cros-bg-color-elevation-2);
+    --cr-menu-shadow: var(--cros-elevation-2-shadow);
   }
 </style>
 

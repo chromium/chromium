@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_PROXY_SERIALIZED_HANDLES_H_
-#define PPAPI_PROXY_SERIALIZED_HANDLES_H_
+#ifndef PPAPI_PROXY_SERIALIZED_HANDLE_H_
+#define PPAPI_PROXY_SERIALIZED_HANDLE_H_
 
 #include <stdint.h>
 
@@ -58,6 +58,9 @@ class PPAPI_PROXY_EXPORT SerializedHandle {
   SerializedHandle& operator=(SerializedHandle&&);
   // Create an invalid handle of the given type.
   explicit SerializedHandle(Type type);
+
+  SerializedHandle(const SerializedHandle&) = delete;
+  SerializedHandle& operator=(const SerializedHandle&) = delete;
 
   // Create a shared memory region handle.
   explicit SerializedHandle(base::ReadOnlySharedMemoryRegion region);
@@ -164,11 +167,9 @@ class PPAPI_PROXY_EXPORT SerializedHandle {
   int32_t open_flags_;
   // This is non-zero if file writes require quota checking.
   PP_Resource file_io_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerializedHandle);
 };
 
 }  // namespace proxy
 }  // namespace ppapi
 
-#endif  // PPAPI_PROXY_SERIALIZED_HANDLES_H_
+#endif  // PPAPI_PROXY_SERIALIZED_HANDLE_H_

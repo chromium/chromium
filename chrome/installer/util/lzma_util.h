@@ -9,7 +9,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/win/windows_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -47,6 +46,10 @@ UnPackStatus UnPackArchive(const base::FilePath& archive,
 class LzmaUtilImpl {
  public:
   LzmaUtilImpl();
+
+  LzmaUtilImpl(const LzmaUtilImpl&) = delete;
+  LzmaUtilImpl& operator=(const LzmaUtilImpl&) = delete;
+
   ~LzmaUtilImpl();
 
   UnPackStatus OpenArchive(const base::FilePath& archivePath);
@@ -70,8 +73,6 @@ class LzmaUtilImpl {
   base::File archive_file_;
   std::set<base::FilePath> directories_created_;
   absl::optional<DWORD> error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(LzmaUtilImpl);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_LZMA_UTIL_H_

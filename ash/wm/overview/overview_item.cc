@@ -54,7 +54,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -102,6 +102,9 @@ class AnimationObserver : public ui::ImplicitAnimationObserver {
     DCHECK(!on_animation_finished_.is_null());
   }
 
+  AnimationObserver(const AnimationObserver&) = delete;
+  AnimationObserver& operator=(const AnimationObserver&) = delete;
+
   ~AnimationObserver() override = default;
 
   // ui::ImplicitAnimationObserver:
@@ -117,8 +120,6 @@ class AnimationObserver : public ui::ImplicitAnimationObserver {
  private:
   base::OnceClosure on_animation_started_;
   base::OnceClosure on_animation_finished_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationObserver);
 };
 
 OverviewAnimationType GetExitOverviewAnimationTypeForMinimizedWindow(
@@ -204,6 +205,32 @@ aura::Window* OverviewItem::GetWindow() {
 
 bool OverviewItem::Contains(const aura::Window* target) const {
   return transform_window_.Contains(target);
+}
+
+void OverviewItem::HideForDesksTemplatesGrid() {
+  transform_window_.window()->layer()->SetOpacity(0.0f);
+  item_widget_->GetLayer()->SetOpacity(0.0f);
+
+  for (aura::Window* transient_child :
+       GetTransientTreeIterator(transform_window_.window())) {
+    transient_child->layer()->SetOpacity(0.0f);
+  }
+
+  item_widget_event_blocker_ =
+      std::make_unique<aura::ScopedWindowEventTargetingBlocker>(
+          item_widget_->GetNativeWindow());
+}
+
+void OverviewItem::RevertHideForDesksTemplatesGrid() {
+  transform_window_.window()->layer()->SetOpacity(1.0f);
+  item_widget_->GetLayer()->SetOpacity(1.0f);
+
+  for (aura::Window* transient_child :
+       GetTransientTreeIterator(transform_window_.window())) {
+    transient_child->layer()->SetOpacity(1.0f);
+  }
+
+  item_widget_event_blocker_.reset();
 }
 
 void OverviewItem::OnMovingWindowToAnotherDesk() {
@@ -1174,7 +1201,7 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
   ScopedOverviewTransformWindow::ScopedAnimationSettings animation_settings;
   transform_window_.BeginScopedAnimation(animation_type, &animation_settings);
   if (animation_type == OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW &&
-      !animation_settings.empty()) {
+      !animation_settings.empty() && !GetWindow()->is_destroying()) {
     animation_settings.front()->AddObserver(new AnimationObserver{
         base::BindOnce(&OverviewItem::OnItemBoundsAnimationStarted,
                        weak_ptr_factory_.GetWeakPtr()),

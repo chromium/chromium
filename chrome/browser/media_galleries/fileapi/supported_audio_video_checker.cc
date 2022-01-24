@@ -15,7 +15,6 @@
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -45,14 +44,16 @@ class SupportedAudioVideoExtensions {
     }
   }
 
+  SupportedAudioVideoExtensions(const SupportedAudioVideoExtensions&) = delete;
+  SupportedAudioVideoExtensions& operator=(
+      const SupportedAudioVideoExtensions&) = delete;
+
   bool HasSupportedAudioVideoExtension(const base::FilePath& file) {
     return base::Contains(audio_video_extensions_, file.Extension());
   }
 
  private:
   std::set<base::FilePath::StringType> audio_video_extensions_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupportedAudioVideoExtensions);
 };
 
 base::LazyInstance<SupportedAudioVideoExtensions>::DestructorAtExit

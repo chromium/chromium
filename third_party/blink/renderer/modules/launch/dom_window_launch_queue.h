@@ -19,6 +19,7 @@
 namespace blink {
 
 class LocalDOMWindow;
+class KURL;
 
 class DOMWindowLaunchQueue final
     : public GarbageCollected<DOMWindowLaunchQueue>,
@@ -33,6 +34,8 @@ class DOMWindowLaunchQueue final
 
   static void UpdateLaunchFiles(LocalDOMWindow*,
                                 HeapVector<Member<FileSystemHandle>>);
+  // TODO(crbug.com/1250225): Unify UpdateLaunchFiles() into this method.
+  static void EnqueueLaunchParams(LocalDOMWindow*, const KURL& launch_url);
 
   void Trace(Visitor*) const override;
 

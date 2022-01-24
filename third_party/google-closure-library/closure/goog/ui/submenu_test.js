@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.SubMenuTest');
 goog.setTestOnly();
@@ -45,6 +37,7 @@ let mockClock;
 // the menu always fits. (we don't care about testing the
 // dynamic menu positioning if the menu doesn't fit in the window.)
 const oldPositionFn = positioning.positionAtCoordinate;
+/** @suppress {checkTypes} suppression added to enable type checking */
 positioning.positionAtCoordinate =
     (absolutePos, movableElement, movableElementCorner, margin = undefined,
      overflow = undefined) =>
@@ -136,6 +129,7 @@ function assertRenderDirection(subMenu, left) {
  * Asserts that this sub menu has a properly-oriented arrow.
  * @param {SubMenu} subMenu The sub menu.
  * @param {boolean} left True for left-pointing, false for right-pointing.
+ * @suppress {visibility} suppression added to enable type checking
  */
 function assertArrowDirection(subMenu, left) {
   assertEquals(
@@ -147,11 +141,20 @@ function assertArrowDirection(subMenu, left) {
  * Asserts that the arrow position is correct.
  * @param {SubMenu} subMenu The sub menu.
  * @param {boolean} leftAlign True for left-aligned, false for right-aligned.
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function assertArrowPosition(subMenu, left) {
   const arrow = getArrowElement(subMenu);
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   const expectedLeft =
       left ? 0 : arrow.offsetParent.offsetWidth - arrow.offsetWidth;
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   const actualLeft = arrow.offsetLeft;
   assertTrue(
       `Expected left offset: ${expectedLeft}
@@ -164,6 +167,7 @@ function assertArrowPosition(subMenu, left) {
  * Gets the arrow element of a sub menu.
  * @param {SubMenu} subMenu The sub menu.
  * @return {Element} The arrow.
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function getArrowElement(subMenu) {
   return subMenu.getContentElement().lastChild;
@@ -230,6 +234,7 @@ testSuite({
   },
 
   testNullContentElement() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const subMenu = new SubMenu();
     subMenu.setContent('demo');
   },
@@ -400,6 +405,7 @@ testSuite({
         handleEvent);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testCloseSubMenuBehavior() {
     menu.decorate(dom.getElement('demoMenu'));
     const subMenu = menu.getChildAt(1);
@@ -533,6 +539,7 @@ testSuite({
    * is fired on it, and showSubMenu() is called, showSubMenu causes a null
    * value to be dereferenced. This test validates that the fix for this works.
    * (See bug 1823144).
+   * @suppress {checkTypes} suppression added to enable type checking
    */
   testDeleteItemDuringSubmenuDisplayInterval() {
     mockClock = new MockClock(true);
@@ -542,6 +549,7 @@ testSuite({
     menu.addItem(submenu);
 
     // Trigger mouseover, and remove item before showSubMenu can be called.
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const e = new GoogEvent();
     submenu.handleMouseOver(e);
     menu.removeItem(submenu);
@@ -557,7 +565,10 @@ testSuite({
     // (No JS error should occur.)
   },
 
-  /** Tests that if a sub menu is selectable, then it can handle actions. */
+  /**
+     Tests that if a sub menu is selectable, then it can handle actions.
+     @suppress {visibility} suppression added to enable type checking
+   */
   testSubmenuSelectable() {
     const submenu = new SubMenu('submenu');
     submenu.addItem(new MenuItem('submenu item 1'));
@@ -582,7 +593,10 @@ testSuite({
         'The submenu should not have fired any further events', 2, numClicks);
   },
 
-  /** Tests that if a sub menu is checkable, then it can handle actions. */
+  /**
+     Tests that if a sub menu is checkable, then it can handle actions.
+     @suppress {visibility} suppression added to enable type checking
+   */
   testSubmenuCheckable() {
     const submenu = new SubMenu('submenu');
     submenu.addItem(new MenuItem('submenu item 1'));

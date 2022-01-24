@@ -15,41 +15,112 @@ namespace login {
     // first available one.
     // |password|: If provided, the launched managed guest session will be
     // lockable, and can only be unlocked by calling
-    // <code>unlockManagedGuestSession()</code> with the same password.
+    // $(ref:unlockManagedGuestSession) with the same password.
     // |callback|: Note: If the function succeeds, the callback is not
-    // guaranteed to be called as the extension will be disabled when the
+    // guaranteed to be invoked as the extension will be disabled when the
     // session starts. Use this callback only to handle the failure case by
     // checking $(ref:runtime.lastError).
-    static void launchManagedGuestSession(optional DOMString password,
-                                          optional VoidCallback callback);
+    [supportsPromises] static void launchManagedGuestSession(
+        optional DOMString password,
+        optional VoidCallback callback);
 
     // Exits the current session.
     // |dataForNextLoginAttempt|: If set, stores data which can be read by
-    // <code>fetchDataForNextLoginAttempt()</code> from the login screen. If
-    // unset, any currently stored data will be cleared.
-    static void exitCurrentSession(optional DOMString dataForNextLoginAttempt,
-                                   optional VoidCallback callback);
+    // $(ref:fetchDataForNextLoginAttempt) from the login screen. If unset, any
+    // currently stored data will be cleared.
+    [supportsPromises] static void exitCurrentSession(
+        optional DOMString dataForNextLoginAttempt,
+        optional VoidCallback callback);
 
-    // Reads the <code>dataForNextLoginAttempt</code> set by
-    // <code>exitCurrentSession()</code>. Clears the previously stored data
-    // after reading so it can only be read once.
+    // Reads the $(ref:dataForNextLoginAttempt) set by
+    // $(ref:exitCurrentSession). Clears the previously stored data after
+    // reading so it can only be read once.
     // |callback|: Called with the stored data, or an empty string if there was
     // no previously stored data.
-    static void fetchDataForNextLoginAttempt(StringCallback callback);
+    [supportsPromises] static void fetchDataForNextLoginAttempt(
+        StringCallback callback);
 
     // Locks the current managed guest session. The session has to have been
-    // launched by <code>launchManagedGuestSession()</code> with a password.
-    static void lockManagedGuestSession(optional VoidCallback callback);
+    // launched by $(ref:launchManagedGuestSession) with a password.
+    [supportsPromises] static void lockManagedGuestSession(
+        optional VoidCallback callback);
 
     // Unlocks a managed guest session which was launched by
-    // <code>launchManagedGuestSession()</code> with a password. The session
-    // will unlock if the provided password matches the one provided earlier.
+    // $(ref:launchManagedGuestSession) with a password. The session will
+    // unlock if the provided password matches the one provided earlier.
     // |password|: The password which will be used to unlock the session.
     // |callback|: Note: If the function succeeds, the callback is not
-    // guaranteed to be called as the extension will be disabled when the
+    // guaranteed to be invoked as the extension will be disabled when the
     // session starts. Use this callback only to handle the failure case by
     // checking $(ref:runtime.lastError).
-    static void unlockManagedGuestSession(DOMString password,
-                                          optional VoidCallback callback);
+    [supportsPromises] static void unlockManagedGuestSession(
+        DOMString password,
+        optional VoidCallback callback);
+
+    // Starts a ChromeOS Managed Guest Session which will host the shared user
+    // sessions. An initial shared session is entered with |password| as the
+    // password. When this shared session is locked, it can only be unlocked by
+    // the same extension calling $(ref:unlockSharedSession) with the same
+    // password.
+    // Fails when another shared ChromeOS Managed Guest Session has already
+    // been launched. Can only be called from the login screen.
+    // |password|: The password which can be used to unlock the shared session.
+    // |callback|: Note: If the function succeeds, the callback is not
+    // guaranteed to be invoked as the extension will be disabled when the
+    // session starts. Use this callback only to handle the failure case by
+    // checking $(ref:runtime.lastError).
+    [supportsPromises] static void launchSharedManagedGuestSession(
+        DOMString password,
+        optional VoidCallback callback);
+
+    // Enters the shared session with the given password. If the session is
+    // locked, it can only be unlocked by calling $(ref:unlockSharedSession)
+    // with the same password. 
+    // Fails if calling extension is not the same as the one which called
+    // $(ref:launchSharedManagedGuestSession) or there is already a shared
+    // session running. Can only be called from the lock screen.
+    // |password|: The password which can be used to unlock the shared session.
+    // |callback|: Note: If the function succeeds, the callback is not
+    // guaranteed to be invoked as the extension will be disabled when the
+    // session starts. Use this callback only to handle the failure case by
+    // checking $(ref:runtime.lastError).
+    [supportsPromises] static void enterSharedSession(
+        DOMString password,
+        optional VoidCallback callback);
+
+    // Unlocks the shared session with the provided password. Fails if the
+    // password does not match the one provided to
+    // $(ref:launchSharedManagedGuestSession) or $(ref:enterSharedSession).
+    // Fails if the calling extension is not the same as the one which called
+    // $(ref:launchSharedManagedGuestSession) or if there is no existing shared
+    // session. Can only be called from the lock screen.
+    // |password|: The password used to unlock the shared session.
+    // |callback|: Note: If the function succeeds, the callback is not
+    // guaranteed to be invoked as the extension will be disabled when the
+    // session starts. Use this callback only to handle the failure case by
+    // checking $(ref:runtime.lastError).
+    [supportsPromises] static void unlockSharedSession(
+        DOMString password,
+        optional VoidCallback callback);
+
+    // Ends the shared session. Security- and privacy-sensitive data in the
+    // session will be cleaned up on a best effort basis.
+    // The calling extension does not have to be the same one which called
+    // $(ref:launchSharedManagedGuestSession). Can be called from both the
+    // lock screen or in session.
+    // Fails if there is no existing shared session.
+    // |callback|: Invoked after cleanup operations have finished and the
+    // session is locked.
+    [supportsPromises] static void endSharedSession(
+        optional VoidCallback callback);
+
+    // Sets data for the next login attempt. The data can be retrieved by
+    // calling $(ref:fetchDataForNextLoginAttempt). The data is cleared when
+    // it is fetched so it can only be read once.
+    // |dataForNextLoginAttempt|: The data to be set.
+    [supportsPromises] static void setDataForNextLoginAttempt(
+        DOMString dataForNextLoginAttempt,
+        optional VoidCallback callback);
+
   };
 };

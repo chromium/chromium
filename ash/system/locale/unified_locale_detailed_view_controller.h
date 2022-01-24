@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/system/unified/detailed_view_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -24,6 +23,12 @@ class UnifiedLocaleDetailedViewController : public DetailedViewController {
  public:
   explicit UnifiedLocaleDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UnifiedLocaleDetailedViewController(
+      const UnifiedLocaleDetailedViewController&) = delete;
+  UnifiedLocaleDetailedViewController& operator=(
+      const UnifiedLocaleDetailedViewController&) = delete;
+
   ~UnifiedLocaleDetailedViewController() override;
 
   // DetailedViewControllerBase:
@@ -34,8 +39,6 @@ class UnifiedLocaleDetailedViewController : public DetailedViewController {
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
   tray::LocaleDetailedView* view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedLocaleDetailedViewController);
 };
 
 }  // namespace ash

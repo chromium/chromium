@@ -7,9 +7,9 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserSwitchProxy, BrowserSwitchProxyImpl} from './browser_switch_proxy.js';
 
@@ -20,9 +20,7 @@ enum LaunchError {
   PROTOCOL_ERROR = 'protocolError',
 }
 
-const BrowserSwitchAppElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+const BrowserSwitchAppElementBase = I18nMixin(PolymerElement);
 
 class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
   static get is() {

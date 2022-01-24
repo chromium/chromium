@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "cc/input/compositor_input_interfaces.h"
 #include "cc/input/event_listener_properties.h"
@@ -25,17 +26,17 @@
 namespace gfx {
 class Point;
 class PointF;
-class ScrollOffset;
+class Vector2dF;
 }  // namespace gfx
 
 namespace cc {
 
+class LatencyInfoSwapPromiseMonitor;
 class LayerImpl;
 class ScrollbarController;
 class ScrollElasticityHelper;
 struct ScrollNode;
 class ScrollTree;
-class SwapPromiseMonitor;
 class Viewport;
 
 class CC_EXPORT ThreadedInputHandler : public InputHandler,
@@ -70,7 +71,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
       const gfx::PointF& viewport_point) override;
   void RequestUpdateForSynchronousInputHandler() override;
   void SetSynchronousInputHandlerRootScrollOffset(
-      const gfx::ScrollOffset& root_content_offset) override;
+      const gfx::Vector2dF& root_content_offset) override;
   void PinchGestureBegin() override;
   void PinchGestureUpdate(float magnify_delta,
                           const gfx::Point& anchor) override;
@@ -85,16 +86,17 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   EventListenerTypeForTouchStartOrMoveAt(
       const gfx::Point& viewport_port,
       TouchAction* out_touch_action) override;
-  std::unique_ptr<SwapPromiseMonitor> CreateLatencyInfoSwapPromiseMonitor(
-      ui::LatencyInfo* latency) override;
+  std::unique_ptr<LatencyInfoSwapPromiseMonitor>
+  CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency) override;
   std::unique_ptr<EventsMetricsManager::ScopedMonitor>
   GetScopedEventMetricsMonitor(
       EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) override;
   ScrollElasticityHelper* CreateScrollElasticityHelper() override;
+  void DestroyScrollElasticityHelper() override;
   bool GetScrollOffsetForLayer(ElementId element_id,
-                               gfx::ScrollOffset* offset) override;
+                               gfx::Vector2dF* offset) override;
   bool ScrollLayerTo(ElementId element_id,
-                     const gfx::ScrollOffset& offset) override;
+                     const gfx::Vector2dF& offset) override;
   bool ScrollingShouldSwitchtoMainThread() override;
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
       const gfx::Vector2dF& natural_displacement_in_viewport,
@@ -118,6 +120,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   void DidUnregisterScrollbar(ElementId scroll_element_id,
                               ScrollbarOrientation orientation) override;
   void ScrollOffsetAnimationFinished() override;
+  void SetPrefersReducedMotion(bool prefers_reduced_motion) override;
   bool IsCurrentlyScrolling() const override;
   ActivelyScrollingType GetActivelyScrollingType() const override;
 
@@ -181,7 +184,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
 
   // This method gets the scroll offset for a regular scroller, or the combined
   // visual and layout offsets of the viewport.
-  gfx::ScrollOffset GetVisualScrollOffset(const ScrollNode& scroll_node) const;
+  gfx::Vector2dF GetVisualScrollOffset(const ScrollNode& scroll_node) const;
   bool IsScrolledBy(LayerImpl* child, ScrollNode* ancestor);
   bool IsAnimatingForSnap() const;
 
@@ -443,6 +446,8 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   bool has_scrolled_by_touch_ = false;
   bool has_scrolled_by_precisiontouchpad_ = false;
   bool has_scrolled_by_scrollbar_ = false;
+
+  bool prefers_reduced_motion_ = false;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

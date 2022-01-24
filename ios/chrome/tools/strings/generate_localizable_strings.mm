@@ -31,11 +31,14 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/resource/data_pack.h"
 #include "ui/base/resource/resource_handle.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -59,7 +62,7 @@ std::unique_ptr<ui::DataPack> LoadResourceDataPack(
   if (!base::PathExists(resources_pak_path))
     return resource_data_pack;
 
-  resource_data_pack.reset(new ui::DataPack(ui::SCALE_FACTOR_100P));
+  resource_data_pack.reset(new ui::DataPack(ui::k100Percent));
   if (!resource_data_pack->LoadFromPath(resources_pak_path))
     resource_data_pack.reset();
 
@@ -76,14 +79,13 @@ NSString* GetStringFromDataPack(const ui::DataPack& data_pack,
 
   // Data pack encodes strings as either UTF8 or UTF16.
   if (data_pack.GetTextEncodingType() == ui::DataPack::UTF8) {
-    return [[[NSString alloc] initWithBytes:data.data()
-                                     length:data.length()
-                                   encoding:NSUTF8StringEncoding] autorelease];
+    return [[NSString alloc] initWithBytes:data.data()
+                                    length:data.length()
+                                  encoding:NSUTF8StringEncoding];
   } else if (data_pack.GetTextEncodingType() == ui::DataPack::UTF16) {
-    return [[[NSString alloc] initWithBytes:data.data()
-                                     length:data.length()
-                                   encoding:NSUTF16LittleEndianStringEncoding]
-        autorelease];
+    return [[NSString alloc] initWithBytes:data.data()
+                                    length:data.length()
+                                  encoding:NSUTF16LittleEndianStringEncoding];
   }
   return nil;
 }
@@ -138,8 +140,7 @@ NSDictionary* LoadResourcesListFromHeaders(NSArray* header_list,
     fprintf(stderr, "ERROR: No header file in the config.\n");
     return nil;
   }
-  NSMutableDictionary* resources_ids =
-      [[[NSMutableDictionary alloc] init] autorelease];
+  NSMutableDictionary* resources_ids = [[NSMutableDictionary alloc] init];
   for (NSString* header : header_list) {
     NSString* header_file =
         [root_header_dir stringByAppendingPathComponent:header];
@@ -238,11 +239,7 @@ bool SavePropertyList(NSDictionary* dictionary,
   return true;
 }
 
-}  // namespace
-
-int main(int argc, char* const argv[]) {
-  base::mac::ScopedNSAutoreleasePool autorelease_pool;
-
+int real_main(int argc, char* const argv[]) {
   NSString* output_dir = nil;
   NSString* data_pack_dir = nil;
   NSString* root_header_dir = nil;
@@ -273,11 +270,9 @@ int main(int argc, char* const argv[]) {
                 "for all specified locales in output_dir from packed data\n"
                 "packs in data_pack_dir.\n");
         exit(0);
-        break;
       default:
         fprintf(stderr, "ERROR: bad command line arg: %c.n\n", ch);
         exit(1);
-        break;
     }
   }
 
@@ -325,8 +320,8 @@ int main(int argc, char* const argv[]) {
     if ([locale isEqualToString:@"en-US"]) {
       locale = @"en";
     } else {
-      locale =
-          [locale stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+      locale = [locale stringByReplacingOccurrencesOfString:@"-"
+                                                 withString:@"_"];
     }
     [locales addObject:locale];
   }
@@ -373,4 +368,12 @@ int main(int argc, char* const argv[]) {
     }
   }
   return 0;
+}
+
+}  // namespace
+
+int main(int argc, char* const argv[]) {
+  @autoreleasepool {
+    return real_main(argc, argv);
+  }
 }

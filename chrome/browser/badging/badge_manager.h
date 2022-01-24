@@ -10,9 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,7 +31,11 @@ class RenderProcessHost;
 
 namespace ukm {
 class UkmRecorder;
-}
+}  // namespace ukm
+
+namespace web_app {
+class WebAppSyncBridge;
+}  // namespace web_app
 
 namespace badging {
 class BadgeManagerDelegate;
@@ -53,16 +56,13 @@ enum UpdateBadgeType {
 // The maximum value of badge contents before saturation occurs.
 constexpr uint64_t kMaxBadgeContent = 99u;
 
-// With kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications,
-// we don't show a badge in response to notifications if the
+// We don't show a badge in response to notifications if the
 // Badging API has been used recently.
-constexpr base::TimeDelta kBadgingOverrideLifetime =
-    base::TimeDelta::FromDays(14);
+constexpr base::TimeDelta kBadgingOverrideLifetime = base::Days(14);
 
 // We record when the Badging API was last used, but rate limit
 // our updates to minimize load on the Web App database,
-constexpr base::TimeDelta kBadgingMinimumUpdateInterval =
-    base::TimeDelta::FromHours(2);
+constexpr base::TimeDelta kBadgingMinimumUpdateInterval = base::Hours(2);
 
 // Maintains a record of badge contents and dispatches badge changes to a
 // delegate.
@@ -74,6 +74,10 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   using BadgeValue = absl::optional<uint64_t>;
 
   explicit BadgeManager(Profile* profile);
+
+  BadgeManager(const BadgeManager&) = delete;
+  BadgeManager& operator=(const BadgeManager&) = delete;
+
   ~BadgeManager() override;
 
   // Sets the delegate used for setting/clearing badges.
@@ -103,6 +107,11 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   void ClearBadgeForTesting(const web_app::AppId& app_id,
                             ukm::UkmRecorder* test_recorder);
   const base::Clock* SetClockForTesting(const base::Clock* clock);
+  void SetSyncBridgeForTesting(web_app::WebAppSyncBridge* sync_bridge);
+
+ protected:
+  // Protected for tests.
+  BadgeManager(Profile* profile, web_app::WebAppSyncBridge* sync_bridge);
 
  private:
   // The BindingContext of a mojo request. Allows mojo calls to be tied back
@@ -169,6 +178,8 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
 
   const base::Clock* clock_;
 
+  web_app::WebAppSyncBridge* sync_bridge_;
+
   // All the mojo receivers for the BadgeManager. Keeps track of the
   // render_frame the binding is associated with, so as to not have to rely
   // on the renderer passing it in.
@@ -181,8 +192,6 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
 
   // Maps app_id to badge contents.
   std::map<web_app::AppId, BadgeValue> badged_apps_;
-
-  DISALLOW_COPY_AND_ASSIGN(BadgeManager);
 };
 
 // Determines the text to put on the badge based on some badge_content.

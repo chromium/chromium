@@ -29,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_Stubs) {
   // Navigate to a simple http:// page, which should get the content script
   // injected and run the rest of the test.
   GURL url(embedded_test_server()->GetURL("/extensions/test_file.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ResultCatcher catcher;
   ASSERT_TRUE(catcher.GetNextResult());

@@ -34,6 +34,10 @@
 
 #pragma mark - Public
 
+- (BOOL)isBlocked {
+  return _passwordForm.blocked_by_user;
+}
+
 - (NSString*)username {
   if (self.blocked) {
     return nil;
@@ -48,8 +52,15 @@
   return base::SysUTF16ToNSString(_passwordForm.password_value);
 }
 
-- (BOOL)isBlocked {
-  return _passwordForm.blocked_by_user;
+- (NSString*)keychainIdentifier {
+  if (self.blocked) {
+    return nil;
+  }
+  // On iOS, the LoginDatabase uses Keychain API to store passwords. The
+  // "encrypted" version of the password is a unique ID (UUID) that is
+  // stored as an attribute along with the password in the keychain.
+  // See login_database_ios.cc for more info.
+  return base::SysUTF8ToNSString(_passwordForm.encrypted_password);
 }
 
 #pragma mark - NSObject

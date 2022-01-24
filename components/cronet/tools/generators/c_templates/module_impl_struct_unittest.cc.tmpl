@@ -20,6 +20,10 @@
 {% set test_class_name = namespaces_as_array|first|title %}
 
 class {{test_class_name}}StructTest : public ::testing::Test {
+ public:
+  {{test_class_name}}StructTest(const {{test_class_name}}StructTest&) = delete;
+  {{test_class_name}}StructTest& operator=(const {{test_class_name}}StructTest&) = delete;
+
  protected:
   void SetUp() override {
   }
@@ -29,9 +33,6 @@ class {{test_class_name}}StructTest : public ::testing::Test {
 
   {{test_class_name}}StructTest() {}
   ~{{test_class_name}}StructTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN({{test_class_name}}StructTest);
 };
 
 {%- for struct in structs %}

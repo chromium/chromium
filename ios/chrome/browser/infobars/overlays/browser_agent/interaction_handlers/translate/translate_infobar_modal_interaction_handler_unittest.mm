@@ -65,7 +65,7 @@ TEST_F(TranslateInfobarModalInteractionHandlerTest, ToggleNeverTranslateSite) {
       InfobarType::kInfobarTypeTranslate,
       delegate_factory_.CreateMockTranslateInfoBarDelegate(
           translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE));
-  EXPECT_CALL(mock_delegate(infobar.get()), ToggleNeverPrompt());
+  EXPECT_CALL(mock_delegate(infobar.get()), ToggleNeverPromptSite());
   handler_.ToggleNeverTranslateSite(infobar.get());
 }
 

@@ -6,7 +6,20 @@
  * @fileoverview 'os-settings-search-selection-dialog' is a dialog for setting
  * the preferred search engine.
  */
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/md_select_css.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '../../settings_shared_css.js';
+
+import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-search-selection-dialog',
 
   behaviors: [],
@@ -24,12 +37,12 @@ Polymer({
     },
   },
 
-  /** @private {?settings.SearchEnginesBrowserProxy} */
+  /** @private {?SearchEnginesBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.SearchEnginesBrowserProxyImpl.getInstance();
+    this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -38,7 +51,7 @@ Polymer({
       this.set('searchEngines_', searchEngines.defaults);
     };
     this.browserProxy_.getSearchEnginesList().then(updateSearchEngines);
-    cr.addWebUIListener('search-engines-changed', updateSearchEngines);
+    addWebUIListener('search-engines-changed', updateSearchEngines);
   },
 
   /**

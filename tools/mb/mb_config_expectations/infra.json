@@ -7,39 +7,7 @@
       "use_goma": true
     }
   },
-  "linux-component-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "linux-control-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "linux-local-ssd-nvme-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "linux-local-ssd-scsi-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "linux-pd-ssd-rel": {
+  "win-bootstrap": {
     "gn_args": {
       "dcheck_always_on": false,
       "is_component_build": false,

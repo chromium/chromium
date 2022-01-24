@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "url/gurl.h"
 
@@ -26,6 +25,10 @@ class Profile;
 // search.
 class SupervisedUserInterstitial {
  public:
+  SupervisedUserInterstitial(const SupervisedUserInterstitial&) = delete;
+  SupervisedUserInterstitial& operator=(const SupervisedUserInterstitial&) =
+      delete;
+
   ~SupervisedUserInterstitial();
 
   static std::unique_ptr<SupervisedUserInterstitial> Create(
@@ -42,7 +45,8 @@ class SupervisedUserInterstitial {
       bool is_main_frame);
 
   void GoBack();
-  void RequestPermission(base::OnceCallback<void(bool)> callback);
+  void RequestUrlAccessRemote(base::OnceCallback<void(bool)> callback);
+  void RequestUrlAccessLocal(base::OnceCallback<void(bool)> callback);
   void ShowFeedback();
 
   // Getter methods.
@@ -80,8 +84,6 @@ class SupervisedUserInterstitial {
 
   // The Navigation ID of the navigation that last triggered the interstitial.
   int64_t interstitial_navigation_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserInterstitial);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_INTERSTITIAL_H_

@@ -112,7 +112,7 @@ public class EditorDialog
      * @param profile         The current profile that creates EditorDialog.
      */
     public EditorDialog(Activity activity, Runnable deleteRunnable, Profile profile) {
-        super(activity, R.style.Theme_Chromium_Fullscreen);
+        super(activity, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         // Sets transparent background for animating content view.
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mActivity = activity;

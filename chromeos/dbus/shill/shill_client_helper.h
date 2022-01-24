@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -57,6 +56,9 @@ class ShillClientHelper {
 
   explicit ShillClientHelper(dbus::ObjectProxy* proxy);
 
+  ShillClientHelper(const ShillClientHelper&) = delete;
+  ShillClientHelper& operator=(const ShillClientHelper&) = delete;
+
   virtual ~ShillClientHelper();
 
   // Sets |released_callback_|. This is optional and should only be called at
@@ -83,7 +85,7 @@ class ShillClientHelper {
                                              ObjectPathCallback callback,
                                              ErrorCallback error_callback);
 
-  // Calls a method with a dictionary value result.
+  // Calls a method with a value result.
   void CallValueMethod(dbus::MethodCall* method_call,
                        DBusMethodCallback<base::Value> callback);
 
@@ -126,6 +128,11 @@ class ShillClientHelper {
   static void AppendServiceProperties(dbus::MessageWriter* writer,
                                       const base::Value& dictionary);
 
+  // Helper method to check for a dictionary result in GetProperties calls.
+  static void OnGetProperties(const dbus::ObjectPath& device_path,
+                              DBusMethodCallback<base::Value> callback,
+                              absl::optional<base::Value> result);
+
  protected:
   // Reference / Ownership management. If the number of active refs (observers
   // + in-progress method calls) becomes 0, |released_callback_| (if set) will
@@ -155,8 +162,6 @@ class ShillClientHelper {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<ShillClientHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShillClientHelper);
 };
 
 }  // namespace chromeos

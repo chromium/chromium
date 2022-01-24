@@ -19,10 +19,13 @@ class MEDIA_EXPORT AudioDebugRecordingSessionImpl
  public:
   explicit AudioDebugRecordingSessionImpl(
       const base::FilePath& debug_recording_file_path);
-  ~AudioDebugRecordingSessionImpl() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugRecordingSessionImpl);
+  AudioDebugRecordingSessionImpl(const AudioDebugRecordingSessionImpl&) =
+      delete;
+  AudioDebugRecordingSessionImpl& operator=(
+      const AudioDebugRecordingSessionImpl&) = delete;
+
+  ~AudioDebugRecordingSessionImpl() override;
 };
 
 }  // namespace media

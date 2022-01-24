@@ -12,16 +12,23 @@ package feature_engagement;
 
 // Event stores state for a specific event a count per day it has happened.
 message Event {
-  // Count stores a pair of a day and how many times something happened that
-  // day.
+  // Count stores a day, how many times something happened that
+  // day, and how many time it has been snoozed.
   message Count {
     optional uint32 day = 1;
     optional uint32 count = 2;
+    optional uint32 snooze_count = 3;
   }
 
   // The descriptive name of the event.
   optional string name = 1;
 
-  // The number of this event that happened per day.
+  // Per-day aggregation of event details.
   repeated Count events = 2;
+
+  // The most recent timestamp of when this feature was snoozed.
+  optional int64 last_snooze_time_us = 3;
+
+  // Whether the user has explicitly dismissed the snooze.
+  optional bool snooze_dismissed = 4;
 }

@@ -16,12 +16,12 @@
 
 #include <string>
 
-#include "absl/container/flat_hash_set.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/container/flat_hash_set.h"
 #include "libxml/parser.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
+#include "maldoca/base/testing/test_utils.h"
 #include "maldoca/base/logging.h"
 #include "maldoca/base/testing/status_matchers.h"
 #include "maldoca/ole/proto/ooxml_to_proto_settings.pb.h"
@@ -30,17 +30,16 @@
 namespace maldoca {
 namespace {
 
-using maldoca::ooxml::OoxmlToProtoSettings;
+using ::maldoca::ooxml::OoxmlToProtoSettings;
 
 std::string TestFilename(absl::string_view filename) {
-  return maldoca::file::JoinPath(
-      maldoca::GetRunfilesDir(),
-      absl::StrCat("maldoca/ole/testdata/ooxml/", filename));
+  return maldoca::testing::OleTestFilename(filename, "ooxml/");
 }
 
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status =
+      maldoca::testing::GetTestContents(TestFilename(filename), &content);
   MALDOCA_EXPECT_OK(status) << status;
   return content;
 }
@@ -371,5 +370,6 @@ TEST(ExtractOoxml, TestParserConfig) {
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
+  maldoca::InitLogging();
   return RUN_ALL_TESTS();
 }

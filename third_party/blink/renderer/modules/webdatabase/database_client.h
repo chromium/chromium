@@ -52,6 +52,9 @@ class MODULES_EXPORT DatabaseClient : public GarbageCollected<DatabaseClient>,
 
   DatabaseClient();
 
+  DatabaseClient(const DatabaseClient&) = delete;
+  DatabaseClient& operator=(const DatabaseClient&) = delete;
+
   void Trace(Visitor*) const override;
 
   bool AllowDatabase(ExecutionContext*);
@@ -68,8 +71,6 @@ class MODULES_EXPORT DatabaseClient : public GarbageCollected<DatabaseClient>,
 
  private:
   Member<InspectorDatabaseAgent> inspector_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseClient);
 };
 
 MODULES_EXPORT void ProvideDatabaseClientTo(Page&, DatabaseClient*);

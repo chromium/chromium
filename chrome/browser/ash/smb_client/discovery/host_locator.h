@@ -28,15 +28,16 @@ using FindHostsCallback =
 class HostLocator {
  public:
   HostLocator() = default;
+
+  HostLocator(const HostLocator&) = delete;
+  HostLocator& operator=(const HostLocator&) = delete;
+
   virtual ~HostLocator() = default;
 
   // Finds hosts in the local network. |callback| will be called once finished
   // finding all the hosts. If no hosts are found, an empty map will be passed
   // in the |callback|.
   virtual void FindHosts(FindHostsCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostLocator);
 };
 
 }  // namespace smb_client

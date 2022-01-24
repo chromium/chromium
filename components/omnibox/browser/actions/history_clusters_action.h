@@ -5,15 +5,20 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_ACTIONS_HISTORY_CLUSTERS_ACTION_H_
 #define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_HISTORY_CLUSTERS_ACTION_H_
 
-namespace history_clusters {
-class HistoryClustersService;
-}
 class AutocompleteResult;
+class PrefService;
+
+namespace history_clusters {
+
+class HistoryClustersService;
 
 // If the feature is enabled, attaches any necessary History Clusters actions
 // onto any relevant matches in `result`.
 void AttachHistoryClustersActions(
     history_clusters::HistoryClustersService* service,
+    PrefService* prefs,
     AutocompleteResult& result);
+
+}  // namespace history_clusters
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_HISTORY_CLUSTERS_ACTION_H_

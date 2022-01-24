@@ -13,8 +13,8 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
-import {eventToPromise} from '../test_util.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {eventToPromise} from '../test_util.js';
 
 
 /**

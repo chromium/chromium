@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 
@@ -17,6 +16,11 @@ namespace content {
 class CONTENT_EXPORT TouchEventStreamValidator {
  public:
   TouchEventStreamValidator();
+
+  TouchEventStreamValidator(const TouchEventStreamValidator&) = delete;
+  TouchEventStreamValidator& operator=(const TouchEventStreamValidator&) =
+      delete;
+
   ~TouchEventStreamValidator();
 
   // If |event| is valid for the current stream, returns true.
@@ -25,8 +29,6 @@ class CONTENT_EXPORT TouchEventStreamValidator {
 
  private:
   blink::WebTouchEvent previous_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchEventStreamValidator);
 };
 
 }  // namespace content

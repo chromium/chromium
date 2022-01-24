@@ -186,7 +186,7 @@ void PasswordGenerationPopupViewViews::Hide() {
 }
 
 void PasswordGenerationPopupViewViews::UpdateState() {
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
   password_view_ = nullptr;
   help_label_ = nullptr;
   CreateLayoutAndChildren();

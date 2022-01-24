@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/inspector/dom_patch_support.h"
 #include "third_party/blink/renderer/core/inspector/inspector_history.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Protocol.h"
+#include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {

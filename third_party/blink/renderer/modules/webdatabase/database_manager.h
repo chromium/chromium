@@ -49,6 +49,9 @@ class DatabaseManager {
  public:
   static DatabaseManager& Manager();
 
+  DatabaseManager(const DatabaseManager&) = delete;
+  DatabaseManager& operator=(const DatabaseManager&) = delete;
+
   // These 2 methods are for DatabaseContext (un)registration, and should only
   // be called by the DatabaseContext constructor and destructor.
   void RegisterDatabaseContext(DatabaseContext*);
@@ -110,8 +113,6 @@ class DatabaseManager {
   int database_context_registered_count_ = 0;
   int database_context_instance_count_ = 0;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseManager);
 };
 
 }  // namespace blink

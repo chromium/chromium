@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_WIFI_HOTSPOT_DISCONNECTOR_IMPL_H_
 #define CHROMEOS_COMPONENTS_TETHER_WIFI_HOTSPOT_DISCONNECTOR_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/tether/wifi_hotspot_disconnector.h"
 
@@ -32,6 +31,11 @@ class WifiHotspotDisconnectorImpl : public WifiHotspotDisconnector {
       NetworkStateHandler* network_state_handler,
       PrefService* pref_service,
       NetworkConfigurationRemover* network_configuration_remover);
+
+  WifiHotspotDisconnectorImpl(const WifiHotspotDisconnectorImpl&) = delete;
+  WifiHotspotDisconnectorImpl& operator=(const WifiHotspotDisconnectorImpl&) =
+      delete;
+
   ~WifiHotspotDisconnectorImpl() override;
 
   // WifiHotspotDisconnector:
@@ -60,8 +64,6 @@ class WifiHotspotDisconnectorImpl : public WifiHotspotDisconnector {
   NetworkConfigurationRemover* network_configuration_remover_;
 
   base::WeakPtrFactory<WifiHotspotDisconnectorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WifiHotspotDisconnectorImpl);
 };
 
 }  // namespace tether

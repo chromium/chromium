@@ -11,11 +11,9 @@
 #include <functional>
 #include <random>
 #include <string>
-#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 
 namespace variations {
@@ -31,6 +29,10 @@ class COMPONENT_EXPORT(VARIATIONS) SHA1EntropyProvider
   // should contain a large amount of entropy - for example, a textual
   // representation of a persistent randomly-generated 128-bit value.
   explicit SHA1EntropyProvider(const std::string& entropy_source);
+
+  SHA1EntropyProvider(const SHA1EntropyProvider&) = delete;
+  SHA1EntropyProvider& operator=(const SHA1EntropyProvider&) = delete;
+
   ~SHA1EntropyProvider() override;
 
   // base::FieldTrial::EntropyProvider implementation:
@@ -39,8 +41,6 @@ class COMPONENT_EXPORT(VARIATIONS) SHA1EntropyProvider
 
  private:
   const std::string entropy_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(SHA1EntropyProvider);
 };
 
 // NormalizedMurmurHashEntropyProvider is an entropy provider suitable for low
@@ -54,6 +54,12 @@ class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider
  public:
   NormalizedMurmurHashEntropyProvider(uint16_t low_entropy_source,
                                       size_t low_entropy_source_max);
+
+  NormalizedMurmurHashEntropyProvider(
+      const NormalizedMurmurHashEntropyProvider&) = delete;
+  NormalizedMurmurHashEntropyProvider& operator=(
+      const NormalizedMurmurHashEntropyProvider&) = delete;
+
   ~NormalizedMurmurHashEntropyProvider() override;
 
   // base::FieldTrial::EntropyProvider:
@@ -63,8 +69,6 @@ class COMPONENT_EXPORT(VARIATIONS) NormalizedMurmurHashEntropyProvider
  private:
   const uint16_t low_entropy_source_;
   const size_t low_entropy_source_max_;
-
-  DISALLOW_COPY_AND_ASSIGN(NormalizedMurmurHashEntropyProvider);
 };
 
 }  // namespace variations

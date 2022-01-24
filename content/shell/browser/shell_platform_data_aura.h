@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/aura/window_tree_host.h"
 
@@ -34,6 +33,10 @@ namespace content {
 class ShellPlatformDataAura {
  public:
   explicit ShellPlatformDataAura(const gfx::Size& initial_size);
+
+  ShellPlatformDataAura(const ShellPlatformDataAura&) = delete;
+  ShellPlatformDataAura& operator=(const ShellPlatformDataAura&) = delete;
+
   ~ShellPlatformDataAura();
 
   void ShowWindow();
@@ -50,8 +53,6 @@ class ShellPlatformDataAura {
   std::unique_ptr<aura::client::FocusClient> focus_client_;
   std::unique_ptr<aura::client::DefaultCaptureClient> capture_client_;
   std::unique_ptr<aura::client::WindowParentingClient> window_parenting_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellPlatformDataAura);
 };
 
 }  // namespace content

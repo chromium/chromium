@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/ime/infolist_entry.h"
 
 namespace ui {
@@ -57,6 +56,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_TYPES) CandidateWindow {
   };
 
   CandidateWindow();
+
+  CandidateWindow(const CandidateWindow&) = delete;
+  CandidateWindow& operator=(const CandidateWindow&) = delete;
+
   virtual ~CandidateWindow();
 
   // Returns true if the given |candidate_window| is equal to myself.
@@ -136,8 +139,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_TYPES) CandidateWindow {
  private:
   std::unique_ptr<CandidateWindowProperty> property_;
   std::vector<Entry> candidates_;
-
-  DISALLOW_COPY_AND_ASSIGN(CandidateWindow);
 };
 
 }  // namespace ui

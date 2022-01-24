@@ -32,6 +32,7 @@ DECLARE_RESOURCE_ID(IDR_PAGEINFO_BAD, R.drawable.omnibox_not_secure_warning)
 // Good:
 DECLARE_RESOURCE_ID(IDR_PAGEINFO_GOOD_COLOR, R.color.default_icon_color)
 // Warning:
-DECLARE_RESOURCE_ID(IDR_PAGEINFO_WARNING_COLOR, R.color.default_icon_color_blue)
+DECLARE_RESOURCE_ID(IDR_PAGEINFO_WARNING_COLOR,
+                    R.color.default_icon_color_accent1_tint_list)
 // Bad:
 DECLARE_RESOURCE_ID(IDR_PAGEINFO_BAD_COLOR, R.color.default_text_color_error)

@@ -72,13 +72,13 @@ if (enable_me2me_host) {
       ":remoting_me2me_host_copy_user_session_wrapper",
       ":remoting_native_messaging_host",
       ":url_forwarder_desktop_entry",
-      "//remoting/host:remote_open_url",
       "//remoting/host:remoting_me2me_host",
+      "//remoting/host/remote_open_url",
     ]
   }
 }
 
-if (use_x11) {
+if (remoting_use_x11) {
   source_set("x11") {
     sources = [
       "unicode_to_keysym.cc",
@@ -101,17 +101,6 @@ if (use_x11) {
   }
 }
 
-source_set("file_path_util") {
-  sources = [
-    "file_path_util.cc",
-    "file_path_util.h",
-  ]
-  deps = [
-    "//base",
-    "//net",
-  ]
-}
-
 if (!is_chromeos_ash && !is_chromeos_lacros) {
   executable("remoting_native_messaging_host") {
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -132,6 +121,8 @@ if (!is_chromeos_ash && !is_chromeos_lacros) {
       "//remoting/base:breakpad",
       "//remoting/host",
       "//remoting/host:base",
+      "//remoting/host:common",
+      "//remoting/host:host_main_headers",
       "//remoting/host/native_messaging",
       "//remoting/host/setup",
       "//services/network:network_service",
@@ -159,7 +150,7 @@ source_set("unit_tests") {
     "x_server_clipboard_unittest.cc",
   ]
 
-  if (!use_x11) {
+  if (!remoting_use_x11) {
     sources -= [
       "unicode_to_keysym_unittest.cc",
       "x_server_clipboard_unittest.cc",
@@ -182,7 +173,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (use_x11) {
+  if (remoting_use_x11) {
     deps += [ ":x11" ]
   }
 

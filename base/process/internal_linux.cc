@@ -225,8 +225,7 @@ TimeDelta ClockTicksToTimeDelta(int clock_ticks) {
   // It may be the case that this value is always 100.
   static const int kHertz = sysconf(_SC_CLK_TCK);
 
-  return TimeDelta::FromMicroseconds(
-      Time::kMicrosecondsPerSecond * clock_ticks / kHertz);
+  return Microseconds(Time::kMicrosecondsPerSecond * clock_ticks / kHertz);
 }
 
 }  // namespace internal

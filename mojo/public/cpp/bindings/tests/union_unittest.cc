@@ -73,9 +73,9 @@ size_t SerializeArray(InputType& input,
 }
 
 TEST(UnionTest, PlainOldDataGetterSetter) {
-  PodUnionPtr pod(PodUnion::New());
+  PodUnionPtr pod;
 
-  pod->set_f_int8(10);
+  pod = PodUnion::NewFInt8(10);
   EXPECT_EQ(10, pod->get_f_int8());
   EXPECT_TRUE(pod->is_f_int8());
   EXPECT_FALSE(pod->is_f_int8_other());
@@ -205,11 +205,8 @@ TEST(UnionTest, PlainOldDataFactoryFunction) {
 }
 
 TEST(UnionTest, PodEquals) {
-  PodUnionPtr pod1(PodUnion::New());
-  PodUnionPtr pod2(PodUnion::New());
-
-  pod1->set_f_int8(10);
-  pod2->set_f_int8(10);
+  PodUnionPtr pod1(PodUnion::NewFInt8(10));
+  PodUnionPtr pod2(PodUnion::NewFInt8(10));
   EXPECT_TRUE(pod1.Equals(pod2));
 
   pod2->set_f_int8(11);
@@ -220,8 +217,7 @@ TEST(UnionTest, PodEquals) {
 }
 
 TEST(UnionTest, PodClone) {
-  PodUnionPtr pod(PodUnion::New());
-  pod->set_f_int8(10);
+  PodUnionPtr pod(PodUnion::NewFInt8(10));
 
   PodUnionPtr pod_clone = pod.Clone();
   EXPECT_EQ(10, pod_clone->get_f_int8());
@@ -230,8 +226,7 @@ TEST(UnionTest, PodClone) {
 }
 
 TEST(UnionTest, PodSerialization) {
-  PodUnionPtr pod1(PodUnion::New());
-  pod1->set_f_int8(10);
+  PodUnionPtr pod1(PodUnion::NewFInt8(10));
 
   mojo::Message message;
   internal::PodUnion_Data* data = nullptr;
@@ -261,8 +256,7 @@ TEST(UnionTest, EnumSerialization) {
 }
 
 TEST(UnionTest, PodValidation) {
-  PodUnionPtr pod(PodUnion::New());
-  pod->set_f_int8(10);
+  PodUnionPtr pod(PodUnion::NewFInt8(10));
 
   mojo::Message message;
   internal::PodUnion_Data* data = nullptr;
@@ -276,8 +270,7 @@ TEST(UnionTest, PodValidation) {
 }
 
 TEST(UnionTest, SerializeNotNull) {
-  PodUnionPtr pod(PodUnion::New());
-  pod->set_f_int8(0);
+  PodUnionPtr pod(PodUnion::NewFInt8(0));
 
   mojo::Message message;
   internal::PodUnion_Data* data = nullptr;
@@ -372,10 +365,9 @@ TEST(UnionTest, UnknownExtensibleEnumValueValidation) {
 }
 
 TEST(UnionTest, StringGetterSetter) {
-  ObjectUnionPtr pod(ObjectUnion::New());
-
   std::string hello("hello world");
-  pod->set_f_string(hello);
+  ObjectUnionPtr pod(ObjectUnion::NewFString(hello));
+
   EXPECT_EQ(hello, pod->get_f_string());
   EXPECT_TRUE(pod->is_f_string());
   EXPECT_EQ(pod->which(), ObjectUnion::Tag::F_STRING);
@@ -477,11 +469,8 @@ TEST(UnionTest, StringValidateOOB) {
 TEST(UnionTest, PodUnionInArray) {
   SmallStructPtr small_struct(SmallStruct::New());
   small_struct->pod_union_array.emplace(2);
-  small_struct->pod_union_array.value()[0] = PodUnion::New();
-  small_struct->pod_union_array.value()[1] = PodUnion::New();
-
-  small_struct->pod_union_array.value()[0]->set_f_int8(10);
-  small_struct->pod_union_array.value()[1]->set_f_int16(12);
+  small_struct->pod_union_array.value()[0] = PodUnion::NewFInt8(10);
+  small_struct->pod_union_array.value()[1] = PodUnion::NewFInt16(12);
 
   EXPECT_EQ(10, small_struct->pod_union_array.value()[0]->get_f_int8());
   EXPECT_EQ(12, small_struct->pod_union_array.value()[1]->get_f_int16());
@@ -489,11 +478,8 @@ TEST(UnionTest, PodUnionInArray) {
 
 TEST(UnionTest, PodUnionInArraySerialization) {
   std::vector<PodUnionPtr> array(2);
-  array[0] = PodUnion::New();
-  array[1] = PodUnion::New();
-
-  array[0]->set_f_int8(10);
-  array[1]->set_f_int16(12);
+  array[0] = PodUnion::NewFInt8(10);
+  array[1] = PodUnion::NewFInt16(12);
   EXPECT_EQ(2U, array.size());
 
   mojo::Message message;
@@ -511,9 +497,7 @@ TEST(UnionTest, PodUnionInArraySerialization) {
 
 TEST(UnionTest, PodUnionInArraySerializationWithNull) {
   std::vector<PodUnionPtr> array(2);
-  array[0] = PodUnion::New();
-
-  array[0]->set_f_int8(10);
+  array[0] = PodUnion::NewFInt8(10);
   EXPECT_EQ(2U, array.size());
 
   mojo::Message message;
@@ -531,11 +515,8 @@ TEST(UnionTest, PodUnionInArraySerializationWithNull) {
 
 TEST(UnionTest, ObjectUnionInArraySerialization) {
   std::vector<ObjectUnionPtr> array(2);
-  array[0] = ObjectUnion::New();
-  array[1] = ObjectUnion::New();
-
-  array[0]->set_f_string("hello");
-  array[1]->set_f_string("world");
+  array[0] = ObjectUnion::NewFString("hello");
+  array[1] = ObjectUnion::NewFString("world");
   EXPECT_EQ(2U, array.size());
 
   mojo::Message message;
@@ -571,8 +552,7 @@ TEST(UnionTest, ObjectUnionInArraySerialization) {
 // Struct tests
 TEST(UnionTest, Clone_Union) {
   SmallStructPtr small_struct(SmallStruct::New());
-  small_struct->pod_union = PodUnion::New();
-  small_struct->pod_union->set_f_int8(10);
+  small_struct->pod_union = PodUnion::NewFInt8(10);
 
   SmallStructPtr clone = small_struct.Clone();
   EXPECT_EQ(10, clone->pod_union->get_f_int8());
@@ -581,8 +561,7 @@ TEST(UnionTest, Clone_Union) {
 // Serialization test of a struct with a union of plain old data.
 TEST(UnionTest, Serialization_UnionOfPods) {
   SmallStructPtr small_struct(SmallStruct::New());
-  small_struct->pod_union = PodUnion::New();
-  small_struct->pod_union->set_f_int32(10);
+  small_struct->pod_union = PodUnion::NewFInt32(10);
 
   mojo::Message message;
   internal::SmallStruct_Data* data = nullptr;
@@ -598,9 +577,8 @@ TEST(UnionTest, Serialization_UnionOfPods) {
 // Serialization test of a struct with a union of structs.
 TEST(UnionTest, Serialization_UnionOfObjects) {
   SmallObjStructPtr obj_struct(SmallObjStruct::New());
-  obj_struct->obj_union = ObjectUnion::New();
   std::string hello("hello world");
-  obj_struct->obj_union->set_f_string(hello);
+  obj_struct->obj_union = ObjectUnion::NewFString(hello);
 
   mojo::Message message;
   internal::SmallObjStruct_Data* data = nullptr;
@@ -616,8 +594,7 @@ TEST(UnionTest, Serialization_UnionOfObjects) {
 // Validation test of a struct with a union.
 TEST(UnionTest, Validation_UnionsInStruct) {
   SmallStructPtr small_struct(SmallStruct::New());
-  small_struct->pod_union = PodUnion::New();
-  small_struct->pod_union->set_f_int32(10);
+  small_struct->pod_union = PodUnion::NewFInt32(10);
 
   mojo::Message message;
   internal::SmallStruct_Data* data = nullptr;
@@ -631,8 +608,7 @@ TEST(UnionTest, Validation_UnionsInStruct) {
 // Validation test of a struct union fails due to unknown union tag.
 TEST(UnionTest, Validation_PodUnionInStruct_Failure) {
   SmallStructPtr small_struct(SmallStruct::New());
-  small_struct->pod_union = PodUnion::New();
-  small_struct->pod_union->set_f_int32(10);
+  small_struct->pod_union = PodUnion::NewFInt32(10);
 
   mojo::Message message;
   internal::SmallStruct_Data* data = nullptr;
@@ -678,11 +654,8 @@ TEST(UnionTest, Validation_NullableUnion) {
 TEST(UnionTest, PodUnionInMap) {
   SmallStructPtr small_struct(SmallStruct::New());
   small_struct->pod_union_map.emplace();
-  small_struct->pod_union_map.value()["one"] = PodUnion::New();
-  small_struct->pod_union_map.value()["two"] = PodUnion::New();
-
-  small_struct->pod_union_map.value()["one"]->set_f_int8(8);
-  small_struct->pod_union_map.value()["two"]->set_f_int16(16);
+  small_struct->pod_union_map.value()["one"] = PodUnion::NewFInt8(8);
+  small_struct->pod_union_map.value()["two"] = PodUnion::NewFInt16(16);
 
   EXPECT_EQ(8, small_struct->pod_union_map.value()["one"]->get_f_int8());
   EXPECT_EQ(16, small_struct->pod_union_map.value()["two"]->get_f_int16());
@@ -692,11 +665,8 @@ TEST(UnionTest, PodUnionInMapSerialization) {
   using MojomType = MapDataView<StringDataView, PodUnionDataView>;
 
   base::flat_map<std::string, PodUnionPtr> map;
-  map.insert(std::make_pair("one", PodUnion::New()));
-  map.insert(std::make_pair("two", PodUnion::New()));
-
-  map["one"]->set_f_int8(8);
-  map["two"]->set_f_int16(16);
+  map.emplace("one", PodUnion::NewFInt8(8));
+  map.emplace("two", PodUnion::NewFInt16(16));
 
   mojo::Message message(0, 0, 0, 0, nullptr);
   const size_t payload_start = message.payload_buffer()->cursor();
@@ -720,10 +690,8 @@ TEST(UnionTest, PodUnionInMapSerializationWithNull) {
   using MojomType = MapDataView<StringDataView, PodUnionDataView>;
 
   base::flat_map<std::string, PodUnionPtr> map;
-  map.insert(std::make_pair("one", PodUnion::New()));
-  map.insert(std::make_pair("two", nullptr));
-
-  map["one"]->set_f_int8(8);
+  map.emplace("one", PodUnion::NewFInt8(8));
+  map.emplace("two", nullptr);
 
   mojo::Message message(0, 0, 0, 0, nullptr);
   const size_t payload_start = message.payload_buffer()->cursor();
@@ -747,8 +715,7 @@ TEST(UnionTest, StructInUnionGetterSetterPasser) {
   DummyStructPtr dummy(DummyStruct::New());
   dummy->f_int8 = 8;
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_dummy(std::move(dummy));
+  ObjectUnionPtr obj(ObjectUnion::NewFDummy(std::move(dummy)));
 
   EXPECT_EQ(8, obj->get_f_dummy()->f_int8);
 }
@@ -757,8 +724,7 @@ TEST(UnionTest, StructInUnionSerialization) {
   DummyStructPtr dummy(DummyStruct::New());
   dummy->f_int8 = 8;
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_dummy(std::move(dummy));
+  ObjectUnionPtr obj(ObjectUnion::NewFDummy(std::move(dummy)));
 
   mojo::Message message;
   internal::ObjectUnion_Data* data = nullptr;
@@ -773,8 +739,7 @@ TEST(UnionTest, StructInUnionValidation) {
   DummyStructPtr dummy(DummyStruct::New());
   dummy->f_int8 = 8;
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_dummy(std::move(dummy));
+  ObjectUnionPtr obj(ObjectUnion::NewFDummy(std::move(dummy)));
 
   mojo::Message message;
   internal::ObjectUnion_Data* data = nullptr;
@@ -791,8 +756,7 @@ TEST(UnionTest, StructInUnionValidationNonNullable) {
 
   DummyStructPtr dummy(nullptr);
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_dummy(std::move(dummy));
+  ObjectUnionPtr obj(ObjectUnion::NewFDummy(std::move(dummy)));
 
   mojo::Message message;
   internal::ObjectUnion_Data* data = nullptr;
@@ -807,8 +771,7 @@ TEST(UnionTest, StructInUnionValidationNonNullable) {
 TEST(UnionTest, StructInUnionValidationNullable) {
   DummyStructPtr dummy(nullptr);
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_nullable(std::move(dummy));
+  ObjectUnionPtr obj(ObjectUnion::NewFNullable(std::move(dummy)));
 
   mojo::Message message;
   internal::ObjectUnion_Data* data = nullptr;
@@ -825,8 +788,7 @@ TEST(UnionTest, ArrayInUnionGetterSetter) {
   array[0] = 8;
   array[1] = 9;
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_array_int8(std::move(array));
+  ObjectUnionPtr obj(ObjectUnion::NewFArrayInt8(std::move(array)));
 
   EXPECT_EQ(8, obj->get_f_array_int8()[0]);
   EXPECT_EQ(9, obj->get_f_array_int8()[1]);
@@ -837,8 +799,7 @@ TEST(UnionTest, ArrayInUnionSerialization) {
   array[0] = 8;
   array[1] = 9;
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_array_int8(std::move(array));
+  ObjectUnionPtr obj(ObjectUnion::NewFArrayInt8(std::move(array)));
 
   mojo::Message message;
   internal::ObjectUnion_Data* data = nullptr;
@@ -857,8 +818,7 @@ TEST(UnionTest, ArrayInUnionValidation) {
   array[0] = 8;
   array[1] = 9;
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_array_int8(std::move(array));
+  ObjectUnionPtr obj(ObjectUnion::NewFArrayInt8(std::move(array)));
 
   mojo::Message message;
   internal::ObjectUnion_Data* data = nullptr;
@@ -875,8 +835,7 @@ TEST(UnionTest, MapInUnionGetterSetter) {
   map.insert({"one", 1});
   map.insert({"two", 2});
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_map_int8(std::move(map));
+  ObjectUnionPtr obj(ObjectUnion::NewFMapInt8(std::move(map)));
 
   EXPECT_EQ(1, obj->get_f_map_int8()["one"]);
   EXPECT_EQ(2, obj->get_f_map_int8()["two"]);
@@ -887,8 +846,7 @@ TEST(UnionTest, MapInUnionSerialization) {
   map.insert({"one", 1});
   map.insert({"two", 2});
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_map_int8(std::move(map));
+  ObjectUnionPtr obj(ObjectUnion::NewFMapInt8(std::move(map)));
 
   mojo::Message message;
   internal::ObjectUnion_Data* data = nullptr;
@@ -907,8 +865,7 @@ TEST(UnionTest, MapInUnionValidation) {
   map.insert({"one", 1});
   map.insert({"two", 2});
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_map_int8(std::move(map));
+  ObjectUnionPtr obj(ObjectUnion::NewFMapInt8(std::move(map)));
 
   mojo::Message message;
   internal::ObjectUnion_Data* data = nullptr;
@@ -922,18 +879,15 @@ TEST(UnionTest, MapInUnionValidation) {
 }
 
 TEST(UnionTest, UnionInUnionGetterSetter) {
-  PodUnionPtr pod(PodUnion::New());
-  pod->set_f_int8(10);
+  PodUnionPtr pod(PodUnion::NewFInt8(10));
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_pod_union(std::move(pod));
+  ObjectUnionPtr obj(ObjectUnion::NewFPodUnion(std::move(pod)));
 
   EXPECT_EQ(10, obj->get_f_pod_union()->get_f_int8());
 }
 
 TEST(UnionTest, UnionInUnionFactoryFunction) {
-  PodUnionPtr pod(PodUnion::New());
-  pod->set_f_int8(10);
+  PodUnionPtr pod(PodUnion::NewFInt8(10));
 
   ObjectUnionPtr obj(ObjectUnion::NewFPodUnion(std::move(pod)));
 
@@ -941,11 +895,9 @@ TEST(UnionTest, UnionInUnionFactoryFunction) {
 }
 
 TEST(UnionTest, UnionInUnionSerialization) {
-  PodUnionPtr pod(PodUnion::New());
-  pod->set_f_int8(10);
+  PodUnionPtr pod(PodUnion::NewFInt8(10));
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_pod_union(std::move(pod));
+  ObjectUnionPtr obj(ObjectUnion::NewFPodUnion(std::move(pod)));
 
   mojo::Message message;
   internal::ObjectUnion_Data* data = nullptr;
@@ -958,11 +910,9 @@ TEST(UnionTest, UnionInUnionSerialization) {
 }
 
 TEST(UnionTest, UnionInUnionValidation) {
-  PodUnionPtr pod(PodUnion::New());
-  pod->set_f_int8(10);
+  PodUnionPtr pod(PodUnion::NewFInt8(10));
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_pod_union(std::move(pod));
+  ObjectUnionPtr obj(ObjectUnion::NewFPodUnion(std::move(pod)));
 
   mojo::Message message;
   internal::ObjectUnion_Data* data = nullptr;
@@ -980,8 +930,7 @@ TEST(UnionTest, UnionInUnionValidationNonNullable) {
 
   PodUnionPtr pod(nullptr);
 
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_pod_union(std::move(pod));
+  ObjectUnionPtr obj(ObjectUnion::NewFPodUnion(std::move(pod)));
 
   mojo::Message message;
   internal::ObjectUnion_Data* data = nullptr;
@@ -999,8 +948,7 @@ TEST(UnionTest, HandleInUnionGetterSetter) {
 
   CreateMessagePipe(nullptr, &pipe0, &pipe1);
 
-  HandleUnionPtr handle(HandleUnion::New());
-  handle->set_f_message_pipe(std::move(pipe1));
+  HandleUnionPtr handle(HandleUnion::NewFMessagePipe(std::move(pipe1)));
 
   std::string golden("hello world");
   WriteTextMessage(pipe0.get(), golden);
@@ -1034,8 +982,7 @@ TEST(UnionTest, HandleInUnionSerialization) {
 
   CreateMessagePipe(nullptr, &pipe0, &pipe1);
 
-  HandleUnionPtr handle(HandleUnion::New());
-  handle->set_f_message_pipe(std::move(pipe1));
+  HandleUnionPtr handle(HandleUnion::NewFMessagePipe(std::move(pipe1)));
 
   mojo::Message message;
   internal::HandleUnion_Data* data = nullptr;
@@ -1043,7 +990,7 @@ TEST(UnionTest, HandleInUnionSerialization) {
   EXPECT_EQ(16U, size);
   EXPECT_EQ(1U, message.handles()->size());
 
-  HandleUnionPtr handle2(HandleUnion::New());
+  HandleUnionPtr handle2;
   mojo::internal::Deserialize<HandleUnionDataView>(data, &handle2, &message);
 
   std::string golden("hello world");
@@ -1061,8 +1008,7 @@ TEST(UnionTest, HandleInUnionValidation) {
 
   CreateMessagePipe(nullptr, &pipe0, &pipe1);
 
-  HandleUnionPtr handle(HandleUnion::New());
-  handle->set_f_message_pipe(std::move(pipe1));
+  HandleUnionPtr handle(HandleUnion::NewFMessagePipe(std::move(pipe1)));
 
   mojo::Message message;
   internal::HandleUnion_Data* data = nullptr;
@@ -1079,8 +1025,7 @@ TEST(UnionTest, HandleInUnionValidationNull) {
   mojo::internal::SerializationWarningObserverForTesting suppress_warning;
 
   ScopedMessagePipeHandle pipe;
-  HandleUnionPtr handle(HandleUnion::New());
-  handle->set_f_message_pipe(std::move(pipe));
+  HandleUnionPtr handle(HandleUnion::NewFMessagePipe(std::move(pipe)));
 
   mojo::Message message;
   internal::HandleUnion_Data* data = nullptr;
@@ -1121,8 +1066,7 @@ TEST(UnionTest, InterfaceInUnion) {
   Remote<SmallCache> remote;
   Receiver<SmallCache> receiver(&impl, remote.BindNewPipeAndPassReceiver());
 
-  HandleUnionPtr handle(HandleUnion::New());
-  handle->set_f_small_cache(remote.Unbind());
+  HandleUnionPtr handle(HandleUnion::NewFSmallCache(remote.Unbind()));
 
   remote.Bind(std::move(handle->get_f_small_cache()));
   remote->SetIntValue(10);
@@ -1151,8 +1095,7 @@ TEST(UnionTest, InterfaceInUnionSerialization) {
   Remote<SmallCache> remote;
   Receiver<SmallCache> receiver(&impl, remote.BindNewPipeAndPassReceiver());
 
-  HandleUnionPtr handle(HandleUnion::New());
-  handle->set_f_small_cache(remote.Unbind());
+  HandleUnionPtr handle(HandleUnion::NewFSmallCache(remote.Unbind()));
 
   mojo::Message message;
   internal::HandleUnion_Data* data = nullptr;
@@ -1160,7 +1103,7 @@ TEST(UnionTest, InterfaceInUnionSerialization) {
   EXPECT_EQ(16U, size);
   EXPECT_EQ(1U, message.handles()->size());
 
-  HandleUnionPtr handle2(HandleUnion::New());
+  HandleUnionPtr handle2;
   mojo::internal::Deserialize<HandleUnionDataView>(data, &handle2, &message);
 
   remote.Bind(std::move(handle2->get_f_small_cache()));
@@ -1186,8 +1129,7 @@ TEST(UnionTest, UnionInInterface) {
   Remote<UnionInterface> remote;
   Receiver<UnionInterface> receiver(&impl, remote.BindNewPipeAndPassReceiver());
 
-  PodUnionPtr pod(PodUnion::New());
-  pod->set_f_int16(16);
+  PodUnionPtr pod(PodUnion::NewFInt16(16));
 
   remote->Echo(std::move(pod), base::BindOnce([](PodUnionPtr out) {
                  EXPECT_EQ(16, out->get_f_int16());

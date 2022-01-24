@@ -31,6 +31,10 @@ class MojoTestBase : public testing::Test {
   static constexpr size_t kMaxMessageSizeInTests = 32 * 1024 * 1024;
 
   MojoTestBase();
+
+  MojoTestBase(const MojoTestBase&) = delete;
+  MojoTestBase& operator=(const MojoTestBase&) = delete;
+
   ~MojoTestBase() override;
 
   using LaunchType = MultiprocessTestHelper::LaunchType;
@@ -40,6 +44,10 @@ class MojoTestBase : public testing::Test {
     ClientController(const std::string& client_name,
                      MojoTestBase* test,
                      LaunchType launch_type);
+
+    ClientController(const ClientController&) = delete;
+    ClientController& operator=(const ClientController&) = delete;
+
     ~ClientController();
 
     MojoHandle pipe() const { return pipe_.get().value(); }
@@ -54,8 +62,6 @@ class MojoTestBase : public testing::Test {
 #endif
     ScopedMessagePipeHandle pipe_;
     bool was_shutdown_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(ClientController);
   };
 
   ClientController& StartClient(const std::string& client_name);
@@ -170,8 +176,6 @@ class MojoTestBase : public testing::Test {
   std::vector<std::unique_ptr<ClientController>> clients_;
 
   LaunchType launch_type_ = LaunchType::CHILD;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoTestBase);
 };
 
 // Use this to declare the child process's "main()" function for tests using

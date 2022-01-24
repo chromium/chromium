@@ -39,6 +39,7 @@ class BaseAudioContext;
 class ExceptionState;
 class OscillatorOptions;
 class PeriodicWave;
+class PeriodicWaveImpl;
 
 // OscillatorNode is an audio generator of periodic waveforms.
 
@@ -62,7 +63,7 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
   static scoped_refptr<OscillatorHandler> Create(AudioNode&,
                                                  float sample_rate,
                                                  const String& oscillator_type,
-                                                 PeriodicWave* wave_table,
+                                                 PeriodicWaveImpl* wave_table,
                                                  AudioParamHandler& frequency,
                                                  AudioParamHandler& detune);
   ~OscillatorHandler() override;
@@ -73,7 +74,7 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
   String GetType() const;
   void SetType(const String&, ExceptionState&);
 
-  void SetPeriodicWave(PeriodicWave*);
+  void SetPeriodicWave(PeriodicWaveImpl*);
 
   void HandleStoppableSourceNode() override;
 
@@ -81,7 +82,7 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
   OscillatorHandler(AudioNode&,
                     float sample_rate,
                     const String& oscillator_type,
-                    PeriodicWave* wave_table,
+                    PeriodicWaveImpl* wave_table,
                     AudioParamHandler& frequency,
                     AudioParamHandler& detune);
   bool SetType(uint8_t);  // Returns true on success.
@@ -195,8 +196,9 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
   AudioFloatArray phase_increments_;
   AudioFloatArray detune_values_;
 
-  // PeriodicWave is held alive by OscillatorNode.
-  CrossThreadWeakPersistent<PeriodicWave> periodic_wave_;
+  // PeriodicWaveImpl cannot cause cycles with OscillatorNode as it is not
+  // scriptable.
+  CrossThreadPersistent<PeriodicWaveImpl> periodic_wave_;
 };
 
 class OscillatorNode final : public AudioScheduledSourceNode {
@@ -231,9 +233,6 @@ class OscillatorNode final : public AudioScheduledSourceNode {
  private:
   Member<AudioParam> frequency_;
   Member<AudioParam> detune_;
-  // This PeriodicWave is held alive here to allow referencing it from
-  // OscillatorHandler via weak reference.
-  Member<PeriodicWave> periodic_wave_;
 };
 
 }  // namespace blink

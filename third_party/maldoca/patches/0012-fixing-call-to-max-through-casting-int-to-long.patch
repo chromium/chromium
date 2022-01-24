@@ -1,0 +1,55 @@
+From b41e068cbaf8d53538bb1b27a82256ad3f40a646 Mon Sep 17 00:00:00 2001
+From: Olabode Anise <anise@chromium.org>
+Date: Thu, 9 Sep 2021 05:24:21 +0000
+Subject: [PATCH] fixing call to max through casting int to long
+
+---
+ third_party/maldoca/src/maldoca/ole/oss_utils.cc | 5 +++--
+ third_party/maldoca/src/maldoca/ole/ppt.cc       | 5 ++++-
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/third_party/maldoca/src/maldoca/ole/oss_utils.cc b/third_party/maldoca/src/maldoca/ole/oss_utils.cc
+index b1178df99a06..7fc9329bed9e 100644
+--- a/third_party/maldoca/src/maldoca/ole/oss_utils.cc
++++ b/third_party/maldoca/src/maldoca/ole/oss_utils.cc
+@@ -432,7 +432,8 @@ bool BufferToUtf8::ConvertEncodingBufferToUTF8String(absl::string_view input,
+ 
+         default:
+           // give up
+-          out_str->resize(std::max(out_ptr - out_str->data(), 0l));
++          out_str->resize(
++              std::max(static_cast<long>(out_ptr - out_str->data()), 0l));
+           LOG(ERROR) << "failed with error: " << errno
+                      << ", in_bytes_left: " << in_bytes_left
+                      << ", out_bytes_left: " << out_bytes_left
+@@ -442,7 +443,7 @@ bool BufferToUtf8::ConvertEncodingBufferToUTF8String(absl::string_view input,
+     }
+   }
+   // resize to actual size
+-  out_str->resize(std::max(out_ptr - out_str->data(), 0l));
++  out_str->resize(std::max(static_cast<long>(out_ptr - out_str->data()), 0l));
+   // For some reason, it preserves start and trailing \0 so remove them
+   StripNullChar(out_str);
+   *bytes_consumed = input.size() - in_bytes_left;
+diff --git a/third_party/maldoca/src/maldoca/ole/ppt.cc b/third_party/maldoca/src/maldoca/ole/ppt.cc
+index 38566604ea09..9336a5050d8e 100644
+--- a/third_party/maldoca/src/maldoca/ole/ppt.cc
++++ b/third_party/maldoca/src/maldoca/ole/ppt.cc
+@@ -193,10 +193,13 @@ StatusOr<std::string> VBAProjectStorage::Decompress(
+ 
+   // Decompress zlib chunks
+   ZLib z;
++  // Have to use a temp var due to different datatypes (size_t vs uLongf)
++  uLongf decompressed_size_tmp = decompressed_size;
+   int result = z.UncompressChunk(
+-      reinterpret_cast<Bytef *>(&(storage[0])), &decompressed_size,
++      reinterpret_cast<Bytef *>(&(storage[0])), &decompressed_size_tmp,
+       reinterpret_cast<const Byte *>(compressed_storage.data()),
+       compressed_storage.size());
++  decompressed_size = decompressed_size_tmp;
+   if (result != Z_OK) {
+     auto status = absl::FailedPreconditionError(absl::StrCat(
+         "Could not decompress VBAProjectStorage, zlib error: ", result));
+-- 
+2.33.0.153.gba50c8fa24-goog
+

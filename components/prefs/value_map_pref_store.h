@@ -10,7 +10,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/prefs_export.h"
@@ -21,6 +20,9 @@
 class COMPONENTS_PREFS_EXPORT ValueMapPrefStore : public WriteablePrefStore {
  public:
   ValueMapPrefStore();
+
+  ValueMapPrefStore(const ValueMapPrefStore&) = delete;
+  ValueMapPrefStore& operator=(const ValueMapPrefStore&) = delete;
 
   // PrefStore overrides:
   bool GetValue(const std::string& key,
@@ -52,8 +54,6 @@ class COMPONENTS_PREFS_EXPORT ValueMapPrefStore : public WriteablePrefStore {
   PrefValueMap prefs_;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValueMapPrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_VALUE_MAP_PREF_STORE_H_

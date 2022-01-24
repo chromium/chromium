@@ -53,7 +53,7 @@ std::unique_ptr<CommandItem> CreateNoOpCommandItem(const std::u16string& title,
                                                    double score) {
   std::vector<gfx::Range> ranges{{0, static_cast<uint32_t>(title.size())}};
   auto item = std::make_unique<CommandItem>(title, score, ranges);
-  item->command = base::DoNothing::Once();
+  item->command = base::DoNothing();
   return item;
 }
 
@@ -244,20 +244,15 @@ TEST_F(CommanderControllerTest, ViewModelSortsResults) {
   EXPECT_EQ(model.items[4].title, u"fifth");
 }
 
-TEST_F(CommanderControllerTest, ViewModelSortsCommandsAboveNouns) {
+TEST_F(CommanderControllerTest, ViewModelSortsSameScoreAlphabetically) {
   std::vector<std::unique_ptr<CommandSource>> sources;
   auto source = std::make_unique<TestCommandSource>(
       base::BindRepeating([](const std::u16string&, Browser* browser) {
         CommandSource::CommandResults result;
-        auto window = CreateNoOpCommandItem(u"window", 99);
-        window->entity_type = CommandItem::Entity::kWindow;
-        auto command = CreateNoOpCommandItem(u"command", 90);
-        command->entity_type = CommandItem::Entity::kCommand;
-        auto tab = CreateNoOpCommandItem(u"tab", 100);
-        tab->entity_type = CommandItem::Entity::kTab;
-        result.push_back(std::move(window));
-        result.push_back(std::move(command));
-        result.push_back(std::move(tab));
+        result.push_back(CreateNoOpCommandItem(u"clementine", 100));
+        result.push_back(CreateNoOpCommandItem(u"apple", 100));
+        result.push_back(CreateNoOpCommandItem(u"banana", 100));
+
         return result;
       }));
   sources.push_back(std::move(source));
@@ -273,7 +268,9 @@ TEST_F(CommanderControllerTest, ViewModelSortsCommandsAboveNouns) {
   ASSERT_EQ(received_view_models_.size(), 1u);
   CommanderViewModel model = received_view_models_.back();
   ASSERT_EQ(model.items.size(), 3u);
-  EXPECT_EQ(model.items[0].title, u"command");
+  EXPECT_EQ(model.items[0].title, u"apple");
+  EXPECT_EQ(model.items[1].title, u"banana");
+  EXPECT_EQ(model.items[2].title, u"clementine");
 }
 
 TEST_F(CommanderControllerTest, ViewModelRetainsBoldRanges) {

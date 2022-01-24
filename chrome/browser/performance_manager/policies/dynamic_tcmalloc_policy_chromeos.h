@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_DYNAMIC_TCMALLOC_POLICY_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_DYNAMIC_TCMALLOC_POLICY_CHROMEOS_H_
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/common/performance_manager/mojom/tcmalloc.mojom-forward.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -21,6 +20,10 @@ namespace policies {
 class DynamicTcmallocPolicy : public GraphOwned {
  public:
   DynamicTcmallocPolicy();
+
+  DynamicTcmallocPolicy(const DynamicTcmallocPolicy&) = delete;
+  DynamicTcmallocPolicy& operator=(const DynamicTcmallocPolicy&) = delete;
+
   ~DynamicTcmallocPolicy() override;
 
   // GraphOwned implementation:
@@ -38,8 +41,6 @@ class DynamicTcmallocPolicy : public GraphOwned {
 
  private:
   Graph* graph_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DynamicTcmallocPolicy);
 };
 
 }  // namespace policies

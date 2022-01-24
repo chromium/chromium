@@ -1,0 +1,6 @@
+Test CSS.getQueryingDescendantsForContainer method for container query containers
+Are the returned nodes the expected descendants for #container-unnamed?
+true
+Are the returned nodes the expected descendants for #container-named?
+true
+

@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "chrome/chrome_cleaner/http/http_agent.h"
 
@@ -25,6 +24,10 @@ class HttpAgentImpl : public HttpAgent {
   //     header.
   HttpAgentImpl(base::WStringPiece product_name,
                 base::WStringPiece product_version);
+
+  HttpAgentImpl(const HttpAgentImpl&) = delete;
+  HttpAgentImpl& operator=(const HttpAgentImpl&) = delete;
+
   ~HttpAgentImpl() override;
 
   // HttpAgent implementation
@@ -47,8 +50,6 @@ class HttpAgentImpl : public HttpAgent {
 
  private:
   std::wstring user_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpAgentImpl);
 };
 
 }  // namespace chrome_cleaner

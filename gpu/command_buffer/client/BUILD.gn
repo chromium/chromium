@@ -116,7 +116,6 @@ source_set("gles2_cmd_helper_sources") {
   ]
 
   configs += [
-    "//build/config/compiler:no_shorten_64_warnings",
     "//gpu:gpu_gles2_implementation",
   ]
 

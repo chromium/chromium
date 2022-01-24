@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/nix/mime_util_xdg.h"
 #include "base/nix/xdg_util.h"
 #include "base/process/launch.h"
@@ -48,6 +47,9 @@ class SelectFileDialogImplKDE : public SelectFileDialogImpl {
                           std::unique_ptr<ui::SelectFilePolicy> policy,
                           base::nix::DesktopEnvironment desktop,
                           const std::string& kdialog_version);
+
+  SelectFileDialogImplKDE(const SelectFileDialogImplKDE&) = delete;
+  SelectFileDialogImplKDE& operator=(const SelectFileDialogImplKDE&) = delete;
 
  protected:
   ~SelectFileDialogImplKDE() override;
@@ -181,8 +183,6 @@ class SelectFileDialogImplKDE : public SelectFileDialogImpl {
   scoped_refptr<base::SequencedTaskRunner> pipe_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogImplKDE);
 };
 
 // static

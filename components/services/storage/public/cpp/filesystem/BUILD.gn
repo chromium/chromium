@@ -6,7 +6,6 @@ component("filesystem") {
   output_name = "storage_service_filesystem_support"
 
   public = [
-    "file_error_or.h",
     "filesystem_impl.h",
     "filesystem_proxy.h",
   ]

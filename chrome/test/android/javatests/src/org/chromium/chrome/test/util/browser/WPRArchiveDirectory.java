@@ -34,10 +34,35 @@ import java.lang.annotation.Target;
  * During gClient runhooks, the files in /path_of_file_foo and /path_of_file_bar
  * are downloaded from GCS. Once the files are downloaded, it will be used in
  * tests as isolated.
+ *
+ * Optionally, a test may additionally be annotated with ArchiveName. This allows multiple tests
+ * to share the same archive. This is possible when a single test exercises the same network
+ * requests needed by other tests.
+ *
+ * For example, these two tests use the same WPR file. You can record running testA, and then replay
+ * on both testA and testB.
+ *
+ *     @Feature("WPRRecordReplayTest")
+ *     @WPRArchiveDirectory("/path_of_file_foo")
+ *     @WPRArchiveDirectory.ArchiveName("shared.wprgo")
+ *     public void test_A() {
+ *        ...
+ *     }
+ *
+ *     @Feature("WPRRecordReplayTest")
+ *     @WPRArchiveDirectory("/path_of_file_foo")
+ *     @WPRArchiveDirectory.ArchiveName("shared.wprgo")
+ *     public void test_B() {
+ *     }
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WPRArchiveDirectory {
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface ArchiveName {
+        String[] value();
+    }
+
     /**
      * @return one WPRArchiveDirectory.
      */

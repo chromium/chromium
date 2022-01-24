@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that iframe's main resource is reported only once.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.showPanel('resources');
   await TestRunner.evaluateInPageAsync(`
       (function createIframe() {

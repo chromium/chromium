@@ -40,6 +40,9 @@ class MediaKeysListenerImpl : public MediaKeysListener {
  public:
   MediaKeysListenerImpl(MediaKeysListener::Delegate* delegate, Scope scope);
 
+  MediaKeysListenerImpl(const MediaKeysListenerImpl&) = delete;
+  MediaKeysListenerImpl& operator=(const MediaKeysListenerImpl&) = delete;
+
   ~MediaKeysListenerImpl() override;
 
   // MediaKeysListener:
@@ -66,8 +69,6 @@ class MediaKeysListenerImpl : public MediaKeysListener {
   CFMachPortRef event_tap_ = nullptr;
   CFRunLoopSourceRef event_tap_source_ = nullptr;
   base::flat_set<KeyboardCode> key_codes_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaKeysListenerImpl);
 };
 
 MediaKeysListenerImpl::MediaKeysListenerImpl(

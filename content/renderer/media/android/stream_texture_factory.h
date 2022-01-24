@@ -9,9 +9,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "cc/layers/video_frame_provider.h"
 #include "content/common/content_export.h"
@@ -42,6 +41,10 @@ class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const absl::optional<gpu::VulkanYCbCrInfo>&)>;
+
+  StreamTextureProxy() = delete;
+  StreamTextureProxy(const StreamTextureProxy&) = delete;
+  StreamTextureProxy& operator=(const StreamTextureProxy&) = delete;
 
   ~StreamTextureProxy() override;
 
@@ -74,6 +77,9 @@ class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
   // Clears |received_frame_cb_| in a thread safe way.
   void ClearReceivedFrameCB();
 
+  // Clears |create_video_frame_cb_| in a thread safe way.
+  void ClearCreateVideoFrameCB();
+
   struct Deleter {
     inline void operator()(StreamTextureProxy* ptr) const { ptr->Release(); }
   };
@@ -85,9 +91,6 @@ class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
   void BindOnThread();
   void Release();
 
-  // Clears |create_video_frame_cb_| in a thread safe way.
-  void ClearCreateVideoFrameCB();
-
   const std::unique_ptr<StreamTextureHost> host_;
 
   // Protects access to |received_frame_cb_| and |task_runner_|.
@@ -95,8 +98,6 @@ class CONTENT_EXPORT StreamTextureProxy : public StreamTextureHost::Listener {
   base::RepeatingClosure received_frame_cb_;
   CreateVideoFrameCB create_video_frame_cb_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(StreamTextureProxy);
 };
 
 typedef std::unique_ptr<StreamTextureProxy, StreamTextureProxy::Deleter>
@@ -108,6 +109,10 @@ class CONTENT_EXPORT StreamTextureFactory
  public:
   static scoped_refptr<StreamTextureFactory> Create(
       scoped_refptr<gpu::GpuChannelHost> channel);
+
+  StreamTextureFactory() = delete;
+  StreamTextureFactory(const StreamTextureFactory&) = delete;
+  StreamTextureFactory& operator=(const StreamTextureFactory&) = delete;
 
   // Create the StreamTextureProxy object. This internally creates a
   // gpu::StreamTexture and returns its route_id. If this route_id is invalid
@@ -127,8 +132,6 @@ class CONTENT_EXPORT StreamTextureFactory
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
   std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(StreamTextureFactory);
 };
 
 }  // namespace content

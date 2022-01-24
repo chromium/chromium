@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
+#include "base/dcheck_is_on.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
@@ -23,6 +24,7 @@
 
 namespace arc {
 
+using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
 using AXEventData = mojom::AccessibilityEventData;
 using AXEventType = mojom::AccessibilityEventType;
 using AXIntProperty = mojom::AccessibilityIntProperty;
@@ -32,8 +34,10 @@ using AXWindowBooleanProperty = mojom::AccessibilityWindowBooleanProperty;
 using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
 using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
 
+// TODO(hirokisato): Enable AXTreeArcSerializer's |crash_on_error| once
+// Android becomes able to send reliable trees.
 AXTreeSourceArc::AXTreeSourceArc(Delegate* delegate, aura::Window* window)
-    : current_tree_serializer_(new AXTreeArcSerializer(this)),
+    : current_tree_serializer_(new AXTreeArcSerializer(this, DCHECK_IS_ON())),
       is_notification_(false),
       is_input_method_window_(false),
       window_(window),
@@ -234,7 +238,6 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
 
   events.push_back(std::move(event));
 
-  // Force the tree, to update, so unignored fields get updated.
   // On event type of WINDOW_STATE_CHANGED, update the entire tree so that
   // window location is correctly calculated.
   int32_t node_id_to_clear =
@@ -259,12 +262,13 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     }
   }
 
+  for (const int32_t update_id : update_ids)
+    current_tree_serializer_->InvalidateSubtree(GetFromId(update_id));
+
   std::vector<ui::AXTreeUpdate> updates;
-  for (const int32_t update_root : update_ids) {
+  for (const int32_t update_id : update_ids) {
     ui::AXTreeUpdate update;
-    update.node_id_to_clear = update_root;
-    current_tree_serializer_->InvalidateSubtree(GetFromId(update_root));
-    if (!current_tree_serializer_->SerializeChanges(GetFromId(update_root),
+    if (!current_tree_serializer_->SerializeChanges(GetFromId(update_id),
                                                     &update)) {
       std::string error_string;
       ui::AXTreeSourceChecker<AccessibilityInfoDataWrapper*> checker(this);
@@ -284,6 +288,9 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
 
 extensions::AutomationEventRouterInterface*
 AXTreeSourceArc::GetAutomationEventRouter() const {
+  if (automation_event_router_for_test_)
+    return automation_event_router_for_test_;
+
   return extensions::AutomationEventRouter::GetInstance();
 }
 
@@ -361,7 +368,9 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
 
   // TODO(hirokisato): Handle CLEAR_ACCESSIBILITY_FOCUS event.
   if (event_data.event_type == AXEventType::VIEW_FOCUSED) {
-    if (source_node && source_node->IsVisibleToUser()) {
+    if (source_node && source_node->IsVisibleToUser() &&
+        GetBooleanProperty(source_node->GetNode(),
+                           AXBooleanProperty::FOCUSED)) {
       // Sometimes Android sets focus on unfocusable node, e.g. ListView.
       AccessibilityInfoDataWrapper* adjusted_node =
           UseFullFocusMode()

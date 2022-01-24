@@ -12,9 +12,9 @@
 #include "base/task/current_thread.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/net/system_proxy_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -56,7 +56,7 @@ class SystemProxyHandlerTest : public testing::Test {
     system_proxy_handler_ =
         std::make_unique<SystemProxyHandler>(ash::CrosSettings::Get());
     system_proxy_manager_ =
-        std::make_unique<chromeos::SystemProxyManager>(local_state_.Get());
+        std::make_unique<ash::SystemProxyManager>(local_state_.Get());
     profile_ = std::make_unique<TestingProfile>();
     system_proxy_manager_->StartObservingPrimaryProfilePrefs(profile_.get());
 
@@ -84,7 +84,7 @@ class SystemProxyHandlerTest : public testing::Test {
     dict.SetKey("system_services_password",
                 base::Value(system_services_password));
     scoped_testing_cros_settings_.device_settings()->Set(
-        chromeos::kSystemProxySettings, dict);
+        ash::kSystemProxySettings, dict);
     task_environment_.RunUntilIdle();
   }
 
@@ -111,7 +111,7 @@ class SystemProxyHandlerTest : public testing::Test {
   ash::ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   chromeos::ScopedStubInstallAttributes test_install_attributes_;
   std::unique_ptr<SystemProxyHandler> system_proxy_handler_;
-  std::unique_ptr<chromeos::SystemProxyManager> system_proxy_manager_;
+  std::unique_ptr<ash::SystemProxyManager> system_proxy_manager_;
 };
 
 // Verifies that authentication details are forwarded to system-proxy according

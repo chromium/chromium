@@ -11,8 +11,13 @@
 //build/android/pylib/local/emulator/proto/__init__.py
 //build/android/pylib/local/emulator/proto/avd_pb2.py
 //build/gn_helpers.py
+//build/util/lib/__init__.py
+//build/util/lib/results/__init__.py
+//build/util/lib/results/result_sink.py
+//build/util/lib/results/result_types.py
 //testing/scripts/common.py
 //testing/scripts/run_android_wpt.py
+//testing/scripts/wpt_android_lib.py
 //testing/scripts/wpt_common.py
 //testing/test_env.py
 //testing/xvfb.py

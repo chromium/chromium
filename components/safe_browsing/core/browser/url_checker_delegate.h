@@ -69,10 +69,13 @@ class UrlCheckerDelegate
 
   // If the method returns true, the entire request won't be checked, including
   // the original URL and redirects.
-  // If neither of |render_process_id| and |render_frame_id| is -1, they will be
-  // used to identify the frame making the request; otherwise
-  // |frame_tree_node_id| will be used. Please note that |frame_tree_node_id|
-  // could also be -1, if a request is not associated with a frame.
+  // If neither of |render_process_id| and |render_frame_id| is a sentinel
+  // value, they will be used to identify the frame making the request;
+  // otherwise |frame_tree_node_id| will be used. Please note that
+  // |frame_tree_node_id| could also be a sentinel value, if a request is not
+  // associated with a frame. Also note that these ids are content/ specific.
+  // See comments in content::RenderFrameHost for the meaning of these ids and
+  // their sentinel values.
   virtual bool ShouldSkipRequestCheck(
       const GURL& original_url,
       int frame_tree_node_id,

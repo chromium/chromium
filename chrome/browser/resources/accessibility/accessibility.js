@@ -185,7 +185,6 @@ function initialize() {
   bindCheckbox('text', data['text']);
   bindCheckbox('screenreader', data['screenreader']);
   bindCheckbox('html', data['html']);
-  bindCheckbox('label_images', data['labelImages']);
   bindCheckbox('internal', data['internal']);
 
   $('pages').textContent = '';
@@ -243,7 +242,6 @@ function bindCheckbox(name, value) {
   }
   $(name).addEventListener('change', function() {
     browserProxy.setGlobalFlag(name, $(name).checked);
-    document.location.reload();
   });
 }
 
@@ -306,8 +304,6 @@ function formatRow(row, data, requestType) {
     row.appendChild(createModeElement(AXMode.kScreenReader, data, 'web'));
     row.appendChild(createModeElement(AXMode.kHTML, data, 'web'));
     row.appendChild(createModeElement(AXMode.kHTMLMetadata, data, 'metadata'));
-    row.appendChild(
-        createModeElement(AXMode.kLabelImages, data, 'labelImages'));
     row.appendChild(createModeElement(AXMode.kPDF, data, 'pdf'));
   } else {
     const siteInfo = document.createElement('span');

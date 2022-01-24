@@ -101,6 +101,16 @@ MEDIA_EXPORT gfx::Size ScaleSizeToFitWithinTarget(const gfx::Size& size,
 MEDIA_EXPORT gfx::Size ScaleSizeToEncompassTarget(const gfx::Size& size,
                                                   const gfx::Size& target);
 
+// Calculates the largest sub-rectangle of a rectangle of size |size| with
+// roughly the same aspect ratio as |target| and centered both horizontally
+// and vertically within the rectangle. It's "roughly" the same aspect ratio
+// because its dimensions may be rounded down to be a multiple of |alignment|.
+// The origin of the rectangle is also aligned down to a multiple of
+// |alignment|. Note that |alignment| must be a power of 2.
+MEDIA_EXPORT gfx::Rect CropSizeForScalingToTarget(const gfx::Size& size,
+                                                  const gfx::Size& target,
+                                                  size_t alignment = 1u);
+
 // Returns the size of a rectangle whose upper left corner is at the origin (0,
 // 0) and whose bottom right corner is the same as that of |rect|. This is
 // useful to get the size of a buffer that contains the visible rectangle plus
@@ -142,6 +152,17 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     gpu::raster::RasterInterface* ri,
     GrDirectContext* gr_context,
     VideoFramePool* pool = nullptr);
+
+// Synchronously reads a single plane. |src_rect| is relative to the plane,
+// which may be smaller than |frame| due to subsampling.
+MEDIA_EXPORT bool ReadbackTexturePlaneToMemorySync(
+    const VideoFrame& src_frame,
+    size_t src_plane,
+    gfx::Rect& src_rect,
+    uint8_t* dest_pixels,
+    size_t dest_stride,
+    gpu::raster::RasterInterface* ri,
+    GrDirectContext* gr_context);
 
 // Converts a frame with I420A format into I420 by dropping alpha channel.
 MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(

@@ -31,6 +31,14 @@ enum class TabSearchCloseAction {
   kMaxValue = kTabSwitch,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TabSearchRecentlyClosedToggleAction {
+  kExpand = 0,
+  kCollapse = 1,
+  kMaxValue = kCollapse,
+};
+
 class TabSearchPageHandler : public tab_search::mojom::PageHandler,
                              public TabStripModelObserver,
                              public BrowserTabStripTrackerDelegate {
@@ -50,6 +58,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void SwitchToTab(
       tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) override;
   void OpenRecentlyClosedEntry(int32_t session_id) override;
+  void SaveRecentlyClosedExpandedPref(bool expanded) override;
   void ShowUI() override;
 
   // TabStripModelObserver:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -39,9 +39,12 @@ For example:
 }
 """
 
+import base64
+import collections
 import hashlib
 import json
 import optparse
+import six
 import struct
 import sys
 
@@ -57,7 +60,7 @@ def _pem_cert_to_binary(pem_filename):
   Returns:
     A byte array containing the decoded certificate data
   """
-  base64 = ""
+  pem_data = ""
   started = False
 
   with open(pem_filename, 'r') as pem_file:
@@ -68,9 +71,9 @@ def _pem_cert_to_binary(pem_filename):
       else:
         if line.startswith('-----END CERTIFICATE'):
           break
-        base64 += line[:-1].strip()
+        pem_data += line[:-1].strip()
 
-  return base64.decode('base64')
+  return base64.b64decode(pem_data)
 
 
 def _parse_asn1_element(der_bytes):
@@ -84,16 +87,16 @@ def _parse_asn1_element(der_bytes):
     read, the sequence of bytes for the value, and then any data from der_bytes
     that was not part of the tag/Length/Value.
   """
-  tag = ord(der_bytes[0])
-  length = ord(der_bytes[1])
+  tag = six.indexbytes(der_bytes, 0)
+  length = six.indexbytes(der_bytes, 1)
   header_length = 2
 
   if length & 0x80:
     num_length_bytes = length & 0x7f
     length = 0
-    for i in xrange(2, 2 + num_length_bytes):
+    for i in range(2, 2 + num_length_bytes):
       length <<= 8
-      length += ord(der_bytes[i])
+      length += six.indexbytes(der_bytes, i)
     header_length = 2 + num_length_bytes
 
   contents = der_bytes[:header_length + length]
@@ -228,7 +231,7 @@ def der_cert_to_serial(der_bytes):
   iterator.step_into()  # enter TBSCertificate
   iterator.step_over()  # over version
   raw_serial = iterator.encoded_value()
-  if raw_serial[0] == chr(0x00) and len(raw_serial) > 1:
+  if six.indexbytes(raw_serial, 0) == 0x00 and len(raw_serial) > 1:
     raw_serial = raw_serial[1:]
   return raw_serial
 
@@ -256,28 +259,32 @@ def main():
 
   config = json.load(sys.stdin)
   blocked_spkis = [
-      pem_cert_file_to_spki_hash(pem_file).encode('base64').strip()
-      for pem_file in config.get('BlockedBySPKI', [])]
+      base64.b64encode(pem_cert_file_to_spki_hash(pem_file)).decode('ascii')
+      for pem_file in config.get('BlockedBySPKI', [])
+  ]
   parents = {
       pem_cert_file_to_spki_hash(pem_file): [
           pem_cert_file_to_serial(issued_cert_file)
           for issued_cert_file in issued_certs
       ]
-      for pem_file, issued_certs in config.get('BlockedByHash', {}).iteritems()
+      for pem_file, issued_certs in config.get('BlockedByHash', {}).items()
   }
   limited_subjects = {
-    pem_cert_file_to_subject_hash(pem_file).encode('base64').strip(): [
-      pem_cert_file_to_spki_hash(filename).encode('base64').strip()
-      for filename in allowed_pems
-    ]
-    for pem_file, allowed_pems in config.get('LimitedSubjects', {}).iteritems()
+      base64.b64encode(pem_cert_file_to_subject_hash(pem_file)).decode('ascii'):
+      [
+          base64.b64encode(pem_cert_file_to_spki_hash(filename)).decode('ascii')
+          for filename in allowed_pems
+      ]
+      for pem_file, allowed_pems in config.get('LimitedSubjects', {}).items()
   }
   known_interception_spkis = [
-    pem_cert_file_to_spki_hash(pem_file).encode('base64').strip()
-    for pem_file in config.get('KnownInterceptionSPKIs', [])]
+      base64.b64encode(pem_cert_file_to_spki_hash(pem_file)).decode('ascii')
+      for pem_file in config.get('KnownInterceptionSPKIs', [])
+  ]
   blocked_interception_spkis = [
-    pem_cert_file_to_spki_hash(pem_file).encode('base64').strip()
-    for pem_file in config.get('BlockedInterceptionSPKIs', [])]
+      base64.b64encode(pem_cert_file_to_spki_hash(pem_file)).decode('ascii')
+      for pem_file in config.get('BlockedInterceptionSPKIs', [])
+  ]
   header_json = {
       'Version': 0,
       'ContentType': 'CRLSet',
@@ -290,19 +297,19 @@ def main():
   }
   header = json.dumps(header_json)
   outfile.write(struct.pack('<H', len(header)))
-  outfile.write(header)
-  for spki, serials in sorted(parents.iteritems()):
+  outfile.write(header.encode('utf-8'))
+  for spki, serials in sorted(parents.items()):
     outfile.write(spki)
     outfile.write(struct.pack('<I', len(serials)))
     for serial in serials:
       raw_serial = []
       if not serial:
-        raw_serial = ['\x00']
+        raw_serial = b'\x00'
       else:
         raw_serial = serial
 
-    outfile.write(struct.pack('<B', len(raw_serial)))
-    outfile.write(''.join(raw_serial))
+      outfile.write(struct.pack('<B', len(raw_serial)))
+      outfile.write(raw_serial)
   return 0
 
 

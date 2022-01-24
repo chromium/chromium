@@ -55,6 +55,10 @@ class MockPeerConnectionHandler : public MockRTCPeerConnectionHandlerPlatform {
       scoped_refptr<base::TestSimpleTaskRunner> signaling_thread)
       : signaling_thread_(signaling_thread) {}
 
+  MockPeerConnectionHandler(const MockPeerConnectionHandler&) = delete;
+  MockPeerConnectionHandler& operator=(const MockPeerConnectionHandler&) =
+      delete;
+
   scoped_refptr<base::SingleThreadTaskRunner> signaling_thread()
       const override {
     return signaling_thread_;
@@ -78,8 +82,6 @@ class MockPeerConnectionHandler : public MockRTCPeerConnectionHandlerPlatform {
 
   scoped_refptr<base::TestSimpleTaskRunner> signaling_thread_;
   CrossThreadOnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPeerConnectionHandler);
 };
 
 class MockDataChannel : public webrtc::DataChannelInterface {
@@ -90,6 +92,9 @@ class MockDataChannel : public webrtc::DataChannelInterface {
         buffered_amount_(0),
         observer_(nullptr),
         state_(webrtc::DataChannelInterface::kConnecting) {}
+
+  MockDataChannel(const MockDataChannel&) = delete;
+  MockDataChannel& operator=(const MockDataChannel&) = delete;
 
   std::string label() const override { return std::string(); }
   bool reliable() const override { return false; }
@@ -207,13 +212,15 @@ class MockDataChannel : public webrtc::DataChannelInterface {
   uint64_t buffered_amount_;
   webrtc::DataChannelObserver* observer_;
   webrtc::DataChannelInterface::DataState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDataChannel);
 };
 
 class RTCDataChannelTest : public ::testing::Test {
  public:
   RTCDataChannelTest() : signaling_thread_(new base::TestSimpleTaskRunner()) {}
+
+  RTCDataChannelTest(const RTCDataChannelTest&) = delete;
+  RTCDataChannelTest& operator=(const RTCDataChannelTest&) = delete;
+
   ~RTCDataChannelTest() override {
     execution_context_->NotifyContextDestroyed();
   }
@@ -228,8 +235,6 @@ class RTCDataChannelTest : public ::testing::Test {
 
  private:
   scoped_refptr<base::TestSimpleTaskRunner> signaling_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(RTCDataChannelTest);
 };
 
 }  // namespace

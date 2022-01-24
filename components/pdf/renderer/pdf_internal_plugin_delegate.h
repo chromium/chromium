@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_PDF_RENDERER_PDF_INTERNAL_PLUGIN_DELEGATE_H_
 #define COMPONENTS_PDF_RENDERER_PDF_INTERNAL_PLUGIN_DELEGATE_H_
 
-namespace blink {
-class WebFrame;
-}  // namespace blink
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace pdf {
 
@@ -18,8 +18,10 @@ class PdfInternalPluginDelegate {
   PdfInternalPluginDelegate();
   virtual ~PdfInternalPluginDelegate();
 
-  // Returns `true` if the frame is allowed to create the internal PDF plugin.
-  virtual bool IsAllowedFrame(const blink::WebFrame& frame) const;
+  // Returns `true` if the origin is allowed to create the internal PDF plugin.
+  // Note that this applies to the origin of the parent of the frame that
+  // contains the in-process plugin.
+  virtual bool IsAllowedOrigin(const url::Origin& origin) const;
 };
 
 }  // namespace pdf

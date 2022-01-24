@@ -107,6 +107,8 @@ const char kDiscoverFeedUserActionReportContentOpened[] =
     "ContentSuggestions.Feed.CardAction.ReportContent";
 const char kDiscoverFeedUserActionReportContentClosed[] =
     "ContentSuggestions.Feed.CardAction.ClosedReportContent";
+const char kDiscoverFeedUserActionPreviewTapped[] =
+    "ContentSuggestions.Feed.CardAction.TapPreview";
 
 // User action names for feed header menu.
 const char kDiscoverFeedUserActionManageActivityTapped[] =
@@ -223,6 +225,13 @@ const int kMinutesBetweenSessions = 5;
     base::RecordAction(base::UserMetricsAction(
         kDiscoverFeedHistogramDeviceOrientationChangedToLandscape));
   }
+}
+
+- (void)recordDiscoverFeedPreviewTapped {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedDiscoverFeedPreview];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionPreviewTapped));
 }
 
 - (void)recordHeaderMenuLearnMoreTapped {
@@ -365,10 +374,10 @@ const int kMinutesBetweenSessions = 5;
                                          success:(BOOL)success {
   if (success) {
     UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedArticlesFetchNetworkDurationSuccess,
-                               base::TimeDelta::FromSeconds(durationInSeconds));
+                               base::Seconds(durationInSeconds));
   } else {
     UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedArticlesFetchNetworkDurationFailure,
-                               base::TimeDelta::FromSeconds(durationInSeconds));
+                               base::Seconds(durationInSeconds));
   }
   [self recordNetworkRequestDurationInSeconds:durationInSeconds];
 }
@@ -379,11 +388,11 @@ const int kMinutesBetweenSessions = 5;
   if (success) {
     UMA_HISTOGRAM_MEDIUM_TIMES(
         kDiscoverFeedMoreArticlesFetchNetworkDurationSuccess,
-        base::TimeDelta::FromSeconds(durationInSeconds));
+        base::Seconds(durationInSeconds));
   } else {
     UMA_HISTOGRAM_MEDIUM_TIMES(
         kDiscoverFeedMoreArticlesFetchNetworkDurationFailure,
-        base::TimeDelta::FromSeconds(durationInSeconds));
+        base::Seconds(durationInSeconds));
   }
   [self recordNetworkRequestDurationInSeconds:durationInSeconds];
 }
@@ -393,10 +402,10 @@ const int kMinutesBetweenSessions = 5;
                                          success:(BOOL)success {
   if (success) {
     UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedUploadActionsNetworkDurationSuccess,
-                               base::TimeDelta::FromSeconds(durationInSeconds));
+                               base::Seconds(durationInSeconds));
   } else {
     UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedUploadActionsNetworkDurationFailure,
-                               base::TimeDelta::FromSeconds(durationInSeconds));
+                               base::Seconds(durationInSeconds));
   }
   [self recordNetworkRequestDurationInSeconds:durationInSeconds];
 }
@@ -448,8 +457,7 @@ const int kMinutesBetweenSessions = 5;
 
   // Determine if this interaction is part of a new 'session'.
   base::Time now = base::Time::Now();
-  base::TimeDelta visitTimeout =
-      base::TimeDelta::FromMinutes(kMinutesBetweenSessions);
+  base::TimeDelta visitTimeout = base::Minutes(kMinutesBetweenSessions);
   if (now - self.sessionStartTime > visitTimeout) {
     [self finalizeSession];
   }
@@ -502,7 +510,7 @@ const int kMinutesBetweenSessions = 5;
 - (void)recordNetworkRequestDurationInSeconds:
     (NSTimeInterval)durationInSeconds {
   UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedNetworkDuration,
-                             base::TimeDelta::FromSeconds(durationInSeconds));
+                             base::Seconds(durationInSeconds));
 }
 
 // Records that a URL was opened regardless of the target surface (e.g. New Tab,

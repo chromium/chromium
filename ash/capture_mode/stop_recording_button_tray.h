@@ -25,6 +25,10 @@ class StopRecordingButtonTray : public TrayBackgroundView {
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
+  void OnThemeChanged() override;
+
+  // Image view of the stop recording icon.
+  views::ImageView* const image_view_;
 };
 
 }  // namespace ash

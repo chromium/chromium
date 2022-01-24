@@ -55,6 +55,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristic
       Permissions permissions,
       BluetoothLocalGattService* service);
 
+  BluetoothLocalGattCharacteristic(const BluetoothLocalGattCharacteristic&) =
+      delete;
+  BluetoothLocalGattCharacteristic& operator=(
+      const BluetoothLocalGattCharacteristic&) = delete;
+
   // Notify the remote device |device| that the value of characteristic
   // |characteristic| has changed and the new value is |new_value|. |indicate|
   // should be set to true if we want to use an indication instead of a
@@ -70,9 +75,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristic
  protected:
   BluetoothLocalGattCharacteristic();
   ~BluetoothLocalGattCharacteristic() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLocalGattCharacteristic);
 };
 
 }  // namespace device

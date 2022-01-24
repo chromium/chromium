@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -190,6 +189,10 @@ class DialogEnrollmentDelegate {
   DialogEnrollmentDelegate(const std::string& network_guid,
                            const std::string& network_name,
                            Profile* profile);
+
+  DialogEnrollmentDelegate(const DialogEnrollmentDelegate&) = delete;
+  DialogEnrollmentDelegate& operator=(const DialogEnrollmentDelegate&) = delete;
+
   ~DialogEnrollmentDelegate();
 
   bool Enroll(const std::vector<std::string>& uri_list);
@@ -198,8 +201,6 @@ class DialogEnrollmentDelegate {
   std::string network_guid_;
   std::string network_name_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogEnrollmentDelegate);
 };
 
 DialogEnrollmentDelegate::DialogEnrollmentDelegate(

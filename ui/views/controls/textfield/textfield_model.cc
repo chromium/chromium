@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -58,6 +57,9 @@ class Edit {
     kDelete,
     kReplace,
   };
+
+  Edit(const Edit&) = delete;
+  Edit& operator=(const Edit&) = delete;
 
   virtual ~Edit() = default;
 
@@ -195,8 +197,6 @@ class Edit {
   std::u16string new_text_;
   // The index of |new_text_|
   size_t new_text_start_;
-
-  DISALLOW_COPY_AND_ASSIGN(Edit);
 };
 
 // Insert text at a given position. Assumes 1) no previous selection and 2) the

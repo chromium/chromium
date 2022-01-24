@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
@@ -32,6 +31,10 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 #if defined(OS_ANDROID)
 #include "components/signin/internal/identity_manager/child_account_info_fetcher_android.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -39,8 +42,7 @@
 
 namespace {
 
-const base::TimeDelta kRefreshFromTokenServiceDelay =
-    base::TimeDelta::FromHours(24);
+const base::TimeDelta kRefreshFromTokenServiceDelay = base::Hours(24);
 
 }  // namespace
 
@@ -109,12 +111,6 @@ bool AccountFetcherService::AreAllAccountCapabilitiesFetched() const {
   return account_capabilities_requests_.empty();
 }
 
-void AccountFetcherService::ForceRefreshOfAccountInfo(
-    const CoreAccountId& account_id) {
-  DCHECK(network_fetches_enabled_);
-  RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/false);
-}
-
 void AccountFetcherService::OnNetworkInitialized() {
   DCHECK(!network_initialized_);
   DCHECK(!network_fetches_enabled_);
@@ -154,6 +150,12 @@ void AccountFetcherService::RefreshAllAccountInfo(bool only_fetch_if_invalid) {
 // single account. This is possible since we only support a single account to be
 // a child anyway.
 #if defined(OS_ANDROID)
+void AccountFetcherService::RefreshAccountInfoIfStale(
+    const CoreAccountId& account_id) {
+  DCHECK(network_fetches_enabled_);
+  RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/true);
+}
+
 void AccountFetcherService::UpdateChildInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<CoreAccountId> accounts = token_service_->GetAccounts();
@@ -238,9 +240,10 @@ bool AccountFetcherService::IsAccountCapabilitiesFetcherEnabled() {
     return true;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(switches::kMinorModeSupport);
-#endif
+  return ash::features::IsMinorModeRestrictionEnabled();
+#else
   return false;
+#endif
 }
 
 void AccountFetcherService::StartFetchingAccountCapabilities(

@@ -12,9 +12,8 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "components/prefs/pref_notifier.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/prefs_export.h"
@@ -26,6 +25,10 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
  public:
   PrefNotifierImpl();
   explicit PrefNotifierImpl(PrefService* pref_service);
+
+  PrefNotifierImpl(const PrefNotifierImpl&) = delete;
+  PrefNotifierImpl& operator=(const PrefNotifierImpl&) = delete;
+
   ~PrefNotifierImpl() override;
 
   // If the pref at the given path changes, we call the observer's
@@ -79,9 +82,7 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
   // Observers for changes to any preference.
   PrefObserverList all_prefs_pref_observers_;
 
-  base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefNotifierImpl);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_NOTIFIER_IMPL_H_

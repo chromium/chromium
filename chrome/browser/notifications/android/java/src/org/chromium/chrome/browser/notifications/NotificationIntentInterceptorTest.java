@@ -103,8 +103,7 @@ public class NotificationIntentInterceptorTest {
                 NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES, null, 0);
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        true /* preferCompat */, ChromeChannelDefinitions.ChannelId.DOWNLOADS,
-                        null /* remoteAppPackageName */, metaData);
+                        ChromeChannelDefinitions.ChannelId.DOWNLOADS, metaData);
 
         // Set content intent.
         Intent contentIntent = new Intent(TestReceiver.TEST_ACTION);

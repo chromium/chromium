@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
@@ -35,6 +34,9 @@ class ContentSettingsRegistry {
                                           const ContentSettingsInfo*>;
 
   static ContentSettingsRegistry* GetInstance();
+
+  ContentSettingsRegistry(const ContentSettingsRegistry&) = delete;
+  ContentSettingsRegistry& operator=(const ContentSettingsRegistry&) = delete;
 
   // Reset the instance for use inside tests.
   void ResetForTest();
@@ -72,8 +74,6 @@ class ContentSettingsRegistry {
 
   Map content_settings_info_;
   WebsiteSettingsRegistry* website_settings_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsRegistry);
 };
 
 }  // namespace content_settings

@@ -590,8 +590,8 @@ TEST_F(PaintLayerClipperTest, IgnoreRootLayerClipWithBothClip) {
 TEST_F(PaintLayerClipperTest, Fragmentation) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
-    <div id=root style='width: 200px; height: 100px; columns: 2;
-    column-gap: 0'>
+    <div id=root style='position: relative; width: 200px; height: 100px;
+                        columns: 2; column-gap: 0'>
       <div id=target style='width: 100px; height: 200px;
           background: lightblue; position: relative'>
       </div
@@ -619,10 +619,15 @@ TEST_F(PaintLayerClipperTest, Fragmentation) {
                       &target_paint_layer->GetLayoutObject().FirstFragment(),
                       nullptr, layer_bounds, background_rect, foreground_rect);
 
-  EXPECT_EQ(PhysicalRect(-1000000, -1000000, 2000000, 1000100),
-            background_rect.Rect());
-  EXPECT_EQ(PhysicalRect(-1000000, -1000000, 2000000, 1000100),
-            foreground_rect.Rect());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_TRUE(IsInfinite(background_rect.Rect()));
+    EXPECT_TRUE(IsInfinite(foreground_rect.Rect()));
+  } else {
+    EXPECT_EQ(PhysicalRect(-1000000, -1000000, 2000000, 1000100),
+              background_rect.Rect());
+    EXPECT_EQ(PhysicalRect(-1000000, -1000000, 2000000, 1000100),
+              foreground_rect.Rect());
+  }
   EXPECT_EQ(PhysicalRect(0, 0, 100, 200), layer_bounds);
 
   target_paint_layer
@@ -632,10 +637,18 @@ TEST_F(PaintLayerClipperTest, Fragmentation) {
           target_paint_layer->GetLayoutObject().FirstFragment().NextFragment(),
           nullptr, layer_bounds, background_rect, foreground_rect);
 
-  EXPECT_EQ(PhysicalRect(-999900, 0, 2000000, 999900), background_rect.Rect());
-  EXPECT_EQ(PhysicalRect(-999900, 0, 2000000, 999900), foreground_rect.Rect());
-  // Layer bounds adjusted for pagination offset of second fragment.
-  EXPECT_EQ(PhysicalRect(100, -100, 100, 200), layer_bounds);
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_TRUE(IsInfinite(background_rect.Rect()));
+    EXPECT_TRUE(IsInfinite(foreground_rect.Rect()));
+    EXPECT_EQ(PhysicalRect(100, 0, 100, 200), layer_bounds);
+  } else {
+    EXPECT_EQ(PhysicalRect(-999900, 0, 2000000, 999900),
+              background_rect.Rect());
+    EXPECT_EQ(PhysicalRect(-999900, 0, 2000000, 999900),
+              foreground_rect.Rect());
+    // Layer bounds adjusted for pagination offset of second fragment.
+    EXPECT_EQ(PhysicalRect(100, -100, 100, 200), layer_bounds);
+  }
 }
 
 TEST_F(PaintLayerClipperTest, ScrollbarClipBehaviorChild) {

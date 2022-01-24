@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "components/arc/arc_prefs.h"
-#include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -51,20 +51,20 @@ void GoogleAssistantHandler::OnAudioNodesChanged() {
 }
 
 void GoogleAssistantHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showGoogleAssistantSettings",
       base::BindRepeating(
           &GoogleAssistantHandler::HandleShowGoogleAssistantSettings,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "retrainAssistantVoiceModel",
       base::BindRepeating(&GoogleAssistantHandler::HandleRetrainVoiceModel,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "syncVoiceModelStatus",
       base::BindRepeating(&GoogleAssistantHandler::HandleSyncVoiceModelStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializeGoogleAssistantPage",
       base::BindRepeating(&GoogleAssistantHandler::HandleInitialized,
                           base::Unretained(this)));
@@ -72,20 +72,20 @@ void GoogleAssistantHandler::RegisterMessages() {
 
 void GoogleAssistantHandler::HandleShowGoogleAssistantSettings(
     const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetSize());
+  CHECK_EQ(0U, args->GetList().size());
   ash::AssistantController::Get()->OpenAssistantSettings();
 }
 
 void GoogleAssistantHandler::HandleRetrainVoiceModel(
     const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetSize());
+  CHECK_EQ(0U, args->GetList().size());
   chromeos::AssistantOptInDialog::Show(ash::FlowType::kSpeakerIdRetrain,
                                        base::DoNothing());
 }
 
 void GoogleAssistantHandler::HandleSyncVoiceModelStatus(
     const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetSize());
+  CHECK_EQ(0U, args->GetList().size());
 
   auto* settings = assistant::AssistantSettings::Get();
   if (settings)
@@ -93,7 +93,7 @@ void GoogleAssistantHandler::HandleSyncVoiceModelStatus(
 }
 
 void GoogleAssistantHandler::HandleInitialized(const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetSize());
+  CHECK_EQ(0U, args->GetList().size());
   AllowJavascript();
 }
 

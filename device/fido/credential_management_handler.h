@@ -45,6 +45,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
  public:
   using DeleteCredentialCallback =
       base::OnceCallback<void(CtapDeviceResponseCode)>;
+  using UpdateUserInformationCallback =
+      base::OnceCallback<void(CtapDeviceResponseCode)>;
   using FinishedCallback = base::OnceCallback<void(CredentialManagementStatus)>;
   using GetCredentialsCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
@@ -62,6 +64,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
       ReadyCallback ready_callback,
       GetPINCallback get_pin_callback,
       FinishedCallback finished_callback);
+
+  CredentialManagementHandler(const CredentialManagementHandler&) = delete;
+  CredentialManagementHandler& operator=(const CredentialManagementHandler&) =
+      delete;
+
   ~CredentialManagementHandler() override;
 
   // GetCredentials invokes a series of commands to fetch all credentials stored
@@ -86,6 +93,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
   // aborted (but others may have been deleted successfully already).
   void DeleteCredentials(std::vector<std::vector<uint8_t>> credential_ids,
                          DeleteCredentialCallback callback);
+
+  // UpdateUserInformation attempts to update the credential with the given
+  // |credential_id|.
+  void UpdateUserInformation(const PublicKeyCredentialDescriptor& credential_id,
+                             const PublicKeyCredentialUserEntity& updated_user,
+                             UpdateUserInformationCallback callback);
 
  private:
   enum class State {
@@ -137,8 +150,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
   FinishedCallback finished_callback_;
 
   base::WeakPtrFactory<CredentialManagementHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagementHandler);
 };
 
 }  // namespace device

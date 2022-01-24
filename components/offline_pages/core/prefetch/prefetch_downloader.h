@@ -16,8 +16,7 @@
 
 namespace offline_pages {
 class PrefetchService;
-static constexpr base::TimeDelta kPrefetchDownloadLifetime =
-    base::TimeDelta::FromDays(2);
+static constexpr base::TimeDelta kPrefetchDownloadLifetime = base::Days(2);
 
 // Asynchronously downloads the archive.
 class PrefetchDownloader {

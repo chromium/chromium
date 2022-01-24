@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_METRICS_CHROME_ANDROID_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_CHROME_ANDROID_METRICS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace metrics {
@@ -21,6 +20,11 @@ class PrefRegistrySimple;
 class ChromeAndroidMetricsProvider : public metrics::MetricsProvider {
  public:
   explicit ChromeAndroidMetricsProvider(PrefService* local_state);
+
+  ChromeAndroidMetricsProvider(const ChromeAndroidMetricsProvider&) = delete;
+  ChromeAndroidMetricsProvider& operator=(const ChromeAndroidMetricsProvider&) =
+      delete;
+
   ~ChromeAndroidMetricsProvider() override;
 
   // Registers local state prefs used by this class.
@@ -35,8 +39,6 @@ class ChromeAndroidMetricsProvider : public metrics::MetricsProvider {
 
  private:
   PrefService* local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAndroidMetricsProvider);
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_ANDROID_METRICS_PROVIDER_H_

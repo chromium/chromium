@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_UTIL_H_
 #define CHROME_BROWSER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_UTIL_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
 #include "url/origin.h"

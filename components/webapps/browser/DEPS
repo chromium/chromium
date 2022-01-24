@@ -2,6 +2,7 @@ include_rules = [
   "+components/back_forward_cache",
   "+components/content_settings",
   "+components/infobars",
+  "+components/messages",
   "+components/permissions",
   "+components/prefs",
   "+components/security_state/core",

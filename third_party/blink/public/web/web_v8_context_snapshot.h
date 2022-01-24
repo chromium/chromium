@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_V8_CONTEXT_SNAPSHOT_H_
 
 #include "third_party/blink/public/platform/web_common.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-snapshot.h"
 
 namespace blink {
 

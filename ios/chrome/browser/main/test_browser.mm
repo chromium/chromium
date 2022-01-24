@@ -53,10 +53,6 @@ ChromeBrowserState* TestBrowser::GetBrowserState() const {
   return browser_state_;
 }
 
-TabModel* TestBrowser::GetTabModel() const {
-  return tab_model_;
-}
-
 WebStateList* TestBrowser::GetWebStateList() const {
   return web_state_list_;
 }

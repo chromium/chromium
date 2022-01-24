@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "android_webview/common/components/aw_apps_package_names_allowlist_component_utils.h"
-#include "android_webview/nonembedded/component_updater/aw_component_installer_policy_delegate.h"
+#include "android_webview/nonembedded/component_updater/aw_component_installer_policy.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
@@ -32,32 +32,17 @@ const char kWebViewAppsPackageNamesAllowlistName[] =
 namespace android_webview {
 
 AwPackageNamesAllowlistComponentInstallerPolicy::
-    AwPackageNamesAllowlistComponentInstallerPolicy() {
-  std::vector<uint8_t> hash;
-  GetHash(&hash);
-  delegate_ = std::make_unique<AwComponentInstallerPolicyDelegate>(hash);
-}
+    AwPackageNamesAllowlistComponentInstallerPolicy() = default;
 
 AwPackageNamesAllowlistComponentInstallerPolicy::
     ~AwPackageNamesAllowlistComponentInstallerPolicy() = default;
 
 update_client::CrxInstaller::Result
 AwPackageNamesAllowlistComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   // Nothing custom here.
   return update_client::CrxInstaller::Result(/* error = */ 0);
-}
-
-void AwPackageNamesAllowlistComponentInstallerPolicy::OnCustomUninstall() {
-  delegate_->OnCustomUninstall();
-}
-
-void AwPackageNamesAllowlistComponentInstallerPolicy::ComponentReady(
-    const base::Version& version,
-    const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
-  delegate_->ComponentReady(version, install_dir, std::move(manifest));
 }
 
 void RegisterWebViewAppsPackageNamesAllowlistComponent(
@@ -72,7 +57,7 @@ void RegisterWebViewAppsPackageNamesAllowlistComponent(
 
 bool AwPackageNamesAllowlistComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool AwPackageNamesAllowlistComponentInstallerPolicy::
@@ -81,7 +66,7 @@ bool AwPackageNamesAllowlistComponentInstallerPolicy::
 }
 
 bool AwPackageNamesAllowlistComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   return true;
 }

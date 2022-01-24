@@ -105,7 +105,8 @@ void ShellNetworkController::NetworkConnectionStateChanged(
 void ShellNetworkController::SetCellularAllowRoaming(bool allow_roaming) {
   chromeos::NetworkDeviceHandler* device_handler =
       chromeos::NetworkHandler::Get()->network_device_handler();
-  device_handler->SetCellularAllowRoaming(allow_roaming);
+  device_handler->SetCellularAllowRoaming(allow_roaming,
+                                          /*policy_allow_roaming=*/true);
 }
 
 const chromeos::NetworkState* ShellNetworkController::GetActiveWiFiNetwork() {
@@ -127,9 +128,7 @@ void ShellNetworkController::SetScanningEnabled(bool enabled) {
   VLOG(1) << (enabled ? "Starting" : "Stopping") << " scanning";
   if (enabled) {
     RequestScan();
-    scan_timer_.Start(FROM_HERE,
-                      base::TimeDelta::FromSeconds(kScanIntervalSec),
-                      this,
+    scan_timer_.Start(FROM_HERE, base::Seconds(kScanIntervalSec), this,
                       &ShellNetworkController::RequestScan);
   } else {
     scan_timer_.Stop();

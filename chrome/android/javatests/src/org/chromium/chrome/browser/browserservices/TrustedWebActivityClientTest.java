@@ -24,7 +24,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
@@ -34,11 +33,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.StandardNotificationBuilder;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -64,7 +60,6 @@ import java.util.concurrent.TimeoutException;
  * 4. This sends a Message to ResponseHandler in this class.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@EnableFeatures(ChromeFeatureList.USE_NOTIFICATION_COMPAT_BUILDER)
 public class TrustedWebActivityClientTest {
     private static final Uri SCOPE = Uri.parse("https://www.example.com/notifications");
     private static final Origin ORIGIN = Origin.create(SCOPE);
@@ -75,9 +70,6 @@ public class TrustedWebActivityClientTest {
             "org.chromium.chrome.tests.support";
     private static final String MESSENGER_SERVICE_NAME =
             "org.chromium.chrome.browser.browserservices.MessengerService";
-
-    @Rule
-    public final TestRule mProcessor = new Features.JUnitProcessor();
 
     @Rule public final ServiceTestRule mServiceTestRule = new ServiceTestRule();
 

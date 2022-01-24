@@ -10,8 +10,8 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/guid.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/feedback/proto/extension.pb.h"
 

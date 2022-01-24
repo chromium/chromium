@@ -33,6 +33,9 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
                            content::WebContents* web_contents,
                            SharingHubBubbleController* controller);
 
+  SharingHubBubbleViewImpl(const SharingHubBubbleViewImpl&) = delete;
+  SharingHubBubbleViewImpl& operator=(const SharingHubBubbleViewImpl&) = delete;
+
   ~SharingHubBubbleViewImpl() override;
 
   // SharingHubBubbleView:
@@ -44,7 +47,9 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   void WindowClosing() override;
 
   // LocationBarBubbleDelegateView:
+  std::u16string GetAccessibleWindowTitle() const override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   // Shows the bubble view.
   void Show(DisplayReason reason);
@@ -76,9 +81,11 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   // ScrollView containing the list of share/save actions.
   views::ScrollView* scroll_view_ = nullptr;
 
-  base::WeakPtrFactory<SharingHubBubbleViewImpl> weak_factory_{this};
+  // The "Share link to" annotation text, which indicates to the user what
+  // the 3P target options do.
+  views::Label* share_link_label_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(SharingHubBubbleViewImpl);
+  base::WeakPtrFactory<SharingHubBubbleViewImpl> weak_factory_{this};
 };
 
 }  // namespace sharing_hub

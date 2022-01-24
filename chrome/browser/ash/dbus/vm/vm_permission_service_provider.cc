@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -142,6 +143,9 @@ void VmPermissionServiceProvider::RegisterVm(
   VmInfo::VmType vm_type;
   if (request.type() == vm_permission_service::RegisterVmRequest::PLUGIN_VM) {
     vm_type = VmInfo::VmType::PluginVm;
+  } else if (request.type() ==
+             vm_permission_service::RegisterVmRequest::BOREALIS) {
+    vm_type = VmInfo::VmType::Borealis;
   } else {
     LOG(ERROR) << "Unsupported VM " << request.owner_id() << "/"
                << request.name() << " type: " << request.type();
@@ -324,6 +328,9 @@ void VmPermissionServiceProvider::UpdateVmPermissions(VmInfo* vm) {
     case VmInfo::PluginVm:
       UpdatePluginVmPermissions(vm);
       break;
+    case VmInfo::Borealis:
+      UpdateBorealisPermissions(vm);
+      break;
     case VmInfo::CrostiniVm:
       NOTREACHED();
   }
@@ -345,6 +352,20 @@ void VmPermissionServiceProvider::UpdatePluginVmPermissions(VmInfo* vm) {
   if (prefs->GetBoolean(prefs::kAudioCaptureAllowed)) {
     vm->permission_to_enabled_map[VmInfo::PermissionMicrophone] =
         prefs->GetBoolean(plugin_vm::prefs::kPluginVmMicAllowed);
+  }
+}
+
+void VmPermissionServiceProvider::UpdateBorealisPermissions(VmInfo* vm) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  if (!profile || chromeos::ProfileHelper::GetUserIdHashFromProfile(profile) !=
+                      vm->owner_id) {
+    return;
+  }
+
+  const PrefService* prefs = profile->GetPrefs();
+  if (prefs->GetBoolean(prefs::kAudioCaptureAllowed)) {
+    vm->permission_to_enabled_map[VmInfo::PermissionMicrophone] =
+        prefs->GetBoolean(borealis::prefs::kBorealisMicAllowed);
   }
 }
 

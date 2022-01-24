@@ -24,6 +24,10 @@ class BrowsingDataRemoverFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static BrowsingDataRemoverFactory* GetInstance();
 
+  BrowsingDataRemoverFactory(const BrowsingDataRemoverFactory&) = delete;
+  BrowsingDataRemoverFactory& operator=(const BrowsingDataRemoverFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<BrowsingDataRemoverFactory>;
 
@@ -35,8 +39,6 @@ class BrowsingDataRemoverFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_FACTORY_H_

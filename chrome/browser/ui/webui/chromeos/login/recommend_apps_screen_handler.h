@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_RECOMMEND_APPS_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_RECOMMEND_APPS_SCREEN_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "components/prefs/pref_service.h"
@@ -49,6 +48,11 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
   using TView = RecommendAppsScreenView;
 
   explicit RecommendAppsScreenHandler(JSCallsContainer* js_calls_container);
+
+  RecommendAppsScreenHandler(const RecommendAppsScreenHandler&) = delete;
+  RecommendAppsScreenHandler& operator=(const RecommendAppsScreenHandler&) =
+      delete;
+
   ~RecommendAppsScreenHandler() override;
 
   // BaseScreenHandler:
@@ -84,8 +88,6 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
 
   // If true, Initialize() will call Show().
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RecommendAppsScreenHandler);
 };
 
 }  // namespace chromeos

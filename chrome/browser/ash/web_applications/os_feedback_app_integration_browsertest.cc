@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
+#include "ash/webui/sample_system_web_app_ui/url_constants.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/components/sample_system_web_app_ui/url_constants.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -110,19 +110,15 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, DefaultWindowBounds) {
 IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, FeedbackAppAttributes) {
   WaitForTestSystemAppInstall();
 
-  // Check system_web_app_manager has the correct attributes for Feedback App.
-  EXPECT_TRUE(
-      GetManager().ShouldShowInLauncher(web_app::SystemAppType::OS_FEEDBACK));
-  EXPECT_TRUE(
-      GetManager().ShouldShowInSearch(web_app::SystemAppType::OS_FEEDBACK));
-  EXPECT_TRUE(GetManager().IsSingleWindow(web_app::SystemAppType::OS_FEEDBACK));
-  EXPECT_TRUE(GetManager().AllowScriptsToCloseWindows(
-      web_app::SystemAppType::OS_FEEDBACK));
-
-  EXPECT_FALSE(
-      GetManager().IsResizeableWindow(web_app::SystemAppType::OS_FEEDBACK));
-  EXPECT_FALSE(
-      GetManager().IsMaximizableWindow(web_app::SystemAppType::OS_FEEDBACK));
+  // Check the correct attributes for Feedback App.
+  auto* system_app =
+      GetManager().GetSystemApp(web_app::SystemAppType::OS_FEEDBACK);
+  EXPECT_TRUE(system_app->ShouldShowInLauncher());
+  EXPECT_TRUE(system_app->ShouldShowInSearch());
+  EXPECT_TRUE(system_app->ShouldReuseExistingWindow());
+  EXPECT_TRUE(system_app->ShouldAllowScriptsToCloseWindows());
+  EXPECT_FALSE(system_app->ShouldAllowResize());
+  EXPECT_FALSE(system_app->ShouldAllowMaximize());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

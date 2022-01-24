@@ -38,15 +38,20 @@ InertEffect::InertEffect(KeyframeEffectModelBase* model,
                          const Timing& timing,
                          bool paused,
                          absl::optional<AnimationTimeDelta> inherited_time,
-                         absl::optional<TimelinePhase> inherited_phase)
+                         absl::optional<TimelinePhase> inherited_phase,
+                         absl::optional<AnimationTimeDelta> timeline_duration,
+                         double playback_rate)
     : AnimationEffect(timing),
       model_(model),
       paused_(paused),
       inherited_time_(inherited_time),
-      inherited_phase_(inherited_phase) {}
+      inherited_phase_(inherited_phase),
+      timeline_duration_(timeline_duration),
+      playback_rate_(playback_rate) {}
 
 void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
-  UpdateInheritedTime(inherited_time_, inherited_phase_, kTimingUpdateOnDemand);
+  UpdateInheritedTime(inherited_time_, inherited_phase_, false, playback_rate_,
+                      kTimingUpdateOnDemand);
   if (!IsInEffect()) {
     result.clear();
     return;
@@ -55,8 +60,12 @@ void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
   absl::optional<double> iteration = CurrentIteration();
   DCHECK(iteration);
   DCHECK_GE(iteration.value(), 0);
-  model_->Sample(clampTo<int>(iteration.value(), 0), Progress().value(),
+  model_->Sample(ClampTo<int>(iteration.value(), 0), Progress().value(),
                  NormalizedTiming().iteration_duration, result);
+}
+
+bool InertEffect::Affects(const PropertyHandle& property) const {
+  return model_->Affects(property);
 }
 
 AnimationTimeDelta InertEffect::CalculateTimeToEffectChange(
@@ -64,6 +73,10 @@ AnimationTimeDelta InertEffect::CalculateTimeToEffectChange(
     absl::optional<AnimationTimeDelta>,
     AnimationTimeDelta) const {
   return AnimationTimeDelta::Max();
+}
+
+absl::optional<AnimationTimeDelta> InertEffect::TimelineDuration() const {
+  return timeline_duration_;
 }
 
 void InertEffect::Trace(Visitor* visitor) const {

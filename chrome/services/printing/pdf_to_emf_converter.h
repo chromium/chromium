@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_PRINTING_PDF_TO_EMF_CONVERTER_H_
 #define CHROME_SERVICES_PRINTING_PDF_TO_EMF_CONVERTER_H_
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -18,6 +17,10 @@ class PdfToEmfConverter : public mojom::PdfToEmfConverter {
   PdfToEmfConverter(base::ReadOnlySharedMemoryRegion pdf_region,
                     const PdfRenderSettings& render_settings,
                     mojo::PendingRemote<mojom::PdfToEmfConverterClient> client);
+
+  PdfToEmfConverter(const PdfToEmfConverter&) = delete;
+  PdfToEmfConverter& operator=(const PdfToEmfConverter&) = delete;
+
   ~PdfToEmfConverter() override;
 
   int total_page_count() const { return total_page_count_; }
@@ -35,8 +38,6 @@ class PdfToEmfConverter : public mojom::PdfToEmfConverter {
   uint32_t total_page_count_ = 0;
   PdfRenderSettings pdf_render_settings_;
   base::ReadOnlySharedMemoryMapping pdf_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(PdfToEmfConverter);
 };
 
 }  // namespace printing

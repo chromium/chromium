@@ -675,8 +675,7 @@ TEST_F(PlatformSensorReaderTestWinrt, SensorTimestampConversion) {
   EXPECT_EQ(lastReportedTimestamp, 0);
 
   auto second_timestamp =
-      base::TimeDelta::FromSeconds(expectedTimestampDeltaSecs)
-          .ToWinrtDateTime();
+      base::Seconds(expectedTimestampDeltaSecs).ToWinrtDateTime();
   reading =
       Microsoft::WRL::Make<FakeLightSensorReadingWinrt>(second_timestamp, 0.0f);
   fake_sensor->TriggerFakeSensorReading(reading);

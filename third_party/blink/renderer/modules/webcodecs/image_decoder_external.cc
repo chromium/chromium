@@ -9,7 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_readablestream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared_readablestream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
@@ -188,26 +188,45 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     return;
   }
 
-  DOMArrayPiece buffer;
+  base::span<const uint8_t> buffer;
   switch (init->data()->GetContentType()) {
-    case V8ImageBufferSource::ContentType::kArrayBuffer:
-      buffer = DOMArrayPiece(init->data()->GetAsArrayBuffer());
+    case V8ImageBufferSource::ContentType::kArrayBufferAllowShared:
+      if (auto* data_ptr = init->data()->GetAsArrayBufferAllowShared()) {
+        if (!data_ptr->IsDetached()) {
+          buffer = base::span<const uint8_t>(
+              reinterpret_cast<const uint8_t*>(data_ptr->DataMaybeShared()),
+              data_ptr->ByteLength());
+        }
+      }
       break;
-    case V8ImageBufferSource::ContentType::kArrayBufferView:
-      buffer = DOMArrayPiece(init->data()->GetAsArrayBufferView().Get());
+    case V8ImageBufferSource::ContentType::kArrayBufferViewAllowShared:
+      if (auto* data_ptr =
+              init->data()->GetAsArrayBufferViewAllowShared().Get()) {
+        if (!data_ptr->IsDetached()) {
+          buffer =
+              base::span<const uint8_t>(reinterpret_cast<const uint8_t*>(
+                                            data_ptr->BaseAddressMaybeShared()),
+                                        data_ptr->byteLength());
+        }
+      }
       break;
     case V8ImageBufferSource::ContentType::kReadableStream:
       NOTREACHED();
-      return;
+      break;
   }
 
-  if (!buffer.ByteLength()) {
+  if (!buffer.data()) {
+    exception_state.ThrowTypeError("Provided image data was detached");
+    return;
+  }
+
+  if (!buffer.size()) {
     exception_state.ThrowTypeError("No image data provided");
     return;
   }
 
   auto segment_reader = SegmentReader::CreateFromSkData(
-      SkData::MakeWithCopy(buffer.Data(), buffer.ByteLength()));
+      SkData::MakeWithCopy(buffer.data(), buffer.size()));
   if (!segment_reader) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to read image data");
@@ -341,7 +360,6 @@ void ImageDecoderExternal::close() {
   auto* exception = MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kAbortError,
       failed_ ? "Aborted by close." : "Aborted by failure.");
-  reset(exception);
 
   // Failure cases should have already rejected the tracks ready promise.
   if (!failed_ && decoder_ && tracks_->IsEmpty())
@@ -352,7 +370,11 @@ void ImageDecoderExternal::close() {
 
   if (consumer_)
     consumer_->Cancel();
+  CloseInternal(exception);
+}
 
+void ImageDecoderExternal::CloseInternal(DOMException* exception) {
+  reset(exception);
   weak_factory_.InvalidateWeakPtrs();
   pending_metadata_requests_ = 0;
   consumer_ = nullptr;
@@ -420,9 +442,11 @@ void ImageDecoderExternal::ContextDestroyed() {
   // WeakPtrs need special consideration when used with a garbage collected
   // type; they must be invalidated ahead of finalization.
   //
-  // We also need to ensure that no further WeakPtrs are created, so close() the
+  // We also need to ensure that no further WeakPtrs are created, so close the
   // decoder at this point to prevent further operation.
-  close();
+  auto* exception = MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kAbortError, "Aborted by close.");
+  CloseInternal(exception);
 
   DCHECK(!weak_factory_.HasWeakPtrs());
   DCHECK(!decode_weak_factory_.HasWeakPtrs());

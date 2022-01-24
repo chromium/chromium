@@ -9,6 +9,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,5 +52,21 @@ public class PageInfoIPHController {
                                                     .setAutoDismissTimeout(iphTimeout)
                                                     .setAnchorView(mStatusView)
                                                     .build());
+    }
+
+    /**
+     * Show the IPH for store icon in omnibox.
+     * @param iphTimeout The timeout after which the IPH bubble should disappear if it was shown.
+     * @param stringId Resource id of the string displayed. The string will also be used for
+     *         accessibility.
+     */
+    public void showStoreIconIPH(int iphTimeout, @StringRes int stringId) {
+        mUserEducationHelper.requestShowIPH(
+                new IPHCommandBuilder(mStatusView.getContext().getResources(),
+                        FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE, stringId, stringId)
+                        .setAutoDismissTimeout(iphTimeout)
+                        .setAnchorView(mStatusView)
+                        .setDismissOnTouch(true)
+                        .build());
     }
 }

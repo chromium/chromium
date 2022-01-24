@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
@@ -21,7 +20,7 @@
 #include "extensions/browser/event_router.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #endif
 
 namespace content {
@@ -37,13 +36,19 @@ class LanguageSettingsPrivateDelegate
       public EventRouter::Observer,
       public content::NotificationObserver,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      public chromeos::input_method::InputMethodManager::Observer,
+      public ash::input_method::InputMethodManager::Observer,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       public SpellcheckHunspellDictionary::Observer,
       public SpellcheckCustomDictionary::Observer {
  public:
   static LanguageSettingsPrivateDelegate* Create(
       content::BrowserContext* browser_context);
+
+  LanguageSettingsPrivateDelegate(const LanguageSettingsPrivateDelegate&) =
+      delete;
+  LanguageSettingsPrivateDelegate& operator=(
+      const LanguageSettingsPrivateDelegate&) = delete;
+
   ~LanguageSettingsPrivateDelegate() override;
 
   // Returns the languages and statuses of the enabled spellcheck dictionaries.
@@ -70,8 +75,8 @@ class LanguageSettingsPrivateDelegate
   void OnListenerRemoved(const EventListenerInfo& details) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // chromeos::input_method::InputMethodManager::Observer implementation.
-  void InputMethodChanged(chromeos::input_method::InputMethodManager* manager,
+  // ash::input_method::InputMethodManager::Observer implementation.
+  void InputMethodChanged(ash::input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
   void OnInputMethodExtensionAdded(const std::string& extension_id) override;
@@ -144,8 +149,6 @@ class LanguageSettingsPrivateDelegate
   content::NotificationRegistrar notification_registrar_;
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateDelegate);
 };
 
 }  // namespace extensions

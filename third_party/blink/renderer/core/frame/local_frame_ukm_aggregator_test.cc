@@ -160,7 +160,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
       if (mark_fcp && i == static_cast<int>(LocalFrameUkmAggregator::kPaint))
         aggregator().DidReachFirstContentfulPaint(true);
       test_task_runner_->FastForwardBy(
-          base::TimeDelta::FromMilliseconds(millisecond_per_step));
+          base::Milliseconds(millisecond_per_step));
     }
     aggregator().RecordEndOfFrameMetrics(start_time, Now(), trackers);
   }
@@ -172,7 +172,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
       auto timer = aggregator().GetScopedTimer(i);
       test_task_runner_->FastForwardBy(
-          base::TimeDelta::FromMilliseconds(millisecond_per_step));
+          base::Milliseconds(millisecond_per_step));
     }
   }
 
@@ -181,7 +181,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
       LocalFrameUkmAggregator::MetricId target_metric,
       unsigned expected_num_entries) {
     base::TimeTicks start_time = Now();
-    test_task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(10));
+    test_task_runner_->FastForwardBy(base::Milliseconds(10));
     base::TimeTicks end_time = Now();
 
     aggregator().BeginMainFrame();
@@ -238,7 +238,7 @@ TEST_F(LocalFrameUkmAggregatorTest, EmptyEventsNotRecorded) {
     return;
 
   // There is no BeginMainFrame, so no metrics get recorded.
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(10));
+  test_task_runner_->FastForwardBy(base::Seconds(10));
   ResetAggregator();
 
   EXPECT_EQ(recorder().sources_count(), 0u);
@@ -290,7 +290,7 @@ TEST_F(LocalFrameUkmAggregatorTest, PreFrameWorkIsRecorded) {
   // for the initial frame, regardless of the initial interval.
   unsigned millisecond_for_step = 1;
   base::TimeTicks start_time =
-      Now() + base::TimeDelta::FromMilliseconds(millisecond_for_step) *
+      Now() + base::Milliseconds(millisecond_for_step) *
                   LocalFrameUkmAggregator::kForcedStyleAndLayout;
   SimulatePreFrame(millisecond_for_step);
   SimulateFrame(start_time, millisecond_for_step, 12);
@@ -509,8 +509,7 @@ TEST_F(LocalFrameUkmAggregatorTest, LatencyDataIsPopulated) {
   for (int i = 0; i < LocalFrameUkmAggregator::kForcedStyleAndLayout; ++i) {
     auto timer = aggregator().GetScopedTimer(
         i % LocalFrameUkmAggregator::kForcedStyleAndLayout);
-    test_task_runner_->FastForwardBy(
-        base::TimeDelta::FromMilliseconds(millisecond_for_step));
+    test_task_runner_->FastForwardBy(base::Milliseconds(millisecond_for_step));
   }
 
   std::unique_ptr<cc::BeginMainFrameMetrics> metrics_data =
@@ -559,17 +558,13 @@ TEST_F(LocalFrameUkmAggregatorTest, IterativeTimer) {
   {
     LocalFrameUkmAggregator::IterativeTimer timer(aggregator());
     timer.StartInterval(LocalFrameUkmAggregator::kStyle);
-    test_task_runner_->AdvanceMockTickClock(
-        base::TimeDelta::FromMicroseconds(5));
+    test_task_runner_->AdvanceMockTickClock(base::Microseconds(5));
     timer.StartInterval(LocalFrameUkmAggregator::kLayout);
-    test_task_runner_->AdvanceMockTickClock(
-        base::TimeDelta::FromMicroseconds(7));
+    test_task_runner_->AdvanceMockTickClock(base::Microseconds(7));
     timer.StartInterval(LocalFrameUkmAggregator::kLayout);
-    test_task_runner_->AdvanceMockTickClock(
-        base::TimeDelta::FromMicroseconds(11));
+    test_task_runner_->AdvanceMockTickClock(base::Microseconds(11));
     timer.StartInterval(LocalFrameUkmAggregator::kPrePaint);
-    test_task_runner_->AdvanceMockTickClock(
-        base::TimeDelta::FromMicroseconds(13));
+    test_task_runner_->AdvanceMockTickClock(base::Microseconds(13));
   }
   EXPECT_EQ(GetIntervalCount(LocalFrameUkmAggregator::kStyle), 5);
   EXPECT_EQ(GetIntervalCount(LocalFrameUkmAggregator::kLayout), 18);

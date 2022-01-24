@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_NETWORK_HINTS_BROWSER_SIMPLE_NETWORK_HINTS_HANDLER_IMPL_H_
 #define COMPONENTS_NETWORK_HINTS_BROWSER_SIMPLE_NETWORK_HINTS_HANDLER_IMPL_H_
 
-#include "base/macros.h"
 #include "components/network_hints/common/network_hints.mojom.h"
 
 namespace content {
@@ -19,6 +18,11 @@ namespace network_hints {
 class SimpleNetworkHintsHandlerImpl : public mojom::NetworkHintsHandler {
  public:
   SimpleNetworkHintsHandlerImpl(int render_process_id, int render_frame_id);
+
+  SimpleNetworkHintsHandlerImpl(const SimpleNetworkHintsHandlerImpl&) = delete;
+  SimpleNetworkHintsHandlerImpl& operator=(
+      const SimpleNetworkHintsHandlerImpl&) = delete;
+
   ~SimpleNetworkHintsHandlerImpl() override;
 
   static void Create(
@@ -32,8 +36,6 @@ class SimpleNetworkHintsHandlerImpl : public mojom::NetworkHintsHandler {
  private:
   const int render_process_id_;
   const int render_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleNetworkHintsHandlerImpl);
 };
 
 }  // namespace network_hints

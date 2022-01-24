@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -47,6 +46,10 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   explicit AutofillWalletSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       AutofillWebDataBackend* web_data_backend);
+
+  AutofillWalletSyncBridge(const AutofillWalletSyncBridge&) = delete;
+  AutofillWalletSyncBridge& operator=(const AutofillWalletSyncBridge&) = delete;
+
   ~AutofillWalletSyncBridge() override;
 
   // ModelTypeSyncBridge implementation.
@@ -134,6 +137,8 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   // processor so that it can start tracking changes.
   void LoadMetadata();
 
+  // TODO(crbug/com/1196021): Clean up duplicate functions and use it for
+  // logging only.
   // Checks whether any virtual card metadata for new_data is new and make
   // corresponding changes.
   void ProcessVirtualCardMetadataChanges(
@@ -146,8 +151,6 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
 
   // The bridge should be used on the same sequence where it is constructed.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillWalletSyncBridge);
 };
 
 }  // namespace autofill

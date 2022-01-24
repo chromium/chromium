@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/strings/string_piece.h"
 #include "components/cbor/values.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/noise.h"
@@ -27,21 +28,25 @@ namespace cablev2 {
 
 namespace tunnelserver {
 
-// DecodeDomain converts a 22-bit tunnel server domain (as encoded by
-// |EncodeDomain|) into a string in dotted form.
-COMPONENT_EXPORT(DEVICE_FIDO) std::string DecodeDomain(uint16_t domain);
-
-// GetNewTunnelURL converts a 22-bit tunnel server domain (as encoded by
-// |EncodeDomain|), and a tunnel ID, into a WebSockets-based URL for creating a
-// new tunnel.
+// ToKnownDomainID creates a KnownDomainID from a raw 16-bit value, or returns
+// |nullopt| if the value maps to an assigned, but unknown, domain.
 COMPONENT_EXPORT(DEVICE_FIDO)
-GURL GetNewTunnelURL(uint16_t domain, base::span<const uint8_t, 16> id);
+absl::optional<KnownDomainID> ToKnownDomainID(uint16_t domain);
 
-// GetConnectURL converts a 22-bit tunnel server domain (as encoded by
-// |EncodeDomain|), a routing-ID, and a tunnel ID, into a WebSockets-based URL
-// for connecting to an existing tunnel.
+// DecodeDomain converts a 16-bit tunnel server domain into a string in dotted
+// form.
 COMPONENT_EXPORT(DEVICE_FIDO)
-GURL GetConnectURL(uint16_t domain,
+std::string DecodeDomain(KnownDomainID domain);
+
+// GetNewTunnelURL converts a tunnel server domain and a tunnel ID, into a
+// WebSockets-based URL for creating a new tunnel.
+COMPONENT_EXPORT(DEVICE_FIDO)
+GURL GetNewTunnelURL(KnownDomainID domain, base::span<const uint8_t, 16> id);
+
+// GetConnectURL converts a tunnel server domain, a routing-ID, and a tunnel ID,
+// into a WebSockets-based URL for connecting to an existing tunnel.
+COMPONENT_EXPORT(DEVICE_FIDO)
+GURL GetConnectURL(KnownDomainID domain,
                    std::array<uint8_t, kRoutingIdSize> routing_id,
                    base::span<const uint8_t, 16> id);
 
@@ -64,7 +69,8 @@ std::array<uint8_t, kAdvertSize> Encrypt(
     base::span<const uint8_t, kEIDKeySize> key);
 
 // Decrypt turns a BLE advert payload into a plaintext EID (suitable for passing
-// to |FromComponents|) by decrypting with |key|.
+// to |ToComponents|) by decrypting with |key|. It ensures that the encoded
+// tunnel server domain is recognised.
 COMPONENT_EXPORT(DEVICE_FIDO)
 absl::optional<CableEidArray> Decrypt(
     const std::array<uint8_t, kAdvertSize>& advert,
@@ -73,20 +79,24 @@ absl::optional<CableEidArray> Decrypt(
 // TODO(agl): this could probably be a class.
 
 // Components contains the parts of a decrypted EID.
-struct Components {
-  uint16_t tunnel_server_domain;
+struct COMPONENT_EXPORT(DEVICE_FIDO) Components {
+  Components();
+  Components(const Components&);
+  ~Components();
+
+  tunnelserver::KnownDomainID tunnel_server_domain;
   std::array<uint8_t, kRoutingIdSize> routing_id;
   std::array<uint8_t, kNonceSize> nonce;
 };
 
-// FromComponents constructs a valid EID from the given components. |IsValid|
-// will be true of the result.
+// FromComponents constructs a valid EID from the given components. The result
+// will produce a non-nullopt value if given to |ToComponents|.
 COMPONENT_EXPORT(DEVICE_FIDO)
 CableEidArray FromComponents(const Components& components);
 
 // ToComponents explodes a decrypted EID into its components. It's the
-// inverse of |ComponentsToEID|. |IsValid| must be true for the given EID before
-// calling this function.
+// inverse of |FromComponents|. This will CHECK if the |eid| array is invalid;
+// eids from |Decrypt| are always valid.
 COMPONENT_EXPORT(DEVICE_FIDO)
 Components ToComponents(const CableEidArray& eid);
 
@@ -106,6 +116,14 @@ absl::optional<Components> Parse(const std::string& qr_url);
 // Encode returns the contents of a QR code that represents |qr_key|.
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key);
+
+// BytesToDigits returns a base-10 encoding of |in|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::string BytesToDigits(base::span<const uint8_t> in);
+
+// DigitsToBytes reverses the actions of |BytesToDigits|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+absl::optional<std::vector<uint8_t>> DigitsToBytes(base::StringPiece in);
 
 }  // namespace qr
 

@@ -43,7 +43,7 @@ class ClipboardLacrosBrowserTest : public InProcessBrowserTest {
         },
         &run_loop, text);
     base::RepeatingTimer timer;
-    timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
+    timer.Start(FROM_HERE, base::Milliseconds(1),
                 std::move(look_for_clipboard_text));
     run_loop.Run();
   }

@@ -29,6 +29,10 @@ class CompositorDependenciesAndroid {
  public:
   static CompositorDependenciesAndroid& Get();
 
+  CompositorDependenciesAndroid(const CompositorDependenciesAndroid&) = delete;
+  CompositorDependenciesAndroid& operator=(
+      const CompositorDependenciesAndroid&) = delete;
+
   cc::TaskGraphRunner* GetTaskGraphRunner();
 
   viz::HostFrameSinkManager* host_frame_sink_manager() {
@@ -43,7 +47,7 @@ class CompositorDependenciesAndroid {
  private:
   friend class base::NoDestructor<CompositorDependenciesAndroid>;
 
-  static void ConnectVizFrameSinkManagerOnProcessThread(
+  static void ConnectVizFrameSinkManagerOnMainThread(
       mojo::PendingReceiver<viz::mojom::FrameSinkManager> receiver,
       mojo::PendingRemote<viz::mojom::FrameSinkManagerClient> client,
       const viz::DebugRendererSettings& debug_renderer_settings);
@@ -63,15 +67,13 @@ class CompositorDependenciesAndroid {
   // when we hide, canceled when we're shown.
   base::CancelableOnceClosure low_end_background_cleanup_task_;
 
-  // A callback which connects to the viz service on the GpuProcessHost thread.
-  base::OnceClosure pending_connect_viz_on_process_thread_;
+  // A callback which connects to the viz service on the main thread.
+  base::OnceClosure pending_connect_viz_on_main_thread_;
 
   // The set of visible CompositorImpls.
   base::flat_set<CompositorImpl*> visible_compositors_;
 
   std::unique_ptr<cc::TaskGraphRunner> task_graph_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorDependenciesAndroid);
 };
 
 }  // namespace content

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
@@ -26,6 +27,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/common/extension.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -168,7 +170,9 @@ ExclusiveAccessBubbleType ExclusiveAccessTest::GetExclusiveAccessBubbleType() {
 }
 
 bool ExclusiveAccessTest::IsExclusiveAccessBubbleDisplayed() {
-  return GetExclusiveAccessBubbleType() != EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
+  return GetExclusiveAccessManager()
+      ->context()
+      ->IsExclusiveAccessBubbleDisplayed();
 }
 
 void ExclusiveAccessTest::GoBack() {
@@ -200,7 +204,9 @@ void ExclusiveAccessTest::ToggleBrowserFullscreen() {
 
 void ExclusiveAccessTest::EnterExtensionInitiatedFullscreen() {
   FullscreenNotificationObserver fullscreen_observer(browser());
-  browser()->ToggleFullscreenModeWithExtension(GURL("faux_extension"));
+  static const char kExtensionId[] = "extension-id";
+  browser()->ToggleFullscreenModeWithExtension(
+      extensions::Extension::GetBaseURLFromExtensionId(kExtensionId));
   fullscreen_observer.Wait();
 }
 

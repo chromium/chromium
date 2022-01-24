@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {LanguagesMetricsProxy} from 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // clang-format on
 
 cr.define('settings', function() {
@@ -23,6 +23,7 @@ cr.define('settings', function() {
         'recordToggleTranslate',
         'recordAddInputMethod',
         'recordTranslateCheckboxChanged',
+        'recordShortcutReminderDismissed',
       ]);
     }
 
@@ -64,6 +65,11 @@ cr.define('settings', function() {
     /** @override */
     recordTranslateCheckboxChanged(value) {
       this.methodCalled('recordTranslateCheckboxChanged', value);
+    }
+
+    /** @override */
+    recordShortcutReminderDismissed(value) {
+      this.methodCalled('recordShortcutReminderDismissed', value);
     }
   }
   // #cr_define_end

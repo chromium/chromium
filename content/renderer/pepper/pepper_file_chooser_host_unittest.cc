@@ -17,6 +17,7 @@
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/renderer/pepper/mock_renderer_ppapi_host.h"
+#include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/test/test_content_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

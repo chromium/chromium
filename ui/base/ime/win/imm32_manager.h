@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -76,6 +75,10 @@ struct CompositionText;
 class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
  public:
   IMM32Manager();
+
+  IMM32Manager(const IMM32Manager&) = delete;
+  IMM32Manager& operator=(const IMM32Manager&) = delete;
+
   virtual ~IMM32Manager();
 
   // Retrieves whether or not there is an ongoing composition.
@@ -301,8 +304,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
 
   // Indicates whether or not we want IME to render composition text.
   bool use_composition_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(IMM32Manager);
 };
 
 }  // namespace ui

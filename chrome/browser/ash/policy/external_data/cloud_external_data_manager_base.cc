@@ -20,11 +20,10 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_external_data_store.h"
@@ -33,6 +32,7 @@
 #include "components/policy/core/common/cloud/external_policy_data_updater.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
@@ -46,6 +46,10 @@ const int kMaxParallelFetches = 2;
 // external data even if no |max_size| was specified in policy_templates.json.
 int g_max_external_data_size_for_testing = 0;
 
+// Keys for 'DictionaryValue' objects
+const char kUrlKey[] = "url";
+const char kHashKey[] = "hash";
+const char kCustomIconKey[] = "custom_icon";
 }  // namespace
 
 // Backend for the CloudExternalDataManagerBase that handles all data download,
@@ -59,6 +63,9 @@ class CloudExternalDataManagerBase::Backend {
   Backend(const GetChromePolicyDetailsCallback& get_policy_details,
           scoped_refptr<base::SequencedTaskRunner> task_runner,
           scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
+
+  Backend(const Backend&) = delete;
+  Backend& operator=(const Backend&) = delete;
 
   // Allows downloaded external data to be cached in |external_data_store|.
   // Ownership of the store is taken. The store can be destroyed by calling
@@ -79,25 +86,25 @@ class CloudExternalDataManagerBase::Backend {
   // the external data that each of the policies references.
   void OnMetadataUpdated(std::unique_ptr<Metadata> metadata);
 
-  // Called by the |updater_| when the external |data| referenced by |policy|
+  // Called by the |updater_| when the external |data| referenced by |key|
   // has been successfully downloaded and verified to match |hash|.
-  bool OnDownloadSuccess(const std::string& policy,
+  bool OnDownloadSuccess(const MetadataKey& key,
                          const std::string& hash,
                          const std::string& data);
 
-  // Retrieves the external data referenced by |policy| and invokes |callback|
-  // with the result. If |policy| does not reference any external data, the
+  // Retrieves the external data referenced by |key| and invokes |callback|
+  // with the result. If |key| does not reference any external data, the
   // |callback| is invoked with a NULL pointer. Otherwise, the |callback| is
   // invoked with the referenced data once it has been successfully retrieved.
   // If retrieval is temporarily impossible (e.g. the data is not cached yet and
   // there is no network connectivity), the |callback| will be invoked when the
   // temporary hindrance is resolved. If retrieval is permanently impossible
-  // (e.g. |policy| references data that does not exist on the server), the
+  // (e.g. |key| references data that does not exist on the server), the
   // |callback| will never be invoked.
-  // If the data for |policy| is not cached yet, only one download is started,
+  // If the data for |key| is not cached yet, only one download is started,
   // even if this method is invoked multiple times. The |callback|s passed are
   // enqueued and all invoked once the data has been successfully retrieved.
-  void Fetch(const std::string& policy,
+  void Fetch(const MetadataKey& key,
              ExternalDataFetcher::FetchCallback callback);
 
   // Try to download and cache all external data referenced by |metadata_|.
@@ -110,10 +117,11 @@ class CloudExternalDataManagerBase::Backend {
       base::OnceCallbackList<void(const std::string*, const base::FilePath&)>;
 
   // Map from policy names to the lists of callbacks defined above.
-  using FetchCallbackMap = std::map<std::string, FetchCallbackList>;
+  using FetchCallbackMap = std::map<MetadataKey, FetchCallbackList>;
 
-  // Looks up the maximum size that the data referenced by |policy| can have.
-  size_t GetMaxExternalDataSize(const std::string& policy) const;
+  // Looks up the maximum size that the data referenced by |key.policy| can
+  // have.
+  size_t GetMaxExternalDataSize(const MetadataKey& key) const;
 
   // Invokes |callback| via the |callback_task_runner_|, passing |data| and
   // |file_path| as parameters.
@@ -121,9 +129,11 @@ class CloudExternalDataManagerBase::Backend {
                    std::unique_ptr<std::string> data,
                    const base::FilePath& file_path) const;
 
-  // Tells the |updater_| to download the external data referenced by |policy|.
+  // Tells the |updater_| to download the external data referenced by |key|.
   // If Connect() was not called yet and no |updater_| exists, does nothing.
-  void StartDownload(const std::string& policy);
+  void StartDownload(const MetadataKey& key);
+
+  void PruneDataStore();
 
   // Used to determine the maximum size that the data referenced by each policy
   // can have.
@@ -155,8 +165,6 @@ class CloudExternalDataManagerBase::Backend {
   std::unique_ptr<ExternalPolicyDataUpdater> updater_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Backend);
 };
 
 CloudExternalDataManagerBase::Backend::Backend(
@@ -175,8 +183,8 @@ void CloudExternalDataManagerBase::Backend::SetExternalDataStore(
     std::unique_ptr<CloudExternalDataStore> external_data_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   external_data_store_ = std::move(external_data_store);
-  if (metadata_set_ && external_data_store_)
-    external_data_store_->Prune(metadata_);
+  if (metadata_set_)
+    PruneDataStore();
 }
 
 void CloudExternalDataManagerBase::Backend::Connect(
@@ -204,57 +212,56 @@ void CloudExternalDataManagerBase::Backend::OnMetadataUpdated(
   if (metadata)
     metadata_.swap(*metadata);
 
-  if (external_data_store_)
-    external_data_store_->Prune(metadata_);
+  PruneDataStore();
 
   for (FetchCallbackMap::iterator it = pending_downloads_.begin();
        it != pending_downloads_.end();) {
-    const std::string policy = it->first;
-    Metadata::const_iterator metadata = metadata_.find(policy);
+    const MetadataKey key = it->first;
+    Metadata::const_iterator metadata = metadata_.find(key);
     if (metadata == metadata_.end()) {
       // |policy| no longer references external data.
       if (updater_) {
         // Cancel the external data download.
-        updater_->CancelExternalDataFetch(policy);
+        updater_->CancelExternalDataFetch(key.ToString());
       }
-      // Invoke all callbacks for |policy|, indicating permanent failure.
+      // Invoke all callbacks for |key|, indicating permanent failure.
       it->second.Notify(nullptr, base::FilePath());
       pending_downloads_.erase(it++);
       continue;
     }
 
-    if (updater_ && metadata->second != old_metadata[policy]) {
+    if (updater_ && metadata->second != old_metadata[key]) {
       // |policy| still references external data but the reference has changed.
       // Cancel the external data download and start a new one.
-      updater_->CancelExternalDataFetch(policy);
-      StartDownload(policy);
+      updater_->CancelExternalDataFetch(key.ToString());
+      StartDownload(key);
     }
     ++it;
   }
 }
 
 bool CloudExternalDataManagerBase::Backend::OnDownloadSuccess(
-    const std::string& policy,
+    const MetadataKey& key,
     const std::string& hash,
     const std::string& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(metadata_.find(policy) != metadata_.end());
-  DCHECK_EQ(hash, metadata_[policy].hash);
+  DCHECK(metadata_.find(key) != metadata_.end());
+  DCHECK_EQ(hash, metadata_[key].hash);
   base::FilePath file_path;
   if (external_data_store_)
-    file_path = external_data_store_->Store(policy, hash, data);
+    file_path = external_data_store_->Store(key.ToString(), hash, data);
 
-  pending_downloads_[policy].Notify(&data, file_path);
-  pending_downloads_.erase(policy);
+  pending_downloads_[key].Notify(&data, file_path);
+  pending_downloads_.erase(key);
   return true;
 }
 
 void CloudExternalDataManagerBase::Backend::Fetch(
-    const std::string& policy,
+    const MetadataKey& key,
     ExternalDataFetcher::FetchCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  Metadata::const_iterator metadata = metadata_.find(policy);
+  Metadata::const_iterator metadata = metadata_.find(key);
   if (metadata == metadata_.end()) {
     // If |policy| does not reference any external data, indicate permanent
     // failure.
@@ -262,12 +269,12 @@ void CloudExternalDataManagerBase::Backend::Fetch(
     return;
   }
 
-  const bool has_pending_download = base::Contains(pending_downloads_, policy);
+  const bool has_pending_download = base::Contains(pending_downloads_, key);
   if (!has_pending_download && external_data_store_) {
     auto data = std::make_unique<std::string>();
     const base::FilePath file_path =
-        external_data_store_->Load(policy, metadata->second.hash,
-                                   GetMaxExternalDataSize(policy), data.get());
+        external_data_store_->Load(key.ToString(), metadata->second.hash,
+                                   GetMaxExternalDataSize(key), data.get());
     if (!file_path.empty()) {
       // If the external data referenced by |policy| exists in the cache and
       // matches the expected hash, pass it to the callback.
@@ -281,7 +288,7 @@ void CloudExternalDataManagerBase::Backend::Fetch(
   // it null or unspecified for remaining callbacks.  Instead, adapt the
   // provided callbacks to accept a raw pointer, which can be copied, and then
   // wrap in a separate scoping object for each callback.
-  pending_downloads_[policy].AddUnsafe(base::BindOnce(
+  pending_downloads_[key].AddUnsafe(base::BindOnce(
       [](const CloudExternalDataManagerBase::Backend* backend,
          ExternalDataFetcher::FetchCallback callback, const std::string* data,
          const base::FilePath& file_path) {
@@ -291,35 +298,35 @@ void CloudExternalDataManagerBase::Backend::Fetch(
       },
       base::Unretained(this), std::move(callback)));
   if (!has_pending_download)
-    StartDownload(policy);
+    StartDownload(key);
 }
 
 void CloudExternalDataManagerBase::Backend::FetchAll() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Loop through all external data references.
   for (const auto& it : metadata_) {
-    const std::string& policy = it.first;
+    const MetadataKey& key = it.first;
     std::unique_ptr<std::string> data(new std::string);
-    if (base::Contains(pending_downloads_, policy) ||
+    if (base::Contains(pending_downloads_, key) ||
         (external_data_store_ &&
          !external_data_store_
-              ->Load(policy, it.second.hash, GetMaxExternalDataSize(policy),
-                     data.get())
+              ->Load(key.ToString(), it.second.hash,
+                     GetMaxExternalDataSize(key), data.get())
               .empty())) {
-      // If a download of the external data referenced by |policy| has already
+      // If a download of the external data referenced by |key| has already
       // been requested or the data exists in the cache and matches the expected
       // hash, there is nothing to be done.
       continue;
     }
-    // Request a download of the the external data referenced by |policy| and
-    // initialize the list of callbacks to an empty list.
-    pending_downloads_[policy];
-    StartDownload(policy);
+    // Initialize the list of callbacks referenced by |key| to an empty list.
+    pending_downloads_[key];
+    // Request a download of the external data referenced by |key|.
+    StartDownload(key);
   }
 }
 
 size_t CloudExternalDataManagerBase::Backend::GetMaxExternalDataSize(
-    const std::string& policy) const {
+    const MetadataKey& key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (g_max_external_data_size_for_testing)
@@ -329,7 +336,7 @@ size_t CloudExternalDataManagerBase::Backend::GetMaxExternalDataSize(
   // get_policy_details, which is constructed from the information in
   // policy_templates.json, allowing the maximum data size to be specified as
   // part of the policy definition.
-  const PolicyDetails* details = get_policy_details_.Run(policy);
+  const PolicyDetails* details = get_policy_details_.Run(key.policy);
   if (details)
     return details->max_external_data_size;
   NOTREACHED();
@@ -347,20 +354,35 @@ void CloudExternalDataManagerBase::Backend::RunCallback(
 }
 
 void CloudExternalDataManagerBase::Backend::StartDownload(
-    const std::string& policy) {
+    const MetadataKey& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::Contains(pending_downloads_, policy));
+  DCHECK(base::Contains(pending_downloads_, key));
   if (!updater_)
     return;
 
-  const MetadataEntry& metadata = metadata_[policy];
+  const MetadataEntry& metadata = metadata_[key];
   updater_->FetchExternalData(
-      policy,
+      key.ToString(),
       ExternalPolicyDataUpdater::Request(metadata.url, metadata.hash,
-                                         GetMaxExternalDataSize(policy)),
+                                         GetMaxExternalDataSize(key)),
       base::BindRepeating(
           &CloudExternalDataManagerBase::Backend::OnDownloadSuccess,
-          base::Unretained(this), policy, metadata.hash));
+          base::Unretained(this), key, metadata.hash));
+}
+
+void CloudExternalDataManagerBase::Backend::PruneDataStore() {
+  if (!external_data_store_)
+    return;
+
+  // Extract the list of (key, hash) pairs from the Metadata map to tell the
+  // store which data should be kept.
+  CloudExternalDataStore::PruningData key_hash_pairs;
+  std::transform(metadata_.begin(), metadata_.end(),
+                 std::back_inserter(key_hash_pairs),
+                 [](const std::pair<MetadataKey, MetadataEntry>& p) {
+                   return make_pair(p.first.ToString(), p.second.hash);
+                 });
+  external_data_store_->Prune(key_hash_pairs);
 }
 
 CloudExternalDataManagerBase::CloudExternalDataManagerBase(
@@ -399,6 +421,28 @@ void CloudExternalDataManagerBase::SetPolicyStore(
     OnPolicyStoreLoaded();
 }
 
+// Extract a url and hash from |value|, and put them into |metadata|.
+void AddMetadataFromValue(CloudExternalDataManagerBase::Metadata* metadata,
+                          const std::string& policy_name,
+                          const std::string& field_name,
+                          const base::Value* const value) {
+  DCHECK(metadata);
+  const base::DictionaryValue* dict = nullptr;
+  if (!value || !value->GetAsDictionary(&dict))
+    return;
+  const std::string* url = dict->FindStringKey(kUrlKey);
+  const std::string* hex_hash = dict->FindStringKey(kHashKey);
+  std::string hash;
+  if (url && hex_hash && !url->empty() && !hex_hash->empty() &&
+      base::HexStringToString(*hex_hash, &hash)) {
+    // Add the external data reference to |metadata| if it is valid (URL and
+    // hash are not empty, hash can be decoded as a hex string).
+    CloudExternalDataManagerBase::MetadataKey key(policy_name, field_name);
+    CloudExternalDataManagerBase::MetadataEntry entry(*url, hash);
+    (*metadata)[key] = entry;
+  }
+}
+
 void CloudExternalDataManagerBase::OnPolicyStoreLoaded() {
   // Collect all external data references made by policies in |policy_store_|
   // and pass them to the |backend_|.
@@ -410,17 +454,22 @@ void CloudExternalDataManagerBase::OnPolicyStoreLoaded() {
       // Skip policies that do not reference external data.
       continue;
     }
-    const base::DictionaryValue* dict = NULL;
-    if (!it.second.value() || !it.second.value()->GetAsDictionary(&dict))
+    if (it.first != key::kWebAppInstallForceList) {
+      AddMetadataFromValue(metadata.get(), it.first, std::string(),
+                           it.second.value());
       continue;
-    const std::string* url = dict->FindStringKey("url");
-    const std::string* hex_hash = dict->FindStringKey("hash");
-    std::string hash;
-    if (url && hex_hash && !url->empty() && !hex_hash->empty() &&
-        base::HexStringToString(*hex_hash, &hash)) {
-      // Add the external data reference to |metadata| if it is valid (URL and
-      // hash are not empty, hash can be decoded as a hex string).
-      (*metadata)[it.first] = MetadataEntry(*url, hash);
+    }
+    if (it.second.value() && it.second.value()->is_list()) {
+      for (const auto& app : it.second.value()->GetList()) {
+        const base::DictionaryValue* dict = nullptr;
+        if (app.GetAsDictionary(&dict)) {
+          const base::Value* const icon = dict->FindKey(kCustomIconKey);
+          const std::string* const url = dict->FindStringKey(kUrlKey);
+          if (icon && url) {
+            AddMetadataFromValue(metadata.get(), it.first, *url, icon);
+          }
+        }
+      }
     }
   }
 
@@ -451,12 +500,13 @@ void CloudExternalDataManagerBase::Disconnect() {
 
 void CloudExternalDataManagerBase::Fetch(
     const std::string& policy,
+    const std::string& field_name,
     ExternalDataFetcher::FetchCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&Backend::Fetch, base::Unretained(backend_.get()), policy,
-                     std::move(callback)));
+      base::BindOnce(&Backend::Fetch, base::Unretained(backend_.get()),
+                     MetadataKey(policy, field_name), std::move(callback)));
 }
 
 // static

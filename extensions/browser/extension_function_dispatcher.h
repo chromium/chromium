@@ -134,6 +134,7 @@ class ExtensionFunctionDispatcher
       const mojom::RequestParams& params,
       const Extension* extension,
       int requesting_process_id,
+      bool is_worker_request,
       const GURL* rfh_url,
       const ProcessMap& process_map,
       ExtensionAPI* api,

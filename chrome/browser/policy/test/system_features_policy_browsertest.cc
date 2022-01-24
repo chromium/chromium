@@ -4,20 +4,21 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -50,14 +51,18 @@ struct VisibilityFlags {
 
 class SystemFeaturesPolicyTest : public PolicyTest {
  public:
-  SystemFeaturesPolicyTest() = default;
+  SystemFeaturesPolicyTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kEcheSWA},
+        /*disabled_features=*/{});
+  }
 
  protected:
   std::u16string GetWebUITitle(const GURL& url,
                                bool using_navigation_throttle) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     if (using_navigation_throttle) {
       content::WaitForLoadStopWithoutSuccessCheck(web_contents);
     } else {
@@ -132,7 +137,7 @@ class SystemFeaturesPolicyTest : public PolicyTest {
   }
 
   void InstallSWAs() {
-    web_app::WebAppProvider::Get(browser()->profile())
+    web_app::WebAppProvider::GetForTest(browser()->profile())
         ->system_web_app_manager()
         .InstallSystemAppsForTesting();
   }
@@ -219,6 +224,10 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     const GURL& app_url = GURL(url);
     EXPECT_EQ(base::UTF8ToUTF16(app_title), GetWebUITitle(app_url, true));
   }
+
+  // TODO(b/204827405): remove this when we resolve multidevice_handler check
+  // failed or Eche be enabled.
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreBeforeInstall) {

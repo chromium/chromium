@@ -19,6 +19,10 @@ class OtherMechanismsMenuModel : public ui::SimpleMenuModel,
  public:
   explicit OtherMechanismsMenuModel(
       AuthenticatorRequestDialogModel* dialog_model);
+
+  OtherMechanismsMenuModel(const OtherMechanismsMenuModel&) = delete;
+  OtherMechanismsMenuModel& operator=(const OtherMechanismsMenuModel&) = delete;
+
   ~OtherMechanismsMenuModel() override;
 
  protected:
@@ -28,8 +32,6 @@ class OtherMechanismsMenuModel : public ui::SimpleMenuModel,
   void ExecuteCommand(int command_id, int event_flags) override;
 
   AuthenticatorRequestDialogModel* const dialog_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(OtherMechanismsMenuModel);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_OTHER_MECHANISMS_MENU_MODEL_H_

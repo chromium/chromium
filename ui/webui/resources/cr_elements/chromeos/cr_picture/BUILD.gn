@@ -4,165 +4,57 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
-import("../os_cr_elements.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":cr_camera",
-    ":cr_picture_list",
-    ":cr_picture_pane",
-    ":cr_picture_types",
-    ":png",
-  ]
-}
-
-js_library("cr_camera") {
-  deps = [ ":png" ]
-}
-
-js_library("cr_picture_list") {
-  deps = [
-    ":cr_picture_types",
-    ":png",
-    "//third_party/polymer/v1_0/components-chromium/iron-selector:iron-selector-extracted",
-    "//ui/webui/resources/js:assert",
-  ]
-}
-
-js_library("cr_picture_pane") {
-  deps = [
-    ":cr_camera",
-    ":cr_picture_types",
-    ":png",
-  ]
-}
-
-js_library("cr_picture_types") {
-}
-
-js_library("png") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "png.js",
-    "cr_picture_types.js",
-  ]
-}
+assert(is_chromeos)
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [
-    ":cr_camera.m",
-    ":cr_picture_list.m",
-    ":cr_picture_pane.m",
-    ":png.m",
-  ]
-}
+  deps = [ ":png" ]
 
-js_library("png.m") {
-  sources = [
-    "$root_gen_dir/ui/webui/resources/cr_elements/chromeos/cr_picture/png.m.js",
-  ]
-  extra_deps = [ ":modulize" ]
-}
-
-# TODO(crbug.com/1134204): This target should probably only be defined if
-# target_os is "chromos" as it does not include any source files on other
-# platforms.
-js_library("cr_picture_types.m") {
-  sources = []
   if (is_chromeos_ash) {
-    sources += [ "$root_gen_dir/ui/webui/resources/cr_elements/chromeos/cr_picture/cr_picture_types.m.js" ]
+    deps += [
+      ":cr_camera",
+      ":cr_picture_list",
+      ":cr_picture_pane",
+    ]
   }
-  extra_deps = [ ":modulize" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":cr_camera_module",
-    ":cr_picture_list_module",
-    ":cr_picture_pane_module",
-    ":icons_module",
-    ":modulize",
-  ]
+js_library("png") {
 }
 
-# TODO(crbug.com/1134204): This target should probably only be defined if
-# target_os is "chromos" as it does not include any source files on other
-# platforms.
-js_library("cr_picture_pane.m") {
-  sources = []
-  if (is_chromeos_ash) {
-    sources += [ "$root_gen_dir/ui/webui/resources/cr_elements/chromeos/cr_picture/cr_picture_pane.m.js" ]
+if (is_chromeos_ash) {
+  js_library("cr_picture_types") {
   }
-  deps = [
-    ":cr_camera.m",
-    ":cr_picture_types.m",
-    ":png.m",
-  ]
-  extra_deps = [ ":cr_picture_pane_module" ]
-}
 
-# TODO(crbug.com/1134204): This target should probably only be defined if
-# target_os is "chromos" as it does not include any source files on other
-# platforms.
-js_library("cr_camera.m") {
-  sources = []
-  if (is_chromeos_ash) {
-    sources += [ "$root_gen_dir/ui/webui/resources/cr_elements/chromeos/cr_picture/cr_camera.m.js" ]
+  js_library("cr_picture_pane") {
+    deps = [
+      ":cr_camera",
+      ":cr_picture_types",
+      ":png",
+    ]
   }
-  deps = [ ":png.m" ]
-  extra_deps = [ ":cr_camera_module" ]
-}
 
-# TODO(crbug.com/1134204): This target should probably only be defined if
-# target_os is "chromos" as it does not include any source files on other
-# platforms.
-js_library("cr_picture_list.m") {
-  sources = []
-  if (is_chromeos_ash) {
-    sources += [ "$root_gen_dir/ui/webui/resources/cr_elements/chromeos/cr_picture/cr_picture_list.m.js" ]
+  js_library("cr_camera") {
+    deps = [ ":png" ]
   }
-  deps = [
-    ":cr_picture_types.m",
-    ":png.m",
-    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  extra_deps = [ ":cr_picture_list_module" ]
-}
 
-polymer_modulizer("cr_camera") {
-  js_file = "cr_camera.js"
-  html_file = "cr_camera.html"
-  html_type = "dom-module"
-  namespace_rewrites = cr_elements_chromeos_namespace_rewrites
-  auto_imports = cr_elements_chromeos_auto_imports
-}
+  js_library("cr_picture_list") {
+    deps = [
+      ":cr_picture_types",
+      ":png",
+      "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
+      "//ui/webui/resources/js:assert.m",
+    ]
+  }
 
-polymer_modulizer("cr_picture_list") {
-  js_file = "cr_picture_list.js"
-  html_file = "cr_picture_list.html"
-  html_type = "dom-module"
-  namespace_rewrites = cr_elements_chromeos_namespace_rewrites
-  auto_imports = cr_elements_chromeos_auto_imports
-}
-
-polymer_modulizer("cr_picture_pane") {
-  js_file = "cr_picture_pane.js"
-  html_file = "cr_picture_pane.html"
-  html_type = "dom-module"
-  namespace_rewrites = cr_elements_chromeos_namespace_rewrites
-  auto_imports = cr_elements_chromeos_auto_imports
-}
-
-polymer_modulizer("icons") {
-  js_file = "icons.m.js"
-  html_file = "icons.html"
-  html_type = "iron-iconset"
+  html_to_js("web_components") {
+    js_files = [
+      "cr_camera.js",
+      "cr_picture_list.js",
+      "cr_picture_pane.js",
+      "icons.js",
+    ]
+  }
 }

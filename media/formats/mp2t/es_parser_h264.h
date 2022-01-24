@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
 #include "media/base/video_decoder_config.h"
@@ -50,6 +49,10 @@ class MEDIA_EXPORT EsParserH264 : public EsParser {
                EncryptionScheme init_encryption_scheme,
                const GetDecryptConfigCB& get_decrypt_config_cb);
 #endif
+
+  EsParserH264(const EsParserH264&) = delete;
+  EsParserH264& operator=(const EsParserH264&) = delete;
+
   ~EsParserH264() override;
 
   // EsParser implementation.
@@ -95,8 +98,6 @@ class MEDIA_EXPORT EsParserH264 : public EsParser {
 
   // Last video decoder config.
   VideoDecoderConfig last_video_decoder_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(EsParserH264);
 };
 
 }  // namespace mp2t

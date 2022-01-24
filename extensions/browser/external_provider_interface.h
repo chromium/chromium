@@ -75,7 +75,7 @@ class ExternalProviderInterface {
 
   // Enumerate registered extensions, calling
   // OnExternalExtension(File|UpdateUrl)Found on the |visitor| object for each
-  // registered extension found.
+  // registered extension found if the external loader calls LoadFinished().
   virtual void VisitRegisteredExtension() = 0;
 
   // Test if this provider has an extension with id |id| registered.
@@ -93,6 +93,13 @@ class ExternalProviderInterface {
   // Determines if this provider had loaded the list of external extensions
   // from its source.
   virtual bool IsReady() const = 0;
+
+  // Notifies the provider visitor about the external extensions found with the
+  // existing prefs. This method differs from VisitRegisteredExtension() in that
+  // it always triggers the OnExternalExtension(File|UpdateUrl)Found() methods
+  // and is independent of the external loader calling LoadFinished(). This
+  // method does not load the prefs, but uses the ones present in the provider.
+  virtual void TriggerOnExternalExtensionFound() = 0;
 };
 
 using ProviderCollection =

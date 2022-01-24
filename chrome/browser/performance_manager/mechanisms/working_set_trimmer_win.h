@@ -15,6 +15,9 @@ namespace mechanism {
 // should be used via the WorkingSetTrimmer::GetIntsance() method.
 class WorkingSetTrimmerWin : public WorkingSetTrimmer {
  public:
+  WorkingSetTrimmerWin(const WorkingSetTrimmerWin&) = delete;
+  WorkingSetTrimmerWin& operator=(const WorkingSetTrimmerWin&) = delete;
+
   ~WorkingSetTrimmerWin() override;
 
   bool PlatformSupportsWorkingSetTrim() override;
@@ -27,8 +30,6 @@ class WorkingSetTrimmerWin : public WorkingSetTrimmer {
   // directly, it should always be retrieved via
   // WorkingSetTrimmer::GetIntsance().
   WorkingSetTrimmerWin();
-
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmerWin);
 };
 
 }  // namespace mechanism

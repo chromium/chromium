@@ -41,10 +41,10 @@ InvalidationsMessageHandler::~InvalidationsMessageHandler() {
 }
 
 void InvalidationsMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "doneLoading", base::BindRepeating(&InvalidationsMessageHandler::UIReady,
                                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestDetailedStatus",
       base::BindRepeating(
           &InvalidationsMessageHandler::HandleRequestDetailedStatus,
@@ -90,7 +90,7 @@ void InvalidationsMessageHandler::OnRegistrationChange(
   base::ListValue list_of_handlers;
   for (auto it = registered_handlers.begin(); it != registered_handlers.end();
        ++it) {
-    list_of_handlers.AppendString(*it);
+    list_of_handlers.Append(*it);
   }
   FireWebUIListener("handlers-updated", list_of_handlers);
 }

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 
@@ -26,6 +25,10 @@ class NotificationSource;
 class CONTENT_EXPORT NotificationRegistrar final {
  public:
   NotificationRegistrar();
+
+  NotificationRegistrar(const NotificationRegistrar&) = delete;
+  NotificationRegistrar& operator=(const NotificationRegistrar&) = delete;
+
   ~NotificationRegistrar();
 
   // Wrappers around NotificationService::[Add|Remove]Observer.
@@ -61,8 +64,6 @@ class CONTENT_EXPORT NotificationRegistrar final {
   RecordVector registered_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationRegistrar);
 };
 
 }  // namespace content

@@ -18,6 +18,10 @@ class MixedContentSettingsTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<MixedContentSettingsTabHelper> {
  public:
+  MixedContentSettingsTabHelper(const MixedContentSettingsTabHelper&) = delete;
+  MixedContentSettingsTabHelper& operator=(
+      const MixedContentSettingsTabHelper&) = delete;
+
   ~MixedContentSettingsTabHelper() override;
 
   // Enables running active mixed content resources in the associated
@@ -40,7 +44,7 @@ class MixedContentSettingsTabHelper
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   // TODO(crbug.com/1071232): When RenderDocument is implemented, make this a
-  // RenderDocumentHostUserData.
+  // DocumentUserData.
   class PageSettings {
    public:
     explicit PageSettings(content::RenderFrameHost* render_frame_host);
@@ -60,8 +64,6 @@ class MixedContentSettingsTabHelper
   std::map<content::RenderFrameHost*, std::unique_ptr<PageSettings>> settings_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MixedContentSettingsTabHelper);
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_MIXED_CONTENT_SETTINGS_TAB_HELPER_H_

@@ -13,10 +13,10 @@ import './icons.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 
@@ -54,8 +54,7 @@ export interface ProfileCardMenuElement {
 }
 
 const ProfileCardMenuElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
+    WebUIListenerMixin(I18nMixin(PolymerElement));
 
 export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   static get is() {
@@ -215,6 +214,12 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     this.manageProfilesBrowserProxy_.openManageProfileSettingsSubPage(
         this.profileState.profilePath);
     this.$.actionMenu.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'profile-card-menu': ProfileCardMenuElement;
   }
 }
 

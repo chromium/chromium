@@ -60,7 +60,7 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
     extensions::ExtensionService* service =
         extensions::ExtensionSystem::Get(GetProfile())->extension_service();
     web_app::WebAppProvider* web_app_provider =
-        web_app::WebAppProvider::Get(GetProfile());
+        web_app::WebAppProvider::GetForWebApps(GetProfile());
     DCHECK(web_app_provider);
     DCHECK(service);
     // We should not be launched without an ExtensionService or WebAppProvider.

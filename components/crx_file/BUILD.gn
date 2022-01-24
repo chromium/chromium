@@ -72,3 +72,17 @@ source_set("unit_tests") {
 proto_library("crx3_proto") {
   sources = [ "crx3.proto" ]
 }
+
+if (host_toolchain == current_toolchain) {
+  executable("crx3_build_action") {
+    testonly = true
+
+    sources = [ "crx_build_action_main.cc" ]
+
+    deps = [
+      ":crx_creator",
+      "//base",
+      "//crypto",
+    ]
+  }
+}

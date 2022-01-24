@@ -36,7 +36,7 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
 
   const base::Version& version() const { return version_; }
 
-  const base::DictionaryValue& manifest() const { return manifest_; }
+  const base::Value& manifest() const { return manifest_; }
 
   const base::FilePath& GetPath() const {
     return component_install_dir_.GetPath();
@@ -72,7 +72,7 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_env_;
   base::Version version_;
-  base::DictionaryValue manifest_;
+  base::Value manifest_ = base::Value(base::Value::Type::DICTIONARY);
   ZxcvbnDataComponentInstallerPolicy policy_;
   base::ScopedTempDir component_install_dir_;
 };
@@ -96,7 +96,8 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest, VerifyInstallation) {
 // zxcvbn::default_ranked_dicts().
 TEST_F(ZxcvbnDataComponentInstallerPolicyTest, ComponentReady) {
   // Empty / non-existent files should result in empty dictionaries.
-  policy().ComponentReady(version(), GetPath(), nullptr);
+  policy().ComponentReady(version(), GetPath(),
+                          base::Value(base::Value::Type::DICTIONARY));
   task_env().RunUntilIdle();
 
   // Populated files should be read and fed to the correct ranked zxcvbn
@@ -125,7 +126,8 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest, ComponentReady) {
           ZxcvbnDataComponentInstallerPolicy::kUsTvAndFilmTxtFileName),
       "us\ntv\nand\nfilm");
 
-  policy().ComponentReady(version(), GetPath(), nullptr);
+  policy().ComponentReady(version(), GetPath(),
+                          base::Value(base::Value::Type::DICTIONARY));
   task_env().RunUntilIdle();
 
   zxcvbn::RankedDicts& ranked_dicts = zxcvbn::default_ranked_dicts();

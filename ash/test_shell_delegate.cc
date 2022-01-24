@@ -8,10 +8,13 @@
 
 #include "ash/accessibility/default_accessibility_delegate.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
+#include "ash/constants/app_types.h"
+#include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h"
-#include "components/full_restore/app_launch_info.h"
+#include "components/app_restore/app_launch_info.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {
@@ -93,9 +96,38 @@ base::FilePath TestShellDelegate::GetPrimaryUserDownloadsFolder() const {
   return base::FilePath();
 }
 
-std::unique_ptr<full_restore::AppLaunchInfo>
+std::unique_ptr<app_restore::AppLaunchInfo>
 TestShellDelegate::GetAppLaunchDataForDeskTemplate(aura::Window* window) const {
   return nullptr;
+}
+
+void TestShellDelegate::GetFaviconForUrl(
+    const std::string& page_url,
+    int desired_icon_size,
+    favicon_base::FaviconRawBitmapCallback callback,
+    base::CancelableTaskTracker* tracker) const {}
+
+void TestShellDelegate::GetIconForAppId(
+    const std::string& app_id,
+    int desired_icon_size,
+    base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
+    const {}
+
+void TestShellDelegate::LaunchAppsFromTemplate(
+    std::unique_ptr<DeskTemplate> desk_template) {}
+
+bool TestShellDelegate::IsWindowSupportedForDeskTemplate(
+    aura::Window* window) const {
+  const ash::AppType app_type =
+      static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
+  switch (app_type) {
+    case AppType::CROSTINI_APP:
+    case AppType::LACROS:
+      return false;
+    default:
+      break;
+  }
+  return true;
 }
 
 }  // namespace ash

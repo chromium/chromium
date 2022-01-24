@@ -34,6 +34,10 @@ class AnsibleManagementService : public KeyedService,
   static AnsibleManagementService* GetForProfile(Profile* profile);
 
   explicit AnsibleManagementService(Profile* profile);
+
+  AnsibleManagementService(const AnsibleManagementService&) = delete;
+  AnsibleManagementService& operator=(const AnsibleManagementService&) = delete;
+
   ~AnsibleManagementService() override;
 
   // |callback| is called once default Crostini container configuration is
@@ -75,8 +79,6 @@ class AnsibleManagementService : public KeyedService,
   base::OnceCallback<void(bool success)> configuration_finished_callback_;
   std::string playbook_;
   base::WeakPtrFactory<AnsibleManagementService> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnsibleManagementService);
 };
 
 }  // namespace crostini

@@ -79,6 +79,10 @@ class ExtensionPrefValueMap : public KeyedService {
   };
 
   ExtensionPrefValueMap();
+
+  ExtensionPrefValueMap(const ExtensionPrefValueMap&) = delete;
+  ExtensionPrefValueMap& operator=(const ExtensionPrefValueMap&) = delete;
+
   ~ExtensionPrefValueMap() override;
 
   // KeyedService implementation.
@@ -204,8 +208,6 @@ class ExtensionPrefValueMap : public KeyedService {
   bool destroyed_;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefValueMap);
 };
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_PREF_VALUE_MAP_H_

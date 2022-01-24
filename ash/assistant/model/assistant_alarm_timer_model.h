@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace chromeos {
@@ -28,6 +27,10 @@ class AssistantAlarmTimerModelObserver;
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantAlarmTimerModel {
  public:
   AssistantAlarmTimerModel();
+
+  AssistantAlarmTimerModel(const AssistantAlarmTimerModel&) = delete;
+  AssistantAlarmTimerModel& operator=(const AssistantAlarmTimerModel&) = delete;
+
   ~AssistantAlarmTimerModel();
 
   // Adds/removes the specified alarm/timer model |observer|.
@@ -61,8 +64,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantAlarmTimerModel {
   std::map<std::string, chromeos::assistant::AssistantTimer> timers_;
 
   mutable base::ObserverList<AssistantAlarmTimerModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantAlarmTimerModel);
 };
 
 }  // namespace ash

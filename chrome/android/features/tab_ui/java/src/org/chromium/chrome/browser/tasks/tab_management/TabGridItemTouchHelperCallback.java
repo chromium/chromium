@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
 import org.chromium.chrome.tab_ui.R;
@@ -48,6 +49,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     private final TabListMediator.TabActionListener mTabClosedListener;
     private final String mComponentName;
     private final TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
+    private final @TabListMode int mMode;
     private float mSwipeToDismissThreshold;
     private float mMergeThreshold;
     private float mUngroupThreshold;
@@ -65,7 +67,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     public TabGridItemTouchHelperCallback(Context context, TabListModel tabListModel,
             TabModelSelector tabModelSelector, TabActionListener tabClosedListener,
             TabGridDialogHandler tabGridDialogHandler, String componentName,
-            boolean actionsOnAllRelatedTabs) {
+            boolean actionsOnAllRelatedTabs, @TabListMode int mode) {
         super(0, 0);
         mModel = tabListModel;
         mTabModelSelector = tabModelSelector;
@@ -74,6 +76,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         mActionsOnAllRelatedTabs = actionsOnAllRelatedTabs;
         mTabGridDialogHandler = tabGridDialogHandler;
         mContext = context;
+        mMode = mode;
     }
 
     /**
@@ -92,7 +95,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         mUngroupThreshold = ungroupThreshold;
         mProfile = profile;
         boolean isMRUEnabledInTabSwitcher =
-                TabSwitcherMediator.isShowingTabsInMRUOrder() && mActionsOnAllRelatedTabs;
+                TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode) && mActionsOnAllRelatedTabs;
         // Disable drag for MRU-order tab switcher in start surface.
         // TODO(crbug.com/1005931): Figure out how drag-to-reorder lives in StartSurface MRU
         // ordering scenario.

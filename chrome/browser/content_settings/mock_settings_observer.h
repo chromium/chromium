@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_MOCK_SETTINGS_OBSERVER_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_MOCK_SETTINGS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -17,11 +16,16 @@ class ContentSettingsPattern;
 class MockSettingsObserver : public content_settings::Observer {
  public:
   explicit MockSettingsObserver(HostContentSettingsMap* map);
+
+  MockSettingsObserver(const MockSettingsObserver&) = delete;
+  MockSettingsObserver& operator=(const MockSettingsObserver&) = delete;
+
   ~MockSettingsObserver() override;
 
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   MOCK_METHOD6(OnContentSettingsChanged,
                void(HostContentSettingsMap*,
@@ -37,8 +41,6 @@ class MockSettingsObserver : public content_settings::Observer {
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockSettingsObserver);
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_MOCK_SETTINGS_OBSERVER_H_

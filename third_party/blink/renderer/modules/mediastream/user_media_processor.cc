@@ -14,9 +14,10 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -153,9 +154,7 @@ std::string GetOnTrackStartedLogString(
 void InitializeAudioTrackControls(UserMediaRequest* user_media_request,
                                   TrackControls* track_controls) {
   if (user_media_request->MediaRequestType() ==
-          UserMediaRequest::MediaType::kDisplayMedia ||
-      user_media_request->MediaRequestType() ==
-          UserMediaRequest::MediaType::kGetCurrentBrowsingContextMedia) {
+      UserMediaRequest::MediaType::kDisplayMedia) {
     track_controls->requested = true;
     track_controls->stream_type = MediaStreamType::DISPLAY_AUDIO_CAPTURE;
     return;
@@ -191,13 +190,10 @@ void InitializeVideoTrackControls(UserMediaRequest* user_media_request,
   if (user_media_request->MediaRequestType() ==
       UserMediaRequest::MediaType::kDisplayMedia) {
     track_controls->requested = true;
-    track_controls->stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
-    return;
-  } else if (user_media_request->MediaRequestType() ==
-             UserMediaRequest::MediaType::kGetCurrentBrowsingContextMedia) {
-    track_controls->requested = true;
     track_controls->stream_type =
-        MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
+        user_media_request->should_prefer_current_tab()
+            ? MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB
+            : MediaStreamType::DISPLAY_VIDEO_CAPTURE;
     return;
   }
 
@@ -1918,6 +1914,13 @@ bool UserMediaProcessor::HasActiveSources() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return !local_sources_.IsEmpty();
 }
+
+#if !defined(OS_ANDROID)
+void UserMediaProcessor::FocusCapturedSurface(const String& label, bool focus) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  GetMediaStreamDispatcherHost()->FocusCapturedSurface(label, focus);
+}
+#endif
 
 blink::mojom::blink::MediaStreamDispatcherHost*
 UserMediaProcessor::GetMediaStreamDispatcherHost() {

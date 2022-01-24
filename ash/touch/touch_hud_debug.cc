@@ -21,8 +21,8 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/transform.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
@@ -93,6 +93,9 @@ class TouchTrace {
 
   TouchTrace() = default;
 
+  TouchTrace(const TouchTrace&) = delete;
+  TouchTrace& operator=(const TouchTrace&) = delete;
+
   void AddTouchPoint(const ui::TouchEvent& touch) {
     log_.push_back(TouchPointLog(touch));
   }
@@ -108,14 +111,15 @@ class TouchTrace {
 
  private:
   std::vector<TouchPointLog> log_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchTrace);
 };
 
 // A TouchLog keeps track of all touch events of all touch points.
 class TouchLog {
  public:
   TouchLog() : next_trace_index_(0) {}
+
+  TouchLog(const TouchLog&) = delete;
+  TouchLog& operator=(const TouchLog&) = delete;
 
   void AddTouchPoint(const ui::TouchEvent& touch) {
     if (touch.type() == ui::ET_TOUCH_PRESSED)
@@ -161,8 +165,6 @@ class TouchLog {
   int next_trace_index_;
 
   std::map<int, int> touch_id_to_trace_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchLog);
 };
 
 // TouchHudCanvas draws touch traces in |FULLSCREEN| and |REDUCED_SCALE| modes.
@@ -175,6 +177,9 @@ class TouchHudCanvas : public views::View {
 
     flags_.setStyle(cc::PaintFlags::kFill_Style);
   }
+
+  TouchHudCanvas(const TouchHudCanvas&) = delete;
+  TouchHudCanvas& operator=(const TouchHudCanvas&) = delete;
 
   ~TouchHudCanvas() override = default;
 
@@ -243,8 +248,6 @@ class TouchHudCanvas : public views::View {
   SkColor colors_[kMaxPaths];
 
   int scale_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchHudCanvas);
 };
 
 TouchHudDebug::TouchHudDebug(aura::Window* initial_root)

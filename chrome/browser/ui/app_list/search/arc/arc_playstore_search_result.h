@@ -33,6 +33,10 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
                            Profile* profile,
                            AppListControllerDelegate* list_controller,
                            const std::u16string& query);
+
+  ArcPlayStoreSearchResult(const ArcPlayStoreSearchResult&) = delete;
+  ArcPlayStoreSearchResult& operator=(const ArcPlayStoreSearchResult&) = delete;
+
   ~ArcPlayStoreSearchResult() override;
 
   // ChromeSearchResult overrides:
@@ -59,6 +63,9 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
   // ChromeSearchResult overrides:
   AppContextMenu* GetAppContextMenu() override;
 
+  // Callback passed to |icon_decode_request_|.
+  void OnIconDecoded(const gfx::ImageSkia&);
+
   arc::mojom::AppDiscoveryResultPtr data_;
   std::unique_ptr<arc::IconDecodeRequest> icon_decode_request_;
 
@@ -68,8 +75,6 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
   std::unique_ptr<ArcPlayStoreAppContextMenu> context_menu_;
 
   base::WeakPtrFactory<ArcPlayStoreSearchResult> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreSearchResult);
 };
 
 }  // namespace app_list

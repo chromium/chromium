@@ -44,6 +44,9 @@ class NetExportTabHelperTest : public web::WebTestWithWebState {
   NetExportTabHelperTest()
       : delegate_([[TestNetExportTabHelperDelegate alloc] init]) {}
 
+  NetExportTabHelperTest(const NetExportTabHelperTest&) = delete;
+  NetExportTabHelperTest& operator=(const NetExportTabHelperTest&) = delete;
+
  protected:
   void SetUp() override {
     web::WebTestWithWebState::SetUp();
@@ -52,9 +55,6 @@ class NetExportTabHelperTest : public web::WebTestWithWebState {
 
   // A delegate that is given to the NetExportTabHelper for testing.
   __strong TestNetExportTabHelperDelegate* delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetExportTabHelperTest);
 };
 
 // Verifies the initial state of the NetExportTabHelper and its delegate.

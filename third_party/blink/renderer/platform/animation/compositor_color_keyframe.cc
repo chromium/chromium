@@ -12,10 +12,10 @@ CompositorColorKeyframe::CompositorColorKeyframe(
     double time,
     SkColor value,
     const TimingFunction& timing_function)
-    : color_keyframe_(
-          gfx::ColorKeyframe::Create(base::TimeDelta::FromSecondsD(time),
-                                     value,
-                                     timing_function.CloneToCC())) {}
+    : color_keyframe_(gfx::ColorKeyframe::Create(base::Seconds(time),
+                                                 value,
+                                                 timing_function.CloneToCC())) {
+}
 
 CompositorColorKeyframe::CompositorColorKeyframe(
     std::unique_ptr<gfx::ColorKeyframe> color_keyframe)
@@ -23,8 +23,8 @@ CompositorColorKeyframe::CompositorColorKeyframe(
 
 CompositorColorKeyframe::~CompositorColorKeyframe() = default;
 
-double CompositorColorKeyframe::Time() const {
-  return color_keyframe_->Time().InSecondsF();
+base::TimeDelta CompositorColorKeyframe::Time() const {
+  return color_keyframe_->Time();
 }
 
 const gfx::TimingFunction* CompositorColorKeyframe::CcTimingFunction() const {

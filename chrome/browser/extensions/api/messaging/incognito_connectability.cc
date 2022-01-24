@@ -66,7 +66,7 @@ void IncognitoConnectability::Query(const Extension* extension,
                                     content::WebContents* web_contents,
                                     const GURL& url,
                                     base::OnceCallback<void(bool)> callback) {
-  GURL origin = url.GetOrigin();
+  GURL origin = url.DeprecatedGetOriginAsURL();
   if (origin.is_empty()) {
     std::move(callback).Run(false);
     return;
@@ -191,7 +191,7 @@ void IncognitoConnectability::OnInteractiveResponse(
 bool IncognitoConnectability::IsInMap(const Extension* extension,
                                       const GURL& origin,
                                       const ExtensionToOriginsMap& map) {
-  DCHECK_EQ(origin, origin.GetOrigin());
+  DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
   auto it = map.find(extension->id());
   return it != map.end() && it->second.count(origin) > 0;
 }

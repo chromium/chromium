@@ -31,8 +31,8 @@ void PermissionsBrowserTest::SetUpOnMainThread() {
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(test_url()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(test_url())));
 }
 
 void PermissionsBrowserTest::TearDownOnMainThread() {

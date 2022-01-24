@@ -30,6 +30,10 @@ class MODULES_EXPORT SensorProviderProxy final
   static SensorProviderProxy* From(LocalDOMWindow*);
 
   explicit SensorProviderProxy(LocalDOMWindow&);
+
+  SensorProviderProxy(const SensorProviderProxy&) = delete;
+  SensorProviderProxy& operator=(const SensorProviderProxy&) = delete;
+
   ~SensorProviderProxy();
 
   SensorProxy* CreateSensorProxy(device::mojom::blink::SensorType, Page*);
@@ -55,8 +59,6 @@ class MODULES_EXPORT SensorProviderProxy final
   HeapHashSet<WeakMember<SensorProxy>> sensor_proxies_;
   HeapMojoRemote<device::mojom::blink::SensorProvider> sensor_provider_;
   bool inspector_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(SensorProviderProxy);
 };
 
 }  // namespace blink

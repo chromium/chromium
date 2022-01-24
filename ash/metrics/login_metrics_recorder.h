@@ -6,7 +6,6 @@
 #define ASH_METRICS_LOGIN_METRICS_RECORDER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -55,6 +54,8 @@ class ASH_EXPORT LoginMetricsRecorder {
     kVirtualKeyboardTray,
     kImeTray,
     kEnterpriseEnrollmentButton,
+    kSignIn,
+    kOsInstallButton,
     kTargetCount,
   };
 
@@ -82,10 +83,15 @@ class ASH_EXPORT LoginMetricsRecorder {
     kParentAccessButton,
     kEnterpriseEnrollmentButton,
     kOsInstallButton,
+    kSignIn,
     kTargetCount,
   };
 
   LoginMetricsRecorder();
+
+  LoginMetricsRecorder(const LoginMetricsRecorder&) = delete;
+  LoginMetricsRecorder& operator=(const LoginMetricsRecorder&) = delete;
+
   ~LoginMetricsRecorder();
 
   // Methods used to record UMA stats.
@@ -93,10 +99,6 @@ class ASH_EXPORT LoginMetricsRecorder {
   void RecordNumLoginAttempts(bool success, int* num_attempt);
   void RecordUserTrayClick(TrayClickTarget target);
   void RecordUserShelfButtonClick(ShelfButtonClickTarget target);
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(LoginMetricsRecorder);
 };
 
 }  // namespace ash

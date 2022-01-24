@@ -335,6 +335,11 @@
   'chromium-webrtc-rel-win8': {
     'perf_builder_name_alias': 'chromium-webrtc-rel-win8',
   },
+  # Used for invert CQ tests selection. Adding ci_only: False to
+  # test_suite_exceptions.pyl to select tests that are allowed on CQ builders.
+  'ci_only': {
+    'ci_only': True,
+  },
   'dawn_end2end_gpu_test': {
     '$mixin_append': {
       'args': [
@@ -358,23 +363,18 @@
         'device_os': None,
         'device_type': None,
         'pool': 'chromium.tests.avd',
-        'machine_type': 'n1-standard-4',
+        'machine_type': 'n1-standard-4|e2-standard-4',
       },
     },
   },
-  'emulator-e2-4-cores': {
+  'emulator-8-cores': {
     'swarming': {
       'dimensions': {
         'device_os': None,
         'device_type': None,
         'pool': 'chromium.tests.avd',
-        'machine_type': 'e2-standard-4',
+        'machine_type': 'e2-standard-8',
       },
-    },
-  },
-  'enable_resultdb': {
-    'resultdb': {
-      'enable': True,
     },
   },
   'femu-additional-ram': {
@@ -426,11 +426,11 @@
         '--device=aemu',
       ],
     },
-  },
-  'fuchsia_runner_logs': {
+  }, 
+  'fuchsia_logs': {
     '$mixin_append': {
       'args': [
-        '--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs',
+        '--logs-dir=${ISOLATED_OUTDIR}/logs',
       ],
     },
   },
@@ -450,11 +450,14 @@
       },
     },
   },
-  'intel_iris_5100': {
-    'swarming': {
-      'dimensions': {
-        'gpu': '8086:0a2e',
-      },
+  # Use of this mixin signals to the recipe that the test uploads its results
+  # to result-sink and doesn't need to be wrapped by result_adapter.
+  'has_native_resultdb_integration': {
+    'resultdb': {
+      'enable': True,
+      # TODO(crbug.com/1163797): Remove the 'enable' field in favor of
+      # 'has_native_resultdb_integration'.
+      'has_native_resultdb_integration': True,
     },
   },
   'ios_custom_webkit': {
@@ -478,18 +481,6 @@
       'args': [
         '--restart',
       ],
-    },
-  },
-  'ios_runtime_cache_13_6': {
-    '$mixin_append': {
-      'swarming': {
-        'named_caches': [
-          {
-            'name': 'runtime_ios_13_6',
-            'path': 'Runtime-ios-13.6',
-          },
-        ],
-      },
     },
   },
   'ios_runtime_cache_14_4': {
@@ -586,13 +577,6 @@
       },
     },
   },
-  'linux-xenial-or-focal': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-16.04|Ubuntu-20.04',
-      },
-    },
-  },
   'linux_amd_rx_5500_xt': {
     'swarming': {
       'dimensions': {
@@ -633,9 +617,9 @@
   'linux_nvidia_gtx_1660_experimental': {
     'swarming': {
       'dimensions': {
-        'gpu': '10de:2184',
-        'os': 'Ubuntu',
-        'pool': 'chromium.tests.gpu.experimental',
+        'gpu': '10de:2184-440.100',
+        'os': 'Ubuntu-18.04.5',
+        'pool': 'chromium.tests.gpu',
       },
     },
   },
@@ -652,13 +636,6 @@
     'swarming': {
       'dimensions': {
         'device_os': 'LMY48M',
-      },
-    },
-  },
-  'lollipop_generic': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'L',
       },
     },
   },
@@ -707,19 +684,27 @@
       },
     },
   },
-  'mac_11_beta_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-11.3',
-      },
-    },
-  },
   'mac_11_x64': {
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
         'os': 'Mac-11|Mac-10.16',
+      },
+    },
+  },
+  'mac_12_beta_arm64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'os': 'Mac-12',
+      },
+    },
+  },
+  'mac_12_beta_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-12',
       },
     },
   },
@@ -755,8 +740,8 @@
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
-        'gpu': '8086:0a2e',
-        'os': 'Mac-10.15.7',
+        'gpu': '8086:3e9b',
+        'os': 'Mac-11.5.2',
         'display_attached': '1',
       },
     },
@@ -765,33 +750,8 @@
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
-        'gpu': '8086:0a2e',
-        'os': 'Mac-10.15.7',
-        'display_attached': '1',
-      },
-    },
-  },
-  # Version of mac_mini_intel_gpu_stable that uses 'dimension_sets'
-  # instead of 'dimensions' so it can be used to trigger tests on multiple
-  # configurations.
-  'mac_mini_intel_gpu_stable_dimension_set': {
-    'swarming': {
-      'dimension_sets': [
-        {
-          'cpu': 'x86-64',
-          'gpu': '8086:0a2e',
-          'os': 'Mac-10.15.7',
-          'display_attached': '1',
-        },
-      ],
-    },
-  },
-  'mac_mini_intel_uhd_630_gpu_stable': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
         'gpu': '8086:3e9b',
-        'os': 'Mac-10.15.7',
+        'os': 'Mac-11.5.2',
         'display_attached': '1',
       },
     },
@@ -825,27 +785,10 @@
         'cpu': 'x86-64',
         'gpu': '1002:6821',
         'hidpi': '1',
-        'os': 'Mac-10.14.6',
+        'os': 'Mac-11.4',
         'pool': 'chromium.tests.gpu',
         'display_attached': '1',
       },
-    },
-  },
-  # Version of mac_retina_amd_gpu_stable that uses 'dimension_sets'
-  # instead of 'dimensions' so it can be used to trigger tests on multiple
-  # configurations.
-  'mac_retina_amd_gpu_stable_dimension_set': {
-    'swarming': {
-      'dimension_sets': [
-        {
-          'cpu': 'x86-64',
-          'gpu': '1002:6821',
-          'hidpi': '1',
-          'os': 'Mac-10.14.6',
-          'pool': 'chromium.tests.gpu',
-          'display_attached': '1',
-        },
-      ],
     },
   },
   'mac_retina_nvidia_gpu_experimental': {
@@ -1045,15 +988,6 @@
       },
     },
   },
-  'shamu': {
-    # Nexus 6
-    'swarming': {
-      'dimensions': {
-        'device_type': 'shamu',
-        'os': 'Android',
-      },
-    },
-  },
   'skia_gold_test': {
     '$mixin_append': {
       'args': [
@@ -1102,14 +1036,14 @@
   'win10': {
     'swarming': {
       'dimensions': {
-        'os': 'Windows-10-18363',
+        'os': 'Windows-10-19042',
       },
     },
   },
-  'win10-20h2': {
+  'win10-1909': {
     'swarming': {
       'dimensions': {
-        'os': 'Windows-10-19042',
+        'os': 'Windows-10-18363',
       },
     },
   },
@@ -1167,9 +1101,9 @@
   'win10_nvidia_geforce_gtx_1660': {
     'swarming': {
       'dimensions': {
-        'gpu': '10de:2184',
-        'os': 'Windows-10',
-        'pool': 'chromium.tests.gpu.experimental',
+        'gpu': '10de:2184-27.21.14.5638',
+        'os': 'Windows-10-18363',
+        'pool': 'chromium.tests.gpu',
       },
     },
   },
@@ -1290,30 +1224,30 @@
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '13a5192ixc'
+        '13a233'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_13a5192ixc',
+          'name': 'xcode_ios_13a233',
           'path': 'Xcode.app',
         },
       ],
     },
   },
-  # Default Xcode 13 on main (Xcode 13.0 beta 3).
+  # Default Xcode 13 on main (Xcode 13.0 release candidate).
   'xcode_13_main': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '13a5192ixc'
+        '13a233'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_13a5192ixc',
+          'name': 'xcode_ios_13a233',
           'path': 'Xcode.app',
         },
       ],

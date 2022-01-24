@@ -8,14 +8,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -33,93 +32,28 @@ namespace extensions {
 
 namespace {
 
-using PassKey = base::PassKey<ExtensionMessagePort>;
-
-bool IsExtensionMessageSupported() {
-  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
-    return false;
-  static const base::FeatureParam<bool> extension_message_supported(
-      &features::kBackForwardCache, "extension_message_supported", false);
-  return extension_message_supported.Get();
-}
-
 std::string PortIdToString(const extensions::PortId& port_id) {
   return base::StrCat({port_id.GetChannelId().first.ToString(), ":",
                        base::NumberToString(port_id.GetChannelId().second)});
 }
 
-// This class is created per RenderDocument. It stores the set of
-// ExtensionMessagePort objects that have the associated `RenderFrameHost` in
-// the `ExtensionMessagePort::frames_` set.
-class MessagePortStatePerRenderDocument
-    : public content::RenderDocumentHostUserData<
-          MessagePortStatePerRenderDocument> {
- public:
-  ~MessagePortStatePerRenderDocument() override {
-    if (!ports_opened_.empty()) {
-      // Clear the disable reason as the new document may reuse the
-      // RenderFrameHost.
-      content::BackForwardCache::ClearDisableReasonForRenderFrameHost(
-          rfh_id_, back_forward_cache::DisabledReason(
-                       back_forward_cache::DisabledReasonId::
-                           kExtensionMessagingForOpenPort));
-    }
-  }
-
-  void PortOpened(extensions::ExtensionMessagePort* port) {
-    ports_opened_.insert(port);
-    if (ports_opened_.size() != 1)
-      return;
-    back_forward_cache::DisabledReasonId reason_id =
-        back_forward_cache::DisabledReasonId::kExtensionMessagingForOpenPort;
-    if (!IsExtensionMessageSupported()) {
-      // When extension messages are not supported, use kExtensionMessaging.
-      // kExtensionMessaging will not be cleared by
-      // ClearDisableReasonForRenderFrameHost(kExtensionMessagingForOpenPort).
-      reason_id = back_forward_cache::DisabledReasonId::kExtensionMessaging;
-    }
-    content::BackForwardCache::DisableForRenderFrameHost(
-        rfh_id_, back_forward_cache::DisabledReason(reason_id));
-  }
-
-  void PortClosed(extensions::ExtensionMessagePort* port) {
-    if (ports_opened_.erase(port) == 0)
-      return;
-
-    if (!ports_opened_.empty())
-      return;
-
-    content::BackForwardCache::ClearDisableReasonForRenderFrameHost(
-        rfh_id_, back_forward_cache::DisabledReason(
-                     back_forward_cache::DisabledReasonId::
-                         kExtensionMessagingForOpenPort));
-  }
-
- private:
-  explicit MessagePortStatePerRenderDocument(content::RenderFrameHost* rfh)
-      : rfh_id_(rfh->GetGlobalId()) {}
-  friend class content::RenderDocumentHostUserData<
-      MessagePortStatePerRenderDocument>;
-
-  std::set<extensions::ExtensionMessagePort*> ports_opened_;
-  const content::GlobalRenderFrameHostId rfh_id_;
-
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
-};
-
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(MessagePortStatePerRenderDocument)
-
-}  // namespace
+using PassKey = base::PassKey<ExtensionMessagePort>;
 
 const char kReceivingEndDoesntExistError[] =
     // TODO(lazyboy): Test these in service worker implementation.
     "Could not establish connection. Receiving end does not exist.";
+
+}  // namespace
 
 // Helper class to detect when frames are destroyed.
 class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
                                            public ProcessManagerObserver {
  public:
   explicit FrameTracker(ExtensionMessagePort* port) : port_(port) {}
+
+  FrameTracker(const FrameTracker&) = delete;
+  FrameTracker& operator=(const FrameTracker&) = delete;
+
   ~FrameTracker() override = default;
 
   void TrackExtensionProcessFrames() {
@@ -139,8 +73,36 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
+    // There are a number of possible scenarios for the navigation:
+    // 1. Same-document navigation - Don't unregister the frame, since it can
+    // still use the port.
+    // 2. Cross-document navigation, reusing the RenderFrameHost - Unregister
+    // the frame, since the new document is not allowed to use the port.
+    // 3. Cross-document navigation, with a new RenderFrameHost - Since the
+    // navigated-to document has a new RFH, the port can not be registered for
+    // it, so it doesn't matter whether we unregister it or not. If the
+    // navigated-from document is stored in the back-forward cache, don't
+    // unregister the frame (see note below). If it is not cached, the frame
+    // will be unregistered when the RFH is deleted.
+    // 4. Restoring a cached frame from back-forward cache - This is similar to
+    // (3) in that the navigation changes RFH, with the difference that the RFH
+    // is not new and so may be registered. Don't unregister the frame in this
+    // case since it may stil use the port.
+
+    // Note that we don't just disconnect channels when a frame is bf-cached
+    // since when such a document is later restored, there is no "load" and so a
+    // message channel won't be immediately available to extensions.
+    // Contrast this with a normal load where an extension is able to inject
+    // scripts at "document_start" and set up message ports.
     if (navigation_handle->HasCommitted() &&
-        !navigation_handle->IsSameDocument()) {
+        !navigation_handle->IsSameDocument() &&
+        !navigation_handle->IsServedFromBackForwardCache()) {
+      // Note: This unregisters the _new_ RenderFrameHost. In case a new RFH was
+      // created for this navigation, this will be a no-op, since we haven't
+      // seen it before. In case the RFH is reused for the navigation, this will
+      // correctly unregister the frame, to avoid messages intended for the
+      // previous document being sent to the new document. If the navigated-to
+      // RFH is served from cache, keep the port alive.
       port_->UnregisterFrame(navigation_handle->GetRenderFrameHost());
     }
   }
@@ -160,8 +122,6 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       pm_observation_{this};
   ExtensionMessagePort* port_;  // Owns this FrameTracker.
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTracker);
 };
 
 // Represents target of an IPC (render frame, ServiceWorker or render process).
@@ -258,29 +218,13 @@ ExtensionMessagePort::ExtensionMessagePort(
       extension_id_(extension_id),
       browser_context_(browser_context) {}
 
-ExtensionMessagePort::~ExtensionMessagePort() {
-  ClearFrames();
-}
-
-void ExtensionMessagePort::ClearFrames() {
-  for (auto* rfh : frames_) {
-    auto* message_port_state =
-        MessagePortStatePerRenderDocument::GetForCurrentDocument(rfh);
-    if (message_port_state)
-      message_port_state->PortClosed(this);
-  }
-  frames_.clear();
-}
+ExtensionMessagePort::~ExtensionMessagePort() = default;
 
 void ExtensionMessagePort::RemoveCommonFrames(const MessagePort& port) {
   // Avoid overlap in the set of frames to make sure that it does not matter
   // when UnregisterFrame is called.
   for (auto it = frames_.begin(); it != frames_.end();) {
     if (port.HasFrame(*it)) {
-      auto* message_port_state =
-          MessagePortStatePerRenderDocument::GetForCurrentDocument(*it);
-      if (message_port_state)
-        message_port_state->PortClosed(this);
       frames_.erase(it++);
     } else {
       ++it;
@@ -436,22 +380,12 @@ void ExtensionMessagePort::RegisterFrame(content::RenderFrameHost* rfh) {
   // |frames_| can eventually contain a stale pointer because RenderFrameDeleted
   // is not triggered for |rfh|.
   if (rfh->IsRenderFrameLive()) {
-    auto* message_port_state =
-        MessagePortStatePerRenderDocument::GetOrCreateForCurrentDocument(rfh);
-    message_port_state->PortOpened(this);
     frames_.insert(rfh);
   }
 }
 
 void ExtensionMessagePort::UnregisterFrame(content::RenderFrameHost* rfh) {
-  if (frames_.erase(rfh) == 0)
-    return;
-  auto* message_port_state =
-      MessagePortStatePerRenderDocument::GetForCurrentDocument(rfh);
-  if (message_port_state)
-    message_port_state->PortClosed(this);
-
-  if (!HasReceivers())
+  if (frames_.erase(rfh) != 0 && !HasReceivers())
     CloseChannel();
 }
 
@@ -508,6 +442,23 @@ void ExtensionMessagePort::SendToPort(IPCBuilderCallback ipc_builder) {
   }
 
   for (const IPCTarget& target : targets) {
+    // Frames in the BackForwardCache are not allowed to receive messages (or
+    // even have them queued). In such a case, we evict the frame from the cache
+    // and "drop" the message (See comment in `DidFinishNavigation()`).
+    // Note: Since this will cause the frame to be deleted, we do this here
+    // instead of in the loop above to avoid modifying `frames_` while it is
+    // being iterated.
+    if (target.render_frame_host &&
+        target.render_frame_host->GetLifecycleState() ==
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache) {
+      content::BackForwardCache::DisableForRenderFrameHost(
+          target.render_frame_host,
+          back_forward_cache::DisabledReason(
+              back_forward_cache::DisabledReasonId::
+                  kExtensionSentMessageToCachedFrame));
+      continue;
+    }
+
     std::unique_ptr<IPC::Message> ipc_message = ipc_builder.Run(target);
     SendToIPCTarget(target, std::move(ipc_message));
   }

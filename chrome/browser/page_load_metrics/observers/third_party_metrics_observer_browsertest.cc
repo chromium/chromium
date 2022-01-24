@@ -90,6 +90,12 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
  protected:
   ThirdPartyMetricsObserverBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  ThirdPartyMetricsObserverBrowserTest(
+      const ThirdPartyMetricsObserverBrowserTest&) = delete;
+  ThirdPartyMetricsObserverBrowserTest& operator=(
+      const ThirdPartyMetricsObserverBrowserTest&) = delete;
+
   ~ThirdPartyMetricsObserverBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -105,12 +111,13 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
   }
 
   void NavigateToUntrackedUrl() {
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   }
 
   void NavigateToPageWithFrame(const std::string& host) {
     GURL main_url(https_server()->GetURL(host, "/iframe.html"));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   }
 
   void NavigateToPageWithFrameAndWaitForFrame(
@@ -169,8 +176,6 @@ class ThirdPartyMetricsObserverBrowserTest : public InProcessBrowserTest {
   // This is needed because third party cookies must be marked SameSite=None and
   // Secure, so they must be accessed over HTTPS.
   net::EmbeddedTestServer https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyMetricsObserverBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,

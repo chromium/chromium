@@ -115,8 +115,7 @@ const char* UpdateQueryParams::GetNaclArch() {
 #if defined(ARCH_CPU_X86_64)
   return "x86-64";
 #elif defined(OS_WIN)
-  bool x86_64 = (base::win::OSInfo::GetInstance()->wow64_status() ==
-                 base::win::OSInfo::WOW64_ENABLED);
+  bool x86_64 = base::win::OSInfo::GetInstance()->IsWowX86OnAMD64();
   return x86_64 ? "x86-64" : "x86-32";
 #else
   return "x86-32";

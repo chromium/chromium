@@ -40,6 +40,31 @@ const int kRequestTimeoutMs = 10000;
 const char kPasswordProtectionRequestUrl[] =
     "https://sb-ssl.google.com/safebrowsing/clientreport/login";
 
+// Check if the verdict makes this a security sensitive event.
+bool IsSecuritySensitiveVerdict(
+    LoginReputationClientResponse::VerdictType verdict_type) {
+  switch (verdict_type) {
+    case LoginReputationClientResponse::SAFE:
+      return false;
+    case LoginReputationClientResponse::LOW_REPUTATION:
+    case LoginReputationClientResponse::PHISHING:
+    case LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED:
+      return true;
+  }
+  NOTREACHED() << "Unexpected verdict_type: " << verdict_type;
+  return false;
+}
+
+// Log security sensitive event if required.
+void MaybeRecordSecuritySensitiveEvent(
+    SafeBrowsingMetricsCollector* metrics_collector,
+    LoginReputationClientResponse::VerdictType verdict_type) {
+  if (metrics_collector && IsSecuritySensitiveVerdict(verdict_type)) {
+    metrics_collector->AddSafeBrowsingEventToPref(
+        SafeBrowsingMetricsCollector::EventType::
+            SECURITY_SENSITIVE_PASSWORD_PROTECTION);
+  }
+}
 }  // namespace
 
 PasswordProtectionServiceBase::PasswordProtectionServiceBase(
@@ -50,21 +75,18 @@ PasswordProtectionServiceBase::PasswordProtectionServiceBase(
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     bool is_off_the_record,
     signin::IdentityManager* identity_manager,
-    bool try_token_fetch)
+    bool try_token_fetch,
+    SafeBrowsingMetricsCollector* metrics_collector)
     : database_manager_(database_manager),
       url_loader_factory_(url_loader_factory),
       pref_service_(pref_service),
       token_fetcher_(std::move(token_fetcher)),
       is_off_the_record_(is_off_the_record),
       identity_manager_(identity_manager),
-      try_token_fetch_(try_token_fetch) {
+      try_token_fetch_(try_token_fetch),
+      metrics_collector_(metrics_collector) {
   if (history_service)
     history_service_observation_.Observe(history_service);
-
-  common_spoofed_domains_ = {"login.live.com", "facebook.com", "box.com",
-                             "google.com",     "paypal.com",   "apple.com",
-                             "yahoo.com",      "adobe.com",    "amazon.com",
-                             "linkedin.com"};
 }
 
 PasswordProtectionServiceBase::~PasswordProtectionServiceBase() {
@@ -122,6 +144,15 @@ bool PasswordProtectionServiceBase::CanSendPing(
          !IsInExcludedCountry();
 }
 
+bool PasswordProtectionServiceBase::
+    IsSyncingGMAILPasswordWithSignedInProtectionEnabled(
+        ReusedPasswordAccountType password_type) const {
+  return base::FeatureList::IsEnabled(
+             safe_browsing::kPasswordProtectionForSignedInUsers) &&
+         password_type.account_type() == ReusedPasswordAccountType::GMAIL &&
+         password_type.is_account_syncing();
+}
+
 void PasswordProtectionServiceBase::RequestFinished(
     PasswordProtectionRequest* request,
     RequestOutcome outcome,
@@ -173,6 +204,9 @@ void PasswordProtectionServiceBase::RequestFinished(
         response ? response->verdict_type()
                  : LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED;
 
+    // If verdict declares a security sensitive event, log accordingly.
+    MaybeRecordSecuritySensitiveEvent(metrics_collector_, verdict);
+
 // Disabled on Android, because enterprise reporting extension is not supported.
 #if !defined(OS_ANDROID)
     MaybeReportPasswordReuseDetected(
@@ -192,7 +226,7 @@ void PasswordProtectionServiceBase::RequestFinished(
   }
 
   // Remove request from |pending_requests_| list. If it triggers warning, add
-  // it into the !warning_reqeusts_| list.
+  // it into the |warning_requests_| list.
   for (auto it = pending_requests_.begin(); it != pending_requests_.end();
        it++) {
     if (it->get() == request) {
@@ -308,21 +342,20 @@ PasswordProtectionServiceBase::GetPasswordProtectionReusedPasswordAccountType(
         return reused_password_account_type;
       }
       reused_password_account_type.set_account_type(
-          IsPrimaryAccountGmail() ? ReusedPasswordAccountType::GMAIL
-                                  : ReusedPasswordAccountType::GSUITE);
+          IsAccountGmail(username) ? ReusedPasswordAccountType::GMAIL
+                                   : ReusedPasswordAccountType::GSUITE);
       return reused_password_account_type;
     }
     case PasswordType::OTHER_GAIA_PASSWORD: {
-      AccountInfo account_info = GetSignedInNonSyncAccount(username);
+      AccountInfo account_info = GetAccountInfoForUsername(username);
       if (account_info.account_id.empty()) {
         reused_password_account_type.set_account_type(
             ReusedPasswordAccountType::UNKNOWN);
         return reused_password_account_type;
       }
       reused_password_account_type.set_account_type(
-          IsOtherGaiaAccountGmail(username)
-              ? ReusedPasswordAccountType::GMAIL
-              : ReusedPasswordAccountType::GSUITE);
+          IsAccountGmail(username) ? ReusedPasswordAccountType::GMAIL
+                                   : ReusedPasswordAccountType::GSUITE);
       return reused_password_account_type;
     }
     case PasswordType::PASSWORD_TYPE_UNKNOWN:
@@ -380,10 +413,10 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForModalWarning(
   if (password_type.account_type() == ReusedPasswordAccountType::SAVED_PASSWORD)
     return true;
 
-// Currently password reuse warnings are only supported for saved passwords on
-// Android.
+// Currently password reuse warnings are only supported for saved passwords
+// and GAIA passwords on Android.
 #if defined(OS_ANDROID)
-  return false;
+  return IsSyncingGMAILPasswordWithSignedInProtectionEnabled(password_type);
 #else
   if (password_type.account_type() ==
       ReusedPasswordAccountType::NON_GAIA_ENTERPRISE)
@@ -403,10 +436,8 @@ bool PasswordProtectionServiceBase::CanGetAccessToken() {
   if (!try_token_fetch_ || is_off_the_record_)
     return false;
 
-  // Return true if the finch feature is enabled for an ESB user, and if the
-  // primary user account is signed in.
-  return base::FeatureList::IsEnabled(kPasswordProtectionWithToken) &&
-         pref_service_ && IsEnhancedProtectionEnabled(*pref_service_) &&
+  // Return true if the primary user account of an ESB user is signed in.
+  return pref_service_ && IsEnhancedProtectionEnabled(*pref_service_) &&
          identity_manager_ &&
          safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager_);
 }

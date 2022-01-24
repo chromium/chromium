@@ -49,6 +49,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   void SetProactiveHelpSettingEnabled(bool enabled) override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetIsCustomTab() const override;
+  bool GetIsTabCreatedByGSA() const override;
 
   // Intentionally public to give tests direct access.
   std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
@@ -69,6 +70,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool proactive_help_enabled_ = true;
   bool msbb_enabled_ = true;
   bool is_custom_tab_ = true;
+  bool is_tab_created_by_gsa_ = true;
   base::OnceCallback<void(
       GURL url,
       std::unique_ptr<TriggerContext> trigger_context,

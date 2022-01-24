@@ -60,11 +60,12 @@ class ExplicitSynchronizationClient : public ClientBase {
  public:
   ExplicitSynchronizationClient() = default;
 
+  ExplicitSynchronizationClient(const ExplicitSynchronizationClient&) = delete;
+  ExplicitSynchronizationClient& operator=(
+      const ExplicitSynchronizationClient&) = delete;
+
   // Initialize and run client main loop.
   void Run();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExplicitSynchronizationClient);
 };
 
 void ExplicitSynchronizationClient::Run() {

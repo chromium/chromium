@@ -85,7 +85,7 @@ int MenuCommandForKeyEvent(NSEvent* event) {
 
   // "Close window" doesn't use the |commandDispatch:| mechanism. Menu items
   // that do not correspond to IDC_ constants need no special treatment however,
-  // as they can't be blacklisted in
+  // as they can't be reserved in
   // |BrowserCommandController::IsReservedCommandOrKey()| anyhow.
   if ([item action] == @selector(performClose:))
     return IDC_CLOSE_WINDOW;
@@ -131,11 +131,9 @@ CommandForKeyEventResult ShortcutCommand(int cmd) {
   return {cmd, /*from_main_menu=*/false};
 }
 
-}  // namespace
-
-const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
+std::vector<KeyboardShortcutData> CreateKeyboardShortcutVector() {
   // clang-format off
-  static base::NoDestructor<std::vector<KeyboardShortcutData>> keys({
+  std::vector<KeyboardShortcutData> keys({
   // cmd    shift  cntrl  option vkeycode               command
   // ---    -----  -----  ------ --------               -------
     {true,  true,  false, false, kVK_ANSI_RightBracket, IDC_SELECT_NEXT_TAB},
@@ -164,26 +162,34 @@ const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
     {true,  false, false, false, kVK_ANSI_Keypad8,      IDC_SELECT_TAB_7},
     {true,  false, false, false, kVK_ANSI_9,            IDC_SELECT_LAST_TAB},
     {true,  false, false, false, kVK_ANSI_Keypad9,      IDC_SELECT_LAST_TAB},
+
     {true,  true,  false, false, kVK_ANSI_M,            IDC_SHOW_AVATAR_MENU},
     {true,  false, false, true,  kVK_ANSI_L,            IDC_SHOW_DOWNLOADS},
     {true,  true,  false, false, kVK_ANSI_C,            IDC_DEV_TOOLS_INSPECT},
     {true,  false, false, true,  kVK_ANSI_C,            IDC_DEV_TOOLS_INSPECT},
-
     {true,  false, false, true,  kVK_DownArrow,         IDC_FOCUS_NEXT_PANE},
     {true,  false, false, true,  kVK_UpArrow,           IDC_FOCUS_PREVIOUS_PANE},
+    {true,  true,  false, false, kVK_ANSI_A,            IDC_TAB_SEARCH},
+    {true,  true,  false, true,  kVK_ANSI_A,            IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY},
   });
-
-  keys->push_back({true,  true,  false, false, kVK_ANSI_A, IDC_TAB_SEARCH});
+  // clang-format on
 
   if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
-    keys->push_back({false, true, true, true, kVK_ANSI_T,
-                     IDC_DEBUG_TOGGLE_TABLET_MODE});
-    keys->push_back({false, true, true, true, kVK_ANSI_V,
-                     IDC_DEBUG_PRINT_VIEW_TREE});
-    keys->push_back({false, true, true, true, kVK_ANSI_M,
-                     IDC_DEBUG_PRINT_VIEW_TREE_DETAILS});
+    keys.push_back(
+        {false, true, true, true, kVK_ANSI_T, IDC_DEBUG_TOGGLE_TABLET_MODE});
+    keys.push_back(
+        {false, true, true, true, kVK_ANSI_V, IDC_DEBUG_PRINT_VIEW_TREE});
+    keys.push_back({false, true, true, true, kVK_ANSI_M,
+                    IDC_DEBUG_PRINT_VIEW_TREE_DETAILS});
   }
-  // clang-format on
+  return keys;
+}
+
+}  // namespace
+
+const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
+  static const base::NoDestructor<std::vector<KeyboardShortcutData>> keys(
+      CreateKeyboardShortcutVector());
   return *keys;
 }
 

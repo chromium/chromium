@@ -20,9 +20,10 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
+class SkColorInfo;
+
 namespace blink {
 
-class CanvasColorParams;
 class CanvasRenderingContext;
 class CanvasResource;
 class CanvasResourceDispatcher;
@@ -91,8 +92,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   bool IsPaintable() const;
 
   // Required by template functions in WebGLRenderingContextBase
-  int width() const { return Size().Width(); }
-  int height() const { return Size().Height(); }
+  int width() const { return Size().width(); }
+  int height() const { return Size().height(); }
 
   // Partial CanvasResourceHost implementation
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const final;
@@ -105,7 +106,10 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   bool IsWebGPU() const;
   bool IsRenderingContext2D() const;
   bool IsImageBitmapRenderingContext() const;
-  CanvasColorParams ColorParams() const;
+
+  // Returns an SkColorInfo that best represents the canvas rendering context's
+  // contents.
+  SkColorInfo GetRenderingContextSkColorInfo() const;
 
   // blink::CanvasImageSource
   bool IsOffscreenCanvas() const override;

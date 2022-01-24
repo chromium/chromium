@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_LOADER_NAVIGATION_URL_LOADER_IMPL_H_
 #define CONTENT_BROWSER_LOADER_NAVIGATION_URL_LOADER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/loader/navigation_url_loader.h"
@@ -17,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/url_request/url_request.h"
+#include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -42,17 +42,16 @@ struct WebPluginInfo;
 
 class CONTENT_EXPORT NavigationURLLoaderImpl
     : public NavigationURLLoader,
-      public network::mojom::URLLoaderClient {
+      public network::mojom::URLLoaderClient,
+      public network::mojom::AcceptCHFrameObserver {
  public:
-  // The caller is responsible for ensuring that |delegate| outlives the loader.
-  // Note |initial_interceptors| is there for test purposes only.
+  // The caller is responsible for ensuring that `delegate` outlives the loader.
   NavigationURLLoaderImpl(
       BrowserContext* browser_context,
       StoragePartition* storage_partition,
       std::unique_ptr<NavigationRequestInfo> request_info,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       ServiceWorkerMainResourceHandle* service_worker_handle,
-      AppCacheNavigationHandle* appcache_handle,
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
       NavigationURLLoaderDelegate* delegate,
@@ -62,31 +61,73 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
       std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
           initial_interceptors);
+
+  NavigationURLLoaderImpl(const NavigationURLLoaderImpl&) = delete;
+  NavigationURLLoaderImpl& operator=(const NavigationURLLoaderImpl&) = delete;
+
   ~NavigationURLLoaderImpl() override;
 
-  // TODO(kinuko): Make most of these methods private.
   // TODO(kinuko): Some method parameters can probably be just kept as
   // member variables rather than being passed around.
 
-  void CreateInterceptors(AppCacheNavigationHandle* appcache_handle,
-                          scoped_refptr<PrefetchedSignedExchangeCache>
+  // Intercepts loading of frame requests when network service is enabled and
+  // either a network::mojom::TrustedURLLoaderHeaderClient is being used or
+  // for schemes not handled by network service (e.g. files). This must be
+  // called on the UI thread or before threads start.
+  using URLLoaderFactoryInterceptor = base::RepeatingCallback<void(
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory>* receiver)>;
+  static void SetURLLoaderFactoryInterceptorForTesting(
+      const URLLoaderFactoryInterceptor& interceptor);
+
+  // Creates a URLLoaderFactory for a navigation. The factory uses
+  // `header_client`. This should have the same settings as the factory from
+  // the URLLoaderFactoryGetter. Called on the UI thread.
+  static void CreateURLLoaderFactoryWithHeaderClient(
+      mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
+          header_client,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+      StoragePartitionImpl* partition);
+
+ private:
+  // Starts the loader by finalizing loader factories initialization and
+  // calling Restart().
+  // This is called only once (while Restart can be called multiple times).
+  // Sets `started_` true.
+  void StartImpl(
+      scoped_refptr<PrefetchedSignedExchangeCache>
+          prefetched_signed_exchange_cache,
+      scoped_refptr<SignedExchangePrefetchMetricRecorder>
+          signed_exchange_prefetch_metric_recorder,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui,
+      std::string accept_langs);
+
+  void BindNonNetworkURLLoaderFactoryReceiver(
+      const GURL& url,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
+  void BindAndInterceptNonNetworkURLLoaderFactoryReceiver(
+      const GURL& url,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
+
+  void CreateInterceptors(scoped_refptr<PrefetchedSignedExchangeCache>
                               prefetched_signed_exchange_cache,
                           scoped_refptr<SignedExchangePrefetchMetricRecorder>
                               signed_exchange_prefetch_metric_recorder,
                           const std::string& accept_langs);
 
   // This could be called multiple times to follow a chain of redirects.
+  // This internally rather recreates another loader than actually following the
+  // redirects.
   void Restart();
 
-  // |interceptor| is non-null if this is called by one of the interceptors
+  // `interceptor` is non-null if this is called by one of the interceptors
   // (via a LoaderCallback).
-  // |single_request_handler| is the RequestHandler given by the
-  // |interceptor|, non-null if the interceptor wants to handle the request.
+  // `single_request_handler` is the RequestHandler given by the
+  // `interceptor`, non-null if the interceptor wants to handle the request.
   void MaybeStartLoader(
       NavigationLoaderInterceptor* interceptor,
       scoped_refptr<network::SharedURLLoaderFactory> single_request_factory);
 
-  // This is the |fallback_callback| passed to
+  // This is the `fallback_callback` passed to
   // NavigationLoaderInterceptor::MaybeCreateLoader. It allows an interceptor
   // to initially elect to handle a request, and later decide to fallback to
   // the default behavior. This is needed for service worker network fallback
@@ -96,13 +137,49 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   scoped_refptr<network::SharedURLLoaderFactory>
   PrepareForNonInterceptedRequest(uint32_t* out_options);
 
-  // TODO(kinuko): Merge this back to FollowRedirect().
-  void FollowRedirectInternal(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      blink::PreviewsState new_previews_state,
-      base::Time ui_post_time);
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  void CheckPluginAndContinueOnReceiveResponse(
+      network::mojom::URLResponseHeadPtr head,
+      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+      bool is_download_if_not_handled_by_plugin,
+      const std::vector<WebPluginInfo>& plugins);
+#endif
+
+  void CallOnReceivedResponse(
+      network::mojom::URLResponseHeadPtr head,
+      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+      bool is_download);
+
+  bool MaybeCreateLoaderForResponse(
+      network::mojom::URLResponseHeadPtr* response);
+
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles();
+
+  std::unique_ptr<SignedExchangeRequestHandler>
+  CreateSignedExchangeRequestHandler(
+      const NavigationRequestInfo& request_info,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      scoped_refptr<SignedExchangePrefetchMetricRecorder>
+          signed_exchange_prefetch_metric_recorder,
+      std::string accept_langs);
+
+  void ParseHeaders(const GURL& url,
+                    network::mojom::URLResponseHead* head,
+                    base::OnceClosure continuation);
+
+  void NotifyResponseStarted(
+      network::mojom::URLResponseHeadPtr response_head,
+      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+      mojo::ScopedDataPipeConsumerHandle response_body,
+      const GlobalRequestID& global_request_id,
+      bool is_download);
+
+  void NotifyRequestRedirected(net::RedirectInfo redirect_info,
+                               network::mojom::URLResponseHeadPtr response);
+
+  void NotifyRequestFailed(const network::URLLoaderCompletionStatus& status);
 
   // network::mojom::URLLoaderClient implementation:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -118,32 +195,13 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  void CheckPluginAndContinueOnReceiveResponse(
-      network::mojom::URLResponseHeadPtr head,
-      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      bool is_download_if_not_handled_by_plugin,
-      const std::vector<WebPluginInfo>& plugins);
-#endif
-
-  void CallOnReceivedResponse(
-      network::mojom::URLResponseHeadPtr head,
-      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      bool is_download);
-  bool MaybeCreateLoaderForResponse(
-      network::mojom::URLResponseHeadPtr* response);
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-  CreateURLLoaderThrottles();
-  std::unique_ptr<SignedExchangeRequestHandler>
-  CreateSignedExchangeRequestHandler(
-      const NavigationRequestInfo& request_info,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      scoped_refptr<SignedExchangePrefetchMetricRecorder>
-          signed_exchange_prefetch_metric_recorder,
-      std::string accept_langs);
-  void ParseHeaders(const GURL& url,
-                    network::mojom::URLResponseHead* head,
-                    base::OnceClosure continuation);
+  // network::mojom::AcceptCHFrameObserver implementation
+  void OnAcceptCHFrameReceived(
+      const GURL& url,
+      const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
+      OnAcceptCHFrameReceivedCallback callback) override;
+  void Clone(mojo::PendingReceiver<network::mojom::AcceptCHFrameObserver>
+                 listener) override;
 
   // NavigationURLLoader implementation:
   void Start() override;
@@ -152,57 +210,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       blink::PreviewsState new_previews_state) override;
-
-  void NotifyResponseStarted(
-      network::mojom::URLResponseHeadPtr response_head,
-      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      mojo::ScopedDataPipeConsumerHandle response_body,
-      const GlobalRequestID& global_request_id,
-      bool is_download);
-  void NotifyRequestRedirected(net::RedirectInfo redirect_info,
-                               network::mojom::URLResponseHeadPtr response);
-  void NotifyRequestFailed(const network::URLLoaderCompletionStatus& status);
-
-  // Intercepts loading of frame requests when network service is enabled and
-  // either a network::mojom::TrustedURLLoaderHeaderClient is being used or
-  // for schemes not handled by network service (e.g. files). This must be
-  // called on the UI thread or before threads start.
-  using URLLoaderFactoryInterceptor = base::RepeatingCallback<void(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>* receiver)>;
-  static void SetURLLoaderFactoryInterceptorForTesting(
-      const URLLoaderFactoryInterceptor& interceptor);
-
-  // Creates a URLLoaderFactory for a navigation. The factory uses
-  // |header_client|. This should have the same settings as the factory from
-  // the URLLoaderFactoryGetter. Called on the UI thread.
-  static void CreateURLLoaderFactoryWithHeaderClient(
-      mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
-          header_client,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
-      StoragePartitionImpl* partition);
-
- private:
-  // Starts the loader by finalizing loader factories initialization and
-  // calling Restart().
-  // This is called only once (while Restart can be called multiple times).
-  // Sets |started_| true.
-  void StartImpl(
-      scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
-      AppCacheNavigationHandle* appcache_handle,
-      scoped_refptr<PrefetchedSignedExchangeCache>
-          prefetched_signed_exchange_cache,
-      scoped_refptr<SignedExchangePrefetchMetricRecorder>
-          signed_exchange_prefetch_metric_recorder,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui,
-      std::string accept_langs,
-      bool needs_loader_factory_interceptor);
-
-  void BindNonNetworkURLLoaderFactoryReceiver(
-      const GURL& url,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
-  void BindAndInterceptNonNetworkURLLoaderFactoryReceiver(
-      const GURL& url,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
+  bool SetNavigationTimeout(base::TimeDelta timeout) override;
 
   NavigationURLLoaderDelegate* delegate_;
   BrowserContext* browser_context_;
@@ -229,13 +237,11 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
 
   // Caches the modified request headers provided by clients during redirect,
-  // will be consumed by next |url_loader_->FollowRedirect()|.
+  // will be consumed by next `url_loader_->FollowRedirect()`.
   std::vector<std::string> url_loader_removed_headers_;
   net::HttpRequestHeaders url_loader_modified_headers_;
   net::HttpRequestHeaders url_loader_modified_cors_exempt_headers_;
 
-  // Currently used by the AppCache loader to pass its factory to the
-  // renderer which enables it to handle subresources.
   absl::optional<SubresourceLoaderParams> subresource_loader_params_;
 
   std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors_;
@@ -258,14 +264,11 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // URLLoaderClient::OnStartLoadingResponseBody() is called.
   bool received_response_ = false;
 
-  // When URLLoaderClient::OnReceiveResponse() is called. For UMA.
-  base::TimeTicks on_receive_response_time_;
-
   bool started_ = false;
 
   // The completion status if it has been received. This is needed to handle
   // the case that the response is intercepted by download, and OnComplete()
-  // is already called while we are transferring the |url_loader_| and
+  // is already called while we are transferring the `url_loader_` and
   // response body to download code.
   absl::optional<network::URLLoaderCompletionStatus> status_;
 
@@ -308,18 +311,22 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   std::map<std::string, mojo::Remote<network::mojom::URLLoaderFactory>>
       non_network_url_loader_factory_remotes_;
 
-  // Counts the time overhead of all the hops from the IO to the UI threads.
-  base::TimeDelta io_to_ui_time_;
-
   std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
 
   // Set on the constructor and runs in Start(). This is used for transferring
   // parameters prepared in the constructor to Start().
   base::OnceClosure start_closure_;
 
-  base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
+  // While it's not expected to have two active Remote ends for the same
+  // NavigationURLLoaderImpl, when a TrustedParam is copied all of the pipes are
+  // cloned instead of being destroyed.
+  mojo::ReceiverSet<network::mojom::AcceptCHFrameObserver>
+      accept_ch_frame_observers_;
 
-  DISALLOW_COPY_AND_ASSIGN(NavigationURLLoaderImpl);
+  // Timer used for triggering (optional) early timeout on the navigation.
+  base::OneShotTimer timeout_timer_;
+
+  base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
 };
 
 }  // namespace content

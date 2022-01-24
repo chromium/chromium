@@ -21,7 +21,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
-#include "components/version_info/version_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -33,6 +32,10 @@ std::u16string GetDisplayUsername(const std::u16string& username) {
 }
 
 }  // namespace
+
+constexpr base::FeatureParam<int> kCredentialLastUsedDaysThreshold{
+    &password_manager::features::kPasswordChangeOnlyRecentCredentials,
+    "credenital_last_used_days_threshold", /* two years */ 730};
 
 using password_manager::PasswordForm;
 
@@ -278,7 +281,7 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
 
   } else {
     ui_credential.display_origin = url_formatter::FormatUrl(
-        credential.url.GetOrigin(),
+        credential.url.DeprecatedGetOriginAsURL(),
         url_formatter::kFormatUrlOmitDefaults |
             url_formatter::kFormatUrlOmitHTTPS |
             url_formatter::kFormatUrlOmitTrivialSubdomains |
@@ -292,12 +295,9 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
   ui_credential.has_startable_script =
       !credential.username.empty() && ShouldFetchPasswordScripts() &&
       password_script_fetcher_->IsScriptAvailable(
-          url::Origin::Create(ui_credential.url.GetOrigin()),
-          version_info::GetVersion());
+          url::Origin::Create(ui_credential.url.DeprecatedGetOriginAsURL()));
   ui_credential.has_auto_change_button =
-      ui_credential.has_startable_script &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordChangeInSettings);
+      ui_credential.has_startable_script && IsEligibleForAutoChange(credential);
 
   return ui_credential;
 }
@@ -347,6 +347,24 @@ bool PasswordCheckManager::CanUseAccountCheck() const {
     case SyncState::kAccountPasswordsActiveNormalEncryption:
       return true;
   }
+}
+
+bool PasswordCheckManager::IsEligibleForAutoChange(
+    const CredentialWithPassword& credential) const {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordChangeInSettings)) {
+    return false;
+  }
+
+  // return |true| if |kPasswordChangeOnlyRecentCredentials| feature is not
+  // enabled.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordChangeOnlyRecentCredentials)) {
+    return true;
+  }
+
+  return (base::Time::Now() - credential.last_used_time).InDays() <
+         kCredentialLastUsedDaysThreshold.Get();
 }
 
 bool PasswordCheckManager::AreScriptsRefreshed() const {

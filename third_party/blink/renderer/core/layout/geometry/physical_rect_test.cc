@@ -102,6 +102,16 @@ TEST(PhysicalRectTest, SquaredDistanceTo) {
       << "on the left edge";
 
   EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(10, 190))) << "contained";
+
+  // Huge size
+  rect = PhysicalRect(LayoutUnit(500), LayoutUnit(), LayoutUnit::Max(),
+                      LayoutUnit());
+  EXPECT_GT(rect.SquaredDistanceTo(PhysicalOffset(10, 0)), 0);
+
+  // Negative size
+  rect = PhysicalRect(LayoutUnit(500), LayoutUnit(), LayoutUnit(-100),
+                      LayoutUnit());
+  EXPECT_EQ(1, rect.SquaredDistanceTo(PhysicalOffset(501, 0)));
 }
 
 TEST(PhysicalRectTest, InclusiveIntersect) {

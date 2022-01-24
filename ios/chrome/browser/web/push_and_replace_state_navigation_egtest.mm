@@ -358,11 +358,12 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
   std::map<GURL, std::string> responses;
   GURL originURL =
       web::test::HttpServer::MakeUrl("http://foo.com/foo/bar.html");
-  GURL pushResultURL = originURL.GetOrigin().Resolve("pushed/relative/url");
+  GURL pushResultURL =
+      originURL.DeprecatedGetOriginAsURL().Resolve("pushed/relative/url");
   const std::string pushResultOmniboxText =
       net::GetContentAndFragmentForUrl(pushResultURL);
   GURL replaceResultURL =
-      originURL.GetOrigin().Resolve("replaced/relative/url");
+      originURL.DeprecatedGetOriginAsURL().Resolve("replaced/relative/url");
   const std::string replaceResultOmniboxText =
       net::GetContentAndFragmentForUrl(replaceResultURL);
 

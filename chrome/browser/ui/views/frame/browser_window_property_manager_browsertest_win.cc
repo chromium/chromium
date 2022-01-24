@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_propvariant.h"
@@ -31,8 +30,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/web_applications/components/web_app_shortcut.h"
-#include "chrome/browser/web_applications/components/web_app_shortcut_win.h"
+#include "chrome/browser/web_applications/web_app_shortcut.h"
+#include "chrome/browser/web_applications/web_app_shortcut_win.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -155,12 +154,14 @@ class BrowserTestWithProfileShortcutManager : public InProcessBrowserTest {
  public:
   BrowserTestWithProfileShortcutManager() {}
 
+  BrowserTestWithProfileShortcutManager(
+      const BrowserTestWithProfileShortcutManager&) = delete;
+  BrowserTestWithProfileShortcutManager& operator=(
+      const BrowserTestWithProfileShortcutManager&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kEnableProfileShortcutManager);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserTestWithProfileShortcutManager);
 };
 
 // Check that the window properties on Windows are properly set.
@@ -206,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::mojom::AppLaunchSource::kSourceTest));
+          apps::mojom::LaunchSource::kFromTest));
 
   // Check that the new browser has an app name.
   // The launch should have created a new browser.

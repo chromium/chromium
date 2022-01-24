@@ -31,7 +31,7 @@
 #include <memory>
 
 #include "base/cxx17_backports.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
@@ -528,6 +528,10 @@ void Resource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
   DCHECK(!GetResponse().IsNull());
 }
 
+bool Resource::CodeCacheHashRequired() const {
+  return false;
+}
+
 String Resource::ReasonNotDeletable() const {
   StringBuilder builder;
   if (HasClientsOrObservers()) {
@@ -614,9 +618,6 @@ void Resource::AddClient(ResourceClient* client,
 
 void Resource::RemoveClient(ResourceClient* client) {
   CHECK(!is_add_remove_client_prohibited_);
-
-  // This code may be called in a pre-finalizer, where weak members in the
-  // HashCountedSet are already swept out.
 
   if (finished_clients_.Contains(client))
     finished_clients_.erase(client);

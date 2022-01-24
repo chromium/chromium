@@ -209,9 +209,8 @@ void ExecutionContextCSPDelegate::AddConsoleMessage(
   execution_context_->AddConsoleMessage(console_message);
 }
 
-void ExecutionContextCSPDelegate::AddInspectorIssue(
-    mojom::blink::InspectorIssueInfoPtr info) {
-  execution_context_->AddInspectorIssue(std::move(info));
+void ExecutionContextCSPDelegate::AddInspectorIssue(AuditsIssue issue) {
+  execution_context_->AddInspectorIssue(std::move(issue));
 }
 
 void ExecutionContextCSPDelegate::DisableEval(const String& error_message) {

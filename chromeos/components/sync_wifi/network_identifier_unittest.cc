@@ -22,11 +22,12 @@ const char kHexSsid[] = "0123456789ABCDEF";
 }  // namespace
 
 class NetworkIdentifierTest : public testing::Test {
+ public:
+  NetworkIdentifierTest(const NetworkIdentifierTest&) = delete;
+  NetworkIdentifierTest& operator=(const NetworkIdentifierTest&) = delete;
+
  protected:
   NetworkIdentifierTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkIdentifierTest);
 };
 
 TEST_F(NetworkIdentifierTest, FromProto) {

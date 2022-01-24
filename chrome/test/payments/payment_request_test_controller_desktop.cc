@@ -6,8 +6,8 @@
 
 #include "base/check.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/payments/chrome_payment_request_delegate.h"
 #include "chrome/browser/payments/payment_request_factory.h"
 #include "components/payments/content/android_app_communication.h"
@@ -38,7 +38,7 @@ class TestAuthenticator : public content::InternalAuthenticatorImpl {
 
   ~TestAuthenticator() override = default;
 
-  // autofill::InternalAuthenticator
+  // webauthn::InternalAuthenticator
   void IsUserVerifyingPlatformAuthenticatorAvailable(
       blink::mojom::Authenticator::
           IsUserVerifyingPlatformAuthenticatorAvailableCallback callback)
@@ -52,13 +52,14 @@ class TestAuthenticator : public content::InternalAuthenticatorImpl {
 
 class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
  public:
-  ChromePaymentRequestTestDelegate(content::RenderFrameHost* render_frame_host,
-                                   bool is_off_the_record,
-                                   bool valid_ssl,
-                                   PrefService* prefs,
-                                   const std::string& twa_package_name,
-                                   bool has_authenticator,
-                                   PaymentUIObserver* ui_observer_for_test)
+  ChromePaymentRequestTestDelegate(
+      content::RenderFrameHost* render_frame_host,
+      bool is_off_the_record,
+      bool valid_ssl,
+      PrefService* prefs,
+      const std::string& twa_package_name,
+      bool has_authenticator,
+      base::WeakPtr<PaymentUIObserver> ui_observer_for_test)
       : ChromePaymentRequestDelegate(render_frame_host),
         frame_routing_id_(content::GlobalRenderFrameHostId(
             render_frame_host->GetProcess()->GetID(),
@@ -77,14 +78,13 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
   PrefService* GetPrefService() override { return prefs_; }
   bool IsBrowserWindowActive() const override { return true; }
   std::string GetTwaPackageName() const override { return twa_package_name_; }
-  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
+  std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override {
     auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-    return rfh ? std::make_unique<TestAuthenticator>(rfh->GetMainFrame(),
-                                                     has_authenticator_)
+    return rfh ? std::make_unique<TestAuthenticator>(rfh, has_authenticator_)
                : nullptr;
   }
-  const PaymentUIObserver* GetPaymentUIObserver() const override {
+  const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override {
     return ui_observer_for_test_;
   }
 
@@ -95,7 +95,7 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
   PrefService* const prefs_;
   const std::string twa_package_name_;
   const bool has_authenticator_;
-  const PaymentUIObserver* const ui_observer_for_test_;
+  base::WeakPtr<PaymentUIObserver> ui_observer_for_test_;
 };
 
 }  // namespace
@@ -148,8 +148,14 @@ class PaymentRequestTestController::ObserverConverter
   // PaymentUIObserver:
   void OnUIDisplayed() const override { controller_->OnUIDisplayed(); }
 
+  base::WeakPtr<ObserverConverter> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   PaymentRequestTestController* const controller_;
+
+  base::WeakPtrFactory<ObserverConverter> weak_ptr_factory_{this};
 };
 
 PaymentRequestTestController::PaymentRequestTestController()
@@ -185,20 +191,17 @@ bool PaymentRequestTestController::CloseDialog() {
     return false;
 
   PaymentRequestDialog* dialog = delegate_->GetDialogForTesting();
-  if (!dialog)
+  SecurePaymentConfirmationNoCreds* no_creds_dialog =
+      delegate_->GetNoMatchingCredentialsDialogForTesting();
+  if (!dialog && !no_creds_dialog)
     return false;
 
-  dialog->CloseDialog();
-  return true;
-}
+  if (dialog)
+    dialog->CloseDialog();
 
-bool PaymentRequestTestController::ConfirmMinimalUI() {
-  // Desktop does not have a minimal UI.
-  return true;
-}
+  if (no_creds_dialog)
+    no_creds_dialog->CloseDialog();
 
-bool PaymentRequestTestController::DismissMinimalUI() {
-  // Desktop does not have a minimal UI.
   return true;
 }
 
@@ -257,8 +260,8 @@ void PaymentRequestTestController::SetTwaPaymentApp(
 
 void PaymentRequestTestController::UpdateDelegateFactory() {
   SetPaymentRequestFactoryForTesting(base::BindRepeating(
-      [](ObserverConverter* observer_for_test, bool is_off_the_record,
-         bool valid_ssl, PrefService* prefs,
+      [](base::WeakPtr<ObserverConverter> observer_for_test,
+         bool is_off_the_record, bool valid_ssl, PrefService* prefs,
          const std::string& twa_package_name, bool has_authenticator,
          const std::string& twa_payment_app_method_name,
          const std::string& twa_payment_app_response,
@@ -283,9 +286,9 @@ void PaymentRequestTestController::UpdateDelegateFactory() {
         manager->CreatePaymentRequest(render_frame_host, std::move(delegate),
                                       std::move(receiver), observer_for_test);
       },
-      observer_converter_.get(), is_off_the_record_, valid_ssl_, prefs_.get(),
-      twa_package_name_, has_authenticator_, twa_payment_app_method_name_,
-      twa_payment_app_response_, &delegate_));
+      observer_converter_->GetWeakPtr(), is_off_the_record_, valid_ssl_,
+      prefs_.get(), twa_package_name_, has_authenticator_,
+      twa_payment_app_method_name_, twa_payment_app_response_, &delegate_));
 }
 
 void PaymentRequestTestController::OnCanMakePaymentCalled() {
@@ -322,10 +325,6 @@ void PaymentRequestTestController::OnCompleteCalled() {
   if (observer_) {
     observer_->OnCompleteCalled();
   }
-}
-
-void PaymentRequestTestController::OnMinimalUIReady() {
-  NOTREACHED();
 }
 
 void PaymentRequestTestController::OnUIDisplayed() {

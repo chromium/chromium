@@ -12,7 +12,6 @@
 #include <queue>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -29,6 +28,9 @@ class OptOutBlocklistItem {
   OptOutBlocklistItem(size_t stored_history_length,
                       int opt_out_block_list_threshold,
                       base::TimeDelta block_list_duration);
+
+  OptOutBlocklistItem(const OptOutBlocklistItem&) = delete;
+  OptOutBlocklistItem& operator=(const OptOutBlocklistItem&) = delete;
 
   ~OptOutBlocklistItem();
 
@@ -50,6 +52,10 @@ class OptOutBlocklistItem {
   class OptOutRecord {
    public:
     OptOutRecord(base::Time entry_time, bool opt_out);
+
+    OptOutRecord(const OptOutRecord&) = delete;
+    OptOutRecord& operator=(const OptOutRecord&) = delete;
+
     ~OptOutRecord();
     OptOutRecord(OptOutRecord&&) noexcept;
     OptOutRecord& operator=(OptOutRecord&&) noexcept;
@@ -68,8 +74,6 @@ class OptOutBlocklistItem {
     base::Time entry_time_;
     // Whether the user opted out of the action.
     bool opt_out_;
-
-    DISALLOW_COPY_AND_ASSIGN(OptOutRecord);
   };
 
   // The number of entries to store to determine action eligibility.
@@ -89,8 +93,6 @@ class OptOutBlocklistItem {
 
   // The total number of opt outs currently in |opt_out_records_|.
   int total_opt_out_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptOutBlocklistItem);
 };
 
 }  // namespace blocklist

@@ -74,7 +74,7 @@ int32_t PointerEventUtil::TiltXFromSpherical(double azimuth_radians,
     // Not using std::round because we need Javascript Math.round behaviour
     // here which is different
     return std::floor(
-        rad2deg(atan(cos(azimuth_radians) / tan(altitude_radians))) + 0.5);
+        Rad2deg(atan(cos(azimuth_radians) / tan(altitude_radians))) + 0.5);
   }
 
   if (azimuth_radians == kPiOverTwoDouble ||
@@ -99,7 +99,7 @@ int32_t PointerEventUtil::TiltYFromSpherical(double azimuth_radians,
     // Not using std::round because we need Javascript Math.round behaviour
     // here which is different
     return std::floor(
-        rad2deg(atan(sin(azimuth_radians) / tan(altitude_radians))) + 0.5);
+        Rad2deg(atan(sin(azimuth_radians) / tan(altitude_radians))) + 0.5);
   }
   if (azimuth_radians == 0 || azimuth_radians == kPiDouble ||
       azimuth_radians == kTwoPiDouble) {

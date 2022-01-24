@@ -86,6 +86,10 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   explicit RuntimeAPI(content::BrowserContext* context);
+
+  RuntimeAPI(const RuntimeAPI&) = delete;
+  RuntimeAPI& operator=(const RuntimeAPI&) = delete;
+
   ~RuntimeAPI() override;
 
   void ReloadExtension(const std::string& extension_id);
@@ -186,8 +190,6 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
   bool was_last_restart_due_to_delayed_restart_api_;
 
   base::WeakPtrFactory<RuntimeAPI> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RuntimeAPI);
 };
 
 template <>

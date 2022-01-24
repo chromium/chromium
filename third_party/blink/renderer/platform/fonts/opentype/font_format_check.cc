@@ -51,9 +51,10 @@ FontFormatCheck::COLRVersion determineCOLRVersion(
 }  // namespace
 
 FontFormatCheck::FontFormatCheck(sk_sp<SkData> sk_data) {
-  HbScoped<hb_blob_t> font_blob(hb_blob_create(
-      reinterpret_cast<const char*>(sk_data->bytes()), sk_data->size(),
-      HB_MEMORY_MODE_READONLY, nullptr, nullptr));
+  HbScoped<hb_blob_t> font_blob(
+      hb_blob_create(reinterpret_cast<const char*>(sk_data->bytes()),
+                     base::checked_cast<unsigned>(sk_data->size()),
+                     HB_MEMORY_MODE_READONLY, nullptr, nullptr));
   HbScoped<hb_face_t> face(hb_face_create(font_blob.get(), 0));
 
   unsigned table_count = 0;

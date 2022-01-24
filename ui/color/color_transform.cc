@@ -283,4 +283,27 @@ ColorTransform SetAlpha(ColorTransform transform, SkAlpha alpha) {
   return base::BindRepeating(generator, std::move(transform), alpha);
 }
 
+ColorTransform PickGoogleColor(ColorTransform color,
+                               ColorTransform background_color,
+                               float min_contrast) {
+  const auto generator =
+      [](ColorTransform transform, ColorTransform background_transform,
+         float min_contrast, SkColor input_color, const ColorMixer& mixer) {
+        const SkColor transform_color = transform.Run(input_color, mixer);
+        const SkColor background_color =
+            background_transform.Run(input_color, mixer);
+        const SkColor result_color = color_utils::PickGoogleColor(
+            transform_color, background_color, min_contrast);
+        DVLOG(2) << "ColorTransform PickGoogleColor:"
+                 << " Input Color: " << SkColorName(input_color)
+                 << " Transform Color: " << SkColorName(transform_color)
+                 << " Background Color: " << SkColorName(background_color)
+                 << " Min Contrast: " << base::NumberToString(min_contrast)
+                 << " Result Color: " << SkColorName(result_color);
+        return result_color;
+      };
+  return base::BindRepeating(generator, std::move(color),
+                             std::move(background_color), min_contrast);
+}
+
 }  // namespace ui

@@ -12,8 +12,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 // TODO(tzik): Merge this file to media/base/bind_to_current_loop.h.
@@ -47,6 +46,9 @@ class CallbackHolder {
     DCHECK(task_runner_.get());
   }
 
+  CallbackHolder(const CallbackHolder&) = delete;
+  CallbackHolder& operator=(const CallbackHolder&) = delete;
+
   ~CallbackHolder() {
     if (callback_) {
       task_runner_->PostTask(from_here_,
@@ -67,8 +69,6 @@ class CallbackHolder {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const base::Location from_here_;
   CallbackType callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackHolder);
 };
 
 }  // namespace internal

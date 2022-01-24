@@ -8,6 +8,7 @@
 #include <list>
 #include <unordered_map>
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/platform/input/predictor_factory.h"

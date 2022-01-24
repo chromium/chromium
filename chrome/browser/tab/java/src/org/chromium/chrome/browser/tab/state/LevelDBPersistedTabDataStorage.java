@@ -12,6 +12,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -29,7 +30,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     private LevelDBPersistedDataStorage mPersistedDataStorage;
     // Callback is only used for synchronization of save and delete in testing.
     // Otherwise it is a no-op.
-    // TODO(crbug.com/1146799) Apply tricks like @CheckDiscard or @RemovableInRelease to improve
+    // TODO(crbug.com/1146799) Apply tricks like @CheckDiscard or proguard rules to improve
     // performance
     private boolean mIsDestroyed;
 
@@ -98,6 +99,26 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     @Override
     public String getUmaTag() {
         return "LevelDB";
+    }
+
+    @Override
+    public void performMaintenance(List<Integer> tabIds, String dataId) {
+        mPersistedDataStorage.performMaintenance(getKeysToKeep(tabIds, dataId), dataId);
+    }
+
+    @VisibleForTesting
+    public void performMaintenanceForTesting(
+            List<Integer> tabIds, String dataId, Runnable onComplete) {
+        mPersistedDataStorage.performMaintenanceForTesting(
+                getKeysToKeep(tabIds, dataId), dataId, onComplete); // IN-TEST
+    }
+
+    private static String[] getKeysToKeep(List<Integer> tabIds, String dataId) {
+        String[] keysToKeep = new String[tabIds.size()];
+        for (int i = 0; i < tabIds.size(); i++) {
+            keysToKeep[i] = getKey(tabIds.get(i), dataId);
+        }
+        return keysToKeep;
     }
 
     // TODO(crbug.com/1145785) Implement URL -> byte[] mapping rather

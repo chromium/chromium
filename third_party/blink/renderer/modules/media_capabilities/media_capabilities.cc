@@ -192,6 +192,11 @@ class MediaCapabilitiesKeySystemAccessInitializer final
                                             supported_configurations),
         get_perf_callback_(std::move(get_perf_callback)) {}
 
+  MediaCapabilitiesKeySystemAccessInitializer(
+      const MediaCapabilitiesKeySystemAccessInitializer&) = delete;
+  MediaCapabilitiesKeySystemAccessInitializer& operator=(
+      const MediaCapabilitiesKeySystemAccessInitializer&) = delete;
+
   ~MediaCapabilitiesKeySystemAccessInitializer() override = default;
 
   void RequestSucceeded(
@@ -226,8 +231,6 @@ class MediaCapabilitiesKeySystemAccessInitializer final
 
  private:
   GetPerfCallback get_perf_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCapabilitiesKeySystemAccessInitializer);
 };
 
 bool IsValidFrameRate(double framerate) {
@@ -460,16 +463,17 @@ bool CheckMseSupport(const String& mime_type, const String& codec) {
   // Media MIME API expects a vector of codec strings. We query audio and video
   // separately, so |codec_string|.size() should always be 1 or 0 (when no
   // codecs parameter is required for the given mime type).
-  std::vector<std::string> codec_vector;
+  base::span<const std::string> codecs;
 
+  const std::string codec_ascii = codec.Ascii();
   if (!codec.Ascii().empty())
-    codec_vector.push_back(codec.Ascii());
+    codecs = base::make_span(&codec_ascii, 1);
 
-  if (media::IsSupported != media::StreamParserFactory::IsTypeSupported(
-                                mime_type.Ascii(), codec_vector)) {
+  if (media::IsSupported !=
+      media::StreamParserFactory::IsTypeSupported(mime_type.Ascii(), codecs)) {
     DVLOG(2) << __func__
              << " MSE does not support the content type: " << mime_type.Ascii()
-             << " " << (codec_vector.empty() ? "" : codec_vector[0]);
+             << " " << (codecs.empty() ? "" : codecs.front());
     return false;
   }
 
@@ -539,7 +543,7 @@ void ParseDynamicRangeConfigurations(
 bool IsAudioCodecValid(const String& mime_type,
                        const String& codec,
                        String* console_warning) {
-  media::AudioCodec audio_codec = media::kUnknownAudioCodec;
+  media::AudioCodec audio_codec = media::AudioCodec::kUnknown;
   bool is_audio_codec_ambiguous = true;
 
   if (!media::ParseAudioCodecString(mime_type.Ascii(), codec.Ascii(),
@@ -602,7 +606,7 @@ bool IsAudioConfigurationSupported(
     const blink::AudioConfiguration* audio_config,
     const String& mime_type,
     const String& codec) {
-  media::AudioCodec audio_codec = media::kUnknownAudioCodec;
+  media::AudioCodec audio_codec = media::AudioCodec::kUnknown;
   media::AudioCodecProfile audio_profile = media::AudioCodecProfile::kUnknown;
   bool is_audio_codec_ambiguous = true;
   bool is_spatial_rendering = false;
@@ -626,7 +630,7 @@ bool IsVideoConfigurationSupported(const String& mime_type,
                                    const String& codec,
                                    media::VideoColorSpace video_color_space,
                                    gfx::HdrMetadataType hdr_metadata_type) {
-  media::VideoCodec video_codec = media::kUnknownVideoCodec;
+  media::VideoCodec video_codec = media::VideoCodec::kUnknown;
   media::VideoCodecProfile video_profile;
   uint8_t video_level = 0;
   bool is_video_codec_ambiguous = true;
@@ -836,7 +840,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
     }
   }
 
-  media::VideoCodec video_codec = media::kUnknownVideoCodec;
+  media::VideoCodec video_codec = media::VideoCodec::kUnknown;
   media::VideoCodecProfile video_profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
 
   if ((config->hasAudio() &&
@@ -1283,7 +1287,7 @@ void MediaCapabilities::GetPerfInfo_ML(ExecutionContext* execution_context,
   // WebMediaPlayerImpl::UpdateSmoothnessHelper().
   // TODO(chcunningham): refactor into something more robust.
   Vector<media::learning::FeatureValue> ml_features(
-      {media::learning::FeatureValue(video_codec),
+      {media::learning::FeatureValue(static_cast<int>(video_codec)),
        media::learning::FeatureValue(video_profile),
        media::learning::FeatureValue(width),
        media::learning::FeatureValue(framerate)});

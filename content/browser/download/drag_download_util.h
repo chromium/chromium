@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/download/drag_download_file.h"
 #include "ui/base/dragdrop/download_file_interface.h"
@@ -46,6 +45,9 @@ class PromiseFileFinalizer : public ui::DownloadFileObserver {
   explicit PromiseFileFinalizer(
       std::unique_ptr<DragDownloadFile> drag_file_downloader);
 
+  PromiseFileFinalizer(const PromiseFileFinalizer&) = delete;
+  PromiseFileFinalizer& operator=(const PromiseFileFinalizer&) = delete;
+
   // DownloadFileObserver methods.
   void OnDownloadCompleted(const base::FilePath& file_path) override;
   void OnDownloadAborted() override;
@@ -57,8 +59,6 @@ class PromiseFileFinalizer : public ui::DownloadFileObserver {
   void Cleanup();
 
   std::unique_ptr<DragDownloadFile> drag_file_downloader_;
-
-  DISALLOW_COPY_AND_ASSIGN(PromiseFileFinalizer);
 };
 
 }  // namespace content

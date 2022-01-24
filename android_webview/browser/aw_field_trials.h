@@ -13,17 +13,18 @@
 class AwFieldTrials : public variations::PlatformFieldTrials {
  public:
   AwFieldTrials() = default;
+
+  AwFieldTrials(const AwFieldTrials&) = delete;
+  AwFieldTrials& operator=(const AwFieldTrials&) = delete;
+
   ~AwFieldTrials() override = default;
 
   // variations::PlatformFieldTrials:
-  void SetupFieldTrials() override;
-  void SetupFeatureControllingFieldTrials(
+  void SetUpFieldTrials() override;
+  void SetUpFeatureControllingFieldTrials(
       bool has_seed,
       const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AwFieldTrials);
 };
 
 #endif  // ANDROID_WEBVIEW_BROWSER_AW_FIELD_TRIALS_H_

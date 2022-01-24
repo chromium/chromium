@@ -181,13 +181,13 @@ Color CSSColorInterpolationType::ResolveInterpolableColor(
     AddPremultipliedColor(red, green, blue, alpha, quirk_inherit_fraction,
                           colors.TextColor());
 
-  alpha = clampTo<double>(alpha, 0, 255);
+  alpha = ClampTo<double>(alpha, 0, 255);
   if (alpha == 0)
     return Color::kTransparent;
 
   return MakeRGBA(
-      clampTo<int>(round(red / alpha)), clampTo<int>(round(green / alpha)),
-      clampTo<int>(round(blue / alpha)), clampTo<int>(round(alpha)));
+      ClampTo<int>(round(red / alpha)), ClampTo<int>(round(green / alpha)),
+      ClampTo<int>(round(blue / alpha)), ClampTo<int>(round(alpha)));
 }
 
 class InheritedColorChecker

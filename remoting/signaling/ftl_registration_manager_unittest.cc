@@ -28,7 +28,7 @@ using SignInGaiaResponseCallback =
 constexpr char kAuthToken[] = "auth_token";
 constexpr int64_t kAuthTokenExpiresInMicroseconds = 86400000000;  // = 1 day
 constexpr base::TimeDelta kAuthTokenExpiration =
-    base::TimeDelta::FromMicroseconds(kAuthTokenExpiresInMicroseconds);
+    base::Microseconds(kAuthTokenExpiresInMicroseconds);
 
 MATCHER_P(HasErrorCode, error_code, "") {
   return arg.error_code() == error_code;

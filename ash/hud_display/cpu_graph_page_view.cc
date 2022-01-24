@@ -4,11 +4,11 @@
 
 #include "ash/hud_display/cpu_graph_page_view.h"
 
-#include <algorithm>
 #include <numeric>
 
 #include "ash/hud_display/hud_constants.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -61,8 +61,8 @@ CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
       vertical_ticks_interval);
 
   Legend::Formatter formatter = base::BindRepeating([](float value) {
-    return base::ASCIIToUTF16(base::StringPrintf(
-        "%d %%", std::min(100, std::max(0, (int)(value * 100)))));
+    return base::ASCIIToUTF16(
+        base::StringPrintf("%d %%", base::clamp((int)(value * 100), 0, 100)));
   });
 
   const std::vector<Legend::Entry> legend(

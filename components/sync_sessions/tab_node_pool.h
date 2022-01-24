@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "components/sessions/core/session_id.h"
 
 namespace sync_sessions {
@@ -35,6 +34,10 @@ extern const base::Feature kTabNodePoolImmediateDeletion;
 class TabNodePool {
  public:
   TabNodePool();
+
+  TabNodePool(const TabNodePool&) = delete;
+  TabNodePool& operator=(const TabNodePool&) = delete;
+
   ~TabNodePool();
 
   // If free nodes > kFreeNodesHighWatermark, delete all free nodes until
@@ -112,8 +115,6 @@ class TabNodePool {
   // that are not used within the range [0..max_used_tab_node_id_). This
   // allows AssociateWithFreeTabNode() to return a compact distribution of IDs.
   std::set<int> missing_nodes_pool_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabNodePool);
 };
 
 }  // namespace sync_sessions

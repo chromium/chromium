@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -22,16 +21,6 @@ namespace {
 class MockPaymentProvider : public payments::mojom::blink::PaymentRequest {
  public:
   // mojom::PaymentRequest
-#if defined(OS_ANDROID)
-  void Init(
-      mojo::PendingRemote<payments::mojom::blink::PaymentRequestClient> client,
-      WTF::Vector<payments::mojom::blink::PaymentMethodDataPtr> method_data,
-      payments::mojom::blink::PaymentDetailsPtr details,
-      payments::mojom::blink::PaymentOptionsPtr options,
-      bool google_pay_bridge_eligible) override {
-    details_ = std::move(details);
-  }
-#else
   void Init(
       mojo::PendingRemote<payments::mojom::blink::PaymentRequestClient> client,
       WTF::Vector<payments::mojom::blink::PaymentMethodDataPtr> method_data,
@@ -39,7 +28,6 @@ class MockPaymentProvider : public payments::mojom::blink::PaymentRequest {
       payments::mojom::blink::PaymentOptionsPtr options) override {
     details_ = std::move(details);
   }
-#endif
 
   void Show(bool is_user_gesture, bool wait_for_updated_details) override {
     NOTREACHED();

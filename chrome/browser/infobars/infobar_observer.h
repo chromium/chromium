@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_INFOBARS_INFOBAR_OBSERVER_H_
 #define CHROME_BROWSER_INFOBARS_INFOBAR_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -22,6 +21,10 @@ class InfoBarObserver : public infobars::InfoBarManager::Observer {
   // Creates the observer. |type| is the type of infobar event that should be
   // waited for.
   InfoBarObserver(infobars::InfoBarManager* manager, Type type);
+
+  InfoBarObserver(const InfoBarObserver&) = delete;
+  InfoBarObserver& operator=(const InfoBarObserver&) = delete;
+
   ~InfoBarObserver() override;
 
   // Waits for the specified infobar event to happen. It is OK if the infobar
@@ -44,8 +47,6 @@ class InfoBarObserver : public infobars::InfoBarManager::Observer {
   base::ScopedObservation<infobars::InfoBarManager,
                           infobars::InfoBarManager::Observer>
       infobar_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarObserver);
 };
 
 #endif  // CHROME_BROWSER_INFOBARS_INFOBAR_OBSERVER_H_

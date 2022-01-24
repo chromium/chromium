@@ -23,7 +23,8 @@ def _RunMakeDafsaTests(input_api, output_api):
           output_api,
           input_api.PresubmitLocalPath(),
           files_to_check=['.*test\.py$'],
-          run_on_python2=False))
+          run_on_python2=False,
+          skip_shebang_check=True))
 
 
 def CheckChangeOnUpload(input_api, output_api):

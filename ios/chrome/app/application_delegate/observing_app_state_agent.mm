@@ -53,6 +53,18 @@
   return self;
 }
 
+#pragma mark - AppStateAgent
+
+- (void)setAppState:(AppState*)appState {
+  [super setAppState:appState];
+
+  // If there are already connected scenes, start observing them.
+  for (SceneState* scene in self.appState.connectedScenes) {
+    [scene addObserver:self];
+  }
+  [self notifyOfConvenienceEventsIfNecessary];
+}
+
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
@@ -71,7 +83,7 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (self.appState.initStage <= self.minimumStageForNotifications) {
+  if (self.appState.initStage < self.minimumStageForNotifications) {
     return;
   }
 
@@ -92,9 +104,10 @@
   }
 }
 
-#pragma mark - template methods methods
+#pragma mark - template methods
 - (void)appDidEnterForeground {
 }
+
 - (void)appDidEnterBackground {
 }
 

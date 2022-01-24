@@ -44,8 +44,6 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
                ReadRtfCallback callback) override;
   void ReadPng(mojom::ClipboardBuffer clipboard_buffer,
                ReadPngCallback callback) override;
-  void ReadImage(mojom::ClipboardBuffer clipboard_buffer,
-                 ReadImageCallback callback) override;
   void ReadFiles(mojom::ClipboardBuffer clipboard_buffer,
                  ReadFilesCallback callback) override;
   void ReadCustomData(mojom::ClipboardBuffer clipboard_buffer,
@@ -59,6 +57,13 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   void WriteBookmark(const String& url, const String& title) override;
   void WriteImage(const SkBitmap& bitmap) override;
   void CommitWrite() override;
+  void ReadAvailableCustomAndStandardFormats(
+      ReadAvailableCustomAndStandardFormatsCallback callback) override;
+  void ReadUnsanitizedCustomFormat(
+      const String& format,
+      ReadUnsanitizedCustomFormatCallback callback) override;
+  void WriteUnsanitizedCustomFormat(const String& format,
+                                    mojo_base::BigBuffer data) override;
 #if defined(OS_MAC)
   void WriteStringToFindPboard(const String& text) override;
 #endif
@@ -75,6 +80,7 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   HashMap<String, String> custom_data_;
   bool write_smart_paste_ = false;
   bool needs_reset_ = false;
+  HashMap<String, Vector<uint8_t>> unsanitized_custom_data_map_;
 };
 
 }  // namespace blink

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -26,6 +25,10 @@ namespace ash {
 class PublicSamlUrlFetcher {
  public:
   explicit PublicSamlUrlFetcher(AccountId account_id);
+
+  PublicSamlUrlFetcher(const PublicSamlUrlFetcher&) = delete;
+  PublicSamlUrlFetcher& operator=(const PublicSamlUrlFetcher&) = delete;
+
   ~PublicSamlUrlFetcher();
 
   // Sends request to the DM server, gets and checks the response and
@@ -58,8 +61,6 @@ class PublicSamlUrlFetcher {
   // Called at the end of Fetch().
   base::OnceClosure callback_;
   base::WeakPtrFactory<PublicSamlUrlFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PublicSamlUrlFetcher);
 };
 
 }  // namespace ash

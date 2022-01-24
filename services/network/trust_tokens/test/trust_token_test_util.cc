@@ -13,8 +13,9 @@
 namespace network {
 
 TestURLRequestMaker::TestURLRequestMaker() {
-  context_.set_net_log(&net_log_);
+  context_.set_net_log(net::NetLog::Get());
 }
+
 TestURLRequestMaker::~TestURLRequestMaker() = default;
 
 std::unique_ptr<net::URLRequest> TestURLRequestMaker::MakeURLRequest(

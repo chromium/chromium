@@ -111,8 +111,8 @@ class UpgradeDetectorTest : public ::testing::Test {
   UpgradeDetector::RelaunchWindow CreateRelaunchWindow(int hour,
                                                        int minute,
                                                        int duration_mins) {
-    return UpgradeDetector::RelaunchWindow(
-        hour, minute, base::TimeDelta::FromMinutes(duration_mins));
+    return UpgradeDetector::RelaunchWindow(hour, minute,
+                                           base::Minutes(duration_mins));
   }
 
  private:
@@ -137,7 +137,7 @@ TEST_F(UpgradeDetectorTest, RelaunchWindowPolicy) {
   ASSERT_TRUE(window);
   EXPECT_EQ(window.value().hour, 2);
   EXPECT_EQ(window.value().minute, 20);
-  EXPECT_EQ(window.value().duration, base::TimeDelta::FromMinutes(180));
+  EXPECT_EQ(window.value().duration, base::Minutes(180));
 }
 
 TEST_F(UpgradeDetectorTest, DeadlineAdjustment) {

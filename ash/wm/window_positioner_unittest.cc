@@ -27,14 +27,15 @@ namespace ash {
 class WindowPositionerTest : public AshTestBase {
  public:
   WindowPositionerTest() = default;
-  ~WindowPositionerTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowPositionerTest);
+  WindowPositionerTest(const WindowPositionerTest&) = delete;
+  WindowPositionerTest& operator=(const WindowPositionerTest&) = delete;
+
+  ~WindowPositionerTest() override = default;
 };
 
 TEST_F(WindowPositionerTest, OpenDefaultWindowOnSecondDisplay) {
-  UpdateDisplay("400x400,1400x900");
+  UpdateDisplay("500x400,1400x900");
   aura::Window* second_root_window = Shell::GetAllRootWindows()[1];
   display::ScopedDisplayForNewWindows display_for_new_windows(
       second_root_window);

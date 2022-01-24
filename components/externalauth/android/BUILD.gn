@@ -30,7 +30,6 @@ android_library("java") {
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
-    "//components/embedder_support/android:browser_context_java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:chromium_play_services_availability_java",

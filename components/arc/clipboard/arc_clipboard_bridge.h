@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_CLIPBOARD_ARC_CLIPBOARD_BRIDGE_H_
 #define COMPONENTS_ARC_CLIPBOARD_ARC_CLIPBOARD_BRIDGE_H_
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/clipboard.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -30,6 +29,10 @@ class ArcClipboardBridge : public KeyedService,
 
   ArcClipboardBridge(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);
+
+  ArcClipboardBridge(const ArcClipboardBridge&) = delete;
+  ArcClipboardBridge& operator=(const ArcClipboardBridge&) = delete;
+
   ~ArcClipboardBridge() override;
 
   // ClipboardObserver overrides.
@@ -45,8 +48,6 @@ class ArcClipboardBridge : public KeyedService,
   bool event_originated_at_instance_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ArcClipboardBridge);
 };
 
 }  // namespace arc

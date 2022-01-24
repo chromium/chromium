@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "extensions/common/url_pattern_set.h"
 
 namespace base {
@@ -23,6 +22,10 @@ class NativeMessagingHostManifest {
   enum HostInterface {
     HOST_INTERFACE_STDIO,
   };
+
+  NativeMessagingHostManifest(const NativeMessagingHostManifest&) = delete;
+  NativeMessagingHostManifest& operator=(const NativeMessagingHostManifest&) =
+      delete;
 
   ~NativeMessagingHostManifest();
 
@@ -57,8 +60,6 @@ class NativeMessagingHostManifest {
   base::FilePath path_;
   URLPatternSet allowed_origins_;
   bool supports_native_initiated_connections_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMessagingHostManifest);
 };
 
 }  // namespace extensions

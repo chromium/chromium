@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -26,6 +25,8 @@ struct DisplayGeometry {
 class DesktopDisplayInfo {
  public:
   DesktopDisplayInfo();
+  DesktopDisplayInfo(DesktopDisplayInfo&&);
+  DesktopDisplayInfo& operator=(DesktopDisplayInfo&&);
   ~DesktopDisplayInfo();
 
   static webrtc::DesktopSize CalcSizeDips(webrtc::DesktopSize size,
@@ -45,9 +46,6 @@ class DesktopDisplayInfo {
 
   void AddDisplayFrom(protocol::VideoTrackLayout track);
 
-  // Query the OS for the set of currently active desktop displays.
-  void LoadCurrentDisplayInfo();
-
   bool operator==(const DesktopDisplayInfo& other);
   bool operator!=(const DesktopDisplayInfo& other);
 
@@ -57,8 +55,6 @@ class DesktopDisplayInfo {
 
  private:
   std::vector<std::unique_ptr<DisplayGeometry>> displays_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopDisplayInfo);
 };
 
 }  // namespace remoting

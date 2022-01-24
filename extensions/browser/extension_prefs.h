@@ -110,6 +110,10 @@ class ExtensionPrefs : public KeyedService {
     ScopedDictionaryUpdate(ExtensionPrefs* prefs,
                            const std::string& extension_id,
                            const std::string& key);
+
+    ScopedDictionaryUpdate(const ScopedDictionaryUpdate&) = delete;
+    ScopedDictionaryUpdate& operator=(const ScopedDictionaryUpdate&) = delete;
+
     ~ScopedDictionaryUpdate();
 
     // Returns a mutable value for the key, if one exists. Otherwise, returns
@@ -123,8 +127,6 @@ class ExtensionPrefs : public KeyedService {
    private:
     std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update_;
     const std::string key_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedDictionaryUpdate);
   };
 
   class ScopedListUpdate {
@@ -132,6 +134,10 @@ class ExtensionPrefs : public KeyedService {
     ScopedListUpdate(ExtensionPrefs* prefs,
                      const std::string& extension_id,
                      const std::string& key);
+
+    ScopedListUpdate(const ScopedListUpdate&) = delete;
+    ScopedListUpdate& operator=(const ScopedListUpdate&) = delete;
+
     ~ScopedListUpdate();
 
     // Returns a mutable value for the key (ownership remains with the prefs),
@@ -146,8 +152,6 @@ class ExtensionPrefs : public KeyedService {
    private:
     std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update_;
     const std::string key_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedListUpdate);
   };
 
   // Creates an ExtensionPrefs object.
@@ -174,6 +178,9 @@ class ExtensionPrefs : public KeyedService {
       bool extensions_disabled,
       const std::vector<EarlyExtensionPrefsObserver*>& early_observers,
       base::Clock* clock);
+
+  ExtensionPrefs(const ExtensionPrefs&) = delete;
+  ExtensionPrefs& operator=(const ExtensionPrefs&) = delete;
 
   ~ExtensionPrefs() override;
 
@@ -372,22 +379,6 @@ class ExtensionPrefs : public KeyedService {
   void ClearInapplicableDisableReasonsForComponentExtension(
       const std::string& component_extension_id);
 
-  // Gets the set of extensions that have been blocklisted in prefs. This will
-  // return only the blocked extensions, not the "greylist" extensions.
-  // TODO(crbug.com/1193695): This method is not called in production, remove
-  // it.
-  std::set<std::string> GetBlocklistedExtensions() const;
-
-  // Gets the key of blocklist acknowledged pref.
-  // TODO(crbug.com/1193695): Remove this method once kPrefBlocklistAcknowledged
-  // is removed.
-  base::StringPiece GetPrefBlocklistAcknowledgedKey();
-
-  // Gets the key of blocklist pref.
-  // TODO(crbug.com/1193695): Remove this method once kPrefBlocklist
-  // is removed.
-  base::StringPiece GetPrefBlocklistKey();
-
   // Returns the version string for the currently installed extension, or
   // the empty string if not found.
   std::string GetVersionString(const std::string& extension_id) const;
@@ -403,14 +394,6 @@ class ExtensionPrefs : public KeyedService {
   // extension.
   void SetInstallLocation(const std::string& extension_id,
                           mojom::ManifestLocation location);
-
-  // Returns whether the extension with |id| has its blocklist bit set.
-  //
-  // WARNING: this only checks the extension's entry in prefs, so by definition
-  // can only check extensions that prefs knows about. There may be other
-  // sources of blocklist information, such as safebrowsing. You probably want
-  // to use Blocklist::GetBlocklistedIDs rather than this method.
-  bool IsExtensionBlocklisted(const std::string& id) const;
 
   // Increment the count of how many times we prompted the user to acknowledge
   // the given extension, and return the new count.
@@ -598,10 +581,6 @@ class ExtensionPrefs : public KeyedService {
   // Returns true if the extension was installed from the Chrome Web Store.
   bool IsFromWebStore(const std::string& extension_id) const;
 
-  // Returns true if the extension was installed from an App generated from a
-  // bookmark.
-  bool IsFromBookmark(const std::string& extension_id) const;
-
   // Returns true if the extension was installed as a default app.
   bool WasInstalledByDefault(const std::string& extension_id) const;
 
@@ -745,6 +724,11 @@ class ExtensionPrefs : public KeyedService {
   // dictionary).
   // TODO(devlin): Remove this once clients are migrated over, around M84.
   void MigrateToNewExternalUninstallPref();
+
+  // Migrates kPrefBlocklist with kPrefBlocklistState.
+  // TODO(crbug.com/1232243): Remove this once clients are migrated over, around
+  // M97.
+  void MigrateOldBlocklistPrefs();
 
   // Returns true if the given component extension should be installed, even
   // though it has been obsoleted. Installing it allows us to ensure it is
@@ -901,7 +885,7 @@ class ExtensionPrefs : public KeyedService {
       int install_flags,
       const std::string& install_parameter,
       const declarative_net_request::RulesetInstallPrefs& ruleset_install_prefs,
-      prefs::DictionaryValueUpdate* extension_dict) const;
+      prefs::DictionaryValueUpdate* extension_dict);
 
   void InitExtensionControlledPrefs(const ExtensionsInfo& extensions_info);
 
@@ -943,8 +927,6 @@ class ExtensionPrefs : public KeyedService {
   bool extensions_disabled_;
 
   base::ObserverList<ExtensionPrefsObserver>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefs);
 };
 
 }  // namespace extensions

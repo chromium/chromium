@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_TEST_TEST_ENABLED_STATE_PROVIDER_H_
 #define COMPONENTS_METRICS_TEST_TEST_ENABLED_STATE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/metrics/enabled_state_provider.h"
 
 namespace metrics {
@@ -16,6 +15,10 @@ class TestEnabledStateProvider : public EnabledStateProvider {
  public:
   TestEnabledStateProvider(bool consent, bool enabled)
       : consent_(consent), enabled_(enabled) {}
+
+  TestEnabledStateProvider(const TestEnabledStateProvider&) = delete;
+  TestEnabledStateProvider& operator=(const TestEnabledStateProvider&) = delete;
+
   ~TestEnabledStateProvider() override {}
 
   // EnabledStateProvider
@@ -28,8 +31,6 @@ class TestEnabledStateProvider : public EnabledStateProvider {
  private:
   bool consent_;
   bool enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEnabledStateProvider);
 };
 
 }  // namespace metrics

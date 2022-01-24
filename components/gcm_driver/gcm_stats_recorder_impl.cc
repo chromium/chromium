@@ -4,7 +4,6 @@
 
 #include "components/gcm_driver/gcm_stats_recorder_impl.h"
 
-#include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/format_macros.h"

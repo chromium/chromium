@@ -5,7 +5,6 @@
 #ifndef MEDIA_AUDIO_SCOPED_TASK_RUNNER_OBSERVER_H_
 #define MEDIA_AUDIO_SCOPED_TASK_RUNNER_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/current_thread.h"
 
@@ -28,6 +27,9 @@ class ScopedTaskRunnerObserver
   explicit ScopedTaskRunnerObserver(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
 
+  ScopedTaskRunnerObserver(const ScopedTaskRunnerObserver&) = delete;
+  ScopedTaskRunnerObserver& operator=(const ScopedTaskRunnerObserver&) = delete;
+
  protected:
   ~ScopedTaskRunnerObserver() override;
 
@@ -44,8 +46,6 @@ class ScopedTaskRunnerObserver
   // A pointer to the task runner. In case it gets destroyed before this object
   // goes out of scope, PostTask() etc will fail but not crash.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTaskRunnerObserver);
 };
 
 }  // namespace media.

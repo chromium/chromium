@@ -35,7 +35,7 @@ class CookiesApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<
                            std::tuple<ContextType, SameSiteCookieSemantics>> {
  public:
-  CookiesApiTest() = default;
+  CookiesApiTest() : ExtensionApiTest(std::get<0>(GetParam())) {}
   ~CookiesApiTest() override = default;
   CookiesApiTest(const CookiesApiTest&) = delete;
   CookiesApiTest& operator=(const CookiesApiTest&) = delete;
@@ -66,11 +66,8 @@ class CookiesApiTest : public ExtensionApiTest,
   bool RunTest(const char* extension_name,
                bool allow_in_incognito = false,
                const char* custom_arg = nullptr) {
-    return RunExtensionTest(
-        extension_name, {.custom_arg = custom_arg},
-        {.allow_in_incognito = allow_in_incognito,
-         .load_as_service_worker =
-             GetContextType() == ContextType::kServiceWorker});
+    return RunExtensionTest(extension_name, {.custom_arg = custom_arg},
+                            {.allow_in_incognito = allow_in_incognito});
   }
 
   ContextType GetContextType() { return std::get<0>(GetParam()); }

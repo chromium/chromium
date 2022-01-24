@@ -9,7 +9,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -45,6 +44,11 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       const base::UnguessableToken& devtools_worker_token);
+
+  ServiceWorkerDevToolsAgentHost(const ServiceWorkerDevToolsAgentHost&) =
+      delete;
+  ServiceWorkerDevToolsAgentHost& operator=(
+      const ServiceWorkerDevToolsAgentHost&) = delete;
 
   // DevToolsAgentHost overrides.
   BrowserContext* GetBrowserContext() override;
@@ -92,7 +96,7 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   base::Time version_doomed_time() const { return version_doomed_time_; }
 
   int64_t version_id() const { return version_id_; }
-  const ServiceWorkerContextWrapper* context_wrapper() const {
+  ServiceWorkerContextWrapper* context_wrapper() {
     return context_wrapper_.get();
   }
 
@@ -107,11 +111,14 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   // DevToolsAgentHostImpl overrides.
   bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
   void DetachSession(DevToolsSession* session) override;
+  protocol::TargetAutoAttacher* auto_attacher() override;
 
   // RenderProcessHostObserver implementation.
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   void UpdateLoaderFactories(base::OnceClosure callback);
+
+  std::unique_ptr<protocol::TargetAutoAttacher> auto_attacher_;
 
   enum WorkerState {
     WORKER_NOT_READY,
@@ -144,8 +151,6 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
       coep_reporter_;
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       process_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerDevToolsAgentHost);
 };
 
 }  // namespace content

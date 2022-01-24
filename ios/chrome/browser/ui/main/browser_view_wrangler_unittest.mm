@@ -19,7 +19,6 @@
 #include "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -34,7 +33,7 @@
 
 @interface SceneStateWithFakeScene : SceneState
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithScene:(id)scene NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithAppState:(AppState*)appState NS_UNAVAILABLE;
 
@@ -42,11 +41,9 @@
 
 @implementation SceneStateWithFakeScene
 
-- (instancetype)init {
+- (instancetype)initWithScene:(id)scene {
   if ((self = [super initWithAppState:nil])) {
-    if (@available(ios 13, *)) {
-      [self setScene:FakeSceneWithIdentifier([[NSUUID UUID] UUIDString])];
-    }
+    [self setScene:scene];
   }
   return self;
 }
@@ -58,7 +55,9 @@ namespace {
 class BrowserViewWranglerTest : public PlatformTest {
  protected:
   BrowserViewWranglerTest()
-      : scene_state_([[SceneStateWithFakeScene alloc] init]),
+      : fake_scene_(FakeSceneWithIdentifier([[NSUUID UUID] UUIDString])),
+        scene_state_(
+            [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_]),
         test_session_service_([[TestSessionService alloc] init]) {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
@@ -90,6 +89,7 @@ class BrowserViewWranglerTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  id fake_scene_;
   SceneState* scene_state_;
   TestSessionService* test_session_service_;
   id session_service_block_;

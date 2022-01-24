@@ -112,7 +112,7 @@ public class DownloadForegroundServiceTest {
         mForegroundService = new MockDownloadForegroundService();
         mNotification =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(true /* preferCompat */,
+                        .createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.DOWNLOADS)
                         .setSmallIcon(org.chromium.chrome.R.drawable.ic_file_download_white_24dp)
                         .setContentTitle("fakeContentTitle")

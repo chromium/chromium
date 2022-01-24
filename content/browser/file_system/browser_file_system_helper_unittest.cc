@@ -9,7 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/null_task_runner.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
@@ -25,6 +25,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -58,7 +59,8 @@ TEST(BrowserFileSystemHelperTest,
       storage::FileSystemMountOption(), mount_path));
   storage::FileSystemURL original_file =
       external_mount_points->CreateExternalFileSystemURL(
-          url::Origin::Create(kSensitiveOrigin), kMountName, kTestPath);
+          blink::StorageKey(url::Origin::Create(kSensitiveOrigin)), kMountName,
+          kTestPath);
   EXPECT_TRUE(original_file.is_valid());
   EXPECT_EQ(kSensitiveOrigin, original_file.origin().GetURL());
 
@@ -106,8 +108,9 @@ TEST(BrowserFileSystemHelperTest,
   // proper access patterns that are verified below).
 
   // Verify that the URL didn't change *too* much.
+  const GURL crack_url = drop_data.file_system_files[0].url;
   storage::FileSystemURL dropped_file =
-      test_file_system_context->CrackURL(drop_data.file_system_files[0].url);
+      test_file_system_context->CrackURLInFirstPartyContext(crack_url);
   EXPECT_TRUE(dropped_file.is_valid());
   EXPECT_EQ(original_file.origin(), dropped_file.origin());
   EXPECT_EQ(original_file.path().BaseName(), dropped_file.path().BaseName());

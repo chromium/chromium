@@ -32,6 +32,22 @@ void AwJavaScriptDialogManager::RunJavaScriptDialog(
     return;
   }
 
+  // Non-WebView versions of Chrome use the frame's last committed origin for
+  // dialog attribution (crbug.com/1241497). However, WebView exposes JS dialog
+  // calls to users, which means that a change to using the origin (exposed as
+  // a URL) would be app-visible and a potential compatibility issue.
+  //
+  // In addition, WebView is special in that the "last committed origin" and the
+  // origin of the "last committed URL" can be different due to a legacy app-
+  // exposed setting, so such a change might be even more breaking.
+  //
+  // TODO(crbug.com/1241925): Figure out if some kind of migration can be done
+  // here, as this is one of several instances in which moving from URL to
+  // origin would be desirable.
+  //
+  // References:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/2944834/27..46/android_webview/browser/aw_permission_manager.cc#b599
+  // https://chromium-review.googlesource.com/c/chromium/src/+/3107569/5/android_webview/browser/aw_javascript_dialog_manager.cc#41
   bridge->RunJavaScriptDialog(
       dialog_type, render_frame_host->GetLastCommittedURL(), message_text,
       default_prompt_text, std::move(callback));

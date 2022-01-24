@@ -18,16 +18,14 @@ namespace syncer {
 namespace {
 
 // Possible nudge delays for local changes.
-constexpr base::TimeDelta kMinLocalChangeNudgeDelay =
-    base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kMinLocalChangeNudgeDelay = base::Milliseconds(50);
 constexpr base::TimeDelta kMediumLocalChangeNudgeDelay =
-    base::TimeDelta::FromMilliseconds(200);
-constexpr base::TimeDelta kBigLocalChangeNudgeDelay =
-    base::TimeDelta::FromMilliseconds(2000);
+    base::Milliseconds(200);
+constexpr base::TimeDelta kBigLocalChangeNudgeDelay = base::Milliseconds(2000);
 constexpr base::TimeDelta kVeryBigLocalChangeNudgeDelay = kDefaultPollInterval;
 
 constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSessions =
-    base::TimeDelta::FromSeconds(11);
+    base::Seconds(11);
 
 const size_t kDefaultMaxPayloadsPerType = 10;
 
@@ -81,8 +79,8 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case OS_PRIORITY_PREFERENCES:
     case WORKSPACE_DESK:
     case NIGORI:
-      return kMediumLocalChangeNudgeDelay;
     case PROXY_TABS:
+      return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:
       NOTREACHED();
       return base::TimeDelta();
@@ -91,7 +89,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
 
 }  // namespace
 
-WaitInterval::WaitInterval() : mode(UNKNOWN) {}
+WaitInterval::WaitInterval() : mode(BlockingMode::kUnknown) {}
 
 WaitInterval::WaitInterval(BlockingMode mode, base::TimeDelta length)
     : mode(mode), length(length) {}
@@ -202,9 +200,9 @@ void DataTypeTracker::RecordSuccessfulSyncCycle() {
   // crash before writing all our state, we should wait until the results of
   // this sync cycle have been written to disk before updating the invalidations
   // state.  See crbug.com/324996.
-  for (auto it = pending_invalidations_.begin();
-       it != pending_invalidations_.end(); ++it) {
-    (*it)->Acknowledge();
+  for (const std::unique_ptr<InvalidationInterface>& pending_invalidation :
+       pending_invalidations_) {
+    pending_invalidation->Acknowledge();
   }
   pending_invalidations_.clear();
 
@@ -295,10 +293,10 @@ void DataTypeTracker::FillGetUpdatesTriggersMessage(
   // Fill the list of payloads, if applicable.  The payloads must be ordered
   // oldest to newest, so we insert them in the same order as we've been storing
   // them internally.
-  for (auto it = pending_invalidations_.begin();
-       it != pending_invalidations_.end(); ++it) {
-    if (!(*it)->IsUnknownVersion()) {
-      msg->add_notification_hint((*it)->GetPayload());
+  for (const std::unique_ptr<InvalidationInterface>& pending_invalidation :
+       pending_invalidations_) {
+    if (!pending_invalidation->IsUnknownVersion()) {
+      msg->add_notification_hint(pending_invalidation->GetPayload());
     }
   }
 
@@ -315,20 +313,21 @@ void DataTypeTracker::FillGetUpdatesTriggersMessage(
 
 bool DataTypeTracker::IsBlocked() const {
   return wait_interval_.get() &&
-         (wait_interval_->mode == WaitInterval::THROTTLED ||
-          wait_interval_->mode == WaitInterval::EXPONENTIAL_BACKOFF);
+         (wait_interval_->mode == WaitInterval::BlockingMode::kThrottled ||
+          wait_interval_->mode ==
+              WaitInterval::BlockingMode::kExponentialBackoff);
 }
 
 base::TimeDelta DataTypeTracker::GetTimeUntilUnblock() const {
   DCHECK(IsBlocked());
-  return std::max(base::TimeDelta::FromSeconds(0),
-                  unblock_time_ - base::TimeTicks::Now());
+  return std::max(base::Seconds(0), unblock_time_ - base::TimeTicks::Now());
 }
 
 base::TimeDelta DataTypeTracker::GetLastBackoffInterval() const {
-  if (GetBlockingMode() != WaitInterval::EXPONENTIAL_BACKOFF_RETRYING) {
+  if (GetBlockingMode() !=
+      WaitInterval::BlockingMode::kExponentialBackoffRetrying) {
     NOTREACHED();
-    return base::TimeDelta::FromSeconds(0);
+    return base::Seconds(0);
   }
   return wait_interval_->length;
 }
@@ -336,23 +335,26 @@ base::TimeDelta DataTypeTracker::GetLastBackoffInterval() const {
 void DataTypeTracker::ThrottleType(base::TimeDelta duration,
                                    base::TimeTicks now) {
   unblock_time_ = std::max(unblock_time_, now + duration);
-  wait_interval_ =
-      std::make_unique<WaitInterval>(WaitInterval::THROTTLED, duration);
+  wait_interval_ = std::make_unique<WaitInterval>(
+      WaitInterval::BlockingMode::kThrottled, duration);
 }
 
 void DataTypeTracker::BackOffType(base::TimeDelta duration,
                                   base::TimeTicks now) {
   unblock_time_ = std::max(unblock_time_, now + duration);
   wait_interval_ = std::make_unique<WaitInterval>(
-      WaitInterval::EXPONENTIAL_BACKOFF, duration);
+      WaitInterval::BlockingMode::kExponentialBackoff, duration);
 }
 
 void DataTypeTracker::UpdateThrottleOrBackoffState() {
   if (base::TimeTicks::Now() >= unblock_time_) {
     if (wait_interval_.get() &&
-        (wait_interval_->mode == WaitInterval::EXPONENTIAL_BACKOFF ||
-         wait_interval_->mode == WaitInterval::EXPONENTIAL_BACKOFF_RETRYING)) {
-      wait_interval_->mode = WaitInterval::EXPONENTIAL_BACKOFF_RETRYING;
+        (wait_interval_->mode ==
+             WaitInterval::BlockingMode::kExponentialBackoff ||
+         wait_interval_->mode ==
+             WaitInterval::BlockingMode::kExponentialBackoffRetrying)) {
+      wait_interval_->mode =
+          WaitInterval::BlockingMode::kExponentialBackoffRetrying;
     } else {
       unblock_time_ = base::TimeTicks();
       wait_interval_.reset();
@@ -373,7 +375,7 @@ base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay() const {
 
 WaitInterval::BlockingMode DataTypeTracker::GetBlockingMode() const {
   if (!wait_interval_) {
-    return WaitInterval::UNKNOWN;
+    return WaitInterval::BlockingMode::kUnknown;
   }
   return wait_interval_->mode;
 }

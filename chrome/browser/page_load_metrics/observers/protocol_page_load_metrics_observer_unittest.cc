@@ -25,16 +25,13 @@ class ProtocolPageLoadMetricsObserverTest
       page_load_metrics::mojom::PageLoadTiming* timing) {
     page_load_metrics::InitPageLoadTimingForTest(timing);
     timing->navigation_start = base::Time::FromDoubleT(1);
-    timing->parse_timing->parse_start = base::TimeDelta::FromMilliseconds(100);
-    timing->paint_timing->first_paint = base::TimeDelta::FromMilliseconds(200);
-    timing->paint_timing->first_contentful_paint =
-        base::TimeDelta::FromMilliseconds(300);
-    timing->paint_timing->first_meaningful_paint =
-        base::TimeDelta::FromMilliseconds(400);
+    timing->parse_timing->parse_start = base::Milliseconds(100);
+    timing->paint_timing->first_paint = base::Milliseconds(200);
+    timing->paint_timing->first_contentful_paint = base::Milliseconds(300);
+    timing->paint_timing->first_meaningful_paint = base::Milliseconds(400);
     timing->document_timing->dom_content_loaded_event_start =
-        base::TimeDelta::FromMilliseconds(600);
-    timing->document_timing->load_event_start =
-        base::TimeDelta::FromMilliseconds(1000);
+        base::Milliseconds(600);
+    timing->document_timing->load_event_start = base::Milliseconds(1000);
     PopulateRequiredTimingFields(timing);
   }
 

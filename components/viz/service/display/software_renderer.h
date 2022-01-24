@@ -6,9 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_SOFTWARE_RENDERER_H_
 
 #include <memory>
-#include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/direct_renderer.h"
@@ -33,6 +31,9 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
                    OutputSurface* output_surface,
                    DisplayResourceProviderSoftware* resource_provider,
                    OverlayProcessorInterface* overlay_processor);
+
+  SoftwareRenderer(const SoftwareRenderer&) = delete;
+  SoftwareRenderer& operator=(const SoftwareRenderer&) = delete;
 
   ~SoftwareRenderer() override;
 
@@ -126,8 +127,6 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   SkPaint current_paint_;
   SkSamplingOptions current_sampling_;
   std::unique_ptr<SkCanvas> current_framebuffer_canvas_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareRenderer);
 };
 
 }  // namespace viz

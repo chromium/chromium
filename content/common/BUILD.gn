@@ -54,6 +54,7 @@ source_set("common") {
     "background_fetch/background_fetch_types.h",
     "child_process_host_impl.cc",
     "child_process_host_impl.h",
+    "color_parser.cc",
     "common_param_traits.cc",
     "common_param_traits.h",
     "common_param_traits_macros.h",
@@ -84,6 +85,7 @@ source_set("common") {
     "font_list.cc",
     "font_list.h",
     "font_list_fontconfig.cc",
+    "frame_owner_element_type_mojom_traits.cc",
     "gin_java_bridge_messages.h",
     "in_process_child_thread_params.cc",
     "in_process_child_thread_params.h",
@@ -131,6 +133,8 @@ source_set("common") {
     "process_type.cc",
     "process_visibility_tracker.cc",
     "process_visibility_tracker.h",
+    "pseudonymization_salt.cc",
+    "pseudonymization_salt.h",
     "service_worker/service_worker_utils.cc",
     "service_worker/service_worker_utils.h",
     "set_process_title.cc",
@@ -145,6 +149,8 @@ source_set("common") {
     "trace_utils.h",
     "url_schemes.cc",
     "url_schemes.h",
+    "url_utils.cc",
+    "url_utils.h",
     "user_agent.cc",
     "web_package/signed_exchange_utils.cc",
     "web_package/signed_exchange_utils.h",
@@ -153,7 +159,6 @@ source_set("common") {
   configs += [
     "//content:content_implementation",
     "//build/config:precompiled_headers",
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   public_deps = [
@@ -225,6 +230,7 @@ source_set("common") {
     "//third_party/angle:angle_gpu_info_util",
     "//third_party/boringssl",
     "//third_party/icu",
+    "//third_party/re2",
     "//ui/base",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime",
@@ -258,6 +264,8 @@ source_set("common") {
 
   if (is_android) {
     sources += [
+      "android/cpu_affinity_setter.cc",
+      "android/cpu_affinity_setter.h",
       "android/cpu_time_metrics.cc",
       "android/cpu_time_metrics.h",
       "android/cpu_time_metrics_internal.cc",
@@ -324,7 +332,7 @@ source_set("common") {
     deps += [ "//ppapi/proxy:ipc_sources" ]
   }
 
-  if (!use_x11 && !use_ozone) {
+  if (!use_ozone) {
     sources -= [ "cursors/webcursor_ozone.cc" ]
   }
 
@@ -469,6 +477,10 @@ mojom("mojo_bindings") {
     {
       types = [
         {
+          mojom = "content.mojom.ChildFrameOwnerElementType"
+          cpp = "::blink::FrameOwnerElementType"
+        },
+        {
           mojom = "content.mojom.ContentSecurityPolicy"
           cpp = "::content::ContentSecurityPolicy"
         },
@@ -524,20 +536,22 @@ mojom("mojo_bindings") {
 
       traits_headers = [
         "//cc/input/touch_action.h",
+        "//content/common/frame_owner_element_type_mojom_traits.h",
         "//content/common/input/input_injector_mojom_traits.h",
         "//content/common/input/synthetic_pinch_gesture_params.h",
         "//content/common/input/synthetic_pointer_action_list_params.h",
         "//content/common/input/synthetic_smooth_drag_gesture_params.h",
         "//content/common/input/synthetic_smooth_scroll_gesture_params.h",
         "//content/common/input/synthetic_tap_gesture_params.h",
-        "//third_party/blink/public/common/widget/visual_properties.h",
-        "//third_party/blink/public/common/web_preferences/web_preferences.h",
+        "//content/common/navigation_gesture.h",
         "//net/base/network_change_notifier.h",
         "//third_party/blink/public/common/input/web_coalesced_input_event_mojom_traits.h",
         "//third_party/blink/public/common/input/web_input_event.h",
         "//third_party/blink/public/common/input/web_mouse_wheel_event.h",
         "//third_party/blink/public/common/input/web_pointer_properties.h",
         "//third_party/blink/public/common/input/web_touch_point.h",
+        "//third_party/blink/public/common/web_preferences/web_preferences.h",
+        "//third_party/blink/public/common/widget/visual_properties.h",
         "//ui/events/blink/did_overscroll_params.h",
         "//ui/events/blink/web_input_event_traits.h",
         "//ui/latency/ipc/latency_info_param_traits.h",
@@ -545,6 +559,7 @@ mojom("mojo_bindings") {
       ]
 
       traits_private_headers = [
+        "//content/common/content_param_traits_macros.h",
         "//content/public/common/common_param_traits.h",
         "//services/network/public/cpp/p2p_param_traits.h",
       ]
@@ -596,6 +611,7 @@ mojom("mojo_bindings") {
     "//cc/mojom",
     "//components/variations:variations_mojom",
     "//content/public/common:interfaces",
+    "//content/services/shared_storage_worklet/public/mojom:mojom",
     "//ipc:mojom",
     "//ipc:mojom_constants",
     "//media/capture/mojom:video_capture",

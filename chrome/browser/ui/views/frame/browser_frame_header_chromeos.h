@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_HEADER_CHROMEOS_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -32,6 +31,11 @@ class BrowserFrameHeaderChromeOS : public chromeos::FrameHeader {
       views::View* view,
       AppearanceProvider* appearance_provider,
       chromeos::FrameCaptionButtonContainerView* caption_button_container);
+
+  BrowserFrameHeaderChromeOS(const BrowserFrameHeaderChromeOS&) = delete;
+  BrowserFrameHeaderChromeOS& operator=(const BrowserFrameHeaderChromeOS&) =
+      delete;
+
   ~BrowserFrameHeaderChromeOS() override;
 
   // Returns the amount that the frame background is inset from the left edge of
@@ -54,8 +58,6 @@ class BrowserFrameHeaderChromeOS : public chromeos::FrameHeader {
   void PaintFrameImages(gfx::Canvas* canvas);
 
   AppearanceProvider* appearance_provider_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserFrameHeaderChromeOS);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_HEADER_CHROMEOS_H_

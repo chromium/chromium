@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/common/content_export.h"

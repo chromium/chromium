@@ -6,7 +6,6 @@
 
 #include <jni.h>
 #include <stdint.h>
-#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"

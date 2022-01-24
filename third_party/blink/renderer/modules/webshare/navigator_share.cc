@@ -296,6 +296,15 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
     }
   }
 
+  if (has_files)
+    UseCounter::Count(execution_context, WebFeature::kWebShareContainingFiles);
+  if (data->hasTitle())
+    UseCounter::Count(execution_context, WebFeature::kWebShareContainingTitle);
+  if (data->hasText())
+    UseCounter::Count(execution_context, WebFeature::kWebShareContainingText);
+  if (data->hasUrl())
+    UseCounter::Count(execution_context, WebFeature::kWebShareContainingUrl);
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   ShareClientImpl* client =

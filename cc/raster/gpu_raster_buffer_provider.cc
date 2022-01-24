@@ -34,6 +34,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -67,8 +68,11 @@ static void RasterizeSourceOOP(
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY |
                      gpu::SHARED_IMAGE_USAGE_RASTER |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    if (texture_is_overlay_candidate)
+    if (texture_is_overlay_candidate) {
       flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    } else if (features::IsUsingRawDraw()) {
+      flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
+    }
     *mailbox = sii->CreateSharedImage(
         resource_format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, flags, gpu::kNullSurfaceHandle);

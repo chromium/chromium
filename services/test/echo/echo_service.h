@@ -15,6 +15,10 @@ namespace echo {
 class EchoService : public mojom::EchoService {
  public:
   explicit EchoService(mojo::PendingReceiver<mojom::EchoService> receiver);
+
+  EchoService(const EchoService&) = delete;
+  EchoService& operator=(const EchoService&) = delete;
+
   ~EchoService() override;
 
  private:
@@ -27,8 +31,6 @@ class EchoService : public mojom::EchoService {
   void Crash() override;
 
   mojo::Receiver<mojom::EchoService> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(EchoService);
 };
 
 }  // namespace echo

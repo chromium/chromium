@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -154,6 +153,9 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
             }));
   }
 
+  BetterSessionRestoreTest(const BetterSessionRestoreTest&) = delete;
+  BetterSessionRestoreTest& operator=(const BetterSessionRestoreTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     SessionServiceTestHelper helper(browser()->profile());
@@ -179,8 +181,8 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     title_watcher.AlsoWaitForTitle(title_pass_);
     title_watcher.AlsoWaitForTitle(title_error_write_failed_);
     title_watcher.AlsoWaitForTitle(title_error_empty_);
-    ui_test_utils::NavigateToURL(
-        browser, GURL(fake_server_address_ + test_path_ + filename));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, GURL(fake_server_address_ + test_path_ + filename)));
     std::u16string final_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(title_storing_, final_title);
   }
@@ -200,8 +202,8 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     title_watcher.AlsoWaitForTitle(title_storing_);
     title_watcher.AlsoWaitForTitle(title_error_write_failed_);
     title_watcher.AlsoWaitForTitle(title_error_empty_);
-    ui_test_utils::NavigateToURL(
-        browser, GURL(fake_server_address_ + test_path_ + filename));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, GURL(fake_server_address_ + test_path_ + filename)));
     std::u16string final_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(title_pass_, final_title);
   }
@@ -256,8 +258,8 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::TitleWatcher title_watcher(web_contents, title_pass_);
-    ui_test_utils::NavigateToURL(
-        browser(), GURL(fake_server_address_ + test_path_ + filename));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(fake_server_address_ + test_path_ + filename)));
     std::u16string final_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(title_pass_, final_title);
     EXPECT_TRUE(DidLastUploadContain("posted-text"));
@@ -344,13 +346,15 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
   const std::u16string title_error_empty_;
 
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(BetterSessionRestoreTest);
 };
 
 class ContinueWhereILeftOffTest : public BetterSessionRestoreTest {
  public:
   ContinueWhereILeftOffTest() = default;
+
+  ContinueWhereILeftOffTest(const ContinueWhereILeftOffTest&) = delete;
+  ContinueWhereILeftOffTest& operator=(const ContinueWhereILeftOffTest&) =
+      delete;
 
   void SetUpOnMainThread() override {
     BetterSessionRestoreTest::SetUpOnMainThread();
@@ -367,8 +371,6 @@ class ContinueWhereILeftOffTest : public BetterSessionRestoreTest {
     session_restore_observer.Wait();
     return new_browser;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ContinueWhereILeftOffTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, PRE_SessionCookies) {
@@ -555,6 +557,10 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
 class RestartTest : public BetterSessionRestoreTest {
  public:
   RestartTest() = default;
+
+  RestartTest(const RestartTest&) = delete;
+  RestartTest& operator=(const RestartTest&) = delete;
+
   ~RestartTest() override = default;
 
  protected:
@@ -568,9 +574,6 @@ class RestartTest : public BetterSessionRestoreTest {
     PrefService* pref_service = g_browser_process->local_state();
     pref_service->SetBoolean(prefs::kWasRestarted, true);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RestartTest);
 };
 
 IN_PROC_BROWSER_TEST_F(RestartTest, PRE_SessionCookies) {
@@ -641,14 +644,14 @@ class NoSessionRestoreTest : public BetterSessionRestoreTest {
  public:
   NoSessionRestoreTest() = default;
 
+  NoSessionRestoreTest(const NoSessionRestoreTest&) = delete;
+  NoSessionRestoreTest& operator=(const NoSessionRestoreTest&) = delete;
+
   void SetUpOnMainThread() override {
     BetterSessionRestoreTest::SetUpOnMainThread();
     SessionStartupPref::SetStartupPref(
         browser()->profile(), SessionStartupPref(SessionStartupPref::DEFAULT));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoSessionRestoreTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NoSessionRestoreTest, PRE_SessionCookies) {

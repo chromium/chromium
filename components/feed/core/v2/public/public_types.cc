@@ -10,6 +10,7 @@ namespace feed {
 WebFeedMetadata::WebFeedMetadata() = default;
 WebFeedMetadata::WebFeedMetadata(const WebFeedMetadata&) = default;
 WebFeedMetadata::WebFeedMetadata(WebFeedMetadata&&) = default;
+WebFeedMetadata::~WebFeedMetadata() = default;
 WebFeedMetadata& WebFeedMetadata::operator=(const WebFeedMetadata&) = default;
 WebFeedMetadata& WebFeedMetadata::operator=(WebFeedMetadata&&) = default;
 
@@ -92,12 +93,25 @@ std::ostream& operator<<(std::ostream& out,
   }
 }
 
+std::ostream& operator<<(std::ostream& out, WebFeedAvailabilityStatus value) {
+  switch (value) {
+    case WebFeedAvailabilityStatus::kStateUnspecified:
+      return out << "kStateUnspecified";
+    case WebFeedAvailabilityStatus::kInactive:
+      return out << "kInactive";
+    case WebFeedAvailabilityStatus::kActive:
+      return out << "kActive";
+    case WebFeedAvailabilityStatus::kWaitingForContent:
+      return out << "kWaitingForContent";
+  }
+}
+
 std::ostream& operator<<(std::ostream& out, const WebFeedMetadata& value) {
   out << "WebFeedMetadata{";
   if (!value.web_feed_id.empty())
     out << " id=" << value.web_feed_id;
-  if (value.is_active)
-    out << " is_active";
+  if (value.availability_status != WebFeedAvailabilityStatus::kStateUnspecified)
+    out << " availability_status=" << value.availability_status;
   if (value.is_recommended)
     out << " is_recommended";
   if (!value.title.empty())

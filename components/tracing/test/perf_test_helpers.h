@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace tracing {
@@ -20,13 +19,15 @@ namespace tracing {
 class ScopedStopwatch {
  public:
   ScopedStopwatch(const std::string& metric);
+
+  ScopedStopwatch(const ScopedStopwatch&) = delete;
+  ScopedStopwatch& operator=(const ScopedStopwatch&) = delete;
+
   ~ScopedStopwatch();
 
  private:
   base::TimeTicks begin_;
   const std::string metric_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedStopwatch);
 };
 
 // Measure median time of loop iterations.
@@ -41,6 +42,10 @@ class ScopedStopwatch {
 class IterableStopwatch {
  public:
   IterableStopwatch(const std::string& metric);
+
+  IterableStopwatch(const IterableStopwatch&) = delete;
+  IterableStopwatch& operator=(const IterableStopwatch&) = delete;
+
   ~IterableStopwatch();
 
   void NextLap();
@@ -49,8 +54,6 @@ class IterableStopwatch {
   base::TimeTicks begin_;
   std::vector<double> laps_;
   const std::string metric_;
-
-  DISALLOW_COPY_AND_ASSIGN(IterableStopwatch);
 };
 
 }  // namespace tracing

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
 #include "chrome/browser/sync_file_system/sync_action.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
@@ -54,6 +53,10 @@ class SyncWorkerInterface {
   };
 
   SyncWorkerInterface() {}
+
+  SyncWorkerInterface(const SyncWorkerInterface&) = delete;
+  SyncWorkerInterface& operator=(const SyncWorkerInterface&) = delete;
+
   virtual ~SyncWorkerInterface() {}
 
   // Initializes SyncWorkerInterface after constructions of some member classes.
@@ -98,8 +101,6 @@ class SyncWorkerInterface {
 
  private:
   friend class SyncEngineTest;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncWorkerInterface);
 };
 
 }  // namespace drive_backend

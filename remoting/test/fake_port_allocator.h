@@ -24,6 +24,10 @@ class FakePortAllocator : public cricket::BasicPortAllocator {
       rtc::NetworkManager* network_manager,
       rtc::PacketSocketFactory* socket_factory,
       scoped_refptr<protocol::TransportContext> transport_context_);
+
+  FakePortAllocator(const FakePortAllocator&) = delete;
+  FakePortAllocator& operator=(const FakePortAllocator&) = delete;
+
   ~FakePortAllocator() override;
 
   // cricket::BasicPortAllocator overrides.
@@ -35,14 +39,16 @@ class FakePortAllocator : public cricket::BasicPortAllocator {
 
  private:
   scoped_refptr<protocol::TransportContext> transport_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePortAllocator);
 };
 
 class FakePortAllocatorFactory : public protocol::PortAllocatorFactory {
  public:
   FakePortAllocatorFactory(
       scoped_refptr<FakeNetworkDispatcher> fake_network_dispatcher);
+
+  FakePortAllocatorFactory(const FakePortAllocatorFactory&) = delete;
+  FakePortAllocatorFactory& operator=(const FakePortAllocatorFactory&) = delete;
+
   ~FakePortAllocatorFactory() override;
 
   FakePacketSocketFactory* socket_factory() { return socket_factory_.get(); }
@@ -56,8 +62,6 @@ class FakePortAllocatorFactory : public protocol::PortAllocatorFactory {
  private:
   std::unique_ptr<rtc::NetworkManager> network_manager_;
   std::unique_ptr<FakePacketSocketFactory> socket_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePortAllocatorFactory);
 };
 
 }  // namespace remoting

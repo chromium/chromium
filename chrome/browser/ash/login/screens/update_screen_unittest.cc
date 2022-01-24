@@ -36,6 +36,9 @@ class UpdateScreenUnitTest : public testing::Test {
  public:
   UpdateScreenUnitTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
+  UpdateScreenUnitTest(const UpdateScreenUnitTest&) = delete;
+  UpdateScreenUnitTest& operator=(const UpdateScreenUnitTest&) = delete;
+
   // Simulates an update being available (or not).
   // The parameter "update_screen" points to the currently active UpdateScreen.
   // The parameter "available" indicates whether an update is available.
@@ -128,8 +131,6 @@ class UpdateScreenUnitTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateScreenUnitTest);
 };
 
 TEST_F(UpdateScreenUnitTest, HandlesNoUpdate) {

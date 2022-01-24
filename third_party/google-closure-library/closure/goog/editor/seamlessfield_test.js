@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.editor.seamlessfield_test');
 goog.setTestOnly();
@@ -46,7 +38,7 @@ function createSeamlessIframe() {
  * innerHTML and styles.
  * @param {string} innerHTML html for the field contents.
  * @param {?Object} styles Key-value pairs for styles on the field.
- * @return {SeamlessField} The field.
+ * @return {!SeamlessField} The field.
  */
 function initSeamlessField(innerHTML, styles) {
   const field = new SeamlessField('field');
@@ -62,6 +54,7 @@ function initSeamlessField(innerHTML, styles) {
  * and that's not what we want.
  * @param {?Field} fieldObj The field.
  * @param {?HTMLIFrameElement} iframe The iframe.
+ * @suppress {visibility} suppression added to enable type checking
  */
 function assertAttachSeamlessIframeSizesCorrectly(fieldObj, iframe) {
   const size = style.getSize(fieldObj.getOriginalElement());
@@ -122,6 +115,10 @@ testSuite({
     }
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testFieldWithOverflow() {
     if (!BrowserFeature.HAS_CONTENT_EDITABLE) {
       assertAttachSeamlessIframeSizesCorrectly(
@@ -133,6 +130,10 @@ testSuite({
     }
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testFieldWithOverflowAndPadding() {
     if (!BrowserFeature.HAS_CONTENT_EDITABLE) {
       const blendedField =
@@ -164,6 +165,7 @@ testSuite({
         clock.tick(1);
 
         // Capture starting heights.
+        /** @suppress {visibility} suppression added to enable type checking */
         const unwrappedIframeHeight =
             blendedField.getEditableIframe().offsetHeight;
 
@@ -172,6 +174,7 @@ testSuite({
         blendedField.doFieldSizingGecko();
 
         // Iframe should grow as a result.
+        /** @suppress {visibility} suppression added to enable type checking */
         const wrappedIframeHeight =
             blendedField.getEditableIframe().offsetHeight;
         assertTrue(
@@ -186,6 +189,7 @@ testSuite({
     }
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testDispatchIframeResizedForWrapperHeight() {
     if (!BrowserFeature.HAS_CONTENT_EDITABLE) {
       const clock = new MockClock(true);
@@ -221,6 +225,7 @@ testSuite({
     }
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testDispatchIframeResizedForBodyHeight() {
     if (!BrowserFeature.HAS_CONTENT_EDITABLE) {
       const clock = new MockClock(true);
@@ -245,7 +250,9 @@ testSuite({
         assertFalse('Iframe resize must not be dispatched yet', resizeCalled);
 
         // Resize the field to a different body height.
+        /** @suppress {visibility} suppression added to enable type checking */
         const bodyHeight = blendedField.getIframeBodyHeightGecko_();
+        /** @suppress {visibility} suppression added to enable type checking */
         blendedField.getIframeBodyHeightGecko_ = () => bodyHeight + 1;
         blendedField.sizeIframeToBodyHeightGecko_();
         assertTrue('Iframe resize must be dispatched for Body', resizeCalled);
@@ -256,6 +263,10 @@ testSuite({
     }
   },
 
+  /**
+     @suppress {visibility,missingProperties} suppression added to enable type
+     checking
+   */
   testDispatchBlur() {
     if (!BrowserFeature.HAS_CONTENT_EDITABLE &&
         !BrowserFeature.CLEARS_SELECTION_WHEN_FOCUS_LEAVES) {
@@ -271,7 +282,9 @@ testSuite({
       const clearSelection = Range.clearSelection;
       let cleared = false;
       let clearedWindow;
+      /** @suppress {visibility} suppression added to enable type checking */
       blendedField.editableDomHelper = new DomHelper();
+      /** @suppress {visibility} suppression added to enable type checking */
       blendedField.editableDomHelper.getWindow =
           functions.constant(iframe.contentWindow);
       const mockRange = new MockRange();
@@ -299,6 +312,7 @@ testSuite({
     }
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testSetMinHeight() {
     if (!BrowserFeature.HAS_CONTENT_EDITABLE) {
       const clock = new MockClock(true);
@@ -360,6 +374,7 @@ testSuite({
     }
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testStartChangeEvents() {
     if (BrowserFeature.USE_MUTATION_EVENTS) {
       const clock = new MockClock(true);
@@ -449,6 +464,7 @@ testSuite({
     }
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAttachIframe() {
     const blendedField = initSeamlessField('Hi!', {});
     const iframe = createSeamlessIframe();

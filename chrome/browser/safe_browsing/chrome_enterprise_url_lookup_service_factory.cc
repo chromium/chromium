@@ -11,8 +11,9 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/user_population.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
@@ -47,6 +48,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(VerdictCacheManagerFactory::GetInstance());
   DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
+  DependsOn(SafeBrowsingNavigationObserverManagerFactory::GetInstance());
 }
 
 KeyedService*
@@ -58,21 +60,15 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   auto url_loader_factory =
       std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-          g_browser_process->safe_browsing_service()->GetURLLoaderFactory());
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies)) {
-    url_loader_factory =
-        std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-            profile->GetURLLoaderFactory());
-  }
+          profile->GetURLLoaderFactory());
   return new ChromeEnterpriseRealTimeUrlLookupService(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       VerdictCacheManagerFactory::GetForProfile(profile), profile,
-      base::BindRepeating(&safe_browsing::GetUserPopulation, profile),
+      base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           profile),
-      // Referrer chain provider is set to nullptr for enterprise because
-      // it is currently not supported for enterprise users.
-      /*referrer_chain_provider=*/nullptr);
+      SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+          profile));
 }
 
 }  // namespace safe_browsing

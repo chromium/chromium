@@ -9,8 +9,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/macros.h"
-
 #include <wayland-server-core.h>
 
 struct wl_client;
@@ -22,6 +20,10 @@ namespace wl {
 class ServerObject {
  public:
   explicit ServerObject(wl_resource* resource);
+
+  ServerObject(const ServerObject&) = delete;
+  ServerObject& operator=(const ServerObject&) = delete;
+
   virtual ~ServerObject();
 
   wl_resource* resource() const { return resource_; }
@@ -30,8 +32,6 @@ class ServerObject {
 
  private:
   wl_resource* resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServerObject);
 };
 
 template <class T>

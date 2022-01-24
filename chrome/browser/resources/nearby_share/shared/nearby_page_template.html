@@ -6,14 +6,28 @@
     <style include="cr-icons cr-shared-style"></style>
     <style>
       :host {
+        --nearby-page-linear-gradient-color-start: var(--google-blue-50);
         --nearby-page-space-block: 24px;
         --nearby-page-space-inline: 24px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :host {
+          --nearby-page-linear-gradient-color-start:
+              rgba(var(--google-blue-300-rgb), 0.2);
+        }
       }
 
       #pageContainer {
         display: flex;
         flex-direction: column;
         height: 100%;
+      }
+
+      /* pageContainer has tabindex="-1" but is focused with JS for ChromeVox
+      accessibility */
+      #pageContainer:focus {
+        outline: none;
       }
 
       #header {
@@ -33,7 +47,7 @@
       }
 
       #pageTitle {
-        color: var(--cr-primary-text-color);
+        color: var(--cros-text-color-primary);
         font-family: 'Google Sans';
         font-size: 16px;
         font-weight: normal;
@@ -42,7 +56,7 @@
       }
 
       #pageSubTitle {
-        color: var(--cr-secondary-text-color);
+        color: var(--cros-text-color-secondary);
         font-size: 14px;
         font-weight: inherit;
         line-height: 20px;
@@ -74,7 +88,8 @@
       }
     </style>
     <div id="pageContainer" role="dialog" aria-modal="true"
-        aria-labelledby="[[getDialogAriaLabelledBy_(a11yAnnouncedSubTitle)]]">
+        aria-labelledby$="[[getDialogAriaLabelledBy_(a11yAnnouncedSubTitle)]]"
+        tabindex="-1">
       <div id="header">
         <h1 id="pageTitle">[[title]]</h1>
         <h2 id="pageSubTitle"

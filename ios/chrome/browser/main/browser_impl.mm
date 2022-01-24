@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
@@ -30,10 +29,6 @@ BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state)
       std::make_unique<WebStateList>(web_state_list_delegate_.get());
 }
 
-void BrowserImpl::CreateTabModel() {
-  tab_model_ = [[TabModel alloc] initWithBrowser:this];
-}
-
 BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state,
                          std::unique_ptr<WebStateList> web_state_list)
     : browser_state_(browser_state),
@@ -49,10 +44,6 @@ BrowserImpl::~BrowserImpl() {
 
 ChromeBrowserState* BrowserImpl::GetBrowserState() const {
   return browser_state_;
-}
-
-TabModel* BrowserImpl::GetTabModel() const {
-  return tab_model_;
 }
 
 WebStateList* BrowserImpl::GetWebStateList() const {
@@ -76,6 +67,5 @@ std::unique_ptr<Browser> Browser::Create(ChromeBrowserState* browser_state) {
   std::unique_ptr<BrowserImpl> browser =
       std::make_unique<BrowserImpl>(browser_state);
   AttachBrowserAgents(browser.get());
-  browser->CreateTabModel();
   return browser;
 }

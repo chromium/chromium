@@ -9,12 +9,19 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 
 namespace network {
 class TestURLLoaderFactory;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+namespace account_manager {
+class AccountManagerFacade;
+}
+#endif  // defined(OS_CHROMEOS)
 
 class GoogleServiceAuthError;
 
@@ -198,6 +205,11 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
                                           const std::string& given_name,
                                           const std::string& locale,
                                           const std::string& picture_url);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+account_manager::AccountManagerFacade* GetAccountManagerFacade(
+    IdentityManager* identity_manager);
+#endif
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_TEST_UTILS_H_

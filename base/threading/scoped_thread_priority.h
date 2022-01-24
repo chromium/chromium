@@ -72,6 +72,12 @@ class BASE_EXPORT ScopedMayLoadLibraryAtBackgroundPriority {
   explicit ScopedMayLoadLibraryAtBackgroundPriority(
       const Location& from_here,
       std::atomic_bool* already_loaded);
+
+  ScopedMayLoadLibraryAtBackgroundPriority(
+      const ScopedMayLoadLibraryAtBackgroundPriority&) = delete;
+  ScopedMayLoadLibraryAtBackgroundPriority& operator=(
+      const ScopedMayLoadLibraryAtBackgroundPriority&) = delete;
+
   ~ScopedMayLoadLibraryAtBackgroundPriority();
 
  private:
@@ -80,8 +86,6 @@ class BASE_EXPORT ScopedMayLoadLibraryAtBackgroundPriority {
   absl::optional<ThreadPriority> original_thread_priority_;
   std::atomic_bool* const already_loaded_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMayLoadLibraryAtBackgroundPriority);
 };
 
 }  // namespace internal

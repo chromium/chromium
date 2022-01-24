@@ -6,9 +6,11 @@
 
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
+#include "base/test/values_test_util.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/simple_feature.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -24,6 +26,9 @@ class CustomTypesTest : public NativeExtensionBindingsSystemUnittest {
   CustomTypesTest()
       : extension_id_(crx_file::id_util::GenerateId("id")),
         allowlisted_extension_id_(extension_id_) {}
+
+  CustomTypesTest(const CustomTypesTest&) = delete;
+  CustomTypesTest& operator=(const CustomTypesTest&) = delete;
 
   ~CustomTypesTest() override = default;
 
@@ -72,8 +77,6 @@ class CustomTypesTest : public NativeExtensionBindingsSystemUnittest {
  private:
   std::string extension_id_;
   SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlisted_extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomTypesTest);
 };
 
 TEST_F(CustomTypesTest, ContentSettingsUseAfterInvalidation) {
@@ -100,7 +103,82 @@ TEST_F(CustomTypesTest, ChromeSettingsEventUseAfterInvalidation) {
                                 });)");
 }
 
-TEST_F(CustomTypesTest, ContentSettingsInvalidInvocationError) {
+TEST_F(CustomTypesTest, ContentSettingsPromisesForManifestV3) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("foo")
+          .SetManifestKey("manifest_version", 3)
+          .AddPermission("contentSettings")
+          .Build();
+  RegisterExtension(extension);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  ScriptContext* script_context = CreateScriptContext(
+      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+  script_context->set_url(extension->url());
+
+  bindings_system()->UpdateBindingsForContext(script_context);
+
+  v8::Local<v8::Value> settings =
+      V8ValueFromScriptSource(context, "chrome.contentSettings");
+  ASSERT_TRUE(settings->IsObject());
+
+  // Invoking ContentSetting.get() without the required callback should work
+  // and use the promise-based version of the API.
+  {
+    constexpr char kRunGetContentSetting[] = R"(
+        (function(settings) {
+          return settings.javascript.get({primaryUrl: "https://chrome.org"});
+        }))";
+    v8::Local<v8::Function> run_get_content_setting =
+        FunctionFromString(context, kRunGetContentSetting);
+    v8::Local<v8::Value> args[] = {settings};
+    v8::Local<v8::Value> return_value = RunFunctionOnGlobal(
+        run_get_content_setting, context, base::size(args), args);
+
+    ASSERT_TRUE(return_value->IsPromise());
+    v8::Local<v8::Promise> promise = return_value.As<v8::Promise>();
+
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+    EXPECT_EQ(extension->id(), last_params().extension_id);
+    EXPECT_EQ("contentSettings.get", last_params().name);
+    EXPECT_EQ(extension->url(), last_params().source_url);
+    // We treat returning a promise as having a callback in the request params.
+    EXPECT_TRUE(last_params().has_callback);
+    EXPECT_THAT(last_params().arguments,
+                base::test::IsJson(
+                    R"(["javascript", {"primaryUrl": "https://chrome.org"}])"));
+
+    bindings_system()->HandleResponse(
+        last_params().request_id, /*success=*/true,
+        *ListValueFromString(R"([{"setting": "block"}])"),
+        /*error=*/std::string());
+
+    EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+    EXPECT_EQ(R"({"setting":"block"})", V8ToString(promise->Result(), context));
+  }
+
+  // Invoking ContentSetting.set() without the required argument should trigger
+  // an error.
+  {
+    constexpr char kRunSetContentSetting[] =
+        "(function(settings) { settings.javascript.set(); })";
+    v8::Local<v8::Function> run_set_content_setting =
+        FunctionFromString(context, kRunSetContentSetting);
+    v8::Local<v8::Value> args[] = {settings};
+    RunFunctionAndExpectError(
+        run_set_content_setting, context, base::size(args), args,
+        "Uncaught TypeError: " +
+            api_errors::InvocationError(
+                "contentSettings.ContentSetting.set",
+                "object details, optional function callback",
+                "No matching signature."));
+  }
+}
+
+TEST_F(CustomTypesTest, ContentSettingsInvalidInvocationForManifestV2) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo").AddPermission("contentSettings").Build();
   RegisterExtension(extension);
@@ -118,22 +196,117 @@ TEST_F(CustomTypesTest, ContentSettingsInvalidInvocationError) {
       V8ValueFromScriptSource(context, "chrome.contentSettings");
   ASSERT_TRUE(settings->IsObject());
 
-  // Invoke ContentSetting.set() without a required argument to trigger an
-  // error.
-  constexpr char kRunSetContentSetting[] =
-      "(function(settings) { settings.javascript.set(); })";
-  v8::Local<v8::Function> run_set_content_setting =
-      FunctionFromString(context, kRunSetContentSetting);
-  v8::Local<v8::Value> args[] = {settings};
-  RunFunctionAndExpectError(
-      run_set_content_setting, context, base::size(args), args,
-      "Uncaught TypeError: " + api_errors::InvocationError(
-                                   "contentSettings.ContentSetting.set",
-                                   "object details, optional function callback",
-                                   "No matching signature."));
+  // Invoking ContentSetting.get() without the required callback should
+  // trigger an error and not get the promise-based version of the API.
+  {
+    constexpr char kRunGetContentSetting[] = R"(
+        (function(settings) {
+          return settings.javascript.get({primaryUrl: "https://chrome.org"});
+        }))";
+    v8::Local<v8::Function> run_get_content_setting =
+        FunctionFromString(context, kRunGetContentSetting);
+    v8::Local<v8::Value> args[] = {settings};
+    RunFunctionAndExpectError(
+        run_get_content_setting, context, base::size(args), args,
+        "Uncaught TypeError: " +
+            api_errors::InvocationError("contentSettings.ContentSetting.get",
+                                        "object details, function callback",
+                                        "No matching signature."));
+  }
+
+  // Invoking ContentSetting.set() without the required argument should trigger
+  // an error.
+  {
+    constexpr char kRunSetContentSetting[] =
+        "(function(settings) { settings.javascript.set(); })";
+    v8::Local<v8::Function> run_set_content_setting =
+        FunctionFromString(context, kRunSetContentSetting);
+    v8::Local<v8::Value> args[] = {settings};
+    RunFunctionAndExpectError(
+        run_set_content_setting, context, base::size(args), args,
+        "Uncaught TypeError: " +
+            api_errors::InvocationError(
+                "contentSettings.ContentSetting.set",
+                "object details, optional function callback",
+                "No matching signature."));
+  }
 }
 
-TEST_F(CustomTypesTest, ChromeSettingsInvalidInvocationError) {
+TEST_F(CustomTypesTest, ChromeSettingPromisesForManifestV3) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("foo")
+          .SetManifestKey("manifest_version", 3)
+          .AddPermission("privacy")
+          .Build();
+  RegisterExtension(extension);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  ScriptContext* script_context = CreateScriptContext(
+      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+  script_context->set_url(extension->url());
+
+  bindings_system()->UpdateBindingsForContext(script_context);
+
+  v8::Local<v8::Value> settings =
+      V8ValueFromScriptSource(context, "chrome.privacy");
+  ASSERT_TRUE(settings->IsObject());
+
+  // Invoking ChromeSetting.get() without the required callback should work
+  // and use the promise-based version of the API.
+  {
+    constexpr char kRunGetChromeSetting[] = R"(
+        (function(settings) {
+          return settings.websites.doNotTrackEnabled.get({});
+        }))";
+    v8::Local<v8::Function> run_get_chrome_setting =
+        FunctionFromString(context, kRunGetChromeSetting);
+    v8::Local<v8::Value> args[] = {settings};
+    v8::Local<v8::Value> return_value = RunFunctionOnGlobal(
+        run_get_chrome_setting, context, base::size(args), args);
+
+    ASSERT_TRUE(return_value->IsPromise());
+    v8::Local<v8::Promise> promise = return_value.As<v8::Promise>();
+
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+    EXPECT_EQ(extension->id(), last_params().extension_id);
+    EXPECT_EQ("types.ChromeSetting.get", last_params().name);
+    EXPECT_EQ(extension->url(), last_params().source_url);
+    // We treat returning a promise as having a callback in the request params.
+    EXPECT_TRUE(last_params().has_callback);
+    EXPECT_THAT(last_params().arguments,
+                base::test::IsJson(R"(["doNotTrackEnabled", {}])"));
+
+    bindings_system()->HandleResponse(
+        last_params().request_id, /*success=*/true,
+        *ListValueFromString(R"([{"value": false}])"),
+        /*error=*/std::string());
+
+    EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+    EXPECT_EQ(R"({"value":false})", V8ToString(promise->Result(), context));
+  }
+
+  // Invoking ChromeSetting.set() without the required argument should trigger
+  // an error.
+  {
+    constexpr char kRunSetChromeSetting[] =
+        "(function(settings) { settings.websites.doNotTrackEnabled.set(); })";
+    v8::Local<v8::Function> run_set_chrome_setting =
+        FunctionFromString(context, kRunSetChromeSetting);
+    v8::Local<v8::Value> args[] = {settings};
+    RunFunctionAndExpectError(
+        run_set_chrome_setting, context, base::size(args), args,
+        "Uncaught TypeError: " +
+            api_errors::InvocationError(
+                "types.ChromeSetting.set",
+                "object details, optional function callback",
+                "No matching signature."));
+  }
+}
+
+TEST_F(CustomTypesTest, ChromeSettingInvalidInvocationForManifestV2) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo").AddPermission("privacy").Build();
   RegisterExtension(extension);
@@ -151,19 +324,39 @@ TEST_F(CustomTypesTest, ChromeSettingsInvalidInvocationError) {
       V8ValueFromScriptSource(context, "chrome.privacy");
   ASSERT_TRUE(settings->IsObject());
 
-  // Invoke ChromeSetting.set() without a required argument to trigger an
+  // Invoking ChromeSetting.get() without the required callback should trigger
+  // an error and not get the promise-based version of the API.
+  {
+    constexpr char kRunGetChromeSetting[] =
+        "(function(settings) { return "
+        "settings.websites.doNotTrackEnabled.get({}); })";
+    v8::Local<v8::Function> run_get_chrome_setting =
+        FunctionFromString(context, kRunGetChromeSetting);
+    v8::Local<v8::Value> args[] = {settings};
+    RunFunctionAndExpectError(
+        run_get_chrome_setting, context, base::size(args), args,
+        "Uncaught TypeError: " +
+            api_errors::InvocationError("types.ChromeSetting.get",
+                                        "object details, function callback",
+                                        "No matching signature."));
+  }
+
+  // Invoking ChromeSetting.set() without the required argument to trigger an
   // error.
-  constexpr char kRunSetChromeSetting[] =
-      "(function(settings) { settings.websites.doNotTrackEnabled.set(); })";
-  v8::Local<v8::Function> run_set_chrome_setting =
-      FunctionFromString(context, kRunSetChromeSetting);
-  v8::Local<v8::Value> args[] = {settings};
-  RunFunctionAndExpectError(
-      run_set_chrome_setting, context, base::size(args), args,
-      "Uncaught TypeError: " + api_errors::InvocationError(
-                                   "types.ChromeSetting.set",
-                                   "object details, optional function callback",
-                                   "No matching signature."));
+  {
+    constexpr char kRunSetChromeSetting[] =
+        "(function(settings) { settings.websites.doNotTrackEnabled.set(); })";
+    v8::Local<v8::Function> run_set_chrome_setting =
+        FunctionFromString(context, kRunSetChromeSetting);
+    v8::Local<v8::Value> args[] = {settings};
+    RunFunctionAndExpectError(
+        run_set_chrome_setting, context, base::size(args), args,
+        "Uncaught TypeError: " +
+            api_errors::InvocationError(
+                "types.ChromeSetting.set",
+                "object details, optional function callback",
+                "No matching signature."));
+  }
 }
 
 }  // namespace extensions

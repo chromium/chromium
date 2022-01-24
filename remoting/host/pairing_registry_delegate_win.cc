@@ -218,11 +218,13 @@ bool PairingRegistryDelegateWin::Save(const PairingRegistry::Pairing& pairing) {
   std::unique_ptr<base::DictionaryValue> pairing_json = pairing.ToValue();
 
   // Extract the shared secret to a separate dictionary.
-  std::unique_ptr<base::Value> secret_key;
-  CHECK(pairing_json->Remove(PairingRegistry::kSharedSecretKey, &secret_key));
+  absl::optional<base::Value> secret_key =
+      pairing_json->ExtractKey(PairingRegistry::kSharedSecretKey);
+  CHECK(secret_key.has_value());
   std::unique_ptr<base::DictionaryValue> secret_json(
       new base::DictionaryValue());
-  secret_json->Set(PairingRegistry::kSharedSecretKey, std::move(secret_key));
+  secret_json->SetKey(PairingRegistry::kSharedSecretKey,
+                      std::move(*secret_key));
 
   // presubmit: allow wstring
   std::wstring value_name = base::UTF8ToWide(pairing.client_id());

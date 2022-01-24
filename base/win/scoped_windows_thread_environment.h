@@ -14,12 +14,15 @@ namespace win {
 class ScopedWindowsThreadEnvironment {
  public:
   ScopedWindowsThreadEnvironment() = default;
+
+  ScopedWindowsThreadEnvironment(const ScopedWindowsThreadEnvironment&) =
+      delete;
+  ScopedWindowsThreadEnvironment& operator=(
+      const ScopedWindowsThreadEnvironment&) = delete;
+
   virtual ~ScopedWindowsThreadEnvironment() = default;
 
   virtual bool Succeeded() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedWindowsThreadEnvironment);
 };
 
 }  // namespace win

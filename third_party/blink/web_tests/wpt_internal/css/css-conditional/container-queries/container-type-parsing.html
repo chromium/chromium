@@ -12,13 +12,16 @@ test_valid_value('container-type', 'revert');
 test_valid_value('container-type', 'none');
 test_valid_value('container-type', 'inline-size');
 test_valid_value('container-type', 'block-size');
-test_valid_value('container-type', 'inline-size block-size');
-test_valid_value('container-type', 'block-size inline-size', 'inline-size block-size');
+test_valid_value('container-type', 'size');
 
 test_invalid_value('container-type', 'none none');
 test_invalid_value('container-type', 'none inline-size');
 test_invalid_value('container-type', 'inline-size none');
 test_invalid_value('container-type', 'inline-size inline-size');
+test_invalid_value('container-type', 'inline-size block-size');
+test_invalid_value('container-type', 'block-size inline-size');
+test_invalid_value('container-type', 'size inline-size');
+test_invalid_value('container-type', 'inline-size size');
 test_invalid_value('container-type', 'none, none');
 test_invalid_value('container-type', 'foo');
 test_invalid_value('container-type', '"foo"');
@@ -26,4 +29,5 @@ test_invalid_value('container-type', 'foo, bar');
 test_invalid_value('container-type', '#fff');
 test_invalid_value('container-type', '1px');
 test_invalid_value('container-type', 'default');
+test_invalid_value('container-type', 'size nonsense');
 </script>

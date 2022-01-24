@@ -81,7 +81,7 @@ void BaseWebUIHandler::MaybeRecordIncomingEvent(
 
 void BaseWebUIHandler::OnRawCallback(
     const std::string& function_name,
-    const content::WebUI::MessageCallback callback,
+    const content::WebUI::DeprecatedMessageCallback& callback,
     const base::ListValue* args) {
   MaybeRecordIncomingEvent(function_name, args);
   callback.Run(args);

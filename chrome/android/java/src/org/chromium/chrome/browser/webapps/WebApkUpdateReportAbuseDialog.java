@@ -36,6 +36,9 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
 
     private static final String TAG = "UpdateReportAbuseDlg";
 
+    // The Activity context to use.
+    private Context mActivityContext;
+
     // The modal dialog manager to use.
     private ModalDialogManager mModalDialogManager;
 
@@ -54,8 +57,10 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     // Notifies the parent (dialog beneath us) that uninstalling was the action taken by the user.
     private Callback mOnUninstallCallback;
 
-    public WebApkUpdateReportAbuseDialog(ModalDialogManager manager, String appPackageName,
-            String appShortName, boolean showAbuseCheckbox, Callback callback) {
+    public WebApkUpdateReportAbuseDialog(Context activityContext, ModalDialogManager manager,
+            String appPackageName, String appShortName, boolean showAbuseCheckbox,
+            Callback callback) {
+        mActivityContext = activityContext;
         mModalDialogManager = manager;
         mAppPackageName = appPackageName;
         mAppShortName = appShortName;
@@ -76,7 +81,8 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
                         .with(ModalDialogProperties.TITLE, title)
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                                 R.string.webapk_report_abuse_confirm)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
@@ -123,15 +129,14 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     }
 
     private void showAppInfoToUninstall() {
-        Context context = ContextUtils.getApplicationContext();
-        if (!PackageUtils.isPackageInstalled(context, mAppPackageName)) {
-            Log.i(TAG, "WebApk not found:" + mAppPackageName);
+        if (!PackageUtils.isPackageInstalled(mActivityContext, mAppPackageName)) {
+            Log.i(TAG, "WebApk not found: " + mAppPackageName);
             return;
         }
 
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.setData(Uri.parse("package:" + mAppPackageName));
-        context.startActivity(intent);
+        mActivityContext.startActivity(intent);
     }
 }

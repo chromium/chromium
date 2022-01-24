@@ -14,11 +14,9 @@
 
 namespace feed {
 namespace {
-using base::TimeDelta;
 
-const base::Time kAnchorTime =
-    base::Time::UnixEpoch() + TimeDelta::FromHours(6);
-const base::TimeDelta kDefaultScheduleInterval = base::TimeDelta::FromHours(24);
+const base::Time kAnchorTime = base::Time::UnixEpoch() + base::Hours(6);
+const base::TimeDelta kDefaultScheduleInterval = base::Hours(24);
 
 std::string ToJSON(const base::Value& value) {
   std::string json;
@@ -32,7 +30,7 @@ std::string ToJSON(const base::Value& value) {
 TEST(RequestSchedule, CanSerialize) {
   RequestSchedule schedule;
   schedule.anchor_time = kAnchorTime;
-  schedule.refresh_offsets = {TimeDelta::FromHours(1), TimeDelta::FromHours(6)};
+  schedule.refresh_offsets = {base::Hours(1), base::Hours(6)};
 
   const base::Value schedule_value = RequestScheduleToValue(schedule);
   ASSERT_EQ(R"({
@@ -60,16 +58,16 @@ class NextScheduledRequestTimeTest : public testing::Test {
 TEST_F(NextScheduledRequestTimeTest, NormalUsage) {
   RequestSchedule schedule;
   schedule.anchor_time = kAnchorTime;
-  schedule.refresh_offsets = {TimeDelta::FromHours(1), TimeDelta::FromHours(6)};
+  schedule.refresh_offsets = {base::Hours(1), base::Hours(6)};
 
   // |kNow| is in the normal range [kAnchorTime, kAnchorTime+1hr)
-  base::Time kNow = kAnchorTime + TimeDelta::FromMinutes(12);
-  EXPECT_EQ(kAnchorTime + TimeDelta::FromHours(1),
+  base::Time kNow = kAnchorTime + base::Minutes(12);
+  EXPECT_EQ(kAnchorTime + base::Hours(1),
             NextScheduledRequestTime(kNow, &schedule));
-  kNow += TimeDelta::FromHours(1);
-  EXPECT_EQ(kAnchorTime + TimeDelta::FromHours(6),
+  kNow += base::Hours(1);
+  EXPECT_EQ(kAnchorTime + base::Hours(6),
             NextScheduledRequestTime(kNow, &schedule));
-  kNow += TimeDelta::FromHours(6);
+  kNow += base::Hours(6);
   EXPECT_EQ(kNow + kDefaultScheduleInterval,
             NextScheduledRequestTime(kNow, &schedule));
 }
@@ -77,12 +75,12 @@ TEST_F(NextScheduledRequestTimeTest, NormalUsage) {
 TEST_F(NextScheduledRequestTimeTest, NowPastRequestTimeSkipsRequest) {
   RequestSchedule schedule;
   schedule.anchor_time = kAnchorTime;
-  schedule.refresh_offsets = {TimeDelta::FromHours(1), TimeDelta::FromHours(6)};
+  schedule.refresh_offsets = {base::Hours(1), base::Hours(6)};
 
-  base::Time kNow = kAnchorTime + TimeDelta::FromMinutes(61);
-  EXPECT_EQ(kAnchorTime + TimeDelta::FromHours(6),
+  base::Time kNow = kAnchorTime + base::Minutes(61);
+  EXPECT_EQ(kAnchorTime + base::Hours(6),
             NextScheduledRequestTime(kNow, &schedule));
-  kNow += TimeDelta::FromHours(6);
+  kNow += base::Hours(6);
   EXPECT_EQ(kNow + kDefaultScheduleInterval,
             NextScheduledRequestTime(kNow, &schedule));
 }
@@ -90,9 +88,9 @@ TEST_F(NextScheduledRequestTimeTest, NowPastRequestTimeSkipsRequest) {
 TEST_F(NextScheduledRequestTimeTest, NowPastAllRequestTimes) {
   RequestSchedule schedule;
   schedule.anchor_time = kAnchorTime;
-  schedule.refresh_offsets = {TimeDelta::FromHours(1), TimeDelta::FromHours(6)};
+  schedule.refresh_offsets = {base::Hours(1), base::Hours(6)};
 
-  base::Time kNow = kAnchorTime + TimeDelta::FromHours(7);
+  base::Time kNow = kAnchorTime + base::Hours(7);
   EXPECT_EQ(kNow + kDefaultScheduleInterval,
             NextScheduledRequestTime(kNow, &schedule));
 }
@@ -100,33 +98,29 @@ TEST_F(NextScheduledRequestTimeTest, NowPastAllRequestTimes) {
 TEST_F(NextScheduledRequestTimeTest, NowInPast) {
   RequestSchedule schedule;
   schedule.anchor_time = kAnchorTime;
-  schedule.refresh_offsets = {TimeDelta::FromHours(1), TimeDelta::FromHours(6)};
+  schedule.refresh_offsets = {base::Hours(1), base::Hours(6)};
 
   // Since |kNow| is in the past, deltas are recomputed using |kNow|.
-  base::Time kNow = kAnchorTime - TimeDelta::FromMinutes(12);
-  EXPECT_EQ(kNow + TimeDelta::FromHours(1),
-            NextScheduledRequestTime(kNow, &schedule));
+  base::Time kNow = kAnchorTime - base::Minutes(12);
+  EXPECT_EQ(kNow + base::Hours(1), NextScheduledRequestTime(kNow, &schedule));
   EXPECT_EQ(kNow, schedule.anchor_time);
 }
 
 TEST_F(NextScheduledRequestTimeTest, NowInFarFuture) {
   RequestSchedule schedule;
   schedule.anchor_time = kAnchorTime;
-  schedule.refresh_offsets = {TimeDelta::FromHours(1), TimeDelta::FromHours(6)};
+  schedule.refresh_offsets = {base::Hours(1), base::Hours(6)};
 
   // Since |kNow| is in the far future, deltas are recomputed using |kNow|.
-  base::Time kNow = kAnchorTime + TimeDelta::FromDays(12);
-  EXPECT_EQ(kNow + TimeDelta::FromHours(1),
-            NextScheduledRequestTime(kNow, &schedule));
+  base::Time kNow = kAnchorTime + base::Days(12);
+  EXPECT_EQ(kNow + base::Hours(1), NextScheduledRequestTime(kNow, &schedule));
   EXPECT_EQ(kNow, schedule.anchor_time);
 }
 
 class ContentLifetimeTest : public testing::Test {
  public:
-  const base::TimeDelta kDefaultContentExpiration =
-      base::TimeDelta::FromHours(24);
-  const base::TimeDelta kDefaultStaleContentThreshold =
-      base::TimeDelta::FromHours(4);
+  const base::TimeDelta kDefaultContentExpiration = base::Hours(24);
+  const base::TimeDelta kDefaultStaleContentThreshold = base::Hours(4);
 
   void SetUp() override {
     Config config = GetFeedConfig();
@@ -156,7 +150,7 @@ class ContentLifetimeTest : public testing::Test {
   }
 
   base::TimeDelta WithEpsilon(base::TimeDelta duration) {
-    return duration + base::TimeDelta::FromMilliseconds(1);
+    return duration + base::Milliseconds(1);
   }
 
   feedstore::Metadata metadata_;
@@ -167,38 +161,37 @@ TEST_F(ContentLifetimeTest, ShouldWaitForNewContent_DefaultThreshold) {
                                        kDefaultStaleContentThreshold));
   EXPECT_TRUE(ShouldWaitForNewContent(
       metadata_, kForYouStream, WithEpsilon(kDefaultStaleContentThreshold)));
-  EXPECT_TRUE(ShouldWaitForNewContent(metadata_, kForYouStream,
-                                      base::TimeDelta::FromHours(5)));
-  EXPECT_FALSE(ShouldWaitForNewContent(metadata_, kForYouStream,
-                                       base::TimeDelta::FromHours(3)));
+  EXPECT_TRUE(
+      ShouldWaitForNewContent(metadata_, kForYouStream, base::Hours(5)));
+  EXPECT_FALSE(
+      ShouldWaitForNewContent(metadata_, kForYouStream, base::Hours(3)));
 }
 
 TEST_F(ContentLifetimeTest, ShouldWaitForNewContent_ServerThreshold_Valid) {
-  set_stale_age(base::TimeDelta::FromMinutes(60));
-  EXPECT_TRUE(ShouldWaitForNewContent(metadata_, kForYouStream,
-                                      base::TimeDelta::FromMinutes(61)));
-  EXPECT_FALSE(ShouldWaitForNewContent(metadata_, kForYouStream,
-                                       base::TimeDelta::FromMinutes(59)));
+  set_stale_age(base::Minutes(60));
+  EXPECT_TRUE(
+      ShouldWaitForNewContent(metadata_, kForYouStream, base::Minutes(61)));
+  EXPECT_FALSE(
+      ShouldWaitForNewContent(metadata_, kForYouStream, base::Minutes(59)));
 }
 
 TEST_F(ContentLifetimeTest, ShouldWaitForNewContent_ServerThreshold_Invalid) {
   // We ignore stale ages greater than the default.
   EXPECT_TRUE(ShouldWaitForNewContent(
       metadata_, kForYouStream, WithEpsilon(kDefaultStaleContentThreshold)));
-  set_stale_age(kDefaultStaleContentThreshold +
-                base::TimeDelta::FromMinutes(1));
+  set_stale_age(kDefaultStaleContentThreshold + base::Minutes(1));
   EXPECT_TRUE(ShouldWaitForNewContent(
       metadata_, kForYouStream, WithEpsilon(kDefaultStaleContentThreshold)));
 
   // We ignore zero durations.
-  set_stale_age(base::TimeDelta::FromDays(0));
+  set_stale_age(base::Days(0));
   EXPECT_FALSE(ShouldWaitForNewContent(metadata_, kForYouStream,
                                        kDefaultStaleContentThreshold));
   EXPECT_TRUE(ShouldWaitForNewContent(
       metadata_, kForYouStream, WithEpsilon(kDefaultStaleContentThreshold)));
 
   // We ignore negative durations.
-  set_stale_age(base::TimeDelta::FromDays(-1));
+  set_stale_age(base::Days(-1));
   EXPECT_FALSE(ShouldWaitForNewContent(metadata_, kForYouStream,
                                        kDefaultStaleContentThreshold));
   EXPECT_TRUE(ShouldWaitForNewContent(
@@ -208,40 +201,39 @@ TEST_F(ContentLifetimeTest, ShouldWaitForNewContent_ServerThreshold_Invalid) {
 TEST_F(ContentLifetimeTest, ContentInvalidFromAge_DefaultThreshold) {
   EXPECT_FALSE(ContentInvalidFromAge(metadata_, kForYouStream,
                                      kDefaultContentExpiration));
-  EXPECT_TRUE(ContentInvalidFromAge(
-      metadata_, kForYouStream,
-      kDefaultContentExpiration + base::TimeDelta::FromMilliseconds(1)));
-  EXPECT_TRUE(ContentInvalidFromAge(metadata_, kForYouStream,
-                                    base::TimeDelta::FromHours(25)));
-  EXPECT_FALSE(ContentInvalidFromAge(metadata_, kForYouStream,
-                                     base::TimeDelta::FromHours(23)));
+  EXPECT_TRUE(
+      ContentInvalidFromAge(metadata_, kForYouStream,
+                            kDefaultContentExpiration + base::Milliseconds(1)));
+  EXPECT_TRUE(ContentInvalidFromAge(metadata_, kForYouStream, base::Hours(25)));
+  EXPECT_FALSE(
+      ContentInvalidFromAge(metadata_, kForYouStream, base::Hours(23)));
 }
 
 TEST_F(ContentLifetimeTest, ContentInvalidFromAge_ServerThreshold_Valid) {
-  set_invalid_age(base::TimeDelta::FromMinutes(60));
-  EXPECT_TRUE(ContentInvalidFromAge(metadata_, kForYouStream,
-                                    base::TimeDelta::FromMinutes(61)));
-  EXPECT_FALSE(ContentInvalidFromAge(metadata_, kForYouStream,
-                                     base::TimeDelta::FromMinutes(59)));
+  set_invalid_age(base::Minutes(60));
+  EXPECT_TRUE(
+      ContentInvalidFromAge(metadata_, kForYouStream, base::Minutes(61)));
+  EXPECT_FALSE(
+      ContentInvalidFromAge(metadata_, kForYouStream, base::Minutes(59)));
 }
 
 TEST_F(ContentLifetimeTest, ContentInvalidFromAge_ServerThreshold_Invalid) {
   // We ignore stale ages greater than the default.
   EXPECT_TRUE(ContentInvalidFromAge(metadata_, kForYouStream,
                                     WithEpsilon(kDefaultContentExpiration)));
-  set_invalid_age(kDefaultContentExpiration + base::TimeDelta::FromMinutes(1));
+  set_invalid_age(kDefaultContentExpiration + base::Minutes(1));
   EXPECT_TRUE(ContentInvalidFromAge(metadata_, kForYouStream,
                                     WithEpsilon(kDefaultContentExpiration)));
 
   // We ignore zero durations.
-  set_invalid_age(base::TimeDelta::FromDays(0));
+  set_invalid_age(base::Days(0));
   EXPECT_FALSE(ContentInvalidFromAge(metadata_, kForYouStream,
                                      kDefaultContentExpiration));
   EXPECT_TRUE(ContentInvalidFromAge(metadata_, kForYouStream,
                                     WithEpsilon(kDefaultContentExpiration)));
 
   // We ignore negative durations.
-  set_invalid_age(base::TimeDelta::FromDays(-1));
+  set_invalid_age(base::Days(-1));
   EXPECT_FALSE(ContentInvalidFromAge(metadata_, kForYouStream,
                                      kDefaultContentExpiration));
   EXPECT_TRUE(ContentInvalidFromAge(metadata_, kForYouStream,

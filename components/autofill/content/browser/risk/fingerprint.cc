@@ -18,7 +18,6 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/cpu.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
@@ -92,13 +91,9 @@ void AddFontsToFingerprint(const base::ListValue& fonts,
   for (const auto& it : fonts.GetList()) {
     // Each item in the list is a two-element list such that the first element
     // is the font family and the second is the font name.
-    const base::ListValue* font_description = nullptr;
-    bool success = it.GetAsList(&font_description);
-    DCHECK(success);
+    DCHECK(it.is_list());
 
-    std::string font_name;
-    success = font_description->GetString(1, &font_name);
-    DCHECK(success);
+    std::string font_name = it.GetList()[1].GetString();
 
     machine->add_font(font_name);
   }
@@ -196,6 +191,9 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
       const base::TimeDelta& timeout,
       base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback);
 
+  FingerprintDataLoader(const FingerprintDataLoader&) = delete;
+  FingerprintDataLoader& operator=(const FingerprintDataLoader&) = delete;
+
  private:
   ~FingerprintDataLoader() override {}
 
@@ -255,8 +253,6 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
   // For invalidating asynchronous callbacks that might arrive after |this|
   // instance is destroyed.
   base::WeakPtrFactory<FingerprintDataLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintDataLoader);
 };
 
 FingerprintDataLoader::FingerprintDataLoader(
@@ -483,12 +479,12 @@ void GetFingerprint(
   content::RenderWidgetHostView* host_view =
       web_contents->GetRenderWidgetHostView();
   if (host_view)
-    host_view->GetRenderWidgetHost()->GetScreenInfo(&screen_info);
+    screen_info = host_view->GetRenderWidgetHost()->GetScreenInfo();
 
   internal::GetFingerprintInternal(
       obfuscated_gaia_id, window_bounds, content_bounds, screen_info, version,
       charset, accept_languages, install_time, app_locale, user_agent,
-      base::TimeDelta::FromSeconds(kTimeoutSeconds), std::move(callback));
+      base::Seconds(kTimeoutSeconds), std::move(callback));
 }
 
 }  // namespace risk

@@ -31,11 +31,14 @@
 #include "base/compiler_specific.h"
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect_outsets.h"
+#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if defined(OS_MAC)
@@ -56,10 +59,10 @@ class PLATFORM_EXPORT IntRect {
 
  public:
   constexpr IntRect() = default;
-  constexpr IntRect(const IntPoint& location, const IntSize& size)
+  constexpr IntRect(const gfx::Point& location, const IntSize& size)
       : location_(location), size_(size) {}
   constexpr IntRect(int x, int y, int width, int height)
-      : location_(IntPoint(x, y)), size_(IntSize(width, height)) {}
+      : location_(gfx::Point(x, y)), size_(IntSize(width, height)) {}
 
   // Use EnclosingIntRect(), EnclosedIntRect(), RoundedIntRect(),
   // PixelSnappedIntRect(), etc. instead.
@@ -71,67 +74,69 @@ class PLATFORM_EXPORT IntRect {
   explicit IntRect(const SkIRect& r)
       : IntRect(r.x(), r.y(), r.width(), r.height()) {}
 
-  constexpr IntPoint Location() const { return location_; }
-  constexpr IntSize Size() const { return size_; }
+  constexpr gfx::Point origin() const { return location_; }
+  constexpr IntSize size() const { return size_; }
 
-  void SetLocation(const IntPoint& location) { location_ = location; }
-  void SetSize(const IntSize& size) { size_ = size; }
+  gfx::Vector2d OffsetFromOrigin() const {
+    return location_.OffsetFromOrigin();
+  }
 
-  constexpr int X() const { return location_.X(); }
-  constexpr int Y() const { return location_.Y(); }
-  constexpr int MaxX() const { return X() + Width(); }
-  constexpr int MaxY() const { return Y() + Height(); }
-  constexpr int Width() const { return size_.Width(); }
-  constexpr int Height() const { return size_.Height(); }
+  void set_origin(const gfx::Point& location) { location_ = location; }
+  void set_size(const IntSize& size) { size_ = size; }
 
-  void SetX(int x) { location_.SetX(x); }
-  void SetY(int y) { location_.SetY(y); }
-  void SetWidth(int width) { size_.SetWidth(width); }
-  void SetHeight(int height) { size_.SetHeight(height); }
+  constexpr int x() const { return location_.x(); }
+  constexpr int y() const { return location_.y(); }
+  constexpr int right() const { return x() + width(); }
+  constexpr int bottom() const { return y() + height(); }
+  constexpr int width() const { return size_.width(); }
+  constexpr int height() const { return size_.height(); }
+
+  void set_x(int x) { location_.set_x(x); }
+  void set_y(int y) { location_.set_y(y); }
+  void set_width(int width) { size_.set_width(width); }
+  void set_height(int height) { size_.set_height(height); }
 
   constexpr bool IsEmpty() const { return size_.IsEmpty(); }
 
   // NOTE: The result is rounded to integer values, and thus may be not the
   // exact center point.
-  IntPoint Center() const {
-    return IntPoint(X() + Width() / 2, Y() + Height() / 2);
+  gfx::Point CenterPoint() const {
+    return gfx::Point(x() + width() / 2, y() + height() / 2);
   }
 
-  void Move(const IntSize& size) { location_ += size; }
-  void MoveBy(const IntPoint& offset) {
-    location_.Move(offset.X(), offset.Y());
+  void Offset(const IntSize& size) { Offset(ToGfxVector2d(size)); }
+  void Offset(const gfx::Vector2d& offset) { location_ += offset; }
+  void MoveBy(const gfx::Point& offset) {
+    location_.Offset(offset.x(), offset.y());
   }
-  void Move(int dx, int dy) { location_.Move(dx, dy); }
-  void SaturatedMove(int dx, int dy) { location_.SaturatedMove(dx, dy); }
+  void Offset(int dx, int dy) { location_.Offset(dx, dy); }
+  void SaturatedMove(int dx, int dy) { location_.Offset(dx, dy); }
 
   void Expand(const IntSize& size) { size_ += size; }
-  void Expand(int dw, int dh) { size_.Expand(dw, dh); }
+  void Expand(int dw, int dh) { size_.Enlarge(dw, dh); }
   void Expand(const IntRectOutsets& outsets) {
-    location_.Move(-outsets.Left(), -outsets.Top());
-    size_.Expand(outsets.Left() + outsets.Right(),
-                 outsets.Top() + outsets.Bottom());
+    location_.Offset(-outsets.Left(), -outsets.Top());
+    size_.Enlarge(outsets.Left() + outsets.Right(),
+                  outsets.Top() + outsets.Bottom());
   }
 
   void Contract(const IntSize& size) { size_ -= size; }
-  void Contract(int dw, int dh) { size_.Expand(-dw, -dh); }
+  void Contract(int dw, int dh) { size_.Enlarge(-dw, -dh); }
 
   void ShiftXEdgeTo(int);
   void ShiftMaxXEdgeTo(int);
   void ShiftYEdgeTo(int);
   void ShiftMaxYEdgeTo(int);
 
-  constexpr IntPoint MinXMinYCorner() const {
-    return location_;
-  }  // typically topLeft
-  constexpr IntPoint MaxXMinYCorner() const {
-    return IntPoint(location_.X() + size_.Width(), location_.Y());
+  constexpr gfx::Point top_right() const {
+    return gfx::Point(location_.x() + size_.width(), location_.y());
   }  // typically topRight
-  constexpr IntPoint MinXMaxYCorner() const {
-    return IntPoint(location_.X(), location_.Y() + size_.Height());
+  constexpr gfx::Point bottom_left() const {
+    return gfx::Point(location_.x(), location_.y() + size_.height());
   }  // typically bottomLeft
-  constexpr IntPoint MaxXMaxYCorner() const {
-    return IntPoint(location_.X() + size_.Width(),
-                    location_.Y() + size_.Height());
+  constexpr gfx::Point bottom_right() const {
+    return gfx::Point(location_.x() + size_.width(),
+                      location_.y() + size_.height());
   }  // typically bottomRight
 
   WARN_UNUSED_RESULT bool Intersects(const IntRect&) const;
@@ -141,65 +146,59 @@ class PLATFORM_EXPORT IntRect {
   // Equivalent to checking if the rect contains a 1x1 rect below and to the
   // right of (px,py).
   bool Contains(int px, int py) const {
-    return px >= X() && px < MaxX() && py >= Y() && py < MaxY();
+    return px >= x() && px < right() && py >= y() && py < bottom();
   }
-  bool Contains(const IntPoint& point) const {
-    return Contains(point.X(), point.Y());
+  bool Contains(const gfx::Point& point) const {
+    return Contains(point.x(), point.y());
   }
 
   void Intersect(const IntRect&);
 
-  // Set this rect to be the intersection of itself and the argument rect
-  // using edge-inclusive geometry.  If the two rectangles overlap but the
-  // overlap region is zero-area (either because one of the two rectangles
-  // is zero-area, or because the rectangles overlap at an edge or a corner),
-  // the result is the zero-area intersection.  The return value indicates
-  // whether the two rectangle actually have an intersection, since checking
-  // the result for isEmpty() is not conclusive.
-  bool InclusiveIntersect(const IntRect&);
-
-  void Unite(const IntRect&);
-  void UniteIfNonZero(const IntRect&);
+  void Union(const IntRect&);
+  void UnionIfNonZero(const IntRect&);
 
   // Besides non-empty rects, this method also unites empty rects (as points or
   // line segments).  For example, union of (100, 100, 0x0) and (200, 200, 50x0)
   // is (100, 100, 150x100).
-  void UniteEvenIfEmpty(const IntRect&);
+  void UnionEvenIfEmpty(const IntRect&);
 
-  void InflateX(int dx) {
-    location_.SetX(location_.X() - dx);
-    size_.SetWidth(size_.Width() + dx + dx);
+  void OutsetX(int dx) {
+    location_.set_x(location_.x() - dx);
+    size_.set_width(size_.width() + dx + dx);
   }
-  void InflateY(int dy) {
-    location_.SetY(location_.Y() - dy);
-    size_.SetHeight(size_.Height() + dy + dy);
+  void OutsetY(int dy) {
+    location_.set_y(location_.y() - dy);
+    size_.set_height(size_.height() + dy + dy);
   }
-  void Inflate(int d) {
-    InflateX(d);
-    InflateY(d);
+  void Outset(int d) {
+    OutsetX(d);
+    OutsetY(d);
   }
   void Scale(float s);
 
-  IntSize DifferenceToPoint(const IntPoint&) const;
-  int DistanceSquaredToPoint(const IntPoint& p) const {
+  IntSize DifferenceToPoint(const gfx::Point&) const;
+  int DistanceSquaredToPoint(const gfx::Point& p) const {
     return DifferenceToPoint(p).DiagonalLengthSquared();
   }
 
   IntRect TransposedRect() const {
-    return IntRect(location_.TransposedPoint(), size_.TransposedSize());
+    return IntRect(location_.y(), location_.x(), size_.height(), size_.width());
   }
 
 #if defined(OS_MAC)
   explicit operator CGRect() const;
 #endif
 
-  operator SkRect() const { return SkRect::MakeLTRB(X(), Y(), MaxX(), MaxY()); }
+  operator SkRect() const {
+    return SkRect::MakeLTRB(x(), y(), right(), bottom());
+  }
   operator SkIRect() const {
-    return SkIRect::MakeLTRB(X(), Y(), MaxX(), MaxY());
+    return SkIRect::MakeLTRB(x(), y(), right(), bottom());
   }
-  constexpr operator gfx::Rect() const {
-    return gfx::Rect(X(), Y(), Width(), Height());
-  }
+
+  // This is deleted during blink geometry type to gfx migration.
+  // Use ToGfxRect() instead.
+  operator gfx::Rect() const = delete;
 
   String ToString() const;
 
@@ -208,52 +207,53 @@ class PLATFORM_EXPORT IntRect {
 
  private:
   void SetLocationAndSizeFromEdges(int left, int top, int right, int bottom) {
-    location_.SetX(left);
-    location_.SetY(top);
-    size_.SetWidth(base::ClampSub(right, left));
-    size_.SetHeight(base::ClampSub(bottom, top));
+    location_.set_x(left);
+    location_.set_y(top);
+    size_.set_width(base::ClampSub(right, left));
+    size_.set_height(base::ClampSub(bottom, top));
   }
 
-  IntPoint location_;
+  gfx::Point location_;
   IntSize size_;
 };
 
-inline IntRect Intersection(const IntRect& a, const IntRect& b) {
+inline IntRect IntersectRects(const IntRect& a, const IntRect& b) {
   IntRect c = a;
   c.Intersect(b);
   return c;
 }
 
-inline IntRect UnionRect(const IntRect& a, const IntRect& b) {
+inline IntRect UnionRects(const IntRect& a, const IntRect& b) {
   IntRect c = a;
-  c.Unite(b);
+  c.Union(b);
   return c;
 }
 
-PLATFORM_EXPORT IntRect UnionRect(const Vector<IntRect>&);
+PLATFORM_EXPORT IntRect UnionRects(const Vector<IntRect>&);
 
-inline IntRect UnionRectEvenIfEmpty(const IntRect& a, const IntRect& b) {
+inline IntRect UnionRectsEvenIfEmpty(const IntRect& a, const IntRect& b) {
   IntRect c = a;
-  c.UniteEvenIfEmpty(b);
+  c.UnionEvenIfEmpty(b);
   return c;
 }
 
-PLATFORM_EXPORT IntRect UnionRectEvenIfEmpty(const Vector<IntRect>&);
-
-// Return a maximum rectangle that is covered by the a or b.
-PLATFORM_EXPORT IntRect MaximumCoveredRect(const IntRect& a, const IntRect& b);
+PLATFORM_EXPORT IntRect UnionRectsEvenIfEmpty(const Vector<IntRect>&);
 
 constexpr IntRect SaturatedRect(const IntRect& r) {
-  return IntRect(r.X(), r.Y(), base::ClampAdd(r.X(), r.Width()) - r.X(),
-                 base::ClampAdd(r.Y(), r.Height()) - r.Y());
+  return IntRect(r.x(), r.y(), base::ClampAdd(r.x(), r.width()) - r.x(),
+                 base::ClampAdd(r.y(), r.height()) - r.y());
 }
 
 constexpr bool operator==(const IntRect& a, const IntRect& b) {
-  return a.Location() == b.Location() && a.Size() == b.Size();
+  return a.origin() == b.origin() && a.size() == b.size();
 }
 
 constexpr bool operator!=(const IntRect& a, const IntRect& b) {
   return !(a == b);
+}
+
+constexpr gfx::Rect ToGfxRect(const IntRect& r) {
+  return gfx::Rect(r.x(), r.y(), r.width(), r.height());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const IntRect&);

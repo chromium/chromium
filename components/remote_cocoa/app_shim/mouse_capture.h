@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 
 @class NSWindow;
@@ -24,6 +23,10 @@ class CocoaMouseCaptureDelegate;
 class REMOTE_COCOA_APP_SHIM_EXPORT CocoaMouseCapture {
  public:
   explicit CocoaMouseCapture(CocoaMouseCaptureDelegate* delegate);
+
+  CocoaMouseCapture(const CocoaMouseCapture&) = delete;
+  CocoaMouseCapture& operator=(const CocoaMouseCapture&) = delete;
+
   ~CocoaMouseCapture();
 
   // Returns the NSWindow with capture or nil if no window has capture
@@ -44,8 +47,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT CocoaMouseCapture {
   // The active event tap for this capture. Owned by this, but can be cleared
   // out early if another instance of CocoaMouseCapture is created.
   std::unique_ptr<ActiveEventTap> active_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(CocoaMouseCapture);
 };
 
 }  // namespace remote_cocoa

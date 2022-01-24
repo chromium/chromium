@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
 import {waitFor} from './test_util.js';
 
 window.onerror = e => chrome.test.fail(e.stack);
@@ -360,6 +362,12 @@ chrome.test.runTests([
     viewer.shadowRoot.querySelector('#toolbar').toggleAnnotation();
     await viewer.loaded;
     chrome.test.assertEq('EMBED', contentElement().tagName);
+    chrome.test.succeed();
+  },
+  async function testSaveAfterAnnotationMode() {
+    const saveData =
+        await viewer.currentController.save(SaveRequestType.EDITED);
+    chrome.test.assertTrue(saveData.editModeForTesting);
     chrome.test.succeed();
   },
 ]);

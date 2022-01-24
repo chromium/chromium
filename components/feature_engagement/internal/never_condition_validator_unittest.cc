@@ -28,6 +28,9 @@ class NeverTestEventModel : public EventModel {
  public:
   NeverTestEventModel() = default;
 
+  NeverTestEventModel(const NeverTestEventModel&) = delete;
+  NeverTestEventModel& operator=(const NeverTestEventModel&) = delete;
+
   void Initialize(OnModelInitializationFinished callback,
                   uint32_t current_day) override {}
 
@@ -45,22 +48,41 @@ class NeverTestEventModel : public EventModel {
 
   void IncrementEvent(const std::string& event_name, uint32_t day) override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NeverTestEventModel);
+  void IncrementSnooze(const std::string& event_name,
+                       uint32_t day,
+                       base::Time time) override {}
+
+  void DismissSnooze(const std::string& event_name) override {}
+
+  base::Time GetLastSnoozeTimestamp(
+      const std::string& event_name) const override {
+    return base::Time();
+  }
+
+  uint32_t GetSnoozeCount(const std::string& event_name,
+                          uint32_t window,
+                          uint32_t current_day) const override {
+    return 0;
+  }
+
+  bool IsSnoozeDismissed(const std::string& event_name) const override {
+    return false;
+  }
 };
 
 class NeverConditionValidatorTest : public ::testing::Test {
  public:
   NeverConditionValidatorTest() = default;
 
+  NeverConditionValidatorTest(const NeverConditionValidatorTest&) = delete;
+  NeverConditionValidatorTest& operator=(const NeverConditionValidatorTest&) =
+      delete;
+
  protected:
   NeverTestEventModel event_model_;
   NeverAvailabilityModel availability_model_;
   NoopDisplayLockController display_lock_controller_;
   NeverConditionValidator validator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NeverConditionValidatorTest);
 };
 
 }  // namespace
@@ -69,12 +91,12 @@ TEST_F(NeverConditionValidatorTest, ShouldNeverMeetConditions) {
   EXPECT_FALSE(validator_
                    .MeetsConditions(kNeverTestFeatureFoo, FeatureConfig(),
                                     event_model_, availability_model_,
-                                    display_lock_controller_, 0u)
+                                    display_lock_controller_, nullptr, 0u)
                    .NoErrors());
   EXPECT_FALSE(validator_
                    .MeetsConditions(kNeverTestFeatureBar, FeatureConfig(),
                                     event_model_, availability_model_,
-                                    display_lock_controller_, 0u)
+                                    display_lock_controller_, nullptr, 0u)
                    .NoErrors());
 }
 

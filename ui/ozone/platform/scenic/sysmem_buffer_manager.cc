@@ -47,6 +47,11 @@ void SysmemBufferManager::Shutdown() {
   allocator_ = nullptr;
 }
 
+fuchsia::sysmem::Allocator_Sync* SysmemBufferManager::GetAllocator() {
+  DCHECK(allocator_);
+  return allocator_.get();
+}
+
 scoped_refptr<SysmemBufferCollection> SysmemBufferManager::CreateCollection(
     VkDevice vk_device,
     gfx::Size size,
@@ -91,7 +96,7 @@ void SysmemBufferManager::RegisterCollection(
     collections_[collection->id()] = collection;
   }
 
-  collection->SetOnDeletedCallback(
+  collection->AddOnDeletedCallback(
       base::BindOnce(&SysmemBufferManager::OnCollectionDestroyed,
                      base::Unretained(this), collection->id()));
 }

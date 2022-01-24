@@ -1,5 +1,2 @@
-monorail {
-  component: "Enterprise"
-}
+mixins: "//components/policy/COMMON_METADATA"
 
-team_email: "chromium-enterprise@chromium.org"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/network_screen.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
@@ -21,7 +22,7 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kConnectionTimeout = base::TimeDelta::FromSeconds(40);
+constexpr base::TimeDelta kConnectionTimeout = base::Seconds(40);
 
 constexpr char kUserActionBackButtonClicked[] = "back";
 constexpr char kUserActionContinueButtonClicked[] = "continue";
@@ -32,11 +33,14 @@ constexpr char kUserActionOfflineDemoSetup[] = "offline-demo-setup";
 // static
 std::string NetworkScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::CONNECTED:
+    case Result::CONNECTED_REGULAR:
+    case Result::CONNECTED_DEMO:
       return "Connected";
     case Result::OFFLINE_DEMO_SETUP:
       return "OfflineDemoSetup";
-    case Result::BACK:
+    case Result::BACK_REGULAR:
+    case Result::BACK_DEMO:
+    case Result::BACK_OS_INSTALL:
       return "Back";
   }
 }
@@ -145,6 +149,13 @@ void NetworkScreen::UnsubscribeNetworkNotification() {
   }
 }
 
+void NetworkScreen::NotifyOnConnection() {
+  if (DemoSetupController::IsOobeDemoSetupFlowInProgress())
+    exit_callback_.Run(Result::CONNECTED_DEMO);
+  else
+    exit_callback_.Run(Result::CONNECTED_REGULAR);
+}
+
 void NetworkScreen::OnConnectionTimeout() {
   StopWaitingForConnection(network_id_);
   if (!network_state_helper_->IsConnected() && view_) {
@@ -203,7 +214,13 @@ void NetworkScreen::WaitForConnection(const std::u16string& network_id) {
 void NetworkScreen::OnBackButtonClicked() {
   if (view_)
     view_->ClearErrors();
-  exit_callback_.Run(Result::BACK);
+
+  if (DemoSetupController::IsOobeDemoSetupFlowInProgress())
+    exit_callback_.Run(Result::BACK_DEMO);
+  else if (switches::IsOsInstallAllowed())
+    exit_callback_.Run(Result::BACK_OS_INSTALL);
+  else
+    exit_callback_.Run(Result::BACK_REGULAR);
 }
 
 void NetworkScreen::OnContinueButtonClicked() {

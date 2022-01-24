@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REMOTE_POWERWASH_JOB_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REMOTE_POWERWASH_JOB_H_
 
-#include "base/macros.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace policy {
@@ -15,6 +14,12 @@ class RemoteCommandsService;
 class DeviceCommandRemotePowerwashJob : public RemoteCommandJob {
  public:
   explicit DeviceCommandRemotePowerwashJob(RemoteCommandsService* service);
+
+  DeviceCommandRemotePowerwashJob(const DeviceCommandRemotePowerwashJob&) =
+      delete;
+  DeviceCommandRemotePowerwashJob& operator=(
+      const DeviceCommandRemotePowerwashJob&) = delete;
+
   ~DeviceCommandRemotePowerwashJob() override;
 
   // RemoteCommandJob:
@@ -28,8 +33,6 @@ class DeviceCommandRemotePowerwashJob : public RemoteCommandJob {
 
  private:
   RemoteCommandsService* const service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandRemotePowerwashJob);
 };
 
 }  // namespace policy

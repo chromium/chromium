@@ -13,7 +13,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "components/sync/protocol/sync.proto";
+import "components/sync/protocol/sync_entity.proto";
 
 // Serialization of the LoopbackServerEntity and its ancestors.
 message LoopbackServerEntity {

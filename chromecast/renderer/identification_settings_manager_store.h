@@ -5,6 +5,8 @@
 #ifndef CHROMECAST_RENDERER_IDENTIFICATION_SETTINGS_MANAGER_STORE_H_
 #define CHROMECAST_RENDERER_IDENTIFICATION_SETTINGS_MANAGER_STORE_H_
 
+#include "base/memory/scoped_refptr.h"
+
 namespace chromecast {
 
 class IdentificationSettingsManager;
@@ -15,8 +17,8 @@ class IdentificationSettingsManagerStore {
  public:
   virtual ~IdentificationSettingsManagerStore() = default;
 
-  virtual IdentificationSettingsManager* GetSettingsManagerFromRenderFrameID(
-      int render_frame_id) = 0;
+  virtual scoped_refptr<IdentificationSettingsManager>
+  GetSettingsManagerFromRenderFrameID(int render_frame_id) = 0;
 };
 
 }  // namespace shell

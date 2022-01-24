@@ -162,7 +162,8 @@ constexpr MessageInfo kChromeLatencyInfo = {kChromeLatencyInfoIndices,
                                             kChromeLatencyInfoComplexMessages};
 
 // Proto Message: ChromeFrameReporter
-constexpr int kChromeFrameReporterIndices[] = {1, 2, 3, 4, 5, -1};
+constexpr int kChromeFrameReporterIndices[] = {1, 2, 3, 4,  5,  6,
+                                               7, 8, 9, 10, 11, -1};
 constexpr MessageInfo kChromeFrameReporter = {kChromeFrameReporterIndices,
                                               nullptr};
 
@@ -206,7 +207,7 @@ constexpr MessageInfo kChromeTaskAnnotator = {kChromeTaskAnnotatorIndices,
                                               nullptr};
 
 // Proto Message: ChromeBrowserContext
-constexpr int kChromeBrowserContextIndices[] = {1, -1};
+constexpr int kChromeBrowserContextIndices[] = {1, 2, -1};
 constexpr MessageInfo kChromeBrowserContext = {kChromeBrowserContextIndices,
                                                nullptr};
 
@@ -245,26 +246,93 @@ constexpr int kFrameTreeNodeInfoIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kFrameTreeNodeInfo = {kFrameTreeNodeInfoIndices, nullptr};
 
 // Proto Message: ChromeHashedPerformanceMark
-constexpr int kChromeHashedPerformanceMarkIndices[] = {1, 3, -1};
+constexpr int kChromeHashedPerformanceMarkIndices[] = {1, 3, 5, 6, -1};
 constexpr MessageInfo kChromeHashedPerformanceMark = {
     kChromeHashedPerformanceMarkIndices, nullptr};
+
+// Proto Message: RenderProcessHost
+constexpr int kRenderProcessHostIndices[] = {1, 3, 4, -1};
+constexpr MessageInfo const* kRenderProcessHostComplexMessages[] = {
+    nullptr, nullptr, &kChromeBrowserContext};
+constexpr MessageInfo kRenderProcessHost = {kRenderProcessHostIndices,
+                                            kRenderProcessHostComplexMessages};
+
+// Proto Message: RenderProcessHostCleanup
+constexpr int kRenderProcessHostCleanupIndices[] = {1, 2, 3, 4, -1};
+constexpr MessageInfo kRenderProcessHostCleanup = {
+    kRenderProcessHostCleanupIndices, nullptr};
+
+// Proto Message: RenderProcessHostListener
+constexpr int kRenderProcessHostListenerIndices[] = {1, -1};
+constexpr MessageInfo kRenderProcessHostListener = {
+    kRenderProcessHostListenerIndices, nullptr};
+
+// Proto Message: ChildProcessLauncherPriority
+constexpr int kChildProcessLauncherPriorityIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo kChildProcessLauncherPriority = {
+    kChildProcessLauncherPriorityIndices, nullptr};
 
 // Proto Message: ResourceBundle
 constexpr int kResourceBundleIndices[] = {1, -1};
 constexpr MessageInfo kResourceBundle = {kResourceBundleIndices, nullptr};
 
+// Proto Message: ChromeWebAppBadNavigate
+constexpr int kChromeWebAppBadNavigateIndices[] = {1, 2, 4, 5, 6, -1};
+constexpr MessageInfo kChromeWebAppBadNavigate = {
+    kChromeWebAppBadNavigateIndices, nullptr};
+
+// Proto Message: ChromeExtensionId
+constexpr int kChromeExtensionIdIndices[] = {2, -1};
+constexpr MessageInfo kChromeExtensionId = {kChromeExtensionIdIndices, nullptr};
+
+// Proto Message: SiteInstance
+constexpr int kSiteInstanceIndices[] = {1, 2, 3, 4, 5, 6, -1};
+constexpr MessageInfo kSiteInstance = {kSiteInstanceIndices, nullptr};
+
+// Proto Message: RenderViewHost
+constexpr int kRenderViewHostIndices[] = {1, 2, 3, 4, 5, -1};
+constexpr MessageInfo kRenderViewHost = {kRenderViewHostIndices, nullptr};
+
+// Proto Message: RenderFrameProxyHost
+constexpr int kRenderFrameProxyHostIndices[] = {1, 2, 3, 4, 5, -1};
+constexpr MessageInfo kRenderFrameProxyHost = {kRenderFrameProxyHostIndices,
+                                               nullptr};
+
+// Proto Message: ParkableStringCompressInBackground
+constexpr int kParkableStringCompressInBackgroundIndices[] = {1, -1};
+constexpr MessageInfo kParkableStringCompressInBackground = {
+    kParkableStringCompressInBackgroundIndices, nullptr};
+
+// Proto Message: ParkableStringUnpark
+constexpr int kParkableStringUnparkIndices[] = {1, 2, -1};
+constexpr MessageInfo kParkableStringUnpark = {kParkableStringUnparkIndices,
+                                               nullptr};
+
+// Proto Message: ChromeSamplingProfilerSampleCollected
+constexpr int kChromeSamplingProfilerSampleCollectedIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo kChromeSamplingProfilerSampleCollected = {
+    kChromeSamplingProfilerSampleCollectedIndices, nullptr};
+
+// Proto Message: RendererMainThreadTaskExecution
+constexpr int kRendererMainThreadTaskExecutionIndices[] = {1, 2, 3, 4, -1};
+constexpr MessageInfo kRendererMainThreadTaskExecution = {
+    kRendererMainThreadTaskExecutionIndices, nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
-    1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,
-    24,   25,   26,   27,   28,   29,   30,   31,   32,   33,   34,
-    35,   36,   38,   39,   40,   41,   42,   43,   1001, 1002, 1003,
-    1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1016, -1};
+    1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,   22,
+    23,   24,   25,   26,   27,   28,   29,   30,   31,   32,   33,   34,
+    35,   36,   38,   39,   40,   41,   42,   43,   1001, 1002, 1003, 1004,
+    1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016,
+    1017, 1018, 1019, 1020, 1021, 1023, 1024, 1025, 1031, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
     nullptr,
     &kTaskExecution,
     &kLegacyEvent,
+    nullptr,
+    nullptr,
     nullptr,
     nullptr,
     nullptr,
@@ -301,7 +369,20 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kShouldSwapBrowsingInstancesResult,
     &kFrameTreeNodeInfo,
     &kChromeHashedPerformanceMark,
-    &kResourceBundle};
+    &kRenderProcessHost,
+    &kRenderProcessHostCleanup,
+    &kRenderProcessHostListener,
+    &kChildProcessLauncherPriority,
+    &kResourceBundle,
+    &kChromeWebAppBadNavigate,
+    &kChromeExtensionId,
+    &kSiteInstance,
+    &kRenderViewHost,
+    &kRenderFrameProxyHost,
+    &kParkableStringCompressInBackground,
+    &kParkableStringUnpark,
+    &kChromeSamplingProfilerSampleCollected,
+    &kRendererMainThreadTaskExecution};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 

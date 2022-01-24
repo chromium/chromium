@@ -14,14 +14,6 @@
 
 namespace extensions {
 
-// Extension ids for stable / beta cast extensions. Included in
-// |kChromecastExtensionIds|.
-extern const char* const kBetaChromecastExtensionId;
-extern const char* const kStableChromecastExtensionId;
-
-// Extension ids for the chromecast.
-extern const char* const kChromecastExtensionIds[6];
-
 class TabCaptureCaptureFunction final : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("tabCapture.capture", TABCAPTURE_CAPTURE)
@@ -40,23 +32,6 @@ class TabCaptureGetCapturedTabsFunction final : public ExtensionFunction {
 
  private:
   ~TabCaptureGetCapturedTabsFunction() final {}
-
-  // ExtensionFunction:
-  ResponseAction Run() final;
-};
-
-class TabCaptureCaptureOffscreenTabFunction final : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("tabCapture.captureOffscreenTab",
-                             TABCAPTURE_CAPTUREOFFSCREENTAB)
-
-  // Examines the min/max width/height constraints in the |options| to determine
-  // a suitable initial off-screen tab size.
-  static gfx::Size DetermineInitialSize(
-      const extensions::api::tab_capture::CaptureOptions& options);
-
- private:
-  ~TabCaptureCaptureOffscreenTabFunction() final {}
 
   // ExtensionFunction:
   ResponseAction Run() final;

@@ -15,14 +15,13 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -41,7 +40,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
 #include "content/public/common/webplugininfo.h"
@@ -50,16 +48,6 @@
 
 namespace content {
 namespace {
-
-// This enum is used to collect Flash usage data.
-enum FlashUsage {
-  // Number of browser processes that have started at least one PPAPI Flash
-  // process during their lifetime.
-  START_PPAPI_FLASH_AT_LEAST_ONCE = 1,
-  // Total number of browser processes.
-  TOTAL_BROWSER_PROCESSES,
-  FLASH_USAGE_ENUM_COUNT
-};
 
 // Callback set on the PluginList to assert that plugin loading happens on the
 // correct thread.
@@ -89,20 +77,9 @@ PluginServiceImpl* PluginServiceImpl::GetInstance() {
   return base::Singleton<PluginServiceImpl>::get();
 }
 
-PluginServiceImpl::PluginServiceImpl() : filter_(nullptr) {
-  // Collect the total number of browser processes (which create
-  // PluginServiceImpl objects, to be precise). The number is used to normalize
-  // the number of processes which start at least one NPAPI/PPAPI Flash process.
-  static bool counted = false;
-  if (!counted) {
-    counted = true;
-    UMA_HISTOGRAM_ENUMERATION("Plugin.FlashUsage", TOTAL_BROWSER_PROCESSES,
-                              FLASH_USAGE_ENUM_COUNT);
-  }
-}
+PluginServiceImpl::PluginServiceImpl() = default;
 
-PluginServiceImpl::~PluginServiceImpl() {
-}
+PluginServiceImpl::~PluginServiceImpl() = default;
 
 void PluginServiceImpl::Init() {
   plugin_list_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -150,9 +127,7 @@ PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiPluginProcess(
     const base::FilePath& plugin_path,
     const base::FilePath& profile_data_directory,
     const absl::optional<url::Origin>& origin_lock) {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (filter_ && !filter_->CanLoadPlugin(render_process_id, plugin_path)) {
     VLOG(1) << "Unable to load ppapi plugin: " << plugin_path.MaybeAsASCII();
@@ -211,15 +186,6 @@ PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiPluginProcess(
   if (plugin_host)
     return plugin_host;
 
-  // Record when PPAPI Flash process is started for the first time.
-  static bool counted = false;
-  if (!counted && info->name == kFlashPluginName) {
-    counted = true;
-    UMA_HISTOGRAM_ENUMERATION("Plugin.FlashUsage",
-                              START_PPAPI_FLASH_AT_LEAST_ONCE,
-                              FLASH_USAGE_ENUM_COUNT);
-  }
-
   // Avoid fork bomb.
   if (origin_lock.has_value() && CountPpapiPluginProcessesForProfile(
                                      plugin_path, profile_data_directory) >=
@@ -266,10 +232,11 @@ bool PluginServiceImpl::GetPluginInfoArray(
       url, mime_type, allow_wildcard, plugins, actual_mime_types);
 }
 
+// TODO(crbug.com/850278): Remove unused parameters.
 bool PluginServiceImpl::GetPluginInfo(int render_process_id,
-                                      int render_frame_id,
+                                      int /*render_frame_id*/,
                                       const GURL& url,
-                                      const url::Origin& main_frame_origin,
+                                      const url::Origin& /*main_frame_origin*/,
                                       const std::string& mime_type,
                                       bool allow_wildcard,
                                       bool* is_stale,
@@ -284,9 +251,7 @@ bool PluginServiceImpl::GetPluginInfo(int render_process_id,
     *is_stale = stale;
 
   for (size_t i = 0; i < plugins.size(); ++i) {
-    if (!filter_ ||
-        filter_->IsPluginAvailable(render_process_id, render_frame_id, url,
-                                   main_frame_origin, &plugins[i])) {
+    if (!filter_ || filter_->IsPluginAvailable(render_process_id, plugins[i])) {
       *info = plugins[i];
       if (actual_mime_type)
         *actual_mime_type = mime_types[i];

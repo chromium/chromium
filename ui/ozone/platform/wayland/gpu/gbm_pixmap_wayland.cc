@@ -88,6 +88,34 @@ bool GbmPixmapWayland::InitializeBuffer(
   return true;
 }
 
+bool GbmPixmapWayland::InitializeBufferFromHandle(
+    gfx::AcceleratedWidget widget,
+    gfx::Size size,
+    gfx::BufferFormat format,
+    gfx::NativePixmapHandle handle) {
+  TRACE_EVENT0("wayland", "GbmPixmapWayland::InitializeBufferFromHandle");
+  if (!buffer_manager_->gbm_device())
+    return false;
+
+  widget_ = widget;
+
+  // Create a buffer object from handle.
+  gbm_bo_ = buffer_manager_->gbm_device()->CreateBufferFromHandle(
+      GetFourCCFormatFromBufferFormat(format), size, std::move(handle));
+  if (!gbm_bo_) {
+    LOG(ERROR) << "Cannot create bo with format= "
+               << gfx::BufferFormatToString(format);
+    return false;
+  }
+
+  DVLOG(3) << "Created gbm bo. format= " << gfx::BufferFormatToString(format);
+
+  visible_area_size_ = size;
+  if (widget_ != gfx::kNullAcceleratedWidget)
+    CreateDmabufBasedBuffer();
+  return true;
+}
+
 bool GbmPixmapWayland::AreDmaBufFdsValid() const {
   return gbm_bo_->AreFdsValid();
 }
@@ -130,29 +158,15 @@ uint32_t GbmPixmapWayland::GetUniqueId() const {
 
 bool GbmPixmapWayland::ScheduleOverlayPlane(
     gfx::AcceleratedWidget widget,
-    int plane_z_order,
-    gfx::OverlayTransform plane_transform,
-    const gfx::Rect& display_bounds,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
+    const gfx::OverlayPlaneData& overlay_plane_data,
     std::vector<gfx::GpuFence> acquire_fences,
     std::vector<gfx::GpuFence> release_fences) {
   DCHECK_NE(widget, gfx::kNullAcceleratedWidget);
 
-  // It's possible for a buffer to be attached to a different widget or
-  // wl_surface if this buffer represents an overlay and is being tab-dragged to
-  // a different window. Recreate wl_buffer handle if this happens.
-  // TODO(fangzhoug): Remove this workaround once better buffer management is
-  //   implemented.
-  z_order_ = z_order_set_ ? z_order_ : plane_z_order;
-  if (widget_ != widget || z_order_ != plane_z_order) {
-    if (widget_ != gfx::kNullAcceleratedWidget)
-      buffer_manager_->DestroyBuffer(widget_, buffer_id_);
+  if (widget_ == gfx::kNullAcceleratedWidget)
     CreateDmabufBasedBuffer();
-    widget_ = widget;
-    z_order_ = plane_z_order;
-  }
-  z_order_set_ = true;
+
+  widget_ = widget;
 
   auto* surface = buffer_manager_->GetSurface(widget);
   // This must never be hit.
@@ -167,8 +181,7 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
                    acquire_fences.empty() ? nullptr
                                           : std::make_unique<gfx::GpuFence>(
                                                 std::move(acquire_fences[0])),
-                   plane_z_order, plane_transform, display_bounds, crop_rect,
-                   enable_blend),
+                   overlay_plane_data),
       buffer_id_);
   return true;
 }

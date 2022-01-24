@@ -38,6 +38,9 @@ class QuickUnlockFactory : public BrowserContextKeyedServiceFactory {
 
   static QuickUnlockFactory* GetInstance();
 
+  QuickUnlockFactory(const QuickUnlockFactory&) = delete;
+  QuickUnlockFactory& operator=(const QuickUnlockFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<QuickUnlockFactory>;
 
@@ -47,8 +50,6 @@ class QuickUnlockFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockFactory);
 };
 
 }  // namespace quick_unlock

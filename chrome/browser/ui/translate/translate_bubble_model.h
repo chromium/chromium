@@ -131,7 +131,7 @@ class TranslateBubbleModel {
   virtual bool IsPageTranslatedInCurrentLanguages() const = 0;
 
   // True if the site of the current page can be blocklisted.
-  virtual bool CanBlocklistSite() = 0;
+  virtual bool CanAddSiteToNeverPromptList() = 0;
 
   // Reports a high level UI interaction to the centralzied
   // TranslateMetricsLogger.

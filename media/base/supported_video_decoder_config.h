@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"

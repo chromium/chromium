@@ -58,6 +58,7 @@ public class SettingsFragmentImpl extends FragmentHostingRemoteFragmentImpl {
         public SettingsContext(SettingsFragmentImpl fragmentImpl, Context embedderContext) {
             super(new ContextThemeWrapper(ClassLoaderContextWrapperFactory.get(embedderContext),
                     R.style.Theme_WebLayer_Settings));
+            getTheme().applyStyle(R.style.ColorOverlay_WebLayer, /*force=*/true);
             mEmbedderContext = embedderContext;
             mFragmentImpl = fragmentImpl;
         }

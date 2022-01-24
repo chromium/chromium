@@ -124,10 +124,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   friend class TriggerScriptCoordinatorTest;
 
   // From content::WebContentsObserver.
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void WebContentsDestroyed() override;
 
@@ -136,7 +133,9 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void ShowTriggerScript(int index);
   void HideTriggerScript();
   void CheckDynamicTriggerConditions();
-  void OnDynamicTriggerConditionsEvaluated(bool is_out_of_schedule);
+  void OnDynamicTriggerConditionsEvaluated(
+      bool is_out_of_schedule,
+      absl::optional<base::TimeTicks> start_time);
   void OnGetTriggerScripts(int http_status, const std::string& response);
   GURL GetCurrentURL() const;
   void OnEffectiveVisibilityChanged();
@@ -216,8 +215,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions_;
 
   // The time between consecutive evaluations of dynamic trigger conditions.
-  base::TimeDelta trigger_condition_check_interval_ =
-      base::TimeDelta::FromMilliseconds(1000);
+  base::TimeDelta trigger_condition_check_interval_ = base::Milliseconds(1000);
 
   // The number of times the trigger condition may be evaluated. If this reaches
   // 0, the trigger script stops with |TRIGGER_CONDITION_TIMEOUT|.

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Test that debugger will pause in all event listeners when corresponding breakpoint is set. Bug 77331.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadModule('panels/browser_debugger'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadLegacyModule('panels/browser_debugger'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <input type="button" id="test">

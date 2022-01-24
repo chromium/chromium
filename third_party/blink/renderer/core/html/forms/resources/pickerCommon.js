@@ -24,6 +24,8 @@
  * DAMAGE.
  */
 
+let didOpenPicker = false;
+
 /**
  * @param {!string} id
  */
@@ -205,10 +207,12 @@ function isWindowHidden() {
 }
 
 window.addEventListener('resize', function() {
-  if (isWindowHidden())
+  if (isWindowHidden()) {
     window.dispatchEvent(new CustomEvent('didHide'));
-  else
+  } else {
     window.dispatchEvent(new CustomEvent('didOpenPicker'));
+    window.didOpenPicker = true;
+  }
 }, false);
 
 /**

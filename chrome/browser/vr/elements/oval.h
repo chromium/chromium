@@ -15,14 +15,16 @@ namespace vr {
 class VR_UI_EXPORT Oval : public Rect {
  public:
   Oval();
+
+  Oval(const Oval&) = delete;
+  Oval& operator=(const Oval&) = delete;
+
   ~Oval() override;
 
  private:
   void OnSizeAnimated(const gfx::SizeF& size,
                       int target_property_id,
                       gfx::KeyframeModel* keyframe_model) override;
-
-  DISALLOW_COPY_AND_ASSIGN(Oval);
 };
 
 }  // namespace vr

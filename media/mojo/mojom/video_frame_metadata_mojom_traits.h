@@ -55,11 +55,6 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.hw_protected;
   }
 
-  static uint32_t hw_protected_validation_id(
-      const media::VideoFrameMetadata& input) {
-    return input.hw_protected_validation_id;
-  }
-
   static bool power_efficient(const media::VideoFrameMetadata& input) {
     return input.power_efficient;
   }

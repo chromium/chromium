@@ -11,10 +11,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/null_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -47,6 +46,11 @@ class TestCacheStorageBlobToDiskCache : public CacheStorageBlobToDiskCache {
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
       : CacheStorageBlobToDiskCache(quota_manager_proxy, blink::StorageKey()) {}
 
+  TestCacheStorageBlobToDiskCache(const TestCacheStorageBlobToDiskCache&) =
+      delete;
+  TestCacheStorageBlobToDiskCache& operator=(
+      const TestCacheStorageBlobToDiskCache&) = delete;
+
   ~TestCacheStorageBlobToDiskCache() override = default;
 
   void ContinueReadFromBlob() { CacheStorageBlobToDiskCache::ReadFromBlob(); }
@@ -70,8 +74,6 @@ class TestCacheStorageBlobToDiskCache : public CacheStorageBlobToDiskCache {
 
  private:
   bool delay_blob_reads_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCacheStorageBlobToDiskCache);
 };
 
 class CacheStorageBlobToDiskCacheTest : public testing::Test {

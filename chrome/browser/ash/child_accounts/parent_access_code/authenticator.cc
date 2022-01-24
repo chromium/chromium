@@ -18,12 +18,10 @@ namespace parent_access {
 namespace {
 
 // Value ranges for access code config data.
-constexpr base::TimeDelta kMinCodeValidity = base::TimeDelta::FromSeconds(60);
-constexpr base::TimeDelta kMaxCodeValidity = base::TimeDelta::FromMinutes(60);
-constexpr base::TimeDelta kMinClockDriftTolerance =
-    base::TimeDelta::FromMinutes(0);
-constexpr base::TimeDelta kMaxClockDriftTolerance =
-    base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kMinCodeValidity = base::Seconds(60);
+constexpr base::TimeDelta kMaxCodeValidity = base::Minutes(60);
+constexpr base::TimeDelta kMinClockDriftTolerance = base::Minutes(0);
+constexpr base::TimeDelta kMaxClockDriftTolerance = base::Minutes(30);
 
 // Dictionary keys used to serialize access code config data.
 constexpr char kSharedSecretDictKey[] = "shared_secret";
@@ -52,8 +50,8 @@ absl::optional<AccessCodeConfig> AccessCodeConfig::FromDictionary(
     return absl::nullopt;
   }
 
-  return AccessCodeConfig(*secret, base::TimeDelta::FromSeconds(*validity),
-                          base::TimeDelta::FromSeconds(*clock_drift));
+  return AccessCodeConfig(*secret, base::Seconds(*validity),
+                          base::Seconds(*clock_drift));
 }
 
 AccessCodeConfig::AccessCodeConfig(const std::string& shared_secret,

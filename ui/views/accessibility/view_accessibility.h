@@ -166,8 +166,6 @@ class VIEWS_EXPORT ViewAccessibility {
   // it may be a native accessible object implemented by another class.
   virtual gfx::NativeViewAccessible GetNativeObject() const;
 
-  virtual void NotifyAccessibilityEvent(ax::mojom::Event event_type);
-
   // Causes the screen reader to announce |text|. If the current user is not
   // using a screen reader, has no effect.
   virtual void AnnounceText(const std::u16string& text);
@@ -230,10 +228,15 @@ class VIEWS_EXPORT ViewAccessibility {
  protected:
   explicit ViewAccessibility(View* view);
 
+  // Used internally and by View.
+  virtual void NotifyAccessibilityEvent(ax::mojom::Event event_type);
+
   // Used for testing. Called every time an accessibility event is fired.
   AccessibilityEventsCallback accessibility_events_callback_;
 
  private:
+  friend class View;
+
   // Weak. Owns this.
   View* const view_;
 

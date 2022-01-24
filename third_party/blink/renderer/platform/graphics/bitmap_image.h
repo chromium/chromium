@@ -65,7 +65,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   bool CurrentFrameHasSingleSecurityOrigin() const override;
 
   IntSize SizeWithConfig(SizeConfig) const override;
-  bool GetHotSpot(IntPoint&) const override;
+  bool GetHotSpot(gfx::Point&) const override;
   String FilenameExtension() const override;
 
   SizeAvailability SetData(scoped_refptr<SharedBuffer> data,
@@ -130,10 +130,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
             const cc::PaintFlags&,
             const FloatRect& dst_rect,
             const FloatRect& src_rect,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const ImageDrawOptions&) override;
 
   PaintImage CreatePaintImage();
   void UpdateSize() const;

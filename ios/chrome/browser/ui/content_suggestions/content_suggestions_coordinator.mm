@@ -12,13 +12,11 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #include "components/feed/core/v2/public/ios/pref_names.h"
-#include "components/ntp_snippets/content_suggestions_service.h"
-#include "components/ntp_snippets/pref_names.h"
-#include "components/ntp_snippets/remote/remote_suggestions_scheduler.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/prefs/pref_service.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
@@ -27,7 +25,6 @@
 #include "ios/chrome/browser/favicon/large_icon_cache.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #include "ios/chrome/browser/ntp_tiles/ios_most_visited_sites_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
@@ -43,7 +40,6 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_action_handler.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_sink.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -52,10 +48,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_header_changing.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_menu_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
@@ -70,10 +64,8 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
-#import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -88,8 +80,6 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
-#import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -98,13 +88,11 @@
 #endif
 
 @interface ContentSuggestionsCoordinator () <
-    ContentSuggestionsActionHandler,
+    AppStateObserver,
     ContentSuggestionsHeaderCommands,
     ContentSuggestionsMenuProvider,
     ContentSuggestionsViewControllerAudience,
-    DiscoverFeedDelegate,
     DiscoverFeedMenuCommands,
-    OverscrollActionsControllerDelegate,
     ThemeChangeDelegate,
     URLDropDelegate> {
   // Observer bridge for mediator to listen to
@@ -118,8 +106,6 @@
     ContentSuggestionsMediator* contentSuggestionsMediator;
 @property(nonatomic, strong)
     ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
-@property(nonatomic, strong) ContentSuggestionsMetricsRecorder* metricsRecorder;
-@property(nonatomic, strong) UIViewController* discoverFeedViewController;
 @property(nonatomic, strong) UIView* discoverFeedHeaderMenuButton;
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 @property(nonatomic, strong) ActionSheetCoordinator* alertCoordinator;
@@ -135,11 +121,6 @@
 @property(nonatomic, assign) AuthenticationService* authService;
 // Coordinator in charge of handling sharing use cases.
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
-// YES if the feedShown method has already been called.
-// TODO(crbug.com/1126940): The coordinator shouldn't be keeping track of this
-// for its |self.discoverFeedViewController| remove once we have an appropriate
-// callback.
-@property(nonatomic, assign) BOOL feedShownWasCalled;
 
 @end
 
@@ -164,23 +145,13 @@
   self.authService = AuthenticationServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
 
-  ntp_snippets::ContentSuggestionsService* contentSuggestionsService =
-      IOSChromeContentSuggestionsServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  contentSuggestionsService->remote_suggestions_scheduler()
-      ->OnSuggestionsSurfaceOpened();
-  contentSuggestionsService->user_classifier()->OnEvent(
-      ntp_snippets::UserClassifier::Metric::NTP_OPENED);
-  contentSuggestionsService->user_classifier()->OnEvent(
-      ntp_snippets::UserClassifier::Metric::SUGGESTIONS_SHOWN);
   PrefService* prefs =
       ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
           ->GetPrefs();
 
   self.contentSuggestionsEnabled =
       prefs->GetBoolean(prefs::kArticlesForYouEnabled) &&
-      (!base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) ||
-       prefs->GetBoolean(prefs::kNTPContentSuggestionsEnabled));
+      prefs->GetBoolean(prefs::kNTPContentSuggestionsEnabled);
   self.contentSuggestionsExpanded = [[PrefBackedBoolean alloc]
       initWithPrefService:prefs
                  prefName:feed::prefs::kArticlesListVisible];
@@ -208,6 +179,20 @@
           self.browser->GetBrowserState());
   self.headerController.toolbarDelegate = self.toolbarDelegate;
 
+  // Only handle app state for the new First Run UI.
+  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
+    SceneState* sceneState =
+        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+    AppState* appState = sceneState.appState;
+    [appState addObserver:self];
+
+    // Do not focus on omnibox for voice over if there are other screens to
+    // show.
+    if (appState.initStage < InitStageFinal) {
+      self.headerController.focusOmniboxWhenViewAppears = NO;
+    }
+  }
+
   favicon::LargeIconService* largeIconService =
       IOSChromeLargeIconServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -220,8 +205,6 @@
       ReadingListModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
-  self.discoverFeedViewController = [self discoverFeed];
-
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -233,21 +216,16 @@
           SEARCH_ENGINE_GOOGLE;
 
   self.contentSuggestionsMediator = [[ContentSuggestionsMediator alloc]
-             initWithContentService:contentSuggestionsService
-                   largeIconService:largeIconService
+           initWithLargeIconService:largeIconService
                      largeIconCache:cache
                     mostVisitedSite:std::move(mostVisitedFactory)
                    readingListModel:readingListModel
                         prefService:prefs
-                       discoverFeed:self.discoverFeedViewController
       isGoogleDefaultSearchProvider:isGoogleDefaultSearchProvider];
   self.contentSuggestionsMediator.commandHandler = self.ntpMediator;
   self.contentSuggestionsMediator.headerProvider = self.headerController;
-  if (!IsRefactoredNTP()) {
-    self.contentSuggestionsMediator.contentArticlesExpanded =
-        self.contentSuggestionsExpanded;
-  }
-  self.contentSuggestionsMediator.discoverFeedDelegate = self;
+  self.contentSuggestionsMediator.discoverFeedDelegate =
+      self.discoverFeedDelegate;
   self.contentSuggestionsMediator.webStateList =
       self.browser->GetWebStateList();
   [self configureStartSurfaceIfNeeded];
@@ -255,43 +233,17 @@
   self.headerController.promoCanShow =
       [self.contentSuggestionsMediator notificationPromo]->CanShow();
 
-  self.metricsRecorder = [[ContentSuggestionsMetricsRecorder alloc] init];
-  self.metricsRecorder.delegate = self.contentSuggestionsMediator;
-
-
-  // Offset to maintain Discover feed scroll position.
-  CGFloat offset = 0;
-  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP()) {
-    web::NavigationManager* navigationManager =
-        self.webState->GetNavigationManager();
-    if (navigationManager) {
-      web::NavigationItem* item = navigationManager->GetVisibleItem();
-      if (item) {
-        offset = item->GetPageDisplayState().scroll_state().content_offset().y;
-      }
-    }
-  }
-
   self.suggestionsViewController = [[ContentSuggestionsViewController alloc]
-              initWithStyle:CollectionViewControllerStyleDefault
-                     offset:offset
-                feedVisible:[self isFeedVisible]
-      refactoredFeedVisible:[self.ntpFeedDelegate
-                                    isNTPRefactoredAndFeedVisible]];
+      initWithStyle:CollectionViewControllerStyleDefault];
   [self.suggestionsViewController
       setDataSource:self.contentSuggestionsMediator];
   self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
   self.suggestionsViewController.audience = self;
-  self.suggestionsViewController.overscrollDelegate = self;
   self.suggestionsViewController.themeChangeDelegate = self;
-  self.suggestionsViewController.metricsRecorder = self.metricsRecorder;
   id<SnackbarCommands> dispatcher =
       static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
   self.suggestionsViewController.dispatcher = dispatcher;
   self.suggestionsViewController.discoverFeedMenuHandler = self;
-  self.suggestionsViewController.discoverFeedMetricsRecorder =
-      self.discoverFeedMetricsRecorder;
-  self.suggestionsViewController.panGestureHandler = self.panGestureHandler;
   self.suggestionsViewController.bubblePresenter = self.bubblePresenter;
 
   self.discoverFeedHeaderDelegate =
@@ -301,12 +253,8 @@
                                                  value]];
   self.suggestionsViewController.contentSuggestionsEnabled =
       self.contentSuggestionsEnabled;
-  self.suggestionsViewController.handler = self;
-  self.contentSuggestionsMediator.consumer = self.suggestionsViewController;
 
-  if (@available(iOS 13.0, *)) {
-    self.suggestionsViewController.menuProvider = self;
-  }
+  self.suggestionsViewController.menuProvider = self;
 
   self.ntpMediator.consumer = self.headerController;
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
@@ -317,10 +265,8 @@
   self.ntpMediator.NTPMetrics = [[NTPHomeMetrics alloc]
       initWithBrowserState:self.browser->GetBrowserState()
                   webState:self.webState];
-  self.ntpMediator.metricsRecorder = self.metricsRecorder;
   self.ntpMediator.suggestionsViewController = self.suggestionsViewController;
   self.ntpMediator.suggestionsMediator = self.contentSuggestionsMediator;
-  self.ntpMediator.suggestionsService = contentSuggestionsService;
   [self.ntpMediator setUp];
   self.ntpMediator.discoverFeedMetrics = self.discoverFeedMetricsRecorder;
 
@@ -332,24 +278,8 @@
   // synchronizer instead.
   self.suggestionsViewController.headerProvider = self.headerController;
 
-  if ([self.ntpFeedDelegate isNTPRefactoredAndFeedVisible]) {
-    self.suggestionsViewController.collectionView.accessibilityIdentifier =
-        kContentSuggestionsCollectionIdentifier;
-  } else {
-    self.suggestionsViewController.collectionView.accessibilityIdentifier =
-        kNTPCollectionViewIdentifier;
-  }
-
-  if (![self.ntpFeedDelegate isNTPRefactoredAndFeedVisible]) {
-    self.headerCollectionInteractionHandler =
-        [[ContentSuggestionsHeaderSynchronizer alloc]
-            initWithCollectionController:self.suggestionsViewController
-                        headerController:self.headerController];
-    self.ntpMediator.headerCollectionInteractionHandler =
-        self.headerCollectionInteractionHandler;
-    DCHECK(!self.ntpMediator.primaryViewController);
-    self.ntpMediator.primaryViewController = self.suggestionsViewController;
-  }
+  self.suggestionsViewController.collectionView.accessibilityIdentifier =
+      kContentSuggestionsCollectionIdentifier;
 
   self.dragDropHandler = [[URLDragDropHandler alloc] init];
   self.dragDropHandler.dropDelegate = self;
@@ -374,20 +304,11 @@
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   self.headerController = nil;
-  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP()) {
-    ios::GetChromeBrowserProvider()
-        .GetDiscoverFeedProvider()
-        ->RemoveFeedViewController(self.discoverFeedViewController);
-  }
   self.contentSuggestionsExpanded = nil;
   _started = NO;
 }
 
 - (UIViewController*)viewController {
-  return self.suggestionsViewController;
-}
-
-- (id<ThumbStripSupporting>)thumbStripSupporting {
   return self.suggestionsViewController;
 }
 
@@ -412,79 +333,12 @@
   _discoverFeedHeaderMenuButton = menuButton;
 }
 
-- (void)discoverFeedShown {
-  if (IsDiscoverFeedEnabled() && !self.feedShownWasCalled) {
-    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->FeedWasShown();
-    self.feedShownWasCalled = YES;
-  }
-}
-
 - (void)viewDidDisappear {
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {
     [self.contentSuggestionsMediator hideRecentTabTile];
   }
 }
 
-#pragma mark - OverscrollActionsControllerDelegate
-
-- (void)overscrollActionsController:(OverscrollActionsController*)controller
-                   didTriggerAction:(OverscrollAction)action {
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  id<ApplicationCommands, BrowserCommands, OmniboxCommands, SnackbarCommands>
-      handler = static_cast<id<ApplicationCommands, BrowserCommands,
-                               OmniboxCommands, SnackbarCommands>>(
-          self.browser->GetCommandDispatcher());
-  switch (action) {
-    case OverscrollAction::NEW_TAB: {
-      [handler openURLInNewTab:[OpenNewTabCommand command]];
-    } break;
-    case OverscrollAction::CLOSE_TAB: {
-      [handler closeCurrentTab];
-      base::RecordAction(base::UserMetricsAction("OverscrollActionCloseTab"));
-    } break;
-    case OverscrollAction::REFRESH:
-      [self reload];
-      break;
-    case OverscrollAction::NONE:
-      NOTREACHED();
-      break;
-  }
-}
-
-- (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  return YES;
-}
-
-- (UIView*)toolbarSnapshotViewForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  return
-      [[self.headerController toolBarView] snapshotViewAfterScreenUpdates:NO];
-}
-
-- (UIView*)headerViewForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  return self.suggestionsViewController.view;
-}
-
-- (CGFloat)headerInsetForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  return 0;
-}
-
-- (CGFloat)headerHeightForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  CGFloat height = [self.headerController toolBarView].bounds.size.height;
-  CGFloat topInset = self.suggestionsViewController.view.safeAreaInsets.top;
-  return height + topInset;
-}
-
-- (FullscreenController*)fullscreenControllerForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  // Fullscreen isn't supported here.
-  return nullptr;
-}
 
 #pragma mark - ThemeChangeDelegate
 
@@ -526,10 +380,7 @@
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM)
                   action:^{
                     [weakSelf setDiscoverFeedVisible:NO];
-                    if ([weakSelf.ntpFeedDelegate
-                                isNTPRefactoredAndFeedVisible]) {
-                      [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
-                    }
+                    [weakSelf.ntpCommandHandler updateNTPForDiscoverFeed];
                   }
                    style:UIAlertActionStyleDestructive];
   } else {
@@ -538,10 +389,7 @@
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM)
                   action:^{
                     [weakSelf setDiscoverFeedVisible:YES];
-                    if ([weakSelf.ntpFeedDelegate
-                                isNTPRefactoredAndFeedVisible]) {
-                      [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
-                    }
+                    [weakSelf.ntpCommandHandler updateNTPForDiscoverFeed];
                   }
                    style:UIAlertActionStyleDefault];
   }
@@ -580,37 +428,6 @@
       ->NotifyEvent(feature_engagement::events::kDiscoverFeedLoaded);
 }
 
-#pragma mark - DiscoverFeedDelegate
-
-- (void)recreateDiscoverFeedViewController {
-  DCHECK(IsDiscoverFeedEnabled());
-
-  // Create and set a new DiscoverFeed since that its model has changed.
-  self.discoverFeedViewController = [self discoverFeed];
-  self.contentSuggestionsMediator.discoverFeed =
-      self.discoverFeedViewController;
-  [self.alertCoordinator stop];
-}
-
-- (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {
-  return [SceneStateBrowserAgent::FromBrowser(self.browser)
-              ->GetSceneState()
-              .window.rootViewController.view safeAreaInsets];
-}
-
-- (void)contentSuggestionsWasUpdated {
-  [self.ntpCommandHandler updateDiscoverFeedLayout];
-}
-
-- (void)returnToRecentTabWasAdded {
-  [self.ntpCommandHandler updateDiscoverFeedLayout];
-  if ([self.ntpFeedDelegate isNTPRefactoredAndFeedVisible]) {
-    [self.ntpCommandHandler setContentOffsetToTop];
-  } else {
-    [self.suggestionsViewController setContentOffset:0];
-  }
-}
-
 #pragma mark - ContentSuggestionsHeaderCommands
 
 - (void)prepareForVoiceSearchPresentation {
@@ -624,15 +441,6 @@
 - (void)updateForLocationBarResignedFirstResponder {
   // TODO(crbug.com/1200303): Check if doing this is actually needed.
   [self.ntpMediator dismissModals];
-}
-
-#pragma mark - ContentSuggestionsActionHandler
-
-- (void)loadMoreFeedArticles {
-  ios::GetChromeBrowserProvider()
-      .GetDiscoverFeedProvider()
-      ->LoadMoreFeedArticles();
-  [self.discoverFeedMetricsRecorder recordInfiniteFeedTriggered];
 }
 
 #pragma mark - Public methods
@@ -662,14 +470,7 @@
   return collectionOffset;
 }
 
-- (void)willUpdateSnapshot {
-  [self.suggestionsViewController clearOverscroll];
-}
-
 - (void)reload {
-  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP() && [self isFeedVisible]) {
-    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->RefreshFeed();
-  }
   [self.contentSuggestionsMediator.dataSink reloadAllData];
 }
 
@@ -800,29 +601,6 @@
   scene.modifytVisibleNTPForStartSurface = NO;
 }
 
-// Creates, configures and returns a DiscoverFeed ViewController.
-- (UIViewController*)discoverFeed {
-  if (!IsDiscoverFeedEnabled() || IsRefactoredNTP() ||
-      tests_hook::DisableContentSuggestions() ||
-      tests_hook::DisableDiscoverFeed())
-    return nil;
-
-  UIViewController* discoverFeed = ios::GetChromeBrowserProvider()
-                                       .GetDiscoverFeedProvider()
-                                       ->NewFeedViewController(self.browser);
-  // TODO(crbug.com/1085419): Once the CollectionView is cleanly exposed, remove
-  // this loop.
-  for (UIView* view in discoverFeed.view.subviews) {
-    if ([view isKindOfClass:[UICollectionView class]]) {
-      UICollectionView* feedView = static_cast<UICollectionView*>(view);
-      feedView.bounces = NO;
-      feedView.alwaysBounceVertical = NO;
-      feedView.scrollEnabled = NO;
-    }
-  }
-  return discoverFeed;
-}
-
 // Triggers the URL sharing flow for the given |URL| and |title|, with the
 // origin |view| representing the UI component for that URL.
 - (void)shareURL:(const GURL&)URL
@@ -847,16 +625,20 @@
   [self.contentSuggestionsMediator reloadAllData];
   [self.discoverFeedMetricsRecorder
       recordDiscoverFeedVisibilityChanged:visible];
-  self.suggestionsViewController.feedVisible = [self isFeedVisible];
 }
 
-// YES if the NTP feed is currently visible.
-// TODO(crbug.com/1173610): Move this to the NTPCoordinator so all of the
-// visibility logic lives in there.
-- (BOOL)isFeedVisible {
-  return self.contentSuggestionsEnabled &&
-         [self.contentSuggestionsExpanded value] &&
-         !tests_hook::DisableDiscoverFeed();
+#pragma mark - AppStateObserver
+
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
+    if (previousInitStage == InitStageFirstRun) {
+      self.headerController.focusOmniboxWhenViewAppears = YES;
+      [self.headerController focusAccessibilityOnOmnibox];
+
+      [appState removeObserver:self];
+    }
+  }
 }
 
 @end

@@ -11,9 +11,8 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
 
@@ -26,8 +25,7 @@ class WebContents;
 namespace send_tab_to_self {
 
 class SendTabToSelfSubMenuModel : public ui::SimpleMenuModel,
-                                  public ui::SimpleMenuModel::Delegate,
-                                  public content::WebContentsObserver {
+                                  public ui::SimpleMenuModel::Delegate {
  public:
   static const int kMinCommandId = 2000;
   static const int kMaxCommandId = 2020;
@@ -39,14 +37,16 @@ class SendTabToSelfSubMenuModel : public ui::SimpleMenuModel,
   SendTabToSelfSubMenuModel(content::WebContents* tab,
                             SendTabToSelfMenuType menu_type,
                             const GURL& link_url);
+
+  SendTabToSelfSubMenuModel(const SendTabToSelfSubMenuModel&) = delete;
+  SendTabToSelfSubMenuModel& operator=(const SendTabToSelfSubMenuModel&) =
+      delete;
+
   ~SendTabToSelfSubMenuModel() override;
 
   // Overridden from ui::SimpleMenuModel::Delegate:
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
-
-  // Overridden from content::WebContentsObserver:
-  void WebContentsDestroyed() override;
 
  private:
   void Build(Profile* profile);
@@ -54,14 +54,10 @@ class SendTabToSelfSubMenuModel : public ui::SimpleMenuModel,
                        const std::string& guid,
                        int index);
 
-  // Injected on construction and set to null if the WebContents is being
-  // destroyed.
-  content::WebContents* tab_;
+  base::WeakPtr<content::WebContents> tab_;
   const SendTabToSelfMenuType menu_type_;
   const GURL link_url_;
   std::vector<ValidDeviceItem> valid_device_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfSubMenuModel);
 };
 
 }  //  namespace send_tab_to_self

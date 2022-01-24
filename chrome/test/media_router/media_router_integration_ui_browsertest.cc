@@ -17,81 +17,85 @@
 namespace media_router {
 
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, MANUAL_Dialog_Basic) {
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MANUAL_Dialog_Basic) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
-  test_ui_->ShowCastDialog();
+  test_ui_->ShowDialog();
   test_ui_->WaitForSinkAvailable(receiver_);
-  test_ui_->StartCastingFromCastDialog(receiver_);
+  test_ui_->StartCasting(receiver_);
   test_ui_->WaitForAnyRoute();
 
-  if (!test_ui_->IsCastDialogShown())
-    test_ui_->ShowCastDialog();
+  if (!test_ui_->IsDialogShown())
+    test_ui_->ShowDialog();
 
   ASSERT_EQ("Test Route", test_ui_->GetStatusTextForSink(receiver_));
 
-  test_ui_->StopCastingFromCastDialog(receiver_);
+  test_ui_->StopCasting(receiver_);
   test_ui_->WaitUntilNoRoutes();
   // TODO(takumif): Remove the HideCastDialog() call once the dialog can close
   // on its own.
-  test_ui_->HideCastDialog();
+  test_ui_->HideDialog();
 }
 
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        MANUAL_Dialog_RouteCreationTimedOut) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   // The hardcoded timeout route creation timeout for the UI.
   // See kCreateRouteTimeoutSeconds in media_router_ui.cc.
-  test_provider_->set_delay(base::TimeDelta::FromSeconds(20));
+  test_provider_->set_delay(base::Seconds(20));
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
-  test_ui_->ShowCastDialog();
+  test_ui_->ShowDialog();
   test_ui_->WaitForSinkAvailable(receiver_);
 
   base::TimeTicks start_time(base::TimeTicks::Now());
-  test_ui_->StartCastingFromCastDialog(receiver_);
+  test_ui_->StartCasting(receiver_);
   test_ui_->WaitForAnyIssue();
 
   base::TimeDelta elapsed(base::TimeTicks::Now() - start_time);
-  base::TimeDelta expected_timeout(base::TimeDelta::FromSeconds(20));
+  base::TimeDelta expected_timeout(base::Seconds(20));
 
   EXPECT_GE(elapsed, expected_timeout);
-  EXPECT_LE(elapsed - expected_timeout, base::TimeDelta::FromSeconds(5));
+  EXPECT_LE(elapsed - expected_timeout, base::Seconds(5));
 
   std::string issue_title = test_ui_->GetIssueTextForSink(receiver_);
   // TODO(imcheng): Fix host name for file schemes (crbug.com/560576).
   ASSERT_EQ(l10n_util::GetStringFUTF8(
-                IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT, u"file:///"),
+                IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT, u"file://"),
             issue_title);
 
   ASSERT_EQ(test_ui_->GetRouteIdForSink(receiver_), "");
-  test_ui_->HideCastDialog();
+  test_ui_->HideDialog();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        PRE_OpenDialogAfterEnablingMediaRouting) {
   SetEnableMediaRouter(false);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        OpenDialogAfterEnablingMediaRouting) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   // Enable media routing and open media router dialog.
   SetEnableMediaRouter(true);
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
-  test_ui_->ShowCastDialog();
-  ASSERT_TRUE(test_ui_->IsCastDialogShown());
-  test_ui_->HideCastDialog();
+  test_ui_->ShowDialog();
+  ASSERT_TRUE(test_ui_->IsDialogShown());
+  test_ui_->HideDialog();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        DisableMediaRoutingWhenDialogIsOpened) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   // Open media router dialog.
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
-  test_ui_->ShowCastDialog();
-  ASSERT_TRUE(test_ui_->IsCastDialogShown());
+  test_ui_->ShowDialog();
+  ASSERT_TRUE(test_ui_->IsDialogShown());
 
   // Disable media routing.
   SetEnableMediaRouter(false);
 
-  ASSERT_FALSE(test_ui_->IsCastDialogShown());
+  ASSERT_FALSE(test_ui_->IsDialogShown());
 }
 
 }  // namespace media_router

@@ -25,6 +25,12 @@ class CastDevToolsManagerDelegateTest
   using WebContentsSet = std::unordered_set<content::WebContents*>;
 
   CastDevToolsManagerDelegateTest() {}
+
+  CastDevToolsManagerDelegateTest(const CastDevToolsManagerDelegateTest&) =
+      delete;
+  CastDevToolsManagerDelegateTest& operator=(
+      const CastDevToolsManagerDelegateTest&) = delete;
+
   ~CastDevToolsManagerDelegateTest() override {}
 
   void SetUp() override {
@@ -49,9 +55,6 @@ class CastDevToolsManagerDelegateTest
  protected:
   std::unique_ptr<content::TestContentClientInitializer> initializer_;
   std::unique_ptr<CastDevToolsManagerDelegate> devtools_manager_delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastDevToolsManagerDelegateTest);
 };
 
 TEST_F(CastDevToolsManagerDelegateTest, TestSingletonGetter) {

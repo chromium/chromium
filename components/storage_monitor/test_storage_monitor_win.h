@@ -12,7 +12,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/storage_monitor/storage_monitor_win.h"
 
@@ -27,6 +26,9 @@ class TestStorageMonitorWin: public StorageMonitorWin {
       std::unique_ptr<TestVolumeMountWatcherWin> volume_mount_watcher,
       std::unique_ptr<TestPortableDeviceWatcherWin> portable_device_watcher);
 
+  TestStorageMonitorWin(const TestStorageMonitorWin&) = delete;
+  TestStorageMonitorWin& operator=(const TestStorageMonitorWin&) = delete;
+
   ~TestStorageMonitorWin() override;
 
   void InjectDeviceChange(UINT event_type, LPARAM data);
@@ -34,9 +36,6 @@ class TestStorageMonitorWin: public StorageMonitorWin {
   VolumeMountWatcherWin* volume_mount_watcher();
 
   Receiver* receiver() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestStorageMonitorWin);
 };
 
 }  // namespace storage_monitor

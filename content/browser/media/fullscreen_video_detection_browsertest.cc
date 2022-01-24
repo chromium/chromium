@@ -35,6 +35,9 @@ class FullscreenEventsRecorder : public WebContentsObserver {
   explicit FullscreenEventsRecorder(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
+  FullscreenEventsRecorder(const FullscreenEventsRecorder&) = delete;
+  FullscreenEventsRecorder& operator=(const FullscreenEventsRecorder&) = delete;
+
   void MediaEffectivelyFullscreenChanged(bool value) override {
     AddEvent(value ? FullscreenTestEvent::kEffectivelyFullscreen
                    : FullscreenTestEvent::kNotEffectivelyFullscreen);
@@ -74,8 +77,6 @@ class FullscreenEventsRecorder : public WebContentsObserver {
     if (events_.size() == expected_event_count_ && run_loop_)
       run_loop_->Quit();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenEventsRecorder);
 };
 
 }  // namespace

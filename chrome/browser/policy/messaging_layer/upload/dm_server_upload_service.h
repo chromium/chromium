@@ -10,12 +10,12 @@
 
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/task_runner_context.h"
@@ -34,15 +34,15 @@ namespace reporting {
 // DmServerUploadService relies on DmServerUploader for uploading. A
 // DmServerUploader is provided with RecordHandlers for each Destination. An
 // |EnqueueUpload| call creates a DmServerUploader and provides it with the
-// records for upload, and the RecordHandlers.  DmServerUploader uses the
-// RecordHandlers to upload each record.
+// flags and records for upload and the result handlers.  DmServerUploader uses
+// the RecordHandlers to upload each record.
 class DmServerUploadService {
  public:
   // ReportSuccessfulUploadCallback is used to pass server responses back to
   // the owner of |this| (the respone consists of sequencing information and
   // force_confirm flag).
   using ReportSuccessfulUploadCallback =
-      base::RepeatingCallback<void(SequencingInformation,
+      base::RepeatingCallback<void(SequenceInformation,
                                    /*force_confirm*/ bool)>;
 
   // ReceivedEncryptionKeyCallback is called if server attached encryption key
@@ -53,7 +53,7 @@ class DmServerUploadService {
   // Successful response consists of Sequencing information that may be
   // accompanied with force_confirm flag.
   struct SuccessfulUploadResponse {
-    SequencingInformation sequencing_information;
+    SequenceInformation sequence_information;
     bool force_confirm;
   };
   using CompletionResponse = StatusOr<SuccessfulUploadResponse>;
@@ -75,7 +75,7 @@ class DmServerUploadService {
     // be present). If response has the key info attached, it is decoded and
     // handed over to |encryption_key_attached_cb|.
     // Once the server has responded |upload_complete| is called with either the
-    // highest accepted SequencingInformation, or an error detailing the failure
+    // highest accepted SequenceInformation, or an error detailing the failure
     // cause.
     // Any errors will result in |upload_complete| being called with a Status.
     virtual void HandleRecords(
@@ -102,8 +102,9 @@ class DmServerUploadService {
         bool need_encryption_key,
         std::unique_ptr<std::vector<EncryptedRecord>> records,
         RecordHandler* handler,
-        CompletionCallback completion_cb,
+        ReportSuccessfulUploadCallback report_success_upload_cb,
         EncryptionKeyAttachedCallback encryption_key_attached_cb,
+        CompletionCallback completion_cb,
         scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
 
    private:
@@ -122,7 +123,10 @@ class DmServerUploadService {
     // to upload to DmServer.
     void HandleRecords();
 
-    // Complete schedules |Response| with the provided |completion_response|.
+    // Processes |completion_response| and call |Response|.
+    void Finalize(CompletionResponse completion_response);
+
+    // Complete schedules |Finalize| with the provided |completion_response|.
     void Complete(CompletionResponse completion_response);
 
     // Helper function for determining if an EncryptedRecord is valid.
@@ -132,7 +136,8 @@ class DmServerUploadService {
 
     const bool need_encryption_key_;
     std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
-    EncryptionKeyAttachedCallback encryption_key_attached_cb_;
+    const ReportSuccessfulUploadCallback report_success_upload_cb_;
+    const EncryptionKeyAttachedCallback encryption_key_attached_cb_;
     RecordHandler* handler_;
 
     SEQUENCE_CHECKER(sequence_checker_);
@@ -150,33 +155,27 @@ class DmServerUploadService {
   // the one received from the server.
   static void Create(
       policy::CloudPolicyClient* client,
-      ReportSuccessfulUploadCallback report_upload_success_cb,
-      EncryptionKeyAttachedCallback encryption_key_attached_cb,
       base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
           created_cb);
   ~DmServerUploadService();
 
-  Status EnqueueUpload(bool need_encryption_key,
-                       std::unique_ptr<std::vector<EncryptedRecord>> record);
+  Status EnqueueUpload(
+      bool need_encryption_key,
+      std::unique_ptr<std::vector<EncryptedRecord>> records,
+      ReportSuccessfulUploadCallback report_upload_success_cb,
+      EncryptionKeyAttachedCallback encryption_key_attached_cb);
 
  private:
-  DmServerUploadService(
-      policy::CloudPolicyClient* client,
-      ReportSuccessfulUploadCallback completion_cb,
-      EncryptionKeyAttachedCallback encryption_key_attached_cb);
+  explicit DmServerUploadService(policy::CloudPolicyClient* client);
 
   static void InitRecordHandler(
       std::unique_ptr<DmServerUploadService> uploader,
       base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
           created_cb);
 
-  void UploadCompletion(CompletionResponse upload_result) const;
-
   policy::CloudPolicyClient* GetClient();
 
   policy::CloudPolicyClient* client_;
-  ReportSuccessfulUploadCallback upload_cb_;
-  EncryptionKeyAttachedCallback encryption_key_attached_cb_;
   std::unique_ptr<RecordHandler> handler_;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

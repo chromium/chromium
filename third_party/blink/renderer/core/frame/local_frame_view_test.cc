@@ -664,5 +664,26 @@ TEST_F(LocalFrameViewTest, StartOfLifecycleTaskRunsOnFullLifecycle) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(callback.calls, 1);
 }
+
+TEST_F(LocalFrameViewTest, DarkModeDocumentBackground) {
+  auto* frame_view = GetDocument().View();
+  GetDocument().documentElement()->SetInlineStyleProperty(
+      CSSPropertyID::kBackgroundColor, "white");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(frame_view->DocumentBackgroundColor(), Color::kWhite);
+
+  // Document background is inverted by the dark mode filter.
+  GetDocument().GetSettings()->SetForceDarkModeEnabled(true);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(frame_view->DocumentBackgroundColor(), Color(18, 18, 18));
+
+  // Using color adjust background for base color in forced dark.
+  GetDocument().documentElement()->SetInlineStyleProperty(
+      CSSPropertyID::kBackgroundColor, "transparent");
+  UpdateAllLifecyclePhasesForTest();
+  frame_view->SetBaseBackgroundColor(Color(255, 0, 0));
+  EXPECT_EQ(frame_view->DocumentBackgroundColor(), Color(18, 18, 18));
+}
+
 }  // namespace
 }  // namespace blink

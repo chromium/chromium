@@ -64,7 +64,8 @@ void SetCookieDirect(WebContentsImpl* tab,
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
   auto cookie_obj = net::CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */);
+      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
 
   base::RunLoop run_loop;
   tab->GetBrowserContext()
@@ -88,7 +89,7 @@ std::string GetCookiesDirect(WebContentsImpl* tab, const GURL& url) {
       ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->GetCookieList(
-          url, options,
+          url, options, net::CookiePartitionKeychain(),
           base::BindLambdaForTesting(
               [&](const net::CookieAccessResultList& cookie_list,
                   const net::CookieAccessResultList& excluded_cookies) {
@@ -251,10 +252,14 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   RenderFrameHost* main_frame = web_contents->GetMainFrame();
-  RenderFrameHost* a_iframe =
-      web_contents->GetFrameTree()->root()->child_at(0)->current_frame_host();
-  RenderFrameHost* b_iframe =
-      web_contents->GetFrameTree()->root()->child_at(1)->current_frame_host();
+  RenderFrameHost* a_iframe = web_contents->GetPrimaryFrameTree()
+                                  .root()
+                                  ->child_at(0)
+                                  ->current_frame_host();
+  RenderFrameHost* b_iframe = web_contents->GetPrimaryFrameTree()
+                                  .root()
+                                  ->child_at(1)
+                                  ->current_frame_host();
 
   // The top-level frame should get all same-site cookies.
   EXPECT_EQ("none=1; strict=1; unspecified=1; lax=1",
@@ -378,11 +383,11 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
       "   +--Site B ------- proxies for A\n"
       "Where A = http://127.0.0.1/\n"
       "      B = http://baz.com/",
-      v.DepictFrameTree(tab->GetFrameTree()->root()));
+      v.DepictFrameTree(tab->GetPrimaryFrameTree().root()));
 
   RenderFrameHost* main_frame = tab->GetMainFrame();
   RenderFrameHost* iframe =
-      tab->GetFrameTree()->root()->child_at(0)->current_frame_host();
+      tab->GetPrimaryFrameTree().root()->child_at(0)->current_frame_host();
 
   EXPECT_NE(iframe->GetProcess(), main_frame->GetProcess());
 
@@ -409,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
       "   +--Site B ------- proxies for A\n"
       "Where A = http://127.0.0.1/\n"
       "      B = http://baz.com/",
-      v.DepictFrameTree(tab->GetFrameTree()->root()));
+      v.DepictFrameTree(tab->GetPrimaryFrameTree().root()));
 
   // Now set a cross-site cookie from the main frame's process.
   {
@@ -430,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
       "   +--Site B ------- proxies for A\n"
       "Where A = http://127.0.0.1/\n"
       "      B = http://baz.com/",
-      v.DepictFrameTree(tab->GetFrameTree()->root()));
+      v.DepictFrameTree(tab->GetPrimaryFrameTree().root()));
 }
 
 class SamePartyEnabledCookieBrowserTest : public CookieBrowserTest {

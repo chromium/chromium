@@ -24,10 +24,10 @@ class FeedbackHandler : public content::WebUIMessageHandler {
 
  private:
   void HandleShowDialog(const base::ListValue* args);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   void HandleShowAssistantLogsInfo(const base::ListValue* args);
   void HandleShowBluetoothLogsInfo(const base::ListValue* args);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS)
   void HandleShowMetrics(const base::ListValue* args);
   void HandleShowSystemInfo(const base::ListValue* args);
 

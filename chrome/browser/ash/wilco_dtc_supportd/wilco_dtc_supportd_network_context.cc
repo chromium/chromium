@@ -67,7 +67,6 @@ void WilcoDtcSupportdNetworkContextImpl::CreateNetworkContext() {
   network::mojom::NetworkContextParamsPtr network_context_params =
       g_browser_process->system_network_context_manager()
           ->CreateDefaultNetworkContextParams();
-  network_context_params->context_name = "wilco_dtc";
   network_context_params->http_cache_enabled = false;
 
   proxy_config_monitor_.AddToNetworkContextParams(network_context_params.get());

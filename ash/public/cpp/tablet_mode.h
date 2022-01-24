@@ -20,6 +20,10 @@ class ASH_PUBLIC_EXPORT TabletMode {
   class Waiter : public TabletModeObserver {
    public:
     explicit Waiter(bool enable);
+
+    Waiter(const Waiter&) = delete;
+    Waiter& operator=(const Waiter&) = delete;
+
     ~Waiter() override;
 
     void Wait();
@@ -31,8 +35,6 @@ class ASH_PUBLIC_EXPORT TabletMode {
    private:
     bool enable_;
     base::RunLoop run_loop_;
-
-    DISALLOW_COPY_AND_ASSIGN(Waiter);
   };
 
   // Returns true if the device's board is tablet mode capable.
@@ -46,6 +48,9 @@ class ASH_PUBLIC_EXPORT TabletMode {
 
   // Returns true if the system is in tablet mode.
   virtual bool InTabletMode() const = 0;
+
+  // Returns true if TabletMode singleton exists and is in the tablet mode.
+  static bool IsInTabletMode();
 
   // Force the tablet mode state for integration tests. The meaning of |enabled|
   // are as follows:

@@ -17,8 +17,10 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorTextField;
 import org.chromium.chrome.browser.autofill_assistant.AssistantChevronStyle;
@@ -30,6 +32,8 @@ import org.chromium.ui.widget.ChromeImageView;
 /** Generic view factory. */
 @JNINamespace("autofill_assistant")
 public class AssistantViewFactory {
+    private static final String TAG = "AutofillAssistant";
+
     /** Attaches {@code view} to {@code container}. */
     @CalledByNative
     public static void addViewToContainer(ViewGroup container, View view) {
@@ -103,10 +107,23 @@ public class AssistantViewFactory {
         AssistantViewInteractions.setViewText(textView, text, delegate);
         textView.setTag(identifier);
         if (textAppearance != null) {
-            int styleId = context.getResources().getIdentifier(
-                    textAppearance, "style", context.getPackageName());
-            if (styleId != 0) {
-                ApiCompatibilityUtils.setTextAppearance(textView, styleId);
+            try {
+                // TODO(b/203392437): Find the correct way of accessing a resource by name.
+                if (textAppearance.equals("TextAppearance.ErrorCaption")) {
+                    Log.i(TAG, "Using explicit style id for " + textAppearance);
+                    ApiCompatibilityUtils.setTextAppearance(
+                            textView, R.style.TextAppearance_ErrorCaption);
+                } else {
+                    int fieldId =
+                            R.style.class.getField(textAppearance.replace('.', '_')).getInt(null);
+                    if (fieldId != 0) {
+                        ApiCompatibilityUtils.setTextAppearance(textView, fieldId);
+                    } else {
+                        Log.e(TAG, "Could not find field id for " + textAppearance);
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error looking up style id for " + textAppearance, e);
             }
         }
         textView.setGravity(textGravity);

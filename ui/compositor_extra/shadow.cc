@@ -62,7 +62,7 @@ void Shadow::SetElevation(int elevation) {
     ui::ScopedLayerAnimationSettings settings(fading_layer()->GetAnimator());
     settings.AddObserver(this);
     settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kShadowAnimationDurationMs));
+        base::Milliseconds(kShadowAnimationDurationMs));
     fading_layer()->SetOpacity(0.f);
   }
 
@@ -70,7 +70,7 @@ void Shadow::SetElevation(int elevation) {
     // We don't care to observe this one.
     ui::ScopedLayerAnimationSettings settings(shadow_layer()->GetAnimator());
     settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kShadowAnimationDurationMs));
+        base::Milliseconds(kShadowAnimationDurationMs));
     shadow_layer()->SetOpacity(1.f);
   }
 }

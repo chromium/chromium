@@ -6,8 +6,8 @@
 
 namespace syncer {
 
-MockSyncEngine::MockSyncEngine() {}
+MockSyncEngine::MockSyncEngine() = default;
 
-MockSyncEngine::~MockSyncEngine() {}
+MockSyncEngine::~MockSyncEngine() = default;
 
 }  // namespace syncer

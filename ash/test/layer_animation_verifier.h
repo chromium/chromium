@@ -71,4 +71,4 @@ class LayerAnimationVerifier : public ui::CompositorObserver {
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_TEST_LAYER_ANIMATION_VERIFIER_H_

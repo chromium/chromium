@@ -15,9 +15,9 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
@@ -44,6 +44,9 @@ class MultiplexRouter::InterfaceEndpoint
         peer_closed_(false),
         handle_created_(false),
         client_(nullptr) {}
+
+  InterfaceEndpoint(const InterfaceEndpoint&) = delete;
+  InterfaceEndpoint& operator=(const InterfaceEndpoint&) = delete;
 
   // ---------------------------------------------------------------------------
   // The following public methods are safe to call from any sequence without
@@ -247,8 +250,6 @@ class MultiplexRouter::InterfaceEndpoint
   // Guarded by the router's lock. Used to synchronously wait on replies.
   std::unique_ptr<SequenceLocalSyncEventWatcher> sync_watcher_;
   base::flat_set<uint64_t> requests_with_external_sync_waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceEndpoint);
 };
 
 // MessageWrapper objects are always destroyed under the router's lock. On
@@ -263,6 +264,9 @@ class MultiplexRouter::MessageWrapper {
 
   MessageWrapper(MessageWrapper&& other)
       : router_(other.router_), value_(std::move(other.value_)) {}
+
+  MessageWrapper(const MessageWrapper&) = delete;
+  MessageWrapper& operator=(const MessageWrapper&) = delete;
 
   ~MessageWrapper() {
     if (!router_ || value_.IsNull())
@@ -300,8 +304,6 @@ class MultiplexRouter::MessageWrapper {
  private:
   MultiplexRouter* router_ = nullptr;
   Message value_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageWrapper);
 };
 
 struct MultiplexRouter::Task {

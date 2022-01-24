@@ -42,6 +42,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceAndroid
       const base::android::JavaRef<jobject>&
           chrome_bluetooth_device);  // ChromeBluetoothDevice
 
+  BluetoothRemoteGattServiceAndroid(const BluetoothRemoteGattServiceAndroid&) =
+      delete;
+  BluetoothRemoteGattServiceAndroid& operator=(
+      const BluetoothRemoteGattServiceAndroid&) = delete;
+
   ~BluetoothRemoteGattServiceAndroid() override;
 
   // Returns the associated ChromeBluetoothRemoteGattService Java object.
@@ -106,8 +111,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceAndroid
 
   // Adapter unique instance ID.
   std::string instance_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattServiceAndroid);
 };
 
 }  // namespace device

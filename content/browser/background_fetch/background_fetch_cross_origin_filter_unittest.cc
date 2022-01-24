@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,12 +19,20 @@ const char kFirstOriginFile[] = "https://example.com/cat.jpg";
 const char kSecondOriginFile[] = "https://chrome.com/cat.jpg";
 
 const char kAccessControlAllowOriginHeader[] = "access-control-allow-origin";
+const char kAccessControlAllowCredentialsHeader[] =
+    "access-control-allow-credentials";
 
 class BackgroundFetchCrossOriginFilterTest : public ::testing::Test {
  public:
   BackgroundFetchCrossOriginFilterTest()
       : task_environment_(BrowserTaskEnvironment::REAL_IO_THREAD),
         source_(url::Origin::Create(GURL(kFirstOrigin))) {}
+
+  BackgroundFetchCrossOriginFilterTest(
+      const BackgroundFetchCrossOriginFilterTest&) = delete;
+  BackgroundFetchCrossOriginFilterTest& operator=(
+      const BackgroundFetchCrossOriginFilterTest&) = delete;
+
   ~BackgroundFetchCrossOriginFilterTest() override = default;
 
   // Creates a BackgroundFetchRequestInfo instance filled with the information
@@ -35,7 +42,8 @@ class BackgroundFetchCrossOriginFilterTest : public ::testing::Test {
       const char* response_url,
       std::initializer_list<
           typename std::map<std::string, std::string>::value_type>
-          response_headers) {
+          response_headers,
+      bool allow_credentials = false) {
     scoped_refptr<BackgroundFetchRequestInfo> request_info =
         base::MakeRefCounted<BackgroundFetchRequestInfo>(
             0 /* request_info */, blink::mojom::FetchAPIRequest::New(),
@@ -43,6 +51,13 @@ class BackgroundFetchCrossOriginFilterTest : public ::testing::Test {
 
     request_info->response_headers_ = response_headers;
     request_info->url_chain_ = {GURL(response_url)};
+    if (allow_credentials) {
+      request_info->fetch_request()->credentials_mode =
+          network::mojom::CredentialsMode::kInclude;
+    } else {
+      request_info->fetch_request()->credentials_mode =
+          network::mojom::CredentialsMode::kSameOrigin;
+    }
 
     return request_info;
   }
@@ -51,9 +66,6 @@ class BackgroundFetchCrossOriginFilterTest : public ::testing::Test {
   BrowserTaskEnvironment task_environment_;  // Must be first member.
 
   url::Origin source_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchCrossOriginFilterTest);
 };
 
 TEST_F(BackgroundFetchCrossOriginFilterTest, SameOrigin) {
@@ -109,6 +121,56 @@ TEST_F(BackgroundFetchCrossOriginFilterTest, CrossOriginAllowSpecificOrigin) {
         kSecondOriginFile, {{kAccessControlAllowOriginHeader, kOriginList}});
 
     BackgroundFetchCrossOriginFilter filter(source_, *cross_origin_response);
+    EXPECT_FALSE(filter.CanPopulateBody());
+  }
+}
+
+TEST_F(BackgroundFetchCrossOriginFilterTest, CrossOriginCredentials) {
+  // 1: No headers.
+  {
+    auto request =
+        CreateRequestInfo(kSecondOriginFile, {}, /*include_credentials=*/true);
+    BackgroundFetchCrossOriginFilter filter(source_, *request);
+    EXPECT_FALSE(filter.CanPopulateBody());
+  }
+
+  // 2: Valid request.
+  {
+    auto request =
+        CreateRequestInfo(kSecondOriginFile,
+                          {{kAccessControlAllowOriginHeader, kFirstOrigin},
+                           {kAccessControlAllowCredentialsHeader, "true"}},
+                          /*include_credentials=*/true);
+    BackgroundFetchCrossOriginFilter filter(source_, *request);
+    EXPECT_TRUE(filter.CanPopulateBody());
+  }
+
+  // 3: Missing ACAO Header.
+  {
+    auto request = CreateRequestInfo(
+        kSecondOriginFile, {{kAccessControlAllowCredentialsHeader, "true"}},
+        /*include_credentials=*/true);
+    BackgroundFetchCrossOriginFilter filter(source_, *request);
+    EXPECT_FALSE(filter.CanPopulateBody());
+  }
+
+  // 4: Missing ACAC header.
+  {
+    auto request = CreateRequestInfo(
+        kSecondOriginFile, {{kAccessControlAllowOriginHeader, kFirstOrigin}},
+        /*include_credentials=*/true);
+    BackgroundFetchCrossOriginFilter filter(source_, *request);
+    EXPECT_FALSE(filter.CanPopulateBody());
+  }
+
+  // 5: ACAO any origin.
+  {
+    auto request =
+        CreateRequestInfo(kSecondOriginFile,
+                          {{kAccessControlAllowOriginHeader, "*"},
+                           {kAccessControlAllowCredentialsHeader, "true"}},
+                          /*include_credentials=*/true);
+    BackgroundFetchCrossOriginFilter filter(source_, *request);
     EXPECT_FALSE(filter.CanPopulateBody());
   }
 }

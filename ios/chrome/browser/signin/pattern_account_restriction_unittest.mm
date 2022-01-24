@@ -24,8 +24,8 @@ class PatternAccountRestrictionTest : public PlatformTest {};
 // restrictions are set.
 TEST_F(PatternAccountRestrictionTest, FilterEmailsWithRestrictions) {
   base::ListValue value;
-  value.AppendString("*gmail.com");
-  value.AppendString("*google.com");
+  value.Append("*gmail.com");
+  value.Append("*google.com");
   auto restriction = PatternAccountRestrictionFromValue(&value);
 
   CHECK_EQ(restriction->IsAccountRestricted(email1), false);

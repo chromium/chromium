@@ -1,0 +1,5 @@
+monorail {
+  component: "Internals>SegmentationPlatform"
+}
+
+team_email: "chrome-segmentation-platform@google.com"

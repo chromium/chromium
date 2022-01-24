@@ -9,6 +9,25 @@
  * destroyed when finished, and re-created when shown again.
  */
 
+import '../../../cr_elements/cr_button/cr_button.m.js';
+import '../../../cr_elements/cr_checkbox/cr_checkbox.m.js';
+import '../../../cr_elements/cr_dialog/cr_dialog.m.js';
+import '../../../cr_elements/cr_input/cr_input.m.js';
+import '../../../cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
+import '../../../cr_elements/icons.m.js';
+import '../../../cr_elements/shared_style_css.m.js';
+import '../../../cr_elements/shared_vars_css.m.js';
+import '../../../cr_elements/md_select_css.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+import {loadTimeData} from '../../../js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '../../../js/web_ui_listener_behavior.m.js';
+
+import {SmbAuthMethod, SmbBrowserProxy, SmbBrowserProxyImpl, SmbMountResult} from './smb_browser_proxy.js';
+
 /** @enum{number} */
 const MountErrorType = {
   NO_ERROR: 0,
@@ -29,6 +48,8 @@ const SMB_SHARE_URL_REGEX =
 
 Polymer({
   is: 'add-smb-share-dialog',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [I18nBehavior, WebUIListenerBehavior],
 
@@ -142,12 +163,12 @@ Polymer({
     },
   },
 
-  /** @private {?smb_shares.SmbBrowserProxy} */
+  /** @private {?SmbBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   created() {
-    this.browserProxy_ = smb_shares.SmbBrowserProxyImpl.getInstance();
+    this.browserProxy_ = SmbBrowserProxyImpl.getInstance();
   },
 
   /** @override */

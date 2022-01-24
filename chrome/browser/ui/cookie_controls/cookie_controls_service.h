@@ -36,6 +36,9 @@ class CookieControlsService : public KeyedService,
     virtual void OnThirdPartyCookieBlockingPolicyChanged() {}
   };
 
+  CookieControlsService(const CookieControlsService&) = delete;
+  CookieControlsService& operator=(const CookieControlsService&) = delete;
+
   ~CookieControlsService() override;
 
   void Init();
@@ -71,8 +74,6 @@ class CookieControlsService : public KeyedService,
       cookie_observations_{this};
 
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieControlsService);
 };
 
 #endif  // CHROME_BROWSER_UI_COOKIE_CONTROLS_COOKIE_CONTROLS_SERVICE_H_

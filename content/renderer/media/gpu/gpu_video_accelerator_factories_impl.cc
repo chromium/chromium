@@ -11,7 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -152,6 +152,11 @@ void GpuVideoAcceleratorFactoriesImpl::BindOnTaskRunner(
 
   context_provider_->AddObserver(this);
 
+  // Request the channel token.
+  context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
+      base::BindOnce(&GpuVideoAcceleratorFactoriesImpl::OnChannelTokenReady,
+                     base::Unretained(this)));
+
   if (video_accelerator_enabled_) {
     {
       // TODO(crbug.com/709631): This should be removed.
@@ -279,17 +284,29 @@ bool GpuVideoAcceleratorFactoriesImpl::IsGpuVideoAcceleratorEnabled() {
   return video_accelerator_enabled_;
 }
 
-base::UnguessableToken GpuVideoAcceleratorFactoriesImpl::GetChannelToken() {
+void GpuVideoAcceleratorFactoriesImpl::GetChannelToken(
+    gpu::mojom::GpuChannel::GetChannelTokenCallback cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (CheckContextLost())
-    return base::UnguessableToken();
-
-  if (channel_token_.is_empty()) {
-    context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
-        &channel_token_);
+  if (CheckContextLost()) {
+    std::move(cb).Run(base::UnguessableToken());
+    return;
   }
 
-  return channel_token_;
+  if (!channel_token_.is_empty()) {
+    // Use cached token.
+    std::move(cb).Run(channel_token_);
+    return;
+  }
+
+  // Retrieve a channel token if needed.
+  channel_token_callbacks_.AddUnsafe(std::move(cb));
+}
+
+void GpuVideoAcceleratorFactoriesImpl::OnChannelTokenReady(
+    const base::UnguessableToken& token) {
+  channel_token_ = token;
+  channel_token_callbacks_.Notify(channel_token_);
+  DCHECK(channel_token_callbacks_.empty());
 }
 
 int32_t GpuVideoAcceleratorFactoriesImpl::GetCommandBufferRouteId() {

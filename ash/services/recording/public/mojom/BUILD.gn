@@ -7,6 +7,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "recording_service.mojom" ]
 
+  public_deps = [ "//sandbox/policy/mojom" ]
+
   deps = [
     "//media/mojo/mojom",
     "//services/viz/privileged/mojom/compositing",

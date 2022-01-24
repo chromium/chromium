@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
@@ -26,6 +25,12 @@ class ServerBackedStateKeysBrokerTest : public testing::Test {
     state_keys_.push_back("3");
     fake_session_manager_client_.set_server_backed_state_keys(state_keys_);
   }
+
+  ServerBackedStateKeysBrokerTest(const ServerBackedStateKeysBrokerTest&) =
+      delete;
+  ServerBackedStateKeysBrokerTest& operator=(
+      const ServerBackedStateKeysBrokerTest&) = delete;
+
   ~ServerBackedStateKeysBrokerTest() override {}
 
   void StateKeysUpdated() { updated_ = true; }
@@ -50,9 +55,6 @@ class ServerBackedStateKeysBrokerTest : public testing::Test {
   bool updated_;
   std::vector<std::string> callback_state_keys_;
   bool callback_invoked_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServerBackedStateKeysBrokerTest);
 };
 
 TEST_F(ServerBackedStateKeysBrokerTest, Load) {

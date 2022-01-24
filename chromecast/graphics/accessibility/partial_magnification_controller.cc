@@ -85,6 +85,9 @@ class PartialMagnificationController::ContentMask : public ui::LayerDelegate {
     layer_.SetBounds(gfx::Rect(mask_bounds));
   }
 
+  ContentMask(const ContentMask&) = delete;
+  ContentMask& operator=(const ContentMask&) = delete;
+
   ~ContentMask() override { layer_.set_delegate(nullptr); }
 
   ui::Layer* layer() { return &layer_; }
@@ -122,7 +125,6 @@ class PartialMagnificationController::ContentMask : public ui::LayerDelegate {
 
   ui::Layer layer_;
   bool is_border_;
-  DISALLOW_COPY_AND_ASSIGN(ContentMask);
 };
 
 // The border renderer draws the border as well as outline on both the outer and
@@ -138,6 +140,9 @@ class PartialMagnificationController::BorderRenderer
     magnifier_shadows_.push_back(gfx::ShadowValue(
         gfx::Vector2d(0, 0), kShadowThickness, kTopShadowColor));
   }
+
+  BorderRenderer(const BorderRenderer&) = delete;
+  BorderRenderer& operator=(const BorderRenderer&) = delete;
 
   ~BorderRenderer() override = default;
 
@@ -188,8 +193,6 @@ class PartialMagnificationController::BorderRenderer
 
   gfx::Rect magnifier_window_bounds_;
   std::vector<gfx::ShadowValue> magnifier_shadows_;
-
-  DISALLOW_COPY_AND_ASSIGN(BorderRenderer);
 };
 
 PartialMagnificationController::PartialMagnificationController(

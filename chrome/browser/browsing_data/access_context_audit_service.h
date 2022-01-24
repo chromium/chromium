@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_ACCESS_CONTEXT_AUDIT_SERVICE_H_
 #define CHROME_BROWSER_BROWSING_DATA_ACCESS_CONTEXT_AUDIT_SERVICE_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
-#include "base/updateable_sequenced_task_runner.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/content/canonical_cookie_hash.h"
@@ -71,6 +72,11 @@ class AccessContextAuditService
   };
 
   explicit AccessContextAuditService(Profile* profile);
+
+  AccessContextAuditService(const AccessContextAuditService&) = delete;
+  AccessContextAuditService& operator=(const AccessContextAuditService&) =
+      delete;
+
   ~AccessContextAuditService() override;
 
   // Initialises the Access Context Audit database in |database_dir|, and
@@ -190,7 +196,6 @@ class AccessContextAuditService
       storage_partition_observation_{this};
 
   base::WeakPtrFactory<AccessContextAuditService> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AccessContextAuditService);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_ACCESS_CONTEXT_AUDIT_SERVICE_H_

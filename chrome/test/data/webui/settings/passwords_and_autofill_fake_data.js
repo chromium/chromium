@@ -5,10 +5,9 @@
 // clang-format off
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AutofillManager, PaymentsManager} from 'chrome://settings/lazy_load.js';
 import {MultiStoreExceptionEntry, MultiStorePasswordUiEntry} from 'chrome://settings/settings.js';
 
-import {assertEquals} from '../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 // clang-format on
@@ -378,15 +377,24 @@ export class PasswordSectionElementFactory {
 
   /**
    * Helper method used to create a password editing dialog.
-   * @param {!MultiStorePasswordUiEntry} passwordEntry
-   * @param {!Array<!MultiStorePasswordUiEntry>} passwords
+   * @param {MultiStorePasswordUiEntry=} passwordEntry
+   * @param {Array<!MultiStorePasswordUiEntry>=} passwords
+   * @param {boolean=} isAccountStoreUser
    * @return {!Object}
    */
-  createPasswordEditDialog(passwordEntry, passwords) {
+  createPasswordEditDialog(
+      passwordEntry = null, passwords, isAccountStoreUser = false) {
     const passwordDialog = this.document.createElement('password-edit-dialog');
-    passwordDialog.entry = passwordEntry;
-    passwordDialog.password = '';
-    passwordDialog.savedPasswords = passwords ? passwords : [];
+    passwordDialog.existingEntry = passwordEntry;
+    if (passwordEntry && !passwordEntry.federationText) {
+      // Edit dialog is always opened with plaintext password for non-federated
+      // credentials since user authentication is required before opening the
+      // edit dialog.
+      passwordDialog.existingEntry.password = 'password';
+    }
+    passwordDialog.savedPasswords =
+        passwords || (passwordEntry ? [passwordEntry] : []);
+    passwordDialog.isAccountStoreUser = isAccountStoreUser;
     this.document.body.appendChild(passwordDialog);
     flush();
     return passwordDialog;

@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/chromeos/idle_detector.h"
+#include "chrome/browser/ash/idle_detector.h"
 
 namespace base {
 class TickClock;

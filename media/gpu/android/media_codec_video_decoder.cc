@@ -64,7 +64,7 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
   if (device_info->IsVp8DecoderAvailable()) {
     // For unencrypted content, require that the size is at least 360p and that
     // the MediaCodec implementation is hardware; otherwise fall back to libvpx.
-    if (!device_info->IsDecoderKnownUnaccelerated(kCodecVP8)) {
+    if (!device_info->IsDecoderKnownUnaccelerated(VideoCodec::kVP8)) {
       supported_configs.emplace_back(VP8PROFILE_ANY, VP8PROFILE_ANY,
                                      gfx::Size(480, 360), gfx::Size(3840, 2160),
                                      false,   // allow_encrypted
@@ -81,7 +81,8 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
   // TODO(dalecurtis): This needs to actually check the profiles available. This
   // can be done by calling MediaCodecUtil::AddSupportedCodecProfileLevels.
   if (device_info->IsVp9DecoderAvailable()) {
-    const bool is_sw = device_info->IsDecoderKnownUnaccelerated(kCodecVP9);
+    const bool is_sw =
+        device_info->IsDecoderKnownUnaccelerated(VideoCodec::kVP9);
 
     std::vector<CodecProfileLevel> profiles;
 
@@ -92,10 +93,10 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
     // If we think a VP9 decoder is available, but we didn't get any profiles
     // returned, just assume support for vp9.0 only.
     if (profiles.empty())
-      profiles.push_back({kCodecVP9, VP9PROFILE_PROFILE0, 0});
+      profiles.push_back({VideoCodec::kVP9, VP9PROFILE_PROFILE0, 0});
 
     for (const auto& p : profiles) {
-      if (p.codec != kCodecVP9)
+      if (p.codec != VideoCodec::kVP9)
         continue;
 
       // We don't compile support into libvpx for these profiles, so allow them
@@ -224,8 +225,10 @@ MediaCodecVideoDecoder::MediaCodecVideoDecoder(
     std::unique_ptr<AndroidVideoSurfaceChooser> surface_chooser,
     AndroidOverlayMojoFactoryCB overlay_factory_cb,
     RequestOverlayInfoCB request_overlay_info_cb,
-    std::unique_ptr<VideoFrameFactory> video_frame_factory)
-    : media_log_(std::move(media_log)),
+    std::unique_ptr<VideoFrameFactory> video_frame_factory,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock)
+    : gpu::RefCountedLockHelperDrDc(std::move(drdc_lock)),
+      media_log_(std::move(media_log)),
       codec_allocator_(codec_allocator),
       request_overlay_info_cb_(std::move(request_overlay_info_cb)),
       is_surface_control_enabled_(IsSurfaceControlEnabled(gpu_feature_info)),
@@ -259,12 +262,13 @@ std::unique_ptr<VideoDecoder> MediaCodecVideoDecoder::Create(
     std::unique_ptr<AndroidVideoSurfaceChooser> surface_chooser,
     AndroidOverlayMojoFactoryCB overlay_factory_cb,
     RequestOverlayInfoCB request_overlay_info_cb,
-    std::unique_ptr<VideoFrameFactory> video_frame_factory) {
+    std::unique_ptr<VideoFrameFactory> video_frame_factory,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock) {
   auto* decoder = new MediaCodecVideoDecoder(
       gpu_preferences, gpu_feature_info, std::move(media_log), device_info,
       codec_allocator, std::move(surface_chooser),
       std::move(overlay_factory_cb), std::move(request_overlay_info_cb),
-      std::move(video_frame_factory));
+      std::move(video_frame_factory), std::move(drdc_lock));
   return std::make_unique<AsyncDestroyVideoDecoder<MediaCodecVideoDecoder>>(
       base::WrapUnique(decoder));
 }
@@ -370,7 +374,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   waiting_cb_ = waiting_cb;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (config.codec() == kCodecH264)
+  if (config.codec() == VideoCodec::kH264)
     ExtractSpsAndPps(config.extra_data(), &csd0_, &csd1_);
 #endif
 
@@ -526,7 +530,8 @@ void MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized(
     EnterTerminalState(State::kError, "Could not allocated TextureOwner");
     return;
   }
-  texture_owner_bundle_ = new CodecSurfaceBundle(std::move(texture_owner));
+  texture_owner_bundle_ =
+      new CodecSurfaceBundle(std::move(texture_owner), GetDrDcLock());
 
   // This is for A/B power testing only.  Turn off Dialog-based overlays in
   // power testing mode, unless we need them for L1 content.
@@ -816,7 +821,7 @@ void MediaCodecVideoDecoder::StartTimerOrPumpCodec() {
   // TODO: Experiment with this number to save power. Since we already pump the
   // codec in response to receiving a decode and output buffer release, polling
   // at this frequency is likely overkill in the steady state.
-  const auto kPollingPeriod = base::TimeDelta::FromMilliseconds(10);
+  const auto kPollingPeriod = base::Milliseconds(10);
   if (!pump_codec_timer_.IsRunning()) {
     pump_codec_timer_.Start(
         FROM_HERE, kPollingPeriod,
@@ -830,7 +835,7 @@ void MediaCodecVideoDecoder::StopTimerIfIdle() {
   DCHECK(!using_async_api_);
 
   // Stop the timer if we've been idle for one second. Chosen arbitrarily.
-  const auto kTimeout = base::TimeDelta::FromSeconds(1);
+  const auto kTimeout = base::Seconds(1);
   if (idle_timer_.Elapsed() > kTimeout) {
     DVLOG(2) << "Stopping timer; idle timeout hit";
     pump_codec_timer_.Stop();
@@ -872,10 +877,11 @@ bool MediaCodecVideoDecoder::QueueInput() {
     // larger based on the actual input size.
     if (decoder_config_.coded_size().width() == last_width_) {
       // See MediaFormatBuilder::addInputSizeInfoToFormat() for details.
-      const size_t compression_ratio = (decoder_config_.codec() == kCodecH264 ||
-                                        decoder_config_.codec() == kCodecVP8)
-                                           ? 2
-                                           : 4;
+      const size_t compression_ratio =
+          (decoder_config_.codec() == VideoCodec::kH264 ||
+           decoder_config_.codec() == VideoCodec::kVP8)
+              ? 2
+              : 4;
       const size_t max_pixels =
           (pending_decode.buffer->data_size() * compression_ratio * 2) / 3;
       if (max_pixels > 8294400)  // 4K
@@ -1047,8 +1053,8 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
   // Record how long this frame was pending.
   const base::TimeDelta duration = base::TimeTicks::Now() - started_at;
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.MCVD.ForwardVideoFrameTiming", duration,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMilliseconds(100), 25);
+                             base::Milliseconds(1), base::Milliseconds(100),
+                             25);
 
   // No |frame| indicates an error creating it.
   if (!frame) {
@@ -1101,8 +1107,8 @@ void MediaCodecVideoDecoder::StartDrainingCodec(DrainType drain_type) {
   // (http://crbug.com/598963).
   // TODO(watk): Strongly consider blocking VP8 (or specific MediaCodecs)
   // instead. Draining is responsible for a lot of complexity.
-  if (decoder_config_.codec() != kCodecVP8 || !codec_ || codec_->IsFlushed() ||
-      codec_->IsDrained() || using_async_api_) {
+  if (decoder_config_.codec() != VideoCodec::kVP8 || !codec_ ||
+      codec_->IsFlushed() || codec_->IsDrained() || using_async_api_) {
     // If the codec isn't already drained or flushed, then we have to remember
     // that we owe it a flush.  We also have to remember not to deliver any
     // output buffers that might still be in progress in the codec.

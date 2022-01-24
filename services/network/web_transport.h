@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/quic/quic_transport_client.h"
+#include "net/quic/web_transport_client.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 
 class GURL;
@@ -64,14 +64,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void AcceptUnidirectionalStream(
       UnidirectionalStreamAcceptanceCallback callback) override;
   void SendFin(uint32_t stream_id) override;
-  void AbortStream(uint32_t stream_id, uint64_t code) override;
+  void AbortStream(uint32_t stream_id, uint8_t code) override;
+  void StopSending(uint32_t stream_id, uint8_t code) override;
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta duration) override;
+  void Close(mojom::WebTransportCloseInfoPtr close_info) override;
 
   // WebTransportClientVisitor implementation:
-  void OnConnected() override;
-  void OnConnectionFailed() override;
-  void OnClosed() override;
-  void OnError() override;
+  void OnConnected(
+      scoped_refptr<net::HttpResponseHeaders> response_headers) override;
+  void OnConnectionFailed(const net::WebTransportError& error) override;
+  void OnClosed(
+      const absl::optional<net::WebTransportCloseInfo>& close_info) override;
+  void OnError(const net::WebTransportError& error) override;
   void OnIncomingBidirectionalStreamAvailable() override;
   void OnIncomingUnidirectionalStreamAvailable() override;
   void OnDatagramReceived(base::StringPiece datagram) override;
@@ -102,6 +106,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   mojo::Remote<mojom::WebTransportClient> client_;
   base::queue<base::OnceCallback<void(bool)>> datagram_callbacks_;
 
+  bool closing_ = false;
   bool torn_down_ = false;
 
   // This must be the last member.

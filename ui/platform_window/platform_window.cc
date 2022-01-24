@@ -63,10 +63,10 @@ bool PlatformWindow::CanSetDecorationInsets() const {
   return false;
 }
 
-void PlatformWindow::SetDecorationInsets(gfx::Insets insets_px) {}
+void PlatformWindow::SetDecorationInsets(const gfx::Insets* insets_px) {}
 
-void PlatformWindow::SetOpaqueRegion(std::vector<gfx::Rect> region_px) {}
+void PlatformWindow::SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) {}
 
-void PlatformWindow::SetInputRegion(gfx::Rect region_px) {}
+void PlatformWindow::SetInputRegion(const gfx::Rect* region_px) {}
 
 }  // namespace ui

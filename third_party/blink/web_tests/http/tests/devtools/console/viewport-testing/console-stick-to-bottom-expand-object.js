@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies viewport stick-to-bottom behavior when prompt has space below editable area.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
   ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
@@ -18,16 +18,16 @@
   await ConsoleTestRunner.waitForPendingViewportUpdates();
 
   const consoleView = Console.ConsoleView.instance();
-  const viewport = consoleView._viewport;
+  const viewport = consoleView.viewport;
 
   TestRunner.runTestSuite([
     async function testExpandLastVisibleObjectRemainsInView(next) {
-      const index = consoleView._visibleViewMessages.length - 1;
+      const index = consoleView.visibleViewMessages.length - 1;
       forceSelect(index);
       dumpInfo();
 
       TestRunner.addResult('Expanding object');
-      const objectSection = consoleView._visibleViewMessages[index]._selectableChildren[0];
+      const objectSection = consoleView.visibleViewMessages[index].selectableChildren[0];
       objectSection.objectTreeElement().expand();
       await ConsoleTestRunner.waitForRemoteObjectsConsoleMessagesPromise();
       dumpInfo();
@@ -45,7 +45,7 @@
       dumpInfo();
 
       TestRunner.addResult('Expanding object');
-      const objectSection = consoleView._visibleViewMessages[index]._selectableChildren[0];
+      const objectSection = consoleView.visibleViewMessages[index].selectableChildren[0];
       objectSection.objectTreeElement().expand();
       dumpInfo();
 
@@ -61,7 +61,7 @@
     viewport.refresh();
     let infoText =
       'Is at bottom: ' + TestRunner.isScrolledToBottom(viewport.element) + ', should stick: ' + viewport.stickToBottom();
-    const selectedElement = viewport.renderedElementAt(viewport._virtualSelectedIndex);
+    const selectedElement = viewport.renderedElementAt(viewport.virtualSelectedIndex);
     if (selectedElement) {
       const selectedRect = selectedElement.getBoundingClientRect();
       const viewportRect = viewport.element.getBoundingClientRect();
@@ -73,8 +73,8 @@
 
   function forceSelect(index) {
     TestRunner.addResult(`\nForce selecting index ${index}`);
-    viewport._virtualSelectedIndex = index;
-    viewport._contentElement.focus();
-    viewport._updateFocusedItem();
+    viewport.virtualSelectedIndex = index;
+    viewport.contentElement().focus();
+    viewport.updateFocusedItem();
   }
 })();

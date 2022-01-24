@@ -63,7 +63,7 @@ Scheme GetScheme(const GURL& url) {
   return Scheme::UNKNOWN;
 }
 
-void RecordMainFrameNavigation(
+void RecordPrimaryMainFrameNavigation(
     const GURL& url,
     bool is_same_document,
     bool is_off_the_record,

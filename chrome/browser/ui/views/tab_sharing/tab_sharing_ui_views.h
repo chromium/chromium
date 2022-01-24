@@ -10,9 +10,9 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/media/webrtc/same_origin_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -47,7 +47,8 @@ class TabSharingUIViews : public TabSharingUI,
   // Called when tab sharing has started. Creates infobars on all tabs.
   gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback) override;
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) override;
 
   // TabSharingUI:
   // Runs |source_callback_| to start sharing the tab containing |infobar|.
@@ -110,12 +111,19 @@ class TabSharingUIViews : public TabSharingUI,
   void SetTabFaviconForTesting(content::WebContents* web_contents,
                                const ui::ImageModel& favicon);
 
+  void StopCaptureDueToPolicy(content::WebContents* contents);
+
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;
+  std::map<content::WebContents*, std::unique_ptr<SameOriginObserver>>
+      same_origin_observers_;
   const content::GlobalRenderFrameHostId capturer_;
+  const GURL capturer_origin_;
   const bool can_focus_capturer_;
+  const bool capturer_restricted_to_same_origin_ = false;
   content::DesktopMediaID shared_tab_media_id_;
   const std::u16string app_name_;
   content::WebContents* shared_tab_;
+  std::unique_ptr<SameOriginObserver> shared_tab_origin_observer_;
   std::u16string shared_tab_name_;
   Profile* profile_;
   std::unique_ptr<content::MediaStreamUI> tab_capture_indicator_ui_;

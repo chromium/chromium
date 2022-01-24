@@ -22,6 +22,9 @@ class FakeConsumer {
  public:
   FakeConsumer(int channels, int sample_rate);
 
+  FakeConsumer(const FakeConsumer&) = delete;
+  FakeConsumer& operator=(const FakeConsumer&) = delete;
+
   ~FakeConsumer();
 
   // Returns the total number of frames recorded (the end position of the
@@ -55,8 +58,6 @@ class FakeConsumer {
  private:
   const int sample_rate_;
   std::vector<std::vector<float>> recorded_channel_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConsumer);
 };
 
 }  // namespace audio

@@ -6,7 +6,6 @@
 #define ASH_ASSISTANT_MODEL_ASSISTANT_UI_MODEL_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,6 +23,7 @@ enum class AssistantUiMode {
 // Enumeration of Assistant visibility states.
 enum class AssistantVisibility {
   kClosed,   // Assistant UI is hidden and the previous session has finished.
+  kClosing,  // Assistant UI is transitioning from `kVisible` to `kClosed`.
   kVisible,  // Assistant UI is visible and a session is in progress.
 };
 
@@ -48,6 +48,10 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
   using AssistantExitPoint = chromeos::assistant::AssistantExitPoint;
 
   AssistantUiModel();
+
+  AssistantUiModel(const AssistantUiModel&) = delete;
+  AssistantUiModel& operator=(const AssistantUiModel&) = delete;
+
   ~AssistantUiModel();
 
   // Adds/removes the specified |observer|.
@@ -63,6 +67,7 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
 
   // Sets the UI visibility.
   void SetVisible(AssistantEntryPoint entry_point);
+  void SetClosing(AssistantExitPoint exit_point);
   void SetClosed(AssistantExitPoint exit_point);
 
   AssistantVisibility visibility() const { return visibility_; }
@@ -97,8 +102,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
   // Usable work area for Assistant. Value is only meaningful when Assistant
   // UI exists.
   gfx::Rect usable_work_area_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantUiModel);
 };
 
 }  // namespace ash

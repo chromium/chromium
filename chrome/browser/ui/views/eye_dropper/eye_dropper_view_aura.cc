@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_features.h"
 
 class EyeDropperView::PreEventDispatchHandler::KeyboardHandler
     : public ui::EventHandler {
@@ -109,5 +110,7 @@ float EyeDropperView::GetDiameter() const {
 std::unique_ptr<content::EyeDropper> ShowEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
-  return std::make_unique<EyeDropperView>(frame, listener);
+  return features::IsEyeDropperEnabled()
+             ? std::make_unique<EyeDropperView>(frame, listener)
+             : nullptr;
 }

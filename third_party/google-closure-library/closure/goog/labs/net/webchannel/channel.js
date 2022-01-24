@@ -1,36 +1,25 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
- * @fileoverview A shared interface for WebChannelBase and BaseTestChannel.
+ * @fileoverview A core interface for WebChannelBase.
+ *
  */
 
 
 goog.provide('goog.labs.net.webChannel.Channel');
 
-goog.forwardDeclare('goog.Uri');
-goog.forwardDeclare('goog.labs.net.webChannel.BaseTestChannel');
-goog.forwardDeclare('goog.labs.net.webChannel.ChannelRequest');
-goog.forwardDeclare('goog.labs.net.webChannel.ChannelRequest.Error');
-goog.forwardDeclare('goog.labs.net.webChannel.ConnectionState');
-goog.forwardDeclare('goog.net.XhrIo');
+goog.requireType('goog.Uri');
+goog.requireType('goog.labs.net.webChannel.ChannelRequest');
+goog.requireType('goog.labs.net.webChannel.ConnectionState');
+goog.requireType('goog.net.XhrIo');
 
 
 /**
- * Shared interface between Channel and TestChannel to support callbacks
- * between WebChannelBase and BaseTestChannel and between Channel and
- * ChannelRequest.
+ * Core interface for WebChannelBase.
  *
  * @interface
  */
@@ -38,6 +27,7 @@ goog.labs.net.webChannel.Channel = function() {};
 
 
 goog.scope(function() {
+'use strict';
 const Channel = goog.labs.net.webChannel.Channel;
 
 
@@ -69,6 +59,8 @@ Channel.prototype.shouldUseSecondaryDomains = goog.abstractMethod;
  * a secondary domain if withCredentials (CORS) is enabled.
  * @param {?string} hostPrefix The host prefix, if we need an XhrIo object
  *     capable of calling a secondary domain.
+ * @param {boolean=} isStreaming Whether or not fetch/streams are enabled for
+ *     the underlying HTTP request.
  * @return {!goog.net.XhrIo} A new XhrIo object.
  */
 Channel.prototype.createXhrIo = goog.abstractMethod;
@@ -96,6 +88,16 @@ Channel.prototype.isClosed = goog.abstractMethod;
  * @param {string} responseText The text of the response.
  */
 Channel.prototype.onRequestData = goog.abstractMethod;
+
+
+/**
+ * Callback from ChannelRequest for when the first byte of response body has
+ * been received. This is needed for detecting buffering proxies.
+ * @param {!goog.labs.net.webChannel.ChannelRequest} request
+ *     The request object.
+ * @param {string} responseText The text of the response.
+ */
+Channel.prototype.onFirstByteReceived = goog.abstractMethod;
 
 
 /**
@@ -154,29 +156,6 @@ Channel.prototype.createDataUri = goog.abstractMethod;
 
 /**
  * Not needed for testchannel.
- *
- * Callback from TestChannel for when the channel is finished.
- * @param {goog.labs.net.webChannel.BaseTestChannel} testChannel
- *     The TestChannel.
- * @param {boolean} useChunked  Whether we can chunk responses.
- */
-Channel.prototype.testConnectionFinished = goog.abstractMethod;
-
-
-/**
- * Not needed for testchannel.
- *
- * Callback from TestChannel for when the channel has an error.
- * @param {goog.labs.net.webChannel.BaseTestChannel} testChannel
- *     The TestChannel.
- * @param {goog.labs.net.webChannel.ChannelRequest.Error} errorCode
- *     The error code of the failure.
- */
-Channel.prototype.testConnectionFailure = goog.abstractMethod;
-
-
-/**
- * Not needed for testchannel.
  * Gets the result of previous connectivity tests.
  *
  * @return {!goog.labs.net.webChannel.ConnectionState} The connectivity state.
@@ -215,11 +194,10 @@ Channel.prototype.setHttpSessionId = goog.abstractMethod;
  */
 Channel.prototype.getHttpSessionId = goog.abstractMethod;
 
-
 /**
- * Returns true if the channel-test is done in background.
+ * Whether or not this channel uses WHATWG Fetch/streams.
  *
- * @return {boolean} if the channel-test is done in background.
+ * @return {boolean} true if use Fetch streams.
  */
-Channel.prototype.getBackgroundChannelTest = goog.abstractMethod;
+Channel.prototype.usesFetchStreams = goog.abstractMethod;
 });  // goog.scope

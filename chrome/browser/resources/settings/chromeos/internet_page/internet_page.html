@@ -6,11 +6,8 @@
     width: 24px;
   }
 
-  cr-toast {
-    --iron-icon-fill-color: var(--google-yellow-500);
-  }
-
   cr-toast iron-icon {
+    --iron-icon-fill-color: var(--cros-toast-icon-color-warning);
     margin-inline-end: 16px;
   }
 </style>
@@ -87,14 +84,12 @@
     </template>
   </div>
 
-  <template is="dom-if" route-path="/networkDetail" no-search restamp>
+  <template is="dom-if" route-path="/networkDetail" restamp>
     <settings-subpage page-title="$i18n{internetDetailPageTitle}">
-      <template is="dom-if" if="[[isUpdatedCellularUiEnabled_]]" restamp>
-        <settings-internet-detail-menu
-            slot="subpage-title-extra"
-            device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
-        </settings-internet-detail-menu>
-      </template>
+      <settings-internet-detail-menu
+          slot="subpage-title-extra"
+          device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
+      </settings-internet-detail-menu>
       <settings-internet-detail-page prefs="{{prefs}}"
           default-network="[[defaultNetwork]]"
           global-policy="[[globalPolicy_]]"
@@ -103,7 +98,7 @@
     </settings-subpage>
   </template>
 
-  <template is="dom-if" route-path="/knownNetworks" no-search restamp>
+  <template is="dom-if" route-path="/knownNetworks" restamp>
     <settings-subpage page-title="$i18n{internetKnownNetworksPageTitle}">
       <settings-internet-known-networks-page
           network-type="[[knownNetworksType_]]">
@@ -111,7 +106,7 @@
     </settings-subpage>
   </template>
 
-  <template is="dom-if" route-path="/networks" no-search restamp>
+  <template is="dom-if" route-path="/networks" restamp>
     <settings-subpage page-title="[[getNetworksPageTitle_(subpageType_)]]"
         show-spinner="[[showSpinner_]]"
         spinner-title="$i18n{networkScanningLabel}">

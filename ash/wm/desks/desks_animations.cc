@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "base/time/time.h"
@@ -19,7 +20,7 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -53,8 +54,7 @@ class WindowMoveToDeskAnimation : public ui::ImplicitAnimationObserver {
       : old_window_layer_tree_(::wm::RecreateLayers(window)) {
     ui::Layer* layer = old_window_layer_tree_->root();
     ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
-    constexpr base::TimeDelta kDuration =
-        base::TimeDelta::FromMilliseconds(200);
+    constexpr base::TimeDelta kDuration = base::Milliseconds(200);
     settings.SetTransitionDuration(kDuration);
     settings.SetTweenType(gfx::Tween::EASE_IN);
     settings.SetPreemptionStrategy(
@@ -63,6 +63,10 @@ class WindowMoveToDeskAnimation : public ui::ImplicitAnimationObserver {
     layer->SetTransform(GetWindowEndTransform(window, going_left));
   }
 
+  WindowMoveToDeskAnimation(const WindowMoveToDeskAnimation&) = delete;
+  WindowMoveToDeskAnimation& operator=(const WindowMoveToDeskAnimation&) =
+      delete;
+
   ~WindowMoveToDeskAnimation() override = default;
 
   // ui::ImplicitAnimationObserver:
@@ -70,8 +74,6 @@ class WindowMoveToDeskAnimation : public ui::ImplicitAnimationObserver {
 
  private:
   std::unique_ptr<ui::LayerTreeOwner> old_window_layer_tree_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowMoveToDeskAnimation);
 };
 
 }  // namespace
@@ -98,7 +100,7 @@ void PerformHitTheWallAnimation(aura::Window* root, bool going_left) {
   //      |     |
   //      |---->|
   //      |     |
-  constexpr base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(150);
+  constexpr base::TimeDelta kDuration = base::Milliseconds(150);
   auto outgoing_transition = ui::LayerAnimationElement::CreateTransformElement(
       begin_transform, kDuration);
   outgoing_transition->set_tween_type(gfx::Tween::EASE_OUT);
@@ -119,7 +121,7 @@ void PerformHitTheWallAnimation(aura::Window* root, bool going_left) {
 
 void PerformWindowMoveToDeskAnimation(aura::Window* window, bool going_left) {
   DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
-  DCHECK(!window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey));
+  DCHECK(!desks_util::IsWindowVisibleOnAllWorkspaces(window));
 
   // The entire transient window tree should appear to animate together towards
   // the target desk.

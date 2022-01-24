@@ -25,6 +25,10 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) P2PMessageThrottler {
  public:
   P2PMessageThrottler();
+
+  P2PMessageThrottler(const P2PMessageThrottler&) = delete;
+  P2PMessageThrottler& operator=(const P2PMessageThrottler&) = delete;
+
   virtual ~P2PMessageThrottler();
 
   bool DropNextPacket(size_t packet_len);
@@ -32,8 +36,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PMessageThrottler {
 
  private:
   std::unique_ptr<rtc::DataRateLimiter> rate_limiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(P2PMessageThrottler);
 };
 
 }  // namespace network

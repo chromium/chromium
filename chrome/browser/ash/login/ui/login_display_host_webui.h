@@ -12,9 +12,9 @@
 
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/multi_user_window_manager_observer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
@@ -23,8 +23,8 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
@@ -46,6 +46,7 @@ class WebUILoginView;
 // WebUI signals ready (via NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE) or there
 // is a network error (via NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN).
 class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
+                              public session_manager::SessionManagerObserver,
                               public content::WebContentsObserver,
                               public chromeos::SessionManagerClient::Observer,
                               public CrasAudioHandler::AudioObserver,
@@ -57,6 +58,10 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public MultiUserWindowManagerObserver {
  public:
   LoginDisplayHostWebUI();
+
+  LoginDisplayHostWebUI(const LoginDisplayHostWebUI&) = delete;
+  LoginDisplayHostWebUI& operator=(const LoginDisplayHostWebUI&) = delete;
+
   ~LoginDisplayHostWebUI() override;
 
   // LoginDisplayHost:
@@ -77,6 +82,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void OnStartAppLaunch() override;
   void OnBrowserCreated() override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
+  void ShowOsInstallScreen() override;
+  void ShowGuestTosScreen() override;
   void HideOobeDialog() override;
   void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(OobeDialogState state) override;
@@ -92,6 +99,14 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void StartBrowserDataMigration() override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
+  SigninUI* GetSigninUI() final;
+  bool IsWizardControllerCreated() const final;
+  bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
+                                    int* value) const final;
+
+  // session_manager::SessionManagerObserver:
+  void OnNetworkErrorScreenShown() override;
+  void OnLoginOrLockScreenVisible() override;
 
   // Trace id for ShowLoginWebUI event (since there exists at most one login
   // WebUI at a time).
@@ -105,13 +120,9 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
  protected:
   class KeyboardDrivenOobeKeyHandler;
 
-  // LoginDisplayHost:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // content::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   // chromeos::SessionManagerClient::Observer:
   void EmitLoginPromptVisibleCalled() override;
@@ -142,6 +153,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // anymore.
   // MultiUserWindowManagerObserver:
   void OnUserSwitchAnimationFinished() override;
+
+  bool IsOobeUIDialogVisible() const override;
 
  private:
   // Way to restore if renderer have crashed.
@@ -268,13 +281,15 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // Measures OOBE WebUI load time.
   absl::optional<base::ElapsedTimer> oobe_load_timer_;
 
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+
   display::ScopedDisplayObserver display_observer_{this};
 
   base::ObserverList<LoginDisplayHost::Observer> observers_;
 
   base::WeakPtrFactory<LoginDisplayHostWebUI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDisplayHostWebUI);
 };
 
 }  // namespace ash

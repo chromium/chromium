@@ -51,14 +51,13 @@ const char kUnknownActionType[] = "unknownType";
 std::unique_ptr<WebRequestActionSet> CreateSetOfActions(const char* json) {
   std::unique_ptr<base::Value> parsed_value(
       base::test::ParseJsonDeprecated(json));
-  const base::ListValue* parsed_list;
-  CHECK(parsed_value->GetAsList(&parsed_list));
+  CHECK(parsed_value->is_list());
 
   WebRequestActionSet::Values actions;
-  for (const auto& entry : parsed_list->GetList()) {
-    const base::DictionaryValue* dict;
-    CHECK(entry.GetAsDictionary(&dict));
-    actions.push_back(dict->CreateDeepCopy());
+  for (const base::Value& entry : parsed_value->GetList()) {
+    CHECK(entry.is_dict());
+    actions.push_back(base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(entry.Clone())));
   }
 
   std::string error;
@@ -185,14 +184,14 @@ TEST(WebRequestActionTest, CreateAction) {
   EXPECT_FALSE(result.get());
 
   // Test wrong instanceType element.
-  input.SetString(keys::kInstanceTypeKey, kUnknownActionType);
+  input.SetStringKey(keys::kInstanceTypeKey, kUnknownActionType);
   error.clear();
   result = WebRequestAction::Create(NULL, NULL, input, &error, &bad_message);
   EXPECT_NE("", error);
   EXPECT_FALSE(result.get());
 
   // Test success
-  input.SetString(keys::kInstanceTypeKey, keys::kCancelRequestType);
+  input.SetStringKey(keys::kInstanceTypeKey, keys::kCancelRequestType);
   error.clear();
   result = WebRequestAction::Create(NULL, NULL, input, &error, &bad_message);
   EXPECT_EQ("", error);
@@ -218,13 +217,14 @@ TEST(WebRequestActionTest, CreateActionSet) {
   EXPECT_EQ(std::numeric_limits<int>::min(), result->GetMinimumPriority());
 
   base::DictionaryValue correct_action;
-  correct_action.SetString(keys::kInstanceTypeKey, keys::kIgnoreRulesType);
-  correct_action.SetInteger(keys::kLowerPriorityThanKey, 10);
+  correct_action.SetStringKey(keys::kInstanceTypeKey, keys::kIgnoreRulesType);
+  correct_action.SetIntKey(keys::kLowerPriorityThanKey, 10);
   base::DictionaryValue incorrect_action;
-  incorrect_action.SetString(keys::kInstanceTypeKey, kUnknownActionType);
+  incorrect_action.SetStringKey(keys::kInstanceTypeKey, kUnknownActionType);
 
   // Test success.
-  input.push_back(correct_action.CreateDeepCopy());
+  input.push_back(base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(correct_action.Clone())));
   error.clear();
   result = WebRequestActionSet::Create(NULL, NULL, input, &error, &bad_message);
   EXPECT_TRUE(error.empty()) << error;
@@ -236,7 +236,8 @@ TEST(WebRequestActionTest, CreateActionSet) {
   EXPECT_EQ(10, result->GetMinimumPriority());
 
   // Test failure.
-  input.push_back(incorrect_action.CreateDeepCopy());
+  input.push_back(base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(incorrect_action.Clone())));
   error.clear();
   result = WebRequestActionSet::Create(NULL, NULL, input, &error, &bad_message);
   EXPECT_NE("", error);

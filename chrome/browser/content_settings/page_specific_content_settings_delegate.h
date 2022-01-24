@@ -7,10 +7,12 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/access_context_audit_service.h"
-#include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "content/public/common/custom_handlers/protocol_handler.h"
 
 namespace chrome {
+
+using content::ProtocolHandler;
 
 class PageSpecificContentSettingsDelegate
     : public content_settings::PageSpecificContentSettings::Delegate,

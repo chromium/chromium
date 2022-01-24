@@ -43,6 +43,10 @@ class BluetoothApiSocket : public ApiResource {
                      scoped_refptr<device::BluetoothSocket> socket,
                      const std::string& device_address,
                      const device::BluetoothUUID& uuid);
+
+  BluetoothApiSocket(const BluetoothApiSocket&) = delete;
+  BluetoothApiSocket& operator=(const BluetoothApiSocket&) = delete;
+
   ~BluetoothApiSocket() override;
 
   // Adopts a socket |socket| connected to a device with address
@@ -151,8 +155,6 @@ class BluetoothApiSocket : public ApiResource {
 
   // Flag indicating whether a socket is connected.
   bool connected_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothApiSocket);
 };
 
 }  // namespace extensions

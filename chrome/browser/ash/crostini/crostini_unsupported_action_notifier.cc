@@ -18,7 +18,7 @@
 #include "components/exo/wm_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
+#include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -67,7 +67,7 @@ CrostiniUnsupportedActionNotifier::~CrostiniUnsupportedActionNotifier() {
 // Testing on using Debian/stretch on Eve shows Crostini supports all tested xkb
 // IMEs but no non-xkb IMEs.
 bool CrostiniUnsupportedActionNotifier::IsIMESupportedByCrostini(
-    const chromeos::input_method::InputMethodDescriptor& method) {
+    const ash::input_method::InputMethodDescriptor& method) {
   return method.id().find("xkb:") != std::string::npos;
 }
 
@@ -83,7 +83,7 @@ void CrostiniUnsupportedActionNotifier::OnWindowFocused(
 }
 
 void CrostiniUnsupportedActionNotifier::InputMethodChanged(
-    chromeos::input_method::InputMethodManager* manager,
+    ash::input_method::InputMethodManager* manager,
     Profile* profile,
     bool show_message) {
   ShowIMEUnsupportedNotificationIfNeeded();
@@ -164,9 +164,9 @@ bool CrostiniUnsupportedActionNotifier::Delegate::IsFocusedWindowCrostini() {
           static_cast<int>(ash::AppType::CROSTINI_APP));
 }
 
-chromeos::input_method::InputMethodDescriptor
+ash::input_method::InputMethodDescriptor
 CrostiniUnsupportedActionNotifier::Delegate::GetCurrentInputMethod() {
-  return chromeos::input_method::InputMethodManager::Get()
+  return ash::input_method::InputMethodManager::Get()
       ->GetActiveIMEState()
       ->GetCurrentInputMethod();
 }
@@ -182,8 +182,8 @@ void CrostiniUnsupportedActionNotifier::Delegate::ShowToast(
 
 std::string
 CrostiniUnsupportedActionNotifier::Delegate::GetLocalizedDisplayName(
-    const chromeos::input_method::InputMethodDescriptor& descriptor) {
-  return chromeos::input_method::InputMethodManager::Get()
+    const ash::input_method::InputMethodDescriptor& descriptor) {
+  return ash::input_method::InputMethodManager::Get()
       ->GetInputMethodUtil()
       ->GetLocalizedDisplayName(descriptor);
 }
@@ -227,13 +227,13 @@ void CrostiniUnsupportedActionNotifier::Delegate::RemoveTabletModeObserver(
 }
 
 void CrostiniUnsupportedActionNotifier::Delegate::AddInputMethodObserver(
-    chromeos::input_method::InputMethodManager::Observer* observer) {
-  chromeos::input_method::InputMethodManager::Get()->AddObserver(observer);
+    ash::input_method::InputMethodManager::Observer* observer) {
+  ash::input_method::InputMethodManager::Get()->AddObserver(observer);
 }
 
 void CrostiniUnsupportedActionNotifier::Delegate::RemoveInputMethodObserver(
-    chromeos::input_method::InputMethodManager::Observer* observer) {
-  chromeos::input_method::InputMethodManager::Get()->RemoveObserver(observer);
+    ash::input_method::InputMethodManager::Observer* observer) {
+  ash::input_method::InputMethodManager::Get()->RemoveObserver(observer);
 }
 
 void CrostiniUnsupportedActionNotifier::Delegate::AddKeyboardControllerObserver(

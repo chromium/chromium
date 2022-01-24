@@ -55,7 +55,7 @@ class SettingsOverridePermissionTest : public ChromeManifestTest {
       settings_override->SetString("homepage", "http://www.google.com/home");
     if (flags & kStartupPages) {
       std::unique_ptr<base::ListValue> startup_pages(new base::ListValue);
-      startup_pages->AppendString("http://startup.com/startup.html");
+      startup_pages->Append("http://startup.com/startup.html");
       settings_override->Set("startup_pages", std::move(startup_pages));
     }
     if (flags & kSearchProvider) {

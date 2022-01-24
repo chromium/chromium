@@ -5,7 +5,7 @@
 package org.chromium.mojo.bindings.test.mojom.mojo;
 
 import org.chromium.mojo.bindings.MessageReceiver;
-import org.chromium.mojo.bindings.test.mojom.mojo.IntegrationTestInterface.Method0Response;
+import org.chromium.mojo.bindings.test.mojom.mojo.IntegrationTestInterface.Method0_Response;
 import org.chromium.mojo.bindings.test.mojom.mojo.IntegrationTestInterface_Internal.IntegrationTestInterfaceMethod0ResponseParamsForwardToCallback;
 
 /**
@@ -13,14 +13,14 @@ import org.chromium.mojo.bindings.test.mojom.mojo.IntegrationTestInterface_Inter
  * tests.
  */
 public class IntegrationTestInterfaceTestHelper {
-    private static final class SinkMethod0Response implements Method0Response {
+    private static final class SinkMethod0Response implements Method0_Response {
         @Override
         public void call(byte[] arg1) {}
     }
 
     /**
      * Creates a new {@link MessageReceiver} to use for the callback of
-     * |IntegrationTestInterface#method0(Method0Response)|.
+     * |IntegrationTestInterface#method0(Method0_Response)|.
      */
     public static MessageReceiver newIntegrationTestInterfaceMethodCallback() {
         return new IntegrationTestInterfaceMethod0ResponseParamsForwardToCallback(

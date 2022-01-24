@@ -12,12 +12,12 @@
 
 namespace WTF {
 
-#if !defined(OS_ANDROID)
+#if !defined(OS_ANDROID) && !defined(OS_WIN)
 base::PlatformThreadId CurrentThread() {
   thread_local base::PlatformThreadId g_id = base::PlatformThread::CurrentId();
   return g_id;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !defined(OS_ANDROID) && !defined(OS_WIN)
 
 // For debugging only -- whether a non-main thread has been created.
 

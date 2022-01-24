@@ -461,11 +461,10 @@ bool ExtensionWebUI::HandleChromeURLOverrideReverse(
   // chrome://bookmarks/#1 for display in the omnibox.
   for (base::DictionaryValue::Iterator dict_iter(*overrides);
        !dict_iter.IsAtEnd(); dict_iter.Advance()) {
-    const base::ListValue* url_list = nullptr;
-    if (!dict_iter.value().GetAsList(&url_list))
+    if (!dict_iter.value().is_list())
       continue;
 
-    for (const auto& list_iter : url_list->GetList()) {
+    for (const auto& list_iter : dict_iter.value().GetList()) {
       const std::string* override = nullptr;
       if (list_iter.is_dict())
         override = list_iter.FindStringKey(kEntry);

@@ -346,8 +346,10 @@ TestDriver::TestDriver()
   partition_allocator_.init({base::PartitionOptions::AlignedAlloc::kDisallowed,
                              base::PartitionOptions::ThreadCache::kDisabled,
                              base::PartitionOptions::Quarantine::kDisallowed,
-                             base::PartitionOptions::Cookies::kAllowed,
-                             base::PartitionOptions::RefCount::kDisallowed});
+                             base::PartitionOptions::Cookie::kAllowed,
+                             base::PartitionOptions::BackupRefPtr::kDisabled,
+                             base::PartitionOptions::UseConfigurablePool::kNo,
+                             base::PartitionOptions::LazyCommit::kEnabled});
 }
 TestDriver::~TestDriver() {
   base::PartitionAllocGlobalUninitForTesting();
@@ -791,7 +793,7 @@ void TestDriver::WaitForProfilingToStartForAllRenderersUIThreadCallback(
 
   // Brief sleep to prevent spamming the task queue, since this code is called
   // in a tight loop.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMicroseconds(100));
+  base::PlatformThread::Sleep(base::Microseconds(100));
 
   WaitForProfilingToStartForAllRenderersUIThreadAndSignal();
 }

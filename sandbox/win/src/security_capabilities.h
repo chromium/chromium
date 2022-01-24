@@ -19,14 +19,16 @@ class SecurityCapabilities final : public SECURITY_CAPABILITIES {
   explicit SecurityCapabilities(const Sid& package_sid);
   SecurityCapabilities(const Sid& package_sid,
                        const std::vector<Sid>& capabilities);
+
+  SecurityCapabilities(const SecurityCapabilities&) = delete;
+  SecurityCapabilities& operator=(const SecurityCapabilities&) = delete;
+
   ~SecurityCapabilities();
 
  private:
   std::vector<Sid> capabilities_;
   std::vector<SID_AND_ATTRIBUTES> capability_sids_;
   Sid package_sid_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityCapabilities);
 };
 
 }  // namespace sandbox

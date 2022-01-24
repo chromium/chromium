@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -51,6 +50,9 @@ class InProcessContextProvider
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gpu::ImageFactory* image_factory,
       bool support_locking);
+
+  InProcessContextProvider(const InProcessContextProvider&) = delete;
+  InProcessContextProvider& operator=(const InProcessContextProvider&) = delete;
 
   // viz::ContextProvider / viz::RasterContextProvider implementation.
   void AddRef() const override;
@@ -118,8 +120,6 @@ class InProcessContextProvider
   base::Lock context_lock_;
 
   base::ObserverList<viz::ContextLostObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessContextProvider);
 };
 
 }  // namespace ui

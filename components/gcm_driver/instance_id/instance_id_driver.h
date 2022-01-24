@@ -9,8 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace gcm {
 class GCMDriver;
 }  // namespace gcm
@@ -26,6 +24,10 @@ class InstanceID;
 class InstanceIDDriver {
  public:
   explicit InstanceIDDriver(gcm::GCMDriver* gcm_driver);
+
+  InstanceIDDriver(const InstanceIDDriver&) = delete;
+  InstanceIDDriver& operator=(const InstanceIDDriver&) = delete;
+
   virtual ~InstanceIDDriver();
 
   // Returns the InstanceID that provides the Instance ID service for the given
@@ -47,8 +49,6 @@ class InstanceIDDriver {
   gcm::GCMDriver* gcm_driver_;
 
   std::map<std::string, std::unique_ptr<InstanceID>> instance_id_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDDriver);
 };
 
 }  // namespace instance_id

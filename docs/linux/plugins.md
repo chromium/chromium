@@ -4,7 +4,7 @@
 
 ### Plugins in general
 
-*   [Gecko Plugin API reference](https://developer.mozilla.org/en/Gecko_Plugin_API_Reference)
+*   [Gecko Plugin API reference](https://developer.mozilla.org/en-US/docs/Plugins/Guide)
     -- most important to read
 *   [Mozilla plugins site](http://www.mozilla.org/projects/plugins/)
 *   [XEmbed extension](https://developer.mozilla.org/en/XEmbed_Extension_for_Mozilla_Plugins)

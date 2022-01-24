@@ -47,14 +47,15 @@ enum PolicySource {
 
   // Any non-platform policy was overridden because we are running in a
   // public session or kiosk mode.
-  // TODO(crbug/1225922): Remove deprecated policy source.
+  // TODO(crbug.com/1225922): Remove deprecated policy source.
   POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED,
 
   // The policy was set by a platform source.
   POLICY_SOURCE_PLATFORM,
 
   // The policy was set by a cloud source that has higher priroity.
-  POLICY_SOURCE_PRIORITY_CLOUD,
+  // TODO(crbug.com/1249611): Remove deprecated policy source.
+  POLICY_SOURCE_PRIORITY_CLOUD_DEPRECATED,
 
   // The policy coming from multiple sources and its value has been merged.
   POLICY_SOURCE_MERGED,
@@ -62,12 +63,50 @@ enum PolicySource {
   // The policy was set by Cloud in Ash and piped to Lacros.
   POLICY_SOURCE_CLOUD_FROM_ASH,
 
-  // The policy was set by the RestrictedManagedGuestSessionEnabled policy. This
-  // source should be kept as highest priority source.
+  // The policy was set by the DeviceRestrictedManagedGuestSessionEnabled
+  // policy. This source should be kept as highest priority source.
   POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
 
   // Number of source types. Has to be the last element.
   POLICY_SOURCE_COUNT
+};
+
+// The priorities are set in order, with lowest priority first. A similar enum
+// doesn't exist for Chrome OS since there is a 1:1 mapping from source to
+// priority, so source is used directly in the priority comparison.
+enum PolicyPriorityBrowser {
+  // The policy was set through remapping or debugging.
+  POLICY_PRIORITY_BROWSER_ENTERPRISE_DEFAULT,
+
+  // The policy was set by command line flag for testing purposes.
+  POLICY_PRIORITY_BROWSER_COMMAND_LINE,
+
+  // The policy was set by a cloud source at the user level.
+  POLICY_PRIORITY_BROWSER_CLOUD_USER,
+
+  // The policy was set by a platform source at the user level.
+  POLICY_PRIORITY_BROWSER_PLATFORM_USER,
+
+  // The policy was set by a cloud source at the machine level.
+  POLICY_PRIORITY_BROWSER_CLOUD_MACHINE,
+
+  // The policy was set by a cloud source at the user level. Its priority is
+  // raised above that of cloud machine policies.
+  POLICY_PRIORITY_BROWSER_CLOUD_USER_RAISED,
+
+  // The policy was set by a platform source at the machine level.
+  POLICY_PRIORITY_BROWSER_PLATFORM_MACHINE,
+
+  // The policy was set by a platform source at the machine level. Its priority
+  // is raised above that of platform machine policies.
+  POLICY_PRIORITY_BROWSER_CLOUD_MACHINE_RAISED,
+
+  // The policy was set by a cloud source at the user level. Its priority is
+  // raised above that of platform and cloud machine policies.
+  POLICY_PRIORITY_BROWSER_CLOUD_USER_DOUBLE_RAISED,
+
+  // The policy coming from multiple sources and its value has been merged.
+  POLICY_PRIORITY_BROWSER_MERGED,
 };
 
 }  // namespace policy

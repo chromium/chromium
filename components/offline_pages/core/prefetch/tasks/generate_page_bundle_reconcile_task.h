@@ -23,6 +23,12 @@ class GeneratePageBundleReconcileTask : public Task {
   GeneratePageBundleReconcileTask(
       PrefetchStore* prefetch_store,
       PrefetchNetworkRequestFactory* request_factory);
+
+  GeneratePageBundleReconcileTask(const GeneratePageBundleReconcileTask&) =
+      delete;
+  GeneratePageBundleReconcileTask& operator=(
+      const GeneratePageBundleReconcileTask&) = delete;
+
   ~GeneratePageBundleReconcileTask() override;
 
  private:
@@ -34,7 +40,6 @@ class GeneratePageBundleReconcileTask : public Task {
   PrefetchNetworkRequestFactory* request_factory_;
 
   base::WeakPtrFactory<GeneratePageBundleReconcileTask> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(GeneratePageBundleReconcileTask);
 };
 
 }  // namespace offline_pages

@@ -118,7 +118,8 @@ bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
 
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
                          run_loop.QuitClosure()));
   if (copy_rect)
@@ -156,7 +157,8 @@ bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
 
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
                          run_loop.QuitClosure()));
   target->copy_requests.push_back(std::move(request));
@@ -203,7 +205,9 @@ bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
 void PixelTest::ReadbackResult(base::OnceClosure quit_run_loop,
                                std::unique_ptr<viz::CopyOutputResult> result) {
   ASSERT_FALSE(result->IsEmpty());
-  EXPECT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA_BITMAP);
+  EXPECT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
+  EXPECT_EQ(result->destination(),
+            viz::CopyOutputResult::Destination::kSystemMemory);
   auto scoped_sk_bitmap = result->ScopedAccessSkBitmap();
   result_bitmap_ =
       std::make_unique<SkBitmap>(scoped_sk_bitmap.GetOutScopedBitmap());
@@ -261,8 +265,8 @@ void PixelTest::SetUpGLWithoutRenderer(
 
   auto context_provider =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          /*enable_gpu_rasterization=*/false,
-          /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+          /*enable_gles2_interface=*/true, /*support_locking=*/false,
+          viz::RasterInterfaceType::None);
   gpu::ContextResult result = context_provider->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   output_surface_ = std::make_unique<PixelTestOutputSurface>(
@@ -271,8 +275,8 @@ void PixelTest::SetUpGLWithoutRenderer(
 
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          /*enable_gpu_rasterization=*/false,
-          /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+          /*enable_gles2_interface=*/true, /*support_locking=*/false,
+          viz::RasterInterfaceType::None);
   result = child_context_provider_->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
@@ -317,8 +321,8 @@ void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   // Set up the client side context provider, etc
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          /*enable_gpu_rasterization=*/false,
-          /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+          /*enable_gles2_interface=*/true, /*support_locking=*/false,
+          viz::RasterInterfaceType::None);
   gpu::ContextResult result = child_context_provider_->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();

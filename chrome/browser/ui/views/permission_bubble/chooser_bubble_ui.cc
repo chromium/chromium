@@ -48,6 +48,11 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
       Browser* browser,
       content::WebContents* web_contents,
       std::unique_ptr<permissions::ChooserController> chooser_controller);
+
+  ChooserBubbleUiViewDelegate(const ChooserBubbleUiViewDelegate&) = delete;
+  ChooserBubbleUiViewDelegate& operator=(const ChooserBubbleUiViewDelegate&) =
+      delete;
+
   ~ChooserBubbleUiViewDelegate() override;
 
   // views::View:
@@ -76,8 +81,6 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
   DeviceChooserContentView* device_chooser_content_view_ = nullptr;
 
   base::WeakPtrFactory<ChooserBubbleUiViewDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChooserBubbleUiViewDelegate);
 };
 
 ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(

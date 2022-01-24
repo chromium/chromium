@@ -82,8 +82,8 @@ TEST_F(WaylandFuzzerTest, MakeSureItWorks) {
                                  base::BindOnce(&RunHarness, &harness, &event));
   // For this action sequence we need two dispatches. The first will bind the
   // registry, the second is for the callback.
-  server_->Dispatch(base::TimeDelta::FromSeconds(5));
-  server_->Dispatch(base::TimeDelta::FromSeconds(5));
+  server_->Dispatch(base::Seconds(5));
+  server_->Dispatch(base::Seconds(5));
   server_->Flush();
   event.Wait();
 

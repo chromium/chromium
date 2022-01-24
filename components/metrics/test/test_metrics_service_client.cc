@@ -46,6 +46,11 @@ bool TestMetricsServiceClient::GetBrand(std::string* brand_code) {
   return true;
 }
 
+const network_time::NetworkTimeTracker*
+TestMetricsServiceClient::GetNetworkTimeTracker() {
+  return nullptr;
+}
+
 SystemProfileProto::Channel TestMetricsServiceClient::GetChannel() {
   return SystemProfileProto::CHANNEL_BETA;
 }
@@ -74,7 +79,7 @@ std::unique_ptr<MetricsLogUploader> TestMetricsServiceClient::CreateUploader(
 }
 
 base::TimeDelta TestMetricsServiceClient::GetStandardUploadInterval() {
-  return base::TimeDelta::FromMinutes(5);
+  return base::Minutes(5);
 }
 
 bool TestMetricsServiceClient::IsReportingPolicyManaged() {

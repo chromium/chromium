@@ -6,8 +6,10 @@
 
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/credential_provider/credential_provider_service.h"
+#include "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -37,6 +39,7 @@ CredentialProviderServiceFactory::CredentialProviderServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "CredentialProviderService",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
   DependsOn(IOSChromePasswordStoreFactory::GetInstance());
   DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -50,7 +53,7 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  scoped_refptr<password_manager::PasswordStore> password_store =
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
       IOSChromePasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS);
   AuthenticationService* authentication_service =
@@ -62,8 +65,10 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForBrowserState(browser_state);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state);
+  password_manager::AffiliationService* affiliation_service =
+      IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
 
   return std::make_unique<CredentialProviderService>(
-      password_store, authentication_service, credential_store,
-      identity_manager, sync_service);
+      browser_state->GetPrefs(), password_store, authentication_service,
+      credential_store, identity_manager, sync_service, affiliation_service);
 }

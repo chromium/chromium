@@ -32,6 +32,8 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -71,17 +73,16 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
 
   std::unique_ptr<FileSystemAccessFileHandleImpl>
   GetHandleWithPermissions(const base::FilePath& path, bool read, bool write) {
-    auto url_and_fs = manager_->CreateFileSystemURLFromPath(
-        test_src_origin_, FileSystemAccessEntryFactory::PathType::kLocal, path);
+    auto url = manager_->CreateFileSystemURLFromPath(
+        FileSystemAccessEntryFactory::PathType::kLocal, path);
     auto handle = std::make_unique<FileSystemAccessFileHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
-            test_src_origin_, test_src_url_, /*worker_process_id=*/1),
-        url_and_fs.url,
+            test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
+        url,
         FileSystemAccessManagerImpl::SharedHandleState(
             /*read_grant=*/read ? allow_grant_ : deny_grant_,
-            /*write_grant=*/write ? allow_grant_ : deny_grant_,
-            url_and_fs.file_system));
+            /*write_grant=*/write ? allow_grant_ : deny_grant_));
     return handle;
   }
 
@@ -101,7 +102,7 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     }
 
     test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
-        test_src_origin_, type, base::FilePath::FromUTF8Unsafe("test"));
+        test_src_storage_key_, type, base::FilePath::FromUTF8Unsafe("test"));
 
     ASSERT_EQ(base::File::FILE_OK,
               storage::AsyncFileTestHelper::CreateFile(
@@ -119,14 +120,15 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     handle_ = std::make_unique<FileSystemAccessFileHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
-            test_src_origin_, test_src_url_, /*worker_process_id=*/1),
+            test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
         test_file_url_,
-        FileSystemAccessManagerImpl::SharedHandleState(
-            allow_grant_, allow_grant_, /*file_system=*/{}));
+        FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                       allow_grant_));
   }
 
   const GURL test_src_url_ = GURL("http://example.com/foo");
-  const url::Origin test_src_origin_ = url::Origin::Create(test_src_url_);
+  const blink::StorageKey test_src_storage_key_ =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com/foo");
 
   BrowserTaskEnvironment task_environment_;
 
@@ -151,18 +153,10 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
 class FileSystemAccessAccessHandleTest
     : public FileSystemAccessFileHandleImplTest {
  public:
-  FileSystemAccessAccessHandleTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kFileSystemAccessAccessHandle);
-  }
-
   void SetUp() override {
     // AccessHandles are only allowed for temporary file systems.
     SetupHelper(storage::kFileSystemTypeTemporary, /*is_incognito=*/false);
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class FileSystemAccessAccessHandleIncognitoTest
@@ -179,7 +173,7 @@ TEST_F(FileSystemAccessFileHandleImplTest, CreateFileWriterOverLimitNotOK) {
 
   const FileSystemURL base_swap_url =
       file_system_context_->CreateCrackedFileSystemURL(
-          test_src_origin_, storage::kFileSystemTypeTest,
+          test_src_storage_key_, storage::kFileSystemTypeTest,
           base::FilePath::FromUTF8Unsafe("test.crswap"));
 
   std::vector<mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
@@ -190,7 +184,7 @@ TEST_F(FileSystemAccessFileHandleImplTest, CreateFileWriterOverLimitNotOK) {
       swap_url = base_swap_url;
     } else {
       swap_url = file_system_context_->CreateCrackedFileSystemURL(
-          test_src_origin_, storage::kFileSystemTypeTest,
+          test_src_storage_key_, storage::kFileSystemTypeTest,
           base::FilePath::FromUTF8Unsafe(
               base::StringPrintf("test.%d.crswap", i)));
     }
@@ -274,7 +268,11 @@ TEST_F(FileSystemAccessAccessHandleTest, OpenAccessHandle) {
                       blink::mojom::FileSystemAccessStatus::kOk);
             // File should be valid and no incognito remote is needed.
             EXPECT_TRUE(file->is_regular_file());
-            EXPECT_TRUE(file->get_regular_file().IsValid());
+            blink::mojom::FileSystemAccessRegularFilePtr regular_file =
+                std::move(file->get_regular_file());
+            EXPECT_TRUE(regular_file->os_file.IsValid());
+            EXPECT_EQ(regular_file->file_size, 0);
+            EXPECT_TRUE(regular_file->capacity_allocation_host.is_valid());
             EXPECT_TRUE(access_handle_remote.is_valid());
           })
           .Then(loop.QuitClosure()));

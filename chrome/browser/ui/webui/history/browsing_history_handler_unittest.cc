@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
@@ -60,6 +59,11 @@ class BrowsingHistoryHandlerWithWebUIForTesting
     test_clock_.SetNow(PretendNow());
   }
 
+  BrowsingHistoryHandlerWithWebUIForTesting(
+      const BrowsingHistoryHandlerWithWebUIForTesting&) = delete;
+  BrowsingHistoryHandlerWithWebUIForTesting& operator=(
+      const BrowsingHistoryHandlerWithWebUIForTesting&) = delete;
+
   void SendHistoryQuery(int count, const std::u16string& query) override {
     if (postpone_query_results_) {
       return;
@@ -74,8 +78,6 @@ class BrowsingHistoryHandlerWithWebUIForTesting
  private:
   base::SimpleTestClock test_clock_;
   bool postpone_query_results_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingHistoryHandlerWithWebUIForTesting);
 };
 
 }  // namespace

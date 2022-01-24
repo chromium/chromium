@@ -9,13 +9,12 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
@@ -200,6 +199,9 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
                      TokenCallback callback,
                      Mode mode);
 
+  AccessTokenFetcher(const AccessTokenFetcher&) = delete;
+  AccessTokenFetcher& operator=(const AccessTokenFetcher&) = delete;
+
   ~AccessTokenFetcher() override;
 
  private:
@@ -263,8 +265,6 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
       token_service_observation_{this};
 
   std::unique_ptr<OAuth2AccessTokenManager::Request> access_token_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessTokenFetcher);
 };
 
 }  // namespace signin

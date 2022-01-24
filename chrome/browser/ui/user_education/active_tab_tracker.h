@@ -29,6 +29,10 @@ class ActiveTabTracker : public TabStripModelObserver {
 
   ActiveTabTracker(const base::TickClock* clock,
                    ActiveTabClosedCallback callback);
+
+  ActiveTabTracker(const ActiveTabTracker&) = delete;
+  ActiveTabTracker& operator=(const ActiveTabTracker&) = delete;
+
   ~ActiveTabTracker() override;
 
   // Observes |tab_strip_model|. Its last activation time is set to the current
@@ -51,8 +55,6 @@ class ActiveTabTracker : public TabStripModelObserver {
   // Map containing the latest time the active tab changed for each tab strip
   // model. Also serves as the list of all registered |TabStripModel|s.
   std::unordered_map<TabStripModel*, base::TimeTicks> active_tab_changed_times_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveTabTracker);
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_ACTIVE_TAB_TRACKER_H_

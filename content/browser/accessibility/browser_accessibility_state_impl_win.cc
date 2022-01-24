@@ -82,6 +82,15 @@ class WindowsAccessibilityEnabler
     AddAXModeForUIA(ui::AXMode::kWebContents);
   }
 
+  void OnUIAutomationIdRequested() override {
+    // TODO(janewman): Currently, UIA_AutomationIdPropertyId currently uses
+    // GetAuthorUniqueId. This implementation requires html to be enabled, we
+    // should avoid needing all of kHTML by either modifying what we return for
+    // this property or serializing the author supplied ID attribute separately.
+    // Separating out the id is being tracked by crbug 703277
+    AddAXModeForUIA(ui::AXMode::kHTML);
+  }
+
   void OnProbableUIAutomationScreenReaderDetected() override {
     // Same as kAXModeComplete but without kHTML as it is not needed for UIA.
     AddAXModeForUIA(ui::kAXModeCompleteNoHTML);

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_DRIVER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_DRIVER_H_
 
-#include "base/macros.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 
 namespace password_manager {
@@ -16,6 +15,11 @@ namespace password_manager {
 class StubPasswordManagerDriver : public PasswordManagerDriver {
  public:
   StubPasswordManagerDriver();
+
+  StubPasswordManagerDriver(const StubPasswordManagerDriver&) = delete;
+  StubPasswordManagerDriver& operator=(const StubPasswordManagerDriver&) =
+      delete;
+
   ~StubPasswordManagerDriver() override;
 
   // PasswordManagerDriver:
@@ -31,13 +35,10 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override;
   PasswordManager* GetPasswordManager() override;
   PasswordAutofillManager* GetPasswordAutofillManager() override;
-  bool IsMainFrame() const override;
+  bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;
   ::ui::AXTreeID GetAxTreeId() const override;
   const GURL& GetLastCommittedURL() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubPasswordManagerDriver);
 };
 
 }  // namespace password_manager

@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_TRAY_SYSTEM_MENU_BUTTON_H_
 
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "base/macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -32,6 +31,10 @@ class SystemMenuButton : public views::ImageButton {
   SystemMenuButton(PressedCallback callback,
                    const gfx::VectorIcon& icon,
                    int accessible_name_id);
+
+  SystemMenuButton(const SystemMenuButton&) = delete;
+  SystemMenuButton& operator=(const SystemMenuButton&) = delete;
+
   ~SystemMenuButton() override;
 
   // Sets the normal and disabled icons based on that using default menu icon
@@ -44,8 +47,6 @@ class SystemMenuButton : public views::ImageButton {
  private:
   // Returns the size that the ink drop should be constructed with.
   gfx::Size GetInkDropSize() const;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMenuButton);
 };
 
 }  // namespace ash

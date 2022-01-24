@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
@@ -30,6 +29,10 @@ class TrackerIDSet;
 class RegisterAppTask : public ExclusiveTask {
  public:
   RegisterAppTask(SyncEngineContext* sync_context, const std::string& app_id);
+
+  RegisterAppTask(const RegisterAppTask&) = delete;
+  RegisterAppTask& operator=(const RegisterAppTask&) = delete;
+
   ~RegisterAppTask() override;
 
   bool CanFinishImmediately();
@@ -55,8 +58,6 @@ class RegisterAppTask : public ExclusiveTask {
   std::unique_ptr<FolderCreator> folder_creator_;
 
   base::WeakPtrFactory<RegisterAppTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RegisterAppTask);
 };
 
 }  // namespace drive_backend

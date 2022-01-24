@@ -17,7 +17,7 @@ export class PointScanManager extends PointNavigatorInterface {
     this.point_ = {x: 0, y: 0};
 
     /** @private {function(constants.Point)} */
-    this.pointListener_ = this.handleOnPointScanSet_.bind(this);
+    this.pointListener_ = point => this.handleOnPointScanSet_(point);
   }
 
   // ====== PointNavigatorInterface implementation =====

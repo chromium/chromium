@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
@@ -70,8 +69,7 @@ void OtaActivatorImpl::Factory::SetFactoryForTesting(Factory* test_factory) {
 OtaActivatorImpl::Factory::~Factory() = default;
 
 // static
-const base::TimeDelta OtaActivatorImpl::kConnectRetryDelay =
-    base::TimeDelta::FromSeconds(3);
+const base::TimeDelta OtaActivatorImpl::kConnectRetryDelay = base::Seconds(3);
 
 // static
 const size_t OtaActivatorImpl::kMaxConnectRetryAttempt = 3;

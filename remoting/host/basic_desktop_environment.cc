@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
@@ -18,6 +18,7 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
+#include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/screen_controls.h"
 #include "remoting/protocol/capability_names.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
@@ -28,22 +29,20 @@
 #include "remoting/host/win/evaluate_d3d.h"
 #endif
 
-#if defined(USE_X11)
+#if defined(REMOTING_USE_X11)
 #include "base/threading/watchdog.h"
 #include "remoting/host/linux/x11_util.h"
-#include "ui/base/ui_base_features.h"
 #endif
 
 namespace remoting {
 
-#if defined(USE_X11)
+#if defined(REMOTING_USE_X11)
 
 namespace {
 
 // The maximum amount of time we will wait for the IgnoreXServerGrabs() to
 // return before we crash the host.
-constexpr base::TimeDelta kWaitForIgnoreXServerGrabsTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kWaitForIgnoreXServerGrabsTimeout = base::Seconds(30);
 
 // Helper class to monitor the call to
 // webrtc::SharedXDisplay::IgnoreXServerGrabs() (on a temporary thread), which
@@ -67,7 +66,7 @@ class IgnoreXServerGrabsWatchdog : public base::Watchdog {
 
 }  // namespace
 
-#endif  // defined(USE_X11)
+#endif  // defined(REMOTING_USE_X11)
 
 BasicDesktopEnvironment::~BasicDesktopEnvironment() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
@@ -118,6 +117,11 @@ BasicDesktopEnvironment::CreateFileOperations() {
   return std::make_unique<LocalFileOperations>(ui_task_runner_);
 }
 
+std::unique_ptr<UrlForwarderConfigurator>
+BasicDesktopEnvironment::CreateUrlForwarderConfigurator() {
+  return UrlForwarderConfigurator::Create();
+}
+
 std::string BasicDesktopEnvironment::GetCapabilities() const {
   return std::string();
 }
@@ -145,7 +149,7 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   std::unique_ptr<DesktopCapturerProxy> result(new DesktopCapturerProxy(
-      video_capture_task_runner_, client_session_control_));
+      video_capture_task_runner_, ui_task_runner_, client_session_control_));
   result->CreateCapturer(desktop_capture_options());
   return std::move(result);
 }
@@ -164,16 +168,14 @@ BasicDesktopEnvironment::BasicDesktopEnvironment(
       client_session_control_(client_session_control),
       options_(options) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    // TODO(yuweih): The watchdog is just to test the hypothesis.
-    // The IgnoreXServerGrabs() call should probably be moved to whichever
-    // thread that created desktop_capture_options().x_display().
-    IgnoreXServerGrabsWatchdog watchdog;
-    watchdog.Arm();
-    desktop_capture_options().x_display()->IgnoreXServerGrabs();
-    watchdog.Disarm();
-  }
+#if defined(REMOTING_USE_X11)
+  // TODO(yuweih): The watchdog is just to test the hypothesis.
+  // The IgnoreXServerGrabs() call should probably be moved to whichever
+  // thread that created desktop_capture_options().x_display().
+  IgnoreXServerGrabsWatchdog watchdog;
+  watchdog.Arm();
+  desktop_capture_options().x_display()->IgnoreXServerGrabs();
+  watchdog.Disarm();
 #elif defined(OS_WIN)
   // The options passed to this instance are determined by a process running in
   // Session 0.  Access to DirectX functions in Session 0 is limited so the

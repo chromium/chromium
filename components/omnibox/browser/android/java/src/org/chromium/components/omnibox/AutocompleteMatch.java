@@ -99,7 +99,7 @@ public class AutocompleteMatch {
     private final int mGroupId;
     private final List<QueryTile> mQueryTiles;
     private byte[] mClipboardImageData;
-    private final boolean mHasTabMatch;
+    private boolean mHasTabMatch;
     private final @Nullable List<NavsuggestTile> mNavsuggestTiles;
     private long mNativeMatch;
 
@@ -234,6 +234,11 @@ public class AutocompleteMatch {
             mDescriptionClassifications.add(new MatchClassification(
                     descriptionClassificationOffsets[i], descriptionClassificationStyles[i]));
         }
+    }
+
+    @CalledByNative
+    private void updateMatchingTab(boolean hasTabMatch) {
+        mHasTabMatch = hasTabMatch;
     }
 
     public int getType() {

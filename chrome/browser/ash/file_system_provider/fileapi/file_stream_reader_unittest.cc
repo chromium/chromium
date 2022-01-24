@@ -15,7 +15,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/run_loop.h"
@@ -35,6 +34,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace ash {
 namespace file_system_provider {
@@ -48,6 +48,10 @@ const ProviderId kProviderId = ProviderId::CreateFromExtensionId(kExtensionId);
 class EventLogger {
  public:
   EventLogger() {}
+
+  EventLogger(const EventLogger&) = delete;
+  EventLogger& operator=(const EventLogger&) = delete;
+
   virtual ~EventLogger() {}
 
   void OnRead(int result) { results_.push_back(result); }
@@ -62,8 +66,6 @@ class EventLogger {
  private:
   std::vector<int64_t> results_;
   base::WeakPtrFactory<EventLogger> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventLogger);
 };
 
 // Creates a cracked FileSystemURL for tests.
@@ -73,7 +75,8 @@ storage::FileSystemURL CreateFileSystemURL(const std::string& mount_point_name,
   const storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   return mount_points->CreateCrackedFileSystemURL(
-      url::Origin::Create(GURL(origin)), storage::kFileSystemTypeExternal,
+      blink::StorageKey::CreateFromStringForTesting(origin),
+      storage::kFileSystemTypeExternal,
       base::FilePath::FromUTF8Unsafe(mount_point_name).Append(file_path));
 }
 

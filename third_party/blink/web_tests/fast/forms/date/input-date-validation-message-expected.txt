@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 20: The specified value "foo" does not conform to the required format, "yyyy-MM-dd".
+CONSOLE WARNING: The specified value "foo" does not conform to the required format, "yyyy-MM-dd".
 Test for validationMessage IDL attribute for <input type=date>
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

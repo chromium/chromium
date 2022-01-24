@@ -6,9 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_DEVICE_X11_H_
 
 #include <memory>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/types/pass_key.h"
 #include "components/viz/service/display_embedder/skia_output_device_offscreen.h"
 #include "ui/gfx/native_widget_types.h"
@@ -26,6 +24,10 @@ class SkiaOutputDeviceX11 final : public SkiaOutputDeviceOffscreen {
       x11::VisualId visual,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  SkiaOutputDeviceX11(const SkiaOutputDeviceX11&) = delete;
+  SkiaOutputDeviceX11& operator=(const SkiaOutputDeviceX11&) = delete;
+
   ~SkiaOutputDeviceX11() override;
 
   static std::unique_ptr<SkiaOutputDeviceX11> Create(
@@ -51,8 +53,6 @@ class SkiaOutputDeviceX11 final : public SkiaOutputDeviceOffscreen {
   const x11::VisualId visual_;
   const x11::GraphicsContext gc_;
   scoped_refptr<base::RefCountedMemory> pixels_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputDeviceX11);
 };
 
 }  // namespace viz

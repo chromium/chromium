@@ -5,8 +5,6 @@
 #ifndef UI_COMPOSITOR_PAINT_RECORDER_H_
 #define UI_COMPOSITOR_PAINT_RECORDER_H_
 
-
-#include "base/macros.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "ui/compositor/compositor_export.h"
@@ -35,6 +33,10 @@ class COMPOSITOR_EXPORT PaintRecorder {
                 float recording_scale_y,
                 PaintCache* cache);
   PaintRecorder(const PaintContext& context, const gfx::Size& recording_size);
+
+  PaintRecorder(const PaintRecorder&) = delete;
+  PaintRecorder& operator=(const PaintRecorder&) = delete;
+
   ~PaintRecorder();
 
   // Gets a gfx::Canvas for painting into.
@@ -47,8 +49,6 @@ class COMPOSITOR_EXPORT PaintRecorder {
   gfx::Canvas canvas_;
   PaintCache* cache_;
   gfx::Size recording_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintRecorder);
 };
 
 }  // namespace ui

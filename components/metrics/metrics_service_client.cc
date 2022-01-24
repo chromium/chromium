@@ -86,7 +86,7 @@ base::TimeDelta MetricsServiceClient::GetUploadInterval() {
         metrics::switches::kMetricsUploadIntervalSec);
     int custom_upload_interval;
     if (base::StringToInt(switch_value, &custom_upload_interval)) {
-      return base::TimeDelta::FromSeconds(
+      return base::Seconds(
           std::max(custom_upload_interval, kMetricsUploadIntervalSecMinimum));
     }
     LOG(DFATAL) << "Malformed value for --metrics-upload-interval. "
@@ -160,8 +160,7 @@ void MetricsServiceClient::UpdateRunningServices() {
 }
 
 bool MetricsServiceClient::IsMetricsReportingForceEnabled() const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kForceEnableMetricsReporting);
+  return ::metrics::IsMetricsReportingForceEnabled();
 }
 
 }  // namespace metrics

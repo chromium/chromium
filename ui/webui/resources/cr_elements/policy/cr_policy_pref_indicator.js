@@ -25,8 +25,7 @@ Polymer({
       computed: 'getIndicatorTypeForPref_(pref.*, associatedValue)',
     },
 
-    /** @private */
-    indicatorTooltip_: {
+    indicatorTooltip: {
       type: String,
       computed: 'getIndicatorTooltipForPref_(indicatorType, pref.*)',
     },

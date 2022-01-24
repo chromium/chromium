@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -59,6 +58,10 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
                                           public EnvObserver {
  public:
   explicit WindowEventDispatcher(WindowTreeHost* host);
+
+  WindowEventDispatcher(const WindowEventDispatcher&) = delete;
+  WindowEventDispatcher& operator=(const WindowEventDispatcher&) = delete;
+
   ~WindowEventDispatcher() override;
 
   // Stops dispatching/synthesizing mouse events.
@@ -153,12 +156,14 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   class ObserverNotifier {
    public:
     ObserverNotifier(WindowEventDispatcher* dispatcher, const ui::Event& event);
+
+    ObserverNotifier(const ObserverNotifier&) = delete;
+    ObserverNotifier& operator=(const ObserverNotifier&) = delete;
+
     ~ObserverNotifier();
 
    private:
     WindowEventDispatcher* dispatcher_;
-
-    DISALLOW_COPY_AND_ASSIGN(ObserverNotifier);
   };
 
   // The parameter for OnWindowHidden() to specify why window is hidden.
@@ -336,8 +341,6 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
 
   // Used to schedule DispatchHeldEvents() when |move_hold_count_| goes to 0.
   base::WeakPtrFactory<WindowEventDispatcher> held_event_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WindowEventDispatcher);
 };
 
 }  // namespace aura

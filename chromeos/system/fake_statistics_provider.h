@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/system/statistics_provider.h"
 
 namespace chromeos {
@@ -21,6 +20,10 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) FakeStatisticsProvider
     : public StatisticsProvider {
  public:
   FakeStatisticsProvider();
+
+  FakeStatisticsProvider(const FakeStatisticsProvider&) = delete;
+  FakeStatisticsProvider& operator=(const FakeStatisticsProvider&) = delete;
+
   ~FakeStatisticsProvider() override;
 
   // StatisticsProvider implementation:
@@ -40,8 +43,6 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) FakeStatisticsProvider
  private:
   std::map<std::string, std::string> machine_statistics_;
   std::map<std::string, bool> machine_flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeStatisticsProvider);
 };
 
 // A convenience subclass that automatically registers itself as the test
@@ -50,10 +51,12 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) ScopedFakeStatisticsProvider
     : public FakeStatisticsProvider {
  public:
   ScopedFakeStatisticsProvider();
-  ~ScopedFakeStatisticsProvider() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedFakeStatisticsProvider);
+  ScopedFakeStatisticsProvider(const ScopedFakeStatisticsProvider&) = delete;
+  ScopedFakeStatisticsProvider& operator=(const ScopedFakeStatisticsProvider&) =
+      delete;
+
+  ~ScopedFakeStatisticsProvider() override;
 };
 
 }  // namespace system

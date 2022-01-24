@@ -1,5 +1,2 @@
-monorail {
-  component: "Internals>Compositing"
-}
+mixins: "//components/viz/COMMON_METADATA"
 
-team_email: "graphics-dev@chromium.org"

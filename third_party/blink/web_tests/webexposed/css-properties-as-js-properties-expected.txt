@@ -18,6 +18,7 @@ animationName
 animationPlayState
 animationTimeline
 animationTimingFunction
+appRegion
 appearance
 ascentOverride
 aspectRatio
@@ -129,7 +130,11 @@ columnSpan
 columnWidth
 columns
 contain
+containIntrinsicBlockSize
+containIntrinsicHeight
+containIntrinsicInlineSize
 containIntrinsicSize
+containIntrinsicWidth
 content
 contentVisibility
 counterIncrement
@@ -172,6 +177,10 @@ fontSize
 fontSizeAdjust
 fontStretch
 fontStyle
+fontSynthesis
+fontSynthesisSmallCaps
+fontSynthesisStyle
+fontSynthesisWeight
 fontVariant
 fontVariantCaps
 fontVariantEastAsian
@@ -409,7 +418,6 @@ textSizeAdjust
 textTransform
 textUnderlineOffset
 textUnderlinePosition
-timeRange
 top
 touchAction
 transform

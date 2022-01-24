@@ -7,7 +7,6 @@
 
 #include "media/video/video_encode_accelerator.h"
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media {
@@ -15,6 +14,11 @@ namespace media {
 class MockVideoEncodeAccelerator : public VideoEncodeAccelerator {
  public:
   MockVideoEncodeAccelerator();
+
+  MockVideoEncodeAccelerator(const MockVideoEncodeAccelerator&) = delete;
+  MockVideoEncodeAccelerator& operator=(const MockVideoEncodeAccelerator&) =
+      delete;
+
   ~MockVideoEncodeAccelerator() override;
 
   MOCK_METHOD0(GetSupportedProfiles,
@@ -31,7 +35,6 @@ class MockVideoEncodeAccelerator : public VideoEncodeAccelerator {
 
  private:
   void DeleteThis();
-  DISALLOW_COPY_AND_ASSIGN(MockVideoEncodeAccelerator);
 };
 
 }  // namespace media

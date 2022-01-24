@@ -16,6 +16,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/device/hid/test_report_descriptors.h"
+#include "services/device/hid/test_util.h"
 #include "services/device/public/cpp/hid/fake_hid_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +26,7 @@
 using ::base::test::RunClosure;
 using ::testing::_;
 using ::testing::ByMove;
+using ::testing::ElementsAre;
 using ::testing::Return;
 
 namespace content {
@@ -81,6 +84,8 @@ class HidServiceTest : public RenderViewHostImplTestHarness {
  public:
   HidServiceTest() {
     ON_CALL(hid_delegate(), GetHidManager).WillByDefault(Return(&hid_manager_));
+    ON_CALL(hid_delegate(), IsFidoAllowedForOrigin)
+        .WillByDefault(Return(false));
   }
   HidServiceTest(HidServiceTest&) = delete;
   HidServiceTest& operator=(HidServiceTest&) = delete;
@@ -139,6 +144,12 @@ class HidServiceTest : public RenderViewHostImplTestHarness {
         device::mojom::HidReportDescription::New());
     device_info->collections.push_back(std::move(collection));
     return device_info;
+  }
+
+  device::mojom::HidDeviceInfoPtr CreateFidoDevice() {
+    return device::CreateDeviceFromReportDescriptor(
+        /*vendor_id=*/0x1234, /*product_id=*/0xabcd,
+        device::TestReportDescriptors::FidoU2fHid());
   }
 
   MockHidDelegate& hid_delegate() { return test_client_.delegate(); }
@@ -277,7 +288,9 @@ TEST_F(HidServiceTest, OpenAndCloseHidConnection) {
   EXPECT_FALSE(contents()->IsConnectedToHidDevice());
 }
 
-TEST_F(HidServiceTest, OpenAndNavigateCrossOrigin) {
+// This test is disabled because it fails on the "linux-bfcache-rel" bot.
+// TODO(https://crbug.com/1232841): Re-enable this test.
+TEST_F(HidServiceTest, DISABLED_OpenAndNavigateCrossOrigin) {
   NavigateAndCommit(GURL(kTestUrl));
 
   mojo::Remote<blink::mojom::HidService> service;
@@ -629,5 +642,205 @@ TEST_F(HidServiceTest, BlockedDeviceChangedToUnblockedDispatchesDeviceChanged) {
   DisconnectDevice(*updated_device_info);
   device_removed_loop.Run();
 }
+
+class HidServiceFidoTest : public HidServiceTest,
+                           public testing::WithParamInterface<bool> {};
+
+TEST_P(HidServiceFidoTest, FidoDeviceAllowedWithPrivilegedOrigin) {
+  const bool is_fido_allowed = GetParam();
+  GURL test_url = GURL(kTestUrl);
+  NavigateAndCommit(test_url);
+
+  mojo::Remote<blink::mojom::HidService> service;
+  contents()->GetMainFrame()->GetHidService(
+      service.BindNewPipeAndPassReceiver());
+
+  // Register the mock client with the service.
+  MockHidManagerClient mock_hid_manager_client;
+  mojo::PendingAssociatedRemote<device::mojom::HidManagerClient>
+      hid_manager_client;
+  mock_hid_manager_client.Bind(
+      hid_manager_client.InitWithNewEndpointAndPassReceiver());
+  service->RegisterClient(std::move(hid_manager_client));
+
+  // Wait for GetDevices to return to ensure the client has been set. HidService
+  // checks if the origin is allowed to access FIDO reports before returning the
+  // device information to the client.
+  url::Origin origin = url::Origin::Create(GURL(kTestUrl));
+  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(origin))
+      .WillOnce(Return(is_fido_allowed));
+  base::RunLoop get_devices_loop;
+  service->GetDevices(base::BindLambdaForTesting(
+      [&](std::vector<device::mojom::HidDeviceInfoPtr> d) {
+        EXPECT_TRUE(d.empty());
+        get_devices_loop.Quit();
+      }));
+  get_devices_loop.Run();
+
+  // Create a FIDO device with two reports. Both reports are protected, which
+  // would normally cause the device to be blocked.
+  auto device_info = CreateFidoDevice();
+  ASSERT_EQ(device_info->collections.size(), 1u);
+  ASSERT_EQ(device_info->collections[0]->input_reports.size(), 1u);
+  EXPECT_EQ(device_info->collections[0]->input_reports[0]->report_id, 0u);
+  ASSERT_EQ(device_info->collections[0]->output_reports.size(), 1u);
+  EXPECT_EQ(device_info->collections[0]->output_reports[0]->report_id, 0u);
+  EXPECT_TRUE(device_info->collections[0]->feature_reports.empty());
+  ASSERT_TRUE(device_info->protected_input_report_ids);
+  EXPECT_THAT(*device_info->protected_input_report_ids, ElementsAre(0));
+  ASSERT_TRUE(device_info->protected_output_report_ids);
+  EXPECT_THAT(*device_info->protected_output_report_ids, ElementsAre(0));
+  ASSERT_TRUE(device_info->protected_output_report_ids);
+  EXPECT_TRUE(device_info->protected_feature_report_ids->empty());
+
+  // Add the device to the HidManager. HidService checks if the origin is
+  // allowed to access FIDO reports before dispatching DeviceAdded to its
+  // clients. If the origin is allowed to access FIDO reports, the
+  // information about those reports should be included. If the origin is not
+  // allowed to access FIDO reports, the device is blocked and DeviceAdded is
+  // not called.
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(true));
+  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(origin))
+      .WillOnce(Return(is_fido_allowed));
+  base::RunLoop device_added_loop;
+  if (is_fido_allowed) {
+    EXPECT_CALL(mock_hid_manager_client, DeviceAdded).WillOnce([&](auto d) {
+      EXPECT_EQ(d->collections.size(), 1u);
+      if (!d->collections.empty()) {
+        EXPECT_EQ(d->collections[0]->input_reports.size(), 1u);
+        EXPECT_EQ(d->collections[0]->output_reports.size(), 1u);
+        EXPECT_EQ(d->collections[0]->feature_reports.size(), 0u);
+      }
+      device_added_loop.Quit();
+    });
+  }
+  ConnectDevice(*device_info);
+  if (is_fido_allowed)
+    device_added_loop.Run();
+
+  // Update the device. HidService checks if the origin is allowed to access
+  // FIDO reports before dispatching DeviceChanged to its clients.
+  //
+  // The updated device includes a second top-level collection containing a
+  // feature report. The second top-level collection does not have a protected
+  // usage and should be included whether or not the origin is allowed to access
+  // FIDO reports.
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(true));
+  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(origin))
+      .WillOnce(Return(is_fido_allowed));
+  base::RunLoop device_changed_loop;
+  EXPECT_CALL(mock_hid_manager_client, DeviceChanged).WillOnce([&](auto d) {
+    if (is_fido_allowed) {
+      EXPECT_EQ(d->collections.size(), 2u);
+      if (d->collections.size() >= 2) {
+        EXPECT_EQ(d->collections[0]->input_reports.size(), 1u);
+        EXPECT_EQ(d->collections[0]->output_reports.size(), 1u);
+        EXPECT_EQ(d->collections[0]->feature_reports.size(), 0u);
+        EXPECT_EQ(d->collections[1]->input_reports.size(), 0u);
+        EXPECT_EQ(d->collections[1]->output_reports.size(), 0u);
+        EXPECT_EQ(d->collections[1]->feature_reports.size(), 1u);
+      }
+    } else {
+      EXPECT_EQ(d->collections.size(), 1u);
+      if (d->collections.size() >= 1) {
+        EXPECT_EQ(d->collections[0]->input_reports.size(), 0u);
+        EXPECT_EQ(d->collections[0]->output_reports.size(), 0u);
+        EXPECT_EQ(d->collections[0]->feature_reports.size(), 1u);
+      }
+    }
+    device_changed_loop.Quit();
+  });
+  auto collection = device::mojom::HidCollectionInfo::New();
+  collection->usage = device::mojom::HidUsageAndPage::New(
+      device::mojom::kGenericDesktopJoystick,
+      device::mojom::kPageGenericDesktop);
+  collection->collection_type = device::mojom::kHIDCollectionTypeApplication;
+  collection->feature_reports.push_back(
+      device::mojom::HidReportDescription::New());
+  auto updated_device_info = device_info.Clone();
+  updated_device_info->collections.push_back(std::move(collection));
+  UpdateDevice(*updated_device_info);
+  device_changed_loop.Run();
+
+  // Open a connection. HidService checks if the origin is allowed to access
+  // FIDO reports before creating a HidConnection.
+  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(origin))
+      .WillOnce(Return(is_fido_allowed));
+  mojo::PendingRemote<device::mojom::HidConnectionClient> hid_connection_client;
+  connection_client()->Bind(
+      hid_connection_client.InitWithNewPipeAndPassReceiver());
+  base::RunLoop connect_loop;
+  mojo::Remote<device::mojom::HidConnection> connection;
+  service->Connect(
+      device_info->guid, std::move(hid_connection_client),
+      base::BindLambdaForTesting(
+          [&](mojo::PendingRemote<device::mojom::HidConnection> c) {
+            connection.Bind(std::move(c));
+            connect_loop.Quit();
+          }));
+  connect_loop.Run();
+  EXPECT_TRUE(connection.is_connected());
+
+  // Try reading from the connection. The read should succeed if the connection
+  // is allowed to receive FIDO reports.
+  base::RunLoop read_loop;
+  connection->Read(base::BindLambdaForTesting(
+      [&](bool success, uint8_t report_id,
+          const absl::optional<std::vector<uint8_t>>& buffer) {
+        EXPECT_EQ(success, is_fido_allowed);
+        read_loop.Quit();
+      }));
+  read_loop.Run();
+
+  // Try writing to the connection. The write should succeed if the connection
+  // is allowed to send FIDO reports.
+  //
+  // Writing to FakeHidConnection will only succeed if the report data is
+  // exactly "o-report".
+  base::RunLoop write_loop;
+  std::vector<uint8_t> buffer = {'o', '-', 'r', 'e', 'p', 'o', 'r', 't'};
+  connection->Write(/*report_id=*/0, buffer,
+                    base::BindLambdaForTesting([&](bool success) {
+                      EXPECT_EQ(success, is_fido_allowed);
+                      write_loop.Quit();
+                    }));
+  write_loop.Run();
+
+  // Disconnect the device. HidService checks if the origin is allowed to access
+  // FIDO reports before dispatching DeviceRemoved to its clients. The
+  // information about FIDO reports should only be included if the origin is
+  // allowed to access FIDO reports.
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(true));
+  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(origin))
+      .WillOnce(Return(is_fido_allowed));
+  base::RunLoop device_removed_loop;
+  EXPECT_CALL(mock_hid_manager_client, DeviceRemoved).WillOnce([&](auto d) {
+    if (is_fido_allowed) {
+      EXPECT_EQ(d->collections.size(), 2u);
+      if (d->collections.size() >= 2) {
+        EXPECT_EQ(d->collections[0]->input_reports.size(), 1u);
+        EXPECT_EQ(d->collections[0]->output_reports.size(), 1u);
+        EXPECT_EQ(d->collections[0]->feature_reports.size(), 0u);
+        EXPECT_EQ(d->collections[1]->input_reports.size(), 0u);
+        EXPECT_EQ(d->collections[1]->output_reports.size(), 0u);
+        EXPECT_EQ(d->collections[1]->feature_reports.size(), 1u);
+      }
+    } else {
+      EXPECT_EQ(d->collections.size(), 1u);
+      if (d->collections.size() >= 1) {
+        EXPECT_EQ(d->collections[0]->input_reports.size(), 0u);
+        EXPECT_EQ(d->collections[0]->output_reports.size(), 0u);
+        EXPECT_EQ(d->collections[0]->feature_reports.size(), 1u);
+      }
+    }
+    device_removed_loop.Quit();
+  });
+  DisconnectDevice(*updated_device_info);
+  device_removed_loop.Run();
+}
+
+INSTANTIATE_TEST_SUITE_P(HidServiceFidoTests,
+                         HidServiceFidoTest,
+                         testing::Values(false, true));
 
 }  // namespace content

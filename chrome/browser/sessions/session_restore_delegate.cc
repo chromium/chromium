@@ -55,8 +55,10 @@ SessionRestoreDelegate::RestoredTab::RestoredTab(
       is_pinned_(is_pinned),
       group_(group) {}
 
-SessionRestoreDelegate::RestoredTab::RestoredTab(const RestoredTab& other) =
-    default;
+SessionRestoreDelegate::RestoredTab::RestoredTab(const RestoredTab&) = default;
+
+SessionRestoreDelegate::RestoredTab&
+SessionRestoreDelegate::RestoredTab::operator=(const RestoredTab&) = default;
 
 bool SessionRestoreDelegate::RestoredTab::operator<(
     const RestoredTab& right) const {

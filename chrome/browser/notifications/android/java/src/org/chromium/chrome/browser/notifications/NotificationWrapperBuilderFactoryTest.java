@@ -30,7 +30,7 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperBuild
 
 /**
  * Tests that NotificationWrapperBuilders created using
- * {@link NotificationWrapperBuilderFactory#createNotificationWrapperBuilder(boolean, String)} can
+ * {@link NotificationWrapperBuilderFactory#createNotificationWrapperBuilder(String)} can
  * be built and the notifications they build don't cause a crash when passed to
  * NotificationManager#notify.
  */
@@ -69,23 +69,10 @@ public class NotificationWrapperBuilderFactoryTest {
 
     @MediumTest
     @Test
-    public void buildNotificationAndNotifyDoesNotCrash() {
-        NotificationWrapperBuilder notificationBuilder =
-                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        false, ChromeChannelDefinitions.ChannelId.BROWSER);
-
-        Notification notification = notificationBuilder.setContentTitle("Title")
-                                            .setSmallIcon(R.drawable.ic_chrome)
-                                            .build();
-        mNotificationManager.notify(TEST_NOTIFICATION_ID, notification);
-    }
-
-    @MediumTest
-    @Test
     public void buildCompatNotificationAndNotifyDoesNotCrash() {
         NotificationWrapperBuilder notificationBuilder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        true, ChromeChannelDefinitions.ChannelId.BROWSER);
+                        ChromeChannelDefinitions.ChannelId.BROWSER);
 
         Notification notification = notificationBuilder.setContentTitle("Title")
                                             .setSmallIcon(R.drawable.ic_chrome)
@@ -98,8 +85,8 @@ public class NotificationWrapperBuilderFactoryTest {
     @Test
     public void buildNotificationWrapper() {
         NotificationWrapperBuilder builder =
-                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(true,
-                        ChromeChannelDefinitions.ChannelId.BROWSER, null,
+                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
+                        ChromeChannelDefinitions.ChannelId.BROWSER,
                         new NotificationMetadata(
                                 NotificationUmaTracker.SystemNotificationType.BROWSER_ACTIONS, null,
                                 TEST_NOTIFICATION_ID));

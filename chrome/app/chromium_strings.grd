@@ -96,6 +96,92 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
     <output filename="chromium_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="chromium_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
 
+    <!-- On Android, output some strings into Android's xml string format.
+         These strings are tagged with formatter_data="android_java" -->
+    <if expr="is_android">
+      <output filename="java/res/values-af/chromium_strings.xml" lang="af" type="android" context="android_java" />
+      <output filename="java/res/values-am/chromium_strings.xml" lang="am" type="android" context="android_java" />
+      <output filename="java/res/values-ar/chromium_strings.xml" lang="ar" type="android" context="android_java" />
+      <output filename="java/res/values-as/chromium_strings.xml" lang="as" type="android" context="android_java" />
+      <output filename="java/res/values-az/chromium_strings.xml" lang="az" type="android" context="android_java" />
+      <output filename="java/res/values-be/chromium_strings.xml" lang="be" type="android" context="android_java" />
+      <output filename="java/res/values-bg/chromium_strings.xml" lang="bg" type="android" context="android_java" />
+      <output filename="java/res/values-bn/chromium_strings.xml" lang="bn" type="android" context="android_java" />
+      <output filename="java/res/values-bs/chromium_strings.xml" lang="bs" type="android" context="android_java" />
+      <output filename="java/res/values-ca/chromium_strings.xml" lang="ca" type="android" context="android_java" />
+      <output filename="java/res/values-cs/chromium_strings.xml" lang="cs" type="android" context="android_java" />
+      <output filename="java/res/values-da/chromium_strings.xml" lang="da" type="android" context="android_java" />
+      <output filename="java/res/values-de/chromium_strings.xml" lang="de" type="android" context="android_java" />
+      <output filename="java/res/values-el/chromium_strings.xml" lang="el" type="android" context="android_java" />
+      <output filename="java/res/values/chromium_strings.xml" lang="en" type="android" context="android_java" />
+      <output filename="java/res/values-en-rGB/chromium_strings.xml" lang="en-GB" type="android" context="android_java" />
+      <output filename="java/res/values-es/chromium_strings.xml" lang="es" type="android" context="android_java" />
+      <output filename="java/res/values-es-rUS/chromium_strings.xml" lang="es-419" type="android" context="android_java" />
+      <output filename="java/res/values-et/chromium_strings.xml" lang="et" type="android" context="android_java" />
+      <output filename="java/res/values-eu/chromium_strings.xml" lang="eu" type="android" context="android_java" />
+      <output filename="java/res/values-fa/chromium_strings.xml" lang="fa" type="android" context="android_java" />
+      <output filename="java/res/values-fi/chromium_strings.xml" lang="fi" type="android" context="android_java" />
+      <output filename="java/res/values-tl/chromium_strings.xml" lang="fil" type="android" context="android_java" />
+      <output filename="java/res/values-fr/chromium_strings.xml" lang="fr" type="android" context="android_java" />
+      <output filename="java/res/values-fr-rCA/chromium_strings.xml" lang="fr-CA" type="android" context="android_java" />
+      <output filename="java/res/values-gl/chromium_strings.xml" lang="gl" type="android" context="android_java" />
+      <output filename="java/res/values-gu/chromium_strings.xml" lang="gu" type="android" context="android_java" />
+      <output filename="java/res/values-iw/chromium_strings.xml" lang="he" type="android" context="android_java" />
+      <output filename="java/res/values-hi/chromium_strings.xml" lang="hi" type="android" context="android_java" />
+      <output filename="java/res/values-hr/chromium_strings.xml" lang="hr" type="android" context="android_java" />
+      <output filename="java/res/values-hu/chromium_strings.xml" lang="hu" type="android" context="android_java" />
+      <output filename="java/res/values-hy/chromium_strings.xml" lang="hy" type="android" context="android_java" />
+      <output filename="java/res/values-in/chromium_strings.xml" lang="id" type="android" context="android_java" />
+      <output filename="java/res/values-is/chromium_strings.xml" lang="is" type="android" context="android_java" />
+      <output filename="java/res/values-it/chromium_strings.xml" lang="it" type="android" context="android_java" />
+      <output filename="java/res/values-ja/chromium_strings.xml" lang="ja" type="android" context="android_java" />
+      <output filename="java/res/values-ka/chromium_strings.xml" lang="ka" type="android" context="android_java" />
+      <output filename="java/res/values-kk/chromium_strings.xml" lang="kk" type="android" context="android_java" />
+      <output filename="java/res/values-km/chromium_strings.xml" lang="km" type="android" context="android_java" />
+      <output filename="java/res/values-kn/chromium_strings.xml" lang="kn" type="android" context="android_java" />
+      <output filename="java/res/values-ko/chromium_strings.xml" lang="ko" type="android" context="android_java" />
+      <output filename="java/res/values-ky/chromium_strings.xml" lang="ky" type="android" context="android_java" />
+      <output filename="java/res/values-lo/chromium_strings.xml" lang="lo" type="android" context="android_java" />
+      <output filename="java/res/values-lt/chromium_strings.xml" lang="lt" type="android" context="android_java" />
+      <output filename="java/res/values-lv/chromium_strings.xml" lang="lv" type="android" context="android_java" />
+      <output filename="java/res/values-mk/chromium_strings.xml" lang="mk" type="android" context="android_java" />
+      <output filename="java/res/values-ml/chromium_strings.xml" lang="ml" type="android" context="android_java" />
+      <output filename="java/res/values-mn/chromium_strings.xml" lang="mn" type="android" context="android_java" />
+      <output filename="java/res/values-mr/chromium_strings.xml" lang="mr" type="android" context="android_java" />
+      <output filename="java/res/values-ms/chromium_strings.xml" lang="ms" type="android" context="android_java" />
+      <output filename="java/res/values-my/chromium_strings.xml" lang="my" type="android" context="android_java" />
+      <output filename="java/res/values-ne/chromium_strings.xml" lang="ne" type="android" context="android_java" />
+      <output filename="java/res/values-nl/chromium_strings.xml" lang="nl" type="android" context="android_java" />
+      <output filename="java/res/values-nb/chromium_strings.xml" lang="no" type="android" context="android_java" />
+      <output filename="java/res/values-or/chromium_strings.xml" lang="or" type="android" context="android_java" />
+      <output filename="java/res/values-pa/chromium_strings.xml" lang="pa" type="android" context="android_java" />
+      <output filename="java/res/values-pl/chromium_strings.xml" lang="pl" type="android" context="android_java" />
+      <output filename="java/res/values-pt-rBR/chromium_strings.xml" lang="pt-BR" type="android" context="android_java" />
+      <output filename="java/res/values-pt-rPT/chromium_strings.xml" lang="pt-PT" type="android" context="android_java" />
+      <output filename="java/res/values-ro/chromium_strings.xml" lang="ro" type="android" context="android_java" />
+      <output filename="java/res/values-ru/chromium_strings.xml" lang="ru" type="android" context="android_java" />
+      <output filename="java/res/values-si/chromium_strings.xml" lang="si" type="android" context="android_java" />
+      <output filename="java/res/values-sk/chromium_strings.xml" lang="sk" type="android" context="android_java" />
+      <output filename="java/res/values-sl/chromium_strings.xml" lang="sl" type="android" context="android_java" />
+      <output filename="java/res/values-sq/chromium_strings.xml" lang="sq" type="android" context="android_java" />
+      <output filename="java/res/values-sr/chromium_strings.xml" lang="sr" type="android" context="android_java" />
+      <output filename="java/res/values-b+sr+Latn/chromium_strings.xml" lang="sr-Latn" type="android" context="android_java" />
+      <output filename="java/res/values-sv/chromium_strings.xml" lang="sv" type="android" context="android_java" />
+      <output filename="java/res/values-sw/chromium_strings.xml" lang="sw" type="android" context="android_java" />
+      <output filename="java/res/values-ta/chromium_strings.xml" lang="ta" type="android" context="android_java" />
+      <output filename="java/res/values-te/chromium_strings.xml" lang="te" type="android" context="android_java" />
+      <output filename="java/res/values-th/chromium_strings.xml" lang="th" type="android" context="android_java" />
+      <output filename="java/res/values-tr/chromium_strings.xml" lang="tr" type="android" context="android_java" />
+      <output filename="java/res/values-uk/chromium_strings.xml" lang="uk" type="android" context="android_java" />
+      <output filename="java/res/values-ur/chromium_strings.xml" lang="ur" type="android" context="android_java" />
+      <output filename="java/res/values-uz/chromium_strings.xml" lang="uz" type="android" context="android_java" />
+      <output filename="java/res/values-vi/chromium_strings.xml" lang="vi" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rCN/chromium_strings.xml" lang="zh-CN" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rHK/chromium_strings.xml" lang="zh-HK" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rTW/chromium_strings.xml" lang="zh-TW" type="android" context="android_java" />
+      <output filename="java/res/values-zu/chromium_strings.xml" lang="zu" type="android" context="android_java" />
+    </if>
+
     <!-- Pseudolocales -->
     <output filename="chromium_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
     <output filename="chromium_strings_en-XA.pak" type="data_package" lang="en-XA" />
@@ -220,6 +306,9 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Chromium OS
         </message>
         <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The Chrome OS application short name">
+          Chromium OS
+        </message>
+        <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
           Chromium OS
         </message>
       </if>
@@ -512,11 +601,6 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
-      <!-- Print Preview -->
-      <message name="IDS_PRINT_PREVIEW_NO_PLUGIN" desc="Message to display when the PDF viewer is missing.">
-        Chromium cannot show the print preview when the built-in PDF viewer is missing.
-      </message>
-
       <!-- Download Shelf Items -->
       <message name="IDS_DOWNLOAD_STATUS_CRX_INSTALL_RUNNING"
                desc="Message shown when a CRX has been downloaded and is being unpacked.">
@@ -584,6 +668,14 @@ Chromium is unable to recover your settings.
         <message name="IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX" desc="Checkbox text to ask the user whether they want to remove associated data at uninstall time. Only used when uninstalling an app associated with a particular website.">
           Also clear data from Chromium (<ph name="URL">$1<ex>www.google.com</ex></ph>)
         </message>
+
+        <!-- Extension alerts. -->
+        <message name="IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_MALWARE" desc="A statement that an extension has been newly blocklisted for malware.">
+          Chromium found that "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>" contains malware
+        </message>
+        <message name="IDS_EXTENSIONS_ALERT_ITEM_BLOCKLISTED_MALWARE_TITLE" desc="A statement that multiple extension/apps have been newly blocklisted for malware.">
+          Chromium found that these items contain malware:
+        </message>
       </if>
 
       <!-- chrome://settings/extensions page -->
@@ -627,10 +719,7 @@ Chromium is unable to recover your settings.
         <message name="IDS_ABOUT" desc="In Title Case: The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
-        <message name="IDS_UPDATE_NOW" desc="In Title Case: The text label of the Update Chrome Now menu item">
-          Update &amp;Chromium
-        </message>
-        <message name="IDS_RELAUNCH_TO_UPDATE" desc="In Title Case: The text label of the Update Chrome menu item, when relaunch to update experiment is enabled">
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="In Title Case: The text label of the relaunch to update Chrome menu item">
           Relaunch to Update &amp;Chromium
         </message>
       </if>
@@ -638,10 +727,7 @@ Chromium is unable to recover your settings.
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
-        <message name="IDS_UPDATE_NOW" desc="The text label of the Update Chrome Now menu item">
-          Update &amp;Chromium
-        </message>
-        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the Update Chrome menu item, when relaunch to update experiment is enabled">
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update Chrome menu item">
           Relaunch to update &amp;Chromium
         </message>
       </if>
@@ -649,10 +735,7 @@ Chromium is unable to recover your settings.
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
-        <message name="IDS_UPDATE_NOW" desc="The text label of the Update Chrome OS Now menu item">
-          Update &amp;Chromium OS
-        </message>
-        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the Update Chrome OS menu item, when relaunch to update experiment is enabled">
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update Chrome OS menu item">
           Relaunch to update &amp;Chromium OS
         </message>
       </if>
@@ -722,7 +805,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- about:browser-switch strings -->
-      <if expr="is_win or is_macosx or (is_linux and not chromeos)">
+      <if expr="is_win or is_macosx or is_fuchsia or (is_linux and not chromeos)">
         <message name="IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_UNKNOWN_BROWSER" desc="Description shown while waiting for an alternative browser to open, when the browser name is not auto-detected">
           Your system administrator has configured Chromium to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME">$1<ex>example.com</ex></ph>.
         </message>
@@ -1084,6 +1167,25 @@ Chromium is unable to recover your settings.
         <message name="IDS_MISSING_STORAGE_PERMISSION_DOWNLOAD_EDUCATION_TEXT" desc="Text shown educating the user that Chrome is missing the Android storage permission, which is required to download files.">
           Chromium needs storage access to download files
         </message>
+
+        <message name="IDS_MESSAGE_MISSING_AR_CAMERA_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to augmented reality capabilities, but Chrome is missing the Android camera permission.">
+          Chromium needs camera permission to create a 3D map of your surroundings
+        </message>
+        <message name="IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to the camera capabilities, but Chrome is missing the Android camera permission.">
+          Chromium needs camera permission for this site
+        </message>
+        <message name="IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to the microphone capabilities, but Chrome is missing the Android microphone permission.">
+          Chromium needs microphone permission for this site
+        </message>
+        <message name="IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT" desc="Text shown in a prompt ui when a website has requested access to the microphone and camera capabilities, but Chrome is missing the Android microphone and camera permissions.">
+          Chromium needs camera and microphone permissions for this site
+        </message>
+        <message name="IDS_MESSAGE_MISSING_LOCATION_PERMISSION_TEXT" desc="Text shown in a prompt ui when a website has requested access to the location capabilities, but Chrome is missing the Android location permission.">
+          Chromium needs location permission for this site
+        </message>
+        <message name="IDS_MESSAGE_STORAGE_ACCESS_PERMISSION_TEXT" desc="Text shown educating the user that Chrome is missing the Android storage permission, which is required to download files.">
+          Chromium needs storage access permission to download files
+        </message>
       </if>
 
       <if  expr="is_macosx">
@@ -1099,49 +1201,6 @@ Chromium is unable to recover your settings.
         </message>
         <message name="IDS_EULA_SCREEN_ACCESSIBLE_TITLE" desc="Title to be spoken on opening the OOBE EULA screen">
           Chromium OS terms
-        </message>
-        <message name="IDS_OOBE_WELCOME_START_OS_INSTALL" desc="Label for button shown on the OOBE welcome screen to show the OS installation screens">
-          Install Chromium OS
-        </message>
-
-        <!-- OS install screen -->
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_TITLE" desc="Title of the introduction page in the OS install screen">
-          Install Chromium OS
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_SUBTITLE" desc="Subtitle text of the OS install screen's introduction step">
-          Installing Chromium OS will overwrite all data on your device.
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_BODY" desc="Body text of the OS install screen's introduction step">
-          <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Before we get started, please ensure that you have an up-to-date backup of your data. Installing Chromium OS will overwrite all data on your hard drive.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-          <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Google is not responsible for any data loss, and makes no guarantee that Chromium OS will work on uncertified models. Please visit [TBD] to learn more about certified models.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-          <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Learn more about installing Chromium OS and data erasure: [TBD URL]<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
-          <ph name="BEGIN_PARAGRAPH4">&lt;p&gt;</ph>If you are ready to proceed, click “Install Chromium OS” and we'll guide you through the installation in just a couple easy steps. You'll have another chance to confirm before we make any changes to your computer.<ph name="END_PARAGRAPH4">&lt;/p&gt;</ph>
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_NEXT_BUTTON" desc="Text of the next button on the introduction page of the OS install screen">
-          Install Chromium OS
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_TITLE" desc="Title of the confirmation page of the OS install screen">
-          Ready to install Chromium OS
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_BODY" desc="Body text of the OS install screen's confirmation step">
-          <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>We’re ready to install Chromium OS! Once you proceed:
-          <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Files, data, and your current operating system will be erased.
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Chromium OS will be installed.
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Your device will shut down once the installation is complete.
-          <ph name="END_LIST">&lt;/ul&gt;</ph>
-          <ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-          <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>One last reminder: installation will erase your entire hard drive. Please make sure you have any data you care about backed up.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-          <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Once installation starts it cannot be canceled.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_NEXT_BUTTON" desc="Text of the next button on the confirmation page of the OS install screen">
-          Erase Hard Drive &amp; Install Chromium OS
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_TITLE" desc="Title of the in-progress page of the OS install screen">
-          Chromium OS installation in progress
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_SUBTITLE" desc="Subtitle of the in-progress page of the OS install screen">
-          Installation is in progress. Don't turn off the device. Install should take no longer than twenty minutes. The machine will automatically shut down after installing.
         </message>
       </if>
 
@@ -1231,28 +1290,37 @@ Chromium is unable to recover your settings.
         <message name="IDS_EXTENSION_ENABLE_BLOCKED_BY_PARENT_PROMPT_MESSAGE" desc="Text for the dialog indicating that a parent has blocked extensions and apps.">
          Your parent has turned off "Permissions for sites, apps and extensions" for Chromium. Enabling this <ph name="EXTENSION_TYPE_PARAMETER">$1<ex>extension</ex></ph> is not allowed.
         </message>
-
       </if>
 
       <if expr="not chromeos and not is_android">
         <!-- Profile Picker -->
-        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE" desc="Profile picker main view title">
-          Welcome to Chromium profiles
-        </message>
-        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2" desc="Title of a screen that lets the user choose which profile to use when browsing the web. *If the EN source doesn't translate well in your language, an alternative string 'Which Chromium profile would you like to use?' may be used instead">
-          Who's using Chromium?
-        </message>
-        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE" desc="Profile picker main view subtitle">
-          With Chromium profiles you can separate all your Chromium stuff. Create profiles for friends and family, or split between work and fun.
-        </message>
+        <if expr="lacros">
+          <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_LACROS" desc="Profile picker main view subtitle">
+            With Chromium profiles you can separate all of your Chromium stuff. This makes it easier to split between work and fun.
+          </message>
+          <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_LACROS" desc="Profile picker profile type choice subtitle">
+            To access your Chromium browser stuff across all your devices, sign in, then turn on sync
+          </message>
+          <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE" desc="Profile picker, account selection screen subtitle">
+            The following accounts are available for this Chromium profile
+          </message>
+        </if>
+        <if expr="not lacros">
+          <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE" desc="Profile picker main view title">
+            Welcome to Chromium profiles
+          </message>
+          <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2" desc="Title of a screen that lets the user choose which profile to use when browsing the web. *If the EN source doesn't translate well in your language, an alternative string 'Which Chromium profile would you like to use?' may be used instead">
+            Who's using Chromium?
+          </message>
+          <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE" desc="Profile picker main view subtitle">
+            With Chromium profiles you can separate all your Chromium stuff. Create profiles for friends and family, or split between work and fun.
+          </message>
+          <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE" desc="Profile picker profile type choice subtitle">
+            To access your Chromium stuff across all your devices, sign in, then turn on sync.
+          </message>
+        </if>
         <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE" desc="Profile picker profile type choice title">
           Set up your new Chromium profile
-        </message>
-        <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE" desc="Profile picker profile type choice subtitle">
-          To access your Chromium stuff across all your devices, sign in, then turn on sync.
-        </message>
-        <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_V2" desc="Profile picker profile type choice subtitle">
-          To access your Chromium stuff across all your devices, sign in so that you can turn on sync.
         </message>
         <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_TITLE" desc="Title for the local profile customiztion screen on the picker.">
           Customize your Chromium profile

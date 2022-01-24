@@ -18,7 +18,7 @@
 #include "base/guid.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/shortcut_info.h"
-#include "ui/android/color_helpers.h"
+#include "ui/android/color_utils_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
 #endif

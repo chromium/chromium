@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/display/display_export.h"
 #include "ui/display/display_layout.h"
 
@@ -23,6 +22,9 @@ class DISPLAY_EXPORT DisplayLayoutBuilder final {
 
   // Creates a builder with the primary display id.
   explicit DisplayLayoutBuilder(int64_t primary_id);
+
+  DisplayLayoutBuilder(const DisplayLayoutBuilder&) = delete;
+  DisplayLayoutBuilder& operator=(const DisplayLayoutBuilder&) = delete;
 
   ~DisplayLayoutBuilder();
 
@@ -52,8 +54,6 @@ class DISPLAY_EXPORT DisplayLayoutBuilder final {
 
  private:
   std::unique_ptr<DisplayLayout> layout_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayLayoutBuilder);
 };
 
 }  // namespace display

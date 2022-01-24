@@ -28,7 +28,8 @@ LayerAnimationSequence* LayerAnimatorTestController::GetRunningSequence(
     return NULL;
 }
 
-void LayerAnimatorTestController::StartThreadedAnimationsIfNeeded() {
+void LayerAnimatorTestController::StartThreadedAnimationsIfNeeded(
+    base::TimeTicks started_time) {
   std::vector<cc::TargetProperty::Type> threaded_properties;
   threaded_properties.push_back(cc::TargetProperty::OPACITY);
   threaded_properties.push_back(cc::TargetProperty::TRANSFORM);
@@ -48,8 +49,7 @@ void LayerAnimatorTestController::StartThreadedAnimationsIfNeeded() {
         element->effective_start_time() != base::TimeTicks())
       continue;
 
-    animator_->OnThreadedAnimationStarted(base::TimeTicks::Now(),
-                                          threaded_properties[i],
+    animator_->OnThreadedAnimationStarted(started_time, threaded_properties[i],
                                           element->animation_group_id());
   }
 }

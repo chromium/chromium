@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -31,7 +30,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base_test_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -80,8 +79,8 @@ policy::CloudPolicyStore* GetStoreForUser(const user_manager::User* user) {
     ADD_FAILURE();
     return NULL;
   }
-  policy::UserCloudPolicyManagerChromeOS* policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+  policy::UserCloudPolicyManagerAsh* policy_manager =
+      profile->GetUserCloudPolicyManagerAsh();
   if (!policy_manager) {
     ADD_FAILURE();
     return NULL;
@@ -130,6 +129,10 @@ void SetSystemSalt() {
 
 class WallpaperPolicyTest : public LoginManagerTest,
                             public WallpaperControllerObserver {
+ public:
+  WallpaperPolicyTest(const WallpaperPolicyTest&) = delete;
+  WallpaperPolicyTest& operator=(const WallpaperPolicyTest&) = delete;
+
  protected:
   WallpaperPolicyTest()
       : LoginManagerTest(), owner_key_util_(new ownership::MockOwnerKeyUtil()) {
@@ -299,7 +302,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
   std::unique_ptr<policy::UserPolicyBuilder> user_policy_builders_[2];
   policy::DevicePolicyBuilder device_policy_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   LoginManagerMixin login_manager_{&mixin_host_};
@@ -309,8 +312,6 @@ class WallpaperPolicyTest : public LoginManagerTest,
   absl::optional<SkColor> average_color_;
 
   base::WeakPtrFactory<WallpaperPolicyTest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperPolicyTest);
 };
 
 // Verifies that the wallpaper can be set and re-set through policy and that

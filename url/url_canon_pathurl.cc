@@ -63,14 +63,17 @@ bool DoCanonicalizePathURL(const URLComponentSource<CHAR>& source,
   new_parsed->host.reset();
   new_parsed->port.reset();
 
-  // Canonicalize path and query via the weaker path URL rules.
+  // Canonicalize path via the weaker path URL rules.
   //
   // Note: parsing the path part should never cause a failure, see
   // https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
   DoCanonicalizePathComponent<CHAR, UCHAR>(source.path, parsed.path, '\0',
                                            output, &new_parsed->path);
-  DoCanonicalizePathComponent<CHAR, UCHAR>(source.query, parsed.query, '?',
-                                           output, &new_parsed->query);
+
+  // Similar to mailto:, always use the default UTF-8 charset converter for
+  // query.
+  CanonicalizeQuery(source.query, parsed.query, nullptr, output,
+                    &new_parsed->query);
 
   CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
 

@@ -81,7 +81,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(DragHandleTest, AccessibilityFeaturesEnabled) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
   // Create a widget to transition to the in-app shelf.
   TestWidgetBuilder()
       .SetTestWidgetDelegate()

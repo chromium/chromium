@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
@@ -54,8 +55,12 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
+
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc_overrides/metronome_provider.h"
+#include "third_party/webrtc_overrides/webrtc_timer.h"
 
 namespace cc {
 class Layer;
@@ -154,8 +159,6 @@ class CORE_EXPORT HTMLMediaElement
   };
   void ScheduleTextTrackResourceLoad();
 
-  bool HasRemoteRoutes() const;
-
   // error state
   MediaError* error() const;
 
@@ -243,6 +246,7 @@ class CORE_EXPORT HTMLMediaElement
   // controls
   bool ShouldShowControls(
       const RecordMetricsBehavior = RecordMetricsBehavior::kDoNotRecord) const;
+  bool ShouldShowAllControls() const;
   DOMTokenList* controlsList() const;
   HTMLMediaElementControlsList* ControlsListInternal() const;
   double volume() const;
@@ -251,6 +255,7 @@ class CORE_EXPORT HTMLMediaElement
   void setMuted(bool);
   virtual bool SupportsPictureInPicture() const { return false; }
   void SetUserWantsControlsVisible(bool visible);
+  bool UserWantsControlsVisible() const;
 
   void TogglePlayState();
 
@@ -365,6 +370,26 @@ class CORE_EXPORT HTMLMediaElement
 
   bool IsShowPosterFlagSet() const { return show_poster_flag_; }
 
+  // What LocalFrame should own our player?  Normally, players are tied to their
+  // HTMLMediaElement's LocalFrame for metrics, network fetch, etc.  This has
+  // the side-effect of requiring that a player is destroyed when the element's
+  // frame changes.  That causes playback to be user-visibly interrupted,
+  // potentially for multiple seconds.
+  //
+  // In some very restricted cases, related to picture-in-picture playback, it
+  // is okay to keep the player even when the element is moved to a new
+  // document.  It requires that everything is same-origin, and that lifetimes
+  // are looked after carefully so that the player does not outlive the frame
+  // that owns it.  However, it permits seamless playback when transitioning to
+  // picture in picture.  In this case, this function will return a different
+  // frame than our own.
+  //
+  // Note that new players can be created in this frame as well, so that a
+  // transfer back to the original opener frame when picture in picture is
+  // closed can be seamless too, even if the player was recreated for some
+  // reason while in picture in picture mode.
+  LocalFrame* LocalFrameForPlayer();
+
  protected:
   // Assert the correct order of the children in shadow dom when DCHECK is on.
   static void AssertShadowRootChildren(ShadowRoot&);
@@ -436,6 +461,9 @@ class CORE_EXPORT HTMLMediaElement
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
   void ContextDestroyed() override;
 
+  // Gets the current context's metronome provider.
+  scoped_refptr<MetronomeProvider> GetExecutionContextMetronomeProvider() const;
+
   virtual void OnPlay() {}
   virtual void OnLoadStarted() {}
   virtual void OnLoadFinished() {}
@@ -480,7 +508,7 @@ class CORE_EXPORT HTMLMediaElement
   WebRemotePlaybackClient* RemotePlaybackClient() final {
     return remote_playback_client_;
   }
-  std::vector<TextTrackMetadata> GetTextTrackMetadata() override;
+  Vector<TextTrackMetadata> GetTextTrackMetadata() override;
   gfx::ColorSpace TargetColorSpace() override;
   bool WasAutoplayInitiated() override;
   bool IsInAutoPIP() const override { return false; }
@@ -516,6 +544,7 @@ class CORE_EXPORT HTMLMediaElement
   void RequestSeekTo(base::TimeDelta seek_time) override;
   void RequestEnterPictureInPicture() override {}
   void RequestExitPictureInPicture() override {}
+  void RequestMute(bool mute) override;
   void SetVolumeMultiplier(double multiplier) override;
   void SetPersistentState(bool persistent) override {}
   void SetPowerExperimentState(bool enabled) override;
@@ -523,8 +552,8 @@ class CORE_EXPORT HTMLMediaElement
   void SuspendForFrameClosed() override;
 
   void LoadTimerFired(TimerBase*);
-  void ProgressEventTimerFired(TimerBase*);
-  void PlaybackProgressTimerFired(TimerBase*);
+  void ProgressEventTimerFired();
+  void PlaybackProgressTimerFired();
   void ScheduleTimeupdateEvent(bool periodic_event);
   void StartPlaybackProgressTimer();
   void StartProgressEventTimer();
@@ -618,7 +647,7 @@ class CORE_EXPORT HTMLMediaElement
   // their track info.
   void CreatePlaceholderTracksIfNecessary();
 
-  void SetNetworkState(NetworkState);
+  void SetNetworkState(NetworkState, bool update_media_controls = true);
 
   void AudioTracksTimerFired(TimerBase*);
 
@@ -637,17 +666,25 @@ class CORE_EXPORT HTMLMediaElement
 
   Features GetFeatures() override;
 
+  void ResetMojoState();
+
   // Adds a new MediaPlayerObserver remote that will be notified about media
   // player events and returns a receiver that an observer implementation can
   // bind to.
   mojo::PendingAssociatedReceiver<media::mojom::blink::MediaPlayerObserver>
   AddMediaPlayerObserverAndPassReceiver();
 
+  // Timers used to schedule one-shot tasks with no delay.
   HeapTaskRunnerTimer<HTMLMediaElement> load_timer_;
-  HeapTaskRunnerTimer<HTMLMediaElement> progress_event_timer_;
-  HeapTaskRunnerTimer<HTMLMediaElement> playback_progress_timer_;
   HeapTaskRunnerTimer<HTMLMediaElement> audio_tracks_timer_;
   HeapTaskRunnerTimer<HTMLMediaElement> removed_from_document_timer_;
+  // Timers used to schedule repeating tasks. For this a lower precision timer,
+  // WebRtcTimer, is used. This may reduce Idle Wake Ups when WebRTC is used.
+  // TODO(https://crbug.com/1267874): When there exists a low resolution timer
+  // in base/ that does not have a dependency on WebRTC, use such a timer
+  // instead.
+  WebRtcTimer progress_event_timer_;
+  WebRtcTimer playback_progress_timer_;
 
   Member<TimeRanges> played_time_ranges_;
   Member<EventQueue> async_event_queue_;
@@ -815,7 +852,7 @@ class CORE_EXPORT HTMLMediaElement
 
     // AudioSourceProvider
     void SetClient(AudioSourceProviderClient*) override;
-    void ProvideInput(AudioBus*, uint32_t frames_to_process) override;
+    void ProvideInput(AudioBus*, int frames_to_process) override;
 
     void Trace(Visitor*) const;
 
@@ -826,6 +863,32 @@ class CORE_EXPORT HTMLMediaElement
   };
 
   AudioSourceProviderImpl audio_source_provider_;
+
+  // Notify HTMLMediaElement when a document's ExecutionContext is destroyed.
+  // It allows us to disconnect from a previous document's frame if we were
+  // using it to support our WebMediaPlayer rather than our current frame.
+  class OpenerContextObserver final
+      : public GarbageCollected<OpenerContextObserver>,
+        public ContextLifecycleObserver {
+   public:
+    // Notify `element` when our context is destroyed.
+    explicit OpenerContextObserver(HTMLMediaElement* element);
+    ~OpenerContextObserver() final;
+
+    void Trace(Visitor* visitor) const final;
+
+   protected:
+    void ContextDestroyed() final;
+
+    Member<HTMLMediaElement> element_;
+  };
+
+  // Clean up things that are tied to any previous frame, including the player
+  // and mojo interfaces, when we switch to a new frame.
+  void AttachToNewFrame();
+
+  Member<Document> opener_document_;
+  Member<OpenerContextObserver> opener_context_observer_;
 
   friend class AutoplayPolicy;
   friend class AutoplayUmaHelperTest;

@@ -55,6 +55,7 @@ VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
             // TODO(b/172217032): remove once enabled by default.
             media::kVaapiAV1Decoder,
 #endif
+                media::kVp9kSVCHWDecoding,
           },
           /*disabled_features=*/
           {

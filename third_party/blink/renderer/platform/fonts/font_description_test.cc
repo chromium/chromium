@@ -140,9 +140,9 @@ TEST(FontDescriptionTest, ToString) {
   FontDescription description;
 
   FontFamily family;
-  family.SetFamily("A");
+  family.SetFamily("A", FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> b_family = SharedFontFamily::Create();
-  b_family->SetFamily("B");
+  b_family->SetFamily("B", FontFamily::Type::kFamilyName);
   family.AppendFamily(b_family);
   description.SetFamily(family);
 
@@ -173,7 +173,7 @@ TEST(FontDescriptionTest, ToString) {
   description.SetTextRendering(kOptimizeLegibility);
 
   EXPECT_EQ(
-      "family_list=[A,B], feature_settings=[cccc=76,dddd=94], "
+      "family_list=[A, B], feature_settings=[cccc=76,dddd=94], "
       "variation_settings=[aaaa=42,bbbb=8118], locale=no, "
       "specified_size=1.100000, "
       "computed_size=2.200000, adjusted_size=3.300000, size_adjust=4.400000, "
@@ -190,7 +190,8 @@ TEST(FontDescriptionTest, ToString) {
       "variant_numeric=[numeric_figure=NormalFigure, "
       "numeric_spacing=NormalSpacing, numeric_fraction=Normal, ordinal=Off, "
       "slashed_zero=Off], variant_east_asian=[form=Normal, width=Normal, "
-      "ruby=false], font_optical_sizing=Auto",
+      "ruby=false], font_optical_sizing=Auto, font_synthesis_weight=Auto, "
+      "font_synthesis_style=Auto",
       description.ToString());
 }
 
@@ -204,9 +205,9 @@ TEST(FontDescriptionTest, DefaultHashTrait) {
   description1.SetWeight(FontSelectionValue(100));
 
   FontFamily family;
-  family.SetFamily("A");
+  family.SetFamily("A", FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> b_family = SharedFontFamily::Create();
-  b_family->SetFamily("B");
+  b_family->SetFamily("B", FontFamily::Type::kFamilyName);
   family.AppendFamily(b_family);
   FontDescription description3;
   description3.SetFamily(family);

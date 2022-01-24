@@ -138,7 +138,7 @@ Polymer({
    */
   getNetworkListItemWithQueryForTest(query) {
     let networkList =
-        this.$.networkSelectLogin.$$('#networkSelect').getNetworkListForTest();
+        this.$.networkSelectLogin.shadowRoot.querySelector('#networkSelect').getNetworkListForTest();
     assert(networkList);
     return networkList.querySelector(query);
   },
@@ -150,7 +150,7 @@ Polymer({
    * @return {?NetworkList.NetworkListItemType}
    */
   getNetworkListItemByNameForTest(name) {
-    return this.$.networkSelectLogin.$$('#networkSelect')
+    return this.$.networkSelectLogin.shadowRoot.querySelector('#networkSelect')
         .getNetworkListItemByNameForTest(name);
   },
 

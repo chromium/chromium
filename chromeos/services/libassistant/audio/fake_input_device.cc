@@ -69,7 +69,7 @@ class FakeInputDevice {
     PostDelayedTask(FROM_HERE,
                     base::BindOnce(&FakeInputDevice::WaitForAudioFile,
                                    weak_factory_.GetWeakPtr()),
-                    base::TimeDelta::FromMilliseconds(100));
+                    base::Milliseconds(100));
   }
 
   void Stop() {
@@ -136,7 +136,7 @@ class FakeInputDevice {
     PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FakeInputDevice::SendAudio, weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMicrosecondsD(delay_in_microseconds));
+        base::Microseconds(delay_in_microseconds));
 
     DVLOG(2) << "Send " << block->frames() << " audio frames";
     const base::TimeTicks time = base::TimeTicks::Now();
@@ -162,7 +162,7 @@ class FakeInputDevice {
     PostDelayedTask(FROM_HERE,
                     base::BindOnce(&FakeInputDevice::WaitForAudioFile,
                                    weak_factory_.GetWeakPtr()),
-                    base::TimeDelta::FromMicrosecondsD(delay_in_microseconds));
+                    base::Microseconds(delay_in_microseconds));
   }
 
   void PostDelayedTask(const base::Location& from_here,

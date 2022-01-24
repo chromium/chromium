@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_result.h"
@@ -23,12 +22,15 @@ namespace device_sync {
 // Fake CryptAuthScheduler implementation.
 class FakeCryptAuthScheduler : public CryptAuthScheduler {
  public:
-  static constexpr base::TimeDelta kDefaultRefreshPeriod =
-      base::TimeDelta::FromDays(30);
+  static constexpr base::TimeDelta kDefaultRefreshPeriod = base::Days(30);
   static constexpr base::TimeDelta kDefaultTimeToNextEnrollmentRequest =
-      base::TimeDelta::FromHours(12);
+      base::Hours(12);
 
   FakeCryptAuthScheduler();
+
+  FakeCryptAuthScheduler(const FakeCryptAuthScheduler&) = delete;
+  FakeCryptAuthScheduler& operator=(const FakeCryptAuthScheduler&) = delete;
+
   ~FakeCryptAuthScheduler() override;
 
   size_t num_enrollment_requests() const { return num_enrollment_requests_; }
@@ -125,8 +127,6 @@ class FakeCryptAuthScheduler : public CryptAuthScheduler {
   size_t num_consecutive_device_sync_failures_ = 0u;
   bool is_waiting_for_enrollment_result_ = false;
   bool is_waiting_for_device_sync_result_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthScheduler);
 };
 
 // Fake CryptAuthScheduler::EnrollmentDelegate implementation.
@@ -134,6 +134,12 @@ class FakeCryptAuthSchedulerEnrollmentDelegate
     : public CryptAuthScheduler::EnrollmentDelegate {
  public:
   FakeCryptAuthSchedulerEnrollmentDelegate();
+
+  FakeCryptAuthSchedulerEnrollmentDelegate(
+      const FakeCryptAuthSchedulerEnrollmentDelegate&) = delete;
+  FakeCryptAuthSchedulerEnrollmentDelegate& operator=(
+      const FakeCryptAuthSchedulerEnrollmentDelegate&) = delete;
+
   ~FakeCryptAuthSchedulerEnrollmentDelegate() override;
 
   base::WeakPtr<FakeCryptAuthSchedulerEnrollmentDelegate> GetWeakPtr();
@@ -160,8 +166,6 @@ class FakeCryptAuthSchedulerEnrollmentDelegate
       policy_references_from_enrollment_requests_;
   base::WeakPtrFactory<FakeCryptAuthSchedulerEnrollmentDelegate>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthSchedulerEnrollmentDelegate);
 };
 
 // Fake CryptAuthScheduler::DeviceSyncDelegate implementation.
@@ -169,6 +173,12 @@ class FakeCryptAuthSchedulerDeviceSyncDelegate
     : public CryptAuthScheduler::DeviceSyncDelegate {
  public:
   FakeCryptAuthSchedulerDeviceSyncDelegate();
+
+  FakeCryptAuthSchedulerDeviceSyncDelegate(
+      const FakeCryptAuthSchedulerDeviceSyncDelegate&) = delete;
+  FakeCryptAuthSchedulerDeviceSyncDelegate& operator=(
+      const FakeCryptAuthSchedulerDeviceSyncDelegate&) = delete;
+
   ~FakeCryptAuthSchedulerDeviceSyncDelegate() override;
 
   base::WeakPtr<FakeCryptAuthSchedulerDeviceSyncDelegate> GetWeakPtr();
@@ -187,8 +197,6 @@ class FakeCryptAuthSchedulerDeviceSyncDelegate
       client_metadata_from_device_sync_requests_;
   base::WeakPtrFactory<FakeCryptAuthSchedulerDeviceSyncDelegate>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthSchedulerDeviceSyncDelegate);
 };
 
 }  // namespace device_sync

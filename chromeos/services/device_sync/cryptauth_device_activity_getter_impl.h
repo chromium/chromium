@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_activity_getter.h"
@@ -53,6 +52,11 @@ class CryptAuthDeviceActivityGetterImpl : public CryptAuthDeviceActivityGetter {
     static Factory* test_factory_;
   };
 
+  CryptAuthDeviceActivityGetterImpl(const CryptAuthDeviceActivityGetterImpl&) =
+      delete;
+  CryptAuthDeviceActivityGetterImpl& operator=(
+      const CryptAuthDeviceActivityGetterImpl&) = delete;
+
   ~CryptAuthDeviceActivityGetterImpl() override;
 
  private:
@@ -96,8 +100,6 @@ class CryptAuthDeviceActivityGetterImpl : public CryptAuthDeviceActivityGetter {
   std::string instance_id_token_;
   CryptAuthClientFactory* client_factory_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceActivityGetterImpl);
 };
 
 }  // namespace device_sync

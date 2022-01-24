@@ -8,6 +8,8 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "services/network/public/cpp/features.h"');
 
+/* eslint-disable no-var */
+
 class TabSearchBrowserTest extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -15,7 +17,6 @@ class TabSearchBrowserTest extends PolymerTest {
   }
 }
 
-// eslint-disable-next-line no-var
 var TabSearchAppTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
@@ -27,7 +28,6 @@ TEST_F('TabSearchAppTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BiMapTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
@@ -39,7 +39,6 @@ TEST_F('BiMapTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var FuzzySearchTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
@@ -51,7 +50,6 @@ TEST_F('FuzzySearchTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var InfiniteListTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
@@ -63,7 +61,6 @@ TEST_F('InfiniteListTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var TabSearchItemTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {

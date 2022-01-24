@@ -38,6 +38,9 @@ class ContainerView : public views::View {
     AddChildView(unified_view);
   }
 
+  ContainerView(const ContainerView&) = delete;
+  ContainerView& operator=(const ContainerView&) = delete;
+
   ~ContainerView() override = default;
 
   // views::View:
@@ -59,8 +62,6 @@ class ContainerView : public views::View {
 
  private:
   UnifiedSystemTrayView* const unified_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContainerView);
 };
 
 }  // namespace
@@ -123,7 +124,7 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   // Unified view children depend on `controller_` which is about to go away.
   // Remove child views synchronously to ensure they don't try to access
   // `controller_` after `this` goes out of scope.
-  bubble_view_->RemoveAllChildViews(true);
+  bubble_view_->RemoveAllChildViews();
   bubble_view_->ResetDelegate();
 
   if (bubble_widget_) {
@@ -186,6 +187,15 @@ void UnifiedSystemTrayBubble::ShowAudioDetailedView() {
   DCHECK(unified_view_);
   DCHECK(controller_);
   controller_->ShowAudioDetailedView();
+}
+
+void UnifiedSystemTrayBubble::ShowCalendarView() {
+  if (!bubble_widget_)
+    return;
+
+  DCHECK(unified_view_);
+  DCHECK(controller_);
+  controller_->ShowCalendarView();
 }
 
 void UnifiedSystemTrayBubble::ShowNetworkDetailedView(bool force) {

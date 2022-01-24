@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
 
 namespace web_app {

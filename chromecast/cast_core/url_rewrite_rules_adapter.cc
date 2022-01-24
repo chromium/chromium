@@ -224,7 +224,7 @@ void HandleSubstitutableParamRule(
                          << rule.scheme_filters(0);
     return;
   }
-  if (!translated_rules->full_host_names.empty() |
+  if (!translated_rules->full_host_names.empty() ||
       !translated_rules->wildcard_host_names.empty()) {
     RULE_WARNING(errors) << "Multiple rules specifying host-filters";
     return;
@@ -449,6 +449,15 @@ mojom::DeviceSettingsPtr ConvertDeviceSettingsToMojo(
 }
 
 }  // namespace
+
+MojoIdentificationSettings::MojoIdentificationSettings(
+    const cast::v2::UrlRequestRewriteRules& rules) {
+  auto translated_rules = TranslateRewriteRules(rules);
+  substitutable_params = ConvertParamsToMojo(translated_rules);
+  application_settings = ConvertAppSettingsToMojo(translated_rules);
+  device_settings = ConvertDeviceSettingsToMojo(translated_rules);
+}
+MojoIdentificationSettings::~MojoIdentificationSettings() = default;
 
 ParamRule::ParamRule() = default;
 ParamRule::~ParamRule() = default;

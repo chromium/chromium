@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SSL_CHROME_SECURITY_BLOCKING_PAGE_FACTORY_H_
 #define CHROME_BROWSER_SSL_CHROME_SECURITY_BLOCKING_PAGE_FACTORY_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/security_interstitials/content/bad_clock_blocking_page.h"

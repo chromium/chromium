@@ -17,12 +17,12 @@
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom-blink.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/html/media/html_media_test_helper.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
-#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
@@ -112,12 +112,36 @@ class VideoWakeLockFrameClient : public test::MediaStubLocalFrameClient {
   VideoWakeLockFrameClient& operator=(const VideoWakeLockFrameClient&) = delete;
 };
 
-class VideoWakeLockTest : public PageTestBase {
+class VideoWakeLockTestWebFrameClient
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  explicit VideoWakeLockTestWebFrameClient(
+      std::unique_ptr<WebMediaPlayer> web_media_player)
+      : web_media_player_(std::move(web_media_player)) {}
+
+  WebMediaPlayer* CreateMediaPlayer(
+      const WebMediaPlayerSource&,
+      WebMediaPlayerClient*,
+      blink::MediaInspectorContext*,
+      WebMediaPlayerEncryptedMediaClient*,
+      WebContentDecryptionModule*,
+      const WebString& sink_id,
+      const cc::LayerTreeSettings& settings) override {
+    return web_media_player_.release();
+  }
+
+ private:
+  std::unique_ptr<WebMediaPlayer> web_media_player_;
+};
+
+class VideoWakeLockTest : public testing::Test {
  public:
   void SetUp() override {
-    PageTestBase::SetupPageWithClients(
-        nullptr, MakeGarbageCollected<VideoWakeLockFrameClient>(
-                     std::make_unique<VideoWakeLockMediaPlayer>()));
+    client_ = std::make_unique<VideoWakeLockTestWebFrameClient>(
+        std::make_unique<VideoWakeLockMediaPlayer>());
+
+    helper_.Initialize(client_.get());
+    helper_.Resize(gfx::Size(800, 600));
 
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::PictureInPictureService::Name_,
@@ -136,12 +160,19 @@ class VideoWakeLockTest : public PageTestBase {
   void TearDown() override {
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::PictureInPictureService::Name_, {});
-
-    PageTestBase::TearDown();
   }
 
   HTMLVideoElement* Video() const { return video_.Get(); }
   VideoWakeLock* GetVideoWakeLock() const { return video_wake_lock_.Get(); }
+
+  LocalFrame& GetFrame() const { return *helper_.LocalMainFrame()->GetFrame(); }
+  Page& GetPage() const { return *GetDocument().GetPage(); }
+
+  void UpdateAllLifecyclePhasesForTest() {
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  }
+
+  Document& GetDocument() const { return *GetFrame().GetDocument(); }
 
   void SetFakeCcLayer(cc::Layer* layer) { video_->SetCcLayer(layer); }
 
@@ -202,10 +233,12 @@ class VideoWakeLockTest : public PageTestBase {
   }
 
  private:
+  std::unique_ptr<frame_test_helpers::TestWebFrameClient> client_;
   Persistent<HTMLVideoElement> video_;
   Persistent<VideoWakeLock> video_wake_lock_;
 
   VideoWakeLockPictureInPictureService pip_service_;
+  frame_test_helpers::WebViewHelper helper_;
 };
 
 TEST_F(VideoWakeLockTest, NoLockByDefault) {

@@ -30,7 +30,7 @@ LayoutBlock* LayoutNGFieldset::FindAnonymousFieldsetContentBox() const {
 
 void LayoutNGFieldset::AddChild(LayoutObject* new_child,
                                 LayoutObject* before_child) {
-  if (!new_child->IsText()) {
+  if (!new_child->IsText() && !new_child->IsAnonymous()) {
     // Adding a child LayoutObject always causes reattach of <fieldset>. So
     // |before_child| is always nullptr.
     // See HTMLFieldSetElement::DidRecalcStyle().

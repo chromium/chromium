@@ -15,6 +15,10 @@ namespace vr {
 class Grid : public Rect {
  public:
   Grid();
+
+  Grid(const Grid&) = delete;
+  Grid& operator=(const Grid&) = delete;
+
   ~Grid() override;
 
   void Render(UiElementRenderer* renderer,
@@ -35,6 +39,10 @@ class Grid : public Rect {
   class Renderer : public BaseQuadRenderer {
    public:
     Renderer();
+
+    Renderer(const Renderer&) = delete;
+    Renderer& operator=(const Renderer&) = delete;
+
     ~Renderer() override;
 
     void Draw(const gfx::Transform& model_view_proj_matrix,
@@ -49,15 +57,11 @@ class Grid : public Rect {
     GLuint grid_color_handle_;
     GLuint opacity_handle_;
     GLuint lines_count_handle_;
-
-    DISALLOW_COPY_AND_ASSIGN(Renderer);
   };
 
  private:
   SkColor grid_color_ = SK_ColorWHITE;
   int gridline_count_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(Grid);
 };
 
 }  // namespace vr

@@ -33,6 +33,9 @@ class ProxiedServiceConnector : public mojom::Connector {
         proxies_(proxies),
         test_instance_group_(test_instance_group) {}
 
+  ProxiedServiceConnector(const ProxiedServiceConnector&) = delete;
+  ProxiedServiceConnector& operator=(const ProxiedServiceConnector&) = delete;
+
   ~ProxiedServiceConnector() override = default;
 
  private:
@@ -95,8 +98,6 @@ class ProxiedServiceConnector : public mojom::Connector {
   TestConnectorFactory::NameToServiceProxyMap* const proxies_;
   const base::Token test_instance_group_;
   mojo::ReceiverSet<mojom::Connector> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxiedServiceConnector);
 };
 
 }  // namespace

@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/hash/sha1.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -43,8 +42,8 @@ const char kTestMimeType[] = "test_mime_type";
 
 class TestLogStore : public LogStore {
  public:
-  TestLogStore() {}
-  ~TestLogStore() {}
+  TestLogStore() = default;
+  ~TestLogStore() override = default;
 
   void AddLog(const TestLog& log) { logs_.push_back(log); }
 
@@ -87,6 +86,10 @@ class TestReportingService : public ReportingService {
       : ReportingService(client, local_state, 100) {
     Initialize();
   }
+
+  TestReportingService(const TestReportingService&) = delete;
+  TestReportingService& operator=(const TestReportingService&) = delete;
+
   ~TestReportingService() override {}
 
   void AddLog(const TestLog& log) { log_store_.AddLog(log); }
@@ -102,8 +105,6 @@ class TestReportingService : public ReportingService {
   }
 
   TestLogStore log_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportingService);
 };
 
 class ReportingServiceTest : public testing::Test {
@@ -113,6 +114,9 @@ class ReportingServiceTest : public testing::Test {
         task_runner_handle_(task_runner_) {
     ReportingService::RegisterPrefs(testing_local_state_.registry());
   }
+
+  ReportingServiceTest(const ReportingServiceTest&) = delete;
+  ReportingServiceTest& operator=(const ReportingServiceTest&) = delete;
 
   ~ReportingServiceTest() override {}
 
@@ -125,8 +129,6 @@ class ReportingServiceTest : public testing::Test {
 
  private:
   TestingPrefServiceSimple testing_local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingServiceTest);
 };
 
 }  // namespace

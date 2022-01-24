@@ -431,12 +431,12 @@ TEST_P(ParameterizedTextOffsetMappingTest, RangeWithSelect1) {
   const auto& expected_outer =
       "^<select>"
       "<div aria-hidden=\"true\"></div>"
-      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "<slot></slot>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
       "<div aria-hidden=\"true\">^|</div>"
-      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "<slot></slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));
@@ -449,12 +449,12 @@ TEST_P(ParameterizedTextOffsetMappingTest, RangeWithSelect2) {
   const auto& expected_outer =
       "^<select>"
       "<div aria-hidden=\"true\"></div>"
-      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "<slot></slot>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
       "<div aria-hidden=\"true\">^|</div>"
-      "<slot name=\"user-agent-custom-assign-slot\"></slot>"
+      "<slot></slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));
@@ -469,6 +469,32 @@ TEST_P(ParameterizedTextOffsetMappingTest, RangeWithShadowDOM) {
                      "<template data-mode='open'><slot></slot></template>"
                      "|abc"
                      "</div>"));
+}
+
+// http://crbug.com/1262589
+TEST_P(ParameterizedTextOffsetMappingTest, RangeWithSvgUse) {
+  SetBodyContent(R"HTML(
+<svg id="svg1"><symbol id="foo"><circle cx=1 cy=1 r=1 /></symbol></svg>
+<div id="div1"><svg><use href="#foo"></svg>&#32;</div>
+<div id="div2">xyz</div>
+)HTML");
+  const auto& div1 = *GetElementById("div1");
+  const auto& div2 = *GetElementById("div2");
+
+  const TextOffsetMapping::InlineContents& div1_contents =
+      TextOffsetMapping::FindForwardInlineContents(
+          PositionInFlatTree::FirstPositionInNode(div1));
+  EXPECT_EQ(div1.firstChild()->GetLayoutObject(),
+            div1_contents.FirstLayoutObject());
+  EXPECT_EQ(div1.lastChild()->GetLayoutObject(),
+            div1_contents.LastLayoutObject());
+
+  const TextOffsetMapping::InlineContents& div2_contents =
+      TextOffsetMapping::InlineContents::NextOf(div1_contents);
+  EXPECT_EQ(div2.firstChild()->GetLayoutObject(),
+            div2_contents.FirstLayoutObject());
+  EXPECT_EQ(div2.lastChild()->GetLayoutObject(),
+            div2_contents.LastLayoutObject());
 }
 
 TEST_P(ParameterizedTextOffsetMappingTest, GetPositionBefore) {

@@ -10,7 +10,6 @@
 #include <map>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
@@ -29,10 +28,16 @@ namespace media {
 class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
     : public VideoCaptureBufferPool {
  public:
+  VideoCaptureBufferPoolImpl() = delete;
+
   explicit VideoCaptureBufferPoolImpl(VideoCaptureBufferType buffer_type);
   explicit VideoCaptureBufferPoolImpl(
       VideoCaptureBufferType buffer_type,
       int count);
+
+  VideoCaptureBufferPoolImpl(const VideoCaptureBufferPoolImpl&) = delete;
+  VideoCaptureBufferPoolImpl& operator=(const VideoCaptureBufferPoolImpl&) =
+      delete;
 
   // VideoCaptureBufferPool implementation.
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion(
@@ -90,8 +95,6 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
 
   const std::unique_ptr<VideoCaptureBufferTrackerFactory>
       buffer_tracker_factory_ GUARDED_BY(lock_);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureBufferPoolImpl);
 };
 
 }  // namespace media

@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -64,8 +64,7 @@ void LoaderLockSamplingThread::StopSampling() {
 }
 
 void LoaderLockSamplingThread::LoaderLockTracker::StartSampling() {
-  sample_timer_.Start(FROM_HERE,
-                      base::TimeDelta::FromMilliseconds(kSamplingIntervalMsec),
+  sample_timer_.Start(FROM_HERE, base::Milliseconds(kSamplingIntervalMsec),
                       this, &LoaderLockTracker::SampleLoaderLock);
 }
 

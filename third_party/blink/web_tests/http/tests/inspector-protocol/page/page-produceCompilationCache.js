@@ -8,10 +8,6 @@
     }
     </script>`, 'Tests that compilation cache is only being produced for specified scripts');
 
-    dp.Page.onCompilationCacheProduced(async result => {
-      testRunner.log('Compilation cache produced for: ' + result.params.url);
-    });
-
     dp.Page.enable();
     const scriptUrls = [
         testRunner.url('resources/script-1.js'),
@@ -22,25 +18,25 @@
     });
     dp.Runtime.enable();
 
+    dp.Page.onCompilationCacheProduced(result => {
+      testRunner.log('Compilation cache produced for: ' + result.params.url);
+      const newUrl = result.params.url.replace("-1.js", "-2.js?v2");
+      // Forge a new cache entry for the wrong script.
+      dp.Page.addCompilationCache({url: newUrl, data: result.params.data});
+    });
+
     for (let i = 0; i < 2; ++i) {
+      testRunner.log(`Running ${scriptUrls[i]}`);
       session.evaluate(`loadScript("${scriptUrls[i]}")`);
       const message = (await dp.Runtime.onceConsoleAPICalled()).params.args[0].value;
       testRunner.log(`Page: ${message}`);
     }
 
-    dp.Page.produceCompilationCache({
-      scripts: [{url: scriptUrls[0] + '?v2'}]
-    });
-    dp.Page.setProduceCompilationCache({ enabled: false });
-    dp.Page.produceCompilationCache({
-        scripts: [{url: scriptUrls[1] + '?v2'}]
-    });
-
-    for (let i = 0; i < 2; ++i) {
-      session.evaluate(`loadScript("${scriptUrls[i]}?v2")`);
-      const message = (await dp.Runtime.onceConsoleAPICalled()).params.args[0].value;
-      testRunner.log(`Page: ${message}`);
-    }
+    // This should still run the right script.
+    testRunner.log(`Running ${scriptUrls[1]}?v1`);
+    session.evaluate(`loadScript("${scriptUrls[1]}?v1")`);
+    const message = (await dp.Runtime.onceConsoleAPICalled()).params.args[0].value;
+    testRunner.log(`Page: ${message}`);
 
     testRunner.completeTest();
 })

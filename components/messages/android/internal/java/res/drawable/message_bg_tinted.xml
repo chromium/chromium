@@ -8,8 +8,8 @@
     tools:ignore="UnusedResources">
     <item>
         <shape>
-            <corners android:radius="@dimen/message_banner_radius" />
-            <solid android:color="@color/popup_bg_color" />
+            <corners android:radius="@dimen/message_banner_radius"/>
+            <solid android:color="@color/dialog_bg_color"/>
         </shape>
     </item>
 </layer-list>

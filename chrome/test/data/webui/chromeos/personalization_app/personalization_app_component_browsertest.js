@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview Test suite for chrome://personalization. Tests individual
- * components in isolation.
+ * polymer components in isolation.
  */
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
@@ -16,7 +16,7 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
   get browsePreload() {
     return 'chrome://personalization/test_loader.html?' +
         'module=chromeos/personalization_app/' +
-        'personalization_app_unified_test.js';
+        'personalization_app_component_test.js';
   }
 
   get featureList() {

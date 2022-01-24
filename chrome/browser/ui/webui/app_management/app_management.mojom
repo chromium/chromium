@@ -20,8 +20,8 @@ struct App {
   apps.mojom.OptionalBool is_policy_pinned;
   string? version;
   string? size;
-  map<uint32, apps.mojom.Permission> permissions;
-  apps.mojom.InstallSource install_source;
+  map<apps.mojom.PermissionType, apps.mojom.Permission> permissions;
+  apps.mojom.InstallReason install_reason;
   bool hide_more_settings;
   bool hide_pin_to_shelf;
   bool is_preferred_app;
@@ -56,6 +56,9 @@ interface PageHandler {
   Uninstall(string app_id);
   OpenNativeSettings(string app_id);
   SetPreferredApp(string app_id, bool is_preferred_app);
+  // Returns a list of |app_ids| that are currently set as preferred apps
+  // and have overlapping intent filters with |app_id|.
+  GetOverlappingPreferredApps(string app_id) => (array<string> app_ids);
 };
 
 // Frontend interface.
@@ -63,40 +66,4 @@ interface Page {
   OnAppAdded(App app);
   OnAppChanged(App update);
   OnAppRemoved(string app_id);
-};
-
-// Permission Type Enums for each App Publisher. The App Publishers are
-// required to provide these values so the WebUI can map permission ID to
-// permission value.
-
-// This enum shows the ARC permission values currently supported over the
-// App Service. It should always match the AppPermission enum in
-// app_permissions.mojom
-enum ArcPermissionType {
-  CAMERA          = 0,
-  LOCATION        = 1,
-  MICROPHONE      = 2,
-  NOTIFICATIONS   = 3,
-  CONTACTS        = 4,
-  STORAGE         = 5,
-};
-
-// This enum takes the important permission values from the
-// contents_settings_type.h ContentSettingsType enum.
-enum PwaPermissionType {
-  GEOLOCATION = 4,
-  NOTIFICATIONS = 5,
-  MEDIASTREAM_MIC = 8,
-  MEDIASTREAM_CAMERA = 9,
-};
-
-// The Plugin VM app publisher uses this enum directly.
-enum PluginVmPermissionType {
-  PRINTING = 0,
-  CAMERA = 1,
-  MICROPHONE = 2,
-};
-
-enum BorealisPermissionType {
-  MICROPHONE = 0,
 };

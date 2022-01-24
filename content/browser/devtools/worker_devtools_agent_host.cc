@@ -11,12 +11,23 @@
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
+#include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/public/common/child_process_host.h"
 
 namespace content {
+
+namespace protocol {
+class TargetAutoAttacher;
+}  // namespace protocol
+
+// static
+WorkerDevToolsAgentHost* WorkerDevToolsAgentHost::GetFor(
+    DedicatedWorkerHost* host) {
+  return WorkerDevToolsManager::GetInstance().GetDevToolsHost(host);
+}
 
 WorkerDevToolsAgentHost::WorkerDevToolsAgentHost(
     int process_id,
@@ -32,20 +43,48 @@ WorkerDevToolsAgentHost::WorkerDevToolsAgentHost(
       url_(url),
       name_(name),
       parent_id_(parent_id),
+      auto_attacher_(std::make_unique<protocol::RendererAutoAttacherBase>(
+          GetRendererChannel())),
       destroyed_callback_(std::move(destroyed_callback)),
       devtools_worker_token_(devtools_worker_token) {
-  DCHECK(agent_remote);
   DCHECK(!devtools_worker_token.is_empty());
+  // TODO(crbug.com/906991): Remove AddRef() and Release() once
+  // PlzDedicatedWorker is enabled and the code for non-PlzDedicatedWorker is
+  // deleted. Worker agent hosts will be retained by the Worker DevTools manager
+  // instead.
   AddRef();  // Self keep-alive while the worker agent is alive.
+  NotifyCreated();
+
+  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker))
+    SetRenderer(process_id, std::move(agent_remote), std::move(host_receiver));
+}
+
+WorkerDevToolsAgentHost::~WorkerDevToolsAgentHost() = default;
+
+void WorkerDevToolsAgentHost::SetRenderer(
+    int process_id,
+    mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
+    mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver) {
+  DCHECK(agent_remote);
+  DCHECK(host_receiver);
+
   base::OnceClosure connection_error = (base::BindOnce(
       &WorkerDevToolsAgentHost::Disconnected, base::Unretained(this)));
-  NotifyCreated();
   GetRendererChannel()->SetRenderer(std::move(agent_remote),
                                     std::move(host_receiver), process_id,
                                     std::move(connection_error));
 }
 
-WorkerDevToolsAgentHost::~WorkerDevToolsAgentHost() = default;
+void WorkerDevToolsAgentHost::ChildWorkerCreated(
+    const GURL& url,
+    const std::string& name,
+    base::OnceCallback<void(DevToolsAgentHostImpl*)> callback) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
+
+  url_ = url;
+  name_ = name;
+  destroyed_callback_ = std::move(callback);
+}
 
 void WorkerDevToolsAgentHost::Disconnected() {
   ForceDetachAllSessions();
@@ -58,6 +97,12 @@ void WorkerDevToolsAgentHost::Disconnected() {
 BrowserContext* WorkerDevToolsAgentHost::GetBrowserContext() {
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   return process ? process->GetBrowserContext() : nullptr;
+}
+
+RenderProcessHost* WorkerDevToolsAgentHost::GetProcessHost() {
+  DedicatedWorkerHost* host = GetDedicatedWorkerHost();
+  DCHECK(host);
+  return host->GetProcessHost();
 }
 
 std::string WorkerDevToolsAgentHost::GetType() {
@@ -91,8 +136,7 @@ bool WorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
   session->AddHandler(std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      protocol::TargetAutoAttacher::CreateForWorker(GetRendererChannel()),
-      session->GetRootSession()));
+      auto_attacher_.get(), session->GetRootSession()));
   session->AddHandler(std::make_unique<protocol::NetworkHandler>(
       GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing()));
   return true;
@@ -100,6 +144,10 @@ bool WorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
 
 void WorkerDevToolsAgentHost::DetachSession(DevToolsSession* session) {
   // Destroying session automatically detaches in renderer.
+}
+
+protocol::TargetAutoAttacher* WorkerDevToolsAgentHost::auto_attacher() {
+  return auto_attacher_.get();
 }
 
 DedicatedWorkerHost* WorkerDevToolsAgentHost::GetDedicatedWorkerHost() {

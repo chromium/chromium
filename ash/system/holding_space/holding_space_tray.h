@@ -95,6 +95,9 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // depending on state.
   void UpdateVisibility();
 
+  // Returns the holding space tray bubble for testing.
+  HoldingSpaceTrayBubble* bubble_for_testing() { return bubble_.get(); }
+
   // Previews are updated with delay to de-dupe against multiple updates
   // scheduled in quick succession. Invoke this method to cause scheduled
   // updates to be run immediately for testing.

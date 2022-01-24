@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/services/speech/soda/proto/soda_api.pb.h"
 #include "chrome/services/speech/soda/soda_client.h"
 #include "components/soda/constants.h"
@@ -315,12 +316,12 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
 }
 
 void SpeechRecognitionRecognizerImpl::RecordDuration() {
-  if (caption_bubble_visible_duration_ > base::TimeDelta()) {
+  if (caption_bubble_visible_duration_.is_positive()) {
     base::UmaHistogramLongTimes100(kCaptionBubbleVisibleHistogramName,
                                    caption_bubble_visible_duration_);
   }
 
-  if (caption_bubble_hidden_duration_ > base::TimeDelta()) {
+  if (caption_bubble_hidden_duration_.is_positive()) {
     base::UmaHistogramLongTimes100(kCaptionBubbleHiddenHistogramName,
                                    caption_bubble_hidden_duration_);
   }
@@ -347,6 +348,8 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   config_msg.set_recognition_mode(
       GetSodaSpeechRecognitionMode(options_->recognition_mode));
   config_msg.set_enable_formatting(options_->enable_formatting);
+  config_msg.set_enable_speaker_change_detection(
+      base::FeatureList::IsEnabled(media::kSpeakerChangeDetection));
   auto serialized = config_msg.SerializeAsString();
 
   SerializedSodaConfig config;

@@ -21,6 +21,7 @@
 #include "net/ssl/ssl_info.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/net_adapters.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -80,6 +81,10 @@ class CONTENT_EXPORT SignedExchangeLoader final
       scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
       const std::string& accept_langs,
       bool keep_entry_for_prefetch_cache);
+
+  SignedExchangeLoader(const SignedExchangeLoader&) = delete;
+  SignedExchangeLoader& operator=(const SignedExchangeLoader&) = delete;
+
   ~SignedExchangeLoader() override;
 
 
@@ -206,8 +211,6 @@ class CONTENT_EXPORT SignedExchangeLoader final
   std::unique_ptr<SignedExchangeValidityPinger> validity_pinger_;
 
   base::WeakPtrFactory<SignedExchangeLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeLoader);
 };
 
 }  // namespace content

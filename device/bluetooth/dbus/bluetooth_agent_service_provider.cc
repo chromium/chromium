@@ -109,6 +109,11 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  BluetoothAgentServiceProviderImpl(const BluetoothAgentServiceProviderImpl&) =
+      delete;
+  BluetoothAgentServiceProviderImpl& operator=(
+      const BluetoothAgentServiceProviderImpl&) = delete;
+
   ~BluetoothAgentServiceProviderImpl() override {
     DVLOG(1) << "Cleaning up Bluetooth Agent: " << object_path_.value();
 
@@ -441,8 +446,6 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAgentServiceProviderImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAgentServiceProviderImpl);
 };
 
 BluetoothAgentServiceProvider::BluetoothAgentServiceProvider() = default;

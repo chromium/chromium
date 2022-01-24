@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_MULTIDEVICE_DEBUG_WEBUI_PROXIMITY_AUTH_UI_H_
 #define CHROMEOS_COMPONENTS_MULTIDEVICE_DEBUG_WEBUI_PROXIMITY_AUTH_UI_H_
 
-#include "base/macros.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -16,10 +15,6 @@ namespace chromeos {
 namespace device_sync {
 class DeviceSyncClient;
 }  // namespace device_sync
-
-namespace secure_channel {
-class SecureChannelClient;
-}  // namespace secure_channel
 
 namespace multidevice {
 
@@ -33,8 +28,11 @@ class ProximityAuthUI : public ui::MojoWebUIController {
   // instance.
   ProximityAuthUI(content::WebUI* web_ui,
                   device_sync::DeviceSyncClient* device_sync_client,
-                  secure_channel::SecureChannelClient* secure_channel_client,
                   MultiDeviceSetupBinder multidevice_setup_binder);
+
+  ProximityAuthUI(const ProximityAuthUI&) = delete;
+  ProximityAuthUI& operator=(const ProximityAuthUI&) = delete;
+
   ~ProximityAuthUI() override;
 
   // Instantiates implementor of the mojom::MultiDeviceSetup mojo interface
@@ -47,8 +45,6 @@ class ProximityAuthUI : public ui::MojoWebUIController {
   const MultiDeviceSetupBinder multidevice_setup_binder_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthUI);
 };
 
 }  // namespace multidevice

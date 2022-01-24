@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -19,9 +20,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -36,7 +37,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/autotest_desks_api.h"
-#include "ash/public/cpp/desks_helper.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
 #endif
 
 #if defined(USE_AURA)
@@ -209,7 +210,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
     int workspace = browser->window()->GetNativeWindow()->GetProperty(
         aura::client::kWindowWorkspaceKey);
     ASSERT_EQ(desk_index,
-              workspace == aura::client::kUnassignedWorkspace ? 0 : workspace);
+              workspace == aura::client::kWindowWorkspaceUnassignedWorkspace
+                  ? 0
+                  : workspace);
   }
 
   RemoveInactiveDesks();
@@ -234,9 +237,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
   auto* visible_on_all_desks_window =
       visible_on_all_desks_browser->window()->GetNativeWindow();
   ASSERT_TRUE(visible_on_all_desks_window->GetProperty(
-      aura::client::kVisibleOnAllWorkspacesKey));
-  ASSERT_TRUE(ash::DesksHelper::Get()->BelongsToActiveDesk(
-      visible_on_all_desks_window));
+                  aura::client::kWindowWorkspaceKey) ==
+              aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
+  ASSERT_TRUE(chromeos::DesksHelper::Get(visible_on_all_desks_window)
+                  ->BelongsToActiveDesk(visible_on_all_desks_window));
 
   // Check that there are two browsers, the default one and the visible on all
   // desks browser.
@@ -259,11 +263,12 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
   auto* visible_on_all_desks_window =
       visible_on_all_desks_browser->window()->GetNativeWindow();
   ASSERT_TRUE(visible_on_all_desks_window->GetProperty(
-      aura::client::kVisibleOnAllWorkspacesKey));
+                  aura::client::kWindowWorkspaceKey) ==
+              aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
   // Visible on all desks windows should always reside on the active desk,
   // even if there is a desk switch.
-  ASSERT_TRUE(ash::DesksHelper::Get()->BelongsToActiveDesk(
-      visible_on_all_desks_window));
+  ASSERT_TRUE(chromeos::DesksHelper::Get(visible_on_all_desks_window)
+                  ->BelongsToActiveDesk(visible_on_all_desks_window));
 
   RemoveInactiveDesks();
 }
@@ -376,7 +381,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMaximized) {
   TurnOnSessionRestore();
 }
 
-IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreMaximized) {
+// https://crbug.com/1216209
+IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMaximized) {
   size_t total_count = 0;
   size_t app1_maximized_count = 0;
   size_t app2_maximized_count = 0;
@@ -413,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMinimized) {
   TurnOnSessionRestore();
 }
 
-IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreMinimized) {
+// https://crbug.com/1216209
+IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMinimized) {
   size_t total_count = 0;
   size_t minimized_count = 0;
   for (auto* browser : *BrowserList::GetInstance()) {

@@ -95,6 +95,9 @@ class SSLPlatformKeyAndroid : public ThreadedSSLPrivateKey::Delegate {
     }
   }
 
+  SSLPlatformKeyAndroid(const SSLPlatformKeyAndroid&) = delete;
+  SSLPlatformKeyAndroid& operator=(const SSLPlatformKeyAndroid&) = delete;
+
   ~SSLPlatformKeyAndroid() override {}
 
   std::string GetProviderName() override { return provider_name_; }
@@ -177,8 +180,6 @@ class SSLPlatformKeyAndroid : public ThreadedSSLPrivateKey::Delegate {
   std::string provider_name_;
   std::vector<uint16_t> preferences_;
   base::flat_set<uint16_t> use_pss_fallback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLPlatformKeyAndroid);
 };
 
 }  // namespace

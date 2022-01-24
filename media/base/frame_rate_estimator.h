@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_FRAME_RATE_ESTIMATOR_H_
 #define MEDIA_BASE_FRAME_RATE_ESTIMATOR_H_
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/moving_average.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

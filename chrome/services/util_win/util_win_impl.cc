@@ -36,6 +36,9 @@ class IsPinnedToTaskbarHelper {
  public:
   IsPinnedToTaskbarHelper() = default;
 
+  IsPinnedToTaskbarHelper(const IsPinnedToTaskbarHelper&) = delete;
+  IsPinnedToTaskbarHelper& operator=(const IsPinnedToTaskbarHelper&) = delete;
+
   // Returns true if the current executable is pinned to the taskbar. If
   // [check_verbs] is true we check that the unpin from taskbar verb exists for
   // the shortcut.
@@ -67,8 +70,6 @@ class IsPinnedToTaskbarHelper {
 
   bool error_occured_ = false;
   base::win::ScopedCOMInitializer scoped_com_initializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(IsPinnedToTaskbarHelper);
 };
 
 std::wstring IsPinnedToTaskbarHelper::LoadShellResourceString(
@@ -241,6 +242,15 @@ void UtilWinImpl::IsPinnedToTaskbar(IsPinnedToTaskbarCallback callback) {
   bool is_pinned_to_taskbar_verb_check = helper.GetResult(true);
   std::move(callback).Run(!helper.error_occured(), is_pinned_to_taskbar,
                           is_pinned_to_taskbar_verb_check);
+}
+
+void UtilWinImpl::UnpinShortcuts(
+    const std::vector<base::FilePath>& shortcut_paths,
+    UnpinShortcutsCallback callback) {
+  for (const auto& shortcut_path : shortcut_paths)
+    base::win::UnpinShortcutFromTaskbar(shortcut_path);
+
+  std::move(callback).Run();
 }
 
 void UtilWinImpl::CallExecuteSelectFile(

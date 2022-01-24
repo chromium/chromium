@@ -23,7 +23,7 @@
 #include "net/dns/public/secure_dns_mode.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace net {
+namespace ash {
 
 SecureDnsManager::SecureDnsManager(PrefService* pref_service) {
   registrar_.Init(pref_service);
@@ -51,7 +51,7 @@ void SecureDnsManager::LoadProviders() {
     std::vector<std::string> ip_addrs;
     std::transform(provider->ip_addresses.begin(), provider->ip_addresses.end(),
                    std::back_inserter(ip_addrs),
-                   [](const IPAddress& addr) { return addr.ToString(); });
+                   [](const net::IPAddress& addr) { return addr.ToString(); });
     local_doh_providers_[provider->dns_over_https_template] =
         base::JoinString(ip_addrs, ",");
   }
@@ -96,4 +96,4 @@ void SecureDnsManager::OnPrefChanged() {
       ->SetManagerProperty(shill::kDNSProxyDOHProvidersProperty, doh_providers);
 }
 
-}  // namespace net
+}  // namespace ash

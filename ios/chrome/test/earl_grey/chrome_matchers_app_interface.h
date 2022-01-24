@@ -199,10 +199,6 @@
 // Returns matcher for the "Done" button in the settings' navigation bar.
 + (id<GREYMatcher>)settingsDoneButton;
 
-// Returns matcher for the "Confirm" button in the Sync and Google services
-// settings' navigation bar.
-+ (id<GREYMatcher>)syncSettingsConfirmButton;
-
 // Returns matcher for the Autofill Credit Card "Payment Methods" edit view.
 + (id<GREYMatcher>)autofillCreditCardEditTableView;
 
@@ -269,15 +265,16 @@
 // Returns matcher for the privacy table view.
 + (id<GREYMatcher>)settingsPrivacyTableView;
 
-// Returns matcher for the menu button to sync accounts.
-+ (id<GREYMatcher>)accountsSyncButton;
-
 // Returns matcher for the Content Settings button on the main Settings screen.
 + (id<GREYMatcher>)contentSettingsButton;
 
 // Returns matcher for the Google Services Settings button on the main Settings
 // screen.
 + (id<GREYMatcher>)googleServicesSettingsButton;
+
+// Returns matcher for the Manage Sync Settings button on the main Settings
+// screen.
++ (id<GREYMatcher>)manageSyncSettingsButton;
 
 // Returns matcher for the Google Services Settings view.
 + (id<GREYMatcher>)googleServicesSettingsView;
@@ -583,6 +580,9 @@
 // Returns a matcher for the button to open the context menu for edit actions.
 + (id<GREYMatcher>)tabGridEditButton;
 
+// Returns a matcher for the context menu button to close all tabs.
++ (id<GREYMatcher>)tabGridEditMenuCloseAllButton;
+
 // Returns a matcher for the context menu button to enter the tab grid tab
 // selection mode.
 + (id<GREYMatcher>)tabGridSelectTabsMenuButton;
@@ -595,6 +595,9 @@
 
 // Returns a matcher for the button to select all tabs.
 + (id<GREYMatcher>)tabGridEditSelectAllButton;
+
+// Returns a matcher for the button to share tabs.
++ (id<GREYMatcher>)tabGridEditShareButton;
 
 @end
 

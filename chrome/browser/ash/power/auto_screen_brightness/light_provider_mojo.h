@@ -81,6 +81,12 @@ class LightProviderMojo
   void OnSensorServiceDisconnect();
   void ResetSensorService();
 
+  // Called when an in-use device is unplugged, and we need to search for other
+  // devices to use.
+  // Assumes that the angle device won't be unplugged.
+  void ResetStates();
+  void QueryDevices();
+
   // Callback of GetDeviceIds(LIGHT), containing all iio_device_ids of light
   // sensors.
   void GetLightIdsCallback(const std::vector<int32_t>& light_ids);
@@ -99,7 +105,9 @@ class LightProviderMojo
 
   mojo::Remote<chromeos::sensors::mojom::SensorDevice> GetSensorDeviceRemote(
       int32_t id);
-  void OnLightRemoteDisconnect(int32_t id);
+  void OnLightRemoteDisconnect(int32_t id,
+                               uint32_t custom_reason_code,
+                               const std::string& description);
 
   void DetermineLightSensor(int32_t id);
   void SetupLightSamplesObserver();
@@ -123,6 +131,7 @@ class LightProviderMojo
   // remote.
   std::map<int32_t, LightData> lights_;
 
+  bool als_init_status_set_ = false;
   // The device id of light to be used.
   absl::optional<int32_t> light_device_id_;
 

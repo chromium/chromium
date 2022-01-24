@@ -10,15 +10,15 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/password_manager/core/browser/login_database.h"
+#include "components/password_manager/core/browser/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
-#include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/web_view/internal/app/application_context.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
@@ -31,7 +31,7 @@
 namespace ios_web_view {
 
 // static
-scoped_refptr<password_manager::PasswordStore>
+scoped_refptr<password_manager::PasswordStoreInterface>
 WebViewPasswordStoreFactory::GetForBrowserState(
     WebViewBrowserState* browser_state,
     ServiceAccessType access_type) {
@@ -42,8 +42,9 @@ WebViewPasswordStoreFactory::GetForBrowserState(
       browser_state->IsOffTheRecord()) {
     return nullptr;
   }
-  return base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
+  return base::WrapRefCounted(
+      static_cast<password_manager::PasswordStoreInterface*>(
+          GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
 }
 
 // static
@@ -78,8 +79,10 @@ WebViewPasswordStoreFactory::BuildServiceInstanceFor(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
   scoped_refptr<password_manager::PasswordStore> store =
-      new password_manager::PasswordStoreImpl(std::move(login_db));
-  if (!store->Init(nullptr)) {
+      new password_manager::PasswordStore(
+          std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
+              std::move(login_db)));
+  if (!store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr)) {
     // TODO(crbug.com/479725): Remove the LOG once this error is visible in the
     // UI.
     LOG(WARNING) << "Could not initialize password store.";

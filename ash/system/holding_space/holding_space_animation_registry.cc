@@ -13,7 +13,6 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_progress_ring_animation.h"
-#include "ash/system/holding_space/holding_space_progress_ring_indeterminate_animation.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_map.h"
 #include "base/memory/ptr_util.h"
@@ -83,7 +82,8 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
   // NOTE: This may return `nullptr` if no such animation is registered.
   HoldingSpaceProgressRingAnimation* GetAnimationForKey(const void* key) {
     auto it = animations_by_key_.find(key);
-    return it != animations_by_key_.end() ? it->second.get() : nullptr;
+    return it != animations_by_key_.end() ? it->second.animation.get()
+                                          : nullptr;
   }
 
  private:
@@ -91,33 +91,50 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
   void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override {
     model_ = model;
     model_observation_.Observe(model_);
-    UpdateAnimations();
+    UpdateAnimations(/*for_removal=*/false);
   }
 
   void OnHoldingSpaceModelDetached(HoldingSpaceModel* model) override {
     model_ = nullptr;
     model_observation_.Reset();
-    UpdateAnimations();
+    UpdateAnimations(/*for_removal=*/false);
   }
 
   // HoldingSpaceModelObserver:
   void OnHoldingSpaceItemsAdded(
       const std::vector<const HoldingSpaceItem*>& items) override {
-    UpdateAnimations();
+    UpdateAnimations(/*for_removal=*/false);
   }
 
   void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) override {
-    UpdateAnimations();
+    // The removal of `items` can be safely ignored if none were in progress.
+    const bool removed_in_progress_item = std::any_of(
+        items.begin(), items.end(), [](const HoldingSpaceItem* item) {
+          return item->IsInitialized() && !item->progress().IsComplete();
+        });
+    if (removed_in_progress_item)
+      UpdateAnimations(/*for_removal=*/true);
   }
 
   void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override {
-    UpdateAnimations();
+    UpdateAnimations(/*for_removal=*/false);
   }
 
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
                                  uint32_t updated_fields) override {
-    UpdateAnimations();
+    // The `item` update can be safely ignored if progress has not been updated.
+    if (!(updated_fields & HoldingSpaceModelObserver::UpdatedField::kProgress))
+      return;
+
+    // If `item` has just progressed to completion, ensure that a pulse
+    // animation is created and started.
+    if (item->progress().IsComplete()) {
+      EnsureAnimationOfTypeForKey(
+          item, HoldingSpaceProgressRingAnimation::Type::kPulse);
+    }
+
+    UpdateAnimations(/*for_removal=*/false);
   }
 
   // Erases all animations, notifying any animation changed callbacks.
@@ -154,6 +171,16 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
       EraseAnimationForKey(key);
   }
 
+  // Erases the animation for the specified `key` if it is not of the desired
+  // `type`, notifying any animation changed callbacks.
+  void EraseAnimationIfNotOfTypeForKey(
+      const void* key,
+      HoldingSpaceProgressRingAnimation::Type type) {
+    auto it = animations_by_key_.find(key);
+    if (it != animations_by_key_.end() && it->second.animation->type() != type)
+      EraseAnimationForKey(key);
+  }
+
   // Erases the animation callback list for the specified `key` if it is empty.
   void EraseAnimationChangedCallbackListForKeyIfEmpty(const void* key) {
     auto it = animation_changed_callback_lists_by_key_.find(key);
@@ -161,6 +188,33 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
       return;
     if (it->second.empty())
       animation_changed_callback_lists_by_key_.erase(it);
+  }
+
+  // Ensures that the animation for the specified `key` is of the desired
+  // `type`. If necessary, a new animation is created and started, notifying any
+  // animation changed callbacks.
+  void EnsureAnimationOfTypeForKey(
+      const void* key,
+      HoldingSpaceProgressRingAnimation::Type type) {
+    auto it = animations_by_key_.find(key);
+    if (it != animations_by_key_.end() && it->second.animation->type() == type)
+      return;
+
+    auto animation = HoldingSpaceProgressRingAnimation::CreateOfType(type);
+
+    auto subscription =
+        animation->AddAnimationUpdatedCallback(base::BindRepeating(
+            &ProgressRingAnimationDelegate::OnAnimationUpdatedForKey,
+            base::Unretained(this), key, animation.get()));
+
+    auto subscribed_animation = SubscribedProgressRingAnimation{
+        .animation = std::move(animation),
+        .subscription = std::move(subscription)};
+
+    animations_by_key_.emplace(key, std::move(subscribed_animation))
+        .first->second.animation->Start();
+
+    NotifyAnimationChangedForKey(key);
   }
 
   // Notifies any animation changed callbacks registered for the specified `key`
@@ -171,16 +225,17 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
       return;
     auto animation_it = animations_by_key_.find(key);
     it->second.Notify(animation_it != animations_by_key_.end()
-                          ? animation_it->second.get()
+                          ? animation_it->second.animation.get()
                           : nullptr);
   }
 
-  // TODO(crbug.com/1184438): Support pulse animations.
-  // Updates animation state for the current `model_` state.
-  void UpdateAnimations() {
+  // Updates animation state for the current `model_` state. If `for_removal` is
+  // `true`, the update was triggered by holding space item removal.
+  void UpdateAnimations(bool for_removal) {
     // If no `model_` is currently attached, there should be no animations.
     // Animations will be updated if and when a `model_` is attached.
     if (model_ == nullptr) {
+      cumulative_progress_ = HoldingSpaceProgress();
       EraseAllAnimations();
       return;
     }
@@ -196,23 +251,38 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
         },
         std::cref(model_->items()), base::Unretained(controller_)));
 
-    HoldingSpaceProgress cumulative_progress;
+    HoldingSpaceProgress last_cumulative_progress = cumulative_progress_;
+    cumulative_progress_ = HoldingSpaceProgress();
 
     // Iterate over each holding space item in the attached `model_`.
     for (const auto& item : model_->items()) {
-      // If an `item` is not initialized or is complete, it should neither
-      // contribute to `cumulative_progress` nor should it have an animation.
-      if (!item->IsInitialized() || item->progress().IsComplete()) {
+      // If an `item` is not initialized or is not visibly in-progress, it
+      // shouldn't contribute to `cumulative_progress_` nor have an animation.
+      if (!item->IsInitialized() || item->progress().IsHidden()) {
         EraseAnimationForKey(item.get());
         continue;
       }
 
-      cumulative_progress += item->progress();
+      // If the `item` is complete, it should be allowed to continue a pulse
+      // animation if one was previously created and started. This would only
+      // have happened in response to the `item` transitioning to completion at
+      // runtime, as items that are already complete on creation are not
+      // animated. Any other type of animation should be cleared. Note that a
+      // completed `item` does not contribute to `cumulative_progress_`.
+      if (item->progress().IsComplete()) {
+        EraseAnimationIfNotOfTypeForKey(
+            item.get(), HoldingSpaceProgressRingAnimation::Type::kPulse);
+        continue;
+      }
+
+      cumulative_progress_ += item->progress();
 
       // If the `item` is in an indeterminate state, an indeterminate animation
       // should be associated with it (if one does not already exist).
       if (item->progress().IsIndeterminate()) {
-        EnsureIndeterminateAnimationForKey(item.get());
+        EnsureAnimationOfTypeForKey(
+            item.get(),
+            HoldingSpaceProgressRingAnimation::Type::kIndeterminate);
         continue;
       }
 
@@ -221,39 +291,83 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
       EraseAnimationForKey(item.get());
     }
 
-    // If `cumulative_progress` is in an indeterminate state, an indeterminate
-    // animation should be associated with the `controller_` (if one does not
-    // already exist).
-    if (cumulative_progress.IsIndeterminate()) {
-      EnsureIndeterminateAnimationForKey(controller_);
+    if (cumulative_progress_.IsComplete()) {
+      if (!last_cumulative_progress.IsComplete()) {
+        if (for_removal) {
+          // If `cumulative_progress_` has just become complete as a result of
+          // one or more holding space items being removed, the `controller_`
+          // should not have an associated animation.
+          EraseAnimationForKey(controller_);
+        } else {
+          // If `cumulative_progress_` has just become complete and is *not* due
+          // to the removal of one or more holding space items, ensure that a
+          // pulse animation is created and started.
+          EnsureAnimationOfTypeForKey(
+              controller_, HoldingSpaceProgressRingAnimation::Type::kPulse);
+        }
+      } else {
+        // If `cumulative_progress_` was already complete, it should be allowed
+        // to continue a pulse animation if one was previously created and
+        // started. Any other type of animation should be cleared.
+        EraseAnimationIfNotOfTypeForKey(
+            controller_, HoldingSpaceProgressRingAnimation::Type::kPulse);
+      }
       return;
     }
 
-    // If `cumulative_progress` is not in an indeterminate state, the
+    // If `cumulative_progress_` is in an indeterminate state, an indeterminate
+    // animation should be associated with the `controller_` (if one does not
+    // already exist).
+    if (cumulative_progress_.IsIndeterminate()) {
+      EnsureAnimationOfTypeForKey(
+          controller_, HoldingSpaceProgressRingAnimation::Type::kIndeterminate);
+      return;
+    }
+
+    // If `cumulative_progress_` is not in an indeterminate state, the
     // `controller_` should not have an associated animation.
     EraseAnimationForKey(controller_);
   }
 
-  void EnsureIndeterminateAnimationForKey(const void* key) {
-    if (base::Contains(animations_by_key_, key))
+  // Invoked when the specified `animation` for the specified `key` has been
+  // updated. This is used to clean up finished animations.
+  void OnAnimationUpdatedForKey(const void* key,
+                                HoldingSpaceProgressRingAnimation* animation) {
+    if (animation->IsAnimating())
       return;
-
-    animations_by_key_[key] =
-        std::make_unique<HoldingSpaceProgressRingIndeterminateAnimation>();
-    animations_by_key_[key]->Start();
-
-    NotifyAnimationChangedForKey(key);
+    // Once `animation` has finished, it can be removed from the registry. Note
+    // that this needs to be posted as it is illegal to delete `animation` from
+    // its update callback sequence.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](const base::WeakPtr<ProgressRingAnimationDelegate>& delegate,
+               const void* key, HoldingSpaceProgressRingAnimation* animation) {
+              if (delegate && delegate->GetAnimationForKey(key) == animation)
+                delegate->EraseAnimationForKey(key);
+            },
+            weak_factory_.GetWeakPtr(), key, animation));
   }
 
   HoldingSpaceController* const controller_;
   HoldingSpaceModel* model_ = nullptr;
 
+  // The cumulative progress for the attached `model_`, calculated and cached
+  // with each call to `UpdateAnimations()`. This is used to determine when
+  // cumulative progress changes from an incomplete to a completed state, at
+  // which time a pulse animation is created and started.
+  HoldingSpaceProgress cumulative_progress_;
+
+  struct SubscribedProgressRingAnimation {
+    std::unique_ptr<HoldingSpaceProgressRingAnimation> animation;
+    base::RepeatingClosureList::Subscription subscription;
+  };
+
   // Mapping of keys to their associated progress ring animations. For
   // cumulative progress, the animation is keyed on a pointer to the holding
   // space `controller_`. For individual item progress, the animation is keyed
   // on a pointer to the holding space item itself.
-  std::map<const void*, std::unique_ptr<HoldingSpaceProgressRingAnimation>>
-      animations_by_key_;
+  std::map<const void*, SubscribedProgressRingAnimation> animations_by_key_;
 
   // Mapping of keys to their associated animation changed callback lists.
   // Whenever an animation for a given key is changed, the callback list for
@@ -267,6 +381,8 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
 
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       model_observation_{this};
+
+  base::WeakPtrFactory<ProgressRingAnimationDelegate> weak_factory_{this};
 };
 
 // HoldingSpaceAnimationRegistry -----------------------------------------------

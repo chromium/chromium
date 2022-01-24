@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_CONTEXT_H_
 
+#include <utility>
+
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/style_recalc.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
@@ -18,7 +21,6 @@ namespace blink {
 
 class Document;
 class Element;
-class StyleRecalcChange;
 
 enum class DisplayLockActivationReason {
   // Accessibility driven activation
@@ -67,14 +69,7 @@ class CORE_EXPORT DisplayLockContext final
     : public GarbageCollected<DisplayLockContext>,
       public LocalFrameView::LifecycleNotificationObserver {
  public:
-  // The type of style that was blocked by this display lock.
-  enum StyleType {
-    kStyleUpdateNotRequired,
-    kStyleUpdateSelf,
-    kStyleUpdatePseudoElements,
-    kStyleUpdateChildren,
-    kStyleUpdateDescendants
-  };
+  enum class ForcedPhase { kStyleAndLayoutTree, kLayout, kPrePaint };
 
   explicit DisplayLockContext(Element*);
   ~DisplayLockContext() = default;
@@ -99,9 +94,9 @@ class CORE_EXPORT DisplayLockContext final
   bool ShouldPaintChildren() const;
 
   // Returns true if the last style recalc traversal was blocked at this
-  // element, either for itself, its children or its descendants.
-  bool StyleTraversalWasBlocked() {
-    return blocked_style_traversal_type_ != kStyleUpdateNotRequired;
+  // element.
+  bool StyleTraversalWasBlocked() const {
+    return !blocked_child_recalc_change_.IsEmpty();
   }
 
   // Returns true if the contents of the associated element should be visible
@@ -125,27 +120,27 @@ class CORE_EXPORT DisplayLockContext final
 
   EContentVisibility GetState() { return state_; }
 
-  bool UpdateForced() const { return update_forced_; }
-
   // This is called when the element with which this context is associated is
   // moved to a new document. Used to listen to the lifecycle update from the
   // right document's view.
   void DidMoveToNewDocument(Document& old_document);
-
-  void AddToWhitespaceReattachSet(Element& element);
 
   // LifecycleNotificationObserver overrides.
   void WillStartLifecycleUpdate(const LocalFrameView&) override;
 
   // Inform the display lock that it prevented a style change. This is used to
   // invalidate style when we need to update it in the future.
-  void NotifyStyleRecalcWasBlocked(StyleType type) {
-    blocked_style_traversal_type_ =
-        std::max(blocked_style_traversal_type_, type);
+  void NotifyChildStyleRecalcWasBlocked(const StyleRecalcChange& change) {
+    blocked_child_recalc_change_ = blocked_child_recalc_change_.Combine(change);
+  }
+
+  StyleRecalcChange TakeBlockedStyleRecalcChange() {
+    return std::exchange(blocked_child_recalc_change_, StyleRecalcChange());
   }
 
   void NotifyReattachLayoutTreeWasBlocked() {
-    reattach_layout_tree_was_blocked_ = true;
+    blocked_child_recalc_change_ =
+        blocked_child_recalc_change_.ForceReattachLayoutTree();
   }
 
   void NotifyChildLayoutWasBlocked() { child_layout_was_blocked_ = true; }
@@ -173,6 +168,8 @@ class CORE_EXPORT DisplayLockContext final
   void ElementDisconnected();
   void ElementConnected();
 
+  void DetachLayoutTree();
+
   void NotifySubtreeLostFocus();
   void NotifySubtreeGainedFocus();
 
@@ -188,12 +185,6 @@ class CORE_EXPORT DisplayLockContext final
         needs_blocking_wheel_event_handler_update;
     needs_prepaint_subtree_walk_ = true;
   }
-
-  // This is called by the style recalc code in lieu of
-  // MarkForStyleRecalcIfNeeded() in order to adjust the child change if we need
-  // to recalc children nodes here.
-  StyleRecalcChange AdjustStyleRecalcChangeForChildren(
-      StyleRecalcChange change);
 
   void DidForceActivatableDisplayLocks() {
     if (IsLocked() && IsActivatable(DisplayLockActivationReason::kAny)) {
@@ -220,6 +211,22 @@ class CORE_EXPORT DisplayLockContext final
   // We unlock auto locks for printing, which is set here.
   void SetShouldUnlockAutoForPrint(bool);
 
+  void SetIsHiddenUntilFoundElement(bool is_hidden_until_found) {
+    is_hidden_until_found_ = is_hidden_until_found;
+  }
+
+  void SetIsDetailsSlotElement(bool is_details_slot) {
+    is_details_slot_ = is_details_slot;
+  }
+
+  bool HasElement() const { return element_; }
+
+  // Top layer implementation.
+  void NotifyHasTopLayerElement();
+  void ClearHasTopLayerElement();
+
+  void ScheduleTopLayerCheck();
+
  private:
   // Give access to |NotifyForcedUpdateScopeStarted()| and
   // |NotifyForcedUpdateScopeEnded()|.
@@ -238,8 +245,8 @@ class CORE_EXPORT DisplayLockContext final
   void RequestUnlock();
 
   // Called in |DisplayLockUtilities| to notify the state of scope.
-  void NotifyForcedUpdateScopeStarted();
-  void NotifyForcedUpdateScopeEnded();
+  void NotifyForcedUpdateScopeStarted(ForcedPhase phase);
+  void NotifyForcedUpdateScopeEnded(ForcedPhase phase);
 
   // Records the locked context counts on the document as well as context that
   // block all activation.
@@ -253,10 +260,6 @@ class CORE_EXPORT DisplayLockContext final
 
   // Clear the activated flag.
   void ResetActivation();
-
-  // Marks ancestors of elements in |whitespace_reattach_set_| with
-  // ChildNeedsReattachLayoutTree and clears the set.
-  void MarkElementsForWhitespaceReattachment();
 
   // The following functions propagate dirty bits from the locked element up to
   // the ancestors in order to be reached, and update dirty bits for the element
@@ -319,6 +322,13 @@ class CORE_EXPORT DisplayLockContext final
   // selected notes up to its root looking for `element_`.
   void DetermineIfSubtreeHasSelection();
 
+  // Determines if the subtree has a top layer element. This is a walk from each
+  // top layer node up the ancestor chain looking for `element_`.
+  void DetermineIfSubtreeHasTopLayerElement();
+
+  // Detaching the layout tree from the top layers nested under this lock.
+  void DetachDescendantTopLayerElements();
+
   // Keep this context unlocked until the beginning of lifecycle. Effectively
   // keeps this context unlocked for the next `count` frames. It also schedules
   // a frame to ensure the lifecycle happens. Only affects locks with 'auto'
@@ -338,27 +348,67 @@ class CORE_EXPORT DisplayLockContext final
   void RestoreScrollOffsetIfStashed();
   bool HasStashedScrollOffset() const;
 
+  bool SubtreeHasTopLayerElement() const;
+
   WeakMember<Element> element_;
   WeakMember<Document> document_;
   EContentVisibility state_ = EContentVisibility::kVisible;
 
-  // See StyleEngine's |whitespace_reattach_set_|.
-  // Set of elements that had at least one rendered children removed
-  // since its last lifecycle update. For such elements that are located
-  // in a locked subtree, we save it here instead of the global set in
-  // StyleEngine because we don't want to accidentally mark elements
-  // in a locked subtree for layout tree reattachment before we did
-  // style recalc on them.
-  HeapHashSet<Member<Element>> whitespace_reattach_set_;
+  // A struct to keep track of forced unlocks, and reasons for it.
+  struct UpdateForcedInfo {
+    bool is_forced(ForcedPhase phase) const {
+      switch (phase) {
+        case ForcedPhase::kStyleAndLayoutTree:
+          return style_update_forced_ || layout_update_forced_ ||
+                 prepaint_update_forced_;
+        case ForcedPhase::kLayout:
+          return layout_update_forced_ || prepaint_update_forced_;
+        case ForcedPhase::kPrePaint:
+          return prepaint_update_forced_;
+      }
+    }
 
-  // If non-zero, then the update has been forced.
-  int update_forced_ = 0;
+    void start(ForcedPhase phase) {
+      switch (phase) {
+        case ForcedPhase::kStyleAndLayoutTree:
+          ++style_update_forced_;
+          break;
+        case ForcedPhase::kLayout:
+          ++layout_update_forced_;
+          break;
+        case ForcedPhase::kPrePaint:
+          ++prepaint_update_forced_;
+      }
+    }
 
-  StyleType blocked_style_traversal_type_ = kStyleUpdateNotRequired;
-  // Signifies whether we've blocked a layout tree reattachment on |element_|'s
-  // descendants or not, so that we can mark |element_| for reattachment when
-  // needed.
-  bool reattach_layout_tree_was_blocked_ = false;
+    void end(ForcedPhase phase) {
+      switch (phase) {
+        case ForcedPhase::kStyleAndLayoutTree:
+          DCHECK(style_update_forced_);
+          --style_update_forced_;
+          break;
+        case ForcedPhase::kLayout:
+          DCHECK(layout_update_forced_);
+          --layout_update_forced_;
+          break;
+        case ForcedPhase::kPrePaint:
+          DCHECK(prepaint_update_forced_);
+          --prepaint_update_forced_;
+      }
+    }
+
+   private:
+    // Each of the forced modes includes forcing phases before. For instance,
+    // layout_update_forced_ == 1 would also ensure that style and layout tree
+    // are up to date.
+    int style_update_forced_ = 0;
+    int layout_update_forced_ = 0;
+    int prepaint_update_forced_ = 0;
+  };
+
+  UpdateForcedInfo forced_info_;
+
+  StyleRecalcChange blocked_child_recalc_change_;
 
   bool needs_effective_allowed_touch_action_update_ = false;
   bool needs_blocking_wheel_event_handler_update_ = false;
@@ -412,6 +462,7 @@ class CORE_EXPORT DisplayLockContext final
     kSubtreeHasSelection,
     kAutoStateUnlockedUntilLifecycle,
     kAutoUnlockedForPrint,
+    kSubtreeHasTopLayerElement,
     kNumRenderAffectingStates
   };
   void SetRenderAffectingState(RenderAffectingState state, bool flag);
@@ -431,6 +482,28 @@ class CORE_EXPORT DisplayLockContext final
   bool set_requested_state_scope_ = false;
 
   absl::optional<ScrollOffset> stashed_scroll_offset_;
+
+  // When we use content-visibility:hidden for the <details> element's content
+  // slot or the hidden=until-found attribute, then this lock must activate
+  // during find-in-page.
+  bool is_details_slot_ = false;
+
+  // When an element has the hidden=until-found attribute, it gets the a
+  // presentational style of content-visibility:hidden, and we also want to
+  // activate this lock during find-in-page.
+  bool is_hidden_until_found_ = false;
+
+  // If we have pending subtree checks, it means we should check for selection
+  // and focus at the start of the next frame.
+  bool has_pending_subtree_checks_ = false;
+
+  // If true, we need to clear the fact that we have a top layer at the start of
+  // the next frame.
+  bool has_pending_clear_has_top_layer_ = false;
+
+  // If ture, we need to check if this subtree has any top layer elements at the
+  // start of the next frame.
+  bool has_pending_top_layer_check_ = false;
 };
 
 }  // namespace blink

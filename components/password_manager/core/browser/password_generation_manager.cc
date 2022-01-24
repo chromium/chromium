@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/time/default_clock.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -199,7 +198,7 @@ const PasswordForm* FindUsernameConflict(
 
 PasswordGenerationManager::PasswordGenerationManager(
     PasswordManagerClient* client)
-    : client_(client), clock_(new base::DefaultClock) {}
+    : client_(client) {}
 
 PasswordGenerationManager::~PasswordGenerationManager() = default;
 
@@ -243,7 +242,7 @@ void PasswordGenerationManager::PresaveGeneratedPassword(
   // the same username in order to prevent overwriting.
   if (FindUsernameConflict(generated, matches))
     generated.username_value.clear();
-  generated.date_created = clock_->Now();
+  generated.date_created = base::Time::Now();
   if (presaved_) {
     form_saver->UpdateReplace(generated, {} /* matches */,
                               std::u16string() /* old_password */,
@@ -268,8 +267,8 @@ void PasswordGenerationManager::CommitGeneratedPassword(
     const std::u16string& old_password,
     FormSaver* form_saver) {
   DCHECK(presaved_);
-  generated.date_last_used = clock_->Now();
-  generated.date_created = clock_->Now();
+  generated.date_last_used = base::Time::Now();
+  generated.date_created = base::Time::Now();
   form_saver->UpdateReplace(generated, matches, old_password,
                             presaved_.value() /* old_primary_key */);
 }

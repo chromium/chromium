@@ -12,7 +12,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/cast/common/frame_id.h"
 

@@ -22,21 +22,15 @@
 
     <!--  Distilled Page Prefs colors -->
     <color name="distilled_page_prefs_selected">#999999</color>
-    <color name="distilled_page_prefs_unselected">@color/popup_bg_color</color>
+    <color name="distilled_page_prefs_unselected">@color/dialog_bg_color</color>
 
     <!-- Data Saver Colors -->
     <color name="data_reduction_compressed_color">#E1E1E1</color>
     <color name="data_reduction_original_color">@color/default_control_color_active</color>
     <color name="data_reduction_chart_background_color">@color/default_bg_color_secondary</color>
 
-    <!-- Compositor Tab Colors -->
-    <color name="compositor_background_tab_bg">@color/modern_grey_300</color>
-    <color name="compositor_background_tab_bg_incognito">@color/modern_grey_900</color>
-    <color name="compositor_background_tab_outline">#ACB1B6</color>
-    <color name="compositor_background_tab_outline_incognito">@android:color/black</color>
-
     <!-- Compositor Tab Title Colors -->
-    <color name="compositor_tab_title_bar_text">@color/default_text_color</color>
+    <color name="compositor_tab_title_bar_text">@color/default_text_color_list</color>
     <color name="compositor_tab_title_bar_text_incognito">@android:color/white</color>
 
     <!-- Account Signin Colors -->
@@ -49,7 +43,7 @@
     <color name="signin_header_animation_laptop_screen">#F4F4F4</color>
 
     <!-- NTP and Home sheet colors. Also used on the bookmarks and recent tabs pages. -->
-    <color name="ntp_bg_incognito">@color/default_bg_color_dark_elev_3</color>
+    <color name="ntp_bg_incognito">@color/default_bg_color_dark</color>
     <color name="suggestions_modern_bg">@color/default_bg_color</color>
     <color name="google_logo_tint">@android:color/transparent</color>
 
@@ -57,12 +51,11 @@
     <color name="incognito_emphasis">@android:color/white</color>
 
     <!-- Overlay Panel colors -->
-    <color name="overlay_panel_bar_background_color">@color/default_bg_color_elev_4</color>
-    <color name="overlay_panel_separator_line_color">@color/default_bg_color_secondary</color>
+    <color name="overlay_panel_bar_background_color">@color/default_bg_color</color>
+    <color name="overlay_panel_separator_line_color">@color/divider_line_bg_color</color>
 
     <!-- Contextual Search colors -->
     <color name="contextual_search_promo_background_color">@color/default_bg_color_elev_0</color>
-    <color name="contextual_search_promo_border_color">#C2C2C2</color>
 
     <!-- Find in Page colors -->
     <color name="find_in_page_query_white_color">@android:color/white</color>
@@ -99,7 +92,7 @@
     <color name="media_viewer_bg">#000000</color>
     <color name="image_viewer_bg">#0E0E0E</color>
     <color name="thumbnail_placeholder_on_primary_bg" tools:ignore="UnusedResources">@color/default_bg_color_secondary</color>
-    <color name="tab_layout_selected_tab_color">@color/default_text_color_blue</color>
+    <macro name="tab_layout_selected_tab_color">@macro/default_text_color_accent1</macro>
     <color name="web_notification_text">#CCCCCC</color>
 
 </resources>

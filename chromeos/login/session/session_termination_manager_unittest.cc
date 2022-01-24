@@ -4,7 +4,6 @@
 
 #include "chromeos/login/session/session_termination_manager.h"
 
-#include "base/macros.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
@@ -20,6 +19,11 @@ class SessionTerminationManagerTest : public testing::Test {
     CryptohomeMiscClient::InitializeFake();
     SessionManagerClient::InitializeFake();
   }
+
+  SessionTerminationManagerTest(const SessionTerminationManagerTest&) = delete;
+  SessionTerminationManagerTest& operator=(
+      const SessionTerminationManagerTest&) = delete;
+
   ~SessionTerminationManagerTest() override {
     CryptohomeMiscClient::Shutdown();
     PowerManagerClient::Shutdown();
@@ -29,8 +33,6 @@ class SessionTerminationManagerTest : public testing::Test {
  protected:
   FakePowerManagerClient* power_client_;
   SessionTerminationManager session_termination_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionTerminationManagerTest);
 };
 
 // The device is not locked to single user. Check that no reboot is triggered

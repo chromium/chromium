@@ -16,6 +16,7 @@
 #include "base/task/post_task.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -187,17 +188,19 @@ String CachedStorageArea::RegisterSource(Source* source) {
 
 CachedStorageArea::CachedStorageArea(
     AreaType type,
-    scoped_refptr<const SecurityOrigin> origin,
+    const BlinkStorageKey& storage_key,
+    const LocalDOMWindow* local_dom_window,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     StorageNamespace* storage_namespace,
-    bool is_session_storage_for_prerendering)
+    bool is_session_storage_for_prerendering,
+    mojo::PendingRemote<mojom::blink::StorageArea> storage_area)
     : type_(type),
-      origin_(std::move(origin)),
+      storage_key_(storage_key),
       storage_namespace_(storage_namespace),
       is_session_storage_for_prerendering_(is_session_storage_for_prerendering),
       task_runner_(std::move(task_runner)),
       areas_(MakeGarbageCollected<HeapHashMap<WeakMember<Source>, String>>()) {
-  BindStorageArea();
+  BindStorageArea(std::move(storage_area), local_dom_window);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "DOMStorage",
       ThreadScheduler::Current()->DeprecatedDefaultTaskRunner());
@@ -208,15 +211,36 @@ CachedStorageArea::~CachedStorageArea() {
       this);
 }
 
+const LocalDOMWindow* CachedStorageArea::GetBestCurrentDOMWindow() {
+  for (auto key : areas_->Keys()) {
+    if (!key->GetDOMWindow()) {
+      continue;
+    }
+    return key->GetDOMWindow();
+  }
+  return nullptr;
+}
+
 void CachedStorageArea::BindStorageArea(
-    mojo::PendingRemote<mojom::blink::StorageArea> new_area) {
+    mojo::PendingRemote<mojom::blink::StorageArea> new_area,
+    const LocalDOMWindow* local_dom_window) {
   // Some tests may not provide a StorageNamespace.
   DCHECK(!remote_area_);
-  if (new_area) {
+  if (!local_dom_window)
+    local_dom_window = GetBestCurrentDOMWindow();
+  if (!local_dom_window) {
+    // If there isn't a local_dom_window to bind to, clear out storage areas and
+    // mutations. When EnsureLoaded is called it will attempt to re-bind.
+    map_ = nullptr;
+    pending_mutations_by_key_.clear();
+    pending_mutations_by_source_.clear();
+    return;
+  } else if (new_area) {
     remote_area_.Bind(std::move(new_area), task_runner_);
   } else if (storage_namespace_) {
     storage_namespace_->BindStorageArea(
-        origin_, remote_area_.BindNewPipeAndPassReceiver(task_runner_));
+        *local_dom_window,
+        remote_area_.BindNewPipeAndPassReceiver(task_runner_));
   } else {
     return;
   }
@@ -568,6 +592,8 @@ void CachedStorageArea::MaybeApplyNonLocalMutationForKey(
 void CachedStorageArea::EnsureLoaded() {
   if (map_)
     return;
+  if (!remote_area_)
+    BindStorageArea();
 
   // There might be something weird happening during the sync call that destroys
   // this object. Keep a reference to either fix or rule out that this is the
@@ -650,7 +676,7 @@ void CachedStorageArea::EnqueueStorageEvent(const String& key,
   }
   areas_->RemoveAll(areas_to_remove_);
   if (storage_namespace_) {
-    storage_namespace_->DidDispatchStorageEvent(origin_.get(), key, old_value,
+    storage_namespace_->DidDispatchStorageEvent(storage_key_, key, old_value,
                                                 new_value);
   }
 }

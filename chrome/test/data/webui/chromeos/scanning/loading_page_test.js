@@ -7,7 +7,7 @@ import 'chrome://scanning/loading_page.js';
 import {AppState} from 'chrome://scanning/scanning_app_types.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {isVisible} from '../../test_util.m.js';
+import {isVisible} from '../../test_util.js';
 
 export function loadingPageTest() {
   /** @type {?LoadingPageElement} */

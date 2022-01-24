@@ -6,8 +6,8 @@
 
 #include "base/i18n/rtl.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/views/view.h"
 
 namespace media_message_center {

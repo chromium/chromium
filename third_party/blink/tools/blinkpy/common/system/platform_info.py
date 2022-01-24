@@ -28,6 +28,7 @@
 
 import re
 import sys
+from six.moves import map
 
 
 class PlatformInfo(object):
@@ -58,7 +59,7 @@ class PlatformInfo(object):
                 platform_module.mac_ver()[0])
         if self.os_name.startswith('win'):
             self.os_version = self._determine_win_version(
-                self._win_version_tuple(sys_module))
+                self._win_version_tuple())
         assert sys.platform != 'cygwin', 'Cygwin is not supported.'
 
     def is_mac(self):
@@ -109,7 +110,7 @@ class PlatformInfo(object):
 
     def total_bytes_memory(self):
         if self.is_mac():
-            return long(
+            return int(
                 self._executive.run_command(['sysctl', '-n', 'hw.memsize']))
         return None
 
@@ -141,6 +142,9 @@ class PlatformInfo(object):
                 return columns
         except Exception:  # pylint: disable=broad-except
             return sys.maxsize
+
+    def get_machine(self):
+        return self._platform_module.machine()
 
     def linux_distribution(self):
         if not self.is_linux():
@@ -175,23 +179,25 @@ class PlatformInfo(object):
         minor_release = int(mac_version_string.split('.')[1])
         if major_release == 10:
             assert 10 <= minor_release <= 16, 'Unsupported mac OS version: %s' % mac_version_string
-        elif major_release == 11:
-            assert minor_release == 0, 'Unsupported mac OS version: %s' % mac_version_string
+            return 'mac{major_release}.{minor_release}'.format(
+                major_release=major_release,
+                minor_release=minor_release,
+            )
         else:
-            raise AssertionError('Unsupported mac OS version: %s' %
-                                 mac_version_string)
-
-        return 'mac{major_release}.{minor_release}'.format(
-            major_release=major_release,
-            minor_release=minor_release,
-        )
+            assert 11 <= major_release <= 11, 'Unsupported mac OS version: %s' % mac_version_string
+            return 'mac{major_release}'.format(major_release=major_release, )
 
     def _determine_linux_version(self, _):
         return 'trusty'
 
     def _determine_win_version(self, win_version_tuple):
         if win_version_tuple[:2] == (10, 0):
-            return '10'
+            # came across instances where build number was 15063.
+            # Treat those as 1909.
+            if win_version_tuple[2] > 19000:
+                return '10.20h2'
+            else:
+                return '10.1909'
         if win_version_tuple[:2] == (6, 3):
             return '8.1'
         if win_version_tuple[:2] == (6, 2):
@@ -210,9 +216,11 @@ class PlatformInfo(object):
                     (win_version_tuple, ))
         return 'future'
 
-    def _win_version_tuple(self, sys_module):
-        if hasattr(sys_module, 'getwindowsversion'):
-            return sys_module.getwindowsversion()
+    def _win_version_tuple(self):
+        version_str = self._platform_module.win32_ver()[1]
+        if version_str:
+            return tuple(map(int, version_str.split('.')))
+
         return self._win_version_tuple_from_cmd()
 
     def _win_version_tuple_from_cmd(self):

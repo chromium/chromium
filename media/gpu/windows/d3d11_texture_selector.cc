@@ -19,11 +19,13 @@ namespace media {
 TextureSelector::TextureSelector(VideoPixelFormat pixfmt,
                                  DXGI_FORMAT output_dxgifmt,
                                  ComD3D11VideoDevice video_device,
-                                 ComD3D11DeviceContext device_context)
+                                 ComD3D11DeviceContext device_context,
+                                 bool shared_image_use_shared_handle)
     : pixel_format_(pixfmt),
       output_dxgifmt_(output_dxgifmt),
       video_device_(std::move(video_device)),
-      device_context_(std::move(device_context)) {}
+      device_context_(std::move(device_context)),
+      shared_image_use_shared_handle_(shared_image_use_shared_handle) {}
 
 TextureSelector::~TextureSelector() = default;
 
@@ -47,14 +49,13 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     const FormatSupportChecker* format_checker,
     ComD3D11VideoDevice video_device,
     ComD3D11DeviceContext device_context,
-    MediaLog* media_log) {
+    MediaLog* media_log,
+    bool shared_image_use_shared_handle) {
   VideoPixelFormat output_pixel_format;
   DXGI_FORMAT output_dxgi_format;
   absl::optional<gfx::ColorSpace> output_color_space;
 
-  bool needs_texture_copy =
-      !SupportsZeroCopy(gpu_preferences, workarounds) ||
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderAlwaysCopy);
+  bool needs_texture_copy = !SupportsZeroCopy(gpu_preferences, workarounds);
 
   auto supports_fmt = [format_checker](auto fmt) {
     return format_checker->CheckOutputFormatSupport(fmt);
@@ -133,7 +134,8 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is copying textures";
     return std::make_unique<CopyTextureSelector>(
         output_pixel_format, decoder_output_format, output_dxgi_format,
-        output_color_space, std::move(video_device), std::move(device_context));
+        output_color_space, std::move(video_device), std::move(device_context),
+        shared_image_use_shared_handle);
   } else {
     MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is binding textures";
     // Binding can't change the color space. The consumer has to do it, if they
@@ -141,7 +143,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     DCHECK(!output_color_space);
     return std::make_unique<TextureSelector>(
         output_pixel_format, output_dxgi_format, std::move(video_device),
-        std::move(device_context));
+        std::move(device_context), shared_image_use_shared_handle);
   }
 }
 
@@ -150,6 +152,10 @@ std::unique_ptr<Texture2DWrapper> TextureSelector::CreateTextureWrapper(
     gfx::Size size) {
   // TODO(liberato): If the output format is rgb, then create a pbuffer wrapper.
   return std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat());
+}
+
+bool TextureSelector::DoesDecoderOutputUseSharedHandle() const {
+  return shared_image_use_shared_handle_;
 }
 
 bool TextureSelector::WillCopyForTesting() const {
@@ -162,11 +168,13 @@ CopyTextureSelector::CopyTextureSelector(
     DXGI_FORMAT output_dxgifmt,
     absl::optional<gfx::ColorSpace> output_color_space,
     ComD3D11VideoDevice video_device,
-    ComD3D11DeviceContext device_context)
+    ComD3D11DeviceContext device_context,
+    bool shared_image_use_shared_handle)
     : TextureSelector(pixfmt,
                       output_dxgifmt,
                       std::move(video_device),
-                      std::move(device_context)),
+                      std::move(device_context),
+                      shared_image_use_shared_handle),
       output_color_space_(std::move(output_color_space)),
       video_processor_proxy_(
           base::MakeRefCounted<VideoProcessorProxy>(this->video_device(),
@@ -188,6 +196,10 @@ std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
       D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
   texture_desc.Width = size.width();
   texture_desc.Height = size.height();
+  if (DoesSharedImageUseSharedHandle()) {
+    texture_desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
+                             D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+  }
 
   ComD3D11Texture2D out_texture;
   if (FAILED(device->CreateTexture2D(&texture_desc, nullptr, &out_texture)))
@@ -200,6 +212,10 @@ std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
   return std::make_unique<CopyingTexture2DWrapper>(
       size, std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat()),
       video_processor_proxy_, out_texture, output_color_space_);
+}
+
+bool CopyTextureSelector::DoesDecoderOutputUseSharedHandle() const {
+  return false;
 }
 
 bool CopyTextureSelector::WillCopyForTesting() const {

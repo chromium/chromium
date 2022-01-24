@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_control_button.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -25,6 +24,10 @@ class ASH_EXPORT BackButton : public ShelfControlButton,
   static const char kViewClassName[];
 
   explicit BackButton(Shelf* shelf);
+
+  BackButton(const BackButton&) = delete;
+  BackButton& operator=(const BackButton&) = delete;
+
   ~BackButton() override;
 
   // Called when a locale change is detected. Updates the button tooltip and
@@ -46,9 +49,6 @@ class ASH_EXPORT BackButton : public ShelfControlButton,
   void ButtonPressed(views::Button* sender,
                      const ui::Event& event,
                      views::InkDrop* ink_drop) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackButton);
 };
 
 }  // namespace ash

@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_VPX_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIARECORDER_VPX_ENCODER_H_
 
-#include "base/sequenced_task_runner.h"
+#include "base/compiler_specific.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
@@ -32,6 +33,9 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
              int32_t bits_per_second,
              scoped_refptr<base::SequencedTaskRunner> main_task_runner);
 
+  VpxEncoder(const VpxEncoder&) = delete;
+  VpxEncoder& operator=(const VpxEncoder&) = delete;
+
  private:
   // VideoTrackRecorder::Encoder implementation.
   ~VpxEncoder() override;
@@ -39,9 +43,10 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
                                   base::TimeTicks capture_timestamp) override;
   bool CanEncodeAlphaChannel() override;
 
-  void ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
-                                            vpx_codec_enc_cfg_t* codec_config,
-                                            ScopedVpxCodecCtxPtr* encoder);
+  WARN_UNUSED_RESULT bool ConfigureEncoderOnEncodingTaskRunner(
+      const gfx::Size& size,
+      vpx_codec_enc_cfg_t* codec_config,
+      ScopedVpxCodecCtxPtr* encoder);
 
   void DoEncode(vpx_codec_ctx_t* const encoder,
                 const gfx::Size& frame_size,
@@ -87,8 +92,6 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
   // used to predict the duration of the next frame. Only used on
   // VideoTrackRecorder::Encoder::encoding_thread_.
   base::TimeDelta last_frame_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(VpxEncoder);
 };
 
 }  // namespace blink

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -37,6 +36,9 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       scoped_refptr<ContextProvider> provider) {
     return base::WrapUnique(new FakeSkiaOutputSurface(std::move(provider)));
   }
+
+  FakeSkiaOutputSurface(const FakeSkiaOutputSurface&) = delete;
+  FakeSkiaOutputSurface& operator=(const FakeSkiaOutputSurface&) = delete;
 
   ~FakeSkiaOutputSurface() override;
 
@@ -107,6 +109,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
   gpu::SharedImageInterface* GetSharedImageInterface() override;
   gpu::SyncToken Flush() override;
+  void OnObservingBeginFrameSourceChanged(bool observing) override {}
 #if defined(OS_APPLE) || defined(USE_OZONE)
   SkCanvas* BeginPaintRenderPassOverlay(
       const gfx::Size& size,
@@ -186,8 +189,6 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<FakeSkiaOutputSurface> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSkiaOutputSurface);
 };
 
 }  // namespace viz

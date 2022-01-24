@@ -7,8 +7,9 @@
 #include "base/check.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -118,6 +119,11 @@
   [[_currentEditingCell textField] resignFirstResponder];
 }
 
+- (FormInputAccessoryViewTextData*)textDataforFormInputAccessoryView:
+    (FormInputAccessoryView*)sender {
+  return ChromiumAccessoryViewTextData();
+}
+
 #pragma mark - Helper methods
 
 // Returns the cell containing |textField|.
@@ -142,17 +148,19 @@
   if (!cellPath || !offset)
     return nil;
 
-  NSInteger cellSection = [cellPath section];
-  NSInteger nextCellRow = [cellPath row] + offset;
-
-  if (nextCellRow >= 0 && nextCellRow < [self.tableView
-                                            numberOfRowsInSection:cellSection])
+  const NSInteger cellSection = [cellPath section];
+  const NSInteger nextCellRow = [cellPath row] + offset;
+  if ((0 <= nextCellRow) &&
+      (nextCellRow < [self.tableView numberOfRowsInSection:cellSection])) {
     return [NSIndexPath indexPathForRow:nextCellRow inSection:cellSection];
+  }
 
-  NSInteger nextCellSection = cellSection + offset;
-  if (nextCellSection >= 0 &&
-      nextCellSection < [self.tableView numberOfSections])
+  const NSInteger nextCellSection = cellSection + offset;
+  if ((0 <= nextCellSection) &&
+      (nextCellSection < [self.tableView numberOfSections]) &&
+      ([self.tableView numberOfRowsInSection:nextCellSection] > 0)) {
     return [NSIndexPath indexPathForRow:0 inSection:nextCellSection];
+  }
 
   return nil;
 }

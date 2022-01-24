@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -20,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/arc/mojom/anr.mojom.h"
 #include "components/arc/mojom/metrics.mojom.h"
 #include "components/arc/mojom/process.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -60,6 +60,7 @@ class ArcMetricsService : public KeyedService,
    public:
     virtual void OnArcLowMemoryKill() = 0;
     virtual void OnArcOOMKillCount(unsigned long count) = 0;
+    virtual void OnArcMemoryPressureKill(int count, int estimated_freed_kb) = 0;
     virtual void OnArcMetricsServiceDestroyed() {}
   };
 
@@ -80,6 +81,10 @@ class ArcMetricsService : public KeyedService,
 
   ArcMetricsService(content::BrowserContext* context,
                     ArcBridgeService* bridge_service);
+
+  ArcMetricsService(const ArcMetricsService&) = delete;
+  ArcMetricsService& operator=(const ArcMetricsService&) = delete;
+
   ~ArcMetricsService() override;
 
   // KeyedService overrides.
@@ -102,6 +107,7 @@ class ArcMetricsService : public KeyedService,
                           mojom::BootType boot_type) override;
   void ReportNativeBridge(mojom::NativeBridgeType native_bridge_type) override;
   void ReportCompanionLibApiUsage(mojom::CompanionLibApiId api_id) override;
+  void ReportDnsQueryResult(mojom::ArcDnsQuery query, bool success) override;
   void ReportAppKill(mojom::AppKillPtr app_kill) override;
   void ReportArcCorePriAbiMigEvent(
       mojom::ArcCorePriAbiMigEvent event_type) override;
@@ -122,6 +128,13 @@ class ArcMetricsService : public KeyedService,
                                 uint32_t number_of_failures) override;
   void ReportPerAppFixupMetrics(base::TimeDelta duration,
                                 uint32_t number_of_directories) override;
+  void ReportMainAccountHashMigrationMetrics(
+      mojom::MainAccountHashMigrationStatus status) override;
+  void ReportImageCopyPasteCompatAction(
+      mojom::ArcImageCopyPasteCompatAction action_type) override;
+  void ReportArcNetworkEvent(mojom::ArcNetworkEvent event) override;
+  void ReportArcNetworkError(mojom::ArcNetworkError error) override;
+  void ReportAppPrimaryAbi(mojom::AppPrimaryAbi abi) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.
@@ -153,11 +166,19 @@ class ArcMetricsService : public KeyedService,
   absl::optional<base::TimeTicks> GetArcStartTimeFromEvents(
       std::vector<mojom::BootProgressEventPtr>& events);
 
+  // Forwards reports of app kills resulting from a MemoryPressureArcvm signal
+  // to MemoryKillsMonitor via ArcMetricsServiceProxy.
+  void ReportMemoryPressureArcVmKills(int count, int estimated_freed_kb);
+
  private:
   // Adapter to be able to also observe ProcessInstance events.
   class ProcessObserver : public ConnectionObserver<mojom::ProcessInstance> {
    public:
     explicit ProcessObserver(ArcMetricsService* arc_metrics_service);
+
+    ProcessObserver(const ProcessObserver&) = delete;
+    ProcessObserver& operator=(const ProcessObserver&) = delete;
+
     ~ProcessObserver() override;
 
    private:
@@ -166,13 +187,16 @@ class ArcMetricsService : public KeyedService,
     void OnConnectionClosed() override;
 
     ArcMetricsService* arc_metrics_service_;
-
-    DISALLOW_COPY_AND_ASSIGN(ProcessObserver);
   };
 
   class ArcBridgeServiceObserver : public arc::ArcBridgeService::Observer {
    public:
     ArcBridgeServiceObserver();
+
+    ArcBridgeServiceObserver(const ArcBridgeServiceObserver&) = delete;
+    ArcBridgeServiceObserver& operator=(const ArcBridgeServiceObserver&) =
+        delete;
+
     ~ArcBridgeServiceObserver() override;
 
     // Whether the arc bridge is in the process of closing.
@@ -182,7 +206,6 @@ class ArcMetricsService : public KeyedService,
     // arc::ArcBridgeService::Observer overrides.
     void BeforeArcBridgeClosed() override;
     void AfterArcBridgeClosed() override;
-    DISALLOW_COPY_AND_ASSIGN(ArcBridgeServiceObserver);
   };
 
   class IntentHelperObserver
@@ -190,6 +213,10 @@ class ArcMetricsService : public KeyedService,
    public:
     IntentHelperObserver(ArcMetricsService* arc_metrics_service,
                          ArcBridgeServiceObserver* arc_bridge_service_observer);
+
+    IntentHelperObserver(const IntentHelperObserver&) = delete;
+    IntentHelperObserver& operator=(const IntentHelperObserver&) = delete;
+
     ~IntentHelperObserver() override;
 
    private:
@@ -199,14 +226,16 @@ class ArcMetricsService : public KeyedService,
 
     ArcMetricsService* arc_metrics_service_;
     ArcBridgeServiceObserver* arc_bridge_service_observer_;
-
-    DISALLOW_COPY_AND_ASSIGN(IntentHelperObserver);
   };
 
   class AppLauncherObserver : public ConnectionObserver<mojom::AppInstance> {
    public:
     AppLauncherObserver(ArcMetricsService* arc_metrics_service,
                         ArcBridgeServiceObserver* arc_bridge_service_observer);
+
+    AppLauncherObserver(const AppLauncherObserver&) = delete;
+    AppLauncherObserver& operator=(const AppLauncherObserver&) = delete;
+
     ~AppLauncherObserver() override;
 
    private:
@@ -216,8 +245,6 @@ class ArcMetricsService : public KeyedService,
 
     ArcMetricsService* arc_metrics_service_;
     ArcBridgeServiceObserver* arc_bridge_service_observer_;
-
-    DISALLOW_COPY_AND_ASSIGN(AppLauncherObserver);
   };
 
   void RecordArcUserInteraction(UserInteractionType type);
@@ -265,8 +292,6 @@ class ArcMetricsService : public KeyedService,
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.
   base::WeakPtrFactory<ArcMetricsService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcMetricsService);
 };
 
 // Singleton factory for ArcMetricsService.

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -28,9 +28,8 @@ namespace {
 
 constexpr char kSamlAuthErrorMessage[] = "SAML authentication failed. ";
 
-policy::BrowserPolicyConnectorChromeOS* GetConnector() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos();
+policy::BrowserPolicyConnectorAsh* GetConnector() {
+  return g_browser_process->platform_part()->browser_policy_connector_ash();
 }
 
 policy::DeviceManagementService* GetDeviceManagementService() {

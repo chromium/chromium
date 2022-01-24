@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/installable/installed_webapp_bridge.h"
@@ -25,6 +24,10 @@ class InstalledWebappIterator : public content_settings::RuleIterator {
  public:
   explicit InstalledWebappIterator(InstalledWebappProvider::RuleList rules)
       : rules_(std::move(rules)) {}
+
+  InstalledWebappIterator(const InstalledWebappIterator&) = delete;
+  InstalledWebappIterator& operator=(const InstalledWebappIterator&) = delete;
+
   ~InstalledWebappIterator() override = default;
 
   bool HasNext() const override { return index_ < rules_.size(); }
@@ -44,8 +47,6 @@ class InstalledWebappIterator : public content_settings::RuleIterator {
  private:
   size_t index_ = 0;
   InstalledWebappProvider::RuleList rules_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstalledWebappIterator);
 };
 
 bool IsSupportedContentType(ContentSettingsType content_type) {
@@ -103,6 +104,6 @@ void InstalledWebappProvider::ShutdownOnUIThread() {
 }
 
 void InstalledWebappProvider::Notify(ContentSettingsType content_type) {
-  NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
-                  content_type);
+  NotifyObservers(ContentSettingsPattern::Wildcard(),
+                  ContentSettingsPattern::Wildcard(), content_type);
 }

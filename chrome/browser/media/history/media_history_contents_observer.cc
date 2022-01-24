@@ -120,4 +120,4 @@ void MediaHistoryContentsObserver::MaybeCommitMediaSession() {
                                 cached_position_, cached_artwork_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaHistoryContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaHistoryContentsObserver);

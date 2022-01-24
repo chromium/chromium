@@ -50,6 +50,9 @@ class WifiDataProviderManager {
   // Instantiates the singleton if necessary, and always returns it.
   static WifiDataProviderManager* Register(WifiDataUpdateCallback* callback);
 
+  WifiDataProviderManager(const WifiDataProviderManager&) = delete;
+  WifiDataProviderManager& operator=(const WifiDataProviderManager&) = delete;
+
   // Removes a callback. If this is the last callback, deletes the singleton
   // instance. Return value indicates success.
   static bool Unregister(WifiDataUpdateCallback* callback);
@@ -89,8 +92,6 @@ class WifiDataProviderManager {
 
   // The internal implementation.
   scoped_refptr<WifiDataProvider> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(WifiDataProviderManager);
 };
 
 }  // namespace device

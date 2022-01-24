@@ -217,7 +217,7 @@ base::Time ConvertTicksToTime(uint64_t ticks) {
 
 // A wrapper function converting ticks (in units of 100 ns) to TimeDelta.
 base::TimeDelta ConvertTicksToTimeDelta(uint64_t ticks) {
-  return base::TimeDelta::FromMicroseconds(ticks / 10);
+  return base::Microseconds(ticks / 10);
 }
 
 }  // namespace

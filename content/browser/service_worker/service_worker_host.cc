@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
+#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -30,26 +31,6 @@
 
 namespace content {
 
-namespace {
-
-void CreateWebTransportConnectorImpl(
-    int process_id,
-    const url::Origin& origin,
-    const net::NetworkIsolationKey& network_isolation_key,
-    mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* process = RenderProcessHost::FromID(process_id);
-  if (!process)
-    return;
-
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<WebTransportConnectorImpl>(
-          process_id, /*frame=*/nullptr, origin, network_isolation_key),
-      std::move(receiver));
-}
-
-}  // anonymous namespace
-
 ServiceWorkerHost::ServiceWorkerHost(
     mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
         host_receiver,
@@ -60,18 +41,19 @@ ServiceWorkerHost::ServiceWorkerHost(
       container_host_(std::make_unique<content::ServiceWorkerContainerHost>(
           std::move(context))),
       host_receiver_(container_host_.get(), std::move(host_receiver)) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(version_);
 
   container_host_->set_service_worker_host(this);
   container_host_->UpdateUrls(
       version_->script_url(),
       net::SiteForCookies::FromUrl(version_->script_url()),
-      version_->key().origin());
+      url::Origin::Create(version_->key().top_level_site().GetURL()),
+      version_->key());
 }
 
 ServiceWorkerHost::~ServiceWorkerHost() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Explicitly destroy the ServiceWorkerContainerHost to release
   // ServiceWorkerObjectHosts and ServiceWorkerRegistrationObjectHosts owned by
@@ -87,7 +69,7 @@ void ServiceWorkerHost::CompleteStartWorkerPreparation(
     int process_id,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         broker_receiver) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(ChildProcessHost::kInvalidUniqueID, worker_process_id_);
   DCHECK_NE(ChildProcessHost::kInvalidUniqueID, process_id);
   worker_process_id_ = process_id;
@@ -96,17 +78,17 @@ void ServiceWorkerHost::CompleteStartWorkerPreparation(
 
 void ServiceWorkerHost::CreateWebTransportConnector(
     mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(&CreateWebTransportConnectorImpl, worker_process_id_,
-                     version_->key().origin(), GetNetworkIsolationKey(),
-                     std::move(receiver)));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<WebTransportConnectorImpl>(
+          worker_process_id_, /*frame=*/nullptr, version_->key().origin(),
+          GetNetworkIsolationKey()),
+      std::move(receiver));
 }
 
 void ServiceWorkerHost::BindCacheStorage(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!base::FeatureList::IsEnabled(
       blink::features::kEagerCacheStorageSetupForServiceWorkers));
   version_->embedded_worker()->BindCacheStorage(std::move(receiver));
@@ -124,6 +106,19 @@ const base::UnguessableToken& ServiceWorkerHost::GetReportingSource() const {
   return version_->reporting_source();
 }
 
+StoragePartition* ServiceWorkerHost::GetStoragePartition() const {
+  // It is possible that the RenderProcessHost is gone but we receive a request
+  // before we had the opportunity to Detach because the disconnect handler
+  // wasn't run yet. In such cases it is is safe to ignore these messages since
+  // we are about to stop the service worker.
+  auto* process =
+      RenderProcessHost::FromID(version_->embedded_worker()->process_id());
+  if (process == nullptr)
+    return nullptr;
+
+  return process->GetStoragePartition();
+}
+
 void ServiceWorkerHost::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   auto embedded_worker_status = version_->embedded_worker()->status();
@@ -137,28 +132,38 @@ void ServiceWorkerHost::CreateCodeCacheHost(
   if (embedded_worker_status == EmbeddedWorkerStatus::STOPPING)
     return;
 
-  // It is possible that the RenderProcessHost is gone but we receive a request
-  // before we had the opportunity to Detach because the disconnect handler
-  // wasn't run yet. In such cases it is is safe to ignore these messages since
-  // we are about to stop the service worker.
-  auto* process =
-      RenderProcessHost::FromID(version_->embedded_worker()->process_id());
-  if (process == nullptr)
-    return;
-
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  StoragePartition* storage_partition = process->GetStoragePartition();
+  StoragePartition* storage_partition = GetStoragePartition();
+  if (!storage_partition) {
+    return;
+  }
   if (!code_cache_host_receivers_) {
     code_cache_host_receivers_ =
         std::make_unique<CodeCacheHostImpl::ReceiverSet>(
             storage_partition->GetGeneratedCodeCacheContext());
   }
   code_cache_host_receivers_->Add(version_->embedded_worker()->process_id(),
+                                  GetNetworkIsolationKey(),
                                   std::move(receiver));
 }
 
+void ServiceWorkerHost::CreateBroadcastChannelProvider(
+    mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver) {
+  auto* storage_partition_impl =
+      static_cast<StoragePartitionImpl*>(GetStoragePartition());
+  if (!storage_partition_impl) {
+    return;
+  }
+
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<BroadcastChannelProvider>(
+          storage_partition_impl->GetBroadcastChannelService(),
+          version()->key()),
+      std::move(receiver));
+}
+
 base::WeakPtr<ServiceWorkerHost> ServiceWorkerHost::GetWeakPtr() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return weak_factory_.GetWeakPtr();
 }
 

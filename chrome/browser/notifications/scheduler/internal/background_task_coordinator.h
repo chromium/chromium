@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 
 namespace base {

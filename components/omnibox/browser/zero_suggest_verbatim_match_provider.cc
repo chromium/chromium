@@ -27,6 +27,7 @@ bool IsVerbatimMatchEligible(
          context == metrics::OmniboxEventProto::
                         SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT ||
          context == metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET ||
+         context == metrics::OmniboxEventProto::ANDROID_SHORTCUTS_WIDGET ||
          context == metrics::OmniboxEventProto::OTHER;
 }
 

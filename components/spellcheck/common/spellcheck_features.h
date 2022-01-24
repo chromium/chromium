@@ -48,9 +48,6 @@ bool WindowsVersionSupportsSpellchecker();
 #endif  // defined(OS_WIN)
 
 #if defined(OS_ANDROID)
-extern const base::Feature kAndroidSpellChecker;
-extern const base::Feature kAndroidSpellCheckerNonLowEnd;
-
 bool IsAndroidSpellCheckFeatureEnabled();
 #endif  // defined(OS_ANDROID)
 

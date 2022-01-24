@@ -103,7 +103,7 @@ TEST_F(ExternalFileURLUtilTest, VirtualPathToExternalFileURL) {
                              "foo/bar%20%22%23%3C%3E%3F%60%7B%7D.txt");
 
   // (U+3000) IDEOGRAPHIC SPACE and (U+1F512) LOCK are examples of characters
-  // potentially used for URL spoofing. Those are blacklisted from unescaping
+  // potentially used for URL spoofing. Those are blocklisted from unescaping
   // when a URL is displayed, but this should not prevent it from being
   // unescaped when converting a URL to a virtual file path. See
   // crbug.com/585422 for detail.

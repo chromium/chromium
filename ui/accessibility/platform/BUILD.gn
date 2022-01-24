@@ -59,6 +59,8 @@ source_set("platform") {
     "ax_platform_node_test_helper.h",
 
     # Used by DumpAccTree testsuite and a11y tools
+    "inspect/ax_api_type.cc",
+    "inspect/ax_api_type.h",
     "inspect/ax_event_recorder.cc",
     "inspect/ax_event_recorder.h",
     "inspect/ax_inspect.cc",
@@ -82,6 +84,19 @@ source_set("platform") {
     "//ui/accessibility:ax_base",
     "//ui/display",
   ]
+
+  if (is_fuchsia) {
+    sources += [
+      "fuchsia/accessibility_bridge_fuchsia.h",
+      "fuchsia/accessibility_bridge_fuchsia_registry.cc",
+      "fuchsia/accessibility_bridge_fuchsia_registry.h",
+      "fuchsia/fuchsia_types.cc",
+      "fuchsia/fuchsia_types.h",
+    ]
+
+    public_deps +=
+        [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics" ]
+  }
 
   if (has_native_accessibility) {
     sources += [
@@ -129,8 +144,11 @@ source_set("platform") {
       sources += [
         "ax_event_intent_mac.h",
         "ax_event_intent_mac.mm",
+        "ax_platform_node_cocoa.h",
+        "ax_platform_node_cocoa.mm",
         "ax_platform_node_mac.h",
         "ax_platform_node_mac.mm",
+        "ax_private_attributes_mac.h",
         "ax_private_webkit_constants_mac.h",
         "ax_private_webkit_constants_mac.mm",
       ]

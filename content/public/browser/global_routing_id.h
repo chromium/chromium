@@ -20,17 +20,17 @@ namespace content {
 // process. While they are finite and thus must eventually roll over, this case
 // may be considered sufficiently rare as to be ignorable.
 struct GlobalRoutingID {
-  GlobalRoutingID() : child_id(-1), route_id(-1) {}
+  GlobalRoutingID() = default;
 
   GlobalRoutingID(int child_id, int route_id)
       : child_id(child_id), route_id(route_id) {}
 
   // The unique ID of the child process (this is different from OS's PID / this
   // should come from RenderProcessHost::GetID()).
-  int child_id;
+  int child_id = -1;
 
   // The route ID.
-  int route_id;
+  int route_id = -1;
 
   bool operator<(const GlobalRoutingID& other) const {
     return std::tie(child_id, route_id) <
@@ -56,7 +56,7 @@ inline std::ostream& operator<<(std::ostream& os, const GlobalRoutingID& id) {
 // process. While they are finite and thus must eventually roll over, this case
 // may be considered sufficiently rare as to be ignorable.
 struct GlobalRenderFrameHostId {
-  GlobalRenderFrameHostId() : child_id(0), frame_routing_id(MSG_ROUTING_NONE) {}
+  GlobalRenderFrameHostId() = default;
 
   GlobalRenderFrameHostId(int child_id, int frame_routing_id)
       : child_id(child_id), frame_routing_id(frame_routing_id) {}
@@ -67,11 +67,11 @@ struct GlobalRenderFrameHostId {
 
   // The unique ID of the child process (this is different from OS's PID / this
   // should come from RenderProcessHost::GetID()).
-  int child_id;
+  int child_id = 0;
 
   // The route ID of a RenderFrame - should come from
   // RenderFrameHost::GetRoutingID().
-  int frame_routing_id;
+  int frame_routing_id = MSG_ROUTING_NONE;
 
   bool operator<(const GlobalRenderFrameHostId& other) const {
     return std::tie(child_id, frame_routing_id) <

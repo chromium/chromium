@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -21,7 +21,7 @@ import find_bad_builds
 import mock
 
 
-class Pool(object):
+class Pool:
   """Simple object used to mock out multiprocessing.Pool."""
 
   def map(self, fn, lst):
@@ -112,6 +112,7 @@ class FindBadBuildsIntegrationTest(unittest.TestCase):
             if b['id'] == bid:
               return b['revision']
           self.fail('build %s is missing a revision' % bid)
+          return None
 
         fetch_rev.side_effect = find_rev
         with mock.patch('find_bad_builds._get_build_running_time') as b_runtime:

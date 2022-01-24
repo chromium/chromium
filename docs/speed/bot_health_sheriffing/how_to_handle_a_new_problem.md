@@ -1,5 +1,7 @@
 # How to handle an alert for a new problem
 
+**Important**: When making changes to this document, also update duplicate files under the [internal docs](http://goto.google.com/perf-bot-health-sheriffs).
+
 **Warning: this is the hardest part of being a sheriff.**
 
 Each bug may take 10 minutes to an hour to address, but there are usually a manageable number of new bugs per shift (5 on a good shift, 15 on a bad one).

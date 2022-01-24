@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "url/gurl.h"
@@ -79,6 +78,9 @@ class TestFileErrorInjector
   static scoped_refptr<TestFileErrorInjector> Create(
       DownloadManager* download_manager);
 
+  TestFileErrorInjector(const TestFileErrorInjector&) = delete;
+  TestFileErrorInjector& operator=(const TestFileErrorInjector&) = delete;
+
   // Injects the errors such that new download files will be affected.
   // The download system must already be initialized before calling this.
   // Multiple calls are allowed, but only useful if the errors have changed.
@@ -130,8 +132,6 @@ class TestFileErrorInjector
 
   // The download manager we set the factory on.
   DownloadManagerImpl* download_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFileErrorInjector);
 };
 
 }  // namespace content

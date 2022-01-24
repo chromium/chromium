@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {InitializeModuleCallback} from 'chrome://new-tab-page/new_tab_page.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertNotEquals} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** @type {string} */
 export const NONE_ANIMATION = 'none 0s ease 0s 1 normal none running';
@@ -71,6 +72,19 @@ export function createMock(clazz) {
   return {mock: new Proxy({}, handler), callTracker};
 }
 
+/**
+ * @param {!typeof T} clazz
+ * @param {!function(!T)=} installer
+ * @return {!TestBrowserProxy}
+ * @template T
+ */
+export function installMock(clazz, installer) {
+  installer = installer || clazz.setInstance;
+  const {mock, callTracker} = createMock(clazz);
+  installer(mock);
+  return callTracker;
+}
+
 /** @return {!newTabPage.mojom.Theme} */
 export function createTheme() {
   const mostVisited = {
@@ -108,5 +122,16 @@ export function createTheme() {
     mostVisited: mostVisited,
     searchBox: searchBox,
     textColor: {value: 0xff0000ff},
+    isCustomBackground: true
   };
+}
+
+/** @type {!InitializeModuleCallback} */
+export async function initNullModule() {
+  return null;
+}
+
+/** @return {!HTMLElement} */
+export function createElement() {
+  return /** @type {!HTMLElement} */ (document.createElement('div'));
 }

@@ -26,9 +26,9 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/navigator_id.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -61,10 +61,10 @@ String Navigator::platform() const {
   // the platform with a frozen platform to distinguish between
   // mobile and desktop when ReduceUserAgent is enabled.
   if (!DomWindow())
-    return NavigatorID::platform();
+    return NavigatorBase::platform();
   const String& platform_override =
       DomWindow()->GetFrame()->GetSettings()->GetNavigatorPlatformOverride();
-  return platform_override.IsEmpty() ? NavigatorID::platform()
+  return platform_override.IsEmpty() ? NavigatorBase::platform()
                                      : platform_override;
 }
 

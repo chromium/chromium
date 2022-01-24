@@ -1,0 +1,79 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// Represents StorableSource::SourceType.
+enum SourceType {
+  kNavigation,
+  kEvent,
+};
+
+// Struct containing stored data that will be sent in a future attribution
+// report.
+struct WebUIAttributionReport {
+  string attribution_destination;
+  url.mojom.Url report_url;
+  double trigger_time;
+  double report_time;
+  int64 priority;
+  string report_body;
+  bool attributed_truthfully;
+
+  enum Status {
+    kPending,
+    kDroppedDueToLowPriority,
+    kDroppedForNoise,
+    kSent,
+  };
+
+  Status status;
+
+  // Only valid if `status == kSent`.
+  int32 http_response_code;
+};
+
+// Struct representing a stored attribution source that will be displayed by WebUI.
+struct WebUIAttributionSource {
+  uint64 source_event_id;
+  url.mojom.Origin impression_origin;
+  // Replace SchemefulSite with string if this struct is ever reused elsewhere.
+  string attribution_destination;
+  url.mojom.Origin reporting_origin;
+  double impression_time;
+  double expiry_time;
+  SourceType source_type;
+  int64 priority;
+  array<int64> dedup_keys;
+  bool reportable;
+};
+
+// Mojo interface for the attribution internals WebUI to communicate with the
+// storage layer.
+interface AttributionInternalsHandler {
+  // Returns whether attribution reporting and the debug mode are enabled in
+  // the browsing context the WebUI is in.
+  IsAttributionReportingEnabled() => (bool enabled, bool debug_mode);
+
+  // Returns all active sources that are persisted in storage. This does
+  // not include expired sources, or sources that can no longer be attributed
+  // due to reaching policy limits.
+  GetActiveSources() => (array<WebUIAttributionSource> sources);
+
+  // Returns all reports contained in storage, including those that are actively
+  // being sent.
+  GetReports() => (array<WebUIAttributionReport> reports);
+
+  // Sends all stored reports, ignoring delay, returning when the
+  // operation has been completed and all reports have been cleared from
+  // storage.
+  SendPendingReports() => ();
+
+  // Deletes all persisted data for the attribution reporting API, returning when the
+  // operation has been completed.
+  ClearStorage() => ();
+};

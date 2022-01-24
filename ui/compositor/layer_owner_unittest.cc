@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/test/null_task_runner.h"
 #include "cc/animation/animation.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +27,11 @@ namespace {
 class TestLayerAnimationObserver : public ImplicitAnimationObserver {
  public:
   explicit TestLayerAnimationObserver(Layer* layer) : layer_(layer) {}
+
+  TestLayerAnimationObserver(const TestLayerAnimationObserver&) = delete;
+  TestLayerAnimationObserver& operator=(const TestLayerAnimationObserver&) =
+      delete;
+
   ~TestLayerAnimationObserver() override = default;
 
   // ImplicitAnimationObserver:
@@ -37,8 +41,6 @@ class TestLayerAnimationObserver : public ImplicitAnimationObserver {
 
  private:
   Layer* layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayerAnimationObserver);
 };
 
 class LayerOwnerForTesting : public LayerOwner {
@@ -53,6 +55,11 @@ class LayerOwnerForTesting : public LayerOwner {
 class LayerOwnerTestWithCompositor : public testing::Test {
  public:
   LayerOwnerTestWithCompositor();
+
+  LayerOwnerTestWithCompositor(const LayerOwnerTestWithCompositor&) = delete;
+  LayerOwnerTestWithCompositor& operator=(const LayerOwnerTestWithCompositor&) =
+      delete;
+
   ~LayerOwnerTestWithCompositor() override;
 
   void SetUp() override;
@@ -64,8 +71,6 @@ class LayerOwnerTestWithCompositor : public testing::Test {
  private:
   std::unique_ptr<ui::TestContextFactories> context_factories_;
   std::unique_ptr<ui::Compositor> compositor_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerOwnerTestWithCompositor);
 };
 
 LayerOwnerTestWithCompositor::LayerOwnerTestWithCompositor() {
@@ -129,7 +134,7 @@ TEST_F(LayerOwnerTestWithCompositor, RecreateRootLayerDuringAnimation) {
           ui::ScopedAnimationDurationScaleMode::SLOW_DURATION));
   {
     ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     animation.AddObserver(observer.get());
     gfx::Transform transform;
     transform.Scale(0.5f, 0.5f);
@@ -163,7 +168,7 @@ TEST_F(LayerOwnerTestWithCompositor, RecreateNonRootLayerDuringAnimation) {
           ui::ScopedAnimationDurationScaleMode::SLOW_DURATION));
   {
     ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
-    animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(1000));
+    animation.SetTransitionDuration(base::Milliseconds(1000));
     animation.AddObserver(observer.get());
     gfx::Transform transform;
     transform.Scale(0.5f, 0.5f);

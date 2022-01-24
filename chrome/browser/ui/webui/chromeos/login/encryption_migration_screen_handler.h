@@ -54,6 +54,12 @@ class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
 
   explicit EncryptionMigrationScreenHandler(
       JSCallsContainer* js_calls_container);
+
+  EncryptionMigrationScreenHandler(const EncryptionMigrationScreenHandler&) =
+      delete;
+  EncryptionMigrationScreenHandler& operator=(
+      const EncryptionMigrationScreenHandler&) = delete;
+
   ~EncryptionMigrationScreenHandler() override;
 
   // EncryptionMigrationScreenView implementation:
@@ -78,8 +84,6 @@ class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
  private:
   ash::EncryptionMigrationScreen* delegate_ = nullptr;
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(EncryptionMigrationScreenHandler);
 };
 
 }  // namespace chromeos

@@ -12,6 +12,9 @@ namespace nacl_io {
 
 class DevFs : public Filesystem {
  public:
+  DevFs(const DevFs&) = delete;
+  DevFs& operator=(const DevFs&) = delete;
+
   virtual Error OpenWithMode(const Path& path, int open_flags, mode_t mode,
                              ScopedNode* out_node);
   virtual Error Unlink(const Path& path);
@@ -33,7 +36,6 @@ class DevFs : public Filesystem {
   ScopedNode fs_dir_;
 
   friend class TypedFsFactory<DevFs>;
-  DISALLOW_COPY_AND_ASSIGN(DevFs);
 };
 
 }  // namespace nacl_io

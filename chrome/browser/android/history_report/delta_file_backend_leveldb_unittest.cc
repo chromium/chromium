@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "chrome/browser/android/history_report/delta_file_commons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -21,6 +20,10 @@ namespace history_report {
 class DeltaFileBackendTest : public testing::Test {
  public:
   DeltaFileBackendTest() {}
+
+  DeltaFileBackendTest(const DeltaFileBackendTest&) = delete;
+  DeltaFileBackendTest& operator=(const DeltaFileBackendTest&) = delete;
+
   ~DeltaFileBackendTest() override {}
 
  protected:
@@ -33,8 +36,6 @@ class DeltaFileBackendTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaFileBackendTest);
 };
 
 TEST_F(DeltaFileBackendTest, AddPage) {

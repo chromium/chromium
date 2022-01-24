@@ -5,6 +5,8 @@
 #ifndef BASE_OBSERVER_LIST_INTERNAL_H_
 #define BASE_OBSERVER_LIST_INTERNAL_H_
 
+#include <string>
+
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/containers/linked_list.h"

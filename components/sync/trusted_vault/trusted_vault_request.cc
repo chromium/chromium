@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -75,10 +76,13 @@ std::string GetHttpMethodString(TrustedVaultRequest::HttpMethod http_method) {
 TrustedVaultRequest::TrustedVaultRequest(
     HttpMethod http_method,
     const GURL& request_url,
-    const absl::optional<std::string>& serialized_request_proto)
+    const absl::optional<std::string>& serialized_request_proto,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : http_method_(http_method),
       request_url_(request_url),
-      serialized_request_proto_(serialized_request_proto) {
+      serialized_request_proto_(serialized_request_proto),
+      url_loader_factory_(std::move(url_loader_factory)) {
+  DCHECK(url_loader_factory_);
   DCHECK(http_method == HttpMethod::kPost ||
          !serialized_request_proto.has_value());
 }
@@ -87,51 +91,46 @@ TrustedVaultRequest::~TrustedVaultRequest() = default;
 
 void TrustedVaultRequest::FetchAccessTokenAndSendRequest(
     const CoreAccountId& account_id,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TrustedVaultAccessTokenFetcher* access_token_fetcher,
     CompletionCallback callback) {
-  DCHECK(url_loader_factory);
   DCHECK(access_token_fetcher);
   completion_callback_ = std::move(callback);
   access_token_fetcher->FetchAccessToken(
-      account_id,
-      base::BindOnce(&TrustedVaultRequest::OnAccessTokenFetched,
-                     weak_ptr_factory_.GetWeakPtr(), url_loader_factory));
+      account_id, base::BindOnce(&TrustedVaultRequest::OnAccessTokenFetched,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TrustedVaultRequest::OnAccessTokenFetched(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     absl::optional<signin::AccessTokenInfo> access_token_info) {
+  base::UmaHistogramBoolean("Sync.TrustedVaultAccessTokenFetchSuccess",
+                            access_token_info.has_value());
+
   if (!access_token_info.has_value()) {
-    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kOtherError,
-                                             /*response_body=*/std::string());
+    RunCompletionCallbackAndMaybeDestroySelf(
+        HttpStatus::kAccessTokenFetchingFailure,
+        /*response_body=*/std::string());
     return;
   }
 
-  url_loader_ = CreateURLLoader(url_loader_factory, access_token_info->token);
+  url_loader_ = CreateURLLoader(access_token_info->token);
   // Destroying |this| object will cancel the request, so use of Unretained() is
   // safe here.
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory.get(),
+      url_loader_factory_.get(),
       base::BindOnce(&TrustedVaultRequest::OnURLLoadComplete,
                      base::Unretained(this)));
 }
 
 void TrustedVaultRequest::OnURLLoadComplete(
     std::unique_ptr<std::string> response_body) {
-  const int net_error = url_loader_->NetError();
   int http_response_code = 0;
 
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     http_response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
 
-  DCHECK_LE(net_error, 0);
-  DCHECK_GE(http_response_code, 0);
-
-  base::UmaHistogramSparse(
-      "Sync.TrustedVaultURLFetchResponse",
-      http_response_code == 0 ? net_error : http_response_code);
+  RecordTrustedVaultURLFetchResponse(/*http_response_code=*/http_response_code,
+                                     /*net_error=*/url_loader_->NetError());
 
   std::string response_content = response_body ? *response_body : std::string();
   if (http_response_code == net::HTTP_BAD_REQUEST) {
@@ -161,7 +160,6 @@ void TrustedVaultRequest::OnURLLoadComplete(
 }
 
 std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token) const {
   auto request = std::make_unique<network::ResourceRequest>();
   // Specify that the server's response body should be formatted as a
@@ -179,9 +177,11 @@ std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
       network::SimpleURLLoader::Create(std::move(request),
                                        CreateTrafficAnnotationTag());
 
+  // Fetchers are sometimes cancelled because a network change was detected,
+  // especially at startup and after sign-in on ChromeOS.
+  url_loader->SetRetryOptions(
+      3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   url_loader->SetAllowHttpErrorResults(true);
-  // TODO(crbug.com/1113598): do we need to set retry options? (in particular
-  // RETRY_ON_NETWORK_CHANGE).
 
   if (serialized_request_proto_.has_value()) {
     url_loader->AttachStringForUpload(*serialized_request_proto_,

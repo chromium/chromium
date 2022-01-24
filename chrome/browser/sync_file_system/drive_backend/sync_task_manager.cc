@@ -11,8 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task_token.h"
 #include "chrome/browser/sync_file_system/sync_file_metadata.h"
@@ -28,6 +27,10 @@ class SyncTaskAdapter : public ExclusiveTask {
  public:
   explicit SyncTaskAdapter(SyncTaskManager::Task task)
       : task_(std::move(task)) {}
+
+  SyncTaskAdapter(const SyncTaskAdapter&) = delete;
+  SyncTaskAdapter& operator=(const SyncTaskAdapter&) = delete;
+
   ~SyncTaskAdapter() override = default;
 
   void RunExclusive(SyncStatusCallback callback) override {
@@ -36,8 +39,6 @@ class SyncTaskAdapter : public ExclusiveTask {
 
  private:
   SyncTaskManager::Task task_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncTaskAdapter);
 };
 
 }  // namespace

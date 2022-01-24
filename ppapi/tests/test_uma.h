@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PAPPI_TESTS_TEST_UMA_H_
-#define PAPPI_TESTS_TEST_UMA_H_
+#ifndef PPAPI_TESTS_TEST_UMA_H_
+#define PPAPI_TESTS_TEST_UMA_H_
 
 #include <string>
 
@@ -27,4 +27,4 @@ class TestUMA : public TestCase {
   const PPB_UMA_Private* uma_interface_;
 };
 
-#endif  // PAPPI_TESTS_TEST_UMA_H_
+#endif  // PPAPI_TESTS_TEST_UMA_H_

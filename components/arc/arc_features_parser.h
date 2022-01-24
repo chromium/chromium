@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -30,10 +29,14 @@ struct ArcFeatures {
   using BuildPropsMapping = std::map<std::string, std::string>;
 
   ArcFeatures();
-  ArcFeatures(ArcFeatures&& other);
-  ~ArcFeatures();
 
+  ArcFeatures(const ArcFeatures&) = delete;
+  ArcFeatures& operator=(const ArcFeatures&) = delete;
+
+  ArcFeatures(ArcFeatures&& other);
   ArcFeatures& operator=(ArcFeatures&& other);
+
+  ~ArcFeatures();
 
   // This map contains all ARC system available features. For each feature, it
   // has the name and version. Unavailable features have been filtered out from
@@ -47,9 +50,6 @@ struct ArcFeatures {
   BuildPropsMapping build_props;
 
   std::string play_store_version;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcFeatures);
 };
 
 // Parses JSON files for Android system available features and build properties.
@@ -78,6 +78,9 @@ struct ArcFeatures {
 // }
 class ArcFeaturesParser {
  public:
+  ArcFeaturesParser(const ArcFeaturesParser&) = delete;
+  ArcFeaturesParser& operator=(const ArcFeaturesParser&) = delete;
+
   // Get ARC system available features.
   static void GetArcFeatures(
       base::OnceCallback<void(absl::optional<ArcFeatures>)> callback);
@@ -92,9 +95,6 @@ class ArcFeaturesParser {
   // is called.
   static void SetArcFeaturesGetterForTesting(
       base::RepeatingCallback<absl::optional<ArcFeatures>()>* getter);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcFeaturesParser);
 };
 
 }  // namespace arc

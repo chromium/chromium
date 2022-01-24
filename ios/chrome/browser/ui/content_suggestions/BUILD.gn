@@ -4,23 +4,16 @@
 
 source_set("content_suggestions") {
   sources = [
-    "content_suggestions_action_handler.h",
     "content_suggestions_alert_factory.h",
     "content_suggestions_alert_factory.mm",
     "content_suggestions_category_wrapper.h",
     "content_suggestions_category_wrapper.mm",
-    "content_suggestions_consumer.h",
     "content_suggestions_coordinator.h",
     "content_suggestions_coordinator.mm",
     "content_suggestions_favicon_mediator.h",
     "content_suggestions_favicon_mediator.mm",
     "content_suggestions_mediator.h",
     "content_suggestions_mediator.mm",
-    "content_suggestions_metrics_recorder.h",
-    "content_suggestions_metrics_recorder.mm",
-    "content_suggestions_service_bridge_observer.h",
-    "content_suggestions_service_bridge_observer.mm",
-    "discover_feed_delegate.h",
     "mediator_util.h",
     "mediator_util.mm",
     "ntp_home_mediator.h",
@@ -51,6 +44,7 @@ source_set("content_suggestions") {
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
@@ -85,6 +79,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/ntp",
+    "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/ntp:ntp_internal",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/reading_list",
@@ -102,9 +97,6 @@ source_set("content_suggestions") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/discover_feed",
-    "//ios/public/provider/chrome/browser/images",
-    "//ios/public/provider/chrome/browser/signin",
-    "//ios/public/provider/chrome/browser/ui",
     "//ui/base",
     "//ui/strings",
   ]
@@ -122,13 +114,11 @@ source_set("constants") {
 
 source_set("content_suggestions_ui") {
   sources = [
-    "content_suggestions_action_handler.h",
     "content_suggestions_collection_controlling.h",
     "content_suggestions_collection_synchronizing.h",
     "content_suggestions_collection_updater.h",
     "content_suggestions_collection_updater.mm",
     "content_suggestions_commands.h",
-    "content_suggestions_consumer.h",
     "content_suggestions_data_sink.h",
     "content_suggestions_data_source.h",
     "content_suggestions_header_commands.h",
@@ -145,7 +135,6 @@ source_set("content_suggestions_ui") {
     "content_suggestions_layout.h",
     "content_suggestions_layout.mm",
     "content_suggestions_menu_provider.h",
-    "content_suggestions_metrics_recording.h",
     "content_suggestions_view_controller.h",
     "content_suggestions_view_controller.mm",
     "content_suggestions_view_controller_audience.h",
@@ -177,15 +166,13 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/browser/ui/content_suggestions/cells:cells_ui",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/elements",
-    "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/ntp",
+    "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/ntp_tile_views",
     "//ios/chrome/browser/ui/omnibox:omnibox_internal",
     "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
-    "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
-    "//ios/chrome/browser/ui/thumb_strip:public",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util:util",
@@ -194,8 +181,6 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/discover_feed",
-    "//ios/public/provider/chrome/browser/ui",
-    "//ios/public/provider/chrome/browser/voice",
     "//ios/web/common",
     "//ui/base",
   ]
@@ -287,6 +272,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:cells_ui",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
+    "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/toolbar/test",
     "//ios/chrome/browser/ui/util",
@@ -296,7 +282,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/public/provider/chrome/browser:test_support",
-    "//ios/public/provider/chrome/browser/ui",
     "//ios/testing:block_swizzler",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
@@ -309,7 +294,6 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -333,6 +317,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/ui/ntp:constants",
+    "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public:constants",
@@ -348,14 +333,16 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
 
-  sources = [ "new_tab_page_app_interface.h" ]
+  sources = [
+    "new_tab_page_app_interface.h",
+    "new_tab_page_app_interface_stub.mm",
+  ]
 
   deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }
@@ -366,7 +353,6 @@ source_set("eg_app_support+eg2") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  defines = [ "CHROME_EARL_GREY_2" ]
 
   sources = [
     "new_tab_page_app_interface.h",

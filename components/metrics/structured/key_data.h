@@ -8,11 +8,10 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/metrics/structured/persistent_proto.h"
 #include "components/metrics/structured/storage.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -86,6 +85,15 @@ class KeyData {
   // uploaded from the device. See the class comment of
   // StructuredMetricsProvider for more details.
   uint64_t Id(uint64_t project_name_hash);
+
+  // Returns when the key for |project_name_hash| was last rotated, in days
+  // since epoch. Returns nullopt if the key doesn't exist.
+  absl::optional<int> LastKeyRotation(uint64_t project_name_hash);
+
+  // Clears all key data from memory and from disk. If this is called before the
+  // underlying proto has been read from disk, the purge will be performed once
+  // the read is complete.
+  void Purge();
 
   // Returns whether this KeyData instance has finished reading from disk and is
   // ready to be used. If false, both Id and HmacMetric will return 0u.

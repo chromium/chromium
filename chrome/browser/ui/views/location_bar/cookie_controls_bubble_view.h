@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
@@ -35,6 +34,9 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
     VIEW_ID_NONE = 0,
     VIEW_ID_COOKIE_CONTROLS_NOT_WORKING_LINK,
   };
+
+  CookieControlsBubbleView(const CookieControlsBubbleView&) = delete;
+  CookieControlsBubbleView& operator=(const CookieControlsBubbleView&) = delete;
 
   static void ShowBubble(views::View* anchor_view,
                          views::Button* highlighted_button,
@@ -103,8 +105,6 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
       controller_observation_{this};
   base::ScopedObservation<views::TooltipIcon, views::TooltipIcon::Observer>
       tooltip_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CookieControlsBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_BUBBLE_VIEW_H_

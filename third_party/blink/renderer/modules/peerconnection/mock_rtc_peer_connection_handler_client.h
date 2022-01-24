@@ -22,6 +22,12 @@ class MockRTCPeerConnectionHandlerClient
     : public RTCPeerConnectionHandlerClient {
  public:
   MockRTCPeerConnectionHandlerClient();
+
+  MockRTCPeerConnectionHandlerClient(
+      const MockRTCPeerConnectionHandlerClient&) = delete;
+  MockRTCPeerConnectionHandlerClient& operator=(
+      const MockRTCPeerConnectionHandlerClient&) = delete;
+
   ~MockRTCPeerConnectionHandlerClient() override;
 
   // RTCPeerConnectionHandlerClient implementation.
@@ -99,8 +105,6 @@ class MockRTCPeerConnectionHandlerClient
   std::string candidate_sdp_;
   absl::optional<uint16_t> candidate_mline_index_;
   std::string candidate_mid_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRTCPeerConnectionHandlerClient);
 };
 
 }  // namespace blink

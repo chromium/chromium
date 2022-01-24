@@ -47,6 +47,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::Clear() {
   text_ = absl::nullopt;
   markup_ = absl::nullopt;
   rtf_ = absl::nullopt;
+  filenames_.clear();
   bookmark_title_ = absl::nullopt;
   png_ = absl::nullopt;
   custom_format_ = absl::nullopt;

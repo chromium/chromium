@@ -112,7 +112,7 @@ class UserSettingsEventLoggerTest : public AshTestBase {
 
  protected:
   void FastForwardBySeconds(const int seconds) {
-    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(seconds));
+    task_environment()->FastForwardBy(base::Seconds(seconds));
   }
 
   std::vector<const ukm::mojom::UkmEntry*> GetUkmEntries() {

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_INPUT_STREAM_READER_H_
 #define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_INPUT_STREAM_READER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace net {
@@ -21,6 +20,10 @@ class InputStreamReader {
  public:
   // The constructor is called on the IO thread, not on the worker thread.
   explicit InputStreamReader(InputStream* stream);
+
+  InputStreamReader(const InputStreamReader&) = delete;
+  InputStreamReader& operator=(const InputStreamReader&) = delete;
+
   virtual ~InputStreamReader();
 
   // Perform a seek operation on the InputStream associated with this job.
@@ -51,8 +54,6 @@ class InputStreamReader {
   int SkipToRequestedRange(const net::HttpByteRange& byte_range);
 
   InputStream* stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputStreamReader);
 };
 
 }  // namespace embedder_support

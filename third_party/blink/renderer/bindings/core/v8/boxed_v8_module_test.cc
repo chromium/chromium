@@ -27,11 +27,11 @@ TEST(BoxedV8ModuleTest, equalAndHash) {
   Member<BoxedV8Module> module_deleted(kMemberDeletedValue);
 
   v8::Local<v8::Module> local_module_a = ModuleTestBase::CompileModule(
-      scope.GetIsolate(), "export const a = 'a';", js_url_a);
+      scope.GetScriptState(), "export const a = 'a';", js_url_a);
   Member<BoxedV8Module> module_a =
       MakeGarbageCollected<BoxedV8Module>(scope.GetIsolate(), local_module_a);
   v8::Local<v8::Module> local_module_b = ModuleTestBase::CompileModule(
-      scope.GetIsolate(), "export const b = 'b';", js_url_b);
+      scope.GetScriptState(), "export const b = 'b';", js_url_b);
   Member<BoxedV8Module> module_b =
       MakeGarbageCollected<BoxedV8Module>(scope.GetIsolate(), local_module_b);
 

@@ -61,14 +61,12 @@ class MachineLevelUserCloudPolicyStoreTest : public ::testing::Test {
                              nullptr);
   }
 
-  std::unique_ptr<MachineLevelUserCloudPolicyStore> CreateStore(
-      bool cloud_policy_overrides = false) {
+  std::unique_ptr<MachineLevelUserCloudPolicyStore> CreateStore() {
     std::unique_ptr<MachineLevelUserCloudPolicyStore> store =
         MachineLevelUserCloudPolicyStore::Create(
             DMToken::CreateValidTokenForTesting(PolicyBuilder::kFakeToken),
             PolicyBuilder::kFakeDeviceId, updater_policy_dir_,
-            tmp_policy_dir_.GetPath(), cloud_policy_overrides,
-            base::ThreadTaskRunnerHandle::Get());
+            tmp_policy_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get());
     store->AddObserver(&observer_);
     return store;
   }
@@ -372,30 +370,6 @@ TEST_F(MachineLevelUserCloudPolicyStoreTest, LoadOnlyExternalPolicies) {
 
   ::testing::Mock::VerifyAndClearExpectations(&observer_);
   loader->RemoveObserver(&observer_);
-}
-
-TEST_F(MachineLevelUserCloudPolicyStoreTest,
-       StoreAndLoadPolicyWithCloudPriority) {
-  EXPECT_CALL(observer_, OnStoreLoaded(store_.get()));
-  store_->Store(policy_.policy());
-  base::RunLoop().RunUntilIdle();
-
-  ::testing::Mock::VerifyAndClearExpectations(&observer_);
-
-  std::unique_ptr<MachineLevelUserCloudPolicyStore> loader = CreateStore(true);
-  EXPECT_CALL(observer_, OnStoreLoaded(loader.get()));
-  loader->Load();
-  base::RunLoop().RunUntilIdle();
-
-  SetExpectedPolicyMap(POLICY_SOURCE_PRIORITY_CLOUD);
-  ASSERT_TRUE(loader->policy());
-  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
-            loader->policy()->SerializeAsString());
-  EXPECT_TRUE(expected_policy_map_.Equals(loader->policy_map()));
-  EXPECT_EQ(CloudPolicyStore::STATUS_OK, loader->status());
-  loader->RemoveObserver(&observer_);
-
-  ::testing::Mock::VerifyAndClearExpectations(&observer_);
 }
 
 TEST_F(MachineLevelUserCloudPolicyStoreTest,

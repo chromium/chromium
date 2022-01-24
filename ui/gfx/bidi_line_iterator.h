@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "ui/gfx/gfx_export.h"
@@ -22,6 +21,10 @@ namespace gfx {
 class GFX_EXPORT BiDiLineIterator {
  public:
   BiDiLineIterator();
+
+  BiDiLineIterator(const BiDiLineIterator&) = delete;
+  BiDiLineIterator& operator=(const BiDiLineIterator&) = delete;
+
   ~BiDiLineIterator();
 
   // Initializes the bidirectional iterator with the specified text.  Returns
@@ -39,8 +42,6 @@ class GFX_EXPORT BiDiLineIterator {
 
  private:
   UBiDi* bidi_;
-
-  DISALLOW_COPY_AND_ASSIGN(BiDiLineIterator);
 };
 
 }  // namespace gfx

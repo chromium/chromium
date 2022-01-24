@@ -9,7 +9,7 @@
 // #import {assertEquals} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 
@@ -30,10 +30,6 @@ suite('A11yPageTests', function() {
   });
 
   test('Deep link to always show a11y settings', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
-
     const params = new URLSearchParams;
     params.append('settingId', '1500');
     settings.Router.getInstance().navigateTo(
@@ -41,7 +37,8 @@ suite('A11yPageTests', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement = a11yPage.$$('#optionsInMenuToggle').$$('cr-toggle');
+    const deepLinkElement = a11yPage.$$('#optionsInMenuToggle')
+                                .shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

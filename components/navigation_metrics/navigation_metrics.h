@@ -13,7 +13,7 @@ enum class BrowserProfileType;
 
 namespace navigation_metrics {
 
-// Names of the metrics logged by RecordMainFrameNavigation() function.
+// Names of the metrics logged by RecordPrimaryMainFrameNavigation() function.
 extern const char kMainFrameScheme[];
 extern const char kMainFrameSchemeDifferentPage[];
 extern const char kMainFrameSchemeOTR[];
@@ -52,7 +52,7 @@ enum class Scheme {
 
 Scheme GetScheme(const GURL& url);
 
-void RecordMainFrameNavigation(
+void RecordPrimaryMainFrameNavigation(
     const GURL& url,
     bool is_same_document,
     bool is_off_the_record,

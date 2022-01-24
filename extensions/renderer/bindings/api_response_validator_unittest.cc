@@ -16,6 +16,7 @@
 #include "extensions/renderer/bindings/api_type_reference_map.h"
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "extensions/renderer/bindings/argument_spec_builder.h"
+#include "extensions/renderer/bindings/returns_async_builder.h"
 #include "gin/converter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
@@ -25,10 +26,14 @@ namespace {
 
 constexpr char kMethodName[] = "oneString";
 
-std::unique_ptr<APISignature> OneStringSignature() {
-  std::vector<std::unique_ptr<ArgumentSpec>> specs;
-  specs.push_back(ArgumentSpecBuilder(ArgumentType::STRING, "str").Build());
-  return std::make_unique<APISignature>(std::move(specs));
+std::unique_ptr<APISignature> OneStringCallbackSignature() {
+  std::vector<std::unique_ptr<ArgumentSpec>> empty_specs;
+  std::vector<std::unique_ptr<ArgumentSpec>> async_specs;
+  async_specs.push_back(
+      ArgumentSpecBuilder(ArgumentType::STRING, "str").Build());
+  return std::make_unique<APISignature>(
+      std::move(empty_specs),
+      ReturnsAsyncBuilder(std::move(async_specs)).Build(), nullptr);
 }
 
 std::vector<v8::Local<v8::Value>> StringToV8Vector(
@@ -55,13 +60,17 @@ class APIResponseValidatorTest : public APIBindingTest {
             base::BindRepeating(&APIResponseValidatorTest::OnValidationFailure,
                                 base::Unretained(this))),
         validator_(&type_refs_) {}
+
+  APIResponseValidatorTest(const APIResponseValidatorTest&) = delete;
+  APIResponseValidatorTest& operator=(const APIResponseValidatorTest&) = delete;
+
   ~APIResponseValidatorTest() override = default;
 
   void SetUp() override {
     APIBindingTest::SetUp();
     response_validation_override_ =
         binding::SetResponseValidationEnabledForTesting(true);
-    type_refs_.AddCallbackSignature(kMethodName, OneStringSignature());
+    type_refs_.AddAPIMethodSignature(kMethodName, OneStringCallbackSignature());
   }
 
   void TearDown() override {
@@ -97,8 +106,6 @@ class APIResponseValidatorTest : public APIBindingTest {
 
   absl::optional<std::string> failure_method_;
   absl::optional<std::string> failure_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIResponseValidatorTest);
 };
 
 TEST_F(APIResponseValidatorTest, TestValidation) {

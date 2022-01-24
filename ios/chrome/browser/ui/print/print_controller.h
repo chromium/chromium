@@ -9,15 +9,34 @@
 
 #import "ios/chrome/browser/web/print/web_state_printer.h"
 
+// The delegate for PrintController. Provide information needed to display the
+// UIPrintInteractionController.
+@protocol PrintControllerDelegate
+// The view controller the system print dialog should be presented from.
+- (UIViewController*)baseViewControllerForPrintPreview;
+@end
+
 // Interface for printing.
 @interface PrintController : NSObject <WebStatePrinter>
 
-// The view controller the system print dialog should be presented from.
-// Set this before calling any print methods.
-@property(nonatomic, weak) UIViewController* baseViewController;
+// |baseViewController| is the default VC to present print preview in case it
+// is not specified in the command.
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Shows print UI for |view| with |title|.
-- (void)printView:(UIView*)view withTitle:(NSString*)title;
+// Print preview will be presented on top of |baseViewController|.
+- (void)printView:(UIView*)view
+             withTitle:(NSString*)title
+    baseViewController:(UIViewController*)baseViewController;
+
+// Shows print UI for |image| with |title|.
+// Print preview will be presented on top of |baseViewController|.
+- (void)printImage:(UIImage*)image
+                 title:(NSString*)title
+    baseViewController:(UIViewController*)baseViewController;
 
 // Dismisses the print dialog with animation if |animated|.
 - (void)dismissAnimated:(BOOL)animated;

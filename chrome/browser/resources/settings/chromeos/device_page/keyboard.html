@@ -1,156 +1,134 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="device_page_browser_proxy.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../controls/settings_dropdown_menu.html">
-<link rel="import" href="../../controls/settings_slider.html">
-<link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../../router.html">
-
-<dom-module id="settings-keyboard">
-  <template>
-    <style include="settings-shared"></style>
-    <template is="dom-if" if="[[hasLauncherKey_]]">
-      <div class="settings-box first" id="launcherKey">
-        <div class="start" aria-hidden="true">$i18n{keyboardKeySearch}</div>
-        <settings-dropdown-menu label="$i18n{keyboardKeySearch}"
-            pref="{{prefs.settings.language.xkb_remap_search_key_to}}"
-            menu-options="[[keyMapTargets_]]">
-        </settings-dropdown-menu>
-      </div>
-    </template>
-    <div class="settings-box">
-      <div class="start" aria-hidden="true">$i18n{keyboardKeyCtrl}</div>
-      <settings-dropdown-menu label="$i18n{keyboardKeyCtrl}"
-          pref="{{prefs.settings.language.xkb_remap_control_key_to}}"
-          menu-options="[[keyMapTargets_]]">
-      </settings-dropdown-menu>
+<style include="settings-shared"></style>
+<template is="dom-if" if="[[hasLauncherKey_]]">
+  <div class="settings-box first" id="launcherKey">
+    <div class="start" aria-hidden="true">$i18n{keyboardKeySearch}</div>
+    <settings-dropdown-menu label="$i18n{keyboardKeySearch}"
+        pref="{{prefs.settings.language.xkb_remap_search_key_to}}"
+        menu-options="[[keyMapTargets_]]">
+    </settings-dropdown-menu>
+  </div>
+</template>
+<div class="settings-box">
+  <div class="start" aria-hidden="true">$i18n{keyboardKeyCtrl}</div>
+  <settings-dropdown-menu label="$i18n{keyboardKeyCtrl}"
+      pref="{{prefs.settings.language.xkb_remap_control_key_to}}"
+      menu-options="[[keyMapTargets_]]">
+  </settings-dropdown-menu>
+</div>
+<div class="settings-box">
+  <div class="start" aria-hidden="true">$i18n{keyboardKeyAlt}</div>
+  <settings-dropdown-menu label="$i18n{keyboardKeyAlt}"
+      pref="{{prefs.settings.language.xkb_remap_alt_key_to}}"
+      menu-options="[[keyMapTargets_]]">
+  </settings-dropdown-menu>
+</div>
+<div class="settings-box">
+  <div class="start" aria-hidden="true">$i18n{keyboardKeyEscape}</div>
+  <settings-dropdown-menu label="$i18n{keyboardKeyEscape}"
+      pref="{{prefs.settings.language.remap_escape_key_to}}"
+      menu-options="[[keyMapTargets_]]">
+  </settings-dropdown-menu>
+</div>
+<div class="settings-box">
+  <div class="start" aria-hidden="true">$i18n{keyboardKeyBackspace}</div>
+  <settings-dropdown-menu label="$i18n{keyboardKeyBackspace}"
+      pref="{{prefs.settings.language.remap_backspace_key_to}}"
+      menu-options="[[keyMapTargets_]]">
+  </settings-dropdown-menu>
+</div>
+<template is="dom-if" if="[[hasAssistantKey_]]">
+  <div class="settings-box" id="assistantKey">
+    <div class="start" aria-hidden="true">$i18n{keyboardKeyAssistant}</div>
+    <settings-dropdown-menu label="$i18n{keyboardKeyAssistant}"
+        pref="{{prefs.settings.language.xkb_remap_assistant_key_to}}"
+        menu-options="[[keyMapTargets_]]">
+    </settings-dropdown-menu>
+  </div>
+</template>
+<template is="dom-if" if="[[showCapsLock_]]">
+  <div class="settings-box" id="capsLockKey">
+    <div class="start" aria-hidden="true">$i18n{keyboardKeyCapsLock}</div>
+    <settings-dropdown-menu label="$i18n{keyboardKeyCapsLock}"
+        pref="{{prefs.settings.language.remap_caps_lock_key_to}}"
+        menu-options="[[keyMapTargets_]]">
+    </settings-dropdown-menu>
+  </div>
+</template>
+<template is="dom-if" if="[[showExternalMetaKey_]]">
+  <div class="settings-box" id="externalMetaKey">
+    <div class="start" aria-hidden="true">
+      [[getExternalMetaKeyLabel_(hasLauncherKey_)]]
     </div>
-    <div class="settings-box">
-      <div class="start" aria-hidden="true">$i18n{keyboardKeyAlt}</div>
-      <settings-dropdown-menu label="$i18n{keyboardKeyAlt}"
-          pref="{{prefs.settings.language.xkb_remap_alt_key_to}}"
-          menu-options="[[keyMapTargets_]]">
-      </settings-dropdown-menu>
+    <settings-dropdown-menu
+        label="[[getExternalMetaKeyLabel_(hasLauncherKey_)]]"
+        pref="{{prefs.settings.language.remap_external_meta_key_to}}"
+        menu-options="[[keyMapTargets_]]">
+    </settings-dropdown-menu>
+  </div>
+</template>
+<template is="dom-if" if="[[showAppleCommandKey_]]">
+  <div class="settings-box" id="externalCommandKey">
+    <div class="start" aria-hidden="true">
+      [[getExternalCommandKeyLabel_(hasLauncherKey_)]]
     </div>
-    <div class="settings-box">
-      <div class="start" aria-hidden="true">$i18n{keyboardKeyEscape}</div>
-      <settings-dropdown-menu label="$i18n{keyboardKeyEscape}"
-          pref="{{prefs.settings.language.remap_escape_key_to}}"
-          menu-options="[[keyMapTargets_]]">
-      </settings-dropdown-menu>
+    <settings-dropdown-menu
+        label="[[getExternalCommandKeyLabel_(hasLauncherKey_)]]"
+        pref="{{prefs.settings.language.remap_external_command_key_to}}"
+        menu-options="[[keyMapTargets_]]">
+    </settings-dropdown-menu>
+  </div>
+</template>
+<settings-toggle-button
+    class="hr"
+    pref="{{prefs.settings.language.send_function_keys}}"
+    label="$i18n{keyboardSendFunctionKeys}"
+    sub-label="$i18n{keyboardSendFunctionKeysDescription}"
+    deep-link-focus-id$="[[Setting.kKeyboardFunctionKeys]]">
+</settings-toggle-button>
+<settings-toggle-button
+    class="hr"
+    pref="{{prefs.settings.language.xkb_auto_repeat_enabled_r2}}"
+    label="$i18n{keyboardEnableAutoRepeat}"
+    deep-link-focus-id$="[[Setting.kKeyboardAutoRepeat]]">
+</settings-toggle-button>
+<iron-collapse
+    opened="[[prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]">
+  <div class="settings-box continuation embedded">
+    <div class="start" id="repeatDelayLabel" aria-hidden="true">
+      $i18n{keyRepeatDelay}
     </div>
-    <div class="settings-box">
-      <div class="start" aria-hidden="true">$i18n{keyboardKeyBackspace}</div>
-      <settings-dropdown-menu label="$i18n{keyboardKeyBackspace}"
-          pref="{{prefs.settings.language.remap_backspace_key_to}}"
-          menu-options="[[keyMapTargets_]]">
-      </settings-dropdown-menu>
+    <settings-slider id="delaySlider"
+        pref="{{prefs.settings.language.xkb_auto_repeat_delay_r2}}"
+        ticks="[[autoRepeatDelays_]]"
+        disabled="[[
+            !prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
+        label-aria="$i18n{keyRepeatDelay}"
+        label-min="$i18n{keyRepeatDelayLong}"
+        label-max="$i18n{keyRepeatDelayShort}">
+    </settings-slider>
+  </div>
+  <div class="settings-box continuation embedded">
+    <div class="start" id="repeatRateLabel" aria-hidden="true">
+      $i18n{keyRepeatRate}
     </div>
-    <template is="dom-if" if="[[hasAssistantKey_]]">
-      <div class="settings-box" id="assistantKey">
-        <div class="start" aria-hidden="true">$i18n{keyboardKeyAssistant}</div>
-        <settings-dropdown-menu label="$i18n{keyboardKeyAssistant}"
-            pref="{{prefs.settings.language.xkb_remap_assistant_key_to}}"
-            menu-options="[[keyMapTargets_]]">
-        </settings-dropdown-menu>
-      </div>
-    </template>
-    <template is="dom-if" if="[[showCapsLock_]]">
-      <div class="settings-box" id="capsLockKey">
-        <div class="start" aria-hidden="true">$i18n{keyboardKeyCapsLock}</div>
-        <settings-dropdown-menu label="$i18n{keyboardKeyCapsLock}"
-            pref="{{prefs.settings.language.remap_caps_lock_key_to}}"
-            menu-options="[[keyMapTargets_]]">
-        </settings-dropdown-menu>
-      </div>
-    </template>
-    <template is="dom-if" if="[[showExternalMetaKey_]]">
-      <div class="settings-box" id="externalMetaKey">
-        <div class="start" aria-hidden="true">
-          [[getExternalMetaKeyLabel_(hasLauncherKey_)]]
-        </div>
-        <settings-dropdown-menu
-            label="[[getExternalMetaKeyLabel_(hasLauncherKey_)]]"
-            pref="{{prefs.settings.language.remap_external_meta_key_to}}"
-            menu-options="[[keyMapTargets_]]">
-        </settings-dropdown-menu>
-      </div>
-    </template>
-    <template is="dom-if" if="[[showAppleCommandKey_]]">
-      <div class="settings-box" id="externalCommandKey">
-        <div class="start" aria-hidden="true">
-          [[getExternalCommandKeyLabel_(hasLauncherKey_)]]
-        </div>
-        <settings-dropdown-menu
-            label="[[getExternalCommandKeyLabel_(hasLauncherKey_)]]"
-            pref="{{prefs.settings.language.remap_external_command_key_to}}"
-            menu-options="[[keyMapTargets_]]">
-        </settings-dropdown-menu>
-      </div>
-    </template>
-    <settings-toggle-button
-        class="hr"
-        pref="{{prefs.settings.language.send_function_keys}}"
-        label="$i18n{keyboardSendFunctionKeys}"
-        sub-label="$i18n{keyboardSendFunctionKeysDescription}"
-        deep-link-focus-id$="[[Setting.kKeyboardFunctionKeys]]">
-    </settings-toggle-button>
-    <settings-toggle-button
-        class="hr"
-        pref="{{prefs.settings.language.xkb_auto_repeat_enabled_r2}}"
-        label="$i18n{keyboardEnableAutoRepeat}"
-        deep-link-focus-id$="[[Setting.kKeyboardAutoRepeat]]">
-    </settings-toggle-button>
-    <iron-collapse
-        opened="[[prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]">
-      <div class="settings-box continuation embedded">
-        <div class="start" id="repeatDelayLabel" aria-hidden="true">
-          $i18n{keyRepeatDelay}
-        </div>
-        <settings-slider id="delaySlider"
-            pref="{{prefs.settings.language.xkb_auto_repeat_delay_r2}}"
-            ticks="[[autoRepeatDelays_]]"
-            disabled="[[
-                !prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
-            label-aria="$i18n{keyRepeatDelay}"
-            label-min="$i18n{keyRepeatDelayLong}"
-            label-max="$i18n{keyRepeatDelayShort}">
-        </settings-slider>
-      </div>
-      <div class="settings-box continuation embedded">
-        <div class="start" id="repeatRateLabel" aria-hidden="true">
-          $i18n{keyRepeatRate}
-        </div>
-        <settings-slider id="repeatRateSlider"
-            pref="{{
-                prefs.settings.language.xkb_auto_repeat_interval_r2}}"
-            ticks="[[autoRepeatIntervals_]]"
-            disabled="[[
-                !prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
-            label-aria="$i18n{keyRepeatRate}"
-            label-min="$i18n{keyRepeatRateSlow}"
-            label-max="$i18n{keyRepeatRateFast}">
-        </settings-slider>
-      </div>
-    </iron-collapse>
-    <cr-link-row id="keyboardShortcutViewer" class="hr"
-        on-click="onShowKeyboardShortcutViewerTap_"
-        label="$i18n{showKeyboardShortcutViewer}" external
-        deep-link-focus-id$="[[Setting.kKeyboardShortcuts]]"></cr-link-row>
-    <cr-link-row id="showLanguagesInput"
-        class="hr" on-click="onShowInputSettingsTap_"
-        label="$i18n{keyboardShowInputSettings}"
-        role-description="$i18n{subpageArrowRoleDescription}">
-    </cr-link-row>
-  </template>
-  <script src="keyboard.js"></script>
-</dom-module>
+    <settings-slider id="repeatRateSlider"
+        pref="{{
+            prefs.settings.language.xkb_auto_repeat_interval_r2}}"
+        ticks="[[autoRepeatIntervals_]]"
+        disabled="[[
+            !prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
+        label-aria="$i18n{keyRepeatRate}"
+        label-min="$i18n{keyRepeatRateSlow}"
+        label-max="$i18n{keyRepeatRateFast}">
+    </settings-slider>
+  </div>
+</iron-collapse>
+<cr-link-row id="keyboardShortcutViewer" class="hr"
+    on-click="onShowKeyboardShortcutViewerTap_"
+    label="$i18n{showKeyboardShortcutViewer}" external
+    deep-link-focus-id$="[[Setting.kKeyboardShortcuts]]"></cr-link-row>
+<cr-link-row id="showLanguagesInput"
+    class="hr" on-click="onShowInputSettingsTap_"
+    label="$i18n{keyboardShowInputSettings}"
+    role-description="$i18n{subpageArrowRoleDescription}">
+</cr-link-row>

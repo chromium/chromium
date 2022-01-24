@@ -1,0 +1,38 @@
+From eae854ac2cfe6abcaaa0e145cf5726996ced0141 Mon Sep 17 00:00:00 2001
+From: Olabode Anise <anise@chromium.org>
+Date: Thu, 26 Aug 2021 01:20:18 +0000
+Subject: [PATCH] fixing unreachable break and unreachable return errors
+
+---
+ third_party/maldoca/src/maldoca/ole/ooxml_to_proto.cc      | 1 -
+ third_party/maldoca/src/maldoca/ole/property_set_stream.cc | 2 +-
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/third_party/maldoca/src/maldoca/ole/ooxml_to_proto.cc b/third_party/maldoca/src/maldoca/ole/ooxml_to_proto.cc
+index 439b245d1e20..0903236db877 100644
+--- a/third_party/maldoca/src/maldoca/ole/ooxml_to_proto.cc
++++ b/third_party/maldoca/src/maldoca/ole/ooxml_to_proto.cc
+@@ -276,7 +276,6 @@ absl::Status OOXMLToProto::ExtractPropertiesFromFile(absl::string_view filename,
+   if (!absl::StrContains(root_node_name, "Properties")) {
+     return ::maldoca::AbortedError("Unable to get root of the document!",
+                                    MaldocaErrorCode::MISSING_PROPERTIES);
+-    return absl::AbortedError("File does not contain properties!");
+   }
+ 
+   // Beginning of the linked list with all the properties.
+diff --git a/third_party/maldoca/src/maldoca/ole/property_set_stream.cc b/third_party/maldoca/src/maldoca/ole/property_set_stream.cc
+index f29cc4f76c1c..58b397a070eb 100644
+--- a/third_party/maldoca/src/maldoca/ole/property_set_stream.cc
++++ b/third_party/maldoca/src/maldoca/ole/property_set_stream.cc
+@@ -324,7 +324,7 @@ bool OLEPropertySetStream::VtValueReader(absl::string_view *stream,
+       }
+       stream->remove_prefix(sizeof(uint16_t));
+       return VtValueReader(stream, vt, value);
+-    } break;
++    }
+ 
+     case kVtBlob: {
+       uint32_t size;
+-- 
+2.33.0.rc2.250.ged5fa647cd-goog
+

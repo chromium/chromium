@@ -234,6 +234,39 @@ TEST(SchemefulSiteTest, SerializationConsistent) {
   }
 }
 
+TEST(SchemefulSiteTest, SerializationFileSiteWithHost) {
+  const struct {
+    SchemefulSite site;
+    std::string expected;
+  } kTestCases[] = {
+      {SchemefulSite(GURL("file:///etc/passwd")), "file://"},
+      {SchemefulSite(GURL("file://example.com/etc/passwd")),
+       "file://example.com"},
+      {SchemefulSite(GURL("file://example.com")), "file://example.com"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.site.GetDebugString());
+    std::string serialized_site = test_case.site.SerializeFileSiteWithHost();
+    EXPECT_EQ(test_case.expected, serialized_site);
+    absl::optional<SchemefulSite> deserialized_site =
+        SchemefulSite::Deserialize(serialized_site);
+    EXPECT_TRUE(deserialized_site);
+    EXPECT_EQ(test_case.site, deserialized_site);
+  }
+}
+
+TEST(SchemefulSiteTest, FileURLWithHostEquality) {
+  // Two file URLs with different hosts should result in unequal SchemefulSites.
+  SchemefulSite site1(GURL("file://foo/some/path.txt"));
+  SchemefulSite site2(GURL("file://bar/some/path.txt"));
+  EXPECT_NE(site1, site2);
+
+  // Two file URLs with the same host should result in equal SchemefulSites.
+  SchemefulSite site3(GURL("file://foo/another/path.pdf"));
+  EXPECT_EQ(site1, site3);
+}
+
 TEST(SchemefulSiteTest, OpaqueSerialization) {
   // List of origins which should all share a schemeful site.
   SchemefulSite kTestSites[] = {
@@ -329,51 +362,6 @@ TEST(SchemefulSiteTest, ConvertWebSocketToHttp) {
   SchemefulSite file_site(url::Origin::Create(GURL("file:///")));
   file_site.ConvertWebSocketToHttp();
   EXPECT_EQ(url::kFileScheme, file_site.GetInternalOriginForTesting().scheme());
-}
-
-// Test for a hack to work around https://crbug.com/1157010, until a more
-// permanent solution is in place. Purely numeric eTLD+1's can't safely be
-// stored in url::Origins.  Not only does trying to do so DCHECK, but converting
-// them to a GURL, as some code does, results in a URL with an IPv4 domain,
-// which is not correct.
-TEST(SchemefulSiteTest, NumericEtldPlusOne) {
-  base::HistogramTester histogram_tester;
-  SchemefulSite site(url::Origin::Create(GURL("https://foo.127.1/")));
-  EXPECT_EQ("foo.127.1", site.registrable_domain_or_host_for_testing());
-  EXPECT_NE(site, SchemefulSite(GURL("https://127.0.0.1/")));
-
-  SchemefulSite site2(url::Origin::Create(GURL("https://bar.foo.127.1/")));
-  EXPECT_EQ("bar.foo.127.1", site2.registrable_domain_or_host_for_testing());
-  EXPECT_NE(site2, SchemefulSite(GURL("https://127.0.0.1/")));
-  EXPECT_NE(site, site2);
-
-  EXPECT_FALSE(SchemefulSite::CreateIfHasRegisterableDomain(
-      url::Origin::Create(GURL("https://foo.127.1/"))));
-}
-
-TEST(SchemefulSiteTest, SiteDomainIsSafeHistogram) {
-  base::HistogramTester histogram_tester1;
-  SchemefulSite site(url::Origin::Create(GURL("https://foo.127.1/")));
-  histogram_tester1.ExpectUniqueSample("Net.SiteDomainIsSafe", false, 1);
-
-  base::HistogramTester histogram_tester2;
-  SchemefulSite site2(url::Origin::Create(GURL("https://foo.bar.127.1/")));
-  histogram_tester2.ExpectUniqueSample("Net.SiteDomainIsSafe", false, 1);
-
-  base::HistogramTester histogram_tester3;
-  SchemefulSite site3(url::Origin::Create(GURL("https://127.0.0.1/")));
-  histogram_tester3.ExpectUniqueSample("Net.SiteDomainIsSafe", true, 1);
-
-  base::HistogramTester histogram_tester4;
-  SchemefulSite site4(url::Origin::Create(GURL("https://foo.test/")));
-  histogram_tester4.ExpectUniqueSample("Net.SiteDomainIsSafe", true, 1);
-
-  base::HistogramTester histogram_tester5;
-  SchemefulSite site5{url::Origin()};
-  histogram_tester5.ExpectTotalCount("Net.SiteDomainIsSafe", 0);
-  SchemefulSite site6(
-      url::Origin::Create(GURL("data:text/html,<body>Hello World</body>")));
-  histogram_tester5.ExpectTotalCount("Net.SiteDomainIsSafe", 0);
 }
 
 TEST(SchemefulSiteTest, GetGURL) {

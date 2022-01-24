@@ -137,7 +137,8 @@ public class SigninSignoutIntegrationTest {
         assertSignedOut();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { syncConsentActivity.findViewById(R.id.positive_button).performClick(); });
-        CriteriaHelper.pollUiThread(mSigninManager.getIdentityManager()::hasPrimaryAccount);
+        CriteriaHelper.pollUiThread(
+                () -> mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
         verify(mSignInStateObserverMock).onSignedIn();
         verify(mSignInStateObserverMock, never()).onSignedOut();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -245,14 +246,14 @@ public class SigninSignoutIntegrationTest {
     private void assertSignedIn() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue("Account should be signed in!",
-                    mSigninManager.getIdentityManager().hasPrimaryAccount());
+                    mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
         });
     }
 
     private void assertSignedOut() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse("Account should be signed out!",
-                    mSigninManager.getIdentityManager().hasPrimaryAccount());
+                    mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
             Assert.assertNull(
                     mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC));
         });

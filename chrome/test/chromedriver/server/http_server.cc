@@ -15,6 +15,7 @@ namespace {
 // or so can cause crashes in Chrome (https://crbug.com/890854), so there is no
 // need to support messages that are too large.
 const int kBufferSize = 256 * 1024 * 1024;  // 256 MB
+const char kAnyHostPattern[] = "*";
 
 int ListenOnIPv4(net::ServerSocket* socket, uint16_t port, bool allow_remote) {
   std::string binding_ip = net::IPAddress::IPv4Localhost().ToString();
@@ -66,9 +67,57 @@ void GetCanonicalHostName(std::vector<std::string>* canonical_host_names) {
   return;
 }
 
+bool HostIsSafeToServe(GURL host_url,
+                       std::string host_header_value,
+                       const std::vector<net::IPAddress>& whitelisted_ips,
+                       const std::vector<std::string>& allowed_origins) {
+  auto host = host_url.host();
+  // Check if the origin is in the allowed origins.
+  for (const std::string& allowed_origin : allowed_origins) {
+    if (allowed_origin == kAnyHostPattern) {
+      // Allow any host origin in case of `allowed-origins` contains `*`.
+      return true;
+    }
+    if (allowed_origin == host) {
+      // Allow host from `allowed-origins`.
+      return true;
+    }
+  }
+
+  net::IPAddress host_address = net::IPAddress();
+  if (ParseURLHostnameToAddress(host, &host_address)) {
+    net::NetworkInterfaceList list;
+    if (net::GetNetworkList(&list,
+                            net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES)) {
+      for (const auto& networkInterface : list) {
+        if (networkInterface.address == host_address) {
+          return true;
+        }
+      }
+
+      LOG(ERROR) << "Rejecting request with host: " << host_header_value
+                 << " address: " << host_address.ToString();
+      return false;
+    }
+    return true;
+  }
+
+  static std::vector<std::string> canonical_host_names;
+  GetCanonicalHostName(&canonical_host_names);
+  for (const auto& system_host : canonical_host_names) {
+    if (IsMatch(system_host, host)) {
+      return true;
+    }
+  }
+
+  LOG(ERROR) << "Unable find match for host: " << host_header_value;
+  return false;
+}
+
 bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info,
                           bool allow_remote,
-                          const std::vector<net::IPAddress>& whitelisted_ips) {
+                          const std::vector<net::IPAddress>& whitelisted_ips,
+                          const std::vector<std::string>& allowed_origins) {
   std::string origin_header_value = info.GetHeaderValue("origin");
   std::string host_header_value = info.GetHeaderValue("host");
   bool is_origin_set = !origin_header_value.empty();
@@ -112,44 +161,8 @@ bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info,
     }
 
     if (is_host_set && !is_host_local) {
-      net::IPAddress host_address = net::IPAddress();
-      auto host = host_url.host();
-      bool host_match = false;
-      if (ParseURLHostnameToAddress(host, &host_address)) {
-        net::NetworkInterfaceList list;
-        if (net::GetNetworkList(&list,
-                                net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES)) {
-          for (const auto& networkInterface : list) {
-            if (networkInterface.address == host_address) {
-              host_match = true;
-              break;
-            }
-          }
-
-          if (!host_match) {
-            LOG(ERROR) << "Rejecting request with host: " << host_header_value
-                       << " address: " << host_address.ToString();
-            return false;
-          }
-        }
-      } else {
-        static bool cached = false;
-        static std::vector<std::string> canonical_host_names;
-        if (!cached) {
-          GetCanonicalHostName(&canonical_host_names);
-          cached = true;
-        }
-        for (const auto& system_host : canonical_host_names) {
-          if (IsMatch(system_host, host)) {
-            host_match = true;
-            break;
-          }
-        }
-        if (!host_match) {
-          LOG(ERROR) << "Unable find match for host: " << host_header_value;
-          return false;
-        }
-      }
+      return HostIsSafeToServe(host_url, host_header_value, whitelisted_ips,
+                               allowed_origins);
     }
   }
 
@@ -160,6 +173,7 @@ bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info,
 
 HttpServer::HttpServer(const std::string& url_base,
                        const std::vector<net::IPAddress>& whitelisted_ips,
+                       const std::vector<std::string>& allowed_origins,
                        const HttpRequestHandlerFunc& handle_request_func,
                        base::WeakPtr<HttpHandler> handler,
                        scoped_refptr<base::SingleThreadTaskRunner> cmd_runner)
@@ -167,6 +181,7 @@ HttpServer::HttpServer(const std::string& url_base,
       handle_request_func_(handle_request_func),
       allow_remote_(false),
       whitelisted_ips_(whitelisted_ips),
+      allowed_origins_(allowed_origins),
       handler_(handler),
       cmd_runner_(cmd_runner) {}
 
@@ -193,7 +208,8 @@ void HttpServer::OnConnect(int connection_id) {
 
 void HttpServer::OnHttpRequest(int connection_id,
                                const net::HttpServerRequestInfo& info) {
-  if (!RequestIsSafeToServe(info, allow_remote_, whitelisted_ips_)) {
+  if (!RequestIsSafeToServe(info, allow_remote_, whitelisted_ips_,
+                            allowed_origins_)) {
     server_->Send500(connection_id,
                      "Host header or origin header is specified and is not "
                      "whitelisted or localhost.",

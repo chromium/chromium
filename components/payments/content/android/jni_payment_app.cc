@@ -156,18 +156,6 @@ void JniPaymentApp::AbortPaymentApp(JNIEnv* env,
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
-bool JniPaymentApp::IsReadyForMinimalUI(JNIEnv* env) {
-  return payment_app_->IsReadyForMinimalUI();
-}
-
-ScopedJavaLocalRef<jstring> JniPaymentApp::AccountBalance(JNIEnv* env) {
-  return ConvertUTF8ToJavaString(env, payment_app_->GetAccountBalance());
-}
-
-void JniPaymentApp::DisableShowingOwnUI(JNIEnv* env) {
-  payment_app_->DisableShowingOwnUI();
-}
-
 ScopedJavaLocalRef<jstring> JniPaymentApp::GetApplicationIdentifierToHide(
     JNIEnv* env) {
   return ConvertUTF8ToJavaString(

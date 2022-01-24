@@ -177,18 +177,17 @@ void RemoteCommandsQueueTest::VerifyCommandIssuedTime(
     base::TimeTicks expected_issued_time) {
   // Maximum possible error can be 1 millisecond due to truncating.
   EXPECT_GE(expected_issued_time, job->issued_time());
-  EXPECT_LE(expected_issued_time - base::TimeDelta::FromMilliseconds(1),
-            job->issued_time());
+  EXPECT_LE(expected_issued_time - base::Milliseconds(1), job->issued_time());
 }
 
 TEST_F(RemoteCommandsQueueTest, SingleSucceedCommand) {
   // Initialize a job expected to succeed after 5 seconds, from a protobuf with
   // |kUniqueID|, |kPayload| and |test_start_time_| as command issued time.
   std::unique_ptr<RemoteCommandJob> job(
-      new TestRemoteCommandJob(true, base::TimeDelta::FromSeconds(5)));
+      new TestRemoteCommandJob(true, base::Seconds(5)));
   InitializeJob(job.get(), kUniqueID, test_start_time_, kPayload);
 
-  AddJobAndVerifyRunningAfter(std::move(job), base::TimeDelta::FromSeconds(4));
+  AddJobAndVerifyRunningAfter(std::move(job), base::Seconds(4));
 
   // After 6 seconds, the job is expected to be finished.
   EXPECT_CALL(observer_,
@@ -196,7 +195,7 @@ TEST_F(RemoteCommandsQueueTest, SingleSucceedCommand) {
                                            RemoteCommandJob::SUCCEEDED),
                                   Property(&RemoteCommandJob::GetResultPayload,
                                            Pointee(StrEq(kPayload))))));
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_runner_->FastForwardBy(base::Seconds(2));
   Mock::VerifyAndClearExpectations(&observer_);
 
   task_runner_->FastForwardUntilNoTasksRemain();
@@ -206,10 +205,10 @@ TEST_F(RemoteCommandsQueueTest, SingleFailedCommand) {
   // Initialize a job expected to fail after 10 seconds, from a protobuf with
   // |kUniqueID|, |kPayload| and |test_start_time_| as command issued time.
   std::unique_ptr<RemoteCommandJob> job(
-      new TestRemoteCommandJob(false, base::TimeDelta::FromSeconds(10)));
+      new TestRemoteCommandJob(false, base::Seconds(10)));
   InitializeJob(job.get(), kUniqueID, test_start_time_, kPayload);
 
-  AddJobAndVerifyRunningAfter(std::move(job), base::TimeDelta::FromSeconds(9));
+  AddJobAndVerifyRunningAfter(std::move(job), base::Seconds(9));
 
   // After 11 seconds, the job is expected to be finished.
   EXPECT_CALL(observer_,
@@ -217,7 +216,7 @@ TEST_F(RemoteCommandsQueueTest, SingleFailedCommand) {
                   Property(&RemoteCommandJob::status, RemoteCommandJob::FAILED),
                   Property(&RemoteCommandJob::GetResultPayload,
                            Pointee(StrEq(kPayload))))));
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_runner_->FastForwardBy(base::Seconds(2));
   Mock::VerifyAndClearExpectations(&observer_);
 
   task_runner_->FastForwardUntilNoTasksRemain();
@@ -227,17 +226,16 @@ TEST_F(RemoteCommandsQueueTest, SingleTerminatedCommand) {
   // Initialize a job expected to fail after 600 seconds, from a protobuf with
   // |kUniqueID|, |kPayload| and |test_start_time_| as command issued time.
   std::unique_ptr<RemoteCommandJob> job(
-      new TestRemoteCommandJob(false, base::TimeDelta::FromSeconds(600)));
+      new TestRemoteCommandJob(false, base::Seconds(600)));
   InitializeJob(job.get(), kUniqueID, test_start_time_, kPayload);
 
-  AddJobAndVerifyRunningAfter(std::move(job),
-                              base::TimeDelta::FromSeconds(599));
+  AddJobAndVerifyRunningAfter(std::move(job), base::Seconds(599));
 
   // After 601 seconds, the job is expected to be terminated (10 minutes is the
   // timeout duration).
   EXPECT_CALL(observer_, OnJobFinished(Property(&RemoteCommandJob::status,
                                                 RemoteCommandJob::TERMINATED)));
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_runner_->FastForwardBy(base::Seconds(2));
   Mock::VerifyAndClearExpectations(&observer_);
 
   task_runner_->FastForwardUntilNoTasksRemain();
@@ -247,7 +245,7 @@ TEST_F(RemoteCommandsQueueTest, SingleMalformedCommand) {
   // Initialize a job expected to succeed after 10 seconds, from a protobuf with
   // |kUniqueID|, |kMalformedCommandPayload| and |test_start_time_|.
   std::unique_ptr<RemoteCommandJob> job(
-      new TestRemoteCommandJob(true, base::TimeDelta::FromSeconds(10)));
+      new TestRemoteCommandJob(true, base::Seconds(10)));
   // Should failed immediately.
   FailInitializeJob(job.get(), kUniqueID, test_start_time_,
                     TestRemoteCommandJob::kMalformedCommandPayload);
@@ -257,9 +255,8 @@ TEST_F(RemoteCommandsQueueTest, SingleExpiredCommand) {
   // Initialize a job expected to succeed after 10 seconds, from a protobuf with
   // |kUniqueID| and |test_start_time_ - 4 hours|.
   std::unique_ptr<RemoteCommandJob> job(
-      new TestRemoteCommandJob(true, base::TimeDelta::FromSeconds(10)));
-  InitializeJob(job.get(), kUniqueID,
-                test_start_time_ - base::TimeDelta::FromHours(4),
+      new TestRemoteCommandJob(true, base::Seconds(10)));
+  InitializeJob(job.get(), kUniqueID, test_start_time_ - base::Hours(4),
                 std::string());
 
   // Add the job to the queue. It should not be started.
@@ -277,7 +274,7 @@ TEST_F(RemoteCommandsQueueTest, TwoCommands) {
   // Initialize a job expected to succeed after 5 seconds, from a protobuf with
   // |kUniqueID|, |kPayload| and |test_start_time_| as command issued time.
   std::unique_ptr<RemoteCommandJob> job(
-      new TestRemoteCommandJob(true, base::TimeDelta::FromSeconds(5)));
+      new TestRemoteCommandJob(true, base::Seconds(5)));
   InitializeJob(job.get(), kUniqueID, test_start_time_, kPayload);
 
   // Add the job to the queue, should start executing immediately. Pass the
@@ -293,18 +290,17 @@ TEST_F(RemoteCommandsQueueTest, TwoCommands) {
   // Initialize another job expected to succeed after 5 seconds, from a protobuf
   // with |kUniqueID2|, |kPayload2| and |test_start_time_ + 1s| as command
   // issued time.
-  job = std::make_unique<TestRemoteCommandJob>(true,
-                                               base::TimeDelta::FromSeconds(5));
-  InitializeJob(job.get(), kUniqueID2,
-                test_start_time_ + base::TimeDelta::FromSeconds(1), kPayload2);
+  job = std::make_unique<TestRemoteCommandJob>(true, base::Seconds(5));
+  InitializeJob(job.get(), kUniqueID2, test_start_time_ + base::Seconds(1),
+                kPayload2);
 
   // After 2 seconds, add the second job. It should be queued and not start
   // running immediately.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_runner_->FastForwardBy(base::Seconds(2));
   queue_.AddJob(std::move(job));
 
   // After 4 seconds, nothing happens.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_runner_->FastForwardBy(base::Seconds(2));
   Mock::VerifyAndClearExpectations(&observer_);
 
   // After 6 seconds, the first job should finish running and the second one
@@ -321,7 +317,7 @@ TEST_F(RemoteCommandsQueueTest, TwoCommands) {
       OnJobStarted(AllOf(
           Property(&RemoteCommandJob::unique_id, kUniqueID2),
           Property(&RemoteCommandJob::status, RemoteCommandJob::RUNNING))));
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_runner_->FastForwardBy(base::Seconds(2));
   Mock::VerifyAndClearExpectations(&observer_);
 
   // After 11 seconds, the second job should finish running as well.
@@ -332,7 +328,7 @@ TEST_F(RemoteCommandsQueueTest, TwoCommands) {
           Property(&RemoteCommandJob::status, RemoteCommandJob::SUCCEEDED),
           Property(&RemoteCommandJob::GetResultPayload,
                    Pointee(StrEq(kPayload2))))));
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_runner_->FastForwardBy(base::Seconds(5));
   Mock::VerifyAndClearExpectations(&observer_);
 
   task_runner_->FastForwardUntilNoTasksRemain();

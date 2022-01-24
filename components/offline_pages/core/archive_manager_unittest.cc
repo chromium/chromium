@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 #include <set>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/file.h"

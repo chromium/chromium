@@ -25,7 +25,6 @@
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
-#include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-forward.h"
@@ -68,7 +67,6 @@ struct DropData;
 struct MediaPlayerWatchTime;
 struct NativeWebKeyboardEvent;
 struct Referrer;
-struct SecurityStyleExplanations;
 }  // namespace content
 
 namespace device {
@@ -201,9 +199,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   // gestures.
   virtual bool CanOverscrollContent();
 
-  // Invoked prior to showing before unload handler confirmation dialog.
-  virtual void WillRunBeforeUnloadConfirm() {}
-
   // Returns true if javascript dialogs and unload alerts are suppressed.
   // Default is false.
   virtual bool ShouldSuppressDialogs(WebContents* source);
@@ -267,8 +262,14 @@ class CONTENT_EXPORT WebContentsDelegate {
                            const std::string& request_method,
                            base::OnceCallback<void(bool)> callback);
 
+  // Asks the delegate to open/show the context menu based on `params`.
+  //
+  // The `render_frame_host` represents the frame that requests the context menu
+  // (typically this frame is focused, but this is not necessarily the case -
+  // see https://crbug.com/1257907#c14).
+  //
   // Returns true if the context menu operation was handled by the delegate.
-  virtual bool HandleContextMenu(RenderFrameHost* render_frame_host,
+  virtual bool HandleContextMenu(RenderFrameHost& render_frame_host,
                                  const ContextMenuParams& params);
 
   // Allows delegates to handle keyboard events before sending to the renderer.
@@ -549,6 +550,13 @@ class CONTENT_EXPORT WebContentsDelegate {
       WebContents* web_contents,
       blink::mojom::MediaStreamType type);
 
+  // Returns the human-readable name for title in Media Controls.
+  // If the returned value is an empty string, it means that there is no
+  // human-readable name.
+  // For example, this returns an extension name for title instead of extension
+  // url.
+  virtual std::string GetTitleForMediaControls(WebContents* web_contents);
+
 #if defined(OS_ANDROID)
   // Returns true if the given media should be blocked to load.
   virtual bool ShouldBlockMediaRequest(const GURL& url);
@@ -580,14 +588,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual bool SaveFrame(const GURL& url,
                          const Referrer& referrer,
                          content::RenderFrameHost* rfh);
-
-  // Can be overridden by a delegate to return the security style of the
-  // given |web_contents|, populating |security_style_explanations| to
-  // explain why the SecurityStyle was downgraded. Returns
-  // SecurityStyleUnknown if not overriden.
-  virtual blink::SecurityStyle GetSecurityStyle(
-      WebContents* web_contents,
-      SecurityStyleExplanations* security_style_explanations);
 
   // Called when a suspicious navigation of the main frame has been blocked.
   // Allows the delegate to provide some UI to let the user know about the

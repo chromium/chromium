@@ -243,7 +243,7 @@ class PredictionServiceTest : public testing::Test {
           FROM_HERE,
           base::BindOnce(&PredictionServiceTest::Respond,
                          base::Unretained(this), url, 0, err_code),
-          base::TimeDelta::FromSecondsD(delay_in_seconds));
+          base::Seconds(delay_in_seconds));
       return;
     }
 

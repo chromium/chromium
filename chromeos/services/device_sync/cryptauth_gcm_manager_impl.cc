@@ -193,8 +193,8 @@ void RecordGCMRegistrationMetrics(gcm::GCMClient::Result result,
                                   base::TimeDelta execution_time) {
   base::UmaHistogramCustomTimes(
       "CryptAuth.Gcm.Registration.AttemptTimeWithRetries", execution_time,
-      base::TimeDelta::FromSeconds(1) /* min */,
-      base::TimeDelta::FromMinutes(10) /* max */, 100 /* buckets */);
+      base::Seconds(1) /* min */, base::Minutes(10) /* max */,
+      100 /* buckets */);
 
   base::UmaHistogramEnumeration("CryptAuth.Gcm.Registration.Result", result);
 }

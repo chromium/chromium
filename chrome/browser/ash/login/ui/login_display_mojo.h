@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_MOJO_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_MOJO_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
@@ -22,6 +21,10 @@ class LoginDisplayMojo : public LoginDisplay,
                          public user_manager::UserManager::Observer {
  public:
   explicit LoginDisplayMojo(LoginDisplayHostMojo* host);
+
+  LoginDisplayMojo(const LoginDisplayMojo&) = delete;
+  LoginDisplayMojo& operator=(const LoginDisplayMojo&) = delete;
+
   ~LoginDisplayMojo() override;
 
   // Updates the state of the authentication methods supported for the user.
@@ -64,8 +67,6 @@ class LoginDisplayMojo : public LoginDisplay,
   LoginDisplayWebUIHandler* webui_handler_ = nullptr;
 
   base::WeakPtrFactory<LoginDisplayMojo> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDisplayMojo);
 };
 
 }  // namespace ash

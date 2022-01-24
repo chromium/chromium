@@ -11,8 +11,8 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/test/chromedriver/net/command_id.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "net/base/net_errors.h"
@@ -70,7 +70,7 @@ bool SyncWebSocketImpl::Core::Connect(const GURL& url) {
     context_getter_->GetNetworkTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&SyncWebSocketImpl::Core::ConnectOnIO, this,
                                   url, &success, &event));
-    if (event.TimedWait(base::TimeDelta::FromSeconds(timeout)))
+    if (event.TimedWait(base::Seconds(timeout)))
       break;
     LOG(WARNING) << "Timed out connecting to Chrome, "
                  << (timeout < kMaxTimeout ? "retrying..." : "giving up.");
@@ -106,14 +106,14 @@ SyncWebSocket::StatusCode SyncWebSocketImpl::Core::ReceiveNextMessage(
   while (received_queue_.empty() && is_connected_) {
     base::TimeDelta next_wait = timeout.GetRemainingTime();
     if (next_wait <= base::TimeDelta())
-      return SyncWebSocket::kTimeout;
+      return SyncWebSocket::StatusCode::kTimeout;
     on_update_event_.TimedWait(next_wait);
   }
   if (!is_connected_)
-    return SyncWebSocket::kDisconnected;
+    return SyncWebSocket::StatusCode::kDisconnected;
   *message = received_queue_.front();
   received_queue_.pop_front();
-  return SyncWebSocket::kOk;
+  return SyncWebSocket::StatusCode::kOk;
 }
 
 bool SyncWebSocketImpl::Core::HasNextMessage() {

@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "js_module_root=" + rebase_path(".", root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/content/browser/attribution_reporting",
+                            root_build_dir),
+                  ]
+  deps = [ ":attribution_internals" ]
+}
+
+js_library("attribution_internals") {
+  deps = [
+    "//content/browser/attribution_reporting:mojo_bindings_webui_js",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+}

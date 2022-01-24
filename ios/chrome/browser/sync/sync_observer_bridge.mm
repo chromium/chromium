@@ -19,8 +19,7 @@ SyncObserverBridge::SyncObserverBridge(id<SyncObserverModelBridge> delegate,
     scoped_observation_.Observe(sync_service);
 }
 
-SyncObserverBridge::~SyncObserverBridge() {
-}
+SyncObserverBridge::~SyncObserverBridge() {}
 
 void SyncObserverBridge::OnStateChanged(syncer::SyncService* sync) {
   [delegate_ onSyncStateChanged];

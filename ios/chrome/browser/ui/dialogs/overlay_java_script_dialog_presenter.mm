@@ -82,7 +82,8 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptDialog(
   }
 
   bool from_main_frame_origin =
-      origin_url.GetOrigin() == web_state->GetLastCommittedURL().GetOrigin();
+      origin_url.DeprecatedGetOriginAsURL() ==
+      web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<JavaScriptDialogRequest>(
           dialog_type, web_state, origin_url, from_main_frame_origin,

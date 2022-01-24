@@ -4,14 +4,17 @@
 
 /** @fileoverview Runs the Polymer tests for the PasswordsDeviceSection page. */
 
+import 'chrome://settings/lazy_load.js';
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MultiStorePasswordUiEntry, PasswordManagerImpl, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {createMultiStorePasswordEntry, createPasswordEntry, PasswordDeviceSectionElementFactory} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
-import {simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
-import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
-import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
-import {assertEquals, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {createMultiStorePasswordEntry, createPasswordEntry, PasswordDeviceSectionElementFactory} from './passwords_and_autofill_fake_data.js';
+import {simulateStoredAccounts, simulateSyncStatus} from './sync_test_util.js';
+import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 /**
  * Sets the fake password data, the appropriate route and creates the element.
@@ -74,9 +77,9 @@ suite('PasswordsDeviceSection', function() {
   setup(function() {
     PolymerTest.clearBody();
     passwordManager = new TestPasswordManagerProxy();
-    PasswordManagerImpl.instance_ = passwordManager;
+    PasswordManagerImpl.setInstance(passwordManager);
     syncBrowserProxy = new TestSyncBrowserProxy();
-    SyncBrowserProxyImpl.instance_ = syncBrowserProxy;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
     elementFactory = new PasswordDeviceSectionElementFactory(document);
 
     // The user only enters this page when they are eligible (signed-in but not
@@ -371,9 +374,6 @@ suite('PasswordsDeviceSection', function() {
   test(
       'moveMultiplePasswordsBannerHiddenWhenNoLocalPasswords',
       async function() {
-        loadTimeData.overrideValues(
-            {enableMovingMultiplePasswordsToAccount: true});
-
         const passwordsDeviceSection = await createPasswordsDeviceSection(
             syncBrowserProxy, passwordManager, []);
 
@@ -384,9 +384,6 @@ suite('PasswordsDeviceSection', function() {
 
   test(
       'moveMultiplePasswordsBannerVisibleWhenLocalPasswords', async function() {
-        loadTimeData.overrideValues(
-            {enableMovingMultiplePasswordsToAccount: true});
-
         const devicePassword = createPasswordEntry(
             {username: 'device', id: 0, fromAccountStore: false});
         const passwordsDeviceSection = await createPasswordsDeviceSection(
@@ -400,9 +397,6 @@ suite('PasswordsDeviceSection', function() {
   test(
       'moveMultiplePasswordsBannerHiddenWhenConflictingLocalAndDevicesPasswords',
       async function() {
-        loadTimeData.overrideValues(
-            {enableMovingMultiplePasswordsToAccount: true});
-
         // The existence of two entries with the same url and password username
         // indicate that they must have different passwords. Otherwise, they
         // would have deduped earlier.

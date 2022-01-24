@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
 namespace ash {
@@ -22,6 +21,9 @@ class RequestValue {
   // Creates an empty value. Use static methods to create a value holding a
   // proper content.
   RequestValue();
+
+  RequestValue(const RequestValue&) = delete;
+  RequestValue& operator=(const RequestValue&) = delete;
 
   virtual ~RequestValue();
 
@@ -123,8 +125,6 @@ class RequestValue {
                       OperationRequestedError::Params>
       operation_error_params_;
   std::unique_ptr<std::string> testing_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestValue);
 };
 
 }  // namespace file_system_provider

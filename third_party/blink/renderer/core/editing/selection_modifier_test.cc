@@ -48,6 +48,33 @@ TEST_F(SelectionModifierTest, MoveForwardByWordNone) {
   EXPECT_EQ(SelectionInDOMTree(), modifier.Selection().AsSelection());
 }
 
+TEST_F(SelectionModifierTest, MoveByLineBlockInInline) {
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "font: 10px/20px Ahem;"
+      "padding: 10px;"
+      "writing-mode: horizontal-tb;"
+      "}");
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("<div>ab|c<b><p>ABC</p><p>DEF</p>def</b></div>");
+  SelectionModifier modifier(GetFrame(), selection);
+
+  EXPECT_EQ("<div>abc<b><p>AB|C</p><p>DEF</p>def</b></div>",
+            MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DE|F</p>def</b></div>",
+            MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DEF</p>de|f</b></div>",
+            MoveForwardByLine(modifier));
+
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DE|F</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>AB|C</p><p>DEF</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>ab|c<b><p>ABC</p><p>DEF</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+}
+
 TEST_F(SelectionModifierTest, MoveByLineHorizontal) {
   LoadAhem();
   InsertStyleElement(

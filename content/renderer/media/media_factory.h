@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -53,7 +54,7 @@ class MediaLog;
 class MediaObserver;
 class RemotePlaybackClientWrapper;
 class RendererWebMediaPlayerDelegate;
-}
+}  // namespace media
 
 namespace content {
 

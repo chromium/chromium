@@ -444,8 +444,7 @@ base::Time Statement::ColumnTime(int column_index) {
       << "Invalid column index";
 
   int64_t int_value = sqlite3_column_int64(ref_->stmt(), column_index);
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(int_value));
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(int_value));
 }
 
 std::string Statement::ColumnString(int column_index) {

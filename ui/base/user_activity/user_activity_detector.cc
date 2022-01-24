@@ -84,8 +84,8 @@ void UserActivityDetector::RemoveObserver(UserActivityObserver* observer) {
 }
 
 void UserActivityDetector::OnDisplayPowerChanging() {
-  honor_mouse_events_time_ = GetCurrentTime() +
-      base::TimeDelta::FromMilliseconds(kDisplayPowerChangeIgnoreMouseMs);
+  honor_mouse_events_time_ =
+      GetCurrentTime() + base::Milliseconds(kDisplayPowerChangeIgnoreMouseMs);
 }
 
 void UserActivityDetector::HandleExternalUserActivity() {

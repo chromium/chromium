@@ -19,6 +19,10 @@ namespace net {
 class NET_EXPORT TrustStoreCollection : public TrustStore {
  public:
   TrustStoreCollection();
+
+  TrustStoreCollection(const TrustStoreCollection&) = delete;
+  TrustStoreCollection& operator=(const TrustStoreCollection&) = delete;
+
   ~TrustStoreCollection() override;
 
   // Includes results from |store| in the combined output. |store| must
@@ -28,14 +32,11 @@ class NET_EXPORT TrustStoreCollection : public TrustStore {
   // TrustStore implementation:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
-  void GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                CertificateTrust* trust,
-                base::SupportsUserData* debug_data) const override;
+  CertificateTrust GetTrust(const ParsedCertificate* cert,
+                            base::SupportsUserData* debug_data) const override;
 
  private:
   std::vector<TrustStore*> stores_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustStoreCollection);
 };
 
 }  // namespace net

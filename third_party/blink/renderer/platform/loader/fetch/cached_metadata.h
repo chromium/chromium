@@ -34,6 +34,7 @@
 #include <stdint.h>
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -60,6 +61,20 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
                                               size_t size) {
     return base::AdoptRef(
         new CachedMetadata(data_type_id, data, SafeCast<wtf_size_t>(size)));
+  }
+
+  static Vector<uint8_t> GetSerializedData(uint32_t data_type_id,
+                                           const uint8_t* data,
+                                           size_t size) {
+    Vector<uint8_t> vector;
+    vector.ReserveInitialCapacity(kCachedMetaDataStart +
+                                  SafeCast<wtf_size_t>(size));
+    uint32_t marker = CachedMetadataHandler::kSingleEntry;
+    vector.Append(reinterpret_cast<const uint8_t*>(&marker), sizeof(uint32_t));
+    vector.Append(reinterpret_cast<const uint8_t*>(&data_type_id),
+                  sizeof(uint32_t));
+    vector.Append(data, SafeCast<wtf_size_t>(size));
+    return vector;
   }
 
   static scoped_refptr<CachedMetadata> CreateFromSerializedData(

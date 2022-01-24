@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_MODEL_SYNCABLE_SERVICE_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -27,6 +26,10 @@ class SyncErrorFactory;
 class SyncableService : public base::SupportsWeakPtr<SyncableService> {
  public:
   SyncableService() = default;
+
+  SyncableService(const SyncableService&) = delete;
+  SyncableService& operator=(const SyncableService&) = delete;
+
   virtual ~SyncableService() = default;
 
   // A StartSyncFlare is useful when your SyncableService has a need for sync
@@ -72,9 +75,6 @@ class SyncableService : public base::SupportsWeakPtr<SyncableService> {
   virtual absl::optional<ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const SyncChangeList& change_list) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncableService);
 };
 
 }  // namespace syncer

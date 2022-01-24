@@ -43,12 +43,22 @@
     color: var(--cr-secondary-text-color);
     display: flex;
     font-size: var(--mwb-list-section-title-font-size);
+    font-weight: bolder;
     height: var(--mwb-list-section-title-height);
-    padding-inline-start: 8px;
+    padding-inline-end: 24px;
+    padding-inline-start: 16px;
     position: sticky;
     text-transform: uppercase;
     top: 0;
+    user-select: none;
     z-index: 1000;
+  }
+
+  cr-expand-button {
+    --cr-expand-button-size: 24px;
+    --cr-expand-button-icon-size: 16px;
+    --cr-section-vertical-padding: 0;
+    flex-grow: 1;
   }
 </style>
 <tab-search-search-field id="searchField" autofocus
@@ -61,7 +71,16 @@
   <infinite-list id="tabsList" max-height="[[listMaxHeight_(availableHeight_)]]"
       items="[[filteredItems_]]">
     <template data-type="TitleItem">
-      <div class="list-section-title">[[item.title]]</div>
+      <div class="list-section-title">
+        <div>[[item.title]]</div>
+        <template is="dom-if" if="[[item.expandable]]">
+          <cr-expand-button aria-label="$i18n{recentlyClosedExpandA11yLabel}"
+              expand-icon="cr:arrow-drop-down" collapse-icon="cr:arrow-drop-up"
+              expanded="[[item.expanded]]"
+              on-expanded-changed="onTitleExpandChanged_" no-hover>
+          </cr-expand-button>
+        </template>
+      </div>
     </template>
     <template data-type="TabData" data-selectable>
       <tab-search-item id="[[item.tab.tabId]]" aria-label="[[ariaLabel_(item)]]"

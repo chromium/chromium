@@ -25,6 +25,9 @@ class UsbContext : public base::RefCountedThreadSafe<UsbContext> {
  public:
   explicit UsbContext(PlatformUsbContext context);
 
+  UsbContext(const UsbContext&) = delete;
+  UsbContext& operator=(const UsbContext&) = delete;
+
   PlatformUsbContext context() const { return context_; }
 
  protected:
@@ -37,8 +40,6 @@ class UsbContext : public base::RefCountedThreadSafe<UsbContext> {
 
   PlatformUsbContext context_;
   std::unique_ptr<UsbEventHandler> event_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbContext);
 };
 
 }  // namespace device

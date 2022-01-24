@@ -47,6 +47,10 @@ class ConnectionListener : public GamepadConsumer {
 };
 
 class GamepadServiceTest : public testing::Test {
+ public:
+  GamepadServiceTest(const GamepadServiceTest&) = delete;
+  GamepadServiceTest& operator=(const GamepadServiceTest&) = delete;
+
  protected:
   GamepadServiceTest() {
     memset(&test_data_, 0, sizeof(test_data_));
@@ -115,8 +119,6 @@ class GamepadServiceTest : public testing::Test {
   GamepadService* service_;
   std::vector<std::unique_ptr<ConnectionListener>> consumers_;
   Gamepads test_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadServiceTest);
 };
 
 TEST_F(GamepadServiceTest, ConnectionsTest) {

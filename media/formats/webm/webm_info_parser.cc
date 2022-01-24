@@ -96,8 +96,7 @@ bool WebMInfoParser::OnBinary(int id, const uint8_t* data, int size) {
     base::Time out_time;
     if (!base::Time::FromUTCExploded(exploded_epoch, &out_time))
       return false;
-    date_utc_ = out_time +
-                base::TimeDelta::FromMicroseconds(date_in_nanoseconds / 1000);
+    date_utc_ = out_time + base::Microseconds(date_in_nanoseconds / 1000);
   }
   return true;
 }

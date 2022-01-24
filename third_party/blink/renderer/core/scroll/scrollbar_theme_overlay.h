@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_OVERLAY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_OVERLAY_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 
 namespace blink {
@@ -81,7 +82,7 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
                         int thumb_thickness_thin_dip,
                         int scrollbar_margin_thin_dip);
 
-  ScrollbarPart HitTest(const Scrollbar&, const IntPoint&) override;
+  ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&) override;
 
  private:
   int thumb_thickness_default_dip_;

@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_KEYCODES_KEYBOARD_CODE_CONVERSION_WIN_H_
 #define UI_EVENTS_KEYCODES_KEYBOARD_CODE_CONVERSION_WIN_H_
 
+#include "base/win/windows_types.h"
 #include "ui/events/events_base_export.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"

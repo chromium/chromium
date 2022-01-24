@@ -9,9 +9,9 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -176,16 +176,17 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   suggestion.match = prefix_matched_suggestion ? Suggestion::PREFIX_MATCH
                                                : Suggestion::SUBSTRING_MATCH;
 
-  std::string server_id_for_virtual_card_option;
+  GURL card_art_url_for_virtual_card_option;
   if (virtual_card_option &&
       credit_card.record_type() == CreditCard::MASKED_SERVER_CARD) {
-    server_id_for_virtual_card_option = credit_card.server_id();
+    card_art_url_for_virtual_card_option = credit_card.card_art_url();
   } else if (virtual_card_option &&
              credit_card.record_type() == CreditCard::LOCAL_CARD) {
     const CreditCard* server_duplicate_card =
         GetServerCardForLocalCard(&credit_card);
     DCHECK(server_duplicate_card);
-    server_id_for_virtual_card_option = server_duplicate_card->server_id();
+    card_art_url_for_virtual_card_option =
+        server_duplicate_card->card_art_url();
     backend_id = server_duplicate_card->guid();
   }
   suggestion.backend_id = backend_id;
@@ -249,11 +250,15 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     // card is presented in the keyboard accessory.
     suggestion.feature_for_iph =
         feature_engagement::kIPHKeyboardAccessoryPaymentVirtualCardFeature.name;
+    suggestion.custom_icon_url = credit_card.card_art_url();
 #endif  // OS_ANDROID
 
-    // TODO(crbug.com/1196021): Populate custom_icon with card art if available
-    // (use server_id_for_virtual_card_option).
     suggestion.frontend_id = POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
+
+    gfx::Image* image = personal_data_->GetCreditCardArtImageForUrl(
+        card_art_url_for_virtual_card_option);
+    if (image)
+      suggestion.custom_icon = *image;
   }
 
   return suggestion;

@@ -9,6 +9,8 @@
  * Styles for the HSV color palette.
  */
 
+@provide 'goog.css.hsvapalette';
+
 .goog-hsva-palette,
 .goog-hsva-palette-sm {
   position: relative;

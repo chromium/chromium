@@ -19,8 +19,8 @@ MediaPosition::MediaPosition(double playback_rate,
       position_(position),
       last_updated_time_(base::TimeTicks::Now()),
       end_of_media_(end_of_media) {
-  DCHECK(duration_ >= base::TimeDelta::FromSeconds(0));
-  DCHECK(position_ >= base::TimeDelta::FromSeconds(0));
+  DCHECK(duration_ >= base::Seconds(0));
+  DCHECK(position_ >= base::Seconds(0));
   DCHECK(position_ <= duration_);
 }
 
@@ -48,7 +48,7 @@ base::TimeDelta MediaPosition::GetPositionAtTime(base::TimeTicks time) const {
   base::TimeDelta elapsed_time = playback_rate_ * (time - last_updated_time_);
   base::TimeDelta updated_position = position_ + elapsed_time;
 
-  base::TimeDelta start = base::TimeDelta::FromSeconds(0);
+  base::TimeDelta start = base::Seconds(0);
 
   if (updated_position <= start)
     return start;

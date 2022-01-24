@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
@@ -19,6 +18,9 @@ class AuthenticatorQRSheetView : public AuthenticatorRequestSheetView {
  public:
   explicit AuthenticatorQRSheetView(
       std::unique_ptr<AuthenticatorQRSheetModel> model);
+
+  AuthenticatorQRSheetView(const AuthenticatorQRSheetView&) = delete;
+  AuthenticatorQRSheetView& operator=(const AuthenticatorQRSheetView&) = delete;
 
   ~AuthenticatorQRSheetView() override;
 
@@ -34,8 +36,6 @@ class AuthenticatorQRSheetView : public AuthenticatorRequestSheetView {
   AuthenticatorQRViewCentered* qr_view_ = nullptr;
   const std::string qr_string_;
   base::RepeatingTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorQRSheetView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_QR_SHEET_VIEW_H_

@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_browsertest.h"
@@ -27,6 +26,9 @@ class MediaCanPlayTypeTest : public MediaBrowserTest {
  public:
   MediaCanPlayTypeTest() = default;
 
+  MediaCanPlayTypeTest(const MediaCanPlayTypeTest&) = delete;
+  MediaCanPlayTypeTest& operator=(const MediaCanPlayTypeTest&) = delete;
+
   void SetUpOnMainThread() override {
     EXPECT_TRUE(
         NavigateToURL(shell(), GetTestUrl("media", "canplaytype_test.html")));
@@ -35,9 +37,6 @@ class MediaCanPlayTypeTest : public MediaBrowserTest {
   void ExecuteTest(const std::string& command) {
     EXPECT_EQ(true, EvalJs(shell(), command));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaCanPlayTypeTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MediaCanPlayTypeTest, CodecSupportTest_av1) {

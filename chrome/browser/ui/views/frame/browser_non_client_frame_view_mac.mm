@@ -459,6 +459,14 @@ int BrowserNonClientFrameViewMac::TopUIFullscreenYOffset() const {
 
   CGFloat menu_bar_height =
       [[[NSApplication sharedApplication] mainMenu] menuBarHeight];
+  // If there's a camera notch, the window is already below where the menu bar
+  // will be, so we shouldn't account for it.
+  if (@available(macos 12.0.1, *)) {
+    id screen = [GetWidget()->GetNativeWindow().GetNativeNSWindow() screen];
+    NSEdgeInsets insets = [screen safeAreaInsets];
+    if (insets.top != 0)
+      menu_bar_height = 0;
+  }
   CGFloat title_bar_height =
       NSHeight([NSWindow frameRectForContentRect:NSZeroRect
                                        styleMask:NSWindowStyleMaskTitled]);
@@ -551,18 +559,25 @@ void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
     const int overlay_width =
         width() - (caption_button_placeholder_container_->size().width() +
                    web_app_frame_toolbar()->size().width());
+    const int overlay_height = GetTopInset(false);
     gfx::Rect bounding_rect;
 
     if (CaptionButtonsOnLeadingEdge() && base::i18n::IsRTL()) {
       bounding_rect =
           gfx::Rect(caption_button_placeholder_container_->size().width() +
                         web_app_frame_toolbar()->size().width(),
-                    0, overlay_width, GetTopInset(false));
+                    0, overlay_width, overlay_height);
     } else {
       bounding_rect = GetMirroredRect(
           gfx::Rect(caption_button_placeholder_container_->size().width(), 0,
-                    overlay_width, GetTopInset(false)));
+                    overlay_width, overlay_height));
     }
+
+    // In the case where ShouldHideTopUIForFullscreen() returns true, height
+    // goes to 0 so the rest of bounding_rect values need to be reset as well.
+    if (bounding_rect.height() == 0)
+      bounding_rect = gfx::Rect();
+
     web_contents->UpdateWindowControlsOverlay(bounding_rect);
   }
 }

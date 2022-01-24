@@ -10,8 +10,7 @@ import os
 
 class QualityCheckError(Exception):
   def __init__(self, msg):
-    super(QualityCheckError,
-          self).__init__('--check-data-quality assertion failed: ' + msg)
+    super().__init__('--check-data-quality assertion failed: ' + msg)
 
 
 def CheckDataQuality(size_info, track_string_literals):
@@ -169,7 +168,7 @@ def _DescribeSizeInfoContainerCoverage(raw_symbols, container):
     yield '* {} have a component assigned. {}'.format(len(syms), size_msg(syms))
 
     syms = in_section.WhereNameMatches(r'^\*')
-    if len(syms):
+    if syms:
       yield '* {} placeholders exist (symbols that start with **). {}'.format(
           len(syms), size_msg(syms))
 
@@ -184,7 +183,7 @@ def _DescribeSizeInfoContainerCoverage(raw_symbols, container):
           len(syms), size_msg(syms, show_padding=True))
 
     syms = in_section.Filter(lambda s: s.aliases)
-    if len(syms):
+    if syms:
       uniques = sum(1 for s in syms.IterUniqueSymbols())
       saved = sum(s.size_without_padding * (s.num_aliases - 1)
                   for s in syms.IterUniqueSymbols())
@@ -192,7 +191,7 @@ def _DescribeSizeInfoContainerCoverage(raw_symbols, container):
              '({} bytes saved)').format(len(syms), uniques, saved)
 
     syms = in_section.WhereObjectPathMatches('{shared}')
-    if len(syms):
+    if syms:
       yield '* {} symbols have shared ownership. {}'.format(
           len(syms), size_msg(syms))
     else:
@@ -205,7 +204,7 @@ def _DescribeSizeInfoContainerCoverage(raw_symbols, container):
                        (models.FLAG_GENERATED_SOURCE,
                         'from generated sources')):
       syms = in_section.WhereHasFlag(flag)
-      if len(syms):
+      if syms:
         yield '* {} symbols are {}. {}'.format(len(syms), desc, size_msg(syms))
 
     spam_counter = 0

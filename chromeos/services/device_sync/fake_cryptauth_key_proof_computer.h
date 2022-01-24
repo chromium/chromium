@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/cryptauth_key_proof_computer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,6 +20,11 @@ class CryptAuthKey;
 class FakeCryptAuthKeyProofComputer : public CryptAuthKeyProofComputer {
  public:
   FakeCryptAuthKeyProofComputer();
+
+  FakeCryptAuthKeyProofComputer(const FakeCryptAuthKeyProofComputer&) = delete;
+  FakeCryptAuthKeyProofComputer& operator=(
+      const FakeCryptAuthKeyProofComputer&) = delete;
+
   ~FakeCryptAuthKeyProofComputer() override;
 
   // CryptAuthKeyProofComputer:
@@ -38,8 +42,6 @@ class FakeCryptAuthKeyProofComputer : public CryptAuthKeyProofComputer {
  private:
   // If true, ComputeKeyProof() returns absl::nullopt.
   bool should_return_null_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthKeyProofComputer);
 };
 
 }  // namespace device_sync

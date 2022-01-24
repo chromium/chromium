@@ -22,6 +22,9 @@ class AwURLLoaderThrottleProvider : public blink::URLLoaderThrottleProvider {
       blink::ThreadSafeBrowserInterfaceBrokerProxy* broker,
       blink::URLLoaderThrottleProviderType type);
 
+  AwURLLoaderThrottleProvider& operator=(const AwURLLoaderThrottleProvider&) =
+      delete;
+
   ~AwURLLoaderThrottleProvider() override;
 
   // blink::URLLoaderThrottleProvider implementation.
@@ -42,8 +45,6 @@ class AwURLLoaderThrottleProvider : public blink::URLLoaderThrottleProvider {
   mojo::Remote<safe_browsing::mojom::SafeBrowsing> safe_browsing_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_ASSIGN(AwURLLoaderThrottleProvider);
 };
 
 }  // namespace android_webview

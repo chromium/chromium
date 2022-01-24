@@ -33,12 +33,11 @@ import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/origin_policy_manager.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
-import "services/network/public/mojom/p2p.mojom";
-import "services/network/public/mojom/p2p_trusted.mojom";
 import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/proxy_config_with_annotation.mojom";
 import "services/network/public/mojom/proxy_lookup_client.mojom";
 import "services/network/public/mojom/proxy_resolving_socket.mojom";
+import "services/network/public/mojom/reporting_service.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
@@ -57,6 +56,12 @@ import "url/mojom/url.mojom";
 
 [EnableIf=is_chromeos_ash]
 import "services/network/public/mojom/dhcp_wpad_url_client.mojom";
+
+[EnableIf=is_p2p_enabled]
+import "services/network/public/mojom/p2p.mojom";
+
+[EnableIf=is_p2p_enabled]
+import "services/network/public/mojom/p2p_trusted.mojom";
 
 const uint32 kWebSocketOptionNone = 0;
 // Disallow the request from sending cookies. Disallow the response from writing
@@ -117,7 +122,7 @@ struct CertVerifierServiceRemoteParams {
 
 // Client to update the custom proxy config.
 interface CustomProxyConfigClient {
-  OnCustomProxyConfigUpdated(CustomProxyConfig proxy_config);
+  OnCustomProxyConfigUpdated(CustomProxyConfig proxy_config) => ();
 
   // Marks the custom proxies in |bad_proxies| as temporarily bad, so they are
   // not layered onto the proxy resolution results for subsequent requests.
@@ -190,11 +195,82 @@ struct CTPolicy {
   array<string> excluded_legacy_spkis;
 };
 
+struct NetworkContextFilePaths {
+  // Points to a path that contains all the network service files and databases
+  // as listed below. If this network context is running inside a sandboxed
+  // network service, then this path should contain no other sensitive data
+  // since the sandboxed network service will have full access to this path.
+  // This should be a different path for each different network context running
+  // inside the network service.
+  mojo_base.mojom.FilePath data_path;
+
+  // Points to a path that might contain existing network service data files and
+  // databases from network contexts created with the same `data_path`.
+  // This parameter must be specified if `perform_migration` is set to true.
+  // Once migration has been successful (see below), data is no longer read from
+  // this path. Data could continue to be read from this path if migration
+  // fails, or if `trigger_migration` has never been set to true.
+  // If this parameter is specified then the sandbox will be granted access to
+  // the `data_path` specified above.
+  // This parameter, along with `trigger_migration` parameter below will be
+  // removed in the future, once migration of network context data to the new
+  // `data_path` has been completed. At this point the sandbox will be granted
+  // access to `data_path` unconditionally.
+  mojo_base.mojom.FilePath? unsandboxed_data_path;
+
+  // Points to the cookie database file name inside `data_path`. An in-memory
+  // cookie store is used if it's empty, or if `data_path` is empty.
+  mojo_base.mojom.FilePath? cookie_database_name;
+
+  // Points to the Trust Token database file name inside `data_path`. An
+  // in-memory trust token store is used if it's empty, or if `data_path` is
+  // empty, or (through a fallback in the initialization logic; see
+  // SQLiteTrustTokenPersister's comments) if initialization fails.
+  //
+  // Initializing the on-disk database takes place asynchronously, so requests
+  // near startup may not support Trust Tokens protocol operations.
+  mojo_base.mojom.FilePath? trust_token_database_name;
+
+  // The name of the file to store cached server properties (Like HTTP2 and QUIC
+  // support) inside `data_path`. This information is used as a performance
+  // optimization in connection logic. If empty, or if `data_path` is empty, an
+  // in-memory cache will be used instead.
+  mojo_base.mojom.FilePath? http_server_properties_file_name;
+
+  // The name of the file to store cached transport security properties (like
+  // HSTS) inside `data_path`. If empty, or `data_path` is empty, or the file
+  // can't be opened, an in-memory store will be used instead.
+  mojo_base.mojom.FilePath? transport_security_persister_file_name;
+
+  // Points to a sqlite database contained within `data_path` containing
+  // persisted Reporting clients and NEL policies. If Reporting and NEL
+  // persistence is disabled, then this field is ignored. If this field is
+  // empty, or `data_path` is empty, then persistence will be disabled
+  // regardless. This field should not be used if the ENABLE_REPORTING build
+  // flag is false.
+  mojo_base.mojom.FilePath? reporting_and_nel_store_database_name;
+
+  // Specifies whether or not a migration of existing data should occur from
+  // `unsandboxed_data_path` to `data_path`. It is not valid to set this to true
+  // if an `unsandboxed_data_path` is not specified.
+  // If the migration is successful then network context data will operate from
+  // `data_path`, and the old data will be removed from `unsandboxed_data_path`.
+  // If migration is unsuccessful then data will continue to operate from
+  // `unsandboxed_data_path` and migration will be re-attempted the next time
+  // `trigger_migration` is set to true.
+  // Since migration is a one-way operation, setting `trigger_migration` to
+  // false does not move the data back to `unsandboxed_data_path`. The network
+  // context data will be read from `data_path` or `unsandboxed_data_path`
+  // depending on whether a migration has successfully occurred previously.
+  // This parameter, along with `unsandboxed_data_path` parameter above will be
+  // removed in the future, once migration of network context data to the new
+  // `data_path` has been completed. At this point the sandbox will be granted
+  // access to `data_path` unconditionally.
+  bool trigger_migration = false;
+};
+
 // Parameters for constructing a network context.
 struct NetworkContextParams {
-  // Name used by memory tools to identify the context.
-  string? context_name;
-
   // The user agent string.
   string user_agent;
 
@@ -228,17 +304,6 @@ struct NetworkContextParams {
   [EnableIf=is_chromeos_ash]
   pending_remote<DhcpWpadUrlClient>? dhcp_wpad_url_client;
 
-  // Points to the cookie file. An in-memory cookie store is used if it's empty.
-  mojo_base.mojom.FilePath? cookie_path;
-
-  // Points to the Trust Token database. An in-memory trust token store is used
-  // if it's empty, or (through a fallback in the initialization logic; see
-  // SQLiteTrustTokenPersister's comments) if initialization fails.
-  //
-  // Initializing the on-disk database takes place asynchronously, so requests
-  // near startup may not support Trust Tokens protocol operations.
-  mojo_base.mojom.FilePath? trust_token_path;
-
   // If true, cookies will be stored encrypted.
   bool enable_encrypted_cookies = true;
 
@@ -259,23 +324,9 @@ struct NetworkContextParams {
   // If null and the cache is enabled, an in-memory database is used.
   mojo_base.mojom.FilePath? http_cache_path;
 
-  // The file to store cached server properties (Like HTTP2 and QUIC support).
-  // This information is used as a performance optimization in connection
-  // logic. If null, an in-memory cache will be used instead.
-  mojo_base.mojom.FilePath? http_server_properties_path;
-
-  // The directory in which to store cached transport security properties (like
-  // HSTS). The file itself will be called "TransportSecurity". If null, or the
-  // file can't be opened, an in-memory store will be used instead.
-  mojo_base.mojom.FilePath? transport_security_persister_path;
-
   // Enabled protocols. Note that these apply to all fetches, including those
   // used to fetch PAC scripts. Note that currently data URLs are always enabled
   // and file URLs are always disabled.
-
-  // True if ftp URLs should be supported.
-  // Must be false if built without FTP support.
-  bool enable_ftp_url_support = false;
 
   // Whether or not to check the Android platform's cleartext policy for
   // requests. Under some conditions, Android may advise us to block cleartext
@@ -417,13 +468,6 @@ struct NetworkContextParams {
   // policy.
   array<string> hsts_policy_bypass_list;
 
-  // Points to a sqlite database containing persisted Reporting clients and NEL
-  // policies. If Reporting and NEL persistence is disabled, then we'll ignore
-  // this field. If this field is null then persistence will be disabled
-  // regardless. This field should not be used if the ENABLE_REPORTING build
-  // flag is false.
-  mojo_base.mojom.FilePath? reporting_and_nel_store_path;
-
   // The params are network context specific which will be merged with
   // the dynamic preference from NetworkService side, to populate
   // HttpAuthPreference.
@@ -446,6 +490,14 @@ struct NetworkContextParams {
   // files and sandbox can be enabled for this network context.
   [EnableIf=win_permissions_validation]
   bool win_permissions_set = false;
+
+  // The paths to data files used by this network context, except for the disk
+  // cache which is specified by the `http_cache_path` parameter. If empty then
+  // persistent storage for all of the files within this parameter will be
+  // disabled for the network context and some data may be stored in memory or
+  // disabled. See the above definition of each inner field for details of these
+  // behaviors.
+  NetworkContextFilePaths? file_paths;
 };
 
 struct NetworkConditions {
@@ -842,7 +894,8 @@ interface NetworkContext {
   // directly interact with NetworkContext.
   NotifyExternalCacheHit(url.mojom.Url url, string http_method,
                          NetworkIsolationKey key,
-                         bool is_subframe_document_resource);
+                         bool is_subframe_document_resource,
+                         bool include_credentials);
 
   // Clears the host cache. This will affect all NetworkContexts that share the
   // same HostResolved as the NetworkContext this is called on.
@@ -889,35 +942,58 @@ interface NetworkContext {
 
   // Configures per-resource reporting endpoints set with the
   // Reporting-Endpoints header.
-  // |network_isolation_key| is used when creating the endpoints in the
-  // ReportingCache, and will need to match the key sent when reports are queued
-  // in order for these reporting endpoints to be considered for delivery.
+  // |reporting_source| is a token which identifies the document or worker with
+  // which the header was received. The endpoints configured by this method are
+  // only used to deliver reports which are queued by that same source.
+  // |isolation_info| is used when creating the endpoints in the ReportingCache
+  // and when determining which credentials to send with uploaded reports. Its
+  // network isolation key will need to match the key sent when reports are
+  // queued, in order for these reporting endpoints to be considered for
+  // delivery, although this should always be the case when reports are queued
+  // by the same source which configured the endpoints.
   // |endpoints| is a mapping of endpoint name to URL (URLs here are represented
   // as strings, and will be rejected if they fail to parse or are not secure).
   //
   // Spec: https://w3c.github.io/reporting/#header
   SetDocumentReportingEndpoints(
-      url.mojom.Origin origin, NetworkIsolationKey network_isolation_key,
+      mojo_base.mojom.UnguessableToken reporting_source,
+      url.mojom.Origin origin, IsolationInfo isolation_info,
       map<string,string> endpoints);
+
+  // Queues any outstanding reports for a single |reporting_source| (which
+  // must not be empty), and removes the reporting endpoint configuration for
+  // that source. This is called when the reporting source (document or worker)
+  // is destroyed.
+  SendReportsAndRemoveSource(
+      mojo_base.mojom.UnguessableToken reporting_source);
 
   // Queues a report via the Reporting API. |type| describes the type of report
   // (as well as what data will contained in |body|). |group| specifies the
   // endpoint group that the report will be delivered to. |url| indicates the
-  // URL of the resource that the report describes; |network_isolation_key|
-  // indicates the NetworkIsolationKey associated with the request, and is
-  // used for both looking up the appropriately scoped reporting information
-  // and for sending the report. |user_agent| may be provided, or will be
-  // automatically generated if omitted; |body| holds the contents of the
-  // report.
+  // URL of the resource that the report describes. |user_agent| may be
+  // provided, or will be automatically generated if omitted; |body| holds the
+  // contents of the report.
+  //
+  // |reporting_source| and |network_isolation_key| are used both for looking
+  // up the appropriately scoped reporting information and for sending the
+  // report. |network_isolation_key| indicates the NetworkIsolationKey
+  // associated with the request, while |reporting_source|, if not empty,
+  // identifies the specific document or worker instance causing the report to
+  // be queued. If |reporting_source| is not empty, then it will be used to
+  // look up reporting endpoints set with the SetDocumentReportingEndpoints
+  // method first, and if no matching endpoint is found, it will fall back to
+  // looking up a matching endpoint group configured for the origin and
+  // |network_isolation_key|.
   //
   // Note that this queued report will never be delivered if no reporting
-  // endpoint is registered for this |url| with the provided
-  // |network_isolation_key|.
+  // endpoint is registered for this |url| or |reporting_source| with the
+  // provided |network_isolation_key|.
   //
   // Spec: https://w3c.github.io/reporting/#concept-reports
   QueueReport(string type,
               string group,
               url.mojom.Url url,
+              mojo_base.mojom.UnguessableToken? reporting_source,
               NetworkIsolationKey network_isolation_key,
               string? user_agent,
               mojo_base.mojom.DictionaryValue body);
@@ -1160,6 +1236,7 @@ interface NetworkContext {
   // |network_isolation_key| is the network cache shard to associate with the
   // P2PSocketManager instance, and affects DNS cache shard used and proxy
   // connection sharing.
+  [EnableIf=is_p2p_enabled]
   CreateP2PSocketManager(
       NetworkIsolationKey network_isolation_key,
       pending_remote<P2PTrustedSocketManagerClient> client,
@@ -1264,17 +1341,20 @@ interface NetworkContext {
   LoadHttpAuthCacheProxyEntries(mojo_base.mojom.UnguessableToken cache_key)
       => ();
 
-  // Adds an entry to the HttpAuthCache or FtpAuthCache (determined by whether
-  // the |challenger| field within |challenge| is an ftp:// URL).
-  // |network_isolation_key| is the NetworkIsolationKey to restrict the
-  // credentials to, and is only respected for server (not proxy) HTTP auth
-  // and only when the NetworkService was configured to split the auth cache by
-  // NetworkIsolationKey. |challenge| may not necessarily contain a stateful
-  // challenge that requires a persistent connection, allowing the cache to be
-  // pre-populated.
+  // Adds an entry to the HttpAuthCache. |network_isolation_key| is the
+  // NetworkIsolationKey to restrict the credentials to, and is only respected
+  // for server (not proxy) HTTP auth and only when the NetworkService was
+  // configured to split the auth cache by NetworkIsolationKey. |challenge|
+  // may not necessarily contain a stateful challenge that requires a persistent
+  // connection, allowing the cache to be pre-populated.
   AddAuthCacheEntry(AuthChallengeInfo challenge,
                     NetworkIsolationKey network_isolation_key,
                     AuthCredentials credentials) => ();
+
+  // Sets whether
+  // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name is
+  // supported in this network context.
+  SetCorsNonWildcardRequestHeadersSupport(bool value);
 
   // Looks up credentials in the HttpAuthCache using the origin and path from
   // |url|. Only supports basic auth scheme. Only looks up server (not proxy)
@@ -1322,4 +1402,9 @@ interface NetworkContext {
   // Set whether SCT auditing is enabled for this NetworkContext.
   [EnableIf=is_ct_supported]
   SetSCTAuditingEnabled(bool enabled);
+
+  // Adds an observer that will receive Reporting Service callbacks. Generates
+  // events for Reporting API reports currently stored in the reporting service.
+  [EnableIf=enable_reporting]
+  AddReportingApiObserver(pending_remote<ReportingApiObserver> observer);
 };

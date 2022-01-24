@@ -7,6 +7,10 @@
 
 #include "ash/public/cpp/image_downloader.h"
 
+namespace net {
+class HttpRequestHeaders;
+}  // namespace net
+
 // Download images for ash using the active user profile. Fail and return null
 // image if there is no active user.
 class ImageDownloaderImpl : public ash::ImageDownloader {
@@ -17,6 +21,10 @@ class ImageDownloaderImpl : public ash::ImageDownloader {
   // ash::ImageDownloader:
   void Download(const GURL& url,
                 const net::NetworkTrafficAnnotationTag& annotation_tag,
+                DownloadCallback callback) override;
+  void Download(const GURL& url,
+                const net::NetworkTrafficAnnotationTag& annotation_tag,
+                const net::HttpRequestHeaders& additional_headers,
                 ash::ImageDownloader::DownloadCallback callback) override;
 };
 

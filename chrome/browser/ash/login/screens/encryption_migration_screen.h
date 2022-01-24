@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
@@ -36,10 +35,20 @@ class EncryptionMigrationScreen : public BaseScreen,
 
   using SkipMigrationCallback = base::OnceCallback<void(const UserContext&)>;
 
-  // Callback that can be used to check free disk space.
-  using FreeDiskSpaceFetcher = base::RepeatingCallback<int64_t()>;
+  class EncryptionMigrationScreenTestDelegate {
+   public:
+    virtual ~EncryptionMigrationScreenTestDelegate() = default;
+
+    // Returns free disk space for testing.
+    virtual int64_t GetFreeSpace() const = 0;
+  };
 
   explicit EncryptionMigrationScreen(EncryptionMigrationScreenView* view);
+
+  EncryptionMigrationScreen(const EncryptionMigrationScreen&) = delete;
+  EncryptionMigrationScreen& operator=(const EncryptionMigrationScreen&) =
+      delete;
+
   ~EncryptionMigrationScreen() override;
 
   // This method is called, when view is being destroyed. Note, if Delegate is
@@ -61,11 +70,8 @@ class EncryptionMigrationScreen : public BaseScreen,
   // This should be called after other state like UserContext, etc... are set.
   void SetupInitialView();
 
-  // Testing only: Sets the free disk space fetcher.
-  void set_free_disk_space_fetcher_for_testing(
-      FreeDiskSpaceFetcher free_disk_space_fetcher) {
-    free_disk_space_fetcher_ = std::move(free_disk_space_fetcher);
-  }
+  static void SetEncryptionMigrationScreenTestDelegate(
+      EncryptionMigrationScreenTestDelegate* test_delegate);
 
  protected:
   virtual device::mojom::WakeLock* GetWakeLock();
@@ -155,8 +161,6 @@ class EncryptionMigrationScreen : public BaseScreen,
 
   std::unique_ptr<LoginFeedback> login_feedback_;
 
-  FreeDiskSpaceFetcher free_disk_space_fetcher_;
-
   std::unique_ptr<
       base::ScopedObservation<UserDataAuthClient, UserDataAuthClient::Observer>>
       userdataauth_observer_;
@@ -165,8 +169,6 @@ class EncryptionMigrationScreen : public BaseScreen,
       power_manager_observation_{this};
 
   base::WeakPtrFactory<EncryptionMigrationScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EncryptionMigrationScreen);
 };
 
 }  // namespace ash

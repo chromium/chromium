@@ -71,6 +71,9 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // Observes measurements of round trip time.
   class NET_EXPORT_PRIVATE RTTObserver {
    public:
+    RTTObserver(const RTTObserver&) = delete;
+    RTTObserver& operator=(const RTTObserver&) = delete;
+
     // Will be called when a new RTT observation is available. The round trip
     // time is specified in milliseconds. The time when the observation was
     // taken and the source of the observation are provided.
@@ -81,14 +84,14 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
    protected:
     RTTObserver() {}
     virtual ~RTTObserver() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(RTTObserver);
   };
 
   // Observes measurements of throughput.
   class NET_EXPORT_PRIVATE ThroughputObserver {
    public:
+    ThroughputObserver(const ThroughputObserver&) = delete;
+    ThroughputObserver& operator=(const ThroughputObserver&) = delete;
+
     // Will be called when a new throughput observation is available.
     // Throughput is specified in kilobits per second.
     virtual void OnThroughputObservation(
@@ -99,9 +102,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
    protected:
     ThroughputObserver() {}
     virtual ~ThroughputObserver() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ThroughputObserver);
   };
 
   // Creates a new NetworkQualityEstimator.
@@ -111,6 +111,9 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   NetworkQualityEstimator(
       std::unique_ptr<NetworkQualityEstimatorParams> params,
       NetLog* net_log);
+
+  NetworkQualityEstimator(const NetworkQualityEstimator&) = delete;
+  NetworkQualityEstimator& operator=(const NetworkQualityEstimator&) = delete;
 
   ~NetworkQualityEstimator() override;
 
@@ -646,8 +649,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   std::unique_ptr<ConnectivityMonitor> connectivity_monitor_;
 
   base::WeakPtrFactory<NetworkQualityEstimator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityEstimator);
 };
 
 }  // namespace net

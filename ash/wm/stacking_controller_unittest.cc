@@ -19,6 +19,10 @@ namespace ash {
 class StackingControllerTest : public AshTestBase {
  public:
   StackingControllerTest() = default;
+
+  StackingControllerTest(const StackingControllerTest&) = delete;
+  StackingControllerTest& operator=(const StackingControllerTest&) = delete;
+
   ~StackingControllerTest() override = default;
 
   aura::Window* CreateTestWindow() {
@@ -28,9 +32,6 @@ class StackingControllerTest : public AshTestBase {
     window->Init(ui::LAYER_TEXTURED);
     return window;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StackingControllerTest);
 };
 
 // Verifies a window with a transient parent is in the same container as its

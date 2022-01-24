@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
@@ -41,7 +40,8 @@ struct VideoEncoderClientConfig {
       VideoCodecProfile output_profile,
       const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
           spatial_layers,
-      const media::VideoBitrateAllocation& bitrate);
+      const media::VideoBitrateAllocation& bitrate,
+      bool reverse);
   VideoEncoderClientConfig(const VideoEncoderClientConfig&);
   ~VideoEncoderClientConfig();
 
@@ -72,6 +72,9 @@ struct VideoEncoderClientConfig {
   // The storage type of the input VideoFrames.
   VideoEncodeAccelerator::Config::StorageType input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kShmem;
+  // True if the video should play backwards at reaching the end of video.
+  // Otherwise the video loops. See the comment in AlignedDataHelper for detail.
+  const bool reverse = false;
 };
 
 struct VideoEncoderStats {
@@ -259,6 +262,9 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
   // A counter to track what frame is represented by a bitstream returned on
   // BitstreamBufferReady().
   size_t frame_index_ = 0;
+
+  // The current top spatial layer index.
+  uint8_t current_top_spatial_index_ = 0;
 
   // Force a key frame on next Encode(), only accessed on the
   // |encoder_client_thread_|.

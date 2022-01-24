@@ -4,6 +4,8 @@
 
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -91,8 +93,8 @@ class PageLifecycleStateManagerBrowserTest : public ContentBrowserTest {
 
   RenderFrameHostImpl* current_frame_host() {
     return static_cast<WebContentsImpl*>(shell()->web_contents())
-        ->GetFrameTree()
-        ->root()
+        ->GetPrimaryFrameTree()
+        .root()
         ->current_frame_host();
   }
 };
@@ -140,8 +142,15 @@ IN_PROC_BROWSER_TEST_F(PageLifecycleStateManagerBrowserTest, SetVisibility) {
             EvalJs(rfh, "window.performanceObserverEntries"));
 }
 
+// TODO(crbug.com/1241814): Test is flaky on Win and Lacros
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_CrossProcessIframeHiddenAnFrozen \
+  DISABLED_CrossProcessIframeHiddenAnFrozen
+#else
+#define MAYBE_CrossProcessIframeHiddenAnFrozen CrossProcessIframeHiddenAnFrozen
+#endif
 IN_PROC_BROWSER_TEST_F(PageLifecycleStateManagerBrowserTest,
-                       CrossProcessIframeHiddenAnFrozen) {
+                       MAYBE_CrossProcessIframeHiddenAnFrozen) {
   EXPECT_TRUE(embedded_test_server()->Start());
   // Load a page with a cross-process iframe.
   GURL url_a_b(embedded_test_server()->GetURL(

@@ -108,7 +108,8 @@ DownloadsDOMHandler::~DownloadsDOMHandler() {
   FinalizeRemovals();
 }
 
-void DownloadsDOMHandler::RenderProcessGone(base::TerminationStatus status) {
+void DownloadsDOMHandler::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   // TODO(dbeam): WebUI + WebUIMessageHandler should do this automatically.
   // http://crbug.com/610450
   render_process_gone_ = true;
@@ -174,6 +175,12 @@ void DownloadsDOMHandler::SaveDangerousRequiringGesture(const std::string& id) {
   download::DownloadItem* file = GetDownloadByStringId(id);
   if (file)
     ShowDangerPrompt(file);
+}
+
+void DownloadsDOMHandler::AcceptIncognitoWarning(const std::string& id) {
+  download::DownloadItem* file = GetDownloadByStringId(id);
+  if (file)
+    file->AcceptIncognitoWarning();
 }
 
 void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {

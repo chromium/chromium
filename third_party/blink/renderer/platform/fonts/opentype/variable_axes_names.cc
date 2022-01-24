@@ -23,9 +23,10 @@ Vector<VariationAxis> VariableAxesNames::GetVariationAxes(
     return output;
   sk_sp<SkData> sk_data =
       SkData::MakeFromStream(stream.get(), stream->getLength());
-  HbScoped<hb_blob_t> blob(hb_blob_create(
-      reinterpret_cast<const char*>(sk_data->bytes()), sk_data->size(),
-      HB_MEMORY_MODE_READONLY, nullptr, nullptr));
+  HbScoped<hb_blob_t> blob(
+      hb_blob_create(reinterpret_cast<const char*>(sk_data->bytes()),
+                     base::checked_cast<unsigned>(sk_data->size()),
+                     HB_MEMORY_MODE_READONLY, nullptr, nullptr));
   HbScoped<hb_face_t> face(hb_face_create(blob.get(), 0));
   unsigned axes_count = hb_ot_var_get_axis_count(face.get());
   std::unique_ptr<hb_ot_var_axis_info_t[]> axes =

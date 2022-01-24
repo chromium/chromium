@@ -61,6 +61,68 @@ const cpu_set_t& LittleCores() {
   return kLittleCores;
 }
 
+const cpu_set_t& BigCores() {
+  static const cpu_set_t kBigCores = []() {
+    const std::vector<CPU::CoreType>& core_types = CPU::GetGuessedCoreTypes();
+    if (core_types.empty())
+      return AllCores();
+
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    for (size_t core_index = 0; core_index < core_types.size(); core_index++) {
+      switch (core_types[core_index]) {
+        case CPU::CoreType::kUnknown:
+        case CPU::CoreType::kOther:
+        case CPU::CoreType::kSymmetric:
+          // In the presence of an unknown core type or symmetric architecture,
+          // fall back to allowing all cores.
+          return AllCores();
+        case CPU::CoreType::kBigLittle_Little:
+        case CPU::CoreType::kBigLittleBigger_Little:
+          break;
+        case CPU::CoreType::kBigLittle_Big:
+        case CPU::CoreType::kBigLittleBigger_Big:
+        case CPU::CoreType::kBigLittleBigger_Bigger:
+          CPU_SET(core_index, &set);
+          break;
+      }
+    }
+    return set;
+  }();
+  return kBigCores;
+}
+
+const cpu_set_t& BiggerCores() {
+  static const cpu_set_t kBiggerCores = []() {
+    const std::vector<CPU::CoreType>& core_types = CPU::GetGuessedCoreTypes();
+    if (core_types.empty())
+      return AllCores();
+
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    for (size_t core_index = 0; core_index < core_types.size(); core_index++) {
+      switch (core_types[core_index]) {
+        case CPU::CoreType::kUnknown:
+        case CPU::CoreType::kOther:
+        case CPU::CoreType::kSymmetric:
+          // In the presence of an unknown core type or symmetric architecture,
+          // fall back to allowing all cores.
+          return AllCores();
+        case CPU::CoreType::kBigLittle_Little:
+        case CPU::CoreType::kBigLittleBigger_Little:
+        case CPU::CoreType::kBigLittle_Big:
+        case CPU::CoreType::kBigLittleBigger_Big:
+          break;
+        case CPU::CoreType::kBigLittleBigger_Bigger:
+          CPU_SET(core_index, &set);
+          break;
+      }
+    }
+    return set;
+  }();
+  return kBiggerCores;
+}
+
 }  // anonymous namespace
 
 bool HasBigCpuCores() {
@@ -87,6 +149,31 @@ bool HasBigCpuCores() {
   return kHasBigCores;
 }
 
+bool HasBiggerCpuCores() {
+  static const bool kHasBiggerCores = []() {
+    const std::vector<CPU::CoreType>& core_types = CPU::GetGuessedCoreTypes();
+    if (core_types.empty())
+      return false;
+    for (CPU::CoreType core_type : core_types) {
+      switch (core_type) {
+        case CPU::CoreType::kUnknown:
+        case CPU::CoreType::kOther:
+        case CPU::CoreType::kSymmetric:
+          return false;
+        case CPU::CoreType::kBigLittle_Little:
+        case CPU::CoreType::kBigLittleBigger_Little:
+        case CPU::CoreType::kBigLittle_Big:
+        case CPU::CoreType::kBigLittleBigger_Big:
+          continue;
+        case CPU::CoreType::kBigLittleBigger_Bigger:
+          return true;
+      }
+    }
+    return false;
+  }();
+  return kHasBiggerCores;
+}
+
 bool SetThreadCpuAffinityMode(PlatformThreadId thread_id,
                               CpuAffinityMode affinity) {
   int result = 0;
@@ -100,6 +187,17 @@ bool SetThreadCpuAffinityMode(PlatformThreadId thread_id,
       const cpu_set_t& little_cores = LittleCores();
       result =
           sched_setaffinity(thread_id, sizeof(little_cores), &little_cores);
+      break;
+    }
+    case CpuAffinityMode::kBigCoresOnly: {
+      const cpu_set_t& big_cores = BigCores();
+      result = sched_setaffinity(thread_id, sizeof(big_cores), &big_cores);
+      break;
+    }
+    case CpuAffinityMode::kBiggerCoresOnly: {
+      const cpu_set_t& bigger_cores = BiggerCores();
+      result =
+          sched_setaffinity(thread_id, sizeof(bigger_cores), &bigger_cores);
       break;
     }
   }
@@ -129,6 +227,10 @@ absl::optional<CpuAffinityMode> CurrentThreadCpuAffinityMode() {
       return CpuAffinityMode::kDefault;
     if (CPU_EQUAL(&set, &LittleCores()))
       return CpuAffinityMode::kLittleCoresOnly;
+    if (CPU_EQUAL(&set, &BigCores()))
+      return CpuAffinityMode::kBigCoresOnly;
+    if (CPU_EQUAL(&set, &BiggerCores()))
+      return CpuAffinityMode::kBiggerCoresOnly;
   }
   return absl::nullopt;
 }

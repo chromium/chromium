@@ -25,6 +25,9 @@ class ReceiverRtcpSession : public RtcpSession {
                       uint32_t local_ssrc,
                       uint32_t remote_ssrc);
 
+  ReceiverRtcpSession(const ReceiverRtcpSession&) = delete;
+  ReceiverRtcpSession& operator=(const ReceiverRtcpSession&) = delete;
+
   ~ReceiverRtcpSession() override;
 
   uint32_t local_ssrc() const { return local_ssrc_; }
@@ -88,8 +91,6 @@ class ReceiverRtcpSession : public RtcpSession {
   // remembers state about prior RTP timestamps and other sequence values to
   // re-construct "expanded" values.
   RtcpParser parser_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReceiverRtcpSession);
 };
 
 }  // namespace cast

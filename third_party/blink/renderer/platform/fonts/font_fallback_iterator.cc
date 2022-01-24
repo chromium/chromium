@@ -40,7 +40,10 @@ bool FontFallbackIterator::RangeSetContributesForHint(
       // If it's a pending custom font, we need to make sure it can render any
       // new characters, otherwise we may trigger a redundant load. In other
       // cases (already loaded or not a custom font), we can use it right away.
+      // Loading data url fonts doesn't incur extra network cost, so we always
+      // load them.
       if (!segmented_face->IsPendingCustomFont() ||
+          segmented_face->IsPendingDataUrlCustomFont() ||
           !AlreadyLoadingRangeForHintChar(*it))
         return true;
     }

@@ -14,14 +14,14 @@ CompositorFilterKeyframe::CompositorFilterKeyframe(
     CompositorFilterOperations value,
     const TimingFunction& timing_function)
     : filter_keyframe_(
-          cc::FilterKeyframe::Create(base::TimeDelta::FromSecondsD(time),
+          cc::FilterKeyframe::Create(base::Seconds(time),
                                      value.ReleaseCcFilterOperations(),
                                      timing_function.CloneToCC())) {}
 
 CompositorFilterKeyframe::~CompositorFilterKeyframe() = default;
 
-double CompositorFilterKeyframe::Time() const {
-  return filter_keyframe_->Time().InSecondsF();
+base::TimeDelta CompositorFilterKeyframe::Time() const {
+  return filter_keyframe_->Time();
 }
 
 const gfx::TimingFunction* CompositorFilterKeyframe::CcTimingFunction() const {

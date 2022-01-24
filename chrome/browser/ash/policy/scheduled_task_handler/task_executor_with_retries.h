@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_TASK_EXECUTOR_WITH_RETRIES_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -30,6 +29,10 @@ class TaskExecutorWithRetries {
   // given up.
   // |retry_time| - Time between each retry.
   TaskExecutorWithRetries(int max_retries, base::TimeDelta retry_time);
+
+  TaskExecutorWithRetries(const TaskExecutorWithRetries&) = delete;
+  TaskExecutorWithRetries& operator=(const TaskExecutorWithRetries&) = delete;
+
   ~TaskExecutorWithRetries();
 
   // Runs |task| and caches |retry_failure_cb| which will be called when
@@ -65,8 +68,6 @@ class TaskExecutorWithRetries {
 
   // Timer used to retry |task| passed in |ScheduleRetry|.
   base::OneShotTimer retry_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskExecutorWithRetries);
 };
 
 }  // namespace policy

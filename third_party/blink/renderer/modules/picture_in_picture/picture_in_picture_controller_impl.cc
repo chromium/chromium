@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/media/display_type.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_options.h"
@@ -38,13 +39,6 @@ namespace {
 bool ShouldShowPlayPauseButton(const HTMLVideoElement& element) {
   return element.GetLoadType() != WebMediaPlayer::kLoadTypeMediaStream &&
          element.duration() != std::numeric_limits<double>::infinity();
-}
-
-bool IsVideoElement(const Element& element) {
-  if (!element.IsMediaElement())
-    return false;
-
-  return IsA<HTMLVideoElement>(static_cast<const HTMLMediaElement&>(element));
 }
 
 }  // namespace
@@ -92,7 +86,7 @@ PictureInPictureController::Status
 PictureInPictureControllerImpl::VerifyElementAndOptions(
     const HTMLElement& element,
     const PictureInPictureOptions* options) const {
-  if (!IsVideoElement(element) && options) {
+  if (!IsA<HTMLVideoElement>(element) && options) {
     // If either the width or height is present then we should make sure they
     // are both present and valid.
     if (options->hasWidth() || options->hasHeight()) {
@@ -120,11 +114,9 @@ PictureInPictureControllerImpl::IsElementAllowed(const HTMLElement& element,
   if (status != Status::kEnabled)
     return status;
 
-  if (!IsVideoElement(element))
+  const auto* video_element = DynamicTo<HTMLVideoElement>(element);
+  if (!video_element)
     return Status::kEnabled;
-
-  const HTMLVideoElement* video_element =
-      static_cast<const HTMLVideoElement*>(&element);
 
   if (video_element->getReadyState() == HTMLMediaElement::kHaveNothing)
     return Status::kMetadataNotLoaded;
@@ -142,15 +134,14 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
     HTMLElement* element,
     PictureInPictureOptions* options,
     ScriptPromiseResolver* resolver) {
-  if (!IsVideoElement(*element)) {
+  auto* video_element = DynamicTo<HTMLVideoElement>(*element);
+  if (!video_element) {
     // TODO(https://crbug.com/953957): Support element level pip.
     if (resolver)
       resolver->Resolve();
 
     return;
   }
-
-  HTMLVideoElement* video_element = static_cast<HTMLVideoElement*>(element);
 
   DCHECK(video_element->GetWebMediaPlayer());
   DCHECK(!options);
@@ -218,7 +209,6 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
   picture_in_picture_session_.Bind(
       std::move(session_remote),
       element->GetDocument().GetTaskRunner(TaskType::kMediaElementEvent));
-
   if (IsElementAllowed(*element, /*report_failure=*/true) != Status::kEnabled) {
     if (resolver) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -235,6 +225,12 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
   picture_in_picture_element_ = element;
   picture_in_picture_element_->OnEnteredPictureInPicture();
 
+  // Request that viz does not throttle our LayerTree's BeginFrame messages, in
+  // case this page generates them as a side-effect of driving picture-in-
+  // picture content.  See the header file for more details, or
+  // https://crbug.com/1232173
+  SetMayThrottleIfUndrawnFrames(false);
+
   picture_in_picture_window_ = MakeGarbageCollected<PictureInPictureWindow>(
       GetExecutionContext(), picture_in_picture_window_size);
 
@@ -244,6 +240,13 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
 
   if (resolver)
     resolver->Resolve(picture_in_picture_window_);
+
+  // Unregister the video frame sink from the element since it will be moved
+  // to be the child of the PiP window frame sink.
+  if (picture_in_picture_element_->GetWebMediaPlayer()) {
+    picture_in_picture_element_->GetWebMediaPlayer()
+        ->UnregisterFrameSinkHierarchy();
+  }
 }
 
 void PictureInPictureControllerImpl::ExitPictureInPicture(
@@ -269,6 +272,12 @@ void PictureInPictureControllerImpl::OnExitedPictureInPicture(
   if (!GetSupplementable()->IsActive())
     return;
 
+  // Now that this widget is not responsible for providing the content for a
+  // Picture in Picture window, we should not be producing CompositorFrames
+  // while the widget is hidden.  Let viz know that throttling us is okay if we
+  // do that.
+  SetMayThrottleIfUndrawnFrames(true);
+
   // The Picture-in-Picture window and the Picture-in-Picture element
   // should be either both set or both null.
   DCHECK(!picture_in_picture_element_ == !picture_in_picture_window_);
@@ -282,6 +291,12 @@ void PictureInPictureControllerImpl::OnExitedPictureInPicture(
     element->DispatchEvent(*PictureInPictureEvent::Create(
         event_type_names::kLeavepictureinpicture,
         WrapPersistent(picture_in_picture_window_.Get())));
+
+    // Register the video frame sink back to the element when the PiP window
+    // is closed and if the video is not unset.
+    if (element->GetWebMediaPlayer()) {
+      element->GetWebMediaPlayer()->RegisterFrameSinkHierarchy();
+    }
   }
 
   if (resolver)
@@ -341,8 +356,8 @@ bool PictureInPictureControllerImpl::IsEnterAutoPictureInPictureAllowed()
         GetSupplementable()->GetFrame()->GetWidgetForLocalRoot()->DisplayMode();
     is_in_pwa_window = display_mode != mojom::blink::DisplayMode::kBrowser;
   }
-  if (!(SchemeRegistry::IsExtensionScheme(
-            GetSupplementable()->Url().Protocol()) ||
+  if (!(CommonSchemeRegistry::IsExtensionScheme(
+            GetSupplementable()->Url().Protocol().Ascii()) ||
         Fullscreen::FullscreenElementFrom(*GetSupplementable()) ||
         (is_in_pwa_window && GetSupplementable()->IsInWebAppScope()))) {
     return false;
@@ -428,6 +443,14 @@ void PictureInPictureControllerImpl::OnWindowSizeChanged(
 
 void PictureInPictureControllerImpl::OnStopped() {
   OnExitedPictureInPicture(nullptr);
+}
+
+void PictureInPictureControllerImpl::SetMayThrottleIfUndrawnFrames(
+    bool may_throttle) {
+  GetSupplementable()
+      ->GetFrame()
+      ->GetWidgetForLocalRoot()
+      ->SetMayThrottleIfUndrawnFrames(may_throttle);
 }
 
 void PictureInPictureControllerImpl::Trace(Visitor* visitor) const {

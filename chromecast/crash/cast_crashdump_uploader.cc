@@ -85,7 +85,11 @@ bool CastCrashdumpUploader::Upload(std::string* response) {
     return false;
   }
 
-  if (!http_layer_->AddFile(data_.minidump_pathname, "upload_file_minidump")) {
+  std::string upload_filename = data_.upload_filename;
+  if (upload_filename.empty()) {
+    upload_filename = "upload_file_minidump";
+  }
+  if (!http_layer_->AddFile(data_.minidump_pathname, upload_filename)) {
     LOG(ERROR) << "Failed to add file: " << data_.minidump_pathname;
     return false;
   }

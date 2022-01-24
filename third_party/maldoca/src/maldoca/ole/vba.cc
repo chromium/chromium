@@ -37,7 +37,21 @@
 #include "maldoca/ole/stream.h"
 #include "re2/re2.h"
 
+namespace maldoca {
+namespace vba_code {
 namespace {
+// Mapping between what we find in the code module stream and code
+// chunk filename extensions.
+const std::vector<std::pair<std::string, std::string>>& NameExtensionMap() {
+  static const std::vector<std::pair<std::string, std::string>>*
+      name_extension_map = new std::vector<std::pair<std::string, std::string>>(
+          {{"Module", "bas"}, {"Class", "cls"}, {"BaseClass", "frm"}});
+  return *name_extension_map;
+}
+
+LazyRE2 kAttributeRE = {"(\\0Attribut[^e])"};
+const char kUtf16le[] = "utf-16le";
+
 std::string GetHipHCompatibleMacroHash(absl::string_view vba_code) {
   // Prior to hashing, strip Attributes and the last line-break to mimic
   // VBProject.VBComponents.Codemodule.Lines
@@ -62,11 +76,63 @@ std::string GetHipHCompatibleMacroHash(absl::string_view vba_code) {
   }
   return "";
 }
+
+// Decode input using encoding into output. Return true upon success.
+bool DecodeEncodedString(absl::string_view input, const std::string& encoding,
+                         std::string* output) {
+  int bytes_consumed, bytes_filled, error_char_count;
+  bool success = utils::ConvertEncodingBufferToUTF8String(
+      input, encoding.c_str(), output, &bytes_consumed, &bytes_filled,
+      &error_char_count);
+  DLOG(INFO) << "DecodeEncodedString success: " << success
+             << ", error_cnt: " << error_char_count;
+  return success && error_char_count == 0;
+}
+
+// Decompresses VBA code in orphaned/malformed directory entries.
+bool DecompressMalformedStream(
+    uint32_t offset, absl::string_view vba_code_stream,
+    const OLEDirectoryEntry* entry,
+    const absl::node_hash_map<std::string, std::string>& code_modules,
+    bool include_hash, VBACodeChunks* code_chunks) {
+  // Decompress the code stream at the previously found offset.
+  std::string vba_code;
+  if (offset >= vba_code_stream.size()) {
+    DLOG(ERROR) << "Can not read vba_code_stream from offset " << offset;
+    return false;
+  }
+  if (!OLEStream::DecompressStream(
+          vba_code_stream.substr(offset, std::string::npos), &vba_code)) {
+    DLOG(ERROR) << "Decompressing the VBA code stream at offset " << offset
+                << " failed.";
+    return false;
+  }
+
+  // Build the code chunk file name using the code_modules map to
+  // find code chunk file name extension.
+  const auto found = code_modules.find(
+      absl::AsciiStrToLower(absl::string_view(entry->Name())));
+  std::string filename = absl::StrFormat(
+      "%s.%s", entry->Name(),
+      (found == code_modules.end() ? "bin" : found->second.c_str()));
+
+  // Create, initialize and add a new code chunk to the existing
+  // ones.
+  VBACodeChunk* chunk = code_chunks->add_chunk();
+  chunk->set_code(vba_code);
+  chunk->set_path(entry->Path());
+  chunk->set_filename(filename);
+  chunk->set_extracted_from_malformed_entry(true);
+
+  const std::string sha1 =
+      include_hash ? GetHipHCompatibleMacroHash(vba_code) : "";
+  if (!sha1.empty()) {
+    chunk->set_sha1(sha1);
+  }
+  chunk->set_sha256_hex_string(Sha256HexString(vba_code));
+  return true;
+}
 }  // namespace
-
-namespace maldoca {
-namespace vba_code {
-
 // PROJECTREFERENCE records ID values. We keep name that can easily
 // be looked up in the MSDN documentation (not the most readable form.)
 enum : uint16_t {
@@ -92,15 +158,6 @@ enum : uint16_t {
   MODULEOFFSET = 0x0031,
   MODULENAMEUNICODE = 0x0047,
 };
-
-// Mapping between what we find in the code module stream and code
-// chunk filename extensions.
-static std::vector<std::pair<std::string, std::string>>* name_extension_map =
-    new std::vector<std::pair<std::string, std::string>>(
-        {{"Module", "bas"}, {"Class", "cls"}, {"BaseClass", "frm"}});
-
-static LazyRE2 kAttributeRE = {"(\\0Attribut[^e])"};
-static const char kUtf16le[] = "utf-16le";
 
 // Vector initialization and macro carefully laid out for
 // readability. Do not clang-format.
@@ -250,67 +307,10 @@ static const char kUtf16le[] = "utf-16le";
 
 // clang-format on
 
-// Decode input using encoding into output. Return true upon success.
-static bool DecodeEncodedString(absl::string_view input,
-                                const std::string& encoding,
-                                std::string* output) {
-  int bytes_consumed, bytes_filled, error_char_count;
-  bool success = utils::ConvertEncodingBufferToUTF8String(
-      input, encoding.c_str(), output, &bytes_consumed, &bytes_filled,
-      &error_char_count);
-  DLOG(INFO) << "DecodeEncodedString success: " << success
-             << ", error_cnt: " << error_char_count;
-  return success && error_char_count == 0;
-}
-
 void InsertPathPrefix(const std::string& prefix, VBACodeChunk* chunk) {
   std::string* path = chunk->mutable_path();
   path->insert(0, prefix);
   path->insert(prefix.length(), 1, ':');
-}
-
-// Decompresses VBA code in orphaned/malformed directory entries.
-static bool DecompressMalformedStream(
-    uint32_t offset, absl::string_view vba_code_stream,
-    const OLEDirectoryEntry* entry,
-    const absl::node_hash_map<std::string, std::string>& code_modules,
-    bool include_hash, VBACodeChunks* code_chunks) {
-  // Decompress the code stream at the previously found offset.
-  std::string vba_code;
-  if (offset >= vba_code_stream.size()) {
-    DLOG(ERROR) << "Can not read vba_code_stream from offset " << offset;
-    return false;
-  }
-  if (!OLEStream::DecompressStream(
-          vba_code_stream.substr(offset, std::string::npos), &vba_code)) {
-    DLOG(ERROR) << "Decompressing the VBA code stream at offset " << offset
-                << " failed.";
-    return false;
-  }
-
-  // Build the code chunk file name using the code_modules map to
-  // find code chunk file name extension.
-  const auto found = code_modules.find(
-      absl::AsciiStrToLower(absl::string_view(entry->Name())));
-  std::string filename = absl::StrFormat(
-      "%s.%s", entry->Name(),
-      (found == code_modules.end() ? "bin" : found->second.c_str()));
-
-  // Create, initialize and add a new code chunk to the existing
-  // ones.
-  VBACodeChunk* chunk = code_chunks->add_chunk();
-  chunk->set_code(vba_code);
-  chunk->set_path(entry->Path());
-  chunk->set_filename(filename);
-  chunk->set_extracted_from_malformed_entry(true);
-
-  const std::string sha1 =
-      include_hash ? GetHipHCompatibleMacroHash(vba_code) : "";
-  if (!sha1.empty()) {
-    chunk->set_sha1(sha1);
-  }
-  chunk->set_sha256_hex_string(Sha256HexString(vba_code));
-  return true;
 }
 
 uint32_t ExtractMalformedOrOrphan(
@@ -872,7 +872,7 @@ bool ParseCodeModules(
                       << name_value[1];
       }
     } else {
-      for (auto const& name_extension : *name_extension_map) {
+      for (auto const& name_extension : NameExtensionMap()) {
         if (name_value[0] == name_extension.first) {
           code_modules->insert(
               std::make_pair(name_value[1], name_extension.second));

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/tag_collection.h"
 #include "third_party/blink/renderer/core/editing/commands/clipboard_commands.h"
@@ -1985,6 +1986,18 @@ bool EditorCommand::Execute(const String& parameter,
           break;
       }
     }
+  }
+
+  // We need to force unlock activatable DisplayLocks for Editor::FindString
+  // before the following call to UpdateStyleAndLayout. Otherwise,
+  // ExecuteFindString/Editor::FindString will hit bad style/layout data.
+  absl::optional<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
+      forced_locks;
+  if (command_->command_type == EditingCommandType::kFindString) {
+    forced_locks = GetFrame()
+                       .GetDocument()
+                       ->GetDisplayLockDocumentState()
+                       .GetScopedForceActivatableLocks();
   }
 
   GetFrame().GetDocument()->UpdateStyleAndLayout(

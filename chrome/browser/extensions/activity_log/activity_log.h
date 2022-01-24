@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread.h"
@@ -53,6 +52,9 @@ class ActivityLog : public BrowserContextKeyedAPI,
    public:
     virtual void OnExtensionActivity(scoped_refptr<Action> activity) = 0;
   };
+
+  ActivityLog(const ActivityLog&) = delete;
+  ActivityLog& operator=(const ActivityLog&) = delete;
 
   static BrowserContextKeyedAPIFactory<ActivityLog>* GetFactoryInstance();
 
@@ -240,7 +242,6 @@ class ActivityLog : public BrowserContextKeyedAPI,
   FRIEND_TEST_ALL_PREFIXES(ActivityLogEnabledTest, NoSwitch);
   FRIEND_TEST_ALL_PREFIXES(ActivityLogEnabledTest, PrefSwitch);
   FRIEND_TEST_ALL_PREFIXES(ActivityLogEnabledTest, WatchdogSwitch);
-  DISALLOW_COPY_AND_ASSIGN(ActivityLog);
 };
 
 template <>

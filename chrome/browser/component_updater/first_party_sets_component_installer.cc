@@ -18,6 +18,7 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/base/features.h"
+#include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -62,10 +63,16 @@ base::FilePath& GetConfigPathInstance() {
   return *instance;
 }
 
+// Invokes `on_sets_ready` with the contents of the component, if:
+// * the component has been installed; and
+// * the `kFirstPartySets` feature is enabled; and
+// * the component was read successfully.
 void SetFirstPartySetsConfig(
     const base::RepeatingCallback<void(const std::string&)>& on_sets_ready) {
-  if (GetConfigPathInstance().empty())
+  if (GetConfigPathInstance().empty() ||
+      !net::cookie_util::IsFirstPartySetsEnabled()) {
     return;
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -77,6 +84,10 @@ void SetFirstPartySetsConfig(
               on_sets_ready.Run(*raw_sets);
           },
           on_sets_ready));
+}
+
+std::string BoolToString(bool b) {
+  return b ? "true" : "false";
 }
 
 }  // namespace
@@ -100,10 +111,12 @@ const char
     FirstPartySetsComponentInstallerPolicy::kDogfoodInstallerAttributeName[] =
         "_internal_experimental_sets";
 
+const char FirstPartySetsComponentInstallerPolicy::kV2FormatOptIn[] =
+    "_v2_format_plz";
+
 bool FirstPartySetsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  // False since this is a data, non-binary component.
-  return false;
+  return true;
 }
 
 bool FirstPartySetsComponentInstallerPolicy::RequiresNetworkEncryption() const {
@@ -114,7 +127,7 @@ bool FirstPartySetsComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 FirstPartySetsComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -129,14 +142,10 @@ base::FilePath FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
 void FirstPartySetsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
-  if (install_dir.empty())
+    base::Value manifest) {
+  if (install_dir.empty() || !GetConfigPathInstance().empty())
     return;
 
-  if (component_installed_)
-    return;
-
-  component_installed_ = true;
   VLOG(1) << "First-Party Sets Component ready, version " << version.GetString()
           << " in " << install_dir.value();
 
@@ -147,7 +156,7 @@ void FirstPartySetsComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool FirstPartySetsComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   // No need to actually validate the sets here, since we'll do the validation
   // in the Network Service.
@@ -175,23 +184,41 @@ FirstPartySetsComponentInstallerPolicy::GetInstallerAttributes() const {
   return {
       {
           kDogfoodInstallerAttributeName,
-          net::features::kFirstPartySetsIsDogfooder.Get() ? "true" : "false",
+          BoolToString(net::features::kFirstPartySetsIsDogfooder.Get()),
+      },
+      {
+          kV2FormatOptIn,
+          BoolToString(base::FeatureList::IsEnabled(
+              net::features::kFirstPartySetsV2ComponentFormat)),
       },
   };
 }
 
+// static
+void FirstPartySetsComponentInstallerPolicy::ResetForTesting() {
+  GetConfigPathInstance().clear();
+}
+
 void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
-  if (!base::FeatureList::IsEnabled(net::features::kFirstPartySets))
-    return;
   VLOG(1) << "Registering First-Party Sets component.";
-  auto installer = base::MakeRefCounted<ComponentInstaller>(
+
+  base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<FirstPartySetsComponentInstallerPolicy>(
           /*on_sets_ready=*/base::BindRepeating(
               [](const std ::string& raw_sets) {
                 VLOG(1) << "Received Sets: \"" << raw_sets << "\"";
                 content::GetNetworkService()->SetFirstPartySets(raw_sets);
-              })));
-  installer->Register(cus, base::OnceClosure());
+              })))
+      ->Register(cus, base::OnceClosure());
+}
+
+// static
+void FirstPartySetsComponentInstallerPolicy::WriteComponentForTesting(
+    const base::FilePath& install_dir,
+    base::StringPiece contents) {
+  CHECK(base::WriteFile(GetInstalledPath(install_dir), contents));
+
+  GetConfigPathInstance() = GetInstalledPath(install_dir);
 }
 
 }  // namespace component_updater

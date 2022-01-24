@@ -72,9 +72,6 @@ void FakeLocalFrameHost::EnforceInsecureRequestPolicy(
 void FakeLocalFrameHost::EnforceInsecureNavigationsSet(
     const WTF::Vector<uint32_t>& set) {}
 
-void FakeLocalFrameHost::DidChangeActiveSchedulerTrackedFeatures(
-    uint64_t features_mask) {}
-
 void FakeLocalFrameHost::SuddenTerminationDisablerChanged(
     bool present,
     blink::mojom::SuddenTerminationDisablerType disabler_type) {}
@@ -89,8 +86,6 @@ void FakeLocalFrameHost::ScrollRectToVisibleInParentFrame(
 void FakeLocalFrameHost::BubbleLogicalScrollInParentFrame(
     blink::mojom::blink::ScrollDirection direction,
     ui::ScrollGranularity granularity) {}
-
-void FakeLocalFrameHost::DidAccessInitialDocument() {}
 
 void FakeLocalFrameHost::DidBlockNavigation(
     const KURL& blocked_url,
@@ -124,7 +119,7 @@ void FakeLocalFrameHost::DocumentOnLoadCompleted() {}
 void FakeLocalFrameHost::ForwardResourceTimingToParent(
     mojom::blink::ResourceTimingInfoPtr timing) {}
 
-void FakeLocalFrameHost::DidFinishDocumentLoad() {}
+void FakeLocalFrameHost::DidDispatchDOMContentLoadedEvent() {}
 
 void FakeLocalFrameHost::RunModalAlertDialog(
     const WTF::String& alert_message,
@@ -193,7 +188,8 @@ void FakeLocalFrameHost::DidLoadResourceFromMemoryCache(
     const KURL& url,
     const WTF::String& http_method,
     const WTF::String& mime_type,
-    network::mojom::blink::RequestDestination request_destination) {}
+    network::mojom::blink::RequestDestination request_destination,
+    bool include_credentials) {}
 
 void FakeLocalFrameHost::DidChangeFrameOwnerProperties(
     const blink::FrameToken& child_frame_token,
@@ -215,8 +211,8 @@ void FakeLocalFrameHost::CapturePaintPreviewOfSubframe(
     const gfx::Rect& clip_rect,
     const base::UnguessableToken& guid) {}
 
-void FakeLocalFrameHost::SetModalCloseListener(
-    mojo::PendingRemote<mojom::blink::ModalCloseListener>) {}
+void FakeLocalFrameHost::SetCloseListener(
+    mojo::PendingRemote<mojom::blink::CloseListener>) {}
 
 void FakeLocalFrameHost::Detach() {}
 
@@ -226,7 +222,7 @@ void FakeLocalFrameHost::GetKeepAliveHandleFactory(
 void FakeLocalFrameHost::DidAddMessageToConsole(
     mojom::ConsoleMessageLevel log_level,
     const WTF::String& message,
-    int32_t line_no,
+    uint32_t line_no,
     const WTF::String& source_id,
     const WTF::String& untrusted_stack_trace) {}
 

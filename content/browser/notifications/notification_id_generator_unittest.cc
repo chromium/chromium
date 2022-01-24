@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/notifications/notification_id_generator.h"
 #include "testing/gtest/include/gtest/gtest.h"

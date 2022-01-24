@@ -46,7 +46,7 @@ TouchHandleOrientation ToTouchHandleOrientation(
 }  // namespace
 
 TouchSelectionController::Config::Config()
-    : max_tap_duration(base::TimeDelta::FromMilliseconds(300)),
+    : max_tap_duration(base::Milliseconds(300)),
       tap_slop(8),
       enable_adaptive_handle_orientation(false),
       enable_longpress_drag_selection(false),
@@ -703,10 +703,8 @@ void TouchSelectionController::LogSelectionEnd() {
   if (selection_handle_dragged_) {
     base::TimeDelta duration = base::TimeTicks::Now() - selection_start_time_;
     UMA_HISTOGRAM_CUSTOM_TIMES("Event.TouchSelection.WasDraggedDuration",
-                               duration,
-                               base::TimeDelta::FromMilliseconds(500),
-                               base::TimeDelta::FromSeconds(60),
-                               60);
+                               duration, base::Milliseconds(500),
+                               base::Seconds(60), 60);
   }
 }
 

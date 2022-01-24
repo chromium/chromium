@@ -27,6 +27,12 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
  public:
   AutofillKeyboardAccessoryAdapter(
       base::WeakPtr<AutofillPopupController> controller);
+
+  AutofillKeyboardAccessoryAdapter(const AutofillKeyboardAccessoryAdapter&) =
+      delete;
+  AutofillKeyboardAccessoryAdapter& operator=(
+      const AutofillKeyboardAccessoryAdapter&) = delete;
+
   ~AutofillKeyboardAccessoryAdapter() override;
 
   // Interface describing the minimal capabilities for the native view.
@@ -107,8 +113,6 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryAdapter> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillKeyboardAccessoryAdapter);
 };
 
 }  // namespace autofill

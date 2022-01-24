@@ -8,11 +8,9 @@
 #include <memory>
 #include <ostream>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
@@ -170,6 +168,10 @@ class ArcSessionImpl
                      scheduler_configuration_manager,
                  AdbSideloadingAvailabilityDelegate*
                      adb_sideloading_availability_delegate);
+
+  ArcSessionImpl(const ArcSessionImpl&) = delete;
+  ArcSessionImpl& operator=(const ArcSessionImpl&) = delete;
+
   ~ArcSessionImpl() override;
 
   // Returns default delegate implementation used for the production.
@@ -296,8 +298,6 @@ class ArcSessionImpl
 
   // WeakPtrFactory to use callbacks.
   base::WeakPtrFactory<ArcSessionImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionImpl);
 };
 
 // Stringified output for logging purpose.

@@ -139,6 +139,8 @@ class CONTENT_EXPORT ContentClient {
     // Registers a URL scheme as strictly empty documents, allowing them to
     // commit synchronously.
     std::vector<std::string> empty_document_schemes;
+    // Registers a URL scheme as extension scheme.
+    std::vector<std::string> extension_schemes;
 #if defined(OS_ANDROID)
     // Normally, non-standard schemes canonicalize to opaque origins. However,
     // Android WebView requires non-standard schemes to still be preserved.
@@ -201,6 +203,8 @@ class CONTENT_EXPORT ContentClient {
   virtual void ExposeInterfacesToBrowser(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       mojo::BinderMap* binders);
+
+  virtual std::u16string GetLocalizedProtocolName(const std::string&);
 
  private:
   friend class ContentClientInitializer;  // To set these pointers.

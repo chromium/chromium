@@ -24,6 +24,9 @@ class AwNetworkChangeNotifier
     : public net::NetworkChangeNotifier,
       public net::NetworkChangeNotifierDelegateAndroid::Observer {
  public:
+  AwNetworkChangeNotifier(const AwNetworkChangeNotifier&) = delete;
+  AwNetworkChangeNotifier& operator=(const AwNetworkChangeNotifier&) = delete;
+
   ~AwNetworkChangeNotifier() override;
 
   // NetworkChangeNotifier:
@@ -57,8 +60,6 @@ class AwNetworkChangeNotifier
   static NetworkChangeCalculatorParams DefaultNetworkChangeCalculatorParams();
 
   net::NetworkChangeNotifierDelegateAndroid* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwNetworkChangeNotifier);
 };
 
 }  // namespace android_webview

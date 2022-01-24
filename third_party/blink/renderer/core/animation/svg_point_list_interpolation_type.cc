@@ -86,9 +86,8 @@ SVGPropertyBase* SVGPointListInterpolationType::AppliedSVGValue(
   const auto& list = To<InterpolableList>(interpolable_value);
   DCHECK_EQ(list.length() % 2, 0U);
   for (wtf_size_t i = 0; i < list.length(); i += 2) {
-    FloatPoint point =
-        FloatPoint(To<InterpolableNumber>(list.Get(i))->Value(),
-                   To<InterpolableNumber>(list.Get(i + 1))->Value());
+    gfx::PointF point(To<InterpolableNumber>(list.Get(i))->Value(),
+                      To<InterpolableNumber>(list.Get(i + 1))->Value());
     result->Append(MakeGarbageCollected<SVGPoint>(point));
   }
 

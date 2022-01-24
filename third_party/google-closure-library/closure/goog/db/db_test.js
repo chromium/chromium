@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.dbTest');
 goog.setTestOnly();
@@ -863,6 +855,80 @@ testSuite({
         .addCallback((results) => {
           assertEquals(0, results.length);
         });
+  },
+
+  testCommit() {
+    if (!idbSupported) {
+      return;
+    }
+
+    return globalDb.branch()
+        .addCallback(addStore)
+        .addCallback((db) => {
+          return new Promise((resolve, reject) => {
+            const commitTx =
+                db.createTransaction(['store'], TransactionMode.READ_WRITE);
+            const store = commitTx.objectStore('store');
+            store.put('data', 'stuff');
+            commitTx.commit(false /* allowNoopWhenUnsupported */);
+            store.put('data', 'another stuff')
+                .addCallback(() => {
+                  fail('Should not able to add new data after commit');
+                })
+                .addErrback((e) => {
+                  assertEquals(
+                      DbError.ErrorName.TRANSACTION_INACTIVE_ERR, e.getName());
+                });
+            events.listen(commitTx, EventTypes.ERROR, reject);
+            events.listen(commitTx, EventTypes.COMPLETE, () => {
+              resolve(db);
+            });
+          });
+        })
+        .addCallback((db) => {
+          const checkResultsTx = db.createTransaction(['store']);
+          return checkResultsTx.objectStore('store').getAll();
+        })
+        .addCallback((result) => {
+          // Only 1 entry is committed
+          assertEquals(1, result.length);
+          assertEquals('data', result[0]);
+        });
+  },
+
+  testCommitNotSupported() {
+    if (!idbSupported) {
+      return;
+    }
+
+    return globalDb.branch().addCallback(addStore).addCallback((db) => {
+      if (!IDBTransaction.prototype.hasOwnProperty('commit')) {
+        const commitTx =
+            db.createTransaction(['store'], TransactionMode.READ_WRITE);
+        try {
+          commitTx.commit();
+        } catch (e) {
+          assertEquals(DbError.ErrorName.UNKNOWN_ERR, e.getName());
+        }
+      }
+    });
+  },
+
+  testCommitTwice() {
+    if (!idbSupported) {
+      return;
+    }
+
+    return globalDb.branch().addCallback(addStore).addCallback((db) => {
+      const commitTx =
+          db.createTransaction(['store'], TransactionMode.READ_WRITE);
+      commitTx.commit(false /* allowNoopWhenUnsupported */);
+      try {
+        commitTx.commit(false /* allowNoopWhenUnsupported */);
+      } catch (e) {
+        assertEquals(DbError.ErrorName.INVALID_STATE_ERR, e.getName());
+      }
+    });
   },
 
   testAbortTransaction() {

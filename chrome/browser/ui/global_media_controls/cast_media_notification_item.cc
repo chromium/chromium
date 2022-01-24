@@ -8,11 +8,15 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_session_controller.h"
-#include "chrome/browser/ui/global_media_controls/media_items_manager.h"
+#include "components/feature_engagement/public/tracker.h"
+#include "components/global_media_controls/public/media_item_manager.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_message_center/media_notification_view_impl.h"
+#include "components/media_router/browser/media_router.h"
+#include "components/media_router/browser/media_router_factory.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -144,13 +148,14 @@ std::u16string GetSourceTitle(const media_router::MediaRoute& route) {
 
 CastMediaNotificationItem::CastMediaNotificationItem(
     const media_router::MediaRoute& route,
-    MediaItemsManager* items_manager,
+    global_media_controls::MediaItemManager* item_manager,
     std::unique_ptr<CastMediaSessionController> session_controller,
     Profile* profile)
-    : items_manager_(items_manager),
+    : item_manager_(item_manager),
       profile_(profile),
       session_controller_(std::move(session_controller)),
       media_route_id_(route.media_route_id()),
+      is_local_presentation_(route.is_local_presentation()),
       image_downloader_(
           profile,
           base::BindRepeating(&CastMediaNotificationItem::ImageChanged,
@@ -163,7 +168,7 @@ CastMediaNotificationItem::CastMediaNotificationItem(
 }
 
 CastMediaNotificationItem::~CastMediaNotificationItem() {
-  items_manager_->HideItem(media_route_id_);
+  item_manager_->HideItem(media_route_id_);
 }
 
 void CastMediaNotificationItem::SetView(
@@ -185,7 +190,7 @@ void CastMediaNotificationItem::SetView(
         FROM_HERE,
         base::BindOnce(&CastMediaNotificationItem::RecordMetadataMetrics,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(3));
+        base::Seconds(3));
   }
 }
 
@@ -201,8 +206,16 @@ void CastMediaNotificationItem::SeekTo(base::TimeDelta time) {
 }
 
 void CastMediaNotificationItem::Dismiss() {
-  items_manager_->HideItem(media_route_id_);
+  item_manager_->HideItem(media_route_id_);
   is_active_ = false;
+}
+
+void CastMediaNotificationItem::SetMute(bool mute) {
+  session_controller_->SetMute(mute);
+}
+
+void CastMediaNotificationItem::SetVolume(float volume) {
+  session_controller_->SetVolume(volume);
 }
 
 media_message_center::SourceType CastMediaNotificationItem::SourceType() {
@@ -216,6 +229,8 @@ void CastMediaNotificationItem::OnMediaStatusUpdated(
   actions_ = ToMediaSessionActions(*status);
   session_info_->state = ToSessionState(status->play_state);
   session_info_->playback_state = ToPlaybackState(status->play_state);
+  is_muted_ = status->is_muted;
+  volume_ = status->volume;
 
   // Make sure |current_time| is always less than or equal to |duration|
   base::TimeDelta duration = status->duration;
@@ -255,6 +270,36 @@ void CastMediaNotificationItem::OnRouteUpdated(
   }
   if (updated && view_)
     view_->UpdateWithMediaMetadata(metadata_);
+}
+
+void CastMediaNotificationItem::StopCasting(
+    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
+  media_router::MediaRouterFactory::GetApiForBrowserContext(profile_)
+      ->TerminateRoute(media_route_id_);
+
+  item_manager_->FocusDialog();
+
+  feature_engagement::TrackerFactory::GetForBrowserContext(profile_)
+      ->NotifyEvent("media_route_stopped_from_gmc");
+
+  global_media_controls::GlobalMediaControlsCastActionAndEntryPoint action;
+  switch (entry_point) {
+    case global_media_controls::GlobalMediaControlsEntryPoint::kToolbarIcon:
+      action = global_media_controls::
+          GlobalMediaControlsCastActionAndEntryPoint::kStopViaToolbarIcon;
+      break;
+    case global_media_controls::GlobalMediaControlsEntryPoint::kPresentation:
+      action = global_media_controls::
+          GlobalMediaControlsCastActionAndEntryPoint::kStopViaPresentation;
+      break;
+    case global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray:
+      action = global_media_controls::
+          GlobalMediaControlsCastActionAndEntryPoint::kStopViaSystemTray;
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      media_message_center::MediaNotificationItem::kCastStartStopHistogramName,
+      action);
 }
 
 mojo::PendingRemote<media_router::mojom::MediaStatusObserver>
@@ -310,9 +355,10 @@ void CastMediaNotificationItem::UpdateView() {
   view_->UpdateWithMediaSessionInfo(session_info_.Clone());
   view_->UpdateWithMediaArtwork(
       gfx::ImageSkia::CreateFrom1xBitmap(image_downloader_.bitmap()));
-
   if (!media_position_.duration().is_zero())
     view_->UpdateWithMediaPosition(media_position_);
+  view_->UpdateWithMuteStatus(is_muted_);
+  view_->UpdateWithVolume(volume_);
 }
 
 void CastMediaNotificationItem::ImageChanged(const SkBitmap& bitmap) {

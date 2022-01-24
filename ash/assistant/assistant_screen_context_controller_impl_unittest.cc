@@ -12,7 +12,6 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -41,6 +40,12 @@ ui::Layer* FindLayerWithClosure(
 }  // namespace
 
 class AssistantScreenContextControllerTest : public AssistantAshTestBase {
+ public:
+  AssistantScreenContextControllerTest(
+      const AssistantScreenContextControllerTest&) = delete;
+  AssistantScreenContextControllerTest& operator=(
+      const AssistantScreenContextControllerTest&) = delete;
+
  protected:
   AssistantScreenContextControllerTest()
       : AssistantAshTestBase(
@@ -95,8 +100,6 @@ class AssistantScreenContextControllerTest : public AssistantAshTestBase {
 
  private:
   AssistantScreenContextControllerImpl* controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantScreenContextControllerTest);
 };
 
 // Verify that incognito windows are blocked in screenshot.

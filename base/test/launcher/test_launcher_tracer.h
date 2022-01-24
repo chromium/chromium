@@ -21,6 +21,10 @@ class FilePath;
 class TestLauncherTracer {
  public:
   TestLauncherTracer();
+
+  TestLauncherTracer(const TestLauncherTracer&) = delete;
+  TestLauncherTracer& operator=(const TestLauncherTracer&) = delete;
+
   ~TestLauncherTracer();
 
   // Records an event corresponding to test process execution.
@@ -46,8 +50,6 @@ class TestLauncherTracer {
 
   // Lock to protect all member variables.
   Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLauncherTracer);
 };
 
 }  // namespace base

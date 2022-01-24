@@ -18,6 +18,10 @@ namespace remoting {
 class FakeExtension::Session : public HostExtensionSession {
  public:
   Session(FakeExtension* extension, const std::string& message_type);
+
+  Session(const Session&) = delete;
+  Session& operator=(const Session&) = delete;
+
   ~Session() override = default;
 
   // HostExtensionSession interface.
@@ -28,8 +32,6 @@ class FakeExtension::Session : public HostExtensionSession {
  private:
   FakeExtension* extension_;
   std::string message_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(Session);
 };
 
 FakeExtension::Session::Session(FakeExtension* extension,

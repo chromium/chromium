@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/strings/string_piece.h"
 #include "components/crash/core/common/crash_key.h"
 
 // CrashReportMultiParameter keeps state of multiple report values that will be
@@ -22,20 +23,20 @@
 // Adds or updates an element in the dictionary of the breakpad report. Value
 // are stored in the instance so every time you call this function, the whole
 // JSON dictionary is regenerated. The total size of the serialized dictionary
-// bmust e under 256 bytes due to Breakpad limitation. Setting a value to 0 will
+// must be under 256 bytes due to Breakpad limitation. Setting a value to 0 will
 // not remove the key. Use [removeValue:key] instead.
-- (void)setValue:(NSString*)key withValue:(int)value;
+- (void)setValue:(base::StringPiece)key withValue:(int)value;
 
 // Removes the key element from the dictionary. Note that this is different from
 // setting the parameter to 0 or false.
-- (void)removeValue:(NSString*)key;
+- (void)removeValue:(base::StringPiece)key;
 
 // Increases the key element by one.
-- (void)incrementValue:(NSString*)key;
+- (void)incrementValue:(base::StringPiece)key;
 
 // Decreases the key element by one. If the element is 0, the element is removed
 // from the dictionary.
-- (void)decrementValue:(NSString*)key;
+- (void)decrementValue:(base::StringPiece)key;
 @end
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_REPORT_MULTI_PARAMETER_H_

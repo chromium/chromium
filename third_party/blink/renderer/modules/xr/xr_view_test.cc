@@ -13,38 +13,58 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/geometry/vector3d_f.h"
 
 namespace blink {
 namespace {
 
-TEST(XRViewTest, UpdatePoseMatrix) {
-  XRViewData view(device::mojom::blink::XREye::kLeft);
-
-  TransformationMatrix head_from_eye;
-  head_from_eye.Translate3d(-1.0, 2.0, 3.0);
-  view.SetHeadFromEyeTransform(head_from_eye);
-
-  DOMPointInit* position = MakePointForTest(1.0, -1.0, 4.0, 1.0);
-  DOMPointInit* orientation =
-      MakePointForTest(0.3701005885691383, -0.5678993882056005,
-                       0.31680366148754113, 0.663438979322567);
-  XRRigidTransform* initial_transform =
-      MakeGarbageCollected<XRRigidTransform>(position, orientation);
-  TransformationMatrix pose_matrix = initial_transform->TransformMatrix();
-
-  view.UpdatePoseMatrix(pose_matrix);
-  TransformationMatrix view_transform_matrix = view.Transform();
-  const Vector<double> actual_matrix =
-      GetMatrixDataForTest(view_transform_matrix);
-
-  const Vector<double> expected_matrix{
-      0.154251,  0.000000,  0.988032,  0.000000,  -0.840720, 0.525322,
-      0.131253,  0.000000,  -0.519035, -0.850904, 0.081032,  0.000000,
-      -2.392795, -2.502067, 3.517570,  1.000000};
-
+void AssertMatrixEquals(const Vector<double>& actual,
+                        const Vector<double>& expected) {
   for (int i = 0; i < 16; ++i) {
-    ASSERT_NEAR(actual_matrix[i], expected_matrix[i], kEpsilon);
+    ASSERT_NEAR(actual[i], expected[i], kEpsilon);
   }
+}
+
+TEST(XRViewTest, ViewMatrices) {
+  const double kDepthNear = 0.1;
+  const double kDepthFar = 1000.0;
+  const float kFov = 52.0f;
+  const int kRenderSize = 1024;
+
+  gfx::Transform mojo_from_view;
+  mojo_from_view.Translate3d(gfx::Vector3dF(4.3, 0.8, -2.5));
+  mojo_from_view.RotateAboutXAxis(5.2);
+  mojo_from_view.RotateAboutYAxis(30.9);
+  mojo_from_view.RotateAboutZAxis(23.1);
+
+  gfx::Transform ref_space_from_mojo;
+  ref_space_from_mojo.Translate(gfx::Vector2dF(0.0, -5.0));
+
+  gfx::Transform ref_space_from_view = ref_space_from_mojo * mojo_from_view;
+
+  device::mojom::blink::XRViewPtr xr_view = device::mojom::blink::XRView::New();
+  xr_view->eye = device::mojom::blink::XREye::kLeft;
+  xr_view->field_of_view =
+      device::mojom::blink::VRFieldOfView::New(kFov, kFov, kFov, kFov);
+  xr_view->mojo_from_view = mojo_from_view;
+  xr_view->viewport = gfx::Size(kRenderSize, kRenderSize);
+
+  XRViewData* view_data =
+      MakeGarbageCollected<XRViewData>(xr_view, kDepthNear, kDepthFar);
+  XRView view(nullptr, view_data,
+              TransformationMatrix(ref_space_from_mojo.matrix()));
+
+  AssertMatrixEquals(
+      GetMatrixDataForTest(view_data->MojoFromView()),
+      GetMatrixDataForTest(TransformationMatrix(mojo_from_view.matrix())));
+  AssertMatrixEquals(
+      GetMatrixDataForTest(view.refSpaceFromView()->TransformMatrix()),
+      GetMatrixDataForTest(TransformationMatrix(ref_space_from_view.matrix())));
+  AssertMatrixEquals(GetMatrixDataForTest(view_data->ProjectionMatrix()),
+                     GetMatrixDataForTest(TransformationMatrix(
+                         0.78128596636, 0, 0, 0, 0, 0.78128596636, 0, 0, 0, 0,
+                         -1.00020002, -1, 0, 0, -0.200020002, 0)));
 }
 
 }  // namespace

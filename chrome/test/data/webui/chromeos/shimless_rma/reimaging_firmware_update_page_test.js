@@ -7,7 +7,7 @@ import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_se
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingFirmwareUpdatePageElement} from 'chrome://shimless-rma/reimaging_firmware_update_page.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.js';
 
 export function reimagingFirmwareUpdatePageTest() {
   /** @type {?ReimagingFirmwareUpdatePageElement} */

@@ -112,7 +112,6 @@ class SharedImageRepresentationDawnIOSurface
 
   WGPUTexture BeginAccess(WGPUTextureUsage usage) final {
     WGPUTextureDescriptor texture_descriptor = {};
-    texture_descriptor.nextInChain = nullptr;
     texture_descriptor.format = wgpu_format_;
     texture_descriptor.usage = usage;
     texture_descriptor.dimension = WGPUTextureDimension_2D;
@@ -120,6 +119,14 @@ class SharedImageRepresentationDawnIOSurface
                                static_cast<uint32_t>(size().height()), 1};
     texture_descriptor.mipLevelCount = 1;
     texture_descriptor.sampleCount = 1;
+
+    // We need to have an internal usage of CopySrc in order to use
+    // CopyTextureToTextureInternal.
+    WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
+    internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
+    internalDesc.internalUsage = WGPUTextureUsage_CopySrc;
+    texture_descriptor.nextInChain =
+        reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 
     dawn_native::metal::ExternalImageDescriptorIOSurface descriptor;
     descriptor.cTextureDescriptor = &texture_descriptor;

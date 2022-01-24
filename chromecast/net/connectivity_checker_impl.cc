@@ -9,7 +9,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
@@ -200,11 +200,14 @@ void ConnectivityCheckerImpl::CheckInternal() {
   resource_request->url = GURL(*connectivity_check_url_);
   resource_request->method = "HEAD";
   resource_request->priority = net::MAXIMUM_PRIORITY;
-  // To enable ssl_info in the response.
-  resource_request->report_raw_headers = true;
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  MISSING_TRAFFIC_ANNOTATION);
+
+  // To enable ssl_info in the response.
+  url_loader_->SetURLLoaderFactoryOptions(
+      network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
+      network::mojom::kURLLoadOptionSendSSLInfoForCertificateError);
 
   // Configure the loader to treat HTTP error status codes as successful loads.
   // This setting allows us to inspect the status code and log it as an error.
@@ -221,7 +224,7 @@ void ConnectivityCheckerImpl::CheckInternal() {
   const int timeout = kRequestTimeoutInSeconds
                       << (check_errors_ > 2 ? 2 : check_errors_);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, timeout_.callback(), base::TimeDelta::FromSeconds(timeout));
+      FROM_HERE, timeout_.callback(), base::Seconds(timeout));
 }
 
 void ConnectivityCheckerImpl::SetCastMetricsHelperForTesting(
@@ -242,7 +245,7 @@ void ConnectivityCheckerImpl::OnConnectionChanged(
       FROM_HERE,
       base::BindOnce(&ConnectivityCheckerImpl::OnConnectionChangedInternal,
                      weak_this_),
-      base::TimeDelta::FromSeconds(kNetworkChangedDelayInSeconds));
+      base::Seconds(kNetworkChangedDelayInSeconds));
 }
 
 void ConnectivityCheckerImpl::OnConnectionChangedInternal() {
@@ -311,7 +314,7 @@ void ConnectivityCheckerImpl::OnConnectivityCheckComplete(
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ConnectivityCheckerImpl::CheckInternal, weak_this_),
-      base::TimeDelta::FromSeconds(kConnectivitySuccessPeriodSeconds));
+      base::Seconds(kConnectivitySuccessPeriodSeconds));
 }
 
 void ConnectivityCheckerImpl::OnUrlRequestError(ErrorType type) {
@@ -330,7 +333,7 @@ void ConnectivityCheckerImpl::OnUrlRequestError(ErrorType type) {
   // Check again.
   task_runner_->PostDelayedTask(
       FROM_HERE, base::BindOnce(&ConnectivityCheckerImpl::Check, weak_this_),
-      base::TimeDelta::FromSeconds(kConnectivityPeriodSeconds));
+      base::Seconds(kConnectivityPeriodSeconds));
 }
 
 void ConnectivityCheckerImpl::OnUrlRequestTimeout() {

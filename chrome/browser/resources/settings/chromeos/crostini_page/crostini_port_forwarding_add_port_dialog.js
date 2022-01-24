@@ -8,7 +8,20 @@
  * fields and clicking add.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '//resources/cr_elements/md_select_css.m.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-crostini-add-port-dialog',
 
   properties: {
@@ -139,7 +152,7 @@ Polymer({
     }
     const portNumber = +this.$.portNumberInput.value;
     const portLabel = this.$.portLabelInput.value;
-    settings.CrostiniBrowserProxyImpl.getInstance()
+    CrostiniBrowserProxyImpl.getInstance()
         .addCrostiniPortForward(
             DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER, portNumber,
             /** @type {!CrostiniPortProtocol} */ (this.inputProtocolIndex_),

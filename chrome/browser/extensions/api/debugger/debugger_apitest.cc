@@ -99,7 +99,7 @@ void DebuggerApiTest::SetUpOnMainThread() {
 
 testing::AssertionResult DebuggerApiTest::RunAttachFunction(
     const GURL& url, const std::string& expected_error) {
-  ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -117,16 +117,17 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   std::unique_ptr<base::Value> value(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           get_targets_function.get(), "[]", browser()));
-  base::ListValue* targets = nullptr;
-  EXPECT_TRUE(value->GetAsList(&targets));
+  EXPECT_TRUE(value->is_list());
+  const base::ListValue& targets = base::Value::AsListValue(*value);
 
   std::string debugger_target_id;
-  for (size_t i = 0; i < targets->GetSize(); ++i) {
-    base::DictionaryValue* target_dict = nullptr;
-    EXPECT_TRUE(targets->GetDictionary(i, &target_dict));
-    int id = -1;
-    if (target_dict->GetInteger("tabId", &id) && id == tab_id) {
-      EXPECT_TRUE(target_dict->GetString("id", &debugger_target_id));
+  for (const base::Value& target_value : targets.GetList()) {
+    EXPECT_TRUE(target_value.is_dict());
+    absl::optional<int> id = target_value.FindIntKey("tabId");
+    if (id == tab_id) {
+      const base::DictionaryValue& target_dict =
+          base::Value::AsDictionaryValue(target_value);
+      EXPECT_TRUE(target_dict.GetString("id", &debugger_target_id));
       break;
     }
   }

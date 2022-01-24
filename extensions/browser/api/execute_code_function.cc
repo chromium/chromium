@@ -131,7 +131,8 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
     std::vector<mojom::JSSourcePtr> sources;
     sources.push_back(mojom::JSSource::New(code_string, script_url_));
     injection = mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-        std::move(sources), wants_result, user_gesture()));
+        std::move(sources), mojom::ExecutionWorld::kIsolated, wants_result,
+        user_gesture()));
   }
 
   executor->ExecuteScript(

@@ -13,7 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -38,30 +38,8 @@ const int kMaxMockCacheEntrySize = 100 * 1000 * 1000;
 int g_test_mode = 0;
 
 int GetTestModeForEntry(const std::string& key) {
-  std::string url = key;
-
-  // 'key' is prefixed with an identifier if it corresponds to a cached POST.
-  // Skip past that to locate the actual URL.
-  //
-  // TODO(darin): It breaks the abstraction a bit that we assume 'key' is an
-  // URL corresponding to a registered MockTransaction.  It would be good to
-  // have another way to access the test_mode.
-  if (isdigit(key[0])) {
-    size_t slash = key.find('/');
-    DCHECK(slash != std::string::npos);
-    url = url.substr(slash + 1);
-  }
-
-  // If we split the cache by top frame origin, then the origin is prepended to
-  // the key. Skip to the second url in the key.
-  if (base::StartsWith(url, "_dk_", base::CompareCase::SENSITIVE)) {
-    auto pos = url.find(" http");
-    url = url.substr(pos + 1);
-    pos = url.find(" http");
-    url = url.substr(pos + 1);
-  }
-
-  const MockTransaction* t = FindMockTransaction(GURL(url));
+  GURL url(HttpCache::GetResourceURLFromHttpCacheKey(key));
+  const MockTransaction* t = FindMockTransaction(url);
   DCHECK(t);
   return t->test_mode;
 }
@@ -634,12 +612,6 @@ void MockDiskCache::GetStats(base::StringPairs* stats) {
 
 void MockDiskCache::OnExternalCacheHit(const std::string& key) {
   external_cache_hits_.push_back(key);
-}
-
-size_t MockDiskCache::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_absolute_name) const {
-  return 0u;
 }
 
 uint8_t MockDiskCache::GetEntryInMemoryData(const std::string& key) {

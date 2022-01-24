@@ -46,6 +46,12 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
     : public GarbageCollected<WorkerOrWorkletScriptController> {
  public:
   WorkerOrWorkletScriptController(WorkerOrWorkletGlobalScope*, v8::Isolate*);
+
+  WorkerOrWorkletScriptController(const WorkerOrWorkletScriptController&) =
+      delete;
+  WorkerOrWorkletScriptController& operator=(
+      const WorkerOrWorkletScriptController&) = delete;
+
   virtual ~WorkerOrWorkletScriptController();
   void Dispose();
 
@@ -110,8 +116,6 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   bool execution_forbidden_ = false;
 
   scoped_refptr<RejectedPromises> rejected_promises_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerOrWorkletScriptController);
 };
 
 }  // namespace blink

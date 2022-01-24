@@ -80,7 +80,9 @@ class LiteralBuffer {
   }
 
   ALWAYS_INLINE const T* data() const { return begin_; }
-  ALWAYS_INLINE size_t size() const { return end_ - begin_; }
+  ALWAYS_INLINE wtf_size_t size() const {
+    return base::checked_cast<wtf_size_t>(end_ - begin_);
+  }
 
   ALWAYS_INLINE bool IsEmpty() const { return size() == 0; }
 

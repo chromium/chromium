@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,11 +25,13 @@
 #include "components/query_tiles/tile.h"
 #include "components/search_engines/template_url.h"
 #include "components/url_formatter/url_formatter.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
+#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -233,9 +236,16 @@ struct AutocompleteMatch {
   void UpdateJavaAnswer();
   // Update the Java object description.
   void UpdateJavaDescription();
+  // Update the pointer to corresponding Java tab object.
+  void UpdateMatchingJavaTab(const JavaObjectWeakGlobalRef& tab);
+  // Get the matching Java Tab object.
+  JavaObjectWeakGlobalRef GetMatchingJavaTab() const;
 #endif
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+  // Converts SuggestionAnswer::AnswerType to an answer vector icon.
+  static const gfx::VectorIcon& AnswerTypeToAnswerIcon(int type);
+
   // Gets the vector icon identifier for the icon to be shown for this match. If
   // |is_bookmark| is true, returns a bookmark icon rather than what the type
   // would normally determine.  Note that in addition to |type|, the icon chosen
@@ -397,18 +407,18 @@ struct AutocompleteMatch {
 
   // Gets data relevant to whether there should be any special keyword-related
   // UI shown for this match.  If this match represents a selected keyword, i.e.
-  // the UI should be "in keyword mode", |keyword| will be set to the keyword
-  // and |is_keyword_hint| will be set to false.  If this match has a non-NULL
-  // |associated_keyword|, i.e. we should show a "Press [tab] to search ___"
-  // hint and allow the user to toggle into keyword mode, |keyword| will be set
-  // to the associated keyword and |is_keyword_hint| will be set to true.  Note
-  // that only one of these states can be in effect at once.  In all other
-  // cases, |keyword| will be cleared, even when our member variable |keyword|
-  // is non-empty -- such as with non-substituting keywords or matches that
-  // represent searches using the default search engine.  See also
+  // the UI should be "in keyword mode", |keyword_out| will be set to the
+  // keyword and |is_keyword_hint| will be set to false.  If this match has a
+  // non-null |associated_keyword|, i.e. we should show a "Press [tab] to search
+  // ___" hint and allow the user to toggle into keyword mode, |keyword_out|
+  // will be set to the associated keyword and |is_keyword_hint| will be set to
+  // true.  Note that only one of these states can be in effect at once.  In all
+  // other cases, |keyword_out| will be cleared, even when our member variable
+  // |keyword| is non-empty -- such as with non-substituting keywords or matches
+  // that represent searches using the default search engine.  See also
   // GetSubstitutingExplicitlyInvokedKeyword().
   void GetKeywordUIState(TemplateURLService* template_url_service,
-                         std::u16string* keyword,
+                         std::u16string* keyword_out,
                          bool* is_keyword_hint) const;
 
   // Returns |keyword|, but only if it represents a substituting keyword that
@@ -534,6 +544,9 @@ struct AutocompleteMatch {
   // True if |inline_autocompletion|, |prefix_autocompletion|, and
   // |split_autocompletion| are all empty.
   bool IsEmptyAutocompletion() const;
+
+  // Serialise this object into a trace.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
   // The provider of this match, used to remember which provider the user had
   // selected when the input changes. This may be NULL, in which case there is
@@ -661,7 +674,8 @@ struct AutocompleteMatch {
   Type type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
 
   // True if we saw a tab that matched this suggestion.
-  bool has_tab_match = false;
+  // Unset if has not been computed yet.
+  absl::optional<bool> has_tab_match;
 
   // Used to identify the specific source / type for suggestions by the
   // suggest server. See |result_subtypes| in omnibox.proto for more
@@ -765,6 +779,9 @@ struct AutocompleteMatch {
   // See AutocompleteControllerAndroid for more details.
   mutable std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>
       java_match_;
+
+  // When set, holds a weak reference to Java Tab object.
+  JavaObjectWeakGlobalRef matching_java_tab_{};
 
   base::WeakPtrFactory<AutocompleteMatch> weak_ptr_factory_{this};
 #endif

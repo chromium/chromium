@@ -5,11 +5,9 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPPS_UTILS_H_
 #define COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPPS_UTILS_H_
 
-class GURL;
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
-namespace blink {
-struct Manifest;
-}
+class GURL;
 
 namespace content {
 class BrowserContext;
@@ -30,7 +28,7 @@ class WebappsUtils {
   // Returns whether the format of the URLs in the Web Manifest is WebAPK
   // compatible.
   static bool AreWebManifestUrlsWebApkCompatible(
-      const blink::Manifest& manifest);
+      const blink::mojom::Manifest& manifest);
 };
 
 }  // namespace webapps

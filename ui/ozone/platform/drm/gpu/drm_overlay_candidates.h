@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 
@@ -21,6 +20,10 @@ class DrmOverlayCandidates : public OverlayCandidatesOzone {
  public:
   DrmOverlayCandidates(DrmOverlayManager* manager,
                        gfx::AcceleratedWidget widget);
+
+  DrmOverlayCandidates(const DrmOverlayCandidates&) = delete;
+  DrmOverlayCandidates& operator=(const DrmOverlayCandidates&) = delete;
+
   ~DrmOverlayCandidates() override;
 
   // OverlayCandidatesOzone:
@@ -30,8 +33,6 @@ class DrmOverlayCandidates : public OverlayCandidatesOzone {
  private:
   DrmOverlayManager* const overlay_manager_;  // Not owned.
   const gfx::AcceleratedWidget widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmOverlayCandidates);
 };
 
 }  // namespace ui

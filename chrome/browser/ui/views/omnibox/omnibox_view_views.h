@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/share/share_submenu_model.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -33,7 +34,7 @@
 #include "ui/views/view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #endif
 
 class LocationBarView;
@@ -53,15 +54,15 @@ class OSExchangeData;
 }  // namespace ui
 
 // Views-implementation of OmniboxView.
-class OmniboxViewViews : public OmniboxView,
-                         public views::Textfield,
+class OmniboxViewViews
+    : public OmniboxView,
+      public views::Textfield,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                         public chromeos::input_method::InputMethodManager::
-                             CandidateWindowObserver,
+      public ash::input_method::InputMethodManager::CandidateWindowObserver,
 #endif
-                         public views::TextfieldController,
-                         public ui::CompositorObserver,
-                         public TemplateURLServiceObserver {
+      public views::TextfieldController,
+      public ui::CompositorObserver,
+      public TemplateURLServiceObserver {
  public:
   METADATA_HEADER(OmniboxViewViews);
 
@@ -157,13 +158,18 @@ class OmniboxViewViews : public OmniboxView,
   }
 
  protected:
+  // OmniboxView:
+  void UpdateSchemeStyle(const gfx::Range& range) override;
+
   // views::Textfield:
   void OnThemeChanged() override;
   bool IsDropCursorForInsertion() const override;
 
-  // Applies the given |color| to |range|. This is a wrapper method around
-  // Textfield::ApplyColor that tests can override.
+  // Wrappers around Textfield methods that tests can override.
   virtual void ApplyColor(SkColor color, const gfx::Range& range);
+  virtual void ApplyStyle(gfx::TextStyle style,
+                          bool value,
+                          const gfx::Range& range);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -220,6 +226,9 @@ class OmniboxViewViews : public OmniboxView,
   void AnnounceFriendlySuggestionText();
 #endif
 
+  // Get the preferred text input type, this checks the IME locale on Windows.
+  ui::TextInputType GetPreferredTextInputType() const;
+
   // OmniboxView:
   void SetCaretPos(size_t caret_pos) override;
   void UpdatePopup() override;
@@ -243,7 +252,6 @@ class OmniboxViewViews : public OmniboxView,
   void HideImeIfNeeded() override;
   int GetOmniboxTextLength() const override;
   void SetEmphasis(bool emphasize, const gfx::Range& range) override;
-  void UpdateSchemeStyle(const gfx::Range& range) override;
 
   // views::View
   void OnMouseMoved(const ui::MouseEvent& event) override;
@@ -252,7 +260,6 @@ class OmniboxViewViews : public OmniboxView,
   // views::Textfield:
   bool IsItemForCommandIdDynamic(int command_id) const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
@@ -264,12 +271,12 @@ class OmniboxViewViews : public OmniboxView,
   void ExecuteTextEditCommand(ui::TextEditCommand command) override;
   bool ShouldShowPlaceholderText() const override;
 
-  // chromeos::input_method::InputMethodManager::CandidateWindowObserver:
+  // ash::input_method::InputMethodManager::CandidateWindowObserver:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void CandidateWindowOpened(
-      chromeos::input_method::InputMethodManager* manager) override;
+      ash::input_method::InputMethodManager* manager) override;
   void CandidateWindowClosed(
-      chromeos::input_method::InputMethodManager* manager) override;
+      ash::input_method::InputMethodManager* manager) override;
 #endif
 
   // views::TextfieldController:
@@ -286,7 +293,7 @@ class OmniboxViewViews : public OmniboxView,
       int* formats,
       std::set<ui::ClipboardFormatType>* format_types) override;
   ui::mojom::DragOperation OnDrop(const ui::DropTargetEvent& event) override;
-  views::View::DropCallback GetDropCallback(
+  views::View::DropCallback CreateDropCallback(
       const ui::DropTargetEvent& event) override;
   void UpdateContextMenu(ui::SimpleMenuModel* menu_contents) override;
 
@@ -311,6 +318,10 @@ class OmniboxViewViews : public OmniboxView,
   // Drops dragged text and updates `output_drag_op` accordingly.
   void PerformDrop(const ui::DropTargetEvent& event,
                    ui::mojom::DragOperation& output_drag_op);
+
+  // Helper methods to construct parts of the context menu.
+  void MaybeAddShareSubmenu(ui::SimpleMenuModel* menu_contents);
+  void MaybeAddSendTabToSelfItem(ui::SimpleMenuModel* menu_contents);
 
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.
@@ -401,7 +412,9 @@ class OmniboxViewViews : public OmniboxView,
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       scoped_template_url_service_observation_{this};
 
-  // Send tab to self submenu.
+  // Send tab to self submenu & share submenu - only one of these is populated
+  // at a time.
+  std::unique_ptr<share::ShareSubmenuModel> share_submenu_model_;
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
       send_tab_to_self_sub_menu_model_;
 

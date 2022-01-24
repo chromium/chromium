@@ -34,8 +34,7 @@ class CORE_EXPORT NGMathScriptsLayoutAlgorithm
                       unsigned* first_prescript_index,
                       NGBoxFragmentBuilder* = nullptr) const;
 
-  MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) const final;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
 
   struct ChildAndMetrics {
     DISALLOW_NEW();

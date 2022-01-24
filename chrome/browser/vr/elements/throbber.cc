@@ -7,7 +7,7 @@
 #include "chrome/browser/vr/target_property.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace vr {
 
@@ -60,8 +60,7 @@ void Throbber::SetCircleGrowAnimationEnabled(bool enabled) {
   curve->AddKeyframe(
       gfx::FloatKeyframe::Create(base::TimeDelta(), kStartScale, nullptr));
   curve->AddKeyframe(gfx::FloatKeyframe::Create(
-      base::TimeDelta::FromMilliseconds(kCircleGrowAnimationTimeMs), kEndScale,
-      nullptr));
+      base::Milliseconds(kCircleGrowAnimationTimeMs), kEndScale, nullptr));
   curve->set_target(this);
 
   std::unique_ptr<gfx::KeyframeModel> keyframe_model(gfx::KeyframeModel::Create(

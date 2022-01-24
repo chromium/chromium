@@ -49,8 +49,8 @@ const char kReplaceStateId[] = "replace-state";
 // JavaScript functions on the history state test page.
 NSString* const kUpdateStateParamsScriptFormat =
     @"updateStateParams('%s', '%s', '%s')";
-NSString* const kOnLoadCheckScript = @"isOnLoadPlaceholderTextVisible()";
-NSString* const kNoOpCheckScript = @"isNoOpPlaceholderTextVisible()";
+const char kOnLoadCheckScript[] = "isOnLoadPlaceholderTextVisible()";
+const char kNoOpCheckScript[] = "isNoOpPlaceholderTextVisible()";
 
 // Wait timeout for state updates.
 const NSTimeInterval kWaitForStateUpdateTimeout = 5.0;
@@ -99,22 +99,26 @@ class HistoryStateOperationsTest : public web::WebIntTest {
     NSString* set_params_script = [NSString
         stringWithFormat:kUpdateStateParamsScriptFormat, state_object.c_str(),
                          title.c_str(), url_spec.c_str()];
-    ExecuteJavaScript(set_params_script);
+    web::test::ExecuteJavaScript(web_state(),
+                                 base::SysNSStringToUTF8(set_params_script));
   }
 
   // Returns the state object returned by JavaScript.
   std::string GetJavaScriptState() {
-    return ExecuteJavaScript(@"window.history.state")->GetString();
+    return web::test::ExecuteJavaScript(web_state(), "window.history.state")
+        ->GetString();
   }
 
   // Executes JavaScript to check whether the onload text is visible.
   bool IsOnLoadTextVisible() {
-    return ExecuteJavaScript(kOnLoadCheckScript)->GetBool();
+    return web::test::ExecuteJavaScript(web_state(), kOnLoadCheckScript)
+        ->GetBool();
   }
 
   // Executes JavaScript to check whether the no-op text is visible.
   bool IsNoOpTextVisible() {
-    return ExecuteJavaScript(kNoOpCheckScript)->GetBool();
+    return web::test::ExecuteJavaScript(web_state(), kNoOpCheckScript)
+        ->GetBool();
   }
 
   // Waits for the NoOp text to be visible.

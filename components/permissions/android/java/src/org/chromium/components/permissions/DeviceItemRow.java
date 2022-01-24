@@ -50,19 +50,22 @@ public class DeviceItemRow {
         if (!TextUtils.equals(mIconDescription, iconDescription)) return false;
 
         if (icon != null && mIcon != null) {
-            Bitmap myBitmap = Bitmap.createBitmap(
-                    icon.getIntrinsicWidth(), icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Drawable myIcon = mIcon.getConstantState().newDrawable();
+            Drawable theirIcon = icon.getConstantState().newDrawable();
+
+            Bitmap myBitmap = Bitmap.createBitmap(myIcon.getIntrinsicWidth(),
+                    myIcon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
             Canvas myCanvas = new Canvas();
             myCanvas.setBitmap(myBitmap);
-            mIcon.setBounds(0, 0, myCanvas.getWidth(), myCanvas.getHeight());
-            mIcon.draw(myCanvas);
+            myIcon.setBounds(0, 0, myCanvas.getWidth(), myCanvas.getHeight());
+            myIcon.draw(myCanvas);
 
-            Bitmap theirBitmap = Bitmap.createBitmap(
-                    icon.getIntrinsicWidth(), icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Bitmap theirBitmap = Bitmap.createBitmap(theirIcon.getIntrinsicWidth(),
+                    theirIcon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
             Canvas theirCanvas = new Canvas();
             theirCanvas.setBitmap(theirBitmap);
-            icon.setBounds(0, 0, theirCanvas.getWidth(), theirCanvas.getHeight());
-            icon.draw(theirCanvas);
+            theirIcon.setBounds(0, 0, theirCanvas.getWidth(), theirCanvas.getHeight());
+            theirIcon.draw(theirCanvas);
 
             return myBitmap.sameAs(theirBitmap);
         }

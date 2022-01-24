@@ -5,6 +5,7 @@
 #include "chromeos/lacros/lacros_dbus_helper.h"
 
 #include "chromeos/dbus/init/initialize_dbus_client.h"
+#include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/lacros/lacros_dbus_thread_manager.h"
 
@@ -21,10 +22,14 @@ void LacrosInitializeDBus() {
   dbus::Bus* bus = LacrosDBusThreadManager::Get()->GetSystemBus();
 
   InitializeDBusClient<PermissionBrokerClient>(bus);
+
+  InitializeDBusClient<MissiveClient>(bus);
 }
 
 void LacrosShutdownDBus() {
   // Shut down D-Bus clients in reverse order of initialization.
+  MissiveClient::Shutdown();
+
   PermissionBrokerClient::Shutdown();
 
   LacrosDBusThreadManager::Shutdown();

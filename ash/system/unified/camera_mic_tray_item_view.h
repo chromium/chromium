@@ -8,7 +8,6 @@
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "base/macros.h"
 
 namespace ash {
 

@@ -59,6 +59,8 @@ enum SoftwareFeature {
   WIFI_SYNC_CLIENT = 12;
   ECHE_HOST = 13;
   ECHE_CLIENT = 14;
+  PHONE_HUB_CAMERA_ROLL_HOST = 15;
+  PHONE_HUB_CAMERA_ROLL_CLIENT = 16;
 }
 
 // A seed used to feed an EID BLE advertisement for some time period. This

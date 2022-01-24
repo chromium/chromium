@@ -9,6 +9,7 @@
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -93,10 +94,16 @@ class CartHandlerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
+    profile_ = profile_builder.Build();
 
     handler_ = std::make_unique<CartHandler>(
-        mojo::PendingReceiver<chrome_cart::mojom::CartHandler>(), &profile_);
-    service_ = CartServiceFactory::GetForProfile(&profile_);
+        mojo::PendingReceiver<chrome_cart::mojom::CartHandler>(),
+        profile_.get());
+    service_ = CartServiceFactory::GetForProfile(profile_.get());
   }
 
   void OperationEvaluation(base::OnceClosure closure,
@@ -144,7 +151,7 @@ class CartHandlerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CartHandler> handler_;
   CartService* service_;
   base::HistogramTester histogram_tester_;
@@ -435,7 +442,9 @@ class CartHandlerNtpModuleDiscountTest : public CartHandlerTest {
 };
 
 // Test discount consent card visibility aligns with CartService.
-TEST_F(CartHandlerNtpModuleDiscountTest, TestGetDiscountConsentCardVisible) {
+// Flaky on multiple platforms: crbug.com/1256745
+TEST_F(CartHandlerNtpModuleDiscountTest,
+       DISABLED_TestGetDiscountConsentCardVisible) {
   CartDB* cart_db = service_->GetDB();
   base::RunLoop run_loop[5];
   service_->ShouldShowDiscountConsent(
@@ -465,7 +474,13 @@ TEST_F(CartHandlerNtpModuleDiscountTest, TestGetDiscountConsentCardVisible) {
 }
 
 // Test OnDiscountConsentAcknowledged can update status in CartService.
-TEST_F(CartHandlerNtpModuleDiscountTest, TestOnDiscountConsentAcknowledged) {
+// Flaky on multiple platforms: crbug.com/1256745
+TEST_F(CartHandlerNtpModuleDiscountTest,
+       DISABLED_TestOnDiscountConsentAcknowledged) {
+  // Update fetch timestamp to avoid fetching triggered by consent
+  // acknowledgement.
+  profile_->GetPrefs()->SetTime(prefs::kCartDiscountLastFetchedTime,
+                                base::Time::Now());
   CartDB* cart_db = service_->GetDB();
   base::RunLoop run_loop[4];
   // Add a partner cart.
@@ -500,14 +515,14 @@ TEST_F(CartHandlerNtpModuleDiscountTest, TestOnDiscountConsentAcknowledged) {
 // enabled.
 TEST_F(CartHandlerNtpModuleDiscountTest, TestGetDiscountEnabled) {
   base::RunLoop run_loop[2];
-  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
   ASSERT_TRUE(service_->IsCartDiscountEnabled());
   handler_->GetDiscountEnabled(
       base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   run_loop[0].Run();
 
-  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
   ASSERT_FALSE(service_->IsCartDiscountEnabled());
   handler_->GetDiscountEnabled(
       base::BindOnce(&CartHandlerTest::GetEvaluationBoolResult,
@@ -533,11 +548,14 @@ TEST_F(CartHandlerNtpModuleDiscountTest, TestDiscountDataWithFeature) {
   cart_db::ChromeCartContentProto merchant_proto =
       BuildProto(kMockMerchantBKey, kMockMerchantB, kMockMerchantURLB);
   merchant_proto.mutable_discount_info()->set_discount_text("15% off");
+  cart_db::RuleDiscountInfoProto* rule_discount_info =
+      merchant_proto.mutable_discount_info()->add_rule_discount_info();
+  rule_discount_info->set_rule_id("123");
   service_->AddCart(kMockMerchantBKey, absl::nullopt, merchant_proto);
   task_environment_.RunUntilIdle();
-  profile_.GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
-                                  0);
-  profile_.GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
+                                   0);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
 
   // Discount should not show in welcome surface.
   for (int i = 0; i < CartService::kWelcomSurfaceShowLimit; i++) {
@@ -570,6 +588,34 @@ TEST_F(CartHandlerNtpModuleDiscountTest, TestDiscountDataWithFeature) {
   run_loop[run_loop_index++].Run();
 }
 
+// Verifies discount data showing when coupons is available.
+TEST_F(CartHandlerNtpModuleDiscountTest, TestDiscountDataShows) {
+  profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
+                                   3);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+
+  base::RunLoop run_loop;
+
+  // Add a cart with discount.
+  cart_db::ChromeCartContentProto merchant_proto =
+      BuildProto(kMockMerchantBKey, kMockMerchantB, kMockMerchantURLB);
+  merchant_proto.mutable_discount_info()->set_discount_text("15% off");
+  merchant_proto.mutable_discount_info()->set_has_coupons(true);
+  service_->AddCart(kMockMerchantBKey, absl::nullopt, merchant_proto);
+  task_environment_.RunUntilIdle();
+
+  // Discount should show.
+  auto expect_cart = chrome_cart::mojom::MerchantCart::New();
+  expect_cart->merchant = kMockMerchantB;
+  expect_cart->cart_url = GURL(kMockMerchantURLB);
+  expect_cart->discount_text = "15% off";
+  std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
+  carts.push_back(std::move(expect_cart));
+  handler_->GetMerchantCarts(base::BindOnce(
+      &GetEvaluationMerchantCarts, run_loop.QuitClosure(), std::move(carts)));
+  run_loop.Run();
+}
+
 // Override CartHandlerTest so that we can initialize feature_list_ in our
 // constructor, before CartHandlerTest::SetUp is called.
 class CartHandlerNtpModuleDiscountFastPathTest : public CartHandlerTest {
@@ -581,7 +627,7 @@ class CartHandlerNtpModuleDiscountFastPathTest : public CartHandlerTest {
         ntp_features::kNtpChromeCartModule,
         {{"NtpChromeCartModuleAbandonedCartDiscountParam", "true"},
          {"partner-merchant-pattern", "(foo.com)"},
-         {ntp_features::NtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
+         {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
           "true"}});
   }
 };

@@ -13,7 +13,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRegion.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -62,8 +62,8 @@ void SynchronousCompositorProxy::SetLayerTreeFrameSink(
 }
 
 void SynchronousCompositorProxy::UpdateRootLayerState(
-    const gfx::ScrollOffset& total_scroll_offset,
-    const gfx::ScrollOffset& max_scroll_offset,
+    const gfx::Vector2dF& total_scroll_offset,
+    const gfx::Vector2dF& max_scroll_offset,
     const gfx::SizeF& scrollable_size,
     float page_scale_factor,
     float min_page_scale_factor,
@@ -127,10 +127,6 @@ void SynchronousCompositorProxy::DemandDrawHw(
   invalidate_needs_draw_ = false;
   hardware_draw_reply_ = std::move(callback);
 
-  animation_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kAnimation);
-  animation_power_mode_voter_->ResetVoteAfterTimeout(
-      power_scheduler::PowerModeVoter::kAnimationTimeout);
-
   if (layer_tree_frame_sink_) {
     layer_tree_frame_sink_->DemandDrawHw(
         params->viewport_size, params->viewport_rect_for_tile_priority,
@@ -181,10 +177,6 @@ void SynchronousCompositorProxy::DemandDrawSw(
     mojom::blink::SyncCompositorDemandDrawSwParamsPtr params,
     DemandDrawSwCallback callback) {
   invalidate_needs_draw_ = false;
-
-  animation_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kAnimation);
-  animation_power_mode_voter_->ResetVoteAfterTimeout(
-      power_scheduler::PowerModeVoter::kSoftwareDrawTimeout);
 
   software_draw_reply_ = std::move(callback);
   if (layer_tree_frame_sink_) {
@@ -301,7 +293,7 @@ void SynchronousCompositorProxy::BeginFrame(
 }
 
 void SynchronousCompositorProxy::SetScroll(
-    const gfx::ScrollOffset& new_total_scroll_offset) {
+    const gfx::Vector2dF& new_total_scroll_offset) {
   if (total_scroll_offset_ == new_total_scroll_offset)
     return;
   total_scroll_offset_ = new_total_scroll_offset;

@@ -64,6 +64,9 @@ Polymer({
      */
     deviceState: Object,
 
+    /** @type {!chromeos.networkConfig.mojom.GlobalPolicy|undefined} */
+    globalPolicy: Object,
+
     /**
      * Contains |networks| + |customItems|.
      * @private {!Array<!NetworkList.NetworkListItemType>}

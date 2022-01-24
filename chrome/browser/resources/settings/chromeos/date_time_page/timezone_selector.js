@@ -7,14 +7,14 @@
  */
 
 import '../../settings_shared_css.js';
+import '../../controls/settings_dropdown_menu.js';
 
 import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../../i18n_setup.js';
-import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
 import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
 
 import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
 

@@ -5,13 +5,15 @@
 #ifndef BASE_TASK_THREAD_POOL_DELAYED_TASK_MANAGER_H_
 #define BASE_TASK_THREAD_POOL_DELAYED_TASK_MANAGER_H_
 
+#include <functional>
+
 #include "base/base_export.h"
 #include "base/callback.h"
+#include "base/containers/intrusive_heap.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/common/checked_lock.h"
-#include "base/task/common/intrusive_heap.h"
 #include "base/task/thread_pool/task.h"
 #include "base/thread_annotations.h"
 #include "base/time/default_tick_clock.h"
@@ -72,8 +74,8 @@ class BASE_EXPORT DelayedTaskManager {
     // Required by IntrusiveHeap::insert().
     DelayedTask& operator=(DelayedTask&& other);
 
-    // Required by IntrusiveHeap.
-    bool operator<=(const DelayedTask& other) const;
+    // Used for a min-heap.
+    bool operator>(const DelayedTask& other) const;
 
     Task task;
     PostTaskNowCallback callback;
@@ -124,7 +126,8 @@ class BASE_EXPORT DelayedTaskManager {
 
   scoped_refptr<SequencedTaskRunner> service_thread_task_runner_;
 
-  IntrusiveHeap<DelayedTask> delayed_task_queue_ GUARDED_BY(queue_lock_);
+  IntrusiveHeap<DelayedTask, std::greater<>> delayed_task_queue_
+      GUARDED_BY(queue_lock_);
 };
 
 }  // namespace internal

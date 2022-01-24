@@ -1,2 +1,2 @@
-CONSOLE ERROR: line 4: Not allowed to navigate top frame to data URL: data:text/html;charset=utf-8,<html><body>PASS</body></html>
+CONSOLE ERROR: Not allowed to navigate top frame to data URL: data:text/html;charset=utf-8,<html><body>PASS</body></html>
 PASS

@@ -35,6 +35,7 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
       return kBGRA_8888_SkColorType;
     case ALPHA_8:
       return kAlpha_8_SkColorType;
+    case BGR_565:
     case RGB_565:
       return kRGB_565_SkColorType;
     case LUMINANCE_8:
@@ -53,14 +54,14 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
     case YUV_420_BIPLANAR:
       return kRGB_888x_SkColorType;
 
-    // Use kN32_SkColorType if there is no corresponding SkColorType.
     case RED_8:
-      return kGray_8_SkColorType;
-    case LUMINANCE_F16:
+      return kAlpha_8_SkColorType;
     case R16_EXT:
+      return kA16_unorm_SkColorType;
     case RG16_EXT:
-    case BGR_565:
-      return kN32_SkColorType;
+      return kR16G16_unorm_SkColorType;
+    // Use kN32_SkColorType if there is no corresponding SkColorType.
+    case LUMINANCE_F16:
     case RG_88:
       return kR8G8_unorm_SkColorType;
     case BGRX_8888:
@@ -107,6 +108,7 @@ ResourceFormat SkColorTypeToResourceFormat(SkColorType color_type) {
     case kBGR_101010x_SkColorType:
     case kRGBA_F16Norm_SkColorType:
     case kRGBA_F32_SkColorType:
+    case kSRGBA_8888_SkColorType:
       break;
   }
   NOTREACHED();
@@ -186,7 +188,7 @@ unsigned int GLDataType(ResourceFormat format) {
       GL_UNSIGNED_BYTE,                    // ALPHA_8
       GL_UNSIGNED_BYTE,                    // LUMINANCE_8
       GL_UNSIGNED_SHORT_5_6_5,             // RGB_565,
-      GL_ZERO,                             // BGR_565
+      GL_UNSIGNED_SHORT_5_6_5,             // BGR_565
       GL_UNSIGNED_BYTE,                    // ETC1
       GL_UNSIGNED_BYTE,                    // RED_8
       GL_UNSIGNED_BYTE,                    // RG_88
@@ -217,7 +219,7 @@ unsigned int GLDataFormat(ResourceFormat format) {
       GL_ALPHA,      // ALPHA_8
       GL_LUMINANCE,  // LUMINANCE_8
       GL_RGB,        // RGB_565
-      GL_ZERO,       // BGR_565
+      GL_RGB,        // BGR_565
       GL_RGB,        // ETC1
       GL_RED_EXT,    // RED_8
       GL_RG_EXT,     // RG_88
@@ -274,7 +276,7 @@ unsigned int GLCopyTextureInternalFormat(ResourceFormat format) {
       GL_ALPHA,      // ALPHA_8
       GL_LUMINANCE,  // LUMINANCE_8
       GL_RGB,        // RGB_565
-      GL_ZERO,       // BGR_565
+      GL_RGB,        // BGR_565
       GL_RGB,        // ETC1
       GL_LUMINANCE,  // RED_8
       GL_RGBA,       // RG_88
@@ -305,6 +307,8 @@ gfx::BufferFormat BufferFormat(ResourceFormat format) {
       return gfx::BufferFormat::R_8;
     case R16_EXT:
       return gfx::BufferFormat::R_16;
+    case RG16_EXT:
+      return gfx::BufferFormat::RG_1616;
     case RGBA_4444:
       return gfx::BufferFormat::RGBA_4444;
     case RGBA_8888:
@@ -334,7 +338,6 @@ gfx::BufferFormat BufferFormat(ResourceFormat format) {
     case LUMINANCE_8:
     case RGB_565:
     case LUMINANCE_F16:
-    case RG16_EXT:
       // These types not allowed by IsGpuMemoryBufferFormatSupported(), so
       // give a default value that will not be used.
       break;
@@ -360,6 +363,7 @@ unsigned int TextureStorageFormat(ResourceFormat format) {
       return GL_ALPHA8_EXT;
     case LUMINANCE_8:
       return GL_LUMINANCE8_EXT;
+    case BGR_565:
     case RGB_565:
       return GL_RGB565;
     case RED_8:
@@ -385,7 +389,7 @@ unsigned int TextureStorageFormat(ResourceFormat format) {
       return GL_RGB8_OES;
     case BGRX_8888:
       return GL_RGB8_OES;
-    case BGR_565:
+    default:
       break;
   }
   NOTREACHED();
@@ -462,6 +466,8 @@ ResourceFormat GetResourceFormat(gfx::BufferFormat format) {
       return RED_8;
     case gfx::BufferFormat::R_16:
       return R16_EXT;
+    case gfx::BufferFormat::RG_1616:
+      return RG16_EXT;
     case gfx::BufferFormat::RGBA_4444:
       return RGBA_4444;
     case gfx::BufferFormat::RGBA_8888:

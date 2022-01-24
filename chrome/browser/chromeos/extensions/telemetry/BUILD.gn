@@ -1,0 +1,20 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(enable_extensions)
+
+source_set("telemetry") {
+  sources = [
+    "chromeos_telemetry_extensions_browser_api_provider.cc",
+    "chromeos_telemetry_extensions_browser_api_provider.h",
+  ]
+
+  deps = [
+    "api:api_registration",
+    "//base",
+    "//extensions/browser",
+  ]
+}

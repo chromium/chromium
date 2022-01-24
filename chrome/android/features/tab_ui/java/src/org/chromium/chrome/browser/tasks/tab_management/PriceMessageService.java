@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -216,6 +217,7 @@ public class PriceMessageService extends MessageService {
             mPriceWelcomeMessageProvider.showPriceDropTooltip(bindingTabIndex);
             PriceTrackingUtilities.disablePriceWelcomeMessageCard();
             mPriceTabData = null;
+            RecordUserAction.record("Commerce.PriceWelcomeMessageCard.Reviewed");
         } else if (type == PriceMessageType.PRICE_ALERTS) {
             if (mNotificationManager.areAppNotificationsEnabled()) {
                 mNotificationManager.createNotificationChannel();
@@ -223,6 +225,7 @@ public class PriceMessageService extends MessageService {
                 mNotificationManager.launchNotificationSettings();
             }
             PriceTrackingUtilities.disablePriceAlertsMessageCard();
+            RecordUserAction.record("Commerce.PriceAlertsMessageCard.Reviewed");
         }
     }
 
@@ -231,8 +234,10 @@ public class PriceMessageService extends MessageService {
         if (type == PriceMessageType.PRICE_WELCOME) {
             PriceTrackingUtilities.disablePriceWelcomeMessageCard();
             mPriceTabData = null;
+            RecordUserAction.record("Commerce.PriceWelcomeMessageCard.Dismissed");
         } else if (type == PriceMessageType.PRICE_ALERTS) {
             PriceTrackingUtilities.disablePriceAlertsMessageCard();
+            RecordUserAction.record("Commerce.PriceAlertsMessageCard.Dismissed");
         }
     }
 

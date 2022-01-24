@@ -52,6 +52,9 @@ class MockAudioLogFactory : public media::mojom::AudioLogFactory {
       mock_logs_.push_back(new MockAudioLog());
   }
 
+  MockAudioLogFactory(const MockAudioLogFactory&) = delete;
+  MockAudioLogFactory& operator=(const MockAudioLogFactory&) = delete;
+
   MOCK_METHOD2(MockCreateAudioLog,
                void(media::mojom::AudioLogComponent, int32_t));
 
@@ -71,7 +74,6 @@ class MockAudioLogFactory : public media::mojom::AudioLogFactory {
   mojo::Receiver<media::mojom::AudioLogFactory> receiver_;
   size_t current_mock_log_ = 0;
   std::vector<MockAudioLog*> mock_logs_;
-  DISALLOW_COPY_AND_ASSIGN(MockAudioLogFactory);
 };
 
 }  // namespace
@@ -79,6 +81,9 @@ class MockAudioLogFactory : public media::mojom::AudioLogFactory {
 class LogFactoryManagerTest : public ::testing::Test {
  public:
   LogFactoryManagerTest() = default;
+
+  LogFactoryManagerTest(const LogFactoryManagerTest&) = delete;
+  LogFactoryManagerTest& operator=(const LogFactoryManagerTest&) = delete;
 
  protected:
   void CreateLogFactoryManager() {
@@ -95,10 +100,6 @@ class LogFactoryManagerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<mojom::LogFactoryManager> remote_log_factory_manager_;
   std::unique_ptr<LogFactoryManager> log_factory_manager_;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(LogFactoryManagerTest);
 };
 
 TEST_F(LogFactoryManagerTest, LogFactoryManagerQueuesRequestsAndSetsFactory) {

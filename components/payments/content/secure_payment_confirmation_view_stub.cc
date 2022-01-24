@@ -9,7 +9,7 @@ namespace payments {
 // static
 base::WeakPtr<SecurePaymentConfirmationView>
 SecurePaymentConfirmationView::Create(
-    const PaymentUIObserver* payment_ui_observer) {
+    const base::WeakPtr<PaymentUIObserver> payment_ui_observer) {
   return nullptr;
 }
 

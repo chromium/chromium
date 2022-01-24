@@ -8,7 +8,7 @@ import './diagnostics_shared_css.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js'
+import {SystemDataProviderInterface, SystemInfo} from './diagnostics_types.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 
 
@@ -76,10 +76,9 @@ Polymer({
       return versionInfo[0].toUpperCase() + versionInfo.slice(1);
     }
 
-    let deviceInfo = this.systemInfo_.boardName ?
+    const deviceInfo = this.systemInfo_.boardName ?
         loadTimeData.getStringF(
-            'boardAndVersionInfo', this.systemInfo_.boardName,
-            version) :
+            'boardAndVersionInfo', this.systemInfo_.boardName, version) :
         loadTimeData.getStringF('versionInfo', version);
     return marketingNameValid ? `(${deviceInfo})` : deviceInfo;
   },

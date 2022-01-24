@@ -8,11 +8,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/api/messaging/native_message_process_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 
 namespace extensions {
 
@@ -115,8 +116,11 @@ void NativeMessagePort::DispatchOnMessage(const Message& message) {
 void NativeMessagePort::PostMessageFromNativeHost(const std::string& message) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (weak_channel_delegate_) {
+    // Native messaging always uses JSON since a native host doesn't understand
+    // structured cloning serialization.
     weak_channel_delegate_->PostMessage(
-        port_id_, Message(message, false /* user_gesture */));
+        port_id_,
+        Message(message, SerializationFormat::kJson, false /* user_gesture */));
   }
 }
 

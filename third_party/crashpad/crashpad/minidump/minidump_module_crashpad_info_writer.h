@@ -21,7 +21,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "minidump/minidump_extensions.h"
 #include "minidump/minidump_string_writer.h"
 #include "minidump/minidump_writable.h"
@@ -38,6 +37,12 @@ class MinidumpModuleCrashpadInfoWriter final
     : public internal::MinidumpWritable {
  public:
   MinidumpModuleCrashpadInfoWriter();
+
+  MinidumpModuleCrashpadInfoWriter(const MinidumpModuleCrashpadInfoWriter&) =
+      delete;
+  MinidumpModuleCrashpadInfoWriter& operator=(
+      const MinidumpModuleCrashpadInfoWriter&) = delete;
+
   ~MinidumpModuleCrashpadInfoWriter() override;
 
   //! \brief Initializes MinidumpModuleCrashpadInfo based on \a module_snapshot.
@@ -107,8 +112,6 @@ class MinidumpModuleCrashpadInfoWriter final
   std::unique_ptr<MinidumpUTF8StringListWriter> list_annotations_;
   std::unique_ptr<MinidumpSimpleStringDictionaryWriter> simple_annotations_;
   std::unique_ptr<MinidumpAnnotationListWriter> annotation_objects_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpModuleCrashpadInfoWriter);
 };
 
 //! \brief The writer for a MinidumpModuleCrashpadInfoList object in a minidump
@@ -117,6 +120,12 @@ class MinidumpModuleCrashpadInfoListWriter final
     : public internal::MinidumpWritable {
  public:
   MinidumpModuleCrashpadInfoListWriter();
+
+  MinidumpModuleCrashpadInfoListWriter(
+      const MinidumpModuleCrashpadInfoListWriter&) = delete;
+  MinidumpModuleCrashpadInfoListWriter& operator=(
+      const MinidumpModuleCrashpadInfoListWriter&) = delete;
+
   ~MinidumpModuleCrashpadInfoListWriter() override;
 
   //! \brief Adds an initialized MinidumpModuleCrashpadInfo for modules in \a
@@ -171,8 +180,6 @@ class MinidumpModuleCrashpadInfoListWriter final
       module_crashpad_infos_;
   std::vector<MinidumpModuleCrashpadInfoLink> module_crashpad_info_links_;
   MinidumpModuleCrashpadInfoList module_crashpad_info_list_base_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpModuleCrashpadInfoListWriter);
 };
 
 }  // namespace crashpad

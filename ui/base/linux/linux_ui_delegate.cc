@@ -36,11 +36,4 @@ bool LinuxUiDelegate::ExportWindowHandle(
   return false;
 }
 
-int LinuxUiDelegate::GetKeyState() {
-  // This function should not be called when using a platform that doesn't
-  // implement it.
-  NOTREACHED();
-  return 0;
-}
-
 }  // namespace ui

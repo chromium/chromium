@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace password_manager {
 
 // Abstract class to define a communication interface for the http-auth UI and
@@ -16,6 +14,9 @@ namespace password_manager {
 class HttpAuthObserver {
  public:
   HttpAuthObserver() = default;
+
+  HttpAuthObserver(const HttpAuthObserver&) = delete;
+  HttpAuthObserver& operator=(const HttpAuthObserver&) = delete;
 
   // Called by the model when |credentials| has been identified as a match for
   // the pending login prompt. Checks that the realm matches, and passes
@@ -27,9 +28,6 @@ class HttpAuthObserver {
 
  protected:
   virtual ~HttpAuthObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HttpAuthObserver);
 };
 
 }  // namespace password_manager

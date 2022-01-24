@@ -9,8 +9,8 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {

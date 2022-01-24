@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/connection_details.h"
 
@@ -36,6 +35,9 @@ class ActiveConnectionManager {
     kNoConnectionExists,
     kDisconnectingConnectionExists
   };
+
+  ActiveConnectionManager(const ActiveConnectionManager&) = delete;
+  ActiveConnectionManager& operator=(const ActiveConnectionManager&) = delete;
 
   virtual ~ActiveConnectionManager();
 
@@ -76,8 +78,6 @@ class ActiveConnectionManager {
 
  private:
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveConnectionManager);
 };
 
 std::ostream& operator<<(

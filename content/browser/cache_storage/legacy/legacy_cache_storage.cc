@@ -26,9 +26,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -862,10 +862,9 @@ void LegacyCacheStorage::ScheduleWriteIndex() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   index_write_task_.Reset(base::BindOnce(&LegacyCacheStorage::WriteIndex,
                                          weak_factory_.GetWeakPtr(),
-                                         base::DoNothing::Once<bool>()));
+                                         base::DoNothing()));
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, index_write_task_.callback(),
-      base::TimeDelta::FromMilliseconds(delay_ms));
+      FROM_HERE, index_write_task_.callback(), base::Milliseconds(delay_ms));
 }
 
 void LegacyCacheStorage::WriteIndex(base::OnceCallback<void(bool)> callback) {
@@ -1454,7 +1453,7 @@ void LegacyCacheStorage::FlushIndexIfDirty() {
   if (!index_write_pending())
     return;
   index_write_task_.Cancel();
-  cache_loader_->WriteIndex(*cache_index_, base::DoNothing::Once<bool>());
+  cache_loader_->WriteIndex(*cache_index_, base::DoNothing());
 }
 
 #if defined(OS_ANDROID)

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PERMISSIONS_ANDROID_BLUETOOTH_SCANNING_PROMPT_ANDROID_DELEGATE_H_
 #define COMPONENTS_PERMISSIONS_ANDROID_BLUETOOTH_SCANNING_PROMPT_ANDROID_DELEGATE_H_
 
-#include "base/macros.h"
-
 #include "base/android/scoped_java_ref.h"
 #include "components/security_state/core/security_state.h"
 

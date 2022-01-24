@@ -8,7 +8,7 @@
 -->
 <html>
 <!--
-Copyright 2009 The Closure Library Authors. All Rights Reserved.
+Copyright The Closure Library Authors. All Rights Reserved.
 
 Use of this source code is governed by the Apache License, Version 2.0.
 See the COPYING file for details.
@@ -16,9 +16,9 @@ See the COPYING file for details.
 
 <head>
 <title>XPC test inner frame</title>
-<script src="../../../base.js" type="text/javascript"></script>
+
+<!-- MOE:insert <script src="../../../base.js" type="text/javascript"></script> -->
 <script type="text/javascript">
-goog.require('goog.debug.Logger');
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.events.EventType');
@@ -81,9 +81,9 @@ function responseHandler(payload) {
 
 <script type="text/javascript">
 var debugDiv = goog.dom.getElement('debugDiv');
-var logger = goog.debug.Logger.getLogger('goog.net.xpc');
-logger.setLevel(goog.debug.Logger.Level.ALL);
-logger.addHandler(function(logRecord) {
+var logger = goog.log.getLogger('goog.net.xpc');
+goog.log.setLevel(logger, goog.log.Level.ALL);
+goog.log.addHandler(logger, function(logRecord) {
   var msgElm = goog.dom.createDom('div');
   msgElm.innerHTML = logRecord.getMessage();
   goog.dom.appendChild(debugDiv, msgElm);

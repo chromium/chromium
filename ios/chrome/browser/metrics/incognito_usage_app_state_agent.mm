@@ -61,9 +61,9 @@ const int kMinimumDelayInSeconds = 10;
   if (duration.InSecondsF() < kMinimumDelayInSeconds) {
     return;
   }
-  base::UmaHistogramCustomTimes(
-      "IOS.Incognito.TimeSpent", duration, base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromSeconds(86400 /* secs per day */), 50);
+  base::UmaHistogramCustomTimes("IOS.Incognito.TimeSpent", duration,
+                                base::Seconds(1),
+                                base::Seconds(86400 /* secs per day */), 50);
   self.incognitoUsageStart = base::TimeTicks();
   self.incognitoUsageEnd = base::TimeTicks();
 }

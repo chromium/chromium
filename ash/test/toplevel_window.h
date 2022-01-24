@@ -5,7 +5,6 @@
 #ifndef ASH_TEST_TOPLEVEL_WINDOW_H_
 #define ASH_TEST_TOPLEVEL_WINDOW_H_
 
-#include "base/macros.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
@@ -20,6 +19,10 @@ class ToplevelWindow : public views::WidgetDelegateView {
     bool can_maximize;
     bool use_saved_placement;
   };
+
+  ToplevelWindow(const ToplevelWindow&) = delete;
+  ToplevelWindow& operator=(const ToplevelWindow&) = delete;
+
   static views::Widget* CreateToplevelWindow(const CreateParams& params);
 
   // Clears saved show state and bounds used to position
@@ -41,8 +44,6 @@ class ToplevelWindow : public views::WidgetDelegateView {
                                ui::WindowShowState* show_state) const override;
 
   bool use_saved_placement_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ToplevelWindow);
 };
 
 }  // namespace shell

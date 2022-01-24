@@ -19,7 +19,7 @@ using AsyncEnabledStateObserver =
 using EnabledStateObserver = base::trace_event::TraceLog::EnabledStateObserver;
 
 inline base::TimeTicks ToTraceTimestamp(double seconds) {
-  return base::TimeTicks() + base::TimeDelta::FromSecondsD(seconds);
+  return base::TimeTicks() + base::Seconds(seconds);
 }
 
 // This is to avoid error of passing a chromium time internal value.

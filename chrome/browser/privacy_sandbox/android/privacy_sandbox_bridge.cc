@@ -13,13 +13,6 @@
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
-static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxSettingsFunctional(
-    JNIEnv* env) {
-  return PrivacySandboxSettingsFactory::GetForProfile(
-             ProfileManager::GetActiveUserProfile())
-      ->PrivacySandboxSettingsFunctional();
-}
-
 static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxEnabled(JNIEnv* env) {
   return PrivacySandboxSettingsFactory::GetForProfile(
              ProfileManager::GetActiveUserProfile())
@@ -62,7 +55,7 @@ static jboolean JNI_PrivacySandboxBridge_IsFlocIdResettable(JNIEnv* env) {
 static void JNI_PrivacySandboxBridge_ResetFlocId(JNIEnv* env) {
   PrivacySandboxSettingsFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile())
-      ->ResetFlocId();
+      ->ResetFlocId(/*user_initiated=*/true);
 }
 
 static ScopedJavaLocalRef<jstring> JNI_PrivacySandboxBridge_GetFlocStatusString(

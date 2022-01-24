@@ -13,10 +13,11 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/views_test_base.h"
 
-using ash::EchoDialogListener;
-using ash::EchoDialogView;
+namespace ash {
 
 namespace {
+
+using EchoDialogViewTest = ::views::ViewsTestBase;
 
 class TestEchoDialogListener : public EchoDialogListener {
  public:
@@ -58,8 +59,6 @@ views::View* FindLabelWithText(views::View* root, const std::u16string& text) {
 
 }  // namespace
 
-using EchoDialogViewTest = views::ViewsTestBase;
-
 // These two tests ensure that the dialog contains certain strings somewhere in
 // its body depending on the params given to it.
 TEST_F(EchoDialogViewTest, EnabledHasEnabledText) {
@@ -95,3 +94,5 @@ TEST_F(EchoDialogViewTest, DisabledHasDisabledText) {
       &dialog,
       l10n_util::GetStringUTF16(IDS_ECHO_DISABLED_CONSENT_DIALOG_TEXT)));
 }
+
+}  // namespace ash

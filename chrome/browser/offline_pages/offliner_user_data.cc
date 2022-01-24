@@ -36,6 +36,6 @@ OfflinerUserData::ResourceLoadingObserverFromWebContents(
   return nullptr;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OfflinerUserData)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OfflinerUserData);
 
 }  // namespace offline_pages

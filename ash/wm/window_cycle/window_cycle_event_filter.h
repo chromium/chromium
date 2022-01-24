@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_handler.h"
@@ -32,6 +31,10 @@ class ASH_EXPORT WindowCycleEventFilter : public ui::EventHandler {
   static constexpr float kHorizontalThresholdDp = 330.f;
 
   WindowCycleEventFilter();
+
+  WindowCycleEventFilter(const WindowCycleEventFilter&) = delete;
+  WindowCycleEventFilter& operator=(const WindowCycleEventFilter&) = delete;
+
   ~WindowCycleEventFilter() override;
 
   // Overridden from ui::EventHandler:
@@ -54,13 +57,14 @@ class ASH_EXPORT WindowCycleEventFilter : public ui::EventHandler {
   class AltReleaseHandler : public ui::EventHandler {
    public:
     AltReleaseHandler();
+
+    AltReleaseHandler(const AltReleaseHandler&) = delete;
+    AltReleaseHandler& operator=(const AltReleaseHandler&) = delete;
+
     ~AltReleaseHandler() override;
 
     // ui::EventHandler:
     void OnKeyEvent(ui::KeyEvent* event) override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(AltReleaseHandler);
   };
 
   // Depending on the values of |event| either repeatedly cycle through windows,
@@ -141,8 +145,6 @@ class ASH_EXPORT WindowCycleEventFilter : public ui::EventHandler {
 
   // Tracks whether the user is touch scrolling the window cycle list.
   bool touch_scrolling_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowCycleEventFilter);
 };
 
 }  // namespace ash

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<title>Tests fragmentDirective.items</title>
+<meta charset="utf-8">
+<link rel="help" href="https://wicg.github.io/ScrollToTextFragment/issues/160">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+</style>
+<script>
+  function reset() {
+    location.hash = ':~:'
+  }
+</script>
+<body>
+  <iframe src="resources/simple-frame.html"></iframe>
+
+  <script>
+    onload = () => {
+      // Ensure fragmentDirective.items is initially an empty array.
+      promise_test(async (t) => {
+        assert_equals(document.fragmentDirective.items.length, 0, "Main frame");
+        assert_equals(frames[0].document.fragmentDirective.items.length, 0, "Iframe");
+
+        let doc = document.implementation.createHTMLDocument("New Document");
+        assert_equals(doc.fragmentDirective.items.length, 0, "Unattached document");
+      }, 'Initial page has empty items array');
+
+      // Ensure non-existent directives don't create an entry in the items array.
+      promise_test(async (t) => {
+        reset();
+
+        location.hash = ':~:thisisnota=validdirective';
+        assert_equals(document.fragmentDirective.items.length, 0);
+      }, 'Invalid directive doesn\'t create item.');
+
+      // Ensure a valid directive does create an entry in the items array.
+      promise_test(async (t) => {
+        reset();
+
+        location.hash = ':~:text=directive';
+        assert_equals(document.fragmentDirective.items.length, 1, '[MainFrame] items length');
+        assert_equals(document.fragmentDirective.items[0].type, 'text', '[MainFrame] item type');
+        assert_equals(document.fragmentDirective.items[0].toString(), 'text=directive',
+                      '[MainFrame] item toString()');
+        assert_equals(frames[0].document.fragmentDirective.items.length, 0,
+                      '[IFrame] items length after setting main frame directive');
+
+        frames[0].location.hash = ':~:text=fragmentdirective';
+        assert_equals(frames[0].document.fragmentDirective.items.length, 1, '[IFrame] items length');
+        assert_equals(frames[0].document.fragmentDirective.items[0].type, 'text', '[IFrame] item type');
+        assert_equals(frames[0].document.fragmentDirective.items[0].toString(), 'text=fragmentdirective',
+                      '[IFrame] item toString()');
+        assert_equals(document.fragmentDirective.items[0].toString(), 'text=directive',
+                      '[MainFrame] item toString() after setting iframe\'s');
+      }, 'Valid directive creates item');
+
+      // Ensure setting an empty directive clears the items array.
+      promise_test(async (t) => {
+        reset();
+
+        location.hash = ':~:text=test';
+        assert_equals(document.fragmentDirective.items.length, 1, '[PRECONDITION] items length');
+
+        location.hash = ':~:';
+        assert_equals(document.fragmentDirective.items.length, 0);
+      }, 'Empty fragment directive clears items');
+
+      // Ensure the items array isn't mutable.
+      promise_test(async (t) => {
+        reset();
+
+        location.hash = ':~:text=test';
+        assert_equals(document.fragmentDirective.items.length, 1, '[PRECONDITION] items length');
+
+        assert_throws_js(TypeError, () => document.fragmentDirective.items.shift());
+        assert_throws_js(TypeError, () => document.fragmentDirective.items.push({}));
+      }, 'items cannot be mutated');
+
+      // Ensure that changing the hash without a fragment directive doesn't clear the items array.
+      promise_test(async (t) => {
+        reset();
+
+        location.hash = ':~:text=test';
+        assert_equals(document.fragmentDirective.items.length, 1, '[PRECONDITION] items length');
+        assert_equals(document.fragmentDirective.items[0].toString(), 'text=test',
+                      '[PRECONDITION] item toString() before setting hash');
+
+        location.hash = 'arbitraryFragment';
+
+        // Wait until the hashchange event fires to ensure there isn't a delayed effect.
+        await new Promise( (resolve) => { window.addEventListener('hashchange', resolve); } );
+
+        assert_equals(document.fragmentDirective.items.length, 1, 'items length');
+        assert_equals(document.fragmentDirective.items[0].toString(), 'text=test',
+                      'item toString() after setting hash');
+      }, 'Non fragmentDirective hash change doesn\'t affect items');
+
+      // Ensure that changing the hash with an unrelated fragment directive updates the items
+      // array.
+      promise_test(async (t) => {
+        reset();
+
+        location.hash = ':~:text=test';
+        assert_equals(document.fragmentDirective.items.length, 1, '[PRECONDITION] items length');
+        assert_equals(document.fragmentDirective.items[0].toString(), 'text=test',
+                      '[PRECONDITION] item toString() before setting hash');
+
+        location.hash = 'arbitraryFragment:~:nonexistent=directive';
+
+        // Wait until the hashchange event fires to ensure there isn't some delayed effect.
+        await new Promise( (resolve) => { window.addEventListener('hashchange', resolve); } );
+
+        assert_equals(document.fragmentDirective.items.length, 0, 'items length');
+      }, 'Unrelated fragmentDirective hash change doesn\'t affect items');
+
+      // Ensure that changing the hash with a new fragment directive replaces existing items.
+      promise_test(async (t) => {
+        reset();
+
+        location.hash = ':~:text=test';
+        assert_equals(document.fragmentDirective.items.length, 1, '[PRECONDITION] items length');
+        assert_equals(document.fragmentDirective.items[0].toString(), 'text=test',
+                      '[PRECONDITION] item toString() before setting hash');
+
+        location.hash = 'arbitraryFragment:~:nonexistent=directive&text=newdirective';
+
+        assert_equals(document.fragmentDirective.items.length, 1, 'items length');
+        assert_equals(document.fragmentDirective.items[0].toString(), 'text=newdirective',
+                      'item toString() after setting hash');
+      }, 'New fragment directive replaces existing items');
+
+      // Ensure an invalid but existing directive clears the array.
+      promise_test(async (t) => {
+        assert_equals(document.fragmentDirective.items.length, 1, '[PRECONDITION] items length');
+        assert_equals(document.fragmentDirective.items[0].toString(), 'text=newdirective',
+                      '[PRECONDITION] item toString() after setting hash');
+
+        location.hash = 'arbitraryFragment:~:text=';
+
+        assert_equals(document.fragmentDirective.items.length, 0, 'items length');
+      }, 'New invalid fragment directive clears items');
+
+      // Test setting multiple directives. Ensure their relative ordering is preserved.
+      promise_test(async (t) => {
+        reset();
+
+        location.hash = ':~:text=a&nonexistent=directive&text=b&text=c';
+
+        assert_equals(document.fragmentDirective.items.length, 3, 'items length');
+        assert_equals(document.fragmentDirective.items[0].toString(), 'text=a', 'item[0].toString()');
+        assert_equals(document.fragmentDirective.items[1].toString(), 'text=b', 'item[1].toString()');
+        assert_equals(document.fragmentDirective.items[2].toString(), 'text=c', 'item[2].toString()');
+
+        location.hash = ':~:text=3&text=2';
+
+        assert_equals(document.fragmentDirective.items[0].toString(), 'text=3', 'second time item[0].toString()');
+        assert_equals(document.fragmentDirective.items[1].toString(), 'text=2', 'second time item[1].toString()');
+      }, 'Multiple directives');
+
+      // Test that the directive key is case sensitive.
+      promise_test(async (t) => {
+        reset();
+
+        location.hash = ':~:TEXT=test';
+        assert_equals(document.fragmentDirective.items.length, 0, 'items length');
+      }, 'Directive names are case sensitive');
+
+      // Test invalid key=value isn't parsed.
+      promise_test(async (t) => {
+        reset();
+
+        location.hash = ':~:text=';
+        assert_equals(document.fragmentDirective.items.length, 0, 'no-value items length');
+
+        location.hash = ':~:=test';
+        assert_equals(document.fragmentDirective.items.length, 0, 'no-key items length');
+
+        location.hash = ':~:=';
+        assert_equals(document.fragmentDirective.items.length, 0, 'no-key-value items length');
+      }, 'Invalid Key-Value pair');
+    };
+  </script>
+</body>

@@ -6,7 +6,6 @@
 #define MEDIA_LEARNING_MOJO_PUBLIC_CPP_MOJO_LEARNING_TASK_CONTROLLER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/learning/common/learning_task_controller.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -23,6 +22,11 @@ class COMPONENT_EXPORT(MEDIA_LEARNING_MOJO) MojoLearningTaskController
   MojoLearningTaskController(
       const LearningTask& task,
       mojo::Remote<mojom::LearningTaskController> controller);
+
+  MojoLearningTaskController(const MojoLearningTaskController&) = delete;
+  MojoLearningTaskController& operator=(const MojoLearningTaskController&) =
+      delete;
+
   ~MojoLearningTaskController() override;
 
   // LearningTaskController
@@ -44,8 +48,6 @@ class COMPONENT_EXPORT(MEDIA_LEARNING_MOJO) MojoLearningTaskController
  private:
   LearningTask task_;
   mojo::Remote<mojom::LearningTaskController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoLearningTaskController);
 };
 
 }  // namespace learning

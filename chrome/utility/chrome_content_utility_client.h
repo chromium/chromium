@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/utility/content_utility_client.h"
 #include "printing/buildflags/buildflags.h"
@@ -23,6 +22,11 @@ class ChromeContentUtilityClient : public content::ContentUtilityClient {
       base::OnceCallback<void(service_manager::BinderRegistry*)>;
 
   ChromeContentUtilityClient();
+
+  ChromeContentUtilityClient(const ChromeContentUtilityClient&) = delete;
+  ChromeContentUtilityClient& operator=(const ChromeContentUtilityClient&) =
+      delete;
+
   ~ChromeContentUtilityClient() override;
 
   // content::ContentUtilityClient:
@@ -34,7 +38,6 @@ class ChromeContentUtilityClient : public content::ContentUtilityClient {
   void UtilityThreadStarted() override;
   void RegisterMainThreadServices(mojo::ServiceFactory& services) override;
   void RegisterIOThreadServices(mojo::ServiceFactory& services) override;
-  bool GetDefaultUserDataDirectory(base::FilePath* path) override;
 
   // See NetworkBinderProvider above.
   static void SetNetworkBinderCreationCallback(
@@ -48,8 +51,6 @@ class ChromeContentUtilityClient : public content::ContentUtilityClient {
 
   // True if the utility process runs with elevated privileges.
   bool utility_process_running_elevated_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentUtilityClient);
 };
 
 #endif  // CHROME_UTILITY_CHROME_CONTENT_UTILITY_CLIENT_H_

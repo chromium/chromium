@@ -41,9 +41,8 @@ class CaptioningController : public WebContentsObserver {
 
  private:
   // WebContentsObserver implementation.
+  void PrimaryPageChanged(Page& page) override;
   void RenderViewReady() override;
-  void RenderViewHostChanged(RenderViewHost* old_host,
-                             RenderViewHost* new_host) override;
   void WebContentsDestroyed() override;
 
   // A weak reference to the Java CaptioningController object.

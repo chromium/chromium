@@ -102,9 +102,17 @@ class PrerenderOriginTrialBrowserTest
         feature_list_.InitAndDisableFeature(blink::features::kPrerender2);
         break;
       case FeatureEnabledType::kEnabled:
-        feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+        // Enable prerendering with no physical memory requirement so the test
+        // can run on any bot.
+        feature_list_.InitWithFeatures(
+            {blink::features::kPrerender2},
+            {blink::features::kPrerender2MemoryControls});
         break;
       case FeatureEnabledType::kDefault:
+        // Keep the default state for blink::features::kPrerender2, but disable
+        // the physical memory requirement so the test can run on any bot.
+        feature_list_.InitAndDisableFeature(
+            blink::features::kPrerender2MemoryControls);
         break;
     }
   }
@@ -226,8 +234,7 @@ class PrerenderOriginTrialBrowserTest
     EXPECT_TRUE(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(100));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
     run_loop.Run();
     EXPECT_FALSE(prerender_requested_);
   }
@@ -304,7 +311,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithoutTrialToken) {
 // Check the availability of Prerender 2 related APIs on a page with a valid
 // Origin Trial token. The following table shows the expected availability:
 // (The expected availability on the prerendered page should be same as the
-// availability on a page without a valid Oritin Trial token listed above.)
+// availability on a page without a valid Origin Trial token listed above.)
 //                |    blink::features::kPrerender2   |
 //                | disabled  | enabled   | default   |
 // ---------------|-----------|-----------|-----------|

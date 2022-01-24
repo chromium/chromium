@@ -6,7 +6,6 @@
 #define CHROME_RENDERER_SUBRESOURCE_REDIRECT_PUBLIC_IMAGE_HINTS_DECIDER_AGENT_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/renderer/subresource_redirect/public_resource_decider_agent.h"
 #include "components/subresource_redirect/common/subresource_redirect_result.h"

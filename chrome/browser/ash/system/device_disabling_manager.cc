@@ -4,19 +4,19 @@
 
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/cros_settings_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -37,8 +37,8 @@ DeviceDisablingManager::DeviceDisablingManager(
     CrosSettings* cros_settings,
     user_manager::UserManager* user_manager)
     : delegate_(delegate),
-      browser_policy_connector_(g_browser_process->platform_part()
-                                    ->browser_policy_connector_chromeos()),
+      browser_policy_connector_(
+          g_browser_process->platform_part()->browser_policy_connector_ash()),
       cros_settings_(cros_settings),
       user_manager_(user_manager),
       device_disabled_(false) {
@@ -163,7 +163,7 @@ bool DeviceDisablingManager::HonorDeviceDisablingDuringNormalOperation() {
   // Device disabling should be honored when the device is enterprise managed
   // and device disabling has not been turned off by flag.
   return g_browser_process->platform_part()
-             ->browser_policy_connector_chromeos()
+             ->browser_policy_connector_ash()
              ->IsDeviceEnterpriseManaged() &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableDeviceDisabling);

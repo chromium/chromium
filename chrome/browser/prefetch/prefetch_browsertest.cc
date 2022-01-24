@@ -15,7 +15,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -40,11 +39,7 @@ const char kPrefetchCachingPeriodUrl[] = "/prefetch_caching_period";
 
 bool HasVariationsHeader(
     const net::test_server::HttpRequest::HeaderMap& headers) {
-  for (const auto& pair : headers) {
-    if (variations::IsVariationsHeader(pair.first))
-      return true;
-  }
-  return false;
+  return headers.find("X-Client-Data") != headers.end();
 }
 
 class MockNetworkChangeNotifierWIFI : public NetworkChangeNotifier {
@@ -90,7 +85,7 @@ class PrefetchBrowserTest : public InProcessBrowserTest {
         expect_success ? u"link onload" : u"link onerror";
     content::TitleWatcher title_watcher(
         browser->tab_strip_model()->GetActiveWebContents(), expected_title);
-    ui_test_utils::NavigateToURL(browser, url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     return expected_title == title_watcher.WaitAndGetTitle();
   }
 };
@@ -185,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, RedirectedPrefetch) {
   const std::u16string expected_title = u"done";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   ASSERT_EQ(3U, requests.size());
 
@@ -252,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, PrefetchCachingPeriod) {
   const std::u16string expected_title = u"done";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   ASSERT_EQ(2U, requests.size());
 }
@@ -302,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, PrefetchCachingPeriodWithAge) {
   const std::u16string expected_title = u"done";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   ASSERT_EQ(2U, requests.size());
 }

@@ -25,10 +25,8 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kWarningNotificationTimeout =
-    base::TimeDelta::FromMinutes(5);
-constexpr base::TimeDelta kExitNotificationTimeout =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kWarningNotificationTimeout = base::Minutes(5);
+constexpr base::TimeDelta kExitNotificationTimeout = base::Minutes(1);
 
 // Lock notification id. All the time limit lock notifications share the same id
 // so that a subsequent notification can replace the previous one.

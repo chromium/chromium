@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests ViewportDataGrid.\n`);
-  await TestRunner.loadModule('data_grid'); await TestRunner.loadTestModule('data_grid_test_runner');
+  await TestRunner.loadLegacyModule('data_grid'); await TestRunner.loadTestModule('data_grid_test_runner');
 
   function attach(parent, child, index) {
     var parentName = parent === root ? 'root' : parent.data.id;
@@ -53,7 +53,7 @@
 
     TestRunner.addResult(`Class list: ${dataGrid.element.classList}`);
 
-    for (var node of dataGrid._visibleNodes)
+    for (var node of dataGrid.visibleNodes)
       TestRunner.addResult(node.data.id);
   }
 
@@ -67,16 +67,19 @@
   var b = new DataGrid.ViewportDataGridNode({id: 'b'});
 
   var root = dataGrid.rootNode();
+  var widget = dataGrid.asWidget();
+  widget.markAsRoot();
 
   var containerElement = document.body.createChild('div');
   containerElement.style.position = 'absolute';
   containerElement.style.width = '300px';
   containerElement.style.height = '300px';
   containerElement.style.overflow = 'hidden';
-  containerElement.appendChild(dataGrid.element);
-  dataGrid.wasShown();
+  widget.show(containerElement);
   dataGrid.element.style.width = '100%';
   dataGrid.element.style.height = '100%';
+  widget.element.style.width = '100%';
+  widget.element.style.height = '100%';
 
   TestRunner.addResult('Building tree.');
 
@@ -165,7 +168,7 @@
   var children = root.children.slice();
   root.removeChildren();
   // Assure wheelTarget is anything but null, otherwise it happily bypasses crashing code.
-  dataGrid._wheelTarget = children[children.length - 1].element;
+  dataGrid.wheelTarget = children[children.length - 1].element;
   for (var i = 0; i < 40; ++i) {
     children[i].refresh();
     root.appendChild(children[i]);
@@ -176,7 +179,7 @@
   TestRunner.addResult('Scrolling to the top');
   revealChildAndDumpClassAndVisibleNodes(0);
   TestRunner.addResult('Scrolling 1 node down');
-  revealChildAndDumpClassAndVisibleNodes(dataGrid._visibleNodes.length);
+  revealChildAndDumpClassAndVisibleNodes(dataGrid.visibleNodes.length);
   TestRunner.addResult('Disabling the stripes');
   dataGrid.setStriped(false);
   TestRunner.addResult(`Class list: ${dataGrid.element.classList}`);

@@ -10,26 +10,50 @@
 #error "This file requires ARC support."
 #endif
 
-// Feature disabled by default to keep the legacy NTP until the refactored one
-// covers all existing functionality.
-const base::Feature kRefactoredNTP{"RefactoredNTP",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kEnableDiscoverFeedPreview{
     "EnableDiscoverFeedPreview", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEnableNTPMemoryEnhancement{
-    "EnableNTPMemoryEnhancement", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kEnableDiscoverFeedAppFlows{
+    "EnableDiscoverFeedAppFlows", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const char kRefactoredNTPLoggingEnabled[] = "RefactoredNTPLoggingEnabled";
+const base::Feature kEnableDiscoverFeedShorterCache{
+    "EnableDiscoverFeedShorterCache", base::FEATURE_DISABLED_BY_DEFAULT};
 
-bool IsRefactoredNTP() {
-  // This feature is dependent on the DiscoverFeed being enabled, only having
-  // kRefactoredNTP enabled can lead to unexpected behavior.
-  return base::FeatureList::IsEnabled(kRefactoredNTP) &&
-         IsDiscoverFeedEnabled();
-}
+const base::Feature kEnableDiscoverFeedDiscoFeedEndpoint{
+    "EnableDiscoFeedEndpoint", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnableDiscoverFeedStaticResourceServing{
+    "EnableDiscoverFeedStaticResourceServing",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
+    "DiscoverFeedSRSReconstructedTemplatesEnabled";
+
+const char kDiscoverFeedSRSPreloadTemplatesEnabled[] =
+    "DiscoverFeedSRSPreloadTemplatesEnabled";
+
+const base::Feature kEnableWebChannels{"EnableWebChannels",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kNTPViewHierarchyRepair{"NTPViewHierarchyRepair",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
+}
+
+bool IsDiscoverFeedAppFlowsEnabled() {
+  return base::FeatureList::IsEnabled(kEnableDiscoverFeedAppFlows);
+}
+
+bool IsDiscoverFeedShorterCacheEnabled() {
+  return base::FeatureList::IsEnabled(kEnableDiscoverFeedShorterCache);
+}
+
+bool IsWebChannelsEnabled() {
+  return base::FeatureList::IsEnabled(kEnableWebChannels);
+}
+
+bool IsNTPViewHierarchyRepairEnabled() {
+  return base::FeatureList::IsEnabled(kNTPViewHierarchyRepair);
 }

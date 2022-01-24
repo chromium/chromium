@@ -55,6 +55,38 @@ enum class NotificationInteraction {
   kMaxValue = kDismiss,
 };
 
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class CameraRollContentShown {
+  kContentShown1 = 1,
+  kContentShown2 = 2,
+  kContentShown3 = 3,
+  kContentShown4 = 4,
+  kContentShownGTE5 = 5,
+  kMaxValue = kContentShownGTE5
+};
+
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class CameraRollContentClicked {
+  kContentClicked1 = 11,
+  kContentClicked2 = 21,
+  kContentClicked3 = 31,
+  kContentClicked4 = 41,
+  kContentClickedGTE5 = 51,
+  kMaxValue = kContentClickedGTE5
+};
+
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class CameraRollContextMenuDownload {
+  kDownload1 = 111,
+  kDownload2 = 211,
+  kDownload3 = 311,
+  kDownload4 = 411,
+  kDownloadGTE5 = 511,
+  kMaxValue = kDownloadGTE5
+};
+
+enum class CameraRollMediaType { kPhoto = 0, kVideo = 1, kMaxValue = kVideo };
+
 // Logs an |event| occurring for the given |interstitial_screen|.
 void LogInterstitialScreenEvent(Screen screen, InterstitialScreenEvent event);
 
@@ -81,6 +113,15 @@ void LogNotificationCount(int count);
 
 // Logs a given |interaction| with a PhoneHub notification.
 void LogNotificationInteraction(NotificationInteraction interaction);
+
+// Logs the display of a Camera Roll item at |index|.
+void LogCameraRollContentShown(int index, CameraRollMediaType mediaType);
+
+// Logs clicking a Camera Roll item at |index|.
+void LogCameraRollContentClicked(int index, CameraRollMediaType mediaType);
+
+// Logs a download of item at |index| from the Camera Roll context menu.
+void LogCameraRollContextMenuDownload(int index, CameraRollMediaType mediaType);
 
 }  // namespace phone_hub_metrics
 }  // namespace ash

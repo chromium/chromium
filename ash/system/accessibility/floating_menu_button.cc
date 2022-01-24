@@ -10,6 +10,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -149,8 +150,17 @@ void FloatingMenuButton::OnThemeChanged() {
 
 void FloatingMenuButton::UpdateImage() {
   DCHECK(icon_);
-  AshColorProvider::Get()->DecorateIconButton(
-      this, *icon_, toggled_, GetDefaultSizeOfVectorIcon(*icon_));
+  auto* color_provider = AshColorProvider::Get();
+  const SkColor normal_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
+  const SkColor toggled_icon_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
+  const SkColor icon_color = toggled_ ? toggled_icon_color : normal_color;
+  SetImage(views::Button::STATE_NORMAL,
+           gfx::CreateVectorIcon(*icon_, icon_color));
+  SetImage(views::Button::STATE_DISABLED,
+           gfx::CreateVectorIcon(
+               *icon_, AshColorProvider::GetDisabledColor(normal_color)));
 }
 
 BEGIN_METADATA(FloatingMenuButton, views::ImageButton)

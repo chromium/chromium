@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_VIEWS_H_
 
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -37,6 +38,10 @@ class VirtualCardManualFallbackBubbleViews
       const VirtualCardManualFallbackBubbleViews&) = delete;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
+      TooltipAndAccessibleName);
+
   // AutofillBubbleBase:
   void Hide() override;
 
@@ -52,10 +57,24 @@ class VirtualCardManualFallbackBubbleViews
   std::unique_ptr<views::MdTextButton> CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField field);
 
+  // Invoked when a button with card information is clicked.
+  void OnFieldClicked(VirtualCardManualFallbackBubbleField field);
+
+  // Update the tooltips and the accessible names of the buttons.
+  void UpdateButtonTooltipsAndAccessibleNames();
+
   VirtualCardManualFallbackBubbleController* controller_;
 
   PaymentsBubbleClosedReason closed_reason_ =
       PaymentsBubbleClosedReason::kUnknown;
+
+  // The map keeping the references to each button with card information text in
+  // the bubble.
+  std::map<VirtualCardManualFallbackBubbleField, views::MdTextButton*>
+      fields_to_buttons_map_;
+
+  base::WeakPtrFactory<VirtualCardManualFallbackBubbleViews> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace autofill

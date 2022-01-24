@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace mojo {
 
@@ -104,6 +105,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   // calling IsNull() on it will return |true|).
   static Message CreateFromMessageHandle(ScopedMessageHandle* message_handle);
 
+  Message(const Message&) = delete;
+  Message& operator=(const Message&) = delete;
+
   ~Message();
 
   // Moves |other| into a new Message object. The moved-from Message becomes
@@ -176,6 +180,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   uint64_t request_id() const { return header_v1()->request_id; }
   void set_request_id(uint64_t request_id) {
     header_v1()->request_id = request_id;
+  }
+
+  void set_trace_nonce(uint32_t trace_nonce) {
+    header()->trace_nonce = trace_nonce;
   }
 
   // Access the payload.
@@ -254,6 +262,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
     heap_profiler_tag_ = heap_profiler_tag;
   }
 
+  // Get a global trace id identifying this message. Used for connecting the
+  // sender and the receiver in traces.
+  uint64_t GetTraceId() const;
+
+  // Write a representation of this object into a trace.
+  void WriteIntoTrace(perfetto::TracedValue ctx) const;
+
 #if defined(ENABLE_IPC_FUZZER)
   const char* interface_name() const { return interface_name_; }
   void set_interface_name(const char* interface_name) {
@@ -297,8 +312,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   const char* interface_name_ = nullptr;
   const char* method_name_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Message);
 };
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageFilter {
@@ -381,13 +394,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) PassThroughFilter
     : public MessageReceiver {
  public:
   PassThroughFilter();
+
+  PassThroughFilter(const PassThroughFilter&) = delete;
+  PassThroughFilter& operator=(const PassThroughFilter&) = delete;
+
   ~PassThroughFilter() override;
 
   // MessageReceiver:
   bool Accept(Message* message) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PassThroughFilter);
 };
 
 // Reports the currently dispatching Message as bad. Note that this is only

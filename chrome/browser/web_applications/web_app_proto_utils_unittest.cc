@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/base64.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,7 +63,8 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoParse) {
   EXPECT_EQ(kAppName, fallback_data->name);
   ASSERT_EQ(1u, fallback_data->icon_infos.size());
   EXPECT_EQ(kIconUrl, fallback_data->icon_infos[0].url.spec());
-  EXPECT_EQ(Purpose::ANY, fallback_data->icon_infos[0].purpose);
+  EXPECT_EQ(apps::IconInfo::Purpose::kAny,
+            fallback_data->icon_infos[0].purpose);
 }
 
 // Test that a minimal M85 proto (ie. only fields that would always be set in
@@ -119,10 +120,12 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoToWebApp_FullyPopulated) {
   ASSERT_EQ(2u, fallback_data->icon_infos.size());
   EXPECT_EQ(kIconUrl, fallback_data->icon_infos[0].url.spec());
   EXPECT_EQ(kIconSizePx, fallback_data->icon_infos[0].square_size_px);
-  EXPECT_EQ(Purpose::ANY, fallback_data->icon_infos[0].purpose);
+  EXPECT_EQ(apps::IconInfo::Purpose::kAny,
+            fallback_data->icon_infos[0].purpose);
   EXPECT_EQ(kIconUrl, fallback_data->icon_infos[1].url.spec());
   EXPECT_EQ(kIconSizePx, fallback_data->icon_infos[1].square_size_px);
-  EXPECT_EQ(Purpose::MASKABLE, fallback_data->icon_infos[1].purpose);
+  EXPECT_EQ(apps::IconInfo::Purpose::kMaskable,
+            fallback_data->icon_infos[1].purpose);
 }
 
 TEST(WebAppProtoUtilsTest, RunOnOsLoginModes) {

@@ -20,7 +20,7 @@ per-file app_management_strings.grdp=file://chrome/browser/ui/webui/app_manageme
 
 per-file web_time_limit_error_page_strings.grdp=file://chrome/browser/ash/child_accounts/OWNERS
 
-per-file global_media_controls_strings.grdp=file://chrome/browser/ui/global_media_controls/OWNERS
+per-file gmc_strings.grdp=file://chrome/browser/ui/global_media_controls/OWNERS
 
 per-file media_router_strings.grdp=file://chrome/browser/media/router/OWNERS
 
@@ -58,3 +58,9 @@ per-file chrome_exe_main_mac.cc=mark@chromium.org
 
 per-file main_dll_loader_win.cc=brucedawson@chromium.org
 per-file main_dll_loader_win.cc=wfh@chromium.org
+
+# Security-review owners for Fuchsia Component Manifests.
+per-file *.cml=set noparent
+per-file *.cml=file://fuchsia/SECURITY_OWNERS
+per-file *.cmx=set noparent
+per-file *.cmx=file://fuchsia/SECURITY_OWNERS

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/embedded_content_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
@@ -68,27 +69,27 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
 
   PhysicalRect background_rect(
       LayoutUnit(), LayoutUnit(),
-      LayoutUnit(text_geometry.Width() +
+      LayoutUnit(text_geometry.width() +
                  2 * kReplacementTextRoundedRectLeftRightTextMargin),
       LayoutUnit(kReplacementTextRoundedRectHeight));
   background_rect.offset += content_rect.Center() - background_rect.Center();
-  background_rect = PhysicalRect(PixelSnappedIntRect(background_rect));
-  Path rounded_background_rect;
-  FloatRect float_background_rect(background_rect);
-  rounded_background_rect.AddRoundedRect(
-      float_background_rect, FloatSize(kReplacementTextRoundedRectRadius,
-                                       kReplacementTextRoundedRectRadius));
-  context.SetFillColor(
-      ScaleAlpha(Color::kWhite, kReplacementTextRoundedRectOpacity));
-  context.FillPath(rounded_background_rect);
+  FloatRoundedRect rounded_background_rect(
+      FloatRect(PixelSnappedIntRect(background_rect)),
+      kReplacementTextRoundedRectRadius);
+  Color color = ScaleAlpha(Color::kWhite, kReplacementTextRoundedRectOpacity);
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(layout_embedded_object_.StyleRef(),
+                        DarkModeFilter::ElementRole::kBackground));
+  context.FillRoundedRect(rounded_background_rect, color, auto_dark_mode);
 
   FloatRect text_rect(FloatPoint(), text_geometry);
-  text_rect.Move(FloatPoint(content_rect.Center()) - text_rect.Center());
+  text_rect.Offset(FloatPoint(content_rect.Center()) - text_rect.CenterPoint());
   TextRunPaintInfo run_info(text_run);
   context.SetFillColor(ScaleAlpha(Color::kBlack, kReplacementTextTextOpacity));
-  context.DrawBidiText(font, run_info,
-                       text_rect.Location() +
-                           FloatSize(0, font_data->GetFontMetrics().Ascent()));
+  context.DrawBidiText(
+      font, run_info,
+      text_rect.origin() + FloatSize(0, font_data->GetFontMetrics().Ascent()),
+      auto_dark_mode);
 }
 
 }  // namespace blink

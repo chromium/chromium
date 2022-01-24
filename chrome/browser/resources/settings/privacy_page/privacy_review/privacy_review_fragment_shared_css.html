@@ -1,0 +1,53 @@
+<template>
+  <style include="cr-shared-style settings-shared">
+    :host {
+      display: block;
+      flex: 1;
+      padding: 0 24px;
+    }
+
+    .description-column {
+      width: 50%;
+    }
+
+    .description-column-first {
+      padding-inline-end: 12px;
+    }
+
+    .description-header {
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+
+    .description-wrapper {
+      padding: 16px;
+    }
+
+    .headline {
+      color: var(--cr-primary-text-color);
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 1.15;
+    }
+
+    .embedded-setting-wrapper {
+      border: 1px solid var(--google-grey-refresh-300);
+      border-radius: 4px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .embedded-setting-wrapper {
+        border: 1px solid var(--google-grey-refresh-700);
+      }
+    }
+
+    .two-column {
+      display: flex;
+    }
+
+    settings-toggle-button {
+      padding-bottom: 8px;
+      padding-top: 8px;
+    }
+  </style>
+</template>

@@ -22,6 +22,10 @@
 <translation id="2168108852149185974">কিছুমান এড-অনৰ কাৰণে Chrome ক্ৰেশ্ব হয়। অনুগ্ৰহ কৰি ইয়াক আনইনষ্টল কৰক:</translation>
 <translation id="2178608107313874732">এই মুহূৰ্তত Chromiumএ আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব নোৱাৰে</translation>
 <translation id="2195025571279539885">আপুনি এই ছাইটবোৰৰ <ph name="LANGUAGE_NAME" /> পৃষ্ঠাবোৰ Chromiumএ অনুবাদ কৰি দিয়াটো বিচাৰিবনে?</translation>
+<translation id="2218146227246548550">Chromium ব্যৱহাৰ কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানৰ বাবে আপুনি ছাইন ইন কৰাৰ আৱশ্যক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="2426113998523353159">Chromium ব্যৱহাৰ কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানৰ বাবে আপুনি ছাইন ইন কৰাৰ আৱশ্যক।</translation>
+<translation id="2450140762465183767">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত লিংকসমূহত টিপিলে যিকোনো সময়তে Chromium ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> বাছনি কৰক</translation>
 <translation id="2567507405773541360">সৰল, সুৰক্ষিত আৰু পূৰ্বতকৈ ক্ষিপ্ৰ Chromiumৰ জৰিয়তে অধিক কাম কৰক</translation>
 <translation id="2590893390871230428">আপোনাৰ Chromium ডেটা ছিংক কৰক</translation>
 <translation id="2650312721222849884">আপুনি Chromium ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ ছিংক অন কৰক</translation>
@@ -38,7 +42,6 @@
 <translation id="3805899903892079518">আপোনাৰ ফট’ আৰু ভিডিঅ’সমূহত Chromiumৰ এক্সেছ নাই। iOS ছেটিং &gt; গোপনীয়তা &gt; ফট’-ত এক্সেছ সক্ষম কৰক।</translation>
 <translation id="3946918322491238254">আপুনি এই ডিভাইচটোত থকা আপোনাৰ আটাইবোৰ বুকমাৰ্ক, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিং তথাপিও চাব পাৰে। যদি আপুনি কোনো সালসলনি কৰে, সেয়া আপোনাৰ একাউণ্টত ছিংক কৰা নহ’ব।</translation>
 <translation id="4099085513035183040">Chromium বিটাত সমৰ্থিত নহয়</translation>
-<translation id="4166206055865952171">Chromiumক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰক</translation>
 <translation id="4555020257205549924">যেতিয়া এই সুবিধাটো অন কৰি ৰখা হয় তেতিয়া Chromiumএ অন্য ভাষাত থকা পৃষ্ঠা Google Translate ব্যৱহাৰ কৰি অনুবাদ কৰাৰ সুবিধা দিয়ে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা লিংকত টিপিলে যিকোনো সময়তে Chromium ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="4681781466797808448">Chromium স্কেনাৰ অন কৰক</translation>
@@ -54,8 +57,6 @@
 <translation id="5521125884468363740">আপুনি Chromium ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ ছাইন ইন কৰক আৰু ছিংক অন কৰক</translation>
 <translation id="5573014823074921752">Chromium ব্যৱহাৰৰ কিটিপ। টেবৰ অধিক বিকল্প পাবলৈ আপোনাৰ স্ক্রীণৰ একেবাৰে ওপৰত অথবা তলত থকা টুলবাৰৰ টেব দেখুৱাওক বুটামটো স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
 <translation id="5700709190537129682">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে</translation>
-<translation id="5715349567881822785">Chromiumৰ জৰিয়তে অধিক কাৰ্য কৰক</translation>
-<translation id="5742135483959137648">লিংক খুলিবলৈ Chromium ব্যৱহাৰ কৰক</translation>
 <translation id="5777187867430702742">Chromium পৃষ্ঠা</translation>
 <translation id="5862307444128926510">Chromium লৈ স্বাগতম</translation>
 <translation id="5945387852661427312">আপুনি <ph name="DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ জৰিয়তে ছাইন ইন কৰিছে আৰু সেইটোৰ প্ৰশাসকক আপোনাৰ Chromium ডেটা নিয়ন্ত্ৰণ কৰিবলৈ সুবিধা দিছে। আপোনাৰ ডেটা এই একাউণ্টটোৰ সৈতে স্থায়ীভাৱে সংযুক্ত হৈ থাকিব। Chromiumৰ পৰা ছাইন আউট কৰিলে আপোনাৰ ডেটা মচা যাব কিন্ত সেইবোৰ আপোনাৰ Google একাউণ্টত জমা হৈয়ে থাকিব।</translation>
@@ -65,16 +66,17 @@
 ২) ডিফ’ল্ট ব্ৰাউজাৰ এপত টিপক
 ৩) Chromium বাছনি কৰক।</translation>
 <translation id="6155422572367400359">এইটো ছাইট, আপোনাৰ Google একাউণ্ট আৰু Chromiumত ছাইন ইন কৰক। পাছত আপুনি ছিংক অন কৰিব পাৰে।</translation>
+<translation id="6183442264225539303">এই ছাইটটো আৰু Chromiumত ছাইন ইন কৰক। পাছত আপুনি ছিংক অন কৰিব পাৰে।</translation>
 <translation id="6268381023930128611">Chromiumৰ পৰা ছাইন আউট কৰিবনে?</translation>
 <translation id="632825460376924298">Chromiumত ছাইন ইন কৰাৰ অনুমতি দিয়ক</translation>
 <translation id="6337530241089703714">এই ডিভাইচটোৰ পৰা আপোনাৰ Chromiumৰ ডেটা মচিবনে ৰাখিব সেয়া বাছনি কৰক</translation>
 <translation id="6424492062988593837">Chromium আৰু উন্নত হৈছে! এটা নতুন সংস্কৰণ আছে।</translation>
 <translation id="6752854822223394465">আপোনাৰ প্ৰতিষ্ঠানে Chromium ছেট আপ কৰি আছে...</translation>
 <translation id="6820823224820483452">Chromiumএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক।</translation>
-<translation id="6827294685447036764">আপুনি যদি Chromiumক আপোনাৰ অৱস্থানৰ বিষয়ে জানিবলৈ দিয়ে, Chromiumএ সেয়া আপুনি অনুমতি দিয়া সকলো ছাইটলৈ পঠিয়ায়। ছাইটসমূহৰ আপোনাক ওচৰ-পাজৰৰ দোকান অথবা বাতৰিৰ দৰে স্থানীয় তথ্য দেখুৱাবলগীয়া থাকিলে সেইসমূহে আপোনাক অৱস্থানৰ বিষয়ে সুধিব পাৰে।</translation>
 <translation id="7018284295775193585">Chromium আপডে’ট হ’ব নোৱাৰে</translation>
 <translation id="7045244423563602563">আপুনি Chromiumত ছাইন ইন কৰক</translation>
 <translation id="7099326575020694068">Chromiumএ বিভাজিত ম’ডত আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব নোৱাৰে</translation>
+<translation id="7108914401277488191">Chromiumৰ জৰিয়তে অধিক কাৰ্য কৰক</translation>
 <translation id="7118091470949186573">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত লিংকসমূহত টিপিলে যিকোনো সময়তে Chromium ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="7208566199746267865">আপোনাৰ একাউণ্টসমূহ ৱেবলৈ আনি Chromiumএ আপোনাৰ সময় ৰাহি কৰে। আপুনি ছেটিংসমূহ-ত একাউন্ট যোগ কৰিব বা আঁতৰাব পাৰে।</translation>
 <translation id="725427773388857052">Chromiumএ আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট তথা আন বহুতৰ পৰা সুৰক্ষিত হৈ থকাত সহায় কৰিব পাৰে।</translation>
@@ -102,6 +104,7 @@
 <translation id="894437814105052438">আপুনি ছাইন আউট কৰিলে Chromiumএ আপোনাৰ Google একাউণ্টত কোনো নতুন ডেটা ছিংক নকৰিব। পূৰ্বে ছিংক কৰা ডেটাখিনি একাউণ্টটোতে থাকে।</translation>
 <translation id="9022552996538154597">Chromiumত ছাইন ইন কৰক</translation>
 <translation id="9089354809943900324">Chromiumটো অতি পুৰণি</translation>
+<translation id="9110075932708282655">ডিফ’ল্ট হিচাপে Chromium ব্যৱহাৰ কৰক</translation>
 <translation id="921174536258924340">Chromiumএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক অথবা <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্টত পাছৱর্ডসমূহ পৰীক্ষা কৰক।<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

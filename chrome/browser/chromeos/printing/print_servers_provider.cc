@@ -10,13 +10,12 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/printing/print_server.h"
@@ -151,6 +150,9 @@ class PrintServersProviderImpl : public PrintServersProvider {
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
+
+  PrintServersProviderImpl(const PrintServersProviderImpl&) = delete;
+  PrintServersProviderImpl& operator=(const PrintServersProviderImpl&) = delete;
 
   ~PrintServersProviderImpl() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -331,8 +333,6 @@ class PrintServersProviderImpl : public PrintServersProvider {
 
   base::ObserverList<PrintServersProvider::Observer>::Unchecked observers_;
   base::WeakPtrFactory<PrintServersProviderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintServersProviderImpl);
 };
 
 }  // namespace

@@ -328,10 +328,11 @@ class IntegrationTest(unittest.TestCase):
         archive_path,
         '--source-directory',
         _TEST_SOURCE_DIR,
+        '--tool-prefix',
+        _TEST_TOOL_PREFIX,
     ]
     if ignore_linker_map:
       args += ['--no-map-file']
-      args += ['--tool-prefix', _TEST_TOOL_PREFIX]
     elif not use_ssargs:
       # --map-file ignored for use_ssargs.
       args += ['--map-file', _TEST_MAP_PATH]

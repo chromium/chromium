@@ -15,6 +15,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/files/safe_base_name.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -556,6 +557,10 @@ FilePath FilePath::Append(const FilePath& component) const {
   return Append(component.value());
 }
 
+FilePath FilePath::Append(const SafeBaseName& component) const {
+  return Append(component.path().value());
+}
+
 FilePath FilePath::AppendASCII(StringPiece component) const {
   DCHECK(base::IsStringASCII(component));
 #if defined(OS_WIN)
@@ -644,6 +649,12 @@ std::u16string FilePath::AsUTF16Unsafe() const {
 }
 
 // static
+FilePath FilePath::FromASCII(StringPiece ascii) {
+  DCHECK(base::IsStringASCII(ascii));
+  return FilePath(ASCIIToWide(ascii));
+}
+
+// static
 FilePath FilePath::FromUTF8Unsafe(StringPiece utf8) {
   return FilePath(UTF8ToWide(utf8));
 }
@@ -682,6 +693,12 @@ std::u16string FilePath::AsUTF16Unsafe() const {
 #else
   return WideToUTF16(SysNativeMBToWide(value()));
 #endif
+}
+
+// static
+FilePath FilePath::FromASCII(StringPiece ascii) {
+  DCHECK(base::IsStringASCII(ascii));
+  return FilePath(ascii);
 }
 
 // static

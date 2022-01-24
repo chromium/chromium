@@ -15,6 +15,10 @@ class GroupedPermissionInfoBar : public infobars::ConfirmInfoBar {
  public:
   explicit GroupedPermissionInfoBar(
       std::unique_ptr<GroupedPermissionInfoBarDelegate> delegate);
+
+  GroupedPermissionInfoBar(const GroupedPermissionInfoBar&) = delete;
+  GroupedPermissionInfoBar& operator=(const GroupedPermissionInfoBar&) = delete;
+
   ~GroupedPermissionInfoBar() override;
 
  private:
@@ -24,8 +28,6 @@ class GroupedPermissionInfoBar : public infobars::ConfirmInfoBar {
       const ResourceIdMapper& resource_id_mapper) override;
 
   GroupedPermissionInfoBarDelegate* GetDelegate();
-
-  DISALLOW_COPY_AND_ASSIGN(GroupedPermissionInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_GROUPED_PERMISSION_INFOBAR_H_

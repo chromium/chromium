@@ -12,6 +12,7 @@ FakeSearchResultExtractor::FakeSearchResultExtractor() = default;
 FakeSearchResultExtractor::~FakeSearchResultExtractor() = default;
 
 void FakeSearchResultExtractor::ExtractCurrentSearchResults(
+    const std::vector<mojom::ResultType>& result_types,
     ExtractCurrentSearchResultsCallback callback) {
   CHECK(response_set_);
   std::move(callback).Run(status_, std::move(results_));

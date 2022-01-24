@@ -31,7 +31,6 @@ class SyncSetupService : public KeyedService {
     kSyncServiceNeedsTrustedVaultKey,
     kSyncServiceTrustedVaultRecoverabilityDegraded,
     kSyncServiceUnrecoverableError,
-    kSyncSettingsNotConfirmed,
     kLastSyncServiceError = kSyncServiceUnrecoverableError
   };
 
@@ -48,6 +47,10 @@ class SyncSetupService : public KeyedService {
   };
 
   explicit SyncSetupService(syncer::SyncService* sync_service);
+
+  SyncSetupService(const SyncSetupService&) = delete;
+  SyncSetupService& operator=(const SyncSetupService&) = delete;
+
   ~SyncSetupService() override;
 
   // Returns the |syncer::ModelType| associated to the given
@@ -55,7 +58,6 @@ class SyncSetupService : public KeyedService {
   syncer::ModelType GetModelType(SyncableDatatype datatype);
 
   // Returns whether the user wants Sync to run.
-  // It should be used only with kMobileIdentityConsistency enabled.
   virtual bool IsSyncRequested() const;
   // Returns whether Sync-the-transport can start the Sync feature.
   virtual bool CanSyncFeatureStart() const;
@@ -131,8 +133,6 @@ class SyncSetupService : public KeyedService {
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSetupService);
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_SYNC_SETUP_SERVICE_H_

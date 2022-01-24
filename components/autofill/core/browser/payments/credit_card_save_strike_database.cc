@@ -27,7 +27,7 @@ int CreditCardSaveStrikeDatabase::GetMaxStrikesLimit() const {
 absl::optional<base::TimeDelta>
 CreditCardSaveStrikeDatabase::GetExpiryTimeDelta() const {
   // Expiry time is 6 months.
-  return base::TimeDelta::FromDays(183);
+  return base::Days(183);
 }
 
 bool CreditCardSaveStrikeDatabase::UniqueIdsRequired() const {

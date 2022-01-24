@@ -15,10 +15,10 @@ import androidx.core.app.NotificationCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -86,7 +86,7 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
         if (tab == null || webappExtras == null) return;
 
         // All features provided by the notification are also available in the minimal-ui toolbar.
-        if (webappExtras.displayMode == WebDisplayMode.MINIMAL_UI) {
+        if (webappExtras.displayMode == DisplayMode.MINIMAL_UI) {
             return;
         }
 
@@ -116,9 +116,8 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
                 NotificationUmaTracker.SystemNotificationType.WEBAPP_ACTIONS,
                 null /* notificationTag */, NotificationConstants.NOTIFICATION_ID_WEBAPP_ACTIONS);
         return NotificationWrapperBuilderFactory
-                .createNotificationWrapperBuilder(true /* prefer compat */,
-                        ChromeChannelDefinitions.ChannelId.WEBAPP_ACTIONS,
-                        null /* remoteAppPackageName */, metadata)
+                .createNotificationWrapperBuilder(
+                        ChromeChannelDefinitions.ChannelId.WEBAPP_ACTIONS, metadata)
                 .setSmallIcon(R.drawable.ic_chrome)
                 .setContentTitle(webappExtras.shortName)
                 .setContentText(appContext.getString(R.string.webapp_tap_to_copy_url))

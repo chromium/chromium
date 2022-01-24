@@ -184,14 +184,14 @@ void InterpolableLength::SubtractFromOneHundredPercent() {
       hundred_percent, expression_, CSSMathOperator::kSubtract));
 }
 
-static double ClampToRange(double x, ValueRange range) {
-  return (range == kValueRangeNonNegative && x < 0) ? 0 : x;
+static double ClampToRange(double x, Length::ValueRange range) {
+  return (range == Length::ValueRange::kNonNegative && x < 0) ? 0 : x;
 }
 
 static const CSSNumericLiteralValue& ClampNumericLiteralValueToRange(
     const CSSNumericLiteralValue& value,
-    ValueRange range) {
-  if (range == kValueRangeAll || value.DoubleValue() >= 0)
+    CSSPrimitiveValue::ValueRange range) {
+  if (range == CSSPrimitiveValue::ValueRange::kAll || value.DoubleValue() >= 0)
     return value;
   return *CSSNumericLiteralValue::Create(0, value.GetType());
 }
@@ -203,13 +203,14 @@ static UnitType IndexToUnitType(wtf_size_t index) {
 
 Length InterpolableLength::CreateLength(
     const CSSToLengthConversionData& conversion_data,
-    ValueRange range) const {
+    Length::ValueRange range) const {
   // Passing true for ToCalcValue is a dirty hack to ensure that we don't create
   // a degenerate value when animating 'background-position', while we know it
   // may cause some minor animation glitches for the other properties.
   if (IsExpression())
     return Length(expression_->ToCalcValue(conversion_data, range, true));
 
+  DCHECK(IsLengthArray());
   bool has_percentage = HasPercentage();
   double pixels = 0;
   double percentage = 0;
@@ -227,9 +228,15 @@ Length InterpolableLength::CreateLength(
   if (percentage != 0)
     has_percentage = true;
   if (pixels != 0 && has_percentage) {
+    pixels = ClampTo<float>(pixels);
+    if (percentage == 0) {
+      // Match the clamping behavior in the StyleBuilder code path,
+      // which goes through CSSPrimitiveValue::CreateFromLength and then
+      // CSSPrimitiveValue::ConvertToLength.
+      pixels = CSSPrimitiveValue::ClampToCSSLengthRange(pixels);
+    }
     return Length(CalculationValue::Create(
-        PixelsAndPercent(clampTo<float>(pixels), clampTo<float>(percentage)),
-        range));
+        PixelsAndPercent(pixels, ClampTo<float>(percentage)), range));
   }
   if (has_percentage)
     return Length::Percent(ClampToRange(percentage, range));
@@ -238,20 +245,26 @@ Length InterpolableLength::CreateLength(
 }
 
 const CSSPrimitiveValue* InterpolableLength::CreateCSSValue(
-    ValueRange range) const {
-  if (IsExpression())
-    return CSSMathFunctionValue::Create(expression_, range);
+    Length::ValueRange range) const {
+  if (IsExpression()) {
+    return CSSMathFunctionValue::Create(
+        expression_, CSSPrimitiveValue::ValueRangeForLengthValueRange(range));
+  }
 
   DCHECK(IsLengthArray());
   if (length_array_.type_flags.count() > 1u) {
     const CSSMathExpressionNode& expression = AsExpression();
-    if (!expression.IsNumericLiteral())
-      return CSSMathFunctionValue::Create(&AsExpression(), range);
+    if (!expression.IsNumericLiteral()) {
+      return CSSMathFunctionValue::Create(
+          &AsExpression(),
+          CSSPrimitiveValue::ValueRangeForLengthValueRange(range));
+    }
 
     // This creates a temporary CSSMathExpressionNode. Eliminate it if this
     // results in significant performance regression.
     return &ClampNumericLiteralValueToRange(
-        To<CSSMathExpressionNumericLiteral>(expression).GetValue(), range);
+        To<CSSMathExpressionNumericLiteral>(expression).GetValue(),
+        CSSPrimitiveValue::ValueRangeForLengthValueRange(range));
   }
 
   for (wtf_size_t i = 0; i < length_array_.values.size(); ++i) {

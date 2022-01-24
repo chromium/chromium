@@ -21,6 +21,7 @@ import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemDelegate} from './item.js';
@@ -35,7 +36,7 @@ interface RepeaterEvent extends CustomEvent {
 interface ExtensionsRuntimeHostPermissionsElement {
   $: {
     hostActionMenu: CrActionMenuElement,
-    'host-access': CrRadioGroupElement,
+    'host-access': HTMLSelectElement,
   };
 }
 
@@ -58,6 +59,8 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
       itemId: String,
 
       delegate: Object,
+
+      useNewSiteAccessText: Boolean,
 
       /**
        * Whether the dialog to add a new host permission is shown.
@@ -131,6 +134,7 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   permissions: chrome.developerPrivate.RuntimeHostPermissions;
   itemId: string;
   delegate: ItemDelegate;
+  useNewSiteAccessText: boolean;
   private showHostDialog_: boolean;
   private hostDialogModel_: string|null;
   private hostDialogAnchorElement_: HTMLElement|null;
@@ -140,8 +144,8 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   private revertingHostAccess_: boolean;
 
   private onHostAccessChange_() {
-    const group = this.$['host-access'];
-    const access = group.selected as chrome.developerPrivate.HostAccess;
+    const selectMenu = this.$['host-access'];
+    const access = selectMenu.value as chrome.developerPrivate.HostAccess;
 
     // Log a user action when the host access selection is changed by the user,
     // but not when reverting from a canceled change to another setting.
@@ -174,14 +178,23 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
       //   This ensures there will be at least one, so that the host access
       //   is properly calculated.
       this.oldHostAccess_ = this.permissions.hostAccess;
-      this.doShowHostDialog_(group, null);
+      this.doShowHostDialog_(selectMenu, null);
     } else {
       this.delegate.setItemHostAccess(this.itemId, access);
     }
   }
 
+  private getHostPermissionsHeading_(): string {
+    return loadTimeData.getString(
+        this.useNewSiteAccessText ? 'newHostPermissionsHeading' :
+                                    'hostPermissionsHeading');
+  }
+
   private showSpecificSites_(): boolean {
-    return this.permissions.hostAccess ===
+    // TODO(crbug.com/1253673): Show a different "customize for each site" menu
+    // for the new site access menu.
+    return !this.useNewSiteAccessText &&
+        this.permissions.hostAccess ===
         chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES;
   }
 
@@ -235,7 +248,7 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
     if (this.oldHostAccess_) {
       assert(this.permissions.hostAccess === this.oldHostAccess_);
       this.revertingHostAccess_ = true;
-      this.$['host-access'].selected = this.oldHostAccess_;
+      this.$['host-access'].value = this.oldHostAccess_;
       this.revertingHostAccess_ = false;
       this.oldHostAccess_ = null;
     }

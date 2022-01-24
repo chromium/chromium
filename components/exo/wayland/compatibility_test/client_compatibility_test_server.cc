@@ -16,14 +16,16 @@ class CompatibilityTestSuiteServer : public WaylandClientTestSuiteServer {
  public:
   using WaylandClientTestSuiteServer::WaylandClientTestSuiteServer;
 
+  CompatibilityTestSuiteServer(const CompatibilityTestSuiteServer&) = delete;
+  CompatibilityTestSuiteServer& operator=(const CompatibilityTestSuiteServer&) =
+      delete;
+
   void SetClientTestUIThreadTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner)
       override {
     ClientCompatibilityTest::SetUIThreadTaskRunner(
         std::move(ui_thread_task_runner));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CompatibilityTestSuiteServer);
 };
 
 std::unique_ptr<WaylandClientTestSuiteServer> MakeServer(int argc,

@@ -4,6 +4,9 @@
 
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 
+#include "base/command_line.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/tracing/common/tracing_switches.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/shared_memory_arbiter.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 
@@ -13,7 +16,7 @@ namespace tracing {
 constexpr size_t PerfettoProducer::kSMBPageSizeBytes;
 
 // static
-constexpr size_t PerfettoProducer::kSMBSizeBytes;
+constexpr size_t PerfettoProducer::kDefaultSMBSizeBytes;
 
 PerfettoProducer::PerfettoProducer(
     base::tracing::PerfettoTaskRunner* task_runner)
@@ -144,6 +147,21 @@ void PerfettoProducer::ResetSequenceForTesting() {
 
 base::tracing::PerfettoTaskRunner* PerfettoProducer::task_runner() {
   return task_runner_;
+}
+
+size_t PerfettoProducer::GetPreferredSmbSizeBytes() {
+  std::string switch_value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kTraceSmbSize);
+  if (switch_value.empty())
+    return kDefaultSMBSizeBytes;
+  uint64_t switch_kilobytes;
+  if (!base::StringToUint64(switch_value, &switch_kilobytes) ||
+      (switch_kilobytes * 1024) % kSMBPageSizeBytes != 0) {
+    LOG(WARNING) << "Invalid tracing SMB size: " << switch_value;
+    return kDefaultSMBSizeBytes;
+  }
+  return switch_kilobytes * 1024;
 }
 
 }  // namespace tracing

@@ -15,13 +15,12 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/language_code.h"
@@ -64,6 +63,10 @@ class RandomizedEncoder;
 class FormStructure {
  public:
   explicit FormStructure(const FormData& form);
+
+  FormStructure(const FormStructure&) = delete;
+  FormStructure& operator=(const FormStructure&) = delete;
+
   virtual ~FormStructure();
 
   // Runs several heuristics against the form fields to determine their possible
@@ -141,6 +144,10 @@ class FormStructure {
   // Returns true if heuristic autofill type detection should be attempted for
   // this form.
   bool ShouldRunHeuristics() const;
+
+  // Returns true if heuristic autofill type detection for promo codes should be
+  // attempted for this form.
+  bool ShouldRunPromoCodeHeuristics() const;
 
   // Returns true if we should query the crowd-sourcing server to determine this
   // form's field types. If the form includes author-specified types, this will
@@ -417,6 +424,15 @@ class FormStructure {
                          form_interactions_ukm_logger, nullptr);
   }
 
+  void set_single_username_data(
+      AutofillUploadContents::SingleUsernameData single_username_data) {
+    single_username_data_ = single_username_data;
+  }
+  absl::optional<AutofillUploadContents::SingleUsernameData>
+  single_username_data() const {
+    return single_username_data_;
+  }
+
  private:
   friend class AutofillMergeTest;
   friend class FormStructureTestImpl;
@@ -674,7 +690,9 @@ class FormStructure {
   // frame.
   FormRendererId unique_renderer_id_;
 
-  DISALLOW_COPY_AND_ASSIGN(FormStructure);
+  // Single username details, if applicable.
+  absl::optional<AutofillUploadContents::SingleUsernameData>
+      single_username_data_;
 };
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form);

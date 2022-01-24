@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/view.h"
@@ -42,6 +41,9 @@ class VIEWS_EXPORT MessageBoxView : public View {
   // align all paragraphs according to the direction of the first paragraph.
   explicit MessageBoxView(const std::u16string& message = std::u16string(),
                           bool detect_directionality = false);
+
+  MessageBoxView(const MessageBoxView&) = delete;
+  MessageBoxView& operator=(const MessageBoxView&) = delete;
 
   ~MessageBoxView() override;
 
@@ -116,8 +118,6 @@ class VIEWS_EXPORT MessageBoxView : public View {
 
   // Maximum width of the message label.
   int message_width_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageBoxView);
 };
 
 }  // namespace views

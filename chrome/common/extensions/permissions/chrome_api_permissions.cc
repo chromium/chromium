@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"
@@ -124,6 +123,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kWallpaper, "wallpaper",
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kWebAuthenticationProxy, "webAuthenticationProxy",
+     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kWebNavigation, "webNavigation",
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
 

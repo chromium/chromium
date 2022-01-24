@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 class ChromeAuthenticatorRequestDelegate;
 
 namespace content {
@@ -25,6 +23,11 @@ class WebContents;
 class AuthenticatorRequestScheduler {
  public:
   AuthenticatorRequestScheduler() = default;
+
+  AuthenticatorRequestScheduler(const AuthenticatorRequestScheduler&) = delete;
+  AuthenticatorRequestScheduler& operator=(
+      const AuthenticatorRequestScheduler&) = delete;
+
   ~AuthenticatorRequestScheduler() = default;
 
   // Returns a nullptr delegate if there is already an ongoing request in the
@@ -36,9 +39,6 @@ class AuthenticatorRequestScheduler {
   // nullptr if there is none.
   static ChromeAuthenticatorRequestDelegate* GetRequestDelegate(
       content::WebContents* web_contents);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestScheduler);
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REQUEST_SCHEDULER_H_

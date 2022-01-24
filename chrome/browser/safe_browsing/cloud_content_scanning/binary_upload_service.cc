@@ -208,16 +208,6 @@ BinaryUploadService::BinaryUploadService(Profile* profile)
     : url_loader_factory_(profile->GetURLLoaderFactory()),
       binary_fcm_service_(BinaryFCMService::Create(profile)),
       profile_(profile),
-      weakptr_factory_(this) {
-  DCHECK(base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies));
-}
-
-BinaryUploadService::BinaryUploadService(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    Profile* profile)
-    : url_loader_factory_(url_loader_factory),
-      binary_fcm_service_(BinaryFCMService::Create(profile)),
-      profile_(profile),
       weakptr_factory_(this) {}
 
 BinaryUploadService::BinaryUploadService(
@@ -310,7 +300,7 @@ void BinaryUploadService::UploadForDeepScanning(
   active_tokens_[raw_request] = token;
   raw_request->set_request_token(token);
 
-  if (!binary_fcm_service_) {
+  if (!binary_fcm_service_ || !binary_fcm_service_->Connected()) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&BinaryUploadService::FinishRequest,
@@ -328,7 +318,7 @@ void BinaryUploadService::UploadForDeepScanning(
                      weakptr_factory_.GetWeakPtr(), raw_request));
   active_timers_[raw_request] = std::make_unique<base::OneShotTimer>();
   active_timers_[raw_request]->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kScanningTimeoutSeconds),
+      FROM_HERE, base::Seconds(kScanningTimeoutSeconds),
       base::BindOnce(&BinaryUploadService::OnTimeout,
                      weakptr_factory_.GetWeakPtr(), raw_request));
 }
@@ -346,9 +336,8 @@ void BinaryUploadService::OnGetInstanceID(Request* request,
 
   base::UmaHistogramCustomTimes(
       "SafeBrowsingBinaryUploadRequest.TimeToGetFCMToken",
-      base::TimeTicks::Now() - start_times_[request],
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromMinutes(6),
-      50);
+      base::TimeTicks::Now() - start_times_[request], base::Milliseconds(1),
+      base::Minutes(6), 50);
 
   request->set_fcm_token(instance_id);
   request->GetRequestData(base::BindOnce(&BinaryUploadService::OnGetRequestData,
@@ -508,10 +497,10 @@ void BinaryUploadService::FinishRequestCleanup(Request* request,
   received_connector_results_.erase(request);
 
   auto token_it = active_tokens_.find(request);
-  DCHECK(token_it != active_tokens_.end());
-  if (binary_fcm_service_) {
+  if (binary_fcm_service_ && token_it != active_tokens_.end())
     binary_fcm_service_->ClearCallbackForToken(token_it->second);
 
+  if (binary_fcm_service_ && instance_id != BinaryFCMService::kInvalidId) {
     // The BinaryFCMService will handle all recoverable errors. In case of
     // unrecoverable error, there's nothing we can do here.
     binary_fcm_service_->UnregisterInstanceID(
@@ -519,13 +508,15 @@ void BinaryUploadService::FinishRequestCleanup(Request* request,
         base::BindOnce(&BinaryUploadService::InstanceIDUnregisteredCallback,
                        weakptr_factory_.GetWeakPtr(), dm_token, connector));
   } else {
-    // |binary_fcm_service_| can be null in tests, but
+    // `binary_fcm_service_` can be null in tests and `instance_id` can be
+    // invalid if getting an FCM token failed or timed out, but
     // InstanceIDUnregisteredCallback should be called anyway so the requests
     // waiting on authentication can complete.
     InstanceIDUnregisteredCallback(dm_token, connector, true);
   }
 
-  active_tokens_.erase(token_it);
+  if (token_it != active_tokens_.end())
+    active_tokens_.erase(token_it);
 }
 
 void BinaryUploadService::InstanceIDUnregisteredCallback(
@@ -549,8 +540,7 @@ void BinaryUploadService::RecordRequestMetrics(Request* request,
                                 result);
   base::UmaHistogramCustomTimes("SafeBrowsingBinaryUploadRequest.Duration",
                                 base::TimeTicks::Now() - start_times_[request],
-                                base::TimeDelta::FromMilliseconds(1),
-                                base::TimeDelta::FromMinutes(6), 50);
+                                base::Milliseconds(1), base::Minutes(6), 50);
 }
 
 void BinaryUploadService::RecordRequestMetrics(
@@ -558,17 +548,17 @@ void BinaryUploadService::RecordRequestMetrics(
     Result result,
     const enterprise_connectors::ContentAnalysisResponse& response) {
   RecordRequestMetrics(request, result);
-  for (const auto& result : response.results()) {
-    if (result.tag() == "malware") {
+  for (const auto& response_result : response.results()) {
+    if (response_result.tag() == "malware") {
       base::UmaHistogramBoolean(
           "SafeBrowsingBinaryUploadRequest.MalwareResult",
-          result.status() !=
+          response_result.status() !=
               enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
     }
-    if (result.tag() == "dlp") {
+    if (response_result.tag() == "dlp") {
       base::UmaHistogramBoolean(
           "SafeBrowsingBinaryUploadRequest.DlpResult",
-          result.status() !=
+          response_result.status() !=
               enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
     }
   }
@@ -685,6 +675,10 @@ const std::string& BinaryUploadService::Request::digest() const {
   return content_analysis_request_.request_data().digest();
 }
 
+const std::string& BinaryUploadService::Request::content_type() const {
+  return content_analysis_request_.request_data().content_type();
+}
+
 void BinaryUploadService::Request::FinishRequest(
     Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
@@ -761,7 +755,7 @@ void BinaryUploadService::IsAuthorized(
   // order to invalidate the authorization every 24 hours.
   if (!timer_.IsRunning()) {
     timer_.Start(
-        FROM_HERE, base::TimeDelta::FromHours(24),
+        FROM_HERE, base::Hours(24),
         base::BindRepeating(&BinaryUploadService::ResetAuthorizationData,
                             weakptr_factory_.GetWeakPtr(), url));
   }

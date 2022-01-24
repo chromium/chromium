@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/public/browser/shared_worker_instance.h"
@@ -31,6 +30,10 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
       SharedWorkerHost* worker_host,
       const base::UnguessableToken& devtools_worker_token);
 
+  SharedWorkerDevToolsAgentHost(const SharedWorkerDevToolsAgentHost&) = delete;
+  SharedWorkerDevToolsAgentHost& operator=(
+      const SharedWorkerDevToolsAgentHost&) = delete;
+
   // DevToolsAgentHost override.
   BrowserContext* GetBrowserContext() override;
   std::string GetType() override;
@@ -43,6 +46,7 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   NetworkLoaderFactoryParamsAndInfo CreateNetworkFactoryParamsForDevTools()
       override;
   RenderProcessHost* GetProcessHost() override;
+  protocol::TargetAutoAttacher* auto_attacher() override;
 
   blink::StorageKey GetStorageKey() const;
 
@@ -65,6 +69,8 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
   void DetachSession(DevToolsSession* session) override;
 
+  std::unique_ptr<protocol::TargetAutoAttacher> auto_attacher_;
+
   enum WorkerState {
     WORKER_NOT_READY,
     WORKER_READY,
@@ -74,8 +80,6 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   SharedWorkerHost* worker_host_;
   base::UnguessableToken devtools_worker_token_;
   SharedWorkerInstance instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerDevToolsAgentHost);
 };
 
 }  // namespace content

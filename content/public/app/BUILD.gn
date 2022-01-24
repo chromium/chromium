@@ -38,11 +38,19 @@ if (is_win) {
   public_app_shared_sources += [ "sandbox_helper_win.h" ]
 }
 
+public_app_shared_public_deps = [
+  "//content:export",
+  "//third_party/abseil-cpp:absl",
+]
+
 public_app_shared_deps = [
   "//base",
   "//base:i18n",
-  "//content:export",
+  "//content/app",
   "//content/public/common:common_sources",
+  "//content/public/gpu:gpu_sources",
+  "//content/public/renderer:renderer_sources",
+  "//content/public/utility:utility_sources",
 ]
 
 if (is_component_build) {
@@ -54,13 +62,10 @@ if (is_component_build) {
 
     configs += [ "//content:content_implementation" ]
 
-    deps = public_app_shared_deps + [
-             "//content/app",
-             "//content/public/browser:browser_sources",
-             "//content/public/gpu:gpu_sources",
-             "//content/public/renderer:renderer_sources",
-             "//content/public/utility:utility_sources",
-           ]
+    public_deps = public_app_shared_public_deps
+
+    deps =
+        public_app_shared_deps + [ "//content/public/browser:browser_sources" ]
 
     allow_circular_includes_from = [
       # This target is a pair with the non-public version. They always go
@@ -77,13 +82,10 @@ if (is_component_build) {
   source_set("app") {
     sources = public_app_shared_sources
     configs += [ "//content:content_implementation" ]
+    public_deps = public_app_shared_public_deps
     deps = public_app_shared_deps + [
-             "//content/app",
              "//content/public/browser",
              "//content/public/common",
-             "//content/public/gpu:gpu_sources",
-             "//content/public/renderer:renderer_sources",
-             "//content/public/utility:utility_sources",
            ]
 
     allow_circular_includes_from = [

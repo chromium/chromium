@@ -137,11 +137,11 @@ TEST(HttpAuthControllerTest, PermanentErrors) {
 // Verify that the controller logs appropriate lifetime events.
 TEST(HttpAuthControllerTest, Logging) {
   base::test::TaskEnvironment task_environment;
-  RecordingBoundTestNetLog net_log;
+  RecordingNetLogObserver net_log_observer;
 
   RunSingleRoundAuthTest(RUN_HANDLER_SYNC, OK, OK, SCHEME_IS_ENABLED,
-                         net_log.bound());
-  auto entries = net_log.GetEntries();
+                         NetLogWithSource::Make(NetLogSourceType::NONE));
+  auto entries = net_log_observer.GetEntries();
 
   // There should be at least two events.
   ASSERT_GE(entries.size(), 2u);

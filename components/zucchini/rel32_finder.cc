@@ -162,4 +162,133 @@ Rel32Finder::NextIterators Rel32FinderX64::Scan(ConstBufferView region) {
   return {nullptr, nullptr};
 }
 
+/******** Rel32FinderArm ********/
+
+template <typename ADDR_TYPE>
+Rel32FinderArm<ADDR_TYPE>::Rel32FinderArm(ConstBufferView image,
+                                          const AddressTranslator& translator)
+    : Rel32Finder(image, translator) {}
+
+template <typename ADDR_TYPE>
+Rel32FinderArm<ADDR_TYPE>::~Rel32FinderArm() = default;
+
+template <typename ADDR_TYPE>
+Rel32Finder::NextIterators Rel32FinderArm<ADDR_TYPE>::SetResult(
+    Result&& result,
+    ConstBufferView::const_iterator cursor,
+    int instr_size) {
+  rel32_ = result;
+  return {cursor + instr_size, cursor + instr_size};
+}
+
+// SetResult() for end of scan.
+template <typename ADDR_TYPE>
+Rel32Finder::NextIterators Rel32FinderArm<ADDR_TYPE>::SetEmptyResult() {
+  rel32_ = {kInvalidOffset, kInvalidOffset, ADDR_TYPE::ADDR_NONE};
+  return {nullptr, nullptr};
+}
+
+/******** Rel32FinderAArch32 ********/
+
+Rel32FinderAArch32::Rel32FinderAArch32(ConstBufferView image,
+                                       const AddressTranslator& translator,
+                                       bool is_thumb2)
+    : Rel32FinderArm(image, translator), is_thumb2_(is_thumb2) {}
+
+Rel32FinderAArch32::~Rel32FinderAArch32() = default;
+
+Rel32Finder::NextIterators Rel32FinderAArch32::ScanA32(ConstBufferView region) {
+  // Guard against alignment potentially causing |cursor > region.end()|.
+  if (region.size() < 4)
+    return SetEmptyResult();
+  ConstBufferView::const_iterator cursor = region.begin();
+  cursor += IncrementForAlignCeil4(cursor - image_.begin());
+  for (; region.end() - cursor >= 4; cursor += 4) {
+    offset_t offset = base::checked_cast<offset_t>(cursor - image_.begin());
+    AArch32Rel32Translator translator;
+    rva_t instr_rva = offset_to_rva_.Convert(offset);
+    uint32_t code32 = translator.FetchArmCode32(image_, offset);
+    rva_t target_rva = kInvalidRva;
+    if (translator.ReadA24(instr_rva, code32, &target_rva)) {
+      return SetResult({offset, target_rva, AArch32Rel32Translator::ADDR_A24},
+                       cursor, 4);
+    }
+  }
+  return SetEmptyResult();
+}
+
+Rel32Finder::NextIterators Rel32FinderAArch32::ScanT32(ConstBufferView region) {
+  // Guard against alignment potentially causing |cursor > region.end()|.
+  if (region.size() < 2)
+    return SetEmptyResult();
+  ConstBufferView::const_iterator cursor = region.begin();
+  cursor += IncrementForAlignCeil2(cursor - image_.begin());
+  while (region.end() - cursor >= 2) {
+    offset_t offset = base::checked_cast<offset_t>(cursor - image_.begin());
+    AArch32Rel32Translator translator;
+    AArch32Rel32Translator::AddrType type = AArch32Rel32Translator::ADDR_NONE;
+    rva_t instr_rva = offset_to_rva_.Convert(offset);
+    uint16_t code16 = translator.FetchThumb2Code16(image_, offset);
+    int instr_size = GetThumb2InstructionSize(code16);
+    rva_t target_rva = kInvalidRva;
+    if (instr_size == 2) {  // 16-bit THUMB2 instruction.
+      if (translator.ReadT8(instr_rva, code16, &target_rva))
+        type = AArch32Rel32Translator::ADDR_T8;
+      else if (translator.ReadT11(instr_rva, code16, &target_rva))
+        type = AArch32Rel32Translator::ADDR_T11;
+    } else {  // |instr_size == 4|: 32-bit THUMB2 instruction.
+      if (region.end() - cursor >= 4) {
+        uint32_t code32 = translator.FetchThumb2Code32(image_, offset);
+        if (translator.ReadT20(instr_rva, code32, &target_rva))
+          type = AArch32Rel32Translator::ADDR_T20;
+        else if (translator.ReadT24(instr_rva, code32, &target_rva))
+          type = AArch32Rel32Translator::ADDR_T24;
+      }
+    }
+    if (type != AArch32Rel32Translator::ADDR_NONE)
+      return SetResult({offset, target_rva, type}, cursor, instr_size);
+    cursor += instr_size;
+  }
+  return SetEmptyResult();
+}
+
+Rel32Finder::NextIterators Rel32FinderAArch32::Scan(ConstBufferView region) {
+  return is_thumb2_ ? ScanT32(region) : ScanA32(region);
+}
+
+/******** Rel32FinderAArch64 ********/
+
+Rel32FinderAArch64::Rel32FinderAArch64(ConstBufferView image,
+                                       const AddressTranslator& translator)
+    : Rel32FinderArm(image, translator) {}
+
+Rel32FinderAArch64::~Rel32FinderAArch64() = default;
+
+Rel32Finder::NextIterators Rel32FinderAArch64::Scan(ConstBufferView region) {
+  // Guard against alignment potentially causing |cursor > region.end()|.
+  if (region.size() < 4)
+    return SetEmptyResult();
+  ConstBufferView::const_iterator cursor = region.begin();
+  cursor += IncrementForAlignCeil4(cursor - image_.begin());
+  for (; region.end() - cursor >= 4; cursor += 4) {
+    offset_t offset = base::checked_cast<offset_t>(cursor - image_.begin());
+    // For simplicity we assume RVA fits within 32-bits.
+    AArch64Rel32Translator translator;
+    AArch64Rel32Translator::AddrType type = AArch64Rel32Translator::ADDR_NONE;
+    rva_t instr_rva = offset_to_rva_.Convert(offset);
+    uint32_t code32 = translator.FetchCode32(image_, offset);
+    rva_t target_rva = kInvalidRva;
+    if (translator.ReadImmd14(instr_rva, code32, &target_rva)) {
+      type = AArch64Rel32Translator::ADDR_IMMD14;
+    } else if (translator.ReadImmd19(instr_rva, code32, &target_rva)) {
+      type = AArch64Rel32Translator::ADDR_IMMD19;
+    } else if (translator.ReadImmd26(instr_rva, code32, &target_rva)) {
+      type = AArch64Rel32Translator::ADDR_IMMD26;
+    }
+    if (type != AArch64Rel32Translator::ADDR_NONE)
+      return SetResult({offset, target_rva, type}, cursor, 4);
+  }
+  return SetEmptyResult();
+}
+
 }  // namespace zucchini

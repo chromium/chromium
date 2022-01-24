@@ -4,11 +4,21 @@
 
 #include "chrome/browser/ash/login/wizard_context.h"
 
+#include "build/branding_buildflags.h"
+#include "chrome/browser/ui/webui/chromeos/login/family_link_notice_screen_handler.h"
 #include "chromeos/login/auth/user_context.h"
 
-namespace chromeos {
+namespace ash {
 
-WizardContext::WizardContext() = default;
+WizardContext::WizardContext()
+    : screen_after_managed_tos(FamilyLinkNoticeView::kScreenId) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  is_branded_build = true;
+#else
+  is_branded_build = false;
+#endif
+}
+
 WizardContext::~WizardContext() = default;
 
-}  // namespace chromeos
+}  // namespace ash

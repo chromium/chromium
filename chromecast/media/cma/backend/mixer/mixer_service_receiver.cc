@@ -8,9 +8,10 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/media/audio/net/common.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/media/cma/backend/mixer/audio_output_redirector.h"
 #include "chromecast/media/cma/backend/mixer/loopback_handler.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input_connection.h"
@@ -44,6 +45,9 @@ class MixerServiceReceiver::ControlConnection
     socket_->SetDelegate(this);
   }
 
+  ControlConnection(const ControlConnection&) = delete;
+  ControlConnection& operator=(const ControlConnection&) = delete;
+
   ~ControlConnection() override = default;
 
   void OnStreamCountChanged() {
@@ -64,17 +68,17 @@ class MixerServiceReceiver::ControlConnection
   bool HandleMetadata(const mixer_service::Generic& message) override {
     if (message.has_set_volume_limit()) {
       mixer_->SetOutputLimit(
-          mixer_service::ConvertContentType(
+          audio_service::ConvertContentType(
               message.set_volume_limit().content_type()),
           message.set_volume_limit().max_volume_multiplier());
     }
     if (message.has_set_device_muted()) {
-      mixer_->SetMuted(mixer_service::ConvertContentType(
+      mixer_->SetMuted(audio_service::ConvertContentType(
                            message.set_device_muted().content_type()),
                        message.set_device_muted().muted());
     }
     if (message.has_set_device_volume()) {
-      mixer_->SetVolume(mixer_service::ConvertContentType(
+      mixer_->SetVolume(audio_service::ConvertContentType(
                             message.set_device_volume().content_type()),
                         message.set_device_volume().volume_multiplier());
     }
@@ -130,8 +134,6 @@ class MixerServiceReceiver::ControlConnection
   const std::unique_ptr<mixer_service::MixerSocket> socket_;
 
   bool send_stream_count_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ControlConnection);
 };
 
 MixerServiceReceiver::MixerServiceReceiver(StreamMixer* mixer,

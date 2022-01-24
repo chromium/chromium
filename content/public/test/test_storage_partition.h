@@ -22,19 +22,15 @@ class ProtoDatabaseProvider;
 
 namespace content {
 
-class AppCacheService;
 class BackgroundSyncContext;
 class DevToolsBackgroundServicesContext;
 class DOMStorageContext;
 class FileSystemAccessEntryFactory;
-class PlatformNotificationContext;
-class ServiceWorkerContext;
-
-#if !defined(OS_ANDROID)
 class HostZoomLevelContext;
 class HostZoomMap;
+class PlatformNotificationContext;
+class ServiceWorkerContext;
 class ZoomLevelDelegate;
-#endif  // !defined(OS_ANDROID)
 
 namespace mojom {
 class NetworkContext;
@@ -44,6 +40,10 @@ class NetworkContext;
 class TestStoragePartition : public StoragePartition {
  public:
   TestStoragePartition();
+
+  TestStoragePartition(const TestStoragePartition&) = delete;
+  TestStoragePartition& operator=(const TestStoragePartition&) = delete;
+
   ~TestStoragePartition() override;
 
   void set_path(base::FilePath file_path) { file_path_ = file_path; }
@@ -87,11 +87,6 @@ class TestStoragePartition : public StoragePartition {
     quota_manager_ = manager;
   }
   storage::QuotaManager* GetQuotaManager() override;
-
-  void set_app_cache_service(AppCacheService* service) {
-    app_cache_service_ = service;
-  }
-  AppCacheService* GetAppCacheService() override;
 
   void set_file_system_context(storage::FileSystemContext* context) {
     file_system_context_ = context;
@@ -166,7 +161,6 @@ class TestStoragePartition : public StoragePartition {
 
   NativeIOContext* GetNativeIOContext() override;
 
-#if !defined(OS_ANDROID)
   void set_host_zoom_map(HostZoomMap* map) { host_zoom_map_ = map; }
   HostZoomMap* GetHostZoomMap() override;
 
@@ -179,11 +173,11 @@ class TestStoragePartition : public StoragePartition {
     zoom_level_delegate_ = delegate;
   }
   ZoomLevelDelegate* GetZoomLevelDelegate() override;
-#endif  // !defined(OS_ANDROID)
 
   void ClearDataForOrigin(uint32_t remove_mask,
                           uint32_t quota_storage_remove_mask,
-                          const GURL& storage_origin) override;
+                          const GURL& storage_origin,
+                          base::OnceClosure callback) override;
 
   void ClearData(uint32_t remove_mask,
                  uint32_t quota_storage_remove_mask,
@@ -229,7 +223,6 @@ class TestStoragePartition : public StoragePartition {
   network::mojom::NetworkContext* network_context_ = nullptr;
   network::mojom::CookieManager* cookie_manager_for_browser_process_ = nullptr;
   storage::QuotaManager* quota_manager_ = nullptr;
-  AppCacheService* app_cache_service_ = nullptr;
   BackgroundSyncContext* background_sync_context_ = nullptr;
   storage::FileSystemContext* file_system_context_ = nullptr;
   storage::DatabaseTracker* database_tracker_ = nullptr;
@@ -246,14 +239,10 @@ class TestStoragePartition : public StoragePartition {
       nullptr;
   ContentIndexContext* content_index_context_ = nullptr;
   NativeIOContext* native_io_context_ = nullptr;
-#if !defined(OS_ANDROID)
   HostZoomMap* host_zoom_map_ = nullptr;
   HostZoomLevelContext* host_zoom_level_context_ = nullptr;
   ZoomLevelDelegate* zoom_level_delegate_ = nullptr;
-#endif  // !defined(OS_ANDROID)
   int data_removal_observer_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestStoragePartition);
 };
 
 }  // namespace content

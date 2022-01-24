@@ -9,7 +9,7 @@
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 // #import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.m.js';
 // clang-format on
 
@@ -24,7 +24,7 @@ suite('Multidevice', function() {
 
   setup(function() {
     const browserProxy = new TestSyncBrowserProxy();
-    settings.SyncBrowserProxyImpl.instance_ = browserProxy;
+    settings.SyncBrowserProxyImpl.setInstance(browserProxy);
 
     PolymerTest.clearBody();
 

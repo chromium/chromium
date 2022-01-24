@@ -28,6 +28,9 @@ class ContextMenuMatcherTest : public testing::Test {
         manager_(CreateMenuManager()),
         prefs_(base::ThreadTaskRunnerHandle::Get()) {}
 
+  ContextMenuMatcherTest(const ContextMenuMatcherTest&) = delete;
+  ContextMenuMatcherTest& operator=(const ContextMenuMatcherTest&) = delete;
+
   // Returns a test item with the given string ID.
   std::unique_ptr<MenuItem> CreateTestItem(Extension* extension,
                                            const std::string& string_id,
@@ -64,9 +67,6 @@ class ContextMenuMatcherTest : public testing::Test {
   MenuManager* manager_;
   ExtensionList extensions_;
   TestExtensionPrefs prefs_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuMatcherTest);
 };
 
 // Tests appending an extension item with an invisible submenu.

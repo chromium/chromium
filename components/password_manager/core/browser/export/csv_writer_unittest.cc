@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/export/csv_writer.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,6 +19,9 @@ class CSVWriterTest : public testing::Test {
  public:
   CSVWriterTest() = default;
 
+  CSVWriterTest(const CSVWriterTest&) = delete;
+  CSVWriterTest& operator=(const CSVWriterTest&) = delete;
+
   void SetUp() override {
     column_names_.push_back("foo");
     column_names_.push_back("bar");
@@ -28,9 +30,6 @@ class CSVWriterTest : public testing::Test {
  protected:
   std::vector<std::string> column_names_;
   std::vector<std::map<std::string, std::string>> records_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CSVWriterTest);
 };
 
 TEST_F(CSVWriterTest, EmptyData) {

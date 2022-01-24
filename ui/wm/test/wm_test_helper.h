@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window_tree_host.h"
@@ -39,6 +38,10 @@ class WMState;
 class WMTestHelper : public aura::client::WindowParentingClient {
  public:
   explicit WMTestHelper(const gfx::Size& default_window_size);
+
+  WMTestHelper(const WMTestHelper&) = delete;
+  WMTestHelper& operator=(const WMTestHelper&) = delete;
+
   ~WMTestHelper() override;
 
   aura::WindowTreeHost* host() { return host_.get(); }
@@ -54,8 +57,6 @@ class WMTestHelper : public aura::client::WindowParentingClient {
   std::unique_ptr<wm::CompoundEventFilter> root_window_event_filter_;
   std::unique_ptr<aura::client::DefaultCaptureClient> capture_client_;
   std::unique_ptr<aura::client::FocusClient> focus_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(WMTestHelper);
 };
 
 }  // namespace wm

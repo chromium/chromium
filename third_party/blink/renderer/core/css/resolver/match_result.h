@@ -25,6 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MATCH_RESULT_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_expansion.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_origin.h"
@@ -60,6 +61,9 @@ struct CORE_EXPORT MatchedProperties {
     //
     // https://drafts.csswg.org/css-scoping/#shadow-cascading
     uint16_t tree_order;
+    // https://drafts.csswg.org/css-cascade-5/#layer-ordering
+    uint16_t layer_order;
+    bool is_inline_style;
   };
   Data types_;
 };
@@ -80,7 +84,7 @@ class MatchedExpansionsIterator {
   MatchedExpansionsIterator(Iterator iterator,
                             const Document& document,
                             CascadeFilter filter,
-                            size_t index)
+                            wtf_size_t index)
       : iterator_(iterator),
         document_(document),
         filter_(filter),
@@ -105,7 +109,7 @@ class MatchedExpansionsIterator {
   Iterator iterator_;
   const Document& document_;
   CascadeFilter filter_;
-  size_t index_;
+  wtf_size_t index_;
 };
 
 class MatchedExpansionsRange {
@@ -124,6 +128,58 @@ class MatchedExpansionsRange {
   MatchedExpansionsIterator end_;
 };
 
+class AddMatchedPropertiesOptions {
+  STACK_ALLOCATED();
+
+ public:
+  class Builder;
+
+  unsigned GetLinkMatchType() const { return link_match_type_; }
+  ValidPropertyFilter GetValidPropertyFilter() const {
+    return valid_property_filter_;
+  }
+  unsigned GetLayerOrder() const { return layer_order_; }
+  bool IsInlineStyle() const { return is_inline_style_; }
+
+ private:
+  unsigned link_match_type_ = CSSSelector::kMatchAll;
+  ValidPropertyFilter valid_property_filter_ = ValidPropertyFilter::kNoFilter;
+  unsigned layer_order_ = 0;
+  bool is_inline_style_ = false;
+
+  friend class Builder;
+};
+
+class AddMatchedPropertiesOptions::Builder {
+  STACK_ALLOCATED();
+
+ public:
+  AddMatchedPropertiesOptions Build() { return options_; }
+
+  Builder& SetLinkMatchType(unsigned type) {
+    options_.link_match_type_ = type;
+    return *this;
+  }
+
+  Builder& SetValidPropertyFilter(ValidPropertyFilter filter) {
+    options_.valid_property_filter_ = filter;
+    return *this;
+  }
+
+  Builder& SetLayerOrder(unsigned layer_order) {
+    options_.layer_order_ = layer_order;
+    return *this;
+  }
+
+  Builder& SetIsInlineStyle(bool is_inline_style) {
+    options_.is_inline_style_ = is_inline_style;
+    return *this;
+  }
+
+ private:
+  AddMatchedPropertiesOptions options_;
+};
+
 class CORE_EXPORT MatchResult {
   STACK_ALLOCATED();
 
@@ -134,8 +190,7 @@ class CORE_EXPORT MatchResult {
 
   void AddMatchedProperties(
       const CSSPropertyValueSet* properties,
-      unsigned link_match_type = CSSSelector::kMatchAll,
-      ValidPropertyFilter = ValidPropertyFilter::kNoFilter);
+      const AddMatchedPropertiesOptions& = AddMatchedPropertiesOptions());
   bool HasMatchedProperties() const { return matched_properties_.size(); }
 
   void FinishAddingUARules();
@@ -147,6 +202,24 @@ class CORE_EXPORT MatchResult {
   void SetDependsOnContainerQueries() { depends_on_container_queries_ = true; }
   bool DependsOnContainerQueries() const {
     return depends_on_container_queries_;
+  }
+  void SetDependsOnViewportContainerQueries() {
+    depends_on_viewport_container_queries_ = true;
+  }
+  bool DependsOnViewportContainerQueries() const {
+    return depends_on_viewport_container_queries_;
+  }
+  void SetDependsOnRemContainerQueries() {
+    depends_on_rem_container_queries_ = true;
+  }
+  bool DependsOnRemContainerQueries() const {
+    return depends_on_rem_container_queries_;
+  }
+  void SetConditionallyAffectsAnimations() {
+    conditionally_affects_animations_ = true;
+  }
+  bool ConditionallyAffectsAnimations() const {
+    return conditionally_affects_animations_;
   }
 
   MatchedExpansionsRange Expansions(const Document&, CascadeFilter) const;
@@ -169,6 +242,9 @@ class CORE_EXPORT MatchResult {
   HeapVector<Member<const TreeScope>, 4> tree_scopes_;
   bool is_cacheable_{true};
   bool depends_on_container_queries_{false};
+  bool depends_on_viewport_container_queries_{false};
+  bool depends_on_rem_container_queries_{false};
+  bool conditionally_affects_animations_{false};
   CascadeOrigin current_origin_{CascadeOrigin::kUserAgent};
   uint16_t current_tree_order_{0};
 };

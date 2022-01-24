@@ -5,7 +5,7 @@
 #include "chrome/browser/media/history/media_history_playback_table.h"
 
 #include "base/strings/stringprintf.h"
-#include "base/updateable_sequenced_task_runner.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "chrome/browser/media/history/media_history_origin_table.h"
 #include "content/public/browser/media_player_watch_time.h"
 #include "sql/statement.h"
@@ -107,14 +107,12 @@ MediaHistoryPlaybackTable::GetPlaybackRows() {
         mojom::MediaHistoryPlaybackRow::New());
 
     playback->url = GURL(statement.ColumnString(0));
-    playback->watchtime =
-        base::TimeDelta::FromSeconds(statement.ColumnInt64(1));
+    playback->watchtime = base::Seconds(statement.ColumnInt64(1));
     playback->has_audio = statement.ColumnBool(2);
     playback->has_video = statement.ColumnBool(3);
-    playback->last_updated_time =
-        base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromSeconds(statement.ColumnInt64(4)))
-            .ToJsTime();
+    playback->last_updated_time = base::Time::FromDeltaSinceWindowsEpoch(
+                                      base::Seconds(statement.ColumnInt64(4)))
+                                      .ToJsTime();
 
     playbacks.push_back(std::move(playback));
   }

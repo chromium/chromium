@@ -37,6 +37,14 @@ BluetoothDelegateImpl::ShowBluetoothScanningPrompt(
   return client_->ShowBluetoothScanningPrompt(frame, event_handler);
 }
 
+void BluetoothDelegateImpl::ShowDeviceCredentialsPrompt(
+    RenderFrameHost* frame,
+    const std::u16string& device_identifier,
+    CredentialsCallback callback) {
+  client_->ShowBluetoothDeviceCredentialsDialog(frame, device_identifier,
+                                                std::move(callback));
+}
+
 WebBluetoothDeviceId BluetoothDelegateImpl::GetWebBluetoothDeviceId(
     RenderFrameHost* frame,
     const std::string& device_address) {

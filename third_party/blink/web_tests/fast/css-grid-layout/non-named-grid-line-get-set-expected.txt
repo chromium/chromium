@@ -15,8 +15,8 @@ PASS window.getComputedStyle(gridWithFixedMultiple, '').getPropertyValue('grid-t
 PASS window.getComputedStyle(gridWithFixedMultiple, '').getPropertyValue('grid-template-rows') is "[first nav] 15px [last]"
 PASS window.getComputedStyle(gridWithPercentageSameStringMultipleTimes, '').getPropertyValue('grid-template-columns') is "[first nav] 10% [nav] 15% [last]"
 PASS window.getComputedStyle(gridWithPercentageSameStringMultipleTimes, '').getPropertyValue('grid-template-rows') is "[first nav2] 25% [nav2] 75% [last]"
-PASS window.getComputedStyle(gridWithRepeatElement, '').getPropertyValue('grid-template-columns') is "[first] 10px [nav nav2] 50% [nav nav2] 50%"
-PASS window.getComputedStyle(gridWithRepeatElement, '').getPropertyValue('grid-template-rows') is "100px [nav nav2] 25% [nav nav2] 25% [last]"
+PASS window.getComputedStyle(gridWithRepeatElement, '').getPropertyValue('grid-template-columns') is "[first] 10px repeat(2, [nav nav2] 50%)"
+PASS window.getComputedStyle(gridWithRepeatElement, '').getPropertyValue('grid-template-rows') is "100px repeat(2, [nav nav2] 25%) [last]"
 PASS window.getComputedStyle(gridWithEmptyBrackets, '').getPropertyValue('grid-template-columns') is "10px"
 PASS window.getComputedStyle(gridWithEmptyBrackets, '').getPropertyValue('grid-template-rows') is "20px 50px"
 

@@ -26,6 +26,7 @@ enum ActionType : ubyte {
 table QueryKeyValue {
   key : string (required);
   value : string (required);
+  replace_only: bool = false;
 }
 
 table UrlTransform {

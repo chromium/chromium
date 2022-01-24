@@ -191,8 +191,6 @@ void ChromeCleanerDialogControllerImpl::OnInfected(
     return;
   }
   ShowChromeCleanerPrompt();
-  RecordPromptShownWithTypeHistogram(
-      PromptTypeHistogramValue::PROMPT_TYPE_ON_TRANSITION_TO_INFECTED_STATE);
 }
 
 void ChromeCleanerDialogControllerImpl::OnCleaning(
@@ -215,8 +213,6 @@ void ChromeCleanerDialogControllerImpl::OnBrowserSetLastActive(
 
   browser_ = browser;
   ShowChromeCleanerPrompt();
-  RecordPromptShownWithTypeHistogram(
-      PromptTypeHistogramValue::PROMPT_TYPE_ON_BROWSER_WINDOW_AVAILABLE);
   prompt_pending_ = false;
   BrowserList::RemoveObserver(this);
 }

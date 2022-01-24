@@ -107,7 +107,6 @@ source_set("audio") {
     "audio_output_stream_sink.h",
     "audio_sink_parameters.cc",
     "audio_sink_parameters.h",
-    "audio_source_diverter.h",
     "audio_source_parameters.cc",
     "audio_source_parameters.h",
     "audio_system.cc",
@@ -307,18 +306,19 @@ source_set("audio") {
 
   if (is_fuchsia) {
     sources += [
+      "fuchsia/audio_input_stream_fuchsia.cc",
+      "fuchsia/audio_input_stream_fuchsia.h",
       "fuchsia/audio_manager_fuchsia.cc",
       "fuchsia/audio_manager_fuchsia.h",
       "fuchsia/audio_output_stream_fuchsia.cc",
       "fuchsia/audio_output_stream_fuchsia.h",
     ]
     deps += [
+      "//media/fuchsia/audio",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 }
 
 if (use_cras) {
@@ -406,6 +406,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//build:os_buildflags",
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -415,7 +416,6 @@ source_set("unit_tests") {
 
   configs += [
     ":platform_config",
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//media:media_config",
   ]
 
@@ -454,6 +454,10 @@ source_set("unit_tests") {
     }
   }
 
+  if (is_chromeos_lacros && use_cras) {
+    sources += [ "cras/audio_manager_cras_unittest.cc" ]
+  }
+
   if (is_win) {
     sources += [
       "win/audio_device_listener_win_unittest.cc",
@@ -465,6 +469,10 @@ source_set("unit_tests") {
       "win/device_enumeration_win_unittest.cc",
       "win/volume_range_util_unittest.cc",
     ]
+  }
+
+  if (is_fuchsia) {
+    deps += [ "//media/fuchsia/audio:test_support" ]
   }
 
   if (use_alsa) {

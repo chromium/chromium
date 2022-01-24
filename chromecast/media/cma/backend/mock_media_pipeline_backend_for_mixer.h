@@ -32,10 +32,13 @@ class MockMediaPipelineBackendForMixer : public MediaPipelineBackendForMixer {
   }
 
   int64_t MonotonicClockNow() const override;
-  ~MockMediaPipelineBackendForMixer() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockMediaPipelineBackendForMixer);
+  MockMediaPipelineBackendForMixer(const MockMediaPipelineBackendForMixer&) =
+      delete;
+  MockMediaPipelineBackendForMixer& operator=(
+      const MockMediaPipelineBackendForMixer&) = delete;
+
+  ~MockMediaPipelineBackendForMixer() override;
 };
 
 inline MockMediaPipelineBackendForMixer::~MockMediaPipelineBackendForMixer() =

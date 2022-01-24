@@ -68,6 +68,10 @@ class WebRequestCondition {
   WebRequestCondition(
       scoped_refptr<url_matcher::URLMatcherConditionSet> url_matcher_conditions,
       const WebRequestConditionAttributes& condition_attributes);
+
+  WebRequestCondition(const WebRequestCondition&) = delete;
+  WebRequestCondition& operator=(const WebRequestCondition&) = delete;
+
   ~WebRequestCondition();
 
   // Factory method that instantiates a WebRequestCondition according to
@@ -100,8 +104,6 @@ class WebRequestCondition {
   // Bit vector indicating all RequestStage during which all
   // |condition_attributes_| can be evaluated.
   int applicable_request_stages_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRequestCondition);
 };
 
 typedef DeclarativeConditionSet<WebRequestCondition> WebRequestConditionSet;

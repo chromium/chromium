@@ -243,7 +243,7 @@ export class SearchController {
       if (!locationInfo ||
           (locationInfo.isRootEntry &&
            locationInfo.rootType ===
-               VolumeManagerCommon.RootType.DRIVE_OTHER)) {
+               VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME)) {
         this.taskController_.executeEntryTask(entry);
         return;
       }

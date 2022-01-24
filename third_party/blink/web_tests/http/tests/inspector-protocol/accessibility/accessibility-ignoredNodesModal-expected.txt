@@ -1,5 +1,6 @@
 Tests accessibility values of ignored nodes in model dialog.
 {
+    childIds : <object>
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -16,12 +17,14 @@ Tests accessibility values of ignored nodes in model dialog.
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
     }
 }
 {
+    childIds : <object>
     domNode : dialog
     ignored : false
     name : {
@@ -43,6 +46,7 @@ Tests accessibility values of ignored nodes in model dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : modal
@@ -58,6 +62,7 @@ Tests accessibility values of ignored nodes in model dialog.
     }
 }
 {
+    childIds : <object>
     domNode : div
     ignored : false
     name : {
@@ -79,6 +84,7 @@ Tests accessibility values of ignored nodes in model dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {

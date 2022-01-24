@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_icon_loader.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -27,6 +26,10 @@ class AppServiceAppIconLoader : public AppIconLoader,
   AppServiceAppIconLoader(Profile* profile,
                           int resource_size_in_dip,
                           AppIconLoaderDelegate* delegate);
+
+  AppServiceAppIconLoader(const AppServiceAppIconLoader&) = delete;
+  AppServiceAppIconLoader& operator=(const AppServiceAppIconLoader&) = delete;
+
   ~AppServiceAppIconLoader() override;
 
   // AppIconLoader overrides:
@@ -61,8 +64,6 @@ class AppServiceAppIconLoader : public AppIconLoader,
   AppIDToIconMap icon_map_;
 
   base::WeakPtrFactory<AppServiceAppIconLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceAppIconLoader);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_SERVICE_APP_SERVICE_APP_ICON_LOADER_H_

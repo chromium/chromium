@@ -20,13 +20,13 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/idle_detector.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/idle_detector.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -77,10 +77,9 @@ bool IsLegacyDemoRetailModeSession(const user_manager::User* user) {
   if (user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
     return false;
 
-  const std::string enrollment_domain =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
-          ->GetEnterpriseEnrollmentDomain();
+  const std::string enrollment_domain = g_browser_process->platform_part()
+                                            ->browser_policy_connector_ash()
+                                            ->GetEnterpriseEnrollmentDomain();
   return DemoModeResourcesRemover::IsLegacyDemoRetailModeDomain(
       enrollment_domain);
 }
@@ -88,9 +87,9 @@ bool IsLegacyDemoRetailModeSession(const user_manager::User* user) {
 }  // namespace
 
 DemoModeResourcesRemover::UsageAccumulationConfig::UsageAccumulationConfig()
-    : resources_removal_threshold(base::TimeDelta::FromHours(48)),
-      update_interval(base::TimeDelta::FromMinutes(5)),
-      idle_threshold(base::TimeDelta::FromSeconds(30)) {}
+    : resources_removal_threshold(base::Hours(48)),
+      update_interval(base::Minutes(5)),
+      idle_threshold(base::Seconds(30)) {}
 
 DemoModeResourcesRemover::UsageAccumulationConfig::UsageAccumulationConfig(
     const base::TimeDelta& resources_removal_threshold,
@@ -153,7 +152,7 @@ void DemoModeResourcesRemover::ActiveUserChanged(user_manager::User* user) {
   // Attempt resources removal if the device is managed, and not in a retail
   // mode domain.
   if (g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->IsDeviceEnterpriseManaged()) {
     if (!IsLegacyDemoRetailModeSession(user))
       AttemptRemoval(RemovalReason::kEnterpriseEnrolled, RemovalCallback());

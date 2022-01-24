@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/clock.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
@@ -41,6 +40,9 @@ class ConnectionAttempt : public PendingConnectionRequestDelegate {
       std::unique_ptr<ConnectionAttempt<FailureDetailType>> attempt) {
     return attempt->ExtractClientConnectionParameters();
   }
+
+  ConnectionAttempt(const ConnectionAttempt&) = delete;
+  ConnectionAttempt& operator=(const ConnectionAttempt&) = delete;
 
   virtual ~ConnectionAttempt() = default;
 
@@ -133,8 +135,6 @@ class ConnectionAttempt : public PendingConnectionRequestDelegate {
   const base::Time start_attempt_timestamp_;
 
   bool has_notified_delegate_of_success_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionAttempt);
 };
 
 }  // namespace secure_channel

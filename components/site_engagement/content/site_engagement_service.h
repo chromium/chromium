@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -138,6 +137,10 @@ class SiteEngagementService : public KeyedService,
       scoped_refptr<HostContentSettingsMap> map);
 
   explicit SiteEngagementService(content::BrowserContext* browser_context);
+
+  SiteEngagementService(const SiteEngagementService&) = delete;
+  SiteEngagementService& operator=(const SiteEngagementService&) = delete;
+
   ~SiteEngagementService() override;
 
   // Returns the engagement level of |url|.
@@ -332,8 +335,6 @@ class SiteEngagementService : public KeyedService,
   base::ObserverList<SiteEngagementObserver>::Unchecked observer_list_;
 
   base::WeakPtrFactory<SiteEngagementService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SiteEngagementService);
 };
 
 }  // namespace site_engagement

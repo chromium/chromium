@@ -409,8 +409,8 @@ bool ExtensionAdminPolicyTest::MustRemainEnabled(const Extension* extension,
 // handled well.
 TEST_F(ExtensionManagementServiceTest, LegacyInstallSources) {
   base::ListValue allowed_sites_pref;
-  allowed_sites_pref.AppendString("https://www.example.com/foo");
-  allowed_sites_pref.AppendString("https://corp.mycompany.com/*");
+  allowed_sites_pref.Append("https://www.example.com/foo");
+  allowed_sites_pref.Append("https://corp.mycompany.com/*");
   SetPref(true, pref_names::kAllowedInstallSites, allowed_sites_pref.Clone());
   const URLPatternSet& allowed_sites = ReadGlobalSettings()->install_sources;
   ASSERT_TRUE(ReadGlobalSettings()->has_restricted_install_sources);
@@ -427,8 +427,8 @@ TEST_F(ExtensionManagementServiceTest, LegacyInstallSources) {
 // handled well.
 TEST_F(ExtensionManagementServiceTest, LegacyAllowedTypes) {
   base::ListValue allowed_types_pref;
-  allowed_types_pref.AppendInteger(Manifest::TYPE_THEME);
-  allowed_types_pref.AppendInteger(Manifest::TYPE_USER_SCRIPT);
+  allowed_types_pref.Append(Manifest::TYPE_THEME);
+  allowed_types_pref.Append(Manifest::TYPE_USER_SCRIPT);
 
   SetPref(true, pref_names::kAllowedTypes, allowed_types_pref.Clone());
   const std::vector<Manifest::Type>& allowed_types =
@@ -444,7 +444,7 @@ TEST_F(ExtensionManagementServiceTest, LegacyAllowedTypes) {
 // is handled well.
 TEST_F(ExtensionManagementServiceTest, LegacyInstallBlocklist) {
   base::ListValue denied_list_pref;
-  denied_list_pref.AppendString(kTargetExtension);
+  denied_list_pref.Append(kTargetExtension);
 
   SetPref(true, pref_names::kInstallDenyList, denied_list_pref.Clone());
   EXPECT_EQ(GetInstallationModeById(kTargetExtension),
@@ -457,9 +457,9 @@ TEST_F(ExtensionManagementServiceTest, LegacyInstallBlocklist) {
 // is handled well.
 TEST_F(ExtensionManagementServiceTest, LegacyAllowlist) {
   base::ListValue denied_list_pref;
-  denied_list_pref.AppendString("*");
+  denied_list_pref.Append("*");
   base::ListValue allowed_list_pref;
-  allowed_list_pref.AppendString(kTargetExtension);
+  allowed_list_pref.Append(kTargetExtension);
 
   SetPref(true, pref_names::kInstallDenyList, denied_list_pref.Clone());
   SetPref(true, pref_names::kInstallAllowList, allowed_list_pref.Clone());
@@ -843,7 +843,7 @@ TEST_F(ExtensionManagementServiceTest, kMinimumVersionRequired) {
 TEST_F(ExtensionManagementServiceTest, NewInstallSources) {
   // Set the legacy preference, and verifies that it works.
   base::ListValue allowed_sites_pref;
-  allowed_sites_pref.AppendString("https://www.example.com/foo");
+  allowed_sites_pref.Append("https://www.example.com/foo");
   SetPref(true, pref_names::kAllowedInstallSites, allowed_sites_pref.Clone());
   EXPECT_TRUE(ReadGlobalSettings()->has_restricted_install_sources);
   EXPECT_TRUE(ReadGlobalSettings()->install_sources.MatchesURL(
@@ -874,7 +874,7 @@ TEST_F(ExtensionManagementServiceTest, NewInstallSources) {
 TEST_F(ExtensionManagementServiceTest, NewAllowedTypes) {
   // Set the legacy preference, and verifies that it works.
   base::ListValue allowed_types_pref;
-  allowed_types_pref.AppendInteger(Manifest::TYPE_USER_SCRIPT);
+  allowed_types_pref.Append(Manifest::TYPE_USER_SCRIPT);
   SetPref(true, pref_names::kAllowedTypes, allowed_types_pref.Clone());
   EXPECT_TRUE(ReadGlobalSettings()->has_restricted_allowed_types);
   EXPECT_EQ(ReadGlobalSettings()->allowed_types.size(), 1u);
@@ -917,12 +917,12 @@ TEST_F(ExtensionManagementServiceTest, NewInstallBlocklist) {
 
   // Set legacy preference.
   base::ListValue denied_list_pref;
-  denied_list_pref.AppendString("*");
-  denied_list_pref.AppendString(kTargetExtension2);
+  denied_list_pref.Append("*");
+  denied_list_pref.Append(kTargetExtension2);
   SetPref(true, pref_names::kInstallDenyList, denied_list_pref.Clone());
 
   base::ListValue allowed_list_pref;
-  allowed_list_pref.AppendString(kTargetExtension);
+  allowed_list_pref.Append(kTargetExtension);
   SetPref(true, pref_names::kInstallAllowList, allowed_list_pref.Clone());
 
   // Verifies that the new one have higher priority over the legacy ones.
@@ -953,11 +953,11 @@ TEST_F(ExtensionManagementServiceTest, NewAllowlist) {
 
   // Set legacy preference.
   base::ListValue denied_list_pref;
-  denied_list_pref.AppendString(kTargetExtension);
+  denied_list_pref.Append(kTargetExtension);
   SetPref(true, pref_names::kInstallDenyList, denied_list_pref.Clone());
 
   base::ListValue allowed_list_pref;
-  allowed_list_pref.AppendString(kTargetExtension2);
+  allowed_list_pref.Append(kTargetExtension2);
   SetPref(true, pref_names::kInstallAllowList, allowed_list_pref.Clone());
 
   // Verifies that the new one have higher priority over the legacy ones.
@@ -976,7 +976,7 @@ TEST_F(ExtensionManagementServiceTest, NewInstallForcelist) {
   // Set some legacy preferences, to verify that the new one overrides the
   // legacy ones.
   base::ListValue denied_list_pref;
-  denied_list_pref.AppendString(kTargetExtension);
+  denied_list_pref.Append(kTargetExtension);
   SetPref(true, pref_names::kInstallDenyList, denied_list_pref.Clone());
 
   // Set the new dictionary preference.
@@ -1089,13 +1089,13 @@ TEST_F(ExtensionAdminPolicyTest, BlocklistedByDefault) {
   EXPECT_FALSE(BlocklistedByDefault(nullptr));
 
   base::ListValue blocklist;
-  blocklist.AppendString(kNonExistingExtension);
+  blocklist.Append(kNonExistingExtension);
   EXPECT_FALSE(BlocklistedByDefault(&blocklist));
-  blocklist.AppendString("*");
+  blocklist.Append("*");
   EXPECT_TRUE(BlocklistedByDefault(&blocklist));
 
   blocklist.ClearList();
-  blocklist.AppendString("*");
+  blocklist.Append("*");
   EXPECT_TRUE(BlocklistedByDefault(&blocklist));
 }
 
@@ -1111,11 +1111,11 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadRequired) {
 
   // Required extensions may load even if they're on the blocklist.
   base::ListValue blocklist;
-  blocklist.AppendString(extension_->id());
+  blocklist.Append(extension_->id());
   EXPECT_TRUE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
                           extension_.get(), nullptr));
 
-  blocklist.AppendString("*");
+  blocklist.Append("*");
   EXPECT_TRUE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
                           extension_.get(), nullptr));
 }
@@ -1139,12 +1139,12 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadAllowlisted) {
   CreateExtension(ManifestLocation::kInternal);
 
   base::ListValue allowlist;
-  allowlist.AppendString(extension_->id());
+  allowlist.Append(extension_->id());
   EXPECT_TRUE(UserMayLoad(nullptr, &allowlist, nullptr, nullptr,
                           extension_.get(), nullptr));
 
   base::ListValue blocklist;
-  blocklist.AppendString(extension_->id());
+  blocklist.Append(extension_->id());
   EXPECT_TRUE(UserMayLoad(nullptr, &allowlist, nullptr, nullptr,
                           extension_.get(), nullptr));
   std::u16string error;
@@ -1159,7 +1159,7 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadBlocklisted) {
 
   // Blocklisted by default.
   base::ListValue blocklist;
-  blocklist.AppendString("*");
+  blocklist.Append("*");
   EXPECT_FALSE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
                            extension_.get(), nullptr));
   std::u16string error;
@@ -1168,20 +1168,20 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadBlocklisted) {
   EXPECT_FALSE(error.empty());
 
   // Extension on the blocklist, with and without wildcard.
-  blocklist.AppendString(extension_->id());
+  blocklist.Append(extension_->id());
   EXPECT_FALSE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
                            extension_.get(), nullptr));
   blocklist.ClearList();
-  blocklist.AppendString(extension_->id());
+  blocklist.Append(extension_->id());
   EXPECT_FALSE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
                            extension_.get(), nullptr));
 
   // With a allowlist. There's no such thing as a allowlist wildcard.
   base::ListValue allowlist;
-  allowlist.AppendString("behllobkkfkfnphdnhnkndlbkcpglgmj");
+  allowlist.Append("behllobkkfkfnphdnhnkndlbkcpglgmj");
   EXPECT_FALSE(UserMayLoad(&blocklist, &allowlist, nullptr, nullptr,
                            extension_.get(), nullptr));
-  allowlist.AppendString("*");
+  allowlist.Append("*");
   EXPECT_FALSE(UserMayLoad(&blocklist, &allowlist, nullptr, nullptr,
                            extension_.get(), nullptr));
 }
@@ -1195,7 +1195,7 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadAllowedTypes) {
   EXPECT_FALSE(UserMayLoad(nullptr, nullptr, nullptr, &allowed_types,
                            extension_.get(), nullptr));
 
-  allowed_types.AppendInteger(Manifest::TYPE_EXTENSION);
+  allowed_types.Append(Manifest::TYPE_EXTENSION);
   EXPECT_TRUE(UserMayLoad(nullptr, nullptr, nullptr, &allowed_types,
                           extension_.get(), nullptr));
 

@@ -7,14 +7,12 @@
 
 #include <vector>
 
+#include "build/build_config.h"
 #include "content/public/common/content_client.h"
 #include "url/gurl.h"
 
 namespace chromecast {
 namespace shell {
-
-// TODO(halliwell) Move this function to its own header.
-std::string GetUserAgent();
 
 class CastContentClient : public content::ContentClient {
  public:

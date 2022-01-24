@@ -44,6 +44,13 @@ source_set("chromeos") {
   ]
 }
 
+# ChromeOS enterprise specific stuff that is also accessed from other areas
+# like //remoting/host/it2me.
+# Split out in its own target to prevent cyclic dependencies.
+source_set("enterprise_support") {
+  sources = [ "chromeos_enterprise_params.h" ]
+}
+
 source_set("remoting_service") {
   sources = [
     "remote_support_host_ash.cc",
@@ -52,7 +59,10 @@ source_set("remoting_service") {
     "remoting_service.h",
   ]
 
-  public_deps = [ "//remoting/host/it2me:chrome_os_host" ]
+  public_deps = [
+    ":enterprise_support",
+    "//remoting/host/it2me:chrome_os_host",
+  ]
 
   configs += [ "//remoting/build/config:version" ]
 

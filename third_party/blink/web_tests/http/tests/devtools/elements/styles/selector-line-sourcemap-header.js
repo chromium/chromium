@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that sourcemap is applied correctly when specified by the respective HTTP header.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`

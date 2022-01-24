@@ -177,10 +177,9 @@ void DataUsageStore::DeleteBrowsingHistory(const base::Time& start,
       BucketLowerBoundary(current_bucket_last_updated_);
   // Data usage is stored for the past |kDataUsageHistoryNumDays| days. Compute
   // the begin time for data usage.
-  base::Time begin_history =
-      begin_current_interval -
-      base::TimeDelta::FromDays(kDataUsageHistoryNumDays) +
-      base::TimeDelta::FromMinutes(kDataUsageBucketLengthInMinutes);
+  base::Time begin_history = begin_current_interval -
+                             base::Days(kDataUsageHistoryNumDays) +
+                             base::Minutes(kDataUsageBucketLengthInMinutes);
 
   // Nothing to do if there is no overlap between given interval and the
   // interval for which data usage history is maintained.
@@ -239,8 +238,8 @@ bool DataUsageStore::BucketOverlapsInterval(
   DCHECK_LE(start_interval, end_interval);
 
   base::Time bucket_start = BucketLowerBoundary(bucket_last_updated);
-  base::Time bucket_end = bucket_start + base::TimeDelta::FromMinutes(
-                                             kDataUsageBucketLengthInMinutes);
+  base::Time bucket_end =
+      bucket_start + base::Minutes(kDataUsageBucketLengthInMinutes);
   DCHECK_LE(bucket_start, bucket_end);
   return bucket_end >= start_interval && end_interval >= bucket_start;
 }

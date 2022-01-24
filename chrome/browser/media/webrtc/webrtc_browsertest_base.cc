@@ -112,8 +112,8 @@ std::vector<std::string> JsonArrayToVectorOfStrings(
   std::unique_ptr<base::ListValue> list =
       base::ListValue::From(std::move(value));
   std::vector<std::string> vector;
-  vector.reserve(list->GetSize());
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  vector.reserve(list->GetList().size());
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     base::Value* item;
     EXPECT_TRUE(list->Get(i, &item));
     EXPECT_TRUE(item->is_string());
@@ -266,6 +266,21 @@ void WebRtcTestBase::GetUserMedia(content::WebContents* tab_contents,
               result == "request-callback-granted");
 }
 
+void WebRtcTestBase::GetUserMediaReturnsFalseIfWaitIsTooLong(
+    content::WebContents* tab_contents,
+    const std::string& constraints) const {
+  std::string result;
+  permissions::PermissionRequestManager::FromWebContents(tab_contents)
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::ACCEPT_ALL);
+  permissions::PermissionRequestObserver observer(tab_contents);
+  // Request user media: this will launch the media stream info bar or bubble.
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab_contents, "doGetUserMedia(" + constraints + ");", &result));
+
+  EXPECT_TRUE(result == "request-timedout");
+}
+
 content::WebContents* WebRtcTestBase::OpenPageAndGetUserMediaInNewTab(
     const GURL& url) const {
   return OpenPageAndGetUserMediaInNewTabWithConstraints(
@@ -277,7 +292,7 @@ WebRtcTestBase::OpenPageAndGetUserMediaInNewTabWithConstraints(
     const GURL& url,
     const std::string& constraints) const {
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
-  ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* new_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Accept if necessary, but don't expect a prompt (because auto-accept is also
@@ -303,7 +318,7 @@ content::WebContents* WebRtcTestBase::OpenTestPageInNewTab(
     const std::string& test_page) const {
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
   GURL url = embedded_test_server()->GetURL(test_page);
-  ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* new_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Accept if necessary, but don't expect a prompt (because auto-accept is also

@@ -38,6 +38,10 @@ class ExtensionIndicatorIcon : public StatusIconObserver,
       const ExtensionIconSet& icon_set,
       Profile* profile,
       StatusTray* status_tray);
+
+  ExtensionIndicatorIcon(const ExtensionIndicatorIcon&) = delete;
+  ExtensionIndicatorIcon& operator=(const ExtensionIndicatorIcon&) = delete;
+
   ~ExtensionIndicatorIcon() override;
 
   // Sets the dynamic icon for the indicator.
@@ -61,8 +65,6 @@ class ExtensionIndicatorIcon : public StatusIconObserver,
   Profile* profile_;
   IconImage manifest_icon_;
   gfx::Image dynamic_icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionIndicatorIcon);
 };
 
 std::unique_ptr<ExtensionIndicatorIcon> ExtensionIndicatorIcon::Create(

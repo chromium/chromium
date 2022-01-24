@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ANDROID_AFFILIATION_MOCK_AFFILIATION_FETCHER_DELEGATE_H_
 
 #include <memory>
-#include <vector>
 
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"

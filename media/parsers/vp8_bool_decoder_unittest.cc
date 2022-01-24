@@ -9,7 +9,6 @@
 
 #include <limits>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -39,12 +38,12 @@ class Vp8BoolDecoderTest : public ::testing::Test {
  public:
   Vp8BoolDecoderTest() = default;
 
+  Vp8BoolDecoderTest(const Vp8BoolDecoderTest&) = delete;
+  Vp8BoolDecoderTest& operator=(const Vp8BoolDecoderTest&) = delete;
+
  protected:
   // Fixture member, the bool decoder to be tested.
   Vp8BoolDecoder bd_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Vp8BoolDecoderTest);
 };
 
 #define INITIALIZE(data) ASSERT_TRUE(bd_.Initialize(data, sizeof(data)));

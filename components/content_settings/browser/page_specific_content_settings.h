@@ -12,7 +12,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -26,8 +25,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/allow_service_worker_result.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle_user_data.h"
-#include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -71,7 +70,7 @@ namespace content_settings {
 // loaded page once the navigation commits or discarded if it does not.
 class PageSpecificContentSettings
     : public content_settings::Observer,
-      public content::RenderDocumentHostUserData<PageSpecificContentSettings> {
+      public content::DocumentUserData<PageSpecificContentSettings> {
  public:
   // Fields describing the current mic/camera state. If a page has attempted to
   // access a device, the XXX_ACCESSED bit will be set. If access was blocked,
@@ -172,6 +171,10 @@ class PageSpecificContentSettings
   class SiteDataObserver {
    public:
     explicit SiteDataObserver(content::WebContents* web_contents);
+
+    SiteDataObserver(const SiteDataObserver&) = delete;
+    SiteDataObserver& operator=(const SiteDataObserver&) = delete;
+
     virtual ~SiteDataObserver();
 
     // Called whenever site data is accessed.
@@ -185,9 +188,11 @@ class PageSpecificContentSettings
 
    private:
     content::WebContents* web_contents_;
-
-    DISALLOW_COPY_AND_ASSIGN(SiteDataObserver);
   };
+
+  PageSpecificContentSettings(const PageSpecificContentSettings&) = delete;
+  PageSpecificContentSettings& operator=(const PageSpecificContentSettings&) =
+      delete;
 
   ~PageSpecificContentSettings() override;
 
@@ -389,7 +394,7 @@ class PageSpecificContentSettings
   bool HasContentSettingChangedViaPageInfo(ContentSettingsType type) const;
 
  private:
-  friend class content::RenderDocumentHostUserData<PageSpecificContentSettings>;
+  friend class content::DocumentUserData<PageSpecificContentSettings>;
 
   // Keeps track of cookie and service worker access during a navigation.
   // These types of access can happen for the current page or for a new
@@ -453,9 +458,6 @@ class PageSpecificContentSettings
         content::NavigationHandle* navigation_handle) override;
     void DidFinishNavigation(
         content::NavigationHandle* navigation_handle) override;
-    // TODO(carlscab): Change interface to pass target RenderFrameHost
-    void AppCacheAccessed(const GURL& manifest_url,
-                          bool blocked_by_policy) override;
     void OnCookiesAccessed(
         content::NavigationHandle* navigation,
         const content::CookieAccessDetails& details) override;
@@ -499,8 +501,6 @@ class PageSpecificContentSettings
       PageSpecificContentSettings::WebContentsHandler& handler,
       Delegate* delegate);
 
-  void AppCacheAccessed(const GURL& manifest_url, bool blocked_by_policy);
-
   // content_settings::Observer implementation.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
@@ -534,7 +534,6 @@ class PageSpecificContentSettings
   void MaybeUpdateLocationBar();
 
   WebContentsHandler& handler_;
-  content::RenderFrameHost* main_frame_;
 
   Delegate* delegate_;
 
@@ -587,11 +586,9 @@ class PageSpecificContentSettings
   // the page is prerendering. These calls are run when the page is activated.
   std::unique_ptr<PendingUpdates> updates_queued_during_prerender_;
 
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  DOCUMENT_USER_DATA_KEY_DECL();
 
   base::WeakPtrFactory<PageSpecificContentSettings> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PageSpecificContentSettings);
 };
 
 }  // namespace content_settings

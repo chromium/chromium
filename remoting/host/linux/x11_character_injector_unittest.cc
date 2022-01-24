@@ -14,8 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-  constexpr base::TimeDelta kKeycodeReuseDuration =
-      base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kKeycodeReuseDuration = base::Milliseconds(100);
 }
 
 namespace remoting {

@@ -57,7 +57,7 @@ void CheckFieldsVisitor::AtIterator(Iterator* edge) {
   if (!managed_host_)
     return;
 
-  if (edge->IsUnsafe())
+  if (!stack_allocated_host_ && edge->on_heap())
     invalid_fields_.push_back(std::make_pair(current_, kIteratorToGCManaged));
 }
 

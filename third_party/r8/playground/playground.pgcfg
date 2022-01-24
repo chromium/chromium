@@ -5,5 +5,5 @@
 -allowaccessmodification
 
 -keep,allowoptimization class Playground {
-  void main(...);
+  *** main(...);
 }

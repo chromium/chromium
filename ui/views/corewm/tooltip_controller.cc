@@ -20,13 +20,13 @@
 #include "ui/views/corewm/tooltip.h"
 #include "ui/views/corewm/tooltip_state_manager.h"
 #include "ui/views/widget/tooltip_manager.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace views {
 namespace corewm {
 namespace {
 
-constexpr auto kDefaultHideTooltipTimeoutInMs =
-    base::TimeDelta::FromSeconds(10);
+constexpr auto kDefaultHideTooltipTimeoutInMs = base::Seconds(10);
 
 // Returns true if |target| is a valid window to get the tooltip from.
 // |event_target| is the original target from the event and |target| the window
@@ -111,13 +111,20 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
 ////////////////////////////////////////////////////////////////////////////////
 // TooltipController public:
 
-TooltipController::TooltipController(std::unique_ptr<Tooltip> tooltip)
-    : state_manager_(
-          std::make_unique<TooltipStateManager>(std::move(tooltip))) {}
+TooltipController::TooltipController(std::unique_ptr<Tooltip> tooltip,
+                                     wm::ActivationClient* activation_client)
+    : activation_client_(activation_client),
+      state_manager_(
+          std::make_unique<TooltipStateManager>(std::move(tooltip))) {
+  if (activation_client_)
+    activation_client_->AddObserver(this);
+}
 
 TooltipController::~TooltipController() {
   if (observed_window_)
     observed_window_->RemoveObserver(this);
+  if (activation_client_)
+    activation_client_->RemoveObserver(this);
 }
 
 int TooltipController::GetMaxWidth(const gfx::Point& location) const {
@@ -160,6 +167,11 @@ void TooltipController::UpdateTooltipFromKeyboard(const gfx::Rect& bounds,
   UpdateIfRequired(TooltipTrigger::kKeyboard);
 
   ResetWindowAtMousePressedIfNeeded(target, /* force_reset */ true);
+}
+
+bool TooltipController::IsTooltipSetFromKeyboard(aura::Window* target) {
+  return target && target == state_manager_->tooltip_parent_window() &&
+         state_manager_->tooltip_trigger() == TooltipTrigger::kKeyboard;
 }
 
 void TooltipController::SetHideTooltipTimeout(aura::Window* target,
@@ -302,6 +314,14 @@ void TooltipController::OnWindowPropertyChanged(aura::Window* window,
       (IsTooltipTextUpdateNeeded() || IsTooltipIdUpdateNeeded())) {
     UpdateIfRequired(state_manager_->tooltip_trigger());
   }
+}
+
+void TooltipController::OnWindowActivated(ActivationReason reason,
+                                          aura::Window* gained_active,
+                                          aura::Window* lost_active) {
+  // We want to hide tooltips whenever the client is losing user focus.
+  if (lost_active)
+    HideAndReset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

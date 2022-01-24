@@ -9,11 +9,16 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_contribution.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
+
+namespace sync_pb {
+class ClientToServerMessage;
+class SyncEntity;
+class ClientToServerResponse;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -43,6 +48,10 @@ class CommitContributionImpl : public CommitContribution {
       Cryptographer* cryptographer,
       PassphraseType passphrase_type,
       bool only_commit_specifics);
+
+  CommitContributionImpl(const CommitContributionImpl&) = delete;
+  CommitContributionImpl& operator=(const CommitContributionImpl&) = delete;
+
   ~CommitContributionImpl() override;
 
   // Implementation of CommitContribution
@@ -96,8 +105,6 @@ class CommitContributionImpl : public CommitContribution {
   // Don't send any metadata to server, only specifics. This is needed for
   // commit only types to save bandwidth.
   bool only_commit_specifics_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitContributionImpl);
 };
 
 }  // namespace syncer

@@ -44,7 +44,7 @@ class WebAudioDevice {
     // |delay| does *not* represent the point-in-time at which the first
     // rendered sample will be played out.
     virtual void Render(const WebVector<float*>& destination_data,
-                        size_t number_of_frames,
+                        uint32_t number_of_frames,
                         double delay,            // Output delay in seconds.
                         double delay_timestamp,  // System timestamp in seconds
                                                  // when |delay| was obtained.

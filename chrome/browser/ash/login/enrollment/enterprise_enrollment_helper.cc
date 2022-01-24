@@ -48,7 +48,7 @@ EnterpriseEnrollmentHelper::EnterpriseEnrollmentHelper() {}
 
 void EnterpriseEnrollmentHelper::set_status_consumer(
     EnrollmentStatusConsumer* status_consumer) {
-  DCHECK(status_consumer_);
+  DCHECK(status_consumer);
   status_consumer_ = status_consumer;
 }
 

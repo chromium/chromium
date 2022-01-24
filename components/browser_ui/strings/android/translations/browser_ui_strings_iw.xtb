@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">‏הפעולה הזאת תמחק <ph name="DATASIZE" /> של נתונים וקובצי cookie שאתרים ואפליקציות שמרו במסך הבית.</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
-<translation id="1195941046451948919">ההרשאות שניתנו לאתר הזה יאופסו להגדרת ברירת המחדל. להמשיך?</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1242008676835033345">מוטמע ב-<ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">הפסקה</translation>
@@ -19,7 +18,6 @@
 <translation id="1384959399684842514">ההורדה הושהתה</translation>
 <translation id="1415402041810619267">‏כתובת ה-URL קוצרה</translation>
 <translation id="1446450296470737166">‏התרת שליטה מלאה על מכשירי MIDI</translation>
-<translation id="1509960214886564027">ייתכן שהתכונות של חלק גדול מהאתרים לא יפעלו כראוי</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1647582022260550163">‏בחרת לאפס את ההרשאות ולנקות את קובצי ה-Cookie והנתונים מאתרים. להמשיך?</translation>
@@ -31,6 +29,7 @@
 <translation id="1743802530341753419">הצגת בקשה לפני מתן אישור לאתרים להתחבר להתקן (מומלץ)</translation>
 <translation id="1779089405699405702">מפענח התמונות</translation>
 <translation id="1818308510395330587">‏כדי לאפשר ל-<ph name="APP_NAME" /> להשתמש ב-AR, צריך להפעיל את המצלמה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">מקור: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">‏הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">מודעות</translation>
 <translation id="1919950603503897840">בחירת אנשי קשר</translation>
@@ -38,6 +37,7 @@
 <translation id="1984937141057606926">מותר, מלבד צד שלישי</translation>
 <translation id="1989112275319619282">עיון</translation>
 <translation id="1994173015038366702">כתובת אתר</translation>
+<translation id="2004697686368036666">ייתכן שתכונות באתרים מסוימים לא יפעלו</translation>
 <translation id="2025115093177348061">מציאות רבודה</translation>
 <translation id="2030769033451695672">כדי לחזור אל <ph name="URL_OF_THE_CURRENT_TAB" />, יש להקיש כאן</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
@@ -52,6 +52,7 @@
 <translation id="2289270750774289114">‏המערכת מבקשת אישור כשאתר רוצה לאתר התקני Bluetooth קרובים (מומלץ)</translation>
 <translation id="2315043854645842844">מערכת ההפעלה אינה תומכת בבחירת אישור בצד הלקוח.</translation>
 <translation id="2359808026110333948">המשך</translation>
+<translation id="2379925928934107488">‏העיצוב הכהה יוחל על אתרים כש-Chrome ישתמש בעיצוב הכהה, כשהפעולה תתאפשר</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}two{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}many{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">ההורדה הושלמה <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -64,12 +65,14 @@
 <translation id="2570922361219980984">‏גם הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">מורחב - יש ללחוץ כדי לכווץ.</translation>
 <translation id="2586657967955657006">לוח</translation>
+<translation id="2597457036804169544">אין להחיל עיצוב כהה על אתרים</translation>
 <translation id="2621115761605608342">‏אישור JavaScript לאתר ספציפי.</translation>
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2677748264148917807">יציאה</translation>
 <translation id="2687403674020088961">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
 <translation id="2704606927547763573">הועתק</translation>
 <translation id="2717722538473713889">כתובות אימייל</translation>
+<translation id="2785051990912111074">‏הבחירה הזו תגרום לניקוי קובצי ה-cookie של <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">לאפס את כל הרשאות האתר בשביל <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">אתר</translation>
 <translation id="2874939134665556319">הרצועה הקודמת</translation>
@@ -101,6 +104,7 @@
 <translation id="3600792891314830896">השתקת אתרים שמשמיעים צלילים</translation>
 <translation id="3744111561329211289">סנכרון ברקע</translation>
 <translation id="3763247130972274048">בלחיצה פעמיים על הסרטון בצד ימין או שמאל אפשר לדלג על 10 שניות</translation>
+<translation id="3797520601150691162">אין להחיל עיצוב כהה על אתר ספציפי</translation>
 <translation id="381841723434055211">מספרי טלפון</translation>
 <translation id="3835233591525155343">השימוש שלך במכשיר</translation>
 <translation id="385051799172605136">חזרה</translation>
@@ -130,7 +134,6 @@
 <translation id="4570913071927164677">פרטים</translation>
 <translation id="4645575059429386691">מנוהל על-ידי ההורה שלך</translation>
 <translation id="4670064810192446073">מציאות מדומה</translation>
-<translation id="4708011789095599544">‏האם למחוק את קובצי ה-cookie ונתוני אתר נוספים של אתר זה?</translation>
 <translation id="4751476147751820511">חיישני תנועה או אור</translation>
 <translation id="4836046166855586901">תוצג שאלה כשאתר יבקש לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="4883854917563148705">לא ניתן לאפס הגדרות מנוהלות</translation>
@@ -140,6 +143,7 @@
 <translation id="4976702386844183910">הכניסה האחרונה: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">לא נמצאו אנשי קשר</translation>
 <translation id="4996978546172906250">שיתוף באמצעות</translation>
+<translation id="5014906230196386306">‏לנקות את קובצי ה-cookie?</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5048398596102334565">התרת גישה של אתרים אל חיישני התנועה (מומלץ)</translation>
 <translation id="5050380848339752099">אתר זה עומד לשתף מידע עם אפליקציה מחוץ למצב האנונימי.</translation>
@@ -157,15 +161,16 @@
 <translation id="5335288049665977812">‏התרה לאתרים להריץ JavaScript (מומלץ)</translation>
 <translation id="534295439873310000">‏מכשירי NFC</translation>
 <translation id="5354152178998424783">‏הפעולה הזו תגרום למחיקת <ph name="DATASIZE" /> של נתונים וקובצי cookie שנשמרו על ידי אתרים.</translation>
-<translation id="5391532827096253100">החיבור שלך לאתר הזה לא מאובטח. פרטי האתר</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ועוד 1)}two{(ועוד #)}many{(ועוד #)}other{(ועוד #)}}</translation>
 <translation id="5403592356182871684">שמות</translation>
+<translation id="5438097262470833822">הבחירה הזו תגרום לאיפוס ההרשאות של <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">צפית ב-<ph name="ELAPSED_TIME" /> מתוך <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">חסימת מודעות באתרים שמוצגות בהם מודעות מפריעות או מטעות</translation>
 <translation id="5502860503640766021">פועלת: <ph name="PERMISSION_1" />, חסומה: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">אתרים לא יכולים לבקש לשלוח התראות</translation>
 <translation id="5516455585884385570">פתיחה של הגדרות ההתראות</translation>
 <translation id="5527111080432883924">יש לבקש הרשאה לפני מתן גישה לאתרים אל טקסט ותמונות מלוח העריכה (מומלץ)</translation>
+<translation id="5553374991681107062">האחרון</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5649053991847567735">הורדות אוטומטיות</translation>
@@ -190,10 +195,10 @@
 <translation id="6064125863973209585">הורדות שהושלמו</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6177111841848151710">חסוּם למנוע החיפוש הנוכחי</translation>
+<translation id="6177128806592000436">החיבור שלך לאתר הזה לא מאובטח</translation>
 <translation id="6181444274883918285">להוספת מקרה חריג של אתר</translation>
 <translation id="6192792657125177640">יוצאי דופן</translation>
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
-<translation id="6206551242102657620">החיבור מאובטח. פרטי האתר</translation>
 <translation id="6216432067784365534">אפשרויות של <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">להסיר את '<ph name="APP_NAME" />'?</translation>
 <translation id="6262279340360821358">ההרשאות <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /> חסומות</translation>
@@ -202,7 +207,6 @@
 <translation id="6320088164292336938">רטט</translation>
 <translation id="6388207532828177975">ניקוי ואיפוס</translation>
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
-<translation id="6423924377271166037">‏ניקוי קובצי cookie</translation>
 <translation id="6439114592976064011">תיחסם האפשרות של אתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה</translation>
 <translation id="6447842834002726250">‏קובצי Cookie</translation>
 <translation id="6527303717912515753">שיתוף</translation>
@@ -210,6 +214,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}two{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}many{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">הביקור האחרון התבצע לפני <ph name="NUM_DAYS" /> ימים</translation>
 <translation id="6561560012278703671">הצגת חיווי בסרגל הכתובות (מונע הקפצה של חלוניות הודעה מפריעות)</translation>
+<translation id="6593061639179217415">לגרסה במחשב</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">תוכן מוגן</translation>
 <translation id="662080504995468778">להמשיך במצב אנונימי</translation>
@@ -217,6 +222,7 @@
 <translation id="6689172468748959065">תמונות פרופיל</translation>
 <translation id="6697925417670533197">הורדות פעילות</translation>
 <translation id="6746124502594467657">העברה למטה</translation>
+<translation id="6749077623962119521">לאפס את ההרשאות?</translation>
 <translation id="6766622839693428701">החלקה מטה סוגרת.</translation>
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6818926723028410516">בחירת פריטים</translation>
@@ -224,15 +230,14 @@
 <translation id="6910211073230771657">נמחק</translation>
 <translation id="6912998170423641340">חסימת היכולת של אתרים לקרוא טקסט ותמונות מלוח העריכה</translation>
 <translation id="6945221475159498467">בחירה</translation>
-<translation id="6963642900430330478">הדף הזה מסוכן. פרטי האתר</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6992289844737586249">יש לשאול לפני שמאפשרים לאתרים להשתמש במיקרופון (מומלץ)</translation>
 <translation id="7000754031042624318">‏ההרשאה מושבתת בהגדרות Android</translation>
 <translation id="7016516562562142042">מופעל למנוע החיפוש הנוכחי</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{נבחר אחד}two{נבחרו #}many{נבחרו #}other{נבחרו #}}</translation>
+<translation id="7070090581017165256">מידע על האתר הזה</translation>
 <translation id="7087918508125750058">נבחרו <ph name="ITEM_COUNT" />. האפשרויות מוצגות בחלק העליון של המסך</translation>
-<translation id="7128222689758636196">יופעלו במנוע החיפוש הנוכחי</translation>
 <translation id="7141896414559753902">חסימה של חלונות קופצים והפניות אוטומטיות באתרים (מומלץ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="723171743924126238">בחירת תמונות</translation>
@@ -242,12 +247,12 @@
 <translation id="7302486331832100261">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר את ההתראות, ניתן להקיש על 'פרטים'.</translation>
 <translation id="7423098979219808738">תופיע בקשת אישור</translation>
 <translation id="7423538860840206698">הגישה לקריאה מלוח העריכה נחסמה</translation>
+<translation id="7425915948813553151">עיצוב כהה באתרים</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">אתר כלשהו משתמש במיקרופון שלך</translation>
 <translation id="7561196759112975576">תמיד</translation>
 <translation id="7572498721684305250">‏חסימת האפשרות של אתרים לשלוח ולקבל מידע כשמקישים על מכשירי NFC</translation>
 <translation id="757524316907819857">חסימה של הפעלת תוכן מוגן על-ידי אתרים</translation>
-<translation id="7589445247086920869">חסימה במנוע החיפוש הנוכחי</translation>
 <translation id="7649070708921625228">עזרה</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7781829728241885113">אתמול</translation>
@@ -261,19 +266,23 @@
 <translation id="7846076177841592234">ביטול הבחירה</translation>
 <translation id="7846621471902887024">תתבצע יציאה מכל האתרים.</translation>
 <translation id="7882806643839505685">מתן הרשאה להשמעת צלילים באתר ספציפי.</translation>
+<translation id="7940722705963108451">קבלת תזכורת</translation>
 <translation id="7986741934819883144">בחירת איש קשר</translation>
-<translation id="7993619969781047893">ייתכן שהתכונות של חלק מהאתרים לא יפעלו כראוי</translation>
 <translation id="7999064672810608036">‏בטוח שברצונך לנקות את כל הנתונים המקומיים, כולל קובצי Cookie, ולאפס את כל ההרשאות של האתר הזה?</translation>
 <translation id="8007176423574883786">כבוי בשביל המכשיר הזה</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
+<translation id="8042586301629853791">מיון לפי:</translation>
 <translation id="8067883171444229417">הפעלת הסרטון</translation>
 <translation id="8068648041423924542">אין אפשרות לבחור אישור.</translation>
 <translation id="8087000398470557479">‏התוכן הזה הוא מ-<ph name="DOMAIN_NAME" />, ומוגש על-ידי Google.</translation>
 <translation id="8116925261070264013">מושתקים</translation>
+<translation id="813082847718468539">הצגת נתוני אתר</translation>
 <translation id="8131740175452115882">אישור</translation>
+<translation id="8154912474061769055">ייתכן שהתכונות של חלק גדול מהאתרים לא יפעלו</translation>
 <translation id="8197286292360124385">פועלת: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">חידוש</translation>
 <translation id="8206354486702514201">הגדרה זו נאכפת על ידי מנהל המערכת שלך.</translation>
+<translation id="8211406090763984747">החיבור מאובטח</translation>
 <translation id="8249310407154411074">העברה לראש הרשימה</translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8300705686683892304">מנוהלים על-ידי אפליקציה</translation>
@@ -296,6 +305,7 @@
 <translation id="8676374126336081632">ניקוי קלט</translation>
 <translation id="868929229000858085">חיפוש באנשי הקשר</translation>
 <translation id="8702612070107455751">המערכת תמחק את כל הנתונים ששמורים אופליין.</translation>
+<translation id="8712637175834984815">הבנתי</translation>
 <translation id="8719283222052720129">‏יש להעניק הרשאה עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8730621377337864115">בוצע</translation>
@@ -315,7 +325,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד הרשאה אחת (<ph name="NUM_MORE" />)}two{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">‏יש להעניק הרשאות עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">הדף הזה מסוכן</translation>
 <translation id="930525582205581608">לשכוח את האתר הזה?</translation>
-<translation id="965817943346481315">חסימה אם באתר מוצגות מודעות מפריעות או מטעות (מומלץ)</translation>
 <translation id="967624055006145463">נפח הנתונים</translation>
 </translationbundle>

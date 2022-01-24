@@ -1,5 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-// Use of this source code is governed by the Apache License, Version 2.0.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.graphics.SolidFillTest');
 goog.setTestOnly();

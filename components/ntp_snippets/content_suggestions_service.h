@@ -107,6 +107,9 @@ class ContentSuggestionsService : public KeyedService,
       std::unique_ptr<UserClassifier> user_classifier,
       std::unique_ptr<RemoteSuggestionsScheduler>
           remote_suggestions_scheduler);  // Can be nullptr in unittests.
+  ContentSuggestionsService(const ContentSuggestionsService&) = delete;
+  ContentSuggestionsService& operator=(const ContentSuggestionsService&) =
+      delete;
   ~ContentSuggestionsService() override;
 
   // Inherited from KeyedService.
@@ -412,8 +415,6 @@ class ContentSuggestionsService : public KeyedService,
 
   // Provides order for categories.
   std::unique_ptr<CategoryRanker> category_ranker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSuggestionsService);
 };
 
 }  // namespace ntp_snippets

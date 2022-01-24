@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom-forward.h"

@@ -17,11 +17,11 @@
 // https://google.github.io/styleguide/cppguide.html#Static_and_Global_Variables
 // go/totw/110#destruction
 //
-// If CheckedPtr has a non-trivial destructor (e.g. if it is implemented via
-// BackupRefPtr) then CheckedPtr cannot be used as the type of fields in structs
+// If raw_ptr has a non-trivial destructor (e.g. if it is implemented via
+// BackupRefPtr) then raw_ptr cannot be used as the type of fields in structs
 // that are (recursively/transitively) the type of a global variable:
-//     struct MyStruct {       //    Presence of CheckedPtr might mean that
-//       CheckedPtr<int> ptr;  // <- MyStruct has a non-trivial destructor.
+//     struct MyStruct {       //    Presence of raw_ptr might mean that
+//       raw_ptr<int> ptr;  // <- MyStruct has a non-trivial destructor.
 //     };
 //     MyStruct g_struct;  // <- Error if MyStruct has a non-trivial destructor.
 //

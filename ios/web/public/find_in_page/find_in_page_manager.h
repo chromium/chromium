@@ -57,14 +57,15 @@ class FindInPageManager : public web::WebStateUserData<FindInPageManager> {
   virtual FindInPageManagerDelegate* GetDelegate() = 0;
   virtual void SetDelegate(FindInPageManagerDelegate* delegate) = 0;
 
+  FindInPageManager(const FindInPageManager&) = delete;
+  FindInPageManager& operator=(const FindInPageManager&) = delete;
+
   ~FindInPageManager() override {}
 
   WEB_STATE_USER_DATA_KEY_DECL();
 
  protected:
   FindInPageManager() {}
-
-  DISALLOW_COPY_AND_ASSIGN(FindInPageManager);
 };
 
 }  // namespace web

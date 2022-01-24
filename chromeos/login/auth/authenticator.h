@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
@@ -28,6 +27,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) Authenticator
     : public base::RefCountedThreadSafe<Authenticator> {
  public:
   explicit Authenticator(AuthStatusConsumer* consumer);
+
+  Authenticator(const Authenticator&) = delete;
+  Authenticator& operator=(const Authenticator&) = delete;
 
   // Given externally authenticated username and password (part of
   // |user_context|), this method attempts to complete authentication process.
@@ -88,8 +90,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) Authenticator
 
  private:
   friend class base::RefCountedThreadSafe<Authenticator>;
-
-  DISALLOW_COPY_AND_ASSIGN(Authenticator);
 };
 
 }  // namespace chromeos

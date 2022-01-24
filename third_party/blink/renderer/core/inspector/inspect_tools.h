@@ -8,6 +8,7 @@
 #include <vector>
 
 #include <v8-inspector.h>
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/inspector/inspector_overlay_agent.h"
 #include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
 
@@ -158,6 +159,10 @@ using ContainerQueryConfigs = Vector<std::pair<
     Member<Node>,
     std::unique_ptr<InspectorContainerQueryContainerHighlightConfig>>>;
 
+using IsolatedElementConfigs =
+    Vector<std::pair<Member<Element>,
+                     std::unique_ptr<InspectorIsolationModeHighlightConfig>>>;
+
 class PersistentTool : public InspectTool {
   using InspectTool::InspectTool;
 
@@ -171,6 +176,7 @@ class PersistentTool : public InspectTool {
   void SetFlexContainerConfigs(FlexContainerConfigs);
   void SetScrollSnapConfigs(ScrollSnapConfigs);
   void SetContainerQueryConfigs(ContainerQueryConfigs);
+  void SetIsolatedElementConfigs(IsolatedElementConfigs);
 
   std::unique_ptr<protocol::DictionaryValue> GetGridInspectorHighlightsAsJson()
       const;
@@ -180,11 +186,14 @@ class PersistentTool : public InspectTool {
   bool HideOnMouseMove() override;
   bool HideOnHideHighlight() override;
   String GetOverlayName() override;
+  void Dispatch(const ScriptValue& message,
+                ExceptionState& exception_state) override;
 
   GridConfigs grid_node_highlights_;
   FlexContainerConfigs flex_container_configs_;
   ScrollSnapConfigs scroll_snap_configs_;
   ContainerQueryConfigs container_query_configs_;
+  IsolatedElementConfigs isolated_element_configs_;
 };
 
 // -----------------------------------------------------------------------------
@@ -232,7 +241,8 @@ class ScreenshotTool : public InspectTool {
   ScreenshotTool& operator=(const ScreenshotTool&) = delete;
 
  private:
-  void Dispatch(const String& message) override;
+  void Dispatch(const ScriptValue& message,
+                ExceptionState& exception_state) override;
   String GetOverlayName() override;
 };
 
@@ -252,7 +262,8 @@ class PausedInDebuggerTool : public InspectTool {
 
  private:
   void Draw(float scale) override;
-  void Dispatch(const String& message) override;
+  void Dispatch(const ScriptValue& message,
+                ExceptionState& exception_state) override;
   String GetOverlayName() override;
   v8_inspector::V8InspectorSession* v8_session_;
   String message_;

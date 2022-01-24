@@ -23,6 +23,11 @@ class DiscardableMemory;
 class BASE_EXPORT DiscardableMemoryAllocator {
  public:
   DiscardableMemoryAllocator() = default;
+
+  DiscardableMemoryAllocator(const DiscardableMemoryAllocator&) = delete;
+  DiscardableMemoryAllocator& operator=(const DiscardableMemoryAllocator&) =
+      delete;
+
   virtual ~DiscardableMemoryAllocator() = default;
 
   // Returns the allocator instance.
@@ -60,9 +65,6 @@ class BASE_EXPORT DiscardableMemoryAllocator {
   // Release any memory used in the implementation of discardable memory that is
   // not immediately being used.
   virtual void ReleaseFreeMemory() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiscardableMemoryAllocator);
 };
 
 }  // namespace base

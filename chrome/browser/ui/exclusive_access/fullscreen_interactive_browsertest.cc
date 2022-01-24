@@ -24,6 +24,10 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
                                 content::RenderFrameHost* wanted_rfh)
       : content::WebContentsObserver(web_contents), wanted_rfh_(wanted_rfh) {}
 
+  FullscreenWebContentsObserver(const FullscreenWebContentsObserver&) = delete;
+  FullscreenWebContentsObserver& operator=(
+      const FullscreenWebContentsObserver&) = delete;
+
   // WebContentsObserver override.
   void DidAcquireFullscreen(content::RenderFrameHost* rfh) override {
     EXPECT_EQ(wanted_rfh_, rfh);
@@ -44,8 +48,6 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
   base::RunLoop run_loop_;
   bool found_value_ = false;
   content::RenderFrameHost* wanted_rfh_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenWebContentsObserver);
 };
 
 }  // namespace
@@ -53,6 +55,12 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
 class FullscreenInteractiveBrowserTest : public InProcessBrowserTest {
  public:
   FullscreenInteractiveBrowserTest() {}
+
+  FullscreenInteractiveBrowserTest(const FullscreenInteractiveBrowserTest&) =
+      delete;
+  FullscreenInteractiveBrowserTest& operator=(
+      const FullscreenInteractiveBrowserTest&) = delete;
+
   ~FullscreenInteractiveBrowserTest() override {}
 
   void SetUpOnMainThread() override {
@@ -63,9 +71,6 @@ class FullscreenInteractiveBrowserTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FullscreenInteractiveBrowserTest);
 };
 
 // TODO(jonross): Investigate the flakiness on Linux and Mac. Sheriff if this
@@ -77,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b{allowfullscreen})");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
   content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
 
@@ -117,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a{allowfullscreen})");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
   content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
 

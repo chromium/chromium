@@ -42,7 +42,7 @@ class RTCVideoDecoderFactory : public webrtc::VideoDecoderFactory {
 
   webrtc::VideoDecoderFactory::CodecSupport QueryCodecSupport(
       const webrtc::SdpVideoFormat& format,
-      absl::optional<std::string> scalability_mode) const override;
+      bool reference_scaling) const override;
 
  private:
   void CheckAndWaitDecoderSupportStatusIfNeeded() const;

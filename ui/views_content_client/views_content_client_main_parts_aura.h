@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/views_content_client/views_content_client_main_parts.h"
 
 namespace wm {
@@ -17,10 +16,15 @@ class WMState;
 namespace ui {
 
 class ViewsContentClientMainPartsAura : public ViewsContentClientMainParts {
+ public:
+  ViewsContentClientMainPartsAura(const ViewsContentClientMainPartsAura&) =
+      delete;
+  ViewsContentClientMainPartsAura& operator=(
+      const ViewsContentClientMainPartsAura&) = delete;
+
  protected:
-  ViewsContentClientMainPartsAura(
-      const content::MainFunctionParams& content_params,
-      ViewsContentClient* views_content_client);
+  ViewsContentClientMainPartsAura(content::MainFunctionParams content_params,
+                                  ViewsContentClient* views_content_client);
   ~ViewsContentClientMainPartsAura() override;
 
   // content::BrowserMainParts:
@@ -29,8 +33,6 @@ class ViewsContentClientMainPartsAura : public ViewsContentClientMainParts {
 
  private:
   std::unique_ptr<::wm::WMState> wm_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentClientMainPartsAura);
 };
 
 }  // namespace ui

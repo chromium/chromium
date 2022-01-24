@@ -35,7 +35,7 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
   }
 
   std::unique_ptr<api::identity::LaunchWebAuthFlow::Params> params(
-      api::identity::LaunchWebAuthFlow::Params::Create(*args_));
+      api::identity::LaunchWebAuthFlow::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GURL auth_url(params->details.url);

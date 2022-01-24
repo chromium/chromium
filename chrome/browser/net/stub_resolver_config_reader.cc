@@ -353,8 +353,15 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
     parental_controls_checked_ = true;
   }
 
+  bool additional_dns_query_types_enabled =
+      local_state_->GetBoolean(prefs::kAdditionalDnsQueryTypesEnabled);
+
   if (record_metrics) {
     UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsConfig.SecureDnsMode", mode_details);
+    if (!additional_dns_query_types_enabled || ShouldDisableDohForManaged()) {
+      UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.AdditionalDnsQueryTypesEnabled",
+                            additional_dns_query_types_enabled);
+    }
   }
 
   std::string doh_templates =
@@ -390,8 +397,7 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
   if (update_network_service) {
     content::GetNetworkService()->ConfigureStubHostResolver(
         GetInsecureStubResolverEnabled(), secure_dns_mode,
-        std::move(servers_mojo),
-        local_state_->GetBoolean(prefs::kAdditionalDnsQueryTypesEnabled));
+        std::move(servers_mojo), additional_dns_query_types_enabled);
   }
 
   return SecureDnsConfig(secure_dns_mode, std::move(dns_over_https_servers),

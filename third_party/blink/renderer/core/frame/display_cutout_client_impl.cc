@@ -10,15 +10,6 @@
 
 namespace blink {
 
-namespace {
-
-const char kSafeAreaInsetTopName[] = "safe-area-inset-top";
-const char kSafeAreaInsetLeftName[] = "safe-area-inset-left";
-const char kSafeAreaInsetBottomName[] = "safe-area-inset-bottom";
-const char kSafeAreaInsetRightName[] = "safe-area-inset-right";
-
-}  // namespace
-
 DisplayCutoutClientImpl::DisplayCutoutClientImpl(
     LocalFrame* frame,
     mojo::PendingAssociatedReceiver<mojom::blink::DisplayCutoutClient> receiver)
@@ -37,13 +28,13 @@ void DisplayCutoutClientImpl::SetSafeArea(
     mojom::blink::DisplayCutoutSafeAreaPtr safe_area) {
   DocumentStyleEnvironmentVariables& vars =
       frame_->GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
-  vars.SetVariable(kSafeAreaInsetTopName,
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetTop,
                    StyleEnvironmentVariables::FormatPx(safe_area->top));
-  vars.SetVariable(kSafeAreaInsetLeftName,
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetLeft,
                    StyleEnvironmentVariables::FormatPx(safe_area->left));
-  vars.SetVariable(kSafeAreaInsetBottomName,
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetBottom,
                    StyleEnvironmentVariables::FormatPx(safe_area->bottom));
-  vars.SetVariable(kSafeAreaInsetRightName,
+  vars.SetVariable(UADefinedVariable::kSafeAreaInsetRight,
                    StyleEnvironmentVariables::FormatPx(safe_area->right));
 }
 

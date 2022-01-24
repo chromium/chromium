@@ -40,6 +40,9 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
     WallpaperControllerClientImpl::Get()->AddObserver(this);
   }
 
+  TestWallpaperObserver(const TestWallpaperObserver&) = delete;
+  TestWallpaperObserver& operator=(const TestWallpaperObserver&) = delete;
+
   ~TestWallpaperObserver() override {
     WallpaperControllerClientImpl::Get()->RemoveObserver(this);
   }
@@ -49,8 +52,6 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
 
  private:
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWallpaperObserver);
 };
 
 // Creates a high resolution wallpaper and sets it as the current wallpaper as
@@ -69,9 +70,8 @@ void CreateAndSetWallpaper() {
   base::RunLoop run_loop;
   TestWallpaperObserver observer(run_loop.QuitClosure());
   WallpaperControllerClientImpl::Get()->SetCustomWallpaper(
-      user_manager::StubAccountId(), /*wallpaper_files_id=*/"dummyid",
-      /*file_name=*/"dummyfilename", ash::WALLPAPER_LAYOUT_CENTER_CROPPED,
-      image, /*preview_mode=*/false);
+      user_manager::StubAccountId(), /*file_name=*/"dummyfilename",
+      ash::WALLPAPER_LAYOUT_CENTER_CROPPED, image, /*preview_mode=*/false);
   run_loop.Run();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

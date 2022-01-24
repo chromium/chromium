@@ -21,10 +21,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
-#include "base/mac/scoped_nsautorelease_pool.h"
-#endif
-
 // Lifecycle of struct event
 // Libevent uses two main data structures:
 // struct event_base (of which there is one per message pump), and
@@ -129,11 +125,6 @@ bool MessagePumpLibevent::WatchFileDescriptor(int fd,
   // threadsafe, and your watcher may never be registered.
   DCHECK(watch_file_descriptor_caller_checker_.CalledOnValidThread());
 
-  TRACE_EVENT_WITH_FLOW1("toplevel.flow",
-                         "MessagePumpLibevent::WatchFileDescriptor",
-                         reinterpret_cast<uintptr_t>(controller) ^ fd,
-                         TRACE_EVENT_FLAG_FLOW_OUT, "fd", fd);
-
   int event_mask = persistent ? EV_PERSIST : 0;
   if (mode & WATCH_READ) {
     event_mask |= EV_READ;
@@ -200,9 +191,6 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
   std::unique_ptr<event> timer_event(new event);
 
   for (;;) {
-#if defined(OS_APPLE)
-    mac::ScopedNSAutoreleasePool autorelease_pool;
-#endif
     // Do some work and see if the next task is ready right away.
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();
     bool immediate_work_available = next_work_info.is_immediate();
@@ -315,11 +303,7 @@ void MessagePumpLibevent::OnLibeventNotification(int fd,
                                                  void* context) {
   FdWatchController* controller = static_cast<FdWatchController*>(context);
   DCHECK(controller);
-  TRACE_EVENT0("toplevel", "OnLibevent");
-  TRACE_EVENT_WITH_FLOW1(
-      "toplevel.flow", "MessagePumpLibevent::OnLibeventNotification",
-      reinterpret_cast<uintptr_t>(controller) ^ fd,
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "fd", fd);
+  TRACE_EVENT("toplevel", "OnLibevent", "fd", fd);
 
   TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION heap_profiler_scope(
       controller->created_from_location().file_name());

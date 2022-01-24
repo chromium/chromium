@@ -202,6 +202,12 @@ class FidoDeviceEnumerateCallbackReceiver
   explicit FidoDeviceEnumerateCallbackReceiver(
       device::mojom::HidManager* hid_manager)
       : hid_manager_(hid_manager) {}
+
+  FidoDeviceEnumerateCallbackReceiver(
+      const FidoDeviceEnumerateCallbackReceiver&) = delete;
+  FidoDeviceEnumerateCallbackReceiver& operator=(
+      const FidoDeviceEnumerateCallbackReceiver&) = delete;
+
   ~FidoDeviceEnumerateCallbackReceiver() = default;
 
   std::vector<std::unique_ptr<FidoHidDevice>> TakeReturnedDevicesFiltered() {
@@ -228,8 +234,6 @@ class FidoDeviceEnumerateCallbackReceiver
 
  private:
   device::mojom::HidManager* hid_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(FidoDeviceEnumerateCallbackReceiver);
 };
 
 using TestDeviceCallbackReceiver =
@@ -386,8 +390,7 @@ TEST_F(FidoHidDeviceTest, TestKeepAliveMessage) {
       // Repeated Read() invocation due to keep alive message. Sends a dummy
       // response that corresponds to U2F version response.
       .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
-        auto almost_time_out =
-            kDeviceTimeout - base::TimeDelta::FromMicroseconds(1);
+        auto almost_time_out = kDeviceTimeout - base::Microseconds(1);
         task_environment_.FastForwardBy(almost_time_out);
 
         std::move(*cb).Run(true, 0,
@@ -599,7 +602,7 @@ TEST_F(FidoHidDeviceTest, TestCancel) {
       .InSequence(sequence)
       // Device response with a significant delay.
       .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
-        auto delay = base::TimeDelta::FromSeconds(2);
+        auto delay = base::Seconds(2);
         base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(std::move(*cb), true, 0,
@@ -622,7 +625,7 @@ TEST_F(FidoHidDeviceTest, TestCancel) {
   device->set_supported_protocol(ProtocolVersion::kCtap2);
   TestDeviceCallbackReceiver cb;
   auto token = device->DeviceTransact(GetMockDeviceRequest(), cb.callback());
-  auto delay_before_cancel = base::TimeDelta::FromSeconds(1);
+  auto delay_before_cancel = base::Seconds(1);
   auto cancel_callback = base::BindOnce(
       &FidoHidDevice::Cancel, device->weak_factory_.GetWeakPtr(), token);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -837,7 +840,7 @@ TEST_F(FidoHidDeviceTest, TestGetInfoFailsOnDeviceError) {
       .InSequence(sequence)
       // Device response with a significant delay.
       .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
-        auto delay = base::TimeDelta::FromSeconds(2);
+        auto delay = base::Seconds(2);
         base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(std::move(*cb), true, 0,
@@ -877,7 +880,7 @@ TEST_F(FidoHidDeviceTest, TestDeviceMessageError) {
       .InSequence(sequence)
       // Device response with a significant delay.
       .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
-        auto delay = base::TimeDelta::FromSeconds(2);
+        auto delay = base::Seconds(2);
         base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(std::move(*cb), true, 0,

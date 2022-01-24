@@ -15,14 +15,41 @@
 
 namespace device {
 
+namespace {
+
+bool IsFidoReport(uint8_t report_id, const mojom::HidDeviceInfo& device_info) {
+  for (const auto& collection : device_info.collections) {
+    if (collection->usage->usage_page != mojom::kPageFido)
+      continue;
+
+    for (const auto& report : collection->input_reports) {
+      if (report->report_id == report_id)
+        return true;
+    }
+    for (const auto& report : collection->output_reports) {
+      if (report->report_id == report_id)
+        return true;
+    }
+    for (const auto& report : collection->feature_reports) {
+      if (report->report_id == report_id)
+        return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 FakeHidConnection::FakeHidConnection(
     mojom::HidDeviceInfoPtr device,
     mojo::PendingReceiver<mojom::HidConnection> receiver,
     mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
-    mojo::PendingRemote<mojom::HidConnectionWatcher> watcher)
+    mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
+    bool allow_fido_reports)
     : receiver_(this, std::move(receiver)),
       device_(std::move(device)),
-      watcher_(std::move(watcher)) {
+      watcher_(std::move(watcher)),
+      allow_fido_reports_(allow_fido_reports) {
   receiver_.set_disconnect_handler(base::BindOnce(
       [](FakeHidConnection* self) { delete self; }, base::Unretained(this)));
   if (watcher_) {
@@ -40,6 +67,11 @@ void FakeHidConnection::Read(ReadCallback callback) {
   const char kResult[] = "This is a HID input report.";
   uint8_t report_id = device_->has_report_id ? 1 : 0;
 
+  if (!allow_fido_reports_ && IsFidoReport(report_id, *device_)) {
+    std::move(callback).Run(false, 0, absl::nullopt);
+    return;
+  }
+
   std::vector<uint8_t> buffer(kResult, kResult + sizeof(kResult) - 1);
 
   std::move(callback).Run(true, report_id, buffer);
@@ -48,6 +80,11 @@ void FakeHidConnection::Read(ReadCallback callback) {
 void FakeHidConnection::Write(uint8_t report_id,
                               const std::vector<uint8_t>& buffer,
                               WriteCallback callback) {
+  if (!allow_fido_reports_ && IsFidoReport(report_id, *device_)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   const char kExpected[] = "o-report";  // 8 bytes
   if (buffer.size() != sizeof(kExpected) - 1) {
     std::move(callback).Run(false);
@@ -70,6 +107,11 @@ void FakeHidConnection::Write(uint8_t report_id,
 
 void FakeHidConnection::GetFeatureReport(uint8_t report_id,
                                          GetFeatureReportCallback callback) {
+  if (!allow_fido_reports_ && IsFidoReport(report_id, *device_)) {
+    std::move(callback).Run(false, absl::nullopt);
+    return;
+  }
+
   uint8_t expected_report_id = device_->has_report_id ? 1 : 0;
   if (report_id != expected_report_id) {
     std::move(callback).Run(false, absl::nullopt);
@@ -88,6 +130,11 @@ void FakeHidConnection::GetFeatureReport(uint8_t report_id,
 void FakeHidConnection::SendFeatureReport(uint8_t report_id,
                                           const std::vector<uint8_t>& buffer,
                                           SendFeatureReportCallback callback) {
+  if (!allow_fido_reports_ && IsFidoReport(report_id, *device_)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   const char kExpected[] = "The app is setting this HID feature report.";
   if (buffer.size() != sizeof(kExpected) - 1) {
     std::move(callback).Run(false);
@@ -146,6 +193,7 @@ void FakeHidManager::Connect(
     mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
     mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
     bool allow_protected_reports,
+    bool allow_fido_reports,
     ConnectCallback callback) {
   if (!base::Contains(devices_, device_guid)) {
     std::move(callback).Run(mojo::NullRemote());
@@ -156,7 +204,8 @@ void FakeHidManager::Connect(
   // FakeHidConnection is self-owned.
   new FakeHidConnection(devices_[device_guid]->Clone(),
                         connection.InitWithNewPipeAndPassReceiver(),
-                        std::move(connection_client), std::move(watcher));
+                        std::move(connection_client), std::move(watcher),
+                        allow_fido_reports);
   std::move(callback).Run(std::move(connection));
 }
 

@@ -745,6 +745,17 @@ TEST_F(AccessibilityTest, PositionInHTMLLabelIgnored) {
       <input id="input" type="checkbox" checked>
       )HTML");
 
+  // For reference, this is the accessibility tree generated:
+  // rootWebArea
+  // ++genericContainer ignored
+  // ++++genericContainer ignored
+  // ++++++labelText ignored
+  // ++++++++staticText ignored name='Label text.'
+  // ++++++paragraph
+  // ++++++++staticText name='Intervening paragraph.'
+  // ++++++++++inlineTextBox name='Intervening paragraph.'
+  // ++++++checkBox focusable name='Label text.'
+
   const Node* label = GetElementById("label");
   ASSERT_NE(nullptr, label);
   const Node* label_text = label->firstChild();
@@ -769,11 +780,28 @@ TEST_F(AccessibilityTest, PositionInHTMLLabelIgnored) {
   ASSERT_NE(nullptr, ax_paragraph);
   ASSERT_EQ(ax::mojom::Role::kParagraph, ax_paragraph->RoleValue());
 
-  // A position anchored before a text node is explicitly moved to before the
-  // first character of the text object.
+  // The label element produces an ignored, but included node in the
+  // accessibility tree. The position is set right before it.
   const auto position_before = Position::BeforeNode(*label);
-  const auto position_before_text = Position::BeforeNode(*label_text);
+  const auto ax_position_before =
+      AXPosition::FromPosition(position_before, TextAffinity::kDownstream,
+                               AXPositionAdjustmentBehavior::kMoveLeft);
+  EXPECT_FALSE(ax_position_before.IsTextPosition());
+  EXPECT_EQ(ax_body, ax_position_before.ContainerObject());
+  EXPECT_EQ(0, ax_position_before.ChildIndex());
+  EXPECT_EQ(ax_label, ax_position_before.ChildAfterTreePosition());
 
+  const auto position_from_ax_before =
+      ax_position_before.ToPositionWithAffinity();
+  EXPECT_EQ(GetDocument().body(), position_from_ax_before.AnchorNode());
+  EXPECT_EQ(1, position_from_ax_before.GetPosition().OffsetInContainerNode());
+  EXPECT_EQ(label,
+            position_from_ax_before.GetPosition().ComputeNodeAfterPosition());
+
+  // A position anchored before a text node is explicitly moved to before the
+  // first character of the text object. That's why these two positions are
+  // effectively the same.
+  const auto position_before_text = Position::BeforeNode(*label_text);
   const auto position_in_text = Position::FirstPositionInNode(*label_text);
 
   // This position points to the empty text node between the label and the
@@ -782,8 +810,8 @@ TEST_F(AccessibilityTest, PositionInHTMLLabelIgnored) {
   // last character of the label text.
   const auto position_after = Position::AfterNode(*label);
 
-  for (const auto& position : {position_before, position_before_text,
-                               position_in_text, position_after}) {
+  for (const auto& position :
+       {position_before_text, position_in_text, position_after}) {
     const auto ax_position =
         AXPosition::FromPosition(position, TextAffinity::kDownstream,
                                  AXPositionAdjustmentBehavior::kMoveLeft);

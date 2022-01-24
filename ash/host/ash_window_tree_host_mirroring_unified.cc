@@ -7,7 +7,7 @@
 #include "ash/host/ash_window_tree_host_mirroring_delegate.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ash {

@@ -74,62 +74,39 @@ CTLogVerifier::CTLogVerifier(std::string description)
 
 bool CTLogVerifier::Verify(const ct::SignedEntryData& entry,
                            const ct::SignedCertificateTimestamp& sct) const {
-  if (sct.log_id != key_id()) {
-    DVLOG(1) << "SCT is not signed by this log.";
-    return false;
-  }
-
-  if (!SignatureParametersMatch(sct.signature))
-    return false;
-
   std::string serialized_log_entry;
-  if (!ct::EncodeSignedEntry(entry, &serialized_log_entry)) {
-    DVLOG(1) << "Unable to serialize entry.";
-    return false;
-  }
   std::string serialized_data;
-  if (!ct::EncodeV1SCTSignedData(sct.timestamp, serialized_log_entry,
-                                 sct.extensions, &serialized_data)) {
-    DVLOG(1) << "Unable to create SCT to verify.";
-    return false;
-  }
 
-  return VerifySignature(serialized_data, sct.signature.signature_data);
+  return sct.log_id == key_id_ && SignatureParametersMatch(sct.signature) &&
+         ct::EncodeSignedEntry(entry, &serialized_log_entry) &&
+         ct::EncodeV1SCTSignedData(sct.timestamp, serialized_log_entry,
+                                   sct.extensions, &serialized_data) &&
+         VerifySignature(serialized_data, sct.signature.signature_data);
 }
 
 bool CTLogVerifier::VerifySignedTreeHead(
     const ct::SignedTreeHead& signed_tree_head) const {
-  if (!SignatureParametersMatch(signed_tree_head.signature))
-    return false;
-
   std::string serialized_data;
-  if (!ct::EncodeTreeHeadSignature(signed_tree_head, &serialized_data))
+  if (!SignatureParametersMatch(signed_tree_head.signature) ||
+      !ct::EncodeTreeHeadSignature(signed_tree_head, &serialized_data) ||
+      !VerifySignature(serialized_data,
+                       signed_tree_head.signature.signature_data)) {
     return false;
-
-  if (VerifySignature(serialized_data,
-                      signed_tree_head.signature.signature_data)) {
-    if (signed_tree_head.tree_size == 0) {
-      // Root hash must equate SHA256 hash of the empty string.
-      return (memcmp(signed_tree_head.sha256_root_hash, kSHA256EmptyStringHash,
-                     ct::kSthRootHashLength) == 0);
-    }
-    return true;
   }
-  return false;
+
+  if (signed_tree_head.tree_size == 0) {
+    // Root hash must equate SHA256 hash of the empty string.
+    return memcmp(signed_tree_head.sha256_root_hash, kSHA256EmptyStringHash,
+                  ct::kSthRootHashLength) == 0;
+  }
+
+  return true;
 }
 
 bool CTLogVerifier::SignatureParametersMatch(
     const ct::DigitallySigned& signature) const {
-  if (!signature.SignatureParametersMatch(hash_algorithm_,
-                                          signature_algorithm_)) {
-    DVLOG(1) << "Mismatched hash or signature algorithm. Hash: "
-             << hash_algorithm_ << " vs " << signature.hash_algorithm
-             << " Signature: " << signature_algorithm_ << " vs "
-             << signature.signature_algorithm << ".";
-    return false;
-  }
-
-  return true;
+  return signature.SignatureParametersMatch(hash_algorithm_,
+                                            signature_algorithm_);
 }
 
 bool CTLogVerifier::VerifyConsistencyProof(
@@ -320,15 +297,13 @@ bool CTLogVerifier::Init(const base::StringPiece& public_key) {
       signature_algorithm_ = ct::DigitallySigned::SIG_ALGO_ECDSA;
       break;
     default:
-      DVLOG(1) << "Unsupported key type: " << EVP_PKEY_type(public_key_->type);
       return false;
   }
 
-  // Extra sanity check: Require RSA keys of at least 2048 bits.
+  // Extra safety check: Require RSA keys of at least 2048 bits.
   // EVP_PKEY_size returns the size in bytes. 256 = 2048-bit RSA key.
   if (signature_algorithm_ == ct::DigitallySigned::SIG_ALGO_RSA &&
       EVP_PKEY_size(public_key_) < 256) {
-    DVLOG(1) << "Too small a public key.";
     return false;
   }
 
@@ -340,11 +315,9 @@ bool CTLogVerifier::VerifySignature(const base::StringPiece& data_to_sign,
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   const EVP_MD* hash_alg = GetEvpAlg(hash_algorithm_);
-  if (hash_alg == nullptr)
-    return false;
-
   bssl::ScopedEVP_MD_CTX ctx;
-  return EVP_DigestVerifyInit(ctx.get(), nullptr, hash_alg, nullptr,
+  return hash_alg &&
+         EVP_DigestVerifyInit(ctx.get(), nullptr, hash_alg, nullptr,
                               public_key_) &&
          EVP_DigestVerifyUpdate(ctx.get(), data_to_sign.data(),
                                 data_to_sign.size()) &&

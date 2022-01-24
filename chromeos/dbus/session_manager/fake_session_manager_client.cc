@@ -16,11 +16,11 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -337,6 +337,10 @@ void FakeSessionManagerClient::LoginScreenStorageDelete(
 void FakeSessionManagerClient::StartSession(
     const cryptohome::AccountIdentifier& cryptohome_id) {
   DCHECK_EQ(0UL, user_sessions_.count(cryptohome_id.account_id()));
+
+  if (!primary_user_id_.has_value())
+    primary_user_id_ = cryptohome_id.account_id();
+
   std::string user_id_hash =
       UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id);
   user_sessions_[cryptohome_id.account_id()] = user_id_hash;

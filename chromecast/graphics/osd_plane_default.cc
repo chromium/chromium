@@ -18,6 +18,9 @@ class OsdSurfaceDefault : public OsdSurface {
  public:
   OsdSurfaceDefault(const Size& size) : size_(size) {}
 
+  OsdSurfaceDefault(const OsdSurfaceDefault&) = delete;
+  OsdSurfaceDefault& operator=(const OsdSurfaceDefault&) = delete;
+
   // OsdSurface implementation:
   void Blit(OsdSurface* src_surface,
             const Rect& src_rect,
@@ -35,14 +38,15 @@ class OsdSurfaceDefault : public OsdSurface {
 
  private:
   const Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(OsdSurfaceDefault);
 };
 
 // Default no-op OsdPlane implementation
 class OsdPlaneDefault : public OsdPlane {
  public:
   OsdPlaneDefault() : size_(0, 0) {}
+
+  OsdPlaneDefault(const OsdPlaneDefault&) = delete;
+  OsdPlaneDefault& operator=(const OsdPlaneDefault&) = delete;
 
   // OsdPlane implementation:
   OsdSurface* CreateSurface(const Size& size) override {
@@ -64,8 +68,6 @@ class OsdPlaneDefault : public OsdPlane {
  private:
   std::unique_ptr<OsdSurface> back_buffer_;
   Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(OsdPlaneDefault);
 };
 
 }  // namespace

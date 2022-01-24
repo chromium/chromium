@@ -20,7 +20,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -43,7 +43,7 @@
 
 #if defined(OS_MAC)
 #include "base/callback_helpers.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/browser_main_loop.h"
 #include "media/device_monitors/device_monitor_mac.h"
 #endif
@@ -324,6 +324,11 @@ class MediaDevicesManager::AudioServiceDeviceListener
     : public audio::mojom::DeviceListener {
  public:
   AudioServiceDeviceListener() { ConnectToService(); }
+
+  AudioServiceDeviceListener(const AudioServiceDeviceListener&) = delete;
+  AudioServiceDeviceListener& operator=(const AudioServiceDeviceListener&) =
+      delete;
+
   ~AudioServiceDeviceListener() override = default;
 
   void DevicesChanged() override {
@@ -367,8 +372,6 @@ class MediaDevicesManager::AudioServiceDeviceListener
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AudioServiceDeviceListener> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioServiceDeviceListener);
 };
 
 MediaDevicesManager::MediaDevicesManager(
@@ -1116,7 +1119,7 @@ void MediaDevicesManager::MaybeStopRemovedInputDevices(
   // matching either "default" or "communications".
   // NOTE: ChromeOS is able to seamlessly redirect streams to the new default
   // device, hence the event should not be triggered.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   for (const auto& removed_audio_device : removed_audio_devices) {
     for (const auto& old_device_info :
          current_snapshot_[static_cast<size_t>(type)]) {
@@ -1129,7 +1132,7 @@ void MediaDevicesManager::MaybeStopRemovedInputDevices(
       }
     }
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void MediaDevicesManager::NotifyDeviceChangeSubscribers(

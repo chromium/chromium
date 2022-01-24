@@ -778,4 +778,14 @@ TEST_F(BasicInteractionsTest, RunConditionalCallback) {
       basic_interactions_.RunConditionalCallback("condition", callback.Get()));
 }
 
+TEST_F(BasicInteractionsTest, GetClientSettings) {
+  ClientSettings* client_settings = delegate_.GetMutableSettings();
+  client_settings->display_strings_locale = "hi-IN";
+  EXPECT_EQ(basic_interactions_.GetClientSettings().display_strings_locale,
+            "hi-IN");
+  client_settings->display_strings_locale = "";
+  EXPECT_TRUE(
+      basic_interactions_.GetClientSettings().display_strings_locale.empty());
+}
+
 }  // namespace autofill_assistant

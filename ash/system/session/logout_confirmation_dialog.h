@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_SESSION_LOGOUT_CONFIRMATION_DIALOG_H_
 #define ASH_SYSTEM_SESSION_LOGOUT_CONFIRMATION_DIALOG_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -25,6 +24,10 @@ class LogoutConfirmationDialog : public views::DialogDelegateView {
  public:
   LogoutConfirmationDialog(LogoutConfirmationController* controller,
                            base::TimeTicks logout_time);
+
+  LogoutConfirmationDialog(const LogoutConfirmationDialog&) = delete;
+  LogoutConfirmationDialog& operator=(const LogoutConfirmationDialog&) = delete;
+
   ~LogoutConfirmationDialog() override;
 
   void Update(base::TimeTicks logout_time);
@@ -49,8 +52,6 @@ class LogoutConfirmationDialog : public views::DialogDelegateView {
   views::Label* label_;
 
   base::RepeatingTimer update_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogoutConfirmationDialog);
 };
 
 }  // namespace ash

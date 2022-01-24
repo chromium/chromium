@@ -20,15 +20,15 @@
 #include "maldoca/ole/dir.h"
 #include "maldoca/ole/oss_utils.h"
 
-using maldoca::OLEPropertySetStream;
-using maldoca::StatusOr;
-using maldoca::ole::Dictionary;
-using maldoca::ole::DictionaryEntry;
-using maldoca::ole::Property;
-using maldoca::ole::PropertySet;
-using maldoca::ole::PropertySetStream;
-using maldoca::ole::VtValue;
-using maldoca::ole::VtVector;
+using ::maldoca::OLEPropertySetStream;
+using ::maldoca::StatusOr;
+using ::maldoca::ole::Dictionary;
+using ::maldoca::ole::DictionaryEntry;
+using ::maldoca::ole::Property;
+using ::maldoca::ole::PropertySet;
+using ::maldoca::ole::PropertySetStream;
+using ::maldoca::ole::VtValue;
+using ::maldoca::ole::VtVector;
 
 // use default Latin1 code page (1252) if nothing else is defined in the
 // PropertySetStream
@@ -92,17 +92,21 @@ bool OLEPropertySetStream::CodePageStringReader(absl::string_view *stream,
 
   std::string utf8_string;
   int bytes_consumed, bytes_filled, error_char_count;
-  utils::ConvertEncodingBufferToUTF8String(str, encoding_name_.c_str(),
-                                           &utf8_string, &bytes_consumed,
-                                           &bytes_filled, &error_char_count);
-  if (error_char_count != 0) {
-    LOG(WARNING) << "error_char_count is not 0, possible invalid "
-                    "encoding/characters. Input string was: "
-                 << str;
+  if (utils::ConvertEncodingBufferToUTF8String(
+          str, encoding_name_.c_str(), &utf8_string, &bytes_consumed,
+          &bytes_filled, &error_char_count)) {
+    if (error_char_count != 0) {
+      LOG(WARNING) << "error_char_count is not 0, possible invalid "
+                      "encoding/characters. Input string was: "
+                   << str;
+    }
+    absl::StripAsciiWhitespace(&utf8_string);
+    *output = std::move(utf8_string);
+    return true;
+  } else {
+    LOG(WARNING) << "ConvertEncodingBufferToUTF8String failed";
+    return false;
   }
-  absl::StripAsciiWhitespace(&utf8_string);
-  *output = std::move(utf8_string);
-  return true;
 }
 
 void OLEPropertySetStream::ConsumePaddingBytes(uint32_t size, uint32_t padd_to,
@@ -117,7 +121,7 @@ void OLEPropertySetStream::ConsumePaddingBytes(uint32_t size, uint32_t padd_to,
 
 bool OLEPropertySetStream::UnicodeStringReader(absl::string_view *stream,
                                                std::string *output) {
-  uint32_t size;
+  uint32_t size = 0;
   if (!LittleEndianReader::ConsumeUInt32(stream, &size)) {
     return false;
   }
@@ -129,17 +133,21 @@ bool OLEPropertySetStream::UnicodeStringReader(absl::string_view *stream,
 
   int bytes_consumed, bytes_filled, error_char_count;
   std::string utf8_string;
-  utils::ConvertEncodingBufferToUTF8String(str, "utf-16le", &utf8_string,
-                                           &bytes_consumed, &bytes_filled,
-                                           &error_char_count);
-  if (error_char_count != 0) {
-    LOG(WARNING) << "error_char_count is not 0, possible invalid "
-                    "encoding/characters. Input string was: "
-                 << str;
+  if (utils::ConvertEncodingBufferToUTF8String(str, "utf-16le", &utf8_string,
+                                               &bytes_consumed, &bytes_filled,
+                                               &error_char_count)) {
+    if (error_char_count != 0) {
+      LOG(WARNING) << "error_char_count is not 0, possible invalid "
+                      "encoding/characters. Input string was: "
+                   << str;
+    }
+    absl::StripAsciiWhitespace(&utf8_string);
+    *output = std::move(utf8_string);
+    return true;
+  } else {
+    LOG(WARNING) << "ConvertEncodingBufferToUTF8String failed";
+    return false;
   }
-  absl::StripAsciiWhitespace(&utf8_string);
-  *output = std::move(utf8_string);
-  return true;
 }
 
 bool OLEPropertySetStream::VtInt4Reader(absl::string_view *stream,
@@ -264,7 +272,7 @@ bool OLEPropertySetStream::VtValueReader(absl::string_view *stream,
         return false;
       }
       value->set_str(str);
-      DLOG(INFO) << "value: " << str << " " << str.length();
+      DLOG(INFO) << "value length: " << str.length() << ", value: " << str;
     } break;
 
     case kVtLpwstr: {
@@ -273,7 +281,7 @@ bool OLEPropertySetStream::VtValueReader(absl::string_view *stream,
         return false;
       }
       value->set_str(str);
-      DLOG(INFO) << "value: " << str << " " << str.length();
+      DLOG(INFO) << "value length: " << str.length() << ", value: " << str;
     } break;
 
     case kVtI2: {
@@ -324,7 +332,7 @@ bool OLEPropertySetStream::VtValueReader(absl::string_view *stream,
       }
       stream->remove_prefix(sizeof(uint16_t));
       return VtValueReader(stream, vt, value);
-    } break;
+    }
 
     case kVtBlob: {
       uint32_t size;

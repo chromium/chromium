@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
+#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -54,7 +55,7 @@ class CompositingRequirementsUpdater {
   //      child.  This implies that its positive z-index children must also be
   //      compositing.
   //
-  void Update(PaintLayer* root, CompositingReasonsStats&);
+  void Update(PaintLayer* root);
 
  private:
   class OverlapMap;
@@ -65,9 +66,8 @@ class CompositingRequirementsUpdater {
                        OverlapMap&,
                        RecursionData&,
                        bool& descendant_has3d_transform,
-                       Vector<PaintLayer*>& unclipped_descendants,
-                       IntRect& absolute_descendant_bounding_box,
-                       CompositingReasonsStats&);
+                       HeapVector<Member<PaintLayer>>& unclipped_descendants,
+                       IntRect& absolute_descendant_bounding_box);
 
   LayoutView& layout_view_;
 };

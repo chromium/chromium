@@ -102,6 +102,10 @@ class NeverSerializedMessage : public TestMessageBase {
   NeverSerializedMessage(
       base::OnceClosure destruction_callback = base::OnceClosure())
       : destruction_callback_(std::move(destruction_callback)) {}
+
+  NeverSerializedMessage(const NeverSerializedMessage&) = delete;
+  NeverSerializedMessage& operator=(const NeverSerializedMessage&) = delete;
+
   ~NeverSerializedMessage() override {
     if (destruction_callback_)
       std::move(destruction_callback_).Run();
@@ -116,8 +120,6 @@ class NeverSerializedMessage : public TestMessageBase {
   void SerializePayload(void* buffer) override { NOTREACHED(); }
 
   base::OnceClosure destruction_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(NeverSerializedMessage);
 };
 
 class SimpleMessage : public TestMessageBase {
@@ -126,6 +128,9 @@ class SimpleMessage : public TestMessageBase {
                 base::OnceClosure destruction_callback = base::OnceClosure())
       : contents_(contents),
         destruction_callback_(std::move(destruction_callback)) {}
+
+  SimpleMessage(const SimpleMessage&) = delete;
+  SimpleMessage& operator=(const SimpleMessage&) = delete;
 
   ~SimpleMessage() override {
     if (destruction_callback_)
@@ -159,8 +164,6 @@ class SimpleMessage : public TestMessageBase {
   const std::string contents_;
   base::OnceClosure destruction_callback_;
   std::vector<mojo::ScopedMessagePipeHandle> handles_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleMessage);
 };
 
 TEST_F(MessageTest, InvalidMessageObjects) {

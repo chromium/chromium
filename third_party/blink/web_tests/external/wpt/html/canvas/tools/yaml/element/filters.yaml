@@ -38,9 +38,12 @@
     @assert ctx.filter == 'none';
     ctx.filter = 'blur(5px)';
     @assert ctx.filter == 'blur(5px)';
-    ctx.filter = new CanvasFilter({blur: {stdDeviation: 5}});
+    ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: 5});
     @assert ctx.filter.toString() == '[object CanvasFilter]';
-    ctx.filter = new CanvasFilter([{blur: {stdDeviation: 5}}, {blur: {stdDeviation: 10}}]);
+    ctx.filter = new CanvasFilter([
+        {filter: "gaussianBlur", stdDeviation: 5},
+        {filter: "gaussianBlur", stdDeviation: 10}
+    ]);
     @assert ctx.filter.toString() == '[object CanvasFilter]';
     var canvas2 = document.createElement('canvas');
     var ctx2 = canvas2.getContext('2d');
@@ -50,53 +53,52 @@
     @assert ctx.filter == 'blur(5px)';
     ctx.filter = 'none';
     @assert ctx.filter == 'none';
-    ctx.filter = new CanvasFilter({blur: {stdDeviation: 5}});
+    ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: 5});
     ctx.filter = "this string is not a filter and should do nothing";
     @assert ctx.filter.toString() == '[object CanvasFilter]';
 
 - name: 2d.filter.canvasFilterObject.blur.exceptions
   desc: Test exceptions on CanvasFilter() blur.object
   code: |
-    @assert throws TypeError ctx.filter = new CanvasFilter({blur: null});
-    @assert throws TypeError ctx.filter = new CanvasFilter({blur: {}});
-    @assert throws TypeError ctx.filter = new CanvasFilter({blur: {stdDevation: null}});
-    @assert throws TypeError ctx.filter = new CanvasFilter({blur: {stdDeviation: "foo"}});
+    @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur"});
+    @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDevation: null});
+    @assert throws TypeError ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: "foo"});
 
 - name: 2d.filter.canvasFilterObject.colorMatrix
   desc: Test the functionality of ColorMatrix filters in CanvasFilter objects
   code: |
-    @assert throws TypeError new CanvasFilter({colorMatrix: {values: undefined}});
-    @assert throws TypeError new CanvasFilter({colorMatrix: {values: "foo"}});
-    @assert throws TypeError new CanvasFilter({colorMatrix: {values: null}});
-    @assert throws TypeError new CanvasFilter({colorMatrix: {values: [1, 2, 3]}});
-    @assert throws TypeError new CanvasFilter({colorMatrix: {values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, "a"]}});
-    @assert throws TypeError new CanvasFilter({colorMatrix: {values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, Infinity]}});
+    @assert throws TypeError new CanvasFilter({filter: "colorMatrix", values: undefined});
+    @assert throws TypeError new CanvasFilter({filter: "colorMatrix", values: "foo"});
+    @assert throws TypeError new CanvasFilter({filter: "colorMatrix", values: null});
+    @assert throws TypeError new CanvasFilter({filter: "colorMatrix", values: [1, 2, 3]});
+    @assert throws TypeError new CanvasFilter({filter: "colorMatrix", values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, "a"]});
+    @assert throws TypeError new CanvasFilter({filter: "colorMatrix", values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, Infinity]});
     ctx.fillStyle = "#f00";
-    ctx.filter = new CanvasFilter({colorMatrix: {type: "hueRotate", values: 0}});
+    ctx.filter = new CanvasFilter({filter: "colorMatrix", type: "hueRotate", values: 0});
     ctx.fillRect(0, 0, 100, 50);
     @assert pixel 10,10 ==~ 255,0,0,255;
-    ctx.filter = new CanvasFilter({colorMatrix: {type: "hueRotate", values: 90}});
+    ctx.filter = new CanvasFilter({filter: "colorMatrix", type: "hueRotate", values: 90});
     ctx.fillRect(0, 0, 100, 50);
     @assert pixel 10,10 ==~ 0,91,0,255;
-    ctx.filter = new CanvasFilter({colorMatrix: {type: "hueRotate", values: 180}});
+    ctx.filter = new CanvasFilter({filter: "colorMatrix", type: "hueRotate", values: 180});
     ctx.fillRect(0, 0, 100, 50);
     @assert pixel 10,10 ==~ 0,109,109,255;
-    ctx.filter = new CanvasFilter({colorMatrix: {type: "hueRotate", values: 270}});
+    ctx.filter = new CanvasFilter({filter: "colorMatrix", type: "hueRotate", values: 270});
     ctx.fillRect(0, 0, 100, 50);
     @assert pixel 10,10 ==~ 109,18,255,255;
-    ctx.filter = new CanvasFilter({colorMatrix: {type: "saturate", values: 0.5}});
+    ctx.filter = new CanvasFilter({filter: "colorMatrix", type: "saturate", values: 0.5});
     ctx.fillRect(0, 0, 100, 50);
     @assert pixel 10,10 ==~ 155,27,27,255;
     ctx.clearRect(0, 0, 100, 50);
-    ctx.filter = new CanvasFilter({colorMatrix: {type: "luminanceToAlpha"}});
+    ctx.filter = new CanvasFilter({filter: "colorMatrix", type: "luminanceToAlpha"});
     ctx.fillRect(0, 0, 100, 50);
     @assert pixel 10,10 ==~ 0,0,0,54;
-    ctx.filter = new CanvasFilter({colorMatrix: {values: [
+    ctx.filter = new CanvasFilter({filter: "colorMatrix", values: [
             0, 0, 0, 0, 0,
             1, 1, 1, 1, 0,
             0, 0, 0, 0, 0,
             0, 0, 0, 1, 0
-    ]}});
+    ]});
     ctx.fillRect(0, 0, 50, 25);
     ctx.fillStyle = "#0f0";
     ctx.fillRect(50, 0, 50, 25);
@@ -108,23 +110,21 @@
     @assert pixel 60,10 ==~ 0,255,0,255;
     @assert pixel 10,30 ==~ 0,255,0,255;
     @assert pixel 60,30 ==~ 0,255,0,255;
-  expected: green
 
 - name: 2d.filter.canvasFilterObject.convolveMatrix.exceptions
   desc: Test exceptions on CanvasFilter() convolveMatrix
   code: |
-    @assert throws TypeError new CanvasFilter({convolveMatrix: {}});
-    @assert throws TypeError new CanvasFilter({convolveMatrix: null});
-    @assert throws TypeError new CanvasFilter({convolveMatrix: {divisor: 2}});
-    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: null}});
-    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: 1}});
-    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, 0], [0]]}});
-    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, "a"], [0]]}});
-    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, 0], 0]}});
-    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: [[1, 0], [0, Infinity]]}});
-    @assert throws TypeError new CanvasFilter({convolveMatrix: {kernelMatrix: []}});
+    @assert throws TypeError new CanvasFilter({filter: "convolveMatrix"});
+    @assert throws TypeError new CanvasFilter({filter: "convolveMatrix", divisor: 2});
+    @assert throws TypeError new CanvasFilter({filter: "convolveMatrix", kernelMatrix: null});
+    @assert throws TypeError new CanvasFilter({filter: "convolveMatrix", kernelMatrix: 1});
+    @assert throws TypeError new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[1, 0], [0]]});
+    @assert throws TypeError new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[1, "a"], [0]]});
+    @assert throws TypeError new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[1, 0], 0]});
+    @assert throws TypeError new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[1, 0], [0, Infinity]]});
+    @assert throws TypeError new CanvasFilter({filter: "convolveMatrix", kernelMatrix: []});
     // This should not throw an error
-    ctx.filter = new CanvasFilter({convolveMatrix: {kernelMatrix: [[]]}});
+    ctx.filter = new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[]]});
 
 - name: 2d.filter.canvasFilterObject.componentTransfer.linear
   desc: Test pixels on CanvasFilter() componentTransfer with linear type
@@ -140,11 +140,11 @@
 
     const slopes = [0.5, 1.2, -0.2];
     const intercepts = [0.25, 0, 0.5];
-    ctx.filter = new CanvasFilter({componentTransfer: {
+    ctx.filter = new CanvasFilter({filter: "componentTransfer",
         funcR: {type: "linear", slope: slopes[0], intercept: intercepts[0]},
         funcG: {type: "linear", slope: slopes[1], intercept: intercepts[1]},
         funcB: {type: "linear", slope: slopes[2], intercept: intercepts[2]},
-    }});
+    });
 
     const inputColors = [
         [255, 255, 255],
@@ -164,11 +164,11 @@
 - name: 2d.filter.canvasFilterObject.componentTransfer.identity
   desc: Test pixels on CanvasFilter() componentTransfer with identity type
   code: |
-    ctx.filter = new CanvasFilter({componentTransfer: {
+    ctx.filter = new CanvasFilter({filter: "componentTransfer",
         funcR: {type: "identity"},
         funcG: {type: "identity"},
         funcB: {type: "identity"},
-    }});
+    });
 
     const inputColors = [
         [255, 255, 255],
@@ -199,11 +199,11 @@
     const amplitudes = [2, 1.1, 0.5];
     const exponents = [5, 3, 1];
     const offsets = [0.25, 0, 0.5];
-    ctx.filter = new CanvasFilter({componentTransfer: {
+    ctx.filter = new CanvasFilter({filter: "componentTransfer",
         funcR: {type: "gamma", amplitude: amplitudes[0], exponent: exponents[0], offset: offsets[0]},
         funcG: {type: "gamma", amplitude: amplitudes[1], exponent: exponents[1], offset: offsets[1]},
         funcB: {type: "gamma", amplitude: amplitudes[2], exponent: exponents[2], offset: offsets[2]},
-    }});
+    });
 
     const inputColors = [
         [255, 255, 255],
@@ -244,11 +244,11 @@
     tableValuesR = [0, 0, 1, 1];
     tableValuesG = [2, 0, 0.5, 3];
     tableValuesB = [1, -1, 5, 0];
-    ctx.filter = new CanvasFilter({componentTransfer: {
+    ctx.filter = new CanvasFilter({filter: "componentTransfer",
         funcR: {type: "table", tableValues: tableValuesR},
         funcG: {type: "table", tableValues: tableValuesG},
         funcB: {type: "table", tableValues: tableValuesB},
-    }});
+    });
 
     const inputColors = [
         [255, 255, 255],
@@ -264,6 +264,7 @@
         ctx.fillRect(0, 0, 10, 10);
         _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
     }
+    t.done()
 
 - name: 2d.filter.canvasFilterObject.componentTransfer.discrete
   desc: Test pixels on CanvasFilter() componentTransfer with discrete type
@@ -289,11 +290,11 @@
     tableValuesR = [0, 0, 1, 1];
     tableValuesG = [2, 0, 0.5, 3];
     tableValuesB = [1, -1, 5, 0];
-    ctx.filter = new CanvasFilter({componentTransfer: {
+    ctx.filter = new CanvasFilter({filter: "componentTransfer",
         funcR: {type: "discrete", tableValues: tableValuesR},
         funcG: {type: "discrete", tableValues: tableValuesG},
         funcB: {type: "discrete", tableValues: tableValuesB},
-    }});
+    });
 
     const inputColors = [
         [255, 255, 255],

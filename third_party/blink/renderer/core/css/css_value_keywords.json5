@@ -109,6 +109,12 @@
     "bolder",
     "lighter",
 
+    // font-synthesis
+    // none
+    // style
+    // small-caps
+    "weight",
+
     //
     // font-stretch
     //
@@ -140,12 +146,17 @@
     //
     // font-family (<generic-family> in CSS 2.1)
     //
+    // If you modify this list, please make sure you update css_parsing_utils's
+    // ConsumeGenericFamily, ComputedStyleUtils::IdentifierForFamily and
+    // FontFamily::InferredTypeFor accordingly.
     "serif",
     "sans-serif",
     "cursive",
     "fantasy",
     "monospace",
+    "system-ui",
     "-webkit-body",
+    "math",
 
     //
     // font-display
@@ -447,7 +458,7 @@
     "table",
     "flex",
     "grid",
-    "math",
+    //"math",
     // The order must match the order found in IsDisplayBox().
     "contents",
     //none
@@ -705,6 +716,12 @@
     //
     "clip",
     "ellipsis",
+
+    //
+    // text-decoration-line
+    //
+    "spelling-error",
+    "grammar-error",
 
     //
     // text-decoration-skip-ink
@@ -1178,6 +1195,7 @@
     // initial
     // inherit
     "revert",
+    "revert-layer",
     "unset",
 
     // background-image, etc.
@@ -1373,6 +1391,11 @@
     // none
     "active",
 
+    // forced-color-adjust
+    // auto
+    // none
+    "preserve-parent-color",
+
     // (navigation-controls) media feature
     // none
     "back-button",
@@ -1388,11 +1411,6 @@
     // https://drafts.csswg.org/css-conditional-4/#typedef-supports-selector-fn
     "selector",
 
-    // (screen-spanning) media feature
-    // none
-    "single-fold-vertical",
-    "single-fold-horizontal",
-
     // (device-posture) media feature
     "continuous",
     "folded",
@@ -1407,7 +1425,7 @@
     // no-preference
     "more",
     "less",
-    "forced",
+    "custom",
 
     // @counter-style system
     "cyclic",
@@ -1438,10 +1456,12 @@
     "bullets",
     "numbers",
     "words",
-    // spell-out,
 
     // ([video]-dynamic-range) media feature
     "standard",
     "high",
+
+    // Layered @import rule
+    "layer",
   ],
 }

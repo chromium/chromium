@@ -17,7 +17,8 @@ class CastContentSettingsClient : public content::RenderFrameObserver,
                                   public blink::WebContentSettingsClient {
  public:
   CastContentSettingsClient(content::RenderFrame* render_view,
-                            const std::string& app_id);
+                            const std::string& app_id,
+                            bool allow_insecure_content);
   CastContentSettingsClient(const CastContentSettingsClient&) = delete;
   CastContentSettingsClient& operator=(const CastContentSettingsClient&) =
       delete;
@@ -37,7 +38,8 @@ class CastContentSettingsClient : public content::RenderFrameObserver,
   void ReportRendererFeatureUse(const std::string& app_id,
                                 const std::string& feature_name);
 
-  std::string app_id_;
+  const std::string app_id_;
+  const bool allow_insecure_content_;
   // TODO(b/150022618): Add decisions from Cast service to control the
   // availibilitiy of the Renderer features.
 

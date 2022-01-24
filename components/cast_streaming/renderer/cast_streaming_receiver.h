@@ -22,7 +22,7 @@ class CastStreamingDemuxer;
 // triggered the destruction of the media pipeline and the CastStreamingDemuxer
 // before the call to content::RenderFrameObserver::OnDestruct(), which triggers
 // this object destruction.
-class CastStreamingReceiver : public mojom::CastStreamingReceiver {
+class CastStreamingReceiver final : public mojom::CastStreamingReceiver {
  public:
   using PendingCastStreamingReceiver =
       mojo::PendingAssociatedReceiver<mojom::CastStreamingReceiver>;
@@ -32,7 +32,7 @@ class CastStreamingReceiver : public mojom::CastStreamingReceiver {
   explicit CastStreamingReceiver(
       base::OnceCallback<void(InterfaceRegistryBinderCallback)>
           interface_binder_factory);
-  ~CastStreamingReceiver() final;
+  ~CastStreamingReceiver() override;
 
   CastStreamingReceiver(const CastStreamingReceiver&) = delete;
   CastStreamingReceiver& operator=(const CastStreamingReceiver&) = delete;
@@ -51,9 +51,10 @@ class CastStreamingReceiver : public mojom::CastStreamingReceiver {
   void OnReceiverDisconnected();
 
   // mojom::CastStreamingReceiver implementation.
-  void EnableReceiver(EnableReceiverCallback callback) final;
-  void OnStreamsInitialized(mojom::AudioStreamInfoPtr audio_stream_info,
-                            mojom::VideoStreamInfoPtr video_stream_info) final;
+  void EnableReceiver(EnableReceiverCallback callback) override;
+  void OnStreamsInitialized(
+      mojom::AudioStreamInfoPtr audio_stream_info,
+      mojom::VideoStreamInfoPtr video_stream_info) override;
 
   mojo::AssociatedReceiver<mojom::CastStreamingReceiver>
       cast_streaming_receiver_receiver_{this};

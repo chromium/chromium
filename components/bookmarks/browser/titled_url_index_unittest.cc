@@ -31,6 +31,9 @@ class BookmarkClientMock : public TestBookmarkClient {
   explicit BookmarkClientMock(const std::map<GURL, int>& typed_count_map)
       : typed_count_map_(typed_count_map) {}
 
+  BookmarkClientMock(const BookmarkClientMock&) = delete;
+  BookmarkClientMock& operator=(const BookmarkClientMock&) = delete;
+
   bool SupportsTypedCountForUrls() override { return true; }
 
   void GetTypedCountForUrls(UrlTypedCountMap* url_typed_count_map) override {
@@ -49,8 +52,6 @@ class BookmarkClientMock : public TestBookmarkClient {
 
  private:
   const std::map<GURL, int> typed_count_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkClientMock);
 };
 
 // Minimal implementation of TitledUrlNode.

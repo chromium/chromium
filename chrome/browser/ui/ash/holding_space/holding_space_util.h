@@ -88,8 +88,6 @@ std::unique_ptr<HoldingSpaceImage> ResolveImageWithPlaceholderImageSkiaResolver(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path);
 
-void SetNowForTesting(absl::optional<base::Time> now);
-
 }  // namespace holding_space_util
 }  // namespace ash
 

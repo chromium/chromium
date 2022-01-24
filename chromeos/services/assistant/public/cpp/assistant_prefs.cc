@@ -55,6 +55,10 @@ const char kAssistantNotificationEnabled[] =
 // A preference that indicates the mode of the Assistant onboarding experience.
 // This preference should only be changed via policy.
 const char kAssistantOnboardingMode[] = "settings.assistant.onboarding_mode";
+// A preference that indicates whether Voice Match is enabled during OOBE.
+// This preference should only be changed via policy.
+const char kAssistantVoiceMatchEnabledDuringOobe[] =
+    "settings.voice_interaction.oobe_voice_match.enabled";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kAssistantConsentStatus,
@@ -66,6 +70,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kAssistantHotwordEnabled, false);
   registry->RegisterBooleanPref(kAssistantLaunchWithMicOpen, false);
   registry->RegisterBooleanPref(kAssistantNotificationEnabled, true);
+  registry->RegisterBooleanPref(kAssistantVoiceMatchEnabledDuringOobe, true);
   registry->RegisterStringPref(kAssistantOnboardingMode,
                                kAssistantOnboardingModeDefault);
 }

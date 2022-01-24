@@ -10,9 +10,12 @@
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -37,9 +40,12 @@ class BrowserActionFactoryTest : public PlatformTest {
  protected:
   BrowserActionFactoryTest()
       : test_title_(@"SomeTitle"),
-        test_browser_(std::make_unique<TestBrowser>()) {}
+        test_browser_(std::make_unique<TestBrowser>()),
+        scene_state_([[SceneState alloc] initWithAppState:nil]) {}
 
   void SetUp() override {
+    SceneStateBrowserAgent::CreateForBrowser(test_browser_.get(), scene_state_);
+
     mock_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     [test_browser_->GetCommandDispatcher()
@@ -65,125 +71,158 @@ class BrowserActionFactoryTest : public PlatformTest {
   std::unique_ptr<TestBrowser> test_browser_;
   id mock_application_commands_handler_;
   id mock_application_settings_commands_handler_;
+  SceneState* scene_state_;
 };
 
 // Tests that the Open in New Tab actions have the right titles and images.
 TEST_F(BrowserActionFactoryTest, OpenInNewTabAction_URL) {
-  if (@available(iOS 13.0, *)) {
-    GURL testURL = GURL("https://example.com");
+  GURL testURL = GURL("https://example.com");
 
-    // Using an action factory with a browser should return expected action.
-    BrowserActionFactory* factory =
-        [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
-                                             scenario:kTestMenuScenario];
+  // Using an action factory with a browser should return expected action.
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
 
-    UIImage* expectedImage = [UIImage imageNamed:@"open_in_new_tab"];
-    NSString* expectedTitle =
-        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
+  UIImage* expectedImage = [UIImage imageNamed:@"open_in_new_tab"];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
 
-    UIAction* actionWithURL = [factory actionToOpenInNewTabWithURL:testURL
-                                                        completion:nil];
-    EXPECT_TRUE([expectedTitle isEqualToString:actionWithURL.title]);
-    EXPECT_EQ(expectedImage, actionWithURL.image);
+  UIAction* actionWithURL = [factory actionToOpenInNewTabWithURL:testURL
+                                                      completion:nil];
+  EXPECT_TRUE([expectedTitle isEqualToString:actionWithURL.title]);
+  EXPECT_EQ(expectedImage, actionWithURL.image);
 
-    UIAction* actionWithBlock = [factory actionToOpenInNewTabWithBlock:nil];
-    EXPECT_TRUE([expectedTitle isEqualToString:actionWithBlock.title]);
-    EXPECT_EQ(expectedImage, actionWithBlock.image);
-  }
+  UIAction* actionWithBlock = [factory actionToOpenInNewTabWithBlock:nil];
+  EXPECT_TRUE([expectedTitle isEqualToString:actionWithBlock.title]);
+  EXPECT_EQ(expectedImage, actionWithBlock.image);
 }
 
 // Tests that the Open in New Incognito Tab actions have the right titles
 // and images.
 TEST_F(BrowserActionFactoryTest, OpenInNewIncognitoTabAction_URL) {
-  if (@available(iOS 13.0, *)) {
-    GURL testURL = GURL("https://example.com");
+  GURL testURL = GURL("https://example.com");
 
-    // Using an action factory with a browser should return expected action.
-    BrowserActionFactory* factory =
-        [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
-                                             scenario:kTestMenuScenario];
+  // Using an action factory with a browser should return expected action.
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
 
-    UIImage* expectedImage = [UIImage imageNamed:@"open_in_incognito"];
-    NSString* expectedTitle =
-        l10n_util::GetNSString(IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE);
+  UIImage* expectedImage = [UIImage imageNamed:@"open_in_incognito"];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE);
 
-    UIAction* actionWithURL =
-        [factory actionToOpenInNewIncognitoTabWithURL:testURL completion:nil];
-    EXPECT_TRUE([expectedTitle isEqualToString:actionWithURL.title]);
-    EXPECT_EQ(expectedImage, actionWithURL.image);
+  UIAction* actionWithURL =
+      [factory actionToOpenInNewIncognitoTabWithURL:testURL completion:nil];
+  EXPECT_TRUE([expectedTitle isEqualToString:actionWithURL.title]);
+  EXPECT_EQ(expectedImage, actionWithURL.image);
 
-    UIAction* actionWithBlock =
-        [factory actionToOpenInNewIncognitoTabWithBlock:nil];
-    EXPECT_TRUE([expectedTitle isEqualToString:actionWithBlock.title]);
-    EXPECT_EQ(expectedImage, actionWithBlock.image);
-  }
+  UIAction* actionWithBlock =
+      [factory actionToOpenInNewIncognitoTabWithBlock:nil];
+  EXPECT_TRUE([expectedTitle isEqualToString:actionWithBlock.title]);
+  EXPECT_EQ(expectedImage, actionWithBlock.image);
 }
 
 // Tests that the Open in New Window action has the right title and image.
 TEST_F(BrowserActionFactoryTest, OpenInNewWindowAction) {
-  if (@available(iOS 13.0, *)) {
-    GURL testURL = GURL("https://example.com");
+  GURL testURL = GURL("https://example.com");
 
-    // Using an action factory with a browser should return expected action.
-    BrowserActionFactory* factory =
-        [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
-                                             scenario:kTestMenuScenario];
+  // Using an action factory with a browser should return expected action.
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
 
-    UIImage* expectedImage = [UIImage imageNamed:@"open_new_window"];
-    NSString* expectedTitle =
-        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
+  UIImage* expectedImage = [UIImage imageNamed:@"open_new_window"];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
 
-    UIAction* action =
-        [factory actionToOpenInNewWindowWithURL:testURL
-                                 activityOrigin:WindowActivityToolsOrigin];
+  // Test URL variant
+  UIAction* action =
+      [factory actionToOpenInNewWindowWithURL:testURL
+                               activityOrigin:WindowActivityToolsOrigin];
 
-    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
-    EXPECT_EQ(expectedImage, action.image);
-  }
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+
+  // Test user activity variant
+  action = [factory
+      actionToOpenInNewWindowWithActivity:ActivityToLoadURL(
+                                              WindowActivityToolsOrigin,
+                                              testURL)];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
 }
 
 // Tests that the open image action has the right title and image.
 TEST_F(BrowserActionFactoryTest, OpenImageAction) {
-  if (@available(iOS 13.0, *)) {
-    BrowserActionFactory* factory =
-        [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
-                                             scenario:kTestMenuScenario];
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
 
-    GURL testURL = GURL("https://example.com/logo.png");
+  GURL testURL = GURL("https://example.com/logo.png");
 
-    UIImage* expectedImage = [UIImage imageNamed:@"open"];
-    NSString* expectedTitle =
-        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGE);
+  UIImage* expectedImage = [UIImage imageNamed:@"open"];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGE);
 
-    UIAction* action = [factory actionOpenImageWithURL:testURL
-                                            completion:^{
-                                            }];
+  UIAction* action = [factory actionOpenImageWithURL:testURL
+                                          completion:^{
+                                          }];
 
-    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
-    EXPECT_EQ(expectedImage, action.image);
-  }
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
 }
 
 // Tests that the open image in new tab action has the right title and image.
 TEST_F(BrowserActionFactoryTest, OpenImageInNewTabAction) {
-  if (@available(iOS 13.0, *)) {
-    BrowserActionFactory* factory =
-        [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
-                                             scenario:kTestMenuScenario];
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
 
-    GURL testURL = GURL("https://example.com/logo.png");
-    UrlLoadParams testParams = UrlLoadParams::InNewTab(testURL);
+  GURL testURL = GURL("https://example.com/logo.png");
+  UrlLoadParams testParams = UrlLoadParams::InNewTab(testURL);
 
-    UIImage* expectedImage = [UIImage imageNamed:@"open_image_in_new_tab"];
-    NSString* expectedTitle =
-        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB);
+  UIImage* expectedImage = [UIImage imageNamed:@"open_image_in_new_tab"];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB);
 
-    UIAction* action =
-        [factory actionOpenImageInNewTabWithUrlLoadParams:testParams
-                                               completion:^{
-                                               }];
+  UIAction* action =
+      [factory actionOpenImageInNewTabWithUrlLoadParams:testParams
+                                             completion:^{
+                                             }];
 
-    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
-    EXPECT_EQ(expectedImage, action.image);
-  }
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+}
+
+// Tests that the show preview action has the right title and image.
+TEST_F(BrowserActionFactoryTest, ShowPreviewAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = [UIImage imageNamed:@"show_preview"];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SHOWLINKPREVIEW);
+
+  UIAction* action = [factory actionToShowLinkPreview];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+}
+
+// Tests that the hide preview action has the right title and image.
+TEST_F(BrowserActionFactoryTest, HidePreviewAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = [UIImage imageNamed:@"hide_preview"];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_HIDELINKPREVIEW);
+
+  UIAction* action = [factory actionToHideLinkPreview];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
 }

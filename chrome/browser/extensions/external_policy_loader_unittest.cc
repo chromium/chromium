@@ -6,7 +6,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -45,6 +44,11 @@ class MockExternalPolicyProviderVisitor
  public:
   MockExternalPolicyProviderVisitor() {
   }
+
+  MockExternalPolicyProviderVisitor(const MockExternalPolicyProviderVisitor&) =
+      delete;
+  MockExternalPolicyProviderVisitor& operator=(
+      const MockExternalPolicyProviderVisitor&) = delete;
 
   // Initialize a provider with |policy_forcelist|, and check that it installs
   // exactly the extensions specified in |expected_extensions|.
@@ -114,8 +118,6 @@ class MockExternalPolicyProviderVisitor
   std::unique_ptr<TestingProfile> profile_;
 
   std::unique_ptr<ExternalProviderImpl> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockExternalPolicyProviderVisitor);
 };
 
 TEST_F(ExternalPolicyLoaderTest, PolicyIsParsed) {

@@ -6,11 +6,16 @@
 #define BASE_CXX17_BACKPORTS_H_
 
 #include <array>
+#include <functional>
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 
 #include "base/check.h"
+#include "base/functional/invoke.h"
 
 namespace base {
 
@@ -104,7 +109,27 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi, Compare comp) {
 
 template <typename T>
 constexpr const T& clamp(const T& v, const T& lo, const T& hi) {
-  return clamp(v, lo, hi, std::less<T>{});
+  return base::clamp(v, lo, hi, std::less<T>{});
+}
+
+// C++14 implementation of C++17's std::apply():
+// https://en.cppreference.com/w/cpp/utility/apply
+namespace internal {
+template <class F, class Tuple, std::size_t... I>
+constexpr decltype(auto) apply_impl(F&& f,
+                                    Tuple&& t,
+                                    std::index_sequence<I...>) {
+  return base::invoke(std::forward<F>(f),
+                      std::get<I>(std::forward<Tuple>(t))...);
+}
+}  // namespace internal
+
+template <class F, class Tuple>
+constexpr decltype(auto) apply(F&& f, Tuple&& t) {
+  return internal::apply_impl(
+      std::forward<F>(f), std::forward<Tuple>(t),
+      std::make_index_sequence<
+          std::tuple_size<std::remove_reference_t<Tuple>>::value>{});
 }
 
 }  // namespace base

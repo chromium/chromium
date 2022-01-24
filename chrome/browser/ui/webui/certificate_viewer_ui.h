@@ -5,17 +5,17 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CERTIFICATE_VIEWER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CERTIFICATE_VIEWER_UI_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 
 // The WebUI for chrome://view-cert
 class CertificateViewerUI : public ConstrainedWebDialogUI {
  public:
   explicit CertificateViewerUI(content::WebUI* web_ui);
-  ~CertificateViewerUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CertificateViewerUI);
+  CertificateViewerUI(const CertificateViewerUI&) = delete;
+  CertificateViewerUI& operator=(const CertificateViewerUI&) = delete;
+
+  ~CertificateViewerUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CERTIFICATE_VIEWER_UI_H_

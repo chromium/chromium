@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/offline/offline_internals_ui_message_handler.h"
 #include "chrome/common/url_constants.h"

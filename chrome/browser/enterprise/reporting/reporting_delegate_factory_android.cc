@@ -4,32 +4,32 @@
 
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 
+#include <utility>
+
+#include "chrome/browser/enterprise/reporting/browser_report_generator_android.h"
+#include "chrome/browser/enterprise/reporting/profile_report_generator_android.h"
+#include "chrome/browser/enterprise/reporting/report_scheduler_android.h"
+
 namespace enterprise_reporting {
 
 std::unique_ptr<BrowserReportGenerator::Delegate>
 ReportingDelegateFactoryAndroid::GetBrowserReportGeneratorDelegate() {
-  // TODO(crbug.com/1228835) Implement BrowserReportGenerator::Delegate for
-  // Android
-  return nullptr;
+  return std::make_unique<BrowserReportGeneratorAndroid>();
 }
 
 std::unique_ptr<ProfileReportGenerator::Delegate>
 ReportingDelegateFactoryAndroid::GetProfileReportGeneratorDelegate() {
-  // TODO(crbug.com/1228841) Implement ProfileReportGeneratior::Delegate for
-  // Android
-  return nullptr;
+  return std::make_unique<ProfileReportGeneratorAndroid>();
 }
 
 std::unique_ptr<ReportGenerator::Delegate>
 ReportingDelegateFactoryAndroid::GetReportGeneratorDelegate() {
-  // TODO(crbug.com/1228843) Implement ReportGenerator::Delegate for Android
   return nullptr;
 }
 
 std::unique_ptr<ReportScheduler::Delegate>
 ReportingDelegateFactoryAndroid::GetReportSchedulerDelegate() {
-  // TODO(crbug.com/1228844) Implement ReportScheduler::Delegate for Android
-  return nullptr;
+  return std::make_unique<ReportSchedulerAndroid>();
 }
 
 std::unique_ptr<RealTimeReportGenerator::Delegate>

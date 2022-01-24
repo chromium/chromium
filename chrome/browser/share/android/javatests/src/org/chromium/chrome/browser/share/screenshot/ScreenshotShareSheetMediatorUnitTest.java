@@ -29,7 +29,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
@@ -42,7 +41,6 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 // clang-format off
-@Features.EnableFeatures(ChromeFeatureList.CHROME_SHARE_SCREENSHOT)
 public class ScreenshotShareSheetMediatorUnitTest {
     // clang-format on
     @Rule

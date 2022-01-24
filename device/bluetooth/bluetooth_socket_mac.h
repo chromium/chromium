@@ -39,6 +39,9 @@ class BluetoothSocketMac : public BluetoothSocket {
  public:
   static scoped_refptr<BluetoothSocketMac> CreateSocket();
 
+  BluetoothSocketMac(const BluetoothSocketMac&) = delete;
+  BluetoothSocketMac& operator=(const BluetoothSocketMac&) = delete;
+
   // Connects this socket to the service on |device| published as UUID |uuid|.
   // The underlying protocol and PSM or Channel is obtained through service
   // discovery. On a successful connection, the socket properties will be
@@ -195,8 +198,6 @@ class BluetoothSocketMac : public BluetoothSocket {
 
   // Queue of incoming connections.
   base::queue<std::unique_ptr<BluetoothChannelMac>> accept_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketMac);
 };
 
 }  // namespace device

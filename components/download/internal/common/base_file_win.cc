@@ -150,6 +150,10 @@ class FileOperationProgressSink
  public:
   FileOperationProgressSink() = default;
 
+  FileOperationProgressSink(const FileOperationProgressSink&) = delete;
+  FileOperationProgressSink& operator=(const FileOperationProgressSink&) =
+      delete;
+
   HRESULT GetOperationResult() { return result_; }
 
   // IFileOperationProgressSink:
@@ -229,8 +233,6 @@ class FileOperationProgressSink
 
  private:
   HRESULT result_ = S_OK;
-
-  DISALLOW_COPY_AND_ASSIGN(FileOperationProgressSink);
 };
 
 }  // namespace

@@ -18,8 +18,6 @@
 // Designated initializer.
 // |identity| is the identity chosen by the user to sign-in.
 // |signinCompletionAction| is the action required to complete the sign-in.
-// If the |signinCompletionAction| is SigninCompletionActionOpenCompletionURL, a
-// completionURL must be added.
 - (instancetype)initWithIdentity:(ChromeIdentity*)identity
           signinCompletionAction:(SigninCompletionAction)signinCompletionAction
     NS_DESIGNATED_INITIALIZER;
@@ -30,9 +28,6 @@
 // SigninCoordinator's owner.
 @property(nonatomic, assign, readonly)
     SigninCompletionAction signinCompletionAction;
-// URL to be opened. Optional, only used when signinCompletionAction is
-// SigninCompletionActionOpenCompletionURL.
-@property(nonatomic, assign) const GURL& completionURL;
 
 @end
 

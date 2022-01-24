@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/test/cocoa_helper.h"
 #import "ui/events/cocoa/cocoa_event_utils.h"
@@ -31,6 +30,9 @@ const CGEventFlags kNoEventFlags = static_cast<CGEventFlags>(0);
 class EventsMacTest : public CocoaTest {
  public:
   EventsMacTest() {}
+
+  EventsMacTest(const EventsMacTest&) = delete;
+  EventsMacTest& operator=(const EventsMacTest&) = delete;
 
   gfx::Point Flip(gfx::Point window_location) {
     NSRect window_frame = [test_window() frame];
@@ -81,9 +83,6 @@ class EventsMacTest : public CocoaTest {
 
  protected:
   const gfx::Point default_location_ = gfx::Point(10, 20);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventsMacTest);
 };
 
 // Trackpad scroll sequences below determined empirically on OSX 10.11 (linking

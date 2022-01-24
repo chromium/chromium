@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -31,6 +30,10 @@ class CrostiniLowDiskNotification : public chromeos::CiceroneClient::Observer {
  public:
   // Registers this class as a Cicerone Observer.
   CrostiniLowDiskNotification();
+
+  CrostiniLowDiskNotification(const CrostiniLowDiskNotification&) = delete;
+  CrostiniLowDiskNotification& operator=(const CrostiniLowDiskNotification&) =
+      delete;
 
   // Unregisters from observing events.
   ~CrostiniLowDiskNotification() override;
@@ -68,8 +71,6 @@ class CrostiniLowDiskNotification : public chromeos::CiceroneClient::Observer {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<CrostiniLowDiskNotification> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniLowDiskNotification);
 };
 
 }  // namespace crostini

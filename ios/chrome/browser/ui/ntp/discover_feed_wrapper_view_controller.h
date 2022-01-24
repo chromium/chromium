@@ -15,9 +15,9 @@
 // view controller that is wrapped by this view controller.
 @property(nonatomic, strong, readonly) UIViewController* discoverFeed;
 
-// Collection view that contains the feed articles. Is a subview of
-// |self.discoverFeed|.
-@property(nonatomic, weak, readonly) UICollectionView* feedCollectionView;
+// The containing collection view of the NTP. Can either be the Discover feed if
+// the feed is visible, or an empty collection view if not.
+@property(nonatomic, weak) UICollectionView* contentCollectionView;
 
 // Initializes view controller with the Discover feed view controller
 // originating from the Discover feed provider.

@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_AUDIO_DISPLAY_SPEAKER_CONTROLLER_H_
 #define ASH_SYSTEM_AUDIO_DISPLAY_SPEAKER_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -17,6 +16,10 @@ class DisplaySpeakerController : public display::DisplayObserver,
                                  public chromeos::PowerManagerClient::Observer {
  public:
   DisplaySpeakerController();
+
+  DisplaySpeakerController(const DisplaySpeakerController&) = delete;
+  DisplaySpeakerController& operator=(const DisplaySpeakerController&) = delete;
+
   ~DisplaySpeakerController() override;
 
   // display::DisplayObserver.
@@ -33,8 +36,6 @@ class DisplaySpeakerController : public display::DisplayObserver,
   void UpdateInternalSpeakerForDisplayRotation();
 
   display::ScopedDisplayObserver display_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplaySpeakerController);
 };
 
 }  // namespace ash

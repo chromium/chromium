@@ -4,13 +4,17 @@
 
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 
+#include "base/bind.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace pdf_extension_test_util {
 
 testing::AssertionResult EnsurePDFHasLoaded(
-    const content::ToRenderFrameHost& frame) {
+    const content::ToRenderFrameHost& frame,
+    bool wait_for_hit_test_data) {
   bool load_success = false;
   if (!content::ExecuteScriptAndExtractBool(
           frame,
@@ -32,6 +36,13 @@ testing::AssertionResult EnsurePDFHasLoaded(
     return testing::AssertionFailure()
            << "Cannot communicate with PDF extension.";
   }
+
+  if (wait_for_hit_test_data) {
+    frame.render_frame_host()->ForEachRenderFrameHost(
+        base::BindRepeating<void(content::RenderFrameHost*)>(
+            content::WaitForHitTestData));
+  }
+
   return load_success ? testing::AssertionSuccess()
                       : (testing::AssertionFailure() << "Load failed.");
 }

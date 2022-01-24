@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/string_split.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
@@ -25,6 +26,7 @@
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_offscreen_result.h"
 #include "ui/accessibility/ax_position.h"
+#include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -68,6 +70,9 @@ using TextAttributeMap = std::map<int, TextAttributeList>;
 // otherwise.
 class AX_EXPORT AXPlatformNodeDelegate {
  public:
+  AXPlatformNodeDelegate(const AXPlatformNodeDelegate&) = delete;
+  AXPlatformNodeDelegate& operator=(const AXPlatformNodeDelegate&) = delete;
+
   virtual ~AXPlatformNodeDelegate() = default;
 
   // Get the accessibility data that should be exposed for this node. This data
@@ -111,10 +116,14 @@ class AX_EXPORT AXPlatformNodeDelegate {
       ax::mojom::FloatAttribute attribute) const = 0;
   virtual bool GetFloatAttribute(ax::mojom::FloatAttribute attribute,
                                  float* value) const = 0;
+  virtual const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
+  GetIntAttributes() const = 0;
   virtual bool HasIntAttribute(ax::mojom::IntAttribute attribute) const = 0;
   virtual int GetIntAttribute(ax::mojom::IntAttribute attribute) const = 0;
   virtual bool GetIntAttribute(ax::mojom::IntAttribute attribute,
                                int* value) const = 0;
+  virtual const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
+  GetStringAttributes() const = 0;
   virtual bool HasStringAttribute(
       ax::mojom::StringAttribute attribute) const = 0;
   virtual const std::string& GetStringAttribute(
@@ -129,6 +138,9 @@ class AX_EXPORT AXPlatformNodeDelegate {
       ax::mojom::StringAttribute attribute) const = 0;
   virtual std::u16string GetInheritedString16Attribute(
       ax::mojom::StringAttribute attribute) const = 0;
+  virtual const std::vector<
+      std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>>&
+  GetIntListAttributes() const = 0;
   virtual bool HasIntListAttribute(
       ax::mojom::IntListAttribute attribute) const = 0;
   virtual const std::vector<int32_t>& GetIntListAttribute(
@@ -142,11 +154,17 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual bool GetStringListAttribute(
       ax::mojom::StringListAttribute attribute,
       std::vector<std::string>* value) const = 0;
+  virtual const base::StringPairs& GetHtmlAttributes() const = 0;
   virtual bool GetHtmlAttribute(const char* attribute,
                                 std::string* value) const = 0;
   virtual bool GetHtmlAttribute(const char* attribute,
                                 std::u16string* value) const = 0;
+  virtual AXTextAttributes GetTextAttributes() const = 0;
   virtual bool HasState(ax::mojom::State state) const = 0;
+  virtual ax::mojom::State GetState() const = 0;
+  virtual bool HasAction(ax::mojom::Action action) const = 0;
+  virtual bool HasTextStyle(ax::mojom::TextStyle text_style) const = 0;
+  virtual ax::mojom::NameFrom GetNameFrom() const = 0;
 
   // Returns the text of this node and all descendant nodes; including text
   // found in embedded objects.
@@ -191,7 +209,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   // Get the parent of the node, which may be an AXPlatformNode or it may
   // be a native accessible object implemented by another class.
-  virtual gfx::NativeViewAccessible GetParent() = 0;
+  virtual gfx::NativeViewAccessible GetParent() const = 0;
 
   // Get the index in parent. Typically this is the AXNode's index_in_parent_.
   // This should return -1 if the index in parent is unknown.
@@ -282,6 +300,13 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // contenteditable without the role, (see `AXNodeData::IsTextField()`).
   virtual gfx::NativeViewAccessible GetTextFieldAncestor() const = 0;
 
+  // If this node is within a container (or widget) that supports either single
+  // or multiple selection, returns the node that represents the container.
+  virtual gfx::NativeViewAccessible GetSelectionContainer() const = 0;
+
+  // If within a table, returns the node representing the table.
+  virtual gfx::NativeViewAccessible GetTableAncestor() const = 0;
+
   class ChildIterator {
    public:
     virtual ~ChildIterator() = default;
@@ -302,12 +327,18 @@ class AX_EXPORT AXPlatformNodeDelegate {
   ChildrenEnd() = 0;
 
   // Returns the accessible name for the node.
-  virtual std::string GetName() const = 0;
+  virtual const std::string& GetName() const = 0;
 
   // Returns the text of this node and represent the text of descendant nodes
   // with a special character in place of every embedded object. This represents
   // the concept of text in ATK and IA2 APIs.
   virtual std::u16string GetHypertext() const = 0;
+  // Temporary accessor method until hypertext is fully migrated to `AXNode`
+  // from `AXPlatformNodeBase`.
+  // TODO(nektar): Remove this once selection handling is fully migrated to
+  // `AXNode`.
+  virtual const std::map<int, int>& GetHypertextOffsetToHyperlinkChildIndex()
+      const = 0;
 
   // Set the selection in the hypertext of this node. Depending on the
   // implementation, this may mean the new selection will span multiple nodes.
@@ -455,8 +486,9 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   // Return a vector of all the descendants of this delegate's node. This method
   // is only meaningful for Windows UIA.
-  virtual const std::vector<gfx::NativeViewAccessible> GetUIADescendants()
-      const = 0;
+  virtual const std::vector<gfx::NativeViewAccessible>
+  GetUIADirectChildrenInRange(ui::AXPlatformNodeDelegate* start,
+                              ui::AXPlatformNodeDelegate* end) = 0;
 
   // Return a string representing the language code.
   //
@@ -503,9 +535,12 @@ class AX_EXPORT AXPlatformNodeDelegate {
                                             int col_index) const = 0;
   virtual absl::optional<int32_t> CellIndexToId(int cell_index) const = 0;
 
-  // Helper methods to check if a cell is an ARIA-1.1+ 'cell' or 'gridcell'
-  virtual bool IsCellOrHeaderOfARIATable() const = 0;
-  virtual bool IsCellOrHeaderOfARIAGrid() const = 0;
+  // Returns true if this node is a cell or a row/column header in an ARIA grid
+  // or treegrid.
+  virtual bool IsCellOrHeaderOfAriaGrid() const = 0;
+
+  // True if this is a web area, and its grandparent is a presentational iframe.
+  virtual bool IsWebAreaForPresentationalIframe() const = 0;
 
   // Ordered-set-like and item-like nodes.
   virtual bool IsOrderedSetItem() const = 0;
@@ -571,9 +606,6 @@ class AX_EXPORT AXPlatformNodeDelegate {
   AXPlatformNodeDelegate() = default;
 
   virtual std::string SubtreeToStringHelper(size_t level) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AXPlatformNodeDelegate);
 };
 
 }  // namespace ui

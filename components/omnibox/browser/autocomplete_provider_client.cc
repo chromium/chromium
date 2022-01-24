@@ -25,3 +25,7 @@ std::string AutocompleteProviderClient::ProfileUserName() const {
 bool AutocompleteProviderClient::IsIncognitoModeAvailable() const {
   return true;
 }
+
+bool AutocompleteProviderClient::IsSharingHubAvailable() const {
+  return false;
+}

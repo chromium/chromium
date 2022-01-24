@@ -32,6 +32,9 @@ class BASE_EXPORT DispatchSourceMach {
                      mach_port_t port,
                      void (^event_handler)());
 
+  DispatchSourceMach(const DispatchSourceMach&) = delete;
+  DispatchSourceMach& operator=(const DispatchSourceMach&) = delete;
+
   // Cancels the source and waits for it to become fully cancelled before
   // releasing the source.
   ~DispatchSourceMach();
@@ -51,8 +54,6 @@ class BASE_EXPORT DispatchSourceMach {
 
   // Semaphore used to wait on the |source_|'s cancellation in the destructor.
   ScopedDispatchObject<dispatch_semaphore_t> source_canceled_;
-
-  DISALLOW_COPY_AND_ASSIGN(DispatchSourceMach);
 };
 
 }  // namespace base

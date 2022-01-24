@@ -1,0 +1,41 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("core") {
+  public = [
+    "ec_signing_key.h",
+    "signing_key_pair.h",
+  ]
+
+  sources = [
+    "ec_signing_key.cc",
+    "signing_key_pair.cc",
+  ]
+
+  deps = [ "//base" ]
+
+  public_deps = [
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
+    "//components/policy/proto",
+    "//crypto",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ec_signing_key_unittest.cc",
+    "signing_key_pair_unittest.cc",
+  ]
+
+  deps = [
+    ":core",
+    "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
+    "//crypto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

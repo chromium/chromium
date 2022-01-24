@@ -6,7 +6,10 @@
 
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
+#include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/util/resource_util.h"
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,28 +44,61 @@ constexpr float kInkDropHighlightOpacity = 0.08f;
 
 // Helpers ---------------------------------------------------------------------
 
+struct ColorPalette {
+  SkColor flag_off;
+  SkColor dark;
+  SkColor light;
+};
+
 SkColor GetBackgroundColor(int index) {
-  constexpr SkColor kBackgroundColors[] = {gfx::kGoogleBlue050,
-                                           gfx::kGoogleRed050,
-                                           gfx::kGoogleYellow050,
-                                           gfx::kGoogleGreen050,
-                                           SkColorSetRGB(0xF6, 0xE9, 0xF8),
-                                           gfx::kGoogleBlue050};
+  // Opacity values:
+  // 0x19: 10%
+  // 0x4c: 30%
+  constexpr ColorPalette kBackgroundColors[] = {
+      {gfx::kGoogleBlue050, SkColorSetA(gfx::kGoogleBlue300, 0x4c),
+       SkColorSetA(gfx::kGoogleBlue600, 0x19)},
+      {gfx::kGoogleRed050, SkColorSetA(gfx::kGoogleRed300, 0x4c),
+       SkColorSetA(gfx::kGoogleRed600, 0x19)},
+      {gfx::kGoogleYellow050, SkColorSetA(gfx::kGoogleYellow300, 0x4c),
+       SkColorSetA(gfx::kGoogleYellow600, 0x19)},
+      {gfx::kGoogleGreen050, SkColorSetA(gfx::kGoogleGreen300, 0x4c),
+       SkColorSetA(gfx::kGoogleGreen600, 0x19)},
+      {SkColorSetRGB(0xF6, 0xE9, 0xF8), SkColorSetARGB(0x4c, 0xf8, 0x82, 0xff),
+       SkColorSetARGB(0x19, 0xc6, 0x1a, 0xd9)},
+      {gfx::kGoogleBlue050, SkColorSetA(gfx::kGoogleBlue300, 0x4c),
+       SkColorSetA(gfx::kGoogleBlue600, 0x19)}};
+
   DCHECK_GE(index, 0);
   DCHECK_LT(index, static_cast<int>(base::size(kBackgroundColors)));
-  return kBackgroundColors[index];
+
+  if (features::IsDarkLightModeEnabled()) {
+    return ColorProvider::Get()->IsDarkModeEnabled()
+               ? kBackgroundColors[index].dark
+               : kBackgroundColors[index].light;
+  }
+  return kBackgroundColors[index].flag_off;
 }
 
 SkColor GetForegroundColor(int index) {
-  constexpr SkColor kForegroundColors[] = {gfx::kGoogleBlue800,
-                                           gfx::kGoogleRed800,
-                                           SkColorSetRGB(0xBF, 0x50, 0x00),
-                                           gfx::kGoogleGreen800,
-                                           SkColorSetRGB(0x8A, 0x0E, 0x9E),
-                                           gfx::kGoogleBlue800};
+  constexpr ColorPalette kForegroundColors[] = {
+      {gfx::kGoogleBlue800, gfx::kGoogleBlue200, gfx::kGoogleBlue800},
+      {gfx::kGoogleRed800, gfx::kGoogleRed200, gfx::kGoogleRed800},
+      {SkColorSetRGB(0xBF, 0x50, 0x00), gfx::kGoogleYellow200,
+       SkColorSetRGB(0xBF, 0x50, 0x00)},
+      {gfx::kGoogleGreen800, gfx::kGoogleGreen200, gfx::kGoogleGreen800},
+      {SkColorSetRGB(0x8A, 0x0E, 0x9E), SkColorSetRGB(0xf8, 0x82, 0xff),
+       SkColorSetRGB(0xaa, 0x00, 0xb8)},
+      {gfx::kGoogleBlue800, gfx::kGoogleBlue200, gfx::kGoogleBlue800}};
+
   DCHECK_GE(index, 0);
   DCHECK_LT(index, static_cast<int>(base::size(kForegroundColors)));
-  return kForegroundColors[index];
+
+  if (features::IsDarkLightModeEnabled()) {
+    return ColorProvider::Get()->IsDarkModeEnabled()
+               ? kForegroundColors[index].dark
+               : kForegroundColors[index].light;
+  }
+  return kForegroundColors[index].flag_off;
 }
 
 }  // namespace
@@ -109,6 +145,24 @@ void AssistantOnboardingSuggestionView::RemoveLayerBeneathView(
   // This routes background layers to `ink_drop_container_` instead of `this` to
   // avoid painting effects underneath our background.
   ink_drop_container_->RemoveLayerBeneathView(layer);
+}
+
+void AssistantOnboardingSuggestionView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  GetBackground()->SetNativeControlColor(GetBackgroundColor(index_));
+
+  // SetNativeControlColor does not trigger a repaint.
+  SchedulePaint();
+
+  label_->SetEnabledColor(GetForegroundColor(index_));
+
+  if (assistant::util::IsResourceLinkType(url_, ResourceLinkType::kIcon)) {
+    icon_->SetImage(assistant::util::CreateVectorIcon(
+        assistant::util::AppendOrReplaceColorParam(url_,
+                                                   GetForegroundColor(index_)),
+        kIconSizeDip));
+  }
 }
 
 gfx::ImageSkia AssistantOnboardingSuggestionView::GetIcon() const {
@@ -172,24 +226,20 @@ void AssistantOnboardingSuggestionView::InitLayout(
   icon_->SetImageSize({kIconSizeDip, kIconSizeDip});
   icon_->SetPreferredSize({kIconSizeDip, kIconSizeDip});
 
-  const GURL& url = suggestion.icon_url;
-  if (assistant::util::IsResourceLinkType(url, ResourceLinkType::kIcon)) {
-    // Handle local images.
-    icon_->SetImage(assistant::util::CreateVectorIcon(
-        assistant::util::AppendOrReplaceColorParam(url,
-                                                   GetForegroundColor(index_)),
-        kIconSizeDip));
-  } else if (url.is_valid()) {
-    // Handle remote images.
+  url_ = suggestion.icon_url;
+  if (!assistant::util::IsResourceLinkType(url_, ResourceLinkType::kIcon) &&
+      url_.is_valid()) {
+    // Handle remote images. Local resource link type image will be handled in
+    // AssistantOnboardingSuggestionView::OnThemeChanged.
     delegate_->DownloadImage(
-        url, base::BindOnce(&AssistantOnboardingSuggestionView::UpdateIcon,
-                            weak_factory_.GetWeakPtr()));
+        url_, base::BindOnce(&AssistantOnboardingSuggestionView::UpdateIcon,
+                             weak_factory_.GetWeakPtr()));
   }
 
   // Label.
   label_ = AddChildView(std::make_unique<views::Label>());
+  label_->SetID(kAssistantOnboardingSuggestionViewLabel);
   label_->SetAutoColorReadabilityEnabled(false);
-  label_->SetEnabledColor(GetForegroundColor(index_));
   label_->SetFontList(assistant::ui::GetDefaultFontList()
                           .DeriveWithSizeDelta(kLabelSizeDelta)
                           .DeriveWithWeight(gfx::Font::Weight::MEDIUM));

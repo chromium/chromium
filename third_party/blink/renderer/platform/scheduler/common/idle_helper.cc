@@ -18,6 +18,9 @@ namespace scheduler {
 
 using base::sequence_manager::TaskQueue;
 
+// static
+constexpr base::TimeDelta IdleHelper::kMaximumIdlePeriod;
+
 IdleHelper::IdleHelper(
     SchedulerHelper* helper,
     Delegate* delegate,
@@ -81,34 +84,30 @@ IdleHelper::IdlePeriodState IdleHelper::ComputeNewLongIdlePeriodState(
     return IdlePeriodState::kNotInIdlePeriod;
   }
 
-  base::sequence_manager::LazyNow lazy_now(now);
-  absl::optional<base::TimeDelta> delay_till_next_task =
-      helper_->real_time_domain()->DelayTillNextTask(&lazy_now);
+  auto wake_up = helper_->GetNextDelayedWakeUp();
 
-  base::TimeDelta max_long_idle_period_duration =
-      base::TimeDelta::FromMilliseconds(kMaximumIdlePeriodMillis);
   base::TimeDelta long_idle_period_duration;
 
-  if (delay_till_next_task) {
+  if (wake_up) {
     // Limit the idle period duration to be before the next pending task.
     long_idle_period_duration =
-        std::min(*delay_till_next_task, max_long_idle_period_duration);
+        std::min(wake_up->time - now, kMaximumIdlePeriod);
   } else {
-    long_idle_period_duration = max_long_idle_period_duration;
+    long_idle_period_duration = kMaximumIdlePeriod;
   }
 
   if (long_idle_period_duration >=
-      base::TimeDelta::FromMilliseconds(kMinimumIdlePeriodDurationMillis)) {
+      base::Milliseconds(kMinimumIdlePeriodDurationMillis)) {
     *next_long_idle_period_delay_out = long_idle_period_duration;
     if (!idle_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask())
       return IdlePeriodState::kInLongIdlePeriodPaused;
-    if (long_idle_period_duration == max_long_idle_period_duration)
+    if (long_idle_period_duration == kMaximumIdlePeriod)
       return IdlePeriodState::kInLongIdlePeriodWithMaxDeadline;
     return IdlePeriodState::kInLongIdlePeriod;
   } else {
     // If we can't start the idle period yet then try again after wake-up.
-    *next_long_idle_period_delay_out = base::TimeDelta::FromMilliseconds(
-        kRetryEnableLongIdlePeriodDelayMillis);
+    *next_long_idle_period_delay_out =
+        base::Milliseconds(kRetryEnableLongIdlePeriodDelayMillis);
     return IdlePeriodState::kNotInIdlePeriod;
   }
 }
@@ -174,7 +173,7 @@ void IdleHelper::StartIdlePeriod(IdlePeriodState new_state,
 
   base::TimeDelta idle_period_duration(idle_period_deadline - now);
   if (idle_period_duration <
-      base::TimeDelta::FromMilliseconds(kMinimumIdlePeriodDurationMillis)) {
+      base::Milliseconds(kMinimumIdlePeriodDurationMillis)) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                  "NotStartingIdlePeriodBecauseDeadlineIsTooClose",
                  "idle_period_duration_ms",

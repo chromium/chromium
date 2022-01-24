@@ -66,8 +66,8 @@ suite('FuzzySearchTest', () => {
     ];
 
     const options = {
+      useFuzzySearch: true,
       includeScore: true,
-      ignoreLocation: true,
       includeMatches: true,
       keys: [
         {
@@ -113,21 +113,21 @@ suite('FuzzySearchTest', () => {
     const matchedRecords = [
       {
         tab: {
+          title: 'Meet the cast',
+        },
+        tabGroup: {title: 'Glee TV show'},
+        highlightRanges: {
+          'tabGroup.title': [{start: 0, length: 3}],
+        },
+      },
+      {
+        tab: {
           title: 'Google',
         },
         hostname: 'www.google.com',
         highlightRanges: {
           'tab.title': [{start: 0, length: 1}, {start: 3, length: 3}],
           hostname: [{start: 4, length: 1}, {start: 7, length: 3}],
-        },
-      },
-      {
-        tab: {
-          title: 'Meet the cast',
-        },
-        tabGroup: {title: 'Glee TV show'},
-        highlightRanges: {
-          'tabGroup.title': [{start: 0, length: 4}],
         },
       },
       {
@@ -145,8 +145,8 @@ suite('FuzzySearchTest', () => {
     ];
 
     const options = {
+      useFuzzySearch: true,
       includeScore: true,
-      ignoreLocation: true,
       includeMatches: true,
       keys: [
         {
@@ -166,10 +166,30 @@ suite('FuzzySearchTest', () => {
     assertDeepEquals([], fuzzySearch('z', records, options));
   });
 
+  test(
+      'Test fuzzy search prioritize string start over word start over others',
+      () => {
+        const records = [
+          {tab: {title: 'Asear'}},
+          {tab: {title: 'Tab Search'}},
+          {tab: {title: 'Search engine'}},
+        ];
+
+        const options = {
+          useFuzzySearch: true,
+          includeScore: true,
+          includeMatches: true,
+          keys: [
+            {
+              name: 'tab.title',
+            },
+          ]
+        };
+        assertSearchOrders('sear', records, options, [2, 1, 0]);
+      });
+
   test('Test the exact match ranking order.', () => {
-    // Set threshold to 0.0 to assert an exact match search.
     const options = {
-      threshold: 0.0,
       keys: [
         {
           name: 'tab.title',
@@ -293,9 +313,7 @@ suite('FuzzySearchTest', () => {
   });
 
   test('Test exact search with escaped characters.', () => {
-    // Set threshold to 0.0 to assert an exact match search.
     const options = {
-      threshold: 0.0,
       keys: [
         {
           name: 'tab.title',
@@ -345,7 +363,6 @@ suite('FuzzySearchTest', () => {
 
   test('Test exact match result scoring accounts for match position.', () => {
     const options = {
-      threshold: 0.0,
       keys: [
         {
           name: 'tab.title',
@@ -372,7 +389,6 @@ suite('FuzzySearchTest', () => {
       'Test exact match result scoring takes into account the number of matches per item.',
       () => {
         const options = {
-          threshold: 0.0,
           keys: [
             {
               name: 'tab.title',
@@ -397,7 +413,6 @@ suite('FuzzySearchTest', () => {
 
   test('Test exact match result scoring abides by the key weights.', () => {
     const options = {
-      threshold: 0.0,
       keys: [
         {
           name: 'tab.title',

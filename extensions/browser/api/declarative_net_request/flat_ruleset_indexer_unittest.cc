@@ -98,7 +98,9 @@ std::unique_ptr<dnr_api::URLTransform> CreateUrlTransform() {
       "queryTransform" : {
         "removeParams" : ["x1", "x2"],
         "addOrReplaceParams" : [
-          {"key": "y1", "value" : "foo"}
+          {"key" : "y1", "value" : "foo"},
+          {"key" : "y2", "value" : "foo2", "replaceOnly": false},
+          {"key" : "y3", "value" : "foo3", "replaceOnly": true}
         ]
       },
       "fragment" : "#xx",
@@ -127,14 +129,26 @@ bool VerifyUrlTransform(const flat::UrlTransform& flat_transform) {
 
   auto verify_add_or_replace_params = [&flat_transform, &is_string_equal]() {
     if (!flat_transform.add_or_replace_query_params() ||
-        flat_transform.add_or_replace_query_params()->size() != 1) {
+        flat_transform.add_or_replace_query_params()->size() != 3) {
       return false;
     }
 
-    const flat::QueryKeyValue* query_pair =
-        flat_transform.add_or_replace_query_params()->Get(0);
-    return query_pair && is_string_equal("y1", query_pair->key()) &&
-           is_string_equal("foo", query_pair->value());
+    auto does_query_key_value_match = [&flat_transform, &is_string_equal](
+                                          int query_key_index,
+                                          base::StringPiece expected_key,
+                                          base::StringPiece expected_value,
+                                          bool expected_replace_only) {
+      const flat::QueryKeyValue* query_pair =
+          flat_transform.add_or_replace_query_params()->Get(query_key_index);
+      CHECK(query_pair);
+      return is_string_equal(expected_key, query_pair->key()) &&
+             is_string_equal(expected_value, query_pair->value()) &&
+             query_pair->replace_only() == expected_replace_only;
+    };
+
+    return does_query_key_value_match(0, "y1", "foo", false) &&
+           does_query_key_value_match(1, "y2", "foo2", false) &&
+           does_query_key_value_match(2, "y3", "foo3", true);
   };
 
   return is_string_equal("http", flat_transform.scheme()) &&

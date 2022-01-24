@@ -13,6 +13,10 @@
 class ChromeSerialDelegate : public content::SerialDelegate {
  public:
   ChromeSerialDelegate();
+
+  ChromeSerialDelegate(const ChromeSerialDelegate&) = delete;
+  ChromeSerialDelegate& operator=(const ChromeSerialDelegate&) = delete;
+
   ~ChromeSerialDelegate() override;
 
   std::unique_ptr<content::SerialChooser> RunChooser(
@@ -28,9 +32,6 @@ class ChromeSerialDelegate : public content::SerialDelegate {
                    Observer* observer) override;
   void RemoveObserver(content::RenderFrameHost* frame,
                       Observer* observer) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeSerialDelegate);
 };
 
 #endif  // CHROME_BROWSER_SERIAL_CHROME_SERIAL_DELEGATE_H_

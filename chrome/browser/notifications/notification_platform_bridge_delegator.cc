@@ -138,7 +138,9 @@ void NotificationPlatformBridgeDelegator::Close(
 
 void NotificationPlatformBridgeDelegator::GetDisplayed(
     GetDisplayedNotificationsCallback callback) const {
-  // TODO(knollr): Query both bridges to get all notifications.
+  // TODO(crbug.com/1245242): We currently only query one of the bridges for
+  // displayed notifications which may not return TRANSIENT style ones. Ideally
+  // there would be only one bridge to query from.
   NotificationPlatformBridge* bridge =
       system_bridge_ ? system_bridge_ : message_center_bridge_;
   DCHECK(bridge);

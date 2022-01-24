@@ -9,12 +9,11 @@
 namespace history {
 
 using base::Time;
-using base::TimeDelta;
 
 // static
 const double ThumbnailScore::kThumbnailMaximumBoringness = 0.94;
 // static
-const TimeDelta ThumbnailScore::kUpdateThumbnailTime = TimeDelta::FromDays(1);
+const base::TimeDelta ThumbnailScore::kUpdateThumbnailTime = base::Days(1);
 // static
 const double ThumbnailScore::kThumbnailDegradePerHour = 0.01;
 // static
@@ -115,7 +114,7 @@ bool ShouldReplaceThumbnailWith(const ThumbnailScore& current,
     // Degrade the score and prefer the newer one based on how long apart the
     // two thumbnails were taken. This means we'll eventually replace an old
     // good one with a new worse one assuming enough time has passed.
-    TimeDelta time_between_thumbnails =
+    base::TimeDelta time_between_thumbnails =
         replacement.time_at_snapshot - current.time_at_snapshot;
     current_interesting_score -= time_between_thumbnails.InHours() *
                                  ThumbnailScore::kThumbnailDegradePerHour;
@@ -134,7 +133,7 @@ bool ShouldReplaceThumbnailWith(const ThumbnailScore& current,
 }
 
 bool ThumbnailScore::ShouldConsiderUpdating() {
-  const TimeDelta time_elapsed = Time::Now() - time_at_snapshot;
+  const base::TimeDelta time_elapsed = Time::Now() - time_at_snapshot;
   if (time_elapsed < kUpdateThumbnailTime && good_clipping && at_top &&
       load_completed) {
     // The current thumbnail is new and has good properties.

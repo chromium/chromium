@@ -14,7 +14,7 @@
 // because of the embedded test browser state.
 @interface FakeSceneState : SceneState
 
-// Creates an array of |count| instances.
+// Creates an array of |count| instances, without any associated AppState.
 + (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count;
 
 // Append a suitable web state test double to the receiver's main interface.

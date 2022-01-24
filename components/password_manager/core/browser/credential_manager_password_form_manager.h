@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIAL_MANAGER_PASSWORD_FORM_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIAL_MANAGER_PASSWORD_FORM_MANAGER_H_
 
-#include "base/macros.h"
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 
@@ -40,6 +41,10 @@ class CredentialManagerPasswordFormManager : public PasswordFormManager {
       CredentialManagerPasswordFormManagerDelegate* delegate,
       std::unique_ptr<FormSaver> form_saver,
       std::unique_ptr<FormFetcher> form_fetcher);
+  CredentialManagerPasswordFormManager(
+      const CredentialManagerPasswordFormManager&) = delete;
+  CredentialManagerPasswordFormManager& operator=(
+      const CredentialManagerPasswordFormManager&) = delete;
   ~CredentialManagerPasswordFormManager() override;
 
   // FormFetcher::Consumer:
@@ -56,8 +61,6 @@ class CredentialManagerPasswordFormManager : public PasswordFormManager {
 
   base::WeakPtrFactory<CredentialManagerPasswordFormManager> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerPasswordFormManager);
 };
 
 }  // namespace password_manager

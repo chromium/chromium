@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -40,14 +39,16 @@ class BookmarkBubbleSignInDelegateTest : public InProcessBrowserTest {
  public:
   BookmarkBubbleSignInDelegateTest() {}
 
+  BookmarkBubbleSignInDelegateTest(const BookmarkBubbleSignInDelegateTest&) =
+      delete;
+  BookmarkBubbleSignInDelegateTest& operator=(
+      const BookmarkBubbleSignInDelegateTest&) = delete;
+
   Profile* profile() { return browser()->profile(); }
 
   void ReplaceBlank(Browser* browser);
 
   void SignInBrowser(Browser* browser);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBubbleSignInDelegateTest);
 };
 
 // The default browser created for tests start with one tab open on

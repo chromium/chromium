@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_RENDERER_UNVERIFIED_RULESET_DEALER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_RENDERER_UNVERIFIED_RULESET_DEALER_H_
 
-#include "base/macros.h"
 #include "components/subresource_filter/content/common/ruleset_dealer.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"
@@ -27,6 +26,10 @@ class UnverifiedRulesetDealer : public RulesetDealer,
                                 public mojom::SubresourceFilterRulesetObserver {
  public:
   UnverifiedRulesetDealer();
+
+  UnverifiedRulesetDealer(const UnverifiedRulesetDealer&) = delete;
+  UnverifiedRulesetDealer& operator=(const UnverifiedRulesetDealer&) = delete;
+
   ~UnverifiedRulesetDealer() override;
 
  private:
@@ -45,8 +48,6 @@ class UnverifiedRulesetDealer : public RulesetDealer,
 
   mojo::AssociatedReceiver<mojom::SubresourceFilterRulesetObserver> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(UnverifiedRulesetDealer);
 };
 
 }  // namespace subresource_filter

@@ -62,6 +62,10 @@ class GLES2_IMPL_EXPORT ImplementationBase
   ImplementationBase(CommandBufferHelper* helper,
                      TransferBufferInterface* transfer_buffer,
                      GpuControl* gpu_control);
+
+  ImplementationBase(const ImplementationBase&) = delete;
+  ImplementationBase& operator=(const ImplementationBase&) = delete;
+
   ~ImplementationBase() override;
 
   void FreeUnusedSharedMemory();
@@ -160,8 +164,6 @@ class GLES2_IMPL_EXPORT ImplementationBase
   CommandBufferHelper* helper_;
 
   base::WeakPtrFactory<ImplementationBase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImplementationBase);
 };
 
 }  // namespace gpu

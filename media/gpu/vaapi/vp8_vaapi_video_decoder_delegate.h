@@ -22,6 +22,10 @@ class VP8VaapiVideoDecoderDelegate : public VP8Decoder::VP8Accelerator,
   VP8VaapiVideoDecoderDelegate(DecodeSurfaceHandler<VASurface>* const vaapi_dec,
                                scoped_refptr<VaapiWrapper> vaapi_wrapper);
 
+  VP8VaapiVideoDecoderDelegate(const VP8VaapiVideoDecoderDelegate&) = delete;
+  VP8VaapiVideoDecoderDelegate& operator=(const VP8VaapiVideoDecoderDelegate&) =
+      delete;
+
   ~VP8VaapiVideoDecoderDelegate() override;
 
   // VP8Decoder::VP8Accelerator implementation.
@@ -38,8 +42,6 @@ class VP8VaapiVideoDecoderDelegate : public VP8Decoder::VP8Accelerator,
   std::unique_ptr<ScopedVABuffer> prob_buffer_;
   std::unique_ptr<ScopedVABuffer> picture_params_;
   std::unique_ptr<ScopedVABuffer> slice_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(VP8VaapiVideoDecoderDelegate);
 };
 
 }  // namespace media

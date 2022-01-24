@@ -12,11 +12,11 @@
 // 16-character token otherwise.
 TEST(LocalSurfaceIdTest, VerifyToString) {
   const base::UnguessableToken token =
-      base::UnguessableToken::Deserialize(0x111111, 0);
+      base::UnguessableToken::CreateForTesting(0x111111, 0);
   const base::UnguessableToken big_token =
-      base::UnguessableToken::Deserialize(0x123456789, 0xABCABCABC);
+      base::UnguessableToken::CreateForTesting(0x123456789, 0xABCABCABC);
   const base::UnguessableToken small_token =
-      base::UnguessableToken::Deserialize(0, 0x1);
+      base::UnguessableToken::CreateForTesting(0, 0x1);
   const viz::LocalSurfaceId local_surface_id(11, 22, token);
   const viz::LocalSurfaceId big_local_surface_id(11, 22, big_token);
   const viz::LocalSurfaceId small_local_surface_id(11, 22, small_token);
@@ -61,8 +61,7 @@ TEST(LocalSurfaceIdTest, VerifyToString) {
 // IsNewerThan gives prcedence to neither sequence. Instead reporting that
 // neither is newer than the other.
 TEST(LocalSurfaceIdTest, NewerThan) {
-  const base::UnguessableToken token =
-      base::UnguessableToken::Deserialize(0x111111, 0);
+  const base::UnguessableToken token = base::UnguessableToken::Create();
   // Consider a base case of (6, 2). Here `id1` has only the child advancing.
   // While `id2` only the parent advanced.
   const viz::LocalSurfaceId id1(6, 3, token);

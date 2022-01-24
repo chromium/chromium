@@ -10983,7 +10983,7 @@ xmlXPathCompileExpr(xmlXPathParserContextPtr ctxt, int sort) {
     }
 
     if (xpctxt != NULL)
-        xpctxt->depth -= 1;
+        xpctxt->depth -= 10;
 }
 
 /**

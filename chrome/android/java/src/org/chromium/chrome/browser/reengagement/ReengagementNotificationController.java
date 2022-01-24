@@ -117,8 +117,7 @@ public class ReengagementNotificationController {
                 new NotificationMetadata(notificationUmaType, NOTIFICATION_TAG, NOTIFICATION_ID);
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        /* preferCompat = */ true, ChannelId.UPDATES,
-                        /* remoteAppPackageName = */ null, metadata);
+                        ChannelId.UPDATES, metadata);
 
         Intent intent = new Intent(mContext, mActivityClazz);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

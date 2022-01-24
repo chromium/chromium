@@ -5,7 +5,13 @@
 import("//build_overrides/build.gni")
 
 config("gtest_config") {
-  visibility = [ ":*" ]  # gmock also shares this config.
+  # webrtc wants to push this config without a public_dep chain
+  # TODO(crbug.com/1249254): figure out what to do with this
+  visibility = [
+    ":*",  # gmock also shares this config.
+    "//test:*",  # webrts standalone setup
+    "//third_party/webrtc/test:*",
+  ]
 
   defines = [
     # Chromium always links googletest statically, so no API qualifier is

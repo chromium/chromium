@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "storage/browser/blob/blob_url_registry.h"
 

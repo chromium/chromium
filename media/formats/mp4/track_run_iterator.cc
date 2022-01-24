@@ -115,7 +115,7 @@ base::TimeDelta TimeDeltaFromRational(int64_t numer, int64_t denom) {
 
   const int64_t total_microseconds =
       base::Time::kMicrosecondsPerSecond * result_seconds + result_microseconds;
-  return base::TimeDelta::FromMicroseconds(total_microseconds);
+  return base::Microseconds(total_microseconds);
 }
 
 DecodeTimestamp DecodeTimestampFromRational(int64_t numer, int64_t denom) {

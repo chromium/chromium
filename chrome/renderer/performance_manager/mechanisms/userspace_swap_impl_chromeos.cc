@@ -50,8 +50,7 @@ bool UserspaceSwapImpl::PlatformSupportsUserspaceSwap() {
   return chromeos::memory::userspace_swap::UserspaceSwapSupportedAndEnabled();
 }
 
-void UserspaceSwapImpl::MovePTEsLeavingMapping(uint64_t address,
-                                               uint64_t length,
+void UserspaceSwapImpl::MovePTEsLeavingMapping(MemoryRegionPtr src,
                                                uint64_t dest) {
   DCHECK(PlatformSupportsUserspaceSwap());
 
@@ -65,21 +64,23 @@ void UserspaceSwapImpl::MovePTEsLeavingMapping(uint64_t address,
   // the PTEs leaving the original mapping in place (with the userfaultfd still
   // attached). The MREMAP_FIXED tells the kernel we know where we want the
   // memory to go.
-  void* dest_mapping = mremap(reinterpret_cast<void*>(address), length, length,
-                              MREMAP_MAYMOVE | MREMAP_DONTUNMAP | MREMAP_FIXED,
-                              reinterpret_cast<void*>(dest));
+  void* dest_mapping =
+      mremap(reinterpret_cast<void*>(src->address), src->length, src->length,
+             MREMAP_MAYMOVE | MREMAP_DONTUNMAP | MREMAP_FIXED,
+             reinterpret_cast<void*>(dest));
   PCHECK(dest_mapping != MAP_FAILED) << "mremap failed";
 }
 
-void UserspaceSwapImpl::MapArea(uint64_t address, uint64_t length) {
+void UserspaceSwapImpl::MapArea(MemoryRegionPtr area) {
   DCHECK(PlatformSupportsUserspaceSwap());
 
   // MapArea is used to drop pages after they have been read over to the browser
   // process. We do this rather than MADV_DONTNEED because this will fully drop
   // the VMA and recreate it while holding the MM sem. This means the memory
   // will be unaccounted.
-  void* dest_mapping = mmap(reinterpret_cast<void*>(address), length, PROT_NONE,
-                            MAP_FIXED | MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  void* dest_mapping =
+      mmap(reinterpret_cast<void*>(area->address), area->length, PROT_NONE,
+           MAP_FIXED | MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   PCHECK(dest_mapping != MAP_FAILED) << "Unable to map area";
 }
 

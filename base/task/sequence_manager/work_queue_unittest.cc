@@ -9,11 +9,9 @@
 
 #include "base/bind.h"
 #include "base/task/sequence_manager/lazy_now.h"
-#include "base/task/sequence_manager/real_time_domain.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
-#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -38,24 +36,14 @@ struct Cancelable {
   WeakPtrFactory<Cancelable> weak_ptr_factory{this};
 };
 
-class RealTimeDomainFake : public RealTimeDomain {
- public:
-  LazyNow CreateLazyNow() const override {
-    return LazyNow(DefaultTickClock::GetInstance());
-  }
-
-  TimeTicks Now() const override { return TimeTicks::Now(); }
-};
-
 }  // namespace
 
 class WorkQueueTest : public testing::Test {
  public:
   void SetUp() override {
-    time_domain_ = std::make_unique<RealTimeDomainFake>();
-    task_queue_ = std::make_unique<TaskQueueImpl>(/*sequence_manager=*/nullptr,
-                                                  time_domain_.get(),
-                                                  TaskQueue::Spec("test"));
+    task_queue_ = std::make_unique<TaskQueueImpl>(
+        /*sequence_manager=*/nullptr, /*wake_up_queue=*/nullptr,
+        TaskQueue::Spec("test"));
 
     work_queue_ = std::make_unique<WorkQueue>(task_queue_.get(), "test",
                                               WorkQueue::QueueType::kImmediate);
@@ -96,7 +84,6 @@ class WorkQueueTest : public testing::Test {
   }
 
   std::unique_ptr<MockObserver> mock_observer_;
-  std::unique_ptr<RealTimeDomain> time_domain_;
   std::unique_ptr<TaskQueueImpl> task_queue_;
   std::unique_ptr<WorkQueue> work_queue_;
   std::unique_ptr<WorkQueueSets> work_queue_sets_;
@@ -193,7 +180,7 @@ TEST_F(WorkQueueTest, CreateTaskPusherOneTask) {
   {
     WorkQueue::TaskPusher task_pusher(work_queue_->CreateTaskPusher());
     Task task = FakeTaskWithEnqueueOrder(2);
-    task_pusher.Push(&task);
+    task_pusher.Push(std::move(task));
   }
   EXPECT_EQ(work_queue_.get(), work_queue_sets_->GetOldestQueueInSet(0));
 }
@@ -202,12 +189,9 @@ TEST_F(WorkQueueTest, CreateTaskPusherThreeTasks) {
   EXPECT_EQ(nullptr, work_queue_sets_->GetOldestQueueInSet(0));
   {
     WorkQueue::TaskPusher task_pusher(work_queue_->CreateTaskPusher());
-    Task task1 = FakeTaskWithEnqueueOrder(2);
-    Task task2 = FakeTaskWithEnqueueOrder(3);
-    Task task3 = FakeTaskWithEnqueueOrder(4);
-    task_pusher.Push(&task1);
-    task_pusher.Push(&task2);
-    task_pusher.Push(&task3);
+    task_pusher.Push(FakeTaskWithEnqueueOrder(2));
+    task_pusher.Push(FakeTaskWithEnqueueOrder(3));
+    task_pusher.Push(FakeTaskWithEnqueueOrder(4));
   }
   EXPECT_EQ(work_queue_.get(), work_queue_sets_->GetOldestQueueInSet(0));
   EXPECT_EQ(2ull, work_queue_->GetFrontTask()->enqueue_order());
@@ -219,12 +203,9 @@ TEST_F(WorkQueueTest, CreateTaskPusherAfterFenceHit) {
   EXPECT_EQ(nullptr, work_queue_sets_->GetOldestQueueInSet(0));
   {
     WorkQueue::TaskPusher task_pusher(work_queue_->CreateTaskPusher());
-    Task task1 = FakeTaskWithEnqueueOrder(2);
-    Task task2 = FakeTaskWithEnqueueOrder(3);
-    Task task3 = FakeTaskWithEnqueueOrder(4);
-    task_pusher.Push(&task1);
-    task_pusher.Push(&task2);
-    task_pusher.Push(&task3);
+    task_pusher.Push(FakeTaskWithEnqueueOrder(2));
+    task_pusher.Push(FakeTaskWithEnqueueOrder(3));
+    task_pusher.Push(FakeTaskWithEnqueueOrder(4));
   }
   EXPECT_EQ(nullptr, work_queue_sets_->GetOldestQueueInSet(0));
 }

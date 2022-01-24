@@ -8,28 +8,44 @@
 
 #include "base/notreached.h"
 
-#if defined(USE_X11)
-#include "remoting/host/desktop_resizer_x11.h"
-#endif
-
-#if defined(USE_OZONE)
-#include "remoting/host/desktop_resizer_ozone.h"
-#include "ui/base/ui_base_features.h"
-#endif
-
 namespace remoting {
 
+namespace {
+
+// DesktopResizer implementation for Linux platforms where
+// X11 is not enabled.
+class DesktopResizerLinux : public DesktopResizer {
+ public:
+  DesktopResizerLinux() = default;
+  DesktopResizerLinux(const DesktopResizerLinux&) = delete;
+  DesktopResizerLinux& operator=(const DesktopResizerLinux&) = delete;
+  ~DesktopResizerLinux() override = default;
+
+  ScreenResolution GetCurrentResolution() override {
+    NOTIMPLEMENTED();
+    return ScreenResolution();
+  }
+
+  std::list<ScreenResolution> GetSupportedResolutions(
+      const ScreenResolution& preferred) override {
+    NOTIMPLEMENTED();
+    return std::list<ScreenResolution>();
+  }
+
+  void SetResolution(const ScreenResolution& resolution) override {
+    NOTIMPLEMENTED();
+  }
+
+  void RestoreResolution(const ScreenResolution& original) override {
+    NOTIMPLEMENTED();
+  }
+};
+
+}  // namespace
+
+// static
 std::unique_ptr<DesktopResizer> DesktopResizer::Create() {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    return std::make_unique<DesktopResizerOzone>();
-#endif
-#if defined(USE_X11)
-  return std::make_unique<DesktopResizerX11>();
-#else
-  NOTREACHED();
-  return nullptr;
-#endif
+  return std::make_unique<DesktopResizerLinux>();
 }
 
 }  // namespace remoting

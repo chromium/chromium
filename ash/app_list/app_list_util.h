@@ -6,16 +6,23 @@
 #define ASH_APP_LIST_APP_LIST_UTIL_H_
 
 #include "ash/ash_export.h"
-#include "ui/events/event.h"
-#include "ui/gfx/image/image_skia.h"
-
-namespace views {
-class Textfield;
-}  // namespace views
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace gfx {
 class Canvas;
+class ImageSkia;
+class Point;
 }  // namespace gfx
+
+namespace ui {
+class KeyEvent;
+}  // namespace ui
+
+namespace views {
+class Textfield;
+class View;
+}  // namespace views
 
 namespace ash {
 class AppListItem;
@@ -60,10 +67,15 @@ ASH_EXPORT gfx::ImageSkia CreateIconWithCircleBackground(
     const gfx::ImageSkia& icon,
     SkColor background_color);
 
-// Paints a rounded focus bar on the left edge of |canvas|.
+// Paints a rounded focus bar on |canvas| starting at |content_origin| extending
+// |height| dips vertically.
 ASH_EXPORT void PaintFocusBar(gfx::Canvas* canvas,
                               const gfx::Point content_origin,
                               const int height);
+
+// Sets a view as an ignored leaf node, so that it and its child views will be
+// ignored by ChromeVox.
+ASH_EXPORT void SetViewIgnoredForAccessibility(views::View* view, bool ignored);
 
 }  // namespace ash
 

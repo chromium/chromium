@@ -19,6 +19,11 @@ class WebUIIOSControllerFactoryRegistry : public WebUIIOSControllerFactory {
  public:
   static WebUIIOSControllerFactoryRegistry* GetInstance();
 
+  WebUIIOSControllerFactoryRegistry(const WebUIIOSControllerFactoryRegistry&) =
+      delete;
+  WebUIIOSControllerFactoryRegistry& operator=(
+      const WebUIIOSControllerFactoryRegistry&) = delete;
+
   NSInteger GetErrorCodeForWebUIURL(const GURL& url) const override;
 
   // WebUIIOSControllerFactory implementation. Each method loops through the
@@ -32,8 +37,6 @@ class WebUIIOSControllerFactoryRegistry : public WebUIIOSControllerFactory {
 
   WebUIIOSControllerFactoryRegistry();
   ~WebUIIOSControllerFactoryRegistry() override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIIOSControllerFactoryRegistry);
 };
 
 }  // namespace web

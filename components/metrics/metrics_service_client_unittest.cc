@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/test/test_metrics_service_client.h"
@@ -19,10 +18,11 @@ namespace {
 class MetricsServiceClientTest : public testing::Test {
  public:
   MetricsServiceClientTest() {}
-  ~MetricsServiceClientTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceClientTest);
+  MetricsServiceClientTest(const MetricsServiceClientTest&) = delete;
+  MetricsServiceClientTest& operator=(const MetricsServiceClientTest&) = delete;
+
+  ~MetricsServiceClientTest() override {}
 };
 
 }  // namespace
@@ -42,8 +42,7 @@ TEST_F(MetricsServiceClientTest, TestModifyMetricsUploadInterval) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kMetricsUploadIntervalSec,
       base::NumberToString(specified_upload_sec));
-  ASSERT_EQ(base::TimeDelta::FromSeconds(specified_upload_sec),
-            client.GetUploadInterval());
+  ASSERT_EQ(base::Seconds(specified_upload_sec), client.GetUploadInterval());
 
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kMetricsUploadIntervalSec);
@@ -52,8 +51,7 @@ TEST_F(MetricsServiceClientTest, TestModifyMetricsUploadInterval) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kMetricsUploadIntervalSec,
       base::NumberToString(specified_upload_sec));
-  ASSERT_EQ(base::TimeDelta::FromSeconds(specified_upload_sec),
-            client.GetUploadInterval());
+  ASSERT_EQ(base::Seconds(specified_upload_sec), client.GetUploadInterval());
 }
 
 TEST_F(MetricsServiceClientTest, TestUploadIntervalLimitedForDos) {
@@ -67,7 +65,7 @@ TEST_F(MetricsServiceClientTest, TestUploadIntervalLimitedForDos) {
       switches::kMetricsUploadIntervalSec,
       base::NumberToString(too_short_upload_sec));
   // Upload interval should be the DOS rate limit.
-  ASSERT_EQ(base::TimeDelta::FromSeconds(20), client.GetUploadInterval());
+  ASSERT_EQ(base::Seconds(20), client.GetUploadInterval());
 }
 
 }  // namespace metrics

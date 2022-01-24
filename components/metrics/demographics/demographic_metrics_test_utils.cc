@@ -10,7 +10,7 @@
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/log_decoder.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics {
@@ -38,13 +38,12 @@ void UpdateNetworkTime(const base::Time& now,
                        network_time::NetworkTimeTracker* time_tracker) {
   // Simulate the latency in the network to get the network time from the remote
   // server.
-  constexpr base::TimeDelta kLatency = base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kLatency = base::Milliseconds(10);
 
   // Simulate the time taken to call UpdateNetworkTime() since the moment the
   // callback was created. When not testing with the fake sync server, the
   // callback is called when doing an HTTP request to the sync server.
-  constexpr base::TimeDelta kCallbackDelay =
-      base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kCallbackDelay = base::Milliseconds(10);
 
   // Simulate a network time that is a bit earlier than the now time.
   base::Time network_time = now - kCallbackDelay - kLatency;
@@ -55,8 +54,7 @@ void UpdateNetworkTime(const base::Time& now,
   base::TimeTicks post_time = base::TimeTicks::Now() - kCallbackDelay;
 
   time_tracker->UpdateNetworkTime(
-      network_time, /*resolution=*/base::TimeDelta::FromMilliseconds(1),
-      kLatency, post_time);
+      network_time, /*resolution=*/base::Milliseconds(1), kLatency, post_time);
 }
 
 int GetMaximumEligibleBirthYear(const base::Time& now) {

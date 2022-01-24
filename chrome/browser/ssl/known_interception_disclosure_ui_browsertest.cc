@@ -19,10 +19,10 @@ IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureUITest, PageDisplaysStrings) {
   constexpr char16_t kTabTitle[] = u"Monitoring Detected";
   constexpr char16_t kBodyText[] = u"Your activity on the web";
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       content::GetWebUIURL(
-          security_interstitials::kChromeUIConnectionMonitoringDetectedHost));
+          security_interstitials::kChromeUIConnectionMonitoringDetectedHost)));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

@@ -16,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/timer/timer.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/ip_endpoint.h"
@@ -52,6 +53,9 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
                  URLFetcher::RequestType request_type,
                  URLFetcherDelegate* d,
                  net::NetworkTrafficAnnotationTag traffic_annotation);
+
+  URLFetcherCore(const URLFetcherCore&) = delete;
+  URLFetcherCore& operator=(const URLFetcherCore&) = delete;
 
   // Starts the load. It's important that this not happen in the constructor
   // because it causes the IO thread to begin AddRef()ing and Release()ing
@@ -163,6 +167,10 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   class Registry {
    public:
     Registry();
+
+    Registry(const Registry&) = delete;
+    Registry& operator=(const Registry&) = delete;
+
     ~Registry();
 
     void AddURLFetcherCore(URLFetcherCore* core);
@@ -176,8 +184,6 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
 
    private:
     std::set<URLFetcherCore*> fetchers_;
-
-    DISALLOW_COPY_AND_ASSIGN(Registry);
   };
 
   ~URLFetcherCore() override;
@@ -357,8 +363,6 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 
   static base::LazyInstance<Registry>::DestructorAtExit g_registry;
-
-  DISALLOW_COPY_AND_ASSIGN(URLFetcherCore);
 };
 
 }  // namespace net

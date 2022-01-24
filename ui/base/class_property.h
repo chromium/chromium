@@ -190,9 +190,7 @@ template <>
 class ClassPropertyCaster<base::TimeDelta> {
  public:
   static int64_t ToInt64(base::TimeDelta x) { return x.InMicroseconds(); }
-  static base::TimeDelta FromInt64(int64_t x) {
-    return base::TimeDelta::FromMicroseconds(x);
-  }
+  static base::TimeDelta FromInt64(int64_t x) { return base::Microseconds(x); }
 };
 
 namespace subtle {

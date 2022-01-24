@@ -7,6 +7,7 @@
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 // Creates a bagded profile photo for the current profile card in the
@@ -43,5 +44,10 @@ class BadgedProfilePhoto : public views::View {
   BadgedProfilePhoto(const BadgedProfilePhoto&) = delete;
   BadgedProfilePhoto& operator=(const BadgedProfilePhoto&) = delete;
 };
+
+BEGIN_VIEW_BUILDER(, BadgedProfilePhoto, views::View)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, BadgedProfilePhoto)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_BADGED_PROFILE_PHOTO_H_

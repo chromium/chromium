@@ -4,15 +4,18 @@
 
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/paint_info.h"
+#include "ui/views/view_class_properties.h"
 
 TopContainerView::TopContainerView(BrowserView* browser_view)
     : browser_view_(browser_view) {
+  SetProperty(views::kElementIdentifierKey, kTopContainerElementId);
 }
 
 TopContainerView::~TopContainerView() {

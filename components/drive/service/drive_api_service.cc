@@ -14,12 +14,12 @@
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "components/drive/drive_api_util.h"
-#include "google_apis/drive/auth_service.h"
+#include "google_apis/common/auth_service.h"
+#include "google_apis/common/request_sender.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/drive_api_requests.h"
 #include "google_apis/drive/drive_base_requests.h"
 #include "google_apis/drive/files_list_request_runner.h"
-#include "google_apis/drive/request_sender.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using google_apis::AboutResourceCallback;

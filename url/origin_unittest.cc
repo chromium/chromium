@@ -704,17 +704,19 @@ TEST_F(OriginTest, SerializeTBDNonce) {
     EXPECT_EQ(origin.GetDebugString(), deserialized.value().GetDebugString());
   }
 
-  // Same basic test as above, but without a GURL to create tuple_.
-  Origin opaque;
-  absl::optional<std::string> serialized = SerializeWithNonce(opaque);
-  ASSERT_TRUE(serialized);
+  {
+    // Same basic test as above, but without a GURL to create tuple_.
+    Origin opaque;
+    absl::optional<std::string> serialized = SerializeWithNonce(opaque);
+    ASSERT_TRUE(serialized);
 
-  absl::optional<Origin> deserialized = Deserialize(std::move(*serialized));
-  ASSERT_TRUE(deserialized.has_value());
+    absl::optional<Origin> deserialized = Deserialize(std::move(*serialized));
+    ASSERT_TRUE(deserialized.has_value());
 
-  // Can't use DoEqualityComparisons here since empty nonces are never == unless
-  // they are the same object.
-  EXPECT_EQ(opaque.GetDebugString(), deserialized.value().GetDebugString());
+    // Can't use DoEqualityComparisons here since empty nonces are never ==
+    // unless they are the same object.
+    EXPECT_EQ(opaque.GetDebugString(), deserialized.value().GetDebugString());
+  }
 
   // Now force initialization of the nonce prior to serialization.
   for (const GURL& url : invalid_urls) {

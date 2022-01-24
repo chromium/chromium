@@ -28,11 +28,13 @@
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/engine/mock_model_type_worker.h"
 #include "components/sync/test/model/fake_model_type_sync_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using sync_pb::AutofillWalletSpecifics;
 using sync_pb::EntityMetadata;
 using sync_pb::EntitySpecifics;
 using sync_pb::ModelTypeState;
@@ -265,7 +267,7 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
 //   metadata in storage on the bridge side.
 class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
  public:
-  ClientTagBasedModelTypeProcessorTest() {}
+  ClientTagBasedModelTypeProcessorTest() = default;
   ~ClientTagBasedModelTypeProcessorTest() override { CheckPostConditions(); }
 
   void SetUp() override {
@@ -1053,7 +1055,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldCommitLocalUpdate) {
   ASSERT_EQ(ctime, type_processor()->GetEntityModificationTime(kKey1));
 
   // Make sure the clock advances.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+  base::PlatformThread::Sleep(base::Milliseconds(1));
   ASSERT_NE(ctime, base::Time::Now());
 
   bridge()->WriteItem(kKey1, kValue2);
@@ -1124,7 +1126,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   ASSERT_FALSE(ctime.is_null());
 
   // Make sure the clock advances.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+  base::PlatformThread::Sleep(base::Milliseconds(1));
   ASSERT_NE(ctime, base::Time::Now());
 
   bridge()->WriteItem(kKey1, kValue2);

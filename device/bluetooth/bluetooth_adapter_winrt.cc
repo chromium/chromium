@@ -23,15 +23,16 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_native_library.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
 #include "components/device_event_log/device_event_log.h"
@@ -701,6 +702,7 @@ void BluetoothAdapterWinrt::InitForTests(
 // static
 BluetoothAdapterWinrt::StaticsInterfaces
 BluetoothAdapterWinrt::PerformSlowInitTasks() {
+  base::win::AssertComApartmentType(base::win::ComApartmentType::MTA);
   if (!ResolveCoreWinRT())
     return BluetoothAdapterWinrt::StaticsInterfaces();
 

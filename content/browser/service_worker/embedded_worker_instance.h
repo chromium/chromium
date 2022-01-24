@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/check_op.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -46,7 +45,6 @@ class RenderProcessHost;
 class ServiceWorkerContentSettingsProxyImpl;
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
-class CrossOriginEmbedderPolicyReporter;
 
 namespace service_worker_new_script_loader_unittest {
 class ServiceWorkerNewScriptLoaderTest;
@@ -126,6 +124,10 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   };
 
   explicit EmbeddedWorkerInstance(ServiceWorkerVersion* owner_version);
+
+  EmbeddedWorkerInstance(const EmbeddedWorkerInstance&) = delete;
+  EmbeddedWorkerInstance& operator=(const EmbeddedWorkerInstance&) = delete;
+
   ~EmbeddedWorkerInstance() override;
 
   // Starts the worker. It is invalid to call this when the worker is not in
@@ -175,11 +177,6 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
 
   void SetDevToolsAttached(bool attached);
   bool devtools_attached() const { return devtools_attached_; }
-
-  // Ensures that the UMA for how long this worker ran for, normally emitted
-  // when the worker stops, is not emitted. Takes effect only for the current
-  // running session, and has no effect if the worker is not currently running.
-  void AbortLifetimeTracking();
 
   bool network_accessed_for_script() const {
     return network_accessed_for_script_;
@@ -263,7 +260,6 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
 
  private:
   typedef base::ObserverList<Listener>::Unchecked ListenerList;
-  class ScopedLifetimeTracker;
   struct StartInfo;
   class WorkerProcessHandle;
   friend class EmbeddedWorkerInstanceTest;
@@ -366,7 +362,6 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   // Contains info to be recorded on completing StartWorker sequence.
   // Set on Start() and cleared on OnStarted().
   std::unique_ptr<StartInfo> inflight_start_info_;
-  std::unique_ptr<ScopedLifetimeTracker> lifetime_tracker_;
 
   // This is valid only after a process is allocated for the worker.
   ServiceWorkerMetrics::StartSituation start_situation_ =
@@ -392,8 +387,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   // COEP Reporter connected to the URLLoaderFactories that handles subresource
   // requests initiated from the service worker. The impl lives on the UI
   // thread, and |coep_reporter_| has the ownership of the impl instance.
-  mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter_;
+  std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
   // A unique identifier for this service worker instance. This is unique across
   // the browser process, but not persistent across service worker restarts.
@@ -402,8 +396,6 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   absl::optional<blink::ServiceWorkerToken> token_;
 
   base::WeakPtrFactory<EmbeddedWorkerInstance> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedWorkerInstance);
 };
 
 }  // namespace content

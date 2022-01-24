@@ -24,6 +24,9 @@ namespace crypto {
 // TODO(hclam): This class should be ref-counted so it can be reused easily.
 class CRYPTO_EXPORT RSAPrivateKey {
  public:
+  RSAPrivateKey(const RSAPrivateKey&) = delete;
+  RSAPrivateKey& operator=(const RSAPrivateKey&) = delete;
+
   ~RSAPrivateKey();
 
   // Create a new random instance. Can return NULL if initialization fails.
@@ -56,8 +59,6 @@ class CRYPTO_EXPORT RSAPrivateKey {
   RSAPrivateKey();
 
   bssl::UniquePtr<EVP_PKEY> key_;
-
-  DISALLOW_COPY_AND_ASSIGN(RSAPrivateKey);
 };
 
 }  // namespace crypto

@@ -21,6 +21,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -30,24 +31,30 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/components/preinstalled_app_install_features.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
+#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/file_utils_wrapper.h"
+#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -65,18 +72,18 @@ namespace web_app {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // The sub-directory of the extensions directory in which to scan for external
 // web apps (as opposed to external extensions or external ARC apps).
 const base::FilePath::CharType kWebAppsSubDirectory[] =
     FILE_PATH_LITERAL("web_apps");
-#endif
+#endif  // defined(OS_CHROMEOS)
 
 bool g_skip_startup_for_testing_ = false;
 bool g_bypass_offline_manifest_requirement_for_testing_ = false;
 const base::FilePath* g_config_dir_for_testing = nullptr;
 const std::vector<base::Value>* g_configs_for_testing = nullptr;
-const FileUtilsWrapper* g_file_utils_for_testing = nullptr;
+FileUtilsWrapper* g_file_utils_for_testing = nullptr;
 
 struct LoadedConfig {
   base::Value contents;
@@ -131,9 +138,9 @@ ParsedConfigs ParseConfigsBlocking(LoadedConfigs loaded_configs) {
   ParsedConfigs result;
   result.errors = std::move(loaded_configs.errors);
 
-  auto file_utils = g_file_utils_for_testing
-                        ? g_file_utils_for_testing->Clone()
-                        : std::make_unique<FileUtilsWrapper>();
+  scoped_refptr<FileUtilsWrapper> file_utils =
+      g_file_utils_for_testing ? base::WrapRefCounted(g_file_utils_for_testing)
+                               : base::MakeRefCounted<FileUtilsWrapper>();
 
   for (const LoadedConfig& loaded_config : loaded_configs.configs) {
     OptionsOrError parse_result =
@@ -247,7 +254,7 @@ absl::optional<std::string> GetDisableReason(
     }
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
   // Remove if it's a default app and the apps to replace are not installed and
   // default extension apps are not performing new installation.
   if (options.gate_on_feature && !options.uninstall_and_replace.empty() &&
@@ -275,7 +282,7 @@ absl::optional<std::string> GetDisableReason(
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !defined(OS_CHROMEOS)
 
   // Remove if any apps to replace were previously uninstalled.
   for (const AppId& app_id : options.uninstall_and_replace) {
@@ -333,6 +340,9 @@ const char* PreinstalledWebAppManager::kHistogramInstallResult =
     "Webapp.InstallResult.Default";
 const char* PreinstalledWebAppManager::kHistogramUninstallAndReplaceCount =
     "WebApp.Preinstalled.UninstallAndReplaceCount";
+const char*
+    PreinstalledWebAppManager::kHistogramAppToReplaceStillInstalledCount =
+        "WebApp.Preinstalled.AppToReplaceStillInstalledCount";
 
 void PreinstalledWebAppManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -362,7 +372,7 @@ void PreinstalledWebAppManager::SetConfigsForTesting(
 }
 
 void PreinstalledWebAppManager::SetFileUtilsForTesting(
-    const FileUtilsWrapper* file_utils) {
+    FileUtilsWrapper* file_utils) {
   g_file_utils_for_testing = file_utils;
 }
 
@@ -412,8 +422,16 @@ void PreinstalledWebAppManager::LoadAndSynchronize(
 }
 
 void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
-  if (!base::FeatureList::IsEnabled(
-          features::kPreinstalledWebAppInstallation)) {
+  bool preinstalling_enabled =
+      base::FeatureList::IsEnabled(features::kPreinstalledWebAppInstallation);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // With Lacros, web apps are not installed using the Ash browser.
+  if (IsWebAppsCrosapiEnabled())
+    preinstalling_enabled = false;
+#endif
+
+  if (!preinstalling_enabled) {
     std::move(callback).Run({});
     return;
   }
@@ -483,7 +501,12 @@ void PreinstalledWebAppManager::PostProcessConfigs(
 
     options.require_manifest = true;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
+    // On Chrome OS the "quick launch bar" is the shelf pinned apps.
+    // This is configured in `GetDefaultPinnedAppsForFormFactor()` instead of
+    // here to ensure a specific order is deployed.
+    options.add_to_quick_launch_bar = false;
+#else   // defined(OS_CHROMEOS)
     if (!g_bypass_offline_manifest_requirement_for_testing_) {
       // Non-Chrome OS platforms are not permitted to fetch the web app install
       // URLs during start up.
@@ -498,7 +521,7 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     options.add_to_management = false;
     options.add_to_desktop = false;
     options.add_to_quick_launch_bar = false;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
   }
 
   // TODO(crbug.com/1175196): Move this constant into some shared constants.h
@@ -579,27 +602,52 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
       prefs::kWebAppsLastPreinstallSynchronizeVersion,
       version_info::GetMajorVersionNumber());
 
+  DCHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+
   size_t uninstall_and_replace_count = 0;
+  size_t app_to_replace_still_installed_count = 0;
   for (const auto& url_and_result : install_results) {
     UMA_HISTOGRAM_ENUMERATION(kHistogramInstallResult,
                               url_and_result.second.code);
     if (url_and_result.second.did_uninstall_and_replace) {
       ++uninstall_and_replace_count;
     }
-    // We mark the app as migrated to a web app as long as the installation
-    // was successful, even if the previous app was not installed. This ensures
-    // we properly re-install apps if the migration feature is rolled back.
-    if (IsSuccess(url_and_result.second.code)) {
-      auto iter = desired_uninstalls.find(url_and_result.first);
-      if (iter != desired_uninstalls.end()) {
-        for (const auto& uninstalled_id : iter->second) {
-          MarkAppAsMigratedToWebApp(profile_, uninstalled_id, true);
-        }
+
+    if (!IsSuccess(url_and_result.second.code))
+      continue;
+
+    auto iter = desired_uninstalls.find(url_and_result.first);
+    if (iter == desired_uninstalls.end())
+      continue;
+
+    for (const auto& replace_id : iter->second) {
+      // We mark the app as migrated to a web app as long as the
+      // installation was successful, even if the previous app was not
+      // installed. This ensures we properly re-install apps if the
+      // migration feature is rolled back.
+      MarkAppAsMigratedToWebApp(profile_, replace_id, /*was_migrated=*/true);
+
+      // Track whether the app to replace is still present. This is
+      // possibly due to getting reinstalled by the user or by Chrome app
+      // sync. See https://crbug.com/1266234 for context.
+      if (proxy && url_and_result.second.code ==
+                       InstallResultCode::kSuccessAlreadyInstalled) {
+        proxy->AppRegistryCache().ForOneApp(
+            replace_id, [&app_to_replace_still_installed_count](
+                            const apps::AppUpdate& app) {
+              if (apps_util::IsInstalled(app.Readiness()))
+                ++app_to_replace_still_installed_count;
+            });
       }
     }
   }
   UMA_HISTOGRAM_COUNTS_100(kHistogramUninstallAndReplaceCount,
                            uninstall_and_replace_count);
+
+  UMA_HISTOGRAM_COUNTS_100(kHistogramAppToReplaceStillInstalledCount,
+                           app_to_replace_still_installed_count);
 
   SetMigrationRun(profile_, kMigrateDefaultChromeAppToWebAppsGSuite.name,
                   IsPreinstalledAppInstallFeatureEnabled(
@@ -630,28 +678,34 @@ base::FilePath PreinstalledWebAppManager::GetConfigDir() {
   if (!command_line_directory.empty())
     return base::FilePath::FromUTF8Unsafe(command_line_directory);
 
+#if defined(OS_CHROMEOS)
+    // As of mid 2018, only Chrome OS has default/external web apps, and
+    // chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS is only defined for OS_LINUX,
+    // which includes OS_CHROMEOS.
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // As of mid 2018, only Chrome OS has default/external web apps, and
-  // chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS is only defined for OS_LINUX,
-  // which includes OS_CHROMEOS.
-  if (chromeos::ProfileHelper::IsRegularProfile(profile_)) {
-    if (g_config_dir_for_testing) {
-      return *g_config_dir_for_testing;
-    }
-
-    // For manual testing, you can change s/STANDALONE/USER/, as writing to
-    // "$HOME/.config/chromium/test-user/.config/chromium/External
-    // Extensions/web_apps" does not require root ACLs, unlike
-    // "/usr/share/chromium/extensions/web_apps".
-    base::FilePath dir;
-    if (base::PathService::Get(chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
-                               &dir)) {
-      return dir.Append(kWebAppsSubDirectory);
-    }
-
-    LOG(ERROR) << "base::PathService::Get failed";
+  // Exclude sign-in and lock screen profiles.
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile_)) {
+    return {};
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (g_config_dir_for_testing) {
+    return *g_config_dir_for_testing;
+  }
+
+  // For manual testing, you can change s/STANDALONE/USER/, as writing to
+  // "$HOME/.config/chromium/test-user/.config/chromium/External
+  // Extensions/web_apps" does not require root ACLs, unlike
+  // "/usr/share/chromium/extensions/web_apps".
+  base::FilePath dir;
+  if (base::PathService::Get(chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
+                             &dir)) {
+    return dir.Append(kWebAppsSubDirectory);
+  }
+
+  LOG(ERROR) << "base::PathService::Get failed";
+#endif  // defined(OS_CHROMEOS)
 
   return {};
 }

@@ -34,6 +34,9 @@ class BorealisShutdownMonitor {
   void SetShutdownDelayForTesting(base::TimeDelta delay);
 
  private:
+  // Called when the shutdown timer finishes.
+  void OnShutdownTimerElapsed();
+
   // The profile which we will shutdown borealis for.
   Profile* profile_;
 

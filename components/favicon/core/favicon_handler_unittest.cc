@@ -503,7 +503,7 @@ class FaviconHandlerTest : public testing::Test {
     // results on all platforms.
     scoped_set_supported_scale_factors_.reset(
         new ui::test::ScopedSetSupportedResourceScaleFactors(
-            {ui::SCALE_FACTOR_100P}));
+            {ui::k100Percent}));
   }
 
   bool VerifyAndClearExpectations() {
@@ -1370,7 +1370,7 @@ class FaviconHandlerMultipleFaviconsTest : public FaviconHandlerTest {
     scoped_set_supported_scale_factors_.reset();  // Need to delete first.
     scoped_set_supported_scale_factors_.reset(
         new ui::test::ScopedSetSupportedResourceScaleFactors(
-            {ui::SCALE_FACTOR_100P, ui::SCALE_FACTOR_200P}));
+            {ui::k100Percent, ui::k200Percent}));
   }
 
   // Simulates requesting a favicon for |page_url| given:

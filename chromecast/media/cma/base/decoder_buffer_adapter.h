@@ -30,6 +30,9 @@ class DecoderBufferAdapter : public DecoderBufferBase {
   DecoderBufferAdapter(
       StreamId stream_id, const scoped_refptr<::media::DecoderBuffer>& buffer);
 
+  DecoderBufferAdapter(const DecoderBufferAdapter&) = delete;
+  DecoderBufferAdapter& operator=(const DecoderBufferAdapter&) = delete;
+
   // DecoderBufferBase implementation:
   StreamId stream_id() const override;
   int64_t timestamp() const override;
@@ -46,8 +49,6 @@ class DecoderBufferAdapter : public DecoderBufferBase {
   StreamId stream_id_;
   scoped_refptr<::media::DecoderBuffer> const buffer_;
   std::unique_ptr<CastDecryptConfig> decrypt_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecoderBufferAdapter);
 };
 
 }  // namespace media

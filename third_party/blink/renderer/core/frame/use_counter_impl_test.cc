@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -130,7 +131,7 @@ TEST_F(UseCounterImplTest, RecordingExtensions) {
   constexpr auto item = mojom::WebFeature::kFetch;
   constexpr auto second_item = WebFeature::kFetchBodyStream;
   const std::string url = kExtensionUrl;
-  SchemeRegistry::RegisterURLSchemeAsExtension("chrome-extension");
+  CommonSchemeRegistry::RegisterURLSchemeAsExtension("chrome-extension");
   UseCounterImpl::Context context = UseCounterImpl::kExtensionContext;
   int page_visits_bucket = GetPageVisitsBucketforHistogram(histogram);
 
@@ -172,7 +173,7 @@ TEST_F(UseCounterImplTest, RecordingExtensions) {
   EXPECT_TRUE(use_counter1.IsCounted(item));
   histogram_tester_.ExpectBucketCount(histogram, static_cast<int>(item), 2);
   histogram_tester_.ExpectTotalCount(histogram, 4);
-  SchemeRegistry::RemoveURLSchemeAsExtension("chrome-extension");
+  CommonSchemeRegistry::RemoveURLSchemeAsExtensionForTest("chrome-extension");
 }
 
 TEST_F(UseCounterImplTest, CSSSelectorPseudoWhere) {
@@ -359,32 +360,20 @@ TEST_F(DeprecationTest, InspectorDisablesDeprecation) {
   // The specific feature we use here isn't important.
   WebFeature feature =
       WebFeature::kCSSSelectorInternalMediaControlsOverlayCastButton;
-  CSSPropertyID property = CSSPropertyID::kFontWeight;
-
-  EXPECT_FALSE(deprecation_.IsSuppressed(property));
 
   deprecation_.MuteForInspector();
-  Deprecation::WarnOnDeprecatedProperties(GetFrame(), property);
-  EXPECT_FALSE(deprecation_.IsSuppressed(property));
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
   EXPECT_FALSE(use_counter_.IsCounted(feature));
 
   deprecation_.MuteForInspector();
-  Deprecation::WarnOnDeprecatedProperties(GetFrame(), property);
-  EXPECT_FALSE(deprecation_.IsSuppressed(property));
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
   EXPECT_FALSE(use_counter_.IsCounted(feature));
 
   deprecation_.UnmuteForInspector();
-  Deprecation::WarnOnDeprecatedProperties(GetFrame(), property);
-  EXPECT_FALSE(deprecation_.IsSuppressed(property));
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
   EXPECT_FALSE(use_counter_.IsCounted(feature));
 
   deprecation_.UnmuteForInspector();
-  Deprecation::WarnOnDeprecatedProperties(GetFrame(), property);
-  // TODO: use the actually deprecated property to get a deprecation message.
-  EXPECT_FALSE(deprecation_.IsSuppressed(property));
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
   EXPECT_TRUE(use_counter_.IsCounted(feature));
 }

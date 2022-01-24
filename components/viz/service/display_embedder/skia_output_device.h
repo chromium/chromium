@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/output_surface.h"
@@ -58,6 +57,10 @@ class SkiaOutputDevice {
     ScopedPaint(std::vector<GrBackendSemaphore> end_semaphores,
                 SkiaOutputDevice* device,
                 SkSurface* sk_surface);
+
+    ScopedPaint(const ScopedPaint&) = delete;
+    ScopedPaint& operator=(const ScopedPaint&) = delete;
+
     ~ScopedPaint();
 
     // This can be null.
@@ -82,8 +85,6 @@ class SkiaOutputDevice {
     SkiaOutputDevice* const device_;
     // Null when using vulkan secondary command buffer.
     SkSurface* const sk_surface_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedPaint);
   };
 
   using BufferPresentedCallback =
@@ -96,6 +97,10 @@ class SkiaOutputDevice {
       GrDirectContext* gr_context,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  SkiaOutputDevice(const SkiaOutputDevice&) = delete;
+  SkiaOutputDevice& operator=(const SkiaOutputDevice&) = delete;
+
   virtual ~SkiaOutputDevice();
 
   // Begins a paint scope. The base implementation fails when the SkSurface
@@ -262,8 +267,6 @@ class SkiaOutputDevice {
   scoped_refptr<base::SequencedTaskRunner> latency_tracker_runner_;
   // A mapping from skipped swap ID to its corresponding OutputSurfaceFrame.
   base::flat_map<uint64_t, OutputSurfaceFrame> skipped_swap_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputDevice);
 };
 
 }  // namespace viz

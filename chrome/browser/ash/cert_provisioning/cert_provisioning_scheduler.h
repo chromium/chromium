@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_platform_keys_helpers.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 // TODO(https://crbug.com/1164001): forward declare NetworkStateHandler
 // after //chromeos/network is moved to ash.

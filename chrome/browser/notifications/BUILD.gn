@@ -45,7 +45,6 @@ if (is_android) {
   android_library("java") {
     sources = [
       "android/java/src/org/chromium/chrome/browser/notifications/ChromeNotificationWrapperCompatBuilder.java",
-      "android/java/src/org/chromium/chrome/browser/notifications/ChromeNotificationWrapperStandardBuilder.java",
       "android/java/src/org/chromium/chrome/browser/notifications/CustomNotificationBuilder.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationBuilderBase.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationConstants.java",
@@ -73,8 +72,8 @@ if (is_android) {
       "//components/browser_ui/site_settings/android:java",
       "//components/browser_ui/widget/android:java",
       "//components/content_settings/android:content_settings_enums_java",
-      "//components/embedder_support/android:browser_context_java",
       "//components/url_formatter/android:url_formatter_java",
+      "//content/public/android:content_full_java",
       "//third_party/android_deps:android_support_v7_appcompat_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_no_recycler_view_java",
@@ -105,6 +104,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptorTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationSystemStatusUtilUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/PendingIntentProviderTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/ThrottlingNotificationSchedulerTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitionsTest.java",
     ]
 

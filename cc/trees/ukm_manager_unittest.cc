@@ -136,17 +136,17 @@ class UkmManagerTest : public testing::Test {
 
  protected:
   base::TimeTicks AdvanceNowByMs(int advance_ms) {
-    test_tick_clock_.Advance(base::TimeDelta::FromMicroseconds(advance_ms));
+    test_tick_clock_.Advance(base::Microseconds(advance_ms));
     return test_tick_clock_.NowTicks();
   }
 
   std::unique_ptr<EventMetrics> CreateEventMetrics(
       ui::EventType type,
-      absl::optional<EventMetrics::ScrollParams> scroll_params) {
+      absl::optional<EventMetrics::GestureParams> gesture_params) {
     base::TimeTicks event_time = AdvanceNowByMs(10);
     AdvanceNowByMs(10);
     std::unique_ptr<EventMetrics> metrics = EventMetrics::CreateForTesting(
-        type, scroll_params, event_time, &test_tick_clock_);
+        type, gesture_params, event_time, &test_tick_clock_);
     if (metrics) {
       AdvanceNowByMs(10);
       metrics->SetDispatchStageTimestamp(
@@ -199,16 +199,16 @@ class UkmManagerTest : public testing::Test {
 
   BeginMainFrameMetrics BuildBlinkBreakdown() {
     BeginMainFrameMetrics breakdown;
-    breakdown.handle_input_events = base::TimeDelta::FromMicroseconds(10);
-    breakdown.animate = base::TimeDelta::FromMicroseconds(9);
-    breakdown.style_update = base::TimeDelta::FromMicroseconds(8);
-    breakdown.layout_update = base::TimeDelta::FromMicroseconds(7);
-    breakdown.compositing_inputs = base::TimeDelta::FromMicroseconds(6);
-    breakdown.prepaint = base::TimeDelta::FromMicroseconds(5);
-    breakdown.compositing_assignments = base::TimeDelta::FromMicroseconds(4);
-    breakdown.paint = base::TimeDelta::FromMicroseconds(3);
-    breakdown.composite_commit = base::TimeDelta::FromMicroseconds(2);
-    breakdown.update_layers = base::TimeDelta::FromMicroseconds(1);
+    breakdown.handle_input_events = base::Microseconds(10);
+    breakdown.animate = base::Microseconds(9);
+    breakdown.style_update = base::Microseconds(8);
+    breakdown.layout_update = base::Microseconds(7);
+    breakdown.compositing_inputs = base::Microseconds(6);
+    breakdown.prepaint = base::Microseconds(5);
+    breakdown.compositing_assignments = base::Microseconds(4);
+    breakdown.paint = base::Microseconds(3);
+    breakdown.composite_commit = base::Microseconds(2);
+    breakdown.update_layers = base::Microseconds(1);
 
     // Advance now by the sum of the breakdowns.
     AdvanceNowByMs(10 + 9 + 8 + 7 + 6 + 5 + 4 + 3 + 2 + 1);
@@ -297,16 +297,26 @@ class UkmManagerCompositorLatencyTest
       public testing::WithParamInterface<
           CompositorFrameReporter::FrameReportType> {
  public:
-  UkmManagerCompositorLatencyTest() : report_type_(GetParam()) {}
+  UkmManagerCompositorLatencyTest() {
+    report_types_.set(static_cast<size_t>(GetParam()));
+  }
   ~UkmManagerCompositorLatencyTest() override = default;
 
  protected:
   CompositorFrameReporter::FrameReportType report_type() const {
-    return report_type_;
+    for (size_t type = 0; type < report_types_.size(); ++type) {
+      if (!report_types_.test(type))
+        continue;
+      return static_cast<CompositorFrameReporter::FrameReportType>(type);
+    }
+    return CompositorFrameReporter::FrameReportType::kNonDroppedFrame;
+  }
+  const CompositorFrameReporter::FrameReportTypes& report_types() const {
+    return report_types_;
   }
 
  private:
-  CompositorFrameReporter::FrameReportType report_type_;
+  CompositorFrameReporter::FrameReportTypes report_types_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -392,7 +402,7 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
   CompositorFrameReporter::ProcessedVizBreakdown processed_viz_breakdown(
       submit_time, viz_breakdown);
   manager_->RecordCompositorLatencyUKM(
-      report_type(), stage_history, active_trackers, processed_blink_breakdown,
+      report_types(), stage_history, active_trackers, processed_blink_breakdown,
       processed_viz_breakdown);
 
   const auto& entries =
@@ -521,23 +531,24 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
 }
 
 TEST_F(UkmManagerTest, EventLatency) {
-  const bool kIsInertial = true;
-  const bool kIsNotInertial = false;
+  const bool kScrollIsInertial = true;
+  const bool kScrollIsNotInertial = false;
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      CreateEventMetrics(ui::ET_GESTURE_SCROLL_BEGIN,
-                         EventMetrics::ScrollParams(ui::ScrollInputType::kWheel,
-                                                    kIsNotInertial)),
+      CreateEventMetrics(
+          ui::ET_GESTURE_SCROLL_BEGIN,
+          EventMetrics::GestureParams(ui::ScrollInputType::kWheel,
+                                      kScrollIsNotInertial)),
       CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
-                         EventMetrics::ScrollParams(
-                             ui::ScrollInputType::kWheel, kIsNotInertial,
+                         EventMetrics::GestureParams(
+                             ui::ScrollInputType::kWheel, kScrollIsNotInertial,
                              EventMetrics::ScrollUpdateType::kStarted)),
       CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
-                         EventMetrics::ScrollParams(
-                             ui::ScrollInputType::kWheel, kIsNotInertial,
+                         EventMetrics::GestureParams(
+                             ui::ScrollInputType::kWheel, kScrollIsNotInertial,
                              EventMetrics::ScrollUpdateType::kContinued)),
       CreateEventMetrics(ui::ET_GESTURE_SCROLL_UPDATE,
-                         EventMetrics::ScrollParams(
-                             ui::ScrollInputType::kWheel, kIsInertial,
+                         EventMetrics::GestureParams(
+                             ui::ScrollInputType::kWheel, kScrollIsInertial,
                              EventMetrics::ScrollUpdateType::kContinued)),
   };
   EXPECT_THAT(event_metrics_ptrs, ::testing::Each(::testing::NotNull()));

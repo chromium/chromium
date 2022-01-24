@@ -13,9 +13,9 @@ import androidx.browser.trusted.TrustedWebActivityServiceConnection;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.payments.mojom.DigitalGoods.AcknowledgeResponse;
-import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
-import org.chromium.payments.mojom.DigitalGoods.ListPurchasesResponse;
+import org.chromium.payments.mojom.DigitalGoods.Acknowledge_Response;
+import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
+import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
 
 /**
  * This class uses the {@link DigitalGoodsConverter} to convert data types between mojo types and
@@ -36,7 +36,7 @@ public class DigitalGoodsAdapter {
         mClient = client;
     }
 
-    public void getDetails(Uri scope, String[] itemIds, GetDetailsResponse response) {
+    public void getDetails(Uri scope, String[] itemIds, GetDetails_Response response) {
         Bundle args = GetDetailsConverter.convertParams(itemIds);
         TrustedWebActivityCallback callback = GetDetailsConverter.convertCallback(response);
         Runnable onError = () -> GetDetailsConverter.returnClientAppError(response);
@@ -46,7 +46,7 @@ public class DigitalGoodsAdapter {
     }
 
     public void acknowledge(Uri scope, String purchaseToken, boolean makeAvailableAgain,
-            AcknowledgeResponse response) {
+            Acknowledge_Response response) {
         Bundle args = AcknowledgeConverter.convertParams(purchaseToken, makeAvailableAgain);
         TrustedWebActivityCallback callback = AcknowledgeConverter.convertCallback(response);
         Runnable onError = () -> AcknowledgeConverter.returnClientAppError(response);
@@ -55,7 +55,7 @@ public class DigitalGoodsAdapter {
         execute(scope, COMMAND_ACKNOWLEDGE, args, callback, onError, onUnavailable);
     }
 
-    public void listPurchases(Uri scope, ListPurchasesResponse response) {
+    public void listPurchases(Uri scope, ListPurchases_Response response) {
         Bundle args = new Bundle();
         TrustedWebActivityCallback callback = ListPurchasesConverter.convertCallback(response);
         Runnable onError = () -> ListPurchasesConverter.returnClientAppError(response);

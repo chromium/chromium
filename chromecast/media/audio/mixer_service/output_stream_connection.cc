@@ -9,8 +9,9 @@
 
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
+#include "chromecast/media/audio/net/common.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/net/io_buffer_pool.h"
 
 namespace chromecast {
@@ -20,7 +21,8 @@ namespace mixer_service {
 namespace {
 
 int GetFrameSize(const OutputStreamParams& params) {
-  return GetSampleSizeBytes(params.sample_format()) * params.num_channels();
+  return audio_service::GetSampleSizeBytes(params.sample_format()) *
+         params.num_channels();
 }
 
 int GetFillSizeFrames(const OutputStreamParams& params) {

@@ -72,7 +72,11 @@ component("bindings_base") {
     "lib/pending_receiver_state.h",
     "lib/pending_remote_state.cc",
     "lib/pending_remote_state.h",
+    "lib/proxy_to_responder.cc",
+    "lib/proxy_to_responder.h",
     "lib/scoped_interface_endpoint_handle.cc",
+    "lib/send_message_helper.cc",
+    "lib/send_message_helper.h",
     "lib/serialization.h",
     "lib/serialization_forward.h",
     "lib/serialization_util.h",
@@ -103,6 +107,7 @@ component("bindings_base") {
     "struct_forward.h",
     "struct_ptr.h",
     "struct_traits.h",
+    "tracing_helpers.h",
     "type_converter.h",
     "union_traits.h",
   ]
@@ -281,7 +286,5 @@ if (!is_ios) {
       "//third_party/blink/renderer/platform:platform_export",
       "//third_party/blink/renderer/platform/wtf",
     ]
-
-    public_configs = [ "//third_party/blink/renderer:config" ]
   }
 }

@@ -1,0 +1,26 @@
+<style include="cr-shared-style shimless-rma-shared">
+  iron-icon {
+    height: 200px;
+    width: 300px;
+  }
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <!-- TODO(gavindodd): update for i18n -->
+    <h1>Calibrate device components</h1>
+  </div>
+  <div slot="body">
+    <div>
+      <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
+        <calibration-component-chip id="[[component.id]]"
+          skip="{{component.skip}}"
+          completed="{{component.completed}}"
+          failed$="[[component.failed]]"
+          disabled$="[[component.disabled]]"
+          component-name="[[component.name]]">
+        </calibration-component-chip>
+      </template>
+    </div>
+  </div>
+</base-page>

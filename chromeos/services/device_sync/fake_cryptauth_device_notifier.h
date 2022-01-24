@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_notifier.h"
 #include "chromeos/services/device_sync/cryptauth_device_notifier_impl.h"
@@ -51,6 +50,11 @@ class FakeCryptAuthDeviceNotifier : public CryptAuthDeviceNotifier {
   };
 
   FakeCryptAuthDeviceNotifier();
+
+  FakeCryptAuthDeviceNotifier(const FakeCryptAuthDeviceNotifier&) = delete;
+  FakeCryptAuthDeviceNotifier& operator=(const FakeCryptAuthDeviceNotifier&) =
+      delete;
+
   ~FakeCryptAuthDeviceNotifier() override;
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
@@ -68,14 +72,18 @@ class FakeCryptAuthDeviceNotifier : public CryptAuthDeviceNotifier {
 
   Delegate* delegate_ = nullptr;
   std::vector<Request> requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthDeviceNotifier);
 };
 
 class FakeCryptAuthDeviceNotifierFactory
     : public CryptAuthDeviceNotifierImpl::Factory {
  public:
   FakeCryptAuthDeviceNotifierFactory();
+
+  FakeCryptAuthDeviceNotifierFactory(
+      const FakeCryptAuthDeviceNotifierFactory&) = delete;
+  FakeCryptAuthDeviceNotifierFactory& operator=(
+      const FakeCryptAuthDeviceNotifierFactory&) = delete;
+
   ~FakeCryptAuthDeviceNotifierFactory() override;
 
   const std::vector<FakeCryptAuthDeviceNotifier*>& instances() const {
@@ -104,8 +112,6 @@ class FakeCryptAuthDeviceNotifierFactory
   std::string last_instance_id_;
   std::string last_instance_id_token_;
   CryptAuthClientFactory* last_client_factory_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthDeviceNotifierFactory);
 };
 
 }  // namespace device_sync

@@ -13,34 +13,31 @@ namespace payments {
 // Tests that serializing a default PaymentDetailsModifier yields the expected
 // result.
 TEST(PaymentRequestTest, EmptyPaymentDetailsModifierDictionary) {
-  base::DictionaryValue expected_value;
+  base::Value expected_value(base::Value::Type::DICTIONARY);
 
-  expected_value.SetString("supportedMethods", "");
-  expected_value.SetString("data", "");
+  expected_value.SetStringKey("supportedMethods", "");
+  expected_value.SetStringKey("data", "");
 
   PaymentDetailsModifier payment_details_modifier;
-  EXPECT_TRUE(expected_value.Equals(
-      payment_details_modifier.ToDictionaryValue().get()));
+  EXPECT_EQ(expected_value, payment_details_modifier.ToValue());
 }
 
 // Tests that serializing a populated PaymentDetailsModifier yields the expected
 // result.
 TEST(PaymentRequestTest, PopulatedDetailsModifierDictionary) {
-  base::DictionaryValue expected_value;
+  base::Value expected_value(base::Value::Type::DICTIONARY);
 
-  expected_value.SetString("supportedMethods", "basic-card");
-  expected_value.SetString("data",
-                           "{\"supportedNetworks\":[\"visa\",\"mastercard\"]}");
-  std::unique_ptr<base::DictionaryValue> item_dict =
-      std::make_unique<base::DictionaryValue>();
-  item_dict->SetString("label", "Gratuity");
-  std::unique_ptr<base::DictionaryValue> amount_dict =
-      std::make_unique<base::DictionaryValue>();
-  amount_dict->SetString("currency", "USD");
-  amount_dict->SetString("value", "139.99");
-  item_dict->SetDictionary("amount", std::move(amount_dict));
-  item_dict->SetBoolean("pending", false);
-  expected_value.SetDictionary("total", std::move(item_dict));
+  expected_value.SetStringKey("supportedMethods", "basic-card");
+  expected_value.SetStringKey(
+      "data", "{\"supportedNetworks\":[\"visa\",\"mastercard\"]}");
+  base::Value item_dict(base::Value::Type::DICTIONARY);
+  item_dict.SetStringKey("label", "Gratuity");
+  base::Value amount_dict(base::Value::Type::DICTIONARY);
+  amount_dict.SetStringKey("currency", "USD");
+  amount_dict.SetStringKey("value", "139.99");
+  item_dict.SetKey("amount", std::move(amount_dict));
+  item_dict.SetBoolKey("pending", false);
+  expected_value.SetKey("total", std::move(item_dict));
 
   PaymentDetailsModifier payment_details_modifier;
   payment_details_modifier.method_data.supported_method = "basic-card";
@@ -51,8 +48,7 @@ TEST(PaymentRequestTest, PopulatedDetailsModifierDictionary) {
   payment_details_modifier.total->amount->currency = "USD";
   payment_details_modifier.total->amount->value = "139.99";
 
-  EXPECT_TRUE(expected_value.Equals(
-      payment_details_modifier.ToDictionaryValue().get()));
+  EXPECT_EQ(expected_value, payment_details_modifier.ToValue());
 }
 
 // Tests that two details modifier objects are not equal if their property

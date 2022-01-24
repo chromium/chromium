@@ -8,6 +8,7 @@
 
 namespace {  // anonymous namespace for file-local method and constant
 
+using blink::CSSSelector;
 using blink::Element;
 using blink::To;
 using blink::Traversal;
@@ -34,98 +35,82 @@ inline Element* LastDescendantOf(const Element& element,
   return last_descendant;
 }
 
+inline const CSSSelector* GetCurrentRelationAndNextCompound(
+    const CSSSelector* compound_selector,
+    CSSSelector::RelationType& relation) {
+  DCHECK(compound_selector);
+  for (; compound_selector;
+       compound_selector = compound_selector->TagHistory()) {
+    relation = compound_selector->Relation();
+    if (relation != CSSSelector::kSubSelector)
+      return compound_selector->TagHistory();
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 namespace blink {
 
-HasArgumentMatchContext::HasArgumentMatchContext(const CSSSelector* selector) {
-  const CSSSelector* leftmost_compound = selector;
-  const CSSSelector* leftmost_compound_containing_scope = nullptr;
-
-  while (leftmost_compound) {
-    const CSSSelector* simple_selector = leftmost_compound;
-    CSSSelector::RelationType relation;
-    while (simple_selector) {
-      if (leftmost_compound_containing_scope)
-        contains_compounded_scope_selector_ = true;
-      if (simple_selector->GetPseudoType() == CSSSelector::kPseudoScope) {
-        if (leftmost_compound_containing_scope &&
-            leftmost_compound_containing_scope != leftmost_compound) {
-          // Selectors that contains multiple :scope pseudo classes separated
-          // by combinators will never match.
-          // (e.g. :has(:scope > .a > :scope))
-          SetNeverMatch();
-          return;
-        }
-        if (simple_selector != leftmost_compound)
-          contains_compounded_scope_selector_ = true;
-        leftmost_compound_containing_scope = leftmost_compound;
-      }
-      relation = simple_selector->Relation();
-      if (relation != CSSSelector::kSubSelector)
-        break;
-      simple_selector = simple_selector->TagHistory();
-    }
-
-    if (!simple_selector)
-      break;
-
-    if (leftmost_compound_containing_scope) {
-      // Skip to update the context if it already found the :scope
-      leftmost_compound = simple_selector->TagHistory();
-      DCHECK(leftmost_compound);
-      continue;
-    }
-
+HasArgumentMatchContext::HasArgumentMatchContext(const CSSSelector* selector)
+    : leftmost_relation_(CSSSelector::kSubSelector),
+      adjacent_traversal_distance_(0),
+      descendant_traversal_depth_(0) {
+  CSSSelector::RelationType relation = CSSSelector::kSubSelector;
+  // The explicit ':scope' in ':has' argument selector is not considered
+  // for getting the depth and adjacent distance.
+  // TODO(blee@igalia.com) Need to clarify the :scope dependency in relative
+  // selector definition.
+  // - spec : https://www.w3.org/TR/selectors-4/#relative
+  // - csswg issue : https://github.com/w3c/csswg-drafts/issues/6399
+  for (selector = GetCurrentRelationAndNextCompound(selector, relation);
+       selector;
+       selector = GetCurrentRelationAndNextCompound(selector, relation)) {
     switch (relation) {
+      case CSSSelector::kRelativeDescendant:
+        leftmost_relation_ = relation;
+        FALLTHROUGH;
       case CSSSelector::kDescendant:
         descendant_traversal_depth_ = kInfiniteDepth;
         adjacent_traversal_distance_ = 0;
-        leftmost_relation_ = relation;
         break;
+
+      case CSSSelector::kRelativeChild:
+        leftmost_relation_ = relation;
+        FALLTHROUGH;
       case CSSSelector::kChild:
         if (descendant_traversal_depth_ != kInfiniteDepth) {
           descendant_traversal_depth_++;
           adjacent_traversal_distance_ = 0;
         }
-        leftmost_relation_ = relation;
         break;
+
+      case CSSSelector::kRelativeDirectAdjacent:
+        leftmost_relation_ = relation;
+        FALLTHROUGH;
       case CSSSelector::kDirectAdjacent:
         if (adjacent_traversal_distance_ != kInfiniteAdjacentDistance)
           adjacent_traversal_distance_++;
-        leftmost_relation_ = relation;
         break;
+
+      case CSSSelector::kRelativeIndirectAdjacent:
+        leftmost_relation_ = relation;
+        FALLTHROUGH;
       case CSSSelector::kIndirectAdjacent:
         adjacent_traversal_distance_ = kInfiniteAdjacentDistance;
-        leftmost_relation_ = relation;
         break;
+
       case CSSSelector::kUAShadow:
       case CSSSelector::kShadowSlot:
       case CSSSelector::kShadowPart:
         // TODO(blee@igalia.com) Need to check how to handle the shadow tree
         // (e.g. ':has(::slotted(img))', ':has(component::part(my-part))')
-        SetNeverMatch();
         return;
       default:
         NOTREACHED();
         break;
     }
-
-    leftmost_compound = simple_selector->TagHistory();
-    DCHECK(leftmost_compound);
   }
-
-  if (!leftmost_compound_containing_scope) {
-    // Always set descendant relative selector because the relative selector
-    // spec is not supported yet.
-    leftmost_relation_ = CSSSelector::kDescendant;
-    descendant_traversal_depth_ = kInfiniteDepth;
-    adjacent_traversal_distance_ = 0;
-    return;
-  }
-
-  contains_no_leftmost_scope_selector_ =
-      leftmost_compound_containing_scope != leftmost_compound;
 }
 
 CSSSelector::RelationType HasArgumentMatchContext::GetLeftMostRelation() const {
@@ -138,22 +123,6 @@ bool HasArgumentMatchContext::GetDepthFixed() const {
 
 bool HasArgumentMatchContext::GetAdjacentDistanceFixed() const {
   return adjacent_traversal_distance_ != kInfiniteAdjacentDistance;
-}
-
-bool HasArgumentMatchContext::WillNeverMatch() const {
-  return leftmost_relation_ == CSSSelector::kSubSelector;
-}
-
-bool HasArgumentMatchContext::ContainsCompoundedScopeSelector() const {
-  return contains_compounded_scope_selector_;
-}
-
-bool HasArgumentMatchContext::ContainsNoLeftmostScopeSelector() const {
-  return contains_no_leftmost_scope_selector_;
-}
-
-void HasArgumentMatchContext::SetNeverMatch() {
-  leftmost_relation_ = CSSSelector::kSubSelector;
 }
 
 HasArgumentSubtreeIterator::HasArgumentSubtreeIterator(

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -36,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAcceptEncodingHeaderTest, Check) {
       }));
   ASSERT_TRUE(server.Start());
   GURL url = server.GetURL("/fetch.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   navigation_loop.Run();
   subresource_loop.Run();

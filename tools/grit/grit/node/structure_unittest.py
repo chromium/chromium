@@ -173,6 +173,64 @@ class StructureUnittest(unittest.TestCase):
     self.assertEqual(util.ReadFile(
         os.path.join(test_data_root, 'test_text.txt'), util.BINARY), data)
 
+  def testLottie(self):
+    test_data_root = util.PathFromRoot('grit/testdata')
+    root = util.ParseGrdForUnittest('''
+        <structures>
+          <structure name="TEST_LOTTIE" file="test_json.json" type="lottie" />
+        </structures>''',
+                                    base_dir=test_data_root)
+    node, = root.GetChildrenOfType(structure.StructureNode)
+    node.RunPreSubstitutionGatherer()
+    data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+
+    self.assertEqual(
+        b'LOTTIE' + util.ReadFile(
+            os.path.join(test_data_root, 'test_json.json'), util.BINARY), data)
+
+  def testGzippedLottie(self):
+    test_data_root = util.PathFromRoot('grit/testdata')
+    root = util.ParseGrdForUnittest('''
+        <structures>
+          <structure name="TEST_LOTTIE" file="test_json.json" type="lottie" compress="gzip" />
+        </structures>''',
+                                    base_dir=test_data_root)
+    node, = root.GetChildrenOfType(structure.StructureNode)
+    node.RunPreSubstitutionGatherer()
+    data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+
+    self.assertEqual('LOTTIE'.encode('utf-8'), data[0:6])
+    self.assertEqual(
+        util.ReadFile(os.path.join(test_data_root, 'test_json.json'),
+                      util.BINARY),
+        zlib.decompress(data[6:], 16 + zlib.MAX_WBITS))
+
+  def testBrotliLottie(self):
+    test_data_root = util.PathFromRoot('grit/testdata')
+    root = util.ParseGrdForUnittest('''
+        <structures>
+          <structure name="TEST_LOTTIE" file="test_json.json" type="lottie" compress="brotli" />
+        </structures>''',
+                                    base_dir=test_data_root)
+    node, = root.GetChildrenOfType(structure.StructureNode)
+    node.RunPreSubstitutionGatherer()
+    # Using the mock brotli decompression executable.
+    brotli_util.SetBrotliCommand([
+        sys.executable,
+        os.path.join(os.path.dirname(__file__), 'mock_brotli.py')
+    ])
+    data = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+
+    self.assertEqual('LOTTIE'.encode('utf-8'), data[0:6])
+    self.assertEqual(constants.BROTLI_CONST, data[6:8])
+    self.assertEqual(
+        len(
+            util.ReadFile(os.path.join(test_data_root, 'test_json.json'),
+                          util.BINARY)),
+        struct.unpack('<i', data[8:12])[0] +
+        (struct.unpack('<h', data[12:14])[0] << 4 * 8))
+    self.assertEqual(b'This has been mock compressed!', data[14:])
+
 
 if __name__ == '__main__':
   unittest.main()

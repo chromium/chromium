@@ -6,9 +6,8 @@
 #define CHROME_BROWSER_ASH_POWER_ML_USER_ACTIVITY_MANAGER_H_
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
@@ -94,6 +93,10 @@ class UserActivityManager : public ui::UserActivityObserver,
       session_manager::SessionManager* session_manager,
       mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
       const ChromeUserManager* user_manager);
+
+  UserActivityManager(const UserActivityManager&) = delete;
+  UserActivityManager& operator=(const UserActivityManager&) = delete;
+
   ~UserActivityManager() override;
 
   // ui::UserActivityObserver overrides.
@@ -290,8 +293,6 @@ class UserActivityManager : public ui::UserActivityObserver,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<UserActivityManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserActivityManager);
 };
 
 }  // namespace ml

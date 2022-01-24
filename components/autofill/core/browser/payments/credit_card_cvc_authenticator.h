@@ -82,13 +82,17 @@ class CreditCardCVCAuthenticator
 #endif
   };
   explicit CreditCardCVCAuthenticator(AutofillClient* client);
+
+  CreditCardCVCAuthenticator(const CreditCardCVCAuthenticator&) = delete;
+  CreditCardCVCAuthenticator& operator=(const CreditCardCVCAuthenticator&) =
+      delete;
+
   ~CreditCardCVCAuthenticator() override;
 
   // Authentication
   void Authenticate(const CreditCard* card,
                     base::WeakPtr<Requester> requester,
-                    PersonalDataManager* personal_data_manager,
-                    const base::TimeTicks& form_parsed_timestamp);
+                    PersonalDataManager* personal_data_manager);
 
   // payments::FullCardRequest::ResultDelegate
   void OnFullCardRequestSucceeded(
@@ -132,8 +136,6 @@ class CreditCardCVCAuthenticator
   base::WeakPtr<Requester> requester_;
 
   base::WeakPtrFactory<CreditCardCVCAuthenticator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CreditCardCVCAuthenticator);
 };
 
 }  // namespace autofill

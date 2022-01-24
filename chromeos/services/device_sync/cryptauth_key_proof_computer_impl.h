@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/cryptauth_key_proof_computer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -33,6 +32,10 @@ class CryptAuthKeyProofComputerImpl : public CryptAuthKeyProofComputer {
     static Factory* test_factory_;
   };
 
+  CryptAuthKeyProofComputerImpl(const CryptAuthKeyProofComputerImpl&) = delete;
+  CryptAuthKeyProofComputerImpl& operator=(
+      const CryptAuthKeyProofComputerImpl&) = delete;
+
   ~CryptAuthKeyProofComputerImpl() override;
 
   // CryptAuthKeyProofComputer:
@@ -54,8 +57,6 @@ class CryptAuthKeyProofComputerImpl : public CryptAuthKeyProofComputer {
       const CryptAuthKey& asymmetric_key,
       const std::string& payload,
       const std::string& salt);
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyProofComputerImpl);
 };
 
 }  // namespace device_sync

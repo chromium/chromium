@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,7 +25,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
-#include "components/page_load_metrics/common/page_load_metrics_constants.h"
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
@@ -61,6 +59,12 @@ struct FeatureEqualOperator {
 class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
  public:
   ChromeBackForwardCacheBrowserTest() = default;
+
+  ChromeBackForwardCacheBrowserTest(const ChromeBackForwardCacheBrowserTest&) =
+      delete;
+  ChromeBackForwardCacheBrowserTest& operator=(
+      const ChromeBackForwardCacheBrowserTest&) = delete;
+
   ~ChromeBackForwardCacheBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -146,8 +150,6 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
                      FeatureEqualOperator>
       features_with_params_;
   std::vector<base::Feature> disabled_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBackForwardCacheBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, Basic) {
@@ -254,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 
   // Ensure |rfh_a| is evicted from the cache because it is not allowed to
   // service the GEOLOCATION permission request.
-  rfh_a.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
@@ -279,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 
   // The page uses Picture-in-Picture so it must be evicted from the cache and
   // deleted.
-  rfh.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 }
 
 #if defined(OS_ANDROID)
@@ -311,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
 
   // The page uses WebShare so it must be evicted from the cache and deleted.
-  rfh_a.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back.
   web_contents()->GetController().GoBack();
@@ -350,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
 
   // The page uses WebNfc so it must be evicted from the cache and deleted.
-  rfh_a.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back.
   web_contents()->GetController().GoBack();
@@ -422,11 +424,9 @@ class MetricsChromeBackForwardCacheBrowserTest
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Set BufferTimerDelayMillis to a high number so that metrics update on the
-    // renderer won't be sent to the browser by the periodic upload.
-    EnableFeatureAndSetParams(
-        page_load_metrics::kPageLoadMetricsTimerDelayFeature,
-        "BufferTimerDelayMillis", "100000");
+    // TODO(crbug.com/1224780): This test used an experiment param (which no
+    // longer exists) to suppress the metrics send timer. If and when the test
+    // is re-enabled, it should be updated to use a different mechanism.
     ChromeBackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };

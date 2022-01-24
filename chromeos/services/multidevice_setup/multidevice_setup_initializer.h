@@ -65,6 +65,10 @@ class MultiDeviceSetupInitializer
     static Factory* test_factory_;
   };
 
+  MultiDeviceSetupInitializer(const MultiDeviceSetupInitializer&) = delete;
+  MultiDeviceSetupInitializer& operator=(const MultiDeviceSetupInitializer&) =
+      delete;
+
   ~MultiDeviceSetupInitializer() override;
 
  private:
@@ -172,8 +176,6 @@ class MultiDeviceSetupInitializer
   // needs to be passed.
   absl::optional<SetHostDeviceArgs> pending_set_host_args_;
   bool pending_should_remove_host_device_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupInitializer);
 };
 
 }  // namespace multidevice_setup

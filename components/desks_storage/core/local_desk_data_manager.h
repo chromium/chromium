@@ -12,12 +12,13 @@
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "components/desks_storage/core/desk_model.h"
 
 namespace ash {
 class DeskTemplate;
-}
+class OverviewTestBase;
+}  // namespace ash
 
 namespace desks_storage {
 // The LocalDeskDataManager is the local storage implementation of
@@ -58,15 +59,15 @@ class LocalDeskDataManager : public DeskModel {
   void DeleteEntry(const std::string& uuid,
                    DeleteEntryCallback callback) override;
   void DeleteAllEntries(DeleteEntryCallback callback) override;
-
-  // Other helper methods.
-
-  // Gets the maximum number of templates this storage backend could hold.
-  // Adding more templates beyond this limit will result in |kHitMaximumLimit|
-  // error.
-  std::size_t GetMaxEntryCount() const;
+  std::size_t GetEntryCount() const override;
+  std::size_t GetMaxEntryCount() const override;
+  std::vector<base::GUID> GetAllEntryUuids() const override;
+  bool IsReady() const override;
+  bool IsSyncing() const override;
 
  private:
+  friend class ash::OverviewTestBase;
+
   // Loads desk templates from |local_path_| into cache if the cache is not
   // loaded yet.
   void EnsureCacheIsLoaded();
@@ -112,6 +113,9 @@ class LocalDeskDataManager : public DeskModel {
   // Wrapper method to call DeleteEntryCallback.
   void OnDeleteEntry(std::unique_ptr<DeskModel::DeleteEntryStatus> status_ptr,
                      DeskModel::DeleteEntryCallback callback);
+
+  // Returns true if |templates_| contains a desk template with |name|.
+  bool HasTemplateWithName(const std::u16string& name);
 
   // Task runner used to schedule tasks on the IO thread.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

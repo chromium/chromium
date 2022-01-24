@@ -20,7 +20,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 struct ExtensionMsg_ExternalConnectionInfo;
 struct ExtensionMsg_TabConnectionInfo;
@@ -40,6 +40,10 @@ class ExtensionFrameHelper
  public:
   ExtensionFrameHelper(content::RenderFrame* render_frame,
                        Dispatcher* extension_dispatcher);
+
+  ExtensionFrameHelper(const ExtensionFrameHelper&) = delete;
+  ExtensionFrameHelper& operator=(const ExtensionFrameHelper&) = delete;
+
   ~ExtensionFrameHelper() override;
 
   // Returns a list of extension RenderFrames that match the given filter
@@ -221,8 +225,6 @@ class ExtensionFrameHelper
   mojo::AssociatedReceiver<mojom::LocalFrame> local_frame_receiver_{this};
 
   base::WeakPtrFactory<ExtensionFrameHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionFrameHelper);
 };
 
 }  // namespace extensions

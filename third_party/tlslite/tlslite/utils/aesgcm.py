@@ -13,6 +13,8 @@
 # x^127 term. This bit reversal also applies to polynomials used as indices in a
 # look-up table.
 
+from __future__ import division
+
 from .cryptomath import bytesToNumber, numberToByteArray
 
 class AESGCM(object):
@@ -47,7 +49,7 @@ class AESGCM(object):
         self._productTable[_reverseBits(1)] = h
         for i in range(2, 16, 2):
             self._productTable[_reverseBits(i)] = \
-                _gcmShift(self._productTable[_reverseBits(i/2)])
+                _gcmShift(self._productTable[_reverseBits(i//2)])
             self._productTable[_reverseBits(i+1)] = \
                 _gcmAdd(self._productTable[_reverseBits(i)], h)
 

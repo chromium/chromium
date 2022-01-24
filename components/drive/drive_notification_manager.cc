@@ -196,7 +196,7 @@ void DriveNotificationManager::RestartPollingTimer() {
 
   polling_timer_.Stop();
   polling_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(interval_secs + jitter),
+      FROM_HERE, base::Seconds(interval_secs + jitter),
       base::BindOnce(&DriveNotificationManager::NotifyObserversToUpdate,
                      weak_ptr_factory_.GetWeakPtr(), NOTIFICATION_POLLING,
                      std::map<std::string, int64_t>()));
@@ -209,8 +209,7 @@ void DriveNotificationManager::RestartBatchTimer() {
 
   batch_timer_.Stop();
   batch_timer_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(kInvalidationBatchIntervalSecs + jitter),
+      FROM_HERE, base::Seconds(kInvalidationBatchIntervalSecs + jitter),
       base::BindOnce(&DriveNotificationManager::OnBatchTimerExpired,
                      weak_ptr_factory_.GetWeakPtr()));
 }

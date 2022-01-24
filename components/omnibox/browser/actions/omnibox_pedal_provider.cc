@@ -18,7 +18,6 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
-#include "components/omnibox/browser/actions/omnibox_pedal_implementations.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -37,6 +36,11 @@ typedef base::StringTokenizerT<std::u16string, std::u16string::const_iterator>
 // of |max_tokens_| which may be set smaller to speed up matching.
 constexpr size_t kMaximumMaxTokens = 64;
 
+// All characters in this string get removed from text before processing.
+// U+200F is a RTL marker punctuation character that seems to throw
+// off some triggers in 'ar'.
+const char16_t kRemoveChars[] = {0x200F, 0};
+
 }  // namespace
 
 size_t EstimateMemoryUsage(scoped_refptr<OmniboxPedal> pedal) {
@@ -44,10 +48,11 @@ size_t EstimateMemoryUsage(scoped_refptr<OmniboxPedal> pedal) {
   return pedal->EstimateMemoryUsage();
 }
 
-OmniboxPedalProvider::OmniboxPedalProvider(AutocompleteProviderClient& client,
-                                           bool with_branding)
+OmniboxPedalProvider::OmniboxPedalProvider(
+    AutocompleteProviderClient& client,
+    std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals)
     : client_(client),
-      pedals_(GetPedalImplementations(with_branding, client_.IsOffTheRecord())),
+      pedals_(std::move(pedals)),
       ignore_group_(false, false, 0),
       match_tokens_(kMaximumMaxTokens) {
   LoadPedalConcepts();
@@ -156,6 +161,7 @@ void OmniboxPedalProvider::Tokenize(OmniboxPedal::TokenSequence& out_tokens,
   //  FoldCase is equivalent to lower-casing for ASCII/English, but provides
   //  more consistent (canonical) handling in other languages as well.
   std::u16string reduced_text = base::i18n::ToLower(text);
+  base::RemoveChars(reduced_text, kRemoveChars, &reduced_text);
   out_tokens.Clear();
   if (tokenize_characters_.empty()) {
     // Tokenize on Unicode character boundaries when we have no delimiters.
@@ -243,7 +249,7 @@ void OmniboxPedalProvider::TokenizeAndExpandDictionary(
         out_tokens.Clear();
         break;
       }
-      const std::u16string raw_token = tokenizer.token();
+      std::u16string raw_token = tokenizer.token();
       base::StringPiece16 trimmed_token =
           base::TrimWhitespace(raw_token, base::TrimPositions::TRIM_ALL);
       std::u16string token = base::i18n::FoldCase(trimmed_token);
@@ -292,18 +298,27 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
 
   const auto& dictionary = concept_data->FindKey("dictionary")->GetList();
   dictionary_.reserve(dictionary.size());
-  int id = 0;
+  int token_id = 0;
   for (const auto& token_value : dictionary) {
     std::u16string token;
     token_value.GetAsString(&token);
-    dictionary_.insert({token, id});
-    ++id;
+    dictionary_.insert({token, token_id});
+    ++token_id;
   }
 
   if (OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled()) {
     ignore_group_ = LoadSynonymGroupString(
         false, false,
         l10n_util::GetStringUTF16(IDS_OMNIBOX_PEDALS_IGNORE_GROUP));
+    if (tokenize_characters_.empty()) {
+      // Translation console sourced data has lots of spaces, but in practice
+      // the ignore group doesn't include a single space sequence. Rather than
+      // burden l10n with getting this nuance in the data precisely specified,
+      // we simply hardcode to ignore spaces. This applies for all languages
+      // that don't tokenize on spaces (see `tokenize_characters_` above).
+      ignore_group_.AddSynonym(
+          OmniboxPedal::TokenSequence(std::vector<int>({dictionary_[u" "]})));
+    }
   } else {
     const base::Value* ignore_group_value =
         concept_data->FindKey("ignore_group");
@@ -314,14 +329,22 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   for (const auto& pedal_value : concept_data->FindKey("pedals")->GetList()) {
     DCHECK(pedal_value.is_dict());
     const int id = pedal_value.FindIntKey("id").value();
-    // These IDs are the first and last for batch 2. Skip loading if batch 2 is
-    // not enabled for the current locale.
-    if (id >= static_cast<int>(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK) &&
-        id <= static_cast<int>(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD) &&
-        !(OmniboxFieldTrial::IsPedalsBatch2Enabled() &&
-          (locale_is_english ||
-           OmniboxFieldTrial::IsPedalsBatch2NonEnglishEnabled()))) {
-      continue;
+    if (!locale_is_english) {
+      // These IDs are the first and last for batch 2. Skip loading if batch 2
+      // is not enabled for the current locale.
+      if (id >= static_cast<int>(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK) &&
+          id <= static_cast<int>(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD) &&
+          !OmniboxFieldTrial::IsPedalsBatch2NonEnglishEnabled()) {
+        continue;
+      }
+      // These IDs are the first and last for batch 3. Skip loading if batch 3
+      // is not enabled for the current locale.
+      if (id >= static_cast<int>(OmniboxPedalId::CLOSE_INCOGNITO_WINDOWS) &&
+          id <=
+              static_cast<int>(OmniboxPedalId::MANAGE_CHROMEOS_ACCESSIBILITY) &&
+          !OmniboxFieldTrial::IsPedalsBatch3NonEnglishEnabled()) {
+        continue;
+      }
     }
     const auto pedal_iter = pedals_.find(static_cast<OmniboxPedalId>(id));
     if (pedal_iter == pedals_.end()) {
@@ -338,6 +361,12 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     if (!url->empty()) {
       pedal->SetNavigationUrl(GURL(*url));
     }
+
+    OmniboxPedal::TokenSequence verbatim_sequence(0);
+    TokenizeAndExpandDictionary(verbatim_sequence,
+                                pedal->GetLabelStrings().hint);
+    ignore_group_.EraseMatchesIn(verbatim_sequence, true);
+    pedal->AddVerbatimSequence(std::move(verbatim_sequence));
 
     std::vector<OmniboxPedal::SynonymGroupSpec> specs =
         pedal->SpecifySynonymGroups();
@@ -392,8 +421,10 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupString(
     bool required,
     bool match_once,
     std::u16string synonyms_csv) {
+  base::RemoveChars(synonyms_csv, kRemoveChars, &synonyms_csv);
   OmniboxPedal::SynonymGroup group(required, match_once, 0);
-  StringTokenizer16 tokenizer(synonyms_csv, u",");
+  // Note, 'ar' language uses '،' instead of ',' to delimit synonyms.
+  StringTokenizer16 tokenizer(synonyms_csv, u",،");
   while (tokenizer.GetNext()) {
     OmniboxPedal::TokenSequence sequence(0);
     TokenizeAndExpandDictionary(sequence, tokenizer.token());

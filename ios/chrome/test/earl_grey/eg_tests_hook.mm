@@ -43,9 +43,9 @@ bool DisableGeolocation() {
   return true;
 }
 
-bool DisableSigninRecallPromo() {
+bool DisableUpgradeSigninPromo() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableSigninRecallPromo);
+      switches::kEnableUpgradeSigninPromo);
 }
 
 bool DisableUpdateService() {

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_service.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -172,7 +173,7 @@ class BluetoothRemoteGATTCharacteristic final
 
   // Queue of characteristicvaluechanged events created if a value changes
   // while startNotificications() is in the process of registering a listener.
-  HeapLinkedHashSet<Member<DeferredValueChange>> deferred_value_change_data_;
+  HeapVector<Member<DeferredValueChange>> deferred_value_change_data_;
 };
 
 }  // namespace blink

@@ -11,9 +11,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/service_process_launcher_delegate.h"
 
@@ -41,13 +41,17 @@ class ServiceProcessLauncher {
   // the service executable we wish to start.
   ServiceProcessLauncher(ServiceProcessLauncherDelegate* delegate,
                          const base::FilePath& service_path);
+
+  ServiceProcessLauncher(const ServiceProcessLauncher&) = delete;
+  ServiceProcessLauncher& operator=(const ServiceProcessLauncher&) = delete;
+
   ~ServiceProcessLauncher();
 
   // |Start()|s the child process; calls |DidStart()| (on the thread on which
   // |Start()| was called) when the child has been started (or failed to start).
   mojo::PendingRemote<mojom::Service> Start(
       const Identity& target,
-      sandbox::policy::SandboxType sandbox_type,
+      sandbox::mojom::Sandbox sandbox_type,
       ProcessReadyCallback callback);
 
   // Exposed publicly for use in tests. Creates a new Service pipe, passing the
@@ -67,8 +71,6 @@ class ServiceProcessLauncher {
   const base::FilePath service_path_;
   const scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   scoped_refptr<ProcessState> state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessLauncher);
 };
 
 }  // namespace service_manager

@@ -54,16 +54,12 @@ void CommanderController::OnTextChanged(const std::u16string& text,
     }
   }
 
-  // Sort by score, with commands guaranteed to sort above nouns.
+  // Sort by score, then alphabetically.
   std::sort(std::begin(items), std::end(items),
             [](const std::unique_ptr<CommandItem>& left,
                const std::unique_ptr<CommandItem>& right) {
-              return std::make_tuple(
-                         left->entity_type == CommandItem::Entity::kCommand,
-                         left->score) >
-                     std::make_tuple(
-                         right->entity_type == CommandItem::Entity::kCommand,
-                         right->score);
+              return (left->score == right->score) ? left->title < right->title
+                                                   : left->score > right->score;
             });
   if (items.size() > kMaxResults)
     items.resize(kMaxResults);

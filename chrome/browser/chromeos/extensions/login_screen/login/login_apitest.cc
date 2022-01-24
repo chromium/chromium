@@ -99,7 +99,7 @@ namespace chromeos {
 
 class LoginApitest : public LoginScreenApitestBase {
  public:
-  LoginApitest() : LoginScreenApitestBase(version_info::Channel::STABLE) {}
+  LoginApitest() : LoginScreenApitestBase(version_info::Channel::CANARY) {}
 
   LoginApitest(const LoginApitest&) = delete;
 
@@ -202,7 +202,7 @@ class LoginApitest : public LoginScreenApitestBase {
   void LockScreen() { ScreenLockerTester().Lock(); }
 
  private:
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
   base::DictionaryValue config_;
 };
 

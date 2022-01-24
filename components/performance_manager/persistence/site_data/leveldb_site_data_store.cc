@@ -18,8 +18,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -143,6 +143,10 @@ class LevelDBSiteDataStore::AsyncHelper {
     // the process crashes).
     write_options_.sync = false;
   }
+
+  AsyncHelper(const AsyncHelper&) = delete;
+  AsyncHelper& operator=(const AsyncHelper&) = delete;
+
   ~AsyncHelper() = default;
 
   // Open the database from |db_path_| after creating it if it didn't exist,
@@ -206,7 +210,6 @@ class LevelDBSiteDataStore::AsyncHelper {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(AsyncHelper);
 };
 
 void LevelDBSiteDataStore::AsyncHelper::OpenOrCreateDatabase() {

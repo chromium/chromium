@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_WINDOW_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 
@@ -22,6 +21,11 @@ class SyncedTabDelegate;
 class BrowserSyncedWindowDelegate : public sync_sessions::SyncedWindowDelegate {
  public:
   explicit BrowserSyncedWindowDelegate(Browser* browser);
+
+  BrowserSyncedWindowDelegate(const BrowserSyncedWindowDelegate&) = delete;
+  BrowserSyncedWindowDelegate& operator=(const BrowserSyncedWindowDelegate&) =
+      delete;
+
   ~BrowserSyncedWindowDelegate() override;
 
   // SyncedWindowDelegate:
@@ -39,8 +43,6 @@ class BrowserSyncedWindowDelegate : public sync_sessions::SyncedWindowDelegate {
 
  private:
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSyncedWindowDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_WINDOW_DELEGATE_H_

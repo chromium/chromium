@@ -13,6 +13,7 @@
 #include "components/safe_browsing/android/safe_browsing_api_handler.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -105,6 +106,8 @@ TEST_F(RemoteDatabaseManagerTest, DestinationsToCheckFromTrial) {
       network::mojom::RequestDestination::kIframe));
   EXPECT_TRUE(db_->CanCheckRequestDestination(
       network::mojom::RequestDestination::kFrame));
+  EXPECT_TRUE(db_->CanCheckRequestDestination(
+      network::mojom::RequestDestination::kFencedframe));
   EXPECT_TRUE(db_->CanCheckRequestDestination(
       network::mojom::RequestDestination::kStyle));
   EXPECT_FALSE(db_->CanCheckRequestDestination(

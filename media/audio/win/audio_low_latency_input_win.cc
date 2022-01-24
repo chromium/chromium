@@ -387,20 +387,23 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
     return OpenOutcome::kFailed;
   }
 
-#ifndef NDEBUG
-  // Retrieve the stream format which the audio engine uses for its internal
-  // processing/mixing of shared-mode streams. This function call is for
-  // diagnostic purposes only and only in debug mode.
-  hr = GetAudioEngineStreamFormat();
-#endif
+  // Raw audio capture suppresses processing that down mixes e.g. a microphone
+  // array into a supported format and instead exposes the device's native
+  // format. Chrome only supports a maximum number of input channels given by
+  // media::kMaxConcurrentChannels. Therefore, one additional test is needed
+  // before stating that raw audio processing can be supported.
+  // Failure will not prevent opening but the method must succeed to be able to
+  // select raw input capture mode.
+  WORD audio_engine_channels = 0;
+  hr = GetAudioEngineNumChannels(&audio_engine_channels);
 
   // Attempt to enable communications category and raw capture mode on the audio
   // stream. Ignoring return value since the method logs its own error messages
   // and it should be OK to continue opening the stream even after a failure.
   if (base::FeatureList::IsEnabled(media::kWasapiRawAudioCapture) &&
       raw_processing_supported_ &&
-      !AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
-    SetCommunicationsCategoryAndRawCaptureMode();
+      !AudioDeviceDescription::IsLoopbackDevice(device_id_) && SUCCEEDED(hr)) {
+    SetCommunicationsCategoryAndMaybeRawCaptureMode(audio_engine_channels);
   }
 
   // Verify that the selected audio endpoint supports the specified format
@@ -575,13 +578,6 @@ void WASAPIAudioInputStream::Stop() {
       __func__, min_timestamp_diff_.InMillisecondsF(),
       max_timestamp_diff_.InMillisecondsF());
 
-  const bool monotonic_timestamps =
-      min_timestamp_diff_ >= base::TimeDelta::FromMicroseconds(1);
-  base::UmaHistogramBoolean("Media.Audio.Capture.Win.MonotonicTimestamps",
-                            monotonic_timestamps);
-  SendLogMessage("%s => (Media.Audio.Capture.Win.MonotonicTimestamps=%s)",
-                 __func__, monotonic_timestamps ? "true" : "false");
-
   started_ = false;
   sink_ = nullptr;
 }
@@ -707,7 +703,6 @@ void WASAPIAudioInputStream::SendLogMessage(const char* format, ...) {
   va_start(args, format);
   std::string msg("WAIS::" + base::StringPrintV(format, args));
   log_callback_.Run(msg);
-  DVLOG(1) << msg;
   va_end(args);
 }
 
@@ -895,13 +890,12 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
     base::TimeTicks capture_time;
     if (!timestamp_error_was_detected) {
       // Use the latest |capture_time_100ns| since it is marked as valid.
-      capture_time +=
-          base::TimeDelta::FromMicroseconds(capture_time_100ns / 10.0);
+      capture_time += base::Microseconds(capture_time_100ns / 10.0);
     }
     if (capture_time <= last_capture_time_) {
       // Latest |capture_time_100ns| can't be trusted. Ensure a monotonic time-
       // stamp sequence by adding one microsecond to the latest timestamp.
-      capture_time = last_capture_time_ + base::TimeDelta::FromMicroseconds(1);
+      capture_time = last_capture_time_ + base::Microseconds(1);
     }
 
     // Keep track of max and min time difference between two successive time-
@@ -1057,18 +1051,6 @@ HRESULT WASAPIAudioInputStream::SetCaptureDevice() {
     hr = E_ACCESSDENIED;
   }
 
-  return hr;
-}
-
-HRESULT WASAPIAudioInputStream::GetAudioEngineStreamFormat() {
-  HRESULT hr = S_OK;
-#ifndef NDEBUG
-  base::win::ScopedCoMem<WAVEFORMATEX> format;
-  hr = audio_client_->GetMixFormat(&format);
-  if (FAILED(hr))
-    return hr;
-  DVLOG(1) << CoreAudioUtil::WaveFormatToString(format.get());
-#endif
   return hr;
 }
 
@@ -1283,11 +1265,30 @@ HRESULT WASAPIAudioInputStream::GetAudioCaptureEffects(
   return hr;
 }
 
-HRESULT WASAPIAudioInputStream::SetCommunicationsCategoryAndRawCaptureMode() {
+HRESULT WASAPIAudioInputStream::GetAudioEngineNumChannels(WORD* channels) {
+  DCHECK(audio_client_.Get());
+  SendLogMessage("%s()", __func__);
+  WAVEFORMATEXTENSIBLE mix_format;
+  // Retrieve the stream format that the audio engine uses for its internal
+  // processing of shared-mode streams.
+  HRESULT hr =
+      CoreAudioUtil::GetSharedModeMixFormat(audio_client_.Get(), &mix_format);
+  if (SUCCEEDED(hr)) {
+    // Return the native number of supported audio channels.
+    CoreAudioUtil::WaveFormatWrapper wformat(&mix_format);
+    *channels = wformat->nChannels;
+    SendLogMessage("%s => (native channels=[%d])", __func__, *channels);
+  }
+  return hr;
+}
+
+HRESULT
+WASAPIAudioInputStream::SetCommunicationsCategoryAndMaybeRawCaptureMode(
+    WORD channels) {
   DCHECK(audio_client_.Get());
   DCHECK(!AudioDeviceDescription::IsLoopbackDevice(device_id_));
   DCHECK(raw_processing_supported_);
-  SendLogMessage("%s()", __func__);
+  SendLogMessage("%s({channels=%d})", __func__, channels);
 
   Microsoft::WRL::ComPtr<IAudioClient2> audio_client2;
   HRESULT hr = audio_client_.As(&audio_client2);
@@ -1308,7 +1309,11 @@ HRESULT WASAPIAudioInputStream::SetCommunicationsCategoryAndRawCaptureMode() {
     // The audio stream is a 'raw' stream that bypasses all signal processing
     // except for endpoint specific, always-on processing in the Audio
     // Processing Object (APO), driver, and hardware.
-    audio_props.Options = AUDCLNT_STREAMOPTIONS_RAW;
+    // See https://crbug.com/1257662 for details on why we avoid using raw
+    // capture mode on devices with more than eight input channels.
+    if (channels > 0 && channels <= media::kMaxConcurrentChannels) {
+      audio_props.Options = AUDCLNT_STREAMOPTIONS_RAW;
+    }
     hr = audio_client2->SetClientProperties(&audio_props);
     if (FAILED(hr)) {
       SendLogMessage("%s => (ERROR: IAudioClient2::SetClientProperties=[%s])",
@@ -1337,7 +1342,6 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
     SendLogMessage("%s => (ERROR: IAudioClient::IsFormatSupported=[%s])",
                    __func__, ErrorToString(hresult).c_str());
   }
-
   if (hresult == S_FALSE) {
     SendLogMessage(
         "%s => (WARNING: Format is not supported but a closest match exists)",
@@ -1629,14 +1633,12 @@ void WASAPIAudioInputStream::ReportAndResetGlitchStats() {
       __func__, total_glitches_, total_lost_frames_, lost_frames_ms);
   if (total_glitches_ != 0) {
     UMA_HISTOGRAM_LONG_TIMES("Media.Audio.Capture.LostFramesInMs",
-                             base::TimeDelta::FromMilliseconds(lost_frames_ms));
+                             base::Milliseconds(lost_frames_ms));
     int64_t largest_glitch_ms =
         (largest_glitch_frames_ * 1000) / input_format_.Format.nSamplesPerSec;
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "Media.Audio.Capture.LargestGlitchMs",
-        base::TimeDelta::FromMilliseconds(largest_glitch_ms),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromMinutes(1),
-        50);
+    UMA_HISTOGRAM_CUSTOM_TIMES("Media.Audio.Capture.LargestGlitchMs",
+                               base::Milliseconds(largest_glitch_ms),
+                               base::Milliseconds(1), base::Minutes(1), 50);
   }
 
   // TODO(https://crbug.com/825744): It can be possible to replace
@@ -1645,14 +1647,9 @@ void WASAPIAudioInputStream::ReportAndResetGlitchStats() {
                              num_data_discontinuity_warnings_);
   SendLogMessage("%s => (discontinuity warnings=[%" PRIu64 "])", __func__,
                  num_data_discontinuity_warnings_);
-  base::UmaHistogramCounts1M("Media.Audio.Capture.Win.TimestampErrors",
-                             num_timestamp_errors_);
   SendLogMessage("%s => (timstamp errors=[%" PRIu64 "])", __func__,
                  num_timestamp_errors_);
   if (num_timestamp_errors_ > 0) {
-    base::UmaHistogramLongTimes(
-        "Media.Audio.Capture.Win.TimeUntilFirstTimestampError",
-        time_until_first_timestamp_error_);
     SendLogMessage("%s => (time until first timestamp error=[%" PRId64 " ms])",
                    __func__,
                    time_until_first_timestamp_error_.InMilliseconds());

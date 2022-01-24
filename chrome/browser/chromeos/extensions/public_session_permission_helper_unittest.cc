@@ -74,6 +74,10 @@ class ProgrammableInstallPrompt
   explicit ProgrammableInstallPrompt(WebContents* contents)
       : ExtensionInstallPrompt(contents) {}
 
+  ProgrammableInstallPrompt(const ProgrammableInstallPrompt&) = delete;
+  ProgrammableInstallPrompt& operator=(const ProgrammableInstallPrompt&) =
+      delete;
+
   ~ProgrammableInstallPrompt() override {}
 
   void ShowDialog(
@@ -93,8 +97,6 @@ class ProgrammableInstallPrompt
 
  private:
   ExtensionInstallPrompt::DoneCallback done_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgrammableInstallPrompt);
 };
 
 }  // namespace
@@ -103,6 +105,12 @@ class PublicSessionPermissionHelperTest
     : public ChromeRenderViewHostTestHarness {
  public:
   PublicSessionPermissionHelperTest() {}
+
+  PublicSessionPermissionHelperTest(const PublicSessionPermissionHelperTest&) =
+      delete;
+  PublicSessionPermissionHelperTest& operator=(
+      const PublicSessionPermissionHelperTest&) = delete;
+
   ~PublicSessionPermissionHelperTest() override {}
 
   // testing::Test
@@ -125,9 +133,6 @@ class PublicSessionPermissionHelperTest
   std::vector<PermissionIDSet> allowed_permissions_;
 
   std::unique_ptr<chromeos::ScopedTestPublicSessionLoginState> login_state_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PublicSessionPermissionHelperTest);
 };
 
 void PublicSessionPermissionHelperTest::SetUp() {

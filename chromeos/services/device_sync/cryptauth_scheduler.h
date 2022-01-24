@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
@@ -65,6 +64,9 @@ class CryptAuthScheduler {
     virtual void OnDeviceSyncRequested(
         const cryptauthv2::ClientMetadata& client_metadata) = 0;
   };
+
+  CryptAuthScheduler(const CryptAuthScheduler&) = delete;
+  CryptAuthScheduler& operator=(const CryptAuthScheduler&) = delete;
 
   virtual ~CryptAuthScheduler();
 
@@ -144,8 +146,6 @@ class CryptAuthScheduler {
  private:
   base::WeakPtr<EnrollmentDelegate> enrollment_delegate_;
   base::WeakPtr<DeviceSyncDelegate> device_sync_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthScheduler);
 };
 
 }  // namespace device_sync

@@ -27,7 +27,6 @@ class MockUserCloudPolicyStore : public UserCloudPolicyStore {
   using CloudPolicyStore::NotifyStoreError;
 
   using CloudPolicyStore::policy_map_;
-  using CloudPolicyStore::policy_;
   using CloudPolicyStore::status_;
 };
 

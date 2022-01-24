@@ -32,13 +32,10 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Unit tests for {@link ChildAccountService}.
@@ -47,22 +44,9 @@ import java.util.List;
 public class ChildAccountServiceTest {
     private static final Account CHILD_ACCOUNT1 =
             AccountUtils.createAccountFromName("child.account1@gmail.com");
-    private static final Account CHILD_ACCOUNT2 =
-            AccountUtils.createAccountFromName("child.account2@gmail.com");
-    private static final Account ADULT_ACCOUNT1 =
-            AccountUtils.createAccountFromName("adult.account1@gmail.com");
-    private static final Account ADULT_ACCOUNT2 =
-            AccountUtils.createAccountFromName("adult.account2@gmail.com");
     private static final long FAKE_NATIVE_CALLBACK = 1000L;
 
-    private final FakeAccountManagerFacade mFakeFacade = spy(new FakeAccountManagerFacade() {
-        @Override
-        public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
-            listener.onStatusReady(account.name.startsWith("child")
-                            ? ChildAccountStatus.REGULAR_CHILD
-                            : ChildAccountStatus.NOT_CHILD);
-        }
-    });
+    private final FakeAccountManagerFacade mFakeFacade = spy(new FakeAccountManagerFacade());
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -86,48 +70,6 @@ public class ChildAccountServiceTest {
     @Before
     public void setUp() {
         mocker.mock(ChildAccountServiceJni.TEST_HOOKS, mNativeMock);
-    }
-
-    @Test
-    public void testChildAccountStatusWhenNoAccountsOnDevice() {
-        ChildAccountService.checkChildAccountStatus(Collections.emptyList(), mListenerMock);
-        verify(mListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
-    }
-
-    @Test
-    public void testChildAccountStatusWhenTwoChildAccountsOnDevice() {
-        // For product reason, child account cannot share device, so as long
-        // as more than one account detected on device, the child account status
-        // on device should be NOT_CHILD.
-        ChildAccountService.checkChildAccountStatus(
-                List.of(CHILD_ACCOUNT1, CHILD_ACCOUNT2), mListenerMock);
-        verify(mListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
-    }
-
-    @Test
-    public void testChildAccountStatusWhenOneChildAndOneAdultAccountsOnDevice() {
-        ChildAccountService.checkChildAccountStatus(
-                List.of(CHILD_ACCOUNT1, ADULT_ACCOUNT1), mListenerMock);
-        verify(mListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
-    }
-
-    @Test
-    public void testChildAccountStatusWhenTwoAdultAccountsOnDevice() {
-        ChildAccountService.checkChildAccountStatus(
-                List.of(ADULT_ACCOUNT1, ADULT_ACCOUNT2), mListenerMock);
-        verify(mListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
-    }
-
-    @Test
-    public void testChildAccountStatusWhenOnlyOneAdultAccountOnDevice() {
-        ChildAccountService.checkChildAccountStatus(List.of(ADULT_ACCOUNT1), mListenerMock);
-        verify(mListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
-    }
-
-    @Test
-    public void testChildAccountStatusWhenOnlyOneChildAccountOnDevice() {
-        ChildAccountService.checkChildAccountStatus(List.of(CHILD_ACCOUNT1), mListenerMock);
-        verify(mListenerMock).onStatusReady(ChildAccountStatus.REGULAR_CHILD);
     }
 
     @Test

@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/scanning/scanning_type_converters.h"
 
 #include "base/notreached.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
 
@@ -22,16 +24,40 @@ struct PageSize {
   double height;
 };
 
+// ISO A3: 297 x 420 mm.
+constexpr PageSize kIsoA3PageSize = {
+    297,
+    420,
+};
+
 // ISO A4: 210 x 297 mm.
 constexpr PageSize kIsoA4PageSize = {
     210,
     297,
 };
 
+// ISO B4: 257 x 364 mm.
+constexpr PageSize kIsoB4PageSize = {
+    257,
+    364,
+};
+
+// Legal: 215.9 x 355.6 mm.
+constexpr PageSize kLegalPageSize = {
+    215.9,
+    355.6,
+};
+
 // NA Letter: 215.9 x 279.4 mm.
 constexpr PageSize kNaLetterPageSize = {
     215.9,
     279.4,
+};
+
+// Tabloid: 279.4 x 431.8 mm.
+constexpr PageSize kTabloidPageSize = {
+    279.4,
+    431.8,
 };
 
 // Returns true if |area| is large enough to support |page_size|.
@@ -45,13 +71,20 @@ bool AreaSupportsPageSize(const lorgnette::ScannableArea& area,
 std::vector<mojo_ipc::PageSize> GetSupportedPageSizes(
     const lorgnette::ScannableArea& area) {
   std::vector<mojo_ipc::PageSize> page_sizes;
-  page_sizes.reserve(3);
+  page_sizes.reserve(7);
   page_sizes.push_back(mojo_ipc::PageSize::kMax);
+  if (AreaSupportsPageSize(area, kIsoA3PageSize))
+    page_sizes.push_back(mojo_ipc::PageSize::kIsoA3);
   if (AreaSupportsPageSize(area, kIsoA4PageSize))
     page_sizes.push_back(mojo_ipc::PageSize::kIsoA4);
-
+  if (AreaSupportsPageSize(area, kIsoB4PageSize))
+    page_sizes.push_back(mojo_ipc::PageSize::kIsoB4);
+  if (AreaSupportsPageSize(area, kLegalPageSize))
+    page_sizes.push_back(mojo_ipc::PageSize::kLegal);
   if (AreaSupportsPageSize(area, kNaLetterPageSize))
     page_sizes.push_back(mojo_ipc::PageSize::kNaLetter);
+  if (AreaSupportsPageSize(area, kTabloidPageSize))
+    page_sizes.push_back(mojo_ipc::PageSize::kTabloid);
 
   return page_sizes;
 }
@@ -65,13 +98,29 @@ void SetScanRegion(const mojo_ipc::PageSize page_size,
   // bottom-right coordinates need to be set.
   lorgnette::ScanRegion region;
   switch (page_size) {
+    case mojo_ipc::PageSize::kIsoA3:
+      region.set_bottom_right_x(kIsoA3PageSize.width);
+      region.set_bottom_right_y(kIsoA3PageSize.height);
+      break;
     case mojo_ipc::PageSize::kIsoA4:
       region.set_bottom_right_x(kIsoA4PageSize.width);
       region.set_bottom_right_y(kIsoA4PageSize.height);
       break;
+    case mojo_ipc::PageSize::kIsoB4:
+      region.set_bottom_right_x(kIsoB4PageSize.width);
+      region.set_bottom_right_y(kIsoB4PageSize.height);
+      break;
+    case mojo_ipc::PageSize::kLegal:
+      region.set_bottom_right_x(kLegalPageSize.width);
+      region.set_bottom_right_y(kLegalPageSize.height);
+      break;
     case mojo_ipc::PageSize::kNaLetter:
       region.set_bottom_right_x(kNaLetterPageSize.width);
       region.set_bottom_right_y(kNaLetterPageSize.height);
+      break;
+    case mojo_ipc::PageSize::kTabloid:
+      region.set_bottom_right_x(kTabloidPageSize.width);
+      region.set_bottom_right_y(kTabloidPageSize.height);
       break;
     case mojo_ipc::PageSize::kMax:
       return;
@@ -154,8 +203,8 @@ struct TypeConverter<lorgnette::ImageFormat, mojo_ipc::FileType> {
 
 // static
 mojo_ipc::ScanResult
-TypeConverter<mojo_ipc::ScanResult, lorgnette::ScanFailureMode>::Convert(
-    const lorgnette::ScanFailureMode lorgnette_failure_mode) {
+EnumTraits<ash::scanning::mojom::ScanResult, lorgnette::ScanFailureMode>::
+    ToMojom(const lorgnette::ScanFailureMode lorgnette_failure_mode) {
   switch (lorgnette_failure_mode) {
     case lorgnette::SCAN_FAILURE_MODE_NO_FAILURE:
       return mojo_ipc::ScanResult::kSuccess;
@@ -181,9 +230,10 @@ TypeConverter<mojo_ipc::ScanResult, lorgnette::ScanFailureMode>::Convert(
 }
 
 // static
-mojo_ipc::ScannerCapabilitiesPtr TypeConverter<mojo_ipc::ScannerCapabilitiesPtr,
-                                               lorgnette::ScannerCapabilities>::
-    Convert(const lorgnette::ScannerCapabilities& lorgnette_caps) {
+mojo_ipc::ScannerCapabilitiesPtr
+StructTraits<ash::scanning::mojom::ScannerCapabilitiesPtr,
+             lorgnette::ScannerCapabilities>::
+    ToMojom(const lorgnette::ScannerCapabilities& lorgnette_caps) {
   mojo_ipc::ScannerCapabilities mojo_caps;
   mojo_caps.sources.reserve(lorgnette_caps.sources().size());
   for (const auto& source : lorgnette_caps.sources()) {
@@ -207,7 +257,7 @@ mojo_ipc::ScannerCapabilitiesPtr TypeConverter<mojo_ipc::ScannerCapabilitiesPtr,
 
 // static
 lorgnette::ScanSettings
-TypeConverter<lorgnette::ScanSettings, mojo_ipc::ScanSettingsPtr>::Convert(
+StructTraits<lorgnette::ScanSettings, mojo_ipc::ScanSettingsPtr>::ToMojom(
     const mojo_ipc::ScanSettingsPtr& mojo_settings) {
   lorgnette::ScanSettings lorgnette_settings;
   lorgnette_settings.set_source_name(mojo_settings->source_name);

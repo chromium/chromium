@@ -30,7 +30,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -46,8 +45,6 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/session_util.h"
-#include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -94,13 +91,14 @@ class TestShellDelegateChromeOS : public ash::TestShellDelegate {
  public:
   TestShellDelegateChromeOS() {}
 
+  TestShellDelegateChromeOS(const TestShellDelegateChromeOS&) = delete;
+  TestShellDelegateChromeOS& operator=(const TestShellDelegateChromeOS&) =
+      delete;
+
   bool CanShowWindowForUser(const aura::Window* window) const override {
     return ::CanShowWindowForUser(window,
                                   base::BindRepeating(&GetActiveContext));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestShellDelegateChromeOS);
 };
 
 std::unique_ptr<Browser> CreateTestBrowser(aura::Window* window,
@@ -125,6 +123,9 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
   MultiProfileSupportTest()
       : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+
+  MultiProfileSupportTest(const MultiProfileSupportTest&) = delete;
+  MultiProfileSupportTest& operator=(const MultiProfileSupportTest&) = delete;
 
   // ChromeAshTestBase:
   void SetUp() override;
@@ -284,14 +285,8 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
 
   user_manager::ScopedUserManager user_manager_enabler_;
 
-  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
-
-  TestWallpaperController test_wallpaper_controller_;
-
   // The maximized window manager (if enabled).
   std::unique_ptr<TabletModeWindowManager> tablet_mode_window_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiProfileSupportTest);
 };
 
 void MultiProfileSupportTest::SetUp() {
@@ -320,9 +315,6 @@ void MultiProfileSupportTest::SetUpForThisManyWindows(int windows) {
       AccountId::FromUserEmail("a"));
   ash::MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
       ash::MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
-  wallpaper_controller_client_ =
-      std::make_unique<WallpaperControllerClientImpl>();
-  wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 }
 
 std::vector<std::unique_ptr<views::Widget>>
@@ -336,9 +328,9 @@ MultiProfileSupportTest::SetUpOneWindowEachDeskForUser(AccountId account_id) {
   // Set restore in progress to avoid activating desk activation during
   // `window->Show()` in `CreateTestWidget()`.
   test_shell_delegate->SetSessionRestoreInProgress(true);
-  auto* desks_helper = ash::DesksHelper::Get();
+  auto* desks_controller = ash::DesksController::Get();
   const int kActiveDeskIndex = 0;
-  for (int i = 0; i < desks_helper->GetNumberOfDesks(); i++) {
+  for (int i = 0; i < desks_controller->GetNumberOfDesks(); i++) {
     widgets.push_back(
         CreateTestWidget(nullptr, container_ids[i], gfx::Rect(700, 0, 50, 50)));
     aura::Window* win = widgets[i]->GetNativeWindow();
@@ -352,7 +344,7 @@ MultiProfileSupportTest::SetUpOneWindowEachDeskForUser(AccountId account_id) {
     EXPECT_TRUE(ash::AutotestDesksApi().IsWindowInDesk(win,
                                                        /*desk_index=*/i));
   }
-  EXPECT_EQ(kActiveDeskIndex, desks_helper->GetActiveDeskIndex());
+  EXPECT_EQ(kActiveDeskIndex, desks_controller->GetActiveDeskIndex());
   test_shell_delegate->SetSessionRestoreInProgress(false);
   return widgets;
 }
@@ -367,7 +359,6 @@ void MultiProfileSupportTest::TearDown() {
 
   ::MultiUserWindowManagerHelper::DeleteInstance();
   ChromeAshTestBase::TearDown();
-  wallpaper_controller_client_.reset();
   profile_manager_.reset();
   ash::CrosSettings::Shutdown();
   ash::DeviceSettingsService::Shutdown();
@@ -1389,6 +1380,10 @@ TEST_F(MultiProfileSupportTest, ShowForUserSwitchesDesktop) {
 class TestWindowObserver : public aura::WindowObserver {
  public:
   TestWindowObserver() : resize_calls_(0) {}
+
+  TestWindowObserver(const TestWindowObserver&) = delete;
+  TestWindowObserver& operator=(const TestWindowObserver&) = delete;
+
   ~TestWindowObserver() override {}
 
   void OnWindowBoundsChanged(aura::Window* window,
@@ -1402,8 +1397,6 @@ class TestWindowObserver : public aura::WindowObserver {
 
  private:
   int resize_calls_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowObserver);
 };
 
 // Test that switching between different user won't change the activated windows

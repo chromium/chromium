@@ -10,7 +10,12 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -70,5 +75,35 @@ public class RequestDesktopUtils {
         new UkmRecorder.Bridge().recordEventWithIntegerMetric(tab.getWebContents(),
                 "Android.ScreenRotation", "TargetDeviceOrientation",
                 isLandscape ? DeviceOrientation2.LANDSCAPE : DeviceOrientation2.PORTRAIT);
+    }
+
+    /**
+     * Set or remove a site exception with URL for {@link ContentSettingsType.REQUEST_DESKTOP_SITE}.
+     * @param browserContextHandle Target browser context whose content settings needs to be
+     *         updated.
+     * @param url  {@link GURL} for the site that changes in desktop user agent.
+     * @param useDesktopUserAgent True if the input |url| needs to use desktop user agent.
+     */
+    public static void setRequestDesktopSiteContentSettingsForUrl(
+            BrowserContextHandle browserContextHandle, GURL url, boolean useDesktopUserAgent) {
+        @ContentSettingValues
+        int defaultValue = WebsitePreferenceBridge.getDefaultContentSetting(
+                browserContextHandle, ContentSettingsType.REQUEST_DESKTOP_SITE);
+        @ContentSettingValues
+        int contentSettingValue;
+
+        assert defaultValue == ContentSettingValues.ALLOW
+                || defaultValue == ContentSettingValues.BLOCK;
+        boolean blockDesktopGlobally = defaultValue == ContentSettingValues.BLOCK;
+
+        if (useDesktopUserAgent) {
+            contentSettingValue = blockDesktopGlobally ? ContentSettingValues.ALLOW
+                                                       : ContentSettingValues.DEFAULT;
+        } else {
+            contentSettingValue = blockDesktopGlobally ? ContentSettingValues.DEFAULT
+                                                       : ContentSettingValues.BLOCK;
+        }
+        WebsitePreferenceBridge.setContentSettingDefaultScope(browserContextHandle,
+                ContentSettingsType.REQUEST_DESKTOP_SITE, url, url, contentSettingValue);
     }
 }

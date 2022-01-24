@@ -22,7 +22,7 @@ CommitRequestEvent::CommitRequestEvent(
       contributing_types_(contributing_types),
       request_(request) {}
 
-CommitRequestEvent::~CommitRequestEvent() {}
+CommitRequestEvent::~CommitRequestEvent() = default;
 
 std::unique_ptr<ProtocolEvent> CommitRequestEvent::Clone() const {
   return std::make_unique<CommitRequestEvent>(timestamp_, num_items_,

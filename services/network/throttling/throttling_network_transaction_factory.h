@@ -26,6 +26,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransactionFactory
  public:
   explicit ThrottlingNetworkTransactionFactory(
       net::HttpNetworkSession* session);
+
+  ThrottlingNetworkTransactionFactory(
+      const ThrottlingNetworkTransactionFactory&) = delete;
+  ThrottlingNetworkTransactionFactory& operator=(
+      const ThrottlingNetworkTransactionFactory&) = delete;
+
   ~ThrottlingNetworkTransactionFactory() override;
 
   // net::HttpTransactionFactory methods:
@@ -36,8 +42,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransactionFactory
 
  private:
   std::unique_ptr<net::HttpTransactionFactory> network_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottlingNetworkTransactionFactory);
 };
 
 }  // namespace network

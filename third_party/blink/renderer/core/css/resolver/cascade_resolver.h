@@ -51,12 +51,17 @@ class CORE_EXPORT CascadeResolver {
   // https://drafts.csswg.org/css-variables/#animation-tainted
   bool AllowSubstitution(CSSVariableData*) const;
 
-  // If the incoming origin is kAuthor, collect flags from 'property'.
-  // AuthorFlags() can then later be used to see which flags have been observed.
-  void CollectAuthorFlags(const CSSProperty& property, CascadeOrigin origin) {
-    author_flags_ |=
-        (origin == CascadeOrigin::kAuthor ? property.GetFlags() : 0);
+  // Collects CSSProperty::Flags from the given property. The Flags() function
+  // can then be used to see which flags have been observed..
+  void CollectFlags(const CSSProperty& property, CascadeOrigin origin) {
+    CSSProperty::Flags flags = property.GetFlags();
+    author_flags_ |= (origin == CascadeOrigin::kAuthor ? flags : 0);
+    flags_ |= flags;
   }
+
+  CSSProperty::Flags Flags() const { return flags_; }
+
+  // Like Flags, but for the author origin only.
   CSSProperty::Flags AuthorFlags() const { return author_flags_; }
 
   // Automatically locks and unlocks the given property. (See
@@ -108,6 +113,7 @@ class CORE_EXPORT CascadeResolver {
   CascadeFilter filter_;
   const uint8_t generation_ = 0;
   CSSProperty::Flags author_flags_ = 0;
+  CSSProperty::Flags flags_ = 0;
 
   // A very simple cache for CSSPendingSubstitutionValues. We cache only the
   // most recently parsed CSSPendingSubstitutionValue, such that consecutive

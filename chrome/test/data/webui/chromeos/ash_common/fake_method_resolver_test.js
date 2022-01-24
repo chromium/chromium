@@ -56,4 +56,13 @@ export function fakeMethodResolverTestSuite() {
       assertEquals(second_expected, result);
     });
   });
+
+  test('AddingMethodWithDelayedResult', () => {
+    resolver.register('foo');
+    const expected = {'foo': 'bar'};
+    resolver.setResult('foo', expected);
+    return resolver.resolveMethodWithDelay('foo', 1).then((result) => {
+      assertEquals(expected, result);
+    });
+  });
 }

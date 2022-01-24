@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "chrome/browser/web_applications/components/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "url/gurl.h"
 
 namespace web_app {

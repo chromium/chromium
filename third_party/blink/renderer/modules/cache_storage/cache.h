@@ -56,6 +56,9 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
         mojo::PendingAssociatedRemote<mojom::blink::CacheStorageCache>,
         scoped_refptr<base::SingleThreadTaskRunner>);
 
+  Cache(const Cache&) = delete;
+  Cache& operator=(const Cache&) = delete;
+
   // From Cache.idl:
   ScriptPromise match(ScriptState* script_state,
                       const V8RequestInfo* request,
@@ -127,8 +130,6 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
   Member<CacheStorageBlobClientList> blob_client_list_;
 
   mojo::AssociatedRemote<mojom::blink::CacheStorageCache> cache_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cache);
 };
 
 }  // namespace blink

@@ -59,7 +59,7 @@ SignInInternalsHandlerIOS::~SignInInternalsHandlerIOS() {
 }
 
 void SignInInternalsHandlerIOS::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getSigninInfo",
       base::BindRepeating(&SignInInternalsHandlerIOS::HandleGetSignInInfo,
                           base::Unretained(this)));

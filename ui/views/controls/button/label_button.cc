@@ -15,6 +15,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
@@ -22,7 +24,6 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -53,7 +54,7 @@ LabelButton::LabelButton(PressedCallback callback,
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
 
-  SetAnimationDuration(base::TimeDelta::FromMilliseconds(170));
+  SetAnimationDuration(base::Milliseconds(170));
   SetTextInternal(text);
 }
 
@@ -67,7 +68,7 @@ LabelButton::~LabelButton() {
 gfx::ImageSkia LabelButton::GetImage(ButtonState for_state) const {
   for_state = ImageStateForState(for_state);
   return GetImageSkiaFromImageModel(button_state_image_models_[for_state],
-                                    GetNativeTheme());
+                                    GetColorProvider());
 }
 
 void LabelButton::SetImage(ButtonState for_state, const gfx::ImageSkia& image) {
@@ -551,8 +552,8 @@ gfx::Size LabelButton::GetUnclampedSizeWithoutLabel() const {
     size.Enlarge(GetImageLabelSpacing(), 0);
 
   // Make the size at least as large as the minimum size needed by the border.
-  if (border())
-    size.SetToMax(border()->GetMinimumSize());
+  if (GetBorder())
+    size.SetToMax(GetBorder()->GetMinimumSize());
 
   return size;
 }
@@ -587,13 +588,13 @@ void LabelButton::ResetColorsFromNativeTheme() {
     return;
   }
 
-  const ui::NativeTheme* theme = GetNativeTheme();
+  const ui::ColorProvider* color_provider = GetColorProvider();
   // Since this is a LabelButton, use the label colors.
   SkColor colors[STATE_COUNT] = {
-      theme->GetSystemColor(ui::NativeTheme::kColorId_LabelEnabledColor),
-      theme->GetSystemColor(ui::NativeTheme::kColorId_LabelEnabledColor),
-      theme->GetSystemColor(ui::NativeTheme::kColorId_LabelEnabledColor),
-      theme->GetSystemColor(ui::NativeTheme::kColorId_LabelDisabledColor),
+      color_provider->GetColor(ui::kColorLabelForeground),
+      color_provider->GetColor(ui::kColorLabelForeground),
+      color_provider->GetColor(ui::kColorLabelForeground),
+      color_provider->GetColor(ui::kColorLabelForegroundDisabled),
   };
 
   label_->SetBackground(nullptr);

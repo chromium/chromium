@@ -9,7 +9,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace auction_worklet {
 

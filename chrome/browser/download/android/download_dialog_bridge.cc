@@ -53,6 +53,7 @@ void DownloadDialogBridge::ShowDialog(
     const base::FilePath& suggested_path,
     bool supports_later_dialog,
     bool show_date_time_picker,
+    bool is_incognito,
     DialogCallback dialog_callback) {
   if (!native_window)
     return;
@@ -89,7 +90,7 @@ void DownloadDialogBridge::ShowDialog(
       static_cast<int>(dialog_type),
       base::android::ConvertUTF8ToJavaString(env,
                                              suggested_path.AsUTF8Unsafe()),
-      supports_later_dialog);
+      supports_later_dialog, is_incognito);
 }
 
 void DownloadDialogBridge::OnComplete(

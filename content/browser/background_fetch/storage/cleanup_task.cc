@@ -62,12 +62,8 @@ void CleanupTask::DidGetActiveUniqueIds(
       return;
   }
 
-  std::vector<std::string> active_unique_id_vector;
-  active_unique_id_vector.reserve(active_unique_id_data.size());
-  for (const auto& entry : active_unique_id_data)
-    active_unique_id_vector.push_back(entry.second);
-  base::flat_set<std::string> active_unique_ids(
-      std::move(active_unique_id_vector));
+  auto active_unique_ids = base::MakeFlatSet<std::string>(
+      active_unique_id_data, {}, &std::pair<int64_t, std::string>::second);
 
   for (const auto& entry : registration_data) {
     int64_t service_worker_registration_id = entry.first;

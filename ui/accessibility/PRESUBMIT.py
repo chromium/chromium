@@ -4,7 +4,9 @@
 
 """Presubmit script for ui/accessibility."""
 
-import os, re, json
+import json
+import os
+import re
 
 USE_PYTHON3 = True
 
@@ -29,7 +31,7 @@ def CamelToLowerHacker(str):
 # Given a full path to an IDL or MOJOM file containing enum definitions,
 # parse the file for enums and return a dict mapping the enum name
 # to a list of values for that enum.
-def GetEnumsFromFile(fullpath):
+def GetEnumsFromFile(fullpath, get_raw_enum_value=False):
   enum_name = None
   enums = {}
   for line in open(fullpath).readlines():
@@ -53,8 +55,15 @@ def GetEnumsFromFile(fullpath):
     if not enum_name:
       continue
 
-    # If we're inside an enum definition, add the first string consisting of
-    # alphanumerics plus underscore ("\w") to the list of values for that enum.
+    # We're now inside of a enum definition.
+    # First, if requested, add the raw line.
+    if get_raw_enum_value:
+      enums.setdefault(enum_name, [])
+      enums[enum_name].append(line)
+      continue
+
+    # Add the first string consisting of alphanumerics plus underscore ("\w") to
+    # the list of values for that enum.
     m = re.search('([\w]+)', line)
     if m:
       enums.setdefault(enum_name, [])
@@ -170,6 +179,44 @@ def CheckEnumsMatch(input_api, output_api):
                    'AriaCurrentState', errs, output_api)
   return errs
 
+def CheckAXEnumsOrdinals(input_api, output_api):
+  repo_root = input_api.change.RepositoryRoot()
+  ax_enums = GetEnumsFromFile(
+      os.path.join(repo_root, AX_MOJOM), get_raw_enum_value=True)
+
+  # Find all enums containing enum values with ordinals and save each enum value
+  # as a pair e.g. (kEnumValue, 100).
+  enums_with_ordinal_values = {}
+  for enum_name in ax_enums:
+    for enum_value in ax_enums[enum_name]:
+      m = re.search("([\w]+) = ([\d]+)", enum_value)
+      if not m:
+        continue
+
+      enums_with_ordinal_values.setdefault(enum_name, [])
+      enums_with_ordinal_values[enum_name].append(m.groups(1))
+
+  # Now, do the validation for each enum.
+  errs = []
+  for enum_name in enums_with_ordinal_values:
+    # This is expected to not be continuous.
+    if enum_name == "MarkerType":
+      continue
+
+    enum = enums_with_ordinal_values[enum_name]
+    enum.sort(key = lambda item: int(item[1]))
+    index = 0
+    for enum_value in enum:
+      if index == int(enum_value[1]):
+        index += 1
+        continue
+
+      errs.append(output_api.PresubmitError(
+          "Unexpected enum %s ordinal: %s = %s. Expected %d." % (
+              enum_name, enum_value[0], enum_value[1], index)))
+
+  return errs
+
 # Given a full path to c++ header, return an array of the first static
 # constexpr defined. (Note there can be more than one defined in a C++
 # header)
@@ -249,6 +296,7 @@ def CheckChangeOnUpload(input_api, output_api):
     path = path.replace('\\', '/')
     if AX_MOJOM == path:
       errs.extend(CheckEnumsMatch(input_api, output_api))
+      errs.extend(CheckAXEnumsOrdinals(input_api, output_api))
 
     if AX_MODE_HEADER == path:
       errs.extend(CheckModesMatch(input_api, output_api))

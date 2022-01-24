@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/dc_layer_overlay.h"
@@ -31,6 +30,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   OverlayProcessorWin(
       OutputSurface* output_surface,
       std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor);
+
+  OverlayProcessorWin(const OverlayProcessorWin&) = delete;
+  OverlayProcessorWin& operator=(const OverlayProcessorWin&) = delete;
+
   ~OverlayProcessorWin() override;
 
   bool IsOverlaySupported() const override;
@@ -81,8 +84,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor_;
 
   bool is_video_capture_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayProcessorWin);
 };
 
 }  // namespace viz

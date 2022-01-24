@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_INSTALLER_FACTORY_H_
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_INSTALLER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -24,6 +23,9 @@ class PluginVmInstallerFactory : public BrowserContextKeyedServiceFactory {
   static PluginVmInstaller* GetForProfile(Profile* profile);
   static PluginVmInstallerFactory* GetInstance();
 
+  PluginVmInstallerFactory(const PluginVmInstallerFactory&) = delete;
+  PluginVmInstallerFactory& operator=(const PluginVmInstallerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<PluginVmInstallerFactory>;
 
@@ -35,8 +37,6 @@ class PluginVmInstallerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmInstallerFactory);
 };
 
 }  // namespace plugin_vm

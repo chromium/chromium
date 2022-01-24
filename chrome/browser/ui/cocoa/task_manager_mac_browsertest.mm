@@ -7,7 +7,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "base/strings/pattern.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
@@ -42,6 +41,10 @@ using browsertest_util::WaitForTaskManagerRows;
 class TaskManagerMacTest : public InProcessBrowserTest {
  public:
   TaskManagerMacTest() {}
+
+  TaskManagerMacTest(const TaskManagerMacTest&) = delete;
+  TaskManagerMacTest& operator=(const TaskManagerMacTest&) = delete;
+
   ~TaskManagerMacTest() override {}
 
   void SetUpOnMainThread() override {
@@ -113,9 +116,6 @@ class TaskManagerMacTest : public InProcessBrowserTest {
     }
     return -1;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerMacTest);
 };
 
 // Tests that all defined columns have a corresponding string IDs for keying
@@ -167,7 +167,6 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, ColumnsSettingsAreRestored) {
   // be nice to fake a click with -performClick: but that doesn't work (see
   // http://www.cocoabuilder.com/archive/cocoa/177610-programmatically-click-column-header-in-nstableview.html).
   bool is_sorted = false;
-  int sorted_col_id = -1;
   for (NSTableColumn* column in tableColumns) {
     if ([column isHidden])
       continue;
@@ -177,7 +176,6 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, ColumnsSettingsAreRestored) {
           [[column sortDescriptorPrototype] reversedSortDescriptor];
       [table setSortDescriptors:@[ newSortDescriptor ]];
       is_sorted = true;
-      sorted_col_id = [[column identifier] intValue];
       break;
     }
   }
@@ -206,8 +204,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   chrome::ShowTaskManager(browser());
 
   // Set up a total of three tabs in different processes.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.com", "/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title2.html")));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("b.com", "/title2.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,

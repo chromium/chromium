@@ -21,8 +21,8 @@
 #include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/termina_installer.h"
-#include "chrome/browser/chromeos/vm_shutdown_observer.h"
-#include "chrome/browser/chromeos/vm_starting_observer.h"
+#include "chrome/browser/ash/vm_shutdown_observer.h"
+#include "chrome/browser/ash/vm_starting_observer.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/dbus/anomaly_detector/anomaly_detector.pb.h"
@@ -199,9 +199,12 @@ class CrostiniManager : public KeyedService,
 
   struct RestartOptions {
     bool start_vm_only = false;
+    bool stop_after_lxd_available = false;
     // These two options only affect new containers.
     absl::optional<std::string> container_username;
     absl::optional<int64_t> disk_size_bytes;
+    absl::optional<std::string> image_server_url;
+    absl::optional<std::string> image_alias;
 
     RestartOptions();
     ~RestartOptions();
@@ -213,6 +216,10 @@ class CrostiniManager : public KeyedService,
   static CrostiniManager* GetForProfile(Profile* profile);
 
   explicit CrostiniManager(Profile* profile);
+
+  CrostiniManager(const CrostiniManager&) = delete;
+  CrostiniManager& operator=(const CrostiniManager&) = delete;
+
   ~CrostiniManager() override;
 
   base::WeakPtr<CrostiniManager> GetWeakPtr();
@@ -249,7 +256,7 @@ class CrostiniManager : public KeyedService,
       // The path to the disk image, including the name of
       // the image itself. The image name should match the
       // name of the VM that it will be used for.
-      const base::FilePath& disk_path,
+      const std::string& vm_name,
       // The storage location for the disk image
       vm_tools::concierge::StorageLocation storage_location,
       // The logical size of the disk image, in bytes
@@ -262,7 +269,7 @@ class CrostiniManager : public KeyedService,
   // finishes.
   void DestroyDiskImage(
       // The path to the disk image, including the name of the image itself.
-      const base::FilePath& disk_path,
+      const std::string& vm_name,
       BoolCallback callback);
 
   using ListVmDisksCallback =
@@ -301,6 +308,8 @@ class CrostiniManager : public KeyedService,
   // CiceroneClient::CreateLxdContainer. |callback| is called immediately if the
   // arguments are bad, or once the container has been created.
   void CreateLxdContainer(ContainerId container_id,
+                          absl::optional<std::string> opt_image_server_url,
+                          absl::optional<std::string> opt_image_alias,
                           CrostiniResultCallback callback);
 
   // Checks the arguments for deleting an Lxd container via
@@ -347,7 +356,6 @@ class CrostiniManager : public KeyedService,
   // CiceroneClient::UpgradeContainer. An UpgradeProgressObserver should be used
   // to monitor further results.
   void UpgradeContainer(const ContainerId& key,
-                        ContainerVersion source_version,
                         ContainerVersion target_version,
                         CrostiniResultCallback callback);
 
@@ -451,6 +459,12 @@ class CrostiniManager : public KeyedService,
                                        CrostiniResultCallback callback,
                                        RestartObserver* observer = nullptr);
 
+  // Set options for the next restart of |container_id|. The restart will
+  // consume the options.
+  // TODO(crbug:1261319): Get rid of the need for this.
+  void SetRestartOptions(ContainerId container_id,
+                         RestartOptions restart_options);
+
   // Aborts a restart. A "next" restarter with the same ContainerId will run, if
   // there is one. |callback| will be called once the restart has finished
   // aborting
@@ -497,12 +511,12 @@ class CrostiniManager : public KeyedService,
       UpgradeContainerProgressObserver* observer);
 
   // Add/remove vm shutdown observers.
-  void AddVmShutdownObserver(chromeos::VmShutdownObserver* observer);
-  void RemoveVmShutdownObserver(chromeos::VmShutdownObserver* observer);
+  void AddVmShutdownObserver(ash::VmShutdownObserver* observer);
+  void RemoveVmShutdownObserver(ash::VmShutdownObserver* observer);
 
   // Add/remove vm starting observers.
-  void AddVmStartingObserver(chromeos::VmStartingObserver* observer);
-  void RemoveVmStartingObserver(chromeos::VmStartingObserver* observer);
+  void AddVmStartingObserver(ash::VmStartingObserver* observer);
+  void RemoveVmStartingObserver(ash::VmStartingObserver* observer);
 
   // AnomalyDetectorClient::Observer:
   void OnGuestFileCorruption(
@@ -622,7 +636,6 @@ class CrostiniManager : public KeyedService,
   bool IsContainerUpgradeable(const ContainerId& container_id) const;
   bool ShouldPromptContainerUpgrade(const ContainerId& container_id) const;
   void UpgradePromptShown(const ContainerId& container_id);
-  void EnsureVmRunning(const ContainerId& key, CrostiniResultCallback callback);
   bool IsUncleanStartup() const;
   void SetUncleanStartupForTesting(bool is_unclean_startup);
   void RemoveUncleanSshfsMounts();
@@ -644,6 +657,8 @@ class CrostiniManager : public KeyedService,
   void MountCrostiniFiles(ContainerId container_id,
                           CrostiniResultCallback callback,
                           bool background);
+
+  void GetInstallLocation(base::OnceCallback<void(base::FilePath)> callback);
 
  private:
   class CrostiniRestarter;
@@ -849,6 +864,9 @@ class CrostiniManager : public KeyedService,
       export_lxd_container_callbacks_;
   std::map<ContainerId, CrostiniResultCallback> import_lxd_container_callbacks_;
 
+  // Restart options that are required to start particular containers
+  std::map<ContainerId, RestartOptions> restart_options_;
+
   // Callbacks to run after Tremplin is started, keyed by vm_name. These are
   // used if StartTerminaVm completes but we need to wait from Tremplin to
   // start.
@@ -884,8 +902,8 @@ class CrostiniManager : public KeyedService,
   base::ObserverList<UpgradeContainerProgressObserver>::Unchecked
       upgrade_container_progress_observers_;
 
-  base::ObserverList<chromeos::VmShutdownObserver> vm_shutdown_observers_;
-  base::ObserverList<chromeos::VmStartingObserver> vm_starting_observers_;
+  base::ObserverList<ash::VmShutdownObserver> vm_shutdown_observers_;
+  base::ObserverList<ash::VmStartingObserver> vm_starting_observers_;
 
   // Only one restarter flow is actually running for a given container, other
   // restarters will just have their callback called when the running restarter
@@ -932,8 +950,6 @@ class CrostiniManager : public KeyedService,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<CrostiniManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniManager);
 };
 
 }  // namespace crostini

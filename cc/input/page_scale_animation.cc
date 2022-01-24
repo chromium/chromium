@@ -41,7 +41,6 @@ gfx::Vector2dF InterpolateBetween(const gfx::Vector2dF& start,
 namespace cc {
 
 using base::TimeTicks;
-using base::TimeDelta;
 
 std::unique_ptr<PageScaleAnimation> PageScaleAnimation::Create(
     const gfx::Vector2dF& start_scroll_offset,
@@ -76,7 +75,7 @@ void PageScaleAnimation::ZoomTo(const gfx::Vector2dF& target_scroll_offset,
   target_page_scale_factor_ = target_page_scale_factor;
   target_scroll_offset_ = target_scroll_offset;
   ClampTargetScrollOffset();
-  duration_ = TimeDelta::FromSecondsD(duration);
+  duration_ = base::Seconds(duration);
 
   if (start_page_scale_factor_ == target_page_scale_factor) {
     start_anchor_ = start_scroll_offset_;
@@ -95,7 +94,7 @@ void PageScaleAnimation::ZoomWithAnchor(const gfx::Vector2dF& anchor,
                                         double duration) {
   start_anchor_ = anchor;
   target_page_scale_factor_ = target_page_scale_factor;
-  duration_ = TimeDelta::FromSecondsD(duration);
+  duration_ = base::Seconds(duration);
 
   // We start zooming out from the anchor tapped by the user. But if
   // the target scale is impossible to attain without hitting the root layer

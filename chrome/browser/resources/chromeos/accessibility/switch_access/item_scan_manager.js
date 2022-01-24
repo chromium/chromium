@@ -394,27 +394,27 @@ export class ItemScanManager extends ItemNavigatorInterface {
 
     new RepeatedEventHandler(
         this.desktop_, chrome.automation.EventType.FOCUS,
-        this.onFocusChange_.bind(this));
+        event => this.onFocusChange_(event));
 
     // ARC++ fires SCROLL_POSITION_CHANGED.
     new RepeatedEventHandler(
         this.desktop_, chrome.automation.EventType.SCROLL_POSITION_CHANGED,
-        this.onScrollChange_.bind(this));
+        () => this.onScrollChange_());
 
     // Web and Views use AXEventGenerator, which fires
     // separate horizontal and vertical events.
     new RepeatedEventHandler(
         this.desktop_,
         chrome.automation.EventType.SCROLL_HORIZONTAL_POSITION_CHANGED,
-        this.onScrollChange_.bind(this));
+        () => this.onScrollChange_());
     new RepeatedEventHandler(
         this.desktop_,
         chrome.automation.EventType.SCROLL_VERTICAL_POSITION_CHANGED,
-        this.onScrollChange_.bind(this));
+        () => this.onScrollChange_());
 
     new RepeatedTreeChangeHandler(
         chrome.automation.TreeChangeObserverFilter.ALL_TREE_CHANGES,
-        this.onTreeChange_.bind(this), {
+        treeChange => this.onTreeChange_(treeChange), {
           predicate: (treeChange) =>
               this.group_.findChild(treeChange.target) != null ||
               this.group_.isEquivalentTo(treeChange.target)
@@ -427,7 +427,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
           chrome.automation.EventType.MENU_START,
           chrome.automation.EventType.SHOW
         ],
-        this.onModalDialog_.bind(this))
+        event => this.onModalDialog_(event))
         .start();
   }
 

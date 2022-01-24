@@ -8,8 +8,9 @@
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
+#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -100,8 +101,8 @@ base::FilePath SandboxQuotaObserver::GetUsageCachePath(
   DCHECK(sandbox_file_util_);
   base::File::Error error = base::File::FILE_OK;
   base::FilePath path =
-      SandboxFileSystemBackendDelegate::GetUsageCachePathForOriginAndType(
-          sandbox_file_util_, url.origin(), url.type(), &error);
+      SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
+          sandbox_file_util_, url.storage_key(), url.type(), &error);
   if (error != base::File::FILE_OK) {
     LOG(WARNING) << "Could not get usage cache path for: " << url.DebugString();
     return base::FilePath();

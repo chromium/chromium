@@ -9,10 +9,9 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/child_process_launcher.h"
@@ -29,6 +28,9 @@ namespace content {
 class BrowserMessageFilter::Internal : public IPC::MessageFilter {
  public:
   explicit Internal(BrowserMessageFilter* filter) : filter_(filter) {}
+
+  Internal(const Internal&) = delete;
+  Internal& operator=(const Internal&) = delete;
 
  private:
   ~Internal() override {}
@@ -103,8 +105,6 @@ class BrowserMessageFilter::Internal : public IPC::MessageFilter {
   }
 
   scoped_refptr<BrowserMessageFilter> filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(Internal);
 };
 
 BrowserMessageFilter::BrowserMessageFilter() = default;

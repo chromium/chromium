@@ -35,6 +35,8 @@ class CORE_EXPORT MathMLElement : public Element {
 
   bool IsTokenElement() const;
 
+  virtual bool IsGroupingElement() const { return false; }
+
  protected:
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(

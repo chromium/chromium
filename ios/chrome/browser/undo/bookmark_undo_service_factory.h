@@ -25,6 +25,10 @@ class BookmarkUndoServiceFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static BookmarkUndoServiceFactory* GetInstance();
 
+  BookmarkUndoServiceFactory(const BookmarkUndoServiceFactory&) = delete;
+  BookmarkUndoServiceFactory& operator=(const BookmarkUndoServiceFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<BookmarkUndoServiceFactory>;
 
@@ -34,8 +38,6 @@ class BookmarkUndoServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkUndoServiceFactory);
 };
 
 }  // namespace ios

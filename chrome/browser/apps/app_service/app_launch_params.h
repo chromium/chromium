@@ -23,13 +23,13 @@ struct AppLaunchParams {
   AppLaunchParams(const std::string& app_id,
                   apps::mojom::LaunchContainer container,
                   WindowOpenDisposition disposition,
-                  apps::mojom::AppLaunchSource source,
+                  apps::mojom::LaunchSource launch_source,
                   int64_t display_id = display::kInvalidDisplayId);
 
   AppLaunchParams(const std::string& app_id,
                   apps::mojom::LaunchContainer container,
                   WindowOpenDisposition disposition,
-                  apps::mojom::AppLaunchSource source,
+                  apps::mojom::LaunchSource launch_source,
                   int64_t display_id,
                   const std::vector<base::FilePath>& files,
                   const apps::mojom::IntentPtr& intentPtr);
@@ -77,13 +77,11 @@ struct AppLaunchParams {
 
   // Record where the app is launched from for tracking purpose.
   // Different app may have their own enumeration of sources.
-  // TODO(crbug.com/1113502): Reconcile AppLaunchSource vs. LaunchSource vs.
-  // app_runtime::LaunchSource.
-  apps::mojom::AppLaunchSource source;
+  apps::mojom::LaunchSource launch_source;
 
   // The id of the display from which the app is launched.
-  // display::kInvalidDisplayId means that the display does not exist or is not
-  // set.
+  // display::kInvalidDisplayId means that the default display for new windows
+  // will be used. See `display::Screen` for details.
   int64_t display_id;
 
   // The files the application was launched with. Empty if the application was

@@ -70,6 +70,12 @@ export class CrToolbarElement extends PolymerElement {
         value: 900,
       },
 
+      alwaysShowLogo: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       /** @private */
       showingSearch_: {
         type: Boolean,

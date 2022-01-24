@@ -84,9 +84,8 @@ AttestationFlow::AttestationFlow(std::unique_ptr<ServerProxy> server_proxy,
     : attestation_client_(AttestationClient::Get()),
       server_proxy_(std::move(server_proxy)),
       crypto_key_type_(crypto_key_type),
-      ready_timeout_(base::TimeDelta::FromSeconds(kReadyTimeoutInSeconds)),
-      retry_delay_(
-          base::TimeDelta::FromMilliseconds(kRetryDelayInMilliseconds)) {}
+      ready_timeout_(base::Seconds(kReadyTimeoutInSeconds)),
+      retry_delay_(base::Milliseconds(kRetryDelayInMilliseconds)) {}
 
 AttestationFlow::AttestationFlow(std::unique_ptr<ServerProxy> server_proxy)
     : AttestationFlow(std::move(server_proxy), ::attestation::KEY_TYPE_RSA) {}

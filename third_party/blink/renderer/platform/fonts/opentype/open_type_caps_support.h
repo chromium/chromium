@@ -20,9 +20,11 @@ class PLATFORM_EXPORT OpenTypeCapsSupport {
 
  public:
   OpenTypeCapsSupport();
-  OpenTypeCapsSupport(const HarfBuzzFace*,
-                      FontDescription::FontVariantCaps requested_caps,
-                      hb_script_t);
+  OpenTypeCapsSupport(
+      const HarfBuzzFace*,
+      FontDescription::FontVariantCaps requested_caps,
+      FontDescription::FontSynthesisSmallCaps font_synthesis_small_caps,
+      hb_script_t);
 
   bool NeedsRunCaseSplitting();
   bool NeedsSyntheticFont(SmallCapsIterator::SmallCapsBehavior run_case);
@@ -39,9 +41,13 @@ class PLATFORM_EXPORT OpenTypeCapsSupport {
   bool SupportsFeature(hb_script_t, uint32_t tag) const;
   bool SupportsAatFeature(uint32_t tag) const;
   bool SupportsOpenTypeFeature(hb_script_t, uint32_t tag) const;
+  bool SyntheticSmallCapsAllowed() const;
 
-  const HarfBuzzFace* harfbuzz_face_;
-  FontDescription::FontVariantCaps requested_caps_;
+  const HarfBuzzFace* harfbuzz_face_ = nullptr;
+  FontDescription::FontVariantCaps requested_caps_ =
+      FontDescription::kCapsNormal;
+  FontDescription::FontSynthesisSmallCaps font_synthesis_small_caps_ =
+      FontDescription::kAutoFontSynthesisSmallCaps;
 
   enum class FontSupport {
     kFull,

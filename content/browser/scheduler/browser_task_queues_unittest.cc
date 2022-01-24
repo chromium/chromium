@@ -37,10 +37,8 @@ class BrowserTaskQueuesTest : public testing::Test {
   BrowserTaskQueuesTest()
       : sequence_manager_(CreateSequenceManagerOnCurrentThreadWithPump(
             base::MessagePump::Create(base::MessagePumpType::DEFAULT))),
-        queues_(std::make_unique<BrowserTaskQueues>(
-            BrowserThread::UI,
-            sequence_manager_.get(),
-            sequence_manager_->GetRealTimeDomain())),
+        queues_(std::make_unique<BrowserTaskQueues>(BrowserThread::UI,
+                                                    sequence_manager_.get())),
         handle_(queues_->GetHandle()) {
     sequence_manager_->SetDefaultTaskRunner(handle_->GetDefaultTaskRunner());
   }

@@ -26,19 +26,23 @@ void SetSchemeAndProtocol(const std::string& service_type,
   } else if (service_type == ZeroconfScannerDetector::kEsclServiceType) {
     scheme_out = "http";
     protocol_out = chromeos::ScanProtocol::kEscl;
+  } else if (service_type ==
+             ZeroconfScannerDetector::kGenericScannerServiceType) {
+    protocol_out = chromeos::ScanProtocol::kLegacyNetwork;
   } else {
     NOTREACHED() << "Zeroconf scanner with unknown service type: "
                  << service_type;
   }
 }
 
-// Creates a device name compatible with the sane-airscan backend. Returns the
+// Creates a device name compatible with the given backend. Returns the
 // name on success and an empty string on failure.
 std::string CreateDeviceName(const std::string& name,
                              const std::string& scheme,
                              const std::string& rs,
                              const net::IPAddress& ip_address,
-                             int port) {
+                             int port,
+                             const std::string& backend_prefix) {
   std::string path;
   if (rs == "none")
     path = "eSCL/";
@@ -61,14 +65,13 @@ std::string CreateDeviceName(const std::string& name,
                << url.possibly_invalid_spec();
     return "";
   }
-
-  return base::StringPrintf("airscan:escl:%s:%s", sanitized_name.c_str(),
-                            url.spec().c_str());
+  return base::StringPrintf("%s:%s:%s", backend_prefix.c_str(),
+                            sanitized_name.c_str(), url.spec().c_str());
 }
 
 }  // namespace
 
-absl::optional<chromeos::Scanner> CreateSaneAirscanScanner(
+absl::optional<chromeos::Scanner> CreateSaneScanner(
     const std::string& name,
     const std::string& service_type,
     const std::string& rs,
@@ -78,8 +81,16 @@ absl::optional<chromeos::Scanner> CreateSaneAirscanScanner(
   std::string scheme;
   chromeos::ScanProtocol protocol = chromeos::ScanProtocol::kUnknown;
   SetSchemeAndProtocol(service_type, scheme, protocol);
-  const std::string device_name =
-      CreateDeviceName(name, scheme, rs, ip_address, port);
+  std::string device_name = "";
+  // If the name contains "EPSON" and is a generic service type, use the
+  // "epsonds:net" backend.
+  if (service_type == ZeroconfScannerDetector::kGenericScannerServiceType &&
+      base::StartsWith(name, "EPSON"))
+    device_name = base::StringPrintf("%s:%s", "epsonds:net",
+                                     ip_address.ToString().c_str());
+  else if (service_type != ZeroconfScannerDetector::kGenericScannerServiceType)
+    device_name =
+        CreateDeviceName(name, scheme, rs, ip_address, port, "airscan:escl");
   if (device_name.empty())
     return absl::nullopt;
 

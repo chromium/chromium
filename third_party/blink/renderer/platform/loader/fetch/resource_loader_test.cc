@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
+#include "third_party/blink/renderer/platform/testing/noop_web_url_loader.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -106,51 +107,6 @@ class ResourceLoaderTest : public testing::Test {
         MakeGarbageCollected<MockContextLifecycleNotifier>(),
         nullptr /* back_forward_cache_loader_helper */));
   }
-
- private:
-  class NoopWebURLLoader final : public WebURLLoader {
-   public:
-    explicit NoopWebURLLoader(
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-        : task_runner_(task_runner) {}
-    ~NoopWebURLLoader() override = default;
-    void LoadSynchronously(
-        std::unique_ptr<network::ResourceRequest> request,
-        scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-        bool pass_response_pipe_to_client,
-        bool no_mime_sniffing,
-        base::TimeDelta timeout_interval,
-        WebURLLoaderClient*,
-        WebURLResponse&,
-        absl::optional<WebURLError>&,
-        WebData&,
-        int64_t& encoded_data_length,
-        int64_t& encoded_body_length,
-        WebBlobInfo& downloaded_blob,
-        std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-            resource_load_info_notifier_wrapper) override {
-      NOTREACHED();
-    }
-    void LoadAsynchronously(
-        std::unique_ptr<network::ResourceRequest> request,
-        scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-        bool no_mime_sniffing,
-        std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-            resource_load_info_notifier_wrapper,
-        WebURLLoaderClient*) override {}
-
-    void Freeze(LoaderFreezeMode) override {}
-    void DidChangePriority(WebURLRequest::Priority, int) override {
-      NOTREACHED();
-    }
-    scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
-        override {
-      return task_runner_;
-    }
-
-   private:
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  };
 };
 
 std::ostream& operator<<(std::ostream& o, const ResourceLoaderTest::From& f) {
@@ -222,7 +178,7 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
   for (const auto& span : *buffer) {
-    data.Append(span.data(), span.size());
+    data.Append(span.data(), static_cast<wtf_size_t>(span.size()));
   }
   EXPECT_EQ(data.ToString(), "hello");
 }
@@ -247,7 +203,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndNonStream) {
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
   for (const auto& span : *buffer) {
-    data.Append(span.data(), span.size());
+    data.Append(span.data(), static_cast<wtf_size_t>(span.size()));
   }
   EXPECT_EQ(data.ToString(), "Hello World!");
 }
@@ -354,7 +310,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_Sync) {
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
   for (const auto& span : *buffer) {
-    data.Append(span.data(), span.size());
+    data.Append(span.data(), static_cast<wtf_size_t>(span.size()));
   }
   EXPECT_EQ(data.ToString(), "Hello World!");
 }
@@ -417,7 +373,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndNonStream) {
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
   for (const auto& span : *buffer) {
-    data.Append(span.data(), span.size());
+    data.Append(span.data(), static_cast<wtf_size_t>(span.size()));
   }
   EXPECT_EQ(data.ToString(), "Hello World!");
 }

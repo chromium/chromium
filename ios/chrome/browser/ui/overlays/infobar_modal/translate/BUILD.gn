@@ -53,7 +53,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/public/infobar_modal",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/translate:test_support",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars/coordinators:translate_public",
     "//ios/chrome/browser/ui/infobars/modals/test",
     "//ios/chrome/browser/ui/infobars/test",

@@ -62,6 +62,11 @@ class VulkanGLInterop::GLNonOwnedCompatibilityContext
     g_gl_context = this;
   }
 
+  GLNonOwnedCompatibilityContext(const GLNonOwnedCompatibilityContext&) =
+      delete;
+  GLNonOwnedCompatibilityContext& operator=(
+      const GLNonOwnedCompatibilityContext&) = delete;
+
   bool MakeCurrentImpl(gl::GLSurface* surface) override {
     // A GLNonOwnedCompatibilityContext may have set the GetRealCurrent()
     // pointer to itself, while re-using our EGL context. In these cases just
@@ -95,8 +100,6 @@ class VulkanGLInterop::GLNonOwnedCompatibilityContext
   }
 
   scoped_refptr<gl::GLSurface> surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLNonOwnedCompatibilityContext);
 };
 
 VulkanGLInterop::InFlightInteropDraw::InFlightInteropDraw(

@@ -44,9 +44,8 @@ public class IncognitoNotificationManager {
 
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(true /* preferCompat */,
+                        .createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.INCOGNITO,
-                                null /* remoteAppPackageName */,
                                 new NotificationMetadata(
                                         NotificationUmaTracker.SystemNotificationType
                                                 .CLOSE_INCOGNITO,

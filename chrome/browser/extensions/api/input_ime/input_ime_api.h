@@ -9,13 +9,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/input_method/input_method_engine_base.h"
+#include "chrome/browser/ash/input_method/input_method_engine_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/input_ime.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -26,8 +25,8 @@
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
-#include "ui/base/ime/chromeos/ime_bridge_observer.h"
-#include "ui/base/ime/chromeos/ime_engine_handler_interface.h"
+#include "ui/base/ime/ash/ime_bridge_observer.h"
+#include "ui/base/ime/ash/ime_engine_handler_interface.h"
 #include "ui/base/ime/text_input_flags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -39,11 +38,12 @@ class Profile;
 namespace ui {
 class IMEEngineHandlerInterface;
 
-using chromeos::InputMethodEngineBase;
-
-class ImeObserver : public InputMethodEngineBase::Observer {
+class ImeObserver : public ash::input_method::InputMethodEngineBase::Observer {
  public:
   ImeObserver(const std::string& extension_id, Profile* profile);
+
+  ImeObserver(const ImeObserver&) = delete;
+  ImeObserver& operator=(const ImeObserver&) = delete;
 
   ~ImeObserver() override = default;
 
@@ -106,8 +106,6 @@ class ImeObserver : public InputMethodEngineBase::Observer {
   extensions::api::input_ime::AutoCapitalizeType
   ConvertInputContextAutoCapitalize(
       IMEEngineHandlerInterface::InputContext input_context);
-
-  DISALLOW_COPY_AND_ASSIGN(ImeObserver);
 };
 
 }  // namespace ui
@@ -118,6 +116,10 @@ class ExtensionRegistry;
 
 class InputImeEventRouterFactory {
  public:
+  InputImeEventRouterFactory(const InputImeEventRouterFactory&) = delete;
+  InputImeEventRouterFactory& operator=(const InputImeEventRouterFactory&) =
+      delete;
+
   static InputImeEventRouterFactory* GetInstance();
   InputImeEventRouter* GetRouter(Profile* profile);
   void RemoveProfile(Profile* profile);
@@ -128,8 +130,6 @@ class InputImeEventRouterFactory {
   ~InputImeEventRouterFactory();
 
   std::map<Profile*, InputImeEventRouter*, ProfileCompare> router_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputImeEventRouterFactory);
 };
 
 class InputImeKeyEventHandledFunction : public ExtensionFunction {
@@ -199,6 +199,7 @@ class InputImeAPI : public BrowserContextKeyedAPI,
 
   // EventRouter::Observer implementation.
   void OnListenerAdded(const EventListenerInfo& details) override;
+  void OnListenerRemoved(const EventListenerInfo& details) override;
 
  private:
   friend class BrowserContextKeyedAPIFactory<InputImeAPI>;

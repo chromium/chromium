@@ -9,11 +9,11 @@
 // #import {CrSettingsPrefs} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {GoogleAssistantBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 /**
@@ -150,7 +150,7 @@ suite('GoogleAssistantHandler', function() {
     Polymer.dom.flush();
     const button = page.$$('#google-assistant-hotword-enable');
     const indicator = page.$$('#google-assistant-hotword-enable')
-                          .$$('cr-policy-pref-indicator');
+                          .shadowRoot.querySelector('cr-policy-pref-indicator');
     assertTrue(!!button);
     assertTrue(!!indicator);
     assertTrue(button.disabled);
@@ -197,9 +197,6 @@ suite('GoogleAssistantHandler', function() {
   });
 
   test('Deep link to retrain voice model', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
     page.setPrefValue('settings.voice_interaction.enabled', true);
     page.setPrefValue('settings.voice_interaction.hotword.enabled', true);
     page.setPrefValue(
@@ -212,7 +209,8 @@ suite('GoogleAssistantHandler', function() {
     settings.Router.getInstance().navigateTo(
         settings.routes.GOOGLE_ASSISTANT, params);
 
-    const deepLinkElement = page.$$('#retrain-voice-model').$$('cr-button');
+    const deepLinkElement =
+        page.$$('#retrain-voice-model').shadowRoot.querySelector('cr-button');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

@@ -108,6 +108,7 @@ export class LauncherResultsTableElement extends PolymerElement {
        result.title,
        result.description,
        result.resultType,
+       result.metricsType,
        result.displayType,
        result.score.toString(),
        ...this.flattenScores(result.rankerScores),

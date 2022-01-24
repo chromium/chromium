@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -21,6 +20,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_provider_source.h"
 #include "ui/events/event_source.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -102,6 +102,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
                             public ui::EventSource,
                             public FocusTraversable,
                             public ui::NativeThemeObserver,
+                            public ui::ColorProviderSource,
                             public ui::metadata::MetaDataProvider {
  public:
   METADATA_HEADER_BASE(Widget);
@@ -391,16 +392,21 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // associated widget. See Widget::LockPaintAsActive().
   class PaintAsActiveLock {
    public:
+    PaintAsActiveLock(const PaintAsActiveLock&) = delete;
+    PaintAsActiveLock& operator=(const PaintAsActiveLock&) = delete;
+
     virtual ~PaintAsActiveLock();
 
    protected:
     PaintAsActiveLock();
-
-    DISALLOW_COPY_AND_ASSIGN(PaintAsActiveLock);
   };
 
   Widget();
   explicit Widget(InitParams params);
+
+  Widget(const Widget&) = delete;
+  Widget& operator=(const Widget&) = delete;
+
   ~Widget() override;
 
   // Creates a decorated window Widget with the specified properties. The
@@ -687,11 +693,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   bool IsMinimized() const;
 
   // Accessors for fullscreen state.
-  // If `delay` is true, some underlying implementations will set their target
+  // If `delay` is given, some underlying implementations will set their target
   // fullscreen state and then post a delayed task to request the actual window
   // transition, in order to handle some platform-specific quirks in specific
   // fullscreen scenarios. See crbug.com/1210548 and crbug.com/1034783.
-  void SetFullscreen(bool fullscreen, bool delay = false);
+  void SetFullscreen(bool fullscreen, base::TimeDelta delay = {});
   bool IsFullscreen() const;
 
   // macOS: Sets whether the window can share fullscreen windows' spaces.
@@ -734,18 +740,15 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Returns the ThemeProvider that provides theme resources for this Widget.
   virtual const ui::ThemeProvider* GetThemeProvider() const;
 
+  // Returns a custom theme object suitable for use in a
+  // ColorProviderManager::Key. If this is null, the window has no custom theme.
+  virtual ui::ColorProviderManager::InitializerSupplier* GetCustomTheme() const;
+
   ui::NativeTheme* GetNativeTheme() {
     return const_cast<ui::NativeTheme*>(
         static_cast<const Widget*>(this)->GetNativeTheme());
   }
   virtual const ui::NativeTheme* GetNativeTheme() const;
-
-  // Returns the ui::ColorProvider associated with this Widget.
-  ui::ColorProvider* GetColorProvider() {
-    return const_cast<ui::ColorProvider*>(
-        static_cast<const Widget*>(this)->GetColorProvider());
-  }
-  const ui::ColorProvider* GetColorProvider() const;
 
   // Returns the FocusManager for this widget.
   // Note that all widgets in a widget hierarchy share the same focus manager.
@@ -1038,6 +1041,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Overridden from ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
+  // ui::ColorProviderSource:
+  const ui::ColorProvider* GetColorProvider() const override;
+
   // Set the native theme from which this widget gets color from.
   void SetNativeThemeForTest(ui::NativeTheme* native_theme) {
     SetNativeTheme(native_theme);
@@ -1211,7 +1217,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   ui::WindowShowState saved_show_state_ = ui::SHOW_STATE_DEFAULT;
 
   // The restored bounds used for the initial show. This is only used if
-  // |saved_show_state_| is maximized.
+  // |saved_show_state_| is maximized. initial_restored_bounds_ is in DIP units
+  // and is converted to pixels in DesktopWindowTreeHostWin::Show.
   gfx::Rect initial_restored_bounds_;
 
   // Focus is automatically set to the view provided by the delegate
@@ -1267,8 +1274,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
       native_theme_observation_{this};
 
   base::WeakPtrFactory<Widget> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Widget);
 };
 
 }  // namespace views

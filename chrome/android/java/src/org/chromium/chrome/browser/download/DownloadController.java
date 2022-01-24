@@ -121,6 +121,11 @@ public class DownloadController {
      */
     @CalledByNative
     private static void requestFileAccess(final long callbackId, WindowAndroid windowAndroid) {
+        if (windowAndroid == null) {
+            DownloadControllerJni.get().onAcquirePermissionResult(
+                    callbackId, /*granted=*/false, /*permissionToUpdate=*/null);
+            return;
+        }
         FileAccessPermissionHelper.requestFileAccessPermissionHelper(windowAndroid, result -> {
             DownloadControllerJni.get().onAcquirePermissionResult(
                     callbackId, result.first, result.second);

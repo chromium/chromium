@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/cdm_context.h"
@@ -36,6 +35,9 @@ class MEDIA_MOJO_EXPORT MojoDecryptorService final : public mojom::Decryptor {
   // |cdm_context_ref| is held.
   MojoDecryptorService(media::Decryptor* decryptor,
                        std::unique_ptr<CdmContextRef> cdm_context_ref);
+
+  MojoDecryptorService(const MojoDecryptorService&) = delete;
+  MojoDecryptorService& operator=(const MojoDecryptorService&) = delete;
 
   ~MojoDecryptorService() final;
 
@@ -110,8 +112,6 @@ class MEDIA_MOJO_EXPORT MojoDecryptorService final : public mojom::Decryptor {
 
   base::WeakPtr<MojoDecryptorService> weak_this_;
   base::WeakPtrFactory<MojoDecryptorService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDecryptorService);
 };
 
 }  // namespace media

@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class NativeRendererMessagingService;
@@ -20,6 +20,10 @@ class RuntimeHooksDelegate : public APIBindingHooksDelegate {
  public:
   explicit RuntimeHooksDelegate(
       NativeRendererMessagingService* messaging_service);
+
+  RuntimeHooksDelegate(const RuntimeHooksDelegate&) = delete;
+  RuntimeHooksDelegate& operator=(const RuntimeHooksDelegate&) = delete;
+
   ~RuntimeHooksDelegate() override;
 
   // Returns an absolute url for a path inside of an extension, as requested
@@ -71,8 +75,6 @@ class RuntimeHooksDelegate : public APIBindingHooksDelegate {
   // The messaging service to handle connect() and sendMessage() calls.
   // Guaranteed to outlive this object.
   NativeRendererMessagingService* const messaging_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(RuntimeHooksDelegate);
 };
 
 }  // namespace extensions

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_filter_helper.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_cache.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
@@ -117,27 +118,27 @@ PaintImage Image::ResizeAndOrientImage(
     float opacity,
     InterpolationQuality interpolation_quality) {
   IntSize size(image.width(), image.height());
-  size.Scale(image_scale.Width(), image_scale.Height());
+  size.Scale(image_scale.width(), image_scale.height());
   AffineTransform transform;
   if (orientation != ImageOrientationEnum::kDefault) {
     if (orientation.UsesWidthAsHeight())
       size = size.TransposedSize();
     transform *= orientation.TransformFromDefault(FloatSize(size));
   }
-  transform.ScaleNonUniform(image_scale.Width(), image_scale.Height());
+  transform.ScaleNonUniform(image_scale.width(), image_scale.height());
 
   if (size.IsEmpty())
     return PaintImage();
 
   if (transform.IsIdentity() && opacity == 1) {
     // Nothing to adjust, just use the original.
-    DCHECK_EQ(image.width(), size.Width());
-    DCHECK_EQ(image.height(), size.Height());
+    DCHECK_EQ(image.width(), size.width());
+    DCHECK_EQ(image.height(), size.height());
     return image;
   }
 
   const SkImageInfo info =
-      SkImageInfo::MakeN32(size.Width(), size.Height(), kPremul_SkAlphaType,
+      SkImageInfo::MakeN32(size.width(), size.height(), kPremul_SkAlphaType,
                            SkColorSpace::MakeSRGB());
   sk_sp<SkSurface> surface = SkSurface::MakeRaster(info);
   if (!surface)
@@ -166,7 +167,7 @@ Image::SizeAvailability Image::SetData(scoped_refptr<SharedBuffer> data,
   if (!encoded_image_data_.get())
     return kSizeAvailable;
 
-  int length = encoded_image_data_->size();
+  size_t length = encoded_image_data_->size();
   if (!length)
     return kSizeAvailable;
 
@@ -195,8 +196,8 @@ sk_sp<PaintShader> CreatePatternShader(const PaintImage& image,
   // Arbitrary tiling is currently only supported for SkPictureShader, so we use
   // that instead of a plain bitmap shader to implement spacing.
   const SkRect tile_rect =
-      SkRect::MakeWH(subset_rect.Width() + spacing.Width(),
-                     subset_rect.Height() + spacing.Height());
+      SkRect::MakeWH(subset_rect.width() + spacing.width(),
+                     subset_rect.height() + spacing.height());
 
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording(tile_rect);
@@ -204,7 +205,7 @@ sk_sp<PaintShader> CreatePatternShader(const PaintImage& image,
   flags.setAntiAlias(should_antialias);
   canvas->drawImageRect(
       image, subset_rect,
-      SkRect::MakeWH(subset_rect.Width(), subset_rect.Height()), sampling,
+      SkRect::MakeWH(subset_rect.width(), subset_rect.height()), sampling,
       &flags, SkCanvas::kStrict_SrcRectConstraint);
 
   return PaintShader::MakePaintRecord(recorder.finishRecordingAsPicture(),
@@ -222,7 +223,7 @@ void Image::DrawPattern(GraphicsContext& context,
                         const cc::PaintFlags& base_flags,
                         const FloatRect& dest_rect,
                         const ImageTilingInfo& tiling_info,
-                        RespectImageOrientationEnum respect_orientation) {
+                        const ImageDrawOptions& draw_options) {
   TRACE_EVENT0("skia", "Image::drawPattern");
 
   if (dest_rect.IsEmpty())
@@ -234,7 +235,7 @@ void Image::DrawPattern(GraphicsContext& context,
 
   // Fetch orientation data if needed.
   ImageOrientation orientation = ImageOrientationEnum::kDefault;
-  if (respect_orientation)
+  if (draw_options.respect_orientation)
     orientation = CurrentFrameOrientation();
 
   // |tiling_info.image_rect| is in source image space, unscaled but oriented.
@@ -245,7 +246,7 @@ void Image::DrawPattern(GraphicsContext& context,
   IntSize oriented_image_size(image.width(), image.height());
   if (orientation.UsesWidthAsHeight())
     oriented_image_size = oriented_image_size.TransposedSize();
-  subset_rect.Intersect(IntRect(IntPoint(), oriented_image_size));
+  subset_rect.Intersect(IntRect(gfx::Point(), oriented_image_size));
   if (subset_rect.IsEmpty())
     return;  // nothing to draw
 
@@ -258,19 +259,19 @@ void Image::DrawPattern(GraphicsContext& context,
   // the coordinate system origin as the base for the pattern. If Blink wants
   // a shifted image, it will shift it from there using the localMatrix.
   FloatRect tile_rect(subset_rect);
-  tile_rect.Scale(tiling_info.scale.Width(), tiling_info.scale.Height());
+  tile_rect.Scale(tiling_info.scale.width(), tiling_info.scale.height());
   tile_rect.MoveBy(tiling_info.phase);
   tile_rect.Expand(tiling_info.spacing);
 
   SkMatrix local_matrix;
-  local_matrix.setTranslate(tile_rect.X(), tile_rect.Y());
+  local_matrix.setTranslate(tile_rect.x(), tile_rect.y());
   // Apply the scale to have the subset correctly fill the destination.
-  local_matrix.preScale(tiling_info.scale.Width(), tiling_info.scale.Height());
+  local_matrix.preScale(tiling_info.scale.width(), tiling_info.scale.height());
 
-  const auto tmx = ComputeTileMode(dest_rect.X(), dest_rect.MaxX(),
-                                   tile_rect.X(), tile_rect.MaxX());
-  const auto tmy = ComputeTileMode(dest_rect.Y(), dest_rect.MaxY(),
-                                   tile_rect.Y(), tile_rect.MaxY());
+  const auto tmx = ComputeTileMode(dest_rect.x(), dest_rect.right(),
+                                   tile_rect.x(), tile_rect.right());
+  const auto tmy = ComputeTileMode(dest_rect.y(), dest_rect.bottom(),
+                                   tile_rect.y(), tile_rect.bottom());
 
   // Fetch this now as subsetting may swap the image.
   auto image_id = image.stable_id();
@@ -279,8 +280,8 @@ void Image::DrawPattern(GraphicsContext& context,
       context.ComputeSamplingOptions(this, dest_rect, FloatRect(subset_rect));
   sk_sp<PaintShader> tile_shader = CreatePatternShader(
       image, local_matrix, sampling_to_use, context.ShouldAntialias(),
-      FloatSize(tiling_info.spacing.Width() / tiling_info.scale.Width(),
-                tiling_info.spacing.Height() / tiling_info.scale.Height()),
+      FloatSize(tiling_info.spacing.width() / tiling_info.scale.width(),
+                tiling_info.spacing.height() / tiling_info.scale.height()),
       tmx, tmy, subset_rect);
 
   // If the shader could not be instantiated (e.g. non-invertible matrix),
@@ -289,8 +290,13 @@ void Image::DrawPattern(GraphicsContext& context,
   PaintFlags flags(base_flags);
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
   flags.setShader(std::move(tile_shader));
+  if (draw_options.apply_dark_mode) {
+    DarkModeFilter* dark_mode_filter = draw_options.dark_mode_filter;
+    DarkModeFilterHelper::ApplyToImageIfNeeded(
+        *dark_mode_filter, this, &flags, FloatRect(subset_rect), dest_rect);
+  }
 
-  context.DrawRect(dest_rect, flags);
+  context.DrawRect(dest_rect, flags, AutoDarkMode::Disabled());
 
   StartAnimation();
 
@@ -320,13 +326,22 @@ PaintImageBuilder Image::CreatePaintImageBuilder() {
       .set_is_multipart(is_multipart_);
 }
 
-bool Image::ApplyShader(PaintFlags& flags, const SkMatrix& local_matrix) {
+bool Image::ApplyShader(PaintFlags& flags,
+                        const SkMatrix& local_matrix,
+                        const FloatRect& dst_rect,
+                        const FloatRect& src_rect,
+                        const ImageDrawOptions& draw_options) {
   // Default shader impl: attempt to build a shader based on the current frame
   // SkImage.
   PaintImage image = PaintImageForCurrentFrame();
   if (!image)
     return false;
 
+  if (draw_options.apply_dark_mode) {
+    DarkModeFilter* dark_mode_filter = draw_options.dark_mode_filter;
+    DarkModeFilterHelper::ApplyToImageIfNeeded(*dark_mode_filter, this, &flags,
+                                               src_rect, dst_rect);
+  }
   flags.setShader(PaintShader::MakeImage(image, SkTileMode::kClamp,
                                          SkTileMode::kClamp, &local_matrix));
   if (!flags.HasShader())
@@ -356,8 +371,8 @@ SkBitmap Image::AsSkBitmapForCurrentFrame(
     FloatSize image_scale(1, 1);
     if (density_corrected_size != paint_image_size) {
       image_scale = FloatSize(
-          density_corrected_size.Width() / paint_image_size.Width(),
-          density_corrected_size.Height() / paint_image_size.Height());
+          density_corrected_size.width() / paint_image_size.width(),
+          density_corrected_size.height() / paint_image_size.height());
     }
 
     paint_image = ResizeAndOrientImage(paint_image, orientation, image_scale);

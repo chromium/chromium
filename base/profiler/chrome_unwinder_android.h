@@ -5,6 +5,8 @@
 #ifndef BASE_PROFILER_CHROME_UNWINDER_ANDROID_H_
 #define BASE_PROFILER_CHROME_UNWINDER_ANDROID_H_
 
+#include <vector>
+
 #include "base/profiler/unwinder.h"
 
 #include "base/base_export.h"

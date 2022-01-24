@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace network {
@@ -22,6 +21,10 @@ class NtpBackgroundFetcher {
  public:
   NtpBackgroundFetcher(size_t index,
                        content::WebUIDataSource::GotDataCallback callback);
+
+  NtpBackgroundFetcher(const NtpBackgroundFetcher&) = delete;
+  NtpBackgroundFetcher& operator=(const NtpBackgroundFetcher&) = delete;
+
   ~NtpBackgroundFetcher();
 
  private:
@@ -30,8 +33,6 @@ class NtpBackgroundFetcher {
   size_t index_;
   content::WebUIDataSource::GotDataCallback callback_;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(NtpBackgroundFetcher);
 };
 
 }  // namespace welcome

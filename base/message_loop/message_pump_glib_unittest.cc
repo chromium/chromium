@@ -21,11 +21,11 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -45,6 +45,9 @@ class EventInjector {
     g_source_attach(source_, nullptr);
     g_source_set_can_recurse(source_, TRUE);
   }
+
+  EventInjector(const EventInjector&) = delete;
+  EventInjector& operator=(const EventInjector&) = delete;
 
   ~EventInjector() {
     g_source_destroy(source_);
@@ -116,7 +119,7 @@ class EventInjector {
     else
       last_time = Time::NowFromSystemTime();
 
-    Time future = last_time + TimeDelta::FromMilliseconds(delay_ms);
+    Time future = last_time + Milliseconds(delay_ms);
     EventInjector::Event event = {future, std::move(callback), std::move(task)};
     events_.push_back(std::move(event));
   }
@@ -141,7 +144,6 @@ class EventInjector {
   std::vector<Event> events_;
   int processed_events_;
   static GSourceFuncs SourceFuncs;
-  DISALLOW_COPY_AND_ASSIGN(EventInjector);
 };
 
 GSourceFuncs EventInjector::SourceFuncs = {EventInjector::Prepare,
@@ -166,14 +168,16 @@ void PostMessageLoopTask(const Location& from_here, OnceClosure task) {
 class MessagePumpGLibTest : public testing::Test {
  public:
   MessagePumpGLibTest() = default;
+
+  MessagePumpGLibTest(const MessagePumpGLibTest&) = delete;
+  MessagePumpGLibTest& operator=(const MessagePumpGLibTest&) = delete;
+
   EventInjector* injector() { return &injector_; }
 
  private:
   test::SingleThreadTaskEnvironment task_environment_{
       test::SingleThreadTaskEnvironment::MainThreadType::UI};
   EventInjector injector_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpGLibTest);
 };
 
 }  // namespace
@@ -255,8 +259,7 @@ TEST_F(MessagePumpGLibTest, TestWorkWhileWaitingForEvents) {
   task_count = 0;
   for (int i = 0; i < 10; ++i) {
     ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, BindOnce(&IncrementInt, &task_count),
-        TimeDelta::FromMilliseconds(10 * i));
+        FROM_HERE, BindOnce(&IncrementInt, &task_count), Milliseconds(10 * i));
   }
   // After all the previous tasks have executed, enqueue an event that will
   // quit.
@@ -268,7 +271,7 @@ TEST_F(MessagePumpGLibTest, TestWorkWhileWaitingForEvents) {
         FROM_HERE,
         BindOnce(&EventInjector::AddEvent, Unretained(injector()), 0,
                  run_loop.QuitClosure()),
-        TimeDelta::FromMilliseconds(150));
+        Milliseconds(150));
     run_loop.Run();
   }
   ASSERT_EQ(10, task_count);
@@ -464,11 +467,9 @@ void TestGLibLoopInternal(EventInjector* injector, OnceClosure done) {
   injector->AddDummyEvent(10);
   // Delayed work
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, BindOnce(&IncrementInt, &task_count),
-      TimeDelta::FromMilliseconds(30));
+      FROM_HERE, BindOnce(&IncrementInt, &task_count), Milliseconds(30));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, BindOnce(&GLibLoopRunner::Quit, runner),
-      TimeDelta::FromMilliseconds(40));
+      FROM_HERE, BindOnce(&GLibLoopRunner::Quit, runner), Milliseconds(40));
 
   // Run a nested, straight GLib message loop.
   {
@@ -498,11 +499,9 @@ void TestGtkLoopInternal(EventInjector* injector, OnceClosure done) {
   injector->AddDummyEvent(10);
   // Delayed work
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, BindOnce(&IncrementInt, &task_count),
-      TimeDelta::FromMilliseconds(30));
+      FROM_HERE, BindOnce(&IncrementInt, &task_count), Milliseconds(30));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, BindOnce(&GLibLoopRunner::Quit, runner),
-      TimeDelta::FromMilliseconds(40));
+      FROM_HERE, BindOnce(&GLibLoopRunner::Quit, runner), Milliseconds(40));
 
   // Run a nested, straight Gtk message loop.
   {

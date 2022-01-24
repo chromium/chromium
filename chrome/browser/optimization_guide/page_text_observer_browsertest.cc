@@ -147,7 +147,7 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
     if (request.GetURL().path() == "/slow-first-layout.js") {
       std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
           std::make_unique<net::test_server::DelayedHttpResponse>(
-              base::TimeDelta::FromMilliseconds(500));
+              base::Milliseconds(500));
       resp->set_code(net::HTTP_OK);
       resp->set_content_type("application/javascript");
       resp->set_content(std::string());
@@ -160,7 +160,7 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
     if (request.GetURL().path() == "/slow-add-world-text.js") {
       std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
           std::make_unique<net::test_server::DelayedHttpResponse>(
-              base::TimeDelta::FromMilliseconds(500));
+              base::Milliseconds(500));
       resp->set_code(net::HTTP_OK);
       resp->set_content_type("application/javascript");
       resp->set_content(
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCaseNoSubframes) {
                            /*events=*/{mojom::TextDumpEvent::kFirstLayout});
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(consumer.was_called());
 
   consumer.WaitForPageText();
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
         /*events=*/{mojom::TextDumpEvent::kFinishedLoad});
 
     GURL url(embedded_test_server()->GetURL("a.com", "/hello_world.html"));
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     ASSERT_TRUE(first_layout_consumer.was_called());
     ASSERT_TRUE(on_load_consumer.was_called());
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
       observer()->RemoveConsumer(&on_load_consumer);
       // A new navigation should unblock any missing requests, which are then
       // discarded.
-      ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
       continue;
     }
 
@@ -315,18 +315,17 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
       "<iframe name=\"amp\" src=\"%s\"></iframe>"
       "</body></html>",
       embedded_test_server()->GetURL("b.com", "/amp.html").spec().c_str());
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(consumer.was_called());
 
   consumer.WaitForPageText();
 
   content::GlobalRenderFrameHostId amp_frame_id;
-  for (auto* rfh : web_contents()->GetMainFrame()->GetFramesInSubtree()) {
-    if (rfh->GetFrameName() == "amp") {
-      amp_frame_id = rfh->GetGlobalId();
-      break;
-    }
-  }
+  content::RenderFrameHost* amp_frame = content::FrameMatchingPredicate(
+      web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameMatchesName, "amp"));
+  ASSERT_TRUE(amp_frame);
+  amp_frame_id = amp_frame->GetGlobalId();
 
   ASSERT_TRUE(consumer.result());
 
@@ -382,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFNotAmpSubframe) {
       "<iframe src=\"%s\"></iframe>"
       "</body></html>",
       embedded_test_server()->GetURL("b.com", "/hello.html").spec().c_str());
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(consumer.was_called());
 
   consumer.WaitForPageText();
@@ -436,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
       "<iframe src=\"%s\"></iframe>"
       "</body></html>",
       embedded_test_server()->GetURL("a.com", "/hello.html").spec().c_str());
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(consumer.was_called());
 
   consumer.WaitForPageText();
@@ -473,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
       "<iframe src=\"%s\"></iframe>"
       "</body></html>",
       embedded_test_server()->GetURL("a.com", "/amp.html").spec().c_str());
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(consumer.was_called());
 
   consumer.WaitForPageText();

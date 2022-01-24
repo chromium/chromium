@@ -41,6 +41,11 @@ class WifiConfigurationSyncService : public KeyedService {
       version_info::Channel channel,
       PrefService* pref_service,
       syncer::OnceModelTypeStoreFactory create_store_callback);
+
+  WifiConfigurationSyncService(const WifiConfigurationSyncService&) = delete;
+  WifiConfigurationSyncService& operator=(const WifiConfigurationSyncService&) =
+      delete;
+
   ~WifiConfigurationSyncService() override;
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate();
@@ -55,8 +60,6 @@ class WifiConfigurationSyncService : public KeyedService {
   std::unique_ptr<SyncedNetworkUpdaterImpl> updater_;
   std::unique_ptr<LocalNetworkCollectorImpl> collector_;
   std::unique_ptr<WifiConfigurationBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(WifiConfigurationSyncService);
 };
 
 }  // namespace sync_wifi

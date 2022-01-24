@@ -13,11 +13,10 @@
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> ou <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" />.</translation>
 <translation id="1477442857810932985">Ir para o fim da linha</translation>
 <translation id="1499072997694708844">Feche todas as janelas abertas ou pare o carregamento da página atual.</translation>
-<translation id="1510238584712386396">Launcher</translation>
+<translation id="1510238584712386396">Iniciador</translation>
 <translation id="1516966594427080024">Abra uma nova janela no Modo de navegação anónima</translation>
 <translation id="152892567002884378">Aumentar o volume</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, em seguida, <ph name="ESC" />.</translation>
-<translation id="1633761758045565086">Mova o foco para uma caixa de diálogo de ajuda</translation>
 <translation id="1652741121070700329">Ir para o início da palavra anterior</translation>
 <translation id="1679841710523778799">Aumentar o brilho</translation>
 <translation id="168356808214100546">Prima sem soltar <ph name="ALT" /> e, em seguida, toque em <ph name="TAB" /> até alcançar a janela que pretende abrir. Em seguida, solte.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">Deslocar-se para baixo na página Web</translation>
 <translation id="2530896289327917474">Ativar ou desativar a navegação por cursor</translation>
 <translation id="2574014812750545982">Repor o nível de zoom na página</translation>
-<translation id="2596078834055697711">Criar uma captura de ecrã da janela</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> e, em seguida, <ph name="TAB" /> ou <ph name="RIGHT" />.</translation>
 <translation id="2750942583782703988">Atualizar a página atual</translation>
 <translation id="2764005613199379871">Focar a barra de endereço da pesquisa</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">Atalhos</translation>
 <translation id="3084301071537457911">Realçar o item seguinte na prateleira</translation>
 <translation id="309173601632226815">Realçar o botão do iniciador na prateleira</translation>
-<translation id="3105917916468784889">Fazer captura de ecrã</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Focar barra de endereço</translation>
 <translation id="3256109297135787951">Remover o realce de um item na prateleira</translation>
 <translation id="3288816184963444640">Fechar a janela atual</translation>
+<translation id="3350805006883559974">Apresente a janela ativa em cima</translation>
 <translation id="3407560819924487926">Abrir o Gestor de tarefas</translation>
 <translation id="3417835166382867856">Pesquisar separadores</translation>
 <translation id="3422679037938588196">Ir para a correspondência anterior da pesquisa</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">Consultar a Ajuda dos atalhos de teclado</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> ou <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Abrir a área de estado (onde é apresentada a imagem da conta)</translation>
-<translation id="4642092649622328492">Criar uma captura de ecrã parcial</translation>
 <translation id="4698850295812410683">Mostrar ferramentas da caneta stylus</translation>
 <translation id="4801989101741319327">Ir para o fim da palavra seguinte</translation>
 <translation id="4866066940972151697">Ative o espaço de trabalho à direita.</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">Mova a janela ativa para o espaço de trabalho à esquerda.</translation>
 <translation id="88986195241502842">Página para baixo</translation>
 <translation id="8924883688469390268">Mudar para o utilizador anterior</translation>
+<translation id="8941626538514548667">Foque o conteúdo Web no navegador</translation>
 <translation id="8977648847395357314">Selecionar o conteúdo na barra de endereço</translation>
 <translation id="8982190978301344584">Mostrar o menu que apresenta uma lista dos IMEs disponíveis</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 a 8</translation>

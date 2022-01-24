@@ -29,13 +29,16 @@ class FakeMessagePipeDispatcher : public Dispatcher {
  public:
   FakeMessagePipeDispatcher() = default;
 
+  FakeMessagePipeDispatcher(const FakeMessagePipeDispatcher&) = delete;
+  FakeMessagePipeDispatcher& operator=(const FakeMessagePipeDispatcher&) =
+      delete;
+
   Type GetType() const override { return Type::MESSAGE_PIPE; }
 
   MojoResult Close() override { return MOJO_RESULT_OK; }
 
  private:
   ~FakeMessagePipeDispatcher() override = default;
-  DISALLOW_COPY_AND_ASSIGN(FakeMessagePipeDispatcher);
 };
 
 void CheckNameAndValue(base::trace_event::ProcessMemoryDump* pmd,

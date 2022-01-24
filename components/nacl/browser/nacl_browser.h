@@ -11,9 +11,8 @@
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -49,6 +48,9 @@ base::File OpenNaClReadExecImpl(const base::FilePath& file_path,
 class NaClBrowser {
  public:
   static NaClBrowser* GetInstance();
+
+  NaClBrowser(const NaClBrowser&) = delete;
+  NaClBrowser& operator=(const NaClBrowser&) = delete;
 
   // Will it be possible to launch a NaCl process, eventually?
   bool IsOk() const;
@@ -205,7 +207,7 @@ class NaClBrowser {
   typedef std::map<int, int> GdbDebugStubPortMap;
   GdbDebugStubPortMap gdb_debug_stub_port_map_;
 
-  typedef base::HashingMRUCache<std::string, base::FilePath> PathCacheType;
+  typedef base::HashingLRUCache<std::string, base::FilePath> PathCacheType;
   PathCacheType path_cache_{kFilePathCacheSize};
 
   // True if it is no longer possible to launch NaCl processes.
@@ -219,8 +221,6 @@ class NaClBrowser {
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-
-  DISALLOW_COPY_AND_ASSIGN(NaClBrowser);
 };
 
 } // namespace nacl

@@ -15,6 +15,10 @@ class AXTreeSourceAura : public views::AXTreeSourceViews {
   AXTreeSourceAura(views::AXAuraObjWrapper* root,
                    const ui::AXTreeID& tree_id,
                    views::AXAuraObjCache* cache);
+
+  AXTreeSourceAura(const AXTreeSourceAura&) = delete;
+  AXTreeSourceAura& operator=(const AXTreeSourceAura&) = delete;
+
   ~AXTreeSourceAura() override;
 
   // AXTreeSource:
@@ -24,8 +28,6 @@ class AXTreeSourceAura : public views::AXTreeSourceViews {
 
  private:
   views::AXAuraObjCache* cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSourceAura);
 };
 
 #endif  // CHROMECAST_BROWSER_UI_AURA_ACCESSIBILITY_AX_TREE_SOURCE_AURA_H_

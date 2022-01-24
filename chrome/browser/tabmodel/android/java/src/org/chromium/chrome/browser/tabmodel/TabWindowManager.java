@@ -88,4 +88,11 @@ public interface TabWindowManager {
      * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found.
      */
     Tab getTabById(int tabId);
+
+    /**
+     * Finds the {@link TabModelSelector} bound to an Activity instance of a given index.
+     * @param index The index of {@link TabModelSelector} to get.
+     * @return Specified {@link TabModelSelector} or {@code null} if not found.
+     */
+    TabModelSelector getTabModelSelectorById(int index);
 }

@@ -9,13 +9,17 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_container_observer_set.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_item.h"
+#include "components/global_media_controls/public/media_item_manager_observer.h"
+#include "components/global_media_controls/public/media_item_producer.h"
+#include "components/global_media_controls/public/media_item_ui_observer.h"
+#include "components/global_media_controls/public/media_item_ui_observer_set.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace global_media_controls {
+class MediaItemManager;
+}  // namespace global_media_controls
 
 class MediaNotificationService;
 
@@ -43,10 +47,10 @@ class MediaNotificationService;
 // involved; at that point CastMediaNotificationProducer become responsible for
 // managing the notification for an active session.
 class PresentationRequestNotificationProducer final
-    : public MediaNotificationProducer,
+    : public global_media_controls::MediaItemProducer,
       public media_router::WebContentsPresentationManager::Observer,
-      public MediaNotificationServiceObserver,
-      public MediaNotificationContainerObserver {
+      public global_media_controls::MediaItemManagerObserver,
+      public global_media_controls::MediaItemUIObserver {
  public:
   explicit PresentationRequestNotificationProducer(
       MediaNotificationService* notification_service);
@@ -56,16 +60,18 @@ class PresentationRequestNotificationProducer final
       const PresentationRequestNotificationProducer&) = delete;
   ~PresentationRequestNotificationProducer() final;
 
-  // MediaNotificationProducer:
-  base::WeakPtr<media_message_center::MediaNotificationItem>
-  GetNotificationItem(const std::string& id) override;
+  // global_media_controls::MediaItemProducer:
+  base::WeakPtr<media_message_center::MediaNotificationItem> GetMediaItem(
+      const std::string& id) override;
   // Returns the supplemental notification's id if it should be shown.
-  std::set<std::string> GetActiveControllableNotificationIds() const override;
+  std::set<std::string> GetActiveControllableItemIds() override;
+  bool HasFrozenItems() override;
   void OnItemShown(const std::string& id,
-                   MediaNotificationContainerImpl* container) override;
+                   global_media_controls::MediaItemUI* item_ui) override;
+  bool IsItemActivelyPlaying(const std::string& id) override;
 
-  // MediaNotificationContainerObserver:
-  void OnContainerDismissed(const std::string& id) override;
+  // global_media_controls::MediaItemUIObserver:
+  void OnMediaItemUIDismissed(const std::string& id) override;
 
   void OnStartPresentationContextCreated(
       std::unique_ptr<media_router::StartPresentationContext> context);
@@ -87,8 +93,8 @@ class PresentationRequestNotificationProducer final
   std::unique_ptr<PresentationRequestWebContentsObserver>
       presentation_request_observer_;
 
-  // MediaNotificationServiceObserver:
-  void OnNotificationListChanged() final;
+  // global_media_controls::MediaItemManagerObserver:
+  void OnItemListChanged() final;
   void OnMediaDialogOpened() final;
   void OnMediaDialogClosed() final;
 
@@ -121,6 +127,8 @@ class PresentationRequestNotificationProducer final
 
   MediaNotificationService* const notification_service_;
 
+  global_media_controls::MediaItemManager* const item_manager_;
+
   // A copy of the WebContentsPresentationManager associated with the web
   // page where the media dialog is opened. The value is nullptr if the media
   // dialog is closed.
@@ -138,7 +146,7 @@ class PresentationRequestNotificationProducer final
   // active notifications on WebContents managed by this producer.
   bool should_hide_ = true;
 
-  MediaNotificationContainerObserverSet container_observer_set_;
+  global_media_controls::MediaItemUIObserverSet item_ui_observer_set_;
 
   base::WeakPtrFactory<PresentationRequestNotificationProducer> weak_factory_{
       this};

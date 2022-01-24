@@ -12,9 +12,9 @@
 namespace viz {
 namespace {
 
-constexpr base::TimeDelta k1Usec = base::TimeDelta::FromMicroseconds(1);
-constexpr base::TimeDelta k2Usec = base::TimeDelta::FromMicroseconds(2);
-constexpr base::TimeDelta k3Usec = base::TimeDelta::FromMicroseconds(3);
+constexpr base::TimeDelta k1Usec = base::Microseconds(1);
+constexpr base::TimeDelta k2Usec = base::Microseconds(2);
+constexpr base::TimeDelta k3Usec = base::Microseconds(3);
 
 TEST(BeginFrameArgsTest, Helpers) {
   // Quick create methods work

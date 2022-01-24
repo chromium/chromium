@@ -27,6 +27,7 @@ class PersonalDataManager;
 bool IsCreditCardUploadEnabled(const PrefService* pref_service,
                                const syncer::SyncService* sync_service,
                                const std::string& user_email,
+                               const std::string& user_country,
                                const AutofillSyncSigninState sync_state,
                                LogManager* log_manager);
 
@@ -42,6 +43,11 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
 // still want to run detection code for metrics purposes. This experiment just
 // disables providing suggestions.
 bool IsInAutofillSuggestionsDisabledExperiment();
+
+// Returns true if the feature is explicitly enabled by the corresponding Finch
+// flag, or if launched in general for this platform, which is true for Windows,
+// Android, and Mac OS X >= 10.13.
+bool IsCreditCardFidoAuthenticationEnabled();
 
 }  // namespace autofill
 

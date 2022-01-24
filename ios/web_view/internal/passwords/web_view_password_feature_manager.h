@@ -21,6 +21,11 @@ class WebViewPasswordFeatureManager
  public:
   WebViewPasswordFeatureManager(PrefService* pref_service,
                                 const syncer::SyncService* sync_service);
+
+  WebViewPasswordFeatureManager(const WebViewPasswordFeatureManager&) = delete;
+  WebViewPasswordFeatureManager& operator=(
+      const WebViewPasswordFeatureManager&) = delete;
+
   ~WebViewPasswordFeatureManager() override = default;
 
   bool IsGenerationEnabled() const override;
@@ -34,10 +39,13 @@ class WebViewPasswordFeatureManager
 
   bool ShouldShowAccountStorageBubbleUi() const override;
 
+  bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const override;
+
   void SetDefaultPasswordStore(
       const password_manager::PasswordForm::Store& store) override;
   password_manager::PasswordForm::Store GetDefaultPasswordStore()
       const override;
+  bool IsDefaultPasswordStoreSet() const override;
 
   password_manager::metrics_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;
@@ -48,8 +56,6 @@ class WebViewPasswordFeatureManager
  private:
   PrefService* const pref_service_;
   const syncer::SyncService* const sync_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewPasswordFeatureManager);
 };
 }  // namespace ios_web_view
 

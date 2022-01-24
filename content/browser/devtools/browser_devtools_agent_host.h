@@ -16,6 +16,8 @@ class BrowserDevToolsAgentHost : public DevToolsAgentHostImpl {
 
  private:
   friend class DevToolsAgentHost;
+  class BrowserAutoAttacher;
+
   BrowserDevToolsAgentHost(
       scoped_refptr<base::SingleThreadTaskRunner> tethering_task_runner,
       const CreateServerSocketCallback& socket_callback,
@@ -25,6 +27,7 @@ class BrowserDevToolsAgentHost : public DevToolsAgentHostImpl {
   // DevToolsAgentHostImpl overrides.
   bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
   void DetachSession(DevToolsSession* session) override;
+  protocol::TargetAutoAttacher* auto_attacher() override;
 
   // DevToolsAgentHost implementation.
   std::string GetType() override;
@@ -34,6 +37,7 @@ class BrowserDevToolsAgentHost : public DevToolsAgentHostImpl {
   void Reload() override;
   bool Close() override;
 
+  std::unique_ptr<BrowserAutoAttacher> auto_attacher_;
   scoped_refptr<base::SingleThreadTaskRunner> tethering_task_runner_;
   CreateServerSocketCallback socket_callback_;
   bool only_discovery_;

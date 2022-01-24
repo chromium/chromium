@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFE_BROWSING_POLICY_HANDLER_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFE_BROWSING_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefService;

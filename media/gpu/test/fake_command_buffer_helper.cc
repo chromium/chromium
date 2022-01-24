@@ -70,6 +70,13 @@ gpu::SharedImageStub* FakeCommandBufferHelper::GetSharedImageStub() {
   return nullptr;
 }
 
+#if defined(OS_WIN)
+gpu::DXGISharedHandleManager*
+FakeCommandBufferHelper::GetDXGISharedHandleManager() {
+  return nullptr;
+}
+#endif
+
 bool FakeCommandBufferHelper::HasStub() {
   return has_stub_;
 }

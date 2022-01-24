@@ -56,7 +56,12 @@ enum class SoftwareFeature {
 
   // Eche
   kEcheHost = 13,
-  kEcheClient = 14
+  kEcheClient = 14,
+
+  // Camera Roll allows users to view and download recent photos and videos from
+  // the Phone Hub tray
+  kPhoneHubCameraRollHost = 15,
+  kPhoneHubCameraRollClient = 16
 };
 
 SoftwareFeature FromCryptAuthFeature(

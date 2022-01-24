@@ -4,7 +4,6 @@
 
 #include "ui/compositor_extra/shadow.h"
 
-#include "base/macros.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
@@ -33,6 +32,10 @@ gfx::Size NineboxImageSizeForElevationAndCornerRadius(int elevation,
 }
 
 class ShadowTest : public testing::Test {
+ public:
+  ShadowTest(const ShadowTest&) = delete;
+  ShadowTest& operator=(const ShadowTest&) = delete;
+
  protected:
   ShadowTest() {}
   ~ShadowTest() override {}
@@ -48,8 +51,6 @@ class ShadowTest : public testing::Test {
 
  private:
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShadowTest);
 };
 
 // Test if the proper content bounds is calculated based on the current style.

@@ -187,7 +187,6 @@ base::ScopedCFTypeRef<CVPixelBufferRef> AddPadding(
     int height,
     int padding) {
   size_t num_planes = CVPixelBufferGetPlaneCount(pixel_buffer);
-  size_t padded_size = 0;
   std::vector<size_t> plane_widths;
   std::vector<size_t> plane_heights;
   std::vector<size_t> plane_strides;
@@ -201,7 +200,6 @@ base::ScopedCFTypeRef<CVPixelBufferRef> AddPadding(
       plane_heights.push_back(h);
       plane_widths.push_back(w);
       plane_strides.push_back(padded_stride);
-      padded_size += h * padded_stride;
     }
   } else {
     // CVPixelBufferGetPlaneCount returns 0 for non-planar buffers.
@@ -209,7 +207,6 @@ base::ScopedCFTypeRef<CVPixelBufferRef> AddPadding(
     size_t plane_stride = CVPixelBufferGetBytesPerRow(pixel_buffer);
     size_t padded_stride = plane_stride + padding;
     size_t h = CVPixelBufferGetHeight(pixel_buffer);
-    padded_size += h * padded_stride;
     plane_heights.push_back(h);
     plane_strides.push_back(padded_stride);
   }

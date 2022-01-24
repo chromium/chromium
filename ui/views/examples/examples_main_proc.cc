@@ -67,7 +67,6 @@
 #endif
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -110,11 +109,9 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
   mojo::core::Init();
 
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    ui::OzonePlatform::InitParams params;
-    params.single_process = true;
-    ui::OzonePlatform::InitializeForGPU(params);
-  }
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
   gl::init::InitializeGLOneOff();
@@ -142,7 +139,7 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       views_examples_resources_pak_path.AppendASCII(
           "views_examples_resources.pak"),
-      ui::SCALE_FACTOR_100P);
+      ui::k100Percent);
 
   base::DiscardableMemoryAllocator::SetInstance(
       g_discardable_memory_allocator.Pointer());

@@ -36,7 +36,7 @@ void TaskRunner::PostPackagedTask(Task task) {
 }
 
 void TaskRunner::PostPackagedTaskWithDelay(Task task, Clock::duration delay) {
-  auto time_delta = base::TimeDelta::FromMicroseconds(
+  auto time_delta = base::Microseconds(
       std::chrono::duration_cast<std::chrono::microseconds>(delay).count());
   task_runner_->PostDelayedTask(
       FROM_HERE, base::BindOnce(ExecuteTask, std::move(task)), time_delta);

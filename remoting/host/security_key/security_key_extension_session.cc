@@ -12,7 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/client_session_details.h"
@@ -199,7 +199,7 @@ void SecurityKeyExtensionSession::SendMessageToClient(
 
   base::ListValue bytes;
   for (auto& byte : data) {
-    bytes.AppendInteger(static_cast<unsigned char>(byte));
+    bytes.Append(static_cast<unsigned char>(byte));
   }
   request.SetKey(kDataPayload, std::move(bytes));
 

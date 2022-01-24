@@ -1,5 +1,6 @@
 include_rules = [
   "+components/paint_preview/common",
+  "+components/optimization_guide",
   "+cc/paint",
   "+crypto",
   "+skia/ext",

@@ -12,13 +12,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/metrics/credit_card_form_event_logger.h"
+#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/wait_for_signal_or_timeout.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -41,10 +43,16 @@ enum class UnmaskAuthFlowType {
   kFido = 2,
   // CVC authentication was required in addition to WebAuthn.
   kCvcThenFido = 3,
-  // WebAuthn prompt failed and fell back to CVC prompt.
+  // FIDO authentication failed and fell back to CVC authentication.
   kCvcFallbackFromFido = 4,
+  // OTP authentication was offered.
+  kOtp = 5,
+  // FIDO authentication failed and fell back to OTP authentication.
+  kOtpFallbackFromFido = 6,
+  kMaxValue = kOtpFallbackFromFido,
 };
 
+// TODO(crbug.com/1249665): Remove this. This was added and never used.
 // The result of the attempt to fetch full information for a credit card.
 enum class CreditCardFetchResult {
   kNone = 0,
@@ -71,10 +79,12 @@ struct CachedServerCardInfo {
 // Manages logic for accessing credit cards either stored locally or stored
 // with Google Payments. Owned by BrowserAutofillManager.
 #if defined(OS_IOS)
-class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester {
+class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
+                                public CreditCardOtpAuthenticator::Requester {
 #else
 class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
-                                public CreditCardFIDOAuthenticator::Requester {
+                                public CreditCardFIDOAuthenticator::Requester,
+                                public CreditCardOtpAuthenticator::Requester {
 #endif
  public:
   class Accessor {
@@ -91,6 +101,10 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
       AutofillClient* client,
       PersonalDataManager* personal_data_manager,
       CreditCardFormEventLogger* credit_card_form_event_logger);
+
+  CreditCardAccessManager(const CreditCardAccessManager&) = delete;
+  CreditCardAccessManager& operator=(const CreditCardAccessManager&) = delete;
+
   ~CreditCardAccessManager() override;
 
   // Logs information about current credit card data.
@@ -119,10 +133,8 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   void PrepareToFetchCreditCard();
 
   // Calls |accessor->OnCreditCardFetched()| once credit card is fetched.
-  virtual void FetchCreditCard(
-      const CreditCard* card,
-      base::WeakPtr<Accessor> accessor,
-      const base::TimeTicks& timestamp = base::TimeTicks());
+  virtual void FetchCreditCard(const CreditCard* card,
+                               base::WeakPtr<Accessor> accessor);
 
   // If |opt_in| = true, opts the user into using FIDO authentication for card
   // unmasking. Otherwise, opts the user out. If |creation_options| is set,
@@ -150,19 +162,52 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // Returns true if a |unmasked_cards_cache| contains an entry for the card.
   bool IsCardPresentInUnmaskedCache(const CreditCard& card) const;
 
+  // Accessors to different authenticators. They will first create the
+  // authenticators if they do not exist. Otherwise the accessors will simply
+  // return references to the authenticators.
   CreditCardCVCAuthenticator* GetOrCreateCVCAuthenticator();
-
 #if !defined(OS_IOS)
   CreditCardFIDOAuthenticator* GetOrCreateFIDOAuthenticator();
 #endif
+  CreditCardOtpAuthenticator* GetOrCreateOtpAuthenticator();
 
  private:
+  // TODO(crbug.com/1249665): Remove FRIEND and change everything to _ForTesting
+  // or public.
   FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerBrowserTest,
                            NavigateFromPage_UnmaskedCardCacheResets);
   FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
                            PreflightCallRateLimited);
   FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
                            UnmaskAuthFlowEvent_AlsoLogsVirtualCardSubhistogram);
+  FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
+                           RiskBasedVirtualCardUnmasking_Success);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerTest,
+      RiskBasedVirtualCardUnmasking_AuthenticationRequired_OtpOnly);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerTest,
+      RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoAndOtp_PrefersFido);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerTest,
+      RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoAndOtp_FidoNotOptedIn);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerTest,
+      RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoOnly);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerTest,
+      RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoAndOtp_FidoFailedFallBackToOtp);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerTest,
+      RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoOnly_FidoNotOptedIn);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerTest,
+      RiskBasedVirtualCardUnmasking_Failure_NoOptionReturned);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerTest,
+      RiskBasedVirtualCardUnmasking_Failure_VirtualCardRetrievalError);
+  FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
+                           RiskBasedVirtualCardUnmasking_FlowCancelled);
   friend class AutofillAssistantTest;
   friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
@@ -174,6 +219,10 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
     fido_authenticator_ = std::move(fido_authenticator);
   }
 #endif
+  void set_otp_authenticator_for_testing(
+      std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator) {
+    otp_authenticator_ = std::move(otp_authenticator);
+  }
 
 #if defined(UNIT_TEST)
   // Mocks that a virtual card was selected, so unit tests that don't run the
@@ -204,15 +253,19 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
       AutofillClient::PaymentsRpcResult result,
       payments::PaymentsClient::UnmaskDetails& unmask_details);
 
-  // Determines what form of authentication is required.
-  UnmaskAuthFlowType GetAuthenticationType(bool get_unmask_details_returned);
+  // Determines what type of authentication is required. |fido_auth_enabled|
+  // suggests whether the server has offered FIDO auth as an option.
+  void GetAuthenticationType(bool fido_auth_enabled);
+  void GetAuthenticationTypeForVirtualCard(bool fido_auth_enabled);
+  void GetAuthenticationTypeForMaskedServerCard(bool fido_auth_enabled);
 
-  // If OnDidGetUnmaskDetails() was invoked by PaymentsClient, then
-  // |get_unmask_details_returned| should be set to true. Based on the
-  // contents of |unmask_details_|, either FIDO authentication or CVC
-  // authentication will be prompted. If |get_unmask_details_returned| is false,
-  // then only CVC authentication will be prompted.
-  void Authenticate(bool get_unmask_details_returned = false);
+  // Function invoked when the flow type of the authentication is decided. Also
+  // logs authentication type.
+  void OnDidGetAuthenticationType(UnmaskAuthFlowType unmask_auth_flow_type);
+
+  // Starts the authentication process and delegates the task to authenticators
+  // based on the |unmask_auth_flow_type_|.
+  void Authenticate();
 
   // CreditCardCVCAuthenticator::Requester:
   void OnCVCAuthenticationComplete(
@@ -231,6 +284,11 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   void OnFidoAuthorizationComplete(bool did_succeed) override;
 #endif
 
+  // CreditCardOtpAuthenticator::Requester:
+  void OnOtpAuthenticationComplete(
+      const CreditCardOtpAuthenticator::OtpAuthenticationResponse& response)
+      override;
+
   bool is_authentication_in_progress() {
     return is_authentication_in_progress_;
   }
@@ -238,10 +296,12 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // Returns true only if |credit_card| is a local card.
   bool IsLocalCard(const CreditCard* credit_card);
 
-  // If true, FetchCreditCard() should wait for OnDidGetUnmaskDetails() to begin
-  // authentication. If false, FetchCreditCard() can begin authentication
-  // immediately.
-  bool IsFidoAuthenticationEnabled();
+  // Returns whether the user has opted in to FIDO auth.
+  bool IsUserOptedInToFidoAuth();
+
+  // Returns whether FIDO auth is enabled. |fido_auth_offered| indicates whether
+  // Payments server has offered FIDO auth as an option.
+  bool IsFidoAuthEnabled(bool fido_auth_offered);
 
   // Returns true if |unmask_details_| is set and the card selected is listed as
   // FIDO eligible.
@@ -273,6 +333,45 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // `unmasked_card_cache_`.
   std::string GetKeyForUnmaskedCardsCache(const CreditCard& card) const;
 
+  // Helper function to fetch masked server cards.
+  void FetchMaskedServerCard();
+
+  // Helper function to fetch virtual cards.
+  void FetchVirtualCard();
+
+  // Callback function invoked when risk data is fetched.
+  void OnDidGetUnmaskRiskData(const std::string& risk_data);
+
+  // Callback function invoked when an unmask response for a virtual card has
+  // been received.
+  void OnVirtualCardUnmaskResponseReceived(
+      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsClient::UnmaskResponseDetails& response_details);
+
+  // Invoked when CreditCardAccessManager stops waiting for UnmaskDetails to
+  // return. If OnDidGetUnmaskDetails() has been invoked,
+  // |get_unmask_details_returned| should be set to true.
+  void OnStopWaitingForUnmaskDetails(bool get_unmask_details_returned);
+
+  // Callback function invoked when the user has accepted the authentication
+  // selection dialog and chosen an auth method to use.
+  void OnUserAcceptedAuthenticationSelectionDialog(
+      const std::string& selected_challenge_option_id);
+
+  // Callback function invoked when the user has cancelled the virtual card
+  // unmasking.
+  void OnVirtualCardUnmaskCancelled();
+
+  // Reset all the member variables of |this| and restore initial states.
+  void Reset();
+
+  // Handles the FIDO opt-in status change.
+  void HandleFidoOptInStatusChange();
+
+  // Shows the authenticator selection dialog for users to confirm their choice
+  // of authentication method.
+  void ShowUnmaskAuthenticatorSelectionDialog();
+
   // The current form of authentication in progress.
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
 
@@ -299,21 +398,18 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   CreditCardFormEventLogger* form_event_logger_;
 
   // Timestamp used for preflight call metrics.
-  base::TimeTicks preflight_call_timestamp_;
+  absl::optional<base::TimeTicks> preflight_call_timestamp_;
 
   // Timestamp used for user-perceived latency metrics.
   absl::optional<base::TimeTicks>
       card_selected_without_unmask_details_timestamp_;
 
-  // Meant for histograms recorded in FullCardRequest.
-  base::TimeTicks form_parsed_timestamp_;
-
   // Timestamp for when fido_authenticator_->IsUserVerifiable() is called.
-  absl::optional<base::TimeTicks> is_user_verifiable_called_timestamp_ =
-      absl::nullopt;
+  absl::optional<base::TimeTicks> is_user_verifiable_called_timestamp_;
 
   // Authenticators for card unmasking.
   std::unique_ptr<CreditCardCVCAuthenticator> cvc_authenticator_;
+  std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
 #if !defined(OS_IOS)
   std::unique_ptr<CreditCardFIDOAuthenticator> fido_authenticator_;
 
@@ -321,9 +417,17 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   UserOptInIntention opt_in_intention_ = UserOptInIntention::kUnspecified;
 #endif
 
-  // Suggested authentication method and other information to facilitate card
-  // unmasking.
+  // Struct to store necessary information to start an authentication. It is
+  // populated before an authentication is offered. It includes suggested
+  // authentication methods and other information to facilitate card unmasking.
   payments::PaymentsClient::UnmaskDetails unmask_details_;
+
+  // Structs to store information passed to and fetched from the server for
+  // virtual card unmasking.
+  payments::PaymentsClient::UnmaskRequestDetails
+      virtual_card_unmask_request_details_;
+  payments::PaymentsClient::UnmaskResponseDetails
+      virtual_card_unmask_response_details_;
 
   // Resets when PrepareToFetchCreditCard() is called, if not already reset.
   // Signaled when OnDidGetUnmaskDetails() is called or after timeout.
@@ -357,13 +461,15 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // The object attempting to access a card.
   base::WeakPtr<Accessor> accessor_;
 
+  // Used only in OTP authentication to differentiate between authentication
+  // methods.
+  std::string selected_challenge_option_id_;
+
   // Cached data of cards which have been unmasked. This is cleared upon page
   // navigation. Map key is the card's server_id.
   std::unordered_map<std::string, CachedServerCardInfo> unmasked_card_cache_;
 
   base::WeakPtrFactory<CreditCardAccessManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CreditCardAccessManager);
 };
 
 }  // namespace autofill

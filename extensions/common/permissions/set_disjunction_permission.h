@@ -118,7 +118,7 @@ class SetDisjunctionPermission : public APIPermission {
       return false;
     }
 
-    for (size_t i = 0; i < list->GetSize(); ++i) {
+    for (size_t i = 0; i < list->GetList().size(); ++i) {
       const base::Value* item_value = NULL;
       bool got_item = list->Get(i, &item_value);
       DCHECK(got_item);

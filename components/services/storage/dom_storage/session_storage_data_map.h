@@ -56,6 +56,9 @@ class SessionStorageDataMap final
       scoped_refptr<SessionStorageMetadata::MapData> map_data,
       scoped_refptr<SessionStorageDataMap> clone_from);
 
+  SessionStorageDataMap(const SessionStorageDataMap&) = delete;
+  SessionStorageDataMap& operator=(const SessionStorageDataMap&) = delete;
+
   Listener* listener() const { return listener_; }
 
   StorageAreaImpl* storage_area() { return storage_area_ptr_; }
@@ -109,8 +112,6 @@ class SessionStorageDataMap final
   // unique_ptr could already be null, but this field should still be valid.
   // TODO(dmurph): Change delegate ownership so this doesn't have to be done.
   StorageAreaImpl* storage_area_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStorageDataMap);
 };
 
 }  // namespace storage

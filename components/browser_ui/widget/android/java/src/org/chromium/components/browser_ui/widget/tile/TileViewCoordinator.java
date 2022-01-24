@@ -75,6 +75,20 @@ public class TileViewCoordinator {
     }
 
     /**
+     * Set the rounding radius of the embedded icon.
+     * The supplied radius value is clipped at half the smaller of the (width, height) dimensions,
+     * so that supplying an exceptionally large value will always guarantee the view to be round.
+     *
+     * Radius is only applied when displaying small icons. Large icons are implicitly rounded to
+     * fill in the view.
+     *
+     * @param roundingRadiusPx Rounding radius (in pixels), or 0 to disable rounding.
+     */
+    public void setSmallIconRoundingRadiusPx(int roundingRadiusPx) {
+        mMediator.setSmallIconRoundingRadiusPx(roundingRadiusPx);
+    }
+
+    /**
      * Set the handler receiving click events.
      *
      * @param listener Handler receiving click events.

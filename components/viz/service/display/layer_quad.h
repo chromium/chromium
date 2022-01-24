@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_LAYER_QUAD_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_LAYER_QUAD_H_
 
-#include "base/macros.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -73,6 +72,9 @@ class VIZ_SERVICE_EXPORT LayerQuad {
             const Edge& bottom);
   explicit LayerQuad(const gfx::QuadF& quad);
 
+  LayerQuad(const LayerQuad&) = delete;
+  LayerQuad& operator=(const LayerQuad&) = delete;
+
   Edge left() const { return left_; }
   Edge top() const { return top_; }
   Edge right() const { return right_; }
@@ -101,8 +103,6 @@ class VIZ_SERVICE_EXPORT LayerQuad {
   Edge top_;
   Edge right_;
   Edge bottom_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerQuad);
 };
 
 }  // namespace viz

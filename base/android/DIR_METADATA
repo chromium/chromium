@@ -1,1 +1,1 @@
-os: ANDROID
+mixins: "//base/android/COMMON_METADATA"

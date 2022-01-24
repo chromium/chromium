@@ -4,7 +4,6 @@
 
 GEN_INCLUDE(['../../common/testing/e2e_test_base.js']);
 GEN_INCLUDE(['../../common/testing/mock_accessibility_private.js']);
-GEN_INCLUDE(['../../common/rect_util.js']);
 
 /**
  * Automatic clicks feature using accessibility common extension browser tests.

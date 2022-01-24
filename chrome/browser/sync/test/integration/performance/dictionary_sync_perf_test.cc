@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/sync/test/integration/dictionary_helper.h"
 #include "chrome/browser/sync/test/integration/performance/sync_timing_helper.h"
@@ -33,10 +32,11 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 class DictionarySyncPerfTest : public SyncTest {
  public:
   DictionarySyncPerfTest() : SyncTest(TWO_CLIENT) {}
-  ~DictionarySyncPerfTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DictionarySyncPerfTest);
+  DictionarySyncPerfTest(const DictionarySyncPerfTest&) = delete;
+  DictionarySyncPerfTest& operator=(const DictionarySyncPerfTest&) = delete;
+
+  ~DictionarySyncPerfTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(DictionarySyncPerfTest, P0) {

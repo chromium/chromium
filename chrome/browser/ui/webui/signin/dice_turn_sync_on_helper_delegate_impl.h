@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_TURN_SYNC_ON_HELPER_DELEGATE_IMPL_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
@@ -24,7 +23,21 @@ class DiceTurnSyncOnHelperDelegateImpl : public DiceTurnSyncOnHelper::Delegate,
                                          public LoginUIService::Observer {
  public:
   explicit DiceTurnSyncOnHelperDelegateImpl(Browser* browser);
+
+  DiceTurnSyncOnHelperDelegateImpl(const DiceTurnSyncOnHelperDelegateImpl&) =
+      delete;
+  DiceTurnSyncOnHelperDelegateImpl& operator=(
+      const DiceTurnSyncOnHelperDelegateImpl&) = delete;
+
   ~DiceTurnSyncOnHelperDelegateImpl() override;
+
+ protected:
+  void ShowEnterpriseAccountConfirmation(
+      const AccountInfo& account_info,
+      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
+  virtual void ShouldEnterpriseConfirmationPromptForNewProfile(
+      Profile* profile,
+      base::OnceCallback<void(bool)> callback);
 
  private:
   // DiceTurnSyncOnHelper::Delegate:
@@ -32,9 +45,6 @@ class DiceTurnSyncOnHelperDelegateImpl : public DiceTurnSyncOnHelper::Delegate,
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
-  void ShowEnterpriseAccountConfirmation(
-      const AccountInfo& account_info,
       DiceTurnSyncOnHelper::SigninChoiceCallback callback) override;
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
@@ -59,8 +69,6 @@ class DiceTurnSyncOnHelperDelegateImpl : public DiceTurnSyncOnHelper::Delegate,
       sync_confirmation_callback_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       scoped_login_ui_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DiceTurnSyncOnHelperDelegateImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_DICE_TURN_SYNC_ON_HELPER_DELEGATE_IMPL_H_

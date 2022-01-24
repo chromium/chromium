@@ -87,8 +87,6 @@ component("gamepad") {
       "xinput_haptic_gamepad_win.h",
     ]
     libs = [ "hid.lib" ]
-    cflags =
-        [ "/wd4267" ]  # conversion from 'size_t' (64 bit) to 'type'(32 bit).
   }
 
   if (is_linux || is_chromeos) {
@@ -155,7 +153,7 @@ component("gamepad") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
     deps += [ "//chromeos/dbus/permission_broker" ]
   }
 }

@@ -11,14 +11,12 @@
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace vr {
 
-static constexpr base::TimeDelta kSweepDuration =
-    base::TimeDelta::FromSecondsD(2.0 / 3.0);
-static constexpr base::TimeDelta kRotationDuration =
-    base::TimeDelta::FromMilliseconds(1568);
+static constexpr base::TimeDelta kSweepDuration = base::Seconds(2.0 / 3.0);
+static constexpr base::TimeDelta kRotationDuration = base::Milliseconds(1568);
 static constexpr float kMinAngle = 0.0f;
 static constexpr float kMaxAngle = 135.0f;
 static constexpr float kThicknessFactor = 0.078125f;
@@ -30,6 +28,10 @@ std::unique_ptr<gfx::CubicBezierTimingFunction> CreateTimingFunction() {
 class SpinnerTexture : public UiTexture {
  public:
   SpinnerTexture() {}
+
+  SpinnerTexture(const SpinnerTexture&) = delete;
+  SpinnerTexture& operator=(const SpinnerTexture&) = delete;
+
   ~SpinnerTexture() override {}
 
   void SetAngleSweep(float angle) { SetAndDirty(&angle_sweep_, angle); }
@@ -57,8 +59,6 @@ class SpinnerTexture : public UiTexture {
   float angle_start_ = 0.0f;
   float rotation_ = 0.0f;
   SkColor color_ = SK_ColorWHITE;
-
-  DISALLOW_COPY_AND_ASSIGN(SpinnerTexture);
 };
 
 Spinner::Spinner(int texture_width)

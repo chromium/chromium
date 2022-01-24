@@ -1,9 +1,0 @@
-Tests that inspect object action works for function and resolve bound function location.
-
-Function was revealed:
-lineNumber: 0
-columnNumber: 12
-Function was revealed:
-lineNumber: 0
-columnNumber: 12
-

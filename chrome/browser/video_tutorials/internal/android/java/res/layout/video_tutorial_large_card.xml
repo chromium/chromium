@@ -64,7 +64,7 @@
             app:layout_row="0"
             app:layout_gravity="bottom"
             android:importantForAccessibility="no"
-            android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light" />
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary.Baseline.Light" />
 
         <TextView
             android:id="@+id/title"

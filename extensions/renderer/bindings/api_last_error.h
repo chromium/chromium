@@ -31,6 +31,10 @@ class APILastError {
   APILastError(GetParent get_parent,
                binding::AddConsoleError add_console_error);
   APILastError(APILastError&& other);
+
+  APILastError(const APILastError&) = delete;
+  APILastError& operator=(const APILastError&) = delete;
+
   ~APILastError();
 
   // Sets the last error for the given |context| to |error|.
@@ -64,8 +68,6 @@ class APILastError {
   GetParent get_parent_;
 
   binding::AddConsoleError add_console_error_;
-
-  DISALLOW_COPY_AND_ASSIGN(APILastError);
 };
 
 }  // namespace extensions

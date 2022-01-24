@@ -16,7 +16,6 @@
 #define CRASHPAD_TEST_SCOPED_TEMP_DIR_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace crashpad {
 namespace test {
@@ -29,6 +28,10 @@ namespace test {
 class ScopedTempDir {
  public:
   ScopedTempDir();
+
+  ScopedTempDir(const ScopedTempDir&) = delete;
+  ScopedTempDir& operator=(const ScopedTempDir&) = delete;
+
   ~ScopedTempDir();
 
   //! \brief Returns the path of the temporary directory.
@@ -54,8 +57,6 @@ class ScopedTempDir {
   static void RecursivelyDeleteTemporaryDirectory(const base::FilePath& path);
 
   base::FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTempDir);
 };
 
 }  // namespace test

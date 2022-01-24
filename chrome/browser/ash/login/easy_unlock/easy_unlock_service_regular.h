@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
@@ -57,6 +56,9 @@ class EasyUnlockServiceRegular
       device_sync::DeviceSyncClient* device_sync_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
 
+  EasyUnlockServiceRegular(const EasyUnlockServiceRegular&) = delete;
+  EasyUnlockServiceRegular& operator=(const EasyUnlockServiceRegular&) = delete;
+
   ~EasyUnlockServiceRegular() override;
 
  private:
@@ -88,6 +90,7 @@ class EasyUnlockServiceRegular
   void InitializeInternal() override;
   void ShutdownInternal() override;
   bool IsAllowedInternal() const override;
+  bool IsEligible() const override;
   bool IsEnabled() const override;
   bool IsChromeOSLoginEnabled() const override;
 
@@ -158,8 +161,6 @@ class EasyUnlockServiceRegular
   PrefChangeRegistrar registrar_;
 
   base::WeakPtrFactory<EasyUnlockServiceRegular> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockServiceRegular);
 };
 
 }  // namespace ash

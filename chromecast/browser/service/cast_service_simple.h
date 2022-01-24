@@ -26,10 +26,14 @@ class CastWindowManager;
 
 namespace shell {
 
-class CastServiceSimple : public CastService, public CastWebView::Delegate {
+class CastServiceSimple : public CastService {
  public:
   CastServiceSimple(content::BrowserContext* browser_context,
                     CastWindowManager* window_manager);
+
+  CastServiceSimple(const CastServiceSimple&) = delete;
+  CastServiceSimple& operator=(const CastServiceSimple&) = delete;
+
   ~CastServiceSimple() override;
 
  protected:
@@ -39,13 +43,6 @@ class CastServiceSimple : public CastService, public CastWebView::Delegate {
   void StartInternal() override;
   void StopInternal() override;
 
-  // CastContentWindow::Delegate implementation:
-  void OnWindowDestroyed() override;
-  bool CanHandleGesture(GestureType gesture_type) override;
-  void ConsumeGesture(GestureType gesture_type,
-                      GestureHandledCallback handled_callback) override;
-  void OnVisibilityChange(VisibilityType visibility_type) override;
-
  private:
   const std::unique_ptr<CastWebViewFactory> web_view_factory_;
   const std::unique_ptr<CastWebService> web_service_;
@@ -53,7 +50,6 @@ class CastServiceSimple : public CastService, public CastWebView::Delegate {
   GURL startup_url_;
 
   base::WeakPtrFactory<CastServiceSimple> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CastServiceSimple);
 };
 
 }  // namespace shell

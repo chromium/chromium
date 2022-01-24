@@ -38,26 +38,27 @@ class DataImpl : public PageLoadTrackerDecorator::Data,
   struct Traits : public NodeAttachedDataOwnedByNodeType<PageNodeImpl> {};
 
   explicit DataImpl(const PageNodeImpl* page_node) {}
+
+  DataImpl(const DataImpl&) = delete;
+  DataImpl& operator=(const DataImpl&) = delete;
+
   ~DataImpl() override = default;
 
   static std::unique_ptr<NodeAttachedData>* GetUniquePtrStorage(
       PageNodeImpl* page_node) {
     return PageLoadTrackerAccess::GetUniquePtrStorage(page_node);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DataImpl);
 };
 
 // static
 const char* ToString(LoadIdleState state) {
   switch (state) {
-    case LoadIdleState::kLoadingWaitingForResponse:
-      return "kLoadingWaitingForResponse";
-    case LoadIdleState::kLoadingWaitingForResponseTimedOut:
-      return "kLoadingWaitingForResponseTimedOut";
-    case LoadIdleState::kLoadingDidReceiveResponse:
-      return "kLoadingDidReceiveResponse";
+    case LoadIdleState::kWaitingForNavigation:
+      return "kWaitingForNavigation";
+    case LoadIdleState::kWaitingForNavigationTimedOut:
+      return "kWaitingForNavigationTimedOut";
+    case LoadIdleState::kLoading:
+      return "kLoading";
     case LoadIdleState::kLoadedNotIdling:
       return "kLoadedNotIdling";
     case LoadIdleState::kLoadedAndIdling:
@@ -72,7 +73,8 @@ const char kDescriberName[] = "PageLoadTrackerDecorator";
 }  // namespace
 
 // static
-constexpr base::TimeDelta PageLoadTrackerDecorator::kWaitingForResponseTimeout;
+constexpr base::TimeDelta
+    PageLoadTrackerDecorator::kWaitingForNavigationTimeout;
 constexpr base::TimeDelta PageLoadTrackerDecorator::kLoadedAndIdlingTimeout;
 constexpr base::TimeDelta PageLoadTrackerDecorator::kWaitingForIdleTimeout;
 
@@ -109,7 +111,7 @@ base::Value PageLoadTrackerDecorator::DescribePageNodeData(
   base::Value ret(base::Value::Type::DICTIONARY);
   ret.SetStringKey("load_idle_state", ToString(data->load_idle_state()));
   ret.SetBoolKey("is_loading", data->is_loading_);
-  ret.SetBoolKey("received_response", data->received_response_);
+  ret.SetBoolKey("did_commit", data->did_commit_);
 
   return ret;
 }
@@ -126,29 +128,29 @@ void PageLoadTrackerDecorator::DidStartLoading(PageNodeImpl* page_node) {
   // Typically, |data| is a newly created DataImpl. However, if a load starts
   // before the page reaches an idle state following the previous load, |data|
   // may indicate that the page is |kLoadedNotIdling| or |kLoadedAndIdling|.
-  // In all cases, restart the state machine at |kLoadingWaitingForResponse|
+  // In all cases, restart the state machine at |kWaitingForNavigation|
   // and clear the |loading_started_| timestamp.
   DCHECK_NE(data->load_idle_state(),
-            LoadIdleState::kLoadingWaitingForResponseTimedOut);
-  DCHECK_NE(data->load_idle_state(), LoadIdleState::kLoadingDidReceiveResponse);
+            LoadIdleState::kWaitingForNavigationTimedOut);
+  DCHECK_NE(data->load_idle_state(), LoadIdleState::kLoading);
   DCHECK_NE(data->load_idle_state(), LoadIdleState::kLoadedAndIdle);
   DCHECK(data);
   DCHECK(!data->is_loading_);
-  DCHECK(!data->received_response_);
+  DCHECK(!data->did_commit_);
   data->is_loading_ = true;
-  data->SetLoadIdleState(page_node, LoadIdleState::kLoadingWaitingForResponse);
+  data->SetLoadIdleState(page_node, LoadIdleState::kWaitingForNavigation);
   data->loading_started_ = base::TimeTicks();
   UpdateLoadIdleStatePage(page_node);
 }
 
 // static
-void PageLoadTrackerDecorator::DidReceiveResponse(PageNodeImpl* page_node) {
+void PageLoadTrackerDecorator::PrimaryPageChanged(PageNodeImpl* page_node) {
   auto* data = DataImpl::Get(page_node);
 
   DCHECK(data);
   DCHECK(data->is_loading_);
-  DCHECK(!data->received_response_);
-  data->received_response_ = true;
+  DCHECK(!data->did_commit_);
+  data->did_commit_ = true;
 
   UpdateLoadIdleStatePage(page_node);
 }
@@ -160,7 +162,7 @@ void PageLoadTrackerDecorator::DidStopLoading(PageNodeImpl* page_node) {
   DCHECK(data);
   DCHECK(data->is_loading_);
   data->is_loading_ = false;
-  data->received_response_ = false;
+  data->did_commit_ = false;
 
   UpdateLoadIdleStatePage(page_node);
 }
@@ -207,8 +209,7 @@ void PageLoadTrackerDecorator::UpdateLoadIdleStatePage(
 
   // If this is a new load, set the start time.
   if (data->loading_started_.is_null()) {
-    DCHECK_EQ(data->load_idle_state(),
-              LoadIdleState::kLoadingWaitingForResponse);
+    DCHECK_EQ(data->load_idle_state(), LoadIdleState::kWaitingForNavigation);
     data->loading_started_ = now;
   }
 
@@ -222,48 +223,46 @@ void PageLoadTrackerDecorator::UpdateLoadIdleStatePage(
 
   // Otherwise do normal state transitions.
   switch (data->load_idle_state()) {
-    case LoadIdleState::kLoadingWaitingForResponse: {
-      if (now - data->loading_started_ >= kWaitingForResponseTimeout) {
-        data->SetLoadIdleState(
-            page_node, LoadIdleState::kLoadingWaitingForResponseTimedOut);
+    case LoadIdleState::kWaitingForNavigation: {
+      if (now - data->loading_started_ >= kWaitingForNavigationTimeout) {
+        data->SetLoadIdleState(page_node,
+                               LoadIdleState::kWaitingForNavigationTimedOut);
       }
 
       FALLTHROUGH;
     }
 
-    case LoadIdleState::kLoadingWaitingForResponseTimedOut: {
-      if (data->received_response_) {
-        data->SetLoadIdleState(page_node,
-                               LoadIdleState::kLoadingDidReceiveResponse);
+    case LoadIdleState::kWaitingForNavigationTimedOut: {
+      if (data->did_commit_) {
+        data->SetLoadIdleState(page_node, LoadIdleState::kLoading);
         return;
       }
 
       if (!data->is_loading_) {
-        // Transition to kLoadedAndIdle when load stops without receiving a
-        // response.
+        // Transition to kLoadedAndIdle when load stops without committing a
+        // page change.
         TransitionToLoadedAndIdle(page_node);
         return;
       }
 
       // Schedule a state update to transition to
-      // |kLoadingWaitingForResponseTimedOut| when the page has been waiting for
-      // a response for too long.
-      if (data->load_idle_state() ==
-          LoadIdleState::kLoadingWaitingForResponse) {
+      // |kWaitingForNavigationTimedOut| when the page has been waiting for the
+      // page change commit for too long.
+      if (data->load_idle_state() == LoadIdleState::kWaitingForNavigation) {
         ScheduleDelayedUpdateLoadIdleStatePage(
             page_node, now,
-            data->loading_started_ + kWaitingForResponseTimeout);
+            data->loading_started_ + kWaitingForNavigationTimeout);
       }
 
       return;
     }
 
-    case LoadIdleState::kLoadingDidReceiveResponse: {
+    case LoadIdleState::kLoading: {
       if (data->is_loading_) {
         // DidStopLoading() was not invoked yet.
         return;
       }
-      // DidStartLoading() -> DidReceiveResponse() -> DidStopLoading() were all
+      // DidStartLoading() -> PrimaryPageChanged() -> DidStopLoading() were all
       // invoked. Wait for the page to become idle.
       data->SetLoadIdleState(page_node, LoadIdleState::kLoadedNotIdling);
       data->loading_stopped_ = now;
@@ -401,12 +400,12 @@ void PageLoadTrackerDecorator::Data::SetLoadIdleState(
   load_idle_state_ = load_idle_state;
 
   switch (load_idle_state_) {
-    case LoadIdleState::kLoadingWaitingForResponse:
-    case LoadIdleState::kLoadingDidReceiveResponse: {
+    case LoadIdleState::kWaitingForNavigation:
+    case LoadIdleState::kLoading: {
       page_node->SetLoadingState(PageNode::LoadingState::kLoading);
       break;
     }
-    case LoadIdleState::kLoadingWaitingForResponseTimedOut: {
+    case LoadIdleState::kWaitingForNavigationTimedOut: {
       page_node->SetLoadingState(PageNode::LoadingState::kLoadingTimedOut);
       break;
     }

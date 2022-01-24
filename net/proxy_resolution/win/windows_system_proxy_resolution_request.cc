@@ -10,7 +10,6 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolution_service.h"
-#include "net/proxy_resolution/win/windows_system_proxy_resolver.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
@@ -54,9 +53,8 @@ WindowsSystemProxyResolutionRequest::WindowsSystemProxyResolutionRequest(
     ProxyInfo* results,
     CompletionOnceCallback user_callback,
     const NetLogWithSource& net_log,
-    scoped_refptr<WindowsSystemProxyResolver> windows_system_proxy_resolver)
-    : windows_system_proxy_resolver_(windows_system_proxy_resolver),
-      service_(service),
+    WindowsSystemProxyResolver* windows_system_proxy_resolver)
+    : service_(service),
       user_callback_(std::move(user_callback)),
       results_(results),
       url_(url),
@@ -64,7 +62,9 @@ WindowsSystemProxyResolutionRequest::WindowsSystemProxyResolutionRequest(
       net_log_(net_log),
       creation_time_(base::TimeTicks::Now()) {
   DCHECK(!user_callback_.is_null());
-  DCHECK(windows_system_proxy_resolver_);
+  DCHECK(windows_system_proxy_resolver);
+  proxy_resolution_request_ =
+      windows_system_proxy_resolver->GetProxyForUrl(url.spec(), this);
 }
 
 WindowsSystemProxyResolutionRequest::~WindowsSystemProxyResolutionRequest() {
@@ -73,8 +73,7 @@ WindowsSystemProxyResolutionRequest::~WindowsSystemProxyResolutionRequest() {
     service_->RemovePendingRequest(this);
     net_log_.AddEvent(NetLogEventType::CANCELLED);
 
-    if (IsStarted())
-      CancelResolveJob();
+    CancelResolveRequest();
 
     net_log_.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
   }
@@ -86,49 +85,25 @@ LoadState WindowsSystemProxyResolutionRequest::GetLoadState() const {
   return LOAD_STATE_RESOLVING_PROXY_FOR_URL;
 }
 
-int WindowsSystemProxyResolutionRequest::Start() {
+void WindowsSystemProxyResolutionRequest::CancelResolveRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!was_completed());
-  DCHECK(!IsStarted());
-
-  // Kicks off an asynchronous call that'll eventually call back into
-  // AsynchronousProxyResolutionComplete() with a result.
-  if (!windows_system_proxy_resolver_->GetProxyForUrl(this, url_.spec()))
-    return ERR_FAILED;
-
-  // Asynchronous proxy resolution has begun.
-  return ERR_IO_PENDING;
+  proxy_resolution_request_.reset();
 }
 
-void WindowsSystemProxyResolutionRequest::CancelResolveJob() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsStarted());
-  // The request may already be running in the resolver.
-  // TODO(https://crbug.com/1032820): Cancel callback instead of just ignoring
-  // it.
-  windows_system_proxy_resolver_->RemovePendingCallbackTarget(this);
-  DCHECK(!IsStarted());
-}
-
-bool WindowsSystemProxyResolutionRequest::IsStarted() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return windows_system_proxy_resolver_->HasPendingCallbackTarget(this);
-}
-
-int WindowsSystemProxyResolutionRequest::UpdateResultsOnProxyResolutionComplete(
+void WindowsSystemProxyResolutionRequest::ProxyResolutionComplete(
     const ProxyList& proxy_list,
-    int net_error) {
+    WinHttpStatus winhttp_status,
+    int windows_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!was_completed());
+  // TODO(https://crbug.com/1032820): Log Windows error |windows_error|.
 
+  proxy_resolution_request_.reset();
   results_->UseProxyList(proxy_list);
 
-  // Make sure IsStarted() returns false while DidFinishResolvingProxy() runs.
-  windows_system_proxy_resolver_->RemovePendingCallbackTarget(this);
-
   // Note that DidFinishResolvingProxy might modify |results_|.
-  const int updated_result = service_->DidFinishResolvingProxy(
-      url_, method_, results_, net_error, net_log_);
+  int net_error = service_->DidFinishResolvingProxy(url_, method_, results_,
+                                                    winhttp_status, net_log_);
 
   // Make a note in the results which configuration was in use at the
   // time of the resolve.
@@ -136,28 +111,6 @@ int WindowsSystemProxyResolutionRequest::UpdateResultsOnProxyResolutionComplete(
   results_->set_proxy_resolve_end_time(base::TimeTicks::Now());
   results_->set_traffic_annotation(
       MutableNetworkTrafficAnnotationTag(kWindowsResolverTrafficAnnotation));
-
-  return updated_result;
-}
-
-int WindowsSystemProxyResolutionRequest::SynchronousProxyResolutionComplete(
-    int net_error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ProxyList proxy_list;
-  const int updated_result =
-      UpdateResultsOnProxyResolutionComplete(proxy_list, net_error);
-  service_ = nullptr;
-  return updated_result;
-}
-
-void WindowsSystemProxyResolutionRequest::AsynchronousProxyResolutionComplete(
-    const ProxyList& proxy_list,
-    int net_error,
-    int windows_error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(https://crbug.com/1032820): Log Windows error |windows_error|.
-
-  net_error = UpdateResultsOnProxyResolutionComplete(proxy_list, net_error);
 
   CompletionOnceCallback callback = std::move(user_callback_);
 

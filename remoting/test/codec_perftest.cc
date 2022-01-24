@@ -13,7 +13,7 @@
 namespace remoting {
 namespace test {
 
-constexpr auto kIntervalBetweenFrames = base::TimeDelta::FromSeconds(1) / 30;
+constexpr auto kIntervalBetweenFrames = base::Seconds(1) / 30;
 
 struct CodecParams {
   CodecParams(bool use_vp9, bool lossless, bool lossless_color)

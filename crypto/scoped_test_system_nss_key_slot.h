@@ -17,17 +17,27 @@ namespace crypto {
 
 class ScopedTestNSSDB;
 
-// Opens a persistent NSS software database in a temporary directory and sets
-// the test system slot to the opened database. This helper should be created in
-// tests to fake the system token that is usually provided by the Chaps module.
-// |slot| is exposed through |GetSystemNSSKeySlot| and |IsTPMTokenReady| will
-// return true.
-// |InitializeTPMTokenAndSystemSlot|, which triggers the TPM initialization,
-// does not have to be called if this helper is used.
-// At most one instance of this helper must be used at a time.
+// Helper object to override the behavior of `crypto::GetSystemNSSKeySlot()`
+// to return a slot from a temporary directory (i.e. bypassing the TPM).
+// This object MUST be created before any call to
+// `crypto::InitializeTPMTokenAndSystemSlot()`. Note: As noted in
+// `crypto::ResetSystemSlotForTesting()`, once a fake slot has been configured
+// for a process, it cannot be undone. As such, only one instance of this object
+// must be created for a process.
 class CRYPTO_EXPORT ScopedTestSystemNSSKeySlot {
  public:
-  ScopedTestSystemNSSKeySlot();
+  // If `simulate_token_loader` is false, this class only prepares a software
+  // system slot, which will be made available through `GetSystemNSSKeySlot`
+  // when something else (presumably the TpmTokenLoader) calls
+  // `crypto::FinishInitializingTPMTokenAndSystemSlot`. Setting
+  // `simulate_token_loader` to true emulates the "initialization finished"
+  // signal immediately (e.g. in unit tests).
+  ScopedTestSystemNSSKeySlot(bool simulate_token_loader);
+
+  ScopedTestSystemNSSKeySlot(const ScopedTestSystemNSSKeySlot&) = delete;
+  ScopedTestSystemNSSKeySlot& operator=(const ScopedTestSystemNSSKeySlot&) =
+      delete;
+
   ~ScopedTestSystemNSSKeySlot();
 
   bool ConstructedSuccessfully() const;
@@ -35,8 +45,6 @@ class CRYPTO_EXPORT ScopedTestSystemNSSKeySlot {
 
  private:
   std::unique_ptr<ScopedTestNSSDB> test_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestSystemNSSKeySlot);
 };
 
 }  // namespace crypto

@@ -14,6 +14,12 @@ class HeadlessPrintRenderFrameHelperDelegate
     : public printing::PrintRenderFrameHelper::Delegate {
  public:
   HeadlessPrintRenderFrameHelperDelegate();
+
+  HeadlessPrintRenderFrameHelperDelegate(
+      const HeadlessPrintRenderFrameHelperDelegate&) = delete;
+  HeadlessPrintRenderFrameHelperDelegate& operator=(
+      const HeadlessPrintRenderFrameHelperDelegate&) = delete;
+
   ~HeadlessPrintRenderFrameHelperDelegate() override;
 
  private:
@@ -22,8 +28,6 @@ class HeadlessPrintRenderFrameHelperDelegate
   bool ShouldGenerateTaggedPDF() override;
   bool OverridePrint(blink::WebLocalFrame* frame) override;
   blink::WebElement GetPdfElement(blink::WebLocalFrame* frame) override;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessPrintRenderFrameHelperDelegate);
 };
 
 }  // namespace headless

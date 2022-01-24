@@ -17,6 +17,9 @@ class WebState;
 // Class used to serialize values added to SerializableUserDataManager.
 class SerializableUserData {
  public:
+  SerializableUserData(const SerializableUserData&) = delete;
+  SerializableUserData& operator=(const SerializableUserData&) = delete;
+
   virtual ~SerializableUserData() = default;
 
   // Factory method.
@@ -30,17 +33,21 @@ class SerializableUserData {
 
  protected:
   SerializableUserData() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SerializableUserData);
 };
 
 // Class that can be used to add serializable user data to a WebState.
 class SerializableUserDataManager {
  public:
   // Returns the SerializableUserDataManager instance associated with
-  // |web_state|, instantiating one if necessary.
-  static SerializableUserDataManager* FromWebState(web::WebState* web_state);
+  // |web_state|, instantiating one if necessary (only for non-const
+  // version).
+  static SerializableUserDataManager* FromWebState(WebState* web_state);
+  static const SerializableUserDataManager* FromWebState(
+      const WebState* web_state);
+
+  SerializableUserDataManager(const SerializableUserDataManager&) = delete;
+  SerializableUserDataManager& operator=(const SerializableUserDataManager&) =
+      delete;
 
   // Adds |data| to the user data, allowing it to be encoded under |key|.
   // |data| is expected to be non-nil.  If |key| has already been used, its
@@ -61,9 +68,6 @@ class SerializableUserDataManager {
  protected:
   SerializableUserDataManager() = default;
   ~SerializableUserDataManager() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SerializableUserDataManager);
 };
 
 }  // namespace web

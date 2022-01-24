@@ -6,16 +6,16 @@
 
 #include <string>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/attestation/attestation_policy_observer.h"
 #include "chrome/browser/ash/attestation/mock_machine_certificate_uploader.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

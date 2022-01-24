@@ -28,7 +28,7 @@
 namespace net {
 
 bool ImportSensitiveKeyFromFile(const base::FilePath& dir,
-                                const std::string& key_filename,
+                                base::StringPiece key_filename,
                                 PK11SlotInfo* slot) {
   base::FilePath key_path = dir.AppendASCII(key_filename);
   std::string key_pkcs8;
@@ -143,8 +143,8 @@ ScopedCERTCertificate ImportClientCertToSlot(
 
 scoped_refptr<X509Certificate> ImportClientCertAndKeyFromFile(
     const base::FilePath& dir,
-    const std::string& cert_filename,
-    const std::string& key_filename,
+    base::StringPiece cert_filename,
+    base::StringPiece key_filename,
     PK11SlotInfo* slot,
     ScopedCERTCertificate* nss_cert) {
   if (!ImportSensitiveKeyFromFile(dir, key_filename, slot)) {
@@ -171,8 +171,8 @@ scoped_refptr<X509Certificate> ImportClientCertAndKeyFromFile(
 
 scoped_refptr<X509Certificate> ImportClientCertAndKeyFromFile(
     const base::FilePath& dir,
-    const std::string& cert_filename,
-    const std::string& key_filename,
+    base::StringPiece cert_filename,
+    base::StringPiece key_filename,
     PK11SlotInfo* slot) {
   ScopedCERTCertificate nss_cert;
   return ImportClientCertAndKeyFromFile(dir, cert_filename, key_filename, slot,
@@ -181,7 +181,7 @@ scoped_refptr<X509Certificate> ImportClientCertAndKeyFromFile(
 
 ScopedCERTCertificate ImportCERTCertificateFromFile(
     const base::FilePath& certs_dir,
-    const std::string& cert_file) {
+    base::StringPiece cert_file) {
   scoped_refptr<X509Certificate> cert =
       ImportCertFromFile(certs_dir, cert_file);
   if (!cert)
@@ -191,7 +191,7 @@ ScopedCERTCertificate ImportCERTCertificateFromFile(
 
 ScopedCERTCertificateList CreateCERTCertificateListFromFile(
     const base::FilePath& certs_dir,
-    const std::string& cert_file,
+    base::StringPiece cert_file,
     int format) {
   CertificateList certs =
       CreateCertificateListFromFile(certs_dir, cert_file, format);

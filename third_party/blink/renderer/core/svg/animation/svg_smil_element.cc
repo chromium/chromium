@@ -85,7 +85,9 @@ void SMILInstanceTimeList::InsertSortedAndUnique(SMILTime time,
     if (position->Origin() == origin)
       return;
   }
-  instance_times_.insert(position - instance_times_.begin(), time_with_origin);
+  instance_times_.insert(
+      static_cast<wtf_size_t>(position - instance_times_.begin()),
+      time_with_origin);
   AddOrigin(origin);
 }
 
@@ -97,7 +99,8 @@ void SMILInstanceTimeList::RemoveWithOrigin(SMILTimeOrigin origin) {
                      [origin](const SMILTimeWithOrigin& instance_time) {
                        return instance_time.Origin() == origin;
                      });
-  instance_times_.Shrink(tail - instance_times_.begin());
+  instance_times_.Shrink(
+      static_cast<wtf_size_t>(tail - instance_times_.begin()));
   ClearOrigin(origin);
 }
 
@@ -1050,9 +1053,9 @@ SVGSMILElement::ProgressState SVGSMILElement::CalculateProgressState(
     repeat = active_time.IntDiv(simple_duration);
     simple_time = active_time % simple_duration;
   }
-  return {clampTo<float>(simple_time.InternalValueAsDouble() /
+  return {ClampTo<float>(simple_time.InternalValueAsDouble() /
                          simple_duration.InternalValueAsDouble()),
-          clampTo<unsigned>(repeat)};
+          ClampTo<unsigned>(repeat)};
 }
 
 SMILTime SVGSMILElement::NextProgressTime(SMILTime presentation_time) const {

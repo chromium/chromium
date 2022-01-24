@@ -2,8 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+config("libipp_private_config") {
+  # TODO(crbug.com/1243431): Remove this once libipp has rolled past
+  # https://chromium.googlesource.com/chromiumos/platform2/+/69ae7eb2d0104
+  cflags = [ "-Wno-unreachable-code-return" ]
+}
+
 static_library("libipp") {
   include_dirs = [ "." ]
+  configs += [ ":libipp_private_config" ]
   sources = [
     "libipp/ipp.h",
     "libipp/ipp_attribute.cc",

@@ -114,13 +114,17 @@ class DistillerPageMediaBlocker : public web::WebStatePolicyDecider {
       : web::WebStatePolicyDecider(web_state),
         main_frame_navigation_blocked_(false) {}
 
+  DistillerPageMediaBlocker(const DistillerPageMediaBlocker&) = delete;
+  DistillerPageMediaBlocker& operator=(const DistillerPageMediaBlocker&) =
+      delete;
+
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
-      base::OnceCallback<void(PolicyDecision)> callback) override {
+      web::WebStatePolicyDecider::ResponseInfo response_info,
+      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override {
     if ([response.MIMEType hasPrefix:@"audio/"] ||
         [response.MIMEType hasPrefix:@"video/"]) {
-      if (for_main_frame) {
+      if (response_info.for_main_frame) {
         main_frame_navigation_blocked_ = true;
       }
       std::move(callback).Run(PolicyDecision::Cancel());
@@ -135,7 +139,6 @@ class DistillerPageMediaBlocker : public web::WebStatePolicyDecider {
 
  private:
   bool main_frame_navigation_blocked_;
-  DISALLOW_COPY_AND_ASSIGN(DistillerPageMediaBlocker);
 };
 
 #pragma mark -

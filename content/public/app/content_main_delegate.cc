@@ -18,10 +18,10 @@ bool ContentMainDelegate::BasicStartupComplete(int* exit_code) {
   return false;
 }
 
-int ContentMainDelegate::RunProcess(
+absl::variant<int, MainFunctionParams> ContentMainDelegate::RunProcess(
     const std::string& process_type,
-    const content::MainFunctionParams& main_function_params) {
-  return -1;
+    MainFunctionParams main_function_params) {
+  return std::move(main_function_params);
 }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

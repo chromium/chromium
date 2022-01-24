@@ -29,7 +29,7 @@ bool IsUserLoggedIn() {
 }  // namespace
 
 const int kMaxRebootAttempts = 3;
-const base::TimeDelta kRebootAttemptDelay = base::TimeDelta::FromMinutes(5);
+const base::TimeDelta kRebootAttemptDelay = base::Minutes(5);
 
 SnapshotRebootController::SnapshotRebootController(
     std::unique_ptr<ArcSnapshotRebootNotification> notification)

@@ -43,18 +43,18 @@ TEST_P(SVGContainerPainterTest, FilterPaintProperties) {
                                      5);
 
   const auto* before = GetLayoutObjectByElementId("before");
-  PaintChunk::Id before_id(*before, kSVGEffectPaintPhaseForeground);
+  PaintChunk::Id before_id(before->Id(), kSVGEffectPaintPhaseForeground);
   const auto& before_properties = before->FirstFragment().ContentsProperties();
 
   const auto* rect = GetLayoutObjectByElementId("rect");
-  PaintChunk::Id rect_id(*rect, DisplayItem::kHitTest);
+  PaintChunk::Id rect_id(rect->Id(), DisplayItem::kHitTest);
   const auto* container = GetLayoutObjectByElementId("container");
   // Because the rect doesn't create paint properties, it uses the container's.
   const auto& container_properties =
       container->FirstFragment().ContentsProperties();
 
   const auto* after = GetLayoutObjectByElementId("after");
-  PaintChunk::Id after_id(*after, kSVGEffectPaintPhaseForeground);
+  PaintChunk::Id after_id(after->Id(), kSVGEffectPaintPhaseForeground);
   const auto& after_properties = after->FirstFragment().ContentsProperties();
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {

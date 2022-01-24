@@ -237,7 +237,7 @@ def _GenerateBinarySizePluginDetails(metrics):
       binary_size_listings.insert(0, listing)
       continue
     # The main 'binary size' delta is always shown even if unchanged.
-    elif delta.actual == 0:
+    if delta.actual == 0:
       continue
     binary_size_listings.append(listing)
 

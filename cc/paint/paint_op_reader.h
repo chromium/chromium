@@ -6,7 +6,6 @@
 #define CC_PAINT_PAINT_OP_READER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "build/build_config.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_writer.h"
@@ -79,9 +78,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkYUVAInfo::Subsampling* subsampling);
   void Read(gpu::Mailbox* mailbox);
 
-#if !defined(OS_ANDROID)
   void Read(scoped_refptr<SkottieWrapper>* skottie);
-#endif
 
   void Read(SkClipOp* op) { ReadEnum<SkClipOp, SkClipOp::kMax_EnumValue>(op); }
   void Read(PaintCanvas::AnnotationType* type) {
@@ -127,6 +124,66 @@ class CC_PAINT_EXPORT PaintOpReader {
   void AlignMemory(size_t alignment);
 
  private:
+  enum class DeserializationError {
+    // Enum values must remain synchronized with PaintOpDeserializationError
+    // in tools/metrics/histograms/enums.xml.
+    kDrawLooperForbidden = 0,
+    kEnumValueOutOfRange = 1,
+    kForbiddenSerializedImageType = 2,
+    kInsufficientRemainingBytes_AlignMemory = 3,
+    kInsufficientRemainingBytes_ExtractReadableMemory = 4,
+    kInsufficientRemainingBytes_Read_PaintRecord = 5,
+    kInsufficientRemainingBytes_Read_PaintShader_ColorBytes = 6,
+    kInsufficientRemainingBytes_Read_PaintShader_ColorSize = 7,
+    kInsufficientRemainingBytes_Read_PaintShader_Positions = 8,
+    kInsufficientRemainingBytes_Read_SkData = 9,
+    kInsufficientRemainingBytes_Read_SkPath = 10,
+    kInsufficientRemainingBytes_Read_SkRegion = 11,
+    kInsufficientRemainingBytes_Read_SkTextBlob = 12,
+    kInsufficientRemainingBytes_ReadData = 13,
+    kInsufficientRemainingBytes_ReadFlattenable = 14,
+    kInsufficientRemainingBytes_ReadMatrixConvolutionPaintFilter = 15,
+    kInsufficientRemainingBytes_ReadSimple = 16,
+    kInvalidPaintShader = 17,
+    kInvalidPaintShaderPositionsSize = 18,
+    kInvalidPaintShaderScalingBehavior = 19,
+    kInvalidPaintShaderType = 20,
+    kInvalidPlaneConfig = 21,
+    kInvalidRasterScale = 22,
+    kInvalidRecordShaderId = 23,
+    kInvalidSerializedImageType = 24,
+    kInvalidSkYUVColorSpace = 25,
+    kInvalidSubsampling = 26,
+    kInvalidTypeface = 27,
+    kMissingPaintCachePathEntry = 28,
+    kMissingPaintCacheTextBlobEntry = 29,
+    kMissingSharedImageProvider = 30,
+    kPaintFilterHasTooManyInputs = 31,
+    kPaintOpBufferMakeFromMemoryFailure = 32,
+    kPaintRecordForbidden = 33,
+    kReadImageFailure = 34,
+    kSharedImageOpenFailure = 35,  // Obsolete
+    kSkColorFilterUnflattenFailure = 36,
+    kSkColorSpaceDeserializeFailure = 37,
+    kSkDrawLooperUnflattenFailure = 38,
+    kSkMaskFilterUnflattenFailure = 39,
+    kSkPathEffectUnflattenFailure = 40,
+    kSkPathReadFromMemoryFailure = 41,
+    kSkRegionReadFromMemoryFailure = 42,
+    kSkTextBlobDeserializeFailure = 43,
+    kUnexpectedPaintShaderType = 44,
+    kUnexpectedSerializedImageType = 45,
+    kZeroMailbox = 46,
+    kZeroRegionBytes = 47,
+    kZeroSkPathBytes = 48,
+    kSharedImageProviderUnknownMailbox = 49,
+    kSharedImageProviderNoAccess = 50,
+    kSharedImageProviderSkImageCreationFailed = 51,
+    kZeroSkColorFilterBytes = 52,
+
+    kMaxValue = kZeroSkColorFilterBytes,
+  };
+
   template <typename T>
   void ReadSimple(T* val);
 
@@ -136,7 +193,9 @@ class CC_PAINT_EXPORT PaintOpReader {
                                const SkDeserialProcs* procs);
 
   template <typename T>
-  void ReadFlattenable(sk_sp<T>* val, Factory<T> factory);
+  void ReadFlattenable(sk_sp<T>* val,
+                       Factory<T> factory,
+                       DeserializationError error_on_factory_failure);
 
   template <typename Enum, Enum kMaxValue = Enum::kMaxValue>
   void ReadEnum(Enum* enum_value) {
@@ -145,13 +204,13 @@ class CC_PAINT_EXPORT PaintOpReader {
     uint8_t value = 0u;
     Read(&value);
     if (value > static_cast<uint8_t>(kMaxValue)) {
-      SetInvalid();
+      SetInvalid(DeserializationError::kEnumValueOutOfRange);
       return;
     }
     *enum_value = static_cast<Enum>(value);
   }
 
-  void SetInvalid(bool skip_crash_dump = false);
+  void SetInvalid(DeserializationError error);
 
   // The main entry point is Read(sk_sp<PaintFilter>* filter) which calls one of
   // the following functions depending on read type.

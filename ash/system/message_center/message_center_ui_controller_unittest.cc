@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
@@ -25,15 +24,20 @@ class TestNotificationDelegate : public message_center::NotificationDelegate {
  public:
   TestNotificationDelegate() = default;
 
+  TestNotificationDelegate(const TestNotificationDelegate&) = delete;
+  TestNotificationDelegate& operator=(const TestNotificationDelegate&) = delete;
+
  private:
   ~TestNotificationDelegate() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNotificationDelegate);
 };
 
 class MockDelegate : public MessageCenterUiDelegate {
  public:
   MockDelegate() {}
+
+  MockDelegate(const MockDelegate&) = delete;
+  MockDelegate& operator=(const MockDelegate&) = delete;
+
   ~MockDelegate() override {}
   void OnMessageCenterContentsChanged() override {}
   bool ShowPopups() override {
@@ -57,9 +61,6 @@ class MockDelegate : public MessageCenterUiDelegate {
   bool popups_visible_ = false;
   bool show_popups_success_ = true;
   bool show_message_center_success_ = true;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDelegate);
 };
 
 }  // namespace
@@ -67,6 +68,11 @@ class MockDelegate : public MessageCenterUiDelegate {
 class MessageCenterUiControllerTest : public AshTestBase {
  public:
   MessageCenterUiControllerTest() {}
+
+  MessageCenterUiControllerTest(const MessageCenterUiControllerTest&) = delete;
+  MessageCenterUiControllerTest& operator=(
+      const MessageCenterUiControllerTest&) = delete;
+
   ~MessageCenterUiControllerTest() override {}
 
   void SetUp() override {
@@ -110,9 +116,6 @@ class MessageCenterUiControllerTest : public AshTestBase {
   std::unique_ptr<MockDelegate> delegate_;
   std::unique_ptr<MessageCenterUiController> ui_controller_;
   message_center::MessageCenter* message_center_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterUiControllerTest);
 };
 
 TEST_F(MessageCenterUiControllerTest, BasicMessageCenter) {

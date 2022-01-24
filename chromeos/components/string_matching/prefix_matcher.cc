@@ -5,7 +5,6 @@
 #include "chromeos/components/string_matching/prefix_matcher.h"
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "chromeos/components/string_matching/tokenized_string_char_iterator.h"
 

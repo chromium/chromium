@@ -14,8 +14,11 @@ module chromeos.cros_healthd.mojom;
 const int32 kFailedToStartId = 0;
 
 // Enumeration of each of the diagnostics routines the platform may support.
+//
+// NextMinVersion: 1, NextIndex: 31
 [Extensible]
 enum DiagnosticRoutineEnum {
+  [Default] kUnknown = 30,
   kBatteryCapacity = 0,
   kBatteryHealth = 1,
   kUrandom = 2,
@@ -43,6 +46,9 @@ enum DiagnosticRoutineEnum {
   kHttpsFirewall = 24,
   kHttpsLatency = 25,
   kVideoConferencing = 26,
+  kArcHttp = 27,
+  kArcPing = 28,
+  kArcDnsResolution = 29,
 };
 
 // Enumeration of the possible DiskRead routine's command type
@@ -52,8 +58,11 @@ enum DiskReadRoutineTypeEnum {
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.
+//
+// NextMinVersion: 1, NextIndex: 13
 [Extensible]
 enum DiagnosticRoutineStatusEnum {
+  [Default] kUnknown = 12,
   kReady = 0,  // Routine is ready to start.
   kRunning = 1,  // Routine is currently running.
   kWaiting = 2,  // Routine needs user input to continue.
@@ -72,15 +81,21 @@ enum DiagnosticRoutineStatusEnum {
 
 // Enumeration of each of the messages a diagnostics routine can pass back.
 // These messages prompt interaction from the user of the routine.
+//
+// NextMinVersion: 1, NextIndex: 3
 [Extensible]
 enum DiagnosticRoutineUserMessageEnum {
+  [Default] kUnknown = 2,
   kUnplugACPower = 0,  // The user needs to unplug the AC power cord.
   kPlugInACPower = 1,  // The user needs to plug in the AC power cord.
 };
 
 // Enumeration of the possible commands to send a diagnostics routine.
+//
+// NextMinVersion: 1, NextIndex: 5
 [Extensible]
 enum DiagnosticRoutineCommandEnum {
+  [Default] kUnknown = 4,
   kContinue = 0,  // Resume a routine that is waiting.
   kCancel = 1,  // Cancelled routines must still be removed before the routine
                 // is destroyed.
@@ -91,31 +106,37 @@ enum DiagnosticRoutineCommandEnum {
 };
 
 // Generic return value for a RunSomeRoutine call.
+//
+// NextMinVersion: 1, NextIndex: 2
 struct RunRoutineResponse {
   // Unique identifier for the newly-created routine. An id of kFailedToStartId
   // means that the routine was unable to be created. Can be used in a
   // GetRoutineUpdate call to control or get the status of the created routine.
-  int32 id;
+  int32 id@0;
   // Current status of the newly-created routine. A status of kFailedToStart
   // means the routine was unable to be created.
-  DiagnosticRoutineStatusEnum status;
+  DiagnosticRoutineStatusEnum status@1;
 };
 
 // Status fields specific to interactive routines.
+//
+// NextMinVersion: 1, NextIndex: 1
 struct InteractiveRoutineUpdate {
   // Request for user action. This message should be localized and displayed to
   // the user.
-  DiagnosticRoutineUserMessageEnum user_message;
+  DiagnosticRoutineUserMessageEnum user_message@0;
 };
 
 // Status fields specific to noninteractive routines.
+//
+// NextMinVersion: 1, NextIndex: 2
 struct NonInteractiveRoutineUpdate {
   // Current status of the routine.
-  DiagnosticRoutineStatusEnum status;
+  DiagnosticRoutineStatusEnum status@0;
   // More detailed status - for example, if |status| was kError,
   // |status_message| would describe the error encountered, like "failed to
   // read file."
-  string status_message;
+  string status_message@1;
 };
 
 // Responses will be either interactive or noninteractive.
@@ -125,30 +146,38 @@ union RoutineUpdateUnion {
 };
 
 // Response type for GetRoutineUpdate.
+//
+// NextMinVersion: 1, NextIndex: 3
 struct RoutineUpdate {
   // Percent complete, must be between 0 and 100, inclusive.
-  uint32 progress_percent;
+  uint32 progress_percent@0;
   // Any accumulated output, like logs, from the routine. This field is only
   // valid when GetRoutineUpdate (see cros_healthd.mojom) is called with
   // include_output = true.
-  handle? output;
+  handle? output@1;
 
   // Information specific to the type of response - interactive or
   // noninteractive.
-  RoutineUpdateUnion routine_update_union;
+  RoutineUpdateUnion routine_update_union@2;
 };
 
 // Enumeration of the possible statuses for a power supply in the AC power
 // routine.
+//
+// NextMinVersion: 1, NextIndex: 3
 [Extensible]
 enum AcPowerStatusEnum {
+  [Default] kUnknown = 2,
   kConnected = 0,     // Power supply is connected.
   kDisconnected = 1,  // Power supply is disconnected.
 };
 
 // Enumeration of the self-test type in nvme_self_test routine
+//
+// NextMinVersion: 1, NextIndex: 3
 [Extensible]
 enum NvmeSelfTestTypeEnum {
+  [Default] kUnknown = 2,
   kShortSelfTest = 0, // Short time self-test.
   kLongSelfTest = 1,  // Long time self-test.
 };

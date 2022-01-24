@@ -61,7 +61,7 @@ void ArcAppInstallEventLogUploader::PostTaskForStartSerialization() {
       FROM_HERE,
       base::BindOnce(&InstallEventLogUploaderBase::StartSerialization,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(retry_backoff_ms_));
+      base::Milliseconds(retry_backoff_ms_));
 }
 
 void ArcAppInstallEventLogUploader::OnSerialized(

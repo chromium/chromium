@@ -37,6 +37,18 @@ void FakeInputDeviceSettings::SetTouchpadScrollSensitivity(int value) {
   UpdateTouchpadSettings(settings);
 }
 
+void FakeInputDeviceSettings::SetTouchpadHapticFeedback(bool enabled) {
+  TouchpadSettings settings;
+  settings.SetHapticFeedback(enabled);
+  UpdateTouchpadSettings(settings);
+}
+
+void FakeInputDeviceSettings::SetTouchpadHapticClickSensitivity(int value) {
+  TouchpadSettings settings;
+  settings.SetHapticClickSensitivity(value);
+  UpdateTouchpadSettings(settings);
+}
+
 void FakeInputDeviceSettings::SetTapToClick(bool enabled) {
   TouchpadSettings settings;
   settings.SetTapToClick(enabled);

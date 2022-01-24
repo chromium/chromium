@@ -20,6 +20,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/data_url.h"
+#include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -69,7 +70,8 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
-    GURL html_data_url("data:text/html," + html);
+    GURL html_data_url("data:text/html," +
+                       net::EscapeQueryParamValue(html, false));
     EXPECT_TRUE(NavigateToURL(shell(), html_data_url));
     waiter.WaitForNotification();
   }
@@ -216,6 +218,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   ASSERT_NE(nullptr, target);
   EXPECT_EQ(8.0, target->GetFloatAttribute(
                      ax::mojom::FloatAttribute::kValueForRange));
+  // Numerical ranges (see ui::IsRangeValueSupported) shouldn't have
+  // ax::mojom::StringAttribute::kValue set unless they use aria-valuetext.
+  EXPECT_FALSE(target->HasStringAttribute(ax::mojom::StringAttribute::kValue));
 
   // Increment, should result in value changing from 8 to 10.
   {
@@ -291,12 +296,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCanvasActionBrowserTest, CanvasGetImage) {
           c.beginPath();
           c.moveTo(0, 0.5);
           c.lineTo(4, 0.5);
-          c.strokeStyle = '%23ff0000';
+          c.strokeStyle = '#ff0000';
           c.stroke();
           c.beginPath();
           c.moveTo(0, 1.5);
           c.lineTo(4, 1.5);
-          c.strokeStyle = '%230000ff';
+          c.strokeStyle = '#0000ff';
           c.stroke();
         </script>
       </body>
@@ -333,9 +338,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCanvasActionBrowserTest,
       </canvas>
       <script>
         var c = document.getElementById('c').getContext('2d');
-        c.fillStyle = '%2300ff00';
+        c.fillStyle = '#00ff00';
         c.fillRect(0, 0, 40, 10);
-        c.fillStyle = '%23ff00ff';
+        c.fillStyle = '#ff00ff';
         c.fillRect(0, 10, 40, 10);
       </script>
     </body>
@@ -520,8 +525,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ShowContextMenu) {
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      shell()->web_contents()->GetMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
-  context_menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   // Raise the ShowContextMenu event from the second link.
   ui::AXActionData context_menu_action;
@@ -550,8 +555,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      shell()->web_contents()->GetMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
-  context_menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   // Raise the ShowContextMenu event from the link.
   ui::AXActionData context_menu_action;
@@ -587,8 +592,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      shell()->web_contents()->GetMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
-  context_menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   // Raise the ShowContextMenu event from the link.
   ui::AXActionData context_menu_action;
@@ -621,8 +626,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      shell()->web_contents()->GetMainFrame(),
       ContextMenuInterceptor::ShowBehavior::kPreventShow);
-  context_menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   // Raise the ShowContextMenu event from the link.
   ui::AXActionData context_menu_action;
@@ -756,8 +761,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   GetManager()->DoDefaultAction(*target);
   waiter2.WaitForNotification();
 
-  auto&& control_list = target->GetData().GetIntListAttribute(
-      ax::mojom::IntListAttribute::kControlsIds);
+  auto&& control_list =
+      target->GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
   EXPECT_EQ(2u, control_list.size());
 
   auto find_radio1 =
@@ -973,6 +978,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ClickSVG) {
   BrowserAccessibility* target_node =
       FindNode(ax::mojom::Role::kSvgRoot, "svg");
   ASSERT_NE(target_node, nullptr);
+  EXPECT_EQ(1U, target_node->PlatformChildCount());
   GetManager()->DoDefaultAction(*target_node);
   click_waiter.WaitForNotification();
 #if !defined(OS_ANDROID)

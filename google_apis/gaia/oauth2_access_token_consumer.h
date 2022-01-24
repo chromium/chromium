@@ -45,10 +45,10 @@ class OAuth2AccessTokenConsumer {
       Builder();
       ~Builder();
 
-      Builder& WithAccessToken(const std::string& access_token);
-      Builder& WithRefreshToken(const std::string& refresh_token);
-      Builder& WithExpirationTime(const base::Time& expiration_time);
-      Builder& WithIdToken(const std::string& id_token);
+      Builder& WithAccessToken(const std::string& token);
+      Builder& WithRefreshToken(const std::string& token);
+      Builder& WithExpirationTime(const base::Time& time);
+      Builder& WithIdToken(const std::string& token);
 
       TokenResponse build();
 
@@ -70,6 +70,11 @@ class OAuth2AccessTokenConsumer {
   };
 
   OAuth2AccessTokenConsumer() = default;
+
+  OAuth2AccessTokenConsumer(const OAuth2AccessTokenConsumer&) = delete;
+  OAuth2AccessTokenConsumer& operator=(const OAuth2AccessTokenConsumer&) =
+      delete;
+
   virtual ~OAuth2AccessTokenConsumer();
 
   // Success callback.
@@ -80,9 +85,6 @@ class OAuth2AccessTokenConsumer {
 
   // Returns the OAuth token consumer name, should be used for logging only.
   virtual std::string GetConsumerName() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OAuth2AccessTokenConsumer);
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_CONSUMER_H_

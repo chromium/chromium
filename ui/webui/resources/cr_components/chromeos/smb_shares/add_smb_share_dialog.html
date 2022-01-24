@@ -1,22 +1,3 @@
-<link rel="import" href="../../../html/polymer.html">
-
-<link rel="import" href="../../../cr_elements/cr_button/cr_button.html">
-<link rel="import" href="../../../cr_elements/cr_checkbox/cr_checkbox.html">
-<link rel="import" href="../../../cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="../../../cr_elements/cr_input/cr_input.html">
-<link rel="import" href="../../../cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.html">
-<link rel="import" href="../../../cr_elements/icons.html">
-<link rel="import" href="../../../cr_elements/shared_style_css.html">
-<link rel="import" href="../../../cr_elements/shared_vars_css.html">
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="../../../html/load_time_data.html">
-<link rel="import" href="../../../cr_elements/md_select_css.html">
-<link rel="import" href="../../../html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="smb_browser_proxy.html">
-
-<dom-module id="add-smb-share-dialog">
-  <template>
     <style include="cr-shared-style md-select">
       cr-dialog::part(wrapper) {
         /* Subtract the internal padding in <cr-dialog>. */
@@ -60,11 +41,11 @@
       }
 
       #general-error-icon {
-       --iron-icon-fill-color: var(--google-red-600);
+       --iron-icon-fill-color: var(--cros-icon-color-alert);
       }
 
       #general-error-message {
-        color: var(--google-red-600);
+        color: var(--cros-text-color-alert);
         display: inline-block;
         font-size: 10px;
       }
@@ -132,6 +113,3 @@
         </cr-button>
       </div>
     </cr-dialog>
-  </template>
-  <script src="add_smb_share_dialog.js"></script>
-</dom-module>

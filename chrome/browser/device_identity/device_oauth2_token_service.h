@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
@@ -36,6 +35,9 @@ class DeviceOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
  public:
   using RefreshTokenAvailableCallback = base::RepeatingClosure;
   using StatusCallback = base::OnceCallback<void(bool)>;
+
+  DeviceOAuth2TokenService(const DeviceOAuth2TokenService&) = delete;
+  DeviceOAuth2TokenService& operator=(const DeviceOAuth2TokenService&) = delete;
 
   // Persist the given refresh token on the device. Overwrites any previous
   // value. Should only be called during initial device setup. Signals
@@ -197,8 +199,6 @@ class DeviceOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   std::unique_ptr<DeviceOAuth2TokenStore> store_;
 
   base::WeakPtrFactory<DeviceOAuth2TokenService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceOAuth2TokenService);
 };
 
 #endif  // CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_OAUTH2_TOKEN_SERVICE_H_

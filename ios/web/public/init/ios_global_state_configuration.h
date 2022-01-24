@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_INIT_IOS_GLOBAL_STATE_CONFIGURATION_H_
 #define IOS_WEB_PUBLIC_INIT_IOS_GLOBAL_STATE_CONFIGURATION_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ios_global_state {
 

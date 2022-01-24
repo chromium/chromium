@@ -508,7 +508,7 @@ IdlArray.prototype.is_json_type = function(type)
 {
     /**
      * Checks whether type is a JSON type as per
-     * https://heycam.github.io/webidl/#dfn-json-types
+     * https://webidl.spec.whatwg.org/#dfn-json-types
      */
 
     var idlType = type.idlType;
@@ -1255,7 +1255,7 @@ IdlInterface.prototype.is_global = function()
 /**
  * Value of the LegacyNamespace extended attribute, if any.
  *
- * https://heycam.github.io/webidl/#LegacyNamespace
+ * https://webidl.spec.whatwg.org/#LegacyNamespace
  */
 IdlInterface.prototype.get_legacy_namespace = function()
 {
@@ -1299,7 +1299,7 @@ IdlInterface.prototype.get_interface_object = function() {
 };
 
 IdlInterface.prototype.get_qualified_name = function() {
-    // https://heycam.github.io/webidl/#qualified-name
+    // https://webidl.spec.whatwg.org/#qualified-name
     var legacyNamespace = this.get_legacy_namespace();
     if (legacyNamespace) {
         return legacyNamespace + "." + this.name;
@@ -1320,7 +1320,7 @@ IdlInterface.prototype.has_default_to_json_regular_operation = function() {
 };
 
 /**
- * Implementation of https://heycam.github.io/webidl/#create-an-inheritance-stack
+ * Implementation of https://webidl.spec.whatwg.org/#create-an-inheritance-stack
  * with the order reversed.
  *
  * The order is reversed so that the base class comes first in the list, because
@@ -1358,7 +1358,7 @@ IdlInterface.prototype.get_reverse_inheritance_stack = function() {
 
 /**
  * Implementation of
- * https://heycam.github.io/webidl/#default-tojson-operation
+ * https://webidl.spec.whatwg.org/#default-tojson-operation
  * for testing purposes.
  *
  * Collects the IDL types of the attributes that meet the criteria
@@ -1524,7 +1524,7 @@ IdlInterface.prototype.test_self = function()
     if (this.should_have_interface_object() && !this.is_callback()) {
         subsetTestByKey(this.name, test, function() {
             // This function tests WebIDL as of 2014-10-25.
-            // https://heycam.github.io/webidl/#es-interface-call
+            // https://webidl.spec.whatwg.org/#es-interface-call
 
             this.assert_interface_object_exists();
 
@@ -1549,7 +1549,7 @@ IdlInterface.prototype.test_self = function()
     if (this.should_have_interface_object()) {
         subsetTestByKey(this.name, test, function() {
             // This function tests WebIDL as of 2015-11-17.
-            // https://heycam.github.io/webidl/#interface-object
+            // https://webidl.spec.whatwg.org/#interface-object
 
             this.assert_interface_object_exists();
 
@@ -1741,7 +1741,7 @@ IdlInterface.prototype.test_self = function()
     subsetTestByKey(this.name, test, function()
     {
         // This function tests WebIDL as of 2015-01-21.
-        // https://heycam.github.io/webidl/#interface-object
+        // https://webidl.spec.whatwg.org/#interface-object
 
         if (!this.should_have_interface_object()) {
             return;
@@ -1860,7 +1860,7 @@ IdlInterface.prototype.test_self = function()
     // interfaces for any other interface that is declared with one of these
     // attributes, then the interface prototype object must be an immutable
     // prototype exotic object."
-    // https://heycam.github.io/webidl/#interface-prototype-object
+    // https://webidl.spec.whatwg.org/#interface-prototype-object
     if (this.is_global()) {
         this.test_immutable_prototype("interface prototype object", this.get_interface_object().prototype);
     }
@@ -2237,7 +2237,7 @@ IdlInterface.prototype.test_member_operation = function(member)
     a_test.step(function()
     {
         // This function tests WebIDL as of 2015-12-29.
-        // https://heycam.github.io/webidl/#es-operations
+        // https://webidl.spec.whatwg.org/#es-operations
 
         if (!this.should_have_interface_object()) {
             a_test.done();
@@ -2666,7 +2666,7 @@ IdlInterface.prototype.test_primary_interface_of = function(desc, obj, exception
     // attribute must execute the same algorithm as is defined for the
     // [[SetPrototypeOf]] internal method of an immutable prototype exotic
     // object."
-    // https://heycam.github.io/webidl/#platform-object-setprototypeof
+    // https://webidl.spec.whatwg.org/#platform-object-setprototypeof
     if (this.is_global())
     {
         this.test_immutable_prototype("global platform object", obj);

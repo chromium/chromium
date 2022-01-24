@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -66,7 +67,7 @@ class AvailableComponentLoaderPolicy : public ComponentLoaderPolicy {
         base::android::AttachCurrentThread());
   }
 
-  void ComponentLoadFailed(ComponentLoadError /*error*/) override {
+  void ComponentLoadFailed(ComponentLoadResult /*error*/) override {
     ExpectTrueToJava(
         false, "AvailableComponentLoaderPolicy#ComponentLoadFailed is called");
   }
@@ -75,6 +76,8 @@ class AvailableComponentLoaderPolicy : public ComponentLoaderPolicy {
     hash->assign(std::begin(kAvailableSha256Hash),
                  std::end(kAvailableSha256Hash));
   }
+
+  std::string GetMetricsSuffix() const override { return "AvailableComponent"; }
 };
 
 class UnavailableComponentLoaderPolicy : public ComponentLoaderPolicy {
@@ -90,7 +93,7 @@ class UnavailableComponentLoaderPolicy : public ComponentLoaderPolicy {
         false, "UnavailableComponentLoaderPolicy#ComponentLoaded is called");
   }
 
-  void ComponentLoadFailed(ComponentLoadError /*error*/) override {
+  void ComponentLoadFailed(ComponentLoadResult /*error*/) override {
     Java_EmbeddedComponentLoaderTest_onComponentLoadFailed(
         base::android::AttachCurrentThread());
   }
@@ -98,6 +101,10 @@ class UnavailableComponentLoaderPolicy : public ComponentLoaderPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override {
     hash->assign(std::begin(kUnavailableComponentSha256Hash),
                  std::end(kUnavailableComponentSha256Hash));
+  }
+
+  std::string GetMetricsSuffix() const override {
+    return "UnavailableComponent";
   }
 };
 

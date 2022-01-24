@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_EXTERNAL_VK_IMAGE_FACTORY_H_
 #define GPU_COMMAND_BUFFER_SERVICE_EXTERNAL_VK_IMAGE_FACTORY_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <memory>
 
 #include "gpu/command_buffer/service/external_vk_image_backing.h"
@@ -26,6 +26,10 @@ class GPU_GLES2_EXPORT ExternalVkImageFactory
  public:
   explicit ExternalVkImageFactory(
       scoped_refptr<SharedContextState> context_state);
+
+  ExternalVkImageFactory(const ExternalVkImageFactory&) = delete;
+  ExternalVkImageFactory& operator=(const ExternalVkImageFactory&) = delete;
+
   ~ExternalVkImageFactory() override;
 
   // SharedImageBackingFactory implementation.
@@ -81,8 +85,6 @@ class GPU_GLES2_EXPORT ExternalVkImageFactory
   std::unique_ptr<VulkanCommandPool> command_pool_;
 
   const VulkanImageUsageCache image_usage_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalVkImageFactory);
 };
 
 }  // namespace gpu

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 namespace content_settings {
@@ -53,6 +52,10 @@ class ContentSettingsInfo {
                       IncognitoBehavior incognito_behavior,
                       StorageBehavior storage_behavior,
                       OriginRestriction origin_restriction);
+
+  ContentSettingsInfo(const ContentSettingsInfo&) = delete;
+  ContentSettingsInfo& operator=(const ContentSettingsInfo&) = delete;
+
   ~ContentSettingsInfo();
 
   const WebsiteSettingsInfo* website_settings_info() const {
@@ -79,8 +82,6 @@ class ContentSettingsInfo {
   const IncognitoBehavior incognito_behavior_;
   const StorageBehavior storage_behavior_;
   const OriginRestriction origin_restriction_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsInfo);
 };
 
 }  // namespace content_settings

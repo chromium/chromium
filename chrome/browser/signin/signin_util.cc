@@ -7,18 +7,20 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_internal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
@@ -68,6 +70,10 @@ class DeleteProfileDialogManager : public BrowserListObserver {
         primary_account_email_(primary_account_email),
         delegate_(delegate) {}
 
+  DeleteProfileDialogManager(const DeleteProfileDialogManager&) = delete;
+  DeleteProfileDialogManager& operator=(const DeleteProfileDialogManager&) =
+      delete;
+
   ~DeleteProfileDialogManager() override { BrowserList::RemoveObserver(this); }
 
   void PresentDialogOnAllBrowserWindows() {
@@ -102,8 +108,6 @@ class DeleteProfileDialogManager : public BrowserListObserver {
   Profile* profile_;
   std::string primary_account_email_;
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteProfileDialogManager);
 };
 #endif  // defined(CAN_DELETE_PROFILE)
 
@@ -269,5 +273,42 @@ void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
+
+#if !defined(OS_ANDROID)
+bool ProfileSeparationEnforcedByPolicy(
+    Profile* profile,
+    const std::string& intercepted_account_level_policy_value) {
+  if (!base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync))
+    return false;
+  std::string current_profile_account_restriction =
+      profile->GetPrefs()->GetString(prefs::kManagedAccountsSigninRestriction);
+
+  bool is_machine_level_policy = profile->GetPrefs()->GetBoolean(
+      prefs::kManagedAccountsSigninRestrictionScopeMachine);
+
+  // Enforce profile separation for all new signins if any restriction is
+  // applied at a machine level.
+  if (is_machine_level_policy) {
+    return !current_profile_account_restriction.empty() &&
+           current_profile_account_restriction != "none";
+  }
+
+  // Enforce profile separation for all new signins if "primary_account_strict"
+  // is set at the user account level.
+  return current_profile_account_restriction == "primary_account_strict" ||
+         base::StartsWith(intercepted_account_level_policy_value,
+                          "primary_account");
+}
+
+void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,
+                                               bool created) {
+  base::UmaHistogramBoolean(
+      enforced_by_policy
+          ? "Signin.Enterprise.WorkProfile.ProfileCreatedWithPolicySet"
+          : "Signin.Enterprise.WorkProfile.ProfileCreatedwithPolicyUnset",
+      created);
+}
+
+#endif
 
 }  // namespace signin_util

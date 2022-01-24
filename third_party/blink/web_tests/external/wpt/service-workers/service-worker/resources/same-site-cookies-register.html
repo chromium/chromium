@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<script>
+async function onLoad() {
+  const scope = self.origin + '/cookies/resources/postToParent.py?with-sw';
+  const script = './fetch-rewrite-worker.js';
+  const reg = await navigator.serviceWorker.register(script, { scope: scope });
+  await new Promise(resolve => {
+    const worker = reg.installing;
+    worker.addEventListener('statechange', evt => {
+      if (worker.state === 'activated') {
+        resolve();
+      }
+    });
+  });
+  if (reg.navigationPreload) {
+    await reg.navigationPreload.enable();
+  }
+  window.opener.postMessage({ type: 'SW-REGISTERED' }, '*');
+}
+self.addEventListener('load', onLoad);
+</script>

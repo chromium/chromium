@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -54,6 +53,9 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
       results->success = false;
     }
 
+    ResultsGetter(const ResultsGetter&) = delete;
+    ResultsGetter& operator=(const ResultsGetter&) = delete;
+
     SandboxedZipAnalyzer::ResultCallback GetCallback() {
       return base::BindOnce(&ResultsGetter::OnZipAnalyzerResults,
                             base::Unretained(this));
@@ -68,8 +70,6 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
 
     base::OnceClosure quit_closure_;
     safe_browsing::ArchiveAnalyzerResults* results_;
-
-    DISALLOW_COPY_AND_ASSIGN(ResultsGetter);
   };
 
   SandboxedZipAnalyzerTest()

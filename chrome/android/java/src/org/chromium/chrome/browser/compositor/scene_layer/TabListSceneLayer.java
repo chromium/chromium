@@ -109,7 +109,7 @@ public class TabListSceneLayer extends SceneLayer {
             int urlBarBackgroundId = R.drawable.modern_location_bar;
             boolean useIncognitoColors = t.isIncognito();
 
-            int defaultThemeColor = ChromeColors.getDefaultThemeColor(res, useIncognitoColors);
+            int defaultThemeColor = ChromeColors.getDefaultThemeColor(context, useIncognitoColors);
 
             int closeButtonColor = useIncognitoColors
                     ? Color.WHITE

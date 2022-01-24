@@ -155,8 +155,8 @@ TEST_F(InternalAuthTest, ExpirationAndBruteForce) {
       ASSERT_FALSE(InternalAuthVerification::VerifyPassport(
           dummy2, "zapata", map));
     }
-    if (base::Time::Now() - timestamp > base::TimeDelta::FromSeconds(
-        kCustomVerificationWindow + 1)) {
+    if (base::Time::Now() - timestamp >
+        base::Seconds(kCustomVerificationWindow + 1)) {
       break;
     }
   }

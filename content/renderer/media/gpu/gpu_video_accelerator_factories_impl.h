@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/callback_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -75,7 +75,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
 
   // media::GpuVideoAcceleratorFactories implementation.
   bool IsGpuVideoAcceleratorEnabled() override;
-  base::UnguessableToken GetChannelToken() override;
+  void GetChannelToken(
+      gpu::mojom::GpuChannel::GetChannelTokenCallback cb) override;
   int32_t GetCommandBufferRouteId() override;
   Supported IsDecoderConfigSupported(
       const media::VideoDecoderConfig& config) override;
@@ -129,6 +130,11 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   // with a new ContextProvider.
   bool CheckContextProviderLostOnMainThread();
 
+  GpuVideoAcceleratorFactoriesImpl(const GpuVideoAcceleratorFactoriesImpl&) =
+      delete;
+  GpuVideoAcceleratorFactoriesImpl& operator=(
+      const GpuVideoAcceleratorFactoriesImpl&) = delete;
+
   ~GpuVideoAcceleratorFactoriesImpl() override;
 
  private:
@@ -179,6 +185,7 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
       const media::VideoEncodeAccelerator::SupportedProfiles&
           supported_profiles);
   void OnEncoderSupportFailed();
+  void OnChannelTokenReady(const base::UnguessableToken& token);
 
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -195,6 +202,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   bool context_provider_lost_on_media_thread_ = false;
 
   base::UnguessableToken channel_token_;
+  base::OnceCallbackList<void(const base::UnguessableToken&)>
+      channel_token_callbacks_;
 
   // Whether gpu memory buffers should be used to hold video frames data.
   const bool enable_video_gpu_memory_buffers_;
@@ -226,8 +235,6 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
       supported_vea_profiles_ GUARDED_BY(supported_profiles_lock_);
   Notifier encoder_support_notifier_ GUARDED_BY(supported_profiles_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuVideoAcceleratorFactoriesImpl);
 };
 
 }  // namespace content

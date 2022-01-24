@@ -19,6 +19,10 @@ class ProcfsUtilTest : public testing::Test {
     slash_proc_ = temp_dir_.GetPath().Append("proc");
     CHECK(base::CreateDirectory(slash_proc_));
   }
+
+  ProcfsUtilTest(const ProcfsUtilTest&) = delete;
+  ProcfsUtilTest& operator=(const ProcfsUtilTest&) = delete;
+
   ~ProcfsUtilTest() override = default;
 
   // Write |contents| to file |file_name| under /proc.
@@ -44,8 +48,6 @@ class ProcfsUtilTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcfsUtilTest);
 };
 
 TEST_F(ProcfsUtilTest, GetSingleProcStatSuccess) {

@@ -35,6 +35,12 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
       base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter);
+
+  DedicatedWorkerHostFactoryImpl(const DedicatedWorkerHostFactoryImpl&) =
+      delete;
+  DedicatedWorkerHostFactoryImpl& operator=(
+      const DedicatedWorkerHostFactoryImpl&) = delete;
+
   ~DedicatedWorkerHostFactoryImpl() override;
 
   // blink::mojom::DedicatedWorkerHostFactory:
@@ -75,8 +81,6 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
 
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter_;
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(DedicatedWorkerHostFactoryImpl);
 };
 
 }  // namespace content

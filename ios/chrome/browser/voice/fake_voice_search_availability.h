@@ -16,7 +16,7 @@ class FakeVoiceSearchAvailability : public VoiceSearchAvailability {
   // Setter for whether VoiceOver is enabled.  Disabled by default.  Posts a
   // VoiceOver change notification when the value is updated.
   void SetVoiceOverEnabled(bool enabled);
-  // Setter for whether voice search is enabled for the TestVoiceSearchProvider.
+  // Setter for whether voice search is enabled for the `voice_search` API.
   // Disabled by default.  Must be used in a test fixture that uses a
   // TestChromeBrowserProvider.
   void SetVoiceProviderEnabled(bool enabled);

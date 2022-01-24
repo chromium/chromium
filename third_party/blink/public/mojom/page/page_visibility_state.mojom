@@ -11,6 +11,6 @@ enum PageVisibilityState {
   kVisible,
   // Page is hidden.
   kHidden,
-  // Page is prerendering.
+  // Page is hidden but still rendering, e.g. to generate a screenshot.
   kHiddenButPainting,
 };

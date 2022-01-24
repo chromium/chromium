@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 class UndoManagerObserver;
@@ -24,6 +23,10 @@ class UndoOperation;
 class UndoGroup {
  public:
   UndoGroup();
+
+  UndoGroup(const UndoGroup&) = delete;
+  UndoGroup& operator=(const UndoGroup&) = delete;
+
   ~UndoGroup();
 
   void AddOperation(std::unique_ptr<UndoOperation> operation);
@@ -45,8 +48,6 @@ class UndoGroup {
   // The resource string id describing the undo and redo action.
   int undo_label_id_;
   int redo_label_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(UndoGroup);
 };
 
 // UndoManager ----------------------------------------------------------------
@@ -56,6 +57,10 @@ class UndoGroup {
 class UndoManager {
  public:
   UndoManager();
+
+  UndoManager(const UndoManager&) = delete;
+  UndoManager& operator=(const UndoManager&) = delete;
+
   ~UndoManager();
 
   // Perform an undo or redo operation.
@@ -128,8 +133,6 @@ class UndoManager {
   // processed.
   bool performing_undo_;
   bool performing_redo_;
-
-  DISALLOW_COPY_AND_ASSIGN(UndoManager);
 };
 
 #endif  // COMPONENTS_UNDO_UNDO_MANAGER_H_

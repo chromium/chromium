@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace ntp_snippets {
 
 // On Android builds, a Java counterpart will be generated for this enum.

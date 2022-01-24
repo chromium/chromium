@@ -34,7 +34,7 @@ bool g_crostini_update_filesystem_should_show = false;
 // The time to delay before showing the upgrade container dialog (to decrease
 // flashiness).
 constexpr base::TimeDelta kDelayBeforeUpgradeContainerDialog =
-    base::TimeDelta::FromMilliseconds(400);
+    base::Milliseconds(400);
 
 constexpr char kCrostiniUpgradeContainerSourceHistogram[] =
     "Crostini.UpgradeContainerSource";
@@ -53,7 +53,7 @@ void PrepareShowCrostiniUpdateFilesystemView(
 
   base::TimeDelta delay =
       g_crostini_update_filesystem_should_skip_delay_for_testing
-          ? base::TimeDelta::FromMilliseconds(0)
+          ? base::Milliseconds(0)
           : kDelayBeforeUpgradeContainerDialog;
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(

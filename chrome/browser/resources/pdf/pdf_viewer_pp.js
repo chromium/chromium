@@ -47,6 +47,14 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
   }
 
   /** @override */
+  ready() {
+    super.ready();
+    window.addEventListener('scroll', () => {
+      this.pluginController_.updateScroll(window.scrollX, window.scrollY);
+    });
+  }
+
+  /** @override */
   getContent() {
     return /** @type {!HTMLDivElement} */ (this.$$('#content'));
   }
@@ -77,20 +85,10 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
     this.pluginController_ = PluginController.getInstance();
 
     this.toolbarManager_ = new ToolbarManager(window, this.getZoomToolbar_());
-
-    // Setup the keyboard event listener.
-    document.addEventListener(
-        'keydown',
-        e => this.handleKeyEvent_(/** @type {!KeyboardEvent} */ (e)));
   }
 
-  /**
-   * Handle key events. These may come from the user directly or via the
-   * scripting API.
-   * @param {!KeyboardEvent} e the event to handle.
-   * @private
-   */
-  handleKeyEvent_(e) {
+  /** @override */
+  handleKeyEvent(e) {
     if (shouldIgnoreKeyEvents() || e.defaultPrevented) {
       return;
     }
@@ -184,14 +182,16 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 
   /** @override */
   handleScriptingMessage(message) {
-    super.handleScriptingMessage(message);
+    if (super.handleScriptingMessage(message)) {
+      return true;
+    }
 
     if (this.handlePrintPreviewScriptingMessage_(message)) {
-      return;
+      return true;
     }
 
     if (this.delayScriptingMessage(message)) {
-      return;
+      return true;
     }
 
     switch (message.data.type.toString()) {
@@ -202,7 +202,10 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
       case 'selectAll':
         this.pluginController_.selectAll();
         break;
+      default:
+        return false;
     }
+    return true;
   }
 
   /**
@@ -239,7 +242,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
         this.pluginController_.resetPrintPreviewMode(messageData);
         return true;
       case 'sendKeyEvent':
-        this.handleKeyEvent_(/** @type {!KeyboardEvent} */ (DeserializeKeyEvent(
+        this.handleKeyEvent(/** @type {!KeyboardEvent} */ (DeserializeKeyEvent(
             /** @type {{ keyEvent: Object }} */ (message.data).keyEvent)));
         return true;
       case 'hideToolbar':
@@ -254,7 +257,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
         messageData = /** @type {{ x: number, y: number }} */ (message.data);
         position.y += messageData.y;
         position.x += messageData.x;
-        this.viewport.position = position;
+        this.viewport.setPosition(position);
         return true;
     }
 
@@ -353,7 +356,8 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 }
 
 /**
- * The background color used for print preview (--google-grey-refresh-300).
+ * The background color used for print preview (--google-grey-refresh-300). Keep
+ * in sync with `ChromePdfStreamDelegate::MapToOriginalUrl()`.
  * @type {number}
  */
 const PRINT_PREVIEW_BACKGROUND_COLOR = 0xffdadce0;

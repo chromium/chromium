@@ -34,8 +34,8 @@ AssertionResult VerificationCountAssertionFailure(size_t actual_count,
 }
 
 AssertionResult UnknownTypeAssertionFailure(const string& model_type) {
-  return AssertionFailure() << "Verification not attempted. Unknown ModelType: "
-                            << model_type;
+  return AssertionFailure()
+         << "Verification not attempted. Unknown ModelType: " << model_type;
 }
 
 AssertionResult VerifySessionsHierarchyEquality(
@@ -65,7 +65,7 @@ string ConvertFakeServerContentsToString(
 FakeServerVerifier::FakeServerVerifier(FakeServer* fake_server)
     : fake_server_(fake_server) {}
 
-FakeServerVerifier::~FakeServerVerifier() {}
+FakeServerVerifier::~FakeServerVerifier() = default;
 
 AssertionResult FakeServerVerifier::VerifyEntityCountByType(
     size_t expected_count,
@@ -80,8 +80,8 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByType(
   base::ListValue* entity_list = nullptr;
   if (!entities->GetList(model_type_string, &entity_list)) {
     return UnknownTypeAssertionFailure(model_type_string);
-  } else if (expected_count != entity_list->GetSize()) {
-    return VerificationCountAssertionFailure(entity_list->GetSize(),
+  } else if (expected_count != entity_list->GetList().size()) {
+    return VerificationCountAssertionFailure(entity_list->GetList().size(),
                                              expected_count)
            << "\n\n"
            << ConvertFakeServerContentsToString(*entities);

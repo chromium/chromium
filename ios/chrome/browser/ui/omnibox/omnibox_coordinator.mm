@@ -11,6 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
+#include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -34,6 +35,10 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_coordinator.h"
 #include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_ios.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/url_loading/image_search_param_generator.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -178,7 +183,6 @@
       std::make_unique<OmniboxPopupViewIOS>(_editView->model(),
                                             _editView.get());
 
-  _editView->model()->set_popup_model(popupView->model());
   _editView->SetPopupProvider(popupView.get());
 
   OmniboxPopupCoordinator* coordinator = [[OmniboxPopupCoordinator alloc]
@@ -232,6 +236,24 @@
   DefaultBrowserSceneAgent* agent =
       [DefaultBrowserSceneAgent agentFromScene:sceneState];
   [agent.nonModalScheduler logUserPastedInOmnibox];
+}
+
+- (void)omniboxViewControllerSearchCopiedImage:
+    (OmniboxViewController*)omniboxViewController {
+  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
+      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
+        if (!optionalImage) {
+          return;
+        }
+        UIImage* image = optionalImage.value().ToUIImage();
+        web::NavigationManager::WebLoadParams webParams =
+            ImageSearchParamGenerator::LoadParamsForImage(
+                image, ios::TemplateURLServiceFactory::GetForBrowserState(
+                           self.browser->GetBrowserState()));
+        UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
+
+        UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+      }));
 }
 
 #pragma mark - private

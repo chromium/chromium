@@ -52,6 +52,9 @@ class TextInputManagerTester::InternalObserver
     text_input_manager_->AddObserver(this);
   }
 
+  InternalObserver(const InternalObserver&) = delete;
+  InternalObserver& operator=(const InternalObserver&) = delete;
+
   ~InternalObserver() override {
     if (text_input_manager_)
       text_input_manager_->RemoveObserver(this);
@@ -99,7 +102,7 @@ class TextInputManagerTester::InternalObserver
   }
 
   void OnSelectionBoundsChanged(
-      TextInputManager* text_input_manager_,
+      TextInputManager* text_input_manager,
       RenderWidgetHostViewBase* updated_view) override {
     updated_view_ = updated_view;
     if (!on_selection_bounds_changed_callback_.is_null())
@@ -142,8 +145,6 @@ class TextInputManagerTester::InternalObserver
   base::RepeatingClosure on_selection_bounds_changed_callback_;
   base::RepeatingClosure on_ime_composition_range_changed_callback_;
   base::RepeatingClosure on_text_selection_changed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalObserver);
 };
 
 // This class observes the lifetime of a RenderWidgetHostView. An instance of
@@ -156,6 +157,9 @@ class TestRenderWidgetHostViewDestructionObserver::InternalObserver
       : view_(view), destroyed_(false) {
     view->AddObserver(this);
   }
+
+  InternalObserver(const InternalObserver&) = delete;
+  InternalObserver& operator=(const InternalObserver&) = delete;
 
   ~InternalObserver() override {
     if (view_)
@@ -183,8 +187,6 @@ class TestRenderWidgetHostViewDestructionObserver::InternalObserver
   RenderWidgetHostViewBase* view_;
   bool destroyed_;
   scoped_refptr<MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalObserver);
 };
 
 #if defined(USE_AURA)
@@ -195,6 +197,9 @@ class InputMethodObserverAura : public TestInputMethodObserver,
       : input_method_(input_method), text_input_client_(nullptr) {
     input_method_->AddObserver(this);
   }
+
+  InputMethodObserverAura(const InputMethodObserverAura&) = delete;
+  InputMethodObserverAura& operator=(const InputMethodObserverAura&) = delete;
 
   ~InputMethodObserverAura() override {
     if (input_method_)
@@ -228,8 +233,6 @@ class InputMethodObserverAura : public TestInputMethodObserver,
   ui::InputMethod* input_method_;
   const ui::TextInputClient* text_input_client_;
   base::RepeatingClosure on_show_ime_if_needed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodObserverAura);
 };
 #endif
 
@@ -305,7 +308,7 @@ bool DestroyRenderWidgetHost(int32_t process_id,
     rfh = rfh->GetParent();
 
   FrameTreeNode* ftn = rfh->frame_tree_node();
-  if (ftn->IsMainFrame()) {
+  if (rfh->is_main_frame()) {
     WebContents::FromRenderFrameHost(rfh)->Close();
   } else {
     ftn->frame_tree()->RemoveFrame(ftn);

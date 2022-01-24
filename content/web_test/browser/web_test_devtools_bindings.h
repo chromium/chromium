@@ -6,7 +6,6 @@
 #define CONTENT_WEB_TEST_BROWSER_WEB_TEST_DEVTOOLS_BINDINGS_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/shell/browser/shell_devtools_frontend.h"
 
 namespace content {
@@ -23,6 +22,9 @@ class WebTestDevToolsBindings : public ShellDevToolsBindings {
 
   void Attach() override;
 
+  WebTestDevToolsBindings(const WebTestDevToolsBindings&) = delete;
+  WebTestDevToolsBindings& operator=(const WebTestDevToolsBindings&) = delete;
+
   ~WebTestDevToolsBindings() override;
 
  private:
@@ -36,8 +38,6 @@ class WebTestDevToolsBindings : public ShellDevToolsBindings {
 
   GURL frontend_url_;
   std::unique_ptr<SecondaryObserver> secondary_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestDevToolsBindings);
 };
 
 }  // namespace content

@@ -19,8 +19,8 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -179,11 +179,11 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
     EncryptedRecord encrypted_record;
     encrypted_record.set_encrypted_wrapped_record(serialized_record);
 
-    SequencingInformation* sequencing_information =
-        encrypted_record.mutable_sequencing_information();
-    sequencing_information->set_sequencing_id(static_cast<int64_t>(i));
-    sequencing_information->set_generation_id(kGenerationId);
-    sequencing_information->set_priority(Priority::IMMEDIATE);
+    SequenceInformation* sequence_information =
+        encrypted_record.mutable_sequence_information();
+    sequence_information->set_sequencing_id(static_cast<int64_t>(i));
+    sequence_information->set_generation_id(kGenerationId);
+    sequence_information->set_priority(Priority::IMMEDIATE);
     records->push_back(encrypted_record);
   }
 
@@ -214,29 +214,29 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
                                                       force_confirm_flag));
           })));
 
-  test::TestMultiEvent<SequencingInformation, bool> upload_completion;
-  UploadClient::ReportSuccessfulUploadCallback completion_cb =
-      upload_completion.cb();
+  test::TestMultiEvent<SequenceInformation, bool> upload_success;
+  UploadClient::ReportSuccessfulUploadCallback upload_success_cb =
+      upload_success.cb();
 
   // Save last record seq info for verification.
-  const SequencingInformation last_record_seq_info =
-      records->back().sequencing_information();
+  const SequenceInformation last_record_seq_info =
+      records->back().sequence_information();
 
   test::TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
-  UploadClient::Create(client.get(), completion_cb, encryption_key_attached_cb,
-                       e.cb());
+  UploadClient::Create(client.get(), e.cb());
   StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
   ASSERT_OK(upload_client_result) << upload_client_result.status();
 
   auto upload_client = std::move(upload_client_result.ValueOrDie());
-  auto enqueue_result =
-      upload_client->EnqueueUpload(need_encryption_key(), std::move(records));
+  auto enqueue_result = upload_client->EnqueueUpload(
+      need_encryption_key(), std::move(records), std::move(upload_success_cb),
+      encryption_key_attached_cb);
   EXPECT_TRUE(enqueue_result.ok());
 
-  auto completion_result = upload_completion.result();
-  EXPECT_THAT(std::get<0>(completion_result),
+  auto upload_succes_result = upload_success.result();
+  EXPECT_THAT(std::get<0>(upload_succes_result),
               EqualsProto(last_record_seq_info));
-  EXPECT_THAT(std::get<1>(completion_result), Eq(force_confirm()));
+  EXPECT_THAT(std::get<1>(upload_succes_result), Eq(force_confirm()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

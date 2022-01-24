@@ -32,6 +32,10 @@ class BluetoothSystem : public mojom::BluetoothSystem,
 
   explicit BluetoothSystem(
       mojo::PendingRemote<mojom::BluetoothSystemClient> client);
+
+  BluetoothSystem(const BluetoothSystem&) = delete;
+  BluetoothSystem& operator=(const BluetoothSystem&) = delete;
+
   ~BluetoothSystem() override;
 
   // bluez::BluetoothAdapterClient::Observer
@@ -78,8 +82,6 @@ class BluetoothSystem : public mojom::BluetoothSystem,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothSystem> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSystem);
 };
 
 }  // namespace device

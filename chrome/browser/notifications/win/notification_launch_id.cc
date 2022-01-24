@@ -9,6 +9,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/common/chrome_switches.h"
 
 namespace {
@@ -179,11 +180,13 @@ std::string NotificationLaunchId::GetProfileIdFromLaunchId(
 }
 
 // static
-std::string NotificationLaunchId::GetNotificationLaunchProfileId(
+base::FilePath NotificationLaunchId::GetNotificationLaunchProfileBaseName(
     const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kNotificationLaunchId)) {
-    return NotificationLaunchId::GetProfileIdFromLaunchId(
-        command_line.GetSwitchValueNative(switches::kNotificationLaunchId));
+    return NotificationPlatformBridge::GetProfileBaseNameFromProfileId(
+        NotificationLaunchId::GetProfileIdFromLaunchId(
+            command_line.GetSwitchValueNative(
+                switches::kNotificationLaunchId)));
   }
-  return std::string();
+  return base::FilePath();
 }

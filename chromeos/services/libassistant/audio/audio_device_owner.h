@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom-forward.h"
@@ -29,6 +28,10 @@ class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
                          media_session::mojom::MediaSessionObserver {
  public:
   explicit AudioDeviceOwner(const std::string& device_id);
+
+  AudioDeviceOwner(const AudioDeviceOwner&) = delete;
+  AudioDeviceOwner& operator=(const AudioDeviceOwner&) = delete;
+
   ~AudioDeviceOwner() override;
 
   void Start(
@@ -102,8 +105,6 @@ class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
   // so this sequence checker prevents the other methods from being called on
   // the render sequence.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceOwner);
 };
 
 }  // namespace libassistant

@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -26,7 +27,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -45,6 +45,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -73,13 +74,11 @@ using permissions::PermissionAction;
 // This long after the last top-level tab or window for an origin is closed (or
 // is navigated to another origin), all the permissions for that origin will be
 // revoked.
-constexpr base::TimeDelta kPermissionRevocationTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kPermissionRevocationTimeout = base::Seconds(5);
 
 // Interval at which to periodically sweep persisted permissions to revoke
 // expired grants and renew those with corresponding active grants.
-constexpr base::TimeDelta kPersistentPermissionSweepInterval =
-    base::TimeDelta::FromHours(3);
+constexpr base::TimeDelta kPersistentPermissionSweepInterval = base::Hours(3);
 
 // Dictionary keys for the FILE_SYSTEM_ACCESS_CHOOSER_DATA setting.
 const char kPermissionPathKey[] = "path";
@@ -105,17 +104,6 @@ const char kCustomLastPickedDirectoryKey[] = "custom-id";
 const char kPathKey[] = "path";
 const char kPathTypeKey[] = "path-type";
 const char kTimestampKey[] = "timestamp";
-
-// TODO(https://crbug.com/1177334): Remove migration logic.
-// Deprecated 2/2021. Former schema (per origin):
-// {
-//  ...
-//   "default-path" : <path>,
-//   "default-path-type" : <type>,
-//  ...
-// }
-const char kDeprecatedLastPickedDirectoryKey[] = "default-path";
-const char kDeprecatedLastPickedDirectoryTypeKey[] = "default-path-type";
 
 void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
     content::GlobalRenderFrameHostId frame_id,
@@ -191,7 +179,8 @@ const struct {
     {chrome::DIR_DEFAULT_DOWNLOADS, nullptr, kDontBlockChildren},
     {chrome::DIR_DEFAULT_DOWNLOADS_SAFE, nullptr, kDontBlockChildren},
     // The Chrome installation itself should not be modified by the web.
-    {chrome::DIR_APP, nullptr, kBlockAllChildren},
+    {base::DIR_EXE, nullptr, kBlockAllChildren},
+    {base::DIR_MODULE, nullptr, kBlockAllChildren},
     // And neither should the configuration of at least the currently running
     // Chrome instance (note that this does not take --user-data-dir command
     // line overrides into account).
@@ -207,7 +196,7 @@ const struct {
     {base::DIR_PROGRAM_FILESX86, nullptr, kBlockAllChildren},
     {base::DIR_PROGRAM_FILES6432, nullptr, kBlockAllChildren},
     {base::DIR_WINDOWS, nullptr, kBlockAllChildren},
-    {base::DIR_APP_DATA, nullptr, kBlockAllChildren},
+    {base::DIR_ROAMING_APP_DATA, nullptr, kBlockAllChildren},
     {base::DIR_LOCAL_APP_DATA, nullptr, kBlockAllChildren},
     {base::DIR_COMMON_APP_DATA, nullptr, kBlockAllChildren},
     // Opening a file from an MTP device, such as a smartphone or a camera, is
@@ -339,8 +328,11 @@ void DoSafeBrowsingCheckOnUIThread(
 
   if (!item->web_contents) {
     content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
-    if (rfh)
+    if (rfh) {
+      DCHECK_NE(rfh->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kPrerendering);
       item->web_contents = content::WebContents::FromRenderFrameHost(rfh);
+    }
   }
 
   sb_service->download_protection_service()->CheckFileSystemAccessWrite(
@@ -499,8 +491,30 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     // Otherwise, perform checks and ask the user for permission.
 
     content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
-    if (!rfh || !rfh->IsActive()) {
+    if (!rfh) {
       // Requested from a no longer valid render frame host.
+      RunCallbackAndRecordPermissionRequestOutcome(
+          std::move(callback), PermissionRequestOutcome::kInvalidFrame);
+      return;
+    }
+
+    // Don't show request permission UI for an inactive RenderFrameHost as the
+    // page might not distinguish properly between user denying the permission
+    // and automatic rejection, leading to an inconsistent UX once the page
+    // becomes active again.
+    // - If this is called when RenderFrameHost is in BackForwardCache, evict
+    //   the document from the cache.
+    // - If this is called when RenderFrameHost is in prerendering, cancel
+    //   prerendering.
+    if (rfh->IsInactiveAndDisallowActivation(
+            content::DisallowActivationReasonId::
+                kFileSystemAccessPermissionRequest)) {
+      RunCallbackAndRecordPermissionRequestOutcome(
+          std::move(callback), PermissionRequestOutcome::kInvalidFrame);
+      return;
+    }
+    // We don't allow file system access from fenced frames.
+    if (rfh->IsNestedWithinFencedFrame()) {
       RunCallbackAndRecordPermissionRequestOutcome(
           std::move(callback), PermissionRequestOutcome::kInvalidFrame);
       return;
@@ -708,7 +722,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   base::StringPiece GetKey() const { return PathAsPermissionKey(path_); }
   base::Value AsValue() const {
     base::Value value(base::Value::Type::DICTIONARY);
-    value.SetKey(kPermissionPathKey, util::FilePathToValue(path_));
+    value.SetKey(kPermissionPathKey, base::FilePathToValue(path_));
     value.SetBoolKey(kPermissionIsDirectoryKey,
                      handle_type_ == HandleType::kDirectory);
     value.SetBoolKey(GetGrantKeyFromGrantType(type_),
@@ -722,7 +736,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
                                          MetricsOptions::kDoNotRecord))
       value.SetBoolKey(GetGrantKeyFromGrantType(opposite_type), true);
     value.SetKey(kPermissionLastUsedTimeKey,
-                 util::TimeToValue(context_->clock_->Now()));
+                 base::TimeToValue(context_->clock_->Now()));
     return value;
   }
 
@@ -983,7 +997,7 @@ ChromeFileSystemAccessPermissionContext::GetGrantedObjects(
           objects,
           [this, &is_installed_pwa](const std::unique_ptr<Object>& object) {
             auto last_activity_time =
-                util::ValueToTime(
+                base::ValueToTime(
                     object->value.FindKey(kPermissionLastUsedTimeKey))
                     .value_or(base::Time::Min());
             return this->PersistentPermissionIsExpired(last_activity_time,
@@ -1019,7 +1033,7 @@ ChromeFileSystemAccessPermissionContext::GetAllGrantedObjects() {
                         is_installed_pwa = OriginIsInstalledPWA(origin);
                       }
                       auto last_activity_time =
-                          util::ValueToTime(
+                          base::ValueToTime(
                               object->value.FindKey(kPermissionLastUsedTimeKey))
                               .value_or(base::Time::Min());
                       return this->PersistentPermissionIsExpired(
@@ -1033,7 +1047,7 @@ ChromeFileSystemAccessPermissionContext::GetAllGrantedObjects() {
 std::string ChromeFileSystemAccessPermissionContext::GetKeyForObject(
     const base::Value& object) {
   const auto optional_path =
-      util::ValueToFilePath(object.FindKey(kPermissionPathKey));
+      base::ValueToFilePath(object.FindKey(kPermissionPathKey));
   DCHECK(optional_path);
   return std::string(PathAsPermissionKey(optional_path.value()));
 }
@@ -1055,7 +1069,7 @@ bool ChromeFileSystemAccessPermissionContext::IsValidObject(
 std::u16string ChromeFileSystemAccessPermissionContext::GetObjectDisplayName(
     const base::Value& object) {
   const auto optional_path =
-      util::ValueToFilePath(object.FindKey(kPermissionPathKey));
+      base::ValueToFilePath(object.FindKey(kPermissionPathKey));
   DCHECK(optional_path);
   return optional_path->LossyDisplayName();
 }
@@ -1162,45 +1176,6 @@ void ChromeFileSystemAccessPermissionContext::
                      std::move(result_callback)));
 }
 
-// TODO(https://crbug.com/1177334): Remove migration logic.
-void ChromeFileSystemAccessPermissionContext::MaybeMigrateOriginToNewSchema(
-    const url::Origin& origin) {
-  std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
-      origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
-
-  if (!value)
-    return;
-
-  auto* default_path_value = value->FindKey(kDeprecatedLastPickedDirectoryKey);
-  if (!default_path_value)
-    return;
-
-  auto default_path =
-      util::ValueToFilePath(default_path_value).value_or(base::FilePath());
-  auto default_type =
-      value->FindIntKey(kDeprecatedLastPickedDirectoryTypeKey) ==
-              static_cast<int>(PathType::kExternal)
-          ? PathType::kExternal
-          : PathType::kLocal;
-
-  // Remove old keys.
-  value->RemoveKey(kDeprecatedLastPickedDirectoryKey);
-  value->RemoveKey(kDeprecatedLastPickedDirectoryTypeKey);
-
-  // Set this information as the default.
-  base::Value entry(base::Value::Type::DICTIONARY);
-  entry.SetKey(kPathKey, util::FilePathToValue(default_path));
-  entry.SetIntKey(kPathTypeKey, static_cast<int>(default_type));
-
-  value->SetKey(GenerateLastPickedDirectoryKey(std::string()),
-                std::move(entry));
-
-  content_settings_->SetWebsiteSettingDefaultScope(
-      origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, std::move(value));
-}
-
 void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
     std::unique_ptr<base::Value>& value) {
   if (!value->is_dict()) {
@@ -1214,9 +1189,14 @@ void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
     // Don't evict the default ID.
     if (entry.first == kDefaultLastPickedDirectoryKey)
       continue;
-    entries.emplace_back(util::ValueToTime(entry.second.FindKey(kTimestampKey))
-                             .value_or(base::Time::Min()),
-                         entry.first);
+    // If the data is corrupted and `entry.second` is for some reason not a
+    // dict, it should be first in line for eviction.
+    auto timestamp = base::Time::Min();
+    if (entry.second.is_dict()) {
+      timestamp = base::ValueToTime(entry.second.FindKey(kTimestampKey))
+                      .value_or(base::Time::Min());
+    }
+    entries.emplace_back(timestamp, entry.first);
   }
 
   if (entries.size() <= max_ids_per_origin_)
@@ -1235,8 +1215,6 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
     const std::string& id,
     const base::FilePath& path,
     const PathType type) {
-  MaybeMigrateOriginToNewSchema(origin);
-
   std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
@@ -1245,9 +1223,9 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
 
   // Create an entry into the nested dictionary.
   base::Value entry(base::Value::Type::DICTIONARY);
-  entry.SetKey(kPathKey, util::FilePathToValue(path));
+  entry.SetKey(kPathKey, base::FilePathToValue(path));
   entry.SetIntKey(kPathTypeKey, static_cast<int>(type));
-  entry.SetKey(kTimestampKey, util::TimeToValue(clock_->Now()));
+  entry.SetKey(kTimestampKey, base::TimeToValue(clock_->Now()));
 
   value->SetKey(GenerateLastPickedDirectoryKey(id), std::move(entry));
 
@@ -1262,8 +1240,6 @@ ChromeFileSystemAccessPermissionContext::PathInfo
 ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
     const url::Origin& origin,
     const std::string& id) {
-  MaybeMigrateOriginToNewSchema(origin);
-
   std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
@@ -1281,7 +1257,7 @@ ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
   path_info.type = type_int == static_cast<int>(PathType::kExternal)
                        ? PathType::kExternal
                        : PathType::kLocal;
-  path_info.path = util::ValueToFilePath(entry->FindKey(kPathKey))
+  path_info.path = base::ValueToFilePath(entry->FindKey(kPathKey))
                        .value_or(base::FilePath());
   return path_info;
 }
@@ -1528,7 +1504,7 @@ void ChromeFileSystemAccessPermissionContext::
   bool found = false;
   if (it != origins_.end()) {
     base::FilePath path =
-        util::ValueToFilePath(value.FindKey(kPermissionPathKey)).value();
+        base::ValueToFilePath(value.FindKey(kPermissionPathKey)).value();
     HandleType handle_type =
         value.FindBoolKey(kPermissionIsDirectoryKey).value()
             ? HandleType::kDirectory
@@ -1553,11 +1529,11 @@ void ChromeFileSystemAccessPermissionContext::
     }
   }
   if (found) {
-    value.SetKey(kPermissionLastUsedTimeKey, util::TimeToValue(clock_->Now()));
+    value.SetKey(kPermissionLastUsedTimeKey, base::TimeToValue(clock_->Now()));
     GrantObjectPermission(origin, std::move(value));
   } else {
     auto last_activity_time =
-        util::ValueToTime(value.FindKey(kPermissionLastUsedTimeKey))
+        base::ValueToTime(value.FindKey(kPermissionLastUsedTimeKey))
             .value_or(base::Time::Min());
     // Allow a grace period before revoking permissions to allow for better
     // metrics regarding permission timeouts.
@@ -1633,14 +1609,14 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedPermission(
 
   auto is_installed_pwa = OriginIsInstalledPWA(origin);
   auto last_activity_time =
-      util::ValueToTime(grant->FindKey(kPermissionLastUsedTimeKey)).value();
+      base::ValueToTime(grant->FindKey(kPermissionLastUsedTimeKey)).value();
 
   if (options == MetricsOptions::kRecord) {
     base::UmaHistogramCustomTimes(
         base::StrCat({"Storage.FileSystemAccess.PersistedPermissions.Age.",
                       is_installed_pwa ? "PWA" : "NonPWA"}),
-        clock_->Now() - last_activity_time, base::TimeDelta::FromSeconds(1),
-        base::TimeDelta::FromDays(24), 60);
+        clock_->Now() - last_activity_time, base::Seconds(1), base::Days(24),
+        60);
   }
 
   return !PersistentPermissionIsExpired(last_activity_time, is_installed_pwa);

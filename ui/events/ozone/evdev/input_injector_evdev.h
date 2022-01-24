@@ -6,7 +6,6 @@
 #define UI_EVENTS_OZONE_EVDEV_INPUT_INJECTOR_EVDEV_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
 #include "ui/ozone/public/system_input_injector.h"
 
@@ -19,6 +18,9 @@ class COMPONENT_EXPORT(EVDEV) InputInjectorEvdev : public SystemInputInjector {
  public:
   InputInjectorEvdev(std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher,
                      CursorDelegateEvdev* cursor);
+
+  InputInjectorEvdev(const InputInjectorEvdev&) = delete;
+  InputInjectorEvdev& operator=(const InputInjectorEvdev&) = delete;
 
   ~InputInjectorEvdev() override;
 
@@ -36,11 +38,8 @@ class COMPONENT_EXPORT(EVDEV) InputInjectorEvdev : public SystemInputInjector {
 
   // Interface for dispatching events.
   const std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorEvdev);
 };
 
 }  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_INPUT_INJECTOR_EVDEV_H_
-

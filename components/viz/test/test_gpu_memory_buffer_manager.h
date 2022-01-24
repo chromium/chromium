@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 
@@ -17,6 +16,11 @@ namespace viz {
 class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
  public:
   TestGpuMemoryBufferManager();
+
+  TestGpuMemoryBufferManager(const TestGpuMemoryBufferManager&) = delete;
+  TestGpuMemoryBufferManager& operator=(const TestGpuMemoryBufferManager&) =
+      delete;
+
   ~TestGpuMemoryBufferManager() override;
 
   std::unique_ptr<TestGpuMemoryBufferManager>
@@ -65,8 +69,6 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
   std::map<int, TestGpuMemoryBufferManager*> clients_;
 
   bool fail_on_create_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGpuMemoryBufferManager);
 };
 
 }  // namespace viz

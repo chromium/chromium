@@ -140,22 +140,22 @@ PowerHandler::PowerHandler(PrefService* prefs) : prefs_(prefs) {}
 PowerHandler::~PowerHandler() {}
 
 void PowerHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "updatePowerStatus",
       base::BindRepeating(&PowerHandler::HandleUpdatePowerStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setPowerSource", base::BindRepeating(&PowerHandler::HandleSetPowerSource,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestPowerManagementSettings",
       base::BindRepeating(&PowerHandler::HandleRequestPowerManagementSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setLidClosedBehavior",
       base::BindRepeating(&PowerHandler::HandleSetLidClosedBehavior,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setIdleBehavior",
       base::BindRepeating(&PowerHandler::HandleSetIdleBehavior,
                           base::Unretained(this)));
@@ -217,8 +217,7 @@ void PowerHandler::HandleUpdatePowerStatus(const base::ListValue* args) {
 void PowerHandler::HandleSetPowerSource(const base::ListValue* args) {
   AllowJavascript();
 
-  std::string id;
-  CHECK(args->GetString(0, &id));
+  const std::string& id = args->GetList()[0].GetString();
   chromeos::PowerManagerClient::Get()->SetPowerSource(id);
 }
 
@@ -310,9 +309,8 @@ void PowerHandler::SendBatteryStatus() {
   bool show_time = false;
 
   if (!calculating) {
-    time_left = base::TimeDelta::FromSeconds(
-        charging ? proto->battery_time_to_full_sec()
-                 : proto->battery_time_to_empty_sec());
+    time_left = base::Seconds(charging ? proto->battery_time_to_full_sec()
+                                       : proto->battery_time_to_empty_sec());
     show_time = ash::power_utils::ShouldDisplayBatteryTime(time_left);
   }
 

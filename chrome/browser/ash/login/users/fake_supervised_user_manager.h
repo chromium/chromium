@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_USERS_FAKE_SUPERVISED_USER_MANAGER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager.h"
 
 namespace ash {
@@ -15,6 +14,11 @@ namespace ash {
 class FakeSupervisedUserManager : public SupervisedUserManager {
  public:
   FakeSupervisedUserManager();
+
+  FakeSupervisedUserManager(const FakeSupervisedUserManager&) = delete;
+  FakeSupervisedUserManager& operator=(const FakeSupervisedUserManager&) =
+      delete;
+
   ~FakeSupervisedUserManager() override;
 
   std::string GetUserSyncId(const std::string& user_id) const override;
@@ -27,9 +31,6 @@ class FakeSupervisedUserManager : public SupervisedUserManager {
   void SetPasswordInformation(
       const std::string& user_id,
       const base::DictionaryValue* password_info) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeSupervisedUserManager);
 };
 
 }  // namespace ash

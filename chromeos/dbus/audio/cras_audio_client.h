@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromeos/dbus/audio/audio_node.h"
 #include "chromeos/dbus/audio/volume_state.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -84,6 +83,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
 
   // Returns the global instance if initialized. May return null.
   static CrasAudioClient* Get();
+
+  CrasAudioClient(const CrasAudioClient&) = delete;
+  CrasAudioClient& operator=(const CrasAudioClient&) = delete;
 
   // Adds and removes the observer.
   virtual void AddObserver(Observer* observer) = 0;
@@ -164,6 +166,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Enables or disables the usage of fixed A2DP packet size in CRAS.
   virtual void SetFixA2dpPacketSize(bool enabled) = 0;
 
+  // Enables or disables CRAS to use Floss as the Bluetooth stack.
+  virtual void SetFlossEnabled(bool enabled) = 0;
+
   // Adds input node |node_id| to the active input list. This is used to add
   // an additional active input node besides the one set by SetActiveInputNode.
   // Note that this action will not trigger an ActiveInputNodeChanged event and
@@ -232,9 +237,6 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
 
   CrasAudioClient();
   virtual ~CrasAudioClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrasAudioClient);
 };
 
 }  // namespace chromeos

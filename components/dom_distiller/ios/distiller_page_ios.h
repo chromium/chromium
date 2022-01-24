@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "ios/web/public/web_state_observer.h"
@@ -28,6 +27,10 @@ class DistillerPageMediaBlocker;
 class DistillerPageIOS : public DistillerPage, public web::WebStateObserver {
  public:
   explicit DistillerPageIOS(web::BrowserState* browser_state);
+
+  DistillerPageIOS(const DistillerPageIOS&) = delete;
+  DistillerPageIOS& operator=(const DistillerPageIOS&) = delete;
+
   ~DistillerPageIOS() override;
 
  protected:
@@ -75,8 +78,6 @@ class DistillerPageIOS : public DistillerPage, public web::WebStateObserver {
   bool loading_ = false;
 
   base::WeakPtrFactory<DistillerPageIOS> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DistillerPageIOS);
 };
 
 }  // namespace dom_distiller

@@ -18,7 +18,8 @@ class BrowserCloudManagementStatusProvider final
  public:
   BrowserCloudManagementStatusProvider();
   ~BrowserCloudManagementStatusProvider() final;
-  bool IsManaged() final;
+
+  // ManagementStatusProvider impl
   EnterpriseManagementAuthority GetAuthority() final;
 };
 
@@ -27,7 +28,8 @@ class LocalBrowserManagementStatusProvider final
  public:
   LocalBrowserManagementStatusProvider();
   ~LocalBrowserManagementStatusProvider() final;
-  bool IsManaged() final;
+
+  // ManagementStatusProvider impl
   EnterpriseManagementAuthority GetAuthority() final;
 };
 
@@ -36,7 +38,8 @@ class ProfileCloudManagementStatusProvider final
  public:
   explicit ProfileCloudManagementStatusProvider(Profile* profile);
   ~ProfileCloudManagementStatusProvider() final;
-  bool IsManaged() final;
+
+  // ManagementStatusProvider impl
   EnterpriseManagementAuthority GetAuthority() final;
 
  private:

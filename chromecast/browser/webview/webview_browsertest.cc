@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/macros.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/browser/cast_browser_process.h"
@@ -39,8 +40,7 @@ using testing::Truly;
 namespace chromecast {
 namespace {
 
-constexpr base::TimeDelta kDefaultTimeout =
-    base::TimeDelta::FromMilliseconds(5000);
+constexpr base::TimeDelta kDefaultTimeout = base::Milliseconds(5000);
 
 const std::string kKeyInputDataURL = R"HTML(
 <!DOCTYPE html>
@@ -119,6 +119,7 @@ class WebviewTest : public content::BrowserTestBase {
   }
   void SetUpCommandLine(base::CommandLine* command_line) final {
     command_line->AppendSwitchASCII(switches::kTestType, "browser");
+    command_line->AppendSwitch("allow-pre-commit-input");
   }
   void RunTestOnMainThread() override {}
   void PostRunTestOnMainThread() override {}

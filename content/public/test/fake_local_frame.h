@@ -70,6 +70,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) override;
   void MediaPlayerActionAt(const gfx::Point& location,
                            blink::mojom::MediaPlayerActionPtr action) override;
+  void PluginActionAt(const gfx::Point& location,
+                      blink::mojom::PluginActionType action) override;
   void AdvanceFocusInFrame(blink::mojom::FocusType focus_type,
                            const absl::optional<blink::RemoteFrameToken>&
                                source_frame_token) override;
@@ -77,7 +79,6 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void ReportContentSecurityPolicyViolation(
       network::mojom::CSPViolationPtr violation) override;
   void DidUpdateFramePolicy(const blink::FramePolicy& frame_policy) override;
-  void OnScreensChange() override;
   void PostMessageEvent(
       const absl::optional<blink::RemoteFrameToken>& source_frame_token,
       const std::u16string& source_origin,

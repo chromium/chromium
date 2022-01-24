@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/grit/generated_resources.h"
@@ -13,6 +14,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/view_class_properties.h"
 
 TabSearchFrameCaptionButton::TabSearchFrameCaptionButton(Profile* profile)
     : FrameCaptionButton(views::Button::PressedCallback(),
@@ -24,6 +26,7 @@ TabSearchFrameCaptionButton::TabSearchFrameCaptionButton(Profile* profile)
            views::FrameCaptionButton::Animate::kNo,
            vector_icons::kCaretDownIcon);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
+  SetProperty(views::kElementIdentifierKey, kTabSearchButtonElementId);
 }
 
 TabSearchFrameCaptionButton::~TabSearchFrameCaptionButton() = default;

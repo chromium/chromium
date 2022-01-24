@@ -198,5 +198,5 @@ void AppShortcutManager::UpdateShortcutsForAllAppsIfNeeded() {
       FROM_HERE,
       base::BindOnce(&AppShortcutManager::UpdateShortcutsForAllAppsNow,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kUpdateShortcutsForAllAppsDelay));
+      base::Seconds(kUpdateShortcutsForAllAppsDelay));
 }

@@ -6,7 +6,6 @@
 #define COMPONENTS_GCM_DRIVER_FAKE_GCM_DRIVER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/gcm_driver/gcm_driver.h"
 
@@ -21,6 +20,9 @@ class FakeGCMDriver : public GCMDriver {
   FakeGCMDriver();
   explicit FakeGCMDriver(
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
+
+  FakeGCMDriver(const FakeGCMDriver&) = delete;
+  FakeGCMDriver& operator=(const FakeGCMDriver&) = delete;
 
   ~FakeGCMDriver() override;
 
@@ -62,9 +64,6 @@ class FakeGCMDriver : public GCMDriver {
                 const OutgoingMessage& message) override;
   void RecordDecryptionFailure(const std::string& app_id,
                                GCMDecryptionResult result) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeGCMDriver);
 };
 
 }  // namespace gcm

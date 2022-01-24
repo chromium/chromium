@@ -12,6 +12,8 @@
 #include "base/strings/stringprintf.h"
 #include "extensions/common/extension_api.h"
 
+using value_store::ValueStore;
+
 namespace extensions {
 
 namespace {

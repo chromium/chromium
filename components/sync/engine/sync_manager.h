@@ -14,7 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"
@@ -133,7 +133,7 @@ class SyncManager {
 
   virtual ModelTypeSet InitialSyncEndedTypes() = 0;
 
-  virtual ModelTypeSet GetEnabledTypes() = 0;
+  virtual ModelTypeSet GetConnectedTypes() = 0;
 
   // Update tokens that we're using in Sync. Email must stay the same.
   virtual void UpdateCredentials(const SyncCredentials& credentials) = 0;

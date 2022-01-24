@@ -94,12 +94,11 @@ void ActivityStorage::RemoveOverlappingActivityPeriods() {
          const int64_t start, const int64_t end,
          const std::string& activity_id) {
         if (day_capacities->count(start) == 0)
-          day_capacities->emplace(start, base::TimeDelta::FromDays(1));
+          day_capacities->emplace(start, base::Days(1));
         if (day_capacities->at(start).is_zero())
           return;
-        base::TimeDelta duration =
-            std::min(base::TimeDelta::FromMilliseconds(end - start),
-                     day_capacities->at(start));
+        base::TimeDelta duration = std::min(base::Milliseconds(end - start),
+                                            day_capacities->at(start));
         day_capacities->at(start) -= duration;
 
         enterprise_management::TimePeriod period;
@@ -168,7 +167,7 @@ void ActivityStorage::AddActivityPeriod(base::Time start,
   // Assign the period to day buckets in local time.
   base::Time midnight = GetBeginningOfDay(start);
   while (midnight < end) {
-    midnight += base::TimeDelta::FromDays(1);
+    midnight += base::Days(1);
     int64_t activity = (std::min(end, midnight) - start).InMilliseconds();
 
     const int64_t day_key = LocalTimeToUtcDayStart(start);
@@ -215,7 +214,7 @@ int64_t ActivityStorage::LocalTimeToUtcDayStart(base::Time timestamp) const {
   // TODO(crbug.com/827386): directly test this time change. Currently it is
   // tested through ScreenTimeControllerBrowsertest.
   if (timestamp < day_start)
-    day_start -= base::TimeDelta::FromDays(1);
+    day_start -= base::Days(1);
   day_start.LocalExplode(&exploded);
   base::Time out_time;
   bool conversion_success = base::Time::FromUTCExploded(exploded, &out_time);

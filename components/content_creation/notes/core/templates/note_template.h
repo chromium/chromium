@@ -5,7 +5,6 @@
 #define COMPONENTS_CONTENT_CREATION_NOTES_CORE_TEMPLATES_NOTE_TEMPLATE_H_
 
 #include <string>
-#include <vector>
 
 #include "components/content_creation/notes/core/templates/template_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

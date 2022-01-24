@@ -165,6 +165,12 @@ public class AppBannerManager {
         return AppBannerManagerJni.get().isRunningForTesting(mNativePointer, AppBannerManager.this);
     }
 
+    /** Returns the state of the current pipeline. */
+    @VisibleForTesting
+    public int getPipelineStatusForTesting() {
+        return AppBannerManagerJni.get().getPipelineStatusForTesting(mNativePointer);
+    }
+
     /** Sets constants (in days) the banner should be blocked for after dismissing and ignoring. */
     @VisibleForTesting
     public static void setDaysAfterDismissAndIgnoreForTesting(int dismissDays, int ignoreDays) {
@@ -207,6 +213,7 @@ public class AppBannerManager {
         // Testing methods.
         void ignoreChromeChannelForTesting();
         boolean isRunningForTesting(long nativeAppBannerManagerAndroid, AppBannerManager caller);
+        int getPipelineStatusForTesting(long nativeAppBannerManagerAndroid);
         void setDaysAfterDismissAndIgnoreToTrigger(int dismissDays, int ignoreDays);
         void setTimeDeltaForTesting(int days);
         void setTotalEngagementToTrigger(double engagement);

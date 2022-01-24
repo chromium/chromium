@@ -42,6 +42,9 @@ class WebTestDevToolsBindings::SecondaryObserver : public WebContentsObserver {
       : WebContentsObserver(bindings->inspected_contents()),
         bindings_(bindings) {}
 
+  SecondaryObserver(const SecondaryObserver&) = delete;
+  SecondaryObserver& operator=(const SecondaryObserver&) = delete;
+
   // WebContentsObserver implementation.
   void DocumentAvailableInMainFrame(
       RenderFrameHost* render_frame_host) override {
@@ -52,7 +55,6 @@ class WebTestDevToolsBindings::SecondaryObserver : public WebContentsObserver {
 
  private:
   WebTestDevToolsBindings* bindings_;
-  DISALLOW_COPY_AND_ASSIGN(SecondaryObserver);
 };
 
 // static.
@@ -78,7 +80,10 @@ GURL WebTestDevToolsBindings::MapTestURLIfNeeded(const GURL& test_url,
   bool is_debug_dev_tools = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDebugDevTools);
   // The test runner hosts DevTools resources at this path.
-  std::string url_string = "http://localhost:8000/inspector-sources/";
+  // To reduce timeouts, we need to load DevTools resources from the same
+  // origin as the `test_url_string`.
+  CHECK_NE(test_url_string.find("127.0.0.1:8000"), std::string::npos);
+  std::string url_string = "http://127.0.0.1:8000/inspector-sources/";
   url_string += "integration_test_runner.html?experiments=true";
   if (is_debug_dev_tools)
     url_string += "&debugFrontend=true";

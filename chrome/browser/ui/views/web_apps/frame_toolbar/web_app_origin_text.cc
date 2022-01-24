@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -29,6 +30,7 @@ constexpr gfx::Tween::Type kTweenType = gfx::Tween::FAST_OUT_SLOW_IN_2;
 WebAppOriginText::WebAppOriginText(Browser* browser) {
   DCHECK(web_app::AppBrowserController::IsWebApp(browser));
 
+  SetID(VIEW_ID_WEB_APP_ORIGIN_TEXT);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   label_ = std::make_unique<views::Label>(
@@ -44,6 +46,9 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   label_->SetPaintToLayer();
   label_->layer()->SetFillsBoundsOpaquely(false);
   label_->layer()->SetOpacity(0);
+  label_->layer()->GetAnimator()->AddObserver(this);
+  label_->layer()->GetAnimator()->set_preemption_strategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   AddChildView(label_);
 
   // Clip child views to this view.
@@ -54,21 +59,27 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
 
 WebAppOriginText::~WebAppOriginText() = default;
 
-void WebAppOriginText::SetTextColor(SkColor color) {
+void WebAppOriginText::SetTextColor(SkColor color, bool show_text) {
   label_->SetEnabledColor(color);
+  if (show_text)
+    StartFadeAnimation();
 }
 
 void WebAppOriginText::StartFadeAnimation() {
-  ui::Layer* label_layer = label_->layer();
+  SetVisible(true);
 
-  // Current state will become the first animation keyframe.
-  DCHECK_EQ(label_layer->opacity(), 0);
+  ui::Layer* label_layer = label_->layer();
+  // If a fade animation is already in progress, just skip straight to visible.
+  bool animation_already_in_progress =
+      label_layer->GetAnimator()->is_animating();
 
   auto opacity_sequence = std::make_unique<ui::LayerAnimationSequence>();
 
   // Fade in.
   auto opacity_keyframe = ui::LayerAnimationElement::CreateOpacityElement(
-      1, WebAppToolbarButtonContainer::kOriginFadeInDuration);
+      1, animation_already_in_progress
+             ? base::TimeDelta()
+             : WebAppToolbarButtonContainer::kOriginFadeInDuration);
   opacity_keyframe->set_tween_type(kTweenType);
   opacity_sequence->AddElement(std::move(opacity_keyframe));
 
@@ -84,16 +95,11 @@ void WebAppOriginText::StartFadeAnimation() {
 
   label_layer->GetAnimator()->StartAnimation(opacity_sequence.release());
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&WebAppOriginText::AnimationComplete,
-                     weak_factory_.GetWeakPtr()),
-      WebAppToolbarButtonContainer::OriginTotalDuration());
-
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
 }
 
-void WebAppOriginText::AnimationComplete() {
+void WebAppOriginText::OnLayerAnimationEnded(
+    ui::LayerAnimationSequence* sequence) {
   SetVisible(false);
 }
 

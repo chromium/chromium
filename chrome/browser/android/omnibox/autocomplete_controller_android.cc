@@ -24,6 +24,7 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/android/autocomplete/tab_matcher_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
@@ -141,7 +142,7 @@ ZeroSuggestPrefetcher::ZeroSuggestPrefetcher(Profile* profile)
   controller_->Start(input);
   // Delete ourselves after 10s. This is enough time to cache results or
   // give up if the results haven't been received.
-  expire_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10000), this,
+  expire_timer_.Start(FROM_HERE, base::Milliseconds(10000), this,
                       &ZeroSuggestPrefetcher::SelfDestruct);
 }
 
@@ -281,7 +282,7 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&AutocompleteControllerAndroid::WarmUpRenderProcess,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(renderer_delay_ms));
+        base::Milliseconds(renderer_delay_ms));
   }
 
   input_ = AutocompleteInput(omnibox_text, page_class,
@@ -354,8 +355,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
       static_cast<WindowOpenDisposition>(j_window_open_disposition), false,
       sessions::SessionTabHelper::IdForTab(web_contents),
       OmniboxEventProto::PageClassification(j_page_classification),
-      base::TimeDelta::FromMilliseconds(elapsed_time_since_first_modified),
-      completed_length,
+      base::Milliseconds(elapsed_time_since_first_modified), completed_length,
       now - autocomplete_controller_->last_time_default_match_changed(),
       autocomplete_controller_->result());
   log.is_query_started_from_tile = is_query_started_from_tiles_;
@@ -374,7 +374,7 @@ void AutocompleteControllerAndroid::DeleteSuggestion(JNIEnv* env, jint index) {
 }
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
-    UpdateMatchDestinationURLWithQueryFormulationTime(
+    UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
         JNIEnv* env,
         jint selected_index,
         jlong elapsed_time_since_input_change,
@@ -415,20 +415,18 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
     match.search_terms_args->additional_query_params =
         base::JoinString(params, "&");
   }
-  autocomplete_controller_->UpdateMatchDestinationURLWithQueryFormulationTime(
-      base::TimeDelta::FromMilliseconds(elapsed_time_since_input_change),
-      &match);
+  autocomplete_controller_
+      ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+          base::Milliseconds(elapsed_time_since_input_change), &match);
   return url::GURLAndroid::FromNativeGURL(env, match.destination_url);
 }
 
 ScopedJavaLocalRef<jobject>
-AutocompleteControllerAndroid::FindMatchingTabWithUrl(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_gurl) {
-  TabAndroid* tab = provider_client_->GetTabOpenWithURL(
-      *url::GURLAndroid::ToNativeGURL(env, j_gurl), nullptr);
-
-  return tab ? tab->GetJavaObject() : nullptr;
+AutocompleteControllerAndroid::GetMatchingTabForSuggestion(JNIEnv* env,
+                                                           jint index) {
+  const AutocompleteMatch& match =
+      autocomplete_controller_->result().match_at(index);
+  return match.GetMatchingJavaTab().get(env);
 }
 
 void AutocompleteControllerAndroid::Shutdown() {
@@ -521,6 +519,7 @@ AutocompleteControllerAndroid::Factory::Factory()
     : BrowserContextKeyedServiceFactory(
           "AutocompleteControllerAndroid",
           BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(TemplateURLServiceFactory::GetInstance());
   DependsOn(ShortcutsBackendFactory::GetInstance());
 }
 
@@ -539,6 +538,8 @@ static ScopedJavaLocalRef<jobject> JNI_AutocompleteController_GetForProfile(
   AutocompleteControllerAndroid* native_bridge =
       AutocompleteControllerAndroid::Factory::GetForProfile(
           ProfileAndroid::FromProfileAndroid(jprofile));
+  if (!native_bridge)
+    return {};
   return native_bridge->GetJavaObject();
 }
 

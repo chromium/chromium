@@ -10,7 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base {
 class FilePath;
@@ -38,6 +38,9 @@ class LoadErrorReporter {
                                const base::FilePath& extension_path,
                                const std::string& error) = 0;
   };
+
+  LoadErrorReporter(const LoadErrorReporter&) = delete;
+  LoadErrorReporter& operator=(const LoadErrorReporter&) = delete;
 
   // Initializes the error reporter. Must be called before any other methods
   // and on the UI thread.
@@ -81,8 +84,6 @@ class LoadErrorReporter {
   bool enable_noisy_errors_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadErrorReporter);
 };
 
 }  // namespace extensions

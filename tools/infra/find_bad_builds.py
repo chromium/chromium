@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -17,8 +17,6 @@ This script uses your chromium/src checkout, so you must keep it updated if you
 want this to be able to cancel recent builds.
 """
 
-from __future__ import print_function
-
 import argparse
 import datetime
 import functools
@@ -28,7 +26,7 @@ import multiprocessing
 import subprocess
 import sys
 
-# Provided by root level .vpython file
+# Provided by root level .vpython3 file
 import pytz
 from dateutil.tz import tzlocal
 

@@ -15,8 +15,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/process/launch.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_result.h"
@@ -126,6 +124,10 @@ class TestLauncher {
   TestLauncher(TestLauncherDelegate* launcher_delegate,
                size_t parallel_jobs,
                size_t retry_limit = 1U);
+
+  TestLauncher(const TestLauncher&) = delete;
+  TestLauncher& operator=(const TestLauncher&) = delete;
+
   // virtual to mock in testing.
   virtual ~TestLauncher();
 
@@ -284,6 +286,9 @@ class TestLauncher {
   // Maximum number of retries per iteration.
   size_t retry_limit_;
 
+  // Maximum number of output bytes per test.
+  size_t output_bytes_limit_;
+
   // If true will not early exit nor skip retries even if too many tests are
   // broken.
   bool force_run_broken_tests_;
@@ -303,7 +308,7 @@ class TestLauncher {
   StdioRedirect print_test_stdio_;
 
   // Skip disabled tests unless explicitly requested.
-  bool skip_diabled_tests_;
+  bool skip_disabled_tests_;
 
   // Stop test iterations due to failure.
   bool stop_on_failure_;
@@ -321,8 +326,6 @@ class TestLauncher {
   // 1 if gtest_repeat is not specified or gtest_break_on_failure is specified.
   // Otherwise it matches gtest_repeat value.
   int repeats_per_iteration_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLauncher);
 };
 
 // Return the number of parallel jobs to use, or 0U in case of error.
@@ -331,6 +334,11 @@ size_t NumParallelJobs(unsigned int cores_per_job);
 // Extract part from |full_output| that applies to |result|.
 std::string GetTestOutputSnippet(const TestResult& result,
                                  const std::string& full_output);
+
+// Truncates a snippet to approximately the allowed length, while trying to
+// retain fatal messages. Exposed for testing only.
+std::string TruncateSnippetFocused(const base::StringPiece snippet,
+                                   size_t byte_limit);
 
 }  // namespace base
 

@@ -8,7 +8,7 @@ import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-he
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
 import {createHistoryEntry, createHistoryInfo, polymerSelectAll, shiftClick, waitForEvent} from 'chrome://test/history/test_util.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 window.history_list_test = {};
 history_list_test.suiteName = 'HistoryListTest';
@@ -116,7 +116,7 @@ suite(history_list_test.suiteName, function() {
           const dialog = element.$.dialog.get();
           assertTrue(dialog.open);
           testService.resetResolver('queryHistory');
-          element.$$('.action-button').click();
+          element.shadowRoot.querySelector('.action-button').click();
           return testService.whenCalled('removeVisits');
         })
         .then(function(visits) {
@@ -137,7 +137,7 @@ suite(history_list_test.suiteName, function() {
         return finishSetup(TEST_HISTORY_RESULTS)
             .then(flushTasks)
             .then(function() {
-              element.$$('iron-list').fire('iron-resize');
+              element.shadowRoot.querySelector('iron-list').fire('iron-resize');
               return waitAfterNextRender(element);
             })
             .then(function() {
@@ -173,7 +173,7 @@ suite(history_list_test.suiteName, function() {
         return finishSetup(TEST_HISTORY_RESULTS)
             .then(flushTasks)
             .then(function() {
-              element.$$('iron-list').fire('iron-resize');
+              element.shadowRoot.querySelector('iron-list').fire('iron-resize');
               return waitAfterNextRender(element);
             })
             .then(function() {
@@ -265,7 +265,7 @@ suite(history_list_test.suiteName, function() {
     return finishSetup(TEST_HISTORY_RESULTS)
         .then(flushTasks)
         .then(function() {
-          element.$$('iron-list').fire('iron-resize');
+          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
           return waitAfterNextRender(element);
         })
         .then(function() {
@@ -287,7 +287,8 @@ suite(history_list_test.suiteName, function() {
           testService.resetResolver('queryHistory');
           testService.setQueryResult(
               {info: createHistoryInfo(), value: ADDITIONAL_RESULTS});
-          element.fire('query-history', true);
+          element.dispatchEvent(new CustomEvent(
+              'query-history', {detail: true, bubbles: true, composed: true}));
           return testService.whenCalled('queryHistoryContinuation');
         })
         .then(flushTasks);
@@ -296,7 +297,7 @@ suite(history_list_test.suiteName, function() {
   test(history_list_test.TestNames.UpdatingHistoryResults, function() {
     return loadWithAdditionalResults()
         .then(function() {
-          element.$$('iron-list').fire('iron-resize');
+          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
           return waitAfterNextRender(element);
         })
         .then(function() {
@@ -320,7 +321,7 @@ suite(history_list_test.suiteName, function() {
           return flushTasks();
         })
         .then(function() {
-          element.$$('iron-list').fire('iron-resize');
+          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
           return waitAfterNextRender(element);
         })
         .then(function() {
@@ -351,7 +352,7 @@ suite(history_list_test.suiteName, function() {
             })
             .then(function() {
               flush();
-              const item = element.$$('history-item');
+              const item = element.shadowRoot.querySelector('history-item');
               assertTrue(item.isCardStart);
               const heading = item.$$('#date-accessed').textContent;
               const title = item.$.link;
@@ -379,7 +380,9 @@ suite(history_list_test.suiteName, function() {
 
               testService.setQueryResult(
                   {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS});
-              element.fire('query-history', false);
+              element.dispatchEvent(new CustomEvent(
+                  'query-history',
+                  {bubbles: true, composed: true, detail: false}));
               return testService.whenCalled('queryHistory');
             })
             .then(flushTasks)
@@ -396,7 +399,7 @@ suite(history_list_test.suiteName, function() {
         return finishSetup(TEST_HISTORY_RESULTS)
             .then(flushTasks)
             .then(function() {
-              element.$$('iron-list').fire('iron-resize');
+              element.shadowRoot.querySelector('iron-list').fire('iron-resize');
               return waitAfterNextRender(element);
             })
             .then(function() {
@@ -409,7 +412,7 @@ suite(history_list_test.suiteName, function() {
               items = polymerSelectAll(element, 'history-item');
               items[0].$['menu-button'].click();
               element.$.sharedMenu.get();
-              element.$$('#menuMoreButton').click();
+              element.shadowRoot.querySelector('#menuMoreButton').click();
               return testService.whenCalled('queryHistory');
             })
             .then(function(query) {
@@ -423,11 +426,13 @@ suite(history_list_test.suiteName, function() {
 
               element.$.sharedMenu.get().close();
               items[0].$['menu-button'].click();
-              assertTrue(element.$$('#menuMoreButton').hidden);
+              assertTrue(
+                  element.shadowRoot.querySelector('#menuMoreButton').hidden);
 
               element.$.sharedMenu.get().close();
               items[1].$['menu-button'].click();
-              assertFalse(element.$$('#menuMoreButton').hidden);
+              assertFalse(
+                  element.shadowRoot.querySelector('#menuMoreButton').hidden);
             });
       });
 
@@ -441,7 +446,8 @@ suite(history_list_test.suiteName, function() {
           testService.resetResolver('queryHistory');
           testService.setQueryResult(
               {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS});
-          element.fire('query-history', true);
+          element.dispatchEvent(new CustomEvent(
+              'query-history', {bubbles: true, composed: true, detail: true}));
           const promise = testService.whenCalled('queryHistoryContinuation');
           return numReloads === 1 ?
               promise :
@@ -451,7 +457,7 @@ suite(history_list_test.suiteName, function() {
             .then(loadMoreResults(9))
             .then(flushTasks)
             .then(function() {
-              element.$$('iron-list').fire('iron-resize');
+              element.shadowRoot.querySelector('iron-list').fire('iron-resize');
               return waitAfterNextRender(element);
             })
             .then(() => {
@@ -476,7 +482,7 @@ suite(history_list_test.suiteName, function() {
         .then(flushTasks(20))
         .then(function() {
           flush();
-          const item = element.$$('history-item');
+          const item = element.shadowRoot.querySelector('history-item');
           item.$.checkbox.click();
 
           assertEquals(1, toolbar.count);
@@ -487,7 +493,8 @@ suite(history_list_test.suiteName, function() {
             info: createHistoryInfo('ample'),
             value: [createHistoryEntry('2016-06-9', 'https://www.example.com')],
           });
-          element.fire('query-history', false);
+          element.dispatchEvent(new CustomEvent(
+              'query-history', {bubbles: true, composed: true, detail: false}));
           return testService.whenCalled('queryHistory');
         })
         .then(function() {
@@ -499,7 +506,7 @@ suite(history_list_test.suiteName, function() {
     let dialog;
     return loadWithAdditionalResults()
         .then(function() {
-          element.$$('iron-list').fire('iron-resize');
+          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
           return waitAfterNextRender(element);
         })
         .then(function() {
@@ -524,7 +531,7 @@ suite(history_list_test.suiteName, function() {
           testService.resetResolver('removeVisits');
           // Confirmation dialog should appear.
           assertTrue(dialog.open);
-          element.$$('.action-button').click();
+          element.shadowRoot.querySelector('.action-button').click();
           return testService.whenCalled('removeVisits');
         })
         .then(function(visits) {
@@ -566,7 +573,7 @@ suite(history_list_test.suiteName, function() {
     return finishSetup(TEST_HISTORY_RESULTS)
         .then(flushTasks)
         .then(function() {
-          element.$$('iron-list').fire('iron-resize');
+          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
           return waitAfterNextRender(element);
         })
         .then(function() {
@@ -576,7 +583,7 @@ suite(history_list_test.suiteName, function() {
           items[3].$.checkbox.click();
           items[1].$['menu-button'].click();
           element.$.sharedMenu.get();
-          element.$$('#menuRemoveButton').click();
+          element.shadowRoot.querySelector('#menuRemoveButton').click();
           return testService.whenCalled('removeVisits');
         })
         .then(function(visits) {
@@ -612,7 +619,7 @@ suite(history_list_test.suiteName, function() {
           return flushTasks();
         })
         .then(function() {
-          element.$$('iron-list').fire('iron-resize');
+          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
           return waitAfterNextRender(element);
         })
         .then(function() {
@@ -622,7 +629,7 @@ suite(history_list_test.suiteName, function() {
           items[2].$.checkbox.click();
           items[1].$['menu-button'].click();
           element.$.sharedMenu.get();
-          element.$$('#menuRemoveButton').click();
+          element.shadowRoot.querySelector('#menuRemoveButton').click();
           return testService.whenCalled('removeVisits');
         })
         .then(function(visits) {
@@ -634,7 +641,8 @@ suite(history_list_test.suiteName, function() {
 
           // Deletion is still happening. Verify that menu button and toolbar
           // are disabled.
-          assertTrue(element.$$('#menuRemoveButton').disabled);
+          assertTrue(
+              element.shadowRoot.querySelector('#menuRemoveButton').disabled);
           assertEquals(2, toolbar.count);
           assertTrue(
               toolbar.shadowRoot.querySelector('cr-toolbar-selection-overlay')
@@ -667,7 +675,8 @@ suite(history_list_test.suiteName, function() {
           // Menu button should also be re-enabled.
           items[1].$['menu-button'].click();
           element.$.sharedMenu.get();
-          assertFalse(element.$$('#menuRemoveButton').disabled);
+          assertFalse(
+              element.shadowRoot.querySelector('#menuRemoveButton').disabled);
         });
   });
 
@@ -680,7 +689,7 @@ suite(history_list_test.suiteName, function() {
           flushTasks();
         })
         .then(function() {
-          element.$$('iron-list').fire('iron-resize');
+          element.shadowRoot.querySelector('iron-list').fire('iron-resize');
           return waitAfterNextRender(element);
         })
         .then(function() {
@@ -704,7 +713,7 @@ suite(history_list_test.suiteName, function() {
         })
         .then(function() {
           assertTrue(dialog.open);
-          element.$$('.cancel-button').click();
+          element.shadowRoot.querySelector('.cancel-button').click();
           assertFalse(dialog.open);
 
           pressAndReleaseKeyOn(document.body, 8, '', 'Backspace');
@@ -712,7 +721,7 @@ suite(history_list_test.suiteName, function() {
         })
         .then(function() {
           assertTrue(dialog.open);
-          element.$$('.action-button').click();
+          element.shadowRoot.querySelector('.action-button').click();
           return testService.whenCalled('removeVisits');
         })
         .then(function(toRemove) {
@@ -750,7 +759,9 @@ suite(history_list_test.suiteName, function() {
                 info: createHistoryInfo('something else'),
                 value: ADDITIONAL_RESULTS
               });
-              element.fire('query-history', true);
+              element.dispatchEvent(new CustomEvent(
+                  'query-history',
+                  {bubbles: true, composed: true, detail: true}));
               return testService.whenCalled('queryHistoryContinuation');
             })
             .then(flushTasks)
@@ -806,7 +817,7 @@ suite(history_list_test.suiteName, function() {
             })
             .then(flushTasks)
             .then(function() {
-              element.$$('iron-list').fire('iron-resize');
+              element.shadowRoot.querySelector('iron-list').fire('iron-resize');
               return waitAfterNextRender(element);
             })
             .then(function() {

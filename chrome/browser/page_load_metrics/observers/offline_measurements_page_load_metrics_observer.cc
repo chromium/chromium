@@ -42,15 +42,24 @@ OfflineMeasurementsPageLoadMetricsObserver::OnCommit(
   for (int i = 0; i < system_state_list.system_states_size(); i++) {
     const auto& system_state = system_state_list.system_states(i);
 
-    ukm::builders::OfflineMeasurements(ukm::NoURLSourceId())
-        .SetUserState(system_state.user_state())
+    ukm::builders::OfflineMeasurements offline_measurements_ukm(
+        ukm::NoURLSourceId());
+
+    offline_measurements_ukm.SetUserState(system_state.user_state())
         .SetProbeResult(system_state.probe_result())
-        .SetIsRoaming(system_state.is_roaming())
         .SetIsAirplaneModeEnabled(system_state.is_airplane_mode_enabled())
         .SetLocalHourOfDayStart(system_state.local_hour_of_day_start())
         .SetDurationMillis(ukm::GetExponentialBucketMinForUserTiming(
-            system_state.time_since_last_check_millis()))
-        .Record(ukm_recorder);
+            system_state.time_since_last_check_millis()));
+
+    if (system_state.has_is_roaming()) {
+      // There are cases where we encounter a SecurityException while trying to
+      // check whether the network is marked as roaming or not roaming. When
+      // this happens, we do not set the IsRoaming field. See crbug/1246848.
+      offline_measurements_ukm.SetIsRoaming(system_state.is_roaming());
+    }
+
+    offline_measurements_ukm.Record(ukm_recorder);
   }
 
   offline_pages::android::OfflinePageBridge::

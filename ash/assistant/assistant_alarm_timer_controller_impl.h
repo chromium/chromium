@@ -15,7 +15,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -41,6 +40,12 @@ class AssistantAlarmTimerControllerImpl
  public:
   explicit AssistantAlarmTimerControllerImpl(
       AssistantControllerImpl* assistant_controller);
+
+  AssistantAlarmTimerControllerImpl(const AssistantAlarmTimerControllerImpl&) =
+      delete;
+  AssistantAlarmTimerControllerImpl& operator=(
+      const AssistantAlarmTimerControllerImpl&) = delete;
+
   ~AssistantAlarmTimerControllerImpl() override;
 
   // Provides a pointer to the |assistant| owned by AssistantService.
@@ -90,8 +95,6 @@ class AssistantAlarmTimerControllerImpl
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantAlarmTimerControllerImpl);
 };
 
 }  // namespace ash

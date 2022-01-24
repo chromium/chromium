@@ -18,7 +18,7 @@ source_set("alarms") {
   ]
 
   deps = [
-    "//base/util/values:values_util",
+    "//base",
     "//extensions/common",
     "//extensions/common/api",
   ]

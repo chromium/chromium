@@ -15,9 +15,7 @@
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_accessibility_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_presentation_state.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_coordinator_implementation.h"
-#import "ios/chrome/browser/ui/infobars/infobar_badge_ui_delegate.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
-#import "ios/chrome/browser/ui/infobars/infobar_container.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_positioner.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_transition_driver.h"
@@ -63,14 +61,6 @@
 @synthesize baseViewController = _baseViewController;
 // Synthesize since readonly property from superclass is changed to readwrite.
 @synthesize browser = _browser;
-// Property defined in InfobarUIDelegate.
-@synthesize delegate = _delegate;
-// Property defined in InfobarUIDelegate.
-@synthesize hasBadge = _hasBadge;
-// Property defined in InfobarUIDelegate.
-@synthesize infobarType = _infobarType;
-// Property defined in InfobarUIDelegate.
-@synthesize presented = _presented;
 
 - (instancetype)initWithInfoBarDelegate:
                     (infobars::InfoBarDelegate*)infoBarDelegate
@@ -79,8 +69,6 @@
   self = [super initWithBaseViewController:nil browser:nil];
   if (self) {
     _infobarDelegate = infoBarDelegate;
-    _presented = YES;
-    _hasBadge = badgeSupport;
     _infobarType = infobarType;
     _shouldUseDefaultDismissal = YES;
   }
@@ -145,9 +133,6 @@
                    self.bannerIsBeingDismissed = NO;
                    self.infobarBannerState =
                        InfobarBannerPresentationState::Presented;
-                   [self.badgeDelegate
-                       infobarBannerWasPresented:self.infobarType
-                                     forWebState:self.webState];
                    [self infobarBannerWasPresented];
                    if (completion)
                      completion();
@@ -202,26 +187,6 @@
   }
 }
 
-#pragma mark - Protocols
-
-#pragma mark InfobarUIDelegate
-
-- (void)removeView {
-  // Do not animate the dismissal since the Coordinator might have been stopped
-  // and the animation can cause undefined behavior.
-  [self dismissInfobarBannerAnimated:NO completion:nil];
-}
-
-- (void)detachView {
-  // Do not animate the dismissals since the Coordinator might have been stopped
-  // and the animation can cause undefined behavior.
-  if (self.bannerViewController)
-    [self dismissInfobarBannerAnimated:NO completion:nil];
-  if (self.modalViewController)
-    [self dismissInfobarModalAnimated:NO];
-  [self stop];
-}
-
 #pragma mark InfobarBannerDelegate
 
 - (void)bannerInfobarButtonWasPressed:(id)sender {
@@ -229,12 +194,6 @@
     return;
 
   [self performInfobarAction];
-  // The Infobar action might be async, and the badge should not change until
-  // the Infobar has been accepted.
-  if ([self isInfobarAccepted]) {
-    [self.badgeDelegate infobarWasAccepted:self.infobarType
-                               forWebState:self.webState];
-  }
   // If the Banner Button will present the Modal then the banner shouldn't be
   // dismissed.
   if (![self infobarBannerActionWillPresentModal]) {
@@ -267,18 +226,9 @@
   self.infobarBannerState = InfobarBannerPresentationState::NotPresented;
   [self configureAccessibilityForBannerInViewController:self.baseViewController
                                              presenting:NO];
-  [self.badgeDelegate infobarBannerWasDismissed:self.infobarType
-                                    forWebState:self.webState];
   self.bannerTransitionDriver = nil;
   _animatedFullscreenDisabler = nullptr;
   [self infobarWasDismissed];
-  if (!self.infobarActionInProgress) {
-    // Only inform InfobarContainer that the Infobar banner presentation is
-    // finished if it is not still executing the Infobar action. That way, the
-    // container won't start presenting a queued Infobar's banner when the
-    // current Infobar hasn't finished.
-    [self.infobarContainer childCoordinatorBannerFinishedPresented:self];
-  }
 }
 
 #pragma mark InfobarBannerPositioner
@@ -301,10 +251,6 @@
 
 - (void)modalInfobarButtonWasAccepted:(id)infobarModal {
   [self performInfobarAction];
-  if ([self isInfobarAccepted]) {
-    [self.badgeDelegate infobarWasAccepted:self.infobarType
-                               forWebState:self.webState];
-  }
   [self dismissInfobarModalAnimated:YES];
 }
 

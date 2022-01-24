@@ -18,6 +18,11 @@ class QRCodeGeneratorBubbleBrowserTest : public DialogBrowserTest {
  public:
   QRCodeGeneratorBubbleBrowserTest() = default;
 
+  QRCodeGeneratorBubbleBrowserTest(const QRCodeGeneratorBubbleBrowserTest&) =
+      delete;
+  QRCodeGeneratorBubbleBrowserTest& operator=(
+      const QRCodeGeneratorBubbleBrowserTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     const GURL url("https://www.chromium.org");
@@ -26,9 +31,6 @@ class QRCodeGeneratorBubbleBrowserTest : public DialogBrowserTest {
         qrcode_generator::QRCodeGeneratorBubbleController::Get(web_contents);
     bubble_controller->ShowBubble(url);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QRCodeGeneratorBubbleBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(QRCodeGeneratorBubbleBrowserTest,

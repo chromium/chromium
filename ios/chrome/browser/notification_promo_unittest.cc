@@ -29,7 +29,7 @@ namespace {
 const char kDateFormat[] = "dd MMM yyyy HH:mm:ss zzzz";
 
 bool YearFromNow(double* date_epoch, std::string* date_string) {
-  *date_epoch = (base::Time::Now() + base::TimeDelta::FromDays(365)).ToTimeT();
+  *date_epoch = (base::Time::Now() + base::Days(365)).ToTimeT();
 
   UErrorCode status = U_ZERO_ERROR;
   icu::SimpleDateFormat simple_formatter(icu::UnicodeString(kDateFormat),

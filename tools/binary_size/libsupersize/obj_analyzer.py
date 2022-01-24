@@ -79,14 +79,14 @@ def _MakeToolPrefixAbsolute(tool_prefix):
   return tool_prefix
 
 
-class _PathsByType(object):
+class _PathsByType:
   def __init__(self, arch, obj, bc):
     self.arch = arch
     self.obj = obj
     self.bc = bc
 
 
-class _BulkObjectFileAnalyzerWorker(object):
+class _BulkObjectFileAnalyzerWorker:
   def __init__(self, tool_prefix, output_directory, track_string_literals=True):
     self._tool_prefix = _MakeToolPrefixAbsolute(tool_prefix)
     self._output_directory = output_directory
@@ -106,7 +106,7 @@ class _BulkObjectFileAnalyzerWorker(object):
     obj_paths = []
     bc_paths = []
     for path in paths:
-      if path.endswith('.a'):
+      if path.endswith('.a') or path.endswith('.rlib'):
         # .a files are typically system libraries containing .o files that are
         # ELF files (and never BC files).
         arch_paths.append(path)
@@ -262,7 +262,7 @@ def _TerminateSubprocesses():
     _active_pids = []
 
 
-class _BulkObjectFileAnalyzerHost(object):
+class _BulkObjectFileAnalyzerHost:
   """Runs BulkObjectFileAnalyzer in a subprocess."""
   def __init__(self, tool_prefix, output_directory, track_string_literals=True):
     self._tool_prefix = tool_prefix
@@ -329,7 +329,7 @@ class _BulkObjectFileAnalyzerHost(object):
     # _active_pids to be killed just in case.
 
 
-class _BulkObjectFileAnalyzerDelegate(object):
+class _BulkObjectFileAnalyzerDelegate:
   """The subprocess entry point."""
   def __init__(self, worker_analyzer, pipe):
     self._worker_analyzer = worker_analyzer

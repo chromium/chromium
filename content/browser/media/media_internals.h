@@ -14,10 +14,10 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals_audio_focus_helper.h"
+#include "content/browser/media/media_internals_cdm_helper.h"
 #include "content/common/content_export.h"
 #include "content/common/media/media_log_records.mojom.h"
 #include "content/public/browser/notification_observer.h"
@@ -52,6 +52,9 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   using UpdateCallback = base::RepeatingCallback<void(const std::u16string&)>;
 
   static MediaInternals* GetInstance();
+
+  MediaInternals(const MediaInternals&) = delete;
+  MediaInternals& operator=(const MediaInternals&) = delete;
 
   ~MediaInternals() override;
 
@@ -89,6 +92,9 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   // Sends all audio focus information to each registered UpdateCallback.
   void SendAudioFocusState();
 
+  // Get information of registered CDMs and update the "CDMs" tab.
+  void GetRegisteredCdms();
+
   // Called to inform of the capabilities enumerated for video devices.
   void UpdateVideoCaptureDeviceCapabilities(
       const std::vector<std::tuple<media::VideoCaptureDeviceDescriptor,
@@ -123,6 +129,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
  private:
   // Needs access to SendUpdate.
   friend class MediaInternalsAudioFocusHelper;
+  friend class MediaInternalsCdmHelper;
 
   class AudioLogImpl;
   class MediaInternalLogRecordsImpl;
@@ -170,13 +177,13 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
 
   MediaInternalsAudioFocusHelper audio_focus_helper_;
 
+  MediaInternalsCdmHelper cdm_helper_;
+
   // All variables below must be accessed under |lock_|.
   base::Lock lock_;
   bool can_update_;
   base::DictionaryValue audio_streams_cached_data_;
   int owner_ids_[media::AudioLogFactory::AUDIO_COMPONENT_MAX];
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInternals);
 };
 
 }  // namespace content

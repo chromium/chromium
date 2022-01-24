@@ -4,8 +4,10 @@
 
 source_set("notifications") {
   sources = [
+    "notification_constants.h",
     "notification_image_retainer.cc",
     "notification_image_retainer.h",
+    "notification_operation.h",
   ]
 
   deps = [

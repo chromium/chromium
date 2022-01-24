@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/media_switches.h"
 
 namespace {
@@ -64,9 +65,9 @@ namespace media {
 
 static constexpr int kMovingAverageWindowSize = 32;
 static constexpr base::TimeDelta kFrameIntervalFor120fps =
-    base::TimeDelta::FromMilliseconds(8);
+    base::Milliseconds(8);
 static constexpr base::TimeDelta kFrameIntervalFor24fps =
-    base::TimeDelta::FromMilliseconds(41);
+    base::Milliseconds(41);
 
 V4L2FrameRateControl::V4L2FrameRateControl(
     scoped_refptr<V4L2Device> device,
@@ -104,8 +105,15 @@ void V4L2FrameRateControl::UpdateFrameRate() {
     parms.parm.output.timeperframe.numerator = current_frame_duration_avg_ms_;
     parms.parm.output.timeperframe.denominator = 1000L;
 
-    const auto result = device_->Ioctl(VIDIOC_S_PARM, &parms);
-    LOG_IF(ERROR, result != 0) << "Failed to issue VIDIOC_S_PARM command";
+    TRACE_COUNTER_ID1("media,gpu", "V4L2 time per frame (ms)", this,
+                      current_frame_duration_avg_ms_);
+    TRACE_COUNTER_ID1("media,gpu", "V4L2 estimated frame rate (Hz)", this,
+                      std::round(frame_duration_avg.ToHz()));
+
+    if (device_->Ioctl(VIDIOC_S_PARM, &parms) != 0) {
+      LOG(ERROR) << "Failed to issue VIDIOC_S_PARM command";
+      TRACE_EVENT0("media,gpu", "V4L2 VIDIOC_S_PARM call failed");
+    }
 
     VLOG(1) << "Average framerate: " << frame_duration_avg.ToHz();
   }
@@ -128,8 +136,7 @@ void V4L2FrameRateControl::RecordFrameDurationThunk(
 
 void V4L2FrameRateControl::RecordFrameDuration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  constexpr base::TimeDelta kMaxFrameInterval =
-      base::TimeDelta::FromMilliseconds(500);
+  constexpr base::TimeDelta kMaxFrameInterval = base::Milliseconds(500);
   const base::TimeTicks frame_display_time = base::TimeTicks::Now();
   const base::TimeDelta duration =
       frame_display_time - last_frame_display_time_;

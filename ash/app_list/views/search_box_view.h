@@ -7,11 +7,14 @@
 
 #include <vector>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_box_model_observer.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/search_box/search_box_view_base.h"
+#include "base/scoped_observation.h"
 
 namespace views {
 class Textfield;
@@ -24,7 +27,6 @@ class AppListView;
 class AppListViewDelegate;
 class ContentsView;
 class ResultSelectionController;
-class SearchModel;
 class SearchResultBaseView;
 
 // Subclass of SearchBoxViewBase. SearchBoxModel is its data model
@@ -32,11 +34,16 @@ class SearchResultBaseView;
 // Textfield. The text and selection model part could be set to change the
 // contents and selection model of the Textfield.
 class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
+                                 public AppListModelProvider::Observer,
                                  public SearchBoxModelObserver {
  public:
   SearchBoxView(SearchBoxViewDelegate* delegate,
                 AppListViewDelegate* view_delegate,
                 AppListView* app_list_view = nullptr);
+
+  SearchBoxView(const SearchBoxView&) = delete;
+  SearchBoxView& operator=(const SearchBoxView&) = delete;
+
   ~SearchBoxView() override;
 
   // Must be called before the user interacts with the search box. Cannot be
@@ -57,7 +64,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void Init(const InitParams& params) override;
   void ClearSearch() override;
   void HandleSearchBoxEvent(ui::LocatedEvent* located_event) override;
-  void ModelChanged() override;
   void UpdateKeyboardVisibility() override;
   void UpdateModel(bool initiated_by_user) override;
   void UpdateSearchIcon() override;
@@ -69,6 +75,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void RecordSearchBoxActivationHistogram(ui::EventType event_type) override;
   void OnSearchBoxActiveChanged(bool active) override;
 
+  // AppListModelProvider::Observer:
+  void OnActiveAppListModelsChanged(AppListModel* model,
+                                    SearchModel* search_model) override;
+
   // Overridden from views::View:
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -78,16 +88,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Updates the search box's background corner radius and color based on the
   // state of AppListModel.
-  void UpdateBackground(double progress,
-                        AppListState current_state,
-                        AppListState target_state);
+  void UpdateBackground(AppListState target_state);
 
   // Updates the search box's layout based on the state of AppListModel.
-  void UpdateLayout(double progress,
-                    AppListState current_state,
-                    int current_state_height,
-                    AppListState target_state,
-                    int target_state_height);
+  void UpdateLayout(AppListState target_state, int target_state_height);
 
   // Returns background border corner radius in the given state.
   int GetSearchBoxBorderCornerRadiusForState(AppListState state) const;
@@ -125,6 +129,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void set_highlight_range_for_test(const gfx::Range& range) {
     highlight_range_ = range;
   }
+
+  // Update search box view background when result container visibility changes.
+  void OnResultContainerVisibilityChanged(bool visible);
 
  private:
   // Updates the text field text color.
@@ -173,6 +180,12 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Clear highlight range.
   void ResetHighlightRange();
 
+  // Tracks whether the search result page view is visible.
+  bool search_result_page_visible_ = false;
+
+  // Tracks the current app list state.
+  AppListState current_app_list_state_ = AppListState::kStateApps;
+
   std::u16string current_query_;
 
   // The range of highlighted text for autocomplete.
@@ -182,7 +195,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   ui::KeyboardCode last_key_pressed_ = ui::VKEY_UNKNOWN;
 
   AppListViewDelegate* const view_delegate_;
-  SearchModel* search_model_ = nullptr;  // Owned by the profile-keyed service.
 
   // Owned by views hierarchy. May be null for bubble launcher.
   AppListView* const app_list_view_;
@@ -201,12 +213,13 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   bool a11y_selection_on_search_result_ = false;
 
   // Owned by SearchResultPageView (for fullscreen launcher) or
-  // AppListBubbleSearchPage (for bubble launcher).
+  // ProductivityLauncherSearchPage (for bubble launcher).
   ResultSelectionController* result_selection_controller_ = nullptr;
 
-  base::WeakPtrFactory<SearchBoxView> weak_ptr_factory_{this};
+  base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
+      search_box_model_observer_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(SearchBoxView);
+  base::WeakPtrFactory<SearchBoxView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

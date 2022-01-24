@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/keyboard/ui/keyboard_ui.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 
 class ChromeKeyboardWebContents;
@@ -32,6 +31,10 @@ class ChromeKeyboardUI : public keyboard::KeyboardUI,
                          public aura::WindowObserver {
  public:
   explicit ChromeKeyboardUI(content::BrowserContext* context);
+
+  ChromeKeyboardUI(const ChromeKeyboardUI&) = delete;
+  ChromeKeyboardUI& operator=(const ChromeKeyboardUI&) = delete;
+
   ~ChromeKeyboardUI() override;
 
   // keyboard::KeyboardUI:
@@ -61,8 +64,6 @@ class ChromeKeyboardUI : public keyboard::KeyboardUI,
 
   std::unique_ptr<ChromeKeyboardWebContents> keyboard_contents_;
   std::unique_ptr<ui::Shadow> shadow_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeKeyboardUI);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_KEYBOARD_CHROME_KEYBOARD_UI_H_

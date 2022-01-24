@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/browser/bluetooth_chooser.h"
 
 namespace content {
@@ -21,6 +20,12 @@ class WebTestFirstDeviceBluetoothChooser : public BluetoothChooser {
   // used.
   explicit WebTestFirstDeviceBluetoothChooser(
       const EventHandler& event_handler);
+
+  WebTestFirstDeviceBluetoothChooser(
+      const WebTestFirstDeviceBluetoothChooser&) = delete;
+  WebTestFirstDeviceBluetoothChooser& operator=(
+      const WebTestFirstDeviceBluetoothChooser&) = delete;
+
   ~WebTestFirstDeviceBluetoothChooser() override;
 
   // BluetoothChooser:
@@ -35,8 +40,6 @@ class WebTestFirstDeviceBluetoothChooser : public BluetoothChooser {
 
  private:
   EventHandler event_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestFirstDeviceBluetoothChooser);
 };
 
 }  // namespace content

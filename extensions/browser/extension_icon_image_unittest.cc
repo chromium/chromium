@@ -72,6 +72,9 @@ class ExtensionIconImageTest : public ExtensionsTest,
   ExtensionIconImageTest()
       : image_loaded_count_(0), quit_in_image_loaded_(false) {}
 
+  ExtensionIconImageTest(const ExtensionIconImageTest&) = delete;
+  ExtensionIconImageTest& operator=(const ExtensionIconImageTest&) = delete;
+
   ~ExtensionIconImageTest() override {}
 
   void WaitForImageLoad() {
@@ -128,16 +131,14 @@ class ExtensionIconImageTest : public ExtensionsTest,
  private:
   int image_loaded_count_;
   bool quit_in_image_loaded_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionIconImageTest);
 };
 
 }  // namespace
 
 TEST_F(ExtensionIconImageTest, Basic) {
   std::vector<ui::ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(ui::SCALE_FACTOR_100P);
-  supported_factors.push_back(ui::SCALE_FACTOR_200P);
+  supported_factors.push_back(ui::k100Percent);
+  supported_factors.push_back(ui::k200Percent);
   ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
       supported_factors);
   scoped_refptr<Extension> extension(CreateExtension(
@@ -174,9 +175,9 @@ TEST_F(ExtensionIconImageTest, Basic) {
 
   // Before the image representation is loaded, image should contain blank
   // image representation.
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      representation.GetBitmap(),
-      CreateBlankBitmapForScale(16, ui::SCALE_FACTOR_100P)));
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(representation.GetBitmap(),
+                           CreateBlankBitmapForScale(16, ui::k100Percent)));
 
   WaitForImageLoad();
   EXPECT_EQ(1, ImageLoadedCount());
@@ -191,9 +192,9 @@ TEST_F(ExtensionIconImageTest, Basic) {
   // Gets representation for an additional scale factor.
   representation = image.image_skia().GetRepresentation(2.0f);
 
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      representation.GetBitmap(),
-      CreateBlankBitmapForScale(16, ui::SCALE_FACTOR_200P)));
+  EXPECT_TRUE(
+      gfx::BitmapsAreEqual(representation.GetBitmap(),
+                           CreateBlankBitmapForScale(16, ui::k200Percent)));
 
   WaitForImageLoad();
   EXPECT_EQ(1, ImageLoadedCount());
@@ -211,8 +212,8 @@ TEST_F(ExtensionIconImageTest, Basic) {
 // resource.
 TEST_F(ExtensionIconImageTest, FallbackToSmallerWhenNoBigger) {
   std::vector<ui::ResourceScaleFactor> supported_factors;
-  supported_factors.push_back(ui::SCALE_FACTOR_100P);
-  supported_factors.push_back(ui::SCALE_FACTOR_200P);
+  supported_factors.push_back(ui::k100Percent);
+  supported_factors.push_back(ui::k200Percent);
   ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
       supported_factors);
   scoped_refptr<Extension> extension(CreateExtension(
@@ -350,7 +351,7 @@ TEST_F(ExtensionIconImageTest, InvalidResource) {
   gfx::ImageSkiaRep representation = image.image_skia().GetRepresentation(1.0f);
   EXPECT_TRUE(gfx::BitmapsAreEqual(
       representation.GetBitmap(),
-      CreateBlankBitmapForScale(kInvalidIconSize, ui::SCALE_FACTOR_100P)));
+      CreateBlankBitmapForScale(kInvalidIconSize, ui::k100Percent)));
 
   WaitForImageLoad();
   EXPECT_EQ(1, ImageLoadedCount());

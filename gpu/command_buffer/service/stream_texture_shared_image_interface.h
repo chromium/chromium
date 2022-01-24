@@ -18,17 +18,12 @@ class TextureBase;
 class GPU_GLES2_EXPORT StreamTextureSharedImageInterface : public gl::GLImage {
  public:
   enum class BindingsMode {
-    // Ensures that the texture is bound to the latest image, if
-    // it requires explicit binding.
-    kEnsureTexImageBound,
+    // Binds image to the texture with service id. Doesn't alter current gl
+    // bindings.
+    kBindImage,
 
-    // Updates the current image but does not bind it. If updating the image
-    // implicitly binds the texture, the current bindings will be restored.
-    kRestoreIfBound,
-
-    // Updates the current image but does not bind it. If updating the image
-    // implicitly binds the texture, the current bindings will not be restored.
-    kDontRestoreIfBound
+    // Updates the current image but does not bind it.
+    kDontBindImage
   };
 
   // Release the underlying resources. This should be called when the image is
@@ -64,20 +59,6 @@ class GPU_GLES2_EXPORT StreamTextureSharedImageInterface : public gl::GLImage {
 
  protected:
   ~StreamTextureSharedImageInterface() override = default;
-};
-
-// Used to restore texture binding to GL_TEXTURE_EXTERNAL_OES target.
-class ScopedRestoreTextureBinding {
- public:
-  ScopedRestoreTextureBinding() {
-    glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &bound_service_id_);
-  }
-  ~ScopedRestoreTextureBinding() {
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES, bound_service_id_);
-  }
-
- private:
-  GLint bound_service_id_;
 };
 
 }  // namespace gpu

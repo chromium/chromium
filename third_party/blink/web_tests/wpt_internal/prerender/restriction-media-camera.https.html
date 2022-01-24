@@ -1,11 +1,8 @@
 <!DOCTYPE html>
-<!--
-This file cannot be upstreamed to WPT until:
-* startPrerendering() usage is replaced with a WebDriver API
--->
 <title>Access to the Camera of the user media device is deferred</title>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
+<meta name="timeout" content="long">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
 <body>
 <script>
@@ -23,6 +20,8 @@ promise_test(async t => {
   });
   const url = `resources/media-devices-access.https.html?video=true`;
   window.open(url, '_blank', 'noopener');
+  // According to spec, gUM will resolve only if the window has focus.
+  window.focus();
 
   const result = await gotMessage;
   const expected = [

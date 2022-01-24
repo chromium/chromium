@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_TUNEABLE_H_
 #define MEDIA_BASE_TUNEABLE_H_
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "media/base/media_export.h"
 

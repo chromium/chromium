@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">Opna nýjan glugga í huliðsstillingu</translation>
 <translation id="152892567002884378">Hækka hljóð</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> og svo <ph name="ESC" /></translation>
-<translation id="1633761758045565086">Færa fókus í hjálparglugga</translation>
 <translation id="1652741121070700329">Fara að byrjun fyrra orðs</translation>
 <translation id="1679841710523778799">Auka birtustig</translation>
 <translation id="168356808214100546">Haltu inni <ph name="ALT" />, ýttu á <ph name="TAB" /> þar til glugginn sem þú vilt opna birtist og slepptu svo.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">Fletta niður á vefsíðunni</translation>
 <translation id="2530896289327917474">Kveikja eða slökkva á skoðun með textabendli</translation>
 <translation id="2574014812750545982">Endurstilla aðdráttarstig á síðunni</translation>
-<translation id="2596078834055697711">Taka skjámynd af glugga</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> og svo <ph name="TAB" /> eða <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Endurhlaða opna síðu</translation>
 <translation id="2764005613199379871">Setja fókus á leit í veffangastiku</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">Flýtileiðir</translation>
 <translation id="3084301071537457911">Auðkenna næsta atriði á hillu</translation>
 <translation id="309173601632226815">Auðkenna ræsihnapp á hillu</translation>
-<translation id="3105917916468784889">Taka skjámynd</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Setja fókus á veffangastiku</translation>
 <translation id="3256109297135787951">Fjarlægja auðkenningu atriðis á hillu</translation>
 <translation id="3288816184963444640">Loka núverandi glugga</translation>
+<translation id="3350805006883559974">Láta virkan glugga fljóta efst</translation>
 <translation id="3407560819924487926">Opna verkstjórn</translation>
 <translation id="3417835166382867856">Leita í flipum</translation>
 <translation id="3422679037938588196">Fara að fyrri leitarniðurstöðu</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">Birta hjálp fyrir flýtilykla</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> eða <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Opna stöðusvæðið (þar sem reikningsmyndin er sýnd)</translation>
-<translation id="4642092649622328492">Taka mynd af hluta skjás</translation>
 <translation id="4698850295812410683">Sýna pennaverkfæri</translation>
 <translation id="4801989101741319327">Fara að enda næsta orðs</translation>
 <translation id="4866066940972151697">Virkja skjáborðið hægra megin</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">Færa virkan glugga á skjáborð til vinstri</translation>
 <translation id="88986195241502842">Niður um síðu</translation>
 <translation id="8924883688469390268">Skipta yfir í síðasta notanda</translation>
+<translation id="8941626538514548667">Fókusa á vefefni í vafra</translation>
 <translation id="8977648847395357314">Velja innihald veffangastiku</translation>
 <translation id="8982190978301344584">Sýna valmynd með lista yfir innsláttaraðferðir í boði</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 til 8</translation>

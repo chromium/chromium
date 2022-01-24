@@ -19,6 +19,10 @@ namespace ml {
 class BuiltinWorker : public SmartDimWorker {
  public:
   BuiltinWorker();
+
+  BuiltinWorker(const BuiltinWorker&) = delete;
+  BuiltinWorker& operator=(const BuiltinWorker&) = delete;
+
   ~BuiltinWorker() override;
 
   // SmartDimWorker overrides:
@@ -31,8 +35,6 @@ class BuiltinWorker : public SmartDimWorker {
   // Loads the built-in preprocessor config if not loaded yet. Also
   // initializes the model_ and executor_ with built-in model.
   void LazyInitialize();
-
-  DISALLOW_COPY_AND_ASSIGN(BuiltinWorker);
 };
 
 }  // namespace ml

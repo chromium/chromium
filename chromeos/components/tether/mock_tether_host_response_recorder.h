@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/tether/tether_host_response_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +19,12 @@ namespace tether {
 class MockTetherHostResponseRecorder : public TetherHostResponseRecorder {
  public:
   MockTetherHostResponseRecorder();
+
+  MockTetherHostResponseRecorder(const MockTetherHostResponseRecorder&) =
+      delete;
+  MockTetherHostResponseRecorder& operator=(
+      const MockTetherHostResponseRecorder&) = delete;
+
   ~MockTetherHostResponseRecorder() override;
 
   MOCK_METHOD1(RecordSuccessfulTetherAvailabilityResponse,
@@ -28,9 +33,6 @@ class MockTetherHostResponseRecorder : public TetherHostResponseRecorder {
                void(multidevice::RemoteDeviceRef));
   MOCK_CONST_METHOD0(GetPreviouslyAvailableHostIds, std::vector<std::string>());
   MOCK_CONST_METHOD0(GetPreviouslyConnectedHostIds, std::vector<std::string>());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTetherHostResponseRecorder);
 };
 
 }  // namespace tether

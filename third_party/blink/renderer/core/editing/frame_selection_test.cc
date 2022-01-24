@@ -37,10 +37,11 @@ namespace blink {
 class FrameSelectionTest : public EditingTestBase {
  public:
   FrameSelectionTest()
-      : root_paint_property_client_("root"),
-        root_paint_chunk_id_(root_paint_property_client_,
+      : root_paint_property_client_(
+            MakeGarbageCollected<FakeDisplayItemClient>("root")),
+        root_paint_chunk_id_(root_paint_property_client_->Id(),
                              DisplayItem::kUninitializedType) {}
-  FakeDisplayItemClient root_paint_property_client_;
+  Persistent<FakeDisplayItemClient> root_paint_property_client_;
   PaintChunk::Id root_paint_chunk_id_;
 
  protected:
@@ -139,8 +140,8 @@ TEST_F(FrameSelectionTest, PaintCaretShouldNotLayout) {
     // To force layout in next updateLayout calling, widen view.
     LocalFrameView& frame_view = GetDummyPageHolder().GetFrameView();
     IntRect frame_rect = frame_view.FrameRect();
-    frame_rect.SetWidth(frame_rect.Width() + 1);
-    frame_rect.SetHeight(frame_rect.Height() + 1);
+    frame_rect.set_width(frame_rect.width() + 1);
+    frame_rect.set_height(frame_rect.height() + 1);
     GetDummyPageHolder().GetFrameView().SetFrameRect(frame_rect);
   }
   auto paint_controller =
@@ -148,7 +149,8 @@ TEST_F(FrameSelectionTest, PaintCaretShouldNotLayout) {
   {
     GraphicsContext context(*paint_controller);
     paint_controller->UpdateCurrentPaintChunkProperties(
-        &root_paint_chunk_id_, PropertyTreeState::Root());
+        root_paint_chunk_id_, *root_paint_property_client_,
+        PropertyTreeState::Root());
     Selection().PaintCaret(context, PhysicalOffset());
   }
   paint_controller->CommitNewDisplayItems();
@@ -609,8 +611,8 @@ TEST_F(FrameSelectionTest, FocusingButtonHidesRangeInDisabledTextControl) {
   const IntRect elem_bounds = textarea->BoundsInViewport();
   WebMouseEvent double_click(WebMouseEvent::Type::kMouseDown, 0,
                              WebInputEvent::GetStaticTimeStampForTests());
-  double_click.SetPositionInWidget(elem_bounds.X(), elem_bounds.Y());
-  double_click.SetPositionInScreen(elem_bounds.X(), elem_bounds.Y());
+  double_click.SetPositionInWidget(elem_bounds.x(), elem_bounds.y());
+  double_click.SetPositionInScreen(elem_bounds.x(), elem_bounds.y());
   double_click.button = WebMouseEvent::Button::kLeft;
   double_click.click_count = 2;
   double_click.SetFrameScale(1);

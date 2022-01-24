@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -40,6 +39,10 @@ class LoginWebDialog : public ui::WebDialogDelegate {
                  gfx::NativeWindow parent_window,
                  const std::u16string& title,
                  const GURL& url);
+
+  LoginWebDialog(const LoginWebDialog&) = delete;
+  LoginWebDialog& operator=(const LoginWebDialog&) = delete;
+
   ~LoginWebDialog() override;
 
   void Show();
@@ -71,7 +74,7 @@ class LoginWebDialog : public ui::WebDialogDelegate {
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   bool HandleOpenURLFromTab(content::WebContents* source,
                             const content::OpenURLParams& params,
@@ -89,8 +92,6 @@ class LoginWebDialog : public ui::WebDialogDelegate {
 
   std::u16string title_;
   const GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginWebDialog);
 };
 
 }  // namespace ash

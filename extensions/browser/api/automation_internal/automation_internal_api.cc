@@ -144,6 +144,10 @@ class AutomationWebContentsObserver
       public content::WebContentsUserData<AutomationWebContentsObserver>,
       public AutomationEventRouterObserver {
  public:
+  AutomationWebContentsObserver(const AutomationWebContentsObserver&) = delete;
+  AutomationWebContentsObserver& operator=(
+      const AutomationWebContentsObserver&) = delete;
+
   ~AutomationWebContentsObserver() override {
     automation_event_router_observer_.Reset();
   }
@@ -292,18 +296,16 @@ class AutomationWebContentsObserver
       automation_event_router_observer_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationWebContentsObserver);
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AutomationWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AutomationWebContentsObserver);
 
 ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
   const AutomationInfo* automation_info = AutomationInfo::Get(extension());
   EXTENSION_FUNCTION_VALIDATE(automation_info);
 
   using api::automation_internal::EnableTab::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   content::WebContents* contents = NULL;
   AutomationInternalApiDelegate* automation_api_delegate =
@@ -345,7 +347,7 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
 
   // This gets removed when the extension process dies.
   AutomationEventRouter::GetInstance()->RegisterListenerForOneTree(
-      extension_id(), source_process_id(), ax_tree_id);
+      extension_id(), source_process_id(), GetSenderWebContents(), ax_tree_id);
 
   return RespondNow(
       ArgumentList(api::automation_internal::EnableTab::Results::Create(
@@ -380,7 +382,7 @@ absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
 ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
   using api::automation_internal::EnableTree::Params;
 
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ui::AXTreeID ax_tree_id = ui::AXTreeID::FromString(params->tree_id);
@@ -690,9 +692,8 @@ AutomationInternalPerformActionFunction::PerformAction(
     }
 
     action_handler->PerformAction(data);
-    return result;
   }
-  result.automation_error = "Unable to perform action on unknown tree.";
+
   return result;
 }
 
@@ -702,7 +703,7 @@ AutomationInternalPerformActionFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(automation_info && automation_info->interact);
 
   using api::automation_internal::PerformAction::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   int* request_id_ptr = params->args.request_id.get();
@@ -742,7 +743,7 @@ AutomationInternalEnableDesktopFunction::Run() {
 
   // This gets removed when the extension process dies.
   AutomationEventRouter::GetInstance()->RegisterListenerWithDesktopPermission(
-      extension_id(), source_process_id());
+      extension_id(), source_process_id(), GetSenderWebContents());
 
   AutomationInternalApiDelegate* automation_api_delegate =
       ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();
@@ -765,7 +766,7 @@ AutomationInternalQuerySelectorFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(automation_info);
 
   using api::automation_internal::QuerySelector::Params;
-  std::unique_ptr<Params> params(Params::Create(*args_));
+  std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromAXTreeID(

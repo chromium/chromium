@@ -17,14 +17,23 @@
     }
   </style>
   <script type="text/javascript" charset="utf-8">
-    if (window.testRunner)
-        testRunner.dumpAsText();
+    if (window.testRunner) {
+      testRunner.dumpAsText();
+      testRunner.waitUntilDone();
+    }
 
     function doTest()
     {
         window.setTimeout(function() {
             var testNode = document.getElementById('test');
             testNode.removeChild(testNode.firstChild);
+            if (window.testRunner) {
+              requestAnimationFrame(()=> {
+                requestAnimationFrame(() => {
+                  testRunner.notifyDone()
+                })
+              });
+            }
         }, 1);
     }
     
@@ -35,6 +44,6 @@
   
     <p>This should not assert in debug builds.</p>
     <div class="composited"></div>
-    <span id="test">test</span>
+    <span id="test">FAIL: I should be removed</span>
 </body>
 </html>

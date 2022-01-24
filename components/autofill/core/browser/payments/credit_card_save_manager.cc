@@ -27,12 +27,12 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -94,9 +94,9 @@ CreditCardSaveManager::CreditCardSaveManager(
       personal_data_manager_(personal_data_manager) {
 }
 
-CreditCardSaveManager::~CreditCardSaveManager() {}
+CreditCardSaveManager::~CreditCardSaveManager() = default;
 
-void CreditCardSaveManager::AttemptToOfferCardLocalSave(
+bool CreditCardSaveManager::AttemptToOfferCardLocalSave(
     bool from_dynamic_change_form,
     bool has_non_focusable_field,
     const CreditCard& card) {
@@ -114,13 +114,14 @@ void CreditCardSaveManager::AttemptToOfferCardLocalSave(
       local_card_save_candidate_
           .GetInfo(AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale_)
           .empty())
-    return;
+    return false;
   // Query the Autofill StrikeDatabase on if we should pop up the
   // offer-to-save prompt for this card.
   show_save_prompt_ =
       !GetCreditCardSaveStrikeDatabase()->IsMaxStrikesLimitReached(
           base::UTF16ToUTF8(local_card_save_candidate_.LastFourDigits()));
   OfferCardLocalSave();
+  return show_save_prompt_.value_or(false);
 }
 
 void CreditCardSaveManager::AttemptToOfferCardUploadSave(
@@ -301,6 +302,7 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
   return ::autofill::IsCreditCardUploadEnabled(
       client_->GetPrefs(), client_->GetSyncService(),
       personal_data_manager_->GetAccountInfoForPaymentsServer().email,
+      personal_data_manager_->GetCountryCodeForExperimentGroup(),
       personal_data_manager_->GetSyncSigninState(), client_->GetLogManager());
 }
 
@@ -310,13 +312,13 @@ void CreditCardSaveManager::OnDidUploadCard(
   if (observer_for_testing_)
     observer_for_testing_->OnReceivedUploadCardResponse();
 
-  if (result == AutofillClient::SUCCESS &&
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess &&
       upload_request_.card.HasFirstAndLastName()) {
     AutofillMetrics::LogSaveCardWithFirstAndLastNameComplete(
         /*is_local=*/false);
   }
 
-  if (result == AutofillClient::SUCCESS) {
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     // Log how many strikes the card had when it was saved.
     LogStrikesPresentWhenCardSaved(
         /*is_local=*/false,
@@ -342,7 +344,8 @@ void CreditCardSaveManager::OnDidUploadCard(
   }
 
   // Show credit card upload feedback.
-  client_->CreditCardUploadCompleted(result == AutofillClient::SUCCESS);
+  client_->CreditCardUploadCompleted(
+      result == AutofillClient::PaymentsRpcResult::kSuccess);
 
   if (observer_for_testing_)
     observer_for_testing_->OnShowCardSavedFeedback();
@@ -377,7 +380,7 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
     std::vector<std::pair<int, int>> supported_card_bin_ranges) {
   if (observer_for_testing_)
     observer_for_testing_->OnReceivedGetUploadDetailsResponse();
-  if (result == AutofillClient::SUCCESS) {
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     LegalMessageLine::Parse(*legal_message, &legal_message_lines_,
                             /*escape_apostrophes=*/true);
 
@@ -533,7 +536,7 @@ void CreditCardSaveManager::OfferCardUploadSave() {
 void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
     AutofillClient::SaveCardOfferUserDecision user_decision) {
   switch (user_decision) {
-    case AutofillClient::ACCEPTED:
+    case AutofillClient::SaveCardOfferUserDecision::kAccepted:
       if (local_card_save_candidate_.HasFirstAndLastName())
         AutofillMetrics::LogSaveCardWithFirstAndLastNameComplete(
             /*is_local=*/true);
@@ -558,8 +561,8 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
           local_card_save_candidate_);
       break;
 
-    case AutofillClient::DECLINED:
-    case AutofillClient::IGNORED:
+    case AutofillClient::SaveCardOfferUserDecision::kDeclined:
+    case AutofillClient::SaveCardOfferUserDecision::kIgnored:
       OnUserDidIgnoreOrDeclineSave(local_card_save_candidate_.LastFourDigits());
       break;
   }
@@ -579,12 +582,20 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
     payments::PaymentsClient::UploadRequestDetails* upload_request) {
   std::vector<AutofillProfile> candidate_profiles;
   const base::Time now = AutofillClock::Now();
-  const base::TimeDelta fifteen_minutes = base::TimeDelta::FromMinutes(15);
+  const base::TimeDelta fifteen_minutes = base::Minutes(15);
   // Reset |upload_decision_metrics_| to begin logging detected problems.
   upload_decision_metrics_ = 0;
   bool has_profile = false;
 
-  // First, collect all of the addresses used or modified recently.
+  // First, process address profiles that have been preliminarily imported.
+  for (const AutofillProfile& profile :
+       preliminarily_imported_address_profiles_) {
+    has_profile = true;
+    candidate_profiles.push_back(profile);
+  }
+
+  // Second, collect all of the already stored addresses used or modified
+  // recently.
   for (AutofillProfile* profile : personal_data_manager_->GetProfiles()) {
     has_profile = true;
     if ((now - profile->use_date()) < fifteen_minutes ||
@@ -794,7 +805,7 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
     AutofillClient::SaveCardOfferUserDecision user_decision,
     const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
   switch (user_decision) {
-    case AutofillClient::ACCEPTED:
+    case AutofillClient::SaveCardOfferUserDecision::kAccepted:
 
 #if defined(OS_ANDROID)
       if (messages::IsSaveCardMessagesUiEnabled()) {
@@ -824,8 +835,8 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
       break;
 
-    case AutofillClient::DECLINED:
-    case AutofillClient::IGNORED:
+    case AutofillClient::SaveCardOfferUserDecision::kDeclined:
+    case AutofillClient::SaveCardOfferUserDecision::kIgnored:
       OnUserDidIgnoreOrDeclineSave(upload_request_.card.LastFourDigits());
       break;
   }

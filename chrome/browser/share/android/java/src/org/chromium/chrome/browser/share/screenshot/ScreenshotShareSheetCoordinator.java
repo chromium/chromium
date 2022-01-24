@@ -4,19 +4,16 @@
 
 package org.chromium.chrome.browser.share.screenshot;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -49,9 +46,8 @@ public class ScreenshotShareSheetCoordinator {
         mModel = new PropertyModel(allProperties);
 
         mModel.set(ScreenshotShareSheetViewProperties.SCREENSHOT_BITMAP, screenshot);
-        mSaveDelegate = new ScreenshotShareSheetSaveDelegate(context, mModel, closeDialogRunnable,
-                new ActivityAndroidPermissionDelegate(
-                        new WeakReference<Activity>((Activity) context)));
+        mSaveDelegate = new ScreenshotShareSheetSaveDelegate(
+                context, mModel, closeDialogRunnable, tab.getWindowAndroid());
         mMediator = new ScreenshotShareSheetMediator(context, mModel, closeDialogRunnable,
                 mSaveDelegate::save, tab, shareUrl, shareSheetCallback, installCallback);
 

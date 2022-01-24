@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_TEST_WEB_MOCK_THREAD_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_TEST_WEB_MOCK_THREAD_SCHEDULER_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,7 +58,6 @@ class WebMockThreadScheduler : public WebThreadScheduler {
   MOCK_METHOD0(DidRunBeginMainFrame, void());
   MOCK_METHOD1(SetRendererHidden, void(bool));
   MOCK_METHOD1(SetRendererBackgrounded, void(bool));
-  MOCK_METHOD1(SetSchedulerKeepActive, void(bool));
   MOCK_METHOD0(PauseRenderer, std::unique_ptr<RendererPauseHandle>());
 #if defined(OS_ANDROID)
   MOCK_METHOD0(PauseTimersForAndroidWebView, void());

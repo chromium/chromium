@@ -35,6 +35,10 @@ class MODULES_EXPORT InstalledAppController final
   static const char kSupplementName[];
 
   explicit InstalledAppController(LocalDOMWindow&);
+
+  InstalledAppController(const InstalledAppController&) = delete;
+  InstalledAppController& operator=(const InstalledAppController&) = delete;
+
   virtual ~InstalledAppController();
 
   // Gets a list of related apps from the current page's manifest that belong
@@ -62,8 +66,6 @@ class MODULES_EXPORT InstalledAppController final
 
   // Handle to the InstalledApp mojo service.
   HeapMojoRemote<mojom::blink::InstalledAppProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstalledAppController);
 };
 
 }  // namespace blink

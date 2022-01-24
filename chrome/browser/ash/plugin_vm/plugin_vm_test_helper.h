@@ -37,6 +37,10 @@ void SetupConciergeForCancelDiskImageOperation(
 class PluginVmTestHelper {
  public:
   explicit PluginVmTestHelper(TestingProfile* testing_profile);
+
+  PluginVmTestHelper(const PluginVmTestHelper&) = delete;
+  PluginVmTestHelper& operator=(const PluginVmTestHelper&) = delete;
+
   ~PluginVmTestHelper();
 
   void SetPolicyRequirementsToAllowPluginVm();
@@ -58,8 +62,6 @@ class PluginVmTestHelper {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::test::ScopedRunningOnChromeOS> running_on_chromeos_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmTestHelper);
 };
 
 }  // namespace plugin_vm

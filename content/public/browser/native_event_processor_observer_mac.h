@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NATIVE_EVENT_PROCESSOR_OBSERVER_MAC_H_
 #define CONTENT_PUBLIC_BROWSER_NATIVE_EVENT_PROCESSOR_OBSERVER_MAC_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
 
@@ -34,12 +33,17 @@ class CONTENT_EXPORT ScopedNotifyNativeEventProcessorObserver {
       base::ObserverList<NativeEventProcessorObserver>::Unchecked*
           observer_list,
       NSEvent* event);
+
+  ScopedNotifyNativeEventProcessorObserver(
+      const ScopedNotifyNativeEventProcessorObserver&) = delete;
+  ScopedNotifyNativeEventProcessorObserver& operator=(
+      const ScopedNotifyNativeEventProcessorObserver&) = delete;
+
   ~ScopedNotifyNativeEventProcessorObserver();
 
  private:
   base::ObserverList<NativeEventProcessorObserver>::Unchecked* observer_list_;
   NSEvent* event_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedNotifyNativeEventProcessorObserver);
 };
 
 }  // namespace content

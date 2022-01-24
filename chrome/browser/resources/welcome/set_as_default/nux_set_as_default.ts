@@ -13,17 +13,22 @@ import '../shared/step_indicator.js';
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateToNextStep, NavigationMixin, NavigationMixinInterface} from '../navigation_mixin.js';
+import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
 import {DefaultBrowserInfo, stepIndicatorModel} from '../shared/nux_types.js';
 
 import {NuxSetAsDefaultProxy, NuxSetAsDefaultProxyImpl} from './nux_set_as_default_proxy.js';
 
+export interface NuxSetAsDefaultElement {
+  $: {
+    declineButton: HTMLElement,
+  };
+}
+
 const NuxSetAsDefaultElementBase =
-    mixinBehaviors([WebUIListenerBehavior], NavigationMixin(PolymerElement)) as
-    {new (): PolymerElement & WebUIListenerBehavior & NavigationMixinInterface};
+    WebUIListenerMixin(NavigationMixin(PolymerElement));
 
 /** @polymer */
 export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
@@ -51,12 +56,12 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
 
   private browserProxy_: NuxSetAsDefaultProxy;
   private finalized_: boolean = false;
-  private navigateToNextStep_: Function;
+  navigateToNextStep: Function;
   indicatorModel?: stepIndicatorModel;
 
   constructor() {
     super();
-    this.navigateToNextStep_ = navigateToNextStep;
+    this.navigateToNextStep = navigateToNextStep;
     this.browserProxy_ = NuxSetAsDefaultProxyImpl.getInstance();
   }
 
@@ -132,11 +137,18 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
 
   private finished_() {
     this.finalized_ = true;
-    this.navigateToNextStep_();
+    this.navigateToNextStep();
   }
 
   static get template() {
     return html`{__html_template__}`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'nux-set-as-default': NuxSetAsDefaultElement;
+  }
+}
+
 customElements.define(NuxSetAsDefaultElement.is, NuxSetAsDefaultElement);

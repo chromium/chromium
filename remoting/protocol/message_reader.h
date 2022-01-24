@@ -41,6 +41,10 @@ class MessageReader {
   typedef base::OnceCallback<void(int)> ReadFailedCallback;
 
   MessageReader();
+
+  MessageReader(const MessageReader&) = delete;
+  MessageReader& operator=(const MessageReader&) = delete;
+
   virtual ~MessageReader();
 
   // Starts reading from |socket|.
@@ -77,8 +81,6 @@ class MessageReader {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<MessageReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessageReader);
 };
 
 }  // namespace protocol

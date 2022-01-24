@@ -69,8 +69,8 @@ bool AudioWorkletProcessor::Process(
       return false;
   }
   DCHECK(!inputs_.IsEmpty());
-  DCHECK(inputs_.NewLocal(isolate)->IsArray());
-  DCHECK_EQ(inputs_.NewLocal(isolate)->Length(), inputs.size());
+  DCHECK(inputs_.Get(isolate)->IsArray());
+  DCHECK_EQ(inputs_.Get(isolate)->Length(), inputs.size());
   DCHECK_EQ(input_array_buffers_.size(), inputs.size());
 
   // Copies |inputs| to the internal |input_array_buffers|.
@@ -91,8 +91,8 @@ bool AudioWorkletProcessor::Process(
     ZeroArrayBuffers(isolate, output_array_buffers_);
   }
   DCHECK(!outputs_.IsEmpty());
-  DCHECK(outputs_.NewLocal(isolate)->IsArray());
-  DCHECK_EQ(outputs_.NewLocal(isolate)->Length(), outputs.size());
+  DCHECK(outputs_.Get(isolate)->IsArray());
+  DCHECK_EQ(outputs_.Get(isolate)->Length(), outputs.size());
   DCHECK_EQ(output_array_buffers_.size(), outputs.size());
 
   // 3rd JS arg |params_|. Compare |param_value_map| and |params_|. Then
@@ -106,7 +106,7 @@ bool AudioWorkletProcessor::Process(
       return false;
   }
   DCHECK(!params_.IsEmpty());
-  DCHECK(params_.NewLocal(isolate)->IsObject());
+  DCHECK(params_.Get(isolate)->IsObject());
 
   // Copies |param_value_map| to the internal |params_| object. This operation
   // could fail if the getter of parameterDescriptors is overridden by user code
@@ -125,11 +125,10 @@ bool AudioWorkletProcessor::Process(
         TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
         "AudioWorkletProcessor::Process (author script execution)");
     if (!definition->ProcessFunction()
-                   ->Invoke(this,
-                            ScriptValue(isolate, inputs_.NewLocal(isolate)),
-                            ScriptValue(isolate, outputs_.NewLocal(isolate)),
-                            ScriptValue(isolate, params_.NewLocal(isolate)))
-                   .To(&result)) {
+             ->Invoke(this, ScriptValue(isolate, inputs_.Get(isolate)),
+                      ScriptValue(isolate, outputs_.Get(isolate)),
+                      ScriptValue(isolate, params_.Get(isolate)))
+             .To(&result)) {
       SetErrorState(AudioWorkletProcessorErrorState::kProcessError);
       return false;
     }
@@ -182,7 +181,7 @@ bool AudioWorkletProcessor::PortTopologyMatches(
   if (audio_port_2.IsEmpty())
     return false;
 
-  v8::Local<v8::Array> port_2_local = audio_port_2.NewLocal(isolate);
+  v8::Local<v8::Array> port_2_local = audio_port_2.Get(isolate);
   DCHECK(port_2_local->IsArray());
 
   // Two audio ports may have a different number of inputs or outputs. See
@@ -311,7 +310,7 @@ bool AudioWorkletProcessor::ClonePortTopology(
   if (!FreezeAudioPort(isolate, context, new_port_array))
     return false;
 
-  audio_port_2.Set(isolate, new_port_array);
+  audio_port_2.Reset(isolate, new_port_array);
   array_buffers.swap(new_array_buffers);
   return true;
 }
@@ -329,7 +328,7 @@ void AudioWorkletProcessor::CopyPortToArrayBuffers(
     for (uint32_t channel_index = 0; channel_index < number_of_channels;
          ++channel_index) {
       auto backing_store = array_buffers[bus_index][channel_index]
-                               .NewLocal(isolate)
+                               .Get(isolate)
                                ->GetBackingStore();
       memcpy(backing_store->Data(), audio_bus->Channel(channel_index)->Data(),
              bus_length * sizeof(float));
@@ -348,7 +347,7 @@ void AudioWorkletProcessor::CopyArrayBuffersToPort(
     for (uint32_t channel_index = 0;
          channel_index < audio_bus->NumberOfChannels(); ++channel_index) {
       auto backing_store = array_buffers[bus_index][channel_index]
-                               .NewLocal(isolate)
+                               .Get(isolate)
                                ->GetBackingStore();
       const size_t bus_length = audio_bus->length() * sizeof(float);
 
@@ -371,7 +370,7 @@ void AudioWorkletProcessor::ZeroArrayBuffers(
     for (uint32_t channel_index = 0;
          channel_index < array_buffers[bus_index].size(); ++channel_index) {
       auto backing_store = array_buffers[bus_index][channel_index]
-                               .NewLocal(isolate)
+                               .Get(isolate)
                                ->GetBackingStore();
       memset(backing_store->Data(), 0, backing_store->ByteLength());
     }
@@ -388,7 +387,7 @@ bool AudioWorkletProcessor::ParamValueMapMatchesToParamsObject(
   if (params.IsEmpty())
     return false;
 
-  v8::Local<v8::Object> params_object = params.NewLocal(isolate);
+  v8::Local<v8::Object> params_object = params.Get(isolate);
 
   for (const auto& entry : param_value_map) {
     const String param_name = entry.key.IsolatedCopy();
@@ -473,7 +472,7 @@ bool AudioWorkletProcessor::CloneParamValueMapToObject(
           .To(&object_frozen))
     return false;
 
-  params.Set(isolate, new_params_object);
+  params.Reset(isolate, new_params_object);
   return true;
 }
 
@@ -484,7 +483,7 @@ bool AudioWorkletProcessor::CopyParamValueMapToObject(
     TraceWrapperV8Reference<v8::Object>& params) {
   v8::TryCatch try_catch(isolate);
 
-  v8::Local<v8::Object> params_object = params.NewLocal(isolate);
+  v8::Local<v8::Object> params_object = params.Get(isolate);
 
   for (const auto& entry : param_value_map) {
     const String param_name = entry.key.IsolatedCopy();

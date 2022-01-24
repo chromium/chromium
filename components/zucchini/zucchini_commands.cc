@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/crc32.h"
 #include "components/zucchini/io_utils.h"
@@ -50,6 +49,11 @@ zucchini::status::Code MainApply(MainParams params) {
   return zucchini::Apply(params.file_paths[0], params.file_paths[1],
                          params.file_paths[2],
                          params.command_line.HasSwitch(kSwitchKeep));
+}
+
+zucchini::status::Code MainVerify(MainParams params) {
+  CHECK_EQ(1U, params.file_paths.size());
+  return zucchini::VerifyPatch(params.file_paths[0]);
 }
 
 zucchini::status::Code MainRead(MainParams params) {

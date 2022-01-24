@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -23,7 +24,6 @@ class NavigationHandle;
 
 namespace safe_browsing {
 class SafeBrowsingNavigationObserverManager;
-class SafeBrowsingServiceInterface;
 
 // Struct to record the details of a navigation event for any frame.
 // This information will be used to fill referrer chain info in various Safe
@@ -108,7 +108,7 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
       HostContentSettingsMap* host_content_settings_map,
       SafeBrowsingNavigationObserverManager* observer_manager,
       PrefService* prefs,
-      SafeBrowsingServiceInterface* safe_browsing_service);
+      bool has_safe_browsing_service);
 
   static SafeBrowsingNavigationObserver* FromWebContents(
       content::WebContents* web_contents);
@@ -117,6 +117,11 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
       content::WebContents* contents,
       HostContentSettingsMap* host_content_settings_map,
       SafeBrowsingNavigationObserverManager* observer_manager);
+
+  SafeBrowsingNavigationObserver(const SafeBrowsingNavigationObserver&) =
+      delete;
+  SafeBrowsingNavigationObserver& operator=(
+      const SafeBrowsingNavigationObserver&) = delete;
 
   ~SafeBrowsingNavigationObserver() override;
 
@@ -152,15 +157,32 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
                            bool renderer_initiated) override;
 
   // content_settings::Observer overrides.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
-  // Map keyed on NavigationHandle* to keep track of all the ongoing navigation
-  // events. NavigationHandle pointers are owned by RenderFrameHost. Since a
-  // NavigationHandle object will be destructed after navigation is done,
-  // at the end of DidFinishNavigation(...) corresponding entries in this map
-  // will be removed from navigation_handle_map_ and added to
+  // If the navigation is created from portal contents, records the new contents
+  // to track the referrer chain across portal activations.
+  void MaybeRecordNewWebContentsForPortalContents(
+      content::NavigationHandle* navigation_handle);
+
+  // Setter functions for fields in |nav_event|.
+  void SetNavigationInitiationAndRecordUserGesture(
+      content::NavigationHandle* navigation_handle,
+      NavigationEvent* nav_event);
+  void SetNavigationSourceUrl(content::NavigationHandle* navigation_handle,
+                              NavigationEvent* nav_event);
+  void SetNavigationSourceMainFrameUrl(
+      content::NavigationHandle* navigation_handle,
+      NavigationEvent* nav_event);
+
+  // Map keyed on NavigationHandle* to keep track of all the ongoing
+  // navigation events. NavigationHandle pointers are owned by
+  // RenderFrameHost. Since a NavigationHandle object will be destructed
+  // after navigation is done, at the end of DidFinishNavigation(...)
+  // corresponding entries in this map will be removed from
+  // navigation_handle_map_ and added to
   // SafeBrowsingNavigationObserverManager::navigation_map_.
   NavigationHandleMap navigation_handle_map_;
 
@@ -168,8 +190,6 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
       content_settings_observation_{this};
 
   SafeBrowsingNavigationObserverManager* observer_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingNavigationObserver);
 };
 
 }  // namespace safe_browsing

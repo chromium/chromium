@@ -12,8 +12,8 @@
 #include "base/location.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/launcher/test_launcher_test_utils.h"
 #include "base/test/scoped_feature_list.h"
@@ -56,27 +56,17 @@ namespace content {
 
 namespace {
 
-const char* kSwitchesToCopy[] = {
-#if defined(USE_OZONE)
-    // Keep the kOzonePlatform switch that the Ozone must use.
-    switches::kOzonePlatform,
-#endif
-    // Some tests use custom cmdline that doesn't hold switches from previous
-    // cmdline. Only a couple of switches are copied. That can result in
-    // incorrect initialization of a process. For example, the work that we do
-    // to have use_x11 && use_ozone, requires UseOzonePlatform feature flag to
-    // be passed to all the process to ensure correct path is chosen.
-    // TODO(https://crbug.com/1096425): update this comment once USE_X11 goes
-    // away.
-    switches::kEnableFeatures,
-    switches::kDisableFeatures,
-};
-
 base::CommandLine CreateCommandLine() {
   const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
   base::CommandLine command_line = base::CommandLine(cmdline.GetProgram());
+#if defined(USE_OZONE)
+  const char* kSwitchesToCopy[] = {
+      // Keep the kOzonePlatform switch that the Ozone must use.
+      switches::kOzonePlatform,
+  };
   command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy,
                                 base::size(kSwitchesToCopy));
+#endif
   return command_line;
 }
 
@@ -278,13 +268,25 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RunMockTests) {
 class ContentBrowserTestSanityTest : public ContentBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    ASSERT_FALSE(ran_);
+
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
     if (std::string(test_info->name()) == "SingleProcess")
       command_line->AppendSwitch(switches::kSingleProcess);
   }
 
+  void SetUp() override {
+    ASSERT_FALSE(ran_);
+    BrowserTestBase::SetUp();
+  }
+
+  void SetUpOnMainThread() override { ASSERT_FALSE(ran_); }
+
   void Test() {
+    ASSERT_FALSE(ran_);
+    ran_ = true;
+
     GURL url = GetTestUrl(".", "simple_page.html");
 
     std::u16string expected_title(u"OK");
@@ -293,6 +295,18 @@ class ContentBrowserTestSanityTest : public ContentBrowserTest {
     std::u16string title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(expected_title, title);
   }
+
+  void TearDownOnMainThread() override { ASSERT_TRUE(ran_); }
+
+  void TearDown() override {
+    ASSERT_TRUE(ran_);
+    BrowserTestBase::TearDown();
+  }
+
+ private:
+  // Verify that Test() is invoked once and only once between SetUp and TearDown
+  // phases.
+  bool ran_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTestSanityTest, Basic) {
@@ -323,12 +337,15 @@ class ContentBrowserTestScopedFeatureListTest : public ContentBrowserTest {
                                           {kTestFeatureForBrowserTest4});
   }
 
+  ContentBrowserTestScopedFeatureListTest(
+      const ContentBrowserTestScopedFeatureListTest&) = delete;
+  ContentBrowserTestScopedFeatureListTest& operator=(
+      const ContentBrowserTestScopedFeatureListTest&) = delete;
+
   ~ContentBrowserTestScopedFeatureListTest() override {}
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentBrowserTestScopedFeatureListTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTestScopedFeatureListTest,

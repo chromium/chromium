@@ -33,6 +33,11 @@ class TetherDisconnectorImplTest : public testing::Test {
  public:
   TetherDisconnectorImplTest()
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(2u)) {}
+
+  TetherDisconnectorImplTest(const TetherDisconnectorImplTest&) = delete;
+  TetherDisconnectorImplTest& operator=(const TetherDisconnectorImplTest&) =
+      delete;
+
   ~TetherDisconnectorImplTest() override = default;
 
   void SetUp() override {
@@ -124,9 +129,6 @@ class TetherDisconnectorImplTest : public testing::Test {
   std::string disconnection_result_;
 
   std::unique_ptr<TetherDisconnectorImpl> tether_disconnector_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherDisconnectorImplTest);
 };
 
 TEST_F(TetherDisconnectorImplTest, DisconnectWhenAlreadyDisconnected) {

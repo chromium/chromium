@@ -34,7 +34,7 @@ std::unique_ptr<ui::DataPack> LoadResourceDataPack(
   auto path = base::FilePath(base::StringPrintf(
       "%s/%s_%s.pak", dir_path, branding_strings_name, locale_name.c_str()));
   path = base::MakeAbsoluteFilePath(path);
-  auto resource_pack = std::make_unique<ui::DataPack>(ui::SCALE_FACTOR_100P);
+  auto resource_pack = std::make_unique<ui::DataPack>(ui::k100Percent);
   if (!resource_pack->LoadFromPath(path))
     resource_pack.reset();
   return resource_pack;

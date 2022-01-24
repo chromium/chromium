@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/display/screen.h"
 
 namespace display {
@@ -28,6 +27,10 @@ namespace ash {
 class ASH_EXPORT ScreenAsh : public display::Screen {
  public:
   ScreenAsh();
+
+  ScreenAsh(const ScreenAsh&) = delete;
+  ScreenAsh& operator=(const ScreenAsh&) = delete;
+
   ~ScreenAsh() override;
 
   // display::Screen overrides:
@@ -57,9 +60,6 @@ class ASH_EXPORT ScreenAsh : public display::Screen {
 
   // Test helpers may need to clean up the ScreenForShutdown between tests.
   static void DeleteScreenForShutdown();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenAsh);
 };
 
 }  // namespace ash

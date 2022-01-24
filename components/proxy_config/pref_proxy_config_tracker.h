@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/proxy_config/proxy_config_export.h"
 
 namespace net {
@@ -21,6 +20,10 @@ class ProxyConfigService;
 class PROXY_CONFIG_EXPORT PrefProxyConfigTracker {
  public:
   PrefProxyConfigTracker();
+
+  PrefProxyConfigTracker(const PrefProxyConfigTracker&) = delete;
+  PrefProxyConfigTracker& operator=(const PrefProxyConfigTracker&) = delete;
+
   virtual ~PrefProxyConfigTracker();
 
   // Creates a net::ProxyConfigService and keeps a pointer to it. After this
@@ -38,9 +41,6 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTracker {
   // passed to CreateTrackingProxyConfigService. This must be called on the UI
   // thread.
   virtual void DetachFromPrefService() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefProxyConfigTracker);
 };
 
 #endif  // COMPONENTS_PROXY_CONFIG_PREF_PROXY_CONFIG_TRACKER_H_

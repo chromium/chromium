@@ -18,24 +18,19 @@ namespace syncer {
 
 namespace {
 
-using base::TimeDelta;
 using testing::Gt;
 using testing::Lt;
 
 TEST(BackoffDelayProviderTest, GetRecommendedDelay) {
   std::unique_ptr<BackoffDelayProvider> delay(
       BackoffDelayProvider::FromDefaults());
-  EXPECT_EQ(TimeDelta::FromSeconds(1),
-            delay->GetDelay(TimeDelta::FromSeconds(0)));
-  EXPECT_LE(TimeDelta::FromSeconds(1),
-            delay->GetDelay(TimeDelta::FromSeconds(1)));
-  EXPECT_LE(TimeDelta::FromSeconds(50),
-            delay->GetDelay(TimeDelta::FromSeconds(50)));
-  EXPECT_LE(TimeDelta::FromSeconds(10),
-            delay->GetDelay(TimeDelta::FromSeconds(10)));
+  EXPECT_EQ(base::Seconds(1), delay->GetDelay(base::Seconds(0)));
+  EXPECT_LE(base::Seconds(1), delay->GetDelay(base::Seconds(1)));
+  EXPECT_LE(base::Seconds(50), delay->GetDelay(base::Seconds(50)));
+  EXPECT_LE(base::Seconds(10), delay->GetDelay(base::Seconds(10)));
   EXPECT_EQ(kMaxBackoffTime, delay->GetDelay(kMaxBackoffTime));
   EXPECT_EQ(kMaxBackoffTime,
-            delay->GetDelay(kMaxBackoffTime + TimeDelta::FromSeconds(1)));
+            delay->GetDelay(kMaxBackoffTime + base::Seconds(1)));
 }
 
 TEST(BackoffDelayProviderTest, GetInitialDelay) {
@@ -122,14 +117,14 @@ TEST(BackoffDelayProviderTest, GetExponentiallyIncreasingDelay) {
   // multiplicative factor bigger than 1).
   ASSERT_THAT(kBackoffJitterFactor, Lt(kBackoffMultiplyFactor - 1.0));
 
-  const TimeDelta delay0 = TimeDelta::FromSeconds(1);
-  const TimeDelta delay1_min =
+  const base::TimeDelta delay0 = base::Seconds(1);
+  const base::TimeDelta delay1_min =
       delay_provider->GetDelayForTesting(delay0, /*jitter_sign=*/-1);
-  const TimeDelta delay2_min =
+  const base::TimeDelta delay2_min =
       delay_provider->GetDelayForTesting(delay1_min, /*jitter_sign=*/-1);
-  const TimeDelta delay1_max =
+  const base::TimeDelta delay1_max =
       delay_provider->GetDelayForTesting(delay0, /*jitter_sign=*/1);
-  const TimeDelta delay2_max =
+  const base::TimeDelta delay2_max =
       delay_provider->GetDelayForTesting(delay1_max, /*jitter_sign=*/1);
 
   ASSERT_THAT(delay1_min, Lt(delay1_max));

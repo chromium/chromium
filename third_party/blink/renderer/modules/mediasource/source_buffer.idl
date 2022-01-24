@@ -96,7 +96,8 @@ enum AppendMode {
       RaisesException,
       RuntimeEnabled=MediaSourceExtensionsForWebCodecs,
       ImplementedAs=ChangeTypeUsingConfig,
-      MeasureAs=ChangeTypeUsingConfig
+      MeasureAs=ChangeTypeUsingConfig,
+      CallWith=ExecutionContext
     ] void changeType(SourceBufferConfig config);
 
     // Gets or sets the TrackDefaultList this SourceBuffer may consult during

@@ -21,7 +21,7 @@
 namespace chromecast {
 namespace external_service_support {
 
-void CommonProcessInitialization(int argc, char** argv) {
+void CommonProcessInitialization(int argc, const char* const* argv) {
 #if !defined(OS_ANDROID)
   // Set C library locale to make sure CommandLine can parse argument values
   // in the correct encoding.

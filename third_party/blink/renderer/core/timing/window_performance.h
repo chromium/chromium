@@ -32,31 +32,30 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WINDOW_PERFORMANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WINDOW_PERFORMANCE_H_
 
-#include "base/rand_util.h"
-#include "third_party/blink/public/web/web_swap_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/core/timing/event_counts.h"
-#include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/timing/memory_info.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_navigation.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
-
-class IntSize;
 
 class CORE_EXPORT WindowPerformance final : public Performance,
                                             public PerformanceMonitor::Client,
                                             public ExecutionContextClient,
                                             public PageVisibilityObserver {
   friend class WindowPerformanceTest;
+  friend class ResponsivenessMetrics;
 
   class EventData : public GarbageCollected<EventData> {
    public:
@@ -81,11 +80,11 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     }
     ~EventData() = default;
     void Trace(Visitor*) const;
-    PerformanceEventTiming* GetEventTiming() { return event_timing_; }
-    uint64_t GetFrameIndex() { return frame_; }
-    base::TimeTicks GetEventTimestamp() { return event_timestamp_; }
-    absl::optional<int> GetKeyCode() { return key_code_; }
-    absl::optional<PointerId> GetPointerId() { return pointer_id_; }
+    PerformanceEventTiming* GetEventTiming() const { return event_timing_; }
+    uint64_t GetFrameIndex() const { return frame_; }
+    base::TimeTicks GetEventTimestamp() const { return event_timestamp_; }
+    absl::optional<int> GetKeyCode() const { return key_code_; }
+    absl::optional<PointerId> GetPointerId() const { return pointer_id_; }
 
    private:
     // Event PerformanceEventTiming entry that has not been sent to observers
@@ -122,24 +121,20 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // This method creates a PerformanceEventTiming and if needed creates a
   // presentation promise to calculate the |duration| attribute when such
   // promise is resolved.
-  void RegisterEventTiming(const AtomicString& event_type,
+  void RegisterEventTiming(const Event& event,
                            base::TimeTicks start_time,
                            base::TimeTicks processing_start,
-                           base::TimeTicks processing_end,
-                           bool cancelable,
-                           Node*,
-                           absl::optional<int> key_code,
-                           absl::optional<PointerId> pointer_id);
+                           base::TimeTicks processing_end);
 
   void OnPaintFinished();
 
   void AddElementTiming(const AtomicString& name,
                         const String& url,
-                        const FloatRect& rect,
+                        const gfx::RectF& rect,
                         base::TimeTicks start_time,
                         base::TimeTicks load_time,
                         const AtomicString& identifier,
-                        const IntSize& intrinsic_size,
+                        const gfx::Size& intrinsic_size,
                         const AtomicString& id,
                         Element*);
 
@@ -149,20 +144,22 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // PageVisibilityObserver
   void PageVisibilityChanged() override;
 
-  void OnLargestContentfulPaintUpdated(base::TimeTicks paint_time,
-                                       uint64_t paint_size,
-                                       base::TimeTicks load_time,
-                                       const AtomicString& id,
-                                       const String& url,
-                                       Element*);
+  void OnLargestContentfulPaintUpdated(
+      base::TimeTicks paint_time,
+      uint64_t paint_size,
+      base::TimeTicks load_time,
+      base::TimeTicks first_animated_frame_time,
+      const AtomicString& id,
+      const String& url,
+      Element*);
 
   void Trace(Visitor*) const override;
 
   ResponsivenessMetrics& GetResponsivenessMetrics() {
-    return responsiveness_metrics_;
+    return *responsiveness_metrics_;
   }
 
-  void NotifyPotentialDrag();
+  void NotifyPotentialDrag(PointerId pointer_id);
 
   void SetCurrentEventTimingEvent(const Event* event) {
     current_event_ = event;
@@ -189,10 +186,29 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // add all event timings that have not been added since the last presentation
   // promise.
   void ReportEventTimings(uint64_t frame_index,
-                          WebSwapResult result,
                           base::TimeTicks presentation_timestamp);
 
   void DispatchFirstInputTiming(PerformanceEventTiming* entry);
+
+  // Assign an interaction id to an event timing entry if needed. Also records
+  // the interaction latency. Returns true if the entry is ready to be surfaced
+  // in PerformanceObservers and the Performance Timeline
+  bool SetInteractionIdAndRecordLatency(
+      PerformanceEventTiming* entry,
+      absl::optional<int> key_code,
+      absl::optional<PointerId> pointer_id,
+      ResponsivenessMetrics::EventTimestamps event_timestamps);
+
+  // Notify observer that an event timing entry is ready and add it to the event
+  // timing buffer if needed.
+  void NotifyAndAddEventTimingBuffer(PerformanceEventTiming* entry);
+
+  // NotifyAndAddEventTimingBuffer() when interactionId feature is enabled.
+  void MaybeNotifyInteractionAndAddEventTimingBuffer(
+      PerformanceEventTiming* entry);
+
+  // The last time the page visibility was changed.
+  base::TimeTicks last_visibility_change_timestamp_;
 
   // Counter of the current frame index, based on calls to OnPaintFinished().
   uint64_t frame_index_ = 1;
@@ -214,7 +230,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   absl::optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;
 
   // Calculate responsiveness metrics and record UKM for them.
-  ResponsivenessMetrics responsiveness_metrics_;
+  Member<ResponsivenessMetrics> responsiveness_metrics_;
   // The event we are currently processing.
   WeakMember<const Event> current_event_;
 };

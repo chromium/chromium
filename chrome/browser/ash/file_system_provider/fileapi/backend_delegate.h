@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend_delegate.h"
 
 namespace storage {
@@ -30,6 +29,10 @@ namespace file_system_provider {
 class BackendDelegate : public chromeos::FileSystemBackendDelegate {
  public:
   BackendDelegate();
+
+  BackendDelegate(const BackendDelegate&) = delete;
+  BackendDelegate& operator=(const BackendDelegate&) = delete;
+
   ~BackendDelegate() override;
 
   // FileSystemBackend::Delegate overrides.
@@ -53,8 +56,6 @@ class BackendDelegate : public chromeos::FileSystemBackendDelegate {
  private:
   std::unique_ptr<storage::AsyncFileUtil> async_file_util_;
   std::unique_ptr<storage::WatcherManager> watcher_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackendDelegate);
 };
 
 }  // namespace file_system_provider

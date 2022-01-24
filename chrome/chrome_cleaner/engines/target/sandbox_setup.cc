@@ -31,6 +31,11 @@ class EngineMojoSandboxTargetHooks : public MojoSandboxTargetHooks {
  public:
   EngineMojoSandboxTargetHooks(scoped_refptr<EngineDelegate> engine_delegate,
                                MojoTaskRunner* mojo_task_runner);
+
+  EngineMojoSandboxTargetHooks(const EngineMojoSandboxTargetHooks&) = delete;
+  EngineMojoSandboxTargetHooks& operator=(const EngineMojoSandboxTargetHooks&) =
+      delete;
+
   ~EngineMojoSandboxTargetHooks() override;
 
   void BindEngineCommandsReceiver(
@@ -48,8 +53,6 @@ class EngineMojoSandboxTargetHooks : public MojoSandboxTargetHooks {
   base::SingleThreadTaskExecutor single_thread_task_executor_;
 
   std::unique_ptr<EngineCommandsImpl> engine_commands_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(EngineMojoSandboxTargetHooks);
 };
 
 EngineMojoSandboxTargetHooks::EngineMojoSandboxTargetHooks(

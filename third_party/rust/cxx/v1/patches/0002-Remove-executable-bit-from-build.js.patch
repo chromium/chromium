@@ -1,0 +1,16 @@
+From d8635f00efdb6322df3edbabb971d1a04d01a520 Mon Sep 17 00:00:00 2001
+From: danakj <danakj@chromium.org>
+Date: Fri, 29 Oct 2021 17:02:29 -0400
+Subject: [PATCH] Remove executable bit from build.js
+
+---
+ third_party/rust/cxx/v1/crate/book/build.js | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ mode change 100755 => 100644 third_party/rust/cxx/v1/crate/book/build.js
+
+diff --git a/third_party/rust/cxx/v1/crate/book/build.js b/third_party/rust/cxx/v1/crate/book/build.js
+old mode 100755
+new mode 100644
+-- 
+2.33.1.1089.g2158813163f-goog
+

@@ -32,7 +32,6 @@ preprocess_if_expr("preprocess_src") {
     "i18n_process.css",
     "list.css",
     "roboto.css",
-    "table.css",
     "tabs.css",
     "text_defaults.css",
     "text_defaults_md.css",

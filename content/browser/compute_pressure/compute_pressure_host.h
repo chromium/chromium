@@ -32,7 +32,7 @@ class CONTENT_EXPORT ComputePressureHost
     : public blink::mojom::ComputePressureHost {
  public:
   static constexpr base::TimeDelta kDefaultVisibleObserverRateLimit =
-      base::TimeDelta::FromSeconds(1);
+      base::Seconds(1);
 
   // `did_connection_change` is called on changes to the mojo connections
   // handled by this host are changed. The callback will not be Run() after
@@ -70,7 +70,7 @@ class CONTENT_EXPORT ComputePressureHost
       GlobalRenderFrameHostId frame_id,
       mojo::PendingReceiver<blink::mojom::ComputePressureHost> receiver);
 
-  // blink.mojom.ComputePressureManager implementation.
+  // blink::mojom::ComputePressureHost implementation.
   void AddObserver(
       mojo::PendingRemote<blink::mojom::ComputePressureObserver> observer,
       blink::mojom::ComputePressureQuantizationPtr quantization,
@@ -124,7 +124,7 @@ class CONTENT_EXPORT ComputePressureHost
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Implements the quantizing scheme used for all the origin's observers.
-  ComputePressureQuantizer quantizer_;
+  ComputePressureQuantizer quantizer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The (quantized) sample that was last reported to this origin's observers.
   //
@@ -142,4 +142,4 @@ class CONTENT_EXPORT ComputePressureHost
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_COMPUTE_PRESSURE_COMPUTE_PRESSURE_QUANTIZER_H_
+#endif  // CONTENT_BROWSER_COMPUTE_PRESSURE_COMPUTE_PRESSURE_HOST_H_

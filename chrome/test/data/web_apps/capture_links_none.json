@@ -1,6 +1,6 @@
 {
   "name": "\"capture_links\": \"none\"",
-  "start_url": "capture_links_none.html",
+  "start_url": ".",
   "display": "standalone",
   "capture_links": "none"
 }

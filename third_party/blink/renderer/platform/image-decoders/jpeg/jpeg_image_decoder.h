@@ -38,8 +38,8 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
  public:
   JPEGImageDecoder(AlphaOption,
                    const ColorBehavior&,
-                   size_t max_decoded_bytes,
-                   size_t offset = 0);
+                   wtf_size_t max_decoded_bytes,
+                   wtf_size_t offset = 0);
   JPEGImageDecoder(const JPEGImageDecoder&) = delete;
   JPEGImageDecoder& operator=(const JPEGImageDecoder&) = delete;
   ~JPEGImageDecoder() override;
@@ -51,7 +51,7 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   bool SetSize(unsigned width, unsigned height) override;
   cc::YUVSubsampling GetYUVSubsampling() const override;
   IntSize DecodedYUVSize(cc::YUVIndex) const override;
-  size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
+  wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
   void DecodeToYUV() override;
   SkYUVColorSpace GetYUVColorSpace() const override;
   Vector<SkISize> GetSupportedDecodeSizes() const override;
@@ -60,6 +60,9 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
 
   bool OutputScanlines();
   unsigned DesiredScaleNumerator() const;
+  static unsigned DesiredScaleNumerator(wtf_size_t max_decoded_bytes,
+                                        wtf_size_t original_bytes,
+                                        unsigned scale_denominator);
   bool ShouldGenerateAllSizes() const;
   void Complete();
 
@@ -88,7 +91,7 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
  private:
   // ImageDecoder:
   void DecodeSize() override { Decode(DecodingMode::kDecodeHeader); }
-  void Decode(size_t) override {
+  void Decode(wtf_size_t) override {
     // Use DecodeToYUV for YUV decoding.
     Decode(DecodingMode::kDecodeToBitmap);
   }
@@ -103,7 +106,7 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   void Decode(DecodingMode decoding_mode);
 
   std::unique_ptr<JPEGImageReader> reader_;
-  const size_t offset_;
+  const wtf_size_t offset_;
   IntSize decoded_size_;
   Vector<SkISize> supported_decode_sizes_;
 };

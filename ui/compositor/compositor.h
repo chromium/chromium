@@ -13,10 +13,10 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/power_monitor/power_observer.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -67,7 +67,6 @@ class DelegatedInkPointRenderer;
 }  // namespace mojom
 struct PresentationFeedback;
 class Rect;
-class ScrollOffset;
 class Size;
 }
 
@@ -142,7 +141,8 @@ class COMPOSITOR_EXPORT ContextFactory {
 // displayable form of pixels comprising a single widget's contents. It draws an
 // appropriately transformed texture for each transformed view in the widget's
 // view hierarchy.
-class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
+class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
+                                     public cc::LayerTreeHostClient,
                                      public cc::LayerTreeHostSingleThreadClient,
                                      public viz::HostFrameSinkClient,
                                      public ThroughputTrackerHost {
@@ -154,6 +154,10 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
              bool use_external_begin_frame_control = false,
              bool force_software_compositor = false,
              bool enable_compositing_based_throttling = false);
+
+  Compositor(const Compositor&) = delete;
+  Compositor& operator=(const Compositor&) = delete;
+
   ~Compositor() override;
 
   ui::ContextFactory* context_factory() { return context_factory_; }
@@ -248,8 +252,8 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   // Gets or sets the scroll offset for the given layer in step with the
   // cc::InputHandler. Returns true if the layer is active on the impl side.
   bool GetScrollOffsetForLayer(cc::ElementId element_id,
-                               gfx::ScrollOffset* offset) const;
-  bool ScrollLayerTo(cc::ElementId element_id, const gfx::ScrollOffset& offset);
+                               gfx::Vector2dF* offset) const;
+  bool ScrollLayerTo(cc::ElementId element_id, const gfx::Vector2dF& offset);
 
   // Mac path for transporting vsync parameters to the display. Other platforms
   // update it via the BrowserCompositorLayerTreeFrameSink directly.
@@ -295,8 +299,7 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   // timeout is null, then no timeout is used.
   std::unique_ptr<CompositorLock> GetCompositorLock(
       CompositorLockClient* client,
-      base::TimeDelta timeout =
-          base::TimeDelta::FromMilliseconds(kCompositorLockTimeoutMs)) {
+      base::TimeDelta timeout = base::Milliseconds(kCompositorLockTimeoutMs)) {
     return lock_manager_.GetCompositorLock(client, timeout,
                                            host_->DeferMainFrameUpdate());
   }
@@ -318,6 +321,9 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   // Creates a ThroughputTracker for tracking this Compositor.
   ThroughputTracker RequestNewThroughputTracker();
 
+  // Returns a percentage representing average throughput of last X seconds.
+  uint32_t GetAverageThroughput() const;
+
   // LayerTreeHostClient implementation.
   void WillBeginMainFrame() override {}
   void DidBeginMainFrame() override {}
@@ -336,8 +342,8 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   void RequestNewLayerTreeFrameSink() override;
   void DidInitializeLayerTreeFrameSink() override {}
   void DidFailToInitializeLayerTreeFrameSink() override;
-  void WillCommit() override {}
-  void DidCommit(base::TimeTicks) override;
+  void WillCommit(cc::CommitState*) override {}
+  void DidCommit(base::TimeTicks, base::TimeTicks) override;
   void DidCommitAndDrawFrame() override {}
   void DidReceiveCompositorFrameAck() override;
   void DidCompletePageScaleAnimation() override {}
@@ -375,6 +381,9 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
       ThroughputTrackerHost::ReportCallback callback) override;
   bool StopThroughtputTracker(TrackerId tracker_id) override;
   void CancelThroughtputTracker(TrackerId tracker_id) override;
+
+  // base::PowerSuspendObserver:
+  void OnResume() override;
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -526,8 +535,6 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
 
   base::WeakPtrFactory<Compositor> context_creation_weak_ptr_factory_{this};
   base::WeakPtrFactory<Compositor> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Compositor);
 };
 
 }  // namespace ui

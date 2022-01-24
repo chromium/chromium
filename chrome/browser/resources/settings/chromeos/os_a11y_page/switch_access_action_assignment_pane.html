@@ -1,103 +1,86 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-shared-style settings-shared">
+  #prompt {
+    color: var(--cr-primary-text-color);
+    margin-top: 8px;
+    min-height: 40px;
+    white-space: pre-line;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../os_icons.html">
-<link rel="import" href="switch_access_constants.html">
-<link rel="import" href="switch_access_subpage_browser_proxy.html">
+  #switchAssignments {
+    background-color: var(--cros-textfield-background-color);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 60px;
+    margin-top: 20px;
+    overflow: auto;
+    padding: 16px;
+  }
 
-<dom-module id="settings-switch-access-action-assignment-pane">
-  <template>
-    <style include="cr-shared-style settings-shared">
-      #prompt {
-        color: var(--cr-primary-text-color);
-        height: 40px;
-        margin-top: 8px;
-        white-space: pre-line;
-      }
+  .switch-assignment {
+    display: flex;
+  }
 
-      #switchAssignments {
-        background-color: var(--google-grey-refresh-100);
-        border-radius: 4px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        height: 60px;
-        margin-top: 20px;
-        overflow: auto;
-        padding: 16px;
-      }
+  .icon {
+    margin-inline-end: 10px;
+  }
 
-      .switch-assignment {
-        display: flex;
-      }
+  .add-assignment-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+  }
 
-      .icon {
-        margin-inline-end: 10px;
-      }
+  .assigned-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+  }
 
-      .add-assignment-icon {
-        --iron-icon-fill-color: var(--cros-icon-color-secondary);
-      }
+  .remove-assignment-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+  }
 
-      .assigned-icon {
-        --iron-icon-fill-color: var(--cros-icon-color-prominent);
-      }
+  #errorIcon {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+  }
 
-      .remove-assignment-icon {
-        --iron-icon-fill-color: var(--cros-icon-color-alert);
-      }
+  #button-container {
+    margin-inline-end: 10px;
+    padding-top: 8px;
+  }
 
-      #errorIcon {
-        --iron-icon-fill-color: var(--cros-icon-color-alert);
-      }
+  #errorContainer {
+    height: 40px;
+    margin-top: 16px;
+  }
 
-      #button-container {
-        margin-inline-end: 10px;
-        padding-top: 8px;
-      }
-
-      #errorContainer {
-        height: 40px;
-        margin-top: 16px;
-      }
-
-      #error {
-        color: var(--cros-icon-color-alert);
-        display: flex;
-      }
-    </style>
-    <div id="prompt" aria-live="polite">[[promptText_]]</div>
-    <div id="switchAssignments">
-      <template is="dom-if" if="[[!assignments_.length]]">
-        [[noSwitchesLabel_]]
-      </template>
-      <template is="dom-if" if="[[assignments_.length]]">
-        <template is="dom-repeat" items="[[assignments_]]" as="assignment">
-          <div class="switch-assignment">
-            <iron-icon icon="os-settings:[[computeIcon_(assignment, assignmentState_)]]"
-                class$="icon [[computeIcon_(assignment, assignmentState_)]]-icon"
-                aria-label="[[computeIconLabel_(assignment, assignmentState_)]]">
-            </iron-icon>
-            [[getLabelForAssignment_(assignment)]]
-          </div>
-        </template>
-      </template>
-    </div>
-    <div id="errorContainer">
-      <template is="dom-if" if="[[errorText_]]">
-        <div id="error" aria-live="polite">
-          <iron-icon id="errorIcon" icon="os-settings:error" class="icon"
-              aria-label="$i18n{switchAccessActionAssignmentErrorIconLabel}">
-          </iron-icon>
-          [[errorText_]]
-        </div>
-      </template>
+  #error {
+    color: var(--cros-icon-color-alert);
+    display: flex;
+  }
+</style>
+<div id="prompt" aria-live="polite">[[promptText_]]</div>
+<div id="switchAssignments">
+  <template is="dom-if" if="[[!assignments_.length]]">
+    [[noSwitchesLabel_]]
+  </template>
+  <template is="dom-if" if="[[assignments_.length]]">
+    <template is="dom-repeat" items="[[assignments_]]" as="assignment">
+      <div class="switch-assignment">
+        <iron-icon icon="os-settings:[[computeIcon_(assignment, assignmentState_)]]"
+            class$="icon [[computeIcon_(assignment, assignmentState_)]]-icon"
+            aria-label="[[computeIconLabel_(assignment, assignmentState_)]]">
+        </iron-icon>
+        [[getLabelForAssignment_(assignment)]]
+      </div>
+    </template>
+  </template>
+</div>
+<div id="errorContainer">
+  <template is="dom-if" if="[[errorText_]]">
+    <div id="error" aria-live="polite">
+      <iron-icon id="errorIcon" icon="os-settings:error" class="icon"
+          aria-label="$i18n{switchAccessActionAssignmentErrorIconLabel}">
+      </iron-icon>
+      [[errorText_]]
     </div>
   </template>
-  <script src="switch_access_action_assignment_pane.js"></script>
-</dom-module>
+</div>

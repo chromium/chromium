@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_session_state.h"
-#include "third_party/blink/renderer/core/inspector/protocol/PerformanceTimeline.h"
+#include "third_party/blink/renderer/core/inspector/protocol/performance_timeline.h"
 
 namespace blink {
 

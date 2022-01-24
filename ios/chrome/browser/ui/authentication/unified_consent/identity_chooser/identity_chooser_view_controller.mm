@@ -24,10 +24,6 @@ namespace {
 
 const CGFloat kViewControllerWidth = 312.;
 const CGFloat kViewControllerHeight = 230.;
-// Header height for identity section.
-const CGFloat kHeaderHeight = 49.;
-// Row height.
-const CGFloat kRowHeight = 54.;
 // Footer height for "Add Account…" section.
 const CGFloat kFooterHeight = 17.;
 
@@ -48,12 +44,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.styler.tableViewBackgroundColor =
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-    self.styler.cellBackgroundColor =
-        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-  }
+
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
 
@@ -62,10 +53,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
   self.tableView.contentInset = UIEdgeInsetsMake(0, 0, kFooterHeight, 0);
   self.tableView.sectionFooterHeight = 0;
-  // Setting -UITableView.rowHeight is required for iOS 10. On iOS 11, the row
-  // height is automatically set.
-  self.tableView.estimatedRowHeight = kRowHeight;
-  self.tableView.estimatedSectionHeaderHeight = kHeaderHeight;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

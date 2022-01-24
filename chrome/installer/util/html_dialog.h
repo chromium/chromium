@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 // This is the interface for creating HTML-based Dialogs *before* Chrome has
 // been installed or when there is a suspicion chrome is not working. In
 // other words, the dialogs use another native html rendering engine. In the
@@ -73,6 +71,10 @@ class EulaHTMLDialog {
   // |param| is a string that will be passed to the dialog as a parameter via
   //         the window.dialogArguments property.
   EulaHTMLDialog(const std::wstring& file, const std::wstring& param);
+
+  EulaHTMLDialog(const EulaHTMLDialog&) = delete;
+  EulaHTMLDialog& operator=(const EulaHTMLDialog&) = delete;
+
   ~EulaHTMLDialog();
 
   enum Outcome {
@@ -93,7 +95,6 @@ class EulaHTMLDialog {
   };
 
   HTMLDialog* dialog_;
-  DISALLOW_COPY_AND_ASSIGN(EulaHTMLDialog);
 };
 
 }  // namespace installer

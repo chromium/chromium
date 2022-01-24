@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "media/base/overlay_info.h"
 #include "media/base/renderer_factory_selector.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +35,10 @@ class RendererFactorySelectorTest : public testing::Test {
 
   RendererFactorySelectorTest() = default;
 
+  RendererFactorySelectorTest(const RendererFactorySelectorTest&) = delete;
+  RendererFactorySelectorTest& operator=(const RendererFactorySelectorTest&) =
+      delete;
+
   void AddBaseFactory(RendererType type) {
     selector_.AddBaseFactory(type, std::make_unique<FakeFactory>(type));
   }
@@ -65,8 +68,6 @@ class RendererFactorySelectorTest : public testing::Test {
  protected:
   RendererFactorySelector selector_;
   std::map<RendererType, bool> condition_met_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererFactorySelectorTest);
 };
 
 TEST_F(RendererFactorySelectorTest, SingleFactory) {

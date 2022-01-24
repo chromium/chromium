@@ -21,11 +21,6 @@ class OptimizationGuideTabUrlProvider
   explicit OptimizationGuideTabUrlProvider(Profile* profile);
   ~OptimizationGuideTabUrlProvider() override;
 
-  OptimizationGuideTabUrlProvider(
-      const OptimizationGuideTabUrlProvider& other) = delete;
-  OptimizationGuideTabUrlProvider& operator=(
-      const OptimizationGuideTabUrlProvider&) = delete;
-
   // optimization_guide::TabUrlProvider:
   const std::vector<GURL> GetUrlsOfActiveTabs(
       const base::TimeDelta& duration_since_last_shown) override;

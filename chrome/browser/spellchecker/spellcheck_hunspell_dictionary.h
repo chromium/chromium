@@ -10,11 +10,10 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/spellcheck/browser/spellcheck_dictionary.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -56,6 +55,11 @@ class SpellcheckHunspellDictionary
                                const std::string& platform_spellcheck_language,
                                content::BrowserContext* browser_context,
                                SpellcheckService* spellcheck_service);
+
+  SpellcheckHunspellDictionary(const SpellcheckHunspellDictionary&) = delete;
+  SpellcheckHunspellDictionary& operator=(const SpellcheckHunspellDictionary&) =
+      delete;
+
   ~SpellcheckHunspellDictionary() override;
 
   // SpellcheckDictionary implementation:
@@ -101,6 +105,10 @@ class SpellcheckHunspellDictionary
   struct DictionaryFile {
    public:
     explicit DictionaryFile(base::TaskRunner* task_runner);
+
+    DictionaryFile(const DictionaryFile&) = delete;
+    DictionaryFile& operator=(const DictionaryFile&) = delete;
+
     ~DictionaryFile();
 
     DictionaryFile(DictionaryFile&& other);
@@ -115,8 +123,6 @@ class SpellcheckHunspellDictionary
    private:
     // Task runner where the file is created.
     scoped_refptr<base::TaskRunner> task_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(DictionaryFile);
   };
 
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
@@ -193,8 +199,6 @@ class SpellcheckHunspellDictionary
   DictionaryFile dictionary_file_;
 
   base::WeakPtrFactory<SpellcheckHunspellDictionary> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckHunspellDictionary);
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELLCHECK_HUNSPELL_DICTIONARY_H_

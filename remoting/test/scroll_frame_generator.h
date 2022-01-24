@@ -20,6 +20,9 @@ class ScrollFrameGenerator : public protocol::InputEventTimestampsSource {
  public:
   ScrollFrameGenerator();
 
+  ScrollFrameGenerator(const ScrollFrameGenerator&) = delete;
+  ScrollFrameGenerator& operator=(const ScrollFrameGenerator&) = delete;
+
   std::unique_ptr<webrtc::DesktopFrame> GenerateFrame(
       webrtc::SharedMemoryFactory* shared_memory_factory);
 
@@ -33,8 +36,6 @@ class ScrollFrameGenerator : public protocol::InputEventTimestampsSource {
   base::TimeTicks start_time_;
 
   std::unordered_map<int, base::TimeTicks> frame_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollFrameGenerator);
 };
 
 }  // namespace test

@@ -14,6 +14,7 @@ FrameForTest FrameForTest::Create(fuchsia::web::Context* context,
   FrameForTest result;
   context->CreateFrameWithParams(std::move(params), result.frame_.NewRequest());
   result.CreateAndAttachNavigationListener({});
+  result->SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel::DEBUG);
   return result;
 }
 
@@ -24,6 +25,7 @@ FrameForTest FrameForTest::Create(fuchsia::web::FrameHost* frame_host,
   frame_host->CreateFrameWithParams(std::move(params),
                                     result.frame_.NewRequest());
   result.CreateAndAttachNavigationListener({});
+  result->SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel::DEBUG);
   return result;
 }
 

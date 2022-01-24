@@ -43,7 +43,7 @@ namespace blink {
 
 static const int kMaxRecursionDepth = 3;
 static const base::TimeDelta kProgressNotificationInterval =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 static constexpr uint64_t kMaxTruncateLength =
     std::numeric_limits<uint64_t>::max();
 

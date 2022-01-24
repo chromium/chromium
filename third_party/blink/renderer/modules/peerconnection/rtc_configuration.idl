@@ -48,9 +48,6 @@ dictionary RTCConfiguration {
     [EnforceRange] octet iceCandidatePoolSize = 0;
     // Nonstandard, added for Unified Plan migration
     [RuntimeEnabled=RTCUnifiedPlan] SdpSemantics sdpSemantics;
-    // Nonstandard, added for backward compatibility reasons during a
-    // transitional phase. https://crbug.com/908377
-    boolean offerExtmapAllowMixed;
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMaxPackets;
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] boolean rtcAudioJitterBufferFastAccelerate;
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMinDelayMs;

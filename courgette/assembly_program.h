@@ -42,6 +42,10 @@ class EncodedProgram;
 class AssemblyProgram {
  public:
   AssemblyProgram(ExecutableType kind, uint64_t image_base);
+
+  AssemblyProgram(const AssemblyProgram&) = delete;
+  AssemblyProgram& operator=(const AssemblyProgram&) = delete;
+
   ~AssemblyProgram();
 
   ExecutableType kind() const { return kind_; }
@@ -89,8 +93,6 @@ class AssemblyProgram {
   // These are used by Label adjustment during patch generation.
   std::vector<Label*> abs32_label_annotations_;
   std::vector<Label*> rel32_label_annotations_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssemblyProgram);
 };
 
 }  // namespace courgette

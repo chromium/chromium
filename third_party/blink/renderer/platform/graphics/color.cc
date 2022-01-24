@@ -80,7 +80,7 @@ double CalcHue(double temp1, double temp2, double hue_val) {
 }
 
 int ColorFloatToRGBAByte(float f) {
-  return clampTo(static_cast<int>(lroundf(255.0f * f)), 0, 255);
+  return ClampTo(static_cast<int>(lroundf(255.0f * f)), 0, 255);
 }
 
 // originally moved here from the CSS parser
@@ -142,13 +142,13 @@ inline const NamedColor* FindNamedColor(const String& name) {
 }  // namespace
 
 RGBA32 MakeRGB(int r, int g, int b) {
-  return 0xFF000000 | clampTo(r, 0, 255) << 16 | clampTo(g, 0, 255) << 8 |
-         clampTo(b, 0, 255);
+  return 0xFF000000 | ClampTo(r, 0, 255) << 16 | ClampTo(g, 0, 255) << 8 |
+         ClampTo(b, 0, 255);
 }
 
 RGBA32 MakeRGBA(int r, int g, int b, int a) {
-  return clampTo(a, 0, 255) << 24 | clampTo(r, 0, 255) << 16 |
-         clampTo(g, 0, 255) << 8 | clampTo(b, 0, 255);
+  return ClampTo(a, 0, 255) << 24 | ClampTo(r, 0, 255) << 16 |
+         ClampTo(g, 0, 255) << 8 | ClampTo(b, 0, 255);
 }
 
 RGBA32 MakeRGBA32FromFloats(float r, float g, float b, float a) {

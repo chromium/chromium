@@ -32,6 +32,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementBlueZ
       std::unique_ptr<device::BluetoothAdvertisement::Data> data,
       scoped_refptr<BluetoothAdapterBlueZ> adapter);
 
+  BluetoothAdvertisementBlueZ(const BluetoothAdvertisementBlueZ&) = delete;
+  BluetoothAdvertisementBlueZ& operator=(const BluetoothAdvertisementBlueZ&) =
+      delete;
+
   // BluetoothAdvertisement overrides:
   void Unregister(SuccessCallback success_callback,
                   ErrorCallback error_callback) override;
@@ -55,8 +59,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementBlueZ
   // Adapter this advertisement is advertising on.
   dbus::ObjectPath adapter_path_;
   std::unique_ptr<bluez::BluetoothLEAdvertisementServiceProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdvertisementBlueZ);
 };
 
 }  // namespace bluez

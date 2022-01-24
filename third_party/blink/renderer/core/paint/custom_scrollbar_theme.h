@@ -86,7 +86,7 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
                             const PhysicalRect&);
 
  protected:
-  ScrollbarPart HitTest(const Scrollbar&, const IntPoint&) override;
+  ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&) override;
 
   bool HasButtons(const Scrollbar&) override;
   bool HasThumb(const Scrollbar&) override;
@@ -97,7 +97,7 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
 
   void PaintTrackAndButtons(GraphicsContext&,
                             const Scrollbar&,
-                            const IntPoint&) override;
+                            const gfx::Vector2d&) override;
   void PaintButton(GraphicsContext&,
                    const Scrollbar&,
                    const IntRect&,

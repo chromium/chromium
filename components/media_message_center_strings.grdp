@@ -18,11 +18,17 @@
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK" desc="The button to trigger media playback to go to the next track.">
     Next Track
   </message>
-  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP" desc="The button to trigeer media playback to go in pip mode.">
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP" desc="The button to trigger media playback to go in pip mode.">
     Enter picture-in-picture
   </message>
-  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP" desc="The button to trigeer media playback to exit pip mode.">
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP" desc="The button to trigger media playback to exit pip mode.">
     Exit picture-in-picture
+  </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_MUTE" desc="The button to trigger media playback to mute.">
+    Mute
+  </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_UNMUTE" desc="The button to trigger media playback to unmute.">
+    Unmute
   </message>
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME" desc="The accessible name for the media notification to control playback.">
     Media Controls

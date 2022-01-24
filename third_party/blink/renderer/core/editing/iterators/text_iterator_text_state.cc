@@ -75,7 +75,7 @@ UChar TextIteratorTextState::CharacterAt(unsigned index) const {
 
 String TextIteratorTextState::GetTextForTesting() const {
   if (single_character_buffer_)
-    return String(&single_character_buffer_, 1);
+    return String(&single_character_buffer_, 1u);
   return text_.Substring(text_start_offset_, length());
 }
 

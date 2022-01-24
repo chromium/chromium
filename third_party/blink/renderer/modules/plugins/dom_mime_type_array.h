@@ -31,7 +31,6 @@
 namespace blink {
 
 class ExceptionState;
-class Frame;
 class LocalDOMWindow;
 class PluginData;
 
@@ -41,7 +40,7 @@ class DOMMimeTypeArray final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit DOMMimeTypeArray(LocalDOMWindow*);
+  DOMMimeTypeArray(LocalDOMWindow*, bool should_return_fixed_plugin_data);
 
   void UpdatePluginData();
 
@@ -50,8 +49,6 @@ class DOMMimeTypeArray final : public ScriptWrappable,
   DOMMimeType* namedItem(const AtomicString& property_name);
   void NamedPropertyEnumerator(Vector<String>&, ExceptionState&) const;
   bool NamedPropertyQuery(const AtomicString&, ExceptionState&) const;
-
-  static bool ShouldReturnEmptyPluginData(Frame*);
 
   // PluginsChangedObserver implementation.
   void PluginsChanged() override;
@@ -62,7 +59,7 @@ class DOMMimeTypeArray final : public ScriptWrappable,
   PluginData* GetPluginData() const;
   void ContextDestroyed() override;
 
-  bool ShouldReturnEmptyPluginData() const;
+  const bool should_return_fixed_plugin_data_;
 
   HeapVector<Member<DOMMimeType>> dom_mime_types_;
 };

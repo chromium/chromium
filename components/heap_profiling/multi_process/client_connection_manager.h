@@ -8,7 +8,6 @@
 #include <unordered_set>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/child_process_data.h"
@@ -49,6 +48,10 @@ class ClientConnectionManager : public content::BrowserChildProcessObserver,
   // class.
   // |controller| must be bound to the IO thread.
   ClientConnectionManager(base::WeakPtr<Controller> controller, Mode mode);
+
+  ClientConnectionManager(const ClientConnectionManager&) = delete;
+  ClientConnectionManager& operator=(const ClientConnectionManager&) = delete;
+
   ~ClientConnectionManager() override;
 
   // Start must be called immediately after the constructor. The only reason
@@ -116,8 +119,6 @@ class ClientConnectionManager : public content::BrowserChildProcessObserver,
   // profiled. That information is only known by the profiling service, and for
   // simplicity, it's easier to just track this variable in this process.
   std::unordered_set<void*> profiled_renderers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientConnectionManager);
 };
 
 }  // namespace heap_profiling

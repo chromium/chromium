@@ -10,9 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/syncer_error.h"
@@ -44,6 +42,9 @@ class Commit {
          const sync_pb::ClientToServerMessage& message,
          ExtensionsActivity::Records extensions_activity_buffer);
 
+  Commit(const Commit&) = delete;
+  Commit& operator=(const Commit&) = delete;
+
   ~Commit();
 
   // |extensions_activity| may be null.
@@ -74,8 +75,6 @@ class Commit {
 
   sync_pb::ClientToServerMessage message_;
   ExtensionsActivity::Records extensions_activity_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Commit);
 };
 
 }  // namespace syncer

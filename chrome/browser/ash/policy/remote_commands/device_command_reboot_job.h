@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REBOOT_JOB_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REBOOT_JOB_H_
 
-#include "base/macros.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace chromeos {
@@ -20,6 +19,10 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
  public:
   explicit DeviceCommandRebootJob(
       chromeos::PowerManagerClient* power_manager_client);
+
+  DeviceCommandRebootJob(const DeviceCommandRebootJob&) = delete;
+  DeviceCommandRebootJob& operator=(const DeviceCommandRebootJob&) = delete;
+
   ~DeviceCommandRebootJob() override;
 
   // RemoteCommandJob:
@@ -31,8 +34,6 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
                CallbackWithResult failed_callback) override;
 
   chromeos::PowerManagerClient* power_manager_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandRebootJob);
 };
 
 }  // namespace policy

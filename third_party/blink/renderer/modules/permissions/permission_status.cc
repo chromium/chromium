@@ -77,6 +77,10 @@ String PermissionStatus::state() const {
   return PermissionStatusToString(status_);
 }
 
+String PermissionStatus::name() const {
+  return PermissionNameToString(descriptor_->name);
+}
+
 void PermissionStatus::StartListening() {
   DCHECK(!receiver_.is_bound());
   mojo::PendingRemote<mojom::blink::PermissionObserver> observer;

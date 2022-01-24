@@ -13,7 +13,6 @@
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "sandbox/policy/sandbox_type.h"
 
 namespace base {
 class CommandLine;
@@ -22,10 +21,13 @@ class CommandLine;
 namespace sandbox {
 namespace bpf_dsl {
 class Policy;
-}
+}  // namespace bpf_dsl
+namespace mojom {
+enum class Sandbox;
+}  // namespace mojom
 struct SandboxInterfaceInfo;
 enum ResultCode : int;
-}
+}  // namespace sandbox
 
 namespace content {
 class SandboxedProcessLauncherDelegate;
@@ -40,16 +42,20 @@ class SandboxedProcessLauncherDelegate;
 // occurred.  If process_type isn't one that needs sandboxing true is always
 // returned.
 CONTENT_EXPORT bool InitializeSandbox(
-    sandbox::policy::SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     sandbox::SandboxInterfaceInfo* sandbox_info);
 
 // Launch a sandboxed process. |delegate| may be NULL. If |delegate| is non-NULL
 // then it just has to outlive this method call. |handles_to_inherit| is a list
 // of handles for the child process to inherit. The caller retains ownership of
 // the handles.
+//
+// Note that calling this function does not always create a sandboxed process,
+// as the process might be unsandboxed depending on the behavior of the
+// delegate, the command line of the caller, and the command line of the target.
 CONTENT_EXPORT sandbox::ResultCode StartSandboxedProcess(
     SandboxedProcessLauncherDelegate* delegate,
-    base::CommandLine* child_command_line,
+    const base::CommandLine& target_command_line,
     const base::HandlesToInheritVector& handles_to_inherit,
     base::Process* process);
 

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -33,6 +32,9 @@ class AddressNormalizationManager::NormalizerDelegate {
                      AddressNormalizer* address_normalizer,
                      AutofillProfile* profile);
 
+  NormalizerDelegate(const NormalizerDelegate&) = delete;
+  NormalizerDelegate& operator=(const NormalizerDelegate&) = delete;
+
   // Returns whether this delegate has completed or not.
   bool has_completed() const { return has_completed_; }
 
@@ -46,8 +48,6 @@ class AddressNormalizationManager::NormalizerDelegate {
   bool has_completed_ = false;
   AddressNormalizationManager* owner_ = nullptr;
   AutofillProfile* profile_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NormalizerDelegate);
 };
 
 AddressNormalizationManager::AddressNormalizationManager(

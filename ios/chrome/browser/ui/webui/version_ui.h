@@ -14,10 +14,11 @@
 class VersionUI : public web::WebUIIOSController {
  public:
   explicit VersionUI(web::WebUIIOS* web_ui, const std::string& host);
-  ~VersionUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(VersionUI);
+  VersionUI(const VersionUI&) = delete;
+  VersionUI& operator=(const VersionUI&) = delete;
+
+  ~VersionUI() override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_VERSION_UI_H_

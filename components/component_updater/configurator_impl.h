@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/update_client/configurator.h"
 #include "url/gurl.h"
 
@@ -31,6 +30,9 @@ class ConfiguratorImpl {
  public:
   ConfiguratorImpl(const update_client::CommandLineConfigPolicy& config_policy,
                    bool require_encryption);
+
+  ConfiguratorImpl(const ConfiguratorImpl&) = delete;
+  ConfiguratorImpl& operator=(const ConfiguratorImpl&) = delete;
 
   ~ConfiguratorImpl();
 
@@ -101,8 +103,6 @@ class ConfiguratorImpl {
   const bool require_encryption_;
   const GURL url_source_override_;
   const double initial_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfiguratorImpl);
 };
 
 }  // namespace component_updater

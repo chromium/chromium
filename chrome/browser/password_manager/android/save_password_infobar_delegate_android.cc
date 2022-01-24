@@ -50,7 +50,9 @@ void SavePasswordInfoBarDelegate::Create(
 
 SavePasswordInfoBarDelegate::~SavePasswordInfoBarDelegate() {
   password_manager::metrics_util::LogSaveUIDismissalReason(
-      infobar_response_, /*user_state=*/absl::nullopt);
+      infobar_response_,
+      form_to_save_->GetPendingCredentials().submission_event,
+      /*user_state=*/absl::nullopt);
   if (form_to_save_->WasUnblocklisted()) {
     password_manager::metrics_util::LogSaveUIDismissalReasonAfterUnblocklisting(
         infobar_response_);

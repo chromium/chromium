@@ -9,7 +9,10 @@
 
 namespace ui {
 
+extern const base::Feature kWaylandSurfaceSubmissionInPixelCoordinates;
 extern const base::Feature kWaylandOverlayDelegation;
+
+bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled();
 bool IsWaylandOverlayDelegationEnabled();
 
 }  // namespace ui

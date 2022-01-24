@@ -16,7 +16,7 @@ static_library("os_feedback_ui") {
   ]
 
   deps = [
-    "//ash/components/resources:os_feedback_resources",
+    "//ash/webui/resources:os_feedback_resources",
     "//content/public/browser",
     "//ui/resources",
     "//ui/webui",

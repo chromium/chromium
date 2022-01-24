@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -16,9 +18,9 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -29,8 +31,6 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/cros_settings_provider.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -212,12 +212,11 @@ void DeviceLocalAccountPolicyBroker::UpdateRefreshDelay() {
 }
 
 std::string DeviceLocalAccountPolicyBroker::GetDisplayName() const {
-  std::string display_name;
   const base::Value* display_name_value =
       store_->policy_map().GetValue(policy::key::kUserDisplayName);
-  if (display_name_value)
-    display_name_value->GetAsString(&display_name);
-  return display_name;
+  if (display_name_value && display_name_value->is_string())
+    return display_name_value->GetString();
+  return std::string();
 }
 
 void DeviceLocalAccountPolicyBroker::OnStoreLoaded(CloudPolicyStore* store) {
@@ -240,9 +239,8 @@ void DeviceLocalAccountPolicyBroker::CreateComponentCloudPolicyService(
       /* max_cache_size */ absl::nullopt));
 
   component_policy_service_ = std::make_unique<ComponentCloudPolicyService>(
-      dm_protocol::kChromeExtensionPolicyType, POLICY_SOURCE_CLOUD, this,
-      &schema_registry_, core(), client, std::move(resource_cache),
-      resource_cache_task_runner_);
+      dm_protocol::kChromeExtensionPolicyType, this, &schema_registry_, core(),
+      client, std::move(resource_cache), resource_cache_task_runner_);
 }
 
 DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
@@ -268,7 +266,7 @@ DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
       url_loader_factory_(url_loader_factory),
       local_accounts_subscription_(cros_settings_->AddSettingsObserver(
-          chromeos::kAccountsPrefDeviceLocalAccounts,
+          ash::kAccountsPrefDeviceLocalAccounts,
           base::BindRepeating(
               &DeviceLocalAccountPolicyService::UpdateAccountListIfNonePending,
               base::Unretained(this)))),
@@ -309,7 +307,7 @@ DeviceLocalAccountPolicyService::GetBrokerForUser(const std::string& user_id) {
   if (entry == policy_brokers_.end())
     return nullptr;
 
-  return entry->second;
+  return entry->second.get();
 }
 
 bool DeviceLocalAccountPolicyService::IsPolicyAvailableForUser(
@@ -411,21 +409,21 @@ void DeviceLocalAccountPolicyService::UpdateAccountListIfNonePending() {
 }
 
 void DeviceLocalAccountPolicyService::UpdateAccountList() {
-  chromeos::CrosSettingsProvider::TrustedStatus status =
+  ash::CrosSettingsProvider::TrustedStatus status =
       cros_settings_->PrepareTrustedValues(
           base::BindOnce(&DeviceLocalAccountPolicyService::UpdateAccountList,
                          weak_factory_.GetWeakPtr()));
   switch (status) {
-    case chromeos::CrosSettingsProvider::TRUSTED:
+    case ash::CrosSettingsProvider::TRUSTED:
       waiting_for_cros_settings_ = false;
       break;
-    case chromeos::CrosSettingsProvider::TEMPORARILY_UNTRUSTED:
+    case ash::CrosSettingsProvider::TEMPORARILY_UNTRUSTED:
       waiting_for_cros_settings_ = true;
       // Purposely break to allow initialization with temporarily untrusted
       // settings so that a crash-n-restart public session have its loader
       // properly registered as ExtensionService's external provider.
       break;
-    case chromeos::CrosSettingsProvider::PERMANENTLY_UNTRUSTED:
+    case ash::CrosSettingsProvider::PERMANENTLY_UNTRUSTED:
       waiting_for_cros_settings_ = false;
       return;
   }
@@ -445,7 +443,7 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
     bool broker_initialized = false;
     if (broker_it != old_policy_brokers.end()) {
       // Reuse the existing broker if present.
-      broker.reset(broker_it->second);
+      broker = std::move(broker_it->second);
       old_policy_brokers.erase(broker_it);
       broker_initialized = true;
     } else {
@@ -474,7 +472,7 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
     broker->ConnectIfPossible(device_settings_service_,
                               device_management_service_, url_loader_factory_);
 
-    policy_brokers_[it->user_id] = broker.release();
+    policy_brokers_[it->user_id] = std::move(broker);
     if (!broker_initialized) {
       // The broker must be initialized after it has been added to
       // |policy_brokers_|.
@@ -545,8 +543,6 @@ void DeviceLocalAccountPolicyService::DeleteBrokers(PolicyBrokerMap* map) {
           &DeviceLocalAccountPolicyService::OnObsoleteExtensionCacheShutdown,
           weak_factory_.GetWeakPtr(), it->second->account_id()));
     }
-
-    delete it->second;
   }
   map->clear();
 }

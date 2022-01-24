@@ -96,7 +96,7 @@ scoped_refptr<SimpleFontData> FontCache::FallbackOnStandardFontStyle(
   substitute_description.SetWeight(NormalWeightValue());
 
   FontFaceCreationParams creation_params(
-      substitute_description.Family().Family());
+      substitute_description.Family().FamilyName());
   FontPlatformData* substitute_platform_data =
       GetFontPlatformData(substitute_description, creation_params);
   if (substitute_platform_data &&
@@ -104,9 +104,11 @@ scoped_refptr<SimpleFontData> FontCache::FallbackOnStandardFontStyle(
     FontPlatformData platform_data =
         FontPlatformData(*substitute_platform_data);
     platform_data.SetSyntheticBold(font_description.Weight() >=
-                                   BoldThreshold());
+                                       BoldThreshold() &&
+                                   font_description.SyntheticBoldAllowed());
     platform_data.SetSyntheticItalic(font_description.Style() ==
-                                     ItalicSlopeValue());
+                                         ItalicSlopeValue() &&
+                                     font_description.SyntheticItalicAllowed());
     return FontDataFromFontPlatformData(&platform_data, kDoNotRetain);
   }
 
@@ -209,9 +211,10 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
 #endif
 
   const AtomicString& family = creation_params.Family();
-  DCHECK_NE(family, font_family_names::kSystemUi);
   // If we're creating a fallback font (e.g. "-webkit-monospace"), convert the
   // name into the fallback name (like "monospace") that fontconfig understands.
+  // TODO(https://crbug.com/1252383): Figure out why we still need the call to
+  // GetFallbackFontFamily to get serif to work on Android.
   if (!family.length() || family.StartsWith("-webkit-")) {
     name = GetFallbackFontFamily(font_description).GetString().Utf8();
   } else {
@@ -296,13 +299,17 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   std::unique_ptr<FontPlatformData> font_platform_data =
       std::make_unique<FontPlatformData>(
           typeface, name, font_size,
-          (font_description.Weight() >
-               FontSelectionValue(200) +
-                   FontSelectionValue(typeface->fontStyle().weight()) ||
-           font_description.IsSyntheticBold()),
-          ((font_description.Style() == ItalicSlopeValue()) &&
-           !typeface->isItalic()) ||
-              font_description.IsSyntheticItalic(),
+          ((font_description.Weight() >
+                FontSelectionValue(200) +
+                    FontSelectionValue(typeface->fontStyle().weight()) ||
+            font_description.IsSyntheticBold()) &&
+           font_description.GetFontSynthesisWeight() ==
+               FontDescription::kAutoFontSynthesisWeight),
+          (((font_description.Style() == ItalicSlopeValue()) &&
+            !typeface->isItalic()) ||
+           font_description.IsSyntheticItalic()) &&
+              font_description.GetFontSynthesisStyle() ==
+                  FontDescription::kAutoFontSynthesisStyle,
           font_description.Orientation());
 
   font_platform_data->SetAvoidEmbeddedBitmaps(

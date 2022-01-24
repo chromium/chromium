@@ -4,10 +4,9 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
-#include "chrome/browser/chromeos/printing/printers_sync_bridge.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
+#include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/sync/test/integration/printers_helper.h"
+#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -117,10 +116,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, AddPrintServerPrinter) {
   EXPECT_EQ(kServerAddress, spec_printer->print_server_uri());
 }
 
-// Tests for SplitSettingsSync.
-class SingleClientPrintersOsSyncTest : public OsSyncTest {
+// Tests for SyncConsentOptional.
+class SingleClientPrintersOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
-  SingleClientPrintersOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {}
+  SingleClientPrintersOsSyncTest()
+      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
   ~SingleClientPrintersOsSyncTest() override = default;
 };
 

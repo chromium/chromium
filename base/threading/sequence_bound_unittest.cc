@@ -88,6 +88,9 @@ class BoxedValue {
  public:
   explicit BoxedValue(int initial_value) : value_(initial_value) {}
 
+  BoxedValue(const BoxedValue&) = delete;
+  BoxedValue& operator=(const BoxedValue&) = delete;
+
   ~BoxedValue() {
     if (destruction_callback_)
       std::move(destruction_callback_).Run();
@@ -103,8 +106,6 @@ class BoxedValue {
  private:
   int value_ = 0;
   base::OnceClosure destruction_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoxedValue);
 };
 
 #if defined(OS_IOS) && !TARGET_OS_SIMULATOR
@@ -370,15 +371,12 @@ TEST_F(SequenceBoundTest, PostTaskWithThisObject) {
   constexpr int kTestValue2 = 42;
   base::SequenceBound<BoxedValue> value(task_runner_, kTestValue1);
   base::RunLoop loop;
+  value.PostTaskWithThisObject(base::BindLambdaForTesting(
+      [&](const BoxedValue& v) { EXPECT_EQ(kTestValue1, v.value()); }));
+  value.PostTaskWithThisObject(base::BindLambdaForTesting(
+      [&](BoxedValue* v) { v->set_value(kTestValue2); }));
   value.PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting([&](const BoxedValue& v) {
-        EXPECT_EQ(kTestValue1, v.value());
-      }));
-  value.PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting(
-                     [&](BoxedValue* v) { v->set_value(kTestValue2); }));
-  value.PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting([&](const BoxedValue& v) {
+      base::BindLambdaForTesting([&](const BoxedValue& v) {
         EXPECT_EQ(kTestValue2, v.value());
         loop.Quit();
       }));

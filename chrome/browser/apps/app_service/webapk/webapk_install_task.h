@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "components/arc/arc_features_parser.h"
 #include "components/arc/mojom/webapk.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

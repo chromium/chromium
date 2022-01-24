@@ -12,6 +12,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
@@ -75,6 +76,26 @@ TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsUnifiedSystemTray) {
   // Expect that the returned bounds don't intersect the unified system tray
   // but also don't leave the PIP movement area.
   EXPECT_FALSE(moved_bounds.Intersects(bubble_bounds));
+  EXPECT_TRUE(area.Contains(moved_bounds));
+}
+
+TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsPopupNotification) {
+  UpdateDisplay("1000x900");
+  auto* window = CreateTestWindowInShellWithId(kShellWindowId_ShelfContainer);
+  window->SetName(AshMessagePopupCollection::kMessagePopupWidgetName);
+  window->Show();
+
+  auto display = GetPrimaryDisplay();
+  gfx::Rect area = CollisionDetectionUtils::GetMovementArea(display);
+  gfx::Rect popup_bounds = window->GetBoundsInScreen();
+  gfx::Rect bounds = gfx::Rect(popup_bounds.x(), popup_bounds.y(), 100, 100);
+  gfx::Rect moved_bounds = CollisionDetectionUtils::GetRestingPosition(
+      display, bounds,
+      CollisionDetectionUtils::RelativePriority::kPictureInPicture);
+
+  // Expect that the returned bounds don't intersect the popup message window
+  // but also don't leave the PIP movement area.
+  EXPECT_FALSE(moved_bounds.Intersects(popup_bounds));
   EXPECT_TRUE(area.Contains(moved_bounds));
 }
 

@@ -47,17 +47,10 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class SystemCpuApiTest : public ExtensionApiTest,
                          public testing::WithParamInterface<ContextType> {
  public:
-  SystemCpuApiTest() = default;
+  SystemCpuApiTest() : ExtensionApiTest(GetParam()) {}
   ~SystemCpuApiTest() override = default;
   SystemCpuApiTest(const SystemCpuApiTest&) = delete;
   SystemCpuApiTest& operator=(const SystemCpuApiTest&) = delete;
-
- protected:
-  bool RunTest(const char* name) {
-    return RunExtensionTest(
-        name, {},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(EventPage,
@@ -71,7 +64,7 @@ IN_PROC_BROWSER_TEST_P(SystemCpuApiTest, Cpu) {
   scoped_refptr<CpuInfoProvider> provider = new MockCpuInfoProviderImpl;
   // The provider is owned by the single CpuInfoProvider instance.
   CpuInfoProvider::InitializeForTesting(provider);
-  ASSERT_TRUE(RunTest("system_cpu")) << message_;
+  ASSERT_TRUE(RunExtensionTest("system_cpu")) << message_;
 }
 
 }  // namespace extensions

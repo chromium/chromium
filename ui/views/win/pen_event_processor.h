@@ -25,6 +25,10 @@ class VIEWS_EXPORT PenEventProcessor {
   // |id_generator| must outlive this object's lifecycle.
   PenEventProcessor(ui::SequentialIDGenerator* id_generator,
                     bool direct_manipulation_enabled);
+
+  PenEventProcessor(const PenEventProcessor&) = delete;
+  PenEventProcessor& operator=(const PenEventProcessor&) = delete;
+
   ~PenEventProcessor();
 
   // Generate an appropriate ui::Event for a given pen pointer.
@@ -51,16 +55,14 @@ class VIEWS_EXPORT PenEventProcessor {
 
   ui::SequentialIDGenerator* id_generator_;
   bool direct_manipulation_enabled_;
-  bool pen_in_contact_ = false;
-  bool send_touch_for_pen_ = false;
+  base::flat_map<UINT32, bool> pen_in_contact_;
+  base::flat_map<UINT32, bool> send_touch_for_pen_;
 
   // There may be more than one pen used at the same time.
   base::flat_map<UINT32, bool> sent_mouse_down_;
   base::flat_map<UINT32, bool> sent_touch_start_;
 
   absl::optional<unsigned int> eraser_pointer_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(PenEventProcessor);
 };
 
 }  // namespace views

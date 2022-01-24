@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/guid.h"
 #include "base/i18n/string_compare.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -97,6 +96,10 @@ class SortComparator {
 class EmptyUndoDelegate : public BookmarkUndoDelegate {
  public:
   EmptyUndoDelegate() {}
+
+  EmptyUndoDelegate(const EmptyUndoDelegate&) = delete;
+  EmptyUndoDelegate& operator=(const EmptyUndoDelegate&) = delete;
+
   ~EmptyUndoDelegate() override {}
 
  private:
@@ -106,8 +109,6 @@ class EmptyUndoDelegate : public BookmarkUndoDelegate {
                              const BookmarkNode* parent,
                              size_t index,
                              std::unique_ptr<BookmarkNode> node) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(EmptyUndoDelegate);
 };
 
 }  // namespace
@@ -770,7 +771,9 @@ void BookmarkModel::RemoveNodeFromIndexRecursive(BookmarkNode* node) {
   if (node->is_url())
     titled_url_index_->Remove(node);
 
+  // Reset favicon state for the case when the |node| is restored.
   CancelPendingFaviconLoadRequests(node);
+  node->InvalidateFavicon();
 
   // Recurse through children.
   for (size_t i = node->children().size(); i > 0; --i)

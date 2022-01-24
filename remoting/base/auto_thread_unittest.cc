@@ -10,7 +10,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/scoped_native_library.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,7 +65,7 @@ class AutoThreadTest : public testing::Test {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(5));
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(5));
     run_loop.Run();
   }
 

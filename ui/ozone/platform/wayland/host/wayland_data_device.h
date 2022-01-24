@@ -58,6 +58,7 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
   // Starts a wayland drag and drop session, controlled by |delegate|.
   void StartDrag(const WaylandDataSource& data_source,
                  const WaylandWindow& origin_window,
+                 uint32_t serial,
                  wl_surface* icon_surface,
                  DragDelegate* delegate);
 

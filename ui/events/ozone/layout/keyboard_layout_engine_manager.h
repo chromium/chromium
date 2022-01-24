@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace ui {
 
@@ -16,6 +15,10 @@ class KeyboardLayoutEngine;
 
 class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) KeyboardLayoutEngineManager {
  public:
+  KeyboardLayoutEngineManager(const KeyboardLayoutEngineManager&) = delete;
+  KeyboardLayoutEngineManager& operator=(const KeyboardLayoutEngineManager&) =
+      delete;
+
   virtual ~KeyboardLayoutEngineManager();
 
   static void SetKeyboardLayoutEngine(
@@ -33,8 +36,6 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) KeyboardLayoutEngineManager {
 
  private:
   static KeyboardLayoutEngine* keyboard_layout_engine_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardLayoutEngineManager);
 };
 
 }  // namespace ui

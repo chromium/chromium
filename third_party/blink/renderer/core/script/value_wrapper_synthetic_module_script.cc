@@ -39,13 +39,8 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   UseCounter::Count(execution_context, WebFeature::kCreateCSSModuleScript);
   auto* context_window = DynamicTo<LocalDOMWindow>(execution_context);
-  if (!context_window) {
-    v8::Local<v8::Value> error = V8ThrowException::CreateTypeError(
-        isolate, "Cannot create CSS Module in non-document context");
-    return ValueWrapperSyntheticModuleScript::CreateWithError(
-        v8::Local<v8::Value>(), settings_object, params.SourceURL(), KURL(),
-        ScriptFetchOptions(), error);
-  }
+  DCHECK(context_window)
+      << "Attempted to create a CSS Module in non-document context";
   CSSStyleSheetInit* init = CSSStyleSheetInit::Create();
   // The base URL used to construct the CSSStyleSheet is also used for
   // DevTools as the CSS source URL. This is fine since these two values
@@ -186,7 +181,7 @@ ValueWrapperSyntheticModuleScript::ValueWrapperSyntheticModuleScript(
       export_value_(v8::Isolate::GetCurrent(), value) {}
 
 // This is the definition of [[EvaluationSteps]] As per the synthetic module
-// spec  https://heycam.github.io/webidl/#synthetic-module-records
+// spec  https://webidl.spec.whatwg.org/#synthetic-module-records
 // It is responsible for setting the default export of the provided module to
 // the value wrapped by the ValueWrapperSyntheticModuleScript
 v8::MaybeLocal<v8::Value> ValueWrapperSyntheticModuleScript::EvaluationSteps(
@@ -206,7 +201,7 @@ v8::MaybeLocal<v8::Value> ValueWrapperSyntheticModuleScript::EvaluationSteps(
   v8::TryCatch try_catch(isolate);
   v8::Maybe<bool> result = module->SetSyntheticModuleExport(
       isolate, V8String(isolate, "default"),
-      value_wrapper_synthetic_module_script->export_value_.NewLocal(isolate));
+      value_wrapper_synthetic_module_script->export_value_.Get(isolate));
 
   // Setting the default export should never fail.
   DCHECK(!try_catch.HasCaught());

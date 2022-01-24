@@ -83,9 +83,8 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
          "an existing instance of this class during a window frame refresh.";
   browser_view_->SetToolbarButtonProvider(this);
 
-  if (browser_view_->IsWindowControlsOverlayEnabled()) {
+  if (browser_view_->IsWindowControlsOverlayEnabled())
     OnWindowControlsOverlayEnabledChanged();
-  }
 }
 
 WebAppFrameToolbarView::~WebAppFrameToolbarView() = default;
@@ -95,26 +94,35 @@ void WebAppFrameToolbarView::UpdateStatusIconsVisibility() {
 }
 
 void WebAppFrameToolbarView::UpdateCaptionColors() {
-  const BrowserNonClientFrameView* frame_view =
-      browser_view_->frame()->GetFrameView();
-  DCHECK(frame_view);
+  // We want to behave differently if this is an update to the color (as opposed
+  // to the first time it's being set). Specifically, updates should pulse the
+  // origin into view.
+  bool color_previously_set = active_background_color_.has_value();
+  if (color_previously_set) {
+    SkColor old_active_background_color = *active_background_color_;
+    SkColor old_active_foreground_color = *active_foreground_color_;
+    SkColor old_inactive_background_color = *inactive_background_color_;
+    SkColor old_inactive_foreground_color = *inactive_foreground_color_;
+    UpdateCachedColors();
 
-  active_background_color_ =
-      frame_view->GetFrameColor(BrowserFrameActiveState::kActive);
-  active_foreground_color_ =
-      frame_view->GetCaptionColor(BrowserFrameActiveState::kActive);
-  inactive_background_color_ =
-      frame_view->GetFrameColor(BrowserFrameActiveState::kInactive);
-  inactive_foreground_color_ =
-      frame_view->GetCaptionColor(BrowserFrameActiveState::kInactive);
-  UpdateChildrenColor();
+    if (old_active_background_color == active_background_color_ &&
+        old_active_foreground_color == active_foreground_color_ &&
+        old_inactive_background_color == inactive_background_color_ &&
+        old_inactive_foreground_color == inactive_foreground_color_) {
+      return;
+    }
+  } else {
+    UpdateCachedColors();
+  }
+
+  UpdateChildrenColor(/*color_changed=*/color_previously_set);
 }
 
 void WebAppFrameToolbarView::SetPaintAsActive(bool active) {
   if (paint_as_active_ == active)
     return;
   paint_as_active_ = active;
-  UpdateChildrenColor();
+  UpdateChildrenColor(/*color_changed=*/false);
   OnPropertyChanged(&paint_as_active_, views::kPropertyEffectsNone);
 }
 
@@ -138,7 +146,7 @@ std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
   const int width = std::max(trailing_x - leading_x, 0);
   const int height = preferred_size.height();
   DCHECK_LE(height, available_height);
-  SetBounds(leading_x, y + (available_height - height) / 2, width, height);
+  SetBounds(leading_x, y, width, available_height);
   Layout();
 
   if (!center_container_->GetVisible())
@@ -177,7 +185,7 @@ gfx::Size WebAppFrameToolbarView::GetToolbarButtonSize() const {
 }
 
 views::View* WebAppFrameToolbarView::GetDefaultExtensionDialogAnchorView() {
-  return right_container_->extensions_container()->extensions_button();
+  return right_container_->extensions_container()->GetExtensionsButton();
 }
 
 PageActionIconView* WebAppFrameToolbarView::GetPageActionIconView(
@@ -227,6 +235,10 @@ void WebAppFrameToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
       can_show_bubble);
 }
 
+ReadLaterToolbarButton* WebAppFrameToolbarView::GetSidePanelButton() {
+  return nullptr;
+}
+
 AvatarToolbarButton* WebAppFrameToolbarView::GetAvatarToolbarButton() {
   return nullptr;
 }
@@ -259,9 +271,12 @@ bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,
 
 void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
   if (browser_view_->IsWindowControlsOverlayEnabled()) {
-    SetBackground(views::CreateSolidBackground(
-        paint_as_active_ ? active_background_color_
-                         : inactive_background_color_));
+    // The color is not set until the view is added to a widget.
+    if (active_background_color_) {
+      SetBackground(views::CreateSolidBackground(
+          paint_as_active_ ? *active_background_color_
+                           : *inactive_background_color_));
+    }
 
     // BrowserView paints to a layer, so this view must do the same to ensure
     // that it paints on top of the BrowserView.
@@ -304,18 +319,35 @@ WebAppFrameToolbarView::GetContentSettingViewsForTesting() const {
       ->get_content_setting_views();
 }
 
-void WebAppFrameToolbarView::UpdateChildrenColor() {
-  const SkColor foreground_color =
-      paint_as_active_ ? active_foreground_color_ : inactive_foreground_color_;
+void WebAppFrameToolbarView::UpdateCachedColors() {
+  const BrowserNonClientFrameView* frame_view =
+      browser_view_->frame()->GetFrameView();
+  DCHECK(frame_view);
+
+  active_background_color_ =
+      frame_view->GetFrameColor(BrowserFrameActiveState::kActive);
+  active_foreground_color_ =
+      frame_view->GetCaptionColor(BrowserFrameActiveState::kActive);
+  inactive_background_color_ =
+      frame_view->GetFrameColor(BrowserFrameActiveState::kInactive);
+  inactive_foreground_color_ =
+      frame_view->GetCaptionColor(BrowserFrameActiveState::kInactive);
+}
+
+void WebAppFrameToolbarView::UpdateChildrenColor(bool color_changed) {
+  const SkColor foreground_color = paint_as_active_
+                                       ? *active_foreground_color_
+                                       : *inactive_foreground_color_;
   if (left_container_)
     left_container_->SetIconColor(foreground_color);
-  const SkColor background_color =
-      paint_as_active_ ? active_background_color_ : inactive_background_color_;
-  right_container_->SetColors(foreground_color, background_color);
+  const SkColor background_color = paint_as_active_
+                                       ? *active_background_color_
+                                       : *inactive_background_color_;
+  right_container_->SetColors(foreground_color, background_color,
+                              color_changed);
 
-  if (browser_view_->IsWindowControlsOverlayEnabled()) {
+  if (browser_view_->IsWindowControlsOverlayEnabled())
     SetBackground(views::CreateSolidBackground(background_color));
-  }
 }
 
 BEGIN_METADATA(WebAppFrameToolbarView, views::AccessiblePaneView)

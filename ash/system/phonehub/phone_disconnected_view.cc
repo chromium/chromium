@@ -6,18 +6,18 @@
 
 #include <memory>
 
+#include "ash/components/phonehub/connection_scheduler.h"
+#include "ash/components/phonehub/url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/phonehub/interstitial_view_button.h"
+#include "ash/style/button_style.h"
 #include "ash/system/phonehub/phone_hub_interstitial_view.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "base/bind.h"
-#include "chromeos/components/phonehub/connection_scheduler.h"
-#include "chromeos/components/phonehub/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -48,25 +48,22 @@ PhoneDisconnectedView::PhoneDisconnectedView(
       IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_DESCRIPTION));
 
   // Add "Learn more" and "Refresh" buttons.
-  auto learn_more = std::make_unique<InterstitialViewButton>(
+  auto learn_more = std::make_unique<PillButton>(
       base::BindRepeating(
           &PhoneDisconnectedView::ButtonPressed, base::Unretained(this),
           InterstitialScreenEvent::kLearnMore,
           base::BindRepeating(
-              &NewWindowDelegate::NewTabWithUrl,
+              &NewWindowDelegate::OpenUrl,
               base::Unretained(NewWindowDelegate::GetInstance()),
               GURL(chromeos::phonehub::kPhoneHubLearnMoreLink),
               /*from_user_interaction=*/true)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_LEARN_MORE_BUTTON),
-      /*paint_background=*/false);
-  learn_more->SetEnabledTextColors(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary));
+      PillButton::Type::kIconlessFloating, /*icon=*/nullptr);
   learn_more->SetID(PhoneHubViewID::kDisconnectedLearnMoreButton);
   content_view_->AddButton(std::move(learn_more));
 
-  auto refresh = std::make_unique<InterstitialViewButton>(
+  auto refresh = std::make_unique<PillButton>(
       base::BindRepeating(
           &PhoneDisconnectedView::ButtonPressed, base::Unretained(this),
           InterstitialScreenEvent::kConfirm,
@@ -75,7 +72,7 @@ PhoneDisconnectedView::PhoneDisconnectedView(
               base::Unretained(connection_scheduler_))),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_REFRESH_BUTTON),
-      /*paint_background=*/true);
+      PillButton::Type::kIconless, /*icon=*/nullptr);
   refresh->SetID(PhoneHubViewID::kDisconnectedRefreshButton);
   content_view_->AddButton(std::move(refresh));
 

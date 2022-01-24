@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.testing.fs.integrationTest');
 goog.setTestOnly();
@@ -20,8 +12,9 @@ const FsError = goog.require('goog.fs.Error');
 const FsFileSaver = goog.require('goog.fs.FileSaver');
 const GoogPromise = goog.require('goog.Promise');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
+const Timer = goog.require('goog.Timer');
 const events = goog.require('goog.events');
-const googFs = goog.require('goog.fs');
+const googFsBlob = goog.require('goog.fs.blob');
 const testSuite = goog.require('goog.testing.testSuite');
 const testingFs = goog.require('goog.testing.fs');
 
@@ -31,6 +24,7 @@ const Behavior = FsDirectoryEntry.Behavior;
 const EventType = FsFileSaver.EventType;
 const ReadyState = FsFileSaver.ReadyState;
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 const deferredFs = testingFs.getTemporary();
 
 function loadTestDir() {
@@ -50,7 +44,7 @@ function startWrite(content, fileEntry) {
   return fileEntry.createWriter()
       .then(goog.partial(checkReadyState, ReadyState.INIT))
       .then((writer) => {
-        writer.write(googFs.getBlob(content));
+        writer.write(googFsBlob.getBlob(content));
         return writer;
       })
       .then(goog.partial(checkReadyState, ReadyState.WRITING));
@@ -70,10 +64,15 @@ function writeToFile(content, fileEntry) {
 
 function checkFileContent(content, fileEntry) {
   return fileEntry.file()
-      .then((blob) => googFs.blobToString(blob))
+      .then((blob) => {
+        const resolver = GoogPromise.withResolver();
+        Timer.callOnce(() => resolver.resolve(blob.toString()));
+        return resolver.promise;
+      })
       .then(goog.partial(assertEquals, content));
 }
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 function checkFileRemoved(filename) {
   return loadFile(filename)
       .then(goog.partial(fail, 'expected file to be removed'))
@@ -161,7 +160,7 @@ testSuite({
         .then(goog.partial(checkReadyState, ReadyState.INIT))
         .then((writer) => {
           writer.seek(5);
-          writer.write(googFs.getBlob('stuff and things'));
+          writer.write(googFsBlob.getBlob('stuff and things'));
           return writer;
         })
         .then(goog.partial(checkReadyState, ReadyState.WRITING))

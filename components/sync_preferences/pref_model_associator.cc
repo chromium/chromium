@@ -26,8 +26,8 @@
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_error_factory.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 
@@ -226,9 +226,9 @@ PrefModelAssociator::MergeDataAndStartSyncing(
   }
 
   // Go through and build sync data for any remaining preferences.
-  for (auto pref_name_iter = remaining_preferences.begin();
-       pref_name_iter != remaining_preferences.end(); ++pref_name_iter) {
-    InitPrefAndAssociate(syncer::SyncData(), *pref_name_iter, &new_changes);
+  for (const std::string& remaining_preference : remaining_preferences) {
+    InitPrefAndAssociate(syncer::SyncData(), remaining_preference,
+                         &new_changes);
   }
 
   for (const std::string& legacy_pref_name : legacy_model_type_preferences_) {
@@ -367,9 +367,7 @@ syncer::SyncDataList PrefModelAssociator::GetAllSyncDataForTesting(
     syncer::ModelType type) const {
   DCHECK_EQ(type_, type);
   syncer::SyncDataList current_data;
-  for (auto iter = synced_preferences_.begin();
-       iter != synced_preferences_.end(); ++iter) {
-    std::string name = *iter;
+  for (const std::string& name : synced_preferences_) {
     const PrefService::Preference* pref = pref_service_->FindPreference(name);
     DCHECK(pref);
     if (!pref->IsUserControlled() || pref->IsDefaultValue())

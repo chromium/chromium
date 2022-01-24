@@ -28,6 +28,6 @@
         android:paddingEnd="16dp"
         android:singleLine="true"
         android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary.Baseline" />
 
 </LinearLayout>

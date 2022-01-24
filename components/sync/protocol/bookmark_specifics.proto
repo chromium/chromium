@@ -16,6 +16,8 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/unique_position.proto";
+
 // Corresponds to a single meta info key/value pair for a bookmark node.
 message MetaInfo {
   optional string key = 1;
@@ -50,4 +52,25 @@ message BookmarkSpecifics {
   // Contains full title as is. |legacy_canonicalized_title| is a prefix of
   // |full_title| with escaped symbols.
   optional string full_title = 11;
+  reserved 12;
+  reserved 13;
+  // Introduced in M94, represents the GUID (field |guid|) of the parent.
+  optional string parent_guid = 14;
+
+  // Introduced in M94, determines whether this entity represents a bookmark
+  // folder. This field is redundant to the similar field in SyncEntity. If this
+  // field in specifics is set, it takes precedence over the one in SyncEntity.
+  enum Type {
+    // |UNSPECIFIED| is relevant only for the case where the field is not set.
+    // M94 and above should not use this value.
+    UNSPECIFIED = 0;
+    URL = 1;
+    FOLDER = 2;
+  }
+  optional Type type = 15;
+
+  // Introduced in M94, determines ordering among siblings. This field is
+  // redundant to the similar field in SyncEntity. If this field in specifics is
+  // set, it takes precedence over the one in SyncEntity.
+  optional UniquePosition unique_position = 16;
 }

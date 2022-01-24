@@ -29,6 +29,10 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#endif
+
 const char kGuestProfileName[] = "Guest";
 const char kSystemProfileName[] = "System";
 
@@ -203,19 +207,19 @@ void TestingProfileManager::DeleteTestingProfile(const std::string& name) {
 }
 
 void TestingProfileManager::DeleteAllTestingProfiles() {
+  DCHECK(called_set_up_);
+
   ProfileAttributesStorage& storage =
       profile_manager_->GetProfileAttributesStorage();
-  for (auto it = testing_profiles_.begin(); it != testing_profiles_.end();
-       ++it) {
-    TestingProfile* profile = it->second;
+  for (auto& name_profile_pair : testing_profiles_) {
+    TestingProfile* profile = name_profile_pair.second;
     if (profile->IsGuestSession() || profile->IsSystemProfile()) {
-      // This Profile was skipped in ProfileManager::AddProfileToStorage().
+      // Guest and System profiles aren't added to Storage.
       continue;
     }
     storage.RemoveProfile(profile->GetPath());
   }
-  testing_profiles_.clear();
-  profile_observations_.RemoveAllObservations();
+  profile_manager_->profiles_info_.clear();
 }
 
 
@@ -247,6 +251,15 @@ void TestingProfileManager::UpdateLastUser(Profile* last_active) {
   profile_manager_->UpdateLastUser(last_active);
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void TestingProfileManager::SetAccountProfileMapper(
+    std::unique_ptr<AccountProfileMapper> mapper) {
+  DCHECK(!profile_manager_->account_profile_mapper_)
+      << "AccountProfileMapper must be set before the first usage";
+  profile_manager_->account_profile_mapper_ = std::move(mapper);
+}
+#endif
 
 const base::FilePath& TestingProfileManager::profiles_dir() {
   DCHECK(called_set_up_);

@@ -409,10 +409,15 @@ def _process_dom_module(js_file, html_file):
   # Ignore lines with an ignore annotation.
   IGNORE_LINE_REGEX = '\s*/\* #ignore \*/(\S|\s)*'
 
+  # Special syntax used for files using ES class syntax. (OOBE screens)
+  JS_IMPORTS_PLACEHOLDER_REGEX = '/* #js_imports_placeholder */';
+  HTML_TEMPLATE_PLACEHOLDER_REGEX = '/* #html_template_placeholder */';
+
   with io.open(js_file, encoding='utf-8') as f:
     lines = f.readlines()
 
   imports_added = False
+  html_content_added = False
   iife_found = False
   cr_define_found = False
   cr_define_end_line = -1
@@ -431,17 +436,33 @@ def _process_dom_module(js_file, html_file):
         line = '\n'.join(js_imports) + '\n\n'
         cr_define_found = True
         imports_added = True
+      elif JS_IMPORTS_PLACEHOLDER_REGEX in line:
+        line = line.replace(JS_IMPORTS_PLACEHOLDER_REGEX,
+                            '\n'.join(js_imports) + '\n')
+        imports_added = True
       elif 'Polymer({\n' in line:
         # Place the JS imports right before the opening "Polymer({" line.
         line = '\n'.join(js_imports) + '\n\n' + line
         imports_added = True
 
-    # Place the HTML content right after the opening "Polymer({" line.
-    # Note: There is currently an assumption that only one Polymer() declaration
-    # exists per file.
-    line = line.replace(
-        r'Polymer({',
-        'Polymer({\n  _template: html`%s`,' % html_template)
+    # Place the HTML content right after the opening "Polymer({" line if using
+    # the Polymer() factory method, or replace HTML_TEMPLATE_PLACEHOLDER_REGEX
+    # with the HTML content if the files is using ES6 class syntax.
+    # Note: There is currently an assumption that only one Polymer() declaration,
+    # or one class declaration exists per file.
+    error_message = """Multiple Polymer() declarations found, or mixed ES6 class
+                       syntax with Polymer() declarations in the same file"""
+    if 'Polymer({' in line:
+      assert not html_content_added, error_message
+      line = line.replace(
+          r'Polymer({',
+          'Polymer({\n  _template: html`%s`,' % html_template)
+      html_content_added = True
+    elif HTML_TEMPLATE_PLACEHOLDER_REGEX in line:
+      assert not html_content_added, error_message
+      line = line.replace(HTML_TEMPLATE_PLACEHOLDER_REGEX,
+        'static get template() {\n    return html`%s`;\n  }' % html_template)
+      html_content_added = True
 
     line = line.replace(EXPORT_LINE_REGEX, 'export')
 

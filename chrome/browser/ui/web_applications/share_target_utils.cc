@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_share_target/target_util.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "extensions/common/constants.h"
 #include "net/base/mime_util.h"
@@ -23,7 +24,10 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/arc/nearby_share/share_info_file_handler.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/web_applications/file_stream_data_pipe_getter.h"
 #endif
 
 namespace web_app {
@@ -46,26 +50,16 @@ std::vector<SharedField> ExtractSharedFields(
   if (!intent.share_text.has_value())
     return result;
 
-  std::string extracted_text = *intent.share_text;
-  GURL extracted_url;
-  size_t last_space = extracted_text.find_last_of(' ');
-  if (last_space == std::string::npos) {
-    extracted_url = GURL(extracted_text);
-    if (extracted_url.is_valid())
-      extracted_text.clear();
-  } else {
-    extracted_url = GURL(extracted_text.substr(last_space + 1));
-    if (extracted_url.is_valid())
-      extracted_text.erase(last_space);
-  }
+  apps_util::SharedText extracted_text =
+      apps_util::ExtractSharedText(*intent.share_text);
 
-  if (!share_target.params.text.empty() && !extracted_text.empty())
+  if (!share_target.params.text.empty() && !extracted_text.text.empty())
     result.push_back(
-        {.name = share_target.params.text, .value = extracted_text});
+        {.name = share_target.params.text, .value = extracted_text.text});
 
-  if (!share_target.params.url.empty() && extracted_url.is_valid())
+  if (!share_target.params.url.empty() && !extracted_text.url.is_empty())
     result.push_back(
-        {.name = share_target.params.url, .value = extracted_url.spec()});
+        {.name = share_target.params.url, .value = extracted_text.url.spec()});
 
   return result;
 }
@@ -78,48 +72,78 @@ NavigateParams NavigateParamsForShareTarget(
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  constexpr int kBufSize = 16 * 1024;
   std::vector<std::string> names;
   std::vector<std::string> values;
+  std::vector<bool> is_value_file_uris;
   std::vector<std::string> filenames;
   std::vector<std::string> types;
-  std::vector<bool> is_value_file_uris;
+  std::vector<mojo::PendingRemote<network::mojom::DataPipeGetter>>
+      data_pipe_getters;
 
   if (intent.mime_type.has_value() && intent.files.has_value()) {
-    const std::string& mime_type = intent.mime_type.value();
-    std::string name;
-    for (const apps::ShareTarget::Files& files : share_target.params.files) {
-      // Filter on MIME types. Chrome OS does not filter on file extensions.
-      // https://w3c.github.io/web-share-target/level-2/#dfn-accepted
-      if (base::ranges::any_of(
-              files.accept, [&mime_type](const auto& criteria) {
-                return !base::StartsWith(criteria, ".") &&
-                       net::MatchesMimeType(criteria, mime_type);
-              })) {
-        name = files.name;
-        break;
+    // Files for Web Share intents are created by the browser in
+    // a .WebShare directory, with generated file names and file urls - see
+    // //chrome/browser/webshare/chromeos/sharesheet_client.cc
+    for (const auto& file : intent.files.value()) {
+      const std::string& mime_type = file->mime_type.has_value()
+                                         ? file->mime_type.value()
+                                         : intent.mime_type.value();
+      std::string name;
+      for (const apps::ShareTarget::Files& files : share_target.params.files) {
+        // Filter on MIME types. Chrome OS does not filter on file extensions.
+        // https://w3c.github.io/web-share-target/level-2/#dfn-accepted
+        if (base::ranges::any_of(
+                files.accept, [&mime_type](const auto& criteria) {
+                  return !base::StartsWith(criteria, ".") &&
+                         net::MatchesMimeType(criteria, mime_type);
+                })) {
+          name = files.name;
+          break;
+        }
       }
-    }
-    if (!name.empty()) {
-      // Files for Web Share intents are created by the browser in
-      // a .WebShare directory, with generated file names and file urls - see
-      // //chrome/browser/webshare/chromeos/sharesheet_client.cc
-      for (const auto& file : intent.files.value()) {
-        storage::FileSystemContext* file_system_context =
-            file_manager::util::GetFileManagerFileSystemContext(
-                browser->profile());
-        storage::FileSystemURL file_system_url =
-            file_system_context->CrackURL(file->url);
+      if (name.empty())
+        continue;
+
+      storage::FileSystemContext* file_system_context =
+          file_manager::util::GetFileManagerFileSystemContext(
+              browser->profile());
+      storage::FileSystemURL file_system_url =
+          file_system_context->CrackURLInFirstPartyContext(file->url);
+
+      mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter;
+      if (!file_system_url.is_valid()) {
+        // TODO(crbug.com/1166982): We could be more intelligent here and
+        // decide which cracking method to use based on the scheme.
+        auto file_system_url_and_handle =
+            arc::ShareInfoFileHandler::GetFileSystemURL(browser->profile(),
+                                                        file->url);
+        file_system_url = file_system_url_and_handle.url;
         if (!file_system_url.is_valid()) {
-          VLOG(1) << "Received unexpected file URL: " << file->url.spec();
+          LOG(WARNING) << "Received unexpected file URL: " << file->url.spec();
           continue;
         }
 
-        names.push_back(name);
-        values.push_back(file_system_url.path().AsUTF8Unsafe());
-        filenames.push_back(file_system_url.path().BaseName().AsUTF8Unsafe());
-        types.push_back(mime_type);
-        is_value_file_uris.push_back(true);
+        FileStreamDataPipeGetter::Create(
+            /*receiver=*/data_pipe_getter.InitWithNewPipeAndPassReceiver(),
+            /*context=*/file_system_context,
+            /*url=*/file_system_url,
+            /*offset=*/0,
+            /*file_size=*/file->file_size,
+            /*buf_size=*/kBufSize);
       }
+
+      const std::string filename =
+          (file->file_name.has_value() && !file->file_name->empty())
+              ? (*file->file_name)
+              : file_system_url.path().BaseName().AsUTF8Unsafe();
+
+      names.push_back(name);
+      values.push_back(file_system_url.path().AsUTF8Unsafe());
+      is_value_file_uris.push_back(true);
+      filenames.push_back(filename);
+      types.push_back(mime_type);
+      data_pipe_getters.push_back(std::move(data_pipe_getter));
     }
   }
 
@@ -129,9 +153,11 @@ NavigateParams NavigateParamsForShareTarget(
     DCHECK(!shared_field.value.empty());
     names.push_back(shared_field.name);
     values.push_back(shared_field.value);
+    is_value_file_uris.push_back(false);
     filenames.push_back(std::string());
     types.push_back("text/plain");
-    is_value_file_uris.push_back(false);
+    data_pipe_getters.push_back(
+        mojo::PendingRemote<network::mojom::DataPipeGetter>());
   }
 
   if (share_target.enctype == apps::ShareTarget::Enctype::kMultipartFormData) {
@@ -140,7 +166,7 @@ NavigateParams NavigateParamsForShareTarget(
         "Content-Type: multipart/form-data; boundary=%s\r\n", boundary.c_str());
     nav_params.post_data = web_share_target::ComputeMultipartBody(
         names, values, is_value_file_uris, filenames, types,
-        /*data_pipe_getters=*/absl::nullopt, boundary);
+        std::move(data_pipe_getters), boundary);
   } else {
     const std::string serialization =
         web_share_target::ComputeUrlEncodedBody(names, values);

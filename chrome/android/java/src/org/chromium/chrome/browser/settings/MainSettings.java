@@ -22,7 +22,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.datareduction.settings.DataReductionPreferenceFragment;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
+import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -194,7 +196,7 @@ public class MainSettings extends PreferenceFragmentCompat
             TemplateUrlServiceFactory.get().load();
         }
 
-        new AdaptiveToolbarStatePredictor().recomputeUiState(uiState -> {
+        new AdaptiveToolbarStatePredictor(null).recomputeUiState(uiState -> {
             // We don't show the toolbar shortcut settings page if disabled from finch.
             // Note, we can still have the old data collection experiment running for which
             // |canShowUi| might be true. In that case, just hide the settings page.
@@ -239,7 +241,10 @@ public class MainSettings extends PreferenceFragmentCompat
         setOnOffSummary(homepagePref, HomepageManager.isHomepageEnabled());
 
         if (NightModeUtils.isNightModeSupported()) {
-            addPreferenceIfAbsent(PREF_UI_THEME);
+            addPreferenceIfAbsent(PREF_UI_THEME)
+                    .getExtras()
+                    .putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
+                            ThemeSettingsEntry.SETTINGS);
         } else {
             removePreferenceIfPresent(PREF_UI_THEME);
         }
@@ -347,7 +352,7 @@ public class MainSettings extends PreferenceFragmentCompat
                 mSyncPromoPreference.getState() == State.PERSONALIZED_SIGNIN_PROMO;
         findPreference(PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION)
                 .setVisible(!isShowingPersonalizedSigninPromo);
-        mSignInPreference.setVisible(!isShowingPersonalizedSigninPromo);
+        mSignInPreference.setIsShowingPersonalizedSigninPromo(isShowingPersonalizedSigninPromo);
     }
 
     // TemplateUrlService.LoadListener implementation.

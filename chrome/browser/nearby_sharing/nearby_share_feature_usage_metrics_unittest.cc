@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_usage_metrics.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "components/prefs/testing_pref_service.h"
@@ -45,34 +46,30 @@ TEST_F(NearbyShareFeatureUsageMetricsTest, Enabled_Unmanaged) {
   SetOnboarded(false);
   EXPECT_TRUE(feature_usage_metrics.IsEligible());
   EXPECT_FALSE(feature_usage_metrics.IsEnabled());
-  EXPECT_EQ(NearbyShareFeatureUsageMetrics::NearbyShareEnabledState::
-                kDisabledAndNotOnboarded,
-            feature_usage_metrics.GetNearbyShareEnabledState());
+  EXPECT_EQ(NearbyShareEnabledState::kDisabledAndNotOnboarded,
+            GetNearbyShareEnabledState(&pref_service_));
 
   SetUnmanagedEnabled(false);
   SetOnboarded(true);
   EXPECT_TRUE(feature_usage_metrics.IsEligible());
   EXPECT_FALSE(feature_usage_metrics.IsEnabled());
-  EXPECT_EQ(NearbyShareFeatureUsageMetrics::NearbyShareEnabledState::
-                kDisabledAndOnboarded,
-            feature_usage_metrics.GetNearbyShareEnabledState());
+  EXPECT_EQ(NearbyShareEnabledState::kDisabledAndOnboarded,
+            GetNearbyShareEnabledState(&pref_service_));
 
   // Note: This should never happen in practice.
   SetUnmanagedEnabled(true);
   SetOnboarded(false);
   EXPECT_TRUE(feature_usage_metrics.IsEligible());
   EXPECT_TRUE(feature_usage_metrics.IsEnabled());
-  EXPECT_EQ(NearbyShareFeatureUsageMetrics::NearbyShareEnabledState::
-                kEnabledAndNotOnboarded,
-            feature_usage_metrics.GetNearbyShareEnabledState());
+  EXPECT_EQ(NearbyShareEnabledState::kEnabledAndNotOnboarded,
+            GetNearbyShareEnabledState(&pref_service_));
 
   SetUnmanagedEnabled(true);
   SetOnboarded(true);
   EXPECT_TRUE(feature_usage_metrics.IsEligible());
   EXPECT_TRUE(feature_usage_metrics.IsEnabled());
-  EXPECT_EQ(NearbyShareFeatureUsageMetrics::NearbyShareEnabledState::
-                kEnabledAndOnboarded,
-            feature_usage_metrics.GetNearbyShareEnabledState());
+  EXPECT_EQ(NearbyShareEnabledState::kEnabledAndOnboarded,
+            GetNearbyShareEnabledState(&pref_service_));
 }
 
 TEST_F(NearbyShareFeatureUsageMetricsTest, Enabled_Managed) {
@@ -82,34 +79,30 @@ TEST_F(NearbyShareFeatureUsageMetricsTest, Enabled_Managed) {
   SetOnboarded(false);
   EXPECT_TRUE(feature_usage_metrics.IsEligible());
   EXPECT_FALSE(feature_usage_metrics.IsEnabled());
-  EXPECT_EQ(NearbyShareFeatureUsageMetrics::NearbyShareEnabledState::
-                kDisallowedByPolicy,
-            feature_usage_metrics.GetNearbyShareEnabledState());
+  EXPECT_EQ(NearbyShareEnabledState::kDisallowedByPolicy,
+            GetNearbyShareEnabledState(&pref_service_));
 
   SetManagedEnabled(false);
   SetOnboarded(true);
   EXPECT_TRUE(feature_usage_metrics.IsEligible());
   EXPECT_FALSE(feature_usage_metrics.IsEnabled());
-  EXPECT_EQ(NearbyShareFeatureUsageMetrics::NearbyShareEnabledState::
-                kDisallowedByPolicy,
-            feature_usage_metrics.GetNearbyShareEnabledState());
+  EXPECT_EQ(NearbyShareEnabledState::kDisallowedByPolicy,
+            GetNearbyShareEnabledState(&pref_service_));
 
   // Note: This should never happen in practice.
   SetManagedEnabled(true);
   SetOnboarded(false);
   EXPECT_TRUE(feature_usage_metrics.IsEligible());
   EXPECT_TRUE(feature_usage_metrics.IsEnabled());
-  EXPECT_EQ(NearbyShareFeatureUsageMetrics::NearbyShareEnabledState::
-                kEnabledAndNotOnboarded,
-            feature_usage_metrics.GetNearbyShareEnabledState());
+  EXPECT_EQ(NearbyShareEnabledState::kEnabledAndNotOnboarded,
+            GetNearbyShareEnabledState(&pref_service_));
 
   SetManagedEnabled(true);
   SetOnboarded(true);
   EXPECT_TRUE(feature_usage_metrics.IsEligible());
   EXPECT_TRUE(feature_usage_metrics.IsEnabled());
-  EXPECT_EQ(NearbyShareFeatureUsageMetrics::NearbyShareEnabledState::
-                kEnabledAndOnboarded,
-            feature_usage_metrics.GetNearbyShareEnabledState());
+  EXPECT_EQ(NearbyShareEnabledState::kEnabledAndOnboarded,
+            GetNearbyShareEnabledState(&pref_service_));
 }
 
 TEST_F(NearbyShareFeatureUsageMetricsTest, RecordUsage) {

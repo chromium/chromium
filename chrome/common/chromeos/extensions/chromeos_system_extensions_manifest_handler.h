@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handler.h"
 
 namespace chromeos {
@@ -25,7 +24,6 @@ class ChromeOSSystemExtensionHandler : public extensions::ManifestHandler {
   ~ChromeOSSystemExtensionHandler() override;
 
   bool Parse(extensions::Extension* extension, std::u16string* error) override;
-  bool AlwaysParseForType(extensions::Manifest::Type type) const override;
   base::span<const char* const> Keys() const override;
 };
 

@@ -11,8 +11,8 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/full_restore/features.h"
-#include "components/full_restore/full_restore_utils.h"
+#include "components/app_restore/features.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_types.h"
@@ -24,6 +24,10 @@ namespace ash {
 class MruWindowTrackerTest : public AshTestBase {
  public:
   MruWindowTrackerTest() = default;
+
+  MruWindowTrackerTest(const MruWindowTrackerTest&) = delete;
+  MruWindowTrackerTest& operator=(const MruWindowTrackerTest&) = delete;
+
   ~MruWindowTrackerTest() override = default;
 
   std::unique_ptr<aura::Window> CreateTestWindow() {
@@ -33,9 +37,6 @@ class MruWindowTrackerTest : public AshTestBase {
   MruWindowTracker* mru_window_tracker() {
     return Shell::Get()->mru_window_tracker();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MruWindowTrackerTest);
 };
 
 // Basic test that the activation order is tracked.
@@ -170,12 +171,12 @@ class MruWindowTrackerFullRestoreTest : public MruWindowTrackerTest {
   }
 
   // Simulates restoring a window using Full Restore by init'ing a window with
-  // the `full_restore::kActivationIndexKey`.
+  // the `app_restore::kActivationIndexKey`.
   std::unique_ptr<aura::Window> CreateTestFullRestoredWindow(
       int activation_index) {
     auto window = std::make_unique<aura::Window>(
         nullptr, aura::client::WINDOW_TYPE_NORMAL);
-    window->SetProperty(full_restore::kActivationIndexKey, activation_index);
+    window->SetProperty(app_restore::kActivationIndexKey, activation_index);
     window->Init(ui::LAYER_NOT_DRAWN);
     return window;
   }
@@ -196,7 +197,7 @@ class MruWindowTrackerFullRestoreTest : public MruWindowTrackerTest {
 TEST_F(MruWindowTrackerFullRestoreTest, RestoreMruOrder) {
   // Simulate restoring Full Restored windows out-of-order. Start with `w5`,
   // which has an activation index of 5. The lower
-  // `full_restore::kActivationIndexKey` is, the more recently it was used. Also
+  // `app_restore::kActivationIndexKey` is, the more recently it was used. Also
   // the most recently used window is at the end of
   // `MruWindowTracker::mru_windows_`.
   auto w5 = CreateTestFullRestoredWindow(/*activation_index=*/5);
@@ -232,10 +233,10 @@ TEST_F(MruWindowTrackerFullRestoreTest, RestoreMruOrder) {
 TEST_F(MruWindowTrackerFullRestoreTest, FullRestoredWindowsInMRUWindowList) {
   // Create an `aura::Window` using `CreateTestWindow()` so that the window is
   // parented to something. Then set its
-  // `full_restore::kLaunchedFromFullRestoreKey` to simulate it being Full
+  // `app_restore::kLaunchedFromFullRestoreKey` to simulate it being Full
   // Restore'd.
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  w1.get()->SetProperty(full_restore::kLaunchedFromFullRestoreKey, true);
+  w1->SetProperty(app_restore::kLaunchedFromFullRestoreKey, true);
 
   // Build the MRU window list. `w1` should be included despite not being
   // activatable.

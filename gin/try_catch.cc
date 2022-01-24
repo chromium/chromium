@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "gin/converter.h"
+#include "v8/include/v8-message.h"
 
 namespace {
 

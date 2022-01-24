@@ -7,7 +7,11 @@
 
 namespace autofill_assistant {
 
-FakeElementStore::FakeElementStore() : ElementStore(nullptr) {}
+FakeElementStore::FakeElementStore()
+    : ElementStore(nullptr), web_contents_(nullptr) {}
+
+FakeElementStore::FakeElementStore(content::WebContents* web_content)
+    : ElementStore(web_content), web_contents_(web_content) {}
 
 FakeElementStore::~FakeElementStore() = default;
 
@@ -20,6 +24,9 @@ ClientStatus FakeElementStore::GetElement(
   }
 
   out_element->dom_object = it->second;
+  if (web_contents_ != nullptr) {
+    out_element->container_frame_host = web_contents_->GetMainFrame();
+  }
   return OkClientStatus();
 }
 

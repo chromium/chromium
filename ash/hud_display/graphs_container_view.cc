@@ -22,8 +22,7 @@ namespace hud_display {
 namespace {
 
 // UI refresh interval.
-constexpr base::TimeDelta kGraphsDataRefreshInterval =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kGraphsDataRefreshInterval = base::Milliseconds(500);
 
 void GetDataSnapshotOnThreadPool(DataSource* data_source,
                                  DataSource::Snapshot* out_snapshot) {

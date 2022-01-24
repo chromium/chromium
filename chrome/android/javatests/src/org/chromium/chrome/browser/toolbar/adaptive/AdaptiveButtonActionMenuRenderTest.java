@@ -90,7 +90,7 @@ public class AdaptiveButtonActionMenuRenderTest {
             int popupWidth =
                     activity.getResources().getDimensionPixelSize(R.dimen.tab_switcher_menu_width);
             mView.setBackground(ApiCompatibilityUtils.getDrawable(
-                    activity.getResources(), R.drawable.popup_bg_tinted));
+                    activity.getResources(), R.drawable.menu_bg_tinted));
             activity.setContentView(mView, new LayoutParams(popupWidth, WRAP_CONTENT));
         });
     }

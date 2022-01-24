@@ -5,6 +5,7 @@
 blink_core_sources_timing = [
   "dom_window_performance.cc",
   "dom_window_performance.h",
+  "epoch_time_stamp.h",
   "event_counts.cc",
   "event_counts.h",
   "event_timing.cc",

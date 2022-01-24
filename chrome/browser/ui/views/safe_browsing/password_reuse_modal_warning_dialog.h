@@ -39,9 +39,7 @@ class PasswordReuseModalWarningDialog
   ~PasswordReuseModalWarningDialog() override;
 
   void CreateSavedPasswordReuseModalWarningDialog(
-      const std::u16string message_body,
-      std::vector<std::u16string> placeholders,
-      std::vector<size_t> placeholder_offsets);
+      const std::u16string message_body);
   void CreateGaiaPasswordReuseModalWarningDialog(
       views::Label* message_body_label);
 

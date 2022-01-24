@@ -467,7 +467,7 @@ TEST_P(WebMojoURLLoaderClientTest, DeferWithResponseBody) {
   EXPECT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&options, data_pipe_producer,
                                                  data_pipe_consumer));
   std::string msg1 = "hello";
-  uint32_t size = msg1.size();
+  uint32_t size = static_cast<uint32_t>(msg1.size());
   ASSERT_EQ(MOJO_RESULT_OK, data_pipe_producer->WriteData(
                                 msg1.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(msg1.size(), size);
@@ -518,7 +518,7 @@ TEST_P(WebMojoURLLoaderClientTest,
 
   // Write data to the response body pipe.
   std::string msg1 = "he";
-  uint32_t size = msg1.size();
+  uint32_t size = static_cast<uint32_t>(msg1.size());
   ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
                                 msg1.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(msg1.size(), size);
@@ -528,7 +528,7 @@ TEST_P(WebMojoURLLoaderClientTest,
   // Defer for back-forward cache.
   client_->Freeze(WebLoaderFreezeMode::kBufferIncoming);
   std::string msg2 = "ll";
-  size = msg2.size();
+  size = static_cast<uint32_t>(msg2.size());
   ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
                                 msg2.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(msg2.size(), size);
@@ -538,7 +538,7 @@ TEST_P(WebMojoURLLoaderClientTest,
   // Defer not for back-forward cache again.
   client_->Freeze(WebLoaderFreezeMode::kBufferIncoming);
   std::string msg3 = "o";
-  size = msg3.size();
+  size = static_cast<uint32_t>(msg3.size());
   ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
                                 msg3.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(msg3.size(), size);
@@ -554,7 +554,7 @@ TEST_P(WebMojoURLLoaderClientTest,
 
   // Write more data to the pipe while not deferred.
   std::string msg4 = "world";
-  size = msg4.size();
+  size = static_cast<uint32_t>(msg4.size());
   ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
                                 msg4.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(msg4.size(), size);
@@ -586,7 +586,7 @@ TEST_P(WebMojoURLLoaderClientTest,
 
   // Write data to the response body pipe, but don't close the connection yet.
   std::string msg1 = "hello";
-  uint32_t size = msg1.size();
+  uint32_t size = static_cast<uint32_t>(msg1.size());
   // We expect that the other end of the pipe to be ready to read the data
   // immediately.
   ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
@@ -607,7 +607,7 @@ TEST_P(WebMojoURLLoaderClientTest,
 
   // Write more data to the pipe while not deferred.
   std::string msg2 = "world";
-  size = msg2.size();
+  size = static_cast<uint32_t>(msg2.size());
   ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
                                 msg2.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
   EXPECT_EQ(msg2.size(), size);
@@ -640,7 +640,7 @@ TEST_P(WebMojoURLLoaderClientTest, DeferBodyWithoutOnComplete) {
 
   // Write data to the response body pipe, but don't close the connection yet.
   std::string msg1 = "hello";
-  uint32_t size = msg1.size();
+  uint32_t size = static_cast<uint32_t>(msg1.size());
   // We expect that the other end of the pipe to be ready to read the data
   // immediately.
   ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
@@ -719,7 +719,7 @@ TEST_P(WebMojoURLLoaderClientTest,
 
   // Calling GetRequestPeerContextBody to read data from the new response body
   // pipe will make BodyBuffer write the rest of the body to the pipe.
-  uint32_t bytes_read = 0;
+  size_t bytes_read = 0;
   while (bytes_read < bytes_written) {
     bytes_read = GetRequestPeerContextBody(context_).size();
     base::RunLoop().RunUntilIdle();

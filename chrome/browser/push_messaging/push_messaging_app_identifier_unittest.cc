@@ -23,7 +23,7 @@ void ExpectAppIdentifiersEqual(const PushMessagingAppIdentifier& a,
 }
 
 base::Time kExpirationTime =
-    base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSeconds(1));
+    base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(1));
 
 }  // namespace
 
@@ -54,7 +54,7 @@ class PushMessagingAppIdentifierTest : public testing::Test {
         GURL("https://www.example.com/"), 1, kExpirationTime);
     different_et_ = PushMessagingAppIdentifier::Generate(
         GURL("https://www.example.com/"), 1,
-        kExpirationTime + base::TimeDelta::FromSeconds(100));
+        kExpirationTime + base::Seconds(100));
   }
 
   Profile* profile() { return &profile_; }

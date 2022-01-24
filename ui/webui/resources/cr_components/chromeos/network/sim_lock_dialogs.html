@@ -15,13 +15,6 @@
 <dom-module id="sim-lock-dialogs">
   <template>
     <style>
-      .dialog-error {
-        color: red;
-        font-size: 125%;
-        font-weight: 500;
-        margin-bottom: 10px;
-      }
-
       #enter-pin-description {
         margin-bottom: 16px;
       }
@@ -33,7 +26,7 @@
       }
 
       :host([has-error-text_]) .pinEntrySubtext {
-        color: red;
+        color: var(--cros-text-color-alert);
       }
 
       #changePinOld {
@@ -51,14 +44,14 @@
       }
 
       #puk-warning-icon {
-        --iron-icon-fill-color: var(--google-red-600);
+        --iron-icon-fill-color: var(--cros-icon-color-alert);
         --iron-icon-height: 24px;
         --iron-icon-width: 24px;
         margin-inline-end: 4px;
       }
 
       :host([has-error-text_]) #puk-warning-container {
-        color: var(--google-red-600);
+        color: var(--cros-text-color-alert);
       }
     </style>
     <!-- Enter PIN dialog -->

@@ -7,7 +7,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,6 +95,9 @@ class MeasurementObserver {
         last_power_measurement_(AudioPowerMonitor::zero_power()),
         last_clipped_(false) {}
 
+  MeasurementObserver(const MeasurementObserver&) = delete;
+  MeasurementObserver& operator=(const MeasurementObserver&) = delete;
+
   int measurement_count() const { return measurement_count_; }
 
   float last_power_measurement() const { return last_power_measurement_; }
@@ -137,8 +139,6 @@ class MeasurementObserver {
   bool measurements_should_increase_;
   float last_power_measurement_;
   bool last_clipped_;
-
-  DISALLOW_COPY_AND_ASSIGN(MeasurementObserver);
 };
 
 }  // namespace
@@ -146,9 +146,10 @@ class MeasurementObserver {
 class AudioPowerMonitorTest : public ::testing::TestWithParam<TestScenario> {
  public:
   AudioPowerMonitorTest()
-      : power_monitor_(kSampleRate,
-                       base::TimeDelta::FromMilliseconds(kTimeConstantMillis)) {
-  }
+      : power_monitor_(kSampleRate, base::Milliseconds(kTimeConstantMillis)) {}
+
+  AudioPowerMonitorTest(const AudioPowerMonitorTest&) = delete;
+  AudioPowerMonitorTest& operator=(const AudioPowerMonitorTest&) = delete;
 
   void FeedAndCheckExpectedPowerIsMeasured(const AudioBus& bus,
                                            float power,
@@ -173,8 +174,6 @@ class AudioPowerMonitorTest : public ::testing::TestWithParam<TestScenario> {
 
  private:
   AudioPowerMonitor power_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPowerMonitorTest);
 };
 
 TEST_P(AudioPowerMonitorTest, MeasuresPowerOfSignal) {

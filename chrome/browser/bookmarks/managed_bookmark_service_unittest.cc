@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -65,6 +64,11 @@ TEST(ManagedBookmarkServiceNoPolicyTest, EmptyManagedNode) {
 class ManagedBookmarkServiceTest : public testing::Test {
  public:
   ManagedBookmarkServiceTest() : managed_(nullptr), model_(nullptr) {}
+
+  ManagedBookmarkServiceTest(const ManagedBookmarkServiceTest&) = delete;
+  ManagedBookmarkServiceTest& operator=(const ManagedBookmarkServiceTest&) =
+      delete;
+
   ~ManagedBookmarkServiceTest() override {}
 
   void SetUp() override {
@@ -114,7 +118,8 @@ class ManagedBookmarkServiceTest : public testing::Test {
       std::unique_ptr<base::ListValue> children) {
     auto dict = std::make_unique<base::DictionaryValue>();
     dict->SetString("name", title);
-    dict->Set("children", std::move(children));
+    dict->SetKey("children",
+                 base::Value::FromUniquePtrValue(std::move(children)));
     return dict;
   }
 
@@ -148,15 +153,18 @@ class ManagedBookmarkServiceTest : public testing::Test {
     if (node->is_folder()) {
       const base::ListValue* children = nullptr;
       if (!dict->GetList("children", &children) ||
-          node->children().size() != children->GetSize()) {
+          node->children().size() != children->GetList().size()) {
         return false;
       }
       size_t i = 0;
       return std::all_of(node->children().cbegin(), node->children().cend(),
                          [children, &i](const auto& child_node) {
-                           const base::DictionaryValue* child = nullptr;
-                           return children->GetDictionary(i++, &child) &&
-                                  NodeMatchesValue(child_node.get(), child);
+                           const base::Value& child = children->GetList()[i++];
+                           if (!child.is_dict())
+                             return false;
+                           return NodeMatchesValue(
+                               child_node.get(),
+                               &base::Value::AsDictionaryValue(child));
                          });
     }
     if (!node->is_url())
@@ -171,8 +179,6 @@ class ManagedBookmarkServiceTest : public testing::Test {
   bookmarks::MockBookmarkModelObserver observer_;
   ManagedBookmarkService* managed_;
   BookmarkModel* model_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedBookmarkServiceTest);
 };
 
 TEST_F(ManagedBookmarkServiceTest, LoadInitial) {
@@ -318,16 +324,16 @@ TEST_F(ManagedBookmarkServiceTest, HasDescendantsOfManagedNode) {
   EXPECT_TRUE(bookmarks::HasDescendantsOf(nodes, managed_->managed_node()));
 }
 
-TEST_F(ManagedBookmarkServiceTest, GetManagedBookmarksDomain) {
+TEST_F(ManagedBookmarkServiceTest, GetManagedBookmarksManager) {
   // Not managed profile
   profile_->set_profile_name("user@google.com");
   EXPECT_TRUE(
-      ManagedBookmarkServiceFactory::GetManagedBookmarksDomain(profile_.get())
+      ManagedBookmarkServiceFactory::GetManagedBookmarksManager(profile_.get())
           .empty());
 
   // Managed profile
   profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  EXPECT_EQ(
-      "google.com",
-      ManagedBookmarkServiceFactory::GetManagedBookmarksDomain(profile_.get()));
+  EXPECT_EQ("google.com",
+            ManagedBookmarkServiceFactory::GetManagedBookmarksManager(
+                profile_.get()));
 }

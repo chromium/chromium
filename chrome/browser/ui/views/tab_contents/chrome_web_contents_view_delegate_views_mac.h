@@ -15,6 +15,12 @@ class ChromeWebContentsViewDelegateViewsMac
  public:
   explicit ChromeWebContentsViewDelegateViewsMac(
       content::WebContents* web_contents);
+
+  ChromeWebContentsViewDelegateViewsMac(
+      const ChromeWebContentsViewDelegateViewsMac&) = delete;
+  ChromeWebContentsViewDelegateViewsMac& operator=(
+      const ChromeWebContentsViewDelegateViewsMac&) = delete;
+
   ~ChromeWebContentsViewDelegateViewsMac() override;
 
   // ChromeWebContentsViewDelegateMac:
@@ -30,8 +36,6 @@ class ChromeWebContentsViewDelegateViewsMac
   content::WebContents* web_contents_;
 
   ChromeWebContentsViewFocusHelper* GetFocusHelper() const;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebContentsViewDelegateViewsMac);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_CONTENTS_CHROME_WEB_CONTENTS_VIEW_DELEGATE_VIEWS_MAC_H_

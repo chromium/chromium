@@ -35,8 +35,7 @@ class SaveCardInfobarModalOverlayRequestCallbackInstallerTest
     : public PlatformTest {
  public:
   SaveCardInfobarModalOverlayRequestCallbackInstallerTest()
-      : prefs_(autofill::test::PrefServiceForTesting()),
-        card_(base::GenerateGUID(), "https://www.example.com/"),
+      : card_(base::GenerateGUID(), "https://www.example.com/"),
         installer_(&mock_handler_),
         delegate_factory_() {
     // Create the infobar and add it to the WebState's manager.
@@ -45,8 +44,8 @@ class SaveCardInfobarModalOverlayRequestCallbackInstallerTest
     InfoBarManagerImpl::CreateForWebState(&web_state_);
     std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate =
         delegate_factory_
-            .CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
-                false, prefs_.get(), card_);
+            .CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(false,
+                                                                    card_);
     delegate_ = delegate.get();
     std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeTranslate, std::move(delegate));
@@ -71,7 +70,6 @@ class SaveCardInfobarModalOverlayRequestCallbackInstallerTest
   }
 
  protected:
-  std::unique_ptr<PrefService> prefs_;
   autofill::CreditCard card_;
   web::FakeWebState web_state_;
   InfoBarIOS* infobar_ = nullptr;

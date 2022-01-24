@@ -6,7 +6,6 @@
 #define COMPONENTS_JAVASCRIPT_DIALOGS_VIEWS_LAYER_DIMMER_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 
 namespace ui {
@@ -18,6 +17,10 @@ namespace javascript_dialogs {
 class LayerDimmer : public aura::WindowObserver {
  public:
   explicit LayerDimmer(aura::Window* parent, aura::Window* dialog);
+
+  LayerDimmer(const LayerDimmer&) = delete;
+  LayerDimmer& operator=(const LayerDimmer&) = delete;
+
   ~LayerDimmer() override;
 
   void Show();
@@ -42,8 +45,6 @@ class LayerDimmer : public aura::WindowObserver {
 
   aura::Window* parent_;
   aura::Window* dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerDimmer);
 };
 
 }  // namespace javascript_dialogs

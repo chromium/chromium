@@ -9,7 +9,6 @@
 #include <winuser.h>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura_extra/aura_extra_export.h"
@@ -20,12 +19,14 @@ namespace aura_extra {
 class WindowBoundsDelegate {
  public:
   WindowBoundsDelegate() {}
+
+  WindowBoundsDelegate(const WindowBoundsDelegate&) = delete;
+  WindowBoundsDelegate& operator=(const WindowBoundsDelegate&) = delete;
+
   virtual ~WindowBoundsDelegate() {}
 
   // Gets the bounds in pixels for |window|.
   virtual gfx::Rect GetBoundsInPixels(aura::WindowTreeHost* window) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowBoundsDelegate);
 };
 
 // Stores internal state during occlusion computation by
@@ -33,6 +34,10 @@ class WindowBoundsDelegate {
 class AURA_EXTRA_EXPORT WindowEvaluator {
  public:
   WindowEvaluator() {}
+
+  WindowEvaluator(const WindowEvaluator&) = delete;
+  WindowEvaluator& operator=(const WindowEvaluator&) = delete;
+
   // Called by NativeWindowIterator::Iterate and processes the metadata for a
   // single window. It is assumed that this is called in reverse z-order
   // (topmost window first, bottom window last). |is_relevant| describes if the
@@ -44,8 +49,6 @@ class AURA_EXTRA_EXPORT WindowEvaluator {
   virtual bool EvaluateWindow(bool is_relevant,
                               const gfx::Rect& window_rect_in_pixels,
                               HWND hwnd) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowEvaluator);
 };
 
 // Interface to enumerate through all the native windows. Overriden in tests to
@@ -66,6 +69,10 @@ class AURA_EXTRA_EXPORT WindowsDesktopWindowIterator
  public:
   WindowsDesktopWindowIterator();
 
+  WindowsDesktopWindowIterator(const WindowsDesktopWindowIterator&) = delete;
+  WindowsDesktopWindowIterator& operator=(const WindowsDesktopWindowIterator&) =
+      delete;
+
   // NativeWindowIterator:
   void Iterate(WindowEvaluator* evaluator) override;
 
@@ -77,8 +84,6 @@ class AURA_EXTRA_EXPORT WindowsDesktopWindowIterator
   static BOOL CALLBACK EnumWindowsOcclusionCallback(HWND hwnd, LPARAM lParam);
 
   WindowEvaluator* evaluator_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowsDesktopWindowIterator);
 };
 
 // Returns true if we are interested in |hwnd| for purposes of occlusion

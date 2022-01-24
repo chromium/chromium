@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
@@ -44,6 +43,10 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
       scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  SkiaOutputDeviceGL(const SkiaOutputDeviceGL&) = delete;
+  SkiaOutputDeviceGL& operator=(const SkiaOutputDeviceGL&) = delete;
+
   ~SkiaOutputDeviceGL() override;
 
   // SkiaOutputDevice implementation:
@@ -84,22 +87,12 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
                                 OutputSurfaceFrame frame,
                                 gfx::SwapCompletionResult result);
 
-  using ScopedOverlayAccess =
-      gpu::SharedImageRepresentationOverlay::ScopedReadAccess;
-
-  scoped_refptr<gl::GLImage> GetGLImageForMailbox(
-      const gpu::Mailbox& mailbox,
-      std::unique_ptr<ScopedOverlayAccess>* access);
-
-  static void EndOverlayAccess(
-      std::unique_ptr<ScopedOverlayAccess> overlay_access);
+  scoped_refptr<gl::GLImage> GetGLImageForMailbox(const gpu::Mailbox& mailbox);
 
   // Mailboxes of overlays scheduled in the current frame.
   base::flat_set<gpu::Mailbox> scheduled_overlay_mailboxes_;
 
   // Holds references to overlay textures so they aren't destroyed while in use.
-  // Must be destroyed after |gl_surface_| since the surface can hold scoped
-  // access to the overlay representations kept here.
   base::flat_map<gpu::Mailbox, OverlayData> overlays_;
 
   gpu::MailboxManager* const mailbox_manager_;
@@ -116,8 +109,6 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
   uint64_t backbuffer_estimated_size_ = 0;
 
   base::WeakPtrFactory<SkiaOutputDeviceGL> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaOutputDeviceGL);
 };
 
 }  // namespace viz

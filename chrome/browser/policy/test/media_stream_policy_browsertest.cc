@@ -30,7 +30,7 @@ class MediaStreamDevicesControllerBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   MediaStreamDevicesControllerBrowserTest()
-      : request_url_allowed_via_whitelist_(false) {
+      : request_url_allowed_via_allowlist_(false) {
     policy_value_ = GetParam();
   }
   virtual ~MediaStreamDevicesControllerBrowserTest() {}
@@ -40,8 +40,8 @@ class MediaStreamDevicesControllerBrowserTest
 
     ASSERT_TRUE(embedded_test_server()->Start());
     request_url_ = embedded_test_server()->GetURL("/simple.html");
-    request_pattern_ = request_url_.GetOrigin().spec();
-    ui_test_utils::NavigateToURL(browser(), request_url_);
+    request_pattern_ = request_url_.DeprecatedGetOriginAsURL().spec();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), request_url_));
 
     // Testing both the new (PermissionManager) and old code-paths is not simple
     // since we are already using WithParamInterface. We only test whichever one
@@ -68,7 +68,8 @@ class MediaStreamDevicesControllerBrowserTest
     int render_process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
     int render_frame_id = web_contents->GetMainFrame()->GetRoutingID();
     return content::MediaStreamRequest(
-        render_process_id, render_frame_id, 0, request_url_.GetOrigin(), false,
+        render_process_id, render_frame_id, 0,
+        request_url_.DeprecatedGetOriginAsURL(), false,
         blink::MEDIA_DEVICE_ACCESS, std::string(), std::string(),
         audio_request_type, video_request_type, /*disable_local_echo=*/false,
         /*request_pan_tilt_zoom_permission=*/false);
@@ -76,31 +77,31 @@ class MediaStreamDevicesControllerBrowserTest
 
   // Configure a given policy map. The |policy_name| is the name of either the
   // audio or video capture allow policy and must never be nullptr.
-  // |whitelist_policy| and |allow_rule| are optional.  If nullptr, no whitelist
-  // policy is set.  If non-nullptr, the whitelist policy is set to contain
+  // |allowlist_policy| and |allow_rule| are optional.  If nullptr, no allowlist
+  // policy is set.  If non-nullptr, the allowlist policy is set to contain
   // either the |allow_rule| (if non-nullptr) or an "allow all" wildcard.
   void ConfigurePolicyMap(PolicyMap* policies,
                           const char* policy_name,
-                          const char* whitelist_policy,
+                          const char* allowlist_policy,
                           const char* allow_rule) {
     policies->Set(policy_name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                   POLICY_SOURCE_CLOUD, base::Value(policy_value_), nullptr);
 
-    if (whitelist_policy) {
-      // Add an entry to the whitelist that allows the specified URL regardless
+    if (allowlist_policy) {
+      // Add an entry to the allowlist that allows the specified URL regardless
       // of the setting of kAudioCapturedAllowed.
       base::Value list(base::Value::Type::LIST);
       if (allow_rule) {
         list.Append(allow_rule);
-        request_url_allowed_via_whitelist_ = true;
+        request_url_allowed_via_allowlist_ = true;
       } else {
         list.Append(ContentSettingsPattern::Wildcard().ToString());
-        // We should ignore all wildcard entries in the whitelist, so even
+        // We should ignore all wildcard entries in the allowlist, so even
         // though we've added an entry, it should be ignored and our expectation
-        // is that the request has not been allowed via the whitelist.
-        request_url_allowed_via_whitelist_ = false;
+        // is that the request has not been allowed via the allowlist.
+        request_url_allowed_via_allowlist_ = false;
       }
-      policies->Set(whitelist_policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      policies->Set(allowlist_policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                     POLICY_SOURCE_CLOUD, std::move(list), nullptr);
     }
   }
@@ -110,7 +111,7 @@ class MediaStreamDevicesControllerBrowserTest
               bool blocked_by_permissions_policy,
               ContentSetting audio_setting,
               ContentSetting video_setting) {
-    if (policy_value_ || request_url_allowed_via_whitelist_) {
+    if (policy_value_ || request_url_allowed_via_allowlist_) {
       ASSERT_EQ(1U, devices.size());
       ASSERT_EQ("fake_dev", devices[0].id);
     } else {
@@ -146,7 +147,7 @@ class MediaStreamDevicesControllerBrowserTest
 
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
   bool policy_value_;
-  bool request_url_allowed_via_whitelist_;
+  bool request_url_allowed_via_allowlist_;
   GURL request_url_;
   std::string request_pattern_;
   base::RepeatingClosure quit_closure_;
@@ -188,8 +189,8 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerBrowserTest,
 
   const char* allow_pattern[] = {
       request_pattern_.c_str(),
-      // This will set an allow-all policy whitelist.  Since we do not allow
-      // setting an allow-all entry in the whitelist, this entry should be
+      // This will set an allow-all policy allowlist.  Since we do not allow
+      // setting an allow-all entry in the allowlist, this entry should be
       // ignored and therefore the request should be denied.
       nullptr,
   };
@@ -252,8 +253,8 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerBrowserTest,
 
   const char* allow_pattern[] = {
       request_pattern_.c_str(),
-      // This will set an allow-all policy whitelist.  Since we do not allow
-      // setting an allow-all entry in the whitelist, this entry should be
+      // This will set an allow-all policy allowlist.  Since we do not allow
+      // setting an allow-all entry in the allowlist, this entry should be
       // ignored and therefore the request should be denied.
       nullptr,
   };

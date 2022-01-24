@@ -11,8 +11,9 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -21,6 +22,8 @@
 #include "chromeos/services/secure_channel/ble_weave_packet_generator.h"
 #include "chromeos/services/secure_channel/ble_weave_packet_receiver.h"
 #include "chromeos/services/secure_channel/connection.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/remote_attribute.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -99,6 +102,11 @@ class BluetoothLowEnergyWeaveClientConnection
       const std::string& device_address,
       bool should_set_low_connection_latency);
 
+  BluetoothLowEnergyWeaveClientConnection(
+      const BluetoothLowEnergyWeaveClientConnection&) = delete;
+  BluetoothLowEnergyWeaveClientConnection& operator=(
+      const BluetoothLowEnergyWeaveClientConnection&) = delete;
+
   ~BluetoothLowEnergyWeaveClientConnection() override;
 
   // Connection:
@@ -150,6 +158,11 @@ class BluetoothLowEnergyWeaveClientConnection
   // Connection:
   void SendMessageImpl(std::unique_ptr<WireMessage> message) override;
   void OnDidSendMessage(const WireMessage& message, bool success) override;
+  void RegisterPayloadFileImpl(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) override;
 
   // device::BluetoothAdapter::Observer:
   void DeviceConnectedStateChanged(device::BluetoothAdapter* adapter,
@@ -265,11 +278,11 @@ class BluetoothLowEnergyWeaveClientConnection
   FRIEND_TEST_ALL_PREFIXES(
       SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
       Timeout_SendingMessage);
-  enum WriteRequestType {
-    REGULAR,
-    MESSAGE_COMPLETE,
-    CONNECTION_REQUEST,
-    CONNECTION_CLOSE
+  enum class WriteRequestType {
+    kRegular,
+    kMessageComplete,
+    kConnectionRequest,
+    kConnectionClose
   };
 
   // GATT_CONNECTION_RESULT_UNKNOWN indicates that the Bluetooth platform
@@ -437,8 +450,6 @@ class BluetoothLowEnergyWeaveClientConnection
 
   base::WeakPtrFactory<BluetoothLowEnergyWeaveClientConnection>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyWeaveClientConnection);
 };
 
 }  // namespace weave

@@ -56,7 +56,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * Tests {@link ShareSheetCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
+@Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION,
+        ChromeFeatureList.SHARING_HUB_LINK_TOGGLE})
 public final class ShareSheetCoordinatorTest {
     private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL;
 
@@ -105,7 +106,7 @@ public final class ShareSheetCoordinatorTest {
                 new ArrayList<>(Arrays.asList(testModel1, testModel2));
         when(mWindow.getActivity()).thenReturn(new WeakReference<>(mActivity));
         when(mPropertyModelBuilder.selectThirdPartyApps(
-                     any(), anySet(), any(), anyBoolean(), anyLong(), anyInt()))
+                     any(), anySet(), any(), anyBoolean(), anyLong(), anyInt(), any()))
                 .thenReturn(thirdPartyPropertyModels);
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(anyString()))
                 .thenReturn(JUnitTestGURLs.getGURL(MOCK_URL));

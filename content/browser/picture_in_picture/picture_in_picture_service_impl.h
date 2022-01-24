@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SERVICE_IMPL_H_
 
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,10 +24,9 @@ class PictureInPictureWindowControllerImpl;
 // killed given that the PictureInPictureWindowControllerImpl is
 // WebContents-bound instead of RenderFrameHost.
 // PictureInPictureServiceImpl owns itself. It self-destruct as needed, see the
-// DocumentServiceBase's documentation for more information.
+// DocumentService's documentation for more information.
 class CONTENT_EXPORT PictureInPictureServiceImpl final
-    : public content::DocumentServiceBase<
-          blink::mojom::PictureInPictureService> {
+    : public content::DocumentService<blink::mojom::PictureInPictureService> {
  public:
   static void Create(
       RenderFrameHost*,
@@ -36,6 +35,10 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
   static PictureInPictureServiceImpl* CreateForTesting(
       RenderFrameHost*,
       mojo::PendingReceiver<blink::mojom::PictureInPictureService>);
+
+  PictureInPictureServiceImpl(const PictureInPictureServiceImpl&) = delete;
+  PictureInPictureServiceImpl& operator=(const PictureInPictureServiceImpl&) =
+      delete;
 
   // PictureInPictureService implementation.
   void StartSession(
@@ -56,8 +59,6 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
   ~PictureInPictureServiceImpl() override;
 
   PictureInPictureWindowControllerImpl& GetController();
-
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureServiceImpl);
 };
 
 }  // namespace content

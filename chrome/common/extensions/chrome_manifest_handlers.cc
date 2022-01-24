@@ -15,10 +15,7 @@
 #include "chrome/common/extensions/api/system_indicator/system_indicator_handler.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
-#include "chrome/common/extensions/manifest_handlers/app_display_mode_info.h"
-#include "chrome/common/extensions/manifest_handlers/app_icon_color_info.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "chrome/common/extensions/manifest_handlers/app_theme_color_info.h"
 #include "chrome/common/extensions/manifest_handlers/linked_app_icons.h"
 #include "chrome/common/extensions/manifest_handlers/minimum_chrome_version_checker.h"
 #include "chrome/common/extensions/manifest_handlers/natively_connectable_handler.h"
@@ -43,9 +40,6 @@ void RegisterChromeManifestHandlers() {
   DCHECK(!ManifestHandler::IsRegistrationFinalized());
 
   registry->RegisterHandler(std::make_unique<AboutPageHandler>());
-  registry->RegisterHandler(std::make_unique<AppDisplayModeHandler>());
-  registry->RegisterHandler(std::make_unique<AppIconColorHandler>());
-  registry->RegisterHandler(std::make_unique<AppThemeColorHandler>());
   registry->RegisterHandler(std::make_unique<AppIsolationHandler>());
   registry->RegisterHandler(std::make_unique<AppLaunchManifestHandler>());
   registry->RegisterHandler(std::make_unique<CommandsHandler>());

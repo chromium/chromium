@@ -75,6 +75,9 @@ class POLICY_EXPORT PolicyConverter {
       JNIEnv* env,
       const base::android::JavaRef<jobjectArray>& array);
 
+  // Exposes `SetPolicyValue` for testing purposes.
+  void SetPolicyValueForTesting(const std::string& key, base::Value raw_value);
+
  private:
   const Schema* const policy_schema_;
 

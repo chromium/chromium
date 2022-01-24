@@ -40,7 +40,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/install_warning.h"
-#include "google_apis/drive/test_util.h"
+#include "google_apis/common/test_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 
 using ::testing::_;

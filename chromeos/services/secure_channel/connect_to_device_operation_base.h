@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_BASE_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/services/secure_channel/connect_to_device_operation.h"
@@ -28,6 +27,11 @@ namespace secure_channel {
 template <typename FailureDetailType>
 class ConnectToDeviceOperationBase
     : public ConnectToDeviceOperation<FailureDetailType> {
+ public:
+  ConnectToDeviceOperationBase(const ConnectToDeviceOperationBase&) = delete;
+  ConnectToDeviceOperationBase& operator=(const ConnectToDeviceOperationBase&) =
+      delete;
+
  protected:
   ConnectToDeviceOperationBase(
       typename ConnectToDeviceOperation<
@@ -108,8 +112,6 @@ class ConnectToDeviceOperationBase
   scoped_refptr<base::TaskRunner> task_runner_;
   absl::optional<ConnectionPriority> pending_connection_attempt_priority_;
   base::WeakPtrFactory<ConnectToDeviceOperationBase> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectToDeviceOperationBase);
 };
 
 }  // namespace secure_channel

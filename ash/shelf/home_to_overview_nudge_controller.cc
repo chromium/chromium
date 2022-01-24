@@ -26,29 +26,27 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ash {
 
 namespace {
 
 // The amount of time after home shelf is shown before showing the nudge.
-constexpr base::TimeDelta kShowDelay = base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kShowDelay = base::Seconds(2);
 
 // The duration of nudge opacity animations.
-constexpr base::TimeDelta kNudgeFadeDuration =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kNudgeFadeDuration = base::Milliseconds(300);
 
 // The duration of the nudge opacity and transform animations when the nudge
 // gets hidden on user tap.
-constexpr base::TimeDelta kNudgeHideOnTapDuration =
-    base::TimeDelta::FromMilliseconds(150);
+constexpr base::TimeDelta kNudgeHideOnTapDuration = base::Milliseconds(150);
 
 // The duration of a single component of the nudge position animation - the
 // nudge is transformed vertically up and down for a preset number of
 // iterations.
 constexpr base::TimeDelta kNudgeTransformComponentDuration =
-    base::TimeDelta::FromMilliseconds(600);
+    base::Milliseconds(600);
 
 // The baseline vertical offset from default kShown state bounds added to
 // hotseat position when the nudge is shown - this is the offset that the

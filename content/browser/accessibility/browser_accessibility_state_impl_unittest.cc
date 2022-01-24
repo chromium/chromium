@@ -26,7 +26,7 @@ class BrowserAccessibilityStateImplTest : public ::testing::Test {
         features::kAutoDisableAccessibility);
     ui::SetEventTickClockForTesting(&clock_);
     // Set the initial time to something non-zero.
-    clock_.Advance(base::TimeDelta::FromSeconds(100));
+    clock_.Advance(base::Seconds(100));
     state_ = BrowserAccessibilityStateImpl::GetInstance();
   }
 
@@ -51,7 +51,7 @@ TEST_F(BrowserAccessibilityStateImplTest,
   // Don't simulate any accessibility APIs in that time.
   state_->OnUserInputEvent();
   state_->OnUserInputEvent();
-  clock_.Advance(base::TimeDelta::FromSeconds(31));
+  clock_.Advance(base::Seconds(31));
   state_->OnUserInputEvent();
 
   // Accessibility should now be disabled.
@@ -64,7 +64,7 @@ TEST_F(BrowserAccessibilityStateImplTest,
   // A histogram should record that accessibility was enabled for
   // 31 seconds.
   histograms.ExpectUniqueTimeSample("Accessibility.AutoDisabled.EnabledTime",
-                                    base::TimeDelta::FromSeconds(31), 1);
+                                    base::Seconds(31), 1);
 }
 
 TEST_F(BrowserAccessibilityStateImplTest,
@@ -80,7 +80,7 @@ TEST_F(BrowserAccessibilityStateImplTest,
   // but simulate accessibility APIs in that time.
   state_->OnUserInputEvent();
   state_->OnUserInputEvent();
-  clock_.Advance(base::TimeDelta::FromSeconds(31));
+  clock_.Advance(base::Seconds(31));
   state_->OnAccessibilityApiUsage();
   state_->OnUserInputEvent();
 
@@ -91,7 +91,7 @@ TEST_F(BrowserAccessibilityStateImplTest,
   // user input event, before the delay.
   state_->OnUserInputEvent();
   state_->OnAccessibilityApiUsage();
-  clock_.Advance(base::TimeDelta::FromSeconds(31));
+  clock_.Advance(base::Seconds(31));
   state_->OnUserInputEvent();
   state_->OnUserInputEvent();
 
@@ -100,7 +100,7 @@ TEST_F(BrowserAccessibilityStateImplTest,
 
   // Advance another 31 seconds and simulate another user input event;
   // now accessibility should be disabled.
-  clock_.Advance(base::TimeDelta::FromSeconds(31));
+  clock_.Advance(base::Seconds(31));
   state_->OnUserInputEvent();
   EXPECT_FALSE(state_->IsAccessibleBrowser());
 }
@@ -118,7 +118,7 @@ TEST_F(BrowserAccessibilityStateImplTest,
   // but add a new accessibility mode flag.
   state_->OnUserInputEvent();
   state_->OnUserInputEvent();
-  clock_.Advance(base::TimeDelta::FromSeconds(31));
+  clock_.Advance(base::Seconds(31));
   state_->AddAccessibilityModeFlags(ui::kAXModeComplete);
   state_->OnUserInputEvent();
 

@@ -22,6 +22,7 @@
     app:srcCompat="@drawable/shared_clipboard_zero_state"/>
 
   <TextView
+    android:id="@+id/title"
     android:layout_width="match_parent"
     android:layout_height="@dimen/min_touch_target_size"
     android:gravity="center"
@@ -33,7 +34,7 @@
     android:text="@string/sharing_no_devices_available_title"/>
 
   <TextView
-    android:id='@+id/enable_sync_text_field'
+    android:id="@+id/instructions_to_enable"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"

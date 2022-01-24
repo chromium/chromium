@@ -9,20 +9,19 @@
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
+#include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 
 // Up to 10 minutes, with 100 buckets.
-#define PAGE_LOAD_HISTOGRAM(name, sample)                           \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample,                          \
-                             base::TimeDelta::FromMilliseconds(10), \
-                             base::TimeDelta::FromMinutes(10), 100)
+#define PAGE_LOAD_HISTOGRAM(name, sample)                          \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
+                             base::Minutes(10), 100)
 
 // Up to 1 hour, with 100 buckets.
-#define PAGE_LOAD_LONG_HISTOGRAM(name, sample)                      \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample,                          \
-                             base::TimeDelta::FromMilliseconds(10), \
-                             base::TimeDelta::FromHours(1), 100)
+#define PAGE_LOAD_LONG_HISTOGRAM(name, sample)                     \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
+                             base::Hours(1), 100)
 
 // Records |bytes| to |histogram_name| in kilobytes (i.e., bytes / 1024).
 #define PAGE_BYTES_HISTOGRAM(histogram_name, bytes) \
@@ -32,6 +31,12 @@
 #define PAGE_RESOURCE_COUNT_HISTOGRAM UMA_HISTOGRAM_COUNTS_10000
 
 namespace page_load_metrics {
+
+class PageLoadMetricsObserverDelegate;
+
+namespace mojom {
+class PageLoadTiming;
+}
 
 // Reasons a page load can be aborted.
 enum PageAbortReason {
@@ -189,6 +194,21 @@ int64_t LayoutShiftUkmValue(float shift_score);
 
 // Adjusts the layout shift score for UMA.
 int32_t LayoutShiftUmaValue(float shift_score);
+
+// Adjusts the layout shift score to 10000x for better bucketing at the low end
+// in UMA.
+int32_t LayoutShiftUmaValue10000(float shift_score);
+
+// Helper function that determines the final status for a page visit for a given
+// PageLoadTiming, records it to the appropriate UKM metric and UMA histogram,
+// and returns the status in case the caller needs to use it elsewhere.
+// A 'Page Visit' is a user perceived visit to a page, regardless of how the
+// page was navigated to. See the UserPerceivedPageVisit event in
+// tools/metrics/ukm.xml.
+PageVisitFinalStatus RecordPageVisitFinalStatusForTiming(
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const PageLoadMetricsObserverDelegate& delegate,
+    ukm::SourceId source_id);
 
 }  // namespace page_load_metrics
 

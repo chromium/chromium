@@ -49,7 +49,6 @@ INSTANTIATE_TEST_SUITE_P(
     PerSessionWebRTCAPIMetricsTest,
     ::testing::ValuesIn({RTCAPIName::kGetUserMedia,
                          RTCAPIName::kGetDisplayMedia,
-                         RTCAPIName::kGetCurrentBrowsingContextMedia,
                          RTCAPIName::kEnumerateDevices,
                          RTCAPIName::kRTCPeerConnection}));
 

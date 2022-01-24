@@ -25,6 +25,12 @@ def CommonChecks(input_api, output_api):
           input_api,
           output_api,
           pylintrc='pylintrc',
+          # Temporarily disabled until pylint-2.6
+          disabled_warnings=[
+              'import-error',
+              'no-member',
+              'wrong-import-order',
+          ],
           # Allows pylint to find dependencies imported by scripts in this
           # directory.
           extra_paths_list=[

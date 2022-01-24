@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.background_task_scheduler;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.attribution_reporting.AttributionReportingJobFactory;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTask;
 import org.chromium.chrome.browser.background_sync.PeriodicBackgroundSyncChromeWakeUpTask;
-import org.chromium.chrome.browser.download.DownloadResumptionBackgroundTask;
 import org.chromium.chrome.browser.download.service.DownloadBackgroundTask;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBackgroundTask;
 import org.chromium.chrome.browser.notifications.NotificationTriggerBackgroundTask;
@@ -71,8 +71,6 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
                 return new DownloadBackgroundTask();
             case TaskIds.WEBAPK_UPDATE_JOB_ID:
                 return new WebApkUpdateTask();
-            case TaskIds.DOWNLOAD_RESUMPTION_JOB_ID:
-                return new DownloadResumptionBackgroundTask();
             case TaskIds.COMPONENT_UPDATE_JOB_ID:
                 return new UpdateTask();
             case TaskIds.DEPRECATED_EXPLORE_SITES_REFRESH_JOB_ID:
@@ -88,6 +86,8 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
                 return new PeriodicBackgroundSyncChromeWakeUpTask();
             case TaskIds.OFFLINE_MEASUREMENT_JOB_ID:
                 return new OfflineMeasurementsBackgroundTask();
+            case TaskIds.ATTRIBUTION_PROVIDER_FLUSH_JOB_ID:
+                return AttributionReportingJobFactory.getAttributionReportingProviderFlushTask();
             // End of Java tasks. All native tasks should be listed here.
             case TaskIds.QUERY_TILE_JOB_ID:
             case TaskIds.FEEDV2_REFRESH_JOB_ID:

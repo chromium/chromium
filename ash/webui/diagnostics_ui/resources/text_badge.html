@@ -2,13 +2,11 @@
   .error {
     background-color: var(--google-red-50);
     color: var(--google-red-600);
-    margin-right: 14px;
   }
 
-  .queued {
+  .queued, .stopped, .skipped {
     background-color: var(--google-grey-200);
     color: var(--google-grey-700);
-    margin-right: 7px;
   }
 
   .running {
@@ -16,14 +14,14 @@
     color: var(--google-blue-600);
   }
 
-  .stopped {
-    background-color: var(--google-grey-200);
-    color: var(--google-grey-700);
-  }
-
   .success {
     background-color: var(--google-green-50);
     color: var(--google-green-600);
+  }
+
+  .warning {
+    background-color: #FEF7E0;
+    color: #F9AB00;
   }
 
   #textBadge {
@@ -34,6 +32,7 @@
     line-height: 16px;
     padding: 2px 6px;
     text-transform: uppercase;
+    white-space: nowrap;
   }
 </style>
 

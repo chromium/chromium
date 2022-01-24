@@ -78,8 +78,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/transform_util.h"
 
 namespace vr {
 
@@ -285,8 +285,8 @@ void OnSuggestionModelRemoved(UiScene* scene, SuggestionBinding* binding) {
 std::unique_ptr<TransientElement> CreateTransientParent(UiElementName name,
                                                         int timeout_seconds,
                                                         bool animate_opacity) {
-  auto element = std::make_unique<SimpleTransientElement>(
-      base::TimeDelta::FromSeconds(timeout_seconds));
+  auto element =
+      std::make_unique<SimpleTransientElement>(base::Seconds(timeout_seconds));
   element->SetName(name);
   element->SetVisible(false);
   if (animate_opacity)
@@ -590,7 +590,7 @@ void OnControllerModelAdded(UiScene* scene,
   callout_group->SetVisible(false);
   callout_group->SetTransitionedProperties({OPACITY});
   callout_group->SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kControllerLabelTransitionDurationMs));
+      base::Milliseconds(kControllerLabelTransitionDurationMs));
   callout_group->AddBinding(
       VR_BIND_FUNC(bool, ControllerBinding, element_binding,
                    model->model()->resting_in_viewport, UiElement,
@@ -989,15 +989,14 @@ void BindIndicatorTranscienceForWin(
   gfx::TransformOperations value_2;
   value_2.AppendTranslate(0, kWebVrPermissionOffsetOvershoot, 0);
   curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromMilliseconds(kWebVrPermissionOffsetMs), value_2,
+      base::Milliseconds(kWebVrPermissionOffsetMs), value_2,
       gfx::CubicBezierTimingFunction::CreatePreset(
           gfx::CubicBezierTimingFunction::EaseType::EASE)));
 
   gfx::TransformOperations value_3;
   value_3.AppendTranslate(0, kWebVrPermissionOffsetFinal, 0);
   curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromMilliseconds(kWebVrPermissionAnimationDurationMs),
-      value_3,
+      base::Milliseconds(kWebVrPermissionAnimationDurationMs), value_3,
       gfx::CubicBezierTimingFunction::CreatePreset(
           gfx::CubicBezierTimingFunction::EaseType::EASE)));
 
@@ -1076,15 +1075,14 @@ void BindIndicatorTranscience(
   gfx::TransformOperations value_2;
   value_2.AppendTranslate(0, kWebVrPermissionOffsetOvershoot, 0);
   curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromMilliseconds(kWebVrPermissionOffsetMs), value_2,
+      base::Milliseconds(kWebVrPermissionOffsetMs), value_2,
       gfx::CubicBezierTimingFunction::CreatePreset(
           gfx::CubicBezierTimingFunction::EaseType::EASE)));
 
   gfx::TransformOperations value_3;
   value_3.AppendTranslate(0, kWebVrPermissionOffsetFinal, 0);
   curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromMilliseconds(kWebVrPermissionAnimationDurationMs),
-      value_3,
+      base::Milliseconds(kWebVrPermissionAnimationDurationMs), value_3,
       gfx::CubicBezierTimingFunction::CreatePreset(
           gfx::CubicBezierTimingFunction::EaseType::EASE)));
 
@@ -1201,16 +1199,16 @@ void UiSceneCreator::Create2dBrowsingSubtreeRoots() {
 
   auto hider = Create<UiElement>(k2dBrowsingVisibiltyHider, kPhaseNone);
   hider->SetTransitionedProperties({OPACITY});
-  hider->SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-      kSpeechRecognitionOpacityAnimationDurationMs));
+  hider->SetTransitionDuration(
+      base::Milliseconds(kSpeechRecognitionOpacityAnimationDurationMs));
   VR_BIND_VISIBILITY(
       hider, model->default_browsing_enabled() || model->fullscreen_enabled());
   scene_->AddUiElement(k2dBrowsingRepositioner, std::move(hider));
 
   auto fader = Create<UiElement>(k2dBrowsingVisibiltyFader, kPhaseNone);
   fader->SetTransitionedProperties({OPACITY});
-  fader->SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-      kSpeechRecognitionOpacityAnimationDurationMs));
+  fader->SetTransitionDuration(
+      base::Milliseconds(kSpeechRecognitionOpacityAnimationDurationMs));
   fader->AddBinding(std::make_unique<Binding<float>>(
       VR_BIND_LAMBDA(
           [](Model* model) {
@@ -1230,8 +1228,8 @@ void UiSceneCreator::Create2dBrowsingSubtreeRoots() {
   element = Create<UiElement>(k2dBrowsingForeground, kPhaseNone);
   element->set_bounds_contain_children(true);
   element->SetTransitionedProperties({OPACITY});
-  element->SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-      kSpeechRecognitionOpacityAnimationDurationMs));
+  element->SetTransitionDuration(
+      base::Milliseconds(kSpeechRecognitionOpacityAnimationDurationMs));
   scene_->AddUiElement(k2dBrowsingVisibiltyFader, std::move(element));
 
   element = Create<UiElement>(k2dBrowsingContentGroup, kPhaseNone);
@@ -1514,7 +1512,7 @@ void UiSceneCreator::CreateContentQuad() {
   frame->SetLocalOpacity(0.0f);
   frame->SetTransitionedProperties({LOCAL_OPACITY});
   frame->SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kRepositionFrameTransitionDurationMs));
+      base::Milliseconds(kRepositionFrameTransitionDurationMs));
   VR_BIND_COLOR(model_, frame.get(), &ColorScheme::content_reposition_frame,
                 &Rect::SetColor);
 
@@ -1904,8 +1902,7 @@ void UiSceneCreator::CreateVoiceSearchUiGroup() {
   speech_recognition_root->SetTranslate(0.f, 0.f, -kContentDistance);
   speech_recognition_root->SetTransitionedProperties({OPACITY});
   speech_recognition_root->SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(
-          kSpeechRecognitionOpacityAnimationDurationMs));
+      base::Milliseconds(kSpeechRecognitionOpacityAnimationDurationMs));
   VR_BIND_VISIBILITY(speech_recognition_root, model->voice_search_active());
 
   auto inner_circle = std::make_unique<Rect>();
@@ -1926,8 +1923,8 @@ void UiSceneCreator::CreateVoiceSearchUiGroup() {
   auto speech_result_parent =
       Create<UiElement>(kSpeechRecognitionResult, kPhaseNone);
   speech_result_parent->SetTransitionedProperties({OPACITY});
-  speech_result_parent->SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-      kSpeechRecognitionOpacityAnimationDurationMs));
+  speech_result_parent->SetTransitionDuration(
+      base::Milliseconds(kSpeechRecognitionOpacityAnimationDurationMs));
   speech_result_parent->AddBinding(std::make_unique<Binding<bool>>(
       VR_BIND_LAMBDA(
           [](Model* m) { return !m->speech.recognition_result.empty(); },
@@ -2080,7 +2077,7 @@ void UiSceneCreator::CreateControllers() {
   auto reticle_laser_group = Create<UiElement>(kReticleLaserGroup, kPhaseNone);
   reticle_laser_group->SetTransitionedProperties({OPACITY});
   reticle_laser_group->SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kControllerLabelTransitionDurationMs));
+      base::Milliseconds(kControllerLabelTransitionDurationMs));
   VR_BIND_VISIBILITY(reticle_laser_group, !model->reposition_window_enabled());
 
   auto laser = std::make_unique<Laser>(model_);
@@ -2574,8 +2571,7 @@ void UiSceneCreator::CreateOmnibox() {
   auto omnibox_root = Create<UiElement>(kOmniboxRoot, kPhaseNone);
   omnibox_root->SetVisible(false);
   omnibox_root->SetTransitionedProperties({OPACITY});
-  omnibox_root->SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kOmniboxTransitionMs));
+  omnibox_root->SetTransitionDuration(base::Milliseconds(kOmniboxTransitionMs));
   VR_BIND_VISIBILITY(omnibox_root, model->get_mode() == kModeEditingOmnibox);
 
   auto omnibox_outer_layout =

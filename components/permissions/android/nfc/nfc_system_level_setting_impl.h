@@ -7,7 +7,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/permissions/android/nfc/nfc_system_level_setting.h"
 
 namespace permissions {
@@ -15,6 +14,11 @@ namespace permissions {
 class NfcSystemLevelSettingImpl : public NfcSystemLevelSetting {
  public:
   NfcSystemLevelSettingImpl();
+
+  NfcSystemLevelSettingImpl(const NfcSystemLevelSettingImpl&) = delete;
+  NfcSystemLevelSettingImpl& operator=(const NfcSystemLevelSettingImpl&) =
+      delete;
+
   ~NfcSystemLevelSettingImpl() override;
 
   // NfcSystemLevelSetting implementation:
@@ -23,9 +27,6 @@ class NfcSystemLevelSettingImpl : public NfcSystemLevelSetting {
   void PromptToEnableNfcSystemLevelSetting(
       content::WebContents* web_contents,
       base::OnceClosure prompt_completed_callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NfcSystemLevelSettingImpl);
 };
 
 }  // namespace permissions

@@ -14,10 +14,11 @@
 
 namespace extensions {
 
-// static
-void OmahaAttributesHandler::ReportExtensionDisabledRemotely(
-    bool should_be_remotely_disabled,
-    ExtensionUpdateCheckDataKey reason) {
+namespace {
+
+// Logs UMA metrics when an extension is disabled remotely.
+void ReportExtensionDisabledRemotely(bool should_be_remotely_disabled,
+                                     ExtensionUpdateCheckDataKey reason) {
   // Report that the extension is newly disabled due to Omaha attributes.
   if (should_be_remotely_disabled)
     base::UmaHistogramEnumeration("Extensions.ExtensionDisabledRemotely2",
@@ -28,15 +29,14 @@ void OmahaAttributesHandler::ReportExtensionDisabledRemotely(
       "Extensions.ExtensionAddDisabledRemotelyReason2", reason);
 }
 
-// static
-void OmahaAttributesHandler::ReportNoUpdateCheckKeys() {
+// Logs UMA metrics when the key is not found in Omaha attributes.
+void ReportNoUpdateCheckKeys() {
   base::UmaHistogramEnumeration("Extensions.ExtensionDisabledRemotely2",
                                 ExtensionUpdateCheckDataKey::kNoKey);
 }
 
-// static
-void OmahaAttributesHandler::ReportReenableExtension(
-    ExtensionUpdateCheckDataKey reason) {
+// Logs UMA metrics when a remotely disabled extension is re-enabled.
+void ReportReenableExtension(ExtensionUpdateCheckDataKey reason) {
   const char* histogram = nullptr;
   switch (reason) {
     case ExtensionUpdateCheckDataKey::kMalware:
@@ -54,10 +54,9 @@ void OmahaAttributesHandler::ReportReenableExtension(
   base::UmaHistogramCounts100(histogram, 1);
 }
 
-// static
-bool OmahaAttributesHandler::HasOmahaBlocklistStateInAttributes(
-    const base::Value& attributes,
-    BitMapBlocklistState state) {
+// Checks whether the `state` is in the `attributes`.
+bool HasOmahaBlocklistStateInAttributes(const base::Value& attributes,
+                                        BitMapBlocklistState state) {
   const base::Value* state_value = nullptr;
   switch (state) {
     case BitMapBlocklistState::BLOCKLISTED_MALWARE:
@@ -79,6 +78,8 @@ bool OmahaAttributesHandler::HasOmahaBlocklistStateInAttributes(
   return state_value && state_value->GetBool();
 }
 
+}  // namespace
+
 OmahaAttributesHandler::OmahaAttributesHandler(
     ExtensionPrefs* extension_prefs,
     ExtensionService* extension_service)
@@ -89,6 +90,7 @@ void OmahaAttributesHandler::PerformActionBasedOnOmahaAttributes(
     const ExtensionId& extension_id,
     const base::Value& attributes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  HandleMalwareOmahaAttribute(extension_id, attributes);
   HandleGreylistOmahaAttribute(
       extension_id, attributes,
       extensions_features::kDisablePolicyViolationExtensionsRemotely,
@@ -99,6 +101,45 @@ void OmahaAttributesHandler::PerformActionBasedOnOmahaAttributes(
       extensions_features::kDisablePotentiallyUwsExtensionsRemotely,
       BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
       ExtensionUpdateCheckDataKey::kPotentiallyUWS);
+}
+
+void OmahaAttributesHandler::HandleMalwareOmahaAttribute(
+    const ExtensionId& extension_id,
+    const base::Value& attributes) {
+  bool has_malware_value = HasOmahaBlocklistStateInAttributes(
+      attributes, BitMapBlocklistState::BLOCKLISTED_MALWARE);
+  if (!has_malware_value) {
+    ReportNoUpdateCheckKeys();
+    if (!blocklist_prefs::HasOmahaBlocklistState(
+            extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+            extension_prefs_)) {
+      return;
+    }
+    // The extension was previously blocklisted by Omaha, but is no longer.
+    // Clear the old omaha state.
+    ReportReenableExtension(ExtensionUpdateCheckDataKey::kMalware);
+    blocklist_prefs::RemoveOmahaBlocklistState(
+        extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+        extension_prefs_);
+    extension_service_->OnBlocklistStateRemoved(extension_id);
+    return;
+  }
+
+  if (blocklist_prefs::HasOmahaBlocklistState(
+          extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+          extension_prefs_)) {
+    // The extension is already disabled. No work needs to be done.
+    return;
+  }
+
+  ReportExtensionDisabledRemotely(
+      extension_service_->IsExtensionEnabled(extension_id),
+      ExtensionUpdateCheckDataKey::kMalware);
+
+  blocklist_prefs::AddOmahaBlocklistState(
+      extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs_);
+  extension_service_->OnBlocklistStateAdded(extension_id);
 }
 
 void OmahaAttributesHandler::HandleGreylistOmahaAttribute(
@@ -117,8 +158,7 @@ void OmahaAttributesHandler::HandleGreylistOmahaAttribute(
                                                  extension_prefs_);
       ReportReenableExtension(reason);
     }
-    extension_service_->ClearGreylistedAcknowledgedStateAndMaybeReenable(
-        extension_id);
+    extension_service_->OnGreylistStateRemoved(extension_id);
     return;
   }
 
@@ -126,8 +166,7 @@ void OmahaAttributesHandler::HandleGreylistOmahaAttribute(
       /*should_be_remotely_disabled=*/!has_omaha_blocklist_state, reason);
   blocklist_prefs::AddOmahaBlocklistState(extension_id, greylist_state,
                                           extension_prefs_);
-  extension_service_->MaybeDisableGreylistedExtension(extension_id,
-                                                      greylist_state);
+  extension_service_->OnGreylistStateAdded(extension_id, greylist_state);
 }
 
 }  // namespace extensions

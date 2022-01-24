@@ -25,7 +25,8 @@ class AccessorySheetTabModel extends ListModel<AccessorySheetTabModel.AccessoryS
      */
     static class AccessorySheetDataPiece {
         @IntDef({Type.TITLE, Type.PASSWORD_INFO, Type.ADDRESS_INFO, Type.CREDIT_CARD_INFO,
-                Type.TOUCH_TO_FILL_INFO, Type.FOOTER_COMMAND, Type.WARNING, Type.OPTION_TOGGLE})
+                Type.TOUCH_TO_FILL_INFO, Type.FOOTER_COMMAND, Type.WARNING, Type.OPTION_TOGGLE,
+                Type.PROMO_CODE_INFO})
         @Retention(RetentionPolicy.SOURCE)
         @interface Type {
             /**
@@ -62,6 +63,10 @@ class AccessorySheetTabModel extends ListModel<AccessorySheetTabModel.AccessoryS
              * previously disabled.
              */
             int OPTION_TOGGLE = 8;
+            /**
+             * A section containing a promo code info.
+             */
+            int PROMO_CODE_INFO = 9;
         }
 
         private Object mDataPiece;

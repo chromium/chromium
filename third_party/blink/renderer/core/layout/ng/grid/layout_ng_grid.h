@@ -24,16 +24,23 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
 
   const LayoutNGGridInterface* ToLayoutNGGridInterface() const final;
 
-  size_t ExplicitGridStartForDirection(
-      GridTrackSizingDirection direction) const final;
-  size_t ExplicitGridEndForDirection(
-      GridTrackSizingDirection direction) const final;
-  size_t AutoRepeatCountForDirection(
-      GridTrackSizingDirection direction) const final;
-  LayoutUnit GridGap(GridTrackSizingDirection) const final;
-  LayoutUnit GridItemOffset(GridTrackSizingDirection) const final;
+  bool HasCachedPlacementData() const;
+  const NGGridPlacementData& CachedPlacementData() const;
+  void SetCachedPlacementData(NGGridPlacementData&& placement_data);
+
+  wtf_size_t AutoRepeatCountForDirection(
+      const GridTrackSizingDirection track_direction) const final;
+  wtf_size_t ExplicitGridStartForDirection(
+      const GridTrackSizingDirection track_direction) const final;
+  wtf_size_t ExplicitGridEndForDirection(
+      const GridTrackSizingDirection track_direction) const final;
+  LayoutUnit GridGap(
+      const GridTrackSizingDirection track_direction) const final;
+  LayoutUnit GridItemOffset(
+      const GridTrackSizingDirection track_direction) const final;
   Vector<LayoutUnit, 1> TrackSizesForComputedStyle(
-      GridTrackSizingDirection direction) const final;
+      const GridTrackSizingDirection track_direction) const final;
+
   Vector<LayoutUnit> RowPositions() const final;
   Vector<LayoutUnit> ColumnPositions() const final;
 
@@ -44,12 +51,28 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
   }
 
  private:
-  const NGGridData* GetGridData() const;
-  Vector<LayoutUnit> ComputeTrackSizesInRange(
-      const NGGridLayoutAlgorithmTrackCollection::Range& range,
-      GridTrackSizingDirection direction) const;
+  const NGGridLayoutData* GridLayoutData() const;
+
+  Vector<LayoutUnit> ComputeTrackSizeRepeaterForRange(
+      const NGGridLayoutData::TrackCollectionGeometry& geometry,
+      const NGGridLayoutData::RangeData& range) const;
   Vector<LayoutUnit> ComputeExpandedPositions(
-      GridTrackSizingDirection direction) const;
+      const GridTrackSizingDirection track_direction) const;
+
+  void AddChild(LayoutObject* new_child,
+                LayoutObject* before_child = nullptr) override;
+  void RemoveChild(LayoutObject*) override;
+  void StyleDidChange(StyleDifference, const ComputedStyle*) override;
+
+  absl::optional<NGGridPlacementData> cached_placement_data_;
+};
+
+// wtf/casting.h helper.
+template <>
+struct DowncastTraits<LayoutNGGrid> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutNGGrid();
+  }
 };
 
 }  // namespace blink

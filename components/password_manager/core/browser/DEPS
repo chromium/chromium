@@ -1,5 +1,6 @@
 include_rules = [
   "+components/autofill/core/browser",
+  "+components/device_reauth",
   "+components/favicon/core",
   "+components/keyed_service/core",
   "+components/profile_metrics",

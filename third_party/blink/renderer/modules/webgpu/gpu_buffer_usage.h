@@ -25,8 +25,8 @@ class GPUBufferUsage : public ScriptWrappable {
   static constexpr uint32_t kIndirect = 256;
   static constexpr uint32_t kQueryResolve = 512;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUBufferUsage);
+  GPUBufferUsage(const GPUBufferUsage&) = delete;
+  GPUBufferUsage& operator=(const GPUBufferUsage&) = delete;
 };
 
 }  // namespace blink

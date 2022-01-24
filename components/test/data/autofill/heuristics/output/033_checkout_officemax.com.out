@@ -13,4 +13,4 @@ UNKNOWN_TYPE | emailOptIn | Yes! Send me exclusive coupons and special online sa
 UNKNOWN_TYPE | /atg/commerce/order/purchase/ShippingGroupFormHandler.maxPerksNumber | MaxPerks® ID: < What is this? |  | fname_1-default
 UNKNOWN_TYPE | TaxExemptID | Tax Exempt ID: < What is this? |  | fname_1-default
 UNKNOWN_TYPE | 21919024 | Quantity | 1 | 21919024_1-default
-UNKNOWN_TYPE | promoCode | Enter Promotional Code and Save! |  | promoCode_1-default
+MERCHANT_PROMO_CODE | promoCode | Enter Promotional Code and Save! |  | promoCode_1-default

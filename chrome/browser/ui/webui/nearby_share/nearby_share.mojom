@@ -287,4 +287,9 @@ interface ReceiveManager {
 
   // Reject the incoming share request by the share target id.
   Reject(mojo_base.mojom.UnguessableToken share_target_id) => (bool success);
+
+  // Records via Standard Feature Usage Logging whether or not
+  // advertising successfully starts when the user clicks the
+  // "Device nearby is sharing" notification.
+  RecordFastInitiationNotificationUsage(bool success);
 };

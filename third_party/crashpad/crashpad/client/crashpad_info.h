@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "client/annotation_list.h"
 #include "client/simple_address_range_bag.h"
@@ -31,6 +30,10 @@
 namespace crashpad {
 
 namespace internal {
+
+#if defined(OS_IOS)
+class InProcessIntermediateDumpHandler;
+#endif
 
 //! \brief A linked list of blocks representing custom streams in the minidump,
 //!     with addresses (and size) stored as uint64_t to simplify reading from
@@ -66,6 +69,9 @@ struct CrashpadInfo {
   static CrashpadInfo* GetCrashpadInfo();
 
   CrashpadInfo();
+
+  CrashpadInfo(const CrashpadInfo&) = delete;
+  CrashpadInfo& operator=(const CrashpadInfo&) = delete;
 
   //! \brief Sets the bag of extra memory ranges to be included in the snapshot.
   //!
@@ -223,6 +229,15 @@ struct CrashpadInfo {
     kSignature = 'CPad',
   };
 
+ protected:
+#if defined(OS_IOS)
+  friend class internal::InProcessIntermediateDumpHandler;
+#endif
+
+  uint32_t signature() const { return signature_; }
+  uint32_t version() const { return version_; }
+  uint32_t size() const { return size_; }
+
  private:
   // The compiler won’t necessarily see anyone using these fields, but it
   // shouldn’t warn about that. These fields aren’t intended for use by the
@@ -257,8 +272,6 @@ struct CrashpadInfo {
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(CrashpadInfo);
 };
 
 }  // namespace crashpad

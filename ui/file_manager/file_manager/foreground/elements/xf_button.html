@@ -5,6 +5,29 @@
     margin-inline-start: 0;
   }
 
+  cr-button {
+    --active-bg: var(--cros-button-background-color-secondary-hover);
+    /* The shadow can only be customized via rgb values, to turn the shadow
+       off make the shadow appear as the background color. */
+    --active-shadow-rgb: var(--cros-bg-color-elevation-2-rgb);
+    --border-color: transparent;
+    --focus-shadow-color: var(--cros-focus-ring-color);
+    --hover-bg-color: var(--cros-button-background-color-secondary-hover);
+    --hover-border-color: transparent;
+    --ink-color: var(--cros-button-background-color-secondary-hover);
+    --ripple-opacity: 100%;
+    --text-color: var(--cros-button-label-color-secondary);
+  }
+
+  cr-icon-button {
+    --cr-active-bg-color: linear-gradient(var(--cros-ripple-color),
+                                          var(--cros-ripple-color)),
+                          var(--cros-ripple-color);
+    --cr-focus-outline-color: var(--cros-focus-ring-color);
+    --cr-hover-background-color: var(--cros-ripple-color);
+    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+  }
+
   @keyframes setcollapse {
     from {
       transform: rotate(0deg);

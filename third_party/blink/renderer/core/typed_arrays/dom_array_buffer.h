@@ -47,6 +47,7 @@ class CORE_EXPORT DOMArrayBuffer final : public DOMArrayBufferBase {
 
   static DOMArrayBuffer* CreateOrNull(size_t num_elements,
                                       size_t element_byte_size);
+  static DOMArrayBuffer* CreateOrNull(const void* source, size_t byte_length);
 
   // Only for use by XMLHttpRequest::responseArrayBuffer,
   // Internals::serializeObject, and

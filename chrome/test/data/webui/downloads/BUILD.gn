@@ -1,0 +1,38 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_downloads"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "downloads"
+}
+
+ts_library("build_ts") {
+  root_dir = "./"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://downloads/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/downloads/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = [
+    "item_tests.ts",
+    "manager_tests.ts",
+    "search_service_test.ts",
+    "test_support.ts",
+    "toolbar_tests.ts",
+  ]
+  deps = [ "//chrome/browser/resources/downloads:build_ts" ]
+  extra_deps = [ "..:generate_definitions" ]
+}

@@ -30,6 +30,10 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
  public:
   TouchAccessibilityBrowserTest() {}
 
+  TouchAccessibilityBrowserTest(const TouchAccessibilityBrowserTest&) = delete;
+  TouchAccessibilityBrowserTest& operator=(
+      const TouchAccessibilityBrowserTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -56,8 +60,6 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
                            ui::EventTimeForNow(), flags, 0));
     ignore_result(sink->OnEventFromSource(mouse_move_event.get()));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TouchAccessibilityBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
@@ -113,8 +115,8 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
         BrowserAccessibility* hit = manager->GetFromID(target_id);
         BrowserAccessibility* child = hit->PlatformGetChild(0);
         ASSERT_NE(nullptr, child);
-        cell_text = child->GetData().GetStringAttribute(
-            ax::mojom::StringAttribute::kName);
+        cell_text =
+            child->GetStringAttribute(ax::mojom::StringAttribute::kName);
         VLOG(1) << "Got hover event in cell with text: " << cell_text;
       } while (cell_text != expected_cell_text);
     }
@@ -147,9 +149,8 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   waiter.WaitForNotification();
   int target_id = waiter.event_target_id();
   BrowserAccessibility* hit = child_manager->GetFromID(target_id);
-  EXPECT_EQ(ax::mojom::Role::kButton, hit->GetData().role);
-  std::string text =
-      hit->GetData().GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_EQ(ax::mojom::Role::kButton, hit->GetRole());
+  std::string text = hit->GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("Ordinary Button", text);
 }
 
@@ -185,9 +186,8 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   waiter.WaitForNotification();
   int target_id = waiter.event_target_id();
   BrowserAccessibility* hit = child_manager->GetFromID(target_id);
-  EXPECT_EQ(ax::mojom::Role::kButton, hit->GetData().role);
-  std::string text =
-      hit->GetData().GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_EQ(ax::mojom::Role::kButton, hit->GetRole());
+  std::string text = hit->GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("Ordinary Button", text);
 }
 

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Client indication assert_unreached: The closed promise should be fulfilled or rejected after getting a PASS signal. Reached unreachable code
-Harness: the test ran to completion.
-

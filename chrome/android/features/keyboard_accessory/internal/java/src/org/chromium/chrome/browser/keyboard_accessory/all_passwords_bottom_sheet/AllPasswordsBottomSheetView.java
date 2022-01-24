@@ -46,8 +46,8 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
         }
 
         @Override
-        public void onSheetStateChanged(int newState) {
-            super.onSheetStateChanged(newState);
+        public void onSheetStateChanged(int newState, int reason) {
+            super.onSheetStateChanged(newState, reason);
             if (newState != BottomSheetController.SheetState.HIDDEN) return;
             // This is a fail-safe for cases where onSheetClosed isn't triggered.
             mDismissHandler.onResult(BottomSheetController.StateChangeReason.NONE);

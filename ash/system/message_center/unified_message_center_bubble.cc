@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -37,6 +38,9 @@ class UnifiedMessageCenterBubble::Border : public ui::LayerDelegate {
     layer_.SetFillsBoundsOpaquely(false);
   }
 
+  Border(const Border&) = delete;
+  Border& operator=(const Border&) = delete;
+
   ~Border() override = default;
 
   ui::Layer* layer() { return &layer_; }
@@ -61,8 +65,6 @@ class UnifiedMessageCenterBubble::Border : public ui::LayerDelegate {
                                   float new_device_scale_factor) override {}
 
   ui::Layer layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Border);
 };
 
 UnifiedMessageCenterBubble::UnifiedMessageCenterBubble(UnifiedSystemTray* tray)
@@ -75,6 +77,8 @@ UnifiedMessageCenterBubble::UnifiedMessageCenterBubble(UnifiedSystemTray* tray)
   init_params.preferred_width = kTrayMenuWidth;
   init_params.has_shadow = false;
   init_params.close_on_deactivate = false;
+  if (features::IsNotificationsRefreshEnabled())
+    init_params.translucent = true;
 
   bubble_view_ = new TrayBubbleView(init_params);
 
@@ -97,13 +101,15 @@ void UnifiedMessageCenterBubble::ShowBubble() {
   tray_->bubble()->unified_view()->AddObserver(this);
 
   ui::Layer* widget_layer = bubble_widget_->GetLayer();
-  float radius = kUnifiedTrayCornerRadius;
-  widget_layer->SetRoundedCornerRadius({radius, radius, radius, radius});
-  widget_layer->SetIsFastRoundedCorner(true);
+  if (!features::IsNotificationsRefreshEnabled()) {
+    float radius = kUnifiedTrayCornerRadius;
+    widget_layer->SetRoundedCornerRadius({radius, radius, radius, radius});
+    widget_layer->SetIsFastRoundedCorner(true);
+  }
   widget_layer->Add(border_->layer());
 
   bubble_view_->InitializeAndShowBubble();
-
+  message_center_view_->Init();
   UpdateBubbleState();
 }
 

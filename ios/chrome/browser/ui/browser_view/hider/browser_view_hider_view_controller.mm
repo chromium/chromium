@@ -45,7 +45,7 @@
   self.steadyView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:self.steadyView];
   self.steadyView.colorScheme =
-      [LocationBarSteadyViewColorScheme incognitoScheme];
+      [LocationBarSteadyViewColorScheme standardScheme];
   self.steadyView.locationButton.enabled = NO;
 }
 

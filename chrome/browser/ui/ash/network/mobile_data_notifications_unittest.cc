@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -45,6 +44,11 @@ const char kTestUserName[] = "test-user@example.com";
 class NetworkConnectTestDelegate : public chromeos::NetworkConnect::Delegate {
  public:
   NetworkConnectTestDelegate() {}
+
+  NetworkConnectTestDelegate(const NetworkConnectTestDelegate&) = delete;
+  NetworkConnectTestDelegate& operator=(const NetworkConnectTestDelegate&) =
+      delete;
+
   ~NetworkConnectTestDelegate() override {}
 
   void ShowNetworkConfigure(const std::string& network_id) override {}
@@ -57,14 +61,16 @@ class NetworkConnectTestDelegate : public chromeos::NetworkConnect::Delegate {
   void ShowNetworkConnectError(const std::string& error_name,
                                const std::string& network_id) override {}
   void ShowMobileActivationError(const std::string& network_id) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectTestDelegate);
 };
 
 class MobileDataNotificationsTest : public testing::Test {
  public:
   MobileDataNotificationsTest() {}
+
+  MobileDataNotificationsTest(const MobileDataNotificationsTest&) = delete;
+  MobileDataNotificationsTest& operator=(const MobileDataNotificationsTest&) =
+      delete;
+
   ~MobileDataNotificationsTest() override {}
 
   void SetUp() override {
@@ -161,8 +167,6 @@ class MobileDataNotificationsTest : public testing::Test {
   ash::FakeChromeUserManager* user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(MobileDataNotificationsTest);
 };
 
 // Verify that basic network setup does not trigger notification.

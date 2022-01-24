@@ -11,6 +11,7 @@
 #include "components/feature_engagement/internal/condition_validator.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/tracker.h"
 
 namespace feature_engagement {
 namespace stats {
@@ -71,6 +72,8 @@ enum class TriggerHelpUIResult {
 // Used in the metrics to track the configuration parsing event.
 // The failure reasons are not mutually exclusive.
 // Out-dated entries shouldn't be deleted but marked as obsolete.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // Keep this synced with the enum in //tools/metrics/histograms/enums.xml.
 enum class ConfigParsingEvent {
   // The configuration is parsed correctly.
@@ -119,8 +122,20 @@ enum class ConfigParsingEvent {
   // Successfully read checked in configuration.
   SUCCESS_FROM_SOURCE = 14,
 
+  // Fails to parse the snooze parameters.
+  FAILURE_SNOOZE_PARAMS_PARSE = 15,
+
+  // Fails to parse the blocked_by parameters.
+  FAILURE_BLOCKED_BY_PARSE = 16,
+
+  // Fails to parse the blocked_by feature list.
+  FAILURE_BLOCKED_BY_UNKNOWN_FEATURE = 17,
+
+  // Fails to parse the blocking parameters.
+  FAILURE_BLOCKING_PARSE = 18,
+
   // Last entry for the enum.
-  COUNT = 15,
+  COUNT = 19,
 };
 
 // Used in metrics to track database states. Each type will match to a suffix
@@ -150,6 +165,9 @@ void RecordShouldTriggerHelpUI(const base::Feature& feature,
 
 // Records when the user dismisses the in-product help UI.
 void RecordUserDismiss();
+
+// Records when the user dismisses or snoozes the snoozable in-product help UI.
+void RecordUserSnoozeAction(Tracker::SnoozeAction snooze_action);
 
 // Records the result of database updates.
 void RecordDbUpdate(bool success, StoreType type);

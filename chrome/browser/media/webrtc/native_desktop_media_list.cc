@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/hash/hash.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -93,6 +93,11 @@ gfx::ImageSkia ScaleDesktopFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
   return gfx::ImageSkia::CreateFrom1xBitmap(result);
 }
 
+#if defined(OS_MAC)
+const base::Feature kWindowCaptureMacV2{"WindowCaptureMacV2",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 }  // namespace
 
 class NativeDesktopMediaList::Worker
@@ -102,6 +107,10 @@ class NativeDesktopMediaList::Worker
          base::WeakPtr<NativeDesktopMediaList> media_list,
          DesktopMediaList::Type type,
          std::unique_ptr<webrtc::DesktopCapturer> capturer);
+
+  Worker(const Worker&) = delete;
+  Worker& operator=(const Worker&) = delete;
+
   ~Worker() override;
 
   void Start();
@@ -142,8 +151,6 @@ class NativeDesktopMediaList::Worker
   std::unique_ptr<RefreshThumbnailsState> refresh_thumbnails_state_;
 
   base::WeakPtrFactory<Worker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Worker);
 };
 
 NativeDesktopMediaList::Worker::Worker(
@@ -303,8 +310,8 @@ void NativeDesktopMediaList::Worker::OnCaptureResult(
 NativeDesktopMediaList::NativeDesktopMediaList(
     DesktopMediaList::Type type,
     std::unique_ptr<webrtc::DesktopCapturer> capturer)
-    : DesktopMediaListBase(base::TimeDelta::FromMilliseconds(
-          kDefaultNativeDesktopMediaListUpdatePeriod)),
+    : DesktopMediaListBase(
+          base::Milliseconds(kDefaultNativeDesktopMediaListUpdatePeriod)),
       thread_("DesktopMediaListCaptureThread") {
   type_ = type;
 
@@ -369,7 +376,7 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
       source.id.window_id = aura_id.window_id;
     }
 #elif defined(OS_MAC)
-    if (base::FeatureList::IsEnabled(features::kWindowCaptureMacV2)) {
+    if (base::FeatureList::IsEnabled(kWindowCaptureMacV2)) {
       if (remote_cocoa::ScopedCGWindowID::Get(source.id.id))
         source.id.window_id = source.id.id;
     }

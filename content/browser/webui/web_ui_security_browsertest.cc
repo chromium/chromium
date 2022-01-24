@@ -24,6 +24,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -46,6 +47,9 @@ class WebUISecurityTest : public ContentBrowserTest {
  public:
   WebUISecurityTest() = default;
 
+  WebUISecurityTest(const WebUISecurityTest&) = delete;
+  WebUISecurityTest& operator=(const WebUISecurityTest&) = delete;
+
   TestWebUIControllerFactory* factory() { return &factory_; }
   ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
     return untrusted_factory_;
@@ -57,8 +61,6 @@ class WebUISecurityTest : public ContentBrowserTest {
   ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
   ScopedWebUIControllerFactoryRegistration untrusted_factory_registration_{
       &untrusted_factory_};
-
-  DISALLOW_COPY_AND_ASSIGN(WebUISecurityTest);
 };
 
 // Verify chrome-untrusted:// have no bindings.
@@ -130,8 +132,8 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIReuse) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Capture the SiteInstance and WebUI used in the first navigation to compare
   // with the ones used after the reload.
@@ -166,8 +168,8 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUISameSiteSubframe) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   EXPECT_EQ(1U, root->child_count());
 
   TestFrameNavigationObserver observer(root->child_at(0));
@@ -198,8 +200,8 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUICrossSiteSubframe) {
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   EXPECT_EQ(1U, root->child_count());
   FrameTreeNode* child = root->child_at(0);
 
@@ -282,8 +284,8 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIReuseInSubframe) {
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   EXPECT_EQ(1U, root->child_count());
   FrameTreeNode* child = root->child_at(0);
 
@@ -424,8 +426,8 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIFailedNavigation) {
             shell()->web_contents()->GetMainFrame()->GetEnabledBindings());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   GURL webui_error_url(GetWebUIURL("web-ui/error"));
   EXPECT_FALSE(NavigateToURL(shell(), webui_error_url));
@@ -477,6 +479,31 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
               EvalJs(shell(), JsReplace(kLoadResourceScript, untrusted_url),
                      EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
   }
+}
+
+// Verify chrome-untrusted://resources can't be loaded from the Web.
+IN_PROC_BROWSER_TEST_F(WebUISecurityTest, DisallowWebRequestToSharedResources) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+
+  const char kLoadResourceScript[] =
+      "new Promise((resolve) => {"
+      "  const script = document.createElement('script');"
+      "  script.onload = () => {"
+      "    resolve('Script load should have failed');"
+      "  };"
+      "  script.onerror = (e) => {"
+      "    resolve('Load failed');"
+      "  };"
+      "  script.src = $1;"
+      "  document.body.appendChild(script);"
+      "});";
+
+  GURL shared_resource_url =
+      GURL("chrome-untrusted://resources/mojo/mojo/public/js/bindings.js");
+  EXPECT_EQ("Load failed", EvalJs(shell(), JsReplace(kLoadResourceScript,
+                                                     shared_resource_url)));
 }
 
 class WebUISecurityTestWithWebUIReportOnlyTrustedTypesEnabled
@@ -863,6 +890,49 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
   EXPECT_EQ(console_observer.GetMessageAt(0),
             base::StringPrintf("Not allowed to load local resource: %s",
                                chrome_url.spec().c_str()));
+}
+
+class WebUIBrowserSideSecurityTest : public WebUISecurityTest {
+ public:
+  WebUIBrowserSideSecurityTest() = default;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Disable Web Security to skip renderer-side checks so that we can test
+    // browser-side checks.
+    command_line->AppendSwitch(switches::kDisableWebSecurity);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIBrowserSideSecurityTest,
+                       DenyWebAccessToSharedResources) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+
+  const char kLoadResourceScript[] =
+      "new Promise((resolve) => {"
+      "  const script = document.createElement('script');"
+      "  script.onload = () => {"
+      "    resolve('Script load should have failed');"
+      "  };"
+      "  script.onerror = (e) => {"
+      "    resolve('Load failed');"
+      "  };"
+      "  script.src = $1;"
+      "  document.body.appendChild(script);"
+      "});";
+
+  DevToolsInspectorLogWatcher log_watcher(shell()->web_contents());
+
+  GURL shared_resource_url =
+      GURL("chrome-untrusted://resources/mojo/mojo/public/js/bindings.js");
+  EXPECT_EQ("Load failed", EvalJs(shell(), JsReplace(kLoadResourceScript,
+                                                     shared_resource_url)));
+  log_watcher.FlushAndStopWatching();
+
+  EXPECT_EQ(log_watcher.last_message(),
+            "Failed to load resource: net::ERR_UNKNOWN_URL_SCHEME");
 }
 
 }  // namespace content

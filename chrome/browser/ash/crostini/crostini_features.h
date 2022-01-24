@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 class Profile;
@@ -20,6 +19,9 @@ namespace crostini {
 class CrostiniFeatures {
  public:
   static CrostiniFeatures* Get();
+
+  CrostiniFeatures(const CrostiniFeatures&) = delete;
+  CrostiniFeatures& operator=(const CrostiniFeatures&) = delete;
 
   // Returns false if this |profile| will never be allowed to run crostini for
   // the lifetime of this process, otherwise returns true. The return value of
@@ -78,6 +80,9 @@ class CrostiniFeatures {
   // false.
   virtual bool IsPortForwardingAllowed(Profile* profile);
 
+  // Returns true if user is allowed to use multiple (non-default) containers.
+  virtual bool IsMultiContainerAllowed(Profile*);
+
   // TODO(crbug.com/1004708): Move other functions from crostini_util to here.
 
  protected:
@@ -88,8 +93,6 @@ class CrostiniFeatures {
 
  private:
   base::WeakPtrFactory<CrostiniFeatures> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniFeatures);
 };
 
 }  // namespace crostini

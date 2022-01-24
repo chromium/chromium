@@ -92,19 +92,19 @@ WorkQueue::TaskPusher::TaskPusher(TaskPusher&& other)
   other.work_queue_ = nullptr;
 }
 
-void WorkQueue::TaskPusher::Push(Task* task) {
+void WorkQueue::TaskPusher::Push(Task task) {
   DCHECK(work_queue_);
 
 #ifndef NDEBUG
-  DCHECK(task->enqueue_order_set());
+  DCHECK(task.enqueue_order_set());
 #endif
 
   // Make sure the |enqueue_order()| is monotonically increasing.
   DCHECK(work_queue_->tasks_.empty() ||
-         work_queue_->tasks_.back().enqueue_order() < task->enqueue_order());
+         work_queue_->tasks_.back().enqueue_order() < task.enqueue_order());
 
   // Amortized O(1).
-  work_queue_->tasks_.push_back(std::move(*task));
+  work_queue_->tasks_.push_back(std::move(task));
 }
 
 WorkQueue::TaskPusher::~TaskPusher() {
@@ -210,27 +210,6 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
 
   while (!tasks_.empty()) {
     const auto& pending_task = tasks_.front();
-#if !defined(OS_NACL)
-    // Record some debugging information about the task.
-    // TODO(skyostil): Remove once crbug.com/1071475 is resolved.
-    DEBUG_ALIAS_FOR_CSTR(debug_file_name,
-                         pending_task.posted_from.file_name()
-                             ? pending_task.posted_from.file_name()
-                             : "",
-                         16);
-    DEBUG_ALIAS_FOR_CSTR(debug_function_name,
-                         pending_task.posted_from.function_name()
-                             ? pending_task.posted_from.function_name()
-                             : "",
-                         16);
-    int debug_line_number = pending_task.posted_from.line_number();
-    const void* debug_pc = pending_task.posted_from.program_counter();
-    const void* debug_bind_state =
-        reinterpret_cast<const void*>(&pending_task.task);
-    base::debug::Alias(&debug_line_number);
-    base::debug::Alias(&debug_pc);
-    base::debug::Alias(&debug_bind_state);
-#endif  // !defined(OS_NACL)
     if (pending_task.task && !pending_task.task.IsCancelled())
       break;
     tasks_to_delete->push_back(std::move(tasks_.front()));
@@ -303,19 +282,6 @@ bool WorkQueue::RemoveFence() {
     return true;
   }
   return false;
-}
-
-bool WorkQueue::ShouldRunBefore(const WorkQueue* other_queue) const {
-  DCHECK(!tasks_.empty());
-  DCHECK(!other_queue->tasks_.empty());
-  EnqueueOrder enqueue_order;
-  EnqueueOrder other_enqueue_order;
-  bool have_task = GetFrontTaskEnqueueOrder(&enqueue_order);
-  bool have_other_task =
-      other_queue->GetFrontTaskEnqueueOrder(&other_enqueue_order);
-  DCHECK(have_task);
-  DCHECK(have_other_task);
-  return enqueue_order < other_enqueue_order;
 }
 
 void WorkQueue::MaybeShrinkQueue() {

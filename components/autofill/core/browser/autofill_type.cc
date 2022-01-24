@@ -229,16 +229,9 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
 }
 
 AutofillType::AutofillType(ServerFieldType field_type)
-    : html_type_(HTML_TYPE_UNSPECIFIED), html_mode_(HTML_MODE_NONE) {
-  if ((field_type < NO_SERVER_DATA || field_type >= MAX_VALID_FIELD_TYPE) ||
-      (field_type >= 15 && field_type <= 19) ||
-      (field_type >= 25 && field_type <= 29) ||
-      (field_type >= 44 && field_type <= 50) || field_type == 94) {
-    server_type_ = UNKNOWN_TYPE;
-  } else {
-    server_type_ = field_type;
-  }
-}
+    : server_type_(ToSafeServerFieldType(field_type, UNKNOWN_TYPE)),
+      html_type_(HTML_TYPE_UNSPECIFIED),
+      html_mode_(HTML_MODE_NONE) {}
 
 AutofillType::AutofillType(HtmlFieldType field_type, HtmlFieldMode mode)
     : server_type_(UNKNOWN_TYPE), html_type_(field_type), html_mode_(mode) {}

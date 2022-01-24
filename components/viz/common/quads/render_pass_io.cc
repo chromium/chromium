@@ -11,9 +11,9 @@
 #include "base/base64.h"
 #include "base/bit_cast.h"
 #include "base/containers/span.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
-#include "base/util/values/values_util.h"
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -887,7 +887,7 @@ base::Value SurfaceIdToDict(const SurfaceId& id) {
   dict.SetIntKey("sink_id", id.frame_sink_id().sink_id());
   dict.SetIntKey("parent_seq", id.local_surface_id().parent_sequence_number());
   dict.SetIntKey("child_seq", id.local_surface_id().child_sequence_number());
-  dict.SetKey("embed_token", util::UnguessableTokenToValue(
+  dict.SetKey("embed_token", base::UnguessableTokenToValue(
                                  id.local_surface_id().embed_token()));
 
   return dict;
@@ -905,7 +905,7 @@ absl::optional<SurfaceId> SurfaceIdFromDict(const base::Value& dict) {
   if (!client_id || !sink_id || !parent_seq || !child_seq || !embed_token_value)
     return absl::nullopt;
 
-  auto token = util::ValueToUnguessableToken(*embed_token_value);
+  auto token = base::ValueToUnguessableToken(*embed_token_value);
   if (!token) {
     return absl::nullopt;
   }
@@ -1245,10 +1245,8 @@ void VideoHoleDrawQuadToDict(const VideoHoleDrawQuad* draw_quad,
   dict->SetBoolKey("overlay_plane_id.empty",
                    draw_quad->overlay_plane_id.is_empty());
   if (!draw_quad->overlay_plane_id.is_empty()) {
-    uint64_t high = draw_quad->overlay_plane_id.GetHighForSerialization();
-    dict->SetStringKey("overlay_plane_id.high", base::NumberToString(high));
-    uint64_t low = draw_quad->overlay_plane_id.GetLowForSerialization();
-    dict->SetStringKey("overlay_plane_id.low", base::NumberToString(low));
+    dict->SetKey("overlay_plane_id.unguessable_token",
+                 base::UnguessableTokenToValue(draw_quad->overlay_plane_id));
   }
 }
 
@@ -1608,18 +1606,13 @@ bool VideoHoleDrawQuadFromDict(const base::Value& dict,
   base::UnguessableToken overlay_plane_id;
   DCHECK(overlay_plane_id.is_empty());
   if (!overlay_plane_id_empty.value()) {
-    const std::string* overlay_plane_id_high =
-        dict.FindStringKey("overlay_plane_id.high");
-    const std::string* overlay_plane_id_low =
-        dict.FindStringKey("overlay_plane_id.low");
-    uint64_t high = 0, low = 0;
-    if (!overlay_plane_id_high ||
-        !base::StringToUint64(*overlay_plane_id_high, &high) ||
-        !overlay_plane_id_low ||
-        !base::StringToUint64(*overlay_plane_id_low, &low)) {
+    absl::optional<base::UnguessableToken> deserialized_overlay_plane_id =
+        base::ValueToUnguessableToken(
+            dict.FindKey("overlay_plane_id.unguessable_token"));
+    if (!deserialized_overlay_plane_id) {
       return false;
     }
-    overlay_plane_id = base::UnguessableToken::Deserialize(high, low);
+    overlay_plane_id = deserialized_overlay_plane_id.value();
   }
   draw_quad->SetAll(common.shared_quad_state, common.rect, common.visible_rect,
                     common.needs_blending, overlay_plane_id);

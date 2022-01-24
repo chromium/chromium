@@ -17,6 +17,7 @@ static_library("policy_engine") {
     "//components/unified_consent",
     "//components/user_prefs",
     "//components/variations/service",
+    "//services/network/public/cpp:cpp",
     "//services/network/public/mojom",
   ]
 }

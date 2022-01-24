@@ -170,8 +170,8 @@ bool EsParserMpeg1Audio::UpdateAudioConfiguration(
   // TODO(damienv): Verify whether Android playback requires the extra data
   // field for Mpeg1 audio. If yes, we should generate this field.
   AudioDecoderConfig audio_decoder_config(
-      kCodecMP3, kSampleFormatS16, header.channel_layout, header.sample_rate,
-      EmptyExtraData(), EncryptionScheme::kUnencrypted);
+      AudioCodec::kMP3, kSampleFormatS16, header.channel_layout,
+      header.sample_rate, EmptyExtraData(), EncryptionScheme::kUnencrypted);
 
   if (!audio_decoder_config.IsValidConfig()) {
     DVLOG(1) << "Invalid config: "

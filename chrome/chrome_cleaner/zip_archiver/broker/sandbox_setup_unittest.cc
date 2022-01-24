@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"

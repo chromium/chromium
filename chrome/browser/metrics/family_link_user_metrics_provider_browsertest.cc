@@ -22,14 +22,14 @@
 namespace {
 
 // Returns the user type for logging in.
-chromeos::LoggedInUserMixin::LogInType GetLogInType(
+ash::LoggedInUserMixin::LogInType GetLogInType(
     FamilyLinkUserMetricsProvider::LogSegment log_segment) {
   switch (log_segment) {
     case FamilyLinkUserMetricsProvider::LogSegment::kOther:
-      return chromeos::LoggedInUserMixin::LogInType::kRegular;
+      return ash::LoggedInUserMixin::LogInType::kRegular;
     case FamilyLinkUserMetricsProvider::LogSegment::kUnderConsentAge:
     case FamilyLinkUserMetricsProvider::LogSegment::kOverConsentAge:
-      return chromeos::LoggedInUserMixin::LogInType::kChild;
+      return ash::LoggedInUserMixin::LogInType::kChild;
   }
 }
 
@@ -77,7 +77,7 @@ class FamilyLinkUserMetricsProviderTest
       public testing::WithParamInterface<
           FamilyLinkUserMetricsProvider::LogSegment> {
  protected:
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
+  ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, GetLogInType(GetParam()), embedded_test_server(),
       /*test_base=*/this};
 };
@@ -125,7 +125,7 @@ INSTANTIATE_TEST_SUITE_P(
 class FamilyLinkUserMetricsProviderGuestModeTest
     : public MixinBasedInProcessBrowserTest {
  private:
-  chromeos::GuestSessionMixin guest_session_mixin_{&mixin_host_};
+  ash::GuestSessionMixin guest_session_mixin_{&mixin_host_};
 };
 
 // Tests that guest users go into the kOther bucket.

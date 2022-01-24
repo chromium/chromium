@@ -6,6 +6,7 @@ static_library("test_utils") {
   testonly = true
 
   sources = [
+    "fake_message_dispatch_context.h",
     "lib/test_support.cc",
     "lib/test_utils.cc",
     "test_utils.h",

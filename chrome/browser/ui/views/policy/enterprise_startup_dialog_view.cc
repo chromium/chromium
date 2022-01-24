@@ -20,7 +20,9 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
@@ -65,27 +67,33 @@ std::unique_ptr<views::Label> CreateText(const std::u16string& message) {
   return text;
 }
 
-std::unique_ptr<views::View> CreateLogoView() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Show Google Chrome Enterprise logo only for official build.
-  auto logo_image = std::make_unique<views::ImageView>();
-  logo_image->SetImage(
-      ui::ResourceBundle::GetSharedInstance()
-          .GetImageNamed((logo_image->GetNativeTheme()->ShouldUseDarkColors())
-                             ? IDR_PRODUCT_LOGO_ENTERPRISE_WHITE
-                             : IDR_PRODUCT_LOGO_ENTERPRISE)
-          .AsImageSkia());
-  logo_image->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT));
-  gfx::Rect logo_bounds = logo_image->GetImageBounds();
-  logo_image->SetImageSize(gfx::Size(
-      logo_bounds.width() * kLogoHeight / logo_bounds.height(), kLogoHeight));
-  logo_image->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-  return logo_image;
-#else
-  return nullptr;
-#endif
-}
+class LogoView : public views::ImageView {
+  METADATA_HEADER(LogoView);
+
+ public:
+  LogoView() {
+    SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT));
+    SetVerticalAlignment(views::ImageView::Alignment::kCenter);
+  }
+
+  void OnThemeChanged() override {
+    ImageView::OnThemeChanged();
+    SetImage(ui::ResourceBundle::GetSharedInstance()
+                 .GetImageNamed((GetNativeTheme()->ShouldUseDarkColors())
+                                    ? IDR_PRODUCT_LOGO_ENTERPRISE_WHITE
+                                    : IDR_PRODUCT_LOGO_ENTERPRISE)
+                 .AsImageSkia());
+    const gfx::Rect logo_bounds = GetImageBounds();
+    SetImageSize(gfx::Size(
+        logo_bounds.width() * kLogoHeight / logo_bounds.height(), kLogoHeight));
+  }
+};
+
+BEGIN_METADATA(LogoView, views::ImageView)
+END_METADATA
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
 
@@ -94,7 +102,10 @@ EnterpriseStartupDialogView::EnterpriseStartupDialogView(
     : callback_(std::move(callback)) {
   set_draggable(true);
   SetButtons(ui::DIALOG_BUTTON_OK);
-  SetExtraView(CreateLogoView());
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Show Google Chrome Enterprise logo only for official build.
+  SetExtraView(std::make_unique<LogoView>());
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   SetModalType(ui::MODAL_TYPE_NONE);
   SetAcceptCallback(
       base::BindOnce(&EnterpriseStartupDialogView::RunDialogCallback,
@@ -134,11 +145,9 @@ void EnterpriseStartupDialogView::DisplayErrorMessage(
     const absl::optional<std::u16string>& accept_button) {
   ResetDialog(accept_button.has_value());
   std::unique_ptr<views::Label> text = CreateText(error_message);
-  auto error_icon = std::make_unique<views::ImageView>();
-  error_icon->SetImage(
-      gfx::CreateVectorIcon(kBrowserToolsErrorIcon, kIconSize,
-                            GetNativeTheme()->GetSystemColor(
-                                ui::NativeTheme::kColorId_AlertSeverityHigh)));
+  auto error_icon =
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          kBrowserToolsErrorIcon, ui::kColorAlertHighSeverity, kIconSize));
 
   if (accept_button) {
     // TODO(ellyjones): This should use SetButtonLabel()
@@ -199,7 +208,7 @@ void EnterpriseStartupDialogView::ResetDialog(bool show_accept_button) {
   DCHECK(GetOkButton());
 
   GetOkButton()->SetVisible(show_accept_button);
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 void EnterpriseStartupDialogView::SetupLayout(

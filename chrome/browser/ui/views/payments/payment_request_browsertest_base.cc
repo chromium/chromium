@@ -79,6 +79,11 @@ PersonalDataLoadedObserverMock::~PersonalDataLoadedObserverMock() = default;
 PaymentRequestBrowserTestBase::PaymentRequestBrowserTestBase() = default;
 PaymentRequestBrowserTestBase::~PaymentRequestBrowserTestBase() = default;
 
+base::WeakPtr<PaymentRequestBrowserTestBase>
+PaymentRequestBrowserTestBase::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PaymentRequestBrowserTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
   // HTTPS server only serves a valid cert for localhost, so this is needed to
@@ -115,10 +120,10 @@ void PaymentRequestBrowserTestBase::SetUpOnMainThread() {
 
 void PaymentRequestBrowserTestBase::NavigateTo(const std::string& file_path) {
   if (file_path.find("data:") == 0U) {
-    ui_test_utils::NavigateToURL(browser(), GURL(file_path));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(file_path)));
   } else {
-    ui_test_utils::NavigateToURL(browser(),
-                                 https_server()->GetURL("a.com", file_path));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server()->GetURL("a.com", file_path)));
   }
 }
 
@@ -501,13 +506,13 @@ void PaymentRequestBrowserTestBase::CreatePaymentRequestForTest(
   DCHECK(render_frame_host->IsActive());
   std::unique_ptr<TestChromePaymentRequestDelegate> delegate =
       std::make_unique<TestChromePaymentRequestDelegate>(
-          render_frame_host, /*observer=*/this, &prefs_, is_incognito_,
+          render_frame_host, /*observer=*/GetWeakPtr(), &prefs_, is_incognito_,
           is_valid_ssl_, is_browser_window_active_, skip_ui_for_basic_card_);
   delegate_ = delegate.get();
   PaymentRequestWebContentsManager::GetOrCreateForWebContents(
       content::WebContents::FromRenderFrameHost(render_frame_host))
       ->CreatePaymentRequest(render_frame_host, std::move(delegate),
-                             std::move(receiver), this);
+                             std::move(receiver), GetWeakPtr());
 }
 
 void PaymentRequestBrowserTestBase::ClickOnDialogViewAndWait(
@@ -789,15 +794,14 @@ void PaymentRequestBrowserTestBase::WaitForAnimation(
     PaymentRequestDialogView* dialog_view) {
   ViewStack* view_stack = dialog_view->view_stack_for_testing();
   if (view_stack->slide_in_animator_->IsAnimating()) {
-    view_stack->slide_in_animator_->SetAnimationDuration(
-        base::TimeDelta::FromMilliseconds(1));
+    view_stack->slide_in_animator_->SetAnimationDuration(base::Milliseconds(1));
     view_stack->slide_in_animator_->SetAnimationDelegate(
         view_stack->top(), std::unique_ptr<gfx::AnimationDelegate>(
                                new gfx::TestAnimationDelegate()));
     base::RunLoop().Run();
   } else if (view_stack->slide_out_animator_->IsAnimating()) {
     view_stack->slide_out_animator_->SetAnimationDuration(
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
     view_stack->slide_out_animator_->SetAnimationDelegate(
         view_stack->top(), std::unique_ptr<gfx::AnimationDelegate>(
                                new gfx::TestAnimationDelegate()));

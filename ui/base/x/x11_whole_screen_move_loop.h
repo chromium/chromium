@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/x/x11_move_loop.h"
 #include "ui/base/x/x11_move_loop_delegate.h"
@@ -37,6 +36,10 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WholeScreenMoveLoop
       public ui::PlatformEventDispatcher {
  public:
   explicit X11WholeScreenMoveLoop(X11MoveLoopDelegate* delegate);
+
+  X11WholeScreenMoveLoop(const X11WholeScreenMoveLoop&) = delete;
+  X11WholeScreenMoveLoop& operator=(const X11WholeScreenMoveLoop&) = delete;
+
   ~X11WholeScreenMoveLoop() override;
 
   // ui:::PlatformEventDispatcher:
@@ -59,9 +62,6 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WholeScreenMoveLoop
 
   // Creates an input-only window to be used during the drag.
   void CreateDragInputWindow(x11::Connection* connection);
-
-  // Dispatch mouse movement event to |delegate_| in a posted task.
-  void DispatchMouseMovement();
 
   void PostDispatchIfNeeded(const ui::MouseEvent& event);
 
@@ -91,10 +91,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WholeScreenMoveLoop
   // pressing escape).
   bool canceled_;
 
-  std::unique_ptr<ui::MouseEvent> last_motion_in_screen_;
   base::WeakPtrFactory<X11WholeScreenMoveLoop> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(X11WholeScreenMoveLoop);
 };
 
 }  // namespace ui

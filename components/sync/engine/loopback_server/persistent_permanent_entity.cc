@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/loopback_server.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 using std::string;
 
@@ -22,7 +25,7 @@ static const char kRootParentTag[] = "0";
 
 namespace syncer {
 
-PersistentPermanentEntity::~PersistentPermanentEntity() {}
+PersistentPermanentEntity::~PersistentPermanentEntity() = default;
 
 // static
 std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateNew(

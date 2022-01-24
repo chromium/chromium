@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_ACCOUNT_STATUS_CHANGE_DELEGATE_NOTIFIER_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_ACCOUNT_STATUS_CHANGE_DELEGATE_NOTIFIER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,6 +20,11 @@ namespace multidevice_setup {
 // (3) a new Chromebook has been added to an account for someone who has.
 class AccountStatusChangeDelegateNotifier {
  public:
+  AccountStatusChangeDelegateNotifier(
+      const AccountStatusChangeDelegateNotifier&) = delete;
+  AccountStatusChangeDelegateNotifier& operator=(
+      const AccountStatusChangeDelegateNotifier&) = delete;
+
   virtual ~AccountStatusChangeDelegateNotifier();
 
   void SetAccountStatusChangeDelegateRemote(
@@ -47,8 +51,6 @@ class AccountStatusChangeDelegateNotifier {
   void FlushForTesting();
 
   mojo::Remote<mojom::AccountStatusChangeDelegate> delegate_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountStatusChangeDelegateNotifier);
 };
 
 }  // namespace multidevice_setup

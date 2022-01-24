@@ -91,8 +91,10 @@ void PrivacyScreenFeaturePodController::UpdateButton() {
 }
 
 void PrivacyScreenFeaturePodController::OnPrivacyScreenSettingChanged(
-    bool enabled) {
-  UpdateButton();
+    bool enabled,
+    bool notify_ui) {
+  if (notify_ui)
+    UpdateButton();
 }
 
 }  // namespace ash

@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.editor.plugins.LinkDialogTest');
 goog.setTestOnly();
@@ -75,6 +67,10 @@ function setUpGivenAnchor(anchor, text, href, opt_isNew, opt_target, opt_rel) {
   }
 }
 
+/**
+ * @suppress {missingProperties,checkTypes} suppression added to enable type
+ * checking
+ */
 function verifyRelNoFollow(noFollow, originalRel, expectedRel) {
   mockLink.placeCursorRightOf();
   mockField.dispatchSelectionChangeEvent();
@@ -85,9 +81,14 @@ function verifyRelNoFollow(noFollow, originalRel, expectedRel) {
   plugin = new LinkDialogPlugin();
   plugin.registerFieldObject(mockField);
   plugin.showRelNoFollow();
+  /**
+   * @suppress {visibility,checkTypes} suppression added to enable type
+   * checking
+   */
   plugin.currentLink_ = mockLink;
 
   setUpAnchor(OLD_LINK_TEXT, OLD_LINK_URL, true, null, originalRel);
+  /** @suppress {visibility} suppression added to enable type checking */
   const dialog = plugin.createDialog(new DomHelper(), mockLink);
   dialog.dispatchEvent(
       new LinkDialog.OkEvent(NEW_LINK_TEXT, NEW_LINK_URL, false, noFollow));
@@ -107,6 +108,7 @@ function setUpRealEditableField() {
   fieldElem.appendChild(anchorElem);
   fieldObj = new Field('myField', document);
   fieldObj.makeEditable();
+  /** @suppress {checkTypes} suppression added to enable type checking */
   linkObj = new Link(fieldObj.getElement().firstChild, isNew);
   // Register the plugin to that field.
   plugin = new LinkDialogPlugin();
@@ -123,6 +125,10 @@ function tearDownRealEditableField() {
   dom.removeNode(fieldElem);
 }
 testSuite({
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   setUp() {
     testDiv = dom.getDocument().getElementById('test');
     dom.setTextContent(testDiv, 'Some preceding text');
@@ -158,17 +164,22 @@ testSuite({
     mockCtrl.$tearDown();
   },
 
-  /** Tests that the plugin's dialog is properly created. */
+  /**
+     Tests that the plugin's dialog is properly created.
+     @suppress {checkTypes} suppression added to enable type checking
+   */
   testCreateDialog() {
     // Note: this tests simply creating the dialog because that's the only
-    // functionality added to this class. Opening or closing effects (editing
-    // the actual link) is tested in linkdialog_test.html, but should be moved
-    // here if that functionality gets refactored from the dialog to the plugin.
+    // functionality added to this class. Opening or closing effects
+    // (editing the actual link) is tested in linkdialog_test.html, but
+    // should be moved here if that functionality gets refactored from the
+    // dialog to the plugin.
     mockCtrl.$replayAll();
 
     plugin = new LinkDialogPlugin();
     plugin.registerFieldObject(mockField);
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const dialog = plugin.createDialog(new DomHelper(), mockLink);
     assertTrue(
         'Dialog should be of type goog.ui.editor.LinkDialog',
@@ -177,7 +188,11 @@ testSuite({
     mockCtrl.$verifyAll();
   },
 
-  /** Tests that when the OK event fires the link is properly updated. */
+  /**
+     Tests that when the OK event fires the link is properly updated.
+     @suppress {missingProperties,checkTypes} suppression added to enable
+     type checking
+   */
   testOk() {
     mockLink.placeCursorRightOf();
     mockField.dispatchSelectionChangeEvent();
@@ -188,9 +203,15 @@ testSuite({
     setUpAnchor(OLD_LINK_TEXT, OLD_LINK_URL);
     plugin = new LinkDialogPlugin();
     plugin.registerFieldObject(mockField);
+    /** @suppress {visibility} suppression added to enable type checking */
     const dialog = plugin.createDialog(new DomHelper(), mockLink);
 
-    // Mock of execCommand + clicking OK without actually opening the dialog.
+    // Mock of execCommand + clicking OK without actually opening the
+    // dialog.
+    /**
+     * @suppress {visibility,checkTypes} suppression added to enable type
+     * checking
+     */
     plugin.currentLink_ = mockLink;
     dialog.dispatchEvent(new LinkDialog.OkEvent(NEW_LINK_TEXT, NEW_LINK_URL));
 
@@ -201,16 +222,24 @@ testSuite({
     mockCtrl.$verifyAll();
   },
 
-  /** Tests that when the Cancel event fires the link is unchanged. */
+  /**
+     Tests that when the Cancel event fires the link is unchanged.
+     @suppress {checkTypes} suppression added to enable type checking
+   */
   testCancel() {
     mockCtrl.$replayAll();
 
     setUpAnchor(OLD_LINK_TEXT, OLD_LINK_URL);
     plugin = new LinkDialogPlugin();
     plugin.registerFieldObject(mockField);
+    /** @suppress {visibility} suppression added to enable type checking */
     const dialog = plugin.createDialog(new DomHelper(), mockLink);
 
     // Mock of execCommand + cancel without actually opening the dialog.
+    /**
+     * @suppress {visibility,checkTypes} suppression added to enable type
+     * checking
+     */
     plugin.currentLink_ = mockLink;
     dialog.dispatchEvent(AbstractDialog.EventType.CANCEL);
 
@@ -224,7 +253,11 @@ testSuite({
     mockCtrl.$verifyAll();
   },
 
-  /** Tests that when the Cancel event fires for a new link it gets removed. */
+  /**
+     Tests that when the Cancel event fires for a new link it gets removed.
+     @suppress {missingProperties,checkTypes} suppression added to enable
+     type checking
+   */
   testCancelNew() {
     mockField.dispatchChange();  // Should be fired because link was removed.
     mockCtrl.$replayAll();
@@ -233,9 +266,14 @@ testSuite({
     const prevSib = anchorElem.previousSibling;
     plugin = new LinkDialogPlugin();
     plugin.registerFieldObject(mockField);
+    /** @suppress {visibility} suppression added to enable type checking */
     const dialog = plugin.createDialog(new DomHelper(), mockLink);
 
     // Mock of execCommand + cancel without actually opening the dialog.
+    /**
+     * @suppress {visibility,checkTypes} suppression added to enable type
+     * checking
+     */
     plugin.currentLink_ = mockLink;
     dialog.dispatchEvent(AbstractDialog.EventType.CANCEL);
 
@@ -253,7 +291,11 @@ testSuite({
     mockCtrl.$verifyAll();
   },
 
-  /** Tests that when the Cancel event fires for a new link it gets removed. */
+  /**
+     Tests that when the Cancel event fires for a new link it gets removed.
+     @suppress {missingProperties,checkTypes} suppression added to enable
+     type checking
+   */
   testCancelNewMultiple() {
     mockField.dispatchChange();  // Should be fired because link was removed.
     mockCtrl.$replayAll();
@@ -280,9 +322,14 @@ testSuite({
 
     plugin = new LinkDialogPlugin();
     plugin.registerFieldObject(mockField);
+    /** @suppress {visibility} suppression added to enable type checking */
     const dialog = plugin.createDialog(new DomHelper(), mockLink);
 
     // Mock of execCommand + cancel without actually opening the dialog.
+    /**
+     * @suppress {visibility,checkTypes} suppression added to enable type
+     * checking
+     */
     plugin.currentLink_ = mockLink;
     dialog.dispatchEvent(AbstractDialog.EventType.CANCEL);
 
@@ -319,7 +366,11 @@ testSuite({
     mockCtrl.$verifyAll();
   },
 
-  /** Tests that when the Cancel event fires for a new link it gets removed. */
+  /**
+     Tests that when the Cancel event fires for a new link it gets removed.
+     @suppress {missingProperties,checkTypes} suppression added to enable
+     type checking
+   */
   testOkNewMultiple() {
     mockLink.placeCursorRightOf();
     mockField.dispatchSelectionChangeEvent();
@@ -346,9 +397,15 @@ testSuite({
     const prevSib = anchorElem1.previousSibling;
     plugin = new LinkDialogPlugin();
     plugin.registerFieldObject(mockField);
+    /** @suppress {visibility} suppression added to enable type checking */
     const dialog = plugin.createDialog(new DomHelper(), mockLink);
 
-    // Mock of execCommand + clicking OK without actually opening the dialog.
+    // Mock of execCommand + clicking OK without actually opening the
+    // dialog.
+    /**
+     * @suppress {visibility,checkTypes} suppression added to enable type
+     * checking
+     */
     plugin.currentLink_ = mockLink;
     dialog.dispatchEvent(new LinkDialog.OkEvent(NEW_LINK_TEXT, NEW_LINK_URL));
 
@@ -374,6 +431,8 @@ testSuite({
   /**
    * Tests the anchor's target is correctly modified with the "open in new
    * window" feature on.
+   * @suppress {missingProperties,checkTypes} suppression added to enable
+   * type checking
    */
   testOkOpenInNewWindow() {
     mockLink.placeCursorRightOf().$anyTimes();
@@ -385,10 +444,15 @@ testSuite({
     plugin = new LinkDialogPlugin();
     plugin.registerFieldObject(mockField);
     plugin.showOpenLinkInNewWindow(false);
+    /**
+     * @suppress {visibility,checkTypes} suppression added to enable type
+     * checking
+     */
     plugin.currentLink_ = mockLink;
 
     // Edit a link that doesn't open in a new window and leave it as such.
     setUpAnchor(OLD_LINK_TEXT, OLD_LINK_URL);
+    /** @suppress {visibility} suppression added to enable type checking */
     let dialog = plugin.createDialog(new DomHelper(), mockLink);
     dialog.dispatchEvent(
         new LinkDialog.OkEvent(NEW_LINK_TEXT, NEW_LINK_URL, false, false));
@@ -401,6 +465,7 @@ testSuite({
 
     // Edit a link that doesn't open in a new window and toggle it on.
     setUpAnchor(OLD_LINK_TEXT, OLD_LINK_URL);
+    /** @suppress {visibility} suppression added to enable type checking */
     dialog = plugin.createDialog(new DomHelper(), mockLink);
     dialog.dispatchEvent(
         new LinkDialog.OkEvent(NEW_LINK_TEXT, NEW_LINK_URL, true));
@@ -413,6 +478,7 @@ testSuite({
 
     // Edit a link that doesn't open in a named window and don't touch it.
     setUpAnchor(OLD_LINK_TEXT, OLD_LINK_URL, false, 'named');
+    /** @suppress {visibility} suppression added to enable type checking */
     dialog = plugin.createDialog(new DomHelper(), mockLink);
     dialog.dispatchEvent(
         new LinkDialog.OkEvent(NEW_LINK_TEXT, NEW_LINK_URL, false));
@@ -424,6 +490,7 @@ testSuite({
 
     // Edit a link that opens in a new window and toggle it off.
     setUpAnchor(OLD_LINK_TEXT, OLD_LINK_URL, false, '_blank');
+    /** @suppress {visibility} suppression added to enable type checking */
     dialog = plugin.createDialog(new DomHelper(), mockLink);
     dialog.dispatchEvent(
         new LinkDialog.OkEvent(NEW_LINK_TEXT, NEW_LINK_URL, false));
@@ -465,6 +532,7 @@ testSuite({
   /**
    * Tests that the selection is cleared when the dialog opens and is
    * correctly restored after cancel is clicked.
+   * @suppress {visibility} suppression added to enable type checking
    */
   testRestoreSelectionOnOk() {
     setUpAnchor('12345', '/');
@@ -478,7 +546,7 @@ testSuite({
         'Incorrect text selected before dialog is opened', '234',
         fieldObj.getRange().getText());
     plugin.execCommand(Command.MODAL_LINK_EDITOR, linkObj);
-    if (!userAgent.IE && !userAgent.OPERA) {
+    if (!userAgent.IE) {
       // IE returns some bogus range when field doesn't have selection.
       // You can't remove the selection from a whitebox field in Opera.
       assertNull(
@@ -492,20 +560,21 @@ testSuite({
 
     // Test that the caret is placed at the end of the link text.
     editorDom.assertRangeBetweenText(
-        // If the browser gets stuck in links, an nbsp was added after the link
-        // to avoid that, otherwise we just look for the 5.
+        // If the browser gets stuck in links, an nbsp was added after the
+        // link to avoid that, otherwise we just look for the 5.
         BrowserFeature.GETS_STUCK_IN_LINKS ? Unicode.NBSP : '5', '',
         fieldObj.getRange());
 
-    // NOTE(user): The functionality to avoid getting stuck in links is
-    // tested in editablelink_test.html::testPlaceCursorRightOf().
+    // NOTE(user): The functionality to avoid getting stuck in
+    // links is tested in editablelink_test.html::testPlaceCursorRightOf().
   },
 
   /**
    * Tests that the selection is cleared when the dialog opens and is
    * correctly restored after cancel is clicked.
-   * @param {boolean=} isNew Whether to test behavior when creating a new link
-   *     (cancelling will flatten it).
+   * @param {boolean=} isNew Whether to test behavior when creating a new
+   *     link (cancelling will flatten it).
+   * @suppress {visibility} suppression added to enable type checking
    */
   testRestoreSelectionOnCancel(isNew = undefined) {
     setUpAnchor('12345', '/', isNew);
@@ -519,7 +588,7 @@ testSuite({
         'Incorrect text selected before dialog is opened', '234',
         fieldObj.getRange().getText());
     plugin.execCommand(Command.MODAL_LINK_EDITOR, linkObj);
-    if (!userAgent.IE && !userAgent.OPERA) {
+    if (!userAgent.IE) {
       // IE returns some bogus range when field doesn't have selection.
       // You can't remove the selection from a whitebox field in Opera.
       assertNull(
@@ -541,7 +610,9 @@ testSuite({
   },
 
   /**
-     Tests that the BeforeTestLink event is suppressed for invalid url schemes.
+   * Tests that the BeforeTestLink event is suppressed for invalid url
+   * schemes.
+   * @suppress {checkTypes} suppression added to enable type checking
    */
   testTestLinkDisabledForInvalidScheme() {
     mockAlert(mockmatchers.isString);
@@ -550,9 +621,11 @@ testSuite({
     const invalidUrl = 'javascript:document.write(\'hello\');';
 
     plugin = new LinkDialogPlugin();
+    /** @suppress {visibility} suppression added to enable type checking */
     const dialog = plugin.createDialog(new DomHelper(), mockLink);
 
-    // Mock of execCommand + clicking test without actually opening the dialog.
+    // Mock of execCommand + clicking test without actually opening the
+    // dialog.
     const dispatched =
         dialog.dispatchEvent(new LinkDialog.BeforeTestLinkEvent(invalidUrl));
 
@@ -560,9 +633,11 @@ testSuite({
     mockCtrl.$verifyAll();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testIsSafeSchemeToOpen() {
     plugin = new LinkDialogPlugin();
-    // Urls with no scheme at all are ok too since 'http://' will be prepended.
+    // Urls with no scheme at all are ok too since 'http://' will be
+    // prepended.
     const good = [
       'http://google.com',
       'http://google.com/',
@@ -599,6 +674,7 @@ testSuite({
     }
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testShouldOpenWithWhitelist() {
     plugin.setSafeToOpenSchemes(['abc']);
 
@@ -616,9 +692,10 @@ testSuite({
   /**
    * Regression test for http://b/issue?id=1607766 . Without the fix, this
    * should give an Invalid Argument error in IE, because the editable field
-   * caches a selection util that has a reference to the node of the link text
-   * before it is edited (which gets replaced by a new node for the new text
-   * after editing).
+   * caches a selection util that has a reference to the node of the link
+   * text before it is edited (which gets replaced by a new node for the new
+   * text after editing).
+   * @suppress {visibility} suppression added to enable type checking
    */
   testBug1607766() {
     setUpAnchor('abc', 'def');
@@ -632,11 +709,15 @@ testSuite({
     plugin.fieldObject.dispatchSelectionChangeEvent();
 
     plugin.execCommand(Command.MODAL_LINK_EDITOR, linkObj);
+    /**
+     * @suppress {visibility,strictMissingProperties} suppression added to
+     * enable type checking
+     */
     dom.getElement(LinkDialog.Id_.TEXT_TO_DISPLAY).value = 'Abc';
     events.fireClickSequence(plugin.dialog_.getOkButtonElement());
 
-    // In IE the unit test somehow doesn't cause a browser focus event, so we
-    // need to manually invoke this, which is where the bug happens.
+    // In IE the unit test somehow doesn't cause a browser focus event, so
+    // we need to manually invoke this, which is where the bug happens.
     plugin.fieldObject.dispatchFocus_();
   },
 
@@ -652,13 +733,22 @@ testSuite({
     linkObj = new Link(anchorElem, true);
 
     const helper = new TestHelper(elem);
-    // Select "</a>" in a way, simulating what IE does if you hit enter twice,
-    // arrow up into the blank line and open the link dialog.
+    // Select "</a>" in a way, simulating what IE does if you hit enter
+    // twice, arrow up into the blank line and open the link dialog.
     helper.select(anchorElem, 0, elem.firstChild, 1);
 
     plugin.execCommand(Command.MODAL_LINK_EDITOR, linkObj);
+    /**
+     * @suppress {visibility,strictMissingProperties} suppression added to
+     * enable type checking
+     */
     dom.getElement(LinkDialog.Id_.TEXT_TO_DISPLAY).value = 'foo';
+    /**
+     * @suppress {visibility,strictMissingProperties} suppression added to
+     * enable type checking
+     */
     dom.getElement(LinkDialog.Id_.ON_WEB_INPUT).value = 'foo';
+    /** @suppress {visibility} suppression added to enable type checking */
     const okButton = plugin.dialog_.getOkButtonElement();
     okButton.disabled = false;
     events.fireClickSequence(okButton);
@@ -673,7 +763,8 @@ testSuite({
    */
   testBug7279077ScrollOnFocus() {
     if (userAgent.IE) {
-      return;  // TODO(user): take this out once b/7279077 fixed for IE too.
+      return;  // TODO(user): take this out once b/7279077 fixed for IE
+               // too.
     }
     setUpAnchor('12345', '/');
     setUpRealEditableField();
@@ -698,8 +789,17 @@ testSuite({
 
     // Bring up the link insertion dialog, then cancel.
     plugin.execCommand(Command.MODAL_LINK_EDITOR, linkObj);
+    /**
+     * @suppress {visibility,strictMissingProperties} suppression added to
+     * enable type checking
+     */
     dom.getElement(LinkDialog.Id_.TEXT_TO_DISPLAY).value = 'foo';
+    /**
+     * @suppress {visibility,strictMissingProperties} suppression added to
+     * enable type checking
+     */
     dom.getElement(LinkDialog.Id_.ON_WEB_INPUT).value = 'foo';
+    /** @suppress {visibility} suppression added to enable type checking */
     const cancelButton = plugin.dialog_.getCancelButtonElement();
     events.fireClickSequence(cancelButton);
 
@@ -708,8 +808,17 @@ testSuite({
 
     // Now let's try it with clicking the OK button.
     plugin.execCommand(Command.MODAL_LINK_EDITOR, linkObj);
+    /**
+     * @suppress {visibility,strictMissingProperties} suppression added to
+     * enable type checking
+     */
     dom.getElement(LinkDialog.Id_.TEXT_TO_DISPLAY).value = 'foo';
+    /**
+     * @suppress {visibility,strictMissingProperties} suppression added to
+     * enable type checking
+     */
     dom.getElement(LinkDialog.Id_.ON_WEB_INPUT).value = 'foo';
+    /** @suppress {visibility} suppression added to enable type checking */
     const okButton = plugin.dialog_.getOkButtonElement();
     events.fireClickSequence(okButton);
 

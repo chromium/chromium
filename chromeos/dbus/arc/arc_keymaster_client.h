@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 
@@ -21,6 +20,9 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcKeymasterClient
     : public DBusClient {
  public:
+  ArcKeymasterClient(const ArcKeymasterClient&) = delete;
+  ArcKeymasterClient& operator=(const ArcKeymasterClient&) = delete;
+
   ~ArcKeymasterClient() override;
 
   // Factory function.
@@ -34,9 +36,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcKeymasterClient
  protected:
   // Create() should be used instead.
   ArcKeymasterClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcKeymasterClient);
 };
 
 }  // namespace chromeos

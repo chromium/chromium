@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_presentation_controller.h"
 
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -47,7 +46,7 @@ const CGFloat kContainerCornerRadius = 13.0;
   // so that banners presented are inserted into the correct place in the view
   // hierarchy.  Returning NO adds the container view as a sibling view in front
   // of the presenting view controller's view.
-  return !base::FeatureList::IsEnabled(kInfobarOverlayUI);
+  return NO;
 }
 
 - (void)presentationTransitionWillBegin {

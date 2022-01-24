@@ -16,6 +16,8 @@ namespace metrics {
 // at a time by staging and discarding logs, and persist/load the whole set.
 class LogStore {
  public:
+  virtual ~LogStore() = default;
+
   // Returns true if there are any logs waiting to be uploaded.
   virtual bool has_unsent_logs() const = 0;
 

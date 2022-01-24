@@ -14,6 +14,9 @@ import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js'
  * @fileoverview
  * 'onboarding-choose-wp-disable-method-page' allows user to select between
  * hardware or RSU write protection disable methods.
+ *
+ * TODO(joonbug): Change "Manual" description based on enterprise enrollment
+ * status.
  */
 export class OnboardingChooseWpDisableMethodPageElement extends PolymerElement {
   static get is() {
@@ -26,13 +29,7 @@ export class OnboardingChooseWpDisableMethodPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: {},
-      },
-
-      /** @private {string} */
+      /** @private */
       hwwpMethod_: {
         type: String,
         value: '',
@@ -40,9 +37,9 @@ export class OnboardingChooseWpDisableMethodPageElement extends PolymerElement {
     };
   }
 
-  /** @override */
-  ready() {
-    super.ready();
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
   }
 
@@ -52,6 +49,11 @@ export class OnboardingChooseWpDisableMethodPageElement extends PolymerElement {
    */
   onHwwpDisableMethodSelectionChanged_(event) {
     this.hwwpMethod_ = event.detail.value;
+    const disabled = !this.hwwpMethod_;
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: disabled},
+        ));
   }
 
   /** @return {!Promise<!StateResult>} */
@@ -64,7 +66,7 @@ export class OnboardingChooseWpDisableMethodPageElement extends PolymerElement {
       return Promise.reject(new Error('No disable method selected'));
     }
   }
-};
+}
 
 customElements.define(
     OnboardingChooseWpDisableMethodPageElement.is,

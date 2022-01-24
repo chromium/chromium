@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/infra/described.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 
@@ -103,7 +104,7 @@ BorealisContextManagerImpl::~BorealisContextManagerImpl() {
 
 // Note that this method gets called in the constructor.
 void BorealisContextManagerImpl::ShutDownBorealisIfChromeCrashed() {
-  if (profile_->GetLastSessionExitType() != Profile::EXIT_CRASHED) {
+  if (ExitTypeService::GetLastSessionExitType(profile_) != ExitType::kCrashed) {
     return;
   }
   vm_tools::concierge::GetVmInfoRequest request;

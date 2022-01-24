@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_OAUTH2_LOGIN_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_OAUTH2_LOGIN_MANAGER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -27,6 +26,10 @@ class OAuth2LoginManagerFactory : public BrowserContextKeyedServiceFactory {
   // Returns an instance of the OAuth2LoginManagerFactory singleton.
   static OAuth2LoginManagerFactory* GetInstance();
 
+  OAuth2LoginManagerFactory(const OAuth2LoginManagerFactory&) = delete;
+  OAuth2LoginManagerFactory& operator=(const OAuth2LoginManagerFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<OAuth2LoginManagerFactory>;
 
@@ -36,8 +39,6 @@ class OAuth2LoginManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2LoginManagerFactory);
 };
 
 }  // namespace ash

@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user_type.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -31,6 +30,10 @@ class ASH_EXPORT BluetoothPowerController
       public device::BluetoothAdapter::Observer {
  public:
   explicit BluetoothPowerController(PrefService* local_state);
+
+  BluetoothPowerController(const BluetoothPowerController&) = delete;
+  BluetoothPowerController& operator=(const BluetoothPowerController&) = delete;
+
   ~BluetoothPowerController() override;
 
   // Changes the bluetooth power setting to |enabled|.
@@ -153,8 +156,6 @@ class ASH_EXPORT BluetoothPowerController
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
   base::WeakPtrFactory<BluetoothPowerController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothPowerController);
 };
 
 }  // namespace ash

@@ -201,7 +201,7 @@ TEST(WebInputEventBuilderAndroidTest, CutCopyPasteKey) {
 TEST(WebInputEventBuilderAndroidTest, WebMouseEventCoordinates) {
   constexpr int kEventTimeMs = 5;
   const base::TimeTicks event_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(kEventTimeMs);
+      base::TimeTicks() + base::Milliseconds(kEventTimeMs);
 
   ui::test::ScopedEventTestTickClock clock;
   clock.SetNowTicks(event_time);

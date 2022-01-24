@@ -8,11 +8,13 @@
 
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "base/trace_event/traced_value.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
+#include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_request.h"
 
@@ -84,4 +86,12 @@ void CrtcController::MoveCursor(const gfx::Point& location) {
   drm_->MoveCursor(crtc_, location);
 }
 
+void CrtcController::AsValueInto(base::trace_event::TracedValue* value) const {
+  value->SetInteger("crtc_id", crtc_);
+  value->SetInteger("connector", connector_);
+  {
+    auto mode_dict = value->BeginDictionaryScoped("mode");
+    DrmAsValueIntoHelper(state_.mode, value);
+  }
+}
 }  // namespace ui

@@ -33,8 +33,7 @@ class Profile;
 // It is assumed that the account is already in the profile, but not necessarily
 // in the content area (cookies).
 class DiceInterceptedSessionStartupHelper
-    : public content::WebContentsObserver,
-      public signin::IdentityManager::Observer,
+    : public signin::IdentityManager::Observer,
       public AccountReconcilor::Observer {
  public:
   // |profile| is the new profile that was created after signin interception.
@@ -81,6 +80,7 @@ class DiceInterceptedSessionStartupHelper
   void MoveTab();
 
   Profile* const profile_;
+  base::WeakPtr<content::WebContents> web_contents_;
   bool use_multilogin_;
   CoreAccountId account_id_;
   base::OnceClosure callback_;

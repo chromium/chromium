@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
-#import "ios/chrome/browser/ui/infobars/test/fake_infobar_ui_delegate.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
@@ -30,12 +29,10 @@ class PasswordInfobarBannerInteractionHandlerTest : public PlatformTest {
         std::make_unique<web::FakeNavigationManager>());
     InfobarOverlayRequestInserter::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
-
-    FakeInfobarUIDelegate* ui_delegate = [[FakeInfobarUIDelegate alloc] init];
-    ui_delegate.infobarType = InfobarType::kInfobarTypePasswordSave;
     std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
-        ui_delegate, MockIOSChromeSavePasswordInfoBarDelegate::Create(
-                         @"username", @"password"));
+        InfobarType::kInfobarTypePasswordSave,
+        MockIOSChromeSavePasswordInfoBarDelegate::Create(@"username",
+                                                         @"password"));
     infobar_ = infobar.get();
     InfoBarManagerImpl::FromWebState(&web_state_)
         ->AddInfoBar(std::move(infobar));

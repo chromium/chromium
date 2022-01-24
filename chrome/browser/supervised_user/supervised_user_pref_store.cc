@@ -139,9 +139,11 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       bool record_history = true;
       settings->GetBoolean(supervised_users::kRecordHistory, &record_history);
       prefs_->SetBoolean(prefs::kAllowDeletingBrowserHistory, !record_history);
-      prefs_->SetInteger(prefs::kIncognitoModeAvailability,
-                         record_history ? IncognitoModePrefs::DISABLED
-                                        : IncognitoModePrefs::ENABLED);
+      prefs_->SetInteger(
+          prefs::kIncognitoModeAvailability,
+          static_cast<int>(record_history
+                               ? IncognitoModePrefs::Availability::kDisabled
+                               : IncognitoModePrefs::Availability::kEnabled));
     }
 
     {

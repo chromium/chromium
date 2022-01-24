@@ -14,9 +14,13 @@
 #include "media/base/media_export.h"
 #include "url/gurl.h"
 
+namespace net {
+class SiteForCookies;
+}  // namespace net
+
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace media {
 
@@ -46,7 +50,7 @@ class MEDIA_EXPORT MediaResourceGetter {
 
   // Method for getting the cookies for a given URL.
   virtual void GetCookies(const GURL& url,
-                          const GURL& site_for_cookies,
+                          const net::SiteForCookies& site_for_cookies,
                           const url::Origin& top_frame_origin,
                           GetCookieCB callback) = 0;
 

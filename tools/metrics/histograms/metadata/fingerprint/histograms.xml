@@ -1,0 +1,279 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Fingerprint histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Fingerprint.Auth.ScanResult" enum="FingerprintScanResult"
+    expires_after="2022-04-10">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tomhughes@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the scan result during fingerprint authentication session. It is
+    recorded every time user touches the fingerprint sensor while authenticating
+    (unlock screen, web auth, etc.).
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Enroll.ScanResult" enum="FingerprintScanResult"
+    expires_after="2022-04-10">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tomhughes@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the scan result during fingerprint enrollment session. It is recorded
+    every time user touches the fingerprint sensor while enrolling fingerprints
+    (during onboarding or in Chrome OS settings).
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Reset.ResetContextMode"
+    enum="FingerprintSensorMode" expires_after="2022-05-01">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>The mode FPMCU was in when we reset context.</summary>
+</histogram>
+
+<histogram name="Fingerprint.SetContext.SetContextMode"
+    enum="FingerprintSensorMode" expires_after="2022-05-01">
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>The mode FPMCU was in when we set its context.</summary>
+</histogram>
+
+<histogram name="Fingerprint.SetContext.Success" enum="BooleanSuccess"
+    expires_after="2022-01-02">
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>Whether setting FPMCU mode succeeded.</summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.AttemptsCountBeforeSuccess" units="count"
+    expires_after="2022-05-01">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Counts the number of fingerprint attempts until successful screen unlock.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.AuthSuccessful" enum="BooleanSuccess"
+    expires_after="2022-04-03">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Counts the number of times that the fingerprint match successfully vs.
+    rejected.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.EnrolledFingerCount" units="count"
+    expires_after="2022-04-03">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>Counts the number of fingers enrolled by the user.</summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.Match.Duration.Capture" units="ms"
+    expires_after="2022-05-01">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Measures the time it took to capture the fingerprint image in the 'match'
+    case.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.Match.Duration.Matcher" units="ms"
+    expires_after="2022-04-24">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Measures the time it took to run matcher in the 'match' case.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.Match.Duration.Overall" units="ms"
+    expires_after="2022-04-24">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Measures the time it took between the detection of a finger and the 'match'
+    event being sent to the AP.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.Match.PositiveMatchSecretCorrect"
+    enum="BooleanCorrect" expires_after="2022-01-02">
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Whether the hash of the positive match secret read from FPMCU matches the
+    record.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.MatchIgnoredDueToPowerButtonPress"
+    enum="BooleanIgnored" expires_after="2022-05-01">
+  <owner>ravisadineni@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Whether fingerprint touch was ignored due to parallel power button press.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.MigrationForPositiveMatchSecretResult"
+    enum="BooleanSuccess" expires_after="M85">
+  <obsolete>
+    Removed 09/2020 as the migration is no longer supported after M85.
+  </obsolete>
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Whether migrating a record to positive match secret succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.NoMatch.Duration.Capture" units="ms"
+    expires_after="2022-05-01">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Measures the time it took to capture the fingerprint image in the 'no-match'
+    case.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.NoMatch.Duration.Matcher" units="ms"
+    expires_after="2022-05-01">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Measures the time it took to run the matcher in the 'no-match' case.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.NoMatch.Duration.Overall" units="ms"
+    expires_after="2022-04-24">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Measures the time it took between the detection of a finger and the
+    'no-match' event being sent to the AP.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.ReadPositiveMatchSecret.Success"
+    enum="BooleanSuccess" expires_after="2022-05-01">
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Whether successfully read positive match secret from FPMCU when needed.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.RecordFormatVersion"
+    enum="FingerprintRecordFormatVersion" expires_after="2022-05-01">
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Format version of a fingerprint template record read from storage.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Unlock.Result" enum="FingerprintUnlockResult"
+    expires_after="2022-04-03">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tomhughes@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the result of the fingerprint authentication attempt on the lock
+    screen.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.UnlockEnabled" enum="BooleanEnabled"
+    expires_after="2022-04-03">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Track whether fingerprint is enabled to unlock the screen, when the user
+    logs in.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Updater.NoUpdate.Duration.Overall" units="ms"
+    expires_after="2022-04-17">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Measures the total time it takes to run the fingerprint firmware updater
+    when an update was not necessary.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Updater.Reason" enum="FingerprintUpdaterReason"
+    expires_after="2022-04-10">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the fingerprint firmware updater's reason(s) for re-flashing.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Updater.Status" enum="FingerprintUpdaterStatus"
+    expires_after="2022-04-10">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>Tracks the fingerprint firmware updater's overall status.</summary>
+</histogram>
+
+<histogram name="Fingerprint.Updater.Update.Duration.Overall" units="ms"
+    expires_after="2022-05-01">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Measures the total time it takes to run the fingerprint firmware updater
+    when an update was necessary.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

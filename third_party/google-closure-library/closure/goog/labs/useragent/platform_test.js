@@ -1,16 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /** @fileoverview Unit tests for userAgentPlatform. */
 
@@ -62,14 +54,6 @@ testSuite({
     assertVersionBetween('4.0.0', '4.1.0');
     assertVersionBetween('4.0', '4.1');
     assertVersionBetween('4', '5');
-
-    uaString = testAgents.GO2PHONE;
-
-    util.setUserAgent(uaString);
-    assertTrue(userAgentPlatform.isAndroid());
-    assertVersion('8.1.0');
-    assertVersionBetween('8.0', '8.2');
-    assertVersionBetween('8', '9');
   },
 
   testKindleFire() {
@@ -103,6 +87,20 @@ testSuite({
     assertTrue(userAgentPlatform.isIos());
     assertVersion('6.0');
     assertVersionBetween('5', '7');
+
+    uaString = testAgents.SAFARI_IPHONE_IOS_14;
+    util.setUserAgent(uaString);
+    assertTrue(userAgentPlatform.isIphone());
+    assertTrue(userAgentPlatform.isIos());
+    assertVersion('14.6');
+    assertVersionBetween('14', '15');
+
+    uaString = testAgents.SAFARI_IPHONE_IOS_15;
+    util.setUserAgent(uaString);
+    assertTrue(userAgentPlatform.isIphone());
+    assertTrue(userAgentPlatform.isIos());
+    assertVersion('15.0');
+    assertVersionBetween('15', '16');
 
     uaString = testAgents.SAFARI_IPHONE_32;
     util.setUserAgent(uaString);
@@ -153,8 +151,34 @@ testSuite({
     assertTrue(userAgentPlatform.isIos());
     assertVersion('6.0');
     assertVersionBetween('5', '7');
+
+    uaString = testAgents.SAFARI_DESKTOP_IPAD_IOS_15;
+    util.setUserAgent(uaString);
+    assertFalse(userAgentPlatform.isIpad());
+    assertFalse(userAgentPlatform.isIos());
+    assertTrue(userAgentPlatform.isMacintosh());
+    // In Safari desktop mode, the OS version reported is Mac OS version.
+    assertVersion('10.15.6');
+    assertVersionBetween('10.15.6', '10.15.7');
+
+    uaString = testAgents.SAFARI_MOBILE_IPAD_IOS_15;
+    util.setUserAgent(uaString);
+    assertTrue(userAgentPlatform.isIpad());
+    assertTrue(userAgentPlatform.isIos());
+    assertFalse(userAgentPlatform.isMacintosh());
+    assertVersion('15.0');
+    assertVersionBetween('15.0', '15.1');
+
+    uaString = testAgents.CHROME_IPAD_IOS_15;
+    util.setUserAgent(uaString);
+    assertTrue(userAgentPlatform.isIpad());
+    assertTrue(userAgentPlatform.isIos());
+    assertFalse(userAgentPlatform.isMacintosh());
+    assertVersion('15.0');
+    assertVersionBetween('15.0', '15.1');
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testMac() {
     let uaString = testAgents.CHROME_MAC;
     const platform = 'IntelMac';
@@ -187,6 +211,14 @@ testSuite({
     assertVersionBetween('11', '12');
     assertVersionBetween('11.7', '11.8');
     assertVersionBetween('11.7.9', '11.8.0');
+
+    uaString = testAgents.SAFARI_MAC_OS_BIG_SUR;
+    util.setUserAgent(uaString);
+    assertFalse(userAgentPlatform.isIpad());
+    assertFalse(userAgentPlatform.isIos());
+    assertTrue(userAgentPlatform.isMacintosh());
+    assertVersion('10.15.7');
+    assertVersionBetween('10.15.7', '10.15.8');
   },
 
   testLinux() {
@@ -273,13 +305,5 @@ testSuite({
     util.setUserAgent(uaString);
     assertTrue(userAgentPlatform.isKaiOS());
     assertVersion('2.5');
-  },
-
-  testGo2Phone() {
-    const uaString = testAgents.GO2PHONE;
-
-    util.setUserAgent(uaString);
-    assertTrue(userAgentPlatform.isGo2Phone());
-    assertVersion('8.1.0');
   },
 });

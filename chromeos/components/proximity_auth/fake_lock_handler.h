@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_PROXIMITY_AUTH_FAKE_LOCK_HANDLER_H_
 #define CHROMEOS_COMPONENTS_PROXIMITY_AUTH_FAKE_LOCK_HANDLER_H_
 
-#include "base/macros.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 
 namespace proximity_auth {
@@ -13,6 +12,10 @@ namespace proximity_auth {
 class FakeLockHandler : public ScreenlockBridge::LockHandler {
  public:
   FakeLockHandler();
+
+  FakeLockHandler(const FakeLockHandler&) = delete;
+  FakeLockHandler& operator=(const FakeLockHandler&) = delete;
+
   ~FakeLockHandler() override;
 
   // LockHandler:
@@ -22,6 +25,10 @@ class FakeLockHandler : public ScreenlockBridge::LockHandler {
       const AccountId& account_id,
       const ScreenlockBridge::UserPodCustomIconInfo& icon_info) override;
   void HideUserPodCustomIcon(const AccountId& account_id) override;
+  void SetSmartLockState(const AccountId& account_id,
+                         ash::SmartLockState state) override;
+  void NotifySmartLockAuthResult(const AccountId& account_id,
+                                 bool successful) override;
   void EnableInput() override;
   void SetAuthType(const AccountId& account_id,
                    mojom::AuthType auth_type,
@@ -32,9 +39,6 @@ class FakeLockHandler : public ScreenlockBridge::LockHandler {
   void AttemptEasySignin(const AccountId& account_id,
                          const std::string& secret,
                          const std::string& key_label) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeLockHandler);
 };
 
 }  // namespace proximity_auth

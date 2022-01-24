@@ -12,7 +12,6 @@
 #else
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -21,11 +20,11 @@
 bool DoesOriginContainAnyInstalledWebApp(
     content::BrowserContext* browser_context,
     const GURL& origin) {
-  DCHECK_EQ(origin, origin.GetOrigin());
+  DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
 #if defined(OS_ANDROID)
   return ShortcutHelper::DoesOriginContainAnyInstalledWebApk(origin);
 #else
-  auto* provider = web_app::WebAppProviderFactory::GetForProfile(
+  auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(browser_context));
   // TODO: Change this method to async, or document that the caller must know
   // that WebAppProvider is started.
@@ -40,7 +39,7 @@ std::set<GURL> GetOriginsWithInstalledWebApps(
 #if defined(OS_ANDROID)
   return ShortcutHelper::GetOriginsWithInstalledWebApksOrTwas();
 #else
-  auto* provider = web_app::WebAppProvider::Get(
+  auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(browser_context));
   // TODO: Change this method to async, or document that the caller must know
   // that WebAppProvider is started.
@@ -50,7 +49,7 @@ std::set<GURL> GetOriginsWithInstalledWebApps(
   auto app_ids = registrar.GetAppIds();
   std::set<GURL> installed_origins;
   for (auto& app_id : app_ids) {
-    GURL origin = registrar.GetAppScope(app_id).GetOrigin();
+    GURL origin = registrar.GetAppScope(app_id).DeprecatedGetOriginAsURL();
     DCHECK(origin.is_valid());
     if (origin.SchemeIs(url::kHttpScheme))
       installed_origins.emplace(origin);

@@ -79,9 +79,11 @@ void SensorTestUtils::WaitForEvent(EventTarget* event_target,
   base::RunLoop run_loop;
   auto* event_listener =
       MakeGarbageCollected<SyncEventListener>(run_loop.QuitClosure());
-  event_target->addEventListener(event_type, event_listener);
+  event_target->addEventListener(event_type, event_listener,
+                                 /*use_capture=*/false);
   run_loop.Run();
-  event_target->removeEventListener(event_type, event_listener);
+  event_target->removeEventListener(event_type, event_listener,
+                                    /*use_capture=*/false);
 }
 
 }  // namespace blink

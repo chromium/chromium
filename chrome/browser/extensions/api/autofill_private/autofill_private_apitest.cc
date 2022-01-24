@@ -19,9 +19,12 @@ namespace extensions {
 
 namespace {
 
-class AutofillPrivateApiTest : public ExtensionApiTest {
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class AutofillPrivateApiTest : public ExtensionApiTest,
+                               public testing::WithParamInterface<ContextType> {
  public:
-  AutofillPrivateApiTest() = default;
+  AutofillPrivateApiTest() : ExtensionApiTest(GetParam()) {}
   AutofillPrivateApiTest(const AutofillPrivateApiTest&) = delete;
   AutofillPrivateApiTest& operator=(const AutofillPrivateApiTest&) = delete;
   ~AutofillPrivateApiTest() override = default;
@@ -36,40 +39,47 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   }
 
  protected:
-  bool RunAutofillSubtest(const std::string& subtest) {
+  bool RunAutofillSubtest(const char* subtest) {
     autofill::WaitForPersonalDataManagerToBeLoaded(profile());
 
-    const std::string page_url = "main.html?" + subtest;
-    return RunExtensionTest("autofill_private", {.page_url = page_url.c_str()},
+    return RunExtensionTest("autofill_private", {.custom_arg = subtest},
                             {.load_as_component = true});
   }
 };
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         AutofillPrivateApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         AutofillPrivateApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 }  // namespace
 
 // TODO(hcarmona): Investigate converting these tests to unittests.
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, GetCountryList) {
+IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, GetCountryList) {
   EXPECT_TRUE(RunAutofillSubtest("getCountryList")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, GetAddressComponents) {
+IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, GetAddressComponents) {
   EXPECT_TRUE(RunAutofillSubtest("getAddressComponents")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, RemoveEntry) {
+IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, RemoveEntry) {
   EXPECT_TRUE(RunAutofillSubtest("removeEntry")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, ValidatePhoneNumbers) {
+IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, ValidatePhoneNumbers) {
   EXPECT_TRUE(RunAutofillSubtest("validatePhoneNumbers")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateAddress) {
+IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, AddAndUpdateAddress) {
   EXPECT_TRUE(RunAutofillSubtest("addAndUpdateAddress")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateCreditCard) {
+IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, AddAndUpdateCreditCard) {
   EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard")) << message_;
 }
 

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -23,6 +22,10 @@
 
 class GURL;
 class PrefService;
+
+namespace net {
+class SiteForCookies;
+}  // namespace net
 
 namespace content_settings {
 
@@ -64,6 +67,9 @@ class CookieSettings : public CookieSettingsBase,
                  PrefService* prefs,
                  bool is_incognito,
                  const char* extension_scheme = kDummyExtensionScheme);
+
+  CookieSettings(const CookieSettings&) = delete;
+  CookieSettings& operator=(const CookieSettings&) = delete;
 
   // Returns the default content setting (CONTENT_SETTING_ALLOW,
   // CONTENT_SETTING_BLOCK, or CONTENT_SETTING_SESSION_ONLY) for cookies. If
@@ -127,7 +133,7 @@ class CookieSettings : public CookieSettingsBase,
                                        ContentSetting* setting) const override;
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
-      const GURL& site_for_cookies) const override;
+      const net::SiteForCookies& site_for_cookies) const override;
 
   // Detaches the |CookieSettings| from |PrefService|. This methods needs to be
   // called before destroying the service. Afterwards, only const methods can be
@@ -163,9 +169,10 @@ class CookieSettings : public CookieSettingsBase,
       content_settings::SettingSource* source) const override;
 
   // content_settings::Observer:
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   void OnCookiePreferencesChanged();
 
@@ -175,20 +182,15 @@ class CookieSettings : public CookieSettingsBase,
 
   base::ThreadChecker thread_checker_;
   base::ObserverList<Observer> observers_;
-  scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
+  const scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
   PrefChangeRegistrar pref_change_registrar_;
   const bool is_incognito_;
   const char* extension_scheme_;  // Weak.
 
-  // Used around accesses to |block_third_party_cookies_| to guarantee thread
-  // safety.
   mutable base::Lock lock_;
-
-  bool block_third_party_cookies_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieSettings);
+  bool block_third_party_cookies_ GUARDED_BY(lock_);
 };
 
 }  // namespace content_settings

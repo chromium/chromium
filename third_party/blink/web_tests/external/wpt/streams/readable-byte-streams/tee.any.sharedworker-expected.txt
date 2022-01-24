@@ -35,5 +35,7 @@ FAIL ReadableStream teeing with byte source: read from branch2, then read from b
 FAIL ReadableStream teeing with byte source: read from branch1 with default reader, then close while branch2 has pending BYOB read promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getReader' on 'ReadableStream': Cannot use a BYOB reader with a non-byte stream"
 FAIL ReadableStream teeing with byte source: read from branch2 with default reader, then close while branch1 has pending BYOB read promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getReader' on 'ReadableStream': Cannot use a BYOB reader with a non-byte stream"
 FAIL ReadableStream teeing with byte source: close when both branches have pending BYOB reads promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getReader' on 'ReadableStream': Cannot use a BYOB reader with a non-byte stream"
+PASS ReadableStream teeing with byte source: enqueue() and close() while both branches are pulling
+FAIL ReadableStream teeing with byte source: respond() and close() while both branches are pulling promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getReader' on 'ReadableStream': Cannot use a BYOB reader with a non-byte stream"
 Harness: the test ran to completion.
 

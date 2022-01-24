@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest,
       0, {TabStripModel::GestureType::kOther});
 
   // Navigate main tab to hide print preview.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   browser()->tab_strip_model()->ActivateTabAt(
       1, {TabStripModel::GestureType::kOther});

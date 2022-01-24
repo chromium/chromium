@@ -41,6 +41,7 @@ class CaptionsHandler : public SettingsPageUIHandler,
                                   speech::LanguageCode language_code) override;
 
   PrefService* prefs_;
+  bool soda_available_ = true;
 };
 
 }  // namespace settings

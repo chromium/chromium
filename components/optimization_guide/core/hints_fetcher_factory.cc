@@ -28,4 +28,9 @@ std::unique_ptr<HintsFetcher> HintsFetcherFactory::BuildInstance() {
       network_connection_tracker_);
 }
 
+void HintsFetcherFactory::OverrideOptimizationGuideServiceUrlForTesting(
+    const GURL& optimization_guide_service_url) {
+  optimization_guide_service_url_ = optimization_guide_service_url;
+}
+
 }  // namespace optimization_guide

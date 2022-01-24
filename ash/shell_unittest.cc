@@ -145,6 +145,10 @@ std::unique_ptr<views::WidgetDelegateView> CreateModalWidgetDelegate() {
 class SimpleMenuDelegate : public ui::SimpleMenuModel::Delegate {
  public:
   SimpleMenuDelegate() = default;
+
+  SimpleMenuDelegate(const SimpleMenuDelegate&) = delete;
+  SimpleMenuDelegate& operator=(const SimpleMenuDelegate&) = delete;
+
   ~SimpleMenuDelegate() override = default;
 
   bool IsCommandIdChecked(int command_id) const override { return false; }
@@ -152,9 +156,6 @@ class SimpleMenuDelegate : public ui::SimpleMenuModel::Delegate {
   bool IsCommandIdEnabled(int command_id) const override { return true; }
 
   void ExecuteCommand(int command_id, int event_flags) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SimpleMenuDelegate);
 };
 
 }  // namespace
@@ -568,13 +569,14 @@ TEST_F(ShellTest, NoWindowTabFocus) {
 class ShellTest2 : public AshTestBase {
  public:
   ShellTest2() = default;
+
+  ShellTest2(const ShellTest2&) = delete;
+  ShellTest2& operator=(const ShellTest2&) = delete;
+
   ~ShellTest2() override = default;
 
  protected:
   std::unique_ptr<aura::Window> window_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellTest2);
 };
 
 TEST_F(ShellTest2, DontCrashWhenWindowDeleted) {

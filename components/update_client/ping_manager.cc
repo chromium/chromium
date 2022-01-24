@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
@@ -36,7 +35,12 @@ const int kErrorNoUrl = -2;
 class PingSender : public base::RefCountedThreadSafe<PingSender> {
  public:
   using Callback = PingManager::Callback;
+
   explicit PingSender(scoped_refptr<Configurator> config);
+
+  PingSender(const PingSender&) = delete;
+  PingSender& operator=(const PingSender&) = delete;
+
   void SendPing(const Component& component, Callback callback);
 
  protected:
@@ -53,8 +57,6 @@ class PingSender : public base::RefCountedThreadSafe<PingSender> {
   const scoped_refptr<Configurator> config_;
   Callback callback_;
   std::unique_ptr<RequestSender> request_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(PingSender);
 };
 
 PingSender::PingSender(scoped_refptr<Configurator> config) : config_(config) {}
@@ -87,19 +89,29 @@ void PingSender::SendPing(const Component& component, Callback callback) {
   callback_ = std::move(callback);
 
   std::vector<protocol_request::App> apps;
-  apps.push_back(MakeProtocolApp(component.id(),
-                                 component.crx_component()->version,
-                                 component.GetEvents()));
+  // TODO(crbug.com/1259972): We need to transmit cohort information as well.
+  // TODO(crbug.com/1259972): We need to transmit brand information as well.
+  apps.push_back(MakeProtocolApp(
+      component.id(), component.crx_component()->version,
+      component.crx_component()->ap, {} /* brand */, {} /* install_source */,
+      component.crx_component()->install_location,
+      component.crx_component()->fingerprint,
+      component.crx_component()->installer_attributes, {} /* cohort */,
+      {} /* cohort name */, {} /* cohort hint */,
+      component.crx_component()->channel,
+      component.crx_component()->disabled_reasons,
+      absl::nullopt /* update check */, absl::nullopt /* ping */,
+      component.GetEvents()));
   request_sender_ = std::make_unique<RequestSender>(config_);
   request_sender_->Send(
       urls, {},
       config_->GetProtocolHandlerFactory()->CreateSerializer()->Serialize(
           MakeProtocolRequest(
-              component.session_id(), config_->GetProdId(),
-              config_->GetBrowserVersion().GetString(), config_->GetLang(),
-              config_->GetChannel(), config_->GetOSLongName(),
-              config_->GetDownloadPreference(), config_->ExtraRequestParams(),
-              nullptr, std::move(apps))),
+              !config_->IsPerUserInstall(), component.session_id(),
+              config_->GetProdId(), config_->GetBrowserVersion().GetString(),
+              config_->GetLang(), config_->GetChannel(),
+              config_->GetOSLongName(), config_->GetDownloadPreference(),
+              config_->ExtraRequestParams(), nullptr, std::move(apps))),
       false, base::BindOnce(&PingSender::SendPingComplete, this));
 }
 

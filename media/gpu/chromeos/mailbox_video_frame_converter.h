@@ -51,6 +51,10 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
       GetCommandBufferStubCB get_stub_cb);
 
+  MailboxVideoFrameConverter(const MailboxVideoFrameConverter&) = delete;
+  MailboxVideoFrameConverter& operator=(const MailboxVideoFrameConverter&) =
+      delete;
+
   // Enqueues |frame| to be converted to a gpu::Mailbox backed VideoFrame.
   // |frame| must wrap a DMA-buf backed VideoFrame that is retrieved via
   // |unwrap_frame_cb_|. The generated gpu::Mailbox-based VideoFrame is kept
@@ -169,8 +173,6 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   base::WeakPtrFactory<MailboxVideoFrameConverter> parent_weak_this_factory_{
       this};
   base::WeakPtrFactory<MailboxVideoFrameConverter> gpu_weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MailboxVideoFrameConverter);
 };
 
 }  // namespace media

@@ -16,15 +16,14 @@ using blink::WebInputEvent;
 using blink::WebGestureEvent;
 
 namespace {
-constexpr base::TimeDelta kFrameDelta =
-    base::TimeDelta::FromSecondsD(1.0 / 60.0);
+constexpr base::TimeDelta kFrameDelta = base::Seconds(1.0 / 60.0);
 
 // Maximum time between a fling event's timestamp and the first |Progress| call
 // for the fling curve to use the fling timestamp as the initial animation time.
 // Two frames allows a minor delay between event creation and the first
 // progress.
 constexpr base::TimeDelta kMaxMicrosecondsFromFlingTimestampToFirstProgress =
-    base::TimeDelta::FromSecondsD(2.0 / 60.0);
+    base::Seconds(2.0 / 60.0);
 
 // Since the progress fling is called in ProcessGestureFlingStart right after
 // processing the GFS, it is possible to have a very small delta for the first

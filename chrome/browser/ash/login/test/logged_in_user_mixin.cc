@@ -12,8 +12,7 @@
 #include "components/account_id/account_id.h"
 #include "net/dns/mock_host_resolver.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 user_manager::UserType ConvertUserType(LoggedInUserMixin::LogInType type) {
@@ -59,7 +58,7 @@ LoggedInUserMixin::LoggedInUserMixin(
       user_policy_helper_(user_.account_id.GetUserEmail(),
                           &local_policy_server_),
       embedded_test_server_setup_(mixin_host, embedded_test_server),
-      fake_gaia_(mixin_host, embedded_test_server),
+      fake_gaia_(mixin_host),
       test_base_(test_base) {
   // By default, LoginManagerMixin will set up user session manager not to
   // launch browser as part of user session setup - use this to override that
@@ -108,4 +107,4 @@ void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

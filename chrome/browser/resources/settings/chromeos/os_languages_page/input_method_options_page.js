@@ -73,6 +73,9 @@ Polymer({
     this.id_ = queryParams.get('id') || '';
     this.parentNode.pageTitle =
         this.languageHelper.getInputMethodDisplayName(this.id_);
+    assert(
+        this.parentNode.pageTitle !== '',
+        `Input method ID '${this.id_}' is invalid`);
     this.engineId_ =
         settings.input_method_util.getFirstPartyInputMethodEngineId(this.id_);
     this.populateOptionSections_();
@@ -107,9 +110,14 @@ Polymer({
     const makeOption = (option) => {
       const name = option.name;
       const uiType = settings.input_method_util.getOptionUiType(name);
-      const value = name in currentSettings ?
+      let value = name in currentSettings ?
           currentSettings[name] :
           settings.input_method_util.OPTION_DEFAULT[name];
+      if (!this.isSettingValueValid_(name, value)) {
+        value = settings.input_method_util.OPTION_DEFAULT[name];
+        this.updatePref_(name, value);
+      }
+
       const label = settings.input_method_util.isOptionLabelTranslated(name) ?
           this.i18n(settings.input_method_util.getOptionLabelName(name)) :
           settings.input_method_util.getUntranslatedOptionLabelName(name);
@@ -171,6 +179,33 @@ Polymer({
    * @private
    */
   onToggleButtonOrDropdownChange_(e) {
+    // e.model isn't correctly set for dependent options, due to nested
+    // dom-repeat, so figure out what option was actually set.
+    const option = e.model.dependant ? e.model.dependant : e.model.option;
+    // The value of dropdown is not updated immediately when the event is fired.
+    // Wait for the polymer state to update to make sure we write the latest
+    // to Cros Prefs.
+    Polymer.RenderStatus.afterNextRender(this, () => {
+      this.updatePref_(option.name, option.value);
+    });
+  },
+
+  isSettingValueValid_(name, value) {
+    const uiType = settings.input_method_util.getOptionUiType(name);
+    if (uiType !== UiType.DROPDOWN) {
+      return true;
+    }
+    const menuItems = settings.input_method_util.getOptionMenuItems(name);
+    return menuItems.find((item) => item.value === value);
+  },
+
+  /**
+   * Update an input method pref.
+   * @param {!settings.input_method_util.OptionType} optionName
+   * @param {*} newValue
+   * @private
+   */
+  updatePref_(optionName, newValue) {
     // Get the existing settings dictionary, in order to update it later.
     // |PrefsBehavior.setPrefValue| will update Cros Prefs only if the reference
     // of variable has changed, so we need to copy the current content into a
@@ -181,23 +216,14 @@ Polymer({
     if (!(prefix in updatedSettings)) {
       updatedSettings[prefix] = {};
     }
-    // e.model isn't correctly set for dependent options, due to nested
-    // dom-repeat, so figure out what option was actually set.
-    const option = e.model.dependant ? e.model.dependant : e.model.option;
-    // The value of dropdown is not updated immediately when the event is fired.
-    // Wait for the polymer state to update to make sure we write the latest
-    // to Cros Prefs.
-    Polymer.RenderStatus.afterNextRender(this, () => {
-      let newValue = option.value;
-      // The value of dropdown in html is always string, but some of the prefs
-      // values are used as integer or enum by IME, so we need to store numbers
-      // for them to function correctly.
-      if (settings.input_method_util.isNumberValue(option.name)) {
-        newValue = parseInt(newValue, 10);
-      }
-      updatedSettings[prefix][option.name] = newValue;
-      this.setPrefValue(this.PREFS_PATH, updatedSettings);
-    });
+    // The value of dropdown in html is always string, but some of the prefs
+    // values are used as integer or enum by IME, so we need to store numbers
+    // for them to function correctly.
+    if (settings.input_method_util.isNumberValue(optionName)) {
+      newValue = parseInt(newValue, 10);
+    }
+    updatedSettings[prefix][optionName] = newValue;
+    this.setPrefValue(this.PREFS_PATH, updatedSettings);
   },
 
   /**

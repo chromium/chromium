@@ -73,7 +73,7 @@ class SubresourceRedirectLoggedInSitesBrowserTest
   }
 
   void NavigateAndWaitForLoad(Browser* browser, const GURL& url) {
-    ui_test_utils::NavigateToURL(browser, url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     EXPECT_EQ(true, EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
                            "checkImage()"));
     FetchHistogramsFromChildProcesses();
@@ -108,16 +108,16 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoggedInSitesBrowserTest,
   robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
                                       {{kRuleTypeAllow, ""}});
 
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsTestURL("/load_image/image.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetHttpsTestURL("/load_image/image.html")));
 
   // Wait for the image request to start and its robots rules to be requested.
   while (robots_rules_server_.received_requests().empty()) {
     base::RunLoop().RunUntilIdle();
   }
 
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsTestURL("/load_image/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetHttpsTestURL("/load_image/simple.html")));
   FetchHistogramsFromChildProcesses();
 
   RetryForHistogramUntilCountReached(
@@ -146,17 +146,17 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoggedInSitesBrowserTest,
   robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
                                       {{kRuleTypeAllow, ""}});
 
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsTestURL("/load_image/image.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetHttpsTestURL("/load_image/image.html")));
 
   // Wait for the image request to start and its robots rules to be requested.
   while (robots_rules_server_.received_requests().empty()) {
     base::RunLoop().RunUntilIdle();
   }
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_test_server_.GetURL("loggedin.com", "/load_image/simple.html"));
+      https_test_server_.GetURL("loggedin.com", "/load_image/simple.html")));
   FetchHistogramsFromChildProcesses();
   histogram_tester_.ExpectBucketCount(
       "Login.PageLoad.DetectionType",

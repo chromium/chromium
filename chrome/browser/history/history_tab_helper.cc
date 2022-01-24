@@ -24,7 +24,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/background_tab_manager.h"
-#include "chrome/browser/android/feed/v2/feed_service_factory.h"
+#include "chrome/browser/feed/android/feed_service_factory.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #else
@@ -71,12 +71,34 @@ bool ShouldConsiderForNtpMostVisited(
   return true;
 }
 
+// Returns the page associated with `opener_web_contents`.
+absl::optional<history::Opener> GetHistoryOpenerFromOpenerWebContents(
+    base::WeakPtr<content::WebContents> opener_web_contents) {
+  if (!opener_web_contents)
+    return absl::nullopt;
+
+  // The last committed entry could hypothetically change from when the opener
+  // was set on `HistoryTabHelper` to when this function gets called. It is
+  // unlikely that it will change since we should only be calling this on
+  // the first navigation this tab helper observes, but we are fine with that
+  // edge case.
+  auto* last_committed_entry =
+      opener_web_contents->GetController().GetLastCommittedEntry();
+  if (!last_committed_entry)
+    return absl::nullopt;
+
+  return history::Opener(
+      history::ContextIDForWebContents(opener_web_contents.get()),
+      last_committed_entry->GetUniqueID(),
+      opener_web_contents->GetLastCommittedURL());
+}
+
 }  // namespace
 
 HistoryTabHelper::HistoryTabHelper(WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 
-HistoryTabHelper::~HistoryTabHelper() {}
+HistoryTabHelper::~HistoryTabHelper() = default;
 
 void HistoryTabHelper::UpdateHistoryForNavigation(
     const history::HistoryAddPageArgs& add_page_args) {
@@ -113,9 +135,10 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   // main frame URL.
   GURL referrer_url = navigation_handle->GetReferrer().url;
   if (navigation_handle->IsInMainFrame() && !referrer_url.is_empty() &&
-      referrer_url == referrer_url.GetOrigin() &&
-      referrer_url.GetOrigin() ==
-          navigation_handle->GetPreviousMainFrameURL().GetOrigin()) {
+      referrer_url == referrer_url.DeprecatedGetOriginAsURL() &&
+      referrer_url.DeprecatedGetOriginAsURL() ==
+          navigation_handle->GetPreviousMainFrameURL()
+              .DeprecatedGetOriginAsURL()) {
     referrer_url = navigation_handle->GetPreviousMainFrameURL();
   }
 
@@ -129,10 +152,26 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       hidden, history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
       /*floc_allowed=*/false,
-      navigation_handle->IsSameDocument()
+      // Reloads do not result in calling TitleWasSet() (which normally sets
+      // the title), so a reload needs to set the title. This is important for
+      // a reload after clearing history.
+      navigation_handle->IsSameDocument() ||
+              navigation_handle->GetReloadType() != content::ReloadType::NONE
           ? absl::optional<std::u16string>(
                 navigation_handle->GetWebContents()->GetTitle())
-          : absl::nullopt);
+          : absl::nullopt,
+      // Only compute the opener page if it's the first committed page for this
+      // WebContents.
+      navigation_handle->GetPreviousMainFrameURL().is_empty()
+          ? GetHistoryOpenerFromOpenerWebContents(opener_web_contents_)
+          // Or use the opener for same-document navigations to connect these
+          // visits.
+          : (navigation_handle->IsSameDocument()
+                 ? absl::make_optional(history::Opener(
+                       history::ContextIDForWebContents(web_contents()),
+                       nav_entry_id,
+                       navigation_handle->GetPreviousMainFrameURL()))
+                 : absl::nullopt));
 
   if (ui::PageTransitionIsMainFrame(page_transition) &&
       virtual_url != navigation_handle->GetURL()) {
@@ -151,6 +190,30 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
 
 void HistoryTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  // TODO(https://crbug.com/1225143): Make sure prerender does not affect
+  // browsing history. We may have to filter out navigations only in the primary
+  // frame tree, which seems not to be happening here.
+  //
+  // Calling `navigation_handle->IsInMainFrame()` here seems to work
+  // accidentally because we are getting the navigation entry from the primary
+  // NavigationController [1] on prerendering navigation, which we will try to
+  // add, which will turn into a no-op.
+  //
+  // This is very fragile. There are a few options to address:
+  //
+  // 1. Add NavigationHandle::HasCommittedInPrimaryFrameTree and check it
+  //   instead of simple HasCommitted.
+  //
+  // 2. Always return false from NavigationHandle::ShouldUpdateHistory for
+  //   navigations in non-primary frame trees.
+  //
+  // 3. Use WebContentsObserver::NavigationEntryCommitted instead of
+  //    WebContentsObserver::DidFinishNavigation (which will get notifications
+  //    only about the new entry).
+  //
+  // [1]
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/history/history_tab_helper.cc;l=194;drc=af4244de52d8521c34336470c9a4f634b1e9fd2e
+
   if (!navigation_handle->HasCommitted())
     return;
 
@@ -243,11 +306,30 @@ void HistoryTabHelper::DidActivatePortal(
 void HistoryTabHelper::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (render_frame_host->GetParent())
+  if (!render_frame_host->IsInPrimaryMainFrame())
     return;
 
   is_loading_ = false;
   last_load_completion_ = base::TimeTicks::Now();
+}
+
+void HistoryTabHelper::DidOpenRequestedURL(
+    content::WebContents* new_contents,
+    content::RenderFrameHost* source_render_frame_host,
+    const GURL& url,
+    const content::Referrer& referrer,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    bool started_from_context_menu,
+    bool renderer_initiated) {
+  HistoryTabHelper* new_history_tab_helper =
+      HistoryTabHelper::FromWebContents(new_contents);
+  if (!new_history_tab_helper)
+    return;
+
+  // This should only be set once on a new tab helper.
+  DCHECK(!new_history_tab_helper->opener_web_contents_);
+  new_history_tab_helper->opener_web_contents_ = web_contents()->GetWeakPtr();
 }
 
 void HistoryTabHelper::TitleWasSet(NavigationEntry* entry) {
@@ -304,7 +386,7 @@ void HistoryTabHelper::WebContentsDestroyed() {
 
 bool HistoryTabHelper::IsEligibleTab(
     const history::HistoryAddPageArgs& add_page_args) const {
-  if (force_eligibile_tab_for_testing_)
+  if (force_eligible_tab_for_testing_)
     return true;
 
 #if defined(OS_ANDROID)
@@ -322,4 +404,4 @@ bool HistoryTabHelper::IsEligibleTab(
 #endif
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper);

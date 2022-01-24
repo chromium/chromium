@@ -77,13 +77,14 @@ void ChromeMainDelegateAndroid::SecureDataDirectory() {
   }
 }
 
-int ChromeMainDelegateAndroid::RunProcess(
+absl::variant<int, content::MainFunctionParams>
+ChromeMainDelegateAndroid::RunProcess(
     const std::string& process_type,
-    const content::MainFunctionParams& main_function_params) {
+    content::MainFunctionParams main_function_params) {
   TRACE_EVENT0("startup", "ChromeMainDelegateAndroid::RunProcess");
   // Defer to the default main method outside the browser process.
   if (!process_type.empty())
-    return -1;
+    return std::move(main_function_params);
 
   SecureDataDirectory();
 
@@ -110,10 +111,9 @@ int ChromeMainDelegateAndroid::RunProcess(
     browser_runner_ = content::BrowserMainRunner::Create();
   }
 
-  int exit_code = browser_runner_->Initialize(main_function_params);
+  int exit_code = browser_runner_->Initialize(std::move(main_function_params));
   // On Android we do not run BrowserMain(), so the above initialization of a
-  // BrowserMainRunner is all we want to occur. Return >= 0 to avoid running
-  // BrowserMain, while preserving any error codes > 0.
+  // BrowserMainRunner is all we want to occur. Preserve any error codes > 0.
   if (exit_code > 0)
     return exit_code;
   return 0;

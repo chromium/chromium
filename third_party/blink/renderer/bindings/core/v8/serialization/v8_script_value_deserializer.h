@@ -44,6 +44,10 @@ class CORE_EXPORT V8ScriptValueDeserializer
                             scoped_refptr<SerializedScriptValue>,
                             const Options& = Options());
 
+  V8ScriptValueDeserializer(const V8ScriptValueDeserializer&) = delete;
+  V8ScriptValueDeserializer& operator=(const V8ScriptValueDeserializer&) =
+      delete;
+
   v8::Local<v8::Value> Deserialize();
 
  protected:
@@ -131,8 +135,6 @@ class CORE_EXPORT V8ScriptValueDeserializer
 #if DCHECK_IS_ON()
   bool deserialize_invoked_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(V8ScriptValueDeserializer);
 };
 
 }  // namespace blink

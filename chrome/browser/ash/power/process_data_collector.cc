@@ -54,10 +54,10 @@ constexpr char kConciergeCmdline[] = "/usr/bin/vm_concierge";
 constexpr char kChromeCmdPath[] = "/opt/google/chrome/chrome";
 
 // Sampling frequency.
-constexpr base::TimeDelta kSampleDelay = base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kSampleDelay = base::Seconds(15);
 
 // Time after which a sample is invalid. Must be greater than |kSampleDelay|.
-constexpr base::TimeDelta kExcessiveDelay = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kExcessiveDelay = base::Seconds(30);
 
 // Represents a map of all processes; maps a PPID to a PID.
 using PpidToPidMap = std::unordered_multimap<pid_t, pid_t>;

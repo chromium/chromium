@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -179,6 +180,10 @@ class OAuth2AccessTokenManager {
 
   explicit OAuth2AccessTokenManager(
       OAuth2AccessTokenManager::Delegate* delegate);
+
+  OAuth2AccessTokenManager(const OAuth2AccessTokenManager&) = delete;
+  OAuth2AccessTokenManager& operator=(const OAuth2AccessTokenManager&) = delete;
+
   virtual ~OAuth2AccessTokenManager();
 
   OAuth2AccessTokenManager::Delegate* GetDelegate();
@@ -344,8 +349,6 @@ class OAuth2AccessTokenManager {
   FRIEND_TEST_ALL_PREFIXES(OAuth2AccessTokenManagerTest, ClearCache);
   FRIEND_TEST_ALL_PREFIXES(OAuth2AccessTokenManagerTest, ClearCacheForAccount);
   FRIEND_TEST_ALL_PREFIXES(OAuth2AccessTokenManagerTest, OnAccessTokenRemoved);
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2AccessTokenManager);
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_MANAGER_H_

@@ -75,11 +75,11 @@ class BLINK_EXPORT WebSharedWorker {
       const WebString& name,
       WebSecurityOrigin constructor_origin,
       const WebString& user_agent,
+      const WebString& reduced_user_agent,
       const UserAgentMetadata& ua_metadata,
       const WebVector<WebContentSecurityPolicy>& content_security_policies,
       network::mojom::IPAddressSpace,
       const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
-      const base::UnguessableToken& appcache_host_id,
       const base::UnguessableToken& devtools_worker_token,
       CrossVariantMojoRemote<mojom::WorkerContentSettingsProxyInterfaceBase>
           content_settings,

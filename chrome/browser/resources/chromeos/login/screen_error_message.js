@@ -290,7 +290,7 @@ Polymer({
           ]
         },
         'auto-enrollment-learn-more');
-    this.$$('#auto-enrollment-learn-more').onclick = function() {
+    this.shadowRoot.querySelector('#auto-enrollment-learn-more').onclick = function() {
       chrome.send('launchHelpApp', [HELP_TOPIC_AUTO_ENROLLMENT]);
     };
 
@@ -298,48 +298,48 @@ Polymer({
         'captive-portal-message-text', 'captivePortalMessage',
         {substitutions: ['<b>' + this.currentNetworkName_ + '</b>']},
         'captive-portal-fix-link');
-    this.$$('#captive-portal-fix-link').onclick = function() {
+    this.shadowRoot.querySelector('#captive-portal-fix-link').onclick = function() {
       self.userActed(USER_ACTION_SHOW_CAPTIVE_PORTAL);
     };
 
     this.updateElementWithStringAndAnchorTag_(
         'captive-portal-proxy-message-text', 'captivePortalProxyMessage', {},
         'proxy-settings-fix-link');
-    this.$$('#proxy-settings-fix-link').onclick = function() {
+    this.shadowRoot.querySelector('#proxy-settings-fix-link').onclick = function() {
       chrome.send('openInternetDetailDialog');
     };
 
     this.updateElementWithStringAndAnchorTag_(
         'update-proxy-message-text', 'updateProxyMessageText', {},
         'update-proxy-error-fix-proxy');
-    this.$$('#update-proxy-error-fix-proxy').onclick = function() {
+    this.shadowRoot.querySelector('#update-proxy-error-fix-proxy').onclick = function() {
       chrome.send('openInternetDetailDialog');
     };
 
     this.updateElementWithStringAndAnchorTag_(
         'signin-proxy-message-text', 'signinProxyMessageText', {},
         'proxy-error-signin-retry-link', 'signin-proxy-error-fix-proxy');
-    this.$$('#proxy-error-signin-retry-link').onclick = function() {
+    this.shadowRoot.querySelector('#proxy-error-signin-retry-link').onclick = function() {
       self.userActed('reload-gaia');
     };
-    this.$$('#signin-proxy-error-fix-proxy').onclick = function() {
+    this.shadowRoot.querySelector('#signin-proxy-error-fix-proxy').onclick = function() {
       chrome.send('openInternetDetailDialog');
     };
 
     this.updateElementWithStringAndAnchorTag_(
         'error-guest-signin', 'guestSignin', {}, 'error-guest-signin-link');
-    this.$$('#error-guest-signin-link')
+    this.shadowRoot.querySelector('#error-guest-signin-link')
         .addEventListener('click', this.launchGuestSession_.bind(this));
 
     this.updateElementWithStringAndAnchorTag_(
         'error-guest-signin-fix-network', 'guestSigninFixNetwork', {},
         'error-guest-fix-network-signin-link');
-    this.$$('#error-guest-fix-network-signin-link')
+    this.shadowRoot.querySelector('#error-guest-fix-network-signin-link')
         .addEventListener('click', this.launchGuestSession_.bind(this));
 
     this.updateElementWithStringAndAnchorTag_(
         'error-offline-login', 'offlineLogin', {}, 'error-offline-login-link');
-    this.$$('#error-offline-login-link').onclick = function() {
+    this.shadowRoot.querySelector('#error-offline-login-link').onclick = function() {
       chrome.send('offlineLogin');
     };
   },
@@ -361,7 +361,6 @@ Polymer({
 
   /**
    * Event handler that is invoked just before the screen is hidden.
-   * @suppress {missingProperties} setOobeUIState() exists
    */
   onBeforeHide() {
     this.enableWifiScans_ = false;
@@ -373,7 +372,6 @@ Polymer({
   /**
    * Event handler for guest session launch.
    * @private
-   * @suppress {missingProperties} isOobeUI() exists
    */
   launchGuestSession_() {
     if (Oobe.getInstance().isOobeUI()) {

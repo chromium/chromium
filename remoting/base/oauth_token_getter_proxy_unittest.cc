@@ -21,13 +21,16 @@ namespace remoting {
 namespace {
 
 OAuthTokenGetter::TokenCallback GetDoNothingTokenCallback() {
-  return base::DoNothing::Repeatedly<OAuthTokenGetter::Status,
-                                     const std::string&, const std::string&>();
+  return base::DoNothing();
 }
 
 class FakeOAuthTokenGetter : public OAuthTokenGetter {
  public:
   FakeOAuthTokenGetter();
+
+  FakeOAuthTokenGetter(const FakeOAuthTokenGetter&) = delete;
+  FakeOAuthTokenGetter& operator=(const FakeOAuthTokenGetter&) = delete;
+
   ~FakeOAuthTokenGetter() override;
 
   void ResolveCallback(Status status,
@@ -49,7 +52,6 @@ class FakeOAuthTokenGetter : public OAuthTokenGetter {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<FakeOAuthTokenGetter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FakeOAuthTokenGetter);
 };
 
 FakeOAuthTokenGetter::FakeOAuthTokenGetter() {
@@ -95,6 +97,11 @@ base::WeakPtr<FakeOAuthTokenGetter> FakeOAuthTokenGetter::GetWeakPtr() {
 class OAuthTokenGetterProxyTest : public testing::Test {
  public:
   OAuthTokenGetterProxyTest() = default;
+
+  OAuthTokenGetterProxyTest(const OAuthTokenGetterProxyTest&) = delete;
+  OAuthTokenGetterProxyTest& operator=(const OAuthTokenGetterProxyTest&) =
+      delete;
+
   ~OAuthTokenGetterProxyTest() override = default;
 
   // testing::Test overrides.
@@ -136,8 +143,6 @@ class OAuthTokenGetterProxyTest : public testing::Test {
   std::unique_ptr<TokenCallbackResult> expected_callback_result_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuthTokenGetterProxyTest);
 };
 
 void OAuthTokenGetterProxyTest::SetUp() {

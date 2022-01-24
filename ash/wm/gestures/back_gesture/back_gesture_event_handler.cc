@@ -139,10 +139,12 @@ void ActivateUnderneathWindowInSplitViewMode(
                              : split_view_controller->left_window();
   auto* right_window = is_rtl ? split_view_controller->left_window()
                               : split_view_controller->right_window();
-  const OrientationLockType current_orientation = GetCurrentScreenOrientation();
-  if (current_orientation == OrientationLockType::kLandscapePrimary) {
+  const chromeos::OrientationType current_orientation =
+      GetCurrentScreenOrientation();
+  if (current_orientation == chromeos::OrientationType::kLandscapePrimary) {
     ActivateWindow(dragged_from_splitview_divider ? right_window : left_window);
-  } else if (current_orientation == OrientationLockType::kLandscapeSecondary) {
+  } else if (current_orientation ==
+             chromeos::OrientationType::kLandscapeSecondary) {
     ActivateWindow(dragged_from_splitview_divider ? left_window : right_window);
   } else {
     if (left_window &&
@@ -414,7 +416,7 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
       dragged_from_splitview_divider_ = false;
 
       return true;
-    } break;
+    }
     default:
       break;
   }

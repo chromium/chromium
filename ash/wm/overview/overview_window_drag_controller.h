@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ash {
@@ -91,6 +90,11 @@ class ASH_EXPORT OverviewWindowDragController {
   OverviewWindowDragController(OverviewSession* overview_session,
                                OverviewItem* item,
                                bool is_touch_dragging);
+
+  OverviewWindowDragController(const OverviewWindowDragController&) = delete;
+  OverviewWindowDragController& operator=(const OverviewWindowDragController&) =
+      delete;
+
   ~OverviewWindowDragController();
 
   void InitiateDrag(const gfx::PointF& location_in_screen);
@@ -232,8 +236,6 @@ class ASH_EXPORT OverviewWindowDragController {
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
 
   SplitViewController::SnapPosition snap_position_ = SplitViewController::NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewWindowDragController);
 };
 
 }  // namespace ash

@@ -64,7 +64,7 @@ base::TimeDelta GetTimeDeltaSinceLastPeriodicSync(
   int64_t last_sync_millis_int64;
   base::StringToInt64(last_sync_millis, &last_sync_millis_int64);
   const auto last_sync = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMilliseconds(last_sync_millis_int64));
+      base::Milliseconds(last_sync_millis_int64));
   return base::Time::Now() - last_sync;
 }
 
@@ -170,7 +170,7 @@ void TaskManager::RunTasks(
     // Calculate the next run so that periodic polling  happens within
     // proper time intervals. When the tasks are scheduled, we don't want to
     // immediately start executing to allow some warm-up.
-    base::TimeDelta next_run = base::TimeDelta::FromSeconds(10);
+    base::TimeDelta next_run = base::Seconds(10);
     const base::TimeDelta time_since_last_run =
         GetTimeDeltaSinceLastPeriodicSync(
             GetLastSyncRegNameForTask(base::UTF8ToWide(it->first)));

@@ -12,15 +12,24 @@
 
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
+#include "build/os_buildflags.h"
 #include "ipc/ipc_platform_file_attachment_posix.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_FUCHSIA)
+#include <lib/fdio/fdio.h>
+#endif
 
 namespace IPC {
 namespace {
 
 // Get a safe file descriptor for test purposes.
 int GetSafeFd() {
+#if BUILDFLAG(IS_FUCHSIA)
+  return fdio_fd_create_null();
+#else
   return open("/dev/null", O_RDONLY);
+#endif
 }
 
 // Returns true if fd was already closed.  Closes fd if not closed.

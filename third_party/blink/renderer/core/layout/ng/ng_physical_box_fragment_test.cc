@@ -276,4 +276,38 @@ TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootFieldset) {
   EXPECT_FALSE(child.IsFragmentationContextRoot());
 }
 
+TEST_F(NGPhysicalBoxFragmentTest, MayHaveDescendantAboveBlockStart) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container2">
+      <div id="container">
+        <div style="height: 100px"></div>
+        <div style="height: 100px; margin-top: -200px"></div>
+      </div>
+    </div>
+  )HTML");
+  const auto& container = GetPhysicalBoxFragmentByElementId("container");
+  EXPECT_TRUE(container.MayHaveDescendantAboveBlockStart());
+  const auto& container2 = GetPhysicalBoxFragmentByElementId("container2");
+  EXPECT_TRUE(container2.MayHaveDescendantAboveBlockStart());
+}
+
+TEST_F(NGPhysicalBoxFragmentTest,
+       MayHaveDescendantAboveBlockStartBlockInInline) {
+  ScopedLayoutNGBlockInInlineForTest block_in_inline(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="container2">
+      <div id="container">
+        <span>
+          <div style="height: 100px"></div>
+          <div style="height: 100px; margin-top: -200px"></div>
+        </span>
+      </div>
+    </div>
+  )HTML");
+  const auto& container = GetPhysicalBoxFragmentByElementId("container");
+  EXPECT_TRUE(container.MayHaveDescendantAboveBlockStart());
+  const auto& container2 = GetPhysicalBoxFragmentByElementId("container2");
+  EXPECT_TRUE(container2.MayHaveDescendantAboveBlockStart());
+}
+
 }  // namespace blink

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/browser/history_types.h"
 
@@ -26,6 +25,9 @@ class WebHistoryService;
 // platform logic and classes, facilitating both sending an receiving data.
 class BrowsingHistoryDriver {
  public:
+  BrowsingHistoryDriver(const BrowsingHistoryDriver&) = delete;
+  BrowsingHistoryDriver& operator=(const BrowsingHistoryDriver&) = delete;
+
   // Callback for QueryHistory().
   virtual void OnQueryComplete(
       const std::vector<BrowsingHistoryService::HistoryEntry>& results,
@@ -73,9 +75,6 @@ class BrowsingHistoryDriver {
  protected:
   BrowsingHistoryDriver() {}
   virtual ~BrowsingHistoryDriver() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowsingHistoryDriver);
 };
 
 }  // namespace history

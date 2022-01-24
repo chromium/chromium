@@ -88,8 +88,8 @@ TEST_F(CompositeMatcherTest, SamePrioritySpace) {
   std::vector<std::unique_ptr<RulesetMatcher>> matchers;
   matchers.push_back(std::move(allow_matcher));
   matchers.push_back(std::move(block_matcher));
-  auto composite_matcher =
-      std::make_unique<CompositeMatcher>(std::move(matchers));
+  auto composite_matcher = std::make_unique<CompositeMatcher>(
+      std::move(matchers), HostPermissionsAlwaysRequired::kFalse);
 
   GURL google_url("http://google.com");
   RequestParams params;
@@ -112,7 +112,8 @@ TEST_F(CompositeMatcherTest, SamePrioritySpace) {
   matchers.clear();
   matchers.push_back(std::move(allow_matcher));
   matchers.push_back(std::move(block_matcher));
-  composite_matcher = std::make_unique<CompositeMatcher>(std::move(matchers));
+  composite_matcher = std::make_unique<CompositeMatcher>(
+      std::move(matchers), HostPermissionsAlwaysRequired::kFalse);
 
   // The allow rule should now have higher priority.
   action_info =
@@ -155,8 +156,8 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
   std::vector<std::unique_ptr<RulesetMatcher>> matchers;
   matchers.push_back(std::move(matcher_1));
   matchers.push_back(std::move(matcher_2));
-  auto composite_matcher =
-      std::make_unique<CompositeMatcher>(std::move(matchers));
+  auto composite_matcher = std::make_unique<CompositeMatcher>(
+      std::move(matchers), HostPermissionsAlwaysRequired::kFalse);
 
   GURL google_url = GURL("http://google.com/path");
   RequestParams google_params;
@@ -211,7 +212,8 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
   matchers.clear();
   matchers.push_back(std::move(matcher_1));
   matchers.push_back(std::move(matcher_2));
-  composite_matcher = std::make_unique<CompositeMatcher>(std::move(matchers));
+  composite_matcher = std::make_unique<CompositeMatcher>(
+      std::move(matchers), HostPermissionsAlwaysRequired::kFalse);
 
   // Call GetBeforeRequestAction first to ensure that test and production code
   // paths are consistent.
@@ -312,8 +314,8 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions_Priority) {
   std::vector<std::unique_ptr<RulesetMatcher>> matchers;
   matchers.push_back(std::move(matcher_1));
   matchers.push_back(std::move(matcher_2));
-  auto composite_matcher =
-      std::make_unique<CompositeMatcher>(std::move(matchers));
+  auto composite_matcher = std::make_unique<CompositeMatcher>(
+      std::move(matchers), HostPermissionsAlwaysRequired::kFalse);
 
   // Make a request to "http://google.com/1" which matches with all
   // modifyHeaders rules and |allow_rule|.
@@ -416,8 +418,8 @@ TEST_F(CompositeMatcherTest, NotifyWithholdFromPageAccess) {
   // Create a composite matcher.
   std::vector<std::unique_ptr<RulesetMatcher>> matchers;
   matchers.push_back(std::move(matcher_1));
-  auto composite_matcher =
-      std::make_unique<CompositeMatcher>(std::move(matchers));
+  auto composite_matcher = std::make_unique<CompositeMatcher>(
+      std::move(matchers), HostPermissionsAlwaysRequired::kFalse);
 
   GURL google_url = GURL("http://google.com");
   GURL example_url = GURL("http://example.com");
@@ -475,6 +477,72 @@ TEST_F(CompositeMatcherTest, NotifyWithholdFromPageAccess) {
   }
 }
 
+// Tests CompositeMatcher with the HostPermissionsAlwaysRequired::kTrue mode.
+TEST_F(CompositeMatcherTest, HostPermissionsAlwaysRequired) {
+  int rule_id = kMinValidID;
+
+  TestRule block_rule = CreateGenericRule(rule_id++);
+  block_rule.condition->url_filter = "example.com";
+
+  TestRule block_rule_2 = CreateGenericRule(rule_id++);
+  block_rule_2.condition->url_filter = "foo.com";
+  block_rule.priority = 3;
+
+  TestRule allow_rule = CreateGenericRule(rule_id++);
+  allow_rule.action->type = "allow";
+  allow_rule.condition->url_filter = "foo.com";
+  allow_rule.priority = 5;
+
+  TestRule upgrade_rule = CreateGenericRule(rule_id++);
+  upgrade_rule.action->type = "upgradeScheme";
+  upgrade_rule.condition->url_filter = "upgrade.com";
+
+  std::unique_ptr<RulesetMatcher> matcher;
+  ASSERT_TRUE(CreateVerifiedMatcher(
+      {block_rule, block_rule_2, allow_rule, upgrade_rule},
+      CreateTemporarySource(), &matcher));
+  CompositeMatcher::MatcherList matchers;
+  matchers.push_back(std::move(matcher));
+  auto composite_matcher = std::make_unique<CompositeMatcher>(
+      std::move(matchers), HostPermissionsAlwaysRequired::kTrue);
+
+  struct TestCases {
+    const char* url;
+    const PageAccess access;
+    const bool expected_notify_withheld;
+    absl::optional<int> expected_matched_rule_id;
+  } cases[] = {
+      {"https://example.com", PageAccess::kAllowed, false, block_rule.id},
+      {"https://example.com", PageAccess::kWithheld, true, absl::nullopt},
+      {"https://foo.com", PageAccess::kAllowed, false, allow_rule.id},
+      // We don't expect to be notified about this (even though there's a rule
+      // that would have matched) because the rule would just allow the request.
+      {"https://foo.com", PageAccess::kWithheld, false, absl::nullopt},
+      {"http://upgrade.com", PageAccess::kAllowed, false, upgrade_rule.id},
+      {"http://upgrade.com", PageAccess::kWithheld, true, absl::nullopt},
+      {"http://nomatch.com", PageAccess::kAllowed, false, absl::nullopt},
+      {"http://nomatch.com", PageAccess::kWithheld, false, absl::nullopt},
+  };
+
+  for (size_t i = 0; i < base::size(cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Testing case %zu", i));
+
+    GURL url(cases[i].url);
+    RequestParams params;
+    params.url = &url;
+
+    ActionInfo info =
+        composite_matcher->GetBeforeRequestAction(params, cases[i].access);
+    EXPECT_EQ(cases[i].expected_notify_withheld, info.notify_request_withheld);
+
+    absl::optional<int> rule_matched_id;
+    if (info.action)
+      rule_matched_id = info.action->rule_id;
+
+    EXPECT_EQ(cases[i].expected_matched_rule_id, rule_matched_id);
+  }
+}
+
 // Tests that the redirect url within an extension's ruleset is chosen based on
 // the highest priority matching rule.
 TEST_F(CompositeMatcherTest, GetRedirectUrlFromPriority) {
@@ -509,8 +577,8 @@ TEST_F(CompositeMatcherTest, GetRedirectUrlFromPriority) {
   // Create a composite matcher.
   std::vector<std::unique_ptr<RulesetMatcher>> matchers;
   matchers.push_back(std::move(matcher_1));
-  auto composite_matcher =
-      std::make_unique<CompositeMatcher>(std::move(matchers));
+  auto composite_matcher = std::make_unique<CompositeMatcher>(
+      std::move(matchers), HostPermissionsAlwaysRequired::kFalse);
 
   struct {
     GURL request_url;
@@ -559,6 +627,75 @@ TEST_F(CompositeMatcherTest, GetRedirectUrlFromPriority) {
     }
 
     EXPECT_FALSE(redirect_action_info.notify_request_withheld);
+  }
+}
+
+// Ensure rule placement doesn't have side effects on matching priority.
+TEST_F(CompositeMatcherTest, RulePlacement) {
+  TestRule block_rule = CreateGenericRule(kMinValidID);
+  block_rule.priority = 2;
+  block_rule.condition->url_filter = "example.com";
+
+  TestRule redirect_rule = CreateGenericRule(kMinValidID + 1);
+  redirect_rule.priority = 3;
+  redirect_rule.condition->url_filter = "example.com";
+  redirect_rule.action->type = "redirect";
+  redirect_rule.action->redirect.emplace();
+  redirect_rule.action->redirect->url = "http://newurl.com";
+
+  auto test_matchers = [](CompositeMatcher::MatcherList matchers) {
+    auto composite_matcher = std::make_unique<CompositeMatcher>(
+        std::move(matchers), HostPermissionsAlwaysRequired::kFalse);
+
+    GURL url("http://example.com");
+    RequestParams params;
+    params.url = &url;
+
+    ActionInfo info =
+        composite_matcher->GetBeforeRequestAction(params, PageAccess::kAllowed);
+    ASSERT_TRUE(info.action);
+    EXPECT_EQ(kMinValidID + 1u, info.action->rule_id);
+    EXPECT_FALSE(info.notify_request_withheld);
+
+    // The highest priority matching rule (`redirect_rule`) needs host
+    // permissions to match.
+    info = composite_matcher->GetBeforeRequestAction(params,
+                                                     PageAccess::kWithheld);
+    EXPECT_FALSE(info.action);
+    EXPECT_TRUE(info.notify_request_withheld);
+
+    info =
+        composite_matcher->GetBeforeRequestAction(params, PageAccess::kDenied);
+    EXPECT_FALSE(info.action);
+    EXPECT_FALSE(info.notify_request_withheld);
+  };
+
+  // Case 1: Both rules are part of the same ruleset.
+  {
+    SCOPED_TRACE("Same ruleset");
+    std::unique_ptr<RulesetMatcher> matcher;
+    ASSERT_TRUE(CreateVerifiedMatcher({block_rule, redirect_rule},
+                                      CreateTemporarySource(), &matcher));
+    std::vector<std::unique_ptr<RulesetMatcher>> matchers;
+    matchers.push_back(std::move(matcher));
+    test_matchers(std::move(matchers));
+  }
+
+  // Case 2: Both rules are part of different rulesets.
+  {
+    SCOPED_TRACE("Different ruleset");
+    std::unique_ptr<RulesetMatcher> block_matcher;
+    ASSERT_TRUE(CreateVerifiedMatcher(
+        {block_rule}, CreateTemporarySource(RulesetID(1)), &block_matcher));
+    std::unique_ptr<RulesetMatcher> redirect_matcher;
+    ASSERT_TRUE(CreateVerifiedMatcher({redirect_rule},
+                                      CreateTemporarySource(RulesetID(2)),
+                                      &redirect_matcher));
+
+    std::vector<std::unique_ptr<RulesetMatcher>> matchers;
+    matchers.push_back(std::move(block_matcher));
+    matchers.push_back(std::move(redirect_matcher));
+    test_matchers(std::move(matchers));
   }
 }
 

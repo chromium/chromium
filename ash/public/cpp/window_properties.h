@@ -64,6 +64,10 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kCanConsumeSystemKeysKey;
 
+// Accessibility Id set by the ARC++ client.
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<int32_t>* const
+    kClientAccessibilityIdKey;
+
 // A property key to exclude the window in MruTracker.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kExcludeInMruKey;

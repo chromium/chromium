@@ -167,16 +167,4 @@ enum NTPLoggingEventType {
   NTP_EVENT_TYPE_LAST = NTP_APP_RENDERED
 };
 
-// The different types of events that are logged for NTP search suggestions,
-// such as number of chips shown and the index of chips that are clicked. This
-// enum is used to transfer information from the NTP javascript to the renderer
-// and is *not* used as a UMA enum histogram's logged value. These events may be
-// logged by javascript served from GWS, see
-// google3/java/com/google/gws/plugins/newtab/suggestions.js.
-enum class NTPSuggestionsLoggingEventType {
-  kShownCount = 0,
-  kIndexClicked = 1,
-  kMaxValue = kIndexClicked,
-};
-
 #endif  // CHROME_COMMON_SEARCH_NTP_LOGGING_EVENTS_H_

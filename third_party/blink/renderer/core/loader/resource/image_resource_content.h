@@ -109,6 +109,7 @@ class CORE_EXPORT ImageResourceContent final
   bool IsLoading() const;
   bool ErrorOccurred() const;
   bool LoadFailedOrCanceled() const;
+  bool IsAnimatedImageWithPaintedFirstFrame() const;
 
   // Redirecting methods to Resource.
   const KURL& Url() const;
@@ -238,8 +239,8 @@ class CORE_EXPORT ImageResourceContent final
 
   scoped_refptr<blink::Image> image_;
 
-  HashCountedSet<ImageResourceObserver*> observers_;
-  HashCountedSet<ImageResourceObserver*> finished_observers_;
+  HeapHashCountedSet<WeakMember<ImageResourceObserver>> observers_;
+  HeapHashCountedSet<WeakMember<ImageResourceObserver>> finished_observers_;
 
 #if DCHECK_IS_ON()
   bool is_update_image_being_called_ = false;

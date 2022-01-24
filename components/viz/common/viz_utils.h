@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_COMMON_VIZ_UTILS_H_
 #define COMPONENTS_VIZ_COMMON_VIZ_UTILS_H_
 
+#include "base/timer/elapsed_timer.h"
 #include "components/viz/common/viz_common_export.h"
 
 #include "build/build_config.h"
@@ -38,6 +39,14 @@ VIZ_COMMON_EXPORT bool GetScaledRRectF(const gfx::Rect& space,
 VIZ_COMMON_EXPORT bool GetScaledUVs(const gfx::Rect& rect,
                                     const gfx::QuadF* clip,
                                     float uvs[8]);
+
+// Returns File Descriptor (FD) stats for current process.
+// Rendering resources can consume FDs. This this function can be used to
+// determine if the process is low on FDs or find an FD leak.
+VIZ_COMMON_EXPORT bool GatherFDStats(base::TimeDelta* delta_time_taken,
+                                     int* fd_max,
+                                     int* active_fd_count,
+                                     int* rlim_cur);
 
 }  // namespace viz
 

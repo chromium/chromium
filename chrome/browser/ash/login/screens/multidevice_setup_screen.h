@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/multidevice_setup_screen_handler.h"
@@ -27,6 +26,10 @@ class MultiDeviceSetupScreen : public BaseScreen {
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   MultiDeviceSetupScreen(MultiDeviceSetupScreenView* view,
                          const ScreenExitCallback& exit_callback);
+
+  MultiDeviceSetupScreen(const MultiDeviceSetupScreen&) = delete;
+  MultiDeviceSetupScreen& operator=(const MultiDeviceSetupScreen&) = delete;
+
   ~MultiDeviceSetupScreen() override;
 
   void AddExitCallbackForTesting(const ScreenExitCallback& testing_callback) {
@@ -74,8 +77,6 @@ class MultiDeviceSetupScreen : public BaseScreen {
 
   MultiDeviceSetupScreenView* view_;
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupScreen);
 };
 
 }  // namespace ash

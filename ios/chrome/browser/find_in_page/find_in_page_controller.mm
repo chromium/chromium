@@ -21,7 +21,6 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
-#import "ios/web/public/web_state_observer_bridge.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -39,9 +38,7 @@ namespace {
 static NSString* gSearchTerm;
 }
 
-@interface FindInPageController () <DOMAltering,
-                                    CRWWebStateObserver,
-                                    CRWFindInPageManagerDelegate>
+@interface FindInPageController () <DOMAltering, CRWFindInPageManagerDelegate>
 
 // The web view's scroll view.
 - (CRWWebViewScrollViewProxy*)webViewScrollView;
@@ -73,9 +70,6 @@ static NSString* gSearchTerm;
   // -webStateDestroyed: has been called.
   web::WebState* _webState;
 
-  // Bridge to observe the web state from Objective-C.
-  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
-
   // Bridge to observe FindInPageManager from Objective-C.
   std::unique_ptr<web::FindInPageManagerDelegateBridge>
       _findInPageDelegateBridge;
@@ -95,16 +89,15 @@ static NSString* gSearchTerm;
   self = [super init];
   if (self) {
     DCHECK(webState);
+    DCHECK(webState->IsRealized());
+
     _webState = webState;
     _findInPageModel = [[FindInPageModel alloc] init];
-      _findInPageDelegateBridge =
-          std::make_unique<web::FindInPageManagerDelegateBridge>(self);
-      _findInPageManager = web::FindInPageManager::FromWebState(_webState);
-      _findInPageManager->SetDelegate(_findInPageDelegateBridge.get());
+    _findInPageDelegateBridge =
+        std::make_unique<web::FindInPageManagerDelegateBridge>(self);
+    _findInPageManager = web::FindInPageManager::FromWebState(_webState);
+    _findInPageManager->SetDelegate(_findInPageDelegateBridge.get());
 
-    _webStateObserverBridge =
-        std::make_unique<web::WebStateObserverBridge>(self);
-    _webState->AddObserver(_webStateObserverBridge.get());
     _webViewProxy = _webState->GetWebViewProxy();
     [[NSNotificationCenter defaultCenter]
         addObserver:self
@@ -122,15 +115,11 @@ static NSString* gSearchTerm;
 }
 
 - (void)dealloc {
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserverBridge.get());
-    _webStateObserverBridge.reset();
-    _webState = nullptr;
-  }
+  DCHECK(!_webState) << "-detachFromWebState must be called before -dealloc";
 }
 
 - (BOOL)canFindInPage {
-    return _findInPageManager->CanSearchContent();
+  return _findInPageManager->CanSearchContent();
 }
 
 - (CRWWebViewScrollViewProxy*)webViewScrollView {
@@ -290,18 +279,10 @@ static NSString* gSearchTerm;
 }
 
 - (void)detachFromWebState {
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserverBridge.get());
-    _webStateObserverBridge.reset();
-    _webState = nullptr;
-  }
-}
-
-#pragma mark - CRWWebStateObserver Methods
-
-- (void)webStateDestroyed:(web::WebState*)webState {
-  DCHECK_EQ(_webState, webState);
-  [self detachFromWebState];
+  _findInPageManager->SetDelegate(nullptr);
+  _findInPageDelegateBridge.reset();
+  _findInPageManager = nullptr;
+  _webState = nullptr;
 }
 
 #pragma mark - DOMAltering Methods

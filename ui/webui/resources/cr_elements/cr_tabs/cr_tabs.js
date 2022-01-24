@@ -37,6 +37,15 @@ export class CrTabsElement extends PolymerElement {
   static get properties() {
     return {
       /**
+       * Optional icon urls displayed in each tab.
+       * @type {!Array<string>}
+       */
+      tabIcons: {
+        type: Array,
+        value: () => [],
+      },
+
+      /**
        * Tab names displayed in each tab.
        * @type {!Array<string>}
        */
@@ -87,6 +96,16 @@ export class CrTabsElement extends PolymerElement {
    */
   getAriaSelected_(index) {
     return index === this.selected ? 'true' : 'false';
+  }
+
+  /**
+   * @param {number} index
+   * @return {string}
+   * @private
+   */
+  getIconStyle_(index) {
+    const icon = this.tabIcons[index];
+    return icon ? `-webkit-mask-image: url(${icon}); display: block;` : '';
   }
 
   /**

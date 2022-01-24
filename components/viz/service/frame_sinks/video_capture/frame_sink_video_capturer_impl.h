@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/tick_clock.h"
@@ -84,6 +83,10 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
       std::unique_ptr<media::VideoCaptureOracle> oracle,
       bool log_to_webrtc);
 
+  FrameSinkVideoCapturerImpl(const FrameSinkVideoCapturerImpl&) = delete;
+  FrameSinkVideoCapturerImpl& operator=(const FrameSinkVideoCapturerImpl&) =
+      delete;
+
   ~FrameSinkVideoCapturerImpl() final;
 
   // The currently-requested frame sink for capture. The frame sink manager
@@ -113,7 +116,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                                 bool use_fixed_aspect_ratio) final;
   void SetAutoThrottlingEnabled(bool enabled) final;
   void ChangeTarget(const absl::optional<FrameSinkId>& frame_sink_id,
-                    const SubtreeCaptureId& subtree_capture_id) final;
+                    mojom::SubTargetPtr sub_target) final;
   void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer) final;
   void Stop() final;
   void RequestRefreshFrame() final;
@@ -261,11 +264,10 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // ChangeTarget().
   FrameSinkId requested_target_;
 
-  // If valid, this is the ID of a layer subtree within the requested frame
-  // sink, whose associated render pass should be captured by this capturer.
-  // If not valid, then this capturer capturer the root render pass of the
-  // target frame sink.
-  SubtreeCaptureId request_subtree_id_;
+  // A specifier that indicates what region of the layer should be captured.
+  // If not valid, then the root render pass of the target frame sink should
+  // be captured.
+  CapturableFrameSink::RegionSpecifier region_specifier_;
 
   // The resolved target of video capture, or null if the requested target does
   // not yet exist (or no longer exists).
@@ -358,8 +360,6 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // A weak pointer factory used for cancelling the results from any in-flight
   // copy output requests.
   base::WeakPtrFactory<FrameSinkVideoCapturerImpl> capture_weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSinkVideoCapturerImpl);
 };
 
 }  // namespace viz

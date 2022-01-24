@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "chrome/browser/login_detection/oauth_login_detector.h"
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

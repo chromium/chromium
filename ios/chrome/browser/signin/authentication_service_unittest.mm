@@ -30,12 +30,15 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #include "ios/chrome/browser/system_flags.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#include "ios/chrome/test/testing_application_context.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -43,6 +46,7 @@
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -81,6 +85,9 @@ class AuthenticationServiceTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
 
     browser_state_ = builder.Build();
+
+    account_manager_ = ChromeAccountManagerServiceFactory::GetForBrowserState(
+        browser_state_.get());
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -159,9 +166,19 @@ class AuthenticationServiceTest : public PlatformTest {
   }
 
   ChromeIdentity* identity(NSUInteger index) {
-    return [identity_service()->GetAllIdentities(nullptr) objectAtIndex:index];
+    return [account_manager_->GetAllIdentities() objectAtIndex:index];
   }
 
+  // Sets a restricted pattern.
+  void SetPattern(const std::string pattern) {
+    base::ListValue allowed_patterns;
+    allowed_patterns.Append(pattern);
+    GetApplicationContext()->GetLocalState()->Set(
+        prefs::kRestrictAccountsToPatterns, allowed_patterns);
+  }
+
+  IOSChromeScopedTestingLocalState local_state_;
+  ChromeAccountManagerService* account_manager_;
   web::WebTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -473,6 +490,27 @@ TEST_F(AuthenticationServiceTest,
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
 }
 
+// Tests that local data are not cleared when signing out of a non-syncing
+// managed account.
+TEST_F(AuthenticationServiceTest, SignedInManagedAccountSignOut) {
+  identity_service()->AddManagedIdentities(@[ @"foo3" ]);
+
+  SetExpectationsForSignIn();
+  authentication_service()->SignIn(identity(2));
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
+  EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
+      signin::ConsentLevel::kSignin));
+
+  NSDictionary* user_info = [NSDictionary dictionary];
+  SetCachedMDMInfo(identity(2), user_info);
+
+  authentication_service()->SignOut(signin_metrics::ABORT_SIGNIN,
+                                    /*force_clear_browsing_data=*/false, nil);
+  EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
+  EXPECT_EQ(ClearBrowsingDataCount(), 0);
+}
+
 // Tests that MDM errors are correctly cleared when signing out of a managed
 // account.
 TEST_F(AuthenticationServiceTest, ManagedAccountSignOut) {
@@ -483,6 +521,8 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOut) {
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
+  ON_CALL(*mock_sync_service()->GetMockUserSettings(), IsFirstSetupComplete())
+      .WillByDefault(Return(true));
 
   NSDictionary* user_info = [NSDictionary dictionary];
   SetCachedMDMInfo(identity(2), user_info);
@@ -667,4 +707,37 @@ TEST_F(AuthenticationServiceTest, SigninDisallowedCrash) {
 
   // Attempt to sign in, and verify there is a crash.
   EXPECT_CHECK_DEATH(authentication_service()->SignIn(identity(0)));
+}
+
+// Tests that reauth prompt is not set if the primary identity is restricted and
+// |OnPrimaryAccountRestricted| is forwarded.
+TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
+  id<AuthenticationServiceObserving> observer_delegate =
+      OCMStrictProtocolMock(@protocol(AuthenticationServiceObserving));
+  AuthenticationServiceObserverBridge observer_bridge(authentication_service(),
+                                                      observer_delegate);
+
+  // Sign in.
+  OCMExpect([observer_delegate onPrimaryAccountRestricted]);
+  SetExpectationsForSignInAndSync();
+  authentication_service()->SignIn(identity(0));
+  authentication_service()->GrantSyncConsent(identity(0));
+
+  // Set the account restriction.
+  SetPattern("foo");
+  EXPECT_FALSE(account_manager_->HasIdentities());
+
+  // Set the authentication service as "In Background" and run the loop.
+  base::RunLoop().RunUntilIdle();
+
+  // User is signed out (no corresponding identity), and reauth prompt is set.
+  EXPECT_TRUE(identity_manager()
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+                  .gaia.empty());
+  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
+  EXPECT_OCMOCK_VERIFY(observer_delegate);
 }

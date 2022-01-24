@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/webdata/common/web_database_table.h"
 #include "components/webdata/common/webdata_export.h"
 #include "sql/database.h"
@@ -31,6 +30,10 @@ class WEBDATA_EXPORT WebDatabase {
   static const base::FilePath::CharType kInMemoryPath[];
 
   WebDatabase();
+
+  WebDatabase(const WebDatabase&) = delete;
+  WebDatabase& operator=(const WebDatabase&) = delete;
+
   virtual ~WebDatabase();
 
   // Adds a database table. Ownership remains with the caller, which
@@ -88,8 +91,6 @@ class WEBDATA_EXPORT WebDatabase {
   // object. Non-owning.
   typedef std::map<WebDatabaseTable::TypeKey, WebDatabaseTable*> TableMap;
   TableMap tables_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDatabase);
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_H_

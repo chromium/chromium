@@ -25,7 +25,9 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/controls/button/button_controller.h"
 
@@ -34,6 +36,17 @@ namespace {
 
 constexpr uint8_t kAssistantVisibleAlpha = 255;    // 100% alpha
 constexpr uint8_t kAssistantInvisibleAlpha = 138;  // 54% alpha
+
+// Nudge animation constants
+
+// The offsets that the home button moves up/down from the original home button
+// position at each stage of nudge animation.
+constexpr int kAnimationBounceUpOffset = 12;
+constexpr int kAnimationBounceDownOffset = 3;
+
+constexpr base::TimeDelta kHomeButtonAnimationDuration =
+    base::Milliseconds(250);
+constexpr base::TimeDelta kRippleAnimationDuration = base::Milliseconds(2000);
 
 }  // namespace
 
@@ -50,7 +63,10 @@ HomeButton::ScopedNoClipRect::ScopedNoClipRect(
 }
 
 HomeButton::ScopedNoClipRect::~ScopedNoClipRect() {
-  shelf_navigation_widget_->GetLayer()->SetClipRect(clip_rect_);
+  // The shelf_navigation_widget_ may be destructed before this dtor is
+  // called.
+  if (shelf_navigation_widget_->GetLayer())
+    shelf_navigation_widget_->GetLayer()->SetClipRect(clip_rect_);
 }
 
 // HomeButton::ScopedNoClipRect ------------------------------------------------
@@ -144,6 +160,105 @@ HomeButton::CreateScopedNoClipRect() {
       shelf()->navigation_widget());
 }
 
+void HomeButton::StartNudgeAnimation() {
+  // Create the ripple layer and its delegate for the nudge animation.
+  nudge_ripple_layer_ = std::make_unique<ui::Layer>();
+  float ripple_diameter = layer()->size().width();
+  ripple_layer_delegate_ = std::make_unique<views::CircleLayerDelegate>(
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first,
+      /*radius=*/ripple_diameter / 2);
+
+  // The bounds are set with respect to |shelf_container_layer| stated below.
+  nudge_ripple_layer_->SetBounds(
+      gfx::Rect(layer()->parent()->bounds().x() + bounds().x(),
+                layer()->parent()->bounds().y() + bounds().y(), ripple_diameter,
+                ripple_diameter));
+  nudge_ripple_layer_->set_delegate(ripple_layer_delegate_.get());
+  nudge_ripple_layer_->SetMasksToBounds(true);
+  nudge_ripple_layer_->SetFillsBoundsOpaquely(false);
+
+  // The position of the ripple layer is independent to the home button and its
+  // parent shelf navigation widget. Therefore the ripple layer is added to the
+  // shelf container layer, which is the parent layer of the shelf navigation
+  // widget.
+  ui::Layer* shelf_container_layer = GetWidget()->GetLayer()->parent();
+  shelf_container_layer->Add(nudge_ripple_layer_.get());
+  shelf_container_layer->StackBelow(nudge_ripple_layer_.get(),
+                                    layer()->parent());
+
+  // Home button movement settings. Note that the navigation widget layer
+  // contains the non-opaque part of the home button and is also animated along
+  // with the home button.
+  ui::Layer* widget_layer = GetWidget()->GetLayer();
+
+  gfx::PointF bounce_up_point = shelf()->SelectValueForShelfAlignment(
+      gfx::PointF(0, -kAnimationBounceUpOffset),
+      gfx::PointF(kAnimationBounceUpOffset, 0),
+      gfx::PointF(-kAnimationBounceUpOffset, 0));
+  gfx::PointF bounce_down_point = shelf()->SelectValueForShelfAlignment(
+      gfx::PointF(0, kAnimationBounceDownOffset),
+      gfx::PointF(-kAnimationBounceDownOffset, 0),
+      gfx::PointF(kAnimationBounceDownOffset, 0));
+
+  gfx::Transform move_up;
+  move_up.Translate(bounce_up_point.x(), bounce_up_point.y());
+  gfx::Transform move_down;
+  move_down.Translate(bounce_down_point.x(), bounce_down_point.y());
+
+  gfx::Transform initial_disc_scale;
+  initial_disc_scale.Scale(0.1f, 0.1f);
+  gfx::Transform initial_state =
+      gfx::TransformAboutPivot(GetCenterPoint(), initial_disc_scale);
+
+  gfx::Transform final_disc_scale;
+  final_disc_scale.Scale(3.0f, 3.0f);
+  gfx::Transform scale_about_pivot =
+      gfx::TransformAboutPivot(GetCenterPoint(), final_disc_scale);
+
+  // Remove clip_rect from the home button and its ancestors as the animation
+  // goes beyond its size. The object is deleted once the animation ends.
+  scoped_no_clip_rect_ = CreateScopedNoClipRect();
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnStarted(base::BindOnce(&HomeButton::OnNudgeAnimationStarted,
+                                weak_ptr_factory_.GetWeakPtr()))
+      .OnEnded(base::BindOnce(&HomeButton::OnNudgeAnimationEnded,
+                              weak_ptr_factory_.GetWeakPtr()))
+      .Once()
+      // Set up the animation of the ripple_layer
+      .SetDuration(base::TimeDelta())
+      .SetTransform(nudge_ripple_layer_.get(), initial_state)
+      .SetOpacity(nudge_ripple_layer_.get(), 0.5f)
+      .Then()
+      .SetDuration(kRippleAnimationDuration)
+      .SetTransform(nudge_ripple_layer_.get(), scale_about_pivot,
+                    gfx::Tween::ACCEL_0_40_DECEL_100)
+      .SetOpacity(nudge_ripple_layer_.get(), 0.0f,
+                  gfx::Tween::ACCEL_0_80_DECEL_80)
+      // Set up the animation of the widget_layer
+      .At(base::Seconds(0))
+      .SetDuration(kHomeButtonAnimationDuration)
+      .SetTransform(widget_layer, move_up, gfx::Tween::FAST_OUT_SLOW_IN_3)
+      .Then()
+      .SetDuration(kHomeButtonAnimationDuration)
+      .SetTransform(widget_layer, move_down, gfx::Tween::ACCEL_80_DECEL_20)
+      .Then()
+      .SetDuration(kHomeButtonAnimationDuration)
+      .SetTransform(widget_layer, gfx::Transform(),
+                    gfx::Tween::FAST_OUT_SLOW_IN_3);
+}
+
+void HomeButton::AddNudgeAnimationObserverForTest(
+    NudgeAnimationObserver* observer) {
+  observers_.AddObserver(observer);
+}
+void HomeButton::RemoveNudgeAnimationObserverForTest(
+    NudgeAnimationObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::PointF circle_center(GetCenterPoint());
 
@@ -191,6 +306,10 @@ void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
 
 void HomeButton::OnThemeChanged() {
   ShelfControlButton::OnThemeChanged();
+  if (ripple_layer_delegate_) {
+    ripple_layer_delegate_->set_color(
+        AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first);
+  }
   SchedulePaint();
 }
 
@@ -205,6 +324,24 @@ bool HomeButton::DoesIntersectRect(const views::View* target,
                       -ShelfConfig::Get()->control_button_edge_spacing(
                           !shelf()->IsHorizontalAlignment()));
   return button_bounds.Intersects(rect);
+}
+
+void HomeButton::OnNudgeAnimationStarted() {
+  for (auto& observer : observers_)
+    observer.NudgeAnimationStarted(this);
+}
+
+void HomeButton::OnNudgeAnimationEnded() {
+  // Delete the ripple layer and its delegate after the launcher nudge animation
+  // is completed.
+  nudge_ripple_layer_.reset();
+  ripple_layer_delegate_.reset();
+
+  // Reset the clip rect after the animation is completed.
+  scoped_no_clip_rect_.reset();
+
+  for (auto& observer : observers_)
+    observer.NudgeAnimationEnded(this);
 }
 
 }  // namespace ash

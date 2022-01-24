@@ -4,6 +4,8 @@
 
 #include "components/sync/driver/sync_session_durations_metrics_recorder.h"
 
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
@@ -18,7 +20,7 @@ base::TimeDelta SubtractInactiveTime(base::TimeDelta total_length,
   // ends up giving the session negative length, which can happen if the feature
   // state changed after the user became inactive, log the length as 0.
   base::TimeDelta session_length = total_length - inactive_time;
-  if (session_length < base::TimeDelta()) {
+  if (session_length.is_negative()) {
     session_length = base::TimeDelta();
   }
   return session_length;

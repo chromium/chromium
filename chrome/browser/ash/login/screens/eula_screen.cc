@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ash/login/screens/eula_screen.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/customization/customization_document.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
@@ -91,6 +94,10 @@ std::string EulaScreen::GetResultString(Result result) {
       return "AcceptedWithoutStats";
     case Result::BACK:
       return "Back";
+    case Result::ALREADY_ACCEPTED:
+    case Result::ALREADY_ACCEPTED_DEMO_MODE:
+    case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR:
+    case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO:
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
@@ -111,6 +118,33 @@ EulaScreen::~EulaScreen() {
 }
 
 bool EulaScreen::MaybeSkip(WizardContext* context) {
+  // This should be kept in sync with `testapi_shouldSkipEula`. If the logic
+  // became too complicated we need to consider extract and reuse parts of it.
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    const auto* const demo_setup_controller =
+        WizardController::default_controller()->demo_setup_controller();
+    if (demo_setup_controller) {
+      exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO);
+    } else {
+      exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR);
+    }
+    return true;
+  }
+
+  if (!context->is_branded_build) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
+  if (StartupUtils::IsEulaAccepted()) {
+    const auto* const demo_setup_controller =
+        WizardController::default_controller()->demo_setup_controller();
+    exit_callback_.Run(demo_setup_controller
+                           ? Result::ALREADY_ACCEPTED_DEMO_MODE
+                           : Result::ALREADY_ACCEPTED);
+    return true;
+  }
+
   // Remora (CfM) devices are enterprise only. To enroll device it is required
   // to accept ToS on the server side. Thus for such devices it is not needed to
   // accept EULA on the client side.
@@ -138,8 +172,12 @@ void EulaScreen::OnViewDestroyed(EulaView* view) {
 
 void EulaScreen::ShowImpl() {
   // Command to own the TPM.
-  TpmManagerClient::Get()->TakeOwnership(::tpm_manager::TakeOwnershipRequest(),
-                                         base::DoNothing());
+  // When --tpm-is-dynamic switch is set pre-enrollment TPM check relies on the
+  // TPM being un-owned until enrollment. b/187429309
+  if (!switches::IsTpmDynamic()) {
+    TpmManagerClient::Get()->TakeOwnership(
+        ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
+  }
   if (WizardController::UsingHandsOffEnrollment())
     OnUserAction(kUserActionAcceptButtonClicked);
   else if (view_)

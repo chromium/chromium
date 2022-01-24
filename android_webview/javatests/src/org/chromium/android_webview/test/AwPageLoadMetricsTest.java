@@ -94,7 +94,7 @@ public class AwPageLoadMetricsTest {
         int navigationToFirstContentfulPaint = RecordHistogram.getHistogramTotalCountForTesting(
                 "PageLoad.PaintTiming.NavigationToFirstContentfulPaint");
         int navigationToLargestContentfulPaint = RecordHistogram.getHistogramTotalCountForTesting(
-                "PageLoad.PaintTiming.NavigationToLargestContentfulPaint");
+                "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2");
         loadUrlSync(url);
         AwActivityTestRule.pollInstrumentationThread(
                 () -> (1 + navigationToFirstPaint
@@ -107,9 +107,10 @@ public class AwPageLoadMetricsTest {
         // Flush NavigationToLargestContentfulPaint.
         loadUrlSync("about:blank");
         AwActivityTestRule.pollInstrumentationThread(
-                () -> (1 + navigationToLargestContentfulPaint
-                        == RecordHistogram.getHistogramTotalCountForTesting(
-                                "PageLoad.PaintTiming.NavigationToLargestContentfulPaint")));
+                ()
+                        -> (1 + navigationToLargestContentfulPaint
+                                == RecordHistogram.getHistogramTotalCountForTesting(
+                                        "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2")));
     }
 
     /**

@@ -37,6 +37,11 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
       std::unique_ptr<DeviceInfoPrefs> device_info_prefs,
       std::unique_ptr<DeviceInfoSyncClient> device_info_sync_client,
       SyncInvalidationsService* sync_invalidations_service);
+
+  DeviceInfoSyncServiceImpl(const DeviceInfoSyncServiceImpl&) = delete;
+  DeviceInfoSyncServiceImpl& operator=(const DeviceInfoSyncServiceImpl&) =
+      delete;
+
   ~DeviceInfoSyncServiceImpl() override;
 
   // DeviceInfoSyncService implementation.
@@ -61,8 +66,6 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
   std::unique_ptr<DeviceInfoSyncBridge> bridge_;
 
   SyncInvalidationsService* const sync_invalidations_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncServiceImpl);
 };
 
 }  // namespace syncer

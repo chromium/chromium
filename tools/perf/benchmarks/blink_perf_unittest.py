@@ -80,6 +80,8 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     self.assertEquals(len(frame_view_painttrees), 10)
     self.assertGreater(_Mean(frame_view_painttrees), 0.001)
 
+  @decorators.Disabled('linux',
+                       'chromeos')  # Disable due to flaky: crbug.com/1240931
   def testBlinkPerfTracingMetricsForMeasurePageLoadTime(self):
     measurements = self.RunPageTest(
         self.blink_page_test, 'file://simple-html-measure-page-load-time.html')

@@ -71,6 +71,10 @@ class GCM_EXPORT CheckinRequest {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder);
+
+  CheckinRequest(const CheckinRequest&) = delete;
+  CheckinRequest& operator=(const CheckinRequest&) = delete;
+
   ~CheckinRequest();
 
   void Start();
@@ -98,8 +102,6 @@ class GCM_EXPORT CheckinRequest {
   GCMStatsRecorder* recorder_;
 
   base::WeakPtrFactory<CheckinRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CheckinRequest);
 };
 
 }  // namespace gcm

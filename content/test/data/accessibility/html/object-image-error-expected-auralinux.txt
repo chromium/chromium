@@ -1,0 +1,4 @@
+[document web] tag:#document
+++[section] tag:div
+++++[embedded component] tag:object
+++++++[static] name='Fallback'

@@ -69,6 +69,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
       ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory,
       P2PMessageThrottler* throttler);
 
+  P2PSocket(const P2PSocket&) = delete;
+  P2PSocket& operator=(const P2PSocket&) = delete;
+
   ~P2PSocket() override;
 
   // Initializes the socket. Returns false when initialization fails.
@@ -171,8 +174,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
   int32_t send_bytes_delayed_cur_ = 0;
 
   base::WeakPtrFactory<P2PSocket> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocket);
 };
 
 }  // namespace network

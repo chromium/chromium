@@ -8,6 +8,7 @@
 [
     Exposed=(Window,DedicatedWorker),
     RuntimeEnabled=WebCodecs,
+    SecureContext,
     ImplementedAs=ImageDecoderExternal,
     ActiveScriptWrappable
 ] interface ImageDecoder {

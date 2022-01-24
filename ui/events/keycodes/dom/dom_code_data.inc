@@ -99,6 +99,10 @@ DOM_CODE_DECLARATION {
   // name defined as it is not exposed to web content.
   DOM_CODE(0x000017, 0x0279, 0x0281, 0x0000, 0xffff, "PrivacyScreenToggle",
              PRIVACY_SCREEN_TOGGLE),  // Privacy Screen Toggle
+  // As with privacy screen, microphone mute toggle will not be exposed to web
+  // content.
+  DOM_CODE(0x000018, 0x00f8, 0x0100, 0x0000, 0xffff, "MicrophoneMuteToggle",
+             MICROPHONE_MUTE_TOGGLE),  // Microphone Mute Toggle
 
   // =========================================
   // USB Usage Page 0x01: Generic Desktop Page

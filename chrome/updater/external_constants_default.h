@@ -5,13 +5,13 @@
 #ifndef CHROME_UPDATER_EXTERNAL_CONSTANTS_DEFAULT_H_
 #define CHROME_UPDATER_EXTERNAL_CONSTANTS_DEFAULT_H_
 
-#include <memory>
+#include "base/memory/scoped_refptr.h"
 
 namespace updater {
 
 class ExternalConstants;
 
-std::unique_ptr<ExternalConstants> CreateDefaultExternalConstants();
+scoped_refptr<ExternalConstants> CreateDefaultExternalConstants();
 
 }  // namespace updater
 

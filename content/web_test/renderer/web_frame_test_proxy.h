@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "content/web_test/renderer/accessibility_controller.h"
@@ -37,6 +36,10 @@ class WebFrameTestProxy : public RenderFrameImpl,
  public:
   WebFrameTestProxy(RenderFrameImpl::CreateParams params,
                     TestRunner* test_runner);
+
+  WebFrameTestProxy(const WebFrameTestProxy&) = delete;
+  WebFrameTestProxy& operator=(const WebFrameTestProxy&) = delete;
+
   ~WebFrameTestProxy() override;
 
   // RenderFrameImpl overrides.
@@ -115,8 +118,6 @@ class WebFrameTestProxy : public RenderFrameImpl,
 
   mojo::AssociatedReceiver<mojom::WebTestRenderFrame>
       web_test_render_frame_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebFrameTestProxy);
 };
 
 }  // namespace content

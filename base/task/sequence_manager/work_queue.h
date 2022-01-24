@@ -6,7 +6,7 @@
 #define BASE_TASK_SEQUENCE_MANAGER_WORK_QUEUE_H_
 
 #include "base/base_export.h"
-#include "base/task/common/intrusive_heap.h"
+#include "base/containers/intrusive_heap.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -73,7 +73,7 @@ class BASE_EXPORT WorkQueue {
     TaskPusher(TaskPusher&& other);
     ~TaskPusher();
 
-    void Push(Task* task);
+    void Push(Task task);
 
    private:
     friend class WorkQueue;
@@ -118,18 +118,11 @@ class BASE_EXPORT WorkQueue {
 
   size_t work_queue_set_index() const { return work_queue_set_index_; }
 
-  base::internal::HeapHandle heap_handle() const { return heap_handle_; }
+  HeapHandle heap_handle() const { return heap_handle_; }
 
-  void set_heap_handle(base::internal::HeapHandle handle) {
-    heap_handle_ = handle;
-  }
+  void set_heap_handle(HeapHandle handle) { heap_handle_ = handle; }
 
   QueueType queue_type() const { return queue_type_; }
-
-  // Returns true if the front task in this queue has an older enqueue order
-  // than the front task of |other_queue|. Both queue are assumed to be
-  // non-empty. This method ignores any fences.
-  bool ShouldRunBefore(const WorkQueue* other_queue) const;
 
   // Submit a fence. When TakeTaskFromWorkQueue encounters a task whose
   // enqueue_order is >= |fence| then the WorkQueue will start pretending to be.
@@ -175,7 +168,7 @@ class BASE_EXPORT WorkQueue {
   // Iff the queue isn't empty (or appearing to be empty due to a fence) then
   // |heap_handle_| will be valid and correspond to this queue's location within
   // an IntrusiveHeap inside the WorkQueueSet.
-  base::internal::HeapHandle heap_handle_;
+  HeapHandle heap_handle_;
   const char* const name_;
   EnqueueOrder fence_;
   const QueueType queue_type_;

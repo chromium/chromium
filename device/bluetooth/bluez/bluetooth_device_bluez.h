@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_common.h"
@@ -49,6 +49,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
       base::OnceCallback<void(const std::vector<BluetoothServiceRecordBlueZ>&)>;
   using GetServiceRecordsErrorCallback =
       base::OnceCallback<void(BluetoothServiceRecordBlueZ::ErrorCode)>;
+
+  BluetoothDeviceBlueZ(const BluetoothDeviceBlueZ&) = delete;
+  BluetoothDeviceBlueZ& operator=(const BluetoothDeviceBlueZ&) = delete;
 
   ~BluetoothDeviceBlueZ() override;
 
@@ -285,6 +288,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
                          const std::string& error_name,
                          const std::string& error_message);
 
+  // Called by dbus:: on successful completion of the D-Bus method to remove the
+  // device.
+  void OnForgetSuccess(base::OnceClosure callback);
+
   // The dbus object path of the device object.
   dbus::ObjectPath object_path_;
 
@@ -309,8 +316,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothDeviceBlueZ> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceBlueZ);
 };
 
 }  // namespace bluez

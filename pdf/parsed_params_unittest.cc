@@ -6,8 +6,10 @@
 
 #include <string>
 
-#include "base/strings/string_number_conversions.h"
+#include "pdf/pdfium/pdfium_form_filler.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
@@ -17,103 +19,166 @@ namespace chrome_pdf {
 
 namespace {
 
-constexpr char kDummyOriginalUrl[] = "https://test.com/dummy.pdf";
-constexpr char kDummySrcUrl[] = "chrome-extension://dummy-source-url";
+using ::testing::AnyOf;
 
-constexpr SkColor kNewBackgroundColor = SkColorSetARGB(0xFF, 0x52, 0x56, 0x59);
+constexpr char kFakeSrcUrl[] = "chrome-extension://fake-source-url";
 
-// `kNewBackgroundColor` as a decimal number in string format.
-constexpr char kNewBackgroundColorStr[] = "4283586137";
-
-// Creates a `blink::WebPluginParams` without any URL attributes, namely "src"
-// and "original-url". The return value only contains valid "background-color"
-// and "full-frame" attributes.
-blink::WebPluginParams CreateWebPluginParamsWithoutUrl() {
+// Creates a `blink::WebPluginParams` with only required attributes.
+blink::WebPluginParams CreateMinimalWebPluginParams() {
   blink::WebPluginParams params;
-  params.attribute_names.push_back(blink::WebString("background-color"));
-  params.attribute_values.push_back(blink::WebString(kNewBackgroundColorStr));
-  params.attribute_names.push_back(blink::WebString("full-frame"));
-  params.attribute_values.push_back(blink::WebString(""));
-  return params;
-}
-
-// Creates a `blink::WebPluginParams` with only the URL attributes: "src" and
-// "original-url".
-blink::WebPluginParams CreateWebPluginParamsWithUrls() {
-  blink::WebPluginParams params;
-  params.attribute_names.push_back(blink::WebString("original-url"));
-  params.attribute_values.push_back(blink::WebString(kDummyOriginalUrl));
   params.attribute_names.push_back(blink::WebString("src"));
-  params.attribute_values.push_back(blink::WebString(kDummySrcUrl));
+  params.attribute_values.push_back(blink::WebString(kFakeSrcUrl));
   return params;
 }
 
 }  // namespace
 
-TEST(ParsedParamsTest, ParseValidWebPluginParams) {
-  blink::WebPluginParams params = CreateWebPluginParamsWithoutUrl();
-  params.attribute_names.push_back(blink::WebString("original-url"));
-  params.attribute_values.push_back(blink::WebString(kDummyOriginalUrl));
-  params.attribute_names.push_back(blink::WebString("src"));
-  params.attribute_values.push_back(blink::WebString(kDummySrcUrl));
+TEST(ParsedParamsTest, ParseWebPluginParamsMinimal) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
 
   absl::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(kDummyOriginalUrl, result->original_url);
-  EXPECT_EQ(kDummySrcUrl, result->src_url);
-  ASSERT_TRUE(result->background_color.has_value());
-  EXPECT_EQ(kNewBackgroundColor, result->background_color.value());
-  EXPECT_TRUE(result->full_frame);
+
+  EXPECT_EQ(kFakeSrcUrl, result->src_url);
+  EXPECT_EQ(kFakeSrcUrl, result->original_url);
+  EXPECT_EQ("", result->top_level_url);
+  EXPECT_FALSE(result->full_frame);
+  EXPECT_EQ(SK_ColorTRANSPARENT, result->background_color);
+  EXPECT_EQ(PDFiumFormFiller::DefaultScriptOption(), result->script_option);
+  EXPECT_FALSE(result->has_edits);
 }
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithoutSourceUrl) {
-  blink::WebPluginParams params = CreateWebPluginParamsWithoutUrl();
-  params.attribute_names.push_back(blink::WebString("original-url"));
-  params.attribute_values.push_back(blink::WebString(kDummyOriginalUrl));
+  blink::WebPluginParams params;
 
-  // Expect the `ParsedParams` to be invalid due to missing the source URL.
   absl::optional<ParsedParams> result = ParseWebPluginParams(params);
   EXPECT_FALSE(result.has_value());
 }
 
-TEST(ParseParsedParamsTest, ParseWebPluginParamsWithoutOriginalUrl) {
-  blink::WebPluginParams params = CreateWebPluginParamsWithoutUrl();
-  params.attribute_names.push_back(blink::WebString("src"));
-  params.attribute_values.push_back(blink::WebString(kDummySrcUrl));
+TEST(ParsedParamsTest, ParseWebPluginParamsWithOriginalUrl) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.push_back(blink::WebString("original-url"));
+  params.attribute_values.push_back(
+      blink::WebString("https://example.com/original.pdf"));
 
-  // Expect the `ParsedParams` to be valid and `original_url` to be the same as
-  // `src_url`.
   absl::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(kDummySrcUrl, result->original_url);
-  EXPECT_EQ(kDummySrcUrl, result->src_url);
-  ASSERT_TRUE(result->background_color.has_value());
-  EXPECT_EQ(kNewBackgroundColor, result->background_color.value());
+
+  EXPECT_EQ(kFakeSrcUrl, result->src_url);
+  EXPECT_EQ("https://example.com/original.pdf", result->original_url);
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithTopLevelUrl) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.push_back(blink::WebString("top-level-url"));
+  params.attribute_values.push_back(
+      blink::WebString("https://example.net/top.html"));
+
+  absl::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_EQ("https://example.net/top.html", result->top_level_url);
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithFullFrame) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.push_back(blink::WebString("full-frame"));
+  params.attribute_values.push_back(blink::WebString(""));
+
+  absl::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
   EXPECT_TRUE(result->full_frame);
 }
 
-TEST(ParsedParamsTest, ParseWebPluginParamsWithoutBackgroundColor) {
-  blink::WebPluginParams params = CreateWebPluginParamsWithUrls();
+TEST(ParsedParamsTest, ParseWebPluginParamsWithFullFrameNonEmpty) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.push_back(blink::WebString("full-frame"));
+  params.attribute_values.push_back(blink::WebString("false"));
 
-  // The `ParsedParams` can still be valid without the background color
-  // attribute.
   absl::optional<ParsedParams> result = ParseWebPluginParams(params);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(kDummyOriginalUrl, result->original_url);
-  EXPECT_EQ(kDummySrcUrl, result->src_url);
-  EXPECT_FALSE(result->background_color.has_value());
-  EXPECT_FALSE(result->full_frame);
+
+  EXPECT_TRUE(result->full_frame);
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithBackgroundColor) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.push_back(blink::WebString("background-color"));
+  params.attribute_values.push_back(blink::WebString("4283586137"));
+
+  absl::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_EQ(4283586137, result->background_color);
 }
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithInvalidBackgroundColor) {
-  blink::WebPluginParams params = CreateWebPluginParamsWithUrls();
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
   params.attribute_names.push_back(blink::WebString("background-color"));
   params.attribute_values.push_back(blink::WebString("red"));
 
-  // Expect the `ParsedParams` to be invalid because the background color's
-  // attribute value is in the wrong format.
   absl::optional<ParsedParams> result = ParseWebPluginParams(params);
   EXPECT_FALSE(result.has_value());
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithJavascriptAllow) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.push_back(blink::WebString("javascript"));
+  params.attribute_values.push_back(blink::WebString("allow"));
+
+  absl::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_THAT(result->script_option,
+              AnyOf(PDFiumFormFiller::ScriptOption::kJavaScript,
+                    PDFiumFormFiller::ScriptOption::kJavaScriptAndXFA));
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithJavascriptEmpty) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.push_back(blink::WebString("javascript"));
+  params.attribute_values.push_back(blink::WebString(""));
+
+  absl::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_EQ(PDFiumFormFiller::ScriptOption::kNoJavaScript,
+            result->script_option);
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithJavascriptNonEmpty) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.push_back(blink::WebString("javascript"));
+  params.attribute_values.push_back(blink::WebString("true"));
+
+  absl::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_EQ(PDFiumFormFiller::ScriptOption::kNoJavaScript,
+            result->script_option);
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithHasEdits) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.push_back(blink::WebString("has-edits"));
+  params.attribute_values.push_back(blink::WebString(""));
+
+  absl::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_TRUE(result->has_edits);
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithHasEditsNonEmpty) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.push_back(blink::WebString("has-edits"));
+  params.attribute_values.push_back(blink::WebString("false"));
+
+  absl::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_TRUE(result->has_edits);
 }
 
 }  // namespace chrome_pdf

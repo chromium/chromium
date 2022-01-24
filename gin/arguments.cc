@@ -6,6 +6,10 @@
 
 #include "base/strings/stringprintf.h"
 #include "gin/converter.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-template.h"
 
 namespace gin {
 

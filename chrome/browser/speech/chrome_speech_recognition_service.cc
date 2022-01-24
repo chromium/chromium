@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
-#include "chrome/browser/service_sandbox_type.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -16,12 +15,14 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "media/base/media_switches.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace speech {
 
-constexpr base::TimeDelta kIdleProcessTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kIdleProcessTimeout = base::Seconds(5);
 
 ChromeSpeechRecognitionService::ChromeSpeechRecognitionService(
     content::BrowserContext* context)
@@ -113,7 +114,7 @@ base::FilePath ChromeSpeechRecognitionService::GetSodaConfigPath(
   // non-Chrome OS Chrome, so hard-coding to the Live Caption language code.
   absl::optional<speech::SodaLanguagePackComponentConfig> language_config =
       speech::GetLanguageComponentConfig(
-          prefs->GetString(prefs::kLiveCaptionLanguageCode));
+          prefs::GetLiveCaptionLanguageCode(prefs));
 
   if (language_config) {
     base::UmaHistogramEnumeration("Accessibility.LiveCaption.SodaLanguage",

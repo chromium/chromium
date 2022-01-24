@@ -96,4 +96,13 @@ void ArcMetricsServiceProxy::OnArcOOMKillCount(
   memory::MemoryKillsMonitor::LogArcOOMKill(current_oom_kills);
 }
 
+void ArcMetricsServiceProxy::OnArcMemoryPressureKill(int count,
+                                                     int estimated_freed_kb) {
+  // TODO(b/197040216): update kill metrics to separate tab discards, LMKD
+  // kills, and pressure kills.
+  for (int i = 0; i < count; i++) {
+    memory::MemoryKillsMonitor::LogLowMemoryKill("APP_PRESSURE", 0);
+  }
+}
+
 }  // namespace arc

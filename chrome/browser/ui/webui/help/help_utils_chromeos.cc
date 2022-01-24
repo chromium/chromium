@@ -8,11 +8,11 @@
 
 #include <algorithm>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chromeos/settings/cros_settings_names.h"
 
 namespace help_utils_chromeos {
 
@@ -28,7 +28,7 @@ bool IsUpdateOverCellularAllowed(bool interactive) {
     return default_update_over_cellular_allowed;
 
   const base::Value* types_value =
-      settings->GetPref(chromeos::kAllowedConnectionTypesForUpdate);
+      settings->GetPref(ash::kAllowedConnectionTypesForUpdate);
   if (!types_value)
     return default_update_over_cellular_allowed;
   CHECK(types_value->is_list());

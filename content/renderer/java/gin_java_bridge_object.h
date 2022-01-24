@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/renderer/java/gin_java_bridge_dispatcher.h"
 #include "gin/handle.h"
@@ -26,6 +25,9 @@ class GinJavaBridgeObject : public gin::Wrappable<GinJavaBridgeObject>,
                             public gin::NamedPropertyInterceptor {
  public:
   static gin::WrapperInfo kWrapperInfo;
+
+  GinJavaBridgeObject(const GinJavaBridgeObject&) = delete;
+  GinJavaBridgeObject& operator=(const GinJavaBridgeObject&) = delete;
 
   GinJavaBridgeDispatcher::ObjectID object_id() const { return object_id_; }
 
@@ -62,8 +64,6 @@ class GinJavaBridgeObject : public gin::Wrappable<GinJavaBridgeObject>,
   int frame_routing_id_;
   std::map<std::string, bool> known_methods_;
   v8::StdGlobalValueMap<std::string, v8::FunctionTemplate> template_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinJavaBridgeObject);
 };
 
 }  // namespace content

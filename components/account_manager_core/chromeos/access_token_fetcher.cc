@@ -32,7 +32,7 @@ AccessTokenFetcher::AccessTokenFetcher(
 
   absl::optional<account_manager::AccountKey> maybe_account_key =
       account_manager::FromMojoAccountKey(mojo_account_key);
-  if (maybe_account_key.has_value() && maybe_account_key.value().IsValid()) {
+  if (maybe_account_key.has_value()) {
     access_token_fetcher_ = account_manager->CreateAccessTokenFetcher(
         /*account_key=*/maybe_account_key.value(), /*consumer=*/this);
   }

@@ -12,14 +12,13 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -76,14 +75,15 @@ class SentinelFile {
   explicit SentinelFile(const base::FilePath& version_directory)
       : path_(IndexedRulesetLocator::GetSentinelFilePath(version_directory)) {}
 
+  SentinelFile(const SentinelFile&) = delete;
+  SentinelFile& operator=(const SentinelFile&) = delete;
+
   bool IsPresent() { return base::PathExists(path_); }
   bool Create() { return base::WriteFile(path_, nullptr, 0) == 0; }
   bool Remove() { return base::DeleteFile(path_); }
 
  private:
   base::FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(SentinelFile);
 };
 
 }  // namespace

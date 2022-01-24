@@ -15,8 +15,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
@@ -102,13 +102,12 @@ void FakeShillDeviceClient::SetProperty(const dbus::ObjectPath& device_path,
     std::move(callback).Run();
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(
-            &FakeShillDeviceClient::SetPropertyInternal,
-            weak_ptr_factory_.GetWeakPtr(), device_path, name, value.Clone(),
-            /*callback=*/base::DoNothing::Once<>(),
-            /*error_callback=*/
-            base::DoNothing::Once<const std::string&, const std::string&>(),
-            /*notify_changed=*/true),
+        base::BindOnce(&FakeShillDeviceClient::SetPropertyInternal,
+                       weak_ptr_factory_.GetWeakPtr(), device_path, name,
+                       value.Clone(),
+                       /*callback=*/base::DoNothing(),
+                       /*error_callback=*/base::DoNothing(),
+                       /*notify_changed=*/true),
         *property_change_delay_);
     return;
   }

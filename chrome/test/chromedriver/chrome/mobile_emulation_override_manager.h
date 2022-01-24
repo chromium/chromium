@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -26,6 +25,12 @@ class MobileEmulationOverrideManager : public DevToolsEventListener {
  public:
   MobileEmulationOverrideManager(DevToolsClient* client,
                                  const DeviceMetrics* device_metrics);
+
+  MobileEmulationOverrideManager(const MobileEmulationOverrideManager&) =
+      delete;
+  MobileEmulationOverrideManager& operator=(
+      const MobileEmulationOverrideManager&) = delete;
+
   ~MobileEmulationOverrideManager() override;
 
   // Overridden from DevToolsEventListener:
@@ -44,8 +49,6 @@ class MobileEmulationOverrideManager : public DevToolsEventListener {
 
   DevToolsClient* client_;
   const DeviceMetrics* overridden_device_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(MobileEmulationOverrideManager);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_MOBILE_EMULATION_OVERRIDE_MANAGER_H_

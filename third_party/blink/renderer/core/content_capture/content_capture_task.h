@@ -94,6 +94,9 @@ class CORE_EXPORT ContentCaptureTask
   base::TimeDelta GetTaskNextFireIntervalForTesting() const;
   void CancelTaskForTesting();
   const TaskDelay& GetTaskDelayForTesting() const { return *task_delay_; }
+  void SetTaskStopForTesting(TaskState state) {
+    task_stop_for_testing_ = state;
+  }
 
   void Trace(Visitor*) const;
 

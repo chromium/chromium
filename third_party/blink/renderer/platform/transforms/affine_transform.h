@@ -27,18 +27,27 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_AFFINE_TRANSFORM_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_AFFINE_TRANSFORM_H_
 
-#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
-
 #include <string.h>  // for memcpy
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+namespace gfx {
+class Point;
+class PointF;
+class QuadF;
+class Rect;
+class RectF;
+}  // namespace gfx
 
 namespace blink {
 
 class FloatPoint;
 class FloatQuad;
 class FloatRect;
-class IntPoint;
+class FloatSize;
 class IntRect;
+class IntSize;
 class TransformationMatrix;
 
 #define IDENTITY_TRANSFORM \
@@ -63,19 +72,23 @@ class PLATFORM_EXPORT AffineTransform {
   void Map(double x, double y, double& x2, double& y2) const;
 
   // Rounds the mapped point to the nearest integer value.
-  IntPoint MapPoint(const IntPoint&) const;
+  gfx::Point MapPoint(const gfx::Point&) const;
 
+  gfx::PointF MapPoint(const gfx::PointF&) const;
   FloatPoint MapPoint(const FloatPoint&) const;
 
   IntSize MapSize(const IntSize&) const;
-
   FloatSize MapSize(const FloatSize&) const;
 
   // Rounds the resulting mapped rectangle out. This is helpful for bounding
   // box computations but may not be what is wanted in other contexts.
+  gfx::Rect MapRect(const gfx::Rect&) const;
   IntRect MapRect(const IntRect&) const;
 
+  gfx::RectF MapRect(const gfx::RectF&) const;
   FloatRect MapRect(const FloatRect&) const;
+
+  gfx::QuadF MapQuad(const gfx::QuadF&) const;
   FloatQuad MapQuad(const FloatQuad&) const;
 
   bool IsIdentity() const;

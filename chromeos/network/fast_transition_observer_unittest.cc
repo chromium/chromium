@@ -26,6 +26,10 @@ class FastTransitionObserverTest : public ::testing::Test {
     observer_ = std::make_unique<FastTransitionObserver>(local_state_.get());
   }
 
+  FastTransitionObserverTest(const FastTransitionObserverTest&) = delete;
+  FastTransitionObserverTest& operator=(const FastTransitionObserverTest&) =
+      delete;
+
   ~FastTransitionObserverTest() override {
     observer_.reset();
     local_state_.reset();
@@ -44,8 +48,6 @@ class FastTransitionObserverTest : public ::testing::Test {
   NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<FastTransitionObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FastTransitionObserverTest);
 };
 
 TEST_F(FastTransitionObserverTest, FastTransitionChangeCallsShill) {

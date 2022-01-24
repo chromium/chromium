@@ -16,10 +16,9 @@ t.step(function() {
 var offscreenCanvas = new OffscreenCanvas(100, 50);
 var ctx = offscreenCanvas.getContext('2d');
 
-assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({blur: null}); });
-assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({blur: {}}); });
-assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({blur: {stdDevation: null}}); });
-assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({blur: {stdDeviation: "foo"}}); });
+assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({filter: "gaussianBlur"}); });
+assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDevation: null}); });
+assert_throws_js(TypeError, function() { ctx.filter = new CanvasFilter({filter: "gaussianBlur", stdDeviation: "foo"}); });
 t.done();
 
 });

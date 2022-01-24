@@ -25,7 +25,8 @@ GPUSwapChain::GPUSwapChain(GPUCanvasContext* context,
                            WGPUTextureFormat format,
                            cc::PaintFlags::FilterQuality filter_quality,
                            IntSize size)
-    : DawnObjectImpl(device),
+    : DawnObjectBase(device->GetDawnControlClient()),
+      device_(device),
       context_(context),
       usage_(usage),
       format_(format),
@@ -41,9 +42,9 @@ GPUSwapChain::~GPUSwapChain() {
 }
 
 void GPUSwapChain::Trace(Visitor* visitor) const {
+  visitor->Trace(device_);
   visitor->Trace(context_);
   visitor->Trace(texture_);
-  DawnObjectImpl::Trace(visitor);
 }
 
 void GPUSwapChain::Neuter() {
@@ -115,34 +116,79 @@ scoped_refptr<CanvasResource> GPUSwapChain::ExportCanvasResource() {
     return nullptr;
   }
 
-  CanvasResourceParams resource_params;
-  resource_params.SetSkColorType(viz::ResourceFormatToClosestSkColorType(
-      /*gpu_compositing=*/true, transferable_resource.format));
-
+  SkImageInfo resource_info = SkImageInfo::Make(
+      transferable_resource.size.width(), transferable_resource.size.height(),
+      viz::ResourceFormatToClosestSkColorType(
+          /*gpu_compositing=*/true, transferable_resource.format),
+      kPremul_SkAlphaType);
   return ExternalCanvasResource::Create(
       transferable_resource.mailbox_holder.mailbox, std::move(release_callback),
-      transferable_resource.mailbox_holder.sync_token,
-      IntSize(transferable_resource.size),
-      transferable_resource.mailbox_holder.texture_target, resource_params,
+      transferable_resource.mailbox_holder.sync_token, resource_info,
+      transferable_resource.mailbox_holder.texture_target,
       swap_buffers_->GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
       cc::PaintFlags::FilterQuality::kLow,
       /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin,
       transferable_resource.is_overlay_candidate);
 }
 
-bool GPUSwapChain::CopyToResourceProvider(
-    CanvasResourceProvider* resource_provider) {
-  DCHECK(resource_provider);
-  DCHECK_EQ(resource_provider->Size(), IntSize(Size()));
-  DCHECK(resource_provider->GetSharedImageUsageFlags() &
-         gpu::SHARED_IMAGE_USAGE_WEBGPU);
-  DCHECK(resource_provider->IsOriginTopLeft());
+scoped_refptr<StaticBitmapImage> GPUSwapChain::Snapshot() const {
+  // If there is a current texture, create a snapshot from it.
+  if (texture_) {
+    return SnapshotInternal(texture_->GetHandle(), Size());
+  }
 
+  // If there is no current texture, we need to get the information of the last
+  // texture reserved, that contains the last mailbox, create a new texture for
+  // it, and use it to create the resource provider. We also need the size of
+  // the texture to create the resource provider.
+  auto mailbox_texture_size =
+      swap_buffers_->GetLastWebGPUMailboxTextureAndSize();
+  if (!mailbox_texture_size.mailbox_texture)
+    return nullptr;
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
+      mailbox_texture_size.mailbox_texture;
+  gfx::Size size = mailbox_texture_size.size;
+
+  return SnapshotInternal(mailbox_texture->GetTexture(), size);
+}
+
+scoped_refptr<StaticBitmapImage> GPUSwapChain::SnapshotInternal(
+    const WGPUTexture& texture,
+    const gfx::Size& size) const {
+  const auto info = SkImageInfo::Make(size.width(), size.height(),
+                                      viz::ResourceFormatToClosestSkColorType(
+                                          /*gpu_compositing=*/true, Format()),
+                                      kPremul_SkAlphaType);
+  auto resource_provider = CanvasResourceProvider::CreateWebGPUImageProvider(
+      info,
+      /*is_origin_top_left=*/true);
+  if (!resource_provider)
+    return nullptr;
+
+  if (!CopyTextureToResourceProvider(texture, size, resource_provider.get()))
+    return nullptr;
+
+  return resource_provider->Snapshot();
+}
+
+bool GPUSwapChain::CopyToResourceProvider(
+    CanvasResourceProvider* resource_provider) const {
   if (!texture_)
     return false;
 
-  if (!(usage_ & WGPUTextureUsage_CopySrc))
-    return false;
+  return CopyTextureToResourceProvider(texture_->GetHandle(), Size(),
+                                       resource_provider);
+}
+
+bool GPUSwapChain::CopyTextureToResourceProvider(
+    const WGPUTexture& texture,
+    const gfx::Size& size,
+    CanvasResourceProvider* resource_provider) const {
+  DCHECK(resource_provider);
+  DCHECK_EQ(resource_provider->Size(), IntSize(size));
+  DCHECK(resource_provider->GetSharedImageUsageFlags() &
+         gpu::SHARED_IMAGE_USAGE_WEBGPU);
+  DCHECK(resource_provider->IsOriginTopLeft());
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
       SharedGpuContext::ContextProviderWrapper();
@@ -156,7 +202,13 @@ bool GPUSwapChain::CopyToResourceProvider(
 
   auto* ri = shared_context_wrapper->ContextProvider()->RasterInterface();
 
-  gpu::webgpu::WebGPUInterface* webgpu = GetDawnControlClient()->GetInterface();
+  if (!GetContextProviderWeakPtr()) {
+    return false;
+  }
+  // todo(crbug/1267244) Use WebGPUMailboxTexture here instead of doing things
+  // manually.
+  gpu::webgpu::WebGPUInterface* webgpu =
+      GetContextProviderWeakPtr()->ContextProvider()->WebGPUInterface();
   gpu::webgpu::ReservedTexture reservation =
       webgpu->ReserveTexture(device_->GetHandle());
   DCHECK(reservation.texture);
@@ -174,7 +226,7 @@ bool GPUSwapChain::CopyToResourceProvider(
 
   WGPUImageCopyTexture source = {
       .nextInChain = nullptr,
-      .texture = texture_->GetHandle(),
+      .texture = texture,
       .mipLevel = 0,
       .origin = WGPUOrigin3D{0},
       .aspect = WGPUTextureAspect_All,
@@ -187,12 +239,12 @@ bool GPUSwapChain::CopyToResourceProvider(
       .aspect = WGPUTextureAspect_All,
   };
   WGPUExtent3D copy_size = {
-      .width = static_cast<uint32_t>(swap_buffers_->Size().width()),
-      .height = static_cast<uint32_t>(swap_buffers_->Size().height()),
+      .width = static_cast<uint32_t>(size.width()),
+      .height = static_cast<uint32_t>(size.height()),
       .depthOrArrayLayers = 1,
   };
-  GetProcs().commandEncoderCopyTextureToTexture(command_encoder, &source,
-                                                &destination, &copy_size);
+  GetProcs().commandEncoderCopyTextureToTextureInternal(
+      command_encoder, &source, &destination, &copy_size);
 
   WGPUCommandBuffer command_buffer =
       GetProcs().commandEncoderFinish(command_encoder, nullptr);
@@ -210,13 +262,11 @@ bool GPUSwapChain::CopyToResourceProvider(
 
 // gpu_swap_chain.idl
 GPUTexture* GPUSwapChain::getCurrentTexture() {
-  if (!swap_buffers_) {
-    return GPUTexture::CreateError(device_);
-  }
-
-  // As we are getting a new texture, we need to tell the canvas context that
-  // there will be a need to send a new frame to the offscreencanvas.
-  if (context_->IsOffscreenCanvas())
+  // As we are getting a new texture, if this is an offscreencanvas or if it is
+  // going to be presented to video, we have to notify the placeholder or
+  // listeners.
+  if (context_->IsOffscreenCanvas() ||
+      static_cast<HTMLCanvasElement*>(context_->Host())->HasCanvasCapture())
     context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
 
   // Calling getCurrentTexture returns a texture that is valid until the
@@ -227,12 +277,16 @@ GPUTexture* GPUSwapChain::getCurrentTexture() {
     return texture_;
   }
 
-  // A negative size indicates we're on the deprecated path which automatically
-  // adjusts to the canvas width/height attributes.
-  // TODO(bajones@chromium.org): Remove automatic path after deprecation period.
-  IntSize texture_size = size_.Width() >= 0 ? size_ : context_->CanvasSize();
-  WGPUTexture dawn_client_texture = swap_buffers_->GetNewTexture(texture_size);
-  DCHECK(dawn_client_texture);
+  if (!swap_buffers_) {
+    texture_ = GPUTexture::CreateError(device_);
+    return texture_;
+  }
+
+  WGPUTexture dawn_client_texture = swap_buffers_->GetNewTexture(size_);
+  if (!dawn_client_texture) {
+    texture_ = GPUTexture::CreateError(device_);
+    return texture_;
+  }
   // SwapChain buffer are 2d.
   texture_ = MakeGarbageCollected<GPUTexture>(
       device_, dawn_client_texture, WGPUTextureDimension_2D, format_, usage_);

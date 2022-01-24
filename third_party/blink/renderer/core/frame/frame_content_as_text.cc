@@ -15,7 +15,7 @@
 
 namespace blink {
 
-void FrameContentAsText(size_t max_chars,
+void FrameContentAsText(wtf_size_t max_chars,
                         LocalFrame* frame,
                         StringBuilder& output) {
   Document* document = frame->GetDocument();

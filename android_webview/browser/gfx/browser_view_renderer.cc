@@ -35,8 +35,8 @@
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace android_webview {
 
@@ -434,12 +434,10 @@ sk_sp<SkPicture> BrowserViewRenderer::CapturePicture(int width,
       // value when scroll_reset is out of scope.
       base::AutoReset<gfx::Vector2dF> scroll_reset(&scroll_offset_unscaled_,
                                                    gfx::Vector2dF());
-      compositor_->DidChangeRootLayerScrollOffset(
-          gfx::ScrollOffset(scroll_offset_unscaled_));
+      compositor_->DidChangeRootLayerScrollOffset(scroll_offset_unscaled_);
       CompositeSW(rec_canvas, /*software_canvas=*/false);
     }
-    compositor_->DidChangeRootLayerScrollOffset(
-        gfx::ScrollOffset(scroll_offset_unscaled_));
+    compositor_->DidChangeRootLayerScrollOffset(scroll_offset_unscaled_);
   }
   return recorder.finishRecordingAsPicture();
 }
@@ -697,8 +695,7 @@ void BrowserViewRenderer::ScrollTo(const gfx::Vector2d& scroll_offset) {
                        scroll_offset_unscaled.y());
 
   if (compositor_)
-    compositor_->DidChangeRootLayerScrollOffset(
-        gfx::ScrollOffset(scroll_offset_unscaled));
+    compositor_->DidChangeRootLayerScrollOffset(scroll_offset_unscaled);
 }
 
 void BrowserViewRenderer::RestoreScrollAfterTransition(

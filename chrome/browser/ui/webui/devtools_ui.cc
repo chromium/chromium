@@ -10,13 +10,13 @@
 #include "chrome/browser/ui/webui/devtools_ui_data_source.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/user_agent.h"
-#include "net/base/load_flags.h"
 
 // static
 GURL DevToolsUI::GetProxyURL(const std::string& frontend_url) {

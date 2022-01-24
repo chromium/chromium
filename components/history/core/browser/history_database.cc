@@ -14,6 +14,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -37,7 +38,7 @@ namespace {
 // Current version number. We write databases at the "current" version number,
 // but any previous version that can read the "compatible" one can make do with
 // our database without *too* many bad effects.
-const int kCurrentVersionNumber = 45;
+const int kCurrentVersionNumber = 51;
 const int kCompatibleVersionNumber = 16;
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
 
@@ -160,26 +161,6 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     return;
   UMA_HISTOGRAM_COUNTS_1M("History.VisitTableCount", visit_count.ColumnInt(0));
 
-  base::Time one_week_ago = base::Time::Now() - base::TimeDelta::FromDays(7);
-  sql::Statement weekly_visit_sql(db_.GetUniqueStatement(
-      "SELECT count(*) FROM visits WHERE visit_time > ?"));
-  weekly_visit_sql.BindInt64(0, one_week_ago.ToInternalValue());
-  int weekly_visit_count = 0;
-  if (weekly_visit_sql.Step())
-    weekly_visit_count = weekly_visit_sql.ColumnInt(0);
-  UMA_HISTOGRAM_COUNTS_1M("History.WeeklyVisitCount", weekly_visit_count);
-
-  base::Time one_month_ago = base::Time::Now() - base::TimeDelta::FromDays(30);
-  sql::Statement monthly_visit_sql(db_.GetUniqueStatement(
-      "SELECT count(*) FROM visits WHERE visit_time > ? AND visit_time <= ?"));
-  monthly_visit_sql.BindInt64(0, one_month_ago.ToInternalValue());
-  monthly_visit_sql.BindInt64(1, one_week_ago.ToInternalValue());
-  int older_visit_count = 0;
-  if (monthly_visit_sql.Step())
-    older_visit_count = monthly_visit_sql.ColumnInt(0);
-  UMA_HISTOGRAM_COUNTS_1M("History.MonthlyVisitCount",
-                          older_visit_count + weekly_visit_count);
-
   UMA_HISTOGRAM_TIMES("History.DatabaseBasicMetricsTime",
                       base::TimeTicks::Now() - start_time);
 
@@ -189,6 +170,7 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     start_time = base::TimeTicks::Now();
 
     // Collect all URLs visited within the last month.
+    base::Time one_month_ago = base::Time::Now() - base::Days(30);
     sql::Statement url_sql(db_.GetUniqueStatement(
         "SELECT url, last_visit_time FROM urls WHERE last_visit_time > ?"));
     url_sql.BindInt64(0, one_month_ago.ToInternalValue());
@@ -199,6 +181,7 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     int month_url_count = 0;
     std::set<std::string> week_hosts;
     std::set<std::string> month_hosts;
+    base::Time one_week_ago = base::Time::Now() - base::Days(7);
     while (url_sql.Step()) {
       GURL url(url_sql.ColumnString(0));
       base::Time visit_time =
@@ -224,7 +207,7 @@ void HistoryDatabase::ComputeDatabaseMetrics(
 int HistoryDatabase::CountUniqueHostsVisitedLastMonth() {
   base::TimeTicks start_time = base::TimeTicks::Now();
   // Collect all URLs visited within the last month.
-  base::Time one_month_ago = base::Time::Now() - base::TimeDelta::FromDays(30);
+  base::Time one_month_ago = base::Time::Now() - base::Days(30);
 
   sql::Statement url_sql(
       db_.GetUniqueStatement("SELECT url FROM urls "
@@ -639,6 +622,47 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
 
   if (cur_version == 44) {
     MigrateReplaceClusterVisitsTable();
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 45) {
+    // New download reroute infos table is introduced, no migration needed.
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 46) {
+    if (!MigrateContentAnnotationsWithoutEntitiesColumn())
+      return LogMigrationFailure(46);
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 47) {
+    if (!MigrateContentAnnotationsAddRelatedSearchesColumn())
+      return LogMigrationFailure(47);
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 48) {
+    if (!MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn())
+      return LogMigrationFailure(48);
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 49) {
+    if (!MigrateContentAnnotationsAddVisibilityScore())
+      return LogMigrationFailure(49);
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 50) {
+    if (!MigrateContextAnnotationsAddTotalForegroundDuration())
+      return LogMigrationFailure(50);
     cur_version++;
     meta_table_.SetVersionNumber(cur_version);
   }

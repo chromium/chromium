@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_CHROME_MEDIA_APP_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_CHROME_MEDIA_APP_UI_DELEGATE_H_
 
-#include "chromeos/components/media_app_ui/media_app_ui_delegate.h"
+#include "ash/webui/media_app_ui/media_app_ui_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -16,7 +16,7 @@ class WebUI;
  * Implementation of the MediaAppUiDelegate interface. Provides the media app
  * code in chromeos/ with functions that only exist in chrome/.
  */
-class ChromeMediaAppUIDelegate : public MediaAppUIDelegate {
+class ChromeMediaAppUIDelegate : public ash::MediaAppUIDelegate {
  public:
   explicit ChromeMediaAppUIDelegate(content::WebUI* web_ui);
 

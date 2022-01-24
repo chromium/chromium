@@ -8,18 +8,15 @@
 #include <vector>
 
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/browser/appcache/chrome_appcache_service.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 
 namespace content {
 
 TestSharedWorkerServiceImpl::TestSharedWorkerServiceImpl(
     StoragePartitionImpl* storage_partition,
-    scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
-    scoped_refptr<ChromeAppCacheService> appcache_service)
+    scoped_refptr<ServiceWorkerContextWrapper> service_worker_context)
     : SharedWorkerServiceImpl(storage_partition,
-                              std::move(service_worker_context),
-                              std::move(appcache_service)) {}
+                              std::move(service_worker_context)) {}
 
 TestSharedWorkerServiceImpl::~TestSharedWorkerServiceImpl() = default;
 

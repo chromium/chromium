@@ -26,7 +26,7 @@ namespace sync_wifi {
 namespace {
 
 const int kMaxRetries = 3;
-constexpr base::TimeDelta kTimeout = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kTimeout = base::Minutes(1);
 
 }  // namespace
 
@@ -159,8 +159,7 @@ void SyncedNetworkUpdaterImpl::OnConfigureNetworkResult(
         NetworkHandler::Get()->network_metadata_store();
     metadata_store->SetIsConfiguredBySync(*network_guid);
     metadata_store->SetLastConnectedTimestamp(
-        *network_guid,
-        base::TimeDelta::FromMilliseconds(proto.last_connected_timestamp()));
+        *network_guid, base::Milliseconds(proto.last_connected_timestamp()));
   } else {
     NET_LOG(ERROR) << "Failed to configure network "
                    << NetworkId(NetworkStateFromNetworkIdentifier(id))
@@ -184,8 +183,7 @@ void SyncedNetworkUpdaterImpl::OnSetPropertiesResult(
         NetworkHandler::Get()->network_metadata_store();
     metadata_store->SetIsConfiguredBySync(network_guid);
     metadata_store->SetLastConnectedTimestamp(
-        network_guid,
-        base::TimeDelta::FromMilliseconds(proto.last_connected_timestamp()));
+        network_guid, base::Milliseconds(proto.last_connected_timestamp()));
   } else {
     NET_LOG(ERROR) << "Failed to update network "
                    << NetworkGuidId(network_guid);

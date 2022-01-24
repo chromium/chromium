@@ -11,7 +11,7 @@
 namespace blink {
 
 DoublePoint::operator FloatPoint() const {
-  return FloatPoint(clampTo<float>(x_), clampTo<float>(y_));
+  return FloatPoint(ClampTo<float>(x_), ClampTo<float>(y_));
 }
 
 DoublePoint DoublePoint::ExpandedTo(const DoublePoint& other) const {

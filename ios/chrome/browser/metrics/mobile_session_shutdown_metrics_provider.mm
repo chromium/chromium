@@ -210,7 +210,7 @@ void LogApplicationBackgroundedTime(NSDate* session_end_time) {
       [[NSDate date] timeIntervalSinceDate:session_end_time];
   UMA_STABILITY_HISTOGRAM_LONG_TIMES(
       "Stability.iOS.UTE.TimeBetweenUTEAndNextLaunch",
-      base::TimeDelta::FromSeconds(background_time));
+      base::Seconds(background_time));
 }
 
 // Logs the device |battery_level| as a UTE stability metric.
@@ -251,12 +251,6 @@ void LogOSVersionChange(std::string os_version) {
 
   UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.iOS.UTE.OSVersion", difference,
                                       VersionComparison::kMaxValue);
-}
-
-// Logs wether or not low power mode is enabled.
-void LogLowPowerMode(bool low_power_mode_enabled) {
-  UMA_STABILITY_HISTOGRAM_BOOLEAN("Stability.iOS.UTE.LowPowerModeEnabled",
-                                  low_power_mode_enabled);
 }
 
 // Logs the thermal state of the device.
@@ -356,7 +350,6 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
     if (session_info.OSVersion) {
       LogOSVersionChange(base::SysNSStringToUTF8(session_info.OSVersion));
     }
-    LogLowPowerMode(session_info.deviceWasInLowPowerMode);
     LogDeviceThermalState(session_info.deviceThermalState);
 
     UMA_STABILITY_HISTOGRAM_BOOLEAN(

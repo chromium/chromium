@@ -7,8 +7,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "components/full_restore/features.h"
-#include "components/full_restore/full_restore_utils.h"
+#include "components/app_restore/features.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 

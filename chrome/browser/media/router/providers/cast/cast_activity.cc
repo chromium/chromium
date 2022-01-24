@@ -171,8 +171,8 @@ void CastActivity::HandleLeaveSession(const std::string& client_id) {
       leaving_client_ids.push_back(pair.first);
   }
 
-  for (const auto& client_id : leaving_client_ids) {
-    auto leaving_client_it = connected_clients_.find(client_id);
+  for (const auto& leaving_client_id : leaving_client_ids) {
+    auto leaving_client_it = connected_clients_.find(leaving_client_id);
     CHECK(leaving_client_it != connected_clients_.end());
     leaving_client_it->second->CloseConnection(
         blink::mojom::PresentationConnectionCloseReason::CLOSED);

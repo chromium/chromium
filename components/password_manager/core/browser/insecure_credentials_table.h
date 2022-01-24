@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_INSECURE_CREDENTIALS_TABLE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -73,14 +72,14 @@ class InsecureCredentialsTable {
   static const char kTableName[];
 
   InsecureCredentialsTable() = default;
+
+  InsecureCredentialsTable(const InsecureCredentialsTable&) = delete;
+  InsecureCredentialsTable& operator=(const InsecureCredentialsTable&) = delete;
+
   ~InsecureCredentialsTable() = default;
 
   // Initializes |db_|.
   void Init(sql::Database* db);
-
-  // Adds information about the compromised credentials. Returns true
-  // if the SQL completed successfully and an item was created.
-  bool AddRow(const InsecureCredential& compromised_credentials);
 
   // Adds information about the insecure credential if it doesn't exist.
   // If it does, it removes the previous entry and adds the new one.
@@ -91,32 +90,11 @@ class InsecureCredentialsTable {
   // Removes the row corresponding to |parent_key| and |insecure_type|.
   bool RemoveRow(FormPrimaryKey parent_key, InsecureType insecure_type);
 
-  // Removes information about the credentials compromised for |username| on
-  // |signon_realm|. |reason| is the reason why the credentials are removed from
-  // the table. Returns true if the SQL completed successfully.
-  // Also logs the compromise type in UMA.
-  bool RemoveRows(const std::string& signon_realm,
-                  const std::u16string& username,
-                  RemoveInsecureCredentialsReason reason);
-
-  // Gets all the rows in the database for |signon_realm|.
-  std::vector<InsecureCredential> GetRows(
-      const std::string& signon_realm) const;
-
   // Gets all the rows in the database for |parent_key|.
   std::vector<InsecureCredential> GetRows(FormPrimaryKey parent_key) const;
 
-  // Returns all compromised credentials from the database.
-  std::vector<InsecureCredential> GetAllRows();
-
-  // Reports UMA metrics about the table. |bulk_check_done| means that the
-  // password bulk leak check was executed in the past.
-  void ReportMetrics(BulkCheckDone bulk_check_done);
-
  private:
   sql::Database* db_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(InsecureCredentialsTable);
 };
 
 }  // namespace password_manager

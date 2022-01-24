@@ -5,9 +5,11 @@
 #include "content/browser/handwriting/handwriting_recognition_service_impl_cros.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/handwriting/handwriting_recognizer_impl_cros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -102,6 +104,18 @@ void CrOSHandwritingRecognitionServiceImpl::QueryHandwritingRecognizerSupport(
   }
 
   std::move(callback).Run(std::move(query_result));
+}
+
+void CrOSHandwritingRecognitionServiceImpl::QueryHandwritingRecognizer(
+    handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
+    QueryHandwritingRecognizerCallback callback) {
+  if (!IsCrOSLibHandwritingRootfsEnabled()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  std::move(callback).Run(CrOSHandwritingRecognizerImpl::GetModelDescriptor(
+      std::move(model_constraint)));
 }
 
 CrOSHandwritingRecognitionServiceImpl::CrOSHandwritingRecognitionServiceImpl() =

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/vr/ui_scene_creator.h"
 
-#include "base/macros.h"
 #include "base/numerics/ranges.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"

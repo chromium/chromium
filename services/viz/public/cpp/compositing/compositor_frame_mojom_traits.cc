@@ -8,6 +8,16 @@
 
 namespace mojo {
 
+bool RenderPassExists(viz::CompositorRenderPassId pass_id,
+                      const viz::CompositorRenderPassList& render_passes) {
+  for (const auto& pass : render_passes) {
+    if (pass->id == pass_id)
+      return true;
+  }
+
+  return false;
+}
+
 // static
 bool StructTraits<viz::mojom::CompositorFrameDataView, viz::CompositorFrame>::
     Read(viz::mojom::CompositorFrameDataView data, viz::CompositorFrame* out) {
@@ -27,6 +37,20 @@ bool StructTraits<viz::mojom::CompositorFrameDataView, viz::CompositorFrame>::
 
   if (!data.ReadMetadata(&out->metadata))
     return false;
+
+  // Ensure that all render passes referenced by shared elements are present in
+  // the CompositorFrame.
+  for (const auto& directive : out->metadata.transition_directives) {
+    for (const auto& shared_element : directive.shared_elements()) {
+      if (shared_element.render_pass_id.is_null())
+        continue;
+
+      if (!RenderPassExists(shared_element.render_pass_id,
+                            out->render_pass_list)) {
+        return false;
+      }
+    }
+  }
 
   if (!data.ReadResources(&out->resource_list)) {
     viz::SetDeserializationCrashKeyString(

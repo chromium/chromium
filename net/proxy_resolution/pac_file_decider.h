@@ -79,6 +79,9 @@ class NET_EXPORT_PRIVATE PacFileDecider {
                  DhcpPacFileFetcher* dhcp_pac_file_fetcher,
                  NetLog* net_log);
 
+  PacFileDecider(const PacFileDecider&) = delete;
+  PacFileDecider& operator=(const PacFileDecider&) = delete;
+
   // Aborts any in-progress request.
   ~PacFileDecider();
 
@@ -217,8 +220,6 @@ class NET_EXPORT_PRIVATE PacFileDecider {
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_request_;
 
   base::OneShotTimer quick_check_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PacFileDecider);
 };
 
 }  // namespace net

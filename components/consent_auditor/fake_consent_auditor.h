@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -19,6 +18,10 @@ namespace consent_auditor {
 class FakeConsentAuditor : public ConsentAuditor {
  public:
   FakeConsentAuditor();
+
+  FakeConsentAuditor(const FakeConsentAuditor&) = delete;
+  FakeConsentAuditor& operator=(const FakeConsentAuditor&) = delete;
+
   ~FakeConsentAuditor() override;
 
   // ConsentAuditor implementation.
@@ -95,8 +98,6 @@ class FakeConsentAuditor : public ConsentAuditor {
   std::vector<int> recorded_confirmation_ids_;
   std::vector<Feature> recorded_features_;
   std::vector<ConsentStatus> recorded_statuses_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConsentAuditor);
 };
 
 MATCHER_P(ArcPlayConsentEq, expected_consent, "") {

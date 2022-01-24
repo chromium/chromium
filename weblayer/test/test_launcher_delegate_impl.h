@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_TEST_TEST_LAUNCHER_DELEGATE_IMPL_H_
 #define WEBLAYER_TEST_TEST_LAUNCHER_DELEGATE_IMPL_H_
 
+#include "build/build_config.h"
 #include "content/public/test/test_launcher.h"
 
 namespace weblayer {

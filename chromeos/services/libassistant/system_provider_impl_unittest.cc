@@ -21,6 +21,9 @@ class FakeBatteryMonitor : device::mojom::BatteryMonitor {
  public:
   FakeBatteryMonitor() = default;
 
+  FakeBatteryMonitor(const FakeBatteryMonitor&) = delete;
+  FakeBatteryMonitor& operator=(const FakeBatteryMonitor&) = delete;
+
   void Bind(
       mojo::PendingReceiver<::device::mojom::BatteryMonitor> pending_receiver) {
     receiver_.Bind(std::move(pending_receiver));
@@ -52,8 +55,6 @@ class FakeBatteryMonitor : device::mojom::BatteryMonitor {
   QueryNextStatusCallback callback_;
 
   mojo::Receiver<device::mojom::BatteryMonitor> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBatteryMonitor);
 };
 
 class AssistantSystemProviderImplTest : public testing::Test {
@@ -70,6 +71,10 @@ class AssistantSystemProviderImplTest : public testing::Test {
     battery_monitor_.Bind(platform_delegate_.battery_monitor_receiver());
     FlushForTesting();
   }
+  AssistantSystemProviderImplTest(const AssistantSystemProviderImplTest&) =
+      delete;
+  AssistantSystemProviderImplTest& operator=(
+      const AssistantSystemProviderImplTest&) = delete;
 
   SystemProviderImpl* system_provider() { return system_provider_impl_.get(); }
 
@@ -82,8 +87,6 @@ class AssistantSystemProviderImplTest : public testing::Test {
   FakeBatteryMonitor battery_monitor_;
   assistant::FakePlatformDelegate platform_delegate_;
   std::unique_ptr<SystemProviderImpl> system_provider_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantSystemProviderImplTest);
 };
 
 TEST_F(AssistantSystemProviderImplTest, GetBatteryStateReturnsLastState) {

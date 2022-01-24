@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_APP_LIST_APP_SYNC_UI_STATE_WATCHER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/app_sync_ui_state_observer.h"
 
 class AppListModelUpdater;
@@ -18,6 +17,10 @@ class Profile;
 class AppSyncUIStateWatcher : public AppSyncUIStateObserver {
  public:
   AppSyncUIStateWatcher(Profile* profile, AppListModelUpdater* model_updater);
+
+  AppSyncUIStateWatcher(const AppSyncUIStateWatcher&) = delete;
+  AppSyncUIStateWatcher& operator=(const AppSyncUIStateWatcher&) = delete;
+
   ~AppSyncUIStateWatcher() override;
 
  private:
@@ -27,8 +30,6 @@ class AppSyncUIStateWatcher : public AppSyncUIStateObserver {
   AppSyncUIState* app_sync_ui_state_;
   // Owned by AppListSyncableService
   AppListModelUpdater* model_updater_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppSyncUIStateWatcher);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_SYNC_UI_STATE_WATCHER_H_

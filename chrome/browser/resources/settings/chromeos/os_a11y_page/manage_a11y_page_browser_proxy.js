@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 /** @interface */
-/* #export */ class ManageA11yPageBrowserProxy {
+export class ManageA11yPageBrowserProxy {
   /**
    * Opens the options page for Chrome Vox.
    */
@@ -45,7 +45,7 @@
 /**
  * @implements {ManageA11yPageBrowserProxy}
  */
-/* #export */ class ManageA11yPageBrowserProxyImpl {
+export class ManageA11yPageBrowserProxyImpl {
   /** @override */
   showChromeVoxSettings() {
     chrome.send('showChromeVoxSettings');
@@ -79,4 +79,4 @@
 
 // The singleton instance_ is replaced with a test version of this wrapper
 // during testing.
-cr.addSingletonGetter(ManageA11yPageBrowserProxyImpl);
+addSingletonGetter(ManageA11yPageBrowserProxyImpl);

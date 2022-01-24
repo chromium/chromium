@@ -6,7 +6,6 @@
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_METRICS_PROVIDER_H_
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"

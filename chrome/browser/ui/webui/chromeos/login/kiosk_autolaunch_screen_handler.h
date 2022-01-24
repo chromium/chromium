@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_KIOSK_AUTOLAUNCH_SCREEN_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
@@ -36,6 +35,11 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
   using TView = KioskAutolaunchScreenView;
 
   explicit KioskAutolaunchScreenHandler(JSCallsContainer* js_calls_container);
+
+  KioskAutolaunchScreenHandler(const KioskAutolaunchScreenHandler&) = delete;
+  KioskAutolaunchScreenHandler& operator=(const KioskAutolaunchScreenHandler&) =
+      delete;
+
   ~KioskAutolaunchScreenHandler() override;
 
   // KioskAutolaunchScreenView:
@@ -68,8 +72,6 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
   bool is_visible_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAutolaunchScreenHandler);
 };
 
 }  // namespace chromeos

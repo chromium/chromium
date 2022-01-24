@@ -126,8 +126,9 @@ BrailleDisplayManager = class {
     }
 
     // The number of dots in a braille cell.
-    // TODO(dmazzoni): Both multi-line braille displays we're testing with
-    // are 6-dot (2 x 3), but we should have a way to detect that via brltty.
+    // TODO: Both multi-line braille displays we're testing with
+    // are 6-dot (2 x 3), but we should switch to detecting this with
+    // BRLAPI_PARAM_DEVICE_CELL_SIZE from brlapi instead.
     const cellWidth = 2;
     const cellHeight = 3;
     const maxCellHeight = 4;

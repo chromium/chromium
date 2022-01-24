@@ -25,7 +25,7 @@ bool ShouldReportForAnimation(FrameSequenceTrackerType sequence_type,
     return thread_type == FrameSequenceMetrics::ThreadType::kCompositor;
 
   if (sequence_type == FrameSequenceTrackerType::kMainThreadAnimation ||
-      sequence_type == FrameSequenceTrackerType::kRAF)
+      sequence_type == FrameSequenceTrackerType::kJSAnimation)
     return thread_type == FrameSequenceMetrics::ThreadType::kMain;
 
   return false;
@@ -253,8 +253,7 @@ void FrameSequenceMetrics::ReportMetrics() {
                               type_),
             impl_throughput_);
   }
-  if (main_report || type_ == FrameSequenceTrackerType::kCanvasAnimation ||
-      type_ == FrameSequenceTrackerType::kJSAnimation) {
+  if (main_report) {
     main_throughput_percent_dropped =
         ThroughputData::ReportDroppedFramePercentHistogram(
             this, ThreadType::kMain,
@@ -405,6 +404,12 @@ bool FrameSequenceMetrics::ThroughputData::CanReportHistogram(
       thread_type == ThreadType::kMain)
     return false;
 
+  // RAF and CanvasAnimation are main thread only.
+  if ((sequence_type == FrameSequenceTrackerType::kRAF ||
+       sequence_type == FrameSequenceTrackerType::kCanvasAnimation) &&
+      thread_type == ThreadType::kCompositor)
+    return false;
+
   if (data.frames_expected < kMinFramesForThroughputMetric)
     return false;
 
@@ -412,7 +417,9 @@ bool FrameSequenceMetrics::ThroughputData::CanReportHistogram(
       ShouldReportForAnimation(sequence_type, thread_type);
 
   return is_animation || IsInteractionType(sequence_type) ||
-         sequence_type == FrameSequenceTrackerType::kVideo;
+         sequence_type == FrameSequenceTrackerType::kVideo ||
+         sequence_type == FrameSequenceTrackerType::kRAF ||
+         sequence_type == FrameSequenceTrackerType::kCanvasAnimation;
 }
 
 int FrameSequenceMetrics::ThroughputData::ReportDroppedFramePercentHistogram(
@@ -422,9 +429,7 @@ int FrameSequenceMetrics::ThroughputData::ReportDroppedFramePercentHistogram(
     const ThroughputData& data) {
   const auto sequence_type = metrics->type();
   DCHECK_LT(sequence_type, FrameSequenceTrackerType::kMaxType);
-  DCHECK(CanReportHistogram(metrics, thread_type, data) ||
-         sequence_type == FrameSequenceTrackerType::kCanvasAnimation ||
-         sequence_type == FrameSequenceTrackerType::kJSAnimation);
+  DCHECK(CanReportHistogram(metrics, thread_type, data));
 
   // Throughput means the percent of frames that was expected to show on the
   // screen but didn't. In other words, the lower the throughput is, the

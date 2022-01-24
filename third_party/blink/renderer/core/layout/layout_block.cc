@@ -41,13 +41,13 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_marquee_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
 #include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_grid.h"
@@ -98,21 +98,24 @@ ASSERT_SIZE(LayoutBlock, SameSizeAsLayoutBlock);
 // the middle of recomputing the style so we can't rely on any of its
 // information), which is why it's easier to just update it for every layout.
 TrackedDescendantsMap& GetPositionedDescendantsMap() {
-  DEFINE_STATIC_LOCAL(TrackedDescendantsMap, map, ());
-  return map;
+  DEFINE_STATIC_LOCAL(Persistent<TrackedDescendantsMap>, map,
+                      (MakeGarbageCollected<TrackedDescendantsMap>()));
+  return *map;
 }
 
 TrackedContainerMap& GetPositionedContainerMap() {
-  DEFINE_STATIC_LOCAL(TrackedContainerMap, map, ());
-  return map;
+  DEFINE_STATIC_LOCAL(Persistent<TrackedContainerMap>, map,
+                      (MakeGarbageCollected<TrackedContainerMap>()));
+  return *map;
 }
 
 // This map keeps track of the descendants whose 'height' is percentage
 // associated with a containing block. Like |gPositionedDescendantsMap|, it is
 // also recomputed for every layout (see the comment above about why).
 static TrackedDescendantsMap& GetPercentHeightDescendantsMap() {
-  DEFINE_STATIC_LOCAL(TrackedDescendantsMap, map, ());
-  return map;
+  DEFINE_STATIC_LOCAL(Persistent<TrackedDescendantsMap>, map,
+                      (MakeGarbageCollected<TrackedDescendantsMap>()));
+  return *map;
 }
 
 LayoutBlock::LayoutBlock(ContainerNode* node)
@@ -135,10 +138,15 @@ LayoutBlock::LayoutBlock(ContainerNode* node)
   // By default, subclasses do not have inline children.
 }
 
+void LayoutBlock::Trace(Visitor* visitor) const {
+  visitor->Trace(children_);
+  LayoutBox::Trace(visitor);
+}
+
 void LayoutBlock::RemoveFromGlobalMaps() {
   NOT_DESTROYED();
   if (HasPositionedObjects()) {
-    std::unique_ptr<TrackedLayoutBoxListHashSet> descendants =
+    TrackedLayoutBoxLinkedHashSet* descendants =
         GetPositionedDescendantsMap().Take(this);
     DCHECK(!descendants->IsEmpty());
     for (LayoutBox* descendant : *descendants) {
@@ -147,7 +155,7 @@ void LayoutBlock::RemoveFromGlobalMaps() {
     }
   }
   if (HasPercentHeightDescendants()) {
-    std::unique_ptr<TrackedLayoutBoxListHashSet> descendants =
+    TrackedLayoutBoxLinkedHashSet* descendants =
         GetPercentHeightDescendantsMap().Take(this);
     DCHECK(!descendants->IsEmpty());
     for (LayoutBox* descendant : *descendants) {
@@ -155,10 +163,6 @@ void LayoutBlock::RemoveFromGlobalMaps() {
       descendant->SetPercentHeightContainer(nullptr);
     }
   }
-}
-
-LayoutBlock::~LayoutBlock() {
-  RemoveFromGlobalMaps();
 }
 
 void LayoutBlock::WillBeDestroyed() {
@@ -173,6 +177,8 @@ void LayoutBlock::WillBeDestroyed() {
 
   if (TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer())
     text_autosizer->Destroy(this);
+
+  RemoveFromGlobalMaps();
 
   LayoutBox::WillBeDestroyed();
 }
@@ -417,8 +423,6 @@ void LayoutBlock::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(!GetScrollableArea() || GetScrollableArea()->GetScrollAnchor());
 
-  LayoutAnalyzer::Scope analyzer(*this);
-
   bool needs_scroll_anchoring =
       IsScrollContainer() &&
       GetScrollableArea()->ShouldPerformScrollAnchoring();
@@ -590,8 +594,10 @@ void LayoutBlock::AddVisualOverflowFromBlockChildren() {
     // the outline which may enclose continuations.
     auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
     if (child_block_flow &&
-        child_block_flow->ContainsInlineWithOutlineAndContinuation())
+        child_block_flow->ContainsInlineWithOutlineAndContinuation() &&
+        !child_block_flow->ChildPrePaintBlockedByDisplayLock()) {
       child_block_flow->AddVisualOverflowFromInlineChildren();
+    }
     AddVisualOverflowFromChild(*child);
   }
 }
@@ -611,8 +617,10 @@ void LayoutBlock::AddLayoutOverflowFromBlockChildren() {
     // the outline which may enclose continuations.
     auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
     if (child_block_flow &&
-        child_block_flow->ContainsInlineWithOutlineAndContinuation())
+        child_block_flow->ContainsInlineWithOutlineAndContinuation() &&
+        !child_block_flow->ChildPrePaintBlockedByDisplayLock()) {
       child_block_flow->AddLayoutOverflowFromInlineChildren();
+    }
 
     AddLayoutOverflowFromChild(*child);
   }
@@ -623,11 +631,11 @@ void LayoutBlock::AddLayoutOverflowFromPositionedObjects() {
   if (ChildLayoutBlockedByDisplayLock())
     return;
 
-  TrackedLayoutBoxListHashSet* positioned_descendants = PositionedObjects();
+  TrackedLayoutBoxLinkedHashSet* positioned_descendants = PositionedObjects();
   if (!positioned_descendants)
     return;
 
-  for (auto* positioned_object : *positioned_descendants) {
+  for (const auto& positioned_object : *positioned_descendants) {
     // Fixed positioned elements whose containing block is the LayoutView
     // don't contribute to layout overflow, since they don't scroll with the
     // content.
@@ -773,11 +781,7 @@ bool LayoutBlock::SimplifiedLayout() {
   }
 
   UpdateAfterLayout();
-
   ClearNeedsLayout();
-
-  if (LayoutAnalyzer* analyzer = GetFrameView()->GetLayoutAnalyzer())
-    analyzer->Increment(LayoutAnalyzer::kLayoutObjectsThatNeedSimplifiedLayout);
 
   return true;
 }
@@ -873,11 +877,11 @@ void LayoutBlock::LayoutPositionedObjects(bool relayout_children,
   if (ChildLayoutBlockedByDisplayLock())
     return;
 
-  TrackedLayoutBoxListHashSet* positioned_descendants = PositionedObjects();
+  TrackedLayoutBoxLinkedHashSet* positioned_descendants = PositionedObjects();
   if (!positioned_descendants)
     return;
 
-  for (auto* positioned_object : *positioned_descendants) {
+  for (const auto& positioned_object : *positioned_descendants) {
     LayoutPositionedObject(positioned_object, relayout_children, info);
   }
 }
@@ -995,9 +999,9 @@ void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
 
 void LayoutBlock::MarkPositionedObjectsForLayout() {
   NOT_DESTROYED();
-  if (TrackedLayoutBoxListHashSet* positioned_descendants =
+  if (TrackedLayoutBoxLinkedHashSet* positioned_descendants =
           PositionedObjects()) {
-    for (auto* descendant : *positioned_descendants)
+    for (const auto& descendant : *positioned_descendants)
       descendant->SetChildNeedsLayout();
   }
 }
@@ -1019,9 +1023,10 @@ void LayoutBlock::PaintObject(const PaintInfo& paint_info,
   BlockPainter(*this).PaintObject(paint_info, paint_offset);
 }
 
-TrackedLayoutBoxListHashSet* LayoutBlock::PositionedObjectsInternal() const {
+TrackedLayoutBoxLinkedHashSet* LayoutBlock::PositionedObjectsInternal() const {
   NOT_DESTROYED();
-  return GetPositionedDescendantsMap().at(this);
+  auto it = GetPositionedDescendantsMap().find(this);
+  return it != GetPositionedDescendantsMap().end() ? &*it->value : nullptr;
 }
 
 void LayoutBlock::InsertPositionedObject(LayoutBox* o) {
@@ -1043,11 +1048,12 @@ void LayoutBlock::InsertPositionedObject(LayoutBox* o) {
   }
   GetPositionedContainerMap().Set(o, this);
 
-  TrackedLayoutBoxListHashSet* descendant_set =
-      GetPositionedDescendantsMap().at(this);
+  auto it = GetPositionedDescendantsMap().find(this);
+  TrackedLayoutBoxLinkedHashSet* descendant_set =
+      it != GetPositionedDescendantsMap().end() ? &*it->value : nullptr;
   if (!descendant_set) {
-    descendant_set = new TrackedLayoutBoxListHashSet;
-    GetPositionedDescendantsMap().Set(this, base::WrapUnique(descendant_set));
+    descendant_set = MakeGarbageCollected<TrackedLayoutBoxLinkedHashSet>();
+    GetPositionedDescendantsMap().Set(this, descendant_set);
   }
   descendant_set->insert(o);
 
@@ -1059,7 +1065,7 @@ void LayoutBlock::RemovePositionedObject(LayoutBox* o) {
   if (!container)
     return;
 
-  TrackedLayoutBoxListHashSet* positioned_descendants =
+  TrackedLayoutBoxLinkedHashSet* positioned_descendants =
       GetPositionedDescendantsMap().at(container);
   DCHECK(positioned_descendants);
   DCHECK(positioned_descendants->Contains(o));
@@ -1104,40 +1110,46 @@ void LayoutBlock::ImageChanged(WrappedImagePtr image,
   }
 }
 
+static void ProcessPositionedObjectRemoval(
+    ContainingBlockState containing_block_state,
+    LayoutObject* positioned_object) {
+  if (containing_block_state == kNewContainingBlock) {
+    positioned_object->SetChildNeedsLayout(kMarkOnlyThis);
+
+    // The positioned object changing containing block may change paint
+    // invalidation container.
+    // Invalidate it (including non-compositing descendants) on its original
+    // paint invalidation container.
+    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      // This valid because we need to invalidate based on the current
+      // status.
+      DisableCompositingQueryAsserts compositing_disabler;
+      if (!positioned_object->IsPaintInvalidationContainer()) {
+        ObjectPaintInvalidator(*positioned_object)
+            .InvalidatePaintIncludingNonCompositingDescendants();
+      }
+    }
+  }
+
+  // It is parent blocks job to add positioned child to positioned objects
+  // list of its containing block.
+  // Parent layout needs to be invalidated to ensure this happens.
+  positioned_object->MarkParentForOutOfFlowPositionedChange();
+}
+
 void LayoutBlock::RemovePositionedObjects(
     LayoutObject* o,
     ContainingBlockState containing_block_state) {
   NOT_DESTROYED();
-  TrackedLayoutBoxListHashSet* positioned_descendants = PositionedObjects();
+  TrackedLayoutBoxLinkedHashSet* positioned_descendants = PositionedObjects();
   if (!positioned_descendants)
     return;
 
-  Vector<LayoutBox*, 16> dead_objects;
-  for (auto* positioned_object : *positioned_descendants) {
+  HeapVector<Member<LayoutBox>, 16> dead_objects;
+  for (LayoutBox* positioned_object : *positioned_descendants) {
     if (!o ||
         (positioned_object->IsDescendantOf(o) && o != positioned_object)) {
-      if (containing_block_state == kNewContainingBlock) {
-        positioned_object->SetChildNeedsLayout(kMarkOnlyThis);
-
-        // The positioned object changing containing block may change paint
-        // invalidation container.
-        // Invalidate it (including non-compositing descendants) on its original
-        // paint invalidation container.
-        if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-          // This valid because we need to invalidate based on the current
-          // status.
-          DisableCompositingQueryAsserts compositing_disabler;
-          if (!positioned_object->IsPaintInvalidationContainer())
-            ObjectPaintInvalidator(*positioned_object)
-                .InvalidatePaintIncludingNonCompositingDescendants();
-        }
-      }
-
-      // It is parent blocks job to add positioned child to positioned objects
-      // list of its containing block.
-      // Parent layout needs to be invalidated to ensure this happens.
-      positioned_object->MarkParentForOutOfFlowPositionedChange();
-
+      ProcessPositionedObjectRemoval(containing_block_state, positioned_object);
       dead_objects.push_back(positioned_object);
     }
   }
@@ -1150,7 +1162,7 @@ void LayoutBlock::RemovePositionedObjects(
       containing_block->SetChildNeedsLayout(kMarkContainerChain);
   }
 
-  for (auto* object : dead_objects) {
+  for (const auto& object : dead_objects) {
     DCHECK_EQ(GetPositionedContainerMap().at(object), this);
     positioned_descendants->erase(object);
     GetPositionedContainerMap().erase(object);
@@ -1191,12 +1203,12 @@ void LayoutBlock::AddPercentHeightDescendant(LayoutBox* descendant) {
     cb = cb->ContainingBlock();
   }
 
-  TrackedLayoutBoxListHashSet* descendant_set =
-      GetPercentHeightDescendantsMap().at(this);
+  auto it = GetPercentHeightDescendantsMap().find(this);
+  TrackedLayoutBoxLinkedHashSet* descendant_set =
+      it != GetPercentHeightDescendantsMap().end() ? &*it->value : nullptr;
   if (!descendant_set) {
-    descendant_set = new TrackedLayoutBoxListHashSet;
-    GetPercentHeightDescendantsMap().Set(this,
-                                         base::WrapUnique(descendant_set));
+    descendant_set = MakeGarbageCollected<TrackedLayoutBoxLinkedHashSet>();
+    GetPercentHeightDescendantsMap().Set(this, descendant_set);
   }
   descendant_set->insert(descendant);
 
@@ -1205,7 +1217,7 @@ void LayoutBlock::AddPercentHeightDescendant(LayoutBox* descendant) {
 
 void LayoutBlock::RemovePercentHeightDescendant(LayoutBox* descendant) {
   NOT_DESTROYED();
-  if (TrackedLayoutBoxListHashSet* descendants = PercentHeightDescendants()) {
+  if (TrackedLayoutBoxLinkedHashSet* descendants = PercentHeightDescendants()) {
     descendants->erase(descendant);
     descendant->SetPercentHeightContainer(nullptr);
     if (descendants->IsEmpty()) {
@@ -1215,20 +1227,21 @@ void LayoutBlock::RemovePercentHeightDescendant(LayoutBox* descendant) {
   }
 }
 
-TrackedLayoutBoxListHashSet* LayoutBlock::PercentHeightDescendantsInternal()
+TrackedLayoutBoxLinkedHashSet* LayoutBlock::PercentHeightDescendantsInternal()
     const {
   NOT_DESTROYED();
-  return GetPercentHeightDescendantsMap().at(this);
+  auto it = GetPercentHeightDescendantsMap().find(this);
+  return it != GetPercentHeightDescendantsMap().end() ? &*it->value : nullptr;
 }
 
 void LayoutBlock::DirtyForLayoutFromPercentageHeightDescendants(
     SubtreeLayoutScope& layout_scope) {
   NOT_DESTROYED();
-  TrackedLayoutBoxListHashSet* descendants = PercentHeightDescendants();
+  TrackedLayoutBoxLinkedHashSet* descendants = PercentHeightDescendants();
   if (!descendants)
     return;
 
-  for (auto* box : *descendants) {
+  for (LayoutBox* box : *descendants) {
     DCHECK(box->IsDescendantOf(this));
     while (box != this) {
       if (box->NormalChildNeedsLayout())
@@ -1259,7 +1272,7 @@ bool LayoutBlock::IsPointInOverflowControl(
     return false;
 
   return Layer()->GetScrollableArea()->HitTestOverflowControls(
-      result, RoundedIntPoint(hit_test_location - accumulated_offset));
+      result, ToRoundedPoint(hit_test_location - accumulated_offset));
 }
 
 bool LayoutBlock::HitTestOverflowControl(
@@ -2029,6 +2042,13 @@ LayoutUnit LayoutBlock::InlineBlockBaseline(
 
 const LayoutBlock* LayoutBlock::EnclosingFirstLineStyleBlock() const {
   NOT_DESTROYED();
+  auto* element = DynamicTo<Element>(GetNode());
+  if (element && element->ShadowPseudoId() ==
+                     shadow_element_names::kPseudoInternalInputSuggested) {
+    // Disable ::first-line style for autofill previews. See
+    // crbug.com/1227170.
+    return nullptr;
+  }
   const LayoutBlock* first_line_block = this;
   bool has_pseudo = false;
   while (true) {
@@ -2118,8 +2138,9 @@ void LayoutBlock::AddOutlineRects(Vector<PhysicalRect>& rects,
       !HasNonVisibleOverflow() && !HasControlClip()) {
     AddOutlineRectsForNormalChildren(rects, additional_offset,
                                      include_block_overflows);
-    if (TrackedLayoutBoxListHashSet* positioned_objects = PositionedObjects()) {
-      for (auto* box : *positioned_objects)
+    if (TrackedLayoutBoxLinkedHashSet* positioned_objects =
+            PositionedObjects()) {
+      for (const auto& box : *positioned_objects)
         AddOutlineRectsForDescendant(*box, rects, additional_offset,
                                      include_block_overflows);
     }
@@ -2344,11 +2365,11 @@ LayoutBlock::RecalcPositionedDescendantsLayoutOverflow() {
   NOT_DESTROYED();
   RecalcLayoutOverflowResult result;
 
-  TrackedLayoutBoxListHashSet* positioned_descendants = PositionedObjects();
+  TrackedLayoutBoxLinkedHashSet* positioned_descendants = PositionedObjects();
   if (!positioned_descendants)
     return result;
 
-  for (auto* box : *positioned_descendants)
+  for (auto& box : *positioned_descendants)
     result.Unite(box->RecalcLayoutOverflow());
 
   return result;
@@ -2441,11 +2462,11 @@ void LayoutBlock::CheckPositionedObjectsNeedLayout() {
   if (ChildLayoutBlockedByDisplayLock())
     return;
 
-  if (TrackedLayoutBoxListHashSet* positioned_descendant_set =
+  if (TrackedLayoutBoxLinkedHashSet* positioned_descendant_set =
           PositionedObjects()) {
-    TrackedLayoutBoxListHashSet::const_iterator end =
+    TrackedLayoutBoxLinkedHashSet::const_iterator end =
         positioned_descendant_set->end();
-    for (TrackedLayoutBoxListHashSet::const_iterator it =
+    for (TrackedLayoutBoxLinkedHashSet::const_iterator it =
              positioned_descendant_set->begin();
          it != end; ++it) {
       LayoutBox* curr_box = *it;

@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="696" height="224">
+    <style>line, path, circle,rect,polygon {
+                          stroke: black;
+                          stroke-width: 2;
+                          stroke-opacity: 1;
+                          fill-opacity: 1;
+                          stroke-linecap: round;
+                          stroke-linejoin: miter;
+                        }
+
+                    text {
+                        fill: black;
+                        }
+                        rect.backdrop{
+                            stroke: none;
+                            fill: white;
+                            fill-opacity: 0;
+                        }
+                        .broken{
+                            stroke-dasharray: 8;
+                        }
+                        .filled{
+                            fill: black;
+                        }
+                        .bg_filled{
+                            fill: white;
+                        }
+                        .nofill{
+                            fill: white;
+                            fill-opacity: 0;
+                        }
+
+                        text {
+                         font-family: monospace;
+                         font-size: 14px;
+                        }
+                        </style>
+    <defs>
+        <marker id="arrow" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <polygon points="0,0 0,4 4,2 0,0"></polygon>
+        </marker>
+        <marker id="diamond" viewBox="-2 -2 8 8" refX="4" refY="2" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <polygon points="0,2 2,0 4,2 2,4 0,2"></polygon>
+        </marker>
+        <marker id="circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <circle cx="4" cy="4" r="2" class="filled"></circle>
+        </marker>
+        <marker id="open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <circle cx="4" cy="4" r="2" class="bg_filled"></circle>
+        </marker>
+        <marker id="big_open_circle" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <circle cx="4" cy="4" r="3" class="bg_filled"></circle>
+        </marker>
+    </defs>
+    <rect class="backdrop" x="0" y="0" width="696" height="224"></rect>
+    <rect x="148" y="168" width="136" height="32" class="solid nofill" rx="4"></rect>
+    <text x="162" y="188" >Rust bindings</text>
+    <rect x="412" y="168" width="128" height="32" class="solid nofill" rx="4"></rect>
+    <text x="426" y="188" >C++ bindings</text>
+    <text x="272" y="28" >#[cxx::bridge] mod</text>
+    <text x="250" y="44" >description of boundary</text>
+    <line x1="220" y1="120" x2="220" y2="160" class="solid"></line>
+    <polygon points="216,156 224,156 220,164" class="filled"></polygon>
+    <line x1="476" y1="120" x2="476" y2="160" class="solid"></line>
+    <polygon points="472,156 480,156 476,164" class="filled"></polygon>
+    <text x="74" y="140" >Safe</text>
+    <text x="34" y="156" >straightforward</text>
+    <text x="530" y="156" >Straightforward</text>
+    <polygon points="48,180 40,184 48,188" class="filled"></polygon>
+    <line x1="48" y1="184" x2="144" y2="184" class="solid"></line>
+    <polygon points="136,180 144,184 136,188" class="filled"></polygon>
+    <polygon points="296,180 288,184 296,188" class="filled"></polygon>
+    <line x1="296" y1="184" x2="408" y2="184" class="broken"></line>
+    <polygon points="400,180 408,184 400,188" class="filled"></polygon>
+    <polygon points="552,180 544,184 552,188" class="filled"></polygon>
+    <line x1="552" y1="184" x2="648" y2="184" class="solid"></line>
+    <polygon points="644,180 652,184 644,188" class="filled"></polygon>
+    <text x="2" y="188" >Rust</text>
+    <text x="2" y="204" >code</text>
+    <text x="658" y="204" >code</text>
+    <text x="202" y="108" >Macro expansion</text>
+    <text x="370" y="108" >Code generation</text>
+    <text x="58" y="172" >Rust APIs</text>
+    <text x="298" y="172" >Hidden C ABI</text>
+    <text x="562" y="172" >C++ APIs</text>
+    <text x="658" y="188" >C++</text>
+    <g>
+        <path d="M 228,8 A 8,8 0,0,0 220,16" class="nofill"></path>
+        <line x1="228" y1="8" x2="468" y2="8" class="solid"></line>
+        <path d="M 468,8 A 8,8 0,0,1 476,16" class="nofill"></path>
+        <line x1="220" y1="16" x2="220" y2="48" class="solid"></line>
+        <line x1="476" y1="16" x2="476" y2="48" class="solid"></line>
+        <path d="M 220,48 A 8,8 0,0,0 228,56" class="nofill"></path>
+        <line x1="228" y1="56" x2="468" y2="56" class="solid"></line>
+        <line x1="348" y1="56" x2="348" y2="120" class="solid"></line>
+        <path d="M 476,48 A 8,8 0,0,1 468,56" class="nofill"></path>
+        <line x1="220" y1="120" x2="476" y2="120" class="solid"></line>
+    </g>
+</svg>

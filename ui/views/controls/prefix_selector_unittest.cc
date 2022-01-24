@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/views/controls/prefix_delegate.h"
@@ -26,6 +25,9 @@ class TestPrefixDelegate : public View, public PrefixDelegate {
     rows_.push_back(u"gnu");
   }
 
+  TestPrefixDelegate(const TestPrefixDelegate&) = delete;
+  TestPrefixDelegate& operator=(const TestPrefixDelegate&) = delete;
+
   ~TestPrefixDelegate() override = default;
 
   int GetRowCount() override { return static_cast<int>(rows_.size()); }
@@ -39,8 +41,6 @@ class TestPrefixDelegate : public View, public PrefixDelegate {
  private:
   std::vector<std::u16string> rows_;
   int selected_row_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPrefixDelegate);
 };
 
 class PrefixSelectorTest : public ViewsTestBase {
@@ -48,6 +48,10 @@ class PrefixSelectorTest : public ViewsTestBase {
   PrefixSelectorTest() {
     selector_ = std::make_unique<PrefixSelector>(&delegate_, &delegate_);
   }
+
+  PrefixSelectorTest(const PrefixSelectorTest&) = delete;
+  PrefixSelectorTest& operator=(const PrefixSelectorTest&) = delete;
+
   ~PrefixSelectorTest() override {
     // Explicitly release |selector_| here which can happen before releasing
     // |delegate_|.
@@ -57,9 +61,6 @@ class PrefixSelectorTest : public ViewsTestBase {
  protected:
   std::unique_ptr<PrefixSelector> selector_;
   TestPrefixDelegate delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefixSelectorTest);
 };
 
 TEST_F(PrefixSelectorTest, PrefixSelect) {

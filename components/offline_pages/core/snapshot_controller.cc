@@ -71,7 +71,7 @@ void SnapshotController::DocumentAvailableInMainFrame() {
       base::BindOnce(&SnapshotController::MaybeStartSnapshot,
                      weak_ptr_factory_.GetWeakPtr(),
                      PageQuality::FAIR_AND_IMPROVING),
-      base::TimeDelta::FromMilliseconds(delay_after_document_available_ms_));
+      base::Milliseconds(delay_after_document_available_ms_));
 }
 
 void SnapshotController::DocumentOnLoadCompletedInMainFrame() {
@@ -80,8 +80,7 @@ void SnapshotController::DocumentOnLoadCompletedInMainFrame() {
       FROM_HERE,
       base::BindOnce(&SnapshotController::MaybeStartSnapshotThenStop,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(
-          delay_after_document_on_load_completed_ms_));
+      base::Milliseconds(delay_after_document_on_load_completed_ms_));
 }
 
 void SnapshotController::MaybeStartSnapshot(PageQuality updated_page_quality) {

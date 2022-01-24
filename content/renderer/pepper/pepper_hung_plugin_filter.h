@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_PEPPER_PEPPER_HUNG_PLUGIN_FILTER_H_
 #define CONTENT_RENDERER_PEPPER_PEPPER_HUNG_PLUGIN_FILTER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "content/common/pepper_plugin.mojom.h"
@@ -34,6 +33,9 @@ class PepperHungPluginFilter
       public IPC::MessageFilter {
  public:
   PepperHungPluginFilter();
+
+  PepperHungPluginFilter(const PepperHungPluginFilter&) = delete;
+  PepperHungPluginFilter& operator=(const PepperHungPluginFilter&) = delete;
 
   // The |hung_host| is the mojo channel to inform the browser about the new
   // hung status.
@@ -111,8 +113,6 @@ class PepperHungPluginFilter
   bool hung_plugin_showing_ = false;
 
   bool timer_task_pending_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperHungPluginFilter);
 };
 
 }  // namespace content

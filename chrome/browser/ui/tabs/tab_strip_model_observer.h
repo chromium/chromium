@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -64,11 +65,19 @@ class TabStripModelChange {
   };
 
   struct RemovedTab {
+    RemovedTab(content::WebContents* contents,
+               int index,
+               RemoveReason remove_reason,
+               absl::optional<SessionID> session_id);
+    virtual ~RemovedTab();
+    RemovedTab(RemovedTab&& other);
+
     void WriteIntoTrace(perfetto::TracedValue context) const;
 
     content::WebContents* contents;
     int index;
     RemoveReason remove_reason;
+    absl::optional<SessionID> session_id;
   };
 
   struct ContentsWithIndex {

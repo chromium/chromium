@@ -9,6 +9,7 @@ import os
 import sys
 import time
 
+from devil.android.sdk import version_codes
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
 from gpu_tests import path_util
@@ -126,7 +127,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
              ('GpuProcess_webgl_disabled_extension',
               'gpu/functional_webgl_disabled_extension.html'),
              ('GpuProcess_webgpu_iframe_removed',
-              'gpu/webgpu-iframe-removed.html'))
+              'gpu/webgpu-iframe-removed.html'), ('GpuProcess_visibility',
+                                                  'about:blank'))
 
     for t in tests:
       yield (t[0], t[1], ('_' + t[0]))
@@ -381,6 +383,54 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'chrome.gpuBenchmarking.hasGpuProcess()')
     if not has_gpu_process:
       self.fail('GPU process not detected')
+
+  def _GpuProcess_visibility(self, test_path):
+    os_name = self.browser.platform.GetOSName()
+    if os_name != 'android':
+      logging.info('Skipping test because not running on Android')
+      return
+
+    sdk_version = \
+        self.browser.platform._platform_backend.device.build_version_sdk
+    if sdk_version < version_codes.PIE:
+      logging.info('Skipping test because not running on Android P+')
+      return
+
+    has_gpu_process = self.tab.EvaluateJavaScript(
+        'chrome.gpuBenchmarking.hasGpuProcess()')
+    if not has_gpu_process:
+      logging.info('Skipping test because no out-of-process GPU service')
+      return
+
+    self.RestartBrowserIfNecessaryWithArgs([])
+    self._Navigate(test_path)
+    system_info = self.browser.GetSystemInfo()
+    callback_count = system_info.gpu.aux_attributes[
+        'visibility_callback_call_count']
+    # initial callback count should be 1 since the app became visible
+    if callback_count != 1:
+      self.fail('Visibility callback call count expected 1, got %d' %
+                callback_count)
+
+    self.browser.platform.android_action_runner.TurnScreenOff()
+    self.tab.WaitForJavaScriptCondition('document.visibilityState == "hidden"',
+                                        timeout=_GPU_PAGE_TIMEOUT)
+    system_info = self.browser.GetSystemInfo()
+    callback_count = system_info.gpu.aux_attributes[
+        'visibility_callback_call_count']
+    if callback_count != 2:
+      self.fail('Visibility callback call count expected 2, got %d' %
+                callback_count)
+
+    self.browser.platform.android_action_runner.TurnScreenOn()
+    self.tab.WaitForJavaScriptCondition('document.visibilityState == "visible"',
+                                        timeout=_GPU_PAGE_TIMEOUT)
+    system_info = self.browser.GetSystemInfo()
+    callback_count = system_info.gpu.aux_attributes[
+        'visibility_callback_call_count']
+    if callback_count != 3:
+      self.fail('Visibility callback call count expected 3, got %d' %
+                callback_count)
 
   def _GpuProcess_disable_gpu_and_swiftshader(self, test_path):
     # Disable SwiftShader, GPU process should launch for display compositing.

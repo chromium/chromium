@@ -21,6 +21,11 @@ class TestMojoProxyResolverFactory
     : public proxy_resolver::mojom::ProxyResolverFactory {
  public:
   TestMojoProxyResolverFactory();
+
+  TestMojoProxyResolverFactory(const TestMojoProxyResolverFactory&) = delete;
+  TestMojoProxyResolverFactory& operator=(const TestMojoProxyResolverFactory&) =
+      delete;
+
   ~TestMojoProxyResolverFactory() override;
 
   // Returns true if CreateResolver was called.
@@ -44,8 +49,6 @@ class TestMojoProxyResolverFactory
   mojo::Receiver<ProxyResolverFactory> receiver_{this};
 
   bool resolver_created_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMojoProxyResolverFactory);
 };
 
 }  // namespace network

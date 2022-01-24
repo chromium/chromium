@@ -45,6 +45,9 @@ class BlinkUnitTestSuite : public base::TestSuite {
  public:
   BlinkUnitTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
 
+  BlinkUnitTestSuite(const BlinkUnitTestSuite&) = delete;
+  BlinkUnitTestSuite& operator=(const BlinkUnitTestSuite&) = delete;
+
  private:
   void Initialize() override {
     base::TestSuite::Initialize();
@@ -66,8 +69,6 @@ class BlinkUnitTestSuite : public base::TestSuite {
 
     base::TestSuite::Shutdown();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(BlinkUnitTestSuite);
 };
 
 }  // namespace

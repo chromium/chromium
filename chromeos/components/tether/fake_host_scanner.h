@@ -15,6 +15,10 @@ namespace tether {
 class FakeHostScanner : public HostScanner {
  public:
   FakeHostScanner();
+
+  FakeHostScanner(const FakeHostScanner&) = delete;
+  FakeHostScanner& operator=(const FakeHostScanner&) = delete;
+
   ~FakeHostScanner() override;
 
   size_t num_scans_started() { return num_scans_started_; }
@@ -29,8 +33,6 @@ class FakeHostScanner : public HostScanner {
  private:
   size_t num_scans_started_ = 0u;
   bool is_active_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostScanner);
 };
 
 }  // namespace tether

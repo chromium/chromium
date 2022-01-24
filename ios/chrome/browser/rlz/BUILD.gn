@@ -16,6 +16,7 @@ source_set("rlz") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/google",
     "//ios/chrome/browser/search_engines",
+    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/web",
     "//services/network/public/cpp",
   ]

@@ -7,17 +7,20 @@
 
 #include <memory>
 
-#include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 // The white handler bar in the middle of the divider.
-class ASH_EXPORT SplitViewDividerHandlerView : public views::View {
+class SplitViewDividerHandlerView : public views::View {
  public:
   SplitViewDividerHandlerView();
+
+  SplitViewDividerHandlerView(const SplitViewDividerHandlerView&) = delete;
+  SplitViewDividerHandlerView& operator=(const SplitViewDividerHandlerView&) =
+      delete;
+
   ~SplitViewDividerHandlerView() override;
 
   // Play the white handler's part in the divider spawn animation.
@@ -53,8 +56,6 @@ class ASH_EXPORT SplitViewDividerHandlerView : public views::View {
 
   // Handles the spawning animation.
   std::unique_ptr<SpawningAnimation> spawning_animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SplitViewDividerHandlerView);
 };
 
 }  // namespace ash

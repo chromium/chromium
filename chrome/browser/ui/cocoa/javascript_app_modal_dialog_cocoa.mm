@@ -119,12 +119,6 @@ void JavaScriptAppModalDialogCocoa::OnAlertFinished(
       controller_->OnClose();
       break;
   }
-  if (![NSApp keyWindow]) {
-    // If key wasn't restored after showing an alert, focus the most recent
-    // browser.
-    if (Browser* browser = BrowserList::GetInstance()->GetLastActive())
-      browser->window()->Show();
-  }
   delete this;
 }
 
@@ -139,22 +133,31 @@ void JavaScriptAppModalDialogCocoa::OnMojoDisconnect() {
 void JavaScriptAppModalDialogCocoa::ShowAppModalDialog() {
   is_showing_ = true;
 
-  mojo::PendingReceiver<remote_cocoa::mojom::AlertBridge> bridge_receiver =
-      alert_bridge_.BindNewPipeAndPassReceiver();
-  alert_bridge_.set_disconnect_handler(
-      base::BindOnce(&JavaScriptAppModalDialogCocoa::OnMojoDisconnect,
-                     weak_factory_.GetWeakPtr()));
-  // If the alert is from a window that is out of process then use the
-  // remote_cocoa::ApplicationHost for that window to create the alert.
-  // Otherwise create an AlertBridge in-process (but still communicate with it
-  // over mojo).
-  auto* application_host = remote_cocoa::ApplicationHost::GetForNativeView(
-      controller_->web_contents()->GetNativeView());
-  if (application_host)
+  // Set `alert_bridge` to point to the in-process or out-of-process interface
+  // on which we will call Show. We need different paths (mojo for remote and
+  // raw pointers for in-process) to have consistent ordering with other
+  // remote_cocoa interfaces.
+  // https://crbug.com/1236369
+  remote_cocoa::mojom::AlertBridge* alert_bridge = nullptr;
+  if (auto* application_host = remote_cocoa::ApplicationHost::GetForNativeView(
+          controller_->web_contents()->GetNativeView())) {
+    // If the alert is from a window that is out of process then use the
+    // remote_cocoa::ApplicationHost for that window to create the alert.
+    mojo::PendingReceiver<remote_cocoa::mojom::AlertBridge> bridge_receiver =
+        alert_bridge_remote_.BindNewPipeAndPassReceiver();
+    alert_bridge_remote_.set_disconnect_handler(
+        base::BindOnce(&JavaScriptAppModalDialogCocoa::OnMojoDisconnect,
+                       weak_factory_.GetWeakPtr()));
     application_host->GetApplication()->CreateAlert(std::move(bridge_receiver));
-  else
-    ignore_result(new remote_cocoa::AlertBridge(std::move(bridge_receiver)));
-  alert_bridge_->Show(
+    alert_bridge = alert_bridge_remote_.get();
+  } else {
+    // Otherwise create an remote_cocoa::AlertBridge directly in-process. Note
+    // that `alert_bridge` will delete itself.
+    alert_bridge = new remote_cocoa::AlertBridge(
+        mojo::PendingReceiver<remote_cocoa::mojom::AlertBridge>());
+  }
+
+  alert_bridge->Show(
       GetAlertParams(),
       base::BindOnce(&JavaScriptAppModalDialogCocoa::OnAlertFinished,
                      weak_factory_.GetWeakPtr()));

@@ -66,7 +66,8 @@ public class SaveUpdateAddressProfilePrompt {
                         .with(ModalDialogProperties.CONTROLLER,
                                 new SimpleModalDialogController(
                                         modalDialogManager, this::onDismiss))
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         mDialogModel = builder.build();
 

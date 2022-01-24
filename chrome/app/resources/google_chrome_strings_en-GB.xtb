@@ -38,7 +38,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="174539241580958092">Google Chrome could not sync your data due to an error signing in.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Make sure that you are signed in to Chrome on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
-<translation id="1810203443153428607">Installing Chrome OS will overwrite all data on your device.</translation>
 <translation id="1812689907177901597">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chrome</translation>
 <translation id="1860536484129686729">Chrome needs permission to access your camera for this site</translation>
 <translation id="1873233029667955273">Google Chrome isn't your default browser</translation>
@@ -52,23 +51,14 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2121284319307530122">Relaunch to Update &amp;Chrome</translation>
 <translation id="2123055963409958220">Help make Chrome better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Please restart Chrome now</translation>
-<translation id="2246246234298806438">Google Chrome cannot show the print preview when the built-in PDF viewer is missing.</translation>
+<translation id="2189289170880510015">Customise some of Chrome’s most important privacy choices</translation>
 <translation id="2290014774651636340">Google API keys are missing. Some functionality of Google Chrome will be disabled.</translation>
 <translation id="2290095356545025170">Are you sure you want to uninstall Google Chrome?</translation>
 <translation id="2309047409763057870">This is a secondary installation of Google Chrome, and cannot be made your default browser.</translation>
+<translation id="2345992953227471816">Chrome found that these extensions contain malware:</translation>
 <translation id="2348335408836342058">Chrome needs permission to access your camera and microphone for this site</translation>
 <translation id="234869673307233423">Chrome can't check your passwords. Try again later.</translation>
 <translation id="235650106824528204">Any Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Erase hard drive and install Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />We’re ready to install Chrome OS! Once you proceed:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Files, data and your current operating system will be erased.
-          <ph name="LIST_ITEM" />Chrome OS will be installed.
-          <ph name="LIST_ITEM" />Your device will shut down once the installation is complete.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />One last reminder: installation will erase your entire hard drive. Please make sure that you have any data that you care about backed up.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Once installation starts it cannot be cancelled.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome could not sync your data because Sync is not available for your domain.</translation>
 <translation id="2467438592969358367">Google Chrome wants to export your passwords. Type your Windows password to allow this.</translation>
 <translation id="2485422356828889247">Uninstall</translation>
@@ -94,11 +84,13 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2888126860611144412">About Chrome</translation>
 <translation id="2926676257163822632">Weak passwords are easy to guess. Let Chrome <ph name="BEGIN_LINK" />create and remember strong passwords for you<ph name="END_LINK" />.</translation>
+<translation id="2926952073016206995">Chrome needs camera permission for this site</translation>
 <translation id="2929907241665500097">Chrome didn't update. Something went wrong. <ph name="BEGIN_LINK" />Fix Chrome update problems and failed updates.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Network sign-in – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome is in background mode.</translation>
 <translation id="3059710691562604940">Safe Browsing is off. Chrome recommends turning it on.</translation>
 <translation id="3065168410429928842">Chrome Tab</translation>
+<translation id="3069821012350118710">Sites that you visit remember your information until you close Chrome</translation>
 <translation id="3080151273017101988">Continue running background apps when Google Chrome is closed</translation>
 <translation id="3089968997497233615">There's a new, safer version of Google Chrome available.</translation>
 <translation id="3100998948628680988">Name your Chrome profile</translation>
@@ -109,6 +101,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3379938682270551431">{0,plural, =0{Chrome will relaunch now}=1{Chrome will relaunch in 1 second}other{Chrome will relaunch in # seconds}}</translation>
 <translation id="3395323229510056640">Get help with Chrome OS</translation>
 <translation id="3396977131400919238">An operating system error occurred during installation. Please download Google Chrome again.</translation>
+<translation id="3428747202529429621">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in</translation>
 <translation id="3434246496373299699">Chrome can check your passwords when you sign in with your Google Account</translation>
 <translation id="3451115285585441894">Adding to Chrome...</translation>
 <translation id="345171907106878721">Add yourself to Chrome</translation>
@@ -120,6 +113,8 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3582972582564653026">Sync and personalise Chrome across your devices</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Your administrator requires that you relaunch Chrome to apply an update}=1{Your administrator requires that you relaunch Chrome to apply an update. Your Incognito window won't reopen.}other{Your administrator requires that you relaunch Chrome to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="3622797965165704966">Now it's easier to use Chrome with your Google Account and on shared computers.</translation>
+<translation id="3673813398384385993">Chrome found that '<ph name="EXTENSION_NAME" />' contains malware</translation>
+<translation id="3678552270983184277">The default settings work for most people, but you can customise them to fit how you like to use Chrome</translation>
 <translation id="3718181793972440140">This will delete 1 item from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">The extension "<ph name="EXTENSION_NAME" />" has changed the page that is shown when you start Chrome.</translation>
 <translation id="3779473566290487688">To get future Google Chrome updates, you'll need OS X 10.11 or later. This computer is using OS X 10.10.</translation>
@@ -136,11 +131,11 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4149882025268051530">The installer failed to uncompress archive. Please download Google Chrome again.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Relaunch Chrome within a day}other{Relaunch Chrome within # days}}</translation>
 <translation id="4205939740494406371">Chrome can't check your passwords. Try again after 24 hours or <ph name="BEGIN_LINK" />check passwords in your Google Account<ph name="END_LINK" />.</translation>
+<translation id="4242034826641750751">Chrome needs camera and microphone permissions for this site</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
 <translation id="4251615635259297716">Link my Chrome data to this account</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4293420128516039005">Sign in to sync and personalise Chrome across your devices</translation>
-<translation id="429583012151745428">Installation is in progress. Don't turn off the device. Install should take no longer than twenty minutes. The machine will automatically shut down after installing.</translation>
 <translation id="4325083532956419387">Chrome OS version</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -180,16 +175,12 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="521447420733633466">If you share a device, friends and family can browse separately and set up Chrome just the way they want</translation>
 <translation id="5251420635869119124">Guests can use Chrome without leaving anything behind.</translation>
 <translation id="5251679006894510177">Nearly up to date! Relaunch Chrome to finish updating. Incognito windows won't reopen.</translation>
+<translation id="5334487786912937552">Chrome needs storage access permission to download files</translation>
 <translation id="5386244825306882791">It also controls what page is shown when you start Chrome or search from the Omnibox.</translation>
 <translation id="5394833366792865639">Share a Chrome tab</translation>
 <translation id="5430073640787465221">Your preferences file is corrupt or invalid.
 
 Google Chrome is unable to recover your settings.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Before we get started, please ensure that you have an up-to-date backup of your data. Installing Chrome OS will overwrite all data on your hard drive.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google is not responsible for any data loss, and makes no guarantee that Chrome OS will work on uncertified models. Please visit [TBD] to learn more about certified models.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Learn more about installing Chrome OS and data erasure: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />If you are ready to proceed, click 'Install Chrome OS' and we'll guide you through the installation in just a couple of easy steps. You'll have another chance to confirm before we make any changes to your computer.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5486618155264784386">Install Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome is trying to show passwords.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5657226924540934362">If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN" />
@@ -199,12 +190,14 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5686916850681061684">Customise and control Google Chrome. Something needs your attention – click for details.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome will restart in 1 second}other{Google Chrome will restart in # seconds}}</translation>
+<translation id="5736850870166430177">If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing</translation>
 <translation id="573759479754913123">About Chrome OS</translation>
 <translation id="5756509061973259733">A Chrome profile with this account already exists on this device</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Couldn't launch Chrome. Try again.</translation>
 <translation id="5867197326698922595">Google Chrome is trying to edit passwords.</translation>
 <translation id="5895138241574237353">Restart</translation>
+<translation id="5901850848447342934">You will be <ph name="BEGIN_BOLD" />signed out of most sites<ph name="END_BOLD" /> when you close Chrome. If sync is off, you will also be <ph name="BEGIN_BOLD" />signed out of Google services and Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Network sign-in</translation>
 <translation id="5940385492829620908">Your web, bookmarks and other Chrome stuff live here.</translation>
 <translation id="5941830788786076944">Make Google Chrome the default browser</translation>
@@ -214,17 +207,18 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6145313976051292476">Open PDFs in Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
-<translation id="61852838583753520">Update the &amp;Chrome OS</translation>
 <translation id="6235018212288296708">Inbound rule for Google Chrome to allow mDNS traffic.</translation>
 <translation id="6291089322031436445">Chrome Dev Apps</translation>
 <translation id="6291549208091401781">Google Chrome is already installed for all users on your computer.</translation>
 <translation id="6368958679917195344">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6418662306461808273">Switch to existing Chrome profile?</translation>
+<translation id="6506909944137591434">Chrome needs camera permission to create a 3D map of your surroundings</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS system</translation>
-<translation id="664235759707825982">Ready to install Chrome OS</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
 <translation id="6679975945624592337">Let Google Chrome Run in the Background</translation>
+<translation id="6696915334902295848">Chrome needs microphone permission for this site</translation>
 <translation id="6739177684496155661">Continue in a new Chrome profile?</translation>
 <translation id="6750954913813541382">To fix spelling errors, Chrome sends the text that you type in the browser to Google</translation>
 <translation id="677276454032249905">Exit Chrome anyway?</translation>
@@ -243,7 +237,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7155997830309522122">If so, please edit your saved password in Chrome so that it matches your new password.</translation>
 <translation id="7161904924553537242">Welcome to Google Chrome</translation>
 <translation id="7242029209006116544">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chrome data separate. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OS installation in progress</translation>
 <translation id="7295052994004373688">This language is used to display the Google Chrome UI</translation>
 <translation id="7296210096911315575">Important use and safety information</translation>
 <translation id="7308322188646931570">Chrome needs storage access to download files</translation>
@@ -264,6 +257,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7761834446675418963">Click your name to open Chrome and start browsing.</translation>
 <translation id="7777080907402804672">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="7781002470561365167">There is a new version of Google Chrome available.</translation>
+<translation id="778331955594035129">Chrome needs location permission for this site</translation>
 <translation id="7787950393032327779">The profile appears to be in use by another Google Chrome process (<ph name="PROCESS_ID" />) on another computer (<ph name="HOST_NAME" />). Chrome has locked the profile so that it doesn't get corrupted. If you are sure no other processes are using this profile, you can unlock the profile and relaunch Chrome.</translation>
 <translation id="7801699035218095297">Google Chrome is trying to copy passwords. Type your Windows password to allow this.</translation>
 <translation id="7808348361785373670">Remove from Chrome...</translation>
@@ -277,12 +271,14 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8008534537613507642">Reinstall Chrome</translation>
 <translation id="8013993649590906847">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.</translation>
 <translation id="8129812357326543296">About &amp;Google Chrome</translation>
+<translation id="822971176939352383">The following accounts are not signed into any Chrome profiles. If you want to use an account in another profile, remove that profile first.</translation>
 <translation id="8255190535488645436">Google Chrome is using your camera and microphone.</translation>
 <translation id="8286862437124483331">Google Chrome is trying to show passwords. Type your Windows password to allow this.</translation>
 <translation id="828798499196665338">Your parent has turned off 'Permissions for sites, apps and extensions' for Chrome. Enabling this <ph name="EXTENSION_TYPE_PARAMETER" /> is not allowed.</translation>
 <translation id="8290100596633877290">Whoa! Google Chrome has crashed. Relaunch now?</translation>
 <translation id="8342675569599923794">This file is dangerous, so Chrome has blocked it.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
+<translation id="8394720698884623075">Checks URLs with a list of unsafe sites stored in Chrome</translation>
 <translation id="840084489713044809">Google Chrome wants to export your passwords.</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
@@ -293,11 +289,11 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>
 <translation id="861702415419836452">Chrome needs permission to access your camera to create a 3D map of your surroundings</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome will relaunch in 1 minute}other{Chrome will relaunch in # minutes}}</translation>
+<translation id="8629311577791198377">When you close all Chrome windows, cookies and site data are automatically cleared</translation>
 <translation id="8641606876632989680">Chrome will notify you when you sign in with a compromised password</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">It also controls what page is shown when you start Chrome.</translation>
 <translation id="8686817260976772516">With Chrome profiles you can separate all of your Chrome stuff. Create profiles for friends and family, or split between work and fun.</translation>
-<translation id="870251953148363156">Update &amp;Google Chrome</translation>
 <translation id="873133009373065397">Google Chrome cannot determine or set the default browser</translation>
 <translation id="8823341990149967727">Chrome is Out of Date</translation>
 <translation id="8834965163890861871">Google Chrome is trying to edit passwords. Type your Windows password to allow this.</translation>

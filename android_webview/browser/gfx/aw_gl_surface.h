@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gl/gl_surface_egl.h"
 
 namespace android_webview {
@@ -18,6 +18,10 @@ namespace android_webview {
 class AwGLSurface : public gl::GLSurfaceEGL {
  public:
   explicit AwGLSurface(bool is_angle);
+  explicit AwGLSurface(scoped_refptr<gl::GLSurface> surface);
+
+  AwGLSurface(const AwGLSurface&) = delete;
+  AwGLSurface& operator=(const AwGLSurface&) = delete;
 
   // Implement GLSurface.
   bool Initialize(gl::GLSurfaceFormat format) override;
@@ -25,6 +29,7 @@ class AwGLSurface : public gl::GLSurfaceEGL {
   bool IsOffscreen() override;
   unsigned int GetBackingFramebufferObject() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
+  bool OnMakeCurrent(gl::GLContext* context) override;
   gfx::Size GetSize() override;
   void* GetHandle() override;
   void* GetDisplay() override;
@@ -50,10 +55,16 @@ class AwGLSurface : public gl::GLSurfaceEGL {
 
  private:
   const bool is_angle_;
+
+  // This is used when when webview is compositing with vulkan. There are still
+  // random code that expect to a real EGL context to be present to eg run
+  // glGetError. A real EGL context requires a real EGL surface.
+  // Note this is currently mutually exclusive with `is_angle_`.
+  const scoped_refptr<gl::GLSurface> wrapped_surface_;
+
   PresentationCallback pending_presentation_callback_;
   gfx::Size size_{1, 1};
   EGLSurface surface_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(AwGLSurface);
 };
 
 }  // namespace android_webview

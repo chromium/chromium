@@ -21,7 +21,7 @@ from core.tbmv3 import trace_processor
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--platform', help='linux/mac/win', required=True)
+      '--platform', help='linux/linux_arm/linux_arm64/mac/win', required=True)
   parser.add_argument(
       '--path', metavar='PATH', help='Switch to using a trace processor version'
       ' stored by this cloud path.')

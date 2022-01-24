@@ -35,8 +35,8 @@ ReportingData GetReportingData() {
   const ReportingEndpoint kEndpoint(kGroupKey,
                                     {GURL("https://endpoint.test/reports")});
   const CachedReportingEndpointGroup kGroup(
-      kGroupKey, OriginSubdomains::DEFAULT,
-      base::Time::Now() + base::TimeDelta::FromDays(1), base::Time::Now());
+      kGroupKey, OriginSubdomains::DEFAULT, base::Time::Now() + base::Days(1),
+      base::Time::Now());
   return {kEndpoint, kGroup};
 }
 

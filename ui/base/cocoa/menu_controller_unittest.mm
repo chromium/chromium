@@ -16,6 +16,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #import "ui/base/test/cocoa_helper.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -53,6 +54,10 @@ class TestSimpleMenuModelVisibility : public SimpleMenuModel {
   explicit TestSimpleMenuModelVisibility(SimpleMenuModel::Delegate* delegate)
       : SimpleMenuModel(delegate) {}
 
+  TestSimpleMenuModelVisibility(const TestSimpleMenuModelVisibility&) = delete;
+  TestSimpleMenuModelVisibility& operator=(
+      const TestSimpleMenuModelVisibility&) = delete;
+
   // SimpleMenuModel:
   bool IsVisibleAt(int index) const override {
     return items_[ValidateItemIndex(index)].visible;
@@ -88,8 +93,6 @@ class TestSimpleMenuModelVisibility : public SimpleMenuModel {
   }
 
   ItemVector items_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSimpleMenuModelVisibility);
 };
 
 // A menu delegate that counts the number of times certain things are called
@@ -97,6 +100,9 @@ class TestSimpleMenuModelVisibility : public SimpleMenuModel {
 class Delegate : public SimpleMenuModel::Delegate {
  public:
   Delegate() {}
+
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
 
   bool IsCommandIdChecked(int command_id) const override { return false; }
   bool IsCommandIdEnabled(int command_id) const override {
@@ -135,9 +141,6 @@ class Delegate : public SimpleMenuModel::Delegate {
   bool did_show_ = false;
   bool did_close_ = false;
   bool auto_close_ = true;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 // Just like Delegate, except the items are treated as "dynamic" so updates to
@@ -175,6 +178,9 @@ class OwningDelegate : public Delegate {
     [controller_ setDeallocCalled:did_dealloc];
   }
 
+  OwningDelegate(const OwningDelegate&) = delete;
+  OwningDelegate& operator=(const OwningDelegate&) = delete;
+
   MenuControllerCocoa* controller() { return controller_; }
 
   // Delegate:
@@ -199,8 +205,6 @@ class OwningDelegate : public Delegate {
   bool* did_delete_;
   SimpleMenuModel model_;
   base::scoped_nsobject<WatchedLifetimeMenuController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(OwningDelegate);
 };
 
 // Menu model that returns a gfx::FontList object for one of the items in the
@@ -690,6 +694,55 @@ TEST_F(MenuControllerTest, OwningDelegate) {
   }
   EXPECT_TRUE(did_dealloc);
   EXPECT_TRUE(did_delete);
+}
+
+// Tests to make sure that when |-initWithModel:| is called with a ColorProvider
+// the menu is constructed.
+TEST_F(MenuControllerTest, InitBuildsMenuWithColorProvider) {
+  Delegate delegate;
+  SimpleMenuModel model(&delegate);
+  model.AddItem(1, u"one");
+  model.AddItem(2, u"two");
+  model.AddItem(3, u"three");
+
+  ui::ColorProvider colorProvider;
+  base::scoped_nsobject<MenuControllerCocoa> menu([[MenuControllerCocoa alloc]
+               initWithModel:&model
+                    delegate:nil
+               colorProvider:&colorProvider
+      useWithPopUpButtonCell:YES]);
+  EXPECT_TRUE([menu isMenuBuiltForTesting]);
+}
+
+// Tests to make sure that when |-initWithModel:| is called without a
+// ColorProvider the menu is not constructed but is constructed in a later call
+// to |-maybeBuildWithColorProvider:|.
+TEST_F(MenuControllerTest, InitDoesNotBuildMenuWithoutColorProvider) {
+  Delegate delegate;
+  SimpleMenuModel model(&delegate);
+  model.AddItem(1, u"one");
+  model.AddItem(2, u"two");
+  model.AddItem(3, u"three");
+
+  // Calling |-initWithModel:| without the ColorProvider should not build the
+  // menu.
+  base::scoped_nsobject<MenuControllerCocoa> menu([[MenuControllerCocoa alloc]
+               initWithModel:&model
+                    delegate:nil
+      useWithPopUpButtonCell:YES]);
+  EXPECT_FALSE([menu isMenuBuiltForTesting]);
+
+  // A follow up call to |-maybeBuildWithColorProvider:| should result in the
+  // controller building the menu.
+  ui::ColorProvider colorProvider;
+  [menu maybeBuildWithColorProvider:&colorProvider];
+  EXPECT_TRUE([menu isMenuBuiltForTesting]);
+
+  // Ensure that the menu is not built a second time on a subsequent call to
+  // |-maybeBuildWithColorProvider:|.
+  const NSMenu* originalMenu = [menu menu];
+  [menu maybeBuildWithColorProvider:&colorProvider];
+  EXPECT_EQ(originalMenu, [menu menu]);
 }
 
 }  // namespace

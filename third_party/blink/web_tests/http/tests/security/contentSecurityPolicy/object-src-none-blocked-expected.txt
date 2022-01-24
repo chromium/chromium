@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 16: Refused to load plugin data from 'data:application/x-blink-test-plugin,' because it violates the following Content Security Policy directive: "object-src 'none'".
+CONSOLE ERROR: Refused to load plugin data from 'data:application/x-blink-test-plugin,' because it violates the following Content Security Policy directive: "object-src 'none'".
 
 
 

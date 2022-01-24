@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -423,8 +424,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, RenderFrameProxyHostCreated) {
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
   WebContentsImpl* portal_contents = portal->GetPortalContents();
-  RenderFrameProxyHost* proxy_host = portal_contents->GetFrameTree()
-                                         ->root()
+  RenderFrameProxyHost* proxy_host = portal_contents->GetPrimaryFrameTree()
+                                         .root()
                                          ->render_manager()
                                          ->GetProxyToOuterDelegate();
   EXPECT_TRUE(proxy_host->is_render_frame_proxy_live());
@@ -447,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DetachPortal) {
 
   WebContentsImpl* portal_contents = portal->GetPortalContents();
   FrameTreeNode* portal_main_frame_node =
-      portal_contents->GetFrameTree()->root();
+      portal_contents->GetPrimaryFrameTree().root();
 
   // Remove portal from document and wait for frames to be deleted.
   FrameDeletedObserver fdo1(portal_main_frame_node->render_manager()
@@ -1119,8 +1120,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, GestureCleanedUpBeforeActivation) {
 #endif
 
 // Touch input transfer is only implemented in the content layer for Aura.
+// TODO(crbug.com/1233183): Flaky on all aura platforms.
 #if defined(USE_AURA)
-IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchInputTransferAcrossActivation) {
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
+                       DISABLED_TouchInputTransferAcrossActivation) {
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("portal.test", "/portals/scroll.html")));
@@ -1159,11 +1162,11 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchInputTransferAcrossActivation) {
 }
 #endif
 
-// TODO(crbug.com/1010675): Test fails flakily.
+// TODO(crbug.com/1263222): Test fails flakily.
 // Touch input transfer is only implemented in the content layer for Aura.
 #if defined(USE_AURA)
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
-                       TouchInputTransferAcrossReactivation) {
+                       DISABLED_TouchInputTransferAcrossReactivation) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
                    "portal.test",
@@ -1809,7 +1812,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   RenderFrameHostImpl* rfhi = iframe_ftn->current_frame_host();
   RenderFrameProxyHost* rfph =
       iframe_ftn->render_manager()->GetRenderFrameProxyHost(
-          portal_main_frame->GetSiteInstance());
+          portal_main_frame->GetSiteInstance()->group());
 
   // Simulate renderer sending RemoteFrameHost::DidFocusFrame IPC.
   rfph->DidFocusFrame();
@@ -2656,13 +2659,7 @@ class PortalOriginTrialBrowserTest : public ContentBrowserTest {
  protected:
   PortalOriginTrialBrowserTest() = default;
 
-  bool PlatformSupportsPortalsOriginTrial() {
-#if defined(OS_ANDROID)
-    return true;
-#else
-    return false;
-#endif
-  }
+  bool PlatformSupportsPortalsOriginTrial() { return false; }
 
   void SetUp() override {
     ContentBrowserTest::SetUp();
@@ -2777,7 +2774,7 @@ IN_PROC_BROWSER_TEST_F(PortalPixelBrowserTest, MAYBE_PageScaleRaster) {
   auto* portal_contents = static_cast<WebContentsImpl*>(inner_web_contents[0]);
 
   RenderFrameSubmissionObserver portal_frame_observer(
-      portal_contents->GetFrameTree()->root());
+      portal_contents->GetPrimaryFrameTree().root());
 
   // Perform a pinch-zoom action into the top-left of the page.
   {

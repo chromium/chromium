@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/test/test_context_provider.h"

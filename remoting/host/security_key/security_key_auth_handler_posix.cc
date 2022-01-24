@@ -22,7 +22,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
@@ -62,6 +62,11 @@ class SecurityKeyAuthHandlerPosix : public SecurityKeyAuthHandler {
  public:
   explicit SecurityKeyAuthHandlerPosix(
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner);
+
+  SecurityKeyAuthHandlerPosix(const SecurityKeyAuthHandlerPosix&) = delete;
+  SecurityKeyAuthHandlerPosix& operator=(const SecurityKeyAuthHandlerPosix&) =
+      delete;
+
   ~SecurityKeyAuthHandlerPosix() override;
 
  private:
@@ -124,8 +129,6 @@ class SecurityKeyAuthHandlerPosix : public SecurityKeyAuthHandler {
   base::TimeDelta request_timeout_;
 
   base::WeakPtrFactory<SecurityKeyAuthHandlerPosix> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyAuthHandlerPosix);
 };
 
 std::unique_ptr<SecurityKeyAuthHandler> SecurityKeyAuthHandler::Create(
@@ -146,8 +149,7 @@ void SecurityKeyAuthHandler::SetSecurityKeySocketName(
 SecurityKeyAuthHandlerPosix::SecurityKeyAuthHandlerPosix(
     scoped_refptr<base::SingleThreadTaskRunner> file_task_runner)
     : file_task_runner_(file_task_runner),
-      request_timeout_(
-          base::TimeDelta::FromSeconds(kDefaultRequestTimeoutSeconds)) {}
+      request_timeout_(base::Seconds(kDefaultRequestTimeoutSeconds)) {}
 
 SecurityKeyAuthHandlerPosix::~SecurityKeyAuthHandlerPosix() {
   DCHECK(thread_checker_.CalledOnValidThread());

@@ -9,7 +9,6 @@
 #include <unordered_set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/log.h"
@@ -27,6 +26,9 @@ class DevToolsEventsLogger : public DevToolsEventListener {
   // Creates a |DevToolsEventsLogger| with specific preferences.
   DevToolsEventsLogger(Log* log, const base::Value& prefs);
 
+  DevToolsEventsLogger(const DevToolsEventsLogger&) = delete;
+  DevToolsEventsLogger& operator=(const DevToolsEventsLogger&) = delete;
+
   ~DevToolsEventsLogger() override;
 
   Status OnConnected(DevToolsClient* client) override;
@@ -40,8 +42,6 @@ class DevToolsEventsLogger : public DevToolsEventListener {
 
   const base::Value& prefs_;
   std::unordered_set<std::string> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsEventsLogger);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_DEVTOOLS_EVENTS_LOGGER_H_

@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/callback_holder.h"
@@ -38,6 +37,9 @@ class FakeVideoDecoder : public VideoDecoder {
                    int decoding_delay,
                    int max_parallel_decoding_requests,
                    const BytesDecodedCB& bytes_decoded_cb);
+
+  FakeVideoDecoder(const FakeVideoDecoder&) = delete;
+  FakeVideoDecoder& operator=(const FakeVideoDecoder&) = delete;
 
   ~FakeVideoDecoder() override;
 
@@ -140,8 +142,6 @@ class FakeVideoDecoder : public VideoDecoder {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<FakeVideoDecoder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoDecoder);
 };
 
 }  // namespace media

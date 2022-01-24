@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/printing/print_preview_test.h"
@@ -49,6 +48,10 @@ bool IsShowingWebContentsModalDialog(WebContents* tab) {
 class PrintPreviewUIUnitTest : public PrintPreviewTest {
  public:
   PrintPreviewUIUnitTest() {}
+
+  PrintPreviewUIUnitTest(const PrintPreviewUIUnitTest&) = delete;
+  PrintPreviewUIUnitTest& operator=(const PrintPreviewUIUnitTest&) = delete;
+
   ~PrintPreviewUIUnitTest() override {}
 
  protected:
@@ -57,9 +60,6 @@ class PrintPreviewUIUnitTest : public PrintPreviewTest {
 
     chrome::NewTab(browser());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewUIUnitTest);
 };
 
 // Create/Get a preview tab for initiator.
@@ -211,17 +211,32 @@ TEST_F(PrintPreviewUIUnitTest, ShouldCancelRequest) {
       *preview_ui->GetIDForPrintPreviewUI(), kSecondRequestId));
 }
 
-TEST_F(PrintPreviewUIUnitTest, ParseDataPath) {
-  EXPECT_FALSE(
-      PrintPreviewUI::ParseDataPath("pdf/browser_api.js", nullptr, nullptr));
-  EXPECT_TRUE(PrintPreviewUI::ParseDataPath("1/2/print.pdf", nullptr, nullptr));
+// Ensures that a failure cancels all pending actions.
+TEST_F(PrintPreviewUIUnitTest, PrintPreviewFailureCancelsPendingActions) {
+  WebContents* initiator = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(initiator);
 
-  int ui_id = -1;
-  int page_index = -2;
-  EXPECT_TRUE(
-      PrintPreviewUI::ParseDataPath("3/4/print.pdf", &ui_id, &page_index));
-  EXPECT_EQ(ui_id, 3);
-  EXPECT_EQ(page_index, 4);
+  PrintPreviewDialogController* controller =
+      PrintPreviewDialogController::GetInstance();
+  ASSERT_TRUE(controller);
+
+  WebContents* preview_dialog = controller->GetOrCreatePreviewDialog(initiator);
+
+  EXPECT_NE(initiator, preview_dialog);
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_TRUE(IsShowingWebContentsModalDialog(initiator));
+
+  PrintPreviewUI* preview_ui =
+      static_cast<PrintPreviewUI*>(preview_dialog->GetWebUI()->GetController());
+  ASSERT_TRUE(preview_ui);
+  preview_ui->SetPreviewUIId();
+
+  constexpr int kRequestId = 1;
+  preview_ui->OnPrintPreviewRequest(kRequestId);
+  EXPECT_FALSE(
+      PrintPreviewUI::ShouldCancelRequest(preview_ui->id_, kRequestId));
+  preview_ui->OnPrintPreviewFailed(kRequestId);
+  EXPECT_TRUE(PrintPreviewUI::ShouldCancelRequest(preview_ui->id_, kRequestId));
 }
 
 }  // namespace printing

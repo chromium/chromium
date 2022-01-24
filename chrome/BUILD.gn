@@ -17,6 +17,7 @@ import("//build/toolchain/toolchain.gni")
 import("//chrome/chrome_paks.gni")
 import("//chrome/common/features.gni")
 import("//chrome/process_version_rc_template.gni")
+import("//components/exo/buildflags.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -60,8 +61,8 @@ declare_args() {
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
-if (enable_resource_allowlist_generation) {
-  chrome_resource_whitelist = "$target_gen_dir/chrome_resource_whitelist.txt"
+if (is_win && enable_resource_allowlist_generation) {
+  _chrome_resource_allowlist = "$target_gen_dir/chrome_resource_allowlist.txt"
 }
 
 if (is_win) {
@@ -92,6 +93,8 @@ if (is_win) {
 # on Chrome and the main DLLs it uses, it will transitively assert that those
 # targets also have no deps on disallowed things.
 group("assert_no_deps") {
+  # TODO(issuetracker.google.com/199337060): remove testonly
+  testonly = enable_weston_test
   deps = []
 
   if (is_android) {
@@ -111,6 +114,8 @@ group("assert_no_deps") {
 }
 if (!is_android && !is_mac) {
   group("chrome") {
+    # TODO(issuetracker.google.com/199337060): remove testonly
+    testonly = enable_weston_test
     public_deps = [ ":chrome_initial" ]
     data_deps = [ ":chrome_initial" ]
 
@@ -151,6 +156,8 @@ if (!is_android && !is_mac) {
     data_deps = []
 
     if (is_chromeos_ash) {
+      # TODO(issuetracker.google.com/199337060): remove testonly
+      testonly = enable_weston_test
       data_deps += [ "//sandbox/linux:chrome_sandbox" ]
     }
 
@@ -194,6 +201,7 @@ if (!is_android && !is_mac) {
         "//gpu/command_buffer/service",
         "//sandbox",
         "//sandbox/policy",
+        "//sandbox/policy/mojom",
         "//third_party/breakpad:breakpad_handler",
         "//third_party/breakpad:breakpad_sender",
         "//third_party/crashpad/crashpad/util",
@@ -240,7 +248,7 @@ if (!is_android && !is_mac) {
       sources += [ "app/chrome_exe_main_aura.cc" ]
     }
 
-    if (is_linux || is_chromeos) {
+    if (is_linux || is_chromeos || is_fuchsia) {
       sources += [
         "app/chrome_dll_resource.h",
         "app/chrome_main.cc",
@@ -268,12 +276,24 @@ if (!is_android && !is_mac) {
         "//headless:headless_shell_lib",
       ]
 
-      public_deps = [
-        ":xdg_mime",  # Needs to be public for installer to consume files.
-        "//chrome/common:buildflags",
-      ]
+      public_deps = [ "//chrome/common:buildflags" ]
+
+      if (!is_fuchsia) {
+        public_deps += [
+          ":xdg_mime",  # Needs to be public for installer to consume files.
+        ]
+
+        data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
+      }
 
       ldflags = []
+
+      # On Chrome OS builds (for both ash-chrome and lacros-chrome), put
+      # priority to the library in the installed directory.
+      # This will avoid conflicting of exposed symbols.
+      if (is_chromeos_device) {
+        ldflags += [ "-L" + rebase_path(root_out_dir) ]
+      }
 
       # Chrome OS debug builds for arm need to pass --long-plt to the linker.
       # See https://bugs.chromium.org/p/chromium/issues/detail?id=583532
@@ -287,6 +307,10 @@ if (!is_android && !is_mac) {
         inputs = [ version_script ]
         ldflags += [ "-Wl,--version-script=" +
                      rebase_path(version_script, root_build_dir) ]
+      }
+
+      if (is_chromeos_ash) {
+        public_deps += [ "//ui/lottie" ]
       }
 
       if (is_chromeos_lacros) {
@@ -316,6 +340,19 @@ if (!is_android && !is_mac) {
     # library usage.
     if (is_chromeos_ash && !is_component_build) {
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
+    }
+
+    # Lacros is built with "{arch}-generic" configuration. However, in Chrome
+    # OS, it is just "one board variation", so the libraries on the *-generic
+    # boards may not be compatible with the ones on the actual DUTs.
+    # One of the common pattern recently we hit is symbols exposed by libgcc.
+    # The symbols start to be exposed recently because of libunwind transition
+    # and along with it they are or are not re-exposed by other libraries, too,
+    # depending on per-board implementation.
+    # To mitigate the situation, marking -shared-libgcc to look up the system
+    # libgcc always.
+    if (is_chromeos_lacros && is_chromeos_device) {
+      ldflags += [ "-shared-libgcc" ]
     }
 
     data_deps += [
@@ -841,12 +878,6 @@ if (is_win) {
         "//chrome/updater/mac:updater_install_script",
       ]
     }
-
-    if (is_asan) {
-      # crashpad_handler requires the ASan runtime at its @executable_path.
-      sources += [ "$root_out_dir/libclang_rt.asan_osx_dynamic.dylib" ]
-      public_deps += [ "//build/config/sanitizers:copy_asan_runtime" ]
-    }
   }
 
   bundle_data("chrome_framework_resources") {
@@ -886,7 +917,8 @@ if (is_win) {
       if (use_v8_context_snapshot) {
         sources += [ "$root_out_dir/$v8_context_snapshot_filename" ]
         public_deps += [ "//tools/v8_context_snapshot" ]
-      } else {
+      }
+      if (!use_v8_context_snapshot || include_both_v8_snapshots) {
         sources += [ "$root_out_dir/snapshot_blob.bin" ]
       }
     }
@@ -1315,7 +1347,6 @@ group("browser_dependencies") {
     "//chrome/browser",
     "//chrome/browser/policy:path_parser",
     "//chrome/common",
-    "//components/crash/core/app",
     "//components/gwp_asan/buildflags",
     "//components/heap_profiling/in_process",
     "//components/power_scheduler",
@@ -1352,12 +1383,17 @@ group("browser_dependencies") {
   }
 
   if (is_chromeos_ash) {
+    testonly = enable_weston_test
     public_deps += [
       "//ash/constants",
       "//chrome/browser/chromeos",
       "//chromeos",
       "//chromeos/memory",
     ]
+  }
+
+  if (!is_fuchsia) {
+    public_deps += [ "//components/crash/core/app" ]
   }
 
   if (!is_component_build) {
@@ -1523,8 +1559,8 @@ if (!is_android) {
     }
 
     if (enable_resource_allowlist_generation) {
-      repack_allowlist = chrome_resource_whitelist
-      deps = [ "//chrome:resource_whitelist" ]
+      repack_allowlist = _chrome_resource_allowlist
+      deps = [ ":resource_allowlist" ]
     }
 
     if (is_chrome_branded && !is_mac) {
@@ -1551,6 +1587,10 @@ repack("browser_tests_pak") {
   sources = [ "$root_gen_dir/chrome/webui_test_resources.pak" ]
   output = "$root_out_dir/browser_tests.pak"
   deps = [ "//chrome/test/data:webui_test_resources" ]
+  if (!is_android) {
+    sources += [ "$root_gen_dir/chrome/webui_generated_test_resources.pak" ]
+    deps += [ "//chrome/test/data/webui:resources" ]
+  }
 }
 
 group("strings") {
@@ -1650,6 +1690,10 @@ if (is_android) {
       ]
     }
 
+    if (is_chromeos_ash) {
+      public_deps += [ "//ui/lottie" ]
+    }
+
     if (enable_vr) {
       deps += [ "//third_party/gvr-android-sdk:gvr_shim" ]
     }
@@ -1660,18 +1704,13 @@ if (is_android) {
   }
 }
 
-if (enable_resource_allowlist_generation) {
-  generate_resource_allowlist("resource_whitelist") {
-    if (is_android) {
-      deps = [ "//chrome/android:libchrome" ]
-      inputs = [ "$root_out_dir/lib.unstripped/libchrome$shlib_extension" ]
-    } else if (is_win) {
-      deps = [ ":chrome_dll" ]
-      inputs = [ "$root_out_dir/chrome.dll.pdb" ]
-    } else {
-      assert(false, "unsupported platform for whitelist generation")
-    }
-    output = chrome_resource_whitelist
+# Android also supports this, but uses
+# //chrome/android:${_variant}_resource_allowlist.
+if (is_win && enable_resource_allowlist_generation) {
+  generate_resource_allowlist("resource_allowlist") {
+    deps = [ ":chrome_dll" ]
+    inputs = [ "$root_out_dir/chrome.dll.pdb" ]
+    output = _chrome_resource_allowlist
   }
 }
 
@@ -1681,8 +1720,8 @@ if (is_linux || is_chromeos) {
       deps = [
         ":angle_egl_symbols",
         ":angle_gles_symbols",
+        ":chrome_crashpad_symbols",
         ":chrome_symbols",
-        ":crashpad_symbols",
         ":swiftshader_egl_symbols",
         ":swiftshader_gles_symbols",
       ]
@@ -1705,8 +1744,8 @@ if (is_linux || is_chromeos) {
 
       deps = [ ":chrome" ]
     }
-    extract_symbols("crashpad_symbols") {
-      binary = "$root_out_dir/crashpad_handler"
+    extract_symbols("chrome_crashpad_symbols") {
+      binary = "$root_out_dir/chrome_crashpad_handler"
 
       if (current_cpu == "x86") {
         # GYP used "ia32" so keep that naming for back-compat.
@@ -1715,7 +1754,7 @@ if (is_linux || is_chromeos) {
         symbol_file = "$root_out_dir/crashpad.breakpad.$current_cpu"
       }
 
-      deps = [ "//third_party/crashpad/crashpad/handler:crashpad_handler" ]
+      deps = [ "//components/crash/core/app:chrome_crashpad_handler" ]
     }
     extract_symbols("swiftshader_egl_symbols") {
       binary = "$root_out_dir/swiftshader/libEGL.so"

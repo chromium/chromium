@@ -8,11 +8,43 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 
 namespace ui {
+
+namespace {
+constexpr uint32_t kMaxGtkPrimarySelectionDeviceManagerVersion = 1;
+}
+
+// static
+constexpr char GtkPrimarySelectionDeviceManager::kInterfaceName[];
+
+// static
+void GtkPrimarySelectionDeviceManager::Instantiate(
+    WaylandConnection* connection,
+    wl_registry* registry,
+    uint32_t name,
+    const std::string& interface,
+    uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
+  if (connection->gtk_primary_selection_device_manager())
+    return;
+
+  auto manager = wl::Bind<gtk_primary_selection_device_manager>(
+      registry, name,
+      std::min(version, kMaxGtkPrimarySelectionDeviceManagerVersion));
+  if (!manager) {
+    LOG(ERROR) << "Failed to bind gtk_primary_selection_device_manager";
+    return;
+  }
+  connection->gtk_primary_selection_device_manager_ =
+      std::make_unique<GtkPrimarySelectionDeviceManager>(manager.release(),
+                                                         connection);
+}
 
 GtkPrimarySelectionDeviceManager::GtkPrimarySelectionDeviceManager(
     gtk_primary_selection_device_manager* manager,
@@ -30,6 +62,7 @@ GtkPrimarySelectionDevice* GtkPrimarySelectionDeviceManager::GetDevice() {
     device_ = std::make_unique<GtkPrimarySelectionDevice>(
         connection_, gtk_primary_selection_device_manager_get_device(
                          device_manager_.get(), connection_->seat()));
+    connection_->ScheduleFlush();
   }
   DCHECK(device_);
   return device_.get();
@@ -40,6 +73,7 @@ GtkPrimarySelectionDeviceManager::CreateSource(
     GtkPrimarySelectionSource::Delegate* delegate) {
   auto* data_source =
       gtk_primary_selection_device_manager_create_source(device_manager_.get());
+  connection_->ScheduleFlush();
   return std::make_unique<GtkPrimarySelectionSource>(data_source, connection_,
                                                      delegate);
 }

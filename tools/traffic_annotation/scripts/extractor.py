@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -10,37 +10,102 @@ Extracts network traffic annotation definitions from C++ source code.
 from __future__ import print_function
 
 import argparse
-import os
 import re
 import sys
 import traceback
 
 from annotation_tools import NetworkTrafficAnnotationTools
-from annotation_tokenizer import Tokenizer, CppParsingError
+from annotation_tokenizer import Tokenizer, SourceCodeParsingError
+
+from enum import Enum
+from pathlib import Path
+from typing import List, Dict, NamedTuple
+
+
+class AnnotationType(Enum):
+  COMPLETE = 'Definition'
+  PARTIAL = 'Partial'
+  COMPLETING = 'Completing'
+  BRANCHED_COMPLETING = 'BranchedCompleting'
+  MUTABLE = 'Mutable'
+
+
+class Language(NamedTuple):
+  """Info on how to parse a given programming language's source code."""
+  # Human-readable name, for debugging.
+  name: str
+  # Maps definition function names to the type of annotation they define.
+  annotation_types: Dict[str, AnnotationType]
+  # Regex that matches an annotation definition. Capture group 1 of this regex
+  # should contain a function name that can be mapped via annotation_types.
+  call_detection_regex: re.Pattern
 
 # Exit code for parsing errors. Other runtime errors return 1.
 EX_PARSE_ERROR = 2
 
-ANNOTATION_TYPES = {
-    'DefineNetworkTrafficAnnotation': 'Definition',
-    'DefinePartialNetworkTrafficAnnotation': 'Partial',
-    'CompleteNetworkTrafficAnnotation': 'Completing',
-    'BranchedCompleteNetworkTrafficAnnotation': 'BranchedCompleting',
-    'CreateMutableNetworkTrafficAnnotationTag': 'Mutable',
+# A regex that scans more quickly than the other regexen below, for
+# pre-filtering. A first pass will check for these strings, and skip any files
+# that don't contain them. Keep this regex simple, so it's fast.
+#
+# N.B.: this regex MUST match anything that would be matched by the other
+# regexen below, or we will get false negatives (i.e., we will miss some
+# annotations because pre-filtering is too strict).
+PREFILTER_REGEX = re.compile(r'''
+  TrafficAnnotation | TRAFFIC_ANNOTATION
+''', re.VERBOSE | re.IGNORECASE)
+
+# Language definition for C++ source files.
+CPP_ANNOTATION_TYPES = {
+    'DefineNetworkTrafficAnnotation': AnnotationType.COMPLETE,
+    'DefinePartialNetworkTrafficAnnotation': AnnotationType.PARTIAL,
+    'CompleteNetworkTrafficAnnotation': AnnotationType.COMPLETING,
+    'BranchedCompleteNetworkTrafficAnnotation':
+    AnnotationType.BRANCHED_COMPLETING,
+    'CreateMutableNetworkTrafficAnnotationTag': AnnotationType.MUTABLE,
 }
 
-# Regex that matches an annotation definition.
-CALL_DETECTION_REGEX = re.compile(r'''
-  \b
-  # Look for one of the tracked function names.
-  # Capture group 1.
-  (
-    ''' + ('|'.join(ANNOTATION_TYPES.keys())) + r'''
-  )
-  # Followed by a left-paren.
-  \s*
-  \(
-''', re.VERBOSE | re.DOTALL)
+CPP_LANGUAGE = Language(name='C++',
+                        annotation_types=CPP_ANNOTATION_TYPES,
+                        call_detection_regex=re.compile(
+                            r'''
+    \b
+    # Look for one of the tracked function names.
+    # Capture group 1: function name.
+    (
+      ''' + ('|'.join(CPP_ANNOTATION_TYPES.keys())) + r'''
+    )
+    # Followed by a left-paren.
+    \s*
+    \(
+  ''', re.VERBOSE | re.DOTALL))
+
+# Language definition for Java source files.
+JAVA_ANNOTATION_TYPES = {
+    'createComplete': AnnotationType.COMPLETE,
+}
+
+JAVA_LANGUAGE = Language(name='Java',
+                         annotation_types=JAVA_ANNOTATION_TYPES,
+                         call_detection_regex=re.compile(
+                             r'''
+    \b
+    # Look for a string like NetworkTrafficAnnotationTag.<methodName>
+    NetworkTrafficAnnotationTag \s* \. \s*
+    # Capture group 1: method name.
+    (
+      ''' + ('|'.join(JAVA_ANNOTATION_TYPES.keys())) + r'''
+    )
+    # Followed by a left-paren.
+    \s*
+    \(
+  ''', re.VERBOSE | re.DOTALL))
+
+# Maps file extensions to their Language definition.
+LANGUAGE_MAPPING: Dict[str, Language] = {
+    '.cc': CPP_LANGUAGE,
+    '.mm': CPP_LANGUAGE,
+    '.java': JAVA_LANGUAGE,
+}
 
 # Regex that matches an annotation that should only be used in test files.
 TEST_ANNOTATION_REGEX = re.compile(
@@ -53,17 +118,27 @@ MISSING_ANNOTATION_REGEX = re.compile(r'\bMISSING_TRAFFIC_ANNOTATION\b')
 # don't require Network Traffic Annotations compliance. (e.g. iOS)
 NO_ANNOTATION_REGEX = re.compile(r'\bNO_TRAFFIC_ANNOTATION_YET\b')
 
+# List of supported file extensions for source code.
+SUPPORTED_EXTENSIONS = set(LANGUAGE_MAPPING.keys())
+
 
 class Annotation:
   """A network annotation definition in C++ code."""
 
-  def __init__(self, file_path, line_number, type_name='', unique_id='',
-               extra_id='', text=''):
+  def __init__(self,
+               language: Language,
+               file_path: Path,
+               line_number: int,
+               type_name: AnnotationType,
+               unique_id='',
+               extra_id='',
+               text=''):
     """Constructs an Annotation object with the given field values.
 
     Args:
       file_path: Path to the file that contains this annotation.
     """
+    self.language = language
     self.file_path = file_path
     self.line_number = line_number
     self.type_name = type_name
@@ -71,15 +146,14 @@ class Annotation:
     self.extra_id = extra_id
     self.text = text
 
-  def parse_definition(self, re_match):
+  def parse_definition(self, re_match: re.Match):
     """Parses the annotation and populates object fields.
 
     Args:
-      file_path: Path to the file that contains this annotation.
-      re_match: A MatchObject obtained from CALL_DETECTION_REGEX.
+      re_match: A Match obtained from the Language's call_detection_regex.
     """
     definition_function = re_match.group(1)
-    self.type_name = ANNOTATION_TYPES[definition_function]
+    self.type_name = self.language.annotation_types[definition_function]
 
     # Parse the arguments given to the definition function, populating
     # |unique_id|, |text| and (possibly) |extra_id|.
@@ -87,39 +161,44 @@ class Annotation:
     self._parse_body(body)
 
 
-  def extractor_output_string(self):
+  def extractor_output_string(self) -> str:
     """Returns a string formatted for output."""
-    return "\n".join(map(str, [
-        "==== NEW ANNOTATION ====",
-        self.file_path,
-        self.line_number,
-        self.type_name,
-        self.unique_id,
-        self.extra_id,
-        self.text,
-        "==== ANNOTATION ENDS ====",
-    ]))
+    return '\n'.join(
+        map(str, [
+            '==== NEW ANNOTATION ====',
+            self.file_path,
+            self.line_number,
+            self.type_name.value,
+            self.unique_id,
+            self.extra_id,
+            self.text,
+            '==== ANNOTATION ENDS ====',
+        ]))
 
-  def _parse_body(self, body):
+  def _parse_body(self, body: str):
     """Tokenizes and parses the arguments given to the definition function."""
     # Don't bother parsing CreateMutableNetworkTrafficAnnotationTag(), we don't
     # care about its arguments anyways.
-    if self.type_name == 'Mutable':
+    if self.type_name == AnnotationType.MUTABLE:
       return
 
     tokenizer = Tokenizer(body, self.file_path, self.line_number)
 
     # unique_id
-    self.unique_id = tokenizer.advance('string_literal')
+    self.unique_id = self._parse_string(tokenizer)
     tokenizer.advance('comma')
 
     # extra_id (Partial/BranchedCompleting)
-    if self.type_name == 'Partial' or self.type_name == 'BranchedCompleting':
-      self.extra_id = tokenizer.advance('string_literal')
+    if self.type_name in [
+        AnnotationType.PARTIAL, AnnotationType.BRANCHED_COMPLETING
+    ]:
+      self.extra_id = self._parse_string(tokenizer)
       tokenizer.advance('comma')
 
     # partial_annotation (Completing/BranchedCompleting)
-    if self.type_name == 'Completing' or self.type_name == 'BranchedCompleting':
+    if self.type_name in [
+        AnnotationType.COMPLETING, AnnotationType.BRANCHED_COMPLETING
+    ]:
       # Skip the |partial_annotation| argument. It can be a variable_name, or a
       # FunctionName(), so skip the parentheses if they're there.
       tokenizer.advance('symbol')
@@ -128,10 +207,25 @@ class Annotation:
       tokenizer.advance('comma')
 
     # proto text
-    self.text = tokenizer.advance('string_literal')
+    self.text = self._parse_string(tokenizer)
 
     # The function call should end here without any more arguments.
     assert tokenizer.advance('right_paren')
+
+  def _parse_string(self, tokenizer: Tokenizer) -> str:
+    """Parse a string value.
+
+    It could be a string literal by itself, or multiple string literals
+    concatenated together. Add a newline to the string for each
+    concatenation."""
+    text = tokenizer.advance('string_literal')
+    while True:
+      # Perform concatenations.
+      if tokenizer.maybe_advance('plus') is None:
+        break
+      text += '\n'
+      text += tokenizer.advance('string_literal')
+    return text
 
 
 def get_line_number_at(string, pos):
@@ -159,26 +253,34 @@ def is_inside_comment(string, pos):
   # TODO(crbug/966883): Add multi-line comment support.
 
 
-def extract_annotations(file_path):
+def may_contain_annotations(file_path: Path) -> bool:
+  """Returns False if |file_path| is guaranteed not to contain annotations.
+
+  This runs much faster than extract_annotations(), and is meant for
+  pre-filtering. If this returns True, then |file_path| *might* contain
+  annotations. Call extract_annotations() to know for sure."""
+  return bool(PREFILTER_REGEX.search(file_path.read_text(encoding="utf-8")))
+
+
+def extract_annotations(file_path: Path) -> List[Annotation]:
   """Extracts and returns annotations from the file at |file_path|."""
-  if sys.version_info.major >= 3:
-    # In Python 3, contents is a unicode string decoded from UTF-8 file
-    # contents.
-    with open(file_path, encoding="utf-8") as f:
-      contents = f.read()
-  else:
-    # In Python 2, contents is a byte-string.
-    with open(file_path) as f:
-      contents = f.read()
+  if file_path.suffix not in LANGUAGE_MAPPING:
+    raise ValueError("Unrecognized extension '{}' for file '{}'.".format(
+        file_path.suffix, str(file_path)))
+
+  language = LANGUAGE_MAPPING[file_path.suffix]
+
+  contents = file_path.read_text(encoding="utf-8")
 
   defs = []
 
   # Check for function calls (e.g. DefineNetworkTrafficAnnotation(...))
-  for re_match in CALL_DETECTION_REGEX.finditer(contents):
+  for re_match in language.call_detection_regex.finditer(contents):
     if is_inside_comment(re_match.string, re_match.start()):
       continue
     line_number = get_line_number_at(contents, re_match.start())
-    annotation = Annotation(file_path, line_number)
+    annotation = Annotation(language, file_path, line_number,
+                            AnnotationType.COMPLETE)
     annotation.parse_definition(re_match)
     defs.append(annotation)
 
@@ -190,17 +292,21 @@ def extract_annotations(file_path):
 
     is_partial = bool(re_match.group(1))
     if is_partial:
-      type_name = 'Partial'
+      type_name = AnnotationType.PARTIAL
       unique_id = 'test_partial'
       extra_id = 'test'
     else:
-      type_name = 'Definition'
+      type_name = AnnotationType.COMPLETE
       unique_id = 'test'
       extra_id = ''
 
     annotation = Annotation(
-        file_path, line_number, type_name=type_name,
-        unique_id=unique_id, extra_id=extra_id,
+        language,
+        file_path,
+        line_number,
+        type_name=type_name,
+        unique_id=unique_id,
+        extra_id=extra_id,
         text='Traffic annotation for unit, browser and other tests')
     defs.append(annotation)
 
@@ -210,9 +316,12 @@ def extract_annotations(file_path):
       continue
     line_number = get_line_number_at(contents, re_match.start())
 
-    annotation = Annotation(
-        file_path, line_number, type_name='Definition', unique_id='missing',
-        text='Function called without traffic annotation.')
+    annotation = Annotation(language,
+                            file_path,
+                            line_number,
+                            type_name=AnnotationType.COMPLETE,
+                            unique_id='missing',
+                            text='Function called without traffic annotation.')
     defs.append(annotation)
 
   # Check for NO_TRAFFIC_ANNOTATION_YET.
@@ -221,9 +330,10 @@ def extract_annotations(file_path):
       continue
     line_number = get_line_number_at(contents, re_match.start())
 
-    annotation = Annotation(file_path,
+    annotation = Annotation(language,
+                            file_path,
                             line_number,
-                            type_name='Definition',
+                            type_name=AnnotationType.COMPLETE,
                             unique_id='undefined',
                             text='Nothing here yet.')
     defs.append(annotation)
@@ -233,15 +343,16 @@ def extract_annotations(file_path):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '--options-file',
-      help='optional file to read options from')
+  parser.add_argument('--options-file',
+                      type=Path,
+                      help='optional file to read options from')
   args, argv = parser.parse_known_args()
-  if args.options_file:
-    argv = open(args.options_file).read().split()
+  if args.options_file is not None:
+    argv = args.options_file.read_text(encoding="utf-8").split()
 
   parser.add_argument(
       '--build-path',
+      type=Path,
       help='Specifies a compiled build directory, e.g. out/Debug.')
   parser.add_argument(
       '--generate-compdb', action='store_true',
@@ -249,24 +360,27 @@ def main():
   parser.add_argument(
       '--no-filter', action='store_true',
       help='Do not filter files based on compdb entries')
-  parser.add_argument(
-      'file_paths', nargs='+', help='List of files to process.')
+  parser.add_argument('file_paths',
+                      nargs='+',
+                      type=Path,
+                      help='List of files to process.')
 
   args = parser.parse_args(argv)
 
-  tools = NetworkTrafficAnnotationTools(args.build_path)
-  compdb_files = tools.GetCompDBFiles(args.generate_compdb)
+  if not args.no_filter:
+    tools = NetworkTrafficAnnotationTools(args.build_path)
+    compdb_files = tools.GetCompDBFiles(args.generate_compdb)
 
   annotation_definitions = []
 
   # Parse all the files.
   # TODO(crbug/966883): Do this in parallel.
   for file_path in args.file_paths:
-    if not args.no_filter and os.path.abspath(file_path) not in compdb_files:
+    if not args.no_filter and file_path.resolve() not in compdb_files:
       continue
     try:
       annotation_definitions.extend(extract_annotations(file_path))
-    except CppParsingError:
+    except SourceCodeParsingError:
       traceback.print_exc()
       return EX_PARSE_ERROR
 

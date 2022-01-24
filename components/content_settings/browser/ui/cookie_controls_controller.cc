@@ -23,6 +23,7 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "net/cookies/site_for_cookies.h"
 
 using base::UserMetricsAction;
 
@@ -111,8 +112,8 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
 
 bool CookieControlsController::FirstPartyCookiesBlocked() {
   const GURL& url = GetWebContents()->GetLastCommittedURL();
-  return !cookie_settings_->IsFullCookieAccessAllowed(url, url,
-                                                      url::Origin::Create(url));
+  return !cookie_settings_->IsFullCookieAccessAllowed(
+      url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url));
 }
 
 int CookieControlsController::GetAllowedCookieCount() {

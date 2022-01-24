@@ -109,8 +109,8 @@ class InterceptNavigationThrottleTest
     simulator->Start();
     if (failed(simulator.get()))
       return simulator->GetLastThrottleCheckResult();
-    for (const GURL& url : redirect_chain) {
-      simulator->Redirect(url);
+    for (const GURL& redirect_url : redirect_chain) {
+      simulator->Redirect(redirect_url);
       if (failed(simulator.get()))
         return simulator->GetLastThrottleCheckResult();
     }

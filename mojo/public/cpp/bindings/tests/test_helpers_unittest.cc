@@ -18,18 +18,24 @@ namespace {
 class TestHelperTest : public testing::Test {
  public:
   TestHelperTest() = default;
+
+  TestHelperTest(const TestHelperTest&) = delete;
+  TestHelperTest& operator=(const TestHelperTest&) = delete;
+
   ~TestHelperTest() override = default;
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHelperTest);
 };
 
 class PingImpl : public test::PingService {
  public:
   explicit PingImpl(PendingReceiver<test::PingService> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  PingImpl(const PingImpl&) = delete;
+  PingImpl& operator=(const PingImpl&) = delete;
+
   ~PingImpl() override = default;
 
   bool pinged() const { return pinged_; }
@@ -43,14 +49,16 @@ class PingImpl : public test::PingService {
  private:
   bool pinged_ = false;
   Receiver<test::PingService> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(PingImpl);
 };
 
 class EchoImpl : public test::EchoService {
  public:
   explicit EchoImpl(PendingReceiver<test::EchoService> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  EchoImpl(const EchoImpl&) = delete;
+  EchoImpl& operator=(const EchoImpl&) = delete;
+
   ~EchoImpl() override = default;
 
   // test::EchoService:
@@ -60,14 +68,16 @@ class EchoImpl : public test::EchoService {
 
  private:
   Receiver<test::EchoService> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(EchoImpl);
 };
 
 class TrampolineImpl : public test::HandleTrampoline {
  public:
   explicit TrampolineImpl(PendingReceiver<test::HandleTrampoline> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TrampolineImpl(const TrampolineImpl&) = delete;
+  TrampolineImpl& operator=(const TrampolineImpl&) = delete;
+
   ~TrampolineImpl() override = default;
 
   // test::HandleTrampoline:
@@ -84,8 +94,6 @@ class TrampolineImpl : public test::HandleTrampoline {
 
  private:
   Receiver<test::HandleTrampoline> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrampolineImpl);
 };
 
 TEST_F(TestHelperTest, AsyncWaiter) {

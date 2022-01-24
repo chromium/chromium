@@ -24,6 +24,12 @@ class MockBluetoothGattNotifySession : public BluetoothGattNotifySession {
  public:
   explicit MockBluetoothGattNotifySession(
       base::WeakPtr<BluetoothRemoteGattCharacteristic> characteristic);
+
+  MockBluetoothGattNotifySession(const MockBluetoothGattNotifySession&) =
+      delete;
+  MockBluetoothGattNotifySession& operator=(
+      const MockBluetoothGattNotifySession&) = delete;
+
   ~MockBluetoothGattNotifySession() override;
 
   MOCK_METHOD0(IsActive, bool());
@@ -46,8 +52,6 @@ class MockBluetoothGattNotifySession : public BluetoothGattNotifySession {
                 const std::vector<uint8_t>& value);
 
   base::RepeatingTimer test_notifications_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBluetoothGattNotifySession);
 };
 
 }  // namespace device

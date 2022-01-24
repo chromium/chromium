@@ -67,6 +67,16 @@ void ChromeSearchResult::SetFormattedPrice(
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetCategory(Category category) {
+  metadata_->category = category;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetBestMatch(bool best_match) {
+  metadata_->best_match = best_match;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetDisplayType(DisplayType display_type) {
   metadata_->display_type = display_type;
   SetSearchResultMetadata();
@@ -122,8 +132,8 @@ void ChromeSearchResult::SetEquivalentResutlId(
     updater->SetSearchResultMetadata(id(), CloneMetadata());
 }
 
-void ChromeSearchResult::SetIcon(const gfx::ImageSkia& icon) {
-  icon.EnsureRepsForSupportedScales();
+void ChromeSearchResult::SetIcon(const IconInfo& icon) {
+  icon.icon.EnsureRepsForSupportedScales();
   metadata_->icon = icon;
   SetSearchResultMetadata();
 }
@@ -156,7 +166,7 @@ void ChromeSearchResult::SetSearchResultMetadata() {
     updater->SetSearchResultMetadata(id(), CloneMetadata());
 }
 
-void ChromeSearchResult::InvokeAction(int action_index) {}
+void ChromeSearchResult::InvokeAction(ash::SearchResultActionType action) {}
 
 void ChromeSearchResult::OnVisibilityChanged(bool visibility) {
   VLOG(1) << " Visibility change to " << visibility << " and ID is " << id();
@@ -168,4 +178,9 @@ void ChromeSearchResult::GetContextMenuModel(GetMenuModelCallback callback) {
 
 app_list::AppContextMenu* ChromeSearchResult::GetAppContextMenu() {
   return nullptr;
+}
+
+::std::ostream& operator<<(::std::ostream& os,
+                           const ChromeSearchResult& result) {
+  return os << result.id() << " " << result.scoring();
 }

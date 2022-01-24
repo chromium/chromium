@@ -4,7 +4,6 @@
 
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
 
-#include <chromium/internal/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_ptr_set.h>
 #include <lib/sys/cpp/component_context.h>
@@ -19,6 +18,7 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/common/content_switches.h"
+#include "fuchsia/engine/fidl/chromium/internal/cpp/fidl.h"
 #include "fuchsia/engine/switches.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"

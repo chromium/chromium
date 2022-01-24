@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -22,6 +21,10 @@ namespace ash {
 class ScreenLockerTester : public session_manager::SessionManagerObserver {
  public:
   ScreenLockerTester();
+
+  ScreenLockerTester(const ScreenLockerTester&) = delete;
+  ScreenLockerTester& operator=(const ScreenLockerTester&) = delete;
+
   ~ScreenLockerTester() override;
 
   // Synchronously lock the device.
@@ -60,8 +63,6 @@ class ScreenLockerTester : public session_manager::SessionManagerObserver {
 
   base::OnceClosure on_lock_callback_;
   base::OnceClosure on_unlock_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenLockerTester);
 };
 
 }  // namespace ash

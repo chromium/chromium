@@ -2,7 +2,6 @@ create {
   source {
     script { name: "fetch.py" }
     unpack_archive: true
-    patch_version: "cr0"
   }
 
   build {

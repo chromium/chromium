@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_DELEGATE_H_
 #define CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_DELEGATE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service.h"
 
 class NotificationDisplayService;
@@ -20,6 +19,12 @@ class AnnouncementNotificationDelegate
  public:
   explicit AnnouncementNotificationDelegate(
       NotificationDisplayService* display_service);
+
+  AnnouncementNotificationDelegate(const AnnouncementNotificationDelegate&) =
+      delete;
+  AnnouncementNotificationDelegate& operator=(
+      const AnnouncementNotificationDelegate&) = delete;
+
   ~AnnouncementNotificationDelegate() override;
 
  private:
@@ -29,8 +34,6 @@ class AnnouncementNotificationDelegate
 
   // Used to show the notification.
   NotificationDisplayService* display_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnnouncementNotificationDelegate);
 };
 
 #endif  // CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_DELEGATE_H_

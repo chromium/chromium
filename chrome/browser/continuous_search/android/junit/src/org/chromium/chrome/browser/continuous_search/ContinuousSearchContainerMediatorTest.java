@@ -135,6 +135,7 @@ public class ContinuousSearchContainerMediatorTest {
                 mLayoutStateProvider, canAnimateNativeSupplier, defaultContainerHeightSupplier,
                 initializeLayout, hideToolbarShadow);
         Runnable requestLayout = () -> mMediator.setJavaHeight(JAVA_HEIGHT);
+        mMediator.onTopControlsHeightChanged(0, 0); // Ensure this won't crash.
         mModel = new PropertyModel(ContinuousSearchContainerProperties.ALL_KEYS);
         mMediator.onLayoutInitialized(mModel, requestLayout);
         Mockito.when(mLayoutStateProvider.isLayoutVisible(Mockito.eq(LayoutType.BROWSING)))
@@ -499,7 +500,7 @@ public class ContinuousSearchContainerMediatorTest {
         };
         mMediator.addHeightObserver(heightObserver);
         mCurrentExpectedHeight = JAVA_HEIGHT;
-        mMediator.show();
+        mMediator.show(null);
         mMediator.removeHeightObserver(heightObserver);
         Assert.assertTrue("Mediator should be visible.", mMediator.isVisibleForTesting());
         Assert.assertEquals(

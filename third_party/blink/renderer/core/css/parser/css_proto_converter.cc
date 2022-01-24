@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_proto_converter.h"
 
 // TODO(metzman): Figure out how to remove this include and use DCHECK.
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/parser/css.pb.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -62,6 +63,7 @@ const std::string Converter::kPseudoLookupTable[] = {
     "-webkit-scrollbar-track-piece",
     "active",
     "after",
+    "autofill",
     "backdrop",
     "before",
     "checked",
@@ -968,6 +970,8 @@ const std::string Converter::kValueLookupTable[] = {
     "jis-b4",
     "standard",
     "high",
+    "spelling-error",
+    "grammar-error",
     "INVALID_VALUE",
 };
 

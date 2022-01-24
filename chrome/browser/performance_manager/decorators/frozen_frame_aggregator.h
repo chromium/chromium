@@ -32,6 +32,10 @@ class FrozenFrameAggregator : public FrameNode::ObserverDefaultImpl,
   // TODO(chrisha): Check that the graph is empty when this observer is added!
   // https://www.crbug.com/952891
   FrozenFrameAggregator();
+
+  FrozenFrameAggregator(const FrozenFrameAggregator&) = delete;
+  FrozenFrameAggregator& operator=(const FrozenFrameAggregator&) = delete;
+
   ~FrozenFrameAggregator() override;
 
   // FrameNodeObserver implementation:
@@ -70,9 +74,6 @@ class FrozenFrameAggregator : public FrameNode::ObserverDefaultImpl,
   void UpdateFrameCounts(FrameNodeImpl* frame_node,
                          int32_t current_frame_delta,
                          int32_t frozen_frame_delta);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrozenFrameAggregator);
 };
 
 // This struct is stored internally on page and process nodes using

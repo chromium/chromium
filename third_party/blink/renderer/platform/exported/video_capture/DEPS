@@ -3,7 +3,14 @@ include_rules = [
 ]
 
 specific_include_rules = {
+    "web_video_capture_impl_manager.cc": [
+        "+base/task/bind_post_task.h",
+        "+base/threading/sequenced_task_runner_handle.h",
+        "+base/token.h",
+        "+media/capture/mojom/video_capture_types.mojom-blink.h",
+    ],
     "web_video_capture_impl_manager_test.cc": [
+        "+base/token.h",
         "+media/capture/mojom/video_capture.mojom-blink.h",
     ],
 }

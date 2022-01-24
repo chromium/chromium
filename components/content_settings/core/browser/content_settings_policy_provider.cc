@@ -475,7 +475,8 @@ void PolicyProvider::OnPreferenceChanged(const std::string& name) {
     ReadManagedDefaultSettings();
   }
 
-  NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
+  NotifyObservers(ContentSettingsPattern::Wildcard(),
+                  ContentSettingsPattern::Wildcard(),
                   ContentSettingsType::DEFAULT);
 }
 

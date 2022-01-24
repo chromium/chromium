@@ -14,7 +14,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/offline_pages/measurements/proto/system_state.pb.h"
@@ -67,6 +66,10 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
   OfflinePageBridge(JNIEnv* env,
                     SimpleFactoryKey* key,
                     OfflinePageModel* offline_page_model);
+
+  OfflinePageBridge(const OfflinePageBridge&) = delete;
+  OfflinePageBridge& operator=(const OfflinePageBridge&) = delete;
+
   ~OfflinePageBridge() override;
 
   // OfflinePageModel::Observer implementation.
@@ -268,8 +271,6 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
   OfflinePageModel* offline_page_model_;
 
   base::WeakPtrFactory<OfflinePageBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageBridge);
 };
 
 }  // namespace android

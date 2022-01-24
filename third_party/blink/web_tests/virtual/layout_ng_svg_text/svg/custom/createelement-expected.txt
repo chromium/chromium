@@ -1,1 +1,0 @@
-CONSOLE ERROR: line 13: Uncaught TypeError: Cannot read properties of null (reading 'setAttribute')

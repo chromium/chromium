@@ -30,6 +30,10 @@ class FeedbackData {
   };
 
   FeedbackData();
+
+  FeedbackData(const FeedbackData&) = delete;
+  FeedbackData& operator=(const FeedbackData&) = delete;
+
   ~FeedbackData();
 
   void SetData(Key key, const std::string& data);
@@ -42,8 +46,6 @@ class FeedbackData {
 
  private:
   std::map<Key, std::string> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackData);
 };
 
 }  // namespace remoting

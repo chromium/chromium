@@ -13,9 +13,9 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
-#include "ui/gfx/transform.h"
 
 namespace cc {
 

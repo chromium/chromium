@@ -218,6 +218,6 @@ jlong JNI_TaskTabHelper_GetRootTaskId(
 }
 #endif  // defined(OS_ANDROID)
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TaskTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TaskTabHelper);
 
 }  // namespace tasks

@@ -7,7 +7,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/archive_manager.h"
 #include "components/offline_pages/core/offline_page_types.h"
@@ -48,6 +47,10 @@ class ClearStorageTask : public Task {
                    ArchiveManager* archive_manager,
                    const base::Time& clearup_time,
                    ClearStorageCallback callback);
+
+  ClearStorageTask(const ClearStorageTask&) = delete;
+  ClearStorageTask& operator=(const ClearStorageTask&) = delete;
+
   ~ClearStorageTask() override;
 
  private:
@@ -67,7 +70,6 @@ class ClearStorageTask : public Task {
   base::Time clearup_time_;
 
   base::WeakPtrFactory<ClearStorageTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ClearStorageTask);
 };
 
 }  // namespace offline_pages

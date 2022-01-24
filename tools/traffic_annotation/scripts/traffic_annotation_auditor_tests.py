@@ -20,9 +20,9 @@ from annotation_tools import NetworkTrafficAnnotationTools
 # //tools/traffic_annotation/OWNERS.
 TEST_IS_ENABLED = True
 
-# If the auditor.py part of this test starts failing, please set
-# TEST_PYTHON_AUDITOR to "False" and file a bug (see comment above).
-TEST_PYTHON_AUDITOR = True
+# If this test starts failing due to a critical bug in auditor.py, please set
+# USE_PYTHON_AUDITOR to "False" and file a bug (see comment above).
+USE_PYTHON_AUDITOR = True
 
 MINIMUM_EXPECTED_NUMBER_OF_ANNOTATIONS = 260
 
@@ -74,20 +74,16 @@ class TrafficAnnotationTestsChecker():
       ],
     ]
 
-    # Test both t_a_auditor.exe and auditor.py.
-    for use_python_auditor in [False, True]:
-      if use_python_auditor and not TEST_PYTHON_AUDITOR:
-        continue
-      self.last_result = None
-      for config in configs:
-        result = self._RunTest(config, use_python_auditor)
-        if not result:
-          print("No output for config: %s" % config)
-          return False
-        if self.last_result and self.last_result != result:
-          print("Unexpected different results for config: %s" % config)
-          return False
-        self.last_result = result
+    self.last_result = None
+    for config in configs:
+      result = self._RunTest(config, USE_PYTHON_AUDITOR)
+      if not result:
+        print("No output for config: %s" % config)
+        return False
+      if self.last_result and self.last_result != result:
+        print("Unexpected different results for config: %s" % config)
+        return False
+      self.last_result = result
     return True
 
 
@@ -135,19 +131,12 @@ class TrafficAnnotationTestsChecker():
     except OSError:
       pass
 
-    if use_python_auditor:
-      # Test the TSV codepath for auditor.py, but don't use its output to
-      # update go/network_traffic_annotations_sheet.
-      final_annotations_filename = self.annotations_filename + ".bak"
-    else:
-      final_annotations_filename = self.annotations_filename
-
     stdout_text, stderr_text, return_code = self.tools.RunAuditor(
-        args + ["--annotations-file=%s" % final_annotations_filename],
+        args + ["--annotations-file=%s" % self.annotations_filename],
         use_python_auditor)
 
     annotations = None
-    if os.path.exists(final_annotations_filename):
+    if os.path.exists(self.annotations_filename):
       # When tests are run on all files (without filtering), there might be some
       # compile errors in irrelevant files on Windows that can be ignored.
       if (return_code and "--no-filtering" in args and
@@ -155,9 +144,9 @@ class TrafficAnnotationTestsChecker():
         print("Ignoring return code: %i" % return_code)
         return_code = 0
       if not return_code:
-        annotations = open(final_annotations_filename).read()
+        annotations = open(self.annotations_filename).read()
       if not self.persist_annotations:
-        os.remove(final_annotations_filename)
+        os.remove(self.annotations_filename)
 
     if annotations:
       print("Test PASSED.")

@@ -11,12 +11,11 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/native_library.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/common/pepper_plugin_info.h"
 #include "ppapi/c/pp_bool.h"
@@ -74,6 +73,9 @@ class CONTENT_EXPORT PluginModule : public base::RefCounted<PluginModule>,
                const std::string& version,
                const base::FilePath& path,
                const ppapi::PpapiPermissions& perms);
+
+  PluginModule(const PluginModule&) = delete;
+  PluginModule& operator=(const PluginModule&) = delete;
 
   // Sets the given class as being associated with this module. It will be
   // deleted when the module is destroyed. You can only set it once, subsequent
@@ -267,8 +269,6 @@ class CONTENT_EXPORT PluginModule : public base::RefCounted<PluginModule>,
   PluginInstanceSet instances_;
 
   PP_Bool (*reserve_instance_id_)(PP_Module, PP_Instance);
-
-  DISALLOW_COPY_AND_ASSIGN(PluginModule);
 };
 
 }  // namespace content

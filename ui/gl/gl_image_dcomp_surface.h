@@ -33,13 +33,6 @@ class GL_EXPORT GLImageDCOMPSurface : public GLImage {
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
                        const gfx::Rect& rect) override;
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int z_order,
-                            gfx::OverlayTransform transform,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   void SetColorSpace(const gfx::ColorSpace& color_space) override;
   void Flush() override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,

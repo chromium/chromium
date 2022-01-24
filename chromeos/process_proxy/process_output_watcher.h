@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace chromeos {
@@ -32,6 +31,10 @@ using ProcessOutputCallback = base::RepeatingCallback<
 class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessOutputWatcher {
  public:
   ProcessOutputWatcher(int out_fd, const ProcessOutputCallback& callback);
+
+  ProcessOutputWatcher(const ProcessOutputWatcher&) = delete;
+  ProcessOutputWatcher& operator=(const ProcessOutputWatcher&) = delete;
+
   ~ProcessOutputWatcher();
 
   void Start();
@@ -70,8 +73,6 @@ class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessOutputWatcher {
   ProcessOutputCallback on_read_callback_;
 
   base::WeakPtrFactory<ProcessOutputWatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessOutputWatcher);
 };
 
 }  // namespace chromeos

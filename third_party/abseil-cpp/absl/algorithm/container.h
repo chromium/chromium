@@ -1262,7 +1262,7 @@ OutputIterator c_set_union(const C1& c1, const C2& c2, OutputIterator output,
 // c_set_intersection()
 //
 // Container-based version of the <algorithm> `std::set_intersection()` function
-// to return an iterator containing the intersection of two containers.
+// to return an iterator containing the intersection of two sorted containers.
 template <typename C1, typename C2, typename OutputIterator,
           typename = typename std::enable_if<
               !container_algorithm_internal::IsUnorderedContainer<C1>::value,
@@ -1272,6 +1272,11 @@ template <typename C1, typename C2, typename OutputIterator,
               void>::type>
 OutputIterator c_set_intersection(const C1& c1, const C2& c2,
                                   OutputIterator output) {
+  // In debug builds, ensure that both containers are sorted with respect to the
+  // default comparator. std::set_intersection requires the containers be sorted
+  // using operator<.
+  assert(absl::c_is_sorted(c1));
+  assert(absl::c_is_sorted(c2));
   return std::set_intersection(container_algorithm_internal::c_begin(c1),
                                container_algorithm_internal::c_end(c1),
                                container_algorithm_internal::c_begin(c2),
@@ -1289,6 +1294,11 @@ template <typename C1, typename C2, typename OutputIterator, typename LessThan,
               void>::type>
 OutputIterator c_set_intersection(const C1& c1, const C2& c2,
                                   OutputIterator output, LessThan&& comp) {
+  // In debug builds, ensure that both containers are sorted with respect to the
+  // default comparator. std::set_intersection requires the containers be sorted
+  // using the same comparator.
+  assert(absl::c_is_sorted(c1, comp));
+  assert(absl::c_is_sorted(c2, comp));
   return std::set_intersection(container_algorithm_internal::c_begin(c1),
                                container_algorithm_internal::c_end(c1),
                                container_algorithm_internal::c_begin(c2),

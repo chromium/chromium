@@ -17,6 +17,7 @@
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
@@ -105,9 +106,6 @@ struct BLINK_EXPORT WebNavigationInfo {
   // Whether this is a navigation in the opener frame initiated
   // by the window.open'd frame.
   bool is_opener_navigation = false;
-
-  // Whether the runtime feature |BlockingDownloadsInSandbox| is enabled.
-  bool blocking_downloads_in_sandbox_enabled = false;
 
   // Event information. See TriggeringEventInfo.
   blink::mojom::TriggeringEventInfo triggering_event_info =
@@ -311,8 +309,17 @@ struct BLINK_EXPORT WebNavigationParams {
   // The origin in which a navigation should commit. When provided, Blink
   // should use this origin directly and not compute locally the new document
   // origin.
-  // TODO(arthursonzogni): Always provide origin_to_commit.
+  //
+  // TODO(https://crbug.com/888079): Always provide origin_to_commit.
   WebSecurityOrigin origin_to_commit;
+
+  // The storage key of the document that will be created by the navigation.
+  // This is compatible with the `origin_to_commit`. Until the browser will be
+  // able to compute the `origin_to_commit` in all cases
+  // (https://crbug.com/888079), this is actually just a provisional
+  // `storage_key`. The final storage key is computed by the document loader
+  // taking into account the origin computed by the renderer.
+  StorageKey storage_key;
 
   // The sandbox flags to apply to the new document. This is the union of:
   // - the frame's current sandbox attribute, taken when the navigation started.
@@ -354,6 +361,10 @@ struct BLINK_EXPORT WebNavigationParams {
       service_worker_network_provider;
   // The AppCache host id for this navigation.
   base::UnguessableToken appcache_host_id;
+
+  // This is `true` only for commit requests coming from
+  // `RenderFrameImpl::SynchronouslyConmmitAboutBlankForBug778318`.
+  bool is_synchronous_commit_for_bug_778318 = false;
 
   // Used for SignedExchangeSubresourcePrefetch.
   // This struct keeps the information about a prefetched signed exchange.
@@ -430,6 +441,11 @@ struct BLINK_EXPORT WebNavigationParams {
 
   // List of URLs which are preloaded by HTTP Early Hints.
   WebVector<WebURL> early_hints_preloaded_resources;
+
+  // If this is a navigation to fenced frame from an interest group auction,
+  // contains URNs mapped to the ad components returned by the winning bid.
+  // Null, otherwise.
+  absl::optional<WebVector<WebURL>> ad_auction_components;
 };
 
 }  // namespace blink

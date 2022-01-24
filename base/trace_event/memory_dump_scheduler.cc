@@ -80,7 +80,7 @@ void MemoryDumpScheduler::StartInternal(MemoryDumpScheduler::Config config) {
   SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       BindOnce(&MemoryDumpScheduler::Tick, Unretained(this), ++generation_),
-      TimeDelta::FromMilliseconds(200));
+      Milliseconds(200));
 }
 
 void MemoryDumpScheduler::StopInternal() {
@@ -106,7 +106,7 @@ void MemoryDumpScheduler::Tick(uint32_t expected_generation) {
       FROM_HERE,
       BindOnce(&MemoryDumpScheduler::Tick, Unretained(this),
                expected_generation),
-      TimeDelta::FromMilliseconds(period_ms_));
+      Milliseconds(period_ms_));
 }
 
 MemoryDumpScheduler::Config::Config() = default;

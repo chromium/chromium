@@ -31,11 +31,6 @@
         margin-inline-start: var(--cr-button-edge-spacing);
       }
 
-      .error {
-        color: red;
-        font-weight: 500;
-      }
-
       .separator {
         border-inline-start: var(--cr-separator-line);
         flex-shrink: 0;
@@ -45,19 +40,13 @@
       }
 
       .pin-required-subtext {
-        color: var(--google-grey-700);
+        color: var(--cros-text-color-secondary);
       }
     </style>
 
     <!-- SIM locked -->
     <template is="dom-if" if="[[eq_(State.SIM_LOCKED, state_)]]" restamp>
       <div id="simLocked" class="property-box two-line">
-        <div class="start layout horizontal center"
-            hidden="[[isUpdatedCellularUiEnabled_]]">
-          <iron-icon icon="cr:sim-lock"></iron-icon>
-          <div class="error">[[i18n('networkSimCardLocked')]]</div>
-        </div>
-        <div class="separator" hidden="[[isUpdatedCellularUiEnabled_]]"></div>
         <cr-button id="unlockPinButton"
             on-click="onUnlockPinTap_"
             disabled="[[disabled]]">

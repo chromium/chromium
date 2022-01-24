@@ -690,6 +690,7 @@ interface CanvasRenderingContext2D
     getter globalCompositeOperation
     getter imageSmoothingEnabled
     getter imageSmoothingQuality
+    getter letterSpacing
     getter lineCap
     getter lineDashOffset
     getter lineJoin
@@ -702,9 +703,8 @@ interface CanvasRenderingContext2D
     getter strokeStyle
     getter textAlign
     getter textBaseline
-    getter textLetterSpacing
     getter textRendering
-    getter textWordSpacing
+    getter wordSpacing
     method arc
     method arcTo
     method beginPath
@@ -759,6 +759,7 @@ interface CanvasRenderingContext2D
     setter globalCompositeOperation
     setter imageSmoothingEnabled
     setter imageSmoothingQuality
+    setter letterSpacing
     setter lineCap
     setter lineDashOffset
     setter lineJoin
@@ -771,9 +772,8 @@ interface CanvasRenderingContext2D
     setter strokeStyle
     setter textAlign
     setter textBaseline
-    setter textLetterSpacing
     setter textRendering
-    setter textWordSpacing
+    setter wordSpacing
 interface ChannelMergerNode : AudioNode
     attribute @@toStringTag
     method constructor
@@ -1388,6 +1388,7 @@ interface Document : Node
     method querySelector
     method querySelectorAll
     method releaseEvents
+    method reportError
     method webkitCancelFullScreen
     method webkitExitFullscreen
     method write
@@ -4249,6 +4250,7 @@ interface OffscreenCanvasRenderingContext2D
     getter globalCompositeOperation
     getter imageSmoothingEnabled
     getter imageSmoothingQuality
+    getter letterSpacing
     getter lineCap
     getter lineDashOffset
     getter lineJoin
@@ -4260,9 +4262,8 @@ interface OffscreenCanvasRenderingContext2D
     getter shadowOffsetY
     getter strokeStyle
     getter textAlign
-    getter textLetterSpacing
     getter textRendering
-    getter textWordSpacing
+    getter wordSpacing
     getter textBaseline
     method arc
     method arcTo
@@ -4316,6 +4317,7 @@ interface OffscreenCanvasRenderingContext2D
     setter globalCompositeOperation
     setter imageSmoothingEnabled
     setter imageSmoothingQuality
+    setter letterSpacing
     setter lineCap
     setter lineDashOffset
     setter lineJoin
@@ -4328,9 +4330,8 @@ interface OffscreenCanvasRenderingContext2D
     setter strokeStyle
     setter textAlign
     setter textBaseline
-    setter textLetterSpacing
     setter textRendering
-    setter textWordSpacing
+    setter wordSpacing
 interface Option
     attribute @@toStringTag
     getter defaultSelected

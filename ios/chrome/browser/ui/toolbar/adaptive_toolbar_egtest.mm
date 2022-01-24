@@ -28,14 +28,6 @@
 #error "This file requires ARC support."
 #endif
 
-// TODO(crbug.com/1015113) The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(AdaptiveToolbarAppInterface);
-#pragma clang diagnostic pop
-
 namespace {
 
 using chrome_test_util::BackButton;
@@ -69,11 +61,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       "<html><body><p>" + std::string(kPageLoadedString) + "</p><a href=\"" +
       kPageURL3 + "\" id=\"" + kLinkID + "\">link!</a></body></html>");
   return std::move(http_response);
-}
-
-// Returns a matcher for the bookmark button.
-id<GREYMatcher> BookmarkButton() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(IDS_TOOLTIP_STAR);
 }
 
 // Returns a matcher for the visible share button.
@@ -212,7 +199,6 @@ void CheckButtonsVisibilityIPhonePortrait(BOOL omniboxFocused) {
 
     CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityNone);
-    CheckVisibilityInToolbar(BookmarkButton(), ButtonVisibilityNone);
 
     // Those buttons are hidden by the keyboard.
     CheckVisibilityInToolbar(BackButton(), ButtonVisibilityNone);
@@ -225,7 +211,6 @@ void CheckButtonsVisibilityIPhonePortrait(BOOL omniboxFocused) {
 
     CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityNone);
-    CheckVisibilityInToolbar(BookmarkButton(), ButtonVisibilityNone);
 
     CheckVisibilityInToolbar(BackButton(), ButtonVisibilitySecondary);
     CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilitySecondary);
@@ -243,7 +228,6 @@ void CheckButtonsVisibilityIPhoneLandscape(BOOL omniboxFocused) {
 
     CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityNone);
-    CheckVisibilityInToolbar(BookmarkButton(), ButtonVisibilityNone);
 
     CheckVisibilityInToolbar(BackButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityNone);
@@ -255,7 +239,6 @@ void CheckButtonsVisibilityIPhoneLandscape(BOOL omniboxFocused) {
 
     CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityPrimary);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityPrimary);
-    CheckVisibilityInToolbar(BookmarkButton(), ButtonVisibilityNone);
 
     CheckVisibilityInToolbar(BackButton(), ButtonVisibilityPrimary);
     CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityPrimary);
@@ -276,7 +259,6 @@ void CheckButtonsVisibilityIPad() {
 
   CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityPrimary);
   CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityPrimary);
-  CheckVisibilityInToolbar(BookmarkButton(), ButtonVisibilityNone);
   CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilityPrimary);
 
   CheckVisibilityInToolbar(BackButton(), ButtonVisibilityPrimary);
@@ -563,8 +545,7 @@ UIViewController* TopPresentedViewController() {
 
 // Test that the bottom toolbar is still visible after closing the last
 // incognito tab using long press. See https://crbug.com/849937.
-// TODO(crbug.com/1229034): Fix flakiness
-- (void)DISABLED_testBottomToolbarHeightAfterClosingTab {
+- (void)testBottomToolbarHeightAfterClosingTab {
   if (![ChromeEarlGrey isSplitToolbarMode])
     EARL_GREY_TEST_SKIPPED(@"This test needs a bottom toolbar.");
   // Close all tabs.
@@ -581,7 +562,7 @@ UIViewController* TopPresentedViewController() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridNewIncognitoTabButton()]
       performAction:grey_tap()];
-  GREYWaitForAppToIdleWithTimeout(2.0, @"App failed to idle");
+  GREYWaitForAppToIdleWithTimeout(5.0, @"App failed to idle");
 
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];

@@ -103,7 +103,13 @@ class ExternalVkImageFactoryTest : public testing::Test {
     DawnProcTable procs = dawn_native::GetProcs();
     dawnProcSetProcs(&procs);
 
-    dawn_device_ = wgpu::Device::Acquire(adapter_it->CreateDevice());
+    dawn_native::DeviceDescriptor device_descriptor;
+    // We need to request internal usage to be able to do operations with
+    // internal methods that would need specific usages.
+    device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+
+    dawn_device_ =
+        wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
     DCHECK(dawn_device_) << "Failed to create Dawn device";
 #endif  // BUILDFLAG(USE_DAWN)
   }
@@ -171,8 +177,8 @@ TEST_F(ExternalVkImageFactoryTest, DawnWrite_SkiaVulkanRead) {
     ASSERT_TRUE(dawn_scoped_access);
 
     wgpu::Texture texture(dawn_scoped_access->texture());
-    wgpu::RenderPassColorAttachmentDescriptor color_desc;
-    color_desc.attachment = texture.CreateView();
+    wgpu::RenderPassColorAttachment color_desc;
+    color_desc.view = texture.CreateView();
     color_desc.resolveTarget = nullptr;
     color_desc.loadOp = wgpu::LoadOp::Clear;
     color_desc.storeOp = wgpu::StoreOp::Store;
@@ -347,11 +353,11 @@ TEST_F(ExternalVkImageFactoryTest, SkiaVulkanWrite_DawnRead) {
     // Encode the buffer copy
     wgpu::CommandEncoder encoder = dawn_device_.CreateCommandEncoder();
     {
-      wgpu::TextureCopyView src_copy_view = {};
+      wgpu::ImageCopyTexture src_copy_view = {};
       src_copy_view.origin = {0, 0, 0};
       src_copy_view.texture = src_texture;
 
-      wgpu::BufferCopyView dst_copy_view = {};
+      wgpu::ImageCopyBuffer dst_copy_view = {};
       dst_copy_view.buffer = dst_buffer;
       dst_copy_view.layout.bytesPerRow = 256;
       dst_copy_view.layout.offset = 0;
@@ -377,7 +383,7 @@ TEST_F(ExternalVkImageFactoryTest, SkiaVulkanWrite_DawnRead) {
         &done);
 
     while (!done) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromMicroseconds(100));
+      base::PlatformThread::Sleep(base::Microseconds(100));
       dawn_device_.Tick();
     }
 

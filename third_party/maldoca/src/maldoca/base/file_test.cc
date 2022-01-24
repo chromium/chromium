@@ -48,6 +48,9 @@ TEST(Match, FindFiles) {
   auto file_2 = JoinPath(tmp_dir, "findfiles_1/abcd_123/xyz/file-2.txt");
   MALDOCA_ASSERT_OK(SetContents(file_1, "dummy"));
   MALDOCA_ASSERT_OK(SetContents(file_2, "dummy"));
+  std::string contents;
+  MALDOCA_ASSERT_OK(GetContents(file_1, &contents));
+  ASSERT_EQ("dummy", contents);
 
   std::vector<std::string> files;
   MALDOCA_ASSERT_OK(

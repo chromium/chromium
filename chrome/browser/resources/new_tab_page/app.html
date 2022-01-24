@@ -242,9 +242,11 @@
         --ntp-theme-text-color: [[rgbaOrInherit_(theme_.textColor)]];
         --ntp-logo-color: [[rgbaOrInherit_(logoColor_)]];">
   <template is="dom-if" if="[[lazyRender_]]">
-    <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
-        hidden$="[[!oneGoogleBarLoaded_]]">
-    </ntp-iframe>
+    <template is="dom-if" if="[[oneGoogleBarEnabled_]]">
+      <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
+          hidden$="[[!oneGoogleBarLoaded_]]">
+      </ntp-iframe>
+    </template>
   </template>
   <!-- TODO(crbug.com/1168361): Instead of hidden$="[[!logoEnabled_]]" it would
        be nicer to use a dom-if. However, that breaks

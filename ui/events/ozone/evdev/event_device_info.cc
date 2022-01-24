@@ -9,11 +9,13 @@
 #include <cstring>
 
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
 #include "ui/events/devices/device_util_linux.h"
+#include "ui/events/ozone/features.h"
 
 #if !defined(EVIOCGMTSLOTS)
 #define EVIOCGMTSLOTS(len) _IOC(_IOC_READ, 'E', 0x0a, len)
@@ -38,12 +40,29 @@ constexpr struct {
     {0x045e, 0x082a},  // Microsoft Pro IntelliMouse
     {0x045e, 0x082f},  // Microsoft Bluetooth Mouse
     {0x045e, 0x0b05},  // Xbox One Elite Series 2 gamepad
-    {0x046d, 0x4069},  // Logitech MX Master 2S (Unifying)
+    {0x046d, 0x4026},  // Logitech T400
+    {0x046d, 0x405e},  // Logitech M720 Triathlon (Unifying)
+    {0x046d, 0x4069},  // Logitech MX Master 2S (Unifying) // nocheck
+    {0x046d, 0x406b},  // Logitech M585 (Unifying)
+    {0x046d, 0x4072},  // Logitech MX Anywhere 2 (Unifying)
+    {0x046d, 0x4080},  // Logitech Pebble M350
     {0x046d, 0xb00d},  // Logitech T630 Ultrathin
     {0x046d, 0xb011},  // Logitech M558
+    {0x046d, 0xb012},  // Logitech MX Master (Bluetooth) // nocheck
+    {0x046d, 0xb013},  // Logitech MX Anywhere 2 (Bluetooth)
+    {0x046d, 0xb015},  // Logitech M720 Triathlon (Bluetooth)
     {0x046d, 0xb016},  // Logitech M535
-    {0x046d, 0xb019},  // Logitech MX Master 2S (Bluetooth)
+    {0x046d, 0xb017},  // Logitech MX Master / Anywhere 2 (Bluetooth) // nocheck
+    {0x046d, 0xb019},  // Logitech MX Master 2S (Bluetooth) // nocheck
+    {0x046d, 0xb01a},  // Logitech MX Anywhere 2S (Bluetooth)
+    {0x046d, 0xb01b},  // Logitech M585/M590 (Bluetooth)
+    {0x046d, 0xb01c},  // Logitech G603 Lightspeed Gaming Mouse (Bluetooth)
+    {0x046d, 0xb01e},  // Logitech MX Master (Bluetooth) // nocheck
+    {0x046d, 0xb01f},  // Logitech MX Anywhere 2 (Bluetooth)
+    {0x046d, 0xb023},  // Logitech MX Master 3 (Bluetooth) // nocheck
+    {0x046d, 0xb024},  // Logitech G604 Lightspeed Gaming Mouse (Bluetooth)
     {0x046d, 0xb503},  // Logitech Spotlight Presentation Remote (Bluetooth)
+    {0x046d, 0xb505},  // Logitech R500 (Bluetooth)
     {0x046d, 0xc093},  // Logitech M500s
     {0x046d, 0xc53e},  // Logitech Spotlight Presentation Remote (USB dongle)
     {0x056e, 0x0134},  // Elecom Enelo IR LED Mouse 350
@@ -52,9 +71,11 @@ constexpr struct {
     {0x05e0, 0x1200},  // Zebra LS2208 barcode scanner
     {0x0c45, 0x7403},  // RDing FootSwitch1F1
     {0x1038, 0x1369},  // SteelSeries Sensei RAW Frost Blue
+    {0x1038, 0x1824},  // SteelSeries Rival 3 Wired
     {0x1038, 0x1830},  // SteelSeries Rival 3 Wireless (USB dongle)
     {0x1050, 0x0010},  // Yubico.com Yubikey
     {0x1050, 0x0407},  // Yubico.com Yubikey 4 OTP+U2F+CCID
+    {0x17ef, 0x6123},  // Lenovo USB-C Wired Compact Mouse
     {0x1b1c, 0x1b94},  // Corsair Katar Pro Wireless (USB dongle)
     {0x1bae, 0x1b1c},  // Corsair Katar Pro Wireless (Bluetooth)
     {0x1bcf, 0x08a0},  // Kensington Pro Fit Full-size
@@ -70,6 +91,29 @@ constexpr struct {
 } kStylusButtonDevices[] = {
     {0x413c, 0x81d5},  // Dell Active Pen PN579X
 };
+
+#if defined(USE_LIBINPUT)
+// Certain devices need to be forced to use libinput in place of
+// evdev/libgestures
+constexpr struct {
+  uint16_t vendor;
+  uint16_t product_id;
+} kForceLibinputlist[] = {
+    {0x0002, 0x000e},  // HP Stream 14 touchpad
+    {0x044e, 0x120a},  // Dell Latitude 3480 touchpad
+};
+
+bool IsForceLibinput(const EventDeviceInfo& devinfo) {
+  for (auto entry : kForceLibinputlist) {
+    if (devinfo.vendor_id() == entry.vendor &&
+        devinfo.product_id() == entry.product_id) {
+      return true;
+    }
+  }
+
+  return false;
+}
+#endif
 
 // Note: this is not SteelSeries's actual VID; the Stratus Duo just reports it
 // incorrectly over Bluetooth.
@@ -500,6 +544,10 @@ bool EventDeviceInfo::HasStylus() const {
          HasKeyEvent(BTN_STYLUS2);
 }
 
+bool EventDeviceInfo::IsSemiMultitouch() const {
+  return HasProp(INPUT_PROP_SEMI_MT);
+}
+
 bool EventDeviceInfo::IsStylusButtonDevice() const {
   for (const auto& device_id : kStylusButtonDevices) {
     if (input_id_.vendor == device_id.vendor &&
@@ -512,6 +560,24 @@ bool EventDeviceInfo::IsStylusButtonDevice() const {
 
 bool EventDeviceInfo::IsMicrophoneMuteSwitchDevice() const {
   return HasSwEvent(SW_MUTE_DEVICE) && device_type_ == INPUT_DEVICE_INTERNAL;
+}
+
+bool EventDeviceInfo::UseLibinput() const {
+  bool useLibinput = false;
+#if defined(USE_LIBINPUT)
+  if (HasTouchpad()) {
+    auto overridden_state =
+        base::FeatureList::GetStateIfOverridden(ui::kLibinputHandleTouchpad);
+    if (overridden_state.has_value()) {
+      useLibinput = overridden_state.value();
+    } else {
+      useLibinput = !HasMultitouch() || !HasValidMTAbsXY() ||
+                    IsSemiMultitouch() || IsForceLibinput(*this);
+    }
+  }
+#endif
+
+  return useLibinput;
 }
 
 bool IsInKeyboardBlockList(input_id input_id_) {
@@ -573,6 +639,37 @@ bool EventDeviceInfo::HasStylusSwitch() const {
                                          device_type_ == INPUT_DEVICE_INTERNAL);
 }
 
+bool EventDeviceInfo::HasNumberpad() const {
+  // Does not check for HasKeyboard(): the dynamic numberpad
+  // and external standalone numeric-pads will not be considered
+  // keyboards, if their descriptor happens to be correct.
+  if (!HasEventType(EV_KEY))
+    return false;
+
+  // The block-lists for keyboards are useful; currently, if something is
+  // falsely claiming to be a keyboard, it probably has false numberpad keys as
+  // well. If a numberpad needs to be added to the keyboard block-list, then
+  // consider whether we need an overriding allow-list here, or whether
+  // it is time to grow the list into a more detailed structure that can
+  // provides more specific information on what a device's capabilities are.
+  if (IsInKeyboardBlockList(input_id_))
+    return false;
+  if (IsStylusButtonDevice())
+    return false;
+  // Internal USB devices that are keyboards tend to be hammer-likes
+  // that we should not treat as numberpads.
+  if (IsInternalUSB(input_id_))
+    return false;
+
+  // Consider a device to have a numberpad if it has all ten numeric keys.
+  for (int key : {KEY_KP0, KEY_KP1, KEY_KP2, KEY_KP3, KEY_KP4, KEY_KP5, KEY_KP6,
+                  KEY_KP7, KEY_KP8, KEY_KP9}) {
+    if (!HasKeyEvent(key))
+      return false;
+  }
+  return true;
+}
+
 bool EventDeviceInfo::HasGamepad() const {
   if (!HasEventType(EV_KEY))
     return false;
@@ -590,6 +687,13 @@ bool EventDeviceInfo::HasGamepad() const {
   return support_gamepad_btn && !HasTablet() && !HasKeyboard();
 }
 
+bool EventDeviceInfo::HasValidMTAbsXY() const {
+  const auto x = GetAbsInfoByCode(ABS_MT_POSITION_X);
+  const auto y = GetAbsInfoByCode(ABS_MT_POSITION_Y);
+
+  return x.resolution > 0 && y.resolution > 0;
+}
+
 bool EventDeviceInfo::SupportsRumble() const {
   return HasEventType(EV_FF) && HasFfEvent(FF_RUMBLE);
 }
@@ -602,12 +706,14 @@ ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
   } kUSBInternalDevices[] = {
       {0x18d1, 0x502b},  // Google, Hammer PID (soraka)
       {0x18d1, 0x5030},  // Google, Whiskers PID (nocturne)
-      {0x18d1, 0x503c},  // Google, Masterball PID (krane)
+      {0x18d1, 0x503c},  // Google, Masterball PID (krane) // nocheck
       {0x18d1, 0x503d},  // Google, Magnemite PID (kodama)
       {0x18d1, 0x5044},  // Google, Moonball PID (kakadu)
       {0x18d1, 0x504c},  // Google, Zed PID (coachz)
       {0x18d1, 0x5050},  // Google, Don PID (katsu)
       {0x18d1, 0x5052},  // Google, Star PID (homestar)
+      {0x18d1, 0x5056},  // Google, bland PID (mrbland)
+      {0x18d1, 0x5057},  // Google, eel PID (wormdingler)
       {0x1fd2, 0x8103},  // LG, Internal TouchScreen PID
   };
 
@@ -630,6 +736,12 @@ ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
     default:
       return ui::InputDeviceType::INPUT_DEVICE_UNKNOWN;
   }
+}
+
+// static
+bool EventDeviceInfo::IsInternalUSB(input_id id) {
+  return (id.bustype == BUS_USB && GetInputDeviceTypeFromId(id) ==
+                                       InputDeviceType::INPUT_DEVICE_INTERNAL);
 }
 
 EventDeviceInfo::LegacyAbsoluteDeviceType

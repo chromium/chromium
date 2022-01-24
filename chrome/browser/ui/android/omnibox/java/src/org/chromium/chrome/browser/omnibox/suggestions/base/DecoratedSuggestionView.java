@@ -10,14 +10,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
 /**
  * Container view for omnibox suggestions supplying icon decoration.
  */
 class DecoratedSuggestionView<T extends View> extends SimpleHorizontalLayoutView {
-    private final RoundedCornerImageView mSuggestionIcon;
+    private final ImageView mSuggestionIcon;
     private T mContentView;
+    private final int mContentVerticalPaddingPx;
+    private final int mContentMinimumHeightPx;
 
     /**
      * Constructs a new suggestion view.
@@ -27,10 +29,17 @@ class DecoratedSuggestionView<T extends View> extends SimpleHorizontalLayoutView
     DecoratedSuggestionView(Context context) {
         super(context);
 
+        mContentVerticalPaddingPx = getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_semicompact_padding);
+        mContentMinimumHeightPx =
+                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_semicompact_height);
+
         setClickable(true);
         setFocusable(true);
 
-        mSuggestionIcon = new RoundedCornerImageView(getContext());
+        mSuggestionIcon = new ImageView(getContext());
+        mSuggestionIcon.setOutlineProvider(new RoundedCornerOutlineProvider(
+                getResources().getDimensionPixelSize(R.dimen.default_rounded_corner_radius)));
         mSuggestionIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
         mSuggestionIcon.setLayoutParams(new LayoutParams(
@@ -43,6 +52,8 @@ class DecoratedSuggestionView<T extends View> extends SimpleHorizontalLayoutView
     void setContentView(T view) {
         if (mContentView != null) removeView(view);
         mContentView = view;
+        mContentView.setPaddingRelative(0, mContentVerticalPaddingPx, 0, mContentVerticalPaddingPx);
+        mContentView.setMinimumHeight(mContentMinimumHeightPx);
         mContentView.setLayoutParams(LayoutParams.forDynamicView());
         addView(mContentView);
     }
@@ -53,7 +64,7 @@ class DecoratedSuggestionView<T extends View> extends SimpleHorizontalLayoutView
     }
 
     /** @return Widget holding suggestion decoration icon.  */
-    RoundedCornerImageView getImageView() {
+    ImageView getImageView() {
         return mSuggestionIcon;
     }
 

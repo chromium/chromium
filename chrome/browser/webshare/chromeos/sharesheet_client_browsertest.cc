@@ -70,6 +70,7 @@ class SharesheetClientBrowserTest : public InProcessBrowserTest {
                 content::WebContents* in_contents,
                 const std::vector<base::FilePath>& file_paths,
                 const std::vector<std::string>& content_types,
+                const std::vector<uint64_t>& file_sizes,
                 const std::string& text, const std::string& title,
                 SharesheetClient::DeliveredCallback delivered_callback) {
               EXPECT_EQ(text, expected_text);
@@ -92,7 +93,7 @@ class SharesheetClientBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
   const std::string script = "share_multiple_files()";
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   std::vector<base::FilePath> file_paths;
@@ -102,7 +103,8 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
           content::WebContents* in_contents,
           const std::vector<base::FilePath>& in_file_paths,
           const std::vector<std::string>& content_types,
-          const std::string& text, const std::string& title,
+          const std::vector<uint64_t>& file_sizes, const std::string& text,
+          const std::string& title,
           SharesheetClient::DeliveredCallback delivered_callback) {
         EXPECT_EQ(contents, in_contents);
 
@@ -132,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
   const int kRepeats = 3;
   const std::string script = "share_single_file()";
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -145,6 +147,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
                 content::WebContents* in_contents,
                 const std::vector<base::FilePath>& in_file_paths,
                 const std::vector<std::string>& content_types,
+                const std::vector<uint64_t>& file_sizes,
                 const std::string& text, const std::string& title,
                 SharesheetClient::DeliveredCallback delivered_callback) {
               EXPECT_EQ(contents, in_contents);
@@ -170,11 +173,12 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, CancelledShare) {
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   SharesheetClient::SetSharesheetCallbackForTesting(base::BindLambdaForTesting(
       [](content::WebContents* in_contents,
          const std::vector<base::FilePath>& file_paths,
-         const std::vector<std::string>& content_types, const std::string& text,
+         const std::vector<std::string>& content_types,
+         const std::vector<uint64_t>& file_sizes, const std::string& text,
          const std::string& title,
          SharesheetClient::DeliveredCallback delivered_callback) {
         std::move(delivered_callback)
@@ -187,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, CancelledShare) {
 
 IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, Text) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   ConfirmShareText("share_title()",
                    /*expected_text=*/"",
                    /*expected_title=*/"Subject", /*expected_content_types=*/{});
@@ -207,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, Text) {
 
 IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, TextWithFile) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   const std::vector<std::string> expected_content_types{"image/webp"};
   ConfirmShareText("share_file_title()",
                    /*expected_text=*/"",

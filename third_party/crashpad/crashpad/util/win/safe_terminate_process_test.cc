@@ -22,7 +22,6 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
@@ -45,6 +44,9 @@ class ScopedExecutablePatch {
     ScopedVirtualProtectRWX protect_rwx(target_, size_);
     memcpy(target_, source, size_);
   }
+
+  ScopedExecutablePatch(const ScopedExecutablePatch&) = delete;
+  ScopedExecutablePatch& operator=(const ScopedExecutablePatch&) = delete;
 
   ~ScopedExecutablePatch() {
     ScopedVirtualProtectRWX protect_rwx(target_, size_);
@@ -71,6 +73,9 @@ class ScopedExecutablePatch {
           << "VirtualProtect";
     }
 
+    ScopedVirtualProtectRWX(const ScopedVirtualProtectRWX&) = delete;
+    ScopedVirtualProtectRWX& operator=(const ScopedVirtualProtectRWX&) = delete;
+
     ~ScopedVirtualProtectRWX() {
       DWORD last_protect_;
       PCHECK(VirtualProtect(address_, size_, old_protect_, &last_protect_))
@@ -81,15 +86,11 @@ class ScopedExecutablePatch {
     void* address_;
     size_t size_;
     DWORD old_protect_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedVirtualProtectRWX);
   };
 
   std::unique_ptr<uint8_t[]> original_;
   void* target_;
   size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedExecutablePatch);
 };
 
 // SafeTerminateProcess is calling convention specific only for x86.

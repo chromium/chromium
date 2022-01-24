@@ -23,6 +23,9 @@ class VideoEncoderHelper {
  public:
   VideoEncoderHelper();
 
+  VideoEncoderHelper(const VideoEncoderHelper&) = delete;
+  VideoEncoderHelper& operator=(const VideoEncoderHelper&) = delete;
+
   // Returns a new VideoPacket with common fields (e.g. capture_time_ms, rects
   // list, frame shape if any) initialized based on the supplied |frame|.
   // Screen width and height will be set iff |frame|'s size differs from that
@@ -41,8 +44,6 @@ class VideoEncoderHelper {
  private:
   // The most recent screen size. Used to detect screen size changes.
   webrtc::DesktopSize screen_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoEncoderHelper);
 };
 
 }  // namespace remoting

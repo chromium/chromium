@@ -64,7 +64,7 @@ MediaPipelineBackend::BufferStatus MediaSinkDesktop::PushBuffer(
   //    Those tests are wrong should be fixed.
   // TODO(alokp): Fix these issues when the next version of CMA backend is
   // scheduled to roll out. crbug.com/678394
-  auto timestamp = base::TimeDelta::FromMicroseconds(buffer->timestamp());
+  auto timestamp = base::Microseconds(buffer->timestamp());
   if (timestamp != ::media::kNoTimestamp) {
     last_frame_pts_ = timestamp;
     time_interpolator_.SetUpperBound(last_frame_pts_);

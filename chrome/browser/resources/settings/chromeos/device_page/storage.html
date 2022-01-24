@@ -1,255 +1,218 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared">
+  progress {
+    -webkit-appearance: none;
+    display: block;
+    height: 28px;
+    width: 100%;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="device_page_browser_proxy.html">
-<link rel="import" href="storage_external.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../route_origin_behavior.html">
-<link rel="import" href="../../prefs/prefs.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../settings_shared_css.html">
+  progress::-webkit-progress-bar {
+    background-color: var(--cros-tab-slider-track-color);
+    border-radius: 2px;
+  }
 
-<dom-module id="settings-storage">
-  <template>
-    <style include="settings-shared">
-      progress {
-        -webkit-appearance: none;
-        display: block;
-        height: 28px;
-        width: 100%;
-      }
+  progress::-webkit-progress-value {
+    background-color: var(--cros-icon-color-prominent);
+    border-radius: 2px;
+  }
 
-      progress::-webkit-progress-bar {
-        background-color: rgba(0, 0, 0, 0.06);
-        border-radius: 2px;
-      }
+  progress.space-low::-webkit-progress-value {
+    background-color: var(--cros-icon-color-warning);
+  }
 
-      progress::-webkit-progress-value {
-        background-color: rgb(0, 175, 255);
-        border-radius: 2px;
-      }
+  progress.space-critically-low::-webkit-progress-value {
+    background-color: var(--cros-icon-color-alert);
+  }
 
-      progress.space-low::-webkit-progress-value {
-        background-color: rgb(255, 176, 0);
-      }
+  iron-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-warning);
+    --iron-icon-height: 32px;
+    --iron-icon-width: 32px;
+  }
 
-      progress.space-critically-low::-webkit-progress-value {
-        background-color: var(--google-red-500);
-      }
+  #criticallyLowMessage iron-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+  }
 
-      iron-icon {
-        --iron-icon-fill-color: rgb(255, 176, 0);
-        --iron-icon-height: 32px;
-        --iron-icon-width: 32px;
-      }
+  .storage-size {
+    color: var(--cr-secondary-text-color);
+  }
 
-      #criticallyLowMessage iron-icon {
-        --iron-icon-fill-color: var(--google-red-500);
-      }
+  .message-area {
+    background-color: var(--cros-textfield-background-color);
+    border-radius: 2px;
+    display: flex;
+    margin: 14px 0 16px;
+    padding-bottom: 12px;
+    padding-inline-end: 48px;
+    padding-inline-start: 16px;
+    padding-top: 16px;
+    width: 100%;
+  }
 
-      .storage-size {
-        color: var(--cr-secondary-text-color);
-      }
+  .message-area > iron-icon {
+    flex: none;
+    padding-inline-end: 16px;
+  }
 
-      .message-area {
-        background-color: var(--google-grey-100);
-        border-radius: 2px;
-        display: flex;
-        margin: 14px 0 16px;
-        padding-bottom: 12px;
-        padding-inline-end: 48px;
-        padding-inline-start: 16px;
-        padding-top: 16px;
-        width: 100%;
-      }
+  .message-title {
+    color: var(--cros-text-color-primary);
+    font-size: 115%;
+  }
 
-      .message-area > iron-icon {
-        flex: none;
-        padding-inline-end: 16px;
-      }
+  .message-description {
+    color: var(--cros-text-color-secondary);
+    font-size: 92%;
+    line-height: 1.6em;
+    margin: 1em 0;
+  }
 
-      .message-title {
-        font-size: 115%;
-      }
+  #barArea {
+    display: flex;
+    flex-direction: column;
+    margin: 24px 0 54px;
+    width: 100%;
+  }
 
-      .message-description {
-        color: rgb(90, 90, 90);
-        font-size: 92%;
-        line-height: 1.6em;
-        margin: 1em 0;
-      }
+  #barLabels {
+    display: flex;
+  }
 
-      #barArea {
-        display: flex;
-        flex-direction: column;
-        margin: 24px 0 54px;
-        width: 100%;
-      }
+  .bar-label {
+    display: flex;
+    flex-direction: column;
+  }
 
-      #barLabels {
-        display: flex;
-      }
+  .bar-label .vertical-line {
+    align-self: center;
+    background-color: var(--cros-separator-color);
+    height: 8px;
+    margin-bottom: 4px;
+    width: 1px;
+  }
 
-      .bar-label {
-        display: flex;
-        flex-direction: column;
-      }
+  .bar-label .wrapper {
+    color: var(--cros-text-color-primary);
+    text-align: center;
+    white-space: nowrap;
+  }
 
-      .bar-label .vertical-line {
-        align-self: center;
-        background-color: rgba(0, 0, 0, 0.17);
-        height: 8px;
-        margin-bottom: 4px;
-        width: 1px;
-      }
+  /* If the "Available" part in the ber is too small, the label "Available"
+   * and a label for its size can overstep the right edge of bar area.
+   * To prevent it, we invert the direction to put the text labels here.
+   * We restore the direction for inner span elements not to change how to
+   * render the text contents. */
+  .end-aligned .wrapper {
+    direction: rtl;
+  }
 
-      .bar-label .wrapper {
-        color: rgb(51, 51, 51);
-        text-align: center;
-        white-space: nowrap;
-      }
+  :host-context([dir=rtl]) .end-aligned .wrapper {
+    direction: ltr;
+  }
 
-      /* If the "Available" part in the ber is too small, the label "Available"
-       * and a label for its size can overstep the right edge of bar area.
-       * To prevent it, we invert the direction to put the text labels here.
-       * We restore the direction for inner span elements not to change how to
-       * render the text contents. */
-      .end-aligned .wrapper {
-        direction: rtl;
-      }
-
-      :host-context([dir=rtl]) .end-aligned .wrapper {
-        direction: ltr;
-      }
-
-      .end-aligned .wrapper span {
-        direction: initial;
-        unicode-bidi: embed;
-      }
-
-      #deleteButton {
-        display: none;
-      }
-
-      [actionable] #deleteButton {
-        display: block;
-      }
-
-      button > iron-icon {
-        --iron-icon-fill-color: var(--google-grey-400);
-        --iron-icon-height: 24px;
-        --iron-icon-width: 24px;
-      }
-    </style>
-    <template is="dom-if" if="[[isSpaceLow_(sizeStat_.spaceState)]]">
-      <div class="settings-box first">
-        <div id="lowMessage" class="message-area">
-          <iron-icon icon="cr:warning"></iron-icon>
-          <div class="message">
-            <div class="message-title">$i18n{storageSpaceLowMessageTitle}</div>
-            <div class="message-description">
-              <span>$i18n{storageSpaceLowMessageLine1}</span>
-              <span>$i18n{storageSpaceLowMessageLine2}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </template>
-    <template is="dom-if" if="[[isSpaceCriticallyLow_(sizeStat_.spaceState)]]">
-      <div class="settings-box first">
-        <div id="criticallyLowMessage" class="message-area">
-          <iron-icon icon="cr:warning"></iron-icon>
-          <div class="message">
-            <div class="message-title">
-              $i18n{storageSpaceCriticallyLowMessageTitle}
-            </div>
-            <div class="message-description">
-              <span>$i18n{storageSpaceCriticallyLowMessageLine1}</span>
-              <span>$i18n{storageSpaceCriticallyLowMessageLine2}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </template>
-    <div class="settings-box first">
-      <div id="barArea">
-        <progress id="bar" class$="[[getBarClass_(sizeStat_.spaceState)]]"
-            value="[[sizeStat_.usedRatio]]"
-            aria-label="$i18n{storageOverviewAriaLabel}"
-            aria-describedby="barLabels">
-        </progress>
-        <div id="barLabels" aria-hidden="true">
-          <div id="inUseLabelArea" class="bar-label">
-            <div class="vertical-line"></div>
-            <div class="wrapper"><span>$i18n{storageItemInUse}</span></div>
-            <div class="wrapper">
-              <span class="storage-size">[[sizeStat_.usedSize]]</span>
-            </div>
-          </div>
-          <div id="availableLabelArea" class="bar-label end-aligned">
-            <div class="vertical-line"></div>
-            <div class="wrapper"><span>$i18n{storageItemAvailable}</span></div>
-            <div class="wrapper">
-              <span class="storage-size">[[sizeStat_.availableSize]]</span>
-            </div>
-          </div>
+  .end-aligned .wrapper span {
+    direction: initial;
+    unicode-bidi: embed;
+  }
+</style>
+<template is="dom-if" if="[[isSpaceLow_(sizeStat_.spaceState)]]">
+  <div class="settings-box first">
+    <div id="lowMessage" class="message-area">
+      <iron-icon icon="cr:warning"></iron-icon>
+      <div class="message">
+        <div class="message-title">$i18n{storageSpaceLowMessageTitle}</div>
+        <div class="message-description">
+          <span>$i18n{storageSpaceLowMessageLine1}</span>
+          <span>$i18n{storageSpaceLowMessageLine2}</span>
         </div>
       </div>
     </div>
-    <cr-link-row id="myFilesSize" class="hr" on-click="onMyFilesTap_"
-        label="$i18n{storageItemMyFiles}"
-        sub-label="$i18n{storageSizeComputing}" external>
-    </cr-link-row>
-    <cr-link-row id="browsingDataSize" class="hr" on-click="onBrowsingDataTap_"
-        label="$i18n{storageItemBrowsingData}"
-        sub-label="$i18n{storageSizeComputing}" external>
-    </cr-link-row>
-    <cr-link-row id="appsSize" class="hr" on-click="onAppsTap_"
-        label="$i18n{storageItemApps}"
-        sub-label="$i18n{storageSizeComputing}" external>
-    </cr-link-row>
-    <template is="dom-if" if="[[showCrostiniStorage_]]">
-      <cr-link-row id="crostiniSize" class="hr" on-click="onCrostiniTap_"
-          label="$i18n{storageItemCrostini}"
-          sub-label="$i18n{storageSizeComputing}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
-    <template is="dom-if" if="[[showOtherUsers_]]">
-      <cr-link-row id="otherUsersSize" class="hr" on-click="onOtherUsersTap_"
-          label="$i18n{storageItemOtherUsers}"
-          sub-label="$i18n{storageSizeComputing}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
-    <template is="dom-if" if="[[!isGuest_]]">
-      <div id="systemSize"
-          class="settings-box two-line single-column stretch settings-box-text"
-          aria-describedby="systemSizeLabel"
-          aria-labelledby="systemSizeSubLabel">
-        <div id="systemSizeLabel" class="label" aria-hidden="true">
-          $i18n{storageItemSystem}
+  </div>
+</template>
+<template is="dom-if" if="[[isSpaceCriticallyLow_(sizeStat_.spaceState)]]">
+  <div class="settings-box first">
+    <div id="criticallyLowMessage" class="message-area">
+      <iron-icon icon="cr:warning"></iron-icon>
+      <div class="message">
+        <div class="message-title">
+          $i18n{storageSpaceCriticallyLowMessageTitle}
         </div>
-        <div id="systemSizeSubLabel" class="secondary label" aria-hidden="true">
-          $i18n{storageSizeComputing}
+        <div class="message-description">
+          <span>$i18n{storageSpaceCriticallyLowMessageLine1}</span>
+          <span>$i18n{storageSpaceCriticallyLowMessageLine2}</span>
         </div>
       </div>
-    </template>
-    <template is="dom-if" if="[[androidEnabled]]">
-      <cr-link-row id="externalStoragePreferences" class="hr"
-          on-click="onExternalStoragePreferencesTap_"
-          label="$i18n{storageExternal}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
-  </template>
-  <script src="storage.js"></script>
-</dom-module>
+    </div>
+  </div>
+</template>
+<div class="settings-box first">
+  <div id="barArea">
+    <progress id="bar" class$="[[getBarClass_(sizeStat_.spaceState)]]"
+        value="[[sizeStat_.usedRatio]]"
+        aria-label="$i18n{storageOverviewAriaLabel}"
+        aria-describedby="barLabels">
+    </progress>
+    <div id="barLabels" aria-hidden="true">
+      <div id="inUseLabelArea" class="bar-label">
+        <div class="vertical-line"></div>
+        <div class="wrapper"><span>$i18n{storageItemInUse}</span></div>
+        <div class="wrapper">
+          <span class="storage-size">[[sizeStat_.usedSize]]</span>
+        </div>
+      </div>
+      <div id="availableLabelArea" class="bar-label end-aligned">
+        <div class="vertical-line"></div>
+        <div class="wrapper"><span>$i18n{storageItemAvailable}</span></div>
+        <div class="wrapper">
+          <span class="storage-size">[[sizeStat_.availableSize]]</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<cr-link-row id="myFilesSize" class="hr" on-click="onMyFilesTap_"
+    label="$i18n{storageItemMyFiles}"
+    sub-label="$i18n{storageSizeComputing}" external>
+</cr-link-row>
+<cr-link-row id="browsingDataSize" class="hr" on-click="onBrowsingDataTap_"
+    label="$i18n{storageItemBrowsingData}"
+    sub-label="$i18n{storageSizeComputing}" external>
+</cr-link-row>
+<cr-link-row id="appsSize" class="hr" on-click="onAppsTap_"
+    label="$i18n{storageItemApps}"
+    sub-label="$i18n{storageSizeComputing}" external>
+</cr-link-row>
+<template is="dom-if" if="[[showCrostiniStorage_]]">
+  <cr-link-row id="crostiniSize" class="hr" on-click="onCrostiniTap_"
+      label="$i18n{storageItemCrostini}"
+      sub-label="$i18n{storageSizeComputing}"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+</template>
+<template is="dom-if" if="[[showOtherUsers_]]">
+  <cr-link-row id="otherUsersSize" class="hr" on-click="onOtherUsersTap_"
+      label="$i18n{storageItemOtherUsers}"
+      sub-label="$i18n{storageSizeComputing}"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+</template>
+<template is="dom-if" if="[[!isGuest_]]">
+  <div id="systemSize"
+      class="settings-box two-line single-column stretch settings-box-text"
+      aria-describedby="systemSizeLabel"
+      aria-labelledby="systemSizeSubLabel">
+    <div id="systemSizeLabel" class="label" aria-hidden="true">
+      $i18n{storageItemSystem}
+    </div>
+    <div id="systemSizeSubLabel" class="secondary label" aria-hidden="true">
+      $i18n{storageSizeComputing}
+    </div>
+  </div>
+</template>
+<template is="dom-if" if="[[androidEnabled]]">
+  <cr-link-row id="externalStoragePreferences" class="hr"
+      on-click="onExternalStoragePreferencesTap_"
+      label="$i18n{storageExternal}"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+</template>

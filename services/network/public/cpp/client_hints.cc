@@ -7,42 +7,60 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
-const char* const kClientHintsNameMapping[] = {"device-memory",
-                                               "dpr",
-                                               "width",
-                                               "viewport-width",
-                                               "rtt",
-                                               "downlink",
-                                               "ect",
-                                               "lang",
-                                               "sec-ch-ua",
-                                               "sec-ch-ua-arch",
-                                               "sec-ch-ua-platform",
-                                               "sec-ch-ua-model",
-                                               "sec-ch-ua-mobile",
-                                               "sec-ch-ua-full-version",
-                                               "sec-ch-ua-platform-version",
-                                               "sec-ch-prefers-color-scheme",
-                                               "sec-ch-ua-bitness"};
+ClientHintToNameMap MakeClientHintToNameMap() {
+  return {
+      {network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+       "device-memory"},
+      {network::mojom::WebClientHintsType::kDpr_DEPRECATED, "dpr"},
+      {network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED, "width"},
+      {network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED,
+       "viewport-width"},
+      {network::mojom::WebClientHintsType::kRtt_DEPRECATED, "rtt"},
+      {network::mojom::WebClientHintsType::kDownlink_DEPRECATED, "downlink"},
+      {network::mojom::WebClientHintsType::kEct_DEPRECATED, "ect"},
+      {network::mojom::WebClientHintsType::kUA, "sec-ch-ua"},
+      {network::mojom::WebClientHintsType::kUAArch, "sec-ch-ua-arch"},
+      {network::mojom::WebClientHintsType::kUAPlatform, "sec-ch-ua-platform"},
+      {network::mojom::WebClientHintsType::kUAModel, "sec-ch-ua-model"},
+      {network::mojom::WebClientHintsType::kUAMobile, "sec-ch-ua-mobile"},
+      {network::mojom::WebClientHintsType::kUAFullVersion,
+       "sec-ch-ua-full-version"},
+      {network::mojom::WebClientHintsType::kUAPlatformVersion,
+       "sec-ch-ua-platform-version"},
+      {network::mojom::WebClientHintsType::kPrefersColorScheme,
+       "sec-ch-prefers-color-scheme"},
+      {network::mojom::WebClientHintsType::kUABitness, "sec-ch-ua-bitness"},
+      {network::mojom::WebClientHintsType::kUAReduced, "sec-ch-ua-reduced"},
+      {network::mojom::WebClientHintsType::kViewportHeight,
+       "sec-ch-viewport-height"},
+      {network::mojom::WebClientHintsType::kDeviceMemory,
+       "sec-ch-device-memory"},
+      {network::mojom::WebClientHintsType::kDpr, "sec-ch-dpr"},
+      {network::mojom::WebClientHintsType::kResourceWidth, "sec-ch-width"},
+      {network::mojom::WebClientHintsType::kViewportWidth,
+       "sec-ch-viewport-width"},
+      {network::mojom::WebClientHintsType::kUAFullVersionList,
+       "sec-ch-ua-full-version-list"},
+  };
+}
 
-const size_t kClientHintsMappingsCount = base::size(kClientHintsNameMapping);
-
-static_assert(
-    base::size(kClientHintsNameMapping) ==
-        (static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) + 1),
-    "Client Hint name table size must match network::mojom::WebClientHintsType "
-    "range");
+const ClientHintToNameMap& GetClientHintToNameMap() {
+  static const base::NoDestructor<ClientHintToNameMap> map(
+      MakeClientHintToNameMap());
+  return *map;
+}
 
 namespace {
 
@@ -58,12 +76,10 @@ using DecodeMap = base::flat_map<std::string,
 
 DecodeMap MakeDecodeMap() {
   DecodeMap result;
-  for (size_t i = 0;
-       i < static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) + 1;
-       ++i) {
-    result.insert(
-        std::make_pair(kClientHintsNameMapping[i],
-                       static_cast<network::mojom::WebClientHintsType>(i)));
+  for (const auto& elem : network::GetClientHintToNameMap()) {
+    const auto& type = elem.first;
+    const auto& header = elem.second;
+    result.insert(std::make_pair(header, type));
   }
   return result;
 }
@@ -113,7 +129,27 @@ base::TimeDelta ParseAcceptCHLifetime(const std::string& header) {
       persist_duration_seconds <= 0)
     return base::TimeDelta();
 
-  return base::TimeDelta::FromSeconds(persist_duration_seconds);
+  return base::Seconds(persist_duration_seconds);
+}
+
+absl::optional<network::mojom::WebClientHintsType> COMPONENT_EXPORT(NETWORK_CPP)
+    SuggestAlternateClientHintIfDeprecated(
+        const network::mojom::WebClientHintsType type) {
+  if (!base::FeatureList::IsEnabled(features::kClientHintDeprecationIssue)) {
+    return absl::nullopt;
+  }
+  switch (type) {
+    case network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED:
+      return network::mojom::WebClientHintsType::kDeviceMemory;
+    case network::mojom::WebClientHintsType::kDpr_DEPRECATED:
+      return network::mojom::WebClientHintsType::kDpr;
+    case network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED:
+      return network::mojom::WebClientHintsType::kResourceWidth;
+    case network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED:
+      return network::mojom::WebClientHintsType::kViewportWidth;
+    default:
+      return absl::nullopt;
+  }
 }
 
 }  // namespace network

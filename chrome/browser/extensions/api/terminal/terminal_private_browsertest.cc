@@ -17,6 +17,11 @@
 namespace extensions {
 
 class TerminalPrivateBrowserTest : public InProcessBrowserTest {
+ public:
+  TerminalPrivateBrowserTest(const TerminalPrivateBrowserTest&) = delete;
+  TerminalPrivateBrowserTest& operator=(const TerminalPrivateBrowserTest&) =
+      delete;
+
  protected:
   TerminalPrivateBrowserTest() = default;
 
@@ -28,14 +33,11 @@ class TerminalPrivateBrowserTest : public InProcessBrowserTest {
                /*world_id=*/1);
     EXPECT_EQ(eval_result.value.GetString(), expected);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TerminalPrivateBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenTerminalProcessChecks) {
-  ui_test_utils::NavigateToURL(
-      browser(), GURL("chrome-untrusted://terminal/html/terminal.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome-untrusted://terminal/html/terminal.html")));
 
   const std::string script = R"(new Promise((resolve) => {
     chrome.terminalPrivate.openVmshellProcess([], () => {

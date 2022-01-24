@@ -16,7 +16,8 @@ namespace blink {
 
 class FeatureContext;
 
-// UADefinedVariable contains all the user agent defined environment variables.
+// UADefinedVariable contains all user agent defined environment variables with
+// a single dimension.
 // When adding a new variable the string equivalent needs to be added to
 // |GetVariableName|.
 enum class UADefinedVariable {
@@ -41,17 +42,6 @@ enum class UADefinedVariable {
   kKeyboardInsetWidth,
   kKeyboardInsetHeight,
 
-  // The fold environment variables define a rectangle that is splitting the
-  // layout viewport.
-  // Explainers:
-  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/Foldables/explainer.md
-  kFoldTop,
-  kFoldRight,
-  kFoldBottom,
-  kFoldLeft,
-  kFoldWidth,
-  kFoldHeight,
-
   // The title bar area variables are four environment variables that define a
   // rectangle by its x and y position as well as its width and height. They are
   // intended for desktop PWAs that use the window controls overlay.
@@ -63,9 +53,23 @@ enum class UADefinedVariable {
   kTitlebarAreaHeight
 };
 
+enum class UADefinedTwoDimensionalVariable {
+  // The viewport segment variables describe logically distinct regions of the
+  // viewport, and are indexed in two dimensions (x and y).
+  kViewportSegmentTop,
+  kViewportSegmentRight,
+  kViewportSegmentBottom,
+  kViewportSegmentLeft,
+  kViewportSegmentWidth,
+  kViewportSegmentHeight,
+};
+
 // StyleEnvironmentVariables stores user agent and user defined CSS environment
 // variables. It has a static root instance that stores global values and
 // each document has a child that stores document level values.
+// Setting and removing values can only be done for the set of variables in
+// UADefinedVariable. Note that UADefinedVariables are not always set/defined,
+// as they depend on the environment.
 class CORE_EXPORT StyleEnvironmentVariables
     : public RefCounted<StyleEnvironmentVariables> {
  public:
@@ -77,6 +81,9 @@ class CORE_EXPORT StyleEnvironmentVariables
   static const AtomicString GetVariableName(
       UADefinedVariable variable,
       const FeatureContext* feature_context);
+  static const AtomicString GetVariableName(
+      UADefinedTwoDimensionalVariable variable,
+      const FeatureContext* feature_context);
 
   // Create a new instance bound to |parent|.
   static scoped_refptr<StyleEnvironmentVariables> Create(
@@ -84,20 +91,25 @@ class CORE_EXPORT StyleEnvironmentVariables
 
   virtual ~StyleEnvironmentVariables();
 
-  // Set the value of the variable |name| and invalidate any dependents.
-  void SetVariable(const AtomicString& name,
-                   scoped_refptr<CSSVariableData> value);
+  // Tokenize |value| and set it. This will invalidate any dependents.
+  void SetVariable(UADefinedVariable variable, const String& value);
 
-  // Tokenize |value| and set it.
-  void SetVariable(const AtomicString& name, const String& value);
-  void SetVariable(const UADefinedVariable name, const String& value);
+  // Tokenize |value| and set it. This will invalidate any dependents.
+  void SetVariable(UADefinedTwoDimensionalVariable variable,
+                   unsigned first_dimension,
+                   unsigned second_dimenison,
+                   const String& value);
 
   // Remove the variable |name| and invalidate any dependents.
-  void RemoveVariable(const AtomicString& name);
+  void RemoveVariable(UADefinedVariable variable);
+  // Remove all the indexed variables referenced by the enum, and invalidate any
+  // dependents.
+  void RemoveVariable(UADefinedTwoDimensionalVariable variable);
 
   // Resolve the variable |name| by traversing the tree of
   // |StyleEnvironmentVariables|.
-  virtual CSSVariableData* ResolveVariable(const AtomicString& name);
+  virtual CSSVariableData* ResolveVariable(const AtomicString& name,
+                                           WTF::Vector<unsigned> indices);
 
   // Detach |this| from |parent|.
   void DetachFromParent();
@@ -110,6 +122,16 @@ class CORE_EXPORT StyleEnvironmentVariables
 
  protected:
   friend class StyleEnvironmentVariablesTest;
+  friend class StyleCascadeTest;
+
+  // Tokenize |value| and set it, invalidating dependents along the way.
+  void SetVariable(const AtomicString& name, const String& value);
+  void SetVariable(const AtomicString& name,
+                   unsigned first_dimension,
+                   unsigned second_dimension,
+                   const String& value);
+
+  void RemoveVariable(const AtomicString& name);
 
   void ClearForTesting();
 
@@ -128,8 +150,12 @@ class CORE_EXPORT StyleEnvironmentVariables
  private:
   class RootOwner;
 
+  typedef WTF::Vector<WTF::Vector<scoped_refptr<CSSVariableData>>>
+      TwoDimensionVariableValues;
+
   Vector<scoped_refptr<StyleEnvironmentVariables>> children_;
   HashMap<AtomicString, scoped_refptr<CSSVariableData>> data_;
+  HashMap<AtomicString, TwoDimensionVariableValues> two_dimension_data_;
   scoped_refptr<StyleEnvironmentVariables> parent_;
 };
 

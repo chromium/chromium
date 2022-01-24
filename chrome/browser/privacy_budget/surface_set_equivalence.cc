@@ -65,14 +65,9 @@ RepresentativeSurface SurfaceSetEquivalence::GetRepresentative(
 
 RepresentativeSurfaceSet SurfaceSetEquivalence::GetRepresentatives(
     const IdentifiableSurfaceSet& source) const {
-  // This implementation assumes that IdentifiableSurfaceSet is a flat_set<>.
-  // The most efficient way to construct one is to construct a container and
-  // move it into the flat_set<>.
-  RepresentativeSurfaceSet::container_type container;
-  container.reserve(source.size());
-  for (const auto s : source)
-    container.push_back(GetRepresentative(s));
-  return RepresentativeSurfaceSet(std::move(container));
+  return base::MakeFlatSet<RepresentativeSurface>(
+      source, {},
+      [this](const auto& surface) { return GetRepresentative(surface); });
 }
 
 RepresentativeSurfaceList SurfaceSetEquivalence::GetRepresentatives(

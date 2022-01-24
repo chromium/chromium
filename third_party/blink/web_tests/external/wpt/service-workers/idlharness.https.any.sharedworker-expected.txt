@@ -38,7 +38,7 @@ FAIL ServiceWorker interface: existence and properties of interface prototype ob
 FAIL ServiceWorker interface: attribute scriptURL assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
 FAIL ServiceWorker interface: attribute state assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
 FAIL ServiceWorker interface: operation postMessage(any, sequence<object>) assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
-FAIL ServiceWorker interface: operation postMessage(any, optional PostMessageOptions) assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
+FAIL ServiceWorker interface: operation postMessage(any, optional StructuredSerializeOptions) assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
 FAIL ServiceWorker interface: attribute onstatechange assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
 PASS ServiceWorkerRegistration interface: existence and properties of interface object
 PASS ServiceWorkerRegistration interface object length

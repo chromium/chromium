@@ -60,6 +60,12 @@ std::string GetOsVersion() {
   return base::SysInfo::OperatingSystemVersion();
 }
 
+std::string GetSecurityPatchLevel() {
+  int32_t major, minor, bugfix;
+  base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+  return base::StringPrintf("%d.%d.%d", major, minor, bugfix);
+}
+
 std::string GetDeviceHostName() {
   return net::GetHostName();
 }
@@ -173,6 +179,7 @@ DeviceInfo DeviceInfoFetcherLinux::Fetch() {
   DeviceInfo device_info;
   device_info.os_name = "linux";
   device_info.os_version = GetOsVersion();
+  device_info.security_patch_level = GetSecurityPatchLevel();
   device_info.device_host_name = GetDeviceHostName();
   device_info.device_model = GetDeviceModel();
   device_info.serial_number = GetSerialNumber();

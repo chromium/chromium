@@ -11,7 +11,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/favicon_service.h"
@@ -22,6 +21,10 @@ class FaviconHelper {
  public:
   FaviconHelper();
   void Destroy(JNIEnv* env);
+
+  FaviconHelper(const FaviconHelper&) = delete;
+  FaviconHelper& operator=(const FaviconHelper&) = delete;
+
   jboolean GetComposedFaviconImage(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_profile,
@@ -80,8 +83,6 @@ class FaviconHelper {
   int last_used_job_id_;
 
   base::WeakPtrFactory<FaviconHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconHelper);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_FAVICON_HELPER_H_

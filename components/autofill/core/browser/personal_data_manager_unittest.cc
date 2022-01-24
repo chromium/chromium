@@ -34,13 +34,14 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -70,6 +71,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
 
@@ -113,6 +115,11 @@ class PersonalDataManagerMock : public PersonalDataManager {
   void OnValidatedPDM(const AutofillProfile* profile) {
     PersonalDataManager::OnValidated(profile);
   }
+
+  MOCK_METHOD(void,
+              FetchImagesForUrls,
+              ((const std::vector<GURL>& updated_urls)),
+              (const override));
 };
 
 template <typename T>
@@ -251,8 +258,8 @@ class PersonalDataManagerTestBase {
     AccountInfo account_info;
     account_info.email = use_sync_transport_mode ? kSyncTransportAccountEmail
                                                  : kPrimaryAccountEmail;
-    sync_service_.SetAuthenticatedAccountInfo(account_info);
-    sync_service_.SetIsAuthenticatedAccountPrimary(!use_sync_transport_mode);
+    sync_service_.SetAccountInfo(account_info);
+    sync_service_.SetHasSyncConsent(!use_sync_transport_mode);
     personal_data->OnSyncServiceInitialized(&sync_service_);
     personal_data->OnStateChanged(&sync_service_);
 
@@ -261,7 +268,7 @@ class PersonalDataManagerTestBase {
 
   bool TurnOnSyncFeature(PersonalDataManager* personal_data)
       WARN_UNUSED_RESULT {
-    sync_service_.SetIsAuthenticatedAccountPrimary(true);
+    sync_service_.SetHasSyncConsent(true);
     if (!sync_service_.IsSyncFeatureEnabled())
       return false;
     personal_data->OnStateChanged(&sync_service_);
@@ -318,8 +325,8 @@ class PersonalDataManagerTestBase {
     AccountInfo account_info;
     account_info.email = kSyncTransportAccountEmail;
     account_info.account_id = CoreAccountId("account_id");
-    sync_service_.SetAuthenticatedAccountInfo(account_info);
-    sync_service_.SetIsAuthenticatedAccountPrimary(false);
+    sync_service_.SetAccountInfo(account_info);
+    sync_service_.SetHasSyncConsent(false);
     return account_info;
   }
   base::test::TaskEnvironment task_environment_;
@@ -402,15 +409,13 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
                             "378282246310005" /* American Express */, "04",
                             "2999", "1");
     credit_card0.set_use_count(3);
-    credit_card0.set_use_date(AutofillClock::Now() -
-                              base::TimeDelta::FromDays(1));
+    credit_card0.set_use_date(AutofillClock::Now() - base::Days(1));
     personal_data_->AddCreditCard(credit_card0);
 
     CreditCard credit_card1("1141084B-72D7-4B73-90CF-3D6AC154673B",
                             test::kEmptyOrigin);
     credit_card1.set_use_count(300);
-    credit_card1.set_use_date(AutofillClock::Now() -
-                              base::TimeDelta::FromDays(10));
+    credit_card1.set_use_date(AutofillClock::Now() - base::Days(10));
     test::SetCreditCardInfo(&credit_card1, "John Dillinger",
                             "4234567890123456" /* Visa */, "01", "2999", "1");
     personal_data_->AddCreditCard(credit_card1);
@@ -418,8 +423,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     CreditCard credit_card2("002149C1-EE28-4213-A3B9-DA243FFF021B",
                             test::kEmptyOrigin);
     credit_card2.set_use_count(1);
-    credit_card2.set_use_date(AutofillClock::Now() -
-                              base::TimeDelta::FromDays(1));
+    credit_card2.set_use_date(AutofillClock::Now() - base::Days(1));
     test::SetCreditCardInfo(&credit_card2, "Bonnie Parker",
                             "5105105105105100" /* Mastercard */, "12", "2999",
                             "1");
@@ -485,8 +489,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     test::SetCreditCardInfo(&credit_card1, "Clyde Barrow",
                             "378282246310005" /* American Express */, "04",
                             "1999", "1");
-    credit_card1.set_use_date(AutofillClock::Now() -
-                              base::TimeDelta::FromDays(400));
+    credit_card1.set_use_date(AutofillClock::Now() - base::Days(400));
 
     personal_data_->AddCreditCard(credit_card1);
 
@@ -498,8 +501,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   // This profile is supposed to be deleted during a major version upgrade.
   void CreateDeletableDisusedProfile() {
     AutofillProfile profile0(test::GetFullProfile());
-    profile0.set_use_date(AutofillClock::Now() -
-                          base::TimeDelta::FromDays(400));
+    profile0.set_use_date(AutofillClock::Now() - base::Days(400));
     AddProfileToPersonalDataManager(profile0);
 
     EXPECT_EQ(1U, personal_data_->GetProfiles().size());
@@ -560,6 +562,11 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     // wallet addresses which in turn triggers a refresh.
     personal_data_->AutofillMultipleChangedBySync();
     WaitForOnPersonalDataChanged();
+  }
+
+  void AddOfferDataForTest(AutofillOfferData offer_data) {
+    personal_data_->AddOfferDataForTest(
+        std::make_unique<AutofillOfferData>(offer_data));
   }
 
   std::unique_ptr<PersonalDataManager> personal_data_;
@@ -709,6 +716,24 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
   int GetLastVersionValidatedUpdate() {
     return personal_data_->pref_service_->GetInteger(
         prefs::kAutofillLastVersionValidated);
+  }
+
+  void AddOfferDataForTest(AutofillOfferData offer_data) {
+    personal_data_->AddOfferDataForTest(
+        std::make_unique<AutofillOfferData>(offer_data));
+  }
+
+  // Verifies the credit card art image fetching should begin.
+  void WaitForFetchImagesForUrls(const std::vector<GURL>& updated_urls) {
+    base::RunLoop run_loop;
+    EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
+        .Times(testing::AnyNumber());
+    EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged())
+        .Times(testing::AnyNumber());
+    EXPECT_CALL(*personal_data_, FetchImagesForUrls(updated_urls))
+        .Times(1)
+        .WillOnce(QuitMessageLoop(&run_loop));
+    run_loop.Run();
   }
 
   std::unique_ptr<PersonalDataManagerMock> personal_data_;
@@ -996,7 +1021,7 @@ TEST_F(PersonalDataManagerTest, SaveImportedProfileSetModificationDate) {
   SaveImportedProfileToPersonalDataManager(profile);
   const std::vector<AutofillProfile*>& profiles = personal_data_->GetProfiles();
   ASSERT_EQ(1U, profiles.size());
-  EXPECT_GT(base::TimeDelta::FromMilliseconds(2000),
+  EXPECT_GT(base::Milliseconds(2000),
             AutofillClock::Now() - profiles[0]->modification_date());
 }
 
@@ -1275,6 +1300,51 @@ TEST_F(PersonalDataManagerTest, AddCreditCard_Invalid) {
   ASSERT_EQ(card, *personal_data_->GetCreditCards()[0]);
 }
 
+#if !defined(OS_IOS)
+TEST_F(PersonalDataManagerTest, AddAndGetCreditCardArtImage) {
+  gfx::Image expected_image = gfx::test::CreateImage(32, 20);
+  std::unique_ptr<CreditCardArtImage> credit_card_art_image =
+      std::make_unique<CreditCardArtImage>();
+  credit_card_art_image->card_art_url = GURL("https://www.example.com");
+  credit_card_art_image->card_art_image = expected_image;
+  std::vector<std::unique_ptr<CreditCardArtImage>> images;
+  images.emplace_back(std::move(credit_card_art_image));
+
+  personal_data_->OnCardArtImagesFetched(std::move(images));
+
+  gfx::Image* actual_image = personal_data_->GetCreditCardArtImageForUrl(
+      GURL("https://www.example.com"));
+  ASSERT_TRUE(actual_image);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *actual_image));
+}
+
+TEST_F(PersonalDataManagerMockTest, ProcessVirtualCardMetadataChanges) {
+  CreditCard card = test::GetFullServerCard();
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
+  card.set_server_id("card_server_id");
+  personal_data_->AddFullServerCreditCard(card);
+  WaitForOnPersonalDataChanged();
+
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  card.set_server_id("card_server_id");
+  card.set_card_art_url(GURL("https://www.example.com/card1"));
+  std::vector<GURL> updated_urls;
+  updated_urls.emplace_back(GURL("https://www.example.com/card1"));
+
+  personal_data_->AddFullServerCreditCard(card);
+  WaitForFetchImagesForUrls(updated_urls);
+
+  card.set_card_art_url(GURL("https://www.example.com/card2"));
+  updated_urls.clear();
+  updated_urls.emplace_back(GURL("https://www.example.com/card2"));
+
+  personal_data_->AddFullServerCreditCard(card);
+  WaitForFetchImagesForUrls(updated_urls);
+}
+#endif
+
 TEST_F(PersonalDataManagerTest, UpdateUnverifiedProfilesAndCreditCards) {
   // Start with unverified data.
   AutofillProfile profile(base::GenerateGUID(), "https://www.example.com/");
@@ -1410,7 +1480,7 @@ TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
   // Sign in.
   identity_test_env_.SetPrimaryAccount("test@gmail.com",
                                        signin::ConsentLevel::kSync);
-  sync_service_.SetIsAuthenticatedAccountPrimary(true);
+  sync_service_.SetHasSyncConsent(true);
   sync_service_.SetActiveDataTypes(
       syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_EQ(AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled,
@@ -1941,6 +2011,76 @@ TEST_F(PersonalDataManagerTest, IncognitoReadOnly) {
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 }
 
+// Tests that GetAutofillOffers returns all available offers.
+TEST_F(PersonalDataManagerTest, GetAutofillOffers) {
+  // Add two card-linked offers and one promo code offer.
+  AddOfferDataForTest(test::GetCardLinkedOfferData1());
+  AddOfferDataForTest(test::GetCardLinkedOfferData2());
+  AddOfferDataForTest(test::GetPromoCodeOfferData());
+
+  // Should return all three.
+  EXPECT_EQ(3U, personal_data_->GetAutofillOffers().size());
+}
+
+// Tests that GetAutofillOffers does not return any offers if
+// |IsAutofillWalletImportEnabled()| returns |false|.
+TEST_F(PersonalDataManagerMockTest, GetAutofillOffers_WalletImportDisabled) {
+  // Add a card-linked offer and a promo code offer.
+  AddOfferDataForTest(test::GetCardLinkedOfferData1());
+  AddOfferDataForTest(test::GetPromoCodeOfferData());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
+      .WillOnce(QuitMessageLoop(&run_loop));
+  prefs::SetPaymentsIntegrationEnabled(prefs_.get(), false);
+
+  // Should return neither of them as the wallet import pref is disabled.
+  EXPECT_EQ(0U, personal_data_->GetAutofillOffers().size());
+}
+
+// Tests that GetActiveAutofillPromoCodeOffersForOrigin returns only active and
+// site-relevant promo code offers.
+TEST_F(PersonalDataManagerTest, GetActiveAutofillPromoCodeOffersForOrigin) {
+  // Card-linked offers should not be returned.
+  AddOfferDataForTest(test::GetCardLinkedOfferData1());
+  // Expired promo code offers should not be returned.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.example.com"), /*is_expired=*/true));
+  // Active promo code offers should be returned.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.example.com"), /*is_expired=*/false));
+  // Active promo code offers for a different site should not be returned.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.some-other-merchant.com"),
+      /*is_expired=*/false));
+
+  // Only the active offer for example.com should be returned.
+  EXPECT_EQ(1U, personal_data_
+                    ->GetActiveAutofillPromoCodeOffersForOrigin(
+                        GURL("http://www.example.com"))
+                    .size());
+}
+
+// Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any
+// promo code offers if |IsAutofillWalletImportEnabled()| returns |false|.
+TEST_F(PersonalDataManagerMockTest,
+       GetActiveAutofillPromoCodeOffersForOrigin_WalletImportDisabled) {
+  // Add an active promo code offer.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.example.com")));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
+      .WillOnce(QuitMessageLoop(&run_loop));
+  prefs::SetPaymentsIntegrationEnabled(prefs_.get(), false);
+
+  // Should not return the offer as the wallet import pref is disabled.
+  EXPECT_EQ(0U, personal_data_
+                    ->GetActiveAutofillPromoCodeOffersForOrigin(
+                        GURL("http://www.example.com"))
+                    .size());
+}
+
 TEST_F(PersonalDataManagerTest, DefaultCountryCodeIsCached) {
   // The return value should always be some country code, no matter what.
   std::string default_country =
@@ -2238,7 +2378,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfilesLimit) {
     // Set frecency such that they appear before the "last" profile (added
     // next).
     profile.set_use_count(12);
-    profile.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(1));
+    profile.set_use_date(AutofillClock::Now() - base::Days(1));
 
     AddProfileToPersonalDataManager(profile);
     profiles.push_back(profile);
@@ -2251,7 +2391,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ProfilesLimit) {
                        "000 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   profile.set_use_count(1);
-  profile.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(7));
+  profile.set_use_date(AutofillClock::Now() - base::Days(7));
   AddProfileToPersonalDataManager(profile);
 
   ResetPersonalDataManager(USER_MODE_NORMAL);
@@ -2275,7 +2415,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Ranking) {
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  profile3.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(1));
+  profile3.set_use_date(AutofillClock::Now() - base::Days(1));
   profile3.set_use_count(5);
   AddProfileToPersonalDataManager(profile3);
 
@@ -2284,7 +2424,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Ranking) {
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  profile1.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(1));
+  profile1.set_use_date(AutofillClock::Now() - base::Days(1));
   profile1.set_use_count(10);
   AddProfileToPersonalDataManager(profile1);
 
@@ -2293,7 +2433,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Ranking) {
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  profile2.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(15));
+  profile2.set_use_date(AutofillClock::Now() - base::Days(15));
   profile2.set_use_count(300);
   AddProfileToPersonalDataManager(profile2);
 
@@ -2349,7 +2489,7 @@ TEST_F(PersonalDataManagerTest,
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  profile1.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(200));
+  profile1.set_use_date(AutofillClock::Now() - base::Days(200));
   AddProfileToPersonalDataManager(profile1);
 
   AutofillProfile profile2(base::GenerateGUID(), test::kEmptyOrigin);
@@ -2357,7 +2497,7 @@ TEST_F(PersonalDataManagerTest,
                        "johnwayne@me.xyz", "Fox",
                        "456 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  profile2.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(20));
+  profile2.set_use_date(AutofillClock::Now() - base::Days(20));
   AddProfileToPersonalDataManager(profile2);
 
   ResetPersonalDataManager(USER_MODE_NORMAL);
@@ -2403,8 +2543,7 @@ TEST_F(PersonalDataManagerTest,
 TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Validity) {
   // Set up 2 different profiles: one valid and one invalid.
   AutofillProfile valid_profile(test::GetFullValidProfileForCanada());
-  valid_profile.set_use_date(AutofillClock::Now() -
-                             base::TimeDelta::FromDays(1));
+  valid_profile.set_use_date(AutofillClock::Now() - base::Days(1));
   valid_profile.set_use_count(1);
   AddProfileToPersonalDataManager(valid_profile);
 
@@ -2413,8 +2552,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Validity) {
                        "invalid email", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "Invalid Phone");
-  invalid_profile.set_use_date(AutofillClock::Now() -
-                               base::TimeDelta::FromDays(1));
+  invalid_profile.set_use_date(AutofillClock::Now() - base::Days(1));
   invalid_profile.set_use_count(1);
   AddProfileToPersonalDataManager(invalid_profile);
 
@@ -2841,7 +2979,7 @@ TEST_F(PersonalDataManagerTest,
   // GetProfileSuggestions.
   profile1.set_use_date(AutofillClock::Now());
   profile1.set_use_count(10);
-  profile2.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(10));
+  profile2.set_use_date(AutofillClock::Now() - base::Days(10));
   profile2.set_use_count(1);
 
   EXPECT_TRUE(profile1.HasGreaterFrecencyThan(&profile2, AutofillClock::Now()));
@@ -2897,7 +3035,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowOne) {
   // GetProfileSuggestions.
   profile1.set_use_date(AutofillClock::Now());
   profile1.set_use_count(10);
-  profile2.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(10));
+  profile2.set_use_date(AutofillClock::Now() - base::Days(10));
   profile2.set_use_count(1);
 
   AddProfileToPersonalDataManager(profile1);
@@ -2953,7 +3091,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
   // GetProfileSuggestions.
   profile1.set_use_date(AutofillClock::Now());
   profile1.set_use_count(10);
-  profile2.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(10));
+  profile2.set_use_date(AutofillClock::Now() - base::Days(10));
   profile2.set_use_count(1);
 
   AddProfileToPersonalDataManager(profile1);
@@ -3212,16 +3350,14 @@ TEST_F(PersonalDataManagerTest,
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
                           "2999", "1");
   server_cards.back().set_use_count(2);
-  server_cards.back().set_use_date(AutofillClock::Now() -
-                                   base::TimeDelta::FromDays(1));
+  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
   server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b460");
   test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
                           "2999", "1");
   server_cards.back().set_use_count(6);
-  server_cards.back().set_use_date(AutofillClock::Now() -
-                                   base::TimeDelta::FromDays(1));
+  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
 
   SetServerCards(server_cards);
 
@@ -3259,16 +3395,14 @@ TEST_F(PersonalDataManagerTest,
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
                           "2999", "1");
   server_cards.back().set_use_count(2);
-  server_cards.back().set_use_date(AutofillClock::Now() -
-                                   base::TimeDelta::FromDays(1));
+  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
   server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b460");
   test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
                           "2999", "1");
   server_cards.back().set_use_count(6);
-  server_cards.back().set_use_date(AutofillClock::Now() -
-                                   base::TimeDelta::FromDays(1));
+  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
 
   SetServerCards(server_cards);
   personal_data_->Refresh();
@@ -3302,16 +3436,14 @@ TEST_F(PersonalDataManagerTest,
   test::SetCreditCardInfo(&server_cards.back(), "Emmet Dalton", "2110", "12",
                           "2999", "1");
   server_cards.back().set_use_count(2);
-  server_cards.back().set_use_date(AutofillClock::Now() -
-                                   base::TimeDelta::FromDays(1));
+  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
   server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "b460");
   test::SetCreditCardInfo(&server_cards.back(), "Jesse James", "2109", "12",
                           "2999", "1");
   server_cards.back().set_use_count(6);
-  server_cards.back().set_use_date(AutofillClock::Now() -
-                                   base::TimeDelta::FromDays(1));
+  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(1));
 
   SetServerCards(server_cards);
 
@@ -3369,8 +3501,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardsToSuggest_ServerDuplicates) {
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "3456" /* Visa */, "01", "2999", "1");
   server_cards.back().set_use_count(2);
-  server_cards.back().set_use_date(AutofillClock::Now() -
-                                   base::TimeDelta::FromDays(15));
+  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(15));
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
   // This unmasked server card is an exact dupe of a local card. Therefore only
@@ -3381,8 +3512,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardsToSuggest_ServerDuplicates) {
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
   server_cards.back().set_use_count(1);
-  server_cards.back().set_use_date(AutofillClock::Now() -
-                                   base::TimeDelta::FromDays(15));
+  server_cards.back().set_use_date(AutofillClock::Now() - base::Days(15));
 
   SetServerCards(server_cards);
 
@@ -3458,7 +3588,7 @@ TEST_F(PersonalDataManagerTest,
   test::SetCreditCardInfo(&local_card, "Homer Simpson",
                           "4234567890123456" /* Visa */, "01", "2999", "1");
   local_card.set_use_count(3);
-  local_card.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(1));
+  local_card.set_use_date(AutofillClock::Now() - base::Days(1));
   credit_cards.push_back(&local_card);
 
   // Create a full server card that is a duplicate of one of the local cards.
@@ -3466,8 +3596,7 @@ TEST_F(PersonalDataManagerTest,
   test::SetCreditCardInfo(&full_server_card, "Homer Simpson",
                           "4234567890123456" /* Visa */, "01", "2999", "1");
   full_server_card.set_use_count(1);
-  full_server_card.set_use_date(AutofillClock::Now() -
-                                base::TimeDelta::FromDays(15));
+  full_server_card.set_use_date(AutofillClock::Now() - base::Days(15));
   credit_cards.push_back(&full_server_card);
 
   PersonalDataManager::DedupeCreditCardToSuggest(&credit_cards);
@@ -3485,7 +3614,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_LocalShadowsMasked) {
   CreditCard local_card("1141084B-72D7-4B73-90CF-3D6AC154673B",
                         test::kEmptyOrigin);
   local_card.set_use_count(300);
-  local_card.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(10));
+  local_card.set_use_date(AutofillClock::Now() - base::Days(10));
   test::SetCreditCardInfo(&local_card, "Homer Simpson",
                           "4234567890123456" /* Visa */, "01", "2999", "1");
   credit_cards.push_back(&local_card);
@@ -3495,8 +3624,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_LocalShadowsMasked) {
   test::SetCreditCardInfo(&masked_card, "Homer Simpson", "3456" /* Visa */,
                           "01", "2999", "1");
   masked_card.set_use_count(2);
-  masked_card.set_use_date(AutofillClock::Now() -
-                           base::TimeDelta::FromDays(15));
+  masked_card.set_use_date(AutofillClock::Now() - base::Days(15));
   masked_card.SetNetworkForMaskedCard(kVisaCard);
   credit_cards.push_back(&masked_card);
 
@@ -3516,8 +3644,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_FullServerAndMasked) {
   test::SetCreditCardInfo(&full_server_card, "Homer Simpson",
                           "4234567890123456" /* Visa */, "01", "2999", "1");
   full_server_card.set_use_count(1);
-  full_server_card.set_use_date(AutofillClock::Now() -
-                                base::TimeDelta::FromDays(15));
+  full_server_card.set_use_date(AutofillClock::Now() - base::Days(15));
   credit_cards.push_back(&full_server_card);
 
   // Create a masked server card that is a duplicate of a local card.
@@ -3525,8 +3652,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_FullServerAndMasked) {
   test::SetCreditCardInfo(&masked_card, "Homer Simpson", "3456" /* Visa */,
                           "01", "2999", "1");
   masked_card.set_use_count(2);
-  masked_card.set_use_date(AutofillClock::Now() -
-                           base::TimeDelta::FromDays(15));
+  masked_card.set_use_date(AutofillClock::Now() - base::Days(15));
   masked_card.SetNetworkForMaskedCard(kVisaCard);
   credit_cards.push_back(&masked_card);
 
@@ -3542,7 +3668,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_DifferentCards) {
   CreditCard local_card("002149C1-EE28-4213-A3B9-DA243FFF021B",
                         test::kEmptyOrigin);
   local_card.set_use_count(1);
-  local_card.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(1));
+  local_card.set_use_date(AutofillClock::Now() - base::Days(1));
   test::SetCreditCardInfo(&local_card, "Homer Simpson",
                           "5105105105105100" /* Mastercard */, "", "", "");
   credit_cards.push_back(&local_card);
@@ -3552,8 +3678,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_DifferentCards) {
   test::SetCreditCardInfo(&masked_card, "Homer Simpson", "0005", "12", "2999",
                           "1");
   masked_card.set_use_count(3);
-  masked_card.set_use_date(AutofillClock::Now() -
-                           base::TimeDelta::FromDays(15));
+  masked_card.set_use_date(AutofillClock::Now() - base::Days(15));
   // credit_card4.SetNetworkForMaskedCard(kVisaCard);
   credit_cards.push_back(&masked_card);
 
@@ -3564,8 +3689,7 @@ TEST_F(PersonalDataManagerTest, DedupeCreditCardToSuggest_DifferentCards) {
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
   full_server_card.set_use_count(1);
-  full_server_card.set_use_date(AutofillClock::Now() -
-                                base::TimeDelta::FromDays(15));
+  full_server_card.set_use_date(AutofillClock::Now() - base::Days(15));
   credit_cards.push_back(&full_server_card);
 
   PersonalDataManager::DedupeCreditCardToSuggest(&credit_cards);
@@ -4436,7 +4560,7 @@ TEST_F(PersonalDataManagerTest,
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
   profile1.set_use_count(12);
-  profile1.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(1));
+  profile1.set_use_date(AutofillClock::Now() - base::Days(1));
 
   // Create a profile with a medium frecency score.
   AutofillProfile profile2(base::GenerateGUID(), test::kEmptyOrigin);
@@ -4444,7 +4568,7 @@ TEST_F(PersonalDataManagerTest,
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910");
   profile2.set_use_count(5);
-  profile2.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(3));
+  profile2.set_use_date(AutofillClock::Now() - base::Days(3));
 
   // Create a profile with a lower frecency score.
   AutofillProfile profile3(base::GenerateGUID(), test::kEmptyOrigin);
@@ -4452,7 +4576,7 @@ TEST_F(PersonalDataManagerTest,
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
   profile3.set_use_count(3);
-  profile3.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(5));
+  profile3.set_use_date(AutofillClock::Now() - base::Days(5));
 
   // Create a set of two profiles to be merged together.
   // Create a profile with a higher frecency score.
@@ -4461,7 +4585,7 @@ TEST_F(PersonalDataManagerTest,
                        "marge.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
   profile4.set_use_count(11);
-  profile4.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(1));
+  profile4.set_use_date(AutofillClock::Now() - base::Days(1));
 
   // Create a profile with a lower frecency score.
   AutofillProfile profile5(base::GenerateGUID(), test::kEmptyOrigin);
@@ -4469,7 +4593,7 @@ TEST_F(PersonalDataManagerTest,
                        "marge.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
   profile5.set_use_count(5);
-  profile5.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(3));
+  profile5.set_use_date(AutofillClock::Now() - base::Days(3));
 
   // Create a unique profile.
   AutofillProfile profile6(base::GenerateGUID(), test::kEmptyOrigin);
@@ -4477,7 +4601,7 @@ TEST_F(PersonalDataManagerTest,
                        "bart.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
   profile6.set_use_count(10);
-  profile6.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(1));
+  profile6.set_use_date(AutofillClock::Now() - base::Days(1));
 
   // Add three credit cards. Give them a frecency score so that they are
   // suggested in order (1, 2, 3). This will ensure a deterministic order for
@@ -4567,7 +4691,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
   profile1.set_use_count(10);
-  profile1.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(1));
+  profile1.set_use_date(AutofillClock::Now() - base::Days(1));
 
   // Create a profile with a medium frecency score.
   AutofillProfile profile2(base::GenerateGUID(), test::kEmptyOrigin);
@@ -4575,7 +4699,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910");
   profile2.set_use_count(5);
-  profile2.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(3));
+  profile2.set_use_date(AutofillClock::Now() - base::Days(3));
 
   // Create a profile with a lower frecency score.
   AutofillProfile profile3(base::GenerateGUID(), test::kEmptyOrigin);
@@ -4583,7 +4707,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
   profile3.set_use_count(3);
-  profile3.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(5));
+  profile3.set_use_date(AutofillClock::Now() - base::Days(5));
 
   AddProfileToPersonalDataManager(profile1);
   AddProfileToPersonalDataManager(profile2);
@@ -4636,8 +4760,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
   EXPECT_EQ(10U, profiles[0]->use_count());
   // The use date that results from the merge should be the one from the
   // profile1 since it was the most recently used profile.
-  EXPECT_LT(profile1.use_date() - base::TimeDelta::FromSeconds(10),
-            profiles[0]->use_date());
+  EXPECT_LT(profile1.use_date() - base::Seconds(10), profiles[0]->use_date());
 }
 
 // Tests that ApplyDedupingRoutine only keeps the verified profile with its
@@ -4877,7 +5000,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
                        "homer.simpson@abc.com", "", "742. Evergreen Terrace",
                        "", "Springfield", "IL", "91601", "US", "");
   Homer1.set_use_count(10);
-  Homer1.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(1));
+  Homer1.set_use_date(AutofillClock::Now() - base::Days(1));
 
   // Create a Homer home profile with a medium frecency score compared to other
   // Homer profiles.
@@ -4886,7 +5009,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
                        "homer.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910");
   Homer2.set_use_count(5);
-  Homer2.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(3));
+  Homer2.set_use_date(AutofillClock::Now() - base::Days(3));
 
   // Create a Homer home profile with a lower frecency score than other Homer
   // profiles.
@@ -4895,7 +5018,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
                        "homer.simpson@abc.com", "Fox", "742 Evergreen Terrace.",
                        "", "Springfield", "IL", "91601", "", "");
   Homer3.set_use_count(3);
-  Homer3.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(5));
+  Homer3.set_use_date(AutofillClock::Now() - base::Days(5));
 
   // Create a Homer work profile (different address).
   AutofillProfile Homer4(base::GenerateGUID(), test::kEmptyOrigin);
@@ -4903,7 +5026,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
                        "homer.simpson@abc.com", "Fox", "12 Nuclear Plant.", "",
                        "Springfield", "IL", "91601", "US", "9876543");
   Homer4.set_use_count(3);
-  Homer4.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(5));
+  Homer4.set_use_date(AutofillClock::Now() - base::Days(5));
 
   // Create a Marge profile with a lower frecency score that other Marge
   // profiles.
@@ -4912,7 +5035,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
                        "marge.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910");
   Marge1.set_use_count(4);
-  Marge1.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(3));
+  Marge1.set_use_date(AutofillClock::Now() - base::Days(3));
 
   // Create a verified Marge home profile with a lower frecency score that the
   // other Marge profile.
@@ -4921,7 +5044,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
                        "marge.simpson@abc.com", "", "742 Evergreen Terrace", "",
                        "Springfield", "IL", "91601", "", "12345678910");
   Marge2.set_use_count(2);
-  Marge2.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(3));
+  Marge2.set_use_date(AutofillClock::Now() - base::Days(3));
 
   // Create a Barney profile (guest user).
   AutofillProfile Barney(base::GenerateGUID(), test::kEmptyOrigin);
@@ -4929,7 +5052,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
                        "ABC", "123 Other Street", "", "Springfield", "IL",
                        "91601", "", "");
   Barney.set_use_count(1);
-  Barney.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(180));
+  Barney.set_use_date(AutofillClock::Now() - base::Days(180));
   Barney.FinalizeAfterImport();
 
   AddProfileToPersonalDataManager(Homer1);
@@ -4991,10 +5114,8 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
   EXPECT_EQ(10U, profiles[0]->use_count());
   // The use date that results from the merge should be the one from the
   // |Homer1| since it was the most recently used profile.
-  EXPECT_LT(Homer1.use_date() - base::TimeDelta::FromSeconds(5),
-            profiles[0]->use_date());
-  EXPECT_GT(Homer1.use_date() + base::TimeDelta::FromSeconds(5),
-            profiles[0]->use_date());
+  EXPECT_LT(Homer1.use_date() - base::Seconds(5), profiles[0]->use_date());
+  EXPECT_GT(Homer1.use_date() + base::Seconds(5), profiles[0]->use_date());
 
   // The other profiles should not have been modified.
   EXPECT_TRUE(Marge1 == *profiles[1]);
@@ -5091,7 +5212,7 @@ TEST_F(PersonalDataManagerTest,
   test::SetProfileInfo(&profile0, "Alice", "", "Delete", "", "ACME",
                        "1234 Evergreen Terrace", "Bld. 6", "Springfield", "IL",
                        "32801", "US", "15151231234");
-  profile0.set_use_date(now - base::TimeDelta::FromDays(400));
+  profile0.set_use_date(now - base::Days(400));
   AddProfileToPersonalDataManager(profile0);
 
   // Create unverified/disused/used-by-expired-credit-card address(deletable).
@@ -5099,12 +5220,12 @@ TEST_F(PersonalDataManagerTest,
   test::SetProfileInfo(&profile1, "Bob", "", "Delete", "", "ACME",
                        "1234 Evergreen Terrace", "Bld. 7", "Springfield", "IL",
                        "32801", "US", "15151231234");
-  profile1.set_use_date(now - base::TimeDelta::FromDays(400));
+  profile1.set_use_date(now - base::Days(400));
   CreditCard credit_card0(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card0, "Bob",
                           "5105105105105100" /* Mastercard */, "04", "1999",
                           "1");
-  credit_card0.set_use_date(now - base::TimeDelta::FromDays(400));
+  credit_card0.set_use_date(now - base::Days(400));
   credit_card0.set_billing_address_id(profile1.guid());
   AddProfileToPersonalDataManager(profile1);
   personal_data_->AddCreditCard(credit_card0);
@@ -5116,7 +5237,7 @@ TEST_F(PersonalDataManagerTest,
                        "1234 Evergreen Terrace", "Bld. 8", "Springfield", "IL",
                        "32801", "US", "15151231234");
   profile2.set_origin(kSettingsOrigin);
-  profile2.set_use_date(now - base::TimeDelta::FromDays(400));
+  profile2.set_use_date(now - base::Days(400));
   AddProfileToPersonalDataManager(profile2);
 
   // Create unverified/recently-used/not-used-by-valid-credit-card address(not
@@ -5125,7 +5246,7 @@ TEST_F(PersonalDataManagerTest,
   test::SetProfileInfo(&profile3, "Dave", "", "Keep", "", "ACME",
                        "1234 Evergreen Terrace", "Bld. 9", "Springfield", "IL",
                        "32801", "US", "15151231234");
-  profile3.set_use_date(now - base::TimeDelta::FromDays(4));
+  profile3.set_use_date(now - base::Days(4));
   AddProfileToPersonalDataManager(profile3);
 
   // Create unverified/disused/used-by-valid-credit-card address(not deletable).
@@ -5133,12 +5254,12 @@ TEST_F(PersonalDataManagerTest,
   test::SetProfileInfo(&profile4, "Emma", "", "Keep", "", "ACME",
                        "1234 Evergreen Terrace", "Bld. 10", "Springfield", "IL",
                        "32801", "US", "15151231234");
-  profile4.set_use_date(now - base::TimeDelta::FromDays(400));
+  profile4.set_use_date(now - base::Days(400));
   CreditCard credit_card1(CreditCard::MASKED_SERVER_CARD, "c987");
   test::SetCreditCardInfo(&credit_card1, "Emma", "6543", "01", "2999", "1");
   credit_card1.SetNetworkForMaskedCard(kVisaCard);
   credit_card1.set_billing_address_id(profile4.guid());
-  credit_card1.set_use_date(now - base::TimeDelta::FromDays(1));
+  credit_card1.set_use_date(now - base::Days(1));
   AddProfileToPersonalDataManager(profile4);
   personal_data_->AddCreditCard(credit_card1);
 
@@ -5170,7 +5291,7 @@ TEST_F(PersonalDataManagerTest,
   test::SetCreditCardInfo(&credit_card1, "Alice",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
-  credit_card1.set_use_date(now - base::TimeDelta::FromDays(4));
+  credit_card1.set_use_date(now - base::Days(4));
 
   // Create a local card that was expired 400 days ago, but recently used.
   // It is expected to remain.
@@ -5178,19 +5299,19 @@ TEST_F(PersonalDataManagerTest,
   test::SetCreditCardInfo(&credit_card2, "Bob",
                           "378282246310006" /* American Express */, "04",
                           "1999", "1");
-  credit_card2.set_use_date(now - base::TimeDelta::FromDays(4));
+  credit_card2.set_use_date(now - base::Days(4));
 
   // Create a local card expired recently, and last used 400 days ago.
   // It is expected to remain.
   CreditCard credit_card3(base::GenerateGUID(), test::kEmptyOrigin);
-  base::Time expiry_date = now - base::TimeDelta::FromDays(32);
+  base::Time expiry_date = now - base::Days(32);
   base::Time::Exploded exploded;
   expiry_date.UTCExplode(&exploded);
   test::SetCreditCardInfo(&credit_card3, "Clyde", "4111111111111111" /* Visa */,
                           base::StringPrintf("%02d", exploded.month).c_str(),
                           base::StringPrintf("%04d", exploded.year).c_str(),
                           "1");
-  credit_card3.set_use_date(now - base::TimeDelta::FromDays(400));
+  credit_card3.set_use_date(now - base::Days(400));
 
   // Create a local card expired 400 days ago, and last used 400 days ago.
   // It is expected to be deleted.
@@ -5198,7 +5319,7 @@ TEST_F(PersonalDataManagerTest,
   test::SetCreditCardInfo(&credit_card4, "David",
                           "5105105105105100" /* Mastercard */, "04", "1999",
                           "1");
-  credit_card4.set_use_date(now - base::TimeDelta::FromDays(400));
+  credit_card4.set_use_date(now - base::Days(400));
   personal_data_->AddCreditCard(credit_card1);
   personal_data_->AddCreditCard(credit_card2);
   personal_data_->AddCreditCard(credit_card3);
@@ -5210,13 +5331,13 @@ TEST_F(PersonalDataManagerTest,
   CreditCard credit_card5(CreditCard::FULL_SERVER_CARD, "c789");
   test::SetCreditCardInfo(&credit_card5, "Emma", "4234567890123456" /* Visa */,
                           "04", "1999", "1");
-  credit_card5.set_use_date(now - base::TimeDelta::FromDays(400));
+  credit_card5.set_use_date(now - base::Days(400));
 
   // Create masked server card expired 400 days ago, and last used 400 days ago.
   // It is expected to remain because we do not delete server cards.
   CreditCard credit_card6(CreditCard::MASKED_SERVER_CARD, "c987");
   test::SetCreditCardInfo(&credit_card6, "Frank", "6543", "01", "1998", "1");
-  credit_card6.set_use_date(now - base::TimeDelta::FromDays(400));
+  credit_card6.set_use_date(now - base::Days(400));
   credit_card6.SetNetworkForMaskedCard(kVisaCard);
 
   // Save the server cards and set used_date to desired dates.
@@ -5890,7 +6011,7 @@ TEST_F(PersonalDataManagerTest, LogStoredProfileMetrics) {
   AutofillProfile profile0(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile0, "Bob", "", "Doe", "", "Fox", "1212 Center.",
                        "Bld. 5", "Orlando", "FL", "32801", "US", "19482937549");
-  profile0.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(3));
+  profile0.set_use_date(AutofillClock::Now() - base::Days(3));
   AddProfileToPersonalDataManager(profile0);
 
   // Add a profile used a long time (200 days) ago.
@@ -5898,7 +6019,7 @@ TEST_F(PersonalDataManagerTest, LogStoredProfileMetrics) {
   test::SetProfileInfo(&profile1, "Seb", "", "Doe", "", "ACME",
                        "1234 Evergreen Terrace", "Bld. 5", "Springfield", "IL",
                        "32801", "US", "15151231234");
-  profile1.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(200));
+  profile1.set_use_date(AutofillClock::Now() - base::Days(200));
   AddProfileToPersonalDataManager(profile1);
 
   // Reload the database, which will log the stored profile counts.
@@ -5926,7 +6047,7 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
 
   // Helper timestamps for setting up the test data.
   base::Time now = AutofillClock::Now();
-  base::Time one_month_ago = now - base::TimeDelta::FromDays(30);
+  base::Time one_month_ago = now - base::Days(30);
   base::Time::Exploded now_exploded;
   base::Time::Exploded one_month_ago_exploded;
   now.LocalExplode(&now_exploded);
@@ -5942,14 +6063,14 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
   for (auto record_type : record_types) {
     // Create a card that's still in active use.
     CreditCard card_in_use = test::GetRandomCreditCard(record_type);
-    card_in_use.set_use_date(now - base::TimeDelta::FromDays(30));
+    card_in_use.set_use_date(now - base::Days(30));
     card_in_use.set_use_count(10);
 
     // Create a card that's not in active use.
     CreditCard card_in_disuse = test::GetRandomCreditCard(record_type);
     card_in_disuse.SetExpirationYear(one_month_ago_exploded.year);
     card_in_disuse.SetExpirationMonth(one_month_ago_exploded.month);
-    card_in_disuse.set_use_date(now - base::TimeDelta::FromDays(200));
+    card_in_disuse.set_use_date(now - base::Days(200));
     card_in_disuse.set_use_count(10);
 
     // Add the cards to the personal data manager in the appropriate way.
@@ -5962,9 +6083,16 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
     }
   }
 
-  // Sets the virtual card enrollment state for the first card.
+  // Sets the virtual card enrollment state for the first three server cards.
   server_cards[0].set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  server_cards[0].set_card_art_url(GURL("https://www.example.com/image1"));
+  server_cards[1].set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  server_cards[1].set_card_art_url(GURL("https://www.example.com/image1"));
+  server_cards[2].set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  server_cards[2].set_card_art_url(GURL("https://www.example.com/image2"));
 
   SetServerCards(server_cards);
 
@@ -5982,6 +6110,8 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
   // Reload the database, which will log the stored profile counts.
   base::HistogramTester histogram_tester;
   ResetPersonalDataManager(USER_MODE_NORMAL);
+
+  EXPECT_EQ(personal_data_->GetServerCardWithArtImageCount(), 3U);
 
   ASSERT_EQ(6U, personal_data_->GetCreditCards().size());
 
@@ -6006,6 +6136,8 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
       "Autofill.StoredCreditCardCount.Server.Unmasked", 2, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata", 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.StoredCreditCardCount.Server.WithCardArtImage", 3, 1);
 }
 
 TEST_F(PersonalDataManagerTest, CreateDataForTest) {
@@ -6031,10 +6163,8 @@ TEST_F(PersonalDataManagerTest, CreateDataForTest) {
   ASSERT_EQ(3U, addresses.size());
   ASSERT_EQ(3U, credit_cards.size());
 
-  const base::Time disused_threshold =
-      AutofillClock::Now() - base::TimeDelta::FromDays(180);
-  const base::Time deletion_threshold =
-      AutofillClock::Now() - base::TimeDelta::FromDays(395);
+  const base::Time disused_threshold = AutofillClock::Now() - base::Days(180);
+  const base::Time deletion_threshold = AutofillClock::Now() - base::Days(395);
 
   // Verify that there was a valid address created.
   {
@@ -6454,7 +6584,7 @@ TEST_F(PersonalDataManagerTest, SwitchServerStorages) {
   ASSERT_EQ(2U, personal_data_->GetServerCreditCards().size());
 
   // Switch to persistent storage.
-  sync_service_.SetIsAuthenticatedAccountPrimary(true);
+  sync_service_.SetHasSyncConsent(true);
   personal_data_->OnStateChanged(&sync_service_);
   WaitForOnPersonalDataChanged();
 
@@ -6473,7 +6603,7 @@ TEST_F(PersonalDataManagerTest, SwitchServerStorages) {
   EXPECT_EQ(1U, personal_data_->GetServerCreditCards().size());
 
   // Switch back to the account storage.
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetHasSyncConsent(false);
   personal_data_->OnStateChanged(&sync_service_);
   WaitForOnPersonalDataChanged();
 
@@ -6515,7 +6645,7 @@ TEST_F(PersonalDataManagerTest, UseCorrectStorageForDifferentCards) {
                           "08", "2999", "1");
   local_card.set_guid("00000000-0000-0000-0000-000000000009");
   local_card.set_record_type(CreditCard::LOCAL_CARD);
-  local_card.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(5));
+  local_card.set_use_date(AutofillClock::Now() - base::Days(5));
   personal_data_->AddCreditCard(local_card);
 
   WaitForOnPersonalDataChanged();
@@ -6776,7 +6906,7 @@ TEST_F(PersonalDataManagerMockTest, UpdateClientValidityStates_Version) {
   AutofillProfile profile2(test::GetFullValidProfileForChina());
   profile2.SetRawInfo(ADDRESS_HOME_STATE, u"invalid state!");
   profile2.set_guid("00000000-0000-0000-0000-000000000002");
-  profile2.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(200));
+  profile2.set_use_date(AutofillClock::Now() - base::Days(200));
   AddProfileToPersonalDataManager(profile2);
 
   AutofillProfile profile1(test::GetFullValidProfileForCanada());
@@ -6917,7 +7047,7 @@ TEST_F(PersonalDataManagerTest, CreateDuplicateWithAnUpdate) {
 
   base::Time older_use_date = AutofillClock::Now();
   less_recently_used_profile.set_use_date(older_use_date);
-  test_clock.Advance(base::TimeDelta::FromDays(1));
+  test_clock.Advance(base::Days(1));
 
   // Set more recently used profile to have a use date that is newer than
   // `older_use_date`.
@@ -6972,7 +7102,7 @@ TEST_F(PersonalDataManagerTest,
   updated_more_recently_used_profile.set_guid(
       more_recently_used_profile.guid());
   // Set the updated profile to have a newer use date than it's duplicate.
-  test_clock.Advance(base::TimeDelta::FromDays(1));
+  test_clock.Advance(base::Days(1));
   base::Time newer_use_data = AutofillClock::Now();
   updated_more_recently_used_profile.set_use_date(newer_use_data);
   UpdateProfileOnPersonalDataManager(updated_more_recently_used_profile);
@@ -6993,10 +7123,10 @@ TEST_F(PersonalDataManagerTest, GetAccountInfoForPaymentsServer) {
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   // Make the sync service return a non-empty AccountInfo when
-  // GetAuthenticatedAccountInfo() is called.
+  // GetAccountInfo() is called.
   AccountInfo active_info;
   active_info.email = kSyncTransportAccountEmail;
-  sync_service_.SetAuthenticatedAccountInfo(active_info);
+  sync_service_.SetAccountInfo(active_info);
 
   // The Active Sync AccountInfo should be returned.
   EXPECT_EQ(kSyncTransportAccountEmail,
@@ -7126,9 +7256,9 @@ TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
   personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
   EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(first_url));
 
-  test_clock.Advance(base::TimeDelta::FromHours(1));
+  test_clock.Advance(base::Hours(1));
   base::Time end_of_deletion = AutofillClock::Now();
-  test_clock.Advance(base::TimeDelta::FromHours(1));
+  test_clock.Advance(base::Hours(1));
 
   personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
   EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(second_url));
@@ -7170,7 +7300,7 @@ TEST_F(PersonalDataManagerMigrationTest,
   EXPECT_FALSE(::autofill::prefs::IsUserOptedInWalletSyncTransport(
       prefs_.get(), CoreAccountId::FromEmail(kPrimaryAccountEmail)));
   EXPECT_TRUE(::autofill::prefs::IsUserOptedInWalletSyncTransport(
-      prefs_.get(), sync_service_.GetAuthenticatedAccountInfo().account_id));
+      prefs_.get(), sync_service_.GetAccountInfo().account_id));
 }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
@@ -7189,8 +7319,8 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   AccountInfo active_info;
   active_info.email = kPrimaryAccountEmail;
   active_info.account_id = CoreAccountId("account_id");
-  sync_service_.SetAuthenticatedAccountInfo(active_info);
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetAccountInfo(active_info);
+  sync_service_.SetHasSyncConsent(false);
 
   // Set a server credit card.
   std::vector<CreditCard> server_cards;
@@ -7208,84 +7338,45 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
       /*enabled_features=*/{features::kAutofillEnableAccountWalletStorage},
       /*disabled_features=*/{});
 
-  const std::string kHistogramName =
-      "Autofill.HadUserOptedIn_To_WalletSyncTransportServerCards";
-
   // Make sure the function returns true.
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
-    histogram_tester.ExpectUniqueSample(kHistogramName, false, 1);
-  }
+  EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set that the user already opted-in. Check that the function now returns
   // false.
   ::autofill::prefs::SetUserOptedInWalletSyncTransport(
       prefs_.get(), active_info.account_id, true);
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
-    histogram_tester.ExpectUniqueSample(kHistogramName, true, 1);
-  }
+  EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Re-opt the user out. Check that the function now returns true.
   ::autofill::prefs::SetUserOptedInWalletSyncTransport(
       prefs_.get(), active_info.account_id, false);
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
-    histogram_tester.ExpectUniqueSample(kHistogramName, false, 1);
-  }
+  EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set that the user has no server cards. Check that the function now returns
   // false.
   SetServerCards({});
   personal_data_->Refresh();
   WaitForOnPersonalDataChanged();
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
-    // The metric should not be logged if the user had no server cards.
-    histogram_tester.ExpectTotalCount(kHistogramName, 0);
-  }
+  EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Re-set some server cards. Check that the function now returns true.
   SetServerCards(server_cards);
   personal_data_->Refresh();
   WaitForOnPersonalDataChanged();
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
-    histogram_tester.ExpectUniqueSample(kHistogramName, false, 1);
-  }
+  EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set that the user enabled the sync feature. Check that the function now
   // returns false.
-  sync_service_.SetIsAuthenticatedAccountPrimary(true);
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
-    // The metric should not be logged for syncing users.
-    histogram_tester.ExpectTotalCount(kHistogramName, 0);
-  }
+  sync_service_.SetHasSyncConsent(true);
+  EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Re-disable the sync feature. Check that the function now returns true.
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
-    histogram_tester.ExpectUniqueSample(kHistogramName, false, 1);
-  }
+  sync_service_.SetHasSyncConsent(false);
+  EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set a null sync service. Check that the function now returns false.
   personal_data_->SetSyncServiceForTest(nullptr);
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
-    // The metric should not be logged if there is no sync service since this
-    // means the user has no server cards.
-    histogram_tester.ExpectTotalCount(kHistogramName, 0);
-  }
+  EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 }
 #else   // !defined(OS_ANDROID) && !defined(OS_IOS) &&
         // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -7303,8 +7394,8 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
   AccountInfo active_info;
   active_info.email = kPrimaryAccountEmail;
   active_info.account_id = CoreAccountId("account_id");
-  sync_service_.SetAuthenticatedAccountInfo(active_info);
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetAccountInfo(active_info);
+  sync_service_.SetHasSyncConsent(false);
 
   // Set a server credit card.
   std::vector<CreditCard> server_cards;
@@ -7351,11 +7442,11 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
 
   // Set that the user enabled the sync feature. Check that the function still
   // returns false.
-  sync_service_.SetIsAuthenticatedAccountPrimary(true);
+  sync_service_.SetHasSyncConsent(true);
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Re-disable the sync feature. Check that the function still returns false.
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetHasSyncConsent(false);
   EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set a null sync service. Check that the function still returns false.
@@ -7370,7 +7461,7 @@ TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   // for the first few tests.
   identity_test_env_.SetPrimaryAccount("test@gmail.com",
                                        signin::ConsentLevel::kSync);
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetHasSyncConsent(false);
   sync_service_.SetActiveDataTypes(
       syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_DATA));
 
@@ -7425,8 +7516,8 @@ TEST_F(PersonalDataManagerTest, GetSyncSigninState) {
   // Simulate that the user has enabled the sync feature.
   AccountInfo primary_account_info;
   primary_account_info.email = kPrimaryAccountEmail;
-  sync_service_.SetAuthenticatedAccountInfo(primary_account_info);
-  sync_service_.SetIsAuthenticatedAccountPrimary(true);
+  sync_service_.SetAccountInfo(primary_account_info);
+  sync_service_.SetHasSyncConsent(true);
 // MakePrimaryAccountAvailable is not supported on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   identity_test_env_.MakePrimaryAccountAvailable(primary_account_info.email,
@@ -7461,8 +7552,8 @@ TEST_F(PersonalDataManagerTest, OnUserAcceptedUpstreamOffer) {
   // Transport for Wallet mode.
   CoreAccountInfo active_info = identity_test_env_.MakePrimaryAccountAvailable(
       kSyncTransportAccountEmail, signin::ConsentLevel::kSignin);
-  sync_service_.SetAuthenticatedAccountInfo(active_info);
-  sync_service_.SetIsAuthenticatedAccountPrimary(false);
+  sync_service_.SetAccountInfo(active_info);
+  sync_service_.SetHasSyncConsent(false);
   sync_service_.SetActiveDataTypes(
       syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_DATA));
   // Make sure there are no opt-ins recorded yet.
@@ -7537,7 +7628,7 @@ TEST_F(PersonalDataManagerTest, OnUserAcceptedUpstreamOffer) {
   ///////////////////////////////////////////////////////////
   identity_test_env_.SetPrimaryAccount(active_info.email,
                                        signin::ConsentLevel::kSync);
-  sync_service_.SetIsAuthenticatedAccountPrimary(true);
+  sync_service_.SetHasSyncConsent(true);
   {
     EXPECT_EQ(AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled,
               personal_data_->GetSyncSigninState());

@@ -194,7 +194,7 @@ interface Adapter {
   // Requests the adapter to start a new discovery session. Returns null if
   // session not created successfully.
   [Sync]
-  StartDiscoverySession() => (pending_remote<DiscoverySession>? session);
+  StartDiscoverySession(string client_name) => (pending_remote<DiscoverySession>? session);
 
   // Attempts to initiate an insecure outgoing L2CAP or RFCOMM connection to the
   // advertised service on this device matching |service_uuid|. This method is

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/common/cloud_print.mojom.h"
 #include "chrome/service/cloud_print/cloud_print_proxy.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -18,6 +17,10 @@ namespace cloud_print {
 class CloudPrintMessageHandler : public cloud_print::mojom::CloudPrint {
  public:
   explicit CloudPrintMessageHandler(CloudPrintProxy::Provider* proxy_provider);
+
+  CloudPrintMessageHandler(const CloudPrintMessageHandler&) = delete;
+  CloudPrintMessageHandler& operator=(const CloudPrintMessageHandler&) = delete;
+
   ~CloudPrintMessageHandler() override;
 
   static void Create(
@@ -35,8 +38,6 @@ class CloudPrintMessageHandler : public cloud_print::mojom::CloudPrint {
   void DisableCloudPrintProxy() override;
 
   CloudPrintProxy::Provider* proxy_provider_;  // Owned by our owner.
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintMessageHandler);
 };
 
 }  // namespace cloud_print

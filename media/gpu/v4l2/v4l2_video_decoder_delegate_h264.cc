@@ -33,6 +33,9 @@ class V4L2H264Picture : public H264Picture {
   explicit V4L2H264Picture(scoped_refptr<V4L2DecodeSurface> dec_surface)
       : dec_surface_(std::move(dec_surface)) {}
 
+  V4L2H264Picture(const V4L2H264Picture&) = delete;
+  V4L2H264Picture& operator=(const V4L2H264Picture&) = delete;
+
   V4L2H264Picture* AsV4L2H264Picture() override { return this; }
   scoped_refptr<V4L2DecodeSurface> dec_surface() { return dec_surface_; }
 
@@ -40,8 +43,6 @@ class V4L2H264Picture : public H264Picture {
   ~V4L2H264Picture() override {}
 
   scoped_refptr<V4L2DecodeSurface> dec_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2H264Picture);
 };
 
 V4L2VideoDecoderDelegateH264::V4L2VideoDecoderDelegateH264(

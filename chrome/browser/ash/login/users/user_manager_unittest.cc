@@ -6,6 +6,7 @@
 #include <cstring>
 #include <memory>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -27,7 +28,6 @@
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/remove_user_delegate.h"
@@ -239,7 +239,9 @@ TEST_F(UserManagerTest, RemoveUser) {
   ASSERT_EQ(2U, user_manager->GetUsers().size());
 
   // Removing logged-in account is unacceptable.
-  user_manager->RemoveUser(account_id0_at_invalid_domain_, nullptr);
+  user_manager->RemoveUser(account_id0_at_invalid_domain_,
+                           user_manager::UserRemovalReason::UNKNOWN,
+                           /*delegate=*/nullptr);
   EXPECT_EQ(2U, user_manager->GetUsers().size());
 
   // Recreate the user manager to log out all accounts.
@@ -250,13 +252,16 @@ TEST_F(UserManagerTest, RemoveUser) {
   // Removing non-owner account is acceptable.
   EXPECT_CALL(*user_manager, AsyncRemoveCryptohome(testing::_)).Times(1);
   UnittestRemoveUserDelegate delegate(account_id0_at_invalid_domain_);
-  user_manager->RemoveUser(account_id0_at_invalid_domain_, &delegate);
+  user_manager->RemoveUser(account_id0_at_invalid_domain_,
+                           user_manager::UserRemovalReason::UNKNOWN, &delegate);
   EXPECT_TRUE(delegate.HasBeforeUserRemoved());
   EXPECT_TRUE(delegate.HasUserRemoved());
   EXPECT_EQ(1U, user_manager->GetUsers().size());
 
   // Removing owner account is unacceptable.
-  user_manager->RemoveUser(owner_account_id_at_invalid_domain_, nullptr);
+  user_manager->RemoveUser(owner_account_id_at_invalid_domain_,
+                           user_manager::UserRemovalReason::UNKNOWN,
+                           /*delegate=*/nullptr);
   EXPECT_EQ(1U, user_manager->GetUsers().size());
 }
 

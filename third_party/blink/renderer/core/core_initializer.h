@@ -33,7 +33,9 @@
 
 #include <memory>
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
+#include "third_party/blink/public/mojom/dom_storage/storage_area.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -140,6 +142,13 @@ class CORE_EXPORT CoreInitializer {
   // during a visual property update.
   virtual void DidUpdateScreens(LocalFrame& frame,
                                 const display::ScreenInfos&) = 0;
+
+  virtual void SetLocalStorageArea(
+      LocalFrame& frame,
+      mojo::PendingRemote<mojom::blink::StorageArea> local_storage_area) = 0;
+  virtual void SetSessionStorageArea(
+      LocalFrame& frame,
+      mojo::PendingRemote<mojom::blink::StorageArea> session_storage_area) = 0;
 
  protected:
   // CoreInitializer is only instantiated by subclass ModulesInitializer.

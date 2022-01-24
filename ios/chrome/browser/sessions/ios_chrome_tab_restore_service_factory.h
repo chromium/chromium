@@ -31,6 +31,11 @@ class IOSChromeTabRestoreServiceFactory
   // registered with SetTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
+  IOSChromeTabRestoreServiceFactory(const IOSChromeTabRestoreServiceFactory&) =
+      delete;
+  IOSChromeTabRestoreServiceFactory& operator=(
+      const IOSChromeTabRestoreServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<IOSChromeTabRestoreServiceFactory>;
 
@@ -41,8 +46,6 @@ class IOSChromeTabRestoreServiceFactory
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeTabRestoreServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_IOS_CHROME_TAB_RESTORE_SERVICE_FACTORY_H_

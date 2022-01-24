@@ -3,8 +3,6 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer
 ++++++++pluginObject
-++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored name='<newline>        Fallback<newline>    '
 ++++++genericContainer
 ++++++++staticText name='complete'
 ++++++++++inlineTextBox name='complete'

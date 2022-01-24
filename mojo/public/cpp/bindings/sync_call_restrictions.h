@@ -67,6 +67,10 @@ class ScopedAllowSyncCallForTesting;
 // the current sequence during its lifetime.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
  public:
+  SyncCallRestrictions() = delete;
+  SyncCallRestrictions(const SyncCallRestrictions&) = delete;
+  SyncCallRestrictions& operator=(const SyncCallRestrictions&) = delete;
+
 #if ENABLE_SYNC_CALL_RESTRICTIONS
   // Checks whether the current sequence is allowed to make sync calls, and
   // causes a DCHECK if not.
@@ -134,28 +138,31 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   class ScopedAllowSyncCall {
    public:
     ScopedAllowSyncCall() { IncreaseScopedAllowCount(); }
+
+    ScopedAllowSyncCall(const ScopedAllowSyncCall&) = delete;
+    ScopedAllowSyncCall& operator=(const ScopedAllowSyncCall&) = delete;
+
     ~ScopedAllowSyncCall() { DecreaseScopedAllowCount(); }
 
    private:
 #if ENABLE_SYNC_CALL_RESTRICTIONS
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait_;
 #endif
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedAllowSyncCall);
   };
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SyncCallRestrictions);
 };
 
 class ScopedAllowSyncCallForTesting {
  public:
   ScopedAllowSyncCallForTesting() {}
+
+  ScopedAllowSyncCallForTesting(const ScopedAllowSyncCallForTesting&) = delete;
+  ScopedAllowSyncCallForTesting& operator=(
+      const ScopedAllowSyncCallForTesting&) = delete;
+
   ~ScopedAllowSyncCallForTesting() {}
 
  private:
   SyncCallRestrictions::ScopedAllowSyncCall scoped_allow_sync_call_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowSyncCallForTesting);
 };
 
 }  // namespace mojo

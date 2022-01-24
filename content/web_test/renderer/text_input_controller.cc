@@ -4,7 +4,6 @@
 
 #include "content/web_test/renderer/text_input_controller.h"
 
-#include "base/macros.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "gin/arguments.h"
 #include "gin/handle.h"
@@ -30,6 +29,10 @@ class TextInputControllerBindings
     : public gin::Wrappable<TextInputControllerBindings> {
  public:
   static gin::WrapperInfo kWrapperInfo;
+
+  TextInputControllerBindings(const TextInputControllerBindings&) = delete;
+  TextInputControllerBindings& operator=(const TextInputControllerBindings&) =
+      delete;
 
   static void Install(base::WeakPtr<TextInputController> controller,
                       blink::WebLocalFrame* frame);
@@ -60,8 +63,6 @@ class TextInputControllerBindings
   void ForceTextInputStateUpdate();
 
   base::WeakPtr<TextInputController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputControllerBindings);
 };
 
 gin::WrapperInfo TextInputControllerBindings::kWrapperInfo = {

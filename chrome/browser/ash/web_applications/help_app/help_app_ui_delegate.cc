@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/webui/help_app_ui/url_constants.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -13,8 +14,9 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/help_app_ui/url_constants.h"
 #include "url/gurl.h"
+
+namespace ash {
 
 ChromeHelpAppUIDelegate::ChromeHelpAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
@@ -24,7 +26,7 @@ absl::optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
   constexpr char kHelpAppFeedbackCategoryTag[] = "FromHelpApp";
   // We don't change the default description, or add extra diagnostics so those
   // are empty strings.
-  chrome::ShowFeedbackPage(GURL(chromeos::kChromeUIHelpAppURL), profile,
+  chrome::ShowFeedbackPage(GURL(kChromeUIHelpAppURL), profile,
                            chrome::kFeedbackSourceHelpApp,
                            std::string() /* description_template */,
                            std::string() /* description_placeholder_text */,
@@ -46,12 +48,14 @@ PrefService* ChromeHelpAppUIDelegate::GetLocalState() {
 
 void ChromeHelpAppUIDelegate::MaybeShowDiscoverNotification() {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  ash::UserSessionManager::GetInstance()->MaybeShowHelpAppDiscoverNotification(
+  UserSessionManager::GetInstance()->MaybeShowHelpAppDiscoverNotification(
       profile);
 }
 
 void ChromeHelpAppUIDelegate::MaybeShowReleaseNotesNotification() {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  ash::UserSessionManager::GetInstance()
-      ->MaybeShowHelpAppReleaseNotesNotification(profile);
+  UserSessionManager::GetInstance()->MaybeShowHelpAppReleaseNotesNotification(
+      profile);
 }
+
+}  // namespace ash

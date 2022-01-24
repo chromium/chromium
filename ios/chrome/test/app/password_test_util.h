@@ -24,7 +24,7 @@
 namespace chrome_test_util {
 
 // Replace the reauthentication module in
-// PasswordDetailsCollectionViewController with a fake one to avoid being
+// PasswordDetailsTableViewController with a fake one to avoid being
 // blocked with a reauth prompt, and return the fake reauthentication module.
 MockReauthenticationModule* SetUpAndReturnMockReauthenticationModule();
 

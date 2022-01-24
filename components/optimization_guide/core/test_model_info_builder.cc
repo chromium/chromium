@@ -22,6 +22,15 @@ TestModelInfoBuilder& TestModelInfoBuilder::SetModelFilePath(
   return *this;
 }
 
+TestModelInfoBuilder& TestModelInfoBuilder::SetAdditionalFiles(
+    const base::flat_set<base::FilePath>& additional_files) {
+  for (const base::FilePath& file_path : additional_files) {
+    model_.mutable_model_info()->add_additional_files()->set_file_path(
+        FilePathToString(file_path));
+  }
+  return *this;
+}
+
 TestModelInfoBuilder& TestModelInfoBuilder::SetVersion(int64_t version) {
   model_.mutable_model_info()->set_version(version);
   return *this;

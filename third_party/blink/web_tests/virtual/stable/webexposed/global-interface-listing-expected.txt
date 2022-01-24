@@ -152,10 +152,45 @@ interface AudioContext : BaseAudioContext
     method getOutputTimestamp
     method resume
     method suspend
+interface AudioData
+    attribute @@toStringTag
+    getter duration
+    getter format
+    getter numberOfChannels
+    getter numberOfFrames
+    getter sampleRate
+    getter timestamp
+    method allocationSize
+    method clone
+    method close
+    method constructor
+    method copyTo
+interface AudioDecoder
+    static method isConfigSupported
+    attribute @@toStringTag
+    getter decodeQueueSize
+    getter state
+    method close
+    method configure
+    method constructor
+    method decode
+    method flush
+    method reset
 interface AudioDestinationNode : AudioNode
     attribute @@toStringTag
     getter maxChannelCount
     method constructor
+interface AudioEncoder
+    static method isConfigSupported
+    attribute @@toStringTag
+    getter encodeQueueSize
+    getter state
+    method close
+    method configure
+    method constructor
+    method encode
+    method flush
+    method reset
 interface AudioListener
     attribute @@toStringTag
     getter forwardX
@@ -1415,6 +1450,7 @@ interface Document : Node
     getter onselect
     getter onselectionchange
     getter onselectstart
+    getter onslotchange
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -1613,6 +1649,7 @@ interface Document : Node
     setter onselect
     setter onselectionchange
     setter onselectstart
+    setter onslotchange
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -1960,6 +1997,22 @@ interface ElementInternals
     setter ariaValueMin
     setter ariaValueNow
     setter ariaValueText
+interface EncodedAudioChunk
+    attribute @@toStringTag
+    getter byteLength
+    getter duration
+    getter timestamp
+    getter type
+    method constructor
+    method copyTo
+interface EncodedVideoChunk
+    attribute @@toStringTag
+    getter byteLength
+    getter duration
+    getter timestamp
+    getter type
+    method constructor
+    method copyTo
 interface ErrorEvent : Event
     attribute @@toStringTag
     getter colno
@@ -2033,6 +2086,10 @@ interface External
     method AddSearchProvider
     method IsSearchProviderInstalled
     method constructor
+interface EyeDropper
+    attribute @@toStringTag
+    method constructor
+    method open
 interface FeaturePolicy
     attribute @@toStringTag
     method allowedFeatures
@@ -2638,11 +2695,13 @@ interface HTMLElement : Element
     getter onreset
     getter onresize
     getter onscroll
+    getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
     getter onselect
     getter onselectionchange
     getter onselectstart
+    getter onslotchange
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -2669,6 +2728,7 @@ interface HTMLElement : Element
     getter tabIndex
     getter title
     getter translate
+    getter virtualKeyboardPolicy
     method attachInternals
     method blur
     method click
@@ -2754,11 +2814,13 @@ interface HTMLElement : Element
     setter onreset
     setter onresize
     setter onscroll
+    setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
     setter onselect
     setter onselectionchange
     setter onselectstart
+    setter onslotchange
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -2785,6 +2847,7 @@ interface HTMLElement : Element
     setter tabIndex
     setter title
     setter translate
+    setter virtualKeyboardPolicy
 interface HTMLEmbedElement : HTMLElement
     attribute @@toStringTag
     getter align
@@ -3503,6 +3566,7 @@ interface HTMLQuoteElement : HTMLElement
     method constructor
     setter cite
 interface HTMLScriptElement : HTMLElement
+    static method supports
     attribute @@toStringTag
     getter async
     getter charset
@@ -4026,6 +4090,15 @@ interface IdleDeadline
     getter didTimeout
     method constructor
     method timeRemaining
+interface IdleDetector : EventTarget
+    static method requestPermission
+    attribute @@toStringTag
+    getter onchange
+    getter screenState
+    getter userState
+    method constructor
+    method start
+    setter onchange
 interface Image
     attribute @@toStringTag
     getter align
@@ -4099,6 +4172,33 @@ interface ImageData
     getter data
     getter height
     getter width
+    method constructor
+interface ImageDecoder
+    static method isTypeSupported
+    attribute @@toStringTag
+    getter complete
+    getter completed
+    getter tracks
+    getter type
+    method close
+    method constructor
+    method decode
+    method reset
+interface ImageTrack
+    attribute @@toStringTag
+    getter animated
+    getter frameCount
+    getter repetitionCount
+    getter selected
+    method constructor
+    setter selected
+interface ImageTrackList
+    attribute @@toStringTag
+    getter length
+    getter ready
+    getter selectedIndex
+    getter selectedTrack
+    method @@iterator
     method constructor
 interface Ink
     attribute @@toStringTag
@@ -4530,6 +4630,14 @@ interface MediaStreamTrackEvent : Event
     attribute @@toStringTag
     getter track
     method constructor
+interface MediaStreamTrackGenerator : MediaStreamTrack
+    attribute @@toStringTag
+    getter writable
+    method constructor
+interface MediaStreamTrackProcessor
+    attribute @@toStringTag
+    getter readable
+    method constructor
 interface MessageChannel
     attribute @@toStringTag
     getter port1
@@ -4672,6 +4780,7 @@ interface Navigator
     getter mediaSession
     getter mimeTypes
     getter onLine
+    getter pdfViewerEnabled
     getter permissions
     getter platform
     getter plugins
@@ -4688,6 +4797,7 @@ interface Navigator
     getter userAgentData
     getter vendor
     getter vendorSub
+    getter virtualKeyboard
     getter wakeLock
     getter webdriver
     getter webkitPersistentStorage
@@ -5146,6 +5256,7 @@ interface PerformanceEntry
 interface PerformanceEventTiming : PerformanceEntry
     attribute @@toStringTag
     getter cancelable
+    getter interactionId
     getter processingEnd
     getter processingStart
     getter target
@@ -5269,6 +5380,7 @@ interface PeriodicWave
     method constructor
 interface PermissionStatus : EventTarget
     attribute @@toStringTag
+    getter name
     getter onchange
     getter state
     method constructor
@@ -5390,6 +5502,12 @@ interface ProcessingInstruction : CharacterData
     getter sheet
     getter target
     method constructor
+interface Profiler : EventTarget
+    attribute @@toStringTag
+    getter sampleInterval
+    getter stopped
+    method constructor
+    method stop
 interface ProgressEvent : Event
     attribute @@toStringTag
     getter lengthComputable
@@ -5404,6 +5522,7 @@ interface PromiseRejectionEvent : Event
 interface PublicKeyCredential : Credential
     static method isUserVerifyingPlatformAuthenticatorAvailable
     attribute @@toStringTag
+    getter authenticatorAttachment
     getter rawId
     getter response
     method constructor
@@ -6093,11 +6212,13 @@ interface SVGElement : Element
     getter onreset
     getter onresize
     getter onscroll
+    getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
     getter onselect
     getter onselectionchange
     getter onselectstart
+    getter onslotchange
     getter onstalled
     getter onsubmit
     getter onsuspend
@@ -6195,11 +6316,13 @@ interface SVGElement : Element
     setter onreset
     setter onresize
     setter onscroll
+    setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
     setter onselect
     setter onselectionchange
     setter onselectstart
+    setter onslotchange
     setter onstalled
     setter onsubmit
     setter onsuspend
@@ -7002,6 +7125,10 @@ interface SVGViewElement : SVGElement
     getter zoomAndPan
     method constructor
     setter zoomAndPan
+interface Scheduler
+    attribute @@toStringTag
+    method constructor
+    method postTask
 interface Scheduling
     attribute @@toStringTag
     method constructor
@@ -7174,6 +7301,7 @@ interface ShadowRoot : DocumentFragment
     getter host
     getter innerHTML
     getter mode
+    getter onslotchange
     getter pictureInPictureElement
     getter pointerLockElement
     getter slotAssignment
@@ -7187,6 +7315,7 @@ interface ShadowRoot : DocumentFragment
     setter adoptedStyleSheets
     setter fullscreenElement
     setter innerHTML
+    setter onslotchange
 interface SharedWorker : EventTarget
     attribute @@toStringTag
     getter onerror
@@ -7371,6 +7500,20 @@ interface TaskAttributionTiming : PerformanceEntry
     getter containerType
     method constructor
     method toJSON
+interface TaskController : AbortController
+    attribute @@toStringTag
+    method constructor
+    method setPriority
+interface TaskPriorityChangeEvent : Event
+    attribute @@toStringTag
+    getter previousPriority
+    method constructor
+interface TaskSignal : AbortSignal
+    attribute @@toStringTag
+    getter onprioritychange
+    getter priority
+    method constructor
+    setter onprioritychange
 interface Text : CharacterData
     attribute @@toStringTag
     getter assignedSlot
@@ -7607,6 +7750,19 @@ interface URL
     setter protocol
     setter search
     setter username
+interface URLPattern
+    attribute @@toStringTag
+    getter hash
+    getter hostname
+    getter password
+    getter pathname
+    getter port
+    getter protocol
+    getter search
+    getter username
+    method constructor
+    method exec
+    method test
 interface URLSearchParams
     attribute @@toStringTag
     method @@iterator
@@ -7765,12 +7921,72 @@ interface ValidityState
     getter valid
     getter valueMissing
     method constructor
+interface VideoColorSpace
+    attribute @@toStringTag
+    getter fullRange
+    getter matrix
+    getter primaries
+    getter transfer
+    method constructor
+    method toJSON
+interface VideoDecoder
+    static method isConfigSupported
+    attribute @@toStringTag
+    getter decodeQueueSize
+    getter state
+    method close
+    method configure
+    method constructor
+    method decode
+    method flush
+    method reset
+interface VideoEncoder
+    static method isConfigSupported
+    attribute @@toStringTag
+    getter encodeQueueSize
+    getter state
+    method close
+    method configure
+    method constructor
+    method encode
+    method flush
+    method reset
+interface VideoFrame
+    attribute @@toStringTag
+    getter codedHeight
+    getter codedRect
+    getter codedWidth
+    getter colorSpace
+    getter displayHeight
+    getter displayWidth
+    getter duration
+    getter format
+    getter timestamp
+    getter visibleRect
+    method allocationSize
+    method clone
+    method close
+    method constructor
+    method copyTo
 interface VideoPlaybackQuality
     attribute @@toStringTag
     getter corruptedVideoFrames
     getter creationTime
     getter droppedVideoFrames
     getter totalVideoFrames
+    method constructor
+interface VirtualKeyboard : EventTarget
+    attribute @@toStringTag
+    getter boundingRect
+    getter ongeometrychange
+    getter overlaysContent
+    method constructor
+    method hide
+    method show
+    setter ongeometrychange
+    setter overlaysContent
+interface VirtualKeyboardGeometryChangeEvent : Event
+    attribute @@toStringTag
     method constructor
 interface VisualViewport : EventTarget
     attribute @@toStringTag
@@ -9175,6 +9391,41 @@ interface WebSocket : EventTarget
     setter onerror
     setter onmessage
     setter onopen
+interface WebTransport
+    attribute @@toStringTag
+    getter closed
+    getter datagrams
+    getter incomingBidirectionalStreams
+    getter incomingUnidirectionalStreams
+    getter ready
+    method close
+    method constructor
+    method createBidirectionalStream
+    method createUnidirectionalStream
+interface WebTransportBidirectionalStream
+    attribute @@toStringTag
+    getter readable
+    getter writable
+    method constructor
+interface WebTransportDatagramDuplexStream
+    attribute @@toStringTag
+    getter incomingHighWaterMark
+    getter incomingMaxAge
+    getter maxDatagramSize
+    getter outgoingHighWaterMark
+    getter outgoingMaxAge
+    getter readable
+    getter writable
+    method constructor
+    setter incomingHighWaterMark
+    setter incomingMaxAge
+    setter outgoingHighWaterMark
+    setter outgoingMaxAge
+interface WebTransportError : DOMException
+    attribute @@toStringTag
+    getter source
+    getter streamErrorCode
+    method constructor
 interface WheelEvent : MouseEvent
     attribute @@toStringTag
     attribute DOM_DELTA_LINE
@@ -9892,11 +10143,13 @@ namespace CSS
     getter onresize
     getter onscroll
     getter onsearch
+    getter onsecuritypolicyviolation
     getter onseeked
     getter onseeking
     getter onselect
     getter onselectionchange
     getter onselectstart
+    getter onslotchange
     getter onstalled
     getter onstorage
     getter onsubmit
@@ -9930,6 +10183,7 @@ namespace CSS
     getter parent
     getter performance
     getter personalbar
+    getter scheduler
     getter screen
     getter screenLeft
     getter screenTop
@@ -9979,6 +10233,7 @@ namespace CSS
     method prompt
     method queueMicrotask
     method releaseEvents
+    method reportError
     method requestAnimationFrame
     method requestIdleCallback
     method resizeBy
@@ -9992,6 +10247,7 @@ namespace CSS
     method showOpenFilePicker
     method showSaveFilePicker
     method stop
+    method structuredClone
     method webkitCancelAnimationFrame
     method webkitRequestAnimationFrame
     method webkitRequestFileSystem
@@ -10095,11 +10351,13 @@ namespace CSS
     setter onresize
     setter onscroll
     setter onsearch
+    setter onsecuritypolicyviolation
     setter onseeked
     setter onseeking
     setter onselect
     setter onselectionchange
     setter onselectstart
+    setter onslotchange
     setter onstalled
     setter onstorage
     setter onsubmit
@@ -10132,6 +10390,7 @@ namespace CSS
     setter parent
     setter performance
     setter personalbar
+    setter scheduler
     setter screen
     setter screenLeft
     setter screenTop

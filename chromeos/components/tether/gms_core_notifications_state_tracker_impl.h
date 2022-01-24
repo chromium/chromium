@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/tether/gms_core_notifications_state_tracker.h"
 #include "chromeos/components/tether/host_scanner_operation.h"
@@ -24,6 +23,12 @@ class GmsCoreNotificationsStateTrackerImpl
       public HostScannerOperation::Observer {
  public:
   GmsCoreNotificationsStateTrackerImpl();
+
+  GmsCoreNotificationsStateTrackerImpl(
+      const GmsCoreNotificationsStateTrackerImpl&) = delete;
+  GmsCoreNotificationsStateTrackerImpl& operator=(
+      const GmsCoreNotificationsStateTrackerImpl&) = delete;
+
   ~GmsCoreNotificationsStateTrackerImpl() override;
 
   // GmsCoreNotificationsStateTracker:
@@ -45,8 +50,6 @@ class GmsCoreNotificationsStateTrackerImpl
   void SendDeviceNamesChangeEvent();
 
   std::map<std::string, std::string> device_id_to_name_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(GmsCoreNotificationsStateTrackerImpl);
 };
 
 }  // namespace tether

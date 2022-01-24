@@ -52,6 +52,17 @@ Vp8FrameHeader::Vp8FrameHeader() {
   memset(this, 0, sizeof(*this));
 }
 
+Vp8FrameHeader::~Vp8FrameHeader() = default;
+
+Vp8FrameHeader::Vp8FrameHeader(const Vp8FrameHeader& fhdr) {
+  memcpy(this, &fhdr, sizeof(*this));
+}
+
+Vp8FrameHeader& Vp8FrameHeader::operator=(const Vp8FrameHeader& fhdr) {
+  memcpy(this, &fhdr, sizeof(*this));
+  return *this;
+}
+
 Vp8Parser::Vp8Parser() : stream_(nullptr), bytes_left_(0) {
 }
 

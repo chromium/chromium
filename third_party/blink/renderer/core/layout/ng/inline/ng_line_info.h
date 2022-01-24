@@ -53,20 +53,31 @@ class CORE_EXPORT NGLineInfo {
   bool IsLastLine() const { return is_last_line_; }
   void SetIsLastLine(bool is_last_line) { is_last_line_ = is_last_line; }
 
+  // Whether this line has ended with a forced break or not. Note, the forced
+  // break item may not be the last item if trailing items are included, or even
+  // does not exist if synthesized for block-in-inline.
+  bool HasForcedBreak() const { return has_forced_break_; }
+  void SetHasForcedBreak() { has_forced_break_ = true; }
+
   // If the line is marked as empty, it means that there's no content that
   // requires it to be present at all, e.g. when there are only close tags with
   // no margin/border/padding.
   bool IsEmptyLine() const { return is_empty_line_; }
   void SetIsEmptyLine() { is_empty_line_ = true; }
 
+  // If this line is empty, but still should have height as editable.
+  bool HasLineEvenIfEmpty() const { return has_line_even_if_empty_; }
+  void SetHasLineEvenIfEmpty() { has_line_even_if_empty_ = true; }
+
   // Returns true if this line is a block-in-inline.
   bool IsBlockInInline() const { return is_block_in_inline_; }
   void SetIsBlockInInline() { is_block_in_inline_ = true; }
   const NGBlockBreakToken* BlockInInlineBreakToken() const {
-    return block_in_inline_break_token_.get();
-  }
-  void SetBlockInInlineBreakToken(const NGBlockBreakToken* break_token) {
-    block_in_inline_break_token_ = break_token;
+    if (!block_in_inline_layout_result_)
+      return nullptr;
+
+    return To<NGBlockBreakToken>(
+        block_in_inline_layout_result_->PhysicalFragment().BreakToken());
   }
 
   // NGInlineItemResults for this line.
@@ -143,13 +154,13 @@ class CORE_EXPORT NGLineInfo {
   // justify alignment.
   bool NeedsAccurateEndPosition() const { return needs_accurate_end_position_; }
 
-  // Line breaker may abort if block-in-inline aborts the layout.
-  const NGLayoutResult* AbortedLayoutResult() const {
-    return aborted_layout_result_.get();
+  // The block-in-inline layout result.
+  const NGLayoutResult* BlockInInlineLayoutResult() const {
+    return block_in_inline_layout_result_.get();
   }
-  void SetAbortedLayoutResult(
+  void SetBlockInInlineLayoutResult(
       scoped_refptr<const NGLayoutResult> layout_result) {
-    aborted_layout_result_ = std::move(layout_result);
+    block_in_inline_layout_result_ = std::move(layout_result);
   }
 
   // |MayHaveTextCombineItem()| is used for treating text-combine box as
@@ -171,8 +182,7 @@ class CORE_EXPORT NGLineInfo {
 
   NGBfcOffset bfc_offset_;
 
-  scoped_refptr<const NGBlockBreakToken> block_in_inline_break_token_;
-  scoped_refptr<const NGLayoutResult> aborted_layout_result_;
+  scoped_refptr<const NGLayoutResult> block_in_inline_layout_result_;
 
   LayoutUnit available_width_;
   LayoutUnit width_;
@@ -188,7 +198,9 @@ class CORE_EXPORT NGLineInfo {
 
   bool use_first_line_style_ = false;
   bool is_last_line_ = false;
+  bool has_forced_break_ = false;
   bool is_empty_line_ = false;
+  bool has_line_even_if_empty_ = false;
   bool is_block_in_inline_ = false;
   bool has_overflow_ = false;
   bool has_trailing_spaces_ = false;

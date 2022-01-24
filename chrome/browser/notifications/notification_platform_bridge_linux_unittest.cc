@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_test_util.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "content/public/test/test_utils.h"
@@ -347,7 +348,7 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  void HandleOperation(NotificationCommon::Operation operation,
+  void HandleOperation(NotificationOperation operation,
                        NotificationHandler::Type notification_type,
                        const GURL& origin,
                        const std::string& notification_id,
@@ -451,7 +452,7 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NotificationPlatformBridgeLinux> notification_bridge_linux_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
-  absl::optional<NotificationCommon::Operation> last_operation_;
+  absl::optional<NotificationOperation> last_operation_;
   absl::optional<int> last_action_index_;
   absl::optional<std::u16string> last_reply_;
 
@@ -867,7 +868,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, DefaultButtonForwards) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(NotificationCommon::OPERATION_CLICK, last_operation_);
+  EXPECT_EQ(NotificationOperation::kClick, last_operation_);
   EXPECT_EQ(false, last_action_index_.has_value());
 }
 
@@ -888,7 +889,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, SettingsButtonForwards) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(NotificationCommon::OPERATION_SETTINGS, last_operation_);
+  EXPECT_EQ(NotificationOperation::kSettings, last_operation_);
 }
 
 TEST_F(NotificationPlatformBridgeLinuxTest, ActionButtonForwards) {
@@ -910,7 +911,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, ActionButtonForwards) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(NotificationCommon::OPERATION_CLICK, last_operation_);
+  EXPECT_EQ(NotificationOperation::kClick, last_operation_);
   EXPECT_EQ(1, last_action_index_);
 }
 
@@ -935,7 +936,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, CloseButtonForwards) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(NotificationCommon::OPERATION_CLOSE, last_operation_);
+  EXPECT_EQ(NotificationOperation::kClose, last_operation_);
 }
 
 TEST_F(NotificationPlatformBridgeLinuxTest, NotificationRepliedForwards) {
@@ -957,7 +958,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationRepliedForwards) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(NotificationCommon::OPERATION_CLICK, last_operation_);
+  EXPECT_EQ(NotificationOperation::kClick, last_operation_);
   EXPECT_EQ(false, last_action_index_.has_value());
   EXPECT_EQ(u"Hello", last_reply_);
 }

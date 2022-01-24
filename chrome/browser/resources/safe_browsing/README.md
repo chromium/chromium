@@ -61,6 +61,42 @@ An example script using this API is
 If we regularly need incremental rollouts, it may be worth creating our own
 scripts to do so reliably.
 
+## Procedure for incremental rollout with A/B testing
+  * Open the Omaha Release manager at:
+    https://omaharelease.corp.google.com/product/1436/cohorts
+  * **Disable** the automatic push by changing the _Push Scheduler_ from
+    `LATEST_TO_AUTO` to `NONE`. Then commit the changes by clicking _Commit
+    Automation Changes_.
+  * **Edit** the `download_file_types_experiment.asciipb` file. Make sure the
+    version in this file is greater than the version in
+    `download_file_types.asciipb`. Do not edit `download_file_types.asciipb`.
+    Otherwise, the experiment version will be automatically released with Chrome
+    binary.
+  * **Upload** the new version of the file types.
+    * In a synced checkout, run the following to generate experiment protos for all
+      platforms and push them to GCS. Replace the arg with your build directory:
+        * % `components/safe_browsing/content/resources/push_file_type_proto.py -d
+          out-gn/Debug --experiment`
+  * Create a new cohort.
+    * Name the new cohort with the new experiment version (e.g. `v44`).
+    * Select the file group as `auto_$EXPERIMENT_VERSION_ID`.
+    * Add an attribute with name `tag` and value `$EXPERIMENT_VERSION_ID`
+      (e.g. `44`).
+    * Keep the `auto` cohort unchanged. The auto cohort should be matching to
+      any tag value.
+  * **Rollout** Create a finch study to rollout the new version.
+    * The finch study should set the `tag` value to `$EXPERIMENT_VERSION_ID`
+      that is sent to Omaha.
+    * Recommended schedule: Canary_Dev 50% -> Beta 50% -> Stable 1% -> Launched.
+  * **Cleanup** After the incremental rollout is complete, perform the following
+    cleanup:
+    * Update `download_file_types.asciipb` with changes in
+      `download_file_types_experiment.asciipb`. Make sure the `version_id` is
+      also updated to be equal to the `version_id` in the experiment config.
+      Chrome will then get the new version by default.
+    * Update the `auto` cohort to match to the new file group. Delete the
+      experiment cohort.
+    * set the _Push Scheduler_ back to `LATEST_TO_AUTO`.
 
 ## Guidelines for a DownloadFileType entry:
 See `download_file_types.proto` for all fields.
@@ -105,7 +141,7 @@ See `download_file_types.proto` for all fields.
     sure to specify values for all necessary settings. The `platform_settings`
     will override all of the `default_file_type`'s settings, and this may result
     in a change in behavior for `platform_settings` left unspecified. For
-    example, see [crbug.com/946558](https://crbug.com/956558#c5).
+    example, see [crbug.com/946558](https://crbug.com/946558#c5).
 
   * `platform_settings.danger_level`: (required) Controls how files should be
     handled by the UI in the absence of a better signal from the Safe Browsing

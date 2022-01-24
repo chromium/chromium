@@ -136,8 +136,7 @@ SessionID RecentTabsBuilderTestHelper::GetWindowID(int session_index,
 
 void RecentTabsBuilderTestHelper::AddTab(int session_index, int window_index) {
   base::Time timestamp =
-      start_time_ +
-      base::TimeDelta::FromMinutes(base::RandGenerator(kMaxMinutesRange));
+      start_time_ + base::Minutes(base::RandGenerator(kMaxMinutesRange));
   AddTabWithInfo(session_index, window_index, timestamp, std::u16string());
 }
 

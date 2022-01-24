@@ -48,6 +48,9 @@ class SpdyBuffer::SharedFrameIOBuffer : public IOBuffer {
       : IOBuffer(shared_frame->data->data() + offset),
         shared_frame_(shared_frame) {}
 
+  SharedFrameIOBuffer(const SharedFrameIOBuffer&) = delete;
+  SharedFrameIOBuffer& operator=(const SharedFrameIOBuffer&) = delete;
+
  private:
   ~SharedFrameIOBuffer() override {
     // Prevent ~IOBuffer() from trying to delete |data_|.
@@ -55,8 +58,6 @@ class SpdyBuffer::SharedFrameIOBuffer : public IOBuffer {
   }
 
   const scoped_refptr<SharedFrame> shared_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedFrameIOBuffer);
 };
 
 SpdyBuffer::SpdyBuffer(std::unique_ptr<spdy::SpdySerializedFrame> frame)

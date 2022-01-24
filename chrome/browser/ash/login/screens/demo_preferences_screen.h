@@ -8,12 +8,11 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
 
@@ -30,6 +29,10 @@ class DemoPreferencesScreen
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   DemoPreferencesScreen(DemoPreferencesScreenView* view,
                         const ScreenExitCallback& exit_callback);
+
+  DemoPreferencesScreen(const DemoPreferencesScreen&) = delete;
+  DemoPreferencesScreen& operator=(const DemoPreferencesScreen&) = delete;
+
   ~DemoPreferencesScreen() override;
 
   void SetLocale(const std::string& locale);
@@ -71,8 +74,6 @@ class DemoPreferencesScreen
 
   DemoPreferencesScreenView* view_;
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoPreferencesScreen);
 };
 
 }  // namespace ash

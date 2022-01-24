@@ -18,22 +18,22 @@ instrumental to the Chrome OS system, it's equally important that we run some
 of these integration tests on Chrome's waterfalls. If you find one of these
 tests failing (likely in the `chrome_all_tast_tests` step), you can:
 
-- **Inspect the failed test's log snippet**: There should be a log link for
-each failed test with failure information. eg: For this [failed build], opening
-the [ui.WindowControl] log link contains stack traces and error messages.
+- **Inspect the failed test's log snippet**: There should be a log snippet for
+each failed test in the `Test Results` tab in the build UI. eg: For this
+[failed build], clicking on the `policy.IncognitoModeAvailability` expands to
+include stack traces and error messages.
 
 - **View browser & system logs**: A common cause of failure on Chrome's builders
 are browser crashes. When this happens, each test's log snippets will simply
 contain warnings like "[Chrome probably crashed]". To debug these crashes,
-navigate to the test's Isolated output, listed in the build under the test
-step's [shard #0 isolated out] link. There you'll find expanded logs for every
-test. For example, the [tests/ui.WindowControl/messages] log has more info
-than its earlier snippet. Additionally, you can find system logs under
-the `system_logs/` prefix. To find a system log for a particular test, match
+expand the list of attached artifacts for the test by clicking the `Artifacts`
+link under the failed test in the `Test Results` tab. There you'll find an
+extended log for the test under `log.txt`. Additionally, you can find system
+logs included in that list. To find a system log for a particular test, match
 the timestamps printed in the test's log with the timestamps present in the
-system log filename. For instance, the previous `ui.WindowControl` failure
-matches the [system_logs/chrome/chrome_20201029-195153] browser log, which
-contains the culprit Chrome crash and backtrace.
+system log filename. For instance, the previous `example.ChromeFixture` failure
+matches the [chrome/chrome_20210920-051805] browser log, which contains the
+culprit Chrome crash and backtrace.
 
 - **Symbolizing a browser crash dump**: See [below](#symbolizing-a-crash-dump).
 
@@ -80,14 +80,14 @@ Once both isolates have been fetched you must then generate the breakpad
 symbols by pointing the `generate_breakpad_symbols.py` script to the input's
 build dir:
 ```
-python input/components/crash/content/tools/generate_breakpad_symbols.py --symbols-dir symbols --build-dir input/out/Release/ --binary input/out/Release/chrome
+vpython input/components/crash/content/tools/generate_breakpad_symbols.py --symbols-dir symbols --build-dir input/out/Release/ --binary input/out/Release/chrome
 ```
 
 That will generate the symbols in the `symbols/` dir. Then to symbolize a Chrome
 crash report present in the task's output (such as
 `chrome.20201211.041043.31022.5747.dmp`):
 ```
-./input/out/Release/minidump_stackwalk output/0/crashes/chrome.20201211.041043.31022.5747.dmp symbols/
+./input/out/Release/minidump_stackwalk output/55e4ed786757bf11/crashes/chrome.20201211.041043.31022.5747.dmp symbols/
 ```
 
 
@@ -121,12 +121,9 @@ To run a Tast test the same way it's ran on Chrome's builders:
 
 [linux-chromeos]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/chromeos_build_instructions.md
 [Tast]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/README.md
-[failed build]: https://ci.chromium.org/p/chromium/builders/ci/chromeos-kevin-rel/29791
-[ui.WindowControl]: https://logs.chromium.org/logs/chromium/buildbucket/cr-buildbucket.appspot.com/8865053459542681936/+/steps/chrome_all_tast_tests_on_ChromeOS/0/logs/Deterministic_failure:_ui.WindowControl__status_FAILURE_/0
-[Chrome probably crashed]: https://logs.chromium.org/logs/chromium/buildbucket/cr-buildbucket.appspot.com/8905974915785988832/+/steps/chrome_all_tast_tests__retry_shards_with_patch__on_ChromeOS/0/logs/Deterministic_failure:_ui.ChromeLogin__status_FAILURE_/0
-[shard #0 isolated out]: https://isolateserver.appspot.com/browse?namespace=default-gzip&hash=3d35c273195f640c69b1cf0d15d19d9868e3f593
-[tests/ui.WindowControl/messages]: https://isolateserver.appspot.com/browse?namespace=default-gzip&digest=baefbcfd24c02b3ada4617d259dc6b4220b413b9&as=messages
-[system_logs/chrome/chrome_20201029-195153]: https://isolateserver.appspot.com/browse?namespace=default-gzip&digest=272166c85f190c336a9885f0267cbdea912e31da&as=chrome_20201029-195153
+[failed build]: https://ci.chromium.org/ui/p/chromium/builders/ci/chromeos-kevin-rel/37300/test-results
+[Chrome probably crashed]: https://luci-milo.appspot.com/ui/inv/build-8835572137562508161/test-results?q=example.ChromeFixture
+[chrome/chrome_20210920-051805]: https://luci-milo.appspot.com/ui/artifact/raw/invocations/task-chromium-swarm.appspot.com-561bed66572a9411/artifacts/chrome%2Fchrome_20210920-051805
 [attribute]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
 [this list]: https://codesearch.chromium.org/chromium/src/chromeos/tast_control.gni
 [Chrome uprev]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/chrome_commit_pipeline.md#the-chrome-os-commit-pipeline-for-chrome-changes

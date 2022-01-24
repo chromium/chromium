@@ -30,6 +30,7 @@
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 using password_manager::SyncState;
 
 namespace ios_web_view {
@@ -49,10 +50,10 @@ WebViewPasswordManagerClient::Create(web::WebState* web_state,
           browser_state);
   auto log_manager =
       autofill::LogManager::Create(logRouter, base::RepeatingClosure());
-  scoped_refptr<password_manager::PasswordStore> profile_store =
+  scoped_refptr<password_manager::PasswordStoreInterface> profile_store =
       ios_web_view::WebViewPasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
-  scoped_refptr<password_manager::PasswordStore> account_store =
+  scoped_refptr<password_manager::PasswordStoreInterface> account_store =
       ios_web_view::WebViewAccountPasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   password_manager::PasswordReuseManager* reuse_manager =
@@ -73,8 +74,8 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     std::unique_ptr<autofill::LogManager> log_manager,
-    PasswordStore* profile_store,
-    PasswordStore* account_store,
+    PasswordStoreInterface* profile_store,
+    PasswordStoreInterface* account_store,
     password_manager::PasswordReuseManager* reuse_manager,
     password_manager::PasswordRequirementsService* requirements_service)
     : web_state_(web_state),
@@ -180,17 +181,24 @@ PrefService* WebViewPasswordManagerClient::GetPrefs() const {
   return pref_service_;
 }
 
-PasswordStore* WebViewPasswordManagerClient::GetProfilePasswordStore() const {
+PasswordStoreInterface* WebViewPasswordManagerClient::GetProfilePasswordStore()
+    const {
   return profile_store_;
 }
 
-PasswordStore* WebViewPasswordManagerClient::GetAccountPasswordStore() const {
+PasswordStoreInterface* WebViewPasswordManagerClient::GetAccountPasswordStore()
+    const {
   return account_store_;
 }
 
 password_manager::PasswordReuseManager*
 WebViewPasswordManagerClient::GetPasswordReuseManager() const {
   return reuse_manager_;
+}
+
+password_manager::PasswordScriptsFetcher*
+WebViewPasswordManagerClient::GetPasswordScriptsFetcher() {
+  return nullptr;
 }
 
 void WebViewPasswordManagerClient::NotifyUserAutoSignin(

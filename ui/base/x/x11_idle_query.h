@@ -6,7 +6,6 @@
 #define UI_BASE_X_X11_IDLE_QUERY_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace x11 {
 class Connection;
@@ -17,14 +16,16 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_X) IdleQueryX11 {
  public:
   IdleQueryX11();
+
+  IdleQueryX11(const IdleQueryX11&) = delete;
+  IdleQueryX11& operator=(const IdleQueryX11&) = delete;
+
   ~IdleQueryX11();
 
   int IdleTime();
 
  private:
   x11::Connection* connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleQueryX11);
 };
 
 }  // namespace ui

@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
 #import "content/browser/accessibility/browser_accessibility_mac.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -56,7 +57,7 @@ BrowserAccessibilityManagerMac::BrowserAccessibilityManagerMac(
   Initialize(initial_tree);
 }
 
-BrowserAccessibilityManagerMac::~BrowserAccessibilityManagerMac() {}
+BrowserAccessibilityManagerMac::~BrowserAccessibilityManagerMac() = default;
 
 // static
 ui::AXTreeUpdate BrowserAccessibilityManagerMac::GetEmptyDocument() {
@@ -238,7 +239,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
                 }
               },
               std::move(retained_node)),
-          base::TimeDelta::FromMilliseconds(kLiveRegionChangeIntervalMS));
+          base::Milliseconds(kLiveRegionChangeIntervalMS));
       return;
     }
     case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
@@ -301,7 +302,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         // selection change if the focus did not change.
         BrowserAccessibility* focus = GetFocus();
         BrowserAccessibility* container =
-            focus->PlatformGetSelectionContainer();
+            focus ? focus->PlatformGetSelectionContainer() : nullptr;
 
         if (focus && node == container &&
             container->HasState(ax::mojom::State::kMultiselectable) &&
@@ -367,6 +368,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
     case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
     case ui::AXEventGenerator::Event::BUSY_CHANGED:
+    case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
     case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
     case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
     case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
@@ -574,7 +576,10 @@ id BrowserAccessibilityManagerMac::GetWindow() {
 bool BrowserAccessibilityManagerMac::IsChromeNewTabPage() {
   if (!delegate() || !IsRootTree())
     return false;
-  content::WebContents* web_contents = delegate()->AccessibilityWebContents();
+  content::WebContents* web_contents = WebContents::FromRenderFrameHost(
+      delegate()->AccessibilityRenderFrameHost());
+  if (!web_contents)
+    return false;
   const GURL& url = web_contents->GetVisibleURL();
   return url == GURL("chrome://newtab/") ||
          url == GURL("chrome://new-tab-page") ||

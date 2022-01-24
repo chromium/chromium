@@ -255,7 +255,7 @@ With [Chromium X-Refs](https://github.com/karlinjf/ChromiumXRefs/) you can
 perform [https://cs.chromium.org](https://cs.chromium.org) cross-reference
 searches in your editor. This gives you the call graph, overrides, references,
 declaration, and definition of most of the code. The results are as fresh as
-the search engine's index so uncomitted changes won't be reflected.
+the search engine's index so uncommitted changes won't be reflected.
 
 More information on Chromium X-Ref's functionality (including keyboard and
 mouse shortcuts) can be found on the [Chromium X-Refs

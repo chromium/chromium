@@ -1,0 +1,4 @@
+partial interface Navigator {
+  Promise<undefined> createAdRequest();
+  Promise<undefined> finalizeAd();
+};

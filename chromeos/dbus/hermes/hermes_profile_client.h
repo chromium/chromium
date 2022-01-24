@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "dbus/property.h"
@@ -99,6 +98,13 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesProfileClient {
   virtual void DisableCarrierProfile(
       const dbus::ObjectPath& carrier_profile_path,
       HermesResponseCallback callback) = 0;
+
+  // Rename the profile's nick name to |new_name| with given
+  // |carrier_profile_path|. |callback| will receive status code indicating
+  // response status.
+  virtual void RenameProfile(const dbus::ObjectPath& carrier_profile_path,
+                             const std::string& new_name,
+                             HermesResponseCallback callback) = 0;
 
   // Returns properties for eSIM carrier profile with given
   // |carrier_profile_path|.

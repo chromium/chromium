@@ -7,7 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash,
        "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
 
-component("ui") {
+source_set("ui") {
   output_name = "quick_pair_ui"
 
   defines = [ "IS_QUICK_PAIR_UI_IMPL" ]
@@ -15,8 +15,6 @@ component("ui") {
   sources = [
     "actions.cc",
     "actions.h",
-    "fast_pair/fast_pair_image_decoder.cc",
-    "fast_pair/fast_pair_image_decoder.h",
     "fast_pair/fast_pair_notification_controller.cc",
     "fast_pair/fast_pair_notification_controller.h",
     "fast_pair/fast_pair_presenter.cc",
@@ -29,11 +27,12 @@ component("ui") {
   deps = [
     "//ash/public/cpp:cpp",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/proto:fastpair_proto",
+    "//ash/quick_pair/repository",
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//base",
-    "//components/image_fetcher/core",
-    "//services/data_decoder/public/cpp",
+    "//third_party/protobuf:protobuf_lite",
     "//ui/base",
     "//ui/gfx",
     "//ui/message_center",

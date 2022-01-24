@@ -361,6 +361,8 @@ void WebRtcLogUploader::SetupMultipart(
   const char product[] = "Chrome_Android";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   const char product[] = "Chrome_ChromeOS";
+#elif defined(OS_FUCHSIA)
+  const char product[] = "Chrome_Fuchsia";
 #else
 #error Platform not supported.
 #endif

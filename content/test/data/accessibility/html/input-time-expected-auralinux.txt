@@ -1,6 +1,6 @@
 [document web]
 ++[section]
-++++[dateeditor]
+++++[dateeditor] text-input-type:time
 ++++++[section]
 ++++++++[section]
 ++++++++++[spin button] name='Hours' xml-roles:spinbutton current=12.000000 minimum=1.000000 maximum=12.000000
@@ -9,7 +9,7 @@
 ++++++++++[static] name=' '
 ++++++++++[spin button] name='AM/PM' xml-roles:spinbutton current=1.000000 minimum=1.000000 maximum=2.000000
 ++++++[push button] name='Show time picker' xml-roles:button
-++++[dateeditor] name='Breakfast'
+++++[dateeditor] name='Breakfast' text-input-type:time
 ++++++[section]
 ++++++++[section]
 ++++++++++[spin button] name='Hours Breakfast' xml-roles:spinbutton current=12.000000 minimum=1.000000 maximum=12.000000

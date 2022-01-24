@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"

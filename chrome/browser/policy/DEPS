@@ -8,5 +8,8 @@ specific_include_rules = {
   "policy_browsertest\.cc": [
     "+ash/shell.h",
     "+content/common/content_navigation_policy.h",
+  ],
+  "screenshot_policy_browsertest\.cc": [
+    "+ui/message_center",
   ]
 }

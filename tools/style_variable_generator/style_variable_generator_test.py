@@ -86,6 +86,25 @@ class TSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         self.generator.generator_options = {'include_style_sheet': 'true'}
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
+    def testTypography(self):
+        expected_file_name = 'colors_test_typography_expected.ts'
+        self.generator.AddJSONFileToModel('typography_test.json5')
+        self.generator.generator_options = {'include_style_sheet': 'true'}
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
+    def testUntypedCSS(self):
+        expected_file_name = 'colors_test_untyped_css_expected.ts'
+        self.generator.AddJSONFileToModel('untyped_css_test.json5')
+        self.generator.generator_options = {'include_style_sheet': 'true'}
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
+    def testTypographyAndUntypedCSS(self):
+        expected_file_name = 'colors_test_typography_and_untyped_css_expected.ts'
+        self.generator.AddJSONFileToModel('typography_test.json5')
+        self.generator.AddJSONFileToModel('untyped_css_test.json5')
+        self.generator.generator_options = {'include_style_sheet': 'true'}
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
 
 class ProtoStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
@@ -104,7 +123,6 @@ class ProtoJSONStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         # confirm we do not generate duplicate fields.
         self.generator.AddJSONFileToModel('additional_colors_test.json5')
         self.expected_output_file = 'colors_test_expected.protojson'
-
 
 if __name__ == '__main__':
     unittest.main()

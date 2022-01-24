@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 
@@ -82,6 +83,8 @@ bool WebFormControlElement::UserHasEditedTheField() const {
     return input->UserHasEditedTheField();
   if (auto* select_element = DynamicTo<HTMLSelectElement>(*private_))
     return select_element->UserHasEditedTheField();
+  if (auto* select_menu_element = DynamicTo<HTMLSelectMenuElement>(*private_))
+    return select_menu_element->UserHasEditedTheField();
   return true;
 }
 
@@ -90,6 +93,8 @@ void WebFormControlElement::SetUserHasEditedTheField(bool value) {
     input->SetUserHasEditedTheField(value);
   if (auto* select_element = DynamicTo<HTMLSelectElement>(*private_))
     select_element->SetUserHasEditedTheField(value);
+  if (auto* select_menu_element = DynamicTo<HTMLSelectMenuElement>(*private_))
+    select_menu_element->SetUserHasEditedTheField(value);
 }
 
 void WebFormControlElement::SetUserHasEditedTheFieldForTest() {
@@ -99,6 +104,17 @@ void WebFormControlElement::SetUserHasEditedTheFieldForTest() {
 
 void WebFormControlElement::SetAutofillState(WebAutofillState autofill_state) {
   Unwrap<HTMLFormControlElement>()->SetAutofillState(autofill_state);
+}
+
+void WebFormControlElement::SetPreventHighlightingOfAutofilledFields(
+    bool prevent_highlighting) {
+  Unwrap<HTMLFormControlElement>()->SetPreventHighlightingOfAutofilledFields(
+      prevent_highlighting);
+}
+
+bool WebFormControlElement::PreventHighlightingOfAutofilledFields() const {
+  return ConstUnwrap<HTMLFormControlElement>()
+      ->PreventHighlightingOfAutofilledFields();
 }
 
 WebString WebFormControlElement::AutofillSection() const {
@@ -265,7 +281,7 @@ WebFormElement WebFormControlElement::Form() const {
   return WebFormElement(ConstUnwrap<HTMLFormControlElement>()->Form());
 }
 
-unsigned WebFormControlElement::UniqueRendererFormControlId() const {
+uint64_t WebFormControlElement::UniqueRendererFormControlId() const {
   return ConstUnwrap<HTMLFormControlElement>()->UniqueRendererFormControlId();
 }
 

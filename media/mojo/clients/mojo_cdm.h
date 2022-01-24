@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -52,6 +51,9 @@ class MojoCdm final : public ContentDecryptionModule,
           const SessionClosedCB& session_closed_cb,
           const SessionKeysChangeCB& session_keys_change_cb,
           const SessionExpirationUpdateCB& session_expiration_update_cb);
+
+  MojoCdm(const MojoCdm&) = delete;
+  MojoCdm& operator=(const MojoCdm&) = delete;
 
   // ContentDecryptionModule implementation.
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
@@ -161,8 +163,6 @@ class MojoCdm final : public ContentDecryptionModule,
 
   // This must be the last member.
   base::WeakPtrFactory<MojoCdm> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoCdm);
 };
 
 }  // namespace media

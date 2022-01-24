@@ -4,24 +4,17 @@
 
 #include "ash/system/audio/unified_volume_view.h"
 
-#include <cmath>
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_pref_names.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
-#include "components/live_caption/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
-#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -33,7 +26,6 @@
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -65,8 +57,8 @@ const gfx::VectorIcon& GetVolumeIconForLevel(float level) {
   return *kVolumeLevelIcons[index];
 }
 
-// A template class for the UnifiedVolumeView buttons, used by the More and
-// Live Caption buttons. |T| must be a subtype of |views::Button|.
+// A template class for the UnifiedVolumeView buttons, used by the More button.
+// |T| must be a subtype of |views::Button|.
 template <typename T>
 class UnifiedVolumeViewButton : public T {
  public:
@@ -108,63 +100,6 @@ class UnifiedVolumeViewButton : public T {
   }
 };
 
-class LiveCaptionButton
-    : public UnifiedVolumeViewButton<views::ToggleImageButton> {
- public:
-  explicit LiveCaptionButton(PressedCallback callback)
-      : UnifiedVolumeViewButton(std::move(callback)) {
-    DCHECK_EQ(GetDefaultSizeOfVectorIcon(vector_icons::kLiveCaptionOffIcon),
-              GetDefaultSizeOfVectorIcon(vector_icons::kLiveCaptionOnIcon));
-    int icon_size =
-        GetDefaultSizeOfVectorIcon(vector_icons::kLiveCaptionOnIcon);
-    SetBorder(
-        views::CreateEmptyBorder(gfx::Insets((kTrayItemSize - icon_size) / 2)));
-    SetImageHorizontalAlignment(ALIGN_CENTER);
-    SetImageVerticalAlignment(ALIGN_MIDDLE);
-
-    SetTooltipText(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP,
-        l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_LIVE_CAPTION_DISABLED_STATE_TOOLTIP)));
-    SetToggledTooltipText(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP,
-        l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_LIVE_CAPTION_ENABLED_STATE_TOOLTIP)));
-
-    SetToggledBackground(views::CreateRoundedRectBackground(
-        GetToggledBackgroundColor(), kTrayItemCornerRadius));
-  }
-
-  ~LiveCaptionButton() override = default;
-
-  const char* GetClassName() const override { return "LiveCaptionButton"; }
-
-  void OnThemeChanged() override {
-    UnifiedVolumeViewButton::OnThemeChanged();
-    const int icon_size =
-        GetDefaultSizeOfVectorIcon(vector_icons::kLiveCaptionOnIcon);
-    views::SetImageFromVectorIconWithColor(
-        this, vector_icons::kLiveCaptionOffIcon, icon_size, GetIconColor());
-    views::SetToggledImageFromVectorIconWithColor(
-        this, vector_icons::kLiveCaptionOnIcon, icon_size,
-        GetToggledIconColor(), GetToggledIconColor());
-    GetToggledBackground()->SetNativeControlColor(GetToggledBackgroundColor());
-  }
-
-  SkColor GetToggledIconColor() {
-    return AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
-  }
-
-  SkColor GetToggledBackgroundColor() {
-    return AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LiveCaptionButton);
-};
-
 class MoreButton : public UnifiedVolumeViewButton<views::Button> {
  public:
   explicit MoreButton(PressedCallback callback)
@@ -180,6 +115,9 @@ class MoreButton : public UnifiedVolumeViewButton<views::Button> {
     more_image_->SetCanProcessEventsWithinSubtree(false);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO));
   }
+
+  MoreButton(const MoreButton&) = delete;
+  MoreButton& operator=(const MoreButton&) = delete;
 
   ~MoreButton() override = default;
 
@@ -199,32 +137,24 @@ class MoreButton : public UnifiedVolumeViewButton<views::Button> {
 
  private:
   views::ImageView* more_image_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MoreButton);
 };
 
 }  // namespace
 
 UnifiedVolumeView::UnifiedVolumeView(
     UnifiedVolumeSliderController* controller,
-    UnifiedVolumeSliderController::Delegate* delegate,
-    bool in_bubble)
+    UnifiedVolumeSliderController::Delegate* delegate)
     : UnifiedSliderView(base::BindRepeating(
                             &UnifiedVolumeSliderController::SliderButtonPressed,
                             base::Unretained(controller)),
                         controller,
                         kSystemMenuVolumeHighIcon,
                         IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL),
-      in_bubble_(in_bubble),
-      live_caption_button_(new LiveCaptionButton(
-          base::BindRepeating(&UnifiedVolumeView::OnLiveCaptionButtonPressed,
-                              base::Unretained(this)))),
       more_button_(new MoreButton(
           base::BindRepeating(&UnifiedVolumeSliderController::Delegate::
                                   OnAudioSettingsButtonClicked,
                               base::Unretained(delegate)))) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
-  AddChildViewAt(live_caption_button_, 0);
   AddChildView(more_button_);
   Update(false /* by_user */);
 }
@@ -257,13 +187,6 @@ void UnifiedVolumeView::Update(bool by_user) {
                : IDS_ASH_STATUS_TRAY_VOLUME_STATE_ON);
   button()->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_VOLUME, state_tooltip_text));
-
-  live_caption_button_->SetVisible(
-      in_bubble_ &&
-      base::FeatureList::IsEnabled(media::kLiveCaptionSystemWideOnChromeOS));
-  live_caption_button_->SetToggled(
-      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-          ::prefs::kLiveCaptionEnabled));
 
   // Slider's value is in finer granularity than audio volume level(0.01),
   // there will be a small discrepancy between slider's value and volume level
@@ -301,14 +224,6 @@ void UnifiedVolumeView::OnActiveInputNodeChanged() {
 
 void UnifiedVolumeView::ChildVisibilityChanged(views::View* child) {
   Layout();
-}
-
-void UnifiedVolumeView::OnLiveCaptionButtonPressed() {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  bool enabled = !prefs->GetBoolean(::prefs::kLiveCaptionEnabled);
-  prefs->SetBoolean(::prefs::kLiveCaptionEnabled, enabled);
-  live_caption_button_->SetToggled(enabled);
 }
 
 }  // namespace ash

@@ -34,8 +34,7 @@ int SafeBrowsingTokenFetchTracker::StartTrackingTokenFetch(
       base::BindOnce(&SafeBrowsingTokenFetchTracker::OnTokenFetchTimeout,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      std::move(on_token_fetch_timeout_callback)),
-      base::TimeDelta::FromMilliseconds(
-          kTokenFetchTimeoutDelayFromMilliseconds));
+      base::Milliseconds(kTokenFetchTimeoutDelayFromMilliseconds));
 
   return request_id;
 }

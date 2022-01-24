@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.history;
 
+import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,6 +55,13 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     public void queryHistoryContinuation() {
         BrowsingHistoryBridgeJni.get().queryHistoryContinuation(
                 mNativeHistoryBridge, BrowsingHistoryBridge.this, new ArrayList<HistoryItem>());
+    }
+
+    @Override
+    public void getLastVisitToHostBeforeRecentNavigations(
+            String hostName, Callback<Long> callback) {
+        BrowsingHistoryBridgeJni.get().getLastVisitToHostBeforeRecentNavigations(
+                mNativeHistoryBridge, BrowsingHistoryBridge.this, hostName, callback);
     }
 
     @Override
@@ -122,6 +130,8 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 List<HistoryItem> historyItems, String query, boolean hostOnly);
         void queryHistoryContinuation(long nativeBrowsingHistoryBridge,
                 BrowsingHistoryBridge caller, List<HistoryItem> historyItems);
+        void getLastVisitToHostBeforeRecentNavigations(long nativeBrowsingHistoryBridge,
+                BrowsingHistoryBridge caller, String hostName, Callback<Long> callback);
         void markItemForRemoval(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller,
                 GURL url, long[] nativeTimestamps);
         void removeItems(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller);

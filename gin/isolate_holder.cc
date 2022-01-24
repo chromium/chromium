@@ -12,9 +12,9 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/single_thread_task_runner.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gin/debug_impl.h"
@@ -23,6 +23,8 @@
 #include "gin/v8_initializer.h"
 #include "gin/v8_isolate_memory_dump_provider.h"
 #include "gin/v8_shared_memory_dump_provider.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-snapshot.h"
 
 namespace gin {
 
@@ -53,7 +55,9 @@ IsolateHolder::IsolateHolder(
     AccessMode access_mode,
     AllowAtomicsWaitMode atomics_wait_mode,
     IsolateType isolate_type,
-    IsolateCreationMode isolate_creation_mode)
+    IsolateCreationMode isolate_creation_mode,
+    v8::CreateHistogramCallback create_histogram_callback,
+    v8::AddHistogramSampleCallback add_histogram_sample_callback)
     : access_mode_(access_mode), isolate_type_(isolate_type) {
   CHECK(Initialized())
       << "You need to invoke gin::IsolateHolder::Initialize first";
@@ -86,6 +90,8 @@ IsolateHolder::IsolateHolder(
     params.only_terminate_in_safe_scope = true;
     params.embedder_wrapper_type_index = kWrapperInfoIndex;
     params.embedder_wrapper_object_index = kEncodedValueIndex;
+    params.create_histogram_callback = create_histogram_callback;
+    params.add_histogram_sample_callback = add_histogram_sample_callback;
 
     v8::Isolate::Initialize(isolate_, params);
   }
@@ -108,9 +114,10 @@ IsolateHolder::~IsolateHolder() {
 // static
 void IsolateHolder::Initialize(ScriptMode mode,
                                v8::ArrayBuffer::Allocator* allocator,
-                               const intptr_t* reference_table) {
+                               const intptr_t* reference_table,
+                               const std::string js_command_line_flags) {
   CHECK(allocator);
-  V8Initializer::Initialize(mode);
+  V8Initializer::Initialize(mode, js_command_line_flags);
   g_array_buffer_allocator = allocator;
   g_reference_table = reference_table;
 }

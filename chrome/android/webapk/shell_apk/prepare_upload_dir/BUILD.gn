@@ -51,10 +51,10 @@ copy_dir("copy_components_libs_common_res_splash_to_upload_dir") {
 copy_ex("copy_extra_files_to_upload_dir") {
   dest = upload_dir
 
-  renaming_sources = [ generate_old_style_manifest_for_upload_output ]
+  renaming_sources = [ generate_chromeos_manifest_for_upload_output ]
   renaming_destinations = [ "AndroidManifest.xml" ]
 
-  renaming_sources += [ generate_new_style_manifest_for_upload_output ]
+  renaming_sources += [ generate_manifest_for_upload_output ]
   renaming_destinations += [ "new_style_AndroidManifest.xml" ]
 
   _strings_target = "//chrome/android/webapk/shell_apk:webapk_strings_grd"
@@ -63,8 +63,8 @@ copy_ex("copy_extra_files_to_upload_dir") {
   renaming_destinations += [ "res/strings.zip" ]
 
   deps = [
-    "//chrome/android/webapk/shell_apk:generate_new_style_manifest_for_upload",
-    "//chrome/android/webapk/shell_apk:generate_old_style_manifest_for_upload",
+    "//chrome/android/webapk/shell_apk:generate_chromeos_manifest_for_upload",
+    "//chrome/android/webapk/shell_apk:generate_manifest_for_upload",
     "//chrome/android/webapk/shell_apk:webapk_strings_grd",
   ]
 }

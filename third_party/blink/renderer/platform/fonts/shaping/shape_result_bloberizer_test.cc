@@ -61,7 +61,7 @@ struct ExpectedRun {
   std::string utf8;
   // Currently RTL is output in reverse of logical order, but this is not
   // a requirement. This really just expects montonicity.
-  enum ClusterDirection { Ascending, Descending } cluster_direction;
+  enum ClusterDirection { kAscending, kDescending } cluster_direction;
 };
 using ExpectedBlob = std::vector<const ExpectedRun>;
 
@@ -110,7 +110,7 @@ void CheckBlobBuffer(const ShapeResultBloberizer::BlobBuffer& blob_buffer,
         EXPECT_LE(0ul, run.fClusterIndex_forTest[i]);
         EXPECT_LT((int)run.fClusterIndex_forTest[i], run.fUtf8Size_forTest);
         auto expected_direction = expected_run.cluster_direction;
-        if (expected_direction == ExpectedRun::ClusterDirection::Ascending) {
+        if (expected_direction == ExpectedRun::ClusterDirection::kAscending) {
           EXPECT_LE(utf8_index_previous, run.fClusterIndex_forTest[i]);
         } else {
           EXPECT_GE(utf8_index_previous, run.fClusterIndex_forTest[i]);
@@ -373,7 +373,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
                .ToString()
                .Substring(run_info.from, run_info.to - run_info.from)
                .Utf8(),
-           ExpectedRun::ClusterDirection::Ascending},
+           ExpectedRun::ClusterDirection::kAscending},
       }});
 }
 
@@ -441,7 +441,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBufferNG) {
           {5,
            string.Substring(text_info.from, text_info.to - text_info.from)
                .Utf8(),
-           ExpectedRun::ClusterDirection::Descending},
+           ExpectedRun::ClusterDirection::kDescending},
       }});
 }
 
@@ -468,7 +468,7 @@ TEST_F(ShapeResultBloberizerTest, FourByteUtf8CodepointsNG) {
           {2,
            string.Substring(text_info.from, text_info.to - text_info.from)
                .Utf8(),
-           ExpectedRun::ClusterDirection::Ascending},
+           ExpectedRun::ClusterDirection::kAscending},
       }});
 }
 
@@ -502,7 +502,7 @@ TEST_F(ShapeResultBloberizerTest, OffsetIntoTrailingSurrogateNG) {
            string
                .Substring(text_info.from + 1, text_info.to - text_info.from - 1)
                .Utf8(),
-           ExpectedRun::ClusterDirection::Ascending},
+           ExpectedRun::ClusterDirection::kAscending},
       }});
 }
 
@@ -551,19 +551,19 @@ TEST_F(ShapeResultBloberizerTest, LatinMultRunNG) {
           // "Testi"
           {static_cast<int>(range_a.length() - 1),
            string.Substring(range_a.from + 1, range_a.length() - 1).Utf8(),
-           ExpectedRun::ClusterDirection::Ascending},
+           ExpectedRun::ClusterDirection::kAscending},
           // "ng"
           {static_cast<int>(range_b.length()),
            string.Substring(range_b.from, range_b.length()).Utf8(),
-           ExpectedRun::ClusterDirection::Ascending},
+           ExpectedRun::ClusterDirection::kAscending},
           // " ShapeResultIterator::Cop"
           {static_cast<int>(range_c.length()),
            string.Substring(range_c.from, range_c.length()).Utf8(),
-           ExpectedRun::ClusterDirection::Ascending},
+           ExpectedRun::ClusterDirection::kAscending},
           // "yRange"
           {static_cast<int>(range_d.length()),
            string.Substring(range_d.from, range_d.length()).Utf8(),
-           ExpectedRun::ClusterDirection::Ascending},
+           ExpectedRun::ClusterDirection::kAscending},
       }});
 }
 
@@ -611,15 +611,15 @@ TEST_F(ShapeResultBloberizerTest, SupplementaryMultiRunNG) {
                       // "𠜎𠜱𠝹"
                       {static_cast<int>(range_a.length() / 2),
                        string.Substring(range_a.from, range_a.length()).Utf8(),
-                       ExpectedRun::ClusterDirection::Ascending},
+                       ExpectedRun::ClusterDirection::kAscending},
                       // "𠱓𠱸𠲖"
                       {static_cast<int>(range_b.length() / 2),
                        string.Substring(range_b.from, range_b.length()).Utf8(),
-                       ExpectedRun::ClusterDirection::Ascending},
+                       ExpectedRun::ClusterDirection::kAscending},
                       // "𠳏𠳕"
                       {static_cast<int>(range_c.length() / 2),
                        string.Substring(range_c.from, range_c.length()).Utf8(),
-                       ExpectedRun::ClusterDirection::Ascending},
+                       ExpectedRun::ClusterDirection::kAscending},
                   }});
 }
 

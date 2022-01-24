@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/hit_test.h"
@@ -125,6 +126,23 @@ void NonClientFrameView::Layout() {
     client_view->SetClipPath(client_clip);
 }
 
+View::Views NonClientFrameView::GetChildrenInZOrder() {
+  View::Views paint_order = View::GetChildrenInZOrder();
+  views::ClientView* client_view =
+      GetWidget() ? GetWidget()->client_view() : nullptr;
+
+  // Move the client view to the beginning of the Z-order to ensure that the
+  // other children of the frame view draw on top of it.
+  if (client_view && base::Erase(paint_order, client_view))
+    paint_order.insert(paint_order.begin(), client_view);
+
+  return paint_order;
+}
+
+void NonClientFrameView::InsertClientView(ClientView* client_view) {
+  AddChildView(client_view);
+}
+
 NonClientFrameView::NonClientFrameView() {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }
@@ -158,7 +176,7 @@ void NonClientView::SetFrameView(
   frame_view_ = std::move(frame_view);
   if (parent()) {
     AddChildViewAt(frame_view_.get(), 0);
-    frame_view_->AddChildViewAt(client_view_, 0);
+    frame_view_->InsertClientView(client_view_);
   }
 
   if (old_frame_view)
@@ -289,7 +307,7 @@ void NonClientView::ViewHierarchyChanged(
   // constructor.
   if (details.is_add && GetWidget() && details.child == this) {
     AddChildViewAt(frame_view_.get(), 0);
-    frame_view_->AddChildViewAt(client_view_, 0);
+    frame_view_->InsertClientView(client_view_);
     if (overlay_view_)
       AddChildView(overlay_view_);
   }

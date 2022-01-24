@@ -14,8 +14,9 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 OptimizationGuideNavigationData::OptimizationGuideNavigationData(
-    int64_t navigation_id)
-    : navigation_id_(navigation_id) {}
+    int64_t navigation_id,
+    base::TimeTicks navigation_start)
+    : navigation_id_(navigation_id), navigation_start_(navigation_start) {}
 
 OptimizationGuideNavigationData::~OptimizationGuideNavigationData() {
   RecordMetrics();

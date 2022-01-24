@@ -332,6 +332,12 @@ public class RadioButtonWithDescription extends RelativeLayout implements OnClic
         mDescription.setEnabled(enabled);
         mPrimary.setEnabled(enabled);
         mRadioButton.setEnabled(enabled);
+        if (mIcon != null) {
+            TypedValue disabledAlpha = new TypedValue();
+            getContext().getResources().getValue(
+                    R.dimen.default_disabled_alpha, disabledAlpha, true);
+            mIcon.setAlpha(enabled ? 1.0f : disabledAlpha.getFloat());
+        }
     }
 
     @Override

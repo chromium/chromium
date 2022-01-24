@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -14,6 +16,7 @@
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
@@ -27,6 +30,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
@@ -34,10 +40,12 @@
 #include "third_party/blink/renderer/modules/mediastream/navigator_media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
+#include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -51,13 +59,35 @@ const char kFeaturePolicyBlocked[] =
 
 class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
  public:
-  explicit PromiseResolverCallbacks(ScriptPromiseResolver* resolver)
-      : resolver_(resolver) {}
+  PromiseResolverCallbacks(
+      ScriptPromiseResolver* resolver,
+      base::OnceCallback<void(const String&, MediaStreamTrack*)>
+          on_success_follow_up)
+      : resolver_(resolver),
+        on_success_follow_up_(std::move(on_success_follow_up)) {}
   ~PromiseResolverCallbacks() override = default;
 
-  void OnSuccess(ScriptWrappable* callback_this_value,
-                 MediaStream* stream) override {
+  void OnSuccess(MediaStream* stream) override {
+    DCHECK(stream);
+
+    MediaStreamTrack* video_track = nullptr;
+
+    if (on_success_follow_up_) {
+      // Only getDisplayMedia() calls set |on_success_follow_up_|.
+      // Successful invocations of getDisplayMedia() always have exactly
+      // one video track.
+      MediaStreamTrackVector video_tracks = stream->getVideoTracks();
+      DCHECK_EQ(video_tracks.size(), 1u);
+      video_track = video_tracks[0];
+    }
+
+    // Resolve Promise<MediaStream> on a microtask.
     resolver_->Resolve(stream);
+
+    // Enqueue the follow-up microtask, if any is intended.
+    if (on_success_follow_up_ && video_track) {
+      std::move(on_success_follow_up_).Run(stream->id(), video_track);
+    }
   }
   void OnError(ScriptWrappable* callback_this_value,
                const V8MediaStreamError* error) override {
@@ -71,6 +101,16 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
 
  private:
   Member<ScriptPromiseResolver> resolver_;
+  base::OnceCallback<void(const String&, MediaStreamTrack*)>
+      on_success_follow_up_;
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DisplayCapturePolicyResult {
+  kDisallowed = 0,
+  kAllowed = 1,
+  kMaxValue = kAllowed
 };
 
 }  // namespace
@@ -143,7 +183,19 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  auto* callbacks = MakeGarbageCollected<PromiseResolverCallbacks>(resolver);
+
+  base::OnceCallback<void(const String&, MediaStreamTrack*)>
+      on_success_follow_up;
+#if !defined(OS_ANDROID)
+  if (media_type == UserMediaRequest::MediaType::kDisplayMedia) {
+    on_success_follow_up = WTF::Bind(
+        &MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
+        WrapWeakPersistent(this));
+  }
+#endif
+
+  auto* callbacks = MakeGarbageCollected<PromiseResolverCallbacks>(
+      resolver, std::move(on_success_follow_up));
 
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   UserMediaController* user_media = UserMediaController::From(window);
@@ -186,7 +238,7 @@ ScriptPromise MediaDevices::getDisplayMedia(
     ScriptState* script_state,
     const MediaStreamConstraints* options,
     ExceptionState& exception_state) {
-  const ExecutionContext* const context = GetExecutionContext();
+  ExecutionContext* const context = GetExecutionContext();
   if (!context) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -194,46 +246,31 @@ ScriptPromise MediaDevices::getDisplayMedia(
     return ScriptPromise();
   }
 
-  if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
-          ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
-    return ScriptPromise();
+  // The kDisplayCapturePermissionsPolicyEnabled preference controls whether
+  // the display-capture permissions-policy is applied or skipped.
+  // The kDisplayCapturePermissionsPolicyEnabled preference is translated
+  // into DisplayCapturePermissionsPolicyEnabled RuntimeEnabledFeature.
+  if (RuntimeEnabledFeatures::DisplayCapturePermissionsPolicyEnabled()) {
+    const bool capture_allowed_by_permissions_policy =
+        context->IsFeatureEnabled(
+            mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
+            ReportOptions::kReportOnFailure);
+
+    base::UmaHistogramEnumeration(
+        "Media.Ui.GetDisplayMedia.DisplayCapturePolicyResult",
+        capture_allowed_by_permissions_policy
+            ? DisplayCapturePolicyResult::kAllowed
+            : DisplayCapturePolicyResult::kDisallowed);
+
+    if (!capture_allowed_by_permissions_policy) {
+      exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+      return ScriptPromise();
+    }
   }
 
   return SendUserMediaRequest(script_state,
                               UserMediaRequest::MediaType::kDisplayMedia,
                               options, exception_state);
-}
-
-ScriptPromise MediaDevices::getCurrentBrowsingContextMedia(
-    ScriptState* script_state,
-    const MediaStreamConstraints* options,
-    ExceptionState& exception_state) {
-  const ExecutionContext* const context = GetExecutionContext();
-  if (!context) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "The implementation did not support the requested type of object or "
-        "operation.");
-    return ScriptPromise();
-  }
-
-  // This call should not be possible otherwise, as per the RuntimeEnabled
-  // in the IDL.
-  CHECK(RuntimeEnabledFeatures::GetCurrentBrowsingContextMediaEnabled(context));
-
-  if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
-          ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
-    return ScriptPromise();
-  }
-
-  return SendUserMediaRequest(
-      script_state,
-      UserMediaRequest::MediaType::kGetCurrentBrowsingContextMedia, options,
-      exception_state);
 }
 
 void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
@@ -295,6 +332,51 @@ void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
 
   GetDispatcherHost(window->GetFrame())
       ->SetCaptureHandleConfig(std::move(config_ptr));
+}
+
+ScriptPromise MediaDevices::produceCropId(
+    ScriptState* script_state,
+    V8UnionHTMLDivElementOrHTMLIFrameElement* element_union,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Current frame is detached.");
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  auto* element =
+      element_union->IsHTMLDivElement()
+          ? static_cast<Element*>(element_union->GetAsHTMLDivElement())
+          : static_cast<Element*>(element_union->GetAsHTMLIFrameElement());
+
+  const RegionCaptureCropId* const old_crop_id =
+      element->GetRegionCaptureCropId();
+  if (old_crop_id) {  // produceCropId() previously called on this element.
+    DCHECK(!old_crop_id->value().is_zero());
+    resolver->Resolve(WTF::String(
+        blink::TokenToGUID(old_crop_id->value()).AsLowercaseString()));
+    return promise;
+  }
+
+  // TODO(crbug.com/1247761): Produce the crop-ID in the browser process,
+  // where it's free from interference by potential malicious applications
+  // trying to produce collisions. Also, we need it there in order to
+  // validate IDs provided to cropTo() for (1) validity and (2) association
+  // with the current browsing context.
+  const base::GUID new_crop_id = base::GUID::GenerateRandomV4();
+  element->SetRegionCaptureCropId(
+      std::make_unique<RegionCaptureCropId>(blink::GUIDToToken(new_crop_id)));
+
+  // TODO(crbug.com/1247761): Delay resolution until ack from Viz received.
+  // Multiple calls to produceCropId() will be handled by returning distinct
+  // Promises which are all fulfilled (in sequence) when the first one is
+  // fulfilled.
+  const std::string& serialized_crop_id = new_crop_id.AsLowercaseString();
+  resolver->Resolve(
+      WTF::String(serialized_crop_id.c_str(), serialized_crop_id.length()));
+  return promise;
 }
 
 const AtomicString& MediaDevices::InterfaceName() const {
@@ -417,7 +499,7 @@ void RecordEnumeratedDevices(ScriptPromiseResolver* resolver,
     // Ignore group_id since that is varies per-site.
   }
   IdentifiabilityMetricBuilder(document->UkmSourceID())
-      .SetWebfeature(WebFeature::kIdentifiabilityMediaDevicesEnumerateDevices,
+      .AddWebFeature(WebFeature::kIdentifiabilityMediaDevicesEnumerateDevices,
                      builder.GetToken())
       .Record(document->UkmRecorder());
 }
@@ -546,5 +628,37 @@ void MediaDevices::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
+
+#if !defined(OS_ANDROID)
+void MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity(
+    const String& id,
+    MediaStreamTrack* track) {
+  Microtask::EnqueueMicrotask(
+      WTF::Bind(&MediaDevices::CloseFocusWindowOfOpportunity,
+                WrapWeakPersistent(this), id, WrapWeakPersistent(track)));
+}
+
+void MediaDevices::CloseFocusWindowOfOpportunity(const String& id,
+                                                 MediaStreamTrack* track) {
+  if (!track) {
+    return;
+  }
+
+  ExecutionContext* const context = GetExecutionContext();
+  if (!context) {
+    return;  // Note: We're still back by the browser-side timer.
+  }
+
+  LocalDOMWindow* const window = To<LocalDOMWindow>(context);
+  if (!window) {
+    return;
+  }
+
+  // Inform the track that further calls to focus() should raise an exception.
+  track->CloseFocusWindowOfOpportunity();
+
+  GetDispatcherHost(window->GetFrame())->CloseFocusWindowOfOpportunity(id);
+}
+#endif
 
 }  // namespace blink

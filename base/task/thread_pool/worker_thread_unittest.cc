@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/bind.h"
@@ -63,7 +64,7 @@ class WorkerThreadDefaultDelegate : public WorkerThread::Delegate {
   WorkerThread::ThreadLabel GetThreadLabel() const override {
     return WorkerThread::ThreadLabel::DEDICATED;
   }
-  void OnMainEntry(const WorkerThread* worker) override {}
+  void OnMainEntry(WorkerThread* worker) override {}
   RegisteredTaskSource GetWork(WorkerThread* worker) override {
     return nullptr;
   }
@@ -151,7 +152,7 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
     }
 
     // WorkerThread::Delegate:
-    void OnMainEntry(const WorkerThread* worker) override {
+    void OnMainEntry(WorkerThread* worker) override {
       outer_->worker_set_.Wait();
       EXPECT_EQ(outer_->worker_.get(), worker);
       EXPECT_FALSE(IsCallToDidProcessTaskExpected());
@@ -523,7 +524,7 @@ class MockedControllableCleanupDelegate : public ControllableCleanupDelegate {
   ~MockedControllableCleanupDelegate() override = default;
 
   // WorkerThread::Delegate:
-  MOCK_METHOD1(OnMainEntry, void(const WorkerThread* worker));
+  MOCK_METHOD1(OnMainEntry, void(WorkerThread* worker));
 };
 
 }  // namespace
@@ -729,9 +730,7 @@ class ExpectThreadPriorityDelegate : public WorkerThreadDefaultDelegate {
   }
 
   // WorkerThread::Delegate:
-  void OnMainEntry(const WorkerThread* worker) override {
-    VerifyThreadPriority();
-  }
+  void OnMainEntry(WorkerThread* worker) override { VerifyThreadPriority(); }
   RegisteredTaskSource GetWork(WorkerThread* worker) override {
     VerifyThreadPriority();
     priority_verified_in_get_work_event_.Signal();
@@ -806,7 +805,7 @@ class VerifyCallsToObserverDelegate : public WorkerThreadDefaultDelegate {
       const VerifyCallsToObserverDelegate&) = delete;
 
   // WorkerThread::Delegate:
-  void OnMainEntry(const WorkerThread* worker) override {
+  void OnMainEntry(WorkerThread* worker) override {
     Mock::VerifyAndClear(observer_);
   }
 
@@ -837,11 +836,8 @@ TEST(ThreadPoolWorkerTest, WorkerThreadObserver) {
   Mock::VerifyAndClear(&observer);
 }
 
-// ThreadCache tests disabled  when ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL is
-// enabled, because the "original" PartitionRoot has ThreadCache disabled.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    defined(PA_THREAD_CACHE_SUPPORTED) &&       \
-    !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
+    defined(PA_THREAD_CACHE_SUPPORTED)
 namespace {
 NOINLINE void FreeForTest(void* data) {
   free(data);
@@ -882,6 +878,10 @@ class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
 };
 
 TEST(ThreadPoolWorkerThreadCachePurgeTest, Purge) {
+  // Make sure the thread cache is enabled in the main partition.
+  allocator::ConfigurePartitions(allocator::EnableBrp(false),
+                                 allocator::ForceSplitPartitions(false));
+
   TaskTracker task_tracker;
   auto delegate = std::make_unique<WorkerThreadThreadCacheDelegate>();
   auto* delegate_raw = delegate.get();
@@ -904,7 +904,6 @@ TEST(ThreadPoolWorkerThreadCachePurgeTest, Purge) {
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // defined(PA_THREAD_CACHE_SUPPORTED) &&
-        // !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
 
 }  // namespace internal
 }  // namespace base

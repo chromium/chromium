@@ -304,9 +304,10 @@ bool CSSStyleSheet::MatchesMediaQueries(const MediaQueryEvaluator& evaluator) {
 
   if (!media_queries_)
     return true;
-  return evaluator.Eval(*media_queries_,
-                        &viewport_dependent_media_query_results_,
-                        &device_dependent_media_query_results_);
+  return evaluator.Eval(
+      *media_queries_,
+      MediaQueryEvaluator::Results{&viewport_dependent_media_query_results_,
+                                   &device_dependent_media_query_results_});
 }
 
 unsigned CSSStyleSheet::length() const {
@@ -449,7 +450,7 @@ int CSSStyleSheet::addRule(const String& selector,
   if (!style.IsEmpty())
     text.Append(' ');
   text.Append('}');
-  insertRule(text.ToString(), index, exception_state);
+  insertRule(text.ReleaseString(), index, exception_state);
 
   // As per Microsoft documentation, always return -1.
   return -1;

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager.h"
 
-#include "chrome/browser/ash/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 
 namespace policy {
 

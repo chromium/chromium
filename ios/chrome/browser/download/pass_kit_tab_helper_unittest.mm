@@ -101,12 +101,9 @@ TEST_F(PassKitTabHelperTest, ValidPassKitFile) {
 
   std::string pass_data =
       testing::GetTestFileContents(testing::kPkPassFilePath);
-  auto buffer = base::MakeRefCounted<net::IOBuffer>(pass_data.size());
-  memcpy(buffer->data(), pass_data.c_str(), pass_data.size());
-  // Writing to URLFetcherStringWriter, which is used by PassKitTabHelper is
-  // synchronous, so it's ok to ignore Write's completion callback.
-  task_ptr->GetResponseWriter()->Write(buffer.get(), pass_data.size(),
-                                       base::DoNothing());
+  NSData* data = [NSData dataWithBytes:pass_data.data()
+                                length:pass_data.size()];
+  task_ptr->SetResponseData(data);
   task_ptr->SetDone(true);
 
   EXPECT_EQ(1U, delegate_.passes.count);

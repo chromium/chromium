@@ -174,11 +174,11 @@ void VTTCueBox::ApplyCSSProperties(
   const FloatPoint& position = display_parameters.position;
 
   // the 'top' property must be set to top,
-  SetInlineStyleProperty(CSSPropertyID::kTop, position.Y(),
+  SetInlineStyleProperty(CSSPropertyID::kTop, position.y(),
                          CSSPrimitiveValue::UnitType::kPercentage);
 
   // the 'left' property must be set to left
-  SetInlineStyleProperty(CSSPropertyID::kLeft, position.X(),
+  SetInlineStyleProperty(CSSPropertyID::kLeft, position.x(),
                          CSSPrimitiveValue::UnitType::kPercentage);
 
   // the 'width' property must be set to width, and the 'height' property  must
@@ -215,7 +215,7 @@ void VTTCueBox::ApplyCSSProperties(
     // other.
     SetInlineStyleProperty(CSSPropertyID::kTransform,
                            String::Format("translate(-%.2f%%, -%.2f%%)",
-                                          position.X(), position.Y()));
+                                          position.x(), position.y()));
     SetInlineStyleProperty(CSSPropertyID::kWhiteSpace, CSSValueID::kPre);
   }
 
@@ -233,7 +233,7 @@ LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style,
     return HTMLDivElement::CreateLayoutObject(style, legacy);
 
   UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByVTTCue);
-  return new LayoutVTTCue(this, snap_to_lines_position_);
+  return MakeGarbageCollected<LayoutVTTCue>(this, snap_to_lines_position_);
 }
 
 VTTCue::VTTCue(Document& document,
@@ -700,15 +700,15 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
   if (writing_direction_ == kHorizontal) {
     switch (computed_cue_alignment) {
       case kStart:
-        display_parameters.position.SetX(computed_text_position);
+        display_parameters.position.set_x(computed_text_position);
         break;
       case kEnd:
-        display_parameters.position.SetX(computed_text_position -
-                                         display_parameters.size);
+        display_parameters.position.set_x(computed_text_position -
+                                          display_parameters.size);
         break;
       case kCenter:
-        display_parameters.position.SetX(computed_text_position -
-                                         display_parameters.size / 2);
+        display_parameters.position.set_x(computed_text_position -
+                                          display_parameters.size / 2);
         break;
       default:
         NOTREACHED();
@@ -717,15 +717,15 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
     // Cases for writing_direction_ being kVerticalGrowing{Left|Right}
     switch (computed_cue_alignment) {
       case kStart:
-        display_parameters.position.SetY(computed_text_position);
+        display_parameters.position.set_y(computed_text_position);
         break;
       case kEnd:
-        display_parameters.position.SetY(computed_text_position -
-                                         display_parameters.size);
+        display_parameters.position.set_y(computed_text_position -
+                                          display_parameters.size);
         break;
       case kCenter:
-        display_parameters.position.SetY(computed_text_position -
-                                         display_parameters.size / 2);
+        display_parameters.position.set_y(computed_text_position -
+                                          display_parameters.size / 2);
         break;
       default:
         NOTREACHED();
@@ -741,14 +741,14 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
   // list:
   if (!snap_to_lines_) {
     if (writing_direction_ == kHorizontal)
-      display_parameters.position.SetY(computed_line_position);
+      display_parameters.position.set_y(computed_line_position);
     else
-      display_parameters.position.SetX(computed_line_position);
+      display_parameters.position.set_x(computed_line_position);
   } else {
     if (writing_direction_ == kHorizontal)
-      display_parameters.position.SetY(0);
+      display_parameters.position.set_y(0);
     else
-      display_parameters.position.SetX(0);
+      display_parameters.position.set_x(0);
   }
 
   // Step 9 not implemented (margin == 0).
@@ -1124,8 +1124,10 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         break;
       }
       case kRegionId:
-        if (region_map)
-          region_ = region_map->at(input.ExtractString(value_run));
+        if (region_map) {
+          auto it = region_map->find(input.ExtractString(value_run));
+          region_ = it != region_map->end() ? it->value : nullptr;
+        }
         break;
       case kNone:
         break;

@@ -40,7 +40,6 @@ HeadlessDevToolsClient::CreateWithExternalHost(ExternalHost* external_host) {
 HeadlessDevToolsClientImpl::HeadlessDevToolsClientImpl()
     : accessibility_domain_(this),
       animation_domain_(this),
-      application_cache_domain_(this),
       browser_domain_(this),
       cache_storage_domain_(this),
       console_domain_(this),
@@ -318,10 +317,6 @@ accessibility::Domain* HeadlessDevToolsClientImpl::GetAccessibility() {
 
 animation::Domain* HeadlessDevToolsClientImpl::GetAnimation() {
   return &animation_domain_;
-}
-
-application_cache::Domain* HeadlessDevToolsClientImpl::GetApplicationCache() {
-  return &application_cache_domain_;
 }
 
 browser::Domain* HeadlessDevToolsClientImpl::GetBrowser() {

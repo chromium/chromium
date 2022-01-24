@@ -9,10 +9,9 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "media/mojo/mojom/gpu_accelerated_video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
@@ -31,6 +30,9 @@ class GpuVideoDecodeAcceleratorHost
  public:
   // |this| is guaranteed not to outlive |impl|.  (See comments for |impl_|.)
   explicit GpuVideoDecodeAcceleratorHost(gpu::CommandBufferProxyImpl* impl);
+  GpuVideoDecodeAcceleratorHost(const GpuVideoDecodeAcceleratorHost&) = delete;
+  GpuVideoDecodeAcceleratorHost& operator=(GpuVideoDecodeAcceleratorHost&) =
+      delete;
 
   // VideoDecodeAccelerator implementation.
   bool Initialize(const Config& config, Client* client) override;
@@ -101,8 +103,6 @@ class GpuVideoDecodeAcceleratorHost
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<GpuVideoDecodeAcceleratorHost> weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GpuVideoDecodeAcceleratorHost);
 };
 
 }  // namespace media

@@ -1982,7 +1982,7 @@ int LegacyFontSizeFromCSSValue(Document* document,
             CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
                 length_unit);
         int pixel_font_size =
-            clampTo<int>(primitive_value->GetDoubleValue() * conversion);
+            ClampTo<int>(primitive_value->GetDoubleValue() * conversion);
         int legacy_font_size = FontSizeFunctions::LegacyFontSize(
             document, pixel_font_size, is_monospace_font);
         // Use legacy font size only if pixel value matches exactly to that of

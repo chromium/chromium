@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,6 +17,12 @@ class ChromeConstrainedWindowViewsClient
     : public constrained_window::ConstrainedWindowViewsClient {
  public:
   ChromeConstrainedWindowViewsClient() {}
+
+  ChromeConstrainedWindowViewsClient(
+      const ChromeConstrainedWindowViewsClient&) = delete;
+  ChromeConstrainedWindowViewsClient& operator=(
+      const ChromeConstrainedWindowViewsClient&) = delete;
+
   ~ChromeConstrainedWindowViewsClient() override {}
 
  private:
@@ -35,8 +40,6 @@ class ChromeConstrainedWindowViewsClient
   gfx::NativeView GetDialogHostView(gfx::NativeWindow parent) override {
     return platform_util::GetViewForWindow(parent);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeConstrainedWindowViewsClient);
 };
 
 }  // namespace

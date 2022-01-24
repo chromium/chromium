@@ -191,8 +191,7 @@ class BrowserTaskExecutorWithCustomSchedulerTest : public testing::Test {
               base::test::TaskEnvironment::MainThreadType::UI,
               base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
       std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler =
-          BrowserUIThreadScheduler::CreateForTesting(sequence_manager(),
-                                                     GetTimeDomain());
+          BrowserUIThreadScheduler::CreateForTesting(sequence_manager());
       DeferredInitFromSubclass(
           browser_ui_thread_scheduler->GetHandle()->GetBrowserTaskRunner(
               QueueType::kDefault));
@@ -245,11 +244,10 @@ TEST_F(BrowserTaskExecutorWithCustomSchedulerTest,
   StrictMockTask best_effort;
 
   ui_best_effort_runner->PostTask(FROM_HERE, best_effort.Get());
-  ui_best_effort_runner->PostDelayedTask(
-      FROM_HERE, best_effort.Get(), base::TimeDelta::FromMilliseconds(100));
+  ui_best_effort_runner->PostDelayedTask(FROM_HERE, best_effort.Get(),
+                                         base::Milliseconds(100));
   GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostDelayedTask(FROM_HERE, best_effort.Get(),
-                        base::TimeDelta::FromMilliseconds(100));
+      ->PostDelayedTask(FROM_HERE, best_effort.Get(), base::Milliseconds(100));
   GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE,
 
@@ -258,7 +256,7 @@ TEST_F(BrowserTaskExecutorWithCustomSchedulerTest,
 
   BrowserTaskExecutor::EnableAllQueues();
   EXPECT_CALL(best_effort, Run).Times(4);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment_.FastForwardBy(base::Milliseconds(100));
 }
 
 }  // namespace content

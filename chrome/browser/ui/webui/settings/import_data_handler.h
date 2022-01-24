@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/importer/importer_progress_observer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/common/importer/importer_data_types.h"
@@ -27,6 +26,10 @@ class ImportDataHandler : public SettingsPageUIHandler,
                           public ui::SelectFileDialog::Listener {
  public:
   ImportDataHandler();
+
+  ImportDataHandler(const ImportDataHandler&) = delete;
+  ImportDataHandler& operator=(const ImportDataHandler&) = delete;
+
   ~ImportDataHandler() override;
 
   // SettingsPageUIHandler
@@ -74,8 +77,6 @@ class ImportDataHandler : public SettingsPageUIHandler,
   bool importer_list_loaded_{false};
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImportDataHandler);
 };
 
 }  // namespace settings

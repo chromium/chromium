@@ -14,6 +14,13 @@ namespace blink {
 // This class collects performance data for font-related operations.
 class PLATFORM_EXPORT FontPerformance {
  public:
+  static void Reset() {
+    primary_font_ = base::TimeDelta();
+    primary_font_in_style_ = base::TimeDelta();
+    system_fallback_ = base::TimeDelta();
+    shaping_ = base::TimeDelta();
+  }
+
   // The aggregated time spent in |DeterminePrimarySimpleFontData|.
   static base::TimeDelta PrimaryFontTime() {
     return primary_font_ + primary_font_in_style_;
@@ -30,6 +37,17 @@ class PLATFORM_EXPORT FontPerformance {
       primary_font_ += time;
   }
 
+  // The aggregated time spent in |FallbackFontForCharacter|.
+  static base::TimeDelta SystemFallbackFontTime() { return system_fallback_; }
+  static void AddSystemFallbackFontTime(base::TimeDelta time) {
+    system_fallback_ += time;
+  }
+
+  static void AddShapingTime(base::TimeDelta time) { shaping_ += time; }
+
+  static void MarkFirstContentfulPaint();
+  static void MarkDomContentLoaded();
+
   class StyleScope {
    public:
     StyleScope() { ++in_style_; }
@@ -42,6 +60,8 @@ class PLATFORM_EXPORT FontPerformance {
  private:
   static base::TimeDelta primary_font_;
   static base::TimeDelta primary_font_in_style_;
+  static base::TimeDelta system_fallback_;
+  static base::TimeDelta shaping_;
   static unsigned in_style_;
 };
 

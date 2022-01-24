@@ -41,6 +41,12 @@ class HandwritingRecognitionService final
       const HandwritingFeatureQuery*,
       ExceptionState&);
 
+  static ScriptPromise queryHandwritingRecognizer(
+      ScriptState*,
+      Navigator&,
+      const HandwritingModelConstraint*,
+      ExceptionState&);
+
   void Trace(Visitor* visitor) const override;
 
  private:
@@ -56,6 +62,11 @@ class HandwritingRecognitionService final
   ScriptPromise QueryHandwritingRecognizerSupport(
       ScriptState*,
       const HandwritingFeatureQuery*,
+      ExceptionState&);
+
+  ScriptPromise QueryHandwritingRecognizer(
+      ScriptState*,
+      const HandwritingModelConstraint* constraint,
       ExceptionState&);
 
   HeapMojoRemote<handwriting::mojom::blink::HandwritingRecognitionService>

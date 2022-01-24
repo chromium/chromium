@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
 
 namespace cryptauthv2 {
@@ -35,6 +34,11 @@ class CryptAuthGroupPrivateKeySharer {
   using IdToEncryptingKeyMap = base::flat_map<std::string, std::string>;
   using ShareGroupPrivateKeyAttemptFinishedCallback =
       base::OnceCallback<void(CryptAuthDeviceSyncResult::ResultCode)>;
+
+  CryptAuthGroupPrivateKeySharer(const CryptAuthGroupPrivateKeySharer&) =
+      delete;
+  CryptAuthGroupPrivateKeySharer& operator=(
+      const CryptAuthGroupPrivateKeySharer&) = delete;
 
   virtual ~CryptAuthGroupPrivateKeySharer();
 
@@ -63,8 +67,6 @@ class CryptAuthGroupPrivateKeySharer {
  private:
   ShareGroupPrivateKeyAttemptFinishedCallback callback_;
   bool was_share_group_private_key_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthGroupPrivateKeySharer);
 };
 
 }  // namespace device_sync

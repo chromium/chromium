@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSString* const kSettingsToolbarAddButtonId;
 extern NSString* const kSettingsToolbarDeleteButtonId;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_ROOT_TABLE_CONSTANTS_H_

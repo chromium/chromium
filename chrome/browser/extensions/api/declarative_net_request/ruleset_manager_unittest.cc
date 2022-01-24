@@ -47,6 +47,9 @@ class RulesetManagerTest : public DNRTestBase {
  public:
   RulesetManagerTest() {}
 
+  RulesetManagerTest(const RulesetManagerTest&) = delete;
+  RulesetManagerTest& operator=(const RulesetManagerTest&) = delete;
+
   void SetUp() override {
     DNRTestBase::SetUp();
     manager_ = std::make_unique<RulesetManager>(browser_context());
@@ -84,7 +87,9 @@ class RulesetManagerTest : public DNRTestBase {
         ->AddEnabled(last_loaded_extension_);
 
     std::vector<FileBackedRulesetSource> sources =
-        FileBackedRulesetSource::CreateStatic(*last_loaded_extension_);
+        FileBackedRulesetSource::CreateStatic(
+            *last_loaded_extension_,
+            FileBackedRulesetSource::RulesetFilter::kIncludeAll);
     ASSERT_EQ(1u, sources.size());
 
     int expected_checksum;
@@ -98,7 +103,8 @@ class RulesetManagerTest : public DNRTestBase {
         LoadRulesetResult::kSuccess,
         sources[0].CreateVerifiedMatcher(expected_checksum, &matchers[0]));
 
-    *matcher = std::make_unique<CompositeMatcher>(std::move(matchers));
+    *matcher = std::make_unique<CompositeMatcher>(
+        std::move(matchers), HostPermissionsAlwaysRequired::kFalse);
   }
 
   void SetIncognitoEnabled(const Extension* extension, bool incognito_enabled) {
@@ -148,8 +154,6 @@ class RulesetManagerTest : public DNRTestBase {
  private:
   scoped_refptr<const Extension> last_loaded_extension_;
   std::unique_ptr<RulesetManager> manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetManagerTest);
 };
 
 // Tests that the RulesetManager handles multiple rulesets correctly.
@@ -526,6 +530,68 @@ TEST_P(RulesetManagerTest, ModifyHeaders) {
               ::testing::ElementsAre(
                   ::testing::Eq(::testing::ByRef(expected_action_1)),
                   ::testing::Eq(::testing::ByRef(expected_action_2))));
+}
+
+// Ensures that an allow rule doesn't win over a higher priority modifyHeaders
+// rule. Regression test for crbug.com/1244249.
+TEST_P(RulesetManagerTest, ModifyHeadersWithAllowRules) {
+  int rule_id = kMinValidID;
+
+  TestRule rule1 = CreateGenericRule();
+  rule1.condition->url_filter = std::string("example.com");
+  rule1.action->type = std::string("modifyHeaders");
+  rule1.action->request_headers =
+      std::vector<TestHeaderInfo>({TestHeaderInfo("header", "set", "value")});
+  rule1.priority = 5;
+  rule1.id = rule_id++;
+
+  TestRule rule2 = CreateGenericRule();
+  rule2.condition->url_filter = std::string("example.com");
+  rule2.action->type = std::string("allow");
+  rule2.priority = 3;
+  rule2.id = rule_id++;
+
+  TestRule rule3 = CreateGenericRule();
+  rule3.condition->url_filter = std::string("abc.example.com");
+  rule3.action->type = std::string("allow");
+  rule3.priority = 8;
+  rule3.id = rule_id++;
+
+  std::unique_ptr<CompositeMatcher> matcher;
+  ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules({rule1, rule2, rule3},
+                                                "test extension", &matcher,
+                                                {URLPattern::kAllUrlsPattern}));
+  const Extension* extension = last_loaded_extension();
+  manager()->AddRuleset(extension->id(), std::move(matcher));
+
+  {
+    WebRequestInfo request(GetRequestParamsForURL("http://example.com"));
+    const std::vector<RequestAction>& actions =
+        manager()->EvaluateRequest(request, false /*is_incognito_context*/);
+
+    // `rule1` and `rule2` match. `rule1` gets precedence because of priority.
+    RequestAction expected_action = CreateRequestActionForTesting(
+        RequestActionType::MODIFY_HEADERS, *rule1.id, *rule1.priority,
+        kMinValidStaticRulesetID, extension->id());
+    expected_action.request_headers_to_modify = {RequestAction::HeaderInfo(
+        "header", dnr_api::HEADER_OPERATION_SET, "value")};
+    EXPECT_THAT(actions, ::testing::ElementsAre(
+                             ::testing::Eq(::testing::ByRef(expected_action))));
+  }
+
+  {
+    WebRequestInfo request(GetRequestParamsForURL("http://abc.example.com"));
+    const std::vector<RequestAction>& actions =
+        manager()->EvaluateRequest(request, false /*is_incognito_context*/);
+
+    // `rule1`, `rule2` and `rule3` match. `rule3` gets precedence because of
+    // priority.
+    RequestAction expected_action = CreateRequestActionForTesting(
+        RequestActionType::ALLOW, *rule3.id, *rule3.priority,
+        kMinValidStaticRulesetID, extension->id());
+    EXPECT_THAT(actions, ::testing::ElementsAre(
+                             ::testing::Eq(::testing::ByRef(expected_action))));
+  }
 }
 
 // Test that an extension's modify header rules are applied on a request only if

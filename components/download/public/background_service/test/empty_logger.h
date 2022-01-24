@@ -14,6 +14,10 @@ namespace test {
 class EmptyLogger : public Logger {
  public:
   EmptyLogger() = default;
+
+  EmptyLogger(const EmptyLogger&) = delete;
+  EmptyLogger& operator=(const EmptyLogger&) = delete;
+
   ~EmptyLogger() override = default;
 
   // Logger implementation.
@@ -21,9 +25,6 @@ class EmptyLogger : public Logger {
   void RemoveObserver(Observer* observer) override;
   base::Value GetServiceStatus() override;
   base::Value GetServiceDownloads() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EmptyLogger);
 };
 
 }  // namespace test

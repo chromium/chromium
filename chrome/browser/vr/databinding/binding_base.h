@@ -15,6 +15,10 @@ namespace vr {
 class BindingBase {
  public:
   BindingBase() = default;
+
+  BindingBase(const BindingBase&) = delete;
+  BindingBase& operator=(const BindingBase&) = delete;
+
   virtual ~BindingBase() = default;
 
   // This function updates the binding. The exact behavior depends on the
@@ -23,9 +27,6 @@ class BindingBase {
   virtual bool Update() = 0;
 
   virtual std::string ToString() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BindingBase);
 };
 
 }  // namespace vr

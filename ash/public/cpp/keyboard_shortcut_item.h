@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 

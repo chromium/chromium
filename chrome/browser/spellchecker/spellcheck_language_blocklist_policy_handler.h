@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 // ConfigurationPolicyHandler for the SpellcheckLanguageBlocklist policy.
@@ -15,6 +14,12 @@ class SpellcheckLanguageBlocklistPolicyHandler
     : public policy::TypeCheckingPolicyHandler {
  public:
   explicit SpellcheckLanguageBlocklistPolicyHandler(const char* policy_name);
+
+  SpellcheckLanguageBlocklistPolicyHandler(
+      const SpellcheckLanguageBlocklistPolicyHandler&) = delete;
+  SpellcheckLanguageBlocklistPolicyHandler& operator=(
+      const SpellcheckLanguageBlocklistPolicyHandler&) = delete;
+
   ~SpellcheckLanguageBlocklistPolicyHandler() override;
 
   // ConfigurationPolicyHandler:
@@ -28,7 +33,6 @@ class SpellcheckLanguageBlocklistPolicyHandler
                                 std::vector<base::Value>* const blocklisted,
                                 std::vector<std::string>* const unknown,
                                 std::vector<std::string>* const duplicates);
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckLanguageBlocklistPolicyHandler);
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_HANDLER_H_

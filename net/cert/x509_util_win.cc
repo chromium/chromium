@@ -15,14 +15,6 @@ namespace net {
 
 namespace x509_util {
 
-namespace {
-
-using ScopedHCERTSTORE = crypto::ScopedCAPIHandle<
-    HCERTSTORE,
-    crypto::CAPIDestroyerWithFlags<HCERTSTORE, CertCloseStore, 0>>;
-
-}  // namespace
-
 scoped_refptr<X509Certificate> CreateX509CertificateFromCertContexts(
     PCCERT_CONTEXT os_cert,
     const std::vector<PCCERT_CONTEXT>& os_chain) {
@@ -58,20 +50,21 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromCertContexts(
   return result;
 }
 
-ScopedPCCERT_CONTEXT CreateCertContextWithChain(const X509Certificate* cert) {
+crypto::ScopedPCCERT_CONTEXT CreateCertContextWithChain(
+    const X509Certificate* cert) {
   return CreateCertContextWithChain(cert, InvalidIntermediateBehavior::kFail);
 }
 
-ScopedPCCERT_CONTEXT CreateCertContextWithChain(
+crypto::ScopedPCCERT_CONTEXT CreateCertContextWithChain(
     const X509Certificate* cert,
     InvalidIntermediateBehavior invalid_intermediate_behavior) {
   // Create an in-memory certificate store to hold the certificate and its
   // intermediate certificates. The store will be referenced in the returned
   // PCCERT_CONTEXT, and will not be freed until the PCCERT_CONTEXT is freed.
-  ScopedHCERTSTORE store(
+  crypto::ScopedHCERTSTORE store(
       CertOpenStore(CERT_STORE_PROV_MEMORY, 0, NULL,
                     CERT_STORE_DEFER_CLOSE_UNTIL_LAST_FREE_FLAG, nullptr));
-  if (!store.get())
+  if (!store.is_valid())
     return nullptr;
 
   PCCERT_CONTEXT primary_cert = nullptr;
@@ -82,7 +75,7 @@ ScopedPCCERT_CONTEXT CreateCertContextWithChain(
       CERT_STORE_ADD_ALWAYS, &primary_cert);
   if (!ok || !primary_cert)
     return nullptr;
-  ScopedPCCERT_CONTEXT scoped_primary_cert(primary_cert);
+  crypto::ScopedPCCERT_CONTEXT scoped_primary_cert(primary_cert);
 
   for (const auto& intermediate : cert->intermediate_buffers()) {
     ok = CertAddEncodedCertificateToStore(

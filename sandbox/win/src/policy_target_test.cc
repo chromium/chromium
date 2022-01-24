@@ -229,6 +229,80 @@ TEST(PolicyTargetTest, PolicyBaseNoJobLifetime) {
       << "Opens the current thread";
 }
 
+// Sets the desktop for the current thread to be one with a null DACL, then
+// launches a sandboxed app. Validates that the sandboxed app has access to the
+// desktop.
+TEST(PolicyTargetTest, InheritedDesktopPolicy) {
+  // Create a desktop with a null dacl - which should allow access to
+  // everything.
+  SECURITY_ATTRIBUTES attributes = {};
+  attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
+  SECURITY_DESCRIPTOR security_desc = {};
+  ::InitializeSecurityDescriptor(&security_desc, SECURITY_DESCRIPTOR_REVISION);
+  ::SetSecurityDescriptorDacl(&security_desc, true, nullptr, false);
+  attributes.lpSecurityDescriptor = &security_desc;
+  HDESK null_dacl_desktop_handle = CreateDesktop(
+      L"null_dacl_desktop", nullptr, nullptr, 0, GENERIC_ALL, &attributes);
+  EXPECT_TRUE(null_dacl_desktop_handle);
+
+  // Switch to the null dacl desktop and run the test.
+  HDESK old_desktop = ::GetThreadDesktop(::GetCurrentThreadId());
+  EXPECT_TRUE(null_dacl_desktop_handle);
+  EXPECT_TRUE(::SetThreadDesktop(null_dacl_desktop_handle));
+
+  BrokerServices* broker = GetBroker();
+
+  // Precreate the desktop.
+  scoped_refptr<TargetPolicy> temp_policy = broker->CreatePolicy();
+  temp_policy->CreateAlternateDesktop(false);
+  temp_policy = nullptr;
+
+  ASSERT_TRUE(broker);
+
+  // Get the path to the sandboxed app.
+  wchar_t prog_name[MAX_PATH];
+  GetModuleFileNameW(nullptr, prog_name, MAX_PATH);
+
+  std::wstring arguments(L"\"");
+  arguments += prog_name;
+  arguments += L"\" -child 0 wait";  // Don't care about the "state" argument.
+
+  // Launch the app.
+  ResultCode result = SBOX_ALL_OK;
+  ResultCode warning_result = SBOX_ALL_OK;
+  DWORD last_error = ERROR_SUCCESS;
+  base::win::ScopedProcessInformation target;
+
+  scoped_refptr<TargetPolicy> policy = broker->CreatePolicy();
+  policy->SetAlternateDesktop(false);
+  policy->SetTokenLevel(USER_INTERACTIVE, USER_LOCKDOWN);
+  PROCESS_INFORMATION temp_process_info = {};
+  result =
+      broker->SpawnTarget(prog_name, arguments.c_str(), policy, &warning_result,
+                          &last_error, &temp_process_info);
+
+  EXPECT_EQ(SBOX_ALL_OK, result);
+  if (result == SBOX_ALL_OK)
+    target.Set(temp_process_info);
+
+  // Run the process for some time to make sure it doesn't crash on launch
+  EXPECT_EQ(1u, ::ResumeThread(target.thread_handle()));
+  EXPECT_EQ(static_cast<DWORD>(WAIT_TIMEOUT),
+            ::WaitForSingleObject(target.process_handle(), 2000));
+
+  EXPECT_TRUE(::TerminateProcess(target.process_handle(), 0));
+  ::WaitForSingleObject(target.process_handle(), INFINITE);
+
+  // Close the desktop handle.
+  temp_policy = broker->CreatePolicy();
+  temp_policy->DestroyAlternateDesktop();
+  temp_policy = nullptr;
+
+  // Close the null dacl desktop.
+  EXPECT_TRUE(::SetThreadDesktop(old_desktop));
+  EXPECT_TRUE(::CloseDesktop(null_dacl_desktop_handle));
+}
+
 // Launches the app in the sandbox and ask it to wait in an
 // infinite loop. Waits for 2 seconds and then check if the
 // desktop associated with the app thread is not the same as the

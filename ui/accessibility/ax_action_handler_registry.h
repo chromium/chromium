@@ -9,15 +9,14 @@
 #include <map>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace base {
-template <typename T>
-struct DefaultSingletonTraits;
+template <typename T, typename O>
+class NoDestructor;
 }  // namespace base
 
 namespace ui {
@@ -42,12 +41,16 @@ class AXActionHandlerObserver : public base::CheckedObserver {
 // The first form allows underlying instances to change but refer to the same
 // frame.
 // The second form allows this registry to track the object for later retrieval.
-class AX_BASE_EXPORT AXActionHandlerRegistry {
+class AX_BASE_EXPORT AXActionHandlerRegistry final {
  public:
   using FrameID = std::pair<int, int>;
 
   // Get the single instance of this class.
   static AXActionHandlerRegistry* GetInstance();
+
+  virtual ~AXActionHandlerRegistry();
+  AXActionHandlerRegistry(const AXActionHandlerRegistry&) = delete;
+  AXActionHandlerRegistry& operator=(const AXActionHandlerRegistry&) = delete;
 
   // Gets the frame id based on an ax tree id.
   FrameID GetFrameID(const AXTreeID& ax_tree_id);
@@ -73,9 +76,14 @@ class AX_BASE_EXPORT AXActionHandlerRegistry {
   void PerformAction(const ui::AXActionData& action_data);
 
  private:
-  friend struct base::DefaultSingletonTraits<AXActionHandlerRegistry>;
+  friend base::NoDestructor<AXActionHandlerRegistry, std::nullptr_t>;
+
+  // Allows registration of tree ids meant to be internally by AXActionHandler*.
+  // These typically involve the creation of a new tree id.
   friend AXActionHandler;
   friend AXActionHandlerBase;
+
+  AXActionHandlerRegistry();
 
   // Get or create a ax tree id keyed on |handler|.
   AXTreeID GetOrCreateAXTreeID(AXActionHandlerBase* handler);
@@ -83,9 +91,6 @@ class AX_BASE_EXPORT AXActionHandlerRegistry {
   // Set a mapping between an AXTreeID and AXActionHandlerBase explicitly.
   void SetAXTreeID(const AXTreeID& ax_tree_id,
                    AXActionHandlerBase* action_handler);
-
-  AXActionHandlerRegistry();
-  virtual ~AXActionHandlerRegistry();
 
   // Maps an accessibility tree to its frame via ids.
   std::map<AXTreeID, FrameID> ax_tree_to_frame_id_map_;
@@ -98,8 +103,6 @@ class AX_BASE_EXPORT AXActionHandlerRegistry {
 
   // Tracks all observers.
   base::ObserverList<AXActionHandlerObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXActionHandlerRegistry);
 };
 
 }  // namespace ui

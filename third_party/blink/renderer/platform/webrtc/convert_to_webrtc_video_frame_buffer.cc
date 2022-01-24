@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -504,10 +503,9 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       return nullptr;
   }
   // The bind ensures that we keep a reference to the underlying buffer.
-  video_frame->AddDestructionObserver(
-      ConvertToBaseOnceCallback(CrossThreadBindOnce(
-          base::DoNothing::Once<const scoped_refptr<rtc::RefCountInterface>&>(),
-          scoped_refptr<webrtc::VideoFrameBuffer>(buffer))));
+  video_frame->AddDestructionObserver(ConvertToBaseOnceCallback(
+      CrossThreadBindOnce([](const scoped_refptr<rtc::RefCountInterface>&) {},
+                          scoped_refptr<webrtc::VideoFrameBuffer>(buffer))));
   return video_frame;
 }
 

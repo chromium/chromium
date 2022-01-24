@@ -33,11 +33,11 @@ LanguagesHandler::LanguagesHandler() = default;
 LanguagesHandler::~LanguagesHandler() = default;
 
 void LanguagesHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getProspectiveUILanguage",
       base::BindRepeating(&LanguagesHandler::HandleGetProspectiveUILanguage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setProspectiveUILanguage",
       base::BindRepeating(&LanguagesHandler::HandleSetProspectiveUILanguage,
                           base::Unretained(this)));
@@ -45,8 +45,7 @@ void LanguagesHandler::RegisterMessages() {
 
 void LanguagesHandler::HandleGetProspectiveUILanguage(
     const base::ListValue* args) {
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
   AllowJavascript();
 
@@ -61,25 +60,24 @@ void LanguagesHandler::HandleGetProspectiveUILanguage(
         language::prefs::kApplicationLocale);
   }
 
-  ResolveJavascriptCallback(*callback_id, base::Value(locale));
+  ResolveJavascriptCallback(callback_id, base::Value(locale));
 }
 
 void LanguagesHandler::HandleSetProspectiveUILanguage(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
-
-  std::string language_code;
-  CHECK(args->GetString(0, &language_code));
+  CHECK_EQ(1U, args->GetList().size());
 
 #if defined(OS_WIN)
   PrefService* prefs = g_browser_process->local_state();
+  const std::string& language_code = args->GetList()[0].GetString();
   prefs->SetString(language::prefs::kApplicationLocale, language_code);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   // Secondary users and public session users cannot change the locale.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+  const std::string& language_code = args->GetList()[0].GetString();
   if (user &&
       user->GetAccountId() == user_manager->GetPrimaryUser()->GetAccountId() &&
       user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {

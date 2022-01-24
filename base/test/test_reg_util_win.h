@@ -33,6 +33,10 @@ namespace registry_util {
 class RegistryOverrideManager {
  public:
   RegistryOverrideManager();
+
+  RegistryOverrideManager(const RegistryOverrideManager&) = delete;
+  RegistryOverrideManager& operator=(const RegistryOverrideManager&) = delete;
+
   ~RegistryOverrideManager();
 
   // Override the given registry hive using a randomly generated temporary key.
@@ -51,13 +55,16 @@ class RegistryOverrideManager {
   class ScopedRegistryKeyOverride {
    public:
     ScopedRegistryKeyOverride(HKEY override, const std::wstring& key_path);
+
+    ScopedRegistryKeyOverride(const ScopedRegistryKeyOverride&) = delete;
+    ScopedRegistryKeyOverride& operator=(const ScopedRegistryKeyOverride&) =
+        delete;
+
     ~ScopedRegistryKeyOverride();
 
    private:
     HKEY override_;
     std::wstring key_path_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedRegistryKeyOverride);
   };
 
   // Used for testing only.
@@ -69,8 +76,6 @@ class RegistryOverrideManager {
 
   std::wstring test_key_root_;
   std::vector<std::unique_ptr<ScopedRegistryKeyOverride>> overrides_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryOverrideManager);
 };
 
 // Generates a temporary key path that will be eventually deleted

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 
 namespace blink {
 
@@ -51,6 +52,7 @@ static bool ShouldAppendLayer(const PaintLayer& layer) {
 void GraphicsLayerTreeBuilder::Rebuild(PaintLayer& layer,
                                        GraphicsLayerVector& child_layers) {
   PendingOverflowControlReparents ignored;
+  ClearCollectionScope<PendingOverflowControlReparents> scope(&ignored);
   RebuildRecursive(layer, child_layers, ignored);
 }
 
@@ -77,12 +79,15 @@ void GraphicsLayerTreeBuilder::RebuildRecursive(
       has_composited_layer_mapping ? &this_layer_children : &child_layers;
 
   PendingOverflowControlReparents this_pending_reparents_children;
+  ClearCollectionScope<PendingOverflowControlReparents> scope(
+      &this_pending_reparents_children);
+
   PendingOverflowControlReparents* pending_reparents_for_children =
       has_composited_layer_mapping ? &this_pending_reparents_children
                                    : &pending_reparents;
 
 #if DCHECK_IS_ON()
-  PaintLayerListMutationDetector mutation_checker(layer);
+  PaintLayerListMutationDetector mutation_checker(&layer);
 #endif
 
   bool recursion_blocked_by_display_lock =
@@ -99,7 +104,7 @@ void GraphicsLayerTreeBuilder::RebuildRecursive(
 
   if (layer.IsStackingContextWithNegativeZOrderChildren()) {
     if (!recursion_blocked_by_display_lock) {
-      PaintLayerPaintOrderIterator iterator(layer, kNegativeZOrderChildren);
+      PaintLayerPaintOrderIterator iterator(&layer, kNegativeZOrderChildren);
       while (PaintLayer* child_layer = iterator.Next()) {
         RebuildRecursive(*child_layer, *layer_vector_for_children,
                          *pending_reparents_for_children);
@@ -116,7 +121,7 @@ void GraphicsLayerTreeBuilder::RebuildRecursive(
   }
 
   if (!recursion_blocked_by_display_lock) {
-    PaintLayerPaintOrderIterator iterator(layer,
+    PaintLayerPaintOrderIterator iterator(&layer,
                                           kNormalFlowAndPositiveZOrderChildren);
     while (PaintLayer* child_layer = iterator.Next()) {
       RebuildRecursive(*child_layer, *layer_vector_for_children,

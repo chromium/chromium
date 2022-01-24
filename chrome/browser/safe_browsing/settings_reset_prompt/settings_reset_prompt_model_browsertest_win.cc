@@ -175,7 +175,7 @@ class SettingsResetPromptModelBrowserTest
     // Ensure that the startup url seen in the prefs is same as |startup_url|.
     const base::ListValue* url_list =
         GetPrefs()->GetList(prefs::kURLsToRestoreOnStartup);
-    ASSERT_EQ(url_list->GetSize(), 1U);
+    ASSERT_EQ(url_list->GetList().size(), 1U);
     std::string url_text;
     ASSERT_TRUE(url_list->GetString(0, &url_text));
     ASSERT_EQ(GURL(url_text), GURL(startup_url));

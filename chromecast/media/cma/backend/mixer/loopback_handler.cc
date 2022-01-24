@@ -11,8 +11,8 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "chromecast/media/audio/mixer_service/loopback_interrupt_reason.h"
 #include "chromecast/media/cma/backend/mixer/mixer_loopback_connection.h"
@@ -25,6 +25,10 @@ namespace media {
 class LoopbackHandler::LoopbackIO {
  public:
   LoopbackIO() = default;
+
+  LoopbackIO(const LoopbackIO&) = delete;
+  LoopbackIO& operator=(const LoopbackIO&) = delete;
+
   ~LoopbackIO() = default;
 
   void AddConnection(std::unique_ptr<MixerLoopbackConnection> connection) {
@@ -80,8 +84,6 @@ class LoopbackHandler::LoopbackIO {
   int sample_rate_ = 0;
   int num_channels_ = 0;
   int data_size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(LoopbackIO);
 };
 
 class LoopbackHandler::ExternalLoopbackHandler
@@ -91,6 +93,9 @@ class LoopbackHandler::ExternalLoopbackHandler
     DCHECK(owner_);
     ExternalAudioPipelineShlib::AddExternalLoopbackAudioObserver(this);
   }
+
+  ExternalLoopbackHandler(const ExternalLoopbackHandler&) = delete;
+  ExternalLoopbackHandler& operator=(const ExternalLoopbackHandler&) = delete;
 
   void Destroy() {
     {
@@ -133,8 +138,6 @@ class LoopbackHandler::ExternalLoopbackHandler
 
   base::Lock lock_;
   bool destroyed_ GUARDED_BY(lock_) = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalLoopbackHandler);
 };
 
 void LoopbackHandler::ExternalDeleter::operator()(

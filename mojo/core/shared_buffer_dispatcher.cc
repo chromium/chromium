@@ -125,6 +125,7 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
     PlatformHandle* platform_handles,
     size_t num_platform_handles) {
   if (num_bytes != sizeof(SerializedState)) {
+    AssertNotExtractingHandlesFromMessage();
     LOG(ERROR) << "Invalid serialized shared buffer dispatcher (bad size)";
     return nullptr;
   }
@@ -132,13 +133,16 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
   const SerializedState* serialized_state =
       static_cast<const SerializedState*>(bytes);
   if (!serialized_state->num_bytes) {
+    AssertNotExtractingHandlesFromMessage();
     LOG(ERROR)
         << "Invalid serialized shared buffer dispatcher (invalid num_bytes)";
     return nullptr;
   }
 
-  if (num_ports)
+  if (num_ports) {
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
+  }
 
   PlatformHandle handles[2];
 #if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
@@ -152,8 +156,10 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
       return nullptr;
   }
 #else
-  if (num_platform_handles != 1)
+  if (num_platform_handles != 1) {
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
+  }
 #endif
   handles[0] = std::move(platform_handles[0]);
 
@@ -172,6 +178,7 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
       mode = base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe;
       break;
     default:
+      AssertNotExtractingHandlesFromMessage();
       LOG(ERROR) << "Invalid serialized shared buffer access mode.";
       return nullptr;
   }
@@ -181,6 +188,7 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
                                                         std::move(handles[1])),
       mode, static_cast<size_t>(serialized_state->num_bytes), guid);
   if (!region.IsValid()) {
+    AssertNotExtractingHandlesFromMessage();
     LOG(ERROR)
         << "Invalid serialized shared buffer dispatcher (invalid num_bytes?)";
     return nullptr;

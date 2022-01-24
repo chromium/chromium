@@ -6,6 +6,8 @@
 
 namespace shared_highlighting {
 
+const char kAnchorDelimiter = '#';
+
 const char kFragmentsUrlDelimiter[] = ":~:";
 
 const char kFragmentParameterName[] = "text=";

@@ -16,7 +16,7 @@ PointerHandler::PointerHandler() {}
 PointerHandler::~PointerHandler() {}
 
 void PointerHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializePointerSettings",
       base::BindRepeating(&PointerHandler::HandleInitialize,
                           base::Unretained(this)));

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/handwriting/handwriting_recognition_service.h"
 
+#include <utility>
+
 #include "base/notreached.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -11,8 +13,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_feature_query.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_feature_query_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_model_constraint.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_recognizer_query_result.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/handwriting/handwriting_recognizer.h"
 #include "third_party/blink/renderer/modules/handwriting/handwriting_type_converters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -58,6 +62,19 @@ void OnQueryHandwritingFeature(
     handwriting::mojom::blink::HandwritingFeatureQueryResultPtr query_result) {
   resolver->Resolve(
       mojo::ConvertTo<HandwritingFeatureQueryResult*>(std::move(query_result)));
+}
+
+void OnQueryHandwritingRecognizer(
+    ScriptState* script_state,
+    ScriptPromiseResolver* resolver,
+    handwriting::mojom::blink::QueryHandwritingRecognizerResultPtr
+        query_result) {
+  if (query_result) {
+    resolver->Resolve(mojo::ConvertTo<HandwritingRecognizerQueryResult*>(
+        std::move(query_result)));
+  } else {
+    resolver->Resolve(v8::Null(script_state->GetIsolate()));
+  }
 }
 
 }  // namespace
@@ -148,6 +165,16 @@ ScriptPromise HandwritingRecognitionService::queryHandwritingRecognizerSupport(
     Navigator& navigator,
     const HandwritingFeatureQuery* query,
     ExceptionState& exception_state) {
+  auto* execution_context = ExecutionContext::From(script_state);
+  if (execution_context) {
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        String::FromUTF8(
+            "queryHandwritingRecognizerSupport will be deprecated after M97, "
+            "please use queryHandwritingRecognizer instead."));
+    execution_context->AddConsoleMessage(console_message);
+  }
   return HandwritingRecognitionService::From(navigator)
       .QueryHandwritingRecognizerSupport(script_state, query, exception_state);
 }
@@ -169,6 +196,37 @@ ScriptPromise HandwritingRecognitionService::QueryHandwritingRecognizerSupport(
           query),
       WTF::Bind(&OnQueryHandwritingFeature, WrapPersistent(script_state),
                 WrapPersistent(resolver)));
+  return promise;
+}
+
+// static
+ScriptPromise HandwritingRecognitionService::queryHandwritingRecognizer(
+    ScriptState* script_state,
+    Navigator& navigator,
+    const HandwritingModelConstraint* constraint,
+    ExceptionState& exception_state) {
+  return HandwritingRecognitionService::From(navigator)
+      .QueryHandwritingRecognizer(script_state, constraint, exception_state);
+}
+
+ScriptPromise HandwritingRecognitionService::QueryHandwritingRecognizer(
+    ScriptState* script_state,
+    const HandwritingModelConstraint* constraint,
+    ExceptionState& exception_state) {
+  if (!BootstrapMojoConnectionIfNeeded(script_state, exception_state)) {
+    return ScriptPromise();
+  }
+
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto promise = resolver->Promise();
+
+  remote_service_->QueryHandwritingRecognizer(
+      mojo::ConvertTo<handwriting::mojom::blink::HandwritingModelConstraintPtr>(
+          constraint),
+      WTF::Bind(&OnQueryHandwritingRecognizer, WrapPersistent(script_state),
+                WrapPersistent(resolver)));
+
   return promise;
 }
 

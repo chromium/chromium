@@ -458,6 +458,6 @@ void PerformanceHintsObserver::DidFinishNavigation(
   page_url_ = navigation_handle->GetURL();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PerformanceHintsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PerformanceHintsObserver);
 
 }  // namespace performance_hints

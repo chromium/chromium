@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
+#include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
@@ -21,31 +22,6 @@ namespace {
 struct TruncatedString16 {
   absl::optional<std::u16string> string;
 };
-
-// This function should be kept in sync with IsHostValidForUrlHandler in
-// manifest_parser.cc.
-bool IsHostValidForUrlHandler(const std::string& host) {
-  if (url::HostIsIPAddress(host))
-    return true;
-
-  const size_t registry_length =
-      net::registry_controlled_domains::PermissiveGetHostRegistryLength(
-          host,
-          // Reject unknown registries (registries that don't have any matches
-          // in effective TLD names).
-          net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-          // Skip matching private registries that allow external users to
-          // specify sub-domains, e.g. glitch.me, as this is allowed.
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-
-  // Host cannot be a TLD or invalid.
-  if (registry_length == 0 || registry_length == std::string::npos ||
-      registry_length >= host.length()) {
-    return false;
-  }
-
-  return true;
-}
 
 }  // namespace
 
@@ -69,88 +45,6 @@ struct StructTraits<mojo_base::mojom::String16DataView, TruncatedString16> {
                         std::u16string>::Read(input, &output->string.value());
   }
 };
-
-bool StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
-    blink::mojom::ManifestDataView data,
-    ::blink::Manifest* out) {
-  TruncatedString16 string;
-  if (!data.ReadName(&string))
-    return false;
-  out->name = std::move(string.string);
-
-  if (!data.ReadShortName(&string))
-    return false;
-  out->short_name = std::move(string.string);
-
-  if (!data.ReadDescription(&string))
-    return false;
-  out->description = std::move(string.string);
-
-  if (!data.ReadId(&string))
-    return false;
-  out->id = std::move(string.string);
-
-  if (!data.ReadGcmSenderId(&string))
-    return false;
-  out->gcm_sender_id = std::move(string.string);
-
-  if (!data.ReadStartUrl(&out->start_url))
-    return false;
-
-  if (!data.ReadIcons(&out->icons))
-    return false;
-
-  if (!data.ReadScreenshots(&out->screenshots))
-    return false;
-
-  if (!data.ReadShortcuts(&out->shortcuts))
-    return false;
-
-  if (!data.ReadShareTarget(&out->share_target))
-    return false;
-
-  if (!data.ReadFileHandlers(&out->file_handlers))
-    return false;
-
-  if (!data.ReadProtocolHandlers(&out->protocol_handlers))
-    return false;
-
-  if (!data.ReadUrlHandlers(&out->url_handlers))
-    return false;
-
-  if (!data.ReadNoteTaking(&out->note_taking))
-    return false;
-
-  if (!data.ReadRelatedApplications(&out->related_applications))
-    return false;
-
-  out->prefer_related_applications = data.prefer_related_applications();
-
-  if (data.has_theme_color())
-    out->theme_color = data.theme_color();
-
-  if (data.has_background_color())
-    out->background_color = data.background_color();
-
-  if (!data.ReadDisplay(&out->display))
-    return false;
-
-  if (!data.ReadDisplayOverride(&out->display_override))
-    return false;
-
-  if (!data.ReadOrientation(&out->orientation))
-    return false;
-
-  if (!data.ReadScope(&out->scope))
-    return false;
-
-  if (!data.ReadCaptureLinks(&out->capture_links))
-    return false;
-
-  out->isolated_storage = data.isolated_storage();
-
-  return true;
-}
 
 bool StructTraits<blink::mojom::ManifestImageResourceDataView,
                   ::blink::Manifest::ImageResource>::
@@ -242,22 +136,6 @@ bool StructTraits<blink::mojom::ManifestFileFilterDataView,
   return true;
 }
 
-bool StructTraits<blink::mojom::ManifestUrlHandlerDataView,
-                  ::blink::Manifest::UrlHandler>::
-    Read(blink::mojom::ManifestUrlHandlerDataView data,
-         ::blink::Manifest::UrlHandler* out) {
-  if (!data.ReadOrigin(&out->origin))
-    return false;
-
-  // Make sure the origin is valid.
-  if (!IsHostValidForUrlHandler(out->origin.host()))
-    return false;
-
-  out->has_origin_wildcard = data.has_origin_wildcard();
-
-  return true;
-}
-
 bool StructTraits<blink::mojom::ManifestShareTargetParamsDataView,
                   ::blink::Manifest::ShareTargetParams>::
     Read(blink::mojom::ManifestShareTargetParamsDataView data,
@@ -297,43 +175,14 @@ bool StructTraits<blink::mojom::ManifestShareTargetDataView,
   return data.ReadParams(&out->params);
 }
 
-bool StructTraits<blink::mojom::ManifestFileHandlerDataView,
-                  ::blink::Manifest::FileHandler>::
-    Read(blink::mojom::ManifestFileHandlerDataView data,
-         ::blink::Manifest::FileHandler* out) {
-  if (!data.ReadAction(&out->action))
+bool StructTraits<blink::mojom::ManifestLaunchHandlerDataView,
+                  ::blink::Manifest::LaunchHandler>::
+    Read(blink::mojom::ManifestLaunchHandlerDataView data,
+         ::blink::Manifest::LaunchHandler* out) {
+  if (!data.ReadRouteTo(&out->route_to))
     return false;
 
-  if (!data.ReadName(&out->name))
-    return false;
-
-  if (!data.ReadIcons(&out->icons))
-    return false;
-
-  if (!data.ReadAccept(&out->accept))
-    return false;
-
-  return true;
-}
-
-bool StructTraits<blink::mojom::ManifestProtocolHandlerDataView,
-                  ::blink::Manifest::ProtocolHandler>::
-    Read(blink::mojom::ManifestProtocolHandlerDataView data,
-         ::blink::Manifest::ProtocolHandler* out) {
-  if (!data.ReadProtocol(&out->protocol))
-    return false;
-
-  if (!data.ReadUrl(&out->url))
-    return false;
-
-  return true;
-}
-
-bool StructTraits<blink::mojom::ManifestNoteTakingDataView,
-                  ::blink::Manifest::NoteTaking>::
-    Read(blink::mojom::ManifestNoteTakingDataView data,
-         ::blink::Manifest::NoteTaking* out) {
-  if (!data.ReadNewNoteUrl(&out->new_note_url))
+  if (!data.ReadNavigateExistingClient(&out->navigate_existing_client))
     return false;
 
   return true;

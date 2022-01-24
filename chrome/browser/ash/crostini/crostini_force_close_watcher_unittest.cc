@@ -75,7 +75,7 @@ TEST_F(CrostiniForceCloseWatcherTest, CallsForceCloseAfterSecondCloseAttempt) {
   EXPECT_CALL(delegate_ref, GetClosableWidget).WillOnce(Return(widget.get()));
   EXPECT_CALL(delegate_ref, Watched)
       .WillOnce(testing::Invoke([](ForceCloseWatcher* watcher) {
-        watcher->OverrideDelayForTesting(base::TimeDelta::FromSeconds(0));
+        watcher->OverrideDelayForTesting(base::Seconds(0));
         watcher->OnCloseRequested();
         watcher->OnCloseRequested();
       }));

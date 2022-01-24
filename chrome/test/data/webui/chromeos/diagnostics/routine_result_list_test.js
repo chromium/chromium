@@ -8,7 +8,7 @@ import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagno
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 

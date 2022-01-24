@@ -11,11 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/thread_controller.h"
 #include "base/task/sequence_manager/work_deduplicator.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -51,7 +51,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   void SetSequencedTaskSource(SequencedTaskSource* sequence) override;
   void SetTimerSlack(TimerSlack timer_slack) override;
   bool RunsTasksInCurrentSequence() override;
-  const TickClock* GetClock() override;
+  void SetTickClock(const TickClock* clock) override;
   void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner>) override;
   scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() override;
   void RestoreDefaultTaskRunner() override;

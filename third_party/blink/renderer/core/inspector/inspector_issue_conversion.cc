@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_issue_conversion.h"
 
 #include "third_party/blink/renderer/core/inspector/inspector_issue.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -59,6 +60,9 @@ blink::protocol::String InspectorIssueCodeValue(
       return "";
     case mojom::blink::InspectorIssueCode::kLowTextContrastIssue:
       return protocol::Audits::InspectorIssueCodeEnum::LowTextContrastIssue;
+    case mojom::blink::InspectorIssueCode::kGenericIssue:
+      NOTREACHED();
+      return "";
   }
 }
 
@@ -279,6 +283,10 @@ protocol::String BuildViolationType(
         kEvalViolation:
       return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
           KEvalViolation;
+    case blink::mojom::blink::ContentSecurityPolicyViolationType::
+        kWasmEvalViolation:
+      return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
+          KWasmEvalViolation;
     case blink::mojom::blink::ContentSecurityPolicyViolationType::kURLViolation:
       return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
           KURLViolation;
@@ -431,10 +439,15 @@ ConvertInspectorIssueToProtocolFormat(InspectorIssue* issue) {
     issueDetails.setLowTextContrastIssueDetails(std::move(lowContrastDetails));
   }
 
-  return protocol::Audits::InspectorIssue::create()
-      .setCode(InspectorIssueCodeValue(issue->Code()))
-      .setDetails(issueDetails.build())
-      .build();
+  auto final_issue = protocol::Audits::InspectorIssue::create()
+                         .setCode(InspectorIssueCodeValue(issue->Code()))
+                         .setDetails(issueDetails.build())
+                         .build();
+  if (issue->Details()->issue_id) {
+    String issue_id = String::FromUTF8(issue->Details()->issue_id->ToString());
+    final_issue->setIssueId(issue_id);
+  }
+  return final_issue;
 }
 
 }  // namespace blink

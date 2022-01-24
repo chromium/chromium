@@ -33,11 +33,10 @@ struct ThreadCacheStats {
   uint64_t batch_fill_count;  // Number of central allocator requests.
 
   // Memory cost:
-  uint64_t bucket_total_memory;
-  uint64_t metadata_overhead;
+  uint32_t bucket_total_memory;
+  uint32_t metadata_overhead;
 
 #if defined(PA_THREAD_CACHE_ALLOC_STATS)
-  uint64_t bucket_size_[kNumBuckets + 1];
   uint64_t allocs_per_bucket_[kNumBuckets + 1];
 #endif  // defined(PA_THREAD_CACHE_ALLOC_STATS)
 };
@@ -47,14 +46,28 @@ struct ThreadCacheStats {
 struct PartitionMemoryStats {
   size_t total_mmapped_bytes;    // Total bytes mmap()-ed from the system.
   size_t total_committed_bytes;  // Total size of committed pages.
+  size_t max_committed_bytes;    // Max size of committed pages.
+  size_t total_allocated_bytes;  // Total size of allcoations.
+  size_t max_allocated_bytes;    // Max size of allocations.
   size_t total_resident_bytes;   // Total bytes provisioned by the partition.
   size_t total_active_bytes;     // Total active bytes in the partition.
   size_t total_decommittable_bytes;  // Total bytes that could be decommitted.
   size_t total_discardable_bytes;    // Total bytes that could be discarded.
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  size_t
+      total_brp_quarantined_bytes;  // Total bytes that are quarantined by BRP.
+  size_t total_brp_quarantined_count;  // Total number of slots that are
+                                       // quarantined by BRP.
+#endif
 
   bool has_thread_cache;
   ThreadCacheStats current_thread_cache_stats;
   ThreadCacheStats all_thread_caches_stats;
+
+  // Count and total duration of system calls made since process start. May not
+  // be reported on all platforms.
+  uint64_t syscall_count;
+  uint64_t syscall_total_time_ns;
 };
 
 // Struct used to retrieve memory statistics about a partition bucket. Used by

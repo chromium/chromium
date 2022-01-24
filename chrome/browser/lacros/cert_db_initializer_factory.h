@@ -9,12 +9,12 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class CertDbInitializer;
-class Profile;
 
 class CertDbInitializerFactory : public BrowserContextKeyedServiceFactory {
  public:
   static CertDbInitializerFactory* GetInstance();
-  static CertDbInitializer* GetForProfileIfExists(Profile* profile);
+  static CertDbInitializer* GetForBrowserContext(
+      content::BrowserContext* context);
 
  private:
   friend class base::NoDestructor<CertDbInitializerFactory>;

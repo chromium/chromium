@@ -49,9 +49,9 @@ constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
 
 constexpr int kMinutesInHour = 60;
 constexpr int kMillisecondsInHour = 3600000;
-constexpr base::TimeDelta kMinute = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kHour = base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kWeek = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kMinute = base::Minutes(1);
+constexpr base::TimeDelta kHour = base::Hours(1);
+constexpr base::TimeDelta kWeek = base::Days(7);
 
 }  // namespace
 
@@ -223,9 +223,7 @@ INSTANTIATE_TEST_SUITE_P(
                         15 * kMinutesInHour + 30,
                         kFriday,
                         17 * kMinutesInHour + 45,
-                        base::TimeDelta::FromDays(6) +
-                            base::TimeDelta::FromHours(2) +
-                            base::TimeDelta::FromMinutes(15))));
+                        base::Days(6) + base::Hours(2) + base::Minutes(15))));
 
 class TwoWeeklyTimesAndDurationInDifferentTimezonesTest
     : public testing::TestWithParam<std::tuple<int,
@@ -262,7 +260,7 @@ INSTANTIATE_TEST_SUITE_P(
                                     kMonday,
                                     kMinutesInHour,
                                     5 * kMillisecondsInHour,
-                                    kWeek - base::TimeDelta::FromHours(4))));
+                                    kWeek - base::Hours(4))));
 
 INSTANTIATE_TEST_SUITE_P(
     TimezoneMakesDurationWrapAround,
@@ -273,18 +271,17 @@ INSTANTIATE_TEST_SUITE_P(
                                     kMonday,
                                     kMinutesInHour,
                                     4 * kMillisecondsInHour,
-                                    base::TimeDelta::FromHours(1))));
+                                    base::Hours(1))));
 
-INSTANTIATE_TEST_SUITE_P(
-    TwoAgnosticTimezones,
-    TwoWeeklyTimesAndDurationInDifferentTimezonesTest,
-    testing::Values(std::make_tuple(kMonday,
-                                    10 * kMinutesInHour,
-                                    absl::nullopt,
-                                    kTuesday,
-                                    5 * kMinutesInHour,
-                                    absl::nullopt,
-                                    base::TimeDelta::FromHours(19))));
+INSTANTIATE_TEST_SUITE_P(TwoAgnosticTimezones,
+                         TwoWeeklyTimesAndDurationInDifferentTimezonesTest,
+                         testing::Values(std::make_tuple(kMonday,
+                                                         10 * kMinutesInHour,
+                                                         absl::nullopt,
+                                                         kTuesday,
+                                                         5 * kMinutesInHour,
+                                                         absl::nullopt,
+                                                         base::Hours(19))));
 
 class TwoWeeklyTimesAndOffsetTest
     : public testing::TestWithParam<std::tuple<int, int, int, int, int>> {

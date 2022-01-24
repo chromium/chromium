@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<body>
+<a><img alt="Hello" src="null-image.png" width="200px" height="200px"></a>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+var test = async_test("Test to copy null image");
+requestAnimationFrame(test.step_func(() => {
+  internals.setPageScaleFactor(2);
+  internals.setVisualViewportOffset(200, 200);
+  requestAnimationFrame(test.step_func(() => {
+    testRunner.copyImageThen(0, 0, test.step_func_done((width, height, snapshot) => {
+      try {
+        assert_equals(width, 0, "The image shouldn't be copied");
+        assert_equals(height, 0, "The image shouldn't be copied");
+        const topleft = new Uint8Array(snapshot).subarray(0, 4);
+        assert_equals(topleft[0], undefined, "The image shouldn't be copied " + JSON.stringify(topleft));
+        assert_equals(topleft[1], undefined, "The image shouldn't be copied " + JSON.stringify(topleft));
+        assert_equals(topleft[2], undefined, "The image shouldn't be copied " + JSON.stringify(topleft));
+        assert_equals(topleft[3], undefined, "The image shouldn't be copied " + JSON.stringify(topleft));
+      } catch (e) {
+        assert_unreached('' + e);
+      }
+    }));
+  }));
+}));
+</script>
+</body>
+</html>

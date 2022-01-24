@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console logging dumps proper messages.\n`);
 
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     console.log('log');
@@ -40,7 +40,7 @@
     console.count("title");
   `);
 
-  Console.ConsoleView.instance()._setImmediatelyFilterMessagesForTest();
+  Console.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
   Console.ConsoleViewFilter.levelFilterSetting().set(Console.ConsoleFilter.allLevelsFilterValue());
   await ConsoleTestRunner.dumpConsoleMessagesWithClasses();
   TestRunner.completeTest();

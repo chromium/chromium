@@ -100,10 +100,9 @@ int64_t ComputeCurrentTicks() {
   size_t size = sizeof(boottime);
   int kr = sysctl(mib, base::size(mib), &boottime, &size, nullptr, 0);
   DCHECK_EQ(KERN_SUCCESS, kr);
-  base::TimeDelta time_difference =
-      base::subtle::TimeNowIgnoringOverride() -
-      (base::Time::FromTimeT(boottime.tv_sec) +
-       base::TimeDelta::FromMicroseconds(boottime.tv_usec));
+  base::TimeDelta time_difference = base::subtle::TimeNowIgnoringOverride() -
+                                    (base::Time::FromTimeT(boottime.tv_sec) +
+                                     base::Microseconds(boottime.tv_usec));
   return time_difference.InMicroseconds();
 #else
   // mach_absolute_time is it when it comes to ticks on the Mac.  Other calls
@@ -175,8 +174,8 @@ Time Time::FromCFAbsoluteTime(CFAbsoluteTime t) {
     return Time();  // Consider 0 as a null Time.
   return (t == std::numeric_limits<CFAbsoluteTime>::infinity())
              ? Max()
-             : (UnixEpoch() + TimeDelta::FromSecondsD(double{
-                                  t + kCFAbsoluteTimeIntervalSince1970}));
+             : (UnixEpoch() +
+                Seconds(double{t + kCFAbsoluteTimeIntervalSince1970}));
 }
 
 CFAbsoluteTime Time::ToCFAbsoluteTime() const {
@@ -204,7 +203,7 @@ NSDate* Time::ToNSDate() const {
 #if defined(OS_MAC)
 // static
 TimeDelta TimeDelta::FromMachTime(uint64_t mach_time) {
-  return TimeDelta::FromMicroseconds(MachTimeToMicroseconds(mach_time));
+  return Microseconds(MachTimeToMicroseconds(mach_time));
 }
 #endif  // defined(OS_MAC)
 
@@ -212,7 +211,7 @@ TimeDelta TimeDelta::FromMachTime(uint64_t mach_time) {
 
 namespace subtle {
 TimeTicks TimeTicksNowIgnoringOverride() {
-  return TimeTicks() + TimeDelta::FromMicroseconds(ComputeCurrentTicks());
+  return TimeTicks() + Microseconds(ComputeCurrentTicks());
 }
 }  // namespace subtle
 
@@ -233,7 +232,7 @@ TimeTicks TimeTicks::FromMachAbsoluteTime(uint64_t mach_absolute_time) {
 }
 
 // static
-mach_timebase_info_data_t* TimeTicks::MachTimebaseInfo() {
+mach_timebase_info_data_t* TimeTicks::MachTimebaseInfoForTesting() {
   return MachTimebaseInfoInternal();
 }
 #endif  // defined(OS_MAC)
@@ -251,7 +250,7 @@ TimeTicks::Clock TimeTicks::GetClock() {
 
 namespace subtle {
 ThreadTicks ThreadTicksNowIgnoringOverride() {
-  return ThreadTicks() + TimeDelta::FromMicroseconds(ComputeThreadTicks());
+  return ThreadTicks() + Microseconds(ComputeThreadTicks());
 }
 }  // namespace subtle
 

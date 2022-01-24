@@ -5,8 +5,8 @@
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {TabStripEmbedderProxy, TabStripEmbedderProxyImpl} from './tab_strip_embedder_proxy.js';
-import {TabGroupVisualData} from './tabs_api_proxy.js';
+import {TabGroupVisualData} from './tab_strip.mojom-webui.js';
+import {TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
 
 export class TabGroupElement extends CustomElement {
   static get template() {
@@ -16,8 +16,8 @@ export class TabGroupElement extends CustomElement {
   constructor() {
     super();
 
-    /** @private @const {!TabStripEmbedderProxy} */
-    this.embedderApi_ = TabStripEmbedderProxyImpl.getInstance();
+    /** @private @const {!TabsApiProxy} */
+    this.tabsApi_ = TabsApiProxyImpl.getInstance();
 
     /** @private @const {!HTMLElement} */
     this.chip_ = /** @type {!HTMLElement} */ (this.$('#chip'));
@@ -62,7 +62,7 @@ export class TabGroupElement extends CustomElement {
     }
 
     const boundingBox = this.$('#chip').getBoundingClientRect();
-    this.embedderApi_.showEditDialogForGroup(
+    this.tabsApi_.showEditDialogForGroup(
         this.dataset.groupId, boundingBox.left, boundingBox.top,
         boundingBox.width, boundingBox.height);
   }

@@ -19,7 +19,7 @@ WebStatePolicyDeciderBridge::~WebStatePolicyDeciderBridge() = default;
 
 void WebStatePolicyDeciderBridge::ShouldAllowRequest(
     NSURLRequest* request,
-    const RequestInfo& request_info,
+    RequestInfo request_info,
     PolicyDecisionCallback callback) {
   if ([decider_ respondsToSelector:@selector
                 (shouldAllowRequest:requestInfo:decisionHandler:)]) {
@@ -47,14 +47,14 @@ bool WebStatePolicyDeciderBridge::ShouldAllowErrorPageToBeDisplayed(
 
 void WebStatePolicyDeciderBridge::ShouldAllowResponse(
     NSURLResponse* response,
-    bool for_main_frame,
+    ResponseInfo response_info,
     PolicyDecisionCallback callback) {
   if ([decider_ respondsToSelector:@selector
                 (decidePolicyForNavigationResponse:
-                                      forMainFrame:decisionHandler:)]) {
+                                      responseInfo:decisionHandler:)]) {
     __block PolicyDecisionCallback block_callback = std::move(callback);
     [decider_ decidePolicyForNavigationResponse:response
-                                   forMainFrame:for_main_frame
+                                   responseInfo:response_info
                                 decisionHandler:^(PolicyDecision result) {
                                   std::move(block_callback).Run(result);
                                 }];

@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/multiprocess_test.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_actions_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_process_win.h"
@@ -61,13 +60,11 @@ enum class ReporterEngine {
 //       process running in scanning mode.
 // - chrome_prompt (ChromePromptValue): indicates if this is a user-initiated
 //       run or if the user was prompted.
-// - reset-shortcuts (bool): indicates reset shortcuts feature is enabled.
 class ChromeCleanerRunnerSimpleTest
     : public testing::TestWithParam<std::tuple<ChromeMetricsStatus,
                                                ReporterEngine,
                                                bool,
-                                               ChromePromptValue,
-                                               bool>>,
+                                               ChromePromptValue>>,
       public ChromeCleanerRunnerTestDelegate {
  public:
   ChromeCleanerRunnerSimpleTest()
@@ -75,12 +72,7 @@ class ChromeCleanerRunnerSimpleTest
 
   void SetUp() override {
     std::tie(metrics_status_, reporter_engine_, cleaner_logs_enabled_,
-             chrome_prompt_, reset_shortcuts_enabled_) = GetParam();
-
-    if (reset_shortcuts_enabled_)
-      scoped_feature_list_.InitAndEnableFeature(kResetShortcutsFeature);
-    else
-      scoped_feature_list_.InitAndDisableFeature(kResetShortcutsFeature);
+             chrome_prompt_) = GetParam();
 
     SetChromeCleanerRunnerTestDelegateForTesting(this);
   }
@@ -152,7 +144,6 @@ class ChromeCleanerRunnerSimpleTest
   ReporterEngine reporter_engine_;
   bool cleaner_logs_enabled_ = false;
   ChromePromptValue chrome_prompt_ = ChromePromptValue::kUnspecified;
-  bool reset_shortcuts_enabled_ = false;
 
   // Set by LaunchTestProcess.
   base::CommandLine command_line_;
@@ -162,9 +153,6 @@ class ChromeCleanerRunnerSimpleTest
   ChromeCleanerRunner::ProcessStatus process_status_;
 
   base::RunLoop run_loop_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(ChromeCleanerRunnerSimpleTest, LaunchParams) {
@@ -202,8 +190,6 @@ TEST_P(ChromeCleanerRunnerSimpleTest, LaunchParams) {
   EXPECT_EQ(
       command_line_.GetSwitchValueASCII(chrome_cleaner::kChromePromptSwitch),
       base::NumberToString(static_cast<int>(chrome_prompt_)));
-  EXPECT_EQ(reset_shortcuts_enabled_,
-            command_line_.HasSwitch(chrome_cleaner::kResetShortcutsSwitch));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -215,8 +201,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                         ReporterEngine::kNewEngine),
                                  Bool(),
                                  Values(ChromePromptValue::kPrompted,
-                                        ChromePromptValue::kUserInitiated),
-                                 Bool()));
+                                        ChromePromptValue::kUserInitiated)));
 
 typedef std::tuple<UwsFoundStatus,
                    MockChromeCleanerProcess::ItemsReporting,

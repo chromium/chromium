@@ -143,7 +143,8 @@ class TabContentsTagTest : public InProcessBrowserTest {
   }
 
   void NavigateToUrl(const char* test_page_file) {
-    ui_test_utils::NavigateToURL(browser(), GetUrlOfFile(test_page_file));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GetUrlOfFile(test_page_file)));
   }
 
   void CloseTabAt(int index) {
@@ -284,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
 
   // Navigate to a page with a favicon.
   GURL favicon_page_url = GetUrlOfFile("/favicon/page_with_favicon.html");
-  ui_test_utils::NavigateToURL(browser(), favicon_page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), favicon_page_url));
   ASSERT_GE(1U, task_manager.tasks().size());
   Task* task = task_manager.tasks().back();
   ASSERT_EQ(GetDefaultTitleForUrl(favicon_page_url), task->title());
@@ -315,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
 
   // Navigate to a page without a favicon.
   GURL no_favicon_page_url = GetUrlOfFile("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), no_favicon_page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), no_favicon_page_url));
 
   if (content::CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
     // When ProactivelySwapBrowsingInstance or RenderDocument is enabled on

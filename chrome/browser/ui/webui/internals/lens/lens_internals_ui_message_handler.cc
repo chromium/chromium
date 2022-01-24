@@ -22,18 +22,18 @@ LensInternalsUIMessageHandler::LensInternalsUIMessageHandler(Profile* profile) {
 LensInternalsUIMessageHandler::~LensInternalsUIMessageHandler() = default;
 
 void LensInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "startDebugMode",
       base::BindRepeating(&LensInternalsUIMessageHandler::HandleStartDebugMode,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "refreshDebugData",
       base::BindRepeating(
           &LensInternalsUIMessageHandler::HandleRefreshDebugData,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "stopDebugMode",
       base::BindRepeating(&LensInternalsUIMessageHandler::HandleStopDebugMode,
                           base::Unretained(this)));

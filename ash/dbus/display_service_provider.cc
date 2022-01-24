@@ -32,6 +32,10 @@ void OnDisplayOwnershipChanged(
 class DisplayServiceProvider::Impl {
  public:
   Impl() = default;
+
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
+
   ~Impl() = default;
 
   void SetDimming(bool dimmed);
@@ -40,8 +44,6 @@ class DisplayServiceProvider::Impl {
 
  private:
   std::unique_ptr<ScreenDimmer> screen_dimmer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 void DisplayServiceProvider::Impl::SetDimming(bool dimmed) {

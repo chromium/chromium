@@ -410,7 +410,9 @@ TEST_F(NodeTest, UpdateChildDirtyAncestorsOnSlotAssignment) {
 }
 
 TEST_F(NodeTest, UpdateChildDirtySlotAfterRemoval) {
-  SetBodyContent("<div id=host><span></span></div>");
+  SetBodyContent(R"HTML(
+    <div id="host"><span style="display:contents"></span></div>
+  )HTML");
   Element* host = GetDocument().getElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
@@ -440,7 +442,9 @@ TEST_F(NodeTest, UpdateChildDirtySlotAfterRemoval) {
 }
 
 TEST_F(NodeTest, UpdateChildDirtyAfterSlotRemoval) {
-  SetBodyContent("<div id=host><span></span></div>");
+  SetBodyContent(R"HTML(
+    <div id="host"><span style="display:contents"></span></div>
+  )HTML");
   Element* host = GetDocument().getElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);

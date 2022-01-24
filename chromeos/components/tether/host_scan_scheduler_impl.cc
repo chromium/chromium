@@ -124,7 +124,7 @@ void HostScanSchedulerImpl::ScanFinished() {
 
   last_scan_end_timestamp_ = clock_->Now();
   host_scan_batch_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kMaxNumSecondsBetweenBatchScans),
+      FROM_HERE, base::Seconds(kMaxNumSecondsBetweenBatchScans),
       base::BindOnce(&HostScanSchedulerImpl::LogHostScanBatchMetric,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -199,11 +199,11 @@ void HostScanSchedulerImpl::LogHostScanBatchMetric() {
 
   base::TimeDelta batch_duration =
       last_scan_end_timestamp_ - last_scan_batch_start_timestamp_;
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "InstantTethering.HostScanBatchDuration", batch_duration,
-      base::TimeDelta::FromSeconds(kMinScanMetricSeconds) /* min */,
-      base::TimeDelta::FromDays(kMaxScanMetricsDays) /* max */,
-      kNumMetricsBuckets /* bucket_count */);
+  UMA_HISTOGRAM_CUSTOM_TIMES("InstantTethering.HostScanBatchDuration",
+                             batch_duration,
+                             base::Seconds(kMinScanMetricSeconds) /* min */,
+                             base::Days(kMaxScanMetricsDays) /* max */,
+                             kNumMetricsBuckets /* bucket_count */);
 
   PA_LOG(VERBOSE) << "Logging host scan batch duration. Duration was "
                   << batch_duration.InSeconds() << " seconds.";

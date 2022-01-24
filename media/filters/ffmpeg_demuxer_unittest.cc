@@ -17,7 +17,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -112,6 +112,10 @@ static void EosOnReadDone(bool* got_eos_buffer,
 // Fixture class to facilitate writing tests.  Takes care of setting up the
 // FFmpeg, pipeline and filter host mocks.
 class FFmpegDemuxerTest : public testing::Test {
+ public:
+  FFmpegDemuxerTest(const FFmpegDemuxerTest&) = delete;
+  FFmpegDemuxerTest& operator=(const FFmpegDemuxerTest&) = delete;
+
  protected:
   FFmpegDemuxerTest() = default;
 
@@ -360,8 +364,6 @@ class FFmpegDemuxerTest : public testing::Test {
     data_source_ = std::make_unique<FileDataSource>();
     EXPECT_TRUE(data_source_->Initialize(file_path));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegDemuxerTest);
 };
 
 TEST_F(FFmpegDemuxerTest, Initialize_OpenFails) {
@@ -398,7 +400,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Successful) {
   EXPECT_EQ(DemuxerStream::VIDEO, stream->type());
 
   const VideoDecoderConfig& video_config = stream->video_decoder_config();
-  EXPECT_EQ(kCodecVP8, video_config.codec());
+  EXPECT_EQ(VideoCodec::kVP8, video_config.codec());
   EXPECT_EQ(VideoDecoderConfig::AlphaMode::kIsOpaque,
             video_config.alpha_mode());
   EXPECT_EQ(320, video_config.coded_size().width());
@@ -417,7 +419,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Successful) {
   EXPECT_EQ(DemuxerStream::AUDIO, stream->type());
 
   const AudioDecoderConfig& audio_config = stream->audio_decoder_config();
-  EXPECT_EQ(kCodecVorbis, audio_config.codec());
+  EXPECT_EQ(AudioCodec::kVorbis, audio_config.codec());
   EXPECT_EQ(32, audio_config.bits_per_channel());
   EXPECT_EQ(CHANNEL_LAYOUT_STEREO, audio_config.channel_layout());
   EXPECT_EQ(44100, audio_config.samples_per_second());
@@ -447,26 +449,26 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
   DemuxerStream* stream = streams[0];
   ASSERT_TRUE(stream);
   EXPECT_EQ(DemuxerStream::VIDEO, stream->type());
-  EXPECT_EQ(kCodecVP8, stream->video_decoder_config().codec());
+  EXPECT_EQ(VideoCodec::kVP8, stream->video_decoder_config().codec());
 
   // Stream #1 should be Vorbis audio.
   stream = streams[1];
   ASSERT_TRUE(stream);
   EXPECT_EQ(DemuxerStream::AUDIO, stream->type());
-  EXPECT_EQ(kCodecVorbis, stream->audio_decoder_config().codec());
+  EXPECT_EQ(AudioCodec::kVorbis, stream->audio_decoder_config().codec());
 
   // The subtitles stream is skipped.
   // Stream #2 should be Theora video.
   stream = streams[2];
   ASSERT_TRUE(stream);
   EXPECT_EQ(DemuxerStream::VIDEO, stream->type());
-  EXPECT_EQ(kCodecTheora, stream->video_decoder_config().codec());
+  EXPECT_EQ(VideoCodec::kTheora, stream->video_decoder_config().codec());
 
   // Stream #3 should be PCM audio.
   stream = streams[3];
   ASSERT_TRUE(stream);
   EXPECT_EQ(DemuxerStream::AUDIO, stream->type());
-  EXPECT_EQ(kCodecPCM, stream->audio_decoder_config().codec());
+  EXPECT_EQ(AudioCodec::kPCM, stream->audio_decoder_config().codec());
 }
 #endif
 
@@ -553,10 +555,10 @@ TEST_F(FFmpegDemuxerTest, Read_Video) {
 TEST_F(FFmpegDemuxerTest, SeekInitialized_NoVideoStartTime) {
   CreateDemuxer("audio-start-time-only.webm");
   InitializeDemuxer();
-  // Video stream should be preferred for seeking even if video start time is
-  // unknown.
-  DemuxerStream* vstream = GetStream(DemuxerStream::VIDEO);
-  EXPECT_EQ(vstream, preferred_seeking_stream(base::TimeDelta()));
+  // Video would normally be preferred, but not if it's a zero packet
+  // stream.
+  DemuxerStream* expected_stream = GetStream(DemuxerStream::AUDIO);
+  EXPECT_EQ(expected_stream, preferred_seeking_stream(base::TimeDelta()));
 }
 
 TEST_F(FFmpegDemuxerTest, Seeking_PreferredStreamSelection) {
@@ -572,10 +574,8 @@ TEST_F(FFmpegDemuxerTest, Seeking_PreferredStreamSelection) {
   FFmpegDemuxerStream* audio =
       static_cast<FFmpegDemuxerStream*>(GetStream(DemuxerStream::AUDIO));
 
-  const base::TimeDelta video_start_time =
-      base::TimeDelta::FromMicroseconds(400000);
-  const base::TimeDelta audio_start_time =
-      base::TimeDelta::FromMicroseconds(396000);
+  const base::TimeDelta video_start_time = base::Microseconds(400000);
+  const base::TimeDelta audio_start_time = base::Microseconds(396000);
 
   // Seeking to a position lower than the start time of either stream should
   // prefer video stream for seeking.
@@ -619,10 +619,8 @@ TEST_F(FFmpegDemuxerTest, Read_VideoPositiveStartTime) {
   DemuxerStream* video = GetStream(DemuxerStream::VIDEO);
   DemuxerStream* audio = GetStream(DemuxerStream::AUDIO);
 
-  const base::TimeDelta video_start_time =
-      base::TimeDelta::FromMicroseconds(400000);
-  const base::TimeDelta audio_start_time =
-      base::TimeDelta::FromMicroseconds(396000);
+  const base::TimeDelta video_start_time = base::Microseconds(400000);
+  const base::TimeDelta audio_start_time = base::Microseconds(396000);
 
   // Run the test twice with a seek in between.
   for (int i = 0; i < 2; ++i) {
@@ -684,11 +682,10 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOggDiscard_Bear) {
     Read(audio, FROM_HERE, 41, 2903, true, DemuxerStream::Status::kOk,
          kInfiniteDuration);
     Read(audio, FROM_HERE, 173, 5805, true, DemuxerStream::Status::kOk,
-         base::TimeDelta::FromMicroseconds(10159));
+         base::Microseconds(10159));
 
     Read(audio, FROM_HERE, 148, 18866, true);
-    EXPECT_EQ(base::TimeDelta::FromMicroseconds(-15964),
-              demuxer_->start_time());
+    EXPECT_EQ(base::Microseconds(-15964), demuxer_->start_time());
 
     Read(video, FROM_HERE, 5751, 0, true);
     Read(video, FROM_HERE, 846, 33367, false);
@@ -717,9 +714,9 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOggDiscard_Sync) {
   // Run the test twice with a seek in between.
   for (int i = 0; i < 2; ++i) {
     Read(audio, FROM_HERE, 1, 0, true, DemuxerStream::Status::kOk,
-         base::TimeDelta::FromMicroseconds(2902));
+         base::Microseconds(2902));
     Read(audio, FROM_HERE, 1, 2902, true);
-    EXPECT_EQ(base::TimeDelta::FromMicroseconds(-2902), demuxer_->start_time());
+    EXPECT_EQ(base::Microseconds(-2902), demuxer_->start_time());
 
     // Though the internal start time may be below zero, the exposed media time
     // must always be >= zero.
@@ -817,7 +814,7 @@ TEST_F(FFmpegDemuxerTest,
   // Run the test twice with a seek in between.
   for (int i = 0; i < 2; ++i) {
     Read(audio, FROM_HERE, 408, 0, true, DemuxerStream::Status::kOk,
-         base::TimeDelta::FromMicroseconds(6500));
+         base::Microseconds(6500));
 
     for (size_t j = 0; j < base::size(kTestExpectations); ++j) {
       Read(audio, FROM_HERE, kTestExpectations[j][0], kTestExpectations[j][1],
@@ -859,7 +856,7 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOpusSfxDiscard_Sync) {
     // has the same sequence, but doesn't have a different discard padding
     // after seeking to the start. Why is this test different?
     Read(audio, FROM_HERE, 314, 0, true, DemuxerStream::Status::kOk,
-         i == 0 ? base::TimeDelta::FromMicroseconds(6500) : base::TimeDelta());
+         i == 0 ? base::Microseconds(6500) : base::TimeDelta());
     Read(audio, FROM_HERE, 244, 20000, true);
 
     // Though the internal start time may be below zero, the exposed media time
@@ -885,7 +882,7 @@ TEST_F(FFmpegDemuxerTest, Read_DiscardDisabledVideoStream) {
   // earliest position guaranteed to give us key frames for all enabled streams.
   // But when the video stream is disabled, FFmpeg can start reading from 1.987s
   // which is earliest audio key frame before the 2.0s |seek_target|.
-  const base::TimeDelta seek_target = base::TimeDelta::FromMilliseconds(2000);
+  const base::TimeDelta seek_target = base::Milliseconds(2000);
 
   CreateDemuxer("bear-vp8-webvtt.webm");
   InitializeDemuxer();
@@ -914,7 +911,7 @@ TEST_F(FFmpegDemuxerTest, Read_EndOfStream_NoDuration) {
   CreateDemuxer("bear-320x240.webm");
   InitializeDemuxer();
   SetDurationKnown(false);
-  EXPECT_CALL(host_, SetDuration(base::TimeDelta::FromMilliseconds(2744)));
+  EXPECT_CALL(host_, SetDuration(base::Milliseconds(2744)));
   ReadUntilEndOfStream(GetStream(DemuxerStream::AUDIO));
   ReadUntilEndOfStream(GetStream(DemuxerStream::VIDEO));
 }
@@ -924,7 +921,7 @@ TEST_F(FFmpegDemuxerTest, Read_EndOfStream_NoDuration_VideoOnly) {
   CreateDemuxer("bear-320x240-video-only.webm");
   InitializeDemuxer();
   SetDurationKnown(false);
-  EXPECT_CALL(host_, SetDuration(base::TimeDelta::FromMilliseconds(2703)));
+  EXPECT_CALL(host_, SetDuration(base::Milliseconds(2703)));
   ReadUntilEndOfStream(GetStream(DemuxerStream::VIDEO));
 }
 
@@ -933,7 +930,7 @@ TEST_F(FFmpegDemuxerTest, Read_EndOfStream_NoDuration_AudioOnly) {
   CreateDemuxer("bear-320x240-audio-only.webm");
   InitializeDemuxer();
   SetDurationKnown(false);
-  EXPECT_CALL(host_, SetDuration(base::TimeDelta::FromMilliseconds(2744)));
+  EXPECT_CALL(host_, SetDuration(base::Milliseconds(2744)));
   ReadUntilEndOfStream(GetStream(DemuxerStream::AUDIO));
 }
 
@@ -943,7 +940,7 @@ TEST_F(FFmpegDemuxerTest, Read_EndOfStream_NoDuration_UnsupportedStream) {
   CreateDemuxer("vorbis_audio_wmv_video.mkv");
   InitializeDemuxer();
   SetDurationKnown(false);
-  EXPECT_CALL(host_, SetDuration(base::TimeDelta::FromMilliseconds(991)));
+  EXPECT_CALL(host_, SetDuration(base::Milliseconds(991)));
   ReadUntilEndOfStream(GetStream(DemuxerStream::AUDIO));
 }
 
@@ -964,8 +961,7 @@ TEST_F(FFmpegDemuxerTest, Seek) {
 
   // Issue a simple forward seek, which should discard queued packets.
   WaitableMessageLoopEvent event;
-  demuxer_->Seek(base::TimeDelta::FromMicroseconds(1000000),
-                 event.GetPipelineStatusCB());
+  demuxer_->Seek(base::Microseconds(1000000), event.GetPipelineStatusCB());
   event.RunAndWaitForStatus(PIPELINE_OK);
 
   // Audio read #1.
@@ -996,10 +992,9 @@ TEST_F(FFmpegDemuxerTest, CancelledSeek) {
 
   // Issue a simple forward seek, which should discard queued packets.
   WaitableMessageLoopEvent event;
-  demuxer_->Seek(base::TimeDelta::FromMicroseconds(1000000),
-                 event.GetPipelineStatusCB());
+  demuxer_->Seek(base::Microseconds(1000000), event.GetPipelineStatusCB());
   // FFmpegDemuxer does not care what the previous seek time was when canceling.
-  demuxer_->CancelPendingSeek(base::TimeDelta::FromSeconds(12345));
+  demuxer_->CancelPendingSeek(base::Seconds(12345));
   event.RunAndWaitForStatus(PIPELINE_OK);
 }
 
@@ -1044,8 +1039,7 @@ TEST_F(FFmpegDemuxerTest, SeekWithCuesBeforeFirstCluster) {
 
   // Issue a simple forward seek, which should discard queued packets.
   WaitableMessageLoopEvent event;
-  demuxer_->Seek(base::TimeDelta::FromMicroseconds(2500000),
-                 event.GetPipelineStatusCB());
+  demuxer_->Seek(base::Microseconds(2500000), event.GetPipelineStatusCB());
   event.RunAndWaitForStatus(PIPELINE_OK);
 
   // Audio read #1.
@@ -1313,8 +1307,8 @@ TEST_F(FFmpegDemuxerTest, HEVC_in_MP4_container) {
                               VideoColorSpace::TransferID::SMPTE170M,
                               VideoColorSpace::MatrixID::SMPTE170M,
                               gfx::ColorSpace::RangeID::LIMITED);
-  VideoType hevc_type = {VideoCodec::kCodecHEVC,
-                         VideoCodecProfile::HEVCPROFILE_MAIN, 10, color_space};
+  VideoType hevc_type = {VideoCodec::kHEVC, VideoCodecProfile::HEVCPROFILE_MAIN,
+                         10, color_space};
   EXPECT_CALL(media_client, IsSupportedVideoType(Eq(hevc_type)))
       .WillRepeatedly(Return(true));
 
@@ -1340,7 +1334,7 @@ TEST_F(FFmpegDemuxerTest, Read_AC3_Audio) {
   MockMediaClient media_client;
   SetMediaClient(&media_client);
 
-  AudioType ac3_type = {AudioCodec::kCodecAC3};
+  AudioType ac3_type = {AudioCodec::kAC3};
   EXPECT_CALL(media_client, IsSupportedAudioType(Eq(ac3_type)))
       .WillRepeatedly(Return(true));
 
@@ -1367,7 +1361,7 @@ TEST_F(FFmpegDemuxerTest, Read_EAC3_Audio) {
   MockMediaClient media_client;
   SetMediaClient(&media_client);
 
-  AudioType eac3_type = {AudioCodec::kCodecEAC3};
+  AudioType eac3_type = {AudioCodec::kEAC3};
   EXPECT_CALL(media_client, IsSupportedAudioType(Eq(eac3_type)))
       .WillRepeatedly(Return(true));
 
@@ -1576,7 +1570,7 @@ static void VerifyFlacStream(DemuxerStream* stream,
   EXPECT_EQ(DemuxerStream::AUDIO, stream->type());
 
   const AudioDecoderConfig& audio_config = stream->audio_decoder_config();
-  EXPECT_EQ(kCodecFLAC, audio_config.codec());
+  EXPECT_EQ(AudioCodec::kFLAC, audio_config.codec());
   EXPECT_EQ(expected_bits_per_channel, audio_config.bits_per_channel());
   EXPECT_EQ(expected_channel_layout, audio_config.channel_layout());
   EXPECT_EQ(expected_samples_per_second, audio_config.samples_per_second());

@@ -18,7 +18,7 @@
 #include "base/cancelable_callback.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
@@ -36,6 +36,7 @@
 #include "content/common/renderer_host.mojom.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/discardable_memory_utils.h"
+#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/media_buildflags.h"
@@ -112,6 +113,10 @@ class VariationsRenderThreadObserver;
 class StreamTextureFactory;
 #endif
 
+#if defined(OS_WIN)
+class DCOMPTextureFactory;
+#endif
+
 // The RenderThreadImpl class represents the main thread, where RenderView
 // instances live.  The RenderThread supports an API that is used by its
 // consumer to talk indirectly to the RenderViews and supporting objects.
@@ -147,6 +152,10 @@ class CONTENT_EXPORT RenderThreadImpl
       const InProcessChildThreadParams& params,
       int32_t client_id,
       std::unique_ptr<blink::scheduler::WebThreadScheduler> scheduler);
+
+  RenderThreadImpl(const RenderThreadImpl&) = delete;
+  RenderThreadImpl& operator=(const RenderThreadImpl&) = delete;
+
   ~RenderThreadImpl() override;
   void Shutdown() override;
   bool ShouldBeDestroyed() override;
@@ -185,8 +194,12 @@ class CONTENT_EXPORT RenderThreadImpl
   void SetRendererProcessType(
       blink::scheduler::WebRendererProcessType type) override;
   blink::WebString GetUserAgent() override;
+  blink::WebString GetReducedUserAgent() override;
   const blink::UserAgentMetadata& GetUserAgentMetadata() override;
   bool IsUseZoomForDSF() override;
+  void WriteIntoTrace(
+      perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
+      override;
 
   // IPC::Listener implementation via ChildThreadImpl:
   void OnAssociatedInterfaceRequest(
@@ -258,6 +271,10 @@ class CONTENT_EXPORT RenderThreadImpl
   bool EnableStreamTextureCopy();
 #endif
 
+#if defined(OS_WIN)
+  scoped_refptr<DCOMPTextureFactory> GetDCOMPTextureFactory();
+#endif
+
   blink::WebVideoCaptureImplManager* video_capture_impl_manager() const {
     return vc_manager_.get();
   }
@@ -303,6 +320,10 @@ class CONTENT_EXPORT RenderThreadImpl
   class CONTENT_EXPORT HistogramCustomizer {
    public:
     HistogramCustomizer();
+
+    HistogramCustomizer(const HistogramCustomizer&) = delete;
+    HistogramCustomizer& operator=(const HistogramCustomizer&) = delete;
+
     ~HistogramCustomizer();
 
     // Called when a top frame of a RenderView navigates. This function updates
@@ -341,8 +362,6 @@ class CONTENT_EXPORT RenderThreadImpl
     // Set of histograms for which we want to produce a custom histogram if
     // possible.
     std::set<std::string> custom_histograms_;
-
-    DISALLOW_COPY_AND_ASSIGN(HistogramCustomizer);
   };
 
   HistogramCustomizer* histogram_customizer() {
@@ -383,6 +402,17 @@ class CONTENT_EXPORT RenderThreadImpl
   void SetVideoFrameCompositorTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     video_frame_compositor_task_runner_ = task_runner;
+  }
+
+  void CreateSharedStorageWorkletService(
+      mojo::PendingReceiver<
+          shared_storage_worklet::mojom::SharedStorageWorkletService> receiver);
+
+  // The time the run loop started for this thread.
+  base::TimeTicks run_loop_start_time() const { return run_loop_start_time_; }
+
+  void set_run_loop_start_time(base::TimeTicks run_loop_start_time) {
+    run_loop_start_time_ = run_loop_start_time;
   }
 
  private:
@@ -426,6 +456,7 @@ class CONTENT_EXPORT RenderThreadImpl
                                double bandwidth_kbps) override;
   void SetWebKitSharedTimersSuspended(bool suspend) override;
   void SetUserAgent(const std::string& user_agent) override;
+  void SetReducedUserAgent(const std::string& user_agent) override;
   void SetUserAgentMetadata(const blink::UserAgentMetadata& metadata) override;
   void SetCorsExemptHeaderList(const std::vector<std::string>& list) override;
   void UpdateScrollbarTheme(
@@ -438,7 +469,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void PurgePluginListCache(bool reload_pages) override;
   void SetProcessState(mojom::RenderProcessBackgroundState background_state,
                        mojom::RenderProcessVisibleState visible_state) override;
-  void SetSchedulerKeepActive(bool keep_active) override;
   void SetIsLockedToSite() override;
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   void WriteClangProfilingProfile(
@@ -492,6 +522,7 @@ class CONTENT_EXPORT RenderThreadImpl
   absl::optional<mojom::RenderProcessVisibleState> visible_state_;
 
   blink::WebString user_agent_;
+  blink::WebString reduced_user_agent_;
   blink::UserAgentMetadata user_agent_metadata_;
 
   // Sticky once true, indicates that compositing is done without Gpu, so
@@ -528,6 +559,10 @@ class CONTENT_EXPORT RenderThreadImpl
 
 #if defined(OS_ANDROID)
   scoped_refptr<StreamTextureFactory> stream_texture_factory_;
+#endif
+
+#if defined(OS_WIN)
+  scoped_refptr<DCOMPTextureFactory> dcomp_texture_factory_;
 #endif
 
   scoped_refptr<viz::ContextProviderCommandBuffer> shared_main_thread_contexts_;
@@ -592,9 +627,10 @@ class CONTENT_EXPORT RenderThreadImpl
   blink::WebResourceRequestSenderDelegate* resource_request_sender_delegate_ =
       nullptr;
 
-  base::WeakPtrFactory<RenderThreadImpl> weak_factory_{this};
+  // Tracks the time the run loop started for this thread.
+  base::TimeTicks run_loop_start_time_;
 
-  DISALLOW_COPY_AND_ASSIGN(RenderThreadImpl);
+  base::WeakPtrFactory<RenderThreadImpl> weak_factory_{this};
 };
 
 }  // namespace content

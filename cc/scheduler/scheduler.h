@@ -48,6 +48,7 @@ enum class FrameSkippedReason {
   kRecoverLatency,
   kNoDamage,
   kWaitingOnMain,
+  kDrawThrottled,
 };
 
 class SchedulerClient {
@@ -87,7 +88,7 @@ class SchedulerClient {
   virtual void FrameIntervalUpdated(base::TimeDelta interval) = 0;
 
   // Functions used for reporting animation targeting UMA, crbug.com/758439.
-  virtual bool HasCustomPropertyAnimations() const = 0;
+  virtual bool HasInvalidationAnimation() const = 0;
 
  protected:
   virtual ~SchedulerClient() {}
@@ -250,6 +251,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   void SetMainThreadWantsBeginMainFrameNotExpected(bool new_state);
 
   void AsProtozeroInto(
+      perfetto::EventContext& ctx,
       perfetto::protos::pbzero::ChromeCompositorSchedulerState* state) const;
 
   void SetVideoNeedsBeginFrames(bool video_needs_begin_frames);
@@ -401,6 +403,10 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   }
 
   void UpdatePowerModeVote();
+
+  // Used only for UMa metric calculations.
+  base::TimeDelta cc_frame_time_available_;
+  base::TimeTicks cc_frame_start_;  // Begin impl frame time.
 };
 
 }  // namespace cc

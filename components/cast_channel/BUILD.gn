@@ -117,8 +117,20 @@ source_set("unit_tests") {
   ]
 }
 
-# TODO(issuetracker.google.com/185815206): fuzzing should move to Open Screen.
+# TODO(issuetracker.google.com/185815206): Fuzzers should also work with
+# openscreen code.
 if (use_fuzzing_engine) {
+  source_set("cast_auth_util_fuzzer_shared") {
+    sources = [
+      "cast_auth_util_fuzzer_shared.cc",
+      "cast_auth_util_fuzzer_shared.h",
+    ]
+    public_deps = [ ":cast_channel_fuzzer_inputs" ]
+    deps = [
+      "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
+    ]
+  }
+
   data_headers("cast_auth_util_fuzzer_certs") {
     namespace = "cast"
     sources =
@@ -165,6 +177,7 @@ fuzzer_test("cast_auth_util_fuzzer") {
   sources = [ "cast_auth_util_fuzzer.cc" ]
   deps = [
     ":cast_auth_util_fuzzer_certs",
+    ":cast_auth_util_fuzzer_shared",
     ":cast_channel",
     ":cast_channel_fuzzer_inputs",
     "//components/cast_certificate",
@@ -215,5 +228,46 @@ fuzzer_test("cast_message_util_fuzzer") {
     ":cast_channel_fuzzer_inputs",
     "//third_party/libprotobuf-mutator",
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
+  ]
+}
+
+fuzzer_test("openscreen_cast_auth_util_fuzzer") {
+  sources = [ "openscreen_cast_auth_util_fuzzer.cc" ]
+  deps = [
+    ":cast_auth_util_fuzzer_certs",
+    ":cast_auth_util_fuzzer_shared",
+    ":cast_channel_fuzzer_inputs",
+    "//base",
+    "//components/cast_certificate:cast_certificate_reader",
+    "//components/openscreen_platform",
+    "//net/data/ssl/certificates:generate_fuzzer_cert_includes",
+    "//third_party/boringssl",
+    "//third_party/libprotobuf-mutator",
+    "//third_party/openscreen/src/cast/common/certificate/proto:certificate_proto",
+    "//third_party/openscreen/src/cast/sender:channel",
+  ]
+  seed_corpus = "$target_gen_dir/cast_auth_util_fuzzer_corpus"
+  seed_corpus_deps = [ ":cast_auth_util_fuzzer_convert_corpus" ]
+}
+
+fuzzer_test("openscreen_message_framer_deserialize_fuzzer") {
+  sources = [ "openscreen_message_framer_deserialize_fuzzer.cc" ]
+  deps = [
+    "//components/openscreen_platform",
+    "//third_party/openscreen/src/cast/common:channel",
+  ]
+  seed_corpus = "fuzz_corpus"
+
+  # NOTE: Max message size is 65536 + 4, so this allows some overhang.
+  libfuzzer_options = [ "max_len=65600" ]
+}
+
+fuzzer_test("openscreen_message_framer_serialize_fuzzer") {
+  sources = [ "openscreen_message_framer_serialize_fuzzer.cc" ]
+  deps = [
+    ":cast_channel_fuzzer_inputs",
+    "//components/openscreen_platform",
+    "//third_party/libprotobuf-mutator",
+    "//third_party/openscreen/src/cast/common:channel",
   ]
 }

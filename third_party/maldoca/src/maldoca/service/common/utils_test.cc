@@ -19,12 +19,14 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
+#include "maldoca/base/logging.h"
 #include "maldoca/base/parse_text_proto.h"
 #include "maldoca/base/status.h"
 #include "maldoca/base/testing/status_matchers.h"
+#include "maldoca/base/testing/test_utils.h"
 
 using ::maldoca::ParsedDocument;
+using ::maldoca::testing::ServiceTestFilename;
 using ::testing::ElementsAre;
 using ::testing::Pair;
 
@@ -33,14 +35,10 @@ namespace utils {
 namespace {
 
 #ifndef MALDOCA_CHROME
-std::string TestFilename(absl::string_view filename) {
-  return file::JoinPath(GetRunfilesDir(),
-                        absl::StrCat("maldoca/service/testdata/", filename));
-}
-
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status = maldoca::testing::GetTestContents(ServiceTestFilename(filename),
+                                                  &content);
   MALDOCA_CHECK_OK(status) << status;
   return content;
 }
@@ -51,7 +49,8 @@ TEST(InferDocType, CorrectInferredType) {
   MALDOCA_ASSERT_OK(fid);
   ::maldoca::FileTypeIdentifier *identifier = fid->get();
   auto doc = GetTestContent(
-      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.doc");
+      "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431_xor_"
+      "0x42_encoded.doc");
   EXPECT_EQ(DocType::DOC, InferDocType("ffc835c9a950beda17fa79dd0acf28d1df38352"
                                        "32877b5fdd512b3df2ffb2431.doc",
                                        doc, identifier));
@@ -70,7 +69,8 @@ TEST(InferDocType, CorrectInferredType) {
   EXPECT_EQ(DocType::XLA, InferDocType("test.xla", doc, identifier));
 
   doc = GetTestContent(
-      "ba5c251f78a1d57b72901f4ff80824d6ad0aa4bf1931c593a36254db4ab41021.ppt");
+      "ba5c251f78a1d57b72901f4ff80824d6ad0aa4bf1931c593a36254db4ab41021_xor_"
+      "0x42_encoded.ppt");
   EXPECT_EQ(DocType::PPT, InferDocType("test.anyname", doc, identifier));
   doc = GetTestContent("image_and_text.pdf");
   EXPECT_EQ(DocType::PDF, InferDocType("test.anyname", doc, identifier));
@@ -118,3 +118,12 @@ TEST(DocumentResponseHasVbaScript, ProcessDocumentResponseNoVba) {
 }  // namespace
 }  // namespace utils
 }  // namespace maldoca
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+#ifdef MALDOCA_CHROME
+  // mini_chromium needs InitLogging
+  maldoca::InitLogging();
+#endif
+  return RUN_ALL_TESTS();
+}

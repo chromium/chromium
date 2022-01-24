@@ -73,6 +73,9 @@ public class ShareHelper {
 
     private static final String EXTRA_SHARE_SCREENSHOT_AS_STREAM = "share_screenshot_as_stream";
 
+    /** The string identifier used as a key to set the extra stream's alt text */
+    private static final String EXTRA_STREAM_ALT_TEXT = "android.intent.extra.STREAM_ALT_TEXT";
+
     /** Force the use of a Chrome-specific intent chooser, not the system chooser. */
     private static boolean sForceCustomChooserForTesting;
 
@@ -220,7 +223,7 @@ public class ShareHelper {
         }
 
         @Override
-        public void onIntentCompleted(WindowAndroid window, int resultCode, Intent data) {
+        public void onIntentCompleted(int resultCode, Intent data) {
             // NOTE: The validity of the returned |resultCode| is somewhat unexpected. For
             // background, a sharing flow starts with a "Chooser" activity that enables the user
             // to select the app to share to, and then when the user selects that application,
@@ -383,11 +386,20 @@ public class ShareHelper {
             if (isFileShare) {
                 intent.setType(params.getFileContentType());
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                final boolean hasAltText =
+                        params.getFileAltTexts() != null && !params.getFileAltTexts().isEmpty();
 
                 if (isMultipleFileShare) {
                     intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, params.getFileUris());
+                    if (hasAltText) {
+                        intent.putStringArrayListExtra(
+                                EXTRA_STREAM_ALT_TEXT, params.getFileAltTexts());
+                    }
                 } else {
                     intent.putExtra(Intent.EXTRA_STREAM, params.getFileUris().get(0));
+                    if (hasAltText) {
+                        intent.putExtra(EXTRA_STREAM_ALT_TEXT, params.getFileAltTexts().get(0));
+                    }
                 }
             } else {
                 intent.setType("text/plain");

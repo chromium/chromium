@@ -15,17 +15,9 @@
 namespace payments {
 namespace {
 
-class PaymentHandlerHeaderViewUITest
-    : public PaymentRequestBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+class PaymentHandlerHeaderViewUITest : public PaymentRequestBrowserTestBase {
  public:
-  PaymentHandlerHeaderViewUITest() {
-    if (GetParam()) {
-      features_.InitAndEnableFeature(features::kPaymentHandlerSecurityIcon);
-    } else {
-      features_.InitAndDisableFeature(features::kPaymentHandlerSecurityIcon);
-    }
-  }
+  PaymentHandlerHeaderViewUITest() = default;
   ~PaymentHandlerHeaderViewUITest() override = default;
 
   void SetUpOnMainThread() override {
@@ -37,8 +29,7 @@ class PaymentHandlerHeaderViewUITest
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
-                       EnablePaymentHandlerSecurityIcon) {
+IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, BasicHeader) {
   autofill::AutofillProfile profile(autofill::test::GetFullProfile());
   AddAutofillProfile(profile);
   autofill::CreditCard card(autofill::test::GetCreditCard());
@@ -65,19 +56,8 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
   EXPECT_TRUE(IsViewVisible(DialogViewID::BACK_BUTTON));
   EXPECT_TRUE(IsViewVisible(DialogViewID::PAYMENT_APP_OPENED_WINDOW_SHEET));
 
-  auto* top = dialog_view()->view_stack_for_testing()->top();
-  if (GetParam()) {
-    EXPECT_NE(nullptr, top->GetViewByID(
-                           static_cast<int>(DialogViewID::SECURITY_ICON_VIEW)));
-  } else {
-    EXPECT_EQ(nullptr, top->GetViewByID(
-                           static_cast<int>(DialogViewID::SECURITY_ICON_VIEW)));
-  }
   NavigateTo("/payment_handler.html");
 }
 
-// Run all tests with both values for
-// features::kPaymentHandlerSecurityIcon
-INSTANTIATE_TEST_SUITE_P(All, PaymentHandlerHeaderViewUITest, testing::Bool());
 }  // namespace
 }  // namespace payments

@@ -22,6 +22,10 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
  public:
   TracingObserver(base::trace_event::TraceLog*,
                   base::trace_event::MemoryDumpManager*);
+
+  TracingObserver(const TracingObserver&) = delete;
+  TracingObserver& operator=(const TracingObserver&) = delete;
+
   ~TracingObserver() override;
 
   // TraceLog::EnabledStateObserver implementation.
@@ -57,8 +61,6 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   base::trace_event::TraceLog* const trace_log_;
   std::unique_ptr<base::trace_event::TraceConfig::MemoryDumpConfig>
       memory_dump_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(TracingObserver);
 };
 
 }  // namespace memory_instrumentation

@@ -64,8 +64,7 @@ void AutofillAssistantOnboardingFetcher::FetchOnboardingDefinition(
 
 void AutofillAssistantOnboardingFetcher::StartFetch(const std::string& locale,
                                                     int timeout_ms) {
-  static const base::TimeDelta kFetchTimeout(
-      base::TimeDelta::FromMilliseconds(timeout_ms));
+  static const base::TimeDelta kFetchTimeout(base::Milliseconds(timeout_ms));
   if (url_loader_) {
     return;
   }
@@ -91,6 +90,8 @@ void AutofillAssistantOnboardingFetcher::StartFetch(const std::string& locale,
           }
           policy {
             cookies_allowed: NO
+            policy_exception_justification:
+              "TODO(crbug.com/1231780): Add this field."
           }
       )");
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),

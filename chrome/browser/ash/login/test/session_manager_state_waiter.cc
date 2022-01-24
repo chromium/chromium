@@ -5,14 +5,23 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 
 #include "base/run_loop.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
+#include "components/user_manager/user_manager.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace test {
 
 void WaitForPrimaryUserSessionStart() {
   if (!session_manager::SessionManager::Get()->IsSessionStarted())
     SessionStateWaiter().Wait();
+
+  // If login UI is still there profile may not be prepared yet.
+  if (ExistingUserController::current_controller()) {
+    ProfilePreparedWaiter(
+        user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId())
+        .Wait();
+  }
 }
 
 }  // namespace test
@@ -24,8 +33,16 @@ SessionStateWaiter::SessionStateWaiter(
 SessionStateWaiter::~SessionStateWaiter() = default;
 
 void SessionStateWaiter::Wait() {
+  if (done_)
+    return;
+
   if (session_manager::SessionManager::Get()->session_state() ==
       target_state_) {
+    return;
+  }
+  if (!target_state_ &&
+      user_manager::UserManager::Get()->GetLoggedInUsers().size() > 0) {
+    // Session is already active.
     return;
   }
 
@@ -40,15 +57,23 @@ void SessionStateWaiter::OnSessionStateChanged() {
   if (session_manager::SessionManager::Get()->session_state() ==
       target_state_) {
     session_observation_.Reset();
-    std::move(session_state_callback_).Run();
+    done_ = true;
+    // This may happen before Wait() was called. See
+    // UserFlagsLoginTest.PRE_RestartToApplyFlags for example.
+    if (session_state_callback_)
+      std::move(session_state_callback_).Run();
   }
 }
 
 void SessionStateWaiter::OnUserSessionStarted(bool is_primary_user) {
   if (!target_state_) {
     session_observation_.Reset();
-    std::move(session_state_callback_).Run();
+    done_ = true;
+    // This may happen before Wait() was called. See
+    // UserFlagsLoginTest.PRE_RestartToApplyFlags for example.
+    if (session_state_callback_)
+      std::move(session_state_callback_).Run();
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

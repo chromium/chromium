@@ -15,7 +15,8 @@
 namespace {
 
 // Templates for the profile preferences paths to store account related
-// information, per service provider. OAuth2 tokens:
+// information, per service provider.
+// OAuth2 tokens:
 constexpr char kAccessTokenPrefPathTemplate[] =
     "enterprise_connectors.file_system.%s.access_token";
 constexpr char kRefreshTokenPrefPathTemplate[] =
@@ -180,6 +181,11 @@ void SetDefaultFolder(PrefService* prefs,
       folder_name);
 }
 
+void ClearDefaultFolder(PrefService* prefs,
+                        const std::string& service_provider) {
+  SetDefaultFolder(prefs, service_provider, std::string(), std::string());
+}
+
 std::string GetDefaultFolderId(PrefService* prefs,
                                const std::string& service_provider) {
   auto folder_id = prefs->GetString(
@@ -191,18 +197,33 @@ std::string GetDefaultFolderLink(PrefService* prefs,
                                  const std::string& service_provider) {
   auto folder_id = GetDefaultFolderId(prefs, service_provider);
   DCHECK_EQ(service_provider, kFileSystemServiceProviderPrefNameBox);
-  return BoxApiCallFlow::MakeUrlToShowFolder(folder_id).spec();
+  std::string url = BoxApiCallFlow::MakeUrlToShowFolder(folder_id).spec();
+  DCHECK_EQ(url.empty(), folder_id.empty());
+  return url;
 }
 
 std::string GetDefaultFolderName(PrefService* prefs,
                                  const std::string& service_provider) {
-  return prefs->GetString(
+  std::string name = prefs->GetString(
       GetPrefPath(kUploadFolderNamePrefPathTemplate, service_provider));
+  return name.empty() ? kUploadFolderDefaultName : name;
+}
+
+std::vector<std::string> GetFileSystemConnectorAccountInfoPrefs(
+    const std::string& service_provider) {
+  std::vector<std::string> prefs_paths;
+  prefs_paths.emplace_back(
+      GetPrefPath(kUploadFolderIdPrefPathTemplate, service_provider));
+  prefs_paths.emplace_back(
+      GetPrefPath(kUploadFolderNamePrefPathTemplate, service_provider));
+  prefs_paths.emplace_back(
+      GetPrefPath(kAccountInfoPrefPathTemplate, service_provider));
+  return prefs_paths;
 }
 
 void SetFileSystemAccountInfo(PrefService* prefs,
                               const std::string& service_provider,
-                              base::DictionaryValue account_info) {
+                              base::Value account_info) {
   prefs->Set(GetPrefPath(kAccountInfoPrefPathTemplate, service_provider),
              account_info);
 }
@@ -223,6 +244,33 @@ base::Value GetFileSystemAccountInfo(PrefService* prefs,
   const base::DictionaryValue* val = prefs->GetDictionary(path);
   DCHECK(val);
   return val->Clone();
+}
+
+AccountInfo::AccountInfo() = default;
+AccountInfo::~AccountInfo() = default;
+AccountInfo::AccountInfo(const AccountInfo& other) = default;
+
+absl::optional<AccountInfo> GetFileSystemAccountInfoFromPrefs(
+    const FileSystemSettings& settings,
+    PrefService* prefs) {
+  const std::string& provider = settings.service_provider;
+  base::Value stored_account_info = GetFileSystemAccountInfo(prefs, provider);
+  std::string *account_name, *account_login;
+  if (stored_account_info.DictEmpty() ||
+      !(account_name = stored_account_info.FindStringPath("name")) ||
+      !(account_login = stored_account_info.FindStringPath("login"))) {
+    return absl::nullopt;
+  }
+
+  AccountInfo account_info;
+  account_info.account_name = *account_name;
+  account_info.account_login = *account_login;
+  account_info.folder_name = GetDefaultFolderName(prefs, provider);
+  account_info.folder_link = GetDefaultFolderLink(prefs, provider);
+  DCHECK(!account_info.account_name.empty());
+  DCHECK(!account_info.account_login.empty());
+  DCHECK(!account_info.folder_name.empty());
+  return absl::make_optional<AccountInfo>(std::move(account_info));
 }
 
 }  // namespace enterprise_connectors

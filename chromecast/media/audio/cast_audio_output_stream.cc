@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/bits.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -17,6 +16,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/base/bind_to_task_runner.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
@@ -25,8 +25,9 @@
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/audio/cast_audio_output_utils.h"
 #include "chromecast/media/audio/cma_audio_output_stream.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/mixer_service/output_stream_connection.h"
+#include "chromecast/media/audio/net/common.pb.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
@@ -54,11 +55,10 @@
 
 namespace {
 // Below are settings for MixerService and the DirectAudio it uses.
-constexpr base::TimeDelta kFadeTime = base::TimeDelta::FromMilliseconds(5);
+constexpr base::TimeDelta kFadeTime = base::Milliseconds(5);
 constexpr base::TimeDelta kCommunicationsMaxBufferedFrames =
-    base::TimeDelta::FromMilliseconds(50);
-constexpr base::TimeDelta kMediaMaxBufferedFrames =
-    base::TimeDelta::FromMilliseconds(70);
+    base::Milliseconds(50);
+constexpr base::TimeDelta kMediaMaxBufferedFrames = base::Milliseconds(70);
 }  // namespace
 
 namespace chromecast {
@@ -72,15 +72,15 @@ AudioContentType GetContentType(const std::string& device_id) {
   return AudioContentType::kMedia;
 }
 
-mixer_service::ContentType ConvertContentType(AudioContentType content_type) {
+audio_service::ContentType ConvertContentType(AudioContentType content_type) {
   switch (content_type) {
     case AudioContentType::kMedia:
-      return mixer_service::CONTENT_TYPE_MEDIA;
+      return audio_service::CONTENT_TYPE_MEDIA;
     case AudioContentType::kCommunication:
-      return mixer_service::CONTENT_TYPE_COMMUNICATION;
+      return audio_service::CONTENT_TYPE_COMMUNICATION;
     default:
       NOTREACHED();
-      return mixer_service::CONTENT_TYPE_MEDIA;
+      return audio_service::CONTENT_TYPE_MEDIA;
   }
 }
 
@@ -91,6 +91,10 @@ class CastAudioOutputStream::MixerServiceWrapper
  public:
   MixerServiceWrapper(const ::media::AudioParameters& audio_params,
                       const std::string& device_id);
+
+  MixerServiceWrapper(const MixerServiceWrapper&) = delete;
+  MixerServiceWrapper& operator=(const MixerServiceWrapper&) = delete;
+
   ~MixerServiceWrapper() override = default;
 
   void SetRunning(bool running);
@@ -129,8 +133,6 @@ class CastAudioOutputStream::MixerServiceWrapper
   // Task runner on |io_thread_|.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   THREAD_CHECKER(io_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MixerServiceWrapper);
 };
 
 CastAudioOutputStream::MixerServiceWrapper::MixerServiceWrapper(
@@ -162,12 +164,12 @@ void CastAudioOutputStream::MixerServiceWrapper::Start(
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   mixer_service::OutputStreamParams params;
-  params.set_content_type(mixer_service::CONTENT_TYPE_MEDIA);
+  params.set_content_type(audio_service::CONTENT_TYPE_MEDIA);
   params.set_focus_type(ConvertContentType(GetContentType(device_id_)));
   params.set_device_id(device_id_);
   params.set_stream_type(
       mixer_service::OutputStreamParams::STREAM_TYPE_DEFAULT);
-  params.set_sample_format(mixer_service::SAMPLE_FORMAT_FLOAT_P);
+  params.set_sample_format(audio_service::SAMPLE_FORMAT_FLOAT_P);
   params.set_sample_rate(audio_params_.sample_rate());
   params.set_num_channels(audio_params_.channels());
 
@@ -286,7 +288,7 @@ void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
   base::TimeDelta reported_delay = ::media::AudioTimestampHelper::FramesToTime(
       max_buffered_frames_, audio_params_.sample_rate());
   base::TimeTicks reported_delay_timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(playout_timestamp);
+      base::TimeTicks() + base::Microseconds(playout_timestamp);
 
   int frames_filled = source_callback_->OnMoreData(
       reported_delay, reported_delay_timestamp, 0, audio_bus_.get());

@@ -57,23 +57,23 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     securityTokenPin.onBeforeShow();
     securityTokenPin.parameters = DEFAULT_PARAMETERS;
 
-    pinKeyboardContainer = securityTokenPin.$$('#pinKeyboardContainer');
+    pinKeyboardContainer = securityTokenPin.shadowRoot.querySelector('#pinKeyboardContainer');
     assert(pinKeyboardContainer);
-    pinKeyboard = securityTokenPin.$$('#pinKeyboard');
+    pinKeyboard = securityTokenPin.shadowRoot.querySelector('#pinKeyboard');
     assert(pinKeyboard);
-    progressElement = securityTokenPin.$$('#progress');
+    progressElement = securityTokenPin.shadowRoot.querySelector('#progress');
     assert(progressElement);
-    pinInput = pinKeyboard.$$('#pinInput');
+    pinInput = pinKeyboard.shadowRoot.querySelector('#pinInput');
     assert(pinInput);
-    inputField = pinInput.$$('input');
+    inputField = pinInput.shadowRoot.querySelector('input');
     assert(inputField);
-    errorContainer = securityTokenPin.$$('#errorContainer');
+    errorContainer = securityTokenPin.shadowRoot.querySelector('#errorContainer');
     assert(errorContainer);
-    errorElement = securityTokenPin.$$('#error');
+    errorElement = securityTokenPin.shadowRoot.querySelector('#error');
     assert(errorElement);
-    submitElement = securityTokenPin.$$('#submit');
+    submitElement = securityTokenPin.shadowRoot.querySelector('#submit');
     assert(submitElement);
-    backElement = securityTokenPin.$$('#back');
+    backElement = securityTokenPin.shadowRoot.querySelector('#back');
     assert(backElement);
   });
 
@@ -246,7 +246,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     // The user clicks the buttons of the on-screen keypad. The input field is
     // updated accordingly.
     for (const character of PIN)
-      pinKeyboard.$$('#digitButton' + character).click();
+      pinKeyboard.shadowRoot.querySelector('#digitButton' + character).click();
     expectEquals(pinInput.value, PIN);
     expectEquals(inputField.value, PIN);
 
@@ -267,11 +267,11 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
         // that can catch ordering bugs in the tested code (in case it handles
         // clicks in asynchronous tasks without proper sequencing).
         setTimeout(() => {
-          pinKeyboard.$$('#digitButton' + PIN[1]).click();
+          pinKeyboard.shadowRoot.querySelector('#digitButton' + PIN[1]).click();
         }, 0);
-        pinKeyboard.$$('#digitButton' + PIN[0]).click();
+        pinKeyboard.shadowRoot.querySelector('#digitButton' + PIN[0]).click();
         setTimeout(() => {
-          pinKeyboard.$$('#digitButton' + PIN[2]).click();
+          pinKeyboard.shadowRoot.querySelector('#digitButton' + PIN[2]).click();
           resolve();
         }, 0);
       });

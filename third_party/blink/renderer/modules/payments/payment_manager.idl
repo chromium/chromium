@@ -13,8 +13,7 @@ enum PaymentDelegation {
 
 [
     Exposed=Window,
-    RuntimeEnabled=PaymentApp,
-    ConstructorCallWith=ExecutionContext
+    RuntimeEnabled=PaymentApp
 ] interface PaymentManager {
     [SameObject] readonly attribute PaymentInstruments instruments;
     attribute DOMString userHint;

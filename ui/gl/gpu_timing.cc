@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "ui/gl/gl_bindings.h"
@@ -33,6 +32,10 @@ int32_t QueryTimestampBits() {
 class GPUTimingImpl : public GPUTiming {
  public:
   explicit GPUTimingImpl(GLContextReal* context);
+
+  GPUTimingImpl(const GPUTimingImpl&) = delete;
+  GPUTimingImpl& operator=(const GPUTimingImpl&) = delete;
+
   ~GPUTimingImpl() override;
 
   void ForceTimeElapsedQuery() { force_time_elapsed_query_ = true; }
@@ -95,13 +98,14 @@ class GPUTimingImpl : public GPUTiming {
   scoped_refptr<TimeElapsedTimerQuery> last_elapsed_query_;
 
   base::circular_deque<scoped_refptr<TimerQuery>> queries_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUTimingImpl);
 };
 
 class QueryResult : public base::RefCounted<QueryResult> {
  public:
   QueryResult() {}
+
+  QueryResult(const QueryResult&) = delete;
+  QueryResult& operator=(const QueryResult&) = delete;
 
   bool IsAvailable() const { return available_; }
   int64_t GetDelta() const { return end_value_ - start_value_; }
@@ -118,13 +122,15 @@ class QueryResult : public base::RefCounted<QueryResult> {
   bool available_ = false;
   int64_t start_value_ = 0;
   int64_t end_value_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryResult);
 };
 
 class TimerQuery : public base::RefCounted<TimerQuery> {
  public:
   explicit TimerQuery(uint32_t next_id);
+
+  TimerQuery(const TimerQuery&) = delete;
+  TimerQuery& operator=(const TimerQuery&) = delete;
+
   virtual void Destroy() = 0;
 
   // Returns true when UpdateQueryResults() is ready to be called.
@@ -142,7 +148,6 @@ class TimerQuery : public base::RefCounted<TimerQuery> {
  protected:
   friend class base::RefCounted<TimerQuery>;
   virtual ~TimerQuery();
-  DISALLOW_COPY_AND_ASSIGN(TimerQuery);
 };
 
 TimerQuery::TimerQuery(uint32_t next_id)
@@ -365,8 +370,7 @@ int64_t GPUTimingImpl::CalculateTimerOffset() {
       // We cannot expect these instructions to run with the accuracy
       // within 1 microsecond, instead discard differences which are less
       // than a single millisecond.
-      base::TimeDelta delta =
-          base::TimeDelta::FromMicroseconds(micro_offset - offset_);
+      base::TimeDelta delta = base::Microseconds(micro_offset - offset_);
 
       if (delta.magnitude().InMilliseconds() >= 1) {
         offset_ = micro_offset;

@@ -1,1 +1,1 @@
-CONSOLE ERROR: line 9: Error: <polyline> attribute points: Expected number, "undefined".
+CONSOLE ERROR: Error: <polyline> attribute points: Expected number, "undefined".

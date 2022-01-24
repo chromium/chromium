@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "content/browser/accessibility/browser_accessibility.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
 namespace content {
@@ -21,6 +21,13 @@ namespace content {
 class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
  public:
   static BrowserAccessibilityAndroid* GetFromUniqueId(int32_t unique_id);
+
+  BrowserAccessibilityAndroid(const BrowserAccessibilityAndroid&) = delete;
+  BrowserAccessibilityAndroid& operator=(const BrowserAccessibilityAndroid&) =
+      delete;
+
+  ~BrowserAccessibilityAndroid() override;
+
   int32_t unique_id() const { return GetUniqueId().Get(); }
 
   // BrowserAccessibility Overrides.
@@ -49,6 +56,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsLink() const;
   bool IsMultiLine() const;
   bool IsMultiselectable() const;
+  bool IsRangeControlWithoutAriaValueText() const;
   bool IsReportingCheckable() const;
   bool IsScrollable() const;
   bool IsSeekControl() const;
@@ -74,6 +82,9 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   // Returns true if the given subtree has inline text box data, or if there
   // aren't any to load.
   bool AreInlineTextBoxesLoaded() const;
+
+  // Returns a relative score of how likely a node is to be clickable.
+  int ClickableScore() const;
 
   bool CanOpenPopup() const;
 
@@ -183,10 +194,13 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   void GetSuggestions(std::vector<int>* suggestion_starts,
                       std::vector<int>* suggestion_ends) const;
 
- private:
-  // This gives BrowserAccessibility::Create access to the class constructor.
-  friend class BrowserAccessibility;
+ protected:
+  BrowserAccessibilityAndroid(BrowserAccessibilityManager* manager,
+                              ui::AXNode* node);
 
+  friend class BrowserAccessibility;  // Needs access to our constructor.
+
+ private:
   static size_t CommonPrefixLength(const std::u16string a,
                                    const std::u16string b);
   static size_t CommonSuffixLength(const std::u16string a,
@@ -194,14 +208,12 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   static size_t CommonEndLengths(const std::u16string a,
                                  const std::u16string b);
 
-  BrowserAccessibilityAndroid();
-  ~BrowserAccessibilityAndroid() override;
-
   // BrowserAccessibility overrides.
   BrowserAccessibility* PlatformGetLowestPlatformAncestor() const override;
 
   bool HasOnlyTextChildren() const;
   bool HasOnlyTextAndImageChildren() const;
+  bool HasListMarkerChild() const;
   bool ShouldExposeValueAsName() const;
   int CountChildrenWithRole(ax::mojom::Role role) const;
 
@@ -212,8 +224,6 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   std::u16string old_value_;
   std::u16string new_value_;
   int32_t unique_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityAndroid);
 };
 
 }  // namespace content

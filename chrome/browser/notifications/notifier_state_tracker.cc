@@ -145,7 +145,7 @@ void NotifierStateTracker::OnStringListPrefChanged(
   const PrefService* pref_service = profile_->GetPrefs();
   CHECK(pref_service);
   const base::ListValue* pref_list = pref_service->GetList(pref_name);
-  for (size_t i = 0; i < pref_list->GetSize(); ++i) {
+  for (size_t i = 0; i < pref_list->GetList().size(); ++i) {
     std::string element;
     if (pref_list->GetString(i, &element) && !element.empty())
       ids_field->insert(element);

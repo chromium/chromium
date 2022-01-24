@@ -14,4 +14,7 @@ interface IUrlBarController {
       in Bundle options,
       in IObjectWrapper /* View.OnClickListener */ textClickListener,
       in IObjectWrapper /* View.OnLongClickListener */ textLongClickListener) = 1;
+
+  // Added in 95.
+  void showPageInfo(in Bundle options) = 2;
 }

@@ -25,6 +25,11 @@ namespace extensions {
 class RendererExtensionRegistry {
  public:
   RendererExtensionRegistry();
+
+  RendererExtensionRegistry(const RendererExtensionRegistry&) = delete;
+  RendererExtensionRegistry& operator=(const RendererExtensionRegistry&) =
+      delete;
+
   ~RendererExtensionRegistry();
 
   static RendererExtensionRegistry* Get();
@@ -70,8 +75,6 @@ class RendererExtensionRegistry {
   std::map<ExtensionId, ActivationSequence> worker_activation_sequences_;
 
   mutable base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererExtensionRegistry);
 };
 
 }  // namespace extensions

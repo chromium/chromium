@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
@@ -94,6 +93,10 @@ class PageNode : public Node {
   static const char* ToString(PageNode::PageState page_state);
 
   PageNode();
+
+  PageNode(const PageNode&) = delete;
+  PageNode& operator=(const PageNode&) = delete;
+
   ~PageNode() override;
 
   // Returns the unique ID of the browser context that this page belongs to.
@@ -200,9 +203,6 @@ class PageNode : public Node {
 
   // Returns the current page state. See "PageNodeObserver::OnPageStateChanged".
   virtual PageState GetPageState() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PageNode);
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
@@ -213,6 +213,10 @@ class PageNodeObserver {
   using EmbeddingType = PageNode::EmbeddingType;
 
   PageNodeObserver();
+
+  PageNodeObserver(const PageNodeObserver&) = delete;
+  PageNodeObserver& operator=(const PageNodeObserver&) = delete;
+
   virtual ~PageNodeObserver();
 
   // Node lifetime notifications.
@@ -297,9 +301,6 @@ class PageNodeObserver {
   virtual void OnFreezingVoteChanged(
       const PageNode* page_node,
       absl::optional<freezing::FreezingVote> previous_vote) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PageNodeObserver);
 };
 
 // Default implementation of observer that provides dummy versions of each
@@ -308,6 +309,10 @@ class PageNodeObserver {
 class PageNode::ObserverDefaultImpl : public PageNodeObserver {
  public:
   ObserverDefaultImpl();
+
+  ObserverDefaultImpl(const ObserverDefaultImpl&) = delete;
+  ObserverDefaultImpl& operator=(const ObserverDefaultImpl&) = delete;
+
   ~ObserverDefaultImpl() override;
 
   // PageNodeObserver implementation:
@@ -337,9 +342,6 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   void OnFreezingVoteChanged(
       const PageNode* page_node,
       absl::optional<freezing::FreezingVote> previous_vote) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverDefaultImpl);
 };
 
 // std::ostream support for PageNode::EmbeddingType.

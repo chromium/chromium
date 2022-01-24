@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.editor.LinkTest');
 goog.setTestOnly();
@@ -21,7 +13,7 @@ const Range = goog.require('goog.dom.Range');
 const TagName = goog.require('goog.dom.TagName');
 const dom = goog.require('goog.dom');
 const testSuite = goog.require('goog.testing.testSuite');
-const userAgent = goog.require('goog.userAgent');
+
 
 let anchor;
 
@@ -177,23 +169,17 @@ testSuite({
     assertTrue('Range should be collapsed', range.isCollapsed());
     const startNode = range.getStartNode();
 
-    if (userAgent.WEBKIT && !userAgent.isVersionOrHigher('528')) {
-      assertEquals(
-          'Selection should be to the right of the anchor', anchor,
-          startNode.previousSibling);
-    } else {
-      // Check that the selection is the "right" place.
-      //
-      // If you query the selection, it is actually still inside the anchor,
-      // but if you type, it types outside the anchor.
-      //
-      // Best we can do is test that it is at the end of the anchor text.
-      assertEquals(
-          'Selection should be in anchor text', anchor.firstChild, startNode);
-      assertEquals(
-          'Selection should be at the end of the text',
-          anchor.firstChild.length, range.getStartOffset());
-    }
+    // Check that the selection is the "right" place.
+    //
+    // If you query the selection, it is actually still inside the anchor,
+    // but if you type, it types outside the anchor.
+    //
+    // Best we can do is test that it is at the end of the anchor text.
+    assertEquals(
+        'Selection should be in anchor text', anchor.firstChild, startNode);
+    assertEquals(
+        'Selection should be at the end of the text', anchor.firstChild.length,
+        range.getStartOffset());
 
     if (ed) {
       dom.removeNode(ed);
@@ -333,6 +319,7 @@ testSuite({
     }
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testIsMailToLink() {
     assertFalse(Link.isMailto());
     assertFalse(Link.isMailto(null));
@@ -362,6 +349,10 @@ testSuite({
     const link = new Link(anchor, true);
 
     for (let i = 0; i < textLinkPairs.length; i += 2) {
+      /**
+       * @suppress {strictMissingProperties} suppression added to enable type
+       * checking
+       */
       link.currentText_ = textLinkPairs[i];
       const result = link.getValidLinkFromText();
       assertEquals(textLinkPairs[i + 1], result);

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/text/bidi_resolver.h"
 #include "third_party/blink/renderer/platform/text/bidi_text_run.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -121,7 +122,7 @@ class MODULES_EXPORT CanvasFormattedText final : public ScriptWrappable {
 
  private:
   HeapVector<Member<CanvasFormattedTextRun>> text_runs_;
-  LayoutBlockFlow* block_;
+  Member<LayoutBlockFlow> block_;
 };
 
 }  // namespace blink

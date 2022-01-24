@@ -173,4 +173,16 @@ public class TabModelUtils {
 
         return childTabs;
     }
+
+    /**
+     * @return all regular {@link Tab} ids from a {@link TabModelSelectoor}
+     */
+    public static List<Integer> getRegularTabIds(TabModelSelector tabModelSelector) {
+        List<Integer> tabIds = new ArrayList<>();
+        int numTabs = tabModelSelector.getModel(false).getCount();
+        for (int i = 0; i < numTabs; i++) {
+            tabIds.add(tabModelSelector.getModel(false).getTabAt(i).getId());
+        }
+        return tabIds;
+    }
 }

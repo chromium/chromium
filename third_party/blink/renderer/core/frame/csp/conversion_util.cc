@@ -32,10 +32,10 @@ WebCSPHashSource ConvertToPublic(
 WebCSPSourceList ConvertToPublic(
     network::mojom::blink::CSPSourceListPtr source_list) {
   WebVector<WebCSPSource> sources(source_list->sources.size());
-  for (size_t i = 0; i < sources.size(); ++i)
+  for (wtf_size_t i = 0; i < source_list->sources.size(); ++i)
     sources[i] = ConvertToPublic(std::move(source_list->sources[i]));
   WebVector<WebCSPHashSource> hashes(source_list->hashes.size());
-  for (size_t i = 0; i < hashes.size(); ++i)
+  for (wtf_size_t i = 0; i < source_list->hashes.size(); ++i)
     hashes[i] = ConvertToPublic(std::move(source_list->hashes[i]));
   return {std::move(sources),
           std::move(source_list->nonces),

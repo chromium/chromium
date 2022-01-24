@@ -38,12 +38,12 @@ IN_PROC_BROWSER_TEST_F(SharingServiceOperationBrowserTest,
   const std::string script =
       "share_multiple_custom_files_url('../sample.csv', '..sample.csv')";
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   std::vector<base::FilePath> file_paths;
 
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   SharingServiceOperation::SetSharePickerCallbackForTesting(
       base::BindLambdaForTesting(
           [](content::WebContents* in_contents,

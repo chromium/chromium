@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
@@ -53,4 +54,12 @@ ash::ShelfAction SelectShelfItem(const ash::ShelfID& id,
       base::NullCallback());
   run_loop.Run();
   return action;
+}
+
+void SetRefocusURL(const ash::ShelfID& id, const GURL& url) {
+  ash::ShelfModel* model = ChromeShelfController::instance()->shelf_model();
+  ash::ShelfItemDelegate* delegate = model->GetShelfItemDelegate(id);
+  AppShortcutShelfItemController* item_controller =
+      static_cast<AppShortcutShelfItemController*>(delegate);
+  item_controller->set_refocus_url(url);
 }

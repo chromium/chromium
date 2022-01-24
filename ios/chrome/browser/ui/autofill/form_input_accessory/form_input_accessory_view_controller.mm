@@ -10,10 +10,9 @@
 #include "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/form_suggestion_view.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ui/base/device_form_factor.h"
 
@@ -72,7 +71,7 @@
 
   FormInputAccessoryView* formInputAccessoryView =
       [[FormInputAccessoryView alloc] init];
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [formInputAccessoryView
         setUpWithLeadingView:self.formSuggestionView
           customTrailingView:self.manualFillAccessoryViewController.view];

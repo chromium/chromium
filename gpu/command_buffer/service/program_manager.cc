@@ -33,7 +33,6 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace gpu {
@@ -1372,7 +1371,7 @@ bool Program::Link(ShaderManager* manager,
               (TimeTicks::Now() - before_time).InMicroseconds()),
           1,
           static_cast<base::HistogramBase::Sample>(
-              TimeDelta::FromSeconds(10).InMicroseconds()),
+              base::Seconds(10).InMicroseconds()),
           50);
     } else {
       UMA_HISTOGRAM_CUSTOM_COUNTS(
@@ -1381,7 +1380,7 @@ bool Program::Link(ShaderManager* manager,
               (TimeTicks::Now() - before_time).InMicroseconds()),
           1,
           static_cast<base::HistogramBase::Sample>(
-              TimeDelta::FromSeconds(1).InMicroseconds()),
+              base::Seconds(1).InMicroseconds()),
           50);
     }
   } else {

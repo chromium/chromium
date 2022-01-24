@@ -7,6 +7,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/macros.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"

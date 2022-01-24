@@ -10,7 +10,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/feature_engagement/public/tracker.h"
 
 namespace feature_engagement {
@@ -18,25 +17,31 @@ namespace feature_engagement {
 class WrappingTestTracker : public Tracker {
  public:
   explicit WrappingTestTracker(const base::android::JavaRef<jobject>& jtracker);
+
+  WrappingTestTracker(const WrappingTestTracker&) = delete;
+  WrappingTestTracker& operator=(const WrappingTestTracker&) = delete;
+
   ~WrappingTestTracker() override;
 
   // TrackerImpl:
 
   void NotifyEvent(const std::string& event) override;
   bool ShouldTriggerHelpUI(const base::Feature& feature) override;
+  TriggerDetails ShouldTriggerHelpUIWithSnooze(
+      const base::Feature& feature) override;
   bool WouldTriggerHelpUI(const base::Feature& feature) const override;
   bool HasEverTriggered(const base::Feature& feature,
                         bool from_window) const override;
   TriggerState GetTriggerState(const base::Feature& feature) const override;
   void Dismissed(const base::Feature& feature) override;
+  void DismissedWithSnooze(const base::Feature& feature,
+                           absl::optional<SnoozeAction> snooze_action) override;
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override;
   bool IsInitialized() const override;
   void AddOnInitializedCallback(OnInitializedCallback callback) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrappingTestTracker);
 };
 
 }  // namespace feature_engagement

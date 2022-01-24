@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/macros.h"
 
 namespace autofill {
 
@@ -17,13 +16,13 @@ namespace autofill {
 // by the embedder to inject its logging mechanisms.
 class AutofillLoggerAndroid {
  public:
+  AutofillLoggerAndroid(const AutofillLoggerAndroid&) = delete;
+  AutofillLoggerAndroid& operator=(const AutofillLoggerAndroid&) = delete;
+
   // Called when a field containing |autofilled_value| has been filled
   // with data from |profile_full_name|.
   static void DidFillOrPreviewField(const std::u16string& autofilled_value,
                                     const std::u16string& profile_full_name);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillLoggerAndroid);
 };
 
 }  // namespace autofill

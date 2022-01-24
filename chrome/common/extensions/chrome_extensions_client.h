@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
 #include "extensions/common/extensions_client.h"
 #include "url/gurl.h"
@@ -20,6 +19,10 @@ namespace extensions {
 class ChromeExtensionsClient : public ExtensionsClient {
  public:
   ChromeExtensionsClient();
+
+  ChromeExtensionsClient(const ChromeExtensionsClient&) = delete;
+  ChromeExtensionsClient& operator=(const ChromeExtensionsClient&) = delete;
+
   ~ChromeExtensionsClient() override;
 
   void Initialize() override;
@@ -61,8 +64,6 @@ class ChromeExtensionsClient : public ExtensionsClient {
 
   GURL webstore_base_url_;
   GURL webstore_update_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsClient);
 };
 
 }  // namespace extensions

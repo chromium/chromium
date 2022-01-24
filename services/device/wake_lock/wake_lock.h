@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -60,6 +60,10 @@ class WakeLock : public mojom::WakeLock {
            WakeLockContextCallback native_view_getter,
            scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
            Observer* observer);
+
+  WakeLock(const WakeLock&) = delete;
+  WakeLock& operator=(const WakeLock&) = delete;
+
   ~WakeLock() override;
 
   // mojom::WakeLock implementation.
@@ -105,8 +109,6 @@ class WakeLock : public mojom::WakeLock {
   // client is being added into the ReceiverSet, we create an unique_ptr<bool>
   // as its context, which records this client's request status.
   mojo::ReceiverSet<mojom::WakeLock, std::unique_ptr<bool>> receiver_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeLock);
 };
 
 }  // namespace device

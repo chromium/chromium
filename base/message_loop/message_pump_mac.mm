@@ -73,13 +73,16 @@ class MessagePumpScopedAutoreleasePool {
   explicit MessagePumpScopedAutoreleasePool(MessagePumpCFRunLoopBase* pump) :
       pool_(pump->CreateAutoreleasePool()) {
   }
-   ~MessagePumpScopedAutoreleasePool() {
-    [pool_ drain];
-  }
+
+  MessagePumpScopedAutoreleasePool(const MessagePumpScopedAutoreleasePool&) =
+      delete;
+  MessagePumpScopedAutoreleasePool& operator=(
+      const MessagePumpScopedAutoreleasePool&) = delete;
+
+  ~MessagePumpScopedAutoreleasePool() { [pool_ drain]; }
 
  private:
   NSAutoreleasePool* pool_;
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpScopedAutoreleasePool);
 };
 
 class MessagePumpCFRunLoopBase::ScopedModeEnabler {
@@ -95,6 +98,9 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
     CFRunLoopAddObserver(loop, owner_->pre_source_observer_, mode());
     CFRunLoopAddObserver(loop, owner_->enter_exit_observer_, mode());
   }
+
+  ScopedModeEnabler(const ScopedModeEnabler&) = delete;
+  ScopedModeEnabler& operator=(const ScopedModeEnabler&) = delete;
 
   ~ScopedModeEnabler() {
     CFRunLoopRef loop = owner_->run_loop_;
@@ -138,8 +144,6 @@ class MessagePumpCFRunLoopBase::ScopedModeEnabler {
  private:
   MessagePumpCFRunLoopBase* const owner_;  // Weak. Owns this.
   const int mode_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedModeEnabler);
 };
 
 // Must be called on the run loop thread.

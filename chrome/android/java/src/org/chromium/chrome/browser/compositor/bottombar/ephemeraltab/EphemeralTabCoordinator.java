@@ -156,7 +156,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                 }
 
                 @Override
-                public void onSheetStateChanged(int newState) {
+                public void onSheetStateChanged(int newState, int reason) {
                     if (mSheetContent == null) return;
                     switch (newState) {
                         case SheetState.PEEK:

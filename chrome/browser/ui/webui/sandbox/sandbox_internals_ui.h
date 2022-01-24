@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SANDBOX_SANDBOX_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SANDBOX_SANDBOX_INTERNALS_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 // This WebUI page displays the status of the renderer sandbox on Linux and

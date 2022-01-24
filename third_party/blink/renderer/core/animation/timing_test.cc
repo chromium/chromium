@@ -18,14 +18,15 @@ class AnimationTimingTest : public testing::Test {
         playback_rate < 0 ? Timing::AnimationDirection::kBackwards
                           : Timing::AnimationDirection::kForwards;
     return timing_.CalculateTimings(
-        local_time, /*timeline_phase*/ absl::nullopt, normalized_timing_,
+        local_time, /*timeline_phase*/ absl::nullopt,
+        /* at_progress_timeline_boundary */ false, normalized_timing_,
         animation_direction, is_keyframe_effect, playback_rate);
   }
   bool IsCurrent(absl::optional<double> local_time, double playback_rate) {
     absl::optional<AnimationTimeDelta> local_time_delta;
     if (local_time) {
       local_time_delta = absl::make_optional(
-          AnimationTimeDelta::FromSecondsD(local_time.value()));
+          ANIMATION_TIME_DELTA_FROM_SECONDS(local_time.value()));
     }
     return CalculateTimings(local_time_delta, playback_rate).is_current;
   }
@@ -34,9 +35,10 @@ class AnimationTimingTest : public testing::Test {
   void SetUp() override {
     normalized_timing_.start_delay = AnimationTimeDelta();
     normalized_timing_.end_delay = AnimationTimeDelta();
-    normalized_timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(1);
-    normalized_timing_.active_duration = AnimationTimeDelta::FromSecondsD(1);
-    normalized_timing_.end_time = AnimationTimeDelta::FromSecondsD(1);
+    normalized_timing_.iteration_duration =
+        ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+    normalized_timing_.active_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+    normalized_timing_.end_time = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
   }
   Timing timing_;
   Timing::NormalizedTiming normalized_timing_;

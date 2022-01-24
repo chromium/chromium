@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/class_property.h"
@@ -33,8 +32,7 @@ namespace views {
 
 class Button;
 
-class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
-                                          public ui::PropertyHandler {
+class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
  public:
   BubbleDialogDelegate(
       View* anchor_view,
@@ -49,7 +47,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
       Widget* widget) override;
   ClientView* CreateClientView(Widget* widget) override;
-  ax::mojom::Role GetAccessibleWindowRole() override;
+  ax::mojom::Role GetAccessibleWindowRole() final;
 
   // Create and initialize the bubble Widget with proper bounds.
   static Widget* CreateBubble(
@@ -176,6 +174,14 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
 
   // Whether focus can traverse from the anchor view into the bubble. Only
   // meaningful if there is an anchor view.
+  // TODO(pbos): See if this can be inferred from if the bubble is activatable
+  // or if there's anything focusable within the dialog. This is currently used
+  // for bubbles that should never receive focus and we should be able have
+  // focus go through a bubble if nothing's focusable within it. Without this
+  // set to `false`, the existence of an InfoBubble in the QR reader bubble will
+  // break focus order in the parent dialog. This is a bug for which
+  // set_focus_traversable_from_anchor_view(false) is used as a workaround. See
+  // if fixing that bug removes the need for this for other dialogs.
   void set_focus_traversable_from_anchor_view(bool focusable) {
     focus_traversable_from_anchor_view_ = focusable;
   }
@@ -207,7 +213,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
     title_margins_ = title_margins;
   }
 
-  // Sets whether or not CreateClientView() returns a layer backed ClientView.
+  // Sets whether or not CreateClientView() returns a Layer backed ClientView.
+  // TODO(pbos): Remove all calls to this, then remove `paint_client_to_layer_`.
+  // See comment around `paint_client_to_layer_`.
   void SetPaintClientToLayer(bool paint_client_to_layer);
 
   // Sets the content margins to a default picked for smaller bubbles.
@@ -361,6 +369,17 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   // Pointer to this bubble's ClientView.
   ClientView* client_view_ = nullptr;
 
+  // A BubbleFrameView will apply a masking path to its ClientView to ensure
+  // contents are appropriately clipped to the frame's rounded corners. If the
+  // bubble uses layers in its views hierarchy, these will not be clipped to
+  // the client mask unless the ClientView is backed by a textured ui::Layer.
+  // This flag tracks whether or not to to create a layer backed ClientView.
+  //
+  // TODO(tluk): Fix all cases where bubble transparency is used and have bubble
+  // ClientViews always paint to a layer.
+  // TODO(tluk): Flip this to true for all bubbles.
+  bool paint_client_to_layer_ = false;
+
 #if defined(OS_MAC)
   // Special handler for close_on_deactivate() on Mac. Window (de)activation is
   // suppressed by the WindowServer when clicking rapidly, so the bubble must
@@ -370,9 +389,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
 };
 
 // BubbleDialogDelegateView is a BubbleDialogDelegate that is also a View.
-// TODO(pbos): Finish moving functionality from BubbleDialogDelegateView into
-// BubbleDialogDelegate, then document here that it's better to subclass View
-// and construct a BubbleDialogDelegate.
+// Prefer using a BubbleDialogDelegate that sets a separate View as its contents
+// view.
+// TODO(pbos): Migrate existing uses of BubbleDialogDelegateView to directly
+// inherit or use BubbleDialogDelegate.
 class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
                                               public View {
  public:

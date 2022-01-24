@@ -65,6 +65,9 @@ class SSLErrorAssistant {
  public:
   SSLErrorAssistant();
 
+  SSLErrorAssistant(const SSLErrorAssistant&) = delete;
+  SSLErrorAssistant& operator=(const SSLErrorAssistant&) = delete;
+
   ~SSLErrorAssistant();
 
   // Returns true if any of the SHA256 hashes in |ssl_info| is of a captive
@@ -117,8 +120,6 @@ class SSLErrorAssistant {
   // Error assistant configuration.
   std::unique_ptr<chrome_browser_ssl::SSLErrorAssistantConfig>
       error_assistant_proto_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorAssistant);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_ERROR_ASSISTANT_H_

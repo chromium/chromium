@@ -61,6 +61,9 @@ class CreditCard;
   // Payment Request is only enabled in main frame.
   web::WebState* webState = self.webStateList->GetActiveWebState();
   web::WebFrame* mainFrame = webState->GetWebFramesManager()->GetMainWebFrame();
+  if (!mainFrame) {
+    return;
+  }
   autofill::BrowserAutofillManager* autofillManager =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, mainFrame)
           ->autofill_manager();

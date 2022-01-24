@@ -32,6 +32,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) SeneschalClient : public DBusClient {
   // Removes an observer if added.
   virtual void RemoveObserver(Observer* observer) = 0;
 
+  SeneschalClient(const SeneschalClient&) = delete;
+  SeneschalClient& operator=(const SeneschalClient&) = delete;
+
   ~SeneschalClient() override;
 
   // Factory function, creates a new instance and returns ownership.
@@ -74,9 +77,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) SeneschalClient : public DBusClient {
  protected:
   // Initialize() should be used instead.
   SeneschalClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SeneschalClient);
 };
 
 }  // namespace chromeos

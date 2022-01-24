@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 11: The specified value "ABC" does not conform to the required format.  The format is "yyyy-MM-ddThh:mm" followed by optional ":ss" or ":ss.SSS".
+CONSOLE WARNING: The specified value "ABC" does not conform to the required format.  The format is "yyyy-MM-ddThh:mm" followed by optional ":ss" or ":ss.SSS".
 Test if an input field matches to various pseudo classes
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

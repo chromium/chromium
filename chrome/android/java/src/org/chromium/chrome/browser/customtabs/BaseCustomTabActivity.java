@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTab
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
+import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -71,6 +72,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     // Fallback study name used for experiments ids.
     public static final String GSA_FALLBACK_STUDY_NAME = "GsaExperiments";
 
+    protected BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
     protected BrowserServicesIntentDataProvider mIntentDataProvider;
     protected CustomTabDelegateFactory mDelegateFactory;
     protected CustomTabToolbarCoordinator mToolbarCoordinator;
@@ -148,14 +150,24 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected RootUiCoordinator createRootUiCoordinator() {
-        return new BaseCustomTabRootUiCoordinator(this, getShareDelegateSupplier(),
-                ()
-                        -> mToolbarCoordinator,
-                ()
-                        -> mNavigationController,
+        // clang-format off
+        mBaseCustomTabRootUiCoordinator = new BaseCustomTabRootUiCoordinator(this,
+                getShareDelegateSupplier(),
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 this::getContextualSearchManager, getTabModelSelectorSupplier(),
-                getBrowserControlsManager(), getWindowAndroid());
+                getBrowserControlsManager(), getWindowAndroid(), getLifecycleDispatcher(),
+                getLayoutManagerSupplier(),
+                /* menuOrKeyboardActionController= */ this, this::getActivityThemeColor,
+                getModalDialogManagerSupplier(), /* appMenuBlocker= */ this, this::supportsAppMenu,
+                this::supportsFindInPage, getTabCreatorManagerSupplier(), getFullscreenManager(),
+                getCompositorViewHolderSupplier(), getTabContentManagerSupplier(),
+                getOverviewModeBehaviorSupplier(), this::getSnackbarManager, getActivityType(),
+                this::isInOverviewMode, this::isWarmOnResume,
+                /* appMenuDelegate= */ this, /* statusBarColorProvider= */ this,
+                getIntentRequestTracker(), () -> mToolbarCoordinator, () -> mNavigationController,
+                () -> mIntentDataProvider, getMultiWindowModeStateDispatcher());
+        // clang-format on
+        return mBaseCustomTabRootUiCoordinator;
     }
 
     @Override
@@ -166,13 +178,21 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     protected BaseCustomTabActivityComponent createComponent(
             ChromeActivityCommonsModule commonsModule) {
+        BaseCustomTabActivityModule.Factory overridenBaseCustomTabFactory =
+                ModuleFactoryOverrides.getOverrideFor(BaseCustomTabActivityModule.Factory.class);
+
         // mIntentHandler comes from the base class.
         IntentIgnoringCriterion intentIgnoringCriterion =
                 (intent) -> mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true);
 
-        BaseCustomTabActivityModule baseCustomTabsModule = new BaseCustomTabActivityModule(
-                mIntentDataProvider, getStartupTabPreloader(), mNightModeStateController,
-                intentIgnoringCriterion, getTopUiThemeColorProvider());
+        BaseCustomTabActivityModule baseCustomTabsModule = overridenBaseCustomTabFactory != null
+                ? overridenBaseCustomTabFactory.create(mIntentDataProvider,
+                        getStartupTabPreloader(), mNightModeStateController,
+                        intentIgnoringCriterion, getTopUiThemeColorProvider(),
+                        new DefaultBrowserProviderImpl())
+                : new BaseCustomTabActivityModule(mIntentDataProvider, getStartupTabPreloader(),
+                        mNightModeStateController, intentIgnoringCriterion,
+                        getTopUiThemeColorProvider(), new DefaultBrowserProviderImpl());
         BaseCustomTabActivityComponent component =
                 ChromeApplicationImpl.getComponent().createBaseCustomTabActivityComponent(
                         commonsModule, baseCustomTabsModule);
@@ -290,9 +310,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     public void finishNativeInitialization() {
-        if (isTaskRoot() && UsageStatsService.isEnabled()) {
-            UsageStatsService.getInstance().createPageViewObserver(
-                    getTabModelSelector(), this, getTabContentManagerSupplier());
+        if (isTaskRoot()) {
+            UsageStatsService.createPageViewObserverIfEnabled(
+                    this, getActivityTabProvider(), getTabContentManagerSupplier());
         }
         if (!getIntentDataProvider().isWebappOrWebApkActivity()) {
             mTabController.finishNativeInitialization();
@@ -516,7 +536,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     public boolean onMenuOrKeyboardAction(int id, boolean fromMenu) {
         // Disable creating new tabs, bookmark, history, print, help, focus_url, etc.
-        if (id == R.id.focus_url_bar || id == R.id.all_bookmarks_menu_id || id == R.id.help_id
+        if (id == R.id.focus_url_bar || id == R.id.all_bookmarks_menu_id
+                || id == R.id.add_to_reading_list_menu_id || id == R.id.help_id
                 || id == R.id.recent_tabs_menu_id || id == R.id.new_incognito_tab_menu_id
                 || id == R.id.new_tab_menu_id || id == R.id.open_history_menu_id) {
             return true;

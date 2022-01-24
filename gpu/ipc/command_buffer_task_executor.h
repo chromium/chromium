@@ -50,6 +50,11 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor {
                             gl::GLSurfaceFormat share_group_surface_format,
                             SharedImageManager* shared_image_manager,
                             gles2::ProgramCache* program_cache);
+
+  CommandBufferTaskExecutor(const CommandBufferTaskExecutor&) = delete;
+  CommandBufferTaskExecutor& operator=(const CommandBufferTaskExecutor&) =
+      delete;
+
   virtual ~CommandBufferTaskExecutor();
 
   // Always use virtualized GL contexts if this returns true.
@@ -122,8 +127,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor {
 
   // No-op default initialization is used in in-process mode.
   GpuProcessActivityFlags activity_flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferTaskExecutor);
 };
 
 }  // namespace gpu

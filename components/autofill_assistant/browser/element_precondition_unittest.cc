@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -32,23 +31,23 @@ using ::testing::WithArgs;
 class ElementPreconditionTest : public testing::Test {
  public:
   void SetUp() override {
-    ON_CALL(mock_web_controller_, OnFindElement(Selector({"exists"}), _))
-        .WillByDefault(WithArgs<1>([](auto&& callback) {
+    ON_CALL(mock_web_controller_, FindElement(Selector({"exists"}), _, _))
+        .WillByDefault(WithArgs<2>([](auto&& callback) {
           std::move(callback).Run(OkClientStatus(),
                                   std::make_unique<ElementFinder::Result>());
         }));
-    ON_CALL(mock_web_controller_, OnFindElement(Selector({"exists_too"}), _))
-        .WillByDefault(WithArgs<1>([](auto&& callback) {
+    ON_CALL(mock_web_controller_, FindElement(Selector({"exists_too"}), _, _))
+        .WillByDefault(WithArgs<2>([](auto&& callback) {
           std::move(callback).Run(OkClientStatus(),
                                   std::make_unique<ElementFinder::Result>());
         }));
     ON_CALL(mock_web_controller_,
-            OnFindElement(Selector({"does_not_exist"}), _))
-        .WillByDefault(RunOnceCallback<1>(
+            FindElement(Selector({"does_not_exist"}), _, _))
+        .WillByDefault(RunOnceCallback<2>(
             ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
     ON_CALL(mock_web_controller_,
-            OnFindElement(Selector({"does_not_exist_either"}), _))
-        .WillByDefault(RunOnceCallback<1>(
+            FindElement(Selector({"does_not_exist_either"}), _, _))
+        .WillByDefault(RunOnceCallback<2>(
             ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
   }
 

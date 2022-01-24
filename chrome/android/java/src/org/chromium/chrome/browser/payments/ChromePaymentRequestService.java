@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.payments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -23,7 +21,6 @@ import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
-import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
@@ -31,14 +28,12 @@ import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentHandlerHost;
-import org.chromium.components.payments.PaymentOptionsUtils;
 import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.payments.PaymentRequestUpdateEventListener;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
-import org.chromium.components.payments.SkipToGPayHelper;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PayerDetail;
@@ -50,7 +45,6 @@ import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
-import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -87,9 +81,6 @@ public class ChromePaymentRequestService
     private boolean mHideServerAutofillCards;
     private PaymentHandlerHost mPaymentHandlerHost;
 
-    /** A helper to manage the Skip-to-GPay experimental flow. */
-    private SkipToGPayHelper mSkipToGPayHelper;
-    private boolean mIsGooglePayBridgeActivated;
     /**
      * True if the browser has skipped showing the app selector UI (PaymentRequest UI).
      *
@@ -253,14 +244,6 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
-            WebContents webContents, PaymentMethodData[] rawMethodData) {
-        mIsGooglePayBridgeActivated = googlePayBridgeEligible
-                && SkipToGPayHelperUtil.canActivateExperiment(mWebContents, rawMethodData);
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
     public void onSpecValidated(PaymentRequestSpec spec) {
         mSpec = spec;
         mPaymentUiService.initialize(mSpec.getPaymentDetails());
@@ -274,11 +257,6 @@ public class ChromePaymentRequestService
         assert methodData != null;
         assert details != null;
 
-        if (mIsGooglePayBridgeActivated) {
-            PaymentMethodData data = methodData.get(MethodStrings.GOOGLE_PAY);
-            mSkipToGPayHelper = new SkipToGPayHelper(options, data.gpayBridgeData);
-        }
-
         if (!parseAndValidateDetailsFurtherIfNeeded(details)) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
@@ -289,32 +267,19 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void modifyQueryForQuotaCreatedIfNeeded(
-            Map<String, PaymentMethodData> queryForQuota, PaymentOptions paymentOptions) {
-        if (queryForQuota.containsKey(MethodStrings.BASIC_CARD)
-                && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)) {
-            PaymentMethodData paymentMethodData = new PaymentMethodData();
-            paymentMethodData.stringifiedData =
-                    PaymentOptionsUtils.stringifyRequestedInformation(paymentOptions);
-            queryForQuota.put("basic-card-payment-options", paymentMethodData);
-        }
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
     public void addPaymentAppFactories(
             PaymentAppService service, PaymentAppFactoryDelegate delegate) {
-
-        String autofillFactoryId = AutofillPaymentAppFactory.class.getName();
-        if (!service.containsFactory(autofillFactoryId)) {
-            service.addUniqueFactory(
-                    mDelegate.createAutofillPaymentAppFactory(), autofillFactoryId);
-        }
-        if (mDelegate.canMakeAutofillPayment(mSpec.getMethodData())) {
-            mPaymentUiService.setAutofillPaymentAppCreator(
-                    AutofillPaymentAppFactory.createAppCreator(
-                            /*delegate=*/delegate));
+        if (PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)) {
+            String autofillFactoryId = AutofillPaymentAppFactory.class.getName();
+            if (!service.containsFactory(autofillFactoryId)) {
+                service.addUniqueFactory(
+                        mDelegate.createAutofillPaymentAppFactory(), autofillFactoryId);
+            }
+            if (mDelegate.canMakeAutofillPayment(mSpec.getMethodData())) {
+                mPaymentUiService.setAutofillPaymentAppCreator(
+                        AutofillPaymentAppFactory.createAppCreator(
+                                /*delegate=*/delegate));
+            }
         }
     }
 
@@ -344,7 +309,6 @@ public class ChromePaymentRequestService
                 && !mSpec.isSecurePaymentConfirmationRequested()) {
             shouldSkipAppSelector = false;
         }
-        if (mSkipToGPayHelper != null) shouldSkipAppSelector = true;
 
         if (shouldSkipAppSelector) {
             mHasSkippedAppSelector = true;
@@ -378,22 +342,6 @@ public class ChromePaymentRequestService
         // immediately after we determine the apps are ready and UI is shown.
         if (mHasSkippedAppSelector) {
             assert !mPaymentUiService.getPaymentApps().isEmpty();
-
-            if (isMinimalUiApplicable(isUserGestureShow)) {
-                if (mPaymentUiService.triggerMinimalUI(windowAndroid, mSpec.getRawTotal(),
-                            this::onMinimalUIReady, this::onMinimalUiConfirmed,
-                            /*dismissObserver=*/
-                            ()
-                                    -> onUiAborted(AbortReason.ABORTED_BY_USER,
-                                            ErrorStrings.USER_CANCELLED))) {
-                    mJourneyLogger.setShown();
-                    return null;
-                } else {
-                    return ErrorStrings.MINIMAL_UI_SUPPRESSED;
-                }
-            }
-
-            assert !mPaymentUiService.getPaymentApps().isEmpty();
             PaymentApp selectedApp = mPaymentUiService.getSelectedPaymentApp();
             dimBackgroundIfNotPaymentHandler(selectedApp);
             mJourneyLogger.setSkippedShow();
@@ -403,57 +351,6 @@ public class ChromePaymentRequestService
             mPaymentUiService.createShippingSectionIfNeeded(context);
         }
         return null;
-    }
-
-    /**
-     * @param isUserGestureShow Whether PaymentRequest.show() was invoked with a user gesture.
-     * @return Whether the minimal UI should be shown.
-     */
-    private boolean isMinimalUiApplicable(boolean isUserGestureShow) {
-        if (!isUserGestureShow || mPaymentUiService.getPaymentApps().size() != 1) {
-            return false;
-        }
-
-        PaymentApp app = mPaymentUiService.getSelectedPaymentApp();
-        if (app == null || !app.isReadyForMinimalUI() || TextUtils.isEmpty(app.accountBalance())) {
-            return false;
-        }
-
-        return PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_MINIMAL_UI);
-    }
-
-    private void onMinimalUIReady() {
-        if (PaymentRequestService.getNativeObserverForTest() != null) {
-            PaymentRequestService.getNativeObserverForTest().onMinimalUIReady();
-        }
-    }
-
-    private void onMinimalUiConfirmed(PaymentApp app) {
-        app.disableShowingOwnUI();
-        invokePaymentApp(
-                null /* selectedShippingAddress */, null /* selectedShippingOption */, app);
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public void modifyMethodDataIfNeeded(@Nullable Map<String, PaymentMethodData> methodDataMap) {
-        if (!mIsGooglePayBridgeActivated || methodDataMap == null) return;
-        Map<String, PaymentMethodData> result = new ArrayMap<>();
-        for (PaymentMethodData methodData : methodDataMap.values()) {
-            String method = methodData.supportedMethod;
-            assert !TextUtils.isEmpty(method);
-            // If skip-to-GPay flow is activated, ignore all other payment methods, which can be
-            // either "basic-card" or "https://android.com/pay". The latter is safe to ignore
-            // because merchant has already requested Google Pay.
-            if (!method.equals(MethodStrings.GOOGLE_PAY)) continue;
-            if (methodData.gpayBridgeData != null
-                    && !methodData.gpayBridgeData.stringifiedData.isEmpty()) {
-                methodData.stringifiedData = methodData.gpayBridgeData.stringifiedData;
-            }
-            result.put(method, methodData);
-        }
-        methodDataMap.clear();
-        methodDataMap.putAll(result);
     }
 
     // Implements BrowserPaymentRequest:
@@ -512,12 +409,6 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public boolean parseAndValidateDetailsFurtherIfNeeded(PaymentDetails details) {
-        return mSkipToGPayHelper == null || mSkipToGPayHelper.setShippingOptionIfValid(details);
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
     public void onInstrumentDetailsLoading() {
         assert mPaymentUiService.getSelectedPaymentApp() == null
                 || mPaymentUiService.getSelectedPaymentApp().getPaymentAppType()
@@ -534,7 +425,7 @@ public class ChromePaymentRequestService
         PaymentResponseHelperInterface paymentResponseHelper =
                 new ChromePaymentResponseHelper(selectedShippingAddress, selectedShippingOption,
                         mPaymentUiService.getSelectedContact(), selectedPaymentApp,
-                        mSpec.getPaymentOptions(), mSkipToGPayHelper != null);
+                        mSpec.getPaymentOptions());
         mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
         return selectedPaymentApp.getPaymentAppType() != PaymentAppType.AUTOFILL;
     }
@@ -575,8 +466,7 @@ public class ChromePaymentRequestService
             PaymentPreferencesUtil.setPaymentCompleteOnce();
         }
 
-        mPaymentUiService.onPaymentRequestComplete(result,
-                /*onMinimalUiErroredAndClosed=*/this::close, onCompleteHandled);
+        mPaymentUiService.onPaymentRequestComplete(result, onCompleteHandled);
     }
 
     // Implements BrowserPaymentRequest:
@@ -700,27 +590,14 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public boolean patchPaymentResponseIfNeeded(PaymentResponse response) {
-        return mSkipToGPayHelper == null || mSkipToGPayHelper.patchPaymentResponse(response);
+    public boolean hasSkippedAppSelector() {
+        return mHasSkippedAppSelector;
     }
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void onInstrumentDetailsError(String errorMessage) {
-        if (mPaymentUiService.isShowingMinimalUi()) {
-            mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-            mPaymentUiService.closeMinimalUiOnError(this::close);
-            return;
-        }
-
-        // When skipping UI, any errors/cancel from fetching payment details should abort payment.
-        if (mHasSkippedAppSelector) {
-            assert !TextUtils.isEmpty(errorMessage);
-            mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-            disconnectFromClientWithDebugMessage(errorMessage);
-        } else {
-            mPaymentUiService.onPayButtonProcessingCancelled();
-        }
+    public void showAppSelectorAfterPaymentAppInvokeFailed() {
+        mPaymentUiService.onPayButtonProcessingCancelled();
     }
 
     // Implement PaymentUiService.Delegate:

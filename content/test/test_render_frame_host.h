@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/navigation_client.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -61,6 +60,10 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
                       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
                       const blink::LocalFrameToken& frame_token,
                       LifecycleStateImpl lifecycle_state);
+
+  TestRenderFrameHost(const TestRenderFrameHost&) = delete;
+  TestRenderFrameHost& operator=(const TestRenderFrameHost&) = delete;
+
   ~TestRenderFrameHost() override;
 
   // RenderFrameHostImpl overrides (same values, but in Test*/Mock* types)
@@ -149,6 +152,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       net::HttpResponseInfo::ConnectionInfo connection_info,
       absl::optional<net::SSLInfo> ssl_info,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
+      mojo::ScopedDataPipeConsumerHandle response_body,
       const std::vector<std::string>& dns_aliases);
 
   // Used to simulate the commit of a navigation having been processed in the
@@ -254,6 +258,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       net::HttpResponseInfo::ConnectionInfo connection_info,
       absl::optional<net::SSLInfo> ssl_info,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
+      mojo::ScopedDataPipeConsumerHandle response_body,
       const std::vector<std::string>& dns_aliases);
 
   // Computes the page ID for a pending navigation in this RenderFrameHost;
@@ -294,8 +299,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
 
   mojo::PendingRemote<blink::mojom::WebBluetoothService>
       dummy_web_bluetooth_service_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRenderFrameHost);
 };
 
 }  // namespace content

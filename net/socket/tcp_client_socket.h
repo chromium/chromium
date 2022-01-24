@@ -72,6 +72,9 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
       const IPEndPoint& bound_address,
       NetworkQualityEstimator* network_quality_estimator);
 
+  TCPClientSocket(const TCPClientSocket&) = delete;
+  TCPClientSocket& operator=(const TCPClientSocket&) = delete;
+
   ~TCPClientSocket() override;
 
   // TransportClientSocket implementation.
@@ -233,8 +236,6 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   base::OneShotTimer connect_attempt_timer_;
 
   base::WeakPtrFactory<TCPClientSocket> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TCPClientSocket);
 };
 
 }  // namespace net

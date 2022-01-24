@@ -73,8 +73,8 @@ class BackgroundSyncLauncherTest : public testing::Test {
 
       static_cast<StoragePartitionImpl*>(storage_partition)
           ->GetBackgroundSyncContext()
-          ->set_wakeup_delta_for_testing(
-              sync_type, base::TimeDelta::FromMilliseconds(iter->second));
+          ->set_wakeup_delta_for_testing(sync_type,
+                                         base::Milliseconds(iter->second));
     }
   }
 

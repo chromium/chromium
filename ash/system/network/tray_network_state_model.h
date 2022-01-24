@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -28,6 +27,10 @@ class VpnList;
 class ASH_EXPORT TrayNetworkStateModel {
  public:
   TrayNetworkStateModel();
+
+  TrayNetworkStateModel(const TrayNetworkStateModel&) = delete;
+  TrayNetworkStateModel& operator=(const TrayNetworkStateModel&) = delete;
+
   ~TrayNetworkStateModel();
 
   void AddObserver(TrayNetworkStateObserver* observer);
@@ -114,8 +117,6 @@ class ASH_EXPORT TrayNetworkStateModel {
   chromeos::network_config::mojom::NetworkStatePropertiesPtr active_vpn_;
   bool has_vpn_ = false;
   std::unique_ptr<VpnList> vpn_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayNetworkStateModel);
 };
 
 }  // namespace ash

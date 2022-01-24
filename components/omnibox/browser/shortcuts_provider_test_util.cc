@@ -61,8 +61,7 @@ void PopulateShortcutsBackendWithTestData(
             cur.contents_class, base::ASCIIToUTF16(cur.description),
             cur.description_class, cur.transition, cur.type,
             base::ASCIIToUTF16(cur.keyword)),
-        base::Time::Now() - base::TimeDelta::FromDays(cur.days_from_now),
-        cur.number_of_hits);
+        base::Time::Now() - base::Days(cur.days_from_now), cur.number_of_hits);
     backend->AddShortcut(shortcut);
   }
   EXPECT_EQ(expected_size, backend->shortcuts_map().size());

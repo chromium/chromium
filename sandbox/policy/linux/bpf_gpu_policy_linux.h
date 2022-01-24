@@ -15,12 +15,13 @@ namespace policy {
 class SANDBOX_POLICY_EXPORT GpuProcessPolicy : public BPFBasePolicy {
  public:
   GpuProcessPolicy();
+
+  GpuProcessPolicy(const GpuProcessPolicy&) = delete;
+  GpuProcessPolicy& operator=(const GpuProcessPolicy&) = delete;
+
   ~GpuProcessPolicy() override;
 
   bpf_dsl::ResultExpr EvaluateSyscall(int system_call_number) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GpuProcessPolicy);
 };
 
 }  // namespace policy

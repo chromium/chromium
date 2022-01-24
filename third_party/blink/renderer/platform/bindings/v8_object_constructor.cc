@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 
+#include "components/crash/core/common/crash_key.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
@@ -78,7 +79,13 @@ v8::Local<v8::Function> V8ObjectConstructor::CreateInterfaceObject(
   v8::Local<v8::Function> interface_object;
   bool get_interface_object =
       interface_template->GetFunction(context).ToLocal(&interface_object);
-  CHECK(get_interface_object);
+  if (UNLIKELY(!get_interface_object)) {
+    // For investigation of crbug.com/1247628
+    static crash_reporter::CrashKeyString<64> crash_key(
+        "blink__create_interface_object");
+    crash_key.Set(type->interface_name);
+    CHECK(get_interface_object);
+  }
 
   if (type->parent_class) {
     DCHECK(!parent_interface.IsEmpty());

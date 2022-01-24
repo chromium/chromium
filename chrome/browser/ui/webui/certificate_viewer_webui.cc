@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -50,6 +49,9 @@ class CertNodeBuilder {
   // string, then delegates to the other constructor.
   explicit CertNodeBuilder(int label_id);
 
+  CertNodeBuilder(const CertNodeBuilder&) = delete;
+  CertNodeBuilder& operator=(const CertNodeBuilder&) = delete;
+
   // Builder methods all return |*this| so that they can be chained in single
   // expressions.
 
@@ -73,8 +75,6 @@ class CertNodeBuilder {
   // |built_| is false until Build() is called. Once it is |true|, |node_| and
   // |children_| are no longer valid for use.
   bool built_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CertNodeBuilder);
 };
 
 CertNodeBuilder::CertNodeBuilder(base::StringPiece label) {
@@ -308,12 +308,12 @@ CertificateViewerDialogHandler::~CertificateViewerDialogHandler() {
 }
 
 void CertificateViewerDialogHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "exportCertificate",
       base::BindRepeating(
           &CertificateViewerDialogHandler::HandleExportCertificate,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestCertificateFields",
       base::BindRepeating(
           &CertificateViewerDialogHandler::HandleRequestCertificateFields,

@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"
 #include "content/browser/payments/payment_app_database.h"
@@ -26,83 +25,42 @@ class ServiceWorkerContextWrapper;
 
 // One instance of this exists per StoragePartition, and services multiple child
 // processes/origins. Most logic is delegated to the owned PaymentAppDatabase
-// instance, which is only accessed on the thread identified by
-// ServiceWorkerContext::GetCoreThreadId() (the service worker "core"
-// thread).
+// instance.
 //
-// This class is created/destructed by StoragePartitionImpl on UI thread.
-// However, the PaymentAppDatabase that this class has internally should work on
-// core thread. So, this class has Init() and Shutdown() methods in addition to
-// constructor and destructor. They should be called explicitly when creating
-// and destroying StoragePartitionImpl.
-//
-// Expected order of lifetime calls:
-//   1) Constructor
-//   2) Init()
-//   3) Can now call other public methods in this class in any order.
-//     - Can call CreatePaymentManagerForOrigin() on UI thread.
-//     - Can call GetAllPaymentApps() on UI thread.
-//     - Can call PaymentManagerHadConnectionError() on core thread.
-//     - Can call payment_app_database() on the core thread.
-//   4) Shutdown()
-//   5) Destructor
+// This class is created by StoragePartitionImpl. It lives on the UI thread.
 class CONTENT_EXPORT PaymentAppContextImpl
-    : public base::RefCountedThreadSafe<
-          PaymentAppContextImpl,
-          content::BrowserThread::DeleteOnUIThread> {
+    : public base::RefCounted<PaymentAppContextImpl> {
  public:
   PaymentAppContextImpl();
 
-  // Init and Shutdown are for use on the UI thread when the
-  // StoragePartition is being setup and torn down.
+  PaymentAppContextImpl(const PaymentAppContextImpl&) = delete;
+  PaymentAppContextImpl& operator=(const PaymentAppContextImpl&) = delete;
+
+  // Init() must be called before using this. It is separate from the
+  // constructor for tests that want to inject a `service_worker_context`.
   void Init(scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
 
-  // Shutdown must be called before deleting this. Call on the UI thread.
-  void Shutdown();
-
-  // Create a PaymentManager that is owned by this. Call on the UI thread.
+  // Creates a PaymentManager that is owned by this.
   void CreatePaymentManagerForOrigin(
       const url::Origin& origin,
       mojo::PendingReceiver<payments::mojom::PaymentManager> receiver);
 
-  // Called by PaymentManager objects so that they can
-  // be deleted. Call on the core thread.
+  // Called by PaymentManager objects so that they can be deleted.
   void PaymentManagerHadConnectionError(PaymentManager* service);
 
-  // Should be accessed only on the core thread.
   PaymentAppDatabase* payment_app_database() const;
 
  private:
   friend class PaymentAppContentUnitTestBase;
-  friend struct content::BrowserThread::DeleteOnThread<
-      content::BrowserThread::UI>;
-  friend class base::DeleteHelper<PaymentAppContextImpl>;
+  friend class base::RefCounted<PaymentAppContextImpl>;
   ~PaymentAppContextImpl();
 
-  void CreatePaymentAppDatabaseOnCoreThread(
-      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
-
-  void CreatePaymentManagerForOriginOnCoreThread(
-      const url::Origin& origin,
-      mojo::PendingReceiver<payments::mojom::PaymentManager> receiver);
-
-  void ShutdownOnCoreThread();
-
-  // Only accessed on the core thread.
   std::unique_ptr<PaymentAppDatabase> payment_app_database_;
 
-  // The PaymentManagers are owned by this. They're either deleted during
-  // ShutdownOnCoreThread or when the channel is closed via
-  // PaymentManagerHadConnectionError. Only accessed on the core thread.
+  // The PaymentManagers are owned by this. They're either deleted in the
+  // destructor or when the channel is closed via
+  // PaymentManagerHadConnectionError.
   std::map<PaymentManager*, std::unique_ptr<PaymentManager>> payment_managers_;
-
-#if DCHECK_IS_ON()
-  // Set after ShutdownOnCoreThread() has run on the core thread. |this|
-  // shouldn't be deleted before this is set.
-  base::AtomicFlag did_shutdown_on_core_;
-#endif
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppContextImpl);
 };
 
 }  // namespace content

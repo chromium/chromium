@@ -31,6 +31,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.KeyUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.media.MediaSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -84,7 +85,8 @@ public class FullscreenVideoTest {
         mActivityTestRule.loadUrl(url);
         Tab tab = mActivity.getActivityTab();
         FullscreenManager.Observer listener = new FullscreenToggleListener();
-        mActivity.getFullscreenManager().addObserver(listener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivity.getFullscreenManager().addObserver(listener));
 
         TestTouchUtils.singleClickView(
                 InstrumentationRegistry.getInstrumentation(), tab.getView(), 500, 500);
@@ -113,7 +115,8 @@ public class FullscreenVideoTest {
 
         final Tab tab = mActivity.getActivityTab();
         FullscreenManager.Observer listener = new FullscreenToggleListener();
-        mActivity.getFullscreenManager().addObserver(listener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivity.getFullscreenManager().addObserver(listener));
 
         // Start playback to guarantee it's properly loaded.
         WebContents webContents = mActivity.getCurrentWebContents();

@@ -32,6 +32,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
@@ -51,6 +52,7 @@
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/android/gurl_android.h"
 
 namespace autofill {
 namespace {
@@ -102,6 +104,9 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
  public:
   FullCardRequester() {}
 
+  FullCardRequester(const FullCardRequester&) = delete;
+  FullCardRequester& operator=(const FullCardRequester&) = delete;
+
   // Takes ownership of |card|.
   void GetFullCard(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& jweb_contents,
@@ -138,7 +143,7 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
 
     driver->browser_autofill_manager()
         ->GetOrCreateFullCardRequest()
-        ->GetFullCard(*card_, AutofillClient::UNMASK_FOR_PAYMENT_REQUEST,
+        ->GetFullCard(*card_, AutofillClient::UnmaskCardReason::kPaymentRequest,
                       AsWeakPtr(),
                       driver->browser_autofill_manager()
                           ->GetAsFullCardRequestUIDelegate());
@@ -170,8 +175,6 @@ class FullCardRequester : public FullCardRequest::ResultDelegate,
 
   std::unique_ptr<CreditCard> card_;
   ScopedJavaGlobalRef<jobject> jdelegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullCardRequester);
 };
 
 void OnSubKeysReceived(ScopedJavaGlobalRef<jobject> jdelegate,
@@ -242,7 +245,8 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
       ConvertUTF8ToJavaString(env, card.server_id()),
       ConvertUTF16ToJavaString(env,
                                card.CardIdentifierStringForAutofillDisplay()),
-      ConvertUTF16ToJavaString(env, card.nickname()));
+      ConvertUTF16ToJavaString(env, card.nickname()),
+      url::GURLAndroid::FromNativeGURL(env, card.card_art_url()));
 }
 
 // static
@@ -270,7 +274,12 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
       ConvertJavaStringToUTF8(Java_CreditCard_getServerId(env, jcard)));
   card->SetNickname(
       ConvertJavaStringToUTF16(Java_CreditCard_getNickname(env, jcard)));
-
+  base::android::ScopedJavaLocalRef<jobject> java_card_art_url =
+      Java_CreditCard_getCardArtUrl(env, jcard);
+  if (!java_card_art_url.is_null()) {
+    card->set_card_art_url(
+        *url::GURLAndroid::ToNativeGURL(env, java_card_art_url));
+  }
   // Only set the guid if it is an existing card (java guid not empty).
   // Otherwise, keep the generated one.
   std::string guid =
@@ -845,9 +854,8 @@ jboolean PersonalDataManagerAndroid::IsFidoAuthenticationAvailable(
           autofill::AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled) {
     return false;
   }
-  // Show the toggle switch only if the authentication flag is enabled.
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillCreditCardAuthentication);
+  // Show the toggle switch only if FIDO authentication is available.
+  return ::autofill::IsCreditCardFidoAuthenticationEnabled();
 }
 
 void PersonalDataManagerAndroid::StartRegionSubKeysRequest(

@@ -33,6 +33,14 @@ crashpad_static_library("client") {
   if (crashpad_is_ios) {
     sources += [
       "crashpad_client_ios.cc",
+      "ios_handler/exception_processor.h",
+      "ios_handler/exception_processor.mm",
+      "ios_handler/in_process_handler.cc",
+      "ios_handler/in_process_handler.h",
+      "ios_handler/in_process_intermediate_dump_handler.cc",
+      "ios_handler/in_process_intermediate_dump_handler.h",
+      "ios_handler/prune_intermediate_dumps_and_crash_reports_thread.cc",
+      "ios_handler/prune_intermediate_dumps_and_crash_reports_thread.h",
       "simulate_crash_ios.h",
     ]
   }
@@ -66,13 +74,13 @@ crashpad_static_library("client") {
 
   public_deps = [
     ":common",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 
   deps = [
     ":common",
-    "../third_party/mini_chromium:chromeos_buildflags",
+    "$mini_chromium_source_parent:chromeos_buildflags",
   ]
 
   if (crashpad_is_win) {
@@ -80,7 +88,6 @@ crashpad_static_library("client") {
     cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
   }
 
-  # TODO(justincohen): Temporary dependency to bring up the iOS client.
   if (crashpad_is_ios) {
     deps += [
       "../handler:common",
@@ -132,7 +139,7 @@ static_library("common") {
 
   public_configs = [ "..:crashpad_config" ]
   public_deps = [
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
   deps = [ "../util" ]
@@ -160,13 +167,10 @@ source_set("client_test") {
   }
 
   if (crashpad_is_ios) {
-    sources += [ "crashpad_client_ios_test.mm" ]
-    sources -= [
-      "annotation_list_test.cc",
-      "annotation_test.cc",
-      "crash_report_database_test.cc",
-      "prune_crash_reports_test.cc",
-      "settings_test.cc",
+    sources += [
+      "crashpad_client_ios_test.mm",
+      "ios_handler/exception_processor_test.mm",
+      "ios_handler/in_process_intermediate_dump_handler_test.cc",
     ]
   }
 
@@ -176,12 +180,12 @@ source_set("client_test") {
 
   deps = [
     ":client",
+    "$mini_chromium_source_parent:base",
     "../compat",
     "../snapshot",
     "../test",
     "../third_party/googletest:googlemock",
     "../third_party/googletest:googletest",
-    "../third_party/mini_chromium:base",
     "../util",
   ]
 

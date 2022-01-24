@@ -99,6 +99,22 @@ def ArgumentParser(standalone=False):
       '--is-unittest',
       action='store_true',
       help='Is running inside a unittest.')
+  group.add_argument(
+      '--fetch-device-data',
+      action='store_true',
+      help='Android-specific argument to enable fetching data from a device.')
+  group.add_argument(
+      '--device-data-path',
+      dest='device_data_path',
+      help=('Android-specific argument for --fetch-data-device. Use this to '
+            'specify the path on device to pull data from using adb.'))
+  group.add_argument(
+      '--local-data-path',
+      dest='local_data_path',
+      default=os.environ.get('ISOLATED_OUTDIR'),
+      help=('Android-specific argument for --fetch-data-device. Use this to '
+            'override the local copy path. Defaults to ISOLATED_OUTDIR '
+            'environment variable.'))
   return parser
 
 

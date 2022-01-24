@@ -79,6 +79,9 @@ class NET_EXPORT CertVerifyProc
       scoped_refptr<CertNetFetcher> cert_net_fetcher);
 #endif
 
+  CertVerifyProc(const CertVerifyProc&) = delete;
+  CertVerifyProc& operator=(const CertVerifyProc&) = delete;
+
   // Verifies the certificate against the given hostname as an SSL server
   // certificate. Returns OK if successful or an error code upon failure.
   //
@@ -200,8 +203,6 @@ class NET_EXPORT CertVerifyProc
   // Feature flag affecting the Legacy Symantec PKI deprecation, documented
   // at https://g.co/chrome/symantecpkicerts
   static const base::Feature kLegacySymantecPKIEnforcement;
-
-  DISALLOW_COPY_AND_ASSIGN(CertVerifyProc);
 };
 
 }  // namespace net

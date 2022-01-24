@@ -57,12 +57,12 @@ class BluetoothPolicyHandlerTest : public testing::Test {
  protected:
   void SetAllowBluetooth(bool allow_bluetooth) {
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        chromeos::kAllowBluetooth, allow_bluetooth);
+        ash::kAllowBluetooth, allow_bluetooth);
   }
 
   void SetDeviceAllowedBluetoothServices(const base::ListValue& allowlist) {
     scoped_testing_cros_settings_.device_settings()->Set(
-        chromeos::kDeviceAllowedBluetoothServices, allowlist);
+        ash::kDeviceAllowedBluetoothServices, allowlist);
   }
 
   base::test::TaskEnvironment task_environment_;

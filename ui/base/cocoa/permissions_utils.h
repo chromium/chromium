@@ -9,20 +9,15 @@
 
 namespace ui {
 
-// Heuristic to check screen capture permission.
 // Starting on macOS 10.15, the ability to screen capture is restricted and
-// requires a permission authorization. There is no direct way to query the
-// permission state, so this uses a heuristic to evaluate whether the permission
-// has been granted.
+// requires a permission authorization. This function returns `true` if screen
+// capture permission was already granted by the user and `false` if it was not.
 COMPONENT_EXPORT(UI_BASE) bool IsScreenCaptureAllowed();
 
-// Heuristic to prompt the user if they have never been prompted for permission.
-// Starting on macOS 10.15, not only can we not tell if we have has permission
-// granted, we also can't tell if we have requested the permission before. We
-// must try capture a stream and the OS will show a modal dialog asking the user
-// for permission if Chrome is not in the permission app list, then return
-// a stream based on whether permission is granted.
-// Returns whether or not permission was granted.
+// Explicitly request from the user permission to capture the screen. Returns
+// `true` if the user granted permission and `false` if the user did not. If the
+// user previously declined to give permission, this will just return `false`
+// immediately without prompting the user.
 COMPONENT_EXPORT(UI_BASE) bool TryPromptUserForScreenCapture();
 
 }  // namespace ui

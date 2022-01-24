@@ -43,7 +43,7 @@ export class Autoclick {
      */
     this.hitTestHandler_ = new EventHandler(
         [], chrome.automation.EventType.MOUSE_PRESSED,
-        this.onAutomationHitTestResult_.bind(this), {capture: true});
+        event => this.onAutomationHitTestResult_(event), {capture: true});
 
     this.init_();
   }
@@ -70,8 +70,8 @@ export class Autoclick {
    * @private
    */
   init_() {
-    this.scrollableBoundsListener_ =
-        this.findScrollingContainerForPoint_.bind(this);
+    this.scrollableBoundsListener_ = (x, y) =>
+        this.findScrollingContainerForPoint_(x, y);
 
     chrome.automation.getDesktop((desktop) => {
       this.desktop_ = desktop;

@@ -44,6 +44,7 @@ ARC_EXPORT extern const char kArcVisibleExternalStorages[];
 ARC_EXPORT extern const char kArcIsManaged[];
 ARC_EXPORT extern const char kEcryptfsMigrationStrategy[];
 ARC_EXPORT extern const char kEngagementPrefsPrefix[];
+ARC_EXPORT extern const char kArcPlayStoreLaunchMetricCanBeRecorded[];
 
 // Local state prefs in lexicographical order.
 ARC_EXPORT extern const char kArcSerialNumberSalt[];

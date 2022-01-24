@@ -4,7 +4,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -121,6 +120,10 @@ class DeclarativeContentApiTest : public ExtensionApiTest {
  public:
   DeclarativeContentApiTest() {}
 
+  DeclarativeContentApiTest(const DeclarativeContentApiTest&) = delete;
+  DeclarativeContentApiTest& operator=(const DeclarativeContentApiTest&) =
+      delete;
+
  protected:
   enum IncognitoMode { SPANNING, SPLIT };
 
@@ -134,9 +137,6 @@ class DeclarativeContentApiTest : public ExtensionApiTest {
   void CheckBookmarkEvents(bool is_bookmarked);
 
   TestExtensionDir ext_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentApiTest);
 };
 
 void DeclarativeContentApiTest::CheckIncognito(IncognitoMode mode,
@@ -440,12 +440,15 @@ class ParameterizedShowActionDeclarativeContentApiTest
       public testing::WithParamInterface<const char*> {
  public:
   ParameterizedShowActionDeclarativeContentApiTest() {}
+
+  ParameterizedShowActionDeclarativeContentApiTest(
+      const ParameterizedShowActionDeclarativeContentApiTest&) = delete;
+  ParameterizedShowActionDeclarativeContentApiTest& operator=(
+      const ParameterizedShowActionDeclarativeContentApiTest&) = delete;
+
   ~ParameterizedShowActionDeclarativeContentApiTest() override {}
 
   void TestShowAction(absl::optional<ActionInfo::Type> action_type);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ParameterizedShowActionDeclarativeContentApiTest);
 };
 
 void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
@@ -492,8 +495,8 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
     action->SetIsVisible(ExtensionAction::kDefaultTabId, false);
 
   // Open the tab to invoke the APIs, as well as test the action visibility.
-  ui_test_utils::NavigateToURL(browser(),
-                               extension->GetResourceURL("page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html")));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 

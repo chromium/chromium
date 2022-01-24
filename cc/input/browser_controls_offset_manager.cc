@@ -16,8 +16,8 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/transform.h"
 
 namespace cc {
 namespace {
@@ -206,8 +206,11 @@ BrowserControlsState BrowserControlsOffsetManager::PullConstraintForMainThread(
     bool* out_changed_since_commit) {
   DCHECK(out_changed_since_commit);
   *out_changed_since_commit = constraint_changed_since_commit_;
-  constraint_changed_since_commit_ = false;
   return permitted_state_;
+}
+
+void BrowserControlsOffsetManager::NotifyConstraintSyncedToMainThread() {
+  constraint_changed_since_commit_ = false;
 }
 
 void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(
@@ -708,7 +711,7 @@ void BrowserControlsOffsetManager::Animation::Initialize(
   direction_ = direction;
   start_value_ = start_value;
   stop_value_ = stop_value;
-  duration_ = base::TimeDelta::FromMilliseconds(duration);
+  duration_ = base::Milliseconds(duration);
   initialized_ = true;
   jump_to_end_on_reset_ = jump_to_end_on_reset;
   SetBounds(std::min(start_value_, stop_value_),

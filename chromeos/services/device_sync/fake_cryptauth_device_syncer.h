@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/cryptauth_device_syncer.h"
 #include "chromeos/services/device_sync/cryptauth_device_syncer_impl.h"
 #include "chromeos/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
@@ -26,6 +25,11 @@ class CryptAuthDeviceSyncResult;
 class FakeCryptAuthDeviceSyncer : public CryptAuthDeviceSyncer {
  public:
   FakeCryptAuthDeviceSyncer();
+
+  FakeCryptAuthDeviceSyncer(const FakeCryptAuthDeviceSyncer&) = delete;
+  FakeCryptAuthDeviceSyncer& operator=(const FakeCryptAuthDeviceSyncer&) =
+      delete;
+
   ~FakeCryptAuthDeviceSyncer() override;
 
   const absl::optional<cryptauthv2::ClientMetadata>& client_metadata() const {
@@ -47,14 +51,18 @@ class FakeCryptAuthDeviceSyncer : public CryptAuthDeviceSyncer {
 
   absl::optional<cryptauthv2::ClientMetadata> client_metadata_;
   absl::optional<cryptauthv2::ClientAppMetadata> client_app_metadata_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthDeviceSyncer);
 };
 
 class FakeCryptAuthDeviceSyncerFactory
     : public CryptAuthDeviceSyncerImpl::Factory {
  public:
   FakeCryptAuthDeviceSyncerFactory();
+
+  FakeCryptAuthDeviceSyncerFactory(const FakeCryptAuthDeviceSyncerFactory&) =
+      delete;
+  FakeCryptAuthDeviceSyncerFactory& operator=(
+      const FakeCryptAuthDeviceSyncerFactory&) = delete;
+
   ~FakeCryptAuthDeviceSyncerFactory() override;
 
   const std::vector<FakeCryptAuthDeviceSyncer*>& instances() const {
@@ -92,8 +100,6 @@ class FakeCryptAuthDeviceSyncerFactory
   SyncedBluetoothAddressTracker* last_synced_bluetooth_address_tracker_ =
       nullptr;
   PrefService* last_pref_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthDeviceSyncerFactory);
 };
 
 }  // namespace device_sync

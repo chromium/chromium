@@ -296,8 +296,8 @@ void GrShaderCache::StoreVkPipelineCacheIfNeeded(GrDirectContext* gr_context) {
           [](base::Time time) {
             UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
                 "GPU.Vulkan.PipelineCache.StoreDuration",
-                base::Time::Now() - time, base::TimeDelta::FromMicroseconds(1),
-                base::TimeDelta::FromMicroseconds(5000), 50);
+                base::Time::Now() - time, base::Microseconds(1),
+                base::Microseconds(5000), 50);
           },
           base::Time::Now()));
 

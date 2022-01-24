@@ -16,8 +16,7 @@ namespace ash {
 namespace {
 
 // Interval for asking metrics::DailyEvent to check whether a day has passed.
-constexpr base::TimeDelta kCheckDailyEventInternal =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kCheckDailyEventInternal = base::Seconds(60);
 
 // Information about a daily count that should be tracked and reported.
 struct DailyCountInfo {
@@ -55,6 +54,10 @@ class PowerMetricsReporter::DailyEventObserver
  public:
   explicit DailyEventObserver(PowerMetricsReporter* reporter)
       : reporter_(reporter) {}
+
+  DailyEventObserver(const DailyEventObserver&) = delete;
+  DailyEventObserver& operator=(const DailyEventObserver&) = delete;
+
   ~DailyEventObserver() override = default;
 
   // metrics::DailyEvent::Observer:
@@ -64,8 +67,6 @@ class PowerMetricsReporter::DailyEventObserver
 
  private:
   PowerMetricsReporter* reporter_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(DailyEventObserver);
 };
 
 const char PowerMetricsReporter::kDailyEventIntervalName[] =

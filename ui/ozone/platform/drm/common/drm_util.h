@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
@@ -29,6 +28,12 @@ class Point;
 
 namespace ui {
 
+// It is safe to assume there will be no more than 256 connected DRM devices.
+constexpr int kMaxDrmCount = 256u;
+
+// It is safe to assume there will be no more than 256 connectors per DRM.
+constexpr int kMaxDrmConnectors = 256u;
+
 // Representation of the information required to initialize and configure a
 // native display. |index| is the position of the connection and will be
 // used to generate a unique identifier for the display.
@@ -36,19 +41,22 @@ class HardwareDisplayControllerInfo {
  public:
   HardwareDisplayControllerInfo(ScopedDrmConnectorPtr connector,
                                 ScopedDrmCrtcPtr crtc,
-                                size_t index);
+                                uint8_t index);
+
+  HardwareDisplayControllerInfo(const HardwareDisplayControllerInfo&) = delete;
+  HardwareDisplayControllerInfo& operator=(
+      const HardwareDisplayControllerInfo&) = delete;
+
   ~HardwareDisplayControllerInfo();
 
   drmModeConnector* connector() const { return connector_.get(); }
   drmModeCrtc* crtc() const { return crtc_.get(); }
-  size_t index() const { return index_; }
+  uint8_t index() const { return index_; }
 
  private:
   ScopedDrmConnectorPtr connector_;
   ScopedDrmCrtcPtr crtc_;
-  size_t index_;
-
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayControllerInfo);
+  uint8_t index_;
 };
 
 // Looks-up and parses the native display configurations returning all available
@@ -76,7 +84,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     HardwareDisplayControllerInfo* info,
     int fd,
     const base::FilePath& sys_path,
-    size_t device_index,
+    uint8_t device_index,
     const gfx::Point& origin);
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format);

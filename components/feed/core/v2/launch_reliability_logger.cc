@@ -9,49 +9,49 @@
 #include "components/feed/core/v2/public/feed_stream_surface.h"
 #include "components/feed/core/v2/public/reliability_logging_bridge.h"
 #include "components/feed/core/v2/public/types.h"
+#include "components/feed/core/v2/stream_surface_set.h"
 
 namespace feed {
 
-LaunchReliabilityLogger::LaunchReliabilityLogger(
-    base::ObserverList<FeedStreamSurface>* surfaces)
+LaunchReliabilityLogger::LaunchReliabilityLogger(StreamSurfaceSet* surfaces)
     : surfaces_(surfaces) {}
 
 LaunchReliabilityLogger::~LaunchReliabilityLogger() = default;
 
 void LaunchReliabilityLogger::LogFeedLaunchOtherStart() {
-  for (FeedStreamSurface& surface : *surfaces_) {
-    surface.GetReliabilityLoggingBridge().LogFeedLaunchOtherStart(
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogFeedLaunchOtherStart(
         base::TimeTicks::Now());
   }
 }
 
 void LaunchReliabilityLogger::LogLaunchFinishedAfterStreamUpdate(
     feedwire::DiscoverLaunchResult result) {
-  for (FeedStreamSurface& surface : *surfaces_) {
-    surface.GetReliabilityLoggingBridge().LogLaunchFinishedAfterStreamUpdate(
-        result);
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge()
+        .LogLaunchFinishedAfterStreamUpdate(result);
   }
 }
 
 void LaunchReliabilityLogger::LogCacheReadStart() {
-  for (FeedStreamSurface& surface : *surfaces_) {
-    surface.GetReliabilityLoggingBridge().LogCacheReadStart(
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogCacheReadStart(
         base::TimeTicks::Now());
   }
 }
 
 void LaunchReliabilityLogger::LogCacheReadEnd(
     feedwire::DiscoverCardReadCacheResult result) {
-  for (FeedStreamSurface& surface : *surfaces_) {
-    surface.GetReliabilityLoggingBridge().LogCacheReadEnd(
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogCacheReadEnd(
         base::TimeTicks::Now(), result);
   }
 }
 
 NetworkRequestId LaunchReliabilityLogger::LogFeedRequestStart() {
   NetworkRequestId id = request_id_gen_.GenerateNextId();
-  for (FeedStreamSurface& surface : *surfaces_) {
-    surface.GetReliabilityLoggingBridge().LogFeedRequestStart(
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogFeedRequestStart(
         id, base::TimeTicks::Now());
   }
   return id;
@@ -59,8 +59,8 @@ NetworkRequestId LaunchReliabilityLogger::LogFeedRequestStart() {
 
 NetworkRequestId LaunchReliabilityLogger::LogActionsUploadRequestStart() {
   NetworkRequestId id = request_id_gen_.GenerateNextId();
-  for (FeedStreamSurface& surface : *surfaces_) {
-    surface.GetReliabilityLoggingBridge().LogActionsUploadRequestStart(
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogActionsUploadRequestStart(
         id, base::TimeTicks::Now());
   }
   return id;
@@ -68,8 +68,8 @@ NetworkRequestId LaunchReliabilityLogger::LogActionsUploadRequestStart() {
 
 NetworkRequestId LaunchReliabilityLogger::LogWebFeedRequestStart() {
   NetworkRequestId id = request_id_gen_.GenerateNextId();
-  for (FeedStreamSurface& surface : *surfaces_) {
-    surface.GetReliabilityLoggingBridge().LogWebFeedRequestStart(
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogWebFeedRequestStart(
         id, base::TimeTicks::Now());
   }
   return id;
@@ -77,8 +77,8 @@ NetworkRequestId LaunchReliabilityLogger::LogWebFeedRequestStart() {
 
 void LaunchReliabilityLogger::LogRequestSent(NetworkRequestId id,
                                              base::TimeTicks timestamp) {
-  for (FeedStreamSurface& surface : *surfaces_)
-    surface.GetReliabilityLoggingBridge().LogRequestSent(id, timestamp);
+  for (auto& entry : *surfaces_)
+    entry.surface->GetReliabilityLoggingBridge().LogRequestSent(id, timestamp);
 }
 
 void LaunchReliabilityLogger::LogResponseReceived(
@@ -86,8 +86,8 @@ void LaunchReliabilityLogger::LogResponseReceived(
     int64_t server_receive_timestamp_ns,
     int64_t server_send_timestamp_ns,
     base::TimeTicks client_receive_timestamp) {
-  for (FeedStreamSurface& surface : *surfaces_) {
-    surface.GetReliabilityLoggingBridge().LogResponseReceived(
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogResponseReceived(
         id, server_receive_timestamp_ns, server_send_timestamp_ns,
         client_receive_timestamp);
   }
@@ -96,15 +96,15 @@ void LaunchReliabilityLogger::LogResponseReceived(
 void LaunchReliabilityLogger::LogRequestFinished(
     NetworkRequestId id,
     int combined_network_status_code) {
-  for (FeedStreamSurface& surface : *surfaces_) {
-    surface.GetReliabilityLoggingBridge().LogRequestFinished(
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.surface->GetReliabilityLoggingBridge().LogRequestFinished(
         id, base::TimeTicks::Now(), combined_network_status_code);
   }
 }
 
 void LaunchReliabilityLogger::OnStreamUpdate(StreamUpdateType type) {
-  for (FeedStreamSurface& surface : *surfaces_)
-    OnStreamUpdate(type, surface);
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces())
+    OnStreamUpdate(type, *entry.surface);
 }
 
 void LaunchReliabilityLogger::OnStreamUpdate(StreamUpdateType type,

@@ -32,6 +32,13 @@ class InterfaceRegistrarImpl {
     }
 
     @CalledByNative
+    static void createInterfaceRegistryOnIOThread(int nativeHandle) {
+        InterfaceRegistry registry = InterfaceRegistry.create(
+                CoreImpl.getInstance().acquireNativeHandle(nativeHandle).toMessagePipeHandle());
+        registerInterfacesOnIOThread(registry);
+    }
+
+    @CalledByNative
     static void createInterfaceRegistryForWebContents(int nativeHandle, WebContents webContents) {
         ensureSingletonRegistrarsAreRegistered();
 
@@ -54,6 +61,10 @@ class InterfaceRegistrarImpl {
         if (sHasRegisteredRegistrars) return;
         sHasRegisteredRegistrars = true;
         InterfaceRegistrar.Registry.addSingletonRegistrar(new SingletonInterfaceRegistrar());
+    }
+
+    private static void registerInterfacesOnIOThread(InterfaceRegistry registry) {
+        registry.addInterface(AndroidFontLookup.MANAGER, new AndroidFontLookupImpl.Factory());
     }
 
     private static class SingletonInterfaceRegistrar implements InterfaceRegistrar<Void> {

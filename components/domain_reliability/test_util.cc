@@ -174,9 +174,9 @@ void MockTime::AdvanceToInternal(base::TimeTicks target_ticks) {
 
 DomainReliabilityScheduler::Params MakeTestSchedulerParams() {
   DomainReliabilityScheduler::Params params;
-  params.minimum_upload_delay = base::TimeDelta::FromMinutes(1);
-  params.maximum_upload_delay = base::TimeDelta::FromMinutes(5);
-  params.upload_retry_interval = base::TimeDelta::FromSeconds(15);
+  params.minimum_upload_delay = base::Minutes(1);
+  params.maximum_upload_delay = base::Minutes(5);
+  params.upload_retry_interval = base::Seconds(15);
   return params;
 }
 

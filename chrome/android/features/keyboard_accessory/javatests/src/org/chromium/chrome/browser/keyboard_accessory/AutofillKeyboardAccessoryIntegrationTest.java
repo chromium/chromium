@@ -134,7 +134,9 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         if (enabledFeature == EnabledFeature.PORTALS) {
             mHelper.loadTestPage(PORTAL_TEST_PAGE, false, false, keyboardDelegate);
             SwapWebContentsObserver observer = new SwapWebContentsObserver();
-            mActivityTestRule.getActivity().getActivityTab().addObserver(observer);
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                mActivityTestRule.getActivity().getActivityTab().addObserver(observer);
+            });
             DOMUtils.clickNode(mHelper.getWebContents(), "ACTIVATE");
             CriteriaHelper.pollUiThread(
                     () -> { return observer.mCallbackHelper.getCallCount() == 1; });

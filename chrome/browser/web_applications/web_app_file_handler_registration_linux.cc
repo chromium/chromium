@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/components/web_app_file_handler_registration.h"
+#include "chrome/browser/web_applications/web_app_file_handler_registration.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/web_app_shortcut.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_shortcut.h"
 
 namespace web_app {
 
@@ -42,34 +44,39 @@ enum class RecreateShortcutResult {
   kMaxValue = kFailToCreateShortcut
 };
 
-// UMA metric name for file handler registration result.
+// UMA metric name for MIME type registration result.
 constexpr const char* kRegistrationResultMetric =
     "Apps.FileHandler.Registration.Linux.Result";
+
+// UMA metric name for MIME type unregistration result.
+constexpr const char* kUnregistrationResultMetric =
+    "Apps.FileHandler.Unregistration.Linux.Result";
 
 // UMA metric name for file handler shortcut re-create result.
 constexpr const char* kRecreateShortcutResultMetric =
     "Apps.FileHandler.Registration.Linux.RecreateShortcut.Result";
 
-// Records UMA metric for result of file handler registration.
-void RecordRegistration(RegistrationResult result) {
-  UMA_HISTOGRAM_ENUMERATION(kRegistrationResultMetric, result);
+// Records UMA metric for result of MIME type registration/unregistration.
+void RecordRegistration(RegistrationResult result, bool install) {
+  base::UmaHistogramEnumeration(
+      install ? kRegistrationResultMetric : kUnregistrationResultMetric,
+      result);
 }
 
-void OnCreateShortcut(base::OnceCallback<void(bool)> callback,
-                      bool shortcut_created) {
+void OnCreateShortcut(ResultCallback callback, bool shortcut_created) {
   UMA_HISTOGRAM_ENUMERATION(
       kRecreateShortcutResultMetric,
       shortcut_created ? RecreateShortcutResult::kSuccess
                        : RecreateShortcutResult::kFailToCreateShortcut);
-  std::move(callback).Run(shortcut_created);
+  std::move(callback).Run(shortcut_created ? Result::kOk : Result::kError);
 }
 
-void OnShortcutInfoReceived(base::OnceCallback<void(bool)> callback,
+void OnShortcutInfoReceived(ResultCallback callback,
                             std::unique_ptr<ShortcutInfo> info) {
   if (!info) {
     UMA_HISTOGRAM_ENUMERATION(kRecreateShortcutResultMetric,
                               RecreateShortcutResult::kFailToCreateShortcut);
-    std::move(callback).Run(false);
+    std::move(callback).Run(Result::kError);
     return;
   }
 
@@ -84,10 +91,9 @@ void OnShortcutInfoReceived(base::OnceCallback<void(bool)> callback,
       base::BindOnce(OnCreateShortcut, std::move(callback)));
 }
 
-void UpdateFileHandlerRegistrationInOs(
-    const AppId& app_id,
-    Profile* profile,
-    base::OnceCallback<void(bool)> callback) {
+void UpdateFileHandlerRegistrationInOs(const AppId& app_id,
+                                       Profile* profile,
+                                       ResultCallback callback) {
   // On Linux, file associations are managed through shortcuts in the app menu,
   // so after enabling or disabling file handling for an app its shortcuts
   // need to be recreated.
@@ -97,42 +103,77 @@ void UpdateFileHandlerRegistrationInOs(
           app_id, base::BindOnce(&OnShortcutInfoReceived, std::move(callback)));
 }
 
-void OnRegisterMimeTypes(bool registration_succeeded) {
-  if (!registration_succeeded)
-    LOG(ERROR) << "Registering MIME types failed.";
+void OnMimeInfoDatabaseUpdated(bool install, bool registration_succeeded) {
+  if (!registration_succeeded) {
+    LOG(ERROR) << (install ? "Registering MIME types failed."
+                           : "Unregistering MIME types failed.");
+  }
 }
 
-bool DoRegisterMimeTypes(base::FilePath filename, std::string file_contents) {
-  DCHECK(!filename.empty() && !file_contents.empty());
+bool UpdateMimeInfoDatabase(bool install,
+                            base::FilePath filename,
+                            std::string file_contents) {
+  DCHECK(!filename.empty());
+  DCHECK_NE(install, file_contents.empty());
 
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
-    RecordRegistration(RegistrationResult::kFailToCreateTempDir);
+    RecordRegistration(RegistrationResult::kFailToCreateTempDir, install);
     return false;
   }
 
   base::FilePath temp_file_path(temp_dir.GetPath().Append(filename));
   if (!base::WriteFile(temp_file_path, file_contents)) {
-    RecordRegistration(RegistrationResult::kFailToWriteMimetypeFile);
+    RecordRegistration(RegistrationResult::kFailToWriteMimetypeFile, install);
     return false;
   }
 
-  std::vector<std::string> argv{"xdg-mime", "install", "--mode", "user",
-                                temp_file_path.value()};
+  const std::vector<std::string> install_argv{"xdg-mime", "install", "--mode",
+                                              "user", temp_file_path.value()};
+  const std::vector<std::string> uninstall_argv{"xdg-mime", "uninstall",
+                                                temp_file_path.value()};
 
   int exit_code;
-  shell_integration_linux::LaunchXdgUtility(argv, &exit_code);
-  bool result = exit_code == 0;
-  if (!result)
-    RecordRegistration(RegistrationResult::kXdgReturnNonZeroCode);
-  else
-    RecordRegistration(RegistrationResult::kSuccess);
-  return result;
+  shell_integration_linux::LaunchXdgUtility(
+      install ? install_argv : uninstall_argv, &exit_code);
+  bool success = exit_code == 0;
+  RecordRegistration(success ? RegistrationResult::kSuccess
+                             : RegistrationResult::kXdgReturnNonZeroCode,
+                     install);
+  return success;
 }
 
-RegisterMimeTypesOnLinuxCallback& GetRegisterMimeTypesCallbackForTesting() {
-  static base::NoDestructor<RegisterMimeTypesOnLinuxCallback> instance;
+UpdateMimeInfoDatabaseOnLinuxCallback&
+GetUpdateMimeInfoDatabaseCallbackForTesting() {
+  static base::NoDestructor<UpdateMimeInfoDatabaseOnLinuxCallback> instance;
   return *instance;
+}
+
+// Returns the callback to use for updating MIME info.
+UpdateMimeInfoDatabaseOnLinuxCallback GetUpdateMimeInfoDatabaseCallback(
+    bool install) {
+  auto callback =
+      std::move(GetUpdateMimeInfoDatabaseCallbackForTesting());  // IN-TEST
+  if (callback)
+    return callback;
+
+  return base::BindOnce(&UpdateMimeInfoDatabase, install);
+}
+
+void UninstallMimeInfoOnLinux(const AppId& app_id, Profile* profile) {
+  base::FilePath filename =
+      shell_integration_linux::GetMimeTypesRegistrationFilename(
+          profile->GetPath(), app_id);
+
+  // Empty file contents because xdg-mime uninstall only cares about the file
+  // name (it uninstalls whatever associations were previously installed via the
+  // same filename).
+  std::string file_contents;
+  internals::GetShortcutIOTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(GetUpdateMimeInfoDatabaseCallback(/*install=*/false),
+                     std::move(filename), std::move(file_contents)),
+      base::BindOnce(&OnMimeInfoDatabaseUpdated, /*install=*/false));
 }
 
 }  // namespace
@@ -141,32 +182,33 @@ bool ShouldRegisterFileHandlersWithOs() {
   return true;
 }
 
+bool FileHandlingIconsSupportedByOs() {
+  // File type icons are not supported on Linux: see https://crbug.com/1218235
+  return false;
+}
+
 void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const std::string& app_name,
                                 Profile* profile,
                                 const apps::FileHandlers& file_handlers) {
-  if (!file_handlers.empty()) {
-    RegisterMimeTypesOnLinuxCallback callback =
-        GetRegisterMimeTypesCallbackForTesting()                   // IN-TEST
-            ? std::move(GetRegisterMimeTypesCallbackForTesting())  // IN-TEST
-            : base::BindOnce(&DoRegisterMimeTypes);
-    RegisterMimeTypesOnLinux(app_id, profile, file_handlers,
-                             std::move(callback));
-  }
+  DCHECK(!file_handlers.empty());
+  InstallMimeInfoOnLinux(app_id, profile, file_handlers);
 
   UpdateFileHandlerRegistrationInOs(app_id, profile, base::DoNothing());
 }
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,
                                   Profile* profile,
-                                  base::OnceCallback<void(bool)> callback) {
+                                  ResultCallback callback) {
+  UninstallMimeInfoOnLinux(app_id, profile);
+
   // If this was triggered as part of the uninstallation process, nothing more
   // is needed. Uninstalling already cleans up shortcuts (and thus, file
   // handlers).
   auto* provider = WebAppProvider::GetForWebApps(profile);
   DCHECK(provider->registrar().IsInstalled(app_id));
   if (provider->registrar().IsUninstalling(app_id)) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(Result::kOk);
     return;
   }
 
@@ -174,10 +216,9 @@ void UnregisterFileHandlersWithOs(const AppId& app_id,
   UpdateFileHandlerRegistrationInOs(app_id, profile, std::move(callback));
 }
 
-void RegisterMimeTypesOnLinux(const AppId& app_id,
-                              Profile* profile,
-                              const apps::FileHandlers& file_handlers,
-                              RegisterMimeTypesOnLinuxCallback callback) {
+void InstallMimeInfoOnLinux(const AppId& app_id,
+                            Profile* profile,
+                            const apps::FileHandlers& file_handlers) {
   DCHECK(!app_id.empty() && !file_handlers.empty());
 
   base::FilePath filename =
@@ -189,14 +230,15 @@ void RegisterMimeTypesOnLinux(const AppId& app_id,
 
   internals::GetShortcutIOTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(std::move(callback), std::move(filename),
-                     std::move(file_contents)),
-      base::BindOnce(&OnRegisterMimeTypes));
+      base::BindOnce(GetUpdateMimeInfoDatabaseCallback(/*install=*/true),
+                     std::move(filename), std::move(file_contents)),
+      base::BindOnce(&OnMimeInfoDatabaseUpdated, /*install=*/true));
 }
 
-void SetRegisterMimeTypesOnLinuxCallbackForTesting(  // IN-TEST
-    RegisterMimeTypesOnLinuxCallback callback) {
-  GetRegisterMimeTypesCallbackForTesting() = std::move(callback);  // IN-TEST
+void SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(  // IN-TEST
+    UpdateMimeInfoDatabaseOnLinuxCallback callback) {
+  GetUpdateMimeInfoDatabaseCallbackForTesting() =  // IN-TEST
+      std::move(callback);
 }
 
 }  // namespace web_app

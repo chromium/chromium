@@ -10,7 +10,7 @@ PASS lastLength = textElement.getComputedTextLength(); lastLength > 0 && lastLen
 PASS lastLength == textElement.textLength.baseVal.value is true
 PASS textElement.getAttribute('textLength') is "200"
 PASS textElement.textLength.baseVal.value is 200
-PASS textElement.getComputedTextLength() == lastLength is true
+PASS textElement.getComputedTextLength() is lastLength
 PASS successfullyParsed is true
 
 TEST COMPLETE

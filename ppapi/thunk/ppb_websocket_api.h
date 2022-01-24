@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_THUNK_WEBSOCKET_API_H_
-#define PPAPI_THUNK_WEBSOCKET_API_H_
+#ifndef PPAPI_THUNK_PPB_WEBSOCKET_API_H_
+#define PPAPI_THUNK_PPB_WEBSOCKET_API_H_
 
 #include <stdint.h>
 
@@ -83,4 +83,4 @@ class PPAPI_THUNK_EXPORT PPB_WebSocket_API {
 }  // namespace thunk
 }  // namespace ppapi
 
-#endif  // PPAPI_THUNK_WEBSOCKET_API_H_
+#endif  // PPAPI_THUNK_PPB_WEBSOCKET_API_H_

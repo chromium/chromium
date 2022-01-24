@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyTest, SignedExchangeDisabled) {
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_DENY);
 
   GURL url = embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   download_observer.WaitForFinished();
 
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyTest, SignedExchangeEnabled) {
   std::u16string title = u"Fallback URL response";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), title);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Check that the SXG file was handled as a Signed Exchange, and the
   // navigation was redirected to the SXG's fallback URL.

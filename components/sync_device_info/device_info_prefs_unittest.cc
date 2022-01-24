@@ -28,12 +28,10 @@ class DeviceInfoPrefsTest : public testing::Test {
 };
 
 TEST_F(DeviceInfoPrefsTest, ShouldGarbageCollectExpiredCacheGuids) {
-  const base::TimeDelta kMaxDaysLocalCacheGuidsStored =
-      base::TimeDelta::FromDays(10);
+  const base::TimeDelta kMaxDaysLocalCacheGuidsStored = base::Days(10);
 
   device_info_prefs_.AddLocalCacheGuid("guid1");
-  clock_.Advance(kMaxDaysLocalCacheGuidsStored -
-                 base::TimeDelta::FromMinutes(1));
+  clock_.Advance(kMaxDaysLocalCacheGuidsStored - base::Minutes(1));
   device_info_prefs_.AddLocalCacheGuid("guid2");
 
   // First garbage collection immediately before taking effect, hence a no-op.
@@ -42,7 +40,7 @@ TEST_F(DeviceInfoPrefsTest, ShouldGarbageCollectExpiredCacheGuids) {
   EXPECT_TRUE(device_info_prefs_.IsRecentLocalCacheGuid("guid2"));
 
   // Advancing one day causes the first GUID to be garbage-collected.
-  clock_.Advance(base::TimeDelta::FromDays(1));
+  clock_.Advance(base::Days(1));
   device_info_prefs_.GarbageCollectExpiredCacheGuids();
   EXPECT_FALSE(device_info_prefs_.IsRecentLocalCacheGuid("guid1"));
   EXPECT_TRUE(device_info_prefs_.IsRecentLocalCacheGuid("guid2"));

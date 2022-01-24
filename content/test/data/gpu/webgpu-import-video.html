@@ -21,10 +21,10 @@
         const device = await adapter.requestDevice();
 
         const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('gpupresent');
+        const context = canvas.getContext('webgpu');
 
         const swapChainFormat = 'bgra8unorm';
-        const swapChain = context.configureSwapChain({
+        context.configure({
           device,
           format: swapChainFormat,
         });
@@ -133,7 +133,7 @@ fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
         };
 
         function frame() {
-          renderPassDescriptor.colorAttachments[0].view = swapChain
+          renderPassDescriptor.colorAttachments[0].view = context
             .getCurrentTexture()
             .createView();
 

@@ -50,7 +50,8 @@ SegmentationPlatformProfileObserver::SegmentationPlatformProfileObserver(
 }
 
 SegmentationPlatformProfileObserver::~SegmentationPlatformProfileObserver() {
-  profile_manager_->RemoveObserver(this);
+  if (profile_manager_)
+    profile_manager_->RemoveObserver(this);
 }
 
 void SegmentationPlatformProfileObserver::OnProfileAdded(Profile* profile) {
@@ -68,6 +69,10 @@ void SegmentationPlatformProfileObserver::OnProfileAdded(Profile* profile) {
   NotifyExistenceOfOTRProfile(has_otr_profiles);
 }
 
+void SegmentationPlatformProfileObserver::OnProfileManagerDestroying() {
+  profile_manager_ = nullptr;
+}
+
 void SegmentationPlatformProfileObserver::OnOffTheRecordProfileCreated(
     Profile* profile) {
   OnProfileAdded(profile);
@@ -77,6 +82,11 @@ void SegmentationPlatformProfileObserver::OnProfileWillBeDestroyed(
     Profile* profile) {
   observed_profiles_.RemoveObservation(profile);
   if (!profile->IsOffTheRecord() && !profile->HasAnyOffTheRecordProfile())
+    return;
+
+  // If the profile manager is destroyed, then skip changing the recording
+  // state.
+  if (!profile_manager_)
     return;
 
   // We are destroying a profile which is an OTR profile or has an OTR profile.

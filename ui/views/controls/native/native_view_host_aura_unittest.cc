@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -50,6 +49,11 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
   };
 
   NativeViewHostWindowObserver() = default;
+
+  NativeViewHostWindowObserver(const NativeViewHostWindowObserver&) = delete;
+  NativeViewHostWindowObserver& operator=(const NativeViewHostWindowObserver&) =
+      delete;
+
   ~NativeViewHostWindowObserver() override = default;
 
   const std::vector<EventDetails>& events() const { return events_; }
@@ -86,13 +90,14 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
  private:
   std::vector<EventDetails> events_;
   gfx::Rect bounds_at_visibility_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostWindowObserver);
 };
 
 class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
  public:
   NativeViewHostAuraTest() = default;
+
+  NativeViewHostAuraTest(const NativeViewHostAuraTest&) = delete;
+  NativeViewHostAuraTest& operator=(const NativeViewHostAuraTest&) = delete;
 
   NativeViewHostAura* native_host() {
     return static_cast<NativeViewHostAura*>(GetNativeWrapper());
@@ -120,8 +125,6 @@ class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
 
  private:
   std::unique_ptr<Widget> child_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostAuraTest);
 };
 
 // Verifies NativeViewHostAura stops observing native view on destruction.
@@ -449,6 +452,9 @@ class TestFocusChangeListener : public FocusChangeListener {
     focus_manager_->AddFocusChangeListener(this);
   }
 
+  TestFocusChangeListener(const TestFocusChangeListener&) = delete;
+  TestFocusChangeListener& operator=(const TestFocusChangeListener&) = delete;
+
   ~TestFocusChangeListener() override {
     focus_manager_->RemoveFocusChangeListener(this);
   }
@@ -464,8 +470,6 @@ class TestFocusChangeListener : public FocusChangeListener {
 
   FocusManager* focus_manager_;
   int did_change_focus_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFocusChangeListener);
 };
 
 }  // namespace

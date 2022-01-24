@@ -21,10 +21,7 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
-#if !defined(OS_ANDROID)
 class ChromeZoomLevelPrefs;
-#endif
-
 class ExtensionSpecialStoragePolicy;
 class GURL;
 class PrefService;
@@ -51,7 +48,7 @@ class UserCloudPolicyManager;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class ActiveDirectoryPolicyManager;
-class UserCloudPolicyManagerChromeOS;
+class UserCloudPolicyManagerAsh;
 #endif
 }  // namespace policy
 
@@ -82,17 +79,6 @@ class Profile : public content::BrowserContext {
   enum CreateMode {
     CREATE_MODE_SYNCHRONOUS,
     CREATE_MODE_ASYNCHRONOUS
-  };
-
-  enum ExitType {
-    // A normal shutdown. The user clicked exit/closed last window of the
-    // profile.
-    EXIT_NORMAL,
-
-    // The exit was the result of the system shutting down.
-    EXIT_SESSION_ENDED,
-
-    EXIT_CRASHED,
   };
 
   // Defines an ID to distinguish different off-the-record profiles of a regular
@@ -320,12 +306,10 @@ class Profile : public content::BrowserContext {
   virtual PrefService* GetPrefs() = 0;
   virtual const PrefService* GetPrefs() const = 0;
 
-#if !defined(OS_ANDROID)
   // Retrieves a pointer to the PrefService that manages the default zoom
   // level and the per-host zoom levels for this user profile.
   // TODO(wjmaclean): Remove this when HostZoomMap migrates to StoragePartition.
   virtual ChromeZoomLevelPrefs* GetZoomLevelPrefs();
-#endif
 
   // Gives a read-only view of prefs that can be used even if there's no OTR
   // profile at the moment (i.e. HasOffTheRecordProfile is false).
@@ -353,9 +337,8 @@ class Profile : public content::BrowserContext {
   virtual policy::SchemaRegistryService* GetPolicySchemaRegistryService() = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Returns the UserCloudPolicyManagerChromeOS.
-  virtual policy::UserCloudPolicyManagerChromeOS*
-  GetUserCloudPolicyManagerChromeOS() = 0;
+  // Returns the UserCloudPolicyManagerAsh.
+  virtual policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManagerAsh() = 0;
 
   // Returns the ActiveDirectoryPolicyManager.
   virtual policy::ActiveDirectoryPolicyManager*
@@ -459,22 +442,9 @@ class Profile : public content::BrowserContext {
     return restored_last_session_;
   }
 
-  // Sets the ExitType for the profile. This may be invoked multiple times
-  // during shutdown; only the first such change (the transition from
-  // EXIT_CRASHED to one of the other values) is written to prefs, any
-  // later calls are ignored.
-  //
-  // NOTE: this is invoked internally on a normal shutdown, but is public so
-  // that it can be invoked when the user logs out/powers down (WM_ENDSESSION),
-  // or to handle backgrounding/foregrounding on mobile.
-  virtual void SetExitType(ExitType exit_type) = 0;
-
-  // Returns how the last session was shutdown.
-  virtual ExitType GetLastSessionExitType() const = 0;
-
   // Returns whether session cookies are restored and saved. The value is
   // ignored for in-memory profiles.
-  virtual bool ShouldRestoreOldSessionCookies() const;
+  virtual bool ShouldRestoreOldSessionCookies();
   virtual bool ShouldPersistSessionCookies() const;
 
   // Stop sending accessibility events until ResumeAccessibilityEvents().
@@ -502,18 +472,16 @@ class Profile : public content::BrowserContext {
   // destroyed by ProfileDestroyer, but in tests, some are not.
   void MaybeSendDestroyedNotification();
 
-#if !defined(OS_ANDROID)
   // Convenience method to retrieve the default zoom level for the default
   // storage partition.
   double GetDefaultZoomLevelForProfile();
-#endif
 
   // Wipes all data for this profile.
   void Wipe();
 
   virtual void SetCreationTimeForTesting(base::Time creation_time) = 0;
 
-  virtual void RecordMainFrameNavigation() = 0;
+  virtual void RecordPrimaryMainFrameNavigation() = 0;
 
  protected:
   // Creates an OffTheRecordProfile which points to this Profile.

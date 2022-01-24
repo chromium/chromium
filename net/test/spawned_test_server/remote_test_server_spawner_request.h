@@ -33,6 +33,12 @@ class RemoteTestServerSpawnerRequest {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       const GURL& url,
       const std::string& post_data);
+
+  RemoteTestServerSpawnerRequest(const RemoteTestServerSpawnerRequest&) =
+      delete;
+  RemoteTestServerSpawnerRequest& operator=(
+      const RemoteTestServerSpawnerRequest&) = delete;
+
   ~RemoteTestServerSpawnerRequest();
 
   // Blocks until request is finished. If |response| isn't nullptr then server
@@ -55,8 +61,6 @@ class RemoteTestServerSpawnerRequest {
   std::unique_ptr<ScopedPortException> allowed_port_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteTestServerSpawnerRequest);
 };
 
 }  // namespace net

@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"

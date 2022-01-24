@@ -4,7 +4,7 @@
 
 import './manager.js';
 
-export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
+export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 export {ActivityLogPageState} from './activity_log/activity_log_history.js';
 export {ARG_URL_PLACEHOLDER} from './activity_log/activity_log_stream_item.js';
 export {UserAction} from './item_util.js';

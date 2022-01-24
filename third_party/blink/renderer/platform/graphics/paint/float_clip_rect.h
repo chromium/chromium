@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_FLOAT_CLIP_RECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_FLOAT_CLIP_RECT_H_
 
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -19,24 +19,23 @@ class PLATFORM_EXPORT FloatClipRect {
 
  public:
   FloatClipRect()
-      : rect_(FloatRect(LayoutRect::InfiniteIntRect())),
+      : rect_(ToGfxRect(LayoutRect::InfiniteIntRect())),
         has_radius_(false),
         is_tight_(true),
         is_infinite_(true) {}
 
-  explicit FloatClipRect(const FloatRect& rect) { SetRect(rect); }
+  explicit FloatClipRect(const gfx::RectF& rect) { SetRect(rect); }
 
   explicit FloatClipRect(const FloatRoundedRect& rect)
-      : rect_(rect.Rect()),
+      : rect_(ToGfxRectF(rect.Rect())),
         has_radius_(rect.IsRounded()),
         is_tight_(!rect.IsRounded()),
         is_infinite_(false) {}
 
-  const FloatRect& Rect() const { return rect_; }
+  const gfx::RectF& Rect() const { return rect_; }
+  gfx::RectF& Rect() { return rect_; }
 
-  FloatRect& Rect() { return rect_; }
-
-  void SetRect(const FloatRect& rect) {
+  void SetRect(const gfx::RectF& rect) {
     rect_ = rect;
     has_radius_ = false;
     is_tight_ = true;
@@ -59,7 +58,7 @@ class PLATFORM_EXPORT FloatClipRect {
       ClearIsTight();
   }
 
-  // See FloatRect::InclusiveIntersect for description of the return value.
+  // See gfx::RectF::InclusiveIntersect for description of the return value.
   // TL;DR, this returns true if rects actually intersect.
   bool InclusiveIntersect(const FloatClipRect& other) {
     if (other.is_infinite_)
@@ -94,10 +93,10 @@ class PLATFORM_EXPORT FloatClipRect {
   }
   void ClearIsTight() { is_tight_ = false; }
 
-  void MoveBy(const FloatPoint& offset) {
+  void Move(const gfx::Vector2dF& offset) {
     if (is_infinite_)
       return;
-    rect_.MoveBy(offset);
+    rect_.Offset(offset);
   }
 
   // Assumes that the transform always makes the clip rect not tight. The caller
@@ -113,7 +112,7 @@ class PLATFORM_EXPORT FloatClipRect {
   bool IsInfinite() const { return is_infinite_; }
 
  private:
-  FloatRect rect_;
+  gfx::RectF rect_;
   bool has_radius_ : 1;
   bool is_tight_ : 1;
   bool is_infinite_ : 1;

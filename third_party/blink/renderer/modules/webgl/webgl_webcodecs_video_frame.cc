@@ -30,7 +30,7 @@ namespace {
 const char kRequiredExtension[] = "GL_NV_EGL_stream_consumer_external";
 #elif defined(OS_MAC)
 const char kRequiredExtension[] = "GL_ANGLE_texture_rectangle";
-#elif defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#elif defined(OS_ANDROID) || defined(OS_CHROMEOS)
 const char kRequiredExtension[] = "GL_OES_EGL_image_external";
 #else
 const char kRequiredExtension[] = "";
@@ -77,7 +77,7 @@ WebGLWebCodecsVideoFrame::WebGLWebCodecsVideoFrame(
   auto& components_nv12 = format_to_components_map_[media::PIXEL_FORMAT_NV12];
   components_nv12[media::VideoFrame::kYPlane] = "r";
   components_nv12[media::VideoFrame::kUPlane] = "rg";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif defined(OS_CHROMEOS)
   formats_supported[media::PIXEL_FORMAT_ABGR] = true;
   auto& components_abgr = format_to_components_map_[media::PIXEL_FORMAT_ABGR];
   components_abgr[media::VideoFrame::kYPlane] = "rgb";
@@ -140,7 +140,7 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
   sampler_type = "sampler2DRect";
   sampler_func = "texture2DRect";
   pixel_format = media::PIXEL_FORMAT_XRGB;
-#elif defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#elif defined(OS_ANDROID) || defined(OS_CHROMEOS)
   sampler_type = "samplerExternalOES";
   pixel_format = media::PIXEL_FORMAT_ABGR;
   src_color_space = gfx::ColorSpace::CreateSRGB();

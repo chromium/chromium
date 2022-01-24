@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -33,6 +32,9 @@ class CryptAuthV2DeviceManager {
     virtual void OnDeviceSyncFinished(
         const CryptAuthDeviceSyncResult& device_sync_result) {}
   };
+
+  CryptAuthV2DeviceManager(const CryptAuthV2DeviceManager&) = delete;
+  CryptAuthV2DeviceManager& operator=(const CryptAuthV2DeviceManager&) = delete;
 
   virtual ~CryptAuthV2DeviceManager();
 
@@ -83,8 +85,6 @@ class CryptAuthV2DeviceManager {
 
  private:
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthV2DeviceManager);
 };
 
 }  // namespace device_sync

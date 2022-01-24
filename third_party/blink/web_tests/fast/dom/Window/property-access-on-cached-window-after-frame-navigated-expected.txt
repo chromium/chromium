@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 151: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
 Tests property access on a cached DOMWindow after the associated frame is navigated. Test should not crash and properties read from the cached DOMWindow should be identical to properties through the 'current' DOMWindow.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -6,9 +5,11 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS oldChildWindow.appHistory.canGoBack is newChildWindow.appHistory.canGoBack
 PASS oldChildWindow.appHistory.canGoForward is newChildWindow.appHistory.canGoForward
 PASS oldChildWindow.appHistory.current is newChildWindow.appHistory.current
+PASS oldChildWindow.appHistory.oncurrentchange is newChildWindow.appHistory.oncurrentchange
 PASS oldChildWindow.appHistory.onnavigate is newChildWindow.appHistory.onnavigate
 PASS oldChildWindow.appHistory.onnavigateerror is newChildWindow.appHistory.onnavigateerror
 PASS oldChildWindow.appHistory.onnavigatesuccess is newChildWindow.appHistory.onnavigatesuccess
+PASS oldChildWindow.appHistory.transition is newChildWindow.appHistory.transition
 PASS oldChildWindow.closed is newChildWindow.closed
 PASS oldChildWindow.cookieStore.onchange is newChildWindow.cookieStore.onchange
 PASS oldChildWindow.crossOriginIsolated is newChildWindow.crossOriginIsolated
@@ -54,6 +55,7 @@ PASS oldChildWindow.navigator.mediaDevices.ondevicechange is newChildWindow.navi
 PASS oldChildWindow.navigator.mediaSession.metadata is newChildWindow.navigator.mediaSession.metadata
 PASS oldChildWindow.navigator.mediaSession.playbackState is newChildWindow.navigator.mediaSession.playbackState
 PASS oldChildWindow.navigator.onLine is newChildWindow.navigator.onLine
+PASS oldChildWindow.navigator.pdfViewerEnabled is newChildWindow.navigator.pdfViewerEnabled
 PASS oldChildWindow.navigator.platform is newChildWindow.navigator.platform
 PASS oldChildWindow.navigator.presentation.defaultRequest is newChildWindow.navigator.presentation.defaultRequest
 PASS oldChildWindow.navigator.presentation.receiver is newChildWindow.navigator.presentation.receiver
@@ -177,11 +179,13 @@ PASS oldChildWindow.onresize is newChildWindow.onresize
 PASS oldChildWindow.onscroll is newChildWindow.onscroll
 PASS oldChildWindow.onscrollend is newChildWindow.onscrollend
 PASS oldChildWindow.onsearch is newChildWindow.onsearch
+PASS oldChildWindow.onsecuritypolicyviolation is newChildWindow.onsecuritypolicyviolation
 PASS oldChildWindow.onseeked is newChildWindow.onseeked
 PASS oldChildWindow.onseeking is newChildWindow.onseeking
 PASS oldChildWindow.onselect is newChildWindow.onselect
 PASS oldChildWindow.onselectionchange is newChildWindow.onselectionchange
 PASS oldChildWindow.onselectstart is newChildWindow.onselectstart
+PASS oldChildWindow.onslotchange is newChildWindow.onslotchange
 PASS oldChildWindow.onstalled is newChildWindow.onstalled
 PASS oldChildWindow.onstorage is newChildWindow.onstorage
 PASS oldChildWindow.onsubmit is newChildWindow.onsubmit
@@ -281,6 +285,7 @@ PASS oldChildWindow.visualViewport.onscroll is newChildWindow.visualViewport.ons
 PASS oldChildWindow.visualViewport.pageLeft is newChildWindow.visualViewport.pageLeft
 PASS oldChildWindow.visualViewport.pageTop is newChildWindow.visualViewport.pageTop
 PASS oldChildWindow.visualViewport.scale is newChildWindow.visualViewport.scale
+PASS oldChildWindow.visualViewport.segments is newChildWindow.visualViewport.segments
 PASS oldChildWindow.visualViewport.width is newChildWindow.visualViewport.width
 PASS successfullyParsed is true
 

@@ -787,8 +787,7 @@ void GetProgramFilesCommonFolders(std::set<base::FilePath>* folders) {
   base::FilePath common_files_x6432_folder;
   if (ExpandEnvPath(common_program_env, &common_files_x6432_folder)) {
     folders->insert(common_files_x6432_folder);
-  } else if (base::win::OSInfo::GetInstance()->wow64_status() ==
-             base::win::OSInfo::WOW64_ENABLED) {
+  } else if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()) {
     LOG(ERROR) << "Can't get path for %CommonProgramW6432%";
   }
 }

@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "cc/paint/image_transfer_cache_entry.h"
@@ -50,6 +50,10 @@ class GPU_GLES2_EXPORT ServiceTransferCache
   };
 
   explicit ServiceTransferCache(const GpuPreferences& preferences);
+
+  ServiceTransferCache(const ServiceTransferCache&) = delete;
+  ServiceTransferCache& operator=(const ServiceTransferCache&) = delete;
+
   ~ServiceTransferCache() override;
 
   bool CreateLockedEntry(const EntryKey& key,
@@ -121,7 +125,7 @@ class GPU_GLES2_EXPORT ServiceTransferCache
     }
   };
 
-  using EntryCache = base::MRUCache<EntryKey, CacheEntryInternal, EntryKeyComp>;
+  using EntryCache = base::LRUCache<EntryKey, CacheEntryInternal, EntryKeyComp>;
 
   void EnforceLimits();
 
@@ -143,8 +147,6 @@ class GPU_GLES2_EXPORT ServiceTransferCache
 
   // The max number of entries we will hold in the cache.
   size_t max_cache_entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceTransferCache);
 };
 
 }  // namespace gpu

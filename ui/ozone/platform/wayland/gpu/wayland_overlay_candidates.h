@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 

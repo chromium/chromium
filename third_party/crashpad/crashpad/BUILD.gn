@@ -83,6 +83,11 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
     fuchsia_test_package("crashpad-test") {
       test_components = [ ":crashpad-test-component" ]
 
+      deps = [
+        "//src/connectivity/network/dns:component-legacy",
+        "//src/connectivity/network/netstack:component-legacy",
+      ]
+
       test_specs = {
         log_settings = {
           max_severity = "FATAL"

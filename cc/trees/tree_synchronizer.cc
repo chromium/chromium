@@ -6,7 +6,9 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <set>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -41,11 +43,13 @@ static bool LayerHasValidPropertyTreeIndices(LayerImpl* layer) {
          layer->scroll_tree_index() != ScrollTree::kInvalidNodeId;
 }
 
-static bool LayerWillPushProperties(LayerTreeHost* host, Layer* layer) {
-  return base::Contains(host->LayersThatShouldPushProperties(), layer);
+static bool LayerWillPushProperties(const CommitState* commit_state,
+                                    const Layer* layer) {
+  return commit_state->layers_that_should_push_properties.contains(layer);
 }
 
-static bool LayerWillPushProperties(LayerTreeImpl* tree, LayerImpl* layer) {
+static bool LayerWillPushProperties(const LayerTreeImpl* tree,
+                                    const LayerImpl* layer) {
   return base::Contains(tree->LayersThatShouldPushProperties(), layer) ||
          // TODO(crbug.com/303943): Stop always pushing PictureLayerImpl
          // properties.
@@ -107,12 +111,12 @@ void SynchronizeTreesInternal(LayerTreeType* source_tree,
 
 }  // namespace
 
-void TreeSynchronizer::SynchronizeTrees(Layer* layer_root,
+void TreeSynchronizer::SynchronizeTrees(const CommitState* commit_state,
                                         LayerTreeImpl* tree_impl) {
-  if (!layer_root) {
+  if (!commit_state->root_layer) {
     tree_impl->DetachLayers();
   } else {
-    SynchronizeTreesInternal(layer_root->layer_tree_host(), tree_impl);
+    SynchronizeTreesInternal(commit_state, tree_impl);
   }
 }
 
@@ -122,52 +126,6 @@ void TreeSynchronizer::SynchronizeTrees(LayerTreeImpl* pending_tree,
     active_tree->DetachLayers();
   } else {
     SynchronizeTreesInternal(pending_tree, active_tree);
-  }
-}
-
-template <typename Iterator>
-static void PushLayerPropertiesInternal(Iterator source_layers_begin,
-                                        Iterator source_layers_end,
-                                        LayerTreeHost* host_tree,
-                                        LayerTreeImpl* target_impl_tree) {
-  for (Iterator it = source_layers_begin; it != source_layers_end; ++it) {
-    auto* source_layer = *it;
-    LayerImpl* target_layer = target_impl_tree->LayerById(source_layer->id());
-    DCHECK(target_layer);
-    // TODO(enne): http://crbug.com/918126 debugging
-    CHECK(source_layer);
-    if (!target_layer) {
-      bool host_set_on_source = source_layer->layer_tree_host() == host_tree;
-
-      bool source_found_by_iterator = false;
-      for (auto host_tree_it = host_tree->begin();
-           host_tree_it != host_tree->end(); ++it) {
-        if (*host_tree_it == source_layer) {
-          source_found_by_iterator = true;
-          break;
-        }
-      }
-
-      bool root_layer_valid = !!host_tree->root_layer();
-      bool found_root = false;
-      Layer* layer = source_layer;
-      while (layer) {
-        if (layer == host_tree->root_layer()) {
-          found_root = true;
-          break;
-        }
-        layer = layer->parent();
-      }
-
-      auto str = base::StringPrintf(
-          "hs: %d, sf: %d, rlv: %d, fr: %d", host_set_on_source,
-          source_found_by_iterator, root_layer_valid, found_root);
-      static auto* crash_key = base::debug::AllocateCrashKeyString(
-          "cc_null_layer_sync", base::debug::CrashKeySize::Size32);
-      base::debug::SetCrashKeyString(crash_key, str);
-      base::debug::DumpWithoutCrashing();
-    }
-    source_layer->PushPropertiesTo(target_layer);
   }
 }
 
@@ -196,14 +154,21 @@ void TreeSynchronizer::PushLayerProperties(LayerTreeImpl* pending_tree,
   pending_tree->ClearLayersThatShouldPushProperties();
 }
 
-void TreeSynchronizer::PushLayerProperties(LayerTreeHost* host_tree,
+void TreeSynchronizer::PushLayerProperties(CommitState* commit_state,
                                            LayerTreeImpl* impl_tree) {
-  auto layers = host_tree->LayersThatShouldPushProperties();
   TRACE_EVENT1("cc", "TreeSynchronizer::PushLayerPropertiesTo.Main",
-               "layer_count", layers.size());
-  PushLayerPropertiesInternal(layers.begin(), layers.end(), host_tree,
-                              impl_tree);
-  host_tree->ClearLayersThatShouldPushProperties();
+               "layer_count",
+               commit_state->layers_that_should_push_properties.size());
+  auto source_layers_begin =
+      commit_state->layers_that_should_push_properties.begin();
+  auto source_layers_end =
+      commit_state->layers_that_should_push_properties.end();
+  for (auto it = source_layers_begin; it != source_layers_end; ++it) {
+    auto* source_layer = *it;
+    LayerImpl* target_layer = impl_tree->LayerById(source_layer->id());
+    DCHECK(target_layer);
+    source_layer->PushPropertiesTo(target_layer, *commit_state);
+  }
 }
 
 }  // namespace cc

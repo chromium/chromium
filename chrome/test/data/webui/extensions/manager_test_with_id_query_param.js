@@ -6,7 +6,7 @@ import {navigation, Page} from 'chrome://extensions/extensions.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
 
 window.extension_manager_tests = {};
 extension_manager_tests.suiteName = 'ExtensionManagerTest';
@@ -15,6 +15,8 @@ extension_manager_tests.TestNames = {
   UrlNavigationToDetails: 'url navigation to details',
   UrlNavigationToActivityLogFail:
       'url navigation to activity log without flag set',
+  UrlNavigationToSiteAccessFail:
+      'url navigation to site access page without flag set',
 };
 
 function getDataByName(list, name) {
@@ -93,6 +95,33 @@ suite(extension_manager_tests.suiteName, function() {
         // Try to open activity log with an invalid ID.
         navigation.navigateTo(
             {page: Page.ACTIVITY_LOG, extensionId: 'z'.repeat(32)});
+        flush();
+        // Should be re-routed to the main page.
+        assertViewActive('extensions-item-list');
+      });
+
+  test(
+      assert(extension_manager_tests.TestNames.UrlNavigationToSiteAccessFail),
+      function() {
+        expectFalse(manager.useNewSiteAccessPage);
+
+        // Try to open the extensions site access page with a valid ID.
+        navigation.navigateTo({
+          page: Page.EXTENSION_SITE_ACCESS,
+          extensionId: 'ldnnhddmnhbkjipkidpdiheffobcpfmf'
+        });
+        flush();
+
+        // Should be re-routed to details page with useNewSiteAccessPage set to
+        // false.
+        assertViewActive('extensions-detail-view');
+        const detailsView =
+            manager.shadowRoot.querySelector('extensions-detail-view');
+        expectFalse(detailsView.useNewSiteAccessPage);
+
+        // Try to open the extensions site access page with an invalid ID.
+        navigation.navigateTo(
+            {page: Page.EXTENSION_SITE_ACCESS, extensionId: 'z'.repeat(32)});
         flush();
         // Should be re-routed to the main page.
         assertViewActive('extensions-item-list');

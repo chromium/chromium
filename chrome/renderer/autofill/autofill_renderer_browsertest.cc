@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -71,12 +70,13 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   void SetFormToBeProbablySubmitted(
       const absl::optional<FormData>& form) override {}
 
-  void FormsSeen(const std::vector<FormData>& forms) override {
+  void FormsSeen(const std::vector<FormData>& updated_forms,
+                 const std::vector<FormRendererId>& removed_forms) override {
     // FormsSeen() could be called multiple times and sometimes even with empty
     // forms array for main frame, but we're interested in only the first time
     // call.
     if (!forms_)
-      forms_ = std::make_unique<std::vector<FormData>>(forms);
+      forms_ = std::make_unique<std::vector<FormData>>(updated_forms);
   }
 
   void FormSubmitted(const FormData& form,
@@ -138,6 +138,9 @@ class AutofillRendererTest : public ChromeRenderViewTest {
  public:
   AutofillRendererTest() {}
 
+  AutofillRendererTest(const AutofillRendererTest&) = delete;
+  AutofillRendererTest& operator=(const AutofillRendererTest&) = delete;
+
   ~AutofillRendererTest() override {}
 
  protected:
@@ -161,9 +164,6 @@ class AutofillRendererTest : public ChromeRenderViewTest {
   }
 
   FakeContentAutofillDriver fake_driver_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillRendererTest);
 };
 
 TEST_F(AutofillRendererTest, SendForms) {

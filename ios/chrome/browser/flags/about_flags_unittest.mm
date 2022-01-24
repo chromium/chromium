@@ -17,9 +17,7 @@ using AboutFlagsTest = PlatformTest;
 // Makes sure that every flag has an owner and an expiry entry in
 // flag-metadata.json.
 TEST_F(AboutFlagsTest, EveryFlagHasMetadata) {
-  size_t count;
-  const flags_ui::FeatureEntry* entries = testing::GetFeatureEntries(&count);
-  flags_ui::testing::EnsureEveryFlagHasMetadata(entries, count);
+  flags_ui::testing::EnsureEveryFlagHasMetadata(testing::GetFeatureEntries());
 }
 
 // Ensures that all flags marked as never expiring in flag-metadata.json is

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 
@@ -19,6 +18,10 @@ class SyncTaskToken;
 class SyncTask {
  public:
   SyncTask() : used_network_(false) {}
+
+  SyncTask(const SyncTask&) = delete;
+  SyncTask& operator=(const SyncTask&) = delete;
+
   virtual ~SyncTask() {}
   virtual void RunPreflight(std::unique_ptr<SyncTaskToken> token) = 0;
 
@@ -31,13 +34,15 @@ class SyncTask {
 
  private:
   bool used_network_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncTask);
 };
 
 class ExclusiveTask : public SyncTask {
  public:
   ExclusiveTask();
+
+  ExclusiveTask(const ExclusiveTask&) = delete;
+  ExclusiveTask& operator=(const ExclusiveTask&) = delete;
+
   ~ExclusiveTask() override;
 
   void RunPreflight(std::unique_ptr<SyncTaskToken> token) final;
@@ -45,8 +50,6 @@ class ExclusiveTask : public SyncTask {
 
  private:
   base::WeakPtrFactory<ExclusiveTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExclusiveTask);
 };
 
 }  // namespace drive_backend

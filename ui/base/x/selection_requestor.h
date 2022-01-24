@@ -15,6 +15,7 @@
 
 namespace ui {
 class SelectionData;
+class XClipboardHelper;
 
 // Requests and later receives data from the X11 server through the selection
 // system.
@@ -25,7 +26,7 @@ class SelectionData;
 // implement per-component fast-paths.
 class COMPONENT_EXPORT(UI_BASE_X) SelectionRequestor {
  public:
-  explicit SelectionRequestor(x11::Window xwindow);
+  SelectionRequestor(x11::Window xwindow, XClipboardHelper* helper);
   SelectionRequestor(const SelectionRequestor&) = delete;
   SelectionRequestor& operator=(const SelectionRequestor&) = delete;
   ~SelectionRequestor();
@@ -111,6 +112,9 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequestor {
 
   // Our X11 state.
   const x11::Window x_window_;
+
+  // Not owned.
+  XClipboardHelper* const helper_;
 
   // The property on |x_window_| set by the selection owner with the value of
   // the selection.

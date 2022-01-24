@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_LOGGER_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_LOGGER_H_
 
-#include "base/macros.h"
-
 namespace base {
 class Value;
 }
@@ -54,6 +52,9 @@ class Logger {
     virtual void OnServiceRequestMade(const base::Value& service_request) = 0;
   };
 
+  Logger(const Logger&) = delete;
+  Logger& operator=(const Logger&) = delete;
+
   virtual ~Logger() = default;
 
   virtual void AddObserver(Observer* observer) = 0;
@@ -90,9 +91,6 @@ class Logger {
 
  protected:
   Logger() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Logger);
 };
 
 }  // namespace download

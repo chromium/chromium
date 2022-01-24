@@ -17,6 +17,11 @@ namespace content {
 class StorageNotificationService {
  public:
   StorageNotificationService() = default;
+
+  StorageNotificationService(const StorageNotificationService&) = delete;
+  StorageNotificationService& operator=(const StorageNotificationService&) =
+      delete;
+
   ~StorageNotificationService() = default;
 
   // This pure virtual function should be implemented in the embedder layer
@@ -25,9 +30,6 @@ class StorageNotificationService {
   // when QuotaManager determines appropriate to alert the user that the device
   // is in a state of storage pressure.
   virtual void MaybeShowStoragePressureNotification(const url::Origin) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StorageNotificationService);
 };
 
 }  // namespace content

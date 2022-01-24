@@ -40,6 +40,9 @@ class TestObserver : public mojom::VideoDetectorObserver {
  public:
   TestObserver() = default;
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   void Bind(mojo::PendingReceiver<mojom::VideoDetectorObserver> receiver) {
     receiver_.Bind(std::move(receiver));
   }
@@ -72,8 +75,6 @@ class TestObserver : public mojom::VideoDetectorObserver {
   base::circular_deque<bool> states_;
 
   mojo::Receiver<mojom::VideoDetectorObserver> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
@@ -86,12 +87,14 @@ class VideoDetectorTest : public testing::Test {
                             false,
                             false) {}
 
+  VideoDetectorTest(const VideoDetectorTest&) = delete;
+  VideoDetectorTest& operator=(const VideoDetectorTest&) = delete;
+
   ~VideoDetectorTest() override = default;
 
   void SetUp() override {
     mock_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
-        base::Time() + base::TimeDelta::FromSeconds(1),
-        base::TimeTicks() + base::TimeDelta::FromSeconds(1));
+        base::Time() + base::Seconds(1), base::TimeTicks() + base::Seconds(1));
 
     detector_ = frame_sink_manager_.CreateVideoDetectorForTesting(
         mock_task_runner_->GetMockTickClock(), mock_task_runner_);
@@ -173,7 +176,7 @@ class VideoDetectorTest : public testing::Test {
                    int updates_per_second,
                    base::TimeDelta duration) {
     const base::TimeDelta time_between_updates =
-        base::TimeDelta::FromSecondsD(1.0 / updates_per_second);
+        base::Seconds(1.0 / updates_per_second);
     for (base::TimeDelta d; d < duration; d += time_between_updates) {
       SendUpdate(frame_sink, damage);
       CreateDisplayFrame();
@@ -207,15 +210,14 @@ class VideoDetectorTest : public testing::Test {
   }
 
   ServerSharedBitmapManager shared_bitmap_manager_;
-  FrameSinkManagerImpl frame_sink_manager_{&shared_bitmap_manager_};
+  FrameSinkManagerImpl frame_sink_manager_{
+      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
   DisplayResourceProviderSoftware resource_provider_{&shared_bitmap_manager_};
   FakeCompositorFrameSinkClient frame_sink_client_;
   SurfaceIdAllocatorSet allocators_;
   SurfaceAggregator surface_aggregator_;
   std::unique_ptr<CompositorFrameSinkSupport> root_frame_sink_;
   std::set<CompositorFrameSinkSupport*> embedded_clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDetectorTest);
 };
 
 constexpr gfx::Rect VideoDetectorTest::kMinRect;
@@ -287,8 +289,7 @@ TEST_F(VideoDetectorTest, DontReportWhenClientHidden) {
 // Turn video activity on and off. Make sure the observers are notified
 // properly.
 TEST_F(VideoDetectorTest, ReportStartAndStop) {
-  const base::TimeDelta kDuration =
-      kMinDuration + base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta kDuration = kMinDuration + base::Milliseconds(100);
   std::unique_ptr<CompositorFrameSinkSupport> frame_sink = CreateFrameSink();
   EmbedClient(frame_sink.get());
   SendUpdates(frame_sink.get(), kMinRect, kMinFps + 5, kDuration);
@@ -320,8 +321,7 @@ TEST_F(VideoDetectorTest, ReportOnceForMultipleClients) {
   // Even if there's video playing in both clients, the observer should only
   // receive a single notification.
   constexpr int fps = 2 * kMinFps;
-  constexpr base::TimeDelta time_between_updates =
-      base::TimeDelta::FromSecondsD(1.0 / fps);
+  constexpr base::TimeDelta time_between_updates = base::Seconds(1.0 / fps);
   for (base::TimeDelta d; d < 2 * kMinDuration; d += time_between_updates) {
     SendUpdate(frame_sink1.get(), kMinRect);
     SendUpdate(frame_sink2.get(), kMinRect);

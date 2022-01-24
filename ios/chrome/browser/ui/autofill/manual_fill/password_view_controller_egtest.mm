@@ -10,7 +10,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -169,7 +169,8 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
 // Tests that returning from "Manage Passwords..." leaves the keyboard and the
 // icons in the right state.
-- (void)testPasswordsStateAfterPresentingManagePasswords {
+// TODO(crbug.com/1234759): Re-enable after fixing flake.
+- (void)DISABLED_testPasswordsStateAfterPresentingManagePasswords {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -337,8 +338,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
 // Tests that the Password View Controller is dismissed when tapping the
 // keyboard icon.
-// TODO(crbug.com/1232510) Re-enable.
-- (void)DISABLED_testKeyboardIconDismissPasswordController {
+- (void)testKeyboardIconDismissPasswordController {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // The keyboard icon is never present in iPads.
     return;
@@ -369,8 +369,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
 // Tests that the Password View Controller is dismissed when tapping the outside
 // the popover on iPad.
-// TODO(crbug.com/1232777): Disabled due to flake.
-- (void)DISABLED_testIPadTappingOutsidePopOverDismissPasswordController {
+- (void)testIPadTappingOutsidePopOverDismissPasswordController {
   if (![ChromeEarlGrey isIPadIdiom]) {
     return;
   }

@@ -23,6 +23,11 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
   ONCPolicyValueValidatorBase(const std::string& onc_policy_name,
                               ::onc::ONCSource source)
       : policy_name_(onc_policy_name), source_(source) {}
+
+  ONCPolicyValueValidatorBase(const ONCPolicyValueValidatorBase&) = delete;
+  ONCPolicyValueValidatorBase& operator=(const ONCPolicyValueValidatorBase&) =
+      delete;
+
   virtual ~ONCPolicyValueValidatorBase() {}
 
   // PolicyValueValidator:
@@ -75,8 +80,6 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
  private:
   const std::string policy_name_;
   const ::onc::ONCSource source_;
-
-  DISALLOW_COPY_AND_ASSIGN(ONCPolicyValueValidatorBase);
 };
 
 }  // namespace policy

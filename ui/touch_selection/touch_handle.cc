@@ -17,7 +17,7 @@ namespace ui {
 namespace {
 
 // Maximum duration of a fade sequence.
-constexpr auto kFadeDuration = base::TimeDelta::FromMilliseconds(200);
+constexpr auto kFadeDuration = base::Milliseconds(200);
 
 // Maximum amount of travel for a fade sequence. This avoids handle "ghosting"
 // when the handle is moving rapidly while the fade is active.

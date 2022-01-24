@@ -213,10 +213,8 @@ TEST(WebSocketPerProcessThrottlerTest, CalculateDelay_16Pending) {
   EXPECT_EQ(0, throttler.num_previous_succeeded_connections());
   EXPECT_EQ(0, throttler.num_current_failed_connections());
   EXPECT_EQ(0, throttler.num_previous_failed_connections());
-  EXPECT_LE(base::TimeDelta::FromMilliseconds(1000),
-            throttler.CalculateDelay());
-  EXPECT_LE(throttler.CalculateDelay(),
-            base::TimeDelta::FromMilliseconds(5000));
+  EXPECT_LE(base::Milliseconds(1000), throttler.CalculateDelay());
+  EXPECT_LE(throttler.CalculateDelay(), base::Milliseconds(5000));
 }
 
 TEST(WebSocketPerProcessThrottlerTest, CalculateDelay_3Failure) {
@@ -255,10 +253,8 @@ TEST(WebSocketPerProcessThrottlerTest, CalculateDelay_16Failure) {
   EXPECT_EQ(0, throttler.num_previous_succeeded_connections());
   EXPECT_EQ(16, throttler.num_current_failed_connections());
   EXPECT_EQ(0, throttler.num_previous_failed_connections());
-  EXPECT_LE(base::TimeDelta::FromMilliseconds(1000),
-            throttler.CalculateDelay());
-  EXPECT_LE(throttler.CalculateDelay(),
-            base::TimeDelta::FromMilliseconds(5000));
+  EXPECT_LE(base::Milliseconds(1000), throttler.CalculateDelay());
+  EXPECT_LE(throttler.CalculateDelay(), base::Milliseconds(5000));
 }
 
 TEST(WebSocketPerProcessThrottlerTest, MoveTracker) {

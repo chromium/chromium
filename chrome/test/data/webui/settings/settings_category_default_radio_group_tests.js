@@ -6,8 +6,8 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ContentSetting, ContentSettingProvider, ContentSettingsTypes, SettingsCategoryDefaultRadioGroupElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 
-import {assertEquals, assertNotEquals, assertTrue} from '../chai_assert.js';
-import {flushTasks} from '../test_util.m.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs, SiteSettingsPref} from './test_util.js';
@@ -30,7 +30,7 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
   // Initialize a settings-category-default-radio-group before each test.
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     testElement = /** @type {!SettingsCategoryDefaultRadioGroupElement} */
         (document.createElement('settings-category-default-radio-group'));

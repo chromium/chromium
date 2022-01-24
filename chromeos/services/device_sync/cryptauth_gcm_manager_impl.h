@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_GCM_MANAGER_IMPL_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_GCM_MANAGER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -45,6 +44,9 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
    private:
     static Factory* factory_instance_;
   };
+
+  CryptAuthGCMManagerImpl(const CryptAuthGCMManagerImpl&) = delete;
+  CryptAuthGCMManagerImpl& operator=(const CryptAuthGCMManagerImpl&) = delete;
 
   ~CryptAuthGCMManagerImpl() override;
 
@@ -100,8 +102,6 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<CryptAuthGCMManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthGCMManagerImpl);
 };
 
 }  // namespace device_sync

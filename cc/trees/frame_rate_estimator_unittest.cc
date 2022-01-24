@@ -75,14 +75,10 @@ TEST_F(FrameRateEstimatorTest, RafAtHalfFps) {
   estimator_->SetFrameEstimationEnabled(true);
   // Recorded rAF intervals at 30 fps.
   const base::TimeDelta kIntervals[] = {
-      base::TimeDelta::FromMicroseconds(33425),
-      base::TimeDelta::FromMicroseconds(33298),
-      base::TimeDelta::FromMicroseconds(33396),
-      base::TimeDelta::FromMicroseconds(33339),
-      base::TimeDelta::FromMicroseconds(33431),
-      base::TimeDelta::FromMicroseconds(33320),
-      base::TimeDelta::FromMicroseconds(33364),
-      base::TimeDelta::FromMicroseconds(33360)};
+      base::Microseconds(33425), base::Microseconds(33298),
+      base::Microseconds(33396), base::Microseconds(33339),
+      base::Microseconds(33431), base::Microseconds(33320),
+      base::Microseconds(33364), base::Microseconds(33360)};
   const base::TimeDelta kIntervalForHalfFps =
       viz::BeginFrameArgs::DefaultInterval() * 2;
   base::TimeTicks time;

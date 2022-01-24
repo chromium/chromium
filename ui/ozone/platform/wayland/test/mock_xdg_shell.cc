@@ -13,7 +13,8 @@ namespace wl {
 
 namespace {
 
-constexpr uint32_t kXdgShellVersion = 1;
+constexpr uint32_t kXdgShellVersion = 3;
+constexpr uint32_t kZXdgShellVersion = 1;
 
 void GetXdgSurfaceImpl(wl_client* client,
                        wl_resource* resource,
@@ -107,7 +108,7 @@ MockXdgShell::~MockXdgShell() {}
 MockZxdgShellV6::MockZxdgShellV6()
     : GlobalObject(&zxdg_shell_v6_interface,
                    &kMockZxdgShellV6Impl,
-                   kXdgShellVersion) {}
+                   kZXdgShellVersion) {}
 
 MockZxdgShellV6::~MockZxdgShellV6() {}
 

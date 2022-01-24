@@ -25,6 +25,9 @@ class AssemblyProgram;
 
 class DisassemblerWin32 : public Disassembler {
  public:
+  DisassemblerWin32(const DisassemblerWin32&) = delete;
+  DisassemblerWin32& operator=(const DisassemblerWin32&) = delete;
+
   virtual ~DisassemblerWin32() = default;
 
   // Disassembler interfaces.
@@ -153,9 +156,6 @@ class DisassemblerWin32 : public Disassembler {
   std::map<RVA, int> abs32_target_rvas_;
   std::map<RVA, int> rel32_target_rvas_;
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisassemblerWin32);
 };
 
 }  // namespace courgette

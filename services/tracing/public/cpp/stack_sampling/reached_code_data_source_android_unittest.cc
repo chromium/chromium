@@ -40,8 +40,7 @@ double BusyLoopFor(base::TimeDelta duration) {
 class ReachedCodeDataSourceTest : public testing::Test {
  public:
   void SetUp() override {
-    PerfettoTracedProcess::ResetTaskRunnerForTesting();
-    PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
+    test_handle_ = tracing::PerfettoTracedProcess::SetupForTesting();
 
     auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
         task_environment_.GetMainThreadTaskRunner());
@@ -70,7 +69,7 @@ class ReachedCodeDataSourceTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
+  std::unique_ptr<tracing::PerfettoTracedProcess::TestHandle> test_handle_;
   std::unique_ptr<TestProducerClient> producer_;
 };
 
@@ -78,7 +77,7 @@ class ReachedCodeDataSourceTest : public testing::Test {
 
 TEST_F(ReachedCodeDataSourceTest, ProfilerDisabled) {
   BeginTrace();
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+  base::PlatformThread::Sleep(base::Milliseconds(200));
   EndTracing();
   EXPECT_EQ(producer()->GetFinalizedPacketCount(), 0u);
 }
@@ -94,7 +93,7 @@ TEST_F(ReachedCodeDataSourceTest, DISABLED_ProfilerOutput) {
       base::android::PROCESS_BROWSER);
   ASSERT_TRUE(base::android::IsReachedCodeProfilerEnabled());
   BeginTrace();
-  BusyLoopFor(base::TimeDelta::FromSeconds(2));
+  BusyLoopFor(base::Seconds(2));
   EndTracing();
   EXPECT_EQ(producer()->GetFinalizedPacketCount(), 1u);
   const auto* packet = producer()->GetFinalizedPacket();

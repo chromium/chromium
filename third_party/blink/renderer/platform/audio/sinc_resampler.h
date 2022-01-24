@@ -57,7 +57,7 @@ class PLATFORM_EXPORT SincResampler {
   // / scaleFactor frames in destination.
   void Process(const float* source,
                float* destination,
-               unsigned number_of_source_frames);
+               int number_of_source_frames);
 
   // Process with input source callback function for streaming applications.
   void Process(AudioSourceProvider*,

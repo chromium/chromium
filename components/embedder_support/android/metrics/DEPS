@@ -8,3 +8,9 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/resource_coordinator/public/cpp/memory_instrumentation",
 ]
+
+specific_include_rules = {
+  "components/embedder_support/android/metrics/android_metrics_service_client\.cc": [
+    "+cc/base/switches.h",
+  ],
+}

@@ -18,7 +18,10 @@
 #include "net/base/escape.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-json.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace auction_worklet {
 
@@ -35,11 +38,9 @@ v8::Local<v8::Object> TrustedBiddingSignals::Result::GetSignals(
   v8::Local<v8::Object> v8_object = v8::Object::New(v8_helper->isolate());
   for (const auto& key : trusted_bidding_signals_keys) {
     auto data = json_data_.find(key);
-    v8::Local<v8::Value> v8_value;
     // InsertJsonValue() shouldn't be able to fail, but the first check might.
     if (data == json_data_.end() ||
         !v8_helper->InsertJsonValue(context, key, data->second, v8_object)) {
-      v8_value = v8::Null(v8_helper->isolate());
       bool result = v8_helper->InsertValue(key, v8::Null(v8_helper->isolate()),
                                            v8_object);
       DCHECK(result);
@@ -58,6 +59,7 @@ TrustedBiddingSignals::TrustedBiddingSignals(
     : trusted_bidding_signals_url_(trusted_bidding_signals_url),
       v8_helper_(std::move(v8_helper)),
       load_signals_callback_(std::move(load_signals_callback)) {
+  DCHECK(v8_helper_);
   DCHECK(!trusted_bidding_signals_keys.empty());
   DCHECK(load_signals_callback_);
 
@@ -140,20 +142,17 @@ void TrustedBiddingSignals::HandleDownloadResultOnV8Thread(
   std::map<std::string, std::string> json_data;
   for (const auto& key : trusted_bidding_signals_keys) {
     v8::Local<v8::String> v8_key;
-    v8::Local<v8::Value> v8_value;
-    v8::Local<v8::Value> v8_string_value;
-    std::string value;
     if (!v8_helper->CreateUtf8String(key).ToLocal(&v8_key)) {
       PostCallbackToUserThread(std::move(user_thread_task_runner),
                                weak_instance, nullptr, absl::nullopt);
 
       return;
     }
-    // Only the `has_result` check should be able to fail.
-    v8::Maybe<bool> has_result =
-        v8_object->Has(v8_helper->scratch_context(), v8_key);
-    if (has_result.IsNothing() || !has_result.FromJust() ||
-        !v8_object->Get(v8_helper->scratch_context(), v8_key)
+    // Only the Get() call should be able to fail.
+    v8::Local<v8::Value> v8_value;
+    v8::Local<v8::Value> v8_string_value;
+    std::string value;
+    if (!v8_object->Get(v8_helper->scratch_context(), v8_key)
              .ToLocal(&v8_value) ||
         !v8::JSON::Stringify(v8_helper->scratch_context(), v8_value)
              .ToLocal(&v8_string_value) ||

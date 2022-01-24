@@ -14,6 +14,10 @@ namespace sandbox {
 class ProcessState {
  public:
   ProcessState();
+
+  ProcessState(const ProcessState&) = delete;
+  ProcessState& operator=(const ProcessState&) = delete;
+
   // Returns true if main has been called.
   bool InitCalled() const;
   // Returns true if LowerToken has been called.
@@ -30,7 +34,6 @@ class ProcessState {
 
   ProcessStateInternal process_state_;
   bool csrss_connected_;
-  DISALLOW_COPY_AND_ASSIGN(ProcessState);
 };
 
 // This class is an implementation of the  TargetServices.
@@ -41,10 +44,14 @@ class TargetServicesBase : public TargetServices {
  public:
   TargetServicesBase();
 
-  // Public interface of TargetServices.
+  TargetServicesBase(const TargetServicesBase&) = delete;
+  TargetServicesBase& operator=(const TargetServicesBase&) = delete;
+
+  // Public interface of TargetServices. See comments in sandbox.h.
   ResultCode Init() override;
   void LowerToken() override;
   ProcessState* GetState() override;
+  SOCKET CreateBrokeredSocket(int af, int type, int protocol) override;
 
   // Factory method.
   static TargetServicesBase* GetInstance();
@@ -58,7 +65,6 @@ class TargetServicesBase : public TargetServices {
  private:
   ~TargetServicesBase() {}
   ProcessState process_state_;
-  DISALLOW_COPY_AND_ASSIGN(TargetServicesBase);
 };
 
 }  // namespace sandbox

@@ -11,7 +11,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/prefs/pref_service.h"
 
@@ -35,6 +34,11 @@ using chromeos::assistant::prefs::kAssistantOnboardingModeEducation;
 class TestAssistantStateObserver : public AssistantStateObserver {
  public:
   TestAssistantStateObserver() = default;
+
+  TestAssistantStateObserver(const TestAssistantStateObserver&) = delete;
+  TestAssistantStateObserver& operator=(const TestAssistantStateObserver&) =
+      delete;
+
   ~TestAssistantStateObserver() override = default;
 
   // AssistantStateObserver:
@@ -82,11 +86,14 @@ class TestAssistantStateObserver : public AssistantStateObserver {
   bool launch_with_mic_open_ = false;
   bool notification_enabled_ = false;
   AssistantOnboardingMode onboarding_mode_ = AssistantOnboardingMode::kDefault;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAssistantStateObserver);
 };
 
 class AssistantStateControllerTest : public AshTestBase {
+ public:
+  AssistantStateControllerTest(const AssistantStateControllerTest&) = delete;
+  AssistantStateControllerTest& operator=(const AssistantStateControllerTest&) =
+      delete;
+
  protected:
   AssistantStateControllerTest() = default;
   ~AssistantStateControllerTest() override = default;
@@ -108,8 +115,6 @@ class AssistantStateControllerTest : public AshTestBase {
  private:
   PrefService* prefs_ = nullptr;
   std::unique_ptr<TestAssistantStateObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantStateControllerTest);
 };
 
 }  // namespace

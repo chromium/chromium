@@ -27,6 +27,10 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
   class Handle {
    public:
     explicit Handle(ChromeBrowserState* browser_state);
+
+    Handle(const Handle&) = delete;
+    Handle& operator=(const Handle&) = delete;
+
     ~Handle();
 
     // Init() must be called before ~Handle(). It records most of the
@@ -83,9 +87,11 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
     ChromeBrowserState* const browser_state_;
 
     mutable bool initialized_;
-
-    DISALLOW_COPY_AND_ASSIGN(Handle);
   };
+
+  ChromeBrowserStateImplIOData(const ChromeBrowserStateImplIOData&) = delete;
+  ChromeBrowserStateImplIOData& operator=(const ChromeBrowserStateImplIOData&) =
+      delete;
 
  private:
   friend class base::RefCountedThreadSafe<ChromeBrowserStateImplIOData>;
@@ -132,8 +138,6 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
   // Parameters needed for isolated apps.
   base::FilePath profile_path_;
   int app_cache_max_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserStateImplIOData);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IMPL_IO_DATA_H_

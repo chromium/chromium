@@ -6,7 +6,6 @@
 #define UI_BASE_WIN_FOREGROUND_HELPER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "ui/gfx/win/window_impl.h"
 
@@ -24,6 +23,10 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE) ForegroundHelper : public gfx::WindowImpl {
  public:
   ForegroundHelper();
+
+  ForegroundHelper(const ForegroundHelper&) = delete;
+  ForegroundHelper& operator=(const ForegroundHelper&) = delete;
+
   ~ForegroundHelper() override;
 
   CR_BEGIN_MSG_MAP_EX(ForegroundHelper)
@@ -44,8 +47,6 @@ class COMPONENT_EXPORT(UI_BASE) ForegroundHelper : public gfx::WindowImpl {
   HWND window_;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(ForegroundHelper)
-
-  DISALLOW_COPY_AND_ASSIGN(ForegroundHelper);
 };
 
 }  // namespace ui

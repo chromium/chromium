@@ -111,6 +111,7 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
   bool IsAltDown() const;
   bool IsAltGrDown() const;
   bool IsCmdDown() const;
+  bool IsFunctionDown() const;
   bool IsRepeat() const;
 
   // Returns a string with the localized shortcut if any.
@@ -130,6 +131,7 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
   }
 
  private:
+  friend class AcceleratorTestMac;
   std::u16string ApplyLongFormModifiers(const std::u16string& shortcut) const;
   std::u16string ApplyShortFormModifiers(const std::u16string& shortcut) const;
 

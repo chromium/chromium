@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "device/fido/cable/v2_handshake.h"
+#include "base/rand_util.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -19,15 +20,25 @@ namespace cablev2 {
 namespace {
 
 TEST(CableV2Encoding, TunnelServerURLs) {
-  // Test that a domain name survives an encode-decode round trip.
   uint8_t tunnel_id[16] = {0};
-  const GURL url = tunnelserver::GetNewTunnelURL(/*domain=*/0, tunnel_id);
+  // Tunnel ID zero should map to Google's tunnel server.
+  const tunnelserver::KnownDomainID kGoogleDomain(0);
+  const GURL url = tunnelserver::GetNewTunnelURL(kGoogleDomain, tunnel_id);
   EXPECT_TRUE(url.spec().find("//cable.ua5v.com/") != std::string::npos) << url;
+
+  // The hash function shouldn't change across releases, so test a hashed
+  // domain.
+  const tunnelserver::KnownDomainID kHashedDomain(512);
+  const GURL hashed_url =
+      tunnelserver::GetNewTunnelURL(kHashedDomain, tunnel_id);
+  EXPECT_TRUE(hashed_url.spec().find("//cable.snorzvaajskg.org/") !=
+              std::string::npos)
+      << url;
 }
 
 TEST(CableV2Encoding, EIDToFromComponents) {
   eid::Components components;
-  components.tunnel_server_domain = 0x0102;
+  components.tunnel_server_domain = tunnelserver::KnownDomainID(0x0102);
   components.routing_id = {9, 10, 11};
   crypto::RandBytes(components.nonce);
 
@@ -41,7 +52,7 @@ TEST(CableV2Encoding, EIDToFromComponents) {
 
 TEST(CableV2Encoding, EIDEncrypt) {
   eid::Components components;
-  components.tunnel_server_domain = 0x0102;
+  components.tunnel_server_domain = tunnelserver::KnownDomainID(0x0102);
   components.routing_id = {9, 10, 11};
   crypto::RandBytes(components.nonce);
   const CableEidArray eid = eid::FromComponents(components);
@@ -56,15 +67,20 @@ TEST(CableV2Encoding, EIDEncrypt) {
 
   advert[0] ^= 1;
   EXPECT_FALSE(eid::Decrypt(advert, key).has_value());
+
+  // Unknown tunnel server domains should not decrypt.
+  components.tunnel_server_domain = tunnelserver::KnownDomainID(255);
+  const CableEidArray eid3 = eid::FromComponents(components);
+  std::array<uint8_t, kAdvertSize> invalid_advert = eid::Encrypt(eid3, key);
+  EXPECT_FALSE(eid::Decrypt(invalid_advert, key).has_value());
 }
 
 TEST(CableV2Encoding, QRs) {
   std::array<uint8_t, kQRKeySize> qr_key;
   crypto::RandBytes(qr_key);
   std::string url = qr::Encode(qr_key);
-  EXPECT_LE(url.size(), 81u) << "QR code doesn't fit into version five";
   const absl::optional<qr::Components> decoded = qr::Parse(url);
-  ASSERT_TRUE(decoded.has_value());
+  ASSERT_TRUE(decoded.has_value()) << url;
   static_assert(EXTENT(qr_key) >= EXTENT(decoded->secret), "");
   EXPECT_EQ(memcmp(decoded->secret.data(),
                    &qr_key[qr_key.size() - decoded->secret.size()],
@@ -170,6 +186,49 @@ std::array<uint8_t, kP256X962Length> PublicKeyOf(const EC_KEY* private_key) {
                               POINT_CONVERSION_UNCOMPRESSED, ret.data(),
                               ret.size(), /*ctx=*/nullptr));
   return ret;
+}
+
+TEST(CableV2Encoding, Digits) {
+  uint8_t test_data[24];
+  base::RandBytes(test_data, sizeof(test_data));
+
+  // |BytesToDigits| and |DigitsToBytes| should round-trip.
+  for (size_t i = 0; i < sizeof(test_data); i++) {
+    std::string digits =
+        qr::BytesToDigits(base::span<const uint8_t>(test_data, i));
+    absl::optional<std::vector<uint8_t>> test_data_again =
+        qr::DigitsToBytes(digits);
+    ASSERT_TRUE(test_data_again.has_value());
+    ASSERT_EQ(test_data_again->size(), i);
+    ASSERT_EQ(0, memcmp(test_data_again->data(), test_data, i));
+  }
+
+  // |DigitsToBytes| should reject non-digit inputs.
+  EXPECT_FALSE(qr::DigitsToBytes("a"));
+  EXPECT_FALSE(qr::DigitsToBytes("ab"));
+  EXPECT_FALSE(qr::DigitsToBytes("abc"));
+
+  // |DigitsToBytes| should reject digits that can't be correct. Here three
+  // digits translates into one byte, but 999 > 0xff.
+  EXPECT_FALSE(qr::DigitsToBytes("999"));
+
+  // |DigitsToBytes| should reject impossible input lengths.
+  char digits[20];
+  memset(digits, '0', sizeof(digits));
+  for (size_t i = 0; i < sizeof(digits); i++) {
+    absl::optional<std::vector<uint8_t>> bytes =
+        qr::DigitsToBytes(base::StringPiece(digits, i));
+    if (!bytes.has_value()) {
+      continue;
+    }
+    EXPECT_TRUE(std::all_of(bytes->begin(), bytes->end(),
+                            [](uint8_t v) -> bool { return v == 0; }));
+  }
+
+  // The encoding is used as part of an external protocol and so should not
+  // change.
+  static const uint8_t kTestBytes[3] = {'a', 'b', 255};
+  EXPECT_EQ(qr::BytesToDigits(kTestBytes), "16736865");
 }
 
 TEST(CableV2Encoding, HandshakeSignatures) {

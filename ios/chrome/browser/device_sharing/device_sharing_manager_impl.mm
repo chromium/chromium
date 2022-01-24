@@ -6,7 +6,6 @@
 
 #import "components/handoff/handoff_manager.h"
 #import "components/handoff/pref_names_ios.h"
-#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 
@@ -16,11 +15,10 @@
 
 DeviceSharingManagerImpl::DeviceSharingManagerImpl(
     ChromeBrowserState* browser_state)
-    : browser_state_(browser_state),
-      prefs_change_observer_(std::make_unique<PrefChangeRegistrar>()) {
+    : browser_state_(browser_state) {
   DCHECK(!browser_state || !browser_state->IsOffTheRecord());
-  prefs_change_observer_->Init(browser_state_->GetPrefs());
-  prefs_change_observer_->Add(
+  prefs_change_observer_.Init(browser_state_->GetPrefs());
+  prefs_change_observer_.Add(
       prefs::kIosHandoffToOtherDevices,
       base::BindRepeating(&DeviceSharingManagerImpl::UpdateHandoffManager,
                           base::Unretained(this)));
@@ -29,7 +27,7 @@ DeviceSharingManagerImpl::DeviceSharingManagerImpl(
   [handoff_manager_ updateActiveTitle:std::u16string()];
 }
 
-DeviceSharingManagerImpl::~DeviceSharingManagerImpl() {}
+DeviceSharingManagerImpl::~DeviceSharingManagerImpl() = default;
 
 void DeviceSharingManagerImpl::SetActiveBrowser(Browser* browser) {
   active_browser_ = browser;

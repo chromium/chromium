@@ -68,8 +68,8 @@ class CookieControlsBubbleViewTest : public DialogBrowserTest {
   }
 
   void NavigateToUrlWithThirdPartyCookies() {
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("a.com", "/iframe.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("a.com", "/iframe.html")));
 
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();

@@ -60,9 +60,7 @@ using password_manager::CredentialLeakType;
 - (void)start {
   self.viewController = [[PasswordBreachViewController alloc] init];
   self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;
-  if (@available(iOS 13, *)) {
-    self.viewController.modalInPresentation = YES;
-  }
+  self.viewController.modalInPresentation = YES;
   self.mediator =
       [[PasswordBreachMediator alloc] initWithConsumer:self.viewController
                                              presenter:self

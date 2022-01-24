@@ -7,6 +7,19 @@
  * details of an incoming share request and allows the user to confirm or
  * reject the request
  */
+
+/**
+ * The progress bar asset URL for light mode.
+ * @type {string}
+ */
+const PROGRESS_BAR_URL_LIGHT = 'nearby_share_progress_bar_light.json';
+
+/**
+ * The progress bar asset URL for dark mode.
+ * @type {string}
+ */
+const PROGRESS_BAR_URL_DARK = 'nearby_share_progress_bar_dark.json';
+
 Polymer({
   is: 'nearby-share-confirm-page',
 
@@ -52,6 +65,15 @@ Polymer({
     errorDescription_: {
       type: String,
       value: null,
+    },
+
+    /**
+     * Whether the confirm page is being rendered in dark mode.
+     * @private {boolean}
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -113,5 +135,16 @@ Polymer({
         this.i18n(
             'nearbyShareReceiveConfirmPageConnectionId', this.connectionToken) :
         '';
+  },
+
+  /**
+   * Returns the URL for the asset that defines a file transfer's animated
+   * progress bar.
+   * @return {string}
+   * @private
+   */
+  getAnimationUrl_() {
+    return this.isDarkModeActive_ ? PROGRESS_BAR_URL_DARK :
+                                    PROGRESS_BAR_URL_LIGHT;
   },
 });

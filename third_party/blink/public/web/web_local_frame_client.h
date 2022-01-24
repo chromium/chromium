@@ -39,18 +39,21 @@
 #include "media/base/speech_recognition_client.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom-shared.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
+#include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom-shared.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-shared.h"
 #include "third_party/blink/public/platform/blame_context.h"
@@ -235,7 +238,7 @@ class BLINK_EXPORT WebLocalFrameClient {
       const WebString& fallback_name,
       const FramePolicy&,
       const WebFrameOwnerProperties&,
-      mojom::FrameOwnerElementType,
+      FrameOwnerElementType,
       WebPolicyContainerBindParams policy_container_bind_params) {
     return nullptr;
   }
@@ -265,7 +268,9 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Request the creation of a new fenced frame, and return the WebRemoteFrame*
   // associated with it.
   virtual WebRemoteFrame* CreateFencedFrame(
-      const WebElement& fenced_frame_element) {
+      const WebElement& fenced_frame_element,
+      CrossVariantMojoAssociatedReceiver<
+          mojom::FencedFrameOwnerHostInterfaceBase> receiver) {
     return nullptr;
   }
 
@@ -401,13 +406,12 @@ class BLINK_EXPORT WebLocalFrameClient {
   // The page title is available.
   virtual void DidReceiveTitle(const WebString& title) {}
 
-  // The frame's document finished loading.
+  // The DOMContentLoaded event was dispatched for the frame's document.
   // This method may not execute JavaScript code.
-  // TODO(dgozman): rename this to DidFireDOMContentLoadedEvent.
-  virtual void DidFinishDocumentLoad() {}
+  virtual void DidDispatchDOMContentLoadedEvent() {}
 
-  // Like |didFinishDocumentLoad|, except this method may run JavaScript
-  // code (and possibly invalidate the frame).
+  // Like |DidDispatchDOMContentLoadedEvent|, except this method may run
+  // JavaScript code (and possibly invalidate the frame).
   virtual void RunScriptsAtDocumentReady() {}
 
   // The frame's window.onload event is ready to fire. This method may delay
@@ -426,10 +430,11 @@ class BLINK_EXPORT WebLocalFrameClient {
   // |is_synchronously_committed| is true if the navigation is synchronously
   // committed from within Blink, as opposed to being driven by the browser's
   // navigation stack.
-  virtual void DidFinishSameDocumentNavigation(WebHistoryCommitType,
-                                               bool is_synchronously_committed,
-                                               bool is_history_api_navigation,
-                                               bool is_client_redirect) {}
+  virtual void DidFinishSameDocumentNavigation(
+      WebHistoryCommitType,
+      bool is_synchronously_committed,
+      mojom::SameDocumentNavigationType,
+      bool is_client_redirect) {}
 
   // Called before a frame's page is frozen.
   virtual void WillFreezePage() {}
@@ -524,6 +529,12 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // An Input Event observed.
   virtual void DidObserveInputDelay(base::TimeDelta input_delay) {}
+
+  // A user interaction is observed.
+  virtual void DidObserveUserInteraction(base::TimeDelta max_event_duration,
+                                         base::TimeDelta total_event_duration,
+                                         UserInteractionType interaction_type) {
+  }
 
   // The first scroll delay, which measures the time between the user's first
   // scrolling and the resultant display update, has been observed.

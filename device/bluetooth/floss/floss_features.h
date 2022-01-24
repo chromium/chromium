@@ -6,11 +6,12 @@
 #define DEVICE_BLUETOOTH_FLOSS_FLOSS_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "device/bluetooth/bluetooth_export.h"
 
 namespace floss {
 namespace features {
 
-extern const base::Feature kFlossEnabled;
+extern const DEVICE_BLUETOOTH_EXPORT base::Feature kFlossEnabled;
 
 }  // namespace features
 }  // namespace floss

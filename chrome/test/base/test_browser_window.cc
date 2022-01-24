@@ -222,7 +222,8 @@ qrcode_generator::QRCodeGeneratorBubbleView*
 TestBrowserWindow::ShowQRCodeGeneratorBubble(
     content::WebContents* contents,
     qrcode_generator::QRCodeGeneratorBubbleController* controller,
-    const GURL& url) {
+    const GURL& url,
+    bool show_back_button) {
   return nullptr;
 }
 
@@ -231,6 +232,16 @@ SharingDialog* TestBrowserWindow::ShowSharingDialog(
     SharingDialogData data) {
   return nullptr;
 }
+
+#if !defined(OS_ANDROID)
+sharing_hub::ScreenshotCapturedBubble*
+TestBrowserWindow::ShowScreenshotCapturedBubble(
+    content::WebContents* contents,
+    const gfx::Image& image,
+    sharing_hub::ScreenshotCapturedBubbleController* controller) {
+  return nullptr;
+}
+#endif
 
 send_tab_to_self::SendTabToSelfBubbleView*
 TestBrowserWindow::ShowSendTabToSelfBubble(

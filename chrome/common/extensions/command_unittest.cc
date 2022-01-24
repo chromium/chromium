@@ -231,10 +231,10 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
 #elif defined(OS_MAC)
   ui::Accelerator accelerator(ui::VKEY_M,
                               ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   ui::Accelerator accelerator(ui::VKEY_C,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_LINUX)
   ui::Accelerator accelerator(ui::VKEY_L,
                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
 #else

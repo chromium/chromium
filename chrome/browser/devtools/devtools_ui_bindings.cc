@@ -16,10 +16,10 @@
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/string_escape.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -36,6 +36,9 @@
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -48,6 +51,9 @@
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/zoom/page_zoom.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -81,12 +87,14 @@
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/resource/resource_bundle.h"
 
 using base::DictionaryValue;
 using content::BrowserThread;
@@ -102,53 +110,6 @@ static const char kFrontendHostId[] = "id";
 static const char kFrontendHostMethod[] = "method";
 static const char kFrontendHostParams[] = "params";
 static const char kTitleFormat[] = "DevTools - %s";
-
-static const char kDevToolsActionTakenHistogram[] = "DevTools.ActionTaken";
-static const char kDevToolsPanelShownHistogram[] = "DevTools.PanelShown";
-static const char kDevToolsPanelClosedHistogram[] = "DevTools.PanelClosed";
-static const char kDevToolsSidebarPaneShownHistogram[] =
-    "DevTools.SidebarPaneShown";
-static const char kDevToolsKeyboardShortcutFiredHistogram[] =
-    "DevTools.KeyboardShortcutFired";
-static const char kDevToolsIssuesPanelOpenedFromHistogram[] =
-    "DevTools.IssuesPanelOpenedFrom";
-static const char kDevToolsKeybindSetSettingChanged[] =
-    "DevTools.KeybindSetSettingChanged";
-static const char kDevToolsDualScreenDeviceEmulatedHistogram[] =
-    "DevTools.DualScreenDeviceEmulated";
-static const char kDevtoolsGridSettingChangedHistogram[] =
-    "DevTools.GridSettingChanged";
-static const char kDevtoolsCSSGridSettingsHistogram[] =
-    "DevTools.CSSGridSettings2";
-static const char kDevToolsHighlightedPersistentCSSGridCountHistogram[] =
-    "DevTools.HighlightedPersistentCSSGridCount";
-static const char kDevtoolsExperimentEnabledHistogram[] =
-    "DevTools.ExperimentEnabled";
-static const char kDevtoolsExperimentDisabledHistogram[] =
-    "DevTools.ExperimentDisabled";
-static const char kDevtoolsExperimentEnabledAtLaunchHistogram[] =
-    "DevTools.ExperimentEnabledAtLaunch";
-static const char kDevToolsColorPickerFixedColorHistogram[] =
-    "DevTools.ColorPicker.FixedColor";
-static const char kDevToolsComputedStyleGroupingHistogram[] =
-    "DevTools.ComputedStyleGrouping";
-static const char kDevtoolsIssuesPanelIssueExpandedHistogram[] =
-    "DevTools.IssuesPanelIssueExpanded";
-static const char kDevtoolsIssuesPanelResourceOpenedHistogram[] =
-    "DevTools.IssuesPanelResourceOpened";
-static const char kDevToolsGridOverlayOpenedFromHistogram[] =
-    "DevTools.GridOverlayOpenedFrom";
-static const char kDevToolsCssEditorOpenedHistogram[] =
-    "DevTools.CssEditorOpened";
-static const char kDevToolsIssueCreatedHistogram[] = "DevTools.IssueCreated";
-static const char kDevToolsDeveloperResourceLoadedHistogram[] =
-    "DevTools.DeveloperResourceLoaded";
-static const char kDevToolsDeveloperResourceSchemeHistogram[] =
-    "DevTools.DeveloperResourceScheme";
-static const char kDevToolsLinearMemoryInspectorRevealedFromHistogram[] =
-    "DevTools.LinearMemoryInspector.RevealedFrom";
-static const char kDevToolsLinearMemoryInspectorTargetHistogram[] =
-    "DevTools.LinearMemoryInspector.Target";
 
 static const char kRemotePageActionInspect[] = "inspect";
 static const char kRemotePageActionReload[] = "reload";
@@ -168,10 +129,6 @@ static const char kConfigNetworkDiscoveryConfig[] = "networkDiscoveryConfig";
 // kLayoutTestMaxMessageChunkSize in
 // content/shell/browser/layout_test/devtools_protocol_test_bindings.cc.
 const size_t kMaxMessageChunkSize = IPC::Channel::kMaximumMessageSize / 4;
-
-typedef std::vector<DevToolsUIBindings*> DevToolsUIBindingsList;
-base::LazyInstance<DevToolsUIBindingsList>::Leaky
-    g_devtools_ui_bindings_instances = LAZY_INSTANCE_INITIALIZER;
 
 base::DictionaryValue CreateFileSystemValue(
     DevToolsFileHelper::FileSystem file_system) {
@@ -200,6 +157,9 @@ class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
   explicit DefaultBindingsDelegate(content::WebContents* web_contents)
       : web_contents_(web_contents) {}
 
+  DefaultBindingsDelegate(const DefaultBindingsDelegate&) = delete;
+  DefaultBindingsDelegate& operator=(const DefaultBindingsDelegate&) = delete;
+
  private:
   ~DefaultBindingsDelegate() override {}
 
@@ -225,7 +185,6 @@ class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
   void RenderProcessGone(bool crashed) override {}
   void ShowCertificateViewer(const std::string& cert_chain) override {}
   content::WebContents* web_contents_;
-  DISALLOW_COPY_AND_ASSIGN(DefaultBindingsDelegate);
 };
 
 void DefaultBindingsDelegate::ActivateWindow() {
@@ -265,16 +224,16 @@ std::unique_ptr<base::DictionaryValue> BuildObjectForResponse(
   response->SetInteger("netError", net_error);
   response->SetString("netErrorName", net::ErrorToString(net_error));
 
-  auto headers = std::make_unique<base::DictionaryValue>();
+  base::DictionaryValue headers;
   size_t iterator = 0;
   std::string name;
   std::string value;
   // TODO(caseq): this probably needs to handle duplicate header names
   // correctly by folding them.
   while (rh && rh->EnumerateHeaderLines(&iterator, &name, &value))
-    headers->SetString(name, value);
+    headers.SetString(name, value);
 
-  response->Set("headers", std::move(headers));
+  response->SetKey("headers", std::move(headers));
   return response;
 }
 
@@ -374,8 +333,10 @@ std::string SanitizeFrontendQueryParam(
   // Convert boolean flags to true.
   if (key == "can_dock" || key == "debugFrontend" || key == "isSharedWorker" ||
       key == "v8only" || key == "remoteFrontend" || key == "nodeFrontend" ||
-      key == "hasOtherClients" || key == "uiDevTools")
+      key == "hasOtherClients" || key == "uiDevTools" ||
+      key == "browserConnection") {
     return "true";
+  }
 
   // Pass connection endpoints as is.
   if (key == "ws" || key == "service-backend")
@@ -434,9 +395,8 @@ GURL SanitizeFrontendURL(const GURL& url,
   return result;
 }
 
-constexpr base::TimeDelta kInitialBackoffDelay =
-    base::TimeDelta::FromMilliseconds(250);
-constexpr base::TimeDelta kMaxBackoffDelay = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kInitialBackoffDelay = base::Milliseconds(250);
+constexpr base::TimeDelta kMaxBackoffDelay = base::Seconds(10);
 
 }  // namespace
 
@@ -498,6 +458,9 @@ class DevToolsUIBindings::NetworkResourceLoader
                  base::BindOnce(&NetworkResourceLoader::DownloadAsStream,
                                 base::Unretained(this)));
   }
+
+  NetworkResourceLoader(const NetworkResourceLoader&) = delete;
+  NetworkResourceLoader& operator=(const NetworkResourceLoader&) = delete;
 
  private:
   void DownloadAsStream() {
@@ -568,8 +531,6 @@ class DevToolsUIBindings::NetworkResourceLoader
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
   base::OneShotTimer timer_;
   base::TimeDelta retry_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkResourceLoader);
 };
 
 // DevToolsUIBindings::FrontendWebContentsObserver ----------------------------
@@ -578,11 +539,17 @@ class DevToolsUIBindings::FrontendWebContentsObserver
     : public content::WebContentsObserver {
  public:
   explicit FrontendWebContentsObserver(DevToolsUIBindings* ui_bindings);
+
+  FrontendWebContentsObserver(const FrontendWebContentsObserver&) = delete;
+  FrontendWebContentsObserver& operator=(const FrontendWebContentsObserver&) =
+      delete;
+
   ~FrontendWebContentsObserver() override;
 
  private:
   // contents::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DocumentOnLoadCompletedInMainFrame(
@@ -591,7 +558,6 @@ class DevToolsUIBindings::FrontendWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
 
   DevToolsUIBindings* devtools_bindings_;
-  DISALLOW_COPY_AND_ASSIGN(FrontendWebContentsObserver);
 };
 
 DevToolsUIBindings::FrontendWebContentsObserver::FrontendWebContentsObserver(
@@ -627,8 +593,8 @@ bool DevToolsUIBindings::IsValidRemoteFrontendURL(const GURL& url) {
              .spec() == url.spec();
 }
 
-void DevToolsUIBindings::FrontendWebContentsObserver::RenderProcessGone(
-    base::TerminationStatus status) {
+void DevToolsUIBindings::FrontendWebContentsObserver::
+    PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) {
   bool crashed = true;
   switch (status) {
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
@@ -682,11 +648,9 @@ void DevToolsUIBindings::FrontendWebContentsObserver::DidFinishNavigation(
 
 DevToolsUIBindings* DevToolsUIBindings::ForWebContents(
      content::WebContents* web_contents) {
-  if (!g_devtools_ui_bindings_instances.IsCreated())
-    return nullptr;
-  DevToolsUIBindingsList* instances =
-      g_devtools_ui_bindings_instances.Pointer();
-  for (DevToolsUIBindings* binding : *instances) {
+  DevToolsUIBindingsList& instances =
+      DevToolsUIBindings::GetDevToolsUIBindings();
+  for (DevToolsUIBindings* binding : instances) {
     if (binding->web_contents() == web_contents)
       return binding;
   }
@@ -699,8 +663,9 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       web_contents_(web_contents),
       delegate_(new DefaultBindingsDelegate(web_contents_)),
       devices_updates_enabled_(false),
-      frontend_loaded_(false) {
-  g_devtools_ui_bindings_instances.Get().push_back(this);
+      frontend_loaded_(false),
+      settings_(profile_) {
+  DevToolsUIBindings::GetDevToolsUIBindings().push_back(this);
   frontend_contents_observer_ =
       std::make_unique<FrontendWebContentsObserver>(this);
 
@@ -727,11 +692,11 @@ DevToolsUIBindings::~DevToolsUIBindings() {
   SetDevicesUpdatesEnabled(false);
 
   // Remove self from global list.
-  DevToolsUIBindingsList* instances =
-      g_devtools_ui_bindings_instances.Pointer();
-  auto it(std::find(instances->begin(), instances->end(), this));
-  DCHECK(it != instances->end());
-  instances->erase(it);
+  DevToolsUIBindingsList& instances =
+      DevToolsUIBindings::GetDevToolsUIBindings();
+  auto it(std::find(instances.begin(), instances.end(), this));
+  DCHECK(it != instances.end());
+  instances.erase(it);
 }
 
 // content::DevToolsFrontendHost::Delegate implementation ---------------------
@@ -958,9 +923,18 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
       return;
     }
   } else {
-    auto* partition =
-        web_contents_->GetBrowserContext()->GetStoragePartitionForUrl(gurl);
-    url_loader_factory = partition->GetURLLoaderFactoryForBrowserProcess();
+    content::WebContents* target_tab =
+        DevToolsWindow::AsDevToolsWindow(web_contents_)
+            ->GetInspectedWebContents();
+    if (target_tab) {
+      auto* partition = target_tab->GetMainFrame()->GetStoragePartition();
+      url_loader_factory = partition->GetURLLoaderFactoryForBrowserProcess();
+    } else {
+      base::DictionaryValue response;
+      response.SetInteger("statusCode", 409);
+      std::move(callback).Run(&response);
+      return;
+    }
   }
 
   NetworkResourceLoader::Create(
@@ -1141,36 +1115,31 @@ void DevToolsUIBindings::SetDevicesDiscoveryConfig(
 
 void DevToolsUIBindings::DevicesDiscoveryConfigUpdated() {
   base::DictionaryValue config;
-  config.Set(kConfigDiscoverUsbDevices,
-             base::Value::ToUniquePtrValue(
-                 profile_->GetPrefs()
-                     ->FindPreference(prefs::kDevToolsDiscoverUsbDevicesEnabled)
-                     ->GetValue()
-                     ->Clone()));
-  config.Set(kConfigPortForwardingEnabled,
-             base::Value::ToUniquePtrValue(
-                 profile_->GetPrefs()
-                     ->FindPreference(prefs::kDevToolsPortForwardingEnabled)
-                     ->GetValue()
-                     ->Clone()));
-  config.Set(kConfigPortForwardingConfig,
-             base::Value::ToUniquePtrValue(
-                 profile_->GetPrefs()
-                     ->FindPreference(prefs::kDevToolsPortForwardingConfig)
-                     ->GetValue()
-                     ->Clone()));
-  config.Set(kConfigNetworkDiscoveryEnabled,
-             base::Value::ToUniquePtrValue(
-                 profile_->GetPrefs()
-                     ->FindPreference(prefs::kDevToolsDiscoverTCPTargetsEnabled)
-                     ->GetValue()
-                     ->Clone()));
-  config.Set(kConfigNetworkDiscoveryConfig,
-             base::Value::ToUniquePtrValue(
-                 profile_->GetPrefs()
-                     ->FindPreference(prefs::kDevToolsTCPDiscoveryConfig)
-                     ->GetValue()
-                     ->Clone()));
+  config.SetKey(kConfigDiscoverUsbDevices,
+                profile_->GetPrefs()
+                    ->FindPreference(prefs::kDevToolsDiscoverUsbDevicesEnabled)
+                    ->GetValue()
+                    ->Clone());
+  config.SetKey(kConfigPortForwardingEnabled,
+                profile_->GetPrefs()
+                    ->FindPreference(prefs::kDevToolsPortForwardingEnabled)
+                    ->GetValue()
+                    ->Clone());
+  config.SetKey(kConfigPortForwardingConfig,
+                profile_->GetPrefs()
+                    ->FindPreference(prefs::kDevToolsPortForwardingConfig)
+                    ->GetValue()
+                    ->Clone());
+  config.SetKey(kConfigNetworkDiscoveryEnabled,
+                profile_->GetPrefs()
+                    ->FindPreference(prefs::kDevToolsDiscoverTCPTargetsEnabled)
+                    ->GetValue()
+                    ->Clone());
+  config.SetKey(kConfigNetworkDiscoveryConfig,
+                profile_->GetPrefs()
+                    ->FindPreference(prefs::kDevToolsTCPDiscoveryConfig)
+                    ->GetValue()
+                    ->Clone());
   CallClientMethod("DevToolsAPI", "devicesDiscoveryConfigChanged",
                    std::move(config));
 }
@@ -1252,29 +1221,72 @@ void DevToolsUIBindings::OpenNodeFrontend() {
   delegate_->OpenNodeFrontend();
 }
 
+void DevToolsUIBindings::RegisterPreference(const std::string& name,
+                                            const RegisterOptions& options) {
+  settings_.Register(name, options);
+}
+
 void DevToolsUIBindings::GetPreferences(DispatchCallback callback) {
-  const DictionaryValue* prefs =
-      profile_->GetPrefs()->GetDictionary(prefs::kDevToolsPreferences);
-  std::move(callback).Run(prefs);
+  base::Value settings = settings_.Get();
+  std::move(callback).Run(&settings);
 }
 
 void DevToolsUIBindings::SetPreference(const std::string& name,
-                                   const std::string& value) {
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsPreferences);
-  update.Get()->SetKey(name, base::Value(value));
+                                       const std::string& value) {
+  settings_.Set(name, value);
 }
 
 void DevToolsUIBindings::RemovePreference(const std::string& name) {
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsPreferences);
-  update.Get()->RemoveKey(name);
+  settings_.Remove(name);
 }
 
 void DevToolsUIBindings::ClearPreferences() {
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsPreferences);
-  update.Get()->Clear();
+  settings_.Clear();
+}
+
+void DevToolsUIBindings::GetSyncInformation(DispatchCallback callback) {
+  base::Value result =
+      DevToolsUIBindings::GetSyncInformationForProfile(profile_);
+  std::move(callback).Run(&result);
+}
+
+base::Value DevToolsUIBindings::GetSyncInformationForProfile(Profile* profile) {
+  base::Value result(base::Value::Type::DICTIONARY);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  if (!sync_service) {
+    result.SetBoolKey("isSyncActive", false);
+    return result;
+  }
+
+  result.SetBoolKey("isSyncActive", sync_service->IsSyncFeatureActive());
+  result.SetBoolKey(
+      "arePreferencesSynced",
+      sync_service->GetActiveDataTypes().Has(syncer::ModelType::PREFERENCES));
+
+  CoreAccountInfo account_info = sync_service->GetAccountInfo();
+  if (account_info.IsEmpty())
+    return result;
+
+  result.SetStringKey("accountEmail", account_info.email);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  AccountInfo extended_info =
+      identity_manager->FindExtendedAccountInfo(account_info);
+  gfx::Image account_image;
+  if (extended_info.IsEmpty() || extended_info.account_image.IsEmpty()) {
+    account_image = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+        profiles::GetPlaceholderAvatarIconResourceID());
+  } else {
+    account_image = extended_info.account_image;
+  }
+  scoped_refptr<base::RefCountedMemory> png_bytes =
+      account_image.As1xPNGBytes();
+  if (png_bytes->size() > 0)
+    result.SetStringKey("accountImage", base::Base64Encode(*png_bytes));
+
+  return result;
 }
 
 void DevToolsUIBindings::Reattach(DispatchCallback callback) {
@@ -1317,31 +1329,9 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
     return;
   }
 
-  if (name == kDevToolsActionTakenHistogram ||
-      name == kDevToolsPanelShownHistogram ||
-      name == kDevToolsPanelClosedHistogram ||
-      name == kDevToolsSidebarPaneShownHistogram ||
-      name == kDevToolsKeyboardShortcutFiredHistogram ||
-      name == kDevToolsIssuesPanelOpenedFromHistogram ||
-      name == kDevToolsKeybindSetSettingChanged ||
-      name == kDevToolsDualScreenDeviceEmulatedHistogram ||
-      name == kDevtoolsGridSettingChangedHistogram ||
-      name == kDevtoolsCSSGridSettingsHistogram ||
-      name == kDevToolsHighlightedPersistentCSSGridCountHistogram ||
-      name == kDevtoolsExperimentEnabledHistogram ||
-      name == kDevtoolsExperimentDisabledHistogram ||
-      name == kDevtoolsExperimentEnabledAtLaunchHistogram ||
-      name == kDevToolsColorPickerFixedColorHistogram ||
-      name == kDevToolsComputedStyleGroupingHistogram ||
-      name == kDevtoolsIssuesPanelIssueExpandedHistogram ||
-      name == kDevtoolsIssuesPanelResourceOpenedHistogram ||
-      name == kDevToolsGridOverlayOpenedFromHistogram ||
-      name == kDevToolsCssEditorOpenedHistogram ||
-      name == kDevToolsIssueCreatedHistogram ||
-      name == kDevToolsDeveloperResourceLoadedHistogram ||
-      name == kDevToolsDeveloperResourceSchemeHistogram ||
-      name == kDevToolsLinearMemoryInspectorRevealedFromHistogram ||
-      name == kDevToolsLinearMemoryInspectorTargetHistogram)
+  const std::string kDevToolsHistogramPrefix = "DevTools.";
+  if (name.compare(0, kDevToolsHistogramPrefix.size(),
+                   kDevToolsHistogramPrefix) == 0)
     base::UmaHistogramExactLinear(name, sample, boundary_value);
   else
     frontend_host_->BadMessageReceived();
@@ -1356,7 +1346,7 @@ void DevToolsUIBindings::RecordPerformanceHistogram(const std::string& name,
   }
   // Use histogram_functions.h instead of macros as the name comes from the
   // DevTools frontend javascript and so will always have the same call site.
-  base::TimeDelta delta = base::TimeDelta::FromMilliseconds(duration);
+  base::TimeDelta delta = base::Milliseconds(duration);
   base::UmaHistogramTimes(name, delta);
 }
 
@@ -1396,9 +1386,8 @@ void DevToolsUIBindings::DeviceCountChanged(int count) {
   CallClientMethod("DevToolsAPI", "deviceCountUpdated", base::Value(count));
 }
 
-void DevToolsUIBindings::DevicesUpdated(
-    const std::string& source,
-    const base::ListValue& targets) {
+void DevToolsUIBindings::DevicesUpdated(const std::string& source,
+                                        const base::Value& targets) {
   CallClientMethod("DevToolsAPI", "devicesUpdated", targets.Clone());
 }
 
@@ -1607,6 +1596,18 @@ void DevToolsUIBindings::AttachTo(
   InnerAttach();
 }
 
+void DevToolsUIBindings::AttachViaBrowserTarget(
+    const scoped_refptr<content::DevToolsAgentHost>& agent_host) {
+  DCHECK(!agent_host_ ||
+         agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser);
+  if (!agent_host_)
+    agent_host_ = content::DevToolsAgentHost::CreateForBrowser(
+        nullptr /* tethering_task_runner */,
+        content::DevToolsAgentHost::CreateServerSocketCallback());
+  initial_target_id_ = agent_host->GetId();
+  InnerAttach();
+}
+
 void DevToolsUIBindings::Detach() {
   if (agent_host_.get())
     agent_host_->DetachClient(this);
@@ -1614,7 +1615,9 @@ void DevToolsUIBindings::Detach() {
 }
 
 bool DevToolsUIBindings::IsAttachedTo(content::DevToolsAgentHost* agent_host) {
-  return agent_host_.get() == agent_host;
+  // TODO(caseq): find better way to track attached targets.
+  return initial_target_id_.empty() ? agent_host_.get() == agent_host
+                                    : initial_target_id_ == agent_host->GetId();
 }
 
 void DevToolsUIBindings::CallClientMethod(
@@ -1684,7 +1687,8 @@ void DevToolsUIBindings::ReadyToCommitNavigation(
   }
 
   content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
-  std::string origin = navigation_handle->GetURL().GetOrigin().spec();
+  std::string origin =
+      navigation_handle->GetURL().DeprecatedGetOriginAsURL().spec();
   auto it = extensions_api_.find(origin);
   if (it == extensions_api_.end())
     return;
@@ -1709,5 +1713,15 @@ void DevToolsUIBindings::FrontendLoaded() {
   // Call delegate first - it seeds importants bit of information.
   delegate_->OnLoadCompleted();
 
+  if (!initial_target_id_.empty())
+    CallClientMethod("DevToolsAPI", "setInitialTargetId",
+                     base::Value(initial_target_id_));
   AddDevToolsExtensionsToClient();
+}
+
+DevToolsUIBindings::DevToolsUIBindingsList&
+DevToolsUIBindings::GetDevToolsUIBindings() {
+  static base::NoDestructor<DevToolsUIBindings::DevToolsUIBindingsList>
+      bindings;
+  return *bindings;
 }

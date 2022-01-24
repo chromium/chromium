@@ -31,6 +31,10 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
                               public performance_manager::WorkerNodeObserver {
  public:
   DiscardsGraphDumpImpl();
+
+  DiscardsGraphDumpImpl(const DiscardsGraphDumpImpl&) = delete;
+  DiscardsGraphDumpImpl& operator=(const DiscardsGraphDumpImpl&) = delete;
+
   ~DiscardsGraphDumpImpl() override;
 
   // Creates a new DiscardsGraphDumpImpl to service |receiver| and passes its
@@ -254,8 +258,6 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DiscardsGraphDumpImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardsGraphDumpImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DISCARDS_GRAPH_DUMP_IMPL_H_

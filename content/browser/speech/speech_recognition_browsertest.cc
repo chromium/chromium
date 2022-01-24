@@ -13,10 +13,10 @@
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/speech/speech_recognition_engine.h"
@@ -53,6 +53,9 @@ class MockAudioSystem : public media::AudioSystem {
  public:
   MockAudioSystem() = default;
 
+  MockAudioSystem(const MockAudioSystem&) = delete;
+  MockAudioSystem& operator=(const MockAudioSystem&) = delete;
+
   // AudioSystem implementation.
   void GetInputStreamParameters(const std::string& device_id,
                                 OnAudioParamsCallback on_params_cb) override {
@@ -80,9 +83,6 @@ class MockAudioSystem : public media::AudioSystem {
   MOCK_METHOD2(GetInputDeviceInfo,
                void(const std::string& input_device_id,
                     OnInputDeviceInfoCallback on_input_device_info_cb));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAudioSystem);
 };
 
 class MockCapturerSource : public media::AudioCapturerSource {
@@ -96,6 +96,9 @@ class MockCapturerSource : public media::AudioCapturerSource {
     start_callback_ = std::move(start_callback);
     stop_callback_ = std::move(stop_callback);
   }
+
+  MockCapturerSource(const MockCapturerSource&) = delete;
+  MockCapturerSource& operator=(const MockCapturerSource&) = delete;
 
   void Initialize(const media::AudioParameters& params,
                   CaptureCallback* callback) {
@@ -122,8 +125,6 @@ class MockCapturerSource : public media::AudioCapturerSource {
   StopCallback stop_callback_;
   CaptureCallback* capture_callback_;
   media::AudioParameters audio_parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCapturerSource);
 };
 
 std::string MakeGoodResponse() {

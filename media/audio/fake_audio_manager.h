@@ -7,7 +7,6 @@
 
 #include <string>
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/audio/fake_audio_output_stream.h"
@@ -18,6 +17,10 @@ class MEDIA_EXPORT FakeAudioManager : public AudioManagerBase {
  public:
   FakeAudioManager(std::unique_ptr<AudioThread> audio_thread,
                    AudioLogFactory* audio_log_factory);
+
+  FakeAudioManager(const FakeAudioManager&) = delete;
+  FakeAudioManager& operator=(const FakeAudioManager&) = delete;
+
   ~FakeAudioManager() override;
 
   // Implementation of AudioManager.
@@ -48,9 +51,6 @@ class MEDIA_EXPORT FakeAudioManager : public AudioManagerBase {
   AudioParameters GetPreferredOutputStreamParameters(
       const std::string& output_device_id,
       const AudioParameters& input_params) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioManager);
 };
 
 }  // namespace media

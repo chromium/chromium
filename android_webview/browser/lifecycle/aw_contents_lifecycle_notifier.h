@@ -38,6 +38,11 @@ class AwContentsLifecycleNotifier {
   // lose foreground.
   explicit AwContentsLifecycleNotifier(
       OnLoseForegroundCallback on_lose_foreground_callback);
+
+  AwContentsLifecycleNotifier(const AwContentsLifecycleNotifier&) = delete;
+  AwContentsLifecycleNotifier& operator=(const AwContentsLifecycleNotifier&) =
+      delete;
+
   virtual ~AwContentsLifecycleNotifier();
 
   void OnWebViewCreated(const AwContents* aw_contents);
@@ -60,14 +65,14 @@ class AwContentsLifecycleNotifier {
   struct AwContentsData {
     AwContentsData();
     AwContentsData(AwContentsData&& data);
+
+    AwContentsData(const AwContentsData&) = delete;
+
     ~AwContentsData();
 
     bool attached_to_window = false;
     bool window_visible = false;
     AwContentsState aw_content_state = AwContentsState::kDetached;
-
-   private:
-    DISALLOW_COPY(AwContentsData);
   };
 
   friend class TestAwContentsLifecycleNotifier;
@@ -104,8 +109,6 @@ class AwContentsLifecycleNotifier {
       WebViewAppStateObserver::State::kDestroyed;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AwContentsLifecycleNotifier);
 };
 
 }  // namespace android_webview

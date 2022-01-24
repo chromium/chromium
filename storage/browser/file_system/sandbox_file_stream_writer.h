@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamWriter
                           const FileSystemURL& url,
                           int64_t initial_offset,
                           const UpdateObserverList& observers);
+
+  SandboxFileStreamWriter(const SandboxFileStreamWriter&) = delete;
+  SandboxFileStreamWriter& operator=(const SandboxFileStreamWriter&) = delete;
+
   ~SandboxFileStreamWriter() override;
 
   // FileStreamWriter overrides.
@@ -91,8 +95,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamWriter
   int64_t default_quota_;
 
   base::WeakPtrFactory<SandboxFileStreamWriter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxFileStreamWriter);
 };
 
 }  // namespace storage

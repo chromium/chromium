@@ -10,14 +10,36 @@ const DEFAULT_BLACK_CURSOR_COLOR = 0;
  * 'settings-manage-a11y-page' is the subpage with the accessibility
  * settings.
  */
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import '../../controls/settings_slider.js';
+import '../../controls/settings_toggle_button.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {Router, Route} from '../../router.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import '../../settings_shared_css.js';
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, getDisplayApi, StorageSpaceState} from '../device_page/device_page_browser_proxy.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import {RouteOriginBehaviorImpl, RouteOriginBehavior} from '../route_origin_behavior.m.js';
+import {ManageA11yPageBrowserProxyImpl, ManageA11yPageBrowserProxy} from './manage_a11y_page_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-manage-a11y-page',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
-    settings.RouteObserverBehavior,
-    settings.RouteOriginBehavior,
+    RouteObserverBehavior,
+    RouteOriginBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -168,14 +190,6 @@ Polymer({
     },
 
     /** @private */
-    isMagnifierPanningImprovementsEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isMagnifierPanningImprovementsEnabled');
-      },
-    },
-
-    /** @private */
     isMagnifierContinuousMouseFollowingModeSettingEnabled_: {
       type: Boolean,
       value() {
@@ -227,20 +241,39 @@ Polymer({
     /** @private */
     dictationSubtitle_: {
       type: String,
-      value: loadTimeData.getString('dictationDescription'),
+      value() {
+        return loadTimeData.getString('dictationDescription');
+      }
     },
 
     /** @private */
-    dictationLocaleMenuSubtitle_: {
+    dictationLocaleSubtitleOverride_: {
       type: String,
       value: '',
     },
 
     /** @private */
-    areDictationLocalePrefsAllowed_: {
+    useDictationLocaleSubtitleOverride_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    dictationLocaleMenuSubtitle_: {
       type: String,
+      computed: 'computeDictationLocaleSubtitle_(' +
+          'dictationLocaleOptions_, ' +
+          'prefs.settings.a11y.dictation_locale.value, ' +
+          'dictationLocaleSubtitleOverride_)',
+    },
+
+    /** @private */
+    areDictationLocalePrefsAllowed_: {
+      type: Boolean,
       readOnly: true,
-      value: loadTimeData.getBoolean('areDictationLocalePrefsAllowed'),
+      value() {
+        return loadTimeData.getBoolean('areDictationLocalePrefsAllowed');
+      }
     },
 
     /** @private */
@@ -346,49 +379,52 @@ Polymer({
         'isKioskModeActive_)',
   ],
 
-  /** settings.RouteOriginBehavior override */
-  route_: settings.routes.MANAGE_ACCESSIBILITY,
+  /** RouteOriginBehavior override */
+  route_: routes.MANAGE_ACCESSIBILITY,
 
   /** @private {?ManageA11yPageBrowserProxy} */
   manageBrowserProxy_: null,
 
-  /** @private {?settings.DevicePageBrowserProxy} */
+  /** @private {?DevicePageBrowserProxy} */
   deviceBrowserProxy_: null,
 
   /** @override */
   created() {
     this.manageBrowserProxy_ = ManageA11yPageBrowserProxyImpl.getInstance();
-    this.deviceBrowserProxy_ =
-        settings.DevicePageBrowserProxyImpl.getInstance();
+    this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   },
 
   /** @override */
   attached() {
     this.addWebUIListener(
-        'has-mouse-changed', this.set.bind(this, 'hasMouse_'));
+        'has-mouse-changed', (exists) => this.set('hasMouse_', exists));
     this.addWebUIListener(
-        'has-pointing-stick-changed', this.set.bind(this, 'hasPointingStick_'));
+        'has-pointing-stick-changed',
+        (exists) => this.set('hasPointingStick_', exists));
     this.addWebUIListener(
-        'has-touchpad-changed', this.set.bind(this, 'hasTouchpad_'));
+        'has-touchpad-changed', (exists) => this.set('hasTouchpad_', exists));
     this.deviceBrowserProxy_.initializePointers();
-
     this.addWebUIListener(
-        'has-hardware-keyboard', this.set.bind(this, 'hasKeyboard_'));
+        'has-hardware-keyboard',
+        (hasKeyboard) => this.set('hasKeyboard_', hasKeyboard));
     this.deviceBrowserProxy_.initializeKeyboardWatcher();
   },
 
   /** @override */
   ready() {
     this.addWebUIListener(
-        'initial-data-ready', this.onManageAllyPageReady_.bind(this));
+        'initial-data-ready',
+        (startup_sound_enabled) =>
+            this.onManageAllyPageReady_(startup_sound_enabled));
     this.addWebUIListener(
-        'dictation-setting-subtitle-changed',
-        this.onDictationSettingSubtitleChanged_.bind(this));
+        'dictation-locale-menu-subtitle-changed',
+        (result) => this.onDictationLocaleMenuSubtitleChanged_(result));
     this.addWebUIListener(
-        'dictation-locales-set', this.onDictationLocalesSet_.bind(this));
+        'dictation-locales-set',
+        (locales) => this.onDictationLocalesSet_(locales));
     this.manageBrowserProxy_.manageA11yPageReady();
 
-    const r = settings.routes;
+    const r = routes;
     this.addFocusConfig_(r.MANAGE_TTS_SETTINGS, '#ttsSubpageButton');
     this.addFocusConfig_(r.MANAGE_CAPTION_SETTINGS, '#captionsSubpageButton');
     this.addFocusConfig_(
@@ -399,12 +435,12 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.MANAGE_ACCESSIBILITY) {
+    if (route !== routes.MANAGE_ACCESSIBILITY) {
       return;
     }
 
@@ -451,8 +487,7 @@ Polymer({
 
   /** @private */
   onManageTtsSettingsTap_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MANAGE_TTS_SETTINGS);
+    Router.getInstance().navigateTo(routes.MANAGE_TTS_SETTINGS);
   },
 
   /** @private */
@@ -467,8 +502,7 @@ Polymer({
 
   /** @private */
   onCaptionsClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MANAGE_CAPTION_SETTINGS);
+    Router.getInstance().navigateTo(routes.MANAGE_CAPTION_SETTINGS);
   },
 
   /** @private */
@@ -478,14 +512,13 @@ Polymer({
 
   /** @private */
   onSwitchAccessSettingsTap_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MANAGE_SWITCH_ACCESS_SETTINGS);
+    Router.getInstance().navigateTo(routes.MANAGE_SWITCH_ACCESS_SETTINGS);
   },
 
   /** @private */
   onDisplayTap_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.DISPLAY,
+    Router.getInstance().navigateTo(
+        routes.DISPLAY,
         /* dynamicParams */ null, /* removeSearch */ true);
   },
 
@@ -497,8 +530,8 @@ Polymer({
 
   /** @private */
   onKeyboardTap_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.KEYBOARD,
+    Router.getInstance().navigateTo(
+        routes.KEYBOARD,
         /* dynamicParams */ null, /* removeSearch */ true);
   },
 
@@ -606,8 +639,8 @@ Polymer({
 
   /** @private */
   onMouseTap_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.POINTERS,
+    Router.getInstance().navigateTo(
+        routes.POINTERS,
         /* dynamicParams */ null, /* removeSearch */ true);
   },
 
@@ -636,8 +669,9 @@ Polymer({
    * @param {string} subtitle
    * @private
    */
-  onDictationSettingSubtitleChanged_(subtitle) {
-    this.dictationSubtitle_ = subtitle;
+  onDictationLocaleMenuSubtitleChanged_(subtitle) {
+    this.useDictationLocaleSubtitleOverride_ = true;
+    this.dictationLocaleSubtitleOverride_ = subtitle;
   },
 
 
@@ -662,24 +696,32 @@ Polymer({
     const currentLocale =
         this.get('prefs.settings.a11y.dictation_locale.value');
     this.dictationLocaleOptions_ =
-        this.dictationLocalesList_
-            .map((localeInfo) => {
-              return {
-                name: localeInfo.name,
-                value: localeInfo.value,
-                offline: localeInfo.offline,
-                recommended: localeInfo.recommended ||
-                    localeInfo.value === currentLocale,
-              };
-            });
-    this.updateDictationLocaleSubtitle_();
+        this.dictationLocalesList_.map((localeInfo) => {
+          return {
+            name: localeInfo.name,
+            value: localeInfo.value,
+            worksOffline: localeInfo.worksOffline,
+            installed: localeInfo.installed,
+            recommended:
+                localeInfo.recommended || localeInfo.value === currentLocale,
+          };
+        });
   },
 
   /**
-   * Updates the Dictation locale subtitle.
+   * Calculates the Dictation locale subtitle based on the current
+   * locale from prefs and the offline availability of that locale.
+   * @return {string}
    * @private
    */
-  updateDictationLocaleSubtitle_() {
+  computeDictationLocaleSubtitle_() {
+    if (this.useDictationLocaleSubtitleOverride_) {
+      // Only use the subtitle override once, since we still want the subtitle
+      // to repsond to changes to the dictation locale.
+      this.useDictationLocaleSubtitleOverride_ = false;
+      return this.dictationLocaleSubtitleOverride_;
+    }
+
     const currentLocale =
         this.get('prefs.settings.a11y.dictation_locale.value');
     const locale = this.dictationLocaleOptions_.find(
@@ -687,10 +729,21 @@ Polymer({
     if (!locale) {
       return '';
     }
-    this.dictationLocaleMenuSubtitle_ = this.i18n(
-        locale.offline ? 'dictationLocaleSubLabelOffline' :
-                         'dictationLocaleSubLabelNetwork',
-        locale.name);
+
+    if (!locale.worksOffline) {
+      // If a locale is not supported offline, then use the network subtitle.
+      return this.i18n('dictationLocaleSubLabelNetwork', locale.name);
+    }
+
+    if (!locale.installed) {
+      // If a locale is supported offline, but isn't installed, then use the
+      // temporary network subtitle.
+      return this.i18n(
+          'dictationLocaleSubLabelNetworkTemporarily', locale.name);
+    }
+
+    // If we get here, we know a locale is both supported offline and installed.
+    return this.i18n('dictationLocaleSubLabelOffline', locale.name);
   },
 
   /** @private */
@@ -703,6 +756,5 @@ Polymer({
   /** @private */
   onChangeDictationLocalesDialogClosed_() {
     this.showDictationLocaleMenu_ = false;
-    this.updateDictationLocaleSubtitle_();
   },
 });

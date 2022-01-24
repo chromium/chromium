@@ -37,6 +37,7 @@ extern NSString* const kTertiaryBackgroundColor;
 extern NSString* const kTextPrimaryColor;
 extern NSString* const kTextSecondaryColor;
 extern NSString* const kTextTertiaryColor;
+extern NSString* const kTextQuaternaryColor;
 extern NSString* const kTextfieldBackgroundColor;
 extern NSString* const kTextfieldPlaceholderColor;
 // Color used for buttons on a toolbar.
@@ -55,6 +56,11 @@ extern NSString* const kBlueColor;
 extern NSString* const kBlueHaloColor;
 // Standard green color.
 extern NSString* const kGreenColor;
+
+// Other shades of green from the palette.
+extern NSString* const kGreen50Color;
+extern NSString* const kGreen700Color;
+
 // Standard red color. This is most commonly used for the tint color on
 // destructive controls.
 extern NSString* const kRedColor;
@@ -70,25 +76,5 @@ extern NSString* const kGrey600Color;
 extern NSString* const kGrey700Color;
 extern NSString* const kGrey800Color;
 extern NSString* const kGrey900Color;
-
-// Temporary colors for iOS 12. Because overridePreferredInterfaceStyle isn't
-// available in iOS 12, any views that should always be dark (e.g. incognito)
-// need to use colorsets that always use the dark variant.
-// TODO(crbug.com/981889): Clean up after iOS 12 support is dropped.
-
-extern NSString* const kBackgroundDarkColor;
-extern NSString* const kSecondaryBackgroundDarkColor;
-extern NSString* const kTertiaryBackgroundDarkColor;
-extern NSString* const kCloseButtonDarkColor;
-extern NSString* const kTableViewRowHighlightDarkColor;
-extern NSString* const kTextPrimaryDarkColor;
-extern NSString* const kTextSecondaryDarkColor;
-extern NSString* const kTextfieldBackgroundDarkColor;
-extern NSString* const kTextfieldPlaceholderDarkColor;
-extern NSString* const kToolbarButtonDarkColor;
-
-extern NSString* const kBlueDarkColor;
-extern NSString* const kGreenDarkColor;
-extern NSString* const kRedDarkColor;
 
 #endif  // IOS_CHROME_COMMON_UI_COLORS_SEMANTIC_COLOR_NAMES_H_

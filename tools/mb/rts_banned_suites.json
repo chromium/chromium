@@ -23,6 +23,7 @@
     "monochrome_public_apk_checker"
   ],
   "fuchsia_x64_rts": [
-    "blink_web_tests"
+    "blink_web_tests",
+    "fuchsia_telemetry_gpu_integration_test"
   ]
 }

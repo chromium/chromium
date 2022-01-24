@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "chromecast/browser/test/mock_cast_content_window_delegate.h"
 #include "chromecast/browser/test/mock_cast_web_view.h"
 #include "chromecast/browser/webview/cast_window_embedder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,13 +69,9 @@ class CastContentWindowEmbeddedTest : public testing::Test {
 
   void SetUp() override {
     cast_window_embedder_ = std::make_unique<MockCastWindowEmbedder>();
-    mock_cast_content_window_delegate_ =
-        std::make_unique<MockCastContentWindowDelegate>();
   }
 
   std::unique_ptr<MockCastWindowEmbedder> cast_window_embedder_;
-  std::unique_ptr<MockCastContentWindowDelegate>
-      mock_cast_content_window_delegate_;
   std::unique_ptr<CastContentWindowEmbedded> cast_content_window_embedded_;
 };
 
@@ -86,8 +81,8 @@ TEST_F(CastContentWindowEmbeddedTest, AddObserverOnWindowCreation) {
   EXPECT_CALL(*cast_window_embedder_, AddEmbeddedWindow(_)).Times(1);
 
   cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
 }
 
 // Test 2: Embedded window shall remove itself from the CastWindowEmbedder's
@@ -96,8 +91,8 @@ TEST_F(CastContentWindowEmbeddedTest, RemoveObserverOnWindowClose) {
   EXPECT_CALL(*cast_window_embedder_, RemoveEmbeddedWindow(_)).Times(1);
 
   cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
   cast_content_window_embedded_.reset();
 }
 
@@ -109,8 +104,8 @@ TEST_F(CastContentWindowEmbeddedTest,
   EXPECT_CALL(*cast_window_embedder_, GenerateWindowId()).Times(1);
 
   cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
 }
 
 // Test 4: Delegate can handle navigation GO_BACK event. In this case,
@@ -125,18 +120,17 @@ TEST_F(CastContentWindowEmbeddedTest, HandleNavigationEventByDelegate) {
       .Times(1)
       .WillOnce(Return(fake_window_id /* window_id */));
 
-  EXPECT_CALL(*mock_cast_content_window_delegate_,
-              CanHandleGesture(GestureType::GO_BACK))
-      .Times(1)
-      .WillOnce(Return(true));
+  cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
 
-  // Delegate of the CastContentWindow indicts that it has handled the event.
-  EXPECT_CALL(*mock_cast_content_window_delegate_, ConsumeGesture(_, _))
-      .Times(1)
-      .WillOnce([](GestureType gesture_type,
-                   base::OnceCallback<void(bool)> consume_gesture_completed) {
-        std::move(consume_gesture_completed).Run(true);
-      });
+  cast_content_window_embedded_->gesture_router()->SetCanGoBack(true);
+  cast_content_window_embedded_->gesture_router()->SetConsumeGestureCallback(
+      base::BindRepeating(
+          [](GestureType gesture_type,
+             base::OnceCallback<void(bool)> consume_gesture_completed) {
+            std::move(consume_gesture_completed).Run(true);
+          }));
 
   // CastWindowEmbedder shall receive the ack of event handling
   EXPECT_CALL(
@@ -144,10 +138,6 @@ TEST_F(CastContentWindowEmbeddedTest, HandleNavigationEventByDelegate) {
       GenerateAndSendNavigationHandleResult(
           fake_window_id, _, true, CastWindowEmbedder::NavigationType::GO_BACK))
       .Times(1);
-
-  cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
 
   CastWindowEmbedder::EmbedderWindowEvent window_event;
   window_event.window_id = 1;
@@ -167,19 +157,20 @@ TEST_F(CastContentWindowEmbeddedTest, NavigationEventUnhandled) {
       .Times(1)
       .WillOnce(Return(fake_window_id /* window_id */));
 
-  EXPECT_CALL(*mock_cast_content_window_delegate_,
-              CanHandleGesture(GestureType::GO_BACK))
-      .Times(1)
-      .WillOnce(Return(true));
+  cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
+
+  cast_content_window_embedded_->gesture_router()->SetCanGoBack(true);
 
   // Delegate of the CastContentWindow indicts that it dit not handle the
   // event.
-  EXPECT_CALL(*mock_cast_content_window_delegate_, ConsumeGesture(_, _))
-      .Times(1)
-      .WillOnce([](GestureType gesture_type,
-                   base::OnceCallback<void(bool)> consume_gesture_completed) {
-        std::move(consume_gesture_completed).Run(false /* handled */);
-      });
+  cast_content_window_embedded_->gesture_router()->SetConsumeGestureCallback(
+      base::BindRepeating(
+          [](GestureType gesture_type,
+             base::OnceCallback<void(bool)> consume_gesture_completed) {
+            std::move(consume_gesture_completed).Run(false);
+          }));
 
   // CastWindowEmbedder shall receive the ack of event handling
   EXPECT_CALL(*cast_window_embedder_,
@@ -187,10 +178,6 @@ TEST_F(CastContentWindowEmbeddedTest, NavigationEventUnhandled) {
                   fake_window_id, _, false /* handled */,
                   CastWindowEmbedder::NavigationType::GO_BACK))
       .Times(1);
-
-  cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
 
   CastWindowEmbedder::EmbedderWindowEvent window_event;
   window_event.window_id = 1;
@@ -210,15 +197,11 @@ TEST_F(CastContentWindowEmbeddedTest, DelegateCannotHandleGoBackGesture) {
       .Times(1)
       .WillOnce(Return(fake_window_id /* window_id */));
 
-  EXPECT_CALL(*mock_cast_content_window_delegate_,
-              CanHandleGesture(GestureType::GO_BACK))
-      .Times(1)
-      .WillOnce(Return(false));
+  cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
 
-  // Delegate of the CastContentWindow indicts that it dit not handled the
-  // event.
-  EXPECT_CALL(*mock_cast_content_window_delegate_, ConsumeGesture(_, _))
-      .Times(0);
+  cast_content_window_embedded_->gesture_router()->SetCanGoBack(false);
 
   // CastWindowEmbedder shall receive the ack of event handling
   EXPECT_CALL(*cast_window_embedder_,
@@ -226,10 +209,6 @@ TEST_F(CastContentWindowEmbeddedTest, DelegateCannotHandleGoBackGesture) {
                   fake_window_id, _, false /* handled */,
                   CastWindowEmbedder::NavigationType::GO_BACK))
       .Times(1);
-
-  cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
 
   CastWindowEmbedder::EmbedderWindowEvent window_event;
   window_event.window_id = 1;
@@ -249,8 +228,8 @@ TEST_F(CastContentWindowEmbeddedTest, WindowIdMustMatchInitialValue) {
       .WillOnce(Return(fake_window_id /* window_id */));
 
   cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
 
   EXPECT_EQ(fake_window_id, cast_content_window_embedded_->GetWindowId());
 }

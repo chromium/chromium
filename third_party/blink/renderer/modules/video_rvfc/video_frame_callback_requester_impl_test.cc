@@ -86,19 +86,14 @@ class MetadataHelper {
     // have sub-microsecond resolution for those values.
 
     metadata_.presented_frames = 42;
-    metadata_.presentation_time =
-        now + base::TimeDelta::FromMillisecondsD(10.1234);
-    metadata_.expected_display_time =
-        now + base::TimeDelta::FromMillisecondsD(26.3467);
+    metadata_.presentation_time = now + base::Milliseconds(10.1234);
+    metadata_.expected_display_time = now + base::Milliseconds(26.3467);
     metadata_.width = 320;
     metadata_.height = 480;
-    metadata_.media_time = base::TimeDelta::FromSecondsD(3.14);
-    metadata_.metadata.processing_time =
-        base::TimeDelta::FromMillisecondsD(60.982);
-    metadata_.metadata.capture_begin_time =
-        now + base::TimeDelta::FromMillisecondsD(5.6785);
-    metadata_.metadata.receive_time =
-        now + base::TimeDelta::FromMillisecondsD(17.1234);
+    metadata_.media_time = base::Seconds(3.14);
+    metadata_.metadata.processing_time = base::Milliseconds(60.982);
+    metadata_.metadata.capture_begin_time = now + base::Milliseconds(5.6785);
+    metadata_.metadata.receive_time = now + base::Milliseconds(17.1234);
     metadata_.metadata.rtp_timestamp = 12345;
   }
 
@@ -173,8 +168,7 @@ class VfcRequesterParameterVerifierCallback
   }
 
   static double ClampElapsedProcessingTime(base::TimeDelta time) {
-    return time.FloorToMultiple(base::TimeDelta::FromMicroseconds(100))
-        .InSecondsF();
+    return time.FloorToMultiple(base::Microseconds(100)).InSecondsF();
   }
 
   double now_;

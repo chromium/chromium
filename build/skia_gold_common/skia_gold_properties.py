@@ -11,8 +11,6 @@ Examples:
 
 import logging
 import os
-import subprocess
-import sys
 
 
 class SkiaGoldProperties(object):
@@ -31,6 +29,7 @@ class SkiaGoldProperties(object):
     self._bypass_skia_gold_functionality = None
     self._code_review_system = None
     self._continuous_integration_system = None
+    self._local_png_directory = None
 
     self._InitializeProperties(args)
 
@@ -60,6 +59,10 @@ class SkiaGoldProperties(object):
   @property
   def local_pixel_tests(self):
     return self._IsLocalRun()
+
+  @property
+  def local_png_directory(self):
+    return self._local_png_directory
 
   @property
   def no_luci_auth(self):
@@ -110,6 +113,9 @@ class SkiaGoldProperties(object):
     if hasattr(args, 'local_pixel_tests'):
       # If not set, will be automatically determined later if needed.
       self._local_pixel_tests = args.local_pixel_tests
+
+    if hasattr(args, 'skia_gold_local_png_write_directory'):
+      self._local_png_directory = args.skia_gold_local_png_write_directory
 
     if hasattr(args, 'no_luci_auth'):
       self._no_luci_auth = args.no_luci_auth

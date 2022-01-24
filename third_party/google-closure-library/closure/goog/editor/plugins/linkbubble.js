@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Base class for bubble plugins.
@@ -32,6 +24,7 @@ goog.require('goog.style');
 goog.require('goog.ui.editor.messages');
 goog.require('goog.uri.utils');
 goog.require('goog.window');
+goog.requireType('goog.events.BrowserEvent');
 
 
 
@@ -43,6 +36,7 @@ goog.require('goog.window');
  * @extends {goog.editor.plugins.AbstractBubblePlugin}
  */
 goog.editor.plugins.LinkBubble = function(var_args) {
+  'use strict';
   goog.editor.plugins.LinkBubble.base(this, 'constructor');
 
   /**
@@ -50,7 +44,7 @@ goog.editor.plugins.LinkBubble = function(var_args) {
    * @type {Array<!goog.editor.plugins.LinkBubble.Action>}
    * @private
    */
-  this.extraActions_ = goog.array.toArray(arguments);
+  this.extraActions_ = Array.prototype.slice.call(arguments);
 
   /**
    * List of spans corresponding to the extra actions.
@@ -171,6 +165,7 @@ goog.editor.plugins.LinkBubble.MSG_INVALID_URL_LINK_BUBBLE =
  * @private
  */
 goog.editor.plugins.LinkBubble.shouldShowLinkBubble_ = function(targetElement) {
+  'use strict';
   return !targetElement.hasAttribute(
       goog.editor.plugins.LinkBubble.DISABLE_LINK_BUBBLE_DATA_ATTRIBUTE_);
 };
@@ -204,6 +199,7 @@ goog.editor.plugins.LinkBubble.prototype.blockOpeningUnsafeSchemes_ = true;
  * if the user had opened a blank window and typed the url in themselves.
  */
 goog.editor.plugins.LinkBubble.prototype.stopReferrerLeaks = function() {
+  'use strict';
   // TODO(user): Right now only 2 plugins have this API to stop
   // referrer leaks. If more plugins need to do this, come up with a way to
   // enable the functionality in all plugins at once. Same thing for
@@ -221,6 +217,7 @@ goog.editor.plugins.LinkBubble.prototype.stopReferrerLeaks = function() {
  */
 goog.editor.plugins.LinkBubble.prototype.setBlockOpeningUnsafeSchemes =
     function(blockOpeningUnsafeSchemes) {
+  'use strict';
   this.blockOpeningUnsafeSchemes_ = blockOpeningUnsafeSchemes;
 };
 
@@ -235,12 +232,14 @@ goog.editor.plugins.LinkBubble.prototype.setBlockOpeningUnsafeSchemes =
  */
 goog.editor.plugins.LinkBubble.prototype.setSafeToOpenSchemes = function(
     schemes) {
+  'use strict';
   this.safeToOpenSchemes_ = schemes;
 };
 
 
 /** @override */
 goog.editor.plugins.LinkBubble.prototype.getTrogClassId = function() {
+  'use strict';
   return 'LinkBubble';
 };
 
@@ -248,6 +247,7 @@ goog.editor.plugins.LinkBubble.prototype.getTrogClassId = function() {
 /** @override */
 goog.editor.plugins.LinkBubble.prototype.isSupportedCommand = function(
     command) {
+  'use strict';
   return command == goog.editor.Command.UPDATE_LINK_BUBBLE;
 };
 
@@ -255,6 +255,7 @@ goog.editor.plugins.LinkBubble.prototype.isSupportedCommand = function(
 /** @override */
 goog.editor.plugins.LinkBubble.prototype.execCommandInternal = function(
     command, var_args) {
+  'use strict';
   if (command == goog.editor.Command.UPDATE_LINK_BUBBLE) {
     this.updateLink_();
   }
@@ -266,6 +267,7 @@ goog.editor.plugins.LinkBubble.prototype.execCommandInternal = function(
  * @private
  */
 goog.editor.plugins.LinkBubble.prototype.updateLink_ = function() {
+  'use strict';
   var targetEl = this.getTargetElement();
   if (targetEl) {
     this.closeBubble();
@@ -277,6 +279,7 @@ goog.editor.plugins.LinkBubble.prototype.updateLink_ = function() {
 /** @override */
 goog.editor.plugins.LinkBubble.prototype.getBubbleTargetFromSelection =
     function(selectedElement) {
+  'use strict';
   var bubbleTarget = goog.dom.getAncestorByTagNameAndClass(
       selectedElement, goog.dom.TagName.A);
 
@@ -308,6 +311,7 @@ goog.editor.plugins.LinkBubble.prototype.getBubbleTargetFromSelection =
  * @param {function(string) : string} func The function to use.
  */
 goog.editor.plugins.LinkBubble.prototype.setTestLinkUrlFn = function(func) {
+  'use strict';
   this.testLinkUrlFn_ = func;
 };
 
@@ -318,6 +322,7 @@ goog.editor.plugins.LinkBubble.prototype.setTestLinkUrlFn = function(func) {
  * @protected
  */
 goog.editor.plugins.LinkBubble.prototype.getTargetUrl = function() {
+  'use strict';
   // Get the href-attribute through getAttribute() rather than the href property
   // because Google-Toolbar on Firefox with "Send with Gmail" turned on
   // modifies the href-property of 'mailto:' links but leaves the attribute
@@ -328,12 +333,14 @@ goog.editor.plugins.LinkBubble.prototype.getTargetUrl = function() {
 
 /** @override */
 goog.editor.plugins.LinkBubble.prototype.getBubbleType = function() {
+  'use strict';
   return String(goog.dom.TagName.A);
 };
 
 
 /** @override */
 goog.editor.plugins.LinkBubble.prototype.getBubbleTitle = function() {
+  'use strict';
   return goog.ui.editor.messages.MSG_LINK_CAPTION;
 };
 
@@ -344,12 +351,14 @@ goog.editor.plugins.LinkBubble.prototype.getBubbleTitle = function() {
  * @protected
  */
 goog.editor.plugins.LinkBubble.prototype.getTestLinkMessage = function() {
+  'use strict';
   return goog.editor.plugins.LinkBubble.MSG_LINK_BUBBLE_TEST_LINK;
 };
 
 /** @override */
 goog.editor.plugins.LinkBubble.prototype.handleSelectionChangeInternal =
     function(selectedElement) {
+  'use strict';
   if (selectedElement) {
     var bubbleTarget = this.getBubbleTargetFromSelection(selectedElement);
     if (bubbleTarget &&
@@ -363,9 +372,13 @@ goog.editor.plugins.LinkBubble.prototype.handleSelectionChangeInternal =
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {missingProperties} dom_ isn't declared
+ */
 goog.editor.plugins.LinkBubble.prototype.createBubbleContents = function(
     bubbleContainer) {
+  'use strict';
   var linkObj = this.getLinkToTextObj_();
 
   // Create linkTextSpan, show plain text for e-mail address or truncate the
@@ -416,6 +429,7 @@ goog.editor.plugins.LinkBubble.prototype.createBubbleContents = function(
     var actionSpan = this.createLinkOption(action.spanId_);
     this.actionSpans_.push(actionSpan);
     this.createLink(action.linkId_, action.message_, function() {
+      'use strict';
       action.actionFn_(this.getTargetUrl());
     }, actionSpan);
   }
@@ -449,6 +463,7 @@ goog.editor.plugins.LinkBubble.prototype.createBubbleContents = function(
  * @protected
  */
 goog.editor.plugins.LinkBubble.prototype.testLink = function(opt_event) {
+  'use strict';
   goog.window.open(
       this.getTestLinkAction_(),
       {'target': '_blank', 'noreferrer': this.stopReferrerLeaks_},
@@ -477,6 +492,7 @@ goog.editor.plugins.LinkBubble.prototype.isInvalidUrl = goog.functions.FALSE;
  * @private
  */
 goog.editor.plugins.LinkBubble.prototype.getLinkToTextObj_ = function() {
+  'use strict';
   var isError;
   var targetUrl = this.getTargetUrl();
 
@@ -497,6 +513,7 @@ goog.editor.plugins.LinkBubble.prototype.getLinkToTextObj_ = function() {
  * @private
  */
 goog.editor.plugins.LinkBubble.prototype.showLinkDialog_ = function(e) {
+  'use strict';
   // Needed when this occurs due to an ENTER key event, else the newly created
   // dialog manages to have its OK button pressed, causing it to disappear.
   e.preventDefault();
@@ -515,6 +532,7 @@ goog.editor.plugins.LinkBubble.prototype.showLinkDialog_ = function(e) {
  * @private
  */
 goog.editor.plugins.LinkBubble.prototype.deleteLink_ = function(e) {
+  'use strict';
   // Needed when this occurs due to an ENTER key event, else the editor receives
   // the key press and inserts a newline.
   e.preventDefault();
@@ -542,8 +560,10 @@ goog.editor.plugins.LinkBubble.prototype.deleteLink_ = function(e) {
  * Sets the proper state for the action links.
  * @protected
  * @override
+ * @suppress {missingProperties} dom_ is not declared
  */
 goog.editor.plugins.LinkBubble.prototype.onShow = function() {
+  'use strict';
   var linkDiv =
       this.dom_.getElement(goog.editor.plugins.LinkBubble.LINK_DIV_ID_);
   if (linkDiv) {
@@ -573,6 +593,7 @@ goog.editor.plugins.LinkBubble.prototype.onShow = function() {
  * @private
  */
 goog.editor.plugins.LinkBubble.prototype.getTestLinkAction_ = function() {
+  'use strict';
   var targetUrl = this.getTargetUrl();
   return this.testLinkUrlFn_ ? this.testLinkUrlFn_(targetUrl) : targetUrl;
 };
@@ -585,6 +606,7 @@ goog.editor.plugins.LinkBubble.prototype.getTestLinkAction_ = function() {
  * @protected
  */
 goog.editor.plugins.LinkBubble.prototype.shouldOpenUrl = function(url) {
+  'use strict';
   return !this.blockOpeningUnsafeSchemes_ || this.isSafeSchemeToOpen_(url);
 };
 
@@ -597,6 +619,7 @@ goog.editor.plugins.LinkBubble.prototype.shouldOpenUrl = function(url) {
  * @private
  */
 goog.editor.plugins.LinkBubble.prototype.isSafeSchemeToOpen_ = function(url) {
+  'use strict';
   var scheme = goog.uri.utils.getScheme(url) || 'http';
   return goog.array.contains(this.safeToOpenSchemes_, scheme.toLowerCase());
 };
@@ -617,6 +640,7 @@ goog.editor.plugins.LinkBubble.prototype.isSafeSchemeToOpen_ = function(url) {
  */
 goog.editor.plugins.LinkBubble.Action = function(
     spanId, linkId, message, toShowFn, actionFn) {
+  'use strict';
   this.spanId_ = spanId;
   this.linkId_ = linkId;
   this.message_ = message;

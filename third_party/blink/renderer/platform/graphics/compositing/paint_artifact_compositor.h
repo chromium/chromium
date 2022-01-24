@@ -146,7 +146,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // nodes for noncomposited scrollers to complete the compositor's scroll
   // property tree.
   void Update(
-      const Vector<PreCompositedLayerInfo>& updated,
+      const HeapVector<PreCompositedLayerInfo>& updated,
       const ViewportProperties& viewport_properties,
       const Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes,
       Vector<std::unique_ptr<cc::DocumentTransitionRequest>> requests);
@@ -168,7 +168,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // This copies over the newly-painted PaintChunks to existing
   // |pending_layers_|, issues raster invalidations, and updates the existing
   // cc::Layer properties such as background color.
-  void UpdateRepaintedLayers(Vector<PreCompositedLayerInfo>& updated);
+  void UpdateRepaintedLayers(HeapVector<PreCompositedLayerInfo>& updated);
 
   bool DirectlyUpdateCompositedOpacityValue(const EffectPaintPropertyNode&);
   bool DirectlyUpdateScrollOffsetTransform(const TransformPaintPropertyNode&);
@@ -242,19 +242,21 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   void SetScrollbarNeedsDisplay(CompositorElementId element_id);
 
  private:
-  static void UpdateLayerProperties(cc::Layer&,
-                                    const PendingLayer&,
-                                    cc::LayerSelection& layer_selection);
+  static void UpdateLayerProperties(cc::Layer&, const PendingLayer&);
+  static void UpdateLayerSelection(cc::Layer&,
+                                   const PendingLayer&,
+                                   cc::LayerSelection& layer_selection);
 
   // Updates |content_layer_client| associated with a |pending_layer| following
   // a paint. This includes updating the drawings and raster invalidation.
   void UpdateRepaintedContentLayerClient(
       const PendingLayer& pending_layer,
+      bool pending_layer_chunks_unchanged,
       ContentLayerClientImpl& content_layer_client);
 
   // Collects the PaintChunks into groups which will end up in the same
   // cc layer. This is the entry point of the layerization algorithm.
-  void CollectPendingLayers(const Vector<PreCompositedLayerInfo>&);
+  void CollectPendingLayers(const HeapVector<PreCompositedLayerInfo>&);
 
   // This is the internal recursion of collectPendingLayers. This function
   // loops over the list of paint chunks, scoped by an isolated group

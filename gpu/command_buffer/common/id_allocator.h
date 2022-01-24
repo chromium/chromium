@@ -27,6 +27,10 @@ static const ResourceId kInvalidResource = 0u;
 class GPU_EXPORT IdAllocator {
  public:
   IdAllocator();
+
+  IdAllocator(const IdAllocator&) = delete;
+  IdAllocator& operator=(const IdAllocator&) = delete;
+
   ~IdAllocator();
 
   // Allocates a new resource ID.
@@ -58,8 +62,6 @@ class GPU_EXPORT IdAllocator {
   typedef std::map<ResourceId, ResourceId> ResourceIdRangeMap;
 
   ResourceIdRangeMap used_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdAllocator);
 };
 
 }  // namespace gpu

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -96,6 +95,9 @@ class CrostiniSshfsHelperTest : public testing::Test {
     fake_concierge_client_ = chromeos::FakeConciergeClient::Get();
   }
 
+  CrostiniSshfsHelperTest(const CrostiniSshfsHelperTest&) = delete;
+  CrostiniSshfsHelperTest& operator=(const CrostiniSshfsHelperTest&) = delete;
+
   ~CrostiniSshfsHelperTest() override {
     storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
         kMountName);
@@ -149,8 +151,6 @@ class CrostiniSshfsHelperTest : public testing::Test {
   std::unique_ptr<CrostiniSshfs> crostini_sshfs_;
   CrostiniManager* crostini_manager_;
   base::HistogramTester histogram_tester{};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniSshfsHelperTest);
 };
 
 TEST_F(CrostiniSshfsHelperTest, MountDiskMountsDisk) {

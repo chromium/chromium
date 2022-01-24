@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_NATIVE_IO_NATIVE_IO_QUOTA_CLIENT_H_
 
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "components/services/storage/public/cpp/storage_key_quota_client.h"
 #include "content/common/content_export.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -47,9 +48,9 @@ class CONTENT_EXPORT NativeIOQuotaClient
                              PerformStorageCleanupCallback callback) override;
 
  private:
-  NativeIOManager* manager_;
-
   SEQUENCE_CHECKER(sequence_checker_);
+
+  NativeIOManager* const manager_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

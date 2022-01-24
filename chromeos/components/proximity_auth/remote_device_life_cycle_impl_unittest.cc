@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -45,12 +44,15 @@ class TestableRemoteDeviceLifeCycleImpl : public RemoteDeviceLifeCycleImpl {
                                   secure_channel_client),
         remote_device_(remote_device) {}
 
+  TestableRemoteDeviceLifeCycleImpl(const TestableRemoteDeviceLifeCycleImpl&) =
+      delete;
+  TestableRemoteDeviceLifeCycleImpl& operator=(
+      const TestableRemoteDeviceLifeCycleImpl&) = delete;
+
   ~TestableRemoteDeviceLifeCycleImpl() override {}
 
  private:
   const chromeos::multidevice::RemoteDeviceRef remote_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestableRemoteDeviceLifeCycleImpl);
 };
 
 }  // namespace
@@ -58,6 +60,12 @@ class TestableRemoteDeviceLifeCycleImpl : public RemoteDeviceLifeCycleImpl {
 class ProximityAuthRemoteDeviceLifeCycleImplTest
     : public testing::Test,
       public RemoteDeviceLifeCycle::Observer {
+ public:
+  ProximityAuthRemoteDeviceLifeCycleImplTest(
+      const ProximityAuthRemoteDeviceLifeCycleImplTest&) = delete;
+  ProximityAuthRemoteDeviceLifeCycleImplTest& operator=(
+      const ProximityAuthRemoteDeviceLifeCycleImplTest&) = delete;
+
  protected:
   ProximityAuthRemoteDeviceLifeCycleImplTest()
       : test_remote_device_(
@@ -161,9 +169,6 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle thread_task_runner_handle_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthRemoteDeviceLifeCycleImplTest);
 };
 
 TEST_F(ProximityAuthRemoteDeviceLifeCycleImplTest,

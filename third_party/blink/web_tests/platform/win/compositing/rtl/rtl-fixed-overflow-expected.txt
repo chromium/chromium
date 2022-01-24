@@ -1,0 +1,71 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1000, 1000],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='positioned indicator'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='positioned layer'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 3
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 585],
+      "bounds": [785, 15]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 585]
+    },
+    {
+      "name": "Scroll corner of LayoutView #document",
+      "position": [785, 585],
+      "bounds": [15, 15],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-215, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [50, 50, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [50, 50, 0, 1]
+      ]
+    }
+  ]
+}
+

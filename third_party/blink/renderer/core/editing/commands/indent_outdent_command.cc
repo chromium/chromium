@@ -345,10 +345,19 @@ void IndentOutdentCommand::OutdentParagraph(EditingState* editing_state) {
     visible_end_of_paragraph =
         CreateVisiblePosition(last_child ? Position::AfterNode(*last_child)
                                          : end_of_paragraph.GetPosition());
-    if (visible_end_of_paragraph.IsNotNull() &&
-        !IsEndOfParagraph(visible_end_of_paragraph))
+    // Insert BR after the old paragraph end if it got merged into the next
+    // paragraph. This happens if the original paragraph end is no longer a
+    // paragraph end, or if it is followed by a BR.
+    // TODO(editing-dev): This doesn't work if there is other unrendered nodes
+    // (e.g., comments) between the old paragraph end and the BR.
+    const bool should_insert_br =
+        (visible_end_of_paragraph.IsNotNull() &&
+         !IsEndOfParagraph(visible_end_of_paragraph)) ||
+        IsA<HTMLBRElement>(split_point);
+    if (should_insert_br) {
       InsertNodeAt(MakeGarbageCollected<HTMLBRElement>(GetDocument()),
                    visible_end_of_paragraph.DeepEquivalent(), editing_state);
+    }
     return;
   }
 
@@ -445,7 +454,8 @@ void IndentOutdentCommand::OutdentRegion(
   Position end_after_selection =
       EndOfParagraph(NextPositionOf(end_of_last_paragraph)).DeepEquivalent();
 
-  while (end_of_current_paragraph.DeepEquivalent() != end_after_selection) {
+  while (!end_of_current_paragraph.IsNull() &&
+         end_of_current_paragraph.DeepEquivalent() != end_after_selection) {
     PositionWithAffinity end_of_next_paragraph =
         EndOfParagraph(NextPositionOf(end_of_current_paragraph))
             .ToPositionWithAffinity();

@@ -27,7 +27,7 @@ bool MockScreen::IsWindowUnderCursor(gfx::NativeWindow window) {
 }
 
 gfx::NativeWindow MockScreen::GetWindowAtScreenPoint(const gfx::Point& point) {
-  return gfx::NativeWindow();
+  return nullptr;
 }
 
 gfx::NativeWindow MockScreen::GetLocalProcessWindowAtPoint(

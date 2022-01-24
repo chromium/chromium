@@ -116,64 +116,54 @@ class AccessContextAuditDatabaseTest : public testing::Test {
             url::Origin::Create(GURL(kManyVisitsTopFrameOrigin1)),
             AccessContextAuditDatabase::StorageAPIType::kLocalStorage,
             url::Origin::Create(GURL("https://test.com")),
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromHours(1))),
+            base::Time::FromDeltaSinceWindowsEpoch(base::Hours(1))),
         AccessContextAuditDatabase::AccessRecord(
             url::Origin::Create(GURL(kManyVisitsTopFrameOrigin2)),
             AccessContextAuditDatabase::StorageAPIType::kLocalStorage,
             url::Origin::Create(GURL("https://test.com")),
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromHours(2))),
+            base::Time::FromDeltaSinceWindowsEpoch(base::Hours(2))),
         AccessContextAuditDatabase::AccessRecord(
             url::Origin::Create(GURL("https://test2.com:8000")), "cookie1",
             "test.com", "/",
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromHours(3)),
+            base::Time::FromDeltaSinceWindowsEpoch(base::Hours(3)),
             /* is_persistent */ true),
         AccessContextAuditDatabase::AccessRecord(
             url::Origin::Create(GURL(kManyVisitsTopFrameOrigin1)),
             kManyContextsCookieName, kManyContextsCookieDomain,
             kManyContextsCookiePath,
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromHours(4)),
+            base::Time::FromDeltaSinceWindowsEpoch(base::Hours(4)),
             /* is_persistent */ true),
         AccessContextAuditDatabase::AccessRecord(
             url::Origin::Create(GURL(kManyVisitsTopFrameOrigin2)),
             kManyContextsCookieName, kManyContextsCookieDomain,
             kManyContextsCookiePath,
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromHours(4)),
+            base::Time::FromDeltaSinceWindowsEpoch(base::Hours(4)),
             /* is_persistent */ true),
         AccessContextAuditDatabase::AccessRecord(
             url::Origin::Create(GURL("https://test4.com:8000")),
             kManyContextsStorageAPIType,
             url::Origin::Create(GURL(kManyContextsStorageAPIOrigin)),
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromHours(5))),
+            base::Time::FromDeltaSinceWindowsEpoch(base::Hours(5))),
         AccessContextAuditDatabase::AccessRecord(
             url::Origin::Create(GURL(kManyVisitsTopFrameOrigin1)),
             kManyContextsStorageAPIType,
             url::Origin::Create(GURL(kManyContextsStorageAPIOrigin)),
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromHours(6))),
+            base::Time::FromDeltaSinceWindowsEpoch(base::Hours(6))),
         AccessContextAuditDatabase::AccessRecord(
             url::Origin::Create(GURL(kManyVisitsTopFrameOrigin2)),
             kSingleContextStorageAPIType,
             url::Origin::Create(GURL(kManyContextsStorageAPIOrigin)),
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromHours(7))),
+            base::Time::FromDeltaSinceWindowsEpoch(base::Hours(7))),
         AccessContextAuditDatabase::AccessRecord(
             url::Origin::Create(GURL("https://test6.com")),
             "non-persistent-cookie", "non-persistent-domain", "/",
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromHours(8)),
+            base::Time::FromDeltaSinceWindowsEpoch(base::Hours(8)),
             /* is_persistent */ false),
         AccessContextAuditDatabase::AccessRecord(
             url::Origin::Create(GURL("https://test7.com")),
             kManyContextsStorageAPIType,
             url::Origin::Create(GURL("https://test8.com")),
-            base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromHours(9))),
+            base::Time::FromDeltaSinceWindowsEpoch(base::Hours(9))),
     };
   }
 
@@ -419,10 +409,8 @@ TEST_F(AccessContextAuditDatabaseTest, RemoveAllRecordsForTimeRange) {
   database()->AddRecords(test_records);
   ValidateDatabaseRecords(database(), test_records);
 
-  auto begin_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(4));
-  auto end_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(6));
+  auto begin_time = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(4));
+  auto end_time = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(6));
 
   database()->RemoveAllRecordsForTimeRange(begin_time, end_time);
 
@@ -446,10 +434,8 @@ TEST_F(AccessContextAuditDatabaseTest, RemoveAllRecordsForTimeRangeHistory) {
   database()->AddRecords(test_records);
   ValidateDatabaseRecords(database(), test_records);
 
-  auto begin_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(4));
-  auto end_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(6));
+  auto begin_time = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(4));
+  auto end_time = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(6));
 
   database()->RemoveAllRecordsForTimeRangeHistory(begin_time, end_time);
 
@@ -556,7 +542,7 @@ TEST_F(AccessContextAuditDatabaseTest, RepeatedAccesses) {
   database()->AddRecords(test_records);
 
   for (auto& record : test_records) {
-    record.last_access_time += base::TimeDelta::FromHours(1);
+    record.last_access_time += base::Hours(1);
   }
 
   database()->AddRecords(test_records);
@@ -664,10 +650,8 @@ TEST_F(AccessContextAuditDatabaseTest, RemoveStorageApiRecords) {
   auto origin_matcher = base::BindLambdaForTesting(
       [&](const url::Origin& origin) { return origin == kStorageOrigin; });
 
-  auto begin_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(5));
-  auto end_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(9));
+  auto begin_time = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(5));
+  auto end_time = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(9));
 
   database()->RemoveStorageApiRecords(storage_types, origin_matcher, begin_time,
                                       end_time);
@@ -759,9 +743,9 @@ TEST_F(AccessContextAuditDatabaseThirdPartyDataClearingTest,
   const url::Origin kCrossSiteOrigin =
       url::Origin::Create(GURL("https://cross.site.com/"));
   const base::Time kAccessTime =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(1));
+      base::Time::FromDeltaSinceWindowsEpoch(base::Hours(1));
   const base::Time kLaterAccessTime =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(2));
+      base::Time::FromDeltaSinceWindowsEpoch(base::Hours(2));
 
   std::vector<AccessContextAuditDatabase::AccessRecord> test_records = {
       // Same-site and cross-site cookie records must be removed.
@@ -814,9 +798,9 @@ TEST_F(AccessContextAuditDatabaseThirdPartyDataClearingTest,
   const url::Origin kCrossSiteOrigin =
       url::Origin::Create(GURL("https://cross.site.com/"));
   const base::Time kAccessTime =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(1));
+      base::Time::FromDeltaSinceWindowsEpoch(base::Hours(1));
   const base::Time kLaterAccessTime =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(2));
+      base::Time::FromDeltaSinceWindowsEpoch(base::Hours(2));
 
   std::vector<AccessContextAuditDatabase::AccessRecord> test_records = {
       // Same-site and cross-site cookie records must be removed.
@@ -866,13 +850,13 @@ TEST_F(AccessContextAuditDatabaseThirdPartyDataClearingTest,
       url::Origin::Create(GURL("https://cross.site.com/"));
 
   const base::Time kBeginTime =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(4));
+      base::Time::FromDeltaSinceWindowsEpoch(base::Hours(4));
   const base::Time kEndTime =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(6));
+      base::Time::FromDeltaSinceWindowsEpoch(base::Hours(6));
   const base::Time kInsideRange =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(5));
+      base::Time::FromDeltaSinceWindowsEpoch(base::Hours(5));
   const base::Time kOutsideRange =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromHours(7));
+      base::Time::FromDeltaSinceWindowsEpoch(base::Hours(7));
 
   std::vector<AccessContextAuditDatabase::AccessRecord> test_records = {
       // Same-site and cross-site cookie records in the time range must be

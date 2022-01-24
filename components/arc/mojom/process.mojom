@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 module arc.mojom;
 
@@ -10,43 +10,65 @@ import "services/resource_coordinator/public/mojom/memory_instrumentation/memory
 
 // Describes the current process state, as defined by AOSP in
 // android.app.ActivityManager.
+// This enum is used to communicate with different versions of Android.
+// The un-prefixed values are for Android P, used by ARC++. Prefixed values are
+// for later versions of Android.
+// R_* used by ARCVM introduced PROCESS_STATE_BOUND_TOP
+// TODO (b:197264634): Make this enum stable across android versions so
+// consuming code doesn't need to know which Android version it's communicating
+// with.
 [Extensible]
 enum ProcessState {
   // Not a real process state.
   UNKNOWN = -1,
+  R_UNKNOWN = -1,
 
   // Process is a persistent system process.
   PERSISTENT = 0,
+  R_PERSISTENT = 0,
 
   // Process is a persistent system process and is doing UI.
   PERSISTENT_UI = 1,
+  R_PERSISTENT_UI = 1,
 
   // Process is hosting the current top activities.  Note that this covers
   // all activities that are visible to the user.
   TOP = 2,
+  R_TOP = 2,
+
+  // Process is bound to a TOP app. This is ranked below SERVICE_LOCATION so
+  // that it doesn't get the capability of location access while-in-use.
+  R_BOUND_TOP = 3,
 
   // Process is hosting a foreground service.
   FOREGROUND_SERVICE = 3,
+  R_FOREGROUND_SERVICE = 4,
 
   // Process is hosting a foreground service due to a system binding.
   BOUND_FOREGROUND_SERVICE = 4,
+  R_BOUND_FOREGROUND_SERVICE = 5,
 
   // Process is important to the user, and something they are aware of.
   IMPORTANT_FOREGROUND = 5,
+  R_IMPORTANT_FOREGROUND = 6,
 
   // Process is important to the user, but not something they are aware of.
   IMPORTANT_BACKGROUND = 6,
+  R_IMPORTANT_BACKGROUND = 7,
 
   // Process is in the background transient so we will try to keep running.
   TRANSIENT_BACKGROUND = 7,
+  R_TRANSIENT_BACKGROUND = 8,
 
   // Process is in the background running a backup/restore operation.
   BACKUP = 8,
+  R_BACKUP = 9,
 
   // Process is in the background running a service.  Unlike oom_adj, this level
   // is used for both the normal running in background state and the executing
   // operations state.
   SERVICE = 9,
+  R_SERVICE = 10,
 
   // Process is in the background running a receiver. Note that from the
   // perspective of oom_adj, receivers run at a higher foreground level, but
@@ -54,36 +76,46 @@ enum ProcessState {
   // services means many fewer changes in some process states as they receive
   // broadcasts.
   RECEIVER = 10,
+  R_RECEIVER = 11,
 
   // Same as PROCESS_STATE_TOP but while device is sleeping.
   TOP_SLEEPING = 11,
+  R_TOP_SLEEPING = 12,
 
   // Process is in the background, but it can't restore its state so we want
   // to try to avoid killing it.
   HEAVY_WEIGHT = 12,
+  R_HEAVY_WEIGHT = 13,
 
   // Process is in the background but hosts the home activity.
   HOME = 13,
+  R_HOME = 14,
 
   // Process is in the background but hosts the last shown activity.
   LAST_ACTIVITY = 14,
+  R_LAST_ACTIVITY = 15,
 
   // Process is being cached for later use and contains activities.
   CACHED_ACTIVITY = 15,
+  R_CACHED_ACTIVITY = 16,
 
   // Process is being cached for later use and is a client of another cached
   // process that contains activities.
   CACHED_ACTIVITY_CLIENT = 16,
+  R_CACHED_ACTIVITY_CLIENT = 17,
 
   // Process is being cached for later use and has an activity that corresponds
   // to an existing recent task.
   CACHED_RECENT = 17,
+  R_CACHED_RECENT = 18,
 
   // Process is being cached for later use and is empty.
   CACHED_EMPTY = 18,
+  R_CACHED_EMPTY = 19,
 
   // Process does not exist.
   NONEXISTENT = 19,
+  R_NONEXISTENT = 20,
 };
 
 // Describes a running ARC process.
@@ -121,7 +153,7 @@ struct ArcMemoryDump {
   uint32 private_footprint_kb = 0;
 };
 
-// Next Method ID: 10
+// Next Method ID: 11
 interface ProcessInstance {
   // Requests ARC instance to kill a process.
   [MinVersion=1]
@@ -150,4 +182,10 @@ interface ProcessInstance {
   RequestSystemProcessMemoryInfo@9(array<uint32> nspids)
     => (array<ArcMemoryDump> process_dumps);
 
+  // Requests that ARC discard processes at and below the given level to free
+  // the given amount of memory.
+  // Returns the number of processes killed, and the estimated bytes reclaimed.
+  [MinVersion=9]
+  ApplyHostMemoryPressure@10(ProcessState level, int64 reclaim_target)
+    => (uint32 killed, uint64 reclaimed);
 };

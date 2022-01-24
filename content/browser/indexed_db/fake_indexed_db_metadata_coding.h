@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/browser/indexed_db/indexed_db_metadata_coding.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
@@ -29,6 +28,11 @@ class TransactionalLevelDBTransaction;
 class FakeIndexedDBMetadataCoding : public IndexedDBMetadataCoding {
  public:
   FakeIndexedDBMetadataCoding();
+
+  FakeIndexedDBMetadataCoding(const FakeIndexedDBMetadataCoding&) = delete;
+  FakeIndexedDBMetadataCoding& operator=(const FakeIndexedDBMetadataCoding&) =
+      delete;
+
   ~FakeIndexedDBMetadataCoding() override;
 
   leveldb::Status ReadDatabaseNames(
@@ -104,9 +108,6 @@ class FakeIndexedDBMetadataCoding : public IndexedDBMetadataCoding {
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBIndexMetadata& metadata) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeIndexedDBMetadataCoding);
 };
 
 }  // namespace content

@@ -4,6 +4,7 @@
 
 #import "ui/base/clipboard/clipboard_util_mac.h"
 
+#include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
@@ -17,7 +18,7 @@ namespace {
 
 class ClipboardUtilMacTest : public PlatformTest {
  public:
-  ClipboardUtilMacTest() { }
+  ClipboardUtilMacTest() = default;
 
   // Given a pasteboard, returns a dictionary of the contents of the pasteboard
   // for use in deep comparisons. This fully unpacks any plist-encoded items.
@@ -45,6 +46,11 @@ class ClipboardUtilMacTest : public PlatformTest {
 };
 
 TEST_F(ClipboardUtilMacTest, PasteboardItemFromUrl) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+
   NSString* urlString =
       @"https://www.google.com/"
       @"search?q=test&oq=test&aqs=chrome..69i57l2j69i60l4.278j0j7&"
@@ -72,6 +78,11 @@ TEST_F(ClipboardUtilMacTest, PasteboardItemFromUrl) {
 }
 
 TEST_F(ClipboardUtilMacTest, PasteboardItemWithTitle) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+
   NSString* urlString = @"https://www.google.com/";
   NSString* title = @"Burrowing Yams";
 
@@ -97,6 +108,11 @@ TEST_F(ClipboardUtilMacTest, PasteboardItemWithTitle) {
 }
 
 TEST_F(ClipboardUtilMacTest, PasteboardItemWithFilePath) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+
   NSURL* url = [NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES];
   ASSERT_TRUE(url);
   NSString* urlString = [url absoluteString];
@@ -123,6 +139,11 @@ TEST_F(ClipboardUtilMacTest, PasteboardItemWithFilePath) {
 }
 
 TEST_F(ClipboardUtilMacTest, CheckForLeak) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+
   for (int i = 0; i < 10000; ++i) {
     @autoreleasepool {
       scoped_refptr<UniquePasteboard> pboard = new UniquePasteboard;
@@ -132,6 +153,11 @@ TEST_F(ClipboardUtilMacTest, CheckForLeak) {
 }
 
 TEST_F(ClipboardUtilMacTest, CompareToWriteToPasteboard) {
+  if (base::mac::IsAtMostOS10_11()) {
+    GTEST_SKIP() << "macOS 10.11 and earlier are flaky and hang in pasteboard "
+                    "code. https://crbug.com/1232472";
+  }
+
   NSString* urlString = @"https://www.cnn.com/";
 
   base::scoped_nsobject<NSPasteboardItem> item(

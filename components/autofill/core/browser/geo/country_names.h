@@ -10,8 +10,7 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/mru_cache.h"
-#include "base/macros.h"
+#include "base/containers/lru_cache.h"
 #include "base/synchronization/lock.h"
 #include "components/autofill/core/browser/geo/country_names_for_locale.h"
 
@@ -29,6 +28,9 @@ class CountryNames {
   // The first call to this function, causing the creation of CountryNames,
   // is expensive.
   static CountryNames* GetInstance();
+
+  CountryNames(const CountryNames&) = delete;
+  CountryNames& operator=(const CountryNames&) = delete;
 
   // Tells CountryNames, what is the application locale. Only the first supplied
   // value is used, further calls result in no changes.  Call this on the UI
@@ -73,7 +75,7 @@ class CountryNames {
   // or default locale. The Cache is keyed by the locale_name and contains
   // |CountryNamesForLocale| instances.
   using LocalizedCountryNamesCache =
-      base::MRUCache<std::string, CountryNamesForLocale>;
+      base::LRUCache<std::string, CountryNamesForLocale>;
 
   // The locale object for the application locale string.
   const std::string application_locale_name_;
@@ -97,8 +99,6 @@ class CountryNames {
 
   // A lock for accessing and manipulating the localization cache.
   base::Lock localized_country_names_cache_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(CountryNames);
 };
 
 }  // namespace autofill

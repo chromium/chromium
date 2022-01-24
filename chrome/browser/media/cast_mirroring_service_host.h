@@ -9,8 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/offscreen_tab.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
 #include "components/mirroring/mojom/mirroring_service_host.mojom.h"
@@ -74,6 +73,9 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   // |source_media_id| indicates the mirroring source.
   explicit CastMirroringServiceHost(content::DesktopMediaID source_media_id);
 
+  CastMirroringServiceHost(const CastMirroringServiceHost&) = delete;
+  CastMirroringServiceHost& operator=(const CastMirroringServiceHost&) = delete;
+
   ~CastMirroringServiceHost() override;
 
   // mojom::MirroringServiceHost implementation.
@@ -127,9 +129,6 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // OffscreenTab::Owner implementation.
-  void RequestMediaAccessPermission(
-      const content::MediaStreamRequest& request,
-      content::MediaResponseCallback callback) override;
   void DestroyTab(OffscreenTab* tab) override;
 
   // Creates and starts a new OffscreenTab.
@@ -167,8 +166,6 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<OffscreenTab> offscreen_tab_;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  DISALLOW_COPY_AND_ASSIGN(CastMirroringServiceHost);
 };
 
 }  // namespace mirroring

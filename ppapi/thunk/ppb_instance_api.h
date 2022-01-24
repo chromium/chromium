@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_THUNK_INSTANCE_API_H_
-#define PPAPI_THUNK_INSTANCE_API_H_
+#ifndef PPAPI_THUNK_PPB_INSTANCE_API_H_
+#define PPAPI_THUNK_PPB_INSTANCE_API_H_
 
 #include <stdint.h>
 
@@ -22,7 +22,6 @@
 #include "ppapi/c/ppb_text_input_controller.h"
 #include "ppapi/c/private/ppb_instance_private.h"
 #include "ppapi/shared_impl/api_id.h"
-#include "ppapi/shared_impl/resource.h"
 #include "ppapi/shared_impl/singleton_resource_id.h"
 
 // Windows headers interfere with this file.
@@ -162,4 +161,4 @@ class PPB_Instance_API {
 }  // namespace thunk
 }  // namespace ppapi
 
-#endif  // PPAPI_THUNK_INSTANCE_API_H_
+#endif  // PPAPI_THUNK_PPB_INSTANCE_API_H_

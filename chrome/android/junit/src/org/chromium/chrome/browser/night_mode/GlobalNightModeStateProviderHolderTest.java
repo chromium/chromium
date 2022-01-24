@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 public class GlobalNightModeStateProviderHolderTest {
     @After
     public void tearDown() {
-        GlobalNightModeStateProviderHolder.resetInstanceForTesting();
+        GlobalNightModeStateProviderHolder.setInstanceForTesting(null);
         NightModeUtils.setNightModeSupportedForTesting(null);
         SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
     }

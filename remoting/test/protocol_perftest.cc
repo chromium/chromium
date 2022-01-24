@@ -14,10 +14,10 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/task_runner_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "jingle/glue/thread_wrapper.h"
@@ -77,11 +77,10 @@ struct NetworkPerformanceParams {
                            double signaling_latency_ms)
       : bandwidth_kbps(bandwidth_kbps),
         max_buffers(buffer_s * bandwidth_kbps * 1000 / 8),
-        latency_average(base::TimeDelta::FromMillisecondsD(latency_average_ms)),
-        latency_stddev(base::TimeDelta::FromMillisecondsD(latency_stddev_ms)),
+        latency_average(base::Milliseconds(latency_average_ms)),
+        latency_stddev(base::Milliseconds(latency_stddev_ms)),
         out_of_order_rate(out_of_order_rate),
-        signaling_latency(
-            base::TimeDelta::FromMillisecondsD(signaling_latency_ms)) {}
+        signaling_latency(base::Milliseconds(signaling_latency_ms)) {}
 
   int bandwidth_kbps;
   int max_buffers;
@@ -128,6 +127,9 @@ class ProtocolPerfTest
         std::make_unique<FakeDesktopEnvironmentFactory>(
             capture_thread_.task_runner());
   }
+
+  ProtocolPerfTest(const ProtocolPerfTest&) = delete;
+  ProtocolPerfTest& operator=(const ProtocolPerfTest&) = delete;
 
   virtual ~ProtocolPerfTest() {
     host_thread_.task_runner()->DeleteSoon(FROM_HERE, host_.release());
@@ -430,9 +432,6 @@ class ProtocolPerfTest
   std::vector<protocol::FrameStats> frame_stats_;
 
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProtocolPerfTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -494,8 +493,8 @@ void ProtocolPerfTest::MeasureTotalLatency(bool use_webrtc) {
 
   int total_frames = 0;
 
-  const base::TimeDelta kWarmUpTime = base::TimeDelta::FromSeconds(2);
-  const base::TimeDelta kTestTime = base::TimeDelta::FromSeconds(5);
+  const base::TimeDelta kWarmUpTime = base::Seconds(2);
+  const base::TimeDelta kTestTime = base::Seconds(5);
 
   base::TimeTicks start_time = base::TimeTicks::Now();
   while ((base::TimeTicks::Now() - start_time) < (kWarmUpTime + kTestTime)) {
@@ -590,8 +589,8 @@ void ProtocolPerfTest::MeasureScrollPerformance(bool use_webrtc) {
   StartHostAndClient(use_webrtc);
   ASSERT_NO_FATAL_FAILURE(WaitConnected());
 
-  const base::TimeDelta kWarmUpTime = base::TimeDelta::FromSeconds(2);
-  const base::TimeDelta kTestTime = base::TimeDelta::FromSeconds(2);
+  const base::TimeDelta kWarmUpTime = base::Seconds(2);
+  const base::TimeDelta kTestTime = base::Seconds(2);
 
   int num_frames = 0;
   int warm_up_frames = 0;

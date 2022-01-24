@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"

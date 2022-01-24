@@ -2,55 +2,68 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Polymer class definition for 'oobe-i18n-dropdown'.
- */
+/* #js_imports_placeholder */
+
 /**
  * Languages/keyboard descriptor to display
  * @typedef {!OobeTypes.LanguageDsc|!OobeTypes.IMEDsc|!OobeTypes.DemoCountryDsc}
  */
 var I18nMenuItem;
 
-Polymer({
-  is: 'oobe-i18n-dropdown',
+/**
+ * Polymer class definition for 'oobe-i18n-dropdown'.
+ * @polymer
+ */
+class OobeI18nDropdown extends Polymer.Element {
 
-  properties: {
+  static get is() { return 'oobe-i18n-dropdown'; }
+
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {
+      /**
+       * List of languages/keyboards to display
+       * @type {!Array<I18nMenuItem>}
+       */
+      items: {
+        type: Array,
+        observer: 'onItemsChanged_',
+      },
+
+      /**
+       * ARIA-label for the selection menu.
+       *
+       * Note that we are not using "aria-label" property here, because
+       * we want to pass the label value but not actually declare it as an
+       * ARIA property anywhere but the actual target element.
+       */
+      labelForAria: String,
+    };
+  }
+
+  constructor() {
+    super();
     /**
-     * List of languages/keyboards to display
-     * @type {!Array<I18nMenuItem>}
+     * Mapping from item id to item.
+     * @type {Map<string,I18nMenuItem>}
      */
-    items: {
-      type: Array,
-      observer: 'onItemsChanged_',
-    },
-
-    /**
-     * ARIA-label for the selection menu.
-     *
-     * Note that we are not using "aria-label" property here, because
-     * we want to pass the label value but not actually declare it as an
-     * ARIA property anywhere but the actual target element.
-     */
-    labelForAria: String,
-  },
-
-  /**
-   * Mapping from item id to item.
-   * @type {Map<string,I18nMenuItem>}
-   */
-  idToItem_: null,
+     this.idToItem_ = null;
+  }
 
   focus() {
     this.$.select.focus();
-  },
+  }
 
   /**
    * @param {string} value Option value.
    * @private
    */
   onSelected_(value) {
-    this.fire('select-item', this.idToItem_.get(value));
-  },
+    const eventDetail = this.idToItem_.get(value);
+    this.dispatchEvent(new CustomEvent('select-item',
+        { detail: eventDetail, bubbles: true, composed: true }));
+  }
 
   onItemsChanged_(items) {
     // Pass selection handler to setupSelect only during initial setup -
@@ -65,5 +78,7 @@ Polymer({
       this.idToItem_.set(item.value, item);
     }
     setupSelect(this.$.select, items, selectionCallback);
-  },
-});
+  }
+}
+
+customElements.define(OobeI18nDropdown.is, OobeI18nDropdown);

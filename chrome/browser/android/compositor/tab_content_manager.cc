@@ -17,7 +17,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/field_trial_params.h"
 #include "cc/layers/layer.h"
 #include "chrome/android/chrome_jni_headers/TabContentManager_jni.h"
@@ -76,7 +76,7 @@ class TabContentManager::TabReadbackRequest {
       double aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
           chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
           kDefaultThumbnailAspectRatio);
-      aspect_ratio = ThumbnailCache::clampAspectRatio(aspect_ratio, 0.5, 2.0);
+      aspect_ratio = base::clamp(aspect_ratio, 0.5, 2.0);
       int height = std::min(view_size_in_pixels.height(),
                             (int)(view_size_in_pixels.width() / aspect_ratio));
       view_size_in_pixels.set_height(height);
@@ -87,6 +87,9 @@ class TabContentManager::TabReadbackRequest {
     rwhv->CopyFromSurface(source_rect, thumbnail_size,
                           std::move(result_callback));
   }
+
+  TabReadbackRequest(const TabReadbackRequest&) = delete;
+  TabReadbackRequest& operator=(const TabReadbackRequest&) = delete;
 
   virtual ~TabReadbackRequest() {}
 
@@ -109,8 +112,6 @@ class TabContentManager::TabReadbackRequest {
   bool drop_after_readback_;
 
   base::WeakPtrFactory<TabReadbackRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabReadbackRequest);
 };
 
 // static
@@ -399,7 +400,7 @@ void TabContentManager::SendThumbnailToJava(
     double aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
         chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
         kDefaultThumbnailAspectRatio);
-    aspect_ratio = ThumbnailCache::clampAspectRatio(aspect_ratio, 0.5, 2.0);
+    aspect_ratio = base::clamp(aspect_ratio, 0.5, 2.0);
 
     int width = std::min(bitmap.width() / scale,
                          (int)(bitmap.height() * aspect_ratio / scale));

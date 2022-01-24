@@ -10,7 +10,6 @@
 #include <bitset>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
@@ -35,6 +34,10 @@ class COMPONENT_EXPORT(EVDEV) KeyboardEvdev
   KeyboardEvdev(EventModifiers* modifiers,
                 KeyboardLayoutEngine* keyboard_layout_engine,
                 const EventDispatchCallback& callback);
+
+  KeyboardEvdev(const KeyboardEvdev&) = delete;
+  KeyboardEvdev& operator=(const KeyboardEvdev&) = delete;
+
   ~KeyboardEvdev();
 
   // Handlers for raw key presses & releases.
@@ -104,8 +107,6 @@ class COMPONENT_EXPORT(EVDEV) KeyboardEvdev
   EventAutoRepeatHandler auto_repeat_handler_;
 
   base::WeakPtrFactory<KeyboardEvdev> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardEvdev);
 };
 
 }  // namespace ui

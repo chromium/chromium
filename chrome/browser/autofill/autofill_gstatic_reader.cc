@@ -22,13 +22,13 @@
 namespace autofill {
 
 namespace {
-static const char kTokenizationBinRangeWhitelistKey[] =
+static const char kTokenizationBinRangeAllowlistKey[] =
     "cpan_eligible_bin_wl_regex";
-static const char kTokenizationMerchantWhitelistKey[] =
+static const char kTokenizationMerchantAllowlistKey[] =
     "cpan_eligible_merchant_wl";
-static const char kTokenizationBinRangeWhitelistURL[] =
+static const char kTokenizationBinRangeAllowlistURL[] =
     "https://www.gstatic.com/autofill/hourly/bins.json";
-static const char kTokenizationMerchantWhitelistURL[] =
+static const char kTokenizationMerchantAllowlistURL[] =
     "https://www.gstatic.com/autofill/weekly/merchants.json";
 static const size_t kMaxDownloadSize = 30 * 1024;
 }  // namespace
@@ -40,10 +40,10 @@ AutofillGstaticReader::~AutofillGstaticReader() {}
 void AutofillGstaticReader::SetUp() {
   if (!setup_called_) {
     setup_called_ = true;
-    LoadDataAsList(GURL(kTokenizationBinRangeWhitelistURL),
-                   kTokenizationBinRangeWhitelistKey);
-    LoadDataAsList(GURL(kTokenizationMerchantWhitelistURL),
-                   kTokenizationMerchantWhitelistKey);
+    LoadDataAsList(GURL(kTokenizationBinRangeAllowlistURL),
+                   kTokenizationBinRangeAllowlistKey);
+    LoadDataAsList(GURL(kTokenizationMerchantAllowlistURL),
+                   kTokenizationMerchantAllowlistKey);
   }
 }
 
@@ -54,15 +54,15 @@ AutofillGstaticReader* AutofillGstaticReader::GetInstance() {
 }
 
 std::vector<std::string>
-AutofillGstaticReader::GetTokenizationMerchantWhitelist() const {
+AutofillGstaticReader::GetTokenizationMerchantAllowlist() const {
   DCHECK(setup_called_);  // Ensure data has been loaded.
-  return tokenization_merchant_whitelist_;
+  return tokenization_merchant_allowlist_;
 }
 
 std::vector<std::string>
-AutofillGstaticReader::GetTokenizationBinRangesWhitelist() const {
+AutofillGstaticReader::GetTokenizationBinRangesAllowlist() const {
   DCHECK(setup_called_);  // Ensure data has been loaded.
-  return tokenization_bin_range_whitelist_;
+  return tokenization_bin_range_allowlist_;
 }
 
 void AutofillGstaticReader::LoadDataAsList(const GURL& url,
@@ -78,7 +78,7 @@ void AutofillGstaticReader::LoadDataAsList(const GURL& url,
           sender: "Autofill"
           description:
             "Downloads data used to decide when to offer Autofill features, "
-            "such as whitelists of eligible websites."
+            "such as allowlists of eligible websites."
           trigger: "Triggered once on Chrome startup."
           data: "None"
           destination: GOOGLE_OWNED_SERVICE
@@ -160,10 +160,10 @@ std::vector<std::string> AutofillGstaticReader::ParseListJSON(
 void AutofillGstaticReader::SetListClassVariable(
     std::vector<std::string> result,
     const std::string& key) {
-  if (key == kTokenizationBinRangeWhitelistKey) {
-    tokenization_bin_range_whitelist_ = result;
-  } else if (key == kTokenizationMerchantWhitelistKey) {
-    tokenization_merchant_whitelist_ = result;
+  if (key == kTokenizationBinRangeAllowlistKey) {
+    tokenization_bin_range_allowlist_ = result;
+  } else if (key == kTokenizationMerchantAllowlistKey) {
+    tokenization_merchant_allowlist_ = result;
   }
 }
 

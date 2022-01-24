@@ -251,9 +251,7 @@ class RecommendAppsScreenTest : public OobeBaseTest {
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, BasicSelection) {
   ShowRecommendAppsScreen();
 
-  OobeScreenWaiter screen_waiter(RecommendAppsScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
-  screen_waiter.Wait();
+  OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
 
   ExpectLoadingStep();
 
@@ -304,9 +302,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, BasicSelection) {
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SelectionChange) {
   ShowRecommendAppsScreen();
 
-  OobeScreenWaiter screen_waiter(RecommendAppsScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
-  screen_waiter.Wait();
+  OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
 
   ExpectLoadingStep();
 
@@ -358,9 +354,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SelectionChange) {
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithSelectedApps) {
   ShowRecommendAppsScreen();
 
-  OobeScreenWaiter screen_waiter(RecommendAppsScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
-  screen_waiter.Wait();
+  OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
 
   ExpectLoadingStep();
 
@@ -406,9 +400,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithSelectedApps) {
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithNoAppsSelected) {
   ShowRecommendAppsScreen();
 
-  OobeScreenWaiter screen_waiter(RecommendAppsScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
-  screen_waiter.Wait();
+  OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
 
   ExpectLoadingStep();
 
@@ -459,9 +451,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithNoAppsSelected) {
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, InstallWithNoAppsSelected) {
   ShowRecommendAppsScreen();
 
-  OobeScreenWaiter screen_waiter(RecommendAppsScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
-  screen_waiter.Wait();
+  OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
 
   ExpectLoadingStep();
 
@@ -496,9 +486,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, InstallWithNoAppsSelected) {
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, NoRecommendedApps) {
   ShowRecommendAppsScreen();
 
-  OobeScreenWaiter screen_waiter(RecommendAppsScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
-  screen_waiter.Wait();
+  OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
 
   ExpectLoadingStep();
 
@@ -527,9 +515,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, NoRecommendedApps) {
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, ParseError) {
   ShowRecommendAppsScreen();
 
-  OobeScreenWaiter screen_waiter(RecommendAppsScreenView::kScreenId);
-  screen_waiter.set_assert_next_screen();
-  screen_waiter.Wait();
+  OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
 
   ExpectLoadingStep();
 
@@ -550,7 +536,7 @@ class RecommendAppsScreenManagedTest : public RecommendAppsScreenTest {
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenManagedTest, SkipDueToManagedUser) {
   // Force the sync screen to be shown so that OOBE isn't destroyed
   // right after login due to all screens being skipped.
-  auto autoreset = WizardController::ForceBrandedBuildForTesting(true);
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
 
   // Mark user as managed.
   user_policy_mixin_.RequestPolicyUpdate();

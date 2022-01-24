@@ -1,5 +1,2 @@
-monorail {
-  component: "Privacy>Fingerprinting"
-}
+mixins: "//third_party/blink/public/common/privacy_budget/COMMON_METADATA"
 
-team_email: "privacy-sandbox-dev@chromium.org"

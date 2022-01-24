@@ -1,5 +1,6 @@
 Tests name sources in input[type=button].
 {
+    childIds : <object>
     domNode : input#button1
     ignored : false
     name : {
@@ -32,6 +33,7 @@ Tests name sources in input[type=button].
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -54,6 +56,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     domNode : input#button2
     ignored : false
     name : {
@@ -96,6 +99,7 @@ Tests name sources in input[type=button].
         value : button-value2
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -118,6 +122,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : button-title3
@@ -168,6 +173,7 @@ Tests name sources in input[type=button].
         value : button-value3
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -190,6 +196,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     domNode : input#button4
     ignored : false
     name : {
@@ -226,6 +233,7 @@ Tests name sources in input[type=button].
         value : button-title4
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -248,6 +256,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     domNode : input#button5
     ignored : false
     name : {
@@ -296,6 +305,7 @@ Tests name sources in input[type=button].
         value : button-label-5
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -330,6 +340,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     domNode : input#button6
     ignored : false
     name : {
@@ -378,6 +389,7 @@ Tests name sources in input[type=button].
         value : button-label-6
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -412,6 +424,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : button-value7
@@ -472,6 +485,7 @@ Tests name sources in input[type=button].
         value : button-label-7
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -506,6 +520,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : button-value8
@@ -575,6 +590,7 @@ Tests name sources in input[type=button].
         value : button-aria-label-8
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -597,6 +613,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : button-value9
@@ -682,6 +699,7 @@ Tests name sources in input[type=button].
         value : button9-aria-labelledby
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -717,6 +735,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     domNode : input#submit1
     ignored : false
     name : {
@@ -754,6 +773,7 @@ Tests name sources in input[type=button].
         value : Submit
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -776,6 +796,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     domNode : input#submit2
     ignored : false
     name : {
@@ -818,6 +839,7 @@ Tests name sources in input[type=button].
         value : submit-value2
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -840,6 +862,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     description : {
         type : computedString
         value : submit-title
@@ -885,6 +908,7 @@ Tests name sources in input[type=button].
         value : Submit
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -907,6 +931,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     domNode : input#reset1
     ignored : false
     name : {
@@ -944,6 +969,7 @@ Tests name sources in input[type=button].
         value : Reset
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -966,6 +992,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     domNode : input#image-input1
     ignored : false
     name : {
@@ -1024,6 +1051,7 @@ Tests name sources in input[type=button].
         value : Submit
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1046,6 +1074,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     domNode : input#image-input2
     ignored : false
     name : {
@@ -1110,6 +1139,7 @@ Tests name sources in input[type=button].
         value : image-input-value2
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1132,6 +1162,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     domNode : input#image-input3
     ignored : false
     name : {
@@ -1201,6 +1232,7 @@ Tests name sources in input[type=button].
         value : image-input-alt3
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1223,6 +1255,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     domNode : input#image-input4
     ignored : false
     name : {
@@ -1296,6 +1329,7 @@ Tests name sources in input[type=button].
         value : image-input-alt4
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1318,6 +1352,7 @@ Tests name sources in input[type=button].
     }
 }
 {
+    childIds : <object>
     domNode : input#image-input5
     ignored : false
     name : {
@@ -1389,6 +1424,7 @@ Tests name sources in input[type=button].
         value : image-input-title5
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid

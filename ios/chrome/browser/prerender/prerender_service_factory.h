@@ -22,6 +22,9 @@ class PrerenderServiceFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static PrerenderServiceFactory* GetInstance();
 
+  PrerenderServiceFactory(const PrerenderServiceFactory&) = delete;
+  PrerenderServiceFactory& operator=(const PrerenderServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<PrerenderServiceFactory>;
 
@@ -32,8 +35,6 @@ class PrerenderServiceFactory : public BrowserStateKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PrerenderServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_PRERENDER_PRERENDER_SERVICE_FACTORY_H_

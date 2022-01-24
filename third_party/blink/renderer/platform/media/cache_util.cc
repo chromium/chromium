@@ -20,7 +20,6 @@
 namespace blink {
 
 using ::base::Time;
-using ::base::TimeDelta;
 using ::net::HttpVersion;
 
 enum { kHttpOK = 200, kHttpPartialContent = 206 };
@@ -60,8 +59,8 @@ uint32_t GetReasonsForUncacheability(const WebURLResponse& response) {
   if (cache_control_header.find("must-revalidate") != std::string::npos)
     reasons |= kHasMustRevalidate;
 
-  const TimeDelta kMinimumAgeForUsefulness =
-      TimeDelta::FromSeconds(3600);  // Arbitrary value.
+  const base::TimeDelta kMinimumAgeForUsefulness =
+      base::Seconds(3600);  // Arbitrary value.
 
   const char kMaxAgePrefix[] = "max-age=";
   const size_t kMaxAgePrefixLen = base::size(kMaxAgePrefix) - 1;
@@ -71,7 +70,7 @@ uint32_t GetReasonsForUncacheability(const WebURLResponse& response) {
         base::MakeStringPiece(cache_control_header.begin() + kMaxAgePrefixLen,
                               cache_control_header.end()),
         &max_age_seconds);
-    if (TimeDelta::FromSeconds(max_age_seconds) < kMinimumAgeForUsefulness)
+    if (base::Seconds(max_age_seconds) < kMinimumAgeForUsefulness)
       reasons |= kShortMaxAge;
   }
 
@@ -97,7 +96,7 @@ base::TimeDelta GetCacheValidUntil(const WebURLResponse& response) {
     return base::TimeDelta();
 
   // Max cache timeout ~= 1 month.
-  base::TimeDelta ret = base::TimeDelta::FromDays(30);
+  base::TimeDelta ret = base::Days(30);
 
   const char kMaxAgePrefix[] = "max-age=";
   const size_t kMaxAgePrefixLen = base::size(kMaxAgePrefix) - 1;
@@ -108,7 +107,7 @@ base::TimeDelta GetCacheValidUntil(const WebURLResponse& response) {
                               cache_control_header.end()),
         &max_age_seconds);
 
-    ret = std::min(ret, TimeDelta::FromSeconds(max_age_seconds));
+    ret = std::min(ret, base::Seconds(max_age_seconds));
   } else {
     // Note that |date| may be smaller than |expires|, which means we'll
     // return a timetick some time in the past.

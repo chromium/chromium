@@ -52,6 +52,9 @@ class ServiceProcessControl : public UpgradeObserver {
   // Returns the singleton instance of this class.
   static ServiceProcessControl* GetInstance();
 
+  ServiceProcessControl(const ServiceProcessControl&) = delete;
+  ServiceProcessControl& operator=(const ServiceProcessControl&) = delete;
+
   // Return true if this object is connected to the service.
   // Virtual for testing.
   virtual bool IsConnected() const;
@@ -179,8 +182,6 @@ class ServiceProcessControl : public UpgradeObserver {
   base::ProcessId saved_pid_;
 
   base::WeakPtrFactory<ServiceProcessControl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessControl);
 };
 
 #endif  // CHROME_BROWSER_SERVICE_PROCESS_SERVICE_PROCESS_CONTROL_H_

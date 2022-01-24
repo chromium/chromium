@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SERVICE_INTERFACE_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SERVICE_INTERFACE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -37,6 +36,10 @@ class SafeBrowsingServiceInterface
   // Create an instance of the safe browsing service.
   static SafeBrowsingServiceInterface* CreateSafeBrowsingService();
 
+  SafeBrowsingServiceInterface(const SafeBrowsingServiceInterface&) = delete;
+  SafeBrowsingServiceInterface& operator=(const SafeBrowsingServiceInterface&) =
+      delete;
+
   virtual network::mojom::NetworkContext* GetNetworkContext(
       content::BrowserContext* browser_context) = 0;
 
@@ -61,22 +64,22 @@ class SafeBrowsingServiceInterface
   // Useful for tests, so they can provide their own implementation of
   // SafeBrowsingServiceInterface.
   static SafeBrowsingServiceFactory* factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingServiceInterface);
 };
 
 // Factory for creating SafeBrowsingServiceInterface.  Useful for tests.
 class SafeBrowsingServiceFactory {
  public:
   SafeBrowsingServiceFactory() {}
+
+  SafeBrowsingServiceFactory(const SafeBrowsingServiceFactory&) = delete;
+  SafeBrowsingServiceFactory& operator=(const SafeBrowsingServiceFactory&) =
+      delete;
+
   virtual ~SafeBrowsingServiceFactory() {}
 
   // TODO(crbug/925153): Once callers of this function are no longer downcasting
   // it to the SafeBrowsingService, we can make this a scoped_refptr.
   virtual SafeBrowsingServiceInterface* CreateSafeBrowsingService() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingServiceFactory);
 };
 
 }  // namespace safe_browsing

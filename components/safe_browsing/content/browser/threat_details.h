@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -73,6 +72,9 @@ using ThreatDetailsDoneCallback =
 class ThreatDetails : public content::WebContentsObserver {
  public:
   typedef security_interstitials::UnsafeResource UnsafeResource;
+
+  ThreatDetails(const ThreatDetails&) = delete;
+  ThreatDetails& operator=(const ThreatDetails&) = delete;
 
   ~ThreatDetails() override;
 
@@ -284,8 +286,6 @@ class ThreatDetails : public content::WebContentsObserver {
   FRIEND_TEST_ALL_PREFIXES(ThreatDetailsTest, ThreatDOMDetails_MultipleFrames);
   FRIEND_TEST_ALL_PREFIXES(ThreatDetailsTest, ThreatDOMDetails_TrimToAdTags);
   FRIEND_TEST_ALL_PREFIXES(ThreatDetailsTest, ThreatDOMDetails);
-
-  DISALLOW_COPY_AND_ASSIGN(ThreatDetails);
 };
 
 // Factory for creating ThreatDetails.  Useful for tests.

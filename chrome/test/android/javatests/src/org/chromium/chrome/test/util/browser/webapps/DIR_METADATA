@@ -1,3 +1,1 @@
-monorail {
-  component: "UI>Browser>WebAppInstalls"
-}
+mixins: "//chrome/android/java/src/org/chromium/chrome/browser/webapps/COMMON_METADATA"

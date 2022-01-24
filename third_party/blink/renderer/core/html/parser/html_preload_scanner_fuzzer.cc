@@ -58,7 +58,6 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   media_data.color_bits_per_component = 24;
   media_data.monochrome_bits_per_component = 0;
   media_data.primary_pointer_type = mojom::blink::PointerType::kPointerFineType;
-  media_data.default_font_size = 16;
   media_data.three_d_enabled = true;
   media_data.media_type = media_type_names::kScreen;
   media_data.strict_mode = true;

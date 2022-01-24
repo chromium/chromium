@@ -2,17 +2,40 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="/components/behaviors/login_screen_behavior.html">
-<link rel="import" href="/components/dialogs/oobe_loading_dialog.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
 
 <dom-module id="lacros-data-migration-element">
   <template>
-    <oobe-loading-dialog title-key="lacrosDataMigrationTitle"
-        subtitle-key="lacrosDataMigrationSubtitle">
+    <oobe-adaptive-dialog id="dialog" role="dialog">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-    </oobe-loading-dialog>
+      <h1 slot="title">[[i18nDynamic(locale, 'lacrosDataMigrationTitle')]]</h1>
+      <paper-progress slot="progress" min="0" max="100"
+          value="[[progressValue_]]">
+      </paper-progress>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'lacrosDataMigrationSubtitle', progressValue_)]]
+      </div>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <img src="/images/update_boot.svg" class="oobe-illustration">
+      </div>
+      <!-- Cancel button -->
+      <div slot="bottom-buttons" hidden="[[!canCancel]]"
+          class="flex layout horizontal">
+        <oobe-text-button id="cancelButton" on-click="onCancelButtonClicked_"
+            text-key="cancelButton">
+        </oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
   </template>
+  <script src="lacros_data_migration.js"></script>
 </dom-module>

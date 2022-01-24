@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <title>A canvas globalCompositeOperation with shadow</title>
+    <script>
+    var compositeTypes = [
+      'difference', 'exclusion', 'hue', 'saturation', 'color',
+      'luminosity'
+    ];
+    function draw(){
+      for (i=0;i<compositeTypes.length;i++){
+        var label = document.createTextNode(compositeTypes[i]);
+        document.getElementById('lab'+i).appendChild(label);
+        var canvas = document.getElementById('tut'+i);
+        canvas.width = 80;
+        canvas.height = 80;
+        var ctx = canvas.getContext('2d');
+
+        // draw rectangle
+        ctx.fillStyle = "#09f";
+        ctx.fillRect(5,5,45,45);
+
+        // set composite property
+        ctx.globalCompositeOperation = compositeTypes[i];
+
+        // draw rectangle with shadow
+        ctx.fillStyle = "#f30";
+        ctx.shadowColor = 'blue';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 10;
+        ctx.shadowOffsetY = -10;
+        ctx.fillRect(20,25,45,45);
+      }
+    }
+    </script>
+    <style type="text/css">
+      body { margin: 20px; font-family: arial,verdana,helvetica; background: #fff;}
+      h1 { font-size: 140%; font-weight:normal; color: #036; border-bottom: 1px solid #ccc; }
+      canvas { border: 2px solid #000; margin-bottom: 5px; }
+      td { padding: 4px; }
+      pre { float:left; display:block; background: rgb(238,238,238); border: 1px dashed #666; padding: 15px 20px; margin: 0 0 10px 0; }
+    </style>
+  </head>
+  <body onload="draw();">
+    <div>
+      <table>
+        <tr>
+          <td><canvas id="tut0"></canvas><br/><label id="lab0"></label></td>
+          <td><canvas id="tut1"></canvas><br/><label id="lab1"></label></td>
+          <td><canvas id="tut2"></canvas><br/><label id="lab2"></label></td>
+          <td><canvas id="tut3"></canvas><br/><label id="lab3"></label></td>
+          <td><canvas id="tut4"></canvas><br/><label id="lab4"></label></td>
+          <td><canvas id="tut5"></canvas><br/><label id="lab5"></label></td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

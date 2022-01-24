@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Interface definitions for working with ranges
@@ -22,13 +14,13 @@ goog.provide('goog.dom.AbstractRange');
 goog.provide('goog.dom.RangeIterator');
 goog.provide('goog.dom.RangeType');
 
-goog.forwardDeclare('goog.dom.TextRange');
 goog.require('goog.dom');
 goog.require('goog.dom.NodeType');
-goog.require('goog.dom.SavedCaretRange');
 goog.require('goog.dom.TagIterator');
 goog.require('goog.userAgent');
-
+goog.requireType('goog.dom.AbstractSavedCaretRange');
+goog.requireType('goog.dom.SavedRange');
+goog.requireType('goog.math.Coordinate');
 
 /**
  * Types of ranges.
@@ -46,6 +38,7 @@ goog.dom.RangeType = {
  * Creates a new selection with no properties.  Do not use this constructor -
  * use one of the goog.dom.Range.from* methods instead.
  * @constructor
+ * @abstract
  */
 goog.dom.AbstractRange = function() {};
 
@@ -55,45 +48,11 @@ goog.dom.AbstractRange = function() {};
  * @param {Window} win The window to get the selection object from.
  * @return {Object} The browser native selection object, or null if it could
  *     not be retrieved.
+ * @deprecated use window#getSelection instead.
  */
 goog.dom.AbstractRange.getBrowserSelectionForWindow = function(win) {
-  if (win.getSelection) {
-    // W3C
-    return win.getSelection();
-  } else {
-    // IE
-    var doc = win.document;
-    var sel = doc.selection;
-    if (sel) {
-      // IE has a bug where it sometimes returns a selection from the wrong
-      // document. Catching these cases now helps us avoid problems later.
-      try {
-        var range = sel.createRange();
-        // Only TextRanges have a parentElement method.
-        if (range.parentElement) {
-          if (range.parentElement().document != doc) {
-            return null;
-          }
-        } else if (
-            !range.length ||
-            /** @type {ControlRange} */ (range).item(0).document != doc) {
-          // For ControlRanges, check that the range has items, and that
-          // the first item in the range is in the correct document.
-          return null;
-        }
-      } catch (e) {
-        // If the selection is in the wrong document, and the wrong document is
-        // in a different domain, IE will throw an exception.
-        return null;
-      }
-      // TODO(user|robbyw) Sometimes IE 6 returns a selection instance
-      // when there is no selection.  This object has a 'type' property equals
-      // to 'None' and a typeDetail property bound to undefined. Ideally this
-      // function should not return this instance.
-      return sel;
-    }
-    return null;
-  }
+  'use strict';
+  return win.getSelection();
 };
 
 
@@ -103,6 +62,7 @@ goog.dom.AbstractRange.getBrowserSelectionForWindow = function(win) {
  * @return {boolean} Whether the given Object is a controlRange.
  */
 goog.dom.AbstractRange.isNativeControlRange = function(range) {
+  'use strict';
   // For now, tests for presence of a control range function.
   return !!range && !!range.addElement;
 };
@@ -135,6 +95,7 @@ goog.dom.AbstractRange.prototype.getBrowserRangeObject = goog.abstractMethod;
  *     range object.
  */
 goog.dom.AbstractRange.prototype.setBrowserRangeObject = function(nativeRange) {
+  'use strict';
   return false;
 };
 
@@ -149,7 +110,7 @@ goog.dom.AbstractRange.prototype.getTextRangeCount = goog.abstractMethod;
  * Get the i-th text range in this range.  The behavior is undefined if
  * i >= getTextRangeCount or i < 0.
  * @param {number} i The range number to retrieve.
- * @return {goog.dom.TextRange} The i-th text range.
+ * @return {?goog.dom.AbstractRange} The i-th text range.
  */
 goog.dom.AbstractRange.prototype.getTextRange = goog.abstractMethod;
 
@@ -157,9 +118,10 @@ goog.dom.AbstractRange.prototype.getTextRange = goog.abstractMethod;
 /**
  * Gets an array of all text ranges this range is comprised of.  For non-multi
  * ranges, returns a single element array containing this.
- * @return {!Array<goog.dom.TextRange>} Array of text ranges.
+ * @return {!Array<?goog.dom.AbstractRange>} Array of text ranges.
  */
 goog.dom.AbstractRange.prototype.getTextRanges = function() {
+  'use strict';
   var output = [];
   for (var i = 0, len = this.getTextRangeCount(); i < len; i++) {
     output.push(this.getTextRange(i));
@@ -179,6 +141,7 @@ goog.dom.AbstractRange.prototype.getContainer = goog.abstractMethod;
  * @return {Element} The deepest element that contains the entire range.
  */
 goog.dom.AbstractRange.prototype.getContainerElement = function() {
+  'use strict';
   var node = this.getContainer();
   return /** @type {Element} */ (
       node.nodeType == goog.dom.NodeType.ELEMENT ? node : node.parentNode);
@@ -234,6 +197,7 @@ goog.dom.AbstractRange.prototype.getEndPosition = goog.abstractMethod;
  * @return {Node} The element or text node the range is anchored at.
  */
 goog.dom.AbstractRange.prototype.getAnchorNode = function() {
+  'use strict';
   return this.isReversed() ? this.getEndNode() : this.getStartNode();
 };
 
@@ -244,6 +208,7 @@ goog.dom.AbstractRange.prototype.getAnchorNode = function() {
  *     is an offset into the childNodes array.
  */
 goog.dom.AbstractRange.prototype.getAnchorOffset = function() {
+  'use strict';
   return this.isReversed() ? this.getEndOffset() : this.getStartOffset();
 };
 
@@ -253,6 +218,7 @@ goog.dom.AbstractRange.prototype.getAnchorOffset = function() {
  *     the cursor is.
  */
 goog.dom.AbstractRange.prototype.getFocusNode = function() {
+  'use strict';
   return this.isReversed() ? this.getStartNode() : this.getEndNode();
 };
 
@@ -263,6 +229,7 @@ goog.dom.AbstractRange.prototype.getFocusNode = function() {
  *     value.  For elements, this is an offset into the childNodes array.
  */
 goog.dom.AbstractRange.prototype.getFocusOffset = function() {
+  'use strict';
   return this.isReversed() ? this.getStartOffset() : this.getEndOffset();
 };
 
@@ -271,6 +238,7 @@ goog.dom.AbstractRange.prototype.getFocusOffset = function() {
  * @return {boolean} Whether the selection is reversed.
  */
 goog.dom.AbstractRange.prototype.isReversed = function() {
+  'use strict';
   return false;
 };
 
@@ -279,6 +247,7 @@ goog.dom.AbstractRange.prototype.isReversed = function() {
  * @return {!Document} The document this selection is a part of.
  */
 goog.dom.AbstractRange.prototype.getDocument = function() {
+  'use strict';
   // Using start node in IE was crashing the browser in some cases so use
   // getContainer for that browser. It's also faster for IE, but still slower
   // than start node for other browsers so we continue to use getStartNode when
@@ -292,6 +261,7 @@ goog.dom.AbstractRange.prototype.getDocument = function() {
  * @return {!Window} The window this selection is a part of.
  */
 goog.dom.AbstractRange.prototype.getWindow = function() {
+  'use strict';
   return goog.dom.getWindow(this.getDocument());
 };
 
@@ -422,6 +392,7 @@ goog.dom.AbstractRange.prototype.insertNode = goog.abstractMethod;
  *     than the node parameter because on IE we have to clone it.
  */
 goog.dom.AbstractRange.prototype.replaceContentsWithNode = function(node) {
+  'use strict';
   if (!this.isCollapsed()) {
     this.removeContents();
   }
@@ -455,15 +426,12 @@ goog.dom.AbstractRange.prototype.saveUsingDom = goog.abstractMethod;
  * Saves the range using HTML carets. As long as the carets remained in the
  * HTML, the range can be restored...even when the HTML is copied across
  * documents.
- * @return {goog.dom.SavedCaretRange?} A range representation that can be
- *     restored as long as carets are not removed. Returns null if carets
+ * @return {?goog.dom.AbstractSavedCaretRange} A range representation that can
+ *     be restored as long as carets are not removed. Returns null if carets
  *     could not be created.
+ * @abstract
  */
-goog.dom.AbstractRange.prototype.saveUsingCarets = function() {
-  return (this.getStartNode() && this.getEndNode()) ?
-      new goog.dom.SavedCaretRange(this) :
-      null;
-};
+goog.dom.AbstractRange.prototype.saveUsingCarets = function() {};
 
 
 // RANGE MODIFICATION
@@ -489,6 +457,7 @@ goog.dom.AbstractRange.prototype.collapse = goog.abstractMethod;
  * @extends {goog.dom.TagIterator}
  */
 goog.dom.RangeIterator = function(node, opt_reverse) {
+  'use strict';
   goog.dom.TagIterator.call(this, node, opt_reverse, true);
 };
 goog.inherits(goog.dom.RangeIterator, goog.dom.TagIterator);

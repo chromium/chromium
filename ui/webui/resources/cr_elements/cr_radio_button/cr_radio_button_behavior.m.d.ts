@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export interface CrRadioButtonBehavior {
+import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
+
+export interface CrRadioButtonBehavior extends PaperRippleBehavior {
   checked: boolean;
   disabled: boolean;
   focusable: boolean;

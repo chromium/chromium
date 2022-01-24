@@ -11,15 +11,16 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/password_manager/chrome_biometric_authenticator.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/url_formatter/elide_url.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -32,7 +33,7 @@ namespace {
 
 using ShowVirtualKeyboard =
     password_manager::PasswordManagerDriver::ShowVirtualKeyboard;
-using password_manager::BiometricsAvailability;
+using device_reauth::BiometricsAvailability;
 using password_manager::PasswordManagerDriver;
 using password_manager::UiCredential;
 
@@ -55,12 +56,12 @@ std::vector<UiCredential> SortCredentials(
 
 TouchToFillController::TouchToFillController(
     base::PassKey<TouchToFillControllerTest>,
-    scoped_refptr<password_manager::BiometricAuthenticator> authenticator)
+    scoped_refptr<device_reauth::BiometricAuthenticator> authenticator)
     : authenticator_(std::move(authenticator)) {}
 
 TouchToFillController::TouchToFillController(
     ChromePasswordManagerClient* password_client,
-    scoped_refptr<password_manager::BiometricAuthenticator> authenticator)
+    scoped_refptr<device_reauth::BiometricAuthenticator> authenticator)
     : password_client_(password_client),
       authenticator_(std::move(authenticator)),
       source_id_(ukm::GetSourceIdForWebContentsDocument(
@@ -69,8 +70,7 @@ TouchToFillController::TouchToFillController(
 TouchToFillController::~TouchToFillController() {
   if (authenticator_) {
     // This is a noop if no auth triggered by Touch To Fill is in progress.
-    authenticator_->Cancel(
-        password_manager::BiometricAuthRequester::kTouchToFill);
+    authenticator_->Cancel(device_reauth::BiometricAuthRequester::kTouchToFill);
   }
 }
 
@@ -110,10 +110,9 @@ void TouchToFillController::OnCredentialSelected(
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kSelectedCredential))
       .Record(ukm::UkmRecorder::Get());
-
-  if (!authenticator_ ||
-      authenticator_->CanAuthenticate() !=
-          password_manager::BiometricsAvailability::kAvailable) {
+  if (!password_manager_util::CanUseBiometricAuth(
+          authenticator_.get(),
+          device_reauth::BiometricAuthRequester::kTouchToFill)) {
     FillCredential(credential);
     return;
   }
@@ -121,7 +120,7 @@ void TouchToFillController::OnCredentialSelected(
   // the callback being reset by the authenticator. Therefore, it is safe
   // to use base::Unretained.
   authenticator_->Authenticate(
-      password_manager::BiometricAuthRequester::kTouchToFill,
+      device_reauth::BiometricAuthRequester::kTouchToFill,
       base::BindOnce(&TouchToFillController::OnReauthCompleted,
                      base::Unretained(this), credential));
 }

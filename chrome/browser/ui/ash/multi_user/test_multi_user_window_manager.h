@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_MULTI_USER_TEST_MULTI_USER_WINDOW_MANAGER_H_
 
 #include "ash/public/cpp/multi_user_window_manager.h"
-#include "base/macros.h"
 #include "components/account_id/account_id.h"
 
 class Browser;
@@ -17,6 +16,10 @@ class Browser;
 // |browser| which is shown on |desktop_owner|'s desktop.
 class TestMultiUserWindowManager : public ash::MultiUserWindowManager {
  public:
+  TestMultiUserWindowManager(const TestMultiUserWindowManager&) = delete;
+  TestMultiUserWindowManager& operator=(const TestMultiUserWindowManager&) =
+      delete;
+
   ~TestMultiUserWindowManager() override;
 
   // Creates an installs TestMultiUserWindowManager as the
@@ -57,8 +60,6 @@ class TestMultiUserWindowManager : public ash::MultiUserWindowManager {
   AccountId created_window_shown_for_;
   // The current selected active user.
   AccountId current_account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMultiUserWindowManager);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MULTI_USER_TEST_MULTI_USER_WINDOW_MANAGER_H_

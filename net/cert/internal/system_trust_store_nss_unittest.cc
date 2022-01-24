@@ -49,6 +49,10 @@ namespace {
 class SystemTrustStoreNSSTest : public ::testing::Test {
  public:
   SystemTrustStoreNSSTest() : test_root_certs_(TestRootCerts::GetInstance()) {}
+
+  SystemTrustStoreNSSTest(const SystemTrustStoreNSSTest&) = delete;
+  SystemTrustStoreNSSTest& operator=(const SystemTrustStoreNSSTest&) = delete;
+
   ~SystemTrustStoreNSSTest() override = default;
 
   void SetUp() override {
@@ -91,9 +95,6 @@ class SystemTrustStoreNSSTest : public ::testing::Test {
   scoped_refptr<X509Certificate> root_cert_;
   scoped_refptr<ParsedCertificate> parsed_root_cert_;
   ScopedCERTCertificate nss_root_cert_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemTrustStoreNSSTest);
 };
 
 // Tests that SystemTrustStore created for NSS with a user-slot restriction
@@ -105,9 +106,9 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionAllows) {
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
-  CertificateTrust trust;
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
+  CertificateTrust trust =
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
+                                                    /*debug_data=*/nullptr);
   EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
 }
 
@@ -121,9 +122,9 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionDisallows) {
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(other_test_nssdb_.slot()));
 
-  CertificateTrust trust;
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
+  CertificateTrust trust =
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
+                                                    /*debug_data=*/nullptr);
   EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
 }
 
@@ -135,9 +136,9 @@ TEST_F(SystemTrustStoreNSSTest, NoUserSlots) {
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
-  CertificateTrust trust;
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
+  CertificateTrust trust =
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
+                                                    /*debug_data=*/nullptr);
   EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
 }
 

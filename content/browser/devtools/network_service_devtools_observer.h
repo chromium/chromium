@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
@@ -39,13 +40,15 @@ class CONTENT_EXPORT NetworkServiceDevToolsObserver
       const std::string& devtools_request_id,
       const net::CookieAccessResultList& request_cookie_list,
       std::vector<network::mojom::HttpRawHeaderPairPtr> request_headers,
+      const base::TimeTicks timestamp,
       network::mojom::ClientSecurityStatePtr security_state) override;
   void OnRawResponse(
       const std::string& devtools_request_id,
       const net::CookieAndLineAccessResultList& response_cookie_list,
       std::vector<network::mojom::HttpRawHeaderPairPtr> response_headers,
       const absl::optional<std::string>& response_headers_text,
-      network::mojom::IPAddressSpace resource_address_space) override;
+      network::mojom::IPAddressSpace resource_address_space,
+      int32_t http_status_code) override;
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       network::mojom::TrustTokenOperationResultPtr result) override;
@@ -64,7 +67,7 @@ class CONTENT_EXPORT NetworkServiceDevToolsObserver
   void OnCorsPreflightResponse(
       const base::UnguessableToken& devtools_request_id,
       const GURL& url,
-      network::mojom::URLResponseHeadPtr head) override;
+      network::mojom::URLResponseHeadDevToolsInfoPtr head) override;
   void OnCorsPreflightRequestCompleted(
       const base::UnguessableToken& devtools_request_id,
       const network::URLLoaderCompletionStatus& status) override;

@@ -56,6 +56,7 @@ component("views") {
   all_dependent_configs = [ ":flags" ]
 
   public = [
+    "accessibility/accessibility_paint_checks.h",
     "accessibility/ax_event_manager.h",
     "accessibility/ax_event_observer.h",
     "accessibility/ax_virtual_view.h",
@@ -64,7 +65,10 @@ component("views") {
     "accessibility/views_ax_tree_manager.h",
     "accessibility/widget_ax_tree_id_map.h",
     "accessible_pane_view.h",
+    "animation/animation_abort_handle.h",
+    "animation/animation_builder.h",
     "animation/animation_delegate_views.h",
+    "animation/animation_sequence_block.h",
     "animation/bounds_animator.h",
     "animation/bounds_animator_observer.h",
     "animation/bubble_slide_animator.h",
@@ -85,10 +89,6 @@ component("views") {
     "animation/ink_drop_state.h",
     "animation/ink_drop_stub.h",
     "animation/ink_drop_util.h",
-    "animation/installable_ink_drop.h",
-    "animation/installable_ink_drop_animator.h",
-    "animation/installable_ink_drop_config.h",
-    "animation/installable_ink_drop_painter.h",
     "animation/scroll_animator.h",
     "animation/slide_out_controller.h",
     "animation/slide_out_controller_delegate.h",
@@ -97,6 +97,7 @@ component("views") {
     "background.h",
     "border.h",
     "bubble/bubble_border.h",
+    "bubble/bubble_border_arrow_utils.h",
     "bubble/bubble_dialog_delegate_view.h",
     "bubble/bubble_dialog_model_host.h",
     "bubble/bubble_frame_view.h",
@@ -106,6 +107,7 @@ component("views") {
     "cascading_property.h",
     "color_chooser/color_chooser_listener.h",
     "context_menu_controller.h",
+    "controls/animated_image_view.h",
     "controls/button/button.h",
     "controls/button/button_controller.h",
     "controls/button/button_controller_delegate.h",
@@ -127,6 +129,7 @@ component("views") {
     "controls/focusable_border.h",
     "controls/highlight_path_generator.h",
     "controls/image_view.h",
+    "controls/image_view_base.h",
     "controls/label.h",
     "controls/link.h",
     "controls/menu/menu_config.h",
@@ -213,6 +216,8 @@ component("views") {
     "layout/layout_types.h",
     "layout/normalized_geometry.h",
     "layout/proposed_layout.h",
+    "layout/table_layout.h",
+    "layout/table_layout_view.h",
     "masked_targeter_delegate.h",
     "metadata/type_conversion.h",
     "metadata/view_factory.h",
@@ -284,13 +289,18 @@ component("views") {
   ]
 
   sources = [
+    "accessibility/accessibility_paint_checks.cc",
     "accessibility/ax_event_manager.cc",
     "accessibility/ax_event_observer.cc",
     "accessibility/ax_virtual_view.cc",
     "accessibility/view_accessibility.cc",
     "accessibility/view_accessibility_utils.cc",
     "accessible_pane_view.cc",
+    "animation/animation_abort_handle.cc",
+    "animation/animation_builder.cc",
     "animation/animation_delegate_views.cc",
+    "animation/animation_key.h",
+    "animation/animation_sequence_block.cc",
     "animation/bounds_animator.cc",
     "animation/bubble_slide_animator.cc",
     "animation/compositor_animation_runner.cc",
@@ -307,9 +317,6 @@ component("views") {
     "animation/ink_drop_state.cc",
     "animation/ink_drop_stub.cc",
     "animation/ink_drop_util.cc",
-    "animation/installable_ink_drop.cc",
-    "animation/installable_ink_drop_animator.cc",
-    "animation/installable_ink_drop_painter.cc",
     "animation/scroll_animator.cc",
     "animation/slide_out_controller.cc",
     "animation/square_ink_drop_ripple.cc",
@@ -317,6 +324,7 @@ component("views") {
     "background.cc",
     "border.cc",
     "bubble/bubble_border.cc",
+    "bubble/bubble_border_arrow_utils.cc",
     "bubble/bubble_dialog_delegate_view.cc",
     "bubble/bubble_dialog_model_host.cc",
     "bubble/bubble_frame_view.cc",
@@ -326,6 +334,7 @@ component("views") {
     "button_drag_utils.cc",
     "cascading_property.cc",
     "context_menu_controller.cc",
+    "controls/animated_image_view.cc",
     "controls/button/button.cc",
     "controls/button/button_controller.cc",
     "controls/button/checkbox.cc",
@@ -348,6 +357,7 @@ component("views") {
     "controls/focusable_border.cc",
     "controls/highlight_path_generator.cc",
     "controls/image_view.cc",
+    "controls/image_view_base.cc",
     "controls/label.cc",
     "controls/link.cc",
     "controls/menu/menu_config.cc",
@@ -418,6 +428,8 @@ component("views") {
     "layout/layout_types.cc",
     "layout/normalized_geometry.cc",
     "layout/proposed_layout.cc",
+    "layout/table_layout.cc",
+    "layout/table_layout_view.cc",
     "masked_targeter_delegate.cc",
     "metadata/type_conversion.cc",
     "metadata/view_factory_internal.cc",
@@ -506,6 +518,7 @@ component("views") {
     "//ui/color:mixers",
     "//ui/display",
     "//ui/latency",
+    "//ui/lottie",
     "//ui/native_theme",
     "//ui/native_theme:native_theme_browser",
     "//ui/resources",
@@ -520,6 +533,7 @@ component("views") {
     ":views_vector_icons",
     "//base",
     "//components/vector_icons",
+    "//third_party/abseil-cpp:absl",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/base",
     "//ui/base/clipboard",
@@ -540,15 +554,11 @@ component("views") {
     "//ui/views/window/vector_icons",
   ]
 
-  if (use_x11) {
-    deps += [ "//ui/display/util" ]
-  }
-
   if (is_chromeos_ash) {
-    deps += [ "//ui/base/ime/chromeos" ]
+    deps += [ "//ui/base/ime/ash" ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (is_linux || is_chromeos || is_fuchsia) {
     public += [ "color_chooser/color_chooser_view.h" ]
     sources += [ "color_chooser/color_chooser_view.cc" ]
   }
@@ -566,6 +576,7 @@ component("views") {
       "linux_ui/nav_button_provider.h",
       "linux_ui/status_icon_linux.h",
       "linux_ui/window_button_order_observer.h",
+      "linux_ui/window_frame_provider.h",
     ]
     sources += [
       "linux_ui/linux_ui.cc",
@@ -682,15 +693,6 @@ component("views") {
     ]
   }
 
-  if (use_x11) {
-    deps += [
-      "//ui/events/devices",
-      "//ui/events/devices/x11",
-      "//ui/events/platform/x11",
-      "//ui/gfx/x",
-    ]
-  }
-
   if (use_aura) {
     public += [
       "accessibility/accessibility_alert_window.h",
@@ -797,14 +799,7 @@ component("views") {
         "//ui/base/cursor",
         "//ui/base/cursor/mojom:cursor_type",
       ]
-      if (use_x11) {
-        public_deps += [
-          "//ui/base/x",
-          "//ui/platform_window/x11",
-        ]
-        public += [ "widget/desktop_aura/desktop_screen_x11.h" ]
-        sources += [ "widget/desktop_aura/desktop_screen_x11.cc" ]
-      } else if (is_win) {
+      if (is_win) {
         public += [ "widget/desktop_aura/desktop_window_tree_host_win.h" ]
         sources += [
           "widget/desktop_aura/desktop_drag_drop_client_win.cc",
@@ -1051,22 +1046,6 @@ source_set("test_support") {
       "//ui/wm",
       "//ui/wm/public",
     ]
-    if (use_x11) {
-      sources += [
-        "test/test_desktop_screen_x11.cc",
-        "test/test_desktop_screen_x11.h",
-        "test/ui_controls_factory_desktop_aurax11.cc",
-        "test/ui_controls_factory_desktop_aurax11.h",
-      ]
-      deps += [ "//ui/base/x:test_support" ]
-    }
-  }
-  if (use_x11) {
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/events/x",
-      "//ui/gfx/x",
-    ]
   }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
@@ -1088,6 +1067,7 @@ test("views_unittests") {
 
   sources = [
     "accessible_pane_view_unittest.cc",
+    "animation/animation_builder_unittest.cc",
     "animation/bounds_animator_unittest.cc",
     "animation/bubble_slide_animator_unittest.cc",
     "animation/compositor_animation_runner_unittest.cc",
@@ -1098,9 +1078,6 @@ test("views_unittests") {
     "animation/ink_drop_mask_unittest.cc",
     "animation/ink_drop_ripple_unittest.cc",
     "animation/ink_drop_unittest.cc",
-    "animation/installable_ink_drop_animator_unittest.cc",
-    "animation/installable_ink_drop_painter_unittest.cc",
-    "animation/installable_ink_drop_unittest.cc",
     "animation/slide_out_controller_unittest.cc",
     "animation/square_ink_drop_ripple_unittest.cc",
     "animation/widget_fade_animator_unittest.cc",
@@ -1173,6 +1150,7 @@ test("views_unittests") {
     "layout/layout_manager_base_unittest.cc",
     "layout/normalized_geometry_unittest.cc",
     "layout/proposed_layout_unittest.cc",
+    "layout/table_layout_unittest.cc",
     "metadata/type_conversion_unittest.cc",
     "metadata/view_factory_unittest.cc",
     "paint_info_unittest.cc",
@@ -1225,6 +1203,7 @@ test("views_unittests") {
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",
     "//ui/base/ime/init",
+    "//ui/color",
     "//ui/compositor:test_support",
     "//ui/display:test_support",
     "//ui/events:dom_keycode_converter",
@@ -1352,30 +1331,12 @@ test("views_unittests") {
           [ "widget/desktop_aura/desktop_window_tree_host_win_unittest.cc" ]
     }
 
-    if (use_x11) {
-      deps += [
-        "//ui/events/devices",
-        "//ui/events/platform/x11",
-        "//ui/gfx/x",
-      ]
-    }
-
     if (enable_desktop_aura) {
       sources += [
         "widget/desktop_aura/desktop_focus_rules_unittest.cc",
         "widget/desktop_aura/desktop_native_widget_aura_unittest.cc",
         "widget/desktop_widget_unittest.cc",
       ]
-      if (use_x11) {
-        sources += [
-          "widget/desktop_aura/desktop_screen_x11_unittest.cc",
-          "widget/desktop_aura/x11_drag_drop_client_unittest.cc",
-        ]
-        deps += [
-          "//ui/base/x",
-          "//ui/base/x:test_support",
-        ]
-      }
       if (is_linux || is_chromeos || is_fuchsia) {
         sources += [
           "widget/desktop_aura/desktop_window_tree_host_platform_unittest.cc",
@@ -1386,7 +1347,7 @@ test("views_unittests") {
           ]
         }
       }
-      if (use_ozone || use_x11) {
+      if (use_ozone) {
         sources +=
             [ "widget/desktop_aura/desktop_drag_drop_client_ozone_unittest.cc" ]
         deps += [ "//ui/platform_window" ]
@@ -1480,19 +1441,18 @@ source_set("views_interactive_ui_tests") {
     ]
   }
 
-  if (use_x11) {
+  # TODO(1239521): x11 interactive ui tests should probably have own target.
+  # At the moment, it's impossible to move this test file under X11 directory
+  # as it will result in a gn dependency problem.
+  if (ozone_platform_x11 && !is_chromeos_ash && !is_chromecast) {
     sources += [
       "widget/desktop_aura/x11_topmost_window_finder_interactive_uitest.cc",
     ]
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-  }
-
-  if (use_x11 || ozone_platform_x11) {
     deps += [
+      "//ui/base/x",
       "//ui/base/x:test_support",
-      "//ui/events/platform/x11:x11",
+      "//ui/gfx/x",
+      "//ui/ozone",
       "//ui/platform_window/x11",
     ]
   }

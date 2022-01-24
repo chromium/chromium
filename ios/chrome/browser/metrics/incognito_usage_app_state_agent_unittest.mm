@@ -114,13 +114,13 @@ TEST_F(IncognitoUsageAppStateAgentTest, NormalIncognitoSession) {
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
 
   // Display one incognito for 1 minute
   SetScene1DisplaysIncognito(YES);
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
 
   // Back to normal
   SetScene1DisplaysIncognito(NO);
@@ -129,12 +129,12 @@ TEST_F(IncognitoUsageAppStateAgentTest, NormalIncognitoSession) {
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
   // Back to incognito
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
   SetScene1DisplaysIncognito(YES);
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   // Metrics from previous time should be logged.
   histogram_tester_.ExpectUniqueTimeSample("IOS.Incognito.TimeSpent",
-                                           base::TimeDelta::FromMinutes(1), 1);
+                                           base::Minutes(1), 1);
 }
 
 // Tests metrics that a session of 5 seconds is not recorded
@@ -145,13 +145,13 @@ TEST_F(IncognitoUsageAppStateAgentTest, ShortIncognitoSession) {
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
 
   // Display one incognito for 5 seconds
   SetScene1DisplaysIncognito(YES);
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
-  AdvanceClock(base::TimeDelta::FromSeconds(5));
+  AdvanceClock(base::Seconds(5));
 
   // Back to normal
   SetScene1DisplaysIncognito(NO);
@@ -160,7 +160,7 @@ TEST_F(IncognitoUsageAppStateAgentTest, ShortIncognitoSession) {
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
   // Back to incognito
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
   SetScene1DisplaysIncognito(YES);
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   // Metrics from previous time should not be logged.
@@ -175,13 +175,13 @@ TEST_F(IncognitoUsageAppStateAgentTest, ShortNormalSession) {
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
 
   // Display one incognito for 1 minute
   SetScene1DisplaysIncognito(YES);
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
 
   // Back to normal
   SetScene1DisplaysIncognito(NO);
@@ -190,24 +190,24 @@ TEST_F(IncognitoUsageAppStateAgentTest, ShortNormalSession) {
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
   // Back to incognito
-  AdvanceClock(base::TimeDelta::FromSeconds(5));
+  AdvanceClock(base::Seconds(5));
   SetScene1DisplaysIncognito(YES);
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   // Nothing logged yet
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
-  AdvanceClock(base::TimeDelta::FromSeconds(55));
+  AdvanceClock(base::Seconds(55));
   SetScene1DisplaysIncognito(NO);
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
   // Metrics is still not logged.
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
   SetScene1DisplaysIncognito(YES);
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   // Metrics from previous time should be logged.
   histogram_tester_.ExpectUniqueTimeSample("IOS.Incognito.TimeSpent",
-                                           base::TimeDelta::FromMinutes(2), 1);
+                                           base::Minutes(2), 1);
 }
 
 // Tests metrics that the current incognito life time is reported.
@@ -218,17 +218,17 @@ TEST_F(IncognitoUsageAppStateAgentTest, ApplicationTerminatesInIncognito) {
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
   // Display one incognito for 1 minute
   SetScene1DisplaysIncognito(YES);
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
 
   [incognito_agent_ applicationWillTerminate];
   // Metrics from previous time should be logged.
   histogram_tester_.ExpectUniqueTimeSample("IOS.Incognito.TimeSpent",
-                                           base::TimeDelta::FromMinutes(1), 1);
+                                           base::Minutes(1), 1);
 }
 
 // Tests metrics that the last incognito life time is reported.
@@ -239,12 +239,12 @@ TEST_F(IncognitoUsageAppStateAgentTest, ApplicationTerminatesInNormal) {
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
 
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
   // Display one incognito for 1 minute
   SetScene1DisplaysIncognito(YES);
   EXPECT_TRUE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
-  AdvanceClock(base::TimeDelta::FromMinutes(1));
+  AdvanceClock(base::Minutes(1));
   SetScene1DisplaysIncognito(NO);
   EXPECT_FALSE(incognito_agent_.incognitoContentVisible);
   histogram_tester_.ExpectTotalCount("IOS.Incognito.TimeSpent", 0);
@@ -252,7 +252,7 @@ TEST_F(IncognitoUsageAppStateAgentTest, ApplicationTerminatesInNormal) {
   [incognito_agent_ applicationWillTerminate];
   // Metrics from previous time should be logged.
   histogram_tester_.ExpectUniqueTimeSample("IOS.Incognito.TimeSpent",
-                                           base::TimeDelta::FromMinutes(1), 1);
+                                           base::Minutes(1), 1);
 }
 
 // Tests incognitoContentVisible in various scenarios.

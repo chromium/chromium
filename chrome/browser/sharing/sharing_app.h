@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ui/gfx/image/image.h"
 
 namespace gfx {
@@ -22,15 +21,16 @@ struct SharingApp {
              std::u16string name,
              std::string identifier);
   SharingApp(SharingApp&& other);
+
+  SharingApp(const SharingApp&) = delete;
+  SharingApp& operator=(const SharingApp&) = delete;
+
   ~SharingApp();
 
   const gfx::VectorIcon* vector_icon = nullptr;
   gfx::Image image;
   std::u16string name;
   std::string identifier;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharingApp);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_APP_H_

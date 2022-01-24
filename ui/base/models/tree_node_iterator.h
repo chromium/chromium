@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/stack.h"
-#include "base/macros.h"
 
 namespace ui {
 
@@ -47,6 +46,9 @@ class TreeNodeIterator {
     if (!node->children().empty())
       positions_.emplace(node, 0);
   }
+
+  TreeNodeIterator(const TreeNodeIterator&) = delete;
+  TreeNodeIterator& operator=(const TreeNodeIterator&) = delete;
 
   // Returns true if there are more descendants.
   bool has_next() const { return !positions_.empty(); }
@@ -94,8 +96,6 @@ class TreeNodeIterator {
 
   base::stack<Position<NodeType>> positions_;
   PruneCallback prune_;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeNodeIterator);
 };
 
 }  // namespace ui

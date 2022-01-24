@@ -70,17 +70,11 @@ class DataUsageStoreTest : public testing::Test {
     base::Time current_time;
     EXPECT_TRUE(base::Time::FromUTCExploded(exploded, &current_time));
 
-    DataUsageBucket current_bucket;
-    current_bucket.set_last_updated_timestamp(current_time.ToInternalValue());
-    current_bucket.set_had_read_error(false);
-    std::string bucket_value;
-    ASSERT_TRUE(current_bucket.SerializeToString(&bucket_value));
-
     std::map<std::string, std::string> map;
     map.insert(
         std::pair<std::string, std::string>("current_bucket_index", "2880"));
     for (int i = 0; i < static_cast<int>(kNumExpectedBuckets); ++i) {
-      base::Time time = current_time - base::TimeDelta::FromMinutes(i * 5);
+      base::Time time = current_time - base::Minutes(i * 5);
       DataUsageBucket bucket;
       bucket.set_last_updated_timestamp(time.ToInternalValue());
       bucket.set_had_read_error(false);
@@ -239,15 +233,13 @@ TEST_F(DataUsageStoreTest, StoreMultipleBuckets) {
   // the second bucket range is 0.0.5.0.0 - 0.0.29.59.999, etc.
   base::Time first_bucket_time = base::Time::Now();  // 0.0.0.0.0.
   base::Time last_bucket_time = first_bucket_time    // 59.23.55.0.0
-                                + base::TimeDelta::FromDays(60) -
-                                base::TimeDelta::FromMinutes(15);
+                                + base::Days(60) - base::Minutes(15);
   base::Time before_history_time =  // 0.0.-5.0.0
-      first_bucket_time - base::TimeDelta::FromMinutes(15);
+      first_bucket_time - base::Minutes(15);
   base::Time tenth_bucket_time =  // 0.2.15.0.0
-      first_bucket_time + base::TimeDelta::FromHours(2) +
-      base::TimeDelta::FromMinutes(15);
+      first_bucket_time + base::Hours(2) + base::Minutes(15);
   base::Time second_last_bucket_time =  // 59.23.45.0.0
-      last_bucket_time - base::TimeDelta::FromMinutes(15);
+      last_bucket_time - base::Minutes(15);
 
   // This bucket will be discarded when the |last_bucket| is stored.
   DataUsageBucket bucket_before_history;
@@ -439,7 +431,7 @@ TEST_F(DataUsageStoreTest, DeleteBrowsingHistory) {
   exploded.minute = 0;
   base::Time now;
   EXPECT_TRUE(base::Time::FromUTCExploded(exploded, &now));
-  base::Time fifteen_mins_from_now = now + base::TimeDelta::FromMinutes(15);
+  base::Time fifteen_mins_from_now = now + base::Minutes(15);
 
   // Deleting browsing from the future should be a no-op.
   data_usage_store()->DeleteBrowsingHistory(fifteen_mins_from_now,
@@ -460,8 +452,7 @@ TEST_F(DataUsageStoreTest, DeleteBrowsingHistory) {
       "DataReductionProxy.DeleteBrowsingHistory.NumBuckets", 1, 1);
 
   // Delete the current bucket + the last 5 minutes, so two buckets.
-  data_usage_store()->DeleteBrowsingHistory(
-      now - base::TimeDelta::FromMinutes(5), now);
+  data_usage_store()->DeleteBrowsingHistory(now - base::Minutes(5), now);
   ASSERT_EQ(kNumExpectedBuckets - 1, store()->map()->size());
   ASSERT_TRUE(store()->map()->find(base::StringPrintf(
                   "data_usage_bucket:%d", kTestCurrentBucketIndex - 1)) ==
@@ -470,8 +461,7 @@ TEST_F(DataUsageStoreTest, DeleteBrowsingHistory) {
       "DataReductionProxy.DeleteBrowsingHistory.NumBuckets", 2, 1);
 
   // Delete 30 days of browsing history.
-  data_usage_store()->DeleteBrowsingHistory(now - base::TimeDelta::FromDays(30),
-                                            now);
+  data_usage_store()->DeleteBrowsingHistory(now - base::Days(30), now);
   ASSERT_EQ(kNumExpectedBuckets - kBucketsInHour * 30 * 24,
             store()->map()->size());
   ASSERT_TRUE(store()->map()->find("data_usage_bucket:0") ==
@@ -486,8 +476,7 @@ TEST_F(DataUsageStoreTest, DeleteBrowsingHistory) {
   // Delete wraps around and removes the last element which is at position
   // (|kNumExpectedBuckets| - 1).
   data_usage_store()->DeleteBrowsingHistory(
-      now - base::TimeDelta::FromDays(30) - base::TimeDelta::FromMinutes(5),
-      now);
+      now - base::Days(30) - base::Minutes(5), now);
   ASSERT_EQ(kNumExpectedBuckets - kBucketsInHour * 30 * 24 - 1,
             store()->map()->size());
   ASSERT_TRUE(store()->map()->find(base::StringPrintf(
@@ -497,8 +486,7 @@ TEST_F(DataUsageStoreTest, DeleteBrowsingHistory) {
                   "data_usage_bucket:%d", kNumExpectedBuckets - 2)) !=
               store()->map()->end());
 
-  data_usage_store()->DeleteBrowsingHistory(now - base::TimeDelta::FromDays(60),
-                                            now);
+  data_usage_store()->DeleteBrowsingHistory(now - base::Days(60), now);
   ASSERT_EQ(1u, store()->map()->size());
   histogram_tester.ExpectBucketCount(
       "DataReductionProxy.DeleteBrowsingHistory.NumBuckets",

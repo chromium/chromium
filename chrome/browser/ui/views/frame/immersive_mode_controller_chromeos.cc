@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 
-#include "base/macros.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -25,6 +26,13 @@
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/ash/window_pin_util.h"
+#include "chromeos/ui/base/window_state_type.h"
+#else
+#include "chrome/browser/ui/lacros/window_properties.h"
+#endif
 
 namespace {
 
@@ -48,10 +56,11 @@ class ImmersiveRevealedLockAsh : public ImmersiveRevealedLock {
   explicit ImmersiveRevealedLockAsh(chromeos::ImmersiveRevealedLock* lock)
       : lock_(lock) {}
 
+  ImmersiveRevealedLockAsh(const ImmersiveRevealedLockAsh&) = delete;
+  ImmersiveRevealedLockAsh& operator=(const ImmersiveRevealedLockAsh&) = delete;
+
  private:
   std::unique_ptr<chromeos::ImmersiveRevealedLock> lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveRevealedLockAsh);
 };
 
 }  // namespace
@@ -227,8 +236,20 @@ void ImmersiveModeControllerChromeos::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
+  bool pin_state_transition = false;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1250129): Get pin state from exo.
+  pin_state_transition = key == lacros::kWindowPinTypeKey;
+#else
   // Track locked fullscreen changes.
-  if (key == chromeos::kWindowPinTypeKey) {
+  if (key == chromeos::kWindowStateTypeKey) {
+    auto old_type = static_cast<chromeos::WindowStateType>(old);
+    // Check if there is a transition into or out of a pinned state.
+    pin_state_transition =
+        IsWindowPinned(window) || chromeos::IsPinnedWindowStateType(old_type);
+  }
+#endif
+  if (pin_state_transition) {
     browser_view_->FullscreenStateChanging();
     return;
   }

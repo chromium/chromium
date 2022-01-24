@@ -11,7 +11,6 @@
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_observer.h"
-#include "base/macros.h"
 
 namespace ash {
 namespace tray {
@@ -29,6 +28,12 @@ class UnifiedIMEDetailedViewController : public DetailedViewController,
  public:
   explicit UnifiedIMEDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UnifiedIMEDetailedViewController(const UnifiedIMEDetailedViewController&) =
+      delete;
+  UnifiedIMEDetailedViewController& operator=(
+      const UnifiedIMEDetailedViewController&) = delete;
+
   ~UnifiedIMEDetailedViewController() override;
 
   // DetailedViewControllerBase:
@@ -55,8 +60,6 @@ class UnifiedIMEDetailedViewController : public DetailedViewController,
   tray::IMEDetailedView* view_ = nullptr;
 
   bool keyboard_suppressed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedIMEDetailedViewController);
 };
 
 }  // namespace ash

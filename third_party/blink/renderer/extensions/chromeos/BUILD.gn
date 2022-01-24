@@ -25,6 +25,8 @@ component("chromeos") {
   sources = [
     "chromeos.cc",
     "chromeos.h",
+    "chromeos_extensions.cc",
+    "chromeos_extensions.h",
     "extensions_chromeos_export.h",
   ]
 
@@ -41,6 +43,7 @@ component("chromeos") {
 
   deps = [
     "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/extensions/chromeos/system_extensions/window_management:cros_window_management",
     "//third_party/blink/renderer/modules",
   ]
 

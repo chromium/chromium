@@ -68,15 +68,19 @@ class PlatformVideoFramePoolTest
     constexpr size_t kNumFrames = 10;
     visible_rect_ = visible_rect;
     natural_size_ = visible_rect.size();
-    layout_ = pool_->Initialize(fourcc, coded_size, visible_rect_,
-                                natural_size_, kNumFrames,
-                                /*use_protected=*/false);
-    return !!layout_;
+    auto status_or_layout = pool_->Initialize(fourcc, coded_size, visible_rect_,
+                                              natural_size_, kNumFrames,
+                                              /*use_protected=*/false);
+    if (status_or_layout.has_error()) {
+      return false;
+    }
+    layout_ = std::move(status_or_layout).value();
+    return true;
   }
 
   scoped_refptr<VideoFrame> GetFrame(int timestamp_ms) {
     scoped_refptr<VideoFrame> frame = pool_->GetFrame();
-    frame->set_timestamp(base::TimeDelta::FromMilliseconds(timestamp_ms));
+    frame->set_timestamp(base::Milliseconds(timestamp_ms));
 
     EXPECT_EQ(layout_->modifier(), frame->layout().modifier());
     EXPECT_EQ(layout_->fourcc(),

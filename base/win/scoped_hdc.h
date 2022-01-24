@@ -32,6 +32,9 @@ class ScopedGetDC {
     }
   }
 
+  ScopedGetDC(const ScopedGetDC&) = delete;
+  ScopedGetDC& operator=(const ScopedGetDC&) = delete;
+
   ~ScopedGetDC() {
     if (hdc_)
       ReleaseDC(hwnd_, hdc_);
@@ -42,8 +45,6 @@ class ScopedGetDC {
  private:
   HWND hwnd_;
   HDC hdc_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedGetDC);
 };
 
 // Like ScopedHandle but for HDC.  Only use this on HDCs returned from
@@ -52,14 +53,15 @@ class CreateDCTraits {
  public:
   typedef HDC Handle;
 
+  CreateDCTraits() = delete;
+  CreateDCTraits(const CreateDCTraits&) = delete;
+  CreateDCTraits& operator=(const CreateDCTraits&) = delete;
+
   static bool CloseHandle(HDC handle) { return ::DeleteDC(handle) != FALSE; }
 
   static bool IsHandleValid(HDC handle) { return handle != NULL; }
 
   static HDC NullHandle() { return NULL; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(CreateDCTraits);
 };
 
 typedef GenericScopedHandle<CreateDCTraits, DummyVerifierTraits> ScopedCreateDC;

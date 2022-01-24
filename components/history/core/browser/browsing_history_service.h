@@ -14,7 +14,6 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -138,11 +137,24 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   BrowsingHistoryService(BrowsingHistoryDriver* driver,
                          HistoryService* local_history,
                          syncer::SyncService* sync_service);
+
+  BrowsingHistoryService(const BrowsingHistoryService&) = delete;
+  BrowsingHistoryService& operator=(const BrowsingHistoryService&) = delete;
+
   ~BrowsingHistoryService() override;
 
   // Start a new query with the given parameters.
   void QueryHistory(const std::u16string& search_text,
                     const QueryOptions& options);
+
+  // Gets a version of the last time any webpage on the given host was visited,
+  // by using the min("last navigation time", x minutes ago) as the upper bound
+  // of the GetLastVisitToHost query. This is done in order to provide the user
+  // with a more useful sneak peak into their navigation history, by excluding
+  // the site(s) they were just on.
+  void GetLastVisitToHostBeforeRecentNavigations(
+      const std::string& host_name,
+      base::OnceCallback<void(base::Time)> callback);
 
   // Removes `items` from history.
   void RemoveVisits(const std::vector<HistoryEntry>& items);
@@ -180,6 +192,20 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // Callback from the history system when a history query has completed.
   void QueryComplete(scoped_refptr<QueryHistoryState> state,
                      QueryResults results);
+
+  // Callback from the history system when the last visit query has completed.
+  // May need to do a second query based on the results.
+  void OnLastVisitBeforeRecentNavigationsComplete(
+      const std::string& host_name,
+      base::Time query_start_time,
+      base::OnceCallback<void(base::Time)> callback,
+      HistoryLastVisitResult result);
+
+  // Callback from the history system when the last visit query has completed
+  // the second time.
+  void OnLastVisitBeforeRecentNavigationsComplete2(
+      base::OnceCallback<void(base::Time)> callback,
+      HistoryLastVisitResult result);
 
   // Combines the query results from the local history database and the history
   // server, and sends the combined results to the
@@ -261,8 +287,6 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   std::unique_ptr<base::Clock> clock_;
 
   base::WeakPtrFactory<BrowsingHistoryService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingHistoryService);
 };
 
 }  // namespace history

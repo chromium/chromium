@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/test/test_simple_task_runner.h"
-#include "google_apis/drive/dummy_auth_service.h"
-#include "google_apis/drive/request_sender.h"
-#include "google_apis/drive/test_util.h"
+#include "google_apis/common/dummy_auth_service.h"
+#include "google_apis/common/request_sender.h"
+#include "google_apis/common/test_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"

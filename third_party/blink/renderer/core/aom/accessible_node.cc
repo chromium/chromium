@@ -926,6 +926,13 @@ AccessibleNodeList* AccessibleNode::childNodes() {
 
 void AccessibleNode::appendChild(AccessibleNode* child,
                                  ExceptionState& exception_state) {
+  if (child == this) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "An AccessibleNode cannot be a child of itself");
+    return;
+  }
+
   if (child->element()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
@@ -940,6 +947,13 @@ void AccessibleNode::appendChild(AccessibleNode* child,
   }
   child->document_ = GetAncestorDocument();
   child->parent_ = this;
+
+  if (!GetExecutionContext()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "Trying to access an AccessibleNode in a detached window.");
+    return;
+  }
 
   if (!GetExecutionContext()->GetSecurityOrigin()->CanAccess(
           child->GetExecutionContext()->GetSecurityOrigin())) {
@@ -1032,6 +1046,8 @@ const AtomicString& AccessibleNode::InterfaceName() const {
 ExecutionContext* AccessibleNode::GetExecutionContext() const {
   if (element_)
     return element_->GetExecutionContext();
+  if (document_)
+    return document_->GetExecutionContext();
 
   if (parent_)
     return parent_->GetExecutionContext();

@@ -66,59 +66,48 @@ HistoryMenuBridge::HistoryItem::~HistoryItem() {
 
 HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
     : controller_([[HistoryMenuCocoaController alloc] initWithBridge:this]),
-      profile_(profile),
-      history_service_(NULL),
-      tab_restore_service_(NULL),
-      create_in_progress_(false),
-      need_recreate_(false) {
+      profile_(profile) {
+  DCHECK(profile_);
   // Set the static icons in the menu.
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   NSMenuItem* full_history_item = [HistoryMenu() itemWithTag:IDC_SHOW_HISTORY];
   [full_history_item
       setImage:rb.GetNativeImageNamed(IDR_HISTORY_FAVICON).ToNSImage()];
-  NSMenuItem* incognito_disclaimer_item =
-      [HistoryMenu() itemWithTag:kIncognitoDisclaimerLabel];
-  [incognito_disclaimer_item
-      setImage:rb.GetNativeImageNamed(IDR_INFO_FAVICON).ToNSImage()];
 
-  // If we don't have a profile, do not bother initializing our data sources.
-  // This shouldn't happen except in unit tests.
-  if (profile_) {
-    // Set the visibility of menu items according to profile type.
-    // "Recently Visited", "Recently Closed" and "Show Full History" sections
-    // should be hidden for incognito mode, while incognito disclaimer should be
-    // visible.
-    SetVisibilityOfMenuItems();
+  // Set the visibility of menu items according to profile type.
+  // "Recently Visited", "Recently Closed" and "Show Full History" sections
+  // should be hidden for incognito mode, while incognito disclaimer should be
+  // visible.
+  SetVisibilityOfMenuItems();
 
-    // If the profile is incognito, no need to set history and tab restore
-    // services.
-    if (profile_->IsOffTheRecord())
-      return;
+  // If the profile is incognito, no need to set history and tab restore
+  // services.
+  if (profile_->IsOffTheRecord())
+    return;
 
-    // Check to see if the history service is ready. Because it loads async, it
-    // may not be ready when the Bridge is created. If this happens, register
-    // for a notification that tells us the HistoryService is ready.
-    history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
-        profile_, ServiceAccessType::EXPLICIT_ACCESS);
-    if (hs) {
-      history_service_observation_.Observe(hs);
-      if (hs->BackendLoaded()) {
-        history_service_ = hs;
-        Init();
-      }
+  // Check to see if the history service is ready. Because it loads async, it
+  // may not be ready when the Bridge is created. If this happens, register for
+  // a notification that tells us the HistoryService is ready.
+  history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  if (hs) {
+    history_service_observation_.Observe(hs);
+    if (hs->BackendLoaded()) {
+      history_service_ = hs;
+      Init();
     }
+  }
 
-    tab_restore_service_ = TabRestoreServiceFactory::GetForProfile(profile_);
-    if (tab_restore_service_) {
-      tab_restore_service_->AddObserver(this);
-      // If the tab entries are already loaded, invoke the observer method to
-      // build the "Recently Closed" section. Otherwise it will be when the
-      // backend loads.
-      if (!tab_restore_service_->IsLoaded())
-        tab_restore_service_->LoadTabsFromLastSession();
-      else
-        TabRestoreServiceChanged(tab_restore_service_);
-    }
+  tab_restore_service_ = TabRestoreServiceFactory::GetForProfile(profile_);
+  if (tab_restore_service_) {
+    tab_restore_service_observation_.Observe(tab_restore_service_);
+    // If the tab entries are already loaded, invoke the observer method to
+    // build the "Recently Closed" section. Otherwise it will be when the
+    // backend loads.
+    if (!tab_restore_service_->IsLoaded())
+      tab_restore_service_->LoadTabsFromLastSession();
+    else
+      TabRestoreServiceChanged(tab_restore_service_);
   }
 
   default_favicon_.reset(
@@ -130,13 +119,7 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
 // Note that all requests sent to either the history service or the favicon
 // service will be automatically cancelled by their respective Consumers, so
 // task cancellation is not done manually here in the dtor.
-HistoryMenuBridge::~HistoryMenuBridge() {
-  // Unregister ourselves as observers and notifications.
-  DCHECK(profile_);
-
-  if (tab_restore_service_)
-    tab_restore_service_->RemoveObserver(this);
-}
+HistoryMenuBridge::~HistoryMenuBridge() = default;
 
 void HistoryMenuBridge::TabRestoreServiceChanged(
     sessions::TabRestoreService* service) {
@@ -182,7 +165,9 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
 
 void HistoryMenuBridge::TabRestoreServiceDestroyed(
     sessions::TabRestoreService* service) {
-  // Intentionally left blank. We hold a weak reference to the service.
+  DCHECK_EQ(service, tab_restore_service_);
+  tab_restore_service_observation_.Reset();
+  tab_restore_service_ = nullptr;
 }
 
 void HistoryMenuBridge::ResetMenu() {
@@ -573,8 +558,8 @@ void HistoryMenuBridge::OnHistoryServiceLoaded(
 
 void HistoryMenuBridge::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  if (history_service_ == history_service)
-    history_service_ = nullptr;
+  history_service_observation_.Reset();
+  history_service_ = nullptr;
 }
 
 void HistoryMenuBridge::SetVisibilityOfMenuItems() {
@@ -588,8 +573,7 @@ void HistoryMenuBridge::SetVisibilityOfMenuItems() {
 bool HistoryMenuBridge::ShouldMenuItemBeVisible(NSMenuItem* item) {
   if (!base::FeatureList::IsEnabled(
           features::kUpdateHistoryEntryPointsInIncognito)) {
-    return [item tag] != kIncognitoDisclaimerLabel &&
-           [item tag] != kIncognitoDisclaimerSeparator;
+    return true;
   }
 
   int tag = [item tag];
@@ -607,10 +591,6 @@ bool HistoryMenuBridge::ShouldMenuItemBeVisible(NSMenuItem* item) {
     case kShowFullSeparator:
     case IDC_SHOW_HISTORY:
       return !profile_->IsOffTheRecord();
-    // The incognito profile specific menu items
-    case kIncognitoDisclaimerSeparator:
-    case kIncognitoDisclaimerLabel:
-      return profile_->IsOffTheRecord();
   }
 
   // When a new menu item is introduced, it should be added to one of the cases

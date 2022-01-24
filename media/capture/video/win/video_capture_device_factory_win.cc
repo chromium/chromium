@@ -22,9 +22,9 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_co_mem.h"
@@ -32,6 +32,7 @@
 #include "base/win/windows_version.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_initializer.h"
+#include "media/capture/capture_switches.h"
 #include "media/capture/video/win/metrics.h"
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 #include "media/capture/video/win/video_capture_device_win.h"
@@ -123,7 +124,9 @@ const char* const kModelIdsBlockedForMediaFoundation[] = {
     // RBG/IR camera for Windows Hello Face Auth. See https://crbug.com/984864.
     "13d3:5257",
     // Acer Aspire f5-573g. See https://crbug.com/1034644.
-    "0bda:57f2"};
+    "0bda:57f2",
+    // Elgato Camlink 4k
+    "0fd9:0066"};
 
 // Use this list only for non-USB webcams.
 const char* const kDisplayNamesBlockedForMediaFoundation[] = {
@@ -326,8 +329,10 @@ bool VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation() {
 VideoCaptureDeviceFactoryWin::VideoCaptureDeviceFactoryWin()
     : use_media_foundation_(
           base::FeatureList::IsEnabled(media::kMediaFoundationVideoCapture)),
-      use_d3d11_with_media_foundation_(base::FeatureList::IsEnabled(
-          media::kMediaFoundationD3D11VideoCapture)),
+      use_d3d11_with_media_foundation_(
+          base::FeatureList::IsEnabled(
+              media::kMediaFoundationD3D11VideoCapture) &&
+          switches::IsVideoCaptureUseGpuMemoryBufferEnabled()),
       com_thread_("Windows Video Capture COM Thread") {
   if (use_media_foundation_ && !PlatformSupportsMediaFoundation()) {
     use_media_foundation_ = false;
@@ -435,7 +440,7 @@ bool VideoCaptureDeviceFactoryWin::CreateDeviceFilterDirectShow(
   for (ComPtr<IMoniker> moniker;
        enum_moniker->Next(1, &moniker, nullptr) == S_OK; moniker.Reset()) {
     ComPtr<IPropertyBag> prop_bag;
-    HRESULT hr = moniker->BindToStorage(0, 0, IID_PPV_ARGS(&prop_bag));
+    hr = moniker->BindToStorage(0, 0, IID_PPV_ARGS(&prop_bag));
     if (FAILED(hr))
       continue;
 

@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "content/browser/native_io/native_io_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -53,7 +54,7 @@ class NativeIOManagerBrowserTest : public ContentBrowserTest {
   base::FilePath GetNativeIODir(base::FilePath user_data_dir,
                                 const GURL& test_url) {
     std::string origin_identifier =
-        storage::GetIdentifierFromOrigin(test_url.GetOrigin());
+        storage::GetIdentifierFromOrigin(test_url.DeprecatedGetOriginAsURL());
     base::FilePath root_dir =
         NativeIOManager::GetNativeIORootPath(user_data_dir);
     return root_dir.AppendASCII(origin_identifier);
@@ -70,12 +71,8 @@ class NativeIOManagerBrowserTest : public ContentBrowserTest {
       scoped_refptr<storage::QuotaManager> quota_manager,
       const blink::StorageKey& storage_key,
       base::OnceCallback<void(blink::mojom::QuotaStatusCode)> callback) {
-    storage::QuotaClientTypes nativeio_quota_client_type;
-    nativeio_quota_client_type.insert(storage::QuotaClientType::kNativeIO);
-
-    quota_manager->DeleteStorageKeyData(
-        storage_key, blink::mojom::StorageType::kTemporary,
-        nativeio_quota_client_type, std::move(callback));
+    quota_manager->FindAndDeleteBucketData(
+        storage_key, storage::kDefaultBucketName, std::move(callback));
   }
 
  private:

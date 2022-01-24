@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -82,9 +83,6 @@ struct CONTENT_EXPORT MediaStreamRequest {
 
   // Flag to indicate whether the request is for PTZ use.
   bool request_pan_tilt_zoom_permission;
-
-  // True if all ancestors of the requesting frame have the same origin.
-  bool all_ancestors_have_same_origin;
 };
 
 // Interface used by the content layer to notify chrome about changes in the
@@ -114,6 +112,20 @@ class MediaStreamUI {
 
   virtual void OnDeviceStopped(const std::string& label,
                                const DesktopMediaID& media_id) = 0;
+
+#if !defined(OS_ANDROID)
+  // Focuses the display surface represented by |media_id|.
+  //
+  // |is_from_microtask| and |is_from_timer| are used to distinguish:
+  // a. Explicit calls from the Web-application.
+  // b. Implicit calls resulting from the focusability-window-closing microtask.
+  // c. The browser-side timer.
+  // This distinction is reflected by UMA.
+  virtual void SetFocus(const DesktopMediaID& media_id,
+                        bool focus,
+                        bool is_from_microtask,
+                        bool is_from_timer) {}
+#endif
 };
 
 // Callback used return results of media access requests.

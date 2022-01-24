@@ -7,7 +7,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
@@ -22,6 +22,9 @@ constexpr char kUserActionSignIn[] = "signin";
 constexpr char kUserActionChildSignIn[] = "child-signin";
 constexpr char kUserActionChildAccountCreate[] = "child-account-create";
 constexpr char kUserActionCancel[] = "cancel";
+
+UserCreationScreen::UserCreationScreenExitTestDelegate* test_exit_delegate =
+    nullptr;
 
 }  // namespace
 
@@ -66,13 +69,19 @@ void UserCreationScreen::OnViewDestroyed(UserCreationView* view) {
     view_ = nullptr;
 }
 
+// static
+void UserCreationScreen::SetUserCreationScreenExitTestDelegate(
+    UserCreationScreen::UserCreationScreenExitTestDelegate* test_delegate) {
+  test_exit_delegate = test_delegate;
+}
+
 bool UserCreationScreen::MaybeSkip(WizardContext* context) {
   if (g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->IsDeviceEnterpriseManaged() ||
       context->skip_to_login_for_tests) {
     context->is_user_creation_enabled = false;
-    exit_callback_.Run(Result::SKIPPED);
+    RunExitCallback(Result::SKIPPED);
     return true;
   }
   context->is_user_creation_enabled = true;
@@ -109,18 +118,18 @@ void UserCreationScreen::HideImpl() {
 void UserCreationScreen::OnUserAction(const std::string& action_id) {
   if (action_id == kUserActionSignIn) {
     context()->sign_in_as_child = false;
-    exit_callback_.Run(Result::SIGNIN);
+    RunExitCallback(Result::SIGNIN);
   } else if (action_id == kUserActionChildSignIn) {
     context()->sign_in_as_child = true;
     context()->is_child_gaia_account_new = false;
-    exit_callback_.Run(Result::CHILD_SIGNIN);
+    RunExitCallback(Result::CHILD_SIGNIN);
   } else if (action_id == kUserActionChildAccountCreate) {
     context()->sign_in_as_child = true;
     context()->is_child_gaia_account_new = true;
-    exit_callback_.Run(Result::CHILD_ACCOUNT_CREATE);
+    RunExitCallback(Result::CHILD_ACCOUNT_CREATE);
   } else if (action_id == kUserActionCancel) {
     context()->is_user_creation_enabled = false;
-    exit_callback_.Run(Result::CANCEL);
+    RunExitCallback(Result::CANCEL);
   } else {
     BaseScreen::OnUserAction(action_id);
   }
@@ -128,7 +137,7 @@ void UserCreationScreen::OnUserAction(const std::string& action_id) {
 
 bool UserCreationScreen::HandleAccelerator(LoginAcceleratorAction action) {
   if (action == LoginAcceleratorAction::kStartEnrollment) {
-    exit_callback_.Run(Result::ENTERPRISE_ENROLL);
+    RunExitCallback(Result::ENTERPRISE_ENROLL);
     return true;
   }
   return false;
@@ -150,6 +159,14 @@ void UserCreationScreen::UpdateState(NetworkError::ErrorReason reason) {
       error_screen_->Hide();
       view_->Show();
     }
+  }
+}
+
+void UserCreationScreen::RunExitCallback(Result result) {
+  if (test_exit_delegate) {
+    test_exit_delegate->OnUserCreationScreenExit(result, exit_callback_);
+  } else {
+    exit_callback_.Run(result);
   }
 }
 

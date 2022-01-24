@@ -99,12 +99,7 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
 
 std::unique_ptr<WebCodeCacheLoader>
 LoaderFactoryForWorker::CreateCodeCacheLoader() {
-  if (global_scope_->IsWorkerGlobalScope()) {
-    return web_context_->CreateCodeCacheLoader(
-        global_scope_->GetCodeCacheHost());
-  }
-  // TODO(mythria): Get the CodeCacheHost corresponding to worklet global scope.
-  return web_context_->CreateCodeCacheLoader(nullptr);
+  return web_context_->CreateCodeCacheLoader(global_scope_->GetCodeCacheHost());
 }
 
 // TODO(altimin): This is used when creating a URLLoader, and

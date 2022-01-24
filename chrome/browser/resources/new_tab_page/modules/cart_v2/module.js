@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -126,26 +126,21 @@ class ChromeCartModuleElement extends mixinBehaviors
   }
 
   /**
-   * @param {string} url
-   * @return {string}
-   * @private
-   */
-  getFaviconUrl_(url) {
-    const faviconUrl = new URL('chrome://favicon2/');
-    faviconUrl.searchParams.set('size', '24');
-    faviconUrl.searchParams.set('scale_factor', '1x');
-    faviconUrl.searchParams.set('show_fallback_monogram', '');
-    faviconUrl.searchParams.set('page_url', url);
-    return faviconUrl.href;
-  }
-
-  /**
    * @param {!Array<string>} imageUrls
    * @return {!Array<string>}
    * @private
    */
   getImagesToShow_(imageUrls) {
     return imageUrls.slice(0, 3);
+  }
+
+  /**
+   * @param {number} length
+   * @return {boolean}
+   * @private
+   */
+  isOne_(length) {
+    return length === 1;
   }
 
   /**
@@ -171,13 +166,13 @@ class ChromeCartModuleElement extends mixinBehaviors
     const merchant = this.cartItems[this.currentMenuIndex_].merchant;
     const cartUrl = this.cartItems[this.currentMenuIndex_].cartUrl;
 
-    await ChromeCartProxy.getInstance().handler.hideCart(cartUrl);
+    await ChromeCartProxy.getHandler().hideCart(cartUrl);
 
     this.dismissedCartData_ = {
       message: loadTimeData.getStringF(
           'modulesCartCartMenuHideMerchantToastMessage', merchant),
       restoreCallback: async () => {
-        await ChromeCartProxy.getInstance().handler.restoreHiddenCart(cartUrl);
+        await ChromeCartProxy.getHandler().restoreHiddenCart(cartUrl);
       },
     };
     const isModuleVisible = await this.resetCartData_();
@@ -192,13 +187,13 @@ class ChromeCartModuleElement extends mixinBehaviors
     const merchant = this.cartItems[this.currentMenuIndex_].merchant;
     const cartUrl = this.cartItems[this.currentMenuIndex_].cartUrl;
 
-    await ChromeCartProxy.getInstance().handler.removeCart(cartUrl);
+    await ChromeCartProxy.getHandler().removeCart(cartUrl);
 
     this.dismissedCartData_ = {
       message: loadTimeData.getStringF(
           'modulesCartCartMenuRemoveMerchantToastMessage', merchant),
       restoreCallback: async () => {
-        await ChromeCartProxy.getInstance().handler.restoreRemovedCart(cartUrl);
+        await ChromeCartProxy.getHandler().restoreRemovedCart(cartUrl);
       },
     };
     const isModuleVisible = await this.resetCartData_();
@@ -223,8 +218,7 @@ class ChromeCartModuleElement extends mixinBehaviors
    * @private
    */
   async resetCartData_() {
-    const {carts} =
-        await ChromeCartProxy.getInstance().handler.getMerchantCarts();
+    const {carts} = await ChromeCartProxy.getHandler().getMerchantCarts();
     this.cartItems = carts;
     const isModuleVisible = this.cartItems.length !== 0;
     if (!isModuleVisible && this.dismissedCartData_ !== null) {
@@ -239,7 +233,7 @@ class ChromeCartModuleElement extends mixinBehaviors
             await this.dismissedCartData_.restoreCallback();
             this.dismissedCartData_ = null;
             const {carts} =
-                await ChromeCartProxy.getInstance().handler.getMerchantCarts();
+                await ChromeCartProxy.getHandler().getMerchantCarts();
             this.cartItems = carts;
           },
         },
@@ -252,7 +246,7 @@ class ChromeCartModuleElement extends mixinBehaviors
 
   /** @private */
   onDismissButtonClick_() {
-    ChromeCartProxy.getInstance().handler.hideCartModule();
+    ChromeCartProxy.getHandler().hideCartModule();
     this.dispatchEvent(new CustomEvent('dismiss-module', {
       bubbles: true,
       composed: true,
@@ -260,7 +254,7 @@ class ChromeCartModuleElement extends mixinBehaviors
         message:
             loadTimeData.getString('modulesCartModuleMenuHideToastMessage'),
         restoreCallback: () => {
-          ChromeCartProxy.getInstance().handler.restoreHiddenCartModule();
+          ChromeCartProxy.getHandler().restoreHiddenCartModule();
           chrome.metricsPrivate.recordUserAction(
               'NewTabPage.Carts.UndoHideModule');
         },
@@ -311,14 +305,13 @@ class ChromeCartModuleElement extends mixinBehaviors
    */
   onLeftScrollClick_() {
     const carts = this.$.cartCarousel.querySelectorAll('.cart-item');
-    let visibleRange = 0, firstVisibleIndex = 0;
+    let firstVisibleIndex = 0;
     for (let i = carts.length - 1; i >= 0; i--) {
       if (this.getVisibilityForIndex_(i)) {
-        visibleRange += 1;
         firstVisibleIndex = i;
       }
     }
-    this.scrollToIndex_(Math.max(0, firstVisibleIndex - visibleRange));
+    this.scrollToIndex_(Math.max(0, firstVisibleIndex - 1));
     chrome.metricsPrivate.recordUserAction('NewTabPage.Carts.LeftScrollClick');
   }
 
@@ -328,14 +321,7 @@ class ChromeCartModuleElement extends mixinBehaviors
    */
   scrollToIndex_(index) {
     const carts = this.$.cartCarousel.querySelectorAll('.cart-item');
-    // Calculate scroll shadow width as scroll offset.
-    const leftScrollShadow = this.shadowRoot.getElementById('leftScrollShadow');
-    const rightScrollShadow =
-        this.shadowRoot.getElementById('rightScrollShadow');
-    const scrollOffset = Math.max(
-        leftScrollShadow ? leftScrollShadow.offsetWidth : 0,
-        rightScrollShadow ? rightScrollShadow.offsetWidth : 0);
-    let leftPosition = carts[index].offsetLeft - scrollOffset;
+    let leftPosition = carts[index].offsetLeft;
     // TODO(crbug.com/1198632): This could make a left scroll jump over cart
     // items.
     if (index === 0) {
@@ -359,9 +345,8 @@ class ChromeCartModuleElement extends mixinBehaviors
   getVisibilityForIndex_(index) {
     const cartCarousel = this.$.cartCarousel;
     const cart = cartCarousel.querySelectorAll('.cart-item')[index];
-    return cart && (cart.offsetLeft > cartCarousel.scrollLeft) &&
-        (cartCarousel.scrollLeft + cartCarousel.clientWidth) >
-        (cart.offsetLeft + cart.offsetWidth);
+    return cart && (cart.offsetLeft === cartCarousel.scrollLeft) &&
+        (cartCarousel.clientWidth <= cart.offsetWidth);
   }
 
   /**
@@ -379,9 +364,8 @@ class ChromeCartModuleElement extends mixinBehaviors
     if (loadTimeData.getBoolean('ruleBasedDiscountEnabled') &&
         (e.shouldNavigate === undefined || e.shouldNavigate === false)) {
       e.preventDefault();
-      const {discountUrl} =
-          await ChromeCartProxy.getInstance().handler.getDiscountURL(
-              this.cartItems[index].cartUrl);
+      const {discountUrl} = await ChromeCartProxy.getHandler().getDiscountURL(
+          this.cartItems[index].cartUrl);
       this.set(`cartItems.${index}.cartUrl`, discountUrl);
       const cloneEvent = new PointerEvent(e.type, e);
       cloneEvent.shouldNavigate = true;
@@ -399,7 +383,7 @@ class ChromeCartModuleElement extends mixinBehaviors
     this.confirmDiscountConsentString_ =
         loadTimeData.getString('modulesCartDiscountConsentRejectConfirmation');
     $$(this, '#confirmDiscountConsentToast').show();
-    ChromeCartProxy.getInstance().handler.onDiscountConsentAcknowledged(false);
+    ChromeCartProxy.getHandler().onDiscountConsentAcknowledged(false);
   }
 
   /** @private */
@@ -408,7 +392,7 @@ class ChromeCartModuleElement extends mixinBehaviors
     this.confirmDiscountConsentString_ =
         loadTimeData.getString('modulesCartDiscountConsentAcceptConfirmation');
     $$(this, '#confirmDiscountConsentToast').show();
-    ChromeCartProxy.getInstance().handler.onDiscountConsentAcknowledged(true);
+    ChromeCartProxy.getHandler().onDiscountConsentAcknowledged(true);
   }
 
   /** @private */
@@ -425,12 +409,11 @@ async function createCartElement() {
   // whether welcome surface should show or not. Anything whose visibility
   // dependes on welcome surface (e.g. RBD consent) should check before
   // getWarmWelcomeVisible.
-  const {consentVisible} = await ChromeCartProxy.getInstance()
-                               .handler.getDiscountConsentCardVisible();
+  const {consentVisible} =
+      await ChromeCartProxy.getHandler().getDiscountConsentCardVisible();
   const {welcomeVisible} =
-      await ChromeCartProxy.getInstance().handler.getWarmWelcomeVisible();
-  const {carts} =
-      await ChromeCartProxy.getInstance().handler.getMerchantCarts();
+      await ChromeCartProxy.getHandler().getWarmWelcomeVisible();
+  const {carts} = await ChromeCartProxy.getHandler().getMerchantCarts();
   chrome.metricsPrivate.recordSmallCount(
       'NewTabPage.Carts.CartCount', carts.length);
   if (carts.length === 0) {

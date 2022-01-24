@@ -22,6 +22,13 @@ base::FilePath ShellFileSystemDelegate::GetDefaultDirectory() {
   return base::FilePath();
 }
 
+base::FilePath ShellFileSystemDelegate::GetManagedSaveAsDirectory(
+    content::BrowserContext* browser_context,
+    const Extension& extension) {
+  NOTIMPLEMENTED();
+  return base::FilePath();
+}
+
 bool ShellFileSystemDelegate::ShowSelectFileDialog(
     scoped_refptr<ExtensionFunction> extension_function,
     ui::SelectFileDialog::Type type,

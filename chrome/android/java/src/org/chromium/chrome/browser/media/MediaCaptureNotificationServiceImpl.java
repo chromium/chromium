@@ -181,8 +181,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
 
         Context appContext = ContextUtils.getApplicationContext();
         NotificationWrapperBuilder builder =
-                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        true /* preferCompat */, channelId, null /*remoteAppPackageName*/,
+                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(channelId,
                         new NotificationMetadata(
                                 NotificationUmaTracker.SystemNotificationType.MEDIA_CAPTURE,
                                 NOTIFICATION_NAMESPACE, notificationId));

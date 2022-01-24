@@ -14,7 +14,7 @@ static const gfx::Rect kVisibleRect(320, 240);
 static const gfx::Size kNaturalSize(320, 240);
 
 TEST(VideoDecoderConfigTest, AlphaModeSetCorrectly) {
-  VideoDecoderConfig config(kCodecVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
+  VideoDecoderConfig config(VideoCodec::kVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
                             VideoDecoderConfig::AlphaMode::kIsOpaque,
                             VideoColorSpace(), kNoTransformation, kCodedSize,
                             kVisibleRect, kNaturalSize, EmptyExtraData(),
@@ -22,7 +22,7 @@ TEST(VideoDecoderConfigTest, AlphaModeSetCorrectly) {
   EXPECT_TRUE(config.IsValidConfig());
   EXPECT_EQ(config.alpha_mode(), VideoDecoderConfig::AlphaMode::kIsOpaque);
 
-  config.Initialize(kCodecVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
+  config.Initialize(VideoCodec::kVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
                     VideoDecoderConfig::AlphaMode::kHasAlpha, VideoColorSpace(),
                     kNoTransformation, kCodedSize, kVisibleRect, kNaturalSize,
                     EmptyExtraData(), EncryptionScheme::kUnencrypted);
@@ -30,10 +30,11 @@ TEST(VideoDecoderConfigTest, AlphaModeSetCorrectly) {
 }
 
 TEST(VideoDecoderConfigTest, SetProfile) {
-  VideoDecoderConfig config(
-      kCodecVP9, VP9PROFILE_PROFILE0, VideoDecoderConfig::AlphaMode::kIsOpaque,
-      VideoColorSpace(), kNoTransformation, kCodedSize, kVisibleRect,
-      kNaturalSize, EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  VideoDecoderConfig config(VideoCodec::kVP9, VP9PROFILE_PROFILE0,
+                            VideoDecoderConfig::AlphaMode::kIsOpaque,
+                            VideoColorSpace(), kNoTransformation, kCodedSize,
+                            kVisibleRect, kNaturalSize, EmptyExtraData(),
+                            EncryptionScheme::kUnencrypted);
   config.set_profile(VP9PROFILE_PROFILE2);
   EXPECT_EQ(config.profile(), VP9PROFILE_PROFILE2);
 }

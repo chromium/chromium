@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FEATURE_MANAGER_IMPL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FEATURE_MANAGER_IMPL_H_
 
-#include "base/macros.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 
 namespace syncer {
@@ -22,6 +21,11 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
  public:
   PasswordFeatureManagerImpl(PrefService* pref_service,
                              const syncer::SyncService* sync_service);
+
+  PasswordFeatureManagerImpl(const PasswordFeatureManagerImpl&) = delete;
+  PasswordFeatureManagerImpl& operator=(const PasswordFeatureManagerImpl&) =
+      delete;
+
   ~PasswordFeatureManagerImpl() override = default;
 
   bool IsGenerationEnabled() const override;
@@ -35,8 +39,11 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
 
   bool ShouldShowAccountStorageBubbleUi() const override;
 
+  bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const override;
+
   void SetDefaultPasswordStore(const PasswordForm::Store& store) override;
   PasswordForm::Store GetDefaultPasswordStore() const override;
+  bool IsDefaultPasswordStoreSet() const override;
   metrics_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;
 
@@ -46,7 +53,6 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
  private:
   PrefService* const pref_service_;
   const syncer::SyncService* const sync_service_;
-  DISALLOW_COPY_AND_ASSIGN(PasswordFeatureManagerImpl);
 };
 
 }  // namespace password_manager

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/exo/surface_observer.h"
@@ -30,6 +29,12 @@ class ArcAppPerformanceTracingCustomSession;
 class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
  public:
   explicit ArcAppPerformanceTracingSession(ArcAppPerformanceTracing* owner);
+
+  ArcAppPerformanceTracingSession(const ArcAppPerformanceTracingSession&) =
+      delete;
+  ArcAppPerformanceTracingSession& operator=(
+      const ArcAppPerformanceTracingSession&) = delete;
+
   ~ArcAppPerformanceTracingSession() override;
 
   // Performs initial scheduling of tracing based on session type.
@@ -110,8 +115,6 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
 
   // Indicates that tracing is in active state.
   bool tracing_active_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppPerformanceTracingSession);
 };
 
 }  // namespace arc

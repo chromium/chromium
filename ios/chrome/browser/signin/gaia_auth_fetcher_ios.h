@@ -39,6 +39,10 @@ class GaiaAuthFetcherIOS
       gaia::GaiaSource source,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       web::BrowserState* browser_state);
+
+  GaiaAuthFetcherIOS(const GaiaAuthFetcherIOS&) = delete;
+  GaiaAuthFetcherIOS& operator=(const GaiaAuthFetcherIOS&) = delete;
+
   ~GaiaAuthFetcherIOS() override;
 
   void CancelRequest() override;
@@ -63,8 +67,6 @@ class GaiaAuthFetcherIOS
 
   web::BrowserState* browser_state_;
   std::unique_ptr<GaiaAuthFetcherIOSBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(GaiaAuthFetcherIOS);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_GAIA_AUTH_FETCHER_IOS_H_

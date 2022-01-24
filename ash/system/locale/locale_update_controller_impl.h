@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/locale_update_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -25,6 +24,11 @@ class LocaleChangeObserver {
 class LocaleUpdateControllerImpl : public LocaleUpdateController {
  public:
   LocaleUpdateControllerImpl();
+
+  LocaleUpdateControllerImpl(const LocaleUpdateControllerImpl&) = delete;
+  LocaleUpdateControllerImpl& operator=(const LocaleUpdateControllerImpl&) =
+      delete;
+
   ~LocaleUpdateControllerImpl() override;
 
   void AddObserver(LocaleChangeObserver* observer);
@@ -39,8 +43,6 @@ class LocaleUpdateControllerImpl : public LocaleUpdateController {
                            LocaleChangeConfirmationCallback callback) override;
 
   base::ObserverList<LocaleChangeObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleUpdateControllerImpl);
 };
 
 }  // namespace ash

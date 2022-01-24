@@ -19,6 +19,10 @@ namespace net {
 class NET_EXPORT TrustStoreInMemory : public TrustStore {
  public:
   TrustStoreInMemory();
+
+  TrustStoreInMemory(const TrustStoreInMemory&) = delete;
+  TrustStoreInMemory& operator=(const TrustStoreInMemory&) = delete;
+
   ~TrustStoreInMemory() override;
 
   // Returns whether the TrustStore is in the initial empty state.
@@ -47,9 +51,8 @@ class NET_EXPORT TrustStoreInMemory : public TrustStore {
   // TrustStore implementation:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
-  void GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                CertificateTrust* trust,
-                base::SupportsUserData* debug_data) const override;
+  CertificateTrust GetTrust(const ParsedCertificate* cert,
+                            base::SupportsUserData* debug_data) const override;
 
   // Returns true if the trust store contains the given ParsedCertificate
   // (matches by DER).
@@ -73,8 +76,6 @@ class NET_EXPORT TrustStoreInMemory : public TrustStore {
   // distrusted certificates require a full DER match.
   void AddCertificate(scoped_refptr<ParsedCertificate> cert,
                       const CertificateTrust& trust);
-
-  DISALLOW_COPY_AND_ASSIGN(TrustStoreInMemory);
 };
 
 }  // namespace net

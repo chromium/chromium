@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "components/omnibox/browser/omnibox_view.h"
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OmniboxTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OmniboxTabHelper);
 
 OmniboxTabHelper::~OmniboxTabHelper() = default;
 OmniboxTabHelper::OmniboxTabHelper(content::WebContents* contents) {}

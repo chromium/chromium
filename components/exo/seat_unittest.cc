@@ -45,6 +45,10 @@ class TestSeatObserver : public SeatObserver {
 class TestDataSourceDelegate : public DataSourceDelegate {
  public:
   TestDataSourceDelegate() {}
+
+  TestDataSourceDelegate(const TestDataSourceDelegate&) = delete;
+  TestDataSourceDelegate& operator=(const TestDataSourceDelegate&) = delete;
+
   bool cancelled() const { return cancelled_; }
 
   // Overridden from DataSourceDelegate:
@@ -73,8 +77,6 @@ class TestDataSourceDelegate : public DataSourceDelegate {
  private:
   bool cancelled_ = false;
   absl::optional<std::vector<uint8_t>> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataSourceDelegate);
 };
 
 void RunReadingTask() {
@@ -599,6 +601,26 @@ TEST_F(SeatTest, DragDropAbort) {
   EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
   seat.AbortPendingDragOperation();
   EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());
+}
+
+TEST_F(SeatTest, CanSetFocusChangedCallbackMoreThanOnce) {
+  TestSeat seat;
+  bool cb_1_called = false;
+  bool cb_2_called = false;
+
+  seat.SetFocusChangedCallback(base::BindLambdaForTesting(
+      [&](Surface* a, Surface* b, bool gained_or_lost) {
+        cb_1_called = true;
+      }));
+  seat.SetFocusChangedCallback(base::BindLambdaForTesting(
+      [&](Surface* a, Surface* b, bool gained_or_lost) {
+        cb_2_called = true;
+      }));
+
+  seat.OnWindowFocused(nullptr, nullptr);
+
+  EXPECT_TRUE(cb_1_called);
+  EXPECT_TRUE(cb_2_called);
 }
 
 }  // namespace

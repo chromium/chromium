@@ -1,197 +1,163 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-page-host-style settings-shared">
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    --settings-menu-width: 250px;
+    /* Centered cards has a max-width of var(--cr-centered-card-max-width)
+      * and a width of a certain percentage. Therefore, to make room for the
+      * cards to be at their max width, the flex-basis of #main needs to be
+      * whatever value the percentage of would equal to the max width. */
+    --settings-main-basis: calc(var(--cr-centered-card-max-width) /
+        var(--cr-centered-card-width-percentage));
+    --cr-toolbar-padding-top: 8px;
+  }
 
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_container_shadow_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_drawer/cr_drawer.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_page_host_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/cr_elements/find_shortcut_behavior.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/util.html">
-<link rel="import" href="../metrics_recorder.html">
-<link rel="import" href="../os_settings_menu/os_settings_menu.html">
-<link rel="import" href="../os_settings_main/os_settings_main.html">
-<link rel="import" href="../os_toolbar/os_toolbar.html">
-<link rel="import" href="../global_scroll_target_behavior.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../os_page_visibility.html">
-<link rel="import" href="../pref_to_setting_metric_converter.html">
-<link rel="import" href="../../prefs/prefs.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../../settings_vars_css.html">
-<script src="chrome://os-settings/constants/setting.mojom-lite.js"></script>
-<script src="chrome://os-settings/search/user_action_recorder.mojom-lite.js"></script>
+  os-toolbar {
+    /* TODO(hsuregan): update for dark mode when needed. */
+    min-height: 56px;
+    /* Needs to be higher than #cr-container-show-top's z-index so that the
+      * new settings search dropdown is not struck through by the shadow. */
+    z-index: 3;
+  }
 
-<dom-module id="os-settings-ui">
-  <template>
-    <style include="cr-page-host-style settings-shared">
-      :host {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        --settings-menu-width: 250px;
-        /* Centered cards has a max-width of var(--cr-centered-card-max-width)
-         * and a width of a certain percentage. Therefore, to make room for the
-         * cards to be at their max width, the flex-basis of #main needs to be
-         * whatever value the percentage of would equal to the max width. */
-        --settings-main-basis: calc(var(--cr-centered-card-max-width) /
-            var(--cr-centered-card-width-percentage));
-        --cr-toolbar-padding-top: 8px;
-      }
+  cr-drawer {
+    --cr-separator-line: none;
+    --cr-drawer-header-color: var(--cros-text-color-secondary);
+    --cr-drawer-header-font-weight: 500;
+    --cr-drawer-header-padding: 20px;
+  }
 
-      os-toolbar {
-        /* TODO(hsuregan): update for dark mode when needed. */
-        min-height: 56px;
-        /* Needs to be higher than #cr-container-show-top's z-index so that the
-         * new settings search dropdown is not struck through by the shadow. */
-        z-index: 3;
-      }
+  #cr-container-shadow-top {
+    /* Needs to be higher than #container's z-index to appear above
+      * scrollbars. */
+    z-index: 2;
+  }
 
-      cr-drawer {
-        --cr-separator-line: none;
-        --cr-drawer-header-color: var(--cros-text-color-secondary);
-        --cr-drawer-header-font-weight: 500;
-        --cr-drawer-header-padding: 20px;
-      }
+  #container {
+    align-items: flex-start;
+    display: flex;
+    flex: 1;
+    overflow: overlay;
+    position: relative;
+  }
 
-      #cr-container-shadow-top {
-        /* Needs to be higher than #container's z-index to appear above
-         * scrollbars. */
-        z-index: 2;
-      }
+  #left,
+  #main,
+  #right {
+    flex: 1 1 0;
+  }
 
-      #container {
-        align-items: flex-start;
-        display: flex;
-        flex: 1;
-        overflow: overlay;
-        position: relative;
-      }
+  #left {
+    height: 100%;
+    position: sticky;
+    top: 0;
+  }
 
-      #left,
-      #main,
-      #right {
-        flex: 1 1 0;
-      }
+  #left os-settings-menu {
+    max-height: 100%;
+    overflow: auto;
+    overscroll-behavior: contain;
+    width: var(--settings-menu-width);
+  }
 
-      #left {
-        height: 100%;
-        position: sticky;
-        top: 0;
-      }
+  #main {
+    flex-basis: var(--settings-main-basis);
+  }
 
-      #left os-settings-menu {
-        max-height: 100%;
-        overflow: auto;
-        overscroll-behavior: contain;
-        width: var(--settings-menu-width);
-      }
+  /* The breakpoint of 980px was decided on by the rounded sum of
+    * var(--settings-main-basis), var(--settings-menu-width), and
+    * var(--cr-section-padding). */
+  @media (max-width: 980px) {
+    #left,
+    #right {
+      display: none;
+    }
 
-      #main {
-        flex-basis: var(--settings-main-basis);
-      }
+    #main {
+      min-width: auto;
+      /* Add some padding to make room for borders and to prevent focus
+        * indicators from being cropped. */
+      padding: 0 3px;
+    }
+  }
 
-      /* The breakpoint of 980px was decided on by the rounded sum of
-       * var(--settings-main-basis), var(--settings-menu-width), and
-       * var(--cr-section-padding). */
-      @media (max-width: 980px) {
-        #left,
-        #right {
-          display: none;
-        }
-
-        #main {
-          min-width: auto;
-          /* Add some padding to make room for borders and to prevent focus
-           * indicators from being cropped. */
-          padding: 0 3px;
-        }
-      }
-
-      #iconButton {
-        cursor: pointer;
-        margin-inline-end: 14px;
-        margin-inline-start: 0;
-        outline: none;
-      }
-    </style>
-    <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
-    <iron-media-query query="(max-width: [[narrowThreshold_]]px)"
-        query-matches="{{isNarrow}}">
-    </iron-media-query>
-    <template is="dom-if" if="[[showToolbar_]]">
-      <os-toolbar on-os-toolbar-menu-tap="onMenuButtonTap_"
-          spinner-active="[[toolbarSpinnerActive_]]"
-          role="banner"
-          narrow="[[isNarrow]]"
-          narrow-threshold="980"
-          show-menu="[[isNarrow]]">
-      </os-toolbar>
-    </template>
+  #iconButton {
+    cursor: pointer;
+    margin-inline-end: 14px;
+    margin-inline-start: 0;
+    outline: none;
+  }
+</style>
+<settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
+<iron-media-query query="(max-width: [[narrowThreshold_]]px)"
+    query-matches="{{isNarrow}}">
+</iron-media-query>
+<template is="dom-if" if="[[showToolbar_]]">
+  <os-toolbar on-os-toolbar-menu-tap="onMenuButtonTap_"
+      spinner-active="[[toolbarSpinnerActive_]]"
+      role="banner"
+      narrow="[[isNarrow]]"
+      narrow-threshold="980"
+      show-menu="[[isNarrow]]">
+  </os-toolbar>
+</template>
+<template is="dom-if" if="[[showNavMenu_]]">
+  <cr-drawer id="drawer" on-close="onMenuClose_" heading="$i18n{settings}"
+      align="$i18n{textdirection}">
+    <div slot="header-icon">
+      <!-- Hidden from a11y because this icon is decorative. Clicking closes
+          the dialog, but screen reader users can do this by pressing ESC,
+          so aria-hidden is OK here. -->
+      <iron-icon id="iconButton" icon="cr20:menu"
+          on-click="onDrawerIconClick_" title="$i18n{close}"
+          aria-hidden="true">
+      </iron-icon>
+    </div>
+    <div slot="body">
+      <template is="dom-if" id="drawerTemplate">
+        <os-settings-menu
+            show-apps="[[showApps_]]"
+            show-crostini="[[showCrostini_]]"
+            show-plugin-vm="[[showPluginVm_]]"
+            show-reset="[[showReset_]]"
+            show-startup="[[showStartup_]]"
+            have-play-store-app="[[havePlayStoreApp_]]"
+            on-iron-activate="onIronActivate_"
+            advanced-opened="{{advancedOpenedInMenu_}}"
+            show-kerberos-section="[[showKerberosSection_]]">
+        </os-settings-menu>
+      </template>
+    </div>
+  </cr-drawer>
+</template>
+<div id="container" class="no-outline">
+  <div id="left">
     <template is="dom-if" if="[[showNavMenu_]]">
-      <cr-drawer id="drawer" on-close="onMenuClose_" heading="$i18n{settings}"
-          align="$i18n{textdirection}">
-        <div slot="header-icon">
-          <!-- Hidden from a11y because this icon is decorative. Clicking closes
-              the dialog, but screen reader users can do this by pressing ESC,
-              so aria-hidden is OK here. -->
-          <iron-icon id="iconButton" icon="cr20:menu"
-              on-click="onDrawerIconClick_" title="$i18n{close}"
-              aria-hidden="true">
-          </iron-icon>
-        </div>
-        <div slot="body">
-          <template is="dom-if" id="drawerTemplate">
-            <os-settings-menu
-                show-apps="[[showApps_]]"
-                show-crostini="[[showCrostini_]]"
-                show-plugin-vm="[[showPluginVm_]]"
-                show-reset="[[showReset_]]"
-                show-startup="[[showStartup_]]"
-                have-play-store-app="[[havePlayStoreApp_]]"
-                on-iron-activate="onIronActivate_"
-                advanced-opened="{{advancedOpenedInMenu_}}"
-                show-kerberos-section="[[showKerberosSection_]]">
-            </os-settings-menu>
-          </template>
-        </div>
-      </cr-drawer>
-    </template>
-    <div id="container" class="no-outline">
-      <div id="left">
-        <template is="dom-if" if="[[showNavMenu_]]">
-          <os-settings-menu page-visibility="[[pageVisibility_]]"
-              show-crostini="[[showCrostini_]]"
-              show-reset="[[showReset_]]"
-              show-startup="[[showStartup_]]"
-              have-play-store-app="[[havePlayStoreApp_]]"
-              on-iron-activate="onIronActivate_"
-              advanced-opened="{{advancedOpenedInMenu_}}"
-              show-kerberos-section="[[showKerberosSection_]]">
-          </os-settings-menu>
-        </template>
-      </div>
-      <os-settings-main id="main" prefs="{{prefs}}"
-          toolbar-spinner-active="{{toolbarSpinnerActive_}}"
-          page-visibility="[[pageVisibility_]]"
-          show-android-apps="[[showAndroidApps_]]"
+      <os-settings-menu page-visibility="[[pageVisibility_]]"
           show-crostini="[[showCrostini_]]"
-          show-plugin-vm="[[showPluginVm_]]"
           show-reset="[[showReset_]]"
           show-startup="[[showStartup_]]"
           have-play-store-app="[[havePlayStoreApp_]]"
-          advanced-toggle-expanded="{{advancedOpenedInMain_}}"
+          on-iron-activate="onIronActivate_"
+          advanced-opened="{{advancedOpenedInMenu_}}"
           show-kerberos-section="[[showKerberosSection_]]">
-      </os-settings-main>
-      <!-- An additional child of the flex #container to take up space,
-           aligned with the right-hand child of the flex toolbar. -->
-      <div id="right"></div>
-    </div>
-  </template>
-  <script src="os_settings_ui.js"></script>
-</dom-module>
+      </os-settings-menu>
+    </template>
+  </div>
+  <os-settings-main id="main" prefs="{{prefs}}"
+      toolbar-spinner-active="{{toolbarSpinnerActive_}}"
+      page-visibility="[[pageVisibility_]]"
+      show-android-apps="[[showAndroidApps_]]"
+      show-crostini="[[showCrostini_]]"
+      show-plugin-vm="[[showPluginVm_]]"
+      show-reset="[[showReset_]]"
+      show-startup="[[showStartup_]]"
+      have-play-store-app="[[havePlayStoreApp_]]"
+      advanced-toggle-expanded="{{advancedOpenedInMain_}}"
+      show-kerberos-section="[[showKerberosSection_]]">
+  </os-settings-main>
+  <!-- An additional child of the flex #container to take up space,
+        aligned with the right-hand child of the flex toolbar. -->
+  <div id="right"></div>
+</div>

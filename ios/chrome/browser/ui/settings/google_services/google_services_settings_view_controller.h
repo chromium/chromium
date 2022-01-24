@@ -39,6 +39,9 @@
 // Handler for GoogleServicesSettingsCommand.
 @property(nonatomic, weak) id<GoogleServicesSettingsServiceDelegate>
     serviceDelegate;
+// YES if the forced sign-in policy is enabled which provides its own
+// information.
+@property(nonatomic, assign) BOOL forcedSigninEnabled;
 
 @end
 

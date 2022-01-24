@@ -81,17 +81,6 @@ void WorkletAnimationController::UpdateAnimationTimings(
   ApplyAnimationTimings(reason);
 }
 
-void WorkletAnimationController::ScrollSourceCompositingStateChanged(
-    Node* node) {
-  DCHECK(ScrollTimeline::HasActiveScrollTimeline(node));
-  for (const auto& animation : animations_.Values()) {
-    if (animation->GetTimeline()->IsScrollTimeline() &&
-        To<ScrollTimeline>(animation->GetTimeline())->scrollSource() == node) {
-      InvalidateAnimation(*animation);
-    }
-  }
-}
-
 base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>
 WorkletAnimationController::EnsureMainThreadMutatorDispatcher(
     scoped_refptr<base::SingleThreadTaskRunner> mutator_task_runner) {

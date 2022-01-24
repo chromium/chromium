@@ -34,11 +34,18 @@ enum {
                                // Start Menu\Programs\Startup"
   DIR_USER_STARTUP,            // Usually "C:\Users\<user>\AppData\Roaming\
                                // Microsoft\Windows\Start Menu\Programs\Startup"
-  DIR_APP_DATA,                // Application Data directory under the user
-                               // profile.
-  DIR_LOCAL_APP_DATA,          // "Local Settings\Application Data" directory
-                               // under the user profile.
-  DIR_COMMON_APP_DATA,         // Usually "C:\ProgramData".
+  DIR_ROAMING_APP_DATA,        // Roaming Application Data directory under the
+                               // user profile.
+                               // Usually "C:\Users\<user>\AppData\Roaming".
+                               // Data for specific applications is stored in
+                               // subdirectories.
+  DIR_LOCAL_APP_DATA,          // Local Application Data directory under the
+                               // user profile.
+                               // Usually "C:\Users\<user>\AppData\Local".
+                               // Data for specific applications is stored in
+                               // subdirectories.
+  DIR_COMMON_APP_DATA,         // Usually "C:\ProgramData". Data for specific
+                               // applications is stored in subdirectories.
   DIR_APP_SHORTCUTS,           // Where tiles on the start screen are stored,
                                // only for Windows 8. Maps to "Local\AppData\
                                // Microsoft\Windows\Application Shortcuts\".

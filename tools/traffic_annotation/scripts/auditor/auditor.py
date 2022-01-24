@@ -57,7 +57,14 @@ NO_ANNOTATION_ID = UniqueId("undefined")
 RESERVED_IDS = TEST_IDS + [MISSING_ID, NO_ANNOTATION_ID]
 
 # Host platforms that support running auditor.py.
-SUPPORTED_PLATFORMS = ["linux", "windows"]
+SUPPORTED_PLATFORMS = ["linux", "windows", "android", "chromeos"]
+
+# These platforms populate the "os_list" field in annotations.xml for
+# newly-added annotations (i.e., assume they're present on these platforms).
+#
+# Android isn't completely supported yet, so exclude it for now.
+# TODO(crbug.com/1231780): Revisit this once Android support is complete.
+DEFAULT_OS_LIST = ["linux", "windows"]
 
 # Earliest valid milestone for added_in_milestone in annotations.xml.
 MIN_MILESTONE = 62
@@ -79,6 +86,34 @@ logging.basicConfig(
     level=logging.INFO,
     format="[%(asctime)s:%(levelname)s:%(filename)s(%(lineno)d)] %(message)s")
 logger = logging.getLogger(__name__)
+
+
+def get_current_platform(build_path: Optional[Path] = None) -> str:
+  """Return the target platform of |build_path| based on heuristics."""
+  # Use host platform as the source of truth (in most cases).
+  current_platform: str = platform.system().lower()
+
+  if current_platform == "linux" and build_path is not None:
+    # It could be an Android build directory, being compiled from a Linux host.
+    # Look for a target_os="android" line in args.gn.
+    try:
+      gn_args = (build_path / "args.gn").read_text(encoding="utf-8")
+      pattern = re.compile(r"^\s*target_os\s*=\s*\"(android|chromeos)\"\s*$",
+                           re.MULTILINE)
+      match = pattern.search(gn_args)
+      if match:
+        current_platform = match.group(1)
+
+    except (ValueError, OSError) as e:
+      logger.info(e)
+      # Maybe the file's absent, or it can't be decoded as UTF-8, or something.
+      # It's probably not Android in that case.
+      pass
+
+  if current_platform not in SUPPORTED_PLATFORMS:
+    raise ValueError("Unsupported platform {}".format(current_platform))
+
+  return current_platform
 
 
 def twos_complement_8bit(b: int) -> int:
@@ -290,7 +325,7 @@ def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
   lines.insert(0, title)
   report = "\n".join(lines) + "\n"
 
-  file_path.write_text(report, "utf-8")
+  file_path.write_text(report, encoding="utf-8")
 
 
 class AuditorError:
@@ -409,7 +444,6 @@ class AuditorError:
           self.file_path, self.line))
 
     if self.type == AuditorError.Type.NO_ANNOTATION:
-      # TODO(nicolaso): We should ignore this error on Android for now.
       return "NO_ANNOTATION: Empty annotation in '{}:{}'.".format(
           self.file_path, self.line)
 
@@ -776,13 +810,14 @@ class Annotation:
     self.file = file_path
     self.line = line_number
 
-    if serialized_annotation.type_name == "Mutable":
+    if serialized_annotation.type_name == extractor.AnnotationType.MUTABLE:
       return [
           AuditorError(AuditorError.Type.MUTABLE_TAG, "", file_path,
                        line_number)
       ]
 
-    self.type = Annotation.Type.from_string(serialized_annotation.type_name)
+    self.type = Annotation.Type.from_string(
+        serialized_annotation.type_name.value)
     self.unique_id = serialized_annotation.unique_id
     self.second_id = serialized_annotation.extra_id
     self.second_id_hash_code = compute_hash_value(self.second_id)
@@ -913,9 +948,10 @@ class FileFilter:
     git_file_for_testing: If present, use this .txt file to mock the output of
        `git ls-files`."""
 
-  def __init__(self):
+  def __init__(self, accepted_suffixes: List[str]):
     self.git_files: List[Path] = []
-    self.git_file_for_testing: Optional[str] = None
+    self.git_file_for_testing: Optional[Path] = None
+    self.accepted_suffixes = accepted_suffixes
 
   def get_source_files(self, safe_list: SafeList, prefix: str) -> List[Path]:
     """Returns a filtered list of files in the prefix directory.
@@ -940,25 +976,17 @@ class FileFilter:
         continue
       file_paths.append(file_path)
 
-    # TODO(nicolaso): Also filter files by content, like the C++ auditor.
-    # Empirically, this seems to save ~10s when parsing the whole codebase (22s
-    # without pre-filtering, 12s with pre-filtering). Maybe the regexen in
-    # extractor.py can be tweaked for performance instead?
-    #
-    # Also, the performance impact is probably smaller if the files aren't in
-    # the disk cache from a previous run.
-
     return file_paths
 
   def _is_supported_source_file(self, file_path: Path) -> bool:
     """Returns true if file_path looks like a non-test C++/Obj-C++ file."""
     # Check file extension.
-    if file_path.suffix not in [".cc", ".mm"]:
+    if file_path.suffix not in self.accepted_suffixes:
       return False
 
     # Ignore test files to speed up the tests. They would be only tested when
     # filters are disabled.
-    if file_path.stem.endswith("test"):
+    if re.search(r'test$', file_path.stem, re.IGNORECASE):
       return False
 
     return True
@@ -973,8 +1001,7 @@ class FileFilter:
 
     if self.git_file_for_testing is not None:
       # Get list of files from git_list.txt (or similar).
-      with open(self.git_file_for_testing) as f:
-        lines = [l.rstrip() for l in f.readlines()]
+      lines = self.git_file_for_testing.read_text(encoding="utf-8").splitlines()
     else:
       # Get list of files from git.
       if platform.system() == "Windows":
@@ -1215,35 +1242,43 @@ class ArchivedAnnotation:
 class Exporter:
   """Handles loading and saving ArchivedAnnotations in annotations.xml."""
 
-  ANNOTATIONS_XML_PATH = (SCRIPT_DIR.parent.parent / "summary" /
-                          "annotations.xml")
+  SUMMARY_DIR = SCRIPT_DIR.parent.parent / "summary"
 
   GROUPING_XML_PATH = SCRIPT_DIR.parent.parent / "summary" / "grouping.xml"
 
-  def __init__(self):
+  def __init__(self, current_platform: str):
     self.archive: Dict[UniqueId, ArchivedAnnotation] = {}
 
-    self._current_platform = platform.system().lower()
-    if self._current_platform not in SUPPORTED_PLATFORMS:
-      raise ValueError("Unsupported platform {}".format(self._current_platform))
+    assert current_platform in SUPPORTED_PLATFORMS
+    self._current_platform = current_platform
 
-    with open(SRC_DIR / "chrome" / "VERSION") as f:
-      contents = f.read()
-      m = re.search(r'MAJOR=(\d+)', contents)
-      if not m:
-        raise ValueError(
-            "Unable to extract MAJOR=... version from chrome/VERSION")
-      self._current_milestone = int(m.group(1))
+    contents = (SRC_DIR / "chrome" / "VERSION").read_text(encoding="utf-8")
+    m = re.search(r'MAJOR=(\d+)', contents)
+    if not m:
+      raise ValueError(
+          "Unable to extract MAJOR=... version from chrome/VERSION")
+    self._current_milestone = int(m.group(1))
+
+    if self._current_platform == "android":
+      # Use a separate file for Android until the CQ/waterfall checks are stable
+      # enough, to avoid confusing CL authors.
+      #
+      # TODO(crbug.com/1231780): Merge this with annotations.xml once the
+      # checks are working well on Android.
+      self.annotations_xml_path = (Exporter.SUMMARY_DIR /
+                                   "annotations_android.xml")
+    else:
+      self.annotations_xml_path = Exporter.SUMMARY_DIR / "annotations.xml"
 
   def load_annotations_xml(self) -> None:
     """Loads annotations from annotations.xml into self.archive using
     ArchivedAnnotation objects."""
     logger.info("Parsing {}.".format(
-        Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
+        self.annotations_xml_path.relative_to(SRC_DIR)))
 
     self.archive = {}
 
-    tree = xml.etree.ElementTree.parse(Exporter.ANNOTATIONS_XML_PATH)
+    tree = xml.etree.ElementTree.parse(self.annotations_xml_path)
     root = tree.getroot()
 
     for item in root.iter("item"):
@@ -1298,6 +1333,12 @@ class Exporter:
 
     current_platform_hashcodes: Set[HashCode] = set()
 
+    # Don't include android in the os_list for new annotations, unless we're
+    # touching annotations_android.xml.
+    default_os_list = DEFAULT_OS_LIST
+    if self._current_platform not in default_os_list:
+      default_os_list = [self._current_platform]
+
     for annotation in annotations:
       # annotations.xml only stores raw annotations.
       if annotation.is_merged:
@@ -1315,13 +1356,13 @@ class Exporter:
         archived.content_hash_code = annotation.get_content_hash_code()
       else:
         # If annotation is new, add it and assume it is on all platforms. Tests
-        # running on other platforms will request updating this if required.:
+        # running on other platforms will request updating this if required.
         new_item = ArchivedAnnotation(
             type=annotation.type,
             id=annotation.unique_id,
             hash_code=annotation.unique_id_hash_code,
             content_hash_code=annotation.get_content_hash_code(),
-            os_list=SUPPORTED_PLATFORMS,
+            os_list=default_os_list,
             added_in_milestone=self._current_milestone,
             file_path=annotation.file)
         if annotation.needs_two_ids():
@@ -1350,7 +1391,7 @@ class Exporter:
             added_in_milestone=self._current_milestone,
             hash_code=compute_hash_value(reserved_id),
             reserved=True,
-            os_list=SUPPORTED_PLATFORMS,
+            os_list=default_os_list,
             file_path="")
 
     # If there are annotations that are not used on any OS, set the deprecation
@@ -1444,7 +1485,7 @@ class Exporter:
       if archived.deprecated and archived.os_list:
         errors.append(
             AuditorError(AuditorError.Type.DEPRECATED_WITH_OS, unique_id,
-                         Exporter.ANNOTATIONS_XML_PATH))
+                         self.annotations_xml_path))
 
     # Check that listed OSes are valid.
     for unique_id, archived in self.archive.items():
@@ -1452,14 +1493,14 @@ class Exporter:
         if os not in SUPPORTED_PLATFORMS:
           errors.append(
               AuditorError(AuditorError.Type.INVALID_OS, "",
-                           Exporter.ANNOTATIONS_XML_PATH, 0, os, unique_id))
+                           self.annotations_xml_path, 0, os, unique_id))
 
     # Check for consistency of "added_in_milestone" attribute.
     for unique_id, archived in self.archive.items():
       if archived.added_in_milestone < MIN_MILESTONE:
         errors.append(
             AuditorError(AuditorError.Type.INVALID_ADDED_IN, "",
-                         Exporter.ANNOTATIONS_XML_PATH, 0,
+                         self.annotations_xml_path, 0,
                          str(archived.added_in_milestone), unique_id))
 
     return errors
@@ -1467,9 +1508,9 @@ class Exporter:
   def save_annotations_xml(self) -> None:
     """Saves self._archive into annotations.xml"""
     logger.info("Saving annotations to {}.".format(
-        Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
+        self.annotations_xml_path.relative_to(SRC_DIR)))
     xml_str = self._generate_serialized_xml()
-    Exporter.ANNOTATIONS_XML_PATH.write_text(xml_str)
+    self.annotations_xml_path.write_text(xml_str, encoding="utf-8")
 
   def get_deprecated_ids(self) -> List[UniqueId]:
     """Produces the list of deprecated unique ids. Requires that annotations.xml
@@ -1507,10 +1548,9 @@ class Exporter:
     """Returns the required updates to go from one state to another in
     annotations.xml"""
     logger.info("Computing required updates for {}.".format(
-        Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
+        self.annotations_xml_path.relative_to(SRC_DIR)))
 
-    old_xml = Exporter.ANNOTATIONS_XML_PATH.read_text("utf-8")
-
+    old_xml = self.annotations_xml_path.read_text(encoding="utf-8")
     new_xml = self._generate_serialized_xml()
 
     return Exporter._get_xml_differences(old_xml, new_xml)
@@ -1521,8 +1561,13 @@ class Auditor:
 
   SAFE_LIST_PATH = (SRC_DIR / "tools" / "traffic_annotation" / "auditor" /
                     "safe_list.txt")
+  # TODO(b/203773498): Remove ChromeOS safelist after cleanup.
+  CHROME_OS_SAFE_LIST_PATH = (SRC_DIR / "tools" / "traffic_annotation" /
+                              "auditor" / "chromeos" / "safe_list.txt")
 
-  def __init__(self):
+  def __init__(self, current_platform: str, no_filtering: bool = False):
+    self.no_filtering = no_filtering
+
     self.extracted_annotations: List[Annotation] = []
 
     self.partial_annotations: List[Annotation] = []
@@ -1530,8 +1575,13 @@ class Auditor:
 
     self._safe_list: SafeList = {}
 
-    self.exporter = Exporter()
-    self.file_filter = FileFilter()
+    self.exporter = Exporter(current_platform)
+
+    accepted_suffixes = [".cc", ".mm"]
+    if current_platform == "android":
+      accepted_suffixes.append(".java")
+
+    self.file_filter = FileFilter(accepted_suffixes)
 
   def _get_safe_list(self) -> SafeList:
     """Lazily loads safe_list.txt and returns it."""
@@ -1541,34 +1591,38 @@ class Auditor:
     self._safe_list = dict((t, []) for t in ExceptionType)
 
     # Ignore safe_list.txt while testing.
-    if self.file_filter.git_file_for_testing:
+    if self.file_filter.git_file_for_testing is not None:
       return self._safe_list
 
     logger.info("Parsing {}.".format(
         Auditor.SAFE_LIST_PATH.relative_to(SRC_DIR)))
-    with open(Auditor.SAFE_LIST_PATH) as f:
-      for line in f.readlines():
-        # Ignore comments and empty lines.
-        line = line.rstrip()
-        if not line or line.startswith("#"):
-          continue
 
-        # Expect a type, and at least 1 value on each line.
-        tokens = line.split(",")
-        assert len(tokens) >= 2, \
-               "Unexpected syntax in safe_list.txt, line: {}".format(line)
+    lines = Auditor.SAFE_LIST_PATH.read_text(encoding="utf-8").splitlines()
+    if self.exporter._current_platform == "chromeos":
+      lines += Auditor.CHROME_OS_SAFE_LIST_PATH.read_text(
+          encoding="utf-8").splitlines()
 
-        exception_type = ExceptionType(tokens[0])
-        valid_characters = "0123456789_abcdefghijklmnopqrstuvwxyz.*/:@"
-        for token in tokens[1:]:
-          token = token.strip()
-          # Convert the rest of the line into re.Patterns, marking dots as fixed
-          # characters and asterisks as wildcards.
-          assert all(c in valid_characters for c in token), \
-              "Unexpected character in safe_list.txt token: '{}'".format(token)
-          token = token.replace(".", "\\.")
-          token = token.replace("*", ".*")
-          self._safe_list[exception_type].append(re.compile(token))
+    for line in lines:
+      # Ignore comments and empty lines.
+      line = line.rstrip()
+      if not line or line.startswith("#"):
+        continue
+
+      # Expect a type, and at least 1 value on each line.
+      tokens = line.split(",")
+      assert len(tokens) >= 2, \
+              "Unexpected syntax in safe_list.txt, line: {}".format(line)
+
+      exception_type = ExceptionType(tokens[0])
+      for token in tokens[1:]:
+        token = token.strip()
+        # Convert the rest of the line into re.Patterns, marking dots as fixed
+        # characters and asterisks as wildcards.
+        assert re.match(r'^[0-9a-zA-Z_.*/:@]+$', token), \
+            "Unexpected character in safe_list.txt token: '{}'".format(token)
+        token = token.replace(".", "\\.")
+        token = token.replace("*", ".*")
+        self._safe_list[exception_type].append(re.compile(token))
 
     return self._safe_list
 
@@ -1593,7 +1647,7 @@ class Auditor:
       build_path: Path
         Path to a directory where Chrome was built (e.g., out/Release)
       path_filters: List[str]
-        If this list is empty, parse all .cc files in the repository.
+        If this list is empty, parse all .cc/.mm/.java files in the repository.
 
     Returns:
       A list of all network traffic annotation instances found within a list of
@@ -1613,33 +1667,44 @@ class Auditor:
     files = self.file_filter.get_source_files(safe_list, "")
 
     # Skip compdb generation while testing to speed up tests.
-    if self.file_filter.git_file_for_testing:
+    if self.file_filter.git_file_for_testing is not None:
       compdb_files = None
     else:
       logger.info("Generating compile_commands.json")
       tools = NetworkTrafficAnnotationTools(str(build_path))
       compdb_files = tools.GetCompDBFiles(not skip_compdb)
 
+    suffixes = '/'.join(self.file_filter.accepted_suffixes)
     if path_filters:
-      logger.info("Parsing valid .cc/.mm files in the Chromium repository, "
-                  "that match any of these prefixes: {}".format(path_filters))
+      logger.info("Parsing valid {} files in the Chromium repository, "
+                  "that match any of these prefixes: {}".format(
+                      suffixes, path_filters))
     else:
-      logger.info("Parsing all valid .cc/.mm files in the Chromium "
-                  "repository.")
+      logger.info("Parsing all valid {} files in the Chromium "
+                  "repository.".format(suffixes))
 
     all_annotations = []
 
     for relative_path in files:
       absolute_path = SRC_DIR / relative_path
-      # Skip files based on compdb and path_filters.
-      if (compdb_files is not None and str(absolute_path) not in compdb_files):
+
+      # Skip files based on compdb and path_filters. Java files aren't in
+      # compile_commands.json, so don't check those.
+      if (absolute_path.suffix != ".java" and compdb_files is not None
+          and str(absolute_path) not in compdb_files):
         continue
       if (path_filters
           and not self._path_filters_match(path_filters, relative_path)):
         continue
 
-      # Extract annotations from the .cc file. This will throw a CppParsingError
-      # if the format is invalid.
+      # Pre-filter files based on their content, using a fast regex. When files
+      # are already in memory from the disk cache, this saves ~10 seconds.
+      if (not self.no_filtering
+          and not extractor.may_contain_annotations(absolute_path)):
+        continue
+
+      # Extract annotations from the .cc/.mm/.java file. This will throw a
+      # SourceCodeParsingError if the format is invalid.
       annotations = extractor.extract_annotations(absolute_path)
       if annotations:
         all_annotations.extend(annotations)
@@ -1778,6 +1843,12 @@ class Auditor:
     return grouping_xml_ids
 
   def check_grouping_xml(self) -> List[AuditorError]:
+    #TODO(b/203822700): Add grouping.xml for chromeos.
+    if self.exporter._current_platform in ["chromeos", "android"]:
+      logger.info("Skipping grouping.xml check for {}".format(
+          self.exporter._current_platform))
+      return []
+
     grouping_xml_ids = self._get_grouping_xml_ids()
 
     logger.info("Computing required updates for {}.".format(
@@ -1847,8 +1918,9 @@ class Auditor:
     if path_filters:
       self._add_missing_annotations(path_filters)
 
-    logger.info("Checking the validity of annotations extracted from .cc/.mm "
-                "files.")
+    suffixes = '/'.join(self.file_filter.accepted_suffixes)
+    logger.info("Checking the validity of annotations extracted from {} "
+                "files.".format(suffixes))
 
     deprecated_ids = self.exporter.get_deprecated_ids()
     id_checker = IdChecker(RESERVED_IDS, deprecated_ids)
@@ -1901,7 +1973,8 @@ class AuditorUI:
 
     # Exposed for testing.
     self.traffic_annotation = self.import_compiled_proto()
-    self.auditor = Auditor()
+    self.auditor = Auditor(get_current_platform(self.build_path),
+                           self.no_filtering)
 
   def import_compiled_proto(self) -> Any:
     """Global import from function. |self.build_path| is needed to perform

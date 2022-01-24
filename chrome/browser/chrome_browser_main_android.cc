@@ -31,9 +31,9 @@
 #include "ui/base/ui_base_paths.h"
 
 ChromeBrowserMainPartsAndroid::ChromeBrowserMainPartsAndroid(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     StartupData* startup_data)
-    : ChromeBrowserMainParts(parameters, startup_data) {}
+    : ChromeBrowserMainParts(std::move(parameters), startup_data) {}
 
 ChromeBrowserMainPartsAndroid::~ChromeBrowserMainPartsAndroid() {
 }
@@ -94,7 +94,7 @@ void ChromeBrowserMainPartsAndroid::PostBrowserStart() {
 
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&ReportSeccompSupport), base::TimeDelta::FromMinutes(1));
+      base::BindOnce(&ReportSeccompSupport), base::Minutes(1));
 
   RegisterChromeJavaMojoInterfaces();
 }

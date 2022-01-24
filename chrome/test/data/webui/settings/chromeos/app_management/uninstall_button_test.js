@@ -5,9 +5,9 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {AppManagementStore, FakePageHandler, ArcPermissionType, updateSelectedAppId, getPermissionValueBool, PageType} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf, isHidden, getPermissionItemByType, getPermissionCrToggleByType} from './test_util.m.js';
-// #import {flushTasks} from 'chrome://test/test_util.m.js';
+// #import {AppManagementStore, FakePageHandler, updateSelectedAppId, PageType} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf, isHidden} from './test_util.m.js';
+// #import {flushTasks} from 'chrome://test/test_util.js';
 // clang-format on
 
 'use strict';
@@ -23,12 +23,11 @@ suite('<app-management-uninstall-button', () => {
     replaceStore();
   });
 
-  async function setupUninstallButton(installSource) {
-
+  async function setupUninstallButton(installReason) {
     // Create an ARC app options.
     const arcOptions = {
       type: apps.mojom.AppType.kArc,
-      installSource: installSource
+      installReason: installReason
     };
 
     // Add an app, and make it the currently selected app.
@@ -47,7 +46,7 @@ suite('<app-management-uninstall-button', () => {
   }
 
   test('Click uninstall', async () => {
-    await setupUninstallButton(apps.mojom.InstallSource.kUser);
+    await setupUninstallButton(apps.mojom.InstallReason.kUser);
 
     uninstallButton.$$('#uninstallButton').click();
     await fakeHandler.flushPipesForTesting();
@@ -56,7 +55,7 @@ suite('<app-management-uninstall-button', () => {
   });
 
   test('Disabled by policy', async () => {
-    await setupUninstallButton(apps.mojom.InstallSource.kPolicy);
+    await setupUninstallButton(apps.mojom.InstallReason.kPolicy);
     uninstallButton.$$('#uninstallButton').click();
     await fakeHandler.flushPipesForTesting();
     // Disabled by policy, clicking should not remove app.
@@ -65,7 +64,7 @@ suite('<app-management-uninstall-button', () => {
   });
 
   test('System app, button hidden', async () => {
-    await setupUninstallButton(apps.mojom.InstallSource.kSystem);
+    await setupUninstallButton(apps.mojom.InstallReason.kSystem);
     assertFalse(!!uninstallButton.$$('#uninstallButton'));
     await fakeHandler.flushPipesForTesting();
     // Disabled by policy, clicking should not remove app.

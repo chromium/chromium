@@ -10,9 +10,9 @@
 #include <string>
 #include <utility>
 
-#include "components/sync/engine/entity_data.h"
-
 namespace syncer {
+
+struct EntityData;
 
 using KeyAndData = std::pair<std::string, std::unique_ptr<EntityData>>;
 

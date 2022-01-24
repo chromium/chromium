@@ -15,8 +15,8 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #include "base/win/windows_version.h"
-// VersionHelpers.h must be included after windows.h.
-#include <VersionHelpers.h>
+// versionhelpers.h must be included after windows.h.
+#include <versionhelpers.h>
 #endif
 
 namespace base {

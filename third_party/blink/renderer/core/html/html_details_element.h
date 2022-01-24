@@ -37,8 +37,15 @@ class HTMLDetailsElement final : public HTMLElement {
 
   Element* FindMainSummary() const;
 
-  // Used for slot assignment.
-  static bool IsFirstSummary(const Node&);
+  void ManuallyAssignSlots() override;
+
+  void Trace(Visitor*) const override;
+
+  // Walks up the ancestor chain and expands all <details> elements found along
+  // the way by setting the open attribute. If any were expanded, returns true.
+  // This method may run script because of the mutation events fired when
+  // setting the open attribute.
+  static bool ExpandDetailsAncestors(const Node&);
 
  private:
   void DispatchPendingEvent(const AttributeModificationReason);
@@ -50,6 +57,8 @@ class HTMLDetailsElement final : public HTMLElement {
 
   bool is_open_;
   TaskHandle pending_event_;
+  Member<HTMLSlotElement> summary_slot_;
+  Member<HTMLSlotElement> content_slot_;
 };
 
 }  // namespace blink

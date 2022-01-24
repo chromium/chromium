@@ -513,8 +513,10 @@ public class ManualFillingTestHelper {
     }
 
     public void registerSheetDataProvider(@AccessoryTabType int tabType) {
-        PropertyProvider<AccessorySheetData> sheetDataProvider = new PropertyProvider<>();
-        getManualFillingCoordinator().registerSheetDataProvider(
-                mWebContentsRef.get(), tabType, sheetDataProvider);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyProvider<AccessorySheetData> sheetDataProvider = new PropertyProvider<>();
+            getManualFillingCoordinator().registerSheetDataProvider(
+                    mWebContentsRef.get(), tabType, sheetDataProvider);
+        });
     }
 }

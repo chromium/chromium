@@ -25,7 +25,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
@@ -44,6 +43,9 @@ class PulseAudioOutputStream : public AudioOutputStream {
                          const std::string& device_id,
                          AudioManagerBase* manager,
                          AudioManager::LogCallback log_callback);
+
+  PulseAudioOutputStream(const PulseAudioOutputStream&) = delete;
+  PulseAudioOutputStream& operator=(const PulseAudioOutputStream&) = delete;
 
   ~PulseAudioOutputStream() override;
 
@@ -105,8 +107,6 @@ class PulseAudioOutputStream : public AudioOutputStream {
   const size_t buffer_size_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PulseAudioOutputStream);
 };
 
 }  // namespace media

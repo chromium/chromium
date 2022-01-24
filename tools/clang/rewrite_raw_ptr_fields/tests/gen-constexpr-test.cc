@@ -19,7 +19,7 @@ class Foo {
   constexpr explicit Foo(int* ptr) : ptr_(ptr), ptr2_(ptr), null_(nullptr) {}
 
  private:
-  // CheckedPtr(T*) constructor is non-constexpr and therefore CheckedPtr fields
+  // raw_ptr(T*) constructor is non-constexpr and therefore raw_ptr fields
   // cannot be initialized in constexpr constructors - such fields should be
   // emitted as candidates for the --field-filter-file.
   int* ptr_;
@@ -28,7 +28,7 @@ class Foo {
   // first one).
   int* ptr2_;
 
-  // CheckedPtr(nullptr_t) is constexpr and therefore the field below doesn't
+  // raw_ptr(nullptr_t) is constexpr and therefore the field below doesn't
   // need to be skipped.
   int* null_;
 };

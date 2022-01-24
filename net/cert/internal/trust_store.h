@@ -59,25 +59,24 @@ class NET_EXPORT TrustStore : public CertIssuerSource {
  public:
   TrustStore();
 
-  // Writes the trustedness of |cert| into |*trust|. Both |cert| and |trust|
-  // must be non-null.
+  TrustStore(const TrustStore&) = delete;
+  TrustStore& operator=(const TrustStore&) = delete;
+
+  // Returns the trusted of |cert|, which must be non-null.
   //
   // Optionally, if |debug_data| is non-null, debug information may be added
   // (any added Data must implement the Clone method.) The same |debug_data|
   // object may be passed to multiple GetTrust calls for a single verification,
   // so implementations should check whether they already added data with a
   // certain key and update it instead of overwriting it.
-  virtual void GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                        CertificateTrust* trust,
-                        base::SupportsUserData* debug_data) const = 0;
+  virtual CertificateTrust GetTrust(
+      const ParsedCertificate* cert,
+      base::SupportsUserData* debug_data) const = 0;
 
   // Disable async issuers for TrustStore, as it isn't needed.
   // TODO(mattm): Pass debug_data here too.
   void AsyncGetIssuersOf(const ParsedCertificate* cert,
                          std::unique_ptr<Request>* out_req) final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TrustStore);
 };
 
 }  // namespace net

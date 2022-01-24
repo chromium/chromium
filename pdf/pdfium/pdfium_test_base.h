@@ -39,6 +39,9 @@ class PDFiumTestBase : public testing::Test {
     InitializeEngineResult& operator=(InitializeEngineResult&& other) noexcept;
     ~InitializeEngineResult();
 
+    // Completes loading the document.
+    void FinishLoading();
+
     // Initialized engine.
     std::unique_ptr<PDFiumEngine> engine;
 

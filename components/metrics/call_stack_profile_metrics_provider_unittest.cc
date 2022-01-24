@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -23,6 +22,11 @@ class CallStackProfileMetricsProviderTest : public testing::Test {
         TestState::kSamplingProfilerReporting);
   }
 
+  CallStackProfileMetricsProviderTest(
+      const CallStackProfileMetricsProviderTest&) = delete;
+  CallStackProfileMetricsProviderTest& operator=(
+      const CallStackProfileMetricsProviderTest&) = delete;
+
  protected:
   // Exposes the feature from the CallStackProfileMetricsProvider.
   class TestState : public CallStackProfileMetricsProvider {
@@ -33,8 +37,6 @@ class CallStackProfileMetricsProviderTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallStackProfileMetricsProviderTest);
 };
 
 // Checks that the unserialized pending profile is encoded in the session data.
@@ -89,9 +91,9 @@ TEST_F(CallStackProfileMetricsProviderTest,
   // Receive a serialized profile.
   std::string contents;
   {
-    SampledProfile profile;
-    profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
-    profile.SerializeToString(&contents);
+    SampledProfile serialized_profile;
+    serialized_profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
+    serialized_profile.SerializeToString(&contents);
   }
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
       base::TimeTicks::Now(), std::move(contents));

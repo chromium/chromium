@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/user_manager/user.h"
@@ -46,6 +45,11 @@ class NetworkingPrivateServiceClientApiTest
  public:
   NetworkingPrivateServiceClientApiTest() {}
 
+  NetworkingPrivateServiceClientApiTest(
+      const NetworkingPrivateServiceClientApiTest&) = delete;
+  NetworkingPrivateServiceClientApiTest& operator=(
+      const NetworkingPrivateServiceClientApiTest&) = delete;
+
   bool RunNetworkingSubtest(const std::string& subtest) {
     const std::string page_url = "main.html?" + subtest;
     return RunExtensionTest("networking_private/service_client",
@@ -80,9 +84,6 @@ class NetworkingPrivateServiceClientApiTest
     content::RunAllPendingInMessageLoop();
     extensions::ExtensionApiTest::TearDownOnMainThread();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateServiceClientApiTest);
 };
 
 // Place each subtest into a separate browser test so that the stub networking

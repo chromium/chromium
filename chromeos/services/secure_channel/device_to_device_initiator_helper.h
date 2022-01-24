@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/session_keys.h"
 #include "third_party/ukey2/proto/device_to_device_messages.pb.h"
@@ -56,6 +55,11 @@ class DeviceToDeviceInitiatorHelper {
       ValidateResponderAuthCallback;
 
   DeviceToDeviceInitiatorHelper();
+
+  DeviceToDeviceInitiatorHelper(const DeviceToDeviceInitiatorHelper&) = delete;
+  DeviceToDeviceInitiatorHelper& operator=(
+      const DeviceToDeviceInitiatorHelper&) = delete;
+
   virtual ~DeviceToDeviceInitiatorHelper();
 
   // Creates the [Hello] message, which is the first message that is sent:
@@ -185,8 +189,6 @@ class DeviceToDeviceInitiatorHelper {
       const securemessage::Header& header);
 
   base::WeakPtrFactory<DeviceToDeviceInitiatorHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceInitiatorHelper);
 };
 
 }  // namespace secure_channel

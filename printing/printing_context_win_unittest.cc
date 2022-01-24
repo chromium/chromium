@@ -14,7 +14,6 @@
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_hdc.h"
-#include "base/win/windows_version.h"
 #include "printing/backend/printing_info_win.h"
 #include "printing/backend/win_helper.h"
 #include "printing/mojom/print.mojom.h"
@@ -29,19 +28,17 @@ namespace printing {
 class PrintingContextTest : public PrintingTest<testing::Test>,
                             public PrintingContext::Delegate {
  public:
-  void PrintSettingsCallback(PrintingContext::Result result) {
-    result_ = result;
-  }
+  void PrintSettingsCallback(mojom::ResultCode result) { result_ = result; }
 
   // PrintingContext::Delegate methods.
   gfx::NativeView GetParentView() override { return nullptr; }
   std::string GetAppLocale() override { return std::string(); }
 
  protected:
-  PrintingContext::Result result() const { return result_; }
+  mojom::ResultCode result() const { return result_; }
 
  private:
-  PrintingContext::Result result_;
+  mojom::ResultCode result_;
 };
 
 namespace {
@@ -146,11 +143,8 @@ class MockPrintingContextWin : public PrintingContextSystemDialogWin {
   }
 };
 
-TEST_F(PrintingContextTest, PrintAll) {
-  // TODO(crbug.com/1231528): Investigate why this test fails on Win 7 bots.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
-
+// Disabled - see crbug.com/1231528 for context.
+TEST_F(PrintingContextTest, DISABLED_PrintAll) {
   if (IsTestCaseDisabled())
     return;
 
@@ -160,16 +154,13 @@ TEST_F(PrintingContextTest, PrintAll) {
       123, false, false,
       base::BindOnce(&PrintingContextTest::PrintSettingsCallback,
                      base::Unretained(this)));
-  EXPECT_EQ(PrintingContext::OK, result());
+  EXPECT_EQ(mojom::ResultCode::kSuccess, result());
   const PrintSettings& settings = context.settings();
   EXPECT_EQ(0u, settings.ranges().size());
 }
 
-TEST_F(PrintingContextTest, Color) {
-  // TODO(crbug.com/1231528): Investigate why this test fails on Win 7 bots.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
-
+// Disabled - see crbug.com/1231528 for context.
+TEST_F(PrintingContextTest, DISABLED_Color) {
   if (IsTestCaseDisabled())
     return;
 
@@ -179,16 +170,13 @@ TEST_F(PrintingContextTest, Color) {
       123, false, false,
       base::BindOnce(&PrintingContextTest::PrintSettingsCallback,
                      base::Unretained(this)));
-  EXPECT_EQ(PrintingContext::OK, result());
+  EXPECT_EQ(mojom::ResultCode::kSuccess, result());
   const PrintSettings& settings = context.settings();
   EXPECT_NE(settings.color(), mojom::ColorModel::kUnknownColorModel);
 }
 
-TEST_F(PrintingContextTest, Base) {
-  // TODO(crbug.com/1231528): Investigate why this test fails on Win 7 bots.
-  if (base::win::GetVersion() <= base::win::Version::WIN7)
-    return;
-
+// Disabled - see crbug.com/1231528 for context.
+TEST_F(PrintingContextTest, DISABLED_Base) {
   if (IsTestCaseDisabled())
     return;
 
@@ -196,7 +184,7 @@ TEST_F(PrintingContextTest, Base) {
   settings->set_device_name(base::WideToUTF16(GetDefaultPrinter()));
   // Initialize it.
   PrintingContextWin context(this);
-  EXPECT_EQ(PrintingContext::OK,
+  EXPECT_EQ(mojom::ResultCode::kSuccess,
             context.InitWithSettingsForTest(std::move(settings)));
 
   // The print may lie to use and may not support world transformation.

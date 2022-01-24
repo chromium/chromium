@@ -24,7 +24,7 @@ ServiceWorkerOfflineCapabilityChecker::ServiceWorkerOfflineCapabilityChecker(
     const GURL& url,
     const blink::StorageKey& key)
     : url_(url), key_(key) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
 ServiceWorkerOfflineCapabilityChecker::

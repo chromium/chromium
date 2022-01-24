@@ -202,6 +202,15 @@ bool WinWebAuthnApiAuthenticator::SupportsHMACSecretExtension() const {
   return true;
 }
 
+bool WinWebAuthnApiAuthenticator::SupportsEnterpriseAttestation() const {
+  return win_api_->Version() >= WEBAUTHN_API_VERSION_3;
+}
+
+bool WinWebAuthnApiAuthenticator::SupportsCredBlobOfSize(
+    size_t num_bytes) const {
+  return win_api_->Version() >= WEBAUTHN_API_VERSION_3;
+}
+
 const absl::optional<AuthenticatorSupportedOptions>&
 WinWebAuthnApiAuthenticator::Options() const {
   // The request can potentially be fulfilled by any device that Windows

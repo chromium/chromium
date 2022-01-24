@@ -45,19 +45,12 @@ public final class BrowserFragment extends RemoteFragment {
 
     // Nonnull between onCreate() and onDestroy().
     private Browser mBrowser;
-    private boolean mUseViewModel;
 
     /**
      * This constructor is for the system FragmentManager only. Please use
      * {@link WebLayer#createBrowserFragment}.
      */
     public BrowserFragment() {
-        this(false);
-    }
-
-    BrowserFragment(boolean useViewModel) {
-        super();
-        mUseViewModel = useViewModel;
     }
 
     /**
@@ -122,7 +115,7 @@ public final class BrowserFragment extends RemoteFragment {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
-        if (mUseViewModel) {
+        if (useViewModel()) {
             saveToViewModel(new ViewModelProvider(this).get(BrowserViewModel.class));
         }
     }
@@ -133,7 +126,7 @@ public final class BrowserFragment extends RemoteFragment {
         ThreadCheck.ensureOnUiThread();
         // If a ViewModel is used, then the Browser is destroyed from the ViewModel, not here
         // (RemoteFragment won't call destroy on Browser either in this case).
-        if (mUseViewModel) {
+        if (useViewModel()) {
             if (mBrowser.getFragment() == this) {
                 // The browser is no long associated with this fragment. Null out the reference to
                 // ensure BrowserFragment can be gc'd.
@@ -163,15 +156,15 @@ public final class BrowserFragment extends RemoteFragment {
         super.configureFromViewModel(model);
 
         BrowserViewModel browserViewModel = (BrowserViewModel) model;
-        // During configuration changes the system creates a BrowserFragment, not the embedder. When
-        // this happens, whether a ViewModel is used is determined by whether a ViewModel is
-        // associated with the fragment (because the embedder would have configured the fragment
-        // when they created it).
-        mUseViewModel = true;
         mBrowser = browserViewModel.mBrowser;
         mWebLayer = browserViewModel.mWebLayer;
         mImpl = browserViewModel.mImpl;
         mBrowser.setFragment(this);
+    }
+
+    private boolean useViewModel() {
+        Bundle args = getArguments();
+        return args == null ? false : args.getBoolean(BrowserFragmentArgs.USE_VIEW_MODEL, false);
     }
 
     /**

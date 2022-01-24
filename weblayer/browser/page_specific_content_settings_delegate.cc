@@ -5,10 +5,13 @@
 #include "weblayer/browser/page_specific_content_settings_delegate.h"
 
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
 #include "weblayer/browser/browser_context_impl.h"
+#include "weblayer/browser/content_settings_manager_delegate.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "weblayer/common/renderer_configuration.mojom.h"
@@ -33,14 +36,26 @@ PageSpecificContentSettingsDelegate::~PageSpecificContentSettingsDelegate() =
     default;
 
 // static
-void PageSpecificContentSettingsDelegate::UpdateRendererContentSettingRules(
+void PageSpecificContentSettingsDelegate::InitializeRenderer(
     content::RenderProcessHost* process) {
+  mojo::AssociatedRemote<mojom::RendererConfiguration> rc_interface;
+  process->GetChannel()->GetRemoteAssociatedInterface(&rc_interface);
+  mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
+      content_settings_manager;
+  if (base::FeatureList::IsEnabled(
+          features::kNavigationThreadingOptimizations)) {
+    content_settings::ContentSettingsManagerImpl::Create(
+        process, content_settings_manager.InitWithNewPipeAndPassReceiver(),
+        std::make_unique<ContentSettingsManagerDelegate>());
+  }
+  rc_interface->SetInitialConfiguration(std::move(content_settings_manager));
+
   RendererContentSettingRules rules;
   GetRendererContentSettingRules(
       HostContentSettingsMapFactory::GetForBrowserContext(
           process->GetBrowserContext()),
       &rules);
-  weblayer::SetContentSettingRules(process, rules);
+  rc_interface->SetContentSettingRules(rules);
 }
 
 void PageSpecificContentSettingsDelegate::UpdateLocationBar() {}

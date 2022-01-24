@@ -46,8 +46,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.blink.mojom.AndroidFontLookup;
-import org.chromium.blink.mojom.AndroidFontLookup.GetUniqueNameLookupTableResponse;
-import org.chromium.blink.mojom.AndroidFontLookup.MatchLocalFontByUniqueNameResponse;
+import org.chromium.blink.mojom.AndroidFontLookup.GetUniqueNameLookupTable_Response;
+import org.chromium.blink.mojom.AndroidFontLookup.MatchLocalFontByUniqueName_Response;
 import org.chromium.content.browser.font.AndroidFontLookupImpl.FetchFontName;
 import org.chromium.content.browser.font.AndroidFontLookupImpl.FetchFontResult;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -85,9 +85,9 @@ public final class AndroidFontLookupImplTest {
     private Context mMockContext;
 
     @Mock
-    private GetUniqueNameLookupTableResponse mGetUniqueNameLookupTableCallback;
+    private GetUniqueNameLookupTable_Response mGetUniqueNameLookupTableCallback;
     @Mock
-    private MatchLocalFontByUniqueNameResponse mMatchLocalFontByUniqueNameCallback;
+    private MatchLocalFontByUniqueName_Response mMatchLocalFontByUniqueNameCallback;
 
     private AndroidFontLookupImpl mAndroidFontLookup;
 

@@ -94,6 +94,10 @@ class FakeKeepAliveOperationFactory final : public KeepAliveOperation::Factory,
 }  // namespace
 
 class KeepAliveSchedulerTest : public testing::Test {
+ public:
+  KeepAliveSchedulerTest(const KeepAliveSchedulerTest&) = delete;
+  KeepAliveSchedulerTest& operator=(const KeepAliveSchedulerTest&) = delete;
+
  protected:
   KeepAliveSchedulerTest()
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(2)) {}
@@ -125,8 +129,7 @@ class KeepAliveSchedulerTest : public testing::Test {
     EXPECT_EQ(is_running, mock_timer_->IsRunning());
 
     if (is_running) {
-      EXPECT_EQ(base::TimeDelta::FromMinutes(
-                    KeepAliveScheduler::kKeepAliveIntervalMinutes),
+      EXPECT_EQ(base::Minutes(KeepAliveScheduler::kKeepAliveIntervalMinutes),
                 mock_timer_->GetCurrentDelay());
     }
   }
@@ -168,9 +171,6 @@ class KeepAliveSchedulerTest : public testing::Test {
   std::unique_ptr<FakeKeepAliveOperationFactory> fake_operation_factory_;
 
   std::unique_ptr<KeepAliveScheduler> scheduler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveSchedulerTest);
 };
 
 TEST_F(KeepAliveSchedulerTest, DISABLED_TestSendTickle_OneActiveHost) {

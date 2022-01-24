@@ -158,9 +158,8 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
       existingContext &&
       (existingContext->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK);
   // The back-forward workaround isn't need on iOS13.
-  if (@available(iOS 13, *)) {
-    needs_back_forward_navigation_reload = false;
-  }
+  needs_back_forward_navigation_reload = false;
+
   if (IsRestoreSessionUrl(webViewURL)) {
     if (previousURLHasAboutScheme || needs_back_forward_navigation_reload) {
       [self.webView reload];
@@ -185,7 +184,8 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
       !self.navigationHandler.pendingNavigationInfo.cancelled) {
     // A fast back-forward navigation does not call |didCommitNavigation:|, so
     // signal page change explicitly.
-    DCHECK_EQ(self.documentURL.GetOrigin(), webViewURL.GetOrigin());
+    DCHECK_EQ(self.documentURL.DeprecatedGetOriginAsURL(),
+              webViewURL.DeprecatedGetOriginAsURL());
     BOOL isSameDocumentNavigation =
         [self isKVOChangePotentialSameDocumentNavigationToURL:webViewURL];
 
@@ -332,7 +332,8 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
            // Re-check origin in case navigaton has occurred since
            // start of JavaScript evaluation.
            BOOL newURLOriginMatchesDocumentURLOrigin =
-               self.documentURL.GetOrigin() == URL.GetOrigin();
+               self.documentURL.DeprecatedGetOriginAsURL() ==
+               URL.DeprecatedGetOriginAsURL();
            // Check that the web view URL still matches the new URL.
            // TODO(crbug.com/563568): webViewURLMatchesNewURL check
            // may drop same document URL changes if pending URL
@@ -375,8 +376,9 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
 // YES for the web view (since if it's not, no guesswork is needed).
 - (BOOL)isKVOChangePotentialSameDocumentNavigationToURL:(const GURL&)newURL {
   // If the origin changes, it can't be same-document.
-  if (self.documentURL.GetOrigin().is_empty() ||
-      self.documentURL.GetOrigin() != newURL.GetOrigin()) {
+  if (self.documentURL.DeprecatedGetOriginAsURL().is_empty() ||
+      self.documentURL.DeprecatedGetOriginAsURL() !=
+          newURL.DeprecatedGetOriginAsURL()) {
     return NO;
   }
   if (self.navigationHandler.navigationState ==

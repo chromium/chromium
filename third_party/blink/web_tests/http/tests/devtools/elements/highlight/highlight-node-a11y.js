@@ -5,7 +5,7 @@
 (async function() {
     TestRunner.addResult(
         `This test verifies a11y attributes for a node.\n`);
-    await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+    await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
     await TestRunner.showPanel('elements');
     await TestRunner.loadHTML(`
         <!DOCTYPE html>

@@ -16,8 +16,7 @@ namespace views {
 
 namespace {
 
-constexpr base::TimeDelta kFadeDuration =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kFadeDuration = base::Milliseconds(1000);
 constexpr base::TimeDelta kHalfFadeDuration = kFadeDuration / 2;
 
 class TestWidgetFadeAnimator : public WidgetFadeAnimator {

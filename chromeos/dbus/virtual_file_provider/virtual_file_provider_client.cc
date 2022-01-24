@@ -22,6 +22,11 @@ namespace {
 class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
  public:
   VirtualFileProviderClientImpl() {}
+
+  VirtualFileProviderClientImpl(const VirtualFileProviderClientImpl&) = delete;
+  VirtualFileProviderClientImpl& operator=(
+      const VirtualFileProviderClientImpl&) = delete;
+
   ~VirtualFileProviderClientImpl() override = default;
 
   // VirtualFileProviderClient override:
@@ -96,8 +101,6 @@ class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
   dbus::ObjectProxy* proxy_ = nullptr;
 
   base::WeakPtrFactory<VirtualFileProviderClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualFileProviderClientImpl);
 };
 
 }  // namespace

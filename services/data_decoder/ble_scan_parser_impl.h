@@ -31,6 +31,10 @@ enum class UuidFormat {
 class BleScanParserImpl : public mojom::BleScanParser {
  public:
   BleScanParserImpl();
+
+  BleScanParserImpl(const BleScanParserImpl&) = delete;
+  BleScanParserImpl& operator=(const BleScanParserImpl&) = delete;
+
   ~BleScanParserImpl() override;
 
   // mojom::BleScanParser:
@@ -47,9 +51,6 @@ class BleScanParserImpl : public mojom::BleScanParser {
       base::span<const uint8_t> bytes,
       UuidFormat format,
       std::vector<device::BluetoothUUID>* service_uuids);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BleScanParserImpl);
 };
 
 }  // namespace data_decoder

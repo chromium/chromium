@@ -26,6 +26,9 @@ namespace assist_ranker {
 // Predictor class for single-layer neural network models.
 class ClassifierPredictor : public BasePredictor {
  public:
+  ClassifierPredictor(const ClassifierPredictor&) = delete;
+  ClassifierPredictor& operator=(const ClassifierPredictor&) = delete;
+
   ~ClassifierPredictor() override;
 
   // Returns an new predictor instance with the given |config| and initialize
@@ -60,8 +63,6 @@ class ClassifierPredictor : public BasePredictor {
   ClassifierPredictor(const PredictorConfig& config);
 
   NNClassifierModel model_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClassifierPredictor);
 };
 
 }  // namespace assist_ranker

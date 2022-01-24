@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "components/exo/surface.h"
 #include "components/exo/toast_surface.h"
 #include "components/exo/wm_helper.h"
@@ -18,6 +17,11 @@ namespace ash {
 class ArcToastSurfaceManagerTest : public AshTestBase {
  public:
   ArcToastSurfaceManagerTest() = default;
+
+  ArcToastSurfaceManagerTest(const ArcToastSurfaceManagerTest&) = delete;
+  ArcToastSurfaceManagerTest& operator=(const ArcToastSurfaceManagerTest&) =
+      delete;
+
   ~ArcToastSurfaceManagerTest() override = default;
 
   void SetUp() override {
@@ -43,8 +47,6 @@ class ArcToastSurfaceManagerTest : public AshTestBase {
 
  private:
   std::unique_ptr<exo::WMHelper> wm_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcToastSurfaceManagerTest);
 };
 
 TEST_F(ArcToastSurfaceManagerTest, AddRemoveSurface) {

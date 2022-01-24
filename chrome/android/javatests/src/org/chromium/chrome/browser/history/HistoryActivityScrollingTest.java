@@ -12,8 +12,8 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,6 +57,7 @@ import java.util.List;
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 public class HistoryActivityScrollingTest {
     // clang-format on
+    // TODO(crbug.com/1238144): Migrate to BaseActivityTestRule.
     @Rule
     public IntentsTestRule<HistoryActivity> mActivityTestRule =
             new IntentsTestRule<>(HistoryActivity.class, false, false);

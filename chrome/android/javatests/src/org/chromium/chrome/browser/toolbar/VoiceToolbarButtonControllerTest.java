@@ -164,9 +164,11 @@ public final class VoiceToolbarButtonControllerTest {
             public void onDismiss(PropertyModel model, int dismissalCause) {}
         };
 
-        PropertyModel dialogModel = (new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                                             .with(ModalDialogProperties.CONTROLLER, controller)
-                                             .build());
+        PropertyModel dialogModel = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                    .with(ModalDialogProperties.CONTROLLER, controller)
+                    .build();
+        });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             sActivityTestRule.getActivity().getModalDialogManager().showDialog(

@@ -16,14 +16,14 @@ t.step(function() {
 var offscreenCanvas = new OffscreenCanvas(100, 50);
 var ctx = offscreenCanvas.getContext('2d');
 
-_assertSame(ctx.textLetterSpacing, 0, "ctx.textLetterSpacing", "0");
-_assertSame(ctx.textWordSpacing, 0, "ctx.textWordSpacing", "0");
+_assertSame(ctx.letterSpacing, 0, "ctx.letterSpacing", "0");
+_assertSame(ctx.wordSpacing, 0, "ctx.wordSpacing", "0");
 
 function test_word_spacing(value) {
-  ctx.textWordSpacing = value;
-  ctx.textLetterSpacing = value;
-  _assertSame(ctx.textWordSpacing, 0, "ctx.textWordSpacing", "0");
-  _assertSame(ctx.textLetterSpacing, 0, "ctx.textLetterSpacing", "0");
+  ctx.wordSpacing = value;
+  ctx.letterSpacing = value;
+  _assertSame(ctx.wordSpacing, 0, "ctx.wordSpacing", "0");
+  _assertSame(ctx.letterSpacing, 0, "ctx.letterSpacing", "0");
 }
 test_word_spacing(NaN);
 test_word_spacing(Infinity);

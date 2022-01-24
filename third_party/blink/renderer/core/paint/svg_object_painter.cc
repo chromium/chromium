@@ -32,7 +32,7 @@ void CopyStateFromGraphicsContext(const GraphicsContext& context,
 }  // namespace
 
 void SVGObjectPainter::PaintResourceSubtree(GraphicsContext& context) {
-  DCHECK(!layout_object_.NeedsLayout());
+  DCHECK(!layout_object_.SelfNeedsLayout());
 
   PaintInfo info(context, CullRect::Infinite(), PaintPhase::kForeground,
                  kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers,
@@ -46,6 +46,8 @@ bool SVGObjectPainter::ApplyPaintResource(
     const AffineTransform* additional_paint_server_transform,
     PaintFlags& flags) {
   SVGElementResourceClient* client = SVGResources::GetClient(layout_object_);
+  if (!client)
+    return false;
   auto* uri_resource = GetSVGResourceAsType<LayoutSVGResourcePaintServer>(
       *client, paint.Resource());
   if (!uri_resource)

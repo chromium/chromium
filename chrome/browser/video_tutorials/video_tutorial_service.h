@@ -33,7 +33,7 @@ class VideoTutorialService : public KeyedService,
                            SingleItemCallback callback) = 0;
 
   // Called to retrieve all the supported locales.
-  virtual const std::vector<std::string>& GetSupportedLanguages() = 0;
+  virtual std::vector<std::string> GetSupportedLanguages() = 0;
 
   // Returns a list of languages in which a given tutorial is available.
   virtual const std::vector<std::string>& GetAvailableLanguagesForTutorial(

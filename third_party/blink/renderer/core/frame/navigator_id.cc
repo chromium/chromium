@@ -59,24 +59,6 @@ String NavigatorID::appVersion() {
 }
 
 String NavigatorID::platform() const {
-  // Call userAgent() so the usage can be reported
-  userAgent();
-
-  // If the User-Agent string is frozen, platform should be a value
-  // matching the frozen string per https://github.com/WICG/ua-client-hints. See
-  // content::frozen_user_agent_strings.
-  if (base::FeatureList::IsEnabled(features::kReduceUserAgent)) {
-#if defined(OS_ANDROID)
-    return "Linux armv81";
-#elif defined(OS_MAC)
-    return "MacIntel";
-#elif defined(OS_WIN)
-    return "Win32";
-#else
-    return "Linux x86_64";
-#endif
-  }
-
 #if defined(OS_MAC)
   // Match Safari and Mozilla on Mac x86.
   return "MacIntel";

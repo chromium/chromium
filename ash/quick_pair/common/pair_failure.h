@@ -16,33 +16,51 @@ enum class PairFailure {
   kCreateGattConnection = 0,
   // Failed to find the expected GATT service.
   kGattServiceDiscovery = 1,
+  // Timed out while starting discovery of GATT service.
+  kGattServiceDiscoveryTimeout = 2,
+  // Failed to retrieve the data encryptor.
+  kDataEncryptorRetrieval = 3,
   // Failed to find the Key-based pairing GATT characteristic.
-  kKeyBasedPairingCharacteristicDiscovery = 2,
+  kKeyBasedPairingCharacteristicDiscovery = 4,
   // Failed to find the Passkey GATT characteristic.
-  kPasskeyCharacteristicDiscovery = 3,
+  kPasskeyCharacteristicDiscovery = 5,
+  // Failed to find the Account Key GATT characteristic.
+  kAccountKeyCharacteristicDiscovery = 6,
   // Failed to start a notify session on the Key-based pairing GATT
   // characteristic.
-  kKeyBasedPairingCharacteristicNotifySession = 4,
+  kKeyBasedPairingCharacteristicNotifySession = 7,
   // Failed to start a notify session on the Passkey GATT characteristic.
-  kPasskeyCharacteristicNotifySession = 5,
+  kPasskeyCharacteristicNotifySession = 8,
+  // Timed out while waiting to start a notify session on the Key-based pairing
+  // GATT characteristic.
+  kKeyBasedPairingCharacteristicNotifySessionTimeout = 9,
+  // / Timed out while waiting to start a notify session on the Passkey GATT
+  // characteristic.
+  kPasskeyCharacteristicNotifySessionTimeout = 10,
   // Failed to write to the Key-based pairing GATT characteristic.
-  kKeyBasedPairingCharacteristicWrite = 6,
+  kKeyBasedPairingCharacteristicWrite = 11,
   // Failed to write to the Passkey GATT characteristic.
-  kPasskeyPairingCharacteristicWrite = 7,
+  kPasskeyPairingCharacteristicWrite = 12,
   // Timed out while waiting for the Key-based Pairing response.
-  kKeyBasedPairingResponseTimeout = 8,
+  kKeyBasedPairingResponseTimeout = 13,
   // Timed out while waiting for the Passkey response.
-  kPasskeyResponseTimeout = 9,
+  kPasskeyResponseTimeout = 14,
+  // Failed to decrypt Key-based response message.
+  kKeybasedPairingResponseDecryptFailure = 15,
   // Incorrect Key-based response message type.
-  kIncorrectKeyBasedPairingResponseType = 10,
+  kIncorrectKeyBasedPairingResponseType = 16,
+  // Failed to decrypt Passkey response message.
+  kPasskeyDecryptFailure = 17,
   // Incorrect Passkey response message type.
-  kIncorrectPasskeyResponseType = 11,
+  kIncorrectPasskeyResponseType = 18,
   // Passkeys did not match.
-  kPasskeyMismatch = 12,
+  kPasskeyMismatch = 19,
+  // Potential pairing device lost during Passkey exchange.
+  kPairingDeviceLost = 20,
   // Failed to bond to discovered device.
-  kPairingConnect = 13,
+  kPairingConnect = 21,
   // Failed to bond to device via public address.
-  kAddressConnect = 14,
+  kAddressConnect = 22,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

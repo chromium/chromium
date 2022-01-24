@@ -13,13 +13,16 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/web_app_chromeos_data.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/sync/base/time.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/color_utils.h"
+
+namespace web_app {
 
 namespace {
 
@@ -28,9 +31,18 @@ std::string ColorToString(absl::optional<SkColor> color) {
                            : "none";
 }
 
-}  // namespace
+std::string ApiApprovalStateToString(ApiApprovalState state) {
+  switch (state) {
+    case ApiApprovalState::kRequiresPrompt:
+      return "kRequiresPrompt";
+    case ApiApprovalState::kAllowed:
+      return "kAllowed";
+    case ApiApprovalState::kDisallowed:
+      return "kDisallowed";
+  }
+}
 
-namespace web_app {
+}  // namespace
 
 WebApp::WebApp(const AppId& app_id)
     : app_id_(app_id),
@@ -91,6 +103,14 @@ bool WebApp::IsSystemApp() const {
   return sources_[Source::kSystem];
 }
 
+bool WebApp::IsWebAppStoreInstalledApp() const {
+  return sources_[Source::kWebAppStore];
+}
+
+bool WebApp::IsSubAppInstalledApp() const {
+  return sources_[Source::kSubApp];
+}
+
 bool WebApp::CanUserUninstallWebApp() const {
   Sources specified_sources;
   specified_sources[Source::kDefault] = true;
@@ -145,8 +165,18 @@ void WebApp::SetThemeColor(absl::optional<SkColor> theme_color) {
   theme_color_ = theme_color;
 }
 
+void WebApp::SetDarkModeThemeColor(
+    absl::optional<SkColor> dark_mode_theme_color) {
+  dark_mode_theme_color_ = dark_mode_theme_color;
+}
+
 void WebApp::SetBackgroundColor(absl::optional<SkColor> background_color) {
   background_color_ = background_color;
+}
+
+void WebApp::SetDarkModeBackgroundColor(
+    absl::optional<SkColor> dark_mode_background_color) {
+  dark_mode_background_color_ = dark_mode_background_color;
 }
 
 void WebApp::SetDisplayMode(DisplayMode display_mode) {
@@ -157,13 +187,13 @@ void WebApp::SetDisplayMode(DisplayMode display_mode) {
 void WebApp::SetUserDisplayMode(DisplayMode user_display_mode) {
   switch (user_display_mode) {
     case DisplayMode::kBrowser:
-      user_display_mode_ = DisplayMode::kBrowser;
+    case DisplayMode::kTabbed:
+      user_display_mode_ = user_display_mode;
       break;
     case DisplayMode::kUndefined:
     case DisplayMode::kMinimalUi:
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
-    case DisplayMode::kTabbed:
       NOTREACHED();
       FALLTHROUGH;
     case DisplayMode::kStandalone:
@@ -204,8 +234,8 @@ void WebApp::SetIsUninstalling(bool is_uninstalling) {
   is_uninstalling_ = is_uninstalling;
 }
 
-void WebApp::SetIconInfos(std::vector<WebApplicationIconInfo> icon_infos) {
-  icon_infos_ = std::move(icon_infos);
+void WebApp::SetManifestIcons(std::vector<apps::IconInfo> manifest_icons) {
+  manifest_icons_ = std::move(manifest_icons);
 }
 
 void WebApp::SetDownloadedIconSizes(IconPurpose purpose, SortedSizesPx sizes) {
@@ -230,6 +260,10 @@ void WebApp::SetFileHandlers(apps::FileHandlers file_handlers) {
   file_handlers_ = std::move(file_handlers);
 }
 
+void WebApp::SetFileHandlerApprovalState(ApiApprovalState approval_state) {
+  file_handler_approval_state_ = approval_state;
+}
+
 void WebApp::SetShareTarget(absl::optional<apps::ShareTarget> share_target) {
   share_target_ = std::move(share_target);
 }
@@ -244,9 +278,14 @@ void WebApp::SetProtocolHandlers(
   protocol_handlers_ = std::move(handlers);
 }
 
-void WebApp::SetApprovedLaunchProtocols(
-    std::vector<std::string> approved_launch_protocols) {
-  approved_launch_protocols_ = std::move(approved_launch_protocols);
+void WebApp::SetAllowedLaunchProtocols(
+    base::flat_set<std::string> allowed_launch_protocols) {
+  allowed_launch_protocols_ = std::move(allowed_launch_protocols);
+}
+
+void WebApp::SetDisallowedLaunchProtocols(
+    base::flat_set<std::string> disallowed_launch_protocols) {
+  disallowed_launch_protocols_ = std::move(disallowed_launch_protocols);
 }
 
 void WebApp::SetUrlHandlers(apps::UrlHandlers url_handlers) {
@@ -280,6 +319,10 @@ void WebApp::SetLastLaunchTime(const base::Time& time) {
 
 void WebApp::SetInstallTime(const base::Time& time) {
   install_time_ = time;
+}
+
+void WebApp::SetManifestUpdateTime(const base::Time& time) {
+  manifest_update_time_ = time;
 }
 
 void WebApp::SetRunOnOsLoginMode(RunOnOsLoginMode mode) {
@@ -319,6 +362,14 @@ void WebApp::SetStorageIsolated(bool is_storage_isolated) {
   is_storage_isolated_ = is_storage_isolated;
 }
 
+void WebApp::SetLaunchHandler(absl::optional<LaunchHandler> launch_handler) {
+  launch_handler_ = std::move(launch_handler);
+}
+
+void WebApp::SetParentAppId(const absl::optional<AppId>& parent_app_id) {
+  parent_app_id_ = parent_app_id;
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -348,10 +399,10 @@ base::Value WebApp::SyncFallbackData::AsDebugValue() const {
   root.SetStringKey("name", name);
   root.SetStringKey("theme_color", ColorToString(theme_color));
   root.SetStringKey("scope", scope.spec());
-  base::Value& icon_infos_json =
-      *root.SetKey("icon_infos", base::Value(base::Value::Type::LIST));
-  for (const WebApplicationIconInfo& icon_info : icon_infos)
-    icon_infos_json.Append(icon_info.AsDebugValue());
+  base::Value& manifest_icons_json =
+      *root.SetKey("manifest_icons", base::Value(base::Value::Type::LIST));
+  for (const apps::IconInfo& icon_info : icon_infos)
+    manifest_icons_json.Append(icon_info.AsDebugValue());
   return root;
 }
 
@@ -369,7 +420,9 @@ bool WebApp::operator==(const WebApp& other) const {
         app.launch_query_params_,
         app.scope_,
         app.theme_color_,
+        app.dark_mode_theme_color_,
         app.background_color_,
+        app.dark_mode_background_color_,
         app.display_mode_,
         app.user_display_mode_,
         app.display_mode_override_,
@@ -379,7 +432,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.is_locally_installed_,
         app.is_from_sync_and_pending_installation_,
         app.is_uninstalling_,
-        app.icon_infos_,
+        app.manifest_icons_,
         app.downloaded_icon_sizes_any_,
         app.downloaded_icon_sizes_monochrome_,
         app.downloaded_icon_sizes_maskable_,
@@ -390,12 +443,14 @@ bool WebApp::operator==(const WebApp& other) const {
         app.share_target_,
         app.additional_search_terms_,
         app.protocol_handlers_,
-        app.approved_launch_protocols_,
+        app.allowed_launch_protocols_,
+        app.disallowed_launch_protocols_,
         app.url_handlers_,
         app.note_taking_new_note_url_,
         app.last_badging_time_,
         app.last_launch_time_,
         app.install_time_,
+        app.manifest_update_time_,
         app.run_on_os_login_mode_,
         app.sync_fallback_data_,
         app.capture_links_,
@@ -403,8 +458,11 @@ bool WebApp::operator==(const WebApp& other) const {
         app.manifest_id_,
         app.client_data_.system_web_app_data,
         app.file_handler_permission_blocked_,
+        app.file_handler_approval_state_,
         app.window_controls_overlay_enabled_,
-        app.is_storage_isolated_
+        app.is_storage_isolated_,
+        app.launch_handler_,
+        app.parent_app_id_
         // clang-format on
     );
   };
@@ -452,10 +510,19 @@ base::Value WebApp::AsDebugValue() const {
   root.SetStringKey("app_service_icon_url",
                     base::StrCat({"chrome://app-icon/", app_id_, "/32"}));
 
-  root.SetKey("approved_launch_protocols",
-              ConvertList(approved_launch_protocols_));
+  root.SetKey("allowed_launch_protocols",
+              ConvertList(allowed_launch_protocols_));
+
+  root.SetKey("disallowed_launch_protocols",
+              ConvertList(disallowed_launch_protocols_));
 
   root.SetStringKey("background_color", ColorToString(background_color_));
+
+  root.SetStringKey("dark_mode_theme_color",
+                    ColorToString(dark_mode_theme_color_));
+
+  root.SetStringKey("dark_mode_background_color",
+                    ColorToString(dark_mode_background_color_));
 
   root.SetStringKey("capture_links", ConvertToString(capture_links_));
 
@@ -497,9 +564,12 @@ base::Value WebApp::AsDebugValue() const {
   root.SetBoolKey("file_handler_permission_blocked",
                   file_handler_permission_blocked_);
 
+  root.SetStringKey("file_handler_approval_state",
+                    ApiApprovalStateToString(file_handler_approval_state_));
+
   root.SetKey("file_handlers", ConvertDebugValueList(file_handlers_));
 
-  root.SetKey("icon_infos", ConvertDebugValueList(icon_infos_));
+  root.SetKey("manifest_icons", ConvertDebugValueList(manifest_icons_));
 
   root.SetStringKey("install_time", ConvertToString(install_time_));
 
@@ -518,14 +588,32 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetStringKey("last_launch_time", ConvertToString(last_launch_time_));
 
+  if (launch_handler_) {
+    base::Value& launch_handler_json = *root.SetKey(
+        "launch_handler", base::Value(base::Value::Type::DICTIONARY));
+    launch_handler_json.SetStringKey(
+        "route_to", ConvertToString(launch_handler_->route_to));
+    launch_handler_json.SetStringKey(
+        "navigate_existing_client",
+        ConvertToString(launch_handler_->navigate_existing_client));
+  } else {
+    root.SetKey("launch_handler", base::Value());
+  }
+
   root.SetKey("launch_query_params", ConvertOptional(launch_query_params_));
 
   root.SetKey("manifest_id", ConvertOptional(manifest_id_));
+
+  root.SetStringKey("manifest_update_time",
+                    ConvertToString(manifest_update_time_));
 
   root.SetStringKey("manifest_url", ConvertToString(manifest_url_));
 
   root.SetStringKey("note_taking_new_note_url",
                     ConvertToString(note_taking_new_note_url_));
+
+  root.SetStringKey("parent_app_id",
+                    parent_app_id_ ? *parent_app_id_ : AppId());
 
   root.SetKey("protocol_handlers", ConvertDebugValueList(protocol_handlers_));
 

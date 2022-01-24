@@ -212,7 +212,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 
   const base::TimeDelta suggested_reclaim_time =
       FeatureList::IsEnabled(kUseFiveMinutesThreadReclaimTime)
-          ? base::TimeDelta::FromMinutes(5)
+          ? base::Minutes(5)
           : init_params.suggested_reclaim_time;
 
 #if HAS_NATIVE_THREAD_POOL()
@@ -353,6 +353,12 @@ void ThreadPoolImpl::Shutdown() {
   // BLOCK_SHUTDOWN tasks don't get a chance to run and that BLOCK_SHUTDOWN
   // tasks run with a normal thread priority.
   UpdateCanRunPolicy();
+
+  // Ensures that there are enough background worker to run BLOCK_SHUTDOWN
+  // tasks.
+  foreground_thread_group_->OnShutdownStarted();
+  if (background_thread_group_)
+    background_thread_group_->OnShutdownStarted();
 
   task_tracker_->CompleteShutdown();
 }

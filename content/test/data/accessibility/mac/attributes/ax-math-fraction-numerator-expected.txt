@@ -1,0 +1,3 @@
+frac1.AXMathFractionNumerator.AXChildren.count=1
+frac1.AXMathFractionNumerator.AXChildren[0].AXValue='1'
+frac2.AXMathFractionNumerator=NULL

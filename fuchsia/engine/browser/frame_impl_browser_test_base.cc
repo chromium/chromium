@@ -13,10 +13,6 @@ FrameImplTestBase::FrameImplTestBase() {
   set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
 }
 
-fuchsia::web::FramePtr FrameImplTestBase::CreateFrame() {
-  return WebEngineBrowserTest::CreateFrame(nullptr);
-}
-
 void FrameImplTestBaseWithServer::SetUpOnMainThread() {
   FrameImplTestBase::SetUpOnMainThread();
 
@@ -26,8 +22,4 @@ void FrameImplTestBaseWithServer::SetUpOnMainThread() {
 
 FrameImplTestBaseWithServer::FrameImplTestBaseWithServer() {
   set_test_server_root(base::FilePath(cr_fuchsia::kTestServerRoot));
-}
-
-fuchsia::web::FramePtr FrameImplTestBaseWithServer::CreateFrame() {
-  return WebEngineBrowserTest::CreateFrame(&navigation_listener_);
 }

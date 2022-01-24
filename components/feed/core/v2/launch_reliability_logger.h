@@ -13,11 +13,11 @@
 #include "components/feed/core/v2/public/types.h"
 
 namespace feed {
+class StreamSurfaceSet;
 
 class LaunchReliabilityLogger {
  public:
-  explicit LaunchReliabilityLogger(
-      base::ObserverList<FeedStreamSurface>* surfaces);
+  explicit LaunchReliabilityLogger(StreamSurfaceSet* surfaces);
   ~LaunchReliabilityLogger();
 
   void LogFeedLaunchOtherStart();
@@ -57,7 +57,7 @@ class LaunchReliabilityLogger {
       feedwire::DiscoverLaunchResult result);
 
  private:
-  base::ObserverList<FeedStreamSurface>* surfaces_;
+  StreamSurfaceSet* surfaces_;
   NetworkRequestId::Generator request_id_gen_;
 };
 

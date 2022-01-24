@@ -6,7 +6,6 @@
 #define COMPONENTS_METRICS_METRICS_PROVIDER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -23,6 +22,10 @@ class SystemProfileProto;
 class MetricsProvider {
  public:
   MetricsProvider();
+
+  MetricsProvider(const MetricsProvider&) = delete;
+  MetricsProvider& operator=(const MetricsProvider&) = delete;
+
   virtual ~MetricsProvider();
 
   // Called after initialization of MetricsService and field trials.
@@ -107,6 +110,11 @@ class MetricsProvider {
   // can provide data about it.
   virtual void ProvideCurrentSessionData(ChromeUserMetricsExtension* uma_proto);
 
+  // Called when building a UKM log about the current session. UKM-specific data
+  // should generally only be emitted through this method, and UMA data should
+  // be emitted through ProvideCurrentSessionData().
+  virtual void ProvideCurrentSessionUKMData();
+
   // Provides additional stability metrics. Stability metrics can be provided
   // directly into |stability_proto| fields or by logging stability histograms
   // via the UMA_STABILITY_HISTOGRAM_ENUMERATION() macro.
@@ -130,9 +138,6 @@ class MetricsProvider {
   // PrepareDelta(), not PrepareDeltas (plural), should be made.
   virtual void RecordInitialHistogramSnapshots(
       base::HistogramSnapshotManager* snapshot_manager);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetricsProvider);
 };
 
 }  // namespace metrics

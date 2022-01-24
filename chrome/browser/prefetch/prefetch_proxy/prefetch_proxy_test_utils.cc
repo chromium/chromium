@@ -6,7 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
@@ -164,7 +164,7 @@ void TestProxyTunnelConnection::SetOnDoneCallback(
 void TestProxyTunnelConnection::OnDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   client_socket_.reset();
-  incoming_socket_.reset();
+  incoming_socket_ = nullptr;
 
   if (on_done_callback_) {
     std::move(on_done_callback_).Run();

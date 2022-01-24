@@ -8,13 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-class Thread;
-}
 
 namespace ui {
 
@@ -27,17 +21,17 @@ class FakeGpuConnection;
 class COMPONENT_EXPORT(OZONE) OzoneGpuTestHelper {
  public:
   OzoneGpuTestHelper();
+
+  OzoneGpuTestHelper(const OzoneGpuTestHelper&) = delete;
+  OzoneGpuTestHelper& operator=(const OzoneGpuTestHelper&) = delete;
+
   virtual ~OzoneGpuTestHelper();
 
   // Binds mojo endpoints on "gpu" and "ui".
-  bool Initialize(
-      const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner);
+  bool Initialize();
 
  private:
   std::unique_ptr<FakeGpuConnection> fake_gpu_connection_;
-  std::unique_ptr<base::Thread> io_helper_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(OzoneGpuTestHelper);
 };
 
 }  // namespace ui

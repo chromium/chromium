@@ -16,10 +16,9 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/observer_list_types.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/trace_event/tracing_agent.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -43,6 +42,9 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
     : public DBusClient,
       public base::trace_event::TracingAgent {
  public:
+  DebugDaemonClient(const DebugDaemonClient&) = delete;
+  DebugDaemonClient& operator=(const DebugDaemonClient&) = delete;
+
   ~DebugDaemonClient() override;
 
   // Observes the signals that are received from D-Bus.
@@ -332,9 +334,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
 
   // Create() should be used instead.
   DebugDaemonClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DebugDaemonClient);
 };
 
 }  // namespace chromeos

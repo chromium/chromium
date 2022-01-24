@@ -14,7 +14,18 @@ WebGLUnownedTexture::WebGLUnownedTexture(WebGLRenderingContextBase* ctx,
                                          GLenum target)
     : WebGLTexture(ctx, texture, target) {}
 
+void WebGLUnownedTexture::OnGLDeleteTextures() {
+  // The owner of the texture name notified us that it is no longer valid.
+  // Just zero it out so we're not going to use it somewhere.
+  // Note that this will suppress the rest of the logic found in
+  // WebGLObject::DeleteObject(), since one of the first things that the method
+  // does is a check to see if |object_| is valid.
+  object_ = 0;
+}
+
 void WebGLUnownedTexture::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
+  // Normally, we would invoke gl->DeleteTextures() here, but
+  // WebGLUnownedTexture does not own its texture name. Just zero it out.
   object_ = 0;
 }
 

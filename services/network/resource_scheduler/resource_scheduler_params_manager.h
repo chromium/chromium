@@ -75,6 +75,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerParamsManager {
       const ParamsForNetworkQualityContainer&
           params_for_network_quality_container);
 
+  ResourceSchedulerParamsManager& operator=(
+      const ResourceSchedulerParamsManager&) = delete;
+
   ~ResourceSchedulerParamsManager();
 
   // Returns the parameters for resource loading based on
@@ -136,8 +139,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerParamsManager {
   const absl::optional<base::TimeDelta> weak_signal_unthrottle_duration_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_ASSIGN(ResourceSchedulerParamsManager);
 };
 
 }  // namespace network

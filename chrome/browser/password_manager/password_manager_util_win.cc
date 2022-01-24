@@ -6,7 +6,6 @@
 #include <windows.h>
 #include <LM.h>
 #include <ntsecapi.h>
-#include <objbase.h>  // For CoTaskMemFree()
 #include <stddef.h>
 #include <stdint.h>
 #include <wincred.h>
@@ -17,49 +16,22 @@
 #include <security.h>
 #undef SECURITY_WIN32
 
-#include <memory>
-#include <utility>
-
 #include "chrome/browser/password_manager/password_manager_util_win.h"
-
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/thread_pool.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/scoped_thread_priority.h"
-#include "base/time/time.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace password_manager_util_win {
 namespace {
-
-enum OsPasswordStatus {
-  PASSWORD_STATUS_UNKNOWN = 0,
-  PASSWORD_STATUS_UNSUPPORTED,
-  PASSWORD_STATUS_BLANK,
-  PASSWORD_STATUS_NONBLANK,
-  PASSWORD_STATUS_WIN_DOMAIN,
-  // NOTE: Add new status types only immediately above this line. Also,
-  // make sure the enum list in tools/histogram/histograms.xml is
-  // updated with any change in here.
-  MAX_PASSWORD_STATUS
-};
 
 const unsigned kMaxPasswordRetries = 3;
 
@@ -78,6 +50,11 @@ struct PasswordCheckPrefs {
 class CredentialBufferValidator {
  public:
   CredentialBufferValidator();
+
+  CredentialBufferValidator(const CredentialBufferValidator&) = delete;
+  CredentialBufferValidator& operator=(const CredentialBufferValidator&) =
+      delete;
+
   ~CredentialBufferValidator();
 
   // Returns ERROR_SUCCESS if the credential buffer given matches the
@@ -96,8 +73,6 @@ class CredentialBufferValidator {
 
   // Buffer holding information about the current process token.
   std::unique_ptr<char[]> cur_token_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialBufferValidator);
 };
 
 CredentialBufferValidator::CredentialBufferValidator() {
@@ -145,7 +120,7 @@ DWORD CredentialBufferValidator::IsValid(ULONG auth_package,
   ULONG profile_buffer_length = 0;
   QUOTA_LIMITS limits;
   LUID luid;
-  HANDLE token;
+  HANDLE token = INVALID_HANDLE_VALUE;
 
   strcpy_s(source.SourceName, base::size(source.SourceName), "Chrome");
   if (!AllocateLocallyUniqueId(&source.SourceIdentifier))
@@ -217,7 +192,7 @@ int64_t GetPasswordLastChanged(const WCHAR* username) {
     return -1;
   }
 
-  base::Time changed = base::Time::Now() - base::TimeDelta::FromSeconds(age);
+  base::Time changed = base::Time::Now() - base::Seconds(age);
 
   return changed.ToInternalValue();
 }
@@ -291,53 +266,6 @@ bool CheckBlankPassword(const WCHAR* username) {
   bool result = CheckBlankPasswordWithPrefs(username, &prefs);
   prefs.Write(local_state);
   return result;
-}
-
-void GetOsPasswordStatusInternal(PasswordCheckPrefs* prefs,
-                                 OsPasswordStatus* status) {
-  DWORD username_length = CREDUI_MAX_USERNAME_LENGTH;
-  WCHAR username[CREDUI_MAX_USERNAME_LENGTH+1] = {};
-  *status = PASSWORD_STATUS_UNKNOWN;
-
-  if (GetUserNameEx(NameUserPrincipal, username, &username_length)) {
-    // If we are on a domain, it is almost certain that the password is not
-    // blank, but we do not actively check any further than this to avoid any
-    // failed login attempts hitting the domain controller.
-    *status = PASSWORD_STATUS_WIN_DOMAIN;
-  } else {
-    username_length = CREDUI_MAX_USERNAME_LENGTH;
-    if (GetUserName(username, &username_length)) {
-      *status = CheckBlankPasswordWithPrefs(username, prefs) ?
-          PASSWORD_STATUS_BLANK :
-          PASSWORD_STATUS_NONBLANK;
-    }
-  }
-}
-
-void ReplyOsPasswordStatus(std::unique_ptr<PasswordCheckPrefs> prefs,
-                           std::unique_ptr<OsPasswordStatus> status) {
-  PrefService* local_state = g_browser_process->local_state();
-  prefs->Write(local_state);
-  UMA_HISTOGRAM_ENUMERATION("PasswordManager.OsPasswordStatus", *status,
-                            MAX_PASSWORD_STATUS);
-}
-
-void GetOsPasswordStatus() {
-  // Preferences can be accessed on the UI thread only.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  PrefService* local_state = g_browser_process->local_state();
-  std::unique_ptr<PasswordCheckPrefs> prefs(new PasswordCheckPrefs);
-  prefs->Read(local_state);
-  std::unique_ptr<OsPasswordStatus> status(
-      new OsPasswordStatus(PASSWORD_STATUS_UNKNOWN));
-  PasswordCheckPrefs* prefs_weak = prefs.get();
-  OsPasswordStatus* status_weak = status.get();
-  // This task calls ::LogonUser(), hence MayBlock().
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GetOsPasswordStatusInternal, prefs_weak, status_weak),
-      base::BindOnce(&ReplyOsPasswordStatus, std::move(prefs),
-                     std::move(status)));
 }
 
 }  // namespace
@@ -423,12 +351,6 @@ bool AuthenticateUser(gfx::NativeWindow window,
   } while (!retval && tries < kMaxPasswordRetries);
 
   return retval;
-}
-
-void DelayReportOsPassword() {
-  content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&GetOsPasswordStatus),
-      base::TimeDelta::FromSeconds(40));
 }
 
 }  // namespace password_manager_util_win

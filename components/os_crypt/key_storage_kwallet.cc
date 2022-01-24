@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "components/os_crypt/kwallet_dbus.h"

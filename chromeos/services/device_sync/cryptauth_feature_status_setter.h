@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/services/device_sync/feature_status_change.h"
 #include "chromeos/services/device_sync/network_request_error.h"
@@ -25,6 +24,11 @@ namespace device_sync {
 class CryptAuthFeatureStatusSetter {
  public:
   CryptAuthFeatureStatusSetter() = default;
+
+  CryptAuthFeatureStatusSetter(const CryptAuthFeatureStatusSetter&) = delete;
+  CryptAuthFeatureStatusSetter& operator=(const CryptAuthFeatureStatusSetter&) =
+      delete;
+
   virtual ~CryptAuthFeatureStatusSetter() = default;
 
   // Enables or disables |feature| for the device with device ID |device_id|.
@@ -34,9 +38,6 @@ class CryptAuthFeatureStatusSetter {
       FeatureStatusChange status_change,
       base::OnceClosure success_callback,
       base::OnceCallback<void(NetworkRequestError)> error_callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthFeatureStatusSetter);
 };
 
 }  // namespace device_sync

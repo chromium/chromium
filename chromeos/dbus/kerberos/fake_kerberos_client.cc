@@ -19,10 +19,10 @@ namespace chromeos {
 namespace {
 
 // Fake validity lifetime for TGTs.
-constexpr base::TimeDelta kTgtValidity = base::TimeDelta::FromHours(10);
+constexpr base::TimeDelta kTgtValidity = base::Hours(10);
 
 // Fake renewal lifetime for TGTs.
-constexpr base::TimeDelta kTgtRenewal = base::TimeDelta::FromHours(24);
+constexpr base::TimeDelta kTgtRenewal = base::Hours(24);
 
 // Blacklist for fake config validation.
 const char* const kBlacklistedConfigOptions[] = {
@@ -375,6 +375,9 @@ FakeKerberosClient::AccountData::AccountData(const std::string& principal_name)
 
 FakeKerberosClient::AccountData::AccountData(const AccountData& other) =
     default;
+
+FakeKerberosClient::AccountData& FakeKerberosClient::AccountData::operator=(
+    const AccountData& other) = default;
 
 bool FakeKerberosClient::AccountData::operator==(
     const AccountData& other) const {

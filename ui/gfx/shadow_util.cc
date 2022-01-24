@@ -13,10 +13,10 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
-#include "ui/gfx/skia_util.h"
 
 namespace gfx {
 namespace {
@@ -33,6 +33,10 @@ class ShadowNineboxSource : public CanvasImageSource {
         corner_radius_(corner_radius) {
     DCHECK(!shadows.empty());
   }
+
+  ShadowNineboxSource(const ShadowNineboxSource&) = delete;
+  ShadowNineboxSource& operator=(const ShadowNineboxSource&) = delete;
+
   ~ShadowNineboxSource() override {}
 
   // CanvasImageSource overrides:
@@ -69,8 +73,6 @@ class ShadowNineboxSource : public CanvasImageSource {
   const std::vector<ShadowValue> shadows_;
 
   const float corner_radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShadowNineboxSource);
 };
 
 // Map from elevation/corner radius pair to a cached shadow.

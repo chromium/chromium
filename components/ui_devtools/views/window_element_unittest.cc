@@ -18,6 +18,10 @@ using ::testing::_;
 class WindowElementTest : public views::ViewsTestBase {
  public:
   WindowElementTest() {}
+
+  WindowElementTest(const WindowElementTest&) = delete;
+  WindowElementTest& operator=(const WindowElementTest&) = delete;
+
   ~WindowElementTest() override {}
 
   void SetUp() override {
@@ -53,8 +57,6 @@ class WindowElementTest : public views::ViewsTestBase {
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<WindowElement> element_;
   std::unique_ptr<MockUIElementDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowElementTest);
 };
 
 TEST_F(WindowElementTest, SettingsBoundsOnWindowCallsDelegate) {

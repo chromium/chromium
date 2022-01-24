@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
@@ -42,6 +41,12 @@ const version_info::Channel kTestChannel = version_info::Channel::UNKNOWN;
 class StubPrefetchBackgroundTaskHandler : public PrefetchBackgroundTaskHandler {
  public:
   StubPrefetchBackgroundTaskHandler() = default;
+
+  StubPrefetchBackgroundTaskHandler(const StubPrefetchBackgroundTaskHandler&) =
+      delete;
+  StubPrefetchBackgroundTaskHandler& operator=(
+      const StubPrefetchBackgroundTaskHandler&) = delete;
+
   ~StubPrefetchBackgroundTaskHandler() override = default;
   void CancelBackgroundTask() override {}
   void EnsureTaskScheduled() override {}
@@ -51,9 +56,6 @@ class StubPrefetchBackgroundTaskHandler : public PrefetchBackgroundTaskHandler {
   void Suspend() override {}
   void RemoveSuspension() override {}
   int GetAdditionalBackoffSeconds() const override { return 0; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubPrefetchBackgroundTaskHandler);
 };
 
 }  // namespace

@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -596,13 +596,15 @@ void MDnsListenerImpl::ScheduleNextRefresh() {
   // Schedule refreshes at both 85% and 95% of the original TTL. These will both
   // be canceled and rescheduled if the record's TTL is updated due to a
   // response being received.
-  base::Time next_refresh1 = last_update_ + base::TimeDelta::FromMilliseconds(
-      static_cast<int>(base::Time::kMillisecondsPerSecond *
-                       kListenerRefreshRatio1 * ttl_));
+  base::Time next_refresh1 =
+      last_update_ +
+      base::Milliseconds(static_cast<int>(base::Time::kMillisecondsPerSecond *
+                                          kListenerRefreshRatio1 * ttl_));
 
-  base::Time next_refresh2 = last_update_ + base::TimeDelta::FromMilliseconds(
-      static_cast<int>(base::Time::kMillisecondsPerSecond *
-                       kListenerRefreshRatio2 * ttl_));
+  base::Time next_refresh2 =
+      last_update_ +
+      base::Milliseconds(static_cast<int>(base::Time::kMillisecondsPerSecond *
+                                          kListenerRefreshRatio2 * ttl_));
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, next_refresh_.callback(), next_refresh1 - clock_->Now());

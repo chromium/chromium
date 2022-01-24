@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:layout_marginEnd="3dp"
-                style="@style/TextAppearance.TextMedium.Primary.Light"/>
+                style="@style/TextAppearance.TextMedium.Primary.Baseline.Light"/>
 
             <ImageView
                 android:id="@+id/small_play_button"

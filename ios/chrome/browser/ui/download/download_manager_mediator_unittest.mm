@@ -120,7 +120,7 @@ TEST_F(DownloadManagerMediatorTest, StartDownload) {
   EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
   // Download file should be located in download directory.
   base::FilePath download_dir;
-  GetDownloadsDirectory(&download_dir);
+  GetTempDownloadsDirectory(&download_dir);
   ASSERT_TRUE(
       WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
         base::RunLoop().RunUntilIdle();
@@ -129,23 +129,6 @@ TEST_F(DownloadManagerMediatorTest, StartDownload) {
 
   // Updates the consumer once the file has been moved.
   mediator_.SetDownloadTask(task());
-}
-
-// Tests starting and failing the download. Simulates download failure from
-// inability to create a file writer.
-TEST_F(DownloadManagerMediatorTest, StartFailure) {
-  // Writer can not be created without file name, which will fail the download.
-  mediator_.SetDownloadTask(task());
-  mediator_.SetConsumer(consumer_);
-  mediator_.StartDowloading();
-
-  // Writer is created by a background task, so wait for failure.
-  ASSERT_TRUE(
-      WaitUntilConditionOrTimeout(base::test::ios::kWaitForDownloadTimeout, ^{
-        base::RunLoop().RunUntilIdle();
-        return consumer_.state == kDownloadManagerStateFailed;
-      }));
-  EXPECT_FALSE(consumer_.installDriveButtonVisible);
 }
 
 // Tests that consumer is updated right after it's set.
@@ -249,7 +232,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerInProgressStateUpdate) {
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
 
-  task()->Start(std::make_unique<net::URLFetcherStringWriter>());
+  task()->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
   EXPECT_EQ(kDownloadManagerStateInProgress, consumer_.state);
   EXPECT_FALSE(consumer_.installDriveButtonVisible);
   EXPECT_EQ(0.0, consumer_.progress);

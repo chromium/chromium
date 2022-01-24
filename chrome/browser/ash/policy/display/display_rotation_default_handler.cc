@@ -57,16 +57,16 @@ DisplayRotationDefaultHandler::DisplayRotationDefaultHandler() = default;
 DisplayRotationDefaultHandler::~DisplayRotationDefaultHandler() = default;
 
 const char* DisplayRotationDefaultHandler::SettingName() {
-  return chromeos::kDisplayRotationDefault;
+  return ash::kDisplayRotationDefault;
 }
 
-// Reads |chromeos::kDisplayRotationDefault| from CrosSettings and stores
+// Reads |ash::kDisplayRotationDefault| from CrosSettings and stores
 // its value, and whether it has a value, in member variables
 // |display_rotation_default_| and |policy_enabled_|.
 void DisplayRotationDefaultHandler::OnSettingUpdate() {
   int new_rotation;
   bool new_policy_enabled = ash::CrosSettings::Get()->GetInteger(
-      chromeos::kDisplayRotationDefault, &new_rotation);
+      ash::kDisplayRotationDefault, &new_rotation);
   display::Display::Rotation new_display_rotation_default =
       display::Display::ROTATE_0;
   if (new_policy_enabled) {

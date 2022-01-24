@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assertEquals, assertDeepEquals} from '../chai_assert.js';
+import {assertDeepEquals, assertEquals} from '../chai_assert.js';
 
 /**
  * Create a mock function that records function calls and validates against
  * expectations.
  * @extends Function
  */
-/* #export */ class MockMethod {
+export class MockMethod {
   constructor() {
     /** @type {MockMethod|Function} */
     var fn = function() {
@@ -129,7 +129,7 @@
  * Controller for mocking methods. Tracks calls to mocked methods and verifies
  * that call signatures match expectations.
  */
-/* #export */ class MockController {
+export class MockController {
   constructor() {
     /**
      * Original functions implementations, which are restored when |reset| is

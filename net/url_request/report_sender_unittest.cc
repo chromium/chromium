@@ -82,6 +82,10 @@ void SuccessCallback(bool* called) {
 class MockServerErrorJob : public URLRequestJob {
  public:
   explicit MockServerErrorJob(URLRequest* request) : URLRequestJob(request) {}
+
+  MockServerErrorJob(const MockServerErrorJob&) = delete;
+  MockServerErrorJob& operator=(const MockServerErrorJob&) = delete;
+
   ~MockServerErrorJob() override = default;
 
  protected:
@@ -92,23 +96,22 @@ class MockServerErrorJob : public URLRequestJob {
         "Content-Length: 0\n");
   }
   void Start() override { NotifyHeadersComplete(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockServerErrorJob);
 };
 
 class MockServerErrorJobInterceptor : public URLRequestInterceptor {
  public:
   MockServerErrorJobInterceptor() = default;
+
+  MockServerErrorJobInterceptor(const MockServerErrorJobInterceptor&) = delete;
+  MockServerErrorJobInterceptor& operator=(
+      const MockServerErrorJobInterceptor&) = delete;
+
   ~MockServerErrorJobInterceptor() override = default;
 
   std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
       URLRequest* request) const override {
     return std::make_unique<MockServerErrorJob>(request);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockServerErrorJobInterceptor);
 };
 
 // A network delegate that lets tests check that a report
@@ -118,9 +121,14 @@ class MockServerErrorJobInterceptor : public URLRequestInterceptor {
 class TestReportSenderNetworkDelegate : public NetworkDelegateImpl {
  public:
   TestReportSenderNetworkDelegate()
-      : url_request_destroyed_callback_(base::DoNothing::Repeatedly()),
-        all_url_requests_destroyed_callback_(base::DoNothing::Repeatedly()),
+      : url_request_destroyed_callback_(base::DoNothing()),
+        all_url_requests_destroyed_callback_(base::DoNothing()),
         num_requests_(0) {}
+
+  TestReportSenderNetworkDelegate(const TestReportSenderNetworkDelegate&) =
+      delete;
+  TestReportSenderNetworkDelegate& operator=(
+      const TestReportSenderNetworkDelegate&) = delete;
 
   void ExpectReport(const std::string& report) {
     expect_reports_.insert(report);
@@ -191,8 +199,6 @@ class TestReportSenderNetworkDelegate : public NetworkDelegateImpl {
   std::set<std::string> expect_reports_;
   std::string expected_content_type_;
   NetworkIsolationKey expected_network_isolation_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportSenderNetworkDelegate);
 };
 
 class ReportSenderTest : public TestWithTaskEnvironment {

@@ -15,6 +15,10 @@
 class ImageDecoderImpl : public image_fetcher::ImageDecoder {
  public:
   ImageDecoderImpl();
+
+  ImageDecoderImpl(const ImageDecoderImpl&) = delete;
+  ImageDecoderImpl& operator=(const ImageDecoderImpl&) = delete;
+
   ~ImageDecoderImpl() override;
 
   void DecodeImage(const std::string& image_data,
@@ -29,8 +33,6 @@ class ImageDecoderImpl : public image_fetcher::ImageDecoder {
 
   // All active image decoding requests.
   std::vector<std::unique_ptr<DecodeImageRequest>> decode_image_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecoderImpl);
 };
 
 #endif  // CHROME_BROWSER_IMAGE_FETCHER_IMAGE_DECODER_IMPL_H_

@@ -10,14 +10,13 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/public/tracker.h"
 
 namespace feature_engagement {
 class AvailabilityModel;
-class Configuration;
 class ConditionValidator;
+class Configuration;
 class DisplayLockController;
 class DisplayLockHandle;
 class EventModel;
@@ -32,17 +31,25 @@ class TrackerImpl : public Tracker {
               std::unique_ptr<DisplayLockController> display_lock_controller,
               std::unique_ptr<ConditionValidator> condition_validator,
               std::unique_ptr<TimeProvider> time_provider);
+
+  TrackerImpl(const TrackerImpl&) = delete;
+  TrackerImpl& operator=(const TrackerImpl&) = delete;
+
   ~TrackerImpl() override;
 
   // Tracker implementation.
   void NotifyEvent(const std::string& event) override;
   bool ShouldTriggerHelpUI(const base::Feature& feature) override;
+  TriggerDetails ShouldTriggerHelpUIWithSnooze(
+      const base::Feature& feature) override;
   bool WouldTriggerHelpUI(const base::Feature& feature) const override;
   Tracker::TriggerState GetTriggerState(
       const base::Feature& feature) const override;
   bool HasEverTriggered(const base::Feature& feature,
                         bool from_window) const override;
   void Dismissed(const base::Feature& feature) override;
+  void DismissedWithSnooze(const base::Feature& feature,
+                           absl::optional<SnoozeAction> snooze_action) override;
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override;
   bool IsInitialized() const override;
   void AddOnInitializedCallback(OnInitializedCallback callback) override;
@@ -96,8 +103,6 @@ class TrackerImpl : public Tracker {
   std::vector<OnInitializedCallback> on_initialized_callbacks_;
 
   base::WeakPtrFactory<TrackerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TrackerImpl);
 };
 
 }  // namespace feature_engagement

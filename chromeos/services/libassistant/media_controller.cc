@@ -6,9 +6,13 @@
 
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
 #include "chromeos/assistant/internal/util_headers.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
+#include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
+#include "chromeos/services/libassistant/grpc/utils/media_status_utils.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/assistant_manager.h"
 #include "libassistant/shared/public/media_manager.h"
@@ -40,67 +44,6 @@ using chromeos::assistant::shared::PlayMediaArgs;
         base::BindOnce(method, weak_factory_.GetWeakPtr(), ##__VA_ARGS__)); \
     return;                                                                 \
   }
-
-assistant_client::MediaStatus::PlaybackState ToPlaybackState(
-    mojom::PlaybackState input) {
-  switch (input) {
-    case mojom::PlaybackState::kError:
-      return assistant_client::MediaStatus::PlaybackState::ERROR;
-    case mojom::PlaybackState::kIdle:
-      return assistant_client::MediaStatus::PlaybackState::IDLE;
-    case mojom::PlaybackState::kNewTrack:
-      return assistant_client::MediaStatus::PlaybackState::NEW_TRACK;
-    case mojom::PlaybackState::kPaused:
-      return assistant_client::MediaStatus::PlaybackState::PAUSED;
-    case mojom::PlaybackState::kPlaying:
-      return assistant_client::MediaStatus::PlaybackState::PLAYING;
-  }
-}
-
-assistant_client::MediaStatus ToMediaStatus(const mojom::MediaState& input) {
-  assistant_client::MediaStatus result;
-
-  if (input.metadata) {
-    result.metadata.album = input.metadata->album;
-    result.metadata.title = input.metadata->title;
-    result.metadata.artist = input.metadata->artist;
-  }
-  result.playback_state = ToPlaybackState(input.playback_state);
-
-  return result;
-}
-
-mojom::PlaybackState ToPlaybackState(
-    assistant_client::MediaStatus::PlaybackState input) {
-  switch (input) {
-    case assistant_client::MediaStatus::PlaybackState::ERROR:
-      return mojom::PlaybackState::kError;
-    case assistant_client::MediaStatus::PlaybackState::IDLE:
-      return mojom::PlaybackState::kIdle;
-    case assistant_client::MediaStatus::PlaybackState::NEW_TRACK:
-      return mojom::PlaybackState::kNewTrack;
-    case assistant_client::MediaStatus::PlaybackState::PAUSED:
-      return mojom::PlaybackState::kPaused;
-    case assistant_client::MediaStatus::PlaybackState::PLAYING:
-      return mojom::PlaybackState::kPlaying;
-  }
-}
-
-mojom::MediaStatePtr ToMediaStatePtr(
-    const assistant_client::MediaStatus& input) {
-  mojom::MediaStatePtr result = mojom::MediaState::New();
-
-  if (!input.metadata.album.empty() || !input.metadata.title.empty() ||
-      !input.metadata.artist.empty()) {
-    result->metadata = mojom::MediaMetadata::New();
-    result->metadata->album = input.metadata.album;
-    result->metadata->title = input.metadata.title;
-    result->metadata->artist = input.metadata.artist;
-  }
-  result->playback_state = ToPlaybackState(input.playback_state);
-
-  return result;
-}
 
 std::string GetAndroidIntentUrlFromMediaArgs(
     const std::string& play_media_args_proto) {
@@ -154,35 +97,36 @@ std::string GetWebUrlFromMediaArgs(const std::string& play_media_args_proto) {
 
 }  // namespace
 
-class MediaController::LibassistantMediaManagerListener
-    : public assistant_client::MediaManager::Listener {
+class MediaController::DeviceStateEventObserver
+    : public GrpcServicesObserver<::assistant::api::OnDeviceStateEventRequest> {
  public:
-  explicit LibassistantMediaManagerListener(MediaController* parent)
-      : parent_(parent),
-        mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
-  LibassistantMediaManagerListener(const LibassistantMediaManagerListener&) =
-      delete;
-  LibassistantMediaManagerListener& operator=(
-      const LibassistantMediaManagerListener&) = delete;
-  ~LibassistantMediaManagerListener() override = default;
+  explicit DeviceStateEventObserver(MediaController* parent)
+      : parent_(parent) {}
+  DeviceStateEventObserver(const DeviceStateEventObserver&) = delete;
+  DeviceStateEventObserver& operator=(const DeviceStateEventObserver&) = delete;
+  ~DeviceStateEventObserver() override = default;
 
-  // assistant_client::MediaManager::Listener implementation:
-  // Called from the Libassistant thread.
-  void OnPlaybackStateChange(
-      const assistant_client::MediaStatus& media_status) override {
-    ENSURE_MOJOM_THREAD(
-        &LibassistantMediaManagerListener::OnPlaybackStateChange, media_status);
-
+  // GrpcServicesObserver:
+  // Invoked when a device state event has been received.
+  void OnGrpcMessage(
+      const ::assistant::api::OnDeviceStateEventRequest& request) override {
     VLOG(1) << "Sending playback state update";
-    delegate().OnPlaybackStateChanged(ToMediaStatePtr(media_status));
+
+    if (!request.event().has_on_state_changed())
+      return;
+
+    const auto& new_state = request.event().on_state_changed().new_state();
+    if (!new_state.has_media_status())
+      return;
+
+    delegate().OnPlaybackStateChanged(
+        ConvertMediaStatusToMojomFromV2(new_state.media_status()));
   }
 
  private:
   mojom::MediaDelegate& delegate() { return *parent_->delegate_; }
 
   MediaController* const parent_;
-  scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
-  base::WeakPtrFactory<LibassistantMediaManagerListener> weak_factory_{this};
 };
 
 class MediaController::LibassistantMediaHandler {
@@ -288,7 +232,8 @@ class MediaController::LibassistantMediaHandler {
 };
 
 MediaController::MediaController()
-    : listener_(std::make_unique<LibassistantMediaManagerListener>(this)) {}
+    : device_state_event_observer_(
+          std::make_unique<DeviceStateEventObserver>(this)) {}
 
 MediaController::~MediaController() = default;
 
@@ -301,49 +246,47 @@ void MediaController::Bind(
 
 void MediaController::ResumeInternalMediaPlayer() {
   VLOG(1) << "Resume internal media player";
-  if (media_manager())
-    media_manager()->Resume();
+  if (assistant_client_)
+    assistant_client_->ResumeCurrentStream();
 }
 
 void MediaController::PauseInternalMediaPlayer() {
   VLOG(1) << "Pause internal media player";
-  if (media_manager())
-    media_manager()->Pause();
+  if (assistant_client_)
+    assistant_client_->PauseCurrentStream();
 }
 
 void MediaController::SetExternalPlaybackState(mojom::MediaStatePtr state) {
   DCHECK(!state.is_null());
   VLOG(1) << "Update external playback state to " << state->playback_state;
-  if (media_manager())
-    media_manager()->SetExternalPlaybackState(ToMediaStatus(*state));
+  if (assistant_client_) {
+    MediaStatus media_status_proto;
+    ConvertMediaStatusToV2FromMojom(*state, &media_status_proto);
+    assistant_client_->SetExternalPlaybackState(media_status_proto);
+  }
 }
 
 void MediaController::OnAssistantClientRunning(
     AssistantClient* assistant_client) {
-  assistant_manager_ = assistant_client->assistant_manager();
-
-  // Media manager should be created when Libassistant signals it is running.
-  DCHECK(media_manager());
+  assistant_client_ = assistant_client;
 
   handler_ = std::make_unique<LibassistantMediaHandler>(
       this, assistant_client->assistant_manager_internal());
 
-  media_manager()->AddListener(listener_.get());
+  // |device_state_event_observer_| outlives |assistant_client_|.
+  assistant_client->AddDeviceStateEventObserver(
+      device_state_event_observer_.get());
 }
 
 void MediaController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
-  assistant_manager_ = nullptr;
+  assistant_client_ = nullptr;
 }
 
-void MediaController::OnAssistantManagerDestroyed() {
+void MediaController::OnAssistantClientDestroyed() {
   // Handler can only be unset after the |AssistantManagerInternal| has been
   // destroyed, as |AssistantManagerInternal| will call the handler.
   handler_ = nullptr;
-}
-
-assistant_client::MediaManager* MediaController::media_manager() {
-  return assistant_manager_ ? assistant_manager_->GetMediaManager() : nullptr;
 }
 
 }  // namespace libassistant

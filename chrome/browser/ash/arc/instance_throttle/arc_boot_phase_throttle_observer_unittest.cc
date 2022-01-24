@@ -16,7 +16,7 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/arc_prefs.h"
-#include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/fake_arc_session.h"
@@ -60,6 +60,11 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
         ArcBootPhaseThrottleObserver::ObserverStateChangedCallback());
   }
 
+  ArcBootPhaseThrottleObserverTest(const ArcBootPhaseThrottleObserverTest&) =
+      delete;
+  ArcBootPhaseThrottleObserverTest& operator=(
+      const ArcBootPhaseThrottleObserverTest&) = delete;
+
   void TearDown() override {
     observer()->StopObserving();
     testing_profile_.reset();
@@ -86,8 +91,6 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   ArcBootPhaseThrottleObserver observer_;
   std::unique_ptr<TestingProfile> testing_profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBootPhaseThrottleObserverTest);
 };
 
 TEST_F(ArcBootPhaseThrottleObserverTest, TestConstructDestruct) {}

@@ -14,7 +14,6 @@
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/search_engines/template_url_service.h"
-#include "ios/chrome/app/intents/SearchInChromeIntent.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_provider_client_impl.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -26,8 +25,8 @@
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller.h"
+#include "ios/chrome/common/intents/SearchInChromeIntent.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -47,17 +46,6 @@ ChromeOmniboxClientIOS::~ChromeOmniboxClientIOS() {}
 std::unique_ptr<AutocompleteProviderClient>
 ChromeOmniboxClientIOS::CreateAutocompleteProviderClient() {
   return std::make_unique<AutocompleteProviderClientImpl>(browser_state_);
-}
-
-std::unique_ptr<OmniboxNavigationObserver>
-ChromeOmniboxClientIOS::CreateOmniboxNavigationObserver(
-    const std::u16string& text,
-    const AutocompleteMatch& match,
-    const AutocompleteMatch& alternate_nav_match) {
-  // TODO(blundell): Bring up an OmniboxNavigationObserver implementation on
-  // iOS if/once iOS wants to start using the ShortcutsProvider.
-  // crbug.com/511965
-  return nullptr;
 }
 
 bool ChromeOmniboxClientIOS::CurrentPageExists() const {
@@ -120,10 +108,10 @@ gfx::Image ChromeOmniboxClientIOS::GetIconIfExtensionMatch(
 }
 
 bool ChromeOmniboxClientIOS::ProcessExtensionKeyword(
+    const std::u16string& text,
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
-    WindowOpenDisposition disposition,
-    OmniboxNavigationObserver* observer) {
+    WindowOpenDisposition disposition) {
   // Extensions are not supported on iOS.
   return false;
 }

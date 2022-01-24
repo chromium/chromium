@@ -14,7 +14,7 @@ namespace signin {
 namespace {
 
 const char kLastUpdatedTimePref[] = "test.last_updated_time";
-constexpr base::TimeDelta kTestDelay = base::TimeDelta::FromHours(2);
+constexpr base::TimeDelta kTestDelay = base::Hours(2);
 
 }  // namespace
 
@@ -50,7 +50,7 @@ TEST_F(PersistentRepeatingTimerTest, MissingPref) {
   timer.Start();
   CheckCallCount(1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   CheckCallCount(1);
 
   // And after the delay.
@@ -72,9 +72,9 @@ TEST_F(PersistentRepeatingTimerTest, MultipleStarts) {
   timer.Start();
   CheckCallCount(1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   CheckCallCount(1);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   timer.Start();
   CheckCallCount(1);
 
@@ -87,7 +87,7 @@ TEST_F(PersistentRepeatingTimerTest, MultipleStarts) {
 
 TEST_F(PersistentRepeatingTimerTest, RecentPref) {
   pref_service_.SetTime(kLastUpdatedTimePref,
-                        base::Time::Now() - base::TimeDelta::FromHours(1));
+                        base::Time::Now() - base::Hours(1));
 
   PersistentRepeatingTimer timer(
       &pref_service_, kLastUpdatedTimePref, kTestDelay,
@@ -99,22 +99,22 @@ TEST_F(PersistentRepeatingTimerTest, RecentPref) {
   timer.Start();
   CheckCallCount(0);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   CheckCallCount(0);
 
   // It is run after te delay.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   CheckCallCount(1);
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   CheckCallCount(1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+  task_environment_.FastForwardBy(base::Hours(1));
   CheckCallCount(2);
 }
 
 TEST_F(PersistentRepeatingTimerTest, OldPref) {
   pref_service_.SetTime(kLastUpdatedTimePref,
-                        base::Time::Now() - base::TimeDelta::FromHours(10));
+                        base::Time::Now() - base::Hours(10));
 
   PersistentRepeatingTimer timer(
       &pref_service_, kLastUpdatedTimePref, kTestDelay,
@@ -126,7 +126,7 @@ TEST_F(PersistentRepeatingTimerTest, OldPref) {
   timer.Start();
   CheckCallCount(1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   CheckCallCount(1);
 
   // And after the delay.

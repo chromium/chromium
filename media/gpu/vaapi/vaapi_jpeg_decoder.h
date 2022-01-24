@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/gpu/vaapi/vaapi_image_decoder.h"
 
 namespace media {
@@ -29,6 +28,10 @@ unsigned int VaSurfaceFormatForJpeg(const JpegFrameHeader& frame_header);
 class VaapiJpegDecoder : public VaapiImageDecoder {
  public:
   VaapiJpegDecoder();
+
+  VaapiJpegDecoder(const VaapiJpegDecoder&) = delete;
+  VaapiJpegDecoder& operator=(const VaapiJpegDecoder&) = delete;
+
   ~VaapiJpegDecoder() override;
 
   // VaapiImageDecoder implementation.
@@ -58,8 +61,6 @@ class VaapiJpegDecoder : public VaapiImageDecoder {
                           const gfx::Size& new_coded_size,
                           const gfx::Size& new_visible_size);
   bool SubmitBuffers(const JpegParseResult& parse_result);
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiJpegDecoder);
 };
 
 }  // namespace media

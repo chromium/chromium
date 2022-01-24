@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_BACKEND_OBSERVER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_BACKEND_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/history/core/browser/history_types.h"
 
 namespace history {
@@ -15,6 +14,10 @@ class HistoryBackend;
 class HistoryBackendObserver {
  public:
   HistoryBackendObserver() {}
+
+  HistoryBackendObserver(const HistoryBackendObserver&) = delete;
+  HistoryBackendObserver& operator=(const HistoryBackendObserver&) = delete;
+
   virtual ~HistoryBackendObserver() {}
 
   // Called when user visits an URL.
@@ -54,9 +57,6 @@ class HistoryBackendObserver {
                              bool expired,
                              const URLRows& deleted_rows,
                              const std::set<GURL>& favicon_urls) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistoryBackendObserver);
 };
 
 }  // namespace history

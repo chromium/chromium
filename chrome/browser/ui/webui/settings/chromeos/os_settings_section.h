@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
@@ -159,13 +160,10 @@ class OsSettingsSection {
   SearchTagRegistry* registry() { return search_tag_registry_; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(OsSettingsSectionTest, SectionWithFlag);
-  FRIEND_TEST_ALL_PREFIXES(OsSettingsSectionTest, SectionNoFlag);
-  FRIEND_TEST_ALL_PREFIXES(OsSettingsSectionTest, SubpageWithFlag);
-  FRIEND_TEST_ALL_PREFIXES(OsSettingsSectionTest, SubpageNoFlag);
-  FRIEND_TEST_ALL_PREFIXES(OsSettingsSectionTest, SettingWithFlag);
-  FRIEND_TEST_ALL_PREFIXES(OsSettingsSectionTest, SettingExistingQueryWithFlag);
-  FRIEND_TEST_ALL_PREFIXES(OsSettingsSectionTest, SettingNoFlag);
+  FRIEND_TEST_ALL_PREFIXES(OsSettingsSectionTest, Section);
+  FRIEND_TEST_ALL_PREFIXES(OsSettingsSectionTest, Subpage);
+  FRIEND_TEST_ALL_PREFIXES(OsSettingsSectionTest, Setting);
+  FRIEND_TEST_ALL_PREFIXES(OsSettingsSectionTest, SettingExistingQuery);
 
   static constexpr char kSettingIdUrlParam[] = "settingId";
 

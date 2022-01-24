@@ -15,7 +15,7 @@
 #include "base/containers/linked_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "url/gurl.h"
@@ -33,6 +33,11 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
 
   // Expects |cookie_monster| to outlive this.
   explicit CookieMonsterChangeDispatcher(const CookieMonster* cookie_monster);
+
+  CookieMonsterChangeDispatcher(const CookieMonsterChangeDispatcher&) = delete;
+  CookieMonsterChangeDispatcher& operator=(
+      const CookieMonsterChangeDispatcher&) = delete;
+
   ~CookieMonsterChangeDispatcher() override;
 
   // The key in CookieNameMap for a cookie name.
@@ -48,9 +53,11 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
   std::unique_ptr<CookieChangeSubscription> AddCallbackForCookie(
       const GURL& url,
       const std::string& name,
+      const absl::optional<CookiePartitionKey>& cookie_partition_key,
       CookieChangeCallback callback) override WARN_UNUSED_RESULT;
   std::unique_ptr<CookieChangeSubscription> AddCallbackForUrl(
       const GURL& url,
+      const absl::optional<CookiePartitionKey>& cookie_partition_key,
       CookieChangeCallback callback) override WARN_UNUSED_RESULT;
   std::unique_ptr<CookieChangeSubscription> AddCallbackForAllChanges(
       CookieChangeCallback callback) override WARN_UNUSED_RESULT;
@@ -69,7 +76,11 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
                  std::string domain_key,
                  std::string name_key,
                  GURL url,
+                 absl::optional<CookiePartitionKey> cookie_partition_key,
                  net::CookieChangeCallback callback);
+
+    Subscription(const Subscription&) = delete;
+    Subscription& operator=(const Subscription&) = delete;
 
     ~Subscription() override;
 
@@ -91,6 +102,8 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
     const std::string domain_key_;  // kGlobalDomainKey means no filtering.
     const std::string name_key_;    // kGlobalNameKey means no filtering.
     const GURL url_;                // empty() means no URL-based filtering.
+    // nullopt means all Partitioned cookies will be ignored.
+    const absl::optional<CookiePartitionKey> cookie_partition_key_;
     const net::CookieChangeCallback callback_;
 
     void DoDispatchChange(const CookieChangeInfo& change) const;
@@ -103,8 +116,6 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
     // Used to cancel delayed calls to DoDispatchChange() when the subscription
     // gets destroyed.
     base::WeakPtrFactory<Subscription> weak_ptr_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(Subscription);
   };
 
   // The last level of the subscription data structures.
@@ -147,8 +158,6 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
 
   // Vends weak pointers to subscriptions.
   base::WeakPtrFactory<CookieMonsterChangeDispatcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CookieMonsterChangeDispatcher);
 };
 
 }  // namespace net

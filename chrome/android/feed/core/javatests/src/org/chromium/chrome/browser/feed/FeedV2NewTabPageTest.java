@@ -13,6 +13,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -38,6 +39,7 @@ import androidx.test.espresso.action.GeneralSwipeAction;
 import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import com.google.common.base.Optional;
@@ -65,6 +67,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -72,7 +75,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListProperties;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -83,8 +85,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -360,28 +360,10 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
-    @EnableFeatures(ChromeFeatureList.MINOR_MODE_SUPPORT)
     public void testSignInPromoWhenDefaultAccountCanNotOfferExtendedSyncPromos() {
         mAccountManagerTestRule.addAccount("test@gmail.com");
         mIsCachePopulatedInAccountManagerFacade = true;
         mCanOfferExtendedSyncPromos = false;
-
-        openNewTabPage();
-        onView(withId(R.id.feed_stream_recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
-
-        // Check that the sign-in promo is not displayed.
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"FeedNewTabPage"})
-    @EnableFeatures(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)
-    @DisableFeatures(ChromeFeatureList.MINOR_MODE_SUPPORT)
-    public void testSignInPromoWhenExtendedSyncPromosAreDisabledByForce() {
-        mAccountManagerTestRule.addAccount("test@gmail.com");
-        mIsCachePopulatedInAccountManagerFacade = true;
 
         openNewTabPage();
         onView(withId(R.id.feed_stream_recycler_view))
@@ -460,7 +442,9 @@ public class FeedV2NewTabPageTest {
         onView(withText(expanded ? R.string.ntp_turn_on_feed : R.string.ntp_turn_off_feed))
                 .perform(click());
 
-        onView(withText(expanded ? R.string.ntp_discover_on : R.string.ntp_discover_off))
+        // There must be one and only one view with "Discover on/off" text being displayed.
+        onView(allOf(withText(expanded ? R.string.ntp_discover_on : R.string.ntp_discover_off),
+                       withEffectiveVisibility(Visibility.VISIBLE)))
                 .check(matches(isDisplayed()));
     }
 

@@ -32,25 +32,14 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TAB_SWITC
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
-import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
-import android.widget.ListView;
-import android.widget.ScrollView;
 
-import androidx.core.widget.NestedScrollView;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.action.ScrollToAction;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -61,17 +50,17 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link TasksViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class TasksViewBinderTest extends DummyUiChromeActivityTestCase {
+public class TasksViewBinderTest extends DummyUiActivityTestCase {
     private TasksView mTasksView;
     private PropertyModel mTasksViewPropertyModel;
     private AtomicBoolean mViewClicked = new AtomicBoolean();
@@ -188,20 +177,20 @@ public class TasksViewBinderTest extends DummyUiChromeActivityTestCase {
             mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
             mTasksViewPropertyModel.set(IS_LENS_BUTTON_VISIBLE, true);
         });
-        assertTrue(isViewVisible(R.id.lens_camera_button_end));
+        assertTrue(isViewVisible(R.id.lens_camera_button));
 
         mViewClicked.set(false);
-        onView(withId(R.id.lens_camera_button_end)).perform(click());
+        onView(withId(R.id.lens_camera_button)).perform(click());
         assertFalse(mViewClicked.get());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTasksViewPropertyModel.set(LENS_BUTTON_CLICK_LISTENER, mViewOnClickListener);
         });
-        onView(withId(R.id.lens_camera_button_end)).perform(click());
+        onView(withId(R.id.lens_camera_button)).perform(click());
         assertTrue(mViewClicked.get());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mTasksViewPropertyModel.set(IS_LENS_BUTTON_VISIBLE, false));
-        assertFalse(isViewVisible(R.id.lens_camera_button_end));
+        assertFalse(isViewVisible(R.id.lens_camera_button));
     }
 
     @Test
@@ -238,13 +227,12 @@ public class TasksViewBinderTest extends DummyUiChromeActivityTestCase {
     @SmallTest
     public void testSetIncognitoMode() {
         mTasksViewPropertyModel.set(IS_INCOGNITO, true);
-        Resources resources = getActivity().getResources();
-        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(resources, true);
+        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getActivity(), true);
         ColorDrawable viewColor = (ColorDrawable) mTasksView.getBackground();
         assertEquals(backgroundColor, viewColor.getColor());
 
         mTasksViewPropertyModel.set(IS_INCOGNITO, false);
-        backgroundColor = ChromeColors.getPrimaryBackgroundColor(resources, false);
+        backgroundColor = ChromeColors.getPrimaryBackgroundColor(getActivity(), false);
         viewColor = (ColorDrawable) mTasksView.getBackground();
         assertEquals(backgroundColor, viewColor.getColor());
     }
@@ -267,33 +255,6 @@ public class TasksViewBinderTest extends DummyUiChromeActivityTestCase {
         });
         assertTrue(isViewVisible(R.id.new_tab_incognito_container));
 
-        mViewClicked.set(false);
-        // Default scrollTo() cannot be used for NestedScrollView. Add a customized scrollTo for
-        // scrolling to learn_more button.
-        ViewAction customizedScrollTo = new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return Matchers.allOf(
-                        ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE),
-                        ViewMatchers.isDescendantOfA(
-                                Matchers.anyOf(ViewMatchers.isAssignableFrom(ScrollView.class),
-                                        ViewMatchers.isAssignableFrom(HorizontalScrollView.class),
-                                        ViewMatchers.isAssignableFrom(ListView.class),
-                                        ViewMatchers.isAssignableFrom(NestedScrollView.class))));
-            }
-
-            @Override
-            public String getDescription() {
-                return "scroll to";
-            }
-
-            @Override
-            public void perform(UiController uiController, View view) {
-                new ScrollToAction().perform(uiController, view);
-            }
-        };
-        onView(withId(R.id.learn_more)).perform(customizedScrollTo, click());
-        assertTrue(mViewClicked.get());
     }
 
     @Test

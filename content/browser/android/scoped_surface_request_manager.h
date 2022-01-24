@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
@@ -20,6 +19,10 @@ class CONTENT_EXPORT ScopedSurfaceRequestManager
     : public gpu::ScopedSurfaceRequestConduit {
  public:
   static ScopedSurfaceRequestManager* GetInstance();
+
+  ScopedSurfaceRequestManager(const ScopedSurfaceRequestManager&) = delete;
+  ScopedSurfaceRequestManager& operator=(const ScopedSurfaceRequestManager&) =
+      delete;
 
   using ScopedSurfaceRequestCB =
       base::OnceCallback<void(gl::ScopedJavaSurface)>;
@@ -76,8 +79,6 @@ class CONTENT_EXPORT ScopedSurfaceRequestManager
 
   ScopedSurfaceRequestManager();
   ~ScopedSurfaceRequestManager() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSurfaceRequestManager);
 };
 
 }  // namespace content

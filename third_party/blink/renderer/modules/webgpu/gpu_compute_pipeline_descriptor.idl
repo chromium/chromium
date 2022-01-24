@@ -5,8 +5,5 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUComputePipelineDescriptor : GPUPipelineDescriptorBase {
-    // compute should be required, but cannot be until the deprecated
-    // computeStage property is removed.
-    GPUProgrammableStage compute;
-    GPUProgrammableStage computeStage; // Deprecated
+    required GPUProgrammableStage compute;
 };

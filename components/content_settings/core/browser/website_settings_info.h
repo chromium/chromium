@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
 namespace base {
@@ -74,6 +73,10 @@ class WebsiteSettingsInfo {
                       LossyStatus lossy_status,
                       ScopingType scoping_type,
                       IncognitoBehavior incognito_behavior);
+
+  WebsiteSettingsInfo(const WebsiteSettingsInfo&) = delete;
+  WebsiteSettingsInfo& operator=(const WebsiteSettingsInfo&) = delete;
+
   ~WebsiteSettingsInfo();
 
   ContentSettingsType type() const { return type_; }
@@ -105,8 +108,6 @@ class WebsiteSettingsInfo {
   const LossyStatus lossy_status_;
   const ScopingType scoping_type_;
   const IncognitoBehavior incognito_behavior_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebsiteSettingsInfo);
 };
 
 }  // namespace content_settings

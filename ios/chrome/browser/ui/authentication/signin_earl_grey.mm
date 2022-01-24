@@ -6,12 +6,17 @@
 
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
+#include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 @implementation SigninEarlGreyImpl
 
@@ -53,7 +58,7 @@
   // Required to avoid any problem since the following test is not dependant
   // to UI, and the previous action has to be totally finished before going
   // through the assert.
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+  GREYAssert(WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForActionTimeout,
                  ^bool {
                    NSString* primaryAccountGaiaID =
@@ -80,13 +85,33 @@
   // the assert.
   GREYWaitForAppToIdle(@"App failed to idle");
 
-  EG_TEST_HELPER_ASSERT_TRUE([SigninEarlGreyAppInterface isSignedOut],
-                             @"Unexpected signed in user");
+  ConditionBlock condition = ^bool {
+    return [SigninEarlGreyAppInterface isSignedOut];
+  };
+  EG_TEST_HELPER_ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(base::test::ios::kWaitForActionTimeout,
+                                  condition),
+      @"Unexpected signed in user");
 }
 
 - (void)verifyAuthenticated {
   EG_TEST_HELPER_ASSERT_TRUE([SigninEarlGreyAppInterface hasPrimaryIdentity],
                              @"User is not signed in");
+}
+
+- (void)verifySyncUIEnabled:(BOOL)enabled {
+  NSString* accessibilityString =
+      enabled ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+              : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+
+  id<GREYMatcher> GetSettingsGoogleSyncAndServicesCellMatcher =
+      grey_allOf(grey_accessibilityValue(accessibilityString),
+                 grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
+                 grey_sufficientlyVisible(), nil);
+
+  [[EarlGrey
+      selectElementWithMatcher:GetSettingsGoogleSyncAndServicesCellMatcher]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

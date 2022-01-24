@@ -33,6 +33,10 @@ class PPAPI_SHARED_EXPORT PPB_VideoDecoder_Shared
  public:
   explicit PPB_VideoDecoder_Shared(PP_Instance instance);
   explicit PPB_VideoDecoder_Shared(const HostResource& host_resource);
+
+  PPB_VideoDecoder_Shared(const PPB_VideoDecoder_Shared&) = delete;
+  PPB_VideoDecoder_Shared& operator=(const PPB_VideoDecoder_Shared&) = delete;
+
   ~PPB_VideoDecoder_Shared() override;
 
   // Resource overrides.
@@ -76,8 +80,6 @@ class PPAPI_SHARED_EXPORT PPB_VideoDecoder_Shared
   // In the out-of-process case, Graphics3D's gles2_impl() exists in the plugin
   // process only, so gles2_impl_ is NULL in that case.
   gpu::gles2::GLES2Implementation* gles2_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_VideoDecoder_Shared);
 };
 
 }  // namespace ppapi

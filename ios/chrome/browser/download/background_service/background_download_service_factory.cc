@@ -11,8 +11,11 @@
 #include "base/time/default_clock.h"
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/download_store.h"
+#include "components/download/internal/background_service/file_monitor_impl.h"
+#include "components/download/internal/background_service/init_aware_background_download_service.h"
 #include "components/download/internal/background_service/ios/background_download_service_impl.h"
 #include "components/download/internal/background_service/ios/background_download_task_helper.h"
+#include "components/download/internal/background_service/logger_impl.h"
 #include "components/download/internal/background_service/model_impl.h"
 #include "components/download/internal/background_service/proto/entry.pb.h"
 #include "components/download/public/background_service/background_download_service.h"
@@ -59,6 +62,14 @@ std::unique_ptr<KeyedService>
 BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   auto clients = std::make_unique<download::DownloadClientMap>();
+  // Clients should be registered here.
+  return BuildServiceWithClients(context, std::move(clients));
+}
+
+std::unique_ptr<KeyedService>
+BackgroundDownloadServiceFactory::BuildServiceWithClients(
+    web::BrowserState* context,
+    std::unique_ptr<download::DownloadClientMap> clients) const {
   auto client_set = std::make_unique<download::ClientSet>(std::move(clients));
   base::FilePath storage_dir =
       context->GetStatePath().Append(kDownloadServiceStorageDir);
@@ -70,9 +81,19 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
       storage_dir.Append(kEntryDBStorageDir), background_task_runner);
   auto store = std::make_unique<download::DownloadStore>(std::move(entry_db));
   auto model = std::make_unique<download::ModelImpl>(std::move(store));
-  return std::make_unique<download::BackgroundDownloadServiceImpl>(
+  base::FilePath files_storage_dir = storage_dir.Append(kFilesStorageDir);
+  auto file_monitor = std::make_unique<download::FileMonitorImpl>(
+      files_storage_dir, background_task_runner);
+  auto logger = std::make_unique<download::LoggerImpl>();
+  auto* logger_ptr = logger.get();
+  auto service = std::make_unique<download::BackgroundDownloadServiceImpl>(
       std::move(client_set), std::move(model),
-      download::BackgroundDownloadTaskHelper::Create(
-          storage_dir.Append(kFilesStorageDir)),
+      download::BackgroundDownloadTaskHelper::Create(), std::move(file_monitor),
+      files_storage_dir, std::move(logger), logger_ptr,
       base::DefaultClock::GetInstance());
+  logger_ptr->SetLogSource(service.get());
+  auto init_aware_service =
+      std::make_unique<download::InitAwareBackgroundDownloadService>(
+          std::move(service));
+  return init_aware_service;
 }

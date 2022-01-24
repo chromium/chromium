@@ -49,8 +49,7 @@ using protocol::ErrorCode;
 namespace {
 
 const char kTestAccessCode[] = "888888";
-constexpr base::TimeDelta kTestAccessCodeLifetime =
-    base::TimeDelta::FromSeconds(666);
+constexpr base::TimeDelta kTestAccessCodeLifetime = base::Seconds(666);
 const char kTestClientUsername[] = "some_user@gmail.com";
 const char kTestStunServer[] = "test_relay_server.com";
 
@@ -116,6 +115,9 @@ class MockIt2MeHost : public It2MeHost {
  public:
   MockIt2MeHost() = default;
 
+  MockIt2MeHost(const MockIt2MeHost&) = delete;
+  MockIt2MeHost& operator=(const MockIt2MeHost&) = delete;
+
   // It2MeHost overrides
   void Connect(std::unique_ptr<ChromotingHostContext> context,
                std::unique_ptr<base::DictionaryValue> policies,
@@ -133,8 +135,6 @@ class MockIt2MeHost : public It2MeHost {
       CreateDeferredConnectContext create_connection_context);
 
   void RunSetState(It2MeHostState state);
-
-  DISALLOW_COPY_AND_ASSIGN(MockIt2MeHost);
 };
 
 void MockIt2MeHost::Connect(
@@ -216,6 +216,10 @@ void MockIt2MeHost::RunSetState(It2MeHostState state) {
 class MockIt2MeHostFactory : public It2MeHostFactory {
  public:
   MockIt2MeHostFactory() : host(new MockIt2MeHost()) {}
+
+  MockIt2MeHostFactory(const MockIt2MeHostFactory&) = delete;
+  MockIt2MeHostFactory& operator=(const MockIt2MeHostFactory&) = delete;
+
   ~MockIt2MeHostFactory() override = default;
 
   scoped_refptr<It2MeHost> CreateIt2MeHost() override {
@@ -223,14 +227,16 @@ class MockIt2MeHostFactory : public It2MeHostFactory {
   }
 
   scoped_refptr<MockIt2MeHost> host;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockIt2MeHostFactory);
 };
 
 class It2MeNativeMessagingHostTest : public testing::Test {
  public:
   It2MeNativeMessagingHostTest() = default;
+
+  It2MeNativeMessagingHostTest(const It2MeNativeMessagingHostTest&) = delete;
+  It2MeNativeMessagingHostTest& operator=(const It2MeNativeMessagingHostTest&) =
+      delete;
+
   ~It2MeNativeMessagingHostTest() override = default;
 
   void SetUp() override;
@@ -286,8 +292,6 @@ class It2MeNativeMessagingHostTest : public testing::Test {
   // Task runner of the host thread.
   scoped_refptr<AutoThreadTaskRunner> host_task_runner_;
   std::unique_ptr<remoting::NativeMessagingPipe> pipe_;
-
-  DISALLOW_COPY_AND_ASSIGN(It2MeNativeMessagingHostTest);
 };
 
 void It2MeNativeMessagingHostTest::SetUp() {

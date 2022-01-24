@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_link.h"
@@ -35,6 +36,7 @@ class NGFragmentItem;
 class NGInlineItem;
 class PaintLayer;
 struct LogicalRect;
+struct NGFragmentedOutOfFlowData;
 struct NGPhysicalOutOfFlowPositionedNode;
 
 enum class NGOutlineType;
@@ -125,6 +127,9 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsAtomicInline() const {
     return IsBox() && BoxType() == NGBoxType::kAtomicInline;
   }
+  // True if this box is a block-in-inline, or if this line contains a
+  // block-in-inline.
+  bool IsBlockInInline() const { return is_block_in_inline_; }
   // True if this fragment is in-flow in an inline formatting context.
   bool IsInline() const { return IsInlineBox() || IsAtomicInline(); }
   bool IsFloating() const {
@@ -180,6 +185,7 @@ class CORE_EXPORT NGPhysicalFragment
            layout_object_->IsRubyBase();
   }
 
+  bool IsSvg() const { return layout_object_->IsSVG(); }
   bool IsSvgText() const { return layout_object_->IsNGSVGText(); }
 
   bool IsTableNGPart() const { return is_table_ng_part_; }
@@ -231,6 +237,12 @@ class CORE_EXPORT NGPhysicalFragment
   // |LayoutObject| after this fragment was placed. See comments in
   // |LayoutNGBlockFlow::UpdateBlockLayout()| and crbug.com/788590
   bool IsPlacedByLayoutNG() const;
+
+  // Returns true if we have a descendant within this formatting context, which
+  // is potentially above our block-start edge.
+  bool MayHaveDescendantAboveBlockStart() const {
+    return may_have_descendant_above_block_start_;
+  }
 
   // The accessors in this class shouldn't be used by layout code directly,
   // instead should be accessed by the NGFragmentBase classes. These accessors
@@ -296,13 +308,13 @@ class CORE_EXPORT NGPhysicalFragment
   PaintLayer* Layer() const {
     if (!HasLayer())
       return nullptr;
-    return To<LayoutBoxModelObject>(layout_object_)->Layer();
+    return To<LayoutBoxModelObject>(layout_object_.Get())->Layer();
   }
 
   // Whether this object has a self-painting |Layer()|.
   bool HasSelfPaintingLayer() const {
-    return HasLayer() &&
-           To<LayoutBoxModelObject>(layout_object_)->HasSelfPaintingLayer();
+    return HasLayer() && To<LayoutBoxModelObject>(layout_object_.Get())
+                             ->HasSelfPaintingLayer();
   }
 
   // True if overflow != 'visible', except for certain boxes that do not allow
@@ -351,6 +363,11 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsHiddenForPaint() const {
     return is_hidden_for_paint_ || layout_object_->IsTruncated();
   }
+
+  // This fragment is opaque for layout and paint, as if it does not exist and
+  // does not paint its backgrounds and borders, but it can have regular
+  // children and paint properties such as filters can apply.
+  bool IsOpaque() const { return is_opaque_; }
 
   // Return true if this fragment is monolithic, as far as block fragmentation
   // is concerned.
@@ -428,13 +445,6 @@ class CORE_EXPORT NGPhysicalFragment
 
   // Returns if this fragment is inside a non-passive wheel event handler.
   bool InsideBlockingWheelEventHandler() const;
-
-  // Returns the bidi level of a text or atomic inline fragment.
-  UBiDiLevel BidiLevel() const;
-
-  // Returns the resolved direction of a text or atomic inline fragment. Not to
-  // be confused with the CSS 'direction' property.
-  TextDirection ResolvedDirection() const;
 
   // Helper functions to convert between |PhysicalRect| and |LogicalRect| of a
   // child.
@@ -551,7 +561,7 @@ class CORE_EXPORT NGPhysicalFragment
     const NGLink* buffer_;
   };
 
-  const NGBreakToken* BreakToken() const { return break_token_.get(); }
+  const NGBreakToken* BreakToken() const { return break_token_; }
 
   base::span<const NGLink> Children() const;
 
@@ -578,24 +588,42 @@ class CORE_EXPORT NGPhysicalFragment
   void SetChildrenInvalid() const;
   bool ChildrenValid() const { return children_valid_; }
 
+  struct OutOfFlowData {
+    USING_FAST_MALLOC(OutOfFlowData);
+
+   public:
+    Vector<NGPhysicalOutOfFlowPositionedNode> oof_positioned_descendants;
+  };
+
+  // Returns true if some child is OOF in the fragment tree. This happens if
+  // it's the containing block of the OOF, or if it's a fragmentation context
+  // root containing them.
+  bool HasOutOfFlowFragmentChild() const {
+    return has_out_of_flow_fragment_child_;
+  }
+
   bool HasOutOfFlowPositionedDescendants() const {
-    DCHECK(!oof_positioned_descendants_ ||
-           !oof_positioned_descendants_->IsEmpty());
-    return oof_positioned_descendants_.get();
+    return oof_data_ && !oof_data_->oof_positioned_descendants.IsEmpty();
   }
 
   base::span<NGPhysicalOutOfFlowPositionedNode> OutOfFlowPositionedDescendants()
       const {
     if (!HasOutOfFlowPositionedDescendants())
       return base::span<NGPhysicalOutOfFlowPositionedNode>();
-    return {oof_positioned_descendants_->data(),
-            oof_positioned_descendants_->size()};
+    return {oof_data_->oof_positioned_descendants.data(),
+            oof_data_->oof_positioned_descendants.size()};
   }
+
+  const NGFragmentedOutOfFlowData* FragmentedOutOfFlowData() const;
+
+  // Figure out if the child has any out-of-flow positioned descendants, in
+  // which case we'll need to propagate this to the fragment builder.
+  bool NeedsOOFPositionedInfoPropagation() const;
 
  protected:
   const ComputedStyle& SlowEffectiveStyle() const;
 
-  const Vector<NGInlineItem>& InlineItemsOfContainingBlock() const;
+  const HeapVector<NGInlineItem>& InlineItemsOfContainingBlock() const;
 
   void AddScrollableOverflowForInlineChild(
       const NGPhysicalBoxFragment& container,
@@ -630,7 +658,14 @@ class CORE_EXPORT NGPhysicalFragment
 
   static bool DependsOnPercentageBlockSize(const NGContainerFragmentBuilder&);
 
-  LayoutObject* layout_object_;
+  std::unique_ptr<OutOfFlowData> OutOfFlowDataFromBuilder(
+      NGContainerFragmentBuilder*);
+  std::unique_ptr<OutOfFlowData> FragmentedOutOfFlowDataFromBuilder(
+      NGContainerFragmentBuilder*);
+  void ClearOutOfFlowData();
+  std::unique_ptr<OutOfFlowData> CloneOutOfFlowData() const;
+
+  UntracedMember<LayoutObject> layout_object_;
   const PhysicalSize size_;
 
   unsigned has_floating_descendants_for_paint_ : 1;
@@ -647,10 +682,10 @@ class CORE_EXPORT NGPhysicalFragment
   const unsigned sub_type_ : 3;       // NGBoxType, NGTextType, or NGLineBoxType
   const unsigned style_variant_ : 2;  // NGStyleVariant
   const unsigned is_hidden_for_paint_ : 1;
+  unsigned is_opaque_ : 1;
+  unsigned is_block_in_inline_ : 1;
   unsigned is_math_fraction_ : 1;
   unsigned is_math_operator_ : 1;
-  // base (line box) or resolve (text) direction
-  unsigned base_or_resolved_direction_ : 1;  // TextDirection
   unsigned may_have_descendant_above_block_start_ : 1;
 
   // The following are only used by NGPhysicalBoxFragment but are initialized
@@ -662,10 +697,14 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_collapsed_borders_ : 1;
   unsigned has_baseline_ : 1;
   unsigned has_last_baseline_ : 1;
+  const unsigned has_fragmented_out_of_flow_data_ : 1;
+  const unsigned has_out_of_flow_fragment_child_ : 1;
 
-  scoped_refptr<const NGBreakToken> break_token_;
-  const std::unique_ptr<Vector<NGPhysicalOutOfFlowPositionedNode>>
-      oof_positioned_descendants_;
+  // The following are only used by NGPhysicalLineBoxFragment.
+  unsigned base_direction_ : 1;  // TextDirection
+
+  Persistent<const NGBreakToken> break_token_;
+  const std::unique_ptr<OutOfFlowData> oof_data_;
 
  private:
   friend struct NGPhysicalFragmentTraits;

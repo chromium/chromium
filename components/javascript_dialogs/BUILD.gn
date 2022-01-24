@@ -35,6 +35,7 @@ static_library("javascript_dialogs") {
     "//skia",
     "//ui/base",
     "//ui/gfx",
+    "//url:url",
   ]
 
   if (use_aura) {
@@ -86,6 +87,7 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//url:url",
   ]
 
   if (is_chromeos_lacros) {

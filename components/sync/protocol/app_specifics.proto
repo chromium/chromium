@@ -80,24 +80,22 @@ message AppSpecifics {
   // This describes how the extension should be launched.
   optional LaunchType launch_type = 5;
 
-  // This is the url of a bookmark app. If this exists, the app is a bookmark
-  // app.
-  optional string bookmark_app_url = 6;
+  // DEPRECATED. See https://crbug.com/1233303.
+  optional string bookmark_app_url = 6 [deprecated = true];
 
-  // This is the description of a bookmark app.
-  optional string bookmark_app_description = 7;
+  // DEPRECATED. See https://crbug.com/1233303.
+  optional string bookmark_app_description = 7 [deprecated = true];
 
-  // This is the color to use when generating bookmark app icons. The string is
-  // in #rrggbb or #rgb syntax, e.g. #d8d8d8.
-  optional string bookmark_app_icon_color = 8;
+  // DEPRECATED. See https://crbug.com/1233303.
+  optional string bookmark_app_icon_color = 8 [deprecated = true];
 
   // This is information about linked icons (that is, icons that are downloaded
   // from outside the app's bundle of files.
   repeated LinkedAppIconInfo linked_app_icons = 9;
 
-  // This is the scope of the bookmark app.
-  optional string bookmark_app_scope = 10;
+  // DEPRECATED. See https://crbug.com/1233303.
+  optional string bookmark_app_scope = 10 [deprecated = true];
 
-  // This is the SkColor used for the browser frame for this bookmark app.
-  optional uint32 bookmark_app_theme_color = 11;
+  // DEPRECATED. See https://crbug.com/1233303.
+  optional uint32 bookmark_app_theme_color = 11 [deprecated = true];
 }

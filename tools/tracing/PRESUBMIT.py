@@ -12,10 +12,19 @@ USE_PYTHON3 = True
 
 
 def RunUnittests(input_api, output_api):
-  presubmit_path = input_api.PresubmitLocalPath()
-  return input_api.canned_checks.RunUnitTests(input_api, output_api, [
-      input_api.os_path.join(presubmit_path, 'metadata_extractor_unittests.py'),
-  ])
+  results = []
+  # Run Pylint over the files in the directory.
+  pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
+  results.extend(input_api.RunTests(pylint_checks))
+
+  results.extend(
+      input_api.canned_checks.RunUnitTestsInDirectory(
+          input_api,
+          output_api,
+          '.',
+          files_to_check=[r'.+_unittest\.py$'],
+          skip_shebang_check=True))
+  return results
 
 
 def CheckChangeOnUpload(input_api, output_api):

@@ -21,6 +21,13 @@
 
 namespace blink {
 
+namespace {
+
+constexpr char kOriginString[] = "https://origin.test/";
+constexpr char kNameString[] = "name";
+
+}  // namespace
+
 // Test fixture for testing both ValidateBlinkInterestGroup() and
 // ValidateInterestGroup(), and making sure they behave the same.
 class ValidateBlinkInterestGroupTest : public testing::Test {
@@ -125,16 +132,30 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
         KURL(String::FromUTF8("https://origin.test/foo?bar#baz2"));
     blink_interest_group->ads->push_back(std::move(mojo_ad2));
 
+    // Add two ad components. Use different URLs, with references.
+    blink_interest_group->ad_components.emplace();
+    auto mojo_ad_component1 = mojom::blink::InterestGroupAd::New();
+    mojo_ad_component1->render_url =
+        KURL(String::FromUTF8("https://origin.test/components?bar#baz"));
+    mojo_ad_component1->metadata =
+        String::FromUTF8("\"This field isn't actually validated\"");
+    blink_interest_group->ad_components->push_back(
+        std::move(mojo_ad_component1));
+    auto mojo_ad_component2 = mojom::blink::InterestGroupAd::New();
+    mojo_ad_component2->render_url =
+        KURL(String::FromUTF8("https://origin.test/foo?component#baz2"));
+    blink_interest_group->ad_components->push_back(
+        std::move(mojo_ad_component2));
+
     return blink_interest_group;
   }
 
  protected:
   // SecurityOrigin used as the owner in most tests.
   const scoped_refptr<const SecurityOrigin> kOrigin =
-      SecurityOrigin::CreateFromString(
-          String::FromUTF8("https://origin.test/"));
+      SecurityOrigin::CreateFromString(String::FromUTF8(kOriginString));
 
-  const String kName = String::FromUTF8("name");
+  const String kName = String::FromUTF8(kNameString);
 };
 
 // Test behavior with an InterestGroup with as few fields populated as allowed.
@@ -341,6 +362,141 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
           kBadAdUrlError /* expected_error */);
     }
   }
+}
+
+// Tests valid and invalid ad render URLs.
+TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
+  const char kBadAdUrlError[] =
+      "renderUrls must be HTTPS and have no embedded credentials.";
+
+  const struct {
+    bool expect_allowed;
+    const char* url;
+  } kTestCases[] = {
+      // Same origin URLs are allowed.
+      {true, "https://origin.test/foo?bar"},
+
+      // Cross origin URLs are allowed, as long as they're HTTPS.
+      {true, "https://b.test/"},
+      {true, "https://a.test:1234/"},
+
+      // URLs with the wrong scheme are rejected.
+      {false, "http://a.test/"},
+      {false, "data://text/html,payload"},
+      {false, "filesystem:https://a.test/foo"},
+
+      // URLs with user/ports are rejected.
+      {false, "https://user:pass@a.test/"},
+
+      // References are allowed for ads, though not other requests, since they
+      // only have an effect when loading a page in a renderer.
+      {true, "https://a.test/#foopy"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.url);
+
+    KURL test_case_url = KURL(String::FromUTF8(test_case.url));
+
+    // Add an InterestGroup with the test cases's URL as the only ad
+    // component's URL.
+    mojom::blink::InterestGroupPtr blink_interest_group =
+        CreateMinimalInterestGroup();
+    blink_interest_group->ad_components.emplace();
+    blink_interest_group->ad_components->emplace_back(
+        mojom::blink::InterestGroupAd::New(test_case_url,
+                                           String() /* metadata */));
+    if (test_case.expect_allowed) {
+      ExpectInterestGroupIsValid(blink_interest_group);
+    } else {
+      ExpectInterestGroupIsNotValid(
+          blink_interest_group,
+          "adComponent[0].renderUrl" /* expected_error_field_name */,
+          test_case_url.GetString().Utf8() /* expected_error_field_value */,
+          kBadAdUrlError /* expected_error */);
+    }
+
+    // Add an InterestGroup with the test cases's URL as the second ad
+    // component's URL.
+    blink_interest_group = CreateMinimalInterestGroup();
+    blink_interest_group->ad_components.emplace();
+    blink_interest_group->ad_components->emplace_back(
+        mojom::blink::InterestGroupAd::New(
+            KURL(String::FromUTF8("https://origin.test/")),
+            String() /* metadata */));
+    blink_interest_group->ad_components->emplace_back(
+        mojom::blink::InterestGroupAd::New(test_case_url,
+                                           String() /* metadata */));
+    if (test_case.expect_allowed) {
+      ExpectInterestGroupIsValid(blink_interest_group);
+    } else {
+      ExpectInterestGroupIsNotValid(
+          blink_interest_group,
+          "adComponent[1].renderUrl" /* expected_error_field_name */,
+          test_case_url.GetString().Utf8() /* expected_error_field_value */,
+          kBadAdUrlError /* expected_error */);
+    }
+  }
+}
+
+// Mojo rejects malformed URLs when converting mojom::blink::InterestGroup to
+// blink::InterestGroup. Since the rejection happens internally in Mojo,
+// typemapping code that invokes blink::InterestGroup::IsValid() isn't run, so
+// adding a AdRenderUrlValidation testcase to verify malformed URLs wouldn't
+// exercise blink::InterestGroup::IsValid(). Since blink::InterestGroup users
+// can call IsValid() directly (i.e when not using Mojo), we need a test that
+// also calls IsValid() directly.
+TEST_F(ValidateBlinkInterestGroupTest, MalformedUrl) {
+  constexpr char kMalformedUrl[] = "https://invalid^";
+
+  // First, check against mojom::blink::InterestGroup.
+  constexpr char kBadAdUrlError[] =
+      "renderUrls must be HTTPS and have no embedded credentials.";
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      mojom::blink::InterestGroup::New();
+  blink_interest_group->owner = kOrigin;
+  blink_interest_group->name = kName;
+  blink_interest_group->ads.emplace();
+  blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
+      KURL(kMalformedUrl), String() /* metadata */));
+  String error_field_name;
+  String error_field_value;
+  String error;
+  EXPECT_FALSE(ValidateBlinkInterestGroup(
+      *blink_interest_group, error_field_name, error_field_value, error));
+  EXPECT_EQ(error_field_name, String::FromUTF8("ad[0].renderUrl"));
+  // The invalid ^ gets escaped.
+  EXPECT_EQ(error_field_value, String::FromUTF8("https://invalid%5E/"));
+  EXPECT_EQ(error, String::FromUTF8(kBadAdUrlError));
+
+  // Now, test against blink::InterestGroup.
+  blink::InterestGroup interest_group;
+  interest_group.owner = url::Origin::Create(GURL(kOriginString));
+  interest_group.name = kNameString;
+  interest_group.ads.emplace();
+  interest_group.ads->emplace_back(
+      blink::InterestGroup::Ad(GURL(kMalformedUrl), /*metadata=*/""));
+  EXPECT_FALSE(interest_group.IsValid());
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, TooLarge) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  std::string long_string(51200, 'n');
+  blink_interest_group->name = String(long_string);
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, "size" /* expected_error_field_name */,
+      "51219" /* expected_error_field_value */,
+      "interest groups must be less than 51200 bytes" /* expected_error */);
+
+  EXPECT_FALSE(CanSerializeAndDeserialize(blink_interest_group));
+
+  // Almost too big enough should still work.
+  long_string = std::string(51200 - 20, 'n');
+  blink_interest_group->name = String(long_string);
+
+  ExpectInterestGroupIsValid(blink_interest_group);
+  EXPECT_TRUE(CanSerializeAndDeserialize(blink_interest_group));
 }
 
 }  // namespace blink

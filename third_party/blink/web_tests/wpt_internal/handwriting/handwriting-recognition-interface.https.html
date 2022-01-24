@@ -12,6 +12,8 @@
   promise_test(async () => {
     assert_not_equals(navigator.queryHandwritingRecognizerSupport, undefined);
     assert_not_equals(navigator.queryHandwritingRecognizerSupport, null);
+    assert_not_equals(navigator.queryHandwritingRecognizer, undefined);
+    assert_not_equals(navigator.queryHandwritingRecognizer, null);
     assert_not_equals(navigator.createHandwritingRecognizer, undefined);
     assert_not_equals(navigator.createHandwritingRecognizer, null);
     assert_not_equals(HandwritingStroke, undefined);
@@ -56,6 +58,19 @@
     assert_equals(response.languages, true);
     assert_equals(response.alternatives, true);
   }, 'queryHandwritingRecognizerSupport works.');
+
+  promise_test(async () => {
+    const response = await navigator.queryHandwritingRecognizer({
+      languages: ['en'],
+    });
+    assert_equals(response.textAlternatives, true);
+    assert_equals(response.textSegmentation, true);
+    assert_equals(typeof response.hints, 'object');
+    assert_equals(response.hints.textContext, true);
+    assert_equals(response.hints.alternatives, true);
+    assert_array_equals(response.hints.recognitionType.sort(), ["text"].sort());
+    assert_array_equals(response.hints.inputType.sort(), ["mouse", "stylus", "touch"].sort());
+  }, 'queryHandwritingRecognizer works.');
 
   promise_test(async () => {
     const response = await navigator.createHandwritingRecognizer({languages: ['en']});

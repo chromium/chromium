@@ -5,11 +5,12 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_STATELESS_H_
 #define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_STATELESS_H_
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
+#include "base/containers/small_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/decode_status.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -35,6 +36,11 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
       VideoCodecProfile profile,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  V4L2StatelessVideoDecoderBackend(const V4L2StatelessVideoDecoderBackend&) =
+      delete;
+  V4L2StatelessVideoDecoderBackend& operator=(
+      const V4L2StatelessVideoDecoderBackend&) = delete;
+
   ~V4L2StatelessVideoDecoderBackend() override;
 
   // V4L2VideoDecoderBackend implementation
@@ -47,7 +53,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   bool ApplyResolution(const gfx::Size& pic_size,
                        const gfx::Rect& visible_rect,
                        const size_t num_output_frames) override;
-  void OnChangeResolutionDone(bool success) override;
+  void OnChangeResolutionDone(CroStatus status) override;
   void ClearPendingRequests(DecodeStatus status) override;
   bool StopInputQueueOnResChange() const override;
 
@@ -80,13 +86,14 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
                   VideoDecoder::DecodeCB cb,
                   int32_t id);
 
+    DecodeRequest(const DecodeRequest&) = delete;
+    DecodeRequest& operator=(const DecodeRequest&) = delete;
+
     // Allow move, but not copy
     DecodeRequest(DecodeRequest&&);
     DecodeRequest& operator=(DecodeRequest&&);
 
     ~DecodeRequest();
-
-    DISALLOW_COPY_AND_ASSIGN(DecodeRequest);
   };
 
   // The reason the decoding is paused.
@@ -158,7 +165,7 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   // operation leads to a frame being output and frames might be reordered, so
   // we don't know when it's safe to drop a timestamp. This means we need to use
   // a cache here, with a size large enough to account for frame reordering.
-  base::MRUCache<int32_t, base::TimeDelta> bitstream_id_to_timestamp_;
+  base::LRUCache<int32_t, base::TimeDelta> bitstream_id_to_timestamp_;
 
   // The task runner we are running on, for convenience.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -172,11 +179,12 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
   // Reference to request queue to get free requests.
   V4L2RequestsQueue* requests_queue_;
 
+  // Map of enqueuing timestamps to wall clock, for histogramming purposes.
+  base::small_map<std::map<int64_t, base::TimeTicks>> encoding_timestamps_;
+
   base::WeakPtr<V4L2StatelessVideoDecoderBackend> weak_this_;
   base::WeakPtrFactory<V4L2StatelessVideoDecoderBackend> weak_this_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2StatelessVideoDecoderBackend);
 };
 
 }  // namespace media

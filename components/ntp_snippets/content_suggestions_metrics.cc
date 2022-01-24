@@ -159,7 +159,7 @@ std::string GetCategoryHistogramName(const char* base_name, Category category) {
 // for the age of suggestions) for use with dynamic histogram names.
 void UmaHistogramAge(const std::string& name, const base::TimeDelta& value) {
   base::Histogram::FactoryTimeGet(
-      name, base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(7), 100,
+      name, base::Seconds(1), base::Days(7), 100,
       base::HistogramBase::kUmaTargetedHistogramFlag)
       ->AddTime(value);
 }
@@ -259,10 +259,10 @@ void OnSuggestionShown(int global_position,
 
   if (category.IsKnownCategory(KnownCategories::ARTICLES)) {
     // Records the time since the fetch time of the displayed snippet.
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        kHistogramTimeSinceSuggestionFetched, base::Time::Now() - fetch_date,
-        base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(7),
-        /*bucket_count=*/100);
+    UMA_HISTOGRAM_CUSTOM_TIMES(kHistogramTimeSinceSuggestionFetched,
+                               base::Time::Now() - fetch_date, base::Seconds(1),
+                               base::Days(7),
+                               /*bucket_count=*/100);
   }
 
   // TODO(markusheintz): Discuss whether the code below should be moved into a

@@ -31,7 +31,7 @@ class LayoutSVGResourcePaintServer : public LayoutSVGResourceContainer {
       : LayoutSVGResourceContainer(element) {}
 
   virtual bool ApplyShader(const SVGResourceClient&,
-                           const FloatRect& reference_box,
+                           const gfx::RectF& reference_box,
                            const AffineTransform* additional_transform,
                            PaintFlags&) = 0;
 };

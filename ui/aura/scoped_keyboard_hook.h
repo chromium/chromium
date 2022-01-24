@@ -24,6 +24,10 @@ class WindowTreeHost;
 class AURA_EXPORT ScopedKeyboardHook {
  public:
   explicit ScopedKeyboardHook(base::WeakPtr<WindowTreeHost> weak_ptr);
+
+  ScopedKeyboardHook(const ScopedKeyboardHook&) = delete;
+  ScopedKeyboardHook& operator=(const ScopedKeyboardHook&) = delete;
+
   virtual ~ScopedKeyboardHook();
 
   // True if |dom_code| is reserved for an active KeyboardLock request.
@@ -36,8 +40,6 @@ class AURA_EXPORT ScopedKeyboardHook {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtr<WindowTreeHost> window_tree_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedKeyboardHook);
 };
 
 }  // namespace aura

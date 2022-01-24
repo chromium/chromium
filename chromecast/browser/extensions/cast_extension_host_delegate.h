@@ -14,6 +14,11 @@ namespace extensions {
 class CastExtensionHostDelegate : public ExtensionHostDelegate {
  public:
   CastExtensionHostDelegate();
+
+  CastExtensionHostDelegate(const CastExtensionHostDelegate&) = delete;
+  CastExtensionHostDelegate& operator=(const CastExtensionHostDelegate&) =
+      delete;
+
   ~CastExtensionHostDelegate() override;
 
   // ExtensionHostDelegate implementation.
@@ -38,9 +43,6 @@ class CastExtensionHostDelegate : public ExtensionHostDelegate {
       const viz::SurfaceId& surface_id,
       const gfx::Size& natural_size) override;
   void ExitPictureInPicture() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionHostDelegate);
 };
 
 }  // namespace extensions

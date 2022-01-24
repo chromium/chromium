@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10.20h2 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
@@ -139,9 +139,6 @@ crbug.com/1041052 [ Linux ] external/wpt/html/canvas/element/fill-and-stroke-sty
 # Sheriff 2020-02-10
 crbug.com/1050559 [ Linux ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?1-1000 [ Skip ]
 
-# Sheriff 2020-03-31
-crbug.com/1066647 [ Linux ] http/tests/devtools/sources/debugger-breakpoints/breakpoint-with-sourcemap-dart.js [ Timeout ]
-
 # Sheriff 2020-06-16
 crbug.com/1095518 [ Linux ] crbug.com/840659 external/wpt/webrtc/simulcast/h264.https.html [ Crash ]
 
@@ -155,10 +152,8 @@ crbug.com/1152088 [ Linux ] fast/dom/cssTarget-crash.html [ Pass Timeout ]
 crbug.com/1174822 [ Linux ] http/tests/mojo/bindings-lite-sw.https.html [ Pass Timeout ]
 
 # Sheriff 2021-02-11
-crbug.com/1177358 [ Linux ] fast/forms/form-invalid-url.html [ Pass Crash ]
 crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-viewport-indices.js [ Pass Timeout ]
 crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-search-reveals-messages.js [ Pass Timeout ]
-crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom.js [ Pass Timeout ]
 
 # Sheriff 2021-02-18
 crbug.com/1179829 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
@@ -187,7 +182,7 @@ crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-
 crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-all-global-events.html [ Pass Timeout ]
 
 # Sheriff 2021-06-02
-crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Pass Failure ]
+crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Pass Failure Timeout ]
 crbug.com/1215632 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-frameset-window.html [ Pass Timeout ]
 crbug.com/1215632 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-windowless-body.html [ Pass Timeout ]
 

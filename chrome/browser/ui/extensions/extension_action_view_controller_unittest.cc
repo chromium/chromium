@@ -362,6 +362,12 @@ class ExtensionActionViewControllerGrayscaleTest
   };
 
   ExtensionActionViewControllerGrayscaleTest() {}
+
+  ExtensionActionViewControllerGrayscaleTest(
+      const ExtensionActionViewControllerGrayscaleTest&) = delete;
+  ExtensionActionViewControllerGrayscaleTest& operator=(
+      const ExtensionActionViewControllerGrayscaleTest&) = delete;
+
   ~ExtensionActionViewControllerGrayscaleTest() override = default;
 
   void RunGrayscaleTest(PermissionType permission_type);
@@ -373,8 +379,6 @@ class ExtensionActionViewControllerGrayscaleTest
       content::WebContents* web_contents,
       scoped_refptr<const extensions::Extension> extensions,
       PermissionType permission_type);
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionViewControllerGrayscaleTest);
 };
 
 void ExtensionActionViewControllerGrayscaleTest::RunGrayscaleTest(

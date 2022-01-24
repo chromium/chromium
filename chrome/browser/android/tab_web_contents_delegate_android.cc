@@ -39,7 +39,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/android/infobars/framebust_block_infobar.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -66,13 +65,11 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
-#include "components/security_state/content/content_utils.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/security_style_explanations.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -360,7 +357,7 @@ WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
     return WebContentsDelegateAndroid::OpenURLFromTab(source, params);
   }
 
-  popup_delegate->nav_params()->created_with_opener = true;
+  popup_delegate->nav_params()->opened_by_another_window = true;
   TabModelList::HandlePopupNavigation(popup_delegate->nav_params());
   return nullptr;
 }
@@ -434,17 +431,6 @@ void TabWebContentsDelegateAndroid::AddNewContents(
   // creates a new TabAndroid instance to own the WebContents.
   if (handled)
     new_contents.release();
-}
-
-blink::SecurityStyle TabWebContentsDelegateAndroid::GetSecurityStyle(
-    WebContents* web_contents,
-    content::SecurityStyleExplanations* security_style_explanations) {
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  DCHECK(helper);
-  return security_state::GetSecurityStyle(helper->GetSecurityLevel(),
-                                          *helper->GetVisibleSecurityState(),
-                                          security_style_explanations);
 }
 
 void TabWebContentsDelegateAndroid::OnDidBlockNavigation(
@@ -586,6 +572,15 @@ bool TabWebContentsDelegateAndroid::IsNightModeEnabled() const {
   if (obj.is_null())
     return false;
   return Java_TabWebContentsDelegateAndroidImpl_isNightModeEnabled(env, obj);
+}
+
+bool TabWebContentsDelegateAndroid::IsForceDarkWebContentEnabled() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null())
+    return false;
+  return Java_TabWebContentsDelegateAndroidImpl_isForceDarkWebContentEnabled(
+      env, obj);
 }
 
 bool TabWebContentsDelegateAndroid::CanShowAppBanners() const {

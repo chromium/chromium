@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -205,8 +204,6 @@ void BrowserPolicyConnector::RegisterPrefs(PrefRegistrySimple* registry) {
       CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
   registry->RegisterBooleanPref(
       policy_prefs::kCloudManagementEnrollmentMandatory, false);
-  registry->RegisterBooleanPref(
-      policy_prefs::kCloudPolicyOverridesPlatformPolicy, false);
 }
 
 }  // namespace policy

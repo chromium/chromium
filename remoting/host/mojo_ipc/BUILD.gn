@@ -1,0 +1,53 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("mojo_ipc") {
+  sources = [
+    "ipc_server.h",
+    "mojo_ipc_server.cc",
+    "mojo_ipc_server.h",
+    "mojo_ipc_util.cc",
+    "mojo_ipc_util.h",
+  ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_ipc_server.cc",
+    "fake_ipc_server.h",
+    "mojo_ipc_test_util.cc",
+    "mojo_ipc_test_util.h",
+  ]
+  deps = [
+    ":mojo_ipc",
+    "//base",
+    "//mojo/public/cpp/platform",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "mojo_ipc_server_unittest.cc" ]
+  deps = [
+    ":mojo_ipc",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+    "//remoting/host/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

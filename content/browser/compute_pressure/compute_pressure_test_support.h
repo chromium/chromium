@@ -30,7 +30,7 @@ std::ostream& operator<<(std::ostream& os, const ComputePressureSample& sample);
 struct CpuCoreSpeedInfo;
 std::ostream& operator<<(std::ostream& os, const CpuCoreSpeedInfo& info);
 
-// Synchronous proxy to a blink::mojom::ComputePressureManager.
+// Synchronous proxy to a blink::mojom::ComputePressureHost.
 class ComputePressureHostSync {
  public:
   // The caller must ensure that `manager` outlives the newly created instance.
@@ -45,7 +45,10 @@ class ComputePressureHostSync {
       mojo::PendingRemote<blink::mojom::ComputePressureObserver> observer);
 
  private:
-  blink::mojom::ComputePressureHost* const host_;
+  // The reference is immutable, so accessing it is thread-safe. The referenced
+  // blink::mojom::ComputePressureHost implementation is called synchronously,
+  // so it's acceptable to rely on its own thread-safety checks.
+  blink::mojom::ComputePressureHost& host_;
 };
 
 // Test double for ComputePressureObserver that records all updates.

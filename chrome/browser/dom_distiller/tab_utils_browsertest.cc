@@ -92,6 +92,10 @@ class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
     scoped_observation_.Observe(
         favicon::ContentFaviconDriver::FromWebContents(web_contents));
   }
+
+  FaviconUpdateWaiter(const FaviconUpdateWaiter&) = delete;
+  FaviconUpdateWaiter& operator=(const FaviconUpdateWaiter&) = delete;
+
   ~FaviconUpdateWaiter() override = default;
 
   void Wait() {
@@ -121,8 +125,6 @@ class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
                           favicon::FaviconDriverObserver>
       scoped_observation_{this};
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconUpdateWaiter);
 };
 
 class DomDistillerTabUtilsBrowserTest : public InProcessBrowserTest {
@@ -182,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
   expected_result.is_mobile_friendly = false;
 
   // This blocks until the navigation has completely finished.
-  ui_test_utils::NavigateToURL(browser(), article_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
   // This blocks until the page is found to be distillable.
   distillability_observer.WaitForResult(expected_result);
 
@@ -217,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, UMATimesAreLogged) {
   expected_result.is_mobile_friendly = false;
 
   // This blocks until the navigation has completely finished.
-  ui_test_utils::NavigateToURL(browser(), article_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
   // This blocks until the page is found to be distillable.
   distillability_observer.WaitForResult(expected_result);
 
@@ -234,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, UMATimesAreLogged) {
   histogram_tester.ExpectTotalCount(kDistilledPageHistogram, 0);
 
   // Go back to the article, check UMA exists for distilled page now.
-  ui_test_utils::NavigateToURL(browser(), article_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
   histogram_tester.ExpectTotalCount(kDistilledPageHistogram, 1);
   // However, there should not be a second distillable histogram.
   histogram_tester.ExpectTotalCount(kDistillablePageHistogram, 1);
@@ -246,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // This blocks until the navigation has completely finished.
-  ui_test_utils::NavigateToURL(browser(), article_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
 
   // Create destination WebContents and add it to the tab strip.
   browser()->tab_strip_model()->AppendWebContents(
@@ -280,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, ToggleOriginalPage) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // This blocks until the navigation has completely finished.
-  ui_test_utils::NavigateToURL(browser(), article_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
 
   // Create and navigate to the distilled page.
   browser()->tab_strip_model()->AppendWebContents(
@@ -322,13 +324,13 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
   expected_result.is_mobile_friendly = false;
 
   // Navigate to the page
-  ui_test_utils::NavigateToURL(browser(), url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
   distillability_observer.WaitForResult(expected_result);
 
   DistillCurrentPageAndView(initial_web_contents);
 
   // Navigate away while starting distillation. This should block bfcache.
-  ui_test_utils::NavigateToURL(browser(), url2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
   EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
       process_id, frame_routing_id,
@@ -345,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, SecurityStateIsNone) {
   expected_result.is_distillable = true;
   expected_result.is_last = false;
   expected_result.is_mobile_friendly = false;
-  ui_test_utils::NavigateToURL(browser(), article_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
   distillability_observer.WaitForResult(expected_result);
 
   // Check security state is not NONE.
@@ -381,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
   expected_result.is_mobile_friendly = false;
   FaviconUpdateWaiter waiter(initial_web_contents);
 
-  ui_test_utils::NavigateToURL(browser(), article_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
   // Ensure the favicon is loaded and the distillability result has also
   // loaded before proceeding with the test.
   waiter.Wait();
@@ -422,7 +424,7 @@ class DistilledPageImageLoadWaiter {
 
   void Wait() {
     base::RepeatingTimer check_timer;
-    check_timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10), this,
+    check_timer.Start(FROM_HERE, base::Milliseconds(10), this,
                       &DistilledPageImageLoadWaiter::OnTimer);
     runner_.Run();
   }
@@ -525,9 +527,9 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTestInsecureContent,
                        DoesNotLoadMixedContent) {
   content::WebContents* initial_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_->GetURL("/dom_distiller/simple_article_mixed_image.html"));
+      https_server_->GetURL("/dom_distiller/simple_article_mixed_image.html")));
   // Security state should be downgraded.
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(initial_web_contents);
@@ -584,7 +586,8 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTestInsecureContent,
                 https_server_expired_->host_port_pair().ToString()));
   std::string path = net::test_server::GetFilePathWithReplacements(
       "/dom_distiller/simple_article_bad_cert_image.html", replacement_text);
-  ui_test_utils::NavigateToURL(browser(), https_server_->GetURL(path));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), https_server_->GetURL(path)));
   // Should have loaded the image with the cert errors.
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(initial_web_contents);

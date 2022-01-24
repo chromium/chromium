@@ -160,8 +160,7 @@ int ToEventFlags(int meta_state, int button_state) {
 }
 
 base::TimeTicks FromAndroidTime(int64_t time_ms) {
-  base::TimeTicks timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time_ms);
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time_ms);
   ValidateEventTimeClock(&timestamp);
   return timestamp;
 }

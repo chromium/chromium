@@ -5,6 +5,10 @@
 #ifndef BASE_FUCHSIA_SCOPED_SERVICE_PUBLISHER_H_
 #define BASE_FUCHSIA_SCOPED_SERVICE_PUBLISHER_H_
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include <lib/async/dispatcher.h>
 #include <lib/fidl/cpp/interface_request.h>
 #include <lib/sys/cpp/outgoing_directory.h>
@@ -39,12 +43,14 @@ class BASE_EXPORT ScopedServicePublisher {
                           std::make_unique<vfs::Service>(std::move(handler)));
   }
 
+  ScopedServicePublisher(const ScopedServicePublisher&) = delete;
+  ScopedServicePublisher& operator=(const ScopedServicePublisher&) = delete;
+
   ~ScopedServicePublisher() { pseudo_dir_->RemoveEntry(name_); }
 
  private:
   vfs::PseudoDir* const pseudo_dir_ = nullptr;
   std::string name_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedServicePublisher);
 };
 
 }  // namespace base

@@ -17,13 +17,13 @@ class RenderFrame;
 // RenderFrame. Owned by WebEngineContentRendererClient, this object will be
 // destroyed on RenderFrame destruction, triggering the destruction of all of
 // the objects it exposes.
-class WebEngineRenderFrameObserver : public content::RenderFrameObserver {
+class WebEngineRenderFrameObserver final : public content::RenderFrameObserver {
  public:
   // |on_render_frame_deleted_callback| must delete |this|.
   WebEngineRenderFrameObserver(
       content::RenderFrame* render_frame,
       base::OnceCallback<void(int)> on_render_frame_deleted_callback);
-  ~WebEngineRenderFrameObserver() final;
+  ~WebEngineRenderFrameObserver() override;
 
   WebEngineRenderFrameObserver(const WebEngineRenderFrameObserver&) = delete;
   WebEngineRenderFrameObserver& operator=(const WebEngineRenderFrameObserver&) =
@@ -35,7 +35,7 @@ class WebEngineRenderFrameObserver : public content::RenderFrameObserver {
 
  private:
   // content::RenderFrameObserver implementation.
-  void OnDestruct() final;
+  void OnDestruct() override;
 
   UrlRequestRulesReceiver url_request_rules_receiver_;
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_LOCALE_LOCALE_TEMPLATE_URL_LOADER_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/search_engines/template_url.h"
 
 using base::android::JavaParamRef;
@@ -23,6 +22,9 @@ class LocaleTemplateUrlLoader {
   void OverrideDefaultSearchProvider(JNIEnv* env);
   void SetGoogleAsDefaultSearch(JNIEnv* env);
 
+  LocaleTemplateUrlLoader(const LocaleTemplateUrlLoader&) = delete;
+  LocaleTemplateUrlLoader& operator=(const LocaleTemplateUrlLoader&) = delete;
+
   virtual ~LocaleTemplateUrlLoader();
 
  protected:
@@ -38,8 +40,6 @@ class LocaleTemplateUrlLoader {
 
   // Pointer to the TemplateUrlService for the main profile.
   TemplateURLService* template_url_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleTemplateUrlLoader);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_LOCALE_LOCALE_TEMPLATE_URL_LOADER_H_

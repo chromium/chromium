@@ -38,6 +38,7 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& SetUseSystemModalContainer();
   ShellSurfaceBuilder& SetNoCommit();
   ShellSurfaceBuilder& SetCanMinimize(bool can_minimize);
+  ShellSurfaceBuilder& SetMaximumSize(const gfx::Size& size);
   ShellSurfaceBuilder& SetDisableMovement();
   ShellSurfaceBuilder& SetCentered();
 
@@ -53,6 +54,7 @@ class ShellSurfaceBuilder {
   gfx::Size root_buffer_size_;
   gfx::BufferFormat root_buffer_format_ = gfx::BufferFormat::RGBA_8888;
   gfx::Point origin_;
+  gfx::Size max_size_;
   ShellSurface* parent_shell_surface_ = nullptr;
   bool use_system_modal_container_ = false;
   bool commit_on_build_ = true;

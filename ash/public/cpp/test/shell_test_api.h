@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;
@@ -40,6 +39,10 @@ class WorkspaceController;
 class ASH_EXPORT ShellTestApi {
  public:
   ShellTestApi();
+
+  ShellTestApi(const ShellTestApi&) = delete;
+  ShellTestApi& operator=(const ShellTestApi&) = delete;
+
   ~ShellTestApi();
 
   // TabletModeController usually takes a screenshot before animating from
@@ -144,8 +147,6 @@ class ASH_EXPORT ShellTestApi {
 
  private:
   Shell* shell_;  // not owned
-
-  DISALLOW_COPY_AND_ASSIGN(ShellTestApi);
 };
 
 }  // namespace ash

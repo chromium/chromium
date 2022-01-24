@@ -58,8 +58,8 @@ std::string FakeScriptExecutorDelegate::GetEmailAddressForAccessTokenAccount() {
   return std::string();
 }
 
-std::string FakeScriptExecutorDelegate::GetLocale() {
-  return "en-US";
+ukm::UkmRecorder* FakeScriptExecutorDelegate::GetUkmRecorder() {
+  return nullptr;
 }
 
 bool FakeScriptExecutorDelegate::EnterState(AutofillAssistantState state) {
@@ -89,6 +89,20 @@ std::string FakeScriptExecutorDelegate::GetBubbleMessage() const {
   return bubble_message_;
 }
 
+void FakeScriptExecutorDelegate::SetTtsMessage(const std::string& message) {
+  tts_message_ = message;
+}
+
+std::string FakeScriptExecutorDelegate::GetTtsMessage() const {
+  return tts_message_;
+}
+
+TtsButtonState FakeScriptExecutorDelegate::GetTtsButtonState() const {
+  return TtsButtonState::DEFAULT;
+}
+
+void FakeScriptExecutorDelegate::MaybePlayTtsMessage() {}
+
 void FakeScriptExecutorDelegate::SetDetails(std::unique_ptr<Details> details,
                                             base::TimeDelta delay) {
   // We ignore |delay|.
@@ -114,8 +128,6 @@ void FakeScriptExecutorDelegate::SetInfoBox(const InfoBox& info_box) {
 void FakeScriptExecutorDelegate::ClearInfoBox() {
   info_box_ = nullptr;
 }
-
-void FakeScriptExecutorDelegate::SetProgress(int progress) {}
 
 bool FakeScriptExecutorDelegate::SetProgressActiveStepIdentifier(
     const std::string& active_step_identifier) {
@@ -203,6 +215,10 @@ void FakeScriptExecutorDelegate::RequireUI() {
   require_ui_ = true;
 }
 
+ProcessedActionStatusDetailsProto& FakeScriptExecutorDelegate::GetLogInfo() {
+  return log_info_;
+}
+
 void FakeScriptExecutorDelegate::AddNavigationListener(
     ScriptExecutorDelegate::NavigationListener* listener) {
   navigation_listeners_.insert(listener);
@@ -230,6 +246,11 @@ void FakeScriptExecutorDelegate::SetExpandSheetForPromptAction(bool expand) {
 void FakeScriptExecutorDelegate::SetBrowseDomainsAllowlist(
     std::vector<std::string> domains) {
   browse_domains_ = std::move(domains);
+}
+
+void FakeScriptExecutorDelegate::SetClientSettings(
+    const ClientSettingsProto& client_settings) {
+  client_settings_.UpdateFromProto(client_settings);
 }
 
 bool FakeScriptExecutorDelegate::SetForm(

@@ -73,32 +73,17 @@
   _safeContent = "Default response";
 }
 
-// On iOS < 14, the legacy TLS interstitial should not be shown.
-- (void)testLegacyTLSInterstitialNotShownOnOldVersions {
-  if (base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-  [ChromeEarlGrey loadURL:_legacyTLSURL];
-  [ChromeEarlGrey waitForWebStateContainingText:_unsafeContent];
-}
-
 // The remaining tests in this file are only relevant for iOS 14 or later.
 
 // Test that loading a page from a server over TLS 1.0 causes the legacy TLS
 // interstitial to show.
 - (void)testLegacyTLSShowsInterstitial {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
   [ChromeEarlGrey loadURL:_legacyTLSURL];
   [ChromeEarlGrey waitForWebStateContainingText:_interstitialContent];
 }
 
 // Test that going back to safety returns the user to the previous page.
 - (void)testLegacyTLSInterstitialBackToSafety {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
   // Load a benign page first.
   [ChromeEarlGrey loadURL:_safeURL];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent];
@@ -115,9 +100,6 @@
 
 // Test that clicking through the interstitial works.
 - (void)testLegacyTLSInterstitialProceed {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
   // Load a benign page first.
   [ChromeEarlGrey loadURL:_safeURL];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent];
@@ -136,9 +118,6 @@
 // Test that clicking through the interstitial is remembered on a reload, and
 // we don't show the interstitial again.
 - (void)testLegacyTLSInterstitialAllowlist {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
   // Trigger the legacy TLS interstitial.
   [ChromeEarlGrey loadURL:_legacyTLSURL];
   [ChromeEarlGrey waitForWebStateContainingText:_interstitialContent];
@@ -161,9 +140,6 @@
 // Test that the allowlist is cleared after session restart and that we show the
 // legacy TLS interstitial again.
 - (void)testLegacyTLSInterstitialAllowlistClearedOnRestart {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
   // Trigger the legacy TLS interstitial.
   [ChromeEarlGrey loadURL:_legacyTLSURL];
   [ChromeEarlGrey waitForWebStateContainingText:_interstitialContent];

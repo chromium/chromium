@@ -15,7 +15,7 @@
 #ifndef MALDOCA_BASE_CLEANUP_H_
 #define MALDOCA_BASE_CLEANUP_H_
 
-#include "absl/cleanup/cleanup.h"
+#include "absl/cleanup/cleanup.h"  // nogncheck
 
 namespace maldoca {
 

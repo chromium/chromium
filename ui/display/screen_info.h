@@ -7,6 +7,7 @@
 
 #include "ui/display/display_export.h"
 #include "ui/display/mojom/screen_orientation.mojom-shared.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -79,8 +80,10 @@ struct DISPLAY_EXPORT ScreenInfo {
   bool is_internal = false;
 
   // Not web-exposed; the display::Display::id(), for internal tracking only.
-  static constexpr int64_t kInvalidDisplayId = -1;
-  int64_t display_id = kInvalidDisplayId;
+  int64_t display_id = kDefaultDisplayId;
+
+  // Expose this constant to Blink.
+  static constexpr int64_t kInvalidDisplayId = display::kInvalidDisplayId;
 
   ScreenInfo();
   ScreenInfo(const ScreenInfo& other);

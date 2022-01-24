@@ -7,7 +7,6 @@
 
 #include "components/performance_manager/frame_node_source.h"
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
@@ -20,6 +19,10 @@ class TabHelperFrameNodeSource : public FrameNodeSource,
                                  public PerformanceManagerTabHelper::Observer {
  public:
   TabHelperFrameNodeSource();
+
+  TabHelperFrameNodeSource(const TabHelperFrameNodeSource&) = delete;
+  TabHelperFrameNodeSource& operator=(const TabHelperFrameNodeSource&) = delete;
+
   ~TabHelperFrameNodeSource() override;
 
   // FrameNodeSource:
@@ -65,8 +68,6 @@ class TabHelperFrameNodeSource : public FrameNodeSource,
   base::ScopedMultiSourceObservation<PerformanceManagerTabHelper,
                                      PerformanceManagerTabHelper::Observer>
       performance_manager_tab_helper_observations_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabHelperFrameNodeSource);
 };
 
 }  // namespace performance_manager

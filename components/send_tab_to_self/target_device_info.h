@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
 class DeviceInfo;

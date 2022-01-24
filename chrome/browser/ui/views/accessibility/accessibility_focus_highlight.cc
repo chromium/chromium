@@ -10,6 +10,7 @@
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/focused_node_details.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
@@ -48,13 +49,13 @@ constexpr int kTotalLayerPadding =
     kPadding + kStrokeWidth + kGradientWidth + kLayerPadding;
 
 // The amount of time it should take for the highlight to fade in.
-constexpr auto kFadeInTime = base::TimeDelta::FromMilliseconds(100);
+constexpr auto kFadeInTime = base::Milliseconds(100);
 
 // The amount of time the highlight should persist before beginning to fade.
-constexpr auto kHighlightPersistTime = base::TimeDelta::FromSeconds(1);
+constexpr auto kHighlightPersistTime = base::Seconds(1);
 
 // The amount of time it should take for the highlight to fade out.
-constexpr auto kFadeOutTime = base::TimeDelta::FromMilliseconds(600);
+constexpr auto kFadeOutTime = base::Milliseconds(600);
 
 }  // namespace
 

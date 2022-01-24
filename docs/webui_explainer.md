@@ -264,12 +264,12 @@ void OvenHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void OvenHandler::HandleBakeDonuts(const base::ListValue* args) {
+void OvenHandler::HandleBakeDonuts(base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(1u, args->GetSize());
+  CHECK_EQ(1u, args.size());
   // JavaScript numbers are doubles.
-  double num_donuts = args->GetList()[0].GetDouble();
+  double num_donuts = args[0].GetDouble();
   GetOven()->BakeDonuts(static_cast<int>(num_donuts));
 }
 ```

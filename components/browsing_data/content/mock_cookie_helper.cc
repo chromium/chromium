@@ -37,7 +37,8 @@ void MockCookieHelper::DeleteCookie(const net::CanonicalCookie& cookie) {
 void MockCookieHelper::AddCookieSamples(const GURL& url,
                                         const std::string& cookie_line) {
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */));
+      url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */));
 
   if (cc.get()) {
     for (const auto& cookie : cookie_list_) {

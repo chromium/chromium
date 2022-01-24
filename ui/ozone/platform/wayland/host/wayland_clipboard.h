@@ -58,6 +58,7 @@ class WaylandClipboard : public PlatformClipboard {
   bool IsSelectionBufferAvailable() const override;
 
  private:
+  friend class WaylandClipboardTest;
   // Get the wl::Clipboard instance owning a given |buffer|. Can return null in
   // case |buffer| is unsupported. E.g: primary selection is not available.
   wl::Clipboard* GetClipboard(ClipboardBuffer buffer);

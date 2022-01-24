@@ -65,9 +65,8 @@ void WelcomeHandler::HandleActivateSignIn(const base::ListValue* args) {
     GoToNewTabPage();
   } else {
     GURL redirect_url = GURL::EmptyGURL();
-    if (args->GetSize() == 1U) {
-      std::string url_string;
-      CHECK(args->GetString(0, &url_string));
+    if (args->GetList().size() == 1U) {
+      const std::string& url_string = args->GetList()[0].GetString();
       redirect_url = GURL(url_string);
       DCHECK(redirect_url.is_valid());
     }
@@ -92,11 +91,11 @@ void WelcomeHandler::RegisterMessages() {
   // constructor, because web_ui hasn't loaded yet at that time.
   is_redirected_welcome_impression_ = isValidRedirectUrl();
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "handleActivateSignIn",
       base::BindRepeating(&WelcomeHandler::HandleActivateSignIn,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "handleUserDecline",
       base::BindRepeating(&WelcomeHandler::HandleUserDecline,
                           base::Unretained(this)));

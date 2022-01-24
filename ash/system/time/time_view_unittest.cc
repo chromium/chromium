@@ -41,6 +41,9 @@ class TimeViewTest : public AshTestBase {
   views::Label* vertical_label_minutes() {
     return time_view_->vertical_label_minutes_;
   }
+  VerticalDateView* vertical_date_view() {
+    return time_view_->vertical_date_view_;
+  }
 
   // Creates a time view with horizontal or vertical |clock_layout|.
   void CreateTimeView(TimeView::ClockLayout clock_layout) {
@@ -115,19 +118,21 @@ TEST_F(TimeViewTest, ShowDateMode) {
 
   // When showing date, the text is expected to be longer since it's showing
   // more content.
-  time_view()->SetShowDateWhenHorizontal(true /* show_date_when_horizontal */);
+  time_view()->SetShowDate(true /* show_date */);
   EXPECT_GT(horizontal_label()->GetText(), time_text);
+  EXPECT_TRUE(vertical_date_view()->GetVisible());
 
   // Resetting show date mode should show only the time.
-  time_view()->SetShowDateWhenHorizontal(false /* show_date_when_horizontal */);
+  time_view()->SetShowDate(false /* show_date */);
   EXPECT_EQ(time_text, horizontal_label()->GetText());
+  EXPECT_FALSE(vertical_date_view()->GetVisible());
 
   time_view()->UpdateClockLayout(TimeView::ClockLayout::VERTICAL_CLOCK);
   std::u16string hours_text = vertical_label_hours()->GetText();
   std::u16string minutes_text = vertical_label_minutes()->GetText();
 
   // Show date mode should not affect vertical view.
-  time_view()->SetShowDateWhenHorizontal(true /* show_date_when_horizontal */);
+  time_view()->SetShowDate(true /* show_date */);
   EXPECT_EQ(hours_text, vertical_label_hours()->GetText());
   EXPECT_EQ(minutes_text, vertical_label_minutes()->GetText());
 }
@@ -137,8 +142,7 @@ TEST_F(TimeViewTest, ShowDateMode) {
 TEST_F(TimeViewTest, UpdateSize) {
   // Set current time to 8:00AM for testing.
   task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
-                                   base::TimeDelta::FromHours(32) -
-                                   base::Time::Now());
+                                   base::Hours(32) - base::Time::Now());
 
   // A newly created horizontal clock only has the horizontal label.
   CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);
@@ -148,11 +152,11 @@ TEST_F(TimeViewTest, UpdateSize) {
   EXPECT_FALSE(test_observer.preferred_size_changed_called());
 
   // Move to 9:59AM. There should be no layout change of the `time_view()`.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(119));
+  task_environment()->FastForwardBy(base::Minutes(119));
   EXPECT_FALSE(test_observer.preferred_size_changed_called());
 
   // Move to 10:00AM. There should be a layout change of the `time_view()`.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(61));
+  task_environment()->FastForwardBy(base::Seconds(61));
   EXPECT_TRUE(test_observer.preferred_size_changed_called());
 }
 

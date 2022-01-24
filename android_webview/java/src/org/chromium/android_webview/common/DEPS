@@ -1,6 +1,5 @@
 include_rules = [
   "+components/background_task_scheduler/android/java",
-  "+components/embedder_support/android/metrics/java",
   "+components/minidump_uploader/android/java",
 
   "-android_webview/glue",

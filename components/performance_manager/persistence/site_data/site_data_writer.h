@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_SITE_DATA_WRITER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PERSISTENCE_SITE_DATA_SITE_DATA_WRITER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
 
@@ -15,6 +14,9 @@ namespace performance_manager {
 // should be sent if/when the tab using it gets loaded.
 class SiteDataWriter {
  public:
+  SiteDataWriter(const SiteDataWriter&) = delete;
+  SiteDataWriter& operator=(const SiteDataWriter&) = delete;
+
   virtual ~SiteDataWriter();
 
   // Records tab load/unload events.
@@ -58,8 +60,6 @@ class SiteDataWriter {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataWriter);
 };
 
 }  // namespace performance_manager

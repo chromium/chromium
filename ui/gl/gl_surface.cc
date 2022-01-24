@@ -28,6 +28,9 @@ base::LazyInstance<base::ThreadLocalPointer<GLSurface>>::Leaky
     current_surface_ = LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
+// static
+GpuPreference GLSurface::forced_gpu_preference_ = GpuPreference::kDefault;
+
 GLSurface::GLSurface() = default;
 
 bool GLSurface::Initialize() {
@@ -148,13 +151,10 @@ gfx::VSyncProvider* GLSurface::GetVSyncProvider() {
 
 void GLSurface::SetVSyncEnabled(bool enabled) {}
 
-bool GLSurface::ScheduleOverlayPlane(int z_order,
-                                     gfx::OverlayTransform transform,
-                                     GLImage* image,
-                                     const gfx::Rect& bounds_rect,
-                                     const gfx::RectF& crop_rect,
-                                     bool enable_blend,
-                                     std::unique_ptr<gfx::GpuFence> gpu_fence) {
+bool GLSurface::ScheduleOverlayPlane(
+    GLImage* image,
+    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    const gfx::OverlayPlaneData& overlay_plane_data) {
   NOTIMPLEMENTED();
   return false;
 }
@@ -270,6 +270,26 @@ GLSurface* GLSurface::GetCurrent() {
 
 bool GLSurface::IsCurrent() {
   return GetCurrent() == this;
+}
+
+// static
+void GLSurface::SetForcedGpuPreference(GpuPreference gpu_preference) {
+  DCHECK_EQ(GpuPreference::kDefault, forced_gpu_preference_);
+  forced_gpu_preference_ = gpu_preference;
+}
+
+// static
+GpuPreference GLSurface::AdjustGpuPreference(GpuPreference gpu_preference) {
+  switch (forced_gpu_preference_) {
+    case GpuPreference::kDefault:
+      return gpu_preference;
+    case GpuPreference::kLowPower:
+    case GpuPreference::kHighPerformance:
+      return forced_gpu_preference_;
+    default:
+      NOTREACHED();
+      return GpuPreference::kDefault;
+  }
 }
 
 GLSurface::~GLSurface() {
@@ -404,6 +424,10 @@ void* GLSurfaceAdapter::GetHandle() {
   return surface_->GetHandle();
 }
 
+void GLSurfaceAdapter::PreserveChildSurfaceControls() {
+  surface_->PreserveChildSurfaceControls();
+}
+
 unsigned int GLSurfaceAdapter::GetBackingFramebufferObject() {
   return surface_->GetBackingFramebufferObject();
 }
@@ -445,16 +469,11 @@ void GLSurfaceAdapter::SetVSyncEnabled(bool enabled) {
 }
 
 bool GLSurfaceAdapter::ScheduleOverlayPlane(
-    int z_order,
-    gfx::OverlayTransform transform,
     GLImage* image,
-    const gfx::Rect& bounds_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  return surface_->ScheduleOverlayPlane(z_order, transform, image, bounds_rect,
-                                        crop_rect, enable_blend,
-                                        std::move(gpu_fence));
+    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    const gfx::OverlayPlaneData& overlay_plane_data) {
+  return surface_->ScheduleOverlayPlane(image, std::move(gpu_fence),
+                                        overlay_plane_data);
 }
 
 bool GLSurfaceAdapter::ScheduleDCLayer(

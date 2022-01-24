@@ -26,7 +26,7 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   // Called immediately after the delegate's construction. Delegates accepting
   // callbacks from the service should *not* invoke callbacks during
   // construction but are free to do so during or anytime after initialization.
-  virtual void Init() = 0;
+  virtual void Init() {}
 
   // Invoked by `HoldingSpaceKeyedService` to notify delegates when holding
   // space persistence has been restored.

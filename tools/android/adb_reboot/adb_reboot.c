@@ -38,6 +38,4 @@ int main(int argc, char ** argv) {
       system("su -c reboot");
     }
   }
-
-  return 0;
 }

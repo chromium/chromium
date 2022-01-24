@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/client_context.h"
+
+#include "base/containers/flat_map.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/device_context.h"
@@ -13,12 +15,9 @@
 namespace autofill_assistant {
 
 using ::testing::_;
-using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::NiceMock;
-using ::testing::Property;
 using ::testing::Return;
-using ::testing::StrEq;
 
 namespace {
 
@@ -95,15 +94,15 @@ TEST_F(ClientContextTest, UpdateWithTriggerContext) {
       .WillOnce(Return(std::pair<int, int>(1080, 1920)));
   EXPECT_CALL(mock_client_, GetScreenOrientation())
       .WillOnce(Return(ClientContextProto::LANDSCAPE));
-  client_context.Update(
-      {std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
-           {"USER_EMAIL", "example@chromium.org"}}),
-       /* exp = */ "1,2,3",
-       /* is_cct = */ true,
-       /* onboarding_shown = */ true,
-       /* is_direct_action = */ true,
-       /* initial_url = */ "https://www.example.com",
-       /* is_in_chrome_triggered = */ true});
+  client_context.Update({std::make_unique<ScriptParameters>(
+                             base::flat_map<std::string, std::string>{
+                                 {"USER_EMAIL", "example@chromium.org"}}),
+                         /* exp = */ "1,2,3",
+                         /* is_cct = */ true,
+                         /* onboarding_shown = */ true,
+                         /* is_direct_action = */ true,
+                         /* initial_url = */ "https://www.example.com",
+                         /* is_in_chrome_triggered = */ true});
 
   auto actual_client_context = client_context.AsProto();
   EXPECT_THAT(actual_client_context.experiment_ids(), Eq("1,2,3"));
@@ -155,27 +154,27 @@ TEST_F(ClientContextTest, AccountMatching) {
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::UNKNOWN));
 
-  client_context.Update(
-      {std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
-           {"USER_EMAIL", "john.doe@chromium.org"}}),
-       /* exp = */ std::string(),
-       /* is_cct = */ false,
-       /* onboarding_shown = */ false,
-       /* is_direct_action = */ false,
-       /* initial_url = */ "https://www.example.com",
-       /* is_in_chrome_triggered = */ false});
+  client_context.Update({std::make_unique<ScriptParameters>(
+                             base::flat_map<std::string, std::string>{
+                                 {"USER_EMAIL", "john.doe@chromium.org"}}),
+                         /* exp = */ std::string(),
+                         /* is_cct = */ false,
+                         /* onboarding_shown = */ false,
+                         /* is_direct_action = */ false,
+                         /* initial_url = */ "https://www.example.com",
+                         /* is_in_chrome_triggered = */ false});
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_MATCHING));
 
-  client_context.Update(
-      {std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
-           {"USER_EMAIL", "lisa.doe@chromium.org"}}),
-       /* exp = */ std::string(),
-       /* is_cct = */ false,
-       /* onboarding_shown = */ false,
-       /* is_direct_action = */ false,
-       /* initial_url = */ "https://www.example.com",
-       /* is_in_chrome_triggered = */ false});
+  client_context.Update({std::make_unique<ScriptParameters>(
+                             base::flat_map<std::string, std::string>{
+                                 {"USER_EMAIL", "lisa.doe@chromium.org"}}),
+                         /* exp = */ std::string(),
+                         /* is_cct = */ false,
+                         /* onboarding_shown = */ false,
+                         /* is_direct_action = */ false,
+                         /* initial_url = */ "https://www.example.com",
+                         /* is_in_chrome_triggered = */ false});
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_NOT_MATCHING));
 }

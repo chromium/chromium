@@ -45,6 +45,7 @@ buildflag_header("buildflags") {
     "ENABLE_ONE_CLICK_SIGNIN=$enable_one_click_signin",
     "ENABLE_SERVICE_DISCOVERY=$enable_service_discovery",
     "ENABLE_SESSION_SERVICE=$enable_session_service",
+    "ENABLE_SIDE_SEARCH=$enable_side_search",
     "ENABLE_SUPERVISED_USERS=$enable_supervised_users",
     "ENABLE_SYSTEM_NOTIFICATIONS=$enable_system_notifications",
     "ENABLE_WAYLAND_SERVER=$enable_wayland_server",
@@ -78,8 +79,12 @@ source_set("channel_info") {
   } else if (is_chromeos_ash) {
     sources += [ "channel_info_chromeos.cc" ]
     deps += [ "//chromeos/crosapi/cpp" ]
+  } else if (is_chromeos_lacros) {
+    sources += [ "channel_info_lacros.cc" ]
   } else if (is_posix) {
     sources += [ "channel_info_posix.cc" ]
+  } else if (is_fuchsia) {
+    sources += [ "channel_info_fuchsia.cc" ]
   }
 }
 
@@ -110,8 +115,6 @@ static_library("common") {
     "content_restriction.h",
     "crash_keys.cc",
     "crash_keys.h",
-    "custom_handlers/protocol_handler.cc",
-    "custom_handlers/protocol_handler.h",
     "google_url_loader_throttle.cc",
     "google_url_loader_throttle.h",
     "logging_chrome.cc",
@@ -158,7 +161,6 @@ static_library("common") {
     "//base",
     "//base:base_static",
     "//base:i18n",
-    "//base/util/values:values_util",
     "//build:branding_buildflags",
     "//chrome:resources",
     "//chrome:strings",
@@ -241,7 +243,7 @@ static_library("common") {
 
   deps = [
     "//build:chromeos_buildflags",
-    "//components/crash/core/app",
+    "//build:os_buildflags",
     "//components/google/core/common",
     "//components/live_caption:constants",
     "//components/metrics:call_stack_profile_builder",
@@ -288,14 +290,8 @@ static_library("common") {
       "extensions/extension_constants.h",
       "extensions/extension_metrics.cc",
       "extensions/extension_metrics.h",
-      "extensions/manifest_handlers/app_display_mode_info.cc",
-      "extensions/manifest_handlers/app_display_mode_info.h",
-      "extensions/manifest_handlers/app_icon_color_info.cc",
-      "extensions/manifest_handlers/app_icon_color_info.h",
       "extensions/manifest_handlers/app_launch_info.cc",
       "extensions/manifest_handlers/app_launch_info.h",
-      "extensions/manifest_handlers/app_theme_color_info.cc",
-      "extensions/manifest_handlers/app_theme_color_info.h",
       "extensions/manifest_handlers/linked_app_icons.cc",
       "extensions/manifest_handlers/linked_app_icons.h",
       "extensions/manifest_handlers/minimum_chrome_version_checker.cc",
@@ -331,6 +327,10 @@ static_library("common") {
       "//media/cast:net",
       "//services/device/public/cpp/usb",
     ]
+  }
+
+  if (!is_fuchsia) {
+    deps += [ "//components/crash/core/app" ]
   }
 
   if (is_mac) {
@@ -402,7 +402,10 @@ static_library("common") {
           "service_process_util_win.cc",
         ]
 
-        public_deps += [ "//printing/mojom" ]
+        public_deps += [
+          "//printing/backend",
+          "//printing/mojom",
+        ]
       }
     }
   }
@@ -426,6 +429,8 @@ static_library("common") {
       "conflicts/remote_module_watcher_win.cc",
       "conflicts/remote_module_watcher_win.h",
       "multi_process_lock_win.cc",
+      "protobuf_init.cc",
+      "protobuf_init.h",
     ]
     deps += [
       "//chrome/chrome_elf:chrome_elf_main_include",
@@ -456,8 +461,6 @@ static_library("common") {
 
   if (enable_plugins) {
     sources += [
-      "plugin_utils.cc",
-      "plugin_utils.h",
       "ppapi_utils.cc",
       "ppapi_utils.h",
     ]
@@ -645,6 +648,9 @@ static_library("constants") {
     sources += [ "chrome_paths_win.cc" ]
     deps += [ "//chrome/install_static:install_static_util" ]
   }
+  if (is_fuchsia) {
+    sources += [ "chrome_paths_fuchsia.cc" ]
+  }
 
   if (enable_widevine && enable_library_cdms) {
     deps += [
@@ -672,8 +678,6 @@ static_library("test_support") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   if (enable_extensions) {
     sources += [
@@ -745,6 +749,7 @@ mojom("mojo_bindings") {
   }
 
   public_deps = [
+    "//components/content_settings/common:mojom",
     "//components/content_settings/core/common:mojo_bindings",
     "//components/no_state_prefetch/common:mojo_bindings",
     "//content/public/common:interfaces",

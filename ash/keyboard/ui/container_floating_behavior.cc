@@ -22,8 +22,8 @@
 namespace keyboard {
 
 // The virtual keyboard show/hide animation durations.
-constexpr auto kShowAnimationDuration = base::TimeDelta::FromMilliseconds(200);
-constexpr auto kHideAnimationDuration = base::TimeDelta::FromMilliseconds(100);
+constexpr auto kShowAnimationDuration = base::Milliseconds(200);
+constexpr auto kHideAnimationDuration = base::Milliseconds(100);
 
 // Distance the keyboard moves during the animation
 constexpr int kAnimationDistance = 30;

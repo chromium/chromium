@@ -17,8 +17,8 @@ TEST(DocumentTransitionRequestTest, PrepareRequest) {
 
   auto request = DocumentTransitionRequest::CreatePrepare(
       DocumentTransitionRequest::Effect::kRevealLeft,
-      /*document_tag=*/0,
-      /*shared_element_count=*/0, std::move(callback));
+      /*document_tag=*/0, DocumentTransitionRequest::TransitionConfig(),
+      /*shared_element_config=*/{}, std::move(callback));
 
   EXPECT_FALSE(called);
   request->TakeFinishedCallback().Run();

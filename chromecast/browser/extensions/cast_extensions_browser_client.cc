@@ -31,6 +31,7 @@
 #include "extensions/browser/updater/null_extension_cache.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/features/feature_channel.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
 using content::BrowserContext;

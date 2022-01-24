@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,6 +18,11 @@ namespace network_config {
 class CrosNetworkConfigTestObserver : public mojom::CrosNetworkConfigObserver {
  public:
   CrosNetworkConfigTestObserver();
+
+  CrosNetworkConfigTestObserver(const CrosNetworkConfigTestObserver&) = delete;
+  CrosNetworkConfigTestObserver& operator=(
+      const CrosNetworkConfigTestObserver&) = delete;
+
   ~CrosNetworkConfigTestObserver() override;
 
   mojo::PendingRemote<mojom::CrosNetworkConfigObserver> GenerateRemote();
@@ -59,8 +63,6 @@ class CrosNetworkConfigTestObserver : public mojom::CrosNetworkConfigObserver {
   int device_state_list_changed_ = 0;
   int vpn_providers_changed_ = 0;
   int network_certificates_changed_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CrosNetworkConfigTestObserver);
 };
 
 }  // namespace network_config

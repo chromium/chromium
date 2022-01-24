@@ -24,6 +24,9 @@ class GaiaOAuthClient : public OAuthClient,
   GaiaOAuthClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+  GaiaOAuthClient(const GaiaOAuthClient&) = delete;
+  GaiaOAuthClient& operator=(const GaiaOAuthClient&) = delete;
+
   ~GaiaOAuthClient() override;
 
   // Redeems |auth_code| using |oauth_client_info| to obtain |refresh_token| and
@@ -72,8 +75,6 @@ class GaiaOAuthClient : public OAuthClient,
   std::string refresh_token_;
   bool need_user_email_;
   CompletionCallback on_done_;
-
-  DISALLOW_COPY_AND_ASSIGN(GaiaOAuthClient);
 };
 
 }  // namespace remoting

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/save_page_type.h"
@@ -24,6 +23,10 @@ class SavePackageFilePicker : public ui::SelectFileDialog::Listener {
                         bool can_save_as_complete,
                         DownloadPrefs* download_prefs,
                         content::SavePackagePathPickedCallback callback);
+
+  SavePackageFilePicker(const SavePackageFilePicker&) = delete;
+  SavePackageFilePicker& operator=(const SavePackageFilePicker&) = delete;
+
   ~SavePackageFilePicker() override;
 
   // Used to disable prompting the user for a directory/filename of the saved
@@ -54,8 +57,6 @@ class SavePackageFilePicker : public ui::SelectFileDialog::Listener {
 
   // For managing select file dialogs.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavePackageFilePicker);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_SAVE_PACKAGE_FILE_PICKER_H_

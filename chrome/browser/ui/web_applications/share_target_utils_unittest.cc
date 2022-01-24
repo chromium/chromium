@@ -72,6 +72,36 @@ TEST(ShareTargetUtils, ExtractUrl) {
   }
 }
 
+TEST(ShareTargetUtils, ExtractTextUrl) {
+  apps::ShareTarget share_target;
+  share_target.params.text = "body";
+  share_target.params.url = "link";
+
+  {
+    apps::mojom::Intent intent;
+    intent.share_text = "One line\nhttps://example.org/";
+    std::vector<SharedField> expected = {{"body", "One line"},
+                                         {"link", "https://example.org/"}};
+    EXPECT_EQ(ExtractSharedFields(share_target, intent), expected);
+  }
+
+  {
+    apps::mojom::Intent intent;
+    intent.share_text = "Two\nlines\nhttps://example.org/";
+    std::vector<SharedField> expected = {{"body", "Two\nlines"},
+                                         {"link", "https://example.org/"}};
+    EXPECT_EQ(ExtractSharedFields(share_target, intent), expected);
+  }
+
+  {
+    apps::mojom::Intent intent;
+    intent.share_text = "Many\nmany\nlines https://example.org/";
+    std::vector<SharedField> expected = {{"body", "Many\nmany\nlines"},
+                                         {"link", "https://example.org/"}};
+    EXPECT_EQ(ExtractSharedFields(share_target, intent), expected);
+  }
+}
+
 TEST(ShareTargetUtils, ExtractTitleTextUrl) {
   apps::mojom::Intent intent;
   intent.share_title = "Browse";

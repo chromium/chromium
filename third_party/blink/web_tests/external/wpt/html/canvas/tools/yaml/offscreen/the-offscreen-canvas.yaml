@@ -328,3 +328,10 @@
     @assert offscreenCanvas.height === n;
     t.done();
 
+- name: 2d.text.setFont.mathFont
+  desc: crbug.com/1212190, make sure offscreencanvas doesn't crash with Math Font
+  testing:
+  - 2d.text.setFont.mathFont
+  code: |
+    ctx.font = "math serif";
+    t.done();

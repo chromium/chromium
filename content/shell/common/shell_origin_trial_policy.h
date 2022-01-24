@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 
@@ -16,6 +15,10 @@ namespace content {
 class ShellOriginTrialPolicy : public blink::OriginTrialPolicy {
  public:
   ShellOriginTrialPolicy();
+
+  ShellOriginTrialPolicy(const ShellOriginTrialPolicy&) = delete;
+  ShellOriginTrialPolicy& operator=(const ShellOriginTrialPolicy&) = delete;
+
   ~ShellOriginTrialPolicy() override;
 
   // blink::OriginTrialPolicy interface
@@ -26,8 +29,6 @@ class ShellOriginTrialPolicy : public blink::OriginTrialPolicy {
 
  private:
   std::vector<blink::OriginTrialPublicKey> public_keys_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellOriginTrialPolicy);
 };
 
 }  // namespace content

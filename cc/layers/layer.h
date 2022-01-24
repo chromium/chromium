@@ -22,6 +22,7 @@
 #include "cc/input/input_handler.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/layers/layer_collections.h"
+#include "cc/layers/region_capture_bounds.h"
 #include "cc/layers/touch_action_region.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
@@ -34,9 +35,9 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/geometry/scroll_offset.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {
 class CopyOutputRequest;
@@ -49,6 +50,8 @@ class LayerTreeHost;
 class LayerTreeHostCommon;
 class LayerTreeImpl;
 class PictureLayer;
+
+struct CommitState;
 
 // For tracing and debugging. The info will be attached to this layer's tracing
 // output.
@@ -131,7 +134,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // A layer is attached to a LayerTreeHost if it or an ancestor layer is set as
   // the root layer of a LayerTreeHost (while noting only a layer without a
   // parent may be set as the root layer).
-  LayerTreeHost* layer_tree_host() const { return layer_tree_host_; }
+  LayerTreeHost* layer_tree_host() { return layer_tree_host_; }
+  const LayerTreeHost* layer_tree_host() const { return layer_tree_host_; }
 
   // This requests the layer and its subtree be rendered and given to the
   // callback. If the copy is unable to be produced (the layer is destroyed
@@ -140,7 +144,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // same source will be aborted.
   void RequestCopyOfOutput(std::unique_ptr<viz::CopyOutputRequest> request);
   // True if a copy request has been inserted on this layer and a commit has not
-  // occured yet.
+  // occurred yet.
   bool HasCopyRequest() const {
     return layer_tree_inputs() && !layer_tree_inputs()->copy_requests.empty();
   }
@@ -160,11 +164,15 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // If the layer says contents_opaque() is true, in layer tree mode, this
   // returns the value set by SetSafeOpaqueBackgroundColor() which should be an
   // opaque color, and in layer list mode, returns an opaque color calculated
-  // from background_color() and layer_tree_host()->background_clor().
+  // from background_color() and the argument host_background_color.
   // Otherwise, it returns something non-opaque. It prefers to return the
   // background_color(), but if the background_color() is opaque (and this layer
   // claims to not be), then SK_ColorTRANSPARENT is returned to avoid intrusive
   // checkerboard where the layer is not covered by the background_color().
+  SkColor SafeOpaqueBackgroundColor(SkColor host_background_color) const;
+
+  // Same as the one-argument version, except that host_background_color is
+  // layer_tree_host()->pending_commit_state()->background_color.
   SkColor SafeOpaqueBackgroundColor() const;
 
   // For layer tree mode only.
@@ -387,24 +395,21 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // position of its subtree, as well as other layers for which this layer is
   // their scroll parent, and their subtrees) is moved up by the amount of
   // offset specified here.
-  void SetScrollOffset(const gfx::ScrollOffset& scroll_offset);
-  gfx::ScrollOffset scroll_offset() const {
+  void SetScrollOffset(const gfx::Vector2dF& scroll_offset);
+  gfx::Vector2dF scroll_offset() const {
     return layer_tree_inputs() ? layer_tree_inputs()->scroll_offset
-                               : gfx::ScrollOffset();
+                               : gfx::Vector2dF();
   }
 
   // For layer tree mode only.
   // Called internally during commit to update the layer with state from the
   // compositor thread. Not to be called externally by users of this class.
-  void SetScrollOffsetFromImplSide(const gfx::ScrollOffset& scroll_offset);
+  void SetScrollOffsetFromImplSide(const gfx::Vector2dF& scroll_offset);
 
   // For layer tree mode only.
   // Marks this layer as being scrollable and needing an associated scroll node,
-  // and specifies the total size of the content to be scrolled (ie the max
-  // scroll offsets. The size should be a union of the layer and its subtree, as
-  // well as any layers for whom this layer is their scroll parent, and their
-  // subtrees, when they are transformed into this layer's space. Thus
-  // transforms of children affect the size of the |scroll_container_bounds|.
+  // and specifies the size of the container in which the scrolling contents are
+  // visible. (Use SetBounds to set the size of the content to be scrolled.)
   // Once scrollable, a Layer cannot become un-scrollable.
   void SetScrollable(const gfx::Size& scroll_container_bounds);
   bool scrollable() const {
@@ -450,6 +455,12 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
     return inputs_.touch_action_region;
   }
 
+  // Set or get the region that should be used for capture.
+  void SetCaptureBounds(RegionCaptureBounds bounds);
+  const RegionCaptureBounds& capture_bounds() const {
+    return inputs_.capture_bounds;
+  }
+
   // Set or get the set of blocking wheel rects of this layer. The
   // |wheel_event_region| is the set of rects for which there is a non-passive
   // wheel event listener that paints into this layer. Mouse wheel messages
@@ -468,8 +479,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // main thread in single-thread mode). It may be set to a null callback, in
   // which case nothing is called. This is for layer tree mode only. Should use
   // ScrollTree::SetScrollCallbacks() in layer list mode.
-  void SetDidScrollCallback(base::RepeatingCallback<
-                            void(const gfx::ScrollOffset&, const ElementId&)>);
+  void SetDidScrollCallback(
+      base::RepeatingCallback<void(const gfx::Vector2dF&, const ElementId&)>);
 
   // For layer tree mode only.
   // Sets the given |subtree_id| on this layer, so that the layer subtree rooted
@@ -599,13 +610,13 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // Captures text content within the given |rect| and returns the associated
   // NodeInfo in |content|.
   virtual void CaptureContent(const gfx::Rect& rect,
-                              std::vector<NodeInfo>* content);
+                              std::vector<NodeInfo>* content) const;
 
   // For tracing. Gets a recorded rasterization of this layer's contents that
   // can be displayed inside representations of this layer. May return null, in
   // which case the layer won't be shown with any content in the tracing
   // display.
-  virtual sk_sp<SkPicture> GetPicture() const;
+  virtual sk_sp<const SkPicture> GetPicture() const;
 
   const LayerDebugInfo* debug_info() const { return debug_info_.get(); }
   LayerDebugInfo& EnsureDebugInfo();
@@ -628,7 +639,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // that state as well. The |layer| passed in will be of the type created by
   // CreateLayerImpl(), so can be safely down-casted if the subclass uses a
   // different type for the compositor thread.
-  virtual void PushPropertiesTo(LayerImpl* layer);
+  virtual void PushPropertiesTo(LayerImpl* layer,
+                                const CommitState& commit_state);
 
   // Internal method to be overridden by Layer subclasses that need to do work
   // during a main frame. The method should compute any state that will need to
@@ -772,10 +784,16 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   void AddDrawableDescendants(int num);
 
   // For debugging. Returns false if the LayerTreeHost this layer is attached to
-  // is in the process of updating layers for a BeginMainFrame. Layer properties
-  // should be changed by the client before the BeginMainFrame, and should not
-  // be changed while the frame is being generated for commit.
+  // is in the process of updating layers or performing commit for a
+  // BeginMainFrame. Layer properties should be changed by the client before the
+  // BeginMainFrame, and should not be changed while the frame is being
+  // generated or committed.
   bool IsPropertyChangeAllowed() const;
+
+  // For debugging. This is less restrictive than IsPropertyChangeAllowed().
+  // It is intended for layer attributes that can be modified during layer
+  // update, but not during commit.
+  bool IsMutationAllowed() const;
 
   void IncreasePaintCount() {
     if (debug_info_)
@@ -859,8 +877,11 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
     SkColor background_color;
 
+    // TODO(crbug.com/1264177): properties that are rarely set should be
+    // moved to a separate sub-struct.
     Region non_fast_scrollable_region;
     TouchActionRegion touch_action_region;
+    RegionCaptureBounds capture_bounds;
     Region wheel_event_region;
 
     ElementId element_id;
@@ -921,7 +942,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
     int mirror_count = 0;
 
-    gfx::ScrollOffset scroll_offset;
+    gfx::Vector2dF scroll_offset;
     // Size of the scroll container that this layer scrolls in.
     gfx::Size scroll_container_bounds;
 
@@ -929,7 +950,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
     //     top left, top right, bottom right, bottom left
     gfx::RoundedCornersF corner_radii;
 
-    base::RepeatingCallback<void(const gfx::ScrollOffset&, const ElementId&)>
+    base::RepeatingCallback<void(const gfx::Vector2dF&, const ElementId&)>
         did_scroll_callback;
     std::vector<std::unique_ptr<viz::CopyOutputRequest>> copy_requests;
   };

@@ -221,10 +221,11 @@ CSSValue* ConsumeCounterStyleAdditiveSymbols(CSSParserTokenRange& range,
 
 CSSValue* ConsumeCounterStyleSpeakAs(CSSParserTokenRange& range,
                                      const CSSParserContext& context) {
-  // Syntax: auto | bullets | numbers | words | spell-out | <counter-style-name>
+  // Syntax: auto | bullets | numbers | words | <counter-style-name>
+  // We don't support spell-out now.
   if (CSSValue* ident = css_parsing_utils::ConsumeIdent<
           CSSValueID::kAuto, CSSValueID::kBullets, CSSValueID::kNumbers,
-          CSSValueID::kWords, CSSValueID::kSpellOut>(range))
+          CSSValueID::kWords>(range))
     return ident;
   if (CSSValue* name =
           css_parsing_utils::ConsumeCounterStyleName(range, context))

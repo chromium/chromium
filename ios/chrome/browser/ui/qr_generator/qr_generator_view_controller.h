@@ -6,15 +6,29 @@
 #define IOS_CHROME_BROWSER_UI_QR_GENERATOR_QR_GENERATOR_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 #import <UIKit/UIKit.h>
 
-// View controller that displays a QR code representing a given website.
-@interface QRGeneratorViewController : ConfirmationAlertViewController
+@protocol ConfirmationAlertActionHandler;
 
-// URL of the page to generate a QR code for.
-@property(nonatomic, copy) NSURL* pageURL;
+// View controller that displays a QR code representing a given website.
+@interface QRGeneratorViewController : UIViewController
+
+// Initializes the view controller with the |title| to be displayed and the
+// |pageURL|.
+- (instancetype)initWithTitle:(NSString*)title pageURL:(NSURL*)pageURL;
+
+// The action handler for interactions in this View Controller.
+@property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
+
+// Returns an image generated from the content of this view controller.
+@property(nonatomic, readonly) UIImage* content;
+
+// The button for the primary action.
+@property(nonatomic, readonly) UIView* primaryActionButton;
+
+// The help button item in the top left of the view.
+@property(nonatomic, readonly) UIBarButtonItem* helpButton;
 
 @end
 

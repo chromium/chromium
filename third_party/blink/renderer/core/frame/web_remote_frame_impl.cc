@@ -315,7 +315,7 @@ void WebRemoteFrameImpl::InitializeFrameVisualProperties(
   visual_properties.page_scale_factor = ancestor_widget->PageScaleInMainFrame();
   visual_properties.is_pinch_gesture_active =
       ancestor_widget->PinchGestureActiveInMainFrame();
-  visual_properties.screen_info = ancestor_widget->GetOriginalScreenInfo();
+  visual_properties.screen_infos = ancestor_widget->GetOriginalScreenInfos();
   visual_properties.visible_viewport_size =
       ancestor_widget->VisibleViewportSizeInDIPs();
   const WebVector<gfx::Rect>& window_segments =
@@ -398,7 +398,7 @@ v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy() const {
 }
 
 gfx::Rect WebRemoteFrameImpl::GetCompositingRect() {
-  return GetFrame()->View()->GetCompositingRect();
+  return ToGfxRect(GetFrame()->View()->GetCompositingRect());
 }
 
 WebString WebRemoteFrameImpl::UniqueName() const {
@@ -424,8 +424,7 @@ WebRemoteFrameImpl::WebRemoteFrameImpl(
       client_(client),
       frame_client_(MakeGarbageCollected<RemoteFrameClientImpl>(this)),
       interface_registry_(interface_registry),
-      associated_interface_provider_(associated_interface_provider),
-      self_keep_alive_(PERSISTENT_FROM_HERE, this) {
+      associated_interface_provider_(associated_interface_provider) {
   DCHECK(client);
 }
 

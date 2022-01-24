@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/ui/settings/block_popups_table_view_controller.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -30,6 +32,10 @@ namespace {
 
 const char* kAllowedPattern = "[*.]example.com";
 const char* kAllowedURL = "http://example.com";
+const char* kAllowedPattern2 = "[*.]example.net";
+const char* kAllowedURL2 = "http://example.net";
+const char* kAllowedPattern3 = "[*.]example.org";
+const char* kAllowedURL3 = "http://example.org";
 
 class BlockPopupsTableViewControllerTest
     : public ChromeTableViewControllerTest {
@@ -119,6 +125,7 @@ TEST_F(BlockPopupsTableViewControllerTest, TestOneAllowedItem) {
   EXPECT_TRUE([controller() navigationItem].rightBarButtonItem);
 }
 
+// Tests deleting one entry for the TableView.
 TEST_F(BlockPopupsTableViewControllerTest, TestOneAllowedItemDeleted) {
   // Get the number of entries before testing, to ensure after adding and
   // deleting, the entries are the same.
@@ -141,8 +148,6 @@ TEST_F(BlockPopupsTableViewControllerTest, TestOneAllowedItemDeleted) {
 
   BlockPopupsTableViewController* popups_controller =
       static_cast<BlockPopupsTableViewController*>(controller());
-  // Put the collectionView in 'edit' mode.
-  [popups_controller editButtonPressed];
   [popups_controller
       deleteItems:@[ [NSIndexPath indexPathForRow:0 inSection:1] ]];
 
@@ -158,6 +163,144 @@ TEST_F(BlockPopupsTableViewControllerTest, TestOneAllowedItemDeleted) {
       chrome_browser_state_.get())
       ->GetSettingsForOneType(ContentSettingsType::POPUPS, &final_entries);
   EXPECT_EQ(initial_entries.size(), final_entries.size());
+}
+
+// Tests deleting 2 items.
+TEST_F(BlockPopupsTableViewControllerTest, TestMultipleAllowedItemsDeleted) {
+  // Get the number of entries before testing, to ensure after adding and
+  // deleting, the entries are the same.
+  ContentSettingsForOneType initial_entries;
+  ios::HostContentSettingsMapFactory::GetForBrowserState(
+      chrome_browser_state_.get())
+      ->GetSettingsForOneType(ContentSettingsType::POPUPS, &initial_entries);
+
+  // Add 3 patterns.
+  AddAllowedPattern(kAllowedPattern, GURL(kAllowedURL));
+  AddAllowedPattern(kAllowedPattern2, GURL(kAllowedURL2));
+  AddAllowedPattern(kAllowedPattern3, GURL(kAllowedURL3));
+
+  std::map<std::string, std::string> patterns_to_url;
+  patterns_to_url.insert(
+      std::pair<std::string, std::string>(kAllowedPattern, kAllowedURL));
+  patterns_to_url.insert(
+      std::pair<std::string, std::string>(kAllowedPattern2, kAllowedURL2));
+  patterns_to_url.insert(
+      std::pair<std::string, std::string>(kAllowedPattern3, kAllowedURL3));
+
+  // Make sure adding the pattern changed the settings size.
+  ContentSettingsForOneType added_entries;
+  ios::HostContentSettingsMapFactory::GetForBrowserState(
+      chrome_browser_state_.get())
+      ->GetSettingsForOneType(ContentSettingsType::POPUPS, &added_entries);
+  EXPECT_NE(initial_entries.size(), added_entries.size());
+
+  CreateController();
+
+  BlockPopupsTableViewController* popups_controller =
+      static_cast<BlockPopupsTableViewController*>(controller());
+
+  // Check that 3 items are displayed.
+  ASSERT_EQ(3L, [popups_controller.tableViewModel numberOfItemsInSection:1]);
+
+  NSIndexPath* first_index = [NSIndexPath indexPathForRow:0 inSection:1];
+  NSIndexPath* second_index = [NSIndexPath indexPathForRow:1 inSection:1];
+  TableViewDetailTextItem* first_item =
+      base::mac::ObjCCastStrict<TableViewDetailTextItem>(
+          [popups_controller.tableViewModel itemAtIndexPath:first_index]);
+  TableViewDetailTextItem* second_item =
+      base::mac::ObjCCastStrict<TableViewDetailTextItem>(
+          [popups_controller.tableViewModel itemAtIndexPath:second_index]);
+
+  std::set<std::string> deleted_patterns{
+      base::SysNSStringToUTF8(first_item.text),
+      base::SysNSStringToUTF8(second_item.text)};
+
+  // Delete patterns 1 and 2. 3 should be left.
+  [popups_controller deleteItems:@[ first_index, second_index ]];
+
+  // Wait for the items to be removed.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return [popups_controller.tableViewModel numberOfItemsInSection:1] == 1;
+      }));
+
+  std::vector<std::string> blocked_urls;
+  std::vector<std::string> allowed_urls;
+  for (std::pair<std::string, std::string> element : patterns_to_url) {
+    if (deleted_patterns.find(element.first) != deleted_patterns.end()) {
+      blocked_urls.push_back(element.second);
+    } else {
+      allowed_urls.push_back(element.second);
+    }
+  }
+
+  // URL3 should be allowed, 1 and 2 shouldn't be.
+  ASSERT_EQ(1UL, allowed_urls.size());
+  ASSERT_EQ(2UL, blocked_urls.size());
+
+  for (std::string url : blocked_urls) {
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+              ios::HostContentSettingsMapFactory::GetForBrowserState(
+                  chrome_browser_state_.get())
+                  ->GetContentSetting(GURL(url), GURL(url),
+                                      ContentSettingsType::POPUPS));
+  }
+  for (std::string url : allowed_urls) {
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              ios::HostContentSettingsMapFactory::GetForBrowserState(
+                  chrome_browser_state_.get())
+                  ->GetContentSetting(GURL(url), GURL(url),
+                                      ContentSettingsType::POPUPS));
+  }
+}
+
+// Tests removing the last 3 URLs. Regression test for https://crbug.com/1232905
+TEST_F(BlockPopupsTableViewControllerTest, TestMultipleAllowedItemsDeleted2) {
+  // Get the number of entries before testing, to ensure after adding and
+  // deleting, the entries are the same.
+  ContentSettingsForOneType initial_entries;
+  ios::HostContentSettingsMapFactory::GetForBrowserState(
+      chrome_browser_state_.get())
+      ->GetSettingsForOneType(ContentSettingsType::POPUPS, &initial_entries);
+
+  // Add 3 patterns.
+  AddAllowedPattern(kAllowedPattern, GURL(kAllowedURL));
+  AddAllowedPattern(kAllowedPattern2, GURL(kAllowedURL2));
+  AddAllowedPattern(kAllowedPattern3, GURL(kAllowedURL3));
+
+  // Make sure adding the pattern changed the settings size.
+  ContentSettingsForOneType added_entries;
+  ios::HostContentSettingsMapFactory::GetForBrowserState(
+      chrome_browser_state_.get())
+      ->GetSettingsForOneType(ContentSettingsType::POPUPS, &added_entries);
+  EXPECT_NE(initial_entries.size(), added_entries.size());
+
+  CreateController();
+
+  BlockPopupsTableViewController* popups_controller =
+      static_cast<BlockPopupsTableViewController*>(controller());
+  [popups_controller deleteItems:@[
+    [NSIndexPath indexPathForRow:0 inSection:1],
+    [NSIndexPath indexPathForRow:1 inSection:1],
+    [NSIndexPath indexPathForRow:2 inSection:1]
+  ]];
+
+  // No URL should be allowed.
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            ios::HostContentSettingsMapFactory::GetForBrowserState(
+                chrome_browser_state_.get())
+                ->GetContentSetting(GURL(kAllowedURL), GURL(kAllowedURL),
+                                    ContentSettingsType::POPUPS));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            ios::HostContentSettingsMapFactory::GetForBrowserState(
+                chrome_browser_state_.get())
+                ->GetContentSetting(GURL(kAllowedURL2), GURL(kAllowedURL2),
+                                    ContentSettingsType::POPUPS));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            ios::HostContentSettingsMapFactory::GetForBrowserState(
+                chrome_browser_state_.get())
+                ->GetContentSetting(GURL(kAllowedURL3), GURL(kAllowedURL3),
+                                    ContentSettingsType::POPUPS));
 }
 
 }  // namespace

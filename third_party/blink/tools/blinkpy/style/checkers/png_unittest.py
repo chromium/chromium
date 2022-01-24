@@ -54,7 +54,7 @@ class PNGCheckerTest(unittest.TestCase):
         fs = MockFileSystem()
 
         file_path = "foo.png"
-        fs.write_binary_file(file_path, "Dummy binary data")
+        fs.write_binary_file(file_path, b"Dummy binary data")
         errors = []
         checker = PNGChecker(file_path, mock_handle_style_error,
                              MockSystemHost(os_name='linux', filesystem=fs))
@@ -62,7 +62,7 @@ class PNGCheckerTest(unittest.TestCase):
         self.assertEqual(len(errors), 0)
 
         file_path = "foo-expected.png"
-        fs.write_binary_file(file_path, "Dummy binary data")
+        fs.write_binary_file(file_path, b"Dummy binary data")
         errors = []
         checker = PNGChecker(file_path, mock_handle_style_error,
                              MockSystemHost(os_name='linux', filesystem=fs))

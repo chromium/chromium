@@ -198,8 +198,8 @@ def main():
         TestPartitionDescription(
             action_name_prefixes={"switch_profile_clients", "sync_"},
             browsertest_dir=sync_tests_location,
-            test_file_prefix="two_client_web_apps_integration_sync_test",
-            test_fixture="TwoClientWebAppsIntegrationSyncTest")
+            test_file_prefix="two_client_web_apps_integration_test",
+            test_fixture="TwoClientWebAppsIntegrationTest")
     ]
     default_partition = TestPartitionDescription(
         action_name_prefixes=set(),

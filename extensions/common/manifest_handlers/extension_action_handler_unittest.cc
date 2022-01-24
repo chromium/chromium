@@ -122,6 +122,11 @@ class ExtensionActionManifestTest
       public testing::WithParamInterface<ActionInfo::Type> {
  public:
   ExtensionActionManifestTest() {}
+
+  ExtensionActionManifestTest(const ExtensionActionManifestTest&) = delete;
+  ExtensionActionManifestTest& operator=(const ExtensionActionManifestTest&) =
+      delete;
+
   ~ExtensionActionManifestTest() override {}
 
   // Constructs and returns a ManifestData object with the provided
@@ -147,8 +152,6 @@ class ExtensionActionManifestTest
  private:
   // The "action" key is restricted to trunk.
   ScopedCurrentChannel scoped_channel_{version_info::Channel::UNKNOWN};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionManifestTest);
 };
 
 // Tests that parsing an action succeeds and properly populates the given

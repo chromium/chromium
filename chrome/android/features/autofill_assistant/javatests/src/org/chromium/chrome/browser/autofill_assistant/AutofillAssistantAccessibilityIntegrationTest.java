@@ -45,7 +45,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto.IntegrationTestSettings;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto;
@@ -148,8 +147,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("autofill_assistant_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -180,6 +178,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1254159")
     public void testBottomSheetListensToAccessibilityChanges() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
@@ -220,8 +219,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("autofill_assistant_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 

@@ -78,8 +78,7 @@ public class AutofillAssistantInputActionIntegrationTest {
     private static final SupportedScriptProto TEST_SCRIPT =
             SupportedScriptProto.newBuilder()
                     .setPath(TEST_PAGE)
-                    .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                            ChipProto.newBuilder().setText("Done")))
+                    .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                     .build();
 
     private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();

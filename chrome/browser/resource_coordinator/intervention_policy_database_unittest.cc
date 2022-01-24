@@ -89,8 +89,8 @@ TEST_F(InterventionPolicyDatabaseTest, EndToEnd) {
                                                 OriginInterventions::DEFAULT));
   WriteProtoToFile(proto_path, policy_map);
 
-  GetDatabase()->InitializeDatabaseWithProtoFile(proto_path, base::Version(),
-                                                 nullptr);
+  GetDatabase()->InitializeDatabaseWithProtoFile(
+      proto_path, base::Version(), base::Value(base::Value::Type::DICTIONARY));
 
   WaitForDatabaseToBeInitialized();
 

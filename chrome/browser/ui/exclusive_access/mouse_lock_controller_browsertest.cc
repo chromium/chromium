@@ -104,8 +104,7 @@ IN_PROC_BROWSER_TEST_F(MouseLockControllerTest,
 
   EXPECT_TRUE(task_runner->HasPendingTask());
   // Must fast forward at least |ExclusiveAccessBubble::kInitialDelayMs|.
-  task_runner->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(InitialBubbleDelayMs() + 20));
+  task_runner->FastForwardBy(base::Milliseconds(InitialBubbleDelayMs() + 20));
   EXPECT_EQ(1ul, mouse_lock_bubble_hide_reason_recorder_.size());
   EXPECT_EQ(ExclusiveAccessBubbleHideReason::kTimeout,
             mouse_lock_bubble_hide_reason_recorder_[0]);
@@ -118,8 +117,7 @@ IN_PROC_BROWSER_TEST_F(MouseLockControllerTest, FastMouseLockUnlockRelock) {
 
   RequestToLockMouse(true, false);
   // Shorter than |ExclusiveAccessBubble::kInitialDelayMs|.
-  task_runner->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(InitialBubbleDelayMs() / 2));
+  task_runner->FastForwardBy(base::Milliseconds(InitialBubbleDelayMs() / 2));
   LostMouseLock();
   RequestToLockMouse(true, true);
 
@@ -137,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(MouseLockControllerTest, SlowMouseLockUnlockRelock) {
 
   RequestToLockMouse(true, false);
   // Longer than |ExclusiveAccessBubble::kInitialDelayMs|.
-  task_runner->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(InitialBubbleDelayMs() + 20));
+  task_runner->FastForwardBy(base::Milliseconds(InitialBubbleDelayMs() + 20));
   LostMouseLock();
   RequestToLockMouse(true, true);
 
@@ -164,15 +161,13 @@ IN_PROC_BROWSER_TEST_F(MouseLockControllerTest,
       GetExclusiveAccessManager()->mouse_lock_controller()->IsMouseLocked());
 
   // A lock request is ignored if we mimic the user-escape happened 1sec ago.
-  SetUserEscapeTimestampForTest(base::TimeTicks::Now() -
-                                base::TimeDelta::FromSeconds(1));
+  SetUserEscapeTimestampForTest(base::TimeTicks::Now() - base::Seconds(1));
   RequestToLockMouse(true, false);
   EXPECT_FALSE(
       GetExclusiveAccessManager()->mouse_lock_controller()->IsMouseLocked());
 
   // A lock request goes through if we mimic the user-escape happened 5secs ago.
-  SetUserEscapeTimestampForTest(base::TimeTicks::Now() -
-                                base::TimeDelta::FromSeconds(5));
+  SetUserEscapeTimestampForTest(base::TimeTicks::Now() - base::Seconds(5));
   RequestToLockMouse(true, false);
   EXPECT_TRUE(
       GetExclusiveAccessManager()->mouse_lock_controller()->IsMouseLocked());

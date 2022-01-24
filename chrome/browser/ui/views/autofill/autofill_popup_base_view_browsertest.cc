@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
@@ -17,7 +16,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
-#include "ui/views/border.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
@@ -50,6 +48,11 @@ class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
 class AutofillPopupBaseViewTest : public InProcessBrowserTest {
  public:
   AutofillPopupBaseViewTest() {}
+
+  AutofillPopupBaseViewTest(const AutofillPopupBaseViewTest&) = delete;
+  AutofillPopupBaseViewTest& operator=(const AutofillPopupBaseViewTest&) =
+      delete;
+
   ~AutofillPopupBaseViewTest() override {}
 
   void SetUpOnMainThread() override {
@@ -81,8 +84,6 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
  protected:
   testing::NiceMock<MockAutofillPopupViewDelegate> mock_delegate_;
   AutofillPopupBaseView* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupBaseViewTest);
 };
 
 // Regression test for crbug.com/391316
@@ -100,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupBaseViewTest, CorrectBoundsTest) {
   // The expected origin is shifted to accomodate the border of the bubble.
   gfx::Point expected_point = gfx::ToRoundedPoint(bounds.bottom_left());
   expected_point.Offset(0, AutofillPopupBaseView::kElementBorderPadding);
-  gfx::Insets border = view_->GetWidget()->GetRootView()->border()->GetInsets();
+  gfx::Insets border = view_->GetWidget()->GetRootView()->GetInsets();
   expected_point.Offset(-border.left(), -border.top());
   EXPECT_EQ(expected_point, display_point);
 }

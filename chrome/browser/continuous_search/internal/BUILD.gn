@@ -15,7 +15,6 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   sources = [
-    "android/java/src/org/chromium/chrome/browser/continuous_search/BackNavigationTabObserver.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserDataImpl.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserDataObserver.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchConfiguration.java",
@@ -50,7 +49,6 @@ android_library("junit") {
   testonly = true
 
   sources = [
-    "android/junit/org/chromium/chrome/browser/continuous_search/BackNavigationTabObserverTest.java",
     "android/junit/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserDataImplTest.java",
     "android/junit/org/chromium/chrome/browser/continuous_search/ContinuousSearchConfigurationTest.java",
     "android/junit/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabObserverTest.java",

@@ -34,6 +34,10 @@ class CONTENT_EXPORT MediaSessionController
  public:
   MediaSessionController(const MediaPlayerId& id,
                          WebContentsImpl* web_contents);
+
+  MediaSessionController(const MediaSessionController&) = delete;
+  MediaSessionController& operator=(const MediaSessionController&) = delete;
+
   ~MediaSessionController() override;
 
   // Must be called when media player metadata changes.
@@ -60,6 +64,7 @@ class CONTENT_EXPORT MediaSessionController
   void OnExitPictureInPicture(int player_id) override;
   void OnSetAudioSinkId(int player_id,
                         const std::string& raw_device_id) override;
+  void OnSetMute(int player_id, bool mute) override;
   RenderFrameHost* render_frame_host() const override;
   absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;
@@ -68,6 +73,8 @@ class CONTENT_EXPORT MediaSessionController
   bool HasVideo(int player_id) const override;
   std::string GetAudioOutputSinkId(int player_id) const override;
   bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
+  media::MediaContentType GetMediaContentType() const override;
+
   // Test helpers.
   int get_player_id_for_testing() const { return player_id_; }
 
@@ -81,6 +88,8 @@ class CONTENT_EXPORT MediaSessionController
   // Called when the media position state of the player has changed.
   void OnMediaPositionStateChanged(
       const media_session::MediaPosition& position);
+
+  void OnMediaMutedStatusChanged(bool mute);
 
   // Called when the media picture-in-picture availability has changed.
   void OnPictureInPictureAvailabilityChanged(bool available);
@@ -123,8 +132,6 @@ class CONTENT_EXPORT MediaSessionController
   bool supports_audio_output_device_switching_ = true;
   media::MediaContentType media_content_type_ =
       media::MediaContentType::Persistent;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionController);
 };
 
 }  // namespace content

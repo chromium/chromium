@@ -6,9 +6,11 @@
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 
 namespace content {
@@ -16,6 +18,16 @@ namespace content {
 using ui::AXPropertyFilter;
 using ui::AXScriptInstruction;
 using ui::AXTreeFormatter;
+
+#if defined(OS_MAC)
+
+constexpr const char kMacAction[]{"mac/action"};
+constexpr const char kMacAttributes[]{"mac/attributes"};
+constexpr const char kMacSelection[]{"mac/selection"};
+constexpr const char kMacTextMarker[]{"mac/textmarker"};
+constexpr const char kMacMethods[]{"mac/methods"};
+
+#endif
 
 // See content/test/data/accessibility/readme.md for an overview.
 //
@@ -30,6 +42,18 @@ using ui::AXTreeFormatter;
 //    exactly match.
 class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
  public:
+  DumpAccessibilityScriptTest() {
+    // Drop 'mac' expectations qualifier both from expectation file names and
+    // from scenario directives.
+    test_helper_.OverrideExpectationType("content");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Enable MathMLCore for some MathML tests.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures, "MathMLCore");
+  }
+
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override;
   void AddPropertyFilter(
       std::vector<AXPropertyFilter>* property_filters,
@@ -91,41 +115,6 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     }
     return dump;
   }
-
-  void RunMacActionTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "mac/action");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(html_file, "accessibility/mac/action");
-  }
-
-  void RunMacSelectionTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path =
-        GetTestFilePath("accessibility", "mac/selection");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(html_file, "accessibility/mac/selection");
-  }
-
-  void RunMacTextMarkerTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path =
-        GetTestFilePath("accessibility", "mac/textmarker");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(html_file, "accessibility/mac/textmarker");
-  }
 };
 
 std::vector<ui::AXPropertyFilter> DumpAccessibilityScriptTest::DefaultFilters()
@@ -136,7 +125,7 @@ std::vector<ui::AXPropertyFilter> DumpAccessibilityScriptTest::DefaultFilters()
 // Parameterize the tests so that each test-pass is run independently.
 struct TestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<AXInspectFactory::Type>& i) const {
+      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
     return std::string(i.param);
   }
 };
@@ -149,46 +138,148 @@ struct TestPassToString {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DumpAccessibilityScriptTest,
-                         ::testing::Values(AXInspectFactory::kMac),
+                         ::testing::Values(ui::AXApiType::kMac),
                          TestPassToString());
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPressButton) {
-  RunMacActionTest(FILE_PATH_LITERAL("ax-press-button.html"));
+  RunTypedTest<kMacAction>("ax-press-button.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXAccessKey) {
+  RunTypedTest<kMacAttributes>("ax-access-key.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIAAtomic) {
+  RunTypedTest<kMacAttributes>("ax-aria-atomic.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIABusy) {
+  RunTypedTest<kMacAttributes>("ax-aria-busy.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIACurrent) {
+  RunTypedTest<kMacAttributes>("ax-aria-current.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIALive) {
+  RunTypedTest<kMacAttributes>("ax-aria-live.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIARelevant) {
+  RunTypedTest<kMacAttributes>("ax-aria-relevant.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXAutocompleteValue) {
+  RunTypedTest<kMacAttributes>("ax-autocomplete-value.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXColumnHeaderUIElements) {
+  RunTypedTest<kMacAttributes>("ax-column-header-ui-elements.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDetailsElements) {
+  RunTypedTest<kMacAttributes>("ax-details-elements.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXInvalid) {
+  RunTypedTest<kMacAttributes>("ax-invalid.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathBase) {
+  RunTypedTest<kMacAttributes>("ax-math-base.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathFractionDenominator) {
+  RunTypedTest<kMacAttributes>("ax-math-fraction-denominator.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathFractionNumerator) {
+  RunTypedTest<kMacAttributes>("ax-math-fraction-numerator.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathOver) {
+  RunTypedTest<kMacAttributes>("ax-math-over.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathPoscripts) {
+  RunTypedTest<kMacAttributes>("ax-math-postscripts.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathPrescripts) {
+  RunTypedTest<kMacAttributes>("ax-math-prescripts.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathRootIndex) {
+  RunTypedTest<kMacAttributes>("ax-math-root-index.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathRootRadicand) {
+  RunTypedTest<kMacAttributes>("ax-math-root-radicand.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathSubscript) {
+  RunTypedTest<kMacAttributes>("ax-math-subscript.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathSuperscript) {
+  RunTypedTest<kMacAttributes>("ax-math-superscript.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathUnder) {
+  RunTypedTest<kMacAttributes>("ax-math-under.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {
-  RunMacSelectionTest(FILE_PATH_LITERAL("selectall-textarea.html"));
+  RunTypedTest<kMacSelection>("selectall-textarea.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        SetSelectionContenteditable) {
-  RunMacSelectionTest(FILE_PATH_LITERAL("set-selection-contenteditable.html"));
+  RunTypedTest<kMacSelection>("set-selection-contenteditable.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SetSelectionTextarea) {
-  RunMacSelectionTest(FILE_PATH_LITERAL("set-selection-textarea.html"));
+  RunTypedTest<kMacSelection>("set-selection-textarea.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       SetSelectedTextRangeContenteditable) {
+  RunTypedTest<kMacSelection>("set-selectedtextrange-contenteditable.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AXNextWordEndTextMarkerForTextMarker) {
-  RunMacTextMarkerTest(
-      FILE_PATH_LITERAL("ax-next-word-end-text-marker-for-text-marker.html"));
+  RunTypedTest<kMacTextMarker>(
+      "ax-next-word-end-text-marker-for-text-marker.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AXPreviousWordStartTextMarkerForTextMarker) {
-  RunMacTextMarkerTest(FILE_PATH_LITERAL(
-      "ax-previous-word-start-text-marker-for-text-marker.html"));
+  RunTypedTest<kMacTextMarker>(
+      "ax-previous-word-start-text-marker-for-text-marker.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXStartTextMarker) {
-  RunMacTextMarkerTest(FILE_PATH_LITERAL("ax_start_text_marker.html"));
+  RunTypedTest<kMacTextMarker>("ax-start-text-marker.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AXTextMarkerRangeForUIElement) {
-  RunMacTextMarkerTest(
-      FILE_PATH_LITERAL("ax-text-marker-range-for-ui-element.html"));
+  RunTypedTest<kMacTextMarker>("ax-text-marker-range-for-ui-element.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityColumnHeaderUIElements) {
+  RunTypedTest<kMacMethods>("accessibility-column-header-ui-elements.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityPlaceholderValue) {
+  RunTypedTest<kMacMethods>("accessibility-placeholder-value.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityTitle) {
+  RunTypedTest<kMacMethods>("accessibility-title.html");
 }
 
 #endif

@@ -80,6 +80,9 @@ class ProfilerTraceBuilder final
                                 const SecurityOrigin* allowed_origin,
                                 base::TimeTicks time_origin);
 
+  ProfilerTraceBuilder(const ProfilerTraceBuilder&) = delete;
+  ProfilerTraceBuilder& operator=(const ProfilerTraceBuilder&) = delete;
+
   void Trace(Visitor*) const;
 
  private:
@@ -99,10 +102,7 @@ class ProfilerTraceBuilder final
   // Discards metadata frames and performs an origin check on the given stack
   // frame, returning true if it either has the same origin as the profiler, or
   // if it should be shared cross origin.
-  bool ShouldIncludeStackFrame(const KURL& script_url,
-                               int script_id,
-                               v8::CpuProfileNode::SourceType source_type,
-                               bool script_shared_cross_origin);
+  bool ShouldIncludeStackFrame(const v8::CpuProfileNode* node);
 
   Member<ScriptState> script_state_;
 
@@ -124,8 +124,6 @@ class ProfilerTraceBuilder final
   // A mapping from a V8 internal script ID to whether or not it passes the
   // same-origin policy for the ScriptState that the trace belongs to.
   HashMap<int, bool> script_same_origin_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfilerTraceBuilder);
 };
 
 }  // namespace blink

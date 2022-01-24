@@ -10,48 +10,69 @@
 
 module chromeos.cros_healthd.mojom;
 
-import "chromeos/services/network_health/public/mojom/network_health.mojom";
-
 // Implemented by clients who desire Bluetooth notifications.
+//
+// NextMinVersion: 1, NextIndex: 6
 interface CrosHealthdBluetoothObserver {
   // Fired when a Bluetooth adapter is added.
-  OnAdapterAdded();
+  OnAdapterAdded@0();
   // Fired when a Bluetooth adapter is removed.
-  OnAdapterRemoved();
+  OnAdapterRemoved@1();
   // Fired when a property of a Bluetooth adapter is changed.
-  OnAdapterPropertyChanged();
+  OnAdapterPropertyChanged@2();
   // Fired when a Bluetooth device is added.
-  OnDeviceAdded();
+  OnDeviceAdded@3();
   // Fired when a Bluetooth device is removed.
-  OnDeviceRemoved();
+  OnDeviceRemoved@4();
   // Fired when a property of a Bluetooth device is changed.
-  OnDevicePropertyChanged();
+  OnDevicePropertyChanged@5();
 };
 
 // Implemented by clients who desire lid notifications.
+//
+// NextMinVersion: 1, NextIndex: 2
 interface CrosHealthdLidObserver {
   // Fired when the device's lid is closed.
-  OnLidClosed();
+  OnLidClosed@0();
   // Fired when the device's lid is opened.
-  OnLidOpened();
+  OnLidOpened@1();
 };
 
 // Implemented by clients who desire power notifications.
+//
+// NextMinVersion: 1, NextIndex: 4
 interface CrosHealthdPowerObserver {
   // Fired when the device begins consuming from an external power source.
-  OnAcInserted();
+  OnAcInserted@0();
   // Fired when the device stops consuming from an external power source.
-  OnAcRemoved();
+  OnAcRemoved@1();
   // Fired when the system receives a suspend request.
-  OnOsSuspend();
+  OnOsSuspend@2();
   // Fired when the system completes a suspend request.
-  OnOsResume();
+  OnOsResume@3();
 };
 
 // Implemented by clients who desire audio notifications.
+//
+// NextMinVersion: 1, NextIndex: 2
 interface CrosHealthdAudioObserver {
   // Fired when the audio underrun happens.
-  OnUnderrun();
+  OnUnderrun@0();
   // Fired when the audio severe underrun happens.
-  OnSevereUnderrun();
+  OnSevereUnderrun@1();
 };
+
+// Implemented by clients who desire Thunderbolt notifications.
+//
+// NextMinVersion: 1, NextIndex: 4
+interface CrosHealthdThunderboltObserver {
+  // Fired when the Thunderbolt plug in.
+  OnAdd@0();
+  // Fired when the Thunderbolt plug out.
+  OnRemove@1();
+  // Fired when the Thunderbolt device is authorized.
+  OnAuthorized@2();
+  // Fired when the Thunderbolt device is unauthorized.
+  OnUnAuthorized@3();
+};
+

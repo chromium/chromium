@@ -26,6 +26,11 @@ class AutocompleteHistoryManagerFactory
       ChromeBrowserState* browser_state);
   static AutocompleteHistoryManagerFactory* GetInstance();
 
+  AutocompleteHistoryManagerFactory(const AutocompleteHistoryManagerFactory&) =
+      delete;
+  AutocompleteHistoryManagerFactory& operator=(
+      const AutocompleteHistoryManagerFactory&) = delete;
+
  private:
   friend class base::NoDestructor<AutocompleteHistoryManagerFactory>;
 
@@ -37,8 +42,6 @@ class AutocompleteHistoryManagerFactory
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteHistoryManagerFactory);
 };
 
 }  // namespace autofill

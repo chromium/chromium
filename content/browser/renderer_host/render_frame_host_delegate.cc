@@ -28,10 +28,6 @@ bool RenderFrameHostDelegate::OnMessageReceived(
   return false;
 }
 
-const GURL& RenderFrameHostDelegate::GetMainFrameLastCommittedURL() {
-  return GURL::EmptyGURL();
-}
-
 bool RenderFrameHostDelegate::DidAddMessageToConsole(
     RenderFrameHostImpl* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,
@@ -40,10 +36,6 @@ bool RenderFrameHostDelegate::DidAddMessageToConsole(
     const std::u16string& source_id,
     const absl::optional<std::u16string>& untrusted_stack_trace) {
   return false;
-}
-
-WebContents* RenderFrameHostDelegate::GetAsWebContents() {
-  return nullptr;
 }
 
 void RenderFrameHostDelegate::RequestMediaAccessPermission(
@@ -87,10 +79,6 @@ void RenderFrameHostDelegate::GetNFC(
 
 bool RenderFrameHostDelegate::CanEnterFullscreenMode() {
   return true;
-}
-
-bool RenderFrameHostDelegate::HasEnteredFullscreenMode() {
-  return false;
 }
 
 void RenderFrameHostDelegate::FullscreenStateChanged(
@@ -139,17 +127,8 @@ RenderFrameHostDelegate::GetJavaRenderFrameHostDelegate() {
 }
 #endif
 
-bool RenderFrameHostDelegate::IsBeingDestroyed() {
-  return false;
-}
-
 Visibility RenderFrameHostDelegate::GetVisibility() {
   return Visibility::HIDDEN;
-}
-
-RenderFrameHostImpl* RenderFrameHostDelegate::GetMainFrameForInnerDelegate(
-    FrameTreeNode* frame_tree_node) {
-  return nullptr;
 }
 
 std::vector<FrameTreeNode*> RenderFrameHostDelegate::GetUnattachedOwnedNodes(
@@ -158,7 +137,8 @@ std::vector<FrameTreeNode*> RenderFrameHostDelegate::GetUnattachedOwnedNodes(
 }
 
 media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-RenderFrameHostDelegate::GetRecordAggregateWatchTimeCallback() {
+RenderFrameHostDelegate::GetRecordAggregateWatchTimeCallback(
+    const GURL& page_main_frame_last_committed_url) {
   return base::NullCallback();
 }
 
@@ -169,10 +149,6 @@ void RenderFrameHostDelegate::IsClipboardPasteContentAllowed(
     IsClipboardPasteContentAllowedCallback callback) {
   std::move(callback).Run(ClipboardPasteContentAllowed(true));
 }
-
-void RenderFrameHostDelegate::OnTextAutosizerPageInfoChanged(
-    RenderFrameHostImpl* source,
-    blink::mojom::TextAutosizerPageInfoPtr page_info) {}
 
 bool RenderFrameHostDelegate::HasSeenRecentScreenOrientationChange() {
   return false;

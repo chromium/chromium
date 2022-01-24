@@ -38,6 +38,6 @@ EntityChange::EntityChange(const std::string& storage_key,
                            EntityData data)
     : storage_key_(storage_key), type_(type), data_(std::move(data)) {}
 
-EntityChange::~EntityChange() {}
+EntityChange::~EntityChange() = default;
 
 }  // namespace syncer

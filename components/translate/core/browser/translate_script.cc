@@ -8,10 +8,10 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/grit/components_resources.h"
@@ -50,7 +50,7 @@ const char TranslateScript::kJavascriptLoaderCallbackQueryValue[] =
     "cr.googleTranslate.onLoadJavascript";
 
 TranslateScript::TranslateScript()
-    : expiration_delay_(base::TimeDelta::FromDays(kExpirationDelayDays)) {}
+    : expiration_delay_(base::Days(kExpirationDelayDays)) {}
 
 TranslateScript::~TranslateScript() {}
 

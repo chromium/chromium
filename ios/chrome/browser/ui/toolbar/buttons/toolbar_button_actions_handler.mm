@@ -54,10 +54,6 @@
   self.navigationAgent->StopLoading();
 }
 
-- (void)bookmarkAction {
-  [self.dispatcher bookmarkCurrentPage];
-}
-
 - (void)searchAction:(id)sender {
   [self.dispatcher closeFindInPage];
   UIView* senderView = base::mac::ObjCCastStrict<UIView>(sender);

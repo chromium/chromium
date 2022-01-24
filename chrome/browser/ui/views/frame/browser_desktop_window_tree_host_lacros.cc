@@ -19,7 +19,10 @@ BrowserDesktopWindowTreeHostLacros::BrowserDesktopWindowTreeHostLacros(
                                         desktop_native_widget_aura,
                                         browser_view,
                                         browser_frame),
-      desktop_native_widget_aura_(desktop_native_widget_aura) {}
+      desktop_native_widget_aura_(desktop_native_widget_aura) {
+  // Lacros receives occlusion information from exo via aura-shell.
+  SetNativeWindowOcclusionEnabled(true);
+}
 
 BrowserDesktopWindowTreeHostLacros::~BrowserDesktopWindowTreeHostLacros() =
     default;

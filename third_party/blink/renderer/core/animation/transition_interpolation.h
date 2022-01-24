@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TRANSITION_INTERPOLATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TRANSITION_INTERPOLATION_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
@@ -93,7 +94,7 @@ class CORE_EXPORT TransitionInterpolation : public Interpolation {
   const Member<CompositorKeyframeValue> compositor_start_;
   const Member<CompositorKeyframeValue> compositor_end_;
 
-  mutable double cached_fraction_ = 0;
+  mutable absl::optional<double> cached_fraction_;
   mutable int cached_iteration_ = 0;
   mutable std::unique_ptr<InterpolableValue> cached_interpolable_value_;
 };

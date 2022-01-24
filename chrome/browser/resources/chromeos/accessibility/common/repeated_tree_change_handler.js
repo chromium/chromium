@@ -29,7 +29,7 @@ class RepeatedTreeChangeHandler {
     this.predicate_ = options.predicate || ((c) => true);
 
     /** @private {!function(!chrome.automation.TreeChange)} */
-    this.handler_ = this.onChange_.bind(this);
+    this.handler_ = change => this.onChange_(change);
 
     chrome.automation.addTreeChangeObserver(filter, this.handler_);
   }
@@ -41,7 +41,7 @@ class RepeatedTreeChangeHandler {
   onChange_(change) {
     if (this.predicate_(change)) {
       this.changeStack_.push(change);
-      setTimeout(this.handleChange_.bind(this), 0);
+      setTimeout(() => this.handleChange_(), 0);
     }
   }
 

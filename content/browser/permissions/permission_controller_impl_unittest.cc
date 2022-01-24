@@ -32,6 +32,10 @@ constexpr char kTestUrl[] = "https://google.com";
 class MockManagerWithRequests : public MockPermissionManager {
  public:
   MockManagerWithRequests() {}
+
+  MockManagerWithRequests(const MockManagerWithRequests&) = delete;
+  MockManagerWithRequests& operator=(const MockManagerWithRequests&) = delete;
+
   ~MockManagerWithRequests() override {}
   MOCK_METHOD(
       void,
@@ -53,9 +57,6 @@ class MockManagerWithRequests : public MockPermissionManager {
               IsPermissionOverridableByDevTools,
               (PermissionType, const absl::optional<url::Origin>&),
               (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockManagerWithRequests);
 };
 
 class PermissionControllerImplTest : public ::testing::Test {
@@ -66,6 +67,11 @@ class PermissionControllerImplTest : public ::testing::Test {
     permission_controller_ =
         std::make_unique<PermissionControllerImpl>(&browser_context_);
   }
+
+  PermissionControllerImplTest(const PermissionControllerImplTest&) = delete;
+  PermissionControllerImplTest& operator=(const PermissionControllerImplTest&) =
+      delete;
+
   ~PermissionControllerImplTest() override {}
 
   void SetUp() override {
@@ -88,8 +94,6 @@ class PermissionControllerImplTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
   std::unique_ptr<PermissionControllerImpl> permission_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionControllerImplTest);
 };
 
 TEST_F(PermissionControllerImplTest, ResettingOverridesForwardsReset) {

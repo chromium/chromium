@@ -14,7 +14,6 @@
 
 #include "util/linux/proc_task_reader.h"
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "test/multiprocess_exec.h"
@@ -123,6 +122,9 @@ class ProcTaskTest : public MultiprocessExec {
     SetChildTestMainFunction("ProcTaskTestChild");
   }
 
+  ProcTaskTest(const ProcTaskTest&) = delete;
+  ProcTaskTest& operator=(const ProcTaskTest&) = delete;
+
  private:
   bool ReadIDFromChild(std::vector<pid_t>* threads) {
     pid_t tid;
@@ -147,8 +149,6 @@ class ProcTaskTest : public MultiprocessExec {
       EXPECT_TRUE(FindThreadID(ids_to_find[index], threads));
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ProcTaskTest);
 };
 
 TEST(ProcTaskReader, ReadChild) {

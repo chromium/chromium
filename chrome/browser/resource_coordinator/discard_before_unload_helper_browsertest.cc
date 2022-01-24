@@ -36,7 +36,7 @@ class HasBeforeUnloadHandlerTest : public InProcessBrowserTest {
   void TestDiscardBeforeUnloadHelper(const char* url,
                                      bool has_beforeunload_helper) {
     GURL gurl(embedded_test_server()->GetURL("a.com", url));
-    ui_test_utils::NavigateToURL(browser(), gurl);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
     auto* wc = browser()->tab_strip_model()->GetActiveWebContents();
     content::PrepContentsForBeforeUnloadTest(wc);
 

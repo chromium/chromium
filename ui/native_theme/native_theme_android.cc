@@ -57,11 +57,6 @@ void NativeThemeAndroid::AdjustCheckboxRadioRectForPadding(SkRect* rect) const {
                 static_cast<int>(rect->bottom()) - 1);
 }
 
-float NativeThemeAndroid::AdjustBorderWidthByZoom(float border_width,
-                                                  float zoom_level) const {
-  return border_width * zoom_level;
-}
-
 SkColor NativeThemeAndroid::ControlsAccentColorForState(
     State state,
     ColorScheme color_scheme) const {

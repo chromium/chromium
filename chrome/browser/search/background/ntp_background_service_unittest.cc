@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -35,13 +36,6 @@ class NtpBackgroundServiceTest : public testing::Test {
 
   ~NtpBackgroundServiceTest() override {}
 
-  void SetUp() override {
-    testing::Test::SetUp();
-
-    service_ =
-        std::make_unique<NtpBackgroundService>(test_shared_loader_factory_);
-  }
-
   void SetUpResponseWithData(const GURL& load_url,
                              const std::string& response) {
     test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
@@ -55,7 +49,14 @@ class NtpBackgroundServiceTest : public testing::Test {
         network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND));
   }
 
-  NtpBackgroundService* service() { return service_.get(); }
+  NtpBackgroundService* service() {
+    if (!service_) {
+      service_ =
+          std::make_unique<NtpBackgroundService>(test_shared_loader_factory_);
+    }
+    return service_.get();
+  }
+
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
@@ -396,4 +397,15 @@ TEST_F(NtpBackgroundServiceTest, GetThumbnailUrl) {
 
   EXPECT_EQ(kValidThumbnailUrl, service()->GetThumbnailUrl(kValidUrl));
   EXPECT_EQ(GURL::EmptyGURL(), service()->GetThumbnailUrl(kInvalidUrl));
+}
+
+TEST_F(NtpBackgroundServiceTest, OverrideBaseUrl) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      "collections-base-url", "https://foo.com");
+  service()->FetchCollectionInfo();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, test_url_loader_factory()->pending_requests()->size());
+  EXPECT_EQ("https://foo.com/cast/chromecast/home/wallpaper/collections?rt=b",
+            test_url_loader_factory()->pending_requests()->at(0).request.url);
 }

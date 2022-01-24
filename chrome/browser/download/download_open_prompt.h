@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace content {
 class WebContents;
@@ -29,6 +28,9 @@ class DownloadOpenPrompt {
       const base::FilePath& file_path,
       OpenCallback open_callback);
 
+  DownloadOpenPrompt(const DownloadOpenPrompt&) = delete;
+  DownloadOpenPrompt& operator=(const DownloadOpenPrompt&) = delete;
+
   // Called to accept the confirmation dialog for testing.
   static void AcceptConfirmationDialogForTesting(
       DownloadOpenPrompt* download_danger_prompt);
@@ -36,8 +38,6 @@ class DownloadOpenPrompt {
  protected:
   DownloadOpenPrompt();
   ~DownloadOpenPrompt();
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadOpenPrompt);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_OPEN_PROMPT_H_

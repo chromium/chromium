@@ -25,7 +25,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/client/gpu_control.h"
 #include "gpu/command_buffer/common/command_buffer.h"
@@ -85,6 +85,10 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
       int32_t stream_id,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  CommandBufferProxyImpl(const CommandBufferProxyImpl&) = delete;
+  CommandBufferProxyImpl& operator=(const CommandBufferProxyImpl&) = delete;
+
   ~CommandBufferProxyImpl() override;
 
   // Connect to a command buffer in the GPU process.
@@ -301,8 +305,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
 
   scoped_refptr<base::SingleThreadTaskRunner> callback_thread_;
   base::WeakPtrFactory<CommandBufferProxyImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferProxyImpl);
 };
 
 }  // namespace gpu

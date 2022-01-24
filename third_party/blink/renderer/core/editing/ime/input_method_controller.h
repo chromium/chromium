@@ -114,6 +114,7 @@ class CORE_EXPORT InputMethodController final
   void DeleteSurroundingText(int before, int after);
   void DeleteSurroundingTextInCodePoints(int before, int after);
 
+  void DidChangeVisibility(const LayoutObject& layout_object);
   void DidLayoutSubtree(const LayoutObject& layout_object);
   void DidUpdateLayout(const LayoutObject& layout_object);
   void LayoutObjectWillBeDestroyed(const LayoutObject& layout_object);

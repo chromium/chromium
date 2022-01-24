@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -32,6 +31,12 @@ class DeviceLocalAccountPolicyProvider
   DeviceLocalAccountPolicyProvider(const std::string& user_id,
                                    DeviceLocalAccountPolicyService* service,
                                    DeviceLocalAccount::Type type);
+
+  DeviceLocalAccountPolicyProvider(const DeviceLocalAccountPolicyProvider&) =
+      delete;
+  DeviceLocalAccountPolicyProvider& operator=(
+      const DeviceLocalAccountPolicyProvider&) = delete;
+
   ~DeviceLocalAccountPolicyProvider() override;
 
   // Factory function to create and initialize a provider for |user_id|. Returns
@@ -79,8 +84,6 @@ class DeviceLocalAccountPolicyProvider
   bool waiting_for_policy_refresh_;
 
   base::WeakPtrFactory<DeviceLocalAccountPolicyProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyProvider);
 };
 
 }  // namespace policy

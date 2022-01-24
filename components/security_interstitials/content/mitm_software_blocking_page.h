@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/core/mitm_software_ui.h"
@@ -46,6 +45,9 @@ class MITMSoftwareBlockingPage : public SSLBlockingPageBase {
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);
 
+  MITMSoftwareBlockingPage(const MITMSoftwareBlockingPage&) = delete;
+  MITMSoftwareBlockingPage& operator=(const MITMSoftwareBlockingPage&) = delete;
+
   ~MITMSoftwareBlockingPage() override;
 
   // SecurityInterstitialPage method:
@@ -62,8 +64,6 @@ class MITMSoftwareBlockingPage : public SSLBlockingPageBase {
 
   const std::unique_ptr<security_interstitials::MITMSoftwareUI>
       mitm_software_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(MITMSoftwareBlockingPage);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_MITM_SOFTWARE_BLOCKING_PAGE_H_

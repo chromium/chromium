@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.net.xpc.CrossPageChannelTest');
 goog.setTestOnly('goog.net.xpc.CrossPageChannelTest');
@@ -30,6 +22,7 @@ const Timer = goog.require('goog.Timer');
 const TransportTypes = goog.require('goog.net.xpc.TransportTypes');
 const Uri = goog.require('goog.Uri');
 const browser = goog.require('goog.labs.userAgent.browser');
+const dispose = goog.require('goog.dispose');
 const dom = goog.require('goog.dom');
 const log = goog.require('goog.log');
 const object = goog.require('goog.object');
@@ -42,13 +35,15 @@ goog.require('goog.testing.jsunit');
 // Set this to false when working on this test.  It needs to be true for
 // automated testing, as some browsers (eg IE8) choke on the large numbers of
 // iframes this test would otherwise leave active.
-var CLEAN_UP_IFRAMES = true;
+/** @const */
+const CLEAN_UP_IFRAMES = true;
 
-var IFRAME_LOAD_WAIT_MS = 1000;
-var stubs = new PropertyReplacer();
-var uniqueId = 0;
-var driver;
-var accessCheckPromise = null;
+/** @const */
+const IFRAME_LOAD_WAIT_MS = 1000;
+const stubs = new PropertyReplacer();
+let uniqueId = 0;
+let driver;
+let accessCheckPromise = null;
 
 testSuite({
 
@@ -59,7 +54,7 @@ testSuite({
     // Show debug log
     const debugDiv = dom.getElement('debugDiv');
     const logger = log.getLogger('goog.net.xpc');
-    logger.setLevel(Level.ALL);
+    log.setLevel(logger, Level.ALL);
     log.addHandler(logger, function(logRecord) {
       const msgElm = dom.createDom(TagName.DIV);
       msgElm.innerHTML = logRecord.getMessage();
@@ -128,6 +123,7 @@ testSuite({
     const channel = new CrossPageChannel(cfg);
     // If the configured role is ignored, this will cause the dynamicly
     // determined role to become INNER.
+    /** @suppress {visibility} suppression added to enable type checking */
     channel.peerWindowObject_ = window.parent;
     assertEquals(
         'Channel should use role from the config.', CrossPageChannelRole.OUTER,
@@ -385,7 +381,9 @@ testSuite({
         true /* reverse */);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testEscapeServiceName() {
+    /** @suppress {visibility} suppression added to enable type checking */
     const escape = CrossPageChannel.prototype.escapeServiceName_;
     assertEquals(
         'Shouldn\'t escape alphanumeric name', 'fooBar123',
@@ -437,7 +435,9 @@ testSuite({
   },
 
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testUnescapeServiceName() {
+    /** @suppress {visibility} suppression added to enable type checking */
     const unescape = CrossPageChannel.prototype.unescapeServiceName_;
     assertEquals(
         'Shouldn\'t modify alphanumeric name', 'fooBar123',
@@ -561,519 +561,522 @@ function checkConnectMismatchedNames(
 
 /**
  * Driver for the tests for CrossPageChannel.
- *
- * @constructor
- * @extends {Disposable}
+ * @unrestricted
  */
-const Driver = function() {
-  Disposable.call(this);
+const Driver = class extends Disposable {
+  constructor() {
+    super();
 
-  /**
-   * The peer iframe.
-   * @type {!Element}
-   * @private
-   */
-  this.iframe_ = null;
+    /**
+     * The peer iframe.
+     * @type {!Element}
+     * @private
+     * @suppress {checkTypes} suppression added to enable type checking
+     */
+    this.iframe_ = null;
 
-  /**
-   * The channel to use.
-   * @type {?CrossPageChannel}
-   * @private
-   */
-  this.channel_ = null;
+    /**
+     * The channel to use.
+     * @type {?CrossPageChannel}
+     * @private
+     */
+    this.channel_ = null;
 
-  /**
-   * Outer frame configuration object.
-   * @type {?Object}
-   * @private
-   */
-  this.outerFrameCfg_ = null;
+    /**
+     * Outer frame configuration object.
+     * @type {?Object}
+     * @private
+     */
+    this.outerFrameCfg_ = null;
 
-  /**
-   * The initial name of the outer channel.
-   * @type {?string}
-   * @private
-   */
-  this.initialOuterChannelName_ = null;
+    /**
+     * The initial name of the outer channel.
+     * @type {?string}
+     * @private
+     */
+    this.initialOuterChannelName_ = null;
 
-  /**
-   * Inner frame configuration object.
-   * @type {?Object}
-   * @private
-   */
-  this.innerFrameCfg_ = null;
+    /**
+     * Inner frame configuration object.
+     * @type {?Object}
+     * @private
+     */
+    this.innerFrameCfg_ = null;
 
-  /**
-   * The contents of the payload of the 'echo' request sent by the inner frame.
-   * @type {?string}
-   * @private
-   */
-  this.innerFrameEchoPayload_ = null;
+    /**
+     * The contents of the payload of the 'echo' request sent by the inner
+     * frame.
+     * @type {?string}
+     * @private
+     */
+    this.innerFrameEchoPayload_ = null;
 
-  /**
-   * The contents of the payload of the 'echo' request sent by the outer frame.
-   * @type {?string}
-   * @private
-   */
-  this.outerFrameEchoPayload_ = null;
+    /**
+     * The contents of the payload of the 'echo' request sent by the outer
+     * frame.
+     * @type {?string}
+     * @private
+     */
+    this.outerFrameEchoPayload_ = null;
 
-  /**
-   * A resolver which fires its promise when the inner frame receives an echo.
-   * @type {!Resolver}
-   * @private
-   */
-  this.innerFrameResponseReceived_ = GoogPromise.withResolver();
+    /**
+     * A resolver which fires its promise when the inner frame receives an echo.
+     * @type {!Resolver}
+     * @private
+     */
+    this.innerFrameResponseReceived_ = GoogPromise.withResolver();
 
-  /**
-   * A resolver which fires its promise when the outer frame receives an echo.
-   * @type {!Resolver}
-   * @private
-   */
-  this.outerFrameResponseReceived_ = GoogPromise.withResolver();
-};
-goog.inherits(Driver, Disposable);
-
-
-/** @override */
-Driver.prototype.disposeInternal = function() {
-  // Required to make this test perform acceptably (and pass) on slow browsers,
-  // esp IE8.
-  if (CLEAN_UP_IFRAMES) {
-    dom.removeNode(this.iframe_);
-    delete this.iframe_;
+    /**
+     * A resolver which fires its promise when the outer frame receives an echo.
+     * @type {!Resolver}
+     * @private
+     */
+    this.outerFrameResponseReceived_ = GoogPromise.withResolver();
   }
-  goog.dispose(this.channel_);
-  this.innerFrameResponseReceived_.promise.cancel();
-  this.outerFrameResponseReceived_.promise.cancel();
-  Driver.base(this, 'disposeInternal');
-};
 
-
-/**
- * Returns the child peer's window object.
- * @return {!Window} Child peer's window.
- * @private
- */
-Driver.prototype.getInnerPeer_ = function() {
-  return this.iframe_.contentWindow;
-};
-
-
-/**
- * Sets up the configuration objects for the inner and outer frames.
- * @param {string=} opt_iframeId If present, the ID of the iframe to use,
- *     otherwise, tells the channel to generate an iframe ID.
- * @param {boolean=} opt_oneSidedHandshake Whether the one sided handshake
- *     config option should be set.
- * @param {string=} opt_channelName The name of the channel to use, or null
- *     to generate one.
- * @param {number=} opt_innerProtocolVersion The native transport protocol
- *     version used in the inner iframe.
- * @param {number=} opt_outerProtocolVersion The native transport protocol
- *     version used in the outer iframe.
- * @param {boolean=} opt_randomChannelNames Whether the different ends of the
- *     channel should be allowed to pick differing, random names.
- * @return {string} The name of the created channel.
- * @private
- */
-Driver.prototype.setConfiguration_ = function(
-    opt_iframeId, opt_oneSidedHandshake, opt_channelName,
-    opt_innerProtocolVersion, opt_outerProtocolVersion,
-    opt_randomChannelNames) {
-  const cfg = {};
-  if (opt_iframeId) {
-    cfg[CfgFields.IFRAME_ID] = opt_iframeId;
+  /** @override */
+  disposeInternal() {
+    // Required to make this test perform acceptably (and pass) on slow
+    // browsers, esp IE8.
+    if (CLEAN_UP_IFRAMES) {
+      dom.removeNode(this.iframe_);
+      delete this.iframe_;
+    }
+    dispose(this.channel_);
+    this.innerFrameResponseReceived_.promise.cancel();
+    this.outerFrameResponseReceived_.promise.cancel();
+    super.disposeInternal();
   }
-  cfg[CfgFields.PEER_URI] = 'testdata/inner_peer.html';
-  if (!opt_randomChannelNames) {
-    const channelName = opt_channelName || 'test_channel' + uniqueId++;
-    cfg[CfgFields.CHANNEL_NAME] = channelName;
+
+  /**
+   * Returns the child peer's window object.
+   * @return {!Window} Child peer's window.
+   * @private
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
+  getInnerPeer_() {
+    return this.iframe_.contentWindow;
   }
-  cfg[CfgFields.LOCAL_POLL_URI] = 'does-not-exist.html';
-  cfg[CfgFields.PEER_POLL_URI] = 'does-not-exist.html';
-  cfg[CfgFields.ONE_SIDED_HANDSHAKE] = !!opt_oneSidedHandshake;
-  cfg[CfgFields.NATIVE_TRANSPORT_PROTOCOL_VERSION] = opt_outerProtocolVersion;
-  function resolveUri(fieldName) {
-    cfg[fieldName] =
-        Uri.resolve(window.location.href, cfg[fieldName]).toString();
-  }
-  resolveUri(CfgFields.PEER_URI);
-  resolveUri(CfgFields.LOCAL_POLL_URI);
-  resolveUri(CfgFields.PEER_POLL_URI);
-  this.outerFrameCfg_ = cfg;
-  this.innerFrameCfg_ = object.clone(cfg);
-  this.innerFrameCfg_[CfgFields.NATIVE_TRANSPORT_PROTOCOL_VERSION] =
-      opt_innerProtocolVersion;
-};
 
-
-/**
- * Creates an outer frame channel object.
- * @return {string}
- * @private
- */
-Driver.prototype.createChannel_ = function() {
-  if (this.channel_) {
-    this.channel_.dispose();
-  }
-  this.channel_ = new CrossPageChannel(this.outerFrameCfg_);
-  this.channel_.registerService('echo', goog.bind(this.echoHandler_, this));
-  this.channel_.registerService(
-      'response', goog.bind(this.responseHandler_, this));
-
-  return this.channel_.name;
-};
-
-
-/**
- * Checks the names of the inner and outer frames meet expectations.
- * @private
- */
-Driver.prototype.checkChannelNames_ = function() {
-  const outerName = this.channel_.name;
-  const innerName = this.getInnerPeer_().channel.name;
-  const configName = this.innerFrameCfg_[CfgFields.CHANNEL_NAME] || null;
-
-  // The outer channel never changes its name.
-  assertEquals(this.initialOuterChannelName_, outerName);
-  // The name should be as configured, if it was configured.
-  if (configName) {
-    assertEquals(configName, innerName);
-  }
-  // The names of both ends of the channel should match.
-  assertEquals(innerName, outerName);
-  G_testRunner.log('Channel name: ' + innerName);
-};
-
-
-/**
- * Returns the configuration of the xpc.
- * @return {?Object} The configuration of the xpc.
- */
-Driver.prototype.getInnerFrameConfiguration = function() {
-  return this.innerFrameCfg_;
-};
-
-
-/**
- * Creates the peer iframe.
- * @param {string=} opt_iframeId If present, the ID of the iframe to create,
- *     otherwise, generates an iframe ID.
- * @param {boolean=} opt_oneSidedHandshake Whether a one sided handshake is
- *     specified.
- * @param {number=} opt_innerProtocolVersion The native transport protocol
- *     version used in the inner iframe.
- * @param {number=} opt_outerProtocolVersion The native transport protocol
- *     version used in the outer iframe.
- * @param {boolean=} opt_randomChannelNames Whether the ends of the channel
- *     should be allowed to pick differing, random names.
- * @return {!Array<string>} The id of the created iframe and the name of the
- *     created channel.
- */
-Driver.prototype.createPeerIframe = function(
-    opt_iframeId, opt_oneSidedHandshake, opt_innerProtocolVersion,
-    opt_outerProtocolVersion, opt_randomChannelNames) {
-  let expectedIframeId;
-
-  if (opt_iframeId) {
-    expectedIframeId = opt_iframeId = opt_iframeId + uniqueId++;
-  } else {
-    // Have createPeerIframe() generate an ID
-    stubs.set(xpc, 'getRandomString', function(length) {
-      return '' + length;
-    });
-    expectedIframeId = 'xpcpeer4';
-  }
-  assertNull(
-      'element[id=' + expectedIframeId + '] exists',
-      dom.getElement(expectedIframeId));
-
-  this.setConfiguration_(
-      opt_iframeId, opt_oneSidedHandshake, undefined /* opt_channelName */,
+  /**
+   * Sets up the configuration objects for the inner and outer frames.
+   * @param {string=} opt_iframeId If present, the ID of the iframe to use,
+   *     otherwise, tells the channel to generate an iframe ID.
+   * @param {boolean=} opt_oneSidedHandshake Whether the one sided handshake
+   *     config option should be set.
+   * @param {string=} opt_channelName The name of the channel to use, or null
+   *     to generate one.
+   * @param {number=} opt_innerProtocolVersion The native transport protocol
+   *     version used in the inner iframe.
+   * @param {number=} opt_outerProtocolVersion The native transport protocol
+   *     version used in the outer iframe.
+   * @param {boolean=} opt_randomChannelNames Whether the different ends of the
+   *     channel should be allowed to pick differing, random names.
+   * @return {string} The name of the created channel.
+   * @private
+   * @suppress {missingReturn} suppression added to enable type checking
+   */
+  setConfiguration_(
+      opt_iframeId, opt_oneSidedHandshake, opt_channelName,
       opt_innerProtocolVersion, opt_outerProtocolVersion,
-      opt_randomChannelNames);
-  const channelName = this.createChannel_();
-  this.initialOuterChannelName_ = channelName;
-  this.iframe_ = this.channel_.createPeerIframe(document.body);
-
-  assertEquals(expectedIframeId, this.iframe_.id);
-};
-
-
-/**
- * Checks if the peer iframe has been created.
- */
-Driver.prototype.checkPeerIframe = function() {
-  assertNotNull(this.iframe_);
-  const peer = this.getInnerPeer_();
-  assertNotNull(peer);
-  assertNotNull(peer.document);
-};
-
-
-/**
- * Starts the connection. The connection happens asynchronously.
- * @param {boolean} fullLifeCycleTest
- * @param {boolean} outerFrameReconnectSupported
- * @param {boolean} innerFrameMigrationSupported
- * @param {boolean} reverse
- * @return {!GoogPromise<undefined>}
- */
-Driver.prototype.connect = function(
-    fullLifeCycleTest, outerFrameReconnectSupported,
-    innerFrameMigrationSupported, reverse) {
-  if (!this.isTransportTestable_()) {
-    return;
+      opt_randomChannelNames) {
+    const cfg = {};
+    if (opt_iframeId) {
+      cfg[CfgFields.IFRAME_ID] = opt_iframeId;
+    }
+    cfg[CfgFields.PEER_URI] = 'testdata/inner_peer.html';
+    if (!opt_randomChannelNames) {
+      const channelName = opt_channelName || 'test_channel' + uniqueId++;
+      cfg[CfgFields.CHANNEL_NAME] = channelName;
+    }
+    cfg[CfgFields.LOCAL_POLL_URI] = 'does-not-exist.html';
+    cfg[CfgFields.PEER_POLL_URI] = 'does-not-exist.html';
+    cfg[CfgFields.ONE_SIDED_HANDSHAKE] = !!opt_oneSidedHandshake;
+    cfg[CfgFields.NATIVE_TRANSPORT_PROTOCOL_VERSION] = opt_outerProtocolVersion;
+    function resolveUri(fieldName) {
+      cfg[fieldName] =
+          Uri.resolve(window.location.href, cfg[fieldName]).toString();
+    }
+    resolveUri(CfgFields.PEER_URI);
+    resolveUri(CfgFields.LOCAL_POLL_URI);
+    resolveUri(CfgFields.PEER_POLL_URI);
+    this.outerFrameCfg_ = cfg;
+    this.innerFrameCfg_ = object.clone(cfg);
+    this.innerFrameCfg_[CfgFields.NATIVE_TRANSPORT_PROTOCOL_VERSION] =
+        opt_innerProtocolVersion;
   }
 
-  // Set the criteria for the initial handshake portion of the test.
-  this.reinitializePromises_();
+  /**
+   * Creates an outer frame channel object.
+   * @return {string}
+   * @private
+   * @suppress {checkTypes} suppression added to enable type checking
+   */
+  createChannel_() {
+    if (this.channel_) {
+      this.channel_.dispose();
+    }
+    this.channel_ = new CrossPageChannel(this.outerFrameCfg_);
+    this.channel_.registerService('echo', goog.bind(this.echoHandler_, this));
+    this.channel_.registerService(
+        'response', goog.bind(this.responseHandler_, this));
 
-  this.innerFrameResponseReceived_.promise.then(
-      this.checkChannelNames_, null, this);
+    return this.channel_.name;
+  }
 
-  if (fullLifeCycleTest) {
+  /**
+   * Checks the names of the inner and outer frames meet expectations.
+   * @private
+   * @suppress {undefinedVars} suppression added to enable type checking
+   */
+  checkChannelNames_() {
+    const outerName = this.channel_.name;
+    /**
+     * @suppress {missingProperties} suppression added to enable type checking
+     */
+    const innerName = this.getInnerPeer_().channel.name;
+    const configName = this.innerFrameCfg_[CfgFields.CHANNEL_NAME] || null;
+
+    // The outer channel never changes its name.
+    assertEquals(this.initialOuterChannelName_, outerName);
+    // The name should be as configured, if it was configured.
+    if (configName) {
+      assertEquals(configName, innerName);
+    }
+    // The names of both ends of the channel should match.
+    assertEquals(innerName, outerName);
+    G_testRunner.log('Channel name: ' + innerName);
+  }
+
+  /**
+   * Returns the configuration of the xpc.
+   * @return {?Object} The configuration of the xpc.
+   */
+  getInnerFrameConfiguration() {
+    return this.innerFrameCfg_;
+  }
+
+  /**
+   * Creates the peer iframe.
+   * @param {string=} opt_iframeId If present, the ID of the iframe to create,
+   *     otherwise, generates an iframe ID.
+   * @param {boolean=} opt_oneSidedHandshake Whether a one sided handshake is
+   *     specified.
+   * @param {number=} opt_innerProtocolVersion The native transport protocol
+   *     version used in the inner iframe.
+   * @param {number=} opt_outerProtocolVersion The native transport protocol
+   *     version used in the outer iframe.
+   * @param {boolean=} opt_randomChannelNames Whether the ends of the channel
+   *     should be allowed to pick differing, random names.
+   * @return {!Array<string>} The id of the created iframe and the name of the
+   *     created channel.
+   * @suppress {missingReturn} suppression added to enable type checking
+   */
+  createPeerIframe(
+      opt_iframeId, opt_oneSidedHandshake, opt_innerProtocolVersion,
+      opt_outerProtocolVersion, opt_randomChannelNames) {
+    let expectedIframeId;
+
+    if (opt_iframeId) {
+      expectedIframeId = opt_iframeId = opt_iframeId + uniqueId++;
+    } else {
+      // Have createPeerIframe() generate an ID
+      stubs.set(xpc, 'getRandomString', function(length) {
+        return '' + length;
+      });
+      expectedIframeId = 'xpcpeer4';
+    }
+    assertNull(
+        'element[id=' + expectedIframeId + '] exists',
+        dom.getElement(expectedIframeId));
+
+    this.setConfiguration_(
+        opt_iframeId, opt_oneSidedHandshake, undefined /* opt_channelName */,
+        opt_innerProtocolVersion, opt_outerProtocolVersion,
+        opt_randomChannelNames);
+    const channelName = this.createChannel_();
+    this.initialOuterChannelName_ = channelName;
+    this.iframe_ = this.channel_.createPeerIframe(document.body);
+
+    assertEquals(expectedIframeId, this.iframe_.id);
+  }
+
+  /**
+   * Checks if the peer iframe has been created.
+   */
+  checkPeerIframe() {
+    assertNotNull(this.iframe_);
+    const peer = this.getInnerPeer_();
+    assertNotNull(peer);
+    assertNotNull(peer.document);
+  }
+
+  /**
+   * Starts the connection. The connection happens asynchronously.
+   * @param {boolean} fullLifeCycleTest
+   * @param {boolean} outerFrameReconnectSupported
+   * @param {boolean} innerFrameMigrationSupported
+   * @param {boolean} reverse
+   * @return {!GoogPromise<undefined>}
+   * @suppress {checkTypes} suppression added to enable type checking
+   */
+  connect(
+      fullLifeCycleTest, outerFrameReconnectSupported,
+      innerFrameMigrationSupported, reverse) {
+    if (!this.isTransportTestable_()) {
+      return;
+    }
+
+    // Set the criteria for the initial handshake portion of the test.
+    this.reinitializePromises_();
+
     this.innerFrameResponseReceived_.promise.then(
-        goog.bind(
-            this.testReconnects_, this, outerFrameReconnectSupported,
-            innerFrameMigrationSupported));
+        this.checkChannelNames_, null, this);
+
+    if (fullLifeCycleTest) {
+      this.innerFrameResponseReceived_.promise.then(goog.bind(
+          this.testReconnects_, this, outerFrameReconnectSupported,
+          innerFrameMigrationSupported));
+    }
+
+    this.continueConnect_(reverse);
+    return this.innerFrameResponseReceived_.promise;
   }
 
-  this.continueConnect_(reverse);
-  return this.innerFrameResponseReceived_.promise;
-};
+  /**
+   * @param {boolean} reverse
+   * @private
+   * @suppress {missingProperties} suppression added to enable type checking
+   */
+  continueConnect_(reverse) {
+    // Wait until the peer is fully established.  Establishment is sometimes
+    // very slow indeed, especially on virtual machines, so a fixed timeout is
+    // not suitable.  This wait is required because we want to take precise
+    // control of the channel startup timing, and shouldn't be needed in
+    // production use, where the inner frame's channel is typically not started
+    // by a DOM call as it is here.
+    if (!this.getInnerPeer_() || !this.getInnerPeer_().instantiateChannel) {
+      window.setTimeout(goog.bind(this.continueConnect_, this, reverse), 100);
+      return;
+    }
 
+    const connectFromOuterFrame = goog.bind(
+        this.channel_.connect, this.channel_,
+        goog.bind(this.outerFrameConnected_, this));
+    const innerConfig = this.innerFrameCfg_;
+    /**
+     * @suppress {missingProperties} suppression added to enable type checking
+     */
+    const connectFromInnerFrame = goog.bind(
+        this.getInnerPeer_().instantiateChannel, this.getInnerPeer_(),
+        innerConfig);
 
-/**
- * @param {boolean} reverse
- * @private
- */
-Driver.prototype.continueConnect_ = function(reverse) {
-  // Wait until the peer is fully established.  Establishment is sometimes very
-  // slow indeed, especially on virtual machines, so a fixed timeout is not
-  // suitable.  This wait is required because we want to take precise control
-  // of the channel startup timing, and shouldn't be needed in production use,
-  // where the inner frame's channel is typically not started by a DOM call as
-  // it is here.
-  if (!this.getInnerPeer_() || !this.getInnerPeer_().instantiateChannel) {
-    window.setTimeout(goog.bind(this.continueConnect_, this, reverse), 100);
-    return;
+    // Take control of the timing and reverse of each frame's first SETUP call.
+    // If these happen to fire right on top of each other, that tends to mask
+    // problems that reliably occur when there is a short delay.
+    window.setTimeout(connectFromOuterFrame, reverse ? 1 : 10);
+    window.setTimeout(connectFromInnerFrame, reverse ? 10 : 1);
   }
 
-  const connectFromOuterFrame = goog.bind(
-      this.channel_.connect, this.channel_,
-      goog.bind(this.outerFrameConnected_, this));
-  const innerConfig = this.innerFrameCfg_;
-  const connectFromInnerFrame = goog.bind(
-      this.getInnerPeer_().instantiateChannel, this.getInnerPeer_(),
-      innerConfig);
+  /**
+   * Called by the outer frame connection callback.
+   * @private
+   */
+  outerFrameConnected_() {
+    const payload = this.outerFrameEchoPayload_ = xpc.getRandomString(10);
+    this.channel_.send('echo', payload);
+  }
 
-  // Take control of the timing and reverse of each frame's first SETUP call. If
-  // these happen to fire right on top of each other, that tends to mask
-  // problems that reliably occur when there is a short delay.
-  window.setTimeout(connectFromOuterFrame, reverse ? 1 : 10);
-  window.setTimeout(connectFromInnerFrame, reverse ? 10 : 1);
-};
+  /**
+   * Called by the inner frame connection callback in inner_peer.html.
+   * @suppress {missingProperties} suppression added to enable type checking
+   */
+  innerFrameConnected() {
+    const payload = this.innerFrameEchoPayload_ = xpc.getRandomString(10);
+    this.getInnerPeer_().sendEcho(payload);
+  }
 
+  /**
+   * The handler function for incoming echo requests.
+   * @param {string} payload The message payload.
+   * @private
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
+  echoHandler_(payload) {
+    assertTrue('outer frame should be connected', this.channel_.isConnected());
+    const peer = this.getInnerPeer_();
+    assertTrue('child should be connected', peer.isConnected());
+    this.channel_.send('response', payload);
+  }
 
-/**
- * Called by the outer frame connection callback.
- * @private
- */
-Driver.prototype.outerFrameConnected_ = function() {
-  const payload = this.outerFrameEchoPayload_ = xpc.getRandomString(10);
-  this.channel_.send('echo', payload);
-};
+  /**
+   * The handler function for incoming echo responses.
+   * @param {string} payload The message payload.
+   * @private
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
+  responseHandler_(payload) {
+    assertTrue('outer frame should be connected', this.channel_.isConnected());
+    const peer = this.getInnerPeer_();
+    assertTrue('child should be connected', peer.isConnected());
+    assertEquals(this.outerFrameEchoPayload_, payload);
+    this.outerFrameResponseReceived_.resolve(true);
+  }
 
+  /**
+   * The handler function for incoming echo replies. Called from
+   * inner_peer.html.
+   * @param {string} payload The message payload.
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
+  innerFrameGotResponse(payload) {
+    assertTrue('outer frame should be connected', this.channel_.isConnected());
+    const peer = this.getInnerPeer_();
+    assertTrue('child should be connected', peer.isConnected());
+    assertEquals(this.innerFrameEchoPayload_, payload);
+    this.innerFrameResponseReceived_.resolve(true);
+  }
 
-/**
- * Called by the inner frame connection callback in inner_peer.html.
- */
-Driver.prototype.innerFrameConnected = function() {
-  const payload = this.innerFrameEchoPayload_ = xpc.getRandomString(10);
-  this.getInnerPeer_().sendEcho(payload);
-};
-
-
-/**
- * The handler function for incoming echo requests.
- * @param {string} payload The message payload.
- * @private
- */
-Driver.prototype.echoHandler_ = function(payload) {
-  assertTrue('outer frame should be connected', this.channel_.isConnected());
-  const peer = this.getInnerPeer_();
-  assertTrue('child should be connected', peer.isConnected());
-  this.channel_.send('response', payload);
-};
-
-
-/**
- * The handler function for incoming echo responses.
- * @param {string} payload The message payload.
- * @private
- */
-Driver.prototype.responseHandler_ = function(payload) {
-  assertTrue('outer frame should be connected', this.channel_.isConnected());
-  const peer = this.getInnerPeer_();
-  assertTrue('child should be connected', peer.isConnected());
-  assertEquals(this.outerFrameEchoPayload_, payload);
-  this.outerFrameResponseReceived_.resolve(true);
-};
-
-
-/**
- * The handler function for incoming echo replies. Called from inner_peer.html.
- * @param {string} payload The message payload.
- */
-Driver.prototype.innerFrameGotResponse = function(payload) {
-  assertTrue('outer frame should be connected', this.channel_.isConnected());
-  const peer = this.getInnerPeer_();
-  assertTrue('child should be connected', peer.isConnected());
-  assertEquals(this.innerFrameEchoPayload_, payload);
-  this.innerFrameResponseReceived_.resolve(true);
-};
-
-
-/**
- * The second phase of the standard test, where reconnections of both the inner
- * and outer frames are performed.
- * @param {boolean} outerFrameReconnectSupported Whether outer frame reconnects
- *     are supported, and should be tested.
- * @param {boolean} innerFrameMigrationSupported
- * @private
- */
-Driver.prototype.testReconnects_ = function(
-    outerFrameReconnectSupported, innerFrameMigrationSupported) {
-  G_testRunner.log('Performing inner frame reconnect');
-  this.reinitializePromises_();
-  this.innerFrameResponseReceived_.promise.then(
-      this.checkChannelNames_, null, this);
-
-  if (outerFrameReconnectSupported) {
+  /**
+   * The second phase of the standard test, where reconnections of both the
+   * inner and outer frames are performed.
+   * @param {boolean} outerFrameReconnectSupported Whether outer frame
+   *     reconnects are supported, and should be tested.
+   * @param {boolean} innerFrameMigrationSupported
+   * @private
+   */
+  testReconnects_(outerFrameReconnectSupported, innerFrameMigrationSupported) {
+    G_testRunner.log('Performing inner frame reconnect');
+    this.reinitializePromises_();
     this.innerFrameResponseReceived_.promise.then(
-        goog.bind(
-            this.performOuterFrameReconnect_, this,
-            innerFrameMigrationSupported));
-  } else if (innerFrameMigrationSupported) {
+        this.checkChannelNames_, null, this);
+
+    if (outerFrameReconnectSupported) {
+      this.innerFrameResponseReceived_.promise.then(goog.bind(
+          this.performOuterFrameReconnect_, this,
+          innerFrameMigrationSupported));
+    } else if (innerFrameMigrationSupported) {
+      this.innerFrameResponseReceived_.promise.then(
+          this.migrateInnerFrame_, null, this);
+    }
+
+    this.performInnerFrameReconnect_();
+  }
+
+  /**
+   * Initializes the promise resolvers and clears the echo payloads, ready for
+   * another sub-test.
+   * @private
+   */
+  reinitializePromises_() {
+    this.innerFrameEchoPayload_ = null;
+    this.outerFrameEchoPayload_ = null;
+    this.innerFrameResponseReceived_.promise.cancel();
+    this.innerFrameResponseReceived_ = GoogPromise.withResolver();
+    this.outerFrameResponseReceived_.promise.cancel();
+    this.outerFrameResponseReceived_ = GoogPromise.withResolver();
+  }
+
+  /**
+   * Get the inner frame to reconnect, and repeat the echo test.
+   * @private
+   * @suppress {missingProperties} suppression added to enable type checking
+   */
+  performInnerFrameReconnect_() {
+    const peer = this.getInnerPeer_();
+    peer.instantiateChannel(this.innerFrameCfg_);
+  }
+
+  /**
+   * Get the outer frame to reconnect, and repeat the echo test.
+   * @private
+   */
+  performOuterFrameReconnect_(innerFrameMigrationSupported) {
+    G_testRunner.log('Closing channel');
+    this.channel_.close();
+
+    // If there is another channel still open, the native transport's global
+    // postMessage listener will still be active.  This will mean that messages
+    // being sent to the now-closed channel will still be received and
+    // delivered, such as transport service traffic from its previous
+    // correspondent in the other frame.  Ensure these messages don't cause
+    // exceptions.
+    try {
+      this.channel_.xpcDeliver(xpc.TRANSPORT_SERVICE, 'payload');
+    } catch (e) {
+      fail('Should not throw exception');
+    }
+
+    G_testRunner.log('Reconnecting outer frame');
+    this.reinitializePromises_();
     this.innerFrameResponseReceived_.promise.then(
-        this.migrateInnerFrame_, null, this);
+        this.checkChannelNames_, null, this);
+    if (innerFrameMigrationSupported) {
+      this.outerFrameResponseReceived_.promise.then(
+          this.migrateInnerFrame_, null, this);
+    }
+    this.channel_.connect(goog.bind(this.outerFrameConnected_, this));
   }
 
-  this.performInnerFrameReconnect_();
-};
-
-
-/**
- * Initializes the promise resolvers and clears the echo payloads, ready for
- * another sub-test.
- * @private
- */
-Driver.prototype.reinitializePromises_ = function() {
-  this.innerFrameEchoPayload_ = null;
-  this.outerFrameEchoPayload_ = null;
-  this.innerFrameResponseReceived_.promise.cancel();
-  this.innerFrameResponseReceived_ = GoogPromise.withResolver();
-  this.outerFrameResponseReceived_.promise.cancel();
-  this.outerFrameResponseReceived_ = GoogPromise.withResolver();
-};
-
-
-/**
- * Get the inner frame to reconnect, and repeat the echo test.
- * @private
- */
-Driver.prototype.performInnerFrameReconnect_ = function() {
-  const peer = this.getInnerPeer_();
-  peer.instantiateChannel(this.innerFrameCfg_);
-};
-
-
-/**
- * Get the outer frame to reconnect, and repeat the echo test.
- * @private
- */
-Driver.prototype.performOuterFrameReconnect_ = function(
-    innerFrameMigrationSupported) {
-  G_testRunner.log('Closing channel');
-  this.channel_.close();
-
-  // If there is another channel still open, the native transport's global
-  // postMessage listener will still be active.  This will mean that messages
-  // being sent to the now-closed channel will still be received and delivered,
-  // such as transport service traffic from its previous correspondent in the
-  // other frame.  Ensure these messages don't cause exceptions.
-  try {
-    this.channel_.xpcDeliver(xpc.TRANSPORT_SERVICE_, 'payload');
-  } catch (e) {
-    fail('Should not throw exception');
+  /**
+   * Migrate the inner frame to the alternate protocol version and reconnect it.
+   * @private
+   */
+  migrateInnerFrame_() {
+    G_testRunner.log('Migrating inner frame');
+    this.reinitializePromises_();
+    const innerFrameProtoVersion =
+        this.innerFrameCfg_[CfgFields.NATIVE_TRANSPORT_PROTOCOL_VERSION];
+    this.innerFrameResponseReceived_.promise.then(
+        this.checkChannelNames_, null, this);
+    this.innerFrameCfg_[CfgFields.NATIVE_TRANSPORT_PROTOCOL_VERSION] =
+        innerFrameProtoVersion == 1 ? 2 : 1;
+    this.performInnerFrameReconnect_();
   }
 
-  G_testRunner.log('Reconnecting outer frame');
-  this.reinitializePromises_();
-  this.innerFrameResponseReceived_.promise.then(
-      this.checkChannelNames_, null, this);
-  if (innerFrameMigrationSupported) {
-    this.outerFrameResponseReceived_.promise.then(
-        this.migrateInnerFrame_, null, this);
-  }
-  this.channel_.connect(goog.bind(this.outerFrameConnected_, this));
-};
+  /**
+   * Determines if the transport type for the channel is testable.
+   * Some transports are misusing global state or making other
+   * assumptions that cause connections to fail.
+   * @return {boolean} Whether the transport is testable.
+   * @private
+   */
+  isTransportTestable_() {
+    let testable = false;
 
+    /** @suppress {visibility} suppression added to enable type checking */
+    const transportType = this.channel_.determineTransportType_();
+    switch (transportType) {
+      case TransportTypes.NATIVE_MESSAGING:
+      case TransportTypes.DIRECT:
+        testable = true;
+        break;
+    }
 
-/**
- * Migrate the inner frame to the alternate protocol version and reconnect it.
- * @private
- */
-Driver.prototype.migrateInnerFrame_ = function() {
-  G_testRunner.log('Migrating inner frame');
-  this.reinitializePromises_();
-  const innerFrameProtoVersion =
-      this.innerFrameCfg_[CfgFields.NATIVE_TRANSPORT_PROTOCOL_VERSION];
-  this.innerFrameResponseReceived_.promise.then(
-      this.checkChannelNames_, null, this);
-  this.innerFrameCfg_[CfgFields.NATIVE_TRANSPORT_PROTOCOL_VERSION] =
-      innerFrameProtoVersion == 1 ? 2 : 1;
-  this.performInnerFrameReconnect_();
-};
-
-
-/**
- * Determines if the transport type for the channel is testable.
- * Some transports are misusing global state or making other
- * assumptions that cause connections to fail.
- * @return {boolean} Whether the transport is testable.
- * @private
- */
-Driver.prototype.isTransportTestable_ = function() {
-  let testable = false;
-
-  const transportType = this.channel_.determineTransportType_();
-  switch (transportType) {
-    case TransportTypes.NATIVE_MESSAGING:
-    case TransportTypes.DIRECT:
-      testable = true;
-      break;
+    return testable;
   }
 
-  return testable;
-};
+  /** @return {?CrossPageChannel} */
+  getChannel() {
+    return this.channel_;
+  }
 
-
-/** @return {?CrossPageChannel} */
-Driver.prototype.getChannel = function() {
-  return this.channel_;
-};
-
-/**
- * Begin, but don't finish, connection to a peer.
- *
- * @return {!Promise<undefined>} A timing hook for the unstable period between
- *     the creation of the peer and the connection notification from that peer.
- */
-Driver.prototype.connectAndWaitForPeer = function() {
-  this.channel_.connect();
-  // Set a listener for when the peer exists.
-  return new Promise(
-      (res) => this.channel_.peerWindowDeferred_.addCallback(res));
+  /**
+   * Begin, but don't finish, connection to a peer.
+   *
+   * @return {!Promise<undefined>} A timing hook for the unstable period between
+   *     the creation of the peer and the connection notification from that
+   * peer.
+   */
+  connectAndWaitForPeer() {
+    this.channel_.connect();
+    // Set a listener for when the peer exists.
+    return new Promise(
+        /** @suppress {visibility} suppression added to enable type checking */
+        (res) => this.channel_.peerWindowDeferred_.addCallback(res));
+  }
 };

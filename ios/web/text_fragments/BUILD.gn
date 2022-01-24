@@ -4,9 +4,11 @@
 
 import("//build/buildflag_header.gni")
 import("//ios/build/config.gni")
+import("//ios/web/js_compile.gni")
 
 source_set("text_fragments") {
   deps = [
+    ":text_fragments_js",
     "//base",
     "//components/shared_highlighting/core/common",
     "//ios/web/common:features",
@@ -20,9 +22,21 @@ source_set("text_fragments") {
   ]
 
   sources = [
+    "text_fragments_java_script_feature.h",
+    "text_fragments_java_script_feature.mm",
     "text_fragments_manager_impl.h",
     "text_fragments_manager_impl.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+js_compile_bundle("text_fragments_js") {
+  visibility = [ ":text_fragments" ]
+  closure_entry_point = "__crWeb.textFragments"
+
+  sources = [
+    "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
+    "resources/text_fragments.js",
+  ]
 }

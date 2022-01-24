@@ -7,10 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
-#include <string>
-
-#include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 #include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
@@ -29,8 +25,8 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
                       OmniboxPopupViewSuggestionsDelegate* delegate);
   ~OmniboxPopupViewIOS() override;
 
-  // Popup model used for this.
-  OmniboxPopupModel* model() const;
+  // Model used for this.
+  OmniboxEditModel* model() const;
 
   // OmniboxPopupView implementation.
   bool IsOpen() const override;
@@ -63,7 +59,7 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
   void SetMediator(OmniboxPopupMediator* mediator) { mediator_ = mediator; }
 
  private:
-  std::unique_ptr<OmniboxPopupModel> model_;
+  OmniboxEditModel* edit_model_;
   OmniboxPopupViewSuggestionsDelegate* delegate_;  // weak
   OmniboxPopupMediator* mediator_;
 };

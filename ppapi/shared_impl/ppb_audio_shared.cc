@@ -231,8 +231,7 @@ void PPB_Audio_Shared::Run() {
       TRACE_EVENT0("audio", "PPB_Audio_Shared::FireRenderCallback");
       media::AudioOutputBuffer* buffer =
           reinterpret_cast<media::AudioOutputBuffer*>(shared_memory_.memory());
-      base::TimeDelta delay =
-          base::TimeDelta::FromMicroseconds(buffer->params.delay_us);
+      base::TimeDelta delay = base::Microseconds(buffer->params.delay_us);
 
       callback_.Run(client_buffer_.get(), client_buffer_size_bytes_,
                     delay.InSecondsF(), user_data_);

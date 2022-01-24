@@ -9,8 +9,8 @@
 #include <set>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/tts_utterance.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace base {
 class Value;
@@ -21,8 +21,7 @@ class BrowserContext;
 class WebContents;
 
 // Implementation of TtsUtterance.
-class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance,
-                                        public WebContentsObserver {
+class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance {
  public:
   TtsUtteranceImpl(BrowserContext* browser_context, WebContents* web_contents);
   ~TtsUtteranceImpl() override;
@@ -83,12 +82,16 @@ class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance,
   int GetId() override;
   bool IsFinished() override;
 
+  // Returns the associated WebContents, may be null.
+  WebContents* GetWebContents();
+
  private:
   // The BrowserContext that initiated this utterance.
   BrowserContext* browser_context_;
 
   // True if the constructor was supplied with a WebContents.
   const bool was_created_with_web_contents_;
+  base::WeakPtr<WebContents> web_contents_;
 
   // The content embedder engine ID of the engine providing TTS for this
   // utterance, or empty if native TTS is being used.

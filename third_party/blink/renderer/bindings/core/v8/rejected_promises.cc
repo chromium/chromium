@@ -48,10 +48,7 @@ class RejectedPromises::Message final {
 
   bool IsCollected() { return collected_ || !script_state_->ContextIsValid(); }
 
-  bool HasPromise(v8::Local<v8::Value> promise) {
-    ScriptState::Scope scope(script_state_);
-    return promise == promise_.NewLocal(script_state_->GetIsolate());
-  }
+  bool HasPromise(v8::Local<v8::Value> promise) { return promise_ == promise; }
 
   void Report() {
     if (!script_state_->ContextIsValid())

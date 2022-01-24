@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/history_backend_client.h"
@@ -19,6 +18,9 @@ class FakeBookmarkDatabase
     : public base::RefCountedThreadSafe<FakeBookmarkDatabase> {
  public:
   FakeBookmarkDatabase() {}
+
+  FakeBookmarkDatabase(const FakeBookmarkDatabase&) = delete;
+  FakeBookmarkDatabase& operator=(const FakeBookmarkDatabase&) = delete;
 
   void ClearAllBookmarks();
   void AddBookmarkWithTitle(const GURL& url, const std::u16string& title);
@@ -34,8 +36,6 @@ class FakeBookmarkDatabase
 
   base::Lock lock_;
   std::map<GURL, std::u16string> bookmarks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBookmarkDatabase);
 };
 
 void FakeBookmarkDatabase::ClearAllBookmarks() {
@@ -77,6 +77,12 @@ class HistoryBackendClientFakeBookmarks : public HistoryBackendClient {
  public:
   explicit HistoryBackendClientFakeBookmarks(
       const scoped_refptr<FakeBookmarkDatabase>& bookmarks);
+
+  HistoryBackendClientFakeBookmarks(const HistoryBackendClientFakeBookmarks&) =
+      delete;
+  HistoryBackendClientFakeBookmarks& operator=(
+      const HistoryBackendClientFakeBookmarks&) = delete;
+
   ~HistoryBackendClientFakeBookmarks() override;
 
   // HistoryBackendClient implementation.
@@ -86,8 +92,6 @@ class HistoryBackendClientFakeBookmarks : public HistoryBackendClient {
 
  private:
   scoped_refptr<FakeBookmarkDatabase> bookmarks_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryBackendClientFakeBookmarks);
 };
 
 HistoryBackendClientFakeBookmarks::HistoryBackendClientFakeBookmarks(

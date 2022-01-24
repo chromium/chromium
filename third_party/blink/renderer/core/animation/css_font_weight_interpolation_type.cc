@@ -87,7 +87,7 @@ void CSSFontWeightInterpolationType::ApplyStandardPropertyValue(
     const NonInterpolableValue*,
     StyleResolverState& state) const {
   state.GetFontBuilder().SetWeight(FontSelectionValue(
-      clampTo(To<InterpolableNumber>(interpolable_value).Value(),
+      ClampTo(To<InterpolableNumber>(interpolable_value).Value(),
               MinWeightValue(), MaxWeightValue())));
 }
 

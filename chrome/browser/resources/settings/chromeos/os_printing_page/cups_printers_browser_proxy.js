@@ -104,7 +104,7 @@ export const PrinterSetupResult = {
 /**
  *  @enum {number}
  *  These values must be kept in sync with the PrintServerQueryResult enum in
- *  /chrome/browser/chromeos/printing/server_printers_fetcher.h
+ *  /chrome/browser/ash/printing/server_printers_fetcher.h
  */
 export const PrintServerResult = {
   NO_ERRORS: 0,

@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 mojom("variations_mojom") {
@@ -15,7 +16,7 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-large_variation_key_size_enabled = is_chromecast
+large_variation_key_size_enabled = is_chromecast || is_chromeos_lacros
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -127,6 +128,7 @@ component("variations") {
     "//build:chromeos_buildflags",
     "//components/crash/core/common:crash_key",
     "//components/prefs",
+    "//components/version_info",
     "//crypto",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/zlib/google:compression_utils",
@@ -187,6 +189,9 @@ static_library("test_support") {
     "field_trial_config:field_trial_config",
     "proto",
     "//base/test:test_support",
+    "//components/metrics",
+    "//components/prefs:prefs",
+    "//components/variations/service:constants",
     "//third_party/zlib/google:compression_utils",
   ]
 }
@@ -211,6 +216,7 @@ source_set("unit_tests") {
     "variations_seed_processor_unittest.cc",
     "variations_seed_simulator_unittest.cc",
     "variations_seed_store_unittest.cc",
+    "variations_test_utils_unittest.cc",
   ]
 
   if (is_android || is_ios) {
@@ -258,4 +264,16 @@ test("variations_unittests") {
     "//components/variations/field_trial_config:unit_tests",
     "//components/variations/service:unit_tests",
   ]
+}
+
+if (use_libfuzzer) {
+  fuzzer_test("create_trial_from_study_fuzzer") {
+    sources = [ "fuzzers/create_trial_from_study_fuzzer.cc" ]
+    deps = [
+      ":variations",
+      "proto",
+      "//base/test:test_support",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
 }

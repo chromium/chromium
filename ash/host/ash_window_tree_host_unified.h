@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/host/ash_window_tree_host_platform.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -23,6 +22,10 @@ class AshWindowTreeHostUnified : public AshWindowTreeHostPlatform,
  public:
   AshWindowTreeHostUnified(const gfx::Rect& initial_bounds,
                            AshWindowTreeHostMirroringDelegate* delegate);
+
+  AshWindowTreeHostUnified(const AshWindowTreeHostUnified&) = delete;
+  AshWindowTreeHostUnified& operator=(const AshWindowTreeHostUnified&) = delete;
+
   ~AshWindowTreeHostUnified() override;
 
  private:
@@ -43,8 +46,6 @@ class AshWindowTreeHostUnified : public AshWindowTreeHostPlatform,
   AshWindowTreeHostMirroringDelegate* delegate_;  // Not owned.
 
   std::vector<AshWindowTreeHost*> mirroring_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshWindowTreeHostUnified);
 };
 
 }  // namespace ash

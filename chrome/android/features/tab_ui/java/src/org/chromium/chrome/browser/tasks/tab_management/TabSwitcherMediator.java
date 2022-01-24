@@ -18,7 +18,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.text.TextUtils;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
@@ -28,6 +27,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -53,7 +54,6 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -422,9 +422,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mHandler = new Handler();
         mTabContentManager = tabContentManager;
 
-        // TODO(crbug.com/982018): Let the start surface pass in the parameter and add unit test for
-        // it. This is a temporary solution to keep this change minimum.
-        mShowTabsInMruOrder = isShowingTabsInMRUOrder();
+        mShowTabsInMruOrder = TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode);
 
         mMultiWindowModeObserver = isInMultiWindowMode -> {
             if (isInMultiWindowMode) {
@@ -462,14 +460,13 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     private int getSoftCleanupDelay() {
         if (mSoftCleanupDelayMsForTesting != null) return mSoftCleanupDelayMsForTesting;
-
-        String delay = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, SOFT_CLEANUP_DELAY_PARAM);
-        try {
-            return Integer.valueOf(delay);
-        } catch (NumberFormatException e) {
-            return DEFAULT_SOFT_CLEANUP_DELAY_MS;
+        if (!LibraryLoader.getInstance().isInitialized()) {
+            return 0;
         }
+
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, SOFT_CLEANUP_DELAY_PARAM,
+                DEFAULT_SOFT_CLEANUP_DELAY_MS);
     }
 
     @VisibleForTesting
@@ -479,14 +476,13 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     private int getCleanupDelay() {
         if (mCleanupDelayMsForTesting != null) return mCleanupDelayMsForTesting;
-
-        String delay = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, CLEANUP_DELAY_PARAM);
-        try {
-            return Integer.valueOf(delay);
-        } catch (NumberFormatException e) {
-            return DEFAULT_CLEANUP_DELAY_MS;
+        if (!LibraryLoader.getInstance().isInitialized()) {
+            return 0;
         }
+
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, CLEANUP_DELAY_PARAM,
+                DEFAULT_CLEANUP_DELAY_MS);
     }
 
     private void setVisibility(boolean isVisible) {
@@ -500,7 +496,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private void updateTopControlsProperties() {
         // If the Start surface is enabled, it will handle the margins and positioning of the tab
         // switcher. So, we shouldn't do it here.
-        if (ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()) {
+        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mContext)) {
             mContainerViewModel.set(TOP_MARGIN, 0);
             mContainerViewModel.set(SHADOW_TOP_OFFSET, 0);
             return;
@@ -574,6 +570,14 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 RecordUserAction.record(
                         "MobileTabSwitched." + TabSwitcherCoordinator.COMPONENT_NAME);
             }
+        }
+        if (mMode == TabListCoordinator.TabListMode.GRID
+                && PriceTrackingUtilities.isTabModelPriceTrackingEligible(
+                        mTabModelSelector.getCurrentModel())
+                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled()) {
+            RecordUserAction.record("Commerce.TabGridSwitched."
+                    + (ShoppingPersistedTabData.hasPriceDrop(tab) ? "HasPriceDrop"
+                                                                  : "NoPriceDrop"));
         }
     }
 
@@ -808,17 +812,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     /**
-     * Check if tabs should show in MRU order in current start surface tab switcher.
-     *  @return whether tabs should show in MRU order
-     */
-    static boolean isShowingTabsInMRUOrder() {
-        String feature = StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue();
-        return TextUtils.equals(feature, "twopanes")
-                || StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER.getValue()
-                && TextUtils.equals(feature, "single");
-    }
-
-    /**
      * Destroy any members that needs clean up.
      */
     public void destroy() {
@@ -860,6 +853,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             Tab newlySelectedTab =
                     TabModelUtils.getTabById(mTabModelSelector.getCurrentModel(), tabId);
             StartSurfaceUserData.setKeepTab(newlySelectedTab, true);
+            if (mMode == TabListMode.CAROUSEL) {
+                StartSurfaceUserData.setOpenedFromStart(newlySelectedTab);
+            }
         }
         mIsSelectingInTabSwitcher = true;
         if (mOnTabSelectingListener != null) {

@@ -283,6 +283,10 @@ class GPU_GLES2_EXPORT Shader : public base::RefCounted<Shader> {
 class GPU_GLES2_EXPORT ShaderManager {
  public:
   ShaderManager(gl::ProgressReporter* progress_reporter);
+
+  ShaderManager(const ShaderManager&) = delete;
+  ShaderManager& operator=(const ShaderManager&) = delete;
+
   ~ShaderManager();
 
   // Must call before destruction.
@@ -326,12 +330,9 @@ class GPU_GLES2_EXPORT ShaderManager {
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
   gl::ProgressReporter* progress_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderManager);
 };
 
 }  // namespace gles2
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHADER_MANAGER_H_
-

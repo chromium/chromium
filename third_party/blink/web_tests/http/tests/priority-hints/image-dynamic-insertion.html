@@ -19,7 +19,7 @@
       if (test.importance) img.importance = test.importance;
 
       const url = new URL(`../resources/square.png?${iteration++}`, location);
-      const priorityPromise = internals.getResourcePriority(url, document);
+      const priorityPromise = internals.getInitialResourcePriority(url, document);
       img.src = url;
       const priority = await priorityPromise;
       assert_equals(priority, test.expected_priority, test.description);

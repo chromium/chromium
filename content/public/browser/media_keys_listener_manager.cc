@@ -14,7 +14,7 @@ namespace content {
 
 // static
 bool MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   return false;
 #else
   return base::FeatureList::IsEnabled(media::kHardwareMediaKeyHandling);

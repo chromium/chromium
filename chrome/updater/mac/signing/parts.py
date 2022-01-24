@@ -20,20 +20,39 @@ def get_parts(config):
         config: The |config.CodeSignConfig|.
 
     Returns:
-        A dictionary of |model.CodeSignedProduct|. The keys are short
-        identifiers that have no bearing on the actual signing operations.
+        A list of |model.CodeSignedProduct|. Items should be signed in the
+        order they appear in this list.
     """
-    return {
-        'app':
-        CodeSignedProduct(
+    ks_bundle = (
+        '{0.app_product}.app/Contents/Helpers/{0.keystone_app_name}.bundle'.
+        format(config))
+
+    # Innermost parts come first.
+    return [
+        CodeSignedProduct(  # Keystone's ksadmin
+            ks_bundle + '/Contents/Helpers/ksadmin',
+            'ksadmin',
+            options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
+        CodeSignedProduct(  # Keystone's ksinstall
+            ks_bundle + '/Contents/Helpers/ksinstall',
+            'ksinstall',
+            options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
+        CodeSignedProduct(  # Keystone bundle
+            ks_bundle,
+            config.keystone_app_name,
+            options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
+        CodeSignedProduct(  # Updater bundle
             '{.app_product}.app'.format(config),
             config.base_bundle_id,
             options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
             requirements=config.codesign_requirements_outer_app,
             identifier_requirement=False,
             entitlements=None,
-            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT)
-    }
+            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
+    ]
 
 
 def sign_all(paths, config):
@@ -46,18 +65,7 @@ def sign_all(paths, config):
             nested binaries must exist in |paths.work|.
     """
     parts = get_parts(config)
-
-    for name, part in parts.items():
-        if name in ('app'):  # Defer app signing to the last step.
-            continue
+    for part in parts:
         signing.sign_part(paths, config, part)
-
-    # Sign the outer app bundle.
-    signing.sign_part(paths, config, parts['app'])
-
-    # Verify all the parts.
-    for part in parts.values():
         signing.verify_part(paths, part)
-
-    # Display the code signature.
-    signing.validate_app(paths, config, parts['app'])
+    signing.validate_app(paths, config, parts[-1])

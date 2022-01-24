@@ -27,12 +27,13 @@ class MockControllerObserver : public ControllerObserver {
   MOCK_METHOD1(OnBubbleMessageChanged, void(const std::string& message));
   MOCK_METHOD0(CloseCustomTab, void());
   MOCK_METHOD1(OnStateChanged, void(AutofillAssistantState));
+  MOCK_METHOD1(OnKeyboardSuppressionStateChanged, void(bool));
   MOCK_METHOD1(OnUserActionsChanged,
                void(const std::vector<UserAction>& user_actions));
   MOCK_METHOD1(OnCollectUserDataOptionsChanged,
                void(const CollectUserDataOptions* options));
   MOCK_METHOD2(OnUserDataChanged,
-               void(const UserData* user_data,
+               void(const UserData& user_data,
                     UserData::FieldChange field_change));
   MOCK_METHOD1(OnDetailsChanged, void(const std::vector<Details>& details));
   MOCK_METHOD1(OnInfoBoxChanged, void(const InfoBox* info_box));
@@ -43,8 +44,9 @@ class MockControllerObserver : public ControllerObserver {
                void(const ShowProgressBarProto::StepProgressBarConfiguration&
                         configuration));
   MOCK_METHOD1(OnProgressBarErrorStateChanged, void(bool error));
-  MOCK_METHOD2(OnTouchableAreaChanged,
-               void(const std::vector<RectF>& touchable_areas,
+  MOCK_METHOD3(OnTouchableAreaChanged,
+               void(const RectF& visual_viewport,
+                    const std::vector<RectF>& touchable_areas,
                     const std::vector<RectF>& restricted_areas));
   MOCK_CONST_METHOD0(Terminate, bool());
   MOCK_CONST_METHOD0(GetDropOutReason, Metrics::DropOutReason());
@@ -63,6 +65,8 @@ class MockControllerObserver : public ControllerObserver {
   MOCK_METHOD1(OnPersistentGenericUserInterfaceChanged,
                void(const GenericUserInterfaceProto* generic_ui));
   MOCK_METHOD1(OnShouldShowOverlayChanged, void(bool should_show));
+  MOCK_METHOD1(OnTtsButtonVisibilityChanged, void(bool visible));
+  MOCK_METHOD1(OnTtsButtonStateChanged, void(TtsButtonState state));
   MOCK_METHOD0(OnFeedbackFormRequested, void());
 };
 

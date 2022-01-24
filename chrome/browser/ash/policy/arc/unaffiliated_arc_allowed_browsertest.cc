@@ -4,9 +4,9 @@
 
 #include <set>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/test/browser_test.h"
@@ -46,6 +45,10 @@ class UnaffiliatedArcAllowedTest
     set_exit_when_last_browser_closes(false);
     affiliation_mixin_.set_affiliated(GetParam().affiliated);
   }
+
+  UnaffiliatedArcAllowedTest(const UnaffiliatedArcAllowedTest&) = delete;
+  UnaffiliatedArcAllowedTest& operator=(const UnaffiliatedArcAllowedTest&) =
+      delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
@@ -77,15 +80,12 @@ class UnaffiliatedArcAllowedTest
     base::RunLoop run_loop;
     base::CallbackListSubscription subscription =
         ash::CrosSettings::Get()->AddSettingsObserver(
-            chromeos::kUnaffiliatedArcAllowed, run_loop.QuitClosure());
+            ash::kUnaffiliatedArcAllowed, run_loop.QuitClosure());
     RefreshDevicePolicy();
     run_loop.Run();
   }
 
   AffiliationMixin affiliation_mixin_{&mixin_host_, policy_helper()};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnaffiliatedArcAllowedTest);
 };
 
 IN_PROC_BROWSER_TEST_P(UnaffiliatedArcAllowedTest, PRE_ProfileTest) {

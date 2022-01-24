@@ -5,6 +5,7 @@
 #include "extensions/renderer/send_message_tester.h"
 
 #include "base/strings/stringprintf.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
@@ -54,7 +55,8 @@ void SendMessageTester::TestConnect(const std::string& args,
 
   constexpr char kAddPortTemplate[] =
       "(function() { return chrome.%s.connect(%s); })";
-  PortId expected_port_id(script_context_->context_id(), next_port_id_++, true);
+  PortId expected_port_id(script_context_->context_id(), next_port_id_++, true,
+                          SerializationFormat::kJson);
   EXPECT_CALL(*ipc_sender_,
               SendOpenMessageChannel(script_context_, expected_port_id,
                                      expected_target, expected_channel));
@@ -91,12 +93,13 @@ void SendMessageTester::TestSendMessageOrRequest(
       break;
   }
 
-  PortId expected_port_id(script_context_->context_id(), next_port_id_++, true);
+  PortId expected_port_id(script_context_->context_id(), next_port_id_++, true,
+                          SerializationFormat::kJson);
 
   EXPECT_CALL(*ipc_sender_,
               SendOpenMessageChannel(script_context_, expected_port_id,
                                      expected_target, expected_channel));
-  Message message(expected_message, false);
+  Message message(expected_message, SerializationFormat::kJson, false);
   EXPECT_CALL(*ipc_sender_, SendPostMessageToPort(expected_port_id, message));
 
   if (expected_port_status == CLOSED) {

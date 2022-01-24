@@ -25,6 +25,12 @@ class SharedMemoryVirtualDeviceMojoAdapter
   SharedMemoryVirtualDeviceMojoAdapter(
       mojo::Remote<mojom::Producer> producer,
       bool send_buffer_handles_to_producer_as_raw_file_descriptors = false);
+
+  SharedMemoryVirtualDeviceMojoAdapter(
+      const SharedMemoryVirtualDeviceMojoAdapter&) = delete;
+  SharedMemoryVirtualDeviceMojoAdapter& operator=(
+      const SharedMemoryVirtualDeviceMojoAdapter&) = delete;
+
   ~SharedMemoryVirtualDeviceMojoAdapter() override;
 
   // mojom::SharedMemoryVirtualDevice implementation.
@@ -63,8 +69,6 @@ class SharedMemoryVirtualDeviceMojoAdapter
   std::vector<int> known_buffer_ids_;
   scoped_refptr<ScopedAccessPermissionMap> scoped_access_permission_map_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryVirtualDeviceMojoAdapter);
 };
 
 }  // namespace video_capture

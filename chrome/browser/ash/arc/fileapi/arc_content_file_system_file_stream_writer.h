@@ -31,6 +31,12 @@ namespace arc {
 class ArcContentFileSystemFileStreamWriter : public storage::FileStreamWriter {
  public:
   ArcContentFileSystemFileStreamWriter(const GURL& arc_url, int64_t offset);
+
+  ArcContentFileSystemFileStreamWriter(
+      const ArcContentFileSystemFileStreamWriter&) = delete;
+  ArcContentFileSystemFileStreamWriter& operator=(
+      const ArcContentFileSystemFileStreamWriter&) = delete;
+
   ~ArcContentFileSystemFileStreamWriter() override;
 
   // storage::FileStreamReader override:
@@ -79,7 +85,6 @@ class ArcContentFileSystemFileStreamWriter : public storage::FileStreamWriter {
 
   base::WeakPtrFactory<ArcContentFileSystemFileStreamWriter> weak_ptr_factory_{
       this};
-  DISALLOW_COPY_AND_ASSIGN(ArcContentFileSystemFileStreamWriter);
 };
 
 }  // namespace arc

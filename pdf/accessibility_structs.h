@@ -221,6 +221,7 @@ struct AccessibilityChoiceFieldOptionInfo {
 enum class ChoiceFieldType {
   kListBox = 0,
   kComboBox = 1,
+  kMinValue = kListBox,
   kMaxValue = kComboBox,
 };
 
@@ -269,6 +270,7 @@ enum class ButtonType {
   kPushButton = 1,
   kCheckBox = 2,
   kRadioButton = 3,
+  kMinValue = kPushButton,
   kMaxValue = kRadioButton,
 };
 

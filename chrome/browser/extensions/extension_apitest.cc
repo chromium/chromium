@@ -54,12 +54,12 @@ namespace {
 const char kTestCustomArg[] = "customArg";
 const char kTestDataDirectory[] = "testDataDirectory";
 const char kTestWebSocketPort[] = "testWebSocketPort";
-const char kFtpServerPort[] = "ftpServer.port";
 const char kEmbeddedTestServerPort[] = "testServer.port";
 
 }  // namespace
 
-ExtensionApiTest::ExtensionApiTest() {
+ExtensionApiTest::ExtensionApiTest(ContextType context_type)
+    : ExtensionBrowserTest(context_type) {
   net::test_server::RegisterDefaultHandlers(embedded_test_server());
 }
 
@@ -100,6 +100,16 @@ bool ExtensionApiTest::RunExtensionTest(const char* extension_name,
 bool ExtensionApiTest::RunExtensionTest(const char* extension_name,
                                         const RunOptions& run_options,
                                         const LoadOptions& load_options) {
+  const base::FilePath& root_path = run_options.use_extensions_root_dir
+                                        ? shared_test_data_dir_
+                                        : test_data_dir_;
+  base::FilePath extension_path = root_path.AppendASCII(extension_name);
+  return RunExtensionTest(extension_path, run_options, load_options);
+}
+
+bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
+                                        const RunOptions& run_options,
+                                        const LoadOptions& load_options) {
   // Do some sanity checks for options that are mutually exclusive or
   // only valid with other options.
   CHECK(!(run_options.extension_url && run_options.page_url))
@@ -113,11 +123,6 @@ bool ExtensionApiTest::RunExtensionTest(const char* extension_name,
     SetCustomArg(run_options.custom_arg);
 
   ResultCatcher catcher;
-
-  const base::FilePath& root_path = run_options.use_extensions_root_dir
-                                        ? shared_test_data_dir_
-                                        : test_data_dir_;
-  base::FilePath extension_path = root_path.AppendASCII(extension_name);
   const Extension* extension = LoadExtension(extension_path, load_options);
   if (!extension) {
     message_ = "Failed to load extension.";
@@ -136,9 +141,10 @@ bool ExtensionApiTest::RunExtensionTest(const char* extension_name,
 
     OpenURL(url, run_options.open_in_incognito);
   } else if (run_options.launch_as_platform_app) {
-    apps::AppLaunchParams params(
-        extension->id(), LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::NEW_WINDOW, AppLaunchSource::kSourceTest);
+    apps::AppLaunchParams params(extension->id(),
+                                 LaunchContainer::kLaunchContainerNone,
+                                 WindowOpenDisposition::NEW_WINDOW,
+                                 apps::mojom::LaunchSource::kFromTest);
     params.command_line = *base::CommandLine::ForCurrentProcess();
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
@@ -157,7 +163,7 @@ void ExtensionApiTest::OpenURL(const GURL& url, bool open_in_incognito) {
   if (open_in_incognito) {
     OpenURLOffTheRecord(browser()->profile(), url);
   } else {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 }
 
@@ -247,19 +253,6 @@ bool ExtensionApiTest::StartWebSocketServer(
 
   test_config_->SetInteger(kTestWebSocketPort,
                            websocket_server_->host_port_pair().port());
-
-  return true;
-}
-
-bool ExtensionApiTest::StartFTPServer(const base::FilePath& root_directory) {
-  ftp_server_ = std::make_unique<net::SpawnedTestServer>(
-      net::SpawnedTestServer::TYPE_FTP, root_directory);
-
-  if (!ftp_server_->Start())
-    return false;
-
-  test_config_->SetInteger(kFtpServerPort,
-                           ftp_server_->host_port_pair().port());
 
   return true;
 }

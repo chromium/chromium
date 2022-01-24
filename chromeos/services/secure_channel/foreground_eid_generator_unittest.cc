@@ -34,8 +34,8 @@ namespace {
 // initializers are not a big problem in tests, but it is preferable to avoid
 // them here for consistensy with similar definitions going into release
 // binaries.
-constexpr base::TimeDelta kEidPeriod = base::TimeDelta::FromHours(8);
-constexpr base::TimeDelta kEidSeedPeriod = base::TimeDelta::FromDays(14);
+constexpr base::TimeDelta kEidPeriod = base::Hours(8);
+constexpr base::TimeDelta kEidSeedPeriod = base::Days(14);
 
 const int32_t kNumBytesInEidValue = 2;
 
@@ -138,8 +138,8 @@ class SecureChannelForegroundEidGeneratorTest : public testing::Test {
 
   // TODO(khorimoto): Is there an easier way to do this?
   void SetTestTime(int64_t timestamp_ms) {
-    base::Time time = base::Time::UnixEpoch() +
-                      base::TimeDelta::FromMilliseconds(timestamp_ms);
+    base::Time time =
+        base::Time::UnixEpoch() + base::Milliseconds(timestamp_ms);
     test_clock_.SetNow(time);
   }
 
@@ -204,8 +204,7 @@ TEST_F(SecureChannelForegroundEidGeneratorTest,
 
 TEST_F(SecureChannelForegroundEidGeneratorTest,
        GenerateBackgroundScanFilter_PastStartOfPeriod) {
-  SetTestTime(kDefaultCurrentTime +
-              base::TimeDelta::FromHours(3).InMilliseconds());
+  SetTestTime(kDefaultCurrentTime + base::Hours(3).InMilliseconds());
 
   std::unique_ptr<ForegroundEidGenerator::EidData> data =
       eid_generator_->GenerateBackgroundScanFilter(
@@ -418,8 +417,7 @@ TEST_F(SecureChannelForegroundEidGeneratorTest,
 
 TEST_F(SecureChannelForegroundEidGeneratorTest,
        testGeneratePossibleAdvertisements_CurrentAndFutureAdjacentPeriods) {
-  SetTestTime(kDefaultCurrentPeriodStart +
-              base::TimeDelta::FromHours(3).InMilliseconds());
+  SetTestTime(kDefaultCurrentPeriodStart + base::Hours(3).InMilliseconds());
 
   std::vector<std::string> possible_advertisements =
       eid_generator_->GeneratePossibleAdvertisements(

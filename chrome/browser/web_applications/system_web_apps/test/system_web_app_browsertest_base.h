@@ -7,9 +7,10 @@
 
 #include <memory>
 
+#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
@@ -27,14 +28,12 @@ namespace web_app {
 
 enum class SystemAppType;
 
-// Clients should use SystemWebAppManagerBrowserTest, so test can be run with
-// both the new web apps provider and the legacy bookmark apps provider.
 class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
  public:
   // Performs common initialization for testing SystemWebAppManager features.
   // If true, |install_mock| installs a WebUIController that serves a mock
   // System PWA, and ensures the WebAppProvider associated with the startup
-  // profile is a TestWebAppProviderCreator.
+  // profile is a FakeWebAppProviderCreator.
   explicit SystemWebAppBrowserTestBase(bool install_mock = true);
   SystemWebAppBrowserTestBase(const SystemWebAppBrowserTestBase&) = delete;
   SystemWebAppBrowserTestBase& operator=(const SystemWebAppBrowserTestBase&) =
@@ -102,51 +101,17 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   content::WebContents* LaunchApp(apps::AppLaunchParams&& params,
                                   bool wait_for_load,
                                   Browser** out_browser);
+
+  ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
-enum class InstallationType { kManifestInstall, kWebAppInfoInstall };
-
-using SystemWebAppManagerTestParams = std::tuple<TestProfileType>;
-
 class SystemWebAppManagerBrowserTest
-    : public SystemWebAppBrowserTestBase,
-      public ::testing::WithParamInterface<SystemWebAppManagerTestParams> {
+    : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
   explicit SystemWebAppManagerBrowserTest(bool install_mock = true);
   ~SystemWebAppManagerBrowserTest() override = default;
-
-  TestProfileType profile_type() const { return std::get<0>(GetParam()); }
-
-  // InProcessBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override;
 };
 
-std::string SystemWebAppManagerTestParamsToString(
-    const ::testing::TestParamInfo<SystemWebAppManagerTestParams>& param_info);
-
 }  // namespace web_app
-
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(SUITE, PARAMS) \
-  INSTANTIATE_TEST_SUITE_P(All, SUITE, PARAMS,                         \
-                           web_app::SystemWebAppManagerTestParamsToString)
-
-// Instantiates 3 versions of each test in |SUITE| to ensure coverage of
-// Guest and Incognito profiles, as well as regular profiles. This is currently
-// only used on ChromeOS. Other platforms will likely need a differently defined
-// macro because there is no such thing as Guest mode.
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P( \
-    SUITE)                                                                 \
-  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                         \
-      SUITE,                                                               \
-      ::testing::Values(TestProfileType::kRegular,                         \
-                        TestProfileType::kIncognito, TestProfileType::kGuest))
-
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(SUITE) \
-  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                             \
-      SUITE, ::testing::Values(TestProfileType::kRegular))
-
-#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(SUITE) \
-  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                           \
-      SUITE, ::testing::Values(TestProfileType::kGuest))
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_

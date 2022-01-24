@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 
@@ -31,6 +30,10 @@ class PrintPreviewDialogController
       public WebContentsCollection::Observer {
  public:
   PrintPreviewDialogController();
+
+  PrintPreviewDialogController(const PrintPreviewDialogController&) = delete;
+  PrintPreviewDialogController& operator=(const PrintPreviewDialogController&) =
+      delete;
 
   static PrintPreviewDialogController* GetInstance();
 
@@ -124,8 +127,6 @@ class PrintPreviewDialogController
   // Whether the PrintPreviewDialogController is in the middle of creating a
   // print preview dialog.
   bool is_creating_print_preview_dialog_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewDialogController);
 };
 
 }  // namespace printing

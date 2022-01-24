@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_GCM_DEVICE_INFO_PROVIDER_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_GCM_DEVICE_INFO_PROVIDER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace chromeos {
@@ -18,16 +17,24 @@ namespace device_sync {
 class GcmDeviceInfoProvider {
  public:
   GcmDeviceInfoProvider() = default;
+
+  GcmDeviceInfoProvider(const GcmDeviceInfoProvider&) = delete;
+  GcmDeviceInfoProvider& operator=(const GcmDeviceInfoProvider&) = delete;
+
   virtual ~GcmDeviceInfoProvider() = default;
 
   virtual const cryptauth::GcmDeviceInfo& GetGcmDeviceInfo() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GcmDeviceInfoProvider);
 };
 
 }  // namespace device_sync
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace device_sync {
+using ::chromeos::device_sync::GcmDeviceInfoProvider;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_GCM_DEVICE_INFO_PROVIDER_H_

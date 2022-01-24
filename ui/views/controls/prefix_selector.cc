@@ -36,7 +36,7 @@ void PrefixSelector::OnViewBlur() {
 
 bool PrefixSelector::ShouldContinueSelection() const {
   const base::TimeTicks now(tick_clock_->NowTicks());
-  constexpr auto kTimeBeforeClearing = base::TimeDelta::FromSeconds(1);
+  constexpr auto kTimeBeforeClearing = base::Seconds(1);
   return (now - time_of_last_key_) < kTimeBeforeClearing;
 }
 
@@ -171,7 +171,7 @@ bool PrefixSelector::ShouldDoLearning() {
   return false;
 }
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 bool PrefixSelector::SetCompositionFromExistingText(
     const gfx::Range& range,
     const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
@@ -204,7 +204,9 @@ void PrefixSelector::SetActiveCompositionForAccessibility(
     const gfx::Range& range,
     const std::u16string& active_composition_text,
     bool is_composition_committed) {}
+#endif
 
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
 void PrefixSelector::GetActiveTextInputControlLayoutBounds(
     absl::optional<gfx::Rect>* control_bounds,
     absl::optional<gfx::Rect>* selection_bounds) {}

@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/gfx/geometry/rect.h"
@@ -26,6 +25,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN)
     : public VirtualKeyboardController {
  public:
   OnScreenKeyboardDisplayManagerTabTip(HWND hwnd);
+
+  OnScreenKeyboardDisplayManagerTabTip(
+      const OnScreenKeyboardDisplayManagerTabTip&) = delete;
+  OnScreenKeyboardDisplayManagerTabTip& operator=(
+      const OnScreenKeyboardDisplayManagerTabTip&) = delete;
+
   ~OnScreenKeyboardDisplayManagerTabTip() override;
 
   // VirtualKeyboardController overrides.
@@ -54,8 +59,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN)
 
   // The location of TabTip.exe.
   std::wstring osk_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnScreenKeyboardDisplayManagerTabTip);
 };
 
 }  // namespace ui

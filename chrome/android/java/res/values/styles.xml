@@ -6,9 +6,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- TODO(huayinz): Move themes to another xml file. -->
     <!-- Application themes -->
-    <style name="LauncherTheme" parent="@android:style/Theme.NoDisplay" />
+    <style name="LauncherTheme" parent="Theme.BrowserUI.NoDisplay" />
 
-    <style name="Base.V17.Theme.Chromium" parent="Theme.BrowserUI" />
+    <style name="Base.V17.Theme.Chromium" parent="Theme.BrowserUI.DayNight" />
     <style name="Base.Theme.Chromium" parent="Base.V17.Theme.Chromium" />
 
     <style name="Base.Theme.Chromium.WithWindowAnimation">
@@ -36,10 +36,9 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
-    <style name="Theme.Chromium.Activity.Fullscreen" parent="Theme.Chromium.Fullscreen">
-        <!-- No ActionBar -->
-        <item name="windowActionBar">false</item>
-    </style>
+    <style name="Base.Theme.Chromium.Activity.Fullscreen" parent="Theme.BrowserUI.DayNight" />
+    <style name="Theme.Chromium.Activity.Fullscreen"
+        parent="Base.Theme.Chromium.Activity.Fullscreen" />
     <style name="Theme.Chromium.Activity.Fullscreen.Transparent">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -154,7 +153,7 @@
 
     <!-- Manage Space Activity styles -->
     <style name="ManageSpaceActionBarModern" parent="Widget.MaterialComponents.ActionBar.Primary">
-        <item name="titleTextStyle">@style/TextAppearance.Headline.Primary.Light</item>
+        <item name="titleTextStyle">@style/TextAppearance.Headline.Primary.Baseline.Light</item>
         <!-- Action bar color. This is intentionally a dark color. See crbug.com/871193. -->
         <item name="background">@color/dark_action_bar_color</item>
     </style>
@@ -293,29 +292,29 @@
     </style>
 
     <!-- Tab Layout -->
-    <style name="TabLayoutStyle">
+    <style name="TabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">@android:color/transparent</item>
         <item name="tabIndicator">@drawable/tab_indicator</item>
+        <item name="tabIndicatorColor">@macro/tab_layout_selected_tab_color</item>
         <item name="tabIndicatorFullWidth">false</item>
         <item name="tabIndicatorHeight">@dimen/tab_indicator_height</item>
-        <item name="tabPaddingStart">5dp</item>
-        <item name="tabPaddingEnd">5dp</item>
         <item name="tabMode">fixed</item>
         <item name="tabGravity">fill</item>
         <item name="tabMaxWidth">0dp</item>
         <item name="tabTextAppearance">@style/TextAppearance.TextMediumThick</item>
-        <item name="tabTextColor">@color/default_text_color_secondary</item>
-        <item name="tabSelectedTextColor">@color/tab_layout_selected_tab_color</item>
-        <item name="android:background">@color/default_bg_color</item>
+        <item name="tabTextColor">@color/default_text_color_secondary_list</item>
+        <item name="tabSelectedTextColor">@macro/tab_layout_selected_tab_color</item>
     </style>
 
     <style name="NtpHeaderTabLayoutStyle" parent="TabLayoutStyle">
         <item name="tabTextAppearance">@style/TextAppearance.TextAccentMediumThick</item>
         <item name="tabGravity">center</item>
-        <item name="android:background">@android:color/transparent</item>
+        <item name="tabPaddingEnd">7dp</item>
+        <item name="tabPaddingStart">7dp</item>
     </style>
 
     <style name="TextAppearance.TabLayout" parent="TextAppearance.TextAccentMediumThick">
-      <item name="android:textColor">@color/tab_layout_colors</item>
+      <item name="android:textColor">@color/tab_layout_text_color_list</item>
     </style>
 
     <!-- Misc styles -->
@@ -328,7 +327,7 @@
     <style name="TabBarLineShadow">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:src">@color/hairline_stroke_color</item>
+        <item name="android:src">@color/divider_line_bg_color</item>
         <item name="android:scaleType">fitXY</item>
     </style>
     <style name="TextAppearance.UpdateMenuItem">
@@ -451,7 +450,7 @@
         <item name="primaryTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
         <item name="iconWidth">@dimen/context_menu_chip_icon_size</item>
         <item name="iconHeight">@dimen/context_menu_chip_icon_size</item>
-        <item name="chipColor">@color/popup_bg_color</item>
+        <item name="chipColor">@color/menu_item_bg_color</item>
         <item name="solidColorChip">true</item>
         <item name="allowMultipleLines">true</item>
         <item name="extendLateralPadding">true</item>

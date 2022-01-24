@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/google/android/gms/play-services-basement/17.5.0/play-services-basement-17.5.0.aar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-basement/17.5.0/play-services-basement-17.5.0.aar'
 _FILE_NAME = 'play-services-basement-17.5.0.aar'
 _FILE_VERSION = '17.5.0'
 

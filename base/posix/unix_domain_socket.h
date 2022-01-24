@@ -96,6 +96,7 @@ class BASE_EXPORT UnixDomainSocket {
                                       int* result_fd,
                                       const Pickle& request);
 #endif  // !defined(OS_NACL_NONSFI)
+
  private:
   // Similar to RecvMsg, but allows to specify |flags| for recvmsg(2).
   static ssize_t RecvMsgWithFlags(int fd,

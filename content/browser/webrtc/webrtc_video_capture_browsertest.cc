@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/video_capture/public/mojom/testing_controls.mojom.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
 namespace content {
 
@@ -36,6 +37,11 @@ static const char kVerifyHasReceivedTrackEndedEvent[] =
 // Integration test that exercises video capture functionality from the
 // JavaScript level.
 class WebRtcVideoCaptureBrowserTest : public ContentBrowserTest {
+ public:
+  WebRtcVideoCaptureBrowserTest(const WebRtcVideoCaptureBrowserTest&) = delete;
+  WebRtcVideoCaptureBrowserTest& operator=(
+      const WebRtcVideoCaptureBrowserTest&) = delete;
+
  protected:
   WebRtcVideoCaptureBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
@@ -58,12 +64,18 @@ class WebRtcVideoCaptureBrowserTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcVideoCaptureBrowserTest);
 };
 
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+#define MAYBE_RecoverFromCrashInVideoCaptureProcess \
+  DISABLED_RecoverFromCrashInVideoCaptureProcess
+#else
+#define MAYBE_RecoverFromCrashInVideoCaptureProcess \
+  RecoverFromCrashInVideoCaptureProcess
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcVideoCaptureBrowserTest,
-                       RecoverFromCrashInVideoCaptureProcess) {
+                       MAYBE_RecoverFromCrashInVideoCaptureProcess) {
   // This test only makes sense if the video capture service runs in a
   // separate process.
   if (!features::IsVideoCaptureServiceEnabledForOutOfProcess())

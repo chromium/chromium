@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
@@ -54,6 +53,9 @@ class MEDIA_EXPORT DecryptConfig {
                 const std::string& iv,
                 const std::vector<SubsampleEntry>& subsamples,
                 absl::optional<EncryptionPattern> encryption_pattern);
+
+  DecryptConfig& operator=(const DecryptConfig&) = delete;
+
   ~DecryptConfig();
 
   const std::string& key_id() const { return key_id_; }
@@ -96,8 +98,6 @@ class MEDIA_EXPORT DecryptConfig {
 
   // Only specified if |encryption_mode_| requires a pattern.
   absl::optional<EncryptionPattern> encryption_pattern_;
-
-  DISALLOW_ASSIGN(DecryptConfig);
 };
 
 inline std::ostream& operator<<(std::ostream& os,

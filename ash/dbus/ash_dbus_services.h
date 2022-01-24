@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace chromeos {
 class CrosDBusService;
 }
@@ -23,16 +21,19 @@ namespace ash {
 class AshDBusServices {
  public:
   explicit AshDBusServices(dbus::Bus* system_bus);
+
+  AshDBusServices(const AshDBusServices&) = delete;
+  AshDBusServices& operator=(const AshDBusServices&) = delete;
+
   ~AshDBusServices();
 
  private:
   std::unique_ptr<chromeos::CrosDBusService> display_service_;
   std::unique_ptr<chromeos::CrosDBusService> gesture_properties_service_;
   std::unique_ptr<chromeos::CrosDBusService> liveness_service_;
+  std::unique_ptr<chromeos::CrosDBusService> privacy_screen_service_;
   std::unique_ptr<chromeos::CrosDBusService> url_handler_service_;
   std::unique_ptr<chromeos::CrosDBusService> user_authentication_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshDBusServices);
 };
 
 }  // namespace ash

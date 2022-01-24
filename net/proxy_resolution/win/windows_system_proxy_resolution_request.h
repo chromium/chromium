@@ -8,14 +8,14 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolution_request.h"
+#include "net/proxy_resolution/win/windows_system_proxy_resolver.h"
+#include "net/proxy_resolution/win/winhttp_status.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -23,7 +23,6 @@ namespace net {
 class ProxyInfo;
 class ProxyList;
 class WindowsSystemProxyResolutionService;
-class WindowsSystemProxyResolver;
 
 // This is the concrete implementation of ProxyResolutionRequest used by
 // WindowsSystemProxyResolutionService. Manages a single asynchronous proxy
@@ -31,6 +30,11 @@ class WindowsSystemProxyResolver;
 class NET_EXPORT WindowsSystemProxyResolutionRequest
     : public ProxyResolutionRequest {
  public:
+  // The |windows_system_proxy_resolver| is not saved by this object. Rather, it
+  // is simply used to kick off proxy resolution in a utility process from
+  // within the constructor. The |windows_system_proxy_resolver| is not needed
+  // after construction. Every other parameter is saved by this object. Details
+  // for each one of these saved parameters can be found below.
   WindowsSystemProxyResolutionRequest(
       WindowsSystemProxyResolutionService* service,
       const GURL& url,
@@ -38,7 +42,7 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
       ProxyInfo* results,
       const CompletionOnceCallback user_callback,
       const NetLogWithSource& net_log,
-      scoped_refptr<WindowsSystemProxyResolver> windows_system_proxy_resolver);
+      WindowsSystemProxyResolver* windows_system_proxy_resolver);
 
   WindowsSystemProxyResolutionRequest(
       const WindowsSystemProxyResolutionRequest&) = delete;
@@ -50,44 +54,23 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
   // ProxyResolutionRequest
   LoadState GetLoadState() const override;
 
-  // Starts the resolve proxy request.
-  int Start();
+  // Callback for when the cross-process proxy resolution has completed. The
+  // |proxy_list| is the list of proxies returned by WinHttp translated into
+  // Chromium-friendly terms. The |winhttp_status| describes the status of the
+  // proxy resolution request. If WinHttp fails for some reason, |windows_error|
+  // contains the specific error returned by WinHttp.
+  virtual void ProxyResolutionComplete(const ProxyList& proxy_list,
+                                       WinHttpStatus winhttp_status,
+                                       int windows_error);
 
+ private:
   // Cancels the callback from the resolver for a previously started proxy
   // resolution.
-  void CancelResolveJob();
-
-  bool IsStarted();
+  void CancelResolveRequest();
 
   // Returns true if the request has been completed.
   bool was_completed() const { return user_callback_.is_null(); }
 
-  // Helper to call after ProxyResolver completion (both synchronous and
-  // asynchronous). Fixes up the result that is to be returned to user.
-  int UpdateResultsOnProxyResolutionComplete(const ProxyList& proxy_list,
-                                             int net_error);
-
-  // Helper to call if the request completes synchronously, since in that case
-  // the request will not be added to |pending_requests_| (in
-  // WindowsSystemProxyResolutionService).
-  int SynchronousProxyResolutionComplete(int net_error);
-
-  // Callback for when the WinHttp request has completed. This is the main way
-  // that proxy resolutions will complete. The |proxy_list| is the list of
-  // proxies returned by WinHttp translated into Chromium-friendly terms. The
-  // |net_error| describes the status of the proxy resolution request. If
-  // WinHttp fails for some reason, |windows_error| contains the specific error
-  // returned by WinHttp.
-  virtual void AsynchronousProxyResolutionComplete(const ProxyList& proxy_list,
-                                                   int net_error,
-                                                   int windows_error);
-
- protected:
-  // The resolver will do the work of talking to system APIs and translating the
-  // results into something Chromium understands.
-  scoped_refptr<WindowsSystemProxyResolver> windows_system_proxy_resolver_;
-
- private:
   // Note that Request holds a bare pointer to the
   // WindowsSystemProxyResolutionService. Outstanding requests are cancelled
   // during ~WindowsSystemProxyResolutionService, so this is guaranteed to be
@@ -101,6 +84,12 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
   // Time when the request was created.  Stored here rather than in |results_|
   // because the time in |results_| will be cleared.
   base::TimeTicks creation_time_;
+
+  // Manages the cross-process proxy resolution. Deleting this will cancel a
+  // pending proxy resolution. After a callback has been received via
+  // ProxyResolutionComplete(), this object will no longer do anything.
+  std::unique_ptr<WindowsSystemProxyResolver::Request>
+      proxy_resolution_request_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

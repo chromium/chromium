@@ -26,7 +26,8 @@ RealtimeAudioWorkletThread::RealtimeAudioWorkletThread(
   ThreadCreationParams params =
       ThreadCreationParams(ThreadType::kRealtimeAudioWorkletThread);
 
-  // Use a higher priority thread only when it is allowed by Finch.
+  // The real-time priority thread is enabled by default. A normal priority
+  // thread is used when it is blocked by a field trial.
   if (base::FeatureList::IsEnabled(
           features::kAudioWorkletThreadRealtimePriority)) {
     // TODO(crbug.com/1022888): The worklet thread priority is always NORMAL on

@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_hotplug_event_observer.h"
 #include "ui/events/devices/input_device.h"
@@ -25,6 +24,9 @@ class TestInputDeviceObserver : public InputDeviceEventObserver {
       manager_->AddObserver(this);
   }
 
+  TestInputDeviceObserver(const TestInputDeviceObserver&) = delete;
+  TestInputDeviceObserver& operator=(const TestInputDeviceObserver&) = delete;
+
   ~TestInputDeviceObserver() override {
     if (manager_)
       manager_->RemoveObserver(this);
@@ -41,8 +43,6 @@ class TestInputDeviceObserver : public InputDeviceEventObserver {
  private:
   DeviceDataManager* manager_;
   bool change_notified_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInputDeviceObserver);
 };
 
 }  //  namespace
@@ -50,6 +50,10 @@ class TestInputDeviceObserver : public InputDeviceEventObserver {
 class DeviceDataManagerX11Test : public testing::Test {
  public:
   DeviceDataManagerX11Test() = default;
+
+  DeviceDataManagerX11Test(const DeviceDataManagerX11Test&) = delete;
+  DeviceDataManagerX11Test& operator=(const DeviceDataManagerX11Test&) = delete;
+
   ~DeviceDataManagerX11Test() override = default;
 
   void SetUp() override { DeviceDataManagerX11::CreateInstance(); }
@@ -60,9 +64,6 @@ class DeviceDataManagerX11Test : public testing::Test {
     DeviceHotplugEventObserver* manager = DeviceDataManagerX11::GetInstance();
     manager->OnKeyboardDevicesUpdated(devices);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceDataManagerX11Test);
 };
 
 // Tests that the the device data manager notifies observers when a device is

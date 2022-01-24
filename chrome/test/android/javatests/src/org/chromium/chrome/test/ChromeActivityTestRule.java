@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.internal.runner.listener.InstrumentationResultPrinter;
-import android.view.Menu;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -38,7 +37,6 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
@@ -140,12 +138,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     @SuppressWarnings("RedundantOverride")
     public T getActivity() {
         return super.getActivity();
-    }
-
-    /** Retrieves the application Menu */
-    public Menu getMenu() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
-                () -> AppMenuTestSupport.getMenu(getAppMenuCoordinator()));
     }
 
     /**
@@ -481,6 +473,18 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      */
     @SuppressWarnings("unchecked")
     public static <T extends ChromeActivity> T waitFor(final Class<T> expectedClass) {
+        return waitFor(expectedClass, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
+    }
+
+    /**
+     * Waits for an Activity of the given class to be started.
+     * @param expectedClass The class of the Activity being waited on.
+     * @param maxTimeToPoll Maximum time in milliseconds to poll.
+     * @return The Activity.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends ChromeActivity> T waitFor(
+            final Class<T> expectedClass, long maxTimeToPoll) {
         final Activity[] holder = new Activity[1];
         CriteriaHelper.pollUiThread(() -> {
             holder[0] = ApplicationStatus.getLastTrackedFocusedActivity();
@@ -488,7 +492,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
             Criteria.checkThat(holder[0].getClass(), Matchers.typeCompatibleWith(expectedClass));
             Criteria.checkThat(
                     ((ChromeActivity) holder[0]).getActivityTab(), Matchers.notNullValue());
-        });
+        }, maxTimeToPoll, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         return (T) holder[0];
     }
 

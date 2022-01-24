@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink.h"
@@ -34,24 +34,15 @@ class PageScheduler;
 
 class FrameScheduler : public FrameOrWorkerScheduler {
  public:
-  class PLATFORM_EXPORT Delegate {
+  class PLATFORM_EXPORT Delegate : public FrameOrWorkerScheduler::Delegate {
    public:
-    virtual ~Delegate() = default;
+    ~Delegate() override = default;
 
     virtual ukm::UkmRecorder* GetUkmRecorder() = 0;
     virtual ukm::SourceId GetUkmSourceId() = 0;
 
     // Called when a frame has exceeded a total task time threshold (100ms).
     virtual void UpdateTaskTime(base::TimeDelta time) = 0;
-
-    // Notify that the list of active features for this frame has changed.
-    // See SchedulingPolicy::Feature for the list of features and the meaning
-    // of individual features.
-    // Note that this method is not called when the frame navigates — it is
-    // the responsibility of the observer to detect this and act reset features
-    // accordingly.
-    virtual void UpdateActiveSchedulerTrackedFeatures(
-        uint64_t features_mask) = 0;
 
     virtual const base::UnguessableToken& GetAgentClusterId() const = 0;
   };

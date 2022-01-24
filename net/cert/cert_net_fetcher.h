@@ -46,6 +46,9 @@ class NET_EXPORT CertNetFetcher
 
   CertNetFetcher() {}
 
+  CertNetFetcher(const CertNetFetcher&) = delete;
+  CertNetFetcher& operator=(const CertNetFetcher&) = delete;
+
   // Shuts down the CertNetFetcher and cancels outstanding network requests. It
   // is not guaranteed that any outstanding or subsequent
   // Request::WaitForResult() calls will be completed. Shutdown() must be called
@@ -85,7 +88,6 @@ class NET_EXPORT CertNetFetcher
 
  private:
   friend class base::RefCountedThreadSafe<CertNetFetcher>;
-  DISALLOW_COPY_AND_ASSIGN(CertNetFetcher);
 };
 
 }  // namespace net

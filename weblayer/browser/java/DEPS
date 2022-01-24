@@ -2,6 +2,7 @@ include_rules = [
   "+components/browser_ui/browser_ui/android",
   "+components/browser_ui/http_auth",
   "+components/browser_ui/util/android",
+  "+components/component_updater/android",
   "+components/content_capture/android",
   "+components/content_settings/android/java",
   "+components/crash/android/java",

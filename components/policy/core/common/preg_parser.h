@@ -12,7 +12,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/policy_export.h"

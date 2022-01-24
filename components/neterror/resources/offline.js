@@ -263,12 +263,14 @@ Runner.events = {
 
 Runner.prototype = {
   /**
-   * Assign a random game type.
+   * Initialize alternative game type.
    */
   initAltGameType() {
-    this.gameType = loadTimeData && loadTimeData.valueExists('altGameType') ?
-        GAME_TYPE[parseInt(loadTimeData.getValue('altGameType'), 10) - 1] :
-        '';
+    if (GAME_TYPE.length > 0) {
+      this.gameType = loadTimeData && loadTimeData.valueExists('altGameType') ?
+          GAME_TYPE[parseInt(loadTimeData.getValue('altGameType'), 10) - 1] :
+          '';
+    }
   },
 
   /**
@@ -455,7 +457,7 @@ Runner.prototype = {
 
     // Add checkbox to slow down the game.
     this.slowSpeedCheckboxLabel = document.createElement('label');
-    this.slowSpeedCheckboxLabel.className = 'slow-speed-toggle hidden';
+    this.slowSpeedCheckboxLabel.className = 'slow-speed-option hidden';
     this.slowSpeedCheckboxLabel.textContent =
         getA11yString(A11Y_STRINGS.speedLabel);
 
@@ -852,7 +854,7 @@ Runner.prototype = {
    * @param {Event} e
    */
   handleCanvasKeyPress(e) {
-    if (!this.activated) {
+    if (!this.activated && !Runner.audioCues) {
       this.toggleSpeed();
       Runner.audioCues = true;
       this.generatedSoundFx.init();
@@ -890,7 +892,9 @@ Runner.prototype = {
         this.tRex.enableSlowConfig();
         this.horizon.adjustObstacleSpeed();
       }
-      this.disableSpeedToggle(true);
+      if (this.playing) {
+        this.disableSpeedToggle(true);
+      }
     }
   },
 
@@ -1874,7 +1878,7 @@ GameOverPanel.prototype = {
    */
   drawAltGameElements(tRex) {
     // Additional adornments.
-    if (this.altGameModeActive) {
+    if (this.altGameModeActive && Runner.spriteDefinition.ALT_GAME_END_CONFIG) {
       const altGameEndConfig = Runner.spriteDefinition.ALT_GAME_END_CONFIG;
 
       let altGameEndSourceWidth = altGameEndConfig.WIDTH;
@@ -1951,8 +1955,6 @@ GameOverPanel.prototype = {
   update() {
     const now = getTimeStamp();
     const deltaTime = now - (this.frameTimeStamp || now);
-    const altTextConfig =
-        Runner.spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG;
 
     this.frameTimeStamp = now;
     this.animTimer += deltaTime;
@@ -1979,7 +1981,11 @@ GameOverPanel.prototype = {
     }
 
     // Game over text
-    if (this.altGameModeActive) {
+    if (this.altGameModeActive &&
+        Runner.spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG) {
+      const altTextConfig =
+          Runner.spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG;
+
       if (this.flashCounter < GameOverPanel.FLASH_ITERATIONS &&
           this.flashTimer > altTextConfig.FLASH_DURATION) {
         this.flashTimer = 0;
@@ -2609,7 +2615,7 @@ Trex.prototype = {
    * @param {number} setting
    */
   setJumpVelocity(setting) {
-    this.config.INIITAL_JUMP_VELOCITY = -setting;
+    this.config.INITIAL_JUMP_VELOCITY = -setting;
     this.config.DROP_VELOCITY = -setting / 2;
   },
 
@@ -3471,18 +3477,21 @@ BackgroundEl.prototype = {
    */
   update(speed) {
     if (!this.remove) {
-      if (!this.spriteConfig.FIXED) {
-        // Fixed speed, regardless of actual game speed.
-        this.xPos -= BackgroundEl.config.SPEED;
-      } else {
+      if (this.spriteConfig.FIXED) {
         this.animTimer += speed;
         if (this.animTimer > BackgroundEl.config.MS_PER_FRAME) {
           this.animTimer = 0;
           this.switchFrames = !this.switchFrames;
         }
 
-        this.yPos = this.switchFrames ? this.spriteConfig.FIXED_Y_POS_1 :
-                                        this.spriteConfig.FIXED_Y_POS_2;
+        if (this.spriteConfig.FIXED_Y_POS_1 &&
+            this.spriteConfig.FIXED_Y_POS_2) {
+          this.yPos = this.switchFrames ? this.spriteConfig.FIXED_Y_POS_1 :
+                                          this.spriteConfig.FIXED_Y_POS_2;
+        }
+      } else {
+        // Fixed speed, regardless of actual game speed.
+        this.xPos -= BackgroundEl.config.SPEED;
       }
       this.draw();
 

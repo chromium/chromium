@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/decryptor.h"
@@ -31,6 +30,10 @@ class MojoDecryptor final : public Decryptor {
   // will be used.
   MojoDecryptor(mojo::PendingRemote<mojom::Decryptor> remote_decryptor,
                 uint32_t writer_capacity = 0);
+
+  MojoDecryptor(const MojoDecryptor&) = delete;
+  MojoDecryptor& operator=(const MojoDecryptor&) = delete;
+
   ~MojoDecryptor() final;
 
   // Decryptor implementation.
@@ -87,8 +90,6 @@ class MojoDecryptor final : public Decryptor {
   std::unique_ptr<MojoDecoderBufferReader> decrypted_buffer_reader_;
 
   base::WeakPtrFactory<MojoDecryptor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDecryptor);
 };
 
 }  // namespace media

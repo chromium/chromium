@@ -27,6 +27,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Tests for {@link LanguagesManager} which gets language lists from native.
@@ -42,7 +43,7 @@ public class LanguagesManagerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        // Setup fake translate and langauge preferences.
+        // Setup fake translate and language preferences.
         List<LanguageItem> chromeLanguages = FakeTranslateBridgeJni.getSimpleLanguageItemList();
         List<String> acceptLanguages = Arrays.asList("sw", "en", "en-US");
         List<String> neverLanguages = Arrays.asList("en");
@@ -111,21 +112,32 @@ public class LanguagesManagerTest {
         Assert.assertFalse(containsLanguage(items, "sw"));
 
         // Check that the first language is the system default language.
-        Assert.assertEquals(items.get(0).getCode(), AppLocaleUtils.SYSTEM_LANGUAGE_VALUE);
+        Assert.assertTrue(AppLocaleUtils.isFollowSystemLanguage(items.get(0).getCode()));
         // Check that the second language is "en-US" from the Accept-Languages.
         Assert.assertEquals(items.get(1).getCode(), "en-US");
 
         // Set UI Language to system default.
-        AppLocaleUtils.setAppLanguagePref(AppLocaleUtils.SYSTEM_LANGUAGE_VALUE);
+        AppLocaleUtils.setAppLanguagePref(AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE);
 
         items = LanguagesManager.getInstance().getPotentialLanguages(
                 LanguagesManager.LanguageListType.UI_LANGUAGES);
 
         // Check that system default is not on the list and that German is.
-        Assert.assertFalse(containsLanguage(items, AppLocaleUtils.SYSTEM_LANGUAGE_VALUE));
+        Assert.assertFalse(containsLanguage(items, AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE));
         // Check that the fist languages are from the Accept-Languages.
         Assert.assertEquals(items.get(0).getCode(), "sw");
         Assert.assertEquals(items.get(1).getCode(), "en-US");
+    }
+
+    /**
+     * Tests for getting the all UI languages.
+     */
+    @Test
+    @SmallTest
+    public void testGetAllPossibleUiLanguages() {
+        List<LanguageItem> items = LanguagesManager.getInstance().getAllPossibleUiLanguages();
+        List<String> itemCodes = items.stream().map(i -> i.getCode()).collect(Collectors.toList());
+        Assert.assertEquals(itemCodes, Arrays.asList("af", "en-GB", "en-US", "fil", "hi", "sw"));
     }
 
     /**

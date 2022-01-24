@@ -45,6 +45,7 @@ bool GLSurfaceEglReadbackWayland::Resize(const gfx::Size& size,
                                          const gfx::ColorSpace& color_space,
                                          bool has_alpha) {
   DestroyBuffers();
+  surface_scale_factor_ = scale_factor;
   pending_frames_ = 0;
 
   if (!PbufferGLSurfaceEGL::Resize(size, scale_factor, color_space, has_alpha))
@@ -117,7 +118,7 @@ void GLSurfaceEglReadbackWayland::SwapBuffersAsync(
 
   const auto bounds = gfx::Rect(GetSize());
   buffer_manager_->CommitBuffer(widget_, next_buffer->buffer_id_, bounds,
-                                bounds);
+                                surface_scale_factor_, bounds);
 }
 
 gfx::SurfaceOrigin GLSurfaceEglReadbackWayland::GetOrigin() const {

@@ -43,6 +43,9 @@ class NET_EXPORT URLRequestFilter : public URLRequestInterceptor {
   // Singleton instance for use.
   static URLRequestFilter* GetInstance();
 
+  URLRequestFilter(const URLRequestFilter&) = delete;
+  URLRequestFilter& operator=(const URLRequestFilter&) = delete;
+
   void AddHostnameInterceptor(
       const std::string& scheme,
       const std::string& hostname,
@@ -90,8 +93,6 @@ class NET_EXPORT URLRequestFilter : public URLRequestInterceptor {
 
   // Singleton instance.
   static URLRequestFilter* shared_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestFilter);
 };
 
 }  // namespace net

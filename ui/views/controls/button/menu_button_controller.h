@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -31,17 +30,22 @@ class VIEWS_EXPORT MenuButtonController : public ButtonController {
                 bool is_sibling_menu_show,
                 const ui::LocatedEvent* event);
 
+    PressedLock(const PressedLock&) = delete;
+    PressedLock& operator=(const PressedLock&) = delete;
+
     ~PressedLock();
 
    private:
     base::WeakPtr<MenuButtonController> menu_button_controller_;
-
-    DISALLOW_COPY_AND_ASSIGN(PressedLock);
   };
 
   MenuButtonController(Button* button,
                        Button::PressedCallback callback,
                        std::unique_ptr<ButtonControllerDelegate> delegate);
+
+  MenuButtonController(const MenuButtonController&) = delete;
+  MenuButtonController& operator=(const MenuButtonController&) = delete;
+
   ~MenuButtonController() override;
 
   // view::ButtonController
@@ -118,8 +122,6 @@ class VIEWS_EXPORT MenuButtonController : public ButtonController {
   base::CallbackListSubscription state_changed_subscription_;
 
   base::WeakPtrFactory<MenuButtonController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MenuButtonController);
 };
 
 }  // namespace views

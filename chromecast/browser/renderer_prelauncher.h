@@ -26,6 +26,10 @@ class RendererPrelauncher : private IPC::Listener {
  public:
   RendererPrelauncher(content::BrowserContext* browser_context,
                       const GURL& gurl);
+
+  RendererPrelauncher(const RendererPrelauncher&) = delete;
+  RendererPrelauncher& operator=(const RendererPrelauncher&) = delete;
+
   ~RendererPrelauncher() override;
 
   virtual void Prelaunch();
@@ -44,8 +48,6 @@ class RendererPrelauncher : private IPC::Listener {
   scoped_refptr<content::SiteInstance> site_instance_;
   const GURL gurl_;
   int32_t rph_routing_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererPrelauncher);
 };
 
 }  // namespace chromecast

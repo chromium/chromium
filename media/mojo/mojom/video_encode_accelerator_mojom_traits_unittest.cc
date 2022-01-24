@@ -12,6 +12,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
+TEST(VideoEncodeAcceleratorSupportedProfile, RoundTrip) {
+  ::media::VideoEncodeAccelerator::SupportedProfile input;
+  input.profile = VP9PROFILE_PROFILE0;
+  input.min_resolution = gfx::Size(64, 64);
+  input.max_resolution = gfx::Size(4096, 4096);
+  input.max_framerate_numerator = 30;
+  input.max_framerate_denominator = 1;
+  input.scalability_modes.push_back(::media::SVCScalabilityMode::kL1T3);
+  input.scalability_modes.push_back(::media::SVCScalabilityMode::kL3T3Key);
+
+  ::media::VideoEncodeAccelerator::SupportedProfile output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::VideoEncodeAcceleratorSupportedProfile>(input, output));
+  EXPECT_EQ(input, output);
+}
+
 TEST(VideoEncoderInfoStructTraitTest, RoundTrip) {
   ::media::VideoEncoderInfo input;
   input.implementation_name = "FakeVideoEncodeAccelerator";
@@ -104,12 +120,23 @@ TEST(BitstreamBufferMetadataTraitTest, RoundTrip) {
   ::media::BitstreamBufferMetadata input_metadata;
   input_metadata.payload_size_bytes = 1234;
   input_metadata.key_frame = true;
-  input_metadata.timestamp = base::TimeDelta::FromMilliseconds(123456);
+  input_metadata.timestamp = base::Milliseconds(123456);
   ::media::BitstreamBufferMetadata output_metadata;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::BitstreamBufferMetadata>(
           input_metadata, output_metadata));
   EXPECT_EQ(input_metadata, output_metadata);
+
+  H264Metadata h264;
+  h264.temporal_idx = 1;
+  h264.layer_sync = true;
+  input_metadata.h264 = h264;
+  output_metadata = ::media::BitstreamBufferMetadata();
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::BitstreamBufferMetadata>(
+          input_metadata, output_metadata));
+  EXPECT_EQ(input_metadata, output_metadata);
+  input_metadata.h264.reset();
 
   Vp8Metadata vp8;
   vp8.non_reference = true;
@@ -124,7 +151,7 @@ TEST(BitstreamBufferMetadataTraitTest, RoundTrip) {
   input_metadata.vp8.reset();
 
   Vp9Metadata vp9;
-  vp9.has_reference = true;
+  vp9.inter_pic_predicted = true;
   vp9.temporal_up_switch = true;
   vp9.referenced_by_upper_spatial_layers = true;
   vp9.reference_lower_spatial_layers = true;

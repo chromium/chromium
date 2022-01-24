@@ -19,9 +19,10 @@ Element& LayoutTreeRebuildRoot::RootElement() const {
   // the need for a LayoutText. Single roots are typically dirty, but we need an
   // extra check for IsSingleRoot() because we mark nodes which have siblings
   // removed with MarkAncestorsWithChildNeedsReattachLayoutTree() in
-  // StyleEngine::MarkForWhitespaceReattachment(). In that case we need to start
-  // from the ancestor to traverse all whitespace siblings.
-  if (IsSingleRoot() || root_node->NeedsReattachLayoutTree() ||
+  // Element::RecalcStyle() if the LayoutObject is marked with
+  // WhitespaceChildrenMayChange(). In that case we need to start from the
+  // ancestor to traverse all whitespace siblings.
+  if (IsSingleRoot() || root_node->IsDirtyForRebuildLayoutTree() ||
       !root_node->GetLayoutObject()) {
     Element* root_element = root_node->GetReattachParent();
     while (root_element && !root_element->GetLayoutObject())
@@ -45,7 +46,7 @@ bool LayoutTreeRebuildRoot::IsChildDirty(const Node& node) const {
 #endif  // DCHECK_IS_ON()
 
 bool LayoutTreeRebuildRoot::IsDirty(const Node& node) const {
-  return node.NeedsReattachLayoutTree();
+  return node.IsDirtyForRebuildLayoutTree();
 }
 
 void LayoutTreeRebuildRoot::SubtreeModified(ContainerNode& parent) {
@@ -68,7 +69,7 @@ void LayoutTreeRebuildRoot::SubtreeModified(ContainerNode& parent) {
   }
   for (; ancestor; ancestor = ancestor->GetReattachParent()) {
     DCHECK(ancestor->ChildNeedsReattachLayoutTree());
-    DCHECK(!ancestor->NeedsReattachLayoutTree());
+    DCHECK(!ancestor->IsDirtyForRebuildLayoutTree());
     ancestor->ClearChildNeedsReattachLayoutTree();
   }
   Clear();

@@ -12,6 +12,8 @@
 #include "build/build_config.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -165,8 +167,16 @@ void DialogClientView::Layout() {
 bool DialogClientView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   DCHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
 
-  if (DialogDelegate* delegate = GetDialogDelegate())
+  // If there's no close-x (typically the case for modal dialogs) then Cancel
+  // the dialog instead of closing the widget as the delegate may likely expect
+  // either Accept or Cancel to be called as a result of user action.
+  DialogDelegate* const delegate = GetDialogDelegate();
+  if (delegate && delegate->EscShouldCancelDialog()) {
     delegate->CancelDialog();
+    return true;
+  }
+
+  GetWidget()->CloseWithReason(Widget::ClosedReason::kEscKeyPressed);
 
   return true;
 }
@@ -211,8 +221,8 @@ void DialogClientView::OnThemeChanged() {
   const DialogDelegate* dialog = GetDialogDelegate();
 
   if (dialog && !dialog->use_custom_frame()) {
-    SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DialogBackground)));
+    SetBackground(views::CreateSolidBackground(
+        GetColorProvider()->GetColor(ui::kColorDialogBackground)));
   }
 }
 

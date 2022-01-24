@@ -8,7 +8,7 @@
  * This file contains typedefs for chromeOS OOBE properties.
  */
 
-var OobeTypes = {};
+/* #export */ var OobeTypes = {};
 
 /**
  * ChromeOS OOBE language descriptor.
@@ -60,7 +60,7 @@ OobeTypes.A11yStatuses;
 
 /**
  * Timezone ID.
- * @typedef {!String}
+ * @typedef {!string}
  */
 OobeTypes.Timezone;
 
@@ -68,7 +68,7 @@ OobeTypes.Timezone;
  * ChromeOS timezone descriptor.
  * @typedef {{
  *   value: (OobeTypes.Timezone|undefined),
- *   title: (String|undefined),
+ *   title: (string|undefined),
  *   selected: (boolean|undefined),
  * }}
  */
@@ -89,6 +89,7 @@ OobeTypes.TimezoneDsc;
  *   eulaSendStatistics: (boolean|undefined),
  *   networkUseConnected: (boolean|undefined),
  *   arcTosAutoAccept: (boolean|undefined),
+ *   networkConfig: (string|undefined),
  * }}
  */
 OobeTypes.OobeConfiguration;

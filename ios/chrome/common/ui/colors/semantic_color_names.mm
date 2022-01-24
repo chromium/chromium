@@ -30,6 +30,7 @@ NSString* const kTertiaryBackgroundColor = @"tertiary_background_color";
 NSString* const kTextPrimaryColor = @"text_primary_color";
 NSString* const kTextSecondaryColor = @"text_secondary_color";
 NSString* const kTextTertiaryColor = @"text_tertiary_color";
+NSString* const kTextQuaternaryColor = @"text_quaternary_color";
 NSString* const kTextfieldBackgroundColor = @"textfield_background_color";
 NSString* const kTextfieldPlaceholderColor = @"textfield_placeholder_color";
 NSString* const kToolbarButtonColor = @"toolbar_button_color";
@@ -39,6 +40,8 @@ NSString* const kToolbarShadowColor = @"toolbar_shadow_color";
 NSString* const kBlueColor = @"blue_color";
 NSString* const kBlueHaloColor = @"blue_halo_color";
 NSString* const kGreenColor = @"green_color";
+NSString* const kGreen50Color = @"green_50_color";
+NSString* const kGreen700Color = @"green_700_color";
 NSString* const kRedColor = @"red_color";
 
 #pragma mark - Grey Palette
@@ -52,25 +55,3 @@ NSString* const kGrey600Color = @"grey_600_color";
 NSString* const kGrey700Color = @"grey_700_color";
 NSString* const kGrey800Color = @"grey_800_color";
 NSString* const kGrey900Color = @"grey_900_color";
-
-// Temporary for iOS 12
-
-NSString* const kBackgroundDarkColor = @"background_dark_color";
-NSString* const kSecondaryBackgroundDarkColor =
-    @"secondary_background_dark_color";
-NSString* const kTertiaryBackgroundDarkColor =
-    @"tertiary_background_dark_color";
-NSString* const kCloseButtonDarkColor = @"close_button_dark_color";
-NSString* const kTableViewRowHighlightDarkColor =
-    @"table_view_row_highlight_dark_color";
-NSString* const kTextPrimaryDarkColor = @"text_primary_dark_color";
-NSString* const kTextSecondaryDarkColor = @"text_secondary_dark_color";
-NSString* const kTextfieldBackgroundDarkColor =
-    @"textfield_background_dark_color";
-NSString* const kTextfieldPlaceholderDarkColor =
-    @"textfield_placeholder_dark_color";
-NSString* const kToolbarButtonDarkColor = @"toolbar_button_dark_color";
-
-NSString* const kBlueDarkColor = @"blue_dark_color";
-NSString* const kGreenDarkColor = @"green_dark_color";
-NSString* const kRedDarkColor = @"red_dark_color";

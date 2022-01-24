@@ -16,11 +16,12 @@ using AddCompletedDownloadCallback = base::OnceCallback<void(int64_t)>;
 // static functions.
 class DownloadManagerBridge {
  public:
+  DownloadManagerBridge(const DownloadManagerBridge&) = delete;
+  DownloadManagerBridge& operator=(const DownloadManagerBridge&) = delete;
+
   static void AddCompletedDownload(DownloadItem* download,
                                    AddCompletedDownloadCallback callback);
   static void RemoveCompletedDownload(DownloadItem* download);
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerBridge);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_MANAGER_BRIDGE_H_

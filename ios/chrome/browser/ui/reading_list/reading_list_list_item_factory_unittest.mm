@@ -25,11 +25,13 @@ class ReadingListListItemFactoryTest : public PlatformTest {
       : PlatformTest(),
         entry_(GURL("https://www.google.com"), "Google", base::Time::Now()) {}
 
+  ReadingListListItemFactoryTest(const ReadingListListItemFactoryTest&) =
+      delete;
+  ReadingListListItemFactoryTest& operator=(
+      const ReadingListListItemFactoryTest&) = delete;
+
  protected:
   const ReadingListEntry entry_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReadingListListItemFactoryTest);
 };
 
 // Tests that the accessibility delegate is properly passed to the generated

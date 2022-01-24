@@ -47,7 +47,7 @@ bool Animator::Animate(
     AnimationWorkletDispatcherOutput::AnimationState* output) {
   DCHECK(!std::isnan(current_time));
 
-  v8::Local<v8::Value> instance = instance_.NewLocal(isolate);
+  v8::Local<v8::Value> instance = instance_.Get(isolate);
   if (IsUndefinedOrNull(instance))
     return false;
 
@@ -102,7 +102,7 @@ v8::Local<v8::Value> Animator::State(v8::Isolate* isolate,
   if (!IsStateful())
     return v8::Undefined(isolate);
 
-  v8::Local<v8::Value> instance = instance_.NewLocal(isolate);
+  v8::Local<v8::Value> instance = instance_.Get(isolate);
   DCHECK(!IsUndefinedOrNull(instance));
 
   v8::TryCatch try_catch(isolate);

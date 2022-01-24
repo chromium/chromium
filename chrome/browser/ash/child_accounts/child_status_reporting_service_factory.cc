@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
 
-#include "base/macros.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 

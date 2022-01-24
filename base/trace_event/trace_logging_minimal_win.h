@@ -345,7 +345,6 @@ class TlmUtf8StringField
 constexpr EVENT_DESCRIPTOR TlmEventDescriptor(uint8_t level,
                                               uint64_t keyword) noexcept {
   return {
-
       // Id
       // TraceLogging generally uses the event's Name instead of Id+Version,
       // so Id is normally set to 0 for TraceLogging events.

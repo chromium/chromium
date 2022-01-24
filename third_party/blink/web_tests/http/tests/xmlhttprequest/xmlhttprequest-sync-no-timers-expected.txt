@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 22: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 Test for: bug 68238: [soup] Crash while loading http://www.jusco.cn This test verifies that WebCore timers do not fire during synchronous XMLHttpRequests.
 
 PASS

@@ -4,8 +4,8 @@
 
 package org.chromium.components.permissions;
 
-import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -102,7 +102,8 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
         int DISCOVERY_IDLE = 3;
     }
 
-    private Activity mActivity;
+    private Context mContext;
+    private Window mWindow;
 
     // The dialog this class encapsulates.
     private Dialog mDialog;
@@ -138,19 +139,21 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
     private boolean mIgnorePendingWindowFocusChangeForClose;
 
     /**
-     * Creates the ItemChooserPopup and displays it (and starts waiting for data).
+     * Creates the ItemChooserDialog and displays it (and starts waiting for data).
      *
-     * @param activity Activity which is used for launching a dialog.
+     * @param context The context used for layout inflation and resource loading.
+     * @param window The window used to determine the list height.
      * @param callback The callback used to communicate back what was selected.
      * @param labels The labels to show in the dialog.
      */
-    public ItemChooserDialog(
-            Activity activity, ItemSelectedCallback callback, ItemChooserLabels labels) {
-        mActivity = activity;
+    public ItemChooserDialog(Context context, Window window, ItemSelectedCallback callback,
+            ItemChooserLabels labels) {
+        mContext = context;
+        mWindow = window;
         mItemSelectedCallback = callback;
         mLabels = labels;
 
-        LinearLayout dialogContainer = (LinearLayout) LayoutInflater.from(mActivity).inflate(
+        LinearLayout dialogContainer = (LinearLayout) LayoutInflater.from(mContext).inflate(
                 R.layout.item_chooser_dialog, null);
 
         mListView = (ListView) dialogContainer.findViewById(R.id.items);
@@ -180,7 +183,7 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
         };
 
         mItemAdapter = new DeviceItemAdapter(
-                mActivity, /*itemsSelectable=*/true, R.layout.item_chooser_dialog_row);
+                mContext, /*itemsSelectable=*/true, R.layout.item_chooser_dialog_row);
         mItemAdapter.setNotifyOnChange(true);
         mItemAdapter.setObserver(this);
 
@@ -205,8 +208,8 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
                         View listViewContainer = dialogContainer.findViewById(R.id.container);
                         listViewContainer.setLayoutParams(new LinearLayout.LayoutParams(
                                 LayoutParams.MATCH_PARENT,
-                                getListHeight(mActivity.getWindow().getDecorView().getHeight(),
-                                        mActivity.getResources().getDisplayMetrics().density)));
+                                getListHeight(mWindow.getDecorView().getHeight(),
+                                        mContext.getResources().getDisplayMetrics().density)));
                     }
                 });
     }
@@ -240,7 +243,7 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
     }
 
     private void showDialogForView(View view) {
-        mDialog = new Dialog(mActivity) {
+        mDialog = new Dialog(mContext) {
             @Override
             public void onWindowFocusChanged(boolean hasFocus) {
                 super.onWindowFocusChanged(hasFocus);
@@ -256,7 +259,7 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
         mDialog.setOnCancelListener(dialog -> mItemSelectedCallback.onItemSelected(""));
 
         Window window = mDialog.getWindow();
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
             // On smaller screens, make the dialog fill the width of the screen,
             // and appear at the top.
             window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));

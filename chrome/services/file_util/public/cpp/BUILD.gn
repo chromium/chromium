@@ -31,6 +31,13 @@ source_set("cpp") {
       ]
     }
 
+    if (is_linux || is_win) {
+      sources += [
+        "sandboxed_document_analyzer.cc",
+        "sandboxed_document_analyzer.h",
+      ]
+    }
+
     deps += [
       "//components/services/filesystem:lib",
       "//content/public/browser",
@@ -52,6 +59,10 @@ if (safe_browsing_mode == 1) {
       sources += [ "sandboxed_dmg_analyzer_mac_unittest.cc" ]
     }
 
+    if (is_linux || is_win) {
+      sources += [ "sandboxed_document_analyzer_unittest.cc" ]
+    }
+
     deps = [
       ":cpp",
       "//base/test:test_support",
@@ -66,6 +77,10 @@ if (safe_browsing_mode == 1) {
       "//testing/gmock",
       "//testing/gtest",
     ]
+
+    if (is_linux || is_win) {
+      deps += [ "//chrome/common/safe_browsing:document_analyzer_results" ]
+    }
   }
 }
 
@@ -87,13 +102,5 @@ if (is_chromeos_ash) {
       "//testing/gtest",
       "//third_party/zlib",
     ]
-
-    if (enable_basic_printing) {
-      # Needed by files which include //chrome/browser/service_sandbox_type.h.
-      # Inclusion of print_backend_service_manager.h depends on this.
-      # TODO(crbug.com/1213762)  Replace this with more accurate dependency
-      # once //chrome/browser/printing build is able to be cleanly targeted.
-      deps += [ "//chrome/services/printing/public/mojom" ]
-    }
   }
 }

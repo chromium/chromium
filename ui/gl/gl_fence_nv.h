@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_FENCE_NV_H_
 #define UI_GL_GL_FENCE_NV_H_
 
-#include "base/macros.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_fence.h"
@@ -15,6 +14,10 @@ namespace gl {
 class GL_EXPORT GLFenceNV : public GLFence {
  public:
   GLFenceNV();
+
+  GLFenceNV(const GLFenceNV&) = delete;
+  GLFenceNV& operator=(const GLFenceNV&) = delete;
+
   ~GLFenceNV() override;
 
   // GLFence implementation:
@@ -27,8 +30,6 @@ class GL_EXPORT GLFenceNV : public GLFence {
 
  private:
   GLuint fence_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GLFenceNV);
 };
 
 }  // namespace gl

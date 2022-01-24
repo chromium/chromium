@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
@@ -28,6 +27,10 @@ class UserEventSyncBridge : public ModelTypeSyncBridge {
       OnceModelTypeStoreFactory store_factory,
       std::unique_ptr<ModelTypeChangeProcessor> change_processor,
       GlobalIdMapper* global_id_mapper);
+
+  UserEventSyncBridge(const UserEventSyncBridge&) = delete;
+  UserEventSyncBridge& operator=(const UserEventSyncBridge&) = delete;
+
   ~UserEventSyncBridge() override;
 
   // ModelTypeSyncBridge implementation.
@@ -81,8 +84,6 @@ class UserEventSyncBridge : public ModelTypeSyncBridge {
   GlobalIdMapper* global_id_mapper_;
 
   base::WeakPtrFactory<UserEventSyncBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserEventSyncBridge);
 };
 
 }  // namespace syncer

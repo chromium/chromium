@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
@@ -71,6 +70,11 @@ class MediaFileSystemRegistryShutdownNotifierFactory
         MediaFileSystemRegistryShutdownNotifierFactory>::get();
   }
 
+  MediaFileSystemRegistryShutdownNotifierFactory(
+      const MediaFileSystemRegistryShutdownNotifierFactory&) = delete;
+  MediaFileSystemRegistryShutdownNotifierFactory& operator=(
+      const MediaFileSystemRegistryShutdownNotifierFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       MediaFileSystemRegistryShutdownNotifierFactory>;
@@ -81,8 +85,6 @@ class MediaFileSystemRegistryShutdownNotifierFactory
     DependsOn(MediaGalleriesPreferencesFactory::GetInstance());
   }
   ~MediaFileSystemRegistryShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileSystemRegistryShutdownNotifierFactory);
 };
 
 struct InvalidatedGalleriesInfo {
@@ -296,6 +298,9 @@ class ExtensionGalleriesHost
         rph_refs_(base::BindRepeating(&ExtensionGalleriesHost::CleanUp,
                                       base::Unretained(this))) {}
 
+  ExtensionGalleriesHost(const ExtensionGalleriesHost&) = delete;
+  ExtensionGalleriesHost& operator=(const ExtensionGalleriesHost&) = delete;
+
   // For each gallery in the list of permitted |galleries|, checks if the
   // device is attached and if so looks up or creates a file system name and
   // passes the information needed for the renderer to create those file
@@ -507,8 +512,6 @@ class ExtensionGalleriesHost
   // The set of render processes and web contents that may have references to
   // the file system ids this instance manages.
   RPHReferenceManager rph_refs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionGalleriesHost);
 };
 
 /******************
@@ -654,6 +657,11 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
     : public MediaFileSystemContext {
  public:
   MediaFileSystemContextImpl() {}
+
+  MediaFileSystemContextImpl(const MediaFileSystemContextImpl&) = delete;
+  MediaFileSystemContextImpl& operator=(const MediaFileSystemContextImpl&) =
+      delete;
+
   ~MediaFileSystemContextImpl() override {}
 
   bool RegisterFileSystem(const std::string& device_id,
@@ -729,8 +737,6 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
     return false;
 #endif
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileSystemContextImpl);
 };
 
 // Constructor in 'private' section because depends on private class definition.

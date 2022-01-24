@@ -47,17 +47,14 @@ ShelfBubble::ShelfBubble(views::View* anchor,
   set_parent_window(
       anchor_widget()->GetNativeWindow()->GetRootWindow()->GetChildById(
           kShellWindowId_SettingBubbleContainer));
+  // We override the role because the base class sets it to alert dialog,
+  // which results in each tooltip title being announced twice on screen
+  // readers each time it is shown.
+  SetAccessibleRole(ax::mojom::Role::kDialog);
 }
 
 ShelfBubble::~ShelfBubble() {
   background_animator_.RemoveObserver(this);
-}
-
-ax::mojom::Role ShelfBubble::GetAccessibleWindowRole() {
-  // We override the role because the base class sets it to alert dialog,
-  // which results in each tooltip title being announced twice on screen
-  // readers each time it is shown.
-  return ax::mojom::Role::kDialog;
 }
 
 void ShelfBubble::CreateBubble() {

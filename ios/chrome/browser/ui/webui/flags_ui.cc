@@ -60,6 +60,10 @@ web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
 class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
  public:
   FlagsDOMHandler() : access_(flags_ui::kGeneralAccessFlagsOnly) {}
+
+  FlagsDOMHandler(const FlagsDOMHandler&) = delete;
+  FlagsDOMHandler& operator=(const FlagsDOMHandler&) = delete;
+
   ~FlagsDOMHandler() override {}
 
   // Initializes the DOM handler with the provided flags storage and flags
@@ -86,25 +90,23 @@ class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
  private:
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   flags_ui::FlagAccess access_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlagsDOMHandler);
 };
 
 void FlagsDOMHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kRequestExperimentalFeatures,
       base::BindRepeating(&FlagsDOMHandler::HandleRequestExperimentalFeatures,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kEnableExperimentalFeature,
       base::BindRepeating(
           &FlagsDOMHandler::HandleEnableExperimentalFeatureMessage,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kRestartBrowser,
       base::BindRepeating(&FlagsDOMHandler::HandleRestartBrowser,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kResetAllFlags,
       base::BindRepeating(&FlagsDOMHandler::HandleResetAllFlags,
                           base::Unretained(this)));
@@ -148,8 +150,8 @@ void FlagsDOMHandler::HandleRequestExperimentalFeatures(
 void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
     const base::ListValue* args) {
   DCHECK(flags_storage_);
-  DCHECK_EQ(2u, args->GetSize());
-  if (args->GetSize() != 2)
+  DCHECK_EQ(2u, args->GetList().size());
+  if (args->GetList().size() != 2)
     return;
 
   std::string entry_internal_name;

@@ -26,6 +26,9 @@ class TestLegalMessageLine : public LegalMessageLine {
     set_links(links);
   }
 
+  TestLegalMessageLine(const TestLegalMessageLine&) = delete;
+  TestLegalMessageLine& operator=(const TestLegalMessageLine&) = delete;
+
   ~TestLegalMessageLine() override {}
 
   void set_text(const std::string& ascii_text) {
@@ -33,9 +36,6 @@ class TestLegalMessageLine : public LegalMessageLine {
   }
 
   void set_links(const Links& links) { links_ = links; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLegalMessageLine);
 };
 
 }  // namespace autofill

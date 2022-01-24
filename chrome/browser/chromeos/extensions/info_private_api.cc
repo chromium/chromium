@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/devicetype.h"
 #include "ash/public/cpp/stylus_utils.h"
@@ -20,7 +21,7 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"
@@ -31,7 +32,6 @@
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/arc/arc_util.h"
 #include "components/metrics/metrics_service.h"
@@ -246,8 +246,8 @@ bool IsEnterpriseKiosk() {
   if (!chrome::IsRunningInForcedAppMode())
     return false;
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->IsDeviceEnterpriseManaged();
 }
 
@@ -266,9 +266,8 @@ ChromeosInfoPrivateGetFunction::~ChromeosInfoPrivateGetFunction() {
 }
 
 ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
-  base::Value::ConstListView args_list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(!args_list.empty() && args_list[0].is_list());
-  base::Value::ConstListView list = args_list[0].GetList();
+  EXTENSION_FUNCTION_VALIDATE(!args().empty() && args()[0].is_list());
+  base::Value::ConstListView list = args()[0].GetList();
 
   base::Value result(base::Value::Type::DICTIONARY);
   for (size_t i = 0; i < list.size(); ++i) {
@@ -328,8 +327,7 @@ std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
   }
 
   if (property_name == kPropertyInitialLocale) {
-    return std::make_unique<base::Value>(
-        chromeos::StartupUtils::GetInitialLocale());
+    return std::make_unique<base::Value>(ash::StartupUtils::GetInitialLocale());
   }
 
   if (property_name == kPropertyBoard) {
@@ -359,8 +357,8 @@ std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
   }
 
   if (property_name == kPropertyManagedDeviceStatus) {
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     if (connector->IsDeviceEnterpriseManaged()) {
       return std::make_unique<base::Value>(kManagedDeviceStatusManaged);
     }
@@ -411,7 +409,7 @@ std::unique_ptr<base::Value> ChromeosInfoPrivateGetFunction::GetValue(
     }
     // TODO(crbug.com/697817): Convert CrosSettings::Get to take a unique_ptr.
     return base::Value::ToUniquePtrValue(
-        ash::CrosSettings::Get()->GetPref(chromeos::kSystemTimezone)->Clone());
+        ash::CrosSettings::Get()->GetPref(ash::kSystemTimezone)->Clone());
   }
 
   if (property_name == kPropertySupportedTimezones) {
@@ -437,11 +435,14 @@ ChromeosInfoPrivateSetFunction::~ChromeosInfoPrivateSetFunction() {
 }
 
 ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
-  std::string param_name;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &param_name));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& param_name = args()[0].GetString();
+
   if (param_name == kPropertyTimezone) {
-    std::string param_value;
-    EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &param_value));
+    EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+    EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
+    const std::string& param_value = args()[1].GetString();
     if (ash::system::PerUserTimezoneEnabled()) {
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
@@ -457,8 +458,9 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
   } else {
     const char* pref_name = GetBoolPrefNameForApiProperty(param_name.c_str());
     if (pref_name) {
-      bool param_value;
-      EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(1, &param_value));
+      EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+      EXTENSION_FUNCTION_VALIDATE(args()[1].is_bool());
+      bool param_value = args()[1].GetBool();
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
           ->SetBoolean(pref_name, param_value);

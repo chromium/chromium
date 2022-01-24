@@ -4,8 +4,8 @@
 
 #include "chrome/common/conflicts/remote_module_watcher_win.h"
 
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace {
 

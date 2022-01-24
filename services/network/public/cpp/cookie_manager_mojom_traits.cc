@@ -362,7 +362,6 @@ bool StructTraits<network::mojom::CookieSameSiteContextMetadataDataView,
                   net::CookieOptions::SameSiteCookieContext::ContextMetadata>::
     Read(network::mojom::CookieSameSiteContextMetadataDataView data,
          net::CookieOptions::SameSiteCookieContext::ContextMetadata* out) {
-  out->affected_by_bugfix_1166211 = data.affected_by_bugfix_1166211();
   if (!data.ReadCrossSiteRedirectDowngrade(&out->cross_site_redirect_downgrade))
     return false;
 
@@ -464,6 +463,48 @@ bool StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions>::
   return true;
 }
 
+bool StructTraits<network::mojom::CookiePartitionKeyDataView,
+                  net::CookiePartitionKey>::
+    Read(network::mojom::CookiePartitionKeyDataView partition_key,
+         net::CookiePartitionKey* out) {
+  if (partition_key.from_script()) {
+    *out = net::CookiePartitionKey::FromScript().value();
+    return true;
+  }
+  net::SchemefulSite site;
+  if (!partition_key.ReadSite(&site))
+    return false;
+  *out = net::CookiePartitionKey::FromWire(site);
+  return true;
+}
+
+const std::vector<net::CookiePartitionKey> StructTraits<
+    network::mojom::CookiePartitionKeychainDataView,
+    net::CookiePartitionKeychain>::keys(const net::CookiePartitionKeychain&
+                                            keychain) {
+  std::vector<net::CookiePartitionKey> result;
+  if (keychain.ContainsAllKeys() || keychain.IsEmpty())
+    return result;
+  result.insert(result.begin(), keychain.PartitionKeys().begin(),
+                keychain.PartitionKeys().end());
+  return result;
+}
+
+bool StructTraits<network::mojom::CookiePartitionKeychainDataView,
+                  net::CookiePartitionKeychain>::
+    Read(network::mojom::CookiePartitionKeychainDataView keychain,
+         net::CookiePartitionKeychain* out) {
+  if (keychain.contains_all_partitions()) {
+    *out = net::CookiePartitionKeychain::ContainsAll();
+    return true;
+  }
+  std::vector<net::CookiePartitionKey> keys;
+  if (!keychain.ReadKeys(&keys))
+    return false;
+  *out = net::CookiePartitionKeychain(keys);
+  return true;
+}
+
 bool StructTraits<
     network::mojom::CanonicalCookieDataView,
     net::CanonicalCookie>::Read(network::mojom::CanonicalCookieDataView cookie,
@@ -504,7 +545,7 @@ bool StructTraits<
   if (!cookie.ReadPriority(&priority))
     return false;
 
-  absl::optional<net::SchemefulSite> partition_key;
+  absl::optional<net::CookiePartitionKey> partition_key;
   if (!cookie.ReadPartitionKey(&partition_key))
     return false;
 
@@ -532,7 +573,8 @@ bool StructTraits<network::mojom::CookieInclusionStatusDataView,
   out->set_exclusion_reasons(status.exclusion_reasons());
   out->set_warning_reasons(status.warning_reasons());
 
-  return out->IsValid();
+  return net::CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
+      status.exclusion_reasons(), status.warning_reasons());
 }
 
 bool StructTraits<network::mojom::CookieAndLineWithAccessResultDataView,

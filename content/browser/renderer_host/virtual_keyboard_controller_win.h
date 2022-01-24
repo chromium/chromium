@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_VIRTUAL_KEYBOARD_CONTROLLER_WIN_H_
 #define CONTENT_BROWSER_RENDERER_HOST_VIRTUAL_KEYBOARD_CONTROLLER_WIN_H_
 
-#include "base/macros.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "ui/base/ime/virtual_keyboard_controller_observer.h"
 

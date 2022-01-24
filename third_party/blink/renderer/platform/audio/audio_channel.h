@@ -46,11 +46,11 @@ class PLATFORM_EXPORT AudioChannel {
   // AudioFloatArray.
 
   // Reference an external buffer.
-  AudioChannel(float* storage, size_t length)
+  AudioChannel(float* storage, uint32_t length)
       : length_(length), raw_pointer_(storage), silent_(false) {}
 
   // Manage storage for us.
-  explicit AudioChannel(size_t length)
+  explicit AudioChannel(uint32_t length)
       : length_(length), raw_pointer_(nullptr), silent_(true) {
     mem_buffer_ = std::make_unique<AudioFloatArray>(length);
   }
@@ -60,7 +60,7 @@ class PLATFORM_EXPORT AudioChannel {
 
   // Redefine the memory for this channel. |storage| represents external memory
   // not managed by this object.
-  void Set(float* storage, size_t length) {
+  void Set(float* storage, uint32_t length) {
     mem_buffer_.reset();  // cleanup managed storage
     raw_pointer_ = storage;
     length_ = length;
@@ -68,11 +68,11 @@ class PLATFORM_EXPORT AudioChannel {
   }
 
   // How many sample-frames do we contain?
-  size_t length() const { return length_; }
+  uint32_t length() const { return length_; }
 
   // ResizeSmaller() can only be called with a new length <= the current length.
   // The data stored in the bus will remain undisturbed.
-  void ResizeSmaller(size_t new_length);
+  void ResizeSmaller(uint32_t new_length);
 
   // Direct access to PCM sample data. Non-const accessor clears silent flag.
   float* MutableData() {
@@ -122,7 +122,7 @@ class PLATFORM_EXPORT AudioChannel {
   float MaxAbsValue() const;
 
  private:
-  size_t length_;
+  uint32_t length_;
 
   float* raw_pointer_;
   std::unique_ptr<AudioFloatArray> mem_buffer_;

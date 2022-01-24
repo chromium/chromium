@@ -133,12 +133,10 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
 
   // Duration of the long standing event timeout since StartEvent() has been
   // called.
-  static constexpr base::TimeDelta kEventTimeout =
-      base::TimeDelta::FromMinutes(5);
+  static constexpr base::TimeDelta kEventTimeout = base::Minutes(5);
   // ServiceWorkerEventQueue periodically updates the timeout state by
   // kUpdateInterval.
-  static constexpr base::TimeDelta kUpdateInterval =
-      base::TimeDelta::FromSeconds(10);
+  static constexpr base::TimeDelta kUpdateInterval = base::Seconds(10);
 
  private:
   // Represents an event dispatch, which can be queued into |queue_|.
@@ -261,8 +259,8 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
 
   // For idle timeouts. The delay until the worker is identified as idle after
   // all inflight events are completed.
-  base::TimeDelta idle_delay_ = base::TimeDelta::FromSeconds(
-      mojom::blink::kServiceWorkerDefaultIdleDelayInSeconds);
+  base::TimeDelta idle_delay_ =
+      base::Seconds(mojom::blink::kServiceWorkerDefaultIdleDelayInSeconds);
 
   // Set to true once |idle_callback_| has been invoked. Set to false when
   // StartEvent() is called.

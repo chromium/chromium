@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
@@ -370,6 +369,10 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
       DBusMethodCallback<bool> callback) = 0;
 
   PowerManagerClient();
+
+  PowerManagerClient(const PowerManagerClient&) = delete;
+  PowerManagerClient& operator=(const PowerManagerClient&) = delete;
+
   virtual ~PowerManagerClient();
 
   // Creates and initializes the global instance. |bus| must not be null.
@@ -383,9 +386,6 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
 
   // Returns the global instance if initialized. May return null.
   static PowerManagerClient* Get();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerManagerClient);
 };
 
 }  // namespace chromeos

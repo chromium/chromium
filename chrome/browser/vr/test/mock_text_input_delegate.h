@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_TEST_MOCK_TEXT_INPUT_DELEGATE_H_
 #define CHROME_BROWSER_VR_TEST_MOCK_TEXT_INPUT_DELEGATE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/model/text_input_info.h"
 #include "chrome/browser/vr/text_input_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -15,13 +14,14 @@ namespace vr {
 class MockTextInputDelegate : public TextInputDelegate {
  public:
   MockTextInputDelegate();
+
+  MockTextInputDelegate(const MockTextInputDelegate&) = delete;
+  MockTextInputDelegate& operator=(const MockTextInputDelegate&) = delete;
+
   ~MockTextInputDelegate() override;
 
   MOCK_METHOD1(UpdateInput, void(const TextInputInfo& info));
   MOCK_METHOD1(RequestFocus, void(int));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTextInputDelegate);
 };
 
 }  // namespace vr

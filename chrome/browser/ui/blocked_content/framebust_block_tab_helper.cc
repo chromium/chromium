@@ -55,4 +55,4 @@ void FramebustBlockTabHelper::DidFinishNavigation(
   content_settings::UpdateLocationBarUiForWebContents(web_contents());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FramebustBlockTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FramebustBlockTabHelper);

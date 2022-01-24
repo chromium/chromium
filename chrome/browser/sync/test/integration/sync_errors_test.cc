@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -111,10 +110,11 @@ class UserEventCommitChecker : public SingleClientStatusChangeChecker {
 class SyncErrorTest : public SyncTest {
  public:
   SyncErrorTest() : SyncTest(SINGLE_CLIENT) {}
-  ~SyncErrorTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncErrorTest);
+  SyncErrorTest(const SyncErrorTest&) = delete;
+  SyncErrorTest& operator=(const SyncErrorTest&) = delete;
+
+  ~SyncErrorTest() override {}
 };
 
 // Helper class that waits until the sync engine has hit an actionable error.
@@ -122,6 +122,9 @@ class ActionableErrorChecker : public SingleClientStatusChangeChecker {
  public:
   explicit ActionableErrorChecker(SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
+
+  ActionableErrorChecker(const ActionableErrorChecker&) = delete;
+  ActionableErrorChecker& operator=(const ActionableErrorChecker&) = delete;
 
   ~ActionableErrorChecker() override {}
 
@@ -134,9 +137,6 @@ class ActionableErrorChecker : public SingleClientStatusChangeChecker {
     return (status.sync_protocol_error.action != syncer::UNKNOWN_ACTION &&
             service()->HasUnrecoverableError());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActionableErrorChecker);
 };
 
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, BirthdayErrorTest) {
@@ -314,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
       GetSyncService(0)->GetActiveDataTypes();
   ASSERT_TRUE(synced_datatypes.Has(syncer::TYPED_URLS));
   ASSERT_TRUE(synced_datatypes.Has(syncer::SESSIONS));
-  GetProfile(0)->GetPrefs()->SetBoolean(
-      prefs::kSavingBrowserHistoryDisabled, true);
+  GetProfile(0)->GetPrefs()->SetBoolean(prefs::kSavingBrowserHistoryDisabled,
+                                        true);
 
   // Wait for reconfigurations.
   ASSERT_TRUE(
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
   const sync_pb::UserEventSpecifics specifics =
       CreateTestEvent(base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMicroseconds(kUserEventTimeUsec)));
+          base::Microseconds(kUserEventTimeUsec)));
   event_service->RecordUserEvent(specifics);
 
   // Wait for a commit message containing the user event. However the commit
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const sync_pb::UserEventSpecifics expected_specifics =
       CreateTestEvent(base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMicroseconds(kUserEventTimeUsec)));
+          base::Microseconds(kUserEventTimeUsec)));
   EXPECT_TRUE(UserEventEqualityChecker(GetSyncService(0), GetFakeServer(),
                                        {{expected_specifics}})
                   .Wait());

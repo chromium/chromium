@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #import "ios/chrome/browser/autofill/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -50,7 +50,8 @@ class WebStateList;
               webStateList:(WebStateList*)webStateList
        personalDataManager:(autofill::PersonalDataManager*)personalDataManager
              passwordStore:
-                 (scoped_refptr<password_manager::PasswordStore>)passwordStore
+                 (scoped_refptr<password_manager::PasswordStoreInterface>)
+                     passwordStore
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
     reauthenticationModule:(ReauthenticationModule*)reauthenticationModule;
 

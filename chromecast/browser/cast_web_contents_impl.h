@@ -24,13 +24,15 @@
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "chromecast/browser/named_message_port_connector_cast.h"
+#include "chromecast/mojo/remote_interfaces.h"
 #include "components/on_load_script_injector/browser/on_load_script_injector_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/media_playback_renderer_type.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
@@ -50,33 +52,38 @@ class CastWebContentsImpl : public CastWebContents,
                             public content::WebContentsObserver {
  public:
   CastWebContentsImpl(content::WebContents* web_contents,
-                      base::WeakPtr<Delegate> delegate,
                       mojom::CastWebViewParamsPtr params);
+
+  CastWebContentsImpl(const CastWebContentsImpl&) = delete;
+  CastWebContentsImpl& operator=(const CastWebContentsImpl&) = delete;
+
   ~CastWebContentsImpl() override;
 
   content::WebContents* web_contents() const override;
   PageState page_state() const override;
-  absl::optional<pid_t> GetMainFrameRenderProcessPid() const override;
 
   // CastWebContents implementation:
   int tab_id() const override;
   int id() const override;
-  void AddRendererFeatures(std::vector<RendererFeature> features) override;
-  void AllowWebAndMojoWebUiBindings() override;
-  void ClearRenderWidgetHostView() override;
-  void SetAppProperties(const std::string& session_id,
-                        bool is_audio_app) override;
-  void SetCastPermissionUserData(const std::string& app_id,
-                                 const GURL& app_web_url) override;
+  void SetAppProperties(const std::string& app_id,
+                        const std::string& session_id,
+                        bool is_audio_app,
+                        const GURL& app_web_url,
+                        bool enforce_feature_permissions,
+                        const std::vector<int32_t>& feature_permissions,
+                        const std::vector<std::string>&
+                            additional_feature_permission_origins) override;
+  void SetGroupInfo(const std::string& session_id,
+                    bool is_multizone_launch) override;
+  void AddRendererFeatures(base::Value features) override;
+  void SetInterfacesForRenderer(
+      mojo::PendingRemote<mojom::RemoteInterfaces> remote_interfaces) override;
   void LoadUrl(const GURL& url) override;
   void ClosePage() override;
   void Stop(int error_code) override;
   void SetWebVisibilityAndPaint(bool visible) override;
-  void RegisterInterfaceProvider(
-      const InterfaceSet& interface_set,
-      service_manager::InterfaceProvider* interface_provider) override;
-  service_manager::BinderRegistry* binder_registry() override;
   bool TryBindReceiver(mojo::GenericPendingReceiver& receiver) override;
+  InterfaceBundle* local_interfaces() override;
   void BlockMediaLoading(bool blocked) override;
   void BlockMediaStarting(bool blocked) override;
   void EnableBackgroundVideoPlayback(bool enabled) override;
@@ -90,12 +97,10 @@ class CastWebContentsImpl : public CastWebContents,
       base::OnceCallback<void(base::Value)> callback) override;
   void ConnectToBindingsService(
       mojo::PendingRemote<mojom::ApiBindings> api_bindings_remote) override;
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
   void SetEnabledForRemoteDebugging(bool enabled) override;
+  void GetMainFramePid(GetMainFramePidCallback cb) override;
   bool is_websql_enabled() override;
   bool is_mixer_audio_enabled() override;
-  bool can_bind_interfaces() override;
 
   // content::RenderProcessHostObserver implementation:
   void RenderProcessReady(content::RenderProcessHost* host) override;
@@ -106,11 +111,9 @@ class CastWebContentsImpl : public CastWebContents,
 
   // content::WebContentsObserver implementation:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void OnInterfaceRequestFromFrame(
-      content::RenderFrameHost* /* render_frame_host */,
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle* interface_pipe) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(
@@ -124,7 +127,6 @@ class CastWebContentsImpl : public CastWebContents,
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
                    const GURL& validated_url,
                    int error_code) override;
-  void MainFrameWasResized(bool width_changed) override;
   void ResourceLoadComplete(
       content::RenderFrameHost* render_frame_host,
       const content::GlobalRequestID& request_id,
@@ -145,6 +147,15 @@ class CastWebContentsImpl : public CastWebContents,
       content::WebContentsObserver::MediaStoppedReason reason) override;
 
  private:
+  // Proxy allowing a client to communicate with IdentificationSettingsManager
+  // in a RenderFrame.
+  struct IdentificationSettingsProxy {
+    IdentificationSettingsProxy();
+    ~IdentificationSettingsProxy();
+    mojo::AssociatedRemote<mojom::IdentificationSettingsManager> remote;
+    mojo::AssociatedReceiverSet<mojom::IdentificationSettingsManager> receivers;
+  };
+
   void OnPageLoading();
   void OnPageLoaded();
   void UpdatePageState();
@@ -161,7 +172,6 @@ class CastWebContentsImpl : public CastWebContents,
                        std::unique_ptr<cast_api_bindings::MessagePort> port);
 
   content::WebContents* web_contents_;
-  base::WeakPtr<Delegate> delegate_;
   mojom::CastWebViewParamsPtr params_;
   PageState page_state_;
   PageState last_state_;
@@ -173,7 +183,7 @@ class CastWebContentsImpl : public CastWebContents,
   content::RenderProcessHost* main_process_host_;
 
   base::flat_set<std::unique_ptr<CastWebContents>> inner_contents_;
-  std::vector<RendererFeature> renderer_features_;
+  base::Value renderer_features_{base::Value::Type::DICTIONARY};
 
   const int tab_id_;
   const int id_;
@@ -193,6 +203,10 @@ class CastWebContentsImpl : public CastWebContents,
   on_load_script_injector::OnLoadScriptInjectorHost<uint64_t> script_injector_;
   mojo::Remote<mojom::ApiBindings> api_bindings_;
 
+  base::flat_map<content::RenderFrameHost*,
+                 std::unique_ptr<IdentificationSettingsProxy>>
+      identification_settings_proxies;
+
   // If |ConnectToBindingsService| is invoked, |bindings_received_| is set
   // false. Following |LoadUrl| will be stored in |pending_load_url_|, and
   // will be invoked once bindings are received.
@@ -202,20 +216,15 @@ class CastWebContentsImpl : public CastWebContents,
   // Used to open a MessageChannel for connecting API bindings.
   std::unique_ptr<NamedMessagePortConnectorCast> named_message_port_connector_;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<CastWebContentsObserver>::Unchecked observer_list_;
 
-  service_manager::BinderRegistry binder_registry_;
+  InterfaceBundle local_interfaces_;
+  RemoteInterfaces remote_interfaces_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // Map of InterfaceSet -> InterfaceProvider pointer.
-  base::flat_map<InterfaceSet, service_manager::InterfaceProvider*>
-      interface_providers_map_;
-
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastWebContentsImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastWebContentsImpl);
 };
 
 }  // namespace chromecast

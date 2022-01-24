@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -52,6 +51,10 @@ class DataReductionProxyService
       data_use_measurement::DataUseMeasurement* data_use_measurement,
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       const base::TimeDelta& commit_delay);
+
+  DataReductionProxyService(const DataReductionProxyService&) = delete;
+  DataReductionProxyService& operator=(const DataReductionProxyService&) =
+      delete;
 
   virtual ~DataReductionProxyService();
 
@@ -143,8 +146,6 @@ class DataReductionProxyService
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DataReductionProxyService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionProxyService);
 };
 
 }  // namespace data_reduction_proxy

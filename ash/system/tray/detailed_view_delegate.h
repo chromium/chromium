@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/controls/button/button.h"
@@ -35,6 +34,10 @@ class ViewClickListener;
 class ASH_EXPORT DetailedViewDelegate {
  public:
   explicit DetailedViewDelegate(UnifiedSystemTrayController* tray_controller);
+
+  DetailedViewDelegate(const DetailedViewDelegate&) = delete;
+  DetailedViewDelegate& operator=(const DetailedViewDelegate&) = delete;
+
   virtual ~DetailedViewDelegate();
 
   // Transition to the main view from the detailed view. |restore_focus| is true
@@ -66,11 +69,6 @@ class ASH_EXPORT DetailedViewDelegate {
   // Configure a |view| to have a visible separator below.
   virtual void ShowStickyHeaderSeparator(views::View* view,
                                          bool show_separator);
-
-  // Create a horizontal separator line to be drawn between rows in a detailed
-  // view above the sub-header rows. Caller takes ownership of the returned
-  // view.
-  virtual views::Separator* CreateListSubHeaderSeparator();
 
   // Return a targetable row containing |icon| and |text|. Caller takes
   // ownership of the returned view.
@@ -109,8 +107,6 @@ class ASH_EXPORT DetailedViewDelegate {
 
   views::Label* title_label_ = nullptr;
   views::Separator* title_separator_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DetailedViewDelegate);
 };
 
 }  // namespace ash

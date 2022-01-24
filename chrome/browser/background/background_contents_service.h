@@ -12,14 +12,12 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/background/background_contents.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "net/base/backoff_entry.h"
@@ -56,13 +54,19 @@ class BackgroundContentsServiceObserver;
 // It is also responsible for tracking the association between
 // BackgroundContents and their parent app, and shutting them down when the
 // parent app is unloaded.
-class BackgroundContentsService : private content::NotificationObserver,
-                                  public extensions::ExtensionRegistryObserver,
-                                  public BackgroundContents::Delegate,
-                                  public KeyedService {
+class BackgroundContentsService
+    : public extensions::ExtensionRegistryObserver,
+      public extensions::ExtensionHostRegistry::Observer,
+      public BackgroundContents::Delegate,
+      public KeyedService {
  public:
   BackgroundContentsService(Profile* profile,
                             const base::CommandLine* command_line);
+
+  BackgroundContentsService(const BackgroundContentsService&) = delete;
+  BackgroundContentsService& operator=(const BackgroundContentsService&) =
+      delete;
+
   ~BackgroundContentsService() override;
 
   // Allows tests to reduce the time between a force-installed app/extension
@@ -151,10 +155,10 @@ class BackgroundContentsService : private content::NotificationObserver,
   // Registers for various notifications.
   void StartObserving();
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // extensions::ExtensionHostRegistry::Observer:
+  void OnExtensionHostRenderProcessGone(
+      content::BrowserContext* browser_context,
+      extensions::ExtensionHost* extension_host) override;
 
   // Called when ExtensionSystem is ready.
   void OnExtensionSystemReady();
@@ -236,7 +240,6 @@ class BackgroundContentsService : private content::NotificationObserver,
   // PrefService used to store list of background pages (or NULL if this is
   // running under an incognito profile).
   PrefService* prefs_ = nullptr;
-  content::NotificationRegistrar registrar_;
 
   // Information we track about each BackgroundContents.
   struct BackgroundContentsInfo {
@@ -265,10 +268,11 @@ class BackgroundContentsService : private content::NotificationObserver,
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
+  base::ScopedObservation<extensions::ExtensionHostRegistry,
+                          extensions::ExtensionHostRegistry::Observer>
+      extension_host_registry_observation_{this};
 
   base::WeakPtrFactory<BackgroundContentsService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundContentsService);
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_BACKGROUND_CONTENTS_SERVICE_H_

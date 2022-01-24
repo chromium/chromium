@@ -33,8 +33,6 @@
 @property(nonatomic, strong, readonly) ToolbarButton* reloadButton;
 // Button to display the share menu.
 @property(nonatomic, strong, readonly) ToolbarButton* shareButton;
-// Button to manage the bookmarks of this page.
-@property(nonatomic, strong, readonly) ToolbarButton* bookmarkButton;
 // Button to display the tools menu.
 @property(nonatomic, strong, readonly) ToolbarToolsMenuButton* toolsMenuButton;
 // Button to create a new tab.

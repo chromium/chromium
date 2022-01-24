@@ -8,6 +8,8 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
@@ -18,6 +20,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,6 +111,62 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest, OpenerTrackingWorks) {
         EXPECT_EQ(1u, frame->GetOpenedPageNodes().size());
         auto* embedded_page = *(frame->GetOpenedPageNodes().begin());
         EXPECT_EQ(frame, embedded_page->GetOpenerFrameNode());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+class PerformanceManagerFencedFrameBrowserTest
+    : public PerformanceManagerBrowserTest {
+ public:
+  PerformanceManagerFencedFrameBrowserTest() = default;
+  ~PerformanceManagerFencedFrameBrowserTest() override = default;
+  PerformanceManagerFencedFrameBrowserTest(
+      const PerformanceManagerFencedFrameBrowserTest&) = delete;
+
+  PerformanceManagerFencedFrameBrowserTest& operator=(
+      const PerformanceManagerFencedFrameBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+  content::WebContents* GetWebContents() { return shell()->web_contents(); }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PerformanceManagerFencedFrameBrowserTest,
+                       FencedFrameDoesNotHaveParentFrameNode) {
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  PerformanceManagerTabHelper* tab_helper =
+      PerformanceManagerTabHelper::FromWebContents(GetWebContents());
+  DCHECK(tab_helper);
+  EXPECT_EQ(tab_helper->frames_.size(), 1U);
+
+  // Load a fenced frame.
+  GURL fenced_frame_url = embedded_test_server()->GetURL("/title1.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), fenced_frame_url);
+
+  // Jump into the graph and make sure |fenced_frame_host| does not have a
+  // parent frame node.
+  base::RunLoop run_loop;
+  PerformanceManager::CallOnGraph(
+      FROM_HERE,
+      base::BindLambdaForTesting([tab_helper, fenced_frame_host, &run_loop]() {
+        // Fenced frame and Portals have an embedder frame node instead of a
+        // parent frame node. So, the fenced frame should not have a parent
+        // frame node.
+        ASSERT_EQ(tab_helper->frames_[fenced_frame_host]->parent_frame_node(),
+                  nullptr);
+        // TODO(crbug.com/1260363): Check that the embedder relationship exists.
+        // See also crbug.com/1261454 because the check of
+        // tab_helper->frames_.size() caused a flaky test failure.
         run_loop.Quit();
       }));
   run_loop.Run();

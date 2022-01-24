@@ -26,7 +26,8 @@ class HoldingSpaceProgressRingIndeterminateAnimation
   // HoldingSpaceProgressRingAnimation:
   void UpdateAnimatableProperties(double fraction,
                                   float* start_value,
-                                  float* end_value) override;
+                                  float* end_value,
+                                  float* opacity) override;
 };
 
 }  // namespace ash

@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/lib/thread_safe_forwarder_base.h"
@@ -54,14 +54,16 @@ class ThreadSafeForwarder : public internal::ThreadSafeForwarderBase {
   // method.
   explicit ThreadSafeForwarder(scoped_refptr<ThreadSafeProxy> thread_safe_proxy)
       : ThreadSafeForwarderBase(std::move(thread_safe_proxy)), proxy_(this) {}
+
+  ThreadSafeForwarder(const ThreadSafeForwarder&) = delete;
+  ThreadSafeForwarder& operator=(const ThreadSafeForwarder&) = delete;
+
   ~ThreadSafeForwarder() override = default;
 
   ProxyType& proxy() { return proxy_; }
 
  private:
   ProxyType proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSafeForwarder);
 };
 
 template <typename Interface>
@@ -73,6 +75,9 @@ class SharedRemoteBase
  public:
   using InterfaceType = typename RemoteType::InterfaceType;
   using PendingType = typename RemoteType::PendingType;
+
+  SharedRemoteBase(const SharedRemoteBase&) = delete;
+  SharedRemoteBase& operator=(const SharedRemoteBase&) = delete;
 
   InterfaceType* get() { return &forwarder_->proxy(); }
   InterfaceType* operator->() { return get(); }
@@ -107,6 +112,9 @@ class SharedRemoteBase
         : task_runner_(std::move(task_runner)),
           remote_(std::move(remote), task_runner_),
           associated_group_(*remote_.internal_state()->associated_group()) {}
+
+    RemoteWrapper(const RemoteWrapper&) = delete;
+    RemoteWrapper& operator=(const RemoteWrapper&) = delete;
 
     std::unique_ptr<ThreadSafeForwarder<InterfaceType>> CreateForwarder() {
       return std::make_unique<ThreadSafeForwarder<InterfaceType>>(
@@ -189,8 +197,6 @@ class SharedRemoteBase
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
     RemoteType remote_;
     AssociatedGroup associated_group_;
-
-    DISALLOW_COPY_AND_ASSIGN(RemoteWrapper);
   };
 
   struct RemoteWrapperDeleter {
@@ -215,14 +221,13 @@ class SharedRemoteBase
 
   const scoped_refptr<RemoteWrapper> wrapper_;
   const std::unique_ptr<ThreadSafeForwarder<InterfaceType>> forwarder_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedRemoteBase);
 };
 
-// SharedRemote wraps a non-thread-safe Remote and proxies messages to it.
-// Unlike normal Remote objects, SharedRemote is copyable and usable from any
-// thread, but has some additional overhead and latency in message transmission
-// as a trade-off.
+// SharedRemote wraps a non-thread-safe Remote and proxies messages to it. Note
+// that SharedRemote itself is also NOT THREAD-SAFE, but unlike Remote it IS
+// copyable cross-thread, and each copy is usable from its own thread. The
+// trade-off compared to a Remote is some additional overhead and latency in
+// message transmission, as sending a message usually incurs a task hop.
 //
 // Async calls are posted to the bound sequence (the sequence that the
 // underlying Remote is bound to, i.e. |bind_task_runner| below), and responses

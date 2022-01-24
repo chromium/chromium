@@ -70,8 +70,6 @@
 #pragma mark** Buttons in the trailing stack view. **
 // Button to display the share menu, redefined as readwrite.
 @property(nonatomic, strong, readwrite) ToolbarButton* shareButton;
-// Button to manage the bookmarks of this page, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarButton* bookmarkButton;
 // Button to display the tools menu, redefined as readwrite.
 @property(nonatomic, strong, readwrite) ToolbarToolsMenuButton* toolsMenuButton;
 
@@ -111,7 +109,6 @@
 @synthesize trailingStackView = _trailingStackView;
 @synthesize trailingStackViewButtons = _trailingStackViewButtons;
 @synthesize shareButton = _shareButton;
-@synthesize bookmarkButton = _bookmarkButton;
 @synthesize toolsMenuButton = _toolsMenuButton;
 @synthesize cancelButton = _cancelButton;
 @synthesize collapsedToolbarButton = _collapsedToolbarButton;
@@ -252,7 +249,6 @@
 // Sets the trailing stack view.
 - (void)setUpTrailingStackView {
   self.shareButton = [self.buttonFactory shareButton];
-  self.bookmarkButton = [self.buttonFactory bookmarkButton];
   self.tabGridButton = [self.buttonFactory tabGridButton];
   self.toolsMenuButton = [self.buttonFactory toolsMenuButton];
 

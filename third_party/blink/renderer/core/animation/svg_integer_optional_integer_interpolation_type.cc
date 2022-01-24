@@ -41,7 +41,7 @@ SVGIntegerOptionalIntegerInterpolationType::MaybeConvertSVGValue(
 
 static SVGInteger* ToPositiveInteger(const InterpolableValue* number) {
   return MakeGarbageCollected<SVGInteger>(
-      clampTo<int>(round(To<InterpolableNumber>(number)->Value()), 1));
+      ClampTo<int>(round(To<InterpolableNumber>(number)->Value()), 1));
 }
 
 SVGPropertyBase* SVGIntegerOptionalIntegerInterpolationType::AppliedSVGValue(

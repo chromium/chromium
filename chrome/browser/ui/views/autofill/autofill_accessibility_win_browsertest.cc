@@ -36,6 +36,11 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
  public:
   AutofillAccessibilityWinBrowserTest() = default;
 
+  AutofillAccessibilityWinBrowserTest(
+      const AutofillAccessibilityWinBrowserTest&) = delete;
+  AutofillAccessibilityWinBrowserTest& operator=(
+      const AutofillAccessibilityWinBrowserTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -74,9 +79,6 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
     SimulateKeyPress(web_contents, key, code, key_code, false, false, false,
                      false);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillAccessibilityWinBrowserTest);
 };
 
 // The test is flaky on Windows. See https://crbug.com/1221273
@@ -89,9 +91,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityWinBrowserTest,
                        MAYBE_AutofillPopupControllerFor) {
   content::AccessibilityNotificationWaiter waiter(
       GetWebContents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/accessibility/input_datalist.html"));
+      embedded_test_server()->GetURL("/accessibility/input_datalist.html")));
   waiter.WaitForNotification();
 
   base::win::ScopedVariant result_variant;

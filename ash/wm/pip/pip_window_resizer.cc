@@ -297,7 +297,7 @@ void PipWindowResizer::CompleteDrag() {
         CollisionDetectionUtils::RelativePriority::kPictureInPicture);
 
     base::TimeDelta duration =
-        base::TimeDelta::FromMilliseconds(kPipSnapToEdgeAnimationDurationMs);
+        base::Milliseconds(kPipSnapToEdgeAnimationDurationMs);
     ::wm::ConvertRectFromScreen(GetTarget()->parent(), &bounds);
     SetBoundsWMEvent event(bounds, /*animate=*/true, duration);
     window_state()->OnWMEvent(&event);

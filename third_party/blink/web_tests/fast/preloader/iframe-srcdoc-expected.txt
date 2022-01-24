@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: line 1: PASS
+CONSOLE MESSAGE: PASS
 This test has to be run using `ContentShell --run-web-tests` in order to see if resources were loaded and the test passed. 
 
 --------

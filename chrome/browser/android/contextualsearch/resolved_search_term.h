@@ -21,8 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 
-#include "base/macros.h"
-
 // Provides the native support needed for the Java class by the same name,
 // which encapsulates a server response for Contextual Search.
 
@@ -63,6 +61,10 @@ struct ResolvedSearchTerm {
                      const std::string& search_url_preload,
                      int coca_card_tag,
                      const std::string& related_searches_json);
+
+  ResolvedSearchTerm(const ResolvedSearchTerm&) = delete;
+  ResolvedSearchTerm& operator=(const ResolvedSearchTerm&) = delete;
+
   ~ResolvedSearchTerm();
 
   // TODO(donnd): switch to member-initialization style instead of initializers.
@@ -87,8 +89,6 @@ struct ResolvedSearchTerm {
   const std::string search_url_preload;
   const int coca_card_tag;
   const std::string related_searches_json;
-
-  DISALLOW_COPY_AND_ASSIGN(ResolvedSearchTerm);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_RESOLVED_SEARCH_TERM_H_

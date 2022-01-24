@@ -58,8 +58,8 @@ TEST_F(ShapeResultViewTest, LatinSingleView) {
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
 
   // Test view at the start of the result: "Test run with multiple"
-  ShapeResultView::Segment segment = {result.get(), 0, 22};
-  auto first4 = ShapeResultView::Create(&segment, 1);
+  ShapeResultView::Segment segments[] = {{result.get(), 0, 22}};
+  auto first4 = ShapeResultView::Create(segments);
 
   EXPECT_EQ(first4->StartIndex(), 0u);
   EXPECT_EQ(first4->NumCharacters(), 22u);
@@ -71,8 +71,8 @@ TEST_F(ShapeResultViewTest, LatinSingleView) {
   EXPECT_TRUE(CompareResultGlyphs(first4_glyphs, glyphs, 0u, 22u));
 
   // Test view in the middle of the result: "multiple words and breaking"
-  segment = {result.get(), 14, 41};
-  auto middle4 = ShapeResultView::Create(&segment, 1);
+  segments[0] = {result.get(), 14, 41};
+  auto middle4 = ShapeResultView::Create(segments);
 
   EXPECT_EQ(middle4->StartIndex(), 14u);
   EXPECT_EQ(middle4->NumCharacters(), 27u);
@@ -84,8 +84,8 @@ TEST_F(ShapeResultViewTest, LatinSingleView) {
   EXPECT_TRUE(CompareResultGlyphs(middle4_glyphs, glyphs, 14u, 27u));
 
   // Test view at the end of the result: "breaking opportunities."
-  segment = {result.get(), 33, 56};
-  auto last2 = ShapeResultView::Create(&segment, 1);
+  segments[0] = {result.get(), 33, 56};
+  auto last2 = ShapeResultView::Create(segments);
 
   EXPECT_EQ(last2->StartIndex(), 33u);
   EXPECT_EQ(last2->NumCharacters(), 23u);
@@ -107,8 +107,8 @@ TEST_F(ShapeResultViewTest, ArabicSingleView) {
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
 
   // Test view at the start of the result: "عربى"
-  ShapeResultView::Segment segment = {result.get(), 0, 4};
-  auto first_word = ShapeResultView::Create(&segment, 1);
+  ShapeResultView::Segment segments[] = {{result.get(), 0, 4}};
+  auto first_word = ShapeResultView::Create(segments);
   Vector<ShapeResultTestGlyphInfo> first_glyphs;
   first_word->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&first_glyphs));
 
@@ -131,8 +131,8 @@ TEST_F(ShapeResultViewTest, ArabicSingleView) {
   EXPECT_TRUE(CompareResultGlyphs(first_glyphs, glyphs, 3u, 7u));
 
   // Test view at the end of the result: "نص"
-  segment = {result.get(), 4, 7};
-  auto last_word = ShapeResultView::Create(&segment, 1);
+  segments[0] = {result.get(), 4, 7};
+  auto last_word = ShapeResultView::Create(segments);
   Vector<ShapeResultTestGlyphInfo> last_glyphs;
   last_word->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&last_glyphs));
 
@@ -211,7 +211,7 @@ TEST_F(ShapeResultViewTest, LatinMultiRun) {
       {result.get(), 5, 8},    // " wo"
       {result.get(), 9, 12},   // "ld!"
   };
-  auto composite_view = ShapeResultView::Create(&segments[0], 5);
+  auto composite_view = ShapeResultView::Create(segments);
   Vector<ShapeResultTestGlyphInfo> view_glyphs;
   composite_view->ForEachGlyph(0, AddGlyphInfo,
                                static_cast<void*>(&view_glyphs));
@@ -291,7 +291,7 @@ TEST_F(ShapeResultViewTest, LatinCompositeView) {
       {result.get(), 4, 5},    // " "
       {result.get(), 0, 4}     // "Test"
   };
-  auto composite_view = ShapeResultView::Create(&segments[0], 4);
+  auto composite_view = ShapeResultView::Create(segments);
 
   EXPECT_EQ(composite_view->StartIndex(), composite_copy->StartIndex());
   EXPECT_EQ(composite_view->NumCharacters(), reference_result->NumCharacters());
@@ -334,9 +334,9 @@ TEST_F(ShapeResultViewTest, MixedScriptsCompositeView) {
   composite_copy->ForEachGlyph(0, AddGlyphInfo,
                                static_cast<void*>(&reference_glyphs));
 
-  ShapeResultView::Segment segments[4] = {{result_a.get(), 0, 22},
-                                          {result_b.get(), 0, 7}};
-  auto composite_view = ShapeResultView::Create(&segments[0], 2);
+  ShapeResultView::Segment segments[] = {{result_a.get(), 0, 22},
+                                         {result_b.get(), 0, 7}};
+  auto composite_view = ShapeResultView::Create(segments);
 
   EXPECT_EQ(composite_view->StartIndex(), 0u);
   EXPECT_EQ(composite_view->NumCharacters(), reference_result->NumCharacters());
@@ -376,13 +376,95 @@ TEST_F(ShapeResultViewTest, MarkerAndTrailingSpace) {
   scoped_refptr<const ShapeResult> result =
       ShapeResult::CreateForSpaces(&font, direction, 1, 2, symbol_width);
 
-  ShapeResultView::Segment segment = {result.get(), 1, 2};
-  auto shape_result_view = ShapeResultView::Create(&segment, 1);
+  ShapeResultView::Segment segments[] = {{result.get(), 1, 2}};
+  auto shape_result_view = ShapeResultView::Create(segments);
   scoped_refptr<ShapeResult> shape_result =
       shape_result_view->CreateShapeResult();
 
   Vector<CharacterRange> ranges;
   shape_result->IndividualCharacterRanges(&ranges);
+}
+
+TEST_F(ShapeResultViewTest, SpacesInLTR) {
+  constexpr unsigned kStartIndex = 0;
+  constexpr unsigned kLength = 2;
+  constexpr float kWidth = 8;
+  const auto result = ShapeResult::CreateForSpaces(
+      &font, TextDirection::kLtr, kStartIndex, kLength, kWidth);
+
+  const auto view0 = ShapeResultView::Create(result.get(), 0, 2);
+  EXPECT_EQ(view0->NumCharacters(), 2u);
+  EXPECT_EQ(view0->NumGlyphs(), 2u);
+
+  const auto view1 = ShapeResultView::Create(result.get(), 0, 1);
+  EXPECT_EQ(view1->NumCharacters(), 1u);
+  EXPECT_EQ(view1->NumGlyphs(), 1u);
+
+  const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
+  EXPECT_EQ(view2->NumCharacters(), 1u);
+  EXPECT_EQ(view2->NumGlyphs(), 1u);
+}
+
+// http://crbug.com/1160582
+TEST_F(ShapeResultViewTest, SpacesInRTL) {
+  constexpr unsigned kStartIndex = 0;
+  constexpr unsigned kLength = 2;
+  constexpr float kWidth = 8;
+  const auto result = ShapeResult::CreateForSpaces(
+      &font, TextDirection::kRtl, kStartIndex, kLength, kWidth);
+
+  const auto view0 = ShapeResultView::Create(result.get(), 0, 2);
+  EXPECT_EQ(view0->NumCharacters(), 2u);
+  EXPECT_EQ(view0->NumGlyphs(), 2u);
+
+  const auto view1 = ShapeResultView::Create(result.get(), 0, 1);
+  EXPECT_EQ(view1->NumCharacters(), 1u);
+  EXPECT_EQ(view1->NumGlyphs(), 1u);
+
+  const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
+  EXPECT_EQ(view2->NumCharacters(), 1u);
+  EXPECT_EQ(view2->NumGlyphs(), 1u);
+}
+
+TEST_F(ShapeResultViewTest, TabulationCharactersInLTR) {
+  constexpr float kPosition = 0;
+  constexpr unsigned kStartIndex = 0;
+  constexpr unsigned kLength = 2;
+  const auto result = ShapeResult::CreateForTabulationCharacters(
+      &font, TextDirection::kLtr, TabSize(8), kPosition, kStartIndex, kLength);
+
+  const auto view0 = ShapeResultView::Create(result.get(), 0, 2);
+  EXPECT_EQ(view0->NumCharacters(), 2u);
+  EXPECT_EQ(view0->NumGlyphs(), 2u);
+
+  const auto view1 = ShapeResultView::Create(result.get(), 0, 1);
+  EXPECT_EQ(view1->NumCharacters(), 1u);
+  EXPECT_EQ(view1->NumGlyphs(), 1u);
+
+  const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
+  EXPECT_EQ(view2->NumCharacters(), 1u);
+  EXPECT_EQ(view2->NumGlyphs(), 1u);
+}
+
+// http://crbug.com/1255310
+TEST_F(ShapeResultViewTest, TabulationCharactersInRTL) {
+  constexpr float kPosition = 0;
+  constexpr unsigned kStartIndex = 0;
+  constexpr unsigned kLength = 2;
+  const auto result = ShapeResult::CreateForTabulationCharacters(
+      &font, TextDirection::kRtl, TabSize(8), kPosition, kStartIndex, kLength);
+
+  const auto view0 = ShapeResultView::Create(result.get(), 0, 2);
+  EXPECT_EQ(view0->NumCharacters(), 2u);
+  EXPECT_EQ(view0->NumGlyphs(), 2u);
+
+  const auto view1 = ShapeResultView::Create(result.get(), 0, 1);
+  EXPECT_EQ(view1->NumCharacters(), 1u);
+  EXPECT_EQ(view1->NumGlyphs(), 1u);
+
+  const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
+  EXPECT_EQ(view2->NumCharacters(), 1u);
+  EXPECT_EQ(view2->NumGlyphs(), 1u);
 }
 
 }  // namespace blink

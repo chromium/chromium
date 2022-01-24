@@ -153,6 +153,9 @@ class GLES2_IMPL_EXPORT VertexArrayObject {
 
   explicit VertexArrayObject(GLuint max_vertex_attribs);
 
+  VertexArrayObject(const VertexArrayObject&) = delete;
+  VertexArrayObject& operator=(const VertexArrayObject&) = delete;
+
   void UnbindBuffer(GLuint id);
 
   bool BindElementArray(GLuint id);
@@ -189,8 +192,6 @@ class GLES2_IMPL_EXPORT VertexArrayObject {
   GLuint bound_element_array_buffer_id_;
 
   VertexAttribs vertex_attribs_;
-
-  DISALLOW_COPY_AND_ASSIGN(VertexArrayObject);
 };
 
 VertexArrayObject::VertexArrayObject(GLuint max_vertex_attribs)

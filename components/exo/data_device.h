@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/seat_observer.h"
@@ -39,6 +38,10 @@ class DataDevice : public WMHelper::DragDropObserver,
                    public SeatObserver {
  public:
   DataDevice(DataDeviceDelegate* delegate, Seat* seat);
+
+  DataDevice(const DataDevice&) = delete;
+  DataDevice& operator=(const DataDevice&) = delete;
+
   ~DataDevice() override;
 
   // Starts drag-and-drop operation.
@@ -63,7 +66,7 @@ class DataDevice : public WMHelper::DragDropObserver,
   void OnDragExited() override;
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event) override;
-  WMHelper::DropCallback GetDropCallback(
+  WMHelper::DragDropObserver::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
 
   // Overridden from ui::ClipboardObserver:
@@ -84,6 +87,10 @@ class DataDevice : public WMHelper::DragDropObserver,
   Surface* GetEffectiveTargetForEvent(const ui::DropTargetEvent& event) const;
   void SetSelectionToCurrentClipboardData();
 
+  void PerformDropOrExitDrag(base::ScopedClosureRunner exit_drag,
+                             const ui::DropTargetEvent& event,
+                             ui::mojom::DragOperation& output_drag_op);
+
   DataDeviceDelegate* const delegate_;
   Seat* const seat_;
   std::unique_ptr<ScopedDataOffer> data_offer_;
@@ -91,9 +98,8 @@ class DataDevice : public WMHelper::DragDropObserver,
 
   base::OnceClosure quit_closure_;
   bool drop_succeeded_;
+  base::WeakPtrFactory<DataDevice> drop_weak_factory_{this};
   base::WeakPtrFactory<DataDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataDevice);
 };
 
 }  // namespace exo

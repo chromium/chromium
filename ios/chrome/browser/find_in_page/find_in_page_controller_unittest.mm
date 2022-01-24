@@ -54,6 +54,7 @@ class FindInPageControllerTest : public ChromeWebTest {
   }
 
   void TearDown() override {
+    [find_in_page_controller_ detachFromWebState];
     test_ukm_recorder_.Purge();
     ChromeWebTest::TearDown();
   }

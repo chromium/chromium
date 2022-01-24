@@ -16,9 +16,9 @@ void AddFakeURLToHistoryDB(HistoryDatabase* history_db, const URLRow& url_row) {
   auto AddVisit = [&](ui::PageTransition transition,
                       bool incremented_omnibox_typed_score) mutable {
     // Assume earlier visits are at one-day intervals.
-    visit_time -= base::TimeDelta::FromDays(1);
+    visit_time -= base::Days(1);
     VisitRow row(url_id, visit_time, 0, transition, 1,
-                 incremented_omnibox_typed_score, false);
+                 incremented_omnibox_typed_score, 0);
     history_db->AddVisit(&row, SOURCE_BROWSED);
   };
 

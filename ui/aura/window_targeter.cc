@@ -4,6 +4,7 @@
 
 #include "ui/aura/window_targeter.h"
 
+#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/event_client.h"

@@ -40,7 +40,6 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -74,7 +73,7 @@ class StaticBitmapImage;
 
 class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
  public:
-  Canvas2DLayerBridge(const IntSize&, RasterMode, const CanvasColorParams&);
+  Canvas2DLayerBridge(const IntSize&, RasterMode, OpacityMode opacity_mode);
   Canvas2DLayerBridge(const Canvas2DLayerBridge&) = delete;
   Canvas2DLayerBridge& operator=(const Canvas2DLayerBridge&) = delete;
 
@@ -116,7 +115,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
 
   void Hibernate();
   bool IsHibernating() const { return hibernation_image_ != nullptr; }
-  const CanvasColorParams& ColorParams() const { return color_params_; }
 
   bool HasRecordedDrawCommands() { return have_recorded_draw_commands_; }
 
@@ -199,7 +197,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   bool last_record_tainted_by_write_pixels_ = false;
 
   const RasterMode raster_mode_;
-  const CanvasColorParams color_params_;
+  const OpacityMode opacity_mode_;
   const IntSize size_;
 
   enum SnapshotState {

@@ -30,6 +30,11 @@ class AccountConsistencyServiceFactory
   // Returns an instance of the factory singleton.
   static AccountConsistencyServiceFactory* GetInstance();
 
+  AccountConsistencyServiceFactory(const AccountConsistencyServiceFactory&) =
+      delete;
+  AccountConsistencyServiceFactory& operator=(
+      const AccountConsistencyServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<AccountConsistencyServiceFactory>;
 
@@ -39,8 +44,6 @@ class AccountConsistencyServiceFactory
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountConsistencyServiceFactory);
 };
 
 }  // namespace ios

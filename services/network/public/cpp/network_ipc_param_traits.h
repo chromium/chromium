@@ -25,11 +25,7 @@
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/net_ipc_param_traits.h"
 #include "services/network/public/cpp/origin_policy.h"
-#include "services/network/public/cpp/url_loader_completion_status.h"
-#include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
-#include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "url/ipc/url_param_traits.h"
 #include "url/origin.h"
@@ -40,9 +36,6 @@
 // This file defines IPC::ParamTraits for network:: classes / structs.
 // For IPC::ParamTraits for net:: class / structs, see net_ipc_param_traits.h.
 
-IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::CorsError,
-                          network::mojom::CorsError::kMaxValue)
-
 IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::CredentialsMode,
                           network::mojom::CredentialsMode::kMaxValue)
 
@@ -51,40 +44,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::RedirectMode,
 
 IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::RequestMode,
                           network::mojom::RequestMode::kMaxValue)
-
-IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::CorsPreflightPolicy,
-                          network::mojom::CorsPreflightPolicy::kMaxValue)
-
-IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::BlockedByResponseReason,
-                          network::mojom::BlockedByResponseReason::kMaxValue)
-
-IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::IPAddressSpace,
-                          network::mojom::IPAddressSpace::kMaxValue)
-
-IPC_STRUCT_TRAITS_BEGIN(network::CorsErrorStatus)
-  IPC_STRUCT_TRAITS_MEMBER(cors_error)
-  IPC_STRUCT_TRAITS_MEMBER(failed_parameter)
-  IPC_STRUCT_TRAITS_MEMBER(resource_address_space)
-  IPC_STRUCT_TRAITS_MEMBER(issue_id)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(network::URLLoaderCompletionStatus)
-  IPC_STRUCT_TRAITS_MEMBER(error_code)
-  IPC_STRUCT_TRAITS_MEMBER(extended_error_code)
-  IPC_STRUCT_TRAITS_MEMBER(exists_in_cache)
-  IPC_STRUCT_TRAITS_MEMBER(completion_time)
-  IPC_STRUCT_TRAITS_MEMBER(encoded_data_length)
-  IPC_STRUCT_TRAITS_MEMBER(encoded_body_length)
-  IPC_STRUCT_TRAITS_MEMBER(decoded_body_length)
-  IPC_STRUCT_TRAITS_MEMBER(cors_error_status)
-  IPC_STRUCT_TRAITS_MEMBER(trust_token_operation_status)
-  IPC_STRUCT_TRAITS_MEMBER(ssl_info)
-  IPC_STRUCT_TRAITS_MEMBER(blocked_by_response_reason)
-  IPC_STRUCT_TRAITS_MEMBER(should_report_corb_blocking)
-  IPC_STRUCT_TRAITS_MEMBER(proxy_server)
-  IPC_STRUCT_TRAITS_MEMBER(resolve_error_info)
-  IPC_STRUCT_TRAITS_MEMBER(should_collapse_initiator)
-IPC_STRUCT_TRAITS_END()
 
 IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::FetchResponseType,
                           network::mojom::FetchResponseType::kMaxValue)

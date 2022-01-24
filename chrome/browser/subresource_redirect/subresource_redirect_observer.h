@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_OBSERVER_H_
 #define CHROME_BROWSER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_OBSERVER_H_
 
-#include "base/macros.h"
 #include "chrome/common/subresource_redirect_service.mojom.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
-#include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/document_user_data.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
 
@@ -28,8 +27,7 @@ class OriginRobotsRulesCache;
 // happens or the web contents is destroyed. This should be created only when
 // subresource redirect compression is allowed for the document.
 class ImageCompressionAppliedDocument
-    : public content::RenderDocumentHostUserData<
-          ImageCompressionAppliedDocument> {
+    : public content::DocumentUserData<ImageCompressionAppliedDocument> {
  public:
   enum State {
     kDisabled,
@@ -60,10 +58,7 @@ class ImageCompressionAppliedDocument
  private:
   explicit ImageCompressionAppliedDocument(
       content::RenderFrameHost* render_frame_host);
-  friend class content::RenderDocumentHostUserData<
-      ImageCompressionAppliedDocument>;
-
-  content::RenderFrameHost* render_frame_host_;
+  friend class content::DocumentUserData<ImageCompressionAppliedDocument>;
 
   // Maintains whether https image compression was attempted for the last
   // navigation. Even though image compression was attempted, it doesn't mean at
@@ -72,7 +67,7 @@ class ImageCompressionAppliedDocument
   // least one public image even though they are fully private.
   State state_ = kDisabled;
 
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
 // Sends the public image URL hints to renderer.
@@ -92,6 +87,11 @@ class SubresourceRedirectObserver
   SubresourceRedirectObserver(const SubresourceRedirectObserver&) = delete;
   SubresourceRedirectObserver& operator=(const SubresourceRedirectObserver&) =
       delete;
+
+  static void BindSubresourceRedirectService(
+      mojo::PendingAssociatedReceiver<mojom::SubresourceRedirectService>
+          receiver,
+      content::RenderFrameHost* rfh);
 
  private:
   friend class content::WebContentsUserData<SubresourceRedirectObserver>;
@@ -128,7 +128,7 @@ class SubresourceRedirectObserver
   bool IsAllowedForCurrentLoginState(
       content::NavigationHandle* navigation_handle);
 
-  content::WebContentsFrameReceiverSet<mojom::SubresourceRedirectService>
+  content::RenderFrameHostReceiverSet<mojom::SubresourceRedirectService>
       receivers_;
 
   base::WeakPtrFactory<SubresourceRedirectObserver> weak_factory_{this};

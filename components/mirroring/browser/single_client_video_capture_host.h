@@ -14,6 +14,8 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/token.h"
+#include "base/unguessable_token.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "media/capture/video/video_frame_receiver.h"
@@ -41,6 +43,11 @@ class SingleClientVideoCaptureHost final
   SingleClientVideoCaptureHost(const std::string& device_id,
                                blink::mojom::MediaStreamType type,
                                DeviceLauncherCreateCallback callback);
+
+  SingleClientVideoCaptureHost(const SingleClientVideoCaptureHost&) = delete;
+  SingleClientVideoCaptureHost& operator=(const SingleClientVideoCaptureHost&) =
+      delete;
+
   ~SingleClientVideoCaptureHost() override;
 
   // media::mojom::VideoCaptureHost implementations
@@ -56,6 +63,9 @@ class SingleClientVideoCaptureHost final
   void Resume(const base::UnguessableToken& device_id,
               const base::UnguessableToken& session_id,
               const VideoCaptureParams& params) override;
+  void Crop(const base::UnguessableToken& device_id,
+            const base::Token& crop_id,
+            CropCallback callback) override;
   void RequestRefreshFrame(const base::UnguessableToken& device_id) override;
   void ReleaseBuffer(const base::UnguessableToken& device_id,
                      int32_t buffer_id,
@@ -128,8 +138,6 @@ class SingleClientVideoCaptureHost final
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SingleClientVideoCaptureHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientVideoCaptureHost);
 };
 
 }  // namespace mirroring

@@ -22,6 +22,7 @@ class DataTypeDebugInfoListener;
 class DataTypeEncryptionHandler;
 class DataTypeManager;
 class DataTypeManagerObserver;
+class ModelTypeConfigurer;
 class SyncEngine;
 class SyncInvalidationsService;
 

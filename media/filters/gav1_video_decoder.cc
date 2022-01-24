@@ -208,8 +208,7 @@ scoped_refptr<VideoFrame> FormatVideoFrame(
     const VideoColorSpace& container_color_space) {
   scoped_refptr<VideoFrame> frame =
       static_cast<VideoFrame*>(buffer.buffer_private_data);
-  frame->set_timestamp(
-      base::TimeDelta::FromMicroseconds(buffer.user_private_data));
+  frame->set_timestamp(base::Microseconds(buffer.user_private_data));
 
   // AV1 color space defines match ISO 23001-8:2016 via ISO/IEC 23091-4/ITU-T
   // H.273. https://aomediacodec.github.io/av1-spec/#color-config-semantics
@@ -269,7 +268,7 @@ void Gav1VideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   InitCB bound_init_cb = bind_callbacks_ ? BindToCurrentLoop(std::move(init_cb))
                                          : std::move(init_cb);
-  if (config.is_encrypted() || config.codec() != kCodecAV1) {
+  if (config.is_encrypted() || config.codec() != VideoCodec::kAV1) {
     std::move(bound_init_cb).Run(StatusCode::kEncryptedContentUnsupported);
     return;
   }
@@ -419,10 +418,6 @@ void Gav1VideoDecoder::Reset(base::OnceClosure reset_cb) {
   } else {
     std::move(reset_cb).Run();
   }
-}
-
-bool Gav1VideoDecoder::IsOptimizedForRTC() const {
-  return true;
 }
 
 void Gav1VideoDecoder::Detach() {

@@ -15,6 +15,10 @@ namespace device_sync {
 class FakeRemoteDeviceProvider : public RemoteDeviceProvider {
  public:
   FakeRemoteDeviceProvider();
+
+  FakeRemoteDeviceProvider(const FakeRemoteDeviceProvider&) = delete;
+  FakeRemoteDeviceProvider& operator=(const FakeRemoteDeviceProvider&) = delete;
+
   ~FakeRemoteDeviceProvider() override;
 
   void set_synced_remote_devices(
@@ -29,8 +33,6 @@ class FakeRemoteDeviceProvider : public RemoteDeviceProvider {
 
  private:
   multidevice::RemoteDeviceList synced_remote_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRemoteDeviceProvider);
 };
 
 }  // namespace device_sync

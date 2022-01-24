@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/foreground_eid_generator.h"
 
 namespace chromeos {
@@ -27,6 +26,10 @@ class BleAdvertisementGenerator {
   static std::unique_ptr<DataWithTimestamp> GenerateBleAdvertisement(
       multidevice::RemoteDeviceRef remote_device,
       const std::string& local_device_public_key);
+
+  BleAdvertisementGenerator(const BleAdvertisementGenerator&) = delete;
+  BleAdvertisementGenerator& operator=(const BleAdvertisementGenerator&) =
+      delete;
 
   virtual ~BleAdvertisementGenerator();
 
@@ -50,8 +53,6 @@ class BleAdvertisementGenerator {
       std::unique_ptr<ForegroundEidGenerator> test_eid_generator);
 
   std::unique_ptr<ForegroundEidGenerator> eid_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleAdvertisementGenerator);
 };
 
 }  // namespace secure_channel

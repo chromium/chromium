@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">Verranno cancellati <ph name="DATASIZE" /> di dati e cookie memorizzati da siti e app nella schermata Home.</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
-<translation id="1195941046451948919">Vuoi reimpostare tutte le autorizzazioni per questo sito web?</translation>
 <translation id="1201402288615127009">Avanti</translation>
 <translation id="1242008676835033345">Incorporato su <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Interrompi</translation>
@@ -19,7 +18,6 @@
 <translation id="1384959399684842514">Download sospeso</translation>
 <translation id="1415402041810619267">URL troncato</translation>
 <translation id="1446450296470737166">Controllo completo dispos. MIDI</translation>
-<translation id="1509960214886564027">Le funzionalità su molti siti potrebbero non essere disponibili</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1647582022260550163">Vuoi reimpostare le autorizzazioni e cancellare cookie e dati dei siti?</translation>
@@ -31,6 +29,7 @@
 <translation id="1743802530341753419">Chiedi prima di consentire ai siti di connettersi a un dispositivo (opzione consigliata)</translation>
 <translation id="1779089405699405702">Decoder di immagini</translation>
 <translation id="1818308510395330587">Per consentire all'app <ph name="APP_NAME" /> di utilizzare la realtà aumentata, attiva la fotocamera anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">Da <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">L'accesso alla posizione è disattivato per questo dispositivo. Attivalo nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Annunci</translation>
 <translation id="1919950603503897840">Seleziona contatti</translation>
@@ -38,6 +37,7 @@
 <translation id="1984937141057606926">Consentiti, tranne i cookie di terze parti</translation>
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="1994173015038366702">URL sito</translation>
+<translation id="2004697686368036666">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="2025115093177348061">Realtà aumentata</translation>
 <translation id="2030769033451695672">Tocca per tornare a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Annulla</translation>
@@ -52,6 +52,7 @@
 <translation id="2289270750774289114">Chiedi conferma quando un sito vuole rilevare i dispositivi Bluetooth nelle vicinanze (opzione consigliata)</translation>
 <translation id="2315043854645842844">La selezione del certificato lato client non è supportata dal sistema operativo.</translation>
 <translation id="2359808026110333948">Continua</translation>
+<translation id="2379925928934107488">Applica il tema scuro ai siti quando viene usato in Chrome, se possibile</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Consentite: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Download completato: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -64,12 +65,14 @@
 <translation id="2570922361219980984">L'accesso alla posizione è disattivato anche per questo dispositivo. Attivalo nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Espanso. Fai clic per comprimere.</translation>
 <translation id="2586657967955657006">Appunti</translation>
+<translation id="2597457036804169544">Non applicare il tema scuro ai siti</translation>
 <translation id="2621115761605608342">Consenti JavaScript per un sito specifico.</translation>
 <translation id="2653659639078652383">Invia</translation>
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2687403674020088961">Blocca tutti i cookie (non consigliato)</translation>
 <translation id="2704606927547763573">Copiata</translation>
 <translation id="2717722538473713889">Indirizzi email</translation>
+<translation id="2785051990912111074">Questa selezione cancellerà i cookie per <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Vuoi reimpostare tutte le autorizzazioni del sito per <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2874939134665556319">Traccia precedente</translation>
@@ -101,6 +104,7 @@
 <translation id="3600792891314830896">Disattiva l'audio nei siti che riproducono suoni</translation>
 <translation id="3744111561329211289">Sincronizzazione in background</translation>
 <translation id="3763247130972274048">Tocca due volte il video a sinistra o a destra per saltare di 10 secondi</translation>
+<translation id="3797520601150691162">Non applicare il tema scuro a un sito specifico</translation>
 <translation id="381841723434055211">Numeri di telefono</translation>
 <translation id="3835233591525155343">Utilizzo del tuo dispositivo</translation>
 <translation id="385051799172605136">Indietro</translation>
@@ -130,7 +134,6 @@
 <translation id="4570913071927164677">Dettagli</translation>
 <translation id="4645575059429386691">Gestito da un genitore</translation>
 <translation id="4670064810192446073">Realtà virtuale</translation>
-<translation id="4708011789095599544">Vuoi cancellare i cookie e altri dati del sito per questo sito web?</translation>
 <translation id="4751476147751820511">Sensori di movimento o della luce</translation>
 <translation id="4836046166855586901">Chiedi conferma quando un sito vuole sapere quando usi attivamente questo dispositivo</translation>
 <translation id="4883854917563148705">Le impostazioni gestite non possono essere reimpostate</translation>
@@ -140,6 +143,7 @@
 <translation id="4976702386844183910">Ultima visita: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nessun contatto trovato</translation>
 <translation id="4996978546172906250">Condividi tramite</translation>
+<translation id="5014906230196386306">Cancellare i cookie?</translation>
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5048398596102334565">Consenti ai siti di accedere ai sensori di movimento (opzione consigliata)</translation>
 <translation id="5050380848339752099">Questo sito sta per condividere informazioni con un'app esterna alla modalità di navigazione in incognito.</translation>
@@ -157,15 +161,16 @@
 <translation id="5335288049665977812">Consenti l'esecuzione di JavaScript nei siti (opzione consigliata)</translation>
 <translation id="534295439873310000">Dispositivi NFC</translation>
 <translation id="5354152178998424783">Verranno cancellati <ph name="DATASIZE" /> di dati e cookie memorizzati dai siti.</translation>
-<translation id="5391532827096253100">La tua connessione al sito non è sicura. Informazioni sul sito</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 altro)}other{(+ altri #)}}</translation>
 <translation id="5403592356182871684">Nomi</translation>
+<translation id="5438097262470833822">Questa selezione reimposterà le autorizzazioni per <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Tempo trascorso: <ph name="ELAPSED_TIME" /> di <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blocca gli annunci su siti che mostrano annunci invasivi o fuorvianti</translation>
 <translation id="5502860503640766021">Autorizzazione <ph name="PERMISSION_1" /> consentita, autorizzazione <ph name="PERMISSION_2" /> bloccata</translation>
 <translation id="5505264765875738116">I siti non possono chiedere di inviare notifiche</translation>
 <translation id="5516455585884385570">Apri le impostazioni di notifica</translation>
 <translation id="5527111080432883924">Chiedi conferma prima di consentire ai siti di leggere testo e immagini negli appunti (opzione consigliata)</translation>
+<translation id="5553374991681107062">Più recenti</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5649053991847567735">Download automatici</translation>
@@ -190,10 +195,10 @@
 <translation id="6064125863973209585">Download completati</translation>
 <translation id="6165508094623778733">Ulteriori informazioni</translation>
 <translation id="6177111841848151710">Bloccata per il motore di ricerca corrente</translation>
+<translation id="6177128806592000436">La tua connessione a questo sito non è sicura</translation>
 <translation id="6181444274883918285">Aggiungi eccezione per un sito</translation>
 <translation id="6192792657125177640">Eccezioni</translation>
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
-<translation id="6206551242102657620">La connessione è sicura. Informazioni sul sito</translation>
 <translation id="6216432067784365534">Opzioni <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Vuoi disinstallare "<ph name="APP_NAME" />"?</translation>
 <translation id="6262279340360821358">Autorizzazioni <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> bloccate</translation>
@@ -202,7 +207,6 @@
 <translation id="6320088164292336938">Vibrazione</translation>
 <translation id="6388207532828177975">Cancella e reimposta</translation>
 <translation id="6398765197997659313">Esci da schermo intero</translation>
-<translation id="6423924377271166037">Cancella cookie</translation>
 <translation id="6439114592976064011">Impedisci ai siti di usare i dati e dispositivi della realtà virtuale</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6527303717912515753">Condividi</translation>
@@ -210,6 +214,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Ultima visita: <ph name="NUM_DAYS" /> giorni fa</translation>
 <translation id="6561560012278703671">Usa messaggi più discreti (impedisce alle notifiche di disturbarti)</translation>
+<translation id="6593061639179217415">Sito desktop</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contenuti protetti</translation>
 <translation id="662080504995468778">Rimani</translation>
@@ -217,6 +222,7 @@
 <translation id="6689172468748959065">Foto del profilo</translation>
 <translation id="6697925417670533197">Download attivi</translation>
 <translation id="6746124502594467657">Sposta giù</translation>
+<translation id="6749077623962119521">Reimpostare le autorizzazioni?</translation>
 <translation id="6766622839693428701">Fai scorrere verso il basso per chiudere.</translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6818926723028410516">Seleziona elementi</translation>
@@ -224,15 +230,14 @@
 <translation id="6910211073230771657">Eliminato</translation>
 <translation id="6912998170423641340">Impedisci ai siti di leggere testo e immagini negli appunti</translation>
 <translation id="6945221475159498467">Seleziona</translation>
-<translation id="6963642900430330478">Questa pagina è pericolosa Informazioni sul sito</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6992289844737586249">Chiedi conferma prima di consentire ai siti di utilizzare il microfono (opzione consigliata)</translation>
 <translation id="7000754031042624318">Disattivata nelle impostazioni Android</translation>
 <translation id="7016516562562142042">Consentita per il motore di ricerca corrente</translation>
 <translation id="7053983685419859001">Blocca</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elemento selezionato}other{# elementi selezionati}}</translation>
+<translation id="7070090581017165256">Informazioni su questo sito</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elementi selezionati. Opzioni disponibili nella parte superiore dello schermo</translation>
-<translation id="7128222689758636196">Consenti per motore di ricerca corrente</translation>
 <translation id="7141896414559753902">Impedisci ai siti di mostrare popup e reindirizzamenti (opzione consigliata)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="723171743924126238">Seleziona immagini</translation>
@@ -242,12 +247,12 @@
 <translation id="7302486331832100261">Di solito blocchi le notifiche. Per consentirle, tocca Dettagli.</translation>
 <translation id="7423098979219808738">Chiedi prima</translation>
 <translation id="7423538860840206698">Lettura degli appunti non consentita</translation>
+<translation id="7425915948813553151">Tema scuro per i siti</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Un sito sta utilizzando il microfono</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7572498721684305250">Impedisci ai siti di inviare e ricevere informazioni quando tocchi i dispositivi NFC</translation>
 <translation id="757524316907819857">Impedisci ai siti di riprodurre contenuti protetti</translation>
-<translation id="7589445247086920869">Blocca per motore di ricerca corrente</translation>
 <translation id="7649070708921625228">Guida</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7781829728241885113">Ieri</translation>
@@ -261,19 +266,23 @@
 <translation id="7846076177841592234">Annulla selezione</translation>
 <translation id="7846621471902887024">Il tuo account verrà disconnesso da tutti i siti.</translation>
 <translation id="7882806643839505685">Consenti l'audio per un sito specifico.</translation>
+<translation id="7940722705963108451">Ricordami</translation>
 <translation id="7986741934819883144">Seleziona un contatto</translation>
-<translation id="7993619969781047893">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="7999064672810608036">Vuoi cancellare tutti i dati locali, inclusi i cookie, e reimpostare tutte le autorizzazioni relative al sito web?</translation>
 <translation id="8007176423574883786">Disattivata per questo dispositivo</translation>
 <translation id="802154636333426148">Download non riuscito</translation>
+<translation id="8042586301629853791">Ordina per:</translation>
 <translation id="8067883171444229417">Guarda il video</translation>
 <translation id="8068648041423924542">Impossibile selezionare il certificato.</translation>
 <translation id="8087000398470557479">Questi contenuti derivano da <ph name="DOMAIN_NAME" /> e sono offerti da Google.</translation>
 <translation id="8116925261070264013">Con audio disattivato</translation>
+<translation id="813082847718468539">Visualizza informazioni sul sito</translation>
 <translation id="8131740175452115882">Conferma</translation>
+<translation id="8154912474061769055">Le funzionalità su molti siti potrebbero non essere disponibili</translation>
 <translation id="8197286292360124385">Autorizzazione <ph name="PERMISSION_1" /> consentita</translation>
 <translation id="8200772114523450471">Riprendi</translation>
 <translation id="8206354486702514201">Questa impostazione è stata applicata dall'amministratore.</translation>
+<translation id="8211406090763984747">La connessione è sicura</translation>
 <translation id="8249310407154411074">Sposta in alto</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8300705686683892304">Gestiti dall'app</translation>
@@ -296,6 +305,7 @@
 <translation id="8676374126336081632">Cancella testo inserito</translation>
 <translation id="868929229000858085">Cerca nei contatti</translation>
 <translation id="8702612070107455751">I dati offline verranno cancellati.</translation>
+<translation id="8712637175834984815">Fatto</translation>
 <translation id="8719283222052720129">Attiva l'autorizzazione per l'app <ph name="APP_NAME" /> nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8730621377337864115">Fine</translation>
@@ -315,7 +325,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Attiva le autorizzazioni per l'app <ph name="APP_NAME" /> nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Questa pagina è pericolosa</translation>
 <translation id="930525582205581608">Vuoi eliminare questo sito?</translation>
-<translation id="965817943346481315">Blocca se il sito mostra annunci invasivi o fuorvianti (consigliato)</translation>
 <translation id="967624055006145463">Dati memorizzati</translation>
 </translationbundle>

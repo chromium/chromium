@@ -4,6 +4,7 @@
 
 #include "media/video/h264_parser.h"
 
+#include <cstring>
 #include <limits>
 #include <memory>
 

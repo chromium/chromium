@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- TODO(crbug.com/1252182): Add android:contentDescription="@string/foo" attributes -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:importantForAccessibility="yes">
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_row_height"
+        android:layout_above="@id/lightweight_reactions_toolbar_controls"
+        android:scrollbars="none">
+        <LinearLayout
+            android:id="@+id/lightweight_reactions_toolbar_reaction_picker"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/toolbar_reactions_margin"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content">
+            <!-- ImageViews are added at runtime. -->
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:id="@+id/lightweight_reactions_toolbar_controls"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/toolbar_button_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_height="@dimen/toolbar_row_height"
+        android:layout_width="match_parent">
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/close_button"
+            android:contentDescription="@string/close"
+            android:src="@drawable/btn_close"
+            android:layout_height="match_parent"
+            android:layout_width="@dimen/toolbar_button_size"
+            android:paddingHorizontal="@dimen/toolbar_button_padding"
+            app:tint="@color/default_icon_color_tint_list"
+            style="@style/ToolbarButton"/>
+
+        <TextView
+            android:id="@+id/lightweight_reactions_toolbar_title"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="@string/sharing_lightweight_reactions"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
+        <!-- TODO(crbug.com/1252182): Fix the android:contentDescription attribute -->
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/done_button"
+            android:contentDescription="@string/screenshot_save_title"
+            android:src="@drawable/ic_checkmark_24dp"
+            android:layout_height="match_parent"
+            android:layout_width="@dimen/toolbar_button_size"
+            android:paddingHorizontal="@dimen/toolbar_button_padding"
+            app:tint="@color/default_icon_color_tint_list"
+            style="@style/ToolbarButton"/>
+    </LinearLayout>
+</RelativeLayout>

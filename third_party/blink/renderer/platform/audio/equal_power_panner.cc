@@ -65,7 +65,7 @@ void EqualPowerPanner::Pan(double azimuth,
     return;
 
   // Clamp azimuth to allowed range of -180 -> +180.
-  azimuth = clampTo(azimuth, -180.0, 180.0);
+  azimuth = ClampTo(azimuth, -180.0, 180.0);
 
   // Alias the azimuth ranges behind us to in front of us:
   // -90 -> -180 to -90 -> 0 and 90 -> 180 to 90 -> 0
@@ -136,7 +136,7 @@ void EqualPowerPanner::CalculateDesiredGain(double& desired_gain_l,
                                             double azimuth,
                                             int number_of_input_channels) {
   // Clamp azimuth to allowed range of -180 -> +180.
-  azimuth = clampTo(azimuth, -180.0, 180.0);
+  azimuth = ClampTo(azimuth, -180.0, 180.0);
 
   // Alias the azimuth ranges behind us to in front of us:
   // -90 -> -180 to -90 -> 0 and 90 -> 180 to 90 -> 0

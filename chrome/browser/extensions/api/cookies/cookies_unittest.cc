@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/cxx17_backports.h"
 #include "base/values.h"
@@ -173,10 +174,10 @@ TEST_F(ExtensionCookiesTest, DomainMatching) {
 
   for (size_t i = 0; i < base::size(tests); ++i) {
     // Build up the Params struct.
-    base::ListValue args;
-    auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetString(keys::kDomainKey, std::string(tests[i].filter));
-    args.Set(0, std::move(dict));
+    std::vector<base::Value> args;
+    base::Value dict(base::Value::Type::DICTIONARY);
+    dict.SetStringKey(keys::kDomainKey, std::string(tests[i].filter));
+    args.emplace_back(std::move(dict));
     std::unique_ptr<GetAll::Params> params(GetAll::Params::Create(args));
 
     cookies_helpers::MatchFilter filter(&params->details);
@@ -195,7 +196,8 @@ TEST_F(ExtensionCookiesTest, DecodeUTF8WithErrorHandling) {
   std::unique_ptr<net::CanonicalCookie> canonical_cookie(
       net::CanonicalCookie::Create(
           GURL("http://test.com"), "=011Q255bNX_1!yd\203e+;path=/path\203",
-          base::Time::Now(), absl::nullopt /* server_time */));
+          base::Time::Now(), absl::nullopt /* server_time */,
+          absl::nullopt /* cookie_partition_key */));
   ASSERT_NE(nullptr, canonical_cookie.get());
   Cookie cookie =
       cookies_helpers::CreateCookie(*canonical_cookie, "some cookie store");

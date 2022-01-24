@@ -30,6 +30,9 @@ class WatcherDispatcher : public Dispatcher {
   // registered watch observes some relevant state change.
   explicit WatcherDispatcher(MojoTrapEventHandler handler);
 
+  WatcherDispatcher(const WatcherDispatcher&) = delete;
+  WatcherDispatcher& operator=(const WatcherDispatcher&) = delete;
+
   // Methods used by watched dispatchers to notify watchers of events.
   void NotifyHandleState(Dispatcher* dispatcher,
                          const HandleSignalsState& state);
@@ -92,8 +95,6 @@ class WatcherDispatcher : public Dispatcher {
   // NOTE: This pointer is only used to index |ready_watches_| and may point to
   // an invalid object. It must therefore never be dereferenced.
   const Watch* last_watch_to_block_arming_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WatcherDispatcher);
 };
 
 }  // namespace core

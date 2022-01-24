@@ -8,6 +8,7 @@ import "media/capture/mojom/video_capture_buffer.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
@@ -26,6 +27,13 @@ interface FrameSinkVideoConsumerFrameCallbacks {
   // |feedback| contains consumer feedback like resource utilization,
   // maximum requested frame-rate and resolution.
   ProvideFeedback(media.mojom.VideoCaptureFeedback feedback);
+};
+
+// Provided with FrameSinkVideoConsumer::ChangeTarget() to indicate what
+// sub target specifier should be used, if any.
+union SubTarget {
+  SubtreeCaptureId subtree_capture_id;
+  mojo_base.mojom.Token region_capture_crop_id;
 };
 
 // Interface for a consumer that receives frames and notifications related to
@@ -120,12 +128,15 @@ interface FrameSinkVideoCapturer {
 
   // Targets a different compositor frame sink. This may be called anytime,
   // before or after Start(). If |frame_sink_id| is null, capture will suspend
-  // until a new frame sink target is set. If the given |subtree_capture_id| is
-  // valid, the capturer will capture a render pass associated with a layer
-  // subtree under the target frame sink, which is identifiable by that
-  // |subtree_capture_id|. Otherwise, the capturer captures the root render pass
-  // of the target frame sink.
-  ChangeTarget(FrameSinkId? frame_sink_id, SubtreeCaptureId subtree_capture_id);
+  // until a new frame sink target is set.
+  // If the |sub_target| is a valid subtree capture id, the capturer will
+  // capture a render pass associated with a layer subtree under the target
+  // frame sink, which is identifiable by that
+  // |subtree_capture_id|. Else, if the |sub_target| is a valid region capture
+  // crop id, only the region associated with that crop id will be captured.
+  // Otherwise, the capturer captures the root render pass of the target frame
+  // sink.
+  ChangeTarget(FrameSinkId? frame_sink_id, SubTarget? sub_target);
 
   // Starts emitting video frames to the given |consumer|.
   Start(pending_remote<FrameSinkVideoConsumer> consumer);

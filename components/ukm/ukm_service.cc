@@ -434,6 +434,10 @@ void UkmService::BuildAndStoreLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "UkmService::BuildAndStoreLog";
 
+  // This may add new UKMs. This means this needs to be done before the empty
+  // log suppression checks.
+  metrics_providers_.ProvideCurrentSessionUKMData();
+
   // Suppress generating a log if we have no new data to include.
   bool empty = sources().empty() && entries().empty();
   UMA_HISTOGRAM_BOOLEAN("UKM.BuildAndStoreLogIsEmpty", empty);

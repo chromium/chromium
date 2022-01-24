@@ -204,8 +204,7 @@ void FakeUserDataAuthClient::StartMigrateToDircrypto(
   dircrypto_migration_progress_ = 0;
   if (run_default_dircrypto_migration_) {
     dircrypto_migration_progress_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kDircryptoMigrationUpdateIntervalMs),
+        FROM_HERE, base::Milliseconds(kDircryptoMigrationUpdateIntervalMs),
         this, &FakeUserDataAuthClient::OnDircryptoMigrationProgressUpdated);
   }
 }

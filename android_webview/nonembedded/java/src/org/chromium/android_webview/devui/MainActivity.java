@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.HashMap;
@@ -50,14 +51,17 @@ public class MainActivity extends FragmentActivity {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({MenuChoice.SWITCH_PROVIDER, MenuChoice.REPORT_BUG, MenuChoice.CHECK_UPDATES,
-            MenuChoice.CRASHES_REFRESH, MenuChoice.ABOUT_DEVTOOLS})
+            MenuChoice.CRASHES_REFRESH, MenuChoice.ABOUT_DEVTOOLS, MenuChoice.COMPONENTS_UI,
+            MenuChoice.COMPONENTS_UPDATE})
     public @interface MenuChoice {
         int SWITCH_PROVIDER = 0;
         int REPORT_BUG = 1;
         int CHECK_UPDATES = 2;
         int CRASHES_REFRESH = 3;
         int ABOUT_DEVTOOLS = 4;
-        int COUNT = 5;
+        int COMPONENTS_UI = 5;
+        int COMPONENTS_UPDATE = 6;
+        int COUNT = 7;
     }
 
     public static void logMenuSelection(@MenuChoice int selectedMenuItem) {
@@ -68,7 +72,7 @@ public class MainActivity extends FragmentActivity {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({FragmentNavigation.HOME_FRAGMENT, FragmentNavigation.CRASHES_LIST_FRAGMENT,
-            FragmentNavigation.FLAGS_FRAGMENT})
+            FragmentNavigation.FLAGS_FRAGMENT, FragmentNavigation.COMPONENTS_LIST_FRAGMENT})
     private @interface FragmentNavigation {
         int HOME_FRAGMENT = 0;
         int CRASHES_LIST_FRAGMENT = 1;
@@ -217,7 +221,7 @@ public class MainActivity extends FragmentActivity {
         // Store the Intent so we can switch Fragments in onResume (which is called next). Only need
         // to switch Fragment if the Intent specifies to do so.
         setIntent(intent);
-        mSwitchFragmentOnResume = intent.hasExtra(FRAGMENT_ID_INTENT_EXTRA);
+        mSwitchFragmentOnResume = IntentUtils.safeHasExtra(intent, FRAGMENT_ID_INTENT_EXTRA);
     }
 
     @Override
@@ -241,10 +245,7 @@ public class MainActivity extends FragmentActivity {
         // FRAGMENT_ID_INTENT_EXTRA is an optional extra to specify which fragment to open. At the
         // moment, it's specified only by DeveloperUiService (so make sure these constants stay in
         // sync).
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            fragmentId = extras.getInt(FRAGMENT_ID_INTENT_EXTRA, fragmentId);
-        }
+        fragmentId = IntentUtils.safeGetIntExtra(getIntent(), FRAGMENT_ID_INTENT_EXTRA, fragmentId);
         switchFragment(fragmentId);
         logFragmentNavigation("FromIntent", fragmentId);
     }
@@ -303,6 +304,10 @@ public class MainActivity extends FragmentActivity {
             Uri uri = Uri.parse(
                     "https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/developer-ui.md");
             startActivity(new Intent(Intent.ACTION_VIEW, uri));
+            return true;
+        } else if (item.getItemId() == R.id.options_menu_components) {
+            logMenuSelection(MenuChoice.COMPONENTS_UI);
+            switchFragment(FRAGMENT_ID_COMPONENTS);
             return true;
         }
         return super.onOptionsItemSelected(item);

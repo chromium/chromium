@@ -6,7 +6,6 @@
 #define MEDIA_BASE_REENTRANCY_CHECKER_H_
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "media/base/media_export.h"
@@ -50,13 +49,15 @@ namespace media {
 class SCOPED_LOCKABLE MEDIA_EXPORT NonReentrantScope {
  public:
   explicit NonReentrantScope(base::Lock& lock) EXCLUSIVE_LOCK_FUNCTION(lock);
+
+  NonReentrantScope(const NonReentrantScope&) = delete;
+  NonReentrantScope& operator=(const NonReentrantScope&) = delete;
+
   ~NonReentrantScope() UNLOCK_FUNCTION();
 
  private:
   base::Lock& lock_;
   bool is_lock_holder_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NonReentrantScope);
 };
 
 }  // namespace media

@@ -117,8 +117,10 @@ enum InstallStatus {
   UNDO_DOWNGRADE_CLEANUP_FAILED = 68,
   UNDO_DOWNGRADE_CLEANUP_SUCCESS = 69,
   DOWNGRADE_CLEANUP_UNKNOWN_OPERATION = 70,
-  MAX_INSTALL_STATUS = 71,  // When adding a new result, bump this and update
-                            // the InstallStatus enum in histograms.xml.
+  ROTATE_DTKEY_FAILED = 71,   // Failed to rotate device trust signing key.
+  ROTATE_DTKEY_SUCCESS = 72,  // Successfully rotated device trust signing key.
+  MAX_INSTALL_STATUS = 73,    // When adding a new result, bump this and update
+                              // the SetupInstallResult enum in histograms.xml.
 };
 
 // The type of an update archive.
@@ -160,6 +162,7 @@ extern const char kCriticalUpdateVersion[];
 extern const char kDeleteOldVersions[];
 extern const char kDeleteProfile[];
 extern const char kDisableLogging[];
+extern const char kDmServerUrl[];
 extern const char kDoNotLaunchChrome[];
 extern const char kDoNotRegisterForUpdateLaunch[];
 extern const char kDoNotRemoveSharedItems[];
@@ -173,6 +176,7 @@ extern const char kLogFile[];
 extern const char kMakeChromeDefault[];
 extern const char kMsi[];
 extern const char kNewSetupExe[];
+extern const char kNonce[];
 extern const char kOnOsUpgrade[];
 extern const char kOutputFile[];
 extern const char kPatch[];
@@ -185,6 +189,7 @@ extern const char kRegisterDevChrome[];
 extern const char kRegisterURLProtocol[];
 extern const char kRemoveChromeRegistration[];
 extern const char kRenameChromeExe[];
+extern const char kRotateDeviceTrustKey[];
 extern const char kRunAsAdmin[];
 extern const char kSelfDestruct[];
 extern const char kShowEula[];
@@ -213,6 +218,7 @@ extern const wchar_t kChromeProxyExe[];
 extern const wchar_t kChromeProxyNewExe[];
 extern const wchar_t kChromeProxyOldExe[];
 extern const wchar_t kCmdOnOsUpgrade[];
+extern const wchar_t kCmdRotateDeviceTrustKey[];
 extern const wchar_t kCmdStoreDMToken[];
 extern const wchar_t kEulaSentinelFile[];
 extern const wchar_t kInstallBinaryDir[];

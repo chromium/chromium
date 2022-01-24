@@ -107,13 +107,13 @@ TEST_F(BookmarkCounterTest, CountWithPeriod) {
   GURL url("https://google.com");
   const bookmarks::BookmarkNode* node1 =
       model()->AddURL(model()->bookmark_bar_node(), 0, u"4", url);
-  model()->SetDateAdded(node1, now - base::TimeDelta::FromMinutes(30));
+  model()->SetDateAdded(node1, now - base::Minutes(30));
   const bookmarks::BookmarkNode* node2 =
       model()->AddURL(model()->bookmark_bar_node(), 0, u"5", url);
-  model()->SetDateAdded(node2, now - base::TimeDelta::FromMinutes(90));
+  model()->SetDateAdded(node2, now - base::Minutes(90));
 
   browsing_data::BookmarkCounter counter(model());
-  counter.InitWithoutPref(now - base::TimeDelta::FromMinutes(60),
+  counter.InitWithoutPref(now - base::Minutes(60),
                           base::BindRepeating(&BookmarkCounterTest::Callback,
                                               base::Unretained(this)));
   counter.Restart();

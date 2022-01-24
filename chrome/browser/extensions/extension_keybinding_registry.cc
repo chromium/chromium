@@ -143,7 +143,7 @@ void ExtensionKeybindingRegistry::CommandExecuted(
     return;
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendString(command);
+  args->Append(command);
 
   std::unique_ptr<base::Value> tab_value;
   if (delegate_) {

@@ -228,6 +228,9 @@ class ProcessDataCollectorTest : public testing::Test {
     CHECK(proc_dir_.CreateUniqueTempDir());
   }
 
+  ProcessDataCollectorTest(const ProcessDataCollectorTest&) = delete;
+  ProcessDataCollectorTest& operator=(const ProcessDataCollectorTest&) = delete;
+
   ~ProcessDataCollectorTest() override { ProcessDataCollector::Shutdown(); }
 
  protected:
@@ -388,8 +391,6 @@ class ProcessDataCollectorTest : public testing::Test {
   // |ProcessDataCollector| which needs to compared against |timestep_info|.
   void ValidateProcessList(const TimeStepExpectedResult& timestep_info,
                            const std::vector<ProcessUsageData>& process_list);
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessDataCollectorTest);
 };
 
 ProcessDataCollector::Config ProcessDataCollectorTest::CreateConfig(

@@ -47,7 +47,7 @@ class ActivityStorage {
   // removed.
   void PruneActivityPeriods(
       base::Time base_time,
-      base::TimeDelta max_past_activity_interval = base::TimeDelta::FromDays(0),
+      base::TimeDelta max_past_activity_interval = base::Days(0),
       base::TimeDelta max_future_activity_interval = base::TimeDelta::Max());
 
   // Trims the stored activity periods to only retain data within the

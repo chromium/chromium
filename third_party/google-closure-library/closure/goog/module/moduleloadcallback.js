@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A simple callback mechanism for notification about module
@@ -34,6 +26,7 @@ goog.require('goog.module');
  * @final
  */
 goog.module.ModuleLoadCallback = function(fn, opt_handler) {
+  'use strict';
   /**
    * Callback function.
    * @type {Function}
@@ -55,6 +48,7 @@ goog.module.ModuleLoadCallback = function(fn, opt_handler) {
  * @param {*} context The module context.
  */
 goog.module.ModuleLoadCallback.prototype.execute = function(context) {
+  'use strict';
   if (this.fn_) {
     this.fn_.call(this.handler_ || null, context);
     this.handler_ = null;
@@ -67,6 +61,7 @@ goog.module.ModuleLoadCallback.prototype.execute = function(context) {
  * Abort the callback, but not the actual module load.
  */
 goog.module.ModuleLoadCallback.prototype.abort = function() {
+  'use strict';
   this.fn_ = null;
   this.handler_ = null;
 };
@@ -80,6 +75,7 @@ goog.debug.entryPointRegistry.register(
      *     function.
      */
     function(transformer) {
+      'use strict';
       goog.module.ModuleLoadCallback.prototype.execute =
           transformer(goog.module.ModuleLoadCallback.prototype.execute);
     });

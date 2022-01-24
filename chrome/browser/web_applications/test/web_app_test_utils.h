@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "chrome/browser/web_applications/components/install_manager.h"
-#include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 
 struct WebApplicationInfo;
 class GURL;
@@ -21,7 +21,9 @@ class WebContents;
 namespace web_app {
 namespace test {
 
-std::unique_ptr<WebApp> CreateMinimalWebApp();
+std::unique_ptr<WebApp> CreateWebApp(
+    const GURL& start_url = GURL("https://example.com/path"),
+    Source::Type source_type = Source::kSync);
 
 std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
                                            const uint32_t seed);
@@ -30,13 +32,13 @@ void TestAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     ForInstallableSite for_installable_site,
-    InstallManager::WebAppInstallationAcceptanceCallback acceptance_callback);
+    WebAppInstallationAcceptanceCallback acceptance_callback);
 
 void TestDeclineDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     ForInstallableSite for_installable_site,
-    InstallManager::WebAppInstallationAcceptanceCallback acceptance_callback);
+    WebAppInstallationAcceptanceCallback acceptance_callback);
 
 }  // namespace test
 }  // namespace web_app

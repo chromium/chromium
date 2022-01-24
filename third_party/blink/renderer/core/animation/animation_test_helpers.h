@@ -17,6 +17,7 @@ namespace blink {
 class Document;
 class Element;
 class KeyframeEffect;
+class KeyframeEffectModelBase;
 
 namespace animation_test_helpers {
 
@@ -36,6 +37,10 @@ KeyframeEffect* CreateSimpleKeyframeEffectForTest(Element*,
                                                   CSSPropertyID,
                                                   String value_start,
                                                   String value_end);
+KeyframeEffectModelBase* CreateSimpleKeyframeEffectModelForTest(
+    CSSPropertyID,
+    String value_start,
+    String value_end);
 
 // Ensures that a set of interpolations actually computes and caches their
 // internal interpolated value, so that tests can retrieve them.

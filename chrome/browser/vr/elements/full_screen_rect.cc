@@ -5,7 +5,7 @@
 #include "chrome/browser/vr/elements/full_screen_rect.h"
 
 #include "chrome/browser/vr/ui_element_renderer.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 

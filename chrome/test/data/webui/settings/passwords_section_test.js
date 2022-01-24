@@ -5,18 +5,20 @@
 /** @fileoverview Runs the Polymer Password Settings tests. */
 
 // clang-format off
-import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import 'chrome://settings/lazy_load.js';
+
+import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SettingsPluralStringProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
-import {createExceptionEntry, createMultiStoreExceptionEntry, createMultiStorePasswordEntry, createPasswordEntry, makeCompromisedCredential, makePasswordCheckStatus, PasswordSectionElementFactory} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
-import {runCancelExportTest, runExportFlowErrorRetryTest, runExportFlowErrorTest, runExportFlowFastTest, runExportFlowSlowTest, runFireCloseEventAfterExportCompleteTest,runStartExportTest} from 'chrome://test/settings/passwords_export_test.js';
-import {getSyncAllPrefs, simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
-import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
-import {TestPluralStringProxy} from 'chrome://test/test_plural_string_proxy.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
+import {HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SettingsPluralStringProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+import {createExceptionEntry, createMultiStoreExceptionEntry, createMultiStorePasswordEntry, createPasswordEntry, makeCompromisedCredential, makePasswordCheckStatus, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
+import {runCancelExportTest, runExportFlowErrorRetryTest, runExportFlowErrorTest, runExportFlowFastTest, runExportFlowSlowTest, runFireCloseEventAfterExportCompleteTest,runStartExportTest} from './passwords_export_test.js';
+import {getSyncAllPrefs, simulateStoredAccounts, simulateSyncStatus} from './sync_test_util.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
+import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 // clang-format on
 
@@ -69,7 +71,6 @@ function validatePasswordList(passwordsSection, passwordList) {
       passwordsSection,
       passwordList.map(entry => new MultiStorePasswordUiEntry(entry)));
 }
-
 
 /**
  * Helper method that validates a that elements in the exception list match
@@ -154,84 +155,6 @@ function exceptionsListContainsUrl(exceptionList, url) {
 }
 
 /**
- * Helper function to test for an element is visible.
- */
-function isElementVisible(element) {
-  return element && !element.hidden;
-}
-
-/**
- * Helper function to test if all components of edit dialog are shown correctly.
- */
-function editDialogPartsAreShownCorrectly(passwordDialog) {
-  assertEquals(
-      passwordDialog.i18n('editPasswordTitle'),
-      passwordDialog.$.title.textContent.trim());
-  assertFalse(passwordDialog.$.passwordInput.readonly);
-  assertTrue(passwordDialog.$.passwordInput.required);
-  assertTrue(isElementVisible(passwordDialog.$.footnote));
-  assertTrue(isElementVisible(passwordDialog.$.cancel));
-  assertEquals(
-      passwordDialog.i18n('save'),
-      passwordDialog.$.actionButton.textContent.trim());
-}
-
-/**
- * Helper function to test if all components of details dialog are shown
- * correctly.
- */
-function detailsDialogPartsAreShownCorrectly(passwordDialog) {
-  assertEquals(
-      passwordDialog.i18n('passwordDetailsTitle'),
-      passwordDialog.$.title.textContent.trim());
-  assertTrue(passwordDialog.$.passwordInput.readonly);
-  assertFalse(passwordDialog.$.passwordInput.required);
-  assertFalse(isElementVisible(passwordDialog.$.footnote));
-  assertFalse(isElementVisible(passwordDialog.$.cancel));
-  assertEquals(
-      passwordDialog.i18n('done'),
-      passwordDialog.$.actionButton.textContent.trim());
-}
-
-
-/**
- * Helper function to test change saved password behavior.
- * @param {!Object} editDialog
- * @param {!Array<number>} entryIds Ids to be called as a changeSavedPassword
- *     parameter.
- * @param {TestPasswordManagerProxy} passwordManager
- */
-async function changeSavedPasswordTestHelper(
-    editDialog, entryIds, passwordManager) {
-  const PASSWORD1 = 'hello_world';
-  const USERNAME1 = 'new_username';
-  editDialog.set('entry.password', PASSWORD1);
-  assertEquals(PASSWORD1, editDialog.$.passwordInput.value);
-
-  // Empty password should be consider invalid and disables the save button.
-  editDialog.$.passwordInput.value = '';
-  assertTrue(editDialog.$.passwordInput.invalid);
-  assertTrue(editDialog.$.actionButton.disabled);
-
-  const PASSWORD2 = 'hello_world_2';
-  editDialog.$.usernameInput.value = USERNAME1;
-  editDialog.$.passwordInput.value = PASSWORD2;
-  assertFalse(editDialog.$.passwordInput.invalid);
-  assertFalse(editDialog.$.actionButton.disabled);
-
-  editDialog.$.actionButton.click();
-
-  // Check that the changeSavedPassword is called with the right arguments.
-  const {ids, newUsername, newPassword} =
-      await passwordManager.whenCalled('changeSavedPassword');
-  assertEquals(USERNAME1, newUsername);
-  assertEquals(PASSWORD2, newPassword);
-
-  assertEquals(entryIds.length, ids.length);
-  entryIds.forEach(entryId => assertTrue(ids.includes(entryId)));
-}
-
-/**
  * Helper function to check password visibility when open password-edit-dialog.
  * @param {TestPasswordManagerProxy} passwordManager
  * @param {PasswordSectionElementFactory} elementFactory
@@ -278,16 +201,16 @@ async function openPasswordEditDialogHelper(passwordManager, elementFactory) {
   const passwordEditDialog =
       passwordsSection.$.passwordsListHandler.shadowRoot.querySelector(
           '#passwordEditDialog');
+  const showPasswordButton =
+      passwordEditDialog.shadowRoot.querySelector('#showPasswordButton');
   assertEquals('password', passwordEditDialog.$.passwordInput.type);
-  assertTrue(passwordEditDialog.$.showPasswordButton.classList.contains(
-      'icon-visibility'));
+  assertTrue(showPasswordButton.classList.contains('icon-visibility'));
 
   passwordEditDialog.shadowRoot.querySelector('#showPasswordButton').click();
   flush();
 
   assertEquals('text', passwordEditDialog.$.passwordInput.type);
-  assertTrue(passwordEditDialog.$.showPasswordButton.classList.contains(
-      'icon-visibility-off'));
+  assertTrue(showPasswordButton.classList.contains('icon-visibility-off'));
 
   // Close the dialog, verify that the list item password remains hidden.
   // Note that the password only gets hidden in the on-close handler, thus we
@@ -305,8 +228,7 @@ async function openPasswordEditDialogHelper(passwordManager, elementFactory) {
 
 /**
  * Simulates user who is eligible and opted-in for account storage. Should be
- * called after the PasswordsSection element is created. The load time value for
- * enableAccountStorage must be overridden separately.
+ * called after the PasswordsSection element is created.
  * @param {TestPasswordManagerProxy} passwordManager
  */
 function simulateAccountStorageUser(passwordManager) {
@@ -317,6 +239,7 @@ function simulateAccountStorageUser(passwordManager) {
   flush();
 }
 
+// TODO(crbug.com/1260310): Split into multiple test suits.
 suite('PasswordsSection', function() {
   /** @type {TestPasswordManagerProxy} */
   let passwordManager = null;
@@ -337,9 +260,9 @@ suite('PasswordsSection', function() {
     pluralString = new TestPluralStringProxy();
     SettingsPluralStringProxyImpl.setInstance(pluralString);
     testHatsBrowserProxy = new TestHatsBrowserProxy();
-    HatsBrowserProxyImpl.instance_ = testHatsBrowserProxy;
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
 
-    PasswordManagerImpl.instance_ = passwordManager;
+    PasswordManagerImpl.setInstance(passwordManager);
     elementFactory = new PasswordSectionElementFactory(document);
   });
 
@@ -1083,164 +1006,6 @@ suite('PasswordsSection', function() {
     assertTrue(ids.includes(accountCopy.id));
   });
 
-  test('verifyFederatedPassword', function() {
-    const federationEntry = createMultiStorePasswordEntry(
-        {federationText: 'with chromium.org', username: 'bart', deviceId: 42});
-    const passwordDialog =
-        elementFactory.createPasswordEditDialog(federationEntry);
-
-    assertEquals(
-        federationEntry.federationText, passwordDialog.$.passwordInput.value);
-    // Text should be readable.
-    assertEquals('text', passwordDialog.$.passwordInput.type);
-    assertTrue(passwordDialog.$.showPasswordButton.hidden);
-    detailsDialogPartsAreShownCorrectly(passwordDialog);
-  });
-
-  test('verifyEditOrDetailsDialog', function() {
-    const federationEntry = createMultiStorePasswordEntry(
-        {federationText: 'with chromium.org', username: 'bart', deviceId: 42});
-    const passwordDialogFederation =
-        elementFactory.createPasswordEditDialog(federationEntry);
-    detailsDialogPartsAreShownCorrectly(passwordDialogFederation);
-
-    const commonEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 42});
-    const passwordDialogCommon =
-        elementFactory.createPasswordEditDialog(commonEntry);
-    // Should show edit dialog for common credential.
-    editDialogPartsAreShownCorrectly(passwordDialogCommon);
-  });
-
-  test('editDialogChangePasswordAccountId', async function() {
-
-    const accountEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 42});
-    const editDialog = elementFactory.createPasswordEditDialog(accountEntry);
-
-    changeSavedPasswordTestHelper(
-        editDialog, [accountEntry.accountId], passwordManager);
-  });
-
-  test('editDialogChangePasswordDeviceId', async function() {
-
-    const deviceEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', deviceId: 42});
-    const editDialog = elementFactory.createPasswordEditDialog(deviceEntry);
-
-    changeSavedPasswordTestHelper(
-        editDialog, [deviceEntry.deviceId], passwordManager);
-  });
-
-  test('editDialogChangePasswordBothId', async function() {
-
-    const multiEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 41, deviceId: 42});
-    const editDialog = elementFactory.createPasswordEditDialog(multiEntry);
-
-    changeSavedPasswordTestHelper(
-        editDialog, [multiEntry.accountId, multiEntry.deviceId],
-        passwordManager);
-  });
-
-  test('editDialogChangeUsernameFailsWhenReused', async function() {
-
-    const accountEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 0});
-    const editDialog = elementFactory.createPasswordEditDialog(accountEntry);
-    editDialog.usernamesForSameOrigin = new Set(['mark', 'bart']);
-
-    editDialog.$.usernameInput.value = 'mark';
-    assertTrue(editDialog.$.usernameInput.invalid);
-    assertTrue(editDialog.$.actionButton.disabled);
-
-    editDialog.$.usernameInput.value = 'new_mark';
-    assertFalse(editDialog.$.usernameInput.invalid);
-    assertFalse(editDialog.$.actionButton.disabled);
-
-    changeSavedPasswordTestHelper(
-        editDialog, [accountEntry.accountId], passwordManager);
-  });
-
-  test('editDialogChangeUsernameWhenReusedForDifferentStore', async function() {
-    const passwords = [
-      createMultiStorePasswordEntry(
-          {url: 'goo.gl', username: 'bart', accountId: 0}),
-      createMultiStorePasswordEntry(
-          {url: 'goo.gl', username: 'mark', deviceId: 0})
-    ];
-    const editDialog =
-        elementFactory.createPasswordEditDialog(passwords[0], passwords);
-
-    // Changing the username to the value which is present for different store
-    // type should work.
-    editDialog.$.usernameInput.value = 'mark';
-    assertFalse(editDialog.$.usernameInput.invalid);
-    assertFalse(editDialog.$.actionButton.disabled);
-  });
-
-  // Test verifies that the edit dialog informs the password is stored in the
-  // account.
-  test('verifyStorageDetailsInEditDialogForAccountPassword', function() {
-    const accountPassword = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 42});
-    const accountPasswordDialog =
-        elementFactory.createPasswordEditDialog(accountPassword);
-
-    // By default no message is displayed.
-    assertTrue(accountPasswordDialog.$.storageDetails.hidden);
-
-    // Display the message.
-    accountPasswordDialog.shouldShowStorageDetails = true;
-    flush();
-    assertFalse(accountPasswordDialog.$.storageDetails.hidden);
-    assertEquals(
-        accountPasswordDialog.i18n('passwordStoredInAccount'),
-        accountPasswordDialog.$.storageDetails.innerText);
-  });
-
-  // Test verifies that the edit dialog informs the password is stored on the
-  // device.
-  test('verifyStorageDetailsInEditDialogForDevicePassword', function() {
-    const devicePassword = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', deviceId: 42});
-    const devicePasswordDialog =
-        elementFactory.createPasswordEditDialog(devicePassword);
-
-    // By default no message is displayed.
-    assertTrue(devicePasswordDialog.$.storageDetails.hidden);
-
-    // Display the message.
-    devicePasswordDialog.shouldShowStorageDetails = true;
-    flush();
-    assertFalse(devicePasswordDialog.$.storageDetails.hidden);
-    assertEquals(
-        devicePasswordDialog.i18n('passwordStoredOnDevice'),
-        devicePasswordDialog.$.storageDetails.innerText);
-  });
-
-  // Test verifies that the edit dialog informs the password is stored both on
-  // the device and in the account.
-  test(
-      'verifyStorageDetailsInEditDialogForPasswordInBothLocations', function() {
-        const accountAndDevicePassword = createMultiStorePasswordEntry(
-            {url: 'goo.gl', username: 'bart', deviceId: 42, accountId: 43});
-        const accountAndDevicePasswordDialog =
-            elementFactory.createPasswordEditDialog(accountAndDevicePassword);
-
-        // By default no message is displayed.
-        assertTrue(accountAndDevicePasswordDialog.$.storageDetails.hidden);
-
-        // Display the message.
-        accountAndDevicePasswordDialog.shouldShowStorageDetails = true;
-        flush();
-        assertFalse(accountAndDevicePasswordDialog.$.storageDetails.hidden);
-        assertEquals(
-            accountAndDevicePasswordDialog.i18n(
-                'passwordStoredInAccountAndOnDevice'),
-            accountAndDevicePasswordDialog.$.storageDetails.innerText);
-      });
-
   test('showSavedPasswordListItem', async function() {
     const PASSWORD = 'bAn@n@5';
     const item = createPasswordEntry({url: 'goo.gl', username: 'bart', id: 1});
@@ -1307,8 +1072,9 @@ suite('PasswordsSection', function() {
             '#passwordEditDialog');
     assertEquals('password', passwordEditDialog.$.passwordInput.type);
     assertEquals(PASSWORD, passwordEditDialog.$.passwordInput.value);
-    assertTrue(passwordEditDialog.$.showPasswordButton.classList.contains(
-        'icon-visibility'));
+    assertTrue(
+        passwordEditDialog.shadowRoot.querySelector('#showPasswordButton')
+            .classList.contains('icon-visibility'));
   });
 
   test('onShowSavedPasswordListItem', function() {
@@ -1426,7 +1192,7 @@ suite('PasswordsSection', function() {
     passwordsSection.$.menuExportPassword.click();
   });
 
-  if (!isChromeOS) {
+  if (!(isChromeOS || isLacros)) {
     // Test that tapping "Export passwords..." notifies the browser.
     test('startExport', function(done) {
       const exportDialog =
@@ -1491,9 +1257,6 @@ suite('PasswordsSection', function() {
     // Tests that the opt-in/opt-out buttons appear for signed-in (non-sync)
     // users and that the text content changes accordingly.
     test('changeOptInButtonsBasedOnSignInAndAccountStorageOptIn', function() {
-      // Feature flag enabled.
-      loadTimeData.overrideValues({enableAccountStorage: true});
-
       const passwordsSection =
           elementFactory.createPasswordsSection(passwordManager, [], []);
 
@@ -1534,8 +1297,6 @@ suite('PasswordsSection', function() {
     // Test verifies the the account storage buttons are not shown for custom
     // passphrase users.
     test('accountStorageButonsNotShownForCustomPassphraseUser', function() {
-      loadTimeData.overrideValues({enableAccountStorage: true});
-
       const passwordsSection =
           elementFactory.createPasswordsSection(passwordManager, [], []);
 
@@ -1555,9 +1316,6 @@ suite('PasswordsSection', function() {
     // Test verifies that enabling sync hides the buttons for account storage
     // opt-in/out and the 'device passwords' page.
     test('enablingSyncHidesAccountStorageButtons', function() {
-      // Feature flag enabled.
-      loadTimeData.overrideValues({enableAccountStorage: true});
-
       const passwordsSection =
           elementFactory.createPasswordsSection(passwordManager, [], []);
 
@@ -1577,7 +1335,6 @@ suite('PasswordsSection', function() {
     test('verifyDevicePasswordsButtonVisibility', function() {
       // Set up user eligible to the account-scoped password storage, not
       // opted in and with no device passwords. Button should be hidden.
-      loadTimeData.overrideValues({enableAccountStorage: true});
       const passwordList =
           [createPasswordEntry({fromAccountStore: true, id: 10})];
       const passwordsSection = elementFactory.createPasswordsSection(
@@ -1607,8 +1364,6 @@ suite('PasswordsSection', function() {
     test(
         'passwordRemovalMessageSpecifiesStoreForAccountStorageUsers',
         function() {
-          loadTimeData.overrideValues({enableAccountStorage: true});
-
           const passwordList = [
             createPasswordEntry(
                 {username: 'account', id: 0, fromAccountStore: true}),
@@ -1645,8 +1400,6 @@ suite('PasswordsSection', function() {
     // Clicking the button in the dialog then removes both versions of the
     // password.
     test('verifyPasswordRemoveDialogRemoveBothCopies', async function() {
-      loadTimeData.overrideValues({enableAccountStorage: true});
-
       const accountCopy =
           createPasswordEntry({frontendId: 42, id: 0, fromAccountStore: true});
       const deviceCopy =
@@ -1686,8 +1439,6 @@ suite('PasswordsSection', function() {
     // both on the device and in the account, the PasswordRemoveDialog shows up.
     // The user then chooses to remove only of the copies.
     test('verifyPasswordRemoveDialogRemoveSingleCopy', async function() {
-      loadTimeData.overrideValues({enableAccountStorage: true});
-
       const accountCopy =
           createPasswordEntry({frontendId: 42, id: 0, fromAccountStore: true});
       const deviceCopy =
@@ -2077,8 +1828,7 @@ suite('PasswordsSection', function() {
     assertEquals('true', router.getQueryParameters().get('start'));
     const referrer =
         await passwordManager.whenCalled('recordPasswordCheckReferrer');
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckReferrer.PASSWORD_SETTINGS, referrer);
+    assertEquals(PasswordCheckReferrer.PASSWORD_SETTINGS, referrer);
   });
 
   test('clickingCheckPasswordsRowStartsCheck', async function() {
@@ -2091,8 +1841,7 @@ suite('PasswordsSection', function() {
     assertEquals('true', router.getQueryParameters().get('start'));
     const referrer =
         await passwordManager.whenCalled('recordPasswordCheckReferrer');
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckReferrer.PASSWORD_SETTINGS, referrer);
+    assertEquals(PasswordCheckReferrer.PASSWORD_SETTINGS, referrer);
   });
 
   test('hatsInformedOnOpen', async function() {
@@ -2101,5 +1850,37 @@ suite('PasswordsSection', function() {
     const interaction =
         await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.OPENED_PASSWORD_MANAGER, interaction);
+  });
+
+  test(
+      'addPasswordButtonShownOnlyWhenAddingPasswordsFeatureEnabled',
+      function() {
+        loadTimeData.overrideValues({addPasswordsInSettingsEnabled: false});
+        const passwordsSectionAddPasswordsDisabled =
+            elementFactory.createPasswordsSection(passwordManager, [], []);
+        assertFalse(
+            !!passwordsSectionAddPasswordsDisabled.shadowRoot.querySelector(
+                '#addPasswordButton'));
+
+        loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
+        const passwordsSectionAddPasswordsEnabled =
+            elementFactory.createPasswordsSection(passwordManager, [], []);
+        assertTrue(
+            !!passwordsSectionAddPasswordsEnabled.shadowRoot.querySelector(
+                '#addPasswordButton'));
+      });
+
+  test('addPasswordButtonOpensAddPasswordDialog', function() {
+    loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
+    const passwordsSection =
+        elementFactory.createPasswordsSection(passwordManager, [], []);
+    assertFalse(
+        !!passwordsSection.shadowRoot.querySelector('#addPasswordDialog'));
+
+    passwordsSection.shadowRoot.querySelector('#addPasswordButton').click();
+    flush();
+    const addDialog =
+        passwordsSection.shadowRoot.querySelector('#addPasswordDialog');
+    assertTrue(!!addDialog);
   });
 });

@@ -22,6 +22,11 @@ class CapabilityDelegationBrowserTest
         features::kCapabilityDelegationPaymentRequest);
   }
 
+  CapabilityDelegationBrowserTest(const CapabilityDelegationBrowserTest&) =
+      delete;
+  CapabilityDelegationBrowserTest& operator=(
+      const CapabilityDelegationBrowserTest&) = delete;
+
   ~CapabilityDelegationBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -35,15 +40,13 @@ class CapabilityDelegationBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CapabilityDelegationBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest, PaymentRequest) {
   // Navigate the top frame.
   GURL main_url(
       https_server()->GetURL("a.com", "/payment_request_delegation.html"));
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // Navigate the sub-frame cross-site.
   content::WebContents* active_web_contents =
@@ -76,20 +79,20 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest, PaymentRequest) {
 
   // Without either user activation or payment request token, PaymentRequest
   // dialog is not allowed.
-  EXPECT_EQ("NotAllowedError",
+  EXPECT_EQ("SecurityError",
             content::EvalJs(active_web_contents, "sendRequestToSubframe(false)",
                             content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Without user activation but with the delegation option, PaymentRequest
   // dialog is not allowed.
-  EXPECT_EQ("NotAllowedError",
+  EXPECT_EQ("SecurityError",
             content::EvalJs(active_web_contents, "sendRequestToSubframe(true)",
                             content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // With user activation but without the delegation option, PaymentRequest
   // dialog is not allowed.
-  EXPECT_EQ("NotAllowedError", content::EvalJs(active_web_contents,
-                                               "sendRequestToSubframe(false)"));
+  EXPECT_EQ("SecurityError", content::EvalJs(active_web_contents,
+                                             "sendRequestToSubframe(false)"));
 
   // With both user activation and the delegation option, PaymentRequest dialog
   // is shown and then successfully aborted by the script.

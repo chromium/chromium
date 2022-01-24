@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_MENU_MODEL_H_
 
-#include "base/macros.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class StarMenuModel : public ui::SimpleMenuModel {

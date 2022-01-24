@@ -71,6 +71,10 @@ class OffloadingVideoDecoderTest : public testing::Test {
             base::test::TaskEnvironment::MainThreadType::DEFAULT,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
+  OffloadingVideoDecoderTest(const OffloadingVideoDecoderTest&) = delete;
+  OffloadingVideoDecoderTest& operator=(const OffloadingVideoDecoderTest&) =
+      delete;
+
   void CreateWrapper(int offload_width, VideoCodec codec) {
     decoder_ = new testing::StrictMock<MockOffloadableVideoDecoder>();
     offloading_decoder_ = std::make_unique<OffloadingVideoDecoder>(
@@ -198,41 +202,38 @@ class OffloadingVideoDecoderTest : public testing::Test {
   std::unique_ptr<OffloadingVideoDecoder> offloading_decoder_;
   testing::StrictMock<MockOffloadableVideoDecoder>* decoder_ =
       nullptr;  // Owned by |offloading_decoder_|.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OffloadingVideoDecoderTest);
 };
 
 TEST_F(OffloadingVideoDecoderTest, NoOffloadingTooSmall) {
-  auto offload_config = TestVideoConfig::Large(kCodecVP9);
-  CreateWrapper(offload_config.coded_size().width(), kCodecVP9);
-  TestNoOffloading(TestVideoConfig::Normal(kCodecVP9));
+  auto offload_config = TestVideoConfig::Large(VideoCodec::kVP9);
+  CreateWrapper(offload_config.coded_size().width(), VideoCodec::kVP9);
+  TestNoOffloading(TestVideoConfig::Normal(VideoCodec::kVP9));
 }
 
 TEST_F(OffloadingVideoDecoderTest, NoOffloadingDifferentCodec) {
-  auto offload_config = TestVideoConfig::Large(kCodecVP9);
-  CreateWrapper(offload_config.coded_size().width(), kCodecVP9);
-  TestNoOffloading(TestVideoConfig::Large(kCodecVP8));
+  auto offload_config = TestVideoConfig::Large(VideoCodec::kVP9);
+  CreateWrapper(offload_config.coded_size().width(), VideoCodec::kVP9);
+  TestNoOffloading(TestVideoConfig::Large(VideoCodec::kVP8));
 }
 
 TEST_F(OffloadingVideoDecoderTest, NoOffloadingHasEncryption) {
-  auto offload_config = TestVideoConfig::Large(kCodecVP9);
-  CreateWrapper(offload_config.coded_size().width(), kCodecVP9);
-  TestNoOffloading(TestVideoConfig::LargeEncrypted(kCodecVP9));
+  auto offload_config = TestVideoConfig::Large(VideoCodec::kVP9);
+  CreateWrapper(offload_config.coded_size().width(), VideoCodec::kVP9);
+  TestNoOffloading(TestVideoConfig::LargeEncrypted(VideoCodec::kVP9));
 }
 
 TEST_F(OffloadingVideoDecoderTest, Offloading) {
-  auto offload_config = TestVideoConfig::Large(kCodecVP9);
-  CreateWrapper(offload_config.coded_size().width(), kCodecVP9);
+  auto offload_config = TestVideoConfig::Large(VideoCodec::kVP9);
+  CreateWrapper(offload_config.coded_size().width(), VideoCodec::kVP9);
   TestOffloading(offload_config);
 }
 
 TEST_F(OffloadingVideoDecoderTest, OffloadingAfterNoOffloading) {
-  auto offload_config = TestVideoConfig::Large(kCodecVP9);
-  CreateWrapper(offload_config.coded_size().width(), kCodecVP9);
+  auto offload_config = TestVideoConfig::Large(VideoCodec::kVP9);
+  CreateWrapper(offload_config.coded_size().width(), VideoCodec::kVP9);
 
   // Setup and test the no offloading path first.
-  TestNoOffloading(TestVideoConfig::Normal(kCodecVP9));
+  TestNoOffloading(TestVideoConfig::Normal(VideoCodec::kVP9));
 
   // Test offloading now.
   TestOffloading(offload_config, true);
@@ -242,7 +243,8 @@ TEST_F(OffloadingVideoDecoderTest, OffloadingAfterNoOffloading) {
   // should happen asynchronously, set expectation after the call.
   VideoDecoder::OutputCB output_cb;
   offloading_decoder_->Initialize(
-      TestVideoConfig::Normal(kCodecVP9), false, nullptr, ExpectInitCB(true),
+      TestVideoConfig::Normal(VideoCodec::kVP9), false, nullptr,
+      ExpectInitCB(true),
       base::BindRepeating(&OffloadingVideoDecoderTest::OutputDone,
                           base::Unretained(this)),
       base::NullCallback());
@@ -255,17 +257,17 @@ TEST_F(OffloadingVideoDecoderTest, OffloadingAfterNoOffloading) {
 }
 
 TEST_F(OffloadingVideoDecoderTest, InitializeWithoutDetach) {
-  auto offload_config = TestVideoConfig::Large(kCodecVP9);
-  CreateWrapper(offload_config.coded_size().width(), kCodecVP9);
+  auto offload_config = TestVideoConfig::Large(VideoCodec::kVP9);
+  CreateWrapper(offload_config.coded_size().width(), VideoCodec::kVP9);
 
   EXPECT_CALL(*decoder_, Detach()).Times(0);
-  TestNoOffloading(TestVideoConfig::Normal(kCodecVP9));
-  TestNoOffloading(TestVideoConfig::Normal(kCodecVP9));
+  TestNoOffloading(TestVideoConfig::Normal(VideoCodec::kVP9));
+  TestNoOffloading(TestVideoConfig::Normal(VideoCodec::kVP9));
 }
 
 TEST_F(OffloadingVideoDecoderTest, ParallelizedOffloading) {
-  auto offload_config = TestVideoConfig::Large(kCodecVP9);
-  CreateWrapper(offload_config.coded_size().width(), kCodecVP9);
+  auto offload_config = TestVideoConfig::Large(VideoCodec::kVP9);
+  CreateWrapper(offload_config.coded_size().width(), VideoCodec::kVP9);
 
   // Since this Initialize() should be happening on another thread, set the
   // expectation after we make the call.
@@ -315,8 +317,8 @@ TEST_F(OffloadingVideoDecoderTest, ParallelizedOffloading) {
 }
 
 TEST_F(OffloadingVideoDecoderTest, ParallelizedOffloadingResetAbortsDecodes) {
-  auto offload_config = TestVideoConfig::Large(kCodecVP9);
-  CreateWrapper(offload_config.coded_size().width(), kCodecVP9);
+  auto offload_config = TestVideoConfig::Large(VideoCodec::kVP9);
+  CreateWrapper(offload_config.coded_size().width(), VideoCodec::kVP9);
 
   // Since this Initialize() should be happening on another thread, set the
   // expectation after we make the call.

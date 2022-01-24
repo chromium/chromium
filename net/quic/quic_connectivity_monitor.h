@@ -25,6 +25,9 @@ class NET_EXPORT_PRIVATE QuicConnectivityMonitor
   explicit QuicConnectivityMonitor(
       NetworkChangeNotifier::NetworkHandle default_network);
 
+  QuicConnectivityMonitor(const QuicConnectivityMonitor&) = delete;
+  QuicConnectivityMonitor& operator=(const QuicConnectivityMonitor&) = delete;
+
   ~QuicConnectivityMonitor() override;
 
   // Records connectivity related stats to histograms.
@@ -119,7 +122,6 @@ class NET_EXPORT_PRIVATE QuicConnectivityMonitor
   QuicErrorCodeMap quic_error_map_;
 
   base::WeakPtrFactory<QuicConnectivityMonitor> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(QuicConnectivityMonitor);
 };
 
 }  // namespace net

@@ -90,20 +90,21 @@ ScrollingCoordinator::ScrollableAreaWithElementIdInAllLocalFrames(
   return nullptr;
 }
 
-void ScrollingCoordinator::DidScroll(
+void ScrollingCoordinator::DidCompositorScroll(
     CompositorElementId element_id,
-    const gfx::ScrollOffset& offset,
+    const gfx::Vector2dF& offset,
     const absl::optional<cc::TargetSnapAreaElementIds>& snap_target_ids) {
   // Find the associated scrollable area using the element id and notify it of
   // the compositor-side scroll. We explicitly do not check the VisualViewport
-  // which handles scroll offset differently (see: VisualViewport::didScroll).
-  // Remote frames will receive DidScroll callbacks from their own compositor.
+  // which handles scroll offset differently (see:
+  // VisualViewport::DidCompositorScroll). Remote frames will receive
+  // DidCompositorScroll callbacks from their own compositor.
   // The ScrollableArea with matching ElementId may have been deleted and we can
-  // safely ignore the DidScroll callback.
+  // safely ignore the DidCompositorScroll callback.
   auto* scrollable = ScrollableAreaWithElementIdInAllLocalFrames(element_id);
   if (!scrollable)
     return;
-  scrollable->DidScroll(FloatPoint(offset.x(), offset.y()));
+  scrollable->DidCompositorScroll(FloatPoint(offset.x(), offset.y()));
   if (snap_target_ids)
     scrollable->SetTargetSnapAreaElementIds(snap_target_ids.value());
 }
@@ -179,7 +180,8 @@ cc::ScrollbarLayerBase* ScrollingCoordinator::GetScrollbarLayer(
   ScrollbarMap& scrollbars = orientation == kHorizontalScrollbar
                                  ? horizontal_scrollbars_
                                  : vertical_scrollbars_;
-  return scrollbars.at(scrollable_area);
+  const auto it = scrollbars.find(scrollable_area);
+  return it != scrollbars.end() ? it->value.get() : nullptr;
 }
 
 void ScrollingCoordinator::ScrollableAreaScrollbarLayerDidChange(
@@ -265,12 +267,12 @@ void ScrollingCoordinator::ScrollableAreaScrollLayerDidChange(
     // content depends on the page scale factor. Its scrollable content is
     // the layout viewport which is sized based on the minimum allowed page
     // scale so it actually can be smaller than its clip.
-    IntSize container_size = scrollable_area->VisibleContentRect().Size();
+    IntSize container_size = scrollable_area->VisibleContentRect().size();
     scroll_contents_size = scroll_contents_size.ExpandedTo(container_size);
 
     // This call has to go through the GraphicsLayer method to preserve
     // invalidation code there.
-    graphics_layer->SetSize(gfx::Size(scroll_contents_size));
+    graphics_layer->SetSize(ToGfxSize(scroll_contents_size));
   }
   if (cc::ScrollbarLayerBase* scrollbar_layer =
           GetScrollbarLayer(scrollable_area, kHorizontalScrollbar)) {

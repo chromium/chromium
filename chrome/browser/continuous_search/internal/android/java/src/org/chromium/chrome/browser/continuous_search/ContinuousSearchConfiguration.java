@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.continuous_search;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -42,10 +41,7 @@ class ContinuousSearchConfiguration {
     static void recordDismissed() {
         if (ignoreDismissals() || isPermanentlyDismissed()) return;
 
-        int dismissalCount =
-                SHARED_PREFERENCES_MANAGER.incrementInt(CONTINUOUS_SEARCH_DISMISSAL_COUNT);
-        RecordHistogram.recordLinearCountHistogram(
-                "Browser.ContinuousSearch.DismissalCount", dismissalCount, 1, 20, 21);
+        SHARED_PREFERENCES_MANAGER.incrementInt(CONTINUOUS_SEARCH_DISMISSAL_COUNT);
     }
 
     /**

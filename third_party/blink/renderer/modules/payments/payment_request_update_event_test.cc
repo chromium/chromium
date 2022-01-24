@@ -26,6 +26,10 @@ class MockPaymentRequest : public GarbageCollected<MockPaymentRequest>,
                            public PaymentRequestDelegate {
  public:
   MockPaymentRequest() = default;
+
+  MockPaymentRequest(const MockPaymentRequest&) = delete;
+  MockPaymentRequest& operator=(const MockPaymentRequest&) = delete;
+
   ~MockPaymentRequest() override = default;
 
   MOCK_METHOD1(OnUpdatePaymentDetails,
@@ -34,9 +38,6 @@ class MockPaymentRequest : public GarbageCollected<MockPaymentRequest>,
   bool IsInteractive() const override { return true; }
 
   void Trace(Visitor* visitor) const override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPaymentRequest);
 };
 
 TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsCalled) {

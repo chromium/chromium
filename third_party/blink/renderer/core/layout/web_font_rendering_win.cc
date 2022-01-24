@@ -14,6 +14,11 @@ void WebFontRendering::SetSkiaFontManager(sk_sp<SkFontMgr> font_mgr) {
 }
 
 // static
+void WebFontRendering::SetFontPrewarmer(WebFontPrewarmer* prewarmer) {
+  FontCache::SetFontPrewarmer(prewarmer);
+}
+
+// static
 void WebFontRendering::AddSideloadedFontForTesting(sk_sp<SkTypeface> typeface) {
   FontCache::AddSideloadedFontForTesting(std::move(typeface));
 }

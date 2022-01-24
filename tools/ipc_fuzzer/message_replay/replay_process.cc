@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -178,7 +179,7 @@ void ReplayProcess::SendNextMessage() {
 
 void ReplayProcess::Run() {
   base::RepeatingTimer timer;
-  timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
+  timer.Start(FROM_HERE, base::Milliseconds(1),
               base::BindRepeating(&ReplayProcess::SendNextMessage,
                                   base::Unretained(this)));
   base::RunLoop().Run();

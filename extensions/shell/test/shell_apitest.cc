@@ -6,9 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/shell/browser/shell_extension_system.h"
@@ -76,11 +74,6 @@ void ShellApiTest::UnloadApp(const Extension* app) {
 
   UnloadedExtensionReason reason(UnloadedExtensionReason::DISABLE);
   registry->TriggerOnUnloaded(app, reason);
-
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_REMOVED,
-      content::Source<content::BrowserContext>(browser_context()),
-      content::Details<const Extension>(app));
 }
 
 }  // namespace extensions

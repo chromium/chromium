@@ -1,3 +1,4 @@
+
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -63,29 +64,14 @@ class NET_EXPORT ParsedCertificate
       std::vector<scoped_refptr<net::ParsedCertificate>>* chain,
       CertErrors* errors);
 
-  // Like Create() this builds a ParsedCertificate given a DER-encoded
-  // Certificate and returns nullptr on failure.
-  //
-  // However a copy of |data| is NOT made.
-  //
-  // This is a dangerous way to create as ParsedCertificate and should only be
-  // used with care when saving a copy is really worth it, or the data is known
-  // to come from static storage (and hence remain valid for entire life of
-  // process).
-  //
-  // ParsedCertificate is reference counted, so it is easy to extend the life
-  // and and end up with a ParsedCertificate referencing feed memory.
-  //
-  // On either success or failure, if |errors| is non-null it may have error
-  // information added to it.
-  static scoped_refptr<ParsedCertificate> CreateWithoutCopyingUnsafe(
-      const uint8_t* data,
-      size_t length,
-      const ParseCertificateOptions& options,
-      CertErrors* errors);
+  ParsedCertificate(const ParsedCertificate&) = delete;
+  ParsedCertificate& operator=(const ParsedCertificate&) = delete;
 
   // Returns the DER-encoded certificate data for this cert.
   const der::Input& der_cert() const { return cert_; }
+
+  // Returns the CRYPTO_BUFFER backing this object.
+  CRYPTO_BUFFER* cert_buffer() const { return cert_data_.get(); }
 
   // Accessors for raw fields of the Certificate.
   const der::Input& tbs_certificate_tlv() const { return tbs_certificate_tlv_; }
@@ -105,14 +91,22 @@ class NET_EXPORT ParsedCertificate
     return *signature_algorithm_;
   }
 
+  // Returns the DER-encoded raw subject value (including the outer sequence
+  // tag). This is guaranteed to be valid DER, though the contents of unhandled
+  // string types are treated as raw bytes.
+  der::Input subject_tlv() const { return tbs_.subject_tlv; }
   // Returns the DER-encoded normalized subject value (not including outer
-  // Sequence tag). This is gauranteed to be valid DER, though the contents of
+  // Sequence tag). This is guaranteed to be valid DER, though the contents of
   // unhandled string types are treated as raw bytes.
   der::Input normalized_subject() const {
     return der::Input(&normalized_subject_);
   }
+  // Returns the DER-encoded raw issuer value (including the outer sequence
+  // tag). This is guaranteed to be valid DER, though the contents of unhandled
+  // string types are treated as raw bytes.
+  der::Input issuer_tlv() const { return tbs_.issuer_tlv; }
   // Returns the DER-encoded normalized issuer value (not including outer
-  // Sequence tag). This is gauranteed to be valid DER, though the contents of
+  // Sequence tag). This is guaranteed to be valid DER, though the contents of
   // unhandled string types are treated as raw bytes.
   der::Input normalized_issuer() const {
     return der::Input(&normalized_issuer_);
@@ -256,18 +250,7 @@ class NET_EXPORT ParsedCertificate
   ParsedCertificate();
   ~ParsedCertificate();
 
-  // Creates a ParsedCertificate.  If |backing_data| is non-null, the
-  // certificate's DER-encoded data will be referenced from here. Otherwise the
-  // certificate's data will be |static_data|, and the pointer MUST remain
-  // valid and its data unmodified for the entirety of the program.
-  static scoped_refptr<ParsedCertificate> CreateInternal(
-      bssl::UniquePtr<CRYPTO_BUFFER> backing_data,
-      der::Input static_data,
-      const ParseCertificateOptions& options,
-      CertErrors* errors);
-
-  // The backing store for the certificate data. May be null if created by
-  // CreateWithoutCopyingUnsafe.
+  // The backing store for the certificate data.
   bssl::UniquePtr<CRYPTO_BUFFER> cert_data_;
 
   // Points to the raw certificate DER.
@@ -339,8 +322,6 @@ class NET_EXPORT ParsedCertificate
 
   // All of the extensions.
   ExtensionsMap extensions_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParsedCertificate);
 };
 
 }  // namespace net

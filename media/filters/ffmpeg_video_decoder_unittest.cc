@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/run_loop.h"
@@ -64,6 +63,9 @@ class FFmpegVideoDecoderTest : public testing::Test {
     i_frame_buffer_ = ReadTestDataFile("vp8-I-frame-320x240");
     corrupt_i_frame_buffer_ = ReadTestDataFile("vp8-corrupt-I-frame");
   }
+
+  FFmpegVideoDecoderTest(const FFmpegVideoDecoderTest&) = delete;
+  FFmpegVideoDecoderTest& operator=(const FFmpegVideoDecoderTest&) = delete;
 
   ~FFmpegVideoDecoderTest() override { Destroy(); }
 
@@ -215,9 +217,6 @@ class FFmpegVideoDecoderTest : public testing::Test {
   scoped_refptr<DecoderBuffer> corrupt_i_frame_buffer_;
 
   OutputFrames output_frames_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FFmpegVideoDecoderTest);
 };
 
 TEST_F(FFmpegVideoDecoderTest, Initialize_Normal) {
@@ -226,7 +225,7 @@ TEST_F(FFmpegVideoDecoderTest, Initialize_Normal) {
 
 TEST_F(FFmpegVideoDecoderTest, Initialize_OpenDecoderFails) {
   // Specify Theora w/o extra data so that avcodec_open2() fails.
-  VideoDecoderConfig config(kCodecTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
+  VideoDecoderConfig config(VideoCodec::kTheora, VIDEO_CODEC_PROFILE_UNKNOWN,
                             VideoDecoderConfig::AlphaMode::kIsOpaque,
                             VideoColorSpace(), kNoTransformation, kCodedSize,
                             kVisibleRect, kNaturalSize, EmptyExtraData(),

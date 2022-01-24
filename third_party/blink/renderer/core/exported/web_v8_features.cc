@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/web/web_v8_features.h"
 
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -30,6 +31,15 @@ void WebV8Features::EnableSharedArrayBuffer() {
   shared_array_buffer_enabled = true;
   constexpr char kSABFlag[] = "--harmony-sharedarraybuffer";
   v8::V8::SetFlagsFromString(kSABFlag, sizeof(kSABFlag));
+}
+
+// static
+void WebV8Features::EnableMojoJSAndUseBroker(
+    v8::Local<v8::Context> context,
+    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote) {
+  EnableMojoJS(context, /*enable*/ true);
+  blink::ExecutionContext::From(context)->SetMojoJSInterfaceBroker(
+      std::move(broker_remote));
 }
 
 }  // namespace blink

@@ -18,7 +18,15 @@ namespace android_webview {
 class AwPrintManager : public printing::PrintManager,
     public content::WebContentsUserData<AwPrintManager> {
  public:
+  AwPrintManager(const AwPrintManager&) = delete;
+  AwPrintManager& operator=(const AwPrintManager&) = delete;
+
   ~AwPrintManager() override;
+
+  static void BindPrintManagerHost(
+      mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
+          receiver,
+      content::RenderFrameHost* rfh);
 
   // printing::PrintManager:
   void PdfWritingDone(int page_count) override;
@@ -54,8 +62,6 @@ class AwPrintManager : public printing::PrintManager,
   int fd_ = -1;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AwPrintManager);
 };
 
 }  // namespace android_webview

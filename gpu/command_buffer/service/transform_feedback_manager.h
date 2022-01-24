@@ -105,6 +105,10 @@ class GPU_GLES2_EXPORT TransformFeedbackManager {
   // out-of-bounds buffer accesses.
   TransformFeedbackManager(GLuint max_transform_feedback_separate_attribs,
                            bool needs_emulation);
+
+  TransformFeedbackManager(const TransformFeedbackManager&) = delete;
+  TransformFeedbackManager& operator=(const TransformFeedbackManager&) = delete;
+
   ~TransformFeedbackManager();
 
   void MarkContextLost() {
@@ -145,8 +149,6 @@ class GPU_GLES2_EXPORT TransformFeedbackManager {
 
   bool needs_emulation_;
   bool lost_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransformFeedbackManager);
 };
 
 }  // namespace gles2

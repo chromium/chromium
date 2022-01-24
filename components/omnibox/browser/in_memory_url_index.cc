@@ -15,8 +15,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -74,7 +74,7 @@ bool InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::RunOnDBThread(
 
 void InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
     DoneRunOnMainThread() {
-  index_->DoneRebuidingPrivateDataFromHistoryDB(succeeded_, data_);
+  index_->DoneRebuildingPrivateDataFromHistoryDB(succeeded_, data_);
   UMA_HISTOGRAM_TIMES("History.InMemoryURLIndexingTime.RoundTripTime",
                       base::TimeTicks::Now() - task_creation_time_);
 }
@@ -333,7 +333,7 @@ void InMemoryURLIndex::ScheduleRebuildFromHistory() {
       &cache_reader_tracker_);
 }
 
-void InMemoryURLIndex::DoneRebuidingPrivateDataFromHistoryDB(
+void InMemoryURLIndex::DoneRebuildingPrivateDataFromHistoryDB(
     bool succeeded,
     scoped_refptr<URLIndexPrivateData> private_data) {
   TRACE_EVENT_NESTABLE_ASYNC_END0(

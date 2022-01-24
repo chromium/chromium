@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/test/pixel_comparator.h"
@@ -39,6 +39,9 @@ using DataOfferTest = test::ExoTestBase;
 class TestDataOfferDelegate : public DataOfferDelegate {
  public:
   TestDataOfferDelegate() {}
+
+  TestDataOfferDelegate(const TestDataOfferDelegate&) = delete;
+  TestDataOfferDelegate& operator=(const TestDataOfferDelegate&) = delete;
 
   // Called at the top of the data device's destructor, to give observers a
   // chance to remove themselves.
@@ -68,8 +71,6 @@ class TestDataOfferDelegate : public DataOfferDelegate {
   base::flat_set<std::string> mime_types_;
   base::flat_set<DndAction> source_actions_;
   DndAction dnd_action_ = DndAction::kNone;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataOfferDelegate);
 };
 
 class TestDataTransferPolicyController : ui::DataTransferPolicyController {
@@ -96,13 +97,13 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
   void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,
                       const ui::DataTransferEndpoint* const data_dst,
                       const absl::optional<size_t> size,
-                      content::WebContents* web_contents,
+                      content::RenderFrameHost* web_contents,
                       base::OnceCallback<void(bool)> callback) override {}
 
-  bool IsDragDropAllowed(const ui::DataTransferEndpoint* const data_src,
-                         const ui::DataTransferEndpoint* const data_dst,
-                         const bool is_drop) override {
-    return true;
+  void DropIfAllowed(const ui::DataTransferEndpoint* const data_src,
+                     const ui::DataTransferEndpoint* const data_dst,
+                     base::OnceClosure drop_cb) override {
+    std::move(drop_cb).Run();
   }
 
   ui::EndpointType last_src_type_ = ui::EndpointType::kUnknownVm;

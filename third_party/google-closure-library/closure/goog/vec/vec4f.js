@@ -1,16 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 
 ////////////////////////// NOTE ABOUT EDITING THIS FILE ///////////////////////
@@ -47,6 +39,7 @@ goog.require('goog.vec');
  * @return {!goog.vec.vec4f.Type} The new vec4f.
  */
 goog.vec.vec4f.create = function() {
+  'use strict';
   return new Float32Array(4);
 };
 
@@ -58,7 +51,8 @@ goog.vec.vec4f.create = function() {
  * @return {!goog.vec.vec4f.Type} The new vec4f.
  */
 goog.vec.vec4f.createFromArray = function(vec) {
-  var newVec = goog.vec.vec4f.create();
+  'use strict';
+  const newVec = goog.vec.vec4f.create();
   goog.vec.vec4f.setFromArray(newVec, vec);
   return newVec;
 };
@@ -74,7 +68,8 @@ goog.vec.vec4f.createFromArray = function(vec) {
  * @return {!goog.vec.vec4f.Type} The new vector.
  */
 goog.vec.vec4f.createFromValues = function(v0, v1, v2, v3) {
-  var vec = goog.vec.vec4f.create();
+  'use strict';
+  const vec = goog.vec.vec4f.create();
   goog.vec.vec4f.setFromValues(vec, v0, v1, v2, v3);
   return vec;
 };
@@ -87,7 +82,8 @@ goog.vec.vec4f.createFromValues = function(v0, v1, v2, v3) {
  * @return {!goog.vec.vec4f.Type} The new cloned vec4f.
  */
 goog.vec.vec4f.clone = function(vec) {
-  var newVec = goog.vec.vec4f.create();
+  'use strict';
+  const newVec = goog.vec.vec4f.create();
   goog.vec.vec4f.setFromVec4f(newVec, vec);
   return newVec;
 };
@@ -105,6 +101,7 @@ goog.vec.vec4f.clone = function(vec) {
  *     chained together.
  */
 goog.vec.vec4f.setFromValues = function(vec, v0, v1, v2, v3) {
+  'use strict';
   vec[0] = v0;
   vec[1] = v1;
   vec[2] = v2;
@@ -122,6 +119,7 @@ goog.vec.vec4f.setFromValues = function(vec, v0, v1, v2, v3) {
  *     chained together.
  */
 goog.vec.vec4f.setFromVec4f = function(vec, src) {
+  'use strict';
   vec[0] = src[0];
   vec[1] = src[1];
   vec[2] = src[2];
@@ -140,6 +138,7 @@ goog.vec.vec4f.setFromVec4f = function(vec, src) {
  *     chained together.
  */
 goog.vec.vec4f.setFromVec4d = function(vec, src) {
+  'use strict';
   vec[0] = src[0];
   vec[1] = src[1];
   vec[2] = src[2];
@@ -157,6 +156,7 @@ goog.vec.vec4f.setFromVec4d = function(vec, src) {
  *     chained together.
  */
 goog.vec.vec4f.setFromArray = function(vec, src) {
+  'use strict';
   vec[0] = src[0];
   vec[1] = src[1];
   vec[2] = src[2];
@@ -177,6 +177,7 @@ goog.vec.vec4f.setFromArray = function(vec, src) {
  *     chained together.
  */
 goog.vec.vec4f.add = function(vec0, vec1, resultVec) {
+  'use strict';
   resultVec[0] = vec0[0] + vec1[0];
   resultVec[1] = vec0[1] + vec1[1];
   resultVec[2] = vec0[2] + vec1[2];
@@ -197,6 +198,7 @@ goog.vec.vec4f.add = function(vec0, vec1, resultVec) {
  *     chained together.
  */
 goog.vec.vec4f.subtract = function(vec0, vec1, resultVec) {
+  'use strict';
   resultVec[0] = vec0[0] - vec1[0];
   resultVec[1] = vec0[1] - vec1[1];
   resultVec[2] = vec0[2] - vec1[2];
@@ -215,6 +217,7 @@ goog.vec.vec4f.subtract = function(vec0, vec1, resultVec) {
  *     chained together.
  */
 goog.vec.vec4f.negate = function(vec0, resultVec) {
+  'use strict';
   resultVec[0] = -vec0[0];
   resultVec[1] = -vec0[1];
   resultVec[2] = -vec0[2];
@@ -234,6 +237,7 @@ goog.vec.vec4f.negate = function(vec0, resultVec) {
  *     chained together.
  */
 goog.vec.vec4f.abs = function(vec0, resultVec) {
+  'use strict';
   resultVec[0] = Math.abs(vec0[0]);
   resultVec[1] = Math.abs(vec0[1]);
   resultVec[2] = Math.abs(vec0[2]);
@@ -254,6 +258,7 @@ goog.vec.vec4f.abs = function(vec0, resultVec) {
  *     chained together.
  */
 goog.vec.vec4f.scale = function(vec0, scalar, resultVec) {
+  'use strict';
   resultVec[0] = vec0[0] * scalar;
   resultVec[1] = vec0[1] * scalar;
   resultVec[2] = vec0[2] * scalar;
@@ -269,7 +274,12 @@ goog.vec.vec4f.scale = function(vec0, scalar, resultVec) {
  * @return {number} The magnitude of the vector.
  */
 goog.vec.vec4f.magnitudeSquared = function(vec0) {
-  var x = vec0[0], y = vec0[1], z = vec0[2], w = vec0[3];
+  'use strict';
+  const w = vec0[3];
+  const x = vec0[0];
+  const y = vec0[1];
+  const z = vec0[2];
+
   return x * x + y * y + z * z + w * w;
 };
 
@@ -281,7 +291,12 @@ goog.vec.vec4f.magnitudeSquared = function(vec0) {
  * @return {number} The magnitude of the vector.
  */
 goog.vec.vec4f.magnitude = function(vec0) {
-  var x = vec0[0], y = vec0[1], z = vec0[2], w = vec0[3];
+  'use strict';
+  const w = vec0[3];
+  const x = vec0[0];
+  const y = vec0[1];
+  const z = vec0[2];
+
   return Math.sqrt(x * x + y * y + z * z + w * w);
 };
 
@@ -296,8 +311,13 @@ goog.vec.vec4f.magnitude = function(vec0) {
  *     chained together.
  */
 goog.vec.vec4f.normalize = function(vec0, resultVec) {
-  var x = vec0[0], y = vec0[1], z = vec0[2], w = vec0[3];
-  var ilen = 1 / Math.sqrt(x * x + y * y + z * z + w * w);
+  'use strict';
+  const w = vec0[3];
+  const x = vec0[0];
+  const y = vec0[1];
+  const z = vec0[2];
+
+  const ilen = 1 / Math.sqrt(x * x + y * y + z * z + w * w);
   resultVec[0] = x * ilen;
   resultVec[1] = y * ilen;
   resultVec[2] = z * ilen;
@@ -314,6 +334,7 @@ goog.vec.vec4f.normalize = function(vec0, resultVec) {
  * @return {number} The scalar product.
  */
 goog.vec.vec4f.dot = function(v0, v1) {
+  'use strict';
   return v0[0] * v1[0] + v0[1] * v1[1] + v0[2] * v1[2] + v0[3] * v1[3];
 };
 
@@ -331,7 +352,12 @@ goog.vec.vec4f.dot = function(v0, v1) {
  *     chained together.
  */
 goog.vec.vec4f.lerp = function(v0, v1, f, resultVec) {
-  var x = v0[0], y = v0[1], z = v0[2], w = v0[3];
+  'use strict';
+  const w = v0[3];
+  const x = v0[0];
+  const y = v0[1];
+  const z = v0[2];
+
   resultVec[0] = (v1[0] - x) * f + x;
   resultVec[1] = (v1[1] - y) * f + y;
   resultVec[2] = (v1[2] - z) * f + z;
@@ -352,6 +378,7 @@ goog.vec.vec4f.lerp = function(v0, v1, f, resultVec) {
  *     chained together.
  */
 goog.vec.vec4f.max = function(vec0, limit, resultVec) {
+  'use strict';
   if (typeof limit === 'number') {
     resultVec[0] = Math.max(vec0[0], limit);
     resultVec[1] = Math.max(vec0[1], limit);
@@ -379,6 +406,7 @@ goog.vec.vec4f.max = function(vec0, limit, resultVec) {
  *     chained together.
  */
 goog.vec.vec4f.min = function(vec0, limit, resultVec) {
+  'use strict';
   if (typeof limit === 'number') {
     resultVec[0] = Math.min(vec0[0], limit);
     resultVec[1] = Math.min(vec0[1], limit);
@@ -402,6 +430,7 @@ goog.vec.vec4f.min = function(vec0, limit, resultVec) {
  * @return {boolean} True if the vectors are equal, false otherwise.
  */
 goog.vec.vec4f.equals = function(v0, v1) {
+  'use strict';
   return v0.length == v1.length && v0[0] == v1[0] && v0[1] == v1[1] &&
       v0[2] == v1[2] && v0[3] == v1[3];
 };

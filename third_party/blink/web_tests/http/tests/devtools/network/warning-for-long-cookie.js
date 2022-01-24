@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Checks that we show warning message for long cookie.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 

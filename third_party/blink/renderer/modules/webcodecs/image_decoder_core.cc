@@ -317,7 +317,7 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
   // create the frame once.
   if (!yuv_frame_) {
     const auto coded_size =
-        gfx::Size(decoder_->DecodedYUVSize(cc::YUVIndex::kY));
+        ToGfxSize(decoder_->DecodedYUVSize(cc::YUVIndex::kY));
 
     // Plane sizes are guaranteed to fit in an int32_t by
     // ImageDecoder::SetSize(); since YUV is 1 byte-per-channel, we can just
@@ -341,10 +341,10 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
 
   void* planes[cc::kNumYUVPlanes] = {yuv_frame_->data(0), yuv_frame_->data(1),
                                      yuv_frame_->data(2)};
-  size_t row_bytes[cc::kNumYUVPlanes] = {
-      static_cast<size_t>(yuv_frame_->stride(0)),
-      static_cast<size_t>(yuv_frame_->stride(1)),
-      static_cast<size_t>(yuv_frame_->stride(2))};
+  wtf_size_t row_bytes[cc::kNumYUVPlanes] = {
+      static_cast<wtf_size_t>(yuv_frame_->stride(0)),
+      static_cast<wtf_size_t>(yuv_frame_->stride(1)),
+      static_cast<wtf_size_t>(yuv_frame_->stride(2))};
 
   // TODO(crbug.com/1073995): Add support for high bit depth format.
   const auto color_type = kGray_8_SkColorType;

@@ -58,6 +58,9 @@ class GetFallbackFontTest
  public:
   GetFallbackFontTest() = default;
 
+  GetFallbackFontTest(const GetFallbackFontTest&) = delete;
+  GetFallbackFontTest& operator=(const GetFallbackFontTest&) = delete;
+
   static std::string ParamInfoToString(
       ::testing::TestParamInfo<FallbackFontTestParamInfo> param_info) {
     const FallbackFontTestCase& test_case = std::get<0>(param_info.param);
@@ -142,8 +145,6 @@ class GetFallbackFontTest
   // Needed to bypass DCHECK in GetFallbackFont.
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-
-  DISALLOW_COPY_AND_ASSIGN(GetFallbackFontTest);
 };
 
 }  // namespace

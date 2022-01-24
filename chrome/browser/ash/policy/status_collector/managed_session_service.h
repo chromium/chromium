@@ -20,6 +20,7 @@
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "components/user_manager/user_manager_base.h"
 
 namespace policy {
 
@@ -29,7 +30,8 @@ class ManagedSessionService
       public chromeos::PowerManagerClient::Observer,
       public chromeos::AuthStatusConsumer,
       public ash::UserAuthenticatorObserver,
-      public chromeos::SessionTerminationManager::Observer {
+      public chromeos::SessionTerminationManager::Observer,
+      public user_manager::UserManager::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -57,6 +59,13 @@ class ManagedSessionService
 
     // Occurs in the beginning of the session termination process.
     virtual void OnSessionTerminationStarted(const user_manager::User* user) {}
+
+    // Occurs just before a user's account will be removed.
+    virtual void OnUserToBeRemoved(const AccountId& account_id) {}
+
+    // Occurs after a user's account is removed.
+    virtual void OnUserRemoved(const AccountId& account_id,
+                               user_manager::UserRemovalReason) {}
   };
 
   explicit ManagedSessionService(
@@ -72,6 +81,11 @@ class ManagedSessionService
   // session_manager::SessionManagerObserver::Observer
   void OnSessionStateChanged() override;
   void OnUserProfileLoaded(const AccountId& account_id) override;
+
+  // user_manager::Observer
+  void OnUserToBeRemoved(const AccountId& account_id) override;
+  void OnUserRemoved(const AccountId& account_id,
+                     user_manager::UserRemovalReason reason) override;
 
   // ProfileObserver
   void OnProfileWillBeDestroyed(Profile* profile) override;
@@ -110,6 +124,10 @@ class ManagedSessionService
       &ash::UserSessionManager::AddUserAuthenticatorObserver,
       &ash::UserSessionManager::RemoveUserAuthenticatorObserver>
       authenticator_observation_{this};
+
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observation_{this};
 };
 
 }  // namespace policy

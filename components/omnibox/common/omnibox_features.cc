@@ -8,28 +8,28 @@
 
 namespace omnibox {
 
-const auto enabled_by_default_desktop_only =
+constexpr auto enabled_by_default_desktop_only =
 #if defined(OS_ANDROID) || defined(OS_IOS)
     base::FEATURE_DISABLED_BY_DEFAULT;
 #else
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
-const auto enabled_by_default_android_only =
+constexpr auto enabled_by_default_android_only =
 #if defined(OS_ANDROID)
     base::FEATURE_ENABLED_BY_DEFAULT;
 #else
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif
 
-const auto enabled_by_default_desktop_android =
+constexpr auto enabled_by_default_desktop_android =
 #if defined(OS_IOS)
     base::FEATURE_DISABLED_BY_DEFAULT;
 #else
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
-const auto enabled_by_default_desktop_ios =
+constexpr auto enabled_by_default_desktop_ios =
 #if defined(OS_ANDROID)
     base::FEATURE_DISABLED_BY_DEFAULT;
 #else
@@ -93,16 +93,8 @@ const base::Feature kUIExperimentMaxAutocompleteMatches{
 // there are no more non-URL matches available.) If enabled, there is a
 // companion parameter - OmniboxMaxURLMatches - which specifies the maximum
 // desired number of URL-type matches.
-const bool kOmniboxMaxURLMatchesEnabledByDefault =
-#if defined(OS_IOS) || defined(OS_ANDROID)
-    false;
-#else
-    true;
-#endif
-const base::Feature kOmniboxMaxURLMatches{
-    "OmniboxMaxURLMatches", kOmniboxMaxURLMatchesEnabledByDefault
-                                ? base::FEATURE_ENABLED_BY_DEFAULT
-                                : base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kOmniboxMaxURLMatches{"OmniboxMaxURLMatches",
+                                          enabled_by_default_desktop_android};
 
 // Feature used to cap max suggestions to a dynamic limit based on how many URLs
 // would be shown. E.g., show up to 10 suggestions if doing so would display no
@@ -112,10 +104,16 @@ const base::Feature kDynamicMaxAutocomplete{"OmniboxDynamicMaxAutocomplete",
 
 // If enabled, when the user clears the whole omnibox text (i.e. via Backspace),
 // Chrome will request remote ZeroSuggest suggestions for the OTHER page
-// classification (contextual web).
+// classification (contextual web), which does NOT include the SRP.
 const base::Feature kClobberTriggersContextualWebZeroSuggest{
     "OmniboxClobberTriggersContextualWebZeroSuggest",
     enabled_by_default_desktop_only};
+
+// If enabled, when the user clears the whole omnibox text (i.e. via Backspace),
+// Chrome will request remote ZeroSuggest suggestions for the SRP (search
+// results page).
+const base::Feature kClobberTriggersSRPZeroSuggest{
+    "OmniboxClobberTriggersSRPZeroSuggest", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Used to adjust the age threshold since the last visit in order to consider a
 // normalized keyword search term as a zero-prefix suggestion. If disabled, the
@@ -130,7 +128,7 @@ const base::Feature kOmniboxLocalZeroSuggestAgeThreshold{
 // and has no direct impact on the client behavior.
 const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP{
     "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    enabled_by_default_desktop_only};
 
 // Enables on-focus suggestions on the Open Web, that are contextual to the
 // current URL. Will only work if user is signed-in and syncing, or is
@@ -140,6 +138,11 @@ const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP{
 //  - Default (search queries)
 //  - SRP specific toggle (enables SRP on top of Web Pages for features below)
 //  - On-Content Suggestions
+//
+// TODO(tommycli): It's confusing whether Contextual Web includes SRP or not.
+// `kOnFocusSuggestionsContextualWebAllowSRP` suggests it's included, but
+// `kClobberTriggersContextualWebZeroSuggest` suggests it's not. Make this
+// consistent, probably by renaming flags to distinguish between OTHER and SRP.
 const base::Feature kOnFocusSuggestionsContextualWeb{
     "OmniboxOnFocusSuggestionsContextualWeb",
     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -148,7 +151,7 @@ const base::Feature kOnFocusSuggestionsContextualWebAllowSRP{
     base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kOnFocusSuggestionsContextualWebOnContent{
     "OmniboxOnFocusSuggestionsContextualWebOnContent",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    enabled_by_default_android_only};
 
 // Allows the LocalHistoryZeroSuggestProvider to use local search history.
 const base::Feature kLocalHistoryZeroSuggest{
@@ -177,7 +180,7 @@ const base::Feature kOmniboxExperimentalSuggestScoring{
 // over 10% of all shutdown hangs.
 const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile{
     "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    enabled_by_default_desktop_only};
 
 // If enabled, suggestions from a cgi param name match are scored to 0.
 const base::Feature kDisableCGIParamMatching{"OmniboxDisableCGIParamMatching",
@@ -196,7 +199,7 @@ const base::Feature kShortBookmarkSuggestions{
     "OmniboxShortBookmarkSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
     "OmniboxShortBookmarkSuggestionsByTotalInputLength",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If disabled, updating shortcuts truncates their text to the user input. If
 // enabled, they preserve up to 3 additional chars. See `GetShortcutText()` in
@@ -209,7 +212,7 @@ const base::Feature kPreserveLongerShortcutsText{
 // 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path
 // containing 'planet.'
 const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Feature used to fetch document suggestions.
 const base::Feature kDocumentProvider{"OmniboxDocumentProvider",
@@ -225,23 +228,18 @@ const base::Feature kDocumentProviderAso{"OmniboxDocumentProviderAso",
 // Allows Omnibox to dynamically adjust number of offered suggestions to fill in
 // the space between Omnibox and the soft keyboard. The number of suggestions
 // shown will be no less than minimum for the platform (eg. 5 for Android).
-const base::Feature kAdaptiveSuggestionsCount{
-    "OmniboxAdaptiveSuggestionsCount", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAdaptiveSuggestionsCount{"OmniboxAdaptiveSuggestionsCount",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, clipboard suggestion will not show the clipboard content until
 // the user clicks the reveal button.
 const base::Feature kClipboardSuggestionContentHidden = {
     "ClipboardSuggestionContentHidden", enabled_by_default_android_only};
 
-// If enabled, shows slightly more compact suggestions, allowing the
-// kAdaptiveSuggestionsCount feature to fit more suggestions on screen.
-const base::Feature kCompactSuggestions{"OmniboxCompactSuggestions",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, frequently visited sites are presented in form of a single row
 // with a carousel of tiles, instead of one URL per row.
 extern const base::Feature kMostVisitedTiles{"OmniboxMostVisitedTiles",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             enabled_by_default_android_only};
 
 // If enabled, expands autocompletion to possibly (depending on params) include
 // suggestion titles and non-prefixes as opposed to be restricted to URL
@@ -250,13 +248,13 @@ extern const base::Feature kMostVisitedTiles{"OmniboxMostVisitedTiles",
 const base::Feature kRichAutocompletion{"OmniboxRichAutocompletion",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature used to enable Pedals in the NTP Realbox.
+const base::Feature kNtpRealboxPedals{"NtpRealboxPedals",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature used to enable Suggestion Answers in the NTP Realbox.
 const base::Feature kNtpRealboxSuggestionAnswers{
     "NtpRealboxSuggestionAnswers", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Feature used to enable the second batch of Pedals (Safety Check, etc.).
-const base::Feature kOmniboxPedalsBatch2{"OmniboxPedalsBatch2",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Feature used to enable the second batch of Pedals (Safety Check, etc.)
 // for non-English locales (English locales are 'en' and 'en-GB').
@@ -268,9 +266,11 @@ const base::Feature kOmniboxPedalsBatch2NonEnglish{
 const base::Feature kOmniboxPedalsBatch3{"OmniboxPedalsBatch3",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature that enables use of the colored version of the default Pedal icon.
-const base::Feature kOmniboxPedalsDefaultIconColored{
-    "OmniboxPedalsDefaultIconColored", base::FEATURE_DISABLED_BY_DEFAULT};
+// Feature used to enable the third batch of Pedals (Find your phone, etc.)
+// for non-English locales (English locales are 'en' and 'en-GB').
+// This feature is only meaningful if `OmniboxPedalsBatch3` is enabled.
+const base::Feature kOmniboxPedalsBatch3NonEnglish{
+    "OmniboxPedalsBatch3NonEnglish", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Feature that enables loading synonyms from the translation console.
 const base::Feature kOmniboxPedalsTranslationConsole{
@@ -284,16 +284,6 @@ const base::Feature kOmniboxKeywordSearchButton{
 // how the NTP "realbox" is implemented.
 const base::Feature kWebUIOmniboxPopup{"WebUIOmniboxPopup",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables rollout of changing the default behavior for DNS interception checks
-// and did-you-mean infobar.
-// Users who are in the enabled group for this feature will have interception
-// checks and did-you-mean turned off. Enterprise Policy takes precedence over
-// this setting, and policy is checked before the feature group is checked and
-// marked.
-const base::Feature kIntranetRedirectBehaviorPolicyRollout{
-    "OmniboxDNSInterceptionChecksPolicyRollout",
-    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.

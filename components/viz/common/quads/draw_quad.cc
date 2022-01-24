@@ -22,20 +22,20 @@ DrawQuad::DrawQuad()
 
 DrawQuad::DrawQuad(const DrawQuad& other) = default;
 
-void DrawQuad::SetAll(const SharedQuadState* shared_quad_state,
-                      Material material,
-                      const gfx::Rect& rect,
-                      const gfx::Rect& visible_rect,
-                      bool needs_blending) {
+void DrawQuad::SetAll(const SharedQuadState* quad_state,
+                      Material m,
+                      const gfx::Rect& r,
+                      const gfx::Rect& visible_r,
+                      bool blending) {
   DCHECK(rect.Contains(visible_rect))
       << "rect: " << rect.ToString()
       << " visible_rect: " << visible_rect.ToString();
 
-  this->material = material;
-  this->rect = rect;
-  this->visible_rect = visible_rect;
-  this->needs_blending = needs_blending;
-  this->shared_quad_state = shared_quad_state;
+  material = m;
+  rect = r;
+  visible_rect = visible_r;
+  needs_blending = blending;
+  shared_quad_state = quad_state;
 
   DCHECK(shared_quad_state);
   DCHECK(material != Material::kInvalid);

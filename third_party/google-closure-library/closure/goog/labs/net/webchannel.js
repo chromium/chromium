@@ -1,51 +1,35 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview The API spec for the WebChannel messaging library.
  *
- * Similar to HTML5 WebSocket and Closure BrowserChannel, WebChannel
- * offers an abstraction for point-to-point socket-like communication between
- * a browser client and a remote origin.
+ * Similar to HTML5 WebSocket, WebChannel offers an abstraction for
+ * point-to-point socket-like communication between a browser client and
+ * a remote origin.
  *
  * WebChannels are created via <code>WebChannel</code>. Multiple WebChannels
  * may be multiplexed over the same WebChannelTransport, which represents
  * the underlying physical connectivity over standard wire protocols
- * such as HTTP and SPDY.
+ * such as HTTP.
  *
- * A WebChannels in turn represents a logical communication channel between
- * the client and server end point. A WebChannel remains open for
- * as long as the client or server end-point allows.
+ * A WebChannel in turn represents a logical communication channel between
+ * the client and server end point. A WebChannel remains open for as long
+ * as the client or server end-point allows.
  *
- * Messages may be delivered in-order or out-of-order, reliably or unreliably
- * over the same WebChannel. Message delivery guarantees of a WebChannel is
- * to be specified by the application code; and the choice of the
- * underlying wire protocols is completely transparent to the API users.
- *
- * Client-to-client messaging via WebRTC based transport may also be support
- * via the same WebChannel API in future.
+ * Messages are delivered in-order and reliably over the same WebChannel,
+ * and the choice of the underlying wire protocols is completely transparent
+ * to the API users.
  *
  * Note that we have no immediate plan to move this API out of labs. While
- * the implementation is production ready, the API is subject to change
- * (addition only):
- * 1. Adopt new Web APIs (mainly whatwg streams) and goog.net.streams.
- * 2. New programming models for cloud (on the server-side) may require
- *    new APIs to be defined.
- * 3. WebRTC DataChannel alignment
+ * the implementation is production ready, the API is subject to change.
  */
 
 goog.provide('goog.net.WebChannel');
+goog.provide('goog.net.WebChannel.Options');
 
 goog.require('goog.events');
 goog.require('goog.events.Event');
@@ -63,7 +47,6 @@ goog.require('goog.net.XmlHttpFactory');
  * to be enabled.
  *
  * @interface
- * @extends {EventTarget}
  * @extends {goog.events.Listenable}
  */
 goog.net.WebChannel = function() {};
@@ -97,65 +80,129 @@ goog.net.WebChannel.FailureRecovery = function() {};
  * WebChannels are configured in the context of the containing
  * {@link WebChannelTransport}. The configuration parameters are specified
  * when a new instance of WebChannel is created via {@link WebChannelTransport}.
- *
- * messageHeaders: custom headers to be added to every message sent to the
+ * @record
+ */
+goog.net.WebChannel.Options = function() {};
+
+/**
+ * Custom headers to be added to every message sent to the
  * server. This object is mutable, and custom headers may be changed, removed,
- * or added during the runtime after a channel has been opened.
- *
- * initMessageHeaders: similar to messageHeaders, but any custom headers will
+ * or added during the runtime after a channel has been
+ * opened
+ * @type {!Object<string, string>|undefined}
+ */
+goog.net.WebChannel.Options.prototype.messageHeaders;
+
+/**
+ * Similar to messageHeaders, but any custom headers will
  * be sent only once when the channel is opened. Typical usage is to send
  * an auth header to the server, which only checks the auth header at the time
  * when the channel is opened.
- *
- * messageContentType: sent as initMessageHeaders via X-WebChannel-Content-Type,
+ * @type {!Object<string, string>|undefined}
+ */
+goog.net.WebChannel.Options.prototype.initMessageHeaders;
+
+/**
+ * Sent as initMessageHeaders via X-WebChannel-Content-Type,
  * to inform the server the MIME type of WebChannel messages.
- *
- * messageUrlParams: custom url query parameters to be added to every message
+ * @type {string|undefined}
+ */
+goog.net.WebChannel.Options.prototype.messageContentType;
+
+/**
+ * Custom url query parameters to be added to every message
  * sent to the server. This object is mutable, and custom parameters may be
  * changed, removed or added during the runtime after a channel has been opened.
- *
- * clientProtocolHeaderRequired: whether a special header should be added to
+ * @type {!Object<string, string>|undefined}
+ */
+goog.net.WebChannel.Options.prototype.messageUrlParams;
+
+/**
+ * Whether a special header should be added to
  * each message so that the server can dispatch webchannel messages without
  * knowing the URL path prefix. Defaults to false.
- *
- * concurrentRequestLimit: the maximum number of in-flight HTTP requests allowed
+ * @type {boolean|undefined}
+ */
+goog.net.WebChannel.Options.prototype.clientProtocolHeaderRequired;
+
+/**
+ * The maximum number of in-flight HTTP requests allowed
  * when SPDY is enabled. Currently we only detect SPDY in Chrome.
  * This parameter defaults to 10. When SPDY is not enabled, this parameter
  * will have no effect.
- *
- * supportsCrossDomainXhr: setting this to true to allow the use of sub-domains
+ * @type {number|undefined}
+ */
+goog.net.WebChannel.Options.prototype.concurrentRequestLimit;
+
+/**
+ * Setting this to true to allow the use of sub-domains
  * (as configured by the server) to send XHRs with the CORS withCredentials
  * bit set to true.
- *
- * testUrl: the test URL for detecting connectivity during the initial
- * handshake. This parameter defaults to "/<channel_url>/test".
- *
- * sendRawJson: whether to bypass v8 encoding of client-sent messages.
+ * @type {boolean|undefined}
+ */
+goog.net.WebChannel.Options.prototype.supportsCrossDomainXhr;
+
+/**
+ * Whether to bypass v8 encoding of client-sent messages.
  * This defaults to false now due to legacy servers. New applications should
  * always configure this option to true.
- *
- * httpSessionIdParam: the URL parameter name that contains the session id (
- * for sticky routing of HTTP requests). When this param is specified, a server
- * that supports this option will respond with an opaque session id as part of
- * the initial handshake (via the X-HTTP-Session-Id header); and all the
- * subsequent requests will contain the httpSessionIdParam. This option will
- * take precedence over any duplicated parameter specified with
- * messageUrlParams, whose value will be ignored.
- *
- * httpHeadersOverwriteParam: the URL parameter name to allow custom HTTP
+ * @type {boolean|undefined}
+ */
+goog.net.WebChannel.Options.prototype.sendRawJson;
+
+/**
+ * The URL parameter name that contains the session id (for sticky routing of
+ * HTTP requests). When this param is specified, a server that supports this
+ * option will respond with an opaque session id as part of the initial
+ * handshake (via the X-HTTP-Session-Id header); and all the subsequent requests
+ * will contain the httpSessionIdParam. This option will take precedence over
+ * any duplicated parameter specified with messageUrlParams, whose value will be
+ * ignored.
+ * @type {string|undefined}
+ */
+goog.net.WebChannel.Options.prototype.httpSessionIdParam;
+
+/**
+ * The URL parameter name to allow custom HTTP
  * headers to be overwritten as a URL param to bypass CORS preflight.
- * goog.net.rpc.HttpCors is used to encode the HTTP headers.
  *
- * backgroundChannelTest: whether to run the channel test (detecting networking
- * conditions) as a background process so the OPEN event will be fired sooner
- * to reduce the initial handshake delay. This option defaults to true.
- * The actual background channel test is not fully implemented.
+ * @type {string|undefined}
+ */
+goog.net.WebChannel.Options.prototype.httpHeadersOverwriteParam;
+
+/**
+ * Whether to encode #initMessageHeaders in the HTTP request body.
+ * This option defaults to false. If true, #httpHeadersOverwriteParam will be
+ * ignored.
  *
- * forceLongPolling: whether to force long-polling from client to server.
+ * This option should not be set if #fastHandshake is enabled.
+ *
+ * @type {boolean|undefined}
+ */
+goog.net.WebChannel.Options.prototype.encodeInitMessageHeaders;
+
+/**
+ * Whether to force long-polling from client to server.
  * This defaults to false. Long-polling may be necessary when a (MITM) proxy
  * is buffering data sent by the server.
- *
- * fastHandshake: enable true 0-RTT message delivery, including
+ * @type {boolean|undefined}
+ */
+goog.net.WebChannel.Options.prototype.forceLongPolling;
+
+/**
+ * Whether to enable automatic detection of buffering proxies. In the presence
+ * of any buffering proxy, webchannel will use long-polling to send messages
+ * from the server to the client. This option defaults to false.
+ * Currently when fastHandshake is enabled, this option will be ignored.
+ * Compared to "forceLongPolling", this option may introduce up to 2-RTT
+ * extra latency for delivering messages generated immediately after the
+ * handshake.
+ * @type {boolean|undefined}
+ */
+goog.net.WebChannel.Options.prototype.detectBufferingProxy;
+
+/**
+ * Enable true 0-RTT message delivery, including
  * leveraging QUIC 0-RTT (which requires GET to be used). This option
  * defaults to false. Note it is allowed to send messages before Open event is
  * received, after a channel has been opened. In order to enable 0-RTT,
@@ -165,55 +212,95 @@ goog.net.WebChannel.FailureRecovery = function() {};
  * to 4K chars and data beyond this limit will be buffered till the handshake
  * (1-RTT) finishes. With sendRawJson=false, it's up to the application
  * to limit the amount of data that is sent as part of the handshake.
- *
- * disableRedact: whether to disable logging redact. By default, redact is
+ * @type {boolean|undefined}
+ */
+goog.net.WebChannel.Options.prototype.fastHandshake;
+
+/**
+ * Enable the blocking RPC semantics for the handshake:
+ * 1) the completion of handshake is blocked by the server-side application
+ * logic for handling the handshake (HTTP) request; 2) the client application
+ * will inspect the handshake (HTTP) response headers as generated
+ * by the server application (v.s. by only the webchannel runtime). This option
+ * defaults to false.
+ * @type {boolean|undefined}
+ */
+goog.net.WebChannel.Options.prototype.blockingHandshake;
+
+/**
+ * Whether to disable logging redact. By default, redact is
  * enabled to remove any message payload or user-provided info
  * from closure logs.
- *
- * clientProfile: inform the server about the client profile to enable
+ * @type {boolean|undefined}
+ */
+goog.net.WebChannel.Options.prototype.disableRedact;
+
+/**
+ * Inform the server about the client profile to enable
  * customized configs that are optimized for certain clients or environments.
  * Currently this information is sent via X-WebChannel-Client-Profile header.
- *
- * internalChannelParams: the internal channel parameter name to allow
+ * @type {string|undefined}
+ */
+goog.net.WebChannel.Options.prototype.clientProfile;
+
+/**
+ * The internal channel parameter name to allow
  * experimental channel configurations. Supported options include fastfail,
  * baseRetryDelayMs, retryDelaySeedMs, forwardChannelMaxRetries and
  * forwardChannelRequestTimeoutMs. Note that these options are subject to
  * change.
- *
- * xmlHttpFactory: allows the caller to override the factory used to create
+ * @type {!Object<string, boolean|number>|undefined}
+ */
+goog.net.WebChannel.Options.prototype.internalChannelParams;
+
+/**
+ * Allows the caller to override the factory used to create
  * XMLHttpRequest objects. This is introduced to disable CORS on firefox OS.
- *
- * requestRefreshThresholds: client-side thresholds that decide when to refresh
+ * @type {!goog.net.XmlHttpFactory|undefined}
+ */
+goog.net.WebChannel.Options.prototype.xmlHttpFactory;
+
+/**
+ * Client-side thresholds that decide when to refresh
  * an underlying HTTP request, to limit memory consumption due to XHR buffering
- * or compression context. The client-side thresholds should be signficantly
+ * or compression context. The client-side thresholds should be significantly
  * smaller than the server-side thresholds. This allows the client to eliminate
  * any latency introduced by request refreshing, i.e. an RTT window during which
  * messages may be buffered on the server-side. Supported params include
  * totalBytesReceived, totalDurationMs.
- *
- * @typedef {{
- *   messageHeaders: (!Object<string, string>|undefined),
- *   initMessageHeaders: (!Object<string, string>|undefined),
- *   messageContentType: (string|undefined),
- *   messageUrlParams: (!Object<string, string>|undefined),
- *   clientProtocolHeaderRequired: (boolean|undefined),
- *   concurrentRequestLimit: (number|undefined),
- *   supportsCrossDomainXhr: (boolean|undefined),
- *   testUrl: (string|undefined),
- *   sendRawJson: (boolean|undefined),
- *   httpSessionIdParam: (string|undefined),
- *   httpHeadersOverwriteParam: (string|undefined),
- *   backgroundChannelTest: (boolean|undefined),
- *   forceLongPolling: (boolean|undefined),
- *   fastHandshake: (boolean|undefined),
- *   disableRedact: (boolean|undefined),
- *   clientProfile: (string|undefined),
- *   internalChannelParams: (!Object<string, boolean|number>|undefined),
- *   xmlHttpFactory: (!goog.net.XmlHttpFactory|undefined),
- *   requestRefreshThresholds: (!Object<string, number>|undefined),
- * }}
+ * @type {!Object<string, number>|undefined}
  */
-goog.net.WebChannel.Options;
+goog.net.WebChannel.Options.prototype.requestRefreshThresholds;
+
+/**
+ * This is an experimental feature to use WHATWG Fetch/streams (when supported)
+ * for the backchannel. If a custom 'xmlHttpFactory' is speficied, this option
+ * will not be effective. This option defaults to false now and will eventually
+ * be turned on by default.
+ * @type {boolean|undefined}
+ */
+goog.net.WebChannel.Options.prototype.useFetchStreams;
+
+/**
+ * Opt-in to enable Chrome origin trials from the WebChannel client. See
+ * https://github.com/GoogleChrome/OriginTrials
+ *
+ * Origin trial history:
+ * - fetch upload (11/2020 - 07/2021)
+ * https://developers.chrome.com/origintrials/#/view_trial/3524066708417413121
+ *
+ * Participating in the origin trials will help Chrome to release new Web
+ * platform features sooner, which will in turn help improve WebChannel
+ * performance.
+ *
+ * Origin trials are not expected to interfere with WebChannel wire messages
+ * and should not introduce any noticeable overhead.
+ *
+ * This is enabled by default with any on-going origin-trial.
+ *
+ * @type {boolean|undefined}
+ */
+goog.net.WebChannel.Options.prototype.enableOriginTrials;
 
 
 /**
@@ -321,6 +408,7 @@ goog.net.WebChannel.EventType = {
  * @extends {goog.events.Event}
  */
 goog.net.WebChannel.MessageEvent = function() {
+  'use strict';
   goog.net.WebChannel.MessageEvent.base(
       this, 'constructor', goog.net.WebChannel.EventType.MESSAGE);
 };
@@ -405,6 +493,7 @@ goog.net.WebChannel.ErrorStatus = {
  * @extends {goog.events.Event}
  */
 goog.net.WebChannel.ErrorEvent = function() {
+  'use strict';
   goog.net.WebChannel.ErrorEvent.base(
       this, 'constructor', goog.net.WebChannel.EventType.ERROR);
 };

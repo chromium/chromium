@@ -42,7 +42,8 @@ class UsageScenarioDataStore
   // Used to store data between 2 calls to ResetIntervalData.
   struct IntervalData {
     IntervalData();
-    IntervalData(const IntervalData& rhs);
+    IntervalData(const IntervalData&);
+    IntervalData& operator=(const IntervalData&);
 
     // The uptime at the end of the interval.
     base::TimeDelta uptime_at_interval_end;

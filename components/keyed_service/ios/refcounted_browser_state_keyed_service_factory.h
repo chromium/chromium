@@ -6,7 +6,6 @@
 #define COMPONENTS_KEYED_SERVICE_IOS_REFCOUNTED_BROWSER_STATE_KEYED_SERVICE_FACTORY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 #include "components/keyed_service/core/refcounted_keyed_service_factory.h"
@@ -36,6 +35,11 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserStateKeyedServiceFactory
   using TestingFactory =
       base::RepeatingCallback<scoped_refptr<RefcountedKeyedService>(
           web::BrowserState* context)>;
+
+  RefcountedBrowserStateKeyedServiceFactory(
+      const RefcountedBrowserStateKeyedServiceFactory&) = delete;
+  RefcountedBrowserStateKeyedServiceFactory& operator=(
+      const RefcountedBrowserStateKeyedServiceFactory&) = delete;
 
   // Associates |testing_factory| with |context| so that |testing_factory| is
   // used to create the KeyedService when requested.  |testing_factory| can be
@@ -131,8 +135,6 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserStateKeyedServiceFactory
   void ContextShutdown(void* context) final;
   void ContextDestroyed(void* context) final;
   void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry) final;
-
-  DISALLOW_COPY_AND_ASSIGN(RefcountedBrowserStateKeyedServiceFactory);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_IOS_REFCOUNTED_BROWSER_STATE_KEYED_SERVICE_FACTORY_H_

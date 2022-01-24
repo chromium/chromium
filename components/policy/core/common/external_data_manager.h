@@ -19,8 +19,11 @@ namespace policy {
 // references.
 class POLICY_EXPORT ExternalDataManager {
  public:
-  // Retrieves the external data referenced by |policy| and invokes |callback|
-  // with the result. If |policy| does not reference any external data, the
+  // Retrieves the external data referenced by the (|policy|, |field_name|) pair
+  // and invokes |callback|
+  // with the result. Most external policies only reference a single piece of
+  // data, in which case |field_name| should be empty. If (|policy|,
+  // |field_name|) does not reference any external data, the
   // |callback| is invoked with a NULL pointer. Otherwise, the |callback| is
   // invoked with the referenced data once it has been successfully retrieved.
   // If retrieval is temporarily impossible (e.g. no network connectivity), the
@@ -28,6 +31,7 @@ class POLICY_EXPORT ExternalDataManager {
   // retrieval is permanently impossible (e.g. |policy| references data that
   // does not exist on the server), the |callback| will never be invoked.
   virtual void Fetch(const std::string& policy,
+                     const std::string& field_name,
                      ExternalDataFetcher::FetchCallback callback) = 0;
 };
 

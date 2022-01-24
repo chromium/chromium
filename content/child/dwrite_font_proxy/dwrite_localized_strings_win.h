@@ -11,8 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace content {
 
 // Impements IDWriteLocalizedStrings, backed by a vector of string pairs.
@@ -22,6 +20,9 @@ class DWriteLocalizedStrings
           IDWriteLocalizedStrings> {
  public:
   DWriteLocalizedStrings();
+
+  DWriteLocalizedStrings& operator=(const DWriteLocalizedStrings&) = delete;
+
   ~DWriteLocalizedStrings() override;
 
   // IDWriteLocalizedStrings:
@@ -41,16 +42,14 @@ class DWriteLocalizedStrings
                                             UINT32* length) override;
 
   HRESULT STDMETHODCALLTYPE RuntimeClassInitialize(
-      std::vector<std::pair<std::wstring, std::wstring>>* strings);
+      std::vector<std::pair<std::u16string, std::u16string>>* strings);
 
  private:
   // List of strings. First element of each pair is the locale, and the second
   // element is the associated value. Use a vector because the expected number
   // of pairs is small (typically 1-2, rarely up to a few dozen?) and we need
   // index-based access.
-  std::vector<std::pair<std::wstring, std::wstring>> strings_;
-
-  DISALLOW_ASSIGN(DWriteLocalizedStrings);
+  std::vector<std::pair<std::u16string, std::u16string>> strings_;
 };
 
 }  // namespace content

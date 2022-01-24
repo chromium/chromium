@@ -1,9 +1,10 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "build/build_config.h"
-#include "ui/color/color_mixers.h"
 
+#include "ui/color/ui_color_mixer.h"
+
+#include "build/build_config.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
@@ -105,6 +106,7 @@ void AddUiColorMixer(ColorProvider* provider,
       SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha400);
   mixer[kColorOverlayScrollbarStrokeHovered] =
       SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha500);
+  mixer[kColorProgressBar] = {kColorAccent};
   mixer[kColorPwaSecurityChipForeground] = {kColorSecondaryForeground};
   mixer[kColorPwaSecurityChipForegroundDangerous] = {kColorAlertHighSeverity};
   mixer[kColorPwaSecurityChipForegroundPolicyCert] = {kColorDisabledForeground};
@@ -114,10 +116,6 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorPwaToolbarForeground] = {kColorEndpointForeground};
   mixer[kColorSeparator] = {kColorMidground};
   mixer[kColorShadowBase] = {dark_window ? SK_ColorBLACK : gfx::kGoogleGrey800};
-  mixer[kColorShadowValueAmbientShadowElevationTwo] =
-      SetAlpha(kColorShadowBase, 0x26);
-  mixer[kColorShadowValueKeyShadowElevationTwo] =
-      SetAlpha(kColorShadowBase, 0x4d);
   mixer[kColorShadowValueAmbientShadowElevationThree] =
       SetAlpha(kColorShadowBase, 0x40);
   mixer[kColorShadowValueKeyShadowElevationThree] =

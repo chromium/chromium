@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 
@@ -44,6 +43,12 @@ class AffiliatedCloudPolicyInvalidator
       CloudPolicyCore* core,
       AffiliatedInvalidationServiceProvider* invalidation_service_provider,
       const std::string& device_local_account_id);
+
+  AffiliatedCloudPolicyInvalidator(const AffiliatedCloudPolicyInvalidator&) =
+      delete;
+  AffiliatedCloudPolicyInvalidator& operator=(
+      const AffiliatedCloudPolicyInvalidator&) = delete;
+
   ~AffiliatedCloudPolicyInvalidator() override;
 
   // AffiliatedInvalidationServiceProvider::Consumer:
@@ -72,8 +77,6 @@ class AffiliatedCloudPolicyInvalidator
   // The current |CloudPolicyInvalidator|. nullptr if no connected invalidation
   // service is available.
   std::unique_ptr<CloudPolicyInvalidator> invalidator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliatedCloudPolicyInvalidator);
 };
 
 }  // namespace policy

@@ -215,14 +215,14 @@ void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
   if (it == peer_connection_data_.GetList().end())
     return;
 
-  if (type == "iceConnectionStateChange") {
+  if (type == "iceconnectionstatechange") {
     if (value == "connected" || value == "checking" || value == "completed") {
       MaybeMarkPeerConnectionAsConnected(&*it);
     } else if (value == "failed" || value == "disconnected" ||
                value == "closed" || value == "new") {
       MaybeMarkPeerConnectionAsNotConnected(&*it);
     }
-  } else if (type == "stop") {
+  } else if (type == "close") {
     MaybeClosePeerConnection(&*it);
   } else if (type == "setConfiguration") {
     // Update the configuration we have for this connection.
@@ -464,7 +464,7 @@ void WebRTCInternals::SendUpdate(const std::string& event_name,
         FROM_HERE,
         base::BindOnce(&WebRTCInternals::ProcessPendingUpdates,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(aggregate_updates_ms_));
+        base::Milliseconds(aggregate_updates_ms_));
   }
 }
 

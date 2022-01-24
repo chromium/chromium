@@ -34,6 +34,10 @@ void WaitForHitTestData(WebContents* guest_web_contents);
 class HitTestRegionObserver : public viz::HitTestRegionObserver {
  public:
   explicit HitTestRegionObserver(const viz::FrameSinkId& frame_sink_id);
+
+  HitTestRegionObserver(const HitTestRegionObserver&) = delete;
+  HitTestRegionObserver& operator=(const HitTestRegionObserver&) = delete;
+
   ~HitTestRegionObserver() override;
 
   // The following functions need to be called in order to wait for the change
@@ -57,8 +61,6 @@ class HitTestRegionObserver : public viz::HitTestRegionObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<base::RunLoop> hit_test_data_change_run_loop_;
   std::vector<viz::AggregatedHitTestRegion> cached_hit_test_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestRegionObserver);
 };
 
 }  // namespace content

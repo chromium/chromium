@@ -25,6 +25,10 @@ class SensorProxyImpl final : public SensorProxy,
   SensorProxyImpl(device::mojom::blink::SensorType,
                   SensorProviderProxy*,
                   Page*);
+
+  SensorProxyImpl(const SensorProxyImpl&) = delete;
+  SensorProxyImpl& operator=(const SensorProxyImpl&) = delete;
+
   ~SensorProxyImpl() override;
 
   void Trace(Visitor*) const override;
@@ -87,8 +91,6 @@ class SensorProxyImpl final : public SensorProxy,
 
   WTF::Vector<double> active_frequencies_;
   HeapTaskRunnerTimer<SensorProxyImpl> polling_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SensorProxyImpl);
 };
 
 }  // namespace blink

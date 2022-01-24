@@ -57,4 +57,8 @@
   return NO;
 }
 
+- (NSMenu*)applicationDockMenu:(NSApplication*)sender {
+  return _appShimController->GetApplicationDockMenu();
+}
+
 @end

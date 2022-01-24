@@ -9,7 +9,7 @@
 #include "base/notreached.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
-#include "components/performance_manager/embedder/graph_features_helper.h"
+#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/graph/frame_node_impl_describer.h"
 #include "components/performance_manager/graph/page_node_impl_describer.h"
@@ -31,33 +31,20 @@ GraphCreatedCallback* GetAdditionalGraphCreatedCallback() {
   return additional_graph_created_callback.get();
 }
 
-absl::optional<Decorators>* GetDecoratorsOverride() {
-  static absl::optional<Decorators> decorators_override;
-  return &decorators_override;
+absl::optional<GraphFeatures>* GetGraphFeaturesOverride() {
+  static absl::optional<GraphFeatures> graph_features_override;
+  return &graph_features_override;
 }
 
-void OnGraphCreated(Decorators decorators,
+void OnGraphCreated(const GraphFeatures& graph_features,
                     GraphCreatedCallback external_graph_created_callback,
                     GraphImpl* graph) {
-  GraphFeaturesHelper features_helper;
-
-  auto decorators_override = *GetDecoratorsOverride();
-  if (decorators_override)
-    decorators = *decorators_override;
-
-  switch (decorators) {
-    case Decorators::kNone:
-      break;
-    case Decorators::kMinimal:
-      features_helper.EnableMinimal();
-      break;
-    case Decorators::kDefault:
-      features_helper.EnableDefault();
-      break;
-  }
+  auto graph_features_override = *GetGraphFeaturesOverride();
+  const GraphFeatures& configured_features =
+      graph_features_override ? *graph_features_override : graph_features;
 
   // Install required features on the graph.
-  features_helper.ConfigureGraph(graph);
+  configured_features.ConfigureGraph(graph);
 
   // Run graph created callbacks.
   std::move(external_graph_created_callback).Run(graph);
@@ -68,16 +55,19 @@ void OnGraphCreated(Decorators decorators,
 }  // namespace
 
 PerformanceManagerLifetime::PerformanceManagerLifetime(
-    Decorators decorators,
+    const GraphFeatures& graph_features,
     GraphCreatedCallback graph_created_callback)
     : performance_manager_(PerformanceManagerImpl::Create(
           base::BindOnce(&OnGraphCreated,
-                         decorators,
+                         graph_features,
                          std::move(graph_created_callback)))),
       performance_manager_registry_(
           performance_manager::PerformanceManagerRegistry::Create()) {}
 
 PerformanceManagerLifetime::~PerformanceManagerLifetime() {
+  // There may still be worker hosts, WebContents and RenderProcessHosts with
+  // attached user data, retaining WorkerNodes, PageNodes, FrameNodes and
+  // ProcessNodes. Tear down the registry to release these nodes.
   performance_manager_registry_->TearDown();
   performance_manager_registry_.reset();
   performance_manager::DestroyPerformanceManager(
@@ -91,17 +81,9 @@ void PerformanceManagerLifetime::SetAdditionalGraphCreatedCallbackForTesting(
 }
 
 // static
-void PerformanceManagerLifetime::SetDecoratorsOverrideForTesting(
-    absl::optional<Decorators> decorators_override) {
-  *GetDecoratorsOverride() = decorators_override;
-}
-
-std::unique_ptr<PerformanceManager>
-CreatePerformanceManagerWithDefaultDecorators(
-    GraphCreatedCallback graph_created_callback) {
-  return PerformanceManagerImpl::Create(
-      base::BindOnce(&OnGraphCreated, Decorators::kDefault,
-                     std::move(graph_created_callback)));
+void PerformanceManagerLifetime::SetGraphFeaturesOverrideForTesting(
+    const GraphFeatures& graph_features_override) {
+  *GetGraphFeaturesOverride() = graph_features_override;
 }
 
 void DestroyPerformanceManager(std::unique_ptr<PerformanceManager> instance) {

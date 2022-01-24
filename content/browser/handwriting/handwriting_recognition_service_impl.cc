@@ -52,6 +52,13 @@ void HandwritingRecognitionServiceImpl::QueryHandwritingRecognizerSupport(
   std::move(callback).Run(std::move(query_result));
 }
 
+void HandwritingRecognitionServiceImpl::QueryHandwritingRecognizer(
+    handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
+    QueryHandwritingRecognizerCallback callback) {
+  // By default, we don't support any handwriting recognizer.
+  std::move(callback).Run(nullptr);
+}
+
 HandwritingRecognitionServiceImpl::HandwritingRecognitionServiceImpl() =
     default;
 

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_MOCK_TRIGGER_MANAGER_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_TRIGGERS_MOCK_TRIGGER_MANAGER_H_
 
-#include "base/macros.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -16,6 +15,10 @@ namespace safe_browsing {
 class MockTriggerManager : public TriggerManager {
  public:
   MockTriggerManager();
+
+  MockTriggerManager(const MockTriggerManager&) = delete;
+  MockTriggerManager& operator=(const MockTriggerManager&) = delete;
+
   ~MockTriggerManager() override;
 
   MOCK_METHOD7(
@@ -45,9 +48,6 @@ class MockTriggerManager : public TriggerManager {
                     bool did_proceed,
                     int num_visits,
                     const SBErrorOptions& error_display_options));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockTriggerManager);
 };
 
 }  // namespace safe_browsing

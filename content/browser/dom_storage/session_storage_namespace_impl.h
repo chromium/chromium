@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/session_storage_namespace.h"
@@ -44,6 +43,10 @@ class SessionStorageNamespaceImpl : public SessionStorageNamespace {
       const std::string& namespace_id_to_clone,
       bool immediately = false);
 
+  SessionStorageNamespaceImpl(const SessionStorageNamespaceImpl&) = delete;
+  SessionStorageNamespaceImpl& operator=(const SessionStorageNamespaceImpl&) =
+      delete;
+
   DOMStorageContextWrapper* context() const { return context_wrapper_.get(); }
 
   // SessionStorageNamespace implementation.
@@ -69,8 +72,6 @@ class SessionStorageNamespaceImpl : public SessionStorageNamespace {
   scoped_refptr<DOMStorageContextWrapper> context_wrapper_;
   std::string namespace_id_;
   bool should_persist_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStorageNamespaceImpl);
 };
 
 }  // namespace content

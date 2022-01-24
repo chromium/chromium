@@ -22,10 +22,7 @@ class GenerateHtmlOutputFileUntitest(fake_filesystem_unittest.TestCase):
     result_map = {
         'some_suite': {
             'some_test': {
-                'some_tags': {
-                    'typ_tags': ['some', 'tags'],
-                    'build_url_list': ['url1', 'url2'],
-                },
+                ('some', 'tags'): ['url1', 'url2'],
             },
         },
     }
@@ -113,10 +110,7 @@ class ConvertAggregatedResultsToStringMapUnittest(unittest.TestCase):
     result_map = {
         'some_suite': {
             'some_test': {
-                'some_tags': {
-                    'typ_tags': ['some', 'tags'],
-                    'build_url_list': ['url1', 'url2'],
-                },
+                ('some', 'tags'): ['url1', 'url2'],
             },
         },
     }

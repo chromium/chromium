@@ -8,11 +8,6 @@ source_set("google") {
     "google_brand.h",
     "google_brand.mm",
   ]
-  deps = [
-    "//base",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/distribution",
-  ]
 }
 
 source_set("google_logo") {

@@ -14,7 +14,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
@@ -166,6 +165,9 @@ class FileURLDirectoryLoader
                            std::move(loader), std::move(client_remote),
                            std::move(observer), std::move(response_headers));
   }
+
+  FileURLDirectoryLoader(const FileURLDirectoryLoader&) = delete;
+  FileURLDirectoryLoader& operator=(const FileURLDirectoryLoader&) = delete;
 
   // network::mojom::URLLoader:
   void FollowRedirect(
@@ -355,8 +357,6 @@ class FileURLDirectoryLoader
   std::unique_ptr<mojo::DataPipeProducer> data_producer_;
   std::string pending_data_;
   bool transfer_in_progress_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FileURLDirectoryLoader);
 };
 
 class FileURLLoader : public network::mojom::URLLoader {
@@ -382,6 +382,9 @@ class FileURLLoader : public network::mojom::URLLoader {
                            link_following_policy, std::move(observer),
                            std::move(extra_response_headers));
   }
+
+  FileURLLoader(const FileURLLoader&) = delete;
+  FileURLLoader& operator=(const FileURLLoader&) = delete;
 
   // network::mojom::URLLoader:
   void FollowRedirect(
@@ -759,8 +762,6 @@ class FileURLLoader : public network::mojom::URLLoader {
   // It is used to set some of the URLLoaderCompletionStatus data passed back
   // to the URLLoaderClients (eg SimpleURLLoader).
   uint64_t total_bytes_written_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FileURLLoader);
 };
 
 }  // namespace

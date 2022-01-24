@@ -26,6 +26,10 @@ class ReadingListSuggestionsProvider : public ContentSuggestionsProvider,
  public:
   ReadingListSuggestionsProvider(ContentSuggestionsProvider::Observer* observer,
                                  ReadingListModel* reading_list_model);
+  ReadingListSuggestionsProvider(const ReadingListSuggestionsProvider&) =
+      delete;
+  ReadingListSuggestionsProvider& operator=(
+      const ReadingListSuggestionsProvider&) = delete;
   ~ReadingListSuggestionsProvider() override;
 
   // ContentSuggestionsProvider implementation.
@@ -76,8 +80,6 @@ class ReadingListSuggestionsProvider : public ContentSuggestionsProvider,
   ReadingListModel* reading_list_model_;
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListSuggestionsProvider);
 };
 
 }  // namespace ntp_snippets

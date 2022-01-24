@@ -57,10 +57,6 @@ public final class WebFeedFollowIntroViewTest {
     @Mock
     private UserEducationHelper mHelper;
 
-    View.OnTouchListener mOnTouchListenerStub = (view, motionEvent) -> {
-        return true;
-    };
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -75,8 +71,10 @@ public final class WebFeedFollowIntroViewTest {
         FeatureList.setTestFeatures(new HashMap<String, Boolean>());
 
         // Build the class under test.
+        Runnable noOp = () -> {};
         mWebFeedFollowIntroView =
-                new WebFeedFollowIntroView(mActivity, null, mMenuButtonAnchorView);
+                new WebFeedFollowIntroView(mActivity, null, mMenuButtonAnchorView, mTracker,
+                        /*introDismissedCallback=*/noOp);
     }
 
     @After
@@ -87,7 +85,7 @@ public final class WebFeedFollowIntroViewTest {
     @Test
     @SmallTest
     public void showIPHTest() {
-        mWebFeedFollowIntroView.showIPH(mOnTouchListenerStub, mTracker, mHelper);
+        mWebFeedFollowIntroView.showIPH(mHelper, () -> {}, () -> {});
         verify(mHelper, times(1)).requestShowIPH(any());
     }
 }

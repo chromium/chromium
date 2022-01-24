@@ -28,7 +28,7 @@ CommitProcessor::CommitProcessor(ModelTypeSet commit_types,
   DCHECK(commit_contributor_map);
 }
 
-CommitProcessor::~CommitProcessor() {}
+CommitProcessor::~CommitProcessor() = default;
 
 Commit::ContributionMap CommitProcessor::GatherCommitContributions(
     size_t max_entries) {

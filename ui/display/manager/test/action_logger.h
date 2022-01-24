@@ -7,14 +7,16 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace display {
 namespace test {
 
 class ActionLogger {
  public:
   ActionLogger();
+
+  ActionLogger(const ActionLogger&) = delete;
+  ActionLogger& operator=(const ActionLogger&) = delete;
+
   ~ActionLogger();
 
   void AppendAction(const std::string& action);
@@ -26,8 +28,6 @@ class ActionLogger {
 
  private:
   std::string actions_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionLogger);
 };
 
 }  // namespace test

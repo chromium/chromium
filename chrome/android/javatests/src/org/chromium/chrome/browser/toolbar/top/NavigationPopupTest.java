@@ -26,11 +26,13 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
@@ -51,14 +53,9 @@ public class NavigationPopupTest {
 
     private static final int INVALID_NAVIGATION_INDEX = -1;
 
-    private Profile mProfile;
-
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
-        // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-        TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> mProfile = Profile.getLastUsedRegularProfile());
     }
 
     // Exists solely to expose protected methods to this test.
@@ -92,6 +89,10 @@ public class NavigationPopupTest {
         public void goToNavigationIndex(int index) {
             mNavigatedIndex = index;
         }
+
+        public int getEntryCount() {
+            return mHistory.getEntryCount();
+        }
     }
 
     @Test
@@ -99,7 +100,7 @@ public class NavigationPopupTest {
     @Feature({"Navigation"})
     public void testFaviconFetching() throws ExecutionException {
         final TestNavigationController controller = new TestNavigationController();
-        final ListPopupWindow popup = showPopup(controller);
+        final ListPopupWindow popup = showPopup(controller, false);
 
         CriteriaHelper.pollUiThread(() -> {
             NavigationHistory history = controller.mHistory;
@@ -117,7 +118,7 @@ public class NavigationPopupTest {
     @Feature({"Navigation"})
     public void testItemSelection() throws ExecutionException {
         final TestNavigationController controller = new TestNavigationController();
-        final ListPopupWindow popup = showPopup(controller);
+        final ListPopupWindow popup = showPopup(controller, false);
 
         TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> popup.performItemClick(1));
 
@@ -131,7 +132,7 @@ public class NavigationPopupTest {
     @Feature({"Navigation"})
     public void testShowAllHistory() throws ExecutionException {
         final TestNavigationController controller = new TestNavigationController();
-        final ListPopupWindow popup = showPopup(controller);
+        final ListPopupWindow popup = showPopup(controller, false);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ListView list = popup.getListView();
@@ -143,9 +144,33 @@ public class NavigationPopupTest {
         });
     }
 
-    private ListPopupWindow showPopup(NavigationController controller) throws ExecutionException {
+    @Test
+    @SmallTest
+    @Feature({"Navigation"})
+    @Features.EnableFeatures({ChromeFeatureList.UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO})
+    public void testPopupForIncognito() throws ExecutionException {
+        final TestNavigationController controller = new TestNavigationController();
+        final ListPopupWindow popup = showPopup(controller, true);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ListView list = popup.getListView();
+            View view = list.getAdapter().getView(list.getAdapter().getCount() - 1, null, list);
+            TextView text = (TextView) view.findViewById(R.id.entry_title);
+            Assert.assertNotNull(text);
+            Assert.assertNotEquals(text.getResources().getString(R.string.show_full_history),
+                    text.getText().toString());
+            Assert.assertEquals(controller.getEntryCount(), list.getAdapter().getCount());
+        });
+    }
+
+    private ListPopupWindow showPopup(NavigationController controller, boolean isOffTheRecord)
+            throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            NavigationPopup popup = new NavigationPopup(mProfile, mActivityTestRule.getActivity(),
+            Profile profile = Profile.getLastUsedRegularProfile();
+            if (isOffTheRecord) {
+                profile = profile.getPrimaryOTRProfile(true);
+            }
+            NavigationPopup popup = new NavigationPopup(profile, mActivityTestRule.getActivity(),
                     controller, NavigationPopup.Type.TABLET_FORWARD,
                     mActivityTestRule.getActivity().getActivityTabProvider(),
                     HistoryManagerUtils::showHistoryManager);

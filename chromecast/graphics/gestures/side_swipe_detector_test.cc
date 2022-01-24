@@ -27,7 +27,7 @@ namespace test {
 
 namespace {
 
-constexpr base::TimeDelta kTimeDelay = base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kTimeDelay = base::Milliseconds(100);
 constexpr int kSwipeDistance = 50;
 constexpr int kNumSteps = 5;
 // constexpr gfx::Point kZeroPoint{0, 0};
@@ -339,15 +339,15 @@ TEST_F(SideSwipeDetectorTest, IgnoreSecondFinger) {
       .Times(0);
 
   // Start a drag but don't complete.
-  Drag(drag_point, base::TimeDelta::FromMilliseconds(10) /*start_hold_time */,
-       base::TimeDelta::FromMilliseconds(1000) /* drag_time */, end_point,
-       1 /* pointer_id */, false /* end_release */);
+  Drag(drag_point, base::Milliseconds(10) /*start_hold_time */,
+       base::Milliseconds(1000) /* drag_time */, end_point, 1 /* pointer_id */,
+       false /* end_release */);
 
   // A second drag is started with another finger, but will be ignored as a
   // swipe and all its events eaten.
-  Drag(drag_point, base::TimeDelta::FromMilliseconds(10) /*start_hold_time */,
-       base::TimeDelta::FromMilliseconds(1000) /* drag_time */, end_point,
-       2 /* pointer_id */, true /* end_release */);
+  Drag(drag_point, base::Milliseconds(10) /*start_hold_time */,
+       base::Milliseconds(1000) /* drag_time */, end_point, 2 /* pointer_id */,
+       true /* end_release */);
 
   base::RunLoop().RunUntilIdle();
 

@@ -8,8 +8,6 @@ per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
 # Files and features related to component:Internals>Sandbox>SiteIsolation:
 per-file initiator_lock_compatibility*=creis@chromium.org
 per-file initiator_lock_compatibility*=lukasza@chromium.org
-per-file cross_origin_resource_policy*=creis@chromium.org
-per-file cross_origin_resource_policy*=lukasza@chromium.org
 
 # Cross origin opener policy.
 per-file cross_origin_opener_policy*=clamy@chromium.org

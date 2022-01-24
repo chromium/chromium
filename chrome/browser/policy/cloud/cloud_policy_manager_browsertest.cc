@@ -34,7 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #else
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -210,9 +210,8 @@ class CloudPolicyManagerTest : public PlatformBrowserTest {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  UserCloudPolicyManagerChromeOS* policy_manager() {
-    return chrome_test_utils::GetProfile(this)
-        ->GetUserCloudPolicyManagerChromeOS();
+  UserCloudPolicyManagerAsh* policy_manager() {
+    return chrome_test_utils::GetProfile(this)->GetUserCloudPolicyManagerAsh();
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   UserCloudPolicyManager* policy_manager() {

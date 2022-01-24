@@ -113,7 +113,7 @@ bool PhysicsBasedFlingCurve::ComputeScrollOffset(base::TimeTicks time,
   DCHECK(velocity);
 
   const base::TimeDelta elapsed_time = time - start_timestamp_;
-  if (elapsed_time < base::TimeDelta()) {
+  if (elapsed_time.is_negative()) {
     *offset = gfx::Vector2dF();
     *velocity = gfx::Vector2dF();
     return true;
@@ -157,6 +157,6 @@ PhysicsBasedFlingCurve::CalculateDurationAndConfigureControlPoints(
     p1_.set_x(p1_.y() / slope);
   }
 
-  return base::TimeDelta::FromSecondsD(duration);
+  return base::Seconds(duration);
 }
 }  // namespace ui

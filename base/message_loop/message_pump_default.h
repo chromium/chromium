@@ -17,6 +17,10 @@ namespace base {
 class BASE_EXPORT MessagePumpDefault : public MessagePump {
  public:
   MessagePumpDefault();
+
+  MessagePumpDefault(const MessagePumpDefault&) = delete;
+  MessagePumpDefault& operator=(const MessagePumpDefault&) = delete;
+
   ~MessagePumpDefault() override;
 
   // MessagePump methods:
@@ -34,8 +38,6 @@ class BASE_EXPORT MessagePumpDefault : public MessagePump {
 
   // Used to sleep until there is more work to do.
   WaitableEvent event_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpDefault);
 };
 
 }  // namespace base

@@ -24,7 +24,8 @@ class WebContentsCollection::ForwardingWebContentsObserver
     collection_->WebContentsDestroyed(web_contents());
   }
 
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     observer_->RenderProcessGone(web_contents(), status);
   }
 

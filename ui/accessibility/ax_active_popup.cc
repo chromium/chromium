@@ -4,8 +4,6 @@
 
 #include "ui/accessibility/ax_active_popup.h"
 
-#include "base/macros.h"
-
 namespace ui {
 
 namespace {

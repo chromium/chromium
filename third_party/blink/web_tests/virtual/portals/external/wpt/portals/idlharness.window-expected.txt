@@ -33,7 +33,7 @@ PASS HTMLPortalElement interface: existence and properties of interface prototyp
 PASS HTMLPortalElement interface: attribute src
 PASS HTMLPortalElement interface: attribute referrerPolicy
 PASS HTMLPortalElement interface: operation activate(optional PortalActivateOptions)
-PASS HTMLPortalElement interface: operation postMessage(any, optional PostMessageOptions)
+PASS HTMLPortalElement interface: operation postMessage(any, optional StructuredSerializeOptions)
 PASS HTMLPortalElement interface: attribute onmessage
 PASS HTMLPortalElement interface: attribute onmessageerror
 PASS HTMLPortalElement must be primary interface of document.createElement("portal")
@@ -42,8 +42,8 @@ PASS HTMLPortalElement interface: document.createElement("portal") must inherit 
 PASS HTMLPortalElement interface: document.createElement("portal") must inherit property "referrerPolicy" with the proper type
 PASS HTMLPortalElement interface: document.createElement("portal") must inherit property "activate(optional PortalActivateOptions)" with the proper type
 PASS HTMLPortalElement interface: calling activate(optional PortalActivateOptions) on document.createElement("portal") with too few arguments must throw TypeError
-PASS HTMLPortalElement interface: document.createElement("portal") must inherit property "postMessage(any, optional PostMessageOptions)" with the proper type
-PASS HTMLPortalElement interface: calling postMessage(any, optional PostMessageOptions) on document.createElement("portal") with too few arguments must throw TypeError
+PASS HTMLPortalElement interface: document.createElement("portal") must inherit property "postMessage(any, optional StructuredSerializeOptions)" with the proper type
+PASS HTMLPortalElement interface: calling postMessage(any, optional StructuredSerializeOptions) on document.createElement("portal") with too few arguments must throw TypeError
 PASS HTMLPortalElement interface: document.createElement("portal") must inherit property "onmessage" with the proper type
 PASS HTMLPortalElement interface: document.createElement("portal") must inherit property "onmessageerror" with the proper type
 PASS PortalHost interface: existence and properties of interface object
@@ -52,12 +52,12 @@ PASS PortalHost interface object name
 PASS PortalHost interface: existence and properties of interface prototype object
 PASS PortalHost interface: existence and properties of interface prototype object's "constructor" property
 PASS PortalHost interface: existence and properties of interface prototype object's @@unscopables property
-PASS PortalHost interface: operation postMessage(any, optional PostMessageOptions)
+PASS PortalHost interface: operation postMessage(any, optional StructuredSerializeOptions)
 PASS PortalHost interface: attribute onmessage
 PASS PortalHost interface: attribute onmessageerror
 FAIL Stringification of window.portalHost assert_class_string: class string of window.portalHost expected "[object PortalHost]" but got "[object Null]"
-FAIL PortalHost interface: window.portalHost must inherit property "postMessage(any, optional PostMessageOptions)" with the proper type assert_inherits: provided value is not an object
-FAIL PortalHost interface: calling postMessage(any, optional PostMessageOptions) on window.portalHost with too few arguments must throw TypeError assert_inherits: provided value is not an object
+FAIL PortalHost interface: window.portalHost must inherit property "postMessage(any, optional StructuredSerializeOptions)" with the proper type assert_inherits: provided value is not an object
+FAIL PortalHost interface: calling postMessage(any, optional StructuredSerializeOptions) on window.portalHost with too few arguments must throw TypeError assert_inherits: provided value is not an object
 FAIL PortalHost interface: window.portalHost must inherit property "onmessage" with the proper type assert_inherits: provided value is not an object
 FAIL PortalHost interface: window.portalHost must inherit property "onmessageerror" with the proper type assert_inherits: provided value is not an object
 PASS PortalActivateEvent interface: existence and properties of interface object

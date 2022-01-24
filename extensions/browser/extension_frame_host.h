@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_FRAME_HOST_H_
 #define EXTENSIONS_BROWSER_EXTENSION_FRAME_HOST_H_
 
-#include "content/public/browser/web_contents_receiver_set.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -25,6 +25,10 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
   ExtensionFrameHost(const ExtensionFrameHost&) = delete;
   ExtensionFrameHost& operator=(const ExtensionFrameHost&) = delete;
   ~ExtensionFrameHost() override;
+
+  void BindLocalFrameHost(
+      mojo::PendingAssociatedReceiver<mojom::LocalFrameHost> receiver,
+      content::RenderFrameHost* rfh);
 
   // mojom::LocalFrameHost:
   void RequestScriptInjectionPermission(
@@ -46,7 +50,7 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
   // This raw pointer is safe to use because ExtensionWebContentsObserver whose
   // lifetime is tied to the WebContents owns this instance.
   content::WebContents* web_contents_;
-  content::WebContentsFrameReceiverSet<mojom::LocalFrameHost> receivers_;
+  content::RenderFrameHostReceiverSet<mojom::LocalFrameHost> receivers_;
 };
 
 }  // namespace extensions

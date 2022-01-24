@@ -48,17 +48,17 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
 TEST_F(AudioContextManagerImplTest, TimeBelow10SecondsIsRaw) {
   // Entry for 42 milliseconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromMilliseconds(42));
+  clock().Advance(base::Milliseconds(42));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   // Entry for 4242 milliseconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromMilliseconds(4242));
+  clock().Advance(base::Milliseconds(4242));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   // Entry for 9999 milliseconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromMilliseconds(9999));
+  clock().Advance(base::Milliseconds(9999));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   auto ukm_entries = test_ukm_recorder().GetEntriesByName(UkmEntry::kEntryName);
@@ -74,22 +74,22 @@ TEST_F(AudioContextManagerImplTest, TimeBelow10SecondsIsRaw) {
 TEST_F(AudioContextManagerImplTest, TimeGreater10SecondsIsRoundedDown) {
   // Entry for 42 seconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromSeconds(42));
+  clock().Advance(base::Seconds(42));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   // Entry for 42.42 seconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromSecondsD(42.42));
+  clock().Advance(base::Seconds(42.42));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   // Entry for 10.01 seconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromSecondsD(10.01));
+  clock().Advance(base::Seconds(10.01));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   // Entry for 10.99 seconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromSecondsD(10.99));
+  clock().Advance(base::Seconds(10.99));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   auto ukm_entries = test_ukm_recorder().GetEntriesByName(UkmEntry::kEntryName);

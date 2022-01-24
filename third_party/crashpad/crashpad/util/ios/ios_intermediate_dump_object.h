@@ -15,7 +15,6 @@
 #ifndef CRASHPAD_UTIL_IOS_IOS_INTERMEDIATE_DUMP_OBJECT_H_
 #define CRASHPAD_UTIL_IOS_IOS_INTERMEDIATE_DUMP_OBJECT_H_
 
-#include "base/macros.h"
 #include "util/ios/ios_intermediate_dump_writer.h"
 
 namespace crashpad {
@@ -25,6 +24,11 @@ namespace internal {
 class IOSIntermediateDumpObject {
  public:
   IOSIntermediateDumpObject();
+
+  IOSIntermediateDumpObject(const IOSIntermediateDumpObject&) = delete;
+  IOSIntermediateDumpObject& operator=(const IOSIntermediateDumpObject&) =
+      delete;
+
   virtual ~IOSIntermediateDumpObject();
 
   //! \brief The type of object stored in the intermediate dump.  .
@@ -41,8 +45,6 @@ class IOSIntermediateDumpObject {
 
   //! \brief Returns a type.
   virtual Type GetType() const = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSIntermediateDumpObject);
 };
 
 }  // namespace internal

@@ -92,7 +92,6 @@ if (is_win) {
       "exit_code_watcher_win_unittest.cc",
       "extended_crash_reporting_win_unittest.cc",
     ]
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
     deps = [
       ":activity_report_proto",
       ":browser_watcher_client",

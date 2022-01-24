@@ -92,15 +92,34 @@ bool IsValidVariableReference(CSSParserTokenRange range) {
 
 bool IsValidEnvVariableReference(CSSParserTokenRange range) {
   range.ConsumeWhitespace();
-  if (range.ConsumeIncludingWhitespace().GetType() !=
-      CSSParserTokenType::kIdentToken)
+  auto token = range.ConsumeIncludingWhitespace();
+  if (token.GetType() != CSSParserTokenType::kIdentToken)
     return false;
   if (range.AtEnd())
     return true;
 
-  if (range.Consume().GetType() != kCommaToken)
-    return false;
-  if (range.AtEnd())
+  if (RuntimeEnabledFeatures::CSSFoldablesEnabled()) {
+    // Consume any number of integer values that indicate the indices for a
+    // multi-dimensional variable.
+    token = range.ConsumeIncludingWhitespace();
+    while (token.GetType() == kNumberToken) {
+      if (token.GetNumericValueType() != kIntegerValueType)
+        return false;
+      if (token.NumericValue() < 0.)
+        return false;
+      token = range.ConsumeIncludingWhitespace();
+    }
+
+    // If that's all we had (either ident then integers or just the ident) then
+    // the env() is valid.
+    if (token.GetType() == kEOFToken)
+      return true;
+  } else {
+    token = range.Consume();
+  }
+
+  // Otherwise we need a comma followed by an optional fallback value.
+  if (token.GetType() != kCommaToken)
     return false;
 
   bool has_references = false;
@@ -145,7 +164,6 @@ bool CSSVariableParser::ContainsValidVariableReferences(
 }
 
 CSSCustomPropertyDeclaration* CSSVariableParser::ParseDeclarationValue(
-    const AtomicString& variable_name,
     const CSSTokenizedValue& tokenized_value,
     bool is_animation_tainted,
     const CSSParserContext& context) {
@@ -160,19 +178,17 @@ CSSCustomPropertyDeclaration* CSSVariableParser::ParseDeclarationValue(
     return nullptr;
   if (type == CSSValueID::kInternalVariableValue) {
     return MakeGarbageCollected<CSSCustomPropertyDeclaration>(
-        variable_name,
+
         CSSVariableData::Create(tokenized_value, is_animation_tainted,
                                 has_references, context.BaseURL(),
                                 context.Charset()));
   }
-  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(variable_name,
-                                                            type);
+  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(type);
 }
 
-CSSVariableReferenceValue* CSSVariableParser::ParseRegisteredPropertyValue(
+CSSVariableReferenceValue* CSSVariableParser::ParseVariableReferenceValue(
     CSSParserTokenRange range,
     const CSSParserContext& context,
-    bool require_var_reference,
     bool is_animation_tainted) {
   if (range.AtEnd())
     return nullptr;
@@ -182,8 +198,6 @@ CSSVariableReferenceValue* CSSVariableParser::ParseRegisteredPropertyValue(
 
   if (type != CSSValueID::kInternalVariableValue)
     return nullptr;  // Invalid or a css-wide keyword
-  if (require_var_reference && !has_references)
-    return nullptr;
   return MakeGarbageCollected<CSSVariableReferenceValue>(
       CSSVariableData::Create({range, StringView()}, is_animation_tainted,
                               has_references, context.BaseURL(),

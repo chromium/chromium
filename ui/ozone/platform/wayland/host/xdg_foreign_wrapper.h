@@ -19,14 +19,26 @@ class WaylandConnection;
 // A wrapper for xdg foreign objects. Exports surfaces that have xdg_surface
 // roles and asynchronously returns handles for them. Only xdg_surface surfaces
 // may be exported. Currently supports only exporting surfaces.
-//
-// TODO(1126817): consider supporting xdg-foreign-v2.
-class XdgForeignWrapper : public WaylandWindowObserver {
+class XdgForeignWrapper : public wl::GlobalObjectRegistrar<XdgForeignWrapper>,
+                          public WaylandWindowObserver {
  public:
+  class XdgForeignWrapperInternal;
+
+  static constexpr char kInterfaceNameV1[] = "zxdg_exporter_v1";
+  static constexpr char kInterfaceNameV2[] = "zxdg_exporter_v2";
+
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          const std::string& interface,
+                          uint32_t version);
+
   using OnHandleExported = base::OnceCallback<void(const std::string&)>;
 
   XdgForeignWrapper(WaylandConnection* connection,
                     wl::Object<zxdg_exporter_v1> exporter_v1);
+  XdgForeignWrapper(WaylandConnection* connection,
+                    wl::Object<zxdg_exporter_v2> exporter_v2);
   XdgForeignWrapper(const XdgForeignWrapper&) = delete;
   XdgForeignWrapper& operator=(const XdgForeignWrapper&) = delete;
   ~XdgForeignWrapper() override;
@@ -37,25 +49,10 @@ class XdgForeignWrapper : public WaylandWindowObserver {
   void ExportSurfaceToForeign(WaylandWindow* window, OnHandleExported cb);
 
  private:
-  struct ExportedSurface;
-
-  ExportedSurface* GetExportedSurface(wl_surface* surface);
-
-  void ExportSurfaceInternal(wl_surface* surface, OnHandleExported cb);
-
   // WaylandWindowObserver:
   void OnWindowRemoved(WaylandWindow* window) override;
 
-  // zxdg_exported_v1_listener:
-  static void OnExported(void* data,
-                         zxdg_exported_v1* exported,
-                         const char* handle);
-
-  WaylandConnection* const connection_;
-
-  wl::Object<zxdg_exporter_v1> exporter_v1_;
-
-  std::vector<ExportedSurface> exported_surfaces_;
+  std::unique_ptr<XdgForeignWrapperInternal> impl_;
 };
 
 }  // namespace ui

@@ -18,7 +18,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -446,10 +445,10 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
           ? metadata.response().request_include_credentials()
           : true;
 
-  // Note that |has_range_requested| can be safely set to false since it only
-  // affects HTTP 206 (Partial) responses, which are blocked from cache storage.
-  // See https://fetch.spec.whatwg.org/#main-fetch for usage of
-  // |has_range_requested|.
+  // While we block most partial responses from being stored, we can have
+  // partial responses for bgfetch or opaque responses.
+  bool has_range_requested = headers.contains(net::HttpRequestHeaders::kRange);
+
   return blink::mojom::FetchAPIResponse::New(
       url_list, metadata.response().status_code(),
       metadata.response().status_text(),
@@ -467,7 +466,7 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
       static_cast<net::HttpResponseInfo::ConnectionInfo>(
           metadata.response().connection_info()),
       alpn_negotiated_protocol, metadata.response().was_fetched_via_spdy(),
-      /*has_range_requested=*/false, /*auth_challenge_info=*/absl::nullopt,
+      has_range_requested, /*auth_challenge_info=*/absl::nullopt,
       request_include_credentials);
 }
 
@@ -530,6 +529,9 @@ struct LegacyCacheStorageCache::QueryCacheContext {
         query_types(query_types),
         matches(std::make_unique<QueryCacheResults>()) {}
 
+  QueryCacheContext(const QueryCacheContext&) = delete;
+  QueryCacheContext& operator=(const QueryCacheContext&) = delete;
+
   ~QueryCacheContext() = default;
 
   // Input to QueryCache
@@ -544,9 +546,6 @@ struct LegacyCacheStorageCache::QueryCacheContext {
 
   // Output of QueryCache
   std::unique_ptr<std::vector<QueryCacheResult>> matches;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueryCacheContext);
 };
 
 struct LegacyCacheStorageCache::BatchInfo {
@@ -1003,9 +1002,7 @@ size_t LegacyCacheStorageCache::EstimatedStructSize(
   return size;
 }
 
-LegacyCacheStorageCache::~LegacyCacheStorageCache() {
-  quota_manager_proxy_->NotifyStorageKeyNoLongerInUse(storage_key_);
-}
+LegacyCacheStorageCache::~LegacyCacheStorageCache() = default;
 
 void LegacyCacheStorageCache::SetSchedulerForTesting(
     std::unique_ptr<CacheStorageScheduler> scheduler) {
@@ -1050,8 +1047,6 @@ LegacyCacheStorageCache::LegacyCacheStorageCache(
     // The size of this cache has already been reported to the QuotaManager.
     last_reported_size_ = cache_size_ + cache_padding_;
   }
-
-  quota_manager_proxy_->NotifyStorageKeyInUse(storage_key_);
 }
 
 void LegacyCacheStorageCache::QueryCache(
@@ -1892,7 +1887,13 @@ void LegacyCacheStorageCache::PutDidCreateEntry(
   }
 
   proto::CacheResponse* response_metadata = metadata.mutable_response();
-  DCHECK_NE(put_context->response->status_code, net::HTTP_PARTIAL_CONTENT);
+  if (owner_ != storage::mojom::CacheStorageOwner::kBackgroundFetch &&
+      put_context->response->response_type !=
+          network::mojom::FetchResponseType::kOpaque &&
+      put_context->response->response_type !=
+          network::mojom::FetchResponseType::kOpaqueRedirect) {
+    DCHECK_NE(put_context->response->status_code, net::HTTP_PARTIAL_CONTENT);
+  }
   response_metadata->set_status_code(put_context->response->status_code);
   response_metadata->set_status_text(put_context->response->status_text);
   response_metadata->set_response_type(FetchResponseTypeToProtoResponseType(
@@ -2533,7 +2534,7 @@ void LegacyCacheStorageCache::InitBackend() {
           base::BindOnce(
               &LegacyCacheStorageCache::InitDidCreateBackend,
               weak_ptr_factory_.GetWeakPtr(),
-              scheduler_->WrapCallbackToRunNext(id, base::DoNothing::Once()))));
+              scheduler_->WrapCallbackToRunNext(id, base::BindOnce([] {})))));
 }
 
 void LegacyCacheStorageCache::InitDidCreateBackend(

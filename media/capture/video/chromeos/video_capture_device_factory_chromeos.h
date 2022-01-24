@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"
 #include "media/capture/video/chromeos/camera_hal_delegate.h"
 #include "media/capture/video/video_capture_device_factory.h"
@@ -25,6 +24,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
   explicit VideoCaptureDeviceFactoryChromeOS(
       scoped_refptr<base::SingleThreadTaskRunner>
           task_runner_for_screen_observer);
+
+  VideoCaptureDeviceFactoryChromeOS(const VideoCaptureDeviceFactoryChromeOS&) =
+      delete;
+  VideoCaptureDeviceFactoryChromeOS& operator=(
+      const VideoCaptureDeviceFactoryChromeOS&) = delete;
 
   ~VideoCaptureDeviceFactoryChromeOS() override;
 
@@ -58,8 +62,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
 
   base::WeakPtrFactory<VideoCaptureDeviceFactoryChromeOS> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactoryChromeOS);
 };
 
 }  // namespace media

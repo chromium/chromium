@@ -25,6 +25,9 @@ class TestModelInfoBuilder {
 
   TestModelInfoBuilder& SetModelFilePath(const base::FilePath& file_path);
 
+  TestModelInfoBuilder& SetAdditionalFiles(
+      const base::flat_set<base::FilePath>& additional_files);
+
   TestModelInfoBuilder& SetVersion(int64_t version);
 
   TestModelInfoBuilder& SetModelMetadata(

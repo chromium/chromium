@@ -89,16 +89,18 @@ void CookieManager::GetAllCookiesWithAccessSemantics(
   cookie_store_->GetAllCookiesWithAccessSemanticsAsync(std::move(callback));
 }
 
-void CookieManager::GetCookieList(const GURL& url,
-                                  const net::CookieOptions& cookie_options,
-                                  GetCookieListCallback callback) {
+void CookieManager::GetCookieList(
+    const GURL& url,
+    const net::CookieOptions& cookie_options,
+    const net::CookiePartitionKeychain& cookie_partition_keychain,
+    GetCookieListCallback callback) {
 #if !defined(OS_IOS)
   if (g_crash_on_get_cookie_list)
     base::Process::TerminateCurrentProcessImmediately(1);
 #endif
 
-  cookie_store_->GetCookieListWithOptionsAsync(url, cookie_options,
-                                               std::move(callback));
+  cookie_store_->GetCookieListWithOptionsAsync(
+      url, cookie_options, cookie_partition_keychain, std::move(callback));
 }
 
 void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,
@@ -169,11 +171,13 @@ void CookieManager::AddCookieChangeListener(
   if (name) {
     listener_registration->subscription =
         cookie_store_->GetChangeDispatcher().AddCallbackForCookie(
-            url, *name, std::move(cookie_change_callback));
+            url, *name, net::CookiePartitionKey::Todo(),
+            std::move(cookie_change_callback));
   } else {
     listener_registration->subscription =
         cookie_store_->GetChangeDispatcher().AddCallbackForUrl(
-            url, std::move(cookie_change_callback));
+            url, net::CookiePartitionKey::Todo(),
+            std::move(cookie_change_callback));
   }
 
   listener_registration->listener.set_disconnect_handler(

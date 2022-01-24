@@ -181,6 +181,7 @@ struct GpuInfo {
 
   bool oop_rasterization_supported;
   bool subpixel_font_rendering;
+  uint32 visibility_callback_call_count;
 
   [EnableIf=supports_vulkan]
   VulkanInfo? vulkan_info;

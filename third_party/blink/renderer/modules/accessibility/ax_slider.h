@@ -41,6 +41,10 @@ class HTMLInputElement;
 class AXSlider : public AXLayoutObject {
  public:
   AXSlider(LayoutObject*, AXObjectCacheImpl&);
+
+  AXSlider(const AXSlider&) = delete;
+  AXSlider& operator=(const AXSlider&) = delete;
+
   ~AXSlider() override = default;
 
  private:
@@ -52,8 +56,6 @@ class AXSlider : public AXLayoutObject {
 
   bool OnNativeSetValueAction(const String&) final;
   AccessibilityOrientation Orientation() const final;
-
-  DISALLOW_COPY_AND_ASSIGN(AXSlider);
 };
 
 }  // namespace blink

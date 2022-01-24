@@ -271,6 +271,7 @@ enum Medium {
   kNfc = 7,
   kWifiDirect = 8,
   kWebRtc = 9,
+  kBleL2Cap = 10,
 };
 
 // Log severity levels. This is passed as a member of

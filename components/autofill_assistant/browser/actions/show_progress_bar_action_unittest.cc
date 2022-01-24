@@ -15,10 +15,8 @@ namespace autofill_assistant {
 namespace {
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Property;
 using ::testing::Return;
-using ::testing::StrEq;
 
 class ShowProgressBarActionTest : public testing::Test {
  public:
@@ -40,22 +38,10 @@ class ShowProgressBarActionTest : public testing::Test {
 };
 
 TEST_F(ShowProgressBarActionTest, EmptyProgressBarDoesNothing) {
-  EXPECT_CALL(mock_action_delegate_, SetStatusMessage(_)).Times(0);
   EXPECT_CALL(mock_action_delegate_, SetProgressVisible(_)).Times(0);
   EXPECT_CALL(mock_action_delegate_, SetStepProgressBarConfiguration(_))
       .Times(0);
-  EXPECT_CALL(mock_action_delegate_, SetProgress(_)).Times(0);
   EXPECT_CALL(mock_action_delegate_, SetProgressActiveStep(_)).Times(0);
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
-  Run();
-}
-
-TEST_F(ShowProgressBarActionTest, SpecifiedMessageGetsSet) {
-  proto_.set_message("Message");
-
-  EXPECT_CALL(mock_action_delegate_, SetStatusMessage("Message"));
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
@@ -84,7 +70,6 @@ TEST_F(ShowProgressBarActionTest, ShowsProgressBar) {
 
 TEST_F(ShowProgressBarActionTest, FewerThanTwoStepsProgressBarFailsAction) {
   auto* config = proto_.mutable_step_progress_bar_configuration();
-  config->set_use_step_progress_bar(true);
   config->add_annotated_step_icons()->mutable_icon()->set_icon(
       DrawableProto::PROGRESSBAR_DEFAULT_INITIAL_STEP);
 
@@ -98,44 +83,12 @@ TEST_F(ShowProgressBarActionTest, FewerThanTwoStepsProgressBarFailsAction) {
 
 TEST_F(ShowProgressBarActionTest, UpdateStepProgressBarConfiguration) {
   auto* config = proto_.mutable_step_progress_bar_configuration();
-  config->set_use_step_progress_bar(true);
   config->add_annotated_step_icons()->mutable_icon()->set_icon(
       DrawableProto::PROGRESSBAR_DEFAULT_INITIAL_STEP);
   config->add_annotated_step_icons()->mutable_icon()->set_icon(
       DrawableProto::PROGRESSBAR_DEFAULT_FINAL_STEP);
 
   EXPECT_CALL(mock_action_delegate_, SetStepProgressBarConfiguration(_));
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
-  Run();
-}
-
-TEST_F(ShowProgressBarActionTest, DeactivateStepProgressBar) {
-  auto* config = proto_.mutable_step_progress_bar_configuration();
-  config->set_use_step_progress_bar(false);
-
-  EXPECT_CALL(mock_action_delegate_, SetStepProgressBarConfiguration(_));
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
-  Run();
-}
-
-TEST_F(ShowProgressBarActionTest, SetProgress) {
-  proto_.set_progress(50);
-
-  EXPECT_CALL(mock_action_delegate_, SetProgress(50));
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
-  Run();
-}
-
-TEST_F(ShowProgressBarActionTest, ClampsProgress) {
-  proto_.set_progress(150);
-
-  EXPECT_CALL(mock_action_delegate_, SetProgress(100));
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
@@ -178,7 +131,6 @@ TEST_F(ShowProgressBarActionTest, SetActiveStepFromUnknownIdentifier) {
 TEST_F(ShowProgressBarActionTest, SetProgressToComplete) {
   proto_.set_complete_progress(true);
 
-  EXPECT_CALL(mock_action_delegate_, SetProgress(100));
   EXPECT_CALL(mock_action_delegate_, SetProgressActiveStep(-1));
   EXPECT_CALL(
       callback_,

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -86,6 +85,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // enabled real time URL lookups for subresource URLs.
   // |real_time_lookup_enabled| must be true if |can_rt_check_subresource_url|
   // is true.
+  // |last_committed_url| is used for obtaining the page load token when the URL
+  // being checked is not a mainframe URL. Only used when real time lookup is
+  // performed.
   // |webui_delegate_| is allowed to be null. If non-null, it must outlive this
   // object.
   SafeBrowsingUrlCheckerImpl(
@@ -96,9 +98,14 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
+      security_interstitials::UnsafeResource::RenderProcessId render_process_id,
+      security_interstitials::UnsafeResource::RenderFrameId render_frame_id,
+      security_interstitials::UnsafeResource::FrameTreeNodeId
+          frame_tree_node_id,
       bool real_time_lookup_enabled,
       bool can_rt_check_subresource_url,
       bool can_check_db,
+      GURL last_committed_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       WebUIDelegate* webui_delegate);
@@ -118,6 +125,10 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       bool can_rt_check_subresource_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui);
+
+  SafeBrowsingUrlCheckerImpl(const SafeBrowsingUrlCheckerImpl&) = delete;
+  SafeBrowsingUrlCheckerImpl& operator=(const SafeBrowsingUrlCheckerImpl&) =
+      delete;
 
   ~SafeBrowsingUrlCheckerImpl() override;
 
@@ -203,6 +214,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   static void StartLookupOnUIThread(
       base::WeakPtr<SafeBrowsingUrlCheckerImpl> weak_checker_on_io,
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
@@ -272,10 +285,19 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   const network::mojom::RequestDestination request_destination_;
   const bool has_user_gesture_;
   // TODO(crbug.com/1069047): |web_state_getter| is only used on iOS, and
-  // |web_contents_getter| is used on all other platforms.  This class should
+  // |web_contents_getter_|, |render_process_id_|, |render_frame_id_|, and
+  // |frame_tree_node_id_| are used on all other platforms.  This class should
   // be refactored to use only the common functionality can be shared across
   // platforms.
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
+  const security_interstitials::UnsafeResource::RenderProcessId
+      render_process_id_ =
+          security_interstitials::UnsafeResource::kNoRenderProcessId;
+  const security_interstitials::UnsafeResource::RenderFrameId render_frame_id_ =
+      security_interstitials::UnsafeResource::kNoRenderFrameId;
+  const security_interstitials::UnsafeResource::FrameTreeNodeId
+      frame_tree_node_id_ =
+          security_interstitials::UnsafeResource::kNoFrameTreeNodeId;
   base::RepeatingCallback<web::WebState*()> web_state_getter_;
   scoped_refptr<UrlCheckerDelegate> url_checker_delegate_;
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
@@ -307,6 +329,11 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // for this profile.
   bool can_check_db_;
 
+  // The last committed URL when the checker is constructed. It is used to
+  // obtain page load token when the URL being checked is not a mainframe URL.
+  // Only used when real time lookup is performed.
+  GURL last_committed_url_;
+
   // The task runner for the UI thread.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
@@ -320,8 +347,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   WebUIDelegate* webui_delegate_ = nullptr;
 
   base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingUrlCheckerImpl);
 };
 
 }  // namespace safe_browsing

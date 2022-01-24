@@ -40,6 +40,8 @@ enum class PopupHidingReason {
   kOverlappingWithAnotherPrompt,  // If the popup will be drawn, it will overlap
                                   // with another open prompt, and may hide
                                   // sensitive information in the prompt.
+  kElementOutsideOfContentArea,  // The anchor element for which the popup would
+                                 // be shown is not visible in the content area.
 };
 
 }  // namespace autofill

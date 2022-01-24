@@ -5,8 +5,7 @@
 #ifndef CONTENT_BROWSER_HYPHENATION_HYPHENATION_IMPL_H_
 #define CONTENT_BROWSER_HYPHENATION_HYPHENATION_IMPL_H_
 
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/hyphenation/hyphenation.mojom.h"
@@ -16,6 +15,10 @@ namespace hyphenation {
 class HyphenationImpl : public blink::mojom::Hyphenation {
  public:
   HyphenationImpl();
+
+  HyphenationImpl(const HyphenationImpl&) = delete;
+  HyphenationImpl& operator=(const HyphenationImpl&) = delete;
+
   ~HyphenationImpl() override;
 
   static void Create(mojo::PendingReceiver<blink::mojom::Hyphenation>);
@@ -34,8 +37,6 @@ class HyphenationImpl : public blink::mojom::Hyphenation {
 #if !defined(OS_ANDROID)
   static void SetDirectory(const base::FilePath& dir);
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(HyphenationImpl);
 };
 
 }  // namespace hyphenation

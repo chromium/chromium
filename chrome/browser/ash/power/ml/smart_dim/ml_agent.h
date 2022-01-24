@@ -29,6 +29,9 @@ class SmartDimMlAgent {
  public:
   static SmartDimMlAgent* GetInstance();
 
+  SmartDimMlAgent(const SmartDimMlAgent&) = delete;
+  SmartDimMlAgent& operator=(const SmartDimMlAgent&) = delete;
+
   // Post a request to determine whether an upcoming dim should go ahead based
   // on input |features|. When a decision is arrived at, runs the callback. If
   // this method is called again before it calls the previous callback, the
@@ -64,8 +67,6 @@ class SmartDimMlAgent {
       dim_decision_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SmartDimMlAgent);
 };
 
 }  // namespace ml

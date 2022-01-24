@@ -70,6 +70,10 @@ class IceTransportChannel : public sigslot::has_slots<> {
 
   explicit IceTransportChannel(
       scoped_refptr<TransportContext> transport_context);
+
+  IceTransportChannel(const IceTransportChannel&) = delete;
+  IceTransportChannel& operator=(const IceTransportChannel&) = delete;
+
   ~IceTransportChannel() override;
 
   // Connects the channel and calls the |callback| after that.
@@ -132,8 +136,6 @@ class IceTransportChannel : public sigslot::has_slots<> {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<IceTransportChannel> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IceTransportChannel);
 };
 
 }  // namespace protocol

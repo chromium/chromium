@@ -287,15 +287,16 @@ testing::AssertionResult ExtensionServiceTestBase::ValidateBooleanPref(
         << "extension pref does not exist " << msg;
   }
 
-  bool val = false;
-  if (!pref->GetBoolean(pref_path, &val)) {
+  absl::optional<bool> val = pref->FindBoolPath(pref_path);
+  if (!val.has_value()) {
     return testing::AssertionFailure()
         << pref_path << " pref not found " << msg;
   }
 
-  return expected_val == val
-      ? testing::AssertionSuccess()
-      : testing::AssertionFailure() << "base::Value is incorrect " << msg;
+  return expected_val == val.value() ? testing::AssertionSuccess()
+                                     : testing::AssertionFailure()
+                                           << "base::Value is incorrect "
+                                           << msg;
 }
 
 void ExtensionServiceTestBase::ValidateIntegerPref(
@@ -313,9 +314,7 @@ void ExtensionServiceTestBase::ValidateIntegerPref(
   const base::DictionaryValue* pref = NULL;
   ASSERT_TRUE(dict->GetDictionary(extension_id, &pref)) << msg;
   EXPECT_TRUE(pref != NULL) << msg;
-  int val;
-  ASSERT_TRUE(pref->GetInteger(pref_path, &val)) << msg;
-  EXPECT_EQ(expected_val, val) << msg;
+  EXPECT_EQ(expected_val, pref->FindIntPath(pref_path)) << msg;
 }
 
 void ExtensionServiceTestBase::ValidateStringPref(

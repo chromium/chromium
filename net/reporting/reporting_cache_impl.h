@@ -18,7 +18,9 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
+#include "net/base/isolation_info.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_endpoint.h"
@@ -34,10 +36,14 @@ class ReportingCacheImpl : public ReportingCache {
  public:
   ReportingCacheImpl(ReportingContext* context);
 
+  ReportingCacheImpl(const ReportingCacheImpl&) = delete;
+  ReportingCacheImpl& operator=(const ReportingCacheImpl&) = delete;
+
   ~ReportingCacheImpl() override;
 
   // ReportingCache implementation
-  void AddReport(const NetworkIsolationKey& network_isolation_key,
+  void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
+                 const NetworkIsolationKey& network_isolation_key,
                  const GURL& url,
                  const std::string& user_agent,
                  const std::string& group_name,
@@ -50,6 +56,8 @@ class ReportingCacheImpl : public ReportingCache {
       std::vector<const ReportingReport*>* reports_out) const override;
   base::Value GetReportsAsValue() const override;
   std::vector<const ReportingReport*> GetReportsToDeliver() override;
+  std::vector<const ReportingReport*> GetReportsToDeliverForSource(
+      const base::UnguessableToken& reporting_source) override;
   void ClearReportsPending(
       const std::vector<const ReportingReport*>& reports) override;
   void IncrementReportsAttempts(
@@ -58,16 +66,28 @@ class ReportingCacheImpl : public ReportingCache {
                                    const GURL& url,
                                    int reports_delivered,
                                    bool successful) override;
+  void SetExpiredSource(
+      const base::UnguessableToken& reporting_source) override;
+  const base::flat_set<base::UnguessableToken>& GetExpiredSources()
+      const override;
   void RemoveReports(
       const std::vector<const ReportingReport*>& reports) override;
+  void RemoveReports(const std::vector<const ReportingReport*>& reports,
+                     bool delivery_success) override;
   void RemoveAllReports() override;
   size_t GetFullReportCountForTesting() const override;
+  size_t GetReportCountWithStatusForTesting(
+      ReportingReport::Status status) const override;
   bool IsReportPendingForTesting(const ReportingReport* report) const override;
   bool IsReportDoomedForTesting(const ReportingReport* report) const override;
   void OnParsedHeader(
       const NetworkIsolationKey& network_isolation_key,
       const url::Origin& origin,
       std::vector<ReportingEndpointGroup> parsed_header) override;
+  void OnParsedReportingEndpointsHeader(
+      const base::UnguessableToken& reporting_source,
+      const IsolationInfo& isolation_info,
+      std::vector<ReportingEndpoint> parsed_header) override;
   std::set<url::Origin> GetAllOrigins() const override;
   void RemoveClient(const NetworkIsolationKey& network_isolation_key,
                     const url::Origin& origin) override;
@@ -75,6 +95,8 @@ class ReportingCacheImpl : public ReportingCache {
   void RemoveAllClients() override;
   void RemoveEndpointGroup(const ReportingEndpointGroupKey& group_key) override;
   void RemoveEndpointsForUrl(const GURL& url) override;
+  void RemoveSourceAndEndpoints(
+      const base::UnguessableToken& reporting_source) override;
   void AddClientsLoadedFromStore(
       std::vector<ReportingEndpoint> loaded_endpoints,
       std::vector<CachedReportingEndpointGroup> loaded_endpoint_groups)
@@ -84,6 +106,9 @@ class ReportingCacheImpl : public ReportingCache {
   base::Value GetClientsAsValue() const override;
   size_t GetEndpointCount() const override;
   void Flush() override;
+  ReportingEndpoint GetV1EndpointForTesting(
+      const base::UnguessableToken& reporting_source,
+      const std::string& endpoint_name) const override;
   ReportingEndpoint GetEndpointForTesting(
       const ReportingEndpointGroupKey& group_key,
       const GURL& url) const override;
@@ -94,12 +119,19 @@ class ReportingCacheImpl : public ReportingCache {
                               const url::Origin& origin) const override;
   size_t GetEndpointGroupCountForTesting() const override;
   size_t GetClientCountForTesting() const override;
+  size_t GetReportingSourceCountForTesting() const override;
   void SetEndpointForTesting(const ReportingEndpointGroupKey& group_key,
                              const GURL& url,
                              OriginSubdomains include_subdomains,
                              base::Time expires,
                              int priority,
                              int weight) override;
+  void SetV1EndpointForTesting(const ReportingEndpointGroupKey& group_key,
+                               const base::UnguessableToken& reporting_source,
+                               const IsolationInfo& isolation_info,
+                               const GURL& url) override;
+  IsolationInfo GetIsolationInfoForEndpoint(
+      const ReportingEndpoint& endpoint) const override;
 
  private:
   // Represents the entire Report-To configuration for a (NIK, origin) pair.
@@ -294,6 +326,11 @@ class ReportingCacheImpl : public ReportingCache {
   void AddEndpointItToIndex(EndpointMap::iterator endpoint_it);
   void RemoveEndpointItFromIndex(EndpointMap::iterator endpoint_it);
 
+  // Helper method for IncrementEndpointDeliveries
+  ReportingEndpoint::Statistics* GetEndpointStats(
+      const ReportingEndpointGroupKey& group_key,
+      const GURL& url);
+
   // Helper methods for GetClientsAsValue().
   base::Value GetClientAsValue(const Client& client) const;
   base::Value GetEndpointGroupAsValue(
@@ -310,24 +347,51 @@ class ReportingCacheImpl : public ReportingCache {
   // Reports that have not yet been successfully uploaded.
   ReportSet reports_;
 
+  // Reporting API V0 Cache:
+  // The |clients_|, |endpoint_groups_| and |endpoints_| members all hold
+  // endpoint group configuration for the V0 API. These endpoint groups are
+  // configured through the Report-To HTTP header, and are currently used for
+  // both document and network reports.
+
   // Map of clients for all configured origins and NIKs, keyed on domain name
   // (there may be multiple NIKs and origins per domain name).
   ClientMap clients_;
 
-  // Map of endpoint groups, keyed on origin and group name.
+  // Map of endpoint groups, keyed on origin and group name. Keys and values
+  // must only contain V0 endpoint group keys.
   EndpointGroupMap endpoint_groups_;
 
   // Map of endpoints, keyed on origin and group name (there may be multiple
-  // endpoints for a given origin and group, with different urls).
+  // endpoints for a given origin and group, with different urls). Keys must
+  // only contain V0 endpoint group keys.
   EndpointMap endpoints_;
 
   // Index of endpoints stored in |endpoints_| keyed on URL, for easier lookup
   // during RemoveEndpointsForUrl(). Should stay in sync with |endpoints_|.
   std::multimap<GURL, EndpointMap::iterator> endpoint_its_by_url_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Reporting API V1 Cache:
+  // The `document_endpoints_` member holds endpoint configuration for the V1
+  // API, configured through the Reporting-Endpoints HTTP header. These
+  // endpoints are strongly associated with the resource which configured them,
+  // and are only used for document reports.
 
-  DISALLOW_COPY_AND_ASSIGN(ReportingCacheImpl);
+  // Map of endpoints for each reporting source, keyed on the reporting source
+  // token. This contains only V1 document endpoints.
+  std::map<base::UnguessableToken, std::vector<ReportingEndpoint>>
+      document_endpoints_;
+
+  // Isolation info for each reporting source. Used for determining credentials
+  // to send when delivering reports. This contains only V1 document endpoints.
+  std::map<base::UnguessableToken, IsolationInfo> isolation_info_;
+
+  // Reporting source tokens representing sources which have been destroyed.
+  // The configuration in `document_endpoints_` and `isolation_info_` for these
+  // sources can be removed once all outstanding reports are delivered (or
+  // expired).
+  base::flat_set<base::UnguessableToken> expired_sources_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace net

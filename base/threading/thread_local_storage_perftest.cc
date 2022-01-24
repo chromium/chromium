@@ -79,6 +79,9 @@ class TLSThread : public SimpleThread {
     Start();
   }
 
+  TLSThread(const TLSThread&) = delete;
+  TLSThread& operator=(const TLSThread&) = delete;
+
   void Run() override {
     start_event_->Wait();
     std::move(action_).Run();
@@ -89,11 +92,14 @@ class TLSThread : public SimpleThread {
   WaitableEvent* const start_event_;
   base::OnceClosure action_;
   base::OnceClosure completion_;
-
-  DISALLOW_COPY_AND_ASSIGN(TLSThread);
 };
 
 class ThreadLocalStoragePerfTest : public testing::Test {
+ public:
+  ThreadLocalStoragePerfTest(const ThreadLocalStoragePerfTest&) = delete;
+  ThreadLocalStoragePerfTest& operator=(const ThreadLocalStoragePerfTest&) =
+      delete;
+
  protected:
   ThreadLocalStoragePerfTest() = default;
   ~ThreadLocalStoragePerfTest() override = default;
@@ -163,9 +169,6 @@ class ThreadLocalStoragePerfTest : public testing::Test {
     reporter.AddResult(metric_base + kMetricSuffixOperationTime,
                        nanos_per_operation);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadLocalStoragePerfTest);
 };
 
 }  // namespace

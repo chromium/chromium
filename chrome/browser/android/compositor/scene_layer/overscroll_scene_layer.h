@@ -27,6 +27,10 @@ class OverscrollSceneLayer : public SceneLayer,
   OverscrollSceneLayer(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& jobj,
                        const base::android::JavaParamRef<jobject>& jwindow);
+
+  OverscrollSceneLayer(const OverscrollSceneLayer&) = delete;
+  OverscrollSceneLayer& operator=(const OverscrollSceneLayer&) = delete;
+
   ~OverscrollSceneLayer() override;
 
   void Prepare(JNIEnv* env,
@@ -67,8 +71,6 @@ class OverscrollSceneLayer : public SceneLayer,
   ui::ResourceManager* resource_manager_ = nullptr;
 
   gfx::Vector2dF start_pos_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollSceneLayer);
 };
 
 }  // namespace android

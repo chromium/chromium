@@ -1,25 +1,16 @@
-// Copyright 2017 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.debug.ConsoleTest');
 goog.setTestOnly();
 
 const DebugConsole = goog.require('goog.debug.Console');
-const LogRecord = goog.require('goog.debug.LogRecord');
-const Logger = goog.require('goog.debug.Logger');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
+const {Level, LogRecord} = goog.require('goog.log');
 
 let debugConsole;
 let mockConsole;
@@ -37,20 +28,20 @@ let logRecord3;
  * @param {string} message The message to log.
  */
 function logAtAllLevels(message) {
-  logAtLevel(Logger.Level.SHOUT, message);
-  logAtLevel(Logger.Level.SEVERE, message);
-  logAtLevel(Logger.Level.WARNING, message);
-  logAtLevel(Logger.Level.INFO, message);
-  logAtLevel(Logger.Level.CONFIG, message);
-  logAtLevel(Logger.Level.FINE, message);
-  logAtLevel(Logger.Level.FINER, message);
-  logAtLevel(Logger.Level.FINEST, message);
-  logAtLevel(Logger.Level.ALL, message);
+  logAtLevel(Level.SHOUT, message);
+  logAtLevel(Level.SEVERE, message);
+  logAtLevel(Level.WARNING, message);
+  logAtLevel(Level.INFO, message);
+  logAtLevel(Level.CONFIG, message);
+  logAtLevel(Level.FINE, message);
+  logAtLevel(Level.FINER, message);
+  logAtLevel(Level.FINEST, message);
+  logAtLevel(Level.ALL, message);
 }
 
 /**
  * Adds a log record to the debug console.
- * @param {!Logger.Level} level The level at which to log.
+ * @param {!Level} level The level at which to log.
  * @param {string} message The message to log.
  */
 function logAtLevel(level, message) {
@@ -62,27 +53,26 @@ testSuite({
 
     // Set up a recorder for mockConsole.log
     mockConsole = {log: recordFunction()};
+    /** @suppress {visibility} suppression added to enable type checking */
     DebugConsole.console_ = mockConsole;
 
     loggerName0 = 'debug.logger';
-    logRecord0 = new LogRecord(
-        Logger.Level.FINE, 'blah blah blah no one cares', loggerName0);
+    logRecord0 =
+        new LogRecord(Level.FINE, 'blah blah blah no one cares', loggerName0);
 
     // Test logger 1.
     loggerName1 = 'this.is.a.logger';
-    logRecord1 =
-        new LogRecord(Logger.Level.INFO, 'this is a statement', loggerName1);
+    logRecord1 = new LogRecord(Level.INFO, 'this is a statement', loggerName1);
 
     // Test logger 2.
     loggerName2 = 'name.of.logger';
-    logRecord2 = new LogRecord(
-        Logger.Level.WARNING, 'hey, this is a warning', loggerName2);
+    logRecord2 =
+        new LogRecord(Level.WARNING, 'hey, this is a warning', loggerName2);
 
     // Test logger 3.
     loggerName3 = 'third.logger';
     logRecord3 = new LogRecord(
-        Logger.Level.SEVERE, 'seriously, this statement is serious',
-        loggerName3);
+        Level.SEVERE, 'seriously, this statement is serious', loggerName3);
   },
 
   testLoggingWithSimpleConsole() {
@@ -91,6 +81,7 @@ testSuite({
     assertEquals(9, mockConsole.log.getCallCount());
   },
 
+  /** @suppress {missingProperties} suppression added to enable type checking */
   testLoggingWithDebugSupported() {
     // Make sure the log function is the default when only 'debug' is available.
     mockConsole['debug'] = recordFunction();
@@ -99,6 +90,7 @@ testSuite({
     assertEquals(4, mockConsole.debug.getCallCount());
   },
 
+  /** @suppress {missingProperties} suppression added to enable type checking */
   testLoggingWithErrorSupported() {
     // Make sure the log function is the default when only 'error' is available.
     mockConsole['error'] = recordFunction();
@@ -107,6 +99,7 @@ testSuite({
     assertEquals(7, mockConsole.log.getCallCount());
   },
 
+  /** @suppress {missingProperties} suppression added to enable type checking */
   testLoggingWithWarningSupported() {
     // Make sure the log function is the default when only 'warn' is available.
     mockConsole['warn'] = recordFunction();
@@ -115,6 +108,7 @@ testSuite({
     assertEquals(8, mockConsole.log.getCallCount());
   },
 
+  /** @suppress {missingProperties} suppression added to enable type checking */
   testLoggingWithEverythingSupported() {
     mockConsole['debug'] = recordFunction();
     mockConsole['error'] = recordFunction();
@@ -176,13 +170,13 @@ testSuite({
   testSetConsole() {
     const fakeConsole = {log: recordFunction()};
 
-    logAtLevel(Logger.Level.INFO, 'test message 1');
+    logAtLevel(Level.INFO, 'test message 1');
     logAtAllLevels('test message 1');
     assertEquals(0, fakeConsole.log.getCallCount());
 
     DebugConsole.setConsole(fakeConsole);
 
-    logAtLevel(Logger.Level.INFO, 'test message 2');
+    logAtLevel(Level.INFO, 'test message 2');
     assertEquals(1, fakeConsole.log.getCallCount());
   },
 });

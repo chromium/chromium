@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -45,6 +44,11 @@ const char kPhoneNumber[] = "+9876543210";
 class ClickToCallContextMenuObserverTest : public testing::Test {
  public:
   ClickToCallContextMenuObserverTest() = default;
+
+  ClickToCallContextMenuObserverTest(
+      const ClickToCallContextMenuObserverTest&) = delete;
+  ClickToCallContextMenuObserverTest& operator=(
+      const ClickToCallContextMenuObserverTest&) = delete;
 
   ~ClickToCallContextMenuObserverTest() override = default;
 
@@ -91,8 +95,6 @@ class ClickToCallContextMenuObserverTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ClickToCallContextMenuObserver> observer_;
   SharingMessage sharing_message;
-
-  DISALLOW_COPY_AND_ASSIGN(ClickToCallContextMenuObserverTest);
 };
 
 }  // namespace

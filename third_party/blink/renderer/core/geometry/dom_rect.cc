@@ -13,8 +13,8 @@ DOMRect* DOMRect::Create(double x, double y, double width, double height) {
 }
 
 DOMRect* DOMRect::FromFloatRect(const FloatRect& rect) {
-  return MakeGarbageCollected<DOMRect>(rect.X(), rect.Y(), rect.Width(),
-                                       rect.Height());
+  return MakeGarbageCollected<DOMRect>(rect.x(), rect.y(), rect.width(),
+                                       rect.height());
 }
 
 DOMRect* DOMRect::fromRect(const DOMRectInit* other) {

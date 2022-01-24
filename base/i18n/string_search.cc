@@ -119,8 +119,7 @@ RepeatingStringSearch::RepeatingStringSearch(const std::u16string& find_this,
   search_ = usearch_open(find_this_.data(), find_this_.size(), in_this_.data(),
                          in_this_.size(), locale.data(), /*breakiter=*/nullptr,
                          &status);
-  DCHECK(status == U_ZERO_ERROR || status == U_USING_FALLBACK_WARNING ||
-         status == U_USING_DEFAULT_WARNING);
+  DCHECK(U_SUCCESS(status));
   if (U_SUCCESS(status)) {
     // http://icu-project.org/apiref/icu4c40/ucol_8h.html#6a967f36248b0a1bc7654f538ee8ba96
     // Set comparison level to UCOL_PRIMARY to ignore secondary and tertiary
@@ -147,7 +146,7 @@ bool RepeatingStringSearch::NextMatchResult(int& match_index,
   const int match_start = usearch_next(search_, &status);
   if (U_FAILURE(status) || match_start == USEARCH_DONE)
     return false;
-  DCHECK_EQ(U_ZERO_ERROR, status);
+  DCHECK(U_SUCCESS(status));
   match_index = match_start;
   match_length = usearch_getMatchedLength(search_);
   return true;

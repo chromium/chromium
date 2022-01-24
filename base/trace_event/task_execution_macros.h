@@ -12,18 +12,6 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/log_message.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/task_execution.pbzero.h"
 
-// Implementation detail: internal macro to trace a task execution with the
-// location where it was posted from.
-#define INTERNAL_TRACE_TASK_EXECUTION(run_function, task)                 \
-  TRACE_EVENT("toplevel", run_function, [&](perfetto::EventContext ctx) { \
-    ctx.event()->set_task_execution()->set_posted_from_iid(               \
-        base::trace_event::InternedSourceLocation::Get(                   \
-            &ctx,                                                         \
-            base::trace_event::TraceSourceLocation((task).posted_from))); \
-  });                                                                     \
-  TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION INTERNAL_TRACE_EVENT_UID( \
-      task_event)((task).posted_from.file_name());
-
 // Implementation detail: internal macro to trace a log message, with the source
 // location of the log statement.
 #define INTERNAL_TRACE_LOG_MESSAGE(file, message, line)                      \

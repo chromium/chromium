@@ -418,6 +418,17 @@ bool CanonicalizePartialPathInternal(const char16_t* spec,
                                      int path_begin_in_output,
                                      CanonOutput* output);
 
+// Find the position of a bona fide Windows drive letter in the given path. If
+// no leading drive letter is found, -1 is returned. This function correctly
+// treats /c:/foo and /./c:/foo as having drive letters, and /def/c:/foo as not
+// having a drive letter.
+//
+// Exported for tests.
+COMPONENT_EXPORT(URL)
+int FindWindowsDriveLetter(const char* spec, int begin, int end);
+COMPONENT_EXPORT(URL)
+int FindWindowsDriveLetter(const char16_t* spec, int begin, int end);
+
 #ifndef WIN32
 
 // Implementations of Windows' int-to-string conversions
@@ -444,6 +455,35 @@ inline unsigned long long _strtoui64(const char* nptr,
 }
 
 #endif  // WIN32
+
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "URLHostEscapedHostChar" in src/tools/metrics/histograms/enums.xml.
+enum class EscapedHostChar {
+  kUnknown = 0,
+  kSpace = 1,
+  kBang = 2,
+  kDoubleQuote = 3,
+  kHash = 4,
+  kDollar = 5,
+  kAmpersand = 6,
+  kSingleQuote = 7,
+  kLeftParen = 8,
+  kRightParen = 9,
+  kAsterisk = 10,
+  kComma = 11,
+  kLeftAngle = 12,
+  kEquals = 13,
+  kRightAngle = 14,
+  kAt = 15,
+  kBackTick = 16,
+  kLeftCurly = 17,
+  kPipe = 18,
+  kRightCurly = 19,
+  kMaxValue = kRightCurly,
+};
+
+COMPONENT_EXPORT(URL) EscapedHostChar EscapedHostCharToEnum(char c);
 
 }  // namespace url
 

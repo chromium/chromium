@@ -36,7 +36,7 @@ class PLATFORM_EXPORT CompositorScrollOffsetAnimationCurve
 
   void SetInitialValue(FloatPoint);
   FloatPoint GetValue(double time) const;
-  double Duration() const;
+  base::TimeDelta Duration() const;
   FloatPoint TargetValue() const;
   void ApplyAdjustment(IntSize);
   void UpdateTarget(base::TimeDelta time, FloatPoint new_target);

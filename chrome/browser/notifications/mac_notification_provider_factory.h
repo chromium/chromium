@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_PROVIDER_FACTORY_H_
 #define CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_PROVIDER_FACTORY_H_
 
-#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class MacNotificationProviderFactory {

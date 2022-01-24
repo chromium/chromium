@@ -27,6 +27,9 @@ class TestXdgPopup : public ServerObject {
   TestXdgPopup& operator=(const TestXdgPopup&) = delete;
   ~TestXdgPopup() override;
 
+  struct TestPositioner::PopupPosition position() const {
+    return position_;
+  }
   void set_position(struct TestPositioner::PopupPosition position) {
     position_ = std::move(position);
   }

@@ -32,7 +32,7 @@ class SSLInfo;
 // Utility class for http authentication.
 class NET_EXPORT_PRIVATE HttpAuth {
  public:
-  // Http authentication can be done the the proxy server, origin server,
+  // Http authentication can be done to the proxy server, origin server,
   // or both. This enum tracks who the target is.
   enum Target {
     AUTH_NONE = -1,
@@ -115,8 +115,8 @@ class NET_EXPORT_PRIVATE HttpAuth {
     kNone,
     // Delegate if approved by KDC policy. Implemented in GSSAPI.
     kByKdcPolicy,
-    // Unconstrained delegation. On Windows both kByKdcPolicy and kUnconstraned
-    // check KDC policy.
+    // Unconstrained delegation. On Windows, both kByKdcPolicy and
+    // kUnconstrained will check KDC policy.
     kUnconstrained,
   };
 

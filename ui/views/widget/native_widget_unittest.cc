@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/views_test_base.h"
@@ -16,6 +15,10 @@ class ScopedTestWidget {
  public:
   explicit ScopedTestWidget(internal::NativeWidgetPrivate* native_widget)
       : native_widget_(native_widget) {}
+
+  ScopedTestWidget(const ScopedTestWidget&) = delete;
+  ScopedTestWidget& operator=(const ScopedTestWidget&) = delete;
+
   ~ScopedTestWidget() {
     // |CloseNow| deletes both |native_widget_| and its associated
     // |Widget|.
@@ -27,12 +30,15 @@ class ScopedTestWidget {
 
  private:
   internal::NativeWidgetPrivate* native_widget_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestWidget);
 };
 
 class NativeWidgetTest : public ViewsTestBase {
  public:
   NativeWidgetTest() = default;
+
+  NativeWidgetTest(const NativeWidgetTest&) = delete;
+  NativeWidgetTest& operator=(const NativeWidgetTest&) = delete;
+
   ~NativeWidgetTest() override = default;
 
   internal::NativeWidgetPrivate* CreateNativeWidgetOfType(
@@ -52,9 +58,6 @@ class NativeWidgetTest : public ViewsTestBase {
   internal::NativeWidgetPrivate* CreateNativeSubWidget() {
     return CreateNativeWidgetOfType(Widget::InitParams::TYPE_CONTROL);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetTest);
 };
 
 TEST_F(NativeWidgetTest, CreateNativeWidget) {

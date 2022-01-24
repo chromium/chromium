@@ -17,6 +17,21 @@
 #include "cc/metrics/ukm_smoothness_data.h"
 
 namespace cc {
+namespace {
+
+// The start ranges of each bucket, up to but not including the start of the
+// next bucket. The last bucket contains the remaining values.
+constexpr double kBucketBounds[7] = {0, 3, 6, 12, 25, 50, 75};
+
+// Search backwards using the bucket bounds defined above.
+size_t DecideSmoothnessBucket(double pdf) {
+  size_t i = base::size(kBucketBounds) - 1;
+  while (pdf < kBucketBounds[i])
+    i--;
+  return i;
+}
+
+}  // namespace
 
 using SlidingWindowHistogram = DroppedFrameCounter::SlidingWindowHistogram;
 
@@ -26,6 +41,7 @@ void SlidingWindowHistogram::AddPercentDroppedFrame(
   DCHECK_GE(percent_dropped_frame, 0.0);
   DCHECK_GE(100.0, percent_dropped_frame);
   histogram_bins_[static_cast<int>(std::round(percent_dropped_frame))] += count;
+  smoothness_buckets_[DecideSmoothnessBucket(percent_dropped_frame)] += count;
   total_count_ += count;
 }
 
@@ -47,8 +63,21 @@ uint32_t SlidingWindowHistogram::GetPercentDroppedFramePercentile(
   return current_index;
 }
 
+std::vector<double> SlidingWindowHistogram::GetPercentDroppedFrameBuckets()
+    const {
+  if (total_count_ == 0)
+    return std::vector<double>(base::size(kBucketBounds), 0);
+  std::vector<double> buckets(base::size(kBucketBounds));
+  for (size_t i = 0; i < base::size(kBucketBounds); ++i) {
+    buckets[i] =
+        static_cast<double>(smoothness_buckets_[i]) * 100 / total_count_;
+  }
+  return buckets;
+}
+
 void SlidingWindowHistogram::Clear() {
   std::fill(std::begin(histogram_bins_), std::end(histogram_bins_), 0);
+  std::fill(std::begin(smoothness_buckets_), std::end(smoothness_buckets_), 0);
   total_count_ = 0;
 }
 
@@ -98,6 +127,11 @@ void DroppedFrameCounter::AddDroppedFrame() {
 }
 
 void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
+  // Start with flushing the frames in frame_sorter ignoring the currently
+  // pending frames (In other words calling NotifyFrameResult and update
+  // smoothness metrics tracked for all frames that have received their ack).
+  frame_sorter_.Reset();
+
   // Before resetting the pending frames, update the measurements for the
   // sliding windows.
   if (!latest_sliding_window_start_.is_null()) {
@@ -106,30 +140,9 @@ void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
     // completed (and some of which may have been dropped).
     while (!sliding_window_.empty()) {
       const auto& args = sliding_window_.front().first;
-      latest_sliding_window_start_ = args.frame_time;
-      latest_sliding_window_interval_ = args.interval;
-      bool was_dropped = sliding_window_.front().second;
-      if (was_dropped) {
-        DCHECK_GT(dropped_frame_count_in_window_, 0u);
-        --dropped_frame_count_in_window_;
-      }
-      sliding_window_.pop();
-      if (latest_sliding_window_start_ > report_until)
+      if (args.frame_time > report_until)
         break;
-      double percent_dropped_frame = std::min(
-          (dropped_frame_count_in_window_ * 100.0) / total_frames_in_window_,
-          100.0);
-      // TODO(jonross): we have divergent calculations for the sliding window
-      // between here and NotifyFrameResult. We should merge them to avoid
-      // inconsistencies in calculations. (https://crbug.com/1225307)
-      if (percent_dropped_frame > sliding_window_max_percent_dropped_) {
-        time_max_delta_ = args.frame_time - time_fcp_received_;
-        sliding_window_max_percent_dropped_ = percent_dropped_frame;
-      }
-      UpdateMaxPercentDroppedFrame(percent_dropped_frame);
-
-      sliding_window_histogram_.AddPercentDroppedFrame(percent_dropped_frame,
-                                                       /*count=*/1);
+      PopSlidingWindow();
     }
     if (sliding_window_.empty()) {
       DCHECK_EQ(dropped_frame_count_in_window_, 0u);
@@ -150,7 +163,10 @@ void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
   sliding_window_ = {};
   latest_sliding_window_start_ = {};
   latest_sliding_window_interval_ = {};
-  frame_sorter_.Reset();
+}
+
+void DroppedFrameCounter::EnableReporForUI() {
+  report_for_ui_ = true;
 }
 
 void DroppedFrameCounter::OnBeginFrame(const viz::BeginFrameArgs& args,
@@ -178,10 +194,16 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
   if (!args.interval.is_zero())
     total_frames_in_window_ = kSlidingWindowInterval / args.interval;
 
-  if (is_dropped) {
-    if (fcp_received_)
-      ++total_smoothness_dropped_;
-    ReportFrames();
+  // Don't measure smoothness for frames that start before FCP is received, or
+  // that have already been reported as dropped.
+  if (is_dropped && fcp_received_ && args.frame_time >= time_fcp_received_ &&
+      !frame_sorter_.IsFrameDropped(args.frame_id)) {
+    ++total_smoothness_dropped_;
+
+    if (report_for_ui_)
+      ReportFramesForUI();
+    else
+      ReportFrames();
   }
   auto iter = scroll_start_per_frame_.find(args.frame_id);
   if (iter != scroll_start_per_frame_.end()) {
@@ -189,9 +211,8 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
     if (args.frame_id.source_id == scroll_start.frame_id.source_id) {
       UMA_HISTOGRAM_CUSTOM_TIMES(
           "Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart.Time",
-          (args.frame_time - scroll_start.timestamp),
-          base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(4),
-          50);
+          (args.frame_time - scroll_start.timestamp), base::Milliseconds(1),
+          base::Seconds(4), 50);
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart.Frames",
           (args.frame_id.sequence_number -
@@ -206,6 +227,8 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
 }
 
 void DroppedFrameCounter::ReportFrames() {
+  DCHECK(!report_for_ui_);
+
   const auto total_frames =
       total_counter_->ComputeTotalVisibleFrames(base::TimeTicks::Now());
   TRACE_EVENT2("cc,benchmark", "SmoothnessDroppedFrame", "total", total_frames,
@@ -246,6 +269,13 @@ void DroppedFrameCounter::ReportFrames() {
     smoothness_data.worst_smoothness = sliding_window_max_percent_dropped_;
     smoothness_data.percentile_95 = sliding_window_95pct_percent_dropped;
 
+    std::vector<double> sliding_window_buckets =
+        sliding_window_histogram_.GetPercentDroppedFrameBuckets();
+    DCHECK_EQ(sliding_window_buckets.size(),
+              base::size(smoothness_data.buckets));
+    std::copy(sliding_window_buckets.begin(), sliding_window_buckets.end(),
+              smoothness_data.buckets);
+
     if (sliding_window_max_percent_dropped_After_1_sec_.has_value())
       smoothness_data.worst_smoothness_after1sec =
           sliding_window_max_percent_dropped_After_1_sec_.value();
@@ -258,6 +288,22 @@ void DroppedFrameCounter::ReportFrames() {
     smoothness_data.time_max_delta = time_max_delta_;
     ukm_smoothness_data_->Write(smoothness_data);
   }
+}
+
+void DroppedFrameCounter::ReportFramesForUI() {
+  DCHECK(report_for_ui_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  UMA_HISTOGRAM_PERCENTAGE(
+      "Ash.Smoothness.MaxPercentDroppedFrames_1sWindow.Uniform",
+      sliding_window_max_percent_dropped_);
+
+  if (sliding_window_max_percent_dropped_ !=
+      last_reported_metrics_.max_window) {
+    UMA_HISTOGRAM_PERCENTAGE("Ash.Smoothness.MaxPercentDroppedFrames_1sWindow",
+                             sliding_window_max_percent_dropped_);
+    last_reported_metrics_.max_window = sliding_window_max_percent_dropped_;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 double DroppedFrameCounter::GetMostRecentAverageSmoothness() const {
@@ -280,6 +326,7 @@ void DroppedFrameCounter::SetUkmSmoothnessDestination(
 }
 
 void DroppedFrameCounter::Reset() {
+  frame_sorter_.Reset();
   total_frames_ = 0;
   total_partial_ = 0;
   total_dropped_ = 0;
@@ -294,7 +341,6 @@ void DroppedFrameCounter::Reset() {
   latest_sliding_window_start_ = {};
   sliding_window_histogram_.Clear();
   ring_buffer_.Clear();
-  frame_sorter_.Reset();
   time_max_delta_ = {};
   last_reported_metrics_ = {};
 }
@@ -318,59 +364,66 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
 
   sliding_window_.push({args, is_dropped});
 
-  if (ComputeCurrentWindowSize() < kSlidingWindowInterval) {
-    if (is_dropped)
-      ++dropped_frame_count_in_window_;
+  if (is_dropped)
+    ++dropped_frame_count_in_window_;
+  if (ComputeCurrentWindowSize() < kSlidingWindowInterval)
     return;
-  }
 
   DCHECK_GE(dropped_frame_count_in_window_, 0u);
   DCHECK_GE(sliding_window_.size(), dropped_frame_count_in_window_);
 
-  const auto max_sliding_window_start =
-      args.frame_time - kSlidingWindowInterval;
-  const auto max_difference = args.interval * 1.5;
   while (ComputeCurrentWindowSize() > kSlidingWindowInterval) {
-    const auto removed_args = sliding_window_.front().first;
-    const auto removed_was_dropped = sliding_window_.front().second;
-    if (removed_was_dropped) {
-      DCHECK_GT(dropped_frame_count_in_window_, 0u);
-      --dropped_frame_count_in_window_;
-    }
-    sliding_window_.pop();
-    DCHECK(!sliding_window_.empty());
+    PopSlidingWindow();
+  }
+  DCHECK(!sliding_window_.empty());
+}
 
-    auto dropped = dropped_frame_count_in_window_;
-    if (ComputeCurrentWindowSize() <= kSlidingWindowInterval && is_dropped)
-      ++dropped;
+void DroppedFrameCounter::PopSlidingWindow() {
+  const auto removed_args = sliding_window_.front().first;
+  const auto removed_was_dropped = sliding_window_.front().second;
+  if (removed_was_dropped) {
+    DCHECK_GT(dropped_frame_count_in_window_, 0u);
+    --dropped_frame_count_in_window_;
+  }
+  sliding_window_.pop();
+  if (sliding_window_.empty())
+    return;
 
-    // If two consecutive 'completed' frames are far apart from each other (in
-    // time), then report the 'dropped frame count' for the sliding window(s) in
-    // between. Note that the window-size still needs to be at least
-    // kSlidingWindowInterval.
-    const auto& remaining_oldest_args = sliding_window_.front().first;
-    const auto last_timestamp =
-        std::min(remaining_oldest_args.frame_time, max_sliding_window_start);
-    const auto difference = last_timestamp - removed_args.frame_time;
-    const size_t count =
-        difference > max_difference ? std::ceil(difference / args.interval) : 1;
-    double percent_dropped_frame =
-        std::min((dropped * 100.0) / total_frames_in_window_, 100.0);
-    sliding_window_histogram_.AddPercentDroppedFrame(percent_dropped_frame,
-                                                     count);
+  // Don't count the newest element if it is outside the current window.
+  const auto& newest_args = sliding_window_.back().first;
+  const auto newest_was_dropped = sliding_window_.back().second;
+  auto dropped = dropped_frame_count_in_window_;
+  if (ComputeCurrentWindowSize() > kSlidingWindowInterval && newest_was_dropped)
+    --dropped;
 
-    if (percent_dropped_frame > sliding_window_max_percent_dropped_) {
-      time_max_delta_ = args.frame_time - time_fcp_received_;
-      sliding_window_max_percent_dropped_ = percent_dropped_frame;
-    }
-    UpdateMaxPercentDroppedFrame(percent_dropped_frame);
+  // If two consecutive 'completed' frames are far apart from each other (in
+  // time), then report the 'dropped frame count' for the sliding window(s) in
+  // between. Note that the window-size still needs to be at least
+  // kSlidingWindowInterval.
+  const auto max_sliding_window_start =
+      newest_args.frame_time - kSlidingWindowInterval;
+  const auto max_difference = newest_args.interval * 1.5;
+  const auto& remaining_oldest_args = sliding_window_.front().first;
+  const auto last_timestamp =
+      std::min(remaining_oldest_args.frame_time, max_sliding_window_start);
+  const auto difference = last_timestamp - removed_args.frame_time;
+  const size_t count = difference > max_difference
+                           ? std::ceil(difference / newest_args.interval)
+                           : 1;
+  double percent_dropped_frame =
+      std::min((dropped * 100.0) / total_frames_in_window_, 100.0);
+  sliding_window_histogram_.AddPercentDroppedFrame(percent_dropped_frame,
+                                                   count);
 
-    latest_sliding_window_start_ = last_timestamp;
-    latest_sliding_window_interval_ = remaining_oldest_args.interval;
+  if (percent_dropped_frame > sliding_window_max_percent_dropped_) {
+    time_max_delta_ = newest_args.frame_time - time_fcp_received_;
+    sliding_window_max_percent_dropped_ = percent_dropped_frame;
   }
 
-  if (is_dropped)
-    ++dropped_frame_count_in_window_;
+  latest_sliding_window_start_ = last_timestamp;
+  latest_sliding_window_interval_ = remaining_oldest_args.interval;
+
+  UpdateMaxPercentDroppedFrame(percent_dropped_frame);
 }
 
 void DroppedFrameCounter::UpdateMaxPercentDroppedFrame(
@@ -378,23 +431,24 @@ void DroppedFrameCounter::UpdateMaxPercentDroppedFrame(
   if (!fcp_received_)
     return;
 
-  const auto fcp_time_delta = base::TimeTicks::Now() - time_fcp_received_;
+  const auto fcp_time_delta = latest_sliding_window_start_ - time_fcp_received_;
 
-  if (fcp_time_delta > base::TimeDelta::FromSeconds(1))
+  if (fcp_time_delta > base::Seconds(1))
     sliding_window_max_percent_dropped_After_1_sec_ =
         std::max(sliding_window_max_percent_dropped_After_1_sec_.value_or(0.0),
                  percent_dropped_frame);
-  if (fcp_time_delta > base::TimeDelta::FromSeconds(2))
+  if (fcp_time_delta > base::Seconds(2))
     sliding_window_max_percent_dropped_After_2_sec_ =
         std::max(sliding_window_max_percent_dropped_After_2_sec_.value_or(0.0),
                  percent_dropped_frame);
-  if (fcp_time_delta > base::TimeDelta::FromSeconds(5))
+  if (fcp_time_delta > base::Seconds(5))
     sliding_window_max_percent_dropped_After_5_sec_ =
         std::max(sliding_window_max_percent_dropped_After_5_sec_.value_or(0.0),
                  percent_dropped_frame);
 }
 
 void DroppedFrameCounter::OnFcpReceived() {
+  DCHECK(!fcp_received_);
   fcp_received_ = true;
   time_fcp_received_ = base::TimeTicks::Now();
 }

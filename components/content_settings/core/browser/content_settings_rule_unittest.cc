@@ -37,9 +37,8 @@ class ListIterator : public RuleIterator {
 }  // namespace
 
 TEST(RuleTest, ConcatenationIterator) {
-  base::Time expiredTime =
-      base::Time::Now() - base::TimeDelta::FromSeconds(101);
-  base::Time validTime = base::Time::Now() - base::TimeDelta::FromSeconds(101);
+  base::Time expiredTime = base::Time::Now() - base::Seconds(101);
+  base::Time validTime = base::Time::Now() - base::Seconds(101);
 
   std::list<Rule> rules1;
   rules1.push_back(Rule(ContentSettingsPattern::FromString("a"),

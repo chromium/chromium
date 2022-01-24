@@ -10,7 +10,6 @@
 #include "apps/saved_files_service.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/profiles/profile.h"

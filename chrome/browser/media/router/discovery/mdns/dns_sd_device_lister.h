@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"  // nogncheck
 #include "chrome/common/buildflags.h"
 
@@ -29,6 +28,10 @@ class DnsSdDeviceLister
       local_discovery::ServiceDiscoveryClient* service_discovery_client,
       DnsSdDelegate* delegate,
       const std::string& service_type);
+
+  DnsSdDeviceLister(const DnsSdDeviceLister&) = delete;
+  DnsSdDeviceLister& operator=(const DnsSdDeviceLister&) = delete;
+
   virtual ~DnsSdDeviceLister();
 
   virtual void Discover();
@@ -58,8 +61,6 @@ class DnsSdDeviceLister
   local_discovery::ServiceDiscoveryClient* const service_discovery_client_;
   const std::string service_type_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DnsSdDeviceLister);
 };
 
 }  // namespace media_router

@@ -36,7 +36,7 @@ def ParseArgs():
                       required=True,
                       help=('The billing project to use for BigQuery queries. '
                             'Must have access to the ResultDB BQ tables, e.g. '
-                            '"luci-resultdb.chromium.gpu_ci_test_results".'))
+                            '"chrome-luci-data.chromium.gpu_ci_test_results".'))
   parser.add_argument('--sample-period',
                       type=int,
                       default=1,
@@ -55,6 +55,7 @@ def ParseArgs():
 
 def main():
   args = ParseArgs()
+  expectations.AssertCheckoutIsUpToDate()
   results = queries.GetFlakyOrFailingTests(args.sample_period, args.project)
   aggregated_results = results_module.AggregateResults(results)
   result_output.GenerateHtmlOutputFile(aggregated_results)

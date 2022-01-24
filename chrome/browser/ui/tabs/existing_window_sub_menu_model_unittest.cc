@@ -7,13 +7,67 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "ui/gfx/text_elider.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/autotest_desks_api.h"
+#include "chrome/browser/ui/tabs/existing_window_sub_menu_model_chromeos.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#include "ui/views/widget/widget.h"
+#endif
+
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class TestBrowserWindowViewsWithDesktopNativeWidgetAura
+    : public TestBrowserWindow {
+ public:
+  explicit TestBrowserWindowViewsWithDesktopNativeWidgetAura(
+      bool popup = false);
+  TestBrowserWindowViewsWithDesktopNativeWidgetAura(
+      const TestBrowserWindowViewsWithDesktopNativeWidgetAura&) = delete;
+  TestBrowserWindowViewsWithDesktopNativeWidgetAura& operator=(
+      const TestBrowserWindowViewsWithDesktopNativeWidgetAura&) = delete;
+  ~TestBrowserWindowViewsWithDesktopNativeWidgetAura() override;
+
+ private:
+  std::unique_ptr<views::Widget> CreateDesktopWidget(bool popup);
+
+  std::unique_ptr<views::Widget> widget_;
+};
+
+TestBrowserWindowViewsWithDesktopNativeWidgetAura::
+    TestBrowserWindowViewsWithDesktopNativeWidgetAura(bool popup) {
+  widget_ = CreateDesktopWidget(popup);
+  SetNativeWindow(widget_->GetNativeWindow());
+}
+
+TestBrowserWindowViewsWithDesktopNativeWidgetAura::
+    ~TestBrowserWindowViewsWithDesktopNativeWidgetAura() = default;
+
+std::unique_ptr<views::Widget>
+TestBrowserWindowViewsWithDesktopNativeWidgetAura::CreateDesktopWidget(
+    bool popup) {
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params;
+  params.type = popup ? views::Widget::InitParams::TYPE_POPUP
+                      : views::Widget::InitParams::TYPE_WINDOW;
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.native_widget = new views::DesktopNativeWidgetAura(widget.get());
+  params.bounds = gfx::Rect(0, 0, 20, 20);
+  widget->Init(std::move(params));
+  return widget;
+}
+#endif
 
 class ExistingWindowSubMenuModelTest : public BrowserWithTestWindowTest {
  public:
@@ -21,6 +75,9 @@ class ExistingWindowSubMenuModelTest : public BrowserWithTestWindowTest {
 
  protected:
   std::unique_ptr<Browser> CreateTestBrowser(bool incognito, bool popup);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<Browser> CreateTestBrowserOnWorkspace(std::string desk_index);
+#endif
   void AddTabWithTitle(Browser* browser, std::string title);
 
   static void CheckBrowserTitle(const std::u16string& title,
@@ -31,7 +88,12 @@ class ExistingWindowSubMenuModelTest : public BrowserWithTestWindowTest {
 std::unique_ptr<Browser> ExistingWindowSubMenuModelTest::CreateTestBrowser(
     bool incognito,
     bool popup) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  TestBrowserWindow* window =
+      new TestBrowserWindowViewsWithDesktopNativeWidgetAura(popup);
+#else
   TestBrowserWindow* window = new TestBrowserWindow;
+#endif
   new TestBrowserWindowOwner(window);
   Profile* profile = incognito ? browser()->profile()->GetPrimaryOTRProfile(
                                      /*create_if_needed=*/true)
@@ -43,6 +105,18 @@ std::unique_ptr<Browser> ExistingWindowSubMenuModelTest::CreateTestBrowser(
   BrowserList::SetLastActive(browser.get());
   return browser;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::unique_ptr<Browser>
+ExistingWindowSubMenuModelTest::CreateTestBrowserOnWorkspace(
+    std::string desk_index) {
+  auto browser = CreateTestBrowser(/*incognito=*/false, /*popup=*/false);
+  auto* test_browser_window =
+      static_cast<TestBrowserWindow*>(browser->window());
+  test_browser_window->set_workspace(desk_index);
+  return browser;
+}
+#endif
 
 void ExistingWindowSubMenuModelTest::AddTabWithTitle(Browser* browser,
                                                      std::string title) {
@@ -156,28 +230,34 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
   AddTabWithTitle(browser_4.get(), kLongTabTitleExample);
 
   // Create menu from browser 1.
-  ExistingWindowSubMenuModel menu1(nullptr, browser()->tab_strip_model(), 0);
-  ASSERT_EQ(5, menu1.GetItemCount());
-  CheckBrowserTitle(menu1.GetLabelAt(2), kLongTabTitleExample, 3);
-  CheckBrowserTitle(menu1.GetLabelAt(3), "Browser 3 Tab 2", 2);
-  CheckBrowserTitle(menu1.GetLabelAt(4), kLongTabTitleExample, 1);
+  auto menu1 = ExistingWindowSubMenuModel::Create(
+      nullptr, browser()->tab_menu_model_delegate(),
+      browser()->tab_strip_model(), 0);
+  ASSERT_EQ(5, menu1->GetItemCount());
+  CheckBrowserTitle(menu1->GetLabelAt(2), kLongTabTitleExample, 3);
+  CheckBrowserTitle(menu1->GetLabelAt(3), "Browser 3 Tab 2", 2);
+  CheckBrowserTitle(menu1->GetLabelAt(4), kLongTabTitleExample, 1);
 
   // Create menu from browser 2.
-  ExistingWindowSubMenuModel menu2(nullptr, browser_2->tab_strip_model(), 0);
-  ASSERT_EQ(5, menu2.GetItemCount());
-  CheckBrowserTitle(menu2.GetLabelAt(2), kLongTabTitleExample, 3);
-  CheckBrowserTitle(menu2.GetLabelAt(3), "Browser 3 Tab 2", 2);
-  CheckBrowserTitle(menu2.GetLabelAt(4), "Browser 1", 1);
+  auto menu2 = ExistingWindowSubMenuModel::Create(
+      nullptr, browser_2->tab_menu_model_delegate(),
+      browser_2->tab_strip_model(), 0);
+  ASSERT_EQ(5, menu2->GetItemCount());
+  CheckBrowserTitle(menu2->GetLabelAt(2), kLongTabTitleExample, 3);
+  CheckBrowserTitle(menu2->GetLabelAt(3), "Browser 3 Tab 2", 2);
+  CheckBrowserTitle(menu2->GetLabelAt(4), "Browser 1", 1);
 
   // Rearrange the MRU and re-test.
   BrowserList::SetLastActive(browser());
   BrowserList::SetLastActive(browser_2.get());
 
-  ExistingWindowSubMenuModel menu3(nullptr, browser_3->tab_strip_model(), 0);
-  ASSERT_EQ(5, menu3.GetItemCount());
-  CheckBrowserTitle(menu3.GetLabelAt(2), kLongTabTitleExample, 1);
-  CheckBrowserTitle(menu3.GetLabelAt(3), "Browser 1", 1);
-  CheckBrowserTitle(menu3.GetLabelAt(4), kLongTabTitleExample, 3);
+  auto menu3 = ExistingWindowSubMenuModel::Create(
+      nullptr, browser_3->tab_menu_model_delegate(),
+      browser_3->tab_strip_model(), 0);
+  ASSERT_EQ(5, menu3->GetItemCount());
+  CheckBrowserTitle(menu3->GetLabelAt(2), kLongTabTitleExample, 1);
+  CheckBrowserTitle(menu3->GetLabelAt(3), "Browser 1", 1);
+  CheckBrowserTitle(menu3->GetLabelAt(4), kLongTabTitleExample, 3);
 
   // Clean up.
   chrome::CloseTab(browser_2.get());
@@ -208,16 +288,19 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuIncognito) {
   const std::u16string kIncognitoBrowser2ExpectedTitle = u"Incognito Browser 2";
 
   // Test that a non-incognito browser only shows non-incognito windows.
-  ExistingWindowSubMenuModel menu(nullptr, browser()->tab_strip_model(), 0);
-  ASSERT_EQ(4, menu.GetItemCount());
-  ASSERT_EQ(kBrowser3ExpectedTitle, menu.GetLabelAt(2));
-  ASSERT_EQ(kBrowser2ExpectedTitle, menu.GetLabelAt(3));
+  auto menu = ExistingWindowSubMenuModel::Create(
+      nullptr, browser()->tab_menu_model_delegate(),
+      browser()->tab_strip_model(), 0);
+  ASSERT_EQ(4, menu->GetItemCount());
+  ASSERT_EQ(kBrowser3ExpectedTitle, menu->GetLabelAt(2));
+  ASSERT_EQ(kBrowser2ExpectedTitle, menu->GetLabelAt(3));
 
   // Test that a incognito browser only shows incognito windows.
-  ExistingWindowSubMenuModel menu_incognito(
-      nullptr, incognito_browser_1->tab_strip_model(), 0);
-  ASSERT_EQ(3, menu_incognito.GetItemCount());
-  ASSERT_EQ(kIncognitoBrowser2ExpectedTitle, menu_incognito.GetLabelAt(2));
+  auto menu_incognito = ExistingWindowSubMenuModel::Create(
+      nullptr, incognito_browser_1->tab_menu_model_delegate(),
+      incognito_browser_1->tab_strip_model(), 0);
+  ASSERT_EQ(3, menu_incognito->GetItemCount());
+  ASSERT_EQ(kIncognitoBrowser2ExpectedTitle, menu_incognito->GetLabelAt(2));
 
   // Clean up.
   chrome::CloseTab(browser_2.get());
@@ -243,10 +326,12 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuPopups) {
   const std::u16string kBrowser3ExpectedTitle = u"Browser 3";
 
   // Test that popups do not show.
-  ExistingWindowSubMenuModel menu(nullptr, browser()->tab_strip_model(), 0);
-  ASSERT_EQ(4, menu.GetItemCount());
-  ASSERT_EQ(kBrowser3ExpectedTitle, menu.GetLabelAt(2));
-  ASSERT_EQ(kBrowser2ExpectedTitle, menu.GetLabelAt(3));
+  auto menu = ExistingWindowSubMenuModel::Create(
+      nullptr, browser()->tab_menu_model_delegate(),
+      browser()->tab_strip_model(), 0);
+  ASSERT_EQ(4, menu->GetItemCount());
+  ASSERT_EQ(kBrowser3ExpectedTitle, menu->GetLabelAt(2));
+  ASSERT_EQ(kBrowser2ExpectedTitle, menu->GetLabelAt(3));
 
   // Clean up.
   chrome::CloseTab(browser_2.get());
@@ -254,5 +339,138 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuPopups) {
   chrome::CloseTab(popup_browser_1.get());
   chrome::CloseTab(popup_browser_2.get());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Ensure that when there are multiple desks the browsers are grouped by which
+// desk they belong to.
+TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuGroupedByDesks) {
+  const std::string kBrowser2TabTitle("Browser 2 Tab 1");
+  const std::string kBrowser3TabTitle("Browser 3 Tab 1");
+  const std::string kBrowser4TabTitle("Browser 4 Tab 1");
+  const std::string kBrowser5TabTitle("Browser 5 Tab 1");
+  const std::string kBrowser6TabTitle("Browser 6 Tab 1");
+  const std::string kBrowser7TabTitle("Browser 7 Tab 1");
+
+  // Create 4 desks so we have 5 in total.
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+
+  // Add some browsers and put them in each desk.
+  BrowserList::SetLastActive(browser());
+  std::unique_ptr<Browser> browser_2(CreateTestBrowserOnWorkspace("0"));
+  std::unique_ptr<Browser> browser_3(CreateTestBrowserOnWorkspace("1"));
+  std::unique_ptr<Browser> browser_4(CreateTestBrowserOnWorkspace("1"));
+  std::unique_ptr<Browser> browser_5(CreateTestBrowserOnWorkspace("2"));
+  std::unique_ptr<Browser> browser_6(CreateTestBrowserOnWorkspace("2"));
+  std::unique_ptr<Browser> browser_7(CreateTestBrowserOnWorkspace("3"));
+
+  // Add tabs.
+  AddTabWithTitle(browser_2.get(), kBrowser2TabTitle);
+  AddTabWithTitle(browser_3.get(), kBrowser3TabTitle);
+  AddTabWithTitle(browser_4.get(), kBrowser4TabTitle);
+  AddTabWithTitle(browser_5.get(), kBrowser5TabTitle);
+  AddTabWithTitle(browser_6.get(), kBrowser6TabTitle);
+  AddTabWithTitle(browser_7.get(), kBrowser7TabTitle);
+
+  // Scramble their MRU order by activating them. The MRU order should be:
+  // [b7, b5, b4, b2, b3, b6] (left-most is MRU).
+  BrowserList::SetLastActive(browser_6.get());
+  BrowserList::SetLastActive(browser_3.get());
+  BrowserList::SetLastActive(browser_2.get());
+  BrowserList::SetLastActive(browser_4.get());
+  BrowserList::SetLastActive(browser_5.get());
+  BrowserList::SetLastActive(browser_7.get());
+
+  const std::vector<Browser*> kExpectedMRUOrder{
+      browser_7.get(), browser_5.get(), browser_4.get(),
+      browser_2.get(), browser_3.get(), browser_6.get()};
+  const auto& mru_ordered_windows =
+      browser()->tab_menu_model_delegate()->GetExistingWindowsForMoveMenu();
+  ASSERT_EQ(6u, mru_ordered_windows.size());
+  ASSERT_EQ(mru_ordered_windows, kExpectedMRUOrder);
+
+  // Create the menu from browser 1. The labels should be grouped by desk and
+  // respect MRU order within each desk grouping. Also a label shouldn't be made
+  // for the 5th desk since no browsers are in it.
+  auto menu1 = ExistingWindowSubMenuModel::Create(
+      nullptr, browser()->tab_menu_model_delegate(),
+      browser()->tab_strip_model(), 0);
+  ASSERT_EQ(15, menu1->GetItemCount());
+  EXPECT_EQ(u"Desk 1", menu1->GetLabelAt(2));
+  CheckBrowserTitle(menu1->GetLabelAt(3), kBrowser2TabTitle, 1);
+  EXPECT_EQ(ui::SPACING_SEPARATOR, menu1->GetSeparatorTypeAt(4));
+  EXPECT_EQ(u"Desk 2", menu1->GetLabelAt(5));
+  CheckBrowserTitle(menu1->GetLabelAt(6), kBrowser4TabTitle, 1);
+  CheckBrowserTitle(menu1->GetLabelAt(7), kBrowser3TabTitle, 1);
+  EXPECT_EQ(ui::SPACING_SEPARATOR, menu1->GetSeparatorTypeAt(8));
+  EXPECT_EQ(u"Desk 3", menu1->GetLabelAt(9));
+  CheckBrowserTitle(menu1->GetLabelAt(10), kBrowser5TabTitle, 1);
+  CheckBrowserTitle(menu1->GetLabelAt(11), kBrowser6TabTitle, 1);
+  EXPECT_EQ(ui::SPACING_SEPARATOR, menu1->GetSeparatorTypeAt(12));
+  EXPECT_EQ(u"Desk 4", menu1->GetLabelAt(13));
+  CheckBrowserTitle(menu1->GetLabelAt(14), kBrowser7TabTitle, 1);
+
+  // Clean up.
+  chrome::CloseTab(browser_2.get());
+  chrome::CloseTab(browser_3.get());
+  chrome::CloseTab(browser_4.get());
+  chrome::CloseTab(browser_5.get());
+  chrome::CloseTab(browser_6.get());
+  chrome::CloseTab(browser_7.get());
+}
+
+// Tests out that executing the commands in the submenu grouped by desks work
+// properly.
+TEST_F(ExistingWindowSubMenuModelTest, EnsureGroupedByDesksCommands) {
+  // Create 2 desks so we have 3 in total.
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+
+  // Add some browsers and put them in desks.
+  std::unique_ptr<Browser> browser_2(CreateTestBrowserOnWorkspace("0"));
+  std::unique_ptr<Browser> browser_3(CreateTestBrowserOnWorkspace("1"));
+  std::unique_ptr<Browser> browser_4(CreateTestBrowserOnWorkspace("1"));
+  std::unique_ptr<Browser> browser_5(CreateTestBrowserOnWorkspace("2"));
+
+  // Scramble the MRU order by activating them. The MRU order should be:
+  // [b4, b2, b3, b5] (left-most is MRU).
+  BrowserList::SetLastActive(browser_5.get());
+  BrowserList::SetLastActive(browser_3.get());
+  BrowserList::SetLastActive(browser_2.get());
+  BrowserList::SetLastActive(browser_4.get());
+
+  const std::vector<Browser*> kExpectedMRUOrder{
+      browser_4.get(), browser_2.get(), browser_3.get(), browser_5.get()};
+  const auto& mru_ordered_windows =
+      browser()->tab_menu_model_delegate()->GetExistingWindowsForMoveMenu();
+  ASSERT_EQ(4u, mru_ordered_windows.size());
+  ASSERT_EQ(mru_ordered_windows, kExpectedMRUOrder);
+
+  // Create the menu from browser 1 and ensure that the command indexes properly
+  // map to their browser indices.
+  auto menu1 = ExistingWindowSubMenuModel::Create(
+      nullptr, browser()->tab_menu_model_delegate(),
+      browser()->tab_strip_model(), 0);
+  const auto& command_id_to_target_index =
+      static_cast<chromeos::ExistingWindowSubMenuModelChromeOS*>(menu1.get())
+          ->command_id_to_target_index_for_testing();
+
+  // A vector of the expected mappings. The first element of each pair is the
+  // commdand id. The second element of each pair is the browser index.
+  const std::vector<std::pair<int, int>> kExpectedMappings{
+      {1002, 1}, {1003, 0}, {1004, 2}, {1005, 3}};
+  for (const auto& pair : kExpectedMappings) {
+    EXPECT_EQ(pair.second, command_id_to_target_index.at(pair.first));
+  }
+
+  // Clean up.
+  chrome::CloseTab(browser_2.get());
+  chrome::CloseTab(browser_3.get());
+  chrome::CloseTab(browser_4.get());
+  chrome::CloseTab(browser_5.get());
+}
+#endif
 
 }  // namespace

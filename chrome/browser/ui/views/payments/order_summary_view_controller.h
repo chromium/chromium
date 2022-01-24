@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAYMENTS_ORDER_SUMMARY_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_ORDER_SUMMARY_VIEW_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -26,6 +25,11 @@ class OrderSummaryViewController : public PaymentRequestSheetController,
   OrderSummaryViewController(base::WeakPtr<PaymentRequestSpec> spec,
                              base::WeakPtr<PaymentRequestState> state,
                              base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  OrderSummaryViewController(const OrderSummaryViewController&) = delete;
+  OrderSummaryViewController& operator=(const OrderSummaryViewController&) =
+      delete;
+
   ~OrderSummaryViewController() override;
 
   // PaymentRequestSpec::Observer:
@@ -42,8 +46,6 @@ class OrderSummaryViewController : public PaymentRequestSheetController,
   void FillContentView(views::View* content_view) override;
 
   base::WeakPtrFactory<OrderSummaryViewController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OrderSummaryViewController);
 };
 
 }  // namespace payments

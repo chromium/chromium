@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 
 using GPollFD = struct _GPollFD;
@@ -21,6 +20,10 @@ namespace ui {
 class X11EventWatcherGlib : public X11EventWatcher {
  public:
   explicit X11EventWatcherGlib(X11EventSource* source);
+
+  X11EventWatcherGlib(const X11EventWatcherGlib&) = delete;
+  X11EventWatcherGlib& operator=(const X11EventWatcherGlib&) = delete;
+
   ~X11EventWatcherGlib() override;
 
   // X11EventWatcher:
@@ -37,8 +40,6 @@ class X11EventWatcherGlib : public X11EventWatcher {
   std::unique_ptr<GPollFD> x_poll_;
 
   bool started_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(X11EventWatcherGlib);
 };
 
 }  // namespace ui

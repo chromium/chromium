@@ -69,7 +69,7 @@ def GetTopLevelContent(file_content):
   first_tag_line = 0
   first_tag_column = 0
   try:
-    xml.sax.parseString(file_content, handler)
+    xml.sax.parseString(file_content.encode('utf-8'), handler)
   except _FirstTagFoundError:
     # This is the expected case, it means a tag was found in the doc.
     first_tag_line = handler.GetFirstTagLine()
@@ -93,7 +93,7 @@ def GetTopLevelContent(file_content):
 def ParseXMLString(raw_xml):
   """Parses raw_xml and returns an ElementTree node that includes comments."""
   if sys.version_info.major == 2:
-    return ET.fromstring(raw_xml, _CommentedXMLParser())
+    return ET.fromstring(raw_xml.encode('utf-8'), _CommentedXMLParser())
   else:
     return ET.fromstring(
         raw_xml, ET.XMLParser(target=ET.TreeBuilder(insert_comments=True)))

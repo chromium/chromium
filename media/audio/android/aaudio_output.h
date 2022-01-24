@@ -23,6 +23,10 @@ class AAudioOutputStream : public MuteableAudioOutputStream {
   AAudioOutputStream(AudioManagerAndroid* manager,
                      const AudioParameters& params,
                      aaudio_usage_t usage);
+
+  AAudioOutputStream(const AAudioOutputStream&) = delete;
+  AAudioOutputStream& operator=(const AAudioOutputStream&) = delete;
+
   ~AAudioOutputStream() override;
 
   // Implementation of MuteableAudioOutputStream.
@@ -73,8 +77,6 @@ class AAudioOutputStream : public MuteableAudioOutputStream {
   bool muted_ GUARDED_BY(lock_) = false;
   double volume_ GUARDED_BY(lock_) = 1.0;
   bool device_changed_ GUARDED_BY(lock_) = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AAudioOutputStream);
 };
 
 }  // namespace media

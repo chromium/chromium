@@ -14,10 +14,10 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/interstitials/security_interstitial_idn_test.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -132,8 +132,7 @@ CaptivePortalTestingNavigationThrottle::WillFailRequest() {
   // Hand the blocking page back to the WebContents's
   // security_interstitials::SecurityInterstitialTabHelper to own.
   security_interstitials::SecurityInterstitialTabHelper::AssociateBlockingPage(
-      navigation_handle()->GetWebContents(),
-      navigation_handle()->GetNavigationId(), std::move(blocking_page));
+      navigation_handle(), std::move(blocking_page));
   return {CANCEL, net::ERR_CERT_COMMON_NAME_INVALID, html};
 }
 
@@ -187,6 +186,10 @@ class CaptivePortalBlockingPageTest : public InProcessBrowserTest {
     CertReportHelper::SetFakeOfficialBuildForTesting();
   }
 
+  CaptivePortalBlockingPageTest(const CaptivePortalBlockingPageTest&) = delete;
+  CaptivePortalBlockingPageTest& operator=(
+      const CaptivePortalBlockingPageTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Setting the sending threshold to 1.0 ensures reporting is enabled.
     variations::testing::VariationParamsManager::AppendVariationParams(
@@ -223,7 +226,6 @@ class CaptivePortalBlockingPageTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<TestingThrottleInstaller> testing_throttle_installer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalBlockingPageTest);
 };
 
 void CaptivePortalBlockingPageTest::TestInterstitial(
@@ -249,8 +251,8 @@ void CaptivePortalBlockingPageTest::TestInterstitial(
   //
   // TODO(https://crbug.com/1003940): Clean this code up now that committed
   // interstitials have shipped.
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("https://mock.failed.request/start=-20"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://mock.failed.request/start=-20")));
   content::RenderFrameHost* frame;
   frame = contents->GetMainFrame();
   ASSERT_TRUE(WaitForRenderFrameReady(frame));

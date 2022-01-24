@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.tasks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
@@ -16,15 +19,19 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
@@ -48,7 +55,6 @@ class TasksView extends CoordinatorLayoutForPointer {
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private IncognitoDescriptionView mIncognitoDescriptionView;
     private View.OnClickListener mIncognitoDescriptionLearnMoreListener;
-    private boolean mIncognitoCookieControlsCardIsVisible;
     private boolean mIncognitoCookieControlsToggleIsChecked;
     private OnCheckedChangeListener mIncognitoCookieControlsToggleCheckedListener;
     private @CookieControlsEnforcement int mIncognitoCookieControlsToggleEnforcement =
@@ -78,7 +84,21 @@ class TasksView extends CoordinatorLayoutForPointer {
         mCarouselTabSwitcherContainer =
                 (FrameLayout) findViewById(R.id.carousel_tab_switcher_container);
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
+
         mHeaderView = (AppBarLayout) findViewById(R.id.task_surface_header);
+        // TODO(https://crbug.com/1251632): Find out why scrolling was broken after
+        // crrev.com/c/3025127. Force the header view to be draggable as a workaround.
+        CoordinatorLayout.LayoutParams params =
+                (CoordinatorLayout.LayoutParams) mHeaderView.getLayoutParams();
+        AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
+        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
+            @Override
+            public boolean canDrag(AppBarLayout appBarLayout) {
+                return true;
+            }
+        });
+        params.setBehavior(behavior);
+
         mUiConfig = new UiConfig(this);
         setHeaderPadding();
         setTabCarouselTitleStyle();
@@ -157,13 +177,29 @@ class TasksView extends CoordinatorLayoutForPointer {
      */
     void setIncognitoMode(boolean isIncognito) {
         Resources resources = mContext.getResources();
-        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(resources, isIncognito);
+        int backgroundColor = ChromeColors.getPrimaryBackgroundColor(mContext, isIncognito);
         setBackgroundColor(backgroundColor);
         mHeaderView.setBackgroundColor(backgroundColor);
 
         mSearchBoxCoordinator.setIncognitoMode(isIncognito);
-        mSearchBoxCoordinator.setBackground(AppCompatResources.getDrawable(mContext,
-                isIncognito ? R.drawable.fake_search_box_bg_incognito : R.drawable.ntp_search_box));
+        Drawable searchBackground = AppCompatResources.getDrawable(mContext,
+                isIncognito ? R.drawable.fake_search_box_bg_incognito : R.drawable.ntp_search_box);
+        if (searchBackground instanceof RippleDrawable) {
+            Drawable shapeDrawable = ((RippleDrawable) searchBackground)
+                                             .findDrawableByLayerId(R.id.fake_search_box_bg_shape);
+            if (shapeDrawable != null) {
+                @ColorInt
+                int searchBackgroundColor = isIncognito
+                        ? getResources().getColor(R.color.toolbar_text_box_background_incognito)
+                        : ChromeColors.getSurfaceColor(
+                                mContext, R.dimen.toolbar_text_box_elevation);
+                shapeDrawable.mutate();
+                // TODO(https://crbug.com/1239289): Change back to #setTint once our min API level
+                // is 23.
+                shapeDrawable.setColorFilter(searchBackgroundColor, PorterDuff.Mode.SRC_IN);
+            }
+        }
+        mSearchBoxCoordinator.setBackground(searchBackground);
         int hintTextColor = isIncognito
                 ? ApiCompatibilityUtils.getColor(resources, R.color.locationbar_light_hint_text)
                 : ApiCompatibilityUtils.getColor(resources, R.color.locationbar_dark_hint_text);
@@ -184,12 +220,22 @@ class TasksView extends CoordinatorLayoutForPointer {
             containerView.setFocusable(true);
             containerView.setFocusableInTouchMode(true);
         }
-        mIncognitoDescriptionView = (IncognitoDescriptionView) containerView.findViewById(
-                R.id.new_tab_incognito_container);
+
+        ViewStub incognitoDescriptionViewStub =
+                (ViewStub) findViewById(R.id.task_view_incognito_layout_stub);
+        if (FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP)) {
+            incognitoDescriptionViewStub.setLayoutResource(
+                    R.layout.revamped_incognito_description_layout);
+        } else {
+            incognitoDescriptionViewStub.setLayoutResource(R.layout.incognito_description_layout);
+        }
+
+        mIncognitoDescriptionView =
+                (IncognitoDescriptionView) incognitoDescriptionViewStub.inflate();
         if (mIncognitoDescriptionLearnMoreListener != null) {
             setIncognitoDescriptionLearnMoreClickListener(mIncognitoDescriptionLearnMoreListener);
         }
-        setIncognitoCookieControlsCardVisibility(mIncognitoCookieControlsCardIsVisible);
         setIncognitoCookieControlsToggleChecked(mIncognitoCookieControlsToggleIsChecked);
         if (mIncognitoCookieControlsToggleCheckedListener != null) {
             setIncognitoCookieControlsToggleCheckedListener(
@@ -206,7 +252,7 @@ class TasksView extends CoordinatorLayoutForPointer {
      * @param isVisible Whether it's visible or not.
      */
     void setIncognitoDescriptionVisibility(boolean isVisible) {
-        mIncognitoDescriptionView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        ((View) mIncognitoDescriptionView).setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -216,19 +262,8 @@ class TasksView extends CoordinatorLayoutForPointer {
     void setIncognitoDescriptionLearnMoreClickListener(View.OnClickListener listener) {
         mIncognitoDescriptionLearnMoreListener = listener;
         if (mIncognitoDescriptionView != null) {
-            mIncognitoDescriptionView.findViewById(R.id.learn_more).setOnClickListener(listener);
+            mIncognitoDescriptionView.setLearnMoreOnclickListener(listener);
             mIncognitoDescriptionLearnMoreListener = null;
-        }
-    }
-
-    /**
-     * Set the visibility of the cookie controls card on the incognito description.
-     * @param isVisible Whether it's visible or not.
-     */
-    void setIncognitoCookieControlsCardVisibility(boolean isVisible) {
-        mIncognitoCookieControlsCardIsVisible = isVisible;
-        if (mIncognitoDescriptionView != null) {
-            mIncognitoDescriptionView.showCookieControlsCard(isVisible);
         }
     }
 

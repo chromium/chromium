@@ -42,6 +42,6 @@ interface INavigationControllerClient {
   IClientPage createClientPage() = 12;
   void onPageDestroyed(IClientPage page) = 13;
 
-  // Added in M94.
+  // Added in M93.
   void onPageLanguageDetermined(IClientPage page, in String language) = 14;
 }

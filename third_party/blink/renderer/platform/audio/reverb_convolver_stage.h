@@ -57,10 +57,10 @@ class PLATFORM_EXPORT ReverbConvolverStage {
                        size_t response_length,
                        size_t reverb_total_latency,
                        size_t stage_offset,
-                       size_t stage_length,
-                       size_t fft_size,
+                       unsigned stage_length,
+                       unsigned fft_size,
                        size_t render_phase,
-                       size_t render_slice_size,
+                       unsigned render_slice_size,
                        ReverbAccumulationBuffer*,
                        float scale,
                        bool direct_mode = false);
@@ -77,7 +77,7 @@ class PLATFORM_EXPORT ReverbConvolverStage {
   void Reset();
 
   // Useful for background processing
-  int InputReadIndex() const { return input_read_index_; }
+  size_t InputReadIndex() const { return input_read_index_; }
 
  private:
   std::unique_ptr<FFTFrame> fft_kernel_;
@@ -86,8 +86,8 @@ class PLATFORM_EXPORT ReverbConvolverStage {
   AudioFloatArray pre_delay_buffer_;
 
   ReverbAccumulationBuffer* accumulation_buffer_;
-  int accumulation_read_index_;
-  int input_read_index_;
+  uint32_t accumulation_read_index_;
+  size_t input_read_index_;
 
   size_t pre_delay_length_;
   size_t post_delay_length_;

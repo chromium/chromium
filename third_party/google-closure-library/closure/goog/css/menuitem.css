@@ -7,9 +7,9 @@
 
 /*
  * Standard styling for menus created by goog.ui.MenuItemRenderer.
- *
- * @provide {goog.css.menuitem}
  */
+
+@provide 'goog.css.menuitem';
 
 /**
  * State: resting.

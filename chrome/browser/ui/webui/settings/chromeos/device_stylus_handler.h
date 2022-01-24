@@ -8,9 +8,8 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/note_taking_helper.h"
+#include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
@@ -28,6 +27,10 @@ class StylusHandler : public ::settings::SettingsPageUIHandler,
                       public ui::InputDeviceEventObserver {
  public:
   StylusHandler();
+
+  StylusHandler(const StylusHandler&) = delete;
+  StylusHandler& operator=(const StylusHandler&) = delete;
+
   ~StylusHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -35,7 +38,7 @@ class StylusHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  // chromeos::NoteTakingHelper::Observer implementation.
+  // NoteTakingHelper::Observer implementation.
   void OnAvailableNoteTakingAppsUpdated() override;
   void OnPreferredNoteTakingAppUpdated(Profile* profile) override;
 
@@ -64,8 +67,6 @@ class StylusHandler : public ::settings::SettingsPageUIHandler,
       note_observation_{this};
   base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
       input_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StylusHandler);
 };
 
 }  // namespace settings

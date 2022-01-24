@@ -40,15 +40,6 @@
           width: 100%;
         }
 
-        :host-context(html:not([new-layout])) {
-          --button-alignment: flex-end;
-          --lock-screen-reauth-dialog-content-direction: column;
-          --lock-screen-reauth-dialog-item-alignment: unset;
-          --lock-screen-reauth-dialog-text-line-height: 150%;
-          --lock-screen-reauth-dialog-title-top-padding: 15px;
-          --lock-screen-reauth-text-alignment: start;
-        }
-
         :host-context([orientation=horizontal]) {
           --button-alignment: flex-end;
           --lock-screen-reauth-dialog-content-direction: row;
@@ -96,8 +87,8 @@
         .main-container {
           align-items: var(--lock-screen-reauth-dialog-item-alignment);
           display: flex;
-          flex-direction: var(--lock-screen-reauth-dialog-content-direction);
           flex: 1;
+          flex-direction: var(--lock-screen-reauth-dialog-content-direction);
         }
 
         #body {
@@ -109,15 +100,20 @@
           width: 100%;
         }
 
-        #saml-container {
-          /* #F1F3F4 */
-          background: rgb(241, 243, 244);
+        #samlContainer {
+          /* #FFFFFF */
+          background: rgb(255, 255, 255);
           /* #000000 */
           box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
           display: flex;
           height: 44px;
           justify-content: flex-end;
           text-align: center;
+        }
+
+        #samlContainer[saml-notice-message] {
+          /* #F1F3F4 */
+          background: rgb(241, 243, 244);
         }
 
         #samlNoticeMessage {
@@ -147,16 +143,7 @@
           align-self: var(--lock-screen-reauth-dialog-item-alignment);
         }
 
-        :host-context(html:not([new-layout])) .header {
-          background: white;
-          flex: 1;
-          padding-bottom: 0;
-          padding-inline-end: 64px;
-          padding-inline-start: 64px;
-          padding-top: 64px;
-        }
-
-        :host-context([new-layout]) .header {
+        .header {
           background: white;
           display: flex;
           flex-direction: column;
@@ -188,14 +175,7 @@
           text-align: var(--lock-screen-reauth-text-alignment);
         }
 
-        :host-context(html:not([new-layout])) .illustration-container {
-          align-items: center;
-          display: flex;
-          flex: 3;
-          justify-content: center;
-        }
-
-        :host-context([new-layout]) .illustration-container {
+        .illustration-container {
           align-items: center;
           display: flex;
           justify-content: center;
@@ -233,15 +213,7 @@
           display: none !important;
         }
 
-        :host-context(html:not([new-layout])) .input-container {
-          border: 0;
-          flex: 2;
-          justify-content: flex-start;
-          padding-inline-start: 64px;
-          width: 75%;
-        }
-
-        :host-context([new-layout]) .input-container {
+        .input-container {
           border: 0;
           flex: 2;
           padding-bottom: 0;
@@ -259,7 +231,7 @@
           padding-bottom: 8px;
         }
 
-        :host-context([new-layout]) cr-button {
+        cr-button {
           border-radius: 16px;
         }
 
@@ -311,9 +283,7 @@
             </div>
           </div>
           <div class="illustration-container">
-            <img class="illustration"
-                srcset="../login/images/1x/error.svg 1x,
-                        ../login/images/2x/error.svg 2x">
+            <img src="../login/images/error.svg" class="illustration">
           </div>
         </div>
         <div class="flex layout horizontal button-container">
@@ -327,8 +297,10 @@
       </div>
 
       <div id="body" hidden="[[!isSamlPage_]]">
-        <div id="saml-container">
-          <span id="samlNoticeMessage"></span>
+        <div id="samlContainer"
+            saml-notice-message$="[[showSamlNoticeMessage_]]">
+          <span id="samlNoticeMessage" hidden="[[!showSamlNoticeMessage_]]">
+          </span>
           <cr-icon-button id="saml-close-button" iron-icon="cr:close"
               on-click="onCloseTap_" aria-label="$i18n{lockScreenCloseButton}">
           </cr-icon-button>

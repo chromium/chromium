@@ -458,6 +458,27 @@ HRESULT GetSidFromId(const std::wstring& id, wchar_t* sid, ULONG length) {
   return GetSidFromKey(kUserId, id, sid, length);
 }
 
+HRESULT GetSidFromDomainAccountInfo(const std::wstring& domain,
+                                    const std::wstring& username,
+                                    wchar_t* sid,
+                                    ULONG length) {
+  // Max SID length is 256 characters.
+  // https://docs.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/microsoft-windows-shell-setup-offlineuseraccounts-offlinedomainaccounts-offlinedomainaccount-sid
+  wchar_t sid1[256];
+  wchar_t sid2[256];
+
+  if (SUCCEEDED(GetSidFromKey(base::UTF8ToWide(kKeyDomain).c_str(), domain,
+                              sid1, length)) &&
+      SUCCEEDED(GetSidFromKey(base::UTF8ToWide(kKeyUsername).c_str(), username,
+                              sid2, length)) &&
+      wcsicmp(sid1, sid2) == 0) {
+    wcscpy_s(sid, length, sid1);
+    return S_OK;
+  } else {
+    return E_FAIL;
+  }
+}
+
 HRESULT GetIdFromSid(const wchar_t* sid, std::wstring* id) {
   DCHECK(id);
 

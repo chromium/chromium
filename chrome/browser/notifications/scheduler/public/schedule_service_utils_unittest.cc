@@ -35,10 +35,8 @@ struct TestCaseInput {
 // verify next actual deliver time window calculation.
 TEST(NotificationScheduleServiceUtilsTest, NextTimeWindow) {
   // Build test cases.
-  TimeDeltaPair morning_window_input = {base::TimeDelta::FromHours(5),
-                                        base::TimeDelta::FromHours(7)};
-  TimeDeltaPair evening_window_input = {base::TimeDelta::FromHours(18),
-                                        base::TimeDelta::FromHours(20)};
+  TimeDeltaPair morning_window_input = {base::Hours(5), base::Hours(7)};
+  TimeDeltaPair evening_window_input = {base::Hours(18), base::Hours(20)};
 
   std::vector<TestCaseInput> test_cases = {
       {"03/24/19 04:05:55 AM", "03/24/19 05:00:00 AM", "03/24/19 07:00:00 AM"},

@@ -14,6 +14,9 @@ class SystemCpuGetInfoFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("system.cpu.getInfo", SYSTEM_CPU_GETINFO)
   SystemCpuGetInfoFunction();
 
+  SystemCpuGetInfoFunction(const SystemCpuGetInfoFunction&) = delete;
+  SystemCpuGetInfoFunction& operator=(const SystemCpuGetInfoFunction&) = delete;
+
  private:
   ~SystemCpuGetInfoFunction() override;
 
@@ -21,8 +24,6 @@ class SystemCpuGetInfoFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   void OnGetCpuInfoCompleted(bool success);
-
-  DISALLOW_COPY_AND_ASSIGN(SystemCpuGetInfoFunction);
 };
 
 }  // namespace extensions

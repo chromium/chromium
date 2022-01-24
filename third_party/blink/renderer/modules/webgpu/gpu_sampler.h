@@ -19,8 +19,8 @@ class GPUSampler : public DawnObject<WGPUSampler> {
                             const GPUSamplerDescriptor* webgpu_desc);
   explicit GPUSampler(GPUDevice* device, WGPUSampler sampler);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUSampler);
+  GPUSampler(const GPUSampler&) = delete;
+  GPUSampler& operator=(const GPUSampler&) = delete;
 };
 
 }  // namespace blink

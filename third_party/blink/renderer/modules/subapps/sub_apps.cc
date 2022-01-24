@@ -92,15 +92,25 @@ ScriptPromise SubApps::add(ScriptState* script_state,
     return resolver->Promise();
   }
 
+  KURL completed_url = KURL(navigator->DomWindow()->Url(), install_url);
+  if (!url::Origin::Create(navigator->DomWindow()->Url())
+           .IsSameOriginWith(url::Origin::Create(completed_url))) {
+    auto* exception = MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "API argument must be a relative path or a fully qualified URL matching"
+        " the origin of the caller.");
+    resolver->Reject(exception);
+    return resolver->Promise();
+  }
+
   mojo::Remote<mojom::blink::SubAppsProvider> provider;
   ExecutionContext::From(script_state)
       ->GetBrowserInterfaceBroker()
       .GetInterface(provider.BindNewPipeAndPassReceiver());
 
   auto* raw_provider = provider.get();
-  // TODO(isandrk, 1171317): Skeleton implementation which doesn't pass
-  // |install_url| for now.
   raw_provider->Add(
+      completed_url.GetPath(),
       WTF::Bind(&OnAddSubApp, WrapPersistent(resolver), std::move(provider)));
 
   return resolver->Promise();

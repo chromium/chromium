@@ -182,8 +182,6 @@ void CheckHistograms(const base::HistogramTester& histograms,
   // Only one PrintPreview.UserAction bucket should have been populated.
   histograms.ExpectTotalCount("PrintPreview.UserAction", 1);
 
-  histograms.ExpectTotalCount("PrintPreview.PrintDocumentSize.HTML", 1);
-  histograms.ExpectTotalCount("PrintPreview.PrintDocumentSize.PDF", 0);
   histograms.ExpectBucketCount("PrintPreview.PrintDocumentType",
                                PrintDocumentTypeBuckets::kHtmlDocument, 1);
   histograms.ExpectBucketCount("PrintPreview.PrintDocumentType",
@@ -269,7 +267,7 @@ class FakePrintPreviewUI : public PrintPreviewUI {
   void OnClosePrintPreviewDialog() override {}
 };
 
-class TestPrintPreviewPrintRenderFrame : public FakePrintRenderFrame {
+class TestPrintPreviewPrintRenderFrame final : public FakePrintRenderFrame {
  public:
   explicit TestPrintPreviewPrintRenderFrame(
       blink::AssociatedInterfaceProvider* provider)
@@ -278,7 +276,7 @@ class TestPrintPreviewPrintRenderFrame : public FakePrintRenderFrame {
       delete;
   TestPrintPreviewPrintRenderFrame& operator=(
       const TestPrintPreviewPrintRenderFrame&) = delete;
-  ~TestPrintPreviewPrintRenderFrame() final = default;
+  ~TestPrintPreviewPrintRenderFrame() override = default;
 
   const base::Value& GetSettings() { return settings_; }
 
@@ -288,7 +286,7 @@ class TestPrintPreviewPrintRenderFrame : public FakePrintRenderFrame {
 
  private:
   // FakePrintRenderFrame:
-  void PrintPreview(base::Value settings) final {
+  void PrintPreview(base::Value settings) override {
     settings_ = std::move(settings);
     std::move(closure_).Run();
   }
@@ -985,6 +983,91 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsMaxSheetsAllowedPolicy) {
   Initialize();
   ValidateInitialSettingsValuePolicy(*web_ui()->call_data().back(), "sheets",
                                      base::Value(2));
+}
+
+TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableColorAndMonochrome) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.allowed_color_modes = 3;
+  SetPolicies(policies);
+#else
+  // Set a pref that should take priority over StickySettings.
+  prefs()->SetInteger(prefs::kPrintingAllowedColorModes, 3);
+#endif
+  Initialize();
+  ValidateInitialSettingsAllowedDefaultModePolicy(
+      *web_ui()->call_data().back(), "color", base::Value(3), absl::nullopt);
+}
+
+TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultColor) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.default_color_mode = printing::mojom::ColorModeRestriction::kColor;
+  SetPolicies(policies);
+#else
+  // Set a pref that should take priority over StickySettings.
+  prefs()->SetInteger(prefs::kPrintingColorDefault, 2);
+#endif
+  Initialize();
+  ValidateInitialSettingsAllowedDefaultModePolicy(
+      *web_ui()->call_data().back(), "color", absl::nullopt, base::Value(2));
+}
+
+TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableSimplexAndDuplex) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.allowed_duplex_modes = 7;
+  SetPolicies(policies);
+#else
+  // Set a pref that should take priority over StickySettings.
+  prefs()->SetInteger(prefs::kPrintingAllowedDuplexModes, 7);
+#endif
+  Initialize();
+  ValidateInitialSettingsAllowedDefaultModePolicy(
+      *web_ui()->call_data().back(), "duplex", base::Value(7), absl::nullopt);
+}
+
+TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultSimplex) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.default_duplex_mode =
+      printing::mojom::DuplexModeRestriction::kSimplex;
+  SetPolicies(policies);
+#else
+  // Set a pref that should take priority over StickySettings.
+  prefs()->SetInteger(prefs::kPrintingDuplexDefault, 1);
+#endif
+  Initialize();
+  ValidateInitialSettingsAllowedDefaultModePolicy(
+      *web_ui()->call_data().back(), "duplex", absl::nullopt, base::Value(1));
+}
+
+TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictPin) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.allowed_pin_modes = printing::mojom::PinModeRestriction::kPin;
+  SetPolicies(policies);
+#else
+  // Set a pref that should take priority over StickySettings.
+  prefs()->SetInteger(prefs::kPrintingAllowedPinModes, 1);
+#endif
+  Initialize();
+  ValidateInitialSettingsAllowedDefaultModePolicy(
+      *web_ui()->call_data().back(), "pin", base::Value(1), absl::nullopt);
+}
+
+TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultNoPin) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::Policies policies;
+  policies.default_pin_mode = printing::mojom::PinModeRestriction::kNoPin;
+  SetPolicies(policies);
+#else
+  // Set a pref that should take priority over StickySettings.
+  prefs()->SetInteger(prefs::kPrintingPinDefault, 2);
+#endif
+  Initialize();
+  ValidateInitialSettingsAllowedDefaultModePolicy(
+      *web_ui()->call_data().back(), "pin", absl::nullopt, base::Value(2));
 }
 #endif  // defined(OS_CHROMEOS)
 

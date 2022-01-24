@@ -36,4 +36,11 @@ interface CommerceHintObserver {
 
   // A form is submitted.
   OnFormSubmit(bool is_purchase);
+
+  // An XMLHttpRequest is about to be sent.
+  OnWillSendRequest(bool is_addtocart);
+
+  // A navigation is about to happen or has happened. Return whether
+  // we should skip collecting commerce hints on current URL or not.
+  OnNavigation(url.mojom.Url url) => (bool should_skip);
 };

@@ -13,7 +13,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
@@ -51,6 +50,10 @@ class CronetEnvironment {
   // |user_agent_partial| is true, or will be used as the complete user-agent
   // otherwise.
   CronetEnvironment(const std::string& user_agent, bool user_agent_partial);
+
+  CronetEnvironment(const CronetEnvironment&) = delete;
+  CronetEnvironment& operator=(const CronetEnvironment&) = delete;
+
   ~CronetEnvironment();
 
   // Starts this instance of Cronet environment.
@@ -133,14 +136,15 @@ class CronetEnvironment {
     CronetNetworkThread(const std::string& name,
                         cronet::CronetEnvironment* cronet_environment);
 
+    CronetNetworkThread(const CronetNetworkThread&) = delete;
+    CronetNetworkThread& operator=(const CronetNetworkThread&) = delete;
+
    protected:
     ~CronetNetworkThread() override;
     void CleanUp() override;
 
    private:
     cronet::CronetEnvironment* const cronet_environment_;
-
-    DISALLOW_COPY_AND_ASSIGN(CronetNetworkThread);
   };
 
   // Performs initialization tasks that must happen on the network thread.
@@ -206,8 +210,6 @@ class CronetEnvironment {
   bool enable_pkp_bypass_for_local_trust_anchors_;
   double network_thread_priority_;
   std::unique_ptr<CronetPrefsManager> cronet_prefs_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetEnvironment);
 };
 
 }  // namespace cronet

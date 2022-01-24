@@ -36,6 +36,7 @@
 // Tells the consumer to show the passed in suggested and all passwords.
 - (void)presentSuggestedPasswords:(NSArray<id<Credential>>*)suggested
                      allPasswords:(NSArray<id<Credential>>*)all
+                    showSearchBar:(BOOL)showSearchBar
             showNewPasswordOption:(BOOL)showNewPasswordOption;
 
 // Sets the prompt to show for the view.

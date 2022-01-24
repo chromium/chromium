@@ -59,7 +59,7 @@ void DevicePosture::EnsureServiceConnection() {
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(task_runner));
 
-  service_->SetListener(
+  service_->AddListenerAndGetCurrentPosture(
       receiver_.BindNewPipeAndPassRemote(task_runner),
       WTF::Bind(&DevicePosture::OnPostureChanged, WrapPersistent(this)));
 }

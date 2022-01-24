@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">This will clear <ph name="DATASIZE" /> of data and cookies stored by sites or by apps on your home screen.</translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
-<translation id="1195941046451948919">Are you sure that you want to reset all permissions for this website?</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1242008676835033345">Embedded on <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -19,7 +18,6 @@
 <translation id="1384959399684842514">Download paused</translation>
 <translation id="1415402041810619267">URL truncated</translation>
 <translation id="1446450296470737166">Allow full control of MIDI devices</translation>
-<translation id="1509960214886564027">Features on many sites may break</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1647582022260550163">Are you sure that you want to reset permissions, and clear cookies and site data?</translation>
@@ -31,6 +29,7 @@
 <translation id="1743802530341753419">Ask before allowing sites to connect to a device (recommended)</translation>
 <translation id="1779089405699405702">Image decoder</translation>
 <translation id="1818308510395330587">To let <ph name="APP_NAME" /> use AR, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">From <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Location access is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Ads</translation>
 <translation id="1919950603503897840">Select contacts</translation>
@@ -38,6 +37,7 @@
 <translation id="1984937141057606926">Allowed, except third-party</translation>
 <translation id="1989112275319619282">Browse</translation>
 <translation id="1994173015038366702">Site URL</translation>
+<translation id="2004697686368036666">Features on some sites may not work</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2030769033451695672">Tap to return to <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Undo</translation>
@@ -52,6 +52,7 @@
 <translation id="2289270750774289114">Ask when a site wants to discover nearby Bluetooth devices (recommended)</translation>
 <translation id="2315043854645842844">Client side certificate selection is not supported by the operating system.</translation>
 <translation id="2359808026110333948">Continue</translation>
+<translation id="2379925928934107488">Apply Dark theme to sites when Chrome uses Dark theme, when possible</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more allowed}}</translation>
 <translation id="2434158240863470628">Download complete <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -64,12 +65,14 @@
 <translation id="2570922361219980984">Location access is also off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expanded – click to collapse.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
+<translation id="2597457036804169544">Don’t apply Dark theme to sites</translation>
 <translation id="2621115761605608342">Allow JavaScript for a specific site.</translation>
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2687403674020088961">Block all cookies (not recommended)</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2717722538473713889">Email addresses</translation>
+<translation id="2785051990912111074">This choice will clear cookies for <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Are you sure that you want to reset all site permissions for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Previous track</translation>
@@ -101,6 +104,7 @@
 <translation id="3600792891314830896">Mute sites that play sound</translation>
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3763247130972274048">Double-tap video left or right to skip 10s</translation>
+<translation id="3797520601150691162">Don’t apply Dark theme for a specific site</translation>
 <translation id="381841723434055211">Phone numbers</translation>
 <translation id="3835233591525155343">Your device use</translation>
 <translation id="385051799172605136">Back</translation>
@@ -130,7 +134,6 @@
 <translation id="4570913071927164677">Details</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
-<translation id="4708011789095599544">Are you sure that you want to clear cookies and other site data for this website?</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
 <translation id="4836046166855586901">Ask when a site wants to know when you're actively using this device</translation>
 <translation id="4883854917563148705">Managed settings cannot be reset</translation>
@@ -140,6 +143,7 @@
 <translation id="4976702386844183910">Last visited <ph name="DATE" /></translation>
 <translation id="4994033804516042629">No contacts found</translation>
 <translation id="4996978546172906250">Share via</translation>
+<translation id="5014906230196386306">Clear cookies?</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5048398596102334565">Allow sites to access motion sensors (recommended)</translation>
 <translation id="5050380848339752099">This site is about to share information with an app outside of Incognito mode.</translation>
@@ -157,15 +161,16 @@
 <translation id="5335288049665977812">Allow sites to run JavaScript (recommended)</translation>
 <translation id="534295439873310000">NFC devices</translation>
 <translation id="5354152178998424783">This will clear <ph name="DATASIZE" /> of data and cookies stored by sites.</translation>
-<translation id="5391532827096253100">Your connection to this site is not secure. Site information</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 more)}other{(+ # more)}}</translation>
 <translation id="5403592356182871684">Names</translation>
+<translation id="5438097262470833822">This choice will reset permissions for <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Elapsed time <ph name="ELAPSED_TIME" /> of <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Block ads on sites that show intrusive or misleading ads</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> allowed, <ph name="PERMISSION_2" /> blocked</translation>
 <translation id="5505264765875738116">Sites can't ask to send notifications</translation>
 <translation id="5516455585884385570">Open notification settings</translation>
 <translation id="5527111080432883924">Ask before allowing sites to read text and images from the clipboard (recommended)</translation>
+<translation id="5553374991681107062">Latest</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5649053991847567735">Automatic downloads</translation>
@@ -190,10 +195,10 @@
 <translation id="6064125863973209585">Completed downloads</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6177111841848151710">Blocked for current search engine</translation>
+<translation id="6177128806592000436">Your connection to this site is not secure</translation>
 <translation id="6181444274883918285">Add site exception</translation>
 <translation id="6192792657125177640">Exceptions</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
-<translation id="6206551242102657620">Connection is secure. Site information</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> Options</translation>
 <translation id="6231752747840485235">Uninstall '<ph name="APP_NAME" />'?</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> blocked</translation>
@@ -202,7 +207,6 @@
 <translation id="6320088164292336938">Vibrate</translation>
 <translation id="6388207532828177975">Clear &amp; reset</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
-<translation id="6423924377271166037">Clear cookies</translation>
 <translation id="6439114592976064011">Block sites from using your virtual reality device and data</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6527303717912515753">Share</translation>
@@ -210,6 +214,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more blocked}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="NUM_MORE" /> more blocked}}</translation>
 <translation id="6554732001434021288">Last visited <ph name="NUM_DAYS" /> days ago</translation>
 <translation id="6561560012278703671">Use quieter messaging (blocks notification prompts from interrupting you)</translation>
+<translation id="6593061639179217415">Desktop site</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Protected content</translation>
 <translation id="662080504995468778">Stay</translation>
@@ -217,6 +222,7 @@
 <translation id="6689172468748959065">Profile photos</translation>
 <translation id="6697925417670533197">Active downloads</translation>
 <translation id="6746124502594467657">Move down</translation>
+<translation id="6749077623962119521">Reset permissions?</translation>
 <translation id="6766622839693428701">Swipe down to close.</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6818926723028410516">Select items</translation>
@@ -224,15 +230,14 @@
 <translation id="6910211073230771657">Deleted</translation>
 <translation id="6912998170423641340">Block sites from reading text and images from the clipboard</translation>
 <translation id="6945221475159498467">Select</translation>
-<translation id="6963642900430330478">This page is dangerous. Site information</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6992289844737586249">Ask first before allowing sites to use your microphone (recommended)</translation>
 <translation id="7000754031042624318">Turned off in Android settings</translation>
 <translation id="7016516562562142042">Allowed for current search engine</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selected}other{# selected}}</translation>
+<translation id="7070090581017165256">About this site</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> selected. Options available near top of the screen</translation>
-<translation id="7128222689758636196">Allow for current search engine</translation>
 <translation id="7141896414559753902">Block sites from showing pop-ups and redirects (recommended)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="723171743924126238">Select images</translation>
@@ -242,12 +247,12 @@
 <translation id="7302486331832100261">You usually block notifications. To allow, tap Details.</translation>
 <translation id="7423098979219808738">Ask first</translation>
 <translation id="7423538860840206698">Blocked from reading clipboard</translation>
+<translation id="7425915948813553151">Dark theme for sites</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">A site is using your microphone</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="7572498721684305250">Block sites from sending and receiving info when you tap NFC devices</translation>
 <translation id="757524316907819857">Block sites from playing protected content</translation>
-<translation id="7589445247086920869">Block for current search engine</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7781829728241885113">Yesterday</translation>
@@ -261,19 +266,23 @@
 <translation id="7846076177841592234">Cancel selection</translation>
 <translation id="7846621471902887024">You'll be signed out of all sites.</translation>
 <translation id="7882806643839505685">Allow sound for a specific site.</translation>
+<translation id="7940722705963108451">Remind me</translation>
 <translation id="7986741934819883144">Select a contact</translation>
-<translation id="7993619969781047893">Features on some sites may break</translation>
 <translation id="7999064672810608036">Are you sure that you want to clear all local data, including cookies, and reset all permissions for this website?</translation>
 <translation id="8007176423574883786">Turned off for this device</translation>
 <translation id="802154636333426148">Download failed</translation>
+<translation id="8042586301629853791">Sort by:</translation>
 <translation id="8067883171444229417">Play video</translation>
 <translation id="8068648041423924542">Unable to select certificate.</translation>
 <translation id="8087000398470557479">This content is from <ph name="DOMAIN_NAME" />, delivered by Google.</translation>
 <translation id="8116925261070264013">Muted</translation>
+<translation id="813082847718468539">View site information</translation>
 <translation id="8131740175452115882">Confirm</translation>
+<translation id="8154912474061769055">Features on many sites may not work</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> allowed</translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8206354486702514201">This setting is enforced by your administrator.</translation>
+<translation id="8211406090763984747">Connection is secure</translation>
 <translation id="8249310407154411074">Move to top</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8300705686683892304">Managed by app</translation>
@@ -296,6 +305,7 @@
 <translation id="8676374126336081632">Clear input</translation>
 <translation id="868929229000858085">Search your contacts</translation>
 <translation id="8702612070107455751">Any offline data will be cleared.</translation>
+<translation id="8712637175834984815">Got it</translation>
 <translation id="8719283222052720129">Turn on permission for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8730621377337864115">Done</translation>
@@ -315,7 +325,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}}</translation>
 <translation id="913657688200966289">Turn on permissions for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">This page is dangerous</translation>
 <translation id="930525582205581608">Forget this site?</translation>
-<translation id="965817943346481315">Block if site shows intrusive or misleading ads (recommended)</translation>
 <translation id="967624055006145463">Data stored</translation>
 </translationbundle>

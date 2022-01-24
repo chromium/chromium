@@ -9,17 +9,17 @@
 namespace blink {
 
 HardwarePreference StringToHardwarePreference(const String& value) {
-  if (value == "allow")
-    return HardwarePreference::kAllow;
+  if (value == "no-preference")
+    return HardwarePreference::kNoPreference;
 
-  if (value == "require")
-    return HardwarePreference::kRequire;
+  if (value == "prefer-hardware")
+    return HardwarePreference::kPreferHardware;
 
-  if (value == "deny")
-    return HardwarePreference::kDeny;
+  if (value == "prefer-software")
+    return HardwarePreference::kPreferSoftware;
 
   NOTREACHED();
-  return HardwarePreference::kAllow;
+  return HardwarePreference::kNoPreference;
 }
 
 }  // namespace blink

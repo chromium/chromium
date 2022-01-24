@@ -114,4 +114,4 @@ inline void XRayRegisterBrowserInterface(
 }
 #endif
 
-#endif  /* LIBRARIES_XRAY_XRAY_H_ */
+#endif  // LIBRARIES_XRAY_XRAY_H_

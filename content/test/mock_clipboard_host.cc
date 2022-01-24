@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -76,9 +77,6 @@ void MockClipboardHost::IsFormatAvailable(blink::mojom::ClipboardFormat format,
     case blink::mojom::ClipboardFormat::kBookmark:
       result = false;
       break;
-    case blink::mojom::ClipboardFormat::kRtf:
-      result = false;
-      break;
   }
   std::move(callback).Run(result);
 }
@@ -106,13 +104,6 @@ void MockClipboardHost::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
 void MockClipboardHost::ReadPng(ui::ClipboardBuffer clipboard_buffer,
                                 ReadPngCallback callback) {
   std::move(callback).Run(mojo_base::BigBuffer(png_));
-}
-
-void MockClipboardHost::ReadImage(ui::ClipboardBuffer clipboard_buffer,
-                                  ReadImageCallback callback) {
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_.data(), png_.size(), &bitmap);
-  std::move(callback).Run(std::move(bitmap));
 }
 
 void MockClipboardHost::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
@@ -174,6 +165,36 @@ void MockClipboardHost::WriteImage(const SkBitmap& bitmap) {
 void MockClipboardHost::CommitWrite() {
   sequence_number_ = ui::ClipboardSequenceNumberToken();
   needs_reset_ = true;
+}
+
+void MockClipboardHost::ReadAvailableCustomAndStandardFormats(
+    ReadAvailableCustomAndStandardFormatsCallback callback) {
+  std::vector<std::u16string> format_names;
+  for (const auto& item : unsanitized_custom_data_map_)
+    format_names.emplace_back(item.first);
+  std::move(callback).Run(format_names);
+}
+
+void MockClipboardHost::ReadUnsanitizedCustomFormat(
+    const std::u16string& format,
+    ReadUnsanitizedCustomFormatCallback callback) {
+  const auto it = unsanitized_custom_data_map_.find(format);
+  if (it == unsanitized_custom_data_map_.end())
+    return;
+
+  mojo_base::BigBuffer buffer = mojo_base::BigBuffer(
+      base::make_span(it->second.data(), it->second.size()));
+  std::move(callback).Run(std::move(buffer));
+}
+
+void MockClipboardHost::WriteUnsanitizedCustomFormat(
+    const std::u16string& format,
+    mojo_base::BigBuffer data) {
+  if (needs_reset_)
+    Reset();
+  // Simulate the underlying platform copying this data.
+  std::vector<uint8_t> data_copy(data.data(), data.data() + data.size());
+  unsanitized_custom_data_map_[format] = data_copy;
 }
 
 #if defined(OS_MAC)

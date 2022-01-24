@@ -16,7 +16,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -130,6 +129,10 @@ Shell* OpenWindow(WebContentsImpl* web_contents, const GURL& url);
 class FrameTreeVisualizer {
  public:
   FrameTreeVisualizer();
+
+  FrameTreeVisualizer(const FrameTreeVisualizer&) = delete;
+  FrameTreeVisualizer& operator=(const FrameTreeVisualizer&) = delete;
+
   ~FrameTreeVisualizer();
 
   // Formats and returns a diagram for the provided FrameTreeNode.
@@ -141,9 +144,7 @@ class FrameTreeVisualizer {
 
   // Elements are site instance ids. The index of the SiteInstance in the vector
   // determines the abbreviated name (0->A, 1->B) for that SiteInstance.
-  std::vector<int> seen_site_instance_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTreeVisualizer);
+  std::vector<SiteInstanceId> seen_site_instance_ids_;
 };
 
 // Uses FrameTreeVisualizer to draw a text representation of the FrameTree that
@@ -202,14 +203,16 @@ class FrameTestNavigationManager : public TestNavigationManager {
                              WebContents* web_contents,
                              const GURL& url);
 
+  FrameTestNavigationManager(const FrameTestNavigationManager&) = delete;
+  FrameTestNavigationManager& operator=(const FrameTestNavigationManager&) =
+      delete;
+
  private:
   // TestNavigationManager:
   bool ShouldMonitorNavigation(NavigationHandle* handle) override;
 
   // Notifications are filtered so only this frame is monitored.
   int filtering_frame_tree_node_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTestNavigationManager);
 };
 
 // An observer that can wait for a specific URL to be committed in a specific
@@ -218,6 +221,10 @@ class FrameTestNavigationManager : public TestNavigationManager {
 class UrlCommitObserver : WebContentsObserver {
  public:
   explicit UrlCommitObserver(FrameTreeNode* frame_tree_node, const GURL& url);
+
+  UrlCommitObserver(const UrlCommitObserver&) = delete;
+  UrlCommitObserver& operator=(const UrlCommitObserver&) = delete;
+
   ~UrlCommitObserver() override;
 
   void Wait();
@@ -233,8 +240,6 @@ class UrlCommitObserver : WebContentsObserver {
 
   // The RunLoop used to spin the message loop.
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlCommitObserver);
 };
 
 // Waits for a kill of the given RenderProcessHost and returns the
@@ -254,6 +259,11 @@ class RenderProcessHostBadIpcMessageWaiter {
   explicit RenderProcessHostBadIpcMessageWaiter(
       RenderProcessHost* render_process_host);
 
+  RenderProcessHostBadIpcMessageWaiter(
+      const RenderProcessHostBadIpcMessageWaiter&) = delete;
+  RenderProcessHostBadIpcMessageWaiter& operator=(
+      const RenderProcessHostBadIpcMessageWaiter&) = delete;
+
   // Waits until the renderer process exits.  Returns the bad message that made
   // //content kill the renderer.  |absl::nullopt| is returned if the renderer
   // was killed outside of //content or exited normally.
@@ -261,8 +271,6 @@ class RenderProcessHostBadIpcMessageWaiter {
 
  private:
   RenderProcessHostKillWaiter internal_waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessHostBadIpcMessageWaiter);
 };
 
 class ShowPopupWidgetWaiter
@@ -270,6 +278,10 @@ class ShowPopupWidgetWaiter
  public:
   ShowPopupWidgetWaiter(WebContentsImpl* web_contents,
                         RenderFrameHostImpl* frame_host);
+
+  ShowPopupWidgetWaiter(const ShowPopupWidgetWaiter&) = delete;
+  ShowPopupWidgetWaiter& operator=(const ShowPopupWidgetWaiter&) = delete;
+
   ~ShowPopupWidgetWaiter() override;
 
   gfx::Rect last_initial_rect() const { return initial_rect_; }
@@ -293,6 +305,7 @@ class ShowPopupWidgetWaiter
   // blink::mojom::PopupWidgetHostInterceptorForTesting:
   blink::mojom::PopupWidgetHost* GetForwardingInterface() override;
   void ShowPopup(const gfx::Rect& initial_rect,
+                 const gfx::Rect& initial_anchor_rect,
                  ShowPopupCallback callback) override;
 
   base::RunLoop run_loop_;
@@ -303,14 +316,15 @@ class ShowPopupWidgetWaiter
 #if defined(OS_MAC) || defined(OS_ANDROID)
   WebContentsImpl* web_contents_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ShowPopupWidgetWaiter);
 };
 
 // A BrowserMessageFilter that drops a blacklisted message.
 class DropMessageFilter : public BrowserMessageFilter {
  public:
   DropMessageFilter(uint32_t message_class, uint32_t drop_message_id);
+
+  DropMessageFilter(const DropMessageFilter&) = delete;
+  DropMessageFilter& operator=(const DropMessageFilter&) = delete;
 
  protected:
   ~DropMessageFilter() override;
@@ -320,8 +334,6 @@ class DropMessageFilter : public BrowserMessageFilter {
   bool OnMessageReceived(const IPC::Message& message) override;
 
   const uint32_t drop_message_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DropMessageFilter);
 };
 
 // A BrowserMessageFilter that observes a message without handling it, and
@@ -329,6 +341,9 @@ class DropMessageFilter : public BrowserMessageFilter {
 class ObserveMessageFilter : public BrowserMessageFilter {
  public:
   ObserveMessageFilter(uint32_t message_class, uint32_t watch_message_id);
+
+  ObserveMessageFilter(const ObserveMessageFilter&) = delete;
+  ObserveMessageFilter& operator=(const ObserveMessageFilter&) = delete;
 
   bool has_received_message() { return received_; }
 
@@ -347,8 +362,6 @@ class ObserveMessageFilter : public BrowserMessageFilter {
   const uint32_t watch_message_id_;
   bool received_ = false;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserveMessageFilter);
 };
 
 // This observer waits until WebContentsObserver::OnRendererUnresponsive
@@ -356,6 +369,11 @@ class ObserveMessageFilter : public BrowserMessageFilter {
 class UnresponsiveRendererObserver : public WebContentsObserver {
  public:
   explicit UnresponsiveRendererObserver(WebContents* web_contents);
+
+  UnresponsiveRendererObserver(const UnresponsiveRendererObserver&) = delete;
+  UnresponsiveRendererObserver& operator=(const UnresponsiveRendererObserver&) =
+      delete;
+
   ~UnresponsiveRendererObserver() override;
 
   RenderProcessHost* Wait(base::TimeDelta timeout = base::TimeDelta::Max());
@@ -366,8 +384,6 @@ class UnresponsiveRendererObserver : public WebContentsObserver {
 
   RenderProcessHost* captured_render_process_host_ = nullptr;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnresponsiveRendererObserver);
 };
 
 // Helper class that overrides the JavaScriptDialogManager of a WebContents
@@ -376,6 +392,11 @@ class BeforeUnloadBlockingDelegate : public JavaScriptDialogManager,
                                      public WebContentsDelegate {
  public:
   explicit BeforeUnloadBlockingDelegate(WebContentsImpl* web_contents);
+
+  BeforeUnloadBlockingDelegate(const BeforeUnloadBlockingDelegate&) = delete;
+  BeforeUnloadBlockingDelegate& operator=(const BeforeUnloadBlockingDelegate&) =
+      delete;
+
   ~BeforeUnloadBlockingDelegate() override;
   void Wait();
 
@@ -411,8 +432,6 @@ class BeforeUnloadBlockingDelegate : public JavaScriptDialogManager,
   DialogClosedCallback callback_;
 
   std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
-
-  DISALLOW_COPY_AND_ASSIGN(BeforeUnloadBlockingDelegate);
 };
 
 // A helper class to get DevTools inspector log messages (e.g. network errors).
@@ -589,8 +608,8 @@ class RenderFrameHostCreatedObserver : public WebContentsObserver {
 // reason and tests will need to assert that it appears.
 BackForwardCache::DisabledReason RenderFrameHostDisabledForTestingReason();
 // Disable using the standard testing DisabledReason.
-void DisableForRenderFrameHostForTesting(RenderFrameHost* render_frame_host);
-void DisableForRenderFrameHostForTesting(GlobalRenderFrameHostId id);
+void DisableBFCacheForRFHForTesting(RenderFrameHost* render_frame_host);
+void DisableBFCacheForRFHForTesting(GlobalRenderFrameHostId id);
 
 // Changes the WebContents and active entry user agent override from
 // DidStartNavigation().

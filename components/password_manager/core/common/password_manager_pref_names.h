@@ -24,6 +24,12 @@ extern const char kCredentialsEnableAutosignin[];
 // passwords.
 extern const char kCredentialsEnableService[];
 
+#if defined(OS_ANDROID)
+// Integer value which indicates the version used to migrate passwords from
+// built in storage to Google Mobile Services.
+extern const char kCurrentMigrationVersionToGoogleMobileServices[];
+#endif
+
 #if defined(OS_WIN)
 // Whether the password was blank, only valid if OS password was last changed
 // on or before the value contained in kOsPasswordLastChanged.
@@ -51,11 +57,6 @@ extern const char kWereOldGoogleLoginsRemoved[];
 // (e.g. whether that user has opted in). It maps from hash of Gaia ID to
 // dictionary of key-value pairs.
 extern const char kAccountStoragePerAccountSettings[];
-
-// A boolean that tracks whether the account-scoped password store exists on
-// disk. When the factory needs to delete the store from disk, it uses this pref
-// to only trigger the deletion if the store actually exists.
-extern const char kAccountStorageExists[];
 
 // String that represents the sync password hash.
 extern const char kSyncPasswordHash[];

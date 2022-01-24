@@ -1,0 +1,6 @@
+# https://crbug.com/1241502
+-All/WidgetScrollViewTestRTLAndLayers.ScrollOffsetUsingLayers/LTR_LAYERS
+-All/WidgetScrollViewTestRTLAndLayers.ScrollOffsetUsingLayers/RTL_LAYERS
+-WidgetScrollViewTest.CompositedScrollEvents
+-WidgetScrollViewTest.EventLocation
+-WidgetScrollViewTest.ScrollTrackScrolling

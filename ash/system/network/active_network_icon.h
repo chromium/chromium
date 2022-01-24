@@ -12,7 +12,6 @@
 #include "ash/ash_export.h"
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/tray_network_state_observer.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -47,6 +46,10 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
   };
 
   explicit ActiveNetworkIcon(TrayNetworkStateModel* model);
+
+  ActiveNetworkIcon(const ActiveNetworkIcon&) = delete;
+  ActiveNetworkIcon& operator=(const ActiveNetworkIcon&) = delete;
+
   ~ActiveNetworkIcon() override;
 
   // Provides the a11y and tooltip strings for |type|. Output parameters can
@@ -97,8 +100,6 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
   base::Time uninitialized_state_time_;
   base::OneShotTimer purge_timer_;
   base::WeakPtrFactory<ActiveNetworkIcon> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveNetworkIcon);
 };
 
 }  // namespace ash

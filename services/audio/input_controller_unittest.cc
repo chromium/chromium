@@ -18,7 +18,7 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_processing.h"
 #include "media/base/user_input_monitor.h"
-#include "media/webrtc/webrtc_switches.h"
+#include "media/webrtc/webrtc_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,8 +44,7 @@ const double kMaxVolume = 1.0;
 
 // InputController will poll once every second, so wait at most a bit
 // more than that for the callbacks.
-constexpr base::TimeDelta kOnMutePollInterval =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kOnMutePollInterval = base::Milliseconds(1000);
 
 }  // namespace
 
@@ -53,14 +52,16 @@ class MockInputControllerEventHandler : public InputController::EventHandler {
  public:
   MockInputControllerEventHandler() = default;
 
+  MockInputControllerEventHandler(const MockInputControllerEventHandler&) =
+      delete;
+  MockInputControllerEventHandler& operator=(
+      const MockInputControllerEventHandler&) = delete;
+
   void OnLog(base::StringPiece) override {}
 
   MOCK_METHOD1(OnCreated, void(bool initially_muted));
   MOCK_METHOD1(OnError, void(InputController::ErrorCode error_code));
   MOCK_METHOD1(OnMuted, void(bool is_muted));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockInputControllerEventHandler);
 };
 
 class MockSyncWriter : public InputController::SyncWriter {
@@ -127,6 +128,10 @@ class TimeSourceInputControllerTest : public ::testing::Test {
                 kSampleRate,
                 kSamplesPerPacket) {}
 
+  TimeSourceInputControllerTest(const TimeSourceInputControllerTest&) = delete;
+  TimeSourceInputControllerTest& operator=(
+      const TimeSourceInputControllerTest&) = delete;
+
   ~TimeSourceInputControllerTest() override {
     audio_manager_->Shutdown();
     task_environment_.RunUntilIdle();
@@ -152,9 +157,6 @@ class TimeSourceInputControllerTest : public ::testing::Test {
   media::AudioParameters params_;
   MockAudioInputStream stream_;
   base::test::ScopedFeatureList audio_processing_feature_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TimeSourceInputControllerTest);
 };
 
 using SystemTimeInputControllerTest = TimeSourceInputControllerTest<

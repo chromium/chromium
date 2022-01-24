@@ -15,10 +15,10 @@
 #include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -62,17 +62,16 @@ bool DoTitlesDiffer(const MostVisitedURLList& old_list,
 }
 
 // The delay for the first HistoryService query at startup.
-constexpr base::TimeDelta kFirstDelayAtStartup =
-    base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kFirstDelayAtStartup = base::Seconds(15);
 
 // The delay for the all HistoryService queries other than the first one.
 #if defined(OS_IOS) || defined(OS_ANDROID)
 // On mobile, having the max at 60 minutes results in the topsites database
 // being not updated often enough since the app isn't usually running for long
 // stretches of time.
-constexpr base::TimeDelta kDelayForUpdates = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kDelayForUpdates = base::Minutes(5);
 #else
-constexpr base::TimeDelta kDelayForUpdates = base::TimeDelta::FromMinutes(60);
+constexpr base::TimeDelta kDelayForUpdates = base::Minutes(60);
 #endif  // defined(OS_IOS) || defined(OS_ANDROID)
 
 // Key for preference listing the URLs that should not be shown as most visited

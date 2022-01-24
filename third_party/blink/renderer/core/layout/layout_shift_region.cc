@@ -30,7 +30,8 @@ struct SweepEvent {
 };
 
 // The sequence of adjacent intervals on the y-axis whose endpoints are the
-// extents (IntRect::Y and IntRect::MaxY) of all the rectangles in the input.
+// extents (gfx::Rect::y and gfx::Rect::bottom) of all the rectangles in the
+// input.
 class BasicIntervals {
  public:
   // Add all the endpoints before creating the index.
@@ -240,7 +241,7 @@ void SegmentTree::Visit(unsigned node_index,
 // Runs the sweep line algorithm to compute the area of a set of rects.
 class Sweeper {
  public:
-  Sweeper(const Vector<IntRect>&);
+  explicit Sweeper(const Vector<gfx::Rect>&);
 
   // Returns the area.
   uint64_t Sweep() const;
@@ -251,10 +252,10 @@ class Sweeper {
   uint64_t SweepImpl(SegmentTree&, const Vector<SweepEvent>&) const;
 
   // The input.
-  const Vector<IntRect>& rects_;
+  const Vector<gfx::Rect>& rects_;
 };
 
-Sweeper::Sweeper(const Vector<IntRect>& rects) : rects_(rects) {}
+Sweeper::Sweeper(const Vector<gfx::Rect>& rects) : rects_(rects) {}
 
 uint64_t Sweeper::Sweep() const {
   BasicIntervals y_vals;
@@ -267,9 +268,9 @@ uint64_t Sweeper::Sweep() const {
 }
 
 void Sweeper::InitIntervals(BasicIntervals& y_vals) const {
-  for (const IntRect& rect : rects_) {
-    y_vals.AddEndpoint(rect.Y());
-    y_vals.AddEndpoint(rect.MaxY());
+  for (const gfx::Rect& rect : rects_) {
+    y_vals.AddEndpoint(rect.y());
+    y_vals.AddEndpoint(rect.bottom());
   }
   y_vals.CreateIndex();
 }
@@ -277,10 +278,10 @@ void Sweeper::InitIntervals(BasicIntervals& y_vals) const {
 void Sweeper::InitEventQueue(Vector<SweepEvent>& events,
                              const BasicIntervals& y_vals) const {
   events.ReserveInitialCapacity(rects_.size() << 1);
-  for (const IntRect& rect : rects_) {
-    Segment segment = y_vals.SegmentFromEndpoints(rect.Y(), rect.MaxY());
-    events.push_back(SweepEvent{rect.X(), EventType::START, segment});
-    events.push_back(SweepEvent{rect.MaxX(), EventType::END, segment});
+  for (const gfx::Rect& rect : rects_) {
+    Segment segment = y_vals.SegmentFromEndpoints(rect.y(), rect.bottom());
+    events.push_back(SweepEvent{rect.x(), EventType::START, segment});
+    events.push_back(SweepEvent{rect.right(), EventType::END, segment});
   }
   std::sort(events.begin(), events.end(),
             [](const SweepEvent& e1, const SweepEvent& e2) -> bool {
@@ -313,10 +314,8 @@ uint64_t LayoutShiftRegion::Area() const {
     return 0;
 
   // Optimization: for a single rect, we don't need Sweeper.
-  if (rects_.size() == 1) {
-    const IntRect& rect = rects_.front();
-    return rect.Width() * rect.Height();
-  }
+  if (rects_.size() == 1)
+    return rects_.front().size().Area64();
   return Sweeper(rects_).Sweep();
 }
 

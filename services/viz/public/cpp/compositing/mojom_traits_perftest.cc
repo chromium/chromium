@@ -10,6 +10,7 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "gpu/ipc/common/mailbox_holder_mojom_traits.h"
@@ -28,7 +29,7 @@
 namespace viz {
 namespace {
 
-static const auto kTimeLimit = base::TimeDelta::FromSeconds(2);
+static const auto kTimeLimit = base::Seconds(2);
 static const int kNumWarmupRuns = 20;
 static const int kNumRunsPerTimeRecord = 10;
 
@@ -210,8 +211,9 @@ class VizSerializationPerfTest : public testing::Test {
     pass_in->SetAll(root_id, arbitrary_rect1, arbitrary_rect2,
                     arbitrary_matrix1, arbitrary_filters2, arbitrary_filters1,
                     arbitrary_rrectf1, SubtreeCaptureId(),
-                    arbitrary_rect1.size(), arbitrary_bool1, arbitrary_bool1,
-                    arbitrary_bool1, arbitrary_bool1, arbitrary_bool7);
+                    arbitrary_rect1.size(), SharedElementResourceId(),
+                    arbitrary_bool1, arbitrary_bool1, arbitrary_bool1,
+                    arbitrary_bool1, arbitrary_bool7);
 
     // Texture quads
     for (uint32_t i = 0; i < 10; ++i) {

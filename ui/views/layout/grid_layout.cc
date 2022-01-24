@@ -117,6 +117,9 @@ class LayoutElement {
     DCHECK_GE(resize_percent, 0);
   }
 
+  LayoutElement(const LayoutElement&) = delete;
+  LayoutElement& operator=(const LayoutElement&) = delete;
+
   virtual ~LayoutElement() = default;
 
   void SetLocation(int location) { location_ = location; }
@@ -145,8 +148,6 @@ class LayoutElement {
   float resize_percent_;
   int location_;
   int size_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutElement);
 };
 
 // Column -------------------------------------------------------------
@@ -171,6 +172,9 @@ class Column : public LayoutElement {
         min_width_(min_width),
         is_padding_(is_padding),
         primary_column_(nullptr) {}
+
+  Column(const Column&) = delete;
+  Column& operator=(const Column&) = delete;
 
   ~Column() override = default;
 
@@ -211,8 +215,6 @@ class Column : public LayoutElement {
   // to resolve the true primary column.
   std::vector<Column*> same_size_columns_;
   Column* primary_column_;
-
-  DISALLOW_COPY_AND_ASSIGN(Column);
 };
 
 void Column::ResetSize() {
@@ -264,6 +266,9 @@ class Row : public LayoutElement {
         max_ascent_(0),
         max_descent_(0) {}
 
+  Row(const Row&) = delete;
+  Row& operator=(const Row&) = delete;
+
   ~Row() override = default;
 
   void ResetSize() override {
@@ -291,8 +296,6 @@ class Row : public LayoutElement {
 
   int max_ascent_;
   int max_descent_;
-
-  DISALLOW_COPY_AND_ASSIGN(Row);
 };
 
 // ViewState -------------------------------------------------------------

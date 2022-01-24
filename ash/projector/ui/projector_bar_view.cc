@@ -6,6 +6,7 @@
 
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -91,8 +92,14 @@ views::UniqueWidgetPtr ProjectorBarView::Create(
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-  params.context = Shell::Get()->GetRootWindowForNewWindows();
+  // The menu container is the same container used by the capture mode bar
+  // (which stacks itself at the top of all children). It's also the same
+  // container used by the recording overlay widget (which hosts the
+  // annotations, and stacks itself at the bottom so as not to cover the
+  // projector bar).
+  params.parent = Shell::Get()->GetRootWindowForNewWindows()->GetChildById(
+      kShellWindowId_MenuContainer);
+  params.name = std::string("ProjectorBarWidget");
 
   params.bounds = bar_view->CalculateBoundsInScreen();
 
@@ -200,7 +207,7 @@ void ProjectorBarView::InitLayout() {
   laser_pointer_button_ = AddChildView(std::make_unique<ProjectorImageButton>(
       base::BindRepeating(&ProjectorBarView::OnLaserPointerPressed,
                           base::Unretained(this)),
-      kPaletteTrayIconLaserPointerIcon,
+      kPaletteModeLaserPointerIcon,
       l10n_util::GetStringUTF16(IDS_LASER_POINTER_BUTTON)));
 
   // Add marker button.

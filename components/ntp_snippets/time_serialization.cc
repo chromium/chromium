@@ -11,7 +11,7 @@ int64_t SerializeTime(const base::Time& time) {
 }
 
 base::Time DeserializeTime(int64_t serialized_time) {
-  return base::Time() + base::TimeDelta::FromMicroseconds(serialized_time);
+  return base::Time() + base::Microseconds(serialized_time);
 }
 
 }  // namespace ntp_snippets

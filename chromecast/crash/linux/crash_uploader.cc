@@ -65,8 +65,7 @@ int main(int argc, char** argv) {
       chromecast::RebootUtil::RebootNow(
           chromecast::RebootShlib::CRASH_UPLOADER);
 
-    base::PlatformThread::Sleep(
-        base::TimeDelta::FromSeconds(kUploadRetryIntervalDefault));
+    base::PlatformThread::Sleep(base::Seconds(kUploadRetryIntervalDefault));
   }
 
   return EXIT_SUCCESS;

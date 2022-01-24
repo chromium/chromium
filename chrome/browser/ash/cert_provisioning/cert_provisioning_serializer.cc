@@ -78,7 +78,7 @@ bool DeserializeRenewalPeriod(const base::Value& parent_value,
                               const char* value_name,
                               base::TimeDelta* dst) {
   absl::optional<int> serialized_time = parent_value.FindIntKey(value_name);
-  *dst = base::TimeDelta::FromSeconds(serialized_time.value_or(0));
+  *dst = base::Seconds(serialized_time.value_or(0));
   return true;
 }
 

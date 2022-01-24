@@ -88,20 +88,6 @@ class HashSet {
 };
 
 template <typename ValueArg,
-          typename HashArg = void,
-          typename TraitsArg = void,
-          typename Allocator = DefaultAllocator>
-class ListHashSet {
- public:
-  typedef ValueArg* iterator;
-  typedef const ValueArg* const_iterator;
-  typedef ValueArg* reverse_iterator;
-  typedef const ValueArg* const_reverse_iterator;
-
-  ~ListHashSet() {}
-};
-
-template <typename ValueArg,
           typename TraitsArg = void,
           typename Allocator = DefaultAllocator>
 class LinkedHashSet {
@@ -195,8 +181,6 @@ class Visitor {
 };
 
 namespace internal {
-class GarbageCollectedBase {};
-
 class StrongMemberTag;
 class WeakMemberTag;
 
@@ -237,9 +221,9 @@ class BasicCrossThreadPersistent : public PersistentBase {
 }  // namespace internal
 
 template <typename T>
-class GarbageCollected : public internal::GarbageCollectedBase {};
+class GarbageCollected {};
 
-class GarbageCollectedMixin : public internal::GarbageCollectedBase {
+class GarbageCollectedMixin {
  public:
   virtual void AdjustAndMark(Visitor*) const = 0;
   virtual bool IsHeapObjectAlive(Visitor*) const = 0;
@@ -412,10 +396,6 @@ class HeapDeque : public GarbageCollected<HeapDeque<T, inlineCapacity>>,
 template <typename T>
 class HeapHashSet : public GarbageCollected<HeapHashSet<T>>,
                     public HashSet<T, void, void, HeapAllocator> {};
-
-template <typename T>
-class HeapListHashSet : public GarbageCollected<HeapListHashSet<T>>,
-                        public ListHashSet<T, void, void, HeapAllocator> {};
 
 template <typename T>
 class HeapLinkedHashSet : public GarbageCollected<HeapLinkedHashSet<T>>,

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/tpm/install_attributes.h"
 
 namespace chromeos {
@@ -17,6 +16,9 @@ class StubInstallAttributes : public InstallAttributes {
  public:
   // The default StubInstallAttributes has a DeviceMode of PENDING.
   StubInstallAttributes();
+
+  StubInstallAttributes(const StubInstallAttributes&) = delete;
+  StubInstallAttributes& operator=(const StubInstallAttributes&) = delete;
 
   // Creates a StubInstallAttributes and Clears it.
   static std::unique_ptr<StubInstallAttributes> CreateUnset();
@@ -50,9 +52,6 @@ class StubInstallAttributes : public InstallAttributes {
   void SetDemoMode(const std::string& device_id);
 
   void set_device_locked(bool is_locked) { device_locked_ = is_locked; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubInstallAttributes);
 };
 
 // Helper class to set install attributes in tests. Using one of the Create*
@@ -67,6 +66,10 @@ class ScopedStubInstallAttributes {
   explicit ScopedStubInstallAttributes(
       std::unique_ptr<StubInstallAttributes> install_attributes);
 
+  ScopedStubInstallAttributes(const ScopedStubInstallAttributes&) = delete;
+  ScopedStubInstallAttributes& operator=(const ScopedStubInstallAttributes&) =
+      delete;
+
   ~ScopedStubInstallAttributes();
 
   // Get the StubInstallAttributes that have been installed for modification.
@@ -76,8 +79,6 @@ class ScopedStubInstallAttributes {
   // The InstallAttributes that are currently installed and that this
   // ScopedStubInstallAttributes is responsible for shutting down.
   std::unique_ptr<StubInstallAttributes> install_attributes_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedStubInstallAttributes);
 };
 
 }  // namespace chromeos

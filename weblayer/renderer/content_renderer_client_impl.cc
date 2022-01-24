@@ -58,6 +58,11 @@ class SpellcheckInterfaceProvider
     : public service_manager::LocalInterfaceProvider {
  public:
   SpellcheckInterfaceProvider() = default;
+
+  SpellcheckInterfaceProvider(const SpellcheckInterfaceProvider&) = delete;
+  SpellcheckInterfaceProvider& operator=(const SpellcheckInterfaceProvider&) =
+      delete;
+
   ~SpellcheckInterfaceProvider() override = default;
 
   // service_manager::LocalInterfaceProvider:
@@ -69,9 +74,6 @@ class SpellcheckInterfaceProvider
     content::RenderThread::Get()->BindHostReceiver(mojo::GenericPendingReceiver(
         interface_name, std::move(interface_pipe)));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckInterfaceProvider);
 };
 #endif  // defined(OS_ANDROID)
 
@@ -118,8 +120,16 @@ void ContentRendererClientImpl::RenderFrameCreated(
   auto* agent = new content_settings::ContentSettingsAgentImpl(
       render_frame, false /* should_whitelist */,
       std::make_unique<content_settings::ContentSettingsAgentImpl::Delegate>());
-  if (weblayer_observer_)
+  if (weblayer_observer_) {
     agent->SetContentSettingRules(weblayer_observer_->content_setting_rules());
+
+    if (weblayer_observer_->content_settings_manager()) {
+      mojo::Remote<content_settings::mojom::ContentSettingsManager> manager;
+      weblayer_observer_->content_settings_manager()->Clone(
+          manager.BindNewPipeAndPassReceiver());
+      agent->SetContentSettingsManager(std::move(manager));
+    }
+  }
 
   auto* metrics_render_frame_observer =
       new page_load_metrics::MetricsRenderFrameObserver(render_frame);
@@ -145,7 +155,7 @@ void ContentRendererClientImpl::RenderFrameCreated(
   if (render_frame->IsMainFrame())
     new webapps::WebPageMetadataAgent(render_frame);
 
-  if (content_capture::features::IsContentCaptureEnabled()) {
+  if (content_capture::features::IsContentCaptureEnabledInWebLayer()) {
     new content_capture::ContentCaptureSender(
         render_frame, render_frame_observer->associated_interfaces());
   }

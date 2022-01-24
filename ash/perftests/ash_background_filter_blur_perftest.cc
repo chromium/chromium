@@ -21,6 +21,12 @@ namespace {
 class AshBackgroundFilterBlurPerfTest : public AshTestBase {
  public:
   AshBackgroundFilterBlurPerfTest() : timer_(0, base::TimeDelta(), 1) {}
+
+  AshBackgroundFilterBlurPerfTest(const AshBackgroundFilterBlurPerfTest&) =
+      delete;
+  AshBackgroundFilterBlurPerfTest& operator=(
+      const AshBackgroundFilterBlurPerfTest&) = delete;
+
   ~AshBackgroundFilterBlurPerfTest() override = default;
 
   // AshTestBase:
@@ -47,8 +53,6 @@ class AshBackgroundFilterBlurPerfTest : public AshTestBase {
   ui::Compositor* compositor_ = nullptr;
 
   base::LapTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshBackgroundFilterBlurPerfTest);
 };
 
 void AshBackgroundFilterBlurPerfTest::SetUp() {

@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/process/kill.h"
 #include "content/browser/devtools/devtools_io_context.h"
 #include "content/browser/devtools/devtools_renderer_channel.h"
@@ -27,11 +26,18 @@ namespace content {
 
 class BrowserContext;
 
+namespace protocol {
+class TargetAutoAttacher;
+}  // namespace protocol
+
 // Describes interface for managing devtools agents from the browser process.
 class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
  public:
   // Returns DevToolsAgentHost with a given |id| or nullptr of it doesn't exist.
   static scoped_refptr<DevToolsAgentHostImpl> GetForId(const std::string& id);
+
+  DevToolsAgentHostImpl(const DevToolsAgentHostImpl&) = delete;
+  DevToolsAgentHostImpl& operator=(const DevToolsAgentHostImpl&) = delete;
 
   // DevToolsAgentHost implementation.
   bool AttachClient(DevToolsAgentHostClient* client) override;
@@ -95,6 +101,8 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   virtual absl::optional<network::CrossOriginOpenerPolicy>
   cross_origin_opener_policy(const std::string& id);
 
+  virtual protocol::TargetAutoAttacher* auto_attacher();
+
  protected:
   explicit DevToolsAgentHostImpl(const std::string& id);
   ~DevToolsAgentHostImpl() override;
@@ -138,8 +146,6 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   DevToolsIOContext io_context_;
   DevToolsRendererChannel renderer_channel_;
   static int s_force_creation_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsAgentHostImpl);
 };
 
 }  // namespace content

@@ -49,10 +49,9 @@ void AXPlatformNode::RegisterNativeWindowHandler(
   native_window_handler_.Get() = handler;
 }
 
-AXPlatformNode::AXPlatformNode() {}
+AXPlatformNode::AXPlatformNode() = default;
 
-AXPlatformNode::~AXPlatformNode() {
-}
+AXPlatformNode::~AXPlatformNode() = default;
 
 void AXPlatformNode::Destroy() {
 }

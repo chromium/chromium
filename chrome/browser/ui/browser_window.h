@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/lifetime/browser_close_manager.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
@@ -19,8 +20,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
+#include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/user_education/in_product_help.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -75,6 +76,8 @@ class SendTabToSelfBubbleView;
 }  // namespace send_tab_to_self
 
 namespace sharing_hub {
+class ScreenshotCapturedBubbleController;
+class ScreenshotCapturedBubble;
 class SharingHubBubbleController;
 class SharingHubBubbleView;
 }  // namespace sharing_hub
@@ -333,11 +336,11 @@ class BrowserWindow : public ui::BaseWindow {
   // Focuses a visible but inactive popup for accessibility.
   virtual void FocusInactivePopupForAccessibility() = 0;
 
-  // Focuses a help bubble if present.
-  virtual void FocusHelpBubble() = 0;
-
   // Moves keyboard focus to the next pane.
   virtual void RotatePaneFocus(bool forwards) = 0;
+
+  // Moves keyboard focus directly to the web contents pane.
+  virtual void FocusWebContentsPane() = 0;
 
   // Returns whether the bookmark bar is visible or not.
   virtual bool IsBookmarkBarVisible() const = 0;
@@ -387,12 +390,19 @@ class BrowserWindow : public ui::BaseWindow {
   // |already_bookmarked| is true if the url is already bookmarked.
   virtual void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) = 0;
 
+  // Shows the Screenshot bubble.
+  virtual sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
+      content::WebContents* contents,
+      const gfx::Image& image,
+      sharing_hub::ScreenshotCapturedBubbleController* controller) = 0;
+
   // Shows the QR Code generator bubble. |url| is the URL for the initial code.
   virtual qrcode_generator::QRCodeGeneratorBubbleView*
   ShowQRCodeGeneratorBubble(
       content::WebContents* contents,
       qrcode_generator::QRCodeGeneratorBubbleController* controller,
-      const GURL& url) = 0;
+      const GURL& url,
+      bool show_back_button) = 0;
 
   // Shows the "send tab to self" bubble.
   virtual send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
@@ -502,21 +512,19 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Shows User Happiness Tracking Survey's dialog after the survey associated
   // with |site_id| has been successfully loaded. Failure to load the survey
-  // will result in the dialog not being shown. |product_specific_data| should
-  // contain key-value pairs where the keys match the field names set for
-  // the survey in hats_service.cc, and the values are those which will be
-  // associated with the survey response.
+  // will result in the dialog not being shown. |product_specific_bits_data| and
+  // |product_specific_string_data| should contain key-value pairs where the
+  // keys match the field names set for the survey in hats_service.cc, and the
+  // values are those which will be associated with the survey response.
   virtual void ShowHatsDialog(
       const std::string& site_id,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
-      const std::map<std::string, bool>& product_specific_data) = 0;
+      const SurveyBitsData& product_specific_bits_data,
+      const SurveyStringData& product_specific_string_data) = 0;
 
   // Returns object implementing ExclusiveAccessContext interface.
   virtual ExclusiveAccessContext* GetExclusiveAccessContext() = 0;
-
-  // Shows in-product help for the given feature.
-  virtual void ShowInProductHelpPromo(InProductHelpFeature iph_feature) = 0;
 
   // Returns the platform-specific ID of the workspace the browser window
   // currently resides in.
@@ -545,6 +553,9 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Shows an Incognito clear browsing data dialog.
   virtual void ShowIncognitoClearBrowsingDataDialog() = 0;
+
+  // Shows an Incognito history disclaimer dialog.
+  virtual void ShowIncognitoHistoryDisclaimerDialog() = 0;
 
  protected:
   friend class BrowserCloseManager;

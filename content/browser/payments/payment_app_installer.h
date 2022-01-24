@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/public/browser/supported_delegations.h"
 
 class GURL;
@@ -24,6 +23,10 @@ class PaymentAppInstaller {
  public:
   using InstallPaymentAppCallback =
       base::OnceCallback<void(int64_t registration_id)>;
+
+  PaymentAppInstaller() = delete;
+  PaymentAppInstaller(const PaymentAppInstaller&) = delete;
+  PaymentAppInstaller& operator=(const PaymentAppInstaller&) = delete;
 
   // Installs the payment app.
   // |app_name| is the name of the payment app.
@@ -43,9 +46,6 @@ class PaymentAppInstaller {
                       const std::string& method,
                       const SupportedDelegations& supported_delegations,
                       InstallPaymentAppCallback callback);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PaymentAppInstaller);
 };
 
 }  // namespace content.

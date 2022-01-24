@@ -29,7 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_adapter.h"
 #include "third_party/webrtc/api/video_codecs/video_codec.h"
-#include "third_party/webrtc/media/base/vp9_profile.h"
+#include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -151,7 +151,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
   bool BasicSetup() {
     if (!CreateAndInitialize())
       return false;
-    if (InitDecode() != WEBRTC_VIDEO_CODEC_OK)
+    if (!InitDecode())
       return false;
     if (RegisterDecodeCompleteCallback() != WEBRTC_VIDEO_CODEC_OK)
       return false;
@@ -177,10 +177,10 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
     return !!rtc_video_decoder_adapter_;
   }
 
-  int32_t InitDecode() {
-    webrtc::VideoCodec codec_settings;
-    codec_settings.codecType = webrtc::kVideoCodecVP9;
-    return rtc_video_decoder_adapter_->InitDecode(&codec_settings, 1);
+  bool InitDecode() {
+    webrtc::VideoDecoder::Settings settings;
+    settings.set_codec_type(webrtc::kVideoCodecVP9);
+    return rtc_video_decoder_adapter_->Configure(settings);
   }
 
   int32_t RegisterDecodeCompleteCallback() {
@@ -214,7 +214,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
             media::PIXEL_FORMAT_ARGB, mailbox_holders,
             media::VideoFrame::ReleaseMailboxCB(), gfx::Size(640, 360),
             gfx::Rect(640, 360), gfx::Size(640, 360),
-            base::TimeDelta::FromMicroseconds(timestamp));
+            base::Microseconds(timestamp));
     output_cb_.Run(std::move(frame));
   }
 
@@ -421,10 +421,6 @@ TEST_F(RTCVideoDecoderAdapterTest, HandlesFlushFailure) {
 }
 
 TEST_F(RTCVideoDecoderAdapterTest, DecoderCountIsIncrementedByDecode) {
-  // Make sure that low-resolution decoders fall back if there are too many.
-  webrtc::VideoCodec codec_settings;
-  codec_settings.codecType = webrtc::kVideoCodecVP9;
-
   // If the count is nonzero, then fail immediately -- the test isn't sane.
   ASSERT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 0);
 
@@ -449,8 +445,8 @@ TEST_F(RTCVideoDecoderAdapterTest, DecoderCountIsIncrementedByDecode) {
 
 TEST_F(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
   // Make sure that low-resolution decoders fall back if there are too many.
-  webrtc::VideoCodec codec_settings;
-  codec_settings.codecType = webrtc::kVideoCodecVP9;
+  webrtc::VideoDecoder::Settings decoder_settings;
+  decoder_settings.set_codec_type(webrtc::kVideoCodecVP9);
 
   // Pretend that we have many decoders already.
   for (int i = 0; i < RTCVideoDecoderAdapter::kMaxDecoderInstances; i++)
@@ -460,11 +456,10 @@ TEST_F(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
   // anything to decode.
   ASSERT_TRUE(CreateAndInitialize(true));
   // Initialize the codec with something below the threshold.
-  codec_settings.width = sqrt(RTCVideoDecoderAdapter::kMinResolution);
-  codec_settings.height =
-      RTCVideoDecoderAdapter::kMinResolution / codec_settings.width - 1;
-  EXPECT_EQ(rtc_video_decoder_adapter_->InitDecode(&codec_settings, 1),
-            WEBRTC_VIDEO_CODEC_OK);
+  int width = sqrt(RTCVideoDecoderAdapter::kMinResolution);
+  int height = RTCVideoDecoderAdapter::kMinResolution / width - 1;
+  decoder_settings.set_max_render_resolution({width, height});
+  EXPECT_TRUE(rtc_video_decoder_adapter_->Configure(decoder_settings));
 
   // The first decode should fail.  It shouldn't forward the decode call to the
   // underlying decoder.
@@ -489,8 +484,8 @@ TEST_F(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
 
 TEST_F(RTCVideoDecoderAdapterTest, DoesNotFallBackForHighResolution) {
   // Make sure that high-resolution decoders don't fall back.
-  webrtc::VideoCodec codec_settings;
-  codec_settings.codecType = webrtc::kVideoCodecVP9;
+  webrtc::VideoDecoder::Settings decoder_settings;
+  decoder_settings.set_codec_type(webrtc::kVideoCodecVP9);
 
   // Pretend that we have many decoders already.
   for (int i = 0; i < RTCVideoDecoderAdapter::kMaxDecoderInstances; i++)
@@ -500,11 +495,10 @@ TEST_F(RTCVideoDecoderAdapterTest, DoesNotFallBackForHighResolution) {
   // anything to decode.
   ASSERT_TRUE(CreateAndInitialize(true));
   // Initialize the codec with something above the threshold.
-  codec_settings.width = sqrt(RTCVideoDecoderAdapter::kMinResolution);
-  codec_settings.height =
-      RTCVideoDecoderAdapter::kMinResolution / codec_settings.width + 1;
-  EXPECT_EQ(rtc_video_decoder_adapter_->InitDecode(&codec_settings, 1),
-            WEBRTC_VIDEO_CODEC_OK);
+  int width = sqrt(RTCVideoDecoderAdapter::kMinResolution);
+  int height = RTCVideoDecoderAdapter::kMinResolution / width + 1;
+  decoder_settings.set_max_render_resolution({width, height});
+  EXPECT_TRUE(rtc_video_decoder_adapter_->Configure(decoder_settings));
 
   // The first decode should increment the count and succeed.
   EXPECT_CALL(*video_decoder_, Decode_(_, _))

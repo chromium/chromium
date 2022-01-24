@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
-#include "content/browser/service_sandbox_type.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

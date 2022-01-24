@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/mac/mac_util.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/grit/generated_resources.h"
@@ -24,7 +23,7 @@
 // Relies on the tag being set to the command id.
 
 RenderViewContextMenuMac::RenderViewContextMenuMac(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params)
     : RenderViewContextMenu(render_frame_host, params),
       text_services_context_menu_(this) {}

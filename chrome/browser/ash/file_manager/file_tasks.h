@@ -104,11 +104,6 @@
 class PrefService;
 class Profile;
 
-namespace apps {
-struct FileHandler;
-struct FileHandlerInfo;
-}
-
 namespace extensions {
 struct EntryInfo;
 }
@@ -178,6 +173,7 @@ struct FullTaskDescriptor {
       bool is_file_extension_match);
 
   FullTaskDescriptor(const FullTaskDescriptor& other);
+  FullTaskDescriptor& operator=(const FullTaskDescriptor& other);
 
   // Unique ID for the task.
   TaskDescriptor task_descriptor;
@@ -250,49 +246,15 @@ typedef base::OnceCallback<void(
 //
 // Parameters:
 // profile    - The profile used for making this function call.
-// source_url - The source URL which originates this function call.
 // task       - See the comment at TaskDescriptor struct.
 // file_urls  - URLs of the target files.
 // done       - The callback which will be called on completion.
 //              The callback won't be called if the function returns
 //              false.
 bool ExecuteFileTask(Profile* profile,
-                     const GURL& source_url,
                      const TaskDescriptor& task,
                      const std::vector<storage::FileSystemURL>& file_urls,
                      FileTaskFinishedCallback done);
-
-// Returns true if a file handler is enabled. Some handlers such as
-// import-crostini-image can be disabled at runtime by enterprise policy.
-bool IsFileHandlerEnabled(Profile* profile,
-                          const apps::FileHandlerInfo& file_handler_info);
-
-// Returns true if a file handler matches with entries as good match.
-//
-// TODO(crbug.com/1060026): This can be removed in favour of
-// IsGoodMatchAppsFileHandler once apps::FileHandlerInfo is completely
-// replaced by apps::FileHandler.
-bool IsGoodMatchFileHandler(const apps::FileHandlerInfo& file_handler_info,
-                            const std::vector<extensions::EntryInfo>& entries);
-
-// Returns true if an apps::FileHandler matches with all of |entries|; that is,
-// if it doesn't include a blanket wild-card MIME type or file extension, it
-// doesn't include text/* and match on an unsupported text MIME type, and if
-// |entries| doesn't include directories.
-//
-// TODO(crbug.com/1060026): For now, this is called only in web_file_tasks,
-// where the new apps::FileHandler representation is used. Once this replaces
-// apps::FileHandlerInfo, this can be used everywhere.
-bool IsGoodMatchAppsFileHandler(
-    const apps::FileHandler& file_Handler,
-    const std::vector<extensions::EntryInfo>& entries);
-
-// Finds the file handler tasks (apps declaring "file_handlers" in
-// manifest.json) that can be used with the given entries, appending them to
-// the |result_list|.
-void FindFileHandlerTasks(Profile* profile,
-                          const std::vector<extensions::EntryInfo>& entries,
-                          std::vector<FullTaskDescriptor>* result_list);
 
 // Finds the file browser handler tasks (app/extensions declaring
 // "file_browser_handlers" in manifest.json) that can be used with the

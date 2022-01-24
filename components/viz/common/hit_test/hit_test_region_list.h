@@ -10,7 +10,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 

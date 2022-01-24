@@ -4,9 +4,9 @@
 
 #include "weblayer/browser/weblayer_variations_service_client.h"
 
-#include "base/bind.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "components/version_info/channel.h"
+#include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/system_network_context_manager.h"
@@ -18,17 +18,6 @@
 using version_info::Channel;
 
 namespace weblayer {
-namespace {
-
-// Gets the version number to use for variations seed simulation. Must be called
-// on a thread where IO is allowed.
-base::Version GetVersionForSimulation() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  return version_info::GetVersion();
-}
-
-}  // namespace
 
 WebLayerVariationsServiceClient::WebLayerVariationsServiceClient(
     SystemNetworkContextManager* network_context_manager)
@@ -38,9 +27,8 @@ WebLayerVariationsServiceClient::WebLayerVariationsServiceClient(
 
 WebLayerVariationsServiceClient::~WebLayerVariationsServiceClient() = default;
 
-base::OnceCallback<base::Version()>
-WebLayerVariationsServiceClient::GetVersionForSimulationCallback() {
-  return base::BindOnce(&GetVersionForSimulation);
+base::Version WebLayerVariationsServiceClient::GetVersionForSimulation() {
+  return version_info::GetVersion();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

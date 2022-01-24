@@ -26,6 +26,9 @@ class OnScreenKeyboardDisplayManagerInputPane::VirtualKeyboardInputPane
       const scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : main_task_runner_(task_runner) {}
 
+  VirtualKeyboardInputPane(const VirtualKeyboardInputPane&) = delete;
+  VirtualKeyboardInputPane& operator=(const VirtualKeyboardInputPane&) = delete;
+
   void InitVirtualKeyboardInputPaneInstance(
       base::WeakPtr<OnScreenKeyboardDisplayManagerInputPane>
           input_pane_weak_ptr) {
@@ -202,8 +205,6 @@ class OnScreenKeyboardDisplayManagerInputPane::VirtualKeyboardInputPane
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   base::WeakPtr<OnScreenKeyboardDisplayManagerInputPane>
       keyboard_input_pane_weak_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardInputPane);
 };
 
 OnScreenKeyboardDisplayManagerInputPane::

@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/plugin.mojom.h"
@@ -39,6 +38,9 @@ class PluginObserver : public content::WebContentsObserver,
       mojo::PendingAssociatedReceiver<chrome::mojom::PluginHost> receiver,
       content::RenderFrameHost* rfh);
 
+  PluginObserver(const PluginObserver&) = delete;
+  PluginObserver& operator=(const PluginObserver&) = delete;
+
   ~PluginObserver() override;
 
   // content::WebContentsObserver implementation.
@@ -57,11 +59,10 @@ class PluginObserver : public content::WebContentsObserver,
   explicit PluginObserver(content::WebContents* web_contents);
 
   // chrome::mojom::PluginHost methods.
+  void CouldNotLoadPlugin(const base::FilePath& plugin_path) override;
   void BlockedOutdatedPlugin(
       mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer,
       const std::string& identifier) override;
-  void ShowFlashPermissionBubble() override;
-  void CouldNotLoadPlugin(const base::FilePath& plugin_path) override;
   void OpenPDF(const GURL& url) override;
 
   void RemovePluginPlaceholderHost(PluginPlaceholderHost* placeholder);
@@ -76,8 +77,6 @@ class PluginObserver : public content::WebContentsObserver,
   base::WeakPtrFactory<PluginObserver> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PluginObserver);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_OBSERVER_H_

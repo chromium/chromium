@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -28,6 +27,9 @@ class ServiceFactory : public BrowserContextKeyedServiceFactory {
   // Gets a singleton instance of the factory.
   static ServiceFactory* GetInstance();
 
+  ServiceFactory(const ServiceFactory&) = delete;
+  ServiceFactory& operator=(const ServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ServiceFactory>;
 
@@ -40,8 +42,6 @@ class ServiceFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsCreatedWithBrowserContext() const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceFactory);
 };
 
 }  // namespace file_system_provider

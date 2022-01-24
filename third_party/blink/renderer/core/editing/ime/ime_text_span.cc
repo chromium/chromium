@@ -63,7 +63,7 @@ namespace {
 Vector<String> ConvertStdVectorOfStdStringsToVectorOfStrings(
     const std::vector<std::string>& input) {
   Vector<String> output;
-  output.ReserveInitialCapacity(input.size());
+  output.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(input.size()));
   for (const std::string& val : input) {
     output.UncheckedAppend(String::FromUTF8(val));
   }

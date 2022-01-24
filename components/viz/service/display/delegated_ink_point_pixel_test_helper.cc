@@ -88,10 +88,10 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendPointFromLastPoint(
     const gfx::PointF& point) {
   DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
   EXPECT_GT(static_cast<int>(ink_points_[pointer_id].size()), 0);
-  CreateAndSendPoint(point,
-                     ink_points_[pointer_id].back().timestamp() +
-                         base::TimeDelta::FromMicroseconds(10),
-                     pointer_id);
+  CreateAndSendPoint(
+      point,
+      ink_points_[pointer_id].back().timestamp() + base::Microseconds(10),
+      pointer_id);
 }
 
 gfx::Rect DelegatedInkPointPixelTestHelper::GetDelegatedInkDamageRect() {

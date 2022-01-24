@@ -24,6 +24,9 @@ namespace sandbox {
 
 class AppContainerBase final : public AppContainer {
  public:
+  AppContainerBase(const AppContainerBase&) = delete;
+  AppContainerBase& operator=(const AppContainerBase&) = delete;
+
   void AddRef() override;
   void Release() override;
   bool GetRegistryLocation(REGSAM desired_access,
@@ -96,8 +99,6 @@ class AppContainerBase final : public AppContainer {
   std::vector<Sid> impersonation_capabilities_;
   AppContainerType type_;
   base::win::ScopedHandle lowbox_directory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppContainerBase);
 };
 
 }  // namespace sandbox

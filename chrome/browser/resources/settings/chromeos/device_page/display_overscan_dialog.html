@@ -1,88 +1,95 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared iron-flex iron-flex-alignment">
+ .subtitle {
+   color: var(--cros-text-color-secondary);
+   margin-top: 10px;
+ }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="device_page_browser_proxy.html">
-<link rel="import" href="../os_icons.html">
-<link rel="import" href="../../settings_shared_css.html">
+ .instructions {
+   color: var(--cros-text-color-secondary);
+   margin-top: 4px;
+ }
 
-<dom-module id="settings-display-overscan-dialog">
-  <template>
-    <style include="settings-shared iron-flex iron-flex-alignment">
-     .subtitle {
-       margin-top: 10px;
-     }
+ .details {
+   margin: 40px;
+ }
 
-     .instructions {
-       color: var(--google-grey-600);
-       margin-top: 4px;
-     }
+ .label {
+   margin-top: 15px;
+ }
 
-     .details {
-       margin: 40px;
-     }
+ iron-icon {
+   --iron-icon-fill-color: var(--cros-icon-color-primary);
+   --iron-icon-height: 18px;
+   --iron-icon-width: 18px;
+   background: var(--cros-bg-color-dropped-elevation-2);
+   border-radius: 2px;
+   margin: 5px;
+   padding: 4px;
+ }
 
-     iron-icon {
-       --iron-icon-fill-color: white;
-       background: black;
-       margin: 5px;
-     }
+ #move {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+ }
 
-     #move > div {
-       color: grey;
-       font-size: 150%;
-     }
+ #move > div {
+   color: var(--cros-text-color-secondary);
+   flex: 0 0 auto;
+ }
 
-     #move > div.shift {
-       background: black;
-       color: white;
-       font-size: 100%;
-       margin: 0 8px;
-       padding: 4px 8px 0;
-     }
-    </style>
-    <cr-dialog id="dialog" on-close="close"
-        close-text="$i18n{close}">
-      <div slot="title">$i18n{displayOverscanPageTitle}</div>
-      <div slot="body">
-        <div class="subtitle" >$i18n{displayOverscanSubtitle}</div>
-        <div class="instructions" >$i18n{displayOverscanInstructions}</div>
-        <div class="details layout horizontal around-justified self-stretch">
-          <div class="layout vertical center">
-            <div class="layout horizontal">
-              <iron-icon icon="cr:expand-less"></iron-icon>
-            </div>
-            <div class="layout horizontal">
-              <iron-icon icon="os-settings:chevron-left"></iron-icon>
-              <iron-icon icon="cr:expand-more"></iron-icon>
-              <iron-icon icon="cr:chevron-right"></iron-icon>
-            </div>
-            <div class="label" >$i18n{displayOverscanResize}</div>
-          </div>
-          <div class="layout vertical center">
-            <div class="layout vertical center-justified flex">
-              <div id="move" class="layout horizontal">
-                <!-- TODO(stevenjb): Localize 'shift' for other keyboards -->
-                <!-- crbug.com/614827 -->
-                <div>( + </div><div class="shift">shift</div><div>)</div>
-              </div>
-            </div>
-            <div class="label">$i18n{displayOverscanPosition}</div>
+ #move > div:not(:first-child) {
+  margin-inline-start: 8px;
+ }
+
+ #move > div:not(:last-child) {
+  margin-inline-end: 8px;
+ }
+
+ #move > div.shift {
+   background: var(--cros-bg-color-dropped-elevation-2);
+   border-radius: 2px;
+   color: var(--cros-text-color-primary);
+   font-size: 100%;
+   padding: 7px 8px;
+ }
+</style>
+<cr-dialog id="dialog" on-close="close"
+    close-text="$i18n{close}">
+  <div slot="title">$i18n{displayOverscanPageTitle}</div>
+  <div slot="body">
+    <div class="subtitle" >$i18n{displayOverscanSubtitle}</div>
+    <div class="instructions" >$i18n{displayOverscanInstructions}</div>
+    <div class="details layout horizontal around-justified self-stretch">
+      <div class="layout vertical center">
+        <div class="layout horizontal">
+          <iron-icon icon="cr:expand-less"></iron-icon>
+        </div>
+        <div class="layout horizontal">
+          <iron-icon icon="os-settings:chevron-left"></iron-icon>
+          <iron-icon icon="cr:expand-more"></iron-icon>
+          <iron-icon icon="cr:chevron-right"></iron-icon>
+        </div>
+        <div class="label" >$i18n{displayOverscanResize}</div>
+      </div>
+      <div class="layout vertical center">
+        <div class="layout vertical center-justified flex">
+          <div id="move" class="layout horizontal">
+            <!-- TODO(stevenjb): Localize 'shift' for other keyboards -->
+            <!-- crbug.com/614827 -->
+            <div>(</div><div>+</div><div class="shift">shift</div><div>)</div>
           </div>
         </div>
+        <div class="label">$i18n{displayOverscanPosition}</div>
       </div>
-      <div slot="button-container">
-        <cr-button id="reset" class="cancel-button" on-click="onResetTap_">
-          $i18n{displayOverscanReset}
-        </cr-button>
-        <cr-button class="action-button" on-click="onSaveTap_">
-          $i18n{ok}
-        </cr-button>
-      </div>
-    </cr-dialog>
-  </template>
-  <script src="display_overscan_dialog.js"></script>
-</dom-module>
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="reset" class="cancel-button" on-click="onResetTap_">
+      $i18n{displayOverscanReset}
+    </cr-button>
+    <cr-button class="action-button" on-click="onSaveTap_">
+      $i18n{ok}
+    </cr-button>
+  </div>
+</cr-dialog>

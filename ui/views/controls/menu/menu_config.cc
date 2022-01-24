@@ -4,7 +4,6 @@
 
 #include "ui/views/controls/menu/menu_config.h"
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -20,7 +19,8 @@ MenuConfig::~MenuConfig() = default;
 int MenuConfig::CornerRadiusForMenu(const MenuController* controller) const {
   if (controller && controller->use_touchable_layout())
     return touchable_corner_radius;
-  if (controller && (controller->IsCombobox() || controller->IsContextMenu()))
+  if (controller && (controller->IsCombobox() ||
+                     (!win11_style_menus && controller->IsContextMenu())))
     return auxiliary_corner_radius;
   return corner_radius;
 }

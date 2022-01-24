@@ -5,7 +5,6 @@
 #ifndef ASH_KEYBOARD_ARC_ARC_VIRTUAL_KEYBOARD_CONTAINER_LAYOUT_MANAGER_H_
 #define ASH_KEYBOARD_ARC_ARC_VIRTUAL_KEYBOARD_CONTAINER_LAYOUT_MANAGER_H_
 
-#include "base/macros.h"
 #include "ui/aura/layout_manager.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
@@ -16,6 +15,11 @@ class ArcVirtualKeyboardContainerLayoutManager : public aura::LayoutManager {
  public:
   explicit ArcVirtualKeyboardContainerLayoutManager(
       aura::Window* arc_ime_window_parent_container);
+
+  ArcVirtualKeyboardContainerLayoutManager(
+      const ArcVirtualKeyboardContainerLayoutManager&) = delete;
+  ArcVirtualKeyboardContainerLayoutManager& operator=(
+      const ArcVirtualKeyboardContainerLayoutManager&) = delete;
 
   // aura::LayoutManager:
   void OnWindowResized() override;
@@ -29,8 +33,6 @@ class ArcVirtualKeyboardContainerLayoutManager : public aura::LayoutManager {
 
  private:
   aura::Window* arc_ime_window_parent_container_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcVirtualKeyboardContainerLayoutManager);
 };
 
 }  // namespace ash

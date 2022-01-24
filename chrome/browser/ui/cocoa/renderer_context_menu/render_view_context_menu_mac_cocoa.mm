@@ -10,13 +10,14 @@
 #include "base/mac/mac_util.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
 #import "base/mac/scoped_sending_event.h"
-#include "base/macros.h"
 #import "base/message_loop/message_pump_mac.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/current_thread.h"
 #import "chrome/browser/mac/nsprocessinfo_additions.h"
 #import "ui/base/cocoa/menu_controller.h"
+#include "ui/color/color_provider.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -159,6 +160,9 @@ class ToolkitDelegateMacCocoa : public RenderViewContextMenu::ToolkitDelegate {
   explicit ToolkitDelegateMacCocoa(RenderViewContextMenuMacCocoa* context_menu)
       : context_menu_(context_menu) {}
 
+  ToolkitDelegateMacCocoa(const ToolkitDelegateMacCocoa&) = delete;
+  ToolkitDelegateMacCocoa& operator=(const ToolkitDelegateMacCocoa&) = delete;
+
   ~ToolkitDelegateMacCocoa() override {}
 
  private:
@@ -177,13 +181,12 @@ class ToolkitDelegateMacCocoa : public RenderViewContextMenu::ToolkitDelegate {
   }
 
   RenderViewContextMenuMacCocoa* context_menu_;
-  DISALLOW_COPY_AND_ASSIGN(ToolkitDelegateMacCocoa);
 };
 
 // Obj-C bridge class that is the target of all items in the context menu.
 // Relies on the tag being set to the command id.
 RenderViewContextMenuMacCocoa::RenderViewContextMenuMacCocoa(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params,
     NSView* parent_view)
     : RenderViewContextMenuMac(render_frame_host, params),
@@ -198,9 +201,16 @@ RenderViewContextMenuMacCocoa::~RenderViewContextMenuMacCocoa() {
 }
 
 void RenderViewContextMenuMacCocoa::Show() {
-  menu_controller_.reset([[MenuControllerCocoa alloc] initWithModel:&menu_model_
-                                                           delegate:nil
-                                             useWithPopUpButtonCell:NO]);
+  views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+      source_web_contents_->GetNativeView());
+  const ui::ColorProvider* color_provider =
+      widget ? widget->GetColorProvider() : nullptr;
+
+  menu_controller_.reset([[MenuControllerCocoa alloc]
+               initWithModel:&menu_model_
+                    delegate:nil
+               colorProvider:color_provider
+      useWithPopUpButtonCell:NO]);
 
   gfx::Point params_position(params_.x, params_.y);
 
@@ -215,7 +225,7 @@ void RenderViewContextMenuMacCocoa::Show() {
   NSTimeInterval eventTime = [currentEvent timestamp];
   NSEvent* clickEvent = [NSEvent mouseEventWithType:NSRightMouseDown
                                            location:position
-                                      modifierFlags:NSRightMouseDownMask
+                                      modifierFlags:0
                                           timestamp:eventTime
                                        windowNumber:[window windowNumber]
                                             context:nil

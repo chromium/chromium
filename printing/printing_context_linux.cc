@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/values.h"
 #include "printing/metafile.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_dialog_gtk_interface.h"
 #include "printing/print_job_constants.h"
 #include "printing/units.h"
@@ -30,7 +31,8 @@ gfx::Size (*get_pdf_paper_size_)(PrintingContextLinux* context) = nullptr;
 }  // namespace
 
 // static
-std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
+std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
+    Delegate* delegate) {
   return std::make_unique<PrintingContextLinux>(delegate);
 }
 
@@ -74,7 +76,7 @@ void PrintingContextLinux::AskUserForSettings(int max_pages,
     // Can only get here if the renderer is sending bad messages.
     // http://crbug.com/341777
     NOTREACHED();
-    std::move(callback).Run(FAILED);
+    std::move(callback).Run(mojom::ResultCode::kFailed);
     return;
   }
 
@@ -82,13 +84,13 @@ void PrintingContextLinux::AskUserForSettings(int max_pages,
                             std::move(callback));
 }
 
-PrintingContext::Result PrintingContextLinux::UseDefaultSettings() {
+mojom::ResultCode PrintingContextLinux::UseDefaultSettings() {
   DCHECK(!in_print_job_);
 
   ResetSettings();
 
   if (!create_dialog_func_)
-    return OK;
+    return mojom::ResultCode::kSuccess;
 
   if (!print_dialog_) {
     print_dialog_ = create_dialog_func_(this);
@@ -96,7 +98,7 @@ PrintingContext::Result PrintingContextLinux::UseDefaultSettings() {
   }
   print_dialog_->UseDefaultSettings();
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
 gfx::Size PrintingContextLinux::GetPdfPaperSizeDeviceUnits() {
@@ -106,7 +108,7 @@ gfx::Size PrintingContextLinux::GetPdfPaperSizeDeviceUnits() {
   return gfx::Size();
 }
 
-PrintingContext::Result PrintingContextLinux::UpdatePrinterSettings(
+mojom::ResultCode PrintingContextLinux::UpdatePrinterSettings(
     bool external_preview,
     bool show_system_dialog,
     int page_count) {
@@ -115,7 +117,7 @@ PrintingContext::Result PrintingContextLinux::UpdatePrinterSettings(
   DCHECK(!external_preview) << "Not implemented";
 
   if (!create_dialog_func_)
-    return OK;
+    return mojom::ResultCode::kSuccess;
 
   if (!print_dialog_) {
     print_dialog_ = create_dialog_func_(this);
@@ -127,7 +129,7 @@ PrintingContext::Result PrintingContextLinux::UpdatePrinterSettings(
   print_dialog_->UpdateSettings(std::move(settings_));
   DCHECK(settings_);
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
 void PrintingContextLinux::InitWithSettings(
@@ -137,43 +139,43 @@ void PrintingContextLinux::InitWithSettings(
   settings_ = std::move(settings);
 }
 
-PrintingContext::Result PrintingContextLinux::NewDocument(
+mojom::ResultCode PrintingContextLinux::NewDocument(
     const std::u16string& document_name) {
   DCHECK(!in_print_job_);
   in_print_job_ = true;
 
   document_name_ = document_name;
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextLinux::NewPage() {
+mojom::ResultCode PrintingContextLinux::NewPage() {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
 
   // Intentional No-op.
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextLinux::PageDone() {
+mojom::ResultCode PrintingContextLinux::PageDone() {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
 
   // Intentional No-op.
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextLinux::DocumentDone() {
+mojom::ResultCode PrintingContextLinux::DocumentDone() {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
 
   ResetSettings();
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
 void PrintingContextLinux::Cancel() {

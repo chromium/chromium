@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/content_creation/notes/core/server/note_data.h"
 #include "components/content_creation/notes/core/server/save_note_response.h"
 #include "components/version_info/channel.h"
 
@@ -24,6 +23,7 @@ namespace content_creation {
 
 using PublishNoteCallback = base::OnceCallback<void(std::string)>;
 
+struct NoteData;
 class NotesServerSaver;
 
 // Instance in charge of saving and publishing the notes to the server.

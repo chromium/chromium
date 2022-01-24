@@ -204,12 +204,14 @@ Position of elements in new file is ascending.
 Name | Format | Description
 --- | --- | ---
 magic | uint32 = kMagic | Magic value.
+major_version | uint16 | Major version number indicating breaking changes.
+minor_version | uint16 | Minor version number indicating possibly breaking changes.
 old_size | uint32 | Size of old file in bytes.
 old_crc | uint32 | CRC32 of old file.
 new_size | uint32 | Size of new file in bytes.
 new_crc | uint32 | CRC32 of new file.
 
-**kMagic** == `'Z' | ('u' << 8) | ('c' << 16)`
+**kMagic** == `'Z' | ('u' << 8) | ('c' << 16) | ('c' << 24)`
 
 **PatchElement**
 Contains all the information required to produce a single element in new file.
@@ -235,6 +237,7 @@ old_length | uint32 | Length of the element in old file.
 new_offset | uint32 | Starting offset of the element in new file.
 new_length | uint32 | Length of the element in new file.
 exe_type | uint32 | Executable type for this unit, see `enum ExecutableType`.
+version | uint16 | Version specific to the executable type for this unit.
 
 **EquivalenceList**
 Encodes a list of equivalences, where dst offsets (in new image) are ascending.
@@ -278,3 +281,16 @@ Name | Format | Description
 --- | --- | ---
 size |uint32 | Size of content in bytes.
 content |T[] | List of integers.
+
+# Format Changelog
+All breaking changes to zucchini patch format will be documented in this
+section.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## [Unreleased]
+
+## [1.0] - 2021-10-27
+### Added
+Major/Minor version is encoded in PatchHeader
+Disassembler version associated with an element version is encoded in PatchElementHeader.

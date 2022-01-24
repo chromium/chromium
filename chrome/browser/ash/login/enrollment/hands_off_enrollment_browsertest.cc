@@ -36,6 +36,10 @@ constexpr char kDefaultNetworkServicePath[] = "/service/eth1";
 
 // Hands-off enrollment flow test.
 class HandsOffEnrollmentTest : public MixinBasedInProcessBrowserTest {
+ public:
+  HandsOffEnrollmentTest(const HandsOffEnrollmentTest&) = delete;
+  HandsOffEnrollmentTest& operator=(const HandsOffEnrollmentTest&) = delete;
+
  protected:
   HandsOffEnrollmentTest() {}
   ~HandsOffEnrollmentTest() override = default;
@@ -49,10 +53,6 @@ class HandsOffEnrollmentTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-
-    // Set official build so EULA screen is not skipped by default.
-    branded_build_override_ =
-        WizardController::ForceBrandedBuildForTesting(true);
 
     // Sets all network services into idle state to simulate disconnected state.
     NetworkStateHandler::NetworkStateList networks;
@@ -81,12 +81,14 @@ class HandsOffEnrollmentTest : public MixinBasedInProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
+  // Set official build so EULA screen is not skipped by default.
+  void ForceBrandedBuild() {
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
+  }
+
  protected:
   test::EnrollmentHelperMixin enrollment_helper_{&mixin_host_};
-  std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HandsOffEnrollmentTest);
 };
 
 IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, NetworkConnectionReady) {
@@ -99,6 +101,8 @@ IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, NetworkConnectionReady) {
   SimulateNetworkConnected();
 
   ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+
+  ForceBrandedBuild();
 
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 
@@ -116,6 +120,8 @@ IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, WaitForNetworkConnection) {
   enrollment_helper_.DisableAttributePromptUpdate();
   enrollment_helper_.SetupClearAuth();
   ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+
+  ForceBrandedBuild();
 
   OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 
@@ -145,6 +151,8 @@ IN_PROC_BROWSER_TEST_F(HandsOffEnrollmentTest, EnrollmentError) {
   SimulateNetworkConnected();
 
   ShowLoginWizard(OobeScreen::SCREEN_UNKNOWN);
+
+  ForceBrandedBuild();
 
   OobeScreenWaiter screen_waiter(NetworkScreenView::kScreenId);
   // WebUI window is not visible until the screen animation finishes.

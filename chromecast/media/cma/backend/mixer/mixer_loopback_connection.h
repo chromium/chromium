@@ -30,6 +30,10 @@ class MixerLoopbackConnection : public mixer_service::MixerSocket::Delegate {
  public:
   explicit MixerLoopbackConnection(
       std::unique_ptr<mixer_service::MixerSocket> socket);
+
+  MixerLoopbackConnection(const MixerLoopbackConnection&) = delete;
+  MixerLoopbackConnection& operator=(const MixerLoopbackConnection&) = delete;
+
   ~MixerLoopbackConnection() override;
 
   void SetErrorCallback(base::OnceClosure callback);
@@ -57,8 +61,6 @@ class MixerLoopbackConnection : public mixer_service::MixerSocket::Delegate {
 
   bool pending_error_ = false;
   bool sent_stream_config_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MixerLoopbackConnection);
 };
 
 }  // namespace media

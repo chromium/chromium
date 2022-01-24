@@ -26,6 +26,7 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -138,7 +139,8 @@ class NavigationController {
     // fields that are present in both structs (some properties are ignored
     // because they are unique to LoadURLParams or OpenURLParams).
     explicit LoadURLParams(const OpenURLParams& open_url_params);
-
+    LoadURLParams(const LoadURLParams&) = delete;
+    LoadURLParams& operator=(const LoadURLParams&) = delete;
     ~LoadURLParams();
 
     // The url to load. This field is required.
@@ -287,7 +289,11 @@ class NavigationController {
     // for navigations originating from a link click.
     absl::optional<blink::Impression> impression;
 
-    DISALLOW_COPY_AND_ASSIGN(LoadURLParams);
+    // Download policy to be applied if this navigation turns into a download.
+    blink::NavigationDownloadPolicy download_policy;
+
+    // Indicates that this navigation is for PDF content in a renderer.
+    bool is_pdf = false;
   };
 
   // Disables checking for a repost and prompting the user. This is used during
@@ -412,14 +418,18 @@ class NavigationController {
   // Navigates directly to an error page in response to an event on the last
   // committed page (e.g., triggered by a subresource), with |error_page_html|
   // as the contents and |url| as the URL.
-
+  //
   // The error page will create a NavigationEntry that temporarily replaces the
   // original page's entry. The original entry will be put back into the entry
   // list after any other navigation.
-  virtual void LoadPostCommitErrorPage(RenderFrameHost* render_frame_host,
-                                       const GURL& url,
-                                       const std::string& error_page_html,
-                                       net::Error error) = 0;
+  //
+  // Returns the handle to the navigation for the error page, which may be null
+  // if the navigation is immediately canceled.
+  virtual base::WeakPtr<NavigationHandle> LoadPostCommitErrorPage(
+      RenderFrameHost* render_frame_host,
+      const GURL& url,
+      const std::string& error_page_html,
+      net::Error error) = 0;
 
   // Renavigation --------------------------------------------------------------
 
@@ -430,7 +440,8 @@ class NavigationController {
   virtual void GoBack() = 0;
   virtual void GoForward() = 0;
 
-  // Navigates to the specified absolute index.
+  // Navigates to the specified absolute index. Should only be used for
+  // browser-initiated navigations.
   virtual void GoToIndex(int index) = 0;
 
   // Navigates to the specified offset from the "current entry". Does nothing if

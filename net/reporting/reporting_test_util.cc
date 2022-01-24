@@ -17,6 +17,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/timer/mock_timer.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
@@ -38,13 +39,13 @@ class PendingUploadImpl : public TestReportingUploader::PendingUpload {
  public:
   PendingUploadImpl(const url::Origin& report_origin,
                     const GURL& url,
-                    const NetworkIsolationKey& network_isolation_key,
+                    const IsolationInfo& isolation_info,
                     const std::string& json,
                     ReportingUploader::UploadCallback callback,
                     base::OnceCallback<void(PendingUpload*)> complete_callback)
       : report_origin_(report_origin),
         url_(url),
-        network_isolation_key_(network_isolation_key),
+        isolation_info_(isolation_info),
         json_(json),
         callback_(std::move(callback)),
         complete_callback_(std::move(complete_callback)) {}
@@ -68,7 +69,7 @@ class PendingUploadImpl : public TestReportingUploader::PendingUpload {
  private:
   url::Origin report_origin_;
   GURL url_;
-  NetworkIsolationKey network_isolation_key_;
+  IsolationInfo isolation_info_;
   std::string json_;
   ReportingUploader::UploadCallback callback_;
   base::OnceCallback<void(PendingUpload*)> complete_callback_;
@@ -103,15 +104,15 @@ TestReportingUploader::PendingUpload::PendingUpload() = default;
 TestReportingUploader::TestReportingUploader() = default;
 TestReportingUploader::~TestReportingUploader() = default;
 
-void TestReportingUploader::StartUpload(
-    const url::Origin& report_origin,
-    const GURL& url,
-    const NetworkIsolationKey& network_isolation_key,
-    const std::string& json,
-    int max_depth,
-    UploadCallback callback) {
+void TestReportingUploader::StartUpload(const url::Origin& report_origin,
+                                        const GURL& url,
+                                        const IsolationInfo& isolation_info,
+                                        const std::string& json,
+                                        int max_depth,
+                                        bool eligible_for_credentials,
+                                        UploadCallback callback) {
   pending_uploads_.push_back(std::make_unique<PendingUploadImpl>(
-      report_origin, url, network_isolation_key, json, std::move(callback),
+      report_origin, url, isolation_info, json, std::move(callback),
       base::BindOnce(&ErasePendingUpload, &pending_uploads_)));
 }
 
@@ -228,6 +229,15 @@ bool ReportingTestBase::SetEndpointInCache(
   return endpoint.is_valid();
 }
 
+void ReportingTestBase::SetV1EndpointInCache(
+    const ReportingEndpointGroupKey& group_key,
+    const base::UnguessableToken& reporting_source,
+    const IsolationInfo& isolation_info,
+    const GURL& url) {
+  cache()->SetV1EndpointForTesting(group_key, reporting_source, isolation_info,
+                                   url);
+}
+
 bool ReportingTestBase::EndpointExistsInCache(
     const ReportingEndpointGroupKey& group_key,
     const GURL& url) {
@@ -238,7 +248,13 @@ bool ReportingTestBase::EndpointExistsInCache(
 ReportingEndpoint::Statistics ReportingTestBase::GetEndpointStatistics(
     const ReportingEndpointGroupKey& group_key,
     const GURL& url) {
-  ReportingEndpoint endpoint = cache()->GetEndpointForTesting(group_key, url);
+  ReportingEndpoint endpoint;
+  if (group_key.IsDocumentEndpoint()) {
+    endpoint = cache()->GetV1EndpointForTesting(
+        group_key.reporting_source.value(), group_key.group_name);
+  } else {
+    endpoint = cache()->GetEndpointForTesting(group_key, url);
+  }
   if (endpoint)
     return endpoint.stats;
   return ReportingEndpoint::Statistics();
@@ -278,7 +294,7 @@ void ReportingTestBase::CreateContext(const ReportingPolicy& policy,
 }
 
 base::TimeTicks ReportingTestBase::yesterday() {
-  return tick_clock()->NowTicks() - base::TimeDelta::FromDays(1);
+  return tick_clock()->NowTicks() - base::Days(1);
 }
 
 base::TimeTicks ReportingTestBase::now() {
@@ -286,7 +302,7 @@ base::TimeTicks ReportingTestBase::now() {
 }
 
 base::TimeTicks ReportingTestBase::tomorrow() {
-  return tick_clock()->NowTicks() + base::TimeDelta::FromDays(1);
+  return tick_clock()->NowTicks() + base::Days(1);
 }
 
 TestReportingService::Report::Report() = default;
@@ -317,6 +333,7 @@ TestReportingService::~TestReportingService() = default;
 
 void TestReportingService::QueueReport(
     const GURL& url,
+    const absl::optional<base::UnguessableToken>& reporting_source,
     const NetworkIsolationKey& network_isolation_key,
     const std::string& user_agent,
     const std::string& group,
@@ -328,7 +345,7 @@ void TestReportingService::QueueReport(
 }
 
 void TestReportingService::ProcessReportToHeader(
-    const GURL& url,
+    const url::Origin& origin,
     const NetworkIsolationKey& network_isolation_key,
     const std::string& header_value) {
   NOTREACHED();
@@ -354,6 +371,21 @@ const ReportingPolicy& TestReportingService::GetPolicy() const {
 ReportingContext* TestReportingService::GetContextForTesting() const {
   NOTREACHED();
   return nullptr;
+}
+
+std::vector<const ReportingReport*> TestReportingService::GetReports() const {
+  NOTREACHED();
+  return std::vector<const ReportingReport*>();
+}
+
+void TestReportingService::AddReportingCacheObserver(
+    ReportingCacheObserver* observer) {
+  NOTREACHED();
+}
+
+void TestReportingService::RemoveReportingCacheObserver(
+    ReportingCacheObserver* observer) {
+  NOTREACHED();
 }
 
 }  // namespace net

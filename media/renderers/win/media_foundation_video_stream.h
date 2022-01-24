@@ -20,6 +20,7 @@ class MediaFoundationVideoStream : public MediaFoundationStreamWrapper {
   static HRESULT Create(int stream_id,
                         IMFMediaSource* parent_source,
                         DemuxerStream* demuxer_stream,
+                        std::unique_ptr<MediaLog> media_log,
                         MediaFoundationStreamWrapper** stream_out);
 
   bool IsEncrypted() const override;

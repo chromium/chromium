@@ -4,8 +4,6 @@
 
 #include "chrome/updater/activity_impl.h"
 
-#include <tchar.h>
-
 #include <string>
 #include <tuple>
 
@@ -14,9 +12,11 @@
 #include "base/strings/strcat.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
+#include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/win_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -52,7 +52,7 @@ struct ReadWriteCallbacks {
 constexpr wchar_t kDidRun[] = L"dr";
 constexpr char kAppId[] = "{6ACB7D4D-E5BA-48b0-85FE-A4051500A1BD}";
 constexpr wchar_t kClientStateKeyPath[] =
-    _T(CLIENT_STATE_KEY) L"{6ACB7D4D-E5BA-48b0-85FE-A4051500A1BD}";
+    CLIENT_STATE_KEY L"{6ACB7D4D-E5BA-48b0-85FE-A4051500A1BD}";
 
 DWORD WriteActiveBitAsString(base::win::RegKey& key, bool value) {
   return key.WriteValue(kDidRun, value ? L"1" : L"0");
@@ -76,9 +76,8 @@ ReadActiveBitRetval ReadActiveBitAsDword(base::win::RegKey& key) {
 
 }  // namespace
 
-class ActivityWinTest
-    : public ::testing::TestWithParam<
-          std::tuple<UpdaterScope, bool, bool, ReadWriteCallbacks>> {
+class ActivityWinTest : public ::testing::TestWithParam<
+                            std::tuple<bool, bool, ReadWriteCallbacks>> {
  protected:
   void SetUp() override {
     std::wstring sid;
@@ -93,39 +92,39 @@ class ActivityWinTest
   }
 
   void TearDown() override {
-    base::win::RegKey(HKEY_CURRENT_USER, L"", DELETE)
+    base::win::RegKey(HKEY_CURRENT_USER, L"", Wow6432(DELETE))
         .DeleteKey(kClientStateKeyPath);
-    base::win::RegKey(HKEY_CURRENT_USER, L"", DELETE)
+    base::win::RegKey(HKEY_CURRENT_USER, L"", Wow6432(DELETE))
         .DeleteKey(low_integrity_key_path_.c_str());
   }
 
-  UpdaterScope GetScope() const { return std::get<0>(GetParam()); }
+  UpdaterScope GetScope() const { return GetTestScope(); }
 
-  bool SetUserValue() const { return std::get<1>(GetParam()); }
+  bool SetUserValue() const { return std::get<0>(GetParam()); }
 
-  bool SetLowUserValue() const { return std::get<2>(GetParam()); }
+  bool SetLowUserValue() const { return std::get<1>(GetParam()); }
 
   WriteActiveBitCallback WriteActiveBitFn() const {
-    return std::get<3>(GetParam()).write_callback;
+    return std::get<2>(GetParam()).write_callback;
   }
 
   ReadActiveBitCallback ReadActiveBitFn() const {
-    return std::get<3>(GetParam()).read_callback;
+    return std::get<2>(GetParam()).read_callback;
   }
 
   void CreateActiveBit(const std::wstring& key_name,
                        bool value,
                        WriteActiveBitCallback callback) const {
     base::win::RegKey key;
-    ASSERT_EQ(ERROR_SUCCESS,
-              key.Create(HKEY_CURRENT_USER, key_name.c_str(), KEY_SET_VALUE));
+    ASSERT_EQ(ERROR_SUCCESS, key.Create(HKEY_CURRENT_USER, key_name.c_str(),
+                                        Wow6432(KEY_SET_VALUE)));
     ASSERT_EQ(DWORD{ERROR_SUCCESS}, callback.Run(key, value));
   }
 
   void DeleteActiveBit(const std::wstring& key_name) const {
     base::win::RegKey key;
-    ASSERT_EQ(ERROR_SUCCESS,
-              key.Open(HKEY_CURRENT_USER, key_name.c_str(), KEY_SET_VALUE));
+    ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, key_name.c_str(),
+                                      Wow6432(KEY_SET_VALUE)));
     ASSERT_EQ(ERROR_SUCCESS, key.DeleteValue(kDidRun));
   }
 
@@ -133,8 +132,8 @@ class ActivityWinTest
                       bool expected,
                       ReadActiveBitCallback callback) const {
     base::win::RegKey key;
-    ASSERT_EQ(ERROR_SUCCESS,
-              key.Open(HKEY_CURRENT_USER, key_name.c_str(), KEY_QUERY_VALUE));
+    ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, key_name.c_str(),
+                                      Wow6432(KEY_QUERY_VALUE)));
 
     const ReadActiveBitRetval retval = callback.Run(key);
     ASSERT_EQ(DWORD{ERROR_SUCCESS}, retval.read_result);
@@ -190,7 +189,6 @@ INSTANTIATE_TEST_SUITE_P(
     UpdaterScopeSetUserValueSetLowUserValueSetAsDword,
     ActivityWinTest,
     ::testing::Combine(
-        ::testing::Values(UpdaterScope::kUser, UpdaterScope::kSystem),
         ::testing::Bool(),
         ::testing::Bool(),
         ::testing::Values(

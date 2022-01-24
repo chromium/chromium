@@ -12,9 +12,9 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/cors/cors.h"
@@ -57,7 +57,7 @@ ResourceMultiBufferDataProvider::ResourceMultiBufferDataProvider(
       url_data_(url_data),
       retries_(0),
       cors_mode_(url_data->cors_mode()),
-      origin_(url_data->url().GetOrigin()),
+      origin_(url_data->url().DeprecatedGetOriginAsURL()),
       is_client_audio_element_(is_client_audio_element),
       task_runner_(std::move(task_runner)) {
   DCHECK(url_data_) << " pos = " << pos;
@@ -183,7 +183,7 @@ bool ResourceMultiBufferDataProvider::WillFollowRedirect(
   // This test is vital for security!
   if (cors_mode_ == UrlData::CORS_UNSPECIFIED) {
     // We allow the redirect if the origin is the same.
-    if (origin_ != redirects_to_.GetOrigin()) {
+    if (origin_ != redirects_to_.DeprecatedGetOriginAsURL()) {
       // We also allow the redirect if we don't have any data in the
       // cache, as that means that no dangerous data mixing can occur.
       if (url_data_->multibuffer()->map().empty() && fifo_.empty())
@@ -367,7 +367,7 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   }
 
   // This test is vital for security!
-  if (!url_data_->ValidateDataOrigin(response_url.GetOrigin())) {
+  if (!url_data_->ValidateDataOrigin(response_url.DeprecatedGetOriginAsURL())) {
     active_loader_.reset();
     url_data_->Fail();
     return;  // "this" may be deleted now.
@@ -443,7 +443,7 @@ void ResourceMultiBufferDataProvider::DidFinishLoading() {
           FROM_HERE,
           base::BindOnce(&ResourceMultiBufferDataProvider::Start,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kLoaderPartialRetryDelayMs));
+          base::Milliseconds(kLoaderPartialRetryDelayMs));
       return;
     } else {
       url_data_->Fail();
@@ -475,8 +475,8 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
         FROM_HERE,
         base::BindOnce(&ResourceMultiBufferDataProvider::Start,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(
-            kLoaderFailedRetryDelayMs + kAdditionalDelayPerRetryMs * retries_));
+        base::Milliseconds(kLoaderFailedRetryDelayMs +
+                           kAdditionalDelayPerRetryMs * retries_));
   } else {
     // We don't need to continue loading after failure.
     // Note that calling Fail() will most likely delete this object.

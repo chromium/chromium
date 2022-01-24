@@ -123,14 +123,16 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
   // page that's being used in this browser test.
   void GrantNotificationPermissionForTest() const {
     NotificationPermissionContext::UpdatePermission(
-        browser()->profile(), TestPageUrl().GetOrigin(), CONTENT_SETTING_ALLOW);
+        browser()->profile(), TestPageUrl().DeprecatedGetOriginAsURL(),
+        CONTENT_SETTING_ALLOW);
   }
 
   // Blocks permission to display Web Notifications for origin of the test
   // page that's being used in this browser test.
   void BlockNotificationPermissionForTest() const {
     NotificationPermissionContext::UpdatePermission(
-        browser()->profile(), TestPageUrl().GetOrigin(), CONTENT_SETTING_BLOCK);
+        browser()->profile(), TestPageUrl().DeprecatedGetOriginAsURL(),
+        CONTENT_SETTING_BLOCK);
   }
 
   bool RequestAndAcceptPermission() {
@@ -152,7 +154,8 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
 
   // Navigates the browser to the test page indicated by |path|.
   void NavigateToTestPage(const std::string& path) const {
-    ui_test_utils::NavigateToURL(browser(), https_server_->GetURL(path));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), https_server_->GetURL(path)));
   }
 
   // Executes |script| and stores the result as a string in |result|. A boolean
@@ -654,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   std::string script_result;
   ASSERT_TRUE(RunScript("DisplayPersistentNotification()", &script_result));
 
-  GURL test_origin = TestPageUrl().GetOrigin();
+  GURL test_origin = TestPageUrl().DeprecatedGetOriginAsURL();
 
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications(true /* is_persistent */);
@@ -966,7 +969,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   ASSERT_NO_FATAL_FAILURE(GrantNotificationPermissionForTest());
 
   Browser* other_browser = CreateBrowser(browser()->profile());
-  ui_test_utils::NavigateToURL(other_browser, GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(other_browser, GURL("about:blank")));
 
   std::string script_result;
   ASSERT_TRUE(RunScript(

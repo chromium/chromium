@@ -130,7 +130,7 @@ public class TabbedPaintPreview implements UserData {
 
         mPlayerManager = new PlayerManager(mTab.getUrl(), mTab.getContext(), getService(),
                 String.valueOf(mTab.getId()), listener,
-                ChromeColors.getPrimaryBackgroundColor(mTab.getContext().getResources(), false),
+                ChromeColors.getPrimaryBackgroundColor(mTab.getContext(), false),
                 /*ignoreInitialScrollOffset=*/false, shouldCompressBitmaps());
 
         // TODO(crbug/1230021): Consider deferring/post tasking. Locally this appears to be slow.

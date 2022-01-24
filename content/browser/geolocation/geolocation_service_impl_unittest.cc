@@ -63,6 +63,10 @@ class TestPermissionManager : public MockPermissionManager {
 };
 
 class GeolocationServiceTest : public RenderViewHostImplTestHarness {
+ public:
+  GeolocationServiceTest(const GeolocationServiceTest&) = delete;
+  GeolocationServiceTest& operator=(const GeolocationServiceTest&) = delete;
+
  protected:
   GeolocationServiceTest() {}
 
@@ -133,8 +137,6 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<GeolocationServiceImpl> service_;
   mojo::Remote<blink::mojom::GeolocationService> service_remote_;
   mojo::Remote<device::mojom::GeolocationContext> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationServiceTest);
 };
 
 }  // namespace

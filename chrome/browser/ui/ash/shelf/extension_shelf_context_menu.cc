@@ -25,6 +25,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -130,12 +131,12 @@ bool ExtensionShelfContextMenu::IsCommandIdEnabled(int command_id) const {
       // "Normal" windows are not allowed when incognito is enforced.
       return IncognitoModePrefs::GetAvailability(
                  controller()->profile()->GetPrefs()) !=
-             IncognitoModePrefs::FORCED;
+             IncognitoModePrefs::Availability::kForced;
     case ash::MENU_NEW_INCOGNITO_WINDOW:
       // Incognito windows are not allowed when incognito is disabled.
       return IncognitoModePrefs::GetAvailability(
                  controller()->profile()->GetPrefs()) !=
-             IncognitoModePrefs::DISABLED;
+             IncognitoModePrefs::Availability::kDisabled;
     default:
       if (command_id < ash::COMMAND_ID_COUNT)
         return ShelfContextMenu::IsCommandIdEnabled(command_id);
@@ -176,10 +177,14 @@ void ExtensionShelfContextMenu::ExecuteCommand(int command_id,
       SetLaunchType(extensions::LAUNCH_TYPE_FULLSCREEN);
       break;
     case ash::MENU_NEW_WINDOW:
-      ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
+      ash::NewWindowDelegate::GetInstance()->NewWindow(
+          /*incognito=*/false,
+          /*should_trigger_session_restore=*/false);
       break;
     case ash::MENU_NEW_INCOGNITO_WINDOW:
-      ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/true);
+      ash::NewWindowDelegate::GetInstance()->NewWindow(
+          /*incognito=*/true,
+          /*should_trigger_session_restore=*/false);
       break;
     default:
       if (extension_items_) {
@@ -205,7 +210,7 @@ void ExtensionShelfContextMenu::CreateOpenNewSubmenu(
       open_new_submenu_model_.get(),
       ui::ImageModel::FromVectorIcon(
           GetCommandIdVectorIcon(ash::MENU_OPEN_NEW, GetLaunchTypeStringId()),
-          /*color_id=*/-1, ash::kAppContextMenuIconSize));
+          ui::kColorMenuIcon, ash::kAppContextMenuIconSize));
 }
 
 extensions::LaunchType ExtensionShelfContextMenu::GetLaunchType() const {

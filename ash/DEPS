@@ -5,21 +5,21 @@ include_rules = [
   "+cc/paint",
   "+chromeos/cryptohome",
   "+components/account_id",
+  "+components/app_restore",
+  "+components/desks_storage",
   "+components/discardable_memory/public",
   "+components/discardable_memory/service/discardable_shared_memory_manager.h",
-  "+components/full_restore",
+  "+components/language/core/browser/pref_names.h",
   "+components/live_caption",
   "+components/media_message_center",
   "+components/pref_registry",
   "+components/prefs",
   "+components/quirks",
   "+components/services/app_service/public",
-  "+components/session_manager",
   "+components/soda",
   "+components/strings",
   "+components/sync",
   "+components/ui_devtools",
-  "+components/user_manager",
   "+components/vector_icons",
   "+components/viz/common",
   "+components/viz/host",
@@ -49,50 +49,57 @@ include_rules = [
   # Ash sits above content. Exceptions live in //ash/webui.
   "-content",
 
-  # Only allow Chrome OS services and D-Bus clients accessible to the mustash
-  # ash process.
+  # Some code in //chromeos should not be used by ash, so use an allowlist.
+  # See //chromeos/README.md for details about Lacros, which is migrating some
+  # code out of //chromeos into //ash.
   "-chromeos",
-  "+chromeos/components/feature_usage/feature_usage_metrics.h",
-  "+chromeos/components/multidevice/logging/logging.h",
-  "+chromeos/components/phonehub",
-  "+chromeos/components/proximity_auth/public/mojom",
-  "+chromeos/components/quick_answers",
-  "+chromeos/components/security_token_pin",
+  # //ash can use chromeos components that sit below it in the dependency tree.
+  "+chromeos/components/feature_usage",
+  "+chromeos/components/multidevice",
+  "+chromeos/components/proximity_auth/public",
   "+chromeos/components/sensors",
-  "+chromeos/crosapi/cpp/crosapi_constants.h",
-  "+chromeos/crosapi/mojom",
-  "+chromeos/dbus/initialize_dbus_client.h",
-  "+chromeos/dbus/audio",
-  "+chromeos/dbus/init",
-  "+chromeos/dbus/hammerd",
-  "+chromeos/dbus/hermes",
-  "+chromeos/dbus/power",
-  "+chromeos/dbus/power_manager",
-  "+chromeos/dbus/rmad",
-  "+chromeos/dbus/shill",
-  "+chromeos/dbus/system_clock",
-  "+chromeos/dbus/usb",
+  # crosapi is an API to support lacros.
+  "+chromeos/crosapi",
+  # //ash can access all D-Bus client libraries. The mustash project previously
+  # limit D-Bus communication to a subset of OS daemons, but that project
+  # stopped in 2019. See //ash/README.md.
+  "+chromeos/dbus",
+  # //ash should use code in //ash/session to get login state. The state in
+  # //ash/session and the state in //chromeos/login/login_state are both
+  # derived from the canonical state in the browser. Using both sources could
+  # create subtle inconsistencies based on when observers are called.
+  "-chromeos/login/login_state",
   "+chromeos/network",
+  # //ash can use the public interfaces of various services.
   "+chromeos/services/assistant/public" ,
   "+chromeos/services/assistant/test_support",
-  "+chromeos/services/libassistant/public/cpp",
-  "+chromeos/services/libassistant/public/mojom",
+  "+chromeos/services/bluetooth_config",
+  "+chromeos/services/libassistant/public",
   "+chromeos/services/machine_learning/public",
   "+chromeos/services/multidevice_setup/public",
   "+chromeos/services/nearby/public",
   "+chromeos/services/network_config/public",
   "+chromeos/services/power/public",
-  "+chromeos/settings/timezone_settings.h",
   "+chromeos/strings",
   "+chromeos/system",
-  # Do not eliminate this.
   "+chromeos/ui",
 
   # ui/base/idle depends on SessionManagerClient so disallow it.
-  "-ui/base/idle"
+  "-ui/base/idle",
 
-  # InputMethodManager lives in the browser process. Use ImeController.
-  "-ui/base/ime/chromeos/input_method_manager.h"
+  # user_manager::UserManager and session_manager::SessionManager lives in the
+  # browser process. Use SessionController to access user or user session info
+  # so that ash code depends on a single source of truth. If the info is not
+  # available, add new interface to SessionControllerClient and friends to
+  # bridge data from user_manager::UserManager or
+  # session_manager::SessionManager.
+  "-components/session_manager",
+  "+components/session_manager/session_manager_types.h",
+  "-components/user_manager",
+  "+components/user_manager/known_user.h",
+  "+components/user_manager/user_names.h",
+  "+components/user_manager/user_type.h",
+  "+components/user_manager/user.h",
 ]
 
 specific_include_rules = {
@@ -108,10 +115,13 @@ specific_include_rules = {
   "shell.cc": [
     "+ash/host/ash_window_tree_host_init_params.h"
   ],
-  "window_manager.cc": [
-    "+ash/host/ash_window_tree_host.h"
+  "shell_delegate.h": [
+    "+components/favicon_base/favicon_callback.h"
   ],
-  "window_service_delegate_impl.cc": [
+  "test_shell_delegate.h": [
+    "+components/favicon_base/favicon_callback.h"
+  ],
+  "window_manager.cc": [
     "+ash/host/ash_window_tree_host.h"
   ],
 }

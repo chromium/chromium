@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Unit tests for the iterable storage mechanism interface.
@@ -19,20 +11,20 @@
  * goog.storage.mechanism.IterableMechanism.
  */
 
-goog.provide('goog.storage.mechanism.iterableMechanismTester');
+goog.module('goog.storage.mechanism.iterableMechanismTester');
+goog.setTestOnly('goog.storage.mechanism.iterableMechanismTester');
 
-goog.require('goog.iter');
-goog.require('goog.iter.StopIteration');
-goog.require('goog.testing.asserts');
-goog.setTestOnly('iterableMechanismTester');
-
-
-var mechanism = null;
+const IterableMechanism = goog.require('goog.storage.mechanism.IterableMechanism');
+const StopIteration = goog.require('goog.iter.StopIteration');
+const googIter = goog.require('goog.iter');
 
 
-function testCount() {
+/**
+ * @param {?IterableMechanism} mechanism
+ */
+exports.testCount = function(mechanism) {
   if (!mechanism) {
-    return;
+    fail('Mechanism undefined for testCount');
   }
   assertEquals(0, mechanism.getCount());
   mechanism.set('first', 'one');
@@ -41,37 +33,54 @@ function testCount() {
   assertEquals(2, mechanism.getCount());
   mechanism.set('first', 'three');
   assertEquals(2, mechanism.getCount());
-}
+};
 
 
-function testIteratorBasics() {
+/**
+ * @param {?IterableMechanism} mechanism
+ */
+exports.testIteratorBasics = function(mechanism) {
   if (!mechanism) {
-    return;
+    fail('Mechanism undefined for testIteratorBasics');
   }
   mechanism.set('first', 'one');
-  assertEquals('first', mechanism.__iterator__(true).next());
-  assertEquals('one', mechanism.__iterator__(false).next());
-  var iterator = mechanism.__iterator__();
-  assertEquals('one', iterator.next());
-  assertEquals(goog.iter.StopIteration, assertThrows(iterator.next));
-}
+  assertEquals('first', mechanism.__iterator__(true).nextValueOrThrow());
+  assertEquals('one', mechanism.__iterator__(false).nextValueOrThrow());
+  // ES6 Iteration should only return keys
+  assertSameElements(['first'], Array.from(mechanism));
+  const iterator = mechanism.__iterator__();
+  assertEquals('one', iterator.nextValueOrThrow());
+  assertEquals(StopIteration, assertThrows(iterator.nextValueOrThrow));
+
+  const es6Iterator = mechanism[Symbol.iterator]();
+  assertObjectEquals({value: 'first', done: false}, es6Iterator.next());
+  assertObjectEquals({value: undefined, done: true}, es6Iterator.next());
+};
 
 
-function testIteratorWithTwoValues() {
+/**
+ * @param {?IterableMechanism} mechanism
+ */
+exports.testIteratorWithTwoValues = function(mechanism) {
   if (!mechanism) {
-    return;
+    fail('Mechanism undefined for testIteratorWithTwoValues');
   }
   mechanism.set('first', 'one');
   mechanism.set('second', 'two');
-  assertSameElements(['one', 'two'], goog.iter.toArray(mechanism));
+  assertSameElements(['one', 'two'], googIter.toArray(mechanism));
+  // ES6 Iteration should only return keys
+  assertSameElements(['first', 'second'], Array.from(mechanism));
   assertSameElements(
-      ['first', 'second'], goog.iter.toArray(mechanism.__iterator__(true)));
-}
+      ['first', 'second'], googIter.toArray(mechanism.__iterator__(true)));
+};
 
 
-function testClear() {
+/**
+ * @param {?IterableMechanism} mechanism
+ */
+exports.testClear = function(mechanism) {
   if (!mechanism) {
-    return;
+    fail('Mechanism undefined for testClear');
   }
   mechanism.set('first', 'one');
   mechanism.set('second', 'two');
@@ -80,26 +89,33 @@ function testClear() {
   assertNull(mechanism.get('second'));
   assertEquals(0, mechanism.getCount());
   assertEquals(
-      goog.iter.StopIteration, assertThrows(mechanism.__iterator__(true).next));
+      StopIteration,
+      assertThrows(mechanism.__iterator__(true).nextValueOrThrow));
   assertEquals(
-      goog.iter.StopIteration,
-      assertThrows(mechanism.__iterator__(false).next));
-}
+      StopIteration,
+      assertThrows(mechanism.__iterator__(false).nextValueOrThrow));
+};
 
 
-function testClearClear() {
+/**
+ * @param {?IterableMechanism} mechanism
+ */
+exports.testClearClear = function(mechanism) {
   if (!mechanism) {
-    return;
+    fail('Mechanism undefined for testClearClear');
   }
   mechanism.clear();
   mechanism.clear();
   assertEquals(0, mechanism.getCount());
-}
+};
 
 
-function testIteratorWithWeirdKeys() {
+/**
+ * @param {?IterableMechanism} mechanism
+ */
+exports.testIteratorWithWeirdKeys = function(mechanism) {
   if (!mechanism) {
-    return;
+    fail('Mechanism undefined for testIteratorWithWeirdKeys');
   }
   mechanism.set(' ', 'space');
   mechanism.set('=+!@#$%^&*()-_\\|;:\'",./<>?[]{}~`', 'control');
@@ -111,7 +127,7 @@ function testIteratorWithWeirdKeys() {
         ' ', '=+!@#$%^&*()-_\\|;:\'",./<>?[]{}~`',
         '\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u4e03\u516b\u4e5d\u5341'
       ],
-      goog.iter.toArray(mechanism.__iterator__(true)));
+      googIter.toArray(mechanism.__iterator__(true)));
   mechanism.clear();
   assertEquals(0, mechanism.getCount());
-}
+};

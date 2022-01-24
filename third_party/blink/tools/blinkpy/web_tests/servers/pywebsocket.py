@@ -80,6 +80,8 @@ class PyWebSocket(server_base.ServerBase):
             self._error_log,
             '--websock-handlers-map-file',
             self._filesystem.join(self._web_socket_tests, 'handler_map.txt'),
+            '--handler-encoding',
+            'utf-8',
         ]
         # TODO(burnik): Check if this is really needed (and why). If not, just set PYTHONPATH.
         self._env = self._port_obj.setup_environ_for_server()

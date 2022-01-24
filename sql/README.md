@@ -31,10 +31,41 @@ popular SQL database systems, such as
 [PostgreSQL](https://www.postgresql.org/) and [MySQL](https://www.mysql.com/).
 
 
-### Data types
+### Data storage model {#storage-model}
 
-SQLite stores data using [5 major types](https://www.sqlite.org/datatype3.html),
-which are summarized below.
+The main bottleneck in SQLite database performance is usually disk I/O. So,
+designing schemas that perform well requires understanding how SQLite stores
+data on disk.
+
+At a very high level, a SQLite database is a forest of
+[B-trees](https://en.wikipedia.org/wiki/B-tree), some of which are
+[B+-trees](https://en.wikipedia.org/wiki/B%2B_tree). The database file is an
+array of fixed-size pages, where each page stores a B-tree node. The page size
+can only be set when a database file is created, and impacts both SQL statement
+execution speed, and memory consumption.
+
+The data in each table (usually called *rows*, *records*, or *tuples*) is stored
+in a separate B-tree. The data in each index (called *entries*, *records* or
+*tuples*) is also stored in a separate B-tree. So, each B-tree is associated
+with exactly one table. The [*Indexing* section](#indexing-model) goes into
+further details.
+
+Each B-tree node stores multiple tuples of values. The values and their
+encodings are described in the [*Value types* section](#data-types).
+
+Tying everything together: The performance of a SQL statement is roughly the
+number of database pages touched (read / written) by the statement. These pages
+are nodes belonging to the B-trees associated with the tables mentioned in the
+statement. The number of pages touched when accessing a B-tree depends on the
+B-tree's depth. Each B-tree's depth depends on its record count (number of
+records stored in it), and on its node width (how many records fit in a node).
+
+
+#### Value types {#data-types}
+
+SQLite stores values using
+[5 major types](https://www.sqlite.org/datatype3.html), which are summarized
+below.
 
 1. NULL is a special type for the `NULL` value.
 
@@ -77,7 +108,7 @@ Chrome database schemas should avoid type affinity, and should not include any
 information ignored by SQLite.
 
 
-### Indexing
+#### Indexing {#indexing-model}
 
 SQLite [uses B-trees](https://www.sqlite.org/fileformat2.html#pages) to store
 both table and index data.
@@ -123,22 +154,97 @@ where columns in both the primary key and the index key are not stored twice in
 B-tree nodes.
 
 
-### Query processing
+### Statement execution model {#query-model}
 
-[At a high level](https://www.sqlite.org/arch.html), SQLite compiles SQL queries
-into bytecode executed by a virtual machine called the VDBE, or
-[the bytecode engine](https://www.sqlite.org/opcode.html). A compiled query can
-be executed multiple times, amortizing the costs of query parsing and planning.
-Chrome's SQLite abstraction layer makes it easy to use compiled queries.
+At [a very high level](https://www.sqlite.org/arch.html), SQLite compiles SQL
+statements (often called *queries*) into bytecode executed by a virtual machine
+called the VDBE, or [the bytecode engine](https://www.sqlite.org/opcode.html).
+A compiled statement can be executed multiple times, amortizing the costs of
+query parsing and planning. Chrome's SQLite abstraction layer makes it easy to
+use compiled queries.
 
-The following SQLite documentation pages cover the query planner and
-optimizer.
+Assuming effective use of cached statements, the performance of a SQL statement
+comes down to the *query plan* that SQLite generates for the statement. The
+query plan is the sequence of B-tree accesses used to execute the statement,
+which determines the number of B-tree pages touched.
+
+The rest of this section summarizes the following SQLite documentation pages.
 
 1. [query planner overview](https://www.sqlite.org/queryplanner.html)
 2. [query optimizer overview](https://www.sqlite.org/optoverview.html)
 3. [`EXPLAIN QUERY PLAN` output description](https://www.sqlite.org/eqp.html)
 
-TODO: Present a simplified model that's sufficient for most database design.
+At a high level, a SQLite query plan is a sequence of **nested** loops, where
+each loop iterates over the data in a B-tree. Each loop can use the current
+record of the outer loops.
+
+TODO: Complete this section. Cover joins, sorting, etc.
+
+#### Getting SQLite's query plans
+
+Ideally, the SQL schemas and statements used by Chrome features would be simple
+enough that the query plans would be obvious to the reader.
+
+When this isn't the case, the fastest way to get the query plan is to load the
+schema in [the SQLite shell](https://sqlite.org/cli.html), and use
+[`EXPLAIN QUERY PLAN`](https://www.sqlite.org/eqp.html).
+
+The following command builds a SQLite shell that uses Chrome's build of SQLite,
+and supports the `EXPLAIN QUERY PLAN` command.
+
+```sh
+autoninja -C out/Default sqlite_dev_shell
+```
+
+Inside the SQLite shell, the `.eqp on` directive automatically shows the results
+of `EXPLAIN QUERY PLAN` for every SQL statement executed in the shell.
+
+
+#### Query steps {#query-step-types}
+
+Query steps are the building blocks of SQLite query plans. Each query step is
+essentially a loop that iterates over the records in a B-tree. These loops
+differ in terms of how many B-tree pages they touch, and how many records they
+produce. This sub-section lists the types of steps implemented by SQLite.
+
+##### Scans
+
+Scans visit an entire (table or index) B-tree. For this reason, scans are almost
+never acceptable in Chrome. Most of our features don't have limits on the amount
+of stored data, so scans can result in an unbounded amount of I/O.
+
+A *table scan* visits the entire table's B-tree.
+
+A *covering index scan* visits an entire index B-tree, but doesn't access the
+associated table B-tree.
+
+SQLite doesn't have any special optimization for `COUNT(*)` queries. In other
+words, SQLite does not track subtree sizes in its B-tree nodes.
+
+Reviewers sometimes emphasize performance issues by calling the scans *full*
+table scans and *full* index scans, where "full" references the fact that the
+number of B-tree pages accessed is proportional to the entire data set stored on
+disk.
+
+TODO: Complete this section. Add examples in a way that doesn't make the section
+overly long.
+
+##### Searches
+
+Searches access a subset of a (table or index) B-tree nodes. Searches limit the
+amount of nodes they need to access based on query restrictions, such as terms
+in the `WHERE` clause. Seeing a `SEARCH` in a query plan is not a guarantee of
+performance. Searches can vary wildly in the amount of B-tree pages they need to
+access.
+
+One of the fastest possible searches is a *table search* that performs exactly
+one B-tree lookup, and produces at most one record.
+
+The other fastest possible search is a *covering index search* that also
+performs one lookup, and produces at most one record.
+
+TODO: Complete this section. Add examples in a way that doesn't make the section
+overly long.
 
 
 ## General advice
@@ -201,23 +307,23 @@ Format statements like so.
   static constexpr char kOriginInfoSql[] =
       // clang-format off
       "CREATE TABLE origin_infos("
-        "origin TEXT NOT NULL,"
-        "last_modified INTEGER NOT NULL,"
-        "secure INTEGER NOT NULL)";
-      // clang-format on
+          "origin TEXT NOT NULL,"
+          "last_modified INTEGER NOT NULL,"
+          "secure INTEGER NOT NULL)";
+  // clang-format on
 
   static constexpr char kInsertSql[] =
-     // clang-format off
-     "INSERT INTO infos(origin,last_modified,secure) "
-       "VALUES (?,?,?)";
-     // clang-format on
+      // clang-format off
+      "INSERT INTO infos(origin,last_modified,secure) "
+          "VALUES(?,?,?)";
+  // clang-format on
 
   static constexpr char kSelectSql[] =
-     // clang-format off
-     "SELECT origin,last_modified,secure FROM origins "
-       "WHERE last_modified > ? "
-       "ORDER BY last_modified";
-     // clang-format on
+      // clang-format off
+      "SELECT origin,last_modified,secure FROM origins "
+          "WHERE last_modified>? "
+          "ORDER BY last_modified";
+  // clang-format on
 ```
 
 * [SQLite keywords](https://sqlite.org/lang_keywords.html) should use ALL CAPS.

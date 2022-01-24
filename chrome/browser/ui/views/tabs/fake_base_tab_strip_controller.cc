@@ -256,9 +256,6 @@ void FakeBaseTabStripController::CreateNewTab() {
 void FakeBaseTabStripController::CreateNewTabWithLocation(
     const std::u16string& location) {}
 
-void FakeBaseTabStripController::StackedLayoutMaybeChanged() {
-}
-
 void FakeBaseTabStripController::OnStartedDragging(bool dragging_window) {}
 
 void FakeBaseTabStripController::OnStoppedDragging() {}

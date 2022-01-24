@@ -13,6 +13,11 @@
 #include "content/public/browser/notification_service.h"
 #include "printing/printed_document.h"
 
+// This should be after all other #includes.
+#if defined(_WINDOWS_)  // Detect whether windows.h was included.
+#include "base/win/windows_h_disallowed.h"
+#endif  // defined(_WINDOWS_)
+
 namespace printing {
 
 PrintQueriesQueue::PrintQueriesQueue() {
@@ -110,7 +115,7 @@ void PrintJobManager::StopJobs(bool wait_for_finish) {
   for (auto job = to_stop.begin(); job != to_stop.end(); ++job) {
     // Wait for two minutes for the print job to be spooled.
     if (wait_for_finish)
-      (*job)->FlushJob(base::TimeDelta::FromMinutes(2));
+      (*job)->FlushJob(base::Minutes(2));
     (*job)->Stop();
   }
 }

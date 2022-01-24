@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/observer_list_types.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
 
@@ -35,6 +36,18 @@ class PushNotificationManager {
     virtual void PurgeFetchedEntries(base::OnceClosure on_success) = 0;
   };
 
+  // Observer interface to process HintNotificationPayload.payload. Subclasses
+  // should parse the optimization_guide::proto::Any to a specific proto type.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Processes the HintNotificationPayload.payload.
+    virtual void OnNotificationPayload(
+        proto::OptimizationType optimization_type,
+        const proto::Any& payload) = 0;
+  };
+
+  PushNotificationManager(const PushNotificationManager&) = delete;
+  PushNotificationManager& operator=(const PushNotificationManager&) = delete;
   virtual ~PushNotificationManager() = default;
 
   // Sets |this|'s delegate.
@@ -46,6 +59,15 @@ class PushNotificationManager {
   // Called when a new push notification arrives.
   virtual void OnNewPushNotification(
       const proto::HintNotificationPayload& notification) = 0;
+
+  // Adds an observer to handle payload in HintNotificationPayload.payload.
+  virtual void AddObserver(Observer* observer) = 0;
+
+  // Removes an observer that handles HintNotificationPayload.payload.
+  virtual void RemoveObserver(Observer* observer) = 0;
+
+ protected:
+  PushNotificationManager() = default;
 };
 
 }  // namespace optimization_guide

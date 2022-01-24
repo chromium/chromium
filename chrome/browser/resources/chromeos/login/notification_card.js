@@ -27,7 +27,7 @@ Polymer({
     if (type == NotificationCardType.FAIL)
       return 'cr:warning';
     if (type == NotificationCardType.SUCCESS)
-      return 'notification-card:done';
+      return 'oobe-24:done';
     console.error('Unknown type "' + type + '".');
     return '';
   },

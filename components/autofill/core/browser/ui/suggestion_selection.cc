@@ -12,11 +12,11 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -60,10 +60,6 @@ constexpr size_t kMaxSuggestedProfilesCount = 50;
 // As of November 2018, displaying 10 suggestions cover at least 99% of the
 // indices clicked by our users. The suggestions will also refine as they type.
 constexpr size_t kMaxUniqueSuggestionsCount = 10;
-
-// This is the maximum number of suggestions that will be displayed when the
-// kAutofillPruneSuggestions flag is enabled.
-constexpr size_t kMaxPrunedUniqueSuggestionsCount = 3;
 
 std::vector<Suggestion> GetPrefixMatchedSuggestions(
     const AutofillType& type,
@@ -131,11 +127,15 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
         }
       }
 
-      suggestions.push_back(Suggestion(value));
+      suggestions.emplace_back(value);
       suggestions.back().backend_id = profile->guid();
       suggestions.back().match = prefix_matched_suggestion
                                      ? Suggestion::PREFIX_MATCH
                                      : Suggestion::SUBSTRING_MATCH;
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillUseConsistentPopupSettingsIcons)) {
+        suggestions.back().icon = "accountIcon";
+      }
     }
   }
 
@@ -159,18 +159,12 @@ std::vector<Suggestion> GetUniqueSuggestions(
     std::vector<AutofillProfile*>* unique_matched_profiles) {
   std::vector<Suggestion> unique_suggestions;
 
-  size_t max_num_suggestions =
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillPruneSuggestions)
-          ? kMaxPrunedUniqueSuggestionsCount
-          : kMaxUniqueSuggestionsCount;
-
   // Limit number of unique profiles as having too many makes the
   // browser hang due to drawing calculations (and is also not
   // very useful for the user).
   ServerFieldTypeSet types(field_types.begin(), field_types.end());
   for (size_t i = 0; i < matched_profiles.size() &&
-                     unique_suggestions.size() < max_num_suggestions;
+                     unique_suggestions.size() < kMaxUniqueSuggestionsCount;
        ++i) {
     bool include = true;
     AutofillProfile* profile_a = matched_profiles[i];

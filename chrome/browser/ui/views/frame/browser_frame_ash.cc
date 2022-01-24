@@ -9,20 +9,22 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "components/full_restore/features.h"
-#include "components/full_restore/full_restore_info.h"
-#include "components/full_restore/full_restore_utils.h"
+#include "components/app_restore/app_restore_utils.h"
+#include "components/app_restore/features.h"
+#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -37,6 +39,11 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
   explicit BrowserWindowStateDelegate(Browser* browser) : browser_(browser) {
     DCHECK(browser_);
   }
+
+  BrowserWindowStateDelegate(const BrowserWindowStateDelegate&) = delete;
+  BrowserWindowStateDelegate& operator=(const BrowserWindowStateDelegate&) =
+      delete;
+
   ~BrowserWindowStateDelegate() override {}
 
   // Overridden from ash::WindowStateDelegate.
@@ -49,10 +56,14 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
     return true;
   }
 
+  // Overridden from ash::WindowStateDelegate.
+  void ToggleLockedFullscreen(ash::WindowState* window_state) override {
+    ash::Shell::Get()->shell_delegate()->SetUpEnvironmentForLockedFullscreen(
+        window_state->IsPinned());
+  }
+
  private:
   Browser* browser_;  // not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserWindowStateDelegate);
 };
 
 }  // namespace
@@ -170,16 +181,16 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
 
   Browser* browser = browser_view_->browser();
   const int32_t restore_id = browser->create_params().restore_id;
-  params.init_properties_container.SetProperty(full_restore::kWindowIdKey,
+  params.init_properties_container.SetProperty(app_restore::kWindowIdKey,
                                                browser->session_id().id());
-  params.init_properties_container.SetProperty(
-      full_restore::kRestoreWindowIdKey, restore_id);
+  params.init_properties_container.SetProperty(app_restore::kRestoreWindowIdKey,
+                                               restore_id);
 
   params.init_properties_container.SetProperty(
-      full_restore::kAppTypeBrowser,
-      (browser->is_type_app() || browser->is_type_app_popup()) ? true : false);
+      app_restore::kAppTypeBrowser,
+      (browser->is_type_app() || browser->is_type_app_popup()));
 
-  params.init_properties_container.SetProperty(full_restore::kBrowserAppNameKey,
+  params.init_properties_container.SetProperty(app_restore::kBrowserAppNameKey,
                                                browser->app_name());
 
   // This is only needed for ash. For lacros, Exo tags the associated
@@ -189,7 +200,7 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
       aura::client::kAppType, static_cast<int>(is_app ? ash::AppType::CHROME_APP
                                                       : ash::AppType::BROWSER));
 
-  full_restore::ModifyWidgetParams(restore_id, &params);
+  app_restore::ModifyWidgetParams(restore_id, &params);
   // Override session restore bounds with Full Restore bounds if they exist.
   if (!params.bounds.IsEmpty())
     browser->set_override_bounds(params.bounds);

@@ -5,6 +5,7 @@
 #ifndef NET_COOKIES_COOKIE_INCLUSION_STATUS_H_
 #define NET_COOKIES_COOKIE_INCLUSION_STATUS_H_
 
+#include <bitset>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -84,6 +85,14 @@ class NET_EXPORT CookieInclusionStatus {
     // valid if the cookie has a __Host- prefix and does not have the SameParty
     // attribute.
     EXCLUDE_INVALID_PARTITIONED = 18,
+    // Cookie exceeded the name/value pair size limit.
+    EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE = 19,
+    // Cookie exceeded the attribute size limit. Note that this exclusion value
+    // won't be used by code that parses cookie lines since RFC6265bis
+    // indicates that large attributes should be ignored instead of causing the
+    // whole cookie to be rejected. There will be a corresponding WarningReason
+    // to notify users that an attribute value was ignored in that case.
+    EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 20,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS
@@ -176,32 +185,25 @@ class NET_EXPORT CookieInclusionStatus {
     // contexts, for cookies that are 'SameParty; SameSite=Lax'.)
     WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE = 11,
 
-    // The cookie was SameSite=Lax (or unspecified-treated-as-lax) and was
-    // excluded due to the fix for crbug.com/1166211, i.e. it was accessed by an
-    // HTTP request which was not a main frame navigation, whose initiator was
-    // cross-site and whose site-for-cookies was same-site with the request URL.
-    // TODO(crbug.com/1166211): Remove when no longer needed.
-    WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211 = 12,
-
     // This cookie was SameSite=None and was included, but would have been
     // excluded if it had been SameParty and the SameParty context had been
     // computed using *either* top & current or the whole ancestor tree.
-    WARN_SAMESITE_NONE_REQUIRED = 13,
+    WARN_SAMESITE_NONE_REQUIRED = 12,
     // This cookie was SameSite=None, was included, would have been included if
     // it had been SameParty and the SameParty context type had been computed
     // with only the top frame & resource URL, but would have been excluded if
     // the SameParty context type had been computed using all ancestor frames.
-    WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE = 14,
+    WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE = 13,
     // This cookie was SameSite=None, was included, and would have been included
     // if it had been SameParty and the SameParty context type had been computed
     // using all ancestor frames.
-    WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS = 15,
+    WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS = 14,
     // This cookie was SameSite=None, was included, and would have been included
     // if it had been SameSite=Lax.
-    WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_LAX = 16,
+    WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_LAX = 15,
     // This cookie was SameSite=None, was included, and would have been included
     // if it had been SameSite=Strict.
-    WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT = 17,
+    WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT = 16,
 
     // The cookie would have been included prior to the spec change considering
     // redirects in the SameSite context calculation
@@ -213,7 +215,13 @@ class NET_EXPORT CookieInclusionStatus {
     // was actually used for the inclusion decision). This is not applied if
     // the context was downgraded but the cookie would have been
     // included/excluded in both cases.
-    WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION = 18,
+    WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION = 17,
+
+    // The cookie exceeded the attribute size limit. RFC6265bis indicates that
+    // large attributes should be ignored instead of causing the whole cookie
+    // to be rejected. This is applied by the code that parses cookie lines and
+    // notifies the user that an attribute value was ignored.
+    WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 18,
 
     // This should be kept last.
     NUM_WARNING_REASONS
@@ -246,6 +254,11 @@ class NET_EXPORT CookieInclusionStatus {
     // Keep last.
     kMaxValue = LAX_CROSS_LAX_SECURE
   };
+
+  using ExclusionReasonBitset =
+      std::bitset<ExclusionReason::NUM_EXCLUSION_REASONS>;
+  using WarningReasonBitset = std::bitset<WarningReason::NUM_WARNING_REASONS>;
+
   // Makes a status that says include and should not warn.
   CookieInclusionStatus();
 
@@ -255,6 +268,10 @@ class NET_EXPORT CookieInclusionStatus {
   CookieInclusionStatus(ExclusionReason reason, WarningReason warning);
   // Makes a status that contains the given warning.
   explicit CookieInclusionStatus(WarningReason warning);
+
+  // Copyable.
+  CookieInclusionStatus(const CookieInclusionStatus& other);
+  CookieInclusionStatus& operator=(const CookieInclusionStatus& other);
 
   bool operator==(const CookieInclusionStatus& other) const;
   bool operator!=(const CookieInclusionStatus& other) const;
@@ -310,13 +327,13 @@ class NET_EXPORT CookieInclusionStatus {
   void RemoveWarningReason(WarningReason reason);
 
   // Used for serialization/deserialization.
-  uint32_t exclusion_reasons() const { return exclusion_reasons_; }
-  void set_exclusion_reasons(uint32_t exclusion_reasons) {
+  ExclusionReasonBitset exclusion_reasons() const { return exclusion_reasons_; }
+  void set_exclusion_reasons(ExclusionReasonBitset exclusion_reasons) {
     exclusion_reasons_ = exclusion_reasons;
   }
 
-  uint32_t warning_reasons() const { return warning_reasons_; }
-  void set_warning_reasons(uint32_t warning_reasons) {
+  WarningReasonBitset warning_reasons() const { return warning_reasons_; }
+  void set_warning_reasons(WarningReasonBitset warning_reasons) {
     warning_reasons_ = warning_reasons;
   }
 
@@ -325,11 +342,6 @@ class NET_EXPORT CookieInclusionStatus {
 
   // Get exclusion reason(s) and warning in string format.
   std::string GetDebugString() const;
-
-  // Checks that the underlying bit vector representation doesn't contain any
-  // extraneous bits that are not mapped to any enum values. Does not check
-  // for reasons which semantically cannot coexist.
-  bool IsValid() const;
 
   // Checks whether the exclusion reasons are exactly the set of exclusion
   // reasons in the vector. (Ignores warnings.)
@@ -341,6 +353,10 @@ class NET_EXPORT CookieInclusionStatus {
   bool HasExactlyWarningReasonsForTesting(
       std::vector<WarningReason> reasons) const;
 
+  // Validates mojo data, since mojo does not support bitsets.
+  static bool ValidateExclusionAndWarningFromWire(uint32_t exclusion_reasons,
+                                                  uint32_t warning_reasons);
+
   // Makes a status that contains the given exclusion reasons and warning.
   static CookieInclusionStatus MakeFromReasonsForTesting(
       std::vector<ExclusionReason> reasons,
@@ -348,14 +364,14 @@ class NET_EXPORT CookieInclusionStatus {
 
  private:
   // Returns the `exclusion_reasons_` with the given `reasons` unset.
-  uint32_t ExclusionReasonsWithout(
+  ExclusionReasonBitset ExclusionReasonsWithout(
       const std::vector<ExclusionReason>& reasons) const;
 
   // A bit vector of the applicable exclusion reasons.
-  uint32_t exclusion_reasons_ = 0u;
+  ExclusionReasonBitset exclusion_reasons_;
 
   // A bit vector of the applicable warning reasons.
-  uint32_t warning_reasons_ = 0u;
+  WarningReasonBitset warning_reasons_;
 };
 
 NET_EXPORT inline std::ostream& operator<<(std::ostream& os,

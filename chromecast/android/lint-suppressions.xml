@@ -2,14 +2,15 @@
 <lint>
   <!-- Ignore all lint errors in chrome code. -->
   <issue id="all">
-    <ignore regexp="../../base/"/>
-    <ignore regexp="../../components/"/>
-    <ignore regexp="../../content/"/>
-    <ignore regexp="../../device/"/>
-    <ignore regexp="../../media/"/>
-    <ignore regexp="../../net/"/>
-    <ignore regexp="../../services/"/>
-    <ignore regexp="../../ui/"/>
+    <ignore regexp="\.\./\.\./base/"/>
+    <ignore regexp="\.\./\.\./components/"/>
+    <ignore regexp="\.\./\.\./content/"/>
+    <ignore regexp="\.\./\.\./device/"/>
+    <ignore regexp="\.\./\.\./media/"/>
+    <ignore regexp="\.\./\.\./net/"/>
+    <ignore regexp="\.\./\.\./services/"/>
+    <ignore regexp="\.\./\.\./third_party/"/>
+    <ignore regexp="\.\./\.\./ui/"/>
   </issue>
   <!-- The following cast-specific suppressions have been migrated from
        //build/android/lint/suppressions.xml -->
@@ -29,8 +30,6 @@
     <ignore regexp="chromecast/internal"/>
   </issue>
   <issue id="IconDuplicates" severity="Error">
-    <!-- mipmap version is used for app launcher only. drawables used for notifications -->
-    <ignore regexp="chromecast/browser/android/apk/res/mipmap-.*/app_icon.png"/>
     <ignore regexp="chromecast/internal"/>
   </issue>
   <issue id="IconDuplicatesConfig" severity="Error">

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base.h"
 #include "components/policy/core/common/policy_details.h"
@@ -35,6 +34,12 @@ class ResourceCache;
 class DeviceLocalAccountExternalDataManager
     : public CloudExternalDataManagerBase,
       public base::RefCounted<DeviceLocalAccountExternalDataManager> {
+ public:
+  DeviceLocalAccountExternalDataManager(
+      const DeviceLocalAccountExternalDataManager&) = delete;
+  DeviceLocalAccountExternalDataManager& operator=(
+      const DeviceLocalAccountExternalDataManager&) = delete;
+
  private:
   friend class DeviceLocalAccountExternalDataService;
   friend class base::RefCounted<DeviceLocalAccountExternalDataManager>;
@@ -57,8 +62,6 @@ class DeviceLocalAccountExternalDataManager
 
   // CloudExternalDataManagerBase:
   void OnPolicyStoreLoaded() override;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountExternalDataManager);
 };
 
 }  // namespace policy

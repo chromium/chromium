@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
@@ -23,8 +24,12 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/protocol/bookmark_model_metadata.pb.h"
+#include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,7 +86,6 @@ syncer::UpdateResponseData CreateUpdateResponseData(
   data.id = bookmark_info.server_id;
   data.parent_id = bookmark_info.parent_id;
   data.server_defined_unique_tag = bookmark_info.server_tag;
-  data.unique_position = unique_position;
   data.originator_client_item_id = guid.AsLowercaseString();
 
   sync_pb::BookmarkSpecifics* bookmark_specifics =
@@ -89,9 +93,12 @@ syncer::UpdateResponseData CreateUpdateResponseData(
   bookmark_specifics->set_guid(guid.AsLowercaseString());
   bookmark_specifics->set_legacy_canonicalized_title(bookmark_info.title);
   bookmark_specifics->set_full_title(bookmark_info.title);
+  *bookmark_specifics->mutable_unique_position() = unique_position.ToProto();
+
   if (bookmark_info.url.empty()) {
-    data.is_folder = true;
+    bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
   } else {
+    bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::URL);
     bookmark_specifics->set_url(bookmark_info.url);
   }
 
@@ -234,55 +241,12 @@ class ProxyCommitQueue : public syncer::CommitQueue {
   CommitQueue* commit_queue_ = nullptr;
 };
 
-class TestBookmarkClientWithFavicon : public bookmarks::TestBookmarkClient {
- public:
-  // This method must be used to tell the bookmark_model about favicon.
-  void SimulateFaviconLoaded(GURL page_url, gfx::Image image, GURL icon_url) {
-    ASSERT_NE(0u, last_tasks_.count(page_url));
-    SimulateFaviconLoaded(last_tasks_[page_url], std::move(image),
-                          std::move(icon_url));
-  }
-
-  void SimulateFaviconLoaded(base::CancelableTaskTracker::TaskId task_id,
-                             gfx::Image image,
-                             GURL icon_url) {
-    favicon_base::FaviconImageResult result;
-    result.image = std::move(image);
-    result.icon_url = std::move(icon_url);
-    favicon_base::FaviconImageCallback cb =
-        std::move(favicon_image_callbacks_[task_id]);
-    favicon_image_callbacks_.erase(task_id);
-    std::move(cb).Run(result);
-  }
-
-  size_t GetTasksCount() const { return favicon_image_callbacks_.size(); }
-
-  // bookmarks::TestBookmarkClient implementation.
-  base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
-      const GURL& page_url,
-      favicon_base::FaviconImageCallback callback,
-      base::CancelableTaskTracker* tracker) override {
-    favicon_image_callbacks_[next_task_id_] = std::move(callback);
-    last_tasks_[page_url] = next_task_id_;
-    return next_task_id_++;
-  }
-
- private:
-  base::CancelableTaskTracker::TaskId next_task_id_ = 1;
-  base::RepeatingCallback<void()> trigger_favicon_loaded_callback_;
-  std::map<base::CancelableTaskTracker::TaskId,
-           favicon_base::FaviconImageCallback>
-      favicon_image_callbacks_;
-  std::map<GURL, base::CancelableTaskTracker::TaskId> last_tasks_;
-};
-
 class BookmarkModelTypeProcessorTest : public testing::Test {
  public:
   BookmarkModelTypeProcessorTest()
       : processor_(std::make_unique<BookmarkModelTypeProcessor>(
             &bookmark_undo_service_)),
-        bookmark_model_(bookmarks::TestBookmarkClient::CreateModelWithClient(
-            std::make_unique<TestBookmarkClientWithFavicon>())) {
+        bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
     // TODO(crbug.com/516866): This class assumes model is loaded and sync has
     // started before running tests. We should test other variations (i.e. model
     // isn't loaded yet and/or sync didn't start yet).
@@ -316,8 +280,8 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   void DestroyBookmarkModel() { bookmark_model_.reset(); }
 
   bookmarks::BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
-  TestBookmarkClientWithFavicon* bookmark_client() {
-    return static_cast<TestBookmarkClientWithFavicon*>(
+  bookmarks::TestBookmarkClient* bookmark_client() {
+    return static_cast<bookmarks::TestBookmarkClient*>(
         bookmark_model_->client());
   }
   BookmarkUndoService* bookmark_undo_service() {
@@ -328,13 +292,6 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   BookmarkModelTypeProcessor* processor() { return processor_.get(); }
   base::MockCallback<base::RepeatingClosure>* schedule_save_closure() {
     return &schedule_save_closure_;
-  }
-
-  sync_pb::BookmarkModelMetadata BuildBookmarkModelMetadataWithoutFullTitles() {
-    sync_pb::BookmarkModelMetadata model_metadata =
-        processor()->GetTrackerForTest()->BuildBookmarkModelMetadata();
-    model_metadata.clear_bookmarks_full_title_reuploaded();
-    return model_metadata;
   }
 
   syncer::CommitRequestDataList GetLocalChangesFromProcessor(
@@ -774,12 +731,12 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                 schedule_save_closure()->Get(),
                                 bookmark_model());
 
-  ASSERT_EQ(0u, bookmark_client()->GetTasksCount());
+  ASSERT_FALSE(bookmark_client()->HasFaviconLoadTasks());
   EXPECT_THAT(GetLocalChangesFromProcessor(/*max_entries=*/10), IsEmpty());
   EXPECT_TRUE(node->is_favicon_loading());
 
-  bookmark_client()->SimulateFaviconLoaded(GURL(kUrl), gfx::Image(),
-                                           GURL(kIconUrl));
+  bookmark_client()->SimulateFaviconLoaded(GURL(kUrl), GURL(kIconUrl),
+                                           gfx::Image());
   ASSERT_TRUE(node->is_favicon_loaded());
   EXPECT_THAT(GetLocalChangesFromProcessor(/*max_entries=*/10),
               ElementsAre(CommitRequestDataMatchesGuid(node->guid())));
@@ -838,8 +795,8 @@ TEST_F(BookmarkModelTypeProcessorTest,
   // without loaded favicon.
   bookmark_model()->GetFavicon(unsynced_entities[1]->bookmark_node());
   bookmark_client()->SimulateFaviconLoaded(
-      unsynced_entities[1]->bookmark_node()->url(), gfx::Image(),
-      GURL(kIconUrl));
+      unsynced_entities[1]->bookmark_node()->url(), GURL(kIconUrl),
+      gfx::Image());
   ASSERT_TRUE(unsynced_entities[1]->bookmark_node()->is_favicon_loaded());
   ASSERT_FALSE(unsynced_entities[0]->bookmark_node()->is_favicon_loaded());
   ASSERT_FALSE(unsynced_entities[0]->bookmark_node()->is_favicon_loading());
@@ -868,7 +825,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
   InitWithSyncedBookmarks(bookmarks, processor());
 
   sync_pb::BookmarkModelMetadata model_metadata =
-      BuildBookmarkModelMetadataWithoutFullTitles();
+      processor()->GetTrackerForTest()->BuildBookmarkModelMetadata();
   ASSERT_FALSE(processor()->GetTrackerForTest()->HasLocalChanges());
 
   // Simulate browser restart, enable sync reupload and initialize the processor
@@ -876,7 +833,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
   ResetModelTypeProcessor();
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(switches::kSyncReuploadBookmarkFullTitles);
+  features.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
 
   std::string metadata_str;
   model_metadata.SerializeToString(&metadata_str);
@@ -895,7 +852,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
   ASSERT_FALSE(processor()
                    ->GetTrackerForTest()
                    ->BuildBookmarkModelMetadata()
-                   .bookmarks_full_title_reuploaded());
+                   .bookmarks_hierarchy_fields_reuploaded());
 
   // Synchronize with the server and get any updates.
   EXPECT_CALL(*mock_commit_queue(), NudgeForCommit());
@@ -908,7 +865,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
   EXPECT_TRUE(processor()
                   ->GetTrackerForTest()
                   ->BuildBookmarkModelMetadata()
-                  .bookmarks_full_title_reuploaded());
+                  .bookmarks_hierarchy_fields_reuploaded());
 }
 
 }  // namespace

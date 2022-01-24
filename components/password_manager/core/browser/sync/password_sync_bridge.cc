@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -63,118 +64,7 @@ base::Time ConvertToBaseTime(uint64_t time) {
   return base::Time::FromDeltaSinceWindowsEpoch(
       // Use FromDeltaSinceWindowsEpoch because create_time_us has
       // always used the Windows epoch.
-      base::TimeDelta::FromMicroseconds(time));
-}
-
-// Converts a map of `form_password_issues` into the format required by the
-// proto. If `form_password_issues` is nullopt, this method returns
-// empty PasswordIssues.
-sync_pb::PasswordSpecificsData::PasswordIssues PasswordIssuesMapToProto(
-    const absl::optional<base::flat_map<InsecureType, InsecurityMetadata>>&
-        form_password_issues) {
-  if (!form_password_issues.has_value())
-    return sync_pb::PasswordSpecificsData::PasswordIssues();
-
-  sync_pb::PasswordSpecificsData::PasswordIssues password_issues;
-  for (const auto& form_issue : form_password_issues.value()) {
-    sync_pb::PasswordSpecificsData::PasswordIssues::PasswordIssue issue;
-    issue.set_date_first_detection_microseconds(
-        form_issue.second.create_time.ToDeltaSinceWindowsEpoch()
-            .InMicroseconds());
-    issue.set_is_muted(form_issue.second.is_muted.value());
-    switch (form_issue.first) {
-      case InsecureType::kLeaked:
-        DCHECK(!password_issues.has_leaked_password_issue());
-        *password_issues.mutable_leaked_password_issue() = std::move(issue);
-        break;
-      case InsecureType::kPhished:
-        DCHECK(!password_issues.has_phished_password_issue());
-        *password_issues.mutable_phished_password_issue() = std::move(issue);
-        break;
-      case InsecureType::kWeak:
-        DCHECK(!password_issues.has_weak_password_issue());
-        *password_issues.mutable_weak_password_issue() = std::move(issue);
-        break;
-      case InsecureType::kReused:
-        DCHECK(!password_issues.has_reused_password_issue());
-        *password_issues.mutable_reused_password_issue() = std::move(issue);
-        break;
-    }
-  }
-  return password_issues;
-}
-
-// Builds a map of password issues from the proto data. The map is required
-// for storing issues in a `PasswordForm`.
-base::flat_map<InsecureType, InsecurityMetadata> PasswordIssuesMapFromProto(
-    const sync_pb::PasswordSpecificsData& password_data) {
-  base::flat_map<InsecureType, InsecurityMetadata> form_issues;
-  const auto& specifics_issues = password_data.password_issues();
-  if (specifics_issues.has_leaked_password_issue()) {
-    const auto& issue = specifics_issues.leaked_password_issue();
-    form_issues[InsecureType::kLeaked] = InsecurityMetadata(
-        ConvertToBaseTime(issue.date_first_detection_microseconds()),
-        IsMuted(issue.is_muted()));
-  }
-  if (specifics_issues.has_reused_password_issue()) {
-    const auto& issue = specifics_issues.reused_password_issue();
-    form_issues[InsecureType::kReused] = InsecurityMetadata(
-        ConvertToBaseTime(issue.date_first_detection_microseconds()),
-        IsMuted(issue.is_muted()));
-  }
-  if (specifics_issues.has_weak_password_issue()) {
-    const auto& issue = specifics_issues.weak_password_issue();
-    form_issues[InsecureType::kWeak] = InsecurityMetadata(
-        ConvertToBaseTime(issue.date_first_detection_microseconds()),
-        IsMuted(issue.is_muted()));
-  }
-  if (specifics_issues.has_phished_password_issue()) {
-    const auto& issue = specifics_issues.phished_password_issue();
-    form_issues[InsecureType::kPhished] = InsecurityMetadata(
-        ConvertToBaseTime(issue.date_first_detection_microseconds()),
-        IsMuted(issue.is_muted()));
-  }
-  return form_issues;
-}
-
-sync_pb::PasswordSpecifics SpecificsFromPassword(
-    const PasswordForm& password_form) {
-  sync_pb::PasswordSpecifics specifics;
-  sync_pb::PasswordSpecificsData* password_data =
-      specifics.mutable_client_only_encrypted_data();
-  password_data->set_scheme(static_cast<int>(password_form.scheme));
-  password_data->set_signon_realm(password_form.signon_realm);
-  password_data->set_origin(password_form.url.spec());
-  password_data->set_action(password_form.action.spec());
-  password_data->set_username_element(
-      base::UTF16ToUTF8(password_form.username_element));
-  password_data->set_password_element(
-      base::UTF16ToUTF8(password_form.password_element));
-  password_data->set_username_value(
-      base::UTF16ToUTF8(password_form.username_value));
-  password_data->set_password_value(
-      base::UTF16ToUTF8(password_form.password_value));
-  password_data->set_date_last_used(
-      password_form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  password_data->set_date_password_modified_windows_epoch_micros(
-      password_form.date_password_modified.ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
-  password_data->set_date_created(
-      password_form.date_created.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  password_data->set_blacklisted(password_form.blocked_by_user);
-  password_data->set_type(static_cast<int>(password_form.type));
-  password_data->set_times_used(password_form.times_used);
-  password_data->set_display_name(
-      base::UTF16ToUTF8(password_form.display_name));
-  password_data->set_avatar_url(password_form.icon_url.spec());
-  password_data->set_federation_url(
-      password_form.federation_origin.opaque()
-          ? std::string()
-          : password_form.federation_origin.Serialize());
-  *password_data->mutable_password_issues() =
-      PasswordIssuesMapToProto(password_form.password_issues);
-
-  return specifics;
+      base::Microseconds(time));
 }
 
 PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
@@ -200,7 +90,7 @@ PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
     // For legacy passwords that don't have the |date_last_used| field set, we
     // should it similar to the logic in login database migration.
     password.date_last_used =
-        base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromDays(1));
+        base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
   }
   password.date_password_modified = ConvertToBaseTime(
       password_data.has_date_password_modified_windows_epoch_micros()
@@ -214,7 +104,6 @@ PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
   password.icon_url = GURL(password_data.avatar_url());
   password.federation_origin =
       url::Origin::Create(GURL(password_data.federation_url()));
-  password.date_synced = sync_time;
   password.password_issues = PasswordIssuesMapFromProto(password_data);
 
   return password;
@@ -312,6 +201,9 @@ class ScopedStoreTransaction {
     }
   }
 
+  ScopedStoreTransaction(const ScopedStoreTransaction&) = delete;
+  ScopedStoreTransaction& operator=(const ScopedStoreTransaction&) = delete;
+
   ~ScopedStoreTransaction() {
     if (!committed_) {
       store_->RollbackTransaction();
@@ -321,8 +213,6 @@ class ScopedStoreTransaction {
  private:
   PasswordStoreSync* store_;
   bool committed_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedStoreTransaction);
 };
 
 }  // namespace
@@ -394,10 +284,6 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
     switch (change.type()) {
       case PasswordStoreChange::ADD:
       case PasswordStoreChange::UPDATE: {
-        // TODO(crbug.com/1223022): Either make sure that AddLogin replaces
-        // nullopt with empty issues or remove nullopt altogether.
-        DCHECK(change.type() == PasswordStoreChange::ADD ||
-               change.form().password_issues.has_value());
         change_processor()->Put(storage_key, CreateEntityData(change.form()),
                                 &metadata_change_list);
         break;
@@ -493,7 +379,6 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
       const FormPrimaryKey primary_key = pair.first;
       const PasswordForm& local_password_form = *pair.second;
 
-      DCHECK(local_password_form.password_issues.has_value());
       std::unique_ptr<syncer::EntityData> local_form_entity_data =
           CreateEntityData(local_password_form);
       const std::string client_tag_of_local_password =
@@ -532,15 +417,15 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
       }
 
       // Passwords or insecure credentials aren't identical.
-      // TODO(crbug.com/1230631): Make sure that if a phished entry exists
-      // locally, it is uploaded and merged with the remote password issues.
       if (ConvertToBaseTime(remote_password_specifics.date_created()) <
               local_password_form.date_created ||
           (AreLocalAndRemotePasswordsEqualExcludingIssues(
                remote_password_specifics, local_password_form) &&
-           !remote_password_specifics.has_password_issues())) {
-        // Either the local password is more recent, or they are equal but local
-        // password has security issues - update the processor.
+           local_password_form.IsInsecureCredential(InsecureType::kPhished))) {
+        // Either the local password is more recent, or they are equal but the
+        // local password has been marked as phished. While all other types of
+        // issues are easy to recompute (e.g. via Password Check) phished
+        // entries are only found locally, so persisting them is important.
         change_processor()->Put(
             /*storage_key=*/base::NumberToString(primary_key.value()),
             std::move(local_form_entity_data), metadata_change_list.get());
@@ -856,7 +741,6 @@ void PasswordSyncBridge::GetData(StorageKeyList storage_keys,
   for (const std::string& storage_key : storage_keys) {
     FormPrimaryKey primary_key = ParsePrimaryKey(storage_key);
     if (key_to_form_map.count(primary_key) != 0) {
-      DCHECK(key_to_form_map[primary_key]->password_issues.has_value());
       batch->Put(storage_key, CreateEntityData(*key_to_form_map[primary_key]));
     }
   }
@@ -878,7 +762,6 @@ void PasswordSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   for (const auto& pair : key_to_form_map) {
     PasswordForm form = *pair.second;
     form.password_value = u"<redacted>";
-    DCHECK(form.password_issues.has_value());
     batch->Put(base::NumberToString(pair.first.value()),
                CreateEntityData(form));
   }

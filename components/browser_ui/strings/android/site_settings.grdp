@@ -69,6 +69,12 @@
   <message name="IDS_VR_PERMISSION_TITLE" desc="Title of the permission to use Virtual Reality [CHAR_LIMIT=32]">
     Virtual reality
   </message>
+  <message name="IDS_AUTO_DARK_WEB_CONTENT_TITLE" desc="Title of the permission auto darken web content [CHAR_LIMIT=32]">
+    Dark theme for sites
+  </message>
+  <message name="IDS_DESKTOP_SITE_TITLE" desc="Title of the permission to request the desktop view of a site by default [CHAR_LIMIT=32]">
+    Desktop site
+  </message>
 
   <!-- Site settings global toggles -->
 
@@ -113,6 +119,12 @@
   <message name="IDS_WEBSITE_SETTINGS_BLOCKED_GROUP_HEADING_SOUND" desc="The heading for a list of websites that have been muted.">
     Muted
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_ALLOWED_GROUP_HEADING_REQUEST_DESKTOP_SITE" desc="The heading for a list of websites that will be requested the desktop view of sites.">
+    Always request desktop site
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_BLOCKED_GROUP_HEADING_REQUEST_DESKTOP_SITE" desc="The heading for a list of websites that will be requested the mobile view of sites.">
+    Always request mobile site
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_MANAGED_GROUP_HEADING" desc="The heading for a list of websites that are managed by an external app.">
     Managed by app
   </message>
@@ -143,17 +155,11 @@
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ALLOW" desc="Summary text explaining that Chrome will allow a website to access some permission, e.g. JavaScript: allow.">
     Allow
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ALLOW_DSE" desc="Summary text explaining that Chrome will allow the default search engine to access this permission, both when performed from the address bar and from search result pages. e.g. Location access: Allow for current search engine">
-    Allow for current search engine
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ALLOWED_DSE" desc="Status message explaining that the default search engine is allowed to access this permission. Displayed in Site Settings page. e.g. Location: Allowed for current search engine">
     Allowed for current search engine
   </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCK" desc="Summary text explaining that Chrome will block a website from accessing some permission, e.g. JavaScript: block.">
     Block
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCK_DSE" desc="Summary text explaining that Chrome will block the default search engine from accessing this permission, both when performed from the address bar and from search result pages. e.g. Location access: Block for current search engine">
-    Block for current search engine
   </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCKED_DSE" desc="Status message explaining that the default search engine is blocked from accessing this permission. Displayed in Site Settings page. e.g. Location: Blocked for current search engine">
     Blocked for current search engine
@@ -237,9 +243,6 @@
 
   <message name="IDS_INTRUSIVE_ADS_INFORMATION" desc="The extra information at the top of the Site Details page when the site tends to show intrusive ads">
     This site shows intrusive or misleading ads
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ADS_BLOCK" desc="The Blocked string for the ads permission on Site Details">
-     Block if site shows intrusive or misleading ads (recommended)
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ADS_BLOCKED" desc="A setting that, if turned on, will block intrusive or misleading ads on sites that have a history of showing such ads.">
     Block ads on sites that show intrusive or misleading ads
@@ -329,10 +332,10 @@
     Sites will work normally
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_ADDITION" desc="Additional text used to explain the block third-party cookies option in settings">
-    Features on some sites may break
+    Features on some sites may not work
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_ADDITION" desc="Additional text used to explain the block cookies option in settings">
-    Features on many sites may break
+    Features on many sites may not work
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_ALLOWED" desc="Summary text explaining that sites are allowed to use cookies and that it is the recommended setting.">
     Allow sites to save and read cookie data (recommended)
@@ -345,6 +348,20 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_COOKIE_INFO" desc="Text describing cookie and third-party cookie settings.">
     Cookies are files created by websites you visit. Sites use them to remember your preferences. Third-party cookies are created by other sites. These sites own some of the content, like ads or images, that you see on the webpage you visit.
+  </message>
+
+  <!-- Desktop Site -->
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_ALLOWED" desc="Summary text explaining that desktop view of sites will be requested by default.">
+    Request desktop view
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_BLOCKED" desc="Summary text explaining that mobile view of sites will be requested by default and that it is the recommended setting.">
+    Request mobile view (recommended)
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_ALLOWED_LIST" desc="Summary text explaining that desktop view of sites will be requested by default. To be shown in the list of permission categories.">
+    On
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_BLOCKED_LIST" desc="Summary text explaining that mobile view of sites will be requested by default. To be shown in the list of permission categories.">
+    Off
   </message>
 
   <!-- Idle Detection -->
@@ -528,4 +545,16 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_VR_BLOCKED" desc="Summary text explaining that sites are blocked from using VR.">
     Block sites from using your virtual reality device and data
   </message>
+
+  <!-- Auto-darken web content -->
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTO_DARK_ALLOWED" desc="Summary text explaining that sites are alllowed to be darkend with Chrome branded darkening algorithm.">
+    Apply dark theme to sites when Chrome uses dark theme, when possible
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTO_DARK_BLOCKED" desc="Summary text explaining that sites are blocked to be darkend with Chrome branded darkening algorithm.">
+    Don’t apply dark theme to sites
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_AUTO_DARK_BLOCK" desc="The description for the block auto darken for a specific website dialog.">
+    Don’t apply dark theme for a specific site
+  </message>
+
 </grit-part>

@@ -9,6 +9,7 @@
 
 #include "chromecast/renderer/cast_content_renderer_client.h"
 #include "components/cast_streaming/renderer/public/demuxer_provider.h"
+#include "media/cast/receiver/cast_streaming_renderer_controller_proxy_impl.h"
 
 namespace media {
 class Demuxer;
@@ -39,6 +40,8 @@ class CastRuntimeContentRendererClient
 
  private:
   cast_streaming::DemuxerProvider cast_streaming_demuxer_provider_;
+  ::media::cast::CastStreamingRendererControllerProxyImpl
+      cast_streaming_renderer_controller_proxy_;
 };
 
 }  // namespace chromecast

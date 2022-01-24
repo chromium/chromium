@@ -122,8 +122,8 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     ASSERT_TRUE(*out_leaf && *out_intermediate && *out_root);
     // This test uses MOCK_TIME, so need to set the cert validity dates based
     // on whatever the mock time happens to start at.
-    base::Time not_before = base::Time::Now() - base::TimeDelta::FromDays(1);
-    base::Time not_after = base::Time::Now() + base::TimeDelta::FromDays(10);
+    base::Time not_before = base::Time::Now() - base::Days(1);
+    base::Time not_after = base::Time::Now() + base::Days(10);
     (*out_leaf)->SetValidity(not_before, not_after);
     (*out_intermediate)->SetValidity(not_before, not_after);
     (*out_root)->SetValidity(not_before, not_after);
@@ -169,7 +169,7 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineCRL) {
 
   const base::TimeDelta timeout_increment =
       CertNetFetcherURLRequest::GetDefaultTimeoutForTesting() +
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
   const int expected_request_count =
       base::ClampFloor(GetCertVerifyProcBuiltinTimeLimitForTesting() /
                        timeout_increment) +
@@ -242,7 +242,7 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineOCSP) {
 
   const base::TimeDelta timeout_increment =
       CertNetFetcherURLRequest::GetDefaultTimeoutForTesting() +
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
   const int expected_request_count =
       base::ClampFloor(GetCertVerifyProcBuiltinTimeLimitForTesting() /
                        timeout_increment) +
@@ -321,7 +321,7 @@ TEST_F(CertVerifyProcBuiltinTest, EVRevocationCheckDeadline) {
 
   const base::TimeDelta timeout_increment =
       CertNetFetcherURLRequest::GetDefaultTimeoutForTesting() +
-      base::TimeDelta::FromMilliseconds(1);
+      base::Milliseconds(1);
   const int expected_request_count =
       base::ClampFloor(GetCertVerifyProcBuiltinTimeLimitForTesting() /
                        timeout_increment) +

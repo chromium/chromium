@@ -9,6 +9,7 @@
 
 #include "base/base_switches.h"
 #include "base/files/file_path.h"
+#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -114,6 +116,9 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
  protected:
   EncryptedMediaSupportedTypesTest() {
+    // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
+    disabled_features_.push_back(features::kChromeWhatsNewUI);
+
     audio_webm_codecs_.push_back("vorbis");
 
     video_webm_codecs_.push_back("vp8");
@@ -131,13 +136,8 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
 
     video_mp4_hi10p_codecs_.push_back("avc1.6E001E");  // Hi10P profile
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    video_mp4_codecs_.push_back("hvc1.1.6.L93.B0");
-    video_mp4_codecs_.push_back("hev1.1.6.L93.B0");
-#else
-    invalid_codecs_.push_back("hvc1.1.6.L93.B0");
-    invalid_codecs_.push_back("hev1.1.6.L93.B0");
-#endif
+    video_mp4_hevc_codecs_.push_back("hvc1.1.6.L93.B0");
+    video_mp4_hevc_codecs_.push_back("hev1.1.6.L93.B0");
 
     // Opus is supported in both MP4 and WebM.
     opus_codecs_.push_back("opus");
@@ -191,6 +191,10 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
   const CodecVector& video_mp4_hi10p_codecs() const {
     return video_mp4_hi10p_codecs_;
   }
+  const CodecVector& video_mp4_hevc_codecs() const {
+    return video_mp4_hevc_codecs_;
+  }
+
   const CodecVector& opus_codecs() const { return opus_codecs_; }
   const CodecVector& vp9_profile0_codecs() const {
     return vp9_profile0_codecs_;
@@ -208,6 +212,8 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     test_launcher_utils::RemoveCommandLineSwitch(
         default_command_line, switches::kDisableComponentUpdate, command_line);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+    feature_list_.InitWithFeatures(enabled_features_, disabled_features_);
   }
 
   void SetUpOnMainThread() override {
@@ -217,7 +223,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     http_test_server->ServeFilesFromSourceDirectory(media::GetTestDataPath());
     CHECK(http_test_server->Start());
     GURL gurl = http_test_server->GetURL("/test_key_system_instantiation.html");
-    ui_test_utils::NavigateToURL(browser(), gurl);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   }
 
   // Create a valid JavaScript string for the content type. Format is
@@ -284,8 +290,8 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
   }
 
   enum class SessionType {
-    kTemporary,             // Temporary session
-    kPersistentLicense,     // Persistent license session
+    kTemporary,          // Temporary session
+    kPersistentLicense,  // Persistent license session
   };
 
   std::string GetSessionTypeString(SessionType session_type) {
@@ -367,6 +373,13 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
                                   robustness);
   }
 
+  std::string IsVideoMp4HevcRobustnessSupported(const std::string& key_system,
+                                                const char* robustness) {
+    return IsSupportedByKeySystem(key_system, kVideoMP4MimeType,
+                                  video_mp4_hevc_codecs(),
+                                  SessionType::kTemporary, robustness);
+  }
+
   std::string IsAudioMp4RobustnessSupported(const std::string& key_system,
                                             const char* robustness) {
     return IsSupportedByKeySystem(key_system, kAudioMP4MimeType,
@@ -392,6 +405,13 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
                                   robustness, encryption_scheme);
   }
 
+ protected:
+  // Features to enable or disable for the test. Must be updated in the test
+  // constructor (before SetUpDefaultCommandLine()) to take effect.
+  std::vector<base::Feature> enabled_features_;
+  std::vector<base::Feature> disabled_features_;
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   const CodecVector no_codecs_;
   CodecVector audio_webm_codecs_;
@@ -400,6 +420,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
   CodecVector audio_mp4_flac_codecs_;
   CodecVector video_mp4_codecs_;
   CodecVector video_mp4_hi10p_codecs_;
+  CodecVector video_mp4_hevc_codecs_;
   CodecVector opus_codecs_;
   CodecVector vp9_profile0_codecs_;
   CodecVector vp9_profile2_codecs_;
@@ -414,11 +435,16 @@ class EncryptedMediaSupportedTypesClearKeyTest
 // For ExternalClearKey tests, ensure that the ClearKey adapter is loaded.
 class EncryptedMediaSupportedTypesExternalClearKeyTest
     : public EncryptedMediaSupportedTypesTest {
+ public:
+  EncryptedMediaSupportedTypesExternalClearKeyTest(
+      const EncryptedMediaSupportedTypesExternalClearKeyTest&) = delete;
+  EncryptedMediaSupportedTypesExternalClearKeyTest& operator=(
+      const EncryptedMediaSupportedTypesExternalClearKeyTest&) = delete;
+
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
  protected:
   EncryptedMediaSupportedTypesExternalClearKeyTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        media::kExternalClearKeyForTesting);
+    enabled_features_.push_back(media::kExternalClearKeyForTesting);
   }
 
   ~EncryptedMediaSupportedTypesExternalClearKeyTest() override {}
@@ -427,12 +453,7 @@ class EncryptedMediaSupportedTypesExternalClearKeyTest
     EncryptedMediaSupportedTypesTest::SetUpCommandLine(command_line);
     RegisterClearKeyCdm(command_line);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
-
-  DISALLOW_COPY_AND_ASSIGN(EncryptedMediaSupportedTypesExternalClearKeyTest);
 };
 
 // By default, the External Clear Key (ECK) key system is not supported even if
@@ -452,6 +473,12 @@ class EncryptedMediaSupportedTypesExternalClearKeyNotEnabledTest
 
 class EncryptedMediaSupportedTypesWidevineTest
     : public EncryptedMediaSupportedTypesTest {
+ public:
+  EncryptedMediaSupportedTypesWidevineTest(
+      const EncryptedMediaSupportedTypesWidevineTest&) = delete;
+  EncryptedMediaSupportedTypesWidevineTest& operator=(
+      const EncryptedMediaSupportedTypesWidevineTest&) = delete;
+
  protected:
   EncryptedMediaSupportedTypesWidevineTest() = default;
 
@@ -464,18 +491,19 @@ class EncryptedMediaSupportedTypesWidevineTest
     command_line->AppendSwitchASCII(
         switches::kUnsafelyAllowProtectedMediaIdentifierForDomain, "127.0.0.1");
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncryptedMediaSupportedTypesWidevineTest);
 };
 
 class EncryptedMediaSupportedTypesWidevineHwSecureTest
     : public EncryptedMediaSupportedTypesWidevineTest {
+ public:
+  EncryptedMediaSupportedTypesWidevineHwSecureTest(
+      const EncryptedMediaSupportedTypesWidevineHwSecureTest&) = delete;
+  EncryptedMediaSupportedTypesWidevineHwSecureTest& operator=(
+      const EncryptedMediaSupportedTypesWidevineHwSecureTest&) = delete;
+
  protected:
   EncryptedMediaSupportedTypesWidevineHwSecureTest() {
-    scoped_feature_list_.InitAndEnableFeature(media::kHardwareSecureDecryption);
+    enabled_features_.push_back(media::kHardwareSecureDecryption);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -486,21 +514,23 @@ class EncryptedMediaSupportedTypesWidevineHwSecureTest
     command_line->AppendSwitchASCII(
         switches::kOverrideHardwareSecureCodecsForTesting, "vp8,vp9,vorbis");
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncryptedMediaSupportedTypesWidevineHwSecureTest);
 };
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 // Registers ClearKey CDM with the wrong path (filename).
 class EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest
     : public EncryptedMediaSupportedTypesTest {
+ public:
+  EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest(
+      const EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest&) =
+      delete;
+  EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest& operator=(
+      const EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest&) =
+      delete;
+
  protected:
   EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        media::kExternalClearKeyForTesting);
+    enabled_features_.push_back(media::kExternalClearKeyForTesting);
   }
 
   ~EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest()
@@ -510,12 +540,6 @@ class EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest
     EncryptedMediaSupportedTypesTest::SetUpCommandLine(command_line);
     RegisterClearKeyCdm(command_line, true /* use_wrong_cdm_path */);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest);
 };
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -602,6 +626,8 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Video_WebM) {
                                             audio_mp4_codecs()));
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kVideoWebMMimeType,
                                             video_mp4_codecs()));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kVideoWebMMimeType,
+                                            video_mp4_hevc_codecs()));
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Audio_WebM) {
@@ -624,12 +650,16 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Audio_WebM) {
                                             audio_mp4_flac_codecs()));
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kAudioWebMMimeType,
                                             video_mp4_codecs()));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kAudioWebMMimeType,
+                                            video_mp4_hevc_codecs()));
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Video_MP4) {
   // Valid video types.
   EXPECT_PROPRIETARY(
       IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType, video_mp4_codecs()));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
+                                            video_mp4_hevc_codecs()));
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
                                         vp9_profile0_codecs()));
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
@@ -674,6 +704,8 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Audio_MP4) {
   // Non-audio MP4 codecs.
   EXPECT_UNSUPPORTED(
       IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType, video_mp4_codecs()));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType,
+                                            video_mp4_hevc_codecs()));
 
   // Invalid or non-MP4 codec.
   EXPECT_UNSUPPORTED(
@@ -730,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
 // External Clear Key
 //
 
-// When BUILDFLAG(ENABLE_LIBRARY_CDMS), this also tests the Pepper CDM check.
+// When BUILDFLAG(ENABLE_LIBRARY_CDMS), this also tests the library CDM check.
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                        Basic) {
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kVideoWebMMimeType,
@@ -743,6 +775,13 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                                     audio_mp4_flac_codecs()));
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_codecs()));
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
+      kExternalClearKey, kVideoMP4MimeType, video_mp4_hevc_codecs()));
+#else
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
+      kExternalClearKey, kVideoMP4MimeType, video_mp4_hevc_codecs()));
+#endif
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kAudioMP4MimeType, audio_mp4_codecs()));
 }
@@ -816,6 +855,8 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       kExternalClearKey, kVideoWebMMimeType, audio_mp4_codecs()));
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
       kExternalClearKey, kVideoWebMMimeType, video_mp4_codecs()));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
+      kExternalClearKey, kVideoWebMMimeType, video_mp4_hevc_codecs()));
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
@@ -839,6 +880,8 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       kExternalClearKey, kAudioWebMMimeType, audio_mp4_flac_codecs()));
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
       kExternalClearKey, kAudioWebMMimeType, video_mp4_codecs()));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
+      kExternalClearKey, kAudioWebMMimeType, video_mp4_hevc_codecs()));
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
@@ -846,6 +889,13 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
   // Valid video types.
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_codecs()));
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
+      kExternalClearKey, kVideoMP4MimeType, video_mp4_hevc_codecs()));
+#else
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
+      kExternalClearKey, kVideoMP4MimeType, video_mp4_hevc_codecs()));
+#endif
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kVideoMP4MimeType,
                                     vp9_profile0_codecs()));
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kVideoMP4MimeType,
@@ -885,6 +935,8 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
   // Non-audio MP4 codecs.
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
       kExternalClearKey, kAudioMP4MimeType, video_mp4_codecs()));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
+      kExternalClearKey, kAudioMP4MimeType, video_mp4_hevc_codecs()));
 
   // Invalid or Non-MP4 codec.
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
@@ -979,6 +1031,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Basic) {
       IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, audio_mp4_codecs()));
   EXPECT_WV(
       IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, opus_codecs()));
+
+  // Without hardware support, HEVC is not supported.
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType,
+                                            video_mp4_hevc_codecs()));
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
@@ -1047,6 +1103,8 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Video_WebM) {
                                             audio_mp4_flac_codecs()));
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
                                             video_mp4_codecs()));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
+                                            video_mp4_hevc_codecs()));
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_WebM) {
@@ -1069,6 +1127,8 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_WebM) {
                                             audio_mp4_flac_codecs()));
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kWidevine, kAudioWebMMimeType,
                                             video_mp4_codecs()));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kWidevine, kAudioWebMMimeType,
+                                            video_mp4_hevc_codecs()));
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Video_MP4) {
@@ -1085,6 +1145,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Video_MP4) {
   // High 10-bit Profile is not supported when using Widevine.
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType,
                                             video_mp4_hi10p_codecs()));
+
+  // HEVC is not supported when using Widevine.
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType,
+                                            video_mp4_hevc_codecs()));
 
   // Non-video MP4 codecs.
   EXPECT_UNSUPPORTED(
@@ -1115,6 +1179,8 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_MP4) {
   // Non-audio MP4 codecs.
   EXPECT_UNSUPPORTED(
       IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, video_mp4_codecs()));
+  EXPECT_UNSUPPORTED(IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType,
+                                            video_mp4_hevc_codecs()));
 
   // Invalid or Non-MP4 codec.
   EXPECT_UNSUPPORTED(
@@ -1256,6 +1322,19 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
   EXPECT_UNSUPPORTED(IsVideoMp4RobustnessSupported(kWidevine, "HW_SECURE_ALL"));
 #endif
 
+  // HEVC codecs. Not supported because either HEVC not supported
+  // (BUILDFLAG(ENABLE_PLATFORM_HEVC)) or HEVC not specified in
+  // kOverrideHardwareSecureCodecsForTesting.
+  // TODO(b/187242911): Add HEVC to kOverrideHardwareSecureCodecsForTesting.
+  EXPECT_UNSUPPORTED(
+      IsVideoMp4HevcRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(
+      IsVideoMp4HevcRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_UNSUPPORTED(
+      IsVideoMp4HevcRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+  EXPECT_UNSUPPORTED(
+      IsVideoMp4HevcRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+
   // Audio proprietary codecs.
   // "SW_SECURE_CRYPTO" is always supported.
   EXPECT_WV_PROPRIETARY(
@@ -1339,6 +1418,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
 //
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesTest,
                        ClearKeyCdmNotRegistered) {
   // External Clear Key will not be supported because Clear Key CDM is not

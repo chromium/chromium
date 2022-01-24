@@ -12,9 +12,24 @@ namespace pdf {
 PdfStreamDelegate::PdfStreamDelegate() = default;
 PdfStreamDelegate::~PdfStreamDelegate() = default;
 
+absl::optional<GURL> PdfStreamDelegate::MapToOriginalUrl(
+    content::WebContents* contents,
+    const GURL& stream_url) {
+  return absl::nullopt;
+}
+
 absl::optional<PdfStreamDelegate::StreamInfo> PdfStreamDelegate::GetStreamInfo(
     content::WebContents* contents) {
   return absl::nullopt;
 }
+
+PdfStreamDelegate::StreamInfo::StreamInfo() = default;
+PdfStreamDelegate::StreamInfo::StreamInfo(const StreamInfo&) = default;
+PdfStreamDelegate::StreamInfo::StreamInfo(StreamInfo&&) = default;
+PdfStreamDelegate::StreamInfo& PdfStreamDelegate::StreamInfo::operator=(
+    const StreamInfo&) = default;
+PdfStreamDelegate::StreamInfo& PdfStreamDelegate::StreamInfo::operator=(
+    StreamInfo&&) = default;
+PdfStreamDelegate::StreamInfo::~StreamInfo() = default;
 
 }  // namespace pdf

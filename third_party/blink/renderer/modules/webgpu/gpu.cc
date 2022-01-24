@@ -7,9 +7,12 @@
 #include <utility>
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/gpu/gpu.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -72,6 +75,20 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
     context_provider = CreateContextProviderOnMainThread(url);
   }
 
+  // Note that we check for API blocking *after* creating the context. This is
+  // because context creation synchronizes against GpuProcessHost lifetime in
+  // the browser process, and GpuProcessHost destruction is what updates API
+  // blocking state on a GPU process crash. See https://crbug.com/1215907#c10
+  // for more details.
+  bool blocked = true;
+  mojo::Remote<mojom::blink::GpuDataManager> gpu_data_manager;
+  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+      gpu_data_manager.BindNewPipeAndPassReceiver());
+  gpu_data_manager->Are3DAPIsBlockedForUrl(url, &blocked);
+  if (blocked) {
+    return nullptr;
+  }
+
   // TODO(kainino): we will need a better way of accessing the GPU interface
   // from multiple threads than BindToCurrentThread et al.
   if (context_provider && !context_provider->BindToCurrentThread()) {
@@ -80,6 +97,16 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
     return nullptr;
   }
   return context_provider;
+}
+
+void AddConsoleWarning(ExecutionContext* execution_context,
+                       const char* message) {
+  if (execution_context) {
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning, message);
+    execution_context->AddConsoleMessage(console_message);
+  }
 }
 
 }  // anonymous namespace
@@ -177,7 +204,7 @@ void GPU::RecordAdapterForIdentifiability(
   }
 
   IdentifiabilityMetricBuilder(context->UkmSourceID())
-      .Set(surface, output_builder.GetToken())
+      .Add(surface, output_builder.GetToken())
       .Record(context->UkmRecorder());
 }
 
@@ -203,15 +230,24 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     } else {
       // Make a new DawnControlClientHolder with the context provider we just
       // made and set the lost context callback
-      dawn_control_client_ = base::MakeRefCounted<DawnControlClientHolder>(
+      dawn_control_client_ = DawnControlClientHolder::Create(
           std::move(context_provider),
           execution_context->GetTaskRunner(TaskType::kWebGPU));
-      dawn_control_client_->SetLostContextCallback();
     }
   }
 
+  bool forceFallbackAdapter = options->forceFallbackAdapter();
+
+  if (options->hasForceSoftware()) {
+    AddConsoleWarning(
+        ExecutionContext::From(script_state),
+        "forceSoftware is deprecated. Use forceFallbackAdapter instead.");
+
+    forceFallbackAdapter = options->forceSoftware();
+  }
+
   // Software adapters are not currently supported.
-  if (options->forceSoftware() == true) {
+  if (forceFallbackAdapter) {
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
     return promise;
   }
@@ -224,7 +260,9 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     power_preference = gpu::webgpu::PowerPreference::kLowPower;
   }
 
-  dawn_control_client_->GetInterface()->RequestAdapterAsync(
+  auto context_provider = dawn_control_client_->GetContextProviderWeakPtr();
+  DCHECK(context_provider);
+  context_provider->ContextProvider()->WebGPUInterface()->RequestAdapterAsync(
       power_preference,
       WTF::Bind(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
                 WrapPersistent(script_state), WrapPersistent(options),

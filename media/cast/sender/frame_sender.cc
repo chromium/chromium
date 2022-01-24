@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/cast/constants.h"
@@ -23,10 +22,8 @@ namespace cast {
 namespace {
 
 constexpr int kNumAggressiveReportsSentAtStart = 100;
-constexpr base::TimeDelta kMinSchedulingDelay =
-    base::TimeDelta::FromMilliseconds(1);
-constexpr base::TimeDelta kReceiverProcessTime =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kMinSchedulingDelay = base::Milliseconds(1);
+constexpr base::TimeDelta kReceiverProcessTime = base::Milliseconds(250);
 
 // The additional number of frames that can be in-flight when input exceeds the
 // maximum frame rate.
@@ -113,7 +110,7 @@ void FrameSender::ScheduleNextRtcpReport() {
       CastEnvironment::MAIN, FROM_HERE,
       base::BindOnce(&FrameSender::SendRtcpReport, weak_factory_.GetWeakPtr(),
                      true),
-      base::TimeDelta::FromMilliseconds(kRtcpReportIntervalMs));
+      base::Milliseconds(kRtcpReportIntervalMs));
 }
 
 void FrameSender::SendRtcpReport(bool schedule_future_reports) {
@@ -337,7 +334,7 @@ void FrameSender::OnCancelSendingFrames() {}
 void FrameSender::OnReceivedCastFeedback(const RtcpCastMessage& cast_feedback) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
-  const bool have_valid_rtt = current_round_trip_time_ > base::TimeDelta();
+  const bool have_valid_rtt = current_round_trip_time_.is_positive();
   if (have_valid_rtt) {
     congestion_control_->UpdateRtt(current_round_trip_time_);
 
@@ -463,7 +460,7 @@ bool FrameSender::ShouldDropNextFrame(base::TimeDelta frame_duration) const {
   const base::TimeDelta allowed_in_flight = GetAllowedInFlightMediaDuration();
   if (VLOG_IS_ON(1)) {
     const int64_t percent =
-        allowed_in_flight > base::TimeDelta()
+        allowed_in_flight.is_positive()
             ? base::ClampRound<int64_t>(duration_would_be_in_flight /
                                         allowed_in_flight * 100)
             : std::numeric_limits<int64_t>::max();

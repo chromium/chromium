@@ -1,9 +1,0 @@
-{
-  "welcomeNext": true,
-  "networkSelectGuid": "eth1_guid",
-  "eulaAutoAccept": true,
-  "eulaSendStatistics": true,
-  "updateSkipNonCritical": true,
-  "wizardAutoEnroll": true,
-  "enrollmentToken": "00000000-1111-2222-3333-444444444444"
-}

@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/autofill/core/common/form_data.h"
 #include "url/gurl.h"
 
@@ -162,6 +161,11 @@ class SavePasswordProgressLogger {
   };
 
   SavePasswordProgressLogger();
+
+  SavePasswordProgressLogger(const SavePasswordProgressLogger&) = delete;
+  SavePasswordProgressLogger& operator=(const SavePasswordProgressLogger&) =
+      delete;
+
   virtual ~SavePasswordProgressLogger();
 
   // Call these methods to log information. They sanitize the input and call
@@ -199,9 +203,6 @@ class SavePasswordProgressLogger {
 
   // Translates the StringID values into the corresponding strings.
   static std::string GetStringFromID(SavePasswordProgressLogger::StringID id);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SavePasswordProgressLogger);
 };
 
 }  // namespace autofill

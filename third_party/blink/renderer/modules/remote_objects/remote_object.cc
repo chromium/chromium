@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/remote_objects/remote_object.h"
+#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "gin/converter.h"
 #include "third_party/blink/public/web/blink.h"

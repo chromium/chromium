@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_action_icon_factory.h"
@@ -49,6 +48,15 @@ class ExtensionActionViewController
       const extensions::ExtensionId& extension_id,
       Browser* browser,
       ExtensionsContainer* extensions_container);
+
+  // Returns whether any of `actions` given have access to the `web_contents`.
+  static bool AnyActionHasCurrentSiteAccess(
+      const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
+      content::WebContents* web_contents);
+
+  ExtensionActionViewController(const ExtensionActionViewController&) = delete;
+  ExtensionActionViewController& operator=(
+      const ExtensionActionViewController&) = delete;
 
   ~ExtensionActionViewController() override;
 
@@ -210,8 +218,6 @@ class ExtensionActionViewController
       popup_host_observation_{this};
 
   base::WeakPtrFactory<ExtensionActionViewController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionViewController);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_CONTROLLER_H_

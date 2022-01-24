@@ -79,23 +79,6 @@ namespace policy {
 
 namespace em = enterprise_management;
 
-std::string GetDeviceManufacturer() {
-#if defined(OS_IOS)
-  return "Apple Inc.";
-#else
-  return std::string();
-#endif
-}
-
-std::string GetDeviceModel() {
-#if defined(OS_IOS)
-  // Obtains the Apple internal device name (e.g. "iPad6,11").
-  return base::SysInfo::HardwareModelName();
-#else
-  return std::string();
-#endif
-}
-
 std::string GetMachineName() {
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   char hostname[HOST_NAME_MAX];
@@ -143,7 +126,9 @@ std::string GetMachineName() {
     return result;
   }
   return std::string();
-#elif defined(OS_ANDROID)
+#elif defined(OS_ANDROID) || defined(OS_FUCHSIA)
+  // TODO(crbug.com/1257674): This should be fully implemented when there is
+  // support in fuchsia.
   return std::string();
 #else
   NOTREACHED();
@@ -152,7 +137,8 @@ std::string GetMachineName() {
 }
 
 std::string GetOSVersion() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE) || \
+    defined(OS_ANDROID) || defined(OS_FUCHSIA)
   return base::SysInfo::OperatingSystemVersion();
 #elif defined(OS_WIN)
   base::win::OSInfo::VersionNumber version_number =
@@ -160,8 +146,6 @@ std::string GetOSVersion() {
   return base::StringPrintf("%u.%u.%u.%u", version_number.major,
                             version_number.minor, version_number.build,
                             version_number.patch);
-#elif defined(OS_ANDROID)
-  return std::string();
 #else
   NOTREACHED();
   return std::string();
@@ -203,7 +187,9 @@ std::string GetOSUsername() {
   if (!user)
     return std::string();
   return user->GetAccountId().GetUserEmail();
-#elif defined(OS_ANDROID)
+#elif defined(OS_ANDROID) || defined(OS_FUCHSIA)
+  // TODO(crbug.com/1257674): This should be fully implemented when there is
+  // support in fuchsia.
   return std::string();
 #else
   NOTREACHED();

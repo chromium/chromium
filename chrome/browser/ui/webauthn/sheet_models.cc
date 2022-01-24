@@ -637,59 +637,6 @@ AuthenticatorAndroidAccessorySheetModel::GetOtherMechanismsMenuModel() {
   return other_mechanisms_menu_model_.get();
 }
 
-// AuthenticatorPaaskV2SheetModel  -----------------------------------------
-
-AuthenticatorPaaskV2SheetModel::AuthenticatorPaaskV2SheetModel(
-    AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model),
-      other_mechanisms_menu_model_(
-          std::make_unique<OtherMechanismsMenuModel>(dialog_model)) {}
-
-AuthenticatorPaaskV2SheetModel::~AuthenticatorPaaskV2SheetModel() = default;
-
-bool AuthenticatorPaaskV2SheetModel::IsBackButtonVisible() const {
-  return true;
-}
-
-bool AuthenticatorPaaskV2SheetModel::IsActivityIndicatorVisible() const {
-  return true;
-}
-
-const gfx::VectorIcon& AuthenticatorPaaskV2SheetModel::GetStepIllustration(
-    ImageColorScheme color_scheme) const {
-  return color_scheme == ImageColorScheme::kDark ? kWebauthnPhoneDarkIcon
-                                                 : kWebauthnPhoneIcon;
-}
-
-bool AuthenticatorPaaskV2SheetModel::IsAcceptButtonVisible() const {
-  return true;
-}
-
-bool AuthenticatorPaaskV2SheetModel::IsAcceptButtonEnabled() const {
-  return true;
-}
-
-std::u16string AuthenticatorPaaskV2SheetModel::GetAcceptButtonLabel() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_QR_TITLE);
-}
-
-void AuthenticatorPaaskV2SheetModel::OnAccept() {
-  return dialog_model()->StartPhonePairing();
-}
-
-std::u16string AuthenticatorPaaskV2SheetModel::GetStepTitle() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_V2_ACTIVATE_TITLE);
-}
-
-std::u16string AuthenticatorPaaskV2SheetModel::GetStepDescription() const {
-  return l10n_util::GetStringUTF16(
-      IDS_WEBAUTHN_CABLE_V2_ACTIVATE_DESCRIPTION_SHORT);
-}
-
-ui::MenuModel* AuthenticatorPaaskV2SheetModel::GetOtherMechanismsMenuModel() {
-  return other_mechanisms_menu_model_.get();
-}
-
 // AuthenticatorClientPinEntrySheetModel
 // -----------------------------------------
 
@@ -1232,9 +1179,11 @@ const gfx::VectorIcon& AuthenticatorQRSheetModel::GetStepIllustration(
 }
 
 std::u16string AuthenticatorQRSheetModel::GetStepTitle() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_QR_TITLE);
+  // TODO: i18n once final strings are ready.
+  return u"Use your phone";
 }
 
 std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_QR_DESCRIPTION);
+  // TODO: i18n once final strings are ready.
+  return u"Scan this QR Code with your Android phone.";
 }

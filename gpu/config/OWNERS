@@ -1,6 +1,3 @@
 kbr@chromium.org
 zmo@chromium.org
-
-# Gpu info collection
-per-file *info*=magchen@chromium.org
-per-file *dx_diag*=magchen@chromium.org
+magchen@chromium.org

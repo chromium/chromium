@@ -13,19 +13,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * Class containing all data that customizes the contents displayed in the dialog.
  */
 public class PasswordManagerDialogContents {
-    /**
-     * Helper class for range.
-     * TODO(crbug.com/1041591): Replace it with android.util.Range once the minimum API level is 21.
-     */
-    public static class BoldRange {
-        public final int start;
-        public final int end;
-        BoldRange(int start, int end) {
-            assert (start <= end);
-            this.start = start;
-            this.end = end;
-        }
-    }
 
     private final String mTitle;
     private final String mDetails;
@@ -37,7 +24,6 @@ public class PasswordManagerDialogContents {
     private boolean mPrimaryButtonFilled;
     private @Nullable Runnable mHelpButtonCallback;
     private @ModalDialogManager.ModalDialogType int mDialogType;
-    private BoldRange[] mBoldRanges;
 
     /**
      * Constructor for the dialog contents.
@@ -63,7 +49,6 @@ public class PasswordManagerDialogContents {
         mPrimaryButtonFilled = false;
         mHelpButtonCallback = null;
         mDialogType = ModalDialogManager.ModalDialogType.APP;
-        mBoldRanges = new BoldRange[] {};
     }
 
     /**
@@ -86,19 +71,6 @@ public class PasswordManagerDialogContents {
      */
     public void setDialogType(@ModalDialogManager.ModalDialogType int type) {
         mDialogType = type;
-    }
-
-    /**
-     * Sets the bold ranges in the dialog details.
-     * @param boldStartRanges The start positions of bold spans in dialog details, inclusive.
-     * @param boldEndRanges The end positions of bold spans in dialog details, exclusive.
-     */
-    public void setBoldRanges(int[] boldStartRanges, int[] boldEndRanges) {
-        assert (boldStartRanges.length == boldEndRanges.length);
-        mBoldRanges = new BoldRange[boldStartRanges.length];
-        for (int i = 0; i < boldStartRanges.length; i++) {
-            mBoldRanges[i] = new BoldRange(boldStartRanges[i], boldEndRanges[i]);
-        }
     }
 
     /**
@@ -167,12 +139,5 @@ public class PasswordManagerDialogContents {
      */
     public @ModalDialogManager.ModalDialogType int getDialogType() {
         return mDialogType;
-    }
-
-    /**
-     * Returns the bold ranges in the details text.
-     */
-    public BoldRange[] getBoldRanges() {
-        return mBoldRanges;
     }
 }

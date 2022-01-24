@@ -6,12 +6,12 @@
 
 #include <string>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_cast_receiver_instance.h"
 #include "components/prefs/pref_service.h"
@@ -37,7 +37,7 @@ class ArcCastReceiverServiceTest : public testing::Test {
     // Initialize prefs and settings.
     prefs()->SetBoolean(prefs::kCastReceiverEnabled, false);
     settings_helper()->ReplaceDeviceSettingsProviderWithStub();
-    settings_helper()->SetString(chromeos::kCastReceiverName, std::string());
+    settings_helper()->SetString(ash::kCastReceiverName, std::string());
 
     bridge_ = ArcCastReceiverService::GetForBrowserContextForTesting(&profile_);
     // This results in ArcCastReceiverService::OnInstanceReady being called.
@@ -95,9 +95,9 @@ TEST_F(ArcCastReceiverServiceTest, OnCastReceiverEnabledChanged) {
   EXPECT_TRUE(*last_enabled);
 }
 
-// Tests that updating chromeos::kCastReceiverName triggers the mojo call.
+// Tests that updating ash::kCastReceiverName triggers the mojo call.
 TEST_F(ArcCastReceiverServiceTest, OnCastReceiverNameChanged) {
-  settings_helper()->SetString(chromeos::kCastReceiverName, "name");
+  settings_helper()->SetString(ash::kCastReceiverName, "name");
 
   const absl::optional<std::string>& last_name =
       cast_receiver_instance()->last_name();

@@ -36,6 +36,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CertVerifierWithTrustAnchors
   // used.
   explicit CertVerifierWithTrustAnchors(
       const base::RepeatingClosure& anchor_used_callback);
+
+  CertVerifierWithTrustAnchors(const CertVerifierWithTrustAnchors&) = delete;
+  CertVerifierWithTrustAnchors& operator=(const CertVerifierWithTrustAnchors&) =
+      delete;
+
   ~CertVerifierWithTrustAnchors() override;
 
   // TODO(jam): once the network service is the only path, rename or get rid of
@@ -62,8 +67,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CertVerifierWithTrustAnchors
   base::RepeatingClosure anchor_used_callback_;
   std::unique_ptr<CertVerifier> delegate_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CertVerifierWithTrustAnchors);
 };
 
 }  // namespace network

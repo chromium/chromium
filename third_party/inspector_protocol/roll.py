@@ -57,6 +57,8 @@ FILES_TO_SYNC = [
     'crdtp/status_test.cc',
     'crdtp/test_platform.cc',
     'crdtp/test_platform.h',
+    'crdtp/test_string_traits.cc',
+    'crdtp/test_string_traits.h',
     'crdtp/transcode.cc',
     'inspector_protocol.gni',
     'inspector_protocol.gypi',

@@ -10,7 +10,6 @@
 #include <memory>
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "content/common/content_export.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
@@ -39,6 +38,10 @@ class CONTENT_EXPORT WebContentsNSViewBridge : public mojom::WebContentsNSView {
   // when all communication is through mojo.
   WebContentsNSViewBridge(uint64_t view_id,
                           content::WebContentsViewMac* web_contents_view);
+
+  WebContentsNSViewBridge(const WebContentsNSViewBridge&) = delete;
+  WebContentsNSViewBridge& operator=(const WebContentsNSViewBridge&) = delete;
+
   ~WebContentsNSViewBridge() override;
 
   WebContentsViewCocoa* GetNSView() const { return ns_view_.get(); }
@@ -60,8 +63,6 @@ class CONTENT_EXPORT WebContentsNSViewBridge : public mojom::WebContentsNSView {
   mojo::AssociatedRemote<mojom::WebContentsNSViewHost> host_;
 
   std::unique_ptr<ScopedNSViewIdMapping> view_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsNSViewBridge);
 };
 
 }  // namespace content

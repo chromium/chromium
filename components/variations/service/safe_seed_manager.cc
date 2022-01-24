@@ -15,26 +15,9 @@
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/variations_seed_store.h"
+#include "components/variations/variations_switches.h"
 
 namespace variations {
-
-// As of the time of this writing, January 2018, users at the 99.5th percentile,
-// across all platforms, tend to experience fewer than 3 consecutive crashes:
-// [1], [2], [3], [4]. Note, however, that this is less true for the less-stable
-// channels on some platforms.
-// [1] All platforms, stable channel (consistently stable):
-//     https://uma.googleplex.com/timeline_v2?sid=90ac80f4573249fb341a8e49501bfcfd
-// [2] Most platforms, all channels (consistently stable other than occasional
-//     spikes on Canary):
-//     https://uma.googleplex.com/timeline_v2?sid=7af5ba1969db76689a401f982a1db539
-// [3] A less stable platform, all channels:
-//     https://uma.googleplex.com/timeline_v2?sid=07dbc8e4fa9f08e332fb609309a21882
-// [4] Another less stable platform, all channels:
-//     https://uma.googleplex.com/timeline_v2?sid=a7b529ef5d52863fae2d216e963c4cbc
-// Overall, the only {platform, channel} combinations that spike above 3
-// consecutive crashes are ones with very few users, plus Canary. It's probably
-// not realistic to avoid false positives for these less-stable configurations.
-constexpr int kCrashStreakThreshold = 3;
 
 // Consecutive seed fetch failures are, unfortunately, a bit more common. As of
 // January 2018, users at the 99.5th percentile tend to see fewer than 4
@@ -89,14 +72,12 @@ void SafeSeedManager::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 bool SafeSeedManager::ShouldRunInSafeMode() const {
-  // Ignore any number of failures if the --force-fieldtrials flag is set. This
-  // flag is only used by developers, and there's no need to make the
-  // development process flakier.
+  // Ignore any number of failures if the --disable-variations-safe-mode flag is
+  // set.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kForceFieldTrials)) {
+          switches::kDisableVariationsSafeMode)) {
     return false;
   }
-
   int num_crashes = local_state_->GetInteger(prefs::kVariationsCrashStreak);
   int num_failed_fetches =
       local_state_->GetInteger(prefs::kVariationsFailedToFetchSeedStreak);
@@ -107,14 +88,15 @@ bool SafeSeedManager::ShouldRunInSafeMode() const {
 void SafeSeedManager::SetActiveSeedState(
     const std::string& seed_data,
     const std::string& base64_seed_signature,
+    int seed_milestone,
     std::unique_ptr<ClientFilterableState> client_filterable_state,
     base::Time seed_fetch_time) {
   DCHECK(!has_set_active_seed_state_);
   has_set_active_seed_state_ = true;
 
   active_seed_state_ = std::make_unique<ActiveSeedState>(
-      seed_data, base64_seed_signature, std::move(client_filterable_state),
-      seed_fetch_time);
+      seed_data, base64_seed_signature, seed_milestone,
+      std::move(client_filterable_state), seed_fetch_time);
 }
 
 void SafeSeedManager::RecordFetchStarted() {
@@ -136,6 +118,7 @@ void SafeSeedManager::RecordSuccessfulFetch(VariationsSeedStore* seed_store) {
   if (active_seed_state_) {
     seed_store->StoreSafeSeed(active_seed_state_->seed_data,
                               active_seed_state_->base64_seed_signature,
+                              active_seed_state_->seed_milestone,
                               *active_seed_state_->client_filterable_state,
                               active_seed_state_->seed_fetch_time);
 
@@ -155,10 +138,12 @@ void SafeSeedManager::RecordSuccessfulFetch(VariationsSeedStore* seed_store) {
 SafeSeedManager::ActiveSeedState::ActiveSeedState(
     const std::string& seed_data,
     const std::string& base64_seed_signature,
+    int seed_milestone,
     std::unique_ptr<ClientFilterableState> client_filterable_state,
     base::Time seed_fetch_time)
     : seed_data(seed_data),
       base64_seed_signature(base64_seed_signature),
+      seed_milestone(seed_milestone),
       client_filterable_state(std::move(client_filterable_state)),
       seed_fetch_time(seed_fetch_time) {}
 

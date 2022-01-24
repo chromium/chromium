@@ -7,9 +7,10 @@
 #include <algorithm>
 
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace views {
 
@@ -56,8 +57,7 @@ gfx::Size Separator::CalculatePreferredSize() const {
 void Separator::OnPaint(gfx::Canvas* canvas) {
   const SkColor color = overridden_color_
                             ? *overridden_color_
-                            : GetNativeTheme()->GetSystemColor(
-                                  ui::NativeTheme::kColorId_SeparatorColor);
+                            : GetColorProvider()->GetColor(ui::kColorSeparator);
   // Paint background and border, if any.
   View::OnPaint(canvas);
 

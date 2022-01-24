@@ -18,6 +18,10 @@ class TestViewsDelegateWithContext : public ChromeTestViewsDelegate<> {
  public:
   TestViewsDelegateWithContext() = default;
 
+  TestViewsDelegateWithContext(const TestViewsDelegateWithContext&) = delete;
+  TestViewsDelegateWithContext& operator=(const TestViewsDelegateWithContext&) =
+      delete;
+
   void set_context(gfx::NativeWindow context) { context_ = context; }
 
   // ViewsDelegate:
@@ -31,8 +35,6 @@ class TestViewsDelegateWithContext : public ChromeTestViewsDelegate<> {
 
  private:
   gfx::NativeWindow context_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestViewsDelegateWithContext);
 };
 
 }  // namespace

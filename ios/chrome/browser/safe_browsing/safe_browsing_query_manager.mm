@@ -78,18 +78,19 @@ void SafeBrowsingQueryManager::StoreUnsafeResource(
     const UnsafeResource& resource) {
   bool is_main_frame = resource.request_destination ==
                        network::mojom::RequestDestination::kDocument;
-  auto it = std::find_if(results_.begin(), results_.end(),
-                         [&resource, &is_main_frame](const auto& pair) {
-                           return pair.first.url == resource.url &&
-                                  is_main_frame == pair.first.IsMainFrame() &&
-                                  !pair.second.resource;
-                         });
-  if (it == results_.end())
-    return;
-
-  UnsafeResource resource_copy = resource;
-  resource_copy.callback = base::DoNothing();
-  it->second.resource = resource;
+  // Responses to repeated queries can arrive in arbitrary order, not
+  // necessarily in the same order as the queries are made. This means
+  // that when there are repeated pending queries (e.g., when a page has
+  // multiple iframes with the same URL), it is not possible to determine
+  // which of these queries will receive a response first. As a result,
+  // |resource| must be stored with every corresponding query, not just the
+  // first.
+  for (auto& pair : results_) {
+    if (pair.first.url == resource.url &&
+        is_main_frame == pair.first.IsMainFrame() && !pair.second.resource) {
+      pair.second.resource = resource;
+    }
+  }
 }
 
 #pragma mark Private

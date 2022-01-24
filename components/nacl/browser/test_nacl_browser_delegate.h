@@ -6,7 +6,6 @@
 #define COMPONENTS_NACL_BROWSER_TEST_NACL_BROWSER_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/nacl/browser/nacl_browser_delegate.h"
 
 // This is a base test implementation of NaClBrowserDelegate which
@@ -21,6 +20,10 @@
 class TestNaClBrowserDelegate : public NaClBrowserDelegate {
  public:
   TestNaClBrowserDelegate();
+
+  TestNaClBrowserDelegate(const TestNaClBrowserDelegate&) = delete;
+  TestNaClBrowserDelegate& operator=(const TestNaClBrowserDelegate&) = delete;
+
   ~TestNaClBrowserDelegate() override;
   void ShowMissingArchInfobar(int render_process_id,
                               int render_view_id) override;
@@ -38,9 +41,6 @@ class TestNaClBrowserDelegate : public NaClBrowserDelegate {
   bool URLMatchesDebugPatterns(const GURL& manifest_url) override;
   bool IsNonSfiModeAllowed(const base::FilePath& profile_directory,
                            const GURL& manifest_url) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestNaClBrowserDelegate);
 };
 
 #endif  // COMPONENTS_NACL_BROWSER_TEST_NACL_BROWSER_DELEGATE_H_

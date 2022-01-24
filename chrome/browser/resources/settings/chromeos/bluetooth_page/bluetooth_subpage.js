@@ -16,7 +16,7 @@ const MAX_NUMBER_DEVICE_SHOWN = 50;
 
 import {Polymer, html, flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import '//resources/cr_components/chromeos/bluetooth/bluetooth_dialog.m.js';
+import '//resources/cr_components/chromeos/bluetooth/bluetooth_dialog.js';
 import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics, recordUserInitiatedReconnectionAttemptDuration} from '//resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
@@ -30,7 +30,8 @@ import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {routes} from '../os_route.m.js';
-import {Router, Route, RouteObserverBehavior} from '../../router.js';
+import {Router, Route} from '../../router.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import '../../settings_shared_css.js';
 import {recordSettingChange} from '../metrics_recorder.m.js';
 import './bluetooth_device_list_item.js';

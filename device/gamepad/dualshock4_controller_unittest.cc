@@ -89,7 +89,7 @@ constexpr double kStrongMagnitude = 1.0;  // 100% intensity
 constexpr double kWeakMagnitude = 0.5;    // 50% intensity
 
 constexpr base::TimeDelta kPendingTaskDuration =
-    base::TimeDelta::FromMillisecondsD(kDurationMillis);
+    base::Milliseconds(kDurationMillis);
 
 class FakeHidWriter : public HidWriter {
  public:
@@ -136,6 +136,9 @@ class Dualshock4ControllerTest : public testing::Test {
         std::move(bluetooth_writer));
   }
 
+  Dualshock4ControllerTest(const Dualshock4ControllerTest&) = delete;
+  Dualshock4ControllerTest& operator=(const Dualshock4ControllerTest&) = delete;
+
   void TearDown() override {
     ds4_usb_->Shutdown();
     ds4_bluetooth_->Shutdown();
@@ -179,8 +182,6 @@ class Dualshock4ControllerTest : public testing::Test {
   std::unique_ptr<Dualshock4Controller> ds4_bluetooth_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  DISALLOW_COPY_AND_ASSIGN(Dualshock4ControllerTest);
 };
 
 TEST_F(Dualshock4ControllerTest, PlayEffectUsb) {

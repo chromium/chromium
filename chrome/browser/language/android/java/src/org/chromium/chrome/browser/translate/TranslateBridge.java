@@ -28,7 +28,10 @@ public class TranslateBridge {
     }
 
     /**
-     * Initates a translation on the given tab to the given target language.
+     * Initates a translation on the given tab to the given target language. All metrics reported
+     * for this translation assume that this translation was initiated from the Translate UI. If the
+     * translation from the Context Menu or by some other means, then an extra signal needs to be
+     * passed through.
      */
     public static void translateTabToLanguage(Tab tab, String targetLanguageCode) {
         TranslateBridgeJni.get().translateToLanguage(tab.getWebContents(), targetLanguageCode);

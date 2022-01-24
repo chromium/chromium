@@ -25,9 +25,7 @@ namespace extensions {
 
 QuotaService::QuotaService() {
   if (!g_purge_disabled_for_testing && base::ThreadTaskRunnerHandle::IsSet()) {
-    purge_timer_.Start(FROM_HERE,
-                       base::TimeDelta::FromDays(kPurgeIntervalInDays),
-                       this,
+    purge_timer_.Start(FROM_HERE, base::Days(kPurgeIntervalInDays), this,
                        &QuotaService::Purge);
   }
 }

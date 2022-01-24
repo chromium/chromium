@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {flushTasks} from '../test_util.m.js';
+import {flushTasks} from '../test_util.js';
 
 import {TestKioskBrowserProxy} from './test_kiosk_browser_proxy.js';
 

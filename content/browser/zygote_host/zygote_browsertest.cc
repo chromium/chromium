@@ -27,10 +27,11 @@ namespace content {
 class LinuxZygoteBrowserTest : public ContentBrowserTest {
  public:
   LinuxZygoteBrowserTest() = default;
-  ~LinuxZygoteBrowserTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(LinuxZygoteBrowserTest);
+  LinuxZygoteBrowserTest(const LinuxZygoteBrowserTest&) = delete;
+  LinuxZygoteBrowserTest& operator=(const LinuxZygoteBrowserTest&) = delete;
+
+  ~LinuxZygoteBrowserTest() override = default;
 };
 
 // https://crbug.com/638303
@@ -69,6 +70,12 @@ IN_PROC_BROWSER_TEST_F(LinuxZygoteBrowserTest, ZygoteSandboxes) {
 class LinuxZygoteDisabledBrowserTest : public ContentBrowserTest {
  public:
   LinuxZygoteDisabledBrowserTest() = default;
+
+  LinuxZygoteDisabledBrowserTest(const LinuxZygoteDisabledBrowserTest&) =
+      delete;
+  LinuxZygoteDisabledBrowserTest& operator=(
+      const LinuxZygoteDisabledBrowserTest&) = delete;
+
   ~LinuxZygoteDisabledBrowserTest() override = default;
 
  protected:
@@ -77,9 +84,6 @@ class LinuxZygoteDisabledBrowserTest : public ContentBrowserTest {
     command_line->AppendSwitch(switches::kNoZygote);
     command_line->AppendSwitch(sandbox::policy::switches::kNoSandbox);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LinuxZygoteDisabledBrowserTest);
 };
 
 // https://crbug.com/712779

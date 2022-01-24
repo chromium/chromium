@@ -33,6 +33,9 @@ class ShaderDiskCache : public base::RefCounted<ShaderDiskCache> {
   using ShaderLoadedCallback =
       base::RepeatingCallback<void(const std::string&, const std::string&)>;
 
+  ShaderDiskCache(const ShaderDiskCache&) = delete;
+  ShaderDiskCache& operator=(const ShaderDiskCache&) = delete;
+
   void set_shader_loaded_callback(const ShaderLoadedCallback& callback) {
     shader_loaded_callback_ = callback;
   }
@@ -100,8 +103,6 @@ class ShaderDiskCache : public base::RefCounted<ShaderDiskCache> {
   std::unordered_map<ShaderDiskCacheEntry*,
                      std::unique_ptr<ShaderDiskCacheEntry>>
       entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderDiskCache);
 };
 
 // ShaderCacheFactory maintains a cache of ShaderDiskCache objects
@@ -109,6 +110,10 @@ class ShaderDiskCache : public base::RefCounted<ShaderDiskCache> {
 class ShaderCacheFactory : public base::ThreadChecker {
  public:
   ShaderCacheFactory();
+
+  ShaderCacheFactory(const ShaderCacheFactory&) = delete;
+  ShaderCacheFactory& operator=(const ShaderCacheFactory&) = delete;
+
   ~ShaderCacheFactory();
 
   // Clear the shader disk cache for the given |path|. This supports unbounded
@@ -157,8 +162,6 @@ class ShaderCacheFactory : public base::ThreadChecker {
   using ShaderClearQueue = base::queue<std::unique_ptr<ShaderClearHelper>>;
   using ShaderClearMap = std::map<base::FilePath, ShaderClearQueue>;
   ShaderClearMap shader_clear_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderCacheFactory);
 };
 
 }  // namespace gpu

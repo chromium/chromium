@@ -1,5 +1,6 @@
 Tests name sources in invisible nodes.
 {
+    childIds : <object>
     domNode : div#link1
     ignored : false
     name : {
@@ -29,6 +30,7 @@ Tests name sources in invisible nodes.
         value : 1 2 7
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -44,6 +46,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : input#input2
     ignored : false
     name : {
@@ -97,6 +100,7 @@ Tests name sources in invisible nodes.
         value : 1 2 7
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -167,6 +171,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : input#input3
     ignored : false
     name : {
@@ -250,6 +255,7 @@ Tests name sources in invisible nodes.
         value : 1 2 3 4 5 6 7
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -350,6 +356,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : input#input4
     ignored : false
     name : {
@@ -403,6 +410,7 @@ Tests name sources in invisible nodes.
         value : 1 2 3 4 5 6 7
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -473,6 +481,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : button#button1
     ignored : false
     name : {
@@ -520,6 +529,7 @@ Tests name sources in invisible nodes.
         value : Hidden text
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -555,6 +565,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : button#button2
     ignored : false
     name : {
@@ -602,6 +613,7 @@ Tests name sources in invisible nodes.
         value : Before After
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -637,6 +649,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : button#button3
     ignored : false
     name : {
@@ -684,6 +697,7 @@ Tests name sources in invisible nodes.
         value : Text within hidden subtree
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -719,6 +733,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : button#button4
     ignored : false
     name : {
@@ -766,6 +781,7 @@ Tests name sources in invisible nodes.
         value : Before After
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -801,6 +817,7 @@ Tests name sources in invisible nodes.
     }
 }
 {
+    childIds : <object>
     domNode : input#input5
     ignored : false
     name : {
@@ -850,6 +867,7 @@ Tests name sources in invisible nodes.
         value : Before After
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid

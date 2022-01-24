@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_SHARED_IMPL_PPAPI_NACL_PLUGIN_ARGS_H
-#define PPAPI_SHARED_IMPL_PPAPI_NACL_PLUGIN_ARGS_H
+#ifndef PPAPI_SHARED_IMPL_PPAPI_NACL_PLUGIN_ARGS_H_
+#define PPAPI_SHARED_IMPL_PPAPI_NACL_PLUGIN_ARGS_H_
 
 #include <string>
 #include <vector>
@@ -28,4 +28,4 @@ struct PPAPI_SHARED_EXPORT PpapiNaClPluginArgs {
 
 }  // namespace ppapi
 
-#endif  // PPAPI_SHARED_IMPL_PPAPI_NACL_PLUGIN_ARGS_H
+#endif  // PPAPI_SHARED_IMPL_PPAPI_NACL_PLUGIN_ARGS_H_

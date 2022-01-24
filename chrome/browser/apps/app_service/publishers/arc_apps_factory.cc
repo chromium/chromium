@@ -44,7 +44,10 @@ ArcAppsFactory::ArcAppsFactory()
 
 KeyedService* ArcAppsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new ArcApps(Profile::FromBrowserContext(context));
+  auto* arc_apps = new ArcApps(AppServiceProxyFactory::GetForProfile(
+      Profile::FromBrowserContext(context)));
+  arc_apps->Initialize();
+  return arc_apps;
 }
 
 }  // namespace apps

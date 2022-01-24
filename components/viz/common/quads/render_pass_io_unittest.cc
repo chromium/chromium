@@ -228,7 +228,7 @@ TEST(RenderPassIOTest, QuadList) {
           render_pass0->CreateAndAppendDrawQuad<VideoHoleDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
                    gfx::Rect(5, 5, 305, 405), gfx::Rect(15, 15, 205, 305),
-                   false, base::UnguessableToken::Deserialize(2001, 2019));
+                   false, base::UnguessableToken::Create());
       ++quad_count;
     }
     {

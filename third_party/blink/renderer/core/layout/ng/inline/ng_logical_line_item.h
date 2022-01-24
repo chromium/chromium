@@ -16,6 +16,7 @@
 namespace blink {
 
 class LayoutObject;
+class NGLayoutResult;
 
 // This class represents an item in a line, after line break, but still mutable
 // and in the logical coordinate system.
@@ -212,12 +213,13 @@ struct NGLogicalLineItem {
 
   // Ellipsis does not have |NGInlineItem|, but built from |LayoutObject| and
   // |NGStyleVariant|.
-  const LayoutObject* layout_object = nullptr;
+  UntracedMember<const LayoutObject> layout_object;
   // Used only when |layout_object_| is not null.
   NGStyleVariant style_variant = NGStyleVariant::kStandard;
 
-  LayoutObject* out_of_flow_positioned_box = nullptr;
-  LayoutObject* unpositioned_float = nullptr;
+  UntracedMember<LayoutObject> out_of_flow_positioned_box;
+  UntracedMember<LayoutObject> unpositioned_float;
+
   // The offset of the border box, initially in this child coordinate system.
   // |ComputeInlinePositions()| converts it to the offset within the line box.
   LogicalRect rect;
@@ -285,6 +287,8 @@ class NGLogicalLineItems {
 
   NGLogicalLineItem* FirstInFlowChild();
   NGLogicalLineItem* LastInFlowChild();
+
+  const NGLayoutResult* BlockInInlineLayoutResult() const;
 
   // Add a child. Accepts all constructor arguments for |NGLogicalLineItem|.
   template <class... Args>

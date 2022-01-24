@@ -81,8 +81,7 @@ const uint8_t kUsbDeviceTypeProController = 0x03;
 // The timeout duration was chosen through experimentation. A shorter duration
 // (~1 second) works for Pro controllers, but Joy-Cons sometimes fail to
 // initialize correctly.
-const base::TimeDelta kTimeoutDuration =
-    base::TimeDelta::FromMilliseconds(3000);
+const base::TimeDelta kTimeoutDuration = base::Milliseconds(3000);
 const size_t kMaxRetryCount = 3;
 
 const size_t kMaxVibrationEffectDurationMillis = 100;
@@ -1192,7 +1191,8 @@ void NintendoController::Connect(mojom::HidManager::ConnectCallback callback) {
   hid_manager_->Connect(device_info_->guid,
                         /*connection_client=*/mojo::NullRemote(),
                         /*watcher=*/mojo::NullRemote(),
-                        /*allow_protected_reports=*/false, std::move(callback));
+                        /*allow_protected_reports=*/false,
+                        /*allow_fido_reports=*/false, std::move(callback));
 }
 
 void NintendoController::OnConnect(

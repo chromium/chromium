@@ -38,41 +38,40 @@
 
 namespace blink {
 
-void GeneratedImage::DrawPattern(
-    GraphicsContext& dest_context,
-    const cc::PaintFlags& base_flags,
-    const FloatRect& dest_rect,
-    const ImageTilingInfo& tiling_info,
-    RespectImageOrientationEnum respect_orientation) {
+void GeneratedImage::DrawPattern(GraphicsContext& dest_context,
+                                 const cc::PaintFlags& base_flags,
+                                 const FloatRect& dest_rect,
+                                 const ImageTilingInfo& tiling_info,
+                                 const ImageDrawOptions& draw_options) {
   FloatRect tile_rect(tiling_info.image_rect);
   tile_rect.Expand(tiling_info.spacing);
 
   SkMatrix pattern_matrix =
-      SkMatrix::Translate(tiling_info.phase.X(), tiling_info.phase.Y());
-  pattern_matrix.preScale(tiling_info.scale.Width(),
-                          tiling_info.scale.Height());
-  pattern_matrix.preTranslate(tile_rect.X(), tile_rect.Y());
+      SkMatrix::Translate(tiling_info.phase.x(), tiling_info.phase.y());
+  pattern_matrix.preScale(tiling_info.scale.width(),
+                          tiling_info.scale.height());
+  pattern_matrix.preTranslate(tile_rect.x(), tile_rect.y());
 
   sk_sp<PaintShader> tile_shader = CreateShader(
-      tile_rect, &pattern_matrix, tiling_info.image_rect, respect_orientation);
+      tile_rect, &pattern_matrix, tiling_info.image_rect, draw_options);
 
   PaintFlags fill_flags(base_flags);
   fill_flags.setShader(std::move(tile_shader));
   fill_flags.setColor(SK_ColorBLACK);
 
-  dest_context.DrawRect(dest_rect, fill_flags);
+  dest_context.DrawRect(dest_rect, fill_flags, AutoDarkMode(draw_options));
 }
 
 sk_sp<PaintShader> GeneratedImage::CreateShader(
     const FloatRect& tile_rect,
     const SkMatrix* pattern_matrix,
     const FloatRect& src_rect,
-    RespectImageOrientationEnum respect_orientation) {
+    const ImageDrawOptions& draw_options) {
   auto paint_controller =
       std::make_unique<PaintController>(PaintController::kTransient);
   GraphicsContext context(*paint_controller);
   context.BeginRecording(tile_rect);
-  DrawTile(context, src_rect, respect_orientation);
+  DrawTile(context, src_rect, draw_options);
   sk_sp<PaintRecord> record = context.EndRecording();
 
   return PaintShader::MakePaintRecord(std::move(record), tile_rect,

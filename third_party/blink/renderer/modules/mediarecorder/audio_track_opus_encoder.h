@@ -27,6 +27,9 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
                         int32_t bits_per_second,
                         bool vbr_enabled = true);
 
+  AudioTrackOpusEncoder(const AudioTrackOpusEncoder&) = delete;
+  AudioTrackOpusEncoder& operator=(const AudioTrackOpusEncoder&) = delete;
+
   void OnSetFormat(const media::AudioParameters& params) override;
   void EncodeAudio(std::unique_ptr<media::AudioBus> input_bus,
                    base::TimeTicks capture_time) override;
@@ -66,8 +69,6 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
   std::unique_ptr<float[]> buffer_;
 
   OpusEncoder* opus_encoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioTrackOpusEncoder);
 };
 
 }  // namespace blink

@@ -65,6 +65,10 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       bool is_off_the_record,
       variations::VariationsService* variations_service,
       ReferrerChainProvider* referrer_chain_provider);
+
+  RealTimeUrlLookupService(const RealTimeUrlLookupService&) = delete;
+  RealTimeUrlLookupService& operator=(const RealTimeUrlLookupService&) = delete;
+
   ~RealTimeUrlLookupService() override;
 
   // RealTimeUrlLookupServiceBase:
@@ -80,8 +84,11 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool CanPerformFullURLLookupWithToken() const override;
   bool CanAttachReferrerChain() const override;
   int GetReferrerUserGestureLimit() const override;
+  bool CanSendPageLoadToken() const override;
   void GetAccessToken(
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
@@ -97,6 +104,8 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   // Called when the access token is obtained from |token_fetcher_|.
   void OnGetAccessToken(
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -128,11 +137,13 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   // location.
   variations::VariationsService* variations_;
 
+  // True if Shutdown() has already been called, or started running. This allows
+  // us to skip unnecessary calls to SendRequest().
+  bool shutting_down_ = false;
+
   friend class RealTimeUrlLookupServiceTest;
 
   base::WeakPtrFactory<RealTimeUrlLookupService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RealTimeUrlLookupService);
 
 };  // class RealTimeUrlLookupService
 

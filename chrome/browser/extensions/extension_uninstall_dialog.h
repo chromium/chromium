@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
@@ -72,6 +71,9 @@ class ExtensionUninstallDialog
   // platforms where that is not the native platform implementation.
   static std::unique_ptr<ExtensionUninstallDialog>
   CreateViews(Profile* profile, gfx::NativeWindow parent, Delegate* delegate);
+
+  ExtensionUninstallDialog(const ExtensionUninstallDialog&) = delete;
+  ExtensionUninstallDialog& operator=(const ExtensionUninstallDialog&) = delete;
 
   ~ExtensionUninstallDialog() override;
 
@@ -191,8 +193,6 @@ class ExtensionUninstallDialog
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionUninstallDialog);
 };
 
 }  // namespace extensions

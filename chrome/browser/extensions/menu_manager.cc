@@ -73,16 +73,12 @@ MenuItem::OwnedList MenuItemsFromValue(const std::string& extension_id,
                                        base::Value* value) {
   MenuItem::OwnedList items;
 
-  base::ListValue* list = nullptr;
-  if (!value || !value->GetAsList(&list))
+  if (!value || !value->is_list())
     return items;
 
-  for (size_t i = 0; i < list->GetSize(); ++i) {
-    base::DictionaryValue* dict = nullptr;
-    if (!list->GetDictionary(i, &dict))
-      continue;
+  for (const base::Value& elem : value->GetList()) {
     std::unique_ptr<MenuItem> item =
-        MenuItem::Populate(extension_id, *dict, nullptr);
+        MenuItem::Populate(extension_id, elem, nullptr);
     if (!item)
       continue;
     items.push_back(std::move(item));
@@ -90,28 +86,30 @@ MenuItem::OwnedList MenuItemsFromValue(const std::string& extension_id,
   return items;
 }
 
-std::unique_ptr<base::ListValue> MenuItemsToValue(const MenuItem::List& items) {
-  std::unique_ptr<base::ListValue> list(new base::ListValue());
+base::Value MenuItemsToValue(const MenuItem::List& items) {
+  base::Value list(base::Value::Type::LIST);
   for (size_t i = 0; i < items.size(); ++i)
-    list->Append(items[i]->ToValue());
+    list.Append(items[i]->ToValue());
   return list;
 }
 
-bool GetStringList(const base::DictionaryValue& dict,
+bool GetStringList(const base::Value& dict,
                    const std::string& key,
                    std::vector<std::string>* out) {
-  if (!dict.HasKey(key))
+  DCHECK(dict.is_dict());
+
+  const base::Value* value = dict.FindKey(key);
+  if (!value)
     return true;
 
-  const base::ListValue* list = nullptr;
-  if (!dict.GetListWithoutPathExpansion(key, &list))
+  if (!value->is_list())
     return false;
+  base::Value::ConstListView list = value->GetList();
 
-  for (size_t i = 0; i < list->GetSize(); ++i) {
-    std::string pattern;
-    if (!list->GetString(i, &pattern))
+  for (const auto& pattern : list) {
+    if (!pattern.is_string())
       return false;
-    out->push_back(pattern);
+    out->push_back(pattern.GetString());
   }
 
   return true;
@@ -196,68 +194,83 @@ void MenuItem::AddChild(std::unique_ptr<MenuItem> item) {
   children_.push_back(std::move(item));
 }
 
-std::unique_ptr<base::DictionaryValue> MenuItem::ToValue() const {
-  std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue);
+base::Value MenuItem::ToValue() const {
+  base::Value value(base::Value::Type::DICTIONARY);
   // Should only be called for extensions with event pages, which only have
   // string IDs for items.
   DCHECK_EQ(0, id_.uid);
-  value->SetString(kStringUIDKey, id_.string_uid);
-  value->SetBoolean(kMenuManagerIncognitoKey, id_.incognito);
-  value->SetInteger(kMenuManagerTypeKey, type_);
+  value.SetStringKey(kStringUIDKey, id_.string_uid);
+  value.SetBoolKey(kMenuManagerIncognitoKey, id_.incognito);
+  value.SetIntKey(kMenuManagerTypeKey, type_);
   if (type_ != SEPARATOR)
-    value->SetString(kTitleKey, title_);
+    value.SetStringKey(kTitleKey, title_);
   if (type_ == CHECKBOX || type_ == RADIO)
-    value->SetBoolean(kCheckedKey, checked_);
-  value->SetBoolean(kEnabledKey, enabled_);
-  value->SetBoolean(kVisibleKey, visible_);
-  value->SetKey(kContextsKey,
-                base::Value::FromUniquePtrValue(contexts_.ToValue()));
+    value.SetBoolKey(kCheckedKey, checked_);
+  value.SetBoolKey(kEnabledKey, enabled_);
+  value.SetBoolKey(kVisibleKey, visible_);
+  value.SetKey(kContextsKey,
+               base::Value::FromUniquePtrValue(contexts_.ToValue()));
   if (parent_id_) {
     DCHECK_EQ(0, parent_id_->uid);
-    value->SetString(kParentUIDKey, parent_id_->string_uid);
+    value.SetStringKey(kParentUIDKey, parent_id_->string_uid);
   }
-  value->SetKey(kDocumentURLPatternsKey, base::Value::FromUniquePtrValue(
-                                             document_url_patterns_.ToValue()));
-  value->SetKey(kTargetURLPatternsKey, base::Value::FromUniquePtrValue(
-                                           target_url_patterns_.ToValue()));
+  value.SetKey(kDocumentURLPatternsKey, base::Value::FromUniquePtrValue(
+                                            document_url_patterns_.ToValue()));
+  value.SetKey(kTargetURLPatternsKey,
+               base::Value::FromUniquePtrValue(target_url_patterns_.ToValue()));
   return value;
 }
 
 // static
 std::unique_ptr<MenuItem> MenuItem::Populate(const std::string& extension_id,
-                                             const base::DictionaryValue& value,
+                                             const base::Value& value,
                                              std::string* error) {
-  bool incognito = false;
-  if (!value.GetBoolean(kMenuManagerIncognitoKey, &incognito))
+  if (!value.is_dict())
     return nullptr;
-  Id id(incognito, MenuItem::ExtensionKey(extension_id));
-  if (!value.GetString(kStringUIDKey, &id.string_uid))
+  absl::optional<bool> incognito = value.FindBoolKey(kMenuManagerIncognitoKey);
+  if (!incognito.has_value())
     return nullptr;
-  int type_int;
-  Type type = NORMAL;
-  if (!value.GetInteger(kMenuManagerTypeKey, &type_int))
+  Id id(incognito.value(), MenuItem::ExtensionKey(extension_id));
+  const std::string* string_uid = value.FindStringKey(kStringUIDKey);
+  if (!string_uid)
     return nullptr;
-  type = static_cast<Type>(type_int);
+  id.string_uid = *string_uid;
+
+  absl::optional<int> type_int = value.FindIntKey(kMenuManagerTypeKey);
+  if (!type_int.has_value())
+    return nullptr;
+
+  Type type = static_cast<Type>(type_int.value());
   std::string title;
-  if (type != SEPARATOR && !value.GetString(kTitleKey, &title))
-    return nullptr;
-  bool checked = false;
-  if ((type == CHECKBOX || type == RADIO) &&
-      !value.GetBoolean(kCheckedKey, &checked)) {
-    return nullptr;
+  if (type != SEPARATOR) {
+    const std::string* specified_title = value.FindStringKey(kTitleKey);
+    if (!specified_title)
+      return nullptr;
+    title = *specified_title;
   }
+
+  bool checked = false;
+  if (type == CHECKBOX || type == RADIO) {
+    absl::optional<bool> specified_checked = value.FindBoolKey(kCheckedKey);
+    if (!specified_checked)
+      return nullptr;
+    checked = specified_checked.value();
+  }
+
   // The ability to toggle a menu item's visibility was introduced in M62, so it
   // is expected that the kVisibleKey will not be present in older menu items in
   // storage. Thus, we do not return nullptr if the kVisibleKey is not found.
   // TODO(catmullings): Remove this in M65 when all prefs should be migrated.
-  bool visible = true;
-  value.GetBoolean(kVisibleKey, &visible);
-  bool enabled = true;
-  if (!value.GetBoolean(kEnabledKey, &enabled))
+  bool visible = value.FindBoolKey(kVisibleKey).value_or(true);
+
+  absl::optional<bool> specified_enabled = value.FindBoolKey(kEnabledKey);
+  if (!specified_enabled.has_value())
     return nullptr;
+  bool enabled = specified_enabled.value();
+
   ContextList contexts;
-  const base::Value* contexts_value = nullptr;
-  if (!value.Get(kContextsKey, &contexts_value))
+  const base::Value* contexts_value = value.FindKey(kContextsKey);
+  if (!contexts_value)
     return nullptr;
   if (!contexts.Populate(*contexts_value))
     return nullptr;
@@ -280,11 +293,14 @@ std::unique_ptr<MenuItem> MenuItem::Populate(const std::string& extension_id,
 
   // parent_id is filled in from the value, but it might not be valid. It's left
   // to be validated upon being added (via AddChildItem) to the menu manager.
-  std::unique_ptr<Id> parent_id =
-      std::make_unique<Id>(incognito, MenuItem::ExtensionKey(extension_id));
-  if (value.HasKey(kParentUIDKey)) {
-    if (!value.GetString(kParentUIDKey, &parent_id->string_uid))
+  std::unique_ptr<Id> parent_id = std::make_unique<Id>(
+      incognito.value(), MenuItem::ExtensionKey(extension_id));
+  const base::Value* parent = value.FindKey(kParentUIDKey);
+  if (parent) {
+    if (!parent->is_string())
       return nullptr;
+
+    parent_id->string_uid = parent->GetString();
     result->parent_id_.swap(parent_id);
   }
   return result;
@@ -830,8 +846,9 @@ void MenuManager::WriteToStorage(const Extension* extension,
     observer.WillWriteToStorage(extension->id());
 
   if (store_) {
-    store_->SetExtensionValue(extension->id(), kContextMenusKey,
-                              MenuItemsToValue(all_items));
+    store_->SetExtensionValue(
+        extension->id(), kContextMenusKey,
+        base::Value::ToUniquePtrValue(MenuItemsToValue(all_items)));
   }
 }
 

@@ -19,6 +19,10 @@ class FlagsStorage;
 class FlagsUIHandler : public content::WebUIMessageHandler {
  public:
   FlagsUIHandler();
+
+  FlagsUIHandler(const FlagsUIHandler&) = delete;
+  FlagsUIHandler& operator=(const FlagsUIHandler&) = delete;
+
   ~FlagsUIHandler() override;
 
   // Initializes the UI handler with the provided flags storage and flags
@@ -53,13 +57,16 @@ class FlagsUIHandler : public content::WebUIMessageHandler {
   // Callback for the "resetAllFlags" message.
   void HandleResetAllFlags(const base::ListValue* args);
 
+#if defined(OS_CHROMEOS)
+  // Callback for the "CrosUrlFlagsRedirect" message.
+  void HandleCrosUrlFlagsRedirect(const base::ListValue* args);
+#endif
+
  private:
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   flags_ui::FlagAccess access_;
   std::string experimental_features_callback_id_;
   bool deprecated_features_only_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlagsUIHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FLAGS_FLAGS_UI_HANDLER_H_

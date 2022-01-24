@@ -5,6 +5,7 @@
 import 'chrome://scanning/action_toolbar.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.js';
 
 export function actionToolbarTest() {
   /** @type {?ActionToolbarElement} */
@@ -27,17 +28,48 @@ export function actionToolbarTest() {
   // Verify the page count text updates when the number of scanned images
   // changes.
   test('totalPageCountIncrements', () => {
+    actionToolbar.pageIndex = 0;
     assertEquals('', actionToolbar.$$('#pageNumbers').textContent.trim());
 
     actionToolbar.numTotalPages = 3;
-    assertEquals('', actionToolbar.$$('#pageNumbers').textContent.trim());
-
-    actionToolbar.numTotalPages = 3;
-    actionToolbar.currentPageInView = 1;
     assertEquals('1 of 3', actionToolbar.$$('#pageNumbers').textContent.trim());
 
     actionToolbar.numTotalPages = 4;
-    actionToolbar.currentPageInView = 2;
+    actionToolbar.pageIndex = 1;
     assertEquals('2 of 4', actionToolbar.$$('#pageNumbers').textContent.trim());
+  });
+
+  // Verify clicking the remove page button fires the 'show-remove-page-dialog'
+  // event with the correct page number.
+  test('removePageClick', () => {
+    const expectedPageIndex = 5;
+    let pageIndexFromEvent = -1;
+
+    actionToolbar.pageIndex = expectedPageIndex;
+    actionToolbar.addEventListener('show-remove-page-dialog', (e) => {
+      pageIndexFromEvent = e.detail;
+    });
+
+    actionToolbar.$$('#removePageIcon').click();
+    return flushTasks().then(() => {
+      assertEquals(expectedPageIndex, pageIndexFromEvent);
+    });
+  });
+
+  // Verify clicking the rescan page button fires the 'show-rescan-page-dialog'
+  // event with the correct page number.
+  test('rescanPageClick', () => {
+    const expectedPageIndex = 5;
+    let pageIndexFromEvent = -1;
+
+    actionToolbar.pageIndex = expectedPageIndex;
+    actionToolbar.addEventListener('show-rescan-page-dialog', (e) => {
+      pageIndexFromEvent = e.detail;
+    });
+
+    actionToolbar.$$('#rescanPageIcon').click();
+    return flushTasks().then(() => {
+      assertEquals(expectedPageIndex, pageIndexFromEvent);
+    });
   });
 }

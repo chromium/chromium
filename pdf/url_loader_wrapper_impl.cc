@@ -29,7 +29,7 @@ namespace chrome_pdf {
 namespace {
 
 // We should read with delay to prevent block UI thread, and reduce CPU usage.
-constexpr base::TimeDelta kReadDelayMs = base::TimeDelta::FromMilliseconds(2);
+constexpr base::TimeDelta kReadDelayMs = base::Milliseconds(2);
 
 UrlRequest MakeRangeRequest(const std::string& url,
                             const std::string& referrer_url,

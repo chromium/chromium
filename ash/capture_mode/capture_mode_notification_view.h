@@ -7,8 +7,16 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ui/message_center/views/notification_view_md.h"
-#include "ui/views/view_observer.h"
+#include "ui/message_center/views/notification_view.h"
+
+namespace message_center {
+class MessageView;
+class Notification;
+}  // namespace message_center
+
+namespace views {
+class View;
+}  // namespace views
 
 namespace ash {
 
@@ -16,8 +24,7 @@ namespace ash {
 // notification by either showing a banner on top of the notification image for
 // image captures, or a play icon on top of the video thumbnail.
 class ASH_EXPORT CaptureModeNotificationView
-    : public message_center::NotificationViewMD,
-      public views::ViewObserver {
+    : public message_center::NotificationView {
  public:
   CaptureModeNotificationView(const message_center::Notification& notification,
                               CaptureModeType capture_type);
@@ -30,23 +37,20 @@ class ASH_EXPORT CaptureModeNotificationView
   // notifications. There is a banner on top of the image area of the
   // notification to indicate the image has been copied to clipboard.
   static std::unique_ptr<message_center::MessageView> CreateForImage(
-      const message_center::Notification& notification);
+      const message_center::Notification& notification,
+      bool shown_in_popup);
 
   // Creates the custom capture mode notification for video capture
   // notifications. There is a superimposed "play" icon on top of the video
   // thumbnail image.
   static std::unique_ptr<message_center::MessageView> CreateForVideo(
-      const message_center::Notification& notification);
+      const message_center::Notification& notification,
+      bool shown_in_popup);
 
-  // message_center::NotificationViewMD:
+  // message_center::NotificationView:
+  void UpdateWithNotification(
+      const message_center::Notification& notification) override;
   void Layout() override;
-
-  // views::ViewObserver:
-  void OnChildViewAdded(views::View* observed_view,
-                        views::View* child) override;
-  void OnChildViewRemoved(views::View* observed_view,
-                          views::View* child) override;
-  void OnViewIsDeleting(View* observed_view) override;
 
  private:
   void CreateExtraView();

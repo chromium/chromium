@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast/named_message_port_connector/named_message_port_connector.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Injects scripts received from the ApiBindings service, and provides connected
@@ -25,6 +25,10 @@ class ApiBindingsClient {
   ApiBindingsClient(
       fidl::InterfaceHandle<chromium::cast::ApiBindings> bindings_service,
       base::OnceClosure on_initialization_complete);
+
+  ApiBindingsClient(const ApiBindingsClient&) = delete;
+  ApiBindingsClient& operator=(const ApiBindingsClient&) = delete;
+
   ~ApiBindingsClient();
 
   // Injects APIs and handles channel connections on |frame|.
@@ -58,8 +62,6 @@ class ApiBindingsClient {
   cast_api_bindings::NamedMessagePortConnector* connector_ = nullptr;
   chromium::cast::ApiBindingsPtr bindings_service_;
   base::OnceClosure on_initialization_complete_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApiBindingsClient);
 };
 
 #endif  // FUCHSIA_RUNNERS_CAST_API_BINDINGS_CLIENT_H_

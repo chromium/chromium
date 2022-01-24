@@ -15,7 +15,7 @@ WebContentsViewDelegateImpl::WebContentsViewDelegateImpl(
 WebContentsViewDelegateImpl::~WebContentsViewDelegateImpl() = default;
 
 void WebContentsViewDelegateImpl::ShowContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   TabImpl* tab = TabImpl::FromWebContents(web_contents_);
   if (tab)

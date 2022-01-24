@@ -64,18 +64,18 @@ PrerenderCommitDeferringCondition::WillCommitNavigation(
   // If the prerender FrameTreeNode is gone, the prerender activation is allowed
   // to continue here but will fail soon.
   if (!prerender_frame_tree_node)
-    return kProceed;
+    return Result::kProceed;
 
   // If there is no ongoing main frame navigation in prerender frame tree, the
   // prerender activation is allowed to continue.
   if (!prerender_frame_tree_node->HasNavigation())
-    return kProceed;
+    return Result::kProceed;
 
   // Defer the prerender activation until the ongoing prerender main frame
   // navigation commits.
   done_closure_ = std::move(resume);
   defer_start_time_ = base::TimeTicks::Now();
-  return kDefer;
+  return Result::kDefer;
 }
 
 void PrerenderCommitDeferringCondition::DidFinishNavigation(

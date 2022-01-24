@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/sync/dice_signin_button_view.h"
 
+#include <memory>
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
@@ -15,25 +16,24 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/image/image.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 
 DiceSigninButtonView::DiceSigninButtonView(
     views::Button::PressedCallback callback,
     bool prominent)
     : account_(absl::nullopt) {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-  // Regular MD text button when there is no account.
-  auto button = std::make_unique<views::MdTextButton>(
-      std::move(callback),
-      l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON));
-  button->SetProminent(prominent);
-  signin_button_ = AddChildView(std::move(button));
+  views::Builder<DiceSigninButtonView>(this)
+      .SetUseDefaultFillLayout(true)
+      .AddChild(
+          // Regular MD text button when there is no account.
+          views::Builder<views::MdTextButton>()
+              .SetCallback(std::move(callback))
+              .SetText(
+                  l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON))
+              .SetProminent(prominent))
+      .BuildChildren();
 }
 
 DiceSigninButtonView::DiceSigninButtonView(
@@ -42,40 +42,30 @@ DiceSigninButtonView::DiceSigninButtonView(
     views::Button::PressedCallback callback,
     bool use_account_name_as_title)
     : account_(account) {
-  views::GridLayout* grid_layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = grid_layout->AddColumnSet(0);
-  grid_layout->StartRow(views::GridLayout::kFixedSize, 0);
-
-  // Add a stretching column for the account card.
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
   DCHECK(!account_icon.IsEmpty());
-  auto account_icon_view = std::make_unique<BadgedProfilePhoto>(
-      BadgedProfilePhoto::BADGE_TYPE_SYNC_OFF, account_icon);
   auto card_title =
       use_account_name_as_title
           ? base::UTF8ToUTF16(account.full_name)
           : l10n_util::GetStringUTF16(IDS_PROFILES_DICE_NOT_SYNCING_TITLE);
-  auto account_card = std::make_unique<HoverButton>(
-      views::Button::PressedCallback(), std::move(account_icon_view),
-      card_title, base::ASCIIToUTF16(account_->email));
-  account_card->SetBorder(nullptr);
-  account_card->SetEnabled(false);
-  grid_layout->AddView(std::move(account_card));
-  grid_layout->AddPaddingRow(views::GridLayout::kFixedSize, 16);
 
-  columns = grid_layout->AddColumnSet(1);
-  grid_layout->StartRow(views::GridLayout::kFixedSize, 1);
-  // Add a stretching column for the sign in button.
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::TRAILING, 1.0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  auto signin_button = std::make_unique<views::MdTextButton>(
-      std::move(callback),
-      l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON));
-  signin_button->SetProminent(true);
-  signin_button_ = grid_layout->AddView(std::move(signin_button));
+  views::Builder<DiceSigninButtonView>(this)
+      .SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical, gfx::Insets(), 16))
+      .AddChildren(
+          views::Builder<HoverButton>(
+              std::make_unique<HoverButton>(
+                  views::Button::PressedCallback(),
+                  std::make_unique<BadgedProfilePhoto>(
+                      BadgedProfilePhoto::BADGE_TYPE_SYNC_OFF, account_icon),
+                  card_title, base::ASCIIToUTF16(account_->email)))
+              .SetBorder(std::unique_ptr<views::Border>(nullptr))
+              .SetEnabled(false),
+          views::Builder<views::MdTextButton>()
+              .SetCallback(std::move(callback))
+              .SetText(
+                  l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON))
+              .SetProminent(true))
+      .BuildChildren();
 }
 
 DiceSigninButtonView::~DiceSigninButtonView() = default;

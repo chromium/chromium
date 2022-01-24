@@ -100,6 +100,11 @@ std::string GetChromotingMessageText(const ftl::InboxMessage& message) {
 class MockMessageReceptionChannel : public MessageReceptionChannel {
  public:
   MockMessageReceptionChannel() = default;
+
+  MockMessageReceptionChannel(const MockMessageReceptionChannel&) = delete;
+  MockMessageReceptionChannel& operator=(const MockMessageReceptionChannel&) =
+      delete;
+
   ~MockMessageReceptionChannel() override = default;
 
   // MessageReceptionChannel implementations.
@@ -120,8 +125,6 @@ class MockMessageReceptionChannel : public MessageReceptionChannel {
  private:
   StreamOpener stream_opener_;
   MessageCallback on_incoming_msg_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMessageReceptionChannel);
 };
 
 class MockRegistrationManager : public RegistrationManager {

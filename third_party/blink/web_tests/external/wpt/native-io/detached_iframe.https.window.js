@@ -1,37 +1,33 @@
 // META: title=NativeIO API: Do not crash in detached iframes.
 // META: global=window
 
-function add_iframe(test, src, sandbox) {
+promise_test(async testCase => {
   const iframe = document.createElement("iframe");
   document.body.appendChild(iframe);
-  return iframe;
-}
 
-promise_test(async testCase => {
-  const iframe = add_iframe();
-  const iframe_sfa = iframe.contentWindow.storageFoundation;
+  const iframeStorageFoundation = iframe.contentWindow.storageFoundation;
   const frameDOMException = iframe.contentWindow.DOMException;
   iframe.remove();
 
   await promise_rejects_dom(
     testCase, 'InvalidStateError', frameDOMException,
-    iframe_sfa.getAll());
+    iframeStorageFoundation.getAll());
   await promise_rejects_dom(
       testCase, 'InvalidStateError', frameDOMException,
-      iframe_sfa.open('test_file'));
+      iframeStorageFoundation.open('test_file'));
   await promise_rejects_dom(
       testCase, 'InvalidStateError', frameDOMException,
-      iframe_sfa.rename('test_file', 'test'));
+      iframeStorageFoundation.rename('test_file', 'test'));
   await promise_rejects_dom(
       testCase, 'InvalidStateError', frameDOMException,
-      iframe_sfa.delete('test'));
+      iframeStorageFoundation.delete('test'));
   await promise_rejects_dom(
       testCase, 'InvalidStateError', frameDOMException,
-      iframe_sfa.requestCapacity(10));
+      iframeStorageFoundation.requestCapacity(10));
   await promise_rejects_dom(
       testCase, 'InvalidStateError', frameDOMException,
-      iframe_sfa.releaseCapacity(10));
+      iframeStorageFoundation.releaseCapacity(10));
   await promise_rejects_dom(
       testCase, 'InvalidStateError', frameDOMException,
-      iframe_sfa.getRemainingCapacity());
+      iframeStorageFoundation.getRemainingCapacity());
 }, 'storageFoundation must return an error when called from detached iframes.');

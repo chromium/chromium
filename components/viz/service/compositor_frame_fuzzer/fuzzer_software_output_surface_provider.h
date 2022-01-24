@@ -19,6 +19,12 @@ class FuzzerSoftwareOutputSurfaceProvider : public OutputSurfaceProvider {
  public:
   explicit FuzzerSoftwareOutputSurfaceProvider(
       absl::optional<base::FilePath> png_dir_path);
+
+  FuzzerSoftwareOutputSurfaceProvider(
+      const FuzzerSoftwareOutputSurfaceProvider&) = delete;
+  FuzzerSoftwareOutputSurfaceProvider& operator=(
+      const FuzzerSoftwareOutputSurfaceProvider&) = delete;
+
   ~FuzzerSoftwareOutputSurfaceProvider() override;
 
   // OutputSurfaceProvider implementation.
@@ -36,8 +42,6 @@ class FuzzerSoftwareOutputSurfaceProvider : public OutputSurfaceProvider {
 
  private:
   absl::optional<base::FilePath> png_dir_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzerSoftwareOutputSurfaceProvider);
 };
 
 }  // namespace viz

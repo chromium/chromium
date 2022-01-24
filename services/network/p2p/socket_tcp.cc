@@ -248,7 +248,7 @@ bool P2PSocketTcpBase::OnPacket(std::vector<int8_t> data) {
 
   client_->DataReceived(
       remote_address_.ip_address, data,
-      base::TimeTicks() + base::TimeDelta::FromNanoseconds(rtc::TimeNanos()));
+      base::TimeTicks() + base::Nanoseconds(rtc::TimeNanos()));
 
   delegate_->DumpPacket(
       base::make_span(reinterpret_cast<const uint8_t*>(&data[0]), data.size()),

@@ -42,17 +42,8 @@ void ObjectPainter::PaintOutline(const PaintInfo& paint_info,
   if (outline_rects.IsEmpty())
     return;
 
-  if (DrawingRecorder::UseCachedDrawingIfPossible(
-          paint_info.context, layout_object_, paint_info.phase))
-    return;
-
-  IntRect visual_rect =
-      PixelSnappedIntRect(UnionRectEvenIfEmpty(outline_rects));
-  visual_rect.Inflate(style_to_use.OutlineOutsetExtent());
-  DrawingRecorder recorder(paint_info.context, layout_object_, paint_info.phase,
-                           visual_rect);
-  OutlinePainter::PaintOutlineRects(paint_info.context, outline_rects,
-                                    style_to_use);
+  OutlinePainter::PaintOutlineRects(paint_info, layout_object_, outline_rects,
+                                    style_to_use, layout_object_.GetDocument());
 }
 
 void ObjectPainter::PaintInlineChildrenOutlines(const PaintInfo& paint_info) {
@@ -81,7 +72,7 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
 
   auto outline_rects = layout_object_.OutlineRects(
       paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
-  IntRect rect = PixelSnappedIntRect(UnionRect(outline_rects));
+  gfx::Rect rect = ToGfxRect(PixelSnappedIntRect(UnionRect(outline_rects)));
   if (rect.IsEmpty())
     return;
 
@@ -97,10 +88,10 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
                                       layout_object_.GetDocument().BaseURL())) {
     String fragment_name = url.FragmentIdentifier();
     if (layout_object_.GetDocument().FindAnchor(fragment_name))
-      paint_info.context.SetURLFragmentForRect(fragment_name, rect);
+      paint_info.context.SetURLFragmentForRect(fragment_name, IntRect(rect));
     return;
   }
-  paint_info.context.SetURLForRect(url, rect);
+  paint_info.context.SetURLForRect(url, IntRect(rect));
 }
 
 void ObjectPainter::PaintAllPhasesAtomically(const PaintInfo& paint_info) {

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef STORAGE_BROWSER_BLOB_BLOB_URL_UTILS_H_
+#define STORAGE_BROWSER_BLOB_BLOB_URL_UTILS_H_
+
 #include "url/gurl.h"
 
 namespace storage {
@@ -21,3 +24,5 @@ GURL ClearUrlFragment(const GURL& url);
 
 }  // namespace BlobUrlUtils
 }  // namespace storage
+
+#endif  // STORAGE_BROWSER_BLOB_BLOB_URL_UTILS_H_

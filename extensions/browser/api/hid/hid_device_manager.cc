@@ -17,7 +17,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
@@ -180,6 +180,7 @@ void HidDeviceManager::Connect(const std::string& device_guid,
   hid_manager_->Connect(device_guid, /*connection_client=*/mojo::NullRemote(),
                         /*watcher=*/mojo::NullRemote(),
                         /*allow_protected_reports=*/true,
+                        /*allow_fido_reports=*/true,
                         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                             std::move(callback), mojo::NullRemote()));
 }
@@ -370,9 +371,9 @@ void HidDeviceManager::OnEnumerationComplete(
   enumeration_ready_ = true;
 
   for (const auto& params : pending_enumerations_) {
-    std::unique_ptr<base::ListValue> devices =
+    std::unique_ptr<base::ListValue> devices_list =
         CreateApiDeviceList(params->extension, params->filters);
-    std::move(params->callback).Run(std::move(devices));
+    std::move(params->callback).Run(std::move(devices_list));
   }
   pending_enumerations_.clear();
 }

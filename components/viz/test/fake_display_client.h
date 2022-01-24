@@ -15,6 +15,10 @@ namespace viz {
 class FakeDisplayClient : public mojom::DisplayClient {
  public:
   FakeDisplayClient();
+
+  FakeDisplayClient(const FakeDisplayClient&) = delete;
+  FakeDisplayClient& operator=(const FakeDisplayClient&) = delete;
+
   ~FakeDisplayClient() override;
 
   mojo::PendingRemote<mojom::DisplayClient> BindRemote();
@@ -30,14 +34,12 @@ class FakeDisplayClient : public mojom::DisplayClient {
       mojo::PendingReceiver<mojom::LayeredWindowUpdater> receiver) override;
 #endif
 
-#if defined(USE_X11)
+#if defined(OS_LINUX)
   void DidCompleteSwapWithNewSize(const gfx::Size& size) override;
 #endif
 
  private:
   mojo::Receiver<mojom::DisplayClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDisplayClient);
 };
 
 }  // namespace viz

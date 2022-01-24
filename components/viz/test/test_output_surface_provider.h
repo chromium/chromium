@@ -15,6 +15,11 @@ namespace viz {
 class TestOutputSurfaceProvider : public OutputSurfaceProvider {
  public:
   TestOutputSurfaceProvider();
+
+  TestOutputSurfaceProvider(const TestOutputSurfaceProvider&) = delete;
+  TestOutputSurfaceProvider& operator=(const TestOutputSurfaceProvider&) =
+      delete;
+
   ~TestOutputSurfaceProvider() override;
 
   // OutputSurfaceProvider implementation.
@@ -29,9 +34,6 @@ class TestOutputSurfaceProvider : public OutputSurfaceProvider {
       DisplayCompositorMemoryAndTaskController* display_controller,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestOutputSurfaceProvider);
 };
 
 }  // namespace viz

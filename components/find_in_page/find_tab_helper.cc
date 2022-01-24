@@ -5,7 +5,6 @@
 #include "components/find_in_page/find_tab_helper.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -182,6 +181,6 @@ void FindTabHelper::HandleFindReply(int request_id,
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FindTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FindTabHelper);
 
 }  // namespace find_in_page

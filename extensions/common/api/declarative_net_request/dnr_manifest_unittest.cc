@@ -41,6 +41,9 @@ class DNRManifestTest : public testing::Test {
  public:
   DNRManifestTest() = default;
 
+  DNRManifestTest(const DNRManifestTest&) = delete;
+  DNRManifestTest& operator=(const DNRManifestTest&) = delete;
+
  protected:
   // Loads the extension and verifies the |expected_error|.
   void LoadAndExpectError(const std::string& expected_error) {
@@ -111,8 +114,6 @@ class DNRManifestTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(DNRManifestTest);
 };
 
 TEST_F(DNRManifestTest, EmptyRuleset) {
@@ -197,8 +198,10 @@ TEST_F(DNRManifestTest, MultipleRulesFileInvalidPath) {
 
 TEST_F(DNRManifestTest, RulesetCountExceeded) {
   std::vector<TestRulesetInfo> rulesets;
-  for (int i = 0; i <= dnr_api::MAX_NUMBER_OF_STATIC_RULESETS; ++i)
-    rulesets.emplace_back(base::NumberToString(i), base::ListValue());
+  for (int i = 0; i <= dnr_api::MAX_NUMBER_OF_STATIC_RULESETS; ++i) {
+    rulesets.emplace_back(base::NumberToString(i), base::ListValue(),
+                          false /* enabled */);
+  }
 
   WriteManifestAndRuleset(*CreateManifest(rulesets), rulesets);
 
@@ -207,6 +210,22 @@ TEST_F(DNRManifestTest, RulesetCountExceeded) {
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
       dnr_api::DNRInfo::kRuleResources,
       base::NumberToString(dnr_api::MAX_NUMBER_OF_STATIC_RULESETS)));
+}
+
+TEST_F(DNRManifestTest, EnabledRulesetCountExceeded) {
+  std::vector<TestRulesetInfo> rulesets;
+  for (int i = 0; i <= dnr_api::MAX_NUMBER_OF_ENABLED_STATIC_RULESETS; ++i) {
+    rulesets.emplace_back(base::NumberToString(i), base::ListValue(),
+                          true /* enabled */);
+  }
+
+  WriteManifestAndRuleset(*CreateManifest(rulesets), rulesets);
+
+  LoadAndExpectError(ErrorUtils::FormatErrorMessage(
+      errors::kEnabledRulesetCountExceeded,
+      dnr_api::ManifestKeys::kDeclarativeNetRequest,
+      dnr_api::DNRInfo::kRuleResources,
+      base::NumberToString(dnr_api::MAX_NUMBER_OF_ENABLED_STATIC_RULESETS)));
 }
 
 TEST_F(DNRManifestTest, NonExistentRulesFile) {
@@ -231,7 +250,7 @@ TEST_F(DNRManifestTest, NeedsDeclarativeNetRequestPermission) {
   WriteManifestAndRuleset(*manifest, rulesets);
 
   LoadAndExpectError(ErrorUtils::FormatErrorMessage(
-      errors::kDeclarativeNetRequestPermissionNeeded, kAPIPermission,
+      errors::kDeclarativeNetRequestPermissionNeeded,
       dnr_api::ManifestKeys::kDeclarativeNetRequest));
 }
 

@@ -31,6 +31,11 @@ class ChildLocalSurfaceIdAllocatorTest : public testing::Test {
  public:
   ChildLocalSurfaceIdAllocatorTest() = default;
 
+  ChildLocalSurfaceIdAllocatorTest(const ChildLocalSurfaceIdAllocatorTest&) =
+      delete;
+  ChildLocalSurfaceIdAllocatorTest& operator=(
+      const ChildLocalSurfaceIdAllocatorTest&) = delete;
+
   ~ChildLocalSurfaceIdAllocatorTest() override {}
 
   ChildLocalSurfaceIdAllocator& allocator() { return *allocator_.get(); }
@@ -61,8 +66,6 @@ class ChildLocalSurfaceIdAllocatorTest : public testing::Test {
   std::unique_ptr<ChildLocalSurfaceIdAllocator> allocator_;
   std::unique_ptr<ParentLocalSurfaceIdAllocator> parent_allocator1_;
   std::unique_ptr<ParentLocalSurfaceIdAllocator> parent_allocator2_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildLocalSurfaceIdAllocatorTest);
 };
 
 // The default constructor should initialize its last-known LocalSurfaceId (and

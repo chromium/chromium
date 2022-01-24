@@ -36,8 +36,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                                const absl::optional<PhysicalRect>
                                    updated_layout_overflow = absl::nullopt);
 
-  using MulticolCollection =
-      HashMap<LayoutBox*, NGMulticolWithPendingOOFs<PhysicalOffset>>;
   using PassKey = base::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
                         NGBoxFragmentBuilder* builder,
@@ -205,44 +203,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return *ComputeInflowBoundsAddress();
   }
 
-  bool HasOutOfFlowPositionedFragmentainerDescendants() const {
-    if (!const_has_rare_data_)
-      return false;
-
-    return !ComputeRareDataAddress()
-                ->oof_positioned_fragmentainer_descendants.IsEmpty();
-  }
-
-  base::span<NGPhysicalOOFNodeForFragmentation>
-  OutOfFlowPositionedFragmentainerDescendants() const {
-    if (!const_has_rare_data_)
-      return base::span<NGPhysicalOOFNodeForFragmentation>();
-    Vector<NGPhysicalOOFNodeForFragmentation>& descendants =
-        const_cast<Vector<NGPhysicalOOFNodeForFragmentation>&>(
-            ComputeRareDataAddress()->oof_positioned_fragmentainer_descendants);
-    return {descendants.data(), descendants.size()};
-  }
-
-  bool HasMulticolsWithPendingOOFs() const {
-    if (!const_has_rare_data_)
-      return false;
-
-    return !ComputeRareDataAddress()->multicols_with_pending_oofs.IsEmpty();
-  }
-
-  MulticolCollection MulticolsWithPendingOOFs() const {
-    if (!const_has_rare_data_)
-      return MulticolCollection();
-    return const_cast<MulticolCollection&>(
-        ComputeRareDataAddress()->multicols_with_pending_oofs);
-  }
-
-  NGPixelSnappedPhysicalBoxStrut PixelSnappedPadding() const {
-    if (!has_padding_)
-      return NGPixelSnappedPhysicalBoxStrut();
-    return ComputePaddingAddress()->SnapToDevicePixels();
-  }
-
   // Return true if this is either a container that establishes an inline
   // formatting context, or if it's non-atomic inline content participating in
   // one. Empty blocks don't establish an inline formatting context.
@@ -301,7 +261,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
       const PhysicalOffset& location,
       const NGBlockBreakToken* incoming_break_token,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
-  IntPoint PixelSnappedScrolledContentOffset() const;
+  gfx::Vector2d PixelSnappedScrolledContentOffset() const;
   PhysicalSize ScrollSize() const;
 
   NGInkOverflow::Type InkOverflowType() const {
@@ -370,7 +330,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return PhysicalBoxSides(include_border_top_, include_border_right_,
                             include_border_bottom_, include_border_left_);
   }
-  NGPixelSnappedPhysicalBoxStrut BorderWidths() const;
 
   // Return true if this is the first fragment generated from a node.
   bool IsFirstForNode() const { return is_first_for_node_; }
@@ -385,12 +344,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   bool IsFragmentationContextRoot() const {
     return is_fragmentation_context_root_;
-  }
-
-  // Returns true if we have a descendant within this formatting context, which
-  // is potentially above our block-start edge.
-  bool MayHaveDescendantAboveBlockStart() const {
-    return may_have_descendant_above_block_start_;
   }
 
 #if DCHECK_IS_ON()
@@ -460,11 +413,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   struct RareData {
     RareData(const RareData&);
-    RareData(NGBoxFragmentBuilder*, PhysicalSize size);
+    explicit RareData(NGBoxFragmentBuilder*);
 
-    Vector<NGPhysicalOOFNodeForFragmentation>
-        oof_positioned_fragmentainer_descendants;
-    MulticolCollection multicols_with_pending_oofs;
     const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
 
     // TablesNG rare data.

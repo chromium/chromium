@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/pin_request_view.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace views {
@@ -44,6 +43,9 @@ class ASH_EXPORT PinRequestWidget {
    private:
     PinRequestWidget* const pin_request_widget_;
   };
+
+  PinRequestWidget(const PinRequestWidget&) = delete;
+  PinRequestWidget& operator=(const PinRequestWidget&) = delete;
 
   // Creates and shows the instance of PinRequestWidget.
   // This widget is modal and only one instance can be created at a time. It
@@ -89,8 +91,6 @@ class ASH_EXPORT PinRequestWidget {
   std::unique_ptr<WindowDimmer> dimmer_;
 
   base::WeakPtrFactory<PinRequestWidget> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PinRequestWidget);
 };
 
 }  // namespace ash

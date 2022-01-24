@@ -11,10 +11,8 @@
 
 namespace media {
 
-const base::TimeDelta FakeAudioConsumer::kMinLeadTime =
-    base::TimeDelta::FromMilliseconds(100);
-const base::TimeDelta FakeAudioConsumer::kMaxLeadTime =
-    base::TimeDelta::FromMilliseconds(500);
+const base::TimeDelta FakeAudioConsumer::kMinLeadTime = base::Milliseconds(100);
+const base::TimeDelta FakeAudioConsumer::kMaxLeadTime = base::Milliseconds(500);
 
 FakeAudioConsumer::FakeAudioConsumer(
     uint64_t session_id,

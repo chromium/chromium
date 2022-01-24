@@ -4,16 +4,22 @@
 
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 
+#include "ash/public/cpp/login_screen_test_api.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
@@ -32,10 +38,16 @@ namespace {
 
 namespace em = enterprise_management;
 using UserSegment = UserTypeByDeviceTypeMetricsProvider::UserSegment;
+using ash::KioskLaunchController;
+using ash::KioskSessionInitializedWaiter;
+using ash::LoginScreenTestApi;
+using ash::ScopedDeviceSettings;
+using ash::WebKioskAppManager;
 using testing::InvokeWithoutArgs;
 
 const char kAccountId1[] = "dla1@example.com";
 const char kDisplayName1[] = "display name 1";
+const char kAppInstallUrl[] = "https://app.com/install";
 
 absl::optional<em::PolicyData::MarketSegment> GetMarketSegment(
     policy::MarketSegment device_segment) {
@@ -63,6 +75,7 @@ absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
     case UserSegment::kEnterprise:
       return em::PolicyData::ENTERPRISE;
     case UserSegment::kUnmanaged:
+    case UserSegment::kKioskApp:
     case UserSegment::kManagedGuestSession:
       return absl::nullopt;
   }
@@ -72,8 +85,8 @@ absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
 
 absl::optional<AccountId> GetPrimaryAccountId() {
   return AccountId::FromUserEmailGaiaId(
-      chromeos::FakeGaiaMixin::kEnterpriseUser1,
-      chromeos::FakeGaiaMixin::kEnterpriseUser1GaiaId);
+      ash::FakeGaiaMixin::kEnterpriseUser1,
+      ash::FakeGaiaMixin::kEnterpriseUser1GaiaId);
 }
 
 void ProvideCurrentSessionData() {
@@ -92,57 +105,53 @@ void ProvideCurrentSessionData() {
 
 class TestCase {
  public:
-  TestCase(const char* const name,
-           UserSegment user_segment,
-           policy::MarketSegment device_segment)
-      : name_(name),
-        user_segment_(user_segment),
+  TestCase(UserSegment user_segment, policy::MarketSegment device_segment)
+      : user_segment_(user_segment),
         device_segment_(device_segment),
-        is_public_session_(false),
-        uma_expected_(true) {
-    CHECK(name && *name) << "no test case name";
-  }
+        uma_expected_(true) {}
 
   std::string GetTestName() const {
-    std::string full_name = name_;
-
-    full_name += "_";
+    std::string test_name = "";
 
     switch (user_segment_) {
       case UserSegment::kUnmanaged:
-        full_name += "UnmanagedUser";
+        test_name += "UnmanagedUser";
         break;
       case UserSegment::kK12:
-        full_name += "K12User";
+        test_name += "K12User";
         break;
       case UserSegment::kUniversity:
-        full_name += "UniversityUser";
+        test_name += "UniversityUser";
         break;
       case UserSegment::kNonProfit:
-        full_name += "NonProfitUser";
+        test_name += "NonProfitUser";
         break;
       case UserSegment::kEnterprise:
-        full_name += "EnterpriseUser";
+        test_name += "EnterpriseUser";
+        break;
+      case UserSegment::kKioskApp:
+        test_name += "KioskApp";
         break;
       case UserSegment::kManagedGuestSession:
-        full_name += "ManagedGuestSession";
+        test_name += "ManagedGuestSession";
+        break;
     }
 
-    full_name += "_on_";
+    test_name += "_on_";
 
     switch (device_segment_) {
       case policy::MarketSegment::UNKNOWN:
-        full_name += "UmanagedDevice";
+        test_name += "UmanagedDevice";
         break;
       case policy::MarketSegment::EDUCATION:
-        full_name += "EducationDevice";
+        test_name += "EducationDevice";
         break;
       case policy::MarketSegment::ENTERPRISE:
-        full_name += "EnterpriseDevice";
+        test_name += "EnterpriseDevice";
         break;
     }
 
-    return full_name;
+    return test_name;
   }
 
   UserSegment GetUserSegment() const { return user_segment_; }
@@ -158,17 +167,11 @@ class TestCase {
     return ::GetMarketSegment(device_segment_);
   }
 
-  TestCase& EnablePublicSession() {
-    is_public_session_ = true;
-    return *this;
+  bool IsPublicSession() const {
+    return GetUserSegment() == UserSegment::kManagedGuestSession;
   }
 
-  TestCase& DisablePublicSession() {
-    is_public_session_ = false;
-    return *this;
-  }
-
-  bool IsPublicSession() const { return is_public_session_; }
+  bool IsKioskApp() const { return GetUserSegment() == UserSegment::kKioskApp; }
 
   TestCase& ExpectUmaOutput() {
     uma_expected_ = true;
@@ -183,16 +186,24 @@ class TestCase {
   bool UmaOutputExpected() const { return uma_expected_; }
 
  private:
-  const char* const name_;
   UserSegment user_segment_;
   policy::MarketSegment device_segment_;
-  bool is_public_session_;
   bool uma_expected_;
 };
 
-TestCase MgsCase(const char* const name, policy::MarketSegment device_segment) {
-  TestCase test_case(name, UserSegment::kManagedGuestSession, device_segment);
-  test_case.EnablePublicSession();
+TestCase UserCase(UserSegment user_segment,
+                  policy::MarketSegment device_segment) {
+  TestCase test_case(user_segment, device_segment);
+  return test_case;
+}
+
+TestCase MgsCase(policy::MarketSegment device_segment) {
+  TestCase test_case(UserSegment::kManagedGuestSession, device_segment);
+  return test_case;
+}
+
+TestCase KioskCase(policy::MarketSegment device_segment) {
+  TestCase test_case(UserSegment::kKioskApp, device_segment);
   return test_case;
 }
 
@@ -212,6 +223,11 @@ class UserTypeByDeviceTypeMetricsProviderTest
     LOG(INFO) << "UserTypeByDeviceTypeMetricsProviderTest::"
               << GetParam().GetTestName();
     InitializePolicy();
+  }
+
+  void TearDownOnMainThread() override {
+    settings_.reset();
+    policy::DevicePolicyCrosBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -304,22 +320,46 @@ class UserTypeByDeviceTypeMetricsProviderTest
     auto* host = ash::LoginDisplayHost::default_host();
     ASSERT_TRUE(host);
     host->StartSignInScreen();
-    chromeos::ExistingUserController* controller =
-        chromeos::ExistingUserController::current_controller();
+    auto* controller = ash::ExistingUserController::current_controller();
     ASSERT_TRUE(controller);
 
     chromeos::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
                                        account_id_1_);
     user_context.SetPublicSessionLocale(std::string());
     user_context.SetPublicSessionInputMethod(std::string());
-    controller->Login(user_context, chromeos::SigninSpecifics());
+    controller->Login(user_context, ash::SigninSpecifics());
+  }
+
+  void PrepareAppLaunch() {
+    std::vector<policy::DeviceLocalAccount> device_local_accounts = {
+        policy::DeviceLocalAccount(
+            policy::WebKioskAppBasicInfo(kAppInstallUrl, "", ""),
+            kAppInstallUrl)};
+
+    settings_ = std::make_unique<ScopedDeviceSettings>();
+    int ui_update_count = LoginScreenTestApi::GetUiUpdateCount();
+    policy::SetDeviceLocalAccounts(settings_->owner_settings_service(),
+                                   device_local_accounts);
+    // Wait for the Kiosk App configuration to reload.
+    LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
+  }
+
+  bool LaunchApp() {
+    return LoginScreenTestApi::LaunchApp(
+        WebKioskAppManager::Get()->GetAppByAccountId(account_id_2_)->app_id());
+  }
+
+  void StartKioskApp() {
+    PrepareAppLaunch();
+    LaunchApp();
+    KioskSessionInitializedWaiter().Wait();
   }
 
   void WaitForSessionStart() {
     if (IsSessionStarted())
       return;
     ash::WizardController::SkipPostLoginScreensForTesting();
-    chromeos::test::WaitForPrimaryUserSessionStart();
+    ash::test::WaitForPrimaryUserSessionStart();
   }
 
   bool IsSessionStarted() {
@@ -333,8 +373,8 @@ class UserTypeByDeviceTypeMetricsProviderTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kRegular,
+  ash::LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
       embedded_test_server(), this,
       /*should_launch_browser=*/true, GetPrimaryAccountId(),
       /*include_initial_user=*/true,
@@ -343,15 +383,29 @@ class UserTypeByDeviceTypeMetricsProviderTest
       // TODO(crbug/1112885): Use LocalPolicyTestServer when this is fixed.
       /*use_local_policy_server=*/false};
   policy::UserPolicyBuilder device_local_account_policy_;
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
 
   const AccountId account_id_1_ =
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
           kAccountId1,
           policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
+  const AccountId account_id_2_ =
+      AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
+          kAppInstallUrl,
+          policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP));
+  // Not strictly necessary, but makes kiosk tests run much faster.
+  std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_ =
+      KioskLaunchController::SkipSplashScreenWaitForTesting();
+  std::unique_ptr<ScopedDeviceSettings> settings_;
 };
 
-IN_PROC_BROWSER_TEST_P(UserTypeByDeviceTypeMetricsProviderTest, Uma) {
+// Flacky on CrOS (http://crbug.com/1248669).
+#if defined(OS_CHROMEOS)
+#define MAYBE_Uma DISABLED_Uma
+#else
+#define MAYBE_Uma Uma
+#endif
+IN_PROC_BROWSER_TEST_P(UserTypeByDeviceTypeMetricsProviderTest, MAYBE_Uma) {
   base::HistogramTester histogram_tester;
 
   SetDevicePolicy();
@@ -365,6 +419,8 @@ IN_PROC_BROWSER_TEST_P(UserTypeByDeviceTypeMetricsProviderTest, Uma) {
 
   if (GetParam().IsPublicSession()) {
     StartPublicSession();
+  } else if (GetParam().IsKioskApp()) {
+    StartKioskApp();
   } else {
     LogInUser();
   }
@@ -387,45 +443,24 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     UserTypeByDeviceTypeMetricsProviderTest,
     testing::Values(
-        TestCase("Uma",
-                 UserSegment::kUnmanaged,
-                 policy::MarketSegment::UNKNOWN),
-        TestCase("Uma", UserSegment::kK12, policy::MarketSegment::UNKNOWN),
-        TestCase("Uma",
-                 UserSegment::kUniversity,
-                 policy::MarketSegment::UNKNOWN),
-        TestCase("Uma",
-                 UserSegment::kNonProfit,
-                 policy::MarketSegment::UNKNOWN),
-        TestCase("Uma",
-                 UserSegment::kEnterprise,
-                 policy::MarketSegment::UNKNOWN),
-        TestCase("Uma",
-                 UserSegment::kUnmanaged,
-                 policy::MarketSegment::EDUCATION),
-        TestCase("Uma", UserSegment::kK12, policy::MarketSegment::EDUCATION),
-        TestCase("Uma",
-                 UserSegment::kUniversity,
-                 policy::MarketSegment::EDUCATION),
-        TestCase("Uma",
-                 UserSegment::kNonProfit,
-                 policy::MarketSegment::EDUCATION),
-        TestCase("Uma",
-                 UserSegment::kEnterprise,
-                 policy::MarketSegment::EDUCATION),
-        TestCase("Uma",
-                 UserSegment::kUnmanaged,
-                 policy::MarketSegment::ENTERPRISE),
-        TestCase("Uma", UserSegment::kK12, policy::MarketSegment::ENTERPRISE),
-        TestCase("Uma",
-                 UserSegment::kUniversity,
-                 policy::MarketSegment::ENTERPRISE),
-        TestCase("Uma",
-                 UserSegment::kNonProfit,
-                 policy::MarketSegment::ENTERPRISE),
-        TestCase("Uma",
-                 UserSegment::kEnterprise,
-                 policy::MarketSegment::ENTERPRISE),
-        MgsCase("Uma", policy::MarketSegment::UNKNOWN).DontExpectUmaOutput(),
-        MgsCase("Uma", policy::MarketSegment::EDUCATION),
-        MgsCase("Uma", policy::MarketSegment::ENTERPRISE)));
+        UserCase(UserSegment::kUnmanaged, policy::MarketSegment::UNKNOWN),
+        UserCase(UserSegment::kK12, policy::MarketSegment::UNKNOWN),
+        UserCase(UserSegment::kUniversity, policy::MarketSegment::UNKNOWN),
+        UserCase(UserSegment::kNonProfit, policy::MarketSegment::UNKNOWN),
+        UserCase(UserSegment::kEnterprise, policy::MarketSegment::UNKNOWN),
+        UserCase(UserSegment::kUnmanaged, policy::MarketSegment::EDUCATION),
+        UserCase(UserSegment::kK12, policy::MarketSegment::EDUCATION),
+        UserCase(UserSegment::kUniversity, policy::MarketSegment::EDUCATION),
+        UserCase(UserSegment::kNonProfit, policy::MarketSegment::EDUCATION),
+        UserCase(UserSegment::kEnterprise, policy::MarketSegment::EDUCATION),
+        UserCase(UserSegment::kUnmanaged, policy::MarketSegment::ENTERPRISE),
+        UserCase(UserSegment::kK12, policy::MarketSegment::ENTERPRISE),
+        UserCase(UserSegment::kUniversity, policy::MarketSegment::ENTERPRISE),
+        UserCase(UserSegment::kNonProfit, policy::MarketSegment::ENTERPRISE),
+        UserCase(UserSegment::kEnterprise, policy::MarketSegment::ENTERPRISE),
+        KioskCase(policy::MarketSegment::UNKNOWN),
+        KioskCase(policy::MarketSegment::EDUCATION),
+        KioskCase(policy::MarketSegment::ENTERPRISE),
+        MgsCase(policy::MarketSegment::UNKNOWN).DontExpectUmaOutput(),
+        MgsCase(policy::MarketSegment::EDUCATION),
+        MgsCase(policy::MarketSegment::ENTERPRISE)));

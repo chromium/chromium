@@ -17,14 +17,16 @@ class AudioStub;
 class AudioReader : public ChannelDispatcherBase {
  public:
   explicit AudioReader(AudioStub* audio_stub);
+
+  AudioReader(const AudioReader&) = delete;
+  AudioReader& operator=(const AudioReader&) = delete;
+
   ~AudioReader() override;
 
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
 
   AudioStub* audio_stub_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioReader);
 };
 
 }  // namespace protocol

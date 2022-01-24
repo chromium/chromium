@@ -23,13 +23,16 @@ group("closure_compile") {
 
 group("js_modules") {
   deps = [
+    ":api",
     ":app_util",
     ":async_util",
+    ":dialog_type",
     ":error_counter",
     ":file_operation_common",
     ":file_type",
     ":files_app_entry_types",
     ":filtered_volume_manager",
+    ":glitch",
     ":importer_common",
     ":lru_cache",
     ":mediasession_types",
@@ -40,6 +43,7 @@ group("js_modules") {
     ":progress_center_common",
     ":storage_adapter",
     ":trash",
+    ":url_constants",
     ":util",
     ":volume_manager_types",
     ":xfm",
@@ -48,6 +52,7 @@ group("js_modules") {
 
 js_type_check("closure_compile_jsmodules") {
   deps = [
+    ":api",
     ":app_util",
     ":async_util",
     ":error_counter",
@@ -55,16 +60,19 @@ js_type_check("closure_compile_jsmodules") {
     ":file_type",
     ":files_app_entry_types",
     ":filtered_volume_manager",
+    ":glitch",
     ":importer_common",
     ":lru_cache",
     ":metrics",
     ":metrics_base",
     ":mock_entry",
+    ":mock_util",
     ":notifications_browser_proxy",
     ":power",
     ":progress_center_common",
     ":storage_adapter",
     ":trash",
+    ":url_constants",
     ":util",
     ":volume_manager_types",
     ":xfm",
@@ -94,8 +102,12 @@ js_type_check("test_support_modules_type_check") {
       ]
 }
 
+js_library("api") {
+}
+
 js_library("app_util") {
   deps = [
+    ":storage_adapter",
     "//ui/file_manager/file_manager/externs:file_manager_private",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:background_base",
@@ -108,6 +120,14 @@ js_library("async_util") {
 }
 
 js_library("error_counter") {
+  deps = [ ":glitch" ]
+}
+
+js_library("glitch") {
+  deps = [ ":metrics" ]
+}
+
+js_library("dialog_type") {
 }
 
 js_unittest("files_app_entry_types_unittest.m") {
@@ -125,6 +145,13 @@ js_library("files_app_entry_types") {
   deps = [
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
+  ]
+}
+
+js_library("files_app_state") {
+  deps = [
+    ":dialog_type",
+    ":volume_manager_types",
   ]
 }
 
@@ -176,6 +203,7 @@ js_library("filtered_volume_manager") {
 js_library("importer_common") {
   deps = [
     ":file_type",
+    ":url_constants",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_info",
@@ -235,7 +263,13 @@ js_library("mock_entry") {
   deps = [ ":util" ]
 }
 
+js_library("mock_util") {
+  deps = [ ":util" ]
+}
+
 js_library("notifications_browser_proxy") {
+  externs_list =
+      [ "//ui/file_manager/file_manager/externs/app_window_common.js" ]
 }
 
 js_library("progress_center_common") {
@@ -272,6 +306,9 @@ js_library("trash") {
 
 js_library("unittest_util") {
   deps = [ "//chrome/test/data/webui:chai_assert" ]
+}
+
+js_library("url_constants") {
 }
 
 js_library("util") {

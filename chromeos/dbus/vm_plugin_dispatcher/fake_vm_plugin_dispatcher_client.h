@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER_FAKE_VM_PLUGIN_DISPATCHER_CLIENT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 
@@ -16,6 +15,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER)
     FakeVmPluginDispatcherClient : public VmPluginDispatcherClient {
  public:
   FakeVmPluginDispatcherClient();
+
+  FakeVmPluginDispatcherClient(const FakeVmPluginDispatcherClient&) = delete;
+  FakeVmPluginDispatcherClient& operator=(const FakeVmPluginDispatcherClient&) =
+      delete;
+
   ~FakeVmPluginDispatcherClient() override;
 
   void AddObserver(Observer* observer) override;
@@ -84,8 +88,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER)
   vm_tools::plugin_dispatcher::ListVmResponse list_vms_response_;
 
   base::ObserverList<Observer> observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVmPluginDispatcherClient);
 };
 
 }  // namespace chromeos

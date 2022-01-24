@@ -52,6 +52,10 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
                        VideoDecodePerfHistory::SaveCallback save_cb,
                        GetLearningSessionCallback learning_session_cb,
                        RecordAggregateWatchTimeCallback record_playback_cb);
+
+  MediaMetricsProvider(const MediaMetricsProvider&) = delete;
+  MediaMetricsProvider& operator=(const MediaMetricsProvider&) = delete;
+
   ~MediaMetricsProvider() override;
 
   // Callback for retrieving a ukm::SourceId.
@@ -163,8 +167,6 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   base::TimeDelta time_to_play_ready_ = kNoTimestamp;
 
   absl::optional<container_names::MediaContainerName> container_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaMetricsProvider);
 };
 
 }  // namespace media

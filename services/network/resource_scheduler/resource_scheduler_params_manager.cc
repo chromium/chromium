@@ -30,7 +30,7 @@ absl::optional<base::TimeDelta> GetMaxWaitTimeP2PConnections() {
           features::kPauseBrowserInitiatedHeavyTrafficForP2P,
           "max_wait_time_p2p_connections_in_minutes", 60);
 
-  return base::TimeDelta::FromMinutes(max_wait_time_p2p_connections_in_minutes);
+  return base::Minutes(max_wait_time_p2p_connections_in_minutes);
 }
 
 std::set<int32_t> GetThrottledHashes() {
@@ -81,8 +81,7 @@ absl::optional<base::TimeDelta> GetMaxWeakSignalThrottlingDuration() {
           features::kPauseLowPriorityBrowserRequestsOnWeakSignal,
           "max_weak_signal_throttling_duration_in_seconds", 600);
 
-  return base::TimeDelta::FromSeconds(
-      max_weak_signal_throttling_duration_in_seconds);
+  return base::Seconds(max_weak_signal_throttling_duration_in_seconds);
 }
 
 absl::optional<base::TimeDelta> GetWeakSignalUnthrottleDuration() {
@@ -96,8 +95,7 @@ absl::optional<base::TimeDelta> GetWeakSignalUnthrottleDuration() {
           features::kPauseLowPriorityBrowserRequestsOnWeakSignal,
           "weak_signal_unthrottle_duration_in_seconds", 60);
 
-  return base::TimeDelta::FromSeconds(
-      weak_signal_unthrottle_duration_in_seconds);
+  return base::Seconds(weak_signal_unthrottle_duration_in_seconds);
 }
 
 // The maximum number of delayable requests to allow to be in-flight at any
@@ -129,9 +127,9 @@ GetParamsForNetworkQualityContainer() {
   static const char kEffectiveConnectionTypeBase[] = "EffectiveConnectionType";
   static const char kNonDelayableWeightBase[] = "NonDelayableWeight";
   static constexpr base::TimeDelta kUpperBoundQueuingDuration =
-      base::TimeDelta::FromSeconds(120);
+      base::Seconds(120);
   static constexpr base::TimeDelta kLowerBoundQueuingDuration =
-      base::TimeDelta::FromSeconds(15);
+      base::Seconds(15);
 
   ResourceSchedulerParamsManager::ParamsForNetworkQualityContainer result;
   // Set the default params for networks with ECT Slow2G and 2G. These params
@@ -385,7 +383,7 @@ base::TimeDelta ResourceSchedulerParamsManager::
     TimeToPauseHeavyBrowserInitiatedRequestsAfterEndOfP2PConnections() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return base::TimeDelta::FromSeconds(base::GetFieldTrialParamByFeatureAsInt(
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       features::kPauseBrowserInitiatedHeavyTrafficForP2P,
       "seconds_to_pause_requests_after_end_of_p2p_connections", 60));
 }

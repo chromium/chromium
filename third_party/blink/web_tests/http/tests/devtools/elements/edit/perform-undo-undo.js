@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that client can call undo multiple times with non-empty history.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div style="display:none" id="container">

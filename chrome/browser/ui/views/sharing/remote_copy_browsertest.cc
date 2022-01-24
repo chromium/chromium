@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -33,7 +32,7 @@
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace {
@@ -55,12 +54,13 @@ class ClipboardObserver : public ui::ClipboardObserver {
   explicit ClipboardObserver(base::RepeatingClosure callback)
       : callback_(callback) {}
 
+  ClipboardObserver(const ClipboardObserver&) = delete;
+  ClipboardObserver& operator=(const ClipboardObserver&) = delete;
+
   void OnClipboardDataChanged() override { callback_.Run(); }
 
  private:
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardObserver);
 };
 
 }  // namespace
@@ -148,8 +148,11 @@ class RemoteCopyBrowserTest : public InProcessBrowserTest {
   }
 
   SkBitmap ReadClipboardImage() {
-    return ui::clipboard_test_util::ReadImage(
-        ui::Clipboard::GetForCurrentThread());
+    SkBitmap bitmap;
+    std::vector<uint8_t> png_data =
+        ui::clipboard_test_util::ReadPng(ui::Clipboard::GetForCurrentThread());
+    gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+    return bitmap;
   }
 
   message_center::Notification GetNotification() {
@@ -176,12 +179,6 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, Text) {
   // The text is in the clipboard and a notification is shown.
   std::vector<std::u16string> types = GetAvailableClipboardTypes();
   size_t expected_size = 1u;
-#if defined(OS_LINUX)
-  // Ozone/X11 and Wayland also set kMimeTypeTextUtf8 along with kMimeTypeText.
-  // TODO(https://crbug.com/1096425): remove this if condition.
-  if (features::IsUsingOzonePlatform())
-    expected_size = 2u;
-#endif
   ASSERT_EQ(expected_size, types.size());
   ASSERT_EQ(ui::kMimeTypeText, base::UTF16ToASCII(types[0]));
   if (expected_size == 2u)
@@ -240,12 +237,6 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, TextThenImageUrl) {
   // The text is in the clipboard.
   std::vector<std::u16string> types = GetAvailableClipboardTypes();
   size_t expected_size = 1u;
-#if defined(OS_LINUX)
-  // Ozone/X11 and Wayland also set kMimeTypeTextUtf8 along with kMimeTypeText.
-  // TODO(https://crbug.com/1096425): remove this if condition.
-  if (features::IsUsingOzonePlatform())
-    expected_size = 2u;
-#endif
   ASSERT_EQ(expected_size, types.size());
   ASSERT_EQ(ui::kMimeTypeText, base::UTF16ToASCII(types[0]));
   if (expected_size == 2u)

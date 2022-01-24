@@ -15,7 +15,6 @@
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_model_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 
@@ -25,6 +24,7 @@ class AppListFolderItem;
 class AppListItem;
 class AppListItemList;
 class AppListModelObserver;
+class AppListModelDelegate;
 
 // Main model for the app list. Holds AppListItemList, which owns a list of
 // AppListItems and is displayed in the grid view.
@@ -33,20 +33,17 @@ class AppListModelObserver;
 // the model needs to notify its observers when this occurs.
 class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
  public:
-  AppListModel();
+  explicit AppListModel(AppListModelDelegate* app_list_model_delegate);
+
+  AppListModel(const AppListModel&) = delete;
+  AppListModel& operator=(const AppListModel&) = delete;
+
   ~AppListModel() override;
 
   void AddObserver(AppListModelObserver* observer);
   void RemoveObserver(AppListModelObserver* observer);
 
   void SetStatus(AppListModelStatus status);
-
-  void SetState(AppListState state);
-  AppListState state() const { return state_; }
-
-  // The current state of the AppListView. Controlled by AppListView.
-  void SetStateFullscreen(AppListViewState state);
-  AppListViewState state_fullscreen() const { return state_fullscreen_; }
 
   // Finds the item matching |id|.
   AppListItem* FindItem(const std::string& id);
@@ -67,6 +64,10 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // Add a "page break" item right after the specified item in item list.
   void AddPageBreakItemAfter(const AppListItem* previous_item);
 
+  // Updates an item's metadata (e.g. name, position, etc).
+  void SetItemMetadata(const std::string& id,
+                       std::unique_ptr<AppListItemMetadata> data);
+
   // Merges two items. If the target item is a folder, the source item is
   // added to the end of the target folder. Otherwise a new folder is created
   // in the same position as the target item with the target item as the first
@@ -82,19 +83,26 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // Move |item| to the folder matching |folder_id| or to the top level if
   // |folder_id| is empty. |item|->position will determine where the item
   // is positioned. See also the comment for RemoveItemFromFolder.
+  // This method should only be called by `AppListControllerImpl`. It does the
+  // real job of reparenting an item. Note that `app_list_model_delegate_`
+  // should be used to request for reparenting an item. We should not call
+  // `MoveItemToFolder()` in ash directly.
+  // TODO(https://crbug.com/1257605): it is confusing that when reparenting an
+  // item, `MoveItemToFolder()` is called through an indirect way. The reason
+  // leading to confusion is that `AppListModel` plays two roles: (1) the class
+  // that sends the request for app list item change (2) the class that manages
+  // app list items. To fix this issue, `AppListModel` code should be splitted
+  // based on these two roles.
   void MoveItemToFolder(AppListItem* item, const std::string& folder_id);
 
-  // Move |item| to the folder matching |folder_id| or to the top level if
-  // |folder_id| is empty. The item will be inserted before |position| or at
-  // the end of the list if |position| is invalid. Note: |position| is copied
-  // in case it refers to the containing folder which may get deleted. See
-  // also the comment for RemoveItemFromFolder. Returns true if the item was
+  // Moves `item` to the top level. The item will be inserted before `position`
+  // or at the end of the list if `position` is invalid. Note: `position` is
+  // copied in case it refers to the containing folder which may get deleted.
+  // See also the comment for RemoveItemFromFolder. Returns true if the item was
   // moved. NOTE: This should only be called by the View code (not the sync
   // code); it enforces folder restrictions (e.g. the source folder can not be
   // type OEM).
-  bool MoveItemToFolderAt(AppListItem* item,
-                          const std::string& folder_id,
-                          syncer::StringOrdinal position);
+  bool MoveItemToRootAt(AppListItem* item, syncer::StringOrdinal position);
 
   // Sets the position of |item| either in |top_level_item_list_| or the
   // folder specified by |item|->folder_id(). If |new_position| is invalid,
@@ -121,55 +129,81 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // Deletes all items. This is used in profile switches.
   void DeleteAllItems();
 
+  // Creates and adds an empty folder item with the provided ID.
+  void AddFolderItemForTest(const std::string& folder_id);
+
   AppListItemList* top_level_item_list() const {
     return top_level_item_list_.get();
   }
 
   AppListModelStatus status() const { return status_; }
 
+ protected:
+  // Returns an existing folder matching |folder_id| or creates a new folder.
+  AppListFolderItem* FindOrCreateFolderItem(const std::string& folder_id);
+
  private:
+  enum class ReparentItemReason {
+    // Reparent an item when adding the item to the model.
+    kAdd,
+
+    // Reparent an item when updating the item in the model.
+    kUpdate
+  };
+
   // AppListItemListObserver
   void OnListItemMoved(size_t from_index,
                        size_t to_index,
                        AppListItem* item) override;
 
-  // Returns an existing folder matching |folder_id| or creates a new folder.
-  AppListFolderItem* FindOrCreateFolderItem(const std::string& folder_id);
-
   // Adds |item_ptr| to |top_level_item_list_| and notifies observers.
-  AppListItem* AddItemToItemListAndNotify(
-      std::unique_ptr<AppListItem> item_ptr);
-
-  // Adds |item_ptr| to |top_level_item_list_| and notifies observers that an
-  // Update occured (e.g. item moved from a folder).
-  AppListItem* AddItemToItemListAndNotifyUpdate(
-      std::unique_ptr<AppListItem> item_ptr);
+  AppListItem* AddItemToRootListAndNotify(std::unique_ptr<AppListItem> item_ptr,
+                                          ReparentItemReason reason);
 
   // Adds |item_ptr| to |folder| and notifies observers.
-  AppListItem* AddItemToFolderItemAndNotify(
+  AppListItem* AddItemToFolderListAndNotify(
       AppListFolderItem* folder,
-      std::unique_ptr<AppListItem> item_ptr);
+      std::unique_ptr<AppListItem> item_ptr,
+      ReparentItemReason reason);
 
-  // Removes |item| from |top_level_item_list_| or calls RemoveItemFromFolder
-  // if |item|->folder_id is set.
-  std::unique_ptr<AppListItem> RemoveItem(AppListItem* item);
+  // Notifies observers of `item` being reparented.
+  void NotifyItemParentChange(AppListItem* item, ReparentItemReason reason);
 
-  // Removes |item| from |folder|. If |folder| becomes empty, deletes |folder|
-  // from |top_level_item_list_|. Does NOT trigger observers, calling function
-  // must do so.
+  // Removes `item` from the top item list.
+  std::unique_ptr<AppListItem> RemoveFromTopList(AppListItem* item);
+
+  // Removes `item` from its parent folder. If `destination_folder_id` is not
+  // set, the removed item will be deleted; otherwise, move `item` to the top
+  // list or a specified folder depending on `destination_folder_id`. If
+  // the parent folder becomes empty after removal, deletes the folder from
+  // `top_level_item_list_`. It is guaranteed that folder deletion is always
+  // after moving or deleting `item`.
+  void ReparentOrDeleteItemInFolder(
+      AppListItem* item,
+      absl::optional<std::string> destination_folder_id);
+
+  // Removes `item` from `folder` then returns a unique pointer to the removed
+  // item.
   std::unique_ptr<AppListItem> RemoveItemFromFolder(AppListFolderItem* folder,
                                                     AppListItem* item);
+
+  // Deletes `folder` if `folder` is empty.
+  void DeleteFolderIfEmpty(AppListFolderItem* folder);
+
+  // Sets the position of a root item.
+  void SetRootItemPosition(AppListItem* item,
+                           const syncer::StringOrdinal& new_position);
+
+  // Used to initiate updates on app list items from the ash side.
+  AppListModelDelegate* const app_list_model_delegate_;
 
   std::unique_ptr<AppListItemList> top_level_item_list_;
 
   AppListModelStatus status_ = AppListModelStatus::kStatusNormal;
-  AppListState state_ = AppListState::kInvalidState;
-  // The AppListView state. Controlled by the AppListView.
-  AppListViewState state_fullscreen_ = AppListViewState::kClosed;
+
   base::ObserverList<AppListModelObserver, true> observers_;
   base::ScopedMultiSourceObservation<AppListItemList, AppListItemListObserver>
       item_list_scoped_observations_{this};
-  DISALLOW_COPY_AND_ASSIGN(AppListModel);
 };
 
 }  // namespace ash

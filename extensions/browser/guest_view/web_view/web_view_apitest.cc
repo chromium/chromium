@@ -51,6 +51,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/display/display_switches.h"
 
 #if defined(USE_AURA)
@@ -99,6 +100,10 @@ class WebContentsHiddenObserver : public content::WebContentsObserver {
         hidden_callback_(std::move(hidden_callback)),
         hidden_observed_(false) {}
 
+  WebContentsHiddenObserver(const WebContentsHiddenObserver&) = delete;
+  WebContentsHiddenObserver& operator=(const WebContentsHiddenObserver&) =
+      delete;
+
   // WebContentsObserver.
   void OnVisibilityChanged(content::Visibility visibility) override {
     if (visibility == content::Visibility::HIDDEN) {
@@ -112,8 +117,6 @@ class WebContentsHiddenObserver : public content::WebContentsObserver {
  private:
   base::RepeatingClosure hidden_callback_;
   bool hidden_observed_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsHiddenObserver);
 };
 
 // Handles |request| by serving a redirect response.
@@ -203,7 +206,8 @@ void WebViewAPITest::RunTest(const std::string& test_name,
 
 void WebViewAPITest::SetUpCommandLine(base::CommandLine* command_line) {
   AppShellTest::SetUpCommandLine(command_line);
-  command_line->AppendSwitchASCII(::switches::kJavaScriptFlags, "--expose-gc");
+  command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                  "--expose-gc");
 }
 
 void WebViewAPITest::SetUpOnMainThread() {
@@ -471,8 +475,8 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContextMenu) {
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor =
-      std::make_unique<content::ContextMenuInterceptor>();
-  context_menu_interceptor->Init(guest_web_contents->GetMainFrame());
+      std::make_unique<content::ContextMenuInterceptor>(
+          guest_web_contents->GetMainFrame());
 
   // Trigger the context menu. AppShell doesn't show a context menu; this is
   // just a sanity check that nothing breaks.

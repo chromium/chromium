@@ -28,4 +28,7 @@ message ShoppingPersistedTabDataProto {
 
   // The id of the main offer on the page.
   optional string main_offer_id = 6;
+
+  // The gurl associated with the price drop.
+  optional string serialized_gurl = 7;
 }

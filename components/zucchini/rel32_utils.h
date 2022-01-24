@@ -151,10 +151,10 @@ class Rel32WriterArm : public ReferenceWriter {
 // Type for specialized versions of ArmCopyDisp().
 // TODO(etiennep/huangs): Fold ReferenceByteMixer into Disassembler and remove
 //     direct function pointer usage.
-typedef bool (*ArmCopyDispFun)(ConstBufferView src_view,
-                               offset_t src_idx,
-                               MutableBufferView dst_view,
-                               offset_t dst_idx);
+using ArmCopyDispFun = bool (*)(ConstBufferView src_view,
+                                offset_t src_idx,
+                                MutableBufferView dst_view,
+                                offset_t dst_idx);
 
 // Copier that makes |*dst_it| similar to |*src_it| (both assumed to point to
 // rel32 instructions of type ADDR_TRAITS) by copying the displacement (i.e.,

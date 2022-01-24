@@ -116,7 +116,7 @@ class FlocInternalsBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FlocInternalsBrowserTest, EmptyResponse) {
-  ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl)));
 
   std::vector<std::string> content_lines = GetPageContents();
 
@@ -147,13 +147,13 @@ IN_PROC_BROWSER_TEST_F(FlocInternalsBrowserTest, PopulatedResponse) {
   status->feature_interest_cohort_api_origin_trial = false;
   status->feature_interest_cohort_feature_policy = true;
   status->feature_param_scheduled_update_interval =
-      base::TimeDelta::FromDays(7) + base::TimeDelta::FromSeconds(1);
+      base::Days(7) + base::Seconds(1);
   status->feature_param_minimum_history_domain_size_required = 99;
   status->feature_param_finch_config_version = 2;
 
   fixed_floc_id_provider()->SetFlocStatus(std::move(status));
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl)));
 
   std::vector<std::string> content_lines = GetPageContents();
 
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(FlocInternalsBrowserTest, ResponseWithExtremeValues) {
 
   fixed_floc_id_provider()->SetFlocStatus(std::move(status));
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl)));
 
   std::vector<std::string> content_lines = GetPageContents();
 
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(FlocInternalsBrowserTest, ResponseWithEmptyId) {
 
   fixed_floc_id_provider()->SetFlocStatus(std::move(status));
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl)));
 
   std::vector<std::string> content_lines = GetPageContents();
 

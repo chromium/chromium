@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
+#include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 

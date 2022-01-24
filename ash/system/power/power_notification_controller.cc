@@ -37,6 +37,9 @@ class UsbNotificationDelegate : public message_center::NotificationDelegate {
   explicit UsbNotificationDelegate(PowerNotificationController* controller)
       : controller_(controller) {}
 
+  UsbNotificationDelegate(const UsbNotificationDelegate&) = delete;
+  UsbNotificationDelegate& operator=(const UsbNotificationDelegate&) = delete;
+
   // Overridden from message_center::NotificationDelegate.
   void Close(bool by_user) override {
     if (by_user)
@@ -47,8 +50,6 @@ class UsbNotificationDelegate : public message_center::NotificationDelegate {
   ~UsbNotificationDelegate() override = default;
 
   PowerNotificationController* const controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbNotificationDelegate);
 };
 
 std::string GetNotificationStateString(
@@ -214,7 +215,7 @@ bool PowerNotificationController::UpdateNotificationStateForRemainingTime() {
   // The notification includes a rounded minutes value, so round the estimate
   // received from the power manager to match.
   const int remaining_minutes =
-      base::ClampRound(*remaining_time / base::TimeDelta::FromMinutes(1));
+      base::ClampRound(*remaining_time / base::Minutes(1));
 
   if (remaining_minutes >= kNoWarningMinutes ||
       PowerStatus::Get()->IsBatteryFull()) {

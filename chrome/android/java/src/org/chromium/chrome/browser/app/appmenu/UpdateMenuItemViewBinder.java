@@ -5,17 +5,12 @@
 package org.chromium.chrome.browser.app.appmenu;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
@@ -24,13 +19,25 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuClickHandler;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * A custom binder used to bind the update menu item.
  */
 class UpdateMenuItemViewBinder implements CustomViewBinder {
     private static final int UPDATE_ITEM_VIEW_TYPE = 0;
+    private final MenuItemState mItemState;
+    private Integer mHighlightedItemId;
+    private AppMenuClickHandler mAppMenuClickHandler;
+
+    UpdateMenuItemViewBinder() {
+        super();
+        mItemState = UpdateMenuItemHelper.getInstance().getUiState().itemState;
+    }
 
     @Override
     public int getViewTypeCount() {
@@ -43,67 +50,77 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
     }
 
     @Override
-    public View getView(MenuItem item, @Nullable View convertView, ViewGroup parent,
-            LayoutInflater inflater, AppMenuClickHandler appMenuClickHandler,
-            @Nullable Integer highlightedItemId) {
-        assert item.getItemId() == R.id.update_menu_id;
-        UpdateMenuItemViewHolder holder;
-        if (convertView == null || !(convertView.getTag() instanceof UpdateMenuItemViewHolder)) {
-            holder = new UpdateMenuItemViewHolder();
-            convertView = inflater.inflate(R.layout.update_menu_item, parent, false);
-            holder.text = convertView.findViewById(R.id.menu_item_text);
-            holder.image = convertView.findViewById(R.id.menu_item_icon);
-            holder.summary = convertView.findViewById(R.id.menu_item_summary);
-            convertView.setTag(holder);
-        } else {
-            holder = (UpdateMenuItemViewHolder) convertView.getTag();
+    public int getLayoutId(int viewType) {
+        if (viewType == UPDATE_ITEM_VIEW_TYPE) {
+            return R.layout.update_menu_item;
         }
+        return CustomViewBinder.NOT_HANDLED;
+    }
 
-        MenuItemState itemState = UpdateMenuItemHelper.getInstance().getUiState().itemState;
+    @Override
+    public void bind(PropertyModel model, View view, PropertyKey key) {
+        AppMenuUtil.bindStandardItemEnterAnimation(model, view, key);
 
-        if (itemState == null) return convertView;
+        if (key == AppMenuItemProperties.MENU_ITEM_ID) {
+            int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
+            assert id == R.id.update_menu_id;
+            view.setId(id);
 
-        Resources resources = convertView.getResources();
+            if (mItemState != null) {
+                TextView summary = view.findViewById(R.id.menu_item_summary);
+                if (!TextUtils.isEmpty(mItemState.summary)) {
+                    summary.setText(mItemState.summary);
+                    summary.setVisibility(View.VISIBLE);
+                } else {
+                    summary.setText("");
+                    summary.setVisibility(View.GONE);
+                }
+            }
+        } else if (key == AppMenuItemProperties.TITLE) {
+            TextView text = view.findViewById(R.id.menu_item_text);
+            if (mItemState == null) {
+                text.setText(model.get(AppMenuItemProperties.TITLE));
+            } else {
+                text.setText(mItemState.title);
+                text.setTextColor(AppCompatResources.getColorStateList(
+                        view.getContext(), mItemState.titleColorId));
+            }
+        } else if (key == AppMenuItemProperties.TITLE_CONDENSED) {
+            TextView text = view.findViewById(R.id.menu_item_text);
+            if (mItemState == null) {
+                CharSequence titleCondensed = model.get(AppMenuItemProperties.TITLE_CONDENSED);
+                text.setContentDescription(titleCondensed);
+            } else {
+                text.setContentDescription(view.getResources().getString(mItemState.title));
+            }
+        } else if (key == AppMenuItemProperties.ICON) {
+            ImageView image = view.findViewById(R.id.menu_item_icon);
 
-        Drawable icon = item.getIcon();
-        holder.image.setImageDrawable(icon);
-        holder.image.setVisibility(icon == null ? View.GONE : View.VISIBLE);
+            if (mItemState == null) {
+                Drawable icon = model.get(AppMenuItemProperties.ICON);
+                image.setImageDrawable(icon);
+                image.setVisibility(View.VISIBLE);
+                return;
+            }
 
-        holder.text.setText(itemState.title);
-        holder.text.setContentDescription(resources.getString(itemState.title));
-        holder.text.setTextColor(ApiCompatibilityUtils.getColor(resources, itemState.titleColorId));
-
-        boolean isEnabled = item.isEnabled();
-        holder.text.setEnabled(isEnabled);
-
-        if (!TextUtils.isEmpty(itemState.summary)) {
-            holder.summary.setText(itemState.summary);
-            holder.summary.setVisibility(View.VISIBLE);
-        } else {
-            holder.summary.setText("");
-            holder.summary.setVisibility(View.GONE);
+            image.setImageResource(mItemState.icon);
+            if (mItemState.iconTintId != 0) {
+                DrawableCompat.setTint(image.getDrawable(),
+                        ApiCompatibilityUtils.getColor(view.getResources(), mItemState.iconTintId));
+            }
+        } else if (key == AppMenuItemProperties.ENABLED) {
+            view.findViewById(R.id.menu_item_text)
+                    .setEnabled(model.get(AppMenuItemProperties.ENABLED));
+            if (mItemState != null) view.setEnabled(mItemState.enabled);
+        } else if (key == AppMenuItemProperties.CLICK_HANDLER) {
+            view.setOnClickListener(
+                    v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));
         }
-
-        holder.image.setImageResource(itemState.icon);
-        if (itemState.iconTintId != 0) {
-            DrawableCompat.setTint(holder.image.getDrawable(),
-                    ApiCompatibilityUtils.getColor(resources, itemState.iconTintId));
-        }
-        convertView.setEnabled(itemState.enabled);
-        convertView.setOnClickListener(v -> appMenuClickHandler.onItemClick(item));
-
-        return convertView;
     }
 
     @Override
     public boolean supportsEnterAnimation(int id) {
         return true;
-    }
-
-    private static class UpdateMenuItemViewHolder {
-        public TextView text;
-        public ImageView image;
-        public TextView summary;
     }
 
     @Override

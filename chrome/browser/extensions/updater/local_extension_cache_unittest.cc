@@ -11,12 +11,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -39,6 +38,10 @@ namespace extensions {
 class LocalExtensionCacheTest : public testing::Test {
  public:
   LocalExtensionCacheTest() = default;
+
+  LocalExtensionCacheTest(const LocalExtensionCacheTest&) = delete;
+  LocalExtensionCacheTest& operator=(const LocalExtensionCacheTest&) = delete;
+
   ~LocalExtensionCacheTest() override = default;
 
   base::FilePath CreateCacheDir() {
@@ -112,8 +115,6 @@ class LocalExtensionCacheTest : public testing::Test {
 
   base::ScopedTempDir cache_dir_;
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalExtensionCacheTest);
 };
 
 static void SimpleCallback(bool* ptr) {
@@ -124,7 +125,7 @@ TEST_F(LocalExtensionCacheTest, Basic) {
   base::FilePath cache_dir(CreateCacheDir());
 
   LocalExtensionCache cache(
-      cache_dir, 1000, base::TimeDelta::FromDays(30),
+      cache_dir, 1000, base::Days(30),
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
   cache.SetCacheStatusPollingDelayForTests(base::TimeDelta());
 
@@ -133,17 +134,13 @@ TEST_F(LocalExtensionCacheTest, Basic) {
 
   base::FilePath file10, file01, file20, file30;
   CreateExtensionFile(cache_dir, kTestExtensionId1, "1.0", 100,
-                      base::Time::Now() - base::TimeDelta::FromDays(1),
-                      &file10);
+                      base::Time::Now() - base::Days(1), &file10);
   CreateExtensionFile(cache_dir, kTestExtensionId1, "0.1", 100,
-                      base::Time::Now() - base::TimeDelta::FromDays(10),
-                      &file01);
+                      base::Time::Now() - base::Days(10), &file01);
   CreateExtensionFile(cache_dir, kTestExtensionId2, "2.0", 100,
-                      base::Time::Now() - base::TimeDelta::FromDays(40),
-                      &file20);
+                      base::Time::Now() - base::Days(40), &file20);
   CreateExtensionFile(cache_dir, kTestExtensionId3, "3.0", 900,
-                      base::Time::Now() - base::TimeDelta::FromDays(41),
-                      &file30);
+                      base::Time::Now() - base::Days(41), &file30);
 
   content::RunAllTasksUntilIdle();
   ASSERT_TRUE(initialized);
@@ -172,7 +169,7 @@ TEST_F(LocalExtensionCacheTest, KeepHashed) {
   base::FilePath cache_dir(CreateCacheDir());
 
   LocalExtensionCache cache(
-      cache_dir, 1000, base::TimeDelta::FromDays(30),
+      cache_dir, 1000, base::Days(30),
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
   cache.SetCacheStatusPollingDelayForTests(base::TimeDelta());
 
@@ -180,7 +177,7 @@ TEST_F(LocalExtensionCacheTest, KeepHashed) {
   cache.Init(true, base::BindOnce(&SimpleCallback, &initialized));
 
   // Add three identical extensions with different hash sums.
-  const base::Time time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  const base::Time time = base::Time::Now() - base::Days(1);
   base::FilePath file, file1, file2;
   CreateExtensionFile(cache_dir, kTestExtensionId1, "1.0", 100, time, &file);
   const std::string hash1 = CreateSignedExtensionFile(
@@ -209,7 +206,7 @@ TEST_F(LocalExtensionCacheTest, KeepLatest) {
   base::FilePath cache_dir(CreateCacheDir());
 
   LocalExtensionCache cache(
-      cache_dir, 1000, base::TimeDelta::FromDays(30),
+      cache_dir, 1000, base::Days(30),
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
   cache.SetCacheStatusPollingDelayForTests(base::TimeDelta());
 
@@ -217,7 +214,7 @@ TEST_F(LocalExtensionCacheTest, KeepLatest) {
   cache.Init(true, base::BindOnce(&SimpleCallback, &initialized));
 
   // All extension files are hashed, but have different versions.
-  const base::Time time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  const base::Time time = base::Time::Now() - base::Days(1);
   base::FilePath file1, file21, file22;
   const std::string hash1 = CreateSignedExtensionFile(
       cache_dir, kTestExtensionId1, "1.0", 100, time, &file1);
@@ -245,7 +242,7 @@ TEST_F(LocalExtensionCacheTest, Complex) {
   base::FilePath cache_dir(CreateCacheDir());
 
   LocalExtensionCache cache(
-      cache_dir, 1000, base::TimeDelta::FromDays(30),
+      cache_dir, 1000, base::Days(30),
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
   cache.SetCacheStatusPollingDelayForTests(base::TimeDelta());
 
@@ -253,7 +250,7 @@ TEST_F(LocalExtensionCacheTest, Complex) {
   cache.Init(true, base::BindOnce(&SimpleCallback, &initialized));
 
   // Like in KeepHashed test, but with two different versions.
-  const base::Time time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  const base::Time time = base::Time::Now() - base::Days(1);
   base::FilePath file1, file11, file12, file2, file21, file22;
   CreateExtensionFile(cache_dir, kTestExtensionId1, "1.0", 100, time, &file1);
   const std::string hash11 = CreateSignedExtensionFile(
@@ -307,7 +304,7 @@ TEST_F(LocalExtensionCacheTest, PutExtensionCases) {
   base::FilePath cache_dir(CreateCacheDir());
 
   LocalExtensionCache cache(
-      cache_dir, 1000, base::TimeDelta::FromDays(30),
+      cache_dir, 1000, base::Days(30),
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
   cache.SetCacheStatusPollingDelayForTests(base::TimeDelta());
 
@@ -315,7 +312,7 @@ TEST_F(LocalExtensionCacheTest, PutExtensionCases) {
   cache.Init(true, base::BindOnce(&SimpleCallback, &initialized));
 
   // Initialize cache with several different files
-  const base::Time time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  const base::Time time = base::Time::Now() - base::Days(1);
   base::FilePath file11, file12, file2, file3;
   const std::string hash11 = CreateSignedExtensionFile(
       cache_dir, kTestExtensionId1, "1.0", 101, time, &file11);

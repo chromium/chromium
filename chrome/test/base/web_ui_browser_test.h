@@ -125,12 +125,6 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
   // handler mocking.
   virtual void BrowsePreload(const GURL& browse_to);
 
-  // Called by javascript-generated test bodies to browse to a page and preload
-  // the javascript for the given |preload_test_fixture| and
-  // |preload_test_name|. chrome.send will be overridden to allow javascript
-  // handler mocking.
-  void BrowsePrintPreload(const GURL& browse_to);
-
  protected:
   // URL to dummy WebUI page for testing framework.
   static const std::string kDummyURL;

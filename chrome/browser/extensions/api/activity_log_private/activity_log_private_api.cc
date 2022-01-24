@@ -22,9 +22,6 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/common/features/feature.h"
-#include "extensions/common/features/feature_provider.h"
-#include "extensions/common/hashed_extension_id.h"
 
 namespace extensions {
 
@@ -74,14 +71,6 @@ void ActivityLogAPI::Shutdown() {
   activity_log_->RemoveObserver(this);
 }
 
-// static
-bool ActivityLogAPI::IsExtensionAllowlisted(const std::string& extension_id) {
-  // TODO(devlin): Pass in a HashedExtensionId to avoid this conversion.
-  return FeatureProvider::GetPermissionFeatures()
-      ->GetFeature("activityLogPrivate")
-      ->IsIdInAllowlist(HashedExtensionId(extension_id));
-}
-
 void ActivityLogAPI::OnListenerAdded(const EventListenerInfo& details) {
   if (activity_log_->has_listeners())
     return;
@@ -112,7 +101,7 @@ void ActivityLogAPI::OnExtensionActivity(scoped_refptr<Action> activity) {
 ExtensionFunction::ResponseAction
 ActivityLogPrivateGetExtensionActivitiesFunction::Run() {
   std::unique_ptr<activity_log_private::GetExtensionActivities::Params> params(
-      activity_log_private::GetExtensionActivities::Params::Create(*args_));
+      activity_log_private::GetExtensionActivities::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Get the arguments in the right format.
@@ -180,7 +169,7 @@ void ActivityLogPrivateGetExtensionActivitiesFunction::OnLookupCompleted(
 ExtensionFunction::ResponseAction
 ActivityLogPrivateDeleteActivitiesFunction::Run() {
   std::unique_ptr<activity_log_private::DeleteActivities::Params> params(
-      activity_log_private::DeleteActivities::Params::Create(*args_));
+      activity_log_private::DeleteActivities::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Put the arguments in the right format.
@@ -201,7 +190,7 @@ ExtensionFunction::ResponseAction
 ActivityLogPrivateDeleteActivitiesByExtensionFunction::Run() {
   std::unique_ptr<activity_log_private::DeleteActivitiesByExtension::Params>
       params(activity_log_private::DeleteActivitiesByExtension::Params::Create(
-          *args_));
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   ActivityLog* activity_log = ActivityLog::GetInstance(browser_context());
@@ -220,7 +209,7 @@ ActivityLogPrivateDeleteDatabaseFunction::Run() {
 
 ExtensionFunction::ResponseAction ActivityLogPrivateDeleteUrlsFunction::Run() {
   std::unique_ptr<activity_log_private::DeleteUrls::Params> params(
-      activity_log_private::DeleteUrls::Params::Create(*args_));
+      activity_log_private::DeleteUrls::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Put the arguments in the right format.

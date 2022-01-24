@@ -8,38 +8,11 @@ static_library("content") {
     "content_utils.h",
   ]
 
-  public_deps = [
-    "//components/security_interstitials/core",
-    "//components/security_state/core",
-  ]
+  public_deps = [ "//components/security_state/core" ]
 
   deps = [
-    "//base",
     "//components/dom_distiller/core",
-    "//components/strings",
     "//content/public/browser",
     "//content/public/common",
-    "//net",
-    "//third_party/blink/public:blink_headers",
-    "//ui/base",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "content_utils_unittest.cc" ]
-
-  deps = [
-    ":content",
-    "//base",
-    "//base/test:test_support",
-    "//components/security_state/core",
-    "//components/strings",
-    "//content/public/browser",
-    "//content/public/common",
-    "//content/test:test_support",
-    "//net",
-    "//net:test_support",
-    "//testing/gtest",
   ]
 }

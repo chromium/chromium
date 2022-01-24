@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_MANAGEMENT_TRANSITION_SCREEN_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
@@ -17,6 +16,11 @@ class ManagementTransitionScreen : public BaseScreen {
  public:
   ManagementTransitionScreen(ManagementTransitionScreenView* view,
                              const base::RepeatingClosure& exit_callback);
+
+  ManagementTransitionScreen(const ManagementTransitionScreen&) = delete;
+  ManagementTransitionScreen& operator=(const ManagementTransitionScreen&) =
+      delete;
+
   ~ManagementTransitionScreen() override;
 
   // Called when view is destroyed so there's no dead reference to it.
@@ -35,8 +39,6 @@ class ManagementTransitionScreen : public BaseScreen {
  private:
   ManagementTransitionScreenView* view_;
   base::RepeatingClosure exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementTransitionScreen);
 };
 
 }  // namespace ash

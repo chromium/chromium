@@ -45,7 +45,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -2863,91 +2862,6 @@ public class AwSettingsTest {
             AwActivityTestRule.pollInstrumentationThread(
                     () -> mWebServer.getRequestCount(path) > initialRequestCount);
             return mWebServer.getRequestCount(path);
-        }
-    }
-
-    @RequiresRestart("Enabling appcache is global and cannot be reversed.")
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Preferences", "AppCache"})
-    public void testAppCache() throws Throwable {
-        final TestAwContentsClient contentClient = new TestAwContentsClient();
-        final AwTestContainerView testContainer =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
-        final AwContents awContents = testContainer.getAwContents();
-        final AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
-        settings.setJavaScriptEnabled(true);
-        // Note that the cache isn't actually enabled until the call to setAppCachePath.
-        settings.setAppCacheEnabled(true);
-
-        TestWebServer webServer = TestWebServer.start();
-        try {
-            ManifestTestHelper helper = new ManifestTestHelper(
-                    webServer, "testAppCache.html", "appcache.manifest");
-            mActivityTestRule.loadUrlSync(
-                    awContents, contentClient.getOnPageFinishedHelper(), helper.getHtmlUrl());
-            helper.waitUntilHtmlIsRequested(0);
-            // Unfortunately, there is no other good way of verifying that AppCache is
-            // disabled, other than checking that it didn't try to fetch the manifest.
-            Thread.sleep(1000);
-            Assert.assertEquals(0, webServer.getRequestCount(helper.getManifestPath()));
-            settings.setAppCachePath("whatever");  // Enables AppCache.
-            mActivityTestRule.loadUrlSync(
-                    awContents, contentClient.getOnPageFinishedHelper(), helper.getHtmlUrl());
-            helper.waitUntilManifestIsRequested(0);
-        } finally {
-            webServer.shutdown();
-        }
-    }
-
-    @RequiresRestart("Enabling appcache is global and cannot be reversed.")
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Preferences", "AppCache"})
-    public void testAppCacheWithTwoViews() throws Throwable {
-        // We don't use the test helper here, because making sure that AppCache
-        // is disabled takes a lot of time, so running through the usual drill
-        // will take about 20 seconds.
-        ViewPair views = createViews();
-
-        AwSettings settings0 = mActivityTestRule.getAwSettingsOnUiThread(views.getContents0());
-        settings0.setJavaScriptEnabled(true);
-        settings0.setAppCachePath("whatever");
-        settings0.setAppCacheEnabled(true);
-        AwSettings settings1 = mActivityTestRule.getAwSettingsOnUiThread(views.getContents1());
-        settings1.setJavaScriptEnabled(true);
-        // AppCachePath setting is global, no need to set it for the second view.
-        settings1.setAppCacheEnabled(true);
-
-        TestWebServer webServer = TestWebServer.start();
-        try {
-            ManifestTestHelper helper0 = new ManifestTestHelper(
-                    webServer, "testAppCache_0.html", "appcache.manifest_0");
-            mActivityTestRule.loadUrlSync(views.getContents0(),
-                    views.getClient0().getOnPageFinishedHelper(), helper0.getHtmlUrl());
-            int manifestRequests0 = helper0.waitUntilManifestIsRequested(0);
-            ManifestTestHelper helper1 = new ManifestTestHelper(
-                    webServer, "testAppCache_1.html", "appcache.manifest_1");
-            mActivityTestRule.loadUrlSync(views.getContents1(),
-                    views.getClient1().getOnPageFinishedHelper(), helper1.getHtmlUrl());
-            helper1.waitUntilManifestIsRequested(0);
-            settings1.setAppCacheEnabled(false);
-            mActivityTestRule.loadUrlSync(views.getContents0(),
-                    views.getClient0().getOnPageFinishedHelper(), helper0.getHtmlUrl());
-            helper0.waitUntilManifestIsRequested(manifestRequests0);
-            final int prevManifestRequestCount =
-                    webServer.getRequestCount(helper1.getManifestPath());
-            int htmlRequests1 = webServer.getRequestCount(helper1.getHtmlPath());
-            mActivityTestRule.loadUrlSync(views.getContents1(),
-                    views.getClient1().getOnPageFinishedHelper(), helper1.getHtmlUrl());
-            helper1.waitUntilHtmlIsRequested(htmlRequests1);
-            // Unfortunately, there is no other good way of verifying that AppCache is
-            // disabled, other than checking that it didn't try to fetch the manifest.
-            Thread.sleep(1000);
-            Assert.assertEquals(
-                    prevManifestRequestCount, webServer.getRequestCount(helper1.getManifestPath()));
-        } finally {
-            webServer.shutdown();
         }
     }
 

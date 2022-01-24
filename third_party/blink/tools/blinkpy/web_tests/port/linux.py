@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import logging
+import os
 import tempfile
 
 from blinkpy.common.exit_codes import SYS_DEPS_EXIT_STATUS
@@ -140,8 +141,13 @@ class LinuxPort(base.Port):
         unnecessary.
         """
         self._original_home = self.host.environ.get('HOME')
+        self._original_cipd_cache_dir = self.host.environ.get('CIPD_CACHE_DIR')
         dummy_home = str(self._filesystem.mkdtemp())
         self.host.environ['HOME'] = dummy_home
+        # When using a dummy home directory, CIPD cache directory needs to be
+        # specified explicitly to make vpython work.
+        self.host.environ['CIPD_CACHE_DIR'] = os.path.join(
+            dummy_home, '.vpython_cipd_cache')
         self._setup_files_in_dummy_home_dir(dummy_home)
 
     def _setup_files_in_dummy_home_dir(self, dummy_home):
@@ -167,6 +173,10 @@ class LinuxPort(base.Port):
         assert dummy_home != self._original_home
         self._filesystem.rmtree(dummy_home)
         self.host.environ['HOME'] = self._original_home
+        if self._original_cipd_cache_dir:
+            self.host.environ['CIPD_CACHE_DIR'] = self._original_cipd_cache_dir
+        else:
+            del self.host.environ['CIPD_CACHE_DIR']
 
     def _start_xvfb(self):
         display = self._find_display()

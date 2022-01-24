@@ -15,6 +15,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
 #include "media/midi/message_util.h"
 #include "media/midi/midi_message_queue.h"
 #include "media/midi/midi_service.h"
@@ -169,15 +170,25 @@ void MidiHost::Detach() {
 
 void MidiHost::StartSession(
     mojo::PendingReceiver<midi::mojom::MidiSession> session_receiver,
-    mojo::PendingRemote<midi::mojom::MidiSessionClient> client) {
+    mojo::PendingRemote<midi::mojom::MidiSessionClient> pending_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  // When the feature is disabled return early and use a temporary remote to
+  // send a "not supported" response before closing the pipes.
+  if (!base::FeatureList::IsEnabled(features::kWebMidi)) {
+    mojo::Remote<midi::mojom::MidiSessionClient> client(
+        std::move(pending_client));
+    client->SessionStarted(Result::NOT_SUPPORTED);
+    return;
+  }
+
   DCHECK(!pending_session_receiver_);
   // Checks to see if |midi_session_| isn't already bound to another
   // MidiSessionRequest.
   pending_session_receiver_ = std::move(session_receiver);
 
   DCHECK(!midi_client_);
-  midi_client_.Bind(std::move(client));
+  midi_client_.Bind(std::move(pending_client));
   midi_client_.set_disconnect_handler(
       base::BindOnce(&MidiHost::EndSession, base::Unretained(this)));
 

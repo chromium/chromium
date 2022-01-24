@@ -38,7 +38,7 @@ MediaPerceptionPrivateSetStateFunction::Run() {
   std::unique_ptr<extensions::api::media_perception_private::SetState::Params>
       params =
           extensions::api::media_perception_private::SetState::Params::Create(
-              *args_);
+              args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
   if (params->state.status !=
           extensions::api::media_perception_private::STATUS_RUNNING &&
@@ -130,7 +130,7 @@ MediaPerceptionPrivateSetAnalyticsComponentFunction::Run() {
   std::unique_ptr<
       extensions::api::media_perception_private::SetAnalyticsComponent::Params>
       params = extensions::api::media_perception_private::
-          SetAnalyticsComponent::Params::Create(*args_);
+          SetAnalyticsComponent::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   MediaPerceptionAPIManager* manager =
@@ -162,7 +162,7 @@ MediaPerceptionPrivateSetComponentProcessStateFunction::Run() {
   std::unique_ptr<extensions::api::media_perception_private::
                       SetComponentProcessState::Params>
       params = extensions::api::media_perception_private::
-          SetComponentProcessState::Params::Create(*args_);
+          SetComponentProcessState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
   if (params->process_state.status !=
           extensions::api::media_perception_private::PROCESS_STATUS_STARTED &&

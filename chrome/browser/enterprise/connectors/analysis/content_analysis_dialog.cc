@@ -22,13 +22,14 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -40,13 +41,18 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/layout_provider.h"
+
+// This should be after all other #includes.
+#if defined(_WINDOWS_)  // Detect whether windows.h was included.
+#include "base/win/windows_h_disallowed.h"
+#endif  // defined(_WINDOWS_)
 
 namespace enterprise_connectors {
 
 namespace {
 
-constexpr base::TimeDelta kResizeAnimationDuration =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kResizeAnimationDuration = base::Milliseconds(100);
 
 constexpr int kSideImageSize = 24;
 constexpr int kLineHeight = 20;
@@ -58,8 +64,8 @@ constexpr int kSideIconBetweenChildSpacing = 16;
 
 // These time values are non-const in order to be overridden in test so they
 // complete faster.
-base::TimeDelta minimum_pending_dialog_time_ = base::TimeDelta::FromSeconds(2);
-base::TimeDelta success_dialog_timeout_ = base::TimeDelta::FromSeconds(1);
+base::TimeDelta minimum_pending_dialog_time_ = base::Seconds(2);
+base::TimeDelta success_dialog_timeout_ = base::Seconds(1);
 
 // A simple background class to show a colored circle behind the side icon once
 // the scanning is done.
@@ -80,8 +86,7 @@ class CircleBackground : public views::Background {
 };
 
 SkColor GetBackgroundColor(const views::View* view) {
-  return view->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground);
+  return view->GetColorProvider()->GetColor(ui::kColorDialogBackground);
 }
 
 ContentAnalysisDialog::TestObserver* observer_for_testing = nullptr;
@@ -176,30 +181,6 @@ class DeepScanningSideIconSpinnerView : public DeepScanningBaseView,
 BEGIN_METADATA(DeepScanningSideIconSpinnerView, views::Throbber)
 END_METADATA
 
-class DeepScanningMessageView : public DeepScanningBaseView,
-                                public views::Label {
- public:
-  METADATA_HEADER(DeepScanningMessageView);
-
-  using DeepScanningBaseView::DeepScanningBaseView;
-
-  void Update() {
-    if (!GetWidget())
-      return;
-    if (dialog()->is_failure() || dialog()->is_warning())
-      SetEnabledColor(dialog()->GetSideImageBackgroundColor());
-  }
-
- protected:
-  void OnThemeChanged() override {
-    views::Label::OnThemeChanged();
-    Update();
-  }
-};
-
-BEGIN_METADATA(DeepScanningMessageView, views::Label)
-END_METADATA
-
 // static
 base::TimeDelta ContentAnalysisDialog::GetMinimumPendingDialogTime() {
   return minimum_pending_dialog_time_;
@@ -224,6 +205,8 @@ ContentAnalysisDialog::ContentAnalysisDialog(
       files_count_(files_count) {
   DCHECK(delegate_);
   SetOwnedByWidget(true);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   if (observer_for_testing)
     observer_for_testing->ConstructorCalled(this, base::TimeTicks::Now());
@@ -332,7 +315,7 @@ views::View* ContentAnalysisDialog::GetContentsView() {
     layout->AddView(CreateSideIcon());
 
     // Add the message.
-    auto label = std::make_unique<DeepScanningMessageView>(this);
+    auto label = std::make_unique<views::Label>();
     label->SetText(GetDialogMessage());
     label->SetLineHeight(kLineHeight);
     label->SetMultiLine(true);
@@ -431,7 +414,6 @@ void ContentAnalysisDialog::UpdateViews() {
   DCHECK(contents_view_);
 
   // Update the style of the dialog to reflect the new state.
-  message_->Update();
   image_->Update();
   side_icon_image_->Update();
   // There isn't always a spinner, for instance when the dialog is started in a
@@ -644,26 +626,43 @@ SkColor ContentAnalysisDialog::GetSideImageBackgroundColor() const {
   DCHECK(is_result());
   DCHECK(contents_view_);
 
-  ui::NativeTheme::ColorId color_id =
-      is_success() ? ui::NativeTheme::kColorId_AlertSeverityLow
-                   : ui::NativeTheme::kColorId_AlertSeverityHigh;
-  return contents_view_->GetNativeTheme()->GetSystemColor(color_id);
+  switch (dialog_state_) {
+    case State::PENDING:
+      NOTREACHED();
+      return gfx::kGoogleBlue500;
+    case State::SUCCESS:
+      return gfx::kGoogleBlue500;
+    case State::FAILURE:
+      return gfx::kGoogleRed500;
+    case State::WARNING:
+      return gfx::kGoogleYellow500;
+  }
 }
 
-int ContentAnalysisDialog::GetPasteImageId(bool use_dark) const {
-  if (is_pending())
-    return use_dark ? IDR_PASTE_SCANNING_DARK : IDR_PASTE_SCANNING;
-  if (is_success())
-    return use_dark ? IDR_PASTE_SUCCESS_DARK : IDR_PASTE_SUCCESS;
-  return use_dark ? IDR_PASTE_VIOLATION_DARK : IDR_PASTE_VIOLATION;
-}
-
-int ContentAnalysisDialog::GetUploadImageId(bool use_dark) const {
-  if (is_pending())
-    return use_dark ? IDR_UPLOAD_SCANNING_DARK : IDR_UPLOAD_SCANNING;
-  if (is_success())
-    return use_dark ? IDR_UPLOAD_SUCCESS_DARK : IDR_UPLOAD_SUCCESS;
-  return use_dark ? IDR_UPLOAD_VIOLATION_DARK : IDR_UPLOAD_VIOLATION;
+int ContentAnalysisDialog::GetTopImageId(bool use_dark) const {
+  if (use_dark) {
+    switch (dialog_state_) {
+      case State::PENDING:
+        return IDR_UPLOAD_SCANNING_DARK;
+      case State::SUCCESS:
+        return IDR_UPLOAD_SUCCESS_DARK;
+      case State::FAILURE:
+        return IDR_UPLOAD_VIOLATION_DARK;
+      case State::WARNING:
+        return IDR_UPLOAD_WARNING_DARK;
+    }
+  } else {
+    switch (dialog_state_) {
+      case State::PENDING:
+        return IDR_UPLOAD_SCANNING;
+      case State::SUCCESS:
+        return IDR_UPLOAD_SUCCESS;
+      case State::FAILURE:
+        return IDR_UPLOAD_VIOLATION;
+      case State::WARNING:
+        return IDR_UPLOAD_WARNING;
+    }
+  }
 }
 
 std::u16string ContentAnalysisDialog::GetPendingMessage() const {
@@ -721,15 +720,8 @@ std::u16string ContentAnalysisDialog::GetCustomMessage() const {
 
 const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
   const bool use_dark = color_utils::IsDark(GetBackgroundColor(contents_view_));
-  const bool treat_as_text_paste =
-      access_point_ == safe_browsing::DeepScanAccessPoint::PASTE ||
-      (access_point_ == safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP &&
-       files_count_ == 0);
-
-  int image_id = treat_as_text_paste ? GetPasteImageId(use_dark)
-                                     : GetUploadImageId(use_dark);
-
-  return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(image_id);
+  return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      GetTopImageId(use_dark));
 }
 
 SkColor ContentAnalysisDialog::GetSideImageLogoColor() const {
@@ -738,8 +730,7 @@ SkColor ContentAnalysisDialog::GetSideImageLogoColor() const {
   switch (dialog_state_) {
     case State::PENDING:
       // Match the spinner in the pending state.
-      return contents_view_->GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_ThrobberSpinningColor);
+      return gfx::kGoogleBlue500;
     case State::SUCCESS:
     case State::FAILURE:
     case State::WARNING:

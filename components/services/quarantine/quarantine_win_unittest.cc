@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -83,13 +82,15 @@ class ScopedZoneForSite {
   ScopedZoneForSite(const std::wstring& domain,
                     const std::wstring& protocol,
                     ZoneIdentifierType zone_identifier_type);
+
+  ScopedZoneForSite(const ScopedZoneForSite&) = delete;
+  ScopedZoneForSite& operator=(const ScopedZoneForSite&) = delete;
+
   ~ScopedZoneForSite();
 
  private:
   std::wstring domain_;
   std::wstring protocol_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedZoneForSite);
 };
 
 ScopedZoneForSite::ScopedZoneForSite(const std::wstring& domain,
@@ -136,6 +137,10 @@ void CheckQuarantineResult(QuarantineFileResult result,
 class QuarantineWinTest : public ::testing::Test {
  public:
   QuarantineWinTest() = default;
+
+  QuarantineWinTest(const QuarantineWinTest&) = delete;
+  QuarantineWinTest& operator=(const QuarantineWinTest&) = delete;
+
   ~QuarantineWinTest() override = default;
 
   void SetUp() override {
@@ -177,8 +182,6 @@ class QuarantineWinTest : public ::testing::Test {
   std::unique_ptr<ScopedZoneForSite> scoped_zone_for_trusted_site_;
   std::unique_ptr<ScopedZoneForSite> scoped_zone_for_internet_site_;
   std::unique_ptr<ScopedZoneForSite> scoped_zone_for_restricted_site_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuarantineWinTest);
 };
 
 // If the file is missing, the QuarantineFile() call should return FILE_MISSING.

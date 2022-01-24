@@ -620,11 +620,11 @@ bool VTVideoDecodeAccelerator::Initialize(const Config& config,
     case H264PROFILE_EXTENDED:
     case H264PROFILE_MAIN:
     case H264PROFILE_HIGH:
-      codec_ = kCodecH264;
+      codec_ = VideoCodec::kH264;
       break;
     case VP9PROFILE_PROFILE0:
     case VP9PROFILE_PROFILE2:
-      codec_ = kCodecVP9;
+      codec_ = VideoCodec::kVP9;
       break;
     default:
       NOTREACHED() << "Unsupported profile.";
@@ -656,10 +656,10 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
 
   base::ScopedCFTypeRef<CMFormatDescriptionRef> format;
   switch (codec_) {
-    case kCodecH264:
+    case VideoCodec::kH264:
       format = CreateVideoFormatH264(active_sps_, active_spsext_, active_pps_);
       break;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       format = CreateVideoFormatVP9(
           cc_detector_->GetColorSpace(config_.container_color_space),
           config_.profile, config_.hdr_metadata,
@@ -708,7 +708,7 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
   }
   UMA_HISTOGRAM_BOOLEAN("Media.VTVDA.HardwareAccelerated", using_hardware);
 
-  if (codec_ == kCodecVP9 && !vp9_bsf_)
+  if (codec_ == VideoCodec::kVP9 && !vp9_bsf_)
     vp9_bsf_ = std::make_unique<VP9SuperFrameBitstreamFilter>();
 
   // Record that the configuration change is complete.
@@ -1050,8 +1050,8 @@ void VTVideoDecodeAccelerator::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
   // Copy NALU data into the CMBlockBuffer, inserting length headers.
   size_t offset = 0;
   for (size_t i = 0; i < nalus.size(); i++) {
-    H264NALU& nalu = nalus[i];
-    uint32_t header = base::HostToNet32(static_cast<uint32_t>(nalu.size));
+    H264NALU& nalu_ref = nalus[i];
+    uint32_t header = base::HostToNet32(static_cast<uint32_t>(nalu_ref.size));
     status =
         CMBlockBufferReplaceDataBytes(&header, data, offset, kNALUHeaderLength);
     if (status) {
@@ -1060,13 +1060,14 @@ void VTVideoDecodeAccelerator::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
       return;
     }
     offset += kNALUHeaderLength;
-    status = CMBlockBufferReplaceDataBytes(nalu.data, data, offset, nalu.size);
+    status = CMBlockBufferReplaceDataBytes(nalu_ref.data, data, offset,
+                                           nalu_ref.size);
     if (status) {
       NOTIFY_STATUS("CMBlockBufferReplaceDataBytes()", status,
                     SFT_PLATFORM_ERROR);
       return;
     }
-    offset += nalu.size;
+    offset += nalu_ref.size;
   }
 
   // Package the data in a CMSampleBuffer.
@@ -1228,7 +1229,7 @@ void VTVideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
   Frame* frame = new Frame(bitstream_id);
   pending_frames_[bitstream_id] = base::WrapUnique(frame);
 
-  if (codec_ == kCodecVP9) {
+  if (codec_ == VideoCodec::kVP9) {
     decoder_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VTVideoDecodeAccelerator::DecodeTaskVp9,
@@ -1307,7 +1308,7 @@ void VTVideoDecodeAccelerator::ProcessWorkQueues() {
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   switch (state_) {
     case STATE_DECODING:
-      if (codec_ != kCodecH264) {
+      if (codec_ != VideoCodec::kH264) {
         while (state_ == STATE_DECODING) {
           if (!ProcessOutputQueue() && !ProcessTaskQueue())
             break;
@@ -1350,7 +1351,7 @@ bool VTVideoDecodeAccelerator::ProcessTaskQueue() {
   Task& task = task_queue_.front();
   switch (task.type) {
     case TASK_FRAME: {
-      if (codec_ == kCodecVP9) {
+      if (codec_ == VideoCodec::kVP9) {
         // Once we've reached our maximum output queue size, defer end of
         // bitstream buffer signals to avoid piling up too many frames.
         if (output_queue_.size() >= limits::kMaxVideoFrames)
@@ -1382,8 +1383,8 @@ bool VTVideoDecodeAccelerator::ProcessTaskQueue() {
 
     case TASK_FLUSH:
       DCHECK_EQ(task.type, pending_flush_tasks_.front());
-      if ((codec_ == kCodecH264 && reorder_queue_.size() == 0) ||
-          (codec_ == kCodecVP9 && output_queue_.empty())) {
+      if ((codec_ == VideoCodec::kH264 && reorder_queue_.size() == 0) ||
+          (codec_ == VideoCodec::kVP9 && output_queue_.empty())) {
         DVLOG(1) << "Flush complete";
         pending_flush_tasks_.pop();
         client_->NotifyFlushDone();
@@ -1394,8 +1395,8 @@ bool VTVideoDecodeAccelerator::ProcessTaskQueue() {
 
     case TASK_RESET:
       DCHECK_EQ(task.type, pending_flush_tasks_.front());
-      if ((codec_ == kCodecH264 && reorder_queue_.size() == 0) ||
-          (codec_ == kCodecVP9 && output_queue_.empty())) {
+      if ((codec_ == VideoCodec::kH264 && reorder_queue_.size() == 0) ||
+          (codec_ == VideoCodec::kVP9 && output_queue_.empty())) {
         DVLOG(1) << "Reset complete";
         waiting_for_idr_ = true;
         pending_flush_tasks_.pop();
@@ -1484,9 +1485,17 @@ bool VTVideoDecodeAccelerator::ProcessFrame(const Frame& frame) {
 
     // Request new pictures.
     picture_size_ = frame.image_size;
+
     // TODO(https://crbug.com/1210994): Remove XRGB support, and expose only
     // PIXEL_FORMAT_NV12 and PIXEL_FORMAT_YUV420P10.
     picture_format_ = PIXEL_FORMAT_XRGB;
+    if (base::FeatureList::IsEnabled(kMultiPlaneVideoToolboxSharedImages)) {
+      // TODO(https://crbug.com/1233228): The UV planes of P010 frames cannot
+      // be represented in the current gfx::BufferFormat.
+      if (config_.profile != VP9PROFILE_PROFILE2)
+        picture_format_ = PIXEL_FORMAT_NV12;
+    }
+
     DVLOG(3) << "ProvidePictureBuffers(" << kNumPictureBuffers
              << frame.image_size.ToString() << ")";
     client_->ProvidePictureBuffers(kNumPictureBuffers, picture_format_, 1,

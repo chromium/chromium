@@ -20,8 +20,8 @@ class AsyncWebStatePolicyDecider : public WebStatePolicyDecider {
   // WebStatePolicyDecider override:
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
-      base::OnceCallback<void(PolicyDecision)> callback) override;
+      WebStatePolicyDecider::ResponseInfo response_info,
+      WebStatePolicyDecider::PolicyDecisionCallback callback) override;
 
   // True if a call to ShouldAllowResponse() has been received but
   // InvokeCallback() has not yet been called.
@@ -31,7 +31,7 @@ class AsyncWebStatePolicyDecider : public WebStatePolicyDecider {
   void InvokeCallback(WebStatePolicyDecider::PolicyDecision decision);
 
  private:
-  base::OnceCallback<void(PolicyDecision)> callback_;
+  WebStatePolicyDecider::PolicyDecisionCallback callback_;
 };
 
 }  // namespace web

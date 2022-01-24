@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/browser_sync/browser_sync_client.h"
 
 class ChromeBrowserState;
@@ -20,7 +20,7 @@ class AutofillWebDataService;
 }
 
 namespace password_manager {
-class PasswordStore;
+class PasswordStoreInterface;
 }
 
 namespace browser_sync {
@@ -30,6 +30,10 @@ class ProfileSyncComponentsFactoryImpl;
 class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
  public:
   explicit IOSChromeSyncClient(ChromeBrowserState* browser_state);
+
+  IOSChromeSyncClient(const IOSChromeSyncClient&) = delete;
+  IOSChromeSyncClient& operator=(const IOSChromeSyncClient&) = delete;
+
   ~IOSChromeSyncClient() override;
 
   // BrowserSyncClient implementation.
@@ -45,7 +49,6 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   history::HistoryService* GetHistoryService() override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
-  base::RepeatingClosure GetPasswordStateChangedCallback() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;
   invalidation::InvalidationService* GetInvalidationService() override;
@@ -72,12 +75,10 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   // respective backend threads.
   scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service_;
   scoped_refptr<autofill::AutofillWebDataService> account_web_data_service_;
-  scoped_refptr<password_manager::PasswordStore> password_store_;
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store_;
 
   // The task runner for the |web_data_service_|, if any.
   scoped_refptr<base::SingleThreadTaskRunner> db_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeSyncClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_IOS_CHROME_SYNC_CLIENT_H__

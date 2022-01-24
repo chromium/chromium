@@ -36,18 +36,4 @@ public interface PaymentUiServiceTestInterface {
      * @return Whether the closing was successful.
      */
     boolean closeDialogForTest();
-
-    /**
-     * Confirms payment in minimal UI.
-     *
-     * @return Whether the payment was confirmed successfully.
-     */
-    boolean confirmMinimalUIForTest();
-
-    /**
-     * Dismisses the minimal UI.
-     *
-     * @return Whether the dismissal was successful.
-     */
-    boolean dismissMinimalUIForTest();
 }

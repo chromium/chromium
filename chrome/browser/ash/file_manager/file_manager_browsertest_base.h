@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/test/base/devtools_listener.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 
@@ -75,14 +75,6 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test requires a browser to be started.
     bool browser = false;
 
-    // Whether test requires zip/unzip support.
-    // TODO(crbug.com/912236) Remove once transition to new ZIP system is done.
-    bool zip = false;
-
-    // Whether test uses the new ZIP system.
-    // TODO(crbug.com/912236) Remove once transition to new ZIP system is done.
-    bool zip_no_nacl = false;
-
     // Whether test should enable drive dss pinning.
     bool drive_dss_pin = false;
 
@@ -115,7 +107,14 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test should run Files app UI as JS modules.
     bool enable_js_modules = true;
+
+    // Whether test should run with the new Banners framework feature.
+    bool enable_banners_framework = false;
   };
+
+  FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;
+  FileManagerBrowserTestBase& operator=(const FileManagerBrowserTestBase&) =
+      delete;
 
  protected:
   FileManagerBrowserTestBase();
@@ -187,13 +186,22 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   // File Manager app.
   content::WebContents* GetLastOpenWindowWebContents();
 
+  // Loads the test utils in the WebContents.
+  void LoadSwaTestUtils(content::WebContents*);
+
+  // Returns appId from its WebContents.
+  std::string GetSwaAppId(content::WebContents*);
+
   // Tries to dispatch a key event via aura::WindowTreeHost. Returns true, if
   // successful, false otherwise.
   bool PostKeyEvent(ui::KeyEvent* key_event);
 
-  // A list of pairs <id, WebContents*> for all launched SWA apps. The active
-  // app is always at the end of the vector.
-  std::vector<std::pair<std::string, content::WebContents*>> swa_list_;
+  // Returns all active web_contents.
+  std::vector<content::WebContents*> GetAllWebContents();
+
+  // Maps the app_id to WebContents* for all launched SWA apps. NOTE: if the
+  // window is closed in the JS the WebContents* will remain invalid here.
+  std::map<std::string, content::WebContents*> swa_web_contents_;
 
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   crostini::FakeCrostiniFeatures crostini_features_;
@@ -237,8 +245,6 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   base::FilePath devtools_code_coverage_dir_;
   DevToolsAgentMap devtools_agent_;
   uint32_t process_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FileManagerBrowserTestBase);
 };
 
 std::ostream& operator<<(std::ostream& out, GuestMode mode);

@@ -33,7 +33,7 @@ constexpr FontExpectation kExpectedTestFonts[] = {{u8"CambriaMath", 1},
                                                   {u8"NSimSun", 1},
                                                   {u8"calibri-bolditalic", 0}};
 
-constexpr base::TimeDelta kTestingTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kTestingTimeout = base::Seconds(10);
 
 class DWriteFontLookupTableBuilderTest : public testing::Test {
  public:

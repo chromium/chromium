@@ -7,7 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/token.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace content {
 
@@ -73,6 +76,14 @@ void ServiceLaunchedVideoCaptureDevice::MaybeSuspendDevice() {
 void ServiceLaunchedVideoCaptureDevice::ResumeDevice() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   subscription_->Resume();
+}
+
+void ServiceLaunchedVideoCaptureDevice::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK(sequence_checker_.CalledOnValidSequence());
+  // TODO(crbug.com/1247761): Implement if necessary.
+  std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
 }
 
 void ServiceLaunchedVideoCaptureDevice::RequestRefreshFrame() {

@@ -14,7 +14,7 @@
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {isVisible, waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 suite('InternetPage', function() {
@@ -132,6 +132,9 @@ suite('InternetPage', function() {
   }
 
   function init() {
+    loadTimeData.overrideValues({
+      bypassConnectivityCheck: false,
+    });
     internetPage = document.createElement('settings-internet-page');
     assertTrue(!!internetPage);
     mojoApi_.resetForTest();
@@ -157,7 +160,6 @@ suite('InternetPage', function() {
       internetAddWiFi: 'internetAddWiFi',
       internetDetailPageTitle: 'internetDetailPageTitle',
       internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
-      updatedCellularActivationUi: false,
     });
 
     mojoApi_ = new FakeNetworkConfig();
@@ -420,9 +422,6 @@ suite('InternetPage', function() {
       'Show pSIM flow cellular setup dialog if route params' +
           'contain showCellularSetup and showPsimFlow',
       async function() {
-        loadTimeData.overrideValues({
-          updatedCellularActivationUi: true,
-        });
         await init();
 
         let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
@@ -444,9 +443,6 @@ suite('InternetPage', function() {
           'contains showCellularSetup, does not contain showPsimFlow,' +
           'connected to a non-cellular network, and cellular enabled',
       async function() {
-        loadTimeData.overrideValues({
-          updatedCellularActivationUi: true,
-        });
         await init();
         eSimManagerRemote.addEuiccForTest(1);
 
@@ -476,9 +472,6 @@ suite('InternetPage', function() {
           'contain showCellularSetup, does not contain showPsimFlow,' +
           'cellular is enabled, but not connected to a non-cellular network',
       async function() {
-        loadTimeData.overrideValues({
-          updatedCellularActivationUi: true,
-        });
         await init();
         eSimManagerRemote.addEuiccForTest(1);
 
@@ -495,13 +488,36 @@ suite('InternetPage', function() {
       });
 
   test(
+      'Show eSIM flow cellular setup dialog if route params ' +
+          'contain showCellularSetup, does not contain showPsimFlow, ' +
+          'cellular is enabled, not connected to a non-cellular network ' +
+          'but cellular bypass esim installation connectivity flag is enabled',
+      async function() {
+        await init();
+        loadTimeData.overrideValues({
+          bypassConnectivityCheck: true,
+        });
+        eSimManagerRemote.addEuiccForTest(1);
+
+        let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        assertFalse(!!cellularSetupDialog);
+
+        await navigateToCellularSetupDialog(
+            /*showPSimFlow=*/ false, /*isCellularEnabled=*/ true);
+
+        cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        assertTrue(!!cellularSetupDialog);
+        const esimFlow =
+            cellularSetupDialog.shadowRoot.querySelector('cellular-setup')
+                .shadowRoot.querySelector('#esim-flow-ui');
+        assertTrue(!!esimFlow);
+      });
+
+  test(
       'Show mobile data not enabled toast if route params' +
           'contains showCellularSetup, does not contain showPsimFlow,' +
           'connected to a non-cellular network, but cellular not enabled',
       async function() {
-        loadTimeData.overrideValues({
-          updatedCellularActivationUi: true,
-        });
         await init();
         eSimManagerRemote.addEuiccForTest(1);
 
@@ -530,9 +546,6 @@ suite('InternetPage', function() {
           'connected to a non-cellular network, cellular enabled,' +
           'but profile limit is reached',
       async function() {
-        loadTimeData.overrideValues({
-          updatedCellularActivationUi: true,
-        });
         await init();
         eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 5);
 
@@ -557,9 +570,6 @@ suite('InternetPage', function() {
       });
 
   test('Show sim lock dialog through URL parameters', async () => {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
     await init();
 
     const mojom = chromeos.networkConfig.mojom;
@@ -646,20 +656,7 @@ suite('InternetPage', function() {
     assertEquals(internetPage.$.errorToastMessage.innerHTML, message);
   });
 
-  test(
-      'Internet detail menu does not render with cellular flag off',
-      async () => {
-        await navigateToCellularDetailPage();
-
-        const internetDetailMenu =
-            internetPage.$$('settings-internet-detail-menu');
-        assertFalse(!!internetDetailMenu);
-      });
-
-  test('Internet detail menu renders with cellular flag on', async () => {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
+  test('Internet detail menu renders', async () => {
     await navigateToCellularDetailPage();
 
     const internetDetailMenu = internetPage.$$('settings-internet-detail-menu');

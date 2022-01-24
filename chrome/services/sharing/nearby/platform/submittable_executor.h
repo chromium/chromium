@@ -9,7 +9,7 @@
 
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/thread_annotations.h"
 #include "chrome/services/sharing/nearby/platform/atomic_boolean.h"
 #include "third_party/nearby/src/cpp/platform/api/submittable_executor.h"
@@ -30,7 +30,6 @@ class SubmittableExecutor : public api::SubmittableExecutor {
   bool DoSubmit(Runnable&& runnable) override;
   void Execute(Runnable&& runnable) override;
   void Shutdown() override;
-  int GetTid(int index) const override;
 
  private:
   // Directly calls run() on |runnable|. This is only meant to be posted as an

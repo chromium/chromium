@@ -74,6 +74,9 @@ const char kMisconfigSoftwareRegexCheckCert[] =
 
 class SSLErrorAssistantTest : public content::RenderViewHostTestHarness {
  public:
+  SSLErrorAssistantTest(const SSLErrorAssistantTest&) = delete;
+  SSLErrorAssistantTest& operator=(const SSLErrorAssistantTest&) = delete;
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     error_assistant_ = std::make_unique<SSLErrorAssistant>();
@@ -130,8 +133,6 @@ class SSLErrorAssistantTest : public content::RenderViewHostTestHarness {
 
   std::unique_ptr<SSLErrorAssistant> error_assistant_;
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorAssistantTest);
 };
 
 // Test to see if IsKnownCaptivePortalCertificate() returns the correct value.

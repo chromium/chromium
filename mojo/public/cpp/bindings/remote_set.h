@@ -14,7 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/id_type.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -88,6 +88,10 @@ class RemoteSetImpl {
   };
 
   RemoteSetImpl() = default;
+
+  RemoteSetImpl(const RemoteSetImpl&) = delete;
+  RemoteSetImpl& operator=(const RemoteSetImpl&) = delete;
+
   ~RemoteSetImpl() = default;
 
   // Adds a new remote to this set and returns a unique ID that can be used to
@@ -166,8 +170,6 @@ class RemoteSetImpl {
   RemoteSetElementId::Generator remote_set_element_id_generator_;
   Storage storage_;
   DisconnectHandler disconnect_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSetImpl);
 };
 
 template <typename Interface>

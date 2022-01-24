@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -188,12 +187,5 @@ class SmartChargingManager : public ui::UserActivityObserver,
 
 }  // namespace power
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-namespace power {
-using ::ash::power::SmartChargingManager;
-}  // namespace power
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_POWER_SMART_CHARGING_SMART_CHARGING_MANAGER_H_

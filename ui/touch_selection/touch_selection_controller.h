@@ -5,7 +5,6 @@
 #ifndef UI_TOUCH_SELECTION_TOUCH_SELECTION_CONTROLLER_H_
 #define UI_TOUCH_SELECTION_TOUCH_SELECTION_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -76,6 +75,10 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
 
   TouchSelectionController(TouchSelectionControllerClient* client,
                            const Config& config);
+
+  TouchSelectionController(const TouchSelectionController&) = delete;
+  TouchSelectionController& operator=(const TouchSelectionController&) = delete;
+
   ~TouchSelectionController() override;
 
   // To be called when the selection bounds have changed.
@@ -247,8 +250,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
   bool consume_touch_sequence_;
 
   bool show_touch_handles_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionController);
 };
 
 }  // namespace ui

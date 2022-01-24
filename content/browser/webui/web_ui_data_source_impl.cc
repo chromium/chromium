@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -288,8 +287,7 @@ std::string WebUIDataSourceImpl::GetSource() {
 }
 
 std::string WebUIDataSourceImpl::GetMimeType(const std::string& path) const {
-  // Remove the query string for to determine the mime type.
-  std::string file_path = path.substr(0, path.find_first_of('?'));
+  std::string file_path = CleanUpPath(path);
 
   if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII))
     return "text/css";

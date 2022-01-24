@@ -343,7 +343,7 @@ TEST_F(BorealisInstallerTest, ReportsMainAppMissingAsError) {
           }));
 
   // Set a zero timeout otherwise the in-progress timeout gets cleaned up.
-  installer_impl_->SetMainAppTimeoutForTesting(base::TimeDelta::FromSeconds(0));
+  installer_impl_->SetMainAppTimeoutForTesting(base::Seconds(0));
 
   EXPECT_CALL(*observer_,
               OnInstallationEnded(BorealisInstallResult::kMainAppNotPresent));

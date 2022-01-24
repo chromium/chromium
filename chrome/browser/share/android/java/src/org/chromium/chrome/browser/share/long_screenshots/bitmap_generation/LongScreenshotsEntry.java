@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 
@@ -69,6 +68,7 @@ public class LongScreenshotsEntry {
     /**
      * @param generator BitmapGenerator to be used to capture and composite the website.
      * @param bounds The bounds of the entry.
+     * @param memoryTracker Callback to be notified of the entry's memory usage.
      */
     public LongScreenshotsEntry(
             BitmapGenerator generator, Rect bounds, Callback<Integer> memoryTracker) {
@@ -130,11 +130,6 @@ public class LongScreenshotsEntry {
      */
     public Bitmap getBitmap() {
         return mGeneratedBitmap;
-    }
-
-    @VisibleForTesting
-    public void setBitmapGenerator(BitmapGenerator generator) {
-        mGenerator = generator;
     }
 
     private void onBitmapGenerated(Bitmap bitmap) {

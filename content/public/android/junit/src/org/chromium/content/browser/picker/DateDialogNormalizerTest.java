@@ -23,7 +23,7 @@ import java.util.TimeZone;
  * Tests for DateDialogNormalizer.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = 21)
+@Config(manifest = Config.NONE)
 public class DateDialogNormalizerTest {
     private static final long MILLIS_PER_MINUTE = 60 * 1000;
     private static final long MILLIS_PER_HOUR = 60 * 60 * 1000;

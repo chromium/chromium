@@ -24,6 +24,7 @@
 #include "net/cookies/cookie_access_result.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
 class SiteDataCountingHelperTest : public testing::Test {
@@ -32,11 +33,6 @@ class SiteDataCountingHelperTest : public testing::Test {
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    // Let the storage system finish setting up, to avoid test flakiness caused
-    // by the quota storage system shutting down at test end, while still being
-    // set up. TODO(crbug.com/1182630) Remove when crbug.com/1182630 is fixed.
-    profile()->GetDefaultStoragePartition();
-    task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
@@ -83,10 +79,11 @@ class SiteDataCountingHelperTest : public testing::Test {
         profile()->GetDefaultStoragePartition()->GetLocalStorageControl();
 
     for (const std::string& origin_str : storage_origins) {
-      url::Origin origin = url::Origin::Create(GURL(origin_str));
-      ASSERT_FALSE(origin.opaque());
+      blink::StorageKey storage_key =
+          blink::StorageKey::CreateFromStringForTesting(origin_str);
+      ASSERT_FALSE(storage_key.origin().opaque());
       mojo::Remote<blink::mojom::StorageArea> area;
-      local_storage_control->BindStorageArea(origin,
+      local_storage_control->BindStorageArea(storage_key,
                                              area.BindNewPipeAndPassReceiver());
 
       bool success = false;
@@ -139,8 +136,8 @@ TEST_F(SiteDataCountingHelperTest, CheckEmptyResult) {
 
 TEST_F(SiteDataCountingHelperTest, CountCookies) {
   base::Time now = base::Time::Now();
-  base::Time last_hour = now - base::TimeDelta::FromHours(1);
-  base::Time yesterday = now - base::TimeDelta::FromDays(1);
+  base::Time last_hour = now - base::Hours(1);
+  base::Time yesterday = now - base::Days(1);
 
   CreateCookies(last_hour, {"https://example.com"});
   CreateCookies(yesterday, {"https://google.com", "https://bing.com"});
@@ -160,12 +157,12 @@ TEST_F(SiteDataCountingHelperTest, LocalStorage) {
   CreateLocalStorage({"https://example.com"});
 
   // Advance time and set more data "now".
-  task_environment_.AdvanceClock(base::TimeDelta::FromDays(1));
+  task_environment_.AdvanceClock(base::Days(1));
   CreateLocalStorage({"https://bing.com"});
 
   base::Time now = base::Time::Now();
-  base::Time last_hour = now - base::TimeDelta::FromHours(1);
-  base::Time two_days_ago = now - base::TimeDelta::FromDays(2);
+  base::Time last_hour = now - base::Hours(1);
+  base::Time two_days_ago = now - base::Days(2);
 
   EXPECT_EQ(1, CountEntries(base::Time(), last_hour));
   EXPECT_EQ(1, CountEntries(last_hour, base::Time::Max()));

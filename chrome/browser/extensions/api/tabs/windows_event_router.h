@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/window_controller_list.h"
@@ -49,6 +48,10 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
                            public WindowControllerListObserver {
  public:
   explicit WindowsEventRouter(Profile* profile);
+
+  WindowsEventRouter(const WindowsEventRouter&) = delete;
+  WindowsEventRouter& operator=(const WindowsEventRouter&) = delete;
+
   ~WindowsEventRouter() override;
 
   // |window_controller| is NULL to indicate a focused window has lost focus.
@@ -109,8 +112,6 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
   base::ScopedObservation<KeyWindowNotifier, KeyWindowNotifier::Observer>
       observed_key_window_notifier_{this};
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(WindowsEventRouter);
 };
 
 }  // namespace extensions

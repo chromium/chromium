@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "printing/mojom/print.mojom.h"
 #include "skia/ext/skia_utils_win.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -155,6 +156,10 @@ bool Emf::GetData(void* buffer, uint32_t size) const {
       GetEnhMetaFileBits(emf_, size, reinterpret_cast<BYTE*>(buffer));
   DCHECK(size2 == size);
   return size2 == size && size2 != 0;
+}
+
+mojom::MetafileDataType Emf::GetDataType() const {
+  return mojom::MetafileDataType::kEMF;
 }
 
 int CALLBACK Emf::SafePlaybackProc(HDC hdc,

@@ -1,0 +1,237 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms related to
+leveldb_proto along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="LevelDBClient">
+  <variant name="BudgetManager"
+      summary="Database for storing budget information for origins."/>
+  <variant name="CachedImageFetcherDatabase"
+      summary="Database for CachedImageFetcher metadata."/>
+  <variant name="CartDatabase" summary="Database for chrome cart."/>
+  <variant name="CommerceSubscriptionDatabase"
+      summary="Database for Chrome commerce subscriptions."/>
+  <variant name="CouponDatabase" summary="Database for coupons in Chrome."/>
+  <variant name="DomDistillerStore" summary="Databases for DomDistillerStore">
+    <obsolete>
+      Deprecated since 2019-10.
+    </obsolete>
+  </variant>
+  <variant name="DownloadDB" summary="Databases for in-progress download."/>
+  <variant name="DownloadService" summary="Databases for download service."/>
+  <variant name="FeatureEngagementTrackerAvailabilityStore"
+      summary="Database for FeatureEngagementTracker feature availability."/>
+  <variant name="FeatureEngagementTrackerEventStore"
+      summary="Database for FeatureEngagementTracker events."/>
+  <variant name="FeedContentDatabase"
+      summary="Database for Feed content storage."/>
+  <variant name="FeedImageDatabase" summary="Databases for Feed Image Loader.">
+    <obsolete>
+      Deprecated since 11/18.
+    </obsolete>
+  </variant>
+  <variant name="FeedJournalDatabase"
+      summary="Database for Feed journal storage."/>
+  <variant name="FeedKeyValueDatabase"
+      summary="Database for key value cache used in feed rendering."/>
+  <variant name="FeedStorageDatabase" summary="Databases for Feed Storage.">
+    <obsolete>
+      Deprecated since 08/18.
+    </obsolete>
+  </variant>
+  <variant name="FeedStreamDatabase"
+      summary="Database for Feed v2 stream and content storage."/>
+  <variant name="GCMKeyStore" summary="Databases for GCMKeyStore"/>
+  <variant name="ImageManager" summary="Databases for ImageManager"/>
+  <variant name="MerchantTrustSignalDatabase"
+      summary="Database for Chrome merchant trust signals events."/>
+  <variant name="Metadata" summary="Metadata of shared databases"/>
+  <variant name="NearbySharePublicCertificateDatabase"
+      summary="Database for Nearby Share public certificates."/>
+  <variant name="NotificationSchedulerIcons"
+      summary="Notification scheduler icons database."/>
+  <variant name="NotificationSchedulerImpressions"
+      summary="Notification scheduler impression database."/>
+  <variant name="NotificationSchedulerNotifications"
+      summary="Notification scheduler notification database."/>
+  <variant name="NTPSnippetImages"
+      summary="Database for RemoteSuggestion images."/>
+  <variant name="NTPSnippets"
+      summary="Database for RemoteSuggestion snippets."/>
+  <variant name="OfflinePageMetadataStore"
+      summary="Databases for OfflinePageMetadataStore"/>
+  <variant name="PersistedStateDatabase"
+      summary="Database for NonCriticalPersistedTabData"/>
+  <variant name="PreviewsHintCacheStore"
+      summary="Databases for Previews Hints"/>
+  <variant name="PrintJobDatabase" summary="Database for print job metadata."/>
+  <variant name="SegmentInfoDatabase"
+      summary="Segmentation platform metadata database."/>
+  <variant name="SharedDb" summary="Shared database"/>
+  <variant name="ShareHistoryDatabase"
+      summary="Database for third-party share history."/>
+  <variant name="ShareRankingDatabase"
+      summary="Database for third-party share rankings."/>
+  <variant name="SignalDatabase"
+      summary="Segmentation platform signal database."/>
+  <variant name="SignalStorageConfigDatabase"
+      summary="Segmentation platform signal storage config."/>
+  <variant name="StrikeService" summary="Database for strike service."/>
+  <variant name="TabStateDatabase"
+      summary="Database for NonCriticalPersistedTabData">
+    <obsolete>
+      Deprecated since 10/2020 in favor of PersistedStateDatabase
+    </obsolete>
+  </variant>
+  <variant name="UpboardingQueryTileStore"
+      summary="Database for Upboarding query tiles."/>
+  <variant name="UsageReportsBufferBackend"
+      summary="The result of the first attempt to open the usage reports
+               buffer backend database."/>
+  <variant name="UsageStatsSuspension"
+      summary="UsageStats database for Suspensions."/>
+  <variant name="UsageStatsTokenMapping"
+      summary="UsageStats database for TokenMappings."/>
+  <variant name="UsageStatsWebsiteEvent"
+      summary="UsageStats database for WebsiteEvents."/>
+  <variant name="VideoDecodeStatsDB" summary="Database for video decode stats"/>
+  <variant name="VideoTutorialsDatabase"
+      summary="Database for video tutorials (deprecated)."/>
+  <variant name="VideoTutorialsV2Database"
+      summary="Database for video tutorials."/>
+</variants>
+
+<histogram name="LevelDB.ApproximateMemTableMemoryUse.{LevelDBClient}"
+    units="bytes" expires_after="2022-04-11">
+  <owner>nyquist@chromium.org</owner>
+  <owner>salg@google.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The approximate MemTable memory use of a LevelDB in bytes. Recorded right
+    after initializing an on-disk database.
+  </summary>
+  <token key="LevelDBClient" variants="LevelDBClient"/>
+</histogram>
+
+<histogram name="ProtoDB.DestroySuccess.{LevelDBClient}" enum="BooleanSuccess"
+    expires_after="2022-04-11">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>Whether a ProtoDB Destroy call was successful or not.</summary>
+  <token key="LevelDBClient" variants="LevelDBClient"/>
+</histogram>
+
+<histogram name="ProtoDB.GetErrorStatus.{LevelDBClient}" enum="LevelDBStatus"
+    expires_after="2022-04-11">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    The LevelDB Status returned from a failed ProtoDatabase Get call.
+  </summary>
+  <token key="LevelDBClient" variants="LevelDBClient"/>
+</histogram>
+
+<histogram name="ProtoDB.GetFound.{LevelDBClient}" enum="Boolean"
+    expires_after="2022-04-11">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>Whether a ProtoDB Get call found what was requested.</summary>
+  <token key="LevelDBClient" variants="LevelDBClient"/>
+</histogram>
+
+<histogram name="ProtoDB.GetSuccess.{LevelDBClient}" enum="BooleanSuccess"
+    expires_after="2022-04-11">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>Whether a ProtoDB Get call was successful or not.</summary>
+  <token key="LevelDBClient" variants="LevelDBClient"/>
+</histogram>
+
+<histogram name="ProtoDB.InitStatus.{LevelDBClient}" enum="LevelDBStatus"
+    expires_after="2022-04-17">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>The LevelDB Status from a ProtoDatabase Init call.</summary>
+  <token key="LevelDBClient" variants="LevelDBClient"/>
+</histogram>
+
+<histogram name="ProtoDB.LoadEntriesSuccess.{LevelDBClient}"
+    enum="BooleanSuccess" expires_after="2022-04-11">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>Whether a ProtoDB LoadEntries call was successful or not.</summary>
+  <token key="LevelDBClient" variants="LevelDBClient"/>
+</histogram>
+
+<histogram name="ProtoDB.LoadKeysAndEntriesSuccess.{LevelDBClient}"
+    enum="BooleanSuccess" expires_after="2022-04-11">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Whether a ProtoDB LoadKeysAndEntries call was successful or not.
+  </summary>
+  <token key="LevelDBClient" variants="LevelDBClient"/>
+</histogram>
+
+<histogram name="ProtoDB.LoadKeysSuccess.{LevelDBClient}" enum="BooleanSuccess"
+    expires_after="2022-04-11">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>Whether a ProtoDB LoadKeys call was successful or not.</summary>
+  <token key="LevelDBClient" variants="LevelDBClient"/>
+</histogram>
+
+<histogram name="ProtoDB.SharedDbInitStatus" enum="ProtoDatabaseInitState"
+    expires_after="2022-04-17">
+  <owner>ssid@chromium.org</owner>
+  <owner>salg@chromium.org</owner>
+  <summary>
+    Tracks the init state progress of a proto database. An enum value is
+    recorded for each state of progression through the initialization process.
+    Shows the number of users hitting each stage. The enum values starting with
+    success and failure indicate that the final output of initialization is a
+    success or failure. See
+    //components/leveldb_proto/internal/proto_init_state_description.md.
+  </summary>
+</histogram>
+
+<histogram name="ProtoDB.UpdateErrorStatus.{LevelDBClient}"
+    enum="LevelDBStatus" expires_after="2022-04-11">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    The LevelDB Status returned from a failed Protodatabase UpdateEntries call.
+  </summary>
+  <token key="LevelDBClient" variants="LevelDBClient"/>
+</histogram>
+
+<histogram name="ProtoDB.UpdateSuccess.{LevelDBClient}" enum="BooleanSuccess"
+    expires_after="2022-04-11">
+  <owner>nyquist@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>Whether a ProtoDB UpdateEntries call was successful or not.</summary>
+  <token key="LevelDBClient" variants="LevelDBClient"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

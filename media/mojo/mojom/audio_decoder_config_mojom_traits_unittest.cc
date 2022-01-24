@@ -14,95 +14,96 @@
 
 namespace media {
 
-TEST(AudioDecoderConfigStructTraitsTest, ConvertAudioDecoderConfig_Normal) {
+TEST(AudioDecoderConfigStructTraitsTest, Normal) {
   const uint8_t kExtraData[] = "input extra data";
   const std::vector<uint8_t> kExtraDataVector(
       &kExtraData[0], &kExtraData[0] + base::size(kExtraData));
 
   AudioDecoderConfig input;
-  input.Initialize(kCodecAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND, 48000,
-                   kExtraDataVector, EncryptionScheme::kUnencrypted,
+  input.Initialize(AudioCodec::kAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND,
+                   48000, kExtraDataVector, EncryptionScheme::kUnencrypted,
                    base::TimeDelta(), 0);
-  std::vector<uint8_t> data =
-      media::mojom::AudioDecoderConfig::Serialize(&input);
+  std::vector<uint8_t> data = mojom::AudioDecoderConfig::Serialize(&input);
   AudioDecoderConfig output;
-  EXPECT_TRUE(
-      media::mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
+  EXPECT_TRUE(mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
   EXPECT_TRUE(output.Matches(input));
 }
 
-TEST(AudioDecoderConfigStructTraitsTest,
-     ConvertAudioDecoderConfig_EmptyExtraData) {
+TEST(AudioDecoderConfigStructTraitsTest, EmptyExtraData) {
   AudioDecoderConfig input;
-  input.Initialize(kCodecAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND, 48000,
-                   EmptyExtraData(), EncryptionScheme::kUnencrypted,
+  input.Initialize(AudioCodec::kAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND,
+                   48000, EmptyExtraData(), EncryptionScheme::kUnencrypted,
                    base::TimeDelta(), 0);
-  std::vector<uint8_t> data =
-      media::mojom::AudioDecoderConfig::Serialize(&input);
+  std::vector<uint8_t> data = mojom::AudioDecoderConfig::Serialize(&input);
   AudioDecoderConfig output;
-  EXPECT_TRUE(
-      media::mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
+  EXPECT_TRUE(mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
   EXPECT_TRUE(output.Matches(input));
 }
 
-TEST(AudioDecoderConfigStructTraitsTest, ConvertAudioDecoderConfig_Encrypted) {
+TEST(AudioDecoderConfigStructTraitsTest, Encrypted) {
   AudioDecoderConfig input;
-  input.Initialize(kCodecAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND, 48000,
-                   EmptyExtraData(), EncryptionScheme::kCenc, base::TimeDelta(),
-                   0);
-  std::vector<uint8_t> data =
-      media::mojom::AudioDecoderConfig::Serialize(&input);
+  input.Initialize(AudioCodec::kAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND,
+                   48000, EmptyExtraData(), EncryptionScheme::kCenc,
+                   base::TimeDelta(), 0);
+  std::vector<uint8_t> data = mojom::AudioDecoderConfig::Serialize(&input);
   AudioDecoderConfig output;
-  EXPECT_TRUE(
-      media::mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
+  EXPECT_TRUE(mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
   EXPECT_TRUE(output.Matches(input));
 }
 
-TEST(AudioDecoderConfigStructTraitsTest,
-     ConvertAudioDecoderConfig_WithProfile) {
+TEST(AudioDecoderConfigStructTraitsTest, WithProfile) {
   AudioDecoderConfig input;
-  input.Initialize(kCodecAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND, 48000,
-                   EmptyExtraData(), EncryptionScheme::kUnencrypted,
+  input.Initialize(AudioCodec::kAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND,
+                   48000, EmptyExtraData(), EncryptionScheme::kUnencrypted,
                    base::TimeDelta(), 0);
   input.set_profile(AudioCodecProfile::kXHE_AAC);
-  std::vector<uint8_t> data =
-      media::mojom::AudioDecoderConfig::Serialize(&input);
+  std::vector<uint8_t> data = mojom::AudioDecoderConfig::Serialize(&input);
   AudioDecoderConfig output;
-  EXPECT_TRUE(
-      media::mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
+  EXPECT_TRUE(mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
   EXPECT_TRUE(output.Matches(input));
 }
 
-TEST(AudioDecoderConfigStructTraitsTest,
-     ConvertAudioDecoderConfig_DisableDiscardDecoderDelay) {
+TEST(AudioDecoderConfigStructTraitsTest, DisableDiscardDecoderDelay) {
   AudioDecoderConfig input;
-  input.Initialize(kCodecAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND, 48000,
-                   EmptyExtraData(), EncryptionScheme::kUnencrypted,
+  input.Initialize(AudioCodec::kAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND,
+                   48000, EmptyExtraData(), EncryptionScheme::kUnencrypted,
                    base::TimeDelta(), 0);
   input.disable_discard_decoder_delay();
-  std::vector<uint8_t> data =
-      media::mojom::AudioDecoderConfig::Serialize(&input);
+  std::vector<uint8_t> data = mojom::AudioDecoderConfig::Serialize(&input);
   AudioDecoderConfig output;
-  EXPECT_TRUE(
-      media::mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
+  EXPECT_TRUE(mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
   EXPECT_TRUE(output.Matches(input));
   EXPECT_FALSE(output.should_discard_decoder_delay());
 }
 
-TEST(AudioDecoderConfigStructTraitsTest,
-     ConvertAudioDecoderConfig_TargetOutputChannelLayout) {
+TEST(AudioDecoderConfigStructTraitsTest, TargetOutputChannelLayout) {
   AudioDecoderConfig input;
-  input.Initialize(kCodecAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND, 48000,
-                   EmptyExtraData(), EncryptionScheme::kUnencrypted,
+  input.Initialize(AudioCodec::kAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND,
+                   48000, EmptyExtraData(), EncryptionScheme::kUnencrypted,
                    base::TimeDelta(), 0);
   input.set_target_output_channel_layout(CHANNEL_LAYOUT_5_1);
-  std::vector<uint8_t> data =
-      media::mojom::AudioDecoderConfig::Serialize(&input);
+  std::vector<uint8_t> data = mojom::AudioDecoderConfig::Serialize(&input);
   AudioDecoderConfig output;
-  EXPECT_TRUE(
-      media::mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
+  EXPECT_TRUE(mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
   EXPECT_TRUE(output.Matches(input));
   EXPECT_EQ(output.target_output_channel_layout(), CHANNEL_LAYOUT_5_1);
+}
+
+TEST(AudioDecoderConfigStructTraitsTest, AacExtraData) {
+  const uint8_t kAacExtraData[] = "aac extra data";
+  const std::vector<uint8_t> kAacExtraDataVector(
+      kAacExtraData, kAacExtraData + base::size(kAacExtraData));
+
+  AudioDecoderConfig input;
+  input.Initialize(AudioCodec::kAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND,
+                   48000, EmptyExtraData(), EncryptionScheme::kUnencrypted,
+                   base::TimeDelta(), 0);
+  input.set_aac_extra_data(kAacExtraDataVector);
+  std::vector<uint8_t> data = mojom::AudioDecoderConfig::Serialize(&input);
+  AudioDecoderConfig output;
+  EXPECT_TRUE(mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
+  EXPECT_TRUE(output.Matches(input));
+  EXPECT_EQ(output.aac_extra_data(), kAacExtraDataVector);
 }
 
 }  // namespace media

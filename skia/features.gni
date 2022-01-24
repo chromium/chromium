@@ -12,3 +12,8 @@ declare_args() {
   # path for D3D12 is available.
   enable_skia_dawn_gtests = false
 }
+
+# Skottie is not used on Android. To keep apk size small the skottie library is
+# excluded from the binary. At the time this comment was written, it adds ~200KB
+# to the APK.
+skia_support_skottie = !is_android

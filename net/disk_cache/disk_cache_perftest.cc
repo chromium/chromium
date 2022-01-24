@@ -671,8 +671,7 @@ TEST(SimpleIndexPerfTest, EvictionPerformance) {
 
     for (int i = 0; i < kEntries; ++i) {
       index.InsertEntryForTesting(
-          i, disk_cache::EntryMetadata(start + base::TimeDelta::FromSeconds(i),
-                                       1u));
+          i, disk_cache::EntryMetadata(start + base::Seconds(i), 1u));
     }
 
     // Trigger an eviction.

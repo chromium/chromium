@@ -6,7 +6,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="../../prefs/prefs.html">
-<link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../prefs_behavior.html">
 <link rel="import" href="types.html">
 
 <dom-module id="nearby-share-data-usage-dialog">
@@ -38,15 +38,16 @@
       }
 
       #dataUsageDataIcon {
-        --iron-icon-fill-color: var(--google-grey-600);
+        --iron-icon-fill-color: var(--cros-icon-color-secondary);
         height: 16px;
         padding-bottom: 2px;
         width: 16px;
       }
 
       #dataUsageDataTooltip {
-        --paper-tooltip-background: var(--google-grey-900);
-        --paper-tooltip-opacity: 0.8;
+        --paper-tooltip-background: var(--cros-tooltip-background-color);
+        --paper-tooltip-opacity: 1;
+        --paper-tooltip-text-color: var(--cros-tooltip-label-color);
         --paper-tooltip: {
           margin-inline-end: 6px;
         };

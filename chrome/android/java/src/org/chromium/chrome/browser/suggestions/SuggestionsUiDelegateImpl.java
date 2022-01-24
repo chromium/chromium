@@ -67,6 +67,7 @@ public class SuggestionsUiDelegateImpl implements SuggestionsUiDelegate {
         mImageFetcher.onDestroy();
 
         for (DestructionObserver observer : mDestructionObservers) observer.onDestroy();
+        mDestructionObservers.clear();
 
         mIsDestroyed = true;
     }

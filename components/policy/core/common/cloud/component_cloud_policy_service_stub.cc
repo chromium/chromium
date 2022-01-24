@@ -4,7 +4,7 @@
 
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace policy {
 
@@ -12,7 +12,6 @@ ComponentCloudPolicyService::Delegate::~Delegate() {}
 
 ComponentCloudPolicyService::ComponentCloudPolicyService(
     const std::string& policy_type,
-    PolicySource policy_source,
     Delegate* delegate,
     SchemaRegistry* schema_registry,
     CloudPolicyCore* core,

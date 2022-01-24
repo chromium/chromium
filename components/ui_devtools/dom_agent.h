@@ -31,6 +31,10 @@ class UI_DEVTOOLS_EXPORT DOMAgent
       public UIElementDelegate {
  public:
   DOMAgent();
+
+  DOMAgent(const DOMAgent&) = delete;
+  DOMAgent& operator=(const DOMAgent&) = delete;
+
   ~DOMAgent() override;
 
   // DOM::Backend:
@@ -113,8 +117,6 @@ class UI_DEVTOOLS_EXPORT DOMAgent
   SearchResults search_results_;
 
   bool is_document_created_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMAgent);
 };
 
 }  // namespace ui_devtools

@@ -47,6 +47,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
   static std::unique_ptr<TouchIdAuthenticator> Create(
       AuthenticatorConfig config);
 
+  TouchIdAuthenticator(const TouchIdAuthenticator&) = delete;
+  TouchIdAuthenticator& operator=(const TouchIdAuthenticator&) = delete;
+
   ~TouchIdAuthenticator() override;
 
   bool HasCredentialForGetAssertionRequest(
@@ -85,9 +88,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
   std::unique_ptr<Operation> operation_;
 
   base::WeakPtrFactory<TouchIdAuthenticator> weak_factory_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TouchIdAuthenticator);
 };
 
 }  // namespace mac

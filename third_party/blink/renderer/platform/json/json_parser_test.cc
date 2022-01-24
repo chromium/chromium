@@ -13,23 +13,28 @@ namespace blink {
 
 TEST(JSONParserTest, Reading) {
   JSONParseError error;
+  bool has_comments = false;
   JSONValue* tmp_value;
   std::unique_ptr<JSONValue> root;
   std::unique_ptr<JSONValue> root2;
   String str_val;
   int int_val = 0;
 
-  // Successfull parsing returns kNoError.
-  root = ParseJSON("1", &error);
+  // Successful parsing returns kNoError.
+  root = ParseJSON("1", &error, &has_comments);
+  EXPECT_EQ(has_comments, false);
   ASSERT_TRUE(root.get());
   EXPECT_EQ(JSONParseErrorType::kNoError, error.type);
-  root = ParseJSON("\"string\"", &error);
+  root = ParseJSON("\"string\"", &error, &has_comments);
+  EXPECT_EQ(has_comments, false);
   ASSERT_TRUE(root.get());
   EXPECT_EQ(JSONParseErrorType::kNoError, error.type);
-  root = ParseJSON("[]", &error);
+  root = ParseJSON("[]", &error, &has_comments);
+  EXPECT_EQ(has_comments, false);
   ASSERT_TRUE(root.get());
   EXPECT_EQ(JSONParseErrorType::kNoError, error.type);
-  root = ParseJSON("{}", &error);
+  root = ParseJSON("{}", &error, &has_comments);
+  EXPECT_EQ(has_comments, false);
   ASSERT_TRUE(root.get());
   EXPECT_EQ(JSONParseErrorType::kNoError, error.type);
 
@@ -58,30 +63,38 @@ TEST(JSONParserTest, Reading) {
   EXPECT_EQ(JSONValue::kTypeBoolean, root->GetType());
 
   // Embedded comment
-  root = ParseJSON("40 /*/", &error);
+  root = ParseJSON("40 /*/", &error, &has_comments);
+  EXPECT_EQ(has_comments, true);
   // EXPECT_FALSE(root.get());
   EXPECT_EQ("Line: 1, column: 4, Syntax error.", error.message);
-  root = ParseJSON("/* comment */null");
+  root = ParseJSON("/* comment */null", &error, &has_comments);
+  EXPECT_EQ(has_comments, true);
   ASSERT_TRUE(root.get());
   EXPECT_EQ(JSONValue::kTypeNull, root->GetType());
-  root = ParseJSON("40 /* comment */");
+  root = ParseJSON("40 /* comment */", &error, &has_comments);
+  EXPECT_EQ(has_comments, true);
   ASSERT_TRUE(root.get());
   EXPECT_EQ(JSONValue::kTypeInteger, root->GetType());
   EXPECT_TRUE(root->AsInteger(&int_val));
   EXPECT_EQ(40, int_val);
-  root = ParseJSON("/**/ 40 /* multi-line\n comment */ // more comment");
+  root = ParseJSON("/**/ 40 /* multi-line\n comment */ // more comment", &error,
+                   &has_comments);
+  EXPECT_EQ(has_comments, true);
   ASSERT_TRUE(root.get());
   EXPECT_EQ(JSONValue::kTypeInteger, root->GetType());
   EXPECT_TRUE(root->AsInteger(&int_val));
   EXPECT_EQ(40, int_val);
-  root = ParseJSON("true // comment");
+  root = ParseJSON("true // comment", &error, &has_comments);
+  EXPECT_EQ(has_comments, true);
   ASSERT_TRUE(root.get());
   EXPECT_EQ(JSONValue::kTypeBoolean, root->GetType());
-  root = ParseJSON("/* comment */\"sample string\"");
+  root = ParseJSON("/* comment */\"sample string\"", &error, &has_comments);
+  EXPECT_EQ(has_comments, true);
   ASSERT_TRUE(root.get());
   EXPECT_TRUE(root->AsString(&str_val));
   EXPECT_EQ("sample string", str_val);
-  root = ParseJSON("[1, /* comment, 2 ] */ \n 3]");
+  root = ParseJSON("[1, /* comment, 2 ] */ \n 3]", &error, &has_comments);
+  EXPECT_EQ(has_comments, true);
   ASSERT_TRUE(root.get());
   JSONArray* list = JSONArray::Cast(root.get());
   ASSERT_TRUE(list);
@@ -94,12 +107,14 @@ TEST(JSONParserTest, Reading) {
   ASSERT_TRUE(tmp_value);
   EXPECT_TRUE(tmp_value->AsInteger(&int_val));
   EXPECT_EQ(3, int_val);
-  root = ParseJSON("[1, /*a*/2, 3]");
+  root = ParseJSON("[1, /*a*/2, 3]", &error, &has_comments);
+  EXPECT_EQ(has_comments, true);
   ASSERT_TRUE(root.get());
   list = JSONArray::Cast(root.get());
   ASSERT_TRUE(list);
   EXPECT_EQ(3u, list->size());
-  root = ParseJSON("/* comment **/42");
+  root = ParseJSON("/* comment **/42", &error, &has_comments);
+  EXPECT_EQ(has_comments, true);
   ASSERT_TRUE(root.get());
   EXPECT_EQ(JSONValue::kTypeInteger, root->GetType());
   EXPECT_TRUE(root->AsInteger(&int_val));
@@ -107,7 +122,9 @@ TEST(JSONParserTest, Reading) {
   root = ParseJSON(
       "/* comment **/\n"
       "// */ 43\n"
-      "44");
+      "44",
+      &error, &has_comments);
+  EXPECT_EQ(has_comments, true);
   ASSERT_TRUE(root.get());
   EXPECT_EQ(JSONValue::kTypeInteger, root->GetType());
   EXPECT_TRUE(root->AsInteger(&int_val));

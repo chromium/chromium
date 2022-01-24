@@ -36,7 +36,10 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
   constexpr int kIconSize = 14;
   std::vector<MenuItemInfo> menu_item_infos;
 
-  for (tab_groups::TabGroupId group : GetOrderedTabGroupsInSubMenu()) {
+  std::vector<tab_groups::TabGroupId> ordered_tab_groups =
+      GetOrderedTabGroupsInSubMenu();
+  for (size_t i = 0; i < ordered_tab_groups.size(); ++i) {
+    tab_groups::TabGroupId group = ordered_tab_groups[i];
     const TabGroup* tab_group = model->group_model()->GetTabGroup(group);
     const std::u16string group_title = tab_group->visual_data()->title();
     const std::u16string displayed_title =
@@ -49,6 +52,7 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
         kTabGroupIcon, tp.GetColor(color_id), kIconSize);
     menu_item_infos.emplace_back(MenuItemInfo{displayed_title, image_model});
     menu_item_infos.back().may_have_mnemonics = false;
+    menu_item_infos.back().target_index = static_cast<int>(i);
   }
   Build(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP, menu_item_infos);
 }
@@ -85,16 +89,16 @@ void ExistingTabGroupSubMenuModel::ExecuteNewCommand(int event_flags) {
                                     event_flags);
 }
 
-void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int command_index) {
+void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int target_index) {
   base::RecordAction(base::UserMetricsAction("TabContextMenu_NewTabInGroup"));
 
-  if (static_cast<size_t>(command_index) >=
+  if (static_cast<size_t>(target_index) >=
       model()->group_model()->ListTabGroups().size())
     return;
   if (!model()->ContainsIndex(GetContextIndex()))
     return;
   model()->ExecuteAddToExistingGroupCommand(
-      GetContextIndex(), GetOrderedTabGroupsInSubMenu()[command_index]);
+      GetContextIndex(), GetOrderedTabGroupsInSubMenu()[target_index]);
 }
 
 // static

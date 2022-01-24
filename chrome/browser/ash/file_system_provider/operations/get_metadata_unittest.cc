@@ -13,7 +13,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/operations/test_util.h"
@@ -49,9 +48,8 @@ void CreateRequestValueFromJSON(const std::string& json,
       base::JSONReader::ReadAndReturnValueWithError(json);
   ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
-  base::ListValue* value_as_list;
-  ASSERT_TRUE(parsed_json.value->GetAsList(&value_as_list));
-  std::unique_ptr<Params> params(Params::Create(*value_as_list));
+  ASSERT_TRUE(parsed_json.value->is_list());
+  std::unique_ptr<Params> params(Params::Create(parsed_json.value->GetList()));
   ASSERT_TRUE(params.get());
   *result = RequestValue::CreateForGetMetadataSuccess(std::move(params));
   ASSERT_TRUE(result->get());
@@ -64,6 +62,10 @@ class CallbackLogger {
    public:
     Event(std::unique_ptr<EntryMetadata> metadata, base::File::Error result)
         : metadata_(std::move(metadata)), result_(result) {}
+
+    Event(const Event&) = delete;
+    Event& operator=(const Event&) = delete;
+
     virtual ~Event() {}
 
     const EntryMetadata* metadata() const { return metadata_.get(); }
@@ -72,11 +74,13 @@ class CallbackLogger {
    private:
     std::unique_ptr<EntryMetadata> metadata_;
     base::File::Error result_;
-
-    DISALLOW_COPY_AND_ASSIGN(Event);
   };
 
   CallbackLogger() {}
+
+  CallbackLogger(const CallbackLogger&) = delete;
+  CallbackLogger& operator=(const CallbackLogger&) = delete;
+
   virtual ~CallbackLogger() {}
 
   void OnGetMetadata(std::unique_ptr<EntryMetadata> metadata,
@@ -88,8 +92,6 @@ class CallbackLogger {
 
  private:
   std::vector<std::unique_ptr<Event>> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackLogger);
 };
 
 }  // namespace
@@ -242,10 +244,10 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, Execute) {
       extensions::api::file_system_provider::OnGetMetadataRequested::kEventName,
       event->event_name);
   base::ListValue* event_args = event->event_args.get();
-  ASSERT_EQ(1u, event_args->GetSize());
+  ASSERT_EQ(1u, event_args->GetList().size());
 
-  const base::DictionaryValue* options_as_value = NULL;
-  ASSERT_TRUE(event_args->GetDictionary(0, &options_as_value));
+  const base::Value* options_as_value = &event_args->GetList()[0];
+  ASSERT_TRUE(options_as_value->is_dict());
 
   GetMetadataRequestedOptions options;
   ASSERT_TRUE(

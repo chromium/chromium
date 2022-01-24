@@ -321,7 +321,7 @@ TEST_F(DriveServiceTest, PassesCachedDataIfRequested) {
 
   // Should re-request if cache expires.
   response.clear();
-  task_environment_.AdvanceClock(base::TimeDelta::FromSeconds(11));
+  task_environment_.AdvanceClock(base::Seconds(11));
   service_->GetDriveFiles(callback.Get());
   identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "foo_token", base::Time());

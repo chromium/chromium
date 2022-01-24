@@ -75,7 +75,7 @@ ExternalProtocolDialog::ExternalProtocolDialog(
     const GURL& url,
     const std::u16string& program_name,
     const absl::optional<url::Origin>& initiating_origin)
-    : content::WebContentsObserver(web_contents),
+    : web_contents_(web_contents->GetWeakPtr()),
       url_(url),
       program_name_(program_name),
       initiating_origin_(initiating_origin) {
@@ -156,7 +156,7 @@ void ExternalProtocolDialog::OnDialogAccepted() {
   ExternalProtocolHandler::RecordHandleStateMetrics(
       remember, ExternalProtocolHandler::DONT_BLOCK);
 
-  if (!web_contents()) {
+  if (!web_contents_) {
     // Dialog outlasted the WebContents.
     return;
   }
@@ -164,14 +164,15 @@ void ExternalProtocolDialog::OnDialogAccepted() {
   if (remember) {
     DCHECK(initiating_origin_);
     Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 
     ExternalProtocolHandler::SetBlockState(url_.scheme(), *initiating_origin_,
                                            ExternalProtocolHandler::DONT_BLOCK,
                                            profile);
   }
 
-  ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(url_, web_contents());
+  ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(url_,
+                                                         web_contents_.get());
 }
 
 views::View* ExternalProtocolDialog::GetContentsView() {

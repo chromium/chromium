@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/permissions/chooser_controller.h"
 
 // A subclass of permissions::ChooserController that pretends to be a USB device
@@ -16,6 +15,9 @@
 class FakeUsbChooserController : public permissions::ChooserController {
  public:
   explicit FakeUsbChooserController(int device_count);
+
+  FakeUsbChooserController(const FakeUsbChooserController&) = delete;
+  FakeUsbChooserController& operator=(const FakeUsbChooserController&) = delete;
 
   // permissions::ChooserController:
   std::u16string GetNoOptionsText() const override;
@@ -35,8 +37,6 @@ class FakeUsbChooserController : public permissions::ChooserController {
   // The number of fake devices to include in the chooser. Names are generated
   // for them.
   size_t device_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUsbChooserController);
 };
 
 #endif  // COMPONENTS_PERMISSIONS_FAKE_USB_CHOOSER_CONTROLLER_H_

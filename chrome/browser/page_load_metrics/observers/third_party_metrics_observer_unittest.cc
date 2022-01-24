@@ -36,6 +36,10 @@ class ThirdPartyMetricsObserverTest
  protected:
   ThirdPartyMetricsObserverTest() {}
 
+  ThirdPartyMetricsObserverTest(const ThirdPartyMetricsObserverTest&) = delete;
+  ThirdPartyMetricsObserverTest& operator=(
+      const ThirdPartyMetricsObserverTest&) = delete;
+
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(base::WrapUnique(new ThirdPartyMetricsObserver()));
   }
@@ -65,9 +69,6 @@ class ThirdPartyMetricsObserverTest
 
     return navigation_simulator->GetFinalRenderFrameHost();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyMetricsObserverTest);
 };
 
 TEST_F(ThirdPartyMetricsObserverTest, NoThirdPartyFrame_NoneRecorded) {
@@ -77,7 +78,7 @@ TEST_F(ThirdPartyMetricsObserverTest, NoThirdPartyFrame_NoneRecorded) {
 
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.paint_timing->first_contentful_paint = base::TimeDelta::FromSeconds(1);
+  timing.paint_timing->first_contentful_paint = base::Seconds(1);
   tester()->SimulateTimingUpdate(timing, sub_frame);
   tester()->histogram_tester().ExpectTotalCount(kSubframeFCPHistogram, 0);
 }
@@ -89,7 +90,7 @@ TEST_F(ThirdPartyMetricsObserverTest, OneThirdPartyFrame_OneRecorded) {
 
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.paint_timing->first_contentful_paint = base::TimeDelta::FromSeconds(1);
+  timing.paint_timing->first_contentful_paint = base::Seconds(1);
   tester()->SimulateTimingUpdate(timing, sub_frame);
   tester()->histogram_tester().ExpectUniqueSample(kSubframeFCPHistogram, 1000,
                                                   1);
@@ -103,7 +104,7 @@ TEST_F(ThirdPartyMetricsObserverTest,
 
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.paint_timing->first_contentful_paint = base::TimeDelta::FromSeconds(1);
+  timing.paint_timing->first_contentful_paint = base::Seconds(1);
   tester()->SimulateTimingUpdate(timing, sub_frame);
   tester()->SimulateTimingUpdate(timing, sub_frame);
   tester()->histogram_tester().ExpectUniqueSample(kSubframeFCPHistogram, 1000,
@@ -120,8 +121,7 @@ TEST_F(ThirdPartyMetricsObserverTest, SixtyFrames_FiftyRecorded) {
 
     page_load_metrics::mojom::PageLoadTiming timing;
     page_load_metrics::InitPageLoadTimingForTest(&timing);
-    timing.paint_timing->first_contentful_paint =
-        base::TimeDelta::FromSeconds(1);
+    timing.paint_timing->first_contentful_paint = base::Seconds(1);
     tester()->SimulateTimingUpdate(timing, sub_frame);
   }
 
@@ -146,25 +146,25 @@ TEST_F(ThirdPartyMetricsObserverTest, ThreeThirdPartyFrames_ThreeRecorded) {
 
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.paint_timing->first_contentful_paint = base::TimeDelta::FromSeconds(1);
+  timing.paint_timing->first_contentful_paint = base::Seconds(1);
   tester()->SimulateTimingUpdate(timing, sub_frame_a);
 
-  timing.paint_timing->first_contentful_paint = base::TimeDelta::FromSeconds(2);
+  timing.paint_timing->first_contentful_paint = base::Seconds(2);
   tester()->SimulateTimingUpdate(timing, sub_frame_b);
 
-  timing.paint_timing->first_contentful_paint = base::TimeDelta::FromSeconds(3);
+  timing.paint_timing->first_contentful_paint = base::Seconds(3);
   tester()->SimulateTimingUpdate(timing, sub_frame_c);
 
-  timing.paint_timing->first_contentful_paint = base::TimeDelta::FromSeconds(4);
+  timing.paint_timing->first_contentful_paint = base::Seconds(4);
   tester()->SimulateTimingUpdate(timing, sub_frame_d);
 
   tester()->histogram_tester().ExpectTotalCount(kSubframeFCPHistogram, 3);
-  tester()->histogram_tester().ExpectTimeBucketCount(
-      kSubframeFCPHistogram, base::TimeDelta::FromSeconds(1), 1);
-  tester()->histogram_tester().ExpectTimeBucketCount(
-      kSubframeFCPHistogram, base::TimeDelta::FromSeconds(2), 1);
-  tester()->histogram_tester().ExpectTimeBucketCount(
-      kSubframeFCPHistogram, base::TimeDelta::FromSeconds(3), 1);
+  tester()->histogram_tester().ExpectTimeBucketCount(kSubframeFCPHistogram,
+                                                     base::Seconds(1), 1);
+  tester()->histogram_tester().ExpectTimeBucketCount(kSubframeFCPHistogram,
+                                                     base::Seconds(2), 1);
+  tester()->histogram_tester().ExpectTimeBucketCount(kSubframeFCPHistogram,
+                                                     base::Seconds(3), 1);
 }
 
 TEST_F(ThirdPartyMetricsObserverTest, NoCookiesRead_NoneRecorded) {
@@ -507,7 +507,7 @@ TEST_F(ThirdPartyMetricsObserverTest,
       100u;
 
   timing.paint_timing->largest_contentful_paint->largest_text_paint =
-      base::TimeDelta::FromMilliseconds(4780);
+      base::Milliseconds(4780);
   timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 120u;
 
   PopulateRequiredTimingFields(&timing);
@@ -544,7 +544,7 @@ TEST_F(ThirdPartyMetricsObserverTest,
       100u;
 
   timing.paint_timing->largest_contentful_paint->largest_text_paint =
-      base::TimeDelta::FromMilliseconds(4780);
+      base::Milliseconds(4780);
   timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 120u;
 
   PopulateRequiredTimingFields(&timing);
@@ -577,7 +577,7 @@ TEST_F(ThirdPartyMetricsObserverTest,
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
   timing.paint_timing->largest_contentful_paint->largest_image_paint =
-      base::TimeDelta::FromMilliseconds(4780);
+      base::Milliseconds(4780);
   timing.paint_timing->largest_contentful_paint->largest_image_paint_size =
       120u;
 

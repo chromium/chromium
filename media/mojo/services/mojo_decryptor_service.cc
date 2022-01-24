@@ -39,12 +39,15 @@ class FrameResourceReleaserImpl final : public mojom::FrameResourceReleaser {
     DVLOG(3) << __func__;
     DCHECK_EQ(VideoFrame::STORAGE_MOJO_SHARED_BUFFER, frame_->storage_type());
   }
+
+  FrameResourceReleaserImpl(const FrameResourceReleaserImpl&) = delete;
+  FrameResourceReleaserImpl& operator=(const FrameResourceReleaserImpl&) =
+      delete;
+
   ~FrameResourceReleaserImpl() override { DVLOG(3) << __func__; }
 
  private:
   scoped_refptr<VideoFrame> frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameResourceReleaserImpl);
 };
 
 const char kInvalidStateMessage[] = "MojoDecryptorService - invalid state";

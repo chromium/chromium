@@ -56,8 +56,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MessageQuotaChecker
     double GetDecayedRateAverage(base::TimeTicks when) const;
 
     // The length of a sampling interval in seconds.
-    static constexpr base::TimeDelta kSamplingInterval =
-        base::TimeDelta::FromSeconds(5);
+    static constexpr base::TimeDelta kSamplingInterval = base::Seconds(5);
 
     // Returns the start of the sampling interval after the interval that
     // |when| falls into.

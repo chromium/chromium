@@ -10,6 +10,7 @@
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -25,26 +26,26 @@ class LambdaThreadDelegate : public PlatformThread::Delegate {
   RepeatingClosure f_;
 };
 
-TEST(PartitionAllocSpinLockTest, Simple) {
-  MaybeSpinLock<true> lock;
+TEST(PartitionAllocLockTest, Simple) {
+  MaybeLock<true> lock;
   lock.Lock();
   lock.Unlock();
 }
 
-MaybeSpinLock<true> g_lock;
-TEST(PartitionAllocSpinLockTest, StaticLockStartsUnlocked) {
+MaybeLock<true> g_lock;
+TEST(PartitionAllocLockTest, StaticLockStartsUnlocked) {
   g_lock.Lock();
   g_lock.Unlock();
 }
 
-TEST(PartitionAllocSpinLockTest, Contended) {
+TEST(PartitionAllocLockTest, Contended) {
   int counter = 0;  // *Not* atomic.
   std::vector<PlatformThreadHandle> thread_handles;
   constexpr int iterations_per_thread = 1000000;
   constexpr int num_threads = 4;
 
-  MaybeSpinLock<true> lock;
-  MaybeSpinLock<true> start_lock;
+  MaybeLock<true> lock;
+  MaybeLock<true> start_lock;
 
   LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
     start_lock.Lock();
@@ -73,14 +74,14 @@ TEST(PartitionAllocSpinLockTest, Contended) {
   EXPECT_EQ(iterations_per_thread * num_threads, counter);
 }
 
-TEST(PartitionAllocSpinLockTest, SlowThreads) {
+TEST(PartitionAllocLockTest, SlowThreads) {
   int counter = 0;  // *Not* atomic.
   std::vector<PlatformThreadHandle> thread_handles;
   constexpr int iterations_per_thread = 100;
   constexpr int num_threads = 4;
 
-  MaybeSpinLock<true> lock;
-  MaybeSpinLock<true> start_lock;
+  MaybeLock<true> lock;
+  MaybeLock<true> start_lock;
 
   LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
     start_lock.Lock();
@@ -90,7 +91,7 @@ TEST(PartitionAllocSpinLockTest, SlowThreads) {
       lock.Lock();
       counter++;
       // Hold the lock for a while, to force futex()-based locks to sleep.
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
+      PlatformThread::Sleep(Milliseconds(1));
       lock.Unlock();
     }
   })};
@@ -111,8 +112,8 @@ TEST(PartitionAllocSpinLockTest, SlowThreads) {
   EXPECT_EQ(iterations_per_thread * num_threads, counter);
 }
 
-TEST(PartitionAllocSpinLockTest, AssertAcquired) {
-  MaybeSpinLock<true> lock;
+TEST(PartitionAllocLockTest, AssertAcquired) {
+  MaybeLock<true> lock;
   lock.Lock();
   lock.AssertAcquired();
   lock.Unlock();
@@ -121,13 +122,13 @@ TEST(PartitionAllocSpinLockTest, AssertAcquired) {
 // AssertAcquired() is only enforced with DCHECK()s.
 #if defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
 
-TEST(PartitionAllocSpinLockTest, AssertAcquiredDeathTest) {
-  MaybeSpinLock<true> lock;
+TEST(PartitionAllocLockTest, AssertAcquiredDeathTest) {
+  MaybeLock<true> lock;
   EXPECT_DEATH(lock.AssertAcquired(), "");
 }
 
-TEST(PartitionAllocSpinLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
-  MaybeSpinLock<true> lock;
+TEST(PartitionAllocLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
+  MaybeLock<true> lock;
   // NO_THREAD_SAFETY_ANALYSIS: The checker rightfully points out that the lock
   // is still held at the end of the function, which is what we want here.
   LambdaThreadDelegate delegate{
@@ -140,6 +141,25 @@ TEST(PartitionAllocSpinLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
 
   EXPECT_DEATH(lock.AssertAcquired(), "");
 }
+
+#if defined(OS_APPLE)
+// On Apple OSes, it is not allowed to unlock a lock from another thread, so
+// we need to re-initialize it.
+TEST(PartitionAllocLockTest, ReinitInOtherThread) NO_THREAD_SAFETY_ANALYSIS {
+  MaybeLock<true> lock;
+  lock.Lock();
+
+  LambdaThreadDelegate delegate{
+      BindLambdaForTesting([&]() NO_THREAD_SAFETY_ANALYSIS {
+        lock.Reinit();
+        lock.Lock();
+        lock.Unlock();
+      })};
+  PlatformThreadHandle handle;
+  PlatformThread::Create(0, &delegate, &handle);
+  PlatformThread::Join(handle);
+}
+#endif  // defined(OS_APPLE)
 
 #endif  // defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
 

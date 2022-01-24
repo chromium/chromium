@@ -13,6 +13,8 @@ import sys
 import threading
 import traceback
 
+from multiprocessing import process
+
 DISABLE_ASYNC = os.environ.get('SUPERSIZE_DISABLE_ASYNC') == '1'
 if DISABLE_ASYNC:
   logging.debug('Running in synchronous mode.')
@@ -27,7 +29,6 @@ _fork_kwargs = None
 
 # Avoid printing backtrace for every worker for Ctrl-C.
 def _PatchMultiprocessing():
-  from multiprocessing import process
   old_run = process.BaseProcess.run
 
   def new_run(self):
@@ -42,7 +43,7 @@ def _PatchMultiprocessing():
 _PatchMultiprocessing()
 
 
-class _ImmediateResult(object):
+class _ImmediateResult:
   def __init__(self, value):
     self._value = value
 
@@ -59,7 +60,7 @@ class _ImmediateResult(object):
     return True
 
 
-class _ExceptionWrapper(object):
+class _ExceptionWrapper:
   """Used to marshal exception messages back to main process."""
 
   def __init__(self, msg, exception_type=None):
@@ -72,7 +73,7 @@ class _ExceptionWrapper(object):
                     self.exception_type)('Originally caused by: ' + self.msg)
 
 
-class _FuncWrapper(object):
+class _FuncWrapper:
   """Runs on the fork()'ed side to catch exceptions and spread *args."""
 
   def __init__(self, func):
@@ -82,7 +83,7 @@ class _FuncWrapper(object):
 
   def __call__(self, index, _=None):
     try:
-      return self._func(*_fork_params[index], **_fork_kwargs)
+      return self._func(*_fork_params[index], **dict(_fork_kwargs))
     except BaseException as e:
       # Only keep the exception type for builtin exception types or else risk
       # further marshalling exceptions.
@@ -94,7 +95,7 @@ class _FuncWrapper(object):
       return _ExceptionWrapper(traceback.format_exc(), exception_type)
 
 
-class _WrappedResult(object):
+class _WrappedResult:
   """Allows for host-side logic to be run after child process has terminated.
 
   * Raises exception caught by _FuncWrapper.

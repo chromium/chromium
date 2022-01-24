@@ -27,7 +27,7 @@ signin::ScopeSet NotesServerBase::GetAuthScopes() {
 }
 
 GURL NotesServerBase::GetNotesServerURL() {
-  GURL base_url("staging-gsaprototype-pa.sandbox.googleapis.com");
+  GURL base_url("https://staging-gsaprototype-pa.sandbox.googleapis.com");
   GURL::Replacements replacements;
   replacements.SetPathStr("/v1/webnotes");
   return base_url.ReplaceComponents(replacements);
@@ -39,7 +39,7 @@ NotesServerBase::CreateNoteResourceRequest(GURL request_url,
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = request_url;
   resource_request->method = request_method;
-  std::string api_key = google_apis::GetAPIKey();
+  std::string api_key = google_apis::GetNonStableAPIKey();
   DCHECK(!api_key.empty());
   resource_request->headers.SetHeader("x-goog-api-key", api_key);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,

@@ -61,8 +61,7 @@ TraceEventHandle ANGLEPlatformImpl_addTraceEvent(
     const unsigned char* arg_types,
     const unsigned long long* arg_values,
     unsigned char flags) {
-  base::TimeTicks timestamp_tt =
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(timestamp);
+  base::TimeTicks timestamp_tt = base::TimeTicks() + base::Seconds(timestamp);
   base::trace_event::TraceArguments args(num_args, arg_names, arg_types,
                                          arg_values);
   base::trace_event::TraceEventHandle handle =

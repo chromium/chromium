@@ -17,6 +17,7 @@
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -58,7 +59,7 @@ bool SubresourceFilterComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 SubresourceFilterComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -68,13 +69,13 @@ void SubresourceFilterComponentInstallerPolicy::OnCustomUninstall() {}
 void SubresourceFilterComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   DCHECK(!install_dir.empty());
   DVLOG(1) << "Subresource Filter Version Ready: " << install_dir.value();
-  int ruleset_format = 0;
-  if (!manifest->GetInteger(kManifestRulesetFormatKey, &ruleset_format) ||
-      ruleset_format != kCurrentRulesetFormat) {
-    DVLOG(1) << "Bailing out. Future ruleset version: " << ruleset_format;
+  absl::optional<int> ruleset_format =
+      manifest.FindIntKey(kManifestRulesetFormatKey);
+  if (!ruleset_format || *ruleset_format != kCurrentRulesetFormat) {
+    DVLOG(1) << "Bailing out. Future ruleset version: " << *ruleset_format;
     return;
   }
   subresource_filter::UnindexedRulesetInfo ruleset_info;
@@ -92,7 +93,7 @@ void SubresourceFilterComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool SubresourceFilterComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(install_dir);
 }

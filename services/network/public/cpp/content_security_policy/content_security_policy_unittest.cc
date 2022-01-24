@@ -90,6 +90,9 @@ class CSPContextTest : public CSPContext {
  public:
   CSPContextTest() = default;
 
+  CSPContextTest(const CSPContextTest&) = delete;
+  CSPContextTest& operator=(const CSPContextTest&) = delete;
+
   const std::vector<network::mojom::CSPViolationPtr>& violations() {
     return violations_;
   }
@@ -109,8 +112,6 @@ class CSPContextTest : public CSPContext {
   }
   std::vector<network::mojom::CSPViolationPtr> violations_;
   std::vector<std::string> scheme_to_bypass_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPContextTest);
 };
 
 mojom::ContentSecurityPolicyPtr EmptyCSP() {

@@ -19,6 +19,8 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
+class GURL;
+
 namespace storage {
 
 namespace {
@@ -162,6 +164,9 @@ class IsolatedContext::Instance {
   // could be registered by IsolatedContext::RegisterDraggedFileSystem().
   Instance(FileSystemType type, const std::set<MountPointInfo>& files);
 
+  Instance(const Instance&) = delete;
+  Instance& operator=(const Instance&) = delete;
+
   ~Instance();
 
   FileSystemType type() const { return type_; }
@@ -192,8 +197,6 @@ class IsolatedContext::Instance {
   // Reference counts. Note that an isolated filesystem is created with ref==0
   // and will get deleted when the ref count reaches <=0.
   int ref_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(Instance);
 };
 
 IsolatedContext::Instance::Instance(FileSystemType type,
@@ -389,21 +392,22 @@ bool IsolatedContext::CrackVirtualPath(
   return true;
 }
 
-FileSystemURL IsolatedContext::CrackURL(const GURL& url) const {
-  FileSystemURL filesystem_url = FileSystemURL(url);
+FileSystemURL IsolatedContext::CrackURL(
+    const GURL& url,
+    const blink::StorageKey& storage_key) const {
+  FileSystemURL filesystem_url = FileSystemURL(url, storage_key);
   if (!filesystem_url.is_valid())
     return FileSystemURL();
   return CrackFileSystemURL(filesystem_url);
 }
 
 FileSystemURL IsolatedContext::CreateCrackedFileSystemURL(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type,
     const base::FilePath& virtual_path) const {
   // TODO(https://crbug.com/1221308): function will have StorageKey param in
   // future CL; conversion from url::Origin is temporary
-  return CrackFileSystemURL(
-      FileSystemURL(blink::StorageKey(origin), type, virtual_path));
+  return CrackFileSystemURL(FileSystemURL(storage_key, type, virtual_path));
 }
 
 void IsolatedContext::RevokeFileSystemByPath(const base::FilePath& path_in) {

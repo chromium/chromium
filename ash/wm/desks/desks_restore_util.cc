@@ -12,7 +12,10 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/auto_reset.h"
+#include "base/macros.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/clock.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -50,9 +53,22 @@ constexpr char kInteractedWithThisWeekKey[] = "interacted_week";
 constexpr char kWeeklyActiveDesksKey[] = "weekly_active_desks";
 constexpr char kReportTimeKey[] = "report_time";
 
+// A boolean pref that indicates whether the user has used desks recently.
+// A user has `used` desks means that there are desks added, removed or renamed
+// by the user. `Recently` means the `used` action happens between 07/27/2021
+// and 09/07/2021. Only the users that used desks in this period of time will be
+// included in the experiment of bento bar and overview button. Note, this pref
+// will not be set to false once it has been set to true. But this perf could be
+// removed after the experiment.
+constexpr char kUserHasUsedDesksRecently[] = "ash.user_has_used_desks_recently";
+
 // While restore is in progress, changes are being made to the desks and their
 // names. Those changes should not trigger an update to the prefs.
 bool g_pause_desks_prefs_updates = false;
+
+// A clock that can be overridden by tests. This is a global variable, reset it
+// to nullptr when overridden is not needed anymore.
+base::Clock* g_override_clock_ = nullptr;
 
 PrefService* GetPrimaryUserPrefService() {
   return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
@@ -83,12 +99,23 @@ base::Time GetTime(int year, int month, int day_of_month, int day_of_week) {
   return time;
 }
 
-// Check if base::Time::Now() is during the time period 07/27/2021 to
-// 09/07/2021.
+// Check if GetTimeNow() is during the time period 07/27/2021 to 09/07/2021 (not
+// included).
 bool IsNowInValidTimePeriod() {
-  const auto now = base::Time::Now();
-  return now <= GetTime(2021, 9, 7, /*Tuesday=*/3) &&
-         now >= GetTime(2021, 7, 27, /*Tuesday=*/3);
+  base::Time now = GetTimeNow();
+  return now <= GetTime(2021, 9, 7, /*Tuesday=*/2) &&
+         now >= GetTime(2021, 7, 27, /*Tuesday=*/2);
+}
+
+// Returns Jan 1, 2010 00:00:00 as a base::Time object in the local timezone.
+base::Time GetLocalEpoch() {
+  static const base::Time local_epoch = [] {
+    base::Time local_epoch;
+    ignore_result(base::Time::FromLocalExploded({2010, 1, 5, 1, 0, 0, 0, 0},
+                                                &local_epoch));
+    return local_epoch;
+  }();
+  return local_epoch;
 }
 
 }  // namespace
@@ -100,7 +127,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kDesksWeeklyActiveDesksMetrics);
   registry->RegisterIntegerPref(prefs::kDesksActiveDesk,
                                 kDefaultActiveDeskIndex);
-  registry->RegisterBooleanPref(prefs::kUserHasUsedDesksRecently,
+  registry->RegisterBooleanPref(kUserHasUsedDesksRecently,
                                 /*default_value=*/false);
 }
 
@@ -113,13 +140,16 @@ void RestorePrimaryUserDesks() {
     return;
   }
 
+  if (primary_user_prefs->GetBoolean(kUserHasUsedDesksRecently))
+    UMA_HISTOGRAM_BOOLEAN("Ash.Desks.UserHasUsedDesksRecently", true);
+
   const base::ListValue* desks_names =
       primary_user_prefs->GetList(prefs::kDesksNamesList);
   const base::ListValue* desks_metrics =
       primary_user_prefs->GetList(prefs::kDesksMetricsList);
 
   // First create the same number of desks.
-  const size_t restore_size = desks_names->GetSize();
+  const size_t restore_size = desks_names->GetList().size();
 
   // If we don't have any restore data, or the list is corrupt for some reason,
   // abort.
@@ -132,7 +162,7 @@ void RestorePrimaryUserDesks() {
 
   const auto& desks_names_list = desks_names->GetList();
   const auto& desks_metrics_list = desks_metrics->GetList();
-  const size_t desks_metrics_list_size = desks_metrics->GetSize();
+  const size_t desks_metrics_list_size = desks_metrics->GetList().size();
   const auto now = base::Time::Now();
   for (size_t index = 0; index < restore_size; ++index) {
     const std::string& desk_name = desks_names_list[index].GetString();
@@ -156,7 +186,7 @@ void RestorePrimaryUserDesks() {
         desks_metrics_dict.FindIntPath(kCreationTimeKey);
     if (creation_time_entry.has_value()) {
       const auto creation_time = base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMinutes(*creation_time_entry));
+          base::Minutes(*creation_time_entry));
       if (!creation_time.is_null() && creation_time < now)
         desks_controller->RestoreCreationTimeOfDeskAtIndex(creation_time,
                                                            index);
@@ -214,8 +244,7 @@ void RestorePrimaryUserDesks() {
     if (report_time != -1 && num_weekly_active_desks != -1) {
       desks_controller->RestoreWeeklyActiveDesksMetrics(
           num_weekly_active_desks,
-          base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMinutes(report_time)));
+          base::Time::FromDeltaSinceWindowsEpoch(base::Minutes(report_time)));
     }
   }
 }
@@ -244,11 +273,11 @@ void UpdatePrimaryUserDeskNamesPrefs() {
                                : std::string());
   }
 
-  DCHECK_EQ(name_pref_data->GetSize(), desks.size());
+  DCHECK_EQ(name_pref_data->GetList().size(), desks.size());
 
   if (IsNowInValidTimePeriod() &&
-      !primary_user_prefs->GetBoolean(prefs::kUserHasUsedDesksRecently)) {
-    primary_user_prefs->SetBoolean(prefs::kUserHasUsedDesksRecently, true);
+      !primary_user_prefs->GetBoolean(kUserHasUsedDesksRecently)) {
+    primary_user_prefs->SetBoolean(kUserHasUsedDesksRecently, true);
   }
 }
 
@@ -281,7 +310,7 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
     metrics_pref_data->Append(std::move(metrics_dict));
   }
 
-  DCHECK_EQ(metrics_pref_data->GetSize(), desks.size());
+  DCHECK_EQ(metrics_pref_data->GetList().size(), desks.size());
 
   // Save weekly active report time.
   DictionaryPrefUpdate weekly_active_desks_update(
@@ -306,6 +335,34 @@ void UpdatePrimaryUserActiveDeskPrefs(int active_desk_index) {
   }
 
   primary_user_prefs->SetInteger(prefs::kDesksActiveDesk, active_desk_index);
+}
+
+bool HasPrimaryUserUsedDesksRecently() {
+  PrefService* primary_user_prefs = GetPrimaryUserPrefService();
+  if (!primary_user_prefs) {
+    // Can be null in tests.
+    return false;
+  }
+
+  return primary_user_prefs->GetBoolean(kUserHasUsedDesksRecently);
+}
+
+const base::Time GetTimeNow() {
+  return g_override_clock_ ? g_override_clock_->Now() : base::Time::Now();
+}
+
+int GetDaysFromLocalEpoch() {
+  return (GetTimeNow() - GetLocalEpoch()).InDays();
+}
+
+void OverrideClockForTesting(base::Clock* test_clock) {
+  g_override_clock_ = test_clock;
+}
+
+void SetPrimaryUserHasUsedDesksRecentlyForTesting(bool value) {
+  PrefService* primary_user_prefs = GetPrimaryUserPrefService();
+  DCHECK(primary_user_prefs);
+  primary_user_prefs->SetBoolean(kUserHasUsedDesksRecently, value);
 }
 
 }  // namespace desks_restore_util

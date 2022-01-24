@@ -8,11 +8,13 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -43,29 +45,32 @@ TEST(AccountConsistencyModeManagerTest, DefaultValue) {
   std::unique_ptr<TestingProfile> profile =
       BuildTestingProfile(/*is_new_profile=*/false);
 
+  signin::AccountConsistencyMethod method =
 #if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(signin::AccountConsistencyMethod::kMirror,
-            AccountConsistencyModeManager::GetMethodForProfile(profile.get()));
-  EXPECT_TRUE(
-      AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile.get()));
-  EXPECT_FALSE(
-      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile.get()));
+      signin::AccountConsistencyMethod::kMirror;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)
+          ? signin::AccountConsistencyMethod::kMirror
+          : signin::AccountConsistencyMethod::kDice;
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
-  EXPECT_EQ(signin::AccountConsistencyMethod::kDice,
-            AccountConsistencyModeManager::GetMethodForProfile(profile.get()));
-  EXPECT_FALSE(
-      AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile.get()));
-  EXPECT_TRUE(
-      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile.get()));
+      signin::AccountConsistencyMethod::kDice;
 #else
 #error Either Dice or Mirror should be enabled
 #endif
+
+  EXPECT_EQ(method,
+            AccountConsistencyModeManager::GetMethodForProfile(profile.get()));
+  EXPECT_EQ(
+      method == signin::AccountConsistencyMethod::kMirror,
+      AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile.get()));
+  EXPECT_EQ(
+      method == signin::AccountConsistencyMethod::kDice,
+      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile.get()));
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/1220066): Remove the lacros exclusion when DICE is disabled on
 // Lacros.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Checks that changing the signin-allowed pref changes the Dice state on next
 // startup.
 TEST(AccountConsistencyModeManagerTest, SigninAllowedChangesDiceState) {
@@ -138,42 +143,15 @@ TEST(AccountConsistencyModeManagerTest, AllowBrowserSigninSwitch) {
               manager.GetAccountConsistencyMethod());
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// Checks that Dice migration happens when the manager is created.
-TEST(AccountConsistencyModeManagerTest, MigrateAtCreation) {
+// Checks that Dice is enabled for new profiles.
+TEST(AccountConsistencyModeManagerTest, DiceEnabledForNewProfiles) {
   content::BrowserTaskEnvironment task_environment;
   std::unique_ptr<TestingProfile> profile =
       BuildTestingProfile(/*is_new_profile=*/false);
   AccountConsistencyModeManager manager(profile.get());
   EXPECT_EQ(signin::AccountConsistencyMethod::kDice,
             manager.GetAccountConsistencyMethod());
-}
-
-TEST(AccountConsistencyModeManagerTest, ForceDiceMigration) {
-  content::BrowserTaskEnvironment task_environment;
-  std::unique_ptr<TestingProfile> profile =
-      BuildTestingProfile(/*is_new_profile=*/false);
-  profile->GetPrefs()->SetBoolean(prefs::kTokenServiceDiceCompatible, true);
-  AccountConsistencyModeManager manager(profile.get());
-  EXPECT_EQ(signin::AccountConsistencyMethod::kDice,
-            manager.GetAccountConsistencyMethod());
-  // Migration is not completed yet, |kDiceMigrationCompletePref| should not
-  // be written.
-  EXPECT_FALSE(manager.IsDiceMigrationCompleted(profile.get()));
-  manager.SetDiceMigrationCompleted();
-  EXPECT_TRUE(manager.IsDiceMigrationCompleted(profile.get()));
-}
-
-// Checks that new profiles are migrated at creation.
-TEST(AccountConsistencyModeManagerTest, NewProfile) {
-  content::BrowserTaskEnvironment task_environment;
-  std::unique_ptr<TestingProfile> profile =
-      BuildTestingProfile(/*is_new_profile=*/true);
-  EXPECT_TRUE(
-      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile.get()));
-  EXPECT_TRUE(
-      AccountConsistencyModeManager::IsDiceMigrationCompleted(profile.get()));
 }
 
 TEST(AccountConsistencyModeManagerTest, DiceOnlyForRegularProfile) {
@@ -230,11 +208,16 @@ TEST(AccountConsistencyModeManagerTest, DiceOnlyForRegularProfile) {
         profile.get()));
   }
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Mirror is enabled by default on Chrome OS, unless specified otherwise.
 TEST(AccountConsistencyModeManagerTest, MirrorEnabledByDefault) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    GTEST_SKIP();
+#endif
+
   // Creation of this object sets the current thread's id as UI thread.
   content::BrowserTaskEnvironment task_environment;
 
@@ -248,6 +231,11 @@ TEST(AccountConsistencyModeManagerTest, MirrorEnabledByDefault) {
 }
 
 TEST(AccountConsistencyModeManagerTest, MirrorDisabledForGuestSession) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    GTEST_SKIP();
+#endif
+
   // Creation of this object sets the current thread's id as UI thread.
   content::BrowserTaskEnvironment task_environment;
 
@@ -262,6 +250,11 @@ TEST(AccountConsistencyModeManagerTest, MirrorDisabledForGuestSession) {
 }
 
 TEST(AccountConsistencyModeManagerTest, MirrorDisabledForOffTheRecordProfile) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    GTEST_SKIP();
+#endif
+
   // Creation of this object sets the current thread's id as UI thread.
   content::BrowserTaskEnvironment task_environment;
 
@@ -286,7 +279,7 @@ TEST(AccountConsistencyModeManagerTest, MirrorDisabledForOffTheRecordProfile) {
   EXPECT_EQ(signin::AccountConsistencyMethod::kDisabled,
             AccountConsistencyModeManager::GetMethodForProfile(otr_profile));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_MIRROR)
 // Test that Mirror is enabled for child accounts.

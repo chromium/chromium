@@ -55,10 +55,10 @@ constexpr int32_t kExtractedStringMinLen = 6;
 constexpr int32_t kExtractedStringMaxLen = 1024;
 constexpr int32_t kOleRootDirIndex = -1;
 
-using ::google::protobuf::RepeatedPtrField;
 using ::maldoca::ole::OleDirectoryEntry;
 using ::maldoca::ole::OleFile;
 using ::maldoca::ole::OleToProtoSettings;
+using ::google::protobuf::RepeatedPtrField;
 
 namespace maldoca {
 OleToProto::OleToProto() {}

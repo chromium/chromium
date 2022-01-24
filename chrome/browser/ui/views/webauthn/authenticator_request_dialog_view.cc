@@ -63,7 +63,7 @@ AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
   // ObservableAuthenticatorList is owned by AuthenticatorRequestDialogModel,
   // destroy all view components that might own models observing the list prior
   // to destroying AuthenticatorRequestDialogModel.
-  RemoveAllChildViews(true /* delete_children */);
+  RemoveAllChildViews();
 }
 
 void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(

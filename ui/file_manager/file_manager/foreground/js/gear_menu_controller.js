@@ -125,13 +125,6 @@ export class GearMenuController {
       return;
     }
 
-    // TODO(crbug.com/1177203): Remove once Drive sends proper quota info to
-    // Chrome.
-    if (currentVolumeInfo.volumeType == VolumeManagerCommon.VolumeType.DRIVE) {
-      this.gearMenu_.setSpaceInfo(null, false);
-      return;
-    }
-
     this.gearMenu_.setSpaceInfo(
         new Promise(fulfill => {
           chrome.fileManagerPrivate.getSizeStats(

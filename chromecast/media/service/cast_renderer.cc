@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/common/mojom/constants.mojom.h"
 #include "chromecast/media/base/audio_device_ids.h"
@@ -40,7 +40,7 @@ namespace {
 
 // Maximum difference between audio frame PTS and video frame PTS
 // for frames read from the DemuxerStream.
-const base::TimeDelta kMaxDeltaFetcher(base::TimeDelta::FromMilliseconds(2000));
+const base::TimeDelta kMaxDeltaFetcher(base::Milliseconds(2000));
 
 void VideoModeSwitchCompletionCb(::media::PipelineStatusCallback init_cb,
                                  bool success) {

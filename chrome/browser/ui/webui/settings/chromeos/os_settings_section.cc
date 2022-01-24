@@ -74,11 +74,9 @@ std::string OsSettingsSection::GetDefaultModifiedUrl(
     mojom::SearchResultType type,
     OsSettingsIdentifier id,
     const std::string& url_to_modify) {
-  if (!chromeos::features::IsDeepLinkingEnabled() ||
-      type != mojom::SearchResultType::kSetting) {
-    // Default case for static URLs which do not need to be modified.
+  // Default case for static URLs which do not need to be modified.
+  if (type != mojom::SearchResultType::kSetting)
     return url_to_modify;
-  }
 
   std::stringstream ss;
   ss << url_to_modify;

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 
 #include "services/network/public/mojom/load_timing_info.mojom-blink.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
@@ -158,8 +157,6 @@ void ResourceLoadTiming::SetWorkerRespondWithSettled(
 }
 
 void ResourceLoadTiming::SetSendStart(base::TimeTicks send_start) {
-  TRACE_EVENT_MARK_WITH_TIMESTAMP0("blink.user_timing", "requestStart",
-                                   send_start);
   send_start_ = send_start;
 }
 

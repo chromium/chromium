@@ -16,9 +16,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ipc/ipc.mojom.h"
@@ -65,6 +65,9 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
       mojo::ScopedMessagePipeHandle handle,
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
       const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner);
+
+  ChannelMojo(const ChannelMojo&) = delete;
+  ChannelMojo& operator=(const ChannelMojo&) = delete;
 
   ~ChannelMojo() override;
 
@@ -132,8 +135,6 @@ class COMPONENT_EXPORT(IPC) ChannelMojo
       associated_interfaces_;
 
   base::WeakPtrFactory<ChannelMojo> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelMojo);
 };
 
 }  // namespace IPC

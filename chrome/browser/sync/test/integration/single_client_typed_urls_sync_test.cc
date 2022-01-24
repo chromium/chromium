@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/typed_urls_helper.h"
@@ -29,9 +28,10 @@ class SingleClientTypedUrlsSyncTest : public SyncTest {
 // so verifier needs to be disabled.
 #if defined(OS_ANDROID)
     return false;
-#endif
+#else
     // TODO(crbug.com/1137779): rewrite tests to not use verifier.
     return true;
+#endif
   }
 };
 

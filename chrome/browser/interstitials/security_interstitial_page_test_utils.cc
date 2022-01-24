@@ -86,4 +86,10 @@ bool IsShowingLegacyTLSInterstitial(content::WebContents* tab) {
                                       "outdated security configuration");
 }
 
+bool IsShowingHttpsFirstModeInterstitial(content::WebContents* tab) {
+  return IsShowingInterstitial(tab) &&
+         IsInterstitialDisplayingText(tab->GetMainFrame(),
+                                      "this site does not support HTTPS.");
+}
+
 }  // namespace chrome_browser_interstitials

@@ -44,7 +44,7 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
     return;
 
   // Finish session.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Check UKM.
   ExpectUKMPageLoadMetric(PageLoad::kLayoutInstability_CumulativeShiftScoreName,

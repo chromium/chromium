@@ -28,21 +28,23 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -61,12 +63,15 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
+#include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/shelf_model.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
-#include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
@@ -78,6 +83,7 @@
 namespace {
 
 // Helper to call AppServiceProxyFactory::GetForProfile().
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 apps::AppServiceProxyBase* GetAppServiceProxy(Profile* profile) {
   // Crash if there is no AppService support for |profile|. GetForProfile() will
   // DumpWithoutCrashing, which will not fail a test. No codepath should trigger
@@ -86,11 +92,12 @@ apps::AppServiceProxyBase* GetAppServiceProxy(Profile* profile) {
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
   return apps::AppServiceProxyFactory::GetForProfile(profile);
 }
+#endif
 
 }  // namespace
 
 namespace web_app {
-
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Test that System Apps install correctly with a manifest.
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, Install) {
   WaitForTestSystemAppInstall();
@@ -100,12 +107,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, Install) {
   Browser* app_browser;
   LaunchAppWithoutWaiting(GetMockAppType(), &app_browser);
 
-  AppId app_id = app_browser->app_controller()->GetAppId();
+  AppId app_id = app_browser->app_controller()->app_id();
   EXPECT_EQ(GetManager().GetAppIdForSystemApp(GetMockAppType()), app_id);
   EXPECT_TRUE(GetManager().IsSystemWebApp(app_id));
 
   Profile* profile = app_browser->profile();
-  WebAppRegistrar& registrar = WebAppProvider::Get(profile)->registrar();
+  WebAppRegistrar& registrar = WebAppProvider::GetForTest(profile)->registrar();
 
   EXPECT_EQ("Test System App", registrar.GetAppShortName(app_id));
   EXPECT_EQ(SkColorSetRGB(0, 0xFF, 0), registrar.GetAppThemeColor(app_id));
@@ -142,16 +149,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   // In scope, the toolbar should not be visible.
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 
-  // Because the first part of the url is on a different origin (settings vs.
-  // foo) a toolbar would normally be shown. However, because settings is a
-  // SystemWebApp and foo is served via chrome:// it is okay not to show the
-  // toolbar.
-  GURL out_of_scope_chrome_page(content::kChromeUIScheme +
-                                std::string("://foo"));
+  // Out of scope chrome:// URL.
+  GURL out_of_scope_chrome_page("chrome://foo");
   content::NavigateToURLBlockUntilNavigationsComplete(
       app_browser->tab_strip_model()->GetActiveWebContents(),
       out_of_scope_chrome_page, 1);
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
 
   // Even though the url is secure it is not being served over chrome:// so a
   // toolbar should be shown.
@@ -225,20 +228,21 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromAppListGrid", 1);
   histograms.ExpectUniqueSample("Apps.DefaultAppLaunch.FromAppListGrid", 39, 1);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // The helper methods in this class uses ExecuteScriptXXX instead of ExecJs and
 // EvalJs because of some quirks surrounding origin trials and content security
 // policies.
 class SystemWebAppManagerFileHandlingBrowserTestBase
-    : public SystemWebAppBrowserTestBase,
-      public ::testing::WithParamInterface<SystemWebAppManagerTestParams> {
+    : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
  public:
   using IncludeLaunchDirectory =
       TestSystemWebAppInstallation::IncludeLaunchDirectory;
 
   explicit SystemWebAppManagerFileHandlingBrowserTestBase(
       IncludeLaunchDirectory include_launch_directory)
-      : SystemWebAppBrowserTestBase(/*install_mock=*/false) {
+      : TestProfileTypeMixin<SystemWebAppBrowserTestBase>(
+            /*install_mock=*/false) {
     scoped_feature_blink_api_.InitWithFeatures(
         {blink::features::kFileHandlingAPI}, {});
 
@@ -251,7 +255,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
       const std::vector<base::FilePath> launch_files,
       bool wait_for_load = true) {
     apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
-    params.source = apps::mojom::AppLaunchSource::kSourceChromeInternal;
+    params.launch_source = apps::mojom::LaunchSource::kFromChromeInternal;
     params.launch_files = launch_files;
 
     return SystemWebAppBrowserTestBase::LaunchApp(std::move(params));
@@ -260,7 +264,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
   content::WebContents* LaunchAppWithoutWaiting(
       const std::vector<base::FilePath> launch_files) {
     apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
-    params.source = apps::mojom::AppLaunchSource::kSourceChromeInternal;
+    params.launch_source = apps::mojom::LaunchSource::kFromChromeInternal;
     params.launch_files = launch_files;
 
     return SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
@@ -328,6 +332,7 @@ class SystemWebAppManagerLaunchFilesBrowserTest
             IncludeLaunchDirectory::kNo) {}
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Check launch files are passed to application.
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
                        LaunchFilesForSystemWebApp) {
@@ -394,6 +399,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
   navigation_observer.Wait();
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromOtherApp", 1);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // The helper methods in this class uses ExecuteScriptXXX instead of ExecJs and
 // EvalJs because of some quirks surrounding origin trials and content security
@@ -540,6 +546,7 @@ class SystemWebAppManagerLaunchDirectoryBrowserTest
   }
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
                        LaunchDirectoryForSystemWebApp) {
   WaitForTestSystemAppInstall();
@@ -625,6 +632,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
   ASSERT_TRUE(base::DirectoryExists(sensitive_dir));
   TestPermissionsForLaunchDirectory(sensitive_dir);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -843,7 +851,7 @@ class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
 
     // Launch the App.
     apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
-    params.source = apps::mojom::AppLaunchSource::kSourceChromeInternal;
+    params.launch_source = apps::mojom::LaunchSource::kFromChromeInternal;
     params.launch_files = {temp_file_path};
 
     return SystemWebAppBrowserTestBase::LaunchApp(std::move(params));
@@ -864,6 +872,7 @@ class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
   url::Origin GetOrigin(const GURL& url) { return url::Origin::Create(url); }
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Test that file handling works when the App is first installed.
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerFileHandlingOriginTrialsBrowserTest,
                        PRE_FileHandlingWorks) {
@@ -881,6 +890,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerFileHandlingOriginTrialsBrowserTest,
   content::WebContents* web_contents = LaunchWithTestFiles();
   EXPECT_TRUE(WaitForLaunchParam(web_contents));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class SystemWebAppManagerNotShownInLauncherTest
     : public SystemWebAppManagerBrowserTest {
@@ -892,6 +902,7 @@ class SystemWebAppManagerNotShownInLauncherTest
   }
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNotShownInLauncherTest,
                        NotShownInLauncher) {
   WaitForTestSystemAppInstall();
@@ -916,6 +927,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNotShownInLauncherTest,
   EXPECT_FALSE(mock_app);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class SystemWebAppManagerNotShownInSearchTest
     : public SystemWebAppManagerBrowserTest {
@@ -927,6 +939,7 @@ class SystemWebAppManagerNotShownInSearchTest
   }
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNotShownInSearchTest,
                        NotShownInSearch) {
   WaitForTestSystemAppInstall();
@@ -941,6 +954,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNotShownInSearchTest,
       });
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class SystemWebAppManagerAdditionalSearchTermsTest
     : public SystemWebAppManagerBrowserTest {
@@ -952,6 +966,7 @@ class SystemWebAppManagerAdditionalSearchTermsTest
   }
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAdditionalSearchTermsTest,
                        AdditionalSearchTerms) {
   WaitForTestSystemAppInstall();
@@ -967,6 +982,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAdditionalSearchTermsTest,
       });
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class SystemWebAppManagerHasTabStripTest
     : public SystemWebAppManagerBrowserTest {
@@ -978,6 +994,7 @@ class SystemWebAppManagerHasTabStripTest
   }
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasTabStripTest, HasTabStrip) {
   WaitForTestSystemAppInstall();
 
@@ -985,6 +1002,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasTabStripTest, HasTabStrip) {
   EXPECT_TRUE(LaunchApp(GetMockAppType(), &browser));
   EXPECT_TRUE(browser->app_controller()->has_tab_strip());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class SystemWebAppManagerHasNoTabStripTest
     : public SystemWebAppManagerBrowserTest {
@@ -996,6 +1014,7 @@ class SystemWebAppManagerHasNoTabStripTest
   }
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasNoTabStripTest, HasNoTabStrip) {
   WaitForTestSystemAppInstall();
 
@@ -1003,6 +1022,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasNoTabStripTest, HasNoTabStrip) {
   EXPECT_TRUE(LaunchApp(GetMockAppType(), &browser));
   EXPECT_FALSE(browser->app_controller()->has_tab_strip());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // We only support custom bounds on Chrome OS.
@@ -1050,6 +1070,7 @@ class SystemWebAppManagerUninstallBrowserTest
   ~SystemWebAppManagerUninstallBrowserTest() override = default;
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUninstallBrowserTest, PRE_Uninstall) {
   WaitForTestSystemAppInstall();
   EXPECT_TRUE(GetManager().GetAppIdForSystemApp(GetMockAppType()).has_value());
@@ -1058,7 +1079,22 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUninstallBrowserTest, PRE_Uninstall) {
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUninstallBrowserTest, Uninstall) {
   WaitForTestSystemAppInstall();
   EXPECT_TRUE(GetManager().GetAppIds().empty());
+
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  app_service_proxy->FlushMojoCallsForTesting();
+
+  bool swa_found = false;
+  app_service_proxy->AppRegistryCache().ForEachApp(
+      [&](const apps::AppUpdate& app) {
+        if (app.AppType() == apps::mojom::AppType::kSystemWeb ||
+            app.AppType() == apps::mojom::AppType::kWeb) {
+          swa_found = true;
+        }
+      });
+  EXPECT_FALSE(swa_found);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // We only have concrete System Web Apps on Chrome OS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1149,6 +1185,7 @@ class SystemWebAppManagerChromeUntrustedTest
   }
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
   WaitForTestSystemAppInstall();
 
@@ -1158,11 +1195,11 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
   LaunchAppWithoutWaiting(GetMockAppType(), &app_browser);
 
   AppId app_id = GetManager().GetAppIdForSystemApp(GetMockAppType()).value();
-  EXPECT_EQ(app_id, app_browser->app_controller()->GetAppId());
+  EXPECT_EQ(app_id, app_browser->app_controller()->app_id());
   EXPECT_TRUE(GetManager().IsSystemWebApp(app_id));
 
   Profile* profile = app_browser->profile();
-  WebAppRegistrar& registrar = WebAppProvider::Get(profile)->registrar();
+  WebAppRegistrar& registrar = WebAppProvider::GetForTest(profile)->registrar();
 
   EXPECT_EQ("Test System App", registrar.GetAppShortName(app_id));
   EXPECT_EQ(SkColorSetRGB(0, 0xFF, 0), registrar.GetAppThemeColor(app_id));
@@ -1172,6 +1209,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
                 GURL("chrome-untrusted://test-system-app/")),
             app_id);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class SystemWebAppManagerOriginTrialsBrowserTest
     : public SystemWebAppManagerBrowserTest {
@@ -1195,7 +1233,7 @@ class SystemWebAppManagerOriginTrialsBrowserTest
    public:
     explicit MockNavigationHandle(const GURL& url)
         : content::MockNavigationHandle(url, nullptr) {}
-    bool IsInMainFrame() override { return IsInPrimaryMainFrame(); }
+    bool IsInMainFrame() const override { return IsInPrimaryMainFrame(); }
   };
 
   std::unique_ptr<content::WebContents> CreateTestWebContents() {
@@ -1214,6 +1252,7 @@ class SystemWebAppManagerOriginTrialsBrowserTest
   url::Origin GetOrigin(const GURL& url) { return url::Origin::Create(url); }
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
                        ForceEnabledOriginTrials_FirstNavigationIntoPage) {
   WaitForTestSystemAppInstall();
@@ -1332,6 +1371,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
     ASSERT_EQ("", tab_helper.GetAppId());
   }
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1438,6 +1478,66 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerAppSuspensionBrowserTest);
 
+class SystemWebAppManagerShortcutTest : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppManagerShortcutTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ = TestSystemWebAppInstallation::SetUpAppWithShortcuts();
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShortcutTest, ShortcutUrl) {
+  WaitForTestSystemAppInstall();
+  AppId app_id =
+      GetManager()
+          .GetAppIdForSystemApp(SystemAppType::SHORTCUT_CUSTOMIZATION)
+          .value();
+  Browser* browser;
+  EXPECT_TRUE(LaunchApp(SystemAppType::SHORTCUT_CUSTOMIZATION, &browser));
+
+  // Wait for app service to see the newly installed apps.
+  apps::AppServiceProxyFactory::GetForProfile(browser->profile())
+      ->FlushMojoCallsForTesting();
+
+  std::unique_ptr<ui::SimpleMenuModel> menu_model;
+  {
+    ash::ShelfModel* const shelf_model = ash::ShelfModel::Get();
+    PinAppWithIDToShelf(app_id);
+    ash::ShelfItemDelegate* const delegate =
+        shelf_model->GetShelfItemDelegate(ash::ShelfID(app_id));
+    base::RunLoop run_loop;
+    delegate->GetContextMenu(
+        display::Display::GetDefaultDisplay().id(),
+        base::BindLambdaForTesting(
+            [&run_loop,
+             &menu_model](std::unique_ptr<ui::SimpleMenuModel> model) {
+              menu_model = std::move(model);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+
+  auto check_shortcut = [&menu_model](int index, int shortcut_index,
+                                      const std::u16string& label) {
+    EXPECT_EQ(menu_model->GetTypeAt(index), ui::MenuModel::TYPE_COMMAND);
+    EXPECT_EQ(menu_model->GetCommandIdAt(index),
+              ash::LAUNCH_APP_SHORTCUT_FIRST + shortcut_index);
+    EXPECT_EQ(menu_model->GetLabelAt(index), label);
+  };
+
+  // Shortcuts appear last in the context menu.
+  check_shortcut(menu_model->GetItemCount() - 3, 0, u"One");
+  // menu_model->GetItemCount() - 2 is used by a separator
+  check_shortcut(menu_model->GetItemCount() - 1, 1, u"Two");
+
+  const int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST + 1;
+  ui_test_utils::UrlLoadObserver url_observer(
+      GURL("chrome://test-system-app/pwa.html#two"),
+      content::NotificationService::AllSources());
+  menu_model->ActivatedAt(menu_model->GetIndexOfCommandId(command_id),
+                          ui::EF_LEFT_MOUSE_BUTTON);
+  url_observer.Wait();
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SystemWebAppManagerBackgroundTaskTest
@@ -1481,7 +1581,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBackgroundTaskTest, TimerFires) {
 
   auto& tasks = GetManager().GetBackgroundTasksForTesting();
   auto* timer = tasks[0]->get_timer_for_testing();
-  EXPECT_EQ(base::TimeDelta::FromSeconds(120), timer->GetCurrentDelay());
+  EXPECT_EQ(base::Seconds(120), timer->GetCurrentDelay());
   EXPECT_EQ(SystemAppBackgroundTask::INITIAL_WAIT,
             tasks[0]->get_state_for_testing());
   // The "Immediate" timer waits for 2 minutes, and it's really hard to mock
@@ -1493,11 +1593,11 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBackgroundTaskTest, TimerFires) {
   EXPECT_TRUE(timer->IsRunning());
   EXPECT_EQ(1u, tasks.size());
   EXPECT_TRUE(tasks[0]->open_immediately_for_testing());
-  EXPECT_EQ(base::TimeDelta::FromDays(1), tasks[0]->period_for_testing());
+  EXPECT_EQ(base::Days(1), tasks[0]->period_for_testing());
   EXPECT_EQ(1u, tasks[0]->timer_activated_count_for_testing());
   EXPECT_EQ(SystemAppBackgroundTask::WAIT_PERIOD,
             tasks[0]->get_state_for_testing());
-  EXPECT_EQ(base::TimeDelta::FromDays(1), timer->GetCurrentDelay());
+  EXPECT_EQ(base::Days(1), timer->GetCurrentDelay());
 
   histograms.ExpectTotalCount("Webapp.SystemApps.BackgroundTaskStartDelay", 1);
   histograms.ExpectUniqueSample("Webapp.SystemApps.BackgroundTaskStartDelay", 0,
@@ -1527,7 +1627,7 @@ class SystemWebAppManagerContextMenuBrowserTest
     params.page_url = web_contents->GetVisibleURL();
     params.source_type = ui::MENU_SOURCE_NONE;
     auto menu = std::make_unique<TestRenderViewContextMenu>(
-        web_contents->GetMainFrame(), params);
+        *web_contents->GetMainFrame(), params);
     menu->Init();
     return menu;
   }
@@ -1539,6 +1639,7 @@ class SystemWebAppManagerContextMenuBrowserTest
   const SystemAppType kAppTypeMultiWindowTabStrip = SystemAppType::HELP;
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerContextMenuBrowserTest,
                        LinkToAppItself) {
   WaitForTestSystemAppInstall();
@@ -1640,7 +1741,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerContextMenuBrowserTest, WebLink) {
     EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
   }
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerBrowserTest);
 
@@ -1649,12 +1752,14 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerLaunchDirectoryBrowserTest);
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest);
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerNotShownInLauncherTest);
 
@@ -1675,27 +1780,35 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerUninstallBrowserTest);
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerInstallAllAppsBrowserTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerShortcutTest);
 #endif
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerBackgroundTaskTest);
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerHasTabStripTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerHasNoTabStripTest);
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerDefaultBoundsTest);
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerContextMenuBrowserTest);
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace web_app

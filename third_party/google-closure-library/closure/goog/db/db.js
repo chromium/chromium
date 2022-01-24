@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Wrappers for the HTML5 IndexedDB. The wrappers export nearly
@@ -58,8 +50,21 @@ goog.require('goog.db.Transaction');
  * @type {!IDBFactory|undefined}
  * @private
  */
-goog.db.indexedDb_ = goog.global.indexedDB || goog.global.mozIndexedDB ||
-    goog.global.webkitIndexedDB || goog.global.moz_indexedDB;
+goog.db.indexedDb_;
+
+/**
+ * Lazily initializes the IndexedDB factory object.
+ *
+ * @return {!IDBFactory|undefined}
+ * @private
+ */
+goog.db.getIndexedDb_ = function() {
+  if (goog.db.indexedDb_ == undefined) {
+    goog.db.indexedDb_ = goog.global.indexedDB || goog.global.mozIndexedDB ||
+        goog.global.webkitIndexedDB || goog.global.moz_indexedDB;
+  }
+  return goog.db.indexedDb_;
+};
 
 
 /**
@@ -120,30 +125,36 @@ goog.db.UpgradeNeededCallback;
  */
 goog.db.openDatabase = function(
     name, opt_version, opt_onUpgradeNeeded, opt_onBlocked) {
+  'use strict';
   goog.asserts.assert(
       (opt_version !== undefined) == (opt_onUpgradeNeeded !== undefined),
       'opt_version must be passed to goog.db.openDatabase if and only if ' +
           'opt_onUpgradeNeeded is also passed');
 
-  var d = new goog.async.Deferred();
-  var openRequest = opt_version ? goog.db.indexedDb_.open(name, opt_version) :
-                                  goog.db.indexedDb_.open(name);
+  const d = new goog.async.Deferred();
+  let openRequest = opt_version ?
+      goog.db.getIndexedDb_().open(name, opt_version) :
+      goog.db.getIndexedDb_().open(name);
   openRequest.onsuccess = function(ev) {
-    var db = new goog.db.IndexedDb(ev.target.result);
+    'use strict';
+    const db = new goog.db.IndexedDb(ev.target.result);
     d.callback(db);
   };
   openRequest.onerror = function(ev) {
-    var msg = 'opening database ' + name;
+    'use strict';
+    const msg = 'opening database ' + name;
     d.errback(goog.db.Error.fromRequest(ev.target, msg));
   };
   openRequest.onupgradeneeded = function(ev) {
+    'use strict';
     if (!opt_onUpgradeNeeded) return;
-    var db = new goog.db.IndexedDb(ev.target.result);
+    const db = new goog.db.IndexedDb(ev.target.result);
     opt_onUpgradeNeeded(
         new goog.db.IndexedDb.VersionChangeEvent(ev.oldVersion, ev.newVersion),
         db, new goog.db.Transaction(ev.target.transaction, db));
   };
   openRequest.onblocked = function(ev) {
+    'use strict';
     if (opt_onBlocked) {
       opt_onBlocked(
           new goog.db.IndexedDb.VersionChangeEvent(
@@ -164,14 +175,20 @@ goog.db.openDatabase = function(
  *     database is deleted.
  */
 goog.db.deleteDatabase = function(name, opt_onBlocked) {
-  var d = new goog.async.Deferred();
-  var deleteRequest = goog.db.indexedDb_.deleteDatabase(name);
-  deleteRequest.onsuccess = function(ev) { d.callback(); };
+  'use strict';
+  const d = new goog.async.Deferred();
+  let deleteRequest = goog.db.getIndexedDb_().deleteDatabase(name);
+  deleteRequest.onsuccess = function(ev) {
+    'use strict';
+    d.callback();
+  };
   deleteRequest.onerror = function(ev) {
-    var msg = 'deleting database ' + name;
+    'use strict';
+    const msg = 'deleting database ' + name;
     d.errback(goog.db.Error.fromRequest(ev.target, msg));
   };
   deleteRequest.onblocked = function(ev) {
+    'use strict';
     if (opt_onBlocked) {
       opt_onBlocked(
           new goog.db.IndexedDb.VersionChangeEvent(

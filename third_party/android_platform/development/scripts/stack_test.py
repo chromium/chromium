@@ -103,7 +103,7 @@ class StackDecodeTest(unittest.TestCase):
     data = '\x7fELF' + ' ' * (0xE00 - self._num_libraries)
     self._num_libraries += 1
     with open(library, 'wb') as f:
-      f.write(data)
+      f.write(data.encode('utf-8'))
 
   # Build a dummy APK with native libraries in it.
   def _MakeApk(self, apk, libs, apk_dir, out_dir, crazy):
@@ -195,7 +195,7 @@ class StackDecodeTest(unittest.TestCase):
     actual_tokens = [line.split() for line in output_lines]
 
     self.assertEqual(len(expected_tokens), len(actual_tokens))
-    for i in xrange(len(expected_tokens)):
+    for i in range(len(expected_tokens)):
       self.assertEqual(expected_tokens[i], actual_tokens[i])
 
   def test_BasicDecoding(self):

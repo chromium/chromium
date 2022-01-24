@@ -168,6 +168,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleFrameAssembler {
  public:
   explicit FidoBleFrameAssembler(
       const FidoBleFrameInitializationFragment& fragment);
+
+  FidoBleFrameAssembler(const FidoBleFrameAssembler&) = delete;
+  FidoBleFrameAssembler& operator=(const FidoBleFrameAssembler&) = delete;
+
   ~FidoBleFrameAssembler();
 
   bool IsDone() const;
@@ -179,8 +183,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleFrameAssembler {
   uint16_t data_length_ = 0;
   uint8_t sequence_number_ = 0;
   FidoBleFrame frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(FidoBleFrameAssembler);
 };
 
 }  // namespace device

@@ -12,11 +12,10 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/media_export.h"
@@ -72,6 +71,9 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
       const base::TickClock* clock,
       scoped_refptr<base::SingleThreadTaskRunner> audio_thread_task_runner,
       scoped_refptr<base::SequencedTaskRunner> monitor_task_runner = nullptr);
+
+  AudioThreadHangMonitor(const AudioThreadHangMonitor&) = delete;
+  AudioThreadHangMonitor& operator=(const AudioThreadHangMonitor&) = delete;
 
   ~AudioThreadHangMonitor();
 
@@ -162,8 +164,6 @@ class MEDIA_EXPORT AudioThreadHangMonitor final {
   // successive successful pings. If the most recent ping was failed, the number
   // is the negative of the number of successive failed pings.
   int recent_ping_state_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioThreadHangMonitor);
 };
 
 }  // namespace media

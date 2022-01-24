@@ -235,13 +235,10 @@ PresentQLPreviewController GetHistogramEnum(
 
 - (id<QLPreviewItem>)previewController:(QLPreviewController*)controller
                     previewItemAtIndex:(NSInteger)index {
-  if (@available(iOS 13, *)) {
-    ARQuickLookPreviewItem* item =
-        [[ARQuickLookPreviewItem alloc] initWithFileAtURL:self.fileURL];
-    item.allowsContentScaling = self.allowsContentScaling;
-    return item;
-  }
-  return self.fileURL;
+  ARQuickLookPreviewItem* item =
+      [[ARQuickLookPreviewItem alloc] initWithFileAtURL:self.fileURL];
+  item.allowsContentScaling = self.allowsContentScaling;
+  return item;
 }
 
 #pragma mark - QLPreviewControllerDelegate

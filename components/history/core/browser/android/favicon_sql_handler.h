@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_FAVICON_SQL_HANDLER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_FAVICON_SQL_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/history/core/browser/android/sql_handler.h"
 
 namespace favicon {
@@ -18,6 +17,10 @@ namespace history {
 class FaviconSQLHandler : public SQLHandler {
  public:
   explicit FaviconSQLHandler(favicon::FaviconDatabase* favicon_db);
+
+  FaviconSQLHandler(const FaviconSQLHandler&) = delete;
+  FaviconSQLHandler& operator=(const FaviconSQLHandler&) = delete;
+
   ~FaviconSQLHandler() override;
 
   // SQLHandler overrides:
@@ -32,8 +35,6 @@ class FaviconSQLHandler : public SQLHandler {
   bool DeleteUnusedFavicon(const std::vector<favicon_base::FaviconID>& ids);
 
   favicon::FaviconDatabase* favicon_db_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconSQLHandler);
 };
 
 }  // namespace history.

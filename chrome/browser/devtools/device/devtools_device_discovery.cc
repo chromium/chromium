@@ -46,8 +46,7 @@ const char kWebViewSocketPrefix[] = "webview_devtools_remote";
 
 static void ScheduleTaskDefault(base::OnceClosure task) {
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE, std::move(task),
-      base::TimeDelta::FromMilliseconds(kPollingIntervalMs));
+      FROM_HERE, std::move(task), base::Milliseconds(kPollingIntervalMs));
 }
 
 // ProtocolCommand ------------------------------------------------------------
@@ -60,6 +59,9 @@ class ProtocolCommand
                   const std::string& target_path,
                   const std::string& command);
 
+  ProtocolCommand(const ProtocolCommand&) = delete;
+  ProtocolCommand& operator=(const ProtocolCommand&) = delete;
+
  private:
   void OnSocketOpened() override;
   void OnFrameRead(const std::string& message) override;
@@ -68,8 +70,6 @@ class ProtocolCommand
 
   const std::string command_;
   std::unique_ptr<AndroidDeviceManager::AndroidWebSocket> web_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolCommand);
 };
 
 ProtocolCommand::ProtocolCommand(
@@ -101,6 +101,9 @@ class WebSocketProxy : public AndroidDeviceManager::AndroidWebSocket::Delegate {
  public:
   explicit WebSocketProxy(content::DevToolsExternalAgentProxy* proxy)
       : socket_opened_(false), proxy_(proxy) {}
+
+  WebSocketProxy(const WebSocketProxy&) = delete;
+  WebSocketProxy& operator=(const WebSocketProxy&) = delete;
 
   void WebSocketCreated(AndroidDeviceManager::AndroidWebSocket* web_socket) {
     web_socket_.reset(web_socket);
@@ -140,7 +143,6 @@ class WebSocketProxy : public AndroidDeviceManager::AndroidWebSocket::Delegate {
   std::vector<std::string> pending_messages_;
   std::unique_ptr<AndroidDeviceManager::AndroidWebSocket> web_socket_;
   content::DevToolsExternalAgentProxy* proxy_;
-  DISALLOW_COPY_AND_ASSIGN(WebSocketProxy);
 };
 
 class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
@@ -153,6 +155,10 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
       const std::string& target_path,
       const std::string& type,
       base::Value* value);
+
+  AgentHostDelegate(const AgentHostDelegate&) = delete;
+  AgentHostDelegate& operator=(const AgentHostDelegate&) = delete;
+
   ~AgentHostDelegate() override;
 
  private:
@@ -194,7 +200,6 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
   std::map<content::DevToolsExternalAgentProxy*,
            std::unique_ptr<WebSocketProxy>>
       proxies_;
-  DISALLOW_COPY_AND_ASSIGN(AgentHostDelegate);
 };
 
 static std::string GetStringProperty(const base::Value& value,

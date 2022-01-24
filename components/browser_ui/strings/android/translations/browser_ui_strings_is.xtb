@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">Þetta hreinsar <ph name="DATASIZE" /> af gögnum og fótsporum sem geymd eru af vefsvæðum og forritum á heimaskjánum.</translation>
 <translation id="1178581264944972037">Gera hlé</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
-<translation id="1195941046451948919">Viltu örugglega endurstilla allar heimildir fyrir þetta vefsvæði?</translation>
 <translation id="1201402288615127009">Áfram</translation>
 <translation id="1242008676835033345">Fellt inn á <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stöðva</translation>
@@ -19,7 +18,6 @@
 <translation id="1384959399684842514">Gert var hlé á niðurhali</translation>
 <translation id="1415402041810619267">Stytt vefslóð</translation>
 <translation id="1446450296470737166">Leyfa ótakmarkaða stjórn á MIDI-tækjum</translation>
-<translation id="1509960214886564027">Eiginleikar gætu bilað á mörgum vefsvæðum</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1644574205037202324">Ferill</translation>
 <translation id="1647582022260550163">Viltu örugglega endurstilla heimildir og hreinsa fótspor og vefsvæðagögn?</translation>
@@ -31,6 +29,7 @@
 <translation id="1743802530341753419">Spyrja áður en vefsvæðum er leyft að tengjast við tæki (mælt með)</translation>
 <translation id="1779089405699405702">Afkóðun mynda</translation>
 <translation id="1818308510395330587">Til að leyfa <ph name="APP_NAME" /> að nota AR þarftu einnig að kveikja á myndavél í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">Frá <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Slökkt er á aðgangi að staðsetningu fyrir þetta tæki. Kveiktu á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Auglýsingar</translation>
 <translation id="1919950603503897840">Velja tengiliði</translation>
@@ -38,6 +37,7 @@
 <translation id="1984937141057606926">Leyfð, nema frá þriðja aðila</translation>
 <translation id="1989112275319619282">Skoða</translation>
 <translation id="1994173015038366702">Slóð vefsvæðis</translation>
+<translation id="2004697686368036666">Óvíst er að eiginleikar á sumum vefsvæðum virki</translation>
 <translation id="2025115093177348061">Aukinn veruleiki</translation>
 <translation id="2030769033451695672">Ýttu til að fara aftur á <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Afturkalla</translation>
@@ -52,6 +52,7 @@
 <translation id="2289270750774289114">Spyrja þegar vefsvæði vill finna nálæg Bluetooth-tæki (ráðlagt)</translation>
 <translation id="2315043854645842844">Stýrikerfið styður ekki vottorðsval hjá biðlara.</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
+<translation id="2379925928934107488">Nota dökkt þema fyrir vefsvæði þegar Chrome notar dökkt þema, sé þess kostur</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót leyft}one{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót leyft}other{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót leyft}}</translation>
 <translation id="2434158240863470628">Niðurhali lokið <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -64,12 +65,14 @@
 <translation id="2570922361219980984">Einnig er slökkt á aðgangi að staðsetningu fyrir þetta tæki. Kveiktu á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Stækkað – smelltu til að minnka.</translation>
 <translation id="2586657967955657006">Klippiborð</translation>
+<translation id="2597457036804169544">Ekki nota dökkt þema fyrir vefsvæði</translation>
 <translation id="2621115761605608342">Leyfa JavaScript fyrir ákveðna síðu.</translation>
 <translation id="2653659639078652383">Senda</translation>
 <translation id="2677748264148917807">Yfirgefa</translation>
 <translation id="2687403674020088961">Loka á öll fótspor (ekki mælt með)</translation>
 <translation id="2704606927547763573">Afritað</translation>
 <translation id="2717722538473713889">Netföng</translation>
+<translation id="2785051990912111074">Þetta val hreinsar fótspor fyrir <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Viltu örugglega endurstilla allar heimildir vefsvæða fyrir „<ph name="CHOSEN_OBJECT_NAME" />“?</translation>
 <translation id="2870560284913253234">Vefsvæði</translation>
 <translation id="2874939134665556319">Fyrra lag</translation>
@@ -101,6 +104,7 @@
 <translation id="3600792891314830896">Slökkva á hljóði vefsvæða sem spila hljóð</translation>
 <translation id="3744111561329211289">Samstilling í bakgrunni</translation>
 <translation id="3763247130972274048">Ýttu tvisvar vinstra eða hægra megin á myndskeið til að fara fram um 10 sekúndur</translation>
+<translation id="3797520601150691162">Ekki nota dökkt þema fyrir tiltekið vefsvæði</translation>
 <translation id="381841723434055211">Símanúmer</translation>
 <translation id="3835233591525155343">Tækjanotkun þín</translation>
 <translation id="385051799172605136">Til baka</translation>
@@ -130,7 +134,6 @@
 <translation id="4570913071927164677">Nánar</translation>
 <translation id="4645575059429386691">Stjórnað af foreldri þínu</translation>
 <translation id="4670064810192446073">Sýndarveruleiki</translation>
-<translation id="4708011789095599544">Viltu örugglega hreinsa fótspor og önnur gögn fyrir þetta vefsvæði?</translation>
 <translation id="4751476147751820511">Hreyfi- eða birtuskynjarar</translation>
 <translation id="4836046166855586901">Spyrja þegar vefsvæði vill vita hvenær þú notar þetta tæki</translation>
 <translation id="4883854917563148705">Ekki er hægt að endurstilla stýrðar stillingar</translation>
@@ -140,6 +143,7 @@
 <translation id="4976702386844183910">Síðast skoðað <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Engir tengiliðir fundust</translation>
 <translation id="4996978546172906250">Deila með</translation>
+<translation id="5014906230196386306">Hreinsa fótspor?</translation>
 <translation id="5039804452771397117">Leyfa</translation>
 <translation id="5048398596102334565">Leyfa vefsvæðum að fá aðgang að hreyfiskynjurunum (ráðlagt)</translation>
 <translation id="5050380848339752099">Vefsvæðið er við það að deila upplýsingum með forriti fyrir utan huliðsstillingu.</translation>
@@ -157,15 +161,16 @@
 <translation id="5335288049665977812">Leyfa vefsvæðum að keyra JavaScript (ráðlagt)</translation>
 <translation id="534295439873310000">NFC-tæki</translation>
 <translation id="5354152178998424783">Þetta hreinsar <ph name="DATASIZE" /> af gögnum og fótsporum sem vefsvæði geyma.</translation>
-<translation id="5391532827096253100">Tenging þín við þetta vefsvæði er ekki örugg. Upplýsingar um vefsvæði</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 í viðbót)}one{(+ # í viðbót)}other{(+ # í viðbót)}}</translation>
 <translation id="5403592356182871684">Heiti</translation>
+<translation id="5438097262470833822">Þetta val endurstillir heimildir fyrir <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Liðinn tími: <ph name="ELAPSED_TIME" /> af <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Útiloka auglýsingar á vefsvæðum sem birta ágengar eða villandi auglýsingar</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> leyft, lokað er fyrir <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Vefsvæði geta ekki óskað eftir því að senda tilkynningar</translation>
 <translation id="5516455585884385570">Opna tilkynningastillingar</translation>
 <translation id="5527111080432883924">Spyrja áður en vefsvæðum er leyft að lesa texta og myndir af klippiborðinu (ráðlagt)</translation>
+<translation id="5553374991681107062">Nýjast</translation>
 <translation id="5556459405103347317">Endurhlaða</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="5649053991847567735">Sjálfvirkt niðurhal</translation>
@@ -190,10 +195,10 @@
 <translation id="6064125863973209585">Niðurhali lokið</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6177111841848151710">Á bannlista á núverandi leitarvél</translation>
+<translation id="6177128806592000436">Tenging þín við þetta vefsvæði er ekki örugg</translation>
 <translation id="6181444274883918285">Bæta við undantekningu</translation>
 <translation id="6192792657125177640">Undantekningar</translation>
 <translation id="6196640612572343990">Loka á fótspor frá þriðja aðila</translation>
-<translation id="6206551242102657620">Örugg tenging. Upplýsingar um vefsvæði</translation>
 <translation id="6216432067784365534">Valkostir fyrir <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Fjarlægja „<ph name="APP_NAME" />“?</translation>
 <translation id="6262279340360821358">Lokað er fyrir <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
@@ -202,7 +207,6 @@
 <translation id="6320088164292336938">Titringur</translation>
 <translation id="6388207532828177975">Hreinsa og endurstilla</translation>
 <translation id="6398765197997659313">Hætta að nota allan skjáinn</translation>
-<translation id="6423924377271166037">Hreinsa fótspor</translation>
 <translation id="6439114592976064011">Loka á að vefsvæði fái að nota sýndarveruleikatækið og -gögnin þín</translation>
 <translation id="6447842834002726250">Fótspor</translation>
 <translation id="6527303717912515753">Deila</translation>
@@ -210,6 +214,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Lokað er fyrir „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}one{Lokað er fyrir „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}other{Lokað er fyrir „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}}</translation>
 <translation id="6554732001434021288">Síðast opnað fyrir <ph name="NUM_DAYS" /> dögum</translation>
 <translation id="6561560012278703671">Nota hljóðlátari skilaboð (útilokar truflun af tilkynningum)</translation>
+<translation id="6593061639179217415">Tölvuvefsvæði</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Varið efni</translation>
 <translation id="662080504995468778">Vera áfram</translation>
@@ -217,6 +222,7 @@
 <translation id="6689172468748959065">Prófílmyndir</translation>
 <translation id="6697925417670533197">Niðurhal í gangi</translation>
 <translation id="6746124502594467657">Færa niður</translation>
+<translation id="6749077623962119521">Endurstilla heimildir?</translation>
 <translation id="6766622839693428701">Strjúktu niður til að loka.</translation>
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6818926723028410516">Veldu atriði</translation>
@@ -224,15 +230,14 @@
 <translation id="6910211073230771657">Eytt</translation>
 <translation id="6912998170423641340">Koma í veg fyrir að vefsvæði geti lesið texta og myndir af klippiborðinu</translation>
 <translation id="6945221475159498467">Velja</translation>
-<translation id="6963642900430330478">Þessi síða er hættuleg. Upplýsingar um vefsvæði</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6992289844737586249">Spyrja áður en vefsvæðum er veitt heimild til að nota hljóðnemann þinn (ráðlagt)</translation>
 <translation id="7000754031042624318">Slökkt í stillingum Android</translation>
 <translation id="7016516562562142042">Leyft á núverandi leitarvél</translation>
 <translation id="7053983685419859001">Setja á bannlista</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 valið}one{# valið}other{# valin}}</translation>
+<translation id="7070090581017165256">Um þetta vefsvæði</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> valin.  Valkostir eru ofarlega á skjánum</translation>
-<translation id="7128222689758636196">Leyfa á núverandi leitarvél</translation>
 <translation id="7141896414559753902">Banna síðum að birta sprettiglugga og framsendingar (ráðlagt)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="723171743924126238">Veldu myndir</translation>
@@ -242,12 +247,12 @@
 <translation id="7302486331832100261">Þú lokar yfirleitt á tilkynningar. Ýttu á „Upplýsingar“ til að leyfa þær.</translation>
 <translation id="7423098979219808738">Spyrja fyrst</translation>
 <translation id="7423538860840206698">Lokað fyrir lestur klippiborðs</translation>
+<translation id="7425915948813553151">Dökkt þema fyrir vefsvæði</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Vefsvæði er að nota hljóðnemann</translation>
 <translation id="7561196759112975576">Alltaf</translation>
 <translation id="7572498721684305250">Loka fyrir að vefsvæði geti sent og tekið við upplýsingum þegar þú ýtir á NFC-tæki</translation>
 <translation id="757524316907819857">Banna síðum að spila varið efni</translation>
-<translation id="7589445247086920869">Setja á bannlista á núverandi leitarvél</translation>
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7781829728241885113">Í gær</translation>
@@ -261,19 +266,23 @@
 <translation id="7846076177841592234">Hætta við val</translation>
 <translation id="7846621471902887024">Þú verður skráð(ur) út af öllum vefsvæðum.</translation>
 <translation id="7882806643839505685">Leyfa hljóð á tilteknu vefsvæði.</translation>
+<translation id="7940722705963108451">Minna mig á</translation>
 <translation id="7986741934819883144">Velja tengilið</translation>
-<translation id="7993619969781047893">Ekki er víst að allir eiginleikar á öllum vefsvæðum virki</translation>
 <translation id="7999064672810608036">Ertu viss um að þú viljir hreinsa öll staðbundin gögn fyrir þetta vefsvæði, þar á meðal fótspor, og endurstilla allar heimildir þess?</translation>
 <translation id="8007176423574883786">Slökkt fyrir þetta tæki</translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
+<translation id="8042586301629853791">Raða eftir:</translation>
 <translation id="8067883171444229417">Spila myndskeið</translation>
 <translation id="8068648041423924542">Ekki er hægt að velja vottorðið.</translation>
 <translation id="8087000398470557479">Þetta efni er frá <ph name="DOMAIN_NAME" />, birt af Google.</translation>
 <translation id="8116925261070264013">Þögguð</translation>
+<translation id="813082847718468539">Skoða upplýsingar um vefsvæði</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
+<translation id="8154912474061769055">Óvíst er að eiginleikar á mörgum vefsvæðum virki</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> leyft</translation>
 <translation id="8200772114523450471">Halda áfram</translation>
 <translation id="8206354486702514201">Stjórnandi valdi þessa stillingu.</translation>
+<translation id="8211406090763984747">Tengingin er örugg</translation>
 <translation id="8249310407154411074">Færa efst</translation>
 <translation id="8261506727792406068">Eyða</translation>
 <translation id="8300705686683892304">Stjórnað af forriti</translation>
@@ -296,6 +305,7 @@
 <translation id="8676374126336081632">Hreinsa innslátt</translation>
 <translation id="868929229000858085">Leita í tengiliðum</translation>
 <translation id="8702612070107455751">Öllum ónettengdum gögnum verður eytt.</translation>
+<translation id="8712637175834984815">Ég skil</translation>
 <translation id="8719283222052720129">Kveiktu á heimild fyrir <ph name="APP_NAME" /> í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Reyna aftur</translation>
 <translation id="8730621377337864115">Lokið</translation>
@@ -315,7 +325,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}one{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}other{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}}</translation>
 <translation id="913657688200966289">Kveiktu á heimildum fyrir <ph name="APP_NAME" /> í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Þessi síða er hættuleg</translation>
 <translation id="930525582205581608">Gleyma þessu vefsvæði?</translation>
-<translation id="965817943346481315">Loka fyrir ef vefsvæði sýnir ágengar eða villandi auglýsingar (ráðlagt)</translation>
 <translation id="967624055006145463">Vistuð gögn</translation>
 </translationbundle>

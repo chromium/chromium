@@ -4,14 +4,11 @@
 
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 
-#import <MaterialComponents/MaterialRipple.h>
-
 #import "base/check.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_view.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -33,8 +30,6 @@ const CGFloat kArrowDownMargin = 12.;
 @interface IdentityButtonControl ()
 
 @property(nonatomic, strong) IdentityView* identityView;
-// Ripple effect when the user starts or stop a touch in the view.
-@property(nonatomic, strong) MDCRippleView* rippleView;
 // Image View for the arrow (down or left according to |style|, see the
 // |arrowDirection| property), letting the user know that more profiles can be
 // selected.
@@ -49,21 +44,14 @@ const CGFloat kArrowDownMargin = 12.;
   if (self) {
     self.accessibilityIdentifier = kIdentityButtonControlIdentifier;
     self.layer.cornerRadius = kIdentityButtonControlRadius;
-    self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-    // Adding view elements inside.
-    // Ink view.
-    _rippleView = [[MDCRippleView alloc] initWithFrame:CGRectZero];
-    _rippleView.layer.cornerRadius = kIdentityButtonControlRadius;
-    _rippleView.rippleStyle = MDCRippleStyleBounded;
-    _rippleView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:_rippleView];
+    [self setUnhighlightedBackgroundColor];
 
+    // Adding view elements inside.
     // Down or right arrow.
     _arrowImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     _arrowImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _arrowDirection = IdentityButtonControlArrowDown;
     [self updateArrowDirection];
-    _arrowImageView.tintColor = UIColor.cr_labelColor;
     [self addSubview:_arrowImageView];
 
     // Main view with avatar, name and email.
@@ -92,9 +80,7 @@ const CGFloat kArrowDownMargin = 12.;
     AddSameCenterYConstraint(self, _arrowImageView);
     ApplyVisualConstraintsWithMetrics(constraints, views, metrics);
 
-    if (@available(iOS 13.4, *)) {
-      [self addInteraction:[[ViewPointerInteraction alloc] init]];
-    }
+    [self addInteraction:[[ViewPointerInteraction alloc] init]];
 
     // Accessibility.
     self.isAccessibilityElement = YES;
@@ -130,6 +116,8 @@ const CGFloat kArrowDownMargin = 12.;
 
 - (void)setIdentityViewStyle:(IdentityViewStyle)style {
   self.identityView.style = style;
+  if (!self.highlighted)
+    [self setUnhighlightedBackgroundColor];
 }
 
 - (IdentityViewStyle)identityViewStyle {
@@ -137,6 +125,21 @@ const CGFloat kArrowDownMargin = 12.;
 }
 
 #pragma mark - Private
+
+// Sets the background color when not highlighted.
+- (void)setUnhighlightedBackgroundColor {
+  DCHECK(!self.highlighted);
+  switch (self.identityView.style) {
+    case IdentityViewStyleDefault:
+    case IdentityViewStyleIdentityChooser:
+      self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+      break;
+    case IdentityViewStyleConsistency:
+      self.backgroundColor =
+          [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+      break;
+  }
+}
 
 - (CGPoint)locationFromTouches:(NSSet*)touches {
   UITouch* touch = [touches anyObject];
@@ -153,6 +156,7 @@ const CGFloat kArrowDownMargin = 12.;
       break;
     case IdentityButtonControlArrowDown:
       image = [UIImage imageNamed:@"identity_picker_view_arrow_down"];
+      tintColor = [UIColor colorNamed:kTextQuaternaryColor];
       break;
   }
   DCHECK(image);
@@ -161,24 +165,14 @@ const CGFloat kArrowDownMargin = 12.;
   self.arrowImageView.tintColor = tintColor;
 }
 
-#pragma mark - UIResponder
+- (void)setHighlighted:(BOOL)highlighted {
+  [super setHighlighted:highlighted];
 
-- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event {
-  [super touchesBegan:touches withEvent:event];
-  CGPoint location = [self locationFromTouches:touches];
-  [self.rippleView beginRippleTouchDownAtPoint:location
-                                      animated:YES
-                                    completion:nil];
-}
-
-- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
-  [super touchesEnded:touches withEvent:event];
-  [self.rippleView beginRippleTouchUpAnimated:YES completion:nil];
-}
-
-- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event {
-  [super touchesCancelled:touches withEvent:event];
-  [self.rippleView beginRippleTouchUpAnimated:YES completion:nil];
+  if (highlighted) {
+    self.backgroundColor = [UIColor colorNamed:kGrey300Color];
+  } else {
+    [self setUnhighlightedBackgroundColor];
+  }
 }
 
 @end

@@ -21,6 +21,9 @@ class GPUUncapturedErrorEvent : public Event {
   GPUUncapturedErrorEvent(const AtomicString& type,
                           const GPUUncapturedErrorEventInit*);
 
+  GPUUncapturedErrorEvent(const GPUUncapturedErrorEvent&) = delete;
+  GPUUncapturedErrorEvent& operator=(const GPUUncapturedErrorEvent&) = delete;
+
   void Trace(Visitor*) const override;
 
   // gpu_uncaptured_error_event.idl
@@ -28,8 +31,6 @@ class GPUUncapturedErrorEvent : public Event {
 
  private:
   Member<V8GPUError> error_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUUncapturedErrorEvent);
 };
 
 }  // namespace blink

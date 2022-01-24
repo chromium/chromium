@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_BLOCKED_INFOBAR_DELEGATE_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_BLOCKED_INFOBAR_DELEGATE_H_
 
-#include "base/macros.h"
 #include "components/infobars/android/infobar_android.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -27,6 +26,10 @@ class AdsBlockedInfobarDelegate : public ConfirmInfoBarDelegate {
   // |infobar_manager|.
   static void Create(infobars::ContentInfoBarManager* infobar_manager);
 
+  AdsBlockedInfobarDelegate(const AdsBlockedInfobarDelegate&) = delete;
+  AdsBlockedInfobarDelegate& operator=(const AdsBlockedInfobarDelegate&) =
+      delete;
+
   ~AdsBlockedInfobarDelegate() override;
 
   std::u16string GetExplanationText() const;
@@ -47,8 +50,6 @@ class AdsBlockedInfobarDelegate : public ConfirmInfoBarDelegate {
 
   // True when the infobar is in the expanded state.
   bool infobar_expanded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AdsBlockedInfobarDelegate);
 };
 
 }  // namespace subresource_filter

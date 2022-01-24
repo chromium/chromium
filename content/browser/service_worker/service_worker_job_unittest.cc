@@ -276,8 +276,10 @@ ServiceWorkerContainerHost* ServiceWorkerJobTest::CreateControllee() {
   remote_endpoints_.emplace_back();
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
       CreateContainerHostForWindow(
-          33 /* dummy render process id */, true /* is_parent_frame_secure */,
-          helper_->context()->AsWeakPtr(), &remote_endpoints_.back());
+          GlobalRenderFrameHostId(/*mock process_id=*/33,
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
+          &remote_endpoints_.back());
   return container_host.get();
 }
 
@@ -298,7 +300,8 @@ ServiceWorkerJobTest::CreateRegistrationWithControllee(const GURL& script_url,
 
   ServiceWorkerContainerHost* container_host = CreateControllee();
   container_host->UpdateUrls(scope_url, net::SiteForCookies::FromUrl(scope_url),
-                             url::Origin::Create(scope_url));
+                             url::Origin::Create(scope_url),
+                             blink::StorageKey(url::Origin::Create(scope_url)));
   container_host->SetControllerRegistration(registration,
                                             /*notify_controllerchange=*/false);
   return registration;
@@ -1196,7 +1199,8 @@ TEST_F(ServiceWorkerJobTest, AddRegistrationToMatchingerHosts) {
   // Make an in-scope client.
   ServiceWorkerContainerHost* client = CreateControllee();
   client->UpdateUrls(in_scope, net::SiteForCookies::FromUrl(in_scope),
-                     url::Origin::Create(in_scope));
+                     url::Origin::Create(in_scope),
+                     blink::StorageKey(url::Origin::Create(in_scope)));
 
   // Make an in-scope reserved client.
   std::unique_ptr<ServiceWorkerContainerHostAndInfo> host_and_info =
@@ -1205,13 +1209,15 @@ TEST_F(ServiceWorkerJobTest, AddRegistrationToMatchingerHosts) {
   base::WeakPtr<ServiceWorkerContainerHost> reserved_client =
       host_and_info->host;
   reserved_client->UpdateUrls(in_scope, net::SiteForCookies::FromUrl(in_scope),
-                              url::Origin::Create(in_scope));
+                              url::Origin::Create(in_scope),
+                              blink::StorageKey(url::Origin::Create(in_scope)));
 
   // Make an out-scope client.
   ServiceWorkerContainerHost* out_scope_client = CreateControllee();
-  out_scope_client->UpdateUrls(out_scope,
-                               net::SiteForCookies::FromUrl(out_scope),
-                               url::Origin::Create(out_scope));
+  out_scope_client->UpdateUrls(
+      out_scope, net::SiteForCookies::FromUrl(out_scope),
+      url::Origin::Create(out_scope),
+      blink::StorageKey(url::Origin::Create(out_scope)));
 
   // Make a new registration.
   GURL script("https://www.example.com/service_worker.js");
@@ -1422,7 +1428,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
       version->script_cache_map()->NotifyFinishedCaching(
           script, base::size(kBody), net::OK, std::string());
     } else {
-      EXPECT_NE(GURL(kNoChangeOrigin), script.GetOrigin());
+      EXPECT_NE(GURL(kNoChangeOrigin), script.DeprecatedGetOriginAsURL());
       // The script must be changed.
       WriteStringResponse(writer, kNewBody);
       version->script_cache_map()->NotifyFinishedCaching(
@@ -1436,6 +1442,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
   // ServiceWorkerContextCoreObserver overrides
   void OnVersionStateChanged(int64_t version_id,
                              const GURL& scope,
+                             const blink::StorageKey& key,
                              ServiceWorkerVersion::Status status) override {
     StateChangeLogEntry entry;
     entry.version_id = version_id;
@@ -1592,8 +1599,7 @@ TEST_F(ServiceWorkerUpdateJobTest, Update_NoChange) {
 
 TEST_F(ServiceWorkerUpdateJobTest, Update_BumpLastUpdateCheckTime) {
   const base::Time kToday = base::Time::Now();
-  const base::Time kYesterday =
-      kToday - base::TimeDelta::FromDays(1) - base::TimeDelta::FromHours(1);
+  const base::Time kYesterday = kToday - base::Days(1) - base::Hours(1);
   const GURL kNewVersionOrigin("https://newversion/");
 
   scoped_refptr<ServiceWorkerRegistration> registration =
@@ -2101,8 +2107,7 @@ Cross-Origin-Embedder-Policy: none
 )";
 
   const base::Time kToday = base::Time::Now();
-  const base::Time kYesterday =
-      kToday - base::TimeDelta::FromDays(1) - base::TimeDelta::FromHours(1);
+  const base::Time kYesterday = kToday - base::Days(1) - base::Hours(1);
 
   scoped_refptr<ServiceWorkerRegistration> registration =
       update_helper_->SetupInitialRegistration(kNewVersionOrigin);
@@ -2205,7 +2210,7 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorTimeout,
                        &registration1, loop1.QuitClosure()));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
 
   // Make a job that gets stuck due to a worker that doesn't finish the install
   // event. The callback is called with kOk, but the job will be stuck until
@@ -2221,7 +2226,7 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration2,
                        loop2.QuitClosure()));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
 
   // Make a normal job.
   base::RunLoop loop3;
@@ -2233,10 +2238,10 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration3,
                        loop3.QuitClosure()));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
 
   // Timeout the first job.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment_.FastForwardBy(base::Minutes(2));
   loop1.Run();
 
   // Let the second job run until the install event is dispatched, then
@@ -2246,7 +2251,7 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
       registration2->installing_version();
   ASSERT_TRUE(version);
   EXPECT_EQ(ServiceWorkerVersion::INSTALLING, version->status());
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
   EXPECT_EQ(ServiceWorkerVersion::REDUNDANT, version->status());
 
   // Let the third job finish successfully. It might have already been

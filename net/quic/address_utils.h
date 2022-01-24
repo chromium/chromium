@@ -57,9 +57,9 @@ inline quic::QuicSocketAddress ToQuicSocketAddress(IPEndPoint address) {
 
   sockaddr_storage result;
   socklen_t size = sizeof(result);
-  bool success =
-      address.ToSockAddr(reinterpret_cast<sockaddr*>(&result), &size);
-  DCHECK(success);
+  if (!address.ToSockAddr(reinterpret_cast<sockaddr*>(&result), &size)) {
+    return quic::QuicSocketAddress();
+  }
   return quic::QuicSocketAddress(result);
 }
 

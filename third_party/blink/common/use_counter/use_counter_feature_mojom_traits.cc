@@ -25,6 +25,8 @@ bool IsReservedFeature(const blink::UseCounterFeature& feature) {
                  blink::mojom::CSSSampleId::kTotalPagesMeasured);
     case blink::mojom::UseCounterFeatureType::
         kPermissionsPolicyViolationEnforce:
+    case blink::mojom::UseCounterFeatureType::kPermissionsPolicyHeader:
+    case blink::mojom::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
       return feature.value() ==
              static_cast<blink::UseCounterFeature::EnumValue>(
                  blink::mojom::PermissionsPolicyFeature::kNotFound);

@@ -19,6 +19,10 @@ namespace chromeos {
 // U2FClient is used to communicate with the org.chromium.U2F service. The
 // browser uses the U2F service to interface with the ChromeOS WebAuthn platform
 // authenticator.
+//
+// The u2fd daemon implementing the U2F service is currently only available on
+// devices with an H1 security chip. Callers should invoke
+// IsU2FServiceAvailable() before calling any other methods.
 class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) U2FClient {
  public:
   U2FClient(const U2FClient&) = delete;
@@ -36,9 +40,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) U2FClient {
   // Returns the global instance which may be null if not initialized.
   static U2FClient* Get();
 
-  // Runs the callback as soon as the service becomes available.
-  virtual void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) = 0;
+  // IsU2FServiceAvailable checks with |TpmManagerClient| whether the device has
+  // an H1 security chip (which is a proxy for "does it run u2fd?"). It runs
+  // |callback| with the result.
+  static void IsU2FServiceAvailable(
+      base::OnceCallback<void(bool is_supported)> callback);
 
   // Returns whether the platform authenticator is configured (i.e. PIN is set
   // or fingerprint is enrolled). The name is short for

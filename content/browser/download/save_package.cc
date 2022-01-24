@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
@@ -22,7 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
@@ -43,7 +42,6 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_impl.h"
-#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
@@ -151,9 +149,7 @@ const std::string GetMimeTypeForSaveType(SavePageType save_type) {
 }
 
 WebContents* GetWebContents(Page* page) {
-  return static_cast<RenderFrameHostImpl*>(&page->GetMainDocument())
-      ->delegate()
-      ->GetAsWebContents();
+  return WebContents::FromRenderFrameHost(&page->GetMainDocument());
 }
 
 const std::u16string& GetTitle(Page& page) {
@@ -705,6 +701,44 @@ void SavePackage::CheckFinish() {
   if (in_process_count() || finished_)
     return;
 
+  DownloadManagerDelegate* delegate = download_manager_->GetDelegate();
+  if (delegate) {
+    std::vector<std::pair<SaveItemId, base::FilePath>> ids_and_final_paths(
+        saved_success_items_.size());
+    for (const auto& it : saved_success_items_)
+      ids_and_final_paths.emplace_back(it.first, it.second->full_path());
+
+    download::GetDownloadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SaveFileManager::GetSaveFilePaths, file_manager_,
+                       std::move(ids_and_final_paths),
+                       base::BindOnce(&SavePackage::CheckRenameAllowedForPaths,
+                                      AsWeakPtr())));
+  } else {
+    RenameIfAllowed(true);
+  }
+}
+
+void SavePackage::CheckRenameAllowedForPaths(
+    base::flat_map<base::FilePath, base::FilePath> tmp_paths_to_final_paths) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  DownloadManagerDelegate* delegate = download_manager_->GetDelegate();
+  if (delegate) {
+    delegate->CheckSavePackageAllowed(
+        download_, std::move(tmp_paths_to_final_paths),
+        base::BindOnce(&SavePackage::RenameIfAllowed, AsWeakPtr()));
+  } else {
+    RenameIfAllowed(true);
+  }
+}
+
+void SavePackage::RenameIfAllowed(bool allowed) {
+  if (!allowed) {
+    Cancel(true);
+    return;
+  }
+
   base::FilePath dir = (save_type_ == SAVE_PAGE_TYPE_AS_COMPLETE_HTML &&
                         saved_success_items_.size() > 1) ?
                         saved_main_directory_path_ : base::FilePath();
@@ -768,6 +802,10 @@ void SavePackage::Finish() {
                                 std::unique_ptr<crypto::SecureHash>());
     }
     download_->MarkAsComplete();
+
+    if (download_->GetOpenWhenComplete())
+      download_->OpenDownload();
+
     FinalizeDownloadEntry();
   }
 }
@@ -859,6 +897,12 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
     RenderFrameHostImpl* requester_frame =
         requester_frame_tree_node->current_frame_host();
 
+    mojo::PendingRemote<quarantine::mojom::Quarantine> quarantine;
+    auto quarantine_callback =
+        download_manager_->GetQuarantineConnectionCallback();
+    if (quarantine_callback)
+      quarantine_callback.Run(quarantine.InitWithNewPipeAndPassReceiver());
+
     file_manager_->SaveURL(
         save_item_ptr->id(), save_item_ptr->url(), save_item_ptr->referrer(),
         requester_frame->GetProcess()->GetID(),
@@ -870,8 +914,8 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
             .GetRenderViewHost()
             ->GetProcess()
             ->GetStoragePartition(),
-        this);
-
+        this, download_manager_->GetApplicationClientIdForFileScanning(),
+        std::move(quarantine));
   } while (process_all_remaining_items && !waiting_item_queue_.empty());
 }
 
@@ -1189,18 +1233,17 @@ void SavePackage::SavableResourceLinksResponse(
                            referrer.To<content::Referrer>());
   }
   for (auto& subframe : subframes) {
-    RenderFrameHostImpl* rfh_subframe = sender->FindAndVerifyChild(
+    FrameTreeNode* subframe_ftn = sender->FindAndVerifyChild(
         subframe->subframe_token,
         bad_message::DWNLD_INVALID_SAVABLE_RESOURCE_LINKS_RESPONSE);
 
-    if (!rfh_subframe) {
+    if (!subframe_ftn) {
       // crbug.com/541354 - Raciness when saving a dynamically changing page.
       continue;
     }
 
     EnqueueFrame(container_frame_tree_node_id,
-                 rfh_subframe->frame_tree_node()->frame_tree_node_id(),
-                 subframe->original_url);
+                 subframe_ftn->frame_tree_node_id(), subframe->original_url);
   }
 
   CompleteSavableResourceLinksResponse();

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/overlay_plane.h"
 #include "ui/ozone/public/overlay_surface.h"
@@ -22,6 +21,10 @@ struct DrmOverlayPlane;
 class GbmOverlaySurface : public OverlaySurface {
  public:
   GbmOverlaySurface(std::unique_ptr<DrmWindowProxy> window);
+
+  GbmOverlaySurface(const GbmOverlaySurface&) = delete;
+  GbmOverlaySurface& operator=(const GbmOverlaySurface&) = delete;
+
   ~GbmOverlaySurface() override;
 
   // OverlaySurface:
@@ -56,8 +59,6 @@ class GbmOverlaySurface : public OverlaySurface {
   bool page_flip_pending_ = false;
 
   base::WeakPtrFactory<GbmOverlaySurface> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GbmOverlaySurface);
 };
 
 }  // namespace ui

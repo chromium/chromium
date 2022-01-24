@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_ASH_CROSAPI_AUTOMATION_ASH_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/automation.mojom.h"
+#include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -21,7 +23,8 @@ namespace crosapi {
 // the UI thread.
 class AutomationAsh : public mojom::Automation,
                       public ui::AXActionHandlerObserver,
-                      public mojom::AutomationFactory {
+                      public mojom::AutomationFactory,
+                      public extensions::AutomationEventRouterObserver {
  public:
   AutomationAsh();
   AutomationAsh(const AutomationAsh&) = delete;
@@ -67,6 +70,10 @@ class AutomationAsh : public mojom::Automation,
       mojo::PendingRemote<crosapi::mojom::AutomationClient> automation_client,
       mojo::PendingReceiver<crosapi::mojom::Automation> automation) override;
 
+  // AutomationEventRouterObserver:
+  void AllAutomationExtensionsGone() override;
+  void ExtensionListenerAdded() override;
+
  private:
   bool desktop_enabled_ = false;
 
@@ -78,6 +85,10 @@ class AutomationAsh : public mojom::Automation,
 
   // This set maintains a list of all known automation clients.
   mojo::RemoteSet<mojom::AutomationClient> automation_client_remotes_;
+
+  base::ScopedObservation<extensions::AutomationEventRouter,
+                          extensions::AutomationEventRouterObserver>
+      automation_event_router_observer_{this};
 
   base::WeakPtrFactory<AutomationAsh> weak_factory_{this};
 };

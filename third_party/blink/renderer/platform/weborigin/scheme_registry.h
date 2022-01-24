@@ -80,10 +80,6 @@ class PLATFORM_EXPORT SchemeRegistry {
   // Serialize the registered schemes in a comma-separated list.
   static String ListOfCorsEnabledURLSchemes();
 
-  // "Legacy" schemes (e.g. 'ftp:') which we might want to treat differently
-  // from "webby" schemes.
-  static bool ShouldTreatURLSchemeAsLegacy(const String& scheme);
-
   // Does the scheme represent a location relevant to web compatibility metrics?
   static bool ShouldTrackUsageMetricsForScheme(const String& scheme);
 
@@ -155,18 +151,6 @@ class PLATFORM_EXPORT SchemeRegistry {
   static void RegisterURLSchemeAsAllowingWasmEvalCSP(const String& scheme);
   static bool SchemeSupportsWasmEvalCSP(const String& scheme);
 
-  // Schemes that represent browser extensions.
-  // TODO(chromium:1197375) Reconsider usages of this category. Are there
-  // meaningful ways to define more abstract permissions or requirements that
-  // could be used instead?
-  static void RegisterURLSchemeAsExtension(const String& scheme);
-  static void RemoveURLSchemeAsExtension(const String& scheme);
-  static bool IsExtensionScheme(const String& scheme);
-
-  // Like the above, but without threading safety checks.
-  static void RegisterURLSchemeAsExtensionForTest(const String& scheme);
-  static void RemoveURLSchemeAsExtensionForTest(const String& scheme);
-
   // Schemes that represent trusted browser UI.
   // TODO(chromium:1197375) Reconsider usages of this category. Are there
   // meaningful ways to define more abstract permissions or requirements that
@@ -178,6 +162,13 @@ class PLATFORM_EXPORT SchemeRegistry {
   // Like the above, but without threading safety checks.
   static void RegisterURLSchemeAsWebUIForTest(const String& scheme);
   static void RemoveURLSchemeAsWebUIForTest(const String& scheme);
+
+  // Schemes which can use code caching but must check in the renderer whether
+  // the script content has changed rather than relying on a response time match
+  // from the network cache.
+  static void RegisterURLSchemeAsCodeCacheWithHashing(const String& scheme);
+  static void RemoveURLSchemeAsCodeCacheWithHashing(const String& scheme);
+  static bool SchemeSupportsCodeCacheWithHashing(const String& scheme);
 
  private:
   static const URLSchemesSet& LocalSchemes();

@@ -227,8 +227,8 @@ bool PopulateGalleryPrefInfoFromDictionary(
   std::u16string volume_label;
   std::u16string vendor_name;
   std::u16string model_name;
-  double total_size_in_bytes = 0.0;
-  double last_attach_time = 0.0;
+  absl::optional<double> total_size_in_bytes;
+  absl::optional<double> last_attach_time;
   bool volume_metadata_valid = false;
   int audio_count = 0;
   int image_count = 0;
@@ -245,11 +245,13 @@ bool PopulateGalleryPrefInfoFromDictionary(
   dict.GetString(kMediaGalleriesDisplayNameKey, &display_name);
   dict.GetInteger(kMediaGalleriesPrefsVersionKey, &prefs_version);
 
+  total_size_in_bytes = dict.FindDoubleKey(kMediaGalleriesSizeKey);
+  last_attach_time = dict.FindDoubleKey(kMediaGalleriesLastAttachTimeKey);
+
   if (dict.GetString(kMediaGalleriesVolumeLabelKey, &volume_label) &&
       dict.GetString(kMediaGalleriesVendorNameKey, &vendor_name) &&
       dict.GetString(kMediaGalleriesModelNameKey, &model_name) &&
-      dict.GetDouble(kMediaGalleriesSizeKey, &total_size_in_bytes) &&
-      dict.GetDouble(kMediaGalleriesLastAttachTimeKey, &last_attach_time)) {
+      total_size_in_bytes && last_attach_time) {
     volume_metadata_valid = true;
   }
 
@@ -273,9 +275,9 @@ bool PopulateGalleryPrefInfoFromDictionary(
   out_gallery_info->volume_label = volume_label;
   out_gallery_info->vendor_name = vendor_name;
   out_gallery_info->model_name = model_name;
-  out_gallery_info->total_size_in_bytes = total_size_in_bytes;
+  out_gallery_info->total_size_in_bytes = total_size_in_bytes.value_or(0.0);
   out_gallery_info->last_attach_time =
-      base::Time::FromInternalValue(last_attach_time);
+      base::Time::FromInternalValue(last_attach_time.value_or(0.0));
   out_gallery_info->volume_metadata_valid = volume_metadata_valid;
   out_gallery_info->prefs_version = prefs_version;
   out_gallery_info->default_gallery_type = GetDefaultGalleryType(dict);
@@ -393,7 +395,7 @@ std::u16string MediaGalleryPrefInfo::GetGalleryDisplayName() const {
     // name, or in the case of a root directory, the root directory name.
     // Exception: ChromeOS -- the full pathname isn't visible there, so only
     // the directory name is used.
-    base::FilePath path = AbsolutePath();
+    base::FilePath absolute_path = AbsolutePath();
     if (!display_name.empty())
       return display_name;
 
@@ -403,12 +405,12 @@ std::u16string MediaGalleryPrefInfo::GetGalleryDisplayName() const {
     if (base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,
                                &download_path)) {
       base::FilePath relative;
-      if (download_path.AppendRelativePath(path, &relative))
+      if (download_path.AppendRelativePath(absolute_path, &relative))
         return relative.LossyDisplayName();
     }
-    return path.BaseName().LossyDisplayName();
+    return absolute_path.BaseName().LossyDisplayName();
 #else
-    return path.LossyDisplayName();
+    return absolute_path.LossyDisplayName();
 #endif
   }
 

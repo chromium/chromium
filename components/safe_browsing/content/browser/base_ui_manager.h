@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 
@@ -36,6 +35,9 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   typedef security_interstitials::UnsafeResource UnsafeResource;
 
   BaseUIManager();
+
+  BaseUIManager(const BaseUIManager&) = delete;
+  BaseUIManager& operator=(const BaseUIManager&) = delete;
 
   // Called on the UI thread to display an interstitial page.
   // |resource| is the unsafe resource that triggered the interstitial.
@@ -164,8 +166,6 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   // most of the time it will be empty or contain a single element.
   std::vector<std::pair<GURL, security_interstitials::UnsafeResource>>
       unsafe_resources_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseUIManager);
 };
 
 }  // namespace safe_browsing

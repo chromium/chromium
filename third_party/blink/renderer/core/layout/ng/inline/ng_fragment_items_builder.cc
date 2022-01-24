@@ -89,6 +89,17 @@ NGLogicalLineItems* NGFragmentItemsBuilder::AcquireLogicalLineItems() {
   return current_line_items_;
 }
 
+const NGLogicalLineItems& NGFragmentItemsBuilder::LogicalLineItems(
+    const NGPhysicalLineBoxFragment& line_fragment) const {
+  if (&line_fragment == current_line_fragment_) {
+    DCHECK(current_line_items_);
+    return *current_line_items_;
+  }
+  const NGLogicalLineItems* items = line_items_map_.at(&line_fragment);
+  DCHECK(items);
+  return *items;
+}
+
 void NGFragmentItemsBuilder::AssociateLogicalLineItems(
     NGLogicalLineItems* line_items,
     const NGPhysicalFragment& line_fragment) {
@@ -222,7 +233,8 @@ NGFragmentItemsBuilder::AddPreviousItems(
 
   DCHECK(items_.IsEmpty());
   const NGFragmentItems::Span source_items = items.Items();
-  const wtf_size_t estimated_size = source_items.size();
+  const wtf_size_t estimated_size =
+      base::checked_cast<wtf_size_t>(source_items.size());
   items_.ReserveCapacity(estimated_size);
 
   // Convert offsets to logical. The logic is opposite to |ConvertToPhysical|.
@@ -254,6 +266,8 @@ NGFragmentItemsBuilder::AddPreviousItems(
       if (end_item) {
         // Check if this line has valid item_index and offset.
         const NGPhysicalLineBoxFragment* line_fragment = item.LineBoxFragment();
+        // Block-in-inline should have been prevented by |EndOfReusableItems|.
+        DCHECK(!line_fragment->IsBlockInInline());
         const NGInlineBreakToken* break_token =
             To<NGInlineBreakToken>(line_fragment->BreakToken());
         DCHECK(break_token);

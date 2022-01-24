@@ -8,9 +8,9 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/json/values_util.h"
 #include "base/location.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
 
@@ -208,7 +208,7 @@ template <>
 bool PrefMember<base::FilePath>::Internal::UpdateValueInternal(
     const base::Value& value)
     const {
-  absl::optional<base::FilePath> path = util::ValueToFilePath(value);
+  absl::optional<base::FilePath> path = base::ValueToFilePath(value);
   if (!path)
     return false;
   value_ = *path;

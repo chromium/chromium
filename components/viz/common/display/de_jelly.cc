@@ -32,9 +32,9 @@ bool DeJellyActive() {
 
 #if defined(OS_ANDROID)
   return Java_DeJellyUtils_useDeJelly(base::android::AttachCurrentThread());
-#endif
-
+#else
   return true;
+#endif
 }
 
 float DeJellyScreenWidth() {
@@ -46,9 +46,9 @@ float DeJellyScreenWidth() {
 
 #if defined(OS_ANDROID)
   return Java_DeJellyUtils_screenWidth(base::android::AttachCurrentThread());
-#endif
-
+#else
   return 1440.0f;
+#endif
 }
 
 float MaxDeJellyHeight() {

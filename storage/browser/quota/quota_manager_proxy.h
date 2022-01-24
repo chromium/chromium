@@ -14,7 +14,7 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -99,9 +99,23 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
+  // Deletes bucket with `bucket_name` for `storage_key` for
+  // StorageType::kTemporary for all registered QuotaClients if a bucket exists.
+  // Will return QuotaStatusCode to the callback. Called by Storage Buckets API
+  // for deleting buckets via StorageBucketManager.
+  virtual void DeleteBucket(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(blink::mojom::QuotaStatusCode)> callback);
+
   virtual void NotifyStorageAccessed(const blink::StorageKey& storage_key,
                                      blink::mojom::StorageType type,
                                      base::Time access_time);
+
+  // Notifies the quota manager that a bucket has been accessed to maintain LRU
+  // ordering.
+  virtual void NotifyBucketAccessed(BucketId bucket_id, base::Time access_time);
 
   // Notify the quota manager that storage has been modified for the given
   // client.  A `callback` may be optionally provided to be invoked on the
@@ -109,6 +123,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   // updated.  If a `callback` is provided then `callback_task_runner` must
   // also be provided.  If the quota manager runs on `callback_task_runner`,
   // then the `callback` may be invoked synchronously.
+  // TODO(crbug.com/1208141): Remove when all usages have updated to use
+  // NotifyBucketModified.
   virtual void NotifyStorageModified(
       QuotaClientType client_id,
       const blink::StorageKey& storage_key,
@@ -118,9 +134,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner = nullptr,
       base::OnceClosure callback = base::OnceClosure());
 
-  virtual void NotifyStorageKeyInUse(const blink::StorageKey& storage_key);
-  virtual void NotifyStorageKeyNoLongerInUse(
-      const blink::StorageKey& storage_key);
+  // Notifies the quota manager that a bucket has been modified for the given
+  // client.  A `callback` may be optionally provided to be invoked on the
+  // given task runner when the quota system's state in memory has been
+  // updated.  If a `callback` is provided then `callback_task_runner` must
+  // also be provided.  If the quota manager runs on `callback_task_runner`,
+  // then the `callback` may be invoked synchronously.
+  virtual void NotifyBucketModified(
+      QuotaClientType client_id,
+      BucketId bucket_id,
+      int64_t delta,
+      base::Time modification_time,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner = nullptr,
+      base::OnceClosure callback = base::OnceClosure());
+
   virtual void NotifyWriteFailed(const blink::StorageKey& storage_key);
 
   virtual void SetUsageCacheEnabled(QuotaClientType client_id,

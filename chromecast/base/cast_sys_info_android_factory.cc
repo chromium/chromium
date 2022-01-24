@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/chromecast_buildflags.h"
 #include "chromecast/base/cast_sys_info_android.h"
 
 namespace chromecast {

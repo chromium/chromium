@@ -4,8 +4,10 @@
 
 #include "chrome/browser/printing/printing_init.h"
 
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/printing/browser/print_manager_utils.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -19,6 +21,10 @@
 namespace printing {
 
 void InitializePrinting(content::WebContents* web_contents) {
+  if (headless::IsChromeNativeHeadless()) {
+    print_to_pdf::PdfPrintManager::CreateForWebContents(web_contents);
+    return;
+  }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   printing::PrintViewManager::CreateForWebContents(web_contents);
   printing::PdfNupConverterClient::CreateForWebContents(web_contents);

@@ -14,12 +14,6 @@ namespace mixer_service {
 constexpr char kDefaultUnixDomainSocketPath[] = "/tmp/mixer-service";
 constexpr int kDefaultTcpPort = 12854;
 
-// First 2 bytes of each message indicate if it is metadata (protobuf) or audio.
-enum class MessageType : int16_t {
-  kMetadata,
-  kAudio,
-};
-
 // Returns true if the full mixer is present on the system, false otherwise.
 bool HaveFullMixer();
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_service_delegate.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"

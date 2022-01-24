@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "chrome/browser/memory_details.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "components/variations/field_trial_config/field_trial_util.h"

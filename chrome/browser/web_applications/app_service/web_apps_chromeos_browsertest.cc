@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/app_service/web_apps_chromeos.h"
+#include "chrome/browser/web_applications/app_service/web_apps.h"
 
 #include <memory>
 
@@ -14,10 +14,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,6 +28,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -56,22 +60,19 @@ void CheckSeparator(const ui::SimpleMenuModel& model, int index) {
 
 }  // namespace
 
-class WebAppsWebAppsChromeOsBrowserTest
-    : public web_app::WebAppControllerBrowserTest {
+class WebAppsChromeOsBrowserTest : public web_app::WebAppControllerBrowserTest {
  public:
-  WebAppsWebAppsChromeOsBrowserTest() {
+  WebAppsChromeOsBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kAppServiceAdaptiveIcon,
-         features::kDesktopPWAsAppIconShortcutsMenuUI},
-        {});
+        {features::kDesktopPWAsAppIconShortcutsMenuUI}, {});
   }
-  ~WebAppsWebAppsChromeOsBrowserTest() override = default;
+  ~WebAppsChromeOsBrowserTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppsWebAppsChromeOsBrowserTest, ShortcutIcons) {
+IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
   const GURL app_url =
       https_server()->GetURL("/web_app_shortcuts/shortcuts.html");
   const web_app::AppId app_id =
@@ -82,18 +83,19 @@ IN_PROC_BROWSER_TEST_F(WebAppsWebAppsChromeOsBrowserTest, ShortcutIcons) {
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->FlushMojoCallsForTesting();
 
-  std::unique_ptr<ui::SimpleMenuModel> result;
+  std::unique_ptr<ui::SimpleMenuModel> menu_model;
   {
     ash::ShelfModel* const shelf_model = ash::ShelfModel::Get();
-    shelf_model->PinAppWithID(app_id);
+    PinAppWithIDToShelf(app_id);
     ash::ShelfItemDelegate* const delegate =
         shelf_model->GetShelfItemDelegate(ash::ShelfID(app_id));
     base::RunLoop run_loop;
     delegate->GetContextMenu(
         display::Display::GetDefaultDisplay().id(),
         base::BindLambdaForTesting(
-            [&run_loop, &result](std::unique_ptr<ui::SimpleMenuModel> model) {
-              result = std::move(model);
+            [&run_loop,
+             &menu_model](std::unique_ptr<ui::SimpleMenuModel> model) {
+              menu_model = std::move(model);
               run_loop.Quit();
             }));
     run_loop.Run();
@@ -101,24 +103,32 @@ IN_PROC_BROWSER_TEST_F(WebAppsWebAppsChromeOsBrowserTest, ShortcutIcons) {
 
   // Shortcuts appear last in the context menu.
   // See /web_app_shortcuts/shortcuts.json for shortcut icon definitions.
-  int index = result->GetItemCount() - 11;
+  int index = menu_model->GetItemCount() - 11;
 
   // Purpose |any| by default.
-  CheckShortcut(*result, index++, 0, u"One", SK_ColorGREEN);
-  CheckSeparator(*result, index++);
+  CheckShortcut(*menu_model, index++, 0, u"One", SK_ColorGREEN);
+  CheckSeparator(*menu_model, index++);
   // Purpose |maskable| takes precedence over |any|.
-  CheckShortcut(*result, index++, 1, u"Two", SK_ColorBLUE);
-  CheckSeparator(*result, index++);
+  CheckShortcut(*menu_model, index++, 1, u"Two", SK_ColorBLUE);
+  CheckSeparator(*menu_model, index++);
   // Purpose |any|.
-  CheckShortcut(*result, index++, 2, u"Three", SK_ColorYELLOW);
-  CheckSeparator(*result, index++);
+  CheckShortcut(*menu_model, index++, 2, u"Three", SK_ColorYELLOW);
+  CheckSeparator(*menu_model, index++);
   // Purpose |any| and |maskable|.
-  CheckShortcut(*result, index++, 3, u"Four", SK_ColorCYAN);
-  CheckSeparator(*result, index++);
+  CheckShortcut(*menu_model, index++, 3, u"Four", SK_ColorCYAN);
+  CheckSeparator(*menu_model, index++);
   // Purpose |maskable|.
-  CheckShortcut(*result, index++, 4, u"Five", SK_ColorMAGENTA);
-  CheckSeparator(*result, index++);
+  CheckShortcut(*menu_model, index++, 4, u"Five", SK_ColorMAGENTA);
+  CheckSeparator(*menu_model, index++);
   // No icons.
-  CheckShortcut(*result, index++, 5, u"Six", absl::nullopt);
-  EXPECT_EQ(index, result->GetItemCount());
+  CheckShortcut(*menu_model, index++, 5, u"Six", absl::nullopt);
+  EXPECT_EQ(index, menu_model->GetItemCount());
+
+  const int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST + 3;
+  ui_test_utils::UrlLoadObserver url_observer(
+      https_server()->GetURL("/web_app_shortcuts/shortcuts.html#four"),
+      content::NotificationService::AllSources());
+  menu_model->ActivatedAt(menu_model->GetIndexOfCommandId(command_id),
+                          ui::EF_LEFT_MOUSE_BUTTON);
+  url_observer.Wait();
 }

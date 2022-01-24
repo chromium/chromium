@@ -6,6 +6,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("web_package") {
   sources = [
+    "web_bundle_builder.cc",
+    "web_bundle_builder.h",
     "web_bundle_parser.cc",
     "web_bundle_parser.h",
     "web_bundle_parser_factory.cc",
@@ -25,28 +27,15 @@ static_library("web_package") {
   public_deps = [ "//components/web_package/mojom" ]
 }
 
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "test_support/web_bundle_builder.cc",
-    "test_support/web_bundle_builder.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/cbor",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "web_bundle_builder_unittest.cc",
     "web_bundle_parser_factory_unittest.cc",
     "web_bundle_parser_unittest.cc",
     "web_bundle_utils_unittest.cc",
   ]
   deps = [
-    ":test_support",
     ":web_package",
     "//base/test:test_support",
     "//components/cbor",

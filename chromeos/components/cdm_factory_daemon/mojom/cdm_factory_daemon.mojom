@@ -16,11 +16,13 @@ module chromeos.cdm.mojom;
 import "chromeos/components/cdm_factory_daemon/mojom/cdm_storage.mojom";
 import "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.mojom";
 import "chromeos/components/cdm_factory_daemon/mojom/output_protection.mojom";
+[EnableIf=is_chromeos_ash]
 import "components/arc/mojom/oemcrypto.mojom";
+[EnableIf=is_chromeos_ash]
 import "components/arc/mojom/protected_buffer_manager.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Next Method ID: 2
+[Stable, Uuid="732a934d-8e2a-4305-b637-ccbe74ee8b88"]
 interface CdmFactory {
   // Deprecated, do not use.
   [MinVersion=1]
@@ -43,9 +45,13 @@ interface CdmFactory {
 };
 
 // Next Method ID: 6
-// Used for bootstrapping the connection between Chrome and the daemon, then
-// methods can be invoked to obtain interfaces to perform CDM or OEMCrypto
-// operations.
+// Used for bootstrapping the connection between ash-chrome browser and the
+// cdm-oemcrypto ChromeOS daemon, then methods can be invoked to obtain
+// interfaces to perform CDM or OEMCrypto operations. For the OEMCrypto
+// operations, those are essentially a passthrough from ARC. The CDM operations
+// are essentially a passthrough from JS EME or the video decoder/decryptor
+// itself.
+[Stable, Uuid="4871bea8-6cf0-479f-86ed-61b3a5acd9b7", EnableIf=is_chromeos_ash]
 interface CdmFactoryDaemon {
   // Used to create CdmFactory interfaces which are then used to create a CDM
   // interface. |key_system| should specify what key system we are using,
@@ -54,23 +60,20 @@ interface CdmFactoryDaemon {
   CreateFactory@0(string key_system) => (pending_remote<CdmFactory>? factory);
 
   // Deprecated, do not use.
-  ConnectOemCryptoDeprecated@1(
-      pending_receiver<arc.mojom.OemCryptoService> oemcryptor,
-      pending_remote<arc.mojom.ProtectedBufferManager>
-          protected_buffer_manager);
+  RemovedMethod1@1();
 
   // Used to establish a connection to the OEMCrypto implementation to provide
   // that service to ARC.
-  [MinVersion=1] ConnectOemCrypto@2(
+  [MinVersion=1]
+  ConnectOemCrypto@2(
       pending_receiver<arc.mojom.OemCryptoService> oemcryptor,
       pending_remote<arc.mojom.ProtectedBufferManager>
           protected_buffer_manager,
       pending_remote<OutputProtection> output_protection);
 
-  // Creates a new OutputProtection interface to be used for passing into the
-  // CreateCdm call in CdmFactory.
+  // Deprecated, do not use.
   [MinVersion=1]
-  GetOutputProtection@3(pending_receiver<OutputProtection> output_protection);
+  RemovedMethod3@3();
 
   // Returns binary configuration data used for setting up HW decrypt+decode. If
   // successful, |success| will be true and |config_data| will be valid.
@@ -78,7 +81,7 @@ interface CdmFactoryDaemon {
   [MinVersion=2]
   GetHwConfigData@4() => (bool success, array<uint8> config_data);
 
-  // Returns an array of the screen resolutions of all the connected displays.
+  // Deprecated, do not use.
   [MinVersion=4]
-  GetScreenResolutions@5() => (array<gfx.mojom.Size> resolutions);
+  RemovedMethod5@5();
 };

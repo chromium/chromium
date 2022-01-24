@@ -65,7 +65,7 @@ The pipeline can be roughly divided into two parts:
    data it receives to the platform-specific `MediaPipelineBackend`, resulting
    in playout of the local device's speakers .
 -  Audio Data Proxying, or how the audio data is streamed across the
-   [CastRuntimeAudioChannel](https://source.chromium.org/chromium/chromium/src/+/main:third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.proto;l=231?q=castruntimeaudiochannel&sq=&ss=chromium%2Fchromium%2Fsrc)
+   [CastRuntimeAudioChannel](https://source.chromium.org/chromium/chromium/src/+/main:third_party/cast_core/public/src/proto/runtime/cast_audio_decoder_service.proto;l=231?q=castruntimeaudiochannel&sq=&ss=chromium%2Fchromium%2Fsrc)
    gRPC Service in parallel to the local playout,
 
 Both can be summarized in this

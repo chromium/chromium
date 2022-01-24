@@ -124,11 +124,9 @@ void TtsHandler::OnTtsEvent(content::TtsUtterance* utterance,
 }
 
 void TtsHandler::HandlePreviewTtsVoice(const base::ListValue* args) {
-  DCHECK_EQ(2U, args->GetSize());
-  std::string text;
-  std::string voice_id;
-  args->GetString(0, &text);
-  args->GetString(1, &voice_id);
+  DCHECK_EQ(2U, args->GetList().size());
+  const std::string& text = args->GetList()[0].GetString();
+  const std::string& voice_id = args->GetList()[1].GetString();
 
   if (text.empty() || voice_id.empty())
     return;
@@ -156,18 +154,18 @@ void TtsHandler::HandlePreviewTtsVoice(const base::ListValue* args) {
 }
 
 void TtsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAllTtsVoiceData",
       base::BindRepeating(&TtsHandler::HandleGetAllTtsVoiceData,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getTtsExtensions",
       base::BindRepeating(&TtsHandler::HandleGetTtsExtensions,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "previewTtsVoice", base::BindRepeating(&TtsHandler::HandlePreviewTtsVoice,
                                              base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "wakeTtsEngine",
       base::BindRepeating(&TtsHandler::WakeTtsEngine, base::Unretained(this)));
 }

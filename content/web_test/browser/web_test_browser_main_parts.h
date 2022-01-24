@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "content/public/common/main_function_params.h"
 #include "content/shell/browser/shell_browser_main_parts.h"
 #include "ppapi/buildflags/buildflags.h"
 
@@ -18,7 +18,11 @@ class ShellPluginServiceFilter;
 
 class WebTestBrowserMainParts : public ShellBrowserMainParts {
  public:
-  explicit WebTestBrowserMainParts(const MainFunctionParams& parameters);
+  explicit WebTestBrowserMainParts(MainFunctionParams parameters);
+
+  WebTestBrowserMainParts(const WebTestBrowserMainParts&) = delete;
+  WebTestBrowserMainParts& operator=(const WebTestBrowserMainParts&) = delete;
+
   ~WebTestBrowserMainParts() override;
 
  private:
@@ -30,8 +34,6 @@ class WebTestBrowserMainParts : public ShellBrowserMainParts {
 #if BUILDFLAG(ENABLE_PLUGINS)
   std::unique_ptr<ShellPluginServiceFilter> plugin_service_filter_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestBrowserMainParts);
 };
 
 }  // namespace content

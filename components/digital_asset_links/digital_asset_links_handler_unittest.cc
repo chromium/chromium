@@ -67,6 +67,10 @@ class DigitalAssetLinksHandlerTest : public ::testing::Test {
   DigitalAssetLinksHandlerTest()
       : num_invocations_(0), result_(RelationshipCheckResult::kSuccess) {}
 
+  DigitalAssetLinksHandlerTest(const DigitalAssetLinksHandlerTest&) = delete;
+  DigitalAssetLinksHandlerTest& operator=(const DigitalAssetLinksHandlerTest&) =
+      delete;
+
   void OnRelationshipCheckComplete(RelationshipCheckResult result) {
     ++num_invocations_;
     result_ = result;
@@ -116,8 +120,6 @@ class DigitalAssetLinksHandlerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DigitalAssetLinksHandlerTest);
 };
 }  // namespace
 

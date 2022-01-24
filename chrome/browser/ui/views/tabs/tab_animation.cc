@@ -13,7 +13,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kZeroDuration = base::TimeDelta::FromMilliseconds(0);
+constexpr base::TimeDelta kZeroDuration = base::Milliseconds(0);
 
 }  // namespace
 

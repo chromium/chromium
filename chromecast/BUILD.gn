@@ -35,7 +35,10 @@ group("all") {
     deps += [ ":cast_shell_apk" ]
   }
   if (!is_android) {
-    data_deps += [ ":cast_shell" ]
+    data_deps += [
+      ":cast_browser",
+      ":cast_shell",
+    ]
   }
   if (is_linux || is_chromeos) {
     deps += [
@@ -490,7 +493,6 @@ group("cast_shell_lib_base") {
     "//chromecast/app",
     "//chromecast/base:default_create_sys_info",
     "//chromecast/browser",
-    "//chromecast/cast_core",
     "//chromecast/common",
     "//chromecast/renderer",
     "//chromecast/utility",
@@ -513,6 +515,18 @@ cast_executable("cast_shell") {
 
   deps = [
     ":cast_shell_lib",
+    ":chromecast_locales_pak",
+    "//chromecast/app",
+    "//content/public/app",
+    "//third_party/widevine/cdm",
+  ]
+}
+
+cast_executable("cast_browser") {
+  sources = [ "app/cast_main.cc" ]
+
+  deps = [
+    ":cast_shell_lib_simple",
     ":chromecast_locales_pak",
     "//chromecast/app",
     "//content/public/app",
@@ -621,12 +635,10 @@ buildflag_header("chromecast_buildflags") {
     "DEFAULT_COMMAND_LINE_FLAGS=\"$_command_line_flags\"",
     "DISABLE_SECURE_FLAC_OPUS_DECODING=$disable_secure_flac_and_opus_decoding",
     "ENABLE_ASSISTANT=$enable_assistant",
-    "ENABLE_CAST_FRAGMENT=$enable_cast_fragment",
     "ENABLE_CHROMECAST_EXTENSIONS=$enable_chromecast_extensions",
     "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
     "ENABLE_PLAYREADY=$enable_playready",
     "ENABLE_VIDEO_CAPTURE_SERVICE=$enable_video_capture_service",
-    "IS_ANDROID_APPLIANCE=$is_android_appliance",
     "IS_CAST_AUDIO_ONLY=$is_cast_audio_only",
     "IS_CAST_DESKTOP_BUILD=$is_cast_desktop_build",
     "IS_SINGLE_VOLUME=$is_single_volume",

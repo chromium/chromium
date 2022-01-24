@@ -11,7 +11,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 
@@ -33,6 +32,11 @@ class ContextualSearchSceneLayer : public SceneLayer,
  public:
   ContextualSearchSceneLayer(JNIEnv* env,
                              const base::android::JavaRef<jobject>& jobj);
+
+  ContextualSearchSceneLayer(const ContextualSearchSceneLayer&) = delete;
+  ContextualSearchSceneLayer& operator=(const ContextualSearchSceneLayer&) =
+      delete;
+
   ~ContextualSearchSceneLayer() override;
 
   void CreateContextualSearchLayer(
@@ -150,8 +154,6 @@ class ContextualSearchSceneLayer : public SceneLayer,
   // Responsible for fading the base page content.
   scoped_refptr<cc::SolidColorLayer> color_overlay_;
   scoped_refptr<cc::Layer> content_container_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchSceneLayer);
 };
 
 }  // namespace android

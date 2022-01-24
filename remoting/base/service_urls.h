@@ -20,6 +20,9 @@ class ServiceUrls {
  public:
   static ServiceUrls* GetInstance();
 
+  ServiceUrls(const ServiceUrls&) = delete;
+  ServiceUrls& operator=(const ServiceUrls&) = delete;
+
   const std::string& ftl_server_endpoint() const {
     return ftl_server_endpoint_;
   }
@@ -39,8 +42,6 @@ class ServiceUrls {
   std::string ice_config_url_;
   std::string ftl_server_endpoint_;
   std::string remoting_server_endpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceUrls);
 };
 
 }  // namespace remoting

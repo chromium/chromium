@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 
 namespace content {

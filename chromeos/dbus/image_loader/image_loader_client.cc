@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -23,6 +22,9 @@ namespace {
 class ImageLoaderClientImpl : public ImageLoaderClient {
  public:
   ImageLoaderClientImpl() = default;
+
+  ImageLoaderClientImpl(const ImageLoaderClientImpl&) = delete;
+  ImageLoaderClientImpl& operator=(const ImageLoaderClientImpl&) = delete;
 
   ~ImageLoaderClientImpl() override = default;
 
@@ -158,8 +160,6 @@ class ImageLoaderClientImpl : public ImageLoaderClient {
   }
 
   dbus::ObjectProxy* proxy_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageLoaderClientImpl);
 };
 
 }  // namespace

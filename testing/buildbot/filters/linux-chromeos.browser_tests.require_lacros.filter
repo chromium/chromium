@@ -1,0 +1,33 @@
+# This file contains tests for browser_tests built for ash, and
+# requires Lacros.
+# For more information, please see //chrome/test/base/chromeos/README.md.
+*Magn*.*
+AccessibilityExtension*
+Autoclick*
+ChromeVox*
+DemoAshRequiresLacrosTest*
+Dictation*
+SelectToSpeak*
+SwitchAccess*
+# TODO(crbug.com/1245416) Enable more accessibility tests.
+-ChromeVoxBackgroundTest.SwipeLeftRight4ByContainers
+-ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
+-ChromeVoxBackgroundTest.TextSelectionAndLiveRegion
+-ChromeVoxBackgroundTest.TouchEditingState
+-ChromeVoxDesktopAutomationHandlerTest.TaskManagerTableView
+-ChromeVoxISearchTest.Simple
+-ChromeVoxPanelTest.FormControlsMenu
+-ChromeVoxPanelTest.InternationalFormControlsMenu
+-ChromeVoxPanelTest.LinkMenu
+-ChromeVoxPortalsTest.PortalName
+-ChromeVoxPortalsTest.ShouldFocusPortal
+-SelectToSpeakEnhancedNetworkTtsVoicesTest.*
+-SelectToSpeakNavigationControlTest.*
+-SwitchAccessFocusRingManagerTest.BackButtonForMenuFocus
+-SwitchAccessFocusRingManagerTest.GroupFocus
+-SwitchAccessItemScanManagerTest.*
+-SwitchAccessPointScanManagerTest.PointScanLeftClick
+# Flaky (crbug.com/1268842).
+-ChromeVoxLiveRegionsTest.LiveRegionRemoveElement
+-ChromeVoxLiveRegionsTest.LiveRegionAddElement
+-ChromeVoxLiveRegionsTest.FocusThenLiveRegion

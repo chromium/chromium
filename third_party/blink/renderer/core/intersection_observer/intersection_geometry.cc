@@ -91,6 +91,8 @@ PhysicalRect InitializeRootRect(const LayoutObject* root,
   } else if (root->IsBox() && root->IsScrollContainer()) {
     result = To<LayoutBox>(root)->PhysicalContentBoxRect();
   } else {
+    // TODO(pdr, crbug.com/1020466): BorderBoundingBox is snapped. Should this
+    // use an unsnapped value such as PhysicalBorderBoxRect?
     result = PhysicalRect(To<LayoutBoxModelObject>(root)->BorderBoundingBox());
   }
   ApplyMargin(result, margin, root->StyleRef().EffectiveZoom());
@@ -98,11 +100,11 @@ PhysicalRect InitializeRootRect(const LayoutObject* root,
 }
 
 PhysicalRect GetBoxBounds(const LayoutBox* box, bool use_overflow_clip_edge) {
-  PhysicalRect bounds = PhysicalRect(box->BorderBoundingBox());
+  PhysicalRect bounds(box->PhysicalBorderBoxRect());
   // OverflowClipMargin() should only apply if clipping occurs on both axis.
   if (use_overflow_clip_edge && box->ShouldClipOverflowAlongBothAxis() &&
       box->StyleRef().OverflowClipMargin() != LayoutUnit()) {
-    // OverflowClipRect() may be smaller than BorderBoundingBox().
+    // OverflowClipRect() may be smaller than PhysicalBorderBoxRect().
     bounds.Unite(box->OverflowClipRect(PhysicalOffset()));
   }
   return bounds;

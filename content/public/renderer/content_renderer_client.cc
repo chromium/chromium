@@ -206,18 +206,8 @@ bool ContentRendererClient::AllowScriptExtensionForServiceWorker(
   return false;
 }
 
-bool ContentRendererClient::IsExcludedHeaderForServiceWorkerFetchEvent(
-    const std::string& header_name) {
-  return false;
-}
-
 bool ContentRendererClient::ShouldEnforceWebRTCRoutingPreferences() {
   return true;
-}
-
-absl::optional<std::string>
-ContentRendererClient::WebRTCPlatformSpecificAudioProcessingConfiguration() {
-  return absl::optional<std::string>();
 }
 
 GURL ContentRendererClient::OverrideFlashEmbedWithHTML(const GURL& url) {
@@ -255,5 +245,15 @@ ContentRendererClient::GetAudioRendererAlgorithmParameters(
 void ContentRendererClient::AppendContentSecurityPolicy(
     const blink::WebURL& url,
     blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {}
+
+std::unique_ptr<media::RendererFactory>
+ContentRendererClient::GetBaseRendererFactory(
+    content::RenderFrame* render_frame,
+    media::MediaLog* media_log,
+    media::DecoderFactory* decoder_factory,
+    base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
+        get_gpu_factories_cb) {
+  return nullptr;
+}
 
 }  // namespace content

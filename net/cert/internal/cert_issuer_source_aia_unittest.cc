@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#include "base/files/file_util.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/test_helpers.h"
+#include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -494,6 +497,52 @@ TEST(CertIssuerSourceAiaTest, MaxFetchesPerCert) {
   ParsedCertificateList result_certs;
   cert_source_request->GetNext(&result_certs);
   ASSERT_EQ(0u, result_certs.size());
+}
+
+// AuthorityInfoAccess that returns a certs-only CMS message containing two
+// certificates.
+TEST(CertIssuerSourceAiaTest, CertsOnlyCmsMessage) {
+  base::FilePath cert_path =
+      GetTestCertsDirectory().AppendASCII("google.binary.p7b");
+  std::string cert_data;
+  ASSERT_TRUE(base::ReadFileToString(cert_path, &cert_data));
+
+  scoped_refptr<ParsedCertificate> cert;
+  ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
+
+  auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
+
+  EXPECT_CALL(*mock_fetcher,
+              FetchCaIssuers(GURL("http://url-for-aia/I.cer"), _, _))
+      .WillOnce(Return(ByMove(CreateMockRequest(
+          std::vector<uint8_t>(cert_data.begin(), cert_data.end())))));
+
+  CertIssuerSourceAia aia_source(mock_fetcher);
+  std::unique_ptr<CertIssuerSource::Request> cert_source_request;
+  aia_source.AsyncGetIssuersOf(cert.get(), &cert_source_request);
+  ASSERT_NE(nullptr, cert_source_request);
+
+  ParsedCertificateList result_certs;
+  cert_source_request->GetNext(&result_certs);
+  ASSERT_EQ(2u, result_certs.size());
+
+  // The fingerprint of the Google certificate used in the parsing tests.
+  SHA256HashValue google_parse_fingerprint = {
+      {0xf6, 0x41, 0xc3, 0x6c, 0xfe, 0xf4, 0x9b, 0xc0, 0x71, 0x35, 0x9e,
+       0xcf, 0x88, 0xee, 0xd9, 0x31, 0x7b, 0x73, 0x8b, 0x59, 0x89, 0x41,
+       0x6a, 0xd4, 0x01, 0x72, 0x0c, 0x0a, 0x4e, 0x2e, 0x63, 0x52}};
+  // The fingerprint for the Thawte SGC certificate
+  SHA256HashValue thawte_parse_fingerprint = {
+      {0x10, 0x85, 0xa6, 0xf4, 0x54, 0xd0, 0xc9, 0x11, 0x98, 0xfd, 0xda,
+       0xb1, 0x1a, 0x31, 0xc7, 0x16, 0xd5, 0xdc, 0xd6, 0x8d, 0xf9, 0x1c,
+       0x03, 0x9c, 0xe1, 0x8d, 0xca, 0x9b, 0xeb, 0x3c, 0xde, 0x3d}};
+  EXPECT_EQ(google_parse_fingerprint, X509Certificate::CalculateFingerprint256(
+                                          result_certs[0]->cert_buffer()));
+  EXPECT_EQ(thawte_parse_fingerprint, X509Certificate::CalculateFingerprint256(
+                                          result_certs[1]->cert_buffer()));
+  result_certs.clear();
+  cert_source_request->GetNext(&result_certs);
+  EXPECT_TRUE(result_certs.empty());
 }
 
 }  // namespace

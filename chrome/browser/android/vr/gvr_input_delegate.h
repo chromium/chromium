@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/android/vr/vr_controller.h"
 #include "chrome/browser/vr/input_delegate.h"
 
@@ -22,6 +21,10 @@ class GestureDetector;
 class GvrInputDelegate : public InputDelegate {
  public:
   explicit GvrInputDelegate(gvr::GvrApi* gvr_api);
+
+  GvrInputDelegate(const GvrInputDelegate&) = delete;
+  GvrInputDelegate& operator=(const GvrInputDelegate&) = delete;
+
   ~GvrInputDelegate() override;
 
   // InputDelegate implementation.
@@ -42,8 +45,6 @@ class GvrInputDelegate : public InputDelegate {
   gvr::GvrApi* gvr_api_;
 
   bool was_select_button_down_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GvrInputDelegate);
 };
 
 }  // namespace vr

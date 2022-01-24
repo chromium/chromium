@@ -19,6 +19,7 @@ js_library("os_files_page") {
   deps = [
     "..:deep_linking_behavior.m",
     "..:os_route.m",
+    "..:route_observer_behavior",
     "../..:router",
   ]
 }
@@ -26,6 +27,7 @@ js_library("os_files_page") {
 js_library("smb_shares_page") {
   deps = [
     "..:os_route.m",
+    "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

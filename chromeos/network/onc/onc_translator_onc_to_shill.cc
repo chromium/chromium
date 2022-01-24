@@ -16,7 +16,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -62,10 +61,8 @@ void SetClientCertProperties(client_cert::ConfigType config_type,
                              base::Value* shill_dictionary) {
   const std::string cert_type =
       FindStringKeyOrEmpty(onc_object, ::onc::client_cert::kClientCertType);
-  if (cert_type != ::onc::client_cert::kPKCS11Id) {
-    client_cert::SetEmptyShillProperties(config_type, shill_dictionary);
+  if (cert_type != ::onc::client_cert::kPKCS11Id)
     return;
-  }
 
   const std::string pkcs11_id =
       FindStringKeyOrEmpty(onc_object, ::onc::client_cert::kClientCertPKCS11Id);
@@ -98,6 +95,9 @@ class LocalTranslator {
         shill_dictionary_(shill_dictionary) {
     field_translation_table_ = GetFieldTranslationTable(onc_signature);
   }
+
+  LocalTranslator(const LocalTranslator&) = delete;
+  LocalTranslator& operator=(const LocalTranslator&) = delete;
 
   void TranslateFields();
 
@@ -139,8 +139,6 @@ class LocalTranslator {
   const FieldTranslationEntry* field_translation_table_;
   const base::Value* onc_object_;
   base::Value* shill_dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalTranslator);
 };
 
 void LocalTranslator::TranslateFields() {

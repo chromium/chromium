@@ -22,9 +22,9 @@ WTF::String TypeConverter<WTF::String, CreateDigitalGoodsResponseCode>::Convert(
     case CreateDigitalGoodsResponseCode::kError:
       return "error";
     case CreateDigitalGoodsResponseCode::kUnsupportedPaymentMethod:
-      return "unsupportedPaymentMethod";
+      return "unsupported payment method";
     case CreateDigitalGoodsResponseCode::kUnsupportedContext:
-      return "unsupportedContext";
+      return "unsupported context";
   }
   NOTREACHED();
 }
@@ -85,20 +85,6 @@ TypeConverter<blink::PurchaseDetails*, PurchaseDetailsPtr>::Convert(
   blink::PurchaseDetails* output = blink::PurchaseDetails::Create();
   output->setItemId(input->item_id);
   output->setPurchaseToken(input->purchase_token);
-  output->setAcknowledged(input->acknowledged);
-  switch (input->purchase_state) {
-    case payments::mojom::blink::PurchaseState::kUnknown:
-      // Omit setting PurchaseState on output.
-      break;
-    case payments::mojom::blink::PurchaseState::kPurchased:
-      output->setPurchaseState("purchased");
-      break;
-    case payments::mojom::blink::PurchaseState::kPending:
-      output->setPurchaseState("pending");
-      break;
-  }
-  output->setPurchaseTime(input->purchase_time.InMilliseconds());
-  output->setWillAutoRenew(input->will_auto_renew);
   return output;
 }
 

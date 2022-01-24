@@ -8,6 +8,7 @@
 #include "cc/layers/surface_layer.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
@@ -81,8 +82,8 @@ static RemoteFramesByTokenMap& GetRemoteFramesMap() {
 
 FloatRect DeNormalizeRect(const gfx::RectF& normalized, const IntRect& base) {
   FloatRect result(normalized);
-  result.Scale(base.Width(), base.Height());
-  result.MoveBy(FloatPoint(base.Location()));
+  result.Scale(base.width(), base.height());
+  result.MoveBy(FloatPoint(base.origin()));
   return result;
 }
 
@@ -309,7 +310,6 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       request.RequestorOrigin()->CanAccess(
           GetSecurityContext()->GetSecurityOrigin()),
       initiator_frame_has_download_sandbox_flag,
-      RuntimeEnabledFeatures::BlockingDownloadsInSandboxEnabled(),
       initiator_frame_is_ad);
 
   GetRemoteFrameHostRemote().OpenURL(std::move(params));
@@ -317,11 +317,12 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
 
 bool RemoteFrame::NavigationShouldReplaceCurrentHistoryEntry(
     WebFrameLoadType frame_load_type) const {
-  // Portal contexts do not create back/forward entries.
+  // Portal and Fenced Frame contexts do not create back/forward entries.
   // TODO(https:/crbug.com/1197384, https://crbug.com/1190644): We may want to
   // support a prerender in RemoteFrame.
-  return frame_load_type == WebFrameLoadType::kStandard &&
-         GetPage()->InsidePortal();
+  return (frame_load_type == WebFrameLoadType::kStandard &&
+          GetPage()->InsidePortal()) ||
+         IsInFencedFrameTree();
 }
 
 bool RemoteFrame::DetachImpl(FrameDetachType type) {
@@ -367,6 +368,13 @@ void RemoteFrame::SetCcLayer(scoped_refptr<cc::Layer> layer,
     static_cast<cc::SurfaceLayer&>(*cc_layer_)
         .SetHasPointerEventsNone(IsIgnoredForHitTest());
   }
+
+  // If we now have a CC layer make sure its bounds match previously sent visual
+  // properties. This is necessary for the crash ui layer to be shown.
+  if (cc_layer_ && sent_visual_properties_) {
+    cc_layer_->SetBounds(sent_visual_properties_->local_frame_size);
+  }
+
   HTMLFrameOwnerElement* owner = To<HTMLFrameOwnerElement>(Owner());
   owner->SetNeedsCompositingUpdate();
 
@@ -544,9 +552,9 @@ void RemoteFrame::SetInsecureNavigationsSet(const WebVector<unsigned>& set) {
 
 void RemoteFrame::FrameRectsChanged(const IntRect& local_frame_rect,
                                     const IntRect& screen_space_rect) {
-  pending_visual_properties_.screen_space_rect = gfx::Rect(screen_space_rect);
+  pending_visual_properties_.screen_space_rect = ToGfxRect(screen_space_rect);
   pending_visual_properties_.local_frame_size =
-      gfx::Size(local_frame_rect.Width(), local_frame_rect.Height());
+      gfx::Size(local_frame_rect.width(), local_frame_rect.height());
   SynchronizeVisualProperties();
 }
 
@@ -795,7 +803,7 @@ void RemoteFrame::DidSetFramePolicyHeaders(
   // ParsedPermissionsPolicy to operate over Vector
   ParsedPermissionsPolicy parsed_permissions_policy_copy(
       parsed_permissions_policy.size());
-  for (size_t i = 0; i < parsed_permissions_policy.size(); ++i)
+  for (wtf_size_t i = 0; i < parsed_permissions_policy.size(); ++i)
     parsed_permissions_policy_copy[i] = parsed_permissions_policy[i];
   SetReplicatedPermissionsPolicyHeader(parsed_permissions_policy_copy);
 }
@@ -838,7 +846,7 @@ IntSize RemoteFrame::GetMainFrameViewportSize() const {
   return owner->GetDocument().GetFrame()->GetMainFrameViewportSize();
 }
 
-IntPoint RemoteFrame::GetMainFrameScrollOffset() const {
+gfx::Point RemoteFrame::GetMainFrameScrollOffset() const {
   HTMLFrameOwnerElement* owner = DeprecatedLocalOwner();
   DCHECK(owner);
   DCHECK(owner->GetDocument().GetFrame());
@@ -926,7 +934,7 @@ bool RemoteFrame::IsIgnoredForHitTest() const {
   if (!owner || !owner->GetLayoutObject())
     return false;
 
-  return owner->OwnerType() == mojom::blink::FrameOwnerElementType::kPortal ||
+  return owner->OwnerType() == FrameOwnerElementType::kPortal ||
          !visible_to_hit_testing_;
 }
 
@@ -962,8 +970,16 @@ void RemoteFrame::ApplyReplicatedPermissionsPolicyHeader() {
 }
 
 bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
-  if (!GetFrameSinkId().is_valid() || remote_process_gone_)
+  if (!GetFrameSinkId().is_valid())
     return false;
+
+  // If the remote process is gone and we have new bounds adjust the
+  // crash ui layer so at least it tracks the new size.
+  if (remote_process_gone_) {
+    if (cc_layer_)
+      cc_layer_->SetBounds(pending_visual_properties_.local_frame_size);
+    return false;
+  }
 
   bool capture_sequence_number_changed =
       sent_visual_properties_ &&
@@ -972,7 +988,7 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
 
   if (view_) {
     pending_visual_properties_.compositor_viewport =
-        view_->GetCompositingRect();
+        ToGfxRect(view_->GetCompositingRect());
     pending_visual_properties_.compositing_scale_factor =
         view_->GetCompositingScaleFactor();
   }
@@ -989,8 +1005,8 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
           pending_visual_properties_.local_frame_size ||
       sent_visual_properties_->screen_space_rect.size() !=
           pending_visual_properties_.screen_space_rect.size() ||
-      sent_visual_properties_->screen_info !=
-          pending_visual_properties_.screen_info ||
+      sent_visual_properties_->screen_infos !=
+          pending_visual_properties_.screen_infos ||
       sent_visual_properties_->zoom_level !=
           pending_visual_properties_.zoom_level ||
       sent_visual_properties_->page_scale_factor !=
@@ -1082,8 +1098,9 @@ void RemoteFrame::SetViewportIntersection(
       intersection_state.Clone(), visual_properties);
 }
 
-void RemoteFrame::DidChangeScreenInfo(const display::ScreenInfo& screen_info) {
-  pending_visual_properties_.screen_info = screen_info;
+void RemoteFrame::DidChangeScreenInfos(
+    const display::ScreenInfos& screen_infos) {
+  pending_visual_properties_.screen_infos = screen_infos;
   SynchronizeVisualProperties();
 }
 

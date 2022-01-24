@@ -12,15 +12,18 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.NavigationHandle;
 
-/** Responsible for detecting candidate events for publishing the merchant trust message. */
+/**
+ * Responsible for detecting candidate events for fetching the merchant trust signal and publishing
+ * the merchant trust message.
+ */
 class MerchantTrustSignalsMediator {
     /** Callback interface to communicate with the owning object. */
     interface MerchantTrustSignalsCallback {
         /**
-         * Called when the mediator has detected a candidate event for displaying the merchant
-         * trust message.
+         * Called when the mediator has detected a candidate event for fetching the merchant
+         * trust signal and scheduling the merchant trust message.
          */
-        void maybeDisplayMessage(MerchantTrustMessageContext item);
+        void onFinishEligibleNavigation(MerchantTrustMessageContext item);
     }
 
     private final CurrentTabObserver mCurrentTabObserver;
@@ -31,13 +34,14 @@ class MerchantTrustSignalsMediator {
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
                 if ((tab.isIncognito()) || (!navigation.hasCommitted())
-                        || (!navigation.isInPrimaryMainFrame()) || (navigation.isSameDocument())
+                        || (!navigation.isInPrimaryMainFrame())
+                        || (navigation.isFragmentNavigation()) || (navigation.isErrorPage())
                         || (navigation.getUrl() == null)
                         || (TextUtils.isEmpty(navigation.getUrl().getHost()))) {
                     return;
                 }
 
-                delegate.maybeDisplayMessage(
+                delegate.onFinishEligibleNavigation(
                         new MerchantTrustMessageContext(navigation, tab.getWebContents()));
             }
         });

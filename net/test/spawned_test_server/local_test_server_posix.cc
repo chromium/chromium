@@ -35,6 +35,9 @@ class OrphanedTestServerFilter : public base::ProcessFilter {
       : path_string_(path_string),
         port_string_(port_string) {}
 
+  OrphanedTestServerFilter(const OrphanedTestServerFilter&) = delete;
+  OrphanedTestServerFilter& operator=(const OrphanedTestServerFilter&) = delete;
+
   bool Includes(const base::ProcessEntry& entry) const override {
     if (entry.parent_pid() != 1)
       return false;
@@ -53,7 +56,6 @@ class OrphanedTestServerFilter : public base::ProcessFilter {
  private:
   std::string path_string_;
   std::string port_string_;
-  DISALLOW_COPY_AND_ASSIGN(OrphanedTestServerFilter);
 };
 
 // Given a file descriptor, reads into |buffer| until |bytes_max|
@@ -96,7 +98,7 @@ bool LocalTestServer::LaunchPython(
     const base::FilePath& testserver_path,
     const std::vector<base::FilePath>& python_path) {
   base::CommandLine python_command(base::CommandLine::NO_PROGRAM);
-  if (!GetPythonCommand(&python_command))
+  if (!GetPython3Command(&python_command))
     return false;
 
   python_command.AppendArgPath(testserver_path);

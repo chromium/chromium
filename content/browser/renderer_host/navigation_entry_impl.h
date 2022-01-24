@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -108,6 +107,10 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       ui::PageTransition transition_type,
       bool is_renderer_initiated,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory);
+
+  NavigationEntryImpl(const NavigationEntryImpl&) = delete;
+  NavigationEntryImpl& operator=(const NavigationEntryImpl&) = delete;
+
   ~NavigationEntryImpl() override;
 
   // NavigationEntry implementation:
@@ -552,8 +555,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // with implement back-forward cache.
   // It is preserved at commit but not persisted.
   scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationEntryImpl);
 };
 
 }  // namespace content

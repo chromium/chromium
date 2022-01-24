@@ -17,6 +17,9 @@ namespace extensions {
 
 class CpuInfoProvider : public SystemInfoProvider {
  public:
+  CpuInfoProvider(const CpuInfoProvider&) = delete;
+  CpuInfoProvider& operator=(const CpuInfoProvider&) = delete;
+
   // Return the single shared instance of CpuInfoProvider.
   static CpuInfoProvider* Get();
 
@@ -53,8 +56,6 @@ class CpuInfoProvider : public SystemInfoProvider {
   static base::LazyInstance<scoped_refptr<CpuInfoProvider>>::DestructorAtExit
       provider_;
   base::CPU cpu_;
-
-  DISALLOW_COPY_AND_ASSIGN(CpuInfoProvider);
 };
 
 }  // namespace extensions

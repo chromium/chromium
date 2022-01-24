@@ -44,6 +44,10 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   UpdateRequiredScreenUnitTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
+  UpdateRequiredScreenUnitTest(const UpdateRequiredScreenUnitTest&) = delete;
+  UpdateRequiredScreenUnitTest& operator=(const UpdateRequiredScreenUnitTest&) =
+      delete;
+
   void SetUpdateEngineStatus(update_engine::Operation operation) {
     update_engine::StatusResult status;
     status.set_current_operation(operation);
@@ -83,7 +87,7 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
         fake_view_.get(), mock_error_screen_.get(), base::DoNothing());
 
     update_required_screen_->GetVersionUpdaterForTesting()
-        ->set_wait_for_reboot_time_for_testing(base::TimeDelta::FromSeconds(0));
+        ->set_wait_for_reboot_time_for_testing(base::Seconds(0));
   }
 
   void TearDown() override {
@@ -124,8 +128,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   // This is used for `GetEnterpriseDisplayDomain`.
   ScopedStubInstallAttributes test_install_attributes_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateRequiredScreenUnitTest);
 };
 
 namespace {

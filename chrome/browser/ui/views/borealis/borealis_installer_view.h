@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_BOREALIS_BOREALIS_INSTALLER_VIEW_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "ui/base/metadata/metadata_header_macros.h"

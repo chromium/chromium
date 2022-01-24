@@ -6,11 +6,9 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
-#include "content/browser/appcache/appcache_request_handler.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
-#include "content/browser/worker_host/worker_script_fetch_initiator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/url_request/redirect_util.h"
@@ -25,9 +23,9 @@ WorkerScriptLoader::WorkerScriptLoader(
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& resource_request,
+    const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     base::WeakPtr<ServiceWorkerMainResourceHandle> service_worker_handle,
-    base::WeakPtr<AppCacheHost> appcache_host,
     const BrowserContextGetter& browser_context_getter,
     scoped_refptr<network::SharedURLLoaderFactory> default_loader_factory,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -50,19 +48,11 @@ WorkerScriptLoader::WorkerScriptLoader(
   }
   auto service_worker_interceptor =
       ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
-          resource_request_, process_id, worker_token, service_worker_handle_);
+          resource_request_, isolation_info, process_id, worker_token,
+          service_worker_handle_);
 
   if (service_worker_interceptor)
     interceptors_.push_back(std::move(service_worker_interceptor));
-
-  if (appcache_host) {
-    std::unique_ptr<NavigationLoaderInterceptor> appcache_interceptor =
-        AppCacheRequestHandler::InitializeForMainResourceNetworkService(
-            resource_request_, appcache_host,
-            RenderFrameHost::kNoFrameTreeNodeId);
-    if (appcache_interceptor)
-      interceptors_.push_back(std::move(appcache_interceptor));
-  }
 
   Start();
 }
@@ -317,9 +307,8 @@ bool WorkerScriptLoader::MaybeCreateLoaderForResponse(
             resource_request_, response_head, response_body,
             response_url_loader, response_client_receiver, url_loader,
             &skip_other_interceptors, &will_return_unsafe_redirect)) {
-      // Both ServiceWorkerMainResourceLoaderInterceptor and
-      // AppCacheRequestHandler don't set skip_other_interceptors nor
-      // will_return_unsafe_redirect.
+      // ServiceWorkerMainResourceLoaderInterceptor doesn't set
+      // skip_other_interceptors or will_return_unsafe_redirect.
       DCHECK(!skip_other_interceptors);
       DCHECK(!will_return_unsafe_redirect);
       subresource_loader_params_ =

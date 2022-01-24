@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/token.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/mojom/video_capture.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -84,6 +85,11 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
               const media::VideoCaptureParams& params) override {
     pause_callback_->OnResumed(session_id);
   }
+
+  MOCK_METHOD3(Crop,
+               void(const base::UnguessableToken&,
+                    const base::Token&,
+                    CropCallback));
 
   MOCK_METHOD1(RequestRefreshFrame, void(const base::UnguessableToken&));
   MOCK_METHOD3(ReleaseBuffer,

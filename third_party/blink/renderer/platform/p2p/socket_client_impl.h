@@ -71,11 +71,11 @@ class P2PSocketClientImpl : public blink::P2PSocketClient,
 
  private:
   enum State {
-    STATE_UNINITIALIZED,
-    STATE_OPENING,
-    STATE_OPEN,
-    STATE_CLOSED,
-    STATE_ERROR,
+    kStateUninitialized,
+    kStateOpening,
+    kStateOpen,
+    kStateClosed,
+    kStateError,
   };
 
   friend class P2PSocketDispatcher;
@@ -91,11 +91,6 @@ class P2PSocketClientImpl : public blink::P2PSocketClient,
   void SocketCreated(const net::IPEndPoint& local_address,
                      const net::IPEndPoint& remote_address) override;
   void SendComplete(const network::P2PSendPacketMetrics& send_metrics) override;
-  void IncomingTcpConnection(
-      const net::IPEndPoint& socket_address,
-      mojo::PendingRemote<network::mojom::blink::P2PSocket> socket,
-      mojo::PendingReceiver<network::mojom::blink::P2PSocketClient>
-          client_receiver) override;
   void DataReceived(const net::IPEndPoint& socket_address,
                     const Vector<int8_t>& data,
                     base::TimeTicks timestamp) override;

@@ -15,7 +15,6 @@
 #include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
@@ -72,13 +71,12 @@ void ManagerSetPropertiesErrorCallback(const std::string& dbus_error_name,
 
 void LogConfigProperties(const std::string& desc,
                          const std::string& path,
-                         const base::DictionaryValue& properties) {
-  for (base::DictionaryValue::Iterator iter(properties); !iter.IsAtEnd();
-       iter.Advance()) {
+                         const base::Value& properties) {
+  for (auto iter : properties.DictItems()) {
     std::string v = "******";
-    if (shill_property_util::IsLoggableShillProperty(iter.key()))
-      base::JSONWriter::Write(iter.value(), &v);
-    NET_LOG(USER) << desc << ": " << path + "." + iter.key() + "=" + v;
+    if (shill_property_util::IsLoggableShillProperty(iter.first))
+      base::JSONWriter::Write(iter.second, &v);
+    NET_LOG(USER) << desc << ": " << path + "." + iter.first + "=" + v;
   }
 }
 
@@ -118,6 +116,9 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
         remove_confirmer_(std::move(remove_confirmer)),
         callback_(std::move(callback)),
         error_callback_(std::move(error_callback)) {}
+
+  ProfileEntryDeleter(const ProfileEntryDeleter&) = delete;
+  ProfileEntryDeleter& operator=(const ProfileEntryDeleter&) = delete;
 
   void RestrictToProfilePath(const std::string& profile_path) {
     restrict_to_profile_path_ = profile_path;
@@ -241,8 +242,6 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
   std::map<std::string, std::string> profile_delete_entries_;
 
   base::WeakPtrFactory<ProfileEntryDeleter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileEntryDeleter);
 };
 
 // NetworkConfigurationHandler
@@ -283,7 +282,7 @@ void NetworkConfigurationHandler::GetShillProperties(
 
 void NetworkConfigurationHandler::SetShillProperties(
     const std::string& service_path,
-    const base::DictionaryValue& shill_properties,
+    const base::Value& shill_properties,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   if (shill_properties.DictEmpty()) {
@@ -293,27 +292,25 @@ void NetworkConfigurationHandler::SetShillProperties(
   }
   NET_LOG(USER) << "SetShillProperties: " << NetworkPathId(service_path);
 
-  std::unique_ptr<base::DictionaryValue> properties_to_set(
-      shill_properties.DeepCopy());
+  base::Value properties_to_set = shill_properties.Clone();
 
   // Make sure that the GUID is saved to Shill when setting properties.
-  std::string guid = GetString(*properties_to_set, shill::kGuidProperty);
+  std::string guid = GetString(properties_to_set, shill::kGuidProperty);
   if (guid.empty()) {
     const NetworkState* network_state =
         network_state_handler_->GetNetworkState(service_path);
     guid = network_state ? network_state->guid() : base::GenerateGUID();
-    properties_to_set->SetKey(shill::kGuidProperty, base::Value(guid));
+    properties_to_set.SetKey(shill::kGuidProperty, base::Value(guid));
   }
 
-  LogConfigProperties("SetProperty", service_path, *properties_to_set);
+  LogConfigProperties("SetProperty", service_path, properties_to_set);
 
   // Clear error state when setting Shill properties.
   network_state_handler_->ClearLastErrorForNetwork(service_path);
 
-  std::unique_ptr<base::DictionaryValue> properties_copy(
-      properties_to_set->DeepCopy());
+  base::Value properties_copy = properties_to_set.Clone();
   ShillServiceClient::Get()->SetProperties(
-      dbus::ObjectPath(service_path), *properties_to_set,
+      dbus::ObjectPath(service_path), properties_to_set,
       base::BindOnce(&NetworkConfigurationHandler::SetPropertiesSuccessCallback,
                      weak_ptr_factory_.GetWeakPtr(), service_path,
                      std::move(properties_copy), std::move(callback)),
@@ -350,36 +347,34 @@ void NetworkConfigurationHandler::ClearShillProperties(
 }
 
 void NetworkConfigurationHandler::CreateShillConfiguration(
-    const base::DictionaryValue& shill_properties,
+    const base::Value& shill_properties,
     network_handler::ServiceResultCallback callback,
     network_handler::ErrorCallback error_callback) {
   ShillManagerClient* manager = ShillManagerClient::Get();
   std::string type = GetString(shill_properties, shill::kTypeProperty);
   DCHECK(!type.empty());
 
-  std::unique_ptr<base::DictionaryValue> properties_to_set(
-      shill_properties.DeepCopy());
+  base::Value properties_to_set = shill_properties.Clone();
 
   NET_LOG(USER) << "CreateShillConfiguration: " << type << ": "
                 << shill_property_util::GetNetworkIdFromProperties(
                        shill_properties);
 
   std::string profile_path =
-      GetString(*properties_to_set, shill::kProfileProperty);
+      GetString(properties_to_set, shill::kProfileProperty);
   DCHECK(!profile_path.empty());
 
   // Make sure that the GUID is saved to Shill when configuring networks.
-  std::string guid = GetString(*properties_to_set, shill::kGuidProperty);
+  std::string guid = GetString(properties_to_set, shill::kGuidProperty);
   if (guid.empty()) {
     guid = base::GenerateGUID();
-    properties_to_set->SetKey(shill::kGuidProperty, base::Value(guid));
+    properties_to_set.SetKey(shill::kGuidProperty, base::Value(guid));
   }
 
-  LogConfigProperties("Configure", type, *properties_to_set);
-  std::unique_ptr<base::DictionaryValue> properties_copy(
-      properties_to_set->DeepCopy());
+  LogConfigProperties("Configure", type, properties_to_set);
+  base::Value properties_copy = properties_to_set.Clone();
   manager->ConfigureServiceForProfile(
-      dbus::ObjectPath(profile_path), *properties_to_set,
+      dbus::ObjectPath(profile_path), properties_to_set,
       base::BindOnce(&NetworkConfigurationHandler::ConfigurationCompleted,
                      weak_ptr_factory_.GetWeakPtr(), profile_path, guid,
                      std::move(properties_copy), std::move(callback)),
@@ -537,7 +532,7 @@ void NetworkConfigurationHandler::ConfigurationFailed(
 void NetworkConfigurationHandler::ConfigurationCompleted(
     const std::string& profile_path,
     const std::string& guid,
-    std::unique_ptr<base::DictionaryValue> configure_properties,
+    base::Value configure_properties,
     network_handler::ServiceResultCallback callback,
     const dbus::ObjectPath& service_path) {
   // It is possible that the newly-configured network was already being tracked
@@ -621,7 +616,7 @@ void NetworkConfigurationHandler::GetPropertiesCallback(
 
 void NetworkConfigurationHandler::SetPropertiesSuccessCallback(
     const std::string& service_path,
-    std::unique_ptr<base::DictionaryValue> set_properties,
+    base::Value set_properties,
     base::OnceClosure callback) {
   if (!callback.is_null())
     std::move(callback).Run();
@@ -632,7 +627,7 @@ void NetworkConfigurationHandler::SetPropertiesSuccessCallback(
 
   for (auto& observer : observers_) {
     observer.OnConfigurationModified(service_path, network_state->guid(),
-                                     set_properties.get());
+                                     &set_properties);
   }
 
   network_state_handler_->RequestUpdateForNetwork(service_path);
@@ -658,12 +653,13 @@ void NetworkConfigurationHandler::ClearPropertiesSuccessCallback(
     base::OnceClosure callback,
     const base::ListValue& result) {
   const std::string kClearPropertiesFailedError("Error.ClearPropertiesFailed");
-  DCHECK(names.size() == result.GetSize())
+  DCHECK(names.size() == result.GetList().size())
       << "Incorrect result size from ClearProperties.";
 
-  for (size_t i = 0; i < result.GetSize(); ++i) {
+  for (size_t i = 0; i < result.GetList().size(); ++i) {
     bool success = false;
-    result.GetBoolean(i, &success);
+    if (result.GetList()[i].is_bool())
+      success = result.GetList()[i].GetBool();
     if (!success) {
       // If a property was cleared that has never been set, the clear will fail.
       // We do not track which properties have been set, so just log the error.
@@ -690,10 +686,11 @@ void NetworkConfigurationHandler::ClearPropertiesErrorCallback(
 }
 
 // static
-NetworkConfigurationHandler* NetworkConfigurationHandler::InitializeForTest(
+std::unique_ptr<NetworkConfigurationHandler>
+NetworkConfigurationHandler::InitializeForTest(
     NetworkStateHandler* network_state_handler,
     NetworkDeviceHandler* network_device_handler) {
-  NetworkConfigurationHandler* handler = new NetworkConfigurationHandler();
+  auto handler = base::WrapUnique(new NetworkConfigurationHandler());
   handler->Init(network_state_handler, network_device_handler);
   return handler;
 }

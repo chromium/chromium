@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/sql_table_builder.h"
 
@@ -35,6 +34,10 @@ namespace password_manager {
 class AffiliationDatabase {
  public:
   AffiliationDatabase();
+
+  AffiliationDatabase(const AffiliationDatabase&) = delete;
+  AffiliationDatabase& operator=(const AffiliationDatabase&) = delete;
+
   ~AffiliationDatabase();
 
   // Opens an existing database at |path|, or creates a new one if none exists,
@@ -102,8 +105,6 @@ class AffiliationDatabase {
 
   // The SQL connection to the database.
   std::unique_ptr<sql::Database> sql_connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliationDatabase);
 };
 
 }  // namespace password_manager

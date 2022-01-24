@@ -46,6 +46,11 @@ using TerminateGpuCallback = base::OnceCallback<void(std::string)>;
 class MockPlatformWindowDelegate : public ui::PlatformWindowDelegate {
  public:
   MockPlatformWindowDelegate() = default;
+
+  MockPlatformWindowDelegate(const MockPlatformWindowDelegate&) = delete;
+  MockPlatformWindowDelegate& operator=(const MockPlatformWindowDelegate&) =
+      delete;
+
   ~MockPlatformWindowDelegate() = default;
 
   MOCK_METHOD1(OnBoundsChanged, void(const BoundsChange& change));
@@ -63,9 +68,6 @@ class MockPlatformWindowDelegate : public ui::PlatformWindowDelegate {
   MOCK_METHOD0(OnAcceleratedWidgetDestroyed, void());
   MOCK_METHOD1(OnActivationChanged, void(bool active));
   MOCK_METHOD0(OnMouseEnter, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPlatformWindowDelegate);
 };
 
 struct Environment {

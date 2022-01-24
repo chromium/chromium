@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "ui/display/display_observer.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -144,6 +144,10 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
       base::RepeatingCallback<void(Profile* profile)>;
 
   explicit ArcSupportHost(Profile* profile);
+
+  ArcSupportHost(const ArcSupportHost&) = delete;
+  ArcSupportHost& operator=(const ArcSupportHost&) = delete;
+
   ~ArcSupportHost() override;
 
   void SetAuthDelegate(AuthDelegate* delegate);
@@ -152,6 +156,10 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
 
   // Returns the should_show_run_network_tests_ field.
   bool GetShouldShowRunNetworkTests();
+
+  // Returns the outermost native view. This will be used as the parent for
+  // dialog boxes.
+  gfx::NativeWindow GetNativeWindow() const;
 
   bool HasAuthDelegate() const { return auth_delegate_ != nullptr; }
 
@@ -278,8 +286,6 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   // Prefix of the device management (DM) server URL used to detect whether the
   // SAML flow finished. The DM server is the SAML service provider.
   std::string active_directory_auth_device_management_url_prefix_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSupportHost);
 };
 
 #endif  // CHROME_BROWSER_ASH_ARC_ARC_SUPPORT_HOST_H_

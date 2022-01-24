@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_APPLIED_DECORATION_PAINTER_H_
 
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -23,10 +24,10 @@ class AppliedDecorationPainter final {
                            TextDecoration line)
       : context_(context), decoration_info_(decoration_info), line_(line) {}
 
-  void Paint();
+  void Paint(const PaintFlags* flags = nullptr);
 
  private:
-  void StrokeWavyTextDecoration();
+  void StrokeWavyTextDecoration(const PaintFlags* flags);
 
   GraphicsContext& context_;
   const TextDecorationInfo& decoration_info_;

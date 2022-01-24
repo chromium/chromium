@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"

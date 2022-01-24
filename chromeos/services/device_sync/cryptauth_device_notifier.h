@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/network_request_error.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
@@ -24,6 +23,10 @@ namespace device_sync {
 class CryptAuthDeviceNotifier {
  public:
   CryptAuthDeviceNotifier() = default;
+
+  CryptAuthDeviceNotifier(const CryptAuthDeviceNotifier&) = delete;
+  CryptAuthDeviceNotifier& operator=(const CryptAuthDeviceNotifier&) = delete;
+
   virtual ~CryptAuthDeviceNotifier() = default;
 
   // Sends a GCM message to devices with Instance IDs |device_ids|. The message
@@ -37,9 +40,6 @@ class CryptAuthDeviceNotifier {
       CryptAuthFeatureType feature_type,
       base::OnceClosure success_callback,
       base::OnceCallback<void(NetworkRequestError)> error_callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceNotifier);
 };
 
 }  // namespace device_sync

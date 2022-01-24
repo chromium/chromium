@@ -25,6 +25,7 @@
 #include "services/video_capture/public/mojom/device_factory.mojom.h"
 #include "services/video_capture/public/mojom/devices_changed_observer.mojom.h"
 #include "services/video_capture/public/mojom/producer.mojom.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 #include "services/video_capture/public/mojom/virtual_device.mojom.h"
 
@@ -63,6 +64,11 @@ class WebRtcVideoCaptureServiceEnumerationBrowserTest
   WebRtcVideoCaptureServiceEnumerationBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
   }
+
+  WebRtcVideoCaptureServiceEnumerationBrowserTest(
+      const WebRtcVideoCaptureServiceEnumerationBrowserTest&) = delete;
+  WebRtcVideoCaptureServiceEnumerationBrowserTest& operator=(
+      const WebRtcVideoCaptureServiceEnumerationBrowserTest&) = delete;
 
   ~WebRtcVideoCaptureServiceEnumerationBrowserTest() override {}
 
@@ -228,8 +234,6 @@ class WebRtcVideoCaptureServiceEnumerationBrowserTest
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_;
   base::OnceClosure closure_to_be_called_on_devices_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcVideoCaptureServiceEnumerationBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(WebRtcVideoCaptureServiceEnumerationBrowserTest,

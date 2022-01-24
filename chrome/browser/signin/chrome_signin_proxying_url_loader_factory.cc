@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -45,6 +46,9 @@ const void* const kBrowserContextUserDataKey = &kBrowserContextUserDataKey;
 // Owns all of the ProxyingURLLoaderFactorys for a given Profile.
 class BrowserContextData : public base::SupportsUserData::Data {
  public:
+  BrowserContextData(const BrowserContextData&) = delete;
+  BrowserContextData& operator=(const BrowserContextData&) = delete;
+
   ~BrowserContextData() override {}
 
   static void StartProxying(
@@ -96,8 +100,6 @@ class BrowserContextData : public base::SupportsUserData::Data {
       proxies_;
 
   base::WeakPtrFactory<BrowserContextData> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserContextData);
 };
 
 }  // namespace
@@ -115,6 +117,9 @@ class ProxyingURLLoaderFactory::InProgressRequest
       const network::ResourceRequest& request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
+
+  InProgressRequest(const InProgressRequest&) = delete;
+  InProgressRequest& operator=(const InProgressRequest&) = delete;
 
   ~InProgressRequest() override {
     if (destruction_callback_)
@@ -205,8 +210,6 @@ class ProxyingURLLoaderFactory::InProgressRequest
   // Messages received by |loader_receiver_| are forwarded to |target_loader_|.
   mojo::Receiver<network::mojom::URLLoader> loader_receiver_;
   mojo::Remote<network::mojom::URLLoader> target_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProgressRequest);
 };
 
 class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
@@ -225,6 +228,9 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
         in_progress_request_(in_progress_request) {
     DCHECK(in_progress_request_);
   }
+
+  ProxyRequestAdapter(const ProxyRequestAdapter&) = delete;
+  ProxyRequestAdapter& operator=(const ProxyRequestAdapter&) = delete;
 
   ~ProxyRequestAdapter() override = default;
 
@@ -251,8 +257,6 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
 
  private:
   InProgressRequest* const in_progress_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyRequestAdapter);
 };
 
 class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
@@ -264,6 +268,9 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
     DCHECK(in_progress_request_);
     DCHECK(headers_);
   }
+
+  ProxyResponseAdapter(const ProxyResponseAdapter&) = delete;
+  ProxyResponseAdapter& operator=(const ProxyResponseAdapter&) = delete;
 
   ~ProxyResponseAdapter() override = default;
 
@@ -277,7 +284,7 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
   }
 
   GURL GetOrigin() const override {
-    return in_progress_request_->response_url_.GetOrigin();
+    return in_progress_request_->response_url_.DeprecatedGetOriginAsURL();
   }
 
   const net::HttpResponseHeaders* GetHeaders() const override {
@@ -301,8 +308,6 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
  private:
   InProgressRequest* const in_progress_request_;
   net::HttpResponseHeaders* const headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResponseAdapter);
 };
 
 ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
@@ -316,7 +321,7 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     : factory_(factory),
       request_url_(request.url),
       response_url_(request.url),
-      referrer_origin_(request.referrer.GetOrigin()),
+      referrer_origin_(request.referrer.DeprecatedGetOriginAsURL()),
       request_destination_(request.destination),
       is_main_frame_(request.is_main_frame),
       is_fetch_like_api_(request.is_fetch_like_api),
@@ -387,7 +392,8 @@ void ProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
                                  modified_cors_exempt_headers, opt_new_url);
 
   request_url_ = redirect_info_.new_url;
-  referrer_origin_ = GURL(redirect_info_.new_referrer).GetOrigin();
+  referrer_origin_ =
+      GURL(redirect_info_.new_referrer).DeprecatedGetOriginAsURL();
 }
 
 void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(

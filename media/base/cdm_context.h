@@ -6,16 +6,14 @@
 #define MEDIA_BASE_CDM_CONTEXT_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/media_export.h"
 #include "media/media_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 namespace chromeos {
 class ChromeOsCdmContext;
 }
@@ -61,6 +59,9 @@ class MEDIA_EXPORT CdmContext {
 
   // Callback to notify the occurrence of an Event.
   using EventCB = base::RepeatingCallback<void(Event)>;
+
+  CdmContext(const CdmContext&) = delete;
+  CdmContext& operator=(const CdmContext&) = delete;
 
   virtual ~CdmContext();
 
@@ -124,7 +125,7 @@ class MEDIA_EXPORT CdmContext {
   virtual FuchsiaCdmContext* GetFuchsiaCdmContext();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Returns a ChromeOsCdmContext interface when the context is backed by the
   // ChromeOS CdmFactoryDaemon. Otherwise return nullptr.
   virtual chromeos::ChromeOsCdmContext* GetChromeOsCdmContext();
@@ -132,9 +133,6 @@ class MEDIA_EXPORT CdmContext {
 
  protected:
   CdmContext();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CdmContext);
 };
 
 // A reference holder to make sure the CdmContext is always valid as long as

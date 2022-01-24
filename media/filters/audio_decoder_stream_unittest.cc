@@ -54,8 +54,12 @@ class AudioDecoderStreamTest : public testing::Test {
                                 base::Unretained(this)),
             &media_log_) {
     // Any valid config will do.
-    demuxer_stream_.set_audio_decoder_config(
-        {kCodecAAC, kSampleFormatS16, CHANNEL_LAYOUT_STEREO, 44100, {}, {}});
+    demuxer_stream_.set_audio_decoder_config({AudioCodec::kAAC,
+                                              kSampleFormatS16,
+                                              CHANNEL_LAYOUT_STEREO,
+                                              44100,
+                                              {},
+                                              {}});
     EXPECT_CALL(demuxer_stream_, SupportsConfigChanges())
         .WillRepeatedly(Return(true));
 
@@ -67,6 +71,9 @@ class AudioDecoderStreamTest : public testing::Test {
         nullptr, base::DoNothing(), base::DoNothing());
     run_loop.Run();
   }
+
+  AudioDecoderStreamTest(const AudioDecoderStreamTest&) = delete;
+  AudioDecoderStreamTest& operator=(const AudioDecoderStreamTest&) = delete;
 
   MockDemuxerStream* demuxer_stream() { return &demuxer_stream_; }
   MockAudioDecoder* decoder() { return decoder_; }
@@ -80,7 +87,7 @@ class AudioDecoderStreamTest : public testing::Test {
   void ProduceDecoderOutput(scoped_refptr<DecoderBuffer> buffer,
                             AudioDecoder::DecodeCB decode_cb) {
     // Make sure successive AudioBuffers have increasing timestamps.
-    last_timestamp_ += base::TimeDelta::FromMilliseconds(27);
+    last_timestamp_ += base::Milliseconds(27);
     const auto& config = demuxer_stream_.audio_decoder_config();
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -122,8 +129,6 @@ class AudioDecoderStreamTest : public testing::Test {
   MockAudioDecoder* decoder_ = nullptr;
   AudioDecoder::OutputCB decoder_output_cb_;
   base::TimeDelta last_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderStreamTest);
 };
 
 TEST_F(AudioDecoderStreamTest, FlushOnConfigChange) {

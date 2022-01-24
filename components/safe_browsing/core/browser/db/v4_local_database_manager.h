@@ -11,8 +11,9 @@
 #include <memory>
 #include <unordered_set>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/v4_database.h"
@@ -38,6 +39,9 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       ExtendedReportingLevelCallback extended_reporting_level_callback);
+
+  V4LocalDatabaseManager(const V4LocalDatabaseManager&) = delete;
+  V4LocalDatabaseManager& operator=(const V4LocalDatabaseManager&) = delete;
 
   // Populates the protobuf with the database data.
   void CollectDatabaseManagerInfo(
@@ -75,7 +79,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
                                                 Client* client) override;
   bool CheckUrlForAccuracyTips(const GURL& url, Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
-  bool MatchDownloadAllowlistString(const std::string& str) override;
   bool MatchDownloadAllowlistUrl(const GURL& url) override;
   bool MatchMalwareIP(const std::string& ip_address) override;
   safe_browsing::ThreatSource GetThreatSource() const override;
@@ -396,8 +399,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   std::unique_ptr<V4UpdateProtocolManager> v4_update_protocol_manager_;
 
   base::WeakPtrFactory<V4LocalDatabaseManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(V4LocalDatabaseManager);
 };  // class V4LocalDatabaseManager
 
 }  // namespace safe_browsing

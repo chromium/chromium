@@ -34,6 +34,7 @@
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/core/v2/test/stream_builder.h"
 #include "components/feed/core/v2/test/test_util.h"
+#include "components/feed/core/v2/types.h"
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/http/http_status_code.h"
@@ -151,7 +152,7 @@ class TestSurfaceBase : public FeedStreamSurface {
  private:
   std::string CurrentState();
 
-  bool IsInitialLoadSpinnerUpdate(const feedui::StreamUpdate& update);
+  bool IsInitialLoadSpinnerUpdate(const feedui::StreamUpdate& stream_update);
 
   // The stream if it was attached using the constructor.
   base::WeakPtr<FeedStream> stream_;
@@ -386,14 +387,17 @@ class TestMetricsReporter : public MetricsReporter {
                     bool is_initial_load,
                     bool loaded_new_content_from_network,
                     base::TimeDelta stored_content_age,
-                    int content_count,
+                    const ContentStats& content_stats,
+                    const RequestMetadata& request_metadata,
                     std::unique_ptr<LoadLatencyTimes> latencies) override;
   void OnLoadMoreBegin(const StreamType& stream_type,
                        SurfaceId surface_id) override;
-  void OnLoadMore(LoadStreamStatus final_status) override;
+  void OnLoadMore(const StreamType& stream_type,
+                  LoadStreamStatus final_status,
+                  const ContentStats& content_stats) override;
   void OnBackgroundRefresh(const StreamType& stream_type,
                            LoadStreamStatus final_status) override;
-  void OnClearAll(base::TimeDelta time_since_last_clear) override;
+  void OnClearAll(base::TimeDelta since_last_clear) override;
   void OnUploadActions(UploadActionsStatus status) override;
 
   struct StreamMetrics {
@@ -437,11 +441,13 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   std::string GetSyncSignedInGaia() override;
   void PrefetchImage(const GURL& url) override;
   void RegisterExperiments(const Experiments& experiments) override {}
+  void RegisterFollowingFeedFollowCountFieldTrial(size_t follow_count) override;
 
   // For tests.
 
   // Replace stream_.
-  void CreateStream(bool wait_for_initialization = true);
+  void CreateStream(bool wait_for_initialization = true,
+                    bool start_surface = false);
   std::unique_ptr<StreamModel> CreateStreamModel();
   bool IsTaskQueueIdle() const;
   void WaitForIdleTaskQueue();
@@ -486,6 +492,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;
   base::RepeatingClosure on_clear_all_;
+  std::vector<size_t> register_following_feed_follow_count_field_trial_calls_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

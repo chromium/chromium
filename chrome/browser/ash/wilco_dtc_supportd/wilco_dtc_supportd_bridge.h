@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_notification_controller.h"
@@ -62,6 +61,9 @@ class WilcoDtcSupportdBridge final
       std::unique_ptr<WilcoDtcSupportdNetworkContext> network_context,
       std::unique_ptr<WilcoDtcSupportdNotificationController>
           notification_controller);
+
+  WilcoDtcSupportdBridge(const WilcoDtcSupportdBridge&) = delete;
+  WilcoDtcSupportdBridge& operator=(const WilcoDtcSupportdBridge&) = delete;
 
   ~WilcoDtcSupportdBridge() override;
 
@@ -159,8 +161,6 @@ class WilcoDtcSupportdBridge final
   base::WeakPtrFactory<WilcoDtcSupportdBridge> dbus_waiting_weak_ptr_factory_{
       this};
   base::WeakPtrFactory<WilcoDtcSupportdBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdBridge);
 };
 
 }  // namespace ash

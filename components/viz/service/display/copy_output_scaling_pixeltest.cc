@@ -69,8 +69,11 @@ class CopyOutputScalingPixelTest
   // the resulting bitmap is compared against an expected bitmap.
   void RunTest() {
     const char* result_format_as_str = "<unknown>";
-    if (result_format_ == CopyOutputResult::Format::RGBA_BITMAP)
-      result_format_as_str = "RGBA_BITMAP";
+
+    // Tests only issue requests for system-memory destinations, no need to
+    // take the destination into account:
+    if (result_format_ == CopyOutputResult::Format::RGBA)
+      result_format_as_str = "RGBA";
     else if (result_format_ == CopyOutputResult::Format::I420_PLANES)
       result_format_as_str = "I420_PLANES";
     else
@@ -137,7 +140,7 @@ class CopyOutputScalingPixelTest
       // http://crbug.com/792734
       bool dummy_ran = false;
       auto request = std::make_unique<CopyOutputRequest>(
-          result_format_,
+          result_format_, CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(
               [](bool* dummy_ran, std::unique_ptr<CopyOutputResult> result) {
                 EXPECT_TRUE(!result->IsEmpty());
@@ -156,7 +159,7 @@ class CopyOutputScalingPixelTest
       // Add a copy request to the root RenderPass, to capture the results of
       // drawing all passes for this frame.
       request = std::make_unique<CopyOutputRequest>(
-          result_format_,
+          result_format_, CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(
               [](bool* dummy_ran,
                  std::unique_ptr<CopyOutputResult>* test_result,
@@ -308,7 +311,7 @@ const auto kParameters =
                      testing::Values(gfx::Vector2d(1, 1),
                                      gfx::Vector2d(2, 1),
                                      gfx::Vector2d(1, 2)),
-                     testing::Values(CopyOutputResult::Format::RGBA_BITMAP,
+                     testing::Values(CopyOutputResult::Format::RGBA,
                                      CopyOutputResult::Format::I420_PLANES));
 
 TEST_P(CopyOutputScalingPixelTest, ScaledCopyOfDrawnFrame) {

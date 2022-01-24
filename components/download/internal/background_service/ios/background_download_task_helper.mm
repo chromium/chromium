@@ -13,6 +13,8 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/download/public/background_service/download_params.h"
 #include "net/base/mac/url_conversions.h"
 
@@ -25,35 +27,45 @@ using CompletionCallback =
 using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
 
 @interface BackgroundDownloadDelegate : NSObject <NSURLSessionDownloadDelegate>
-- (instancetype)initWithDownloadDirectory:(base::FilePath)downloadDir
-                                     guid:(std::string)guid
-                        completionHandler:(CompletionCallback)completionHandler
-                            updateHandler:(UpdateCallback)updateHandler;
+- (instancetype)initWithDownloadPath:(base::FilePath)downloadPath
+                   completionHandler:(CompletionCallback)completionHandler
+                       updateHandler:(UpdateCallback)updateHandler
+                          taskRunner:
+                              (scoped_refptr<base::SingleThreadTaskRunner>)
+                                  taskRunner;
 @end
 
 @implementation BackgroundDownloadDelegate {
-  base::FilePath _downloadDir;
-  std::string _guid;
+  base::FilePath _downloadPath;
   CompletionCallback _completionCallback;
   UpdateCallback _updateCallback;
+  scoped_refptr<base::SingleThreadTaskRunner> _taskRunner;
 }
 
-- (instancetype)initWithDownloadDirectory:(base::FilePath)downloadDir
-                                     guid:(std::string)guid
-                        completionHandler:(CompletionCallback)completionHandler
-                            updateHandler:(UpdateCallback)updateHandler {
-  _downloadDir = downloadDir;
-  _guid = guid;
+- (instancetype)initWithDownloadPath:(base::FilePath)downloadPath
+                   completionHandler:(CompletionCallback)completionHandler
+                       updateHandler:(UpdateCallback)updateHandler
+                          taskRunner:
+                              (scoped_refptr<base::SingleThreadTaskRunner>)
+                                  taskRunner {
+  _downloadPath = downloadPath;
   _completionCallback = std::move(completionHandler);
   _updateCallback = updateHandler;
+  _taskRunner = taskRunner;
   return self;
 }
 
-- (void)invokeCompletionHandler:(bool)success
-                       filePath:(base::FilePath)filePath
-                       fileSize:(int64_t)fileSize {
-  if (_completionCallback)
-    std::move(_completionCallback).Run(success, filePath, fileSize);
+- (void)onDownloadCompletion:(bool)success
+                     session:(NSURLSession*)session
+                    filePath:(base::FilePath)filePath
+                    fileSize:(int64_t)fileSize {
+  if (_completionCallback) {
+    // Invoke the completion callback on main thread.
+    _taskRunner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(_completionCallback), success,
+                                  filePath, fileSize));
+  }
+  [session invalidateAndCancel];
 }
 
 #pragma mark - NSURLSessionDownloadDelegate
@@ -75,8 +87,10 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
   DVLOG(1) << __func__ << ",byte written: " << bytesWritten
            << ", totalBytesWritten:" << totalBytesWritten
            << ", totalBytesExpectedToWrite:" << totalBytesExpectedToWrite;
-  if (_updateCallback)
-    _updateCallback.Run(totalBytesWritten);
+  if (_updateCallback) {
+    _taskRunner->PostTask(
+        FROM_HERE, base::BindRepeating(_updateCallback, totalBytesWritten));
+  }
 }
 
 - (void)URLSession:(NSURLSession*)session
@@ -84,19 +98,24 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
     didFinishDownloadingToURL:(NSURL*)location {
   DVLOG(1) << __func__;
   if (!location) {
-    [self invokeCompletionHandler:/*success=*/false
-                         filePath:base::FilePath()
-                         fileSize:0];
+    [self onDownloadCompletion:/*success=*/false
+                       session:session
+                      filePath:base::FilePath()
+                      fileSize:0];
     return;
   }
 
-  // Make sure the target directory exists.
-  if (!base::CreateDirectory(_downloadDir)) {
-    LOG(ERROR) << "Failed to create dir:" << _downloadDir;
-    [self invokeCompletionHandler:/*success=*/false
-                         filePath:base::FilePath()
-                         fileSize:0];
-    return;
+  // Analyze the response code. Treat non http 200 as failure downloads.
+  NSURLResponse* response = [downloadTask response];
+  if (response && [response isKindOfClass:[NSHTTPURLResponse class]]) {
+    NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+    if ([httpResponse statusCode] != 200) {
+      [self onDownloadCompletion:/*success=*/false
+                         session:session
+                        filePath:base::FilePath()
+                        fileSize:0];
+      return;
+    }
   }
 
   // Move the downloaded file from platform temporary directory to download
@@ -104,28 +123,30 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
   // thread or iOS may delete the file.
   const base::FilePath tempPath =
       base::mac::NSStringToFilePath([location path]);
-  base::FilePath newFile = _downloadDir.AppendASCII(_guid);
-  if (!base::Move(tempPath, newFile)) {
+  if (!base::Move(tempPath, _downloadPath)) {
     LOG(ERROR) << "Failed to move file from:" << tempPath
-               << ", to:" << _downloadDir;
-    [self invokeCompletionHandler:/*success=*/false
-                         filePath:base::FilePath()
-                         fileSize:0];
+               << ", to:" << _downloadPath;
+    [self onDownloadCompletion:/*success=*/false
+                       session:session
+                      filePath:base::FilePath()
+                      fileSize:0];
     return;
   }
 
   // Get the file size on current thread.
   int64_t fileSize = 0;
-  if (!base::GetFileSize(newFile, &fileSize)) {
-    LOG(ERROR) << "Failed to get file size from:" << newFile;
-    [self invokeCompletionHandler:/*success=*/false
-                         filePath:base::FilePath()
-                         fileSize:0];
+  if (!base::GetFileSize(_downloadPath, &fileSize)) {
+    LOG(ERROR) << "Failed to get file size from:" << _downloadPath;
+    [self onDownloadCompletion:/*success=*/false
+                       session:session
+                      filePath:base::FilePath()
+                      fileSize:0];
     return;
   }
-  [self invokeCompletionHandler:/*success=*/true
-                       filePath:newFile
-                       fileSize:fileSize];
+  [self onDownloadCompletion:/*success=*/true
+                     session:session
+                    filePath:_downloadPath
+                    fileSize:fileSize];
 }
 
 #pragma mark - NSURLSessionDelegate
@@ -134,8 +155,14 @@ using UpdateCallback = download::BackgroundDownloadTaskHelper::UpdateCallback;
                     task:(NSURLSessionTask*)task
     didCompleteWithError:(NSError*)error {
   VLOG(1) << __func__;
-  // TODO(xingliu): Check whether we can resume for a few times if the user
-  // terminated the app in multitask window or failed downloads.
+
+  if (!error)
+    return;
+
+  [self onDownloadCompletion:/*success=*/false
+                     session:session
+                    filePath:base::FilePath()
+                    fileSize:0];
 }
 @end
 
@@ -143,18 +170,23 @@ namespace download {
 
 // Implementation of BackgroundDownloadTaskHelper based on
 // NSURLSessionDownloadTask api.
+// This class lives on main thread and all the callbacks will be invoked on main
+// thread. The NSURLSessionDownloadDelegate it uses will broadcast download
+// events on a background thread.
 class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
  public:
-  BackgroundDownloadTaskHelperImpl(const base::FilePath& download_dir)
-      : download_dir_(download_dir) {}
+  BackgroundDownloadTaskHelperImpl() = default;
   ~BackgroundDownloadTaskHelperImpl() override = default;
 
  private:
   void StartDownload(const std::string& guid,
+                     const base::FilePath& target_path,
                      const RequestParams& request_params,
                      const SchedulingParams& scheduling_params,
                      CompletionCallback completion_callback,
                      UpdateCallback update_callback) override {
+    DCHECK(!guid.empty());
+    DCHECK(!target_path.empty());
     // TODO(xingliu): Implement handleEventsForBackgroundURLSession and invoke
     // the callback passed from it.
     NSURLSessionConfiguration* configuration = [NSURLSessionConfiguration
@@ -167,10 +199,10 @@ class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
         scheduling_params.battery_requirements !=
             SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
     BackgroundDownloadDelegate* delegate = [[BackgroundDownloadDelegate alloc]
-        initWithDownloadDirectory:download_dir_
-                             guid:guid
-                completionHandler:std::move(completion_callback)
-                    updateHandler:update_callback];
+        initWithDownloadPath:target_path
+           completionHandler:std::move(completion_callback)
+               updateHandler:update_callback
+                  taskRunner:base::ThreadTaskRunnerHandle::Get()];
     NSURLSession* session = [NSURLSession sessionWithConfiguration:configuration
                                                           delegate:delegate
                                                      delegateQueue:nil];
@@ -188,16 +220,12 @@ class BackgroundDownloadTaskHelperImpl : public BackgroundDownloadTaskHelper {
         [session downloadTaskWithRequest:request];
     [downloadTask resume];
   }
-
-  // A directory to hold download service files. The files in here will be
-  // pruned frequently.
-  const base::FilePath download_dir_;
 };
 
 // static
 std::unique_ptr<BackgroundDownloadTaskHelper>
-BackgroundDownloadTaskHelper::Create(const base::FilePath& download_dir) {
-  return std::make_unique<BackgroundDownloadTaskHelperImpl>(download_dir);
+BackgroundDownloadTaskHelper::Create() {
+  return std::make_unique<BackgroundDownloadTaskHelperImpl>();
 }
 
 }  // namespace download

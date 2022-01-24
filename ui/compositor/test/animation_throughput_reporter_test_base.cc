@@ -35,7 +35,7 @@ void AnimationThroughputReporterTestBase::SetUp() {
   compositor()->SetRootLayer(&root_);
 
   frame_generation_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(16), this,
+      FROM_HERE, base::Milliseconds(16), this,
       &AnimationThroughputReporterTestBase::GenerateOneFrame);
 }
 

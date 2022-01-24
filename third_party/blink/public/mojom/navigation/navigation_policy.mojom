@@ -27,6 +27,4 @@ struct NavigationDownloadPolicy {
   // A bitset of navigation types observed where if the navigation turns into
   // a download, the download should be dropped.
   NavigationDownloadTypes disallowed_types;
-
-  bool blocking_downloads_in_sandbox_enabled = false;
 };

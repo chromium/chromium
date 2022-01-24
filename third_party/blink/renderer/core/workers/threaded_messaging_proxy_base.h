@@ -111,7 +111,7 @@ class CORE_EXPORT ThreadedMessagingProxyBase
   // Used to keep this alive until the worker thread gets terminated. This is
   // necessary because the co-owner (i.e., Worker or Worklet object) can be
   // destroyed before thread termination.
-  SelfKeepAlive<ThreadedMessagingProxyBase> keep_alive_;
+  SelfKeepAlive<ThreadedMessagingProxyBase> keep_alive_{this};
 };
 
 }  // namespace blink

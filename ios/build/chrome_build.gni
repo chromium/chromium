@@ -6,10 +6,10 @@ import("//build/config/apple/symbols.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/ios/ios_sdk.gni")
 
-# Xcode 12.2 or higher is required to build Chromium on iOS. This file should
+# Xcode 13.0 or higher is required to build Chromium on iOS. This file should
 # only be included when building Chromium, not other related projects (cronet,
 # webrtc, ...).
-assert(xcode_version_int >= 1220, "Xcode 12.2 or higher is required.")
+assert(xcode_version_int >= 1300, "Xcode 13.0 or higher is required.")
 
 declare_args() {
   # Enable widget extensions.
@@ -25,20 +25,18 @@ declare_args() {
   # Enable credential provider extension.
   ios_enable_credential_provider_extension = true
 
+  # Enable intents extension.
+  ios_enable_intents_extension = false
+
   # Label of the target providing implementation for AccountVerificationProvider.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_account_verification_provider_target = "//ios/chrome/credential_provider_extension:account_verification_provider_implementation"
 
+  # The API key to query Google services in the Credential Provider Extension.
+  ios_credential_provider_extension_api_key = ""
+
   # Controls whether ScreenTime API is used.
   ios_enable_screen_time = true
-
-  # When set the main plist CFBundleVersion will be set to ios_lock_to_version,
-  # followed by the milestone and patch in one tuple, e.g. 86.0.4240.8720 where
-  # 87 is the milestone and 20 is the stable patch.  Note that CFBundleVersion
-  # is mostly unused by Chrome and should not affect how the actual version
-  # number is handled internally by Chrome.
-  # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-  ios_lock_to_version = ""
 
   # Value of the encryption export compliance code. See "Cryptography and
   # U.S. Export Compliance" in "Submitting the App to App Review" in the
@@ -92,7 +90,7 @@ if (breakpad_enabled) {
   is_official_release = false
 }
 
-chromium_bundle_id = "chrome.ios.dev"
+chromium_bundle_id = "$ios_app_bundle_id_prefix.chrome.ios.dev"
 chromium_handoff_id = "$ios_app_bundle_id_prefix.chrome.handoff"
 ios_move_tab_activity_type = "$ios_app_bundle_id_prefix.chrome.move-tab"
 

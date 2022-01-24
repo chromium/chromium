@@ -223,7 +223,7 @@ TEST_F(DeletePageTaskTest, DeletePageForPageLimit) {
   generator()->SetUrl(GURL("http://example.com"));
   // Guarantees that page1 will be deleted by making it older.
   base::Time now = OfflineTimeNow();
-  generator()->SetLastAccessTime(now - base::TimeDelta::FromMinutes(5));
+  generator()->SetLastAccessTime(now - base::Minutes(5));
   OfflinePageItem page1 = generator()->CreateItemWithTempFile();
   generator()->SetLastAccessTime(now);
   OfflinePageItem page2 = generator()->CreateItemWithTempFile();

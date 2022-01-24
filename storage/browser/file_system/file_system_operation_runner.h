@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
       FileSystemOperation::CopyOrMoveProgressCallback;
   using CopyFileProgressCallback =
       FileSystemOperation::CopyFileProgressCallback;
-  using CopyOrMoveOption = FileSystemOperation::CopyOrMoveOption;
+  using CopyOrMoveOptionSet = FileSystemOperation::CopyOrMoveOptionSet;
   using GetMetadataField = FileSystemOperation::GetMetadataField;
 
   using OperationID = uint64_t;
@@ -59,6 +59,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
       const scoped_refptr<FileSystemContext>& file_system_context);
   FileSystemOperationRunner(base::PassKey<FileSystemContext>,
                             FileSystemContext* file_system_context);
+
+  FileSystemOperationRunner(const FileSystemOperationRunner&) = delete;
+  FileSystemOperationRunner& operator=(const FileSystemOperationRunner&) =
+      delete;
+
   virtual ~FileSystemOperationRunner();
 
   // Cancels all inflight operations.
@@ -83,7 +88,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
   // details.
   OperationID Copy(const FileSystemURL& src_url,
                    const FileSystemURL& dest_url,
-                   CopyOrMoveOption option,
+                   CopyOrMoveOptionSet options,
                    ErrorBehavior error_behavior,
                    const CopyOrMoveProgressCallback& progress_callback,
                    StatusCallback callback);
@@ -93,7 +98,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
   // For |option|, see file_system_operation.h for details.
   OperationID Move(const FileSystemURL& src_url,
                    const FileSystemURL& dest_url,
-                   CopyOrMoveOption option,
+                   CopyOrMoveOptionSet options,
                    ErrorBehavior error_behavior,
                    const CopyOrMoveProgressCallback& progress_callback,
                    StatusCallback callback);
@@ -222,7 +227,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
   //
   OperationID CopyFileLocal(const FileSystemURL& src_url,
                             const FileSystemURL& dest_url,
-                            CopyOrMoveOption option,
+                            CopyOrMoveOptionSet options,
                             const CopyFileProgressCallback& progress_callback,
                             StatusCallback callback);
 
@@ -242,7 +247,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
   //
   OperationID MoveFileLocal(const FileSystemURL& src_url,
                             const FileSystemURL& dest_url,
-                            CopyOrMoveOption option,
+                            CopyOrMoveOptionSet options,
                             StatusCallback callback);
 
   // This is called only by pepper plugin as of writing to synchronously get
@@ -324,8 +329,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
 
   base::WeakPtr<FileSystemOperationRunner> weak_ptr_;
   base::WeakPtrFactory<FileSystemOperationRunner> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemOperationRunner);
 };
 
 }  // namespace storage

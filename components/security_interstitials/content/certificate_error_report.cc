@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/network_time/network_time_tracker.h"
@@ -108,22 +109,22 @@ void AddVerifyFlagsToReport(
 void AddMacTrustFlagsToReport(
     int mac_trust_flags,
     ::google::protobuf::RepeatedField<int>* report_flags) {
-#define COPY_TRUST_FLAGS(flag)                            \
-  if (mac_trust_flags & net::TrustStoreMac::TRUST_##flag) \
-    report_flags->Add(                                    \
-        chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_##flag);
+#define COPY_TRUST_FLAGS(flag)                    \
+  if (mac_trust_flags & net::TrustStoreMac::flag) \
+    report_flags->Add(chrome_browser_ssl::TrialVerificationInfo::MAC_##flag);
 
-  COPY_TRUST_FLAGS(SETTINGS_ARRAY_EMPTY);
-  COPY_TRUST_FLAGS(SETTINGS_DICT_EMPTY);
-  COPY_TRUST_FLAGS(SETTINGS_DICT_UNKNOWN_KEY);
-  COPY_TRUST_FLAGS(SETTINGS_DICT_CONTAINS_POLICY);
-  COPY_TRUST_FLAGS(SETTINGS_DICT_INVALID_POLICY_TYPE);
-  COPY_TRUST_FLAGS(SETTINGS_DICT_CONTAINS_APPLICATION);
-  COPY_TRUST_FLAGS(SETTINGS_DICT_CONTAINS_POLICY_STRING);
-  COPY_TRUST_FLAGS(SETTINGS_DICT_CONTAINS_KEY_USAGE);
-  COPY_TRUST_FLAGS(SETTINGS_DICT_CONTAINS_RESULT);
-  COPY_TRUST_FLAGS(SETTINGS_DICT_INVALID_RESULT_TYPE);
-  COPY_TRUST_FLAGS(SETTINGS_DICT_CONTAINS_ALLOWED_ERROR);
+  COPY_TRUST_FLAGS(TRUST_SETTINGS_ARRAY_EMPTY);
+  COPY_TRUST_FLAGS(TRUST_SETTINGS_DICT_EMPTY);
+  COPY_TRUST_FLAGS(TRUST_SETTINGS_DICT_UNKNOWN_KEY);
+  COPY_TRUST_FLAGS(TRUST_SETTINGS_DICT_CONTAINS_POLICY);
+  COPY_TRUST_FLAGS(TRUST_SETTINGS_DICT_INVALID_POLICY_TYPE);
+  COPY_TRUST_FLAGS(TRUST_SETTINGS_DICT_CONTAINS_APPLICATION);
+  COPY_TRUST_FLAGS(TRUST_SETTINGS_DICT_CONTAINS_POLICY_STRING);
+  COPY_TRUST_FLAGS(TRUST_SETTINGS_DICT_CONTAINS_KEY_USAGE);
+  COPY_TRUST_FLAGS(TRUST_SETTINGS_DICT_CONTAINS_RESULT);
+  COPY_TRUST_FLAGS(TRUST_SETTINGS_DICT_INVALID_RESULT_TYPE);
+  COPY_TRUST_FLAGS(TRUST_SETTINGS_DICT_CONTAINS_ALLOWED_ERROR);
+  COPY_TRUST_FLAGS(COPY_TRUST_SETTINGS_ERROR);
 
 #undef COPY_TRUST_FLAGS
 }
@@ -161,12 +162,31 @@ TrustImplTypeFromMojom(
     case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple:
       return chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_SIMPLE;
     case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
-        kMruCache:
+        kLruCache:
       return chrome_browser_ssl::TrialVerificationInfo::
           MAC_TRUST_IMPL_MRU_CACHE;
   }
 }
 #endif  // defined(OS_APPLE)
+
+#if defined(OS_WIN)
+void AddWinPlatformDebugInfoToReport(
+    const cert_verifier::mojom::WinPlatformVerifierDebugInfoPtr&
+        win_platform_debug_info,
+    chrome_browser_ssl::TrialVerificationInfo* trial_report) {
+  if (!win_platform_debug_info)
+    return;
+  chrome_browser_ssl::WinPlatformDebugInfo* report_info =
+      trial_report->mutable_win_platform_debug_info();
+  report_info->set_authroot_this_update_time_usec(
+      win_platform_debug_info->authroot_this_update.ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
+  report_info->mutable_authroot_sequence_number()->assign(
+      std::begin(win_platform_debug_info->authroot_sequence_number),
+      std::end(win_platform_debug_info->authroot_sequence_number));
+}
+#endif  // defined(OS_WIN)
+
 #endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 
 bool CertificateChainToString(const net::X509Certificate& cert,
@@ -244,6 +264,10 @@ CertificateErrorReport::CertificateErrorReport(
       trial_report->mutable_mac_combined_trust_debug_info());
   trial_report->set_mac_trust_impl(
       TrustImplTypeFromMojom(debug_info->mac_trust_impl));
+#endif
+#if defined(OS_WIN)
+  AddWinPlatformDebugInfoToReport(debug_info->win_platform_debug_info,
+                                  trial_report);
 #endif
   if (!debug_info->trial_verification_time.is_null()) {
     trial_report->set_trial_verification_time_usec(
@@ -441,4 +465,13 @@ CertificateErrorReport::CertificateErrorReport(
   features_info->set_android_aia_fetching_status(
       chrome_browser_ssl::CertLoggerFeaturesInfo::ANDROID_AIA_FETCHING_ENABLED);
 #endif
+
+  cert_report_->set_chrome_version(version_info::GetVersionNumber());
+  cert_report_->set_os_type(version_info::GetOSType());
+  cert_report_->set_os_version(base::SysInfo::OperatingSystemVersion());
+  cert_report_->set_hardware_model_name(base::SysInfo::HardwareModelName());
+  cert_report_->set_os_architecture(
+      base::SysInfo::OperatingSystemArchitecture());
+  cert_report_->set_process_architecture(
+      base::SysInfo::ProcessCPUArchitecture());
 }

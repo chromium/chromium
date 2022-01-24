@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_ICON_BUNDLE_H_
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_ICON_BUNDLE_H_
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace notifications {

@@ -35,6 +35,8 @@ TabStatsDataStore::TabsStats::TabsStats()
       window_count(0U),
       window_count_max(0U) {}
 TabStatsDataStore::TabsStats::TabsStats(const TabsStats& other) = default;
+TabStatsDataStore::TabsStats& TabStatsDataStore::TabsStats::operator=(
+    const TabsStats& other) = default;
 
 TabStatsDataStore::TabStatsDataStore(PrefService* pref_service)
     : pref_service_(pref_service) {

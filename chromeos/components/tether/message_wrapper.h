@@ -8,7 +8,6 @@
 #include <google/protobuf/message_lite.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/components/tether/proto/tether.pb.h"
 
 namespace chromeos {
@@ -38,6 +37,9 @@ class MessageWrapper {
   MessageWrapper(const TetherAvailabilityRequest& request);
   MessageWrapper(const TetherAvailabilityResponse& response);
 
+  MessageWrapper(const MessageWrapper&) = delete;
+  MessageWrapper& operator=(const MessageWrapper&) = delete;
+
   ~MessageWrapper();
 
   std::shared_ptr<google::protobuf::MessageLite> GetProto() const;
@@ -54,8 +56,6 @@ class MessageWrapper {
  private:
   MessageType type_;
   std::shared_ptr<google::protobuf::MessageLite> proto_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageWrapper);
 };
 
 }  // namespace tether

@@ -24,6 +24,10 @@ namespace test {
 class RemoteConnectionObserver {
  public:
   RemoteConnectionObserver() {}
+
+  RemoteConnectionObserver(const RemoteConnectionObserver&) = delete;
+  RemoteConnectionObserver& operator=(const RemoteConnectionObserver&) = delete;
+
   virtual ~RemoteConnectionObserver() {}
 
   // Called when the connection state has changed.
@@ -47,9 +51,6 @@ class RemoteConnectionObserver {
 
   // Called when we have received an ExtensionMessage from the host.
   virtual void HostMessageReceived(const protocol::ExtensionMessage& message) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteConnectionObserver);
 };
 
 }  // namespace test

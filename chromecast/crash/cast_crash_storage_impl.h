@@ -9,22 +9,22 @@
 
 namespace chromecast {
 
-class CastCrashStorageImpl : public CastCrashStorage {
+class CastCrashStorageImpl final : public CastCrashStorage {
  public:
   CastCrashStorageImpl();
-  ~CastCrashStorageImpl() final;
+  ~CastCrashStorageImpl() override;
   CastCrashStorageImpl& operator=(const CastCrashStorageImpl&) = delete;
   CastCrashStorageImpl(const CastCrashStorageImpl&) = delete;
 
   // CastCrashStorage implementation:
-  void SetLastLaunchedApp(base::StringPiece app_id) final;
-  void ClearLastLaunchedApp() final;
-  void SetCurrentApp(base::StringPiece app_id) final;
-  void ClearCurrentApp() final;
-  void SetPreviousApp(base::StringPiece app_id) final;
-  void ClearPreviousApp() final;
-  void SetStadiaSessionId(base::StringPiece session_id) final;
-  void ClearStadiaSessionId() final;
+  void SetLastLaunchedApp(base::StringPiece app_id) override;
+  void ClearLastLaunchedApp() override;
+  void SetCurrentApp(base::StringPiece app_id) override;
+  void ClearCurrentApp() override;
+  void SetPreviousApp(base::StringPiece app_id) override;
+  void ClearPreviousApp() override;
+  void SetStadiaSessionId(base::StringPiece session_id) override;
+  void ClearStadiaSessionId() override;
 };
 
 }  // namespace chromecast

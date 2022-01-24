@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var internalAPI = require('platformKeys.internalAPI');
+var internalAPI = getInternalApi('platformKeysInternal');
 
 var normalizeAlgorithm =
     requireNative('platform_keys_natives').NormalizeAlgorithm;

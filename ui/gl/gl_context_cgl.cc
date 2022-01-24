@@ -14,7 +14,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/dual_gpu_state_mac.h"
@@ -85,7 +85,7 @@ bool GLContextCGL::Initialize(GLSurface* compatible_surface,
          attribs.bind_generates_resource);
 
   GpuPreference gpu_preference =
-      GLContext::AdjustGpuPreference(attribs.gpu_preference);
+      GLSurface::AdjustGpuPreference(attribs.gpu_preference);
 
   GLContextCGL* share_context = share_group() ?
       static_cast<GLContextCGL*>(share_group()->GetContext()) : nullptr;

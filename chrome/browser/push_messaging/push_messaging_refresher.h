@@ -24,6 +24,10 @@
 class PushMessagingRefresher {
  public:
   PushMessagingRefresher();
+
+  PushMessagingRefresher(const PushMessagingRefresher&) = delete;
+  PushMessagingRefresher& operator=(const PushMessagingRefresher&) = delete;
+
   ~PushMessagingRefresher();
 
   // Return number of objects that are currently being refreshed
@@ -90,7 +94,6 @@ class PushMessagingRefresher {
   RefreshMap refresh_map_;
 
   base::WeakPtrFactory<PushMessagingRefresher> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingRefresher);
 };
 
 #endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_REFRESHER_H_

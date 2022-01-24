@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_HANDLER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/notifications/notification_handler.h"  // nogncheck
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -16,6 +15,12 @@ class Profile;
 class AnnouncementNotificationHandler : public NotificationHandler {
  public:
   AnnouncementNotificationHandler();
+
+  AnnouncementNotificationHandler(const AnnouncementNotificationHandler&) =
+      delete;
+  AnnouncementNotificationHandler& operator=(
+      const AnnouncementNotificationHandler&) = delete;
+
   ~AnnouncementNotificationHandler() override;
 
  private:
@@ -33,8 +38,6 @@ class AnnouncementNotificationHandler : public NotificationHandler {
                base::OnceClosure completed_closure) override;
 
   void OpenAnnouncement(Profile* profile);
-
-  DISALLOW_COPY_AND_ASSIGN(AnnouncementNotificationHandler);
 };
 
 #endif  // CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_HANDLER_H_

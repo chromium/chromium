@@ -105,7 +105,7 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_InputEvent_Type,
                               PP_INPUTEVENT_TYPE_FIRST,
                               PP_INPUTEVENT_TYPE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_IsolatedFileSystemType_Private,
-                          PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_PLUGINPRIVATE)
+                          PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_CRX)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_NetAddressFamily_Private,
                           PP_NETADDRESSFAMILY_PRIVATE_IPV6)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_NetworkList_State, PP_NETWORKLIST_STATE_UP)
@@ -598,12 +598,6 @@ IPC_MESSAGE_CONTROL3(PpapiMsg_CreateChannel,
 // Initializes the IPC dispatchers in the NaCl plugin.
 IPC_MESSAGE_CONTROL1(PpapiMsg_InitializeNaClDispatcher,
                      ppapi::PpapiNaClPluginArgs /* args */)
-
-// Instructs the plugin process to crash.
-IPC_MESSAGE_CONTROL0(PpapiMsg_Crash)
-
-// Instructs the plugin process to hang.
-IPC_MESSAGE_CONTROL0(PpapiMsg_Hang)
 
 // Each plugin may be referenced by multiple renderers. We need the instance
 // IDs to be unique within a plugin, despite coming from different renderers,

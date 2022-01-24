@@ -21,6 +21,11 @@ class InterventionInfoBarDelegate : public infobars::InfoBarDelegate {
   InterventionInfoBarDelegate(
       infobars::InfoBarDelegate::InfoBarIdentifier identifier,
       InterventionDelegate* intervention_delegate);
+
+  InterventionInfoBarDelegate(const InterventionInfoBarDelegate&) = delete;
+  InterventionInfoBarDelegate& operator=(const InterventionInfoBarDelegate&) =
+      delete;
+
   ~InterventionInfoBarDelegate() override;
 
   // infobars::InfoBarDelegate:
@@ -33,8 +38,6 @@ class InterventionInfoBarDelegate : public infobars::InfoBarDelegate {
 
   // Weak pointer, the delegate is guaranteed to outlive this object.
   InterventionDelegate* intervention_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterventionInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_INTERVENTIONS_INTERVENTION_INFOBAR_DELEGATE_H_

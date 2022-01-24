@@ -16,6 +16,7 @@
 #include "net/base/filename_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/test/test_url_loader_client.h"

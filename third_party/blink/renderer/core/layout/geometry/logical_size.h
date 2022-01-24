@@ -44,8 +44,6 @@ struct CORE_EXPORT LogicalSize {
     return inline_size == LayoutUnit() || block_size == LayoutUnit();
   }
 
-  void Transpose() { std::swap(inline_size, block_size); }
-
   static LogicalSize AspectRatioFromFloatSize(const FloatSize&);
 };
 

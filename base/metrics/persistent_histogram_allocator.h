@@ -18,6 +18,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -45,6 +46,11 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
   // managers that reference it.
   explicit PersistentSparseHistogramDataManager(
       PersistentMemoryAllocator* allocator);
+
+  PersistentSparseHistogramDataManager(
+      const PersistentSparseHistogramDataManager&) = delete;
+  PersistentSparseHistogramDataManager& operator=(
+      const PersistentSparseHistogramDataManager&) = delete;
 
   ~PersistentSparseHistogramDataManager();
 
@@ -89,8 +95,6 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
       sample_records_ GUARDED_BY(lock_);
 
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentSparseHistogramDataManager);
 };
 
 
@@ -107,6 +111,10 @@ class BASE_EXPORT PersistentSampleMapRecords {
   // manager instance.
   PersistentSampleMapRecords(PersistentSparseHistogramDataManager* data_manager,
                              uint64_t sample_map_id);
+
+  PersistentSampleMapRecords(const PersistentSampleMapRecords&) = delete;
+  PersistentSampleMapRecords& operator=(const PersistentSampleMapRecords&) =
+      delete;
 
   ~PersistentSampleMapRecords();
 
@@ -165,8 +173,6 @@ class BASE_EXPORT PersistentSampleMapRecords {
   // is appended in bulk to "records". Access to this vector can be done
   // only while holding the parent manager's lock.
   std::vector<PersistentMemoryAllocator::Reference> found_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentSampleMapRecords);
 };
 
 
@@ -187,6 +193,9 @@ class BASE_EXPORT PersistentHistogramAllocator {
     // The allocator must live beyond the lifetime of the iterator.
     explicit Iterator(PersistentHistogramAllocator* allocator);
 
+    Iterator(const Iterator&) = delete;
+    Iterator& operator=(const Iterator&) = delete;
+
     // Gets the next histogram from persistent memory; returns null if there
     // are no more histograms to be found. This may still be called again
     // later to retrieve any new histograms added in the meantime.
@@ -203,14 +212,17 @@ class BASE_EXPORT PersistentHistogramAllocator {
     // The iterator used for stepping through objects in persistent memory.
     // It is lock-free and thread-safe which is why this class is also such.
     PersistentMemoryAllocator::Iterator memory_iter_;
-
-    DISALLOW_COPY_AND_ASSIGN(Iterator);
   };
 
   // A PersistentHistogramAllocator is constructed from a PersistentMemory-
   // Allocator object of which it takes ownership.
   explicit PersistentHistogramAllocator(
       std::unique_ptr<PersistentMemoryAllocator> memory);
+
+  PersistentHistogramAllocator(const PersistentHistogramAllocator&) = delete;
+  PersistentHistogramAllocator& operator=(const PersistentHistogramAllocator&) =
+      delete;
+
   virtual ~PersistentHistogramAllocator();
 
   // Direct access to underlying memory allocator. If the segment is shared
@@ -278,7 +290,7 @@ class BASE_EXPORT PersistentHistogramAllocator {
   // is done seperately from construction for situations such as when the
   // histograms will be backed by memory provided by this very allocator.
   //
-  // IMPORTANT: tools/metrics/histograms/histograms_xml/uma/histograms.xml must
+  // IMPORTANT: tools/metrics/histograms/metadata/uma/histograms.xml must
   // be updated with the following histograms for each |name| param:
   //    UMA.PersistentAllocator.name.Errors
   //    UMA.PersistentAllocator.name.UsedPct
@@ -326,8 +338,6 @@ class BASE_EXPORT PersistentHistogramAllocator {
   // trying to import what was just created.
   // TODO(bcwhite): Change this to std::atomic<PMA::Reference> when available.
   subtle::Atomic32 last_created_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentHistogramAllocator);
 };
 
 
@@ -337,6 +347,9 @@ class BASE_EXPORT PersistentHistogramAllocator {
 class BASE_EXPORT GlobalHistogramAllocator
     : public PersistentHistogramAllocator {
  public:
+  GlobalHistogramAllocator(const GlobalHistogramAllocator&) = delete;
+  GlobalHistogramAllocator& operator=(const GlobalHistogramAllocator&) = delete;
+
   ~GlobalHistogramAllocator() override;
 
   // Create a global allocator using the passed-in memory |base|, |size|, and
@@ -356,11 +369,13 @@ class BASE_EXPORT GlobalHistogramAllocator
   // not exist, it will be created with the specified |size|. If the file does
   // exist, the allocator will use and add to its contents, ignoring the passed
   // size in favor of the existing size. Returns whether the global allocator
-  // was set.
+  // was set. If |exclusive_write| is true, the file will be opened in a mode
+  // that disallows multiple concurrent writers (no effect on non-Windows).
   static bool CreateWithFile(const FilePath& file_path,
                              size_t size,
                              uint64_t id,
-                             StringPiece name);
+                             StringPiece name,
+                             bool exclusive_write = false);
 
   // Creates a new file at |active_path|. If it already exists, it will first be
   // moved to |base_path|. In all cases, any old file at |base_path| will be
@@ -478,8 +493,6 @@ class BASE_EXPORT GlobalHistogramAllocator
 
   // The location to which the data should be persisted.
   FilePath persistent_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalHistogramAllocator);
 };
 
 }  // namespace base

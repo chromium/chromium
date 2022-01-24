@@ -28,6 +28,9 @@ class TestSyncService : public syncer::TestSyncService {
  public:
   TestSyncService() = default;
 
+  TestSyncService(const TestSyncService&) = delete;
+  TestSyncService& operator=(const TestSyncService&) = delete;
+
   void AddObserver(syncer::SyncServiceObserver* observer) override {
     observer_ = observer;
   }
@@ -39,8 +42,6 @@ class TestSyncService : public syncer::TestSyncService {
 
  private:
   syncer::SyncServiceObserver* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncService);
 };
 
 }  // namespace
@@ -51,6 +52,10 @@ class UnifiedConsentServiceTest : public testing::Test {
     UnifiedConsentService::RegisterPrefs(pref_service_.registry());
     syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   }
+
+  UnifiedConsentServiceTest(const UnifiedConsentServiceTest&) = delete;
+  UnifiedConsentServiceTest& operator=(const UnifiedConsentServiceTest&) =
+      delete;
 
   ~UnifiedConsentServiceTest() override {
     if (consent_service_)
@@ -79,8 +84,6 @@ class UnifiedConsentServiceTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_environment_;
   TestSyncService sync_service_;
   std::unique_ptr<UnifiedConsentService> consent_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedConsentServiceTest);
 };
 
 TEST_F(UnifiedConsentServiceTest, DefaultValuesWhenSignedOut) {

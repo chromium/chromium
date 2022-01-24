@@ -46,9 +46,8 @@ ParserTokenRangeToTokens(CSSParserTokenRange range) {
     if (range.Peek().FunctionId() == CSSValueID::kVar ||
         range.Peek().FunctionId() == CSSValueID::kEnv) {
       if (!builder.IsEmpty()) {
-        tokens.push_back(
-            MakeGarbageCollected<V8CSSUnparsedSegment>(builder.ToString()));
-        builder.Clear();
+        tokens.push_back(MakeGarbageCollected<V8CSSUnparsedSegment>(
+            builder.ReleaseString()));
       }
       CSSParserTokenRange block = range.ConsumeBlock();
       StringView variable_name = FindVariableName(block);
@@ -63,7 +62,7 @@ ParserTokenRangeToTokens(CSSParserTokenRange range) {
   }
   if (!builder.IsEmpty()) {
     tokens.push_back(
-        MakeGarbageCollected<V8CSSUnparsedSegment>(builder.ToString()));
+        MakeGarbageCollected<V8CSSUnparsedSegment>(builder.ReleaseString()));
   }
   return tokens;
 }
@@ -162,7 +161,7 @@ String CSSUnparsedValue::ToString() const {
     }
   }
 
-  return input.ToString();
+  return input.ReleaseString();
 }
 
 }  // namespace blink

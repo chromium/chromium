@@ -6,6 +6,7 @@ package org.chromium.components.page_info;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -17,13 +18,14 @@ import org.chromium.base.Consumer;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Collection;
 
 /**
  *  Provides embedder-level information to PageInfoController.
@@ -177,12 +179,12 @@ public abstract class PageInfoControllerDelegate {
             CookieControlsObserver observer);
 
     /**
-     * Creates controller for history features.
-     * @return created controller if it exists
+     * Allows the delegate to insert additional {@link PageInfoRowView} views.
+     * @return a collection of controllers corresponding to these views.
      */
     @Nullable
-    public abstract PageInfoSubpageController createHistoryController(
-            PageInfoMainController mainController, PageInfoRowView rowView, String host);
+    public abstract Collection<PageInfoSubpageController> createAdditionalRowViews(
+            PageInfoMainController mainController, ViewGroup rowWrapper);
 
     /**
      * @return Returns the browser context associated with this dialog.

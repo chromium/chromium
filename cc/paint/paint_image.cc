@@ -17,7 +17,7 @@
 #include "cc/paint/paint_worklet_input.h"
 #include "cc/paint/skia_paint_image_generator.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 namespace {
@@ -163,6 +163,12 @@ SkImageInfo PaintImage::GetSkImageInfo() const {
 gpu::Mailbox PaintImage::GetMailbox() const {
   DCHECK(texture_backing_);
   return texture_backing_->GetMailbox();
+}
+
+bool PaintImage::IsOpaque() const {
+  if (IsPaintWorklet())
+    return paint_worklet_input_->KnownToBeOpaque();
+  return GetSkImageInfo().isOpaque();
 }
 
 void PaintImage::CreateSkImage() {

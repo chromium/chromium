@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_model.h"
@@ -131,18 +131,13 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
     ASSERT_TRUE(loader.LoadExtension(extension_path));
   }
 
-  ash::AppListItem* GetAppListItem(const std::string& id) {
-    ash::AppListControllerImpl* controller =
-        ash::Shell::Get()->app_list_controller();
-    ash::AppListModel* model = controller->GetModel();
-    return model->FindItem(id);
+  AppListItem* GetAppListItem(const std::string& id) {
+    return AppListModelProvider::Get()->model()->FindItem(id);
   }
 
   bool IsAppListItemInFront(const std::string& id) {
-    ash::AppListControllerImpl* controller =
-        ash::Shell::Get()->app_list_controller();
-    ash::AppListModel* model = controller->GetModel();
-    ash::AppListItemList* item_list = model->top_level_item_list();
+    AppListModel* const model = AppListModelProvider::Get()->model();
+    AppListItemList* const item_list = model->top_level_item_list();
 
     size_t index;
     if (!item_list->FindItemIndex(id, &index))
@@ -201,6 +196,25 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderToFront) {
 
   // Check that folder is in front.
   EXPECT_TRUE(IsAppListItemInFront(kId2));
+}
+
+IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, DeleteApp) {
+  extensions::ResultCatcher catcher;
+  LoadExtensionAndRunTest("DeleteApp");
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  // Check that app is deleted.
+  EXPECT_FALSE(GetAppListItem(kId1));
+}
+
+IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, DeleteAppInFolder) {
+  extensions::ResultCatcher catcher;
+  LoadExtensionAndRunTest("DeleteAppInFolder");
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  // Check that folder and app are not present.
+  EXPECT_FALSE(GetAppListItem(kId1));
+  EXPECT_FALSE(GetAppListItem(kId2));
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, OnRemoteAppLaunched) {

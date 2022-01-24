@@ -83,8 +83,7 @@ TEST_F(ARQuickLookTabHelperTest, SuccessFileExtention) {
   EXPECT_TRUE(delegate().allowsContentScaling);
 
   // Downloaded file should be located in download directory.
-  base::FilePath file =
-      task_ptr->GetResponseWriter()->AsFileWriter()->file_path();
+  base::FilePath file = task_ptr->GetResponsePath();
   base::FilePath download_dir;
   ASSERT_TRUE(GetTempDownloadsDirectory(&download_dir));
   EXPECT_TRUE(download_dir.IsParent(file));
@@ -122,8 +121,7 @@ TEST_P(ARQuickLookTabHelperTest, SuccessContentType) {
   EXPECT_TRUE(delegate().allowsContentScaling);
 
   // Downloaded file should be located in download directory.
-  base::FilePath file =
-      task_ptr->GetResponseWriter()->AsFileWriter()->file_path();
+  base::FilePath file = task_ptr->GetResponsePath();
   base::FilePath download_dir;
   ASSERT_TRUE(GetTempDownloadsDirectory(&download_dir));
   EXPECT_TRUE(download_dir.IsParent(file));
@@ -163,8 +161,7 @@ TEST_P(ARQuickLookTabHelperTest, DisallowsContentScaling) {
   EXPECT_FALSE(delegate().allowsContentScaling);
 
   // Downloaded file should be located in download directory.
-  base::FilePath file =
-      task_ptr->GetResponseWriter()->AsFileWriter()->file_path();
+  base::FilePath file = task_ptr->GetResponsePath();
   base::FilePath download_dir;
   ASSERT_TRUE(GetTempDownloadsDirectory(&download_dir));
   EXPECT_TRUE(download_dir.IsParent(file));
@@ -204,8 +201,7 @@ TEST_P(ARQuickLookTabHelperTest, AllowsContentScaling) {
   EXPECT_TRUE(delegate().allowsContentScaling);
 
   // Downloaded file should be located in download directory.
-  base::FilePath file =
-      task_ptr->GetResponseWriter()->AsFileWriter()->file_path();
+  base::FilePath file = task_ptr->GetResponsePath();
   base::FilePath download_dir;
   ASSERT_TRUE(GetTempDownloadsDirectory(&download_dir));
   EXPECT_TRUE(download_dir.IsParent(file));

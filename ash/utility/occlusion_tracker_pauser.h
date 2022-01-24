@@ -27,10 +27,9 @@ class ASH_EXPORT OcclusionTrackerPauser : public ui::CompositorObserver {
   ~OcclusionTrackerPauser() override;
 
   // Pause the occlusion tracker until all new animations added after this
-  // are finished. If non zero 'extra_pause_duration' is specified, it'll wait
-  // then unpause the tracker.
-  void PauseUntilAnimationsEnd(
-      const base::TimeDelta& extra_pause_duration = base::TimeDelta());
+  // are finished. If the timeout is elapsed before all new animations are
+  // finished, the pause will be unpaused.
+  void PauseUntilAnimationsEnd(base::TimeDelta timeout);
 
   // ui::CompositorObserver:
   void OnFirstAnimationStarted(ui::Compositor* compositor) override {}
@@ -38,13 +37,11 @@ class ASH_EXPORT OcclusionTrackerPauser : public ui::CompositorObserver {
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
  private:
-  void Pause(ui::Compositor* compositor,
-             const base::TimeDelta& extra_pause_duration);
+  void Pause(ui::Compositor* compositor);
   void OnFinish(ui::Compositor* compositor);
-  void Unpause();
+  void Timeout();
 
   base::OneShotTimer timer_;
-  base::TimeDelta extra_pause_duration_;
   base::ScopedMultiSourceObservation<ui::Compositor, ui::CompositorObserver>
       observations_{this};
 

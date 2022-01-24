@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationStore, DestinationType, LocalDestinationInfo, NativeLayer, NativeLayerCros, NativeLayerCrosImpl, NativeLayerImpl, NUM_PERSISTED_DESTINATIONS, RecentDestination, State} from 'chrome://print/print_preview.js';
+import {Destination, DestinationStore, DestinationType, NativeLayerCrosImpl, NativeLayerImpl, NUM_PERSISTED_DESTINATIONS, PrintPreviewDestinationSettingsElement, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise, fakeDataBind, waitBeforeNextRender} from '../test_util.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, fakeDataBind, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerCrosStub} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -55,9 +55,9 @@ suite(destination_settings_test_cros.suiteName, function() {
 
     // Stub out native layer.
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     nativeLayerCros = new NativeLayerCrosStub();
-    NativeLayerCrosImpl.instance_ = nativeLayerCros;
+    NativeLayerCrosImpl.setInstance(nativeLayerCros);
 
     localDestinations = [];
     destinations = getDestinations(localDestinations);
@@ -89,7 +89,6 @@ suite(destination_settings_test_cros.suiteName, function() {
   function initialize() {
     // Initialize destination settings.
     destinationSettings.setSetting('recentDestinations', []);
-    destinationSettings.appKioskMode = false;
     destinationSettings.init(
         '' /* printerName */, false, isDriveMounted,
         '' /* serializedDefaultDestinationSelectionRulesStr */);
@@ -174,8 +173,12 @@ suite(destination_settings_test_cros.suiteName, function() {
               // it. Since capabilities for this destination are already set,
               // we don't try to fetch the license again.
               nativeLayer.resetResolver('getPrinterCapabilities');
-              destinationSettings.$$('#destinationSelect')
-                  .fire('selected-option-change', 'ID1/chrome_os/');
+              destinationSettings.shadowRoot.querySelector('#destinationSelect')
+                  .dispatchEvent(new CustomEvent('selected-option-change', {
+                    bubbles: true,
+                    composed: true,
+                    detail: 'ID1/chrome_os/',
+                  }));
             })
             .then(() => {
               assertEquals(
@@ -200,7 +203,8 @@ suite(destination_settings_test_cros.suiteName, function() {
               return waitBeforeNextRender(destinationSettings);
             })
             .then(() => {
-              const options = destinationSettings.$$('#destinationSelect')
+              const options = destinationSettings.shadowRoot
+                                  .querySelector('#destinationSelect')
                                   .getVisibleItemsForTest();
               assertEquals(2, options.length);
               assertEquals('Save as PDF/local/', options[0].value);

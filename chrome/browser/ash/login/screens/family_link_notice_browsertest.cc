@@ -99,7 +99,7 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
   base::RepeatingClosure screen_exit_callback_;
   FamilyLinkNoticeScreen::ScreenExitCallback original_callback_;
 
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   base::test::ScopedFeatureList feature_list_;
 };
@@ -107,8 +107,8 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
 // Verify that regular account user should not see family link notice screen
 // after log in.
 IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenTest, RegularAccount) {
-  WizardController::default_controller()
-      ->get_wizard_context_for_testing()
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
       ->sign_in_as_child = false;
   LoginAsRegularUser();
   WaitForScreenExit();
@@ -119,8 +119,8 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenTest, RegularAccount) {
 // Verify user should see family link notice screen when selecting to sign in
 // as a child account but log in as a regular account.
 IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenTest, NonSupervisedChildAccount) {
-  WizardController::default_controller()
-      ->get_wizard_context_for_testing()
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
       ->sign_in_as_child = true;
   LoginAsRegularUser();
   OobeScreenWaiter(FamilyLinkNoticeView::kScreenId).Wait();
@@ -155,8 +155,8 @@ class FamilyLinkNoticeScreenChildTest : public FamilyLinkNoticeScreenTest {
 // Verify child account user should not see family link notice screen after log
 // in.
 IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenChildTest, ChildAccount) {
-  WizardController::default_controller()
-      ->get_wizard_context_for_testing()
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
       ->sign_in_as_child = true;
   LoginAsChildUser();
   WaitForScreenExit();
@@ -168,8 +168,8 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenChildTest, ChildAccount) {
 // in if not selecting sign in as child.
 IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenChildTest,
                        ChildAccountSignInAsRegular) {
-  WizardController::default_controller()
-      ->get_wizard_context_for_testing()
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
       ->sign_in_as_child = false;
   LoginAsChildUser();
   WaitForScreenExit();
@@ -192,8 +192,8 @@ class FamilyLinkNoticeScreenManagedTest : public FamilyLinkNoticeScreenTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenManagedTest, ManagedAccount) {
-  WizardController::default_controller()
-      ->get_wizard_context_for_testing()
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
       ->sign_in_as_child = true;
   LoginAsManagedUser();
   OobeScreenWaiter(FamilyLinkNoticeView::kScreenId).Wait();

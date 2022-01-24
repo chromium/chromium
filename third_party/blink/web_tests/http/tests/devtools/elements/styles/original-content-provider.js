@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Verifies that CSSStyleSheetHeader.originalContentProvider() indeed returns original content.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
 <style>
@@ -36,7 +36,7 @@ div {}
     `);
   await ElementsTestRunner.selectNodeAndWaitForStylesPromise('inspected');
 
-  TestRunner.addSniffer(SDK.CSSModel.prototype, '_originalContentRequestedForTest', onOriginalContentRequested, true);
+  TestRunner.addSniffer(SDK.CSSModel.prototype, 'originalContentRequestedForTest', onOriginalContentRequested, true);
   function onOriginalContentRequested(header) {
     TestRunner.addResult('original content loaded for header: ' + header.sourceURL);
   }

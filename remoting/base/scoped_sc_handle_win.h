@@ -16,6 +16,10 @@ class ScHandleTraits {
  public:
   typedef SC_HANDLE Handle;
 
+  ScHandleTraits() = delete;
+  ScHandleTraits(const ScHandleTraits&) = delete;
+  ScHandleTraits& operator=(const ScHandleTraits&) = delete;
+
   // Closes the handle.
   static bool CloseHandle(SC_HANDLE handle) {
     return ::CloseServiceHandle(handle) != FALSE;
@@ -30,9 +34,6 @@ class ScHandleTraits {
   static SC_HANDLE NullHandle() {
     return NULL;
   }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ScHandleTraits);
 };
 
 typedef base::win::GenericScopedHandle<

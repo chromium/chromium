@@ -15,7 +15,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
 #include "media/base/video_codecs.h"
@@ -437,6 +436,10 @@ class MEDIA_EXPORT H264Parser {
                          std::vector<H264NALU>* nalus);
 
   H264Parser();
+
+  H264Parser(const H264Parser&) = delete;
+  H264Parser& operator=(const H264Parser&) = delete;
+
   ~H264Parser();
 
   void Reset();
@@ -565,8 +568,6 @@ class MEDIA_EXPORT H264Parser {
   // This contains the range of the previous NALU found in
   // AdvanceToNextNalu(). Holds exactly one range.
   Ranges<const uint8_t*> previous_nalu_range_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264Parser);
 };
 
 }  // namespace media

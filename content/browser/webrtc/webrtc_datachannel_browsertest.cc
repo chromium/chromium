@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace {
 
@@ -20,17 +19,18 @@ namespace content {
 class WebRtcDataChannelTest : public WebRtcContentBrowserTestBase {
  public:
   WebRtcDataChannelTest() {}
+
+  WebRtcDataChannelTest(const WebRtcDataChannelTest&) = delete;
+  WebRtcDataChannelTest& operator=(const WebRtcDataChannelTest&) = delete;
+
   ~WebRtcDataChannelTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
     AppendUseFakeUIForMediaStreamFlag();
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kJavaScriptFlags, kJavaScriptFeaturesNeeded);
+        blink::switches::kJavaScriptFlags, kJavaScriptFeaturesNeeded);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRtcDataChannelTest);
 };
 
 // Flaky on all platforms: https://crbug.com/734567

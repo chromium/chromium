@@ -6,7 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_STREAMING_TEST_SENDER_H_
 
 #include "base/callback.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_streaming/browser/test/cast_message_port_sender_impl.h"
 #include "components/openscreen_platform/task_runner.h"
@@ -41,10 +41,11 @@ namespace cast_streaming {
 // sender.SendVideoBuffer(video_buffer);
 // sender.Stop();
 // sender.RunUntilStopped();
-class CastStreamingTestSender : public openscreen::cast::SenderSession::Client {
+class CastStreamingTestSender final
+    : public openscreen::cast::SenderSession::Client {
  public:
   CastStreamingTestSender();
-  ~CastStreamingTestSender() final;
+  ~CastStreamingTestSender() override;
 
   CastStreamingTestSender(const CastStreamingTestSender&) = delete;
   CastStreamingTestSender& operator=(const CastStreamingTestSender&) = delete;
@@ -93,15 +94,15 @@ class CastStreamingTestSender : public openscreen::cast::SenderSession::Client {
   void OnNegotiated(const openscreen::cast::SenderSession* session,
                     openscreen::cast::SenderSession::ConfiguredSenders senders,
                     openscreen::cast::capture_recommendations::Recommendations
-                        capture_recommendations) final;
+                        capture_recommendations) override;
   void OnError(const openscreen::cast::SenderSession* session,
-               openscreen::Error error) final;
+               openscreen::Error error) override;
 
   openscreen_platform::TaskRunner task_runner_;
   openscreen::cast::Environment environment_;
 
-  std::unique_ptr<openscreen::cast::SenderSession> sender_session_;
   std::unique_ptr<CastMessagePortSenderImpl> message_port_;
+  std::unique_ptr<openscreen::cast::SenderSession> sender_session_;
 
   openscreen::cast::Sender* audio_sender_ = nullptr;
   openscreen::cast::Sender* video_sender_ = nullptr;

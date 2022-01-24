@@ -4,12 +4,15 @@
 
 #include "ui/message_center/views/message_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
@@ -29,7 +32,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(OS_WIN)
@@ -117,10 +119,6 @@ MessageView::~MessageView() {
   RemovedFromWidget();
 }
 
-void MessageView::AddGroupedNotification(const Notification& notification) {
-  // Stub
-}
-
 void MessageView::UpdateWithNotification(const Notification& notification) {
   pinned_ = notification.pinned();
   std::u16string new_accessible_name = CreateAccessibleName(notification);
@@ -194,7 +192,7 @@ SkPath MessageView::GetHighlightPath() const {
   // them on top of the notifications. We need to do this because TrayBubbleView
   // has a layer that masks to bounds due to which the focus ring can not extend
   // outside the view.
-  int inset = -views::PlatformStyle::kFocusHaloInset;
+  int inset = -views::FocusRing::kDefaultHaloInset;
   rect.Inset(gfx::Insets(inset));
 
   SkScalar top_radius = std::max(0, top_radius_ - inset);
@@ -480,10 +478,19 @@ bool MessageView::ShouldShowControlButtons() const {
 }
 
 void MessageView::UpdateBackgroundPainter() {
-  auto* theme = GetNativeTheme();
-  SkColor background_color = theme->GetSystemColor(
-      is_active_ ? ui::NativeTheme::kColorId_NotificationBackgroundActive
-                 : ui::NativeTheme::kColorId_NotificationBackground);
+  const auto* color_provider = GetColorProvider();
+  SkColor background_color = color_provider->GetColor(
+      is_active_ ? ui::kColorNotificationBackgroundActive
+                 : ui::kColorNotificationBackgroundInactive);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsNotificationsRefreshEnabled()) {
+    // These are the same colors provided by AshColorProvider.
+    // See ash/style/ash_color_provider.cc
+    background_color = is_active_ ? SkColorSetA(SK_ColorBLACK, 0x0D)
+                                  : SkColorSetA(SK_ColorWHITE, 0x1A);
+  }
+#endif
 
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<NotificationBackgroundPainter>(
@@ -493,8 +500,14 @@ void MessageView::UpdateBackgroundPainter() {
 void MessageView::UpdateNestedBorder() {
   if (!is_nested_ || !GetWidget())
     return;
-  SkColor border_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_UnfocusedBorderColor);
+  SkColor border_color =
+      GetColorProvider()->GetColor(ui::kColorFocusableBorderUnfocused);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsNotificationsRefreshEnabled())
+    border_color = SK_ColorTRANSPARENT;
+#endif
+
   SetBorder(views::CreateRoundedRectBorder(
       kNotificationBorderThickness, kNotificationCornerRadius, border_color));
 }

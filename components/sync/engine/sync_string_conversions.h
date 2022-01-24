@@ -17,8 +17,6 @@ const char* ConnectionStatusToString(ConnectionStatus status);
 
 const char* PassphraseTypeToString(PassphraseType type);
 
-const char* BootstrapTokenTypeToString(BootstrapTokenType type);
-
 const char* KeyDerivationMethodToString(KeyDerivationMethod method);
 
 }  // namespace syncer

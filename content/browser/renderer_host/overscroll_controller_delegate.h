@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_RENDERER_HOST_OVERSCROLL_CONTROLLER_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/common/content_export.h"
@@ -21,6 +20,11 @@ namespace content {
 class CONTENT_EXPORT OverscrollControllerDelegate {
  public:
   OverscrollControllerDelegate();
+
+  OverscrollControllerDelegate(const OverscrollControllerDelegate&) = delete;
+  OverscrollControllerDelegate& operator=(const OverscrollControllerDelegate&) =
+      delete;
+
   virtual ~OverscrollControllerDelegate();
 
   // Get the size of the display containing the view corresponding to the
@@ -52,7 +56,6 @@ class CONTENT_EXPORT OverscrollControllerDelegate {
 
  private:
   base::WeakPtrFactory<OverscrollControllerDelegate> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(OverscrollControllerDelegate);
 };
 
 }  // namespace content

@@ -20,7 +20,7 @@ class WebContentsContext
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsContext)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsContext);
 
 }  // namespace
 

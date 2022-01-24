@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
                               const std::string& guid) override;
   void OnConfigurationModified(const std::string& service_path,
                                const std::string& guid,
-                               base::DictionaryValue* set_properties) override;
+                               const base::Value* set_properties) override;
   void OnConfigurationRemoved(const std::string& service_path,
                               const std::string& guid) override;
 

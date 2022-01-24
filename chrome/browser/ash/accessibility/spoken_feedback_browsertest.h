@@ -21,6 +21,11 @@ using ::extensions::api::braille_display_private::StubBrailleController;
 class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
  public:
   LoggedInSpokenFeedbackTest();
+
+  LoggedInSpokenFeedbackTest(const LoggedInSpokenFeedbackTest&) = delete;
+  LoggedInSpokenFeedbackTest& operator=(const LoggedInSpokenFeedbackTest&) =
+      delete;
+
   ~LoggedInSpokenFeedbackTest() override;
 
   // InProcessBrowserTest:
@@ -57,8 +62,6 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
   StubBrailleController braille_controller_;
   ui::ScopedAnimationDurationScaleMode animation_mode_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggedInSpokenFeedbackTest);
 };
 
 }  // namespace ash

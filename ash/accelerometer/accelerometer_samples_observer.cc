@@ -221,8 +221,8 @@ void AccelerometerSamplesObserver::OnObserverDisconnect() {
 
   LOG(ERROR) << "OnObserverDisconnect error, assuming IIO Service crashes and "
                 "waiting for its relaunch.";
-  // Don't reset |sensor_device_remote_| so that LightProviderMojo can get the
-  // disconnection.
+  // Don't reset |sensor_device_remote_| so that AccelerometerProviderMojo can
+  // get the disconnection.
   receiver_.reset();
 }
 

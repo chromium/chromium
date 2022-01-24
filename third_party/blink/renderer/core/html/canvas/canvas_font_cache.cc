@@ -30,7 +30,8 @@ namespace blink {
 CanvasFontCache::CanvasFontCache(Document& document)
     : document_(&document), pruning_scheduled_(false) {
   FontFamily font_family;
-  font_family.SetFamily(defaultFontFamily);
+  font_family.SetFamily(defaultFontFamily,
+                        FontFamily::InferredTypeFor(defaultFontFamily));
   FontDescription default_font_description;
   default_font_description.SetFamily(font_family);
   default_font_description.SetSpecifiedSize(defaultFontSize);

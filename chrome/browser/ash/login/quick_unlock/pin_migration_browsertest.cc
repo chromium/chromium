@@ -26,6 +26,10 @@ constexpr char kTestUserGaiaId[] = "1234567890";
 class PinMigrationTest : public LoginManagerTest {
  public:
   PinMigrationTest() = default;
+
+  PinMigrationTest(const PinMigrationTest&) = delete;
+  PinMigrationTest& operator=(const PinMigrationTest&) = delete;
+
   ~PinMigrationTest() override = default;
 
   void SetUp() override {
@@ -36,9 +40,6 @@ class PinMigrationTest : public LoginManagerTest {
 
     LoginManagerTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PinMigrationTest);
 };
 
 // Step 1/3: Register a new user.

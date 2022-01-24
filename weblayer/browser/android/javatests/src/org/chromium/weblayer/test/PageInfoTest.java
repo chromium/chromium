@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.content.Context;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.View;
 
@@ -26,8 +25,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.weblayer.PageInfoDisplayOptions;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -67,8 +67,25 @@ public class PageInfoTest {
         int buttonId = ResourceUtil.getIdentifier(remoteContext, "id/security_button", packageName);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            StrictModeContext ignored = StrictModeContext.allowDiskReads();
-            EventUtils.simulateTouchCenterOfView(activity.findViewById(buttonId));
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                EventUtils.simulateTouchCenterOfView(activity.findViewById(buttonId));
+            }
+        });
+        onViewWaiting(withText(CONNECTION_IS_NOT_SECURE_TEXT));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowPageInfo() {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(
+                mActivityTestRule.getTestDataURL("simple_page.html"));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                PageInfoDisplayOptions options =
+                        PageInfoDisplayOptions.builder().showPublisherUrl().build();
+                activity.getBrowser().getUrlBarController().showPageInfo(options);
+            }
         });
         onViewWaiting(withText(CONNECTION_IS_NOT_SECURE_TEXT));
     }
@@ -82,8 +99,9 @@ public class PageInfoTest {
                 mActivityTestRule.getTestDataURL("simple_page.html"), extras);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            StrictModeContext ignored = StrictModeContext.allowDiskReads();
-            EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+            }
         });
         onViewWaiting(withText(CONNECTION_IS_NOT_SECURE_TEXT));
     }
@@ -97,27 +115,27 @@ public class PageInfoTest {
                 mActivityTestRule.getTestDataURL("simple_page.html"), extras);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            StrictModeContext ignored = StrictModeContext.allowDiskReads();
-            EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+            }
         });
         onViewWaiting(withText(CONNECTION_IS_NOT_SECURE_TEXT)).perform(click());
-        onViewWaiting(withText("The identity of this website has not been verified."));
+        onViewWaiting(withText("The identity of this website isn't verified."));
     }
 
     @Test
     @SmallTest
-    @DisableIf.Build(message = "Flaky on Android Marshmallow x86, see crbug.com/1188735",
-            sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N)
-    public void
-    testPageInfoCookiesSubPage() {
+    @DisabledTest(message = "https://crbug.com/1223953")
+    public void testPageInfoCookiesSubPage() {
         Bundle extras = new Bundle();
         extras.putBoolean(InstrumentationActivity.EXTRA_URLBAR_TEXT_CLICKABLE, true);
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(
                 mActivityTestRule.getTestDataURL("simple_page.html"), extras);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            StrictModeContext ignored = StrictModeContext.allowDiskReads();
-            EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+            }
         });
         onViewWaiting(withText("Cookies")).perform(click());
         onViewWaiting(withText("0 cookies in use"));

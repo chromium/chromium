@@ -25,6 +25,9 @@
     <dimen name="autofill_dropdown_refresh_vertical_padding">12dp</dimen>
     <dimen name="autofill_dropdown_refresh_icon_margin">24dp</dimen>
 
+    <dimen name="autofill_dropdown_icon_width">32dp</dimen>
+    <dimen name="autofill_dropdown_icon_height">20dp</dimen>
+
     <!-- Preferences dimensions
       pref_autofill_field_horizontal_padding exists because TextInputLayouts have an internal
       padding set.

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Test that computing the initiator graph works for service worker request.\n`);
   await TestRunner.loadTestModule('network_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();

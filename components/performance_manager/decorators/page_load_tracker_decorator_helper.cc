@@ -79,12 +79,12 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
     if (!web_contents()->IsLoadingToDifferentDocument())
       return;
 
-    loading_state_ = LoadingState::kLoadingWaitingForResponse;
+    loading_state_ = LoadingState::kWaitingForNavigation;
     NotifyPageLoadTrackerDecoratorOnPMSequence(
         web_contents(), &PageLoadTrackerDecorator::DidStartLoading);
   }
 
-  void DidReceiveResponse() override {
+  void PrimaryPageChanged(content::Page& page) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -93,10 +93,16 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
       return;
 
     DCHECK(web_contents()->IsLoading());
-    DCHECK_EQ(loading_state_, LoadingState::kLoadingWaitingForResponse);
-    loading_state_ = LoadingState::kLoadingDidReceiveResponse;
+
+    // Return if the state is already updated, since it can be called in
+    // multiple times between DidStartLoading() and DidStopLoading().
+    if (loading_state_ == LoadingState::kLoading)
+      return;
+
+    DCHECK_EQ(loading_state_, LoadingState::kWaitingForNavigation);
+    loading_state_ = LoadingState::kLoading;
     NotifyPageLoadTrackerDecoratorOnPMSequence(
-        web_contents(), &PageLoadTrackerDecorator::DidReceiveResponse);
+        web_contents(), &PageLoadTrackerDecorator::PrimaryPageChanged);
   }
 
   void DidStopLoading() override {
@@ -149,18 +155,18 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
 
   enum class LoadingState {
     // Initial state.
-    // DidStartLoading():     Transition to kLoadingWaitingForResponse.
-    // DidReceiveResponse():  Invalid from this state.
+    // DidStartLoading():     Transition to kWaitingForNavigation.
+    // PrimaryPageChanged():  Invalid from this state.
     // DidStopLoading():      Invalid from this state.
     kNotLoading,
     // DidStartLoading():     Invalid from this state.
-    // DidReceiveResponse():  Transition to kLoadingDidReceiveResponse.
+    // PrimaryPageChanged():  Transition to kLoading.
     // DidStopLoading():      Transition to kNotLoading.
-    kLoadingWaitingForResponse,
+    kWaitingForNavigation,
     // DidStartLoading():     Invalid from this state.
-    // DidReceiveResponse():  Invalid from this state.
+    // PrimaryPageChanged():  Invalid from this state.
     // DidStopLoading():      Transition to kNotLoading.
-    kLoadingDidReceiveResponse,
+    kLoading,
   };
 
   LoadingState loading_state_ GUARDED_BY_CONTEXT(sequence_checker_) =

@@ -14,6 +14,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/url_util.h"
@@ -21,6 +22,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -49,6 +51,53 @@ const char kHistogramAMPSubframeLayoutInstabilityShiftScore[] =
     "LayoutInstability.CumulativeShiftScore.Subframe";
 const char kHistogramAMPSubframeLayoutInstabilityShiftScoreFullNavigation[] =
     "LayoutInstability.CumulativeShiftScore.Subframe.FullNavigation";
+
+const char
+    kHistogramAMPSubframeAverageUserInteractionLatencyOverBudgetMaxEventDuration
+        [] = "InteractiveTiming.AverageUserInteractionLatencyOverBudget."
+             "MaxEventDuration.Subframe";
+const char
+    kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentileMaxEventDuration
+        [] = "InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+             "HighPercentile.MaxEventDuration.Subframe";
+const char
+    kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration
+        [] = "InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+             "HighPercentile2.MaxEventDuration.Subframe";
+const char
+    kHistogramAMPSubframeSumOfUserInteractionLatencyOverBudgetMaxEventDuration
+        [] = "InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
+             "MaxEventDuration.Subframe";
+const char kHistogramAMPSubframeWorstUserInteractionLatencyMaxEventDuration[] =
+    "InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration.Subframe";
+const char
+    kHistogramAMPSubframeWorstUserInteractionLatencyOverBudgetMaxEventDuration
+        [] = "InteractiveTiming.WorstUserInteractionLatencyOverBudget."
+             "MaxEventDuration.Subframe";
+const char
+    kHistogramAMPSubframeAverageUserInteractionLatencyOverBudgetTotalEventDuration
+        [] = "InteractiveTiming.AverageUserInteractionLatencyOverBudget."
+             "TotalEventDuration.Subframe";
+const char
+    kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentileTotalEventDuration
+        [] = "InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+             "HighPercentile.TotalEventDuration.Subframe";
+const char
+    kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentile2TotalEventDuration
+        [] = "InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+             "HighPercentile2.TotalEventDuration.Subframe";
+const char
+    kHistogramAMPSubframeSumOfUserInteractionLatencyOverBudgetTotalEventDuration
+        [] = "InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
+             "TotalEventDuration.Subframe";
+const char
+    kHistogramAMPSubframeWorstUserInteractionLatencyTotalEventDuration[] =
+        "InteractiveTiming.WorstUserInteractionLatency.TotalEventDuration."
+        "Subframe";
+const char
+    kHistogramAMPSubframeWorstUserInteractionLatencyOverBudgetTotalEventDuration
+        [] = "InteractiveTiming.WorstUserInteractionLatencyOverBudget."
+             "TotalEventDuration.Subframe";
 
 GURL GetCanonicalizedSameDocumentUrl(const GURL& url) {
   if (!url.has_ref())
@@ -139,10 +188,13 @@ void AMPPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   // with this frame is discarded.
   amp_subframe_info_.erase(navigation_handle->GetRenderFrameHost());
 
-  // Only track frames that are direct descendents of the main frame.
+  // Only track frames or fenced frames that are direct descendants of the main
+  // frame.
   if (navigation_handle->GetParentFrame() == nullptr ||
-      navigation_handle->GetParentFrame()->GetParent() != nullptr)
+      navigation_handle->GetParentFrame()->GetParentOrOuterDocument() !=
+          nullptr) {
     return;
+  }
 
   // Only track frames that have AMP cache-like URLs.
   if (!IsLikelyAmpCacheUrl(navigation_handle->GetURL()))
@@ -183,6 +235,25 @@ void AMPPageLoadMetricsObserver::OnTimingUpdate(
     return;
 
   it->second.timing = timing.Clone();
+}
+
+void AMPPageLoadMetricsObserver::OnInputTimingUpdate(
+    content::RenderFrameHost* subframe_rfh,
+    const page_load_metrics::mojom::InputTiming& input_timing_delta) {
+  if (subframe_rfh == nullptr)
+    return;
+
+  auto it = amp_subframe_info_.find(subframe_rfh);
+  if (it == amp_subframe_info_.end())
+    return;
+
+  if (input_timing_delta.num_interactions) {
+    it->second.responsiveness_metrics_normalization
+        .AddNewUserInteractionLatencies(
+            input_timing_delta.num_interactions,
+            *(input_timing_delta.max_event_durations),
+            *(input_timing_delta.total_event_durations));
+  }
 }
 
 void AMPPageLoadMetricsObserver::OnMobileFriendlinessUpdate(
@@ -228,6 +299,8 @@ void AMPPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   MaybeRecordAmpDocumentMetrics();
   current_main_frame_nav_info_ = nullptr;
+  page_load_metrics::RecordPageVisitFinalStatusForTiming(
+      timing, GetDelegate(), GetDelegate().GetPageUkmSourceId());
 }
 
 void AMPPageLoadMetricsObserver::ProcessMainFrameNavigation(
@@ -398,15 +471,15 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
 
     absl::optional<base::TimeDelta> largest_content_paint_time;
     uint64_t largest_content_paint_size;
-    page_load_metrics::ContentfulPaintTimingInfo::LargestContentType
-        largest_content_type;
+    page_load_metrics::ContentfulPaintTimingInfo::LargestContentTextOrImage
+        largest_content_text_or_image;
     const page_load_metrics::mojom::PaintTimingPtr& paint_timing =
         subframe_info.timing->paint_timing;
     if (page_load_metrics::LargestContentfulPaintHandler::
             AssignTimeAndSizeForLargestContentfulPaint(
                 *paint_timing->largest_contentful_paint,
                 &largest_content_paint_time, &largest_content_paint_size,
-                &largest_content_type)) {
+                &largest_content_text_or_image)) {
       builder.SetSubFrame_PaintTiming_NavigationToLargestContentfulPaint2(
           largest_content_paint_time.value().InMilliseconds());
 
@@ -426,16 +499,6 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
             largest_content_paint_time.value());
       }
     }
-    // TODO(crbug.com/1045640): Stop reporting the experimental obsolete
-    // version.
-    if (page_load_metrics::LargestContentfulPaintHandler::
-            AssignTimeAndSizeForLargestContentfulPaint(
-                *paint_timing->experimental_largest_contentful_paint,
-                &largest_content_paint_time, &largest_content_paint_size,
-                &largest_content_type)) {
-      builder.SetSubFrame_PaintTiming_NavigationToLargestContentfulPaint(
-          largest_content_paint_time.value().InMilliseconds());
-    }
 
     if (subframe_info.timing->interactive_timing->first_input_delay
             .has_value()) {
@@ -448,15 +511,13 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
             std::string(kHistogramPrefix)
                 .append(kHistogramAMPSubframeFirstInputDelay),
             subframe_info.timing->interactive_timing->first_input_delay.value(),
-            base::TimeDelta::FromMilliseconds(1),
-            base::TimeDelta::FromSeconds(60), 50);
+            base::Milliseconds(1), base::Seconds(60), 50);
       } else {
         UMA_HISTOGRAM_CUSTOM_TIMES(
             std::string(kHistogramPrefix)
                 .append(kHistogramAMPSubframeFirstInputDelayFullNavigation),
             subframe_info.timing->interactive_timing->first_input_delay.value(),
-            base::TimeDelta::FromMilliseconds(1),
-            base::TimeDelta::FromSeconds(60), 50);
+            base::Milliseconds(1), base::Seconds(60), 50);
       }
     }
   }
@@ -500,6 +561,12 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
           "Subframe.SessionWindow.Gap1000ms.Max5000ms",
           page_load_metrics::LayoutShiftUmaValue(
               normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls));
+      base::UmaHistogramCustomCounts(
+          "PageLoad.Clients.AMP.LayoutInstability.MaxCumulativeShiftScore."
+          "Subframe.SessionWindow.Gap1000ms.Max5000ms2",
+          page_load_metrics::LayoutShiftUmaValue10000(
+              normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls),
+          1, 24000, 50);
     }
     RecordMobileFriendliness(builder);
   } else {
@@ -517,7 +584,170 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
     }
   }
 
+  RecordNormalizedResponsivenessMetrics(
+      subframe_info.responsiveness_metrics_normalization
+          .GetNormalizedResponsivenessMetrics(),
+      builder);
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
+    const page_load_metrics::NormalizedResponsivenessMetrics&
+        normalized_responsiveness_metrics,
+    ukm::builders::AmpPageLoad& builder) {
+  if (!normalized_responsiveness_metrics.num_user_interactions)
+    return;
+
+  const std::string histogram_suffix =
+      current_main_frame_nav_info_->is_same_document_navigation
+          ? ""
+          : ".FullNavigation";
+  auto& max_event_durations =
+      normalized_responsiveness_metrics.normalized_max_event_durations;
+  auto& total_event_durations =
+      normalized_responsiveness_metrics.normalized_total_event_durations;
+
+  builder
+      .SetSubFrame_InteractiveTiming_WorstUserInteractionLatency_MaxEventduration(
+          max_event_durations.worst_latency.InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_WorstUserInteractionLatency_TotalEventduration(
+          total_event_durations.worst_latency.InMilliseconds());
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeWorstUserInteractionLatencyMaxEventDuration)
+          .append(histogram_suffix),
+      max_event_durations.worst_latency, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeWorstUserInteractionLatencyTotalEventDuration)
+          .append(histogram_suffix),
+      total_event_durations.worst_latency, base::Milliseconds(1),
+      base::Seconds(60), 50);
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSendAllUserInteractionLatencies))
+    return;
+
+  base::TimeDelta high_percentile2_max_event_duration = page_load_metrics::
+      ResponsivenessMetricsNormalization::ApproximateHighPercentile(
+          normalized_responsiveness_metrics.num_user_interactions,
+          max_event_durations.worst_ten_latencies_over_budget);
+  base::TimeDelta high_percentile2_total_event_duration = page_load_metrics::
+      ResponsivenessMetricsNormalization::ApproximateHighPercentile(
+          normalized_responsiveness_metrics.num_user_interactions,
+          total_event_durations.worst_ten_latencies_over_budget);
+
+  builder
+      .SetSubFrame_InteractiveTiming_WorstUserInteractionLatencyOverBudget_MaxEventduration(
+          max_event_durations.worst_latency_over_budget.InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_WorstUserInteractionLatencyOverBudget_TotalEventduration(
+          total_event_durations.worst_latency_over_budget.InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_SumOfUserInteractionLatencyOverBudget_MaxEventduration(
+          max_event_durations.sum_of_latency_over_budget.InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_SumOfUserInteractionLatencyOverBudget_TotalEventduration(
+          total_event_durations.sum_of_latency_over_budget.InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventduration(
+          max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
+          normalized_responsiveness_metrics.num_user_interactions);
+  builder
+      .SetSubFrame_InteractiveTiming_AverageUserInteractionLatencyOverBudget_TotalEventduration(
+          total_event_durations.sum_of_latency_over_budget.InMilliseconds() /
+          normalized_responsiveness_metrics.num_user_interactions);
+  builder
+      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_MaxEventduration(
+          max_event_durations.high_percentile_latency_over_budget
+              .InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_TotalEventduration(
+          total_event_durations.high_percentile_latency_over_budget
+              .InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventduration(
+          high_percentile2_max_event_duration.InMilliseconds());
+  builder
+      .SetSubFrame_InteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_TotalEventduration(
+          high_percentile2_total_event_duration.InMilliseconds());
+
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeWorstUserInteractionLatencyOverBudgetMaxEventDuration)
+          .append(histogram_suffix),
+      max_event_durations.worst_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeWorstUserInteractionLatencyOverBudgetTotalEventDuration)
+          .append(histogram_suffix),
+      total_event_durations.worst_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeSumOfUserInteractionLatencyOverBudgetMaxEventDuration)
+          .append(histogram_suffix),
+      max_event_durations.sum_of_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeSumOfUserInteractionLatencyOverBudgetTotalEventDuration)
+          .append(histogram_suffix),
+      total_event_durations.sum_of_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeAverageUserInteractionLatencyOverBudgetMaxEventDuration)
+          .append(histogram_suffix),
+      max_event_durations.sum_of_latency_over_budget /
+          normalized_responsiveness_metrics.num_user_interactions,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeAverageUserInteractionLatencyOverBudgetTotalEventDuration)
+          .append(histogram_suffix),
+      total_event_durations.worst_latency /
+          normalized_responsiveness_metrics.num_user_interactions,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentileMaxEventDuration)
+          .append(histogram_suffix),
+      max_event_durations.high_percentile_latency_over_budget,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentileTotalEventDuration)
+          .append(histogram_suffix),
+      total_event_durations.high_percentile_latency_over_budget,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration)
+          .append(histogram_suffix),
+      high_percentile2_max_event_duration, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  base::UmaHistogramCustomTimes(
+      std::string(kHistogramPrefix)
+          .append(
+              kHistogramAMPSubframeSlowUserInteractionLatencyOverBudgetHighPercentile2TotalEventDuration)
+          .append(histogram_suffix),
+      high_percentile2_total_event_duration, base::Milliseconds(1),
+      base::Seconds(60), 50);
 }
 
 void AMPPageLoadMetricsObserver::RecordMobileFriendliness(
@@ -535,33 +765,20 @@ void AMPPageLoadMetricsObserver::RecordMobileFriendliness(
 
   const blink::MobileFriendliness& mf = subframe_info.mobile_friendliness;
 
-  if (mf.viewport_device_width == blink::mojom::ViewportStatus::kYes)
-    builder.SetSubFrame_MobileFriendliness_ViewportDeviceWidth(true);
-  else if (mf.viewport_device_width == blink::mojom::ViewportStatus::kNo)
-    builder.SetSubFrame_MobileFriendliness_ViewportDeviceWidth(false);
+  // Make sure at least one MF evaluation happen.
+  if (mf.small_text_ratio == -1 && mf.bad_tap_targets_ratio == -1)
+    return;
 
-  if (mf.allow_user_zoom == blink::mojom::ViewportStatus::kYes)
-    builder.SetSubFrame_MobileFriendliness_AllowUserZoom(true);
-  else if (mf.allow_user_zoom == blink::mojom::ViewportStatus::kNo)
-    builder.SetSubFrame_MobileFriendliness_AllowUserZoom(false);
-
-  if (mf.small_text_ratio != -1)
-    builder.SetSubFrame_MobileFriendliness_SmallTextRatio(mf.small_text_ratio);
-
-  if (mf.viewport_initial_scale_x10 != -1) {
-    builder.SetSubFrame_MobileFriendliness_ViewportInitialScaleX10(
-        page_load_metrics::GetBucketedViewportInitialScale(mf));
-  }
-
-  if (mf.viewport_hardcoded_width != -1) {
-    builder.SetSubFrame_MobileFriendliness_ViewportHardcodedWidth(
-        page_load_metrics::GetBucketedViewportHardcodedWidth(mf));
-  }
-  if (mf.text_content_outside_viewport_percentage != -1) {
-    builder.SetSubFrame_MobileFriendliness_TextContentOutsideViewportPercentage(
-        mf.text_content_outside_viewport_percentage);
-  }
-  if (mf.bad_tap_targets_ratio != -1)
-    builder.SetSubFrame_MobileFriendliness_BadTapTargetsRatio(
-        mf.bad_tap_targets_ratio);
+  builder.SetSubFrame_MobileFriendliness_ViewportDeviceWidth(
+      mf.viewport_device_width);
+  builder.SetSubFrame_MobileFriendliness_AllowUserZoom(mf.allow_user_zoom);
+  builder.SetSubFrame_MobileFriendliness_SmallTextRatio(mf.small_text_ratio);
+  builder.SetSubFrame_MobileFriendliness_ViewportInitialScaleX10(
+      page_load_metrics::GetBucketedViewportInitialScale(mf));
+  builder.SetSubFrame_MobileFriendliness_ViewportHardcodedWidth(
+      page_load_metrics::GetBucketedViewportHardcodedWidth(mf));
+  builder.SetSubFrame_MobileFriendliness_TextContentOutsideViewportPercentage(
+      mf.text_content_outside_viewport_percentage);
+  builder.SetSubFrame_MobileFriendliness_BadTapTargetsRatio(
+      mf.bad_tap_targets_ratio);
 }

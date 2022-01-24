@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_WORKING_SET_TRIMMER_POLICY_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_WORKING_SET_TRIMMER_POLICY_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
@@ -37,6 +36,10 @@ class WorkingSetTrimmerPolicy : public GraphOwned,
                                 public NodeDataDescriberDefaultImpl {
  public:
   WorkingSetTrimmerPolicy();
+
+  WorkingSetTrimmerPolicy(const WorkingSetTrimmerPolicy&) = delete;
+  WorkingSetTrimmerPolicy& operator=(const WorkingSetTrimmerPolicy&) = delete;
+
   ~WorkingSetTrimmerPolicy() override;
 
   // CreatePolicyForPlatform will create a working set trimmer policy for a
@@ -80,8 +83,6 @@ class WorkingSetTrimmerPolicy : public GraphOwned,
 
   // NodeDataDescriber implementation:
   base::Value DescribeProcessNodeData(const ProcessNode* node) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmerPolicy);
 };
 
 }  // namespace policies

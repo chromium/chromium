@@ -5,19 +5,23 @@
 #include <memory>
 #include <utility>
 
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/views/overlay/back_to_tab_label_button.h"
+#include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "chrome/browser/ui/views/overlay/track_image_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "content/public/browser/overlay_window.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/test/test_web_contents_factory.h"
-#include "content/public/test/web_contents_tester.h"
-#include "media/base/media_switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/test/button_test_api.h"
 
 class TestPictureInPictureWindowController
     : public content::PictureInPictureWindowController {
@@ -27,9 +31,9 @@ class TestPictureInPictureWindowController
   // PictureInPictureWindowController:
   void Show() override {}
   void FocusInitiator() override {}
-  void Close(bool) override {}
+  MOCK_METHOD(void, Close, (bool));
   void CloseAndFocusInitiator() override {}
-  void OnWindowDestroyed(bool) override {}
+  MOCK_METHOD(void, OnWindowDestroyed, (bool));
   content::OverlayWindow* GetWindowForTesting() override { return nullptr; }
   void UpdateLayerBounds() override {}
   bool IsPlayerActive() override { return false; }
@@ -90,6 +94,10 @@ class OverlayWindowViewsTest : public ChromeViewsTestBase {
   OverlayWindowViews& overlay_window() { return *overlay_window_; }
 
   content::WebContents* web_contents() { return web_contents_; }
+
+  TestPictureInPictureWindowController& pip_window_controller() {
+    return pip_window_controller_;
+  }
 
  private:
   TestingProfile profile_;
@@ -258,10 +266,10 @@ TEST_F(OverlayWindowViewsTest, UpdateMaximumSize) {
   EXPECT_EQ(gfx::Size(4000, 4000), overlay_window().GetMaximumSize());
 
   // If the maximum size decreases then we should shrink to fit.
-  SetDisplayWorkArea({0, 0, 1000, 1000});
+  SetDisplayWorkArea({0, 0, 1000, 2000});
   overlay_window().OnNativeWidgetMove();
-  EXPECT_EQ(gfx::Size(500, 500), overlay_window().GetBounds().size());
-  EXPECT_EQ(gfx::Size(500, 500), overlay_window().GetMaximumSize());
+  EXPECT_EQ(gfx::Size(500, 800), overlay_window().GetBounds().size());
+  EXPECT_EQ(gfx::Size(500, 1000), overlay_window().GetMaximumSize());
 }
 
 TEST_F(OverlayWindowViewsTest, IgnoreInvalidMaximumSize) {
@@ -342,54 +350,75 @@ TEST_F(OverlayWindowViewsTest, HitTestFrameView) {
   EXPECT_EQ(non_client_view->HitTestPoint(point), true);
 }
 
-// Tests with MediaSessionWebRTC enabled.
-class OverlayWindowViewsMediaSessionWebRTCTest : public OverlayWindowViewsTest {
- public:
-  // OverlayWindowViewsTest:
-  void SetUp() override {
-    OverlayWindowViewsTest::SetUp();
-  }
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// With pillarboxing, the close button doesn't cover the video area. Make sure
+// hovering the button doesn't get handled like normal mouse exit events
+// causing the controls to hide.
+TEST_F(OverlayWindowViewsTest, NoMouseExitWithinWindowBounds) {
+  overlay_window().UpdateVideoSize({10, 400});
 
-  void NavigateTo(const GURL& url) {
-    content::WebContentsTester::For(web_contents())->SetLastCommittedURL(url);
-  }
+  const auto close_button_bounds = overlay_window().GetCloseControlsBounds();
+  const auto video_bounds =
+      overlay_window().video_layer_for_testing()->bounds();
+  ASSERT_FALSE(video_bounds.Contains(close_button_bounds));
 
- private:
-  // |feature_list_| needs to be initialized as early as possible to avoid data
-  // races with other threads checking if a feature is enabled.
-  base::test::ScopedFeatureList feature_list_{media::kMediaSessionWebRTC};
-};
+  const gfx::Point moved_location(video_bounds.origin() + gfx::Vector2d(5, 5));
+  ui::MouseEvent moved_event(ui::ET_MOUSE_MOVED, moved_location, moved_location,
+                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  overlay_window().OnMouseEvent(&moved_event);
+  ASSERT_TRUE(overlay_window().AreControlsVisible());
 
-TEST_F(OverlayWindowViewsMediaSessionWebRTCTest,
-       BackToTabLabelButtonDisplaysOrigin) {
-  NavigateTo(GURL("https://foo.com/bar?baz=1"));
-  overlay_window().UpdateVideoSize({200, 200});
-  overlay_window().ShowInactive();
-  EXPECT_EQ(u"foo.com",
-            overlay_window().back_to_tab_label_button_for_testing()->GetText());
+  const gfx::Point exited_location(close_button_bounds.CenterPoint());
+  ui::MouseEvent exited_event(ui::ET_MOUSE_EXITED, exited_location,
+                              exited_location, ui::EventTimeForNow(),
+                              ui::EF_NONE, ui::EF_NONE);
+  overlay_window().OnMouseEvent(&exited_event);
+  EXPECT_TRUE(overlay_window().AreControlsVisible());
 }
 
-TEST_F(OverlayWindowViewsMediaSessionWebRTCTest,
-       BackToTabLabelButtonDoesNotOutgrowWindow) {
-  overlay_window().UpdateVideoSize({200, 200});
-  BackToTabLabelButton* back_to_tab_button =
-      overlay_window().back_to_tab_label_button_for_testing();
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  // With a short origin to display, the button should be shorter than the width
-  // of the window and not truncated.
-  NavigateTo(GURL("https://foo.com/bar?baz=1"));
-  overlay_window().ShowInactive();
-  EXPECT_LT(back_to_tab_button->width(), 200);
-  EXPECT_FALSE(back_to_tab_button->IsTextElidedForTesting());
-  const int short_width = back_to_tab_button->width();
+TEST_F(OverlayWindowViewsTest, ShowControlsOnFocus) {
+  EXPECT_FALSE(overlay_window().AreControlsVisible());
+  overlay_window().OnNativeFocus();
+  EXPECT_TRUE(overlay_window().AreControlsVisible());
+}
 
-  // With a long origin to display, the button should grow but not exceed the
-  // width of the window and become truncated.
-  NavigateTo(GURL(
-      "https://"
-      "somereallylong.origin.thatexceeds.thewidthof.theoverlaywindow.com/foo"));
-  overlay_window().ShowInactive();
-  EXPECT_GT(back_to_tab_button->width(), short_width);
-  EXPECT_LT(back_to_tab_button->width(), 200);
-  EXPECT_TRUE(back_to_tab_button->IsTextElidedForTesting());
+TEST_F(OverlayWindowViewsTest, OnlyPauseOnCloseWhenPauseIsAvailable) {
+  views::test::ButtonTestApi close_button_clicker(
+      overlay_window().close_button_for_testing());
+  ui::MouseEvent dummy_event(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
+                             gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
+
+  // When the play/pause controls are visible, closing via the close button
+  // should pause the video.
+  overlay_window().SetPlayPauseButtonVisibility(true);
+  EXPECT_CALL(pip_window_controller(), Close(true));
+  close_button_clicker.NotifyClick(dummy_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+
+  // When the play/pause controls are not visible, closing via the close button
+  // should not pause the video.
+  overlay_window().SetPlayPauseButtonVisibility(false);
+  EXPECT_CALL(pip_window_controller(), Close(false));
+  close_button_clicker.NotifyClick(dummy_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+}
+
+TEST_F(OverlayWindowViewsTest, PauseOnWidgetCloseWhenPauseAvailable) {
+  // When the play/pause controls are visible, when the native widget is
+  // destroyed we should pause the underlying video.
+  overlay_window().SetPlayPauseButtonVisibility(true);
+  EXPECT_CALL(pip_window_controller(), OnWindowDestroyed(true));
+  overlay_window().CloseNow();
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+}
+
+TEST_F(OverlayWindowViewsTest, DontPauseOnWidgetCloseWhenPauseNotAvailable) {
+  // When the play/pause controls are not visible, when the native widget is
+  // destroyed we should not pause the underlying video.
+  overlay_window().SetPlayPauseButtonVisibility(false);
+  EXPECT_CALL(pip_window_controller(), OnWindowDestroyed(false));
+  overlay_window().CloseNow();
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
 }

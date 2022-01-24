@@ -7,5 +7,5 @@
 
 dictionary AuctionAd {
   required USVString renderUrl;
-  object metadata;
+  any metadata;
 };

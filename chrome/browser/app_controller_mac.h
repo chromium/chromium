@@ -50,10 +50,6 @@ class TabMenuBridge;
   // build the user-data specific main menu items.
   Profile* _lastProfile;
 
-  // When there is only one profile loaded: this prevents it from being deleted,
-  // so |_lastProfile| is always valid.
-  std::unique_ptr<ScopedProfileKeepAlive> _lastProfileKeepAlive;
-
   // The ProfileObserver observes the ProfileAttrbutesStorage and gets notified
   // when a profile has been deleted.
   std::unique_ptr<AppControllerProfileObserver>
@@ -159,13 +155,20 @@ class TabMenuBridge;
 // |-validateUserInterfaceItem:|.
 - (void)commandDispatch:(id)sender;
 
+// Helper function called by -commandDispatch:, to actually execute the command.
+// This runs after -commandDispatch: has obtained a pointer to the last Profile
+// (which possibly requires an async Profile load).
+- (void)executeCommand:(id)sender withProfile:(Profile*)profile;
+
 // Show the preferences window, or bring it to the front if it's already
 // visible.
 - (IBAction)showPreferences:(id)sender;
+- (IBAction)showPreferencesForProfile:(Profile*)profile;
 
 // Redirect in the menu item from the expected target of "File's
 // Owner" (NSApplication) for a Branded About Box
 - (IBAction)orderFrontStandardAboutPanel:(id)sender;
+- (IBAction)orderFrontStandardAboutPanelForProfile:(Profile*)profile;
 
 // Toggles the "Confirm to Quit" preference.
 - (IBAction)toggleConfirmToQuit:(id)sender;
@@ -188,7 +191,7 @@ class TabMenuBridge;
 // may have changed. This can cause a rebuild of the user-data menus. This is a
 // no-op if the new profile is the same as the current one. This can be either
 // the original or the incognito profile.
-- (void)windowChangedToProfile:(Profile*)profile;
+- (void)setLastProfile:(Profile*)profile;
 
 // Certain NSMenuItems [Close Tab and Close Window] have different
 // keyEquivalents depending on context. This must be invoked in two locations:

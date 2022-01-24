@@ -23,6 +23,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync_device_info/device_info.h"
@@ -287,6 +288,10 @@ SharingDeviceRegistration::GetEnabledFeatures(bool supports_vapid) const {
     enabled_features.insert(SharingSpecificFields::SMS_FETCHER);
   if (IsRemoteCopySupported())
     enabled_features.insert(SharingSpecificFields::REMOTE_COPY);
+  if (IsOptimizationGuidePushNotificationSupported()) {
+    enabled_features.insert(
+        SharingSpecificFields::OPTIMIZATION_GUIDE_PUSH_NOTIFICATION);
+  }
 #if BUILDFLAG(ENABLE_DISCOVERY)
   enabled_features.insert(SharingSpecificFields::DISCOVERY);
 #endif
@@ -298,9 +303,9 @@ bool SharingDeviceRegistration::IsClickToCallSupported() const {
 #if defined(OS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_SharingJNIBridge_isTelephonySupported(env);
-#endif
-
+#else
   return false;
+#endif
 }
 
 bool SharingDeviceRegistration::IsSharedClipboardSupported() const {
@@ -315,15 +320,25 @@ bool SharingDeviceRegistration::IsSharedClipboardSupported() const {
 bool SharingDeviceRegistration::IsSmsFetcherSupported() const {
 #if defined(OS_ANDROID)
   return base::FeatureList::IsEnabled(kWebOTPCrossDevice);
-#endif
-
+#else
   return false;
+#endif
 }
 
 bool SharingDeviceRegistration::IsRemoteCopySupported() const {
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
   return true;
+#else
+  return false;
+#endif
+}
+
+bool SharingDeviceRegistration::IsOptimizationGuidePushNotificationSupported()
+    const {
+#if defined(OS_ANDROID)
+  return optimization_guide::features::IsOptimizationHintsEnabled() &&
+         optimization_guide::features::IsPushNotificationsEnabled();
 #else
   return false;
 #endif

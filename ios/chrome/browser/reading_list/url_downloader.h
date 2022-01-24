@@ -53,6 +53,9 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
     // The URL could not be downloaded because of an error. Client may want to
     // try again later.
     ERROR,
+    // The URL could not be downloaded because of an error. Client should not
+    // try again.
+    PERMANENT_ERROR,
   };
 
   // A completion callback that takes a GURL and a bool indicating the
@@ -85,6 +88,10 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const DownloadCompletion& download_completion,
       const SuccessCompletion& delete_completion);
+
+  URLDownloader(const URLDownloader&) = delete;
+  URLDownloader& operator=(const URLDownloader&) = delete;
+
   ~URLDownloader() override;
 
   // Asynchronously download an offline version of the URL.
@@ -191,8 +198,6 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   std::unique_ptr<dom_distiller::DistillerViewerInterface> distiller_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::CancelableTaskTracker task_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLDownloader);
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_URL_DOWNLOADER_H_

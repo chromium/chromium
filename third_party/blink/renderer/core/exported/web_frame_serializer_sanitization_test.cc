@@ -48,11 +48,11 @@ namespace blink {
 namespace {
 
 // Returns the count of match for substring |pattern| in string |str|.
-int MatchSubstring(const String& str, const char* pattern, size_t size) {
+int MatchSubstring(const String& str, const char* pattern, wtf_size_t size) {
   int matches = 0;
-  size_t start = 0;
+  wtf_size_t start = 0;
   while (true) {
-    size_t pos = str.Find(pattern, start);
+    wtf_size_t pos = str.Find(pattern, start);
     if (pos == WTF::kNotFound)
       break;
     matches++;

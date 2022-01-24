@@ -67,6 +67,10 @@ class AndroidTelemetryService
       public TelemetryService {
  public:
   AndroidTelemetryService(SafeBrowsingService* sb_service, Profile* profile);
+
+  AndroidTelemetryService(const AndroidTelemetryService&) = delete;
+  AndroidTelemetryService& operator=(const AndroidTelemetryService&) = delete;
+
   ~AndroidTelemetryService() override;
 
   // download::SimpleDownloadManagerCoordinator::Observer.
@@ -110,8 +114,6 @@ class AndroidTelemetryService
   SafeBrowsingService* sb_service_;
 
   base::WeakPtrFactory<AndroidTelemetryService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidTelemetryService);
 };
 
 }  // namespace safe_browsing

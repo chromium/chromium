@@ -4,12 +4,17 @@
 
 #include "ash/wm/desks/desk_animation_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "base/barrier_closure.h"
+#include "base/test/scoped_feature_list.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -49,7 +54,7 @@ TEST_F(DeskActivationAnimationTest, EndSwipeBeforeStartingScreenshot) {
 TEST_F(DeskActivationAnimationTest, UpdateSwipeNewScreenshotCrash) {
   // Crash is only reproducible on different resolution widths and easier to
   // repro when the widths differ by a lot.
-  UpdateDisplay("600x600,601+0-2000x600");
+  UpdateDisplay("700x600,601+0-2000x600");
 
   // Crash repro requires three desks.
   auto* desks_controller = DesksController::Get();
@@ -142,6 +147,51 @@ TEST_F(DeskActivationAnimationTest, CloseWindowDuringAnimation) {
 
   window.reset();
   WaitEndingScreenshotTaken(&animation);
+}
+
+// Tests that if a fast swipe is detected, we will still wait for the ending
+// screenshot to be taken and animated to.
+TEST_F(DeskActivationAnimationTest, AnimatingAfterFastSwipe) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kEnableDesksTrackpadSwipeImprovements);
+
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+
+  DeskActivationAnimation animation(desks_controller, 0, 1,
+                                    DesksSwitchSource::kDeskSwitchTouchpad,
+                                    /*update_window_activation=*/false);
+  animation.set_skip_notify_controller_on_animation_finished_for_testing(true);
+  animation.Launch();
+
+  // Wait until the starting screenshot is taken, otherwise on swipe end, we
+  // will advance to the next desk with no animation.
+  base::RunLoop run_loop;
+  auto* desk_switch_animator =
+      animation.GetDeskSwitchAnimatorAtIndexForTesting(0);
+  RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator)
+      .SetOnStartingScreenshotTakenCallback(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Update a bit and then end swipe. Modify `last_start_or_replace_time_` to
+  // ensure that a fast swipe is registered since different build configurations
+  // may run slower than others.
+  animation.UpdateSwipeAnimation(10);
+  animation.last_start_or_replace_time_ = base::TimeTicks::Now();
+  animation.EndSwipeAnimation();
+
+  ASSERT_FALSE(desk_switch_animator->ending_desk_screenshot_taken());
+  WaitEndingScreenshotTaken(&animation);
+
+  // Tests that there is an animation after the ending screenshots have been
+  // taken.
+  EXPECT_TRUE(desk_switch_animator->GetAnimationLayerForTesting()
+                  ->GetAnimator()
+                  ->is_animating());
 }
 
 }  // namespace ash

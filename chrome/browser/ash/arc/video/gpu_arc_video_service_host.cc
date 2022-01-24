@@ -22,7 +22,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_service_registry.h"
-#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -56,47 +55,28 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
  public:
   VideoAcceleratorFactoryService() = default;
 
+  VideoAcceleratorFactoryService(const VideoAcceleratorFactoryService&) =
+      delete;
+  VideoAcceleratorFactoryService& operator=(
+      const VideoAcceleratorFactoryService&) = delete;
+
   ~VideoAcceleratorFactoryService() override = default;
 
   void CreateDecodeAccelerator(
       mojo::PendingReceiver<mojom::VideoDecodeAccelerator> receiver) override {
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      content::BindInterfaceInGpuProcess(std::move(receiver));
-    } else {
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&content::BindInterfaceInGpuProcess<
-                                        mojom::VideoDecodeAccelerator>,
-                                    std::move(receiver)));
-    }
+    content::BindInterfaceInGpuProcess(std::move(receiver));
   }
 
   void CreateEncodeAccelerator(
       mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver) override {
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      content::BindInterfaceInGpuProcess(std::move(receiver));
-    } else {
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&content::BindInterfaceInGpuProcess<
-                                        mojom::VideoEncodeAccelerator>,
-                                    std::move(receiver)));
-    }
+    content::BindInterfaceInGpuProcess(std::move(receiver));
   }
 
   void CreateProtectedBufferAllocator(
       mojo::PendingReceiver<mojom::VideoProtectedBufferAllocator> receiver)
       override {
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      content::BindInterfaceInGpuProcess(std::move(receiver));
-    } else {
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&content::BindInterfaceInGpuProcess<
-                                        mojom::VideoProtectedBufferAllocator>,
-                                    std::move(receiver)));
-    }
+    content::BindInterfaceInGpuProcess(std::move(receiver));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoAcceleratorFactoryService);
 };
 
 }  // namespace

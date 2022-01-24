@@ -16,7 +16,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
       *traits.gpu_workarounds, traits.get_command_buffer_stub_cb);
 }
 
-SupportedVideoDecoderConfigs GetPlatformSupportedVideoDecoderConfigs(
+absl::optional<SupportedVideoDecoderConfigs>
+GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {

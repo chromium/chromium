@@ -25,8 +25,9 @@ class PLATFORM_EXPORT ScrollbarThemeSettings {
   friend class Element;
   friend class Internals;
   friend class ScopedMockOverlayScrollbars;
-  friend class ScrollbarTheme;
   friend class ScrollbarsTest;
+  friend class ScrollbarTheme;
+  friend class ScrollbarThemeMacTest;
   friend class WebRuntimeFeatures;
 
   static void SetMockScrollbarsEnabled(bool);

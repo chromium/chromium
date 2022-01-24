@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -27,16 +27,11 @@ namespace webapps {
 class InstallableAmbientBadgeInfoBarDelegate
     : public infobars::InfoBarDelegate {
  public:
-  class Client {
-   public:
-    // Called to trigger the add to home screen flow.
-    virtual void AddToHomescreenFromBadge() = 0;
 
-    // Called to inform the client that the badge was dismissed.
-    virtual void BadgeDismissed() = 0;
-
-    virtual ~Client() {}
-  };
+  InstallableAmbientBadgeInfoBarDelegate(
+      const InstallableAmbientBadgeInfoBarDelegate&) = delete;
+  InstallableAmbientBadgeInfoBarDelegate& operator=(
+      const InstallableAmbientBadgeInfoBarDelegate&) = delete;
 
   ~InstallableAmbientBadgeInfoBarDelegate() override;
 
@@ -47,7 +42,7 @@ class InstallableAmbientBadgeInfoBarDelegate
 
   // Create and show the infobar.
   static void Create(content::WebContents* web_contents,
-                     base::WeakPtr<Client> weak_client,
+                     base::WeakPtr<InstallableAmbientBadgeClient> weak_client,
                      const std::u16string& app_name,
                      const SkBitmap& primary_icon,
                      const bool is_primary_icon_maskable,
@@ -60,23 +55,22 @@ class InstallableAmbientBadgeInfoBarDelegate
   const GURL& GetUrl() const { return start_url_; }
 
  private:
-  InstallableAmbientBadgeInfoBarDelegate(base::WeakPtr<Client> weak_client,
-                                         const std::u16string& app_name,
-                                         const SkBitmap& primary_icon,
-                                         const bool is_primary_icon_maskable,
-                                         const GURL& start_url);
+  InstallableAmbientBadgeInfoBarDelegate(
+      base::WeakPtr<InstallableAmbientBadgeClient> weak_client,
+      const std::u16string& app_name,
+      const SkBitmap& primary_icon,
+      const bool is_primary_icon_maskable,
+      const GURL& start_url);
 
   // InfoBarDelegate overrides:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   void InfoBarDismissed() override;
 
-  base::WeakPtr<Client> weak_client_;
+  base::WeakPtr<InstallableAmbientBadgeClient> weak_client_;
   const std::u16string app_name_;
   const SkBitmap primary_icon_;
   const bool is_primary_icon_maskable_;
   const GURL& start_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallableAmbientBadgeInfoBarDelegate);
 };
 
 }  // namespace webapps

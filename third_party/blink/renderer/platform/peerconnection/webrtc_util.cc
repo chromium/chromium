@@ -15,7 +15,8 @@ namespace blink {
 String WebrtcCodecNameFromMimeType(const String& mime_type,
                                    const char* prefix) {
   if (mime_type.StartsWith(prefix)) {
-    size_t length = mime_type.length() - strlen(prefix) - 1;
+    wtf_size_t length =
+        static_cast<wtf_size_t>(mime_type.length() - strlen(prefix) - 1);
     const String codec_name = mime_type.Right(length);
     return codec_name;
   }

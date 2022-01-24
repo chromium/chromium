@@ -39,6 +39,15 @@ Polymer({
       value: null,
       notify: true,
     },
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @private */
@@ -66,5 +75,15 @@ Polymer({
       return '';
     }
     return String.fromCharCode(...this.profileProperties_.serviceProvider.data);
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getProfileImage_() {
+    return this.isDarkModeActive_ ?
+        'chrome://resources/cr_components/chromeos/cellular_setup/default_esim_profile_dark.svg' :
+        'chrome://resources/cr_components/chromeos/cellular_setup/default_esim_profile.svg';
   },
 });

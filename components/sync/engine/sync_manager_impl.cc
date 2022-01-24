@@ -30,7 +30,7 @@
 #include "components/sync/engine/nigori/keystore_keys_handler.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_scheduler.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
 namespace {
@@ -98,9 +98,9 @@ ModelTypeSet SyncManagerImpl::InitialSyncEndedTypes() {
   return model_type_registry_->GetInitialSyncEndedTypes();
 }
 
-ModelTypeSet SyncManagerImpl::GetEnabledTypes() {
+ModelTypeSet SyncManagerImpl::GetConnectedTypes() {
   DCHECK(initialized_);
-  return model_type_registry_->GetEnabledTypes();
+  return model_type_registry_->GetConnectedTypes();
 }
 
 void SyncManagerImpl::ConfigureSyncer(ConfigureReason reason,
@@ -223,10 +223,8 @@ void SyncManagerImpl::OnTrustedVaultKeyAccepted() {
 }
 
 void SyncManagerImpl::OnBootstrapTokenUpdated(
-    const std::string& bootstrap_token,
-    BootstrapTokenType type) {
-  if (type == KEYSTORE_BOOTSTRAP_TOKEN)
-    sync_status_tracker_->SetHasKeystoreKey(true);
+    const std::string& bootstrap_token) {
+  // Does nothing.
 }
 
 void SyncManagerImpl::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
@@ -242,6 +240,8 @@ void SyncManagerImpl::OnCryptographerStateChanged(Cryptographer* cryptographer,
       sync_encryption_handler_->GetKeystoreMigrationTime());
   sync_status_tracker_->SetTrustedVaultDebugInfo(
       sync_encryption_handler_->GetTrustedVaultDebugInfo());
+  sync_status_tracker_->SetHasKeystoreKey(
+      !sync_encryption_handler_->GetKeystoreKeysHandler()->NeedKeystoreKey());
 }
 
 void SyncManagerImpl::OnPassphraseTypeChanged(
@@ -442,10 +442,12 @@ void SyncManagerImpl::OnIncomingInvalidation(
 
 void SyncManagerImpl::RefreshTypes(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (types.Empty()) {
-    LOG(WARNING) << "Sync received refresh request with no types specified.";
-  } else {
-    scheduler_->ScheduleLocalRefreshRequest(types);
+
+  const ModelTypeSet types_to_refresh =
+      Intersection(types, model_type_registry_->GetConnectedTypes());
+
+  if (!types.Empty()) {
+    scheduler_->ScheduleLocalRefreshRequest(types_to_refresh);
   }
 }
 

@@ -44,7 +44,7 @@ std::string NotificationIdGenerator::GenerateForPersistentNotification(
     bool is_shown_by_browser,
     int64_t persistent_notification_id) const {
   DCHECK(origin.is_valid());
-  DCHECK_EQ(origin, origin.GetOrigin());
+  DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
 
   std::stringstream stream;
 

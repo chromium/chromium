@@ -29,25 +29,62 @@ namespace history {
 
 namespace {
 
-// Returns [lower, upper) bounds for matching a URL against `host`.
-std::pair<std::string, std::string> GetHostSearchBounds(const GURL& host) {
-  // We need to search for URLs with a matching host/port. One way to query for
-  // this is to use the GLOB operator, eg 'url GLOB "http://google.com/*"'. This
-  // approach requires escaping the * and ? and such a query would also need to
-  // be recompiled on every Step(). The same query can be executed by using >=
-  // and < operator. The query becomes: 'url >= http://google.com/' and url <
-  // http://google.com0'. 0 is used as it is one character greater than '/'.
-  // This effectively applies the GLOB optimization by doing it in C++ instead
-  // of relying on SQLite to do it.
+// Returns [lower, upper) bounds for matching a URL against `origin`.
+std::pair<std::string, std::string> GetOriginSearchBounds(const GURL& origin) {
+  // We need to search for URLs with a matching origin. One way to query
+  // for this is to use the GLOB operator, eg 'url GLOB "http://google.com/*"'.
+  // This approach requires escaping the * and ? and such a query would also
+  // need to be recompiled on every Step(). The same query can be executed by
+  // using >= and < operator. The query becomes: 'url >= http://google.com/' and
+  // 'url < http://google.com0'. 0 is used as it is one character greater than
+  // '/'. This effectively applies the GLOB optimization by doing it in C++
+  // instead of relying on SQLite to do it.
   static_assert('/' + 1 == '0', "");
-  const std::string host_query_min = host.GetOrigin().spec();
-  DCHECK(!host_query_min.empty());
-  DCHECK_EQ('/', host_query_min.back());
+  const std::string origin_query_min = origin.DeprecatedGetOriginAsURL().spec();
+  DCHECK(!origin_query_min.empty());
+  DCHECK_EQ('/', origin_query_min.back());
 
-  std::string host_query_max =
-      host_query_min.substr(0, host_query_min.size() - 1) + '0';
+  std::string origin_query_max =
+      origin_query_min.substr(0, origin_query_min.size() - 1) + '0';
 
-  return {std::move(host_query_min), std::move(host_query_max)};
+  return {std::move(origin_query_min), std::move(origin_query_max)};
+}
+
+// Returns [lower, upper) bounds for matching a URL against origins with
+// a non-standard port. 'origin' parameter must not have a port itself.
+std::pair<std::string, std::string>
+GetSearchBoundsForAllOriginsWithNonDefaultPort(const GURL& origin) {
+  // Similar to the above function, but we use ';' instead of 0 to cover origins
+  // with a port. The query becomes: 'url >= http://google.com:' and 'url <
+  // http://google.com;'.
+  static_assert(':' + 1 == ';', "");
+  const std::string spec = origin.DeprecatedGetOriginAsURL().spec();
+  DCHECK(!spec.empty());
+  DCHECK_EQ('/', spec.back());
+  DCHECK(!origin.has_port());
+
+  // Need to replace the end character accordingly.
+  auto end = spec.size() - 1;
+  std::string origin_query_min = spec.substr(0, end) + ':';
+  std::string origin_query_max = spec.substr(0, end) + ';';
+
+  return {std::move(origin_query_min), std::move(origin_query_max)};
+}
+
+// Returns a vector of four [lower, upper) bounds for matching a URL against
+// `host_name`.
+std::array<std::pair<std::string, std::string>, 4> GetHostSearchBounds(
+    const std::string& host_name) {
+  std::array<std::pair<std::string, std::string>, 4> bounds;
+  // GetOriginSearchBounds only handles origin, so we need to query both http
+  // and https versions, as well as origins with non-default ports.
+  const GURL http("http://" + host_name);
+  const GURL https("https://" + host_name);
+  bounds[0] = GetOriginSearchBounds(http);
+  bounds[1] = GetSearchBoundsForAllOriginsWithNonDefaultPort(http);
+  bounds[2] = GetOriginSearchBounds(https);
+  bounds[3] = GetSearchBoundsForAllOriginsWithNonDefaultPort(https);
+  return bounds;
 }
 
 // Is the transition user-visible.
@@ -67,6 +104,11 @@ VisitDatabase::~VisitDatabase() = default;
 
 bool VisitDatabase::InitVisitTable() {
   if (!GetDB().DoesTableExist("visits")) {
+    // Note that it is possible that expiration code could leave both
+    // `from_visit` and `opener_visit` to refer to IDs that don't exist in the
+    // database. As such, this code should not use AUTOINCREMENT. If it did, we
+    // will need to ensure expiring resets from_visit and opener_visit fields
+    // for each row.
     if (!GetDB().Execute(
             "CREATE TABLE visits("
             "id INTEGER PRIMARY KEY,"
@@ -79,11 +121,7 @@ bool VisitDatabase::InitVisitTable() {
             // longer used and should NOT be read or written from any longer.
             "visit_duration INTEGER DEFAULT 0 NOT NULL,"
             "incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT NULL,"
-            // "publicly_routable" is no longer used and should NOT be read or
-            // written from any longer.
-            // TODO(yaoxia): during the next migration of visits, we should drop
-            // the "publicly_routable" column.
-            "publicly_routable BOOLEAN DEFAULT FALSE NOT NULL)"))
+            "opener_visit INTEGER)"))
       return false;
   }
 
@@ -136,6 +174,7 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
   visit->visit_duration =
       base::TimeDelta::FromInternalValue(statement.ColumnInt64(6));
   visit->incremented_omnibox_typed_score = statement.ColumnBool(7);
+  visit->opener_visit = statement.ColumnInt64(8);
 }
 
 // static
@@ -195,8 +234,8 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
       SQL_FROM_HERE,
       "INSERT INTO visits "
       "(url, visit_time, from_visit, transition, segment_id, "
-      "visit_duration, incremented_omnibox_typed_score) "
-      "VALUES (?,?,?,?,?,?,?)"));
+      "visit_duration, incremented_omnibox_typed_score, opener_visit) "
+      "VALUES (?,?,?,?,?,?,?,?)"));
   statement.BindInt64(0, visit->url_id);
   statement.BindInt64(1, visit->visit_time.ToInternalValue());
   statement.BindInt64(2, visit->referring_visit);
@@ -204,6 +243,7 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
   statement.BindInt64(4, visit->segment_id);
   statement.BindInt64(5, visit->visit_duration.ToInternalValue());
   statement.BindBool(6, visit->incremented_omnibox_typed_score);
+  statement.BindInt64(7, visit->opener_visit);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute visit insert statement:  "
@@ -285,7 +325,7 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
       SQL_FROM_HERE,
       "UPDATE visits SET "
       "url=?,visit_time=?,from_visit=?,transition=?,segment_id=?,"
-      "visit_duration=?,incremented_omnibox_typed_score=? "
+      "visit_duration=?,incremented_omnibox_typed_score=?,opener_visit=? "
       "WHERE id=?"));
   statement.BindInt64(0, visit.url_id);
   statement.BindInt64(1, visit.visit_time.ToInternalValue());
@@ -294,7 +334,8 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   statement.BindInt64(4, visit.segment_id);
   statement.BindInt64(5, visit.visit_duration.ToInternalValue());
   statement.BindBool(6, visit.incremented_omnibox_typed_score);
-  statement.BindInt64(7, visit.visit_id);
+  statement.BindInt64(7, visit.opener_visit);
+  statement.BindInt64(8, visit.visit_id);
 
   return statement.Run();
 }
@@ -526,7 +567,7 @@ bool VisitDatabase::GetVisibleVisitCountToHost(const GURL& url,
   // The query becomes:
   // 'url >= http://google.com/' and url < http://google.com0'.
   // 0 is used as it is one character greater than '/'.
-  const std::string host_query_min = url.GetOrigin().spec();
+  const std::string host_query_min = url.DeprecatedGetOriginAsURL().spec();
   if (host_query_min.empty())
     return false;
 
@@ -590,14 +631,68 @@ bool VisitDatabase::GetHistoryCount(const base::Time& begin_time,
   return true;
 }
 
-bool VisitDatabase::GetLastVisitToHost(const GURL& host,
+bool VisitDatabase::GetLastVisitToHost(const std::string& host,
                                        base::Time begin_time,
                                        base::Time end_time,
                                        base::Time* last_visit) {
-  if (!host.is_valid() || !host.SchemeIsHTTPOrHTTPS())
+  const GURL http("http://" + host);
+  const GURL https("https://" + host);
+  if (!http.is_valid() || !https.is_valid())
     return false;
 
-  std::pair<std::string, std::string> host_bounds = GetHostSearchBounds(host);
+  // GetOriginSearchBounds only handles origin, so we need to query both http
+  // and https versions.
+  std::array<std::pair<std::string, std::string>, 4> bounds =
+      GetHostSearchBounds(host);
+
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT "
+      "  v.visit_time, v.transition "
+      "FROM visits v INNER JOIN urls u ON v.url = u.id "
+      "WHERE "
+      "  ( (u.url >= ? AND u.url < ?) OR "
+      "    (u.url >= ? AND u.url < ?) OR "
+      "    (u.url >= ? AND u.url < ?) OR "
+      "    (u.url >= ? AND u.url < ?) ) AND "
+      "  v.visit_time >= ? AND "
+      "  v.visit_time < ? "
+      "ORDER BY v.visit_time DESC "));
+  statement.BindString(0, bounds.at(0).first);
+  statement.BindString(1, bounds.at(0).second);
+  statement.BindString(2, bounds.at(1).first);
+  statement.BindString(3, bounds.at(1).second);
+  statement.BindString(4, bounds.at(2).first);
+  statement.BindString(5, bounds.at(2).second);
+  statement.BindString(6, bounds.at(3).first);
+  statement.BindString(7, bounds.at(3).second);
+  statement.BindInt64(8, begin_time.ToInternalValue());
+  statement.BindInt64(9, end_time.ToInternalValue());
+
+  while (statement.Step()) {
+    if (ui::PageTransitionIsMainFrame(
+            ui::PageTransitionFromInt(statement.ColumnInt(1)))) {
+      *last_visit = base::Time::FromInternalValue(statement.ColumnInt64(0));
+      return true;
+    }
+  }
+  // If there are no entries from the statement, the host may not have been
+  // visited in the given time range. Zero the time result and report the
+  // success of the statement.
+  *last_visit = base::Time();
+  return statement.Succeeded();
+}
+
+bool VisitDatabase::GetLastVisitToOrigin(const url::Origin& origin,
+                                         base::Time begin_time,
+                                         base::Time end_time,
+                                         base::Time* last_visit) {
+  if (origin.opaque() || !(origin.scheme() == url::kHttpScheme ||
+                           origin.scheme() == url::kHttpsScheme))
+    return false;
+
+  std::pair<std::string, std::string> origin_bounds =
+      GetOriginSearchBounds(origin.GetURL());
 
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
@@ -611,8 +706,8 @@ bool VisitDatabase::GetLastVisitToHost(const GURL& host,
       "  v.visit_time < ? "
       "ORDER BY v.visit_time DESC "
       "LIMIT 1"));
-  statement.BindString(0, host_bounds.first);
-  statement.BindString(1, host_bounds.second);
+  statement.BindString(0, origin_bounds.first);
+  statement.BindString(1, origin_bounds.second);
   statement.BindInt64(2, begin_time.ToInternalValue());
   statement.BindInt64(3, end_time.ToInternalValue());
 
@@ -666,7 +761,7 @@ DailyVisitsResult VisitDatabase::GetDailyVisitsToHost(const GURL& host,
   if (!host.is_valid() || !host.SchemeIsHTTPOrHTTPS())
     return result;
 
-  std::pair<std::string, std::string> host_bounds = GetHostSearchBounds(host);
+  std::pair<std::string, std::string> host_bounds = GetOriginSearchBounds(host);
 
   sql::Statement statement(GetDB().GetCachedStatement(
       // clang-format off
@@ -751,6 +846,15 @@ void VisitDatabase::GetVisitsSource(const VisitVector& visits,
       sources->insert(source_entry);
     }
   }
+}
+
+VisitSource VisitDatabase::GetVisitSource(const VisitID visit_id) {
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "SELECT source FROM visit_source WHERE id=?"));
+  statement.BindInt64(0, visit_id);
+  if (!statement.Step())
+    return VisitSource::SOURCE_BROWSED;
+  return static_cast<VisitSource>(statement.ColumnInt(0));
 }
 
 std::vector<DomainVisit>
@@ -838,7 +942,14 @@ bool VisitDatabase::MigrateVisitsWithoutIncrementedOmniboxTypedScore() {
         "incremented_omnibox_typed_score FROM visits"));
     while (read.is_valid() && read.Step()) {
       VisitRow row;
-      FillVisitRow(read, &row);
+      row.visit_id = read.ColumnInt64(0);
+      row.url_id = read.ColumnInt64(1);
+      row.visit_time = base::Time::FromInternalValue(read.ColumnInt64(2));
+      row.referring_visit = read.ColumnInt64(3);
+      row.transition = ui::PageTransitionFromInt(read.ColumnInt(4));
+      row.segment_id = read.ColumnInt64(5);
+      row.visit_duration =
+          base::TimeDelta::FromInternalValue(read.ColumnInt64(6));
       // Check if the visit row is in an invalid state and if it is then
       // leave the new field as the default value.
       if (row.visit_id == row.referring_visit)
@@ -900,6 +1011,40 @@ bool VisitDatabase::CanMigrateFlocAllowed() {
   }
 
   return true;
+}
+
+bool VisitDatabase::
+    MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("visits", "opener_visit"))
+    return true;
+
+  sql::Transaction transaction(&GetDB());
+  return transaction.Begin() &&
+         GetDB().Execute(
+             "CREATE TABLE visits_tmp("
+             "id INTEGER PRIMARY KEY,"
+             "url INTEGER NOT NULL,"  // key of the URL this corresponds to
+             "visit_time INTEGER NOT NULL,"
+             "from_visit INTEGER,"
+             "transition INTEGER DEFAULT 0 NOT NULL,"
+             "segment_id INTEGER,"
+             "visit_duration INTEGER DEFAULT 0 NOT NULL,"
+             "incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT "
+             "NULL)") &&
+         GetDB().Execute(
+             "INSERT INTO visits_tmp SELECT "
+             "id, url, visit_time, from_visit, transition, segment_id, "
+             "visit_duration, incremented_omnibox_typed_score FROM visits") &&
+         GetDB().Execute(
+             "ALTER TABLE visits_tmp ADD COLUMN opener_visit INTEGER") &&
+         GetDB().Execute("DROP TABLE visits") &&
+         GetDB().Execute("ALTER TABLE visits_tmp RENAME TO visits") &&
+         transaction.Commit();
 }
 
 bool VisitDatabase::GetAllVisitedURLRowidsForMigrationToVersion40(

@@ -33,7 +33,7 @@ class SoftwareImageDecodeCachePerfTest : public testing::Test {
  public:
   SoftwareImageDecodeCachePerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   void RunFromImage() {

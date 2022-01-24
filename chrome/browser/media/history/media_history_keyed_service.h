@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_KEYED_SERVICE_H_
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/history/media_history_store.mojom.h"
@@ -31,6 +30,10 @@ class MediaHistoryKeyedService : public KeyedService,
                                  public history::HistoryServiceObserver {
  public:
   explicit MediaHistoryKeyedService(Profile* profile);
+
+  MediaHistoryKeyedService(const MediaHistoryKeyedService&) = delete;
+  MediaHistoryKeyedService& operator=(const MediaHistoryKeyedService&) = delete;
+
   ~MediaHistoryKeyedService() override;
 
   static bool IsEnabled();
@@ -107,8 +110,6 @@ class MediaHistoryKeyedService : public KeyedService,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaHistoryKeyedService);
 };
 
 }  // namespace media_history

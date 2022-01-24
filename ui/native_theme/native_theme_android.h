@@ -5,7 +5,6 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_ANDROID_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_ANDROID_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "ui/native_theme/native_theme_base.h"
 
@@ -14,6 +13,9 @@ namespace ui {
 // Android implementation of native theme support.
 class NativeThemeAndroid : public NativeThemeBase {
  public:
+  NativeThemeAndroid(const NativeThemeAndroid&) = delete;
+  NativeThemeAndroid& operator=(const NativeThemeAndroid&) = delete;
+
   // NativeThemeBase:
   gfx::Size GetPartSize(Part part,
                         State state,
@@ -29,8 +31,6 @@ class NativeThemeAndroid : public NativeThemeBase {
 
   // NativeThemeBase:
   void AdjustCheckboxRadioRectForPadding(SkRect* rect) const override;
-  float AdjustBorderWidthByZoom(float border_width,
-                                float zoom_level) const override;
   // TODO(crbug.com/1165342): Refine hover state behavior on available pointing
   // devices.
   SkColor ControlsAccentColorForState(State state,
@@ -49,8 +49,6 @@ class NativeThemeAndroid : public NativeThemeBase {
  private:
   NativeThemeAndroid();
   ~NativeThemeAndroid() override;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeThemeAndroid);
 };
 
 }  // namespace ui

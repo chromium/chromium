@@ -37,8 +37,7 @@ constexpr char kExitOverviewToastId[] = "ash.wm.reverse_exit_overview_toast";
 constexpr char kSwitchNextDeskToastId[] = "ash.wm.reverse_next_desk_toast";
 constexpr char kSwitchLastDeskToastId[] = "ash.wm.reverse_last_desk_toast";
 
-constexpr base::TimeDelta kToastDurationMs =
-    base::TimeDelta::FromMilliseconds(2500);
+constexpr base::TimeDelta kToastDurationMs = base::Milliseconds(2500);
 
 // Check if the user used the wrong gestures.
 bool g_did_wrong_enter_overview_gesture = false;

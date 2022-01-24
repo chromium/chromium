@@ -16,6 +16,9 @@ class LinearResamplingTest : public InputPredictorTest {
  public:
   explicit LinearResamplingTest() {}
 
+  LinearResamplingTest(const LinearResamplingTest&) = delete;
+  LinearResamplingTest& operator=(const LinearResamplingTest&) = delete;
+
   void SetUp() override { predictor_ = std::make_unique<LinearResampling>(); }
 
   void ValidatePredictorFrameBased(
@@ -28,8 +31,7 @@ class LinearResamplingTest : public InputPredictorTest {
       const double vsync_frequency) {
     // LinearResampling* predictor =
     // dynamic_cast<LinearResampling*>(predictor_.get());
-    base::TimeDelta frame_interval =
-        base::TimeDelta::FromSecondsD(1.0f / vsync_frequency);
+    base::TimeDelta frame_interval = base::Seconds(1.0f / vsync_frequency);
 
     predictor_->Reset();
     std::vector<double> computed_x;
@@ -62,8 +64,6 @@ class LinearResamplingTest : public InputPredictorTest {
   }
 
   base::test::ScopedFeatureList feature_list;
-
-  DISALLOW_COPY_AND_ASSIGN(LinearResamplingTest);
 };
 
 // Test if the output name of the predictor is taking account of the
@@ -161,8 +161,7 @@ TEST_F(LinearResamplingTest, TimeInterval) {
   for (size_t i = 0; i < t.size(); i++) {
     predictor_->Update({gfx::PointF(x[i], y[i]), FromMilliseconds(t[i])});
   }
-  EXPECT_EQ(predictor_->TimeInterval(),
-            base::TimeDelta::FromMilliseconds(t[1] - t[0]));
+  EXPECT_EQ(predictor_->TimeInterval(), base::Milliseconds(t[1] - t[0]));
 }
 
 // Tests resampling with the experimental latency if +3.3ms instead of

@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -31,6 +30,7 @@
 #include "components/download/public/common/url_loader_factory_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -61,7 +61,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                 ui::PageTransition transition_type,
                 bool has_user_gesture,
                 const std::string& remote_address,
-                base::Time start_time);
+                base::Time start_time,
+                ::network::mojom::CredentialsMode credentials_mode,
+                const absl::optional<net::IsolationInfo>& isolation_info);
     RequestInfo();
     explicit RequestInfo(const RequestInfo& other);
     explicit RequestInfo(const GURL& url);
@@ -105,6 +107,13 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
     // Time the download was started.
     base::Time start_time;
+
+    // The credentials mode of the request.
+    ::network::mojom::CredentialsMode credentials_mode =
+        ::network::mojom::CredentialsMode::kInclude;
+
+    // Isolation info for the request.
+    absl::optional<net::IsolationInfo> isolation_info;
   };
 
   // Information about the current state of the download destination.
@@ -197,6 +206,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
       base::Time last_access_time,
       bool transient,
       const std::vector<DownloadItem::ReceivedSlice>& received_slices,
+      const DownloadItemRerouteInfo& reroute_info,
       absl::optional<DownloadSchedule> download_schedule,
       std::unique_ptr<DownloadEntry> download_entry);
 
@@ -215,6 +225,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
                    const std::string& mime_type,
                    DownloadJob::CancelRequestCallback cancel_request_callback);
 
+  DownloadItemImpl(const DownloadItemImpl&) = delete;
+  DownloadItemImpl& operator=(const DownloadItemImpl&) = delete;
+
   ~DownloadItemImpl() override;
 
   // DownloadItem
@@ -223,6 +236,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   void UpdateObservers() override;
   void ValidateDangerousDownload() override;
   void ValidateMixedContentDownload() override;
+  void AcceptIncognitoWarning() override;
   void StealDangerousDownload(bool need_removal,
                               AcquireFileCallback callback) override;
   void Pause() override;
@@ -279,6 +293,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   const DownloadItemRerouteInfo& GetRerouteInfo() const override;
   bool IsDangerous() const override;
   bool IsMixedContent() const override;
+  bool ShouldShowIncognitoWarning() const override;
   DownloadDangerType GetDangerType() const override;
   MixedContentStatus GetMixedContentStatus() const override;
   bool TimeRemaining(base::TimeDelta* remaining) const override;
@@ -303,6 +318,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   bool IsParallelDownload() const override;
   DownloadCreationType GetDownloadCreationType() const override;
   const absl::optional<DownloadSchedule>& GetDownloadSchedule() const override;
+  ::network::mojom::CredentialsMode GetCredentialsMode() const override;
+  const absl::optional<net::IsolationInfo>& GetIsolationInfo() const override;
   void OnContentCheckCompleted(DownloadDangerType danger_type,
                                DownloadInterruptReason reason) override;
   void OnAsyncScanningCompleted(DownloadDangerType danger_type) override;
@@ -757,6 +774,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // The current state of this download.
   DownloadInternalState state_ = INITIAL_INTERNAL;
 
+  // A flag for indicating whether user has accepted incognito warning or not
+  bool incognito_warning_accepted_ = false;
+
   // Current danger type for the download.
   DownloadDangerType danger_type_ = DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
 
@@ -882,8 +902,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<DownloadItemImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadItemImpl);
 };
 
 }  // namespace download

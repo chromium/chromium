@@ -1,0 +1,9 @@
+{
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8xv6iO+j4kzj1HiBL93+XVJH/CRyAQMUHS/Z0l8nCAzaAFkW/JsNwxJqQhrZspnxLqbQxNncXs6g6bsXAwKHiEs+LSs+bIv0Gc/2ycZdhXJ8GhEsSMakog5dpQd1681c2gLK/8CrAoewE/0GIKhaFcp7a2iZlGh4Am6fgMKy0iQIDAQAB",
+  "name": "chrome.tabCapture",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Tab Capture API Test Extension",
+  "incognito": "split",
+  "permissions": ["tabCapture","tabs"]
+}

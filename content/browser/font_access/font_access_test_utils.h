@@ -12,6 +12,12 @@ namespace content {
 class TestFontAccessPermissionManager : public MockPermissionManager {
  public:
   TestFontAccessPermissionManager();
+
+  TestFontAccessPermissionManager(const TestFontAccessPermissionManager&) =
+      delete;
+  TestFontAccessPermissionManager& operator=(
+      const TestFontAccessPermissionManager&) = delete;
+
   ~TestFontAccessPermissionManager() override;
 
   using PermissionCallback =

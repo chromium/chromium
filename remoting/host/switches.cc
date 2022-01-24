@@ -21,6 +21,8 @@ const char kProcessTypeHost[] = "host";
 const char kProcessTypeRdpDesktopSession[] = "rdp_desktop_session";
 const char kProcessTypeEvaluateCapability[] = "evaluate_capability";
 const char kProcessTypeFileChooser[] = "file_chooser";
+const char kProcessTypeUrlForwarderConfigurator[] =
+    "url_forwarder_configurator";
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 const char kProcessTypeXSessionChooser[] = "xsession_chooser";
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -30,6 +32,7 @@ const char kEvaluateCapabilitySwitchName[] = "evaluate-type";
 #if defined(OS_WIN)
 const char kEvaluateD3D[] = "d3d-support";
 const char kEvaluate3dDisplayMode[] = "3d-display-mode";
+const char kSetUpUrlForwarderSwitchName[] = "setup";
 #endif
 
 const char kParentWindowSwitchName[] = "parent-window";

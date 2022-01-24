@@ -1,2 +1,2 @@
-CONSOLE ERROR: line 1: Uncaught SyntaxError: Unexpected token '<'
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
 ../resources/tests7.dat: PASS

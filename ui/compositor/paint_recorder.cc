@@ -9,7 +9,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/compositor/paint_cache.h"
 #include "ui/compositor/paint_context.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace ui {
 

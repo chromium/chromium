@@ -22,6 +22,11 @@ class TemplateURLServiceClientImpl : public TemplateURLServiceClient,
  public:
   explicit TemplateURLServiceClientImpl(
       history::HistoryService* history_service);
+
+  TemplateURLServiceClientImpl(const TemplateURLServiceClientImpl&) = delete;
+  TemplateURLServiceClientImpl& operator=(const TemplateURLServiceClientImpl&) =
+      delete;
+
   ~TemplateURLServiceClientImpl() override;
 
  private:
@@ -46,8 +51,6 @@ class TemplateURLServiceClientImpl : public TemplateURLServiceClient,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceClientImpl);
 };
 
 }  // namespace ios

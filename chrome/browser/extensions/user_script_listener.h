@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/notification_observer.h"
@@ -40,6 +39,10 @@ class UserScriptListener : public content::NotificationObserver,
                            public ExtensionRegistryObserver {
  public:
   UserScriptListener();
+
+  UserScriptListener(const UserScriptListener&) = delete;
+  UserScriptListener& operator=(const UserScriptListener&) = delete;
+
   ~UserScriptListener() override;
 
   // Constructs a NavigationThrottle if the UserScriptListener needs to delay
@@ -119,8 +122,6 @@ class UserScriptListener : public content::NotificationObserver,
       extension_registry_observations_{this};
 
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserScriptListener);
 };
 
 }  // namespace extensions

@@ -21,6 +21,10 @@ namespace {
 class TabScorePredictorTest : public testing::Test {
  public:
   TabScorePredictorTest() = default;
+
+  TabScorePredictorTest(const TabScorePredictorTest&) = delete;
+  TabScorePredictorTest& operator=(const TabScorePredictorTest&) = delete;
+
   ~TabScorePredictorTest() override = default;
 
  protected:
@@ -33,9 +37,6 @@ class TabScorePredictorTest : public testing::Test {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabScorePredictorTest);
 };
 
 }  // namespace

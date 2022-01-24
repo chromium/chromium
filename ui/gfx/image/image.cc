@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -113,6 +112,9 @@ class ImageRepPNG : public ImageRep {
   explicit ImageRepPNG(const std::vector<ImagePNGRep>& image_png_reps)
       : ImageRep(Image::kImageRepPNG), image_png_reps_(image_png_reps) {}
 
+  ImageRepPNG(const ImageRepPNG&) = delete;
+  ImageRepPNG& operator=(const ImageRepPNG&) = delete;
+
   ~ImageRepPNG() override {}
 
   int Width() const override { return Size().width(); }
@@ -141,14 +143,15 @@ class ImageRepPNG : public ImageRep {
 
   // Cached to avoid having to parse the raw data multiple times.
   mutable absl::optional<gfx::Size> size_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageRepPNG);
 };
 
 class ImageRepSkia : public ImageRep {
  public:
   explicit ImageRepSkia(ImageSkia image)
       : ImageRep(Image::kImageRepSkia), image_(image) {}
+
+  ImageRepSkia(const ImageRepSkia&) = delete;
+  ImageRepSkia& operator=(const ImageRepSkia&) = delete;
 
   ~ImageRepSkia() override {}
 
@@ -163,8 +166,6 @@ class ImageRepSkia : public ImageRep {
 
  private:
   ImageSkia image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageRepSkia);
 };
 
 #if defined(OS_IOS)
@@ -176,6 +177,9 @@ class ImageRepCocoaTouch : public ImageRep {
     CHECK(image_);
     base::mac::NSObjectRetain(image_);
   }
+
+  ImageRepCocoaTouch(const ImageRepCocoaTouch&) = delete;
+  ImageRepCocoaTouch& operator=(const ImageRepCocoaTouch&) = delete;
 
   ~ImageRepCocoaTouch() override {
     base::mac::NSObjectRelease(image_);
@@ -192,8 +196,6 @@ class ImageRepCocoaTouch : public ImageRep {
 
  private:
   UIImage* image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageRepCocoaTouch);
 };
 #elif defined(OS_MAC)
 class ImageRepCocoa : public ImageRep {
@@ -204,6 +206,9 @@ class ImageRepCocoa : public ImageRep {
     CHECK(image_);
     base::mac::NSObjectRetain(image_);
   }
+
+  ImageRepCocoa(const ImageRepCocoa&) = delete;
+  ImageRepCocoa& operator=(const ImageRepCocoa&) = delete;
 
   ~ImageRepCocoa() override {
     base::mac::NSObjectRelease(image_);
@@ -220,8 +225,6 @@ class ImageRepCocoa : public ImageRep {
 
  private:
   NSImage* image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageRepCocoa);
 };
 #endif  // defined(OS_MAC)
 
@@ -243,6 +246,9 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
 #endif  // defined(OS_MAC)
   {
   }
+
+  ImageStorage(const ImageStorage&) = delete;
+  ImageStorage& operator=(const ImageStorage&) = delete;
 
   Image::RepresentationType default_representation_type() const {
     DCHECK(IsOnValidSequence());
@@ -313,8 +319,6 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
   // All the representations of an Image. Size will always be at least one, with
   // more for any converted representations.
   mutable RepresentationMap representations_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageStorage);
 };
 
 }  // namespace internal

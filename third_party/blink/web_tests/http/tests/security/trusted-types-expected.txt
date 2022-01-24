@@ -1,5 +1,5 @@
 ALERT: Case #1: Trigger TT error on main page.
-CONSOLE ERROR: line 17: This document requires 'TrustedHTML' assignment.
+CONSOLE ERROR: This document requires 'TrustedHTML' assignment.
 ALERT: Case #2: Trigger TT error in main world, via test runner.
 CONSOLE ERROR: This document requires 'TrustedHTML' assignment.
 ALERT: Case #3: Trigger TT error in extension.

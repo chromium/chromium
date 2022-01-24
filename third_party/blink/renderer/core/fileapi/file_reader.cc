@@ -67,7 +67,7 @@ const std::string Utf8FilePath(Blob* blob) {
 // requests (the value is arbitrarily chosen).
 static const size_t kMaxOutstandingRequestsPerThread = 100;
 static const base::TimeDelta kProgressNotificationInterval =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 class FileReader::ThrottlingController final
     : public GarbageCollected<FileReader::ThrottlingController>,

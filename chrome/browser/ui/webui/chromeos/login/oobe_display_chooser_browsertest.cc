@@ -23,6 +23,10 @@ namespace {
 class OobeDisplayChooserTest : public OobeBaseTest {
  public:
   OobeDisplayChooserTest() {}
+
+  OobeDisplayChooserTest(const OobeDisplayChooserTest&) = delete;
+  OobeDisplayChooserTest& operator=(const OobeDisplayChooserTest&) = delete;
+
   ~OobeDisplayChooserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -30,9 +34,6 @@ class OobeDisplayChooserTest : public OobeBaseTest {
 
     OobeBaseTest::SetUpCommandLine(command_line);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OobeDisplayChooserTest);
 };
 
 display::DisplayManager* display_manager() {

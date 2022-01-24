@@ -26,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/search/search.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/vector_icons/vector_icons.h"
@@ -33,11 +34,14 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia_source.h"
@@ -106,6 +110,11 @@ bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
   } else {
     *title = web_contents->GetTitle();
   }
+
+  // Use "New tab" as title if the current page is NTP even in incognito mode.
+  if (u == GURL(chrome::kChromeUINewTabURL))
+    *title = l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
+
   return true;
 }
 
@@ -262,8 +271,9 @@ bool IsValidBookmarkDropLocation(Profile* profile,
 }
 
 #if defined(TOOLKIT_VIEWS)
-ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
-                                     absl::variant<int, SkColor> color) {
+ui::ImageModel GetBookmarkFolderIcon(
+    BookmarkFolderIconType icon_type,
+    absl::variant<ui::ColorId, SkColor> color) {
   int default_id = IDR_FOLDER_CLOSED;
 #if defined(OS_WIN) || defined(OS_MAC)
   // This block must be #ifdefed because only these platforms actually have this
@@ -272,8 +282,8 @@ ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
     default_id = IDR_BOOKMARK_BAR_FOLDER_MANAGED;
 #endif
   const auto generator = [](int default_id, BookmarkFolderIconType icon_type,
-                            absl::variant<int, SkColor> color,
-                            const ui::NativeTheme* native_theme) {
+                            absl::variant<ui::ColorId, SkColor> color,
+                            const ui::ColorProvider* color_provider) {
     gfx::ImageSkia folder;
 #if defined(OS_WIN)
     // TODO(bsep): vectorize the Windows versions: crbug.com/564112
@@ -284,9 +294,8 @@ ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
     if (absl::holds_alternative<SkColor>(color)) {
       sk_color = absl::get<SkColor>(color);
     } else {
-      DCHECK(native_theme);
-      sk_color = native_theme->GetSystemColor(
-          static_cast<ui::NativeTheme::ColorId>(absl::get<int>(color)));
+      DCHECK(color_provider);
+      sk_color = color_provider->GetColor(absl::get<ui::ColorId>(color));
     }
     const int white_id = (icon_type == BookmarkFolderIconType::kNormal)
                              ? IDR_FOLDER_CLOSED_WHITE
@@ -310,8 +319,8 @@ ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
     const ui::ThemedVectorIcon icon =
         absl::holds_alternative<SkColor>(color)
             ? ui::ThemedVectorIcon(id, absl::get<SkColor>(color))
-            : ui::ThemedVectorIcon(id, absl::get<int>(color));
-    folder = icon.GetImageSkia(native_theme);
+            : ui::ThemedVectorIcon(id, absl::get<ui::ColorId>(color));
+    folder = icon.GetImageSkia(color_provider);
 #endif
     return gfx::ImageSkia(std::make_unique<RTLFlipSource>(folder),
                           folder.size());

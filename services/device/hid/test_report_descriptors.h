@@ -5,9 +5,9 @@
 #ifndef SERVICES_DEVICE_HID_TEST_REPORT_DESCRIPTORS_H_
 #define SERVICES_DEVICE_HID_TEST_REPORT_DESCRIPTORS_H_
 
-#include "base/containers/span.h"
-
 #include <stdint.h>
+
+#include "base/containers/span.h"
 
 namespace device {
 
@@ -60,6 +60,10 @@ class TestReportDescriptors {
 
   // The report descriptor from a Jabra Link 380c USB-C receiver.
   static base::span<const uint8_t> JabraLink380c();
+
+  // The report descriptor for a FIDO U2F HID device.
+  // https://fidoalliance.org/specs/fido-u2f-v1.0-ps-20141009/fido-u2f-hid-protocol-ps-20141009.html
+  static base::span<const uint8_t> FidoU2fHid();
 };
 
 }  // namespace device

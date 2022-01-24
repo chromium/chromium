@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
@@ -37,6 +36,11 @@ class AutoEnrollmentCheckScreen
   AutoEnrollmentCheckScreen(AutoEnrollmentCheckScreenView* view,
                             ErrorScreen* error_screen,
                             const base::RepeatingClosure& exit_callback);
+
+  AutoEnrollmentCheckScreen(const AutoEnrollmentCheckScreen&) = delete;
+  AutoEnrollmentCheckScreen& operator=(const AutoEnrollmentCheckScreen&) =
+      delete;
+
   ~AutoEnrollmentCheckScreen() override;
 
   // Clears the cached state causing the forced enrollment check to be retried.
@@ -125,8 +129,6 @@ class AutoEnrollmentCheckScreen
   base::CallbackListSubscription connect_request_subscription_;
 
   base::WeakPtrFactory<AutoEnrollmentCheckScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentCheckScreen);
 };
 
 }  // namespace ash

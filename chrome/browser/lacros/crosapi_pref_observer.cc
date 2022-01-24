@@ -11,7 +11,8 @@ CrosapiPrefObserver::CrosapiPrefObserver(crosapi::mojom::PrefPath path,
                                          PrefChangedCallback callback)
     : callback_(std::move(callback)) {
   auto* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
+  if (!lacros_service ||
+      !lacros_service->IsAvailable<crosapi::mojom::Prefs>()) {
     LOG(WARNING) << "crosapi: Prefs API not available";
     return;
   }

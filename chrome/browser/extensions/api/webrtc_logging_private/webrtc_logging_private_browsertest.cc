@@ -15,15 +15,18 @@ class WebrtcLoggingPrivateApiBrowserTest
     : public extensions::PlatformAppBrowserTest {
  public:
   WebrtcLoggingPrivateApiBrowserTest() = default;
+
+  WebrtcLoggingPrivateApiBrowserTest(
+      const WebrtcLoggingPrivateApiBrowserTest&) = delete;
+  WebrtcLoggingPrivateApiBrowserTest& operator=(
+      const WebrtcLoggingPrivateApiBrowserTest&) = delete;
+
   ~WebrtcLoggingPrivateApiBrowserTest() override = default;
 
   base::FilePath webrtc_logs_path() {
     return webrtc_logging::TextLogList::
         GetWebRtcLogDirectoryForBrowserContextPath(profile()->GetPath());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebrtcLoggingPrivateApiBrowserTest);
 };
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

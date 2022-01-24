@@ -5,7 +5,7 @@
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
 
 #include "base/guid.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

@@ -383,7 +383,7 @@ public class PseudoTab {
                         sAllTabsFromStateFile.add(tab);
                         seenRootId.add(rootId);
                     },
-                    null, false);
+                    null);
         } catch (IOException exception) {
             Log.e(TAG, "Could not read state file.", exception);
             return;

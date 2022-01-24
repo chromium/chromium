@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -52,6 +51,12 @@ class CONTENT_EXPORT DevToolsDownloadManagerDelegate
       content::BrowserContext* browser_Context);
   static DevToolsDownloadManagerDelegate* GetInstance(
       content::BrowserContext* browser_Context);
+
+  DevToolsDownloadManagerDelegate(const DevToolsDownloadManagerDelegate&) =
+      delete;
+  DevToolsDownloadManagerDelegate& operator=(
+      const DevToolsDownloadManagerDelegate&) = delete;
+
   ~DevToolsDownloadManagerDelegate() override = default;
 
   void set_download_behavior(DownloadBehavior behavior) {
@@ -93,8 +98,6 @@ class CONTENT_EXPORT DevToolsDownloadManagerDelegate
   content::DownloadManagerDelegate* original_download_delegate_;
   DownloadBehavior download_behavior_ = DownloadBehavior::DEFAULT;
   std::string download_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsDownloadManagerDelegate);
 };
 
 }  // namespace protocol

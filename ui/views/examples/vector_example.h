@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_VECTOR_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_VECTOR_EXAMPLE_H_
 
-#include "base/macros.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -14,13 +13,14 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT VectorExample : public ExampleBase {
  public:
   VectorExample();
+
+  VectorExample(const VectorExample&) = delete;
+  VectorExample& operator=(const VectorExample&) = delete;
+
   ~VectorExample() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VectorExample);
 };
 
 }  // namespace examples

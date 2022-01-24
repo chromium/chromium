@@ -274,7 +274,7 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNotPrepared) {
       .WillOnce(SaveArg<1>(&certificate));
 
   AttestationFlowIntegrated flow;
-  flow.set_retry_delay_for_testing(base::TimeDelta::FromMilliseconds(10));
+  flow.set_retry_delay_for_testing(base::Milliseconds(10));
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),
@@ -308,8 +308,8 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNeverPrepared) {
   EXPECT_CALL(callback, Run(_, _)).WillOnce(SaveArg<0>(&status));
 
   AttestationFlowIntegrated flow;
-  flow.set_ready_timeout_for_testing(base::TimeDelta::FromMilliseconds(10));
-  flow.set_retry_delay_for_testing(base::TimeDelta::FromMilliseconds(3));
+  flow.set_ready_timeout_for_testing(base::Milliseconds(10));
+  flow.set_retry_delay_for_testing(base::Milliseconds(3));
   flow.GetCertificate(
       static_cast<AttestationCertificateProfile>(request.certificate_profile()),
       AccountId::FromUserEmail(request.username()), request.request_origin(),

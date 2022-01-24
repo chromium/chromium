@@ -8,6 +8,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 namespace features {
 
 // Enable recognizing "aria-virtualcontent" as a valid aria property.
@@ -104,59 +108,57 @@ bool IsSelectiveUIAEnablementEnabled() {
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kMagnifierPanningImprovements{
-    "MagnifierPanningImprovements", base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsMagnifierPanningImprovementsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kMagnifierPanningImprovements);
-}
-
 const base::Feature kMagnifierContinuousMouseFollowingModeSetting{
     "MagnifierContinuousMouseFollowingModeSetting",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kMagnifierContinuousMouseFollowingModeSetting);
 }
 
-const base::Feature kMagnifierCaretFollowingFromJavascript{
-    "MagnifierCaretFollowingFromJavascript", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDockedMagnifierResizing{"DockedMagnifierResizing",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-bool IsMagnifierCaretFollowingFromJavascriptEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kMagnifierCaretFollowingFromJavascript);
-}
-
-const base::Feature kEnableSwitchAccessPointScanning{
-    "EnableSwitchAccessPointScanning", base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsSwitchAccessPointScanningEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kEnableSwitchAccessPointScanning);
-}
-
-const base::Feature kExperimentalAccessibilityDictationListening{
-    "ExperimentalAccessibilityDictationListening",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsExperimentalAccessibilityDictationListeningEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityDictationListening);
+bool IsDockedMagnifierResizingEnabled() {
+  return base::FeatureList::IsEnabled(::features::kDockedMagnifierResizing);
 }
 
 const base::Feature kExperimentalAccessibilityDictationOffline{
     "ExperimentalAccessibilityDictationOffline",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsExperimentalAccessibilityDictationOfflineEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityDictationOffline);
 }
 
+bool IsDictationOfflineAvailableAndEnabled() {
+  return base::FeatureList::IsEnabled(
+             ash::features::kOnDeviceSpeechRecognition) &&
+         IsExperimentalAccessibilityDictationOfflineEnabled();
+}
+
+const base::Feature kExperimentalAccessibilityDictationCommands{
+    "ExperimentalAccessibilityDictationCommands",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsExperimentalAccessibilityDictationCommandsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kExperimentalAccessibilityDictationCommands);
+}
+
+const base::Feature kExperimentalAccessibilitySwitchAccessSetupGuide{
+    "ExperimentalAccessibilitySwitchAccessSetupGuide",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+bool IsExperimentalAccessibilitySwitchAccessSetupGuideEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kExperimentalAccessibilitySwitchAccessSetupGuide);
+}
+
 const base::Feature kEnhancedNetworkVoices{"EnhancedNetworkVoices",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsEnhancedNetworkVoicesEnabled() {
   return base::FeatureList::IsEnabled(::features::kEnhancedNetworkVoices);
@@ -184,16 +186,6 @@ const base::Feature kEnableAriaElementReflection{
 bool IsAriaElementReflectionEnabled() {
   return base::FeatureList::IsEnabled(::features::kEnableAriaElementReflection);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kSelectToSpeakNavigationControl{
-    "SelectToSpeakNavigationControl", base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsSelectToSpeakNavigationControlEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kSelectToSpeakNavigationControl);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID)
 const base::Feature kComputeAXMode{"ComputeAXMode",

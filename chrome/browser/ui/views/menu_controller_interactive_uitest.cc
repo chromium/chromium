@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/menu_test_base.h"
@@ -14,6 +13,10 @@ class MenuControllerMnemonicTest : public MenuTestBase {
  public:
   MenuControllerMnemonicTest() {
   }
+
+  MenuControllerMnemonicTest(const MenuControllerMnemonicTest&) = delete;
+  MenuControllerMnemonicTest& operator=(const MenuControllerMnemonicTest&) =
+      delete;
 
   ~MenuControllerMnemonicTest() override {
   }
@@ -46,9 +49,6 @@ class MenuControllerMnemonicTest : public MenuTestBase {
     ASSERT_FALSE(menu()->GetSubmenu()->IsShowing());
     Done();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuControllerMnemonicTest);
 };
 
 // Pressing the mnemonic for a menu item should execute the command for that

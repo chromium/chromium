@@ -25,7 +25,7 @@ enum ResponseType { "basic", "cors", "default", "error", "opaque", "opaqueredire
 
     [RaisesException, CallWith=ScriptState, DoNotTestNewObject, NewObject] Response clone();
 
-    [MeasureAs=FetchBodyStream] readonly attribute ReadableStream? body;
+    [Affects=Everything, MeasureAs=FetchBodyStream] readonly attribute ReadableStream? body;
 };
 
 Response includes Body;

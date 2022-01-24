@@ -25,23 +25,34 @@ namespace ash {
 namespace diagnostics {
 namespace {
 
-const char kRoutineLogSectionHeader[] = "=== Routine Log === \n";
-const char kTelemetryLogSectionHeader[] = "=== Telemetry Log === \n";
-const char kNetworkingLogSectionHeader[] = "=== Networking Log === \n";
+const char kRoutineLogSubsectionHeader[] = "--- Test Routines --- \n";
+const char kSystemLogSectionHeader[] = "=== System === \n";
+const char kNetworkingLogSectionHeader[] = "=== Networking === \n";
+const char kNoRoutinesRun[] =
+    "No routines of this type were run in the session.\n";
 const char kDefaultSessionLogFileName[] = "session_log.txt";
-const char kRoutineLogPath[] = "/tmp/diagnostics/diagnostics_routine_log";
+
+std::string GetRoutineResultsString(const std::string& results) {
+  const std::string section_header =
+      std::string(kRoutineLogSubsectionHeader) + "\n";
+  if (results.empty()) {
+    return section_header + kNoRoutinesRun;
+  }
+
+  return section_header + results;
+}
 
 }  // namespace
 
 SessionLogHandler::SessionLogHandler(
     const SelectFilePolicyCreator& select_file_policy_creator,
-    ash::HoldingSpaceClient* holding_space_client)
-    : SessionLogHandler(
-          select_file_policy_creator,
-          std::make_unique<TelemetryLog>(),
-          std::make_unique<RoutineLog>(base::FilePath(kRoutineLogPath)),
-          std::make_unique<NetworkingLog>(),
-          holding_space_client) {}
+    ash::HoldingSpaceClient* holding_space_client,
+    const base::FilePath& log_directory_path)
+    : SessionLogHandler(select_file_policy_creator,
+                        std::make_unique<TelemetryLog>(),
+                        std::make_unique<RoutineLog>(log_directory_path),
+                        std::make_unique<NetworkingLog>(log_directory_path),
+                        holding_space_client) {}
 
 SessionLogHandler::SessionLogHandler(
     const SelectFilePolicyCreator& select_file_policy_creator,
@@ -60,10 +71,10 @@ SessionLogHandler::SessionLogHandler(
 SessionLogHandler::~SessionLogHandler() = default;
 
 void SessionLogHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initialize", base::BindRepeating(&SessionLogHandler::HandleInitialize,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "saveSessionLog",
       base::BindRepeating(&SessionLogHandler::HandleSaveSessionLogRequest,
                           base::Unretained(this)));
@@ -121,20 +132,36 @@ void SessionLogHandler::SetLogCreatedClosureForTest(base::OnceClosure closure) {
 }
 
 bool SessionLogHandler::CreateSessionLog(const base::FilePath& file_path) {
-  // Fetch RoutineLog
-  const std::string routine_log_contents = routine_log_->GetContents();
+  // Fetch Routine logs
+  const std::string system_routines =
+      routine_log_->GetContentsForCategory("system");
+  const std::string network_routines =
+      routine_log_->GetContentsForCategory("network");
 
-  // Fetch TelemetryLog
-  const std::string telemetry_log_contents = telemetry_log_->GetContents();
+  // Fetch system data from TelemetryLog.
+  const std::string system_log_contents = telemetry_log_->GetContents();
 
-  std::vector<std::string> pieces = {
-      kTelemetryLogSectionHeader, telemetry_log_contents,
-      kRoutineLogSectionHeader, routine_log_contents};
+  std::vector<std::string> pieces;
+  pieces.push_back(kSystemLogSectionHeader);
+  if (!system_log_contents.empty()) {
+    pieces.push_back(system_log_contents);
+  }
+
+  // Add the routine section for the system category.
+  pieces.push_back(GetRoutineResultsString(system_routines));
 
   if (features::IsNetworkingInDiagnosticsAppEnabled()) {
-    // Fetch NetworkingLog
+    // Add networking category.
     pieces.push_back(kNetworkingLogSectionHeader);
-    pieces.push_back(networking_log_->GetContents());
+
+    // Add the network info section.
+    pieces.push_back(networking_log_->GetNetworkInfo());
+
+    // Add the routine section for the network category.
+    pieces.push_back(GetRoutineResultsString(network_routines));
+
+    // Add the network events section.
+    pieces.push_back(networking_log_->GetNetworkEvents());
   }
 
   return base::WriteFile(file_path, base::JoinString(pieces, "\n"));
@@ -142,7 +169,7 @@ bool SessionLogHandler::CreateSessionLog(const base::FilePath& file_path) {
 
 void SessionLogHandler::HandleSaveSessionLogRequest(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   DCHECK(save_session_log_callback_id_.empty());
   save_session_log_callback_id_ = args->GetList()[0].GetString();
 

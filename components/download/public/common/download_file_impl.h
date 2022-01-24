@@ -17,11 +17,10 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -51,6 +50,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
                    std::unique_ptr<InputStream> stream,
                    uint32_t download_id,
                    base::WeakPtr<DownloadDestinationObserver> observer);
+
+  DownloadFileImpl(const DownloadFileImpl&) = delete;
+  DownloadFileImpl& operator=(const DownloadFileImpl&) = delete;
 
   ~DownloadFileImpl() override;
 
@@ -101,6 +103,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
     SourceStream(int64_t offset,
                  int64_t starting_file_write_offset,
                  std::unique_ptr<InputStream> stream);
+
+    SourceStream(const SourceStream&) = delete;
+    SourceStream& operator=(const SourceStream&) = delete;
+
     ~SourceStream();
 
     void Initialize();
@@ -190,8 +196,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
 
     // Cancelable callback to read from the |input_stream_|.
     base::CancelableOnceClosure read_stream_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(SourceStream);
   };
 
   // Sets the task runner for testing purpose, must be called before
@@ -391,8 +395,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
 
   base::WeakPtr<DownloadDestinationObserver> observer_;
   base::WeakPtrFactory<DownloadFileImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadFileImpl);
 };
 
 }  // namespace download

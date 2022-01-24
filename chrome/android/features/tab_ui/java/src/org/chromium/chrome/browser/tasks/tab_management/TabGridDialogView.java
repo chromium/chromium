@@ -67,7 +67,6 @@ public class TabGridDialogView extends FrameLayout {
 
     private final Context mContext;
     private final int mToolbarHeight;
-    private final int mUngroupBarHeight;
     private final float mTabGridCardPadding;
     private View mBackgroundFrame;
     private View mAnimationCardView;
@@ -109,11 +108,9 @@ public class TabGridDialogView extends FrameLayout {
     public TabGridDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        mTabGridCardPadding = TabUiThemeProvider.getTabCardPaddingDimension(mContext);
+        mTabGridCardPadding = TabUiThemeProvider.getTabGridCardMarginForDialogAnimation(mContext);
         mToolbarHeight =
                 (int) mContext.getResources().getDimension(R.dimen.tab_group_toolbar_height);
-        mUngroupBarHeight =
-                (int) mContext.getResources().getDimension(R.dimen.bottom_sheet_peek_height);
         mBackgroundDrawableColor =
                 ContextCompat.getColor(mContext, R.color.tab_grid_dialog_background_color);
 
@@ -174,6 +171,7 @@ public class TabGridDialogView extends FrameLayout {
         updateDialogWithOrientation(mContext.getResources().getConfiguration().orientation);
 
         prepareAnimation();
+        mDialogContainerView.setClipToOutline(true);
     }
 
     private void prepareAnimation() {
@@ -634,7 +632,7 @@ public class TabGridDialogView extends FrameLayout {
         ImageView sourceCardFavicon = view.findViewById(R.id.tab_favicon);
         ImageView animationCardFavicon = mAnimationCardView.findViewById(R.id.tab_favicon);
         if (sourceCardFavicon.getDrawable() != null) {
-            int padding = (int) TabUiThemeProvider.getTabCardPaddingDimension(mContext);
+            int padding = (int) TabUiThemeProvider.getTabCardTopFaviconPadding(mContext);
             animationCardFavicon.setPadding(padding, padding, padding, padding);
             animationCardFavicon.setImageDrawable(sourceCardFavicon.getDrawable());
         } else {

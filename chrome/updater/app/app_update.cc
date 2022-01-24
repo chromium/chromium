@@ -14,6 +14,7 @@
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/setup.h"
@@ -34,8 +35,8 @@ class AppUpdate : public App {
 };
 
 void AppUpdate::Initialize() {
-  config_ =
-      base::MakeRefCounted<Configurator>(CreateGlobalPrefs(updater_scope()));
+  config_ = base::MakeRefCounted<Configurator>(
+      CreateGlobalPrefs(updater_scope()), CreateExternalConstants());
 }
 
 void AppUpdate::Uninitialize() {

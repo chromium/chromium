@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "ios/chrome/browser/application_context.h"
@@ -34,7 +35,6 @@
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
@@ -112,12 +112,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super viewDidLoad];
 
   self.title = l10n_util::GetNSString(IDS_IOS_LANGUAGE_SETTINGS_TITLE);
-  self.shouldHideDoneButton = YES;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    self.shouldDisableDoneButtonOnEdit = YES;
+    self.shouldShowDeleteButtonInToolbar = NO;
+  } else {
+    self.shouldHideDoneButton = YES;
+  }
   self.tableView.accessibilityIdentifier =
       kLanguageSettingsTableViewAccessibilityIdentifier;
 
   [self loadModel];
   [self updateUIForEditState];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    self.navigationController.toolbarHidden = NO;
+  }
 }
 
 #pragma mark - ChromeTableViewController
@@ -130,8 +144,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self populateLanguagesSection];
 
   [model addSectionWithIdentifier:SectionIdentifierTranslate];
-  if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
-      self.dataSource.translateManaged) {
+  if (self.dataSource.translateManaged) {
     // Translate managed item.
     TableViewInfoButtonItem* translateManagedItem =
         [[TableViewInfoButtonItem alloc] initWithType:ItemTypeTranslateManaged];
@@ -171,12 +184,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - SettingsRootTableViewController
 
 - (BOOL)shouldShowEditButton {
-  return YES;
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
 }
 
 - (BOOL)editButtonEnabled {
   return [self.tableViewModel hasItemForItemType:ItemTypeLanguage
                                sectionIdentifier:SectionIdentifierLanguages];
+}
+
+- (BOOL)shouldHideToolbar {
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
+}
+
+- (BOOL)shouldShowEditDoneButton {
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
 }
 
 - (void)updateUIForEditState {
@@ -192,11 +216,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (_translateSwitchItem) {
     [self setTranslateSwitchItemEnabled:!self.isEditing];
   }
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    [self updatedToolbarForEditState];
+  }
 }
 
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    return;
+  }
   // Language Settings screen does not have Done button.
   NOTREACHED();
 }
@@ -506,9 +539,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)setAddLanguageItemEnabled:(BOOL)enabled {
   // Update the model.
   self.addLanguageItem.enabled = enabled;
-  self.addLanguageItem.textColor = self.isEditing
-                                       ? UIColor.cr_secondaryLabelColor
-                                       : [UIColor colorNamed:kBlueColor];
+  self.addLanguageItem.textColor =
+      self.isEditing ? [UIColor colorNamed:kTextSecondaryColor]
+                     : [UIColor colorNamed:kBlueColor];
 
   // Update the table view.
   [self reconfigureCellsForItems:@[ self.addLanguageItem ]];

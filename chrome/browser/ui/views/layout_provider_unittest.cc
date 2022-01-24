@@ -26,6 +26,8 @@
 #endif
 
 #if defined(OS_WIN)
+#include <windows.h>
+
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "ui/display/win/dpi.h"
@@ -47,6 +49,9 @@ class LayoutProviderTest : public testing::Test {
  public:
   LayoutProviderTest() {}
 
+  LayoutProviderTest(const LayoutProviderTest&) = delete;
+  LayoutProviderTest& operator=(const LayoutProviderTest&) = delete;
+
  protected:
   static void SetUpTestSuite() {
 #if defined(OS_WIN)
@@ -57,9 +62,6 @@ class LayoutProviderTest : public testing::Test {
     // unexpected state.
     gfx::FontList::SetDefaultFontDescription(std::string());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LayoutProviderTest);
 };
 
 // Check whether the system is in the default configuration. This test will fail

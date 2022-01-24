@@ -45,8 +45,4 @@ MockClientSocketPoolManager::SocketPoolInfoToValue() const {
   return std::unique_ptr<base::Value>(nullptr);
 }
 
-void MockClientSocketPoolManager::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_dump_absolute_name) const {}
-
 }  // namespace net

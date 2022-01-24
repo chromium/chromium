@@ -14,8 +14,6 @@ const int kTrayItemSize = 32;
 
 const float kTrayItemCornerRadius = kTrayItemSize / 2.f;
 
-const int kTrayMenuWidth = 360;
-
 const int kTrayPopupAutoCloseDelayInSeconds = 2;
 const int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback = 5;
 const int kTrayPopupPaddingHorizontal = 18;

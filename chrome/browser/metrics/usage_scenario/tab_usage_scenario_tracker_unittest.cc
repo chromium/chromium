@@ -24,7 +24,7 @@ namespace metrics {
 
 namespace {
 
-constexpr base::TimeDelta kInterval = base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kInterval = base::Minutes(2);
 
 // Inherit from ChromeRenderViewHostTestHarness for access to test profile.
 class TabUsageScenarioTrackerTest : public ChromeRenderViewHostTestHarness {
@@ -76,7 +76,8 @@ class TabUsageScenarioTrackerTest : public ChromeRenderViewHostTestHarness {
 
   void NavigateAndCommitTab(content::WebContents* contents, const GURL& gurl) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(contents, gurl);
-    tab_usage_scenario_tracker_->OnMainFrameNavigationCommitted(contents);
+    tab_usage_scenario_tracker_->OnPrimaryMainFrameNavigationCommitted(
+        contents);
   }
 
  protected:

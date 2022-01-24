@@ -35,6 +35,9 @@ class ThreadedObservable {
     thread_.Start();
   }
 
+  ThreadedObservable(const ThreadedObservable&) = delete;
+  ThreadedObservable& operator=(const ThreadedObservable&) = delete;
+
   Observer<int> Observe() { return value_.Observe(); }
 
   void SetValue(int value) {
@@ -51,8 +54,6 @@ class ThreadedObservable {
 
   base::Thread thread_;
   Observable<int> value_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedObservable);
 };
 
 class ThreadedObserver {
@@ -63,6 +64,9 @@ class ThreadedObserver {
                    base::WaitableEvent::InitialState::NOT_SIGNALED) {
     thread_.Start();
   }
+
+  ThreadedObserver(const ThreadedObserver&) = delete;
+  ThreadedObserver& operator=(const ThreadedObserver&) = delete;
 
   ~ThreadedObserver() {
     thread_.task_runner()->PostTask(
@@ -104,8 +108,6 @@ class ThreadedObserver {
   base::Thread thread_;
   std::unique_ptr<Observer<int>> observer_;
   base::WaitableEvent observing_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedObserver);
 };
 
 void RunCallback(std::function<void()> callback) {

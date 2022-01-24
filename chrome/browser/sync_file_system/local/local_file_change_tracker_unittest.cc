@@ -12,7 +12,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
@@ -46,6 +45,10 @@ class LocalFileChangeTrackerTest : public testing::Test {
                      in_memory_env_.get(),
                      base::ThreadTaskRunnerHandle::Get().get(),
                      base::ThreadTaskRunnerHandle::Get().get()) {}
+
+  LocalFileChangeTrackerTest(const LocalFileChangeTrackerTest&) = delete;
+  LocalFileChangeTrackerTest& operator=(const LocalFileChangeTrackerTest&) =
+      delete;
 
   void SetUp() override {
     file_system_.SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
@@ -121,8 +124,6 @@ class LocalFileChangeTrackerTest : public testing::Test {
 
  private:
   scoped_refptr<LocalFileSyncContext> sync_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileChangeTrackerTest);
 };
 
 TEST_F(LocalFileChangeTrackerTest, DemoteAndPromote) {

@@ -125,7 +125,8 @@ class BrowsingDataRemoverFunction
   // Parse the developer-provided |origin_types| object into |origin_type_mask|
   // that can be used with the BrowsingDataRemover.
   // Returns true if parsing was successful.
-  bool ParseOriginTypeMask(const base::DictionaryValue& options,
+  // Pre-condition: `options` is a dictionary.
+  bool ParseOriginTypeMask(const base::Value& options,
                            uint64_t* origin_type_mask);
 
   // Parses the developer-provided list of origins into |result|.

@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -33,6 +32,10 @@ class TrustedPluginChannel;
 class NexeLoadManager {
  public:
   explicit NexeLoadManager(PP_Instance instance);
+
+  NexeLoadManager(const NexeLoadManager&) = delete;
+  NexeLoadManager& operator=(const NexeLoadManager&) = delete;
+
   ~NexeLoadManager();
 
   void NexeFileDidOpen(int32_t pp_error,
@@ -122,9 +125,6 @@ class NexeLoadManager {
 
   bool nonsfi() const { return nonsfi_; }
   void set_nonsfi(bool nonsfi) { nonsfi_ = nonsfi; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NexeLoadManager);
 
   void ReportDeadNexe();
 

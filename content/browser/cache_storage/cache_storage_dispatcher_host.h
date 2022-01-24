@@ -31,6 +31,11 @@ class CacheStorageContextImpl;
 class CacheStorageDispatcherHost {
  public:
   explicit CacheStorageDispatcherHost(CacheStorageContextImpl* context);
+
+  CacheStorageDispatcherHost(const CacheStorageDispatcherHost&) = delete;
+  CacheStorageDispatcherHost& operator=(const CacheStorageDispatcherHost&) =
+      delete;
+
   ~CacheStorageDispatcherHost();
 
   // Binds the CacheStorage Mojo receiver to this instance.
@@ -67,7 +72,6 @@ class CacheStorageDispatcherHost {
       cache_receivers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageDispatcherHost);
 };
 
 }  // namespace content

@@ -56,7 +56,7 @@ class MockWebContentsObserver : public WebContentsObserver {
               (RenderViewHost* render_view_host),
               (override));
   MOCK_METHOD(void,
-              RenderProcessGone,
+              PrimaryMainFrameRenderProcessGone,
               (base::TerminationStatus status),
               (override));
   MOCK_METHOD(void,
@@ -93,7 +93,6 @@ class MockWebContentsObserver : public WebContentsObserver {
                base::TimeTicks activation_time),
               (override));
   MOCK_METHOD(void, DidStartLoading, (), (override));
-  MOCK_METHOD(void, DidReceiveResponse, (), (override));
   MOCK_METHOD(void, DidStopLoading, (), (override));
   MOCK_METHOD(void, LoadProgressChanged, (double progress), (override));
   MOCK_METHOD(void,
@@ -174,7 +173,10 @@ class MockWebContentsObserver : public WebContentsObserver {
               (override));
   MOCK_METHOD(void, DidGetIgnoredUIEvent, (), (override));
   MOCK_METHOD(void, OnVisibilityChanged, (Visibility visibility), (override));
-  MOCK_METHOD(void, MainFrameWasResized, (bool width_changed), (override));
+  MOCK_METHOD(void,
+              PrimaryMainFrameWasResized,
+              (bool width_changed),
+              (override));
   MOCK_METHOD(void,
               FrameNameChanged,
               (RenderFrameHost* render_frame_host, const std::string& name),
@@ -338,12 +340,6 @@ class MockWebContentsObserver : public WebContentsObserver {
   MOCK_METHOD(void,
               DidUpdateWebManifestURL,
               (RenderFrameHost * target_frame, const GURL& manifest_url),
-              (override));
-  MOCK_METHOD(void,
-              OnInterfaceRequestFromFrame,
-              (RenderFrameHost* render_frame_host,
-               const std::string& interface_name,
-               mojo::ScopedMessagePipeHandle* interface_pipe),
               (override));
   MOCK_METHOD(void,
               AudioContextPlaybackStarted,

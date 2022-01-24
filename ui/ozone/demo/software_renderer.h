@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/ozone/demo/renderer_base.h"
@@ -26,6 +25,10 @@ class SoftwareRenderer : public RendererBase {
   SoftwareRenderer(gfx::AcceleratedWidget widget,
                    std::unique_ptr<PlatformWindowSurface> window_surface,
                    const gfx::Size& size);
+
+  SoftwareRenderer(const SoftwareRenderer&) = delete;
+  SoftwareRenderer& operator=(const SoftwareRenderer&) = delete;
+
   ~SoftwareRenderer() override;
 
   // Renderer:
@@ -49,8 +52,6 @@ class SoftwareRenderer : public RendererBase {
   base::TimeDelta vsync_period_;
 
   base::WeakPtrFactory<SoftwareRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareRenderer);
 };
 
 }  // namespace ui

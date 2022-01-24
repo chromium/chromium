@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -161,11 +162,19 @@ void ApplyDisableDownloadProvider(StartParams* params) {
           chromeos::switches::kArcDisableDownloadProvider);
 }
 
+void ApplyDisableUreadahed(StartParams* params) {
+  params->disable_ureadahead = IsUreadaheadDisabled();
+}
+
 // Real Delegate implementation to connect Mojo.
 class ArcSessionDelegateImpl : public ArcSessionImpl::Delegate {
  public:
   ArcSessionDelegateImpl(ArcBridgeService* arc_bridge_service,
                          version_info::Channel channel);
+
+  ArcSessionDelegateImpl(const ArcSessionDelegateImpl&) = delete;
+  ArcSessionDelegateImpl& operator=(const ArcSessionDelegateImpl&) = delete;
+
   ~ArcSessionDelegateImpl() override = default;
 
   // ArcSessionImpl::Delegate override.
@@ -201,8 +210,6 @@ class ArcSessionDelegateImpl : public ArcSessionImpl::Delegate {
 
   // WeakPtrFactory to use callbacks.
   base::WeakPtrFactory<ArcSessionDelegateImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionDelegateImpl);
 };
 
 ArcSessionDelegateImpl::ArcSessionDelegateImpl(
@@ -452,13 +459,18 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
       delegate_->GetChannel() != version_info::Channel::STABLE &&
       delegate_->GetChannel() != version_info::Channel::BETA;
   params.arc_custom_tabs_experiment = is_custom_tab_enabled;
-  params.enable_image_copy_paste_compat =
-      base::FeatureList::IsEnabled(arc::kImageCopyPasteCompatFeature);
   params.enable_keyboard_shortcut_helper_integration =
       base::FeatureList::IsEnabled(
           arc::kKeyboardShortcutHelperIntegrationFeature);
   params.lcd_density = lcd_density_;
   params.num_cores_disabled = num_cores_disabled;
+  params.enable_notifications_refresh =
+      ash::features::IsNotificationsRefreshEnabled();
+
+  // TODO (b/196460968): Remove after CTS run is complete.
+  if (params.enable_notifications_refresh) {
+    VLOG(1) << "Notifications Refresh is enabled";
+  }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kArcPlayStoreAutoUpdate)) {
@@ -502,6 +514,7 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   ApplyDalvikMemoryProfile(system_memory_info_callback_, &params);
   ApplyUsapProfile(system_memory_info_callback_, &params);
   ApplyDisableDownloadProvider(&params);
+  ApplyDisableUreadahed(&params);
 
   client_->StartMiniArc(std::move(params),
                         base::BindOnce(&ArcSessionImpl::OnMiniInstanceStarted,

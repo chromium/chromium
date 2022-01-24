@@ -476,7 +476,7 @@ TEST_P(DocumentPolicyParserTest, ParseResultShouldMatch) {
 
   ASSERT_EQ(actual_messages.size(), expected_messages.size())
       << "message count should match";
-  for (size_t i = 0; i < expected_messages.size(); ++i) {
+  for (wtf_size_t i = 0; i < expected_messages.size(); ++i) {
     const auto& actual_message = actual_messages[i];
     const MessageForTest& expected_message = expected_messages[i];
 

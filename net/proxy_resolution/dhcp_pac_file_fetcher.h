@@ -29,6 +29,9 @@ class NetLogWithSource;
 // which PAC script to use if one or more are available.
 class NET_EXPORT_PRIVATE DhcpPacFileFetcher {
  public:
+  DhcpPacFileFetcher(const DhcpPacFileFetcher&) = delete;
+  DhcpPacFileFetcher& operator=(const DhcpPacFileFetcher&) = delete;
+
   // Destruction should cancel any outstanding requests.
   virtual ~DhcpPacFileFetcher();
 
@@ -84,9 +87,6 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcher {
 
  protected:
   DhcpPacFileFetcher();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DhcpPacFileFetcher);
 };
 
 // A do-nothing retriever, always returns synchronously with
@@ -95,6 +95,11 @@ class NET_EXPORT_PRIVATE DoNothingDhcpPacFileFetcher
     : public DhcpPacFileFetcher {
  public:
   DoNothingDhcpPacFileFetcher();
+
+  DoNothingDhcpPacFileFetcher(const DoNothingDhcpPacFileFetcher&) = delete;
+  DoNothingDhcpPacFileFetcher& operator=(const DoNothingDhcpPacFileFetcher&) =
+      delete;
+
   ~DoNothingDhcpPacFileFetcher() override;
 
   int Fetch(std::u16string* utf16_text,
@@ -108,7 +113,6 @@ class NET_EXPORT_PRIVATE DoNothingDhcpPacFileFetcher
 
  private:
   GURL gurl_;
-  DISALLOW_COPY_AND_ASSIGN(DoNothingDhcpPacFileFetcher);
 };
 
 }  // namespace net

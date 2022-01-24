@@ -34,6 +34,9 @@ class BrotliSourceStream : public FilterSourceStream {
     CHECK(brotli_state_);
   }
 
+  BrotliSourceStream(const BrotliSourceStream&) = delete;
+  BrotliSourceStream& operator=(const BrotliSourceStream&) = delete;
+
   ~BrotliSourceStream() override {
     BrotliDecoderErrorCode error_code =
         BrotliDecoderGetErrorCode(brotli_state_);
@@ -172,8 +175,6 @@ class BrotliSourceStream : public FilterSourceStream {
   size_t used_memory_maximum_;
   size_t consumed_bytes_;
   size_t produced_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrotliSourceStream);
 };
 
 }  // namespace

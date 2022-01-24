@@ -276,7 +276,8 @@ TEST_F(PrintPreviewDialogControllerUnitTest, CloseDialogOnNavigation) {
   // Forward) but modify the navigation type while pending to look like an
   // address bar + typed transition (like Gmail auto navigation)
   std::unique_ptr<content::NavigationSimulator> forward_nav =
-      content::NavigationSimulator::CreateHistoryNavigation(1, web_contents);
+      content::NavigationSimulator::CreateHistoryNavigation(
+          1, web_contents, false /* is_renderer_initiated */);
   forward_nav->Start();
   web_contents->GetController().GetPendingEntry()->SetTransitionType(
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
@@ -296,6 +297,47 @@ TEST_F(PrintPreviewDialogControllerUnitTest, CloseDialogOnNavigation) {
   ASSERT_TRUE(tiger_preview_dialog_2b);
   EXPECT_EQ(tiger_preview_dialog_2b, tiger_preview_dialog_2);
   EXPECT_NE(tiger_preview_dialog_2b, web_contents);
+
+  // Navigate with back button or ALT+LEFT ARROW to a similar page.
+  content::NavigationSimulator::GoBack(web_contents);
+  EXPECT_EQ(tiger, web_contents->GetLastCommittedURL());
+  EXPECT_TRUE(manager->PrintPreviewNow(web_contents->GetMainFrame(), false));
+
+  // Get new dialog
+  WebContents* tiger_preview_dialog_3 =
+      dialog_controller->GetOrCreatePreviewDialog(web_contents);
+  ASSERT_TRUE(tiger_preview_dialog_3);
+
+  // Verify this is a new dialog.
+  EXPECT_TRUE(tiger_barb_destroyed.IsDestroyed() ||
+              tiger_preview_dialog_2 != tiger_preview_dialog_3);
+  EXPECT_NE(tiger_preview_dialog_3, web_contents);
+  content::WebContentsDestroyedWatcher tiger_3_destroyed(
+      tiger_preview_dialog_3);
+
+  // Try to simulate renderer reloading a PWA page: Navigate to an existing page
+  // (via Forward) but modify the navigation type while pending to look like a
+  // PAGE_TRANSITION_AUTO_BOOKMARK.
+  forward_nav = content::NavigationSimulator::CreateHistoryNavigation(
+      1, web_contents, false /* is_renderer_initiated */);
+  forward_nav->Start();
+  web_contents->GetController().GetPendingEntry()->SetTransitionType(
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK));
+  forward_nav->Commit();
+  // Navigation successful
+  EXPECT_EQ(tiger_barb, web_contents->GetLastCommittedURL());
+
+  // Print preview should not have changed due to this navigation type so print
+  // preview now should return false, dialog is still alive, and the dialog
+  // returned by GetOrCreatePreviewDialog should be the same as the earlier
+  // dialog.
+  EXPECT_FALSE(manager->PrintPreviewNow(web_contents->GetMainFrame(), false));
+  EXPECT_FALSE(tiger_3_destroyed.IsDestroyed());
+  WebContents* tiger_preview_dialog_3b =
+      dialog_controller->GetOrCreatePreviewDialog(web_contents);
+  ASSERT_TRUE(tiger_preview_dialog_3);
+  EXPECT_EQ(tiger_preview_dialog_3b, tiger_preview_dialog_3);
+  EXPECT_NE(tiger_preview_dialog_3, web_contents);
 }
 
 // Tests preview dialog controller cleans up correctly and does not throw errors

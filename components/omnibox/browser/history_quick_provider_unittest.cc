@@ -197,14 +197,17 @@ class HistoryQuickProviderTest : public testing::Test {
 void HistoryQuickProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();
   ASSERT_TRUE(client_->GetHistoryService());
-  ASSERT_NO_FATAL_FAILURE(FillData());
+
+  // First make sure the automatic initialization completes to avoid a race
+  // between that and our manual indexing below.
+  InMemoryURLIndex* url_index = client_->GetInMemoryURLIndex();
+  BlockUntilInMemoryURLIndexIsRefreshed(url_index);
 
   // FillData() must be called before RebuildFromHistory(). This will
   // ensure that the index is properly populated with data from the database.
-  InMemoryURLIndex* url_index = client_->GetInMemoryURLIndex();
+  ASSERT_NO_FATAL_FAILURE(FillData());
   url_index->RebuildFromHistory(
       client_->GetHistoryService()->history_backend_->db());
-  BlockUntilInMemoryURLIndexIsRefreshed(url_index);
 
   // History index refresh creates rebuilt tasks to run on history thread.
   // Block here to make sure that all of them are complete.
@@ -289,8 +292,7 @@ void HistoryQuickProviderTest::FillData() {
     row.set_title(base::UTF8ToUTF16(info.title));
     row.set_visit_count(info.visit_count);
     row.set_typed_count(info.typed_count);
-    row.set_last_visit(base::Time::Now() -
-                       base::TimeDelta::FromDays(info.days_from_now));
+    row.set_last_visit(base::Time::Now() - base::Days(info.days_from_now));
 
     AddFakeURLToHistoryDB(history_backend()->db(), row);
   }

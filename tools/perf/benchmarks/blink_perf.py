@@ -63,7 +63,7 @@ def CreateStorySetFromPath(
   def _AddPage(path):
     if not path.endswith('.html'):
       return
-    if '../' in open(path, 'r').read():
+    if b'../' in open(path, 'rb').read():
       # If the page looks like it references its parent dir, include it.
       serving_dirs.add(os.path.dirname(os.path.dirname(path)))
     page_url = 'file://' + path.replace('\\', '/')

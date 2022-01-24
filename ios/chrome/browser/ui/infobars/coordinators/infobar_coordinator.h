@@ -9,14 +9,12 @@
 
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
-#import "ios/chrome/browser/ui/infobars/infobar_ui_delegate.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
 
 class ChromeBrowserState;
 
 @protocol ApplicationCommands;
 @protocol InfobarBadgeUIDelegate;
-@protocol InfobarContainer;
 @protocol InfobarBannerContained;
 
 @class InfobarBannerTransitionDriver;
@@ -35,9 +33,8 @@ class WebState;
 enum class InfobarBannerPresentationState;
 
 // Must be subclassed. Defines common behavior for all Infobars.
-@interface InfobarCoordinator : ChromeCoordinator <InfobarUIDelegate,
-                                                   InfobarBannerDelegate,
-                                                   InfobarModalDelegate>
+@interface InfobarCoordinator
+    : ChromeCoordinator <InfobarBannerDelegate, InfobarModalDelegate>
 
 // Designated Initializer. |infoBarDelegate| is used to configure the Infobar
 // and subsequently perform related actions. |badgeSupport| should be YES if the
@@ -73,6 +70,9 @@ enum class InfobarBannerPresentationState;
 // Stops this Coordinator.
 - (void)stop NS_REQUIRES_SUPER;
 
+// The InfobarType for this Infobar.
+@property(nonatomic, assign) InfobarType infobarType;
+
 // YES if the Coordinator has been started.
 @property(nonatomic, assign) BOOL started;
 
@@ -102,9 +102,6 @@ enum class InfobarBannerPresentationState;
 
 // The commands handler for this Coordinator.
 @property(nonatomic, weak) id<ApplicationCommands> handler;
-
-// The InfobarContainer for this InfobarCoordinator.
-@property(nonatomic, weak) id<InfobarContainer> infobarContainer;
 
 // The InfobarBanner presentation state.
 @property(nonatomic, assign) InfobarBannerPresentationState infobarBannerState;

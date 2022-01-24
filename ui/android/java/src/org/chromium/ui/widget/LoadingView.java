@@ -44,7 +44,7 @@ public class LoadingView extends ProgressBar {
     }
 
     private long mStartTime = -1;
-    private boolean mDisableAnimationForTest;
+    private static boolean sDisableAnimationForTest;
 
     private final List<Observer> mObservers = new ArrayList<>();
 
@@ -74,7 +74,7 @@ public class LoadingView extends ProgressBar {
     private final Runnable mDelayedHide = new Runnable() {
         @Override
         public void run() {
-            if (mDisableAnimationForTest) {
+            if (sDisableAnimationForTest) {
                 onHideLoadingFinished();
                 return;
             }
@@ -169,7 +169,7 @@ public class LoadingView extends ProgressBar {
      *         #hideLoadingUI()}.
      */
     @VisibleForTesting
-    public void setDisableAnimationForTest(boolean disableAnimation) {
-        mDisableAnimationForTest = disableAnimation;
+    public static void setDisableAnimationForTest(boolean disableAnimation) {
+        sDisableAnimationForTest = disableAnimation;
     }
 }

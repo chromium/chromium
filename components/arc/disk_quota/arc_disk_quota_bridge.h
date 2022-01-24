@@ -6,7 +6,6 @@
 #define COMPONENTS_ARC_DISK_QUOTA_ARC_DISK_QUOTA_BRIDGE_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/mojom/disk_quota.mojom.h"
@@ -40,6 +39,10 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
 
   ArcDiskQuotaBridge(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);
+
+  ArcDiskQuotaBridge(const ArcDiskQuotaBridge&) = delete;
+  ArcDiskQuotaBridge& operator=(const ArcDiskQuotaBridge&) = delete;
+
   ~ArcDiskQuotaBridge() override;
 
   void SetAccountId(const AccountId& account_id);
@@ -65,8 +68,6 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   AccountId account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDiskQuotaBridge);
 };
 
 }  // namespace arc

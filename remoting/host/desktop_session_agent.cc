@@ -9,27 +9,33 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/chromoting_messages.h"
+#include "remoting/host/crash_process.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
-#include "remoting/host/process_stats_sender.h"
+#include "remoting/host/mojom/desktop_session.mojom-shared.h"
 #include "remoting/host/remote_input_filter.h"
+#include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/screen_controls.h"
 #include "remoting/host/screen_resolution.h"
 #include "remoting/proto/action.pb.h"
@@ -45,6 +51,8 @@
 #include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
 
 #if defined(OS_WIN)
+#include <windows.h>
+
 #include "base/memory/writable_shared_memory_region.h"
 #endif
 
@@ -97,6 +105,9 @@ class SharedMemoryImpl : public webrtc::SharedMemory {
                              handle, id, std::move(on_deleted_callback)));
   }
 
+  SharedMemoryImpl(const SharedMemoryImpl&) = delete;
+  SharedMemoryImpl& operator=(const SharedMemoryImpl&) = delete;
+
   ~SharedMemoryImpl() override { std::move(on_deleted_callback_).Run(); }
 
   const base::ReadOnlySharedMemoryRegion& region() const { return region_; }
@@ -126,17 +137,23 @@ class SharedMemoryImpl : public webrtc::SharedMemory {
   // webrtc::ScreenCapturer.
   base::win::ScopedHandle writable_handle_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryImpl);
 };
 
 namespace {
+
+using SetUpUrlForwarderResponse =
+    protocol::UrlForwarderControl::SetUpUrlForwarderResponse;
 
 // Routes local clipboard events though the IPC channel to the network process.
 class DesktopSessionClipboardStub : public protocol::ClipboardStub {
  public:
   explicit DesktopSessionClipboardStub(
       scoped_refptr<DesktopSessionAgent> desktop_session_agent);
+
+  DesktopSessionClipboardStub(const DesktopSessionClipboardStub&) = delete;
+  DesktopSessionClipboardStub& operator=(const DesktopSessionClipboardStub&) =
+      delete;
+
   ~DesktopSessionClipboardStub() override;
 
   // protocol::ClipboardStub implementation.
@@ -144,8 +161,6 @@ class DesktopSessionClipboardStub : public protocol::ClipboardStub {
 
  private:
   scoped_refptr<DesktopSessionAgent> desktop_session_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopSessionClipboardStub);
 };
 
 DesktopSessionClipboardStub::DesktopSessionClipboardStub(
@@ -156,7 +171,7 @@ DesktopSessionClipboardStub::~DesktopSessionClipboardStub() = default;
 
 void DesktopSessionClipboardStub::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {
-  desktop_session_agent_->InjectClipboardEvent(event);
+  desktop_session_agent_->OnClipboardEvent(event);
 }
 
 class SharedMemoryFactoryImpl : public webrtc::SharedMemoryFactory {
@@ -167,6 +182,9 @@ class SharedMemoryFactoryImpl : public webrtc::SharedMemoryFactory {
   explicit SharedMemoryFactoryImpl(
       const SendMessageCallback& send_message_callback)
       : send_message_callback_(send_message_callback) {}
+
+  SharedMemoryFactoryImpl(const SharedMemoryFactoryImpl&) = delete;
+  SharedMemoryFactoryImpl& operator=(const SharedMemoryFactoryImpl&) = delete;
 
   std::unique_ptr<webrtc::SharedMemory> CreateSharedMemory(
       size_t size) override {
@@ -198,8 +216,6 @@ class SharedMemoryFactoryImpl : public webrtc::SharedMemoryFactory {
  private:
   int next_shared_buffer_id_ = 1;
   SendMessageCallback send_message_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryFactoryImpl);
 };
 
 }  // namespace
@@ -214,8 +230,7 @@ DesktopSessionAgent::DesktopSessionAgent(
     : audio_capture_task_runner_(audio_capture_task_runner),
       caller_task_runner_(caller_task_runner),
       input_task_runner_(input_task_runner),
-      io_task_runner_(io_task_runner),
-      current_process_stats_("DesktopSessionAgent") {
+      io_task_runner_(io_task_runner) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 }
 
@@ -229,8 +244,6 @@ bool DesktopSessionAgent::OnMessageReceived(const IPC::Message& message) {
                           OnCaptureFrame)
       IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_SelectSource,
                           OnSelectSource)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_InjectClipboardEvent,
-                          OnInjectClipboardEvent)
       IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_InjectKeyEvent,
                           OnInjectKeyEvent)
       IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_InjectTextEvent,
@@ -261,10 +274,6 @@ bool DesktopSessionAgent::OnMessageReceived(const IPC::Message& message) {
       IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_CancelFile,
                           &*session_file_operations_handler_,
                           SessionFileOperationsHandler::Cancel)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkToAnyMsg_StartProcessStatsReport,
-                          StartProcessStatsReport)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkToAnyMsg_StopProcessStatsReport,
-                          StopProcessStatsReport)
       IPC_MESSAGE_UNHANDLED(handled = false)
     IPC_END_MESSAGE_MAP()
   } else {
@@ -296,13 +305,34 @@ void DesktopSessionAgent::OnChannelError() {
     delegate_->OnNetworkProcessDisconnected();
 }
 
+void DesktopSessionAgent::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (interface_name == mojom::DesktopSessionControl::Name_) {
+    if (desktop_session_control_.is_bound()) {
+      LOG(ERROR) << "Receiver already bound for associated interface: "
+                 << mojom::DesktopSessionControl::Name_;
+      delegate_->CrashNetworkProcess(base::Location::Current());
+    }
+
+    mojo::PendingAssociatedReceiver<mojom::DesktopSessionControl>
+        pending_receiver(std::move(handle));
+    desktop_session_control_.Bind(std::move(pending_receiver));
+  } else {
+    LOG(ERROR) << "Unknown associated interface requested: " << interface_name
+               << ", crashing the network process";
+    delegate_->CrashNetworkProcess(base::Location::Current());
+  }
+}
+
 DesktopSessionAgent::~DesktopSessionAgent() {
   DCHECK(!audio_capturer_);
   DCHECK(!desktop_environment_);
   DCHECK(!network_channel_);
   DCHECK(!screen_controls_);
   DCHECK(!video_capturer_);
-  DCHECK(!stats_sender_);
   DCHECK(!session_file_operations_handler_);
 }
 
@@ -349,12 +379,6 @@ void DesktopSessionAgent::OnDesktopDisplayChanged(
       *layout.get()));
 }
 
-void DesktopSessionAgent::OnProcessStats(
-    const protocol::AggregatedProcessResourceUsage& usage) {
-  SendToNetwork(
-      std::make_unique<ChromotingAnyToNetworkMsg_ReportProcessStats>(usage));
-}
-
 void DesktopSessionAgent::OnStartSessionAgent(
     const std::string& authenticated_jid,
     const ScreenResolution& resolution,
@@ -370,6 +394,10 @@ void DesktopSessionAgent::OnStartSessionAgent(
 
   started_ = true;
   client_jid_ = authenticated_jid;
+
+  // Hook up the associated interface.
+  network_channel_->GetRemoteAssociatedInterface(
+      &desktop_session_event_handler_);
 
   // Create a desktop environment for the new session.
   desktop_environment_ = delegate_->desktop_environment_factory().Create(
@@ -429,6 +457,13 @@ void DesktopSessionAgent::OnStartSessionAgent(
   // Set up the message handler for file transfers.
   session_file_operations_handler_.emplace(
       this, desktop_environment_->CreateFileOperations());
+
+  url_forwarder_configurator_ =
+      desktop_environment_->CreateUrlForwarderConfigurator();
+
+  // Check and report the initial URL forwarder setup state.
+  url_forwarder_configurator_->IsUrlForwarderSetUp(base::BindOnce(
+      &DesktopSessionAgent::OnCheckUrlForwarderSetUpResult, this));
 }
 
 void DesktopSessionAgent::OnCaptureResult(
@@ -477,19 +512,14 @@ void DesktopSessionAgent::OnMouseCursorPosition(
     video_capturer_->SetMouseCursorPosition(position);
 }
 
-void DesktopSessionAgent::InjectClipboardEvent(
+void DesktopSessionAgent::OnClipboardEvent(
     const protocol::ClipboardEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_) << "OnClipboardEvent called before agent was started.";
 
-  std::string serialized_event;
-  if (!event.SerializeToString(&serialized_event)) {
-    LOG(ERROR) << "Failed to serialize protocol::ClipboardEvent.";
-    return;
+  if (desktop_session_event_handler_) {
+    desktop_session_event_handler_->OnClipboardEvent(event);
   }
-
-  SendToNetwork(
-      std::make_unique<ChromotingDesktopNetworkMsg_InjectClipboardEvent>(
-          serialized_event));
 }
 
 void DesktopSessionAgent::ProcessAudioPacket(
@@ -550,8 +580,6 @@ void DesktopSessionAgent::Stop() {
 
   delegate_.reset();
 
-  stats_sender_.reset();
-
   // Make sure the channel is closed.
   network_channel_.reset();
 
@@ -561,6 +589,11 @@ void DesktopSessionAgent::Stop() {
     // Ignore any further callbacks.
     weak_factory_.InvalidateWeakPtrs();
     client_jid_.clear();
+
+    desktop_session_event_handler_.reset();
+    desktop_session_control_.reset();
+
+    url_forwarder_configurator_.reset();
 
     remote_input_filter_.reset();
 
@@ -606,15 +639,9 @@ void DesktopSessionAgent::OnSelectSource(int id) {
   video_capturer_->SelectSource(id);
 }
 
-void DesktopSessionAgent::OnInjectClipboardEvent(
-    const std::string& serialized_event) {
+void DesktopSessionAgent::InjectClipboardEvent(
+    const protocol::ClipboardEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  protocol::ClipboardEvent event;
-  if (!event.ParseFromString(serialized_event)) {
-    LOG(ERROR) << "Failed to parse protocol::ClipboardEvent.";
-    return;
-  }
 
   // InputStub implementations must verify events themselves, so we don't need
   // verification here. This matches HostEventDispatcher.
@@ -744,24 +771,38 @@ void DesktopSessionAgent::StopAudioCapturer() {
   audio_capturer_.reset();
 }
 
-void DesktopSessionAgent::StartProcessStatsReport(base::TimeDelta interval) {
+void DesktopSessionAgent::SetUpUrlForwarder() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  DCHECK(!stats_sender_);
-
-  if (interval <= base::TimeDelta::FromSeconds(0)) {
-    interval = kDefaultProcessStatsInterval;
-  }
-
-  stats_sender_.reset(new ProcessStatsSender(
-      this,
-      interval,
-      { &current_process_stats_ }));
+  url_forwarder_configurator_->SetUpUrlForwarder(base::BindRepeating(
+      &DesktopSessionAgent::OnUrlForwarderSetUpStateChanged, this));
 }
 
-void DesktopSessionAgent::StopProcessStatsReport() {
+void DesktopSessionAgent::OnCheckUrlForwarderSetUpResult(bool is_set_up) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  DCHECK(stats_sender_);
-  stats_sender_.reset();
+  desktop_session_event_handler_->OnUrlForwarderStateChange(
+      is_set_up ? mojom::UrlForwarderState::kSetUp
+                : mojom::UrlForwarderState::kNotSetUp);
+}
+
+void DesktopSessionAgent::OnUrlForwarderSetUpStateChanged(
+    SetUpUrlForwarderResponse::State state) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  mojom::UrlForwarderState mojo_state;
+  switch (state) {
+    case SetUpUrlForwarderResponse::COMPLETE:
+      mojo_state = mojom::UrlForwarderState::kSetUp;
+      break;
+    case SetUpUrlForwarderResponse::FAILED:
+      mojo_state = mojom::UrlForwarderState::kFailed;
+      break;
+    case SetUpUrlForwarderResponse::USER_INTERVENTION_REQUIRED:
+      mojo_state = mojom::UrlForwarderState::kSetupPendingUserIntervention;
+      break;
+    default:
+      NOTREACHED() << "Unknown state: " << state;
+      mojo_state = mojom::UrlForwarderState::kUnknown;
+  }
+  desktop_session_event_handler_->OnUrlForwarderStateChange(mojo_state);
 }
 
 }  // namespace remoting

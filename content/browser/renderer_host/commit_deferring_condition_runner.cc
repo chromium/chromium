@@ -134,7 +134,7 @@ void CommitDeferringConditionRunner::ProcessConditions() {
                        weak_factory_.GetWeakPtr());
     CommitDeferringCondition* condition = (*conditions_.begin()).get();
     if (condition->WillCommitNavigation(std::move(resume_closure)) ==
-        CommitDeferringCondition::kDefer) {
+        CommitDeferringCondition::Result::kDefer) {
       is_deferred_ = true;
       return;
     }

@@ -256,8 +256,7 @@ std::unique_ptr<HttpResponse> FakeSamlIdpMixin::BuildResponseForLoginAuth(
     const HttpRequest& request,
     const GURL& request_url) {
   const std::string relay_state = GetRelayState(request);
-  GURL redirect_url =
-      gaia_mixin_->gaia_https_forwarder()->GetURLForSSLHost("").Resolve("/SSO");
+  GURL redirect_url = gaia_mixin_->GetFakeGaiaURL("/SSO");
 
   if (!login_auth_html_template_.empty()) {
     return BuildHTMLResponse(login_auth_html_template_, relay_state,

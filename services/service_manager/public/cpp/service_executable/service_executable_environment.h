@@ -29,6 +29,11 @@ namespace service_manager {
 class ServiceExecutableEnvironment {
  public:
   ServiceExecutableEnvironment();
+
+  ServiceExecutableEnvironment(const ServiceExecutableEnvironment&) = delete;
+  ServiceExecutableEnvironment& operator=(const ServiceExecutableEnvironment&) =
+      delete;
+
   ~ServiceExecutableEnvironment();
 
   // Returns a ServiceRequest which should be passed to the Service
@@ -38,8 +43,6 @@ class ServiceExecutableEnvironment {
  private:
   base::Thread ipc_thread_;
   absl::optional<mojo::core::ScopedIPCSupport> ipc_support_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceExecutableEnvironment);
 };
 
 }  // namespace service_manager

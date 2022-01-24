@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/ime/cached_text_input_info.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -95,6 +96,71 @@ TEST_F(CachedTextInputInfoTest, RelayoutBoundary) {
   EXPECT_EQ(PlainTextRange(0, 1),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("abX", GetCachedTextInputInfo().GetText());
+}
+
+// http://crbug.com/1228373
+TEST_F(CachedTextInputInfoTest, ShadowTree) {
+  GetFrame().Selection().SetSelectionAndEndTyping(
+      SetSelectionTextToBody("<div id=host><template data-mode=open>"
+                             "<a>012</a><b>3^45</b>67|8"
+                             "</template></div>"));
+
+  EXPECT_EQ(PlainTextRange(4, 8),
+            GetInputMethodController().GetSelectionOffsets());
+
+  // Change shadow tree to "XYZ<a>012</a><b>345</b>678"
+  auto& shadow_root = *GetElementById("host")->GetShadowRoot();
+  shadow_root.insertBefore(Text::Create(GetDocument(), "XYZ"),
+                           shadow_root.firstChild());
+
+  // Ask |CachedTextInputInfo| to compute |PlainTextRange| for selection.
+  GetFrame().Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(*To<Text>(shadow_root.lastChild()), 0))
+          .Build());
+
+  EXPECT_EQ(PlainTextRange(9, 9),
+            GetInputMethodController().GetSelectionOffsets());
+}
+
+// http://crbug.com/1228635
+TEST_F(CachedTextInputInfoTest, VisibilityHiddenToVisible) {
+  GetFrame().Selection().SetSelectionAndEndTyping(SetSelectionTextToBody(
+      "<div contenteditable id=sample>"
+      "<b id=target style='visibility: hidden'>A</b><b>^Z|</b></div>"));
+
+  EXPECT_EQ(PlainTextRange(0, 1),
+            GetInputMethodController().GetSelectionOffsets());
+  EXPECT_EQ("Z", GetCachedTextInputInfo().GetText())
+      << "Texts within visibility:hidden are excluded";
+
+  Element& target = *GetElementById("target");
+  target.style()->setProperty(GetDocument().GetExecutionContext(), "visibility",
+                              "visible", "", ASSERT_NO_EXCEPTION);
+
+  EXPECT_EQ(PlainTextRange(1, 2),
+            GetInputMethodController().GetSelectionOffsets());
+  EXPECT_EQ("AZ", GetCachedTextInputInfo().GetText());
+}
+
+// http://crbug.com/1228635
+TEST_F(CachedTextInputInfoTest, VisibilityVisibleToHidden) {
+  GetFrame().Selection().SetSelectionAndEndTyping(SetSelectionTextToBody(
+      "<div contenteditable id=sample>"
+      "<b id=target style='visibility: visible'>A</b><b>^Z|</b></div>"));
+
+  EXPECT_EQ(PlainTextRange(1, 2),
+            GetInputMethodController().GetSelectionOffsets());
+  EXPECT_EQ("AZ", GetCachedTextInputInfo().GetText());
+
+  Element& target = *GetElementById("target");
+  target.style()->setProperty(GetDocument().GetExecutionContext(), "visibility",
+                              "hidden", "", ASSERT_NO_EXCEPTION);
+
+  EXPECT_EQ(PlainTextRange(0, 1),
+            GetInputMethodController().GetSelectionOffsets());
+  EXPECT_EQ("Z", GetCachedTextInputInfo().GetText())
+      << "Texts within visibility:hidden are excluded";
 }
 
 }  // namespace blink

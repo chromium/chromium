@@ -44,6 +44,10 @@ class SearchResultImageButton : public views::ImageButton {
  public:
   SearchResultImageButton(SearchResultActionsView* parent,
                           const SearchResult::Action& action);
+
+  SearchResultImageButton(const SearchResultImageButton&) = delete;
+  SearchResultImageButton& operator=(const SearchResultImageButton&) = delete;
+
   ~SearchResultImageButton() override {}
 
   // views::ImageButton:
@@ -65,8 +69,6 @@ class SearchResultImageButton : public views::ImageButton {
   SearchResultActionsView* parent_;
   const bool visible_on_hover_;
   bool to_be_activate_by_long_press_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultImageButton);
 };
 
 SearchResultImageButton::SearchResultImageButton(
@@ -85,9 +87,9 @@ SearchResultImageButton::SearchResultImageButton(
         const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
         auto highlight = std::make_unique<views::InkDropHighlight>(
             gfx::SizeF(host->size()),
-            color_provider->GetRippleAttributesBaseColor(bg_color));
+            color_provider->GetInkDropBaseColor(bg_color));
         highlight->set_visible_opacity(
-            color_provider->GetRippleAttributesHighlightOpacity(bg_color));
+            color_provider->GetInkDropOpacity(bg_color));
         return highlight;
       },
       this));
@@ -104,8 +106,8 @@ SearchResultImageButton::SearchResultImageButton(
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(bounds),
             views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-            color_provider->GetRippleAttributesBaseColor(bg_color),
-            color_provider->GetRippleAttributesInkDropOpacity(bg_color));
+            color_provider->GetInkDropBaseColor(bg_color),
+            color_provider->GetInkDropOpacity(bg_color));
       },
       this));
 
@@ -195,7 +197,7 @@ void SearchResultActionsView::SetActions(const SearchResult::Actions& actions) {
   if (selected_action_.has_value())
     selected_action_.reset();
   subscriptions_.clear();
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 
   for (size_t i = 0; i < actions.size(); ++i)
     CreateImageButton(actions[i], i);

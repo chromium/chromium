@@ -47,8 +47,6 @@ CORE_EXPORT void ReplaceNBSPWithSpace(String&);
 CORE_EXPORT String ConvertURIListToURL(const String& uri_list);
 CORE_EXPORT String URLToImageMarkup(const KURL&, const String& title);
 CORE_EXPORT String PNGToImageMarkup(const mojo_base::BigBuffer& png_data);
-// TODO(crbug.com/1223849): Remove this method once `ReadImage()` is removed.
-CORE_EXPORT String BitmapToImageMarkup(const SkBitmap& bitmap);
 
 }  // namespace blink
 

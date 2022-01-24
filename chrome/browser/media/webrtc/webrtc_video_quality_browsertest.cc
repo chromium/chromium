@@ -184,7 +184,7 @@ class WebRtcVideoQualityBrowserTest : public WebRtcTestBase,
       const base::FilePath& captured_video_filename,
       const base::FilePath& reference_video_filename) {
     base::FilePath path_to_analyzer = base::MakeAbsoluteFilePath(
-        GetBrowserDir().Append(kFrameAnalyzerExecutable));
+        GetTestBinaryDir().Append(kFrameAnalyzerExecutable));
     base::FilePath path_to_compare_script = GetSourceDir().Append(
         FILE_PATH_LITERAL("third_party/webrtc/rtc_tools/compare_videos.py"));
 
@@ -315,9 +315,10 @@ class WebRtcVideoQualityBrowserTest : public WebRtcTestBase,
     return source_dir;
   }
 
-  base::FilePath GetBrowserDir() {
+  base::FilePath GetTestBinaryDir() {
     base::FilePath browser_dir;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_MODULE, &browser_dir));
+    EXPECT_TRUE(
+        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &browser_dir));
     return browser_dir;
   }
 

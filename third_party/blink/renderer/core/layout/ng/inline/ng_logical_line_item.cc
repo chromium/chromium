@@ -71,6 +71,15 @@ NGLogicalLineItem* NGLogicalLineItems::LastInFlowChild() {
   return nullptr;
 }
 
+const NGLayoutResult* NGLogicalLineItems::BlockInInlineLayoutResult() const {
+  for (const NGLogicalLineItem& item : *this) {
+    if (item.layout_result &&
+        item.layout_result->PhysicalFragment().IsBlockInInline())
+      return item.layout_result.get();
+  }
+  return nullptr;
+}
+
 void NGLogicalLineItems::WillInsertChild(unsigned insert_before) {
   unsigned index = 0;
   for (NGLogicalLineItem& child : children_) {

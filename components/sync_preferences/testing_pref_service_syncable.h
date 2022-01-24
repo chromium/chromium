@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_PREFERENCES_TESTING_PREF_SERVICE_SYNCABLE_H_
 #define COMPONENTS_SYNC_PREFERENCES_TESTING_PREF_SERVICE_SYNCABLE_H_
 
-#include "base/macros.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 
@@ -40,15 +39,17 @@ class TestingPrefServiceSyncable
                              TestingPrefStore* recommended_prefs,
                              user_prefs::PrefRegistrySyncable* pref_registry,
                              PrefNotifierImpl* pref_notifier);
+
+  TestingPrefServiceSyncable(const TestingPrefServiceSyncable&) = delete;
+  TestingPrefServiceSyncable& operator=(const TestingPrefServiceSyncable&) =
+      delete;
+
   ~TestingPrefServiceSyncable() override;
 
   // This is provided as a convenience; on a production PrefService
   // you would do all registrations before constructing it, passing it
   // a PrefRegistry via its constructor (or via e.g. PrefServiceFactory).
   user_prefs::PrefRegistrySyncable* registry();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingPrefServiceSyncable);
 };
 
 }  // namespace sync_preferences

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/components/tether/asynchronous_shutdown_object_container.h"
 #include "chromeos/components/tether/disconnect_tethering_request_sender.h"
@@ -69,6 +68,11 @@ class AsynchronousShutdownObjectContainerImpl
     static Factory* factory_instance_;
   };
 
+  AsynchronousShutdownObjectContainerImpl(
+      const AsynchronousShutdownObjectContainerImpl&) = delete;
+  AsynchronousShutdownObjectContainerImpl& operator=(
+      const AsynchronousShutdownObjectContainerImpl&) = delete;
+
   ~AsynchronousShutdownObjectContainerImpl() override;
 
   // AsynchronousShutdownObjectContainer:
@@ -110,8 +114,6 @@ class AsynchronousShutdownObjectContainerImpl
 
   // Not set until Shutdown() is invoked.
   base::OnceClosure shutdown_complete_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsynchronousShutdownObjectContainerImpl);
 };
 
 }  // namespace tether

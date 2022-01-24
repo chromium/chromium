@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
@@ -37,7 +36,7 @@
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base_test_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -60,8 +59,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -92,8 +91,8 @@ policy::CloudPolicyStore* GetStoreForUser(const user_manager::User* user) {
     ADD_FAILURE();
     return NULL;
   }
-  policy::UserCloudPolicyManagerChromeOS* policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+  policy::UserCloudPolicyManagerAsh* policy_manager =
+      profile->GetUserCloudPolicyManagerAsh();
   if (!policy_manager) {
     ADD_FAILURE();
     return NULL;
@@ -104,6 +103,10 @@ policy::CloudPolicyStore* GetStoreForUser(const user_manager::User* user) {
 class UserImageChangeWaiter : public user_manager::UserManager::Observer {
  public:
   UserImageChangeWaiter() {}
+
+  UserImageChangeWaiter(const UserImageChangeWaiter&) = delete;
+  UserImageChangeWaiter& operator=(const UserImageChangeWaiter&) = delete;
+
   ~UserImageChangeWaiter() override {}
 
   void Wait() {
@@ -121,8 +124,6 @@ class UserImageChangeWaiter : public user_manager::UserManager::Observer {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserImageChangeWaiter);
 };
 
 }  // namespace
@@ -130,6 +131,9 @@ class UserImageChangeWaiter : public user_manager::UserManager::Observer {
 class UserImageManagerTestBase : public LoginManagerTest,
                                  public user_manager::UserManager::Observer {
  public:
+  UserImageManagerTestBase(const UserImageManagerTestBase&) = delete;
+  UserImageManagerTestBase& operator=(const UserImageManagerTestBase&) = delete;
+
   std::unique_ptr<net::test_server::BasicHttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url.find("/avatar.jpg") == std::string::npos)
@@ -315,10 +319,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
   std::unique_ptr<net::test_server::ControllableHttpResponse>
       controllable_http_response_;
 
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserImageManagerTestBase);
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
 class UserImageManagerTest : public UserImageManagerTestBase {
@@ -539,6 +540,11 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImageFromProfileImage) {
 
 class UserImageManagerPolicyTest : public UserImageManagerTestBase,
                                    public policy::CloudPolicyStore::Observer {
+ public:
+  UserImageManagerPolicyTest(const UserImageManagerPolicyTest&) = delete;
+  UserImageManagerPolicyTest& operator=(const UserImageManagerPolicyTest&) =
+      delete;
+
  protected:
   UserImageManagerPolicyTest()
       : owner_key_util_(new ownership::MockOwnerKeyUtil()) {
@@ -627,9 +633,6 @@ class UserImageManagerPolicyTest : public UserImageManagerTestBase,
   cryptohome::AccountIdentifier cryptohome_id_ =
       cryptohome::CreateAccountIdentifierFromAccountId(enterprise_account_id_);
   LoginManagerMixin login_manager_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserImageManagerPolicyTest);
 };
 
 // Verifies that the user image can be set through policy. Also verifies that

@@ -22,8 +22,10 @@ absl_cc_library(
     "internal/stacktrace_aarch64-inl.inc"
     "internal/stacktrace_arm-inl.inc"
     "internal/stacktrace_config.h"
+    "internal/stacktrace_emscripten-inl.inc"
     "internal/stacktrace_generic-inl.inc"
     "internal/stacktrace_powerpc-inl.inc"
+    "internal/stacktrace_riscv-inl.inc"
     "internal/stacktrace_unimplemented-inl.inc"
     "internal/stacktrace_win32-inl.inc"
     "internal/stacktrace_x86-inl.inc"
@@ -48,6 +50,7 @@ absl_cc_library(
     "symbolize.cc"
     "symbolize_darwin.inc"
     "symbolize_elf.inc"
+    "symbolize_emscripten.inc"
     "symbolize_unimplemented.inc"
     "symbolize_win32.inc"
   COPTS

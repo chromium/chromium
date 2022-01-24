@@ -280,8 +280,6 @@ uint16_t Trap::Add(TrapFnc fnc, const void* aux, bool safe) {
     SANDBOX_DIE(
         "Cannot use unsafe traps unless CHROME_SANDBOX_DEBUGGING "
         "is enabled");
-
-    return 0;
   }
 
   // Each unique pair of TrapFnc and auxiliary data make up a distinct instance

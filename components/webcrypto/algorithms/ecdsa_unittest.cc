@@ -98,8 +98,10 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
   // using the first one.
   base::ListValue private_keys;
   ASSERT_TRUE(ReadJsonTestFileToList("ec_private_keys.json", &private_keys));
-  const base::DictionaryValue* key_dict;
-  ASSERT_TRUE(private_keys.GetDictionary(0, &key_dict));
+  const base::Value& key_value = private_keys.GetList()[0];
+  ASSERT_TRUE(key_value.is_dict());
+  const base::DictionaryValue* key_dict =
+      &base::Value::AsDictionaryValue(key_value);
   blink::WebCryptoNamedCurve curve = GetCurveNameFromDictionary(key_dict);
   const base::DictionaryValue* key_jwk;
   ASSERT_TRUE(key_dict->GetDictionary("jwk", &key_jwk));
@@ -154,11 +156,14 @@ TEST_F(WebCryptoEcdsaTest, VerifyKnownAnswer) {
   base::ListValue tests;
   ASSERT_TRUE(ReadJsonTestFileToList("ecdsa.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests.GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
 
-    const base::DictionaryValue* test;
-    ASSERT_TRUE(tests.GetDictionary(test_index, &test));
+    const base::Value& test_value = tests.GetList()[test_index];
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     blink::WebCryptoNamedCurve curve = GetCurveNameFromDictionary(test);
     blink::WebCryptoKeyFormat key_format = GetKeyFormatFromJsonTestCase(test);
@@ -197,9 +202,9 @@ TEST_F(WebCryptoEcdsaTest, VerifyKnownAnswer) {
 
     // If no error was expected, the verification's boolean must match
     // "verify_result" for the test.
-    bool expected_result = false;
-    ASSERT_TRUE(test->GetBoolean("verify_result", &expected_result));
-    EXPECT_EQ(expected_result, verify_result);
+    absl::optional<bool> expected_result = test->FindBoolKey("verify_result");
+    ASSERT_TRUE(expected_result);
+    EXPECT_EQ(expected_result.value(), verify_result);
   }
 }
 
@@ -235,11 +240,14 @@ TEST_F(WebCryptoEcdsaTest, ImportBadKeys) {
   base::ListValue tests;
   ASSERT_TRUE(ReadJsonTestFileToList("bad_ec_keys.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests.GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
 
-    const base::DictionaryValue* test;
-    ASSERT_TRUE(tests.GetDictionary(test_index, &test));
+    const base::Value& test_value = tests.GetList()[test_index];
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     blink::WebCryptoNamedCurve curve = GetCurveNameFromDictionary(test);
     blink::WebCryptoKeyFormat key_format = GetKeyFormatFromJsonTestCase(test);
@@ -265,11 +273,14 @@ TEST_F(WebCryptoEcdsaTest, ImportExportPrivateKey) {
   base::ListValue tests;
   ASSERT_TRUE(ReadJsonTestFileToList("ec_private_keys.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests.GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
 
-    const base::DictionaryValue* test;
-    ASSERT_TRUE(tests.GetDictionary(test_index, &test));
+    const base::Value& test_value = tests.GetList()[test_index];
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     blink::WebCryptoNamedCurve curve = GetCurveNameFromDictionary(test);
     const base::DictionaryValue* jwk_dict;

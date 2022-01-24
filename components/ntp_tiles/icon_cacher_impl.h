@@ -45,6 +45,10 @@ class IconCacherImpl : public IconCacher {
   IconCacherImpl(favicon::FaviconService* favicon_service,
                  favicon::LargeIconService* large_icon_service,
                  std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher);
+
+  IconCacherImpl(const IconCacherImpl&) = delete;
+  IconCacherImpl& operator=(const IconCacherImpl&) = delete;
+
   ~IconCacherImpl() override;
 
   void StartFetchPopularSites(
@@ -99,8 +103,6 @@ class IconCacherImpl : public IconCacher {
   std::map<GURL, std::vector<base::OnceClosure>> in_flight_requests_;
 
   base::WeakPtrFactory<IconCacherImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IconCacherImpl);
 };
 
 }  // namespace ntp_tiles

@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -101,9 +101,7 @@ public class LongScreenshotsEntryTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(mBoundsManager.getCaptureBounds()).thenReturn(new Rect(0, 100, 0, 1000));
-        when(mBoundsManager.calculateBoundsRelativeToCapture(any(Rect.class)))
-                .thenReturn(new Rect(0, 100, 0, 500));
+        when(mBoundsManager.getCaptureBounds()).thenReturn(new Rect(0, -1, 0, 1000));
     }
 
     @Test
@@ -123,6 +121,7 @@ public class LongScreenshotsEntryTest {
 
         assertEquals(mTestBitmap, entry.getBitmap());
         assertEquals(EntryStatus.BITMAP_GENERATED, entryListener.getReturnedStatus());
+        entry.destroy();
     }
 
     @Test
@@ -143,5 +142,24 @@ public class LongScreenshotsEntryTest {
 
         assertNull(entry.getBitmap());
         assertEquals(EntryStatus.GENERATION_ERROR, entryListener.getReturnedStatus());
+        assertNotEquals(-1, entry.getId());
+        entry.destroy();
+    }
+
+    @Test
+    public void testCreateEntryWithStatus() {
+        LongScreenshotsEntry entry =
+                LongScreenshotsEntry.createEntryWithStatus(EntryStatus.INSUFFICIENT_MEMORY);
+        assertEquals(-1, entry.getId());
+        assertEquals(-1, entry.getEndYAxis());
+        assertEquals(EntryStatus.INSUFFICIENT_MEMORY, entry.getStatus());
+        assertNull(entry.getBitmap());
+        entry.generateBitmap();
+        assertEquals(EntryStatus.GENERATION_ERROR, entry.getStatus());
+        entry.destroy();
+
+        entry = LongScreenshotsEntry.createEntryWithStatus(EntryStatus.BOUNDS_ABOVE_CAPTURE);
+        assertEquals(EntryStatus.BOUNDS_ABOVE_CAPTURE, entry.getStatus());
+        entry.destroy();
     }
 }

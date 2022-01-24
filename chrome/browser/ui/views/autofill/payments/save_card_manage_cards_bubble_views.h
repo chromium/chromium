@@ -22,12 +22,15 @@ class SaveCardManageCardsBubbleViews : public SaveCardBubbleViews {
                                  content::WebContents* web_contents,
                                  SaveCardBubbleController* controller);
 
+  SaveCardManageCardsBubbleViews(const SaveCardManageCardsBubbleViews&) =
+      delete;
+  SaveCardManageCardsBubbleViews& operator=(
+      const SaveCardManageCardsBubbleViews&) = delete;
+
  private:
   std::unique_ptr<views::View> CreateMainContentView() override;
 
   ~SaveCardManageCardsBubbleViews() override;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardManageCardsBubbleViews);
 };
 
 }  // namespace autofill

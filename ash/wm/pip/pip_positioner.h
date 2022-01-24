@@ -6,7 +6,6 @@
 #define ASH_WM_PIP_PIP_POSITIONER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -23,6 +22,10 @@ class ASH_EXPORT PipPositioner {
   static const int kPipDismissTimeMs = 300;
 
   PipPositioner() = delete;
+
+  PipPositioner(const PipPositioner&) = delete;
+  PipPositioner& operator=(const PipPositioner&) = delete;
+
   ~PipPositioner() = delete;
 
   // Adjusts bounds during a drag of a PIP window. For example, this will
@@ -67,8 +70,6 @@ class ASH_EXPORT PipPositioner {
 
  private:
   friend class PipPositionerDisplayTest;
-
-  DISALLOW_COPY_AND_ASSIGN(PipPositioner);
 };
 
 }  // namespace ash

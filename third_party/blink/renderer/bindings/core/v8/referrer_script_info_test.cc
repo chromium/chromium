@@ -11,32 +11,90 @@
 namespace blink {
 
 TEST(ReferrerScriptInfo, IsDefaultValue) {
-  EXPECT_TRUE(ReferrerScriptInfo().IsDefaultValue());
+  const KURL script_origin_resource_name("http://example.org/script.js");
+
+  // TODO(https://crbug.com/1114993): There three cases should be distinguished.
+  EXPECT_TRUE(ReferrerScriptInfo().IsDefaultValue(script_origin_resource_name));
+  EXPECT_TRUE(
+      ReferrerScriptInfo(script_origin_resource_name, ScriptFetchOptions())
+          .IsDefaultValue(script_origin_resource_name));
+  EXPECT_TRUE(ReferrerScriptInfo(KURL(), ScriptFetchOptions())
+                  .IsDefaultValue(script_origin_resource_name));
+
+  EXPECT_FALSE(
+      ReferrerScriptInfo(KURL("http://example.com"), ScriptFetchOptions())
+          .IsDefaultValue(script_origin_resource_name));
   EXPECT_FALSE(ReferrerScriptInfo(KURL("http://example.com"),
                                   network::mojom::CredentialsMode::kInclude, "",
                                   kNotParserInserted,
-                                  network::mojom::ReferrerPolicy::kDefault,
-                                  ReferrerScriptInfo::BaseUrlSource::kOther)
-                   .IsDefaultValue());
+                                  network::mojom::ReferrerPolicy::kDefault)
+                   .IsDefaultValue(script_origin_resource_name));
+}
+
+TEST(ReferrerScriptInfo, ToFromV8NoReferencingScript) {
+  V8TestingScope scope;
+  const KURL script_origin_resource_name("http://example.org/script.js");
+
+  v8::Local<v8::Data> v8_info = ReferrerScriptInfo().ToV8HostDefinedOptions(
+      scope.GetIsolate(), script_origin_resource_name);
+
+  EXPECT_TRUE(v8_info.IsEmpty());
+
+  ReferrerScriptInfo decoded = ReferrerScriptInfo::FromV8HostDefinedOptions(
+      scope.GetContext(), v8_info, script_origin_resource_name);
+
+  // TODO(https://crbug.com/1235202): This should be null URL.
+  EXPECT_EQ(script_origin_resource_name, decoded.BaseURL());
+}
+
+TEST(ReferrerScriptInfo, ToFromV8ScriptOriginBaseUrl) {
+  V8TestingScope scope;
+  const KURL script_origin_resource_name("http://example.org/script.js");
+
+  v8::Local<v8::Data> v8_info =
+      ReferrerScriptInfo(script_origin_resource_name, ScriptFetchOptions())
+          .ToV8HostDefinedOptions(scope.GetIsolate(),
+                                  script_origin_resource_name);
+
+  EXPECT_TRUE(v8_info.IsEmpty());
+
+  ReferrerScriptInfo decoded = ReferrerScriptInfo::FromV8HostDefinedOptions(
+      scope.GetContext(), v8_info, script_origin_resource_name);
+
+  EXPECT_EQ(script_origin_resource_name, decoded.BaseURL());
+}
+
+TEST(ReferrerScriptInfo, ToFromV8ScriptNullBaseUrl) {
+  V8TestingScope scope;
+  const KURL script_origin_resource_name("http://example.org/script.js");
+
+  v8::Local<v8::Data> v8_info =
+      ReferrerScriptInfo(KURL(), ScriptFetchOptions())
+          .ToV8HostDefinedOptions(scope.GetIsolate(),
+                                  script_origin_resource_name);
+
+  EXPECT_TRUE(v8_info.IsEmpty());
+
+  ReferrerScriptInfo decoded = ReferrerScriptInfo::FromV8HostDefinedOptions(
+      scope.GetContext(), v8_info, script_origin_resource_name);
+
+  // TODO(https://crbug.com/1235202): This should be null URL.
+  EXPECT_EQ(script_origin_resource_name, decoded.BaseURL());
 }
 
 TEST(ReferrerScriptInfo, ToFromV8) {
   V8TestingScope scope;
+  const KURL script_origin_resource_name("http://example.org/script.js");
   const KURL url("http://example.com");
 
-  EXPECT_TRUE(ReferrerScriptInfo()
-                  .ToV8HostDefinedOptions(scope.GetIsolate())
-                  .IsEmpty());
+  ReferrerScriptInfo info(url, network::mojom::CredentialsMode::kInclude,
+                          "foobar", kNotParserInserted,
+                          network::mojom::ReferrerPolicy::kOrigin);
+  v8::Local<v8::Data> v8_info = info.ToV8HostDefinedOptions(
+      scope.GetIsolate(), script_origin_resource_name);
 
-  ReferrerScriptInfo info(
-      url, network::mojom::CredentialsMode::kInclude, "foobar",
-      kNotParserInserted, network::mojom::ReferrerPolicy::kOrigin,
-      ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSCrossOrigin);
-  v8::Local<v8::PrimitiveArray> v8_info =
-      info.ToV8HostDefinedOptions(scope.GetIsolate());
-
-  ReferrerScriptInfo decoded =
-      ReferrerScriptInfo::FromV8HostDefinedOptions(scope.GetContext(), v8_info);
+  ReferrerScriptInfo decoded = ReferrerScriptInfo::FromV8HostDefinedOptions(
+      scope.GetContext(), v8_info, script_origin_resource_name);
   EXPECT_EQ(url, decoded.BaseURL());
   EXPECT_EQ(network::mojom::CredentialsMode::kInclude,
             decoded.CredentialsMode());
@@ -44,8 +102,6 @@ TEST(ReferrerScriptInfo, ToFromV8) {
   EXPECT_EQ(kNotParserInserted, decoded.ParserState());
   EXPECT_EQ(network::mojom::ReferrerPolicy::kOrigin,
             decoded.GetReferrerPolicy());
-  EXPECT_EQ(ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSCrossOrigin,
-            decoded.GetBaseUrlSource());
 }
 
 }  // namespace blink

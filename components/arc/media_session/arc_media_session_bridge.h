@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_MEDIA_SESSION_ARC_MEDIA_SESSION_BRIDGE_H_
 #define COMPONENTS_ARC_MEDIA_SESSION_ARC_MEDIA_SESSION_BRIDGE_H_
 
-#include "base/macros.h"
 #include "components/arc/mojom/media_session.mojom.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -35,6 +34,10 @@ class ArcMediaSessionBridge
 
   ArcMediaSessionBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);
+
+  ArcMediaSessionBridge(const ArcMediaSessionBridge&) = delete;
+  ArcMediaSessionBridge& operator=(const ArcMediaSessionBridge&) = delete;
+
   ~ArcMediaSessionBridge() override;
 
   // ConnectionObserver<mojom::MediaSessionInstance> overrides.
@@ -45,8 +48,6 @@ class ArcMediaSessionBridge
   void SetupAudioFocus();
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
-
-  DISALLOW_COPY_AND_ASSIGN(ArcMediaSessionBridge);
 };
 
 }  // namespace arc

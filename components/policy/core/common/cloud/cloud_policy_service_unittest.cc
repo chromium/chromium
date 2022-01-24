@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
@@ -53,16 +52,17 @@ TEST_F(CloudPolicyServiceTest, PolicyUpdateSuccess) {
 
   // After |store_| initializes, credentials and other meta data should be
   // transferred to |client_|.
-  store_.policy_ = std::make_unique<em::PolicyData>();
-  store_.policy_->set_request_token("fake token");
-  store_.policy_->set_device_id("fake client id");
-  store_.policy_->set_timestamp(32);
-  store_.policy_->set_public_key_version(17);
-  store_.policy_->add_user_affiliation_ids("id1");
+  auto policy_data = std::make_unique<em::PolicyData>();
+  policy_data->set_request_token("fake token");
+  policy_data->set_device_id("fake client id");
+  policy_data->set_timestamp(32);
+  policy_data->set_public_key_version(17);
+  policy_data->add_user_affiliation_ids("id1");
+  store_.set_policy_data_for_testing(std::move(policy_data));
   std::vector<std::string> user_affiliation_ids = {
-      store_.policy_->user_affiliation_ids(0)};
-  EXPECT_CALL(client_, SetupRegistration(store_.policy_->request_token(),
-                                         store_.policy_->device_id(),
+      store_.policy()->user_affiliation_ids(0)};
+  EXPECT_CALL(client_, SetupRegistration(store_.policy()->request_token(),
+                                         store_.policy()->device_id(),
                                          user_affiliation_ids))
       .Times(1);
   EXPECT_CALL(client_, UploadPolicyValidationReport(_, _, _, _)).Times(0);
@@ -100,9 +100,10 @@ TEST_F(CloudPolicyServiceTest, RefreshPolicySuccess) {
   EXPECT_EQ(12345, store_.invalidation_version());
 
   // Store reloads policy, callback gets triggered.
-  store_.policy_ = std::make_unique<em::PolicyData>();
-  store_.policy_->set_request_token("token");
-  store_.policy_->set_device_id("device-id");
+  auto policy_data = std::make_unique<em::PolicyData>();
+  policy_data->set_request_token("token");
+  policy_data->set_device_id("device-id");
+  store_.set_policy_data_for_testing(std::move(policy_data));
   EXPECT_CALL(*this, OnPolicyRefresh(true)).Times(1);
   store_.NotifyStoreLoaded();
 }

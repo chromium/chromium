@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
+#include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 
 namespace mojo {
@@ -17,6 +18,9 @@ using ProtoRmadState = rmad::RmadState::StateCase;
 using MojomRmadErrorCode = ash::shimless_rma::mojom::RmadErrorCode;
 using ProtoRmadErrorCode = rmad::RmadErrorCode;
 
+using MojomOsUpdateOperation = ash::shimless_rma::mojom::OsUpdateOperation;
+using ProtoOsUpdateOperation = update_engine::Operation;
+
 using MojomComponentType = ash::shimless_rma::mojom::ComponentType;
 using ProtoComponentType = rmad::RmadComponent;
 
@@ -25,16 +29,31 @@ using MojomComponentRepairState =
 using ProtoComponentRepairState =
     rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus;
 
-using MojomCalibrationComponent =
-    ash::shimless_rma::mojom::CalibrationComponent;
-using ProtoCalibrationComponent =
-    rmad::CalibrateComponentsState::CalibrationComponent;
+using MojomProvisioningStatus = ash::shimless_rma::mojom::ProvisioningStatus;
+using ProtoProvisioningStatus = rmad::ProvisionStatus::Status;
 
-using MojomProvisioningStep = ash::shimless_rma::mojom::ProvisioningStep;
-using ProtoProvisioningStep = rmad::ProvisionDeviceState::ProvisioningStep;
+using MojomCalibrationInstruction =
+    ash::shimless_rma::mojom::CalibrationSetupInstruction;
+using ProtoCalibrationInstruction = rmad::CalibrationSetupInstruction;
+
+using MojomCalibrationOverallStatus =
+    ash::shimless_rma::mojom::CalibrationOverallStatus;
+using ProtoCalibrationOverallStatus = rmad::CalibrationOverallStatus;
+
+using MojomCalibrationStatus = ash::shimless_rma::mojom::CalibrationStatus;
+using ProtoCalibrationStatus =
+    rmad::CalibrationComponentStatus_CalibrationStatus;
+
+using MojomFinalizationStatus = ash::shimless_rma::mojom::FinalizationStatus;
+using ProtoFinalizationStatus = rmad::FinalizeStatus_Status;
 }  // namespace
 
-// static
+// The rmad state does not map 1:1 with UI app state, the UI handles more states
+// such as selecting wifi network and updating Chrome OS.
+// Because some states do not exist in rmad a type mapping build rule cannot be
+// added to automate conversion and ToMojom(rmad::RmadState::StateCase) must be
+// used directly.
+// FromMojom is not needed as state is not passed back from javascript.
 MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
     ProtoRmadState state) {
   switch (state) {
@@ -58,13 +77,19 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
       return MojomRmaState::kRestock;
     case ProtoRmadState::kUpdateDeviceInfo:
       return MojomRmaState::kUpdateDeviceInformation;
-    case ProtoRmadState::kCalibrateComponents:
-      return MojomRmaState::kCalibrateComponents;
+    case ProtoRmadState::kCheckCalibration:
+      return MojomRmaState::kCheckCalibration;
+    case ProtoRmadState::kSetupCalibration:
+      return MojomRmaState::kSetupCalibration;
+    case ProtoRmadState::kRunCalibration:
+      return MojomRmaState::kRunCalibration;
     case ProtoRmadState::kProvisionDevice:
       return MojomRmaState::kProvisionDevice;
     case ProtoRmadState::kWpEnablePhysical:
       return MojomRmaState::kWaitForManualWPEnable;
     case ProtoRmadState::kFinalize:
+      return MojomRmaState::kFinalize;
+    case ProtoRmadState::kRepairComplete:
       return MojomRmaState::kRepairComplete;
 
     case ProtoRmadState::STATE_NOT_SET:
@@ -81,8 +106,6 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
       return MojomRmadErrorCode::kOk;
     case ProtoRmadErrorCode::RMAD_ERROR_WAIT:
       return MojomRmadErrorCode::kWait;
-    case ProtoRmadErrorCode::RMAD_ERROR_NEED_REBOOT:
-      return MojomRmadErrorCode::kNeedReboot;
     case ProtoRmadErrorCode::RMAD_ERROR_EXPECT_REBOOT:
       return MojomRmadErrorCode::kExpectReboot;
     case ProtoRmadErrorCode::RMAD_ERROR_EXPECT_SHUTDOWN:
@@ -133,10 +156,14 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
       return MojomRmadErrorCode::kReimagingUnknownFailure;
     case ProtoRmadErrorCode::RMAD_ERROR_DEVICE_INFO_INVALID:
       return MojomRmadErrorCode::kDeviceInfoInvalid;
+    case ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_COMPONENT_MISSING:
+      return MojomRmadErrorCode::kCalibrationComponentMissing;
+    case ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_STATUS_MISSING:
+      return MojomRmadErrorCode::kCalibrationStatusMissing;
+    case ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_COMPONENT_INVALID:
+      return MojomRmadErrorCode::kCalibrationComponentInvalid;
     case ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_FAILED:
       return MojomRmadErrorCode::kCalibrationFailed;
-    case ProtoRmadErrorCode::RMAD_ERROR_MISSING_CALIBRATION_COMPONENT:
-      return MojomRmadErrorCode::kCalibrationMissingComponent;
     case ProtoRmadErrorCode::RMAD_ERROR_PROVISIONING_FAILED:
       return MojomRmadErrorCode::kProvisioningFailed;
     case ProtoRmadErrorCode::RMAD_ERROR_POWERWASH_FAILED:
@@ -152,6 +179,8 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
       return MojomRmadErrorCode::kLogUploadFtpServerTransferFailed;
     case ProtoRmadErrorCode::RMAD_ERROR_CANNOT_CANCEL_RMA:
       return MojomRmadErrorCode::kCannotCancelRma;
+    case ProtoRmadErrorCode::RMAD_ERROR_CANNOT_GET_LOG:
+      return MojomRmadErrorCode::kCannotGetLog;
 
     case ProtoRmadErrorCode::RMAD_ERROR_NOT_SET:
     default:
@@ -172,9 +201,6 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
       return true;
     case MojomRmadErrorCode::kWait:
       *out = ProtoRmadErrorCode::RMAD_ERROR_WAIT;
-      return true;
-    case MojomRmadErrorCode::kNeedReboot:
-      *out = ProtoRmadErrorCode::RMAD_ERROR_NEED_REBOOT;
       return true;
     case MojomRmadErrorCode::kExpectReboot:
       *out = ProtoRmadErrorCode::RMAD_ERROR_EXPECT_REBOOT;
@@ -252,8 +278,14 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
     case MojomRmadErrorCode::kDeviceInfoInvalid:
       *out = ProtoRmadErrorCode::RMAD_ERROR_DEVICE_INFO_INVALID;
       return true;
-    case MojomRmadErrorCode::kCalibrationMissingComponent:
-      *out = ProtoRmadErrorCode::RMAD_ERROR_MISSING_CALIBRATION_COMPONENT;
+    case MojomRmadErrorCode::kCalibrationComponentMissing:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_COMPONENT_MISSING;
+      return true;
+    case MojomRmadErrorCode::kCalibrationStatusMissing:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_STATUS_MISSING;
+      return true;
+    case MojomRmadErrorCode::kCalibrationComponentInvalid:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_COMPONENT_INVALID;
       return true;
     case MojomRmadErrorCode::kCalibrationFailed:
       *out = ProtoRmadErrorCode::RMAD_ERROR_CALIBRATION_FAILED;
@@ -282,6 +314,9 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
     case MojomRmadErrorCode::kCannotCancelRma:
       *out = ProtoRmadErrorCode::RMAD_ERROR_CANNOT_CANCEL_RMA;
       return true;
+    case MojomRmadErrorCode::kCannotGetLog:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CANNOT_GET_LOG;
+      return true;
 
     case MojomRmadErrorCode::kNotSet:
       NOTREACHED();
@@ -291,13 +326,89 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
   return false;
 }
 
+MojomOsUpdateOperation
+EnumTraits<MojomOsUpdateOperation, ProtoOsUpdateOperation>::ToMojom(
+    ProtoOsUpdateOperation operation) {
+  switch (operation) {
+    case update_engine::IDLE:
+      return MojomOsUpdateOperation::kIdle;
+    case update_engine::CHECKING_FOR_UPDATE:
+      return MojomOsUpdateOperation::kCheckingForUpdate;
+    case update_engine::UPDATE_AVAILABLE:
+      return MojomOsUpdateOperation::kUpdateAvailable;
+    case update_engine::DOWNLOADING:
+      return MojomOsUpdateOperation::kDownloading;
+    case update_engine::VERIFYING:
+      return MojomOsUpdateOperation::kVerifying;
+    case update_engine::FINALIZING:
+      return MojomOsUpdateOperation::kFinalizing;
+    case update_engine::UPDATED_NEED_REBOOT:
+      return MojomOsUpdateOperation::kUpdatedNeedReboot;
+    case update_engine::REPORTING_ERROR_EVENT:
+      return MojomOsUpdateOperation::kReportingErrorEvent;
+    case update_engine::ATTEMPTING_ROLLBACK:
+      return MojomOsUpdateOperation::kAttemptingRollback;
+    case update_engine::DISABLED:
+      return MojomOsUpdateOperation::kDisabled;
+    case update_engine::NEED_PERMISSION_TO_UPDATE:
+      return MojomOsUpdateOperation::kNeedPermissionToUpdate;
+    case update_engine::ERROR:
+    case update_engine::Operation_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case update_engine::Operation_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
+      return MojomOsUpdateOperation::kIdle;
+  }
+  NOTREACHED();
+  return MojomOsUpdateOperation::kIdle;
+}
+
+// static
+bool EnumTraits<MojomOsUpdateOperation, ProtoOsUpdateOperation>::FromMojom(
+    MojomOsUpdateOperation input,
+    ProtoOsUpdateOperation* out) {
+  switch (input) {
+    case MojomOsUpdateOperation::kIdle:
+      *out = update_engine::IDLE;
+      return true;
+    case MojomOsUpdateOperation::kCheckingForUpdate:
+      *out = update_engine::CHECKING_FOR_UPDATE;
+      return true;
+    case MojomOsUpdateOperation::kUpdateAvailable:
+      *out = update_engine::UPDATE_AVAILABLE;
+      return true;
+    case MojomOsUpdateOperation::kDownloading:
+      *out = update_engine::DOWNLOADING;
+      return true;
+    case MojomOsUpdateOperation::kVerifying:
+      *out = update_engine::VERIFYING;
+      return true;
+    case MojomOsUpdateOperation::kFinalizing:
+      *out = update_engine::FINALIZING;
+      return true;
+    case MojomOsUpdateOperation::kUpdatedNeedReboot:
+      *out = update_engine::UPDATED_NEED_REBOOT;
+      return true;
+    case MojomOsUpdateOperation::kReportingErrorEvent:
+      *out = update_engine::REPORTING_ERROR_EVENT;
+      return true;
+    case MojomOsUpdateOperation::kAttemptingRollback:
+      *out = update_engine::ATTEMPTING_ROLLBACK;
+      return true;
+    case MojomOsUpdateOperation::kDisabled:
+      *out = update_engine::DISABLED;
+      return true;
+    case MojomOsUpdateOperation::kNeedPermissionToUpdate:
+      *out = update_engine::NEED_PERMISSION_TO_UPDATE;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
 // static
 MojomComponentType EnumTraits<MojomComponentType, ProtoComponentType>::ToMojom(
     ProtoComponentType component) {
   switch (component) {
-    case rmad::RmadComponent::RMAD_COMPONENT_MAINBOARD_REWORK:
-      return MojomComponentType::kMainboardRework;
-
     case rmad::RmadComponent::RMAD_COMPONENT_AUDIO_CODEC:
       return MojomComponentType::kAudioCodec;
     case rmad::RmadComponent::RMAD_COMPONENT_BATTERY:
@@ -328,12 +439,16 @@ MojomComponentType EnumTraits<MojomComponentType, ProtoComponentType>::ToMojom(
       return MojomComponentType::kWireless;
 
     // Additional rmad components.
-    case rmad::RmadComponent::RMAD_COMPONENT_GYROSCOPE:
-      return MojomComponentType::kGyroscope;
-    case rmad::RmadComponent::RMAD_COMPONENT_ACCELEROMETER:
-      return MojomComponentType::kAccelerometer;
     case rmad::RmadComponent::RMAD_COMPONENT_SCREEN:
       return MojomComponentType::kScreen;
+    case rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER:
+      return MojomComponentType::kBaseAccelerometer;
+    case rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER:
+      return MojomComponentType::kLidAccelerometer;
+    case rmad::RmadComponent::RMAD_COMPONENT_BASE_GYROSCOPE:
+      return MojomComponentType::kBaseGyroscope;
+    case rmad::RmadComponent::RMAD_COMPONENT_LID_GYROSCOPE:
+      return MojomComponentType::kLidGyroscope;
 
     case rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD:
       return MojomComponentType::kKeyboard;
@@ -354,10 +469,6 @@ bool EnumTraits<MojomComponentType, ProtoComponentType>::FromMojom(
     MojomComponentType component,
     ProtoComponentType* out) {
   switch (component) {
-    case MojomComponentType::kMainboardRework:
-      *out = ProtoComponentType::RMAD_COMPONENT_MAINBOARD_REWORK;
-      return true;
-
     case MojomComponentType::kAudioCodec:
       *out = rmad::RmadComponent::RMAD_COMPONENT_AUDIO_CODEC;
       return true;
@@ -402,14 +513,20 @@ bool EnumTraits<MojomComponentType, ProtoComponentType>::FromMojom(
       return true;
 
       // Additional rmad components.
-    case MojomComponentType::kGyroscope:
-      *out = rmad::RmadComponent::RMAD_COMPONENT_GYROSCOPE;
-      return true;
-    case MojomComponentType::kAccelerometer:
-      *out = rmad::RmadComponent::RMAD_COMPONENT_ACCELEROMETER;
-      return true;
     case MojomComponentType::kScreen:
       *out = rmad::RmadComponent::RMAD_COMPONENT_SCREEN;
+      return true;
+    case MojomComponentType::kBaseAccelerometer:
+      *out = rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER;
+      return true;
+    case MojomComponentType::kLidAccelerometer:
+      *out = rmad::RmadComponent::RMAD_COMPONENT_LID_ACCELEROMETER;
+      return true;
+    case MojomComponentType::kBaseGyroscope:
+      *out = rmad::RmadComponent::RMAD_COMPONENT_BASE_GYROSCOPE;
+      return true;
+    case MojomComponentType::kLidGyroscope:
+      *out = rmad::RmadComponent::RMAD_COMPONENT_LID_GYROSCOPE;
       return true;
 
     case MojomComponentType::kKeyboard:
@@ -420,7 +537,6 @@ bool EnumTraits<MojomComponentType, ProtoComponentType>::FromMojom(
       return true;
 
     case MojomComponentType::kComponentUnknown:
-    default:
       NOTREACHED();
       return false;
   }
@@ -442,16 +558,17 @@ EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::ToMojom(
     case rmad::ComponentsRepairState_ComponentRepairStatus::
         RMAD_REPAIR_STATUS_MISSING:
       return MojomComponentRepairState::kMissing;
-
     case rmad::ComponentsRepairState_ComponentRepairStatus::
         RMAD_REPAIR_STATUS_UNKNOWN:
+      return MojomComponentRepairState::kRepairUnknown;
+
     default:
       NOTREACHED();
       return MojomComponentRepairState::kRepairUnknown;
   }
   NOTREACHED();
   return MojomComponentRepairState::kRepairUnknown;
-}  // namespace mojo
+}
 
 // static
 bool EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::
@@ -469,84 +586,59 @@ bool EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::
       *out = rmad::ComponentsRepairState_ComponentRepairStatus::
           RMAD_REPAIR_STATUS_MISSING;
       return true;
-
     case MojomComponentRepairState::kRepairUnknown:
+      *out = rmad::ComponentsRepairState_ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_UNKNOWN;
+      return true;
+
     default:
       NOTREACHED();
       return false;
   }
   NOTREACHED();
   return false;
-}  // namespace mojo
+}
 
 // static
-MojomCalibrationComponent
-EnumTraits<MojomCalibrationComponent, ProtoCalibrationComponent>::ToMojom(
-    ProtoCalibrationComponent component) {
-  switch (component) {
-    case rmad::CalibrateComponentsState::
-        RMAD_CALIBRATION_COMPONENT_ACCELEROMETER:
-      return MojomCalibrationComponent::kAccelerometer;
+MojomProvisioningStatus
+EnumTraits<MojomProvisioningStatus, ProtoProvisioningStatus>::ToMojom(
+    ProtoProvisioningStatus status) {
+  switch (status) {
+    case rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS:
+      return MojomProvisioningStatus::kInProgress;
+    case rmad::ProvisionStatus::RMAD_PROVISION_STATUS_COMPLETE:
+      return MojomProvisioningStatus::kComplete;
+    case rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_BLOCKING:
+      return MojomProvisioningStatus::kFailedBlocking;
+    case rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_NON_BLOCKING:
+      return MojomProvisioningStatus::kFailedNonBlocking;
 
-    case rmad::CalibrateComponentsState::RMAD_CALIBRATION_COMPONENT_UNKNOWN:
+    case rmad::ProvisionStatus::RMAD_PROVISION_STATUS_UNKNOWN:
     default:
       NOTREACHED();
-      return MojomCalibrationComponent::kCalibrateUnknown;
+      return MojomProvisioningStatus::kInProgress;
   }
   NOTREACHED();
-  return MojomCalibrationComponent::kCalibrateUnknown;
+  return MojomProvisioningStatus::kInProgress;
 }
 
 // static
-bool EnumTraits<MojomCalibrationComponent, ProtoCalibrationComponent>::
-    FromMojom(MojomCalibrationComponent component,
-              ProtoCalibrationComponent* out) {
-  switch (component) {
-    case MojomCalibrationComponent::kAccelerometer:
-      *out = rmad::CalibrateComponentsState::
-          RMAD_CALIBRATION_COMPONENT_ACCELEROMETER;
+bool EnumTraits<MojomProvisioningStatus, ProtoProvisioningStatus>::FromMojom(
+    MojomProvisioningStatus status,
+    ProtoProvisioningStatus* out) {
+  switch (status) {
+    case MojomProvisioningStatus::kInProgress:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS;
       return true;
-    case MojomCalibrationComponent::kCalibrateUnknown:
-      NOTREACHED();
-      return false;
-  }
-  NOTREACHED();
-  return false;
-}
-
-// static
-MojomProvisioningStep
-EnumTraits<MojomProvisioningStep, ProtoProvisioningStep>::ToMojom(
-    ProtoProvisioningStep step) {
-  switch (step) {
-    case rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS:
-      return MojomProvisioningStep::kInProgress;
-    case rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_COMPLETE:
-      return MojomProvisioningStep::kProvisioningComplete;
-
-    case rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_UNKNOWN:
-    default:
-      NOTREACHED();
-      return MojomProvisioningStep::kProvisioningUnknown;
-  }
-  NOTREACHED();
-  return MojomProvisioningStep::kProvisioningUnknown;
-}
-
-// static
-bool EnumTraits<MojomProvisioningStep, ProtoProvisioningStep>::FromMojom(
-    MojomProvisioningStep step,
-    ProtoProvisioningStep* out) {
-  switch (step) {
-    case MojomProvisioningStep::kInProgress:
-      *out = rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS;
+    case MojomProvisioningStatus::kComplete:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_STATUS_COMPLETE;
       return true;
-    case MojomProvisioningStep::kProvisioningComplete:
-      *out = rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_COMPLETE;
+    case MojomProvisioningStatus::kFailedBlocking:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_BLOCKING;
       return true;
-    case MojomProvisioningStep::kProvisioningUnknown:
-      NOTREACHED();
-      return false;
+    case MojomProvisioningStatus::kFailedNonBlocking:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_NON_BLOCKING;
+      return true;
   }
   NOTREACHED();
   return false;
@@ -566,4 +658,216 @@ bool StructTraits<ash::shimless_rma::mojom::ComponentDataView,
   return false;
 }
 
+// static
+MojomCalibrationInstruction
+EnumTraits<MojomCalibrationInstruction, ProtoCalibrationInstruction>::ToMojom(
+    ProtoCalibrationInstruction step) {
+  switch (step) {
+    case ProtoCalibrationInstruction::RMAD_CALIBRATION_INSTRUCTION_UNKNOWN:
+      return MojomCalibrationInstruction::kCalibrationInstructionUnknown;
+    case ProtoCalibrationInstruction::
+        RMAD_CALIBRATION_INSTRUCTION_PLACE_BASE_ON_FLAT_SURFACE:
+      return MojomCalibrationInstruction::
+          kCalibrationInstructionPlaceBaseOnFlatSurface;
+    case ProtoCalibrationInstruction::
+        RMAD_CALIBRATION_INSTRUCTION_PLACE_LID_ON_FLAT_SURFACE:
+      return MojomCalibrationInstruction::
+          kCalibrationInstructionPlaceLidOnFlatSurface;
+    case ProtoCalibrationInstruction::
+        RMAD_CALIBRATION_INSTRUCTION_NO_NEED_CALIBRATION:
+    default:
+      NOTREACHED();
+      return MojomCalibrationInstruction::
+          kCalibrationInstructionPlaceBaseOnFlatSurface;
+  }
+  NOTREACHED();
+  return MojomCalibrationInstruction::
+      kCalibrationInstructionPlaceBaseOnFlatSurface;
+}
+
+// static
+bool EnumTraits<MojomCalibrationInstruction, ProtoCalibrationInstruction>::
+    FromMojom(MojomCalibrationInstruction step,
+              ProtoCalibrationInstruction* out) {
+  switch (step) {
+    case MojomCalibrationInstruction::kCalibrationInstructionUnknown:
+      *out = ProtoCalibrationInstruction::RMAD_CALIBRATION_INSTRUCTION_UNKNOWN;
+      return true;
+    case MojomCalibrationInstruction::
+        kCalibrationInstructionPlaceBaseOnFlatSurface:
+      *out = ProtoCalibrationInstruction::
+          RMAD_CALIBRATION_INSTRUCTION_PLACE_BASE_ON_FLAT_SURFACE;
+      return true;
+    case MojomCalibrationInstruction::
+        kCalibrationInstructionPlaceLidOnFlatSurface:
+      *out = ProtoCalibrationInstruction::
+          RMAD_CALIBRATION_INSTRUCTION_PLACE_LID_ON_FLAT_SURFACE;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
+MojomCalibrationOverallStatus
+EnumTraits<MojomCalibrationOverallStatus, ProtoCalibrationOverallStatus>::
+    ToMojom(ProtoCalibrationOverallStatus step) {
+  switch (step) {
+    case ProtoCalibrationOverallStatus::RMAD_CALIBRATION_OVERALL_COMPLETE:
+      return MojomCalibrationOverallStatus::kCalibrationOverallComplete;
+    case ProtoCalibrationOverallStatus::
+        RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE:
+      return MojomCalibrationOverallStatus::
+          kCalibrationOverallCurrentRoundComplete;
+    case ProtoCalibrationOverallStatus::
+        RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_FAILED:
+      return MojomCalibrationOverallStatus::
+          kCalibrationOverallCurrentRoundFailed;
+    case ProtoCalibrationOverallStatus::
+        RMAD_CALIBRATION_OVERALL_INITIALIZATION_FAILED:
+      return MojomCalibrationOverallStatus::
+          kCalibrationOverallInitializationFailed;
+
+    case ProtoCalibrationOverallStatus::RMAD_CALIBRATION_OVERALL_UNKNOWN:
+    default:
+      NOTREACHED();
+      return MojomCalibrationOverallStatus::kCalibrationOverallComplete;
+  }
+  NOTREACHED();
+  return MojomCalibrationOverallStatus::kCalibrationOverallComplete;
+}
+
+// static
+bool EnumTraits<MojomCalibrationOverallStatus, ProtoCalibrationOverallStatus>::
+    FromMojom(MojomCalibrationOverallStatus step,
+              ProtoCalibrationOverallStatus* out) {
+  switch (step) {
+    case MojomCalibrationOverallStatus::kCalibrationOverallComplete:
+      *out = ProtoCalibrationOverallStatus::RMAD_CALIBRATION_OVERALL_COMPLETE;
+      return true;
+    case MojomCalibrationOverallStatus::kCalibrationOverallCurrentRoundComplete:
+      *out = ProtoCalibrationOverallStatus::
+          RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE;
+      return true;
+    case MojomCalibrationOverallStatus::kCalibrationOverallCurrentRoundFailed:
+      *out = ProtoCalibrationOverallStatus::
+          RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_FAILED;
+      return true;
+    case MojomCalibrationOverallStatus::kCalibrationOverallInitializationFailed:
+      *out = ProtoCalibrationOverallStatus::
+          RMAD_CALIBRATION_OVERALL_INITIALIZATION_FAILED;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
+MojomCalibrationStatus
+EnumTraits<MojomCalibrationStatus, ProtoCalibrationStatus>::ToMojom(
+    ProtoCalibrationStatus step) {
+  switch (step) {
+    case rmad::CalibrationComponentStatus::RMAD_CALIBRATION_WAITING:
+      return MojomCalibrationStatus::kCalibrationWaiting;
+    case rmad::CalibrationComponentStatus::RMAD_CALIBRATION_IN_PROGRESS:
+      return MojomCalibrationStatus::kCalibrationInProgress;
+    case rmad::CalibrationComponentStatus::RMAD_CALIBRATION_COMPLETE:
+      return MojomCalibrationStatus::kCalibrationComplete;
+    case rmad::CalibrationComponentStatus::RMAD_CALIBRATION_FAILED:
+      return MojomCalibrationStatus::kCalibrationFailed;
+    case rmad::CalibrationComponentStatus::RMAD_CALIBRATION_SKIP:
+      return MojomCalibrationStatus::kCalibrationSkip;
+
+    case rmad::CalibrationComponentStatus::RMAD_CALIBRATION_UNKNOWN:
+    default:
+      NOTREACHED();
+      return MojomCalibrationStatus::kCalibrationWaiting;
+  }
+  NOTREACHED();
+  return MojomCalibrationStatus::kCalibrationWaiting;
+}
+
+// static
+bool EnumTraits<MojomCalibrationStatus, ProtoCalibrationStatus>::FromMojom(
+    MojomCalibrationStatus step,
+    ProtoCalibrationStatus* out) {
+  switch (step) {
+    case MojomCalibrationStatus::kCalibrationWaiting:
+      *out = rmad::CalibrationComponentStatus::RMAD_CALIBRATION_WAITING;
+      return true;
+    case MojomCalibrationStatus::kCalibrationInProgress:
+      *out = rmad::CalibrationComponentStatus::RMAD_CALIBRATION_IN_PROGRESS;
+      return true;
+    case MojomCalibrationStatus::kCalibrationComplete:
+      *out = rmad::CalibrationComponentStatus::RMAD_CALIBRATION_COMPLETE;
+      return true;
+    case MojomCalibrationStatus::kCalibrationFailed:
+      *out = rmad::CalibrationComponentStatus::RMAD_CALIBRATION_FAILED;
+      return true;
+    case MojomCalibrationStatus::kCalibrationSkip:
+      *out = rmad::CalibrationComponentStatus::RMAD_CALIBRATION_SKIP;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static// static
+MojomFinalizationStatus
+EnumTraits<MojomFinalizationStatus, ProtoFinalizationStatus>::ToMojom(
+    ProtoFinalizationStatus step) {
+  switch (step) {
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS:
+      return MojomFinalizationStatus::kInProgress;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE:
+      return MojomFinalizationStatus::kComplete;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING:
+      return MojomFinalizationStatus::kFailedBlocking;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_NON_BLOCKING:
+      return MojomFinalizationStatus::kFailedNonBlocking;
+
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_UNKNOWN:
+    default:
+      NOTREACHED();
+      return MojomFinalizationStatus::kInProgress;
+  }
+  NOTREACHED();
+  return MojomFinalizationStatus::kInProgress;
+}
+
+bool EnumTraits<MojomFinalizationStatus, ProtoFinalizationStatus>::FromMojom(
+    MojomFinalizationStatus step,
+    ProtoFinalizationStatus* out) {
+  switch (step) {
+    case MojomFinalizationStatus::kInProgress:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS;
+      return true;
+    case MojomFinalizationStatus::kComplete:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE;
+      return true;
+    case MojomFinalizationStatus::kFailedBlocking:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING;
+      return true;
+    case MojomFinalizationStatus::kFailedNonBlocking:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_NON_BLOCKING;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+bool StructTraits<ash::shimless_rma::mojom::CalibrationComponentStatusDataView,
+                  rmad::CalibrationComponentStatus>::
+    Read(ash::shimless_rma::mojom::CalibrationComponentStatusDataView data,
+         rmad::CalibrationComponentStatus* out) {
+  rmad::RmadComponent component;
+  rmad::CalibrationComponentStatus::CalibrationStatus status;
+  if (data.ReadComponent(&component) && data.ReadStatus(&status)) {
+    out->set_component(component);
+    out->set_status(status);
+    out->set_progress(data.progress());
+    return true;
+  }
+  return false;
+}
 }  // namespace mojo

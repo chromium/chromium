@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,11 +24,15 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "components/sync/test/model/test_matchers.h"
 #include "components/webdata/common/web_database.h"
@@ -38,11 +41,9 @@
 
 using base::ScopedTempDir;
 using base::Time;
-using base::TimeDelta;
 using base::UTF8ToUTF16;
 using sync_pb::AutofillSpecifics;
 using sync_pb::EntityMetadata;
-using sync_pb::EntitySpecifics;
 using sync_pb::ModelTypeState;
 using syncer::DataBatch;
 using syncer::EntityChange;
@@ -141,6 +142,11 @@ AutofillEntry CreateAutofillEntry(const AutofillSpecifics& autofill_specifics) {
 class AutocompleteSyncBridgeTest : public testing::Test {
  public:
   AutocompleteSyncBridgeTest() {}
+
+  AutocompleteSyncBridgeTest(const AutocompleteSyncBridgeTest&) = delete;
+  AutocompleteSyncBridgeTest& operator=(const AutocompleteSyncBridgeTest&) =
+      delete;
+
   ~AutocompleteSyncBridgeTest() override {}
 
   void SetUp() override {
@@ -299,8 +305,6 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   std::unique_ptr<AutocompleteSyncBridge> bridge_;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteSyncBridgeTest);
 };
 
 TEST_F(AutocompleteSyncBridgeTest, GetClientTag) {

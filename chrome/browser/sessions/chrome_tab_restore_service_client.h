@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SESSIONS_CHROME_TAB_RESTORE_SERVICE_CLIENT_H_
 #define CHROME_BROWSER_SESSIONS_CHROME_TAB_RESTORE_SERVICE_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 
 class Profile;
@@ -15,6 +14,11 @@ class Profile;
 class ChromeTabRestoreServiceClient : public sessions::TabRestoreServiceClient {
  public:
   explicit ChromeTabRestoreServiceClient(Profile* profile);
+
+  ChromeTabRestoreServiceClient(const ChromeTabRestoreServiceClient&) = delete;
+  ChromeTabRestoreServiceClient& operator=(
+      const ChromeTabRestoreServiceClient&) = delete;
+
   ~ChromeTabRestoreServiceClient() override;
 
  private:
@@ -40,8 +44,6 @@ class ChromeTabRestoreServiceClient : public sessions::TabRestoreServiceClient {
   void OnTabRestored(const GURL& url) override;
 
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeTabRestoreServiceClient);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_CHROME_TAB_RESTORE_SERVICE_CLIENT_H_

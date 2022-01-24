@@ -10,32 +10,32 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "media/cdm/api/content_decryption_module.h"
 
 namespace media {
 
 // cdm::Buffer implementation that provides access to memory. This is a simple
 // implementation that stores the data in a std::vector<uint8_t>.
-class SimpleCdmBuffer : public cdm::Buffer {
+class SimpleCdmBuffer final : public cdm::Buffer {
  public:
   static SimpleCdmBuffer* Create(size_t capacity);
 
+  SimpleCdmBuffer(const SimpleCdmBuffer&) = delete;
+  SimpleCdmBuffer& operator=(const SimpleCdmBuffer&) = delete;
+
   // cdm::Buffer implementation.
-  void Destroy() final;
-  uint32_t Capacity() const final;
-  uint8_t* Data() final;
-  void SetSize(uint32_t size) final;
-  uint32_t Size() const final;
+  void Destroy() override;
+  uint32_t Capacity() const override;
+  uint8_t* Data() override;
+  void SetSize(uint32_t size) override;
+  uint32_t Size() const override;
 
  private:
-  SimpleCdmBuffer(uint32_t capacity);
-  ~SimpleCdmBuffer() final;
+  explicit SimpleCdmBuffer(uint32_t capacity);
+  ~SimpleCdmBuffer() override;
 
   std::vector<uint8_t> buffer_;
   uint32_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleCdmBuffer);
 };
 
 }  // namespace media

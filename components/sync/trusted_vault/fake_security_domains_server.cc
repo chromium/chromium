@@ -5,6 +5,7 @@
 #include "components/sync/trusted_vault/fake_security_domains_server.h"
 
 #include "base/base64url.h"
+#include "base/logging.h"
 #include "base/rand_util.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"

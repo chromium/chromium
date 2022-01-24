@@ -8,8 +8,8 @@ static_library("language_model") {
     "baseline_language_model.h",
     "fluent_language_model.cc",
     "fluent_language_model.h",
-    "heuristic_language_model.cc",
-    "heuristic_language_model.h",
+    "ulp_language_model.cc",
+    "ulp_language_model.h",
   ]
 
   deps = [
@@ -21,6 +21,7 @@ static_library("language_model") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/strings",
+    "//components/translate/core/browser",
     "//ui/base",
   ]
 }
@@ -30,12 +31,13 @@ source_set("unit_tests") {
   sources = [
     "baseline_language_model_unittest.cc",
     "fluent_language_model_unittest.cc",
-    "heuristic_language_model_unittest.cc",
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/language/core/browser",
     "//components/language/core/browser:test_support",
+    "//components/language/core/common",
     "//components/language/core/language_model",
     "//components/pref_registry:pref_registry",
     "//components/prefs",

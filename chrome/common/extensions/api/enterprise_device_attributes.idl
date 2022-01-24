@@ -24,7 +24,8 @@ namespace enterprise.deviceAttributes {
     // If the current user is not affiliated, returns an empty string.
     // |callback| : Called with the device identifier of the directory API when
     // received.
-    void getDirectoryDeviceId(GetDirectoryDeviceIdCallback callback);
+    [supportsPromises] void getDirectoryDeviceId(
+        GetDirectoryDeviceIdCallback callback);
 
     // Fetches the device's serial number. Please note the purpose of this API
     // is to administrate the device (e.g. generating Certificate Sign Requests
@@ -32,25 +33,28 @@ namespace enterprise.deviceAttributes {
     // devices without the consent of the device's administrator.
     // If the current user is not affiliated, returns an empty string.
     // |callback| : Called with the serial number of the device.
-    void getDeviceSerialNumber(GetDeviceSerialNumberCallback callback);
+    [supportsPromises] void getDeviceSerialNumber(
+        GetDeviceSerialNumberCallback callback);
 
     // Fetches the administrator-annotated Asset Id.
     // If the current user is not affiliated or no Asset Id has been set by the
     // administrator, returns an empty string.
     // |callback| : Called with the Asset ID of the device.
-    void getDeviceAssetId(GetDeviceAssetIdCallback callback);
+    [supportsPromises] void getDeviceAssetId(GetDeviceAssetIdCallback callback);
 
     // Fetches the administrator-annotated Location.
     // If the current user is not affiliated or no Annotated Location has been
     // set by the administrator, returns an empty string.
     // |callback| : Called with the Annotated Location of the device.
-    void getDeviceAnnotatedLocation(GetDeviceAnnotatedLocationCallback callback);
+    [supportsPromises] void getDeviceAnnotatedLocation(
+        GetDeviceAnnotatedLocationCallback callback);
 
     // Fetches the device's hostname as set by DeviceHostnameTemplate policy.
     // If the current user is not affiliated or no hostname has been set by the
     // the enterprise policy, returns an empty string.
     // |callback| : Called with hostname of the device.
-    void getDeviceHostname(GetDeviceHostnameCallback callback);
+    [supportsPromises] void getDeviceHostname(
+        GetDeviceHostnameCallback callback);
   };
 
 };

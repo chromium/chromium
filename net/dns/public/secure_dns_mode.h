@@ -5,6 +5,9 @@
 #ifndef NET_DNS_PUBLIC_SECURE_DNS_MODE_H_
 #define NET_DNS_PUBLIC_SECURE_DNS_MODE_H_
 
+#include "base/containers/fixed_flat_map.h"
+#include "base/strings/string_piece.h"
+
 namespace net {
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net
@@ -20,6 +23,12 @@ enum class SecureDnsMode : int {
   // In SECURE mode, only DoH lookups should be performed.
   kSecure = 2,
 };
+
+constexpr auto kSecureDnsModes =
+    base::MakeFixedFlatMap<SecureDnsMode, base::StringPiece>(
+        {{SecureDnsMode::kOff, "Off"},
+         {SecureDnsMode::kAutomatic, "Automatic"},
+         {SecureDnsMode::kSecure, "Secure"}});
 
 }  // namespace net
 

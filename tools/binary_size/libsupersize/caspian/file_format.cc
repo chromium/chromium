@@ -257,7 +257,7 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
   info->object_paths.reserve(n_paths);
   info->source_paths.reserve(n_paths);
   for (int i = 0; i < n_paths; i++) {
-    char* line = strsep(&rest, "\n");
+    line = strsep(&rest, "\n");
     char* first = strsep(&line, "\t");
     char* second = strsep(&line, "\t");
     if (second) {
@@ -378,7 +378,7 @@ void ParseSizeInfo(const char* gzipped, unsigned long len, SizeInfo* info) {
 
       int32_t flags = 0;
       int32_t num_aliases = 0;
-      char* line = strsep(&rest, "\n");
+      line = strsep(&rest, "\n");
       if (*line) {
         new_sym.full_name_ = strsep(&line, "\t");
         char* first = nullptr;

@@ -1,0 +1,5 @@
+This component contains all of the cross-platform logic and protos for commerce
+and shopping related projects.
+
+Commerce is structured as a layered component. See:
+http://www.chromium.org/developers/design-documents/layered-components-design

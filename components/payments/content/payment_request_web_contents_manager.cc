@@ -31,12 +31,11 @@ void PaymentRequestWebContentsManager::CreatePaymentRequest(
     content::RenderFrameHost* render_frame_host,
     std::unique_ptr<ContentPaymentRequestDelegate> delegate,
     mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
-    PaymentRequest::ObserverForTest* observer_for_testing) {
-  auto new_request = std::make_unique<PaymentRequest>(
-      render_frame_host, std::move(delegate), /*manager=*/this,
-      delegate->GetDisplayManager(), std::move(receiver), observer_for_testing);
-  PaymentRequest* request_ptr = new_request.get();
-  payment_requests_.insert(std::make_pair(request_ptr, std::move(new_request)));
+    base::WeakPtr<PaymentRequest::ObserverForTest> observer_for_testing) {
+  // Deliberately drop the returned PaymentRequest*, as the public API for this
+  // class does not expose the requests.
+  CreatePaymentRequestInternal(render_frame_host, std::move(delegate),
+                               std::move(receiver), observer_for_testing);
 }
 
 void PaymentRequestWebContentsManager::DidStartNavigation(
@@ -75,6 +74,41 @@ void PaymentRequestWebContentsManager::RenderFrameDeleted(
   }
 }
 
+void PaymentRequestWebContentsManager::SetSPCTransactionMode(
+    SPCTransactionMode mode) {
+  spc_transaction_mode_ = mode;
+}
+
+base::WeakPtr<PaymentRequestWebContentsManager>
+PaymentRequestWebContentsManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+PaymentRequest*
+PaymentRequestWebContentsManager::CreateAndReturnPaymentRequestForTesting(
+    content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<ContentPaymentRequestDelegate> delegate,
+    mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
+    base::WeakPtr<PaymentRequest::ObserverForTest> observer_for_testing) {
+  return CreatePaymentRequestInternal(render_frame_host, std::move(delegate),
+                                      std::move(receiver),
+                                      observer_for_testing);
+}
+
+PaymentRequest* PaymentRequestWebContentsManager::CreatePaymentRequestInternal(
+    content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<ContentPaymentRequestDelegate> delegate,
+    mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
+    base::WeakPtr<PaymentRequest::ObserverForTest> observer_for_testing) {
+  auto new_request = std::make_unique<PaymentRequest>(
+      render_frame_host, std::move(delegate), /*manager=*/GetWeakPtr(),
+      delegate->GetDisplayManager()->GetWeakPtr(), std::move(receiver),
+      spc_transaction_mode_, observer_for_testing);
+  PaymentRequest* request_ptr = new_request.get();
+  payment_requests_.insert(std::make_pair(request_ptr, std::move(new_request)));
+  return request_ptr;
+}
+
 void PaymentRequestWebContentsManager::DestroyRequest(
     base::WeakPtr<PaymentRequest> request) {
   if (!request)
@@ -86,8 +120,9 @@ void PaymentRequestWebContentsManager::DestroyRequest(
 
 PaymentRequestWebContentsManager::PaymentRequestWebContentsManager(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      spc_transaction_mode_(SPCTransactionMode::NONE) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentRequestWebContentsManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentRequestWebContentsManager);
 
 }  // namespace payments

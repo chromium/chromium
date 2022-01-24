@@ -19,14 +19,21 @@ struct SearchResult {
   mojo_base.mojom.String16 title;
 };
 
-// A logically related group of search results with a label. E.g. ads, organic,
+// The types of logically related groups of search results. E.g. organic
+// search results, related searches, etc.
+enum ResultType {
+  // Organic search results (regular "10 blue links").
+  kSearchResults,
+
+  // Related searches.
+  kRelatedSearches
+};
+
+// A logically related group of search results with a label. E.g. organic,
 // news, etc.
 struct ResultGroup {
-  // A label for the group of results.
-  string label;
-
-  // Whether the group is for ads.
-  bool is_ad_group;
+  // The type for this group.
+  ResultType type;
 
   // A list of results for this group.
   array<SearchResult> results;
@@ -64,7 +71,10 @@ interface SearchResultExtractor {
     kNoResults,
   };
 
-  // Performs a structured search of the DOM to extract results for the current
-  // search result page (with the currently selected category).
-  ExtractCurrentSearchResults() => (Status status, CategoryResults results);
+  // Performs a structured search of the DOM to extract results of given types
+  // from the current search result page (with the currently selected category).
+  // `result_types` is list of result types to extract. The extraction will fail
+  // and no results will be generated if any of the types cannot be extracted.
+  ExtractCurrentSearchResults(array<ResultType> result_types)
+      => (Status status, CategoryResults results);
 };

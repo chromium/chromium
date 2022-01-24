@@ -184,11 +184,11 @@ void GraphicsDelegateWin::ResetMemoryBuffer() {
   gpu_memory_buffer_ = nullptr;
 }
 
-void GraphicsDelegateWin::SetVRDisplayInfo(
-    device::mojom::VRDisplayInfoPtr info) {
+void GraphicsDelegateWin::UpdateViews(
+    std::vector<device::mojom::XRViewPtr> views) {
   // Store the first left and right views. VRUiHostImpl::SetVRDisplayInfo has
   // already validated that the left and right views exist.
-  for (auto& view : info->views) {
+  for (auto& view : views) {
     if (view->eye == device::mojom::XREye::kLeft) {
       left_ = std::move(view);
     } else if (view->eye == device::mojom::XREye::kRight) {
@@ -198,6 +198,11 @@ void GraphicsDelegateWin::SetVRDisplayInfo(
 
   DCHECK(left_);
   DCHECK(right_);
+}
+
+void GraphicsDelegateWin::SetVRDisplayInfo(
+    device::mojom::VRDisplayInfoPtr info) {
+  UpdateViews(std::move(info->views));
 }
 
 FovRectangles GraphicsDelegateWin::GetRecommendedFovs() {
@@ -226,15 +231,16 @@ float GraphicsDelegateWin::GetZNear() {
 
 namespace {
 
-CameraModel CameraModelViewProjFromXRView(const device::mojom::XRViewPtr& view,
-                                          gfx::Transform head_from_world) {
+CameraModel CameraModelViewProjFromXRView(
+    const device::mojom::XRViewPtr& view) {
   CameraModel model = {};
 
-  DCHECK(view->head_from_eye.IsInvertible());
-  gfx::Transform eye_from_head;
-  if (view->head_from_eye.GetInverse(&eye_from_head)) {
-    model.view_matrix = eye_from_head * head_from_world;
-  }
+  // TODO(https://crbug.com/1070380): mojo space is currently equivalent to
+  // world space, so the view matrix is world_from_view.
+  model.view_matrix = view->mojo_from_view;
+
+  bool is_invertible = model.view_matrix.GetInverse(&model.view_matrix);
+  DCHECK(is_invertible);
 
   float up_tan = tanf(view->field_of_view->up_degrees * base::kPiFloat / 180.0);
   float left_tan =
@@ -264,13 +270,13 @@ RenderInfo GraphicsDelegateWin::GetRenderInfo(FrameType frame_type,
   RenderInfo info;
   info.head_pose = head_pose;
 
-  CameraModel left = CameraModelViewProjFromXRView(left_, head_pose);
+  CameraModel left = CameraModelViewProjFromXRView(left_);
   left.eye_type = kLeftEye;
   left.viewport =
       gfx::Rect(0, 0, left_->viewport.width(), left_->viewport.height());
   info.left_eye_model = left;
 
-  CameraModel right = CameraModelViewProjFromXRView(right_, head_pose);
+  CameraModel right = CameraModelViewProjFromXRView(right_);
   right.eye_type = kRightEye;
   right.viewport =
       gfx::Rect(left_->viewport.width(), 0, right_->viewport.width(),

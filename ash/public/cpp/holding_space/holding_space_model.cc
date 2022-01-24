@@ -19,6 +19,17 @@ namespace ash {
 HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
   uint32_t updated_fields = 0u;
 
+  // Cache computed fields.
+  const std::u16string accessible_name = item_->GetAccessibleName();
+
+  // Update accessible name.
+  if (accessible_name_) {
+    if (item_->SetAccessibleName(accessible_name_.value())) {
+      updated_fields |=
+          HoldingSpaceModelObserver::UpdatedField::kAccessibleName;
+    }
+  }
+
   // Update backing file.
   if (file_path_ && file_system_url_) {
     if (item_->SetBackingFile(file_path_.value(), file_system_url_.value()))
@@ -49,6 +60,15 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
       updated_fields |= HoldingSpaceModelObserver::UpdatedField::kText;
   }
 
+  // Invalidate image if necessary. Note that this does not trigger an observer
+  // event as the image itself can be subscribed to independently for updates.
+  if (invalidate_image_)
+    item_->InvalidateImage();
+
+  // Calculate changes to computed fields.
+  if (accessible_name != item_->GetAccessibleName())
+    updated_fields |= HoldingSpaceModelObserver::UpdatedField::kAccessibleName;
+
   // Notify observers if and only if an update occurred.
   if (updated_fields != 0u) {
     for (auto& observer : model_->observers_)
@@ -57,11 +77,24 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
 }
 
 HoldingSpaceModel::ScopedItemUpdate&
+HoldingSpaceModel::ScopedItemUpdate::SetAccessibleName(
+    const absl::optional<std::u16string>& accessible_name) {
+  accessible_name_ = accessible_name;
+  return *this;
+}
+
+HoldingSpaceModel::ScopedItemUpdate&
 HoldingSpaceModel::ScopedItemUpdate::SetBackingFile(
     const base::FilePath& file_path,
     const GURL& file_system_url) {
   file_path_ = file_path;
   file_system_url_ = file_system_url;
+  return *this;
+}
+
+HoldingSpaceModel::ScopedItemUpdate&
+HoldingSpaceModel::ScopedItemUpdate::SetInvalidateImage(bool invalidate_image) {
+  invalidate_image_ = invalidate_image;
   return *this;
 }
 

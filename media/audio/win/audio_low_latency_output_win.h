@@ -103,7 +103,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -132,6 +131,9 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
                           const AudioParameters& params,
                           ERole device_role,
                           AudioManager::LogCallback log_callback);
+
+  WASAPIAudioOutputStream(const WASAPIAudioOutputStream&) = delete;
+  WASAPIAudioOutputStream& operator=(const WASAPIAudioOutputStream&) = delete;
 
   // The dtor is typically called by the AudioManager only and it is usually
   // triggered by calling AudioOutputStream::Close().
@@ -281,8 +283,6 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
   // thread, it's possible to end up in a state where that task would execute
   // after destruction of this class -- so use a WeakPtr to cancel safely.
   base::WeakPtrFactory<WASAPIAudioOutputStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WASAPIAudioOutputStream);
 };
 
 }  // namespace media

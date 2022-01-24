@@ -4,6 +4,7 @@
 
 #include "content/renderer/mock_agent_scheduling_group.h"
 
+#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "content/renderer/render_thread_impl.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"

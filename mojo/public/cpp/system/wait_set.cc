@@ -29,6 +29,9 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
     DCHECK_EQ(MOJO_RESULT_OK, rv);
   }
 
+  State(const State&) = delete;
+  State& operator=(const State&) = delete;
+
   void ShutDown() {
     // NOTE: This may immediately invoke Notify for every context.
     trap_handle_.reset();
@@ -234,6 +237,9 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
     Context(scoped_refptr<State> state, Handle handle)
         : state_(state), handle_(handle) {}
 
+    Context(const Context&) = delete;
+    Context& operator=(const Context&) = delete;
+
     Handle handle() const { return handle_; }
 
     uintptr_t context_value() const {
@@ -256,8 +262,6 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
 
     const scoped_refptr<State> state_;
     const Handle handle_;
-
-    DISALLOW_COPY_AND_ASSIGN(Context);
   };
 
   ~State() {}
@@ -327,8 +331,6 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
   // to guard against event starvation, as base::WaitableEvent::WaitMany gives
   // preference to events in left-to-right order.
   size_t waitable_index_shift_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(State);
 };
 
 WaitSet::WaitSet() : state_(new State) {}

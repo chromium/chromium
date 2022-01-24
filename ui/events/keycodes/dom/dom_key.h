@@ -124,6 +124,9 @@ class DomKey {
   // True if the value is a dead key.
   bool IsDeadKey() const { return (value_ & TYPE_MASK) == TYPE_DEAD; }
 
+  // True if the value is the same as the value of DomKey::COMPOSE.
+  bool IsComposeKey() const { return *this == DomKey::COMPOSE; }
+
   // Returns the Unicode code point for a Unicode key.
   // It is incorrect to call this for other kinds of key.
   int32_t ToCharacter() const {

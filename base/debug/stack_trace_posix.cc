@@ -45,6 +45,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/singleton.h"
 #include "base/numerics/safe_conversions.h"
@@ -55,6 +56,11 @@
 
 #if defined(USE_SYMBOLIZE)
 #include "base/third_party/symbolize/symbolize.h"
+
+#if BUILDFLAG(ENABLE_STACK_TRACE_LINE_NUMBERS)
+#include "base/debug/dwarf_line_no.h"
+#endif
+
 #endif
 
 namespace base {
@@ -163,10 +169,16 @@ void ProcessBacktrace(void* const* trace,
                       size_t size,
                       const char* prefix_string,
                       BacktraceOutputHandler* handler) {
-// NOTE: This code MUST be async-signal safe (it's used by in-process
-// stack dumping signal handler). NO malloc or stdio is allowed here.
+  // NOTE: This code MUST be async-signal safe (it's used by in-process
+  // stack dumping signal handler). NO malloc or stdio is allowed here.
 
 #if defined(USE_SYMBOLIZE)
+#if BUILDFLAG(ENABLE_STACK_TRACE_LINE_NUMBERS)
+  uint64_t* cu_offsets =
+      static_cast<uint64_t*>(alloca(sizeof(uint64_t) * size));
+  GetDwarfCompileUnitOffsets(trace, cu_offsets, size);
+#endif
+
   for (size_t i = 0; i < size; ++i) {
     if (prefix_string)
       handler->HandleOutput(prefix_string);
@@ -176,15 +188,26 @@ void ProcessBacktrace(void* const* trace,
     OutputPointer(trace[i], handler);
     handler->HandleOutput(" ");
 
-    char buf[1024] = { '\0' };
+    char buf[1024] = {'\0'};
 
     // Subtract by one as return address of function may be in the next
     // function when a function is annotated as noreturn.
     void* address = static_cast<char*>(trace[i]) - 1;
-    if (google::Symbolize(address, buf, sizeof(buf)))
+    if (google::Symbolize(address, buf, sizeof(buf))) {
       handler->HandleOutput(buf);
-    else
+#if BUILDFLAG(ENABLE_STACK_TRACE_LINE_NUMBERS)
+      // Only output the source line number if the offset was found. Otherwise,
+      // it takes far too long in debug mode when there are lots of symbols.
+      if (GetDwarfSourceLineNumber(address, cu_offsets[i], &buf[0],
+                                   sizeof(buf))) {
+        handler->HandleOutput(" [");
+        handler->HandleOutput(buf);
+        handler->HandleOutput("]");
+      }
+#endif
+    } else {
       handler->HandleOutput("<unknown>");
+    }
 
     handler->HandleOutput("\n");
   }
@@ -443,14 +466,15 @@ class PrintBacktraceOutputHandler : public BacktraceOutputHandler {
  public:
   PrintBacktraceOutputHandler() = default;
 
+  PrintBacktraceOutputHandler(const PrintBacktraceOutputHandler&) = delete;
+  PrintBacktraceOutputHandler& operator=(const PrintBacktraceOutputHandler&) =
+      delete;
+
   void HandleOutput(const char* output) override {
     // NOTE: This code MUST be async-signal safe (it's used by in-process
     // stack dumping signal handler). NO malloc or stdio is allowed here.
     PrintToStderr(output);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrintBacktraceOutputHandler);
 };
 
 class StreamBacktraceOutputHandler : public BacktraceOutputHandler {
@@ -458,12 +482,14 @@ class StreamBacktraceOutputHandler : public BacktraceOutputHandler {
   explicit StreamBacktraceOutputHandler(std::ostream* os) : os_(os) {
   }
 
+  StreamBacktraceOutputHandler(const StreamBacktraceOutputHandler&) = delete;
+  StreamBacktraceOutputHandler& operator=(const StreamBacktraceOutputHandler&) =
+      delete;
+
   void HandleOutput(const char* output) override { (*os_) << output; }
 
  private:
   std::ostream* os_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamBacktraceOutputHandler);
 };
 
 void WarmUpBacktrace() {
@@ -517,6 +543,9 @@ class SandboxSymbolizeHelper {
     return Singleton<SandboxSymbolizeHelper,
                      LeakySingletonTraits<SandboxSymbolizeHelper>>::get();
   }
+
+  SandboxSymbolizeHelper(const SandboxSymbolizeHelper&) = delete;
+  SandboxSymbolizeHelper& operator=(const SandboxSymbolizeHelper&) = delete;
 
  private:
   friend struct DefaultSingletonTraits<SandboxSymbolizeHelper>;
@@ -765,8 +794,6 @@ class SandboxSymbolizeHelper {
   // Cache for the process memory regions.  Produced by parsing the contents
   // of /proc/self/maps cache.
   std::vector<MappedMemoryRegion> regions_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxSymbolizeHelper);
 };
 #endif  // USE_SYMBOLIZE
 

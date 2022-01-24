@@ -1,2 +1,2 @@
-CONSOLE ERROR: line 2: Uncaught SyntaxError: Unexpected token '}'
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '}'
 Test passes if it doesn't crash.

@@ -10,10 +10,8 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_views_delegate.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chromeos/ui/frame/default_frame_header.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace ash {
@@ -37,6 +35,11 @@ class TestViewsDelegate : public ash::AshTestViewsDelegate {
 class AssistantWebContainerViewTest : public AssistantAshTestBase {
  public:
   AssistantWebContainerViewTest() = default;
+
+  AssistantWebContainerViewTest(const AssistantWebContainerViewTest&) = delete;
+  AssistantWebContainerViewTest& operator=(
+      const AssistantWebContainerViewTest&) = delete;
+
   ~AssistantWebContainerViewTest() override = default;
 
  protected:
@@ -61,8 +64,6 @@ class AssistantWebContainerViewTest : public AssistantAshTestBase {
  private:
   std::unique_ptr<TestViewsDelegate> views_delegate_ =
       std::make_unique<TestViewsDelegate>();
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantWebContainerViewTest);
 };
 
 }  // namespace
@@ -111,8 +112,7 @@ TEST_F(AssistantWebContainerViewTest, CloseWindowByKeyEvent) {
   ASSERT_TRUE(view());
 
   // Close Assistant Settings UI by key event.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(view());
 }

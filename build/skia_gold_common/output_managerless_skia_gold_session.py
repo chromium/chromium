@@ -8,7 +8,9 @@ Diff output is instead stored in a directory and pointed to with file:// URLs.
 
 import os
 import subprocess
-import tempfile
+import time
+
+import six
 
 from skia_gold_common import skia_gold_session
 
@@ -35,11 +37,15 @@ class OutputManagerlessSkiaGoldSession(skia_gold_session.SkiaGoldSession):
         optional_keys=optional_keys,
         force_dryrun=force_dryrun)
 
-  def _CreateDiffOutputDir(self):
-    # We intentionally don't clean this up and don't put it in self._working_dir
-    # since we need it to stick around after the test completes so the user
-    # can look at its contents.
-    return tempfile.mkdtemp()
+  def _CreateDiffOutputDir(self, name):
+    # Do this instead of just making a temporary directory so that it's easier
+    # for users to look through multiple results. We intentionally do not clean
+    # this directory up since the user might need to look at it later.
+    timestamp = int(time.time())
+    name = '%s_%d' % (name, timestamp)
+    filepath = os.path.join(self._local_png_directory, name)
+    os.makedirs(filepath)
+    return filepath
 
   def _StoreDiffLinks(self, image_name, _, output_dir):
     results = self._comparison_results.setdefault(image_name,
@@ -58,7 +64,11 @@ class OutputManagerlessSkiaGoldSession(skia_gold_session.SkiaGoldSession):
   @staticmethod
   def _RunCmdForRcAndOutput(cmd):
     try:
-      output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+      output = subprocess.check_output(cmd,
+                                       stderr=subprocess.STDOUT).decode('utf-8')
       return 0, output
     except subprocess.CalledProcessError as e:
-      return e.returncode, e.output
+      output = e.output
+      if not isinstance(output, six.string_types):
+        output = output.decode('utf-8')
+      return e.returncode, output

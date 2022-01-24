@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_SCHEDULER_BATTERY_STATUS_LISTENER_MAC_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_SCHEDULER_BATTERY_STATUS_LISTENER_MAC_H_
 
-#include "base/macros.h"
 #include "components/download/internal/background_service/scheduler/battery_status_listener.h"
 
 namespace download {
@@ -17,6 +16,10 @@ namespace download {
 class BatteryStatusListenerMac : public BatteryStatusListener {
  public:
   BatteryStatusListenerMac();
+
+  BatteryStatusListenerMac(const BatteryStatusListenerMac&) = delete;
+  BatteryStatusListenerMac& operator=(const BatteryStatusListenerMac&) = delete;
+
   ~BatteryStatusListenerMac() override;
 
  private:
@@ -25,8 +28,6 @@ class BatteryStatusListenerMac : public BatteryStatusListener {
   bool IsOnBatteryPower() override;
   void Start(Observer* observer) override;
   void Stop() override;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusListenerMac);
 };
 
 }  // namespace download

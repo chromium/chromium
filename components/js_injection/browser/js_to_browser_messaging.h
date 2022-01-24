@@ -37,6 +37,10 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
       mojo::PendingAssociatedReceiver<mojom::JsToBrowserMessaging> receiver,
       WebMessageHostFactory* factory,
       const OriginMatcher& origin_matcher);
+
+  JsToBrowserMessaging(const JsToBrowserMessaging&) = delete;
+  JsToBrowserMessaging& operator=(const JsToBrowserMessaging&) = delete;
+
   ~JsToBrowserMessaging() override;
 
   void OnBackForwardCacheStateChanged();
@@ -61,8 +65,6 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
   std::string origin_string_;
   bool is_main_frame_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(JsToBrowserMessaging);
 };
 
 }  // namespace js_injection

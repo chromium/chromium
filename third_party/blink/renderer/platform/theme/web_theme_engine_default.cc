@@ -249,9 +249,69 @@ ForcedColors WebThemeEngineDefault::GetForcedColors() const {
              : ForcedColors::kNone;
 }
 
+void WebThemeEngineDefault::OverrideForcedColorsTheme(bool is_dark_theme) {
+  const base::flat_map<ui::NativeTheme::SystemThemeColor, uint32_t> dark_theme{
+      {ui::NativeTheme::SystemThemeColor::kButtonFace, 4278190080},
+      {ui::NativeTheme::SystemThemeColor::kButtonText, 4294967295},
+      {ui::NativeTheme::SystemThemeColor::kGrayText, 4282380863},
+      {ui::NativeTheme::SystemThemeColor::kHighlight, 4279954431},
+      {ui::NativeTheme::SystemThemeColor::kHighlightText, 4278190080},
+      {ui::NativeTheme::SystemThemeColor::kHotlight, 4294967040},
+      {ui::NativeTheme::SystemThemeColor::kMenuHighlight, 4286578816},
+      {ui::NativeTheme::SystemThemeColor::kScrollbar, 4278190080},
+      {ui::NativeTheme::SystemThemeColor::kWindow, 4278190080},
+      {ui::NativeTheme::SystemThemeColor::kWindowText, 4294967295},
+  };
+  const base::flat_map<ui::NativeTheme::SystemThemeColor, uint32_t> light_theme{
+      {ui::NativeTheme::SystemThemeColor::kButtonFace, 4294967295},
+      {ui::NativeTheme::SystemThemeColor::kButtonText, 4278190080},
+      {ui::NativeTheme::SystemThemeColor::kGrayText, 4284481536},
+      {ui::NativeTheme::SystemThemeColor::kHighlight, 4281794670},
+      {ui::NativeTheme::SystemThemeColor::kHighlightText, 4294967295},
+      {ui::NativeTheme::SystemThemeColor::kHotlight, 4278190239},
+      {ui::NativeTheme::SystemThemeColor::kMenuHighlight, 4278190080},
+      {ui::NativeTheme::SystemThemeColor::kScrollbar, 4294967295},
+      {ui::NativeTheme::SystemThemeColor::kWindow, 4294967295},
+      {ui::NativeTheme::SystemThemeColor::kWindowText, 4278190080},
+  };
+  ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
+      false, true, is_dark_theme ? dark_theme : light_theme);
+}
+
 void WebThemeEngineDefault::SetForcedColors(const ForcedColors forced_colors) {
   ui::NativeTheme::GetInstanceForWeb()->set_forced_colors(
       forced_colors == ForcedColors::kActive);
 }
 
+void WebThemeEngineDefault::ResetToSystemColors(
+    SystemColorInfoState system_color_info_state) {
+  base::flat_map<ui::NativeTheme::SystemThemeColor, uint32_t> colors;
+
+  for (const auto& color : system_color_info_state.colors) {
+    colors.insert({NativeSystemThemeColor(color.first), color.second});
+  }
+
+  ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
+      system_color_info_state.is_dark_mode,
+      system_color_info_state.forced_colors, colors);
+}
+
+WebThemeEngine::SystemColorInfoState
+WebThemeEngineDefault::GetSystemColorInfo() {
+  WebThemeEngine::SystemColorInfoState state;
+  state.is_dark_mode =
+      ui::NativeTheme::GetInstanceForWeb()->ShouldUseDarkColors();
+  state.forced_colors =
+      ui::NativeTheme::GetInstanceForWeb()->InForcedColorsMode();
+
+  std::map<SystemThemeColor, uint32_t> colors;
+  auto native_theme_colors =
+      ui::NativeTheme::GetInstanceForWeb()->GetSystemColors();
+  for (const auto& color : native_theme_colors) {
+    colors.insert({WebThemeSystemThemeColor(color.first), color.second});
+  }
+  state.colors = colors;
+
+  return state;
+}
 }  // namespace blink

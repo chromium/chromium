@@ -19,7 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -76,7 +76,7 @@ class NET_EXPORT_PRIVATE EntryMetadata {
                    bool app_cache_has_trailer_prefetch_size);
 
   static base::TimeDelta GetLowerEpsilonForTimeComparisons() {
-    return base::TimeDelta::FromSeconds(1);
+    return base::Seconds(1);
   }
   static base::TimeDelta GetUpperEpsilonForTimeComparisons() {
     return base::TimeDelta();
@@ -215,9 +215,6 @@ class NET_EXPORT_PRIVATE SimpleIndex
   bool initialized() const { return initialized_; }
 
   IndexInitMethod init_method() const { return init_method_; }
-
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
 
   // Returns base::Time() if hash not known.
   base::Time GetLastUsedTime(uint64_t entry_hash);

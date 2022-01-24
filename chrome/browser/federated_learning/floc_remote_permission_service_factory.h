@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_FEDERATED_LEARNING_FLOC_REMOTE_PERMISSION_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_FEDERATED_LEARNING_FLOC_REMOTE_PERMISSION_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -26,6 +25,11 @@ class FlocRemotePermissionServiceFactory
   static federated_learning::FlocRemotePermissionService* GetForProfile(
       Profile* profile);
 
+  FlocRemotePermissionServiceFactory(
+      const FlocRemotePermissionServiceFactory&) = delete;
+  FlocRemotePermissionServiceFactory& operator=(
+      const FlocRemotePermissionServiceFactory&) = delete;
+
  protected:
   // Overridden from BrowserContextKeyedServiceFactory.
   KeyedService* BuildServiceInstanceFor(
@@ -37,8 +41,6 @@ class FlocRemotePermissionServiceFactory
 
   FlocRemotePermissionServiceFactory();
   ~FlocRemotePermissionServiceFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(FlocRemotePermissionServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_FEDERATED_LEARNING_FLOC_REMOTE_PERMISSION_SERVICE_FACTORY_H_

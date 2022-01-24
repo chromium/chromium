@@ -5,7 +5,6 @@
 #include "chrome/browser/download/download_started_animation.h"
 
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -20,7 +19,7 @@
 #include "ui/views/widget/widget.h"
 
 // How long to spend moving downwards and fading out after waiting.
-constexpr auto kMoveTime = base::TimeDelta::FromMilliseconds(600);
+constexpr auto kMoveTime = base::Milliseconds(600);
 
 // The animation framerate.
 const int kFrameRateHz = 60;

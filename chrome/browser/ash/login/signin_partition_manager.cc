@@ -19,9 +19,8 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace login {
-
 namespace {
 
 // Generates a new unique StoragePartition name.
@@ -185,5 +184,6 @@ SigninPartitionManager::Factory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
+
 }  // namespace login
-}  // namespace chromeos
+}  // namespace ash

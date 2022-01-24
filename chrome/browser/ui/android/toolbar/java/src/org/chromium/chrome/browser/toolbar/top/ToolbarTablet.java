@@ -11,7 +11,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LevelListDrawable;
 import android.util.AttributeSet;
@@ -156,6 +155,8 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
         mLocationBar = locationBarCoordinator;
+        final int color = ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_2);
+        mLocationBar.getTabletCoordinator().getBackground().setTint(color);
     }
 
     /**
@@ -365,7 +366,7 @@ public class ToolbarTablet extends ToolbarLayout
         if (mIsIncognito == null || mIsIncognito != incognito) {
             // TODO (amaralp): Have progress bar observe theme color and incognito changes directly.
             getProgressBar().setThemeColor(
-                    ChromeColors.getDefaultThemeColor(getResources(), incognito), isIncognito());
+                    ChromeColors.getDefaultThemeColor(getContext(), incognito), isIncognito());
 
             mIsIncognito = incognito;
         }
@@ -391,11 +392,10 @@ public class ToolbarTablet extends ToolbarLayout
     public void onThemeColorChanged(int color, boolean shouldAnimate) {
         setBackgroundColor(color);
         final int textBoxColor = ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
-                getResources(), color, isIncognito());
-        mLocationBar.getTabletCoordinator().getBackground().setColorFilter(
-                textBoxColor, PorterDuff.Mode.SRC_IN);
-
+                getContext(), color, isIncognito());
+        mLocationBar.getTabletCoordinator().getBackground().setTint(textBoxColor);
         mLocationBar.updateVisualsForState();
+        setToolbarHairlineColor(color);
     }
 
     /**
@@ -457,7 +457,8 @@ public class ToolbarTablet extends ToolbarLayout
         if (isBookmarked) {
             mBookmarkButton.setImageResource(R.drawable.btn_star_filled);
             ApiCompatibilityUtils.setImageTintList(mBookmarkButton,
-                    AppCompatResources.getColorStateList(getContext(), R.color.blue_mode_tint));
+                    AppCompatResources.getColorStateList(
+                            getContext(), R.color.default_icon_color_accent1_tint_list));
             mBookmarkButton.setContentDescription(getContext().getString(R.string.edit_bookmark));
         } else {
             mBookmarkButton.setImageResource(R.drawable.btn_star);

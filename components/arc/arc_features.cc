@@ -8,9 +8,8 @@ namespace arc {
 
 // Controls ACTION_BOOT_COMPLETED broadcast for third party applications on ARC.
 // When disabled, third party apps will not receive this broadcast.
-const base::Feature kBootCompletedBroadcastFeature {
-    "ArcBootCompletedBroadcast", base::FEATURE_ENABLED_BY_DEFAULT
-};
+const base::Feature kBootCompletedBroadcastFeature{
+    "ArcBootCompletedBroadcast", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls experimental Custom Tabs feature for ARC.
 const base::Feature kCustomTabsExperimentFeature{
@@ -19,6 +18,31 @@ const base::Feature kCustomTabsExperimentFeature{
 // Controls whether to handle files with unknown size.
 const base::Feature kDocumentsProviderUnknownSizeFeature{
     "ArcDocumentsProviderUnknownSize", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls ARC Nearby Share support.
+// When enabled, Android apps will show the Nearby Share as a share target in
+// its sharesheet.
+const base::Feature kEnableArcNearbyShare{"ArcNearbySharing",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether crosvm for ARCVM does per-VM core scheduling on devices with
+// MDS/L1TF vulnerabilities. When this feature is disabled, crosvm does per-vCPU
+// core scheduling which is more secure.
+//
+// How to safely disable this feature for security (or other) reasons:
+//
+// 1) Visit go/stainless and verify arc.Boot.vm_with_per_vcpu_core_scheduling is
+//    green (it should always be because arc.Boot is a critical test.)
+// 2) Change the default value of this feature to FEATURE_DISABLED_BY_DEFAULT.
+// 3) Monitor arc.Boot.vm at go/stainless after Chrome is rolled.
+// 4) Ask ARC team (//components/arc/OWNERS) to update arc.CPUSet.vm test so the
+//    Tast test uses the updated ArcEnablePerVmCoreScheduling setting.
+const base::Feature kEnablePerVmCoreScheduling{
+    "ArcEnablePerVmCoreScheduling", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether to pass throttling notifications to Android side.
+const base::Feature kEnableThrottlingNotification{
+    "ArcEnableThrottlingNotification", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether we should delegate audio focus requests from ARC to Chrome.
 const base::Feature kEnableUnifiedAudioFocusFeature{
@@ -35,17 +59,16 @@ const base::Feature kEnableUnmanagedToManagedTransitionFeature{
 const base::Feature kEnableUsap{"ArcEnableUsap",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether ARC apps can share to Web Apps through WebAPKs and TWAs.
-const base::Feature kEnableWebAppShareFeature{
-    "ArcEnableWebAppShare", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls experimental file picker feature for ARC.
 const base::Feature kFilePickerExperimentFeature{
     "ArcFilePickerExperiment", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls image copy & paste app compat feature in ARC.
-const base::Feature kImageCopyPasteCompatFeature{
-    "ArcImageCopyPasteCompat", base::FEATURE_ENABLED_BY_DEFAULT};
+// Controls whether the guest zram is enabled. This is only for ARCVM.
+const base::Feature kGuestZram{"ArcGuestZram",
+                               base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls the size of the guest zram.
+const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
 
 // Controls keyboard shortcut helper integration feature in ARC.
 const base::Feature kKeyboardShortcutHelperIntegrationFeature{
@@ -72,28 +95,46 @@ const base::Feature kPictureInPictureFeature{"ArcPictureInPicture",
 const base::Feature kSaveRawFilesOnTracing{"ArcSaveRawFilesOnTracing",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls ARC touch mode mouse compatibility feature.
+const base::Feature kTouchModeMouse{"ArcTouchModeMouse",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls ARCVM real time vcpu feature on a device with 2 logical cores
 // online.
+// When you change the default, you also need to change the chromeExtraAgas
+// in tast-tests/src/chromiumos/tast/local/bundles/cros/arc/cpu_set.go to
+// match it to the new default.
 const base::Feature kRtVcpuDualCore{"ArcRtVcpuDualCore",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls ARCVM real time vcpu feature on a device with 3+ logical cores
 // online.
+// When you change the default, you also need to modify the chromeExtraAgas
+// in tast-tests/src/chromiumos/tast/local/bundles/cros/arc/cpu_set.go to
+// add ArcRtVcpuQuadCore there. Otherwise, the test will start failing.
 const base::Feature kRtVcpuQuadCore{"ArcRtVcpuQuadCore",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls ARC high-memory dalvik profile in ARCVM.
-// When enabled, Android tries to use dalvik memory profile tuned for
-// high-memory devices like 8G and 16G. This is enabled without conditions
-// in ARC container.
-const base::Feature kUseHighMemoryDalvikProfile{
-    "ArcUseHighMemoryDalvikProfile", base::FEATURE_DISABLED_BY_DEFAULT};
+// When enabled, unclaimed USB device will be attached to ARCVM by default.
+const base::Feature kUsbDeviceDefaultAttachToArcVm{
+    "UsbDeviceDefaultAttachToArcVm", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls ARC USB Storage UI feature.
 // When enabled, chrome://settings and Files.app will ask if the user wants
 // to expose USB storage devices to ARC.
 const base::Feature kUsbStorageUIFeature{"ArcUsbStorageUI",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls ARC dalvik memory profile in ARCVM.
+// When enabled, Android tries to use dalvik memory profile tuned based on the
+// device memory size.
+const base::Feature kUseDalvikMemoryProfile{"ArcUseDalvikMemoryProfile",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether the system/vendor images are mounted without specifying a
+// block size.
+const base::Feature kUseDefaultBlockSize{"ArcVmUseDefaultBlockSize",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether ARC uses VideoDecoder-backed video decoding.
 // When enabled, GpuArcVideoDecodeAccelerator will use VdVideoDecodeAccelerator
@@ -119,5 +160,39 @@ const base::FeatureParam<int> kVmMemorySizeShiftMiB{&kVmMemorySize, "shift_mib",
 // INT32_MAX means that ARCVM's memory is not capped.
 const base::FeatureParam<int> kVmMemorySizeMaxMiB{&kVmMemorySize, "max_mib",
                                                   INT32_MAX};
+
+// Controls whether to use the new limit cache balloon policy. If disabled the
+// old balance available balloon policy is used. If enabled, ChromeOS's Resource
+// Manager (resourced) is able to kill ARCVM apps by sending a memory pressure
+// signal.
+// The limit cache balloon policy inflates the balloon to limit the kernel page
+// cache inside ARCVM if memory in the host is low. See FeatureParams below for
+// the conditions that limit cache. See mOomMinFreeHigh and mOomAdj in
+// frameworks/base/services/core/java/com/android/server/am/ProcessList.java
+// to see how LMKD maps kernel page cache to a priority level of app to kill.
+// To ensure fairness between tab manager discards and ARCVM low memory kills,
+// we want to stop LMKD killing things out of turn. We do this by making sure
+// ARCVM never has it's kernel page cache drop below the level that LMKD will
+// start killing.
+const base::Feature kVmBalloonPolicy{"ArcVmBalloonPolicy",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// The maximum amount of kernel page cache ARCVM can have when ChromeOS is under
+// moderate memory pressure. 0 for no limit.
+const base::FeatureParam<int> kVmBalloonPolicyModerateKiB{&kVmBalloonPolicy,
+                                                          "moderate_kib", 0};
+
+// The maximum amount of kernel page cache ARCVM can have when ChromeOS is under
+// critical memory pressure. 0 for no limit. The default value of 322560KiB
+// corresponds to the level LMKD will start to kill the lowest priority cached
+// app.
+const base::FeatureParam<int> kVmBalloonPolicyCriticalKiB{
+    &kVmBalloonPolicy, "critical_kib", 322560};
+
+// The maximum amount of kernel page cache ARCVM can have when ChromeOS is
+// reclaiming. 0 for no limit. The default value of 322560KiB corresponds to the
+// level LMKD will start to kill the lowest priority cached app.
+const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB{&kVmBalloonPolicy,
+                                                         "reclaim_kib", 322560};
 
 }  // namespace arc

@@ -13,6 +13,10 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace content {
 
 FileUtilitiesHostImpl::FileUtilitiesHostImpl(int process_id)
@@ -44,5 +48,21 @@ void FileUtilitiesHostImpl::GetFileInfo(const base::FilePath& path,
     std::move(callback).Run(absl::nullopt);
   }
 }
+
+#if defined(OS_MAC)
+void FileUtilitiesHostImpl::SetLength(base::File file,
+                                      const int64_t length,
+                                      SetLengthCallback callback) {
+  if (base::mac::IsAtLeastOS10_15()) {
+    mojo::ReportBadMessage("SetLength() disabled on this OS.");
+    // No error message is specified as the ReportBadMessage() call should close
+    // the pipe and kill the renderer.
+    std::move(callback).Run(std::move(file), false);
+    return;
+  }
+  bool result = file.SetLength(length);
+  std::move(callback).Run(std::move(file), result);
+}
+#endif  // defined(OS_MAC)
 
 }  // namespace content

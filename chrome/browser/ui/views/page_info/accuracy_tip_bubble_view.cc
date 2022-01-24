@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/views/page_info/accuracy_tip_bubble_view.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/notreached.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -17,15 +20,18 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
-#include "components/accuracy_tips/accuracy_tip_ui.h"
+#include "components/accuracy_tips/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -36,6 +42,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+using ClosedReason = views::Widget::ClosedReason;
 
 // The icon size is actually 16, but the vector icons being used generally all
 // have additional internal padding. Account for this difference by asking for
@@ -53,8 +61,8 @@ std::unique_ptr<views::View> CreateRow(const std::u16string& text,
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
   auto icon_view = std::make_unique<NonAccessibleImageView>();
-  icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-      icon, ui::NativeTheme::kColorId_DefaultIconColor, kVectorIconSize));
+  icon_view->SetImage(
+      ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kVectorIconSize));
   icon_view->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 0, icon_margin));
   icon_view->SetProperty(views::kCrossAxisAlignmentKey,
                          views::LayoutAlignment::kStart);
@@ -83,7 +91,8 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
     gfx::NativeView parent_window,
     content::WebContents* web_contents,
     accuracy_tips::AccuracyTipStatus status,
-    base::OnceCallback<void(AccuracyTipUI::Interaction)> close_callback)
+    bool show_opt_out,
+    base::OnceCallback<void(AccuracyTipInteraction)> close_callback)
     : PageInfoBubbleViewBase(anchor_view,
                              anchor_rect,
                              parent_window,
@@ -91,21 +100,30 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
                              web_contents),
       close_callback_(std::move(close_callback)) {
   DCHECK(status == accuracy_tips::AccuracyTipStatus::kShowAccuracyTip);
-
-  views::BubbleDialogDelegateView::CreateBubble(this);
+  set_close_on_deactivate(false);
 
   SetTitle(l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_TITLE));
 
   // Configure buttons.
-  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+  SetButtons(ui::DIALOG_BUTTON_OK);
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_LEARN_MORE_BUTTON));
-  SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_IGNORE_BUTTON));
   SetAcceptCallback(base::BindRepeating(&AccuracyTipBubbleView::OpenHelpCenter,
                                         base::Unretained(this)));
+
+  SetExtraView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&AccuracyTipBubbleView::OnSecondaryButtonClicked,
+                          base::Unretained(this),
+                          show_opt_out ? AccuracyTipInteraction::kOptOut
+                                       : AccuracyTipInteraction::kIgnore),
+      l10n_util::GetStringUTF16(
+          show_opt_out ? IDS_PAGE_INFO_ACCURACY_TIP_OPT_OUT_BUTTON
+                       : IDS_PAGE_INFO_ACCURACY_TIP_IGNORE_BUTTON)));
+
+  // The extra view doesn't seem to work if CreateBubble is already called and
+  // SetHeaderView can only be called afterwards...
+  views::BubbleDialogDelegateView::CreateBubble(this);
 
   // Configure header view.
   auto& bundle = ui::ResourceBundle::GetSharedInstance();
@@ -132,15 +150,17 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
                                    /*adjust_height_for_width =*/true)
               .WithWeight(1));
 
-  // TODO(crbug.com/1210891): Replace placeholder strings.
-  AddChildView(
-      CreateRow(u"Who’s behind this information?", vector_icons::kGroupsIcon));
+  AddChildView(CreateRow(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_1),
+      vector_icons::kGroupsIcon));
 
-  AddChildView(CreateRow(u"What evidence supports it?",
-                         vector_icons::kTroubleshootIcon));
+  AddChildView(CreateRow(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_2),
+      vector_icons::kTroubleshootIcon));
 
-  AddChildView(
-      CreateRow(u"What do other sources say?", vector_icons::kFeedIcon));
+  AddChildView(CreateRow(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_BODY_LINE_3),
+      vector_icons::kFeedIcon));
 
   Layout();
   SizeToContents();
@@ -151,46 +171,45 @@ AccuracyTipBubbleView::~AccuracyTipBubbleView() = default;
 void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);
 
+  // There can either be an action already specified or a closed_reason.
+  DCHECK(!(action_taken_ != AccuracyTipInteraction::kNoAction &&
+           widget->closed_reason() != ClosedReason::kUnspecified));
+
   switch (widget->closed_reason()) {
-    case views::Widget::ClosedReason::kUnspecified:
+    case ClosedReason::kUnspecified:
       // Do not modify action_taken_.  This may correspond to the
       // WebContentsObserver functions below, in which case a more explicit
       // action_taken_ may be set. Otherwise, keep default of kNoAction.
       break;
-    case views::Widget::ClosedReason::kAcceptButtonClicked:
-      action_taken_ = AccuracyTipUI::Interaction::kLearnMorePressed;
+    case ClosedReason::kAcceptButtonClicked:
+      action_taken_ = AccuracyTipInteraction::kLearnMore;
       break;
-    case views::Widget::ClosedReason::kCancelButtonClicked:
-      action_taken_ = AccuracyTipUI::Interaction::kIgnorePressed;
+    case ClosedReason::kEscKeyPressed:
+    case ClosedReason::kCloseButtonClicked:
+    case ClosedReason::kCancelButtonClicked:
+      action_taken_ = AccuracyTipInteraction::kClosed;
       break;
-    case views::Widget::ClosedReason::kLostFocus:
-      action_taken_ = AccuracyTipUI::Interaction::kLostFocus;
-      break;
-    case views::Widget::ClosedReason::kEscKeyPressed:
-    case views::Widget::ClosedReason::kCloseButtonClicked:
-      action_taken_ = AccuracyTipUI::Interaction::kClosed;
+    case ClosedReason::kLostFocus:
+      NOTREACHED();
       break;
   }
   std::move(close_callback_).Run(action_taken_);
 }
 
 void AccuracyTipBubbleView::OpenHelpCenter() {
-  action_taken_ = AccuracyTipUI::Interaction::kLearnMorePressed;
   // TODO(crbug.com/1210891): Add link to the right info page.
+  action_taken_ = AccuracyTipInteraction::kLearnMore;
   web_contents()->OpenURL(content::OpenURLParams(
-      GURL(chrome::kSafetyTipHelpCenterURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      false /*is_renderer_initiated*/));
+      GURL(accuracy_tips::features::kLearnMoreUrl.Get().empty()
+               ? chrome::kSafetyTipHelpCenterURL
+               : accuracy_tips::features::kLearnMoreUrl.Get()),
+      content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK, false /*is_renderer_initiated*/));
 }
 
-void AccuracyTipBubbleView::DidStartNavigation(
-    content::NavigationHandle* handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument()) {
-    return;
-  }
+void AccuracyTipBubbleView::OnSecondaryButtonClicked(
+    AccuracyTipInteraction action) {
+  action_taken_ = action;
   GetWidget()->Close();
 }
 
@@ -198,11 +217,12 @@ void AccuracyTipBubbleView::DidChangeVisibleSecurityState() {
   // Do nothing. (Base class closes the bubble.)
 }
 
-// Implementation for c/b/ui/chrome_accuracy_tip_ui.h
+// Implementation for c/b/ui/chrome_accuracy_tip_interaction.h
 void ShowAccuracyTipDialog(
     content::WebContents* web_contents,
     accuracy_tips::AccuracyTipStatus status,
-    base::OnceCallback<void(accuracy_tips::AccuracyTipUI::Interaction)>
+    bool show_opt_out,
+    base::OnceCallback<void(accuracy_tips::AccuracyTipInteraction)>
         close_callback) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!browser)
@@ -220,7 +240,7 @@ void ShowAccuracyTipDialog(
 
   views::BubbleDialogDelegateView* bubble = new AccuracyTipBubbleView(
       configuration.anchor_view, anchor_rect, parent_view, web_contents, status,
-      std::move(close_callback));
+      show_opt_out, std::move(close_callback));
 
   bubble->SetHighlightedButton(configuration.highlighted_button);
   bubble->SetArrow(configuration.bubble_arrow);

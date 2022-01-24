@@ -14,80 +14,8 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
-
 namespace {
 RmadClient* g_instance = nullptr;
-
-rmad::RmadState* CreateState(rmad::RmadState::StateCase state_case) {
-  rmad::RmadState* state = new rmad::RmadState();
-  switch (state_case) {
-    case rmad::RmadState::kWelcome:
-      state->set_allocated_welcome(new rmad::WelcomeState());
-      break;
-    case rmad::RmadState::kComponentsRepair:
-      state->set_allocated_components_repair(new rmad::ComponentsRepairState());
-      break;
-    case rmad::RmadState::kDeviceDestination:
-      state->set_allocated_device_destination(
-          new rmad::DeviceDestinationState());
-      break;
-    case rmad::RmadState::kWpDisableMethod:
-      state->set_allocated_wp_disable_method(
-          new rmad::WriteProtectDisableMethodState());
-      break;
-    case rmad::RmadState::kWpDisableRsu:
-      state->set_allocated_wp_disable_rsu(
-          new rmad::WriteProtectDisableRsuState());
-      break;
-    case rmad::RmadState::kWpDisablePhysical:
-      state->set_allocated_wp_disable_physical(
-          new rmad::WriteProtectDisablePhysicalState());
-      break;
-    case rmad::RmadState::kWpDisableComplete:
-      state->set_allocated_wp_disable_complete(
-          new rmad::WriteProtectDisableCompleteState());
-      break;
-    case rmad::RmadState::kVerifyRsu:
-      state->set_allocated_verify_rsu(new rmad::VerifyRsuState());
-      break;
-    case rmad::RmadState::kUpdateRoFirmware:
-      state->set_allocated_update_ro_firmware(
-          new rmad::UpdateRoFirmwareState());
-      break;
-    case rmad::RmadState::kRestock:
-      state->set_allocated_restock(new rmad::RestockState());
-      break;
-    case rmad::RmadState::kUpdateDeviceInfo:
-      state->set_allocated_update_device_info(
-          new rmad::UpdateDeviceInfoState());
-      break;
-    case rmad::RmadState::kCalibrateComponents:
-      state->set_allocated_calibrate_components(
-          new rmad::CalibrateComponentsState());
-      break;
-    case rmad::RmadState::kProvisionDevice:
-      state->set_allocated_provision_device(new rmad::ProvisionDeviceState());
-      break;
-    case rmad::RmadState::kWpEnablePhysical:
-      state->set_allocated_wp_enable_physical(
-          new rmad::WriteProtectEnablePhysicalState());
-      break;
-    case rmad::RmadState::kFinalize:
-      state->set_allocated_finalize(new rmad::FinalizeState());
-      break;
-    default:
-      assert(false);
-  }
-  return state;
-}
-
-rmad::GetStateReply CreateStateReply(rmad::RmadState::StateCase state,
-                                     rmad::RmadErrorCode error) {
-  rmad::GetStateReply reply;
-  reply.set_allocated_state(CreateState(state));
-  reply.set_error(error);
-  return reply;
-}
 }  // namespace
 
 class RmadClientImpl : public RmadClient {
@@ -104,7 +32,7 @@ class RmadClientImpl : public RmadClient {
 
   void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) override;
 
-  void GetLogPath(DBusMethodCallback<std::string> callback) override;
+  void GetLog(DBusMethodCallback<std::string> callback) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -119,21 +47,25 @@ class RmadClientImpl : public RmadClient {
   template <class T>
   void OnProtoReply(DBusMethodCallback<T> callback, dbus::Response* response);
 
-  void OnGetLogPathReply(DBusMethodCallback<std::string> callback,
-                         dbus::Response* response);
+  void OnGetLogReply(DBusMethodCallback<std::string> callback,
+                     dbus::Response* response);
 
   void CalibrationProgressReceived(dbus::Signal* signal);
+  void CalibrationOverallProgressReceived(dbus::Signal* signal);
   void ErrorReceived(dbus::Signal* signal);
   void HardwareWriteProtectionStateReceived(dbus::Signal* signal);
   void PowerCableStateReceived(dbus::Signal* signal);
   void ProvisioningProgressReceived(dbus::Signal* signal);
+  void HardwareVerificationResultReceived(dbus::Signal* signal);
+  void FinalizationProgressReceived(dbus::Signal* signal);
 
   void SignalConnected(const std::string& interface_name,
                        const std::string& signal_name,
                        bool success);
 
   dbus::ObjectProxy* rmad_proxy_ = nullptr;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
+      observers_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
@@ -143,17 +75,23 @@ class RmadClientImpl : public RmadClient {
 void RmadClientImpl::Init(dbus::Bus* bus) {
   rmad_proxy_ = bus->GetObjectProxy(rmad::kRmadServiceName,
                                     dbus::ObjectPath(rmad::kRmadServicePath));
-  // Listen to D-Bus signals emitted by powerd.
+  // Listen to D-Bus signals emitted by rmad.
   typedef void (RmadClientImpl::*SignalMethod)(dbus::Signal*);
   const std::pair<const char*, SignalMethod> kSignalMethods[] = {
       {rmad::kCalibrationProgressSignal,
        &RmadClientImpl::CalibrationProgressReceived},
+      {rmad::kCalibrationOverallSignal,
+       &RmadClientImpl::CalibrationOverallProgressReceived},
       {rmad::kErrorSignal, &RmadClientImpl::ErrorReceived},
       {rmad::kHardwareWriteProtectionStateSignal,
        &RmadClientImpl::HardwareWriteProtectionStateReceived},
       {rmad::kPowerCableStateSignal, &RmadClientImpl::PowerCableStateReceived},
       {rmad::kProvisioningProgressSignal,
        &RmadClientImpl::ProvisioningProgressReceived},
+      {rmad::kHardwareVerificationResultSignal,
+       &RmadClientImpl::HardwareVerificationResultReceived},
+      {rmad::kFinalizeProgressSignal,
+       &RmadClientImpl::FinalizationProgressReceived},
   };
   auto on_connected_callback = base::BindRepeating(
       &RmadClientImpl::SignalConnected, weak_ptr_factory_.GetWeakPtr());
@@ -163,7 +101,6 @@ void RmadClientImpl::Init(dbus::Bus* bus) {
         base::BindRepeating(p.second, weak_ptr_factory_.GetWeakPtr()),
         on_connected_callback);
   }
-  // rmad_proxy_->O
 }
 
 // Called when a dbus signal is initially connected.
@@ -178,28 +115,46 @@ void RmadClientImpl::SignalConnected(const std::string& interface_name,
 void RmadClientImpl::CalibrationProgressReceived(dbus::Signal* signal) {
   DCHECK_EQ(signal->GetMember(), rmad::kCalibrationProgressSignal);
   dbus::MessageReader reader(signal);
-  uint32_t component;
+  // Read proto message
+  dbus::MessageReader sub_reader(nullptr);
+  if (!reader.PopStruct(&sub_reader)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
+  DCHECK(!reader.HasMoreData());
+  int32_t component;
+  int32_t status;
   double progress;
-  if (!reader.PopUint32(&component)) {
-    LOG(ERROR) << "Unable to decode component uint32 from "
-               << signal->GetMember() << " signal";
+  if (!sub_reader.PopInt32(&component) || !sub_reader.PopInt32(&status) ||
+      !sub_reader.PopDouble(&progress)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
     return;
   }
-  if (!reader.PopDouble(&progress)) {
-    LOG(ERROR) << "Unable to decode progress double from "
-               << signal->GetMember() << " signal";
-    return;
-  }
+  rmad::CalibrationComponentStatus signal_proto;
+  signal_proto.set_component(static_cast<rmad::RmadComponent>(component));
+  signal_proto.set_status(
+      static_cast<rmad::CalibrationComponentStatus::CalibrationStatus>(status));
+  signal_proto.set_progress(progress);
   for (auto& observer : observers_) {
-    observer.CalibrationProgress(
-        static_cast<rmad::CalibrateComponentsState::CalibrationComponent>(
-            component),
-        progress);
+    observer.CalibrationProgress(signal_proto);
   }
 }
 
-// TODO(gavindodd): Does current value of any state (e.g. HWWP) need to be
-// stored so it can be passed to new observers when added?
+void RmadClientImpl::CalibrationOverallProgressReceived(dbus::Signal* signal) {
+  DCHECK_EQ(signal->GetMember(), rmad::kCalibrationOverallSignal);
+  dbus::MessageReader reader(signal);
+  uint32_t overall_progress;
+  if (!reader.PopUint32(&overall_progress)) {
+    LOG(ERROR) << "Unable to decode overall progress uint32 from "
+               << signal->GetMember() << " signal";
+    return;
+  }
+  DCHECK(!reader.HasMoreData());
+  for (auto& observer : observers_) {
+    observer.CalibrationOverallProgress(
+        static_cast<rmad::CalibrationOverallStatus>(overall_progress));
+  }
+}
 
 void RmadClientImpl::ErrorReceived(dbus::Signal* signal) {
   DCHECK_EQ(signal->GetMember(), rmad::kErrorSignal);
@@ -210,6 +165,7 @@ void RmadClientImpl::ErrorReceived(dbus::Signal* signal) {
                << " signal";
     return;
   }
+  DCHECK(!reader.HasMoreData());
   for (auto& observer : observers_) {
     observer.Error(static_cast<rmad::RmadErrorCode>(error));
   }
@@ -225,6 +181,7 @@ void RmadClientImpl::HardwareWriteProtectionStateReceived(
                << " signal";
     return;
   }
+  DCHECK(!reader.HasMoreData());
   for (auto& observer : observers_) {
     observer.HardwareWriteProtectionState(enabled);
   }
@@ -239,6 +196,7 @@ void RmadClientImpl::PowerCableStateReceived(dbus::Signal* signal) {
                << signal->GetMember() << " signal";
     return;
   }
+  DCHECK(!reader.HasMoreData());
   for (auto& observer : observers_) {
     observer.PowerCableState(plugged_in);
   }
@@ -247,22 +205,73 @@ void RmadClientImpl::PowerCableStateReceived(dbus::Signal* signal) {
 void RmadClientImpl::ProvisioningProgressReceived(dbus::Signal* signal) {
   DCHECK_EQ(signal->GetMember(), rmad::kProvisioningProgressSignal);
   dbus::MessageReader reader(signal);
-  uint32_t step;
+  // Read proto message
+  dbus::MessageReader sub_reader(nullptr);
+  if (!reader.PopStruct(&sub_reader)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
+  DCHECK(!reader.HasMoreData());
+  int32_t status;
   double progress;
-  if (!reader.PopUint32(&step)) {
-    LOG(ERROR) << "Unable to decode step uint32 from " << signal->GetMember()
-               << " signal";
+  if (!sub_reader.PopInt32(&status) || !sub_reader.PopDouble(&progress)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
     return;
   }
-  if (!reader.PopDouble(&progress)) {
-    LOG(ERROR) << "Unable to decode progress double from "
-               << signal->GetMember() << " signal";
-    return;
-  }
+  rmad::ProvisionStatus signal_proto;
+  signal_proto.set_status(static_cast<rmad::ProvisionStatus::Status>(status));
+  signal_proto.set_progress(progress);
   for (auto& observer : observers_) {
-    observer.ProvisioningProgress(
-        static_cast<rmad::ProvisionDeviceState::ProvisioningStep>(step),
-        progress);
+    observer.ProvisioningProgress(signal_proto);
+  }
+}
+
+void RmadClientImpl::HardwareVerificationResultReceived(dbus::Signal* signal) {
+  DCHECK_EQ(signal->GetMember(), rmad::kHardwareVerificationResultSignal);
+  dbus::MessageReader reader(signal);
+  // Read message
+  dbus::MessageReader sub_reader(nullptr);
+  if (!reader.PopStruct(&sub_reader)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
+  DCHECK(!reader.HasMoreData());
+  bool is_compliant = true;
+  std::string error_str = "";
+  if (!sub_reader.PopBool(&is_compliant) || !sub_reader.PopString(&error_str)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
+  DCHECK(!reader.HasMoreData());
+  rmad::HardwareVerificationResult signal_proto;
+  signal_proto.set_is_compliant(is_compliant);
+  signal_proto.set_error_str(error_str);
+  for (auto& observer : observers_) {
+    observer.HardwareVerificationResult(signal_proto);
+  }
+}
+
+void RmadClientImpl::FinalizationProgressReceived(dbus::Signal* signal) {
+  DCHECK_EQ(signal->GetMember(), rmad::kFinalizeProgressSignal);
+  dbus::MessageReader reader(signal);
+  // Read message
+  dbus::MessageReader sub_reader(nullptr);
+  if (!reader.PopStruct(&sub_reader)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
+  DCHECK(!reader.HasMoreData());
+  int32_t status;
+  double progress;
+  if (!sub_reader.PopInt32(&status) || !sub_reader.PopDouble(&progress)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
+  rmad::FinalizeStatus signal_proto;
+  signal_proto.set_status(static_cast<rmad::FinalizeStatus::Status>(status));
+  signal_proto.set_progress(progress);
+  for (auto& observer : observers_) {
+    observer.FinalizationProgress(signal_proto);
   }
 }
 
@@ -318,21 +327,21 @@ void RmadClientImpl::AbortRma(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void RmadClientImpl::GetLogPath(DBusMethodCallback<std::string> callback) {
-  dbus::MethodCall method_call(rmad::kRmadInterfaceName,
-                               rmad::kGetLogPathMethod);
+void RmadClientImpl::GetLog(DBusMethodCallback<std::string> callback) {
+  dbus::MethodCall method_call(rmad::kRmadInterfaceName, rmad::kGetLogMethod);
   dbus::MessageWriter writer(&method_call);
   rmad_proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&RmadClientImpl::OnGetLogPathReply,
+      base::BindOnce(&RmadClientImpl::OnGetLogReply,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void RmadClientImpl::AddObserver(Observer* observer) {
+  // Currently there is only one observer (chromeos::ShimlessRmaService) and it
+  // is added before any signals are expected, so there is no need to preserve
+  // any signals and send them to new observers.
   CHECK(observer);
   observers_.AddObserver(observer);
-  // TODO(gavindodd): Does current value of any state (e.g. HWWP) need to be
-  // 'observed' at add?
 }
 
 void RmadClientImpl::RemoveObserver(Observer* observer) {
@@ -359,12 +368,13 @@ void RmadClientImpl::OnProtoReply(DBusMethodCallback<T> callback,
     std::move(callback).Run(absl::nullopt);
     return;
   }
+  DCHECK(!reader.HasMoreData());
 
   std::move(callback).Run(std::move(response_proto));
 }
 
-void RmadClientImpl::OnGetLogPathReply(DBusMethodCallback<std::string> callback,
-                                       dbus::Response* response) {
+void RmadClientImpl::OnGetLogReply(DBusMethodCallback<std::string> callback,
+                                   dbus::Response* response) {
   if (!response) {
     LOG(ERROR) << "Error calling rmad function";
     std::move(callback).Run(absl::nullopt);
@@ -378,6 +388,7 @@ void RmadClientImpl::OnGetLogPathReply(DBusMethodCallback<std::string> callback,
     std::move(callback).Run(absl::nullopt);
     return;
   }
+  DCHECK(!reader.HasMoreData());
 
   std::move(callback).Run(std::move(log_path));
 }
@@ -400,42 +411,7 @@ void RmadClient::Initialize(dbus::Bus* bus) {
 
 // static
 void RmadClient::InitializeFake() {
-  FakeRmadClient* fake = new FakeRmadClient();
-  // Set up fake state.
-  rmad::GetStateReply components_repair_state =
-      CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
-  rmad::ComponentsRepairState::ComponentRepairStatus* component =
-      components_repair_state.mutable_state()
-          ->mutable_components_repair()
-          ->add_component_repair();
-  component->set_component(rmad::RmadComponent::RMAD_COMPONENT_CAMERA);
-  component->set_repair_status(
-      rmad::ComponentsRepairState::ComponentRepairStatus::
-          RMAD_REPAIR_STATUS_UNKNOWN);
-
-  std::vector<rmad::GetStateReply> fake_states = {
-      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kDeviceDestination,
-                       rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kWpDisableMethod, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kWpDisableRsu, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kVerifyRsu, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kWpDisablePhysical,
-                       rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kWpDisableComplete,
-                       rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kUpdateRoFirmware, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kRestock, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK),
-      // TODO(gavindodd): Add calibration states when implemented.
-      // rmad::RmadState::kCheckCalibration
-      // rmad::RmadState::kSetupCalibration
-      // rmad::RmadState::kRunCalibration
-      CreateStateReply(rmad::RmadState::kProvisionDevice, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kWpEnablePhysical, rmad::RMAD_ERROR_OK),
-      CreateStateReply(rmad::RmadState::kFinalize, rmad::RMAD_ERROR_OK),
-  };
-  fake->SetFakeStateReplies(fake_states);
+  FakeRmadClient::CreateWithState();
 }
 
 // static

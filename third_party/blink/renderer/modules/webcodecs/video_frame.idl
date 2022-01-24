@@ -4,21 +4,18 @@
 
 // https://github.com/WICG/web-codecs
 
+typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) AllowSharedBufferSource;
+
 [
     Exposed=(Window,DedicatedWorker),
     Serializable,
     RuntimeEnabled=WebCodecs
 ] interface VideoFrame {
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoFrameFromImage]
   constructor(CanvasImageSource source, optional VideoFrameInit init = {});
 
-  // TODO(https://crbug.com/1231806): Combine w/ ArrayBuffer ctor below when
-  // [AllowShared] BufferSource is supported.
-  [CallWith=ScriptState, RaisesException]
-  constructor([AllowShared] ArrayBufferView data, VideoFrameBufferInit init);
-
-  [CallWith=ScriptState, RaisesException]
-  constructor(ArrayBuffer data, VideoFrameBufferInit init);
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoFrameFromBuffer]
+  constructor(AllowSharedBufferSource data, VideoFrameBufferInit init);
 
   readonly attribute VideoPixelFormat? format;
 
@@ -43,7 +40,7 @@
   readonly attribute unsigned long displayHeight;
 
   // Color space of the data produced by copyTo().
-  readonly attribute VideoColorSpace? colorSpace;
+  readonly attribute VideoColorSpace colorSpace;
 
   // Returns the minimum size (in bytes) of a buffer that copyTo() could
   // copy this frame into with the given options.
@@ -52,15 +49,9 @@
 
   // Copy the planes of this frame into |destination| according to |options|.
   // The format of the data is the same as this frame's |format|.
-  // TODO(https://crbug.com/1231806): Combine w/ ArrayBuffer copyTo() below when
-  // [AllowShared] BufferSource is supported.
   [CallWith=ScriptState, RaisesException]
   Promise<sequence<PlaneLayout>> copyTo(
-      [AllowShared] ArrayBufferView destination,
-      optional VideoFrameCopyToOptions options = {});
-  [CallWith=ScriptState, RaisesException]
-  Promise<sequence<PlaneLayout>> copyTo(
-      ArrayBuffer destination,
+      AllowSharedBufferSource destination,
       optional VideoFrameCopyToOptions options = {});
 
   // Creates a copy of this VideoFrame, which needs to be independently closed.

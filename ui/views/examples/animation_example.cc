@@ -6,7 +6,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
+#include "base/strings/utf_string_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -21,9 +24,12 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/background.h"
-#include "ui/views/examples/animation_builder.h"
+#include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/examples/grit/views_examples_resources.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
@@ -150,33 +156,49 @@ void SquaresLayoutManager::LayoutImpl() {
 
 void SquaresLayoutManager::OnInstalled(View* host) {
   bounds_animator_ = std::make_unique<BoundsAnimator>(host, true);
-  bounds_animator_->SetAnimationDuration(base::TimeDelta::FromSeconds(1));
+  bounds_animator_->SetAnimationDuration(base::Seconds(1));
 }
 
 void AnimationExample::CreateExampleView(View* container) {
-  container->SetBackground(CreateSolidBackground(SK_ColorWHITE));
-  container->SetPaintToLayer();
-  container->layer()->SetMasksToBounds(true);
-  container->layer()->SetFillsBoundsOpaquely(true);
+  container->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kVertical, gfx::Insets(), 10));
 
-  container->SetLayoutManager(std::make_unique<SquaresLayoutManager>());
+  View* squares_container = container->AddChildView(std::make_unique<View>());
+  squares_container->SetBackground(CreateSolidBackground(SK_ColorWHITE));
+  squares_container->SetPaintToLayer();
+  squares_container->layer()->SetMasksToBounds(true);
+  squares_container->layer()->SetFillsBoundsOpaquely(true);
+
+  squares_container->SetLayoutManager(std::make_unique<SquaresLayoutManager>());
   for (size_t i = 0; i < 5; ++i)
-    container->AddChildView(std::make_unique<AnimatingSquare>(i));
+    squares_container->AddChildView(std::make_unique<AnimatingSquare>(i));
 
   {
     gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
     AnimationBuilder b;
-    for (auto* view : container->children()) {
-      b.SetDuration(base::TimeDelta::FromSeconds(10))
-          .SetRoundedCorners(view, rounded_corners)
-          .StartSequence()
-          .Repeat()
-          .SetDuration(base::TimeDelta::FromSeconds(2))
-          .SetOpacity(view, 0.4f)
-          .SetOpacity(view, 0.9f)
-          .EndSequence();
+    abort_handle_ = b.GetAbortHandle();
+    for (auto* view : squares_container->children()) {
+      // Property setting calls on the builder would be replaced with
+      // view->SetOpacity(..) after animation integration with view::View class
+      b.Once()
+          .SetDuration(base::Seconds(10))
+          .SetRoundedCorners(view, rounded_corners);
+      b.Repeatedly()
+          .SetDuration(base::Seconds(2))
+          .SetOpacity(view, 0.4f, gfx::Tween::LINEAR_OUT_SLOW_IN)
+          .Then()
+          .SetDuration(base::Seconds(2))
+          .SetOpacity(view, 0.9f, gfx::Tween::EASE_OUT_3);
     }
   }
+
+  container->AddChildView(std::make_unique<MdTextButton>(
+      base::BindRepeating(
+          [](std::unique_ptr<AnimationAbortHandle>* abort_handle) {
+            abort_handle->reset();
+          },
+          &abort_handle_),
+      l10n_util::GetStringUTF16(IDS_ABORT_ANIMATION_BUTTON)));
 }
 
 }  // namespace examples

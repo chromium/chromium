@@ -86,4 +86,10 @@ public interface Toolbar {
      * @return The primary color to use for the background drawable.
      */
     int getPrimaryColor();
+
+    /**
+     * Updates the visibility of the reload button.
+     * @param isReloading Whether or not the page is loading.
+     */
+    void updateReloadButtonVisibility(boolean isReloading);
 }

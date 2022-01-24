@@ -96,6 +96,10 @@ const wchar_t kRegProgId[] = L"ProgId";
 
 const wchar_t kFilePathSeparator[] = L"\\";
 
+const wchar_t kFileHandlerProgIds[] = L"FileHandlerProgIds";
+
+const wchar_t kFileExtensions[] = L"FileExtensions";
+
 // Returns the current (or installed) browser's ProgId (e.g.
 // "ChromeHTML|suffix|").
 // |suffix| can be the empty string.
@@ -138,14 +142,16 @@ class UserSpecificRegistrySuffix {
   // LazyInstance.
   UserSpecificRegistrySuffix();
 
+  UserSpecificRegistrySuffix(const UserSpecificRegistrySuffix&) = delete;
+  UserSpecificRegistrySuffix& operator=(const UserSpecificRegistrySuffix&) =
+      delete;
+
   // Sets |suffix| to the pre-computed suffix cached in this object.
   // Returns true unless the initialization originally failed.
   bool GetSuffix(std::wstring* suffix);
 
  private:
   std::wstring suffix_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserSpecificRegistrySuffix);
 };  // class UserSpecificRegistrySuffix
 
 UserSpecificRegistrySuffix::UserSpecificRegistrySuffix() {
@@ -1651,6 +1657,45 @@ bool RegisterApplicationForProtocols(const std::vector<std::wstring>& protocols,
          ShellUtil::AddRegistryEntries(HKEY_CURRENT_USER, entries);
 }
 
+bool DeleteFileExtensionsForProgId(const std::wstring& prog_id) {
+  const std::wstring prog_id_path =
+      base::StrCat({ShellUtil::kRegClasses, kFilePathSeparator, prog_id});
+
+  // Get list of handled file extensions from value FileExtensions at
+  // HKEY_CURRENT_USER\Software\Classes\|prog_id|.
+  RegKey file_extensions_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
+                             KEY_QUERY_VALUE);
+  std::wstring handled_file_extensions;
+  if (file_extensions_key.ReadValue(
+          kFileExtensions, &handled_file_extensions) == ERROR_SUCCESS) {
+    const std::vector<std::wstring> file_extensions =
+        base::SplitString(handled_file_extensions, std::wstring(L";"),
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    // Delete file-extension-handling registry entries for each file extension.
+    for (const auto& file_extension : file_extensions) {
+      std::wstring extension_path = base::StrCat(
+          {ShellUtil::kRegClasses, kFilePathSeparator, file_extension});
+
+      // Delete value |prog_id| at
+      // HKEY_CURRENT_USER\Software\Classes\.<extension>\OpenWithProgids;
+      // this removes |prog_id| from the list of handlers for |file_extension|.
+      base::StrAppend(&extension_path,
+                      {kFilePathSeparator, ShellUtil::kRegOpenWithProgids});
+      InstallUtil::DeleteRegistryValue(HKEY_CURRENT_USER, extension_path,
+                                       WorkItem::kWow64Default, prog_id);
+
+      // Note: if |prog_id| is later reinstalled with fewer extensions, it may
+      // still appear in the Open With menu for extensions that it previously
+      // handled due to cached entries in the most-recently-used list. These
+      // entries can't be cleaned up by apps, so this is an unavoidable quirk
+      // of Windows. See crbug.com/1177401 for details.
+    }
+  }
+  // Delete the key HKEY_CURRENT_USER\Software\Classes\|prog_id|.
+  return ShellUtil::DeleteApplicationClass(prog_id);
+}
+
 }  // namespace
 
 const wchar_t* ShellUtil::kRegAppProtocolHandlers = L"\\AppProtocolHandlers";
@@ -1710,13 +1755,6 @@ ShellUtil::ApplicationInfo::ApplicationInfo(ApplicationInfo&& other) noexcept =
     default;
 
 ShellUtil::ApplicationInfo::~ApplicationInfo() = default;
-
-ShellUtil::FileAssociationsAndAppName::FileAssociationsAndAppName() = default;
-
-ShellUtil::FileAssociationsAndAppName::FileAssociationsAndAppName(
-    FileAssociationsAndAppName&& other) = default;
-
-ShellUtil::FileAssociationsAndAppName::~FileAssociationsAndAppName() = default;
 
 bool ShellUtil::QuickIsChromeRegisteredInHKLM(const base::FilePath& chrome_exe,
                                               const std::wstring& suffix) {
@@ -2586,6 +2624,41 @@ bool ShellUtil::GetOldUserSpecificRegistrySuffix(std::wstring* suffix) {
 }
 
 // static
+bool ShellUtil::RegisterFileHandlerProgIdsForAppId(
+    const std::wstring& prog_id,
+    const std::vector<std::wstring>& file_handler_prog_ids) {
+  std::vector<std::unique_ptr<RegistryEntry>> entries;
+
+  // Save file handler ProgIds in the registry for use during uninstallation.
+  const std::wstring prog_id_path =
+      base::StrCat({ShellUtil::kRegClasses, kFilePathSeparator, prog_id});
+  entries.push_back(std::make_unique<RegistryEntry>(
+      prog_id_path, kFileHandlerProgIds,
+      base::JoinString(file_handler_prog_ids, L";")));
+
+  return AddRegistryEntries(HKEY_CURRENT_USER, entries);
+}
+
+// static
+std::vector<std::wstring> ShellUtil::GetFileHandlerProgIdsForAppId(
+    const std::wstring& prog_id) {
+  std::vector<std::wstring> file_handler_prog_ids;
+  const std::wstring prog_id_path =
+      base::StrCat({kRegClasses, kFilePathSeparator, prog_id});
+
+  const RegKey file_handlers_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
+                                 KEY_QUERY_VALUE);
+  std::wstring file_handler_prog_ids_value;
+  if (file_handlers_key.ReadValue(
+          kFileHandlerProgIds, &file_handler_prog_ids_value) == ERROR_SUCCESS) {
+    file_handler_prog_ids =
+        base::SplitString(file_handler_prog_ids_value, std::wstring(L";"),
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  }
+  return file_handler_prog_ids;
+}
+
+// static
 bool ShellUtil::AddFileAssociations(
     const std::wstring& prog_id,
     const base::CommandLine& command_line,
@@ -2611,8 +2684,7 @@ bool ShellUtil::AddFileAssociations(
 
   std::vector<std::wstring> handled_file_extensions;
 
-  // Associate each extension that the app can handle with the class. Set this
-  // app as the default handler if and only if there is no existing default.
+  // Associate each extension that the app can handle with the class.
   for (const auto& file_extension : file_extensions) {
     // Do not allow empty file extensions, or extensions beginning with a '.'.
     DCHECK(!file_extension.empty());
@@ -2621,12 +2693,6 @@ bool ShellUtil::AddFileAssociations(
     ext += file_extension;
     GetAppExtRegistrationEntries(prog_id, ext, &entries);
 
-    // Registering as the default will have no effect on Windows 8 (see
-    // documentation for GetAppDefaultRegistrationEntries). However, if our app
-    // is the only handler, it will automatically become the default, so the
-    // same effect is achieved.
-    GetAppDefaultRegistrationEntries(prog_id, ext, false, &entries);
-
     handled_file_extensions.push_back(std::move(ext));
   }
 
@@ -2634,59 +2700,34 @@ bool ShellUtil::AddFileAssociations(
   std::wstring prog_id_path =
       base::StrCat({ShellUtil::kRegClasses, kFilePathSeparator, prog_id});
   entries.push_back(std::make_unique<RegistryEntry>(
-      prog_id_path, L"FileExtensions",
+      prog_id_path, kFileExtensions,
       base::JoinString(handled_file_extensions, L";")));
 
   return AddRegistryEntries(HKEY_CURRENT_USER, entries);
 }
 
 // static
-bool ShellUtil::DeleteFileAssociations(const std::wstring& prog_id) {
-  std::wstring prog_id_path =
-      base::StrCat({kRegClasses, kFilePathSeparator, prog_id});
+bool ShellUtil::DeleteFileAssociations(const std::wstring& app_prog_id) {
+  const std::wstring app_prog_id_path =
+      base::StrCat({kRegClasses, kFilePathSeparator, app_prog_id});
 
-  // Get list of handled file extensions from value FileExtensions at
-  // HKEY_CURRENT_USER\Software\Classes\|prog_id|.
-  RegKey file_extensions_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
-                             KEY_QUERY_VALUE);
-  std::wstring handled_file_extensions;
-  if (file_extensions_key.ReadValue(
-          L"FileExtensions", &handled_file_extensions) == ERROR_SUCCESS) {
-    std::vector<std::wstring> file_extensions =
-        base::SplitString(handled_file_extensions, std::wstring(L";"),
-                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  // Get the list of file handler ProgIds for the app. Do this before the
+  // `app_prog_id` key is deleted.
+  const std::vector<std::wstring> file_handler_prog_ids =
+      ShellUtil::GetFileHandlerProgIdsForAppId(app_prog_id);
 
-    // Delete file-extension-handling registry entries for each file extension.
-    for (const auto& file_extension : file_extensions) {
-      std::wstring extension_path =
-          base::StrCat({kRegClasses, kFilePathSeparator, file_extension});
+  // TODO(crbug.com/1247824): This can be replaced with DeleteApplicationClass
+  // once currently installed web apps have been upgraded to use per-file
+  // handler ProgIds. Those web apps were only installed in Origin Trials so
+  // this is just best effort.
+  bool result = DeleteFileExtensionsForProgId(app_prog_id);
 
-      // Delete the default value at
-      // HKEY_CURRENT_USER\Software\Classes\.<extension> if set to |prog_id|;
-      // this unregisters |prog_id| as the default handler for |file_extension|.
-      InstallUtil::DeleteRegistryValueIf(
-          HKEY_CURRENT_USER, extension_path.c_str(), WorkItem::kWow64Default,
-          L"", InstallUtil::ValueEquals(prog_id));
+  // Delete registry entries for the file handler ProgIds.
+  for (const auto& file_handler_prog_id : file_handler_prog_ids)
+    result &= DeleteFileExtensionsForProgId(file_handler_prog_id);
 
-      // Delete value |prog_id| at
-      // HKEY_CURRENT_USER\Software\Classes\.<extension>\OpenWithProgids;
-      // this removes |prog_id| from the list of handlers for |file_extension|.
-      base::StrAppend(&extension_path,
-                      {kFilePathSeparator, ShellUtil::kRegOpenWithProgids});
-      InstallUtil::DeleteRegistryValue(HKEY_CURRENT_USER, extension_path,
-                                       WorkItem::kWow64Default, prog_id);
-
-      // Note: if |prog_id| is later reinstalled with fewer extensions, it may
-      // still appear in the Open With menu for extensions that it previously
-      // handled due to cached entries in the most-recently-used list. These
-      // entries can't be cleaned up by apps, so this is an unavoidable quirk
-      // of Windows. See crbug.com/1177401 for details.
-    }
-  }
-
-  // Delete the key HKEY_CURRENT_USER\Software\Classes\|prog_id|.
-  return InstallUtil::DeleteRegistryKey(HKEY_CURRENT_USER, prog_id_path,
-                                        WorkItem::kWow64Default);
+  ::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+  return result;
 }
 
 // static
@@ -2701,9 +2742,8 @@ bool ShellUtil::AddAppProtocolAssociations(
     return false;
   }
 
-  if (!RegisterApplicationForProtocols(protocols, prog_id, chrome_exe)) {
+  if (!RegisterApplicationForProtocols(protocols, prog_id, chrome_exe))
     return false;
-  }
 
   bool success = true;
   for (const auto& protocol : protocols) {
@@ -2754,14 +2794,6 @@ bool ShellUtil::RemoveAppProtocolAssociations(const std::wstring& prog_id) {
 
   return InstallUtil::DeleteRegistryKey(HKEY_CURRENT_USER, app_key_path,
                                         WorkItem::kWow64Default);
-}
-
-// static
-std::wstring ShellUtil::GetProgIdForBrowser(const base::FilePath& chrome_exe) {
-  std::wstring prog_id =
-      base::StrCat({install_static::GetProgIdPrefix(),
-                    GetCurrentInstallationSuffix(chrome_exe)});
-  return prog_id;
 }
 
 // static
@@ -2863,53 +2895,32 @@ ShellUtil::ApplicationInfo ShellUtil::GetApplicationInfoForProgId(
 }
 
 // static
-ShellUtil::FileAssociationsAndAppName ShellUtil::GetFileAssociationsAndAppName(
-    const std::wstring& prog_id) {
-  FileAssociationsAndAppName file_associations_and_app_name;
-
+std::wstring ShellUtil::GetAppName(const std::wstring& prog_id) {
   std::wstring prog_id_path =
       base::StrCat({kRegClasses, kFilePathSeparator, prog_id});
-
+  std::wstring app_name;
   // Get the app name from value ApplicationName at
   // HKEY_CURRENT_USER\Software\Classes\|prog_id|\Application.
   std::wstring application_path = prog_id_path + kRegApplication;
   RegKey application_key(HKEY_CURRENT_USER, application_path.c_str(),
                          KEY_QUERY_VALUE);
-  if (application_key.ReadValue(kRegApplicationName,
-                                &file_associations_and_app_name.app_name) !=
+  if (application_key.ReadValue(kRegApplicationName, &app_name) ==
       ERROR_SUCCESS) {
-    return file_associations_and_app_name;
+    return app_name;
   }
-
-  // If present, Get list of handled file extensions from value FileExtensions
-  // at HKEY_CURRENT_USER\Software\Classes\|prog_id|.
-  RegKey file_extensions_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
-                             KEY_QUERY_VALUE);
-  std::wstring handled_file_extensions;
-  if (file_extensions_key.ReadValue(
-          L"FileExtensions", &handled_file_extensions) == ERROR_SUCCESS) {
-    std::vector<base::WStringPiece> file_associations_vec =
-        base::SplitStringPiece(base::WStringPiece(handled_file_extensions),
-                               base::WStringPiece(L";"), base::TRIM_WHITESPACE,
-                               base::SPLIT_WANT_NONEMPTY);
-    for (const auto& file_extension : file_associations_vec) {
-      // Skip over the leading '.' so that we return the same
-      // extensions as were passed to AddFileAssociations.
-      file_associations_and_app_name.file_associations.emplace(
-          file_extension.substr(1));
-    }
-  }
-  return file_associations_and_app_name;
+  return L"";
 }
 
 // static
 base::FilePath ShellUtil::GetApplicationPathForProgId(
     const std::wstring& prog_id) {
   std::wstring prog_id_path =
+      base::StrCat({kRegClasses, kFilePathSeparator, prog_id});
+  std::wstring shell_open_key =
       base::StrCat({kRegClasses, kFilePathSeparator, prog_id, kRegShellOpen});
   std::wstring command_line;
-  RegKey command_line_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
-                          KEY_QUERY_VALUE);
+  const RegKey command_line_key(HKEY_CURRENT_USER, shell_open_key.c_str(),
+                                KEY_QUERY_VALUE);
   if (command_line_key.ReadValue(L"", &command_line) == ERROR_SUCCESS)
     return base::CommandLine::FromString(command_line).GetProgram();
 

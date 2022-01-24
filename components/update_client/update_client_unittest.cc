@@ -3244,8 +3244,11 @@ TEST_F(UpdateClientTest, SendUninstallPing) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           &MockUpdateChecker::Create);
 
+  CrxComponent crx;
+  crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
+  crx.version = base::Version("1.2.3.4");
   update_client->SendUninstallPing(
-      "jebgalgnebhfojomionfpkfelancnnkf", base::Version("1.2.3.4"), 10,
+      crx, 10,
       base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
 
   RunThreads();
@@ -3307,9 +3310,11 @@ TEST_F(UpdateClientTest, SendRegistrationPing) {
           config(), base::MakeRefCounted<MockPingManager>(config()),
           &MockUpdateChecker::Create);
 
+  CrxComponent crx;
+  crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
+  crx.version = base::Version("1.2.3.4");
   update_client->SendRegistrationPing(
-      "jebgalgnebhfojomionfpkfelancnnkf", base::Version("1.2.3.4"),
-      base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
+      crx, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
 
   RunThreads();
 }

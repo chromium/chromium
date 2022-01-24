@@ -28,11 +28,9 @@ export function fuzzySearch(input, records, options) {
   // present in the input string.
   // To address these shortcomings we use the exactSearch implementation below
   // if the options indicate an exact matching algorithm should be used.
-  performance.mark('tab_search:search_algorithm:metric_begin');
+  const searchStartTime = Date.now();
   let result;
-  if (options.threshold === 0.0) {
-    result = exactSearch(input, records, options);
-  } else {
+  if (options.useFuzzySearch) {
     const keyNames = options.keys.reduce((acc, {name}) => {
       acc.push(name);
       return acc;
@@ -50,8 +48,15 @@ export function fuzzySearch(input, records, options) {
 
       return item;
     });
+    // Reorder match result by priorities while retaining the
+    // rank fuse.js returns within the same priority.
+    result = prioritizeMatchResult(input, keyNames, result);
+  } else {
+    result = exactSearch(input, records, options);
   }
-  performance.mark('tab_search:search_algorithm:metric_end');
+  chrome.metricsPrivate.recordTime(
+      'Tabs.TabSearch.WebUI.SearchAlgorithmDuration',
+      Math.round(Date.now() - searchStartTime));
   return result;
 }
 
@@ -83,14 +88,11 @@ function convertToRanges(matches) {
 // Exact Match Implementation :
 
 /**
- * The exact match algorithm returns records ranked according to the following
- * priorities (highest to lowest priority):
- * 1. All items with a search key matching the searchText at the beginning of
- *    the string.
- * 2. All items with a search key matching the searchText at the beginning of a
- *    word in the string.
- * 3. All remaining items with a search key matching the searchText elsewhere in
- *    the string.
+ * The exact match algorithm returns records ranked according to priorities
+ * and scores. Records are ordered by priority (higher priority comes
+ * first) and sorted by score within the same priority. See `scoringFunction`
+ * for how to calculate score and `prioritizeMatchResult` for how to calculate
+ * priority.
  * @param {string} searchText
  * @param {!Array<!TabData>} records
  * @param {!Object} options
@@ -142,36 +144,25 @@ function exactSearch(searchText, records, options) {
   // Sort by score.
   exactMatches.sort((a, b) => (b.score - a.score));
 
-  // Prioritize items.
-  const itemsMatchingStringStart = [];
-  const itemsMatchingWordStart = [];
-  const others = [];
-  const wordStartRegexp = new RegExp(`\\b${quoteString(searchText)}`, 'i');
-  const keys = Object.keys(searchFieldWeights);
-  for (const {tab} of exactMatches) {
-    // Find matches that occur at the beginning of the string.
-    if (hasMatchStringStart(tab, keys)) {
-      itemsMatchingStringStart.push(tab);
-    } else if (hasRegexMatch(tab, wordStartRegexp, keys)) {
-      itemsMatchingWordStart.push(tab);
-    } else {
-      others.push(tab);
-    }
-  }
-  return itemsMatchingStringStart.concat(itemsMatchingWordStart, others);
+  // Reorder match result by priorities.
+  return prioritizeMatchResult(
+      searchText, Object.keys(searchFieldWeights),
+      exactMatches.map(item => item.tab));
 }
 
 /**
  * Determines whether the given tab has a search field with identified matches
  * at the beginning of the string.
  * @param {!TabData} tab
+ * @param {string} searchText
  * @param {!Array<string>} keys
  * @return {boolean}
  */
-function hasMatchStringStart(tab, keys) {
-  return keys.some(
-      (key) => tab.highlightRanges[key] !== undefined &&
-          tab.highlightRanges[key][0].start === 0);
+function hasMatchStringStart(tab, searchText, keys) {
+  return keys.some((key) => {
+    const value = deepGet(tab, key);
+    return value !== undefined && value.startsWith(searchText);
+  });
 }
 
 /**
@@ -183,9 +174,10 @@ function hasMatchStringStart(tab, keys) {
  * @return {boolean}
  */
 function hasRegexMatch(tab, regexp, keys) {
-  return keys.some(
-      (key) => tab.highlightRanges[key] !== undefined &&
-          deepGet(tab, key).search(regexp) !== -1);
+  return keys.some((key) => {
+    const value = deepGet(tab, key);
+    return value !== undefined && value.search(regexp) !== -1;
+  });
 }
 
 /**
@@ -232,4 +224,35 @@ function scoringFunction(tabData, distance, searchFieldWeights) {
   }
 
   return score;
+}
+
+/**
+ * Reorder match result based on priorities (highest to lowest priority):
+ * 1. All items with a search key matching the searchText at the beginning of
+ *    the string.
+ * 2. All items with a search key matching the searchText at the beginning of a
+ *    word in the string.
+ * 3. All remaining items with a search key matching the searchText elsewhere in
+ *    the string.
+ * @param {string} searchText
+ * @param {!Array<string>} keys
+ * @param {!Array<!TabData>} result
+ * @return {!Array<!TabData>}
+ */
+function prioritizeMatchResult(searchText, keys, result) {
+  const itemsMatchingStringStart = [];
+  const itemsMatchingWordStart = [];
+  const others = [];
+  const wordStartRegexp = new RegExp(`\\b${quoteString(searchText)}`, 'i');
+  for (const tab of result) {
+    // Find matches that occur at the beginning of the string.
+    if (hasMatchStringStart(tab, searchText, keys)) {
+      itemsMatchingStringStart.push(tab);
+    } else if (hasRegexMatch(tab, wordStartRegexp, keys)) {
+      itemsMatchingWordStart.push(tab);
+    } else {
+      others.push(tab);
+    }
+  }
+  return itemsMatchingStringStart.concat(itemsMatchingWordStart, others);
 }

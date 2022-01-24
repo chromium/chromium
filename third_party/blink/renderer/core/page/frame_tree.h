@@ -31,6 +31,12 @@ class Frame;
 struct FrameLoadRequest;
 class KURL;
 
+// This is used by FrameTree traversal APIs to determine whether they should
+// honor or ignore the fenced frame boundary, for fenced frames implemented on
+// ShadowDOM. See crbug.com/1123606 and
+// https://docs.google.com/document/d/1ijTZJT3DHQ1ljp4QQe4E4XCCRaYAxmInNzN1SzeJM8s/edit.
+enum class FrameTreeBoundary { kIgnoreFence, kFenced };
+
 class CORE_EXPORT FrameTree final {
   DISALLOW_NEW();
 
@@ -58,8 +64,10 @@ class CORE_EXPORT FrameTree final {
   // TODO(andypaicu): remove this once we have gathered the data
   void ExperimentalSetNulledName();
 
-  Frame* Parent() const;
-  Frame& Top() const;
+  Frame* Parent(FrameTreeBoundary frame_tree_boundary =
+                    FrameTreeBoundary::kIgnoreFence) const;
+  Frame& Top(FrameTreeBoundary frame_tree_boundary =
+                 FrameTreeBoundary::kIgnoreFence) const;
   Frame* NextSibling() const;
   Frame* FirstChild() const;
 
@@ -116,7 +124,7 @@ class CORE_EXPORT FrameTree final {
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showFrameTree(const blink::Frame*);
+void ShowFrameTree(const blink::Frame*);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_FRAME_TREE_H_

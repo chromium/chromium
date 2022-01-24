@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -56,8 +56,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
-#include "ui/gfx/skia_util.h"
 
 #if defined(OS_MAC)
 #include "base/mac/scoped_cftyperef.h"
@@ -960,7 +960,7 @@ void PepperGraphics2DHost::ScheduleOffscreenFlushAck() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PepperGraphics2DHost::SendOffscreenFlushAck, AsWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kOffscreenCallbackDelayMs));
+      base::Milliseconds(kOffscreenCallbackDelayMs));
 }
 
 bool PepperGraphics2DHost::HasPendingFlush() const {

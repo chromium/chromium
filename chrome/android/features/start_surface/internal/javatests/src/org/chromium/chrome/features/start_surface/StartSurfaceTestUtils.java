@@ -231,7 +231,7 @@ public class StartSurfaceTestUtils {
         // Toolbar layout should be hidden if start surface toolbar is shown on the top of the
         // screen.
         onView(withId(R.id.toolbar))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         // The home button shouldn't show on homepage.
         onView(withId(R.id.home_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
@@ -362,14 +362,14 @@ public class StartSurfaceTestUtils {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>();
         siteSuggestions.add(new SiteSuggestion("0 EXPLORE_SITES",
                 // Use pre-serialized GURL to avoid loading native.
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), "", TileTitleSource.UNKNOWN,
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), TileTitleSource.UNKNOWN,
                 TileSource.EXPLORE, TileSectionType.PERSONALIZED));
 
         String urlTemplate = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_NUMERAL).serialize();
         for (int i = 0; i < 7; i++) {
             siteSuggestions.add(new SiteSuggestion(String.valueOf(i),
                     // Use pre-serialized GURL to avoid loading native.
-                    GURL.deserialize(urlTemplate.replace("www.1.com", "www." + i + ".com")), "",
+                    GURL.deserialize(urlTemplate.replace("www.1.com", "www." + i + ".com")),
                     TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED));
         }
 

@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/components/local_search_service/index.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 

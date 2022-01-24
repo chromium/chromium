@@ -226,7 +226,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
     bool has_header = response_head->headers->EnumerateHeader(
         nullptr, ServiceWorkerConsts::kServiceWorkerAllowed,
         &service_worker_allowed);
-    if (!ServiceWorkerUtils::IsPathRestrictionSatisfied(
+    if (!service_worker_loader_helpers::IsPathRestrictionSatisfied(
             scope_, script_url_, has_header ? &service_worker_allowed : nullptr,
             &error_message)) {
       Fail(blink::ServiceWorkerStatusCode::kErrorSecurity, error_message,

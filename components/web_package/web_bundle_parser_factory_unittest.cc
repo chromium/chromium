@@ -55,7 +55,7 @@ class WebBundleParserFactoryTest : public testing::Test {
 
 TEST_F(WebBundleParserFactoryTest, FileDataSource) {
   base::FilePath test_file =
-      GetTestFilePath(base::FilePath(FILE_PATH_LITERAL("hello.wbn")));
+      GetTestFilePath(base::FilePath(FILE_PATH_LITERAL("hello_b2.wbn")));
 
   base::File file(test_file, base::File::FLAG_OPEN | base::File::FLAG_READ);
   ASSERT_TRUE(file.IsValid());
@@ -137,7 +137,7 @@ TEST_F(WebBundleParserFactoryTest, FileDataSource) {
 
 TEST_F(WebBundleParserFactoryTest, GetParserForFile) {
   base::File file(
-      GetTestFilePath(base::FilePath(FILE_PATH_LITERAL("hello.wbn"))),
+      GetTestFilePath(base::FilePath(FILE_PATH_LITERAL("hello_b2.wbn"))),
       base::File::FLAG_OPEN | base::File::FLAG_READ);
   ASSERT_TRUE(file.IsValid());
 

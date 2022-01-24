@@ -371,6 +371,17 @@ DnsResponse::DnsResponse(const void* data, size_t length, size_t answer_offset)
   memcpy(io_buffer_->data(), data, length);
 }
 
+// static
+DnsResponse DnsResponse::CreateEmptyNoDataResponse(uint16_t id,
+                                                   bool is_authoritative,
+                                                   base::StringPiece qname,
+                                                   uint16_t qtype) {
+  return DnsResponse(id, is_authoritative,
+                     /*answers=*/{},
+                     /*authority_records=*/{},
+                     /*additional_records=*/{}, DnsQuery(id, qname, qtype));
+}
+
 DnsResponse::DnsResponse(DnsResponse&& other) = default;
 DnsResponse& DnsResponse::operator=(DnsResponse&& other) = default;
 

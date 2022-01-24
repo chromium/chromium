@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "media/base/audio_decoder.h"
@@ -31,6 +30,10 @@ class MojoAudioDecoder final : public AudioDecoder,
  public:
   MojoAudioDecoder(scoped_refptr<base::SequencedTaskRunner> task_runner,
                    mojo::PendingRemote<mojom::AudioDecoder> remote_decoder);
+
+  MojoAudioDecoder(const MojoAudioDecoder&) = delete;
+  MojoAudioDecoder& operator=(const MojoAudioDecoder&) = delete;
+
   ~MojoAudioDecoder() final;
 
   // Decoder implementation
@@ -106,8 +109,6 @@ class MojoAudioDecoder final : public AudioDecoder,
   // Passed from |remote_decoder_| as a result of its initialization.
   bool needs_bitstream_conversion_ = false;
   AudioDecoderType decoder_type_ = AudioDecoderType::kUnknown;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioDecoder);
 };
 
 }  // namespace media

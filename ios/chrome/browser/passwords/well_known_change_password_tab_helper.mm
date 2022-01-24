@@ -50,7 +50,7 @@ void WellKnownChangePasswordTabHelper::DidStartNavigation(
 
 void WellKnownChangePasswordTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL request_url = net::GURLWithNSURL(request.URL);
   // The custom behaviour is only used if the .well-known/change-password
@@ -81,7 +81,7 @@ void WellKnownChangePasswordTabHelper::ShouldAllowRequest(
 
 void WellKnownChangePasswordTabHelper::ShouldAllowResponse(
     NSURLResponse* response,
-    bool for_main_frame,
+    web::WebStatePolicyDecider::ResponseInfo response_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL url = net::GURLWithNSURL(response.URL);
   // True if the TabHelper expects the response from .well-known/change-password
@@ -136,7 +136,7 @@ void WellKnownChangePasswordTabHelper::OnProcessingFinished(bool is_supported) {
       Redirect(redirect_url);
     } else {
       RecordMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
-      Redirect(request_url_.GetOrigin());
+      Redirect(request_url_.DeprecatedGetOriginAsURL());
     }
   }
 }

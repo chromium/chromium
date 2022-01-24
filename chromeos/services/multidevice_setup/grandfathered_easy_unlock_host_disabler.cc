@@ -176,8 +176,7 @@ void GrandfatheredEasyUnlockHostDisabler::OnDisableEasyUnlockHostResult(
 
   PA_LOG(WARNING) << "Retrying in " << kNumMinutesBetweenRetries
                   << " minutes if necessary.";
-  timer_->Start(FROM_HERE,
-                base::TimeDelta::FromMinutes(kNumMinutesBetweenRetries),
+  timer_->Start(FROM_HERE, base::Minutes(kNumMinutesBetweenRetries),
                 base::BindOnce(&GrandfatheredEasyUnlockHostDisabler::
                                    DisableEasyUnlockHostIfNecessary,
                                base::Unretained(this)));

@@ -27,6 +27,7 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -191,6 +192,14 @@ const CGFloat kBubblePresentationDelay = 1;
     return;
 
   BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+  const UIDeviceOrientation deviceOrientation =
+      [[UIDevice currentDevice] orientation];
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    arrowDirection = BubbleArrowDirectionUp;
+  } else if (deviceOrientation == UIDeviceOrientationLandscapeRight ||
+             deviceOrientation == UIDeviceOrientationLandscapeLeft) {
+    arrowDirection = BubbleArrowDirectionUp;
+  }
   NSString* text = l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_IPH);
   CGPoint toolsMenuAnchor = [self anchorPointToGuide:kToolsMenuGuide
                                            direction:arrowDirection];

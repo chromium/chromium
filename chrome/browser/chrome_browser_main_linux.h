@@ -8,22 +8,28 @@
 #define CHROME_BROWSER_CHROME_BROWSER_MAIN_LINUX_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/chrome_browser_main_posix.h"
 
 class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
  public:
-  ChromeBrowserMainPartsLinux(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainPartsLinux(content::MainFunctionParams parameters,
                               StartupData* startup_data);
+
+  ChromeBrowserMainPartsLinux(const ChromeBrowserMainPartsLinux&) = delete;
+  ChromeBrowserMainPartsLinux& operator=(const ChromeBrowserMainPartsLinux&) =
+      delete;
+
   ~ChromeBrowserMainPartsLinux() override;
 
   // ChromeBrowserMainParts overrides.
   void PreProfileInit() override;
   void PostCreateMainMessageLoop() override;
+#if defined(USE_DBUS) && !defined(OS_CHROMEOS)
+  // Only needed for native Linux, to set up the low-memory-monitor-based memory
+  // monitoring (which depends on D-Bus).
+  void PostBrowserStart() override;
+#endif
   void PostDestroyThreads() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainPartsLinux);
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_LINUX_H_

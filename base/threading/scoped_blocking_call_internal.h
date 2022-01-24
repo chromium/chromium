@@ -84,15 +84,20 @@ class BASE_EXPORT IOJankMonitoringWindow
     void Cancel();
 
    private:
-    const TimeTicks call_start_;
+    TimeTicks call_start_;
     scoped_refptr<IOJankMonitoringWindow> assigned_jank_window_;
   };
 
-  static constexpr TimeDelta kIOJankInterval = TimeDelta::FromSeconds(1);
-  static constexpr TimeDelta kMonitoringWindow = TimeDelta::FromMinutes(1);
+  static constexpr TimeDelta kIOJankInterval = Seconds(1);
+  static constexpr TimeDelta kMonitoringWindow = Minutes(1);
   static constexpr TimeDelta kTimeDiscrepancyTimeout = kIOJankInterval * 10;
   static constexpr int kNumIntervals = kMonitoringWindow / kIOJankInterval;
+
+  // kIOJankIntervals must integrally fill kMonitoringWindow
   static_assert((kMonitoringWindow % kIOJankInterval).is_zero(), "");
+
+  // Cancelation is simple because it can only affect the current window.
+  static_assert(kTimeDiscrepancyTimeout < kMonitoringWindow, "");
 
  private:
   friend class base::RefCountedThreadSafe<IOJankMonitoringWindow>;
@@ -167,6 +172,11 @@ class BASE_EXPORT UncheckedScopedBlockingCall {
   explicit UncheckedScopedBlockingCall(const Location& from_here,
                                        BlockingType blocking_type,
                                        BlockingCallType blocking_call_type);
+
+  UncheckedScopedBlockingCall(const UncheckedScopedBlockingCall&) = delete;
+  UncheckedScopedBlockingCall& operator=(const UncheckedScopedBlockingCall&) =
+      delete;
+
   ~UncheckedScopedBlockingCall();
 
  private:
@@ -184,8 +194,6 @@ class BASE_EXPORT UncheckedScopedBlockingCall {
   // Non-nullopt for non-nested blocking calls of type MAY_BLOCK on foreground
   // threads which we monitor for I/O jank.
   absl::optional<IOJankMonitoringWindow::ScopedMonitoredCall> monitored_call_;
-
-  DISALLOW_COPY_AND_ASSIGN(UncheckedScopedBlockingCall);
 };
 
 }  // namespace internal

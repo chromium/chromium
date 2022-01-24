@@ -39,6 +39,10 @@ class PlatformSensorReaderWin32 final : public PlatformSensorReaderWinBase {
       WARN_UNUSED_RESULT;
   void StopSensor() override;
 
+  PlatformSensorReaderWin32(const PlatformSensorReaderWin32&) = delete;
+  PlatformSensorReaderWin32& operator=(const PlatformSensorReaderWin32&) =
+      delete;
+
   // Must be destructed on the same thread that was used during construction.
   ~PlatformSensorReaderWin32() override;
 
@@ -71,8 +75,6 @@ class PlatformSensorReaderWin32 final : public PlatformSensorReaderWinBase {
   Microsoft::WRL::ComPtr<ISensor> sensor_;
   Microsoft::WRL::ComPtr<ISensorEvents> event_listener_;
   base::WeakPtrFactory<PlatformSensorReaderWin32> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorReaderWin32);
 };
 
 }  // namespace device

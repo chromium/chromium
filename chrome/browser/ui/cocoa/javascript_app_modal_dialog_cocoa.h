@@ -20,6 +20,10 @@ class AppModalDialogController;
 class AppModalDialogView;
 }
 
+namespace remote_cocoa {
+class AlertBridge;
+}
+
 class JavaScriptAppModalDialogCocoa
     : public javascript_dialogs::AppModalDialogView {
  public:
@@ -55,7 +59,7 @@ class JavaScriptAppModalDialogCocoa
   void OnMojoDisconnect();
 
   // Mojo interface to the NSAlert.
-  mojo::Remote<remote_cocoa::mojom::AlertBridge> alert_bridge_;
+  mojo::Remote<remote_cocoa::mojom::AlertBridge> alert_bridge_remote_;
 
   std::unique_ptr<javascript_dialogs::AppModalDialogController> controller_;
   std::unique_ptr<PopunderPreventer> popunder_preventer_;

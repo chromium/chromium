@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_UMA_UTIL_H_
 #define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_UMA_UTIL_H_
 
-#include "base/macros.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 namespace content_settings {

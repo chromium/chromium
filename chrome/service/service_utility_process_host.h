@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/cloud_print_utility.mojom.h"
@@ -49,6 +48,9 @@ class ServiceUtilityProcessHost : public content::ChildProcessHostDelegate {
    public:
     Client() {}
 
+    Client(const Client&) = delete;
+    Client& operator=(const Client&) = delete;
+
     // Called when the child process died before a reply was receieved.
     virtual void OnChildDied() {}
 
@@ -84,12 +86,15 @@ class ServiceUtilityProcessHost : public content::ChildProcessHostDelegate {
     // Returns true if metafile successfully loaded from |emf_region|.
     bool MetafileAvailable(float scale_factor,
                            base::ReadOnlySharedMemoryRegion emf_region);
-
-    DISALLOW_COPY_AND_ASSIGN(Client);
   };
 
   ServiceUtilityProcessHost(Client* client,
                             base::SingleThreadTaskRunner* client_task_runner);
+
+  ServiceUtilityProcessHost(const ServiceUtilityProcessHost&) = delete;
+  ServiceUtilityProcessHost& operator=(const ServiceUtilityProcessHost&) =
+      delete;
+
   ~ServiceUtilityProcessHost() override;
 
   content::ChildProcessHost* GetHost() { return child_process_host_.get(); }
@@ -165,8 +170,6 @@ class ServiceUtilityProcessHost : public content::ChildProcessHostDelegate {
   std::unique_ptr<PdfToEmfState> pdf_to_emf_state_;
 
   base::WeakPtrFactory<ServiceUtilityProcessHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceUtilityProcessHost);
 };
 
 #endif  // CHROME_SERVICE_SERVICE_UTILITY_PROCESS_HOST_H_

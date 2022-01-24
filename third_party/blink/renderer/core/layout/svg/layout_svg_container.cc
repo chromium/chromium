@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
 
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
@@ -43,10 +42,14 @@ LayoutSVGContainer::LayoutSVGContainer(SVGElement* node)
 
 LayoutSVGContainer::~LayoutSVGContainer() = default;
 
+void LayoutSVGContainer::Trace(Visitor* visitor) const {
+  visitor->Trace(content_);
+  LayoutSVGModelObject::Trace(visitor);
+}
+
 void LayoutSVGContainer::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  LayoutAnalyzer::Scope analyzer(*this);
 
   // Update the local transform in subclasses.
   // At this point our bounding box may be incorrect, so any box relative

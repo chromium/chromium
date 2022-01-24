@@ -1,22 +1,15 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.emoji.EmojiPickerTest');
 goog.setTestOnly();
 
 const Component = goog.require('goog.ui.Component');
 const Emoji = goog.require('goog.ui.emoji.Emoji');
+const EmojiPalette = goog.requireType('goog.ui.emoji.EmojiPalette');
 const EmojiPicker = goog.require('goog.ui.emoji.EmojiPicker');
 const EventHandler = goog.require('goog.events.EventHandler');
 const SpriteInfo = goog.require('goog.ui.emoji.SpriteInfo');
@@ -175,6 +168,7 @@ const spritedEmoji1 = [
 
 // This group contains a mix of sprited emoji via css, sprited emoji via
 // metadata, and non-sprited emoji.
+/** @suppress {checkTypes} suppression added to enable type checking */
 const spritedEmoji2 = [
   'Emoji 1',
   [
@@ -246,12 +240,15 @@ function checkPathsEndWithSameFile(path1, path2) {
  * or the src attribute if it's an image.
  * @param {Element} element Element to get the image url for
  * @return {string}
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function getImageUrl(element) {
+  /** @suppress {checkTypes} suppression added to enable type checking */
   element = element.firstChild;  // get the wrapped element
   if (element.tagName == TagName.IMG) {
     return element.src;
   } else {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     let url = style.getStyle(element, 'background-image');
     url = url.replace(/url\(/, '');
     url = url.replace(/\)/, '');
@@ -262,7 +259,7 @@ function getImageUrl(element) {
 /**
  * Checks that the content of an emojipicker page is all images pointing to
  * the default img.
- * @param {goog.ui.emoji.EmojiPalette} page The page of the picker to check
+ * @param {!EmojiPalette} page The page of the picker to check
  * @param {string} defaultImgUrl The url of the default img
  */
 function checkContentIsDefaultImg(page, defaultImgUrl) {
@@ -279,10 +276,11 @@ function checkContentIsDefaultImg(page, defaultImgUrl) {
 /**
  * Checks that the content of an emojipicker page is the specified emoji and
  * the default img after the emoji are all used.
- * @param {goog.ui.emoji.EmojiPalette} page The page of the picker to check
+ * @param {!EmojiPalette} page The page of the picker to check
  * @param {Array<Array<string>>} emojiList List of emoji that should be in the
  *     palette
  * @param {string} defaultImgUrl The url of the default img
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function checkContentIsEmojiImages(page, emojiList, defaultImg) {
   const content = page.getContent();
@@ -304,8 +302,9 @@ function checkContentIsEmojiImages(page, emojiList, defaultImg) {
 /**
  * Checks and verifies the structure of a non-progressively-rendered
  * emojipicker.
- * @param {goog.ui.emoji.EmojiPalette} palette Emoji palette to check.
+ * @param {!EmojiPalette} palette Emoji palette to check.
  * @param {Array<Array<string>>} emoji Emoji that should be in the palette.
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function checkStructureForNonProgressivePicker(palette, emoji) {
   // We can hackily check the items by selecting an item and then getting the
@@ -364,8 +363,10 @@ function checkStructureForNonProgressivePicker(palette, emoji) {
 
 /**
  * Checks and verifies the structure of a progressively-rendered emojipicker.
- * @param {goog.ui.emoji.EmojiPalette} palette Emoji palette to check.
+ * @param {!EmojiPalette} palette Emoji palette to check.
  * @param {Array<Array<string>>} emoji Emoji that should be in the palette.
+ * @suppress {strictMissingProperties,checkTypes} suppression added to enable
+ * type checking
  */
 function checkStructureForProgressivePicker(palette, emoji) {
   // We can hackily check the items by selecting an item and then getting the
@@ -427,8 +428,9 @@ function checkStructureForProgressivePicker(palette, emoji) {
 /**
  * Checks and verifies the structure of a non-progressive fast-loading picker
  * after the animated emoji have loaded.
- * @param {goog.ui.emoji.EmojiPalette} palette Emoji palette to check.
+ * @param {!EmojiPalette} palette Emoji palette to check.
  * @param {Array<Array<string>>} emoji Emoji that should be in the palette.
+ * @suppress {strictMissingProperties} suppression added to enable type checking
  */
 function checkPostLoadStructureForFastLoadNonProgressivePicker(palette, emoji) {
   for (let i = 0; i < emoji[1].length; i++) {
@@ -509,8 +511,10 @@ function checkPostLoadStructureForFastLoadNonProgressivePicker(palette, emoji) {
 /**
  * Checks and verifies the structure of a progressive fast-loading picker
  * after the animated emoji have loaded.
- * @param {goog.ui.emoji.EmojiPalette} palette Emoji palette to check.
+ * @param {!EmojiPalette} palette Emoji palette to check.
  * @param {Array<Array<string>>} emoji Emoji that should be in the palette.
+ * @suppress {strictMissingProperties,checkTypes} suppression added to enable
+ * type checking
  */
 function checkPostLoadStructureForFastLoadProgressivePicker(palette, emoji) {
   for (let i = 0; i < emoji[1].length; i++) {
@@ -639,6 +643,7 @@ testSuite({
     assertTrue(picker.getNumEmojiGroups() == emojiGroups.length);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAdjustNumRowsIfNecessaryIsCorrect() {
     const picker = new EmojiPicker('../../demos/emoji/none.gif');
     picker.addEmojiGroup(emojiGroup1[0], emojiGroup1[1]);
@@ -707,6 +712,7 @@ testSuite({
     picker.dispose();
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testDelayedLoadPaletteCreationForSinglePagePicker() {
     const defaultImg = '../../demos/emoji/none.gif';
     const picker = new EmojiPicker(defaultImg);
@@ -810,6 +816,28 @@ testSuite({
     picker.dispose();
   },
 
+  testGetSelectedEmoji_urlPrefix() {
+    const defaultImg = 'a/b/../../../../demos/emoji/none.gif';
+    const picker = new EmojiPicker(defaultImg);
+    picker.setDelayedLoad(false);
+    picker.addEmojiGroup(emojiGroup1[0], emojiGroup1[1]);
+    picker.setUrlPrefix('a/b/../../');
+    picker.render();
+
+    const palette = picker.getPage(0);
+    // Artificially select the an emoji
+    palette.setSelectedIndex(0);
+    palette.dispatchEvent(Component.EventType.ACTION);
+
+    // Now we should get the first emoji back. See emojiGroup1 above.
+    const emoji = picker.getSelectedEmoji();
+    assertEquals('std.200', emoji.getId());
+    assertEquals('a/b/../../../../demos/emoji/200.gif', emoji.getUrl());
+
+    picker.dispose();
+  },
+
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testPreLoadCellConstructionForFastLoadingNonProgressive() {
     const defaultImg = '../../demos/emoji/none.gif';
     const picker = new EmojiPicker(defaultImg);
@@ -826,6 +854,7 @@ testSuite({
     picker.dispose();
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testPreLoadCellConstructionForFastLoadingProgressive() {
     const defaultImg = '../../demos/emoji/none.gif';
     const picker = new EmojiPicker(defaultImg);
@@ -842,6 +871,7 @@ testSuite({
     picker.dispose();
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testCellConstructionForNonProgressiveRenderingSpriting() {
     const defaultImg = '../../demos/emoji/none.gif';
     const picker = new EmojiPicker(defaultImg);
@@ -855,6 +885,7 @@ testSuite({
     picker.dispose();
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testCellConstructionForProgressiveRenderingSpriting() {
     const defaultImg = '../../demos/emoji/none.gif';
     const picker = new EmojiPicker(defaultImg);
@@ -870,6 +901,7 @@ testSuite({
     picker.dispose();
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testDelayedLoadPaletteCreationForMultiPagePicker() {
     const defaultImg = '../../demos/emoji/none.gif';
     const picker = new EmojiPicker(defaultImg);

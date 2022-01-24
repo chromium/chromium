@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
@@ -29,15 +28,20 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareRankingBridge;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
+import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
+import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -50,6 +54,8 @@ import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +75,10 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private final SettingsLauncher mSettingsLauncher;
     private final boolean mIsSyncEnabled;
     private final ImageEditorModuleProvider mImageEditorModuleProvider;
+    private final BottomSheetObserver mBottomSheetObserver;
+    private final LargeIconBridge mIconBridge;
+    private final Tracker mFeatureEngagementTracker;
+
     private long mShareStartTime;
     private boolean mExcludeFirstParty;
     private boolean mIsMultiWindow;
@@ -81,10 +91,10 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private WindowAndroid mWindowAndroid;
     private ChromeShareExtras mChromeShareExtras;
     private LinkToTextCoordinator mLinkToTextCoordinator;
-    private final BottomSheetObserver mBottomSheetObserver;
-    private final LargeIconBridge mIconBridge;
-    private final Tracker mFeatureEngagementTracker;
+    private ShareSheetLinkToggleCoordinator mShareSheetLinkToggleCoordinator;
     private @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.MAX;
+    private LinkToggleMetricsDetails mLinkToggleMetricsDetails =
+            new LinkToggleMetricsDetails(LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED);
 
     // This same constant is used on the C++ side, in ShareRanking, to indicate
     // the position of the special "More..." target. Don't change its value
@@ -132,6 +142,15 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                             ShareSheetCoordinator.this::onLayoutChange);
                 }
             }
+
+            @Override
+            public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
+                if (state == SheetState.HIDDEN) {
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "Sharing.SharingHubAndroid.CloseReason", reason,
+                            StateChangeReason.MAX_VALUE + 1);
+                }
+            }
         };
         mBottomSheetController.addObserver(mBottomSheetObserver);
         mIconBridge = iconBridge;
@@ -162,7 +181,14 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mShareParams = params;
         mChromeShareExtras = chromeShareExtras;
         mActivity = params.getWindow().getActivity().get();
+        if (!shouldShowPreemptiveLinkToText(chromeShareExtras)) {
+            mShareSheetLinkToggleCoordinator.setShareParamsAndExtras(params, chromeShareExtras);
+            mShareParams = mShareSheetLinkToggleCoordinator.getDefaultShareParams();
+        }
         if (mActivity == null) return;
+
+        // Current tab information is necessary to create the first party options.
+        if (!mExcludeFirstParty && (mTabProvider == null || mTabProvider.get() == null)) return;
 
         if (mWindowAndroid == null) {
             mWindowAndroid = params.getWindow();
@@ -171,7 +197,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             }
         }
 
-        mBottomSheet = new ShareSheetBottomSheetContent(mActivity, mIconBridge, this, params);
+        mBottomSheet = new ShareSheetBottomSheetContent(
+                mActivity, mIconBridge, this, params, mFeatureEngagementTracker);
 
         mShareStartTime = shareStartTime;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
@@ -181,20 +208,27 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     }
 
     /**
-     * Updates {@code mShareParams} from the {@link LinkGeneration} state.
-     * Called when toggling between LinkToText options
+     * Updates {@code mShareParams} from the {@link LinkToggleState}.
+     * Called when toggling between link/no link options.
      *
-     * @param state The state from {@link LinkGeneration} to which ShareParams should be updated.
+     * @param linkToggleMetricsDetails {@link LinkToggleMetricsDetails} to record link toggle
+     *         metrics, and contains the {@link LinkToggleState} to update to.
+     * @param linkGenerationState {@link LinkGeneration} to record LinkToText metrics.
      */
-    void updateShareSheetForLinkToText(@LinkGeneration int state) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                || mLinkToTextCoordinator == null) {
+    void updateShareSheetForLinkToggle(LinkToggleMetricsDetails linkToggleMetricsDetails,
+            @LinkGeneration int linkGenerationState) {
+        if ((!ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
+                    || mLinkToTextCoordinator == null)
+                && (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)
+                        || mShareSheetLinkToggleCoordinator == null)) {
             return;
         }
 
-        mShareParams = mLinkToTextCoordinator.getShareParams(state);
+        mShareParams = mShareSheetLinkToggleCoordinator.getShareParams(
+                linkToggleMetricsDetails.mLinkToggleState);
         mBottomSheet.updateShareParams(mShareParams);
-        mLinkGenerationStatusForMetrics = state;
+        mLinkGenerationStatusForMetrics = linkGenerationState;
+        mLinkToggleMetricsDetails = linkToggleMetricsDetails;
         updateShareSheet(null);
     }
 
@@ -211,8 +245,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
     private void finishUpdateShareSheet(List<PropertyModel> firstPartyApps,
             List<PropertyModel> thirdPartyApps, @Nullable Runnable onUpdateFinished) {
-        mBottomSheet.createRecyclerViews(
-                firstPartyApps, thirdPartyApps, mContentTypes, mShareParams.getFileContentType());
+        mBottomSheet.createRecyclerViews(firstPartyApps, thirdPartyApps, mContentTypes,
+                mShareParams.getFileContentType(), mChromeShareExtras.getDetailedContentType(),
+                mShareSheetLinkToggleCoordinator);
         if (onUpdateFinished != null) {
             onUpdateFinished.run();
         }
@@ -228,7 +263,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     }
 
     /**
-     * If preemptive link to text generation is enable, create LinkTotextCoordinator
+     * If preemptive link to text generation is enable, create LinkToTextCoordinator
      * which will generate link to text, create a new share and show share sheet.
      * Otherwise show share sheet with the current share.
      *
@@ -238,8 +273,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
      */
     public void showInitialShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                && chromeShareExtras.isUserHighlightedText()) {
+        if (shouldShowPreemptiveLinkToText(chromeShareExtras)) {
             if (!chromeShareExtras.isReshareHighlightedText()) {
                 LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
                         LinkToTextMetricsHelper.LinkToTextDiagnoseStatus
@@ -247,13 +281,17 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             }
             String tabUrl =
                     mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec() : "";
-            mLinkToTextCoordinator =
-                    new LinkToTextCoordinator(params, mTabProvider.get(), this, chromeShareExtras,
-                            shareStartTime, getUrlToShare(params, chromeShareExtras, tabUrl));
-            return;
+            mLinkToTextCoordinator = new LinkToTextCoordinator(mTabProvider.get(), this,
+                    chromeShareExtras, shareStartTime,
+                    getUrlToShare(params, chromeShareExtras, tabUrl), params.getText());
         }
-
-        showShareSheet(params, chromeShareExtras, shareStartTime);
+        mShareSheetLinkToggleCoordinator = new ShareSheetLinkToggleCoordinator(
+                params, chromeShareExtras, mLinkToTextCoordinator);
+        if (shouldShowPreemptiveLinkToText(chromeShareExtras)) {
+            mLinkToTextCoordinator.shareLinkToText();
+        } else {
+            showShareSheet(params, chromeShareExtras, shareStartTime);
+        }
     }
 
     private Profile getCurrentProfile() {
@@ -285,11 +323,17 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 getUrlToShare(shareParams, chromeShareExtras,
                         mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec()
                                                            : ""),
-                mLinkGenerationStatusForMetrics);
+                mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails);
         mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(
                 contentTypes, mIsMultiWindow);
+    }
+
+    private boolean shouldShowPreemptiveLinkToText(ChromeShareExtras chromeShareExtras) {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
+                && chromeShareExtras.getDetailedContentType()
+                == DetailedContentType.HIGHLIGHTED_TEXT;
     }
 
     private PropertyModel createMorePropertyModel(
@@ -297,14 +341,11 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         return ShareSheetPropertyModelBuilder.createPropertyModel(
                 AppCompatResources.getDrawable(activity, R.drawable.sharing_more),
                 activity.getResources().getString(R.string.sharing_more_icon_label),
+                /*accessibilityDescription=*/null,
                 (shareParams)
                         -> {
-                    RecordUserAction.record("SharingHubAndroid.MoreSelected");
-                    if (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
-                        LinkToTextMetricsHelper.recordSharedHighlightStateMetrics(
-                                mLinkGenerationStatusForMetrics);
-                    }
+                    recordShareMetrics("SharingHubAndroid.MoreSelected",
+                            mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails);
                     mBottomSheetController.hideContent(mBottomSheet, true);
                     ShareHelper.showDefaultShareUi(params, getCurrentProfile(), saveLastUsed);
                     // Reset callback to prevent cancel() being called when the custom sheet is
@@ -347,13 +388,20 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             return;
         }
 
-        List<PropertyModel> models =
-                mPropertyModelBuilder.selectThirdPartyApps(mBottomSheet, contentTypes, params,
-                        saveLastUsed, mShareStartTime, mLinkGenerationStatusForMetrics);
+        List<PropertyModel> models = mPropertyModelBuilder.selectThirdPartyApps(mBottomSheet,
+                contentTypes, params, saveLastUsed, mShareStartTime,
+                mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails);
         models.add(createMorePropertyModel(activity, params, saveLastUsed));
 
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(models));
     }
+
+    class ResolveInfoPackageNameComparator implements Comparator<ResolveInfo> {
+        @Override
+        public int compare(ResolveInfo a, ResolveInfo b) {
+            return a.activityInfo.packageName.compareTo(b.activityInfo.packageName);
+        }
+    };
 
     private void createThirdPartyPropertyModelsFromUsageRanking(Activity activity,
             ShareParams params, Set<Integer> contentTypes, boolean saveLastUsed,
@@ -366,34 +414,90 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
 
-        Intent shareIntent = ShareHelper.getShareLinkAppCompatibilityIntent();
         List<ResolveInfo> availableResolveInfos =
                 pm.queryIntentActivities(ShareHelper.getShareLinkAppCompatibilityIntent(), 0);
         availableResolveInfos.addAll(pm.queryIntentActivities(
                 ShareHelper.createShareFileAppCompatibilityIntent(params.getFileContentType()), 0));
 
         List<String> availableActivities = new ArrayList<String>();
-        Map<String, PropertyModel> models = new HashMap<String, PropertyModel>();
+        Map<String, ResolveInfo> resolveInfos = new HashMap<String, ResolveInfo>();
 
+        // The system can return ResolveInfos which refer to activities exported
+        // by Chrome - especially the Print activity. We don't want to offer
+        // these as "third party" targets, so filter them out.
+        availableResolveInfos = filterOutOwnResolveInfos(availableResolveInfos);
+
+        // Sort the resolve infos by package name: on the backend, we store them by activity name,
+        // but there's no particular reason activity names would be unique, and when we get them
+        // from the system they're in arbitrary order. Here we sort them by package name (which *is*
+        // unique) so that the user always gets a consistent option in a given slot.
+        Collections.sort(availableResolveInfos, new ResolveInfoPackageNameComparator());
+
+        // Accumulate the ResolveInfos for every package available on the system, but do not
+        // construct their PropertyModels yet - there may be many packages but we will only show a
+        // handful of them, and constructing a PropertyModel involves multiple synchronous calls to
+        // the PackageManager which can be quite slow.
         for (ResolveInfo r : availableResolveInfos) {
-            availableActivities.add(r.activityInfo.name);
-            models.put(r.activityInfo.name,
-                    mPropertyModelBuilder.buildThirdPartyAppModel(mBottomSheet, params, r,
-                            saveLastUsed, mShareStartTime, NO_LOG_INDEX,
-                            mLinkGenerationStatusForMetrics));
+            String name = r.activityInfo.packageName + "/" + r.activityInfo.name;
+            availableActivities.add(name);
+            resolveInfos.put(name, r);
         }
 
-        models.put(MORE_TARGET_NAME, createMorePropertyModel(activity, params, saveLastUsed));
-
-        // TODO(ellyjones): Compute the fold from the device size.
-        int fold = 4;
+        int fold = numberOf3PTilesThatFitOnScreen(activity);
+        int length = numberOf3PTilesToShow(fold);
 
         // TODO(ellyjones): Does !saveLastUsed always imply that we shouldn't incorporate the share
         // into our ranking?
         boolean persist = !profile.isOffTheRecord() && saveLastUsed;
 
-        ShareRankingBridge.rank(profile, type, availableActivities, fold, persist,
-                ranking -> { onThirdPartyShareTargetsReceived(callback, models, ranking); });
+        ShareRankingBridge.rank(
+                profile, type, availableActivities, fold, length, persist, ranking -> {
+                    onThirdPartyShareTargetsReceived(
+                            callback, resolveInfos, activity, params, saveLastUsed, ranking);
+                });
+    }
+
+    // Returns a new list of ResovleInfos containing only the elements of the
+    // supplied list which are not references to activities from the current
+    // package.
+    private List<ResolveInfo> filterOutOwnResolveInfos(List<ResolveInfo> infos) {
+        String currentPackageName = ContextUtils.getApplicationContext().getPackageName();
+        List<ResolveInfo> remaining = new ArrayList<ResolveInfo>();
+        for (ResolveInfo info : infos) {
+            if (!info.activityInfo.packageName.equals(currentPackageName)) {
+                remaining.add(info);
+            }
+        }
+        return remaining;
+    }
+
+    private int numberOf3PTilesToShow(int fold) {
+        final boolean shouldFixMore =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_USAGE_RANKING_FIXED_MORE);
+
+        // Let's say that the screen is 4 tiles wide, and MAX_NUM_APPS is 7.
+        // Then, in FIXED_MORE mode, there should be 4 app tiles total:
+        //    aaa bbb ccc more ^
+        // where ^ marks the screen edge.
+        // In non-FIXED_MORE mode there should be 8:
+        //    aaa bbb ccc ddd ^ eee fff ggg more
+        return shouldFixMore ? fold : ShareSheetPropertyModelBuilder.MAX_NUM_APPS + 1;
+    }
+
+    private int numberOf3PTilesThatFitOnScreen(Activity activity) {
+        int screenWidth =
+                ContextUtils.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
+        int tileWidth =
+                activity.getResources().getDimensionPixelSize(R.dimen.sharing_hub_tile_width);
+        int tileMargin =
+                activity.getResources().getDimensionPixelSize(R.dimen.sharing_hub_tile_margin);
+        // In 'fix more' mode, ask for as many tiles as can fit; this will probably end up looking a
+        // bit strange since there will likely be an uneven amount of padding on the right edge.
+        // When not in that mode, the default is 10 tiles.
+        //
+        // Each tile has margin on both sides, so:
+        int tileVisualWidth = (2 * tileMargin) + tileWidth;
+        return (screenWidth - (2 * tileMargin)) / tileVisualWidth;
     }
 
     private String contentTypesToTypeForRanking(Set<Integer> contentTypes) {
@@ -407,12 +511,46 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     }
 
     private void onThirdPartyShareTargetsReceived(Callback<List<PropertyModel>> callback,
-            Map<String, PropertyModel> modelMap, List<String> targets) {
+            Map<String, ResolveInfo> resolveInfos, Activity activity, ShareParams params,
+            boolean saveLastUsed, List<String> targets) {
+        // Build PropertyModels for all the ResolveInfos that correspond to
+        // actual targets, in the order that we're going to show them.
         List<PropertyModel> models = new ArrayList<PropertyModel>();
         for (String target : targets) {
-            models.add(modelMap.get(target));
+            if (target.equals(MORE_TARGET_NAME)) {
+                models.add(createMorePropertyModel(activity, params, saveLastUsed));
+            } else if (!target.equals("")) {
+                assert resolveInfos.get(target) != null;
+                models.add(mPropertyModelBuilder.buildThirdPartyAppModel(mBottomSheet, params,
+                        resolveInfos.get(target), saveLastUsed, mShareStartTime, NO_LOG_INDEX,
+                        mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails));
+            }
         }
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(models));
+    }
+
+    static void recordShareMetrics(String featureName, @LinkGeneration int linkGenerationStatus,
+            LinkToggleMetricsDetails linkToggleMetricsDetails, long shareStartTime) {
+        recordShareMetrics(featureName, linkGenerationStatus, linkToggleMetricsDetails);
+        recordTimeToShare(shareStartTime);
+    }
+
+    private static void recordShareMetrics(String featureName,
+            @LinkGeneration int linkGenerationStatus,
+            LinkToggleMetricsDetails linkToggleMetricsDetails) {
+        RecordUserAction.record(featureName);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
+            LinkToTextMetricsHelper.recordSharedHighlightStateMetrics(linkGenerationStatus);
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)) {
+            ShareSheetLinkToggleMetricsHelper.recordLinkToggleSharedStateMetric(
+                    linkToggleMetricsDetails);
+        }
+    }
+
+    private static void recordTimeToShare(long shareStartTime) {
+        RecordHistogram.recordMediumTimesHistogram("Sharing.SharingHubAndroid.TimeToShare",
+                System.currentTimeMillis() - shareStartTime);
     }
 
     @VisibleForTesting

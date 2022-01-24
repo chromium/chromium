@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_value_map.h"
@@ -21,6 +20,9 @@
 class TestingPrefStore : public PersistentPrefStore {
  public:
   TestingPrefStore();
+
+  TestingPrefStore(const TestingPrefStore&) = delete;
+  TestingPrefStore& operator=(const TestingPrefStore&) = delete;
 
   // Overriden from PrefStore.
   bool GetValue(const std::string& key,
@@ -48,7 +50,6 @@ class TestingPrefStore : public PersistentPrefStore {
   void ReadPrefsAsync(ReadErrorDelegate* error_delegate) override;
   void CommitPendingWrite(base::OnceClosure reply_callback,
                           base::OnceClosure synchronous_done_callback) override;
-  void CommitPendingWriteSynchronously() override;
   void SchedulePendingLossyWrites() override;
 
   // Marks the store as having completed initialization.
@@ -117,8 +118,6 @@ class TestingPrefStore : public PersistentPrefStore {
 
   std::unique_ptr<ReadErrorDelegate> error_delegate_;
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingPrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_TESTING_PREF_STORE_H_

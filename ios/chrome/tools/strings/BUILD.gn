@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 executable("generate_localizable_strings") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "generate_localizable_strings.mm" ]
   deps = [
     "//base",

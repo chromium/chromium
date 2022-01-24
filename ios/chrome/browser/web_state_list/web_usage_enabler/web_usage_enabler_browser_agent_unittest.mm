@@ -33,6 +33,11 @@ class WebUsageEnablerBrowserAgentTest : public PlatformTest {
     enabler_->SetWebUsageEnabled(false);
   }
 
+  WebUsageEnablerBrowserAgentTest(const WebUsageEnablerBrowserAgentTest&) =
+      delete;
+  WebUsageEnablerBrowserAgentTest& operator=(
+      const WebUsageEnablerBrowserAgentTest&) = delete;
+
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<Browser> browser_;
@@ -74,9 +79,6 @@ class WebUsageEnablerBrowserAgentTest : public PlatformTest {
       EXPECT_EQ(web_state->IsWebUsageEnabled(), enabled);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebUsageEnablerBrowserAgentTest);
 };
 
 // Tests that calling SetWebUsageEnabled() updates web usage enabled state for

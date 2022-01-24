@@ -21,6 +21,10 @@ class CastAppRpcInstance : public PlatformViewsRpcInstance,
                      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                      WebviewWindowManager* window_manager,
                      base::WeakPtr<WebContentsProvider> web_contents_provider);
+
+  CastAppRpcInstance(const CastAppRpcInstance&) = delete;
+  CastAppRpcInstance& operator=(const CastAppRpcInstance&) = delete;
+
   ~CastAppRpcInstance() override;
 
  protected:
@@ -32,8 +36,6 @@ class CastAppRpcInstance : public PlatformViewsRpcInstance,
   void WebContentsDestroyed() override;
   webview::PlatformViewsService::AsyncService* service_;
   base::WeakPtr<WebContentsProvider> web_contents_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastAppRpcInstance);
 };
 
 }  // namespace chromecast

@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/remoteplayback/web_remote_playback_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -38,10 +39,12 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_cast_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_current_time_display_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_download_button_element.h"
+#include "third_party/blink/renderer/modules/media_controls/elements/media_control_fullscreen_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_mute_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overflow_menu_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overflow_menu_list_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_play_button_element.h"
+#include "third_party/blink/renderer/modules/media_controls/elements/media_control_playback_speed_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_remaining_time_display_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_timeline_element.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_volume_slider_element.h"
@@ -92,17 +95,6 @@ class MockWebMediaPlayerForImpl : public EmptyWebMediaPlayer {
 
   bool has_audio_ = false;
   WebTimeRanges seekable_;
-};
-
-class MockLayoutObject : public LayoutObject {
- public:
-  MockLayoutObject(Node* node) : LayoutObject(node) {}
-
-  const char* GetName() const override { return "MockLayoutObject"; }
-  void UpdateLayout() override {}
-  FloatRect LocalBoundingBoxRectForAccessibility() const override {
-    return FloatRect();
-  }
 };
 
 class StubLocalFrameClientForImpl : public EmptyLocalFrameClient {
@@ -188,6 +180,10 @@ class MediaControlsImplTest : public PageTestBase,
     GetFrame().GetSettings()->SetScriptEnabled(true);
   }
 
+  void SetMediaControlsFromElement(HTMLMediaElement& elm) {
+    media_controls_ = static_cast<MediaControlsImpl*>(elm.GetMediaControls());
+  }
+
   void SimulateRouteAvailable() {
     RemotePlayback::From(media_controls_->MediaElement())
         .AvailabilityChangedForTesting(/* screen_is_available */ true);
@@ -214,6 +210,13 @@ class MediaControlsImplTest : public PageTestBase,
   void SimulateMediaControlPlaying() {
     MediaControls().MediaElement().SetReadyState(
         HTMLMediaElement::kHaveEnoughData);
+    MediaControls().MediaElement().SetNetworkState(
+        WebMediaPlayer::NetworkState::kNetworkStateLoading);
+  }
+
+  void SimulateMediaControlPlayingForFutureData() {
+    MediaControls().MediaElement().SetReadyState(
+        HTMLMediaElement::kHaveFutureData);
     MediaControls().MediaElement().SetNetworkState(
         WebMediaPlayer::NetworkState::kNetworkStateLoading);
   }
@@ -252,6 +255,12 @@ class MediaControlsImplTest : public PageTestBase,
   }
   MediaControlDownloadButtonElement* DownloadButtonElement() const {
     return media_controls_->download_button_;
+  }
+  MediaControlFullscreenButtonElement* FullscreenButtonElement() const {
+    return media_controls_->fullscreen_button_;
+  }
+  MediaControlPlaybackSpeedButtonElement* PlaybackSpeedButtonElement() const {
+    return media_controls_->playback_speed_button_;
   }
   MediaControlPlayButtonElement* PlayButtonElement() const {
     return media_controls_->play_button_;
@@ -324,6 +333,11 @@ class MediaControlsImplTest : public PageTestBase,
       return false;
 
     return true;
+  }
+
+  PointerEvent* CreatePointerEvent(const AtomicString& name) {
+    PointerEventInit* init = PointerEventInit::Create();
+    return PointerEvent::Create(name, init);
   }
 
  private:
@@ -550,6 +564,29 @@ TEST_F(MediaControlsImplTest, CastOverlayDisabledMediaControlsDisabled) {
   EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
 }
 
+TEST_F(MediaControlsImplTest, CastButtonVisibilityDependsOnControlslistAttr) {
+  EnsureSizing();
+
+  MediaControlCastButtonElement* cast_button = CastButtonElement();
+  ASSERT_NE(nullptr, cast_button);
+
+  SimulateRouteAvailable();
+  ASSERT_TRUE(IsOverflowElementVisible(*cast_button));
+
+  MediaControls().MediaElement().setAttribute(
+      blink::html_names::kControlslistAttr, "noremoteplayback");
+  test::RunPendingTasks();
+
+  // Cast button should not be displayed because of
+  // controlslist="noremoteplayback".
+  ASSERT_FALSE(IsOverflowElementVisible(*cast_button));
+
+  // If the user explicitly shows all controls, that should override the
+  // controlsList attribute and cast button should be displayed.
+  MediaControls().MediaElement().SetUserWantsControlsVisible(true);
+  ASSERT_TRUE(IsOverflowElementVisible(*cast_button));
+}
+
 TEST_F(MediaControlsImplTest, KeepControlsVisibleIfOverflowListVisible) {
   Element* overflow_list = GetElementByShadowPseudoId(
       MediaControls(), "-internal-media-controls-overflow-menu-list");
@@ -632,6 +669,90 @@ TEST_F(MediaControlsImplTest, DownloadButtonNotDisplayedHLS) {
   test::RunPendingTasks();
   SimulateLoadedMetadata();
   EXPECT_FALSE(IsOverflowElementVisible(*download_button));
+
+  MediaControls().MediaElement().SetSrc(
+      "https://example.com/foo.m3u8?title=foo");
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+  EXPECT_FALSE(IsOverflowElementVisible(*download_button));
+
+  // However, it *should* be displayed for otherwise valid sources containing
+  // the text 'm3u8'.
+  MediaControls().MediaElement().SetSrc("https://example.com/foo.m3u8.mp4");
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+  EXPECT_TRUE(IsOverflowElementVisible(*download_button));
+}
+
+TEST_F(MediaControlsImplTest,
+       DownloadButtonVisibilityDependsOnControlslistAttr) {
+  EnsureSizing();
+
+  MediaControlDownloadButtonElement* download_button = DownloadButtonElement();
+  ASSERT_NE(nullptr, download_button);
+
+  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().setAttribute(
+      blink::html_names::kControlslistAttr, "nodownload");
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+
+  // Download button should not be displayed because of
+  // controlslist="nodownload".
+  EXPECT_FALSE(IsOverflowElementVisible(*download_button));
+
+  // If the user explicitly shows all controls, that should override the
+  // controlsList attribute and download button should be displayed.
+  MediaControls().MediaElement().SetUserWantsControlsVisible(true);
+  EXPECT_TRUE(IsOverflowElementVisible(*download_button));
+}
+
+TEST_F(MediaControlsImplTest,
+       FullscreenButtonDisabledDependsOnControlslistAttr) {
+  EnsureSizing();
+
+  MediaControlFullscreenButtonElement* fullscreen_button =
+      FullscreenButtonElement();
+  ASSERT_NE(nullptr, fullscreen_button);
+
+  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().setAttribute(
+      blink::html_names::kControlslistAttr, "nofullscreen");
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+
+  // Fullscreen button should be disabled because of
+  // controlslist="nofullscreen".
+  EXPECT_TRUE(fullscreen_button->IsDisabled());
+
+  // If the user explicitly shows all controls, that should override the
+  // controlsList attribute and fullscreen button should be enabled.
+  MediaControls().MediaElement().SetUserWantsControlsVisible(true);
+  EXPECT_FALSE(fullscreen_button->IsDisabled());
+}
+
+TEST_F(MediaControlsImplTest,
+       PlaybackSpeedButtonVisibilityDependsOnControlslistAttr) {
+  EnsureSizing();
+
+  MediaControlPlaybackSpeedButtonElement* playback_speed_button =
+      PlaybackSpeedButtonElement();
+  ASSERT_NE(nullptr, playback_speed_button);
+
+  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().setAttribute(
+      blink::html_names::kControlslistAttr, "noplaybackrate");
+  test::RunPendingTasks();
+  SimulateLoadedMetadata();
+
+  // Fullscreen button should not be displayed because of
+  // controlslist="noplaybackrate".
+  EXPECT_FALSE(IsOverflowElementVisible(*playback_speed_button));
+
+  // If the user explicitly shows all controls, that should override the
+  // controlsList attribute and playback speed button should be displayed.
+  MediaControls().MediaElement().SetUserWantsControlsVisible(true);
+  EXPECT_TRUE(IsOverflowElementVisible(*playback_speed_button));
 }
 
 TEST_F(MediaControlsImplTest, TimelineSeekToRoundedEnd) {
@@ -855,7 +976,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   MediaControls().DispatchEvent(*Event::Create("focusin"));
   MediaControls().MediaElement().SetFocused(true,
                                             mojom::blink::FocusType::kNone);
-  MediaControls().DispatchEvent(*Event::Create("pointermove"));
+  MediaControls().DispatchEvent(*CreatePointerEvent("pointermove"));
 
   // Controls should remain visible
   platform()->RunForPeriodSeconds(2);
@@ -906,7 +1027,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler, CursorHidesWhenControlsHide) {
 
   // If the mouse moves, the controls are shown and the cursor is no longer
   // hidden.
-  MediaControls().DispatchEvent(*Event::Create("pointermove"));
+  MediaControls().DispatchEvent(*CreatePointerEvent("pointermove"));
   EXPECT_FALSE(IsCursorHidden());
 
   // Once the controls hide again, the cursor is hidden again.
@@ -1167,9 +1288,11 @@ TEST_F(MediaControlsImplTest, CastOverlayShowsOnSomeEvents) {
   SimulateHideMediaControlsTimerFired();
   EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
 
-  for (auto* const event_name :
+  for (const AtomicString event_name :
        {"gesturetap", "click", "pointerover", "pointermove"}) {
-    overlay_enclosure->DispatchEvent(*Event::Create(event_name));
+    overlay_enclosure->DispatchEvent(event_name == "gesturetap"
+                                         ? *Event::Create(event_name)
+                                         : *CreatePointerEvent(event_name));
     EXPECT_TRUE(IsElementVisible(*cast_overlay_button));
 
     SimulateHideMediaControlsTimerFired();
@@ -1194,13 +1317,13 @@ TEST_F(MediaControlsImplTest, ControlsShouldUseSafeAreaInsets) {
   }
 
   GetStyleEngine().EnsureEnvironmentVariables().SetVariable(
-      "safe-area-inset-top", "1px");
+      UADefinedVariable::kSafeAreaInsetTop, "1px");
   GetStyleEngine().EnsureEnvironmentVariables().SetVariable(
-      "safe-area-inset-left", "2px");
+      UADefinedVariable::kSafeAreaInsetLeft, "2px");
   GetStyleEngine().EnsureEnvironmentVariables().SetVariable(
-      "safe-area-inset-bottom", "3px");
+      UADefinedVariable::kSafeAreaInsetBottom, "3px");
   GetStyleEngine().EnsureEnvironmentVariables().SetVariable(
-      "safe-area-inset-right", "4px");
+      UADefinedVariable::kSafeAreaInsetRight, "4px");
 
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
   UpdateAllLifecyclePhasesForTest();
@@ -1388,6 +1511,39 @@ TEST_F(MediaControlsImplTest, HideControlsDefersStyleCalculationOnWaiting) {
   UpdateAllLifecyclePhasesForTest();
   new_element_count = document.GetStyleEngine().StyleForElementCount();
   EXPECT_LT(old_element_count, new_element_count);
+}
+
+TEST_F(MediaControlsImplTest, CheckStateOnPlayingForFutureData) {
+  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().Play();
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+
+  SimulateMediaControlPlayingForFutureData();
+  EXPECT_EQ(MediaControls().State(),
+            MediaControlsImpl::ControlsState::kPlaying);
+}
+
+TEST_F(MediaControlsImplTest, OverflowMenuInPaintContainment) {
+  // crbug.com/1244130
+  auto page_holder = std::make_unique<DummyPageHolder>();
+  page_holder->GetDocument().write("<audio controls style='contain:paint'>");
+  page_holder->GetDocument().Parser()->Finish();
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+  SetMediaControlsFromElement(
+      To<HTMLMediaElement>(*page_holder->GetDocument().QuerySelector("audio")));
+
+  MediaControls().ToggleOverflowMenu();
+  UpdateAllLifecyclePhasesForTest();
+  Element* overflow_list = GetElementByShadowPseudoId(
+      MediaControls(), "-internal-media-controls-overflow-menu-list");
+  ASSERT_TRUE(overflow_list);
+  EXPECT_TRUE(overflow_list->IsInTopLayer());
+
+  MediaControls().ToggleOverflowMenu();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(overflow_list->IsInTopLayer());
 }
 
 }  // namespace blink

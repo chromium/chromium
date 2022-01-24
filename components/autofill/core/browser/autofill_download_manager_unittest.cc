@@ -28,10 +28,10 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -888,11 +888,10 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
 
   EXPECT_EQ(1U, responses_.size());
   EXPECT_LT(download_manager_.loader_backoff_.GetTimeUntilRelease(),
-            base::TimeDelta::FromMilliseconds(1100));
+            base::Milliseconds(1100));
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(1100));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1100));
   run_loop.Run();
 
   // Get the retried request.
@@ -906,7 +905,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
 
   EXPECT_EQ(2U, responses_.size());
   EXPECT_LT(download_manager_.loader_backoff_.GetTimeUntilRelease(),
-            base::TimeDelta::FromMilliseconds(2100));
+            base::Milliseconds(2100));
 
   // There should not be an additional retry.
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
@@ -956,11 +955,10 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
       "", network::URLLoaderCompletionStatus(net::OK));
   EXPECT_EQ(1U, responses_.size());
   EXPECT_LT(download_manager_.loader_backoff_.GetTimeUntilRelease(),
-            base::TimeDelta::FromMilliseconds(1100));
+            base::Milliseconds(1100));
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(1100));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1100));
   run_loop.Run();
 
   // Check that it was a failure.
@@ -1038,7 +1036,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Query) {
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 1);
 
-  const auto kTimeDeltaMargin = base::TimeDelta::FromMilliseconds(100);
+  const auto kTimeDeltaMargin = base::Milliseconds(100);
   const int max_attempts = download_manager_.GetMaxServerAttempts();
   int attempt = 0;
   while (true) {
@@ -1106,7 +1104,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Upload) {
   form.fields.push_back(field);
 
   base::HistogramTester histogram;
-  const auto kTimeDeltaMargin = base::TimeDelta::FromMilliseconds(100);
+  const auto kTimeDeltaMargin = base::Milliseconds(100);
 
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->set_submission_source(SubmissionSource::FORM_SUBMISSION);
@@ -1479,10 +1477,10 @@ class AutofillServerCommunicationTest
       response->set_content_type("text/proto");
       response->AddCustomHeader(
           "Cache-Control",
-          base::StringPrintf("max-age=%" PRId64,
-                             base::TimeDelta::FromMilliseconds(
-                                 cache_expiration_in_milliseconds_)
-                                 .InSeconds()));
+          base::StringPrintf(
+              "max-age=%" PRId64,
+              base::Milliseconds(cache_expiration_in_milliseconds_)
+                  .InSeconds()));
       return response;
     }
 
@@ -1747,8 +1745,7 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
   // (ie this should go to the embedded server).
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(100));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
   run_loop.Run();
 
   {
@@ -1851,7 +1848,6 @@ using AutofillUploadTest = AutofillServerCommunicationTest;
 
 TEST_P(AutofillUploadTest, RichMetadata) {
   base::test::ScopedFeatureList local_feature;
-  local_feature.InitAndEnableFeature(features::kAutofillMetadataUploads);
 
   FormData form;
   form.url = GURL("https://origin.com");
@@ -1924,10 +1920,6 @@ TEST_P(AutofillUploadTest, RichMetadata) {
     histogram_tester.ExpectBucketCount(
         AutofillMetrics::SubmissionSourceToUploadEventMetric(submission_source),
         1, 1);
-
-    // Three encoding events should be sent.
-    histogram_tester.ExpectUniqueSample("Autofill.Upload.MetadataConfigIsValid",
-                                        true, 1);
 
     ASSERT_EQ(1u, payloads_.size());
     AutofillUploadRequest request;
@@ -2078,16 +2070,16 @@ TEST_P(AutofillUploadTest, ThrottlingDisabled) {
 
     // The last middle two uploads were marked as throttle-able.
     ASSERT_EQ(4u, payloads_.size());
-    for (size_t i = 0; i < payloads_.size(); ++i) {
+    for (size_t j = 0; j < payloads_.size(); ++j) {
       AutofillUploadRequest request;
-      ASSERT_TRUE(request.ParseFromString(payloads_[i]));
+      ASSERT_TRUE(request.ParseFromString(payloads_[j]));
       ASSERT_TRUE(request.has_upload());
       const AutofillUploadContents& upload_contents = request.upload();
-      EXPECT_EQ(upload_contents.was_throttleable(), (i == 1 || i == 2))
-          << "Wrong was_throttleable value for upload " << i;
+      EXPECT_EQ(upload_contents.was_throttleable(), (j == 1 || j == 2))
+          << "Wrong was_throttleable value for upload " << j;
       EXPECT_FALSE(upload_contents.has_randomized_form_metadata());
-      for (const auto& field : upload_contents.field()) {
-        EXPECT_FALSE(field.has_randomized_field_metadata());
+      for (const auto& upload_contents_field : upload_contents.field()) {
+        EXPECT_FALSE(upload_contents_field.has_randomized_field_metadata());
       }
     }
   }
@@ -2135,12 +2127,12 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
 
   // Advance the clock, but not past the reset period. The pref won't reset,
   // so the upload should not be sent.
-  test_clock.Advance(base::TimeDelta::FromDays(15));
+  test_clock.Advance(base::Days(15));
   EXPECT_FALSE(SendUploadRequest(form_structure, true, {}, "", true));
 
   // Advance the clock beyond the reset period. The pref should be reset and
   // the upload should succeed.
-  test_clock.Advance(base::TimeDelta::FromDays(2));  // Total = 29
+  test_clock.Advance(base::Days(2));  // Total = 29
   EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));
 
   // One upload was not sent.

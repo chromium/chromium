@@ -21,12 +21,6 @@ class TestOptimizationGuideDecider : public OptimizationGuideDecider {
       delete;
 
   // OptimizationGuideDecider implementation:
-  void RegisterOptimizationTargets(const std::vector<proto::OptimizationTarget>&
-                                       optimization_targets) override;
-  void ShouldTargetNavigationAsync(
-      content::NavigationHandle* navigation_handle,
-      proto::OptimizationTarget optimization_target,
-      OptimizationGuideTargetDecisionCallback callback) override;
   void RegisterOptimizationTypes(
       const std::vector<proto::OptimizationType>& optimization_types) override;
   void CanApplyOptimizationAsync(

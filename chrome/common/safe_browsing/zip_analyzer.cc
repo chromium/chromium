@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
@@ -65,7 +64,7 @@ void AnalyzeZipFile(base::File zip_file,
       continue;
     }
     if (base::Time::Now() - start_time >
-        base::TimeDelta::FromMilliseconds(kZipAnalysisTimeoutMs)) {
+        base::Milliseconds(kZipAnalysisTimeoutMs)) {
       timeout = true;
       break;
     }

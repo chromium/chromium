@@ -16,9 +16,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
@@ -190,15 +190,20 @@ leveldb::Status LevelDBScopes::StartRecoveryAndCleanupTasks(
   // as long as each task type only uses one sequence. This makes sure that the
   // tasks cannot monopolize the entire thread pool, and that they will be run
   // reasonably soon.
+  // Finally, it is also required that these block shutdown. This is because
+  // these tasks will own a reference to a LevelDBState object, which is MUST be
+  // destructed on shutdown as it will be joined with the IO thread on shutdown.
+  // To compensate here, all tasks cooperatively exit by checking
+  // `LevelDBState::is_destruction_requested()`
   switch (mode) {
     case TaskRunnerMode::kNewCleanupAndRevertSequences:
       revert_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::WithBaseSyncPrimitives(),
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
            base::TaskPriority::USER_BLOCKING});
       cleanup_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::WithBaseSyncPrimitives(),
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
            base::TaskPriority::USER_VISIBLE});
       break;
     case TaskRunnerMode::kUseCurrentSequence:

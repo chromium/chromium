@@ -33,6 +33,10 @@ class NetworkContextOwner;
 class IOSChromeIOThread : public io_thread::IOSIOThread {
  public:
   IOSChromeIOThread(PrefService* local_state, net::NetLog* net_log);
+
+  IOSChromeIOThread(const IOSChromeIOThread&) = delete;
+  IOSChromeIOThread& operator=(const IOSChromeIOThread&) = delete;
+
   ~IOSChromeIOThread() override;
 
   network::mojom::NetworkContext* GetSystemNetworkContext();
@@ -53,8 +57,6 @@ class IOSChromeIOThread : public io_thread::IOSIOThread {
 
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   std::unique_ptr<web::NetworkContextOwner> network_context_owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeIOThread);
 };
 
 #endif  // IOS_CHROME_BROWSER_IOS_CHROME_IO_THREAD_H_

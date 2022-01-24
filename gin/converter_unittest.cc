@@ -20,7 +20,12 @@
 #include "gin/wrappable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-template.h"
 
 namespace gin {
 

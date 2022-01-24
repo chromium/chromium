@@ -71,6 +71,8 @@ static_library("driver") {
     "syncable_service_based_model_type_controller.cc",
     "syncable_service_based_model_type_controller.h",
     "trusted_vault_client.h",
+    "trusted_vault_histograms.cc",
+    "trusted_vault_histograms.h",
   ]
 
   public_deps = [
@@ -87,8 +89,8 @@ static_library("driver") {
     "//url",
   ]
   deps = [
+    "//base",
     "//base:i18n",
-    "//base/util/enum_set",
     "//build:chromeos_buildflags",
     "//components/data_use_measurement/core",
     "//components/invalidation/impl:feature_list",

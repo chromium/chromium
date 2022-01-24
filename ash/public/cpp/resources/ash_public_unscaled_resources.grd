@@ -20,6 +20,12 @@
       <include name="IDR_PHONE_HUB_ONBOARDING_IMAGE" file="unscaled_resources/phone_hub_onboarding_image.png" type="BINDATA" />
       <include name="IDR_PHONE_HUB_CONNECTING_IMAGE" file="unscaled_resources/phone_hub_connecting_image.png" type="BINDATA" />
       <include name="IDR_PHONE_HUB_ERROR_STATE_IMAGE" file="unscaled_resources/phone_hub_error_state_image.png" type="BINDATA" />
+      <include name="IDR_OS_FLAGS_APP_ICONS_48_PNG" file="unscaled_resources/os_flags_app_icon_48.png" type="BINDATA" />
+      <include name="IDR_OS_FLAGS_APP_ICONS_128_PNG" file="unscaled_resources/os_flags_app_icon_128.png" type="BINDATA" />
+      <include name="IDR_OS_FLAGS_APP_ICONS_192_PNG" file="unscaled_resources/os_flags_app_icon_192.png" type="BINDATA" />
+      <include name="IDR_OS_URL_HANDLER_APP_ICONS_48_PNG" file="unscaled_resources/os_url_handler_app_icon_48.png" type="BINDATA" />
+      <include name="IDR_OS_URL_HANDLER_APP_ICONS_128_PNG" file="unscaled_resources/os_url_handler_app_icon_128.png" type="BINDATA" />
+      <include name="IDR_OS_URL_HANDLER_APP_ICONS_192_PNG" file="unscaled_resources/os_url_handler_app_icon_192.png" type="BINDATA" />
     </includes>
   </release>
 </grit>

@@ -50,7 +50,7 @@ const net::IPAddress kPublicAddrsIpv6[2] = {
     net::IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16),
     net::IPAddress(16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)};
 
-const base::TimeDelta kDefaultTtl = base::TimeDelta::FromSeconds(120);
+const base::TimeDelta kDefaultTtl = base::Seconds(120);
 
 const int kNumAnnouncementsPerInterface = 2;
 const int kNumMaxRetriesPerResponse = 2;
@@ -846,7 +846,7 @@ TEST_F(MdnsResponderTest,
       reinterpret_cast<const uint8_t*>(query.data()), query.size());
   socket_factory_.SimulateReceive(
       reinterpret_cast<const uint8_t*>(query.data()), query.size());
-  RunFor(base::TimeDelta::FromMilliseconds(900));
+  RunFor(base::Milliseconds(900));
 
   // Receive a conflicting response.
   const std::string conflicting_response =
@@ -874,7 +874,7 @@ TEST_F(MdnsResponderTest,
   EXPECT_CALL(socket_factory_, OnSendTo(expected_response)).Times(1);
   socket_factory_.SimulateReceive(
       reinterpret_cast<const uint8_t*>(query.data()), query.size());
-  RunFor(base::TimeDelta::FromMilliseconds(1000));
+  RunFor(base::Milliseconds(1000));
 
   // Goodbye on both interfaces.
   const std::string expected_goodbye =
@@ -931,7 +931,7 @@ TEST_F(MdnsResponderTest, ClosesBindingWhenNoSocketHanlderStarted) {
 
   // Little extra fudge around throttle delays as it is not essential for it to
   // be precise, and don't need the test to be too restrictive.
-  const base::TimeDelta kThrottleFudge = base::TimeDelta::FromMilliseconds(2);
+  const base::TimeDelta kThrottleFudge = base::Milliseconds(2);
 
   // Expect socket creation to not be attempted again too soon.
   EXPECT_CALL(failing_socket_factory_, CreateSockets(_)).Times(0);
@@ -1023,13 +1023,13 @@ TEST_F(MdnsResponderTest, AnnouncementsAreRateLimitedPerResponse) {
   client_[0]->CreateNameForAddress(addr1, base::DoNothing());
   client_[0]->CreateNameForAddress(addr2, base::DoNothing());
 
-  RunFor(base::TimeDelta::FromMilliseconds(900));
+  RunFor(base::Milliseconds(900));
   // Second announcement for 0.local.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_announcement1)).Times(2);
-  RunFor(base::TimeDelta::FromSeconds(1));
+  RunFor(base::Seconds(1));
   // First announcement for 1.local.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_announcement2)).Times(2);
-  RunFor(base::TimeDelta::FromSeconds(1));
+  RunFor(base::Seconds(1));
   // Second announcement for 1.local.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_announcement2)).Times(2);
   RunUntilNoTasksRemain();
@@ -1056,7 +1056,7 @@ TEST_F(MdnsResponderTest, GoodbyesAreRateLimitedPerResponse) {
   RemoveNameForAddressAndExpectDone(0, addr1);
   RemoveNameForAddressAndExpectDone(0, addr2);
 
-  RunFor(base::TimeDelta::FromMilliseconds(900));
+  RunFor(base::Milliseconds(900));
   // Goodbye for 1.local.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_goodbye2)).Times(2);
   RunUntilNoTasksRemain();
@@ -1086,19 +1086,19 @@ TEST_F(MdnsResponderTest, AnnouncementsAndGoodbyesAreRateLimitedPerResponse) {
   client_[0]->CreateNameForAddress(addr2, base::DoNothing());
   RemoveNameForAddressAndExpectDone(0, addr2);
 
-  RunFor(base::TimeDelta::FromMilliseconds(900));
+  RunFor(base::Milliseconds(900));
   // Second announcement for 0.local.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_announcement1)).Times(2);
-  RunFor(base::TimeDelta::FromSeconds(1));
+  RunFor(base::Seconds(1));
   // Goodbye for 0.local.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_goodbye1)).Times(2);
-  RunFor(base::TimeDelta::FromSeconds(1));
+  RunFor(base::Seconds(1));
   // First announcement for 1.local.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_announcement2)).Times(2);
-  RunFor(base::TimeDelta::FromSeconds(1));
+  RunFor(base::Seconds(1));
   // Second announcement for 1.local.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_announcement2)).Times(2);
-  RunFor(base::TimeDelta::FromSeconds(1));
+  RunFor(base::Seconds(1));
   // Goodbye for 1.local.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_goodbye2)).Times(2);
   RunUntilNoTasksRemain();
@@ -1130,7 +1130,7 @@ TEST_F(MdnsResponderTest,
 
   // Response to the second received query will be delayed for another one
   // second plus an extra delay of 20-120ms.
-  RunFor(base::TimeDelta::FromMilliseconds(1015));
+  RunFor(base::Milliseconds(1015));
   EXPECT_CALL(socket_factory_, OnSendTo(expected_response)).Times(1);
 
   RunUntilNoTasksRemain();
@@ -1162,7 +1162,7 @@ TEST_F(MdnsResponderTest, ResolutionResponsesAreRateLimitedPerRecord) {
       reinterpret_cast<const uint8_t*>(query2.data()), query2.size());
   socket_factory_.SimulateReceive(
       reinterpret_cast<const uint8_t*>(query1.data()), query1.size());
-  RunFor(base::TimeDelta::FromMilliseconds(900));
+  RunFor(base::Milliseconds(900));
   // Resolution for name1 for the second query about it.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_response1)).Times(1);
   RunUntilNoTasksRemain();
@@ -1194,7 +1194,7 @@ TEST_F(MdnsResponderTest, NegativeResponsesAreRateLimitedPerRecord) {
       reinterpret_cast<const uint8_t*>(query2.data()), query2.size());
   socket_factory_.SimulateReceive(
       reinterpret_cast<const uint8_t*>(query1.data()), query1.size());
-  RunFor(base::TimeDelta::FromMilliseconds(900));
+  RunFor(base::Milliseconds(900));
   // Negative response for name1 for the second query about it.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_response1)).Times(1);
   RunUntilNoTasksRemain();
@@ -1219,7 +1219,7 @@ TEST_F(MdnsResponderTest,
       reinterpret_cast<const uint8_t*>(query_a.data()), query_a.size());
   socket_factory_.SimulateReceive(
       reinterpret_cast<const uint8_t*>(query_aaaa.data()), query_aaaa.size());
-  RunFor(base::TimeDelta::FromMilliseconds(900));
+  RunFor(base::Milliseconds(900));
 
   EXPECT_CALL(socket_factory_, OnSendTo(expected_negative_resp)).Times(1);
   RunUntilNoTasksRemain();
@@ -1246,7 +1246,7 @@ TEST_F(MdnsResponderTest, ResponsesToProbesAreNotRateLimited) {
       reinterpret_cast<const uint8_t*>(query.data()), query.size());
   socket_factory_.SimulateReceive(
       reinterpret_cast<const uint8_t*>(query.data()), query.size());
-  RunFor(base::TimeDelta::FromMilliseconds(500));
+  RunFor(base::Milliseconds(500));
 }
 
 // Test that different rate limit schemes effectively form different queues of
@@ -1304,18 +1304,18 @@ TEST_F(MdnsResponderTest, RateLimitSchemesDoNotInterfere) {
   client_[0]->CreateNameForAddress(
       addr2, base::BindOnce(do_sequence_after_name_created, &socket_factory_,
                             query2_a, query2_aaaa, query2_any));
-  RunFor(base::TimeDelta::FromMilliseconds(900));
+  RunFor(base::Milliseconds(900));
 
   // 2 second announcements for name1 from 2 interfaces, and 1 response to
   // query1_aaaa (per-record limit).
   EXPECT_CALL(socket_factory_, OnSendTo(expected_resolution1)).Times(3);
   // 1 response to query2_aaaa (per-record limit).
   EXPECT_CALL(socket_factory_, OnSendTo(expected_resolution2)).Times(1);
-  RunFor(base::TimeDelta::FromSeconds(1));
+  RunFor(base::Seconds(1));
 
   // 2 first announcements for name2 from 2 interfaces.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_resolution2)).Times(2);
-  RunFor(base::TimeDelta::FromSeconds(1));
+  RunFor(base::Seconds(1));
 
   // 2 second announcements for name2 from 2 interfaces.
   EXPECT_CALL(socket_factory_, OnSendTo(expected_resolution2)).Times(2);

@@ -9,13 +9,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "components/nacl/common/nacl_types.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "ipc/ipc_listener.h"
-#include "sandbox/policy/sandbox_type.h"
 
 namespace IPC {
 class Channel;
@@ -27,12 +25,16 @@ class NaClBrokerListener : public content::SandboxedProcessLauncherDelegate,
                            public IPC::Listener {
  public:
   NaClBrokerListener();
+
+  NaClBrokerListener(const NaClBrokerListener&) = delete;
+  NaClBrokerListener& operator=(const NaClBrokerListener&) = delete;
+
   ~NaClBrokerListener() override;
 
   void Listen();
 
   // content::SandboxedProcessLauncherDelegate implementation:
-  sandbox::policy::SandboxType GetSandboxType() override;
+  sandbox::mojom::Sandbox GetSandboxType() override;
 
   // IPC::Listener implementation.
   void OnChannelConnected(int32_t peer_pid) override;
@@ -51,8 +53,6 @@ class NaClBrokerListener : public content::SandboxedProcessLauncherDelegate,
   base::RunLoop run_loop_;
   base::Process browser_process_;
   std::unique_ptr<IPC::Channel> channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClBrokerListener);
 };
 
 #endif  // COMPONENTS_NACL_BROKER_NACL_BROKER_LISTENER_H_

@@ -45,11 +45,10 @@ namespace {
 // TODO(https://crbug.com/634470): Make this smaller.
 constexpr uint32_t kPathBuilderIterationLimit = 25000;
 
-constexpr base::TimeDelta kMaxVerificationTime =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kMaxVerificationTime = base::Seconds(60);
 
 constexpr base::TimeDelta kPerAttemptMinVerificationTimeLimit =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 DEFINE_CERT_ERROR_ID(kPathLacksEVPolicy, "Path does not have an EV policy");
 
@@ -494,7 +493,8 @@ void MapPathBuilderErrorsToCertStatus(const CertPathErrors& errors,
   }
 
   if (errors.ContainsError(cert_errors::kDistrustedByTrustStore) ||
-      errors.ContainsError(cert_errors::kVerifySignedDataFailed)) {
+      errors.ContainsError(cert_errors::kVerifySignedDataFailed) ||
+      errors.ContainsError(cert_errors::kNoIssuersFound)) {
     *cert_status |= CERT_STATUS_AUTHORITY_INVALID;
   }
 

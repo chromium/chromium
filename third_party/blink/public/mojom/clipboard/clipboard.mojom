@@ -17,7 +17,6 @@ enum ClipboardFormat {
   kHtml,
   kSmartPaste,
   kBookmark,
-  kRtf,
 };
 
 enum ClipboardBuffer {
@@ -25,7 +24,7 @@ enum ClipboardBuffer {
   // Used on platforms like the X Window System that treat selection
   // as a type of clipboard.
   // TODO(crbug.com/676224): When preprocessing of mojom is available only
-  // define this value for USE_X11.
+  // define this value for USE_OZONE.
   kSelection,
 };
 
@@ -67,6 +66,12 @@ struct ClipboardFiles {
 // Failure to do so may lead to users leaking sensitive information,
 // that may for example be held in metadata.
 interface ClipboardHost {
+  // Conservative limits to maximum format name and data sizes, to avoid
+  // potential attacks with long strings. These limits are only applied to
+  // unsanitized custom formats. The size limit includes the null terminator.
+  const uint32 kMaxFormatSize = 1024;
+  const uint32 kMaxDataSize = 1073741824; // 1 GB, or 1 << 30
+
   // Returns a token which uniquely identifies clipboard state.
   // This can be used to version the data on the clipboard and determine
   // whether it has changed.
@@ -103,10 +108,6 @@ interface ClipboardHost {
   [Sync]
   ReadPng(ClipboardBuffer buffer) => (mojo_base.mojom.BigBuffer png);
 
-  // TODO(crbug.com/1223849): Transition call sites to ReadPng, then remove.
-  [Sync]
-  ReadImage(ClipboardBuffer buffer) => (skia.mojom.BitmapN32? image);
-
   // Read Files from clipboard. Called on paste event to provide
   // clipboardData.files.
   // Security notes:
@@ -121,6 +122,22 @@ interface ClipboardHost {
   [Sync]
   ReadCustomData(ClipboardBuffer buffer, mojo_base.mojom.String16 type) =>
       (mojo_base.mojom.BigString16 result);
+
+  // Reads both unsanitized custom formats & standard
+  // formats(such as text/html).
+  // `format_types` contains the list of all available custom & standard
+  // formats.
+  [Sync]
+  ReadAvailableCustomAndStandardFormats() =>
+      (array<mojo_base.mojom.String16> format_types);
+
+  // Reads an unsanitized custom format from the clipboard.
+  // `format` contains the custom format name.
+  // Returns the data from the clipboard corresponding to the `format`.
+  // Returns empty `data` if the `format` is not available in the clipboard.
+  [Sync]
+  ReadUnsanitizedCustomFormat(mojo_base.mojom.String16 format) =>
+      (mojo_base.mojom.BigBuffer data);
 
   // Writing to the clipboard via mojo is a two-phase operation. First, the
   // sender sends the different types of data it'd like to write to the
@@ -147,6 +164,14 @@ interface ClipboardHost {
                 mojo_base.mojom.String16 title);
 
   WriteImage(skia.mojom.BitmapN32 image);
+
+  // Writes an unsanitized custom format to the clipboard.
+  // `format` contains the name of the custom format and `data` contains the
+  // unsanitized payload provided by the web authors.
+  // There can only be 100 custom formats per write operation and it will be
+  // registered when the web authors request for a custom format.
+  WriteUnsanitizedCustomFormat(mojo_base.mojom.String16 format,
+                               mojo_base.mojom.BigBuffer data);
 
   CommitWrite();
 

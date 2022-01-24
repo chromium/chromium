@@ -79,7 +79,7 @@ LayoutUnit ClampAndRound(LayoutUnit value, LayoutUnit min, LayoutUnit max) {
   LayoutUnit max_floor = LayoutUnit(max.Floor());
   if (min_ceil >= max_floor)
     return max_floor;
-  return LayoutUnit(clampTo<LayoutUnit>(value, min_ceil, max_floor).Round());
+  return LayoutUnit(ClampTo<LayoutUnit>(value, min_ceil, max_floor).Round());
 }
 
 PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,

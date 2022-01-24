@@ -133,8 +133,7 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
       DeallocateBuffers, std::move(va_image), std::move(src_video_frame)));
   for (auto&& buffer : p016le_buffers) {
     video_frame->AddDestructionObserver(
-        base::BindOnce(base::DoNothing::Once<std::unique_ptr<uint16_t[]>>(),
-                       std::move(buffer)));
+        base::BindOnce([](std::unique_ptr<uint16_t[]>) {}, std::move(buffer)));
   }
   return video_frame;
 }

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -53,6 +52,9 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
     DCHECK(web_contents());
     DCHECK(registry_);
   }
+
+  LiveRequest(const LiveRequest&) = delete;
+  LiveRequest& operator=(const LiveRequest&) = delete;
 
   ~LiveRequest() override {}
 
@@ -115,8 +117,6 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
   // calls to OnRequestUpdate() will always refer to this request by this ID.
   int render_process_id_;
   int render_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(LiveRequest);
 };
 
 TabCaptureRegistry::TabCaptureRegistry(content::BrowserContext* context)

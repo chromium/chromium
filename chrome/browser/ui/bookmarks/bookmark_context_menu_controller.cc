@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// DELETE LATER
+#include "base/logging.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 
 #include <stddef.h>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -32,6 +37,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -155,6 +161,10 @@ void BookmarkContextMenuController::BuildMenu() {
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
             l10n_util::GetPluralStringFUTF16(
                 IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO, incognito_count));
+
+    AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
+            l10n_util::GetPluralStringFUTF16(
+                IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP, count));
   }
 
   AddSeparator();
@@ -188,7 +198,8 @@ void BookmarkContextMenuController::BuildMenu() {
     AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
                     IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
   }
-  if (reading_list::switches::IsReadingListEnabled()) {
+  if (reading_list::switches::IsReadingListEnabled() &&
+      !base::FeatureList::IsEnabled(features::kSidePanel)) {
     AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_READING_LIST,
                     IDS_BOOKMARK_BAR_SHOW_READING_LIST);
   }
@@ -223,9 +234,11 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
   switch (id) {
     case IDC_BOOKMARK_BAR_OPEN_ALL:
     case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
+    case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW: {
       WindowOpenDisposition initial_disposition;
-      if (id == IDC_BOOKMARK_BAR_OPEN_ALL) {
+      if (id == IDC_BOOKMARK_BAR_OPEN_ALL ||
+          id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP) {
         initial_disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
       } else if (id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW) {
         initial_disposition = WindowOpenDisposition::NEW_WINDOW;
@@ -236,8 +249,10 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
           GetActionForLocationAndDisposition(opened_from_, initial_disposition);
       if (action)
         base::RecordAction(*action);
+
       chrome::OpenAllIfAllowed(browser_, std::move(get_navigator_), selection_,
-                               initial_disposition);
+                               initial_disposition,
+                               id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP);
       break;
     }
 
@@ -455,19 +470,19 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
   switch (command_id) {
     case IDC_BOOKMARK_BAR_OPEN_INCOGNITO:
       return !profile_->IsOffTheRecord() &&
-             incognito_avail != IncognitoModePrefs::DISABLED;
+             incognito_avail != IncognitoModePrefs::Availability::kDisabled;
 
     case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
-      return chrome::HasBookmarkURLsAllowedInIncognitoMode(selection_, profile_)
-             &&
+      return chrome::HasBookmarkURLsAllowedInIncognitoMode(selection_,
+                                                           profile_) &&
              !profile_->IsOffTheRecord() &&
-             incognito_avail != IncognitoModePrefs::DISABLED;
-
+             incognito_avail != IncognitoModePrefs::Availability::kDisabled;
     case IDC_BOOKMARK_BAR_OPEN_ALL:
+    case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
       return chrome::HasBookmarkURLs(selection_);
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW:
       return chrome::HasBookmarkURLs(selection_) &&
-             incognito_avail != IncognitoModePrefs::FORCED;
+             incognito_avail != IncognitoModePrefs::Availability::kForced;
 
     case IDC_BOOKMARK_BAR_RENAME_FOLDER:
     case IDC_BOOKMARK_BAR_EDIT:

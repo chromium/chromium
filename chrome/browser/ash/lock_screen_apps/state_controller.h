@@ -75,6 +75,10 @@ class StateController : public ash::mojom::TrayActionClient,
   // StateController will set global instance ptr that can be accessed using
   // |Get|. This pointer will be reset when the StateController is destroyed.
   StateController();
+
+  StateController(const StateController&) = delete;
+  StateController& operator=(const StateController&) = delete;
+
   ~StateController() override;
 
   // Sets the tray action that should be used by |StateController|.
@@ -268,8 +272,6 @@ class StateController : public ash::mojom::TrayActionClient,
   const base::TickClock* tick_clock_ = nullptr;
 
   base::WeakPtrFactory<StateController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StateController);
 };
 
 }  // namespace lock_screen_apps

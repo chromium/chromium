@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.positioning.ViewportClientPositionTest');
 goog.setTestOnly();
@@ -113,6 +105,10 @@ testSuite({
         'Top edge of popup should be at specified y coordinate.', 0, offset.y);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testOverflowRightFlipHor() {
     const pos = new ViewportClientPosition(frameRect.right, 100);
     pos.reposition(popup, Corner.TOP_LEFT);
@@ -141,6 +137,10 @@ testSuite({
         0, offset.y);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testOverflowBottomRightFlipBoth() {
     const pos = new ViewportClientPosition(frameRect.right, frameRect.bottom);
     pos.reposition(popup, Corner.TOP_LEFT);
@@ -156,6 +156,10 @@ testSuite({
         frameRect.bottom - popup.offsetHeight, offset.y);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testLastRespotOverflow() {
     const large = 2000;
     style.setSize(popup, 20, large);

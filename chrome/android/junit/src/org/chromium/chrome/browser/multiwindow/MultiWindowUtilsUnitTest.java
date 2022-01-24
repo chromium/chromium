@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,14 +13,28 @@ import android.content.Context;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
  * Unit tests for {@link MultiWindowUtilsUnit}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MultiWindowUtilsUnitTest {
+    private static final int INSTANCE_ID_0 = 0;
+    private static final int INSTANCE_ID_1 = 1;
+    private static final int INSTANCE_ID_2 = 2;
+    private static final int TASK_ID_5 = 5;
+    private static final int TASK_ID_6 = 6;
+    private static final int TASK_ID_7 = 7;
+    private static final String URL_1 = "url1";
+    private static final String URL_2 = "url2";
+    private static final String URL_3 = "url3";
+
     private MultiWindowUtils mUtils;
     private boolean mIsInMultiWindowMode;
     private boolean mIsInMultiDisplayMode;
@@ -27,8 +42,16 @@ public class MultiWindowUtilsUnitTest {
     private boolean mIsAutosplitSupported;
     private boolean mCustomMultiWindowSupported;
 
+    @Mock
+    TabModelSelector mTabModelSelector;
+    @Mock
+    TabModel mNormalTabModel;
+    @Mock
+    TabModel mIncognitoTabModel;
+
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mUtils = new MultiWindowUtils() {
             @Override
             public boolean isInMultiWindowMode(Activity activity) {
@@ -96,5 +119,33 @@ public class MultiWindowUtilsUnitTest {
                             + " multi-instance: " + mIsMultipleInstanceRunning,
                     openInOtherWindow, mUtils.isOpenInOtherWindowSupported(null));
         }
+    }
+
+    @Test
+    public void testGetInstanceCount() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+
+        // Instance with no tabs (ID_1) still counts as long as it is alive.
+        writeInstanceInfo(INSTANCE_ID_0, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/2, TASK_ID_5);
+        writeInstanceInfo(INSTANCE_ID_1, URL_2, /*tabCount=*/0, /*incognitoTabCount=*/0, TASK_ID_6);
+        writeInstanceInfo(INSTANCE_ID_2, URL_3, /*tabCount=*/6, /*incognitoTabCount=*/2, TASK_ID_7);
+        assertEquals(3, MultiWindowUtils.getInstanceCount());
+
+        // Instance with no running task is not taken into account if there is no normal tab,
+        // regardless of the # of incognito tabs.
+        writeInstanceInfo(INSTANCE_ID_1, URL_2, /*tabCount=*/0, /*incognitoTabCount=*/2,
+                MultiWindowUtils.INVALID_TASK_ID);
+        assertEquals(2, MultiWindowUtils.getInstanceCount());
+    }
+
+    private void writeInstanceInfo(
+            int instanceId, String url, int tabCount, int incognitoTabCount, int taskId) {
+        MultiInstanceManagerApi31.writeUrl(instanceId, url);
+        when(mNormalTabModel.getCount()).thenReturn(tabCount);
+        when(mIncognitoTabModel.getCount()).thenReturn(incognitoTabCount);
+        MultiInstanceManagerApi31.writeLastAccessedTime(instanceId);
+        MultiInstanceManagerApi31.writeTabCount(instanceId, mTabModelSelector);
+        MultiInstanceManagerApi31.updateTaskMap(instanceId, taskId);
     }
 }

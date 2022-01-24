@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace mojo {
 // Begins issuing temporary pauses on randomly selected Mojo bindings for

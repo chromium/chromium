@@ -21,8 +21,8 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -333,8 +333,9 @@ bool GetIsDragged(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::WindowState::Get(browser->window()->GetNativeWindow())
       ->is_dragged();
-#endif
+#else
   return false;
+#endif
 }
 
 }  // namespace
@@ -581,7 +582,7 @@ class DetachToBrowserTabDragControllerTest
           base::BindOnce(&DetachToBrowserTabDragControllerTest::
                              ReleaseInputAfterWindowDetached,
                          base::Unretained(this), first_dragged_tab_width),
-          base::TimeDelta::FromMilliseconds(1));
+          base::Milliseconds(1));
       return;
     }
 
@@ -1471,7 +1472,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   browser2->window()
       ->GetNativeWindow()
       ->GetHost()
-      ->SetNativeWindowOcclusionState(aura::Window::OcclusionState::OCCLUDED);
+      ->SetNativeWindowOcclusionState(aura::Window::OcclusionState::OCCLUDED,
+                                      {});
 
   // Drag a tab from first browser to middle of first tab of the second,
   // occluded browser, and drop. This should create a third browser window.
@@ -2534,8 +2536,10 @@ IN_PROC_BROWSER_TEST_P(
 
   AddTabsAndResetBrowser(browser(), 1);
 
+  // We must ensure that we set the bounds of the browser window such that it is
+  // wide enough to allow the tab strip to expand to accommodate this tab.
   browser()->window()->SetBounds(
-      gfx::Rect(0, 0, TabStyle::GetStandardWidth() * 4, 400));
+      gfx::Rect(0, 0, TabStyle::GetStandardWidth() * 5, 400));
 
   const int tab_strip_width = tab_strip->width();
   const gfx::Point tab_1_center =
@@ -2904,8 +2908,8 @@ void DragWindowAndVerifyOffset(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-#if defined(OS_WIN)
-// TODO(mukai): enable those tests on Windows.
+#if defined(OS_WIN) || defined(OS_LINUX)
+// TODO(mukai): enable this test on Windows and Linux.
 #define MAYBE_OffsetForDraggingTab DISABLED_OffsetForDraggingTab
 #else
 #define MAYBE_OffsetForDraggingTab OffsetForDraggingTab
@@ -4497,14 +4501,14 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   clock.SetNowTicks(base::TimeTicks::Now());
   ui::SetEventTickClockForTesting(&clock);
   ASSERT_TRUE(PressInput(tab_0_center));
-  clock.Advance(base::TimeDelta::FromMilliseconds(5));
+  clock.Advance(base::Milliseconds(5));
   ASSERT_TRUE(DragInputToNotifyWhenDone(
       tab_0_center + detach, base::BindLambdaForTesting([&]() {
         // Drag down again; this should cause a fling-down event.
-        clock.Advance(base::TimeDelta::FromMilliseconds(5));
+        clock.Advance(base::Milliseconds(5));
         ASSERT_TRUE(DragInputToNotifyWhenDone(
             tab_0_center + detach + detach, base::BindLambdaForTesting([&]() {
-              clock.Advance(base::TimeDelta::FromMilliseconds(5));
+              clock.Advance(base::Milliseconds(5));
               ASSERT_TRUE(ReleaseInput());
             })));
       })));
@@ -4533,11 +4537,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   clock.SetNowTicks(base::TimeTicks::Now());
   ui::SetEventTickClockForTesting(&clock);
   ASSERT_TRUE(PressInput(tab_0_center));
-  clock.Advance(base::TimeDelta::FromMilliseconds(5));
+  clock.Advance(base::Milliseconds(5));
   ASSERT_TRUE(DragInputToAsync(tab_0_center + detach));
-  clock.Advance(base::TimeDelta::FromMilliseconds(5));
+  clock.Advance(base::Milliseconds(5));
   ASSERT_TRUE(DragInputToAsync(tab_0_center + detach + detach));
-  clock.Advance(base::TimeDelta::FromMilliseconds(2));
+  clock.Advance(base::Milliseconds(2));
   ASSERT_TRUE(ReleaseInput());
   observer.Wait();
 

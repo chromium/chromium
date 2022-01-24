@@ -14,6 +14,20 @@ EnhancedNetworkTE2ETestBase = class extends E2ETestBase {
     super();
     this.mockMojoPrivate = MockMojoPrivate;
     chrome.mojoPrivate = this.mockMojoPrivate;
+    this.onSpeakWithAudioStreamListeners = [];
+    this.onStopListeners = [];
+    chrome.ttsEngine = {
+      onSpeakWithAudioStream: {
+        addListener: (callback) => {
+          this.onSpeakWithAudioStreamListeners.push(callback);
+        },
+      },
+      onStop: {
+        addListener: (callback) => {
+          this.onStopListeners.push(callback);
+        },
+      }
+    };
   }
 
   /** @override */
@@ -50,6 +64,8 @@ EnhancedNetworkTE2ETestBase = class extends E2ETestBase {
       await importModule(
           'EnhancedNetworkTts',
           '/enhanced_network_tts/enhanced_network_tts.js');
+      await importModule(
+          'enhancedNetworkTts', '/enhanced_network_tts/background.js');
       runTest();
     })();
   }

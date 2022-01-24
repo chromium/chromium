@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -105,6 +104,9 @@ class TestMetricCollector : public internal::MetricCollector {
       : internal::MetricCollector("UMA.CWP.TestData", collection_params),
         weak_factory_(this) {}
 
+  TestMetricCollector(const TestMetricCollector&) = delete;
+  TestMetricCollector& operator=(const TestMetricCollector&) = delete;
+
   const char* ToolName() const override { return "Test"; }
   base::WeakPtr<internal::MetricCollector> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
@@ -119,13 +121,10 @@ class TestMetricCollector : public internal::MetricCollector {
 
  private:
   base::WeakPtrFactory<TestMetricCollector> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricCollector);
 };
 
-const base::TimeDelta kPeriodicCollectionInterval =
-    base::TimeDelta::FromHours(1);
-const base::TimeDelta kMaxCollectionDelay = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kPeriodicCollectionInterval = base::Hours(1);
+const base::TimeDelta kMaxCollectionDelay = base::Seconds(1);
 const uint64_t kRedactedCommMd5Prefix = 0xee1f021828a1fcbc;
 }  // namespace
 
@@ -133,6 +132,9 @@ class MetricProviderTest : public testing::Test {
  public:
   MetricProviderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  MetricProviderTest(const MetricProviderTest&) = delete;
+  MetricProviderTest& operator=(const MetricProviderTest&) = delete;
 
   void SetUp() override {
     CollectionParams test_params;
@@ -160,8 +162,6 @@ class MetricProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestMetricProvider> metric_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricProviderTest);
 };
 
 TEST_F(MetricProviderTest, CheckSetup) {
@@ -215,7 +215,7 @@ TEST_F(MetricProviderTest, SuspendDone) {
   metric_provider_->OnUserLoggedIn();
   task_environment_.RunUntilIdle();
 
-  const auto kSuspendDuration = base::TimeDelta::FromMinutes(3);
+  const auto kSuspendDuration = base::Minutes(3);
 
   metric_provider_->SuspendDone(kSuspendDuration);
 
@@ -300,6 +300,11 @@ class MetricProviderSyncSettingsTest : public testing::Test {
   MetricProviderSyncSettingsTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  MetricProviderSyncSettingsTest(const MetricProviderSyncSettingsTest&) =
+      delete;
+  MetricProviderSyncSettingsTest& operator=(
+      const MetricProviderSyncSettingsTest&) = delete;
+
   void SetUp() override {
     CollectionParams test_params;
     test_params.periodic_interval = kPeriodicCollectionInterval;
@@ -378,8 +383,6 @@ class MetricProviderSyncSettingsTest : public testing::Test {
   PerfDataProto perf_data_unchanged_;
 
   PerfDataProto perf_data_redacted_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricProviderSyncSettingsTest);
 };
 
 TEST_F(MetricProviderSyncSettingsTest, NoLoadedUserProfile) {
@@ -404,11 +407,12 @@ TEST_F(MetricProviderSyncSettingsTest, NoLoadedUserProfile) {
       TestMetricProvider::RecordAttemptStatus::kNoLoadedProfile, 1);
 }
 
-TEST_F(MetricProviderSyncSettingsTest, SplitSettingsAppSyncEnabled) {
+TEST_F(MetricProviderSyncSettingsTest, SettingsCategorizationAppSyncEnabled) {
   base::HistogramTester histogram_tester;
   std::vector<SampledProfile> stored_profiles;
   metric_provider_->OnUserLoggedIn();
-  feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  feature_list_.InitAndEnableFeature(
+      chromeos::features::kSyncSettingsCategorization);
 
   // Set up two testing profiles, both with OS App Sync enabled. The Default
   // profile has OS App Sync disabled but is skipped.
@@ -433,11 +437,12 @@ TEST_F(MetricProviderSyncSettingsTest, SplitSettingsAppSyncEnabled) {
       TestMetricProvider::RecordAttemptStatus::kAppSyncEnabled, 1);
 }
 
-TEST_F(MetricProviderSyncSettingsTest, SplitSettingsAppSyncDisabled) {
+TEST_F(MetricProviderSyncSettingsTest, SettingsCategorizationAppSyncDisabled) {
   base::HistogramTester histogram_tester;
   std::vector<SampledProfile> stored_profiles;
   metric_provider_->OnUserLoggedIn();
-  feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  feature_list_.InitAndEnableFeature(
+      chromeos::features::kSyncSettingsCategorization);
 
   // Set up two testing profiles, one with OS App Sync enabled and the other
   // disabled.
@@ -466,7 +471,8 @@ TEST_F(MetricProviderSyncSettingsTest, UnifiedSettingsAppSyncEnabled) {
   base::HistogramTester histogram_tester;
   std::vector<SampledProfile> stored_profiles;
   metric_provider_->OnUserLoggedIn();
-  feature_list_.InitAndDisableFeature(chromeos::features::kSplitSettingsSync);
+  feature_list_.InitAndDisableFeature(
+      chromeos::features::kSyncSettingsCategorization);
 
   // Set up two testing profiles, both with App Sync enabled. The Default
   // profile has App Sync disabled but is skipped.
@@ -495,7 +501,8 @@ TEST_F(MetricProviderSyncSettingsTest, UnifiedSettingsAppSyncDisabled) {
   base::HistogramTester histogram_tester;
   std::vector<SampledProfile> stored_profiles;
   metric_provider_->OnUserLoggedIn();
-  feature_list_.InitAndDisableFeature(chromeos::features::kSplitSettingsSync);
+  feature_list_.InitAndDisableFeature(
+      chromeos::features::kSyncSettingsCategorization);
 
   // Set up two testing profiles, one with App Sync enabled and the other
   // disabled.

@@ -27,7 +27,7 @@ def main(argv):
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '--isolated-script-test-output', type=str,
-      required=True)
+      required=False)
   parser.add_argument(
       '--isolated-script-test-chartjson-output', type=str,
       required=False)
@@ -85,9 +85,10 @@ def main(argv):
     with open(tempfile_path) as f:
       failures = json.load(f)
 
-  with open(args.isolated_script_test_output, 'w') as fp:
-    common.record_local_script_results(
-        'content_shell_crash_test', fp, failures, True)
+  if args.isolated_script_test_output:
+    with open(args.isolated_script_test_output, 'w') as fp:
+      common.record_local_script_results(
+          'content_shell_crash_test', fp, failures, True)
 
   return rc
 

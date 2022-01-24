@@ -14,8 +14,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_tokenizer.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -1043,33 +1043,6 @@ TEST_F(V4LocalDatabaseManagerTest, UsingWeakPtrDropsCallback) {
   WaitForTasksOnTaskRunner();
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadAllowlistString) {
-  SetupFakeManager();
-  const std::string good_cert = "Good Cert";
-  const std::string other_cert = "Other Cert";
-  FullHash good_hash(crypto::SHA256HashString(good_cert));
-
-  StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetCertCsdDownloadAllowlistId(),
-                                       good_hash);
-
-  ReplaceV4Database(store_and_hash_prefixes, false /* not available */);
-  // Verify it defaults to false when DB is not available.
-  EXPECT_FALSE(
-      v4_local_database_manager_->MatchDownloadAllowlistString(good_cert));
-
-  ReplaceV4Database(store_and_hash_prefixes, true /* available */);
-  // Not allowlisted.
-  EXPECT_FALSE(
-      v4_local_database_manager_->MatchDownloadAllowlistString(other_cert));
-  // Allowlisted.
-  EXPECT_TRUE(
-      v4_local_database_manager_->MatchDownloadAllowlistString(good_cert));
-
-  EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
-      v4_local_database_manager_));
-}
-
 TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadAllowlistUrl) {
   SetupFakeManager();
   GURL good_url("http://safe.com");
@@ -1473,7 +1446,6 @@ TEST_F(V4LocalDatabaseManagerTest, SyncedLists) {
                                              GetUrlUwsId(),
                                              GetUrlMalBinId(),
                                              GetChromeExtMalwareId(),
-                                             GetCertCsdDownloadAllowlistId(),
                                              GetChromeUrlClientIncidentId(),
                                              GetUrlBillingId(),
                                              GetUrlCsdDownloadAllowlistId(),
@@ -1553,7 +1525,6 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccessMultiple) {
 
   const auto kStoreFilesToRename =
       base::MakeFixedFlatMap<std::string, std::string>({
-          {"CertCsdDownloadWhitelist", "CertCsdDownloadAllowlist"},
           {"UrlCsdDownloadWhitelist", "UrlCsdDownloadAllowlist"},
           {"UrlCsdWhitelist", "UrlCsdAllowlist"},
       });

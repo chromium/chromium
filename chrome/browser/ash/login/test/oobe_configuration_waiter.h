@@ -6,16 +6,18 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_CONFIGURATION_WAITER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 
-namespace chromeos {
+namespace ash {
 
 // Class that ensures that OOBE Configuration was loaded before
 // proceeding with checks.
 class OOBEConfigurationWaiter : public OobeConfiguration::Observer {
  public:
   OOBEConfigurationWaiter();
+
+  OOBEConfigurationWaiter(const OOBEConfigurationWaiter&) = delete;
+  OOBEConfigurationWaiter& operator=(const OOBEConfigurationWaiter&) = delete;
 
   ~OOBEConfigurationWaiter() override;
 
@@ -27,10 +29,14 @@ class OOBEConfigurationWaiter : public OobeConfiguration::Observer {
 
  private:
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(OOBEConfigurationWaiter);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::OOBEConfigurationWaiter;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_CONFIGURATION_WAITER_H_

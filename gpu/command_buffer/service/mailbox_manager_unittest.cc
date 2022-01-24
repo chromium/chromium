@@ -23,6 +23,10 @@ static const SyncToken g_sync_token(gpu::CommandBufferNamespace::GPU_IO,
 class MailboxManagerTest : public GpuServiceTest {
  public:
   MailboxManagerTest() = default;
+
+  MailboxManagerTest(const MailboxManagerTest&) = delete;
+  MailboxManagerTest& operator=(const MailboxManagerTest&) = delete;
+
   ~MailboxManagerTest() override = default;
 
  protected:
@@ -72,8 +76,6 @@ class MailboxManagerTest : public GpuServiceTest {
 
  private:
   scoped_refptr<FeatureInfo> feature_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(MailboxManagerTest);
 };
 
 // Tests basic produce/consume behavior.

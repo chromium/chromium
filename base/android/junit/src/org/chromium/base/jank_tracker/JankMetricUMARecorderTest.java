@@ -48,6 +48,7 @@ public class JankMetricUMARecorderTest {
 
         // Ensure that the relevant fields are sent down to native.
         verify(mNativeMock)
-                .recordJankMetrics("OmniboxFocus", durationsNs, jankBurstsNs, missedFrames);
+                .recordJankMetrics(
+                        "OmniboxFocus", timestampsNs, durationsNs, jankBurstsNs, missedFrames);
     }
 }

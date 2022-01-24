@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 
 namespace storage {
 
@@ -26,6 +26,9 @@ class ShareableFileMap {
   using value_type = FileMap::value_type;
 
   ShareableFileMap() = default;
+
+  ShareableFileMap(const ShareableFileMap&) = delete;
+  ShareableFileMap& operator=(const ShareableFileMap&) = delete;
 
   ~ShareableFileMap() = default;
 
@@ -59,8 +62,6 @@ class ShareableFileMap {
   FileMap file_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ShareableFileMap);
 };
 
 base::LazyInstance<ShareableFileMap>::DestructorAtExit g_file_map =

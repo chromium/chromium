@@ -22,9 +22,12 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class SizeF;
+}
+
 namespace blink {
 
-class FloatSize;
 enum class FontOrientation;
 
 class SVGTextMetrics {
@@ -38,7 +41,7 @@ class SVGTextMetrics {
 
   bool IsEmpty() const { return !width_ && !height_ && length_ <= 1; }
 
-  FloatSize Extents() const;
+  gfx::SizeF Extents() const;
 
   // TODO(kojii): We should store logical width (advance) and height instead
   // of storing physical and calculate logical. crbug.com/544767

@@ -31,6 +31,8 @@ ResolveHostClientImpl::ResolveHostClientImpl(
       network::mojom::ResolveHostParameters::New();
   parameters->initial_priority = net::RequestPriority::IDLE;
   parameters->is_speculative = true;
+  parameters->purpose =
+      network::mojom::ResolveHostParameters::Purpose::kPreconnect;
   network_context->ResolveHost(
       net::HostPortPair::FromURL(url), network_isolation_key,
       std::move(parameters),

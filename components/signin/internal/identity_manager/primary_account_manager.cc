@@ -56,7 +56,6 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kAutologinEnabled, true);
   registry->RegisterListPref(prefs::kReverseAutologinRejectedEmailList);
   registry->RegisterBooleanPref(prefs::kSigninAllowed, true);
-  registry->RegisterBooleanPref(prefs::kSigninAllowedByPolicy, true);
   registry->RegisterBooleanPref(prefs::kSignedInWithCredentialProvider, false);
 }
 
@@ -290,36 +289,23 @@ void PrimaryAccountManager::RevokeSyncConsent(
 void PrimaryAccountManager::StartSignOut(
     signin_metrics::ProfileSignout signout_source_metric,
     signin_metrics::SignoutDelete signout_delete_metric,
-    RemoveAccountsOption remove_option,
-    bool assert_signout_allowed) {
+    RemoveAccountsOption remove_option) {
   VLOG(1) << "StartSignOut: " << static_cast<int>(signout_source_metric) << ", "
           << static_cast<int>(signout_delete_metric) << ", "
           << static_cast<int>(remove_option);
-  if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    client_->PreSignOut(
-        base::BindOnce(&PrimaryAccountManager::OnSignoutDecisionReached,
-                       base::Unretained(this), signout_source_metric,
-                       signout_delete_metric, remove_option,
-                       assert_signout_allowed),
-        signout_source_metric);
-  } else {
-    // Sign-out is always allowed if there's only unconsented primary account
-    // without sync consent, so skip calling PreSignOut.
-    OnSignoutDecisionReached(signout_source_metric, signout_delete_metric,
-                             remove_option, assert_signout_allowed,
-                             SigninClient::SignoutDecision::ALLOW_SIGNOUT);
-  }
+  client_->PreSignOut(
+      base::BindOnce(&PrimaryAccountManager::OnSignoutDecisionReached,
+                     base::Unretained(this), signout_source_metric,
+                     signout_delete_metric, remove_option),
+      signout_source_metric);
 }
 
 void PrimaryAccountManager::OnSignoutDecisionReached(
     signin_metrics::ProfileSignout signout_source_metric,
     signin_metrics::SignoutDelete signout_delete_metric,
     RemoveAccountsOption remove_option,
-    bool assert_signout_allowed,
     SigninClient::SignoutDecision signout_decision) {
   DCHECK(IsInitialized());
-  if (assert_signout_allowed)
-    DCHECK_EQ(SigninClient::SignoutDecision::ALLOW_SIGNOUT, signout_decision);
 
   VLOG(1) << "OnSignoutDecisionReached: "
           << (signout_decision == SigninClient::SignoutDecision::ALLOW_SIGNOUT);

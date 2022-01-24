@@ -261,7 +261,7 @@ void CSSParserContext::ReportLayoutAnimationsViolationIfNeeded(
     const StyleRuleKeyframe& rule) const {
   if (!document_ || !document_->GetExecutionContext())
     return;
-  for (size_t i = 0; i < rule.Properties().PropertyCount(); ++i) {
+  for (unsigned i = 0; i < rule.Properties().PropertyCount(); ++i) {
     CSSPropertyID id = rule.Properties().PropertyAt(i).Id();
     if (id == CSSPropertyID::kVariable)
       continue;

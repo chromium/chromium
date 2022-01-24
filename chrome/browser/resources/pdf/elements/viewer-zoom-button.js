@@ -25,11 +25,6 @@ export class ViewerZoomButtonElement extends PolymerElement {
         value: 0,
       },
 
-      delay: {
-        type: Number,
-        observer: 'delayChanged_',
-      },
-
       disabled: {
         type: Boolean,
         value: false,
@@ -51,13 +46,6 @@ export class ViewerZoomButtonElement extends PolymerElement {
       },
 
       tooltips: String,
-
-      /** @private */
-      closed_: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value: false,
-      },
 
       /**
        * Array version of the list of icons. Polymer does not allow array
@@ -124,19 +112,6 @@ export class ViewerZoomButtonElement extends PolymerElement {
    */
   computeVisibleTooltip_() {
     return this.tooltips_ === undefined ? '' : this.tooltips_[this.activeIndex];
-  }
-
-  /** @private */
-  delayChanged_() {
-    this.$.wrapper.style.transitionDelay = this.delay + 'ms';
-  }
-
-  show() {
-    this.closed_ = false;
-  }
-
-  hide() {
-    this.closed_ = true;
   }
 
   /** @private */

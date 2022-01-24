@@ -14,11 +14,14 @@
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/platform_window/extensions/desk_extension.h"
+#include "ui/platform_window/extensions/pinned_mode_extension.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -47,6 +50,11 @@ class SwapWithNewSizeObserverHelper : public ui::CompositorObserver {
       : compositor_(compositor), callback_(callback) {
     compositor_->AddObserver(this);
   }
+
+  SwapWithNewSizeObserverHelper(const SwapWithNewSizeObserverHelper&) = delete;
+  SwapWithNewSizeObserverHelper& operator=(
+      const SwapWithNewSizeObserverHelper&) = delete;
+
   ~SwapWithNewSizeObserverHelper() override {
     if (compositor_)
       compositor_->RemoveObserver(this);
@@ -67,8 +75,6 @@ class SwapWithNewSizeObserverHelper : public ui::CompositorObserver {
 
   ui::Compositor* compositor_;
   const HelperCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwapWithNewSizeObserverHelper);
 };
 
 }  // namespace
@@ -159,12 +165,31 @@ base::OnceClosure DesktopWindowTreeHostLinux::DisableEventListening() {
 }
 
 ui::WaylandExtension* DesktopWindowTreeHostLinux::GetWaylandExtension() {
-  return ui::GetWaylandExtension(*(platform_window()));
+  return platform_window() ? ui::GetWaylandExtension(*(platform_window()))
+                           : nullptr;
 }
 
 const ui::WaylandExtension* DesktopWindowTreeHostLinux::GetWaylandExtension()
     const {
-  return ui::GetWaylandExtension(*(platform_window()));
+  return platform_window() ? ui::GetWaylandExtension(*(platform_window()))
+                           : nullptr;
+}
+
+ui::DeskExtension* DesktopWindowTreeHostLinux::GetDeskExtension() {
+  return ui::GetDeskExtension(*(platform_window()));
+}
+
+const ui::DeskExtension* DesktopWindowTreeHostLinux::GetDeskExtension() const {
+  return ui::GetDeskExtension(*(platform_window()));
+}
+
+ui::PinnedModeExtension* DesktopWindowTreeHostLinux::GetPinnedModeExtension() {
+  return ui::GetPinnedModeExtension(*(platform_window()));
+}
+
+const ui::PinnedModeExtension*
+DesktopWindowTreeHostLinux::GetPinnedModeExtension() const {
+  return ui::GetPinnedModeExtension(*(platform_window()));
 }
 
 void DesktopWindowTreeHostLinux::Init(const Widget::InitParams& params) {
@@ -183,15 +208,6 @@ void DesktopWindowTreeHostLinux::OnNativeWidgetCreated(
     const Widget::InitParams& params) {
   CreateNonClientEventFilter();
   DesktopWindowTreeHostPlatform::OnNativeWidgetCreated(params);
-}
-
-base::flat_map<std::string, std::string>
-DesktopWindowTreeHostLinux::GetKeyboardLayoutMap() {
-  if (features::IsUsingOzonePlatform())
-    return DesktopWindowTreeHostPlatform::GetKeyboardLayoutMap();
-  if (views::LinuxUI::instance())
-    return views::LinuxUI::instance()->GetKeyboardLayoutMap();
-  return {};
 }
 
 void DesktopWindowTreeHostLinux::InitModalType(ui::ModalType modal_type) {
@@ -290,11 +306,13 @@ void DesktopWindowTreeHostLinux::OnActivationChanged(bool active) {
 }
 
 ui::X11Extension* DesktopWindowTreeHostLinux::GetX11Extension() {
-  return ui::GetX11Extension(*(platform_window()));
+  return platform_window() ? ui::GetX11Extension(*(platform_window()))
+                           : nullptr;
 }
 
 const ui::X11Extension* DesktopWindowTreeHostLinux::GetX11Extension() const {
-  return ui::GetX11Extension(*(platform_window()));
+  return platform_window() ? ui::GetX11Extension(*(platform_window()))
+                           : nullptr;
 }
 
 #if BUILDFLAG(USE_ATK)
@@ -307,38 +325,45 @@ bool DesktopWindowTreeHostLinux::OnAtkKeyEvent(AtkKeyEventStruct* atk_event,
 }
 #endif
 
-bool DesktopWindowTreeHostLinux::IsOverrideRedirect(bool is_tiling_wm) const {
+bool DesktopWindowTreeHostLinux::IsOverrideRedirect() const {
   // BrowserDesktopWindowTreeHostLinux implements this for browser windows.
   return false;
+}
+
+gfx::Rect DesktopWindowTreeHostLinux::GetGuessedFullScreenSizeInPx() const {
+  display::Screen* screen = display::Screen::GetScreen();
+  const display::Display display =
+      screen->GetDisplayMatching(GetWindowBoundsInScreen());
+  return gfx::Rect(gfx::ScaleToFlooredPoint(display.bounds().origin(),
+                                            display.device_scale_factor()),
+                   display.GetSizeInPixel());
 }
 
 void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
     const Widget::InitParams& params,
     ui::PlatformWindowInitProperties* properties) {
+  const views::LinuxUI* linux_ui = views::LinuxUI::instance();
+  properties->prefer_dark_theme = linux_ui && linux_ui->PreferDarkTheme();
+
   // Set the background color on startup to make the initial flickering
   // happening between the XWindow is mapped and the first expose event
   // is completely handled less annoying. If possible, we use the content
   // window's background color, otherwise we fallback to white.
-  absl::optional<int> background_color;
-  const views::LinuxUI* linux_ui = views::LinuxUI::instance();
-  if (linux_ui && GetContentWindow()) {
-    ui::NativeTheme::ColorId target_color;
-    switch (properties->type) {
-      case ui::PlatformWindowType::kBubble:
-        target_color = ui::NativeTheme::kColorId_BubbleBackground;
-        break;
-      case ui::PlatformWindowType::kTooltip:
-        target_color = ui::NativeTheme::kColorId_TooltipBackground;
-        break;
-      default:
-        target_color = ui::NativeTheme::kColorId_WindowBackground;
-        break;
-    }
-    ui::NativeTheme* theme = linux_ui->GetNativeTheme(GetContentWindow());
-    background_color = theme->GetSystemColor(target_color);
+  ui::ColorId target_color;
+  switch (properties->type) {
+    case ui::PlatformWindowType::kBubble:
+      target_color = ui::kColorBubbleBackground;
+      break;
+    case ui::PlatformWindowType::kTooltip:
+      target_color = ui::kColorTooltipBackground;
+      break;
+    default:
+      target_color = ui::kColorWindowBackground;
+      break;
   }
-  properties->prefer_dark_theme = linux_ui && linux_ui->PreferDarkTheme();
-  properties->background_color = background_color;
+  properties->background_color =
+      GetWidget()->GetColorProvider()->GetColor(target_color);
+
   properties->icon = ViewsDelegate::GetInstance()->GetDefaultWindowIcon();
 
   properties->wm_class_name = params.wm_class_name;

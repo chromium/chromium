@@ -38,7 +38,7 @@ using sql::test::ExecuteWithResults;
 // structures with no sql, the name is used.
 std::string GetSchema(Database* db) {
   static const char kSql[] =
-      "SELECT COALESCE(sql, name) FROM sqlite_master ORDER BY 1";
+      "SELECT COALESCE(sql, name) FROM sqlite_schema ORDER BY 1";
   return ExecuteWithResults(db, kSql, "|", "\n");
 }
 
@@ -278,7 +278,7 @@ TEST_F(SQLRecoveryTest, RecoverCorruptIndex) {
       &RecoveryCallback, &db_, db_path_, kCreateTable, kCreateIndex, &error));
 
   // This works before the callback is called.
-  static const char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_master";
+  static const char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_schema";
   EXPECT_TRUE(db_.IsSQLValid(kTrivialSql));
 
   // TODO(shess): Could this be delete?  Anything which fails should work.
@@ -355,7 +355,7 @@ TEST_F(SQLRecoveryTest, RecoverCorruptTable) {
   EXPECT_EQ("11", ExecuteWithResult(&db_, kDistinctSql));
 
   // This works before the callback is called.
-  static const char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_master";
+  static const char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_schema";
   EXPECT_TRUE(db_.IsSQLValid(kTrivialSql));
 
   // TODO(shess): Figure out a statement which causes SQLite to notice the
@@ -452,7 +452,7 @@ TEST_F(SQLRecoveryTest, AutoRecoverTable) {
 
     // Save a copy of the temp db's schema before recovering the table.
     static const char kTempSchemaSql[] =
-        "SELECT name, sql FROM sqlite_temp_master";
+        "SELECT name, sql FROM sqlite_temp_schema";
     const std::string temp_schema(
         ExecuteWithResults(recovery->db(), kTempSchemaSql, "|", "\n"));
 
@@ -793,7 +793,7 @@ TEST_F(SQLRecoveryTest, RecoverDatabase) {
             ExecuteWithResults(&db_, kTable2Sql, "|", "\n"));
 
   // Database handle is valid before recovery, poisoned after.
-  static constexpr char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_master";
+  static constexpr char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_schema";
   EXPECT_TRUE(db_.IsSQLValid(kTrivialSql));
   Recovery::RecoverDatabase(&db_, db_path_);
   EXPECT_FALSE(db_.IsSQLValid(kTrivialSql));
@@ -843,7 +843,7 @@ TEST_F(SQLRecoveryTest, RecoverDatabaseWithView) {
       << original_schema;
 
   // Database handle is valid before recovery, poisoned after.
-  static constexpr char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_master";
+  static constexpr char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_schema";
   EXPECT_TRUE(db.IsSQLValid(kTrivialSql));
   Recovery::RecoverDatabase(&db, db_path_);
   EXPECT_FALSE(db.IsSQLValid(kTrivialSql));

@@ -20,10 +20,6 @@ MockImageResourceObserver::MockImageResourceObserver(
   content_->AddObserver(this);
 }
 
-MockImageResourceObserver::~MockImageResourceObserver() {
-  RemoveAsObserver();
-}
-
 void MockImageResourceObserver::RemoveAsObserver() {
   if (!content_)
     return;
@@ -52,6 +48,11 @@ void MockImageResourceObserver::ImageNotifyFinished(
 bool MockImageResourceObserver::ImageNotifyFinishedCalled() const {
   DCHECK_LE(image_notify_finished_count_, 1);
   return image_notify_finished_count_;
+}
+
+void MockImageResourceObserver::Trace(Visitor* visitor) const {
+  visitor->Trace(content_);
+  ImageResourceObserver::Trace(visitor);
 }
 
 }  // namespace blink

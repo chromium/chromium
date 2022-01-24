@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "content/public/browser/context_factory.h"
 #include "content/public/browser/plugin_service.h"
@@ -40,9 +39,14 @@ namespace {
 
 class ViewsContentClientMainPartsMac : public ViewsContentClientMainParts {
  public:
-  ViewsContentClientMainPartsMac(
-      const content::MainFunctionParams& content_params,
-      ViewsContentClient* views_content_client);
+  ViewsContentClientMainPartsMac(content::MainFunctionParams content_params,
+                                 ViewsContentClient* views_content_client);
+
+  ViewsContentClientMainPartsMac(const ViewsContentClientMainPartsMac&) =
+      delete;
+  ViewsContentClientMainPartsMac& operator=(
+      const ViewsContentClientMainPartsMac&) = delete;
+
   ~ViewsContentClientMainPartsMac() override;
 
   // content::BrowserMainParts:
@@ -50,14 +54,13 @@ class ViewsContentClientMainPartsMac : public ViewsContentClientMainParts {
 
  private:
   base::scoped_nsobject<ViewsContentClientAppController> app_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentClientMainPartsMac);
 };
 
 ViewsContentClientMainPartsMac::ViewsContentClientMainPartsMac(
-    const content::MainFunctionParams& content_params,
+    content::MainFunctionParams content_params,
     ViewsContentClient* views_content_client)
-    : ViewsContentClientMainParts(content_params, views_content_client) {
+    : ViewsContentClientMainParts(std::move(content_params),
+                                  views_content_client) {
   // Cache the child process path to avoid triggering an AssertIOAllowed.
   base::FilePath child_process_exe;
   base::PathService::Get(content::CHILD_PROCESS_EXE, &child_process_exe);
@@ -93,11 +96,10 @@ ViewsContentClientMainPartsMac::~ViewsContentClientMainPartsMac() {
 
 // static
 std::unique_ptr<ViewsContentClientMainParts>
-ViewsContentClientMainParts::Create(
-    const content::MainFunctionParams& content_params,
-    ViewsContentClient* views_content_client) {
-  return std::make_unique<ViewsContentClientMainPartsMac>(content_params,
-                                                          views_content_client);
+ViewsContentClientMainParts::Create(content::MainFunctionParams content_params,
+                                    ViewsContentClient* views_content_client) {
+  return std::make_unique<ViewsContentClientMainPartsMac>(
+      std::move(content_params), views_content_client);
 }
 
 // static

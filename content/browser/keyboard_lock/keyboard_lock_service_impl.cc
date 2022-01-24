@@ -20,6 +20,7 @@
 #include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
@@ -40,7 +41,7 @@ void LogKeyboardLockMethodCalled(KeyboardLockMethods method) {
 KeyboardLockServiceImpl::KeyboardLockServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::KeyboardLockService> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentService(render_frame_host, std::move(receiver)),
       render_frame_host_(static_cast<RenderFrameHostImpl*>(render_frame_host)) {
   DCHECK(render_frame_host_);
 }
@@ -52,7 +53,7 @@ void KeyboardLockServiceImpl::CreateMojoService(
   DCHECK(render_frame_host);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See DocumentServiceBase for details.
+  // connection. See DocumentService for details.
   new KeyboardLockServiceImpl(render_frame_host, std::move(receiver));
 }
 
@@ -64,13 +65,13 @@ void KeyboardLockServiceImpl::RequestKeyboardLock(
   else
     LogKeyboardLockMethodCalled(KeyboardLockMethods::kRequestSomeKeys);
 
-  if (!render_frame_host_->IsActive()) {
-    std::move(callback).Run(KeyboardLockRequestResult::kFrameDetachedError);
+  if (render_frame_host_->GetParentOrOuterDocument()) {
+    std::move(callback).Run(KeyboardLockRequestResult::kChildFrameError);
     return;
   }
 
-  if (render_frame_host_->GetParent()) {
-    std::move(callback).Run(KeyboardLockRequestResult::kChildFrameError);
+  if (!render_frame_host_->IsActive()) {
+    std::move(callback).Run(KeyboardLockRequestResult::kFrameDetachedError);
     return;
   }
 
@@ -106,9 +107,10 @@ void KeyboardLockServiceImpl::RequestKeyboardLock(
   if (render_frame_host_->GetRenderWidgetHost()->RequestKeyboardLock(
           std::move(dom_code_set))) {
     std::move(callback).Run(KeyboardLockRequestResult::kSuccess);
-    static_cast<RenderFrameHostImpl*>(render_frame_host_)
-        ->OnSchedulerTrackedFeatureUsed(
-            blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock);
+    feature_handle_ =
+        static_cast<RenderFrameHostImpl*>(render_frame_host_)
+            ->RegisterBackForwardCacheDisablingNonStickyFeature(
+                blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock);
   } else {
     std::move(callback).Run(KeyboardLockRequestResult::kRequestFailedError);
   }
@@ -117,14 +119,23 @@ void KeyboardLockServiceImpl::RequestKeyboardLock(
 void KeyboardLockServiceImpl::CancelKeyboardLock() {
   LogKeyboardLockMethodCalled(KeyboardLockMethods::kCancelLock);
   render_frame_host_->GetRenderWidgetHost()->CancelKeyboardLock();
+  feature_handle_.reset();
 }
 
 void KeyboardLockServiceImpl::GetKeyboardLayoutMap(
     GetKeyboardLayoutMapCallback callback) {
   auto response = GetKeyboardLayoutMapResult::New();
+  // The keyboard layout map is only accessible from the outermost main frame or
+  // with the permission policy enabled.
+  if (render_frame_host_->GetParentOrOuterDocument() &&
+      !render_frame_host_->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kKeyboardMap)) {
+    response->status = blink::mojom::GetKeyboardLayoutMapStatus::kDenied;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
   response->status = blink::mojom::GetKeyboardLayoutMapStatus::kSuccess;
-  response->layout_map =
-      render_frame_host_->GetRenderWidgetHost()->GetKeyboardLayoutMap();
+  response->layout_map = render_frame_host_->GetKeyboardLayoutMap();
 
   std::move(callback).Run(std::move(response));
 }

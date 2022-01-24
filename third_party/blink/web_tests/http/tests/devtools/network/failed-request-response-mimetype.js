@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that network request response view generates a view if no mime type is set.`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
@@ -24,7 +24,7 @@
 
       const responseView = new Network.RequestResponseView(networkRequest);
       responseView.showPreview().then((emptyWidgetView) => {
-        TestRunner.addResult(emptyWidgetView._textElement.textContent);
+        TestRunner.addResult(emptyWidgetView.textElement.textContent);
         TestRunner.completeTest();
       });
     }

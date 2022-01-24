@@ -40,6 +40,12 @@ class GPU_GLES2_EXPORT SharedImageBackingGLCommon {
     ScopedResetAndRestoreUnpackState(gl::GLApi* api,
                                      const UnpackStateAttribs& attribs,
                                      bool uploading_data);
+
+    ScopedResetAndRestoreUnpackState(const ScopedResetAndRestoreUnpackState&) =
+        delete;
+    ScopedResetAndRestoreUnpackState& operator=(
+        const ScopedResetAndRestoreUnpackState&) = delete;
+
     ~ScopedResetAndRestoreUnpackState();
 
    private:
@@ -64,21 +70,22 @@ class GPU_GLES2_EXPORT SharedImageBackingGLCommon {
     // Used when |desktop_gl|.
     GLboolean unpack_swap_bytes_ = GL_FALSE;
     GLboolean unpack_lsb_first_ = GL_FALSE;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedResetAndRestoreUnpackState);
   };
 
   // Object used to restore texture bindings.
   class ScopedRestoreTexture {
    public:
     ScopedRestoreTexture(gl::GLApi* api, GLenum target);
+
+    ScopedRestoreTexture(const ScopedRestoreTexture&) = delete;
+    ScopedRestoreTexture& operator=(const ScopedRestoreTexture&) = delete;
+
     ~ScopedRestoreTexture();
 
    private:
     gl::GLApi* api_;
     GLenum target_;
     GLuint old_binding_ = 0;
-    DISALLOW_COPY_AND_ASSIGN(ScopedRestoreTexture);
   };
 
   // Helper function to create a GL texture.

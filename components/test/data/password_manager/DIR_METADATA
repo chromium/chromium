@@ -1,3 +1,1 @@
-monorail {
-  component: "UI>Browser>Passwords"
-}
+mixins: "//components/password_manager/COMMON_METADATA"

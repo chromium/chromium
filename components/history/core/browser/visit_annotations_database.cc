@@ -21,12 +21,12 @@ namespace history {
 
 namespace {
 
-#define HISTORY_CONTENT_ANNOTATIONS_ROW_FIELDS                           \
-  " visit_id,floc_protected_score,categories,page_topics_model_version," \
-  "annotation_flags "
+#define HISTORY_CONTENT_ANNOTATIONS_ROW_FIELDS                       \
+  " visit_id,visibility_score,categories,page_topics_model_version," \
+  "annotation_flags,entities,related_searches "
 #define HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS                    \
   " visit_id,context_annotation_flags,duration_since_last_visit," \
-  "page_end_reason "
+  "page_end_reason,total_foreground_duration "
 
 // Converts the serialized categories into a vector of (`id`, `weight`)
 // pairs.
@@ -39,15 +39,11 @@ GetCategoriesFromStringColumn(const std::string& column_value) {
   for (const auto& category_string : category_strings) {
     std::vector<std::string> category_parts = base::SplitString(
         category_string, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (category_parts.size() != 2)
-      return {};
 
-    VisitContentModelAnnotations::Category category;
-    if (!base::StringToInt(category_parts[0], &category.id))
-      continue;
-    if (!base::StringToInt(category_parts[1], &category.weight))
-      continue;
-    categories.emplace_back(category);
+    auto category = VisitContentModelAnnotations::Category::FromStringVector(
+        category_parts);
+    if (category)
+      categories.emplace_back(*category);
   }
   return categories;
 }
@@ -57,11 +53,25 @@ std::string ConvertCategoriesToStringColumn(
     const std::vector<VisitContentModelAnnotations::Category>& categories) {
   std::vector<std::string> serialized_categories;
   for (const auto& category : categories) {
-    serialized_categories.emplace_back(
-        base::StrCat({base::NumberToString(category.id), ":",
-                      base::NumberToString(category.weight)}));
+    serialized_categories.emplace_back(category.ToString());
   }
   return base::JoinString(serialized_categories, ",");
+}
+
+// Converts the serialized related searches string into a vector of strings.
+std::vector<std::string> GetRelatedSearchesFromStringColumn(
+    const std::string& column_value) {
+  using std::string_literals::operator""s;
+  return base::SplitString(column_value, "\0"s, base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY);
+}
+
+// Serializes related searches into a string that can be stored in the database.
+std::string ConvertRelatedSearchesToStringColumn(
+    const std::vector<std::string>& related_searches) {
+  // Use the Null character as the separator to serialize the related searches.
+  using std::string_literals::operator""s;
+  return base::JoinString(related_searches, "\0"s);
 }
 
 // An enum of bitmasks to help represent the boolean flags of
@@ -118,7 +128,8 @@ int64_t ContextAnnotationsToFlags(VisitContextAnnotations context_annotations) {
 VisitContextAnnotations ConstructContextAnnotationsWithFlags(
     int64_t flags,
     base::TimeDelta duration_since_last_visit,
-    int page_end_reason) {
+    int page_end_reason,
+    base::TimeDelta total_foreground_duration) {
   VisitContextAnnotations context_annotations;
   context_annotations.omnibox_url_copied =
       flags & static_cast<uint64_t>(ContextAnnotationFlags::kOmniboxUrlCopied);
@@ -137,18 +148,20 @@ VisitContextAnnotations ConstructContextAnnotationsWithFlags(
       flags & static_cast<uint64_t>(ContextAnnotationFlags::kIsNtpCustomLink);
   context_annotations.duration_since_last_visit = duration_since_last_visit;
   context_annotations.page_end_reason = page_end_reason;
+  context_annotations.total_foreground_duration = total_foreground_duration;
   return context_annotations;
 }
 
 // Convenience to construct a `AnnotatedVisitRow`. Assumes the visit values are
 // bound starting at index 0.
 AnnotatedVisitRow StatementToAnnotatedVisitRow(sql::Statement& statement) {
-  return {statement.ColumnInt64(0),
-          ConstructContextAnnotationsWithFlags(
-              statement.ColumnInt64(1),
-              base::TimeDelta::FromMicroseconds(statement.ColumnInt64(2)),
-              statement.ColumnInt(3)),
-          {}};
+  return {
+      statement.ColumnInt64(0),
+      ConstructContextAnnotationsWithFlags(
+          statement.ColumnInt64(1),
+          base::Microseconds(statement.ColumnInt64(2)), statement.ColumnInt(3),
+          base::Microseconds(statement.ColumnInt64(4))),
+      {}};
 }
 
 // Like `StatementToAnnotatedVisitRow()` but for multiple rows.
@@ -169,10 +182,13 @@ bool VisitAnnotationsDatabase::InitVisitAnnotationsTables() {
   // Content Annotations table.
   if (!GetDB().Execute("CREATE TABLE IF NOT EXISTS content_annotations("
                        "visit_id INTEGER PRIMARY KEY,"
+                       "visibility_score NUMERIC,"
                        "floc_protected_score NUMERIC,"
                        "categories VARCHAR,"
                        "page_topics_model_version INTEGER,"
-                       "annotation_flags INTEGER NOT NULL)")) {
+                       "annotation_flags INTEGER NOT NULL,"
+                       "entities VARCHAR,"
+                       "related_searches VARCHAR)")) {
     return false;
   }
 
@@ -182,7 +198,8 @@ bool VisitAnnotationsDatabase::InitVisitAnnotationsTables() {
                        "visit_id INTEGER PRIMARY KEY,"
                        "context_annotation_flags INTEGER NOT NULL,"
                        "duration_since_last_visit INTEGER,"
-                       "page_end_reason INTEGER)")) {
+                       "page_end_reason INTEGER,"
+                       "total_foreground_duration INTEGER)")) {
     return false;
   }
 
@@ -228,17 +245,22 @@ void VisitAnnotationsDatabase::AddContentAnnotationsForVisit(
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO content_annotations(" HISTORY_CONTENT_ANNOTATIONS_ROW_FIELDS
-      ")VALUES(?,?,?,?,?)"));
+      ")VALUES(?,?,?,?,?,?,?)"));
   statement.BindInt64(0, visit_id);
   statement.BindDouble(
       1, static_cast<double>(
-             visit_content_annotations.model_annotations.floc_protected_score));
+             visit_content_annotations.model_annotations.visibility_score));
   statement.BindString(
       2, ConvertCategoriesToStringColumn(
              visit_content_annotations.model_annotations.categories));
   statement.BindInt64(
       3, visit_content_annotations.model_annotations.page_topics_model_version);
   statement.BindInt64(4, visit_content_annotations.annotation_flags);
+  statement.BindString(
+      5, ConvertCategoriesToStringColumn(
+             visit_content_annotations.model_annotations.entities));
+  statement.BindString(6, ConvertRelatedSearchesToStringColumn(
+                              visit_content_annotations.related_searches));
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute 'content_annotations' insert statement:  "
@@ -253,12 +275,14 @@ void VisitAnnotationsDatabase::AddContextAnnotationsForVisit(
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO context_annotations(" HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS
-      ")VALUES(?,?,?,?)"));
+      ")VALUES(?,?,?,?,?)"));
   statement.BindInt64(0, visit_id);
   statement.BindInt64(1, ContextAnnotationsToFlags(visit_context_annotations));
   statement.BindInt64(
       2, visit_context_annotations.duration_since_last_visit.InMicroseconds());
   statement.BindInt(3, visit_context_annotations.page_end_reason);
+  statement.BindInt64(
+      4, visit_context_annotations.total_foreground_duration.InMicroseconds());
 
   if (!statement.Run()) {
     DVLOG(0)
@@ -274,20 +298,26 @@ void VisitAnnotationsDatabase::UpdateContentAnnotationsForVisit(
   sql::Statement statement(
       GetDB().GetCachedStatement(SQL_FROM_HERE,
                                  "UPDATE content_annotations SET "
-                                 "floc_protected_score=?,categories=?,"
+                                 "visibility_score=?,categories=?,"
                                  "page_topics_model_version=?,"
-                                 "annotation_flags=? "
+                                 "annotation_flags=?,entities=?,"
+                                 "related_searches=? "
                                  "WHERE visit_id=?"));
   statement.BindDouble(
       0, static_cast<double>(
-             visit_content_annotations.model_annotations.floc_protected_score));
+             visit_content_annotations.model_annotations.visibility_score));
   statement.BindString(
       1, ConvertCategoriesToStringColumn(
              visit_content_annotations.model_annotations.categories));
   statement.BindInt64(
       2, visit_content_annotations.model_annotations.page_topics_model_version);
   statement.BindInt64(3, visit_content_annotations.annotation_flags);
-  statement.BindInt64(4, visit_id);
+  statement.BindString(
+      4, ConvertCategoriesToStringColumn(
+             visit_content_annotations.model_annotations.entities));
+  statement.BindString(5, ConvertRelatedSearchesToStringColumn(
+                              visit_content_annotations.related_searches));
+  statement.BindInt64(6, visit_id);
 
   if (!statement.Run()) {
     DVLOG(0)
@@ -317,9 +347,8 @@ bool VisitAnnotationsDatabase::GetContextAnnotationsForVisit(
   // The `VisitID` in column 0 is intentionally ignored, as it's not part of
   // `VisitContextAnnotations`.
   *out_context_annotations = ConstructContextAnnotationsWithFlags(
-      statement.ColumnInt64(1),
-      base::TimeDelta::FromMicroseconds(statement.ColumnInt64(2)),
-      statement.ColumnInt(3));
+      statement.ColumnInt64(1), base::Microseconds(statement.ColumnInt64(2)),
+      statement.ColumnInt(3), base::Microseconds(statement.ColumnInt64(4)));
   return true;
 }
 
@@ -340,13 +369,17 @@ bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
   VisitID received_visit_id = statement.ColumnInt64(0);
   DCHECK_EQ(visit_id, received_visit_id);
 
-  out_content_annotations->model_annotations.floc_protected_score =
+  out_content_annotations->model_annotations.visibility_score =
       static_cast<float>(statement.ColumnDouble(1));
   out_content_annotations->model_annotations.categories =
       GetCategoriesFromStringColumn(statement.ColumnString(2));
   out_content_annotations->model_annotations.page_topics_model_version =
       statement.ColumnInt64(3);
   out_content_annotations->annotation_flags = statement.ColumnInt64(4);
+  out_content_annotations->model_annotations.entities =
+      GetCategoriesFromStringColumn(statement.ColumnString(5));
+  out_content_annotations->related_searches =
+      GetRelatedSearchesFromStringColumn(statement.ColumnString(6));
   return true;
 }
 
@@ -406,7 +439,6 @@ VisitAnnotationsDatabase::GetAllContextAnnotationsForTesting() {
 }
 
 void VisitAnnotationsDatabase::DeleteAnnotationsForVisit(VisitID visit_id) {
-  DCHECK_GT(visit_id, 0);
   sql::Statement statement;
 
   statement.Assign(GetDB().GetCachedStatement(
@@ -448,7 +480,7 @@ void VisitAnnotationsDatabase::AddClusters(
       "VALUES(?,?,0)"));
 
   for (const auto& cluster : clusters) {
-    if (cluster.scored_annotated_visits.empty())
+    if (cluster.visits.empty())
       continue;
     clusters_statement.Reset(false);
     if (!clusters_statement.Run()) {
@@ -458,7 +490,7 @@ void VisitAnnotationsDatabase::AddClusters(
     const int64_t cluster_id = GetDB().GetLastInsertRowId();
     DCHECK(cluster_id);
     base::ranges::for_each(
-        cluster.scored_annotated_visits,
+        cluster.visits,
         [&](const auto& annotated_visit) {
           clusters_and_visits_statement.Reset(true);
           clusters_and_visits_statement.BindInt64(0, cluster_id);
@@ -471,7 +503,7 @@ void VisitAnnotationsDatabase::AddClusters(
                 << ", visit_id = " << annotated_visit.visit_row.visit_id;
           }
         },
-        &ScoredAnnotatedVisit::annotated_visit);
+        &ClusterVisit::annotated_visit);
   }
 }
 
@@ -582,6 +614,68 @@ bool VisitAnnotationsDatabase::MigrateReplaceClusterVisitsTable() {
   // rolled out behind a flag.
   return !GetDB().DoesTableExist("cluster_visits") ||
          GetDB().Execute("DROP TABLE cluster_visits");
+}
+
+bool VisitAnnotationsDatabase::
+    MigrateContentAnnotationsWithoutEntitiesColumn() {
+  if (!GetDB().DoesTableExist("content_annotations")) {
+    NOTREACHED() << " Content annotations table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("content_annotations", "entities"))
+    return true;
+
+  // Old versions don't have the entities column, we modify the table to add
+  // that field.
+  return GetDB().Execute(
+      "ALTER TABLE content_annotations "
+      "ADD COLUMN entities VARCHAR");
+}
+
+bool VisitAnnotationsDatabase::
+    MigrateContentAnnotationsAddRelatedSearchesColumn() {
+  if (!GetDB().DoesTableExist("content_annotations")) {
+    NOTREACHED() << " Content annotations table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("content_annotations", "related_searches"))
+    return true;
+
+  // Add the `related_searches` column to the older versions of the table.
+  return GetDB().Execute(
+      "ALTER TABLE content_annotations "
+      "ADD COLUMN related_searches VARCHAR");
+}
+
+bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddVisibilityScore() {
+  if (!GetDB().DoesTableExist("content_annotations")) {
+    NOTREACHED() << " Content annotations table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("content_annotations", "visibility_score"))
+    return true;
+  return GetDB().Execute(
+      "ALTER TABLE content_annotations "
+      "ADD COLUMN visibility_score NUMERIC DEFAULT -1");
+}
+
+bool VisitAnnotationsDatabase::
+    MigrateContextAnnotationsAddTotalForegroundDuration() {
+  if (!GetDB().DoesTableExist("context_annotations")) {
+    NOTREACHED() << " Context annotations table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("context_annotations",
+                              "total_foreground_duration"))
+    return true;
+  // 1000000us = 1s which is the default duration for this DB.
+  return GetDB().Execute(
+      "ALTER TABLE context_annotations "
+      "ADD COLUMN total_foreground_duration NUMERIC DEFAULT -1000000");
 }
 
 }  // namespace history

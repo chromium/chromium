@@ -24,13 +24,13 @@
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
@@ -41,6 +41,7 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,6 +65,12 @@ struct TypeConverter<arc::mojom::ArcPackageInfoPtr,
 }  // namespace mojo
 
 namespace {
+
+using content::RenderFrameHost;
+using content::test::PrerenderHostObserver;
+using content::test::PrerenderHostRegistryObserver;
+using content::test::PrerenderTestHelper;
+
 const char kTestAppActivity[] = "abcdefg";
 
 class FakeIconLoader : public apps::IconLoader {
@@ -167,7 +174,7 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     web_app_info->title = base::UTF8ToUTF16(app_name);
     web_app_info->start_url = url;
     web_app_info->scope = url;
-    web_app_info->open_as_window = true;
+    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
     auto app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     WaitForAppService();
@@ -188,6 +195,8 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     return intent_picker_bubble()->remember_selection_checkbox_;
   }
 
+  // TODO(crbug.com/1265991): There should be an explicit signal we can wait on
+  // rather than assuming the AppService will be started after RunUntilIdle.
   void WaitForAppService() { base::RunLoop().RunUntilIdle(); }
 
   ArcAppListPrefs* app_prefs() { return ArcAppListPrefs::Get(profile()); }
@@ -259,15 +268,14 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     EXPECT_EQ(test_url.spec(), launched_arc_apps()[0].intent->data);
   }
 
-  void VerifyPWALaunched(const std::string& app_id) {
+  bool VerifyPWALaunched(const std::string& app_id) {
     WaitForAppService();
     Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-    EXPECT_TRUE(
-        web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+    return web_app::AppBrowserController::IsForWebApp(app_browser, app_id);
   }
 
  private:
-  apps::AppServiceProxyChromeOs* app_service_proxy_ = nullptr;
+  apps::AppServiceProxy* app_service_proxy_ = nullptr;
   std::unique_ptr<arc::FakeIntentHelperInstance> intent_helper_instance_;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   FakeIconLoader icon_loader_;
@@ -283,7 +291,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -326,7 +335,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), out_of_scope_url,
@@ -350,7 +360,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -383,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 
   // Launch the app.
   intent_picker_bubble()->AcceptDialog();
-  VerifyPWALaunched(app_id);
+  EXPECT_TRUE(VerifyPWALaunched(app_id));
 }
 
 // Test that intent picker bubble will not pop up for non-link navigation.
@@ -395,7 +406,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -430,7 +442,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -449,7 +462,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   EXPECT_EQ(app_name, app_info[0].display_name);
   EXPECT_TRUE(intent_picker_bubble()->Close());
 
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   ui_test_utils::NavigateToURL(&params);
   WaitForAppService();
   EXPECT_TRUE(intent_picker_view->GetVisible());
@@ -457,7 +471,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   EXPECT_TRUE(intent_picker_bubble()->GetVisible());
   EXPECT_TRUE(intent_picker_bubble()->Close());
 
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   ui_test_utils::NavigateToURL(&params);
   WaitForAppService();
   EXPECT_TRUE(intent_picker_view->GetVisible());
@@ -503,7 +518,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -542,7 +558,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -581,7 +598,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -627,7 +645,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -656,7 +675,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -684,7 +704,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -733,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 
   // Launch the app.
   intent_picker_bubble()->AcceptDialog();
-  VerifyPWALaunched(app_id_pwa);
+  EXPECT_TRUE(VerifyPWALaunched(app_id_pwa));
 }
 
 // Test that bubble pops out when there is both PWA and ARC candidates, and
@@ -748,7 +769,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -809,7 +831,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   auto app_id_arc = AddArcAppWithIntentFilter(app_name_arc, test_url);
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -835,7 +858,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -858,7 +882,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 
   // Navigate to the same site again, and see there will be no bubble
   // pop out, and no app will be launched.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   ui_test_utils::NavigateToURL(&params);
   WaitForAppService();
   EXPECT_TRUE(intent_picker_view->GetVisible());
@@ -876,7 +901,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -901,7 +927,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   // Navigate to the same site again, and verify the app is automatically
   // launched.
   clear_launched_arc_apps();
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   ui_test_utils::NavigateToURL(&params);
   ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
 }
@@ -928,7 +955,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBrowserTestPWAPersistence,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -951,7 +979,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBrowserTestPWAPersistence,
 
   // Navigate to the same site again, and see there will be no bubble
   // pop out, and no app will be launched.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   ui_test_utils::NavigateToURL(&params);
   WaitForAppService();
   EXPECT_TRUE(intent_picker_view->GetVisible());
@@ -968,7 +997,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBrowserTestPWAPersistence, RememberOpenPWA) {
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Navigate from a link.
   NavigateParams params(browser(), test_url,
@@ -988,18 +1018,99 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBrowserTestPWAPersistence, RememberOpenPWA) {
   remember_selection_checkbox()->SetChecked(true);
   ASSERT_TRUE(intent_picker_bubble());
   intent_picker_bubble()->AcceptDialog();
-  VerifyPWALaunched(app_id);
+  EXPECT_TRUE(VerifyPWALaunched(app_id));
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
   chrome::CloseWindow(app_browser);
   ui_test_utils::WaitForBrowserToClose(app_browser);
 
   // Navigate to the same site again, and verify the app is automatically
   // launched.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   NavigateParams params_new(browser(), test_url,
                             ui::PageTransition::PAGE_TRANSITION_LINK);
   ui_test_utils::NavigateToURL(&params_new);
 
-  VerifyPWALaunched(app_id);
+  EXPECT_TRUE(VerifyPWALaunched(app_id));
+}
+
+class IntentPickerBrowserTestPrerendering
+    : public IntentPickerBrowserTestPWAPersistence {
+ public:
+  IntentPickerBrowserTestPrerendering()
+      : prerender_helper_(base::BindRepeating(
+            &IntentPickerBrowserTestPrerendering::web_contents,
+            base::Unretained(this))) {}
+  ~IntentPickerBrowserTestPrerendering() override = default;
+
+ protected:
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  PrerenderTestHelper prerender_helper_;
+};
+
+// Simulates prerendering an app URL that the user has opted into always
+// launching an app window for. In this case, the prerender should be canceled
+// and the app shouldn't be opened.
+IN_PROC_BROWSER_TEST_F(IntentPickerBrowserTestPrerendering,
+                       AppLaunchURLCancelsPrerendering) {
+  // Prerendering is currently limited to same-origin pages so we need to start
+  // it from an arbitrary page on the same origin, rather than about:blank.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kAppUrl = embedded_test_server()->GetURL("/app");
+  const std::string kAppName = "test_name";
+  const auto kAppId = InstallWebApp(kAppName, kAppUrl);
+
+  chrome::NewTab(browser());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
+
+  // Setup: navigate to the app URL and persist the "Open App" setting. Then
+  // close the app.
+  {
+    // Navigate from a link.
+    NavigateParams params(browser(), kAppUrl,
+                          ui::PageTransition::PAGE_TRANSITION_LINK);
+
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        IntentPickerBubbleView::kViewClassName);
+    // Navigates and waits for loading to finish.
+    ui_test_utils::NavigateToURL(&params);
+
+    waiter.WaitIfNeededAndGet();
+    EXPECT_TRUE(GetIntentPickerIcon()->GetVisible());
+
+    // Check "Remember my choice" and choose "Open App".
+    ASSERT_TRUE(remember_selection_checkbox());
+    ASSERT_TRUE(remember_selection_checkbox()->GetEnabled());
+    remember_selection_checkbox()->SetChecked(true);
+    ASSERT_TRUE(intent_picker_bubble());
+    intent_picker_bubble()->AcceptDialog();
+    ASSERT_TRUE(VerifyPWALaunched(kAppId));
+    Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+    chrome::CloseWindow(app_browser);
+    ui_test_utils::WaitForBrowserToClose(app_browser);
+    ASSERT_FALSE(VerifyPWALaunched(kAppId));
+  }
+
+  chrome::NewTab(browser());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
+
+  // Trigger a prerender of the app URL.
+  PrerenderHostObserver host_observer(*web_contents(), kAppUrl);
+  prerender_helper_.AddPrerenderAsync(kAppUrl);
+  host_observer.WaitForDestroyed();
+
+  // The app must not have been launched.
+  EXPECT_FALSE(VerifyPWALaunched(kAppId));
+
+  // However, a standard user navigation should launch the app as usual.
+  NavigateParams params_new(browser(), kAppUrl,
+                            ui::PageTransition::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&params_new);
+  EXPECT_TRUE(VerifyPWALaunched(kAppId));
 }

@@ -19,6 +19,7 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/mock_background_sync_controller.h"
 #include "content/test/mock_client_hints_controller_delegate.h"
+#include "content/test/mock_platform_notification_service.h"
 #include "content/web_test/browser/web_test_background_fetch_delegate.h"
 #include "content/web_test/browser/web_test_download_manager_delegate.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
@@ -58,6 +59,15 @@ DownloadManagerDelegate* WebTestBrowserContext::GetDownloadManagerDelegate() {
   }
 
   return download_manager_delegate_.get();
+}
+
+PlatformNotificationService*
+WebTestBrowserContext::GetPlatformNotificationService() {
+  if (!platform_notification_service_) {
+    platform_notification_service_ =
+        std::make_unique<MockPlatformNotificationService>(this);
+  }
+  return platform_notification_service_.get();
 }
 
 PushMessagingService* WebTestBrowserContext::GetPushMessagingService() {

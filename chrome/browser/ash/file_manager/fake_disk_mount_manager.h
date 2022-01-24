@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/disks/disk_mount_manager.h"
@@ -46,6 +45,10 @@ class FakeDiskMountManager : public chromeos::disks::DiskMountManager {
   };
 
   FakeDiskMountManager();
+
+  FakeDiskMountManager(const FakeDiskMountManager&) = delete;
+  FakeDiskMountManager& operator=(const FakeDiskMountManager&) = delete;
+
   ~FakeDiskMountManager() override;
 
   const std::vector<MountRequest>& mount_requests() const {
@@ -118,8 +121,6 @@ class FakeDiskMountManager : public chromeos::disks::DiskMountManager {
   std::vector<std::string> unmount_requests_;
   std::vector<RemountAllRequest> remount_all_requests_;
   std::map<std::string, chromeos::MountError> unmount_errors_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDiskMountManager);
 };
 
 }  // namespace file_manager

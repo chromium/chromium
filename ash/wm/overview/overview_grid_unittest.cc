@@ -24,6 +24,7 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -31,6 +32,10 @@ namespace ash {
 class OverviewGridTest : public AshTestBase {
  public:
   OverviewGridTest() = default;
+
+  OverviewGridTest(const OverviewGridTest&) = delete;
+  OverviewGridTest& operator=(const OverviewGridTest&) = delete;
+
   ~OverviewGridTest() override = default;
 
   void InitializeGrid(const std::vector<aura::Window*>& windows) {
@@ -89,8 +94,6 @@ class OverviewGridTest : public AshTestBase {
 
  private:
   std::unique_ptr<OverviewGrid> grid_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewGridTest);
 };
 
 // Tests that with only one window, we always animate.
@@ -224,8 +227,8 @@ TEST_F(OverviewGridTest, WindowWithBackdrop) {
                        {true, false}, {true, true});
 }
 
-TEST_F(OverviewGridTest, PartiallyOffscreenWindow) {
-  UpdateDisplay("400x400");
+TEST_F(OverviewGridTest, DestinationPartiallyOffscreenWindow) {
+  UpdateDisplay("500x400");
   auto window1 = CreateTestWindow(gfx::Rect(100, 100));
   auto window2 = CreateTestWindow(gfx::Rect(100, 100));
 
@@ -243,9 +246,29 @@ TEST_F(OverviewGridTest, PartiallyOffscreenWindow) {
                        {true, false}, {true, false});
 }
 
+TEST_F(OverviewGridTest, SourcePartiallyOffscreenWindow) {
+  UpdateDisplay("500x400");
+  auto window1 = CreateTestWindow(gfx::Rect(100, 100));
+  // Create |window2| to be partially offscreen.
+  auto window2 = CreateTestWindow(gfx::Rect(450, 100, 100, 100));
+
+  // Tests that it still animates because the onscreen portion is not occluded
+  // by |window1|.
+  std::vector<gfx::RectF> target_bounds = {gfx::RectF(100.f, 100.f),
+                                           gfx::RectF(200.f, 200.f)};
+  CheckAnimationStates({window1.get(), window2.get()}, target_bounds,
+                       {true, true}, {true, true});
+
+  // Maximize |window1|. |window2| should no longer animate since the parts of
+  // it that are onscreen are fully occluded.
+  WindowState::Get(window1.get())->Maximize();
+  CheckAnimationStates({window1.get(), window2.get()}, target_bounds,
+                       {true, false}, {true, false});
+}
+
 // Tests that windows whose destination is fully offscreen never animate.
 TEST_F(OverviewGridTest, FullyOffscreenWindow) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   auto window1 = CreateTestWindow(gfx::Rect(100, 100));
   auto window2 = CreateTestWindow(gfx::Rect(100, 100));
 

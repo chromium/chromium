@@ -7,7 +7,9 @@
 #import <Cocoa/Cocoa.h>
 #import <SafariServices/SafariServices.h>
 
+#include "base/feature_list.h"
 #include "base/strings/sys_string_conversions.h"
+#include "chrome/browser/browser_features.h"
 #include "net/base/mac/url_conversions.h"
 #include "ui/base/models/image_model.h"
 
@@ -41,6 +43,11 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
 }  // namespace
 
 absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
+  static bool universal_links_enabled =
+      base::FeatureList::IsEnabled(features::kEnableUniveralLinks);
+  if (!universal_links_enabled)
+    return absl::nullopt;
+
   if (@available(macOS 10.15, *)) {
     NSURL* nsurl = net::NSURLWithGURL(url);
     if (!nsurl)
@@ -48,6 +55,7 @@ absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
 
     SFUniversalLink* link =
         [[[SFUniversalLink alloc] initWithWebpageURL:nsurl] autorelease];
+
     if (link)
       return AppInfoForAppUrl(link.applicationURL);
   }

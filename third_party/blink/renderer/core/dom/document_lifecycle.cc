@@ -99,9 +99,6 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
       // We can synchronously recalc style.
       if (next_state == kInStyleRecalc)
         return true;
-      // We can notify layout objects that subtrees changed.
-      if (next_state == kInLayoutSubtreeChange)
-        return true;
       if (next_state == kInPerformLayout)
         return true;
       // We can redundant arrive in the style clean state.
@@ -114,27 +111,6 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
         return true;
       if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
           next_state == kCompositingInputsClean)
-        return true;
-      break;
-    case kInLayoutSubtreeChange:
-      return next_state == kLayoutSubtreeChangeClean;
-    case kLayoutSubtreeChangeClean:
-      // We can synchronously recalc style.
-      if (next_state == kInStyleRecalc)
-        return true;
-      // We can synchronously perform layout.
-      if (next_state == kInPerformLayout)
-        return true;
-      // Can move back to style clean.
-      if (next_state == kStyleClean)
-        return true;
-      if (next_state == kLayoutClean)
-        return true;
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kCompositingInputsClean)
-        return true;
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kInCompositingAssignmentsUpdate)
         return true;
       break;
     case kInPerformLayout:
@@ -297,9 +273,9 @@ bool DocumentLifecycle::CanRewindTo(LifecycleState next_state) const {
       state_ == g_deprecated_transition_stack->From() &&
       next_state == g_deprecated_transition_stack->To())
     return true;
-  return state_ == kStyleClean || state_ == kLayoutSubtreeChangeClean ||
-         state_ == kAfterPerformLayout || state_ == kLayoutClean ||
-         state_ == kAccessibilityClean || state_ == kCompositingInputsClean ||
+  return state_ == kStyleClean || state_ == kAfterPerformLayout ||
+         state_ == kLayoutClean || state_ == kAccessibilityClean ||
+         state_ == kCompositingInputsClean ||
          state_ == kCompositingAssignmentsClean || state_ == kPrePaintClean ||
          state_ == kPaintClean;
 }
@@ -316,8 +292,6 @@ static WTF::String StateAsDebugString(
     DEBUG_STRING_CASE(kVisualUpdatePending);
     DEBUG_STRING_CASE(kInStyleRecalc);
     DEBUG_STRING_CASE(kStyleClean);
-    DEBUG_STRING_CASE(kInLayoutSubtreeChange);
-    DEBUG_STRING_CASE(kLayoutSubtreeChangeClean);
     DEBUG_STRING_CASE(kInPerformLayout);
     DEBUG_STRING_CASE(kAfterPerformLayout);
     DEBUG_STRING_CASE(kLayoutClean);

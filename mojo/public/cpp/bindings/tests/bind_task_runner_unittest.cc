@@ -8,9 +8,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
@@ -34,6 +34,9 @@ class TestTaskRunner : public base::SequencedTaskRunner {
         quit_called_(false),
         task_ready_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                     base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+
+  TestTaskRunner(const TestTaskRunner&) = delete;
+  TestTaskRunner& operator=(const TestTaskRunner&) = delete;
 
   bool PostNonNestableDelayedTask(const base::Location& from_here,
                                   base::OnceClosure task,
@@ -117,8 +120,6 @@ class TestTaskRunner : public base::SequencedTaskRunner {
   // Protect |tasks_|.
   base::Lock lock_;
   base::queue<base::OnceClosure> tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTaskRunner);
 };
 
 template <typename ReceiverType, typename PendingReceiverType>

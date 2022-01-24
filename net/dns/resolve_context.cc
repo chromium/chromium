@@ -35,16 +35,14 @@ namespace {
 
 // Min fallback period between queries, in case we are talking to a local DNS
 // proxy.
-const base::TimeDelta kMinFallbackPeriod =
-    base::TimeDelta::FromMilliseconds(10);
+const base::TimeDelta kMinFallbackPeriod = base::Milliseconds(10);
 
 // Default maximum fallback period between queries, even with exponential
 // backoff. (Can be overridden by field trial.)
-const base::TimeDelta kDefaultMaxFallbackPeriod =
-    base::TimeDelta::FromSeconds(5);
+const base::TimeDelta kDefaultMaxFallbackPeriod = base::Seconds(5);
 
 // Maximum RTT that will fit in the RTT histograms.
-const base::TimeDelta kRttMax = base::TimeDelta::FromSeconds(30);
+const base::TimeDelta kRttMax = base::Seconds(30);
 // Number of buckets in the histogram of observed RTTs.
 const size_t kRttBucketCount = 350;
 // Target percentile in the RTT histogram used for fallback period.
@@ -255,7 +253,7 @@ void ResolveContext::RecordRtt(size_t server_index,
 
   // RTT values shouldn't be less than 0, but it shouldn't cause a crash if
   // they are anyway, so clip to 0. See https://crbug.com/753568.
-  if (rtt < base::TimeDelta())
+  if (rtt.is_negative())
     rtt = base::TimeDelta();
 
   // Histogram-based method.
@@ -443,7 +441,7 @@ base::TimeDelta ResolveContext::NextFallbackPeriodHelper(
   }
 
   base::TimeDelta fallback_period =
-      base::TimeDelta::FromMilliseconds(GetRttBuckets()->range(index));
+      base::Milliseconds(GetRttBuckets()->range(index));
 
   fallback_period = std::max(fallback_period, kMinFallbackPeriod);
 

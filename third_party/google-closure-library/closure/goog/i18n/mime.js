@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Functions for encoding strings according to MIME
@@ -50,6 +42,7 @@ goog.i18n.mime.NONASCII_NOQUOTE_ =
  * @return {string} The encoded string.
  */
 goog.i18n.mime.encode = function(str, opt_noquote) {
+  'use strict';
   var nonascii =
       opt_noquote ? goog.i18n.mime.NONASCII_NOQUOTE_ : goog.i18n.mime.NONASCII_;
 
@@ -62,6 +55,7 @@ goog.i18n.mime.encode = function(str, opt_noquote) {
              * @return {string} The quoted-printable form of utf-8 encoding.
              */
             function(c) {
+              'use strict';
               var i = c.charCodeAt(0);
               if (i == 32) {
                 // Special case for space, which can be encoded as _ not =20
@@ -82,6 +76,7 @@ goog.i18n.mime.encode = function(str, opt_noquote) {
  * @return {!Array<string>} A hex array representing the character.
  */
 goog.i18n.mime.getHexCharArray = function(c) {
+  'use strict';
   var i = goog.i18n.uChar.toCharCode(c);
   var a = [];
   // First convert the UCS-2 character into its UTF-8 bytes

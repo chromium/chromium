@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,6 +27,8 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -52,6 +53,11 @@ class NavigationPredictorBrowserTest
     feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kNavigationPredictor, params);
   }
+
+  NavigationPredictorBrowserTest(const NavigationPredictorBrowserTest&) =
+      delete;
+  NavigationPredictorBrowserTest& operator=(
+      const NavigationPredictorBrowserTest&) = delete;
 
   void SetUp() override {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -109,13 +115,15 @@ class NavigationPredictorBrowserTest
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationPredictorBrowserTest);
 };
 
 class TestObserver : public NavigationPredictorKeyedService::Observer {
  public:
   TestObserver() = default;
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
@@ -170,8 +178,6 @@ class TestObserver : public NavigationPredictorKeyedService::Observer {
   absl::optional<size_t> expected_notifications_count_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, Pipeline) {
@@ -179,11 +185,12 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, Pipeline) {
   ResetUKM();
 
   const GURL& url = GetTestURL("/simple_page_with_anchors.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitLinkEnteredViewport(1);
 
   // Force recording NavigationPredictorPageLinkMetrics UKM.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   using PageLinkEntry = ukm::builders::NavigationPredictorPageLinkMetrics;
   auto entries = test_ukm_recorder->GetEntriesByName(PageLinkEntry::kEntryName);
@@ -211,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PipelineOffTheRecord) {
 
   const GURL& url = GetTestURL("/simple_page_with_anchors.html");
   Browser* incognito = CreateIncognitoBrowser();
-  ui_test_utils::NavigateToURL(incognito, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, url));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(content::ExecuteScript(
@@ -237,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PipelineHttp) {
   ResetUKM();
 
   const GURL& url = GetHttpTestURL("/simple_page_with_anchors.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(content::ExecuteScript(
@@ -262,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, MultipleNavigations) {
   ResetUKM();
 
   const GURL& url = GetTestURL("/simple_page_with_anchors.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitLinkEnteredViewport(1);
   using AnchorEntry = ukm::builders::NavigationPredictorAnchorElementMetrics;
   size_t num_links_in_viewport =
@@ -270,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, MultipleNavigations) {
 
   // Load the same URL again. The UKM record from the previous load should get
   // flushed.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // Wait until layout has happened: at least one new link entered viewport
   // since the last page load.
   WaitLinkEnteredViewport(num_links_in_viewport + 1);
@@ -285,7 +292,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, MultipleNavigations) {
   EXPECT_EQ(5, get_metric(PageLinkEntry::kNumberOfAnchors_TotalName));
 
   // Force recording NavigationPredictorPageLinkMetrics UKM.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // If we correctly reset AnchorsData, the number of anchors should still be 5
   // (and not 10).
@@ -301,13 +309,14 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PageWithIframe) {
   ResetUKM();
 
   const GURL& url = GetTestURL("/page_with_anchors_and_iframe.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // Wait until all links have entered the viewport. In particular this forces
   // the iframe to load.
   WaitLinkEnteredViewport(7);
 
   // Force recording NavigationPredictorPageLinkMetrics UKM.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   using PageLinkEntry = ukm::builders::NavigationPredictorPageLinkMetrics;
   auto entries = test_ukm_recorder->GetEntriesByName(PageLinkEntry::kEntryName);
@@ -337,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
   const GURL& url =
       GetTestURL("/page_with_anchors_and_cross_origin_iframe.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   const GURL& iframe_url =
       GetTestURL("cross-origin.com", "/iframe_simple_page_with_anchors.html");
   EXPECT_TRUE(content::NavigateIframeToURL(
@@ -346,7 +355,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   WaitLinkEnteredViewport(1);
 
   // Force recording NavigationPredictorPageLinkMetrics UKM.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   using PageLinkEntry = ukm::builders::NavigationPredictorPageLinkMetrics;
   auto entries = test_ukm_recorder->GetEntriesByName(PageLinkEntry::kEntryName);
@@ -374,8 +384,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   ResetUKM();
 
-  ui_test_utils::NavigateToURL(browser(),
-                               GetTestURL("/dynamically_inserted_anchor.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetTestURL("/dynamically_inserted_anchor.html")));
   WaitLinkEnteredViewport(1);
 
   using AnchorEntry = ukm::builders::NavigationPredictorAnchorElementMetrics;
@@ -397,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, ClickAnchorElement) {
   ResetUKM();
 
   const GURL& url = GetTestURL("/simple_page_with_anchors.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitLinkEnteredViewport(1);
 
   EXPECT_TRUE(content::ExecuteScript(
@@ -441,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   const GURL& url = GetTestURL("/simple_page_with_anchors.html");
 
   Browser* incognito = CreateIncognitoBrowser();
-  ui_test_utils::NavigateToURL(incognito, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, url));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(content::ExecuteScript(
@@ -467,11 +477,12 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   ResetUKM();
 
   const GURL& url = GetTestURL("/long_page_with_anchors-1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitLinkEnteredViewport(1);
 
   // Force recording NavigationPredictorPageLinkMetrics UKM.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Make sure no click has been logged.
   using UkmEntry = ukm::builders::NavigationPredictorPageLinkMetrics;
@@ -500,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, SingleObserver) {
   service->AddObserver(&observer);
 
   const GURL& url = GetTestURL("/simple_page_with_anchors.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitLinkEnteredViewport(1);
   observer.WaitUntilNotificationsCountReached(1);
 
@@ -514,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, SingleObserver) {
 
   // Doing another navigation after removing the observer should not cause a
   // crash.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitLinkEnteredViewport(1);
   EXPECT_EQ(1u, observer.count_predictions());
 }
@@ -534,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   service->AddObserver(&observer);
 
   const GURL& url = GetTestURL("/long_page_with_anchors-1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitLinkEnteredViewport(1);
   observer.WaitUntilNotificationsCountReached(1);
 
@@ -549,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
   // Doing another navigation after removing the observer should not cause a
   // crash.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitLinkEnteredViewport(1);
   EXPECT_EQ(1u, observer.count_predictions());
 }
@@ -566,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, TwoObservers) {
   service->AddObserver(&observer_2);
 
   const GURL& url = GetTestURL("/simple_page_with_anchors.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitLinkEnteredViewport(1);
   observer_1.WaitUntilNotificationsCountReached(1);
   observer_2.WaitUntilNotificationsCountReached(1);
@@ -584,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, TwoObservers) {
 
   // Only |observer_2| should get the notification since |observer_1| has
   // been removed from receiving the notifications.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitLinkEnteredViewport(1);
   observer_2.WaitUntilNotificationsCountReached(2);
   EXPECT_EQ(1u, observer_1.count_predictions());
@@ -602,6 +613,152 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, Incognito) {
       NavigationPredictorKeyedServiceFactory::GetForProfile(
           incognito->profile());
   EXPECT_EQ(nullptr, incognito_service);
+}
+
+class NavigationPredictorMPArchBrowserTest
+    : public NavigationPredictorBrowserTest {
+ public:
+  NavigationPredictorMPArchBrowserTest() = default;
+  ~NavigationPredictorMPArchBrowserTest() override = default;
+  NavigationPredictorMPArchBrowserTest(
+      const NavigationPredictorMPArchBrowserTest&) = delete;
+
+  NavigationPredictorMPArchBrowserTest& operator=(
+      const NavigationPredictorMPArchBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    test_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    test_server_.ServeFilesFromSourceDirectory(
+        "chrome/test/data/navigation_predictor");
+    test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    ASSERT_TRUE(test_server_.Start());
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  net::EmbeddedTestServer* test_server() { return &test_server_; }
+
+ private:
+  net::EmbeddedTestServer test_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+class NavigationPredictorPrerenderBrowserTest
+    : public NavigationPredictorMPArchBrowserTest {
+ public:
+  NavigationPredictorPrerenderBrowserTest()
+      : prerender_test_helper_(base::BindRepeating(
+            &NavigationPredictorPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~NavigationPredictorPrerenderBrowserTest() override = default;
+  NavigationPredictorPrerenderBrowserTest(
+      const NavigationPredictorPrerenderBrowserTest&) = delete;
+
+  NavigationPredictorPrerenderBrowserTest& operator=(
+      const NavigationPredictorPrerenderBrowserTest&) = delete;
+
+  void SetUp() override {
+    prerender_test_helper_.SetUp(test_server());
+    NavigationPredictorMPArchBrowserTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_test_helper_;
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_test_helper_;
+};
+
+// Test that prerendering doesn't create a predictor object and doesn't affect
+// the primary page's behavior.
+IN_PROC_BROWSER_TEST_F(NavigationPredictorPrerenderBrowserTest,
+                       PrerenderingDontCreatePredictor) {
+  auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  ResetUKM();
+
+  // Navigate to an initial page.
+  const GURL& url = test_server()->GetURL("/simple_page_with_anchors.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  WaitLinkEnteredViewport(1);
+
+  using AnchorEntry = ukm::builders::NavigationPredictorAnchorElementMetrics;
+  auto anchor_entries =
+      test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
+  EXPECT_EQ(2u, anchor_entries.size());
+
+  // Start prerendering. This shouldn't create a NavigationPredictor instance.
+  // If it happens, the constructor of NavigationPredictor is called for the
+  // non-primary page and the DCHECK there should fail.
+  int host_id = prerender_test_helper().AddPrerender(url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+
+  // Make sure the prerendering doesn't log any anchors.
+  anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
+  EXPECT_EQ(2u, anchor_entries.size());
+
+  ResetUKM();
+
+  // Activate the prerendered frame.
+  prerender_test_helper().NavigatePrimaryPage(url);
+  EXPECT_TRUE(host_observer.was_activated());
+  WaitLinkEnteredViewport(1);
+
+  // Make sure the activating logs anchors correctly.
+  anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
+  EXPECT_EQ(4u, anchor_entries.size());
+}
+
+class NavigationPredictorFencedFrameBrowserTest
+    : public NavigationPredictorMPArchBrowserTest {
+ public:
+  NavigationPredictorFencedFrameBrowserTest() = default;
+  ~NavigationPredictorFencedFrameBrowserTest() override = default;
+  NavigationPredictorFencedFrameBrowserTest(
+      const NavigationPredictorFencedFrameBrowserTest&) = delete;
+
+  NavigationPredictorFencedFrameBrowserTest& operator=(
+      const NavigationPredictorFencedFrameBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationPredictorFencedFrameBrowserTest,
+                       EnsureFencedFrameDoesNotCreateNavigationPredictor) {
+  auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  ResetUKM();
+
+  // Navigate to an initial page.
+  const GURL& url = test_server()->GetURL("/simple_page_with_anchors.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  WaitLinkEnteredViewport(1);
+
+  using AnchorEntry = ukm::builders::NavigationPredictorAnchorElementMetrics;
+  auto anchor_entries =
+      test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
+  EXPECT_EQ(2u, anchor_entries.size());
+
+  // Create a fenced frame.
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), url);
+
+  // Navigate the fenced frame.
+  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
+                                                            url);
+
+  // Make sure the fenced frame doesn't log any anchors.
+  anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
+  EXPECT_EQ(2u, anchor_entries.size());
 }
 
 }  // namespace

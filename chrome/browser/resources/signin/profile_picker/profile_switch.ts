@@ -6,9 +6,20 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import './profile_picker_shared_css.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
+
+export interface ProfileSwitchElement {
+  $: {
+    iconContainer: HTMLElement,
+    profileName: HTMLElement,
+    gaiaName: HTMLElement,
+    cancelButton: CrButtonElement,
+    switchButton: CrButtonElement,
+  };
+}
 
 export class ProfileSwitchElement extends PolymerElement {
   static get is() {
@@ -50,6 +61,12 @@ export class ProfileSwitchElement extends PolymerElement {
   private onSwitchClick_() {
     this.manageProfilesBrowserProxy_.confirmProfileSwitch(
         this.profileState_.profilePath);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'profile-switch': ProfileSwitchElement;
   }
 }
 

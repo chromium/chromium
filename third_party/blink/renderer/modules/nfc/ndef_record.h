@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_NFC_NDEF_RECORD_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_NFC_NDEF_RECORD_H_
 
+#include <stdint.h>
+
 #include "services/device/public/mojom/nfc.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -17,20 +19,27 @@ namespace blink {
 
 class DOMDataView;
 class ExceptionState;
-class ExecutionContext;
 class NDEFMessage;
 class NDEFRecordInit;
+class ScriptState;
 
 class MODULES_EXPORT NDEFRecord final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // This function is only supposed to be used by the automatically generated
+  // bindings code. Use Create() instead.
+  static NDEFRecord* CreateForBindings(const ScriptState*,
+                                       const NDEFRecordInit*,
+                                       ExceptionState&);
+
   // |is_embedded| indicates if this record is within the context of a parent
   // record.
-  static NDEFRecord* Create(const ExecutionContext*,
+  static NDEFRecord* Create(const ScriptState*,
                             const NDEFRecordInit*,
                             ExceptionState&,
-                            bool is_embedded = false);
+                            uint8_t records_depth,
+                            bool is_embedded);
 
   explicit NDEFRecord(device::mojom::NDEFRecordTypeCategory,
                       const String& record_type,
@@ -54,7 +63,7 @@ class MODULES_EXPORT NDEFRecord final : public ScriptWrappable {
   // Only for constructing "text" type record from just a text. The type
   // category will be device::mojom::NDEFRecordTypeCategory::kStandardized.
   // Called by NDEFMessage.
-  explicit NDEFRecord(const ExecutionContext*, const String&);
+  explicit NDEFRecord(const ScriptState*, const String&);
 
   // Only for constructing "mime" type record. The type category will be
   // device::mojom::NDEFRecordTypeCategory::kStandardized.

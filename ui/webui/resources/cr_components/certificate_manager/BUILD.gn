@@ -16,6 +16,7 @@ preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components
 ts_library("build_ts") {
   root_dir = preprocess_folder_tmp
   out_dir = preprocess_folder
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "certificate_list.ts",

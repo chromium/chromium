@@ -4,7 +4,6 @@
 
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
 
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -19,6 +18,10 @@ namespace {
 class TestWindowedIncognitoMonitor : public WindowedIncognitoMonitor {
  public:
   TestWindowedIncognitoMonitor() : WindowedIncognitoMonitor() {}
+
+  TestWindowedIncognitoMonitor(const TestWindowedIncognitoMonitor&) = delete;
+  TestWindowedIncognitoMonitor& operator=(const TestWindowedIncognitoMonitor&) =
+      delete;
 
   int num_on_browser_added() { return num_on_browser_added_; }
   int num_on_browser_removed() { return num_on_browser_removed_; }
@@ -40,8 +43,6 @@ class TestWindowedIncognitoMonitor : public WindowedIncognitoMonitor {
 
   int num_on_browser_added_ = 0;
   int num_on_browser_removed_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowedIncognitoMonitor);
 };
 
 }  // namespace
@@ -49,6 +50,10 @@ class TestWindowedIncognitoMonitor : public WindowedIncognitoMonitor {
 class WindowedIncognitoMonitorTest : public testing::Test {
  public:
   WindowedIncognitoMonitorTest() = default;
+
+  WindowedIncognitoMonitorTest(const WindowedIncognitoMonitorTest&) = delete;
+  WindowedIncognitoMonitorTest& operator=(const WindowedIncognitoMonitorTest&) =
+      delete;
 
   void SetUp() override {
     // Instantiate a testing profile.
@@ -99,8 +104,6 @@ class WindowedIncognitoMonitorTest : public testing::Test {
   static size_t next_browser_id;
 
   std::unique_ptr<TestWindowedIncognitoMonitor> incognito_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowedIncognitoMonitorTest);
 };
 
 size_t WindowedIncognitoMonitorTest::next_browser_id = 1;

@@ -44,7 +44,7 @@ DEFAULT_MINI_CHROMIUM_BASE_COPTS = [
     "-D_LIBCPP_ABI_UNSTABLE",
     "-D_LIBCPP_ENABLE_NODISCARD",
     "-D_LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS",
-    #    "-D_DEBUG",  # DEBUG / non-DEBUG flag has to be consitent with the rest of the project
+#    "-D_DEBUG",  # DEBUG / non-DEBUG flag has to be consitent with the rest of the project
     "-DDYNAMIC_ANNOTATIONS_ENABLED=1",
     "-DUSE_EGL",
     "-D_WTL_NO_AUTOMATIC_NAMESPACE",
@@ -53,9 +53,9 @@ DEFAULT_MINI_CHROMIUM_BASE_COPTS = [
     "-DPROTOBUF_USE_DLLS",
     "-DABSL_CONSUME_DLL",
     "-DBORINGSSL_SHARED_LIBRARY",
-    #    "-D__DATE__=",  # results in build errors, hence removed
-    #    "-D__TIME__=",  # results in build errors, hence removed
-    #    "-D__TIMESTAMP__=",  # results in build errors, hence removed
+#    "-D__DATE__=",  # results in build errors, hence removed
+#    "-D__TIME__=",  # results in build errors, hence removed
+#    "-D__TIMESTAMP__=",  # results in build errors, hence removed
     "-DPROTOBUF_ALLOW_DEPRECATED=1",
 ]
 
@@ -98,7 +98,7 @@ DEFAULT_MINI_CHROMIUM_LINUX_COPTS = DEFAULT_MINI_CHROMIUM_BASE_COPTS + [
     "-fno-exceptions",
     "-Wall",
     "-Werror",
-    #    "-Wextra",  # results in build errors, hence removed
+#    "-Wextra",  # results in build errors, hence removed
     "-Wno-sign-compare",
     "-Wno-error=unreachable-code",
     "-Wno-unused-private-field",
@@ -134,8 +134,8 @@ DEFAULT_MINI_CHROMIUM_LINUX_COPTS = DEFAULT_MINI_CHROMIUM_BASE_COPTS + [
 
 # Build flags used to build mini_chromium.
 DEFAULT_MINI_CHROMIUM_COPTS = select({
-    "@platforms//os:linux": DEFAULT_MINI_CHROMIUM_LINUX_COPTS,
-    "@platforms//os:windows": DEFAULT_MINI_CHROMIUM_WIN_COPTS,
+	"@platforms//os:linux": DEFAULT_MINI_CHROMIUM_LINUX_COPTS,
+	"@platforms//os:windows": DEFAULT_MINI_CHROMIUM_WIN_COPTS,
 })
 
 MINI_CHROMIUM_HDRS = [
@@ -230,10 +230,10 @@ MINI_CHROMIUM_WINDOWS_SRCS = [
 ]
 
 ALL_HDRS_SRCS_LINUX = MINI_CHROMIUM_SRCS + MINI_CHROMIUM_LINUX_SRCS + \
-                      MINI_CHROMIUM_HDRS + MINI_CHROMIUM_LINUX_HDRS
+                MINI_CHROMIUM_HDRS + MINI_CHROMIUM_LINUX_HDRS
 
 ALL_HDRS_SRCS_WINDOWS = MINI_CHROMIUM_SRCS + MINI_CHROMIUM_WINDOWS_SRCS + \
-                        MINI_CHROMIUM_HDRS
+                MINI_CHROMIUM_HDRS
 
 UNIQUE_HDRS_SRCS_LINUX = dict(zip(ALL_HDRS_SRCS_LINUX, ALL_HDRS_SRCS_LINUX)).keys()
 
@@ -243,9 +243,9 @@ UNIQUE_HDRS_SRCS_WINDOWS = dict(zip(ALL_HDRS_SRCS_WINDOWS, ALL_HDRS_SRCS_WINDOWS
 cc_library(
     name = "base_lib",
     srcs = select({
-        "@platforms//os:linux": UNIQUE_HDRS_SRCS_LINUX,
-        "@platforms//os:windows": UNIQUE_HDRS_SRCS_WINDOWS,
-    }),
+               "@platforms//os:linux": UNIQUE_HDRS_SRCS_LINUX,
+               "@platforms//os:windows": UNIQUE_HDRS_SRCS_WINDOWS,
+           }),
     copts = DEFAULT_MINI_CHROMIUM_COPTS,
     textual_hdrs = [
         "base/atomicops_internals_atomicword_compat.h",

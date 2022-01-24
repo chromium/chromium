@@ -14,6 +14,10 @@ namespace content {
 class WebContents;
 }
 
+namespace ui {
+class DialogModel;
+}
+
 namespace views {
 class DialogDelegate;
 class Widget;
@@ -76,8 +80,17 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
 // suppress the normal behavior of choosing a focused-by-default button. This is
 // especially important if the action of the default button has consequences on
 // the user's task at hand.
+views::Widget* CreateBrowserModalDialogViews(
+    std::unique_ptr<views::DialogDelegate> dialog,
+    gfx::NativeWindow parent);
+
+// TODO(pbos): Transition calls to this to the unique_ptr<> version above.
 views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
                                              gfx::NativeWindow parent);
+
+// Shows a browser-modal dialog based on `dialog_model`.
+void ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                      gfx::NativeWindow parent);
 
 }  // namespace constrained_window
 

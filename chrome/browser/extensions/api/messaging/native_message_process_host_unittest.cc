@@ -291,9 +291,7 @@ TEST_F(NativeMessagingTest, EchoConnect) {
 
   std::string expected_url = std::string("chrome-extension://") +
       ScopedTestNativeMessagingHost::kExtensionId + "/";
-  int id;
-  EXPECT_TRUE(last_message_parsed_->GetInteger("id", &id));
-  EXPECT_EQ(1, id);
+  EXPECT_EQ(1, last_message_parsed_->FindIntKey("id"));
   std::string text;
   EXPECT_TRUE(last_message_parsed_->GetString("echo.text", &text));
   EXPECT_EQ("Hello.", text);
@@ -304,8 +302,7 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   native_message_host_->OnMessage("{\"foo\": \"bar\"}");
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
-  EXPECT_TRUE(last_message_parsed_->GetInteger("id", &id));
-  EXPECT_EQ(2, id);
+  EXPECT_EQ(2, last_message_parsed_->FindIntKey("id"));
   EXPECT_TRUE(last_message_parsed_->GetString("echo.foo", &text));
   EXPECT_EQ("bar", text);
   EXPECT_TRUE(last_message_parsed_->GetString("caller_url", &url));
@@ -353,7 +350,7 @@ TEST_F(NativeMessagingTest, MAYBE_ReconnectArgs) {
   const base::ListValue* args_value = nullptr;
   ASSERT_TRUE(last_message_parsed_->GetList("args", &args_value));
   std::vector<base::CommandLine::StringType> args;
-  args.reserve(args_value->GetSize());
+  args.reserve(args_value->GetList().size());
   for (auto& arg : args_value->GetList()) {
     ASSERT_TRUE(arg.is_string());
 #if defined(OS_WIN)

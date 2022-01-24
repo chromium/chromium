@@ -56,7 +56,9 @@ void PostProcessMatches(const PasswordForm& pending,
     const bool same_password = match->password_value == pending.password_value;
     const bool username_was_added =
         match->username_value.empty() && !pending.username_value.empty();
-    if (same_password && username_was_added && !match->is_public_suffix_match) {
+    if (same_password && username_was_added &&
+        password_manager_util::GetMatchType(*match) ==
+            password_manager_util::GetLoginMatchType::kExact) {
       store->RemoveLogin(*match);
       continue;
     }
@@ -67,6 +69,7 @@ void PostProcessMatches(const PasswordForm& pending,
       if (form_has_old_password) {
         PasswordForm form_to_update = *match;
         form_to_update.password_value = pending.password_value;
+        form_to_update.date_password_modified = base::Time::Now();
         SanitizeFormData(&form_to_update.form_data);
         store->UpdateLogin(std::move(form_to_update));
       }
@@ -98,6 +101,7 @@ void FormSaverImpl::Save(PasswordForm pending,
                          const std::vector<const PasswordForm*>& matches,
                          const std::u16string& old_password) {
   SanitizeFormData(&pending.form_data);
+  pending.date_password_modified = base::Time::Now();
   store_->AddLogin(pending);
   // Update existing matches in the password store.
   PostProcessMatches(pending, matches, old_password, store_);
@@ -107,6 +111,8 @@ void FormSaverImpl::Update(PasswordForm pending,
                            const std::vector<const PasswordForm*>& matches,
                            const std::u16string& old_password) {
   SanitizeFormData(&pending.form_data);
+  if (old_password != pending.password_value)
+    pending.date_password_modified = base::Time::Now();
   store_->UpdateLogin(pending);
   // Update existing matches in the password store.
   PostProcessMatches(pending, matches, old_password, store_);
@@ -118,6 +124,7 @@ void FormSaverImpl::UpdateReplace(
     const std::u16string& old_password,
     const PasswordForm& old_unique_key) {
   SanitizeFormData(&pending.form_data);
+  pending.date_password_modified = base::Time::Now();
   store_->UpdateLoginWithPrimaryKey(pending, old_unique_key);
   // Update existing matches in the password store.
   PostProcessMatches(pending, matches, old_password, store_);

@@ -11,11 +11,10 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_install_error_menu_item_id_provider.h"
@@ -82,6 +81,10 @@ MapDefaultButtonStringToSetting(const std::string& button_setting_string) {
 class ExternalInstallMenuAlert : public GlobalError {
  public:
   explicit ExternalInstallMenuAlert(ExternalInstallError* error);
+
+  ExternalInstallMenuAlert(const ExternalInstallMenuAlert&) = delete;
+  ExternalInstallMenuAlert& operator=(const ExternalInstallMenuAlert&) = delete;
+
   ~ExternalInstallMenuAlert() override;
 
  private:
@@ -101,8 +104,6 @@ class ExternalInstallMenuAlert : public GlobalError {
 
   // Provides menu item id for GlobalError.
   ExtensionInstallErrorMenuItemIdProvider id_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalInstallMenuAlert);
 };
 
 // A global error that spawns a bubble when the menu item is clicked.
@@ -110,6 +111,11 @@ class ExternalInstallBubbleAlert : public GlobalErrorWithStandardBubble {
  public:
   ExternalInstallBubbleAlert(ExternalInstallError* error,
                              ExtensionInstallPrompt::Prompt* prompt);
+
+  ExternalInstallBubbleAlert(const ExternalInstallBubbleAlert&) = delete;
+  ExternalInstallBubbleAlert& operator=(const ExternalInstallBubbleAlert&) =
+      delete;
+
   ~ExternalInstallBubbleAlert() override;
 
  private:
@@ -137,8 +143,6 @@ class ExternalInstallBubbleAlert : public GlobalErrorWithStandardBubble {
   // The Prompt with all information, which we then use to populate the bubble.
   // Owned by |error|.
   ExtensionInstallPrompt::Prompt* prompt_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalInstallBubbleAlert);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -423,11 +427,11 @@ void ExternalInstallError::OnWebstoreResponseParseSuccess(
     const std::string& extension_id,
     std::unique_ptr<base::DictionaryValue> webstore_data) {
   std::string localized_user_count;
-  double average_rating = 0;
-  int rating_count = 0;
+  absl::optional<double> average_rating =
+      webstore_data->FindDoubleKey(kAverageRatingKey);
+  absl::optional<int> rating_count = webstore_data->FindIntKey(kRatingCountKey);
   if (!webstore_data->GetString(kUsersKey, &localized_user_count) ||
-      !webstore_data->GetDouble(kAverageRatingKey, &average_rating) ||
-      !webstore_data->GetInteger(kRatingCountKey, &rating_count)) {
+      !average_rating || !rating_count) {
     // If we don't get a valid webstore response, short circuit, and continue
     // to show a prompt without webstore data.
     OnFetchComplete();
@@ -436,11 +440,11 @@ void ExternalInstallError::OnWebstoreResponseParseSuccess(
 
   default_dialog_button_setting_ = GetDefaultDialogButton(*webstore_data.get());
 
-  bool show_user_count = true;
-  webstore_data->GetBoolean(kShowUserCountKey, &show_user_count);
+  absl::optional<bool> show_user_count =
+      webstore_data->FindBoolKey(kShowUserCountKey);
 
-  prompt_->SetWebstoreData(
-      localized_user_count, show_user_count, average_rating, rating_count);
+  prompt_->SetWebstoreData(localized_user_count, show_user_count.value_or(true),
+                           *average_rating, *rating_count);
   OnFetchComplete();
 }
 

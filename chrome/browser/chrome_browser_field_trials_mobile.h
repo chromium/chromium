@@ -9,7 +9,7 @@ namespace chrome {
 
 // Sets up mobile-only field trials.
 // Add an invocation of your field trial init function to this method, or to
-// SetupFieldTrials in chrome_browser_field_trials.cc if it is for all
+// SetUpFieldTrials in chrome_browser_field_trials.cc if it is for all
 // platforms.
 void SetupMobileFieldTrials();
 

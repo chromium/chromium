@@ -344,8 +344,7 @@ TEST_F(CellularConnectionHandlerTest, FailsRequestingInstalledProfiles) {
 }
 
 TEST_F(CellularConnectionHandlerTest, TimeoutWaitingForConnectable_ESim) {
-  const base::TimeDelta kWaitingForConnectableTimeout =
-      base::TimeDelta::FromSeconds(30);
+  const base::TimeDelta kWaitingForConnectableTimeout = base::Seconds(30);
 
   SetEnableProfileBehavior(HermesProfileClient::TestInterface::
                                EnableProfileBehavior::kNotConnectable);
@@ -373,8 +372,7 @@ TEST_F(CellularConnectionHandlerTest, TimeoutWaitingForConnectable_ESim) {
 }
 
 TEST_F(CellularConnectionHandlerTest, TimeoutWaitingForConnectable_PSim) {
-  const base::TimeDelta kWaitingForConnectableTimeout =
-      base::TimeDelta::FromSeconds(30);
+  const base::TimeDelta kWaitingForConnectableTimeout = base::Seconds(30);
 
   SetEnableProfileBehavior(HermesProfileClient::TestInterface::
                                EnableProfileBehavior::kNotConnectable);

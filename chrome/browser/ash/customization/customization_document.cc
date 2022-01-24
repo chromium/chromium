@@ -16,7 +16,6 @@
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
@@ -31,9 +30,9 @@
 #include "chrome/browser/ash/customization/customization_wallpaper_downloader.h"
 #include "chrome/browser/ash/customization/customization_wallpaper_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/default_app_order.h"
-#include "chrome/browser/chromeos/net/delay_network_call.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -100,6 +99,30 @@ const char kServicesCustomizationKey[] = "customization.manifest_cache";
 
 // Empty customization document that doesn't customize anything.
 const char kEmptyServicesCustomizationManifest[] = "{ \"version\": \"1.0\" }";
+
+constexpr net::NetworkTrafficAnnotationTag kCustomizationDocumentNetworkTag =
+    net::DefineNetworkTrafficAnnotation("customization_document",
+                                        R"(
+        semantics {
+          sender: "Customization document"
+          description:
+            "Get OEM customization manifest from OEM specific URLs that "
+            "provide custom configuration locales, wallpaper etc."
+          trigger:
+            "Triggered on OOBE after user accepts EULA and everytime the "
+            "device boots in. Expected to run only once at OOBE. If the "
+            "network request fails, retried each boot until it succeeds."
+          data: "None."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+         cookies_allowed: NO
+         setting:
+           "This feature is set by OEMs and can be overridden by users."
+         policy_exception_justification:
+           "This request is made based on OEM customization and does not "
+           "send/store any sensitive data."
+        })");
 
 struct CustomizationDocumentTestOverride {
   ServicesCustomizationDocument* customization_document = nullptr;
@@ -186,6 +209,11 @@ class ServicesCustomizationExternalLoader
   explicit ServicesCustomizationExternalLoader(Profile* profile)
       : is_apps_set_(false), profile_(profile) {}
 
+  ServicesCustomizationExternalLoader(
+      const ServicesCustomizationExternalLoader&) = delete;
+  ServicesCustomizationExternalLoader& operator=(
+      const ServicesCustomizationExternalLoader&) = delete;
+
   Profile* profile() { return profile_; }
 
   // Used by the ServicesCustomizationDocument to update the current apps.
@@ -221,8 +249,6 @@ class ServicesCustomizationExternalLoader
   bool is_apps_set_;
   base::DictionaryValue apps_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServicesCustomizationExternalLoader);
 };
 
 // CustomizationDocument implementation. ---------------------------------------
@@ -322,10 +348,13 @@ void StartupCustomizationDocument::Init(
             chromeos::system::kHardwareClassKey, &hwid)) {
       base::ListValue* hwid_list = NULL;
       if (root_->GetList(kHwidMapAttr, &hwid_list)) {
-        for (size_t i = 0; i < hwid_list->GetSize(); ++i) {
-          base::DictionaryValue* hwid_dictionary = NULL;
+        for (const base::Value& hwid_value : hwid_list->GetList()) {
+          const base::DictionaryValue* hwid_dictionary = nullptr;
+          if (hwid_value.is_dict())
+            hwid_dictionary = &base::Value::AsDictionaryValue(hwid_value);
+
           std::string hwid_mask;
-          if (hwid_list->GetDictionary(i, &hwid_dictionary) &&
+          if (hwid_dictionary &&
               hwid_dictionary->GetString(kHwidMaskAttr, &hwid_mask)) {
             if (base::MatchPattern(hwid, hwid_mask)) {
               // If HWID for this machine matches some mask, use HWID specific
@@ -429,8 +458,7 @@ ServicesCustomizationDocument::ServicesCustomizationDocument()
     : CustomizationDocument(kAcceptedManifestVersion),
       num_retries_(0),
       load_started_(false),
-      network_delay_(
-          base::TimeDelta::FromMilliseconds(kDefaultNetworkRetryDelayMS)),
+      network_delay_(base::Milliseconds(kDefaultNetworkRetryDelayMS)),
       apply_tasks_started_(0),
       apply_tasks_finished_(0),
       apply_tasks_success_(0) {}
@@ -438,8 +466,7 @@ ServicesCustomizationDocument::ServicesCustomizationDocument()
 ServicesCustomizationDocument::ServicesCustomizationDocument(
     const std::string& manifest)
     : CustomizationDocument(kAcceptedManifestVersion),
-      network_delay_(
-          base::TimeDelta::FromMilliseconds(kDefaultNetworkRetryDelayMS)),
+      network_delay_(base::Milliseconds(kDefaultNetworkRetryDelayMS)),
       apply_tasks_started_(0),
       apply_tasks_finished_(0),
       apply_tasks_success_(0) {
@@ -586,8 +613,8 @@ void ServicesCustomizationDocument::DoStartFileFetch() {
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   request->headers.SetHeader("Accept", "application/json");
 
-  url_loader_ = network::SimpleURLLoader::Create(std::move(request),
-                                                 NO_TRAFFIC_ANNOTATION_YET);
+  url_loader_ = network::SimpleURLLoader::Create(
+      std::move(request), kCustomizationDocumentNetworkTag);
 
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       g_test_overrides ? g_test_overrides->url_loader_factory.get()
@@ -647,7 +674,7 @@ void ServicesCustomizationDocument::OnSimpleLoaderComplete(
           FROM_HERE,
           base::BindOnce(&ServicesCustomizationDocument::StartFileFetch,
                          weak_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromSeconds(kRetriesDelayInSec));
+          base::Seconds(kRetriesDelayInSec));
       return;
     }
     // This doesn't stop fetching manifest on next restart.
@@ -703,26 +730,28 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
   std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
   const base::ListValue* apps_list = NULL;
   if (root.GetList(kDefaultAppsAttr, &apps_list)) {
-    for (size_t i = 0; i < apps_list->GetSize(); ++i) {
+    for (size_t i = 0; i < apps_list->GetList().size(); ++i) {
       std::string app_id;
-      const base::DictionaryValue* app_entry = nullptr;
       std::unique_ptr<base::DictionaryValue> entry;
+      const base::Value& app_entry_value = apps_list->GetList()[i];
       if (apps_list->GetString(i, &app_id)) {
         entry = std::make_unique<base::DictionaryValue>();
-      } else if (apps_list->GetDictionary(i, &app_entry)) {
-        if (!app_entry->GetString(kIdAttr, &app_id)) {
+      } else if (app_entry_value.is_dict()) {
+        const base::DictionaryValue& app_entry =
+            base::Value::AsDictionaryValue(app_entry_value);
+        if (!app_entry.GetString(kIdAttr, &app_id)) {
           LOG(ERROR) << "Wrong format of default application list";
           prefs->Clear();
           break;
         }
-        entry = app_entry->CreateDeepCopy();
+        entry = app_entry.CreateDeepCopy();
         entry->RemoveKey(kIdAttr);
       } else {
         LOG(ERROR) << "Wrong format of default application list";
         prefs->Clear();
         break;
       }
-      if (!entry->HasKey(
+      if (!entry->FindKey(
               extensions::ExternalProviderImpl::kExternalUpdateUrl)) {
         entry->SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
                          extension_urls::GetWebstoreUpdateUrl().spec());

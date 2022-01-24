@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "media/base/video_frame.h"
@@ -23,8 +22,7 @@ namespace {
 
 // The maximum time since the last video frame was received from the video
 // source, before requesting refresh frames.
-constexpr base::TimeDelta kRefreshInterval =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kRefreshInterval = base::Milliseconds(250);
 
 // The maximum number of refresh video frames to request/receive.  After this
 // limit (60 * 250ms = 15 seconds), refresh frame requests will stop being made.

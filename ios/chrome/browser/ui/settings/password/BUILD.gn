@@ -175,15 +175,14 @@ source_set("unit_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
   sources = [
-    "passwords_settings_app_interface.h",
-    "passwords_settings_app_interface.mm",
+    "password_settings_app_interface.h",
+    "password_settings_app_interface.mm",
   ]
   deps = [
     ":password",
@@ -207,20 +206,24 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
 
-  sources = [ "passwords_settings_app_interface.h" ]
+  sources = [
+    "password_settings_app_interface.h",
+    "password_settings_app_interface_stub.mm",
+  ]
 
-  deps = [ "//ios/chrome/common/ui/reauthentication" ]
+  deps = [
+    "//ios/chrome/common/ui/reauthentication",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",

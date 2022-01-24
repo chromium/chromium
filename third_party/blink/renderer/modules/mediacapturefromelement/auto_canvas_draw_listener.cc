@@ -15,10 +15,13 @@ AutoCanvasDrawListener::AutoCanvasDrawListener(
     std::unique_ptr<CanvasCaptureHandler> handler)
     : handler_(std::move(handler)), frame_capture_requested_(true) {}
 
-void AutoCanvasDrawListener::SendNewFrame(
-    scoped_refptr<StaticBitmapImage> image,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider) {
-  handler_->SendNewFrame(image, context_provider);
+CanvasDrawListener::NewFrameCallback
+AutoCanvasDrawListener::GetNewFrameCallback() {
+  return handler_->GetNewFrameCallback();
+}
+
+bool AutoCanvasDrawListener::CanDiscardAlpha() const {
+  return handler_->CanDiscardAlpha();
 }
 
 bool AutoCanvasDrawListener::NeedsNewFrame() const {

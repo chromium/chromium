@@ -43,17 +43,13 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
   switch (type) {
     case DefaultPromoTypeMadeForIOS:
       return DefaultPromoTypeForUMA::kMadeForIOS;
-      break;
     case DefaultPromoTypeStaySafe:
       return DefaultPromoTypeForUMA::kStaySafe;
-      break;
     case DefaultPromoTypeAllTabs:
       return DefaultPromoTypeForUMA::kAllTabs;
-      break;
     default:
       DCHECK(type == DefaultPromoTypeGeneral);
       return DefaultPromoTypeForUMA::kOther;
-      break;
   }
 }
 }  // namespace
@@ -138,11 +134,6 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
 }
 
 #pragma mark - ConfirmationAlertActionHandler
-
-- (void)confirmationAlertDismissAction {
-  // There should be no cancel toolbar button for this UI.
-  NOTREACHED();
-}
 
 - (void)confirmationAlertPrimaryAction {
   RecordAction(

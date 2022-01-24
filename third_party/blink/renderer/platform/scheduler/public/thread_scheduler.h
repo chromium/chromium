@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
@@ -153,9 +153,6 @@ class PLATFORM_EXPORT ThreadScheduler {
 
   // Associates |isolate| to the scheduler.
   virtual void SetV8Isolate(v8::Isolate* isolate) = 0;
-
-  virtual void OnSafepointEntered() {}
-  virtual void OnSafepointExited() {}
 
   // Test helpers.
 

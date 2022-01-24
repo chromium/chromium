@@ -11,7 +11,8 @@ The following items are stored for each annotation :
 * `hash_code`: Hash code of the unique id of the annotation. These values are
      used in the binary as annotation tags.
 * `type`: Type of the annotation (complete, partial, ...). Uses enum values
-    of `AnnotationInstance` in `tools/traffic_annotation/auditor/instance.h`.
+    of `Annotation.Type` in
+    `tools/traffic_annotation/scripts/auditor/auditor.py`.
 * `content_hash_code`: Hash code of the annotation content. This value is stored
     to check when an annotation is modified.
 * `os_list`: List of all platforms on which this annotation exists.
@@ -27,8 +28,9 @@ The following items are stored for each annotation :
     Unique id of deprecated annotations cannot be reused.
 
 # How to Generate/Update.
-Run `traffic_annotation_auditor` to check for annotations correctness and
+Run `auditor.py` to check for annotations correctness and
 automatic update. There are also trybots on Linux and Windows to run the tests
 and suggest required updates.
-The latest executable of `traffic_annotation_auditor` for supported platforms
-can be found in `tools/traffic_annotation/bin/[platform]`.
+
+The script can be found in
+`tools/traffic_annotation/scripts/auditor/auditor.py`.

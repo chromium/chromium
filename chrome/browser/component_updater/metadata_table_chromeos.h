@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/values.h"
 
 class PrefRegistrySimple;
@@ -23,6 +22,10 @@ namespace component_updater {
 class MetadataTable {
  public:
   explicit MetadataTable(PrefService* pref_service);
+
+  MetadataTable(const MetadataTable&) = delete;
+  MetadataTable& operator=(const MetadataTable&) = delete;
+
   ~MetadataTable();
 
   // Create and return a MetadataTable instance for testing purpose.
@@ -76,8 +79,6 @@ class MetadataTable {
 
   // Local state PrefService.
   PrefService* const pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetadataTable);
 };
 
 }  // namespace component_updater

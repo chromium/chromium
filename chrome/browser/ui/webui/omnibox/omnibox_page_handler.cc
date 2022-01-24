@@ -162,7 +162,7 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
     result->allowed_to_be_default_match = input.allowed_to_be_default_match;
     result->type = AutocompleteMatchType::ToString(input.type);
     result->is_search_type = AutocompleteMatch::IsSearchType(input.type);
-    result->has_tab_match = input.has_tab_match;
+    result->has_tab_match = input.has_tab_match.value_or(false);
     if (input.associated_keyword.get()) {
       result->associated_keyword =
           base::UTF16ToUTF8(input.associated_keyword->keyword);

@@ -5,6 +5,8 @@
 #ifndef BASE_PROFILER_NATIVE_UNWINDER_IOS_H_
 #define BASE_PROFILER_NATIVE_UNWINDER_IOS_H_
 
+#include <vector>
+
 #include "base/profiler/unwinder.h"
 
 namespace base {

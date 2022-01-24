@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/ozone/platform/drm/gpu/drm_thread.h"
@@ -27,6 +26,10 @@ class InterThreadMessagingProxy;
 class DrmThreadProxy {
  public:
   DrmThreadProxy();
+
+  DrmThreadProxy(const DrmThreadProxy&) = delete;
+  DrmThreadProxy& operator=(const DrmThreadProxy&) = delete;
+
   ~DrmThreadProxy();
 
   void BindThreadIntoMessagingProxy(InterThreadMessagingProxy* messaging_proxy);
@@ -88,8 +91,6 @@ class DrmThreadProxy {
 
  private:
   DrmThread drm_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmThreadProxy);
 };
 
 }  // namespace ui

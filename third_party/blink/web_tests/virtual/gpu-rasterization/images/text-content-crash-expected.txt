@@ -1,3 +1,0 @@
-Test for http://bugs.webkit.org/show_bug.cgi?id=13242 REGRESSION: Repro crash when specifying the content property for an image.
-
-No crash means SUCCESS.

@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_RENDERER_WEBLAYER_RENDER_THREAD_OBSERVER_H_
 #define WEBLAYER_RENDERER_WEBLAYER_RENDER_THREAD_OBSERVER_H_
 
+#include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "weblayer/common/renderer_configuration.mojom.h"
@@ -22,6 +23,12 @@ class WebLayerRenderThreadObserver : public content::RenderThreadObserver,
     return &content_setting_rules_;
   }
 
+  content_settings::mojom::ContentSettingsManager* content_settings_manager() {
+    if (content_settings_manager_)
+      return content_settings_manager_.get();
+    return nullptr;
+  }
+
  private:
   // content::RenderThreadObserver:
   void RegisterMojoInterfaces(
@@ -30,6 +37,9 @@ class WebLayerRenderThreadObserver : public content::RenderThreadObserver,
       blink::AssociatedInterfaceRegistry* associated_interfaces) override;
 
   // weblayer::mojom::RendererConfiguration:
+  void SetInitialConfiguration(
+      mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
+          content_settings_manager) override;
   void SetContentSettingRules(
       const RendererContentSettingRules& rules) override;
 
@@ -37,6 +47,8 @@ class WebLayerRenderThreadObserver : public content::RenderThreadObserver,
       mojo::PendingAssociatedReceiver<mojom::RendererConfiguration> receiver);
 
   RendererContentSettingRules content_setting_rules_;
+  mojo::Remote<content_settings::mojom::ContentSettingsManager>
+      content_settings_manager_;
 
   mojo::AssociatedReceiverSet<mojom::RendererConfiguration>
       renderer_configuration_receivers_;

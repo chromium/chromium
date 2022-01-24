@@ -9,11 +9,15 @@
 {%-   endfor %}
 {%- endmacro %}
 
-{% macro declare_request_params(method) %}
+{% macro declare_request_params(method, new_response_name=False) %}
 {{declare_params(method.parameters)}}
 {%-   if method.response_parameters != None -%}
 {%- if method.parameters %}, {% endif %}
+{%- if new_response_name -%}
 {{method|interface_response_name}} callback
+{%- else -%}
+{{method|interface_response_name_old}} callback
+{%- endif -%}
 {%-   endif -%}
 {% endmacro %}
 
@@ -25,6 +29,8 @@ interface {{method|interface_response_name}} extends org.chromium.mojo.bindings.
 {%- if not loop.last %}, {% endif %}
 {%-   endfor -%}
 >{% endif %} { }
+
+interface {{method|interface_response_name_old}} extends {{method|interface_response_name}} {}
 {%- endmacro -%}
 
 {%- macro run_callback(variable, parameters) -%}
@@ -156,9 +162,12 @@ public interface {{interface|name}} extends org.chromium.mojo.bindings.Interface
     {{manager_class(interface)}} MANAGER = {{interface|name}}_Internal.MANAGER;
 {% for method in interface.methods %}
 
-    void {{method|name}}({{declare_request_params(method)}});
 {%   if method.response_parameters != None %}
+    default void {{method|name}}({{declare_request_params(method,True)}}) {}
+    default void {{method|name}}({{declare_request_params(method)}}) {}
     {{declare_callback(method)|indent(4)}}
+{% else %}
+    void {{method|name}}({{declare_request_params(method)}});
 {%   endif %}
 {% endfor %}
 }
@@ -204,6 +213,25 @@ class {{interface|name}}_Internal {
                             new org.chromium.mojo.bindings.MessageHeader({{method|method_ordinal_name}})));
 {%   endif %}
         }
+{%   if method.response_parameters != None %}
+        @Override
+        public void {{method|name}}({{declare_request_params(method,True)}}) {
+{%   set request_struct = method.param_struct %}
+            {{request_struct|name}} _message = new {{request_struct|name}}();
+{%   for param in method.parameters %}
+            _message.{{param|name}} = {{param|name}};
+{%   endfor %}
+            getProxyHandler().getMessageReceiver().acceptWithResponder(
+                    _message.serializeWithHeader(
+                            getProxyHandler().getCore(),
+                            new org.chromium.mojo.bindings.MessageHeader(
+                                    {{method|method_ordinal_name}},
+                                    {{flags_for_method(method, True)}},
+                                    0)),
+                    new {{method.response_param_struct|name}}ForwardToCallback(callback));
+
+        }
+{%   endif %}
 {% endfor %}
 
     }

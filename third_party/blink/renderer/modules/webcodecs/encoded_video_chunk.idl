@@ -19,5 +19,5 @@ enum EncodedVideoChunkType {
   readonly attribute unsigned long byteLength;
 
   [RaisesException]
-  void copyTo([AllowShared] BufferSource destination);
+  void copyTo(AllowSharedBufferSource destination);
 };

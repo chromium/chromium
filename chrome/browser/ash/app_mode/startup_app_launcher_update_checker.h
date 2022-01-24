@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_APP_MODE_STARTUP_APP_LAUNCHER_UPDATE_CHECKER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -21,6 +20,10 @@ namespace ash {
 class StartupAppLauncherUpdateChecker : public content::NotificationObserver {
  public:
   explicit StartupAppLauncherUpdateChecker(Profile* profile);
+  StartupAppLauncherUpdateChecker(const StartupAppLauncherUpdateChecker&) =
+      delete;
+  StartupAppLauncherUpdateChecker& operator=(
+      const StartupAppLauncherUpdateChecker&) = delete;
   ~StartupAppLauncherUpdateChecker() override;
 
   using UpdateCheckCallback = base::OnceCallback<void(bool updates_found)>;
@@ -52,8 +55,6 @@ class StartupAppLauncherUpdateChecker : public content::NotificationObserver {
   content::NotificationRegistrar registrar_;
 
   base::WeakPtrFactory<StartupAppLauncherUpdateChecker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StartupAppLauncherUpdateChecker);
 };
 
 }  // namespace ash

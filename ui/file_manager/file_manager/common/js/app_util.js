@@ -18,12 +18,7 @@ appUtil.saveAppState = () => {
   const items = {};
 
   items[window.appID] = JSON.stringify(window.appState);
-  xfm.storage.local.set(items, () => {
-    if (chrome.runtime.lastError) {
-      console.error(
-          'Failed to save app state: ' + chrome.runtime.lastError.message);
-    }
-  });
+  xfm.storage.local.setAsync(items);
 };
 
 /**
@@ -33,14 +28,9 @@ appUtil.saveAppState = () => {
  *     If null the value is left unchanged.
  * @param {?string} selectionURL Currently selected entry as an URL. If null the
  *     value is left unchanged.
- * @param {string|Object=} opt_param Additional parameters, to be stored. If
- *     null, then left unchanged.
  */
-appUtil.updateAppState = (currentDirectoryURL, selectionURL, opt_param) => {
+appUtil.updateAppState = (currentDirectoryURL, selectionURL) => {
   window.appState = window.appState || {};
-  if (opt_param !== undefined && opt_param !== null) {
-    window.appState.params = opt_param;
-  }
   if (currentDirectoryURL !== null) {
     window.appState.currentDirectoryURL = currentDirectoryURL;
   }
@@ -118,18 +108,18 @@ appUtil.AppCache.update = (key, value, opt_lifetime) => {
  *   key-value pairs.
  * @private
  */
-appUtil.AppCache.read_ = callback => {
-  xfm.storage.local.get(appUtil.AppCache.KEY, values => {
-    const json = values[appUtil.AppCache.KEY];
-    if (json) {
-      try {
-        callback(/** @type {Object} */ (JSON.parse(json)));
-      } catch (e) {
-        // The local storage item somehow got messed up, start fresh.
-      }
+appUtil.AppCache.read_ = async (callback) => {
+  const values = await xfm.storage.local.getAsync(appUtil.AppCache.KEY);
+
+  const json = /** @type {string} */ (values[appUtil.AppCache.KEY]);
+  if (json) {
+    try {
+      callback(/** @type {Object} */ (JSON.parse(json)));
+    } catch (e) {
+      // The local storage item somehow got messed up, start fresh.
     }
-    callback({});
-  });
+  }
+  callback({});
 };
 
 /**
@@ -139,7 +129,7 @@ appUtil.AppCache.read_ = callback => {
 appUtil.AppCache.write_ = map => {
   const items = {};
   items[appUtil.AppCache.KEY] = JSON.stringify(map);
-  xfm.storage.local.set(items);
+  xfm.storage.local.setAsync(items);
 };
 
 /**
@@ -180,8 +170,13 @@ appUtil.AppCache.cleanup_ = map => {
  * @return {!Promise<!VolumeManager>}.
  */
 appUtil.getVolumeManager = async () => {
-  const backgroundWindow =
-      new Promise(resolve => chrome.runtime.getBackgroundPage(resolve));
+  const backgroundWindow = new Promise(resolve => {
+    if (window.isSWA) {
+      resolve(window);
+    } else {
+      chrome.runtime.getBackgroundPage(resolve);
+    }
+  });
 
   /** @type {!BackgroundBase} */
   const backgroundPage = (await backgroundWindow).background;

@@ -122,6 +122,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning,
      &CreateAPIPermission<SocketPermission>},
+    {APIPermissionID::kSpeechRecognitionPrivate, "speechRecognitionPrivate",
+     APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kStorage, "storage",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kSystemCpu, "system.cpu",
@@ -151,7 +153,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kWebRequest, "webRequest"},
     {APIPermissionID::kWebRequestBlocking, "webRequestBlocking"},
     {APIPermissionID::kDeclarativeNetRequest,
-     declarative_net_request::kAPIPermission,
+     declarative_net_request::kDeclarativeNetRequestPermission,
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kWebView, "webview",
      APIPermissionInfo::kFlagCannotBeOptional},
@@ -162,6 +164,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      declarative_net_request::kFeedbackAPIPermission,
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kWmDesksPrivate, "wmDesksPrivate"},
+    {APIPermissionID::kDeclarativeNetRequestWithHostAccess,
+     "declarativeNetRequestWithHostAccess"},
 };
 
 }  // namespace

@@ -34,7 +34,7 @@
       TestRunner.check(event, 'Should receive a TimerFire event.');
       var contentHelper = new Timeline.TimelineDetailsContentHelper(
           PerformanceTestRunner.timelineModel().targetByEvent(event), linkifier, true);
-      Timeline.TimelineUIUtils._generateCauses(
+      Timeline.TimelineUIUtils.generateCauses(
           event, PerformanceTestRunner.timelineModel().targetByEvent(event), null, contentHelper);
       await TestRunner.waitForPendingLiveLocationUpdates();
       var causes = contentHelper.element.deepTextContent();
@@ -58,7 +58,7 @@
       TestRunner.check(event, 'Should receive a FireAnimationFrame event.');
       var contentHelper = new Timeline.TimelineDetailsContentHelper(
           PerformanceTestRunner.timelineModel().targetByEvent(event), linkifier, true);
-      Timeline.TimelineUIUtils._generateCauses(
+      Timeline.TimelineUIUtils.generateCauses(
           event, PerformanceTestRunner.timelineModel().targetByEvent(event), null, contentHelper);
       await TestRunner.waitForPendingLiveLocationUpdates();
       var causes = contentHelper.element.deepTextContent();
@@ -84,7 +84,7 @@
       TestRunner.check(event, 'Should receive a UpdateLayoutTree event.');
       var contentHelper = new Timeline.TimelineDetailsContentHelper(
           PerformanceTestRunner.timelineModel().targetByEvent(event), linkifier, true);
-      Timeline.TimelineUIUtils._generateCauses(
+      Timeline.TimelineUIUtils.generateCauses(
           event, PerformanceTestRunner.timelineModel().targetByEvent(event), null, contentHelper);
       await TestRunner.waitForPendingLiveLocationUpdates();
       var causes = contentHelper.element.deepTextContent();
@@ -110,7 +110,7 @@
       TestRunner.check(event, 'Should receive a Layout event.');
       var contentHelper = new Timeline.TimelineDetailsContentHelper(
           PerformanceTestRunner.timelineModel().targetByEvent(event), linkifier, true);
-      Timeline.TimelineUIUtils._generateCauses(
+      Timeline.TimelineUIUtils.generateCauses(
           event, PerformanceTestRunner.timelineModel().targetByEvent(event), null, contentHelper);
       await TestRunner.waitForPendingLiveLocationUpdates();
       var causes = contentHelper.element.deepTextContent();

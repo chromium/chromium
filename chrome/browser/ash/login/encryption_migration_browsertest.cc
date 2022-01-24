@@ -34,8 +34,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kEncryptionMigrationId[] = "encryption-migration";
@@ -58,10 +57,16 @@ const test::UIPath kInsufficientSpaceRestartButton = {
 
 }  // namespace
 
-class EncryptionMigrationTest : public OobeBaseTest {
+// Base class for testing encryption migration during sign-in.
+// The test user account will be specified by the base class.
+class EncryptionMigrationTestBase
+    : public OobeBaseTest,
+      public EncryptionMigrationScreen::EncryptionMigrationScreenTestDelegate {
  public:
-  EncryptionMigrationTest() = default;
-  ~EncryptionMigrationTest() override = default;
+  explicit EncryptionMigrationTestBase(
+      const LoginManagerMixin::TestUserInfo& test_user)
+      : test_user_(test_user) {}
+  ~EncryptionMigrationTestBase() override = default;
 
   // OobeBaseTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -78,11 +83,12 @@ class EncryptionMigrationTest : public OobeBaseTest {
     FakeUserDataAuthClient::Get()->set_run_default_dircrypto_migration(false);
 
     // Configure encryption migration screen for test.
-    EncryptionMigrationScreen* screen =
-        WizardController::default_controller()
-            ->GetScreen<EncryptionMigrationScreen>();
-    screen->set_free_disk_space_fetcher_for_testing(base::BindRepeating(
-        &EncryptionMigrationTest::GetFreeSpace, base::Unretained(this)));
+    EncryptionMigrationScreen::SetEncryptionMigrationScreenTestDelegate(this);
+  }
+  void TearDownOnMainThread() override {
+    EncryptionMigrationScreen::SetEncryptionMigrationScreenTestDelegate(
+        nullptr);
+    OobeBaseTest::TearDownOnMainThread();
   }
 
  protected:
@@ -167,25 +173,55 @@ class EncryptionMigrationTest : public OobeBaseTest {
   void set_free_space(int64_t free_space) { free_space_ = free_space; }
 
  private:
-  int64_t GetFreeSpace() const { return free_space_; }
+  // EncryptionMigrationScreen::EncryptionMigrationScreenTestDelegate
+  int64_t GetFreeSpace() const override { return free_space_; }
 
   // Encryption migration requires at least 50 MB - set the default reported
   // free space to an arbitrary amount above that limit.
   int64_t free_space_ = 200 * 1024 * 1024;
 
-  const LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId("user@gmail.com", "user")};
+  const LoginManagerMixin::TestUserInfo test_user_;
   LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, test_user_.account_id};
 };
 
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, SkipWithNoPolicySet) {
-  SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
+// Test for encryption migration during sign-in for regular users.
+class EncryptionMigrationTest : public EncryptionMigrationTestBase {
+ public:
+  EncryptionMigrationTest()
+      : EncryptionMigrationTestBase(LoginManagerMixin::TestUserInfo{
+            AccountId::FromUserEmailGaiaId("user@gmail.com", "user")}) {}
+  ~EncryptionMigrationTest() override = default;
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EncryptionMigrationTest(const EncryptionMigrationTest& other) = delete;
+  EncryptionMigrationTest& operator=(const EncryptionMigrationTest& other) =
+      delete;
+};
+
+// Test for encryption migration during sign-in for child users.
+class EncryptionMigrationChildUserTest : public EncryptionMigrationTestBase {
+ public:
+  EncryptionMigrationChildUserTest()
+      : EncryptionMigrationTestBase(LoginManagerMixin::TestUserInfo{
+            AccountId::FromUserEmailGaiaId("userchild@gmail.com", "userchild"),
+            user_manager::USER_TYPE_CHILD}) {}
+  ~EncryptionMigrationChildUserTest() override = default;
+
+  EncryptionMigrationChildUserTest(
+      const EncryptionMigrationChildUserTest& other) = delete;
+  EncryptionMigrationChildUserTest& operator=(
+      const EncryptionMigrationChildUserTest& other) = delete;
+};
+
+IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, SkipWithNoPolicySet) {
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
+  SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
+  encryption_migration_screen_waiter.Wait();
+
+  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS().CreateVisibilityWaiter(true, kReadyDialog)->Wait();
 
@@ -207,8 +243,10 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, SkipWithNoPolicySet) {
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithNoUserPolicySet) {
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
+  encryption_migration_screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kReadyDialog)->Wait();
 
@@ -230,8 +268,10 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithNoUserPolicySet) {
 
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
                        ResumeMigrationWithNoUserPolicySet) {
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
   SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
+  encryption_migration_screen_waiter.Wait();
 
   // Migration is expected to continue immediately.
   RunFullMigrationFlowTest();
@@ -240,8 +280,10 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigratePolicy) {
   MarkUserHasEnterprisePolicy();
 
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
+  encryption_migration_screen_waiter.Wait();
 
   // With kMigrate policy, the migration should start immediately.
   RunFullMigrationFlowTest();
@@ -250,9 +292,22 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigratePolicy) {
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
                        ResumeMigrationWithMigratePolicy) {
   MarkUserHasEnterprisePolicy();
-  SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
+  SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
+  encryption_migration_screen_waiter.Wait();
+
+  RunFullMigrationFlowTest();
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptionMigrationChildUserTest, MigrateForChildUser) {
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
+  SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
+  encryption_migration_screen_waiter.Wait();
+
+  // With kMigrate policy, the migration should start immediately.
   RunFullMigrationFlowTest();
 }
 
@@ -260,8 +315,10 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
                        InsufficientSpaceWithNoUserPolicy) {
   set_free_space(5 * 1000 * 1000);
 
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
+  encryption_migration_screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kInsufficientSpaceDialog)->Wait();
 
@@ -283,8 +340,10 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithInsuficientSpace) {
   set_free_space(5 * 1000 * 1000);
   MarkUserHasEnterprisePolicy();
 
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
+  encryption_migration_screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kInsufficientSpaceDialog)->Wait();
 
@@ -307,8 +366,10 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
   set_free_space(5 * 1000 * 1000);
   MarkUserHasEnterprisePolicy();
 
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
   SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
+  encryption_migration_screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kInsufficientSpaceDialog)->Wait();
 
@@ -330,8 +391,10 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationFailure) {
   MarkUserHasEnterprisePolicy();
 
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
+  encryption_migration_screen_waiter.Wait();
 
   test::OobeJS()
       .CreateWaiter(test::GetOobeElementPath(kMigratingDialog))
@@ -362,8 +425,10 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, LowBattery) {
   SetBatteryPercent(5);
   MarkUserHasEnterprisePolicy();
 
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
+  encryption_migration_screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kReadyDialog)->Wait();
 
@@ -390,8 +455,10 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   SetBatteryPercent(5);
   MarkUserHasEnterprisePolicy();
 
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
   SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
+  encryption_migration_screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kReadyDialog)->Wait();
 
@@ -412,8 +479,10 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   SetBatteryPercent(5);
   MarkUserHasEnterprisePolicy();
 
+  OobeScreenWaiter encryption_migration_screen_waiter(
+      EncryptionMigrationScreenView::kScreenId);
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
+  encryption_migration_screen_waiter.Wait();
 
   test::OobeJS().CreateVisibilityWaiter(true, kReadyDialog)->Wait();
 
@@ -430,4 +499,4 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   RunFullMigrationFlowTest();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -28,11 +28,15 @@ MATCHER_P(DriverEntryEqual, entry, "") {
 class NoopBlobContextGetterFactory : public BlobContextGetterFactory {
  public:
   NoopBlobContextGetterFactory() = default;
+
+  NoopBlobContextGetterFactory(const NoopBlobContextGetterFactory&) = delete;
+  NoopBlobContextGetterFactory& operator=(const NoopBlobContextGetterFactory&) =
+      delete;
+
   ~NoopBlobContextGetterFactory() override = default;
 
  private:
   void RetrieveBlobContextGetter(BlobContextGetterCallback callback) override {}
-  DISALLOW_COPY_AND_ASSIGN(NoopBlobContextGetterFactory);
 };
 
 // Test in memory download that doesn't do complex IO.
@@ -43,6 +47,9 @@ class TestInMemoryDownload : public InMemoryDownload {
       : InMemoryDownload(guid), delegate_(delegate) {
     DCHECK(delegate_) << "Delegate can't be nullptr.";
   }
+
+  TestInMemoryDownload(const TestInMemoryDownload&) = delete;
+  TestInMemoryDownload& operator=(const TestInMemoryDownload&) = delete;
 
   void SimulateDownloadStarted() {
     state_ = InMemoryDownload::State::IN_PROGRESS;
@@ -71,13 +78,17 @@ class TestInMemoryDownload : public InMemoryDownload {
 
  private:
   InMemoryDownload::Delegate* delegate_;
-  DISALLOW_COPY_AND_ASSIGN(TestInMemoryDownload);
 };
 
 // Factory that injects to InMemoryDownloadDriver and only creates fake objects.
 class TestInMemoryDownloadFactory : public InMemoryDownload::Factory {
  public:
   TestInMemoryDownloadFactory() = default;
+
+  TestInMemoryDownloadFactory(const TestInMemoryDownloadFactory&) = delete;
+  TestInMemoryDownloadFactory& operator=(const TestInMemoryDownloadFactory&) =
+      delete;
+
   ~TestInMemoryDownloadFactory() override = default;
 
   // InMemoryDownload::Factory implementation.
@@ -98,12 +109,16 @@ class TestInMemoryDownloadFactory : public InMemoryDownload::Factory {
 
  private:
   TestInMemoryDownload* download_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(TestInMemoryDownloadFactory);
 };
 
 class InMemoryDownloadDriverTest : public testing::Test {
  public:
   InMemoryDownloadDriverTest() = default;
+
+  InMemoryDownloadDriverTest(const InMemoryDownloadDriverTest&) = delete;
+  InMemoryDownloadDriverTest& operator=(const InMemoryDownloadDriverTest&) =
+      delete;
+
   ~InMemoryDownloadDriverTest() override = default;
 
   // Helper method to call public method on |driver_|.
@@ -140,7 +155,6 @@ class InMemoryDownloadDriverTest : public testing::Test {
   testing::NiceMock<MockDriverClient> driver_client_;
   std::unique_ptr<InMemoryDownloadDriver> driver_;
   TestInMemoryDownloadFactory* factory_;
-  DISALLOW_COPY_AND_ASSIGN(InMemoryDownloadDriverTest);
 };
 
 // Verifies in memory download success and remove API.

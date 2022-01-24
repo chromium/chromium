@@ -1,0 +1,69 @@
+<style include="settings-shared">
+  #container {
+    padding-inline-end: calc(var(--cr-section-padding) -
+        var(--cr-icon-ripple-padding));
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .device-lists-separator {
+    border-top: var(--cr-separator-line);
+    padding: 0;
+  }
+
+  #onOff {
+    font-weight: 500;
+  }
+
+  #onOff[on] {
+    color: var(--cros-toggle-color);
+  }
+
+  .device-list {
+    margin-inline-start: 32px;
+  }
+</style>
+<!-- TODO(crbug.com/1010321): Add pair new device button. -->
+<div class="settings-box first">
+  <div id="onOff" class="start" on$="[[isBluetoothToggleOn_]]"
+      aria-hidden="true">
+    [[getOnOffString_(isBluetoothToggleOn_,
+        '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
+  </div>
+  <cr-toggle id="enableBluetoothToggle"
+      checked="{{isBluetoothToggleOn_}}"
+      disabled="[[isToggleDisabled_(systemProperties.systemState)]]"
+      aria-label="$i18n{bluetoothToggleA11yLabel}">
+  </cr-toggle>
+</div>
+<div class="device-lists-separator"></div>
+<div id="container">
+  <template is="dom-if"
+      if="[[shouldShowDeviceList_(connectedDevices_,
+          connectedDevices_.length)]]" restamp>
+    <div class="settings-box-text">
+      $i18n{bluetoothDeviceListCurrentlyConnected}
+    </div>
+    <div class="device-list">
+      <os-settings-paired-bluetooth-list
+          id="connectedDeviceList"
+          devices="[[connectedDevices_]]">
+      </os-settings-paired-bluetooth-list>
+    </div>
+  </template>
+  <template is="dom-if"
+      if="[[shouldShowDeviceList_(unconnectedDevices_,
+          unconnectedDevices_.length)]]" restamp>
+    <div class="settings-box-text">
+      $i18n{bluetoothDeviceListPreviouslyConnected}
+    </div>
+    <div class="device-list">
+      <os-settings-paired-bluetooth-list
+          id="unconnectedDeviceList"
+          devices="[[unconnectedDevices_]]">
+      </os-settings-paired-bluetooth-list>
+    </div>
+  </template>
+</div>
+<template is="dom-if" if="[[isFastPairAllowed_]]">
+  <settings-fast-pair-toggle prefs="{{prefs}}"></settings-fast-pair-toggle>
+</template>

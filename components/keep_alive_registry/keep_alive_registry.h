@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 
@@ -29,6 +28,9 @@ class KeepAliveRegistry {
  public:
   static KeepAliveRegistry* GetInstance();
 
+  KeepAliveRegistry(const KeepAliveRegistry&) = delete;
+  KeepAliveRegistry& operator=(const KeepAliveRegistry&) = delete;
+
   // Methods to query the state of the registry.
   bool IsKeepingAlive() const;
   bool IsKeepingAliveOnlyByBrowserOrigin() const;
@@ -47,6 +49,12 @@ class KeepAliveRegistry {
   bool IsShuttingDown() const;
   // Call when shutting down to ensure registering a new KeepAlive CHECKs.
   void SetIsShuttingDown(bool value = true);
+
+  // True if restarting is in progress.
+  bool IsRestarting() const;
+
+  // Called when restarting is triggered.
+  void SetRestarting();
 
  private:
   friend struct base::DefaultSingletonTraits<KeepAliveRegistry>;
@@ -97,9 +105,10 @@ class KeepAliveRegistry {
   // Used to guard against registering during shutdown.
   bool is_shutting_down_ = false;
 
-  base::ObserverList<KeepAliveStateObserver>::Unchecked observers_;
+  // Used to handle KeepAliveRestartOption::ENABLED.
+  bool is_restarting_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveRegistry);
+  base::ObserverList<KeepAliveStateObserver>::Unchecked observers_;
 };
 
 #endif  // COMPONENTS_KEEP_ALIVE_REGISTRY_KEEP_ALIVE_REGISTRY_H_

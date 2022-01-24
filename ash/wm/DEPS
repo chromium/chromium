@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/full_restore",
+  "+components/app_restore",
 ]
 
 specific_include_rules = {

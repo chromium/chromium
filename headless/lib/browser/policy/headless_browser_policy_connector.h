@@ -8,6 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/browser/browser_policy_connector.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/browser/configuration_policy_pref_store.h"  // nogncheck http://crbug.com/1227148
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
@@ -46,6 +47,8 @@ class HeadlessBrowserPolicyConnector : public BrowserPolicyConnector {
   ConfigurationPolicyProvider* GetPlatformProvider();
 
   std::unique_ptr<ConfigurationPolicyProvider> CreatePlatformProvider();
+
+  PlatformManagementService platform_management_service_;
 
   // Owned by the base class.
   ConfigurationPolicyProvider* platform_provider_ = nullptr;

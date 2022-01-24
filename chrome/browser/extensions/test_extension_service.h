@@ -46,6 +46,8 @@ class TestExtensionService : public extensions::ExtensionServiceInterface {
 
   bool UserCanDisableInstalledExtension(
       const std::string& extension_id) override;
+
+  void ReinstallProviderExtensions() override;
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_TEST_EXTENSION_SERVICE_H_

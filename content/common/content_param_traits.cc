@@ -24,6 +24,7 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 
 namespace IPC {
 

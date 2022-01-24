@@ -12,6 +12,7 @@
 #include "net/base/net_export.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_response_info.h"
+#include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request_job.h"
 
 class GURL;
@@ -25,20 +26,11 @@ namespace net {
 // headers.
 class NET_EXPORT URLRequestRedirectJob : public URLRequestJob {
  public:
-  // Valid status codes for the redirect job. Other 30x codes are theoretically
-  // valid, but unused so far.  Both 302 and 307 are temporary redirects, with
-  // the difference being that 302 converts POSTs to GETs and removes upload
-  // data.
-  enum ResponseCode {
-    REDIRECT_302_FOUND = 302,
-    REDIRECT_307_TEMPORARY_REDIRECT = 307,
-  };
-
   // Constructs a job that redirects to the specified URL.  |redirect_reason| is
   // logged for debugging purposes, and must not be an empty string.
   URLRequestRedirectJob(URLRequest* request,
                         const GURL& redirect_destination,
-                        ResponseCode response_code,
+                        RedirectUtil::ResponseCode response_code,
                         const std::string& redirect_reason);
 
   ~URLRequestRedirectJob() override;
@@ -55,7 +47,7 @@ class NET_EXPORT URLRequestRedirectJob : public URLRequestJob {
   void StartAsync();
 
   const GURL redirect_destination_;
-  const ResponseCode response_code_;
+  const RedirectUtil::ResponseCode response_code_;
   base::TimeTicks receive_headers_end_;
   base::Time response_time_;
   std::string redirect_reason_;

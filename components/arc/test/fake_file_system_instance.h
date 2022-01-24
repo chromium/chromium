@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -211,6 +210,10 @@ class FakeFileSystemInstance : public mojom::FileSystemInstance {
   };
 
   FakeFileSystemInstance();
+
+  FakeFileSystemInstance(const FakeFileSystemInstance&) = delete;
+  FakeFileSystemInstance& operator=(const FakeFileSystemInstance&) = delete;
+
   ~FakeFileSystemInstance() override;
 
   // Returns true if Init() has been called.
@@ -440,8 +443,6 @@ class FakeFileSystemInstance : public mojom::FileSystemInstance {
 
   int64_t next_watcher_id_ = 1;
   int get_child_documents_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFileSystemInstance);
 };
 
 }  // namespace arc

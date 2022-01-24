@@ -36,4 +36,16 @@ SubresourceWebBundle* SubresourceWebBundleList::GetMatchingBundle(
   return nullptr;
 }
 
+SubresourceWebBundle*
+SubresourceWebBundleList::FindSubresourceWebBundleWhichWillBeReleased(
+    const KURL& bundle_url,
+    network::mojom::CredentialsMode credentials_mode) const {
+  for (auto& it : subresource_web_bundles_) {
+    if (it->WillBeReleased() && it->GetBundleUrl() == bundle_url &&
+        it->GetCredentialsMode() == credentials_mode)
+      return it;
+  }
+  return nullptr;
+}
+
 }  // namespace blink

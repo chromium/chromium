@@ -19,6 +19,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.base.compat.ApiHelperForP;
+import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
@@ -189,21 +191,26 @@ public class SmartSelectionProvider {
             int end = mOriginalEnd;
 
             TextSelection textSelection = null;
+            TextClassification textClassification = null;
 
             try {
                 if (mRequestType == RequestType.SUGGEST_AND_CLASSIFY) {
-                    textSelection = mTextClassifier.suggestSelection(
-                            mText, start, end, LocaleList.getAdjustedDefault());
+                    textSelection = suggestSelection(start, end);
                     start = Math.max(0, textSelection.getSelectionStartIndex());
                     end = Math.min(mText.length(), textSelection.getSelectionEndIndex());
                     if (isCancelled()) {
                         return new SelectionClient.Result();
                     }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        textClassification = ApiHelperForS.getTextClassification(textSelection);
+                    }
                 }
 
-                TextClassification tc = mTextClassifier.classifyText(
-                        mText, start, end, LocaleList.getAdjustedDefault());
-                return makeResult(start, end, tc, textSelection);
+                if (textClassification == null) {
+                    textClassification = mTextClassifier.classifyText(
+                            mText, start, end, LocaleList.getAdjustedDefault());
+                }
+                return makeResult(start, end, textClassification, textSelection);
             } catch (IllegalStateException ex) {
                 // An IllegalStateException will be thrown if the text classifier session is
                 // destroyed. This could happen if the selection is ended before text classifier
@@ -211,6 +218,19 @@ public class SmartSelectionProvider {
                 Log.e(TAG, "Failed to use text classifier for smart selection", ex);
                 return new SelectionClient.Result();
             }
+        }
+
+        private TextSelection suggestSelection(int start, int end) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                TextSelection.Request.Builder builder =
+                        ApiHelperForP.newTextSelectionRequestBuilder(mText, start, end);
+                builder = ApiHelperForP.setDefaultLocales(builder, LocaleList.getAdjustedDefault());
+                builder = ApiHelperForS.setIncludeTextClassification(builder, true);
+                return ApiHelperForP.suggestSelection(
+                        mTextClassifier, ApiHelperForP.build(builder));
+            }
+            return mTextClassifier.suggestSelection(
+                    mText, start, end, LocaleList.getAdjustedDefault());
         }
 
         private SelectionClient.Result makeResult(

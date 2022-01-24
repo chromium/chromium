@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 
 namespace base {
 class FilePath;
@@ -18,6 +17,10 @@ namespace ui {
 class DrmDeviceHandle {
  public:
   DrmDeviceHandle();
+
+  DrmDeviceHandle(const DrmDeviceHandle&) = delete;
+  DrmDeviceHandle& operator=(const DrmDeviceHandle&) = delete;
+
   ~DrmDeviceHandle();
 
   int fd() const { return file_.get(); }
@@ -34,8 +37,6 @@ class DrmDeviceHandle {
   base::FilePath sys_path_;
   base::ScopedFD file_;
   bool has_atomic_capabilities_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDeviceHandle);
 };
 
 }  // namespace ui

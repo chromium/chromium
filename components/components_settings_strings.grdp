@@ -15,7 +15,4 @@
   <message name="IDS_OPTIONS_PROXIES_CONFIGURE_BUTTON" desc="The label of the 'Configure proxy settings' button">
     Change proxy settings...
   </message>
-  <message name="IDS_AUTOMATIC_DOWNLOADS_TAB_LABEL" desc="Header for multiple automatic downloads page on Content Settings dialog">
-    Automatic Downloads
-  </message>
 </grit-part>

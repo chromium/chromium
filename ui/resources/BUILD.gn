@@ -42,7 +42,7 @@ grit("webui_resources_grd") {
 
   deps = [ "//ui/webui/resources:modulize" ]
   if (is_chromeos_ash) {
-    deps += [ "//ui/chromeos/colors:cros_colors_css" ]
+    deps += [ "//ui/chromeos/styles:cros_styles_css" ]
   }
 
   outputs = [

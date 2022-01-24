@@ -87,3 +87,15 @@ android_library("junit") {
     "//third_party/junit",
   ]
 }
+
+static_library("android") {
+  sources = [
+    "cloud_management_android_connection.cc",
+    "cloud_management_android_connection.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+  ]
+}

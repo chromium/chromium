@@ -28,6 +28,9 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
    public:
     explicit FdWatchController(const Location& from_here);
 
+    FdWatchController(const FdWatchController&) = delete;
+    FdWatchController& operator=(const FdWatchController&) = delete;
+
     // Implicitly calls StopWatchingFileDescriptor.
     ~FdWatchController() override;
 
@@ -58,11 +61,13 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     // If this pointer is non-NULL, the pointee is set to true in the
     // destructor.
     bool* was_destroyed_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(FdWatchController);
   };
 
   MessagePumpLibevent();
+
+  MessagePumpLibevent(const MessagePumpLibevent&) = delete;
+  MessagePumpLibevent& operator=(const MessagePumpLibevent&) = delete;
+
   ~MessagePumpLibevent() override;
 
   bool WatchFileDescriptor(int fd,
@@ -117,7 +122,6 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
   event* wakeup_event_ = nullptr;
 
   ThreadChecker watch_file_descriptor_caller_checker_;
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpLibevent);
 };
 
 }  // namespace base

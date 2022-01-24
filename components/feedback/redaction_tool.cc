@@ -4,8 +4,8 @@
 
 #include "components/feedback/redaction_tool.h"
 
-#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
@@ -52,6 +52,8 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
 
     // wpa_supplicant
     {"SSID", "(?i-s)(\\bssid[= ]')(.+)(')"},
+    {"SSID", "(?i-s)(\\bssid[= ]\")(.+)(\")"},
+    {"SSID", "(\\* SSID=)(.+)($)"},
     {"SSIDHex", "(?-s)(\\bSSID - hexdump\\(len=[0-9]+\\): )(.+)()"},
 
     // shill
@@ -74,6 +76,9 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // UUIDs given by the 'blkid' tool. These don't necessarily look like
     // standard UUIDs, so treat them specially.
     {"UUID", R"xxx((UUID=")([0-9a-zA-Z-]+)("))xxx"},
+    // Also cover UUIDs given by the 'lvs' and 'pvs' tools, which similarly
+    // don't necessarily look like standard UUIDs.
+    {"UUID", R"xxx(("[lp]v_uuid":")([0-9a-zA-Z-]+)("))xxx"},
 
     // Volume labels presented in the 'blkid' tool, and as part of removable
     // media paths shown in various logs such as cros-disks (in syslog).
@@ -86,6 +91,9 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // capture everything until the end of the line, since the mount path is the
     // last field.
     {"Volume Label", R"xxx((/media/removable/)(.+?)(['"/\n]|$))xxx"},
+
+    // IPP (Internet Printing Protocol) Addresses
+    {"IPP Address", R"xxx((ipp:\/\/)(.+?)(\/ipp))xxx"},
 };
 
 bool MaybeUnmapAddress(net::IPAddress* addr) {

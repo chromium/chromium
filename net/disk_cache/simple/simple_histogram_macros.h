@@ -35,6 +35,7 @@
                            ("SimpleCache.Code." uma_name, ##__VA_ARGS__));  \
         break;                                                              \
       case net::GENERATED_NATIVE_CODE_CACHE:                                \
+      case net::GENERATED_WEBUI_BYTE_CODE_CACHE:                            \
       case net::SHADER_CACHE:                                               \
         break;                                                              \
       default:                                                              \

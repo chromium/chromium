@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/memory_pressure",
   "+mojo/public/cpp",
   "+third_party/harfbuzz-ng/src/src",
   "+third_party/harfbuzz-ng/utils/hb_scoped.h",

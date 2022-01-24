@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
@@ -55,7 +55,7 @@ class ServiceContext;
 // |AssistantManagerService|'s state won't update if it's currently in the
 // process of starting up. This is the delay before we will try to update
 // |AssistantManagerService| again.
-constexpr auto kUpdateAssistantManagerDelay = base::TimeDelta::FromSeconds(1);
+constexpr auto kUpdateAssistantManagerDelay = base::Seconds(1);
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
     : public AssistantService,
@@ -68,6 +68,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>
               pending_url_loader_factory,
           signin::IdentityManager* identity_manager);
+
+  Service(const Service&) = delete;
+  Service& operator=(const Service&) = delete;
+
   ~Service() override;
 
   // Allows tests to override the S3 server URI used by the service.
@@ -193,8 +197,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<Service> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Service);
 };
 
 }  // namespace assistant

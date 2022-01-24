@@ -52,12 +52,6 @@ class NET_EXPORT_PRIVATE DnsResponseResultExtractor {
   // May have the side effect of recording metrics about DnsResponses as they
   // are parsed, so while not an absolute requirement, any given DnsResponse
   // should only be used and extracted from at most once.
-  //
-  // Note that for INTEGRITY or HTTPS, this will ignore errors and pretend it
-  // successfully parsed a no-result response.
-  // TODO(crbug.com/1138620): Cleanup this "helpfulness" and let
-  // HostResolverManager handle whether or not errors should be fatal due to
-  // experimentation.
   ExtractionError ExtractDnsResults(DnsQueryType query_type,
                                     HostCache::Entry* out_results) const;
 

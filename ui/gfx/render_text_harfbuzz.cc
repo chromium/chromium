@@ -9,7 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
@@ -18,7 +18,6 @@
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -429,6 +428,9 @@ class HarfBuzzLineBreaker {
     AdvanceLine();
   }
 
+  HarfBuzzLineBreaker(const HarfBuzzLineBreaker&) = delete;
+  HarfBuzzLineBreaker& operator=(const HarfBuzzLineBreaker&) = delete;
+
   // Constructs a single line for |text_| using |run_list_|.
   void ConstructSingleLine() {
     for (size_t i = 0; i < run_list_.size(); i++) {
@@ -760,8 +762,6 @@ class HarfBuzzLineBreaker {
 
   // The current RTL run segments, to be applied by |UpdateRTLSegmentRanges()|.
   std::vector<SegmentHandle> rtl_segments_;
-
-  DISALLOW_COPY_AND_ASSIGN(HarfBuzzLineBreaker);
 };
 
 // Applies a forced text rendering direction if specified by a command-line
@@ -1260,11 +1260,11 @@ struct ShapeRunWithFontInput {
   size_t hash = 0;
 };
 
-// An MRU cache of the results from calling ShapeRunWithFont. The maximum cache
+// An LRU cache of the results from calling ShapeRunWithFont. The maximum cache
 // size used in blink::ShapeCache is 10k. A Finch experiment showed that
 // reducing the cache size to 1k has no performance impact.
 constexpr int kShapeRunCacheSize = 1000;
-using ShapeRunCacheBase = base::HashingMRUCache<ShapeRunWithFontInput,
+using ShapeRunCacheBase = base::HashingLRUCache<ShapeRunWithFontInput,
                                                 TextRunHarfBuzz::ShapeOutput,
                                                 ShapeRunWithFontInput::Hash>;
 class ShapeRunCache : public ShapeRunCacheBase {
@@ -1970,7 +1970,7 @@ void RenderTextHarfBuzz::ShapeRuns(
       run->shape.glyphs.resize(run->shape.glyph_count);
       run->shape.glyph_to_char.resize(run->shape.glyph_count);
       run->shape.positions.resize(run->shape.glyph_count);
-      run->shape.width = glyph_width_for_test_;
+      // Keep width as zero since newline character doesn't have a width.
     } else {
       // This run needs shaping.
       need_shaping_runs.push_back(run);

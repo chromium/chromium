@@ -1,83 +1,83 @@
-CONSOLE ERROR: line 18: Error: <mask> attribute x: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <mask> attribute x: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <mask> attribute x: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <mask> attribute x: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <mask> attribute x: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <mask> attribute y: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <mask> attribute y: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <mask> attribute y: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <mask> attribute y: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <mask> attribute y: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <svg> attribute x: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <svg> attribute x: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <svg> attribute x: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <svg> attribute x: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <svg> attribute x: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <svg> attribute y: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <svg> attribute y: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <svg> attribute y: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <svg> attribute y: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <svg> attribute y: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <rect> attribute x: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <rect> attribute x: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <rect> attribute x: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <rect> attribute x: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <rect> attribute x: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <rect> attribute y: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <rect> attribute y: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <rect> attribute y: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <rect> attribute y: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <rect> attribute y: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <image> attribute x: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <image> attribute x: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <image> attribute x: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <image> attribute x: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <image> attribute x: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <image> attribute y: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <image> attribute y: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <image> attribute y: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <image> attribute y: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <image> attribute y: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <foreignObject> attribute x: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <foreignObject> attribute x: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <foreignObject> attribute x: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <foreignObject> attribute x: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <foreignObject> attribute x: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <foreignObject> attribute y: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <foreignObject> attribute y: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <foreignObject> attribute y: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <foreignObject> attribute y: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <foreignObject> attribute y: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <rect> attribute rx: A negative value is not valid. ("-200px")
-CONSOLE ERROR: line 18: Error: <rect> attribute rx: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <rect> attribute rx: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <rect> attribute rx: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <rect> attribute rx: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <rect> attribute rx: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <rect> attribute ry: A negative value is not valid. ("-200px")
-CONSOLE ERROR: line 18: Error: <rect> attribute ry: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <rect> attribute ry: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <rect> attribute ry: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <rect> attribute ry: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <rect> attribute ry: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <ellipse> attribute rx: A negative value is not valid. ("-200px")
-CONSOLE ERROR: line 18: Error: <ellipse> attribute rx: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <ellipse> attribute rx: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <ellipse> attribute rx: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <ellipse> attribute rx: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <ellipse> attribute rx: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <ellipse> attribute ry: A negative value is not valid. ("-200px")
-CONSOLE ERROR: line 18: Error: <ellipse> attribute ry: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <ellipse> attribute ry: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <ellipse> attribute ry: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <ellipse> attribute ry: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <ellipse> attribute ry: Expected length, "{ 100px }".
-CONSOLE ERROR: line 18: Error: <circle> attribute r: A negative value is not valid. ("-200px")
-CONSOLE ERROR: line 18: Error: <circle> attribute r: Expected length, "auto".
-CONSOLE ERROR: line 18: Error: <circle> attribute r: Expected length, "100   px".
-CONSOLE ERROR: line 18: Error: <circle> attribute r: Expected length, "100px;".
-CONSOLE ERROR: line 18: Error: <circle> attribute r: Expected length, "100px !important".
-CONSOLE ERROR: line 18: Error: <circle> attribute r: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <mask> attribute x: Expected length, "auto".
+CONSOLE ERROR: Error: <mask> attribute x: Expected length, "100   px".
+CONSOLE ERROR: Error: <mask> attribute x: Expected length, "100px;".
+CONSOLE ERROR: Error: <mask> attribute x: Expected length, "100px !important".
+CONSOLE ERROR: Error: <mask> attribute x: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <mask> attribute y: Expected length, "auto".
+CONSOLE ERROR: Error: <mask> attribute y: Expected length, "100   px".
+CONSOLE ERROR: Error: <mask> attribute y: Expected length, "100px;".
+CONSOLE ERROR: Error: <mask> attribute y: Expected length, "100px !important".
+CONSOLE ERROR: Error: <mask> attribute y: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <svg> attribute x: Expected length, "auto".
+CONSOLE ERROR: Error: <svg> attribute x: Expected length, "100   px".
+CONSOLE ERROR: Error: <svg> attribute x: Expected length, "100px;".
+CONSOLE ERROR: Error: <svg> attribute x: Expected length, "100px !important".
+CONSOLE ERROR: Error: <svg> attribute x: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <svg> attribute y: Expected length, "auto".
+CONSOLE ERROR: Error: <svg> attribute y: Expected length, "100   px".
+CONSOLE ERROR: Error: <svg> attribute y: Expected length, "100px;".
+CONSOLE ERROR: Error: <svg> attribute y: Expected length, "100px !important".
+CONSOLE ERROR: Error: <svg> attribute y: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <rect> attribute x: Expected length, "auto".
+CONSOLE ERROR: Error: <rect> attribute x: Expected length, "100   px".
+CONSOLE ERROR: Error: <rect> attribute x: Expected length, "100px;".
+CONSOLE ERROR: Error: <rect> attribute x: Expected length, "100px !important".
+CONSOLE ERROR: Error: <rect> attribute x: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <rect> attribute y: Expected length, "auto".
+CONSOLE ERROR: Error: <rect> attribute y: Expected length, "100   px".
+CONSOLE ERROR: Error: <rect> attribute y: Expected length, "100px;".
+CONSOLE ERROR: Error: <rect> attribute y: Expected length, "100px !important".
+CONSOLE ERROR: Error: <rect> attribute y: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <image> attribute x: Expected length, "auto".
+CONSOLE ERROR: Error: <image> attribute x: Expected length, "100   px".
+CONSOLE ERROR: Error: <image> attribute x: Expected length, "100px;".
+CONSOLE ERROR: Error: <image> attribute x: Expected length, "100px !important".
+CONSOLE ERROR: Error: <image> attribute x: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <image> attribute y: Expected length, "auto".
+CONSOLE ERROR: Error: <image> attribute y: Expected length, "100   px".
+CONSOLE ERROR: Error: <image> attribute y: Expected length, "100px;".
+CONSOLE ERROR: Error: <image> attribute y: Expected length, "100px !important".
+CONSOLE ERROR: Error: <image> attribute y: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <foreignObject> attribute x: Expected length, "auto".
+CONSOLE ERROR: Error: <foreignObject> attribute x: Expected length, "100   px".
+CONSOLE ERROR: Error: <foreignObject> attribute x: Expected length, "100px;".
+CONSOLE ERROR: Error: <foreignObject> attribute x: Expected length, "100px !important".
+CONSOLE ERROR: Error: <foreignObject> attribute x: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <foreignObject> attribute y: Expected length, "auto".
+CONSOLE ERROR: Error: <foreignObject> attribute y: Expected length, "100   px".
+CONSOLE ERROR: Error: <foreignObject> attribute y: Expected length, "100px;".
+CONSOLE ERROR: Error: <foreignObject> attribute y: Expected length, "100px !important".
+CONSOLE ERROR: Error: <foreignObject> attribute y: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <rect> attribute rx: A negative value is not valid. ("-200px")
+CONSOLE ERROR: Error: <rect> attribute rx: Expected length, "auto".
+CONSOLE ERROR: Error: <rect> attribute rx: Expected length, "100   px".
+CONSOLE ERROR: Error: <rect> attribute rx: Expected length, "100px;".
+CONSOLE ERROR: Error: <rect> attribute rx: Expected length, "100px !important".
+CONSOLE ERROR: Error: <rect> attribute rx: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <rect> attribute ry: A negative value is not valid. ("-200px")
+CONSOLE ERROR: Error: <rect> attribute ry: Expected length, "auto".
+CONSOLE ERROR: Error: <rect> attribute ry: Expected length, "100   px".
+CONSOLE ERROR: Error: <rect> attribute ry: Expected length, "100px;".
+CONSOLE ERROR: Error: <rect> attribute ry: Expected length, "100px !important".
+CONSOLE ERROR: Error: <rect> attribute ry: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <ellipse> attribute rx: A negative value is not valid. ("-200px")
+CONSOLE ERROR: Error: <ellipse> attribute rx: Expected length, "auto".
+CONSOLE ERROR: Error: <ellipse> attribute rx: Expected length, "100   px".
+CONSOLE ERROR: Error: <ellipse> attribute rx: Expected length, "100px;".
+CONSOLE ERROR: Error: <ellipse> attribute rx: Expected length, "100px !important".
+CONSOLE ERROR: Error: <ellipse> attribute rx: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <ellipse> attribute ry: A negative value is not valid. ("-200px")
+CONSOLE ERROR: Error: <ellipse> attribute ry: Expected length, "auto".
+CONSOLE ERROR: Error: <ellipse> attribute ry: Expected length, "100   px".
+CONSOLE ERROR: Error: <ellipse> attribute ry: Expected length, "100px;".
+CONSOLE ERROR: Error: <ellipse> attribute ry: Expected length, "100px !important".
+CONSOLE ERROR: Error: <ellipse> attribute ry: Expected length, "{ 100px }".
+CONSOLE ERROR: Error: <circle> attribute r: A negative value is not valid. ("-200px")
+CONSOLE ERROR: Error: <circle> attribute r: Expected length, "auto".
+CONSOLE ERROR: Error: <circle> attribute r: Expected length, "100   px".
+CONSOLE ERROR: Error: <circle> attribute r: Expected length, "100px;".
+CONSOLE ERROR: Error: <circle> attribute r: Expected length, "100px !important".
+CONSOLE ERROR: Error: <circle> attribute r: Expected length, "{ 100px }".
 Test that 'length' presentation attribute values are parsed with CSS presentation rules.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

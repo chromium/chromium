@@ -39,6 +39,10 @@ const char kTestSharedSecretBad[] = "0000-0000-0001";
 class Spake2AuthenticatorTest : public AuthenticatorTestBase {
  public:
   Spake2AuthenticatorTest() = default;
+
+  Spake2AuthenticatorTest(const Spake2AuthenticatorTest&) = delete;
+  Spake2AuthenticatorTest& operator=(const Spake2AuthenticatorTest&) = delete;
+
   ~Spake2AuthenticatorTest() override = default;
 
  protected:
@@ -50,8 +54,6 @@ class Spake2AuthenticatorTest : public AuthenticatorTestBase {
     client_ = Spake2Authenticator::CreateForClient(
         kClientId, kHostId, client_secret, Authenticator::MESSAGE_READY);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(Spake2AuthenticatorTest);
 };
 
 TEST_F(Spake2AuthenticatorTest, SuccessfulAuth) {

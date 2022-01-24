@@ -8,12 +8,11 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -78,6 +77,10 @@ class ModellerImpl : public Modeller,
                ModelConfigLoader* model_config_loader,
                ui::UserActivityDetector* user_activity_detector,
                std::unique_ptr<Trainer> trainer);
+
+  ModellerImpl(const ModellerImpl&) = delete;
+  ModellerImpl& operator=(const ModellerImpl&) = delete;
+
   ~ModellerImpl() override;
 
   // Modeller overrides:
@@ -211,7 +214,7 @@ class ModellerImpl : public Modeller,
   // Once user remains idle for |training_delay_|, we start training the model.
   // If this value is 0, we will not need to wait for user to remain inactive.
   // This can be overridden by experiment flag "training_delay_in_seconds".
-  base::TimeDelta training_delay_ = base::TimeDelta::FromSeconds(0);
+  base::TimeDelta training_delay_ = base::Seconds(0);
 
   // If personal curve error is above this threshold, the curve will not be
   // exported. The error is expressed in terms of percentages.
@@ -284,8 +287,6 @@ class ModellerImpl : public Modeller,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ModellerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModellerImpl);
 };
 
 // Saves |model| to disk at location specified by |model_saving_spec| and

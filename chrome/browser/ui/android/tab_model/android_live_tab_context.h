@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -24,6 +23,10 @@ class TabModel;
 class AndroidLiveTabContext : public sessions::LiveTabContext {
  public:
   explicit AndroidLiveTabContext(TabModel* tab_model);
+
+  AndroidLiveTabContext(const AndroidLiveTabContext&) = delete;
+  AndroidLiveTabContext& operator=(const AndroidLiveTabContext&) = delete;
+
   ~AndroidLiveTabContext() override {}
 
   // Overridden from LiveTabContext:
@@ -74,7 +77,6 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
 
  private:
   TabModel* tab_model_;
-  DISALLOW_COPY_AND_ASSIGN(AndroidLiveTabContext);
 };
 
 

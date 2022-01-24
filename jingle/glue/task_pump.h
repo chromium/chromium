@@ -20,6 +20,9 @@ class TaskPump : public jingle_xmpp::TaskRunner {
  public:
   TaskPump();
 
+  TaskPump(const TaskPump&) = delete;
+  TaskPump& operator=(const TaskPump&) = delete;
+
   ~TaskPump() override;
 
   // rtc::TaskRunner implementation.
@@ -38,8 +41,6 @@ class TaskPump : public jingle_xmpp::TaskRunner {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<TaskPump> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TaskPump);
 };
 
 }  // namespace jingle_glue

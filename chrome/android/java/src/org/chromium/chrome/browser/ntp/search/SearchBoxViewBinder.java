@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -26,10 +25,7 @@ class SearchBoxViewBinder
     public final void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         ImageView voiceSearchButton =
                 view.findViewById(org.chromium.chrome.R.id.voice_search_button);
-        ImageView lensButton =
-                LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH.getValue()
-                ? view.findViewById(org.chromium.chrome.R.id.lens_camera_button_start)
-                : view.findViewById(org.chromium.chrome.R.id.lens_camera_button_end);
+        ImageView lensButton = view.findViewById(org.chromium.chrome.R.id.lens_camera_button);
         View searchBoxContainer = view;
         final TextView searchBoxTextView = searchBoxContainer.findViewById(R.id.search_box_text);
         final ChipView chipView = searchBoxContainer.findViewById(R.id.query_tiles_chip);

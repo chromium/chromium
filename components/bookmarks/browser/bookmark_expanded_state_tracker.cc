@@ -51,8 +51,8 @@ BookmarkExpandedStateTracker::GetExpandedNodes() {
   for (const auto& entry : value->GetList()) {
     int64_t node_id;
     const BookmarkNode* node;
-    const std::string* value = entry.GetIfString();
-    if (value && base::StringToInt64(*value, &node_id) &&
+    const std::string* value_str = entry.GetIfString();
+    if (value_str && base::StringToInt64(*value_str, &node_id) &&
         (node = GetBookmarkNodeByID(bookmark_model_, node_id)) != nullptr &&
         node->is_folder()) {
       nodes.insert(node);

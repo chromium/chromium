@@ -8,6 +8,36 @@
 
 namespace media {
 
+// WARNING: The returned names are used as part of UMA names. Do NOT change
+// existing return names.
+std::string GetRendererName(RendererType renderer_type) {
+  switch (renderer_type) {
+    case RendererType::kDefault:
+      return "RendererImpl";
+    case RendererType::kMojo:
+      return "MojoRenderer";
+    case RendererType::kMediaPlayer:
+      return "MediaPlayerRenderer";
+    case RendererType::kCourier:
+      return "CourierRenderer";
+    case RendererType::kFlinging:
+      return "FlingingRenderer";
+    case RendererType::kCast:
+      return "CastRenderer";
+    case RendererType::kMediaFoundation:
+      return "MediaFoundationRenderer";
+    case RendererType::kRemoting:
+      return "RemotingRenderer";  // media::remoting::Receiver
+    case RendererType::kCastStreaming:
+      return "CastStreamingRenderer";
+    case RendererType::kContentEmbedderDefined:
+      return "EmbedderDefined";
+    default:
+      NOTREACHED();
+      return "RendererType created through invalid static_cast";
+  }
+}
+
 RendererFactorySelector::RendererFactorySelector() = default;
 
 RendererFactorySelector::~RendererFactorySelector() = default;
@@ -15,7 +45,7 @@ RendererFactorySelector::~RendererFactorySelector() = default;
 void RendererFactorySelector::AddBaseFactory(
     RendererType type,
     std::unique_ptr<RendererFactory> factory) {
-  DVLOG(1) << __func__ << ": type=" << static_cast<int>(type);
+  DVLOG(1) << __func__ << ": type=" << GetRendererName(type);
   DCHECK(!base_renderer_type_) << "At most one base factory!";
 
   AddFactory(type, std::move(factory));
@@ -40,7 +70,7 @@ void RendererFactorySelector::AddFactory(
     std::unique_ptr<RendererFactory> factory) {
   DCHECK(factory);
   DCHECK(!factories_.count(type));
-  DVLOG(2) << __func__ << ": type=" << static_cast<int>(type);
+  DVLOG(2) << __func__ << ": type=" << GetRendererName(type);
   factories_[type] = std::move(factory);
 }
 
@@ -62,7 +92,7 @@ RendererFactory* RendererFactorySelector::GetCurrentFactory() {
   RendererType current_renderer_type = GetCurrentRendererType();
 
   DVLOG(1) << __func__ << " Selecting factory type: "
-           << static_cast<int>(current_renderer_type);
+           << GetRendererName(current_renderer_type);
   auto* current_factory = factories_[current_renderer_type].get();
   DCHECK(current_factory);
 

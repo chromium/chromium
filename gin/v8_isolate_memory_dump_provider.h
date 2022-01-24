@@ -5,7 +5,7 @@
 #ifndef GIN_V8_ISOLATE_MEMORY_DUMP_PROVIDER_H_
 #define GIN_V8_ISOLATE_MEMORY_DUMP_PROVIDER_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gin/gin_export.h"
 

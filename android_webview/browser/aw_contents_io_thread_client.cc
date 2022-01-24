@@ -60,7 +60,7 @@ struct IoThreadClientData {
 
 IoThreadClientData::IoThreadClientData() : pending_association(false) {}
 
-typedef map<pair<int, int>, IoThreadClientData>
+typedef map<content::GlobalRenderFrameHostId, IoThreadClientData>
     RenderFrameHostToIoThreadClientType;
 
 typedef pair<base::flat_set<RenderFrameHost*>, IoThreadClientData>
@@ -74,16 +74,13 @@ typedef pair<base::flat_set<RenderFrameHost*>, IoThreadClientData>
 // therefore the FrameTreeNodeId should be removed).
 typedef map<int, HostsAndClientDataPair> FrameTreeNodeToIoThreadClientType;
 
-static pair<int, int> GetRenderFrameHostIdPair(RenderFrameHost* rfh) {
-  return pair<int, int>(rfh->GetProcess()->GetID(), rfh->GetRoutingID());
-}
-
 // RfhToIoThreadClientMap -----------------------------------------------------
 class RfhToIoThreadClientMap {
  public:
   static RfhToIoThreadClientMap* GetInstance();
-  void Set(pair<int, int> rfh_id, const IoThreadClientData& client);
-  bool Get(pair<int, int> rfh_id, IoThreadClientData* client);
+  void Set(content::GlobalRenderFrameHostId rfh_id,
+           const IoThreadClientData& client);
+  bool Get(content::GlobalRenderFrameHostId rfh_id, IoThreadClientData* client);
 
   bool Get(int frame_tree_node_id, IoThreadClientData* client);
 
@@ -114,13 +111,13 @@ RfhToIoThreadClientMap* RfhToIoThreadClientMap::GetInstance() {
   return g_instance_.Pointer();
 }
 
-void RfhToIoThreadClientMap::Set(pair<int, int> rfh_id,
+void RfhToIoThreadClientMap::Set(content::GlobalRenderFrameHostId rfh_id,
                                  const IoThreadClientData& client) {
   base::AutoLock lock(map_lock_);
   rfh_to_io_thread_client_[rfh_id] = client;
 }
 
-bool RfhToIoThreadClientMap::Get(pair<int, int> rfh_id,
+bool RfhToIoThreadClientMap::Get(content::GlobalRenderFrameHostId rfh_id,
                                  IoThreadClientData* client) {
   base::AutoLock lock(map_lock_);
   RenderFrameHostToIoThreadClientType::iterator iterator =
@@ -147,7 +144,7 @@ bool RfhToIoThreadClientMap::Get(int frame_tree_node_id,
 void RfhToIoThreadClientMap::Set(RenderFrameHost* rfh,
                                  const IoThreadClientData& client) {
   int frame_tree_node_id = rfh->GetFrameTreeNodeId();
-  pair<int, int> rfh_id = GetRenderFrameHostIdPair(rfh);
+  content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
   base::AutoLock lock(map_lock_);
 
   // If this FrameTreeNodeId already has an associated IoThreadClientData, add
@@ -166,7 +163,7 @@ void RfhToIoThreadClientMap::Set(RenderFrameHost* rfh,
 
 void RfhToIoThreadClientMap::Erase(RenderFrameHost* rfh) {
   int frame_tree_node_id = rfh->GetFrameTreeNodeId();
-  pair<int, int> rfh_id = GetRenderFrameHostIdPair(rfh);
+  content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
   base::AutoLock lock(map_lock_);
   HostsAndClientDataPair& current_entry =
       frame_tree_node_to_io_thread_client_[frame_tree_node_id];
@@ -231,11 +228,10 @@ void ClientMapEntryUpdater::WebContentsDestroyed() {
 
 // static
 std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
-    int render_process_id,
-    int render_frame_id) {
-  pair<int, int> rfh_id(render_process_id, render_frame_id);
+    content::GlobalRenderFrameHostId render_frame_host_id) {
   IoThreadClientData client_data;
-  if (!RfhToIoThreadClientMap::GetInstance()->Get(rfh_id, &client_data))
+  if (!RfhToIoThreadClientMap::GetInstance()->Get(render_frame_host_id,
+                                                  &client_data))
     return nullptr;
 
   JNIEnv* env = AttachCurrentThread();
@@ -265,8 +261,10 @@ std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
 void AwContentsIoThreadClient::SubFrameCreated(int render_process_id,
                                                int parent_render_frame_id,
                                                int child_render_frame_id) {
-  pair<int, int> parent_rfh_id(render_process_id, parent_render_frame_id);
-  pair<int, int> child_rfh_id(render_process_id, child_render_frame_id);
+  content::GlobalRenderFrameHostId parent_rfh_id(render_process_id,
+                                                 parent_render_frame_id);
+  content::GlobalRenderFrameHostId child_rfh_id(render_process_id,
+                                                child_render_frame_id);
   IoThreadClientData client_data;
   if (!RfhToIoThreadClientMap::GetInstance()->Get(parent_rfh_id,
                                                   &client_data)) {
@@ -283,7 +281,7 @@ void AwContentsIoThreadClient::RegisterPendingContents(
   IoThreadClientData client_data;
   client_data.pending_association = true;
   RfhToIoThreadClientMap::GetInstance()->Set(
-      GetRenderFrameHostIdPair(web_contents->GetMainFrame()), client_data);
+      web_contents->GetMainFrame()->GetGlobalId(), client_data);
 }
 
 // static

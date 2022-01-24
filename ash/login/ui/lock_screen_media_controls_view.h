@@ -82,6 +82,10 @@ class ASH_EXPORT LockScreenMediaControlsView
 
   struct Callbacks {
     Callbacks();
+
+    Callbacks(const Callbacks&) = delete;
+    Callbacks& operator=(const Callbacks&) = delete;
+
     ~Callbacks();
 
     // Called in |MediaSessionInfoChanged| to determine the visibility of the
@@ -93,11 +97,14 @@ class ASH_EXPORT LockScreenMediaControlsView
 
     // Called when the controls should be drawn on the lock screen.
     base::RepeatingClosure show_media_controls;
-
-    DISALLOW_COPY_AND_ASSIGN(Callbacks);
   };
 
   explicit LockScreenMediaControlsView(const Callbacks& callbacks);
+
+  LockScreenMediaControlsView(const LockScreenMediaControlsView&) = delete;
+  LockScreenMediaControlsView& operator=(const LockScreenMediaControlsView&) =
+      delete;
+
   ~LockScreenMediaControlsView() override;
 
   // views::View:
@@ -273,8 +280,6 @@ class ASH_EXPORT LockScreenMediaControlsView
   bool is_in_drag_ = false;
 
   base::WeakPtrFactory<LockScreenMediaControlsView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenMediaControlsView);
 };
 
 }  // namespace ash

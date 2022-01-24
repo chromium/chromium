@@ -13,7 +13,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/atomic_flag.h"
@@ -50,6 +49,10 @@ class CrashHandlerHostLinux : public base::MessagePumpForIO::FdWatcher,
   CrashHandlerHostLinux(const std::string& process_type,
                         const base::FilePath& dumps_path,
                         bool upload);
+
+  CrashHandlerHostLinux(const CrashHandlerHostLinux&) = delete;
+  CrashHandlerHostLinux& operator=(const CrashHandlerHostLinux&) = delete;
+
   ~CrashHandlerHostLinux() override;
 
   // Starts the uploader thread. Must be called immediately after creating the
@@ -112,8 +115,6 @@ class CrashHandlerHostLinux : public base::MessagePumpForIO::FdWatcher,
   base::AtomicFlag shutting_down_;
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashHandlerHostLinux);
 };
 
 }  // namespace breakpad
@@ -145,6 +146,9 @@ class CrashHandlerHost : public base::MessagePumpForIO::FdWatcher,
   // by the first call to this method.
   static CrashHandlerHost* Get();
 
+  CrashHandlerHost(const CrashHandlerHost&) = delete;
+  CrashHandlerHost& operator=(const CrashHandlerHost&) = delete;
+
   // Get the file descriptor which processes should be given in order to signal
   // crashes to the browser.
   int GetDeathSignalSocket();
@@ -173,8 +177,6 @@ class CrashHandlerHost : public base::MessagePumpForIO::FdWatcher,
   base::MessagePumpForIO::FdWatchController fd_watch_controller_;
   base::ScopedFD process_socket_;
   base::ScopedFD browser_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashHandlerHost);
 };
 
 }  // namespace crashpad

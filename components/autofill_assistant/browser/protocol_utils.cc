@@ -4,9 +4,9 @@
 
 #include "components/autofill_assistant/browser/protocol_utils.h"
 
-#include <map>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
@@ -22,7 +22,6 @@
 #include "components/autofill_assistant/browser/actions/expect_navigation_action.h"
 #include "components/autofill_assistant/browser/actions/generate_password_for_form_field_action.h"
 #include "components/autofill_assistant/browser/actions/get_element_status_action.h"
-#include "components/autofill_assistant/browser/actions/highlight_element_action.h"
 #include "components/autofill_assistant/browser/actions/navigate_action.h"
 #include "components/autofill_assistant/browser/actions/perform_on_single_element_action.h"
 #include "components/autofill_assistant/browser/actions/popup_message_action.h"
@@ -33,6 +32,7 @@
 #include "components/autofill_assistant/browser/actions/save_generated_password_action.h"
 #include "components/autofill_assistant/browser/actions/save_submitted_password_action.h"
 #include "components/autofill_assistant/browser/actions/select_option_action.h"
+#include "components/autofill_assistant/browser/actions/send_keystroke_events_action.h"
 #include "components/autofill_assistant/browser/actions/set_attribute_action.h"
 #include "components/autofill_assistant/browser/actions/set_persistent_ui_action.h"
 #include "components/autofill_assistant/browser/actions/set_touchable_area_action.h"
@@ -45,6 +45,7 @@
 #include "components/autofill_assistant/browser/actions/stop_action.h"
 #include "components/autofill_assistant/browser/actions/tell_action.h"
 #include "components/autofill_assistant/browser/actions/unsupported_action.h"
+#include "components/autofill_assistant/browser/actions/update_client_settings_action.h"
 #include "components/autofill_assistant/browser/actions/upload_dom_action.h"
 #include "components/autofill_assistant/browser/actions/use_address_action.h"
 #include "components/autofill_assistant/browser/actions/use_credit_card_action.h"
@@ -95,16 +96,6 @@ void ProtocolUtils::AddScript(const SupportedScriptProto& script_proto,
     script->handle.interrupt = true;
   } else {
     script->handle.autostart = presentation.autostart();
-  }
-  if (script->handle.autostart) {
-    // Autostartable scripts without chip text must be skipped,
-    // but these chips must never be shown.
-    if (presentation.chip().text().empty()) {
-      return;
-    }
-  } else {
-    script->handle.initial_prompt = presentation.initial_prompt();
-    script->handle.chip = Chip(presentation.chip());
   }
   script->handle.direct_action = DirectAction(presentation.direct_action());
   script->handle.start_message = presentation.start_message();
@@ -195,8 +186,6 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<PromptAction>(delegate, action);
     case ActionProto::ActionInfoCase::kStop:
       return std::make_unique<StopAction>(delegate, action);
-    case ActionProto::ActionInfoCase::kHighlightElement:
-      return std::make_unique<HighlightElementAction>(delegate, action);
     case ActionProto::ActionInfoCase::kUploadDom:
       return std::make_unique<UploadDomAction>(delegate, action);
     case ActionProto::ActionInfoCase::kShowDetails:
@@ -217,6 +206,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<ConfigureBottomSheetAction>(delegate, action);
     case ActionProto::ActionInfoCase::kShowForm:
       return std::make_unique<ShowFormAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kUpdateClientSettings:
+      return std::make_unique<UpdateClientSettingsAction>(delegate, action);
     case ActionProto::ActionInfoCase::kPopupMessage:
       return std::make_unique<PopupMessageAction>(delegate, action);
     case ActionProto::ActionInfoCase::kWaitForDocument:
@@ -261,7 +252,7 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
           action.wait_for_document_to_become_interactive().client_id(),
           base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
                          delegate->GetWeakPtr(),
-                         base::TimeDelta::FromMilliseconds(
+                         base::Milliseconds(
                              action.wait_for_document_to_become_interactive()
                                  .timeout_in_ms()),
                          DOCUMENT_INTERACTIVE));
@@ -269,12 +260,12 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return PerformOnSingleElementAction::WithOptionalClientIdTimed(
           delegate, action,
           action.wait_for_document_to_become_complete().client_id(),
-          base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
-                         delegate->GetWeakPtr(),
-                         base::TimeDelta::FromMilliseconds(
-                             action.wait_for_document_to_become_complete()
-                                 .timeout_in_ms()),
-                         DOCUMENT_COMPLETE));
+          base::BindOnce(
+              &ActionDelegate::WaitUntilDocumentIsInReadyState,
+              delegate->GetWeakPtr(),
+              base::Milliseconds(action.wait_for_document_to_become_complete()
+                                     .timeout_in_ms()),
+              DOCUMENT_COMPLETE));
     case ActionProto::ActionInfoCase::kSendClickEvent:
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.send_click_event().client_id(),
@@ -293,14 +284,7 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
           base::BindOnce(&WebController::JsClickElement,
                          delegate->GetWebController()->GetWeakPtr()));
     case ActionProto::ActionInfoCase::kSendKeystrokeEvents:
-      return PerformOnSingleElementAction::WithClientId(
-          delegate, action, action.send_keystroke_events().client_id(),
-          base::BindOnce(
-              &action_delegate_util::PerformWithTextValue, delegate,
-              action.send_keystroke_events().value(),
-              base::BindOnce(&WebController::SendTextInput,
-                             delegate->GetWebController()->GetWeakPtr(),
-                             action.send_keystroke_events().delay_in_ms())));
+      return std::make_unique<SendKeystrokeEventsAction>(delegate, action);
     case ActionProto::ActionInfoCase::kSendChangeEvent:
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.send_change_event().client_id(),
@@ -334,13 +318,13 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return PerformOnSingleElementAction::WithClientIdTimed(
           delegate, action,
           action.wait_for_element_to_become_stable().client_id(),
-          base::BindOnce(&WebController::WaitUntilElementIsStable,
-                         delegate->GetWebController()->GetWeakPtr(),
-                         action.wait_for_element_to_become_stable()
-                             .stable_check_max_rounds(),
-                         base::TimeDelta::FromMilliseconds(
-                             action.wait_for_element_to_become_stable()
-                                 .stable_check_interval_ms())));
+          base::BindOnce(
+              &WebController::WaitUntilElementIsStable,
+              delegate->GetWebController()->GetWeakPtr(),
+              action.wait_for_element_to_become_stable()
+                  .stable_check_max_rounds(),
+              base::Milliseconds(action.wait_for_element_to_become_stable()
+                                     .stable_check_interval_ms())));
     case ActionProto::ActionInfoCase::kCheckElementIsOnTop:
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.check_element_is_on_top().client_id(),
@@ -533,11 +517,12 @@ bool ProtocolUtils::ParseTriggerScripts(
   }
 
   if (!response_proto.script_parameters().empty()) {
-    std::map<std::string, std::string> parameters;
+    std::vector<std::pair<std::string, std::string>> parameters;
     for (const auto& param : response_proto.script_parameters()) {
-      parameters.emplace(param.name(), param.value());
+      parameters.emplace_back(param.name(), param.value());
     }
-    *script_parameters = std::make_unique<ScriptParameters>(parameters);
+    *script_parameters = std::make_unique<ScriptParameters>(
+        base::flat_map<std::string, std::string>(std::move(parameters)));
   }
   return true;
 }
@@ -599,6 +584,7 @@ bool ProtocolUtils::ValidateTriggerCondition(
     case TriggerScriptConditionProto::kKeyboardHidden:
     case TriggerScriptConditionProto::kScriptParameterMatch:
     case TriggerScriptConditionProto::kSelector:
+    case TriggerScriptConditionProto::kDocumentReadyState:
     case TriggerScriptConditionProto::TYPE_NOT_SET:
       return true;
   }

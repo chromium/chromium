@@ -158,7 +158,7 @@ public class UrlBarIntegrationTest {
         CriteriaHelper.pollUiThread(() -> {
             final int expectedTextColor =
                     ApiCompatibilityUtils.getColor(mActivityTestRule.getActivity().getResources(),
-                            R.color.default_text_color_light);
+                            R.color.branded_url_text_on_dark_bg);
             Criteria.checkThat(getUrlBar().getCurrentTextColor(), Matchers.is(expectedTextColor));
         });
     }

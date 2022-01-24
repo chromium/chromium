@@ -28,11 +28,6 @@ extension_repack_all_locales("packed_resources") {
 
 tweak_info_plist("tweak_info_plist") {
   info_plist = "Info.plist"
-
-  # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-  if (ios_lock_to_version != "") {
-    args = [ "--lock-to-version=$ios_lock_to_version" ]
-  }
 }
 
 compile_entitlements("entitlements") {
@@ -78,12 +73,11 @@ ios_appex_bundle("share_extension") {
   extra_substitutions = [
     "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
     "CHROMIUM_SHORT_NAME=$chromium_short_name",
-    "SHARE_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ShareExtension",
   ]
 
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
-  xcode_product_bundle_id = "$chromium_bundle_id.ShareExtension"
+  bundle_identifier = "$chromium_bundle_id.ShareExtension"
 }
 
 generate_localizable_strings("system_strings") {

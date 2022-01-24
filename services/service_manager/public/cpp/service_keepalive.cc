@@ -22,6 +22,9 @@ class ServiceKeepaliveRefImpl : public ServiceKeepaliveRef {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
+  ServiceKeepaliveRefImpl(const ServiceKeepaliveRefImpl&) = delete;
+  ServiceKeepaliveRefImpl& operator=(const ServiceKeepaliveRefImpl&) = delete;
+
   ~ServiceKeepaliveRefImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -52,8 +55,6 @@ class ServiceKeepaliveRefImpl : public ServiceKeepaliveRef {
   base::WeakPtr<ServiceKeepalive> keepalive_;
   scoped_refptr<base::SequencedTaskRunner> keepalive_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceKeepaliveRefImpl);
 };
 
 ServiceKeepalive::ServiceKeepalive(ServiceReceiver* receiver,

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
@@ -42,6 +41,10 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
 
   explicit DemoExtensionsExternalLoader(const base::FilePath& cache_dir);
 
+  DemoExtensionsExternalLoader(const DemoExtensionsExternalLoader&) = delete;
+  DemoExtensionsExternalLoader& operator=(const DemoExtensionsExternalLoader&) =
+      delete;
+
   // Loads the app with `app_id` and installs it from the update url or cache.
   void LoadApp(const std::string& app_id);
 
@@ -72,8 +75,6 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
   std::vector<std::string> app_ids_;
 
   base::WeakPtrFactory<DemoExtensionsExternalLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoExtensionsExternalLoader);
 };
 
 }  // namespace ash

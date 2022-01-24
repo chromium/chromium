@@ -4,6 +4,9 @@
 
 #include "ui/base/clipboard/clipboard_format_type.h"
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace ui {
@@ -41,15 +44,29 @@ bool ClipboardFormatType::operator==(const ClipboardFormatType& other) const {
   return data_ == other.data_;
 }
 
-// TODO(crbug.com/106449): Support custom formats.
-ClipboardFormatType ClipboardFormatType::GetCustomPlatformType(
+// static
+ClipboardFormatType ClipboardFormatType::CustomPlatformType(
     const std::string& format_string) {
+  DCHECK(base::IsStringASCII(format_string));
   return ClipboardFormatType::Deserialize(format_string);
 }
 
-// TODO(crbug.com/106449): Support custom formats.
-std::string ClipboardFormatType::GetCustomPlatformName() const {
-  return Serialize();
+// static
+std::string ClipboardFormatType::WebCustomFormatName(int index) {
+  return base::StrCat({"application/web;type=\"custom/format",
+                       base::NumberToString(index), "\""});
+}
+
+// static
+std::string ClipboardFormatType::WebCustomFormatMapName() {
+  return "application/web;type=\"custom/formatmap\"";
+}
+
+// static
+const ClipboardFormatType& ClipboardFormatType::WebCustomFormatMap() {
+  static base::NoDestructor<ClipboardFormatType> type(
+      ClipboardFormatType::WebCustomFormatMapName());
+  return *type;
 }
 
 // Various predefined ClipboardFormatTypes.

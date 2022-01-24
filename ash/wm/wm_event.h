@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_state.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -28,7 +27,7 @@ enum WMEventType {
   WM_EVENT_MINIMIZE,
   WM_EVENT_FULLSCREEN,
   // PRIMARY is left in primary landscape orientation and right in secondary
-  // landscape orientation. If |kVerticalSplitScreen| is enabled, PRIMARY is
+  // landscape orientation. If |kVerticalSnapState| is enabled, PRIMARY is
   // top in primary portrait orientation and SECONDARY is bottom in secondary
   // portrait orientation. If not, in the clamshell mode, PRIMARY is left and
   // SECONDARY is right.
@@ -44,6 +43,9 @@ enum WMEventType {
 
   // Following events are compond events which may lead to different
   // states depending on the current state.
+
+  // A user requested to make a window floating.
+  WM_EVENT_TOGGLE_FLOATING,
 
   // A user requested to toggle maximized state by double clicking window
   // header.
@@ -120,6 +122,10 @@ class DisplayMetricsChangedWMEvent;
 class ASH_EXPORT WMEvent {
  public:
   explicit WMEvent(WMEventType type);
+
+  WMEvent(const WMEvent&) = delete;
+  WMEvent& operator=(const WMEvent&) = delete;
+
   virtual ~WMEvent();
 
   WMEventType type() const { return type_; }
@@ -151,7 +157,6 @@ class ASH_EXPORT WMEvent {
 
  private:
   WMEventType type_;
-  DISALLOW_COPY_AND_ASSIGN(WMEvent);
 };
 
 // An WMEvent to request new bounds for the window.
@@ -162,6 +167,10 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
       bool animate = false,
       base::TimeDelta duration = WindowState::kBoundsChangeSlideDuration);
   SetBoundsWMEvent(const gfx::Rect& requested_bounds, int64_t display_id);
+
+  SetBoundsWMEvent(const SetBoundsWMEvent&) = delete;
+  SetBoundsWMEvent& operator=(const SetBoundsWMEvent&) = delete;
+
   ~SetBoundsWMEvent() override;
 
   const gfx::Rect& requested_bounds() const { return requested_bounds_; }
@@ -177,8 +186,6 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
   const int64_t display_id_ = display::kInvalidDisplayId;
   const bool animate_;
   const base::TimeDelta duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetBoundsWMEvent);
 };
 
 // A WMEvent sent when display metrics have changed.
@@ -186,6 +193,11 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
 class ASH_EXPORT DisplayMetricsChangedWMEvent : public WMEvent {
  public:
   explicit DisplayMetricsChangedWMEvent(int display_metrics);
+
+  DisplayMetricsChangedWMEvent(const DisplayMetricsChangedWMEvent&) = delete;
+  DisplayMetricsChangedWMEvent& operator=(const DisplayMetricsChangedWMEvent&) =
+      delete;
+
   ~DisplayMetricsChangedWMEvent() override;
 
   bool primary_changed() const {
@@ -196,8 +208,6 @@ class ASH_EXPORT DisplayMetricsChangedWMEvent : public WMEvent {
 
  private:
   const uint32_t changed_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayMetricsChangedWMEvent);
 };
 
 }  // namespace ash

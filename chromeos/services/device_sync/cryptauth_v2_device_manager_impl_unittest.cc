@@ -28,8 +28,7 @@ namespace {
 
 const char kFakeSessionId[] = "session_id";
 const double kFakeLastSuccessTimeSeconds = 1600600000;
-constexpr base::TimeDelta kFakeFailureRetryTime =
-    base::TimeDelta::FromMinutes(15);
+constexpr base::TimeDelta kFakeFailureRetryTime = base::Minutes(15);
 
 // A FakeCryptAuthScheduler that updates its DeviceSync parameters based on the
 // result of the DeviceSync attempt. This makes for reasonable logs.

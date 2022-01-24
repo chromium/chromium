@@ -52,6 +52,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/lazy_instance_helpers.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 
 // LazyInstance uses its own struct initializer-list style static
 // initialization, which does not require a constructor.
@@ -151,7 +152,7 @@ class LazyInstance {
   Type* Pointer() {
 #if DCHECK_IS_ON()
     if (!Traits::kAllowedToAccessOnNonjoinableThread)
-      ThreadRestrictions::AssertSingletonAllowed();
+      internal::AssertSingletonAllowed();
 #endif
 
     return subtle::GetOrCreateLazyPointer(

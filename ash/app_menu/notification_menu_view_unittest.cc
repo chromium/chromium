@@ -14,7 +14,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
@@ -33,6 +33,12 @@ class MockNotificationMenuController : public views::SlideOutControllerDelegate,
                                        public NotificationMenuView::Delegate {
  public:
   MockNotificationMenuController() = default;
+
+  MockNotificationMenuController(const MockNotificationMenuController&) =
+      delete;
+  MockNotificationMenuController& operator=(
+      const MockNotificationMenuController&) = delete;
+
   ~MockNotificationMenuController() override = default;
 
   void ActivateNotificationAndClose(
@@ -63,8 +69,6 @@ class MockNotificationMenuController : public views::SlideOutControllerDelegate,
 
   // Owned by NotificationMenuViewTest.
   NotificationMenuView* notification_menu_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNotificationMenuController);
 };
 
 }  // namespace
@@ -72,6 +76,10 @@ class MockNotificationMenuController : public views::SlideOutControllerDelegate,
 class NotificationMenuViewTest : public views::ViewsTestBase {
  public:
   NotificationMenuViewTest() {}
+
+  NotificationMenuViewTest(const NotificationMenuViewTest&) = delete;
+  NotificationMenuViewTest& operator=(const NotificationMenuViewTest&) = delete;
+
   ~NotificationMenuViewTest() override = default;
 
   // views::ViewsTestBase:
@@ -206,8 +214,6 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
   std::unique_ptr<NotificationMenuViewTestAPI> test_api_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_scope_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationMenuViewTest);
 };
 
 // Tests that the correct NotificationItemView is shown when notifications come

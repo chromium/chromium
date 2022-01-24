@@ -434,7 +434,7 @@ TEST_F(SpdyStreamTest, StreamError) {
 
   AddReadEOF();
 
-  RecordingBoundTestNetLog log;
+  RecordingNetLogObserver net_log_observer;
 
   SequencedSocketData data(GetReads(), GetWrites());
   MockConnect connect_data(SYNCHRONOUS, OK);
@@ -446,7 +446,8 @@ TEST_F(SpdyStreamTest, StreamError) {
   base::WeakPtr<SpdySession> session(CreateDefaultSpdySession());
 
   base::WeakPtr<SpdyStream> stream = CreateStreamSynchronously(
-      SPDY_BIDIRECTIONAL_STREAM, session, url_, LOWEST, log.bound());
+      SPDY_BIDIRECTIONAL_STREAM, session, url_, LOWEST,
+      NetLogWithSource::Make(NetLogSourceType::NONE));
   ASSERT_TRUE(stream);
   EXPECT_EQ(kDefaultUrl, stream->url().spec());
 
@@ -469,7 +470,7 @@ TEST_F(SpdyStreamTest, StreamError) {
   EXPECT_TRUE(data.AllWriteDataConsumed());
 
   // Check that the NetLog was filled reasonably.
-  auto entries = log.GetEntries();
+  auto entries = net_log_observer.GetEntries();
   EXPECT_LT(0u, entries.size());
 
   // Check that we logged SPDY_STREAM_ERROR correctly.
@@ -1128,17 +1129,17 @@ TEST_F(SpdyStreamTestWithMockClock, NonInformationalResponseStart) {
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   EXPECT_EQ(ERR_IO_PENDING, stream()->SendRequestHeaders(std::move(headers),
                                                          NO_MORE_DATA_TO_SEND));
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   // The receive headers start time should be captured at this time.
   base::TimeTicks expected_receive_headers_start_time = base::TimeTicks::Now();
 
   // Read the first header fragment.
   RunUntilNextPause();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   // Read the second header fragment.
   RunUntilNextPause();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   EXPECT_EQ("200", delegate().GetResponseHeaderValue(spdy::kHttp2StatusHeader));
 
   // Read the response body.
@@ -1198,17 +1199,17 @@ TEST_F(SpdyStreamTestWithMockClock, InformationalHeaders) {
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   EXPECT_EQ(ERR_IO_PENDING, stream()->SendRequestHeaders(std::move(headers),
                                                          NO_MORE_DATA_TO_SEND));
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   // The receive headers start time should be captured at this time.
   base::TimeTicks expected_receive_headers_start_time = base::TimeTicks::Now();
 
   // Read the first header fragment of the informational response.
   RunUntilNextPause();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   // Read the second header fragment of the informational response.
   RunUntilNextPause();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   // We don't check the status code of the informational headers here because
   // SpdyStream doesn't propagate it to the delegate.
 
@@ -1219,7 +1220,7 @@ TEST_F(SpdyStreamTestWithMockClock, InformationalHeaders) {
 
   // Read the non-informational response headers.
   RunUntilNextPause();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   EXPECT_EQ("200", delegate().GetResponseHeaderValue(spdy::kHttp2StatusHeader));
 
   // Read the response body.
@@ -1306,7 +1307,7 @@ TEST_F(SpdyStreamTestWithMockClock, EarlyHints) {
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
   EXPECT_EQ(ERR_IO_PENDING, stream()->SendRequestHeaders(std::move(headers),
                                                          NO_MORE_DATA_TO_SEND));
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
 
   // The receive headers start time should be captured at this time.
   base::TimeTicks expected_receive_headers_start_time = base::TimeTicks::Now();
@@ -1314,9 +1315,9 @@ TEST_F(SpdyStreamTestWithMockClock, EarlyHints) {
   // Read the header fragments of the informational responses.
   for (int i = 0; i < kNumberOfInformationalResponses; ++i) {
     RunUntilNextPause();
-    AdvanceClock(base::TimeDelta::FromSeconds(1));
+    AdvanceClock(base::Seconds(1));
     RunUntilNextPause();
-    AdvanceClock(base::TimeDelta::FromSeconds(1));
+    AdvanceClock(base::Seconds(1));
   }
 
   // Check the callback was called twice with 103 status code.
@@ -1356,7 +1357,7 @@ TEST_F(SpdyStreamTestWithMockClock, EarlyHints) {
 
   // Read the non-informational response headers.
   RunUntilNextPause();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  AdvanceClock(base::Seconds(1));
   EXPECT_EQ("200", delegate().GetResponseHeaderValue(spdy::kHttp2StatusHeader));
 
   // Read the response body.
@@ -1556,8 +1557,6 @@ TEST_F(SpdyStreamTest, IncreaseSendWindowSizeOverflow) {
 
   AddReadEOF();
 
-  RecordingBoundTestNetLog log;
-
   SequencedSocketData data(GetReads(), GetWrites());
   MockConnect connect_data(SYNCHRONOUS, OK);
   data.set_connect_data(connect_data);
@@ -1568,7 +1567,8 @@ TEST_F(SpdyStreamTest, IncreaseSendWindowSizeOverflow) {
   base::WeakPtr<SpdySession> session(CreateDefaultSpdySession());
 
   base::WeakPtr<SpdyStream> stream = CreateStreamSynchronously(
-      SPDY_BIDIRECTIONAL_STREAM, session, url_, LOWEST, log.bound());
+      SPDY_BIDIRECTIONAL_STREAM, session, url_, LOWEST,
+      NetLogWithSource::Make(NetLogSourceType::NONE));
   ASSERT_TRUE(stream);
   EXPECT_EQ(kDefaultUrl, stream->url().spec());
 

@@ -9,12 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
@@ -22,14 +24,17 @@
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 namespace ash {
 namespace {
 
-// Horizontal space between apps in dips.
-constexpr int kHorizontalSpacing = 8;
+constexpr size_t kMinRecommendedApps = 4;
+constexpr size_t kMaxRecommendedApps = 5;
 
 // Sorts increasing by display index, then decreasing by position priority.
 struct CompareByDisplayIndexAndPositionPriority {
@@ -69,12 +74,12 @@ std::vector<std::string> GetRecentAppIdsFromSuggestionChips(
   SearchModel::SearchResults* results = search_model->results();
   auto is_app_suggestion = [](const SearchResult& r) -> bool {
     return IsAppType(r.result_type()) &&
-           r.display_type() == SearchResultDisplayType::kChip;
+           r.display_type() == SearchResultDisplayType::kList;
   };
   std::vector<SearchResult*> app_suggestion_results =
       SearchModel::FilterSearchResultsByFunction(
           results, base::BindRepeating(is_app_suggestion),
-          /*max_results=*/5);
+          /*max_results=*/kMaxRecommendedApps);
 
   std::sort(app_suggestion_results.begin(), app_suggestion_results.end(),
             CompareByDisplayIndexAndPositionPriority());
@@ -114,22 +119,19 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
   bool IsSelectedView(const AppListItemView* view) const override {
     return view == selected_view_;
   }
-  void InitiateDrag(AppListItemView* view,
+  bool InitiateDrag(AppListItemView* view,
                     const gfx::Point& location,
-                    const gfx::Point& root_location) override {}
+                    const gfx::Point& root_location,
+                    base::OnceClosure drag_start_callback,
+                    base::OnceClosure drag_end_callback) override {
+    return false;
+  }
   void StartDragAndDropHostDragAfterLongPress() override {}
   bool UpdateDragFromItem(bool is_touch,
                           const ui::LocatedEvent& event) override {
     return false;
   }
   void EndDrag(bool cancel) override {}
-  bool IsDragging() const override { return false; }
-  bool IsDraggedView(const AppListItemView* view) const override {
-    return false;
-  }
-  bool IsDragViewMoved(const AppListItemView& view) const override {
-    return false;
-  }
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
                                   const ui::Event& event) override {
     // TODO(crbug.com/1216594): Add a new launch type for "recent apps".
@@ -142,46 +144,146 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
         id, event.flags(), AppListLaunchedFrom::kLaunchedFromSuggestionChip);
     // `this` may be deleted.
   }
-  const AppListConfig& GetAppListConfig() const override {
-    // TODO(crbug.com/1211592): Eliminate this method and use the real config.
-    return *AppListConfigProvider::Get().GetConfigForType(
-        AppListConfigType::kLarge, /*can_create=*/true);
-  }
 
  private:
   AppListViewDelegate* const view_delegate_;
   AppListItemView* selected_view_ = nullptr;
 };
 
-RecentAppsView::RecentAppsView(AppListViewDelegate* view_delegate)
-    : view_delegate_(view_delegate),
+RecentAppsView::RecentAppsView(Delegate* delegate,
+                               AppListViewDelegate* view_delegate)
+    : delegate_(delegate),
+      view_delegate_(view_delegate),
       grid_delegate_(std::make_unique<GridDelegateImpl>(view_delegate_)) {
+  DCHECK(delegate_);
   DCHECK(view_delegate_);
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-      kHorizontalSpacing));
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
-
-  std::vector<std::string> app_ids =
-      GetRecentAppIdsFromSuggestionChips(view_delegate_->GetSearchModel());
-
-  AppListModel* model = view_delegate_->GetModel();
-  for (const std::string& app_id : app_ids) {
-    std::string item_id = ItemIdFromAppId(app_id);
-    AppListItem* item = model->FindItem(item_id);
-    if (item) {
-      // NOTE: If you change the view structure, update GetItemForTest() as
-      // well.
-      AddChildView(std::make_unique<AppListItemView>(grid_delegate_.get(), item,
-                                                     view_delegate_));
-    }
-  }
+  layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
+  layout_->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+  layout_->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  SetVisible(false);
 }
 
 RecentAppsView::~RecentAppsView() = default;
 
-AppListItemView* RecentAppsView::GetItemViewForTest(int index) {
-  return static_cast<AppListItemView*>(children()[index]);
+void RecentAppsView::UpdateAppListConfig(const AppListConfig* app_list_config) {
+  app_list_config_ = app_list_config;
+
+  for (auto* item_view : item_views_)
+    item_view->UpdateAppListConfig(app_list_config);
+}
+
+void RecentAppsView::ShowResults(SearchModel* search_model,
+                                 AppListModel* model) {
+  DCHECK(app_list_config_);
+  item_views_.clear();
+  RemoveAllChildViews();
+
+  std::vector<std::string> app_ids =
+      GetRecentAppIdsFromSuggestionChips(search_model);
+  std::vector<AppListItem*> items;
+
+  for (const std::string& app_id : app_ids) {
+    std::string item_id = ItemIdFromAppId(app_id);
+    AppListItem* item = model->FindItem(item_id);
+    if (item)
+      items.push_back(item);
+  }
+
+  if (items.size() < kMinRecommendedApps) {
+    SetVisible(false);
+    return;
+  }
+
+  SetVisible(true);
+
+  for (AppListItem* item : items) {
+    auto* item_view = AddChildView(std::make_unique<AppListItemView>(
+        app_list_config_, grid_delegate_.get(), item, view_delegate_,
+        AppListItemView::Context::kRecentAppsView));
+    item_view->UpdateAppListConfig(app_list_config_);
+    item_views_.push_back(item_view);
+  }
+}
+
+int RecentAppsView::GetItemViewCount() const {
+  return item_views_.size();
+}
+
+AppListItemView* RecentAppsView::GetItemViewAt(int index) const {
+  if (static_cast<int>(item_views_.size()) <= index)
+    return nullptr;
+  return item_views_[index];
+}
+
+void RecentAppsView::DisableFocusForShowingActiveFolder(bool disabled) {
+  for (views::View* child : children())
+    child->SetEnabled(!disabled);
+
+  // Prevent items from being accessed by ChromeVox.
+  SetViewIgnoredForAccessibility(this, disabled);
+}
+
+bool RecentAppsView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::VKEY_UP) {
+    MoveFocusUp();
+    return true;
+  }
+  if (event.key_code() == ui::VKEY_DOWN) {
+    MoveFocusDown();
+    return true;
+  }
+  return false;
+}
+
+void RecentAppsView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  // The AppsGridView's space between items is the sum of the padding on left
+  // and on right of the individual tiles. Because of rounding errors, there can
+  // be an actual difference of 1px over the actual distribution of space
+  // needed, and because this is not compensated on the other columns, the grid
+  // carries over the error making it progressively more significant for each
+  // column. For the RecentAppsView tiles to match the grid we need to calculate
+  // padding as the AppsGridView does to account for the rounding errors and
+  // then double it, so it is exactly the same spacing as the AppsGridView.
+  layout_->set_between_child_spacing(2 * CalculateTilePadding());
+}
+
+void RecentAppsView::MoveFocusUp() {
+  DVLOG(1) << __FUNCTION__;
+  // This function should only run when a child has focus.
+  DCHECK(Contains(GetFocusManager()->GetFocusedView()));
+  DCHECK(!children().empty());
+  delegate_->MoveFocusUpFromRecents();
+}
+
+void RecentAppsView::MoveFocusDown() {
+  DVLOG(1) << __FUNCTION__;
+  // This function should only run when a child has focus.
+  DCHECK(Contains(GetFocusManager()->GetFocusedView()));
+  int column = GetColumnOfFocusedChild();
+  DCHECK_GE(column, 0);
+  delegate_->MoveFocusDownFromRecents(column);
+}
+
+int RecentAppsView::GetColumnOfFocusedChild() const {
+  int column = 0;
+  for (views::View* child : children()) {
+    if (!views::IsViewClass<AppListItemView>(child))
+      continue;
+    if (child->HasFocus())
+      return column;
+    ++column;
+  }
+  return -1;
+}
+
+int RecentAppsView::CalculateTilePadding() const {
+  int content_width = GetContentsBounds().width();
+  int tile_width = app_list_config_->grid_tile_width();
+  int width_to_distribute = content_width - kMaxRecommendedApps * tile_width;
+
+  return width_to_distribute / ((kMaxRecommendedApps - 1) * 2);
 }
 
 BEGIN_METADATA(RecentAppsView, views::View)

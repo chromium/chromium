@@ -32,6 +32,10 @@ class MessagePipeWriterThread : public base::SimpleThread {
         handle_(handle),
         num_bytes_(num_bytes),
         num_writes_(0) {}
+
+  MessagePipeWriterThread(const MessagePipeWriterThread&) = delete;
+  MessagePipeWriterThread& operator=(const MessagePipeWriterThread&) = delete;
+
   ~MessagePipeWriterThread() override {}
 
   void Run() override {
@@ -62,8 +66,6 @@ class MessagePipeWriterThread : public base::SimpleThread {
   const MojoHandle handle_;
   const uint32_t num_bytes_;
   int64_t num_writes_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePipeWriterThread);
 };
 
 class MessagePipeReaderThread : public base::SimpleThread {
@@ -72,6 +74,10 @@ class MessagePipeReaderThread : public base::SimpleThread {
       : SimpleThread("MessagePipeReaderThread"),
         handle_(handle),
         num_reads_(0) {}
+
+  MessagePipeReaderThread(const MessagePipeReaderThread&) = delete;
+  MessagePipeReaderThread& operator=(const MessagePipeReaderThread&) = delete;
+
   ~MessagePipeReaderThread() override {}
 
   void Run() override {
@@ -107,14 +113,16 @@ class MessagePipeReaderThread : public base::SimpleThread {
  private:
   const MojoHandle handle_;
   int64_t num_reads_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePipeReaderThread);
 };
 #endif  // !defined(WIN32)
 
 class CorePerftest : public testing::Test {
  public:
   CorePerftest() {}
+
+  CorePerftest(const CorePerftest&) = delete;
+  CorePerftest& operator=(const CorePerftest&) = delete;
+
   ~CorePerftest() override {}
 
   static void NoOp(void* /*closure*/) {}
@@ -246,8 +254,6 @@ class CorePerftest : public testing::Test {
     assert(rv == 0);
   }
 #endif  // !defined(WIN32)
-
-  DISALLOW_COPY_AND_ASSIGN(CorePerftest);
 };
 
 // A no-op test so we can compare performance.

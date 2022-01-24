@@ -362,446 +362,8 @@ below:
         </message>
       </if>
 
-      <!-- Localized names for accessibility roles -->
-      <message name="IDS_AX_ROLE_ARTICLE" desc="Accessibility role description for article">
-        article
-      </message>
-      <!-- https://w3c.github.io/html-aam/#el-audio -->
-      <message name="IDS_AX_ROLE_AUDIO" desc="Accessible role description for audio">
-        audio
-      </message>
-      <message name="IDS_AX_ROLE_BANNER" desc="Accessibility role description for banner">
-        banner
-      </message>
-      <message name="IDS_AX_ROLE_CODE" desc="Accessibility role description for a section whose content represents a fragment of computer code">
-        code
-      </message>
-      <!-- https://w3c.github.io/html-aam/#el-input-color -->
-      <message name="IDS_AX_ROLE_COLOR_WELL" desc="Accessibility role description for a color picker">
-        color picker
-      </message>
-      <message name="IDS_AX_ROLE_COMMENT" desc="Accessibility role description for a single comment">
-        comment
-      </message>
-      <message name="IDS_AX_ROLE_COMPLEMENTARY" desc="Accessibility role description for complementary">
-        complementary
-      </message>
-      <message name="IDS_AX_ROLE_CONTENT_DELETION" desc="Accessibility role description for content deletion, meaning content that is has been or is suggested to be removed from a document, such as in a revision review">
-        deletion
-      </message>
-      <message name="IDS_AX_ROLE_CONTENT_INSERTION" desc="Accessibility role description for content insertion, meaning content that has been marked or is suggested to be inserted into a document, such as in a revision review">
-        insertion
-      </message>
-      <message name="IDS_AX_ROLE_CHECK_BOX" desc="Accessibility role description for a check box">
-        checkbox
-      </message>
-      <message name="IDS_AX_ROLE_CONTENT_INFO" desc="Accessibility role description for credits and information about the content of the page, like copyrights and privacy statements">
-        content information
-      </message>
-      <message name="IDS_AX_ROLE_DATE" desc="Accessibility role description for a date input">
-        date picker
-      </message>
-      <message name="IDS_AX_ROLE_DATE_TIME_LOCAL" desc="Accessibility role description for a datetime-local input">
-        local date and time picker
-      </message>
-      <message name="IDS_AX_ROLE_DEFINITION" desc="Accessibility role description for a definition">
-        definition
-      </message>
-      <message name="IDS_AX_ROLE_DESCRIPTION_LIST" desc="Accessibility role description for a definition list">
-        definition list
-      </message>
-      <message name="IDS_AX_ROLE_DESCRIPTION_TERM" desc="Accessibility role description for description term (as in a description list)">
-        term
-      </message>
-      <!-- https://w3c.github.io/html-aam/#el-details -->
-      <message name="IDS_AX_ROLE_DETAILS" desc="Accessibility role description for details">
-        details
-      </message>
-      <message name="IDS_AX_ROLE_DISCLOSURE_TRIANGLE" desc="Accessibility role description for a disclosure triangle, a control shaped like a triangle that expands or collapses to show or hide extra content">
-        disclosure triangle
-      </message>
-      <message name="IDS_AX_ROLE_DOC_ABSTRACT" desc="Accessibility role description for abstract, meaning the summary of the contents of an article or book">
-        abstract
-      </message>
-      <message name="IDS_AX_ROLE_DOC_ACKNOWLEDGMENTS" desc="Accessibility role description for acknowledgments">
-        acknowledgments
-      </message>
-      <message name="IDS_AX_ROLE_DOC_AFTERWORD" desc="Accessibility role description for afterword">
-        afterword
-      </message>
-      <message name="IDS_AX_ROLE_DOC_APPENDIX" desc="Accessibility role description for appendix, meaning the summary of the contents of an article or book">
-        appendix
-      </message>
-      <message name="IDS_AX_ROLE_DOC_BACKLINK" desc="Accessibility role description for back link">
-        back link
-      </message>
-      <message name="IDS_AX_ROLE_DOC_BIBLIO_ENTRY" desc="Accessibility role description for bibliography entry">
-        bibliography entry
-      </message>
-      <message name="IDS_AX_ROLE_DOC_BIBLIOGRAPHY" desc="Accessibility role description for bibliography">
-        bibliography
-      </message>
-      <message name="IDS_AX_ROLE_DOC_BIBLIO_REF" desc="Accessibility role description for bibliography reference">
-        bibliography reference
-      </message>
-      <message name="IDS_AX_ROLE_DOC_CHAPTER" desc="Accessibility role description for chapter">
-        chapter
-      </message>
-      <message name="IDS_AX_ROLE_DOC_COLOPHON" desc="Accessibility role description for colophon">
-        colophon
-      </message>
-      <message name="IDS_AX_ROLE_DOC_CONCLUSION" desc="Accessibility role description for conclusion">
-        conclusion
-      </message>
-      <message name="IDS_AX_ROLE_DOC_COVER" desc="Accessibility role description for cover">
-        cover
-      </message>
-      <message name="IDS_AX_ROLE_DOC_CREDIT" desc="Accessibility role description for credit, a public acknowledgement of someone who was responsible for helping with something">
-        credit
-      </message>
-      <message name="IDS_AX_ROLE_DOC_CREDITS" desc="Accessibility role description for credits">
-        credits
-      </message>
-      <message name="IDS_AX_ROLE_DOC_DEDICATION" desc="Accessibility role description for dedication">
-        dedication
-      </message>
-      <message name="IDS_AX_ROLE_DOC_ENDNOTE" desc="Accessibility role description for endnote">
-        endnote
-      </message>
-      <message name="IDS_AX_ROLE_DOC_ENDNOTES" desc="Accessibility role description for endnotes">
-        endnotes
-      </message>
-      <message name="IDS_AX_ROLE_DOC_EPIGRAPH" desc="Accessibility role description for epigraph">
-        epigraph
-      </message>
-      <message name="IDS_AX_ROLE_DOC_EPILOGUE" desc="Accessibility role description for epilogue">
-        epilogue
-      </message>
-      <message name="IDS_AX_ROLE_DOC_ERRATA" desc="Accessibility role description for errata">
-        errata
-      </message>
-      <message name="IDS_AX_ROLE_DOC_EXAMPLE" desc="Accessibility role description for example">
-        example
-      </message>
-      <message name="IDS_AX_ROLE_DOC_FOOTNOTE" desc="Accessibility role description for footnote">
-        footnote
-      </message>
-      <message name="IDS_AX_ROLE_DOC_FOREWORD" desc="Accessibility role description for foreword">
-        foreword
-      </message>
-      <message name="IDS_AX_ROLE_DOC_GLOSSARY" desc="Accessibility role description for glossary">
-        glossary
-      </message>
-      <message name="IDS_AX_ROLE_DOC_GLOSS_REF" desc="Accessibility role description for glossary reference">
-        glossary reference
-      </message>
-      <message name="IDS_AX_ROLE_DOC_INDEX" desc="Accessibility role description for index">
-        index
-      </message>
-      <message name="IDS_AX_ROLE_DOC_INTRODUCTION" desc="Accessibility role description for introduction">
-        introduction
-      </message>
-      <message name="IDS_AX_ROLE_DOC_NOTE_REF" desc="Accessibility role description for note reference">
-        note reference
-      </message>
-      <message name="IDS_AX_ROLE_DOC_NOTICE" desc="Accessibility role description for notice">
-        notice
-      </message>
-      <message name="IDS_AX_ROLE_DOC_PAGE_BREAK" desc="Accessibility role description for page break">
-        page break
-      </message>
-      <message name="IDS_AX_ROLE_DOC_PAGE_FOOTER" desc="Accessibility role description for page footer">
-        page footer
-      </message>
-      <message name="IDS_AX_ROLE_DOC_PAGE_HEADER" desc="Accessibility role description for page header">
-        page header
-      </message>
-      <message name="IDS_AX_ROLE_DOC_PAGE_LIST" desc="Accessibility role description for page list">
-        page list
-      </message>
-      <message name="IDS_AX_ROLE_DOC_PART" desc="Accessibility role description for part, as in a part of a book">
-        part
-      </message>
-      <message name="IDS_AX_ROLE_DOC_PREFACE" desc="Accessibility role description for preface">
-        preface
-      </message>
-      <message name="IDS_AX_ROLE_DOC_PROLOGUE" desc="Accessibility role description for prologue">
-        prologue
-      </message>
-      <message name="IDS_AX_ROLE_DOC_PULLQUOTE" desc="Accessibility role description for pullquote">
-        pullquote
-      </message>
-      <message name="IDS_AX_ROLE_DOC_QNA" desc="Accessibility role description for Q+A (questions and answers)">
-        Q&amp;A
-      </message>
-      <message name="IDS_AX_ROLE_DOC_SUBTITLE" desc="Accessibility role description for subtitle">
-        subtitle
-      </message>
-      <message name="IDS_AX_ROLE_DOC_TIP" desc="Accessibility role description for tip, as in a suggestion or idea">
-        tip
-      </message>
-      <message name="IDS_AX_ROLE_DOC_TOC" desc="Accessibility role description for table of contents">
-        table of contents
-      </message>
-      <message name="IDS_AX_ROLE_EMPHASIS" desc="Accessibility role description for one or more emphasized characters">
-        emphasis
-      </message>
-      <message name="IDS_AX_ROLE_FEED" desc="Accessibility role description for a scrollable list of articles.">
-        feed
-      </message>
-      <message name="IDS_AX_ROLE_FIGURE" desc="Accessibility role description for figure">
-        figure
-      </message>
-      <message name="IDS_AX_ROLE_FORM" desc="Accessibility role description for form">
-        form
-      </message>
-      <message name="IDS_AX_ROLE_FOOTER" desc="Accessibility role description for footers">
-        footer
-      </message>
-      <message name="IDS_AX_ROLE_GRAPHICS_DOCUMENT" desc="Accessibility role description for graphics document">
-        graphics document
-      </message>
-      <message name="IDS_AX_ROLE_GRAPHICS_OBJECT" desc="Accessibility role description for graphics object">
-        graphics object
-      </message>
-      <message name="IDS_AX_ROLE_GRAPHICS_SYMBOL" desc="Accessibility role description for graphics symbol">
-        graphics symbol
-      </message>
-      <!-- https://w3c.github.io/html-aam/#el-input-email -->
-      <message name="IDS_AX_ROLE_EMAIL" desc="Accessibility role description for email input">
-        email
-      </message>
-      <message name="IDS_AX_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA" desc="The accessibility text to speak when we display an autofill popup">
-        Autofill
-      </message>
-      <if expr="is_macosx">
-        <message name="IDS_AX_ROLE_STEPPER" desc="Accessibility role description for a stepper - a control where you can use up/down arrows to increment or decrement it. The name 'stepper' is how this user interface element is described by VoiceOver on Mac OS X; the translation should be consistent with VoiceOver.">
-          stepper
-        </message>
-      </if>
-      <message name="IDS_AX_ROLE_TOGGLE_BUTTON" desc="Accessibility role description for a toggle button">
-        toggle button
-      </message>
-      <message name="IDS_AX_ROLE_HEADER" desc="Accessibility role description for header">
-        header
-      </message>
-      <message name="IDS_AX_ROLE_HEADING" desc="Accessibility role description for headings">
-        heading
-      </message>
-      <message name="IDS_AX_ROLE_LINK" desc="Accessibility role description for link">
-        link
-      </message>
-      <message name="IDS_AX_ROLE_MAIN_CONTENT" desc="Accessibility role description for main content of the document.">
-        main
-      </message>
-      <!-- https://w3c.github.io/html-aam/#el-mark -->
-      <message name="IDS_AX_ROLE_MARK" desc="Accessibility role description for highlighted content.">
-        highlight
-      </message>
-      <message name="IDS_AX_ROLE_MATH" desc="Accessibility role description for math">
-        math
-      </message>
-      <!-- https://w3c.github.io/html-aam/#el-meter -->
-      <message name="IDS_AX_ROLE_METER" desc="Accessibility role description for a meter, for example a temperature indicator or progress bar">
-          meter
-      </message>
-      <message name="IDS_AX_ROLE_MONTH" desc="Accessibility role description for a month input">
-        month picker
-      </message>
-      <message name="IDS_AX_ROLE_NAVIGATIONAL_LINK" desc="Accessibility role description for group of navigational links.">
-        navigation
-      </message>
-      <!-- https://w3c.github.io/html-aam/#el-output -->
-      <message name="IDS_AX_ROLE_OUTPUT" desc="Accessibility role description for output">
-        output
-      </message>
-      <message name="IDS_AX_ROLE_REGION" desc="Accessibility role description for region">
-        region
-      </message>
-      <!-- https://www.w3.org/TR/core-aam-1.1/#role-map-searchbox -->
-      <if expr="is_win">
-        <message name="IDS_AX_ROLE_SEARCH_BOX" desc="UIA role description for search text field">
-          search box
-        </message>
-      </if>
-      <if expr="not is_win">
-        <message name="IDS_AX_ROLE_SEARCH_BOX" desc="Accessibility role description for search text field">
-          search text field
-        </message>
-      </if>
-      <!-- https://w3c.github.io/html-aam/#el-section -->
-      <message name="IDS_AX_ROLE_SECTION" desc="Accessibility role description for a section of a document, like the main body text, the table of contents, a header, or a footer">
-        section
-      </message>
-      <message name="IDS_AX_ROLE_STATUS" desc="Accessibility role description for status">
-        status
-      </message>
-      <message name="IDS_AX_ROLE_STRONG" desc="Accessibility role description for content which is important, serious, or urgent">
-        strong
-      </message>
-      <message name="IDS_AX_ROLE_SUGGESTION" desc="Accessibility role description for suggestion, meaning a suggested change to some content">
-        suggestion
-      </message>
-      <message name="IDS_AX_ROLE_SWITCH" desc="Accessibility role description for switch">
-        switch
-      </message>
-      <!-- https://w3c.github.io/html-aam/#el-input-tel -->
-      <message name="IDS_AX_ROLE_TELEPHONE" desc="Accessibility role description for telephone number input">
-        telephone
-      </message>
-      <!-- https://w3c.github.io/html-aam/#el-time -->
-      <message name="IDS_AX_ROLE_TIME" desc="Accessibility role description for a time">
-        time
-      </message>
-      <!-- https://w3c.github.io/html-aam/#el-input-url -->
-      <message name="IDS_AX_ROLE_URL" desc="Accessibility role description for URL input">
-        url
-      </message>
-      <message name="IDS_AX_ROLE_WEB_AREA" desc="Accessibility role description for web area">
-        HTML content
-      </message>
-      <message name="IDS_AX_ROLE_WEEK" desc="Accessibility role description for a week input">
-        week picker
-      </message>
+      <!-- Accessibility state localized descriptions -->
       <if expr="is_android">
-        <message name="IDS_AX_ROLE_ALERT" desc="Accessibility role description for an alert">
-          alert
-        </message>
-        <message name="IDS_AX_ROLE_ALERT_DIALOG" desc="Accessibility role description for an alert dialog">
-          alert_dialog
-        </message>
-        <message name="IDS_AX_ROLE_APPLICATION" desc="Accessibility role description for an application">
-          application
-        </message>
-        <message name="IDS_AX_ROLE_BLOCKQUOTE" desc="Accessibility role description for a blockquote">
-          blockquote
-        </message>
-        <message name="IDS_AX_ROLE_BUTTON" desc="Accessibility role description for a button">
-          button
-        </message>
-        <message name="IDS_AX_ROLE_COLUMN_HEADER" desc="Accessibility role description for a column header">
-          column header
-        </message>
-        <message name="IDS_AX_ROLE_COMBO_BOX" desc="Accessibility role description for a combo box, an editable text control with an associated drop-down list">
-          combo box
-        </message>
-        <message name="IDS_AX_ROLE_DATE_TIME" desc="Accessibility role description for a date / time picker">
-          date and time picker
-        </message>
-        <message name="IDS_AX_ROLE_DIALOG" desc="Accessibility role description for a dialog">
-          dialog
-        </message>
-        <message name="IDS_AX_ROLE_DIRECTORY" desc="Accessibility role description for a directory, for example a table of contents or list of employees">
-          directory
-        </message>
-        <message name="IDS_AX_ROLE_DOCUMENT" desc="Accessibility role description for a document">
-          document
-        </message>
-        <message name="IDS_AX_ROLE_EMBEDDED_OBJECT" desc="Accessibility role description for an embedded object, like a video inside a web page">
-          object
-        </message>
-        <message name="IDS_AX_ROLE_GRAPHIC" desc="Accessibility role description for a graphic or image">
-          graphic
-        </message>
-        <message name="IDS_AX_ROLE_HEADING_WITH_LEVEL" desc="Accessibility role description for a heading with a heading level, for example 'heading 1' is the most important heading and 'heading 3' is less important">
-          heading <ph name="HEADING_LEVEL">$1<ex>1</ex></ph>
-        </message>
-        <message name="IDS_AX_ROLE_INPUT_TIME" desc="Accessibility role description for a time picker control">
-          time picker
-        </message>
-        <message name="IDS_AX_ROLE_LIST_BOX" desc="Accessibility role description for a list box control">
-          list box
-        </message>
-        <message name="IDS_AX_ROLE_LOG" desc="Accessibility role description for an information log, such as a chat log or error log">
-          log
-        </message>
-        <message name="IDS_AX_ROLE_MARQUEE" desc="Accessibility role description for a marquee, such as a stock ticker or ad banner that frequently changes">
-          marquee
-        </message>
-        <message name="IDS_AX_ROLE_MENU" desc="Accessibility role description for a menu">
-          menu
-        </message>
-        <message name="IDS_AX_ROLE_MENU_BAR" desc="Accessibility role description for a menu bar">
-          menu bar
-        </message>
-        <message name="IDS_AX_ROLE_MENU_ITEM" desc="Accessibility role description for a menu item">
-          menu item
-        </message>
-        <message name="IDS_AX_ROLE_NOTE" desc="Accessibility role description for a note">
-          note
-        </message>
-        <message name="IDS_AX_ROLE_PDF_HIGHLIGHT" desc="Accessibility role description for PDF highlight.">
-          highlight
-        </message>
-        <message name="IDS_AX_ROLE_POP_UP_BUTTON" desc="Accessibility role description for a pop up button">
-          pop up button
-        </message>
-        <message name="IDS_AX_ROLE_POP_UP_BUTTON_MENU" desc="Accessibility role description for a pop up button that opens a menu">
-          menu pop up button
-        </message>
-        <message name="IDS_AX_ROLE_POP_UP_BUTTON_DIALOG" desc="Accessibility role description for a pop up button that opens a dialog">
-          dialog pop up button
-        </message>
-        <message name="IDS_AX_ROLE_PROGRESS_INDICATOR" desc="Accessibility role description for a progress indicator">
-          progress indicator
-        </message>
-        <message name="IDS_AX_ROLE_RADIO" desc="Accessibility role description for a radio button">
-          radio button
-        </message>
-        <message name="IDS_AX_ROLE_RADIO_GROUP" desc="Accessibility role description for a group of related radio buttons">
-          radio group
-        </message>
-        <message name="IDS_AX_ROLE_ROW_GROUP" desc="Accessibility role description for a row group in a table">
-          row group
-        </message>
-        <message name="IDS_AX_ROLE_ROW_HEADER" desc="Accessibility role description for a row header in a table">
-          row header
-        </message>
-        <message name="IDS_AX_ROLE_SCROLL_BAR" desc="Accessibility role description for a scroll bar">
-          scroll bar
-        </message>
-        <message name="IDS_AX_ROLE_SEARCH" desc="Accessibility role description for the section of a web page containing controls for searching the page or site">
-          search
-        </message>
-        <message name="IDS_AX_ROLE_SLIDER" desc="Accessibility role description for a slider">
-          slider
-        </message>
-        <message name="IDS_AX_ROLE_SPIN_BUTTON" desc="Accessibility role description for a spin button, a control containing a numerical value that can be incremented or decremented by 1">
-          spin button
-        </message>
-        <message name="IDS_AX_ROLE_SPLITTER" desc="Accessibility role description for a splitter, a control that splits the window in two pieces and can usually be dragged">
-          splitter
-        </message>
-        <message name="IDS_AX_ROLE_TAB" desc="Accessibility role description for a tab">
-          tab
-        </message>
-        <message name="IDS_AX_ROLE_TABLE" desc="Accessibility role description for a table">
-          table
-        </message>
-        <message name="IDS_AX_ROLE_TAB_LIST" desc="Accessibility role description for a tab list">
-          tab list
-        </message>
-        <message name="IDS_AX_ROLE_TAB_PANEL" desc="Accessibility role description for a tab panel, the part of the window that changes when selecting a new tab">
-          tab panel
-        </message>
-        <message name="IDS_AX_ROLE_TIMER" desc="Accessibility role description for a timer">
-          timer
-        </message>
-        <message name="IDS_AX_ROLE_TOOLBAR" desc="Accessibility role description for a toolbar">
-          toolbar
-        </message>
-        <message name="IDS_AX_ROLE_TOOLTIP" desc="Accessibility role description for a tooltip">
-          tooltip
-        </message>
-        <message name="IDS_AX_ROLE_TREE" desc="Accessibility role description for a tree">
-          tree
-        </message>
-        <message name="IDS_AX_ROLE_TREE_GRID" desc="Accessibility role description for a tree grid">
-          tree grid
-        </message>
-        <message name="IDS_AX_ROLE_TREE_ITEM" desc="Accessibility role description for a tree item">
-          tree item
-        </message>
         <message name="IDS_AX_MULTISELECTABLE_STATE_DESCRIPTION" desc="Accessibility state description for a multiselectable node when some children are selected">
           multiselectable, <ph name="SELECTED">$1<ex>3</ex></ph> of <ph name="COUNT">$2<ex>10</ex></ph> selected.
         </message>
@@ -856,6 +418,9 @@ below:
         <message name="IDS_AX_DIALOG_MODAL_OPENED" desc="Accessibility utterance for when a dialog / modal has been opened.">
           dialog opened.
         </message>
+        <message name="IDS_AX_INDETERMINATE_VALUE" desc="Accessibility utterance for when a progress bar/indicator has no value and is being used as an indeterminate progress bar.">
+          indeterminate
+        </message>
       </if>
 
       <!-- Automatic image annotations for accessibility -->
@@ -897,6 +462,237 @@ below:
       <message name="IDS_AX_IMAGE_ANNOTATION_DESCRIPTION_CONTEXT" desc="Accessibility message spoken out loud to screen reader users when reading a computer-generated description of an image, for example a photo of the president at a press conference might be described as 'A person at a podium'. Because automatic image description is sometimes incorrect, it is important that the langauge used indicates some uncertainty - it may be a person, it appears to be a person, not it definitely is a person.">
         Appears to be: <ph name="DESCRIPTION">$1<ex>A person at a podium</ex></ph>
       </message>
+
+      <if expr="not is_android and not is_fuchsia">
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PLUS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a plus icon, which often is used to add">
+          Plus icon, may mean Add
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_BACKWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an arrow pointing left, which often means back">
+          Left arrow icon, may mean Back
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_FORWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an arrow pointing to the right, which often means forwards">
+          Right arrow icon, may mean Forwards
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CALL" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an icon of a phone handset, which often means to call">
+          Phone handset icon, may mean Call
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CHAT" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a cartoon bubble, which often means chat">
+          Cartoon bubble icon, may mean Chat
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CHECK" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a check mark icon">
+          Check mark icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_X" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an X, which may mean close or delete">
+          X icon, may mean Close or Delete
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_DELETE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a trash can, which may mean delete">
+          Trash icon, may mean Delete
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_EDIT" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a pencil, which may mean edit">
+          Pencil icon, may mean Edit
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_EMOJI" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a smiley face, which may mean Emoji">
+          Smiley face icon, may mean Emoji
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_END_CALL" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a phone handset pointing down, indicating end call">
+          End Call icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_V_DOWNWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a down pointing chevron icon, which may mean Expand">
+          Down chevron icon, may mean Expand
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HEART" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a heart icon, which may mean Favorite">
+          Heart icon, may mean Favorite
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HOME" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a home icon">
+          Home icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_INFO" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a lowercase 'i' icon, which may mean 'information'">
+          Lowercase i icon, may mean Information
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_LAUNCH_APPS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a 'launch apps' icon">
+          Launch apps icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_THUMBS_UP" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a thumbs up icon, which may mean Like">
+          Thumbs up icon, may mean Like
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_THREE_BARS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a three horizontal bars or hamburger shaped menu, which may indicate a menu">
+          Three bars icon, may mean Menu
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_THREE_DOTS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a three dots or ellipsis shaped icon, which may mean More or may open a menu">
+          Three dots, may mean More
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_NOTIFICATIONS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a notification bell icon">
+          Bell icon, may mean Notifications
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PAUSE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a pause icon">
+          Pause icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PLAY" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a Play icon">
+          Play icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_REFRESH" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a Refresh icon">
+          Refresh icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_MAGNIFYING_GLASS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a magnifying glass, which could mean either Search or Zoom">
+          Magnifying glass icon, may mean Search or Zoom
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SEND" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a paper airplane icon meaning Send">
+          Paper airplane icon, may mean Send
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SETTINGS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a gear or wrench icon meaning Settings">
+          Gear or wrench icon, may mean Settings
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SHARE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a share iconE">
+          Share icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_STAR" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a star icon">
+          Star icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_TAKE_PHOTO" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a camera icon, which may mean to take a photo">
+          Camera icon, may mean Take Photo
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_TIME" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a clock icon, may mean Time">
+          Clock icon, may mean Time
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VIDEOCAM" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a video camera icon, which may mean Record Video">
+          Videocamera icon, may mean Record Video
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_EXPAND" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case four diagonal arrows pointing outward indicating Expand">
+          Four outward arrows icon, may mean Expand
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CONTRACT" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case four inward arrows, indicating Contract">
+          Four inward arrows icon, may mean Contract
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_GOOGLE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case the Google logo">
+          Google icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_TWITTER" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case the Twitter logo">
+          Twitter icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_FACEBOOK" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case the Facebook logo">
+          Facebook icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ASSISTANT" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a Google Assistant icon">
+          Google Assistant icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_WEATHER" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a weather icon">
+          Weather icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SHOPPING_CART" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a shopping cart">
+          Shopping cart icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_UPLOAD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an upward arrow indicating Upload">
+          Upward arrow, may mean Upload
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_QUESTION" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a question mark icon">
+          Question mark icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_MIC" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a microphone, which may mean Record">
+          Microphone icon, may mean Record
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_MIC_MUTE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a mute microphone icon">
+          Mute microphone icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_GALLERY" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a gallery icon">
+          Gallery icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_COMPASS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a compass icon">
+          Compass icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PEOPLE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a group of people">
+          People icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_UPWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an up arrow">
+          Up arrow icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ENVELOPE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an envelope icon">
+          Envelope icon, may mean Mail
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_EMOJI_FACE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case happy and sad face emoji">
+          Happy and sad face emoji icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PAPERCLIP" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a paperclip icon, which may mean attachment">
+          Paperclip icon, may mean attachment
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CAST" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a cast icon, meaning to cast a video to a remote screen">
+          Cast icon, may mean to cast a video to a remote screen
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_UP" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a volume up icon">
+          Volume up icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_DOWN" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a volume down icon">
+          Volume down icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_STATE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a speaker icon, usually meaning volume">
+          Speaker icon, may mean volume
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_MUTE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a mute icon">
+          Mute icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_STOP" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a stop icon">
+          Stop icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SHOPPING_BAG" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a shopping bag">
+          Shopping bag icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_LIST" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a bulleted list">
+          Bulleted list icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_LOCATION" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a location icon">
+          Location icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CALENDAR" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a calendar icon">
+          Calendar icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_THUMBS_DOWN" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a thumbs down icon, meaning dislike">
+          Thumbs down icon, may mean dislike
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HEADSET" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a headset icon">
+          Headset icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_REDO" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a clockwise arrow, may mean redo">
+          Clockwise arrow icon, may mean Redo
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_UNDO" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a counterclockwise arrow, may mean undo">
+          Counterclockwise arrow icon, may mean Undo
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_DOWNLOAD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a download icon">
+          Download icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_DOWNWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a down arrow icon">
+          Down arrow icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_V_UPWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a chevron pointing up, which man mean Collapse">
+          Down chevron icon, may mean Collapse
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_V_FORWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a chevron pointing right">
+          Right chevron icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_V_BACKWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a chevron pointing left">
+          Left chevron icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HISTORY" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a clock with a circular arrow, may mean History">
+          Clock with circular arrow, may mean History
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PERSON" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a person">
+          Person icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HAPPY_FACE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a happy face icon">
+          Happy face icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SAD_FACE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a sad face icon">
+          Sad face icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_MOON" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a moon, may mean nighttime or sleep">
+          Moon icon, may mean nighttime or sleep
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CLOUD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a cloud icon">
+          Cloud icon
+        </message>
+        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SUN" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a sun icon, may mean daytime">
+          Sun icon, may mean daytime
+        </message>
+      </if>
 
       <message name="IDS_AX_AM_PM_FIELD_TEXT" desc="Accessibility label of the AM/PM field in a date/time control">
         AM/PM

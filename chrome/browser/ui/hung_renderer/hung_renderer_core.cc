@@ -27,30 +27,49 @@ namespace {
 // the Hung Page dialog, this is the simplest way. When we consolidate
 // implementations, it will be a good idea to reconsider this approach.
 
+// Returns the first render frame host that has a process that matches
+// `hung_process`.
+content::RenderFrameHost* FindFirstRenderFrameHostMatchingProcess(
+    content::WebContents* web_contents,
+    content::RenderProcessHost* hung_process) {
+  content::RenderFrameHost* result = nullptr;
+  // We only consider frames visible to the user for hung frames. This is
+  // fine because only frames receiving input are considered hung.
+  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+      [](const content::RenderProcessHost* hung_process,
+         content::RenderFrameHost** result,
+         content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->GetProcess() == hung_process) {
+          *result = render_frame_host;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      },
+      hung_process, &result));
+  return result;
+}
+
 // Returns whether the WebContents has a frame that is backed by the hung
 // process.
 bool IsWebContentsHung(content::WebContents* web_contents,
                        content::RenderProcessHost* hung_process) {
-  for (auto* frame : web_contents->GetAllFrames()) {
-    if (frame->GetProcess() == hung_process)
-      return true;
-  }
-  return false;
+  return FindFirstRenderFrameHostMatchingProcess(web_contents, hung_process) !=
+         nullptr;
 }
 
 // Returns the URL of the first hung frame encountered in the WebContents.
 GURL GetURLOfAnyHungFrame(content::WebContents* web_contents,
                           content::RenderProcessHost* hung_process) {
-  for (auto* frame : web_contents->GetAllFrames()) {
-    if (frame->GetProcess() == hung_process)
-      return frame->GetLastCommittedURL();
-  }
-
+  content::RenderFrameHost* render_frame_host =
+      FindFirstRenderFrameHostMatchingProcess(web_contents, hung_process);
   // If a frame is attempting to commit a navigation into a hung renderer
   // process, then its |frame->GetProcess()| will still return the process
-  // hosting the previously committed navigation.  In such case, the loop above
-  // might not find any matching frame.
-  return GURL();
+  // hosting the previously committed navigation.  In such case, the
+  // FindFirstRenderFrameHostMatchingProcess above might not find any matching
+  // frame.
+  if (!render_frame_host)
+    return GURL();
+  return render_frame_host->GetLastCommittedURL();
 }
 
 }  // namespace

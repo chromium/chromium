@@ -173,15 +173,13 @@ void SessionRestoreStatsCollector::UmaStatsReportingDelegate::
   if (!tab_loader_stats.foreground_tab_first_paint.is_zero()) {
     UMA_HISTOGRAM_CUSTOM_TIMES("SessionRestore.ForegroundTabFirstPaint4",
                                tab_loader_stats.foreground_tab_first_paint,
-                               base::TimeDelta::FromMilliseconds(100),
-                               base::TimeDelta::FromMinutes(16), 50);
+                               base::Milliseconds(100), base::Minutes(16), 50);
 
     std::string time_for_count = base::StringPrintf(
         "SessionRestore.ForegroundTabFirstPaint4_%u",
         static_cast<unsigned int>(tab_loader_stats.tab_count));
     base::HistogramBase* counter_for_count = base::Histogram::FactoryTimeGet(
-        time_for_count, base::TimeDelta::FromMilliseconds(100),
-        base::TimeDelta::FromMinutes(16), 50,
+        time_for_count, base::Milliseconds(100), base::Minutes(16), 50,
         base::Histogram::kUmaTargetedHistogramFlag);
     counter_for_count->AddTime(tab_loader_stats.foreground_tab_first_paint);
   }
@@ -193,6 +191,5 @@ void SessionRestoreStatsCollector::UmaStatsReportingDelegate::
 void SessionRestoreStatsCollector::UmaStatsReportingDelegate::
     ReportTabTimeSinceActive(base::TimeDelta elapsed) {
   UMA_HISTOGRAM_CUSTOM_TIMES("SessionRestore.RestoredTab.TimeSinceActive",
-                             elapsed, base::TimeDelta::FromSeconds(10),
-                             base::TimeDelta::FromDays(7), 100);
+                             elapsed, base::Seconds(10), base::Days(7), 100);
 }

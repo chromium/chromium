@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -37,6 +36,9 @@ class UdpSocketClientTest : public ::testing::Test {
         base::OnceClosure());
   }
 
+  UdpSocketClientTest(const UdpSocketClientTest&) = delete;
+  UdpSocketClientTest& operator=(const UdpSocketClientTest&) = delete;
+
   ~UdpSocketClientTest() override = default;
 
   MOCK_METHOD0(OnReceivedPacketCall, void());
@@ -52,9 +54,6 @@ class UdpSocketClientTest : public ::testing::Test {
   std::unique_ptr<MockNetworkContext> network_context_;
   std::unique_ptr<UdpSocketClient> udp_transport_client_;
   std::unique_ptr<Packet> received_packet_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UdpSocketClientTest);
 };
 
 TEST_F(UdpSocketClientTest, SendAndReceive) {

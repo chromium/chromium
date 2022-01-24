@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_PROFILE_ATTRIBUTES_UPDATER_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_PROFILE_ATTRIBUTES_UPDATER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -22,6 +21,11 @@ class SigninProfileAttributesUpdaterFactory
   // Returns an instance of the factory singleton.
   static SigninProfileAttributesUpdaterFactory* GetInstance();
 
+  SigninProfileAttributesUpdaterFactory(
+      const SigninProfileAttributesUpdaterFactory&) = delete;
+  SigninProfileAttributesUpdaterFactory& operator=(
+      const SigninProfileAttributesUpdaterFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       SigninProfileAttributesUpdaterFactory>;
@@ -33,8 +37,6 @@ class SigninProfileAttributesUpdaterFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninProfileAttributesUpdaterFactory);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_PROFILE_ATTRIBUTES_UPDATER_FACTORY_H_

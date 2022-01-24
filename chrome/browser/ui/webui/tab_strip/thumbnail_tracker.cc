@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
@@ -27,6 +26,9 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver {
     subscription_->SetCompressedImageCallback(base::BindRepeating(
         &ContentsData::ThumbnailImageCallback, base::Unretained(this)));
   }
+
+  ContentsData(const ContentsData&) = delete;
+  ContentsData& operator=(const ContentsData&) = delete;
 
   void RequestThumbnail() {
     if (thumbnail_)
@@ -54,8 +56,6 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver {
   ThumbnailTracker* parent_;
   scoped_refptr<ThumbnailImage> thumbnail_;
   std::unique_ptr<ThumbnailImage::Subscription> subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentsData);
 };
 
 ThumbnailTracker::ThumbnailTracker(ThumbnailUpdatedCallback callback)

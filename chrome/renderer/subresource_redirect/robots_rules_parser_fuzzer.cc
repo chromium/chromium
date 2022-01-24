@@ -41,7 +41,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   base::RunLoop run_loop;
 
-  RobotsRulesParser parser(base::TimeDelta::FromSeconds(1));
+  RobotsRulesParser parser(base::Seconds(1));
   parser.UpdateRobotsRules({std::move(rules)});
   parser.CheckRobotsRules(0, GURL(std::move(url)),
                           base::BindOnce(

@@ -233,8 +233,7 @@ void InputSyncWriter::Close() {
 
 void InputSyncWriter::CheckTimeSinceLastWrite() {
 #if !defined(OS_ANDROID)
-  static const base::TimeDelta kLogDelayThreadhold =
-      base::TimeDelta::FromMilliseconds(500);
+  static const base::TimeDelta kLogDelayThreadhold = base::Milliseconds(500);
 
   base::TimeTicks new_write_time = base::TimeTicks::Now();
   std::ostringstream oss;

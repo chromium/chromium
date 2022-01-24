@@ -24,11 +24,9 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountInfo;
@@ -51,7 +49,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for {@link SigninManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class SigninManagerImplTest {
     private static final long NATIVE_SIGNIN_MANAGER = 10001L;
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
@@ -61,9 +58,6 @@ public class SigninManagerImplTest {
 
     @Rule
     public final JniMocker mocker = new JniMocker();
-
-    @Rule
-    public final Features.JUnitProcessor processor = new Features.JUnitProcessor();
 
     private final SigninManagerImpl.Natives mNativeMock = mock(SigninManagerImpl.Natives.class);
     private final IdentityManager.Natives mIdentityManagerNativeMock =
@@ -141,7 +135,8 @@ public class SigninManagerImplTest {
         mSigninManager.onFirstRunCheckDone();
 
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
-        mSigninManager.signin(ACCOUNT_INFO, callback);
+        mSigninManager.signin(
+                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()), callback);
 
         // Signin without turning on sync shouldn't apply policies.
         verify(mNativeMock, never()).fetchAndApplyCloudPolicy(anyLong(), any(), any());

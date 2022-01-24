@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
@@ -33,7 +32,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
+#include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom-forward.h"
@@ -56,7 +55,6 @@ class StorageKey;
 
 namespace content {
 
-class AppCacheNavigationHandle;
 class CrossOriginEmbedderPolicyReporter;
 class ServiceWorkerMainResourceHandle;
 class ServiceWorkerObjectHost;
@@ -76,6 +74,10 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
                        content_security_policies,
                    const network::CrossOriginEmbedderPolicy&
                        creator_cross_origin_embedder_policy);
+
+  SharedWorkerHost(const SharedWorkerHost&) = delete;
+  SharedWorkerHost& operator=(const SharedWorkerHost&) = delete;
+
   ~SharedWorkerHost() override;
 
   // Returns the RenderProcessHost where this shared worker lives.
@@ -118,12 +120,12 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
                          base::OnceCallback<void(bool)> callback);
   void AllowWebLocks(const GURL& url, base::OnceCallback<void(bool)> callback);
 
-  void CreateAppCacheBackend(
-      mojo::PendingReceiver<blink::mojom::AppCacheBackend> receiver);
   void CreateWebTransportConnector(
       mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver);
   void BindCacheStorage(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
+  void CreateBroadcastChannelProvider(
+      mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
 
   // Causes this instance to be deleted, which will terminate the worker. May
   // be done based on a UI action.
@@ -134,8 +136,6 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
                  const blink::MessagePortChannel& port,
                  ukm::SourceId client_ukm_source_id);
 
-  void SetAppCacheHandle(
-      std::unique_ptr<AppCacheNavigationHandle> appcache_handle);
   void SetServiceWorkerHandle(
       std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle);
 
@@ -290,10 +290,6 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
 
-  // The handle owns the precreated AppCacheHost until it's claimed by the
-  // renderer after main script loading finishes.
-  std::unique_ptr<AppCacheNavigationHandle> appcache_handle_;
-
   std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
   // CodeCacheHost processes requests to fetch / write generated code for
@@ -322,8 +318,6 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
   base::WeakPtrFactory<SharedWorkerHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerHost);
 };
 
 }  // namespace content

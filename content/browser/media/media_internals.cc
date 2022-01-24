@@ -40,7 +40,7 @@
 #include "media/audio/audio_features.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_log_record.h"
-#include "media/webrtc/webrtc_switches.h"
+#include "media/webrtc/webrtc_features.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -48,6 +48,8 @@
 #if !defined(OS_ANDROID)
 #include "media/filters/decrypting_video_decoder.h"
 #endif
+
+namespace content {
 
 namespace {
 
@@ -113,8 +115,6 @@ const char kAudioLogUpdateFunction[] = "media.updateAudioComponent";
 
 }  // namespace
 
-namespace content {
-
 // This class works as a receiver of logs of events occurring in the
 // media pipeline. Media logs send by the renderer process to the
 // browser process is handled by the below implementation in the
@@ -124,13 +124,17 @@ class MediaInternals::MediaInternalLogRecordsImpl
  public:
   MediaInternalLogRecordsImpl(content::MediaInternals* media_internals,
                               int render_process_id);
+
+  MediaInternalLogRecordsImpl(const MediaInternalLogRecordsImpl&) = delete;
+  MediaInternalLogRecordsImpl& operator=(const MediaInternalLogRecordsImpl&) =
+      delete;
+
   ~MediaInternalLogRecordsImpl() override = default;
   void Log(const std::vector<::media::MediaLogRecord>& arr) override;
 
  private:
   content::MediaInternals* const media_internals_;
   const int render_process_id_;
-  DISALLOW_COPY_AND_ASSIGN(MediaInternalLogRecordsImpl);
 };
 
 MediaInternals::MediaInternalLogRecordsImpl::MediaInternalLogRecordsImpl(
@@ -153,6 +157,10 @@ class MediaInternals::AudioLogImpl : public media::mojom::AudioLog,
                int component_id,
                int render_process_id,
                int render_frame_id);
+
+  AudioLogImpl(const AudioLogImpl&) = delete;
+  AudioLogImpl& operator=(const AudioLogImpl&) = delete;
+
   ~AudioLogImpl() override;
 
   void OnCreated(const media::AudioParameters& params,
@@ -188,8 +196,6 @@ class MediaInternals::AudioLogImpl : public media::mojom::AudioLog,
   const int component_id_;
   const int render_process_id_;
   const int render_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioLogImpl);
 };
 
 MediaInternals::AudioLogImpl::AudioLogImpl(
@@ -396,13 +402,12 @@ static bool ConvertEventToUpdate(int render_process_id,
 
   // Convert PipelineStatus to human readable string
   if (event.type == media::MediaLogRecord::Type::kMediaStatus) {
-    int status;
-    if (!event.params.GetInteger("pipeline_error", &status) ||
-        status < static_cast<int>(media::PIPELINE_OK) ||
-        status > static_cast<int>(media::PIPELINE_STATUS_MAX)) {
+    absl::optional<int> status = event.params.FindIntKey("pipeline_error");
+    if (!status || *status < static_cast<int>(media::PIPELINE_OK) ||
+        *status > static_cast<int>(media::PIPELINE_STATUS_MAX)) {
       return false;
     }
-    media::PipelineStatus error = static_cast<media::PipelineStatus>(status);
+    media::PipelineStatus error = static_cast<media::PipelineStatus>(*status);
     dict.SetString("params.pipeline_error",
                    media::PipelineStatusToString(error));
   } else {
@@ -535,6 +540,10 @@ void MediaInternals::SendAudioFocusState() {
   audio_focus_helper_.SendAudioFocusState();
 }
 
+void MediaInternals::GetRegisteredCdms() {
+  cdm_helper_.GetRegisteredCdms();
+}
+
 void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
     const std::vector<std::tuple<media::VideoCaptureDeviceDescriptor,
                                  media::VideoCaptureFormats>>&
@@ -554,13 +563,13 @@ void MediaInternals::UpdateVideoCaptureDeviceCapabilities(
     const media::VideoCaptureFormats& supported_formats =
         std::get<1>(device_format_pair);
     if (descriptor.control_support().pan)
-      control_support.AppendString("pan");
+      control_support.Append("pan");
     if (descriptor.control_support().tilt)
-      control_support.AppendString("tilt");
+      control_support.Append("tilt");
     if (descriptor.control_support().zoom)
-      control_support.AppendString("zoom");
+      control_support.Append("zoom");
     for (const auto& format : supported_formats)
-      format_list.AppendString(media::VideoCaptureFormat::ToString(format));
+      format_list.Append(media::VideoCaptureFormat::ToString(format));
 
     std::unique_ptr<base::DictionaryValue> device_dict(
         new base::DictionaryValue());

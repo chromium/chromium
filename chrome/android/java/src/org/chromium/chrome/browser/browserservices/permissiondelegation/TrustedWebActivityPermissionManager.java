@@ -28,6 +28,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
@@ -292,7 +293,11 @@ public class TrustedWebActivityPermissionManager {
         if (customTabActivity == null) return;
 
         String packageName = customTabActivity.getTwaPackage();
+
+        Tab activityTab = customTabActivity.getActivityTab();
+
         mUmaRecorder.recordLocationDelegationEnrolled(
+                activityTab != null ? activityTab.getWebContents() : null,
                 hasAndroidLocationPermission(packageName) != null);
     }
 

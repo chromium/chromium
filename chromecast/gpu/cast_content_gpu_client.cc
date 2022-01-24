@@ -5,7 +5,7 @@
 #include "chromecast/gpu/cast_content_gpu_client.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 #include "content/public/child/child_thread.h"
 

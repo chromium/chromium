@@ -16,6 +16,10 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 
+#if defined(OS_WIN)
+#include "windows.h"
+#endif  // defined(OS_WIN)
+
 namespace storage {
 
 namespace {
@@ -249,7 +253,7 @@ bool NativeFileUtil::DirectoryExists(const base::FilePath& path) {
 base::File::Error NativeFileUtil::CopyOrMoveFile(
     const base::FilePath& src_path,
     const base::FilePath& dest_path,
-    FileSystemOperation::CopyOrMoveOption option,
+    FileSystemOperation::CopyOrMoveOptionSet options,
     CopyOrMoveMode mode) {
   base::File::Info info;
   base::File::Error error = NativeFileUtil::GetFileInfo(src_path, &info);
@@ -282,6 +286,25 @@ base::File::Error NativeFileUtil::CopyOrMoveFile(
       return base::File::FILE_ERROR_NOT_FOUND;
   }
 
+  // Cache permissions of dest file before copy/move overwrites the file.
+  bool should_retain_file_permissions = false;
+#if defined(OS_POSIX)
+  int dest_mode;
+  if (options.Has(FileSystemOperation::CopyOrMoveOption::
+                      kPreserveDestinationPermissions)) {
+    // Will be false if the destination file doesn't exist.
+    should_retain_file_permissions =
+        base::GetPosixFilePermissions(dest_path, &dest_mode);
+  }
+#elif defined(OS_WIN)
+  DWORD dest_attributes;
+  if (options.Has(FileSystemOperation::CopyOrMoveOption::
+                      kPreserveDestinationPermissions)) {
+    dest_attributes = ::GetFileAttributes(dest_path.value().c_str());
+    should_retain_file_permissions = dest_attributes != INVALID_FILE_ATTRIBUTES;
+  }
+#endif  // defined(OS_POSIX)
+
   switch (mode) {
     case COPY_NOSYNC:
       if (!base::CopyFile(src_path, dest_path))
@@ -299,8 +322,18 @@ base::File::Error NativeFileUtil::CopyOrMoveFile(
 
   // Preserve the last modified time. Do not return error here even if
   // the setting is failed, because the copy itself is successfully done.
-  if (option == FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED)
+  if (options.Has(
+          FileSystemOperation::CopyOrMoveOption::kPreserveLastModified)) {
     base::TouchFile(dest_path, last_modified, last_modified);
+  }
+
+  if (should_retain_file_permissions) {
+#if defined(OS_POSIX)
+    base::SetPosixFilePermissions(dest_path, dest_mode);
+#elif defined(OS_WIN)
+    ::SetFileAttributes(dest_path.value().c_str(), dest_attributes);
+#endif  // defined(OS_POSIX)
+  }
 
   return base::File::FILE_OK;
 }

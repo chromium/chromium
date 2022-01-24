@@ -51,6 +51,12 @@ class ChromeNativeAppWindowViewsAuraAsh
       public aura::WindowObserver {
  public:
   ChromeNativeAppWindowViewsAuraAsh();
+
+  ChromeNativeAppWindowViewsAuraAsh(const ChromeNativeAppWindowViewsAuraAsh&) =
+      delete;
+  ChromeNativeAppWindowViewsAuraAsh& operator=(
+      const ChromeNativeAppWindowViewsAuraAsh&) = delete;
+
   ~ChromeNativeAppWindowViewsAuraAsh() override;
 
  protected:
@@ -109,6 +115,7 @@ class ChromeNativeAppWindowViewsAuraAsh
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
       bool force_update) override;
+  bool IsExclusiveAccessBubbleDisplayed() const override;
   void OnExclusiveAccessUserInput() override;
   content::WebContents* GetActiveWebContents() override;
   bool CanUserExitFullscreen() const override;
@@ -203,8 +210,6 @@ class ChromeNativeAppWindowViewsAuraAsh
 
   base::WeakPtrFactory<ChromeNativeAppWindowViewsAuraAsh> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNativeAppWindowViewsAuraAsh);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_CHROME_NATIVE_APP_WINDOW_VIEWS_AURA_ASH_H_

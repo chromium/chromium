@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/public/cast_egl_platform.h"
@@ -49,6 +48,10 @@ class OzonePlatformCast : public OzonePlatform {
  public:
   explicit OzonePlatformCast(std::unique_ptr<CastEglPlatform> egl_platform)
       : egl_platform_(std::move(egl_platform)) {}
+
+  OzonePlatformCast(const OzonePlatformCast&) = delete;
+  OzonePlatformCast& operator=(const OzonePlatformCast&) = delete;
+
   ~OzonePlatformCast() override {}
 
   // OzonePlatform implementation:
@@ -161,8 +164,6 @@ class OzonePlatformCast : public OzonePlatform {
   std::unique_ptr<GpuPlatformSupportHost> gpu_platform_support_host_;
   std::unique_ptr<OverlayManagerOzone> overlay_manager_;
   std::unique_ptr<EventFactoryEvdev> event_factory_ozone_;
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatformCast);
 };
 
 }  // namespace

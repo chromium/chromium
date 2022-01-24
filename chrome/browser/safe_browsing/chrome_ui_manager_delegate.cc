@@ -25,7 +25,7 @@ ChromeSafeBrowsingUIManagerDelegate::ChromeSafeBrowsingUIManagerDelegate() =
 ChromeSafeBrowsingUIManagerDelegate::~ChromeSafeBrowsingUIManagerDelegate() =
     default;
 
-const std::string& ChromeSafeBrowsingUIManagerDelegate::GetApplicationLocale() {
+std::string ChromeSafeBrowsingUIManagerDelegate::GetApplicationLocale() {
   return g_browser_process->GetApplicationLocale();
 }
 
@@ -98,6 +98,10 @@ ChromeSafeBrowsingUIManagerDelegate::GetURLLoaderFactory(
 
 bool ChromeSafeBrowsingUIManagerDelegate::IsMetricsAndCrashReportingEnabled() {
   return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
+}
+
+bool ChromeSafeBrowsingUIManagerDelegate::IsSendingOfHitReportsEnabled() {
+  return true;
 }
 
 }  // namespace safe_browsing

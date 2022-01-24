@@ -28,6 +28,10 @@ namespace shell {
 class CastUIDevTools {
  public:
   explicit CastUIDevTools(network::mojom::NetworkContext* network_context);
+
+  CastUIDevTools(const CastUIDevTools&) = delete;
+  CastUIDevTools& operator=(const CastUIDevTools&) = delete;
+
   ~CastUIDevTools();
 
  private:
@@ -35,8 +39,6 @@ class CastUIDevTools {
       network::mojom::NetworkContext* network_context) const;
 
   std::unique_ptr<ui_devtools::UiDevToolsServer> devtools_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastUIDevTools);
 };
 
 }  // namespace shell

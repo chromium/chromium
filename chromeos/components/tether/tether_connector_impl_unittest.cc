@@ -137,6 +137,10 @@ class TetherConnectorImplTest : public testing::Test {
  public:
   TetherConnectorImplTest()
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(2u)) {}
+
+  TetherConnectorImplTest(const TetherConnectorImplTest&) = delete;
+  TetherConnectorImplTest& operator=(const TetherConnectorImplTest&) = delete;
+
   ~TetherConnectorImplTest() override = default;
 
   void SetUp() override {
@@ -340,9 +344,6 @@ class TetherConnectorImplTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<TetherConnectorImpl> tether_connector_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherConnectorImplTest);
 };
 
 TEST_F(TetherConnectorImplTest, DISABLED_TestCannotFetchDevice) {

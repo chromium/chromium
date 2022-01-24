@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -26,6 +25,10 @@ namespace app_list {
 class FrecencyStore {
  public:
   FrecencyStore(int value_limit, float decay_coeff);
+
+  FrecencyStore(const FrecencyStore&) = delete;
+  FrecencyStore& operator=(const FrecencyStore&) = delete;
+
   ~FrecencyStore();
 
   // Records all information about a value: its id and score, along with the
@@ -91,8 +94,6 @@ class FrecencyStore {
   unsigned int num_updates_ = 0;
   // The next ID available for a value to used. This is guaranteed to be unique.
   unsigned int next_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FrecencyStore);
 };
 
 }  // namespace app_list

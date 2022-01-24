@@ -10,7 +10,6 @@
 #include <unordered_set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 
@@ -28,6 +27,10 @@ class FrameTracker : public DevToolsEventListener {
   FrameTracker(DevToolsClient* client,
                WebView* web_view = nullptr,
                const BrowserInfo* browser_info = nullptr);
+
+  FrameTracker(const FrameTracker&) = delete;
+  FrameTracker& operator=(const FrameTracker&) = delete;
+
   ~FrameTracker() override;
 
   Status GetContextIdForFrame(const std::string& frame_id, int* context_id);
@@ -46,8 +49,6 @@ class FrameTracker : public DevToolsEventListener {
   std::map<std::string, std::unique_ptr<WebView>> frame_to_target_map_;
   std::unordered_set<std::string> attached_frames_;
   WebView* web_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTracker);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_FRAME_TRACKER_H_

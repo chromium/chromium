@@ -87,8 +87,16 @@ WebPAnimDecoder* WebPAnimDecoderNewInternal(
     int abi_version) {
   WebPAnimDecoderOptions options;
   WebPAnimDecoder* dec = NULL;
+  WebPBitstreamFeatures features;
   if (webp_data == NULL ||
       WEBP_ABI_IS_INCOMPATIBLE(abi_version, WEBP_DEMUX_ABI_VERSION)) {
+    return NULL;
+  }
+
+  // Validate the bitstream before doing expensive allocations. The demuxer may
+  // be more tolerant than the decoder.
+  if (WebPGetFeatures(webp_data->bytes, webp_data->size, &features) !=
+      VP8_STATUS_OK) {
     return NULL;
   }
 
@@ -145,7 +153,7 @@ static int ZeroFillCanvas(uint8_t* buf, uint32_t canvas_width,
                           uint32_t canvas_height) {
   const uint64_t size =
       (uint64_t)canvas_width * canvas_height * NUM_CHANNELS * sizeof(*buf);
-  if (size != (size_t)size) return 0;
+  if (!CheckSizeOverflow(size)) return 0;
   memset(buf, 0, (size_t)size);
   return 1;
 }
@@ -166,7 +174,7 @@ static void ZeroFillFrameRect(uint8_t* buf, int buf_stride, int x_offset,
 static int CopyCanvas(const uint8_t* src, uint8_t* dst,
                       uint32_t width, uint32_t height) {
   const uint64_t size = (uint64_t)width * height * NUM_CHANNELS;
-  if (size != (size_t)size) return 0;
+  if (!CheckSizeOverflow(size)) return 0;
   assert(src != NULL && dst != NULL);
   memcpy(dst, src, (size_t)size);
   return 1;

@@ -21,7 +21,7 @@ namespace content {
 class MediaSession;
 }
 
-class WEB_ENGINE_EXPORT MediaPlayerImpl
+class WEB_ENGINE_EXPORT MediaPlayerImpl final
     : public fuchsia::media::sessions2::Player,
       public media_session::mojom::MediaSessionObserver {
  public:
@@ -32,45 +32,46 @@ class WEB_ENGINE_EXPORT MediaPlayerImpl
       content::MediaSession* media_session,
       fidl::InterfaceRequest<fuchsia::media::sessions2::Player> request,
       base::OnceClosure on_disconnect);
-  ~MediaPlayerImpl() final;
+  ~MediaPlayerImpl() override;
 
   MediaPlayerImpl(const MediaPlayerImpl&) = delete;
   MediaPlayerImpl& operator=(const MediaPlayerImpl&) = delete;
 
   // fuchsia::media::sessions2::Player implementation.
-  void WatchInfoChange(WatchInfoChangeCallback info_change_callback) final;
+  void WatchInfoChange(WatchInfoChangeCallback info_change_callback) override;
 
   // fuchsia::media::sessions2::PlayerControl implementation.
-  void Play() final;
-  void Pause() final;
-  void Stop() final;
-  void Seek(zx_duration_t position) final;
-  void SkipForward() final;
-  void SkipReverse() final;
-  void NextItem() final;
-  void PrevItem() final;
-  void SetPlaybackRate(float playback_rate) final;
-  void SetRepeatMode(fuchsia::media::sessions2::RepeatMode repeat_mode) final;
-  void SetShuffleMode(bool shuffle_on) final;
+  void Play() override;
+  void Pause() override;
+  void Stop() override;
+  void Seek(zx_duration_t position) override;
+  void SkipForward() override;
+  void SkipReverse() override;
+  void NextItem() override;
+  void PrevItem() override;
+  void SetPlaybackRate(float playback_rate) override;
+  void SetRepeatMode(
+      fuchsia::media::sessions2::RepeatMode repeat_mode) override;
+  void SetShuffleMode(bool shuffle_on) override;
   void BindVolumeControl(
       fidl::InterfaceRequest<fuchsia::media::audio::VolumeControl>
-          volume_control_request) final;
+          volume_control_request) override;
 
  private:
   // media_session::mojom::MediaSessionObserver implementation.
   void MediaSessionInfoChanged(
-      media_session::mojom::MediaSessionInfoPtr info) final;
+      media_session::mojom::MediaSessionInfoPtr info) override;
   void MediaSessionMetadataChanged(
-      const absl::optional<media_session::MediaMetadata>& metadata) final;
+      const absl::optional<media_session::MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& action)
-      final;
+      override;
   void MediaSessionImagesChanged(
       const base::flat_map<media_session::mojom::MediaSessionImageType,
                            std::vector<media_session::MediaImage>>& images)
-      final;
+      override;
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) final;
+      const absl::optional<media_session::MediaPosition>& position) override;
 
   // Sends changes accumulated in |pending_info_delta_|, if any, to the
   // |pending_info_change_callback_|, if it is set.

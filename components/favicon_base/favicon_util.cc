@@ -153,7 +153,7 @@ std::vector<float> GetFaviconScales() {
   // store the favicons in both 100p for sync and 200p for display. cr/160503.
   std::vector<float> favicon_scales(1, kScale1x);
   for (size_t i = 0; i < resource_scale_factors.size(); ++i) {
-    if (resource_scale_factors[i] != ui::SCALE_FACTOR_100P)
+    if (resource_scale_factors[i] != ui::k100Percent)
       favicon_scales.push_back(
           ui::GetScaleForResourceScaleFactor(resource_scale_factors[i]));
   }

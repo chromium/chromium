@@ -1,0 +1,10 @@
+Tests set DOM breakpoint.
+Testing DOM breakpoint for attribute-modified
+Debugger paused on attribute-modified
+Testing DOM breakpoint for subtree-modified
+Debugger paused on subtree-modified
+Testing DOM breakpoint for subtree-modified
+Debugger paused on subtree-modified
+Testing DOM breakpoint for node-removed
+Debugger paused on node-removed
+

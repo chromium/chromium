@@ -36,6 +36,9 @@ class CrosDBusServiceImpl : public CrosDBusService {
     DCHECK(object_path_.IsValid());
   }
 
+  CrosDBusServiceImpl(const CrosDBusServiceImpl&) = delete;
+  CrosDBusServiceImpl& operator=(const CrosDBusServiceImpl&) = delete;
+
   ~CrosDBusServiceImpl() override = default;
 
   // Starts the D-Bus service.
@@ -88,8 +91,6 @@ class CrosDBusServiceImpl : public CrosDBusService {
 
   // Service providers that form CrosDBusService.
   ServiceProviderList service_providers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrosDBusServiceImpl);
 };
 
 // The stub CrosDBusService implementation used on Linux desktop,
@@ -97,10 +98,11 @@ class CrosDBusServiceImpl : public CrosDBusService {
 class CrosDBusServiceStubImpl : public CrosDBusService {
  public:
   CrosDBusServiceStubImpl() = default;
-  ~CrosDBusServiceStubImpl() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrosDBusServiceStubImpl);
+  CrosDBusServiceStubImpl(const CrosDBusServiceStubImpl&) = delete;
+  CrosDBusServiceStubImpl& operator=(const CrosDBusServiceStubImpl&) = delete;
+
+  ~CrosDBusServiceStubImpl() override = default;
 };
 
 // static

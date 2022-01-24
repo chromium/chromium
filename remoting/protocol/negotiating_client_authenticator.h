@@ -27,6 +27,12 @@ class NegotiatingClientAuthenticator : public NegotiatingAuthenticatorBase {
       const std::string& local_id,
       const std::string& remote_id,
       const ClientAuthenticationConfig& config);
+
+  NegotiatingClientAuthenticator(const NegotiatingClientAuthenticator&) =
+      delete;
+  NegotiatingClientAuthenticator& operator=(
+      const NegotiatingClientAuthenticator&) = delete;
+
   ~NegotiatingClientAuthenticator() override;
 
   // NegotiatingAuthenticatorBase:
@@ -70,8 +76,6 @@ class NegotiatingClientAuthenticator : public NegotiatingAuthenticatorBase {
   // Internal NegotiatingClientAuthenticator data.
   bool method_set_by_host_ = false;
   base::WeakPtrFactory<NegotiatingClientAuthenticator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NegotiatingClientAuthenticator);
 };
 
 }  // namespace protocol

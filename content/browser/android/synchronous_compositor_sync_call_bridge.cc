@@ -57,12 +57,14 @@ bool SynchronousCompositorSyncCallBridge::ReceiveFrameOnIOThread(
   frame_futures_.pop_front();
 
   if (compositor_frame) {
-    DCHECK(local_surface_id);
+    if (!local_surface_id)
+      return false;
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&SynchronousCompositorSyncCallBridge::
                                       ProcessFrameMetadataOnUIThread,
                                   this, metadata_version,
-                                  compositor_frame->metadata.Clone()));
+                                  compositor_frame->metadata.Clone(),
+                                  local_surface_id.value()));
     frame_ptr->frame = std::make_unique<viz::CompositorFrame>();
     *frame_ptr->frame = std::move(*compositor_frame);
     frame_ptr->local_surface_id = local_surface_id.value();
@@ -161,10 +163,13 @@ void SynchronousCompositorSyncCallBridge::BeginFrameCompleteOnUIThread() {
 
 void SynchronousCompositorSyncCallBridge::ProcessFrameMetadataOnUIThread(
     uint32_t metadata_version,
-    viz::CompositorFrameMetadata metadata) {
+    viz::CompositorFrameMetadata metadata,
+    const viz::LocalSurfaceId& local_surface_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (host_)
-    host_->UpdateFrameMetaData(metadata_version, std::move(metadata));
+  if (host_) {
+    host_->UpdateFrameMetaData(metadata_version, std::move(metadata),
+                               local_surface_id);
+  }
 }
 
 void SynchronousCompositorSyncCallBridge::

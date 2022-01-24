@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/tether/tether_host_fetcher.h"
@@ -50,6 +49,9 @@ class TetherHostFetcherImpl
     static Factory* factory_instance_;
   };
 
+  TetherHostFetcherImpl(const TetherHostFetcherImpl&) = delete;
+  TetherHostFetcherImpl& operator=(const TetherHostFetcherImpl&) = delete;
+
   ~TetherHostFetcherImpl() override;
 
   // TetherHostFetcher:
@@ -85,8 +87,6 @@ class TetherHostFetcherImpl
 
   multidevice::RemoteDeviceRefList current_remote_device_list_;
   base::WeakPtrFactory<TetherHostFetcherImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TetherHostFetcherImpl);
 };
 
 }  // namespace tether

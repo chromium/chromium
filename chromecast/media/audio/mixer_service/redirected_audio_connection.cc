@@ -8,8 +8,9 @@
 #include <limits>
 
 #include "base/check_op.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
+#include "chromecast/media/audio/net/common.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/net/io_buffer_pool.h"
 
 namespace chromecast {
@@ -25,7 +26,7 @@ void FillPatterns(
       message->mutable_redirected_stream_patterns();
   for (const auto& p : patterns) {
     auto* pattern = patterns_proto->add_patterns();
-    pattern->set_content_type(ConvertContentType(p.first));
+    pattern->set_content_type(audio_service::ConvertContentType(p.first));
     pattern->set_device_id_pattern(p.second);
   }
 }
@@ -70,9 +71,10 @@ void RedirectedAudioConnection::OnConnected(
   RedirectionRequest* request = message.mutable_redirection_request();
   request->set_order(config_.order);
   request->set_num_channels(config_.num_output_channels);
-  if (config_.output_channel_layout != media::ChannelLayout::UNSUPPORTED) {
+  if (config_.output_channel_layout != media::ChannelLayout::UNSUPPORTED &&
+      config_.output_channel_layout != media::ChannelLayout::BITSTREAM) {
     request->set_channel_layout(
-        ConvertChannelLayout(config_.output_channel_layout));
+        audio_service::ConvertChannelLayout(config_.output_channel_layout));
   }
   request->set_apply_volume(config_.apply_volume);
   request->set_extra_delay_microseconds(config_.extra_delay_microseconds);
@@ -90,7 +92,8 @@ void RedirectedAudioConnection::OnConnectionError() {
 
 bool RedirectedAudioConnection::HandleMetadata(const Generic& message) {
   if (message.has_stream_config()) {
-    DCHECK_EQ(message.stream_config().sample_format(), SAMPLE_FORMAT_FLOAT_P);
+    DCHECK_EQ(message.stream_config().sample_format(),
+              audio_service::SAMPLE_FORMAT_FLOAT_P);
     sample_rate_ = message.stream_config().sample_rate();
     DCHECK_EQ(message.stream_config().num_channels(),
               config_.num_output_channels);

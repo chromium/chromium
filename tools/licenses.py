@@ -40,42 +40,39 @@ from util import build_utils
 # Paths from the root of the tree to directories to skip.
 PRUNE_PATHS = set([
     # Placeholder directory only, not third-party code.
-    os.path.join('third_party','adobe'),
+    os.path.join('third_party', 'adobe'),
 
     # Will remove it once converted private sdk using cipd.
-    os.path.join('third_party','android_tools_internal'),
+    os.path.join('third_party', 'android_tools_internal'),
 
     # Build files only, not third-party code.
-    os.path.join('third_party','widevine'),
+    os.path.join('third_party', 'widevine'),
 
     # Only binaries, used during development.
-    os.path.join('third_party','valgrind'),
+    os.path.join('third_party', 'valgrind'),
 
     # Used for development and test, not in the shipping product.
-    os.path.join('build','secondary'),
-    os.path.join('third_party','bison'),
-    os.path.join('third_party','blanketjs'),
-    os.path.join('third_party','chromite'),
-    os.path.join('third_party','cygwin'),
-    os.path.join('third_party','gles2_conform'),
-    os.path.join('third_party','gnu_binutils'),
-    os.path.join('third_party','gold'),
-    os.path.join('third_party','gperf'),
-    os.path.join('third_party','lighttpd'),
-    os.path.join('third_party','llvm'),
-    os.path.join('third_party','llvm-build'),
-    os.path.join('third_party','mingw-w64'),
-    os.path.join('third_party','nacl_sdk_binaries'),
-    os.path.join('third_party','pefile'),
-    os.path.join('third_party','perl'),
-    os.path.join('third_party','psyco_win32'),
-    os.path.join('third_party','pyelftools'),
-    os.path.join('third_party','pylib'),
-    os.path.join('third_party','pywebsocket'),
-    os.path.join('third_party','syzygy'),
-
-    # Chromium code.
-    os.path.join('tools', 'swarming_client'),
+    os.path.join('build', 'secondary'),
+    os.path.join('third_party', 'bison'),
+    os.path.join('third_party', 'blanketjs'),
+    os.path.join('third_party', 'chromite'),
+    os.path.join('third_party', 'cygwin'),
+    os.path.join('third_party', 'gles2_conform'),
+    os.path.join('third_party', 'gnu_binutils'),
+    os.path.join('third_party', 'gold'),
+    os.path.join('third_party', 'gperf'),
+    os.path.join('third_party', 'lighttpd'),
+    os.path.join('third_party', 'llvm'),
+    os.path.join('third_party', 'llvm-build'),
+    os.path.join('third_party', 'mingw-w64'),
+    os.path.join('third_party', 'nacl_sdk_binaries'),
+    os.path.join('third_party', 'pefile'),
+    os.path.join('third_party', 'perl'),
+    os.path.join('third_party', 'psyco_win32'),
+    os.path.join('third_party', 'pyelftools'),
+    os.path.join('third_party', 'pylib'),
+    os.path.join('third_party', 'pywebsocket'),
+    os.path.join('third_party', 'syzygy'),
 
     # Stuff pulled in from chrome-internal for official builds/tools.
     os.path.join('third_party', 'clear_cache'),
@@ -89,8 +86,11 @@ PRUNE_PATHS = set([
     # Chrome for Android proprietary code.
     os.path.join('clank'),
 
+    # Proprietary DevTools code.
+    os.path.join('third_party', 'devtools-frontend-internal'),
+
     # Redistribution does not require attribution in documentation.
-    os.path.join('third_party','directxsdk'),
+    os.path.join('third_party', 'directxsdk'),
 
     # For testing only, presents on some bots.
     os.path.join('isolate_deps_dir'),
@@ -616,10 +616,12 @@ def FindThirdPartyDeps(gn_out_dir, gn_target, target_os):
   try:
     tmp_dir = tempfile.mkdtemp(dir=gn_out_dir)
     shutil.copy(os.path.join(gn_out_dir, "args.gn"), tmp_dir)
-    subprocess.check_output([_GnBinary(), "gen", tmp_dir])
+    subprocess.check_output([
+        _GnBinary(), "gen", "--root=%s" % _REPOSITORY_ROOT, tmp_dir
+    ])
     gn_deps = subprocess.check_output([
-        _GnBinary(), "desc", tmp_dir, gn_target, "deps", "--as=buildfile",
-        "--all"
+        _GnBinary(), "desc", "--root=%s" % _REPOSITORY_ROOT, tmp_dir,
+        gn_target, "deps", "--as=buildfile", "--all"
     ])
     if isinstance(gn_deps, bytes):
       gn_deps = gn_deps.decode("utf-8")

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div style="height:2000px"></div>
+
+<details id=detailselement>
+  <summary>summary</summary>
+  details
+</details>
+
+<script>
+async_test(t => {
+  assert_false(detailselement.open, `details should be closed at the start of the test.`);
+
+  detailselement.addEventListener('toggle',
+    t.unreached_func(`The details element shouldn't be toggled opened when the target text is in the summary.`));
+
+  testRunner.findString('summary', ['Async']);
+
+  requestAnimationFrame(t.step_func(() => {
+    requestAnimationFrame(t.step_func(() => {
+      requestAnimationFrame(t.step_func_done(() => {
+        assert_false(detailselement.open, `The details shouldn't be open at the end of the test.`);
+      }));
+    }));
+  }));
+}, `Verifies that find-in-page does not expands details elements when the target text is inside of their already visible summary.`);
+</script>

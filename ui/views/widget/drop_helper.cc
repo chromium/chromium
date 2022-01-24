@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -14,6 +15,7 @@
 #include "build/build_config.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -102,7 +104,7 @@ DragOperation DropHelper::OnDrop(const OSExchangeData& data,
   return drop_view->OnPerformDrop(drop_event);
 }
 
-View::DropCallback DropHelper::GetDropCallback(
+DropHelper::DropCallback DropHelper::GetDropCallback(
     const OSExchangeData& data,
     const gfx::Point& root_view_location,
     int drag_operation) {
@@ -121,7 +123,15 @@ View::DropCallback DropHelper::GetDropCallback(
   View::ConvertPointToTarget(root_view, drop_view, &view_location);
   ui::DropTargetEvent drop_event(data, gfx::PointF(view_location),
                                  gfx::PointF(view_location), drag_operation);
-  return drop_view->GetDropCallback(drop_event);
+
+  auto drop_view_cb = drop_view->GetDropCallback(drop_event);
+  return base::BindOnce(
+      [](View::DropCallback drop_cb, const ui::DropTargetEvent& event,
+         std::unique_ptr<ui::OSExchangeData> data,
+         ui::mojom::DragOperation& output_drag_op) {
+        std::move(drop_cb).Run(event, output_drag_op);
+      },
+      std::move(drop_view_cb));
 }
 
 View* DropHelper::CalculateTargetView(const gfx::Point& root_view_location,

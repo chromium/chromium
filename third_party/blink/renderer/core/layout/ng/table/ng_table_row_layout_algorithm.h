@@ -23,8 +23,7 @@ class CORE_EXPORT NGTableRowLayoutAlgorithm
 
   scoped_refptr<const NGLayoutResult> Layout() override;
 
-  MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) const override {
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override {
     // Table layout doesn't compute min/max sizes on table rows.
     NOTREACHED();
     return MinMaxSizesResult();

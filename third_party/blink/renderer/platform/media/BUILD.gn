@@ -60,6 +60,7 @@ component("media") {
       [ "//third_party/blink/renderer/platform:blink_platform_implementation" ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//cc",
     "//components/viz/common",
     "//media",

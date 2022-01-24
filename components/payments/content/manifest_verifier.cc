@@ -37,9 +37,9 @@ void EnableMethodManifestUrlForSupportedApps(
     std::map<GURL, std::set<GURL>>* prohibited_payment_methods) {
   for (auto app_id : app_ids) {
     auto* app = (*apps)[app_id].get();
-    app->has_explicitly_verified_methods =
-        base::Contains(supported_origin_strings,
-                       url::Origin::Create(app->scope.GetOrigin()).Serialize());
+    app->has_explicitly_verified_methods = base::Contains(
+        supported_origin_strings,
+        url::Origin::Create(app->scope.DeprecatedGetOriginAsURL()).Serialize());
     if (app->has_explicitly_verified_methods) {
       app->enabled_methods.emplace_back(method_manifest_url.spec());
       prohibited_payment_methods->at(app->scope).erase(method_manifest_url);
@@ -105,8 +105,8 @@ void ManifestVerifier::Verify(
 
       // Same origin payment methods are always allowed.
       url::Origin app_origin =
-          url::Origin::Create(app.second->scope.GetOrigin());
-      if (url::Origin::Create(method_manifest_url.GetOrigin())
+          url::Origin::Create(app.second->scope.DeprecatedGetOriginAsURL());
+      if (url::Origin::Create(method_manifest_url.DeprecatedGetOriginAsURL())
               .IsSameOriginWith(app_origin)) {
         verified_method_names.emplace_back(method);
         app.second->has_explicitly_verified_methods = true;
@@ -261,7 +261,7 @@ void ManifestVerifier::RemoveInvalidPaymentApps() {
   for (const auto& it : prohibited_payment_methods_) {
     DCHECK(it.first.is_valid());
     std::string app_scope = it.first.spec();
-    std::string app_origin = it.first.GetOrigin().spec();
+    std::string app_origin = it.first.DeprecatedGetOriginAsURL().spec();
     const std::set<GURL>& methods = it.second;
     for (const GURL& method : methods) {
       DCHECK(method.is_valid());
@@ -269,7 +269,7 @@ void ManifestVerifier::RemoveInvalidPaymentApps() {
                 "\" is not allowed to use payment method \"" + method.spec() +
                 "\", because the payment handler origin \"" + app_origin +
                 "\" is different from the payment method origin \"" +
-                method.GetOrigin().spec() +
+                method.DeprecatedGetOriginAsURL().spec() +
                 "\" and the \"supported_origins\" field in the payment method "
                 "manifest for \"" +
                 method.spec() + "\" is not a list that includes \"" +

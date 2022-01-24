@@ -204,4 +204,4 @@ XRAY_NO_INSTRUMENT struct XRayTimestampPair XRayGenerateTimestampsNow(void);
 }
 #endif
 
-#endif  /* LIBRARIES_XRAY_XRAY_PRIV_H_ */
+#endif  // LIBRARIES_XRAY_XRAY_PRIV_H_

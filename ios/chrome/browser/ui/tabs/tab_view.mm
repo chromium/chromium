@@ -229,16 +229,14 @@ UIImage* DefaultFaviconImage() {
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 13, *)) {
-    // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
-    // This triggers the styling again, where the image is resolved instead of
-    // relying in the system's magic. Radar filled:
-    // b/137942721.hasDifferentColorAppearanceComparedToTraitCollection
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      [self updateStyleForSelected:self.selected];
-    }
+  // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
+  // This triggers the styling again, where the image is resolved instead of
+  // relying in the system's magic. Radar filled:
+  // b/137942721.hasDifferentColorAppearanceComparedToTraitCollection
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    [self updateStyleForSelected:self.selected];
   }
 }
 
@@ -283,9 +281,7 @@ UIImage* DefaultFaviconImage() {
                    action:@selector(closeButtonPressed)
          forControlEvents:UIControlEventTouchUpInside];
 
-  if (@available(iOS 13.4, *)) {
-      _closeButton.pointerInteractionEnabled = YES;
-  }
+  _closeButton.pointerInteractionEnabled = YES;
 
   [self addSubview:_closeButton];
 
@@ -359,16 +355,14 @@ UIImage* DefaultFaviconImage() {
       StretchableImageFromUIImage(resolvedImage, leftInset, 0);
   _backgroundImageView.image = backgroundImage;
 
-  if (@available(iOS 13.4, *)) {
-    if (selected) {
-      if (_pointerInteraction)
-        [self removeInteraction:_pointerInteraction];
-    } else {
-      if (!_pointerInteraction)
-        _pointerInteraction =
-            [[UIPointerInteraction alloc] initWithDelegate:self];
-      [self addInteraction:_pointerInteraction];
-    }
+  if (selected) {
+    if (_pointerInteraction)
+      [self removeInteraction:_pointerInteraction];
+  } else {
+    if (!_pointerInteraction)
+      _pointerInteraction =
+          [[UIPointerInteraction alloc] initWithDelegate:self];
+    [self addInteraction:_pointerInteraction];
   }
 
   // Style the close button tint color.

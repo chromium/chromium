@@ -33,10 +33,8 @@ using ::testing::Return;
 
 namespace {
 
-constexpr base::TimeDelta kTabMinimumActiveDuration =
-    base::TimeDelta::FromSeconds(15);
-constexpr base::TimeDelta kNewTabOpenedTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kTabMinimumActiveDuration = base::Seconds(15);
+constexpr base::TimeDelta kNewTabOpenedTimeout = base::Seconds(5);
 
 }  // namespace
 
@@ -79,8 +77,9 @@ class ReopenTabInProductHelpTest : public BrowserWithTestWindowTest {
 TEST_F(ReopenTabInProductHelpTest, TriggersIPH) {
   ReopenTabInProductHelp reopen_tab_iph(profile(), clock());
 
-  EXPECT_CALL(*mock_promo_controller(),
-              MaybeShowPromo(Ref(feature_engagement::kIPHReopenTabFeature), _))
+  EXPECT_CALL(
+      *mock_promo_controller(),
+      MaybeShowPromo(Ref(feature_engagement::kIPHReopenTabFeature), _, _))
       .Times(1)
       .WillOnce(Return(true));
 

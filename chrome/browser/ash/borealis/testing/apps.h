@@ -11,9 +11,14 @@ class Profile;
 
 namespace borealis {
 
-// Create a borealis app for use in testing, registered with the given
-// |profile|, its name in the VM would have been "|desktop_file_id|.desktop.
-void CreateFakeApp(Profile* profile, std::string desktop_file_id);
+// Create a borealis app for use in testing, for an app defined in a file
+// called "|desktop_file_id|.desktop" with an Exec key having value |exec|.
+void CreateFakeApp(Profile* profile,
+                   std::string desktop_file_id,
+                   std::string exec);
+
+// The App List Id of an app created using CreateFakeApp().
+std::string FakeAppId(std::string desktop_file_id);
 
 // Creates borealis' main app for use in testing. The app will be registered
 // with the given |profile|.

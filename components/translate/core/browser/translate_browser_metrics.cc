@@ -50,7 +50,8 @@ void ReportLanguageDetectionContentLength(size_t length) {
 }
 
 void ReportUnsupportedLanguageAtInitiation(base::StringPiece language) {
-  int language_code = language::LanguageUsageMetrics::ToLanguageCode(language);
+  int language_code =
+      language::LanguageUsageMetrics::ToLanguageCodeHash(language);
   base::UmaHistogramSparse(kTranslateUnsupportedLanguageAtInitiation,
                            language_code);
 }

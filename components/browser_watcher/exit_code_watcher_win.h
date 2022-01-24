@@ -4,7 +4,6 @@
 #ifndef COMPONENTS_BROWSER_WATCHER_EXIT_CODE_WATCHER_WIN_H_
 #define COMPONENTS_BROWSER_WATCHER_EXIT_CODE_WATCHER_WIN_H_
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/threading/thread.h"
 #include "base/win/scoped_handle.h"
@@ -15,6 +14,10 @@ namespace browser_watcher {
 class ExitCodeWatcher {
  public:
   ExitCodeWatcher();
+
+  ExitCodeWatcher(const ExitCodeWatcher&) = delete;
+  ExitCodeWatcher& operator=(const ExitCodeWatcher&) = delete;
+
   ~ExitCodeWatcher();
 
   // This function expects |process| to be open with sufficient privilege to
@@ -48,8 +51,6 @@ class ExitCodeWatcher {
 
   // Event handle to use to stop exit watcher thread
   base::win::ScopedHandle stop_watching_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExitCodeWatcher);
 };
 
 }  // namespace browser_watcher

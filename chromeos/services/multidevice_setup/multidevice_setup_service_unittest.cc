@@ -59,6 +59,10 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
         expected_gcm_device_info_provider_(expected_gcm_device_info_provider),
         expected_is_secondary_user_(expected_is_secondary_user) {}
 
+  FakeMultiDeviceSetupFactory(const FakeMultiDeviceSetupFactory&) = delete;
+  FakeMultiDeviceSetupFactory& operator=(const FakeMultiDeviceSetupFactory&) =
+      delete;
+
   ~FakeMultiDeviceSetupFactory() override = default;
 
   FakeMultiDeviceSetup* instance() { return instance_; }
@@ -102,13 +106,16 @@ class FakeMultiDeviceSetupFactory : public MultiDeviceSetupImpl::Factory {
   bool expected_is_secondary_user_;
 
   FakeMultiDeviceSetup* instance_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMultiDeviceSetupFactory);
 };
 
 }  // namespace
 
 class MultiDeviceSetupServiceTest : public testing::Test {
+ public:
+  MultiDeviceSetupServiceTest(const MultiDeviceSetupServiceTest&) = delete;
+  MultiDeviceSetupServiceTest& operator=(const MultiDeviceSetupServiceTest&) =
+      delete;
+
  protected:
   MultiDeviceSetupServiceTest()
       : test_devices_(
@@ -225,8 +232,6 @@ class MultiDeviceSetupServiceTest : public testing::Test {
   mojo::Remote<mojom::MultiDeviceSetup> multidevice_setup_remote_;
   mojo::Remote<mojom::PrivilegedHostDeviceSetter>
       privileged_host_device_setter_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupServiceTest);
 };
 
 TEST_F(MultiDeviceSetupServiceTest,

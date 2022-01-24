@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "components/arc/session/connection_holder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -18,13 +17,13 @@ namespace arc {
 // Thin interface to wrap Remote<T> with type erasure.
 class MojoChannelBase {
  public:
+  MojoChannelBase(const MojoChannelBase&) = delete;
+  MojoChannelBase& operator=(const MojoChannelBase&) = delete;
+
   virtual ~MojoChannelBase() = default;
 
  protected:
   MojoChannelBase() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoChannelBase);
 };
 
 // Thin wrapper for Remote<T>, where T is one of ARC mojo Instance class.
@@ -36,6 +35,9 @@ class MojoChannel : public MojoChannelBase {
       : holder_(holder), remote_(std::move(remote)) {
     // Delay registration to the ConnectionHolder until the version is ready.
   }
+
+  MojoChannel(const MojoChannel&) = delete;
+  MojoChannel& operator=(const MojoChannel&) = delete;
 
   ~MojoChannel() override { holder_->CloseInstance(remote_.get()); }
 
@@ -60,8 +62,6 @@ class MojoChannel : public MojoChannelBase {
   // Put as a last member to ensure that any callback tied to the |remote_|
   // is not invoked.
   mojo::Remote<InstanceType> remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoChannel);
 };
 
 }  // namespace arc

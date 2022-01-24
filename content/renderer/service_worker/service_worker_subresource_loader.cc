@@ -140,6 +140,9 @@ class ServiceWorkerSubresourceLoader::StreamWaiter
         base::BindOnce(&StreamWaiter::OnAborted, base::Unretained(this)));
   }
 
+  StreamWaiter(const StreamWaiter&) = delete;
+  StreamWaiter& operator=(const StreamWaiter&) = delete;
+
   // mojom::ServiceWorkerStreamCallback implementations:
   void OnCompleted() override { owner_->OnBodyReadingComplete(net::OK); }
   void OnAborted() override { owner_->OnBodyReadingComplete(net::ERR_ABORTED); }
@@ -147,8 +150,6 @@ class ServiceWorkerSubresourceLoader::StreamWaiter
  private:
   ServiceWorkerSubresourceLoader* owner_;
   mojo::Receiver<blink::mojom::ServiceWorkerStreamCallback> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamWaiter);
 };
 
 // ServiceWorkerSubresourceLoader -------------------------------------------
@@ -569,7 +570,8 @@ void ServiceWorkerSubresourceLoader::StartResponse(
   // for a script.
   auto request_destination = resource_request_.destination;
   if (response->side_data_blob &&
-      request_destination == network::mojom::RequestDestination::kScript) {
+      (request_destination == network::mojom::RequestDestination::kScript ||
+       response->mime_type == "application/wasm")) {
     side_data_as_blob_.Bind(std::move(response->side_data_blob->blob));
     side_data_as_blob_->ReadSideData(base::BindOnce(
         &ServiceWorkerSubresourceLoader::OnSideDataReadingComplete,
@@ -637,11 +639,9 @@ void ServiceWorkerSubresourceLoader::CommitCompleted(int error_code) {
 void ServiceWorkerSubresourceLoader::RecordTimingMetrics(bool handled) {
   DCHECK(fetch_event_timing_);
 
-  // |report_raw_headers| is true when DevTools is attached. Don't record
+  // |devtools_request_id| is set when DevTools is attached. Don't record
   // metrics when DevTools is attached to reduce noise.
-  // TODO(bashi): Relying on |report_raw_header| to detect DevTools existence
-  // is brittle. Figure out a better way to check DevTools is attached.
-  if (resource_request_.report_raw_headers)
+  if (resource_request_.devtools_request_id.has_value())
     return;
 
   // |fetch_event_timing_| can be recorded in different process. We can get

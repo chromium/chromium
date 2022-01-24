@@ -13,6 +13,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
@@ -20,11 +21,10 @@
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -145,6 +145,10 @@ class AppSearchProvider::App {
         last_launch_time_(last_launch_time),
         install_time_(install_time),
         installed_internally_(installed_internally) {}
+
+  App(const App&) = delete;
+  App& operator=(const App&) = delete;
+
   ~App() = default;
 
   struct CompareByLastActivityTimeAndThenAppId {
@@ -251,14 +255,16 @@ class AppSearchProvider::App {
   // Set to true in case app was installed internally, by sync, policy or as a
   // default app.
   const bool installed_internally_;
-
-  DISALLOW_COPY_AND_ASSIGN(App);
 };
 
 class AppSearchProvider::DataSource {
  public:
   DataSource(Profile* profile, AppSearchProvider* owner)
       : profile_(profile), owner_(owner) {}
+
+  DataSource(const DataSource&) = delete;
+  DataSource& operator=(const DataSource&) = delete;
+
   virtual ~DataSource() {}
 
   virtual void AddApps(Apps* apps) = 0;
@@ -278,8 +284,6 @@ class AppSearchProvider::DataSource {
   // Unowned pointers.
   Profile* profile_;
   AppSearchProvider* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataSource);
 };
 
 namespace {
@@ -289,10 +293,10 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
  public:
   AppServiceDataSource(Profile* profile, AppSearchProvider* owner)
       : AppSearchProvider::DataSource(profile, owner),
-        icon_cache_(apps::AppServiceProxyFactory::GetForProfile(profile),
+        proxy_(apps::AppServiceProxyFactory::GetForProfile(profile)),
+        icon_cache_(proxy_,
                     apps::IconCache::GarbageCollectionPolicy::kExplicit) {
-    Observe(&apps::AppServiceProxyFactory::GetForProfile(profile)
-                 ->AppRegistryCache());
+    Observe(&proxy_->AppRegistryCache());
 
     sync_sessions::SessionSyncService* service =
         SessionSyncServiceFactory::GetInstance()->GetForProfile(profile);
@@ -306,14 +310,15 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
             base::Unretained(owner)));
   }
 
+  AppServiceDataSource(const AppServiceDataSource&) = delete;
+  AppServiceDataSource& operator=(const AppServiceDataSource&) = delete;
+
   ~AppServiceDataSource() override = default;
 
   // AppSearchProvider::DataSource overrides:
   void AddApps(AppSearchProvider::Apps* apps_vector) override {
-    apps::AppServiceProxyChromeOs* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->AppRegistryCache().ForEachApp([this, apps_vector](
-                                             const apps::AppUpdate& update) {
+    proxy_->AppRegistryCache().ForEachApp([this, apps_vector](
+                                              const apps::AppUpdate& update) {
       if (!apps_util::IsInstalled(update.Readiness()) ||
           (update.ShowInSearch() != apps::mojom::OptionalBool::kTrue &&
            !(update.Recommendable() == apps::mojom::OptionalBool::kTrue &&
@@ -340,8 +345,11 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
       // TODO(crbug.com/826982): add the "can load in incognito" concept to
       // the App Service and use it here, similar to ExtensionDataSource.
 
+      const std::string name = app_list_features::IsCategoricalSearchEnabled()
+                                   ? update.Name()
+                                   : update.ShortName();
       apps_vector->emplace_back(std::make_unique<AppSearchProvider::App>(
-          this, update.AppId(), update.ShortName(), update.LastLaunchTime(),
+          this, update.AppId(), name, update.LastLaunchTime(),
           update.InstallTime(),
           update.InstalledInternally() == apps::mojom::OptionalBool::kTrue));
       apps_vector->back()->set_recommendable(
@@ -394,6 +402,8 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
     Observe(nullptr);
   }
 
+  apps::AppServiceProxy* const proxy_;
+
   // The AppServiceDataSource seems like one (but not the only) good place to
   // add an App Service icon caching wrapper, because (1) the AppSearchProvider
   // destroys and creates multiple search results in a short period of time,
@@ -407,8 +417,6 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
   apps::IconCache icon_cache_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceDataSource);
 };
 
 }  // namespace
@@ -525,18 +533,23 @@ void AppSearchProvider::UpdateRecommendedResults(
       result->set_relevance(0.0f);
     }
 
-    // Create a second result to the display in the launcher chips, that is
-    // otherwise identical to |result|.
-    std::unique_ptr<AppResult> chip_result =
-        app->data_source()->CreateResult(app->id(), list_controller_, true);
-    chip_result->SetMetadata(result->CloneMetadata());
-    chip_result->SetDisplayType(ChromeSearchResult::DisplayType::kChip);
-    chip_result->set_relevance(result->relevance());
+    // In the old launcher, create a second result to the display in the
+    // launcher chips, that is otherwise identical to |result|.
+    //
+    // TODO(crbug.com/1258415): This can be removed once the productivity
+    // launcher is launched.
+    if (!ash::features::IsProductivityLauncherEnabled()) {
+      std::unique_ptr<AppResult> chip_result =
+          app->data_source()->CreateResult(app->id(), list_controller_, true);
+      chip_result->SetMetadata(result->CloneMetadata());
+      chip_result->SetDisplayType(ChromeSearchResult::DisplayType::kChip);
+      chip_result->set_relevance(result->relevance());
+      MaybeAddResult(&new_results, std::move(chip_result),
+                     &seen_or_filtered_chip_apps);
+    }
 
     MaybeAddResult(&new_results, std::move(result),
                    &seen_or_filtered_tile_apps);
-    MaybeAddResult(&new_results, std::move(chip_result),
-                   &seen_or_filtered_chip_apps);
   }
   PublishQueriedResultsOrRecommendation(false, &new_results);
 }

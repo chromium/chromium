@@ -51,6 +51,12 @@ void ContextualSearchWrapper::Install(content::RenderFrame* render_frame) {
   if (wrapper.IsEmpty())
     return;
 
+  // Setting a property can trigger microtask execution.
+  v8::MicrotasksScope microtasks_scope(isolate,
+                                       v8::MicrotasksScope::kRunMicrotasks);
+
+  // Connect the Contextual Search Chrome object into V8 so the SERP can call
+  // us.
   v8::Local<v8::Object> chrome =
       content::GetOrCreateChromeObject(isolate, context);
   chrome

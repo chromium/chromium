@@ -11,9 +11,10 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/window_state_observer.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -41,6 +42,10 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   OverviewItem(aura::Window* window,
                OverviewSession* overview,
                OverviewGrid* overview_grid);
+
+  OverviewItem(const OverviewItem&) = delete;
+  OverviewItem& operator=(const OverviewItem&) = delete;
+
   ~OverviewItem() override;
 
   aura::Window* GetWindow();
@@ -69,6 +74,15 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   // Restores stacking of window captions above the windows, then fades out.
   void Shutdown();
+
+  // Hides the overview item. This is used to hide any overview items that may
+  // be present when entering the desk templates UI.
+  void HideForDesksTemplatesGrid();
+
+  // This shows overview items that were hidden by the desk templates grid.
+  // Called when exiting the desk templates UI and going back to the overview
+  // grid.
+  void RevertHideForDesksTemplatesGrid();
 
   // Dispatched before beginning window overview. This will do any necessary
   // one time actions such as restoring minimized windows.
@@ -263,7 +277,7 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   }
 
  private:
-  friend class OverviewSessionTest;
+  friend class OverviewTestBase;
   FRIEND_TEST_ALL_PREFIXES(SplitViewOverviewSessionTest, Clipping);
 
   // Returns the target bounds of |window_|. Same as |target_bounds_|, with some
@@ -426,9 +440,12 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   // on each scroll update. Will be nullopt unless a grid scroll is underway.
   absl::optional<gfx::RectF> scrolling_bounds_ = absl::nullopt;
 
-  base::WeakPtrFactory<OverviewItem> weak_ptr_factory_{this};
+  // Used to block events from reaching the item widget when the overview item
+  // has been hidden.
+  std::unique_ptr<aura::ScopedWindowEventTargetingBlocker>
+      item_widget_event_blocker_;
 
-  DISALLOW_COPY_AND_ASSIGN(OverviewItem);
+  base::WeakPtrFactory<OverviewItem> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

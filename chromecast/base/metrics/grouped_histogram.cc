@@ -99,6 +99,9 @@ class GroupedHistogram : public base::Histogram {
         maximum_(maximum),
         bucket_count_(ranges->bucket_count()) {}
 
+  GroupedHistogram(const GroupedHistogram&) = delete;
+  GroupedHistogram& operator=(const GroupedHistogram&) = delete;
+
   ~GroupedHistogram() override {
   }
 
@@ -127,8 +130,6 @@ class GroupedHistogram : public base::Histogram {
   Sample minimum_;
   Sample maximum_;
   uint32_t bucket_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(GroupedHistogram);
 };
 
 // Registers a GroupedHistogram with StatisticsRecorder.  Must be called

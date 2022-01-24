@@ -21,6 +21,10 @@ class CrosvmProcessListTest : public testing::Test {
     slash_proc_ = temp_dir_.GetPath().Append("proc");
     CHECK(base::CreateDirectory(slash_proc_));
   }
+
+  CrosvmProcessListTest(const CrosvmProcessListTest&) = delete;
+  CrosvmProcessListTest& operator=(const CrosvmProcessListTest&) = delete;
+
   ~CrosvmProcessListTest() override = default;
 
   // Create a directory |dir_name| under /proc and write |contents| to file
@@ -40,8 +44,6 @@ class CrosvmProcessListTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrosvmProcessListTest);
 };
 
 TEST_F(CrosvmProcessListTest, ConciergeIsTheOnlyCrosvmProcess) {

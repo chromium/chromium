@@ -4,7 +4,7 @@
      found in the LICENSE file. -->
 
 <resources>
-    <style name="Theme.Chromium.Fullscreen" parent="Base.Theme.Chromium.Fullscreen">
+    <style name="ThemeOverlay.BrowserUI.Fullscreen" parent="Base.ThemeOverlay.BrowserUI.Fullscreen">
         <item name="android:navigationBarColor">@color/bottom_system_nav_color</item>
         <item name="android:navigationBarDividerColor">@color/bottom_system_nav_divider_color</item>
         <item name="android:windowLightNavigationBar">@bool/window_light_navigation_bar</item>

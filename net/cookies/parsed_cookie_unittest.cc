@@ -4,7 +4,10 @@
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/parsed_cookie.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -145,6 +148,12 @@ TEST(ParsedCookieTest, ParseValueStrings) {
 }
 
 TEST(ParsedCookieTest, TestQuoted) {
+  // Ensure that kExtraCookieValidityChecks is always enabled so that the
+  // additional test cases get run.
+  base::test::ScopedFeatureList scope_feature_list;
+  scope_feature_list.InitWithFeatureState(features::kExtraCookieValidityChecks,
+                                          true);
+
   // These are some quoting cases which the major browsers all
   // handle differently.  I've tested Internet Explorer 6, Opera 9.6,
   // Firefox 3, and Safari Windows 3.2.1.  We originally tried to match
@@ -183,6 +192,11 @@ TEST(ParsedCookieTest, TestQuoted) {
     EXPECT_TRUE(pc.HasPath());
     EXPECT_EQ("aBc", pc.Name());
     EXPECT_EQ(test.expected, pc.Value());
+
+    if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+      EXPECT_TRUE(pc.SetValue(pc.Value()));
+      EXPECT_EQ(test.expected, pc.Value());
+    }
 
     // If a path was quoted, the path attribute keeps the quotes.  This will
     // make the cookie effectively useless, but path parameters aren't supposed
@@ -248,6 +262,26 @@ TEST(ParsedCookieTest, MissingName) {
   EXPECT_EQ("ABC", pc.Value());
   EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
   EXPECT_EQ(0U, pc.NumberOfAttributes());
+
+  // Ensure that a preceding equal sign is emitted in the cookie line.
+
+  // Note that this goes against what's specified in RFC6265bis and differs from
+  // how CanonicalCookie produces cookie lines. As currently written (draft 9),
+  // the spec says that a cookie with an empty name should not prepend an '='
+  // character when writing out the cookie line, but in the case where the value
+  // already contains an equal sign the cookie line will be parsed incorrectly
+  // on the receiving end. ParsedCookie.ToCookieLine is only used by the
+  // extensions API to feed modified cookies into a network request for
+  // reparsing, though, so here it's more important that the values always
+  // deserialize correctly than conform to the spec
+  ParsedCookie pc2("=ABC");
+  EXPECT_EQ("=ABC", pc2.ToCookieLine());
+  EXPECT_TRUE(pc2.SetValue("param=value"));
+  EXPECT_EQ("=param=value", pc2.ToCookieLine());
+  ParsedCookie pc3("=param=value");
+  EXPECT_EQ("", pc3.Name());
+  EXPECT_EQ("param=value", pc3.Value());
+  EXPECT_EQ("=param=value", pc3.ToCookieLine());
 }
 
 TEST(ParsedCookieTest, MissingValue) {
@@ -259,6 +293,10 @@ TEST(ParsedCookieTest, MissingValue) {
   EXPECT_EQ("/wee", pc.Path());
   EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
   EXPECT_EQ(1U, pc.NumberOfAttributes());
+
+  // Ensure that a trailing equal sign is emitted in the cookie line
+  ParsedCookie pc2("ABC=");
+  EXPECT_EQ("ABC=", pc2.ToCookieLine());
 }
 
 TEST(ParsedCookieTest, Whitespace) {
@@ -334,16 +372,229 @@ TEST(ParsedCookieTest, LotsOfPairs) {
   }
 }
 
-// TODO(erikwright): some better test cases for invalid cookies.
-TEST(ParsedCookieTest, InvalidTooLong) {
+TEST(ParsedCookieTest, EnforceSizeConstraintsLegacy) {
+  base::test::ScopedFeatureList scope_feature_list;
+  scope_feature_list.InitWithFeatureState(features::kExtraCookieValidityChecks,
+                                          false);
+  CookieInclusionStatus status;
+
   std::string maxstr;
   maxstr.resize(ParsedCookie::kMaxCookieSize, 'a');
 
-  ParsedCookie pc1(maxstr);
+  ParsedCookie pc1(maxstr, &status);
   EXPECT_TRUE(pc1.IsValid());
+  EXPECT_TRUE(status.IsInclude());
 
-  ParsedCookie pc2(maxstr + "A");
+  ParsedCookie pc2(maxstr + "A", &status);
   EXPECT_FALSE(pc2.IsValid());
+  EXPECT_TRUE(status.HasOnlyExclusionReason(
+      CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE));
+}
+
+TEST(ParsedCookieTest, EnforceSizeConstraints) {
+  // Ensure that kExtraCookieValidityChecks is always enabled so that the
+  // additional test cases get run.
+  base::test::ScopedFeatureList scope_feature_list;
+  scope_feature_list.InitWithFeatureState(features::kExtraCookieValidityChecks,
+                                          true);
+  CookieInclusionStatus status;
+
+  // Create maximum size and one-less-than-maximum size name and value
+  // strings for testing.
+  std::string max_name(ParsedCookie::kMaxCookieNamePlusValueSize, 'a');
+  std::string max_value(ParsedCookie::kMaxCookieNamePlusValueSize, 'b');
+  std::string almost_max_name = max_name.substr(1, std::string::npos);
+  std::string almost_max_value = max_value.substr(1, std::string::npos);
+
+  // Test name + value size limits enforced by the constructor.
+  ParsedCookie pc1(max_name + "=");
+  EXPECT_TRUE(pc1.IsValid());
+  EXPECT_EQ(max_name, pc1.Name());
+
+  ParsedCookie pc2(max_name + "=; path=/foo;");
+  EXPECT_TRUE(pc2.IsValid());
+  EXPECT_EQ(max_name, pc2.Name());
+
+  ParsedCookie pc3(max_name + "X=", &status);
+  EXPECT_FALSE(pc3.IsValid());
+  EXPECT_TRUE(status.HasOnlyExclusionReason(
+      CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE));
+
+  ParsedCookie pc4("=" + max_value);
+  EXPECT_TRUE(pc4.IsValid());
+  EXPECT_EQ(max_value, pc4.Value());
+
+  ParsedCookie pc5("=" + max_value + "; path=/foo;");
+  EXPECT_TRUE(pc5.IsValid());
+  EXPECT_EQ(max_value, pc5.Value());
+
+  ParsedCookie pc6("=" + max_value + "X", &status);
+  EXPECT_FALSE(pc6.IsValid());
+  EXPECT_TRUE(status.HasOnlyExclusionReason(
+      CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE));
+
+  ParsedCookie pc7(almost_max_name + "=x");
+  EXPECT_TRUE(pc7.IsValid());
+  EXPECT_EQ(almost_max_name, pc7.Name());
+  EXPECT_EQ("x", pc7.Value());
+
+  ParsedCookie pc8(almost_max_name + "=x; path=/foo;");
+  EXPECT_TRUE(pc8.IsValid());
+  EXPECT_EQ(almost_max_name, pc8.Name());
+  EXPECT_EQ("x", pc8.Value());
+
+  ParsedCookie pc9(almost_max_name + "=xX", &status);
+  EXPECT_FALSE(pc9.IsValid());
+  EXPECT_TRUE(status.HasOnlyExclusionReason(
+      CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE));
+
+  ParsedCookie pc10("x=" + almost_max_value);
+  EXPECT_TRUE(pc10.IsValid());
+  EXPECT_EQ("x", pc10.Name());
+  EXPECT_EQ(almost_max_value, pc10.Value());
+
+  ParsedCookie pc11("x=" + almost_max_value + "; path=/foo;");
+  EXPECT_TRUE(pc11.IsValid());
+  EXPECT_EQ("x", pc11.Name());
+  EXPECT_EQ(almost_max_value, pc11.Value());
+
+  ParsedCookie pc12("xX=" + almost_max_value, &status);
+  EXPECT_FALSE(pc12.IsValid());
+  EXPECT_TRUE(status.HasOnlyExclusionReason(
+      CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE));
+
+  // Test attribute value size limits enforced by the constructor.
+  std::string almost_max_path(ParsedCookie::kMaxCookieAttributeValueSize - 1,
+                              'c');
+  std::string max_path = "/" + almost_max_path;
+  std::string too_long_path = "/X" + almost_max_path;
+
+  ParsedCookie pc20("name=value; path=" + max_path);
+  EXPECT_TRUE(pc20.IsValid());
+  EXPECT_TRUE(pc20.HasPath());
+  EXPECT_EQ("/" + almost_max_path, pc20.Path());
+
+  ParsedCookie pc21("name=value; path=" + too_long_path, &status);
+  EXPECT_TRUE(pc21.IsValid());
+  EXPECT_FALSE(pc21.HasPath());
+  EXPECT_TRUE(status.HasWarningReason(
+      CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE));
+
+  // NOTE: max_domain is based on the max attribute value as defined in
+  // RFC6525bis, but this is larger than what is recommended by RFC1123.
+  // In theory some browsers could restrict domains to that smaller size,
+  // but ParsedCookie doesn't.
+  std::string max_domain(ParsedCookie::kMaxCookieAttributeValueSize, 'd');
+  max_domain.replace(ParsedCookie::kMaxCookieAttributeValueSize - 4, 4, ".com");
+  std::string too_long_domain = "x" + max_domain;
+
+  ParsedCookie pc30("name=value; domain=" + max_domain);
+  EXPECT_TRUE(pc30.IsValid());
+  EXPECT_TRUE(pc30.HasDomain());
+  EXPECT_EQ(max_domain, pc30.Domain());
+
+  ParsedCookie pc31("name=value; domain=" + too_long_domain);
+  EXPECT_TRUE(pc31.IsValid());
+  EXPECT_FALSE(pc31.HasDomain());
+  EXPECT_TRUE(status.HasWarningReason(
+      CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE));
+
+  std::string pc40_suffix = "; domain=example.com";
+
+  ParsedCookie pc40("a=b" + pc40_suffix);
+  EXPECT_TRUE(pc40.IsValid());
+
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    // Test name + value size limits enforced by SetName / SetValue
+    EXPECT_FALSE(pc40.SetName(max_name));
+    EXPECT_EQ("a=b" + pc40_suffix, pc40.ToCookieLine());
+    EXPECT_TRUE(pc40.IsValid());
+
+    EXPECT_FALSE(pc40.SetValue(max_value));
+    EXPECT_EQ("a=b" + pc40_suffix, pc40.ToCookieLine());
+    EXPECT_TRUE(pc40.IsValid());
+
+    EXPECT_TRUE(pc40.SetName(almost_max_name));
+    EXPECT_EQ(almost_max_name + "=b" + pc40_suffix, pc40.ToCookieLine());
+    EXPECT_TRUE(pc40.IsValid());
+
+    EXPECT_FALSE(pc40.SetValue("xX"));
+    EXPECT_EQ(almost_max_name + "=b" + pc40_suffix, pc40.ToCookieLine());
+    EXPECT_TRUE(pc40.IsValid());
+
+    EXPECT_TRUE(pc40.SetName("a"));
+    EXPECT_TRUE(pc40.SetValue(almost_max_value));
+    EXPECT_EQ("a=" + almost_max_value + pc40_suffix, pc40.ToCookieLine());
+    EXPECT_TRUE(pc40.IsValid());
+
+    EXPECT_FALSE(pc40.SetName("xX"));
+    EXPECT_EQ("a=" + almost_max_value + pc40_suffix, pc40.ToCookieLine());
+    EXPECT_TRUE(pc40.IsValid());
+  }
+
+  std::string lots_of_spaces(ParsedCookie::kMaxCookieNamePlusValueSize, ' ');
+  std::string test_str = "test";
+  std::string padded_test_str = lots_of_spaces + test_str + lots_of_spaces;
+
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    // Ensure that leading/trailing whitespace gets stripped before the length
+    // calculations are enforced.
+    ParsedCookie pc41("name=value");
+    EXPECT_TRUE(pc41.SetName(padded_test_str));
+    EXPECT_TRUE(pc41.SetValue(padded_test_str));
+    EXPECT_EQ(test_str, pc41.Name());
+    EXPECT_EQ(test_str, pc41.Value());
+  }
+
+  std::string name_equals_value = "name=value";
+  ParsedCookie pc50(name_equals_value);
+
+  EXPECT_TRUE(pc50.SetPath(max_path));
+  EXPECT_EQ(pc50.Path(), max_path);
+  EXPECT_EQ(name_equals_value + "; path=" + max_path, pc50.ToCookieLine());
+  EXPECT_TRUE(pc50.IsValid());
+
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    // Test attribute value size limits enforced by SetPath
+    EXPECT_FALSE(pc50.SetPath(too_long_path));
+    EXPECT_EQ(pc50.Path(), max_path);
+    EXPECT_EQ(name_equals_value + "; path=" + max_path, pc50.ToCookieLine());
+    EXPECT_TRUE(pc50.IsValid());
+  }
+
+  std::string test_path = "/test";
+  std::string padded_test_path = lots_of_spaces + test_path + lots_of_spaces;
+
+  EXPECT_TRUE(pc50.SetPath(padded_test_path));
+  EXPECT_EQ(test_path, pc50.Path());
+
+  ParsedCookie pc51(name_equals_value);
+
+  EXPECT_TRUE(pc51.SetDomain(max_domain));
+  EXPECT_EQ(pc51.Domain(), max_domain);
+  EXPECT_EQ(name_equals_value + "; domain=" + max_domain, pc51.ToCookieLine());
+  EXPECT_TRUE(pc51.IsValid());
+
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    // Test attribute value size limits enforced by SetDomain
+    EXPECT_FALSE(pc51.SetDomain(too_long_domain));
+    EXPECT_EQ(pc51.Domain(), max_domain);
+    EXPECT_EQ(name_equals_value + "; domain=" + max_domain,
+              pc51.ToCookieLine());
+    EXPECT_TRUE(pc51.IsValid());
+  }
+
+  std::string test_domain = "example.com";
+  std::string padded_test_domain =
+      lots_of_spaces + test_domain + lots_of_spaces;
+
+  EXPECT_TRUE(pc51.SetDomain(padded_test_domain));
+  EXPECT_EQ(test_domain, pc51.Domain());
 }
 
 TEST(ParsedCookieTest, EmbeddedTerminator) {
@@ -388,53 +639,139 @@ TEST(ParsedCookieTest, SerializeCookieLine) {
 }
 
 TEST(ParsedCookieTest, SetNameAndValue) {
-  ParsedCookie cookie("a=b");
-  EXPECT_TRUE(cookie.IsValid());
-  EXPECT_TRUE(cookie.SetDomain("foobar.com"));
-  EXPECT_TRUE(cookie.SetName("name"));
-  EXPECT_TRUE(cookie.SetValue("value"));
-  EXPECT_EQ("name=value; domain=foobar.com", cookie.ToCookieLine());
-  EXPECT_TRUE(cookie.IsValid());
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        features::kExtraCookieValidityChecks, toggle);
 
-  // We don't test
-  //   ParsedCookie invalid("@foo=bar");
-  //   EXPECT_FALSE(invalid.IsValid());
-  // here because we are slightly more tolerant to invalid cookie names and
-  // values that are set by webservers. We only enforce a correct name and
-  // value if set via SetName() and SetValue().
+    ParsedCookie cookie("a=b");
+    EXPECT_TRUE(cookie.IsValid());
+    EXPECT_TRUE(cookie.SetDomain("foobar.com"));
+    EXPECT_TRUE(cookie.SetName("name"));
+    EXPECT_TRUE(cookie.SetValue("value"));
+    EXPECT_EQ("name=value; domain=foobar.com", cookie.ToCookieLine());
+    EXPECT_TRUE(cookie.IsValid());
 
-  ParsedCookie pc("name=value");
-  EXPECT_TRUE(pc.IsValid());
+    ParsedCookie pc("name=value");
+    EXPECT_TRUE(pc.IsValid());
 
-  // Set invalid name / value.
-  EXPECT_FALSE(pc.SetName("@foobar"));
-  EXPECT_EQ("name=value", pc.ToCookieLine());
-  EXPECT_TRUE(pc.IsValid());
+    // Set invalid name / value.
+    EXPECT_FALSE(pc.SetName("foo\nbar"));
+    EXPECT_EQ("name=value", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
 
-  EXPECT_FALSE(pc.SetValue("foo bar"));
-  EXPECT_EQ("name=value", pc.ToCookieLine());
-  EXPECT_TRUE(pc.IsValid());
+    EXPECT_FALSE(pc.SetName("foo\rbar"));
+    EXPECT_EQ("name=value", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
 
-  EXPECT_FALSE(pc.SetValue("\"foobar"));
-  EXPECT_EQ("name=value", pc.ToCookieLine());
-  EXPECT_TRUE(pc.IsValid());
+    EXPECT_FALSE(pc.SetValue(std::string("foo\0bar", 7)));
+    EXPECT_EQ("name=value", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
 
-  // Set valid name / value
-  EXPECT_TRUE(pc.SetName(std::string()));
-  EXPECT_EQ("=value", pc.ToCookieLine());
-  EXPECT_TRUE(pc.IsValid());
+    if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+      // Set previously invalid name / value.
+      EXPECT_TRUE(pc.SetName("@foobar"));
+      EXPECT_EQ("@foobar=value", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
 
-  EXPECT_TRUE(pc.SetName("test"));
-  EXPECT_EQ("test=value", pc.ToCookieLine());
-  EXPECT_TRUE(pc.IsValid());
+      EXPECT_TRUE(pc.SetName("foo bar"));
+      EXPECT_EQ("foo bar=value", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
 
-  EXPECT_TRUE(pc.SetValue("\"foobar\""));
-  EXPECT_EQ("test=\"foobar\"", pc.ToCookieLine());
-  EXPECT_TRUE(pc.IsValid());
+      EXPECT_TRUE(pc.SetName("\"foobar"));
+      EXPECT_EQ("\"foobar=value", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
 
-  EXPECT_TRUE(pc.SetValue(std::string()));
-  EXPECT_EQ("test=", pc.ToCookieLine());
-  EXPECT_TRUE(pc.IsValid());
+      EXPECT_TRUE(pc.SetValue("foo bar"));
+      EXPECT_EQ("\"foobar=foo bar", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
+
+      EXPECT_TRUE(pc.SetValue("\"foobar"));
+      EXPECT_EQ("\"foobar=\"foobar", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
+
+      EXPECT_TRUE(pc.SetName("  foo bar  "));
+      EXPECT_EQ("foo bar=\"foobar", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
+
+      EXPECT_TRUE(pc.SetValue("  foo bar  "));
+      EXPECT_EQ("foo bar=foo bar", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
+
+    } else {
+      // Set invalid name / value.
+      EXPECT_FALSE(pc.SetName("@foobar"));
+      EXPECT_EQ("name=value", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
+
+      EXPECT_FALSE(pc.SetValue("foo bar"));
+      EXPECT_EQ("name=value", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
+
+      EXPECT_FALSE(pc.SetValue("\"foobar"));
+      EXPECT_EQ("name=value", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
+
+      EXPECT_FALSE(pc.SetName("  foo bar  "));
+      EXPECT_EQ("name=value", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
+
+      EXPECT_FALSE(pc.SetValue("  foo bar  "));
+      EXPECT_EQ("name=value", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
+    }
+
+    // Set valid name / value.
+    EXPECT_TRUE(pc.SetValue("value"));
+    EXPECT_TRUE(pc.SetName(std::string()));
+    EXPECT_EQ("=value", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    EXPECT_TRUE(pc.SetName("test"));
+    EXPECT_EQ("test=value", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    EXPECT_TRUE(pc.SetValue("\"foobar\""));
+    EXPECT_EQ("test=\"foobar\"", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    EXPECT_TRUE(pc.SetValue(std::string()));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    // Ensure that failure occurs when trying to set a name containing '='.
+    EXPECT_FALSE(pc.SetName("invalid=name"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    // Ensure that trying to set a name containing ';' fails.
+    EXPECT_FALSE(pc.SetName("invalid;name"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    EXPECT_FALSE(pc.SetValue("invalid;value"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    // Ensure tab characters are treated as control characters.
+    // TODO(crbug.com/1233602) Update this such that tab characters are allowed
+    // and are handled correctly.
+    EXPECT_FALSE(pc.SetName("\tinvalid\t"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    EXPECT_FALSE(pc.SetValue("\tinvalid\t"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    EXPECT_FALSE(pc.SetName("na\tme"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    EXPECT_FALSE(pc.SetValue("val\tue"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+  }
 }
 
 TEST(ParsedCookieTest, SetAttributes) {
@@ -893,41 +1230,84 @@ TEST(ParsedCookieTest, InvalidNonAlphanumericChars) {
 }
 
 TEST(ParsedCookieTest, ValidNonAlphanumericChars) {
-  // Note that some of these words are pasted backwords thanks to poor vim bidi
-  // support. This should not affect the tests, however.
-  const char pc1_literal[] = "name=العربية";
-  const char pc2_literal[] = "name=普通話";
-  const char pc3_literal[] = "name=ภาษาไทย";
-  const char pc4_literal[] = "name=עִבְרִית";
-  const char pc5_literal[] = "العربية=value";
-  const char pc6_literal[] = "普通話=value";
-  const char pc7_literal[] = "ภาษาไทย=value";
-  const char pc8_literal[] = "עִבְרִית=value";
-  ParsedCookie pc1(pc1_literal);
-  ParsedCookie pc2(pc2_literal);
-  ParsedCookie pc3(pc3_literal);
-  ParsedCookie pc4(pc4_literal);
-  ParsedCookie pc5(pc5_literal);
-  ParsedCookie pc6(pc6_literal);
-  ParsedCookie pc7(pc7_literal);
-  ParsedCookie pc8(pc8_literal);
+  // Ensure that kExtraCookieValidityChecks is always enabled so that the
+  // additional test cases get run.
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        features::kExtraCookieValidityChecks, toggle);
 
-  EXPECT_TRUE(pc1.IsValid());
-  EXPECT_EQ(pc1_literal, pc1.ToCookieLine());
-  EXPECT_TRUE(pc2.IsValid());
-  EXPECT_EQ(pc2_literal, pc2.ToCookieLine());
-  EXPECT_TRUE(pc3.IsValid());
-  EXPECT_EQ(pc3_literal, pc3.ToCookieLine());
-  EXPECT_TRUE(pc4.IsValid());
-  EXPECT_EQ(pc4_literal, pc4.ToCookieLine());
-  EXPECT_TRUE(pc5.IsValid());
-  EXPECT_EQ(pc5_literal, pc5.ToCookieLine());
-  EXPECT_TRUE(pc6.IsValid());
-  EXPECT_EQ(pc6_literal, pc6.ToCookieLine());
-  EXPECT_TRUE(pc7.IsValid());
-  EXPECT_EQ(pc7_literal, pc7.ToCookieLine());
-  EXPECT_TRUE(pc8.IsValid());
-  EXPECT_EQ(pc8_literal, pc8.ToCookieLine());
+    // Note that some of these words are pasted backwords thanks to poor vim
+    // bidi support. This should not affect the tests, however.
+    const char pc1_literal[] = "name=العربية";
+    const char pc2_literal[] = "name=普通話";
+    const char pc3_literal[] = "name=ภาษาไทย";
+    const char pc4_literal[] = "name=עִבְרִית";
+    const char pc5_literal[] = "العربية=value";
+    const char pc6_literal[] = "普通話=value";
+    const char pc7_literal[] = "ภาษาไทย=value";
+    const char pc8_literal[] = "עִבְרִית=value";
+    const char pc9_literal[] = "@foo=bar";
+
+    ParsedCookie pc1(pc1_literal);
+    ParsedCookie pc2(pc2_literal);
+    ParsedCookie pc3(pc3_literal);
+    ParsedCookie pc4(pc4_literal);
+    ParsedCookie pc5(pc5_literal);
+    ParsedCookie pc6(pc6_literal);
+    ParsedCookie pc7(pc7_literal);
+    ParsedCookie pc8(pc8_literal);
+    ParsedCookie pc9(pc9_literal);
+
+    EXPECT_TRUE(pc1.IsValid());
+    EXPECT_EQ(pc1_literal, pc1.ToCookieLine());
+    EXPECT_TRUE(pc2.IsValid());
+    EXPECT_EQ(pc2_literal, pc2.ToCookieLine());
+    EXPECT_TRUE(pc3.IsValid());
+    EXPECT_EQ(pc3_literal, pc3.ToCookieLine());
+    EXPECT_TRUE(pc4.IsValid());
+    EXPECT_EQ(pc4_literal, pc4.ToCookieLine());
+    EXPECT_TRUE(pc5.IsValid());
+    EXPECT_EQ(pc5_literal, pc5.ToCookieLine());
+    EXPECT_TRUE(pc6.IsValid());
+    EXPECT_EQ(pc6_literal, pc6.ToCookieLine());
+    EXPECT_TRUE(pc7.IsValid());
+    EXPECT_EQ(pc7_literal, pc7.ToCookieLine());
+    EXPECT_TRUE(pc8.IsValid());
+    EXPECT_EQ(pc8_literal, pc8.ToCookieLine());
+    EXPECT_TRUE(pc9.IsValid());
+    EXPECT_EQ(pc9_literal, pc9.ToCookieLine());
+
+    if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+      EXPECT_TRUE(pc1.SetValue(pc1.Value()));
+      EXPECT_EQ(pc1_literal, pc1.ToCookieLine());
+      EXPECT_TRUE(pc1.IsValid());
+      EXPECT_TRUE(pc2.SetValue(pc2.Value()));
+      EXPECT_EQ(pc2_literal, pc2.ToCookieLine());
+      EXPECT_TRUE(pc2.IsValid());
+      EXPECT_TRUE(pc3.SetValue(pc3.Value()));
+      EXPECT_EQ(pc3_literal, pc3.ToCookieLine());
+      EXPECT_TRUE(pc3.IsValid());
+      EXPECT_TRUE(pc4.SetValue(pc4.Value()));
+      EXPECT_EQ(pc4_literal, pc4.ToCookieLine());
+      EXPECT_TRUE(pc4.IsValid());
+      EXPECT_TRUE(pc5.SetName(pc5.Name()));
+      EXPECT_EQ(pc5_literal, pc5.ToCookieLine());
+      EXPECT_TRUE(pc5.IsValid());
+      EXPECT_TRUE(pc6.SetName(pc6.Name()));
+      EXPECT_EQ(pc6_literal, pc6.ToCookieLine());
+      EXPECT_TRUE(pc6.IsValid());
+      EXPECT_TRUE(pc7.SetName(pc7.Name()));
+      EXPECT_EQ(pc7_literal, pc7.ToCookieLine());
+      EXPECT_TRUE(pc7.IsValid());
+      EXPECT_TRUE(pc8.SetName(pc8.Name()));
+      EXPECT_EQ(pc8_literal, pc8.ToCookieLine());
+      EXPECT_TRUE(pc8.IsValid());
+      EXPECT_TRUE(pc9.SetName(pc9.Name()));
+      EXPECT_EQ(pc9_literal, pc9.ToCookieLine());
+      EXPECT_TRUE(pc9.IsValid());
+    }
+  }
 }
 
 TEST(ParsedCookieTest, TruncatedNameOrValue) {
@@ -975,6 +1355,54 @@ TEST(ParsedCookieTest, TruncatedNameOrValue) {
     EXPECT_FALSE(not_truncated_attribute_parsing.IsHttpOnly());
     EXPECT_FALSE(not_truncated_attribute_parsing.HasTruncatedNameOrValue());
   }
+}
+
+TEST(ParsedCookieTest, TruncatingCharInCookieLine) {
+  using std::string_literals::operator""s;
+
+  // Test scenarios where a control char may appear at start, middle and end of
+  // a cookie line. Control char array with NULL (\x0), CR (\xD), LF (xA),
+  // HT (\x9) and BS (\x1B).
+  const struct {
+    const char ctlChar;
+    const TruncatingCharacterInCookieStringType
+        expectedTruncatingCharInCookieStringType;
+  } kTests[] = {
+      {'\x0', TruncatingCharacterInCookieStringType::kTruncatingCharNull},
+      {'\xD', TruncatingCharacterInCookieStringType::kTruncatingCharNewline},
+      {'\xA', TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed},
+      {'\x9', TruncatingCharacterInCookieStringType::kTruncatingCharNone},
+      {'\x1B', TruncatingCharacterInCookieStringType::kTruncatingCharNone}};
+
+  for (const auto& test : kTests) {
+    std::string ctl_string(1, test.ctlChar);
+    std::string ctl_at_start_cookie_string = ctl_string + "foo=bar"s;
+    ParsedCookie ctl_at_start_cookie(ctl_at_start_cookie_string);
+    EXPECT_EQ(ctl_at_start_cookie.GetTruncatingCharacterInCookieStringType(),
+              test.expectedTruncatingCharInCookieStringType);
+
+    std::string ctl_at_middle_cookie_string =
+        "foo=bar;"s + ctl_string + "secure"s;
+    ParsedCookie ctl_at_middle_cookie(ctl_at_start_cookie_string);
+    EXPECT_EQ(ctl_at_middle_cookie.GetTruncatingCharacterInCookieStringType(),
+              test.expectedTruncatingCharInCookieStringType);
+
+    std::string ctl_at_end_cookie_string =
+        "foo=bar;"s + "secure;"s + ctl_string;
+    ParsedCookie ctl_at_end_cookie(ctl_at_start_cookie_string);
+    EXPECT_EQ(ctl_at_end_cookie.GetTruncatingCharacterInCookieStringType(),
+              test.expectedTruncatingCharInCookieStringType);
+  }
+  // Test if there are multiple control characters that terminate.
+  std::string ctls_cookie_string = "foo=bar;\xA\xD"s;
+  ParsedCookie ctls_cookie(ctls_cookie_string);
+  EXPECT_EQ(ctls_cookie.GetTruncatingCharacterInCookieStringType(),
+            TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed);
+  // Test with no control characters.
+  std::string cookie_string = "foo=bar;"s;
+  ParsedCookie cookie(cookie_string);
+  EXPECT_EQ(cookie.GetTruncatingCharacterInCookieStringType(),
+            TruncatingCharacterInCookieStringType::kTruncatingCharNone);
 }
 
 }  // namespace net

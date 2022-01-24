@@ -10,12 +10,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 
 namespace IPC {
@@ -51,6 +49,10 @@ class ExtensionLocalizationPeer : public blink::WebRequestPeer {
       IPC::Sender* message_sender,
       const std::string& mime_type,
       const GURL& request_url);
+
+  ExtensionLocalizationPeer(const ExtensionLocalizationPeer&) = delete;
+  ExtensionLocalizationPeer& operator=(const ExtensionLocalizationPeer&) =
+      delete;
 
   // blink::WebRequestPeer methods.
   void OnUploadProgress(uint64_t position, uint64_t size) override;
@@ -137,9 +139,6 @@ class ExtensionLocalizationPeer : public blink::WebRequestPeer {
 
   // Original request URL.
   GURL request_url_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionLocalizationPeer);
 };
 
 #endif  // CHROME_RENDERER_EXTENSIONS_EXTENSION_LOCALIZATION_PEER_H_

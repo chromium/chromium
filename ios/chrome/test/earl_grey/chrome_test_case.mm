@@ -115,8 +115,6 @@ void ResetAuthentication() {
 
 }  // namespace
 
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
-
 @interface ChromeTestCase () <AppLaunchManagerObserver> {
   // Block to be executed during object tearDown.
   ProceduralBlock _tearDownHandler;
@@ -197,9 +195,6 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
   [[AppLaunchManager sharedManager] addObserver:self];
 
   [super setUp];
-
-  // TODO(crbug.com/1218575): Remove once moved to EG.
-  [ChromeTestCaseAppInterface disableKeyboardTutorials];
 
   [self resetAppState];
 
@@ -312,8 +307,10 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
   // Make sure local data is cleared, before disabling mock authentication,
   // where data may be sent to real servers.
+  // Remove all identities in FakeChromeIdentityService.
   [ChromeEarlGrey signOutAndClearIdentities];
   [ChromeEarlGrey tearDownFakeSyncServer];
+  // Switch from FakeChromeIdentityService to ChromeIdentityServiceImpl.
   TearDownMockAuthentication();
 }
 

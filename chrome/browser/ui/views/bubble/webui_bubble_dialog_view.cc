@@ -33,7 +33,7 @@ class WebUIBubbleView : public views::WebView {
   ~WebUIBubbleView() override = default;
 
   // WebView:
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override {
     // Ignores context menu.
     return true;

@@ -29,7 +29,7 @@ js_library("read_later_app_test") {
 
 js_library("test_read_later_api_proxy") {
   deps = [
-    "..:test_browser_proxy.m",
+    "..:test_browser_proxy",
     "//chrome/browser/resources/read_later:read_later_api_proxy",
     "//chrome/browser/ui/webui/read_later:mojo_bindings_js_library_for_compile",
   ]

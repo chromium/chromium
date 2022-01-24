@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -42,6 +41,10 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
   ExtensionEnableFlow(Profile* profile,
                       const std::string& extension_id,
                       ExtensionEnableFlowDelegate* delegate);
+
+  ExtensionEnableFlow(const ExtensionEnableFlow&) = delete;
+  ExtensionEnableFlow& operator=(const ExtensionEnableFlow&) = delete;
+
   ~ExtensionEnableFlow() override;
 
   // Starts the flow and the logic continues on |delegate_| after enabling is
@@ -128,8 +131,6 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
       load_error_observation_{this};
 
   base::WeakPtrFactory<ExtensionEnableFlow> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionEnableFlow);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ENABLE_FLOW_H_

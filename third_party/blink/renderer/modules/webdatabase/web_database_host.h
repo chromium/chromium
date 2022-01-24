@@ -38,6 +38,9 @@ class WebDatabaseHost {
  public:
   static WebDatabaseHost& GetInstance();
 
+  WebDatabaseHost(const WebDatabaseHost&) = delete;
+  WebDatabaseHost& operator=(const WebDatabaseHost&) = delete;
+
   // Should be called once before trying to use this class, so that we make sure
   // the remote interface binding is done from the main thread before the first
   // time GetInstance() is invoked (which will happen from the Database thread).
@@ -78,8 +81,6 @@ class WebDatabaseHost {
   // Used to ensure that the database gets opened from the main thread, but that
   // other database-related event is reported from the database thread instead.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDatabaseHost);
 };
 
 }  // namespace blink

@@ -13,6 +13,7 @@ import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/util/branding.gni")
+import("//skia/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
@@ -41,8 +42,8 @@ component("ui_data_pack") {
     "resource/data_pack.h",
     "resource/data_pack_export.h",
     "resource/resource_handle.h",
-    "resource/scale_factor.cc",
-    "resource/scale_factor.h",
+    "resource/resource_scale_factor.cc",
+    "resource/resource_scale_factor.h",
   ]
 
   deps = [
@@ -74,15 +75,6 @@ source_set("hit_test") {
     "hit_test.cc",
     "hit_test.h",
   ]
-
-  if (use_x11 || use_ozone) {
-    sources += [
-      "hit_test_x11.cc",
-      "hit_test_x11.h",
-    ]
-  }
-
-  deps = [ "//base" ]
 }
 
 component("base") {
@@ -314,6 +306,8 @@ component("base") {
       "dragdrop/os_exchange_data_provider_builder_mac.mm",
       "dragdrop/os_exchange_data_provider_mac.h",
       "dragdrop/os_exchange_data_provider_mac.mm",
+      "interaction/element_tracker_mac.h",
+      "interaction/element_tracker_mac.mm",
       "l10n/l10n_util_mac.h",
       "l10n/l10n_util_mac.mm",
       "resource/resource_bundle_mac.mm",
@@ -436,6 +430,7 @@ component("base") {
     "//base",
     "//skia",
     "//third_party/abseil-cpp:absl",
+    "//ui/color:color_headers",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
@@ -484,6 +479,8 @@ component("base") {
     sources += [
       "l10n/l10n_util_mac.h",
       "l10n/l10n_util_mac.mm",
+      "l10n/l10n_util_mac_bridge.h",
+      "l10n/l10n_util_mac_bridge.mm",
     ]
     public_deps += [ "//ui/events:event_constants" ]
     deps -= [
@@ -494,29 +491,6 @@ component("base") {
 
   if (toolkit_views) {
     deps += [ "//ui/events" ]
-  }
-
-  if ((is_linux || is_chromeos) && (use_x11 || ozone_platform_x11)) {
-    public_deps += [ "//ui/base/x" ]
-
-    # X11 drag and drop wants to use common drag and drop types.
-    allow_circular_includes_from = [ "//ui/base/x" ]
-
-    if (!is_chromeos_ash) {
-      deps += [ "//ui/gfx/x" ]
-    }
-  }
-
-  if (use_x11 && use_aura && is_linux) {
-    # These Aura X11 files aren't used on ChromeOS.
-    sources += [
-      "dragdrop/os_exchange_data_provider_x11.cc",
-      "dragdrop/os_exchange_data_provider_x11.h",
-    ]
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/gfx/x",
-    ]
   }
 
   if (use_aura && (is_linux || is_chromeos)) {
@@ -537,7 +511,8 @@ component("base") {
     ]
   }
 
-  if (is_chromeos_ash || (use_aura && (is_linux || is_chromeos_lacros))) {
+  if (is_chromeos_ash || (use_aura && (is_linux || is_chromeos_lacros)) ||
+      is_fuchsia) {
     sources += [
       "dragdrop/os_exchange_data_provider_non_backed.cc",
       "dragdrop/os_exchange_data_provider_non_backed.h",
@@ -633,6 +608,13 @@ component("features") {
     "ui_base_features.cc",
     "ui_base_features.h",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "shortcut_mapping_pref_delegate.cc",
+      "shortcut_mapping_pref_delegate.h",
+    ]
+  }
 
   deps = [
     ":buildflags",
@@ -731,6 +713,7 @@ static_library("test_support") {
       "accelerators/test_accelerator_target.h",
       "test/mock_base_window.cc",
       "test/mock_base_window.h",
+      "test/test_dialog_model_host.cc",
       "test/test_dialog_model_host.h",
       "test/ui_controls.h",
       "test/view_tree_validator.h",
@@ -797,22 +780,22 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
-      "ime/chromeos/mock_component_extension_ime_manager.cc",
-      "ime/chromeos/mock_component_extension_ime_manager.h",
-      "ime/chromeos/mock_component_extension_ime_manager_delegate.cc",
-      "ime/chromeos/mock_component_extension_ime_manager_delegate.h",
-      "ime/chromeos/mock_ime_candidate_window_handler.cc",
-      "ime/chromeos/mock_ime_candidate_window_handler.h",
-      "ime/chromeos/mock_ime_engine_handler.cc",
-      "ime/chromeos/mock_ime_engine_handler.h",
-      "ime/chromeos/mock_ime_input_context_handler.cc",
-      "ime/chromeos/mock_ime_input_context_handler.h",
-      "ime/chromeos/mock_input_method_manager.cc",
-      "ime/chromeos/mock_input_method_manager.h",
+      "ime/ash/mock_component_extension_ime_manager.cc",
+      "ime/ash/mock_component_extension_ime_manager.h",
+      "ime/ash/mock_component_extension_ime_manager_delegate.cc",
+      "ime/ash/mock_component_extension_ime_manager_delegate.h",
+      "ime/ash/mock_ime_candidate_window_handler.cc",
+      "ime/ash/mock_ime_candidate_window_handler.h",
+      "ime/ash/mock_ime_engine_handler.cc",
+      "ime/ash/mock_ime_engine_handler.h",
+      "ime/ash/mock_ime_input_context_handler.cc",
+      "ime/ash/mock_ime_input_context_handler.h",
+      "ime/ash/mock_input_method_manager.cc",
+      "ime/ash/mock_input_method_manager.h",
     ]
     deps += [
-      "//ui/base/ime/chromeos",
-      "//ui/base/ime/chromeos:typing_session_manager",
+      "//ui/base/ime/ash",
+      "//ui/base/ime/ash:typing_session_manager",
     ]
   }
 }
@@ -882,6 +865,7 @@ test("ui_base_unittests") {
     "class_property_unittest.cc",
     "clipboard/file_info_unittest.cc",
     "ime/utf_offset_unittest.cc",
+    "interaction/element_identifier_unittest.cc",
     "interaction/element_tracker_unittest.cc",
     "interaction/interaction_sequence_unittest.cc",
     "l10n/l10n_util_unittest.cc",
@@ -918,6 +902,7 @@ test("ui_base_unittests") {
   if (is_mac) {
     sources += [
       "cocoa/nsmenuitem_additions_unittest.mm",
+      "interaction/element_tracker_mac_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",
     ]
   }
@@ -960,6 +945,7 @@ test("ui_base_unittests") {
     "//ui/base/data_transfer_policy:unittests",
     "//ui/base/metadata:metadata_tests",
     "//ui/base/prediction:prediction",
+    "//ui/color",
     "//ui/display",
     "//ui/events:events_base",
     "//ui/events:test_support",
@@ -1046,34 +1032,31 @@ test("ui_base_unittests") {
     if (is_chromeos_ash) {
       sources += [
         "dragdrop/os_exchange_data_provider_non_backed_unittest.cc",
-        "ime/chromeos/extension_ime_util_unittest.cc",
-        "ime/chromeos/ime_keyboard_unittest.cc",
-        "ime/chromeos/input_method_chromeos_unittest.cc",
-        "ime/chromeos/input_method_descriptor_unittest.cc",
-        "ime/chromeos/input_method_util_unittest.cc",
-        "ime/chromeos/typing_session_manager_unittest.cc",
+        "ime/ash/extension_ime_util_unittest.cc",
+        "ime/ash/ime_keyboard_unittest.cc",
+        "ime/ash/input_method_ash_unittest.cc",
+        "ime/ash/input_method_descriptor_unittest.cc",
+        "ime/ash/input_method_util_unittest.cc",
+        "ime/ash/typing_session_manager_unittest.cc",
       ]
       deps += [
         "//build:branding_buildflags",
-        "//ui/base/ime/chromeos",
-        "//ui/base/ime/chromeos:typing_session_manager",
+        "//ui/base/ime/ash",
+        "//ui/base/ime/ash:typing_session_manager",
       ]
     }
     if ((is_linux || is_chromeos_lacros) && use_aura) {
-      sources += [ "dragdrop/os_exchange_data_provider_non_backed_unittest.cc" ]
-
-      if (use_x11 || use_ozone) {
-        sources += [ "ime/linux/input_method_auralinux_unittest.cc" ]
-        deps += [
-          "//ui/base/ime/init",
-          "//ui/base/ime/linux",
-        ]
-      }
-      if (!use_x11) {
-        sources += [ "ime/input_method_minimal_unittest.cc" ]
-      }
+      sources += [
+        "dragdrop/os_exchange_data_provider_non_backed_unittest.cc",
+        "ime/input_method_minimal_unittest.cc",
+        "ime/linux/input_method_auralinux_unittest.cc",
+      ]
+      deps += [
+        "//ui/base/ime/init",
+        "//ui/base/ime/linux",
+      ]
     }
-    if (use_x11) {
+    if (is_linux && !is_chromecast && !is_chromeos_lacros) {
       sources += [ "ime/linux/composition_text_util_pango_unittest.cc" ]
     }
     if (is_chromeos_ash || use_ozone) {
@@ -1127,14 +1110,6 @@ test("ui_base_unittests") {
     configs += [ "//build/config/linux/pangocairo" ]
   }
 
-  if (use_x11) {
-    deps += [
-      "//ui/base/x:unittests",
-      "//ui/events/platform/x11",
-      "//ui/gfx/x",
-    ]
-  }
-
   if (is_mac) {
     deps += [
       ":ui_unittests_framework",
@@ -1142,8 +1117,7 @@ test("ui_base_unittests") {
     ]
   }
 
-  # TODO(crbug.com/980371): Implement OSExchangeDataProvider for Fuchsia.
-  if ((use_aura || toolkit_views) && !is_fuchsia) {
+  if (use_aura || toolkit_views) {
     sources += [ "dragdrop/os_exchange_data_unittest.cc" ]
     deps += [
       "//ui/events",
@@ -1177,6 +1151,11 @@ test("ui_base_unittests") {
   }
   if (is_mac) {
     data += [ "$root_out_dir/ui_unittests Framework.framework/" ]
+  }
+
+  if (skia_support_skottie && !is_ios) {
+    sources += [ "//ui/lottie/animation_unittest.cc" ]
+    deps += [ "//ui/lottie" ]
   }
 }
 

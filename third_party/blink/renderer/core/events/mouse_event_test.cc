@@ -10,7 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/platform/geometry/double_point.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -63,16 +63,16 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(MouseEventLayerPositionTest, LayerPositionAsExpected) {
   DoublePoint input_layer_location(std::get<0>(GetParam()),
                                    std::get<0>(GetParam()));
-  IntPoint expected_layer_location(std::get<1>(GetParam()),
-                                   std::get<1>(GetParam()));
+  gfx::Point expected_layer_location(std::get<1>(GetParam()),
+                                     std::get<1>(GetParam()));
 
   MouseEventInit& mouse_event_init = *MouseEventInit::Create();
   mouse_event_init.setClientX(input_layer_location.X());
   mouse_event_init.setClientY(input_layer_location.Y());
   MouseEvent mouse_event("mousedown", &mouse_event_init);
 
-  ASSERT_EQ(mouse_event.layerX(), expected_layer_location.X());
-  ASSERT_EQ(mouse_event.layerY(), expected_layer_location.Y());
+  ASSERT_EQ(mouse_event.layerX(), expected_layer_location.x());
+  ASSERT_EQ(mouse_event.layerY(), expected_layer_location.y());
 }
 
 INSTANTIATE_TEST_SUITE_P(

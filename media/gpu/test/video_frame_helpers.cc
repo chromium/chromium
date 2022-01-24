@@ -198,7 +198,6 @@ bool ConvertVideoFrameToARGB(const VideoFrame* src_frame,
                                 src_frame->visible_data(VideoFrame::kUPlane),
                                 src_frame->stride(VideoFrame::kUPlane),
                                 dst_argb, dst_stride, width, height) == 0;
-      break;
     default:
       LOG(ERROR) << "Unsupported input format: " << src_frame->format();
       return false;
@@ -445,7 +444,7 @@ scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image) {
   // Create planes for layout. We cannot use WrapExternalData() because it
   // calls GetDefaultLayout() and it supports only a few pixel formats.
   absl::optional<VideoFrameLayout> layout =
-      CreateVideoFrameLayout(format, image_size);
+      CreateVideoFrameLayout(format, image_size, /*alignment=*/1u);
   if (!layout) {
     LOG(ERROR) << "Failed to create VideoFrameLayout";
     return nullptr;

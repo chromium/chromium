@@ -210,9 +210,9 @@ LayoutRubyRun* LayoutRubyRun::StaticCreateRubyRun(
   DCHECK(parent_ruby->IsRuby());
   LayoutRubyRun* rr;
   if (containing_block.IsLayoutNGObject()) {
-    rr = new LayoutNGRubyRun();
+    rr = MakeGarbageCollected<LayoutNGRubyRun>();
   } else {
-    rr = new LayoutRubyRun(nullptr);
+    rr = MakeGarbageCollected<LayoutRubyRun>(nullptr);
   }
   rr->SetDocumentForAnonymous(&parent_ruby->GetDocument());
   scoped_refptr<ComputedStyle> new_style =

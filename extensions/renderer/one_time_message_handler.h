@@ -9,7 +9,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "v8/include/v8.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
+#include "v8/include/v8-forward.h"
 
 namespace gin {
 class Arguments;
@@ -57,18 +58,25 @@ class OneTimeMessageHandler {
  public:
   explicit OneTimeMessageHandler(
       NativeExtensionBindingsSystem* bindings_system);
+
+  OneTimeMessageHandler(const OneTimeMessageHandler&) = delete;
+  OneTimeMessageHandler& operator=(const OneTimeMessageHandler&) = delete;
+
   ~OneTimeMessageHandler();
 
   // Returns true if the given context has a port with the specified id.
   bool HasPort(ScriptContext* script_context, const PortId& port_id);
 
-  // Initiates a flow to send a message from the given |script_context|.
-  void SendMessage(ScriptContext* script_context,
-                   const PortId& new_port_id,
-                   const MessageTarget& target_id,
-                   const std::string& method_name,
-                   const Message& message,
-                   v8::Local<v8::Function> response_callback);
+  // Initiates a flow to send a message from the given |script_context|. Returns
+  // the associated promise if this is a promise based request, otherwise
+  // returns an empty promise.
+  v8::Local<v8::Promise> SendMessage(ScriptContext* script_context,
+                                     const PortId& new_port_id,
+                                     const MessageTarget& target_id,
+                                     const std::string& method_name,
+                                     const Message& message,
+                                     binding::AsyncResponseType async_type,
+                                     v8::Local<v8::Function> response_callback);
 
   // Adds a receiving port port to the given |script_context| in preparation
   // for receiving a message to post to the onMessage event.
@@ -125,8 +133,6 @@ class OneTimeMessageHandler {
   NativeExtensionBindingsSystem* const bindings_system_;
 
   base::WeakPtrFactory<OneTimeMessageHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OneTimeMessageHandler);
 };
 
 }  // namespace extensions

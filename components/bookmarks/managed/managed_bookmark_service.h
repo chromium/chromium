@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -31,6 +30,10 @@ class ManagedBookmarkService : public KeyedService,
 
   ManagedBookmarkService(PrefService* prefs,
                          GetManagementDomainCallback callback);
+
+  ManagedBookmarkService(const ManagedBookmarkService&) = delete;
+  ManagedBookmarkService& operator=(const ManagedBookmarkService&) = delete;
+
   ~ManagedBookmarkService() override;
 
   // Called upon creation of the BookmarkModel.
@@ -84,8 +87,6 @@ class ManagedBookmarkService : public KeyedService,
   std::unique_ptr<ManagedBookmarksTracker> managed_bookmarks_tracker_;
   GetManagementDomainCallback managed_domain_callback_;
   BookmarkPermanentNode* managed_node_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedBookmarkService);
 };
 
 }  // namespace bookmarks

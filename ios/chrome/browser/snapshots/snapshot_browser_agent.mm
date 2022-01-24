@@ -119,8 +119,7 @@ void SnapshotBrowserAgent::PurgeUnusedSnapshots() {
   NSSet<NSString*>* snapshot_ids = GetTabIDs();
   // Keep snapshots that are less than one minute old, to prevent a concurrency
   // issue if they are created while the purge is running.
-  const base::Time one_minute_ago =
-      base::Time::Now() - base::TimeDelta::FromMinutes(1);
+  const base::Time one_minute_ago = base::Time::Now() - base::Minutes(1);
   [snapshot_cache_ purgeCacheOlderThan:one_minute_ago keeping:snapshot_ids];
 }
 

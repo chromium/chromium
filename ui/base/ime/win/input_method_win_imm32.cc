@@ -42,7 +42,7 @@ void InputMethodWinImm32::OnFocus() {
 }
 
 bool InputMethodWinImm32::OnUntranslatedIMEMessage(
-    const MSG event,
+    const CHROME_MSG event,
     InputMethod::NativeEventResult* result) {
   LRESULT original_result = 0;
   BOOL handled = FALSE;
@@ -268,9 +268,9 @@ LRESULT InputMethodWinImm32::OnImeEndComposition(HWND window_handle,
   // Also see Firefox's implementation:
   // https://dxr.mozilla.org/mozilla-beta/source/widget/windows/IMMHandler.cpp#800
   // TODO(crbug.com/654865): Further investigations and clean-ups required.
-  MSG compositionMsg;
-  if (::PeekMessage(&compositionMsg, window_handle, WM_IME_STARTCOMPOSITION,
-                    WM_IME_COMPOSITION, PM_NOREMOVE) &&
+  CHROME_MSG compositionMsg;
+  if (::PeekMessage(ChromeToWindowsType(&compositionMsg), window_handle,
+                    WM_IME_STARTCOMPOSITION, WM_IME_COMPOSITION, PM_NOREMOVE) &&
       compositionMsg.message == WM_IME_COMPOSITION &&
       (compositionMsg.lParam & GCS_RESULTSTR))
     return 0;

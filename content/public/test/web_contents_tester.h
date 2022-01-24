@@ -25,6 +25,7 @@ class Size;
 namespace content {
 
 class BrowserContext;
+class NavigationSimulator;
 
 // This interface allows embedders of content/ to write tests that depend on a
 // test version of WebContents.  This interface can be retrieved from any
@@ -171,6 +172,10 @@ class WebContentsTester {
   // frame and returns the main frame of the page after the navigation is
   // complete.
   virtual RenderFrameHost* AddPrerenderAndCommitNavigation(const GURL& url) = 0;
+  // Starts prerendering a page, simulates a navigation to |url| in the main
+  // frame and returns the simulator after the navigation is started.
+  virtual std::unique_ptr<NavigationSimulator> AddPrerenderAndStartNavigation(
+      const GURL& url) = 0;
 };
 
 }  // namespace content

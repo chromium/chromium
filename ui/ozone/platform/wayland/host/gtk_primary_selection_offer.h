@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
 
@@ -26,6 +25,10 @@ class GtkPrimarySelectionOffer : public WaylandDataOfferBase {
  public:
   // Takes ownership of data_offer.
   explicit GtkPrimarySelectionOffer(gtk_primary_selection_offer* data_offer);
+
+  GtkPrimarySelectionOffer(const GtkPrimarySelectionOffer&) = delete;
+  GtkPrimarySelectionOffer& operator=(const GtkPrimarySelectionOffer&) = delete;
+
   ~GtkPrimarySelectionOffer() override;
 
   // WaylandDataOfferBase overrides:
@@ -39,8 +42,6 @@ class GtkPrimarySelectionOffer : public WaylandDataOfferBase {
 
   // The Wayland object wrapped by this instance.
   wl::Object<gtk_primary_selection_offer> data_offer_;
-
-  DISALLOW_COPY_AND_ASSIGN(GtkPrimarySelectionOffer);
 };
 
 }  // namespace ui

@@ -119,10 +119,6 @@ Unknown / canceled
                 </OL>
             </OL>
         </DIV>
-        <STYLE >
-        </STYLE>
-        <STYLE >
-        </STYLE>
     </#document-fragment>
 </DIV>
 

@@ -14,9 +14,9 @@
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -139,10 +139,11 @@ CoreAccountId OAuth2LoginManager::GetUnconsentedPrimaryAccountId() {
 }
 
 void OAuth2LoginManager::VerifySessionCookies() {
-  DCHECK(!login_verifier_.get());
-  login_verifier_ = std::make_unique<OAuth2LoginVerifier>(
-      this, GetIdentityManager(), GetUnconsentedPrimaryAccountId(),
-      oauthlogin_access_token_);
+  if (!login_verifier_) {
+    login_verifier_ = std::make_unique<OAuth2LoginVerifier>(
+        this, GetIdentityManager(), GetUnconsentedPrimaryAccountId(),
+        oauthlogin_access_token_);
+  }
 
   login_verifier_->VerifyUserCookies();
 }

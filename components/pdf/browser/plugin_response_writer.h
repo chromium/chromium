@@ -9,11 +9,11 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "components/pdf/browser/pdf_stream_delegate.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "url/gurl.h"
 
 namespace mojo {
 class DataPipeProducer;
@@ -28,8 +28,7 @@ namespace pdf {
 class PluginResponseWriter final {
  public:
   PluginResponseWriter(
-      const GURL& source_url,
-      const GURL& original_url,
+      const PdfStreamDelegate::StreamInfo& stream_info,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
   PluginResponseWriter(const PluginResponseWriter&) = delete;
   PluginResponseWriter& operator=(const PluginResponseWriter&) = delete;

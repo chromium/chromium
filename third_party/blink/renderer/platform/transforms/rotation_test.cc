@@ -13,9 +13,9 @@ const double kAngleTolerance = 1e-4;
 
 #define EXPECT_AXIS(expected, actual)                      \
   do {                                                     \
-    EXPECT_NEAR(expected.X(), actual.X(), kAxisTolerance); \
-    EXPECT_NEAR(expected.Y(), actual.Y(), kAxisTolerance); \
-    EXPECT_NEAR(expected.Z(), actual.Z(), kAxisTolerance); \
+    EXPECT_NEAR(expected.x(), actual.x(), kAxisTolerance); \
+    EXPECT_NEAR(expected.y(), actual.y(), kAxisTolerance); \
+    EXPECT_NEAR(expected.z(), actual.z(), kAxisTolerance); \
   } while (false)
 
 #define EXPECT_ANGLE(expected, actual) \
@@ -129,7 +129,7 @@ TEST(RotationTest, SlerpTest) {
                       Rotation(FloatPoint3D(0, 1, 0), 90), 0.5);
   double root2_inv = 1 / std::sqrt(2);  // half angle is 60 degrees
   EXPECT_AXIS(FloatPoint3D(root2_inv, root2_inv, 0), xy_rotation.axis);
-  double expected_angle = rad2deg(std::acos(1.0 / 3.0));
+  double expected_angle = Rad2deg(std::acos(1.0 / 3.0));
   EXPECT_ANGLE(expected_angle, xy_rotation.angle);
 }
 

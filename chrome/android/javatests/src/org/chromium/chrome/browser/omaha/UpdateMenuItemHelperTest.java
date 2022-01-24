@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omaha;
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
+import android.os.Build;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
@@ -23,6 +24,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -155,8 +157,9 @@ public class UpdateMenuItemHelperTest {
             throws Exception {
         prepareAndStartMainActivity(currentVersion, latestVersion);
         showAppMenuAndAssertMenuShown();
-        Assert.assertTrue("Update menu item is not showing.",
-                mActivityTestRule.getMenu().findItem(R.id.update_menu_id).isVisible());
+        Assert.assertNotNull("Update menu item is not showing.",
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
 
     /**
@@ -166,8 +169,9 @@ public class UpdateMenuItemHelperTest {
             throws Exception {
         prepareAndStartMainActivity(currentVersion, latestVersion);
         showAppMenuAndAssertMenuShown();
-        Assert.assertFalse("Update menu item is showing.",
-                mActivityTestRule.getMenu().findItem(R.id.update_menu_id).isVisible());
+        Assert.assertNull("Update menu item is showing.",
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
 
     @Test
@@ -182,6 +186,8 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
+    @DisableIf.
+    Build(sdk_is_less_than = Build.VERSION_CODES.M, message = "https://crbug.com/1256725")
     public void testCurrentVersionIsSame() throws Exception {
         checkUpdateMenuItemIsNotShowing("1.2.3.4", "1.2.3.4");
     }
@@ -189,6 +195,8 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
+    @DisableIf.
+    Build(sdk_is_less_than = Build.VERSION_CODES.M, message = "https://crbug.com/1256725")
     public void testCurrentVersionIsNewer() throws Exception {
         checkUpdateMenuItemIsNotShowing("27.0.1453.42", "26.0.1410.49");
     }
@@ -196,6 +204,8 @@ public class UpdateMenuItemHelperTest {
     @Test
     @MediumTest
     @Feature({"Omaha"})
+    @DisableIf.
+    Build(sdk_is_less_than = Build.VERSION_CODES.M, message = "https://crbug.com/1256725")
     public void testNoVersionKnown() throws Exception {
         checkUpdateMenuItemIsNotShowing("1.2.3.4", "0");
     }
@@ -221,8 +231,9 @@ public class UpdateMenuItemHelperTest {
 
         // Make sure the item is not shown in tab switcher app menu.
         showAppMenuAndAssertMenuShown();
-        Assert.assertFalse("Update menu item is showing.",
-                mActivityTestRule.getMenu().findItem(R.id.update_menu_id).isVisible());
+        Assert.assertNull("Update menu item is showing.",
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
 
     @Test

@@ -5,7 +5,6 @@
 #ifndef UI_GFX_SCOPED_NS_GRAPHICS_CONTEXT_SAVE_GSTATE_MAC_H_
 #define UI_GFX_SCOPED_NS_GRAPHICS_CONTEXT_SAVE_GSTATE_MAC_H_
 
-#include "base/macros.h"
 #include "ui/gfx/gfx_export.h"
 
 #if defined(__OBJC__)
@@ -20,12 +19,16 @@ namespace gfx {
 class GFX_EXPORT ScopedNSGraphicsContextSaveGState {
  public:
   ScopedNSGraphicsContextSaveGState();
+
+  ScopedNSGraphicsContextSaveGState(const ScopedNSGraphicsContextSaveGState&) =
+      delete;
+  ScopedNSGraphicsContextSaveGState& operator=(
+      const ScopedNSGraphicsContextSaveGState&) = delete;
+
   ~ScopedNSGraphicsContextSaveGState();
 
  private:
   NSGraphicsContext* context_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedNSGraphicsContextSaveGState);
 };
 
 }  // namespace gfx

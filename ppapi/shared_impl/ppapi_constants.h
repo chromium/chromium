@@ -18,9 +18,6 @@ const char kCorbTestPluginName[] = "corb_test_plugin.plugin";
 const char kCorbTestPluginName[] = "libcorb_test_plugin.so";
 #endif
 
-// Name of the root directory in the plugin private file system.
-const char kPluginPrivateRootName[] = "pluginprivate";
-
 }  // namespace ppapi
 
 #endif  // PPAPI_SHARED_IMPL_PPAPI_CONSTANTS_H_

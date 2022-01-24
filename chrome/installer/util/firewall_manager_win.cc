@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/installer/util/advanced_firewall_manager_win.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/installer_util_strings.h"
@@ -25,6 +24,11 @@ const uint16_t kDefaultMdnsPort = 5353;
 class FirewallManagerAdvancedImpl : public FirewallManager {
  public:
   FirewallManagerAdvancedImpl() {}
+
+  FirewallManagerAdvancedImpl(const FirewallManagerAdvancedImpl&) = delete;
+  FirewallManagerAdvancedImpl& operator=(const FirewallManagerAdvancedImpl&) =
+      delete;
+
   ~FirewallManagerAdvancedImpl() override {}
 
   bool Init(const std::wstring& app_name, const base::FilePath& app_path) {
@@ -53,8 +57,6 @@ class FirewallManagerAdvancedImpl : public FirewallManager {
   }
 
   AdvancedFirewallManager manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirewallManagerAdvancedImpl);
 };
 
 }  // namespace

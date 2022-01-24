@@ -21,8 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LINE_ROOT_INLINE_BOX_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LINE_ROOT_INLINE_BOX_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
 #include "third_party/blink/renderer/core/layout/line/inline_flow_box.h"
 #include "third_party/blink/renderer/platform/text/bidi_context.h"
@@ -48,10 +46,10 @@ class RootInlineBox : public InlineFlowBox {
   void DetachEllipsisBox();
 
   RootInlineBox* NextRootBox() const {
-    return static_cast<RootInlineBox*>(next_line_box_);
+    return static_cast<RootInlineBox*>(next_line_box_.Get());
   }
   RootInlineBox* PrevRootBox() const {
-    return static_cast<RootInlineBox*>(prev_line_box_);
+    return static_cast<RootInlineBox*>(prev_line_box_.Get());
   }
 
   void Move(const LayoutSize&) final;
@@ -92,7 +90,9 @@ class RootInlineBox : public InlineFlowBox {
 
   LineBoxList* LineBoxes() const final;
 
-  LineLayoutItem LineBreakObj() const { return line_break_obj_; }
+  LineLayoutItem LineBreakObj() const {
+    return LineLayoutItem(line_break_obj_);
+  }
   BidiStatus LineBreakBidiStatus() const;
   void SetLineBreakInfo(LineLayoutItem, unsigned break_pos, const BidiStatus&);
 
@@ -156,17 +156,11 @@ class RootInlineBox : public InlineFlowBox {
       LayoutUnit,
       bool only_editable_leaves = false) const;
 
-  void AppendFloat(LayoutBox* floating_box) {
-    DCHECK(!IsDirty());
-    if (floats_)
-      floats_->push_back(floating_box);
-    else
-      floats_ = std::make_unique<Vector<LayoutBox*>>(1, floating_box);
-  }
+  void AppendFloat(LayoutBox* floating_box);
 
-  Vector<LayoutBox*>* FloatsPtr() {
+  HeapVector<Member<LayoutBox>>* FloatsPtr() {
     DCHECK(!IsDirty());
-    return floats_.get();
+    return floats_;
   }
 
   void ExtractLineBoxFromLayoutObject() final;
@@ -205,10 +199,10 @@ class RootInlineBox : public InlineFlowBox {
   }
 
   typedef void (*CustomInlineBoxRangeReverse)(
-      Vector<InlineBox*>::iterator first,
-      Vector<InlineBox*>::iterator last);
+      HeapVector<Member<InlineBox>>::iterator first,
+      HeapVector<Member<InlineBox>>::iterator last);
   void CollectLeafBoxesInLogicalOrder(
-      Vector<InlineBox*>&,
+      HeapVector<Member<InlineBox>>&,
       CustomInlineBoxRangeReverse custom_reverse_implementation =
           nullptr) const;
 
@@ -217,21 +211,25 @@ class RootInlineBox : public InlineFlowBox {
 
   const char* BoxName() const override;
 
+  void Trace(Visitor* visitor) const override;
+
  private:
   LayoutUnit BeforeAnnotationsAdjustment() const;
 
   // This folds into the padding at the end of InlineFlowBox on 64-bit.
   unsigned line_break_pos_;
 
-  // Where this line ended.  The exact object and the position within that
+  // Where this line ended. The exact object and the position within that
   // object are stored so that we can create an InlineIterator beginning just
   // after the end of this line.
-  LineLayoutItem line_break_obj_;
+  // RootInlineBox cannot have LineLayoutBox itself bacuse it consists of
+  // WeakPersistent. Use LineBreakObj() to create LineLayoutBox.
+  Member<LayoutObject> line_break_obj_;
   scoped_refptr<BidiContext> line_break_context_;
 
   // Floats hanging off the line are pushed into this vector during layout. It
   // is only good for as long as the line has not been marked dirty.
-  std::unique_ptr<Vector<LayoutBox*>> floats_;
+  Member<HeapVector<Member<LayoutBox>>> floats_;
 
   LayoutUnit line_top_;
   LayoutUnit line_bottom_;

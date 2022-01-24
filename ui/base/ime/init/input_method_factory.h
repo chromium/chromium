@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -33,10 +32,12 @@ void SetUpInputMethodForTesting(InputMethod* input_method);
 class COMPONENT_EXPORT(UI_BASE_IME_INIT) ScopedTestInputMethodFactory {
  public:
   ScopedTestInputMethodFactory();
-  ~ScopedTestInputMethodFactory();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestInputMethodFactory);
+  ScopedTestInputMethodFactory(const ScopedTestInputMethodFactory&) = delete;
+  ScopedTestInputMethodFactory& operator=(const ScopedTestInputMethodFactory&) =
+      delete;
+
+  ~ScopedTestInputMethodFactory();
 };
 
 }  // namespace ui;

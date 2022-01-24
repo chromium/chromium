@@ -39,7 +39,7 @@ TEST(VariationsRequestSchedulerMobileTest, StartNoRun) {
 TEST(VariationsRequestSchedulerMobileTest, StartRun) {
   TestingPrefServiceSimple prefs;
   // Verify it doesn't take more than a day.
-  base::Time old = base::Time::Now() - base::TimeDelta::FromHours(24);
+  base::Time old = base::Time::Now() - base::Hours(24);
   prefs.registry()->RegisterTimePref(prefs::kVariationsLastFetchTime, old);
   int executed = 0;
   const base::RepeatingClosure task =
@@ -83,7 +83,7 @@ TEST(VariationsRequestSchedulerMobileTest, OnAppEnterForegroundRun) {
 
   TestingPrefServiceSimple prefs;
 
-  base::Time old = base::Time::Now() - base::TimeDelta::FromHours(24);
+  base::Time old = base::Time::Now() - base::Hours(24);
   prefs.registry()->RegisterTimePref(prefs::kVariationsLastFetchTime, old);
   int executed = 0;
   const base::RepeatingClosure task =
@@ -110,7 +110,7 @@ TEST(VariationsRequestSchedulerMobileTest, OnAppEnterForegroundOnStartup) {
 
   TestingPrefServiceSimple prefs;
 
-  base::Time old = base::Time::Now() - base::TimeDelta::FromHours(24);
+  base::Time old = base::Time::Now() - base::Hours(24);
   prefs.registry()->RegisterTimePref(prefs::kVariationsLastFetchTime, old);
   int executed = 0;
   const base::RepeatingClosure task =
@@ -132,10 +132,9 @@ TEST(VariationsRequestSchedulerMobileTest, OnAppEnterForegroundOnStartup) {
   // Simulate letting time pass.
   const base::Time last_fetch_time =
       prefs.GetTime(prefs::kVariationsLastFetchTime);
-  const base::Time one_day_earlier =
-      last_fetch_time - base::TimeDelta::FromHours(24);
+  const base::Time one_day_earlier = last_fetch_time - base::Hours(24);
   prefs.SetTime(prefs::kVariationsLastFetchTime, one_day_earlier);
-  scheduler.last_request_time_ -= base::TimeDelta::FromHours(24);
+  scheduler.last_request_time_ -= base::Hours(24);
 
   scheduler.OnAppEnterForeground();
   EXPECT_TRUE(scheduler.schedule_fetch_timer_.IsRunning());

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_app_factory.h"
 
@@ -29,13 +28,15 @@ class AutofillPaymentAppFactory : public PaymentAppFactory {
       base::WeakPtr<Delegate> delegate);
 
   AutofillPaymentAppFactory();
+
+  AutofillPaymentAppFactory(const AutofillPaymentAppFactory&) = delete;
+  AutofillPaymentAppFactory& operator=(const AutofillPaymentAppFactory&) =
+      delete;
+
   ~AutofillPaymentAppFactory() override;
 
   // PaymentAppFactory:
   void Create(base::WeakPtr<Delegate> delegate) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillPaymentAppFactory);
 };
 
 }  // namespace payments

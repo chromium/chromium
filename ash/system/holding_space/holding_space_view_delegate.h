@@ -95,6 +95,12 @@ class ASH_EXPORT HoldingSpaceViewDelegate
   void OnHoldingSpaceItemViewMouseReleased(HoldingSpaceItemView* view,
                                            const ui::MouseEvent& event);
 
+  // Invoked when the primary action for `view` is pressed.
+  void OnHoldingSpaceItemViewPrimaryActionPressed(HoldingSpaceItemView* view);
+
+  // Invoked when the secondary action for `view` is pressed.
+  void OnHoldingSpaceItemViewSecondaryActionPressed(HoldingSpaceItemView* view);
+
   // Invoked when `view` has changed selected state.
   void OnHoldingSpaceItemViewSelectedChanged(HoldingSpaceItemView* view);
 

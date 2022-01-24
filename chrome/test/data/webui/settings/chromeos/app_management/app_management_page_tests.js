@@ -6,7 +6,7 @@
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
 // #import {BrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flushTasks} from 'chrome://test/test_util.m.js';
+// #import {flushTasks} from 'chrome://test/test_util.js';
 // #import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf} from './test_util.m.js';
 // clang-format on
 

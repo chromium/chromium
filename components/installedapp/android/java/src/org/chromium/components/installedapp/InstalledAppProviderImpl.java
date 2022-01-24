@@ -26,8 +26,8 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.installedapp.mojom.InstalledAppProvider;
@@ -61,7 +61,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @VisibleForTesting
     public static final String INSTANT_APP_HOLDBACK_ID_STRING = "instantapp:holdback";
 
-    // The delay, in ms, of the most recent invocation of FilterInstalledAppsResponse.
+    // The delay, in ms, of the most recent invocation of FilterInstalledApps_Response.
     int mLastDelayForTesting;
 
     // The maximum number of related apps declared in the Web Manifest taken into account when
@@ -120,7 +120,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @UiThread
     private class ResultHolder {
         private int mNumTasks;
-        private FilterInstalledAppsResponse mCallback;
+        private FilterInstalledApps_Response mCallback;
         private ArrayList<RelatedApplication> mInstalledApps;
         private int mDelayMs;
 
@@ -129,7 +129,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
          * @param callback Will be passed on to {@link onFilteredInstalledApps()} to be invoked with
          *         the results once all the tasks are complete.
          */
-        public ResultHolder(int numTasks, FilterInstalledAppsResponse callback) {
+        public ResultHolder(int numTasks, FilterInstalledApps_Response callback) {
             mNumTasks = numTasks;
             mCallback = callback;
             mInstalledApps =
@@ -155,7 +155,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @Override
     @UiThread
     public void filterInstalledApps(final RelatedApplication[] relatedApps, final Url manifestUrl,
-            final FilterInstalledAppsResponse callback) {
+            final FilterInstalledApps_Response callback) {
         GURL url = mRenderFrameHost.getLastCommittedURL();
         final GURL frameUrl = url == null ? GURL.emptyGURL() : url;
         int delayMillis = 0;
@@ -200,7 +200,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
      */
     @UiThread
     private void onFilteredInstalledApps(ArrayList<RelatedApplication> installedApps, int delayMs,
-            FilterInstalledAppsResponse callback) {
+            FilterInstalledApps_Response callback) {
         RelatedApplication[] installedAppsArray;
 
         if (mRenderFrameHost.isIncognito()) {

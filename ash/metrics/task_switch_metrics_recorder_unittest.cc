@@ -16,6 +16,11 @@ namespace {
 class TaskSwitchMetricsRecorderTest : public testing::Test {
  public:
   TaskSwitchMetricsRecorderTest();
+
+  TaskSwitchMetricsRecorderTest(const TaskSwitchMetricsRecorderTest&) = delete;
+  TaskSwitchMetricsRecorderTest& operator=(
+      const TaskSwitchMetricsRecorderTest&) = delete;
+
   ~TaskSwitchMetricsRecorderTest() override;
 
   // Wrapper to the test targets OnTaskSwitch(TaskSwitchSource) method.
@@ -31,9 +36,6 @@ class TaskSwitchMetricsRecorderTest : public testing::Test {
 
   // The test target.
   std::unique_ptr<TaskSwitchMetricsRecorder> task_switch_metrics_recorder_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskSwitchMetricsRecorderTest);
 };
 
 TaskSwitchMetricsRecorderTest::TaskSwitchMetricsRecorderTest() = default;

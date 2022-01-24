@@ -83,4 +83,11 @@ export class SigninViewElement extends SigninViewElementBase {
     return html`{__html_template__}`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'signin-view': SigninViewElement;
+  }
+}
+
 customElements.define(SigninViewElement.is, SigninViewElement);

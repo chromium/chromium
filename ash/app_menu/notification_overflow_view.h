@@ -26,6 +26,9 @@ class APP_MENU_EXPORT NotificationOverflowView : public views::View {
  public:
   NotificationOverflowView();
 
+  NotificationOverflowView(const NotificationOverflowView&) = delete;
+  NotificationOverflowView& operator=(const NotificationOverflowView&) = delete;
+
   ~NotificationOverflowView() override;
 
   // Creates a copy of |image_view| and adds it as a child view, using
@@ -57,8 +60,6 @@ class APP_MENU_EXPORT NotificationOverflowView : public views::View {
   // The overflow icon shown when there are more than |kMaxOverflowIcons|
   // notifications.
   message_center::ProportionalImageView* overflow_icon_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationOverflowView);
 };
 
 }  // namespace ash

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"

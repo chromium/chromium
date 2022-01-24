@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_TEST_KEYBOARD_LAYOUT_H_
 #define UI_EVENTS_TEST_KEYBOARD_LAYOUT_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -45,6 +44,10 @@ PlatformKeyboardLayout GetPlatformKeyboardLayout(KeyboardLayout layout);
 class ScopedKeyboardLayout {
  public:
   explicit ScopedKeyboardLayout(KeyboardLayout layout);
+
+  ScopedKeyboardLayout(const ScopedKeyboardLayout&) = delete;
+  ScopedKeyboardLayout& operator=(const ScopedKeyboardLayout&) = delete;
+
   ~ScopedKeyboardLayout();
 
  private:
@@ -57,8 +60,6 @@ class ScopedKeyboardLayout {
 
   PlatformKeyboardLayout original_layout_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedKeyboardLayout);
 };
 
 }  // namespace ui

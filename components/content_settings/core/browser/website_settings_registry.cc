@@ -239,6 +239,20 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::NOT_LOSSY,
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, ALL_PLATFORMS,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+  Register(ContentSettingsType::HTTP_ALLOWED, "http-allowed", nullptr,
+           WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
+           WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
+           DESKTOP | PLATFORM_ANDROID,
+           WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+  Register(ContentSettingsType::FORMFILL_METADATA, "formfill-metadata", nullptr,
+           WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
+           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, ALL_PLATFORMS,
+           WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+  Register(ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION,
+           "webid-active-session", nullptr, WebsiteSettingsInfo::UNSYNCABLE,
+           WebsiteSettingsInfo::NOT_LOSSY,
+           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, ALL_PLATFORMS,
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
 }
 
 }  // namespace content_settings

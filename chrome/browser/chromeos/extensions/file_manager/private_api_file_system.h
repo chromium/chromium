@@ -15,8 +15,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 #include "components/drive/file_errors.h"
@@ -76,6 +76,11 @@ class FileManagerPrivateGrantAccessFunction : public ExtensionFunction {
  public:
   FileManagerPrivateGrantAccessFunction();
 
+  FileManagerPrivateGrantAccessFunction(
+      const FileManagerPrivateGrantAccessFunction&) = delete;
+  FileManagerPrivateGrantAccessFunction& operator=(
+      const FileManagerPrivateGrantAccessFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.grantAccess",
                              FILEMANAGERPRIVATE_GRANTACCESS)
 
@@ -84,7 +89,6 @@ class FileManagerPrivateGrantAccessFunction : public ExtensionFunction {
 
  private:
   ExtensionFunction::ResponseAction Run() override;
-  DISALLOW_COPY_AND_ASSIGN(FileManagerPrivateGrantAccessFunction);
 };
 
 // Base class for FileManagerPrivateInternalAddFileWatchFunction and
@@ -191,6 +195,9 @@ class FileManagerPrivateGetSizeStatsFunction : public LoggedExtensionFunction {
   void OnGetDocumentsProviderAvailableSpace(const bool error,
                                             const uint64_t available_bytes,
                                             const uint64_t capacity_bytes);
+
+  void OnGetDriveQuotaUsage(drive::FileError error,
+                            drivefs::mojom::QuotaUsagePtr usage);
 
   void OnGetSizeStats(const uint64_t* total_size,
                       const uint64_t* remaining_size);
@@ -344,7 +351,7 @@ class FileManagerPrivateInternalComputeChecksumFunction
   ResponseAction Run() override;
 
  private:
-  std::unique_ptr<drive::util::FileStreamMd5Digester> digester_;
+  scoped_refptr<drive::util::FileStreamMd5Digester> digester_;
 
   void RespondWith(std::string hash);
 };
@@ -408,6 +415,33 @@ class FileManagerPrivateInternalGetDirectorySizeFunction
   ~FileManagerPrivateInternalGetDirectorySizeFunction() override = default;
 
   void OnDirectorySizeRetrieved(int64_t size);
+
+  // ExtensionFunction overrides
+  ResponseAction Run() override;
+};
+
+// Implements the chrome.fileManagerPrivate.startIOTask method.
+class FileManagerPrivateInternalStartIOTaskFunction
+    : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.startIOTask",
+                             FILEMANAGERPRIVATEINTERNAL_STARTIOTASK)
+
+ protected:
+  ~FileManagerPrivateInternalStartIOTaskFunction() override = default;
+
+  // ExtensionFunction overrides
+  ResponseAction Run() override;
+};
+
+// Implements the chrome.fileManagerPrivate.cancelIOTask method.
+class FileManagerPrivateCancelIOTaskFunction : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.cancelIOTask",
+                             FILEMANAGERPRIVATE_CANCELIOTASK)
+
+ protected:
+  ~FileManagerPrivateCancelIOTaskFunction() override = default;
 
   // ExtensionFunction overrides
   ResponseAction Run() override;

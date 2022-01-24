@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that debugger StepInto will step through inlined scripts.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(
       'resources/debugger-step-into-inlined-scripts.html');

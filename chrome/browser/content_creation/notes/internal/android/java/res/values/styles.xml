@@ -6,8 +6,8 @@
      found in the LICENSE file.
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="TextAppearance.TextSmallItalic.Secondary.Light" parent="TextAppearance.TextSmall.Secondary">
+<resources>
+    <style name="TextAppearance.TextSmallItalic.Secondary.Baseline.Light" parent="TextAppearance.TextSmall">
         <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
         <item name="android:textStyle">italic</item>
     </style>

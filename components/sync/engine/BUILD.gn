@@ -120,6 +120,8 @@ static_library("engine") {
     "nigori/key_derivation_params.cc",
     "nigori/key_derivation_params.h",
     "nigori/keystore_keys_handler.h",
+    "nigori/nigori.cc",
+    "nigori/nigori.h",
     "nudge_handler.h",
     "polling_constants.h",
     "shutdown_reason.cc",

@@ -33,6 +33,11 @@ class DownloadOfflineContentProviderTest : public testing::Test {
         provider_(&aggregator_, kTestDownloadNamespace),
         coordinator_(base::NullCallback(), false) {}
 
+  DownloadOfflineContentProviderTest(
+      const DownloadOfflineContentProviderTest&) = delete;
+  DownloadOfflineContentProviderTest& operator=(
+      const DownloadOfflineContentProviderTest&) = delete;
+
   ~DownloadOfflineContentProviderTest() override {}
 
   void InitializeDownloads(bool full_browser) {
@@ -48,8 +53,6 @@ class DownloadOfflineContentProviderTest : public testing::Test {
   DownloadOfflineContentProvider provider_;
   SimpleDownloadManagerCoordinator coordinator_;
   NiceMock<download::MockSimpleDownloadManager> mock_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadOfflineContentProviderTest);
 };
 
 TEST_F(DownloadOfflineContentProviderTest, PauseDownloadBeforeInit) {

@@ -53,7 +53,7 @@ ClipboardSetImageDataFunction::~ClipboardSetImageDataFunction() {}
 
 ExtensionFunction::ResponseAction ClipboardSetImageDataFunction::Run() {
   std::unique_ptr<clipboard::SetImageData::Params> params(
-      clipboard::SetImageData::Params::Create(*args_));
+      clipboard::SetImageData::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Fill in the omitted additional data items with empty data.
@@ -65,8 +65,8 @@ ExtensionFunction::ResponseAction ClipboardSetImageDataFunction::Run() {
   }
 
   ExtensionsAPIClient::Get()->SaveImageDataToClipboard(
-      std::vector<char>(params->image_data.begin(), params->image_data.end()),
-      params->type, std::move(*params->additional_items),
+      std::move(params->image_data), params->type,
+      std::move(*params->additional_items),
       base::BindOnce(&ClipboardSetImageDataFunction::OnSaveImageDataSuccess,
                      this),
       base::BindOnce(&ClipboardSetImageDataFunction::OnSaveImageDataError,

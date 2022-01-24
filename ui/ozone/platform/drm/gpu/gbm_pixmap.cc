@@ -70,11 +70,7 @@ uint32_t GbmPixmap::GetUniqueId() const {
 
 bool GbmPixmap::ScheduleOverlayPlane(
     gfx::AcceleratedWidget widget,
-    int plane_z_order,
-    gfx::OverlayTransform plane_transform,
-    const gfx::Rect& display_bounds,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
+    const gfx::OverlayPlaneData& overlay_plane_data,
     std::vector<gfx::GpuFence> acquire_fences,
     std::vector<gfx::GpuFence> release_fences) {
   DCHECK(buffer_->GetFlags() & GBM_BO_USE_SCANOUT);
@@ -84,8 +80,7 @@ bool GbmPixmap::ScheduleOverlayPlane(
   if (framebuffer_) {
     DCHECK(acquire_fences.empty() || acquire_fences.size() == 1u);
     surface_manager_->GetSurface(widget)->QueueOverlayPlane(DrmOverlayPlane(
-        framebuffer_, plane_z_order, plane_transform, display_bounds, crop_rect,
-        enable_blend,
+        framebuffer_, overlay_plane_data,
         acquire_fences.empty()
             ? nullptr
             : std::make_unique<gfx::GpuFence>(std::move(acquire_fences[0]))));

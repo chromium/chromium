@@ -21,6 +21,11 @@ class VideoDecoderDesktop;
 class MediaPipelineBackendDesktop : public MediaPipelineBackend {
  public:
   MediaPipelineBackendDesktop();
+
+  MediaPipelineBackendDesktop(const MediaPipelineBackendDesktop&) = delete;
+  MediaPipelineBackendDesktop& operator=(const MediaPipelineBackendDesktop&) =
+      delete;
+
   ~MediaPipelineBackendDesktop() override;
 
   const AudioDecoderDesktop* audio_decoder() const {
@@ -52,8 +57,6 @@ class MediaPipelineBackendDesktop : public MediaPipelineBackend {
   float rate_;
   std::unique_ptr<AudioDecoderDesktop> audio_decoder_;
   std::unique_ptr<VideoDecoderDesktop> video_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPipelineBackendDesktop);
 };
 
 }  // namespace media

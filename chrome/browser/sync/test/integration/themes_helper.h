@@ -37,8 +37,8 @@ bool UsingSystemTheme(Profile* profile) WARN_UNUSED_RESULT;
 
 // Returns true iff a theme with the given ID is pending install in
 // |profile|.
-bool ThemeIsPendingInstall(
-    Profile* profile, const std::string& id) WARN_UNUSED_RESULT;
+bool ThemeIsPendingInstall(Profile* profile,
+                           const std::string& id) WARN_UNUSED_RESULT;
 
 // Sets |profile| to use the custom theme with the given index.
 void UseCustomTheme(Profile* profile, int index);

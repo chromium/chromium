@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/media/audio_stream_monitor.h"
@@ -61,9 +60,15 @@ class WebContentsImpl;
 // browser side. It receives IPC messages from media RenderFrameObservers and
 // forwards them to the corresponding managers. The managers are responsible
 // for sending IPCs back to the RenderFrameObservers at the render side.
-class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
+class CONTENT_EXPORT MediaWebContentsObserver
+    : public WebContentsObserver,
+      public media::mojom::MediaPlayerObserverClient {
  public:
   explicit MediaWebContentsObserver(WebContentsImpl* web_contents);
+
+  MediaWebContentsObserver(const MediaWebContentsObserver&) = delete;
+  MediaWebContentsObserver& operator=(const MediaWebContentsObserver&) = delete;
+
   ~MediaWebContentsObserver() override;
 
   // Called by WebContentsImpl when the audible state may have changed.
@@ -89,6 +94,13 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void MediaPictureInPictureChanged(bool is_picture_in_picture) override;
   void DidUpdateAudioMutingState(bool muted) override;
+
+  // MediaPlayerObserverClient implementation.
+  void GetHasPlayedBefore(GetHasPlayedBeforeCallback callback) override;
+
+  void BindMediaPlayerObserverClient(
+      mojo::PendingReceiver<media::mojom::MediaPlayerObserverClient>
+          pending_receiver);
 
   // TODO(zqzhang): this method is temporarily in MediaWebContentsObserver as
   // the effectively fullscreen video code is also here. We need to consider
@@ -251,6 +263,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   void OnMediaEffectivelyFullscreenChanged(
       const MediaPlayerId& player_id,
       blink::WebFullscreenVideoStatus fullscreen_status);
+  void OnMediaPlaying();
   void OnAudioOutputSinkChanged(const MediaPlayerId& player_id,
                                 std::string hashed_device_id);
 
@@ -281,6 +294,11 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   // Helper class for recording audible metrics.
   AudibleMetrics* audible_metrics_;
 
+  // A boolean indicating whether media has played before.
+  bool has_played_before_ = false;
+
+  mojo::ReceiverSet<media::mojom::MediaPlayerObserverClient> receivers_;
+
   // Tracking variables and associated wake locks for media playback.
   PlayerInfoMap player_info_map_;
   mojo::Remote<device::mojom::WakeLock> audio_wake_lock_;
@@ -305,7 +323,6 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   MediaPlayerRemotesMap media_player_remotes_;
 
   base::WeakPtrFactory<MediaWebContentsObserver> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MediaWebContentsObserver);
 };
 
 }  // namespace content

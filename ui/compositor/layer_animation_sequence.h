@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -43,6 +42,10 @@ class COMPOSITOR_EXPORT LayerAnimationSequence
   // Takes ownership of the given element and adds it to the sequence.
   explicit LayerAnimationSequence(
       std::unique_ptr<LayerAnimationElement> element);
+
+  LayerAnimationSequence(const LayerAnimationSequence&) = delete;
+  LayerAnimationSequence& operator=(const LayerAnimationSequence&) = delete;
+
   virtual ~LayerAnimationSequence();
 
   // Sets the start time for the animation. This must be called before the
@@ -202,8 +205,6 @@ class COMPOSITOR_EXPORT LayerAnimationSequence
   // Tracks the last_progressed_fraction() of the most recently progressed
   // element.
   double last_progressed_fraction_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerAnimationSequence);
 };
 
 }  // namespace ui

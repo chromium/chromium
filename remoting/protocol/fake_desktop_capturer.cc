@@ -44,6 +44,9 @@ class DefaultFrameGenerator
         box_speed_y_(kSpeed),
         first_frame_(true) {}
 
+  DefaultFrameGenerator(const DefaultFrameGenerator&) = delete;
+  DefaultFrameGenerator& operator=(const DefaultFrameGenerator&) = delete;
+
   std::unique_ptr<webrtc::DesktopFrame> GenerateFrame(
       webrtc::SharedMemoryFactory* shared_memory_factory);
 
@@ -57,8 +60,6 @@ class DefaultFrameGenerator
   int box_speed_x_;
   int box_speed_y_;
   bool first_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultFrameGenerator);
 };
 
 std::unique_ptr<webrtc::DesktopFrame> DefaultFrameGenerator::GenerateFrame(

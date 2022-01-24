@@ -21,6 +21,12 @@ class OfflinePageURLLoaderRequestInterceptor
   OfflinePageURLLoaderRequestInterceptor(
       content::NavigationUIData* navigation_ui_data,
       int frame_tree_node_id);
+
+  OfflinePageURLLoaderRequestInterceptor(
+      const OfflinePageURLLoaderRequestInterceptor&) = delete;
+  OfflinePageURLLoaderRequestInterceptor& operator=(
+      const OfflinePageURLLoaderRequestInterceptor&) = delete;
+
   ~OfflinePageURLLoaderRequestInterceptor() override;
 
   void MaybeCreateLoader(
@@ -38,8 +44,6 @@ class OfflinePageURLLoaderRequestInterceptor
 
   int frame_tree_node_id_;
   std::unique_ptr<OfflinePageURLLoader> url_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageURLLoaderRequestInterceptor);
 };
 
 }  // namespace offline_pages

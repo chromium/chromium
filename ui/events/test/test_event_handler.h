@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 typedef std::vector<std::string> HandlerSequenceRecorder;
@@ -22,6 +21,10 @@ namespace test {
 class TestEventHandler : public EventHandler {
  public:
   TestEventHandler();
+
+  TestEventHandler(const TestEventHandler&) = delete;
+  TestEventHandler& operator=(const TestEventHandler&) = delete;
+
   ~TestEventHandler() override;
 
   int num_key_events() const { return num_key_events_; }
@@ -57,8 +60,6 @@ class TestEventHandler : public EventHandler {
 
   HandlerSequenceRecorder* recorder_;
   std::string handler_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventHandler);
 };
 
 }  // namespace test

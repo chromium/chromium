@@ -17,6 +17,10 @@ namespace storage {
 class MockFileChangeObserver : public FileChangeObserver {
  public:
   MockFileChangeObserver();
+
+  MockFileChangeObserver(const MockFileChangeObserver&) = delete;
+  MockFileChangeObserver& operator=(const MockFileChangeObserver&) = delete;
+
   ~MockFileChangeObserver() override;
 
   // Creates a ChangeObserverList which only contains given |observer|.
@@ -94,8 +98,6 @@ class MockFileChangeObserver : public FileChangeObserver {
   int modify_file_count_;
   int create_directory_count_;
   int remove_directory_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFileChangeObserver);
 };
 
 }  // namespace storage

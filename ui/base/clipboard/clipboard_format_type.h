@@ -82,19 +82,19 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static const ClipboardFormatType& MozUrlType();
 #endif
 
-  // Gets the ClipboardFormatType corresponding to an arbitrary format string,
-  // registering it with the system if needed. Due to Windows/Linux
-  // limitations, please place limits on the amount of GetType calls with unique
-  // |format_string| arguments, when ingesting |format_string| from
-  // untrusted sources, such as renderer processes. In Windows, a failure will
-  // return an invalid format with Deserialize()'ed value of "0".
-  // The custom format name is transformed to the appropriate custom platform
-  // type name.
-  static ClipboardFormatType GetCustomPlatformType(
+  // For custom formats we hardcode the web custom format prefix and the index.
+  // Due to Windows/Linux limitations, please place limits on the amount of
+  // `WebCustomFormatName` calls with unique `index` argument.
+  static std::string WebCustomFormatName(int index);
+  // Gets the ClipboardFormatType corresponding to a format string,
+  // registering it with the system if needed.
+  static ClipboardFormatType CustomPlatformType(
       const std::string& format_string);
-  // Returns a custom MIME type from custom format name.
-  // e.g. On Windows, "Web Text HTML" is returned as "text/html".
-  std::string GetCustomPlatformName() const;
+  // Returns the web custom format map that has the mapping of MIME types to
+  // custom format names.
+  static const ClipboardFormatType& WebCustomFormatMap();
+  // Returns the web custom format map name.
+  static std::string WebCustomFormatMapName();
 
   // ClipboardFormatType can be used in a set on some platforms.
   bool operator<(const ClipboardFormatType& other) const;

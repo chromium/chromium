@@ -6,7 +6,8 @@
 
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

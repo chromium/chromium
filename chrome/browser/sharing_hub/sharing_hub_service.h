@@ -22,14 +22,16 @@ class SharingHubModel;
 class SharingHubService : public KeyedService {
  public:
   explicit SharingHubService(content::BrowserContext* context);
+
+  SharingHubService(const SharingHubService&) = delete;
+  SharingHubService& operator=(const SharingHubService&) = delete;
+
   ~SharingHubService() override;
 
   virtual SharingHubModel* GetSharingHubModel();
 
  private:
   std::unique_ptr<SharingHubModel> model_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingHubService);
 };
 
 }  // namespace sharing_hub

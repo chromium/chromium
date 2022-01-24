@@ -4,15 +4,16 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.ColorRes;
+import androidx.annotation.ColorInt;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -53,21 +54,18 @@ public class SuggestionViewViewBinder {
 
     private static void updateSuggestionTextColor(View view, PropertyModel model) {
         final boolean isSearch = model.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION);
-        final boolean useDarkMode = !OmniboxResourceProvider.isDarkMode(
-                model.get(SuggestionCommonProperties.OMNIBOX_THEME));
+        final @OmniboxTheme int omniboxTheme = model.get(SuggestionCommonProperties.OMNIBOX_THEME);
         final TextView line1 = view.findViewById(R.id.line_1);
         final TextView line2 = view.findViewById(R.id.line_2);
 
-        @ColorRes
-        final int color1 =
-                useDarkMode ? R.color.default_text_color_dark : R.color.default_text_color_light;
-        line1.setTextColor(ApiCompatibilityUtils.getColor(view.getResources(), color1));
+        final Context context = view.getContext();
+        final @ColorInt int color1 =
+                OmniboxResourceProvider.getSuggestionPrimaryTextColor(context, omniboxTheme);
+        line1.setTextColor(color1);
 
-        @ColorRes
-        final int color2 = isSearch ? (useDarkMode ? R.color.default_text_color_secondary_dark
-                                                   : R.color.default_text_color_secondary_light)
-                                    : (useDarkMode ? R.color.suggestion_url_dark_modern
-                                                   : R.color.suggestion_url_light_modern);
-        line2.setTextColor(ApiCompatibilityUtils.getColor(view.getResources(), color2));
+        final @ColorInt int color2 = isSearch
+                ? OmniboxResourceProvider.getSuggestionSecondaryTextColor(context, omniboxTheme)
+                : OmniboxResourceProvider.getSuggestionUrlTextColor(context, omniboxTheme);
+        line2.setTextColor(color2);
     }
 }

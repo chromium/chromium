@@ -123,8 +123,7 @@ TEST_F(DeviceCommandGetAvailableRoutinesJobTest, Success) {
       ->SetAvailableRoutinesForTesting(kAvailableRoutines);
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandGetAvailableRoutinesJob>();
-  InitializeJob(job.get(), kUniqueID, test_start_time_,
-                base::TimeDelta::FromSeconds(30),
+  InitializeJob(job.get(), kUniqueID, test_start_time_, base::Seconds(30),
                 /*terminate_upon_input=*/false);
   base::RunLoop run_loop;
   bool success =
@@ -145,8 +144,7 @@ TEST_F(DeviceCommandGetAvailableRoutinesJobTest, Failure) {
       ->SetAvailableRoutinesForTesting({});
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandGetAvailableRoutinesJob>();
-  InitializeJob(job.get(), kUniqueID, test_start_time_,
-                base::TimeDelta::FromSeconds(30),
+  InitializeJob(job.get(), kUniqueID, test_start_time_, base::Seconds(30),
                 /*terminate_upon_input=*/false);
   base::RunLoop run_loop;
   bool success = job->Run(base::Time::Now(), base::TimeTicks::Now(),

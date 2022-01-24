@@ -13,11 +13,13 @@
 #include "build/build_config.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request.h"
+#include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/payments/core/method_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/url_constants.h"
 
 namespace payments {
 
@@ -73,7 +75,17 @@ void SecurePaymentConfirmationController::
       request_->spec()->request_shipping() ||
       request_->spec()->request_payer_name() ||
       request_->spec()->request_payer_email() ||
-      request_->spec()->request_payer_phone()) {
+      request_->spec()->request_payer_phone() ||
+      request_->spec()->method_data().size() != 1 ||
+      !request_->spec()->method_data().front() ||
+      request_->spec()->method_data().front()->supported_method !=
+          methods::kSecurePaymentConfirmation ||
+      !request_->spec()->method_data().front()->secure_payment_confirmation ||
+      request_->spec()
+              ->method_data()
+              .front()
+              ->secure_payment_confirmation->payee_origin.scheme() !=
+          url::kHttpsScheme) {
     OnCancel();
     return;
   }
@@ -89,7 +101,10 @@ void SecurePaymentConfirmationController::
   model_.set_merchant_label(
       l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL));
   model_.set_merchant_value(url_formatter::FormatUrlForSecurityDisplay(
-      request_->state()->GetTopOrigin(),
+      request_->spec()
+          ->method_data()
+          .front()
+          ->secure_payment_confirmation->payee_origin.GetURL(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
   model_.set_instrument_label(l10n_util::GetStringUTF16(
@@ -116,6 +131,19 @@ void SecurePaymentConfirmationController::
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&SecurePaymentConfirmationController::OnCancel,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  // For automated testing, SPC can be placed in an 'autoaccept' or
+  // 'autoreject' mode, where the dialog should immediately be
+  // accepted/rejected without user interaction. We deliberately wait until
+  // after the dialog is created and shown to handle this, in order to keep the
+  // automation codepath as close to the 'real' one as possible.
+  if (request_->spc_transaction_mode() != SPCTransactionMode::NONE) {
+    if (request_->spc_transaction_mode() == SPCTransactionMode::AUTOACCEPT) {
+      OnConfirm();
+    } else {
+      OnCancel();
+    }
+  }
 }
 
 void SecurePaymentConfirmationController::RetryDialog() {

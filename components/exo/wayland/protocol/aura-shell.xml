@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="21">
+  <interface name="zaura_shell" version="28">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -93,9 +93,62 @@
       </description>
       <arg name="id" type="uint" summary="ID of a single bug fix"/>
     </event>
+
+    <event name="desks_changed" since="22">
+      <description summary="sends names of desks">
+        Notifies when there is a change in global desks state. This is emitted on
+        desk name changes, desk addition/removal or desks are reordered.
+        "desk_names" argument contains the set of null terminated strings as names of desks.
+      </description>
+      <arg name="desk_names" type="array" summary="an array of existing desks' names"/>
+    </event>
+    <event name="desk_activation_changed" since="22">
+      <description summary="sends the index of the active desk">
+        Notifies when there is a change of the active desk.
+      </description>
+      <arg name="active_desk_index" type="int" summary="index of the active desk"/>
+    </event>
+
+    <!-- Version 24 additions -->
+    <event name="activated" since="24">
+      <description summary="activated surface changed">
+	Notifies client that the activated surface changed.
+      </description>
+      <arg name="gained_active" type="object" interface="wl_surface" allow-null="true"/>
+      <arg name="lost_active" type="object" interface="wl_surface" allow-null="true"/>
+    </event>
+
+    <!-- Version 26 additions -->
+    <request name="surface_submission_in_pixel_coordinates" since="26">
+      <description summary="surfaces will be submitted in pixel coordinates">
+        [Deprecated] Informs the server that when submitting surfaces, this
+        client will not use wl_surface_set_buffer_scale to report the scales,
+        nor will it apply scale via vp_viewporter. Instead the server should
+        apply an appropriate scale transform to have the submitted buffers
+        composited correctly.
+      </description>
+    </request>
+
+    <request name="get_aura_toplevel_for_xdg_toplevel" since="27">
+      <description summary="get aura toplevel">
+  Retrieve the aura toplevel interface for a given xdg toplevel interface
+      </description>
+      <arg name="id" type="new_id" interface="zaura_toplevel"
+	   summary="the new aura toplevel interface id"/>
+      <arg name="toplevel" type="object" interface="xdg_toplevel"/>
+    </request>
+
+    <request name="get_aura_popup_for_xdg_popup" since="28">
+      <description summary="get aura popup">
+        Retrieve the aura popup interface for the given xdg popup interface
+      </description>
+      <arg name="id" type="new_id" interface="zaura_popup"
+	    summary="the aura popup interface id"/>
+      <arg name="popup" type="object" interface="xdg_popup"/>
+    </request>
   </interface>
 
-  <interface name="zaura_surface" version="21">
+  <interface name="zaura_surface" version="25">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -392,6 +445,60 @@
       <arg name="mode" type="uint" enum="occlusion_state"/>
     </event>
 
+    <!-- Version 22 additions -->
+    <request name="move_to_desk" since="22">
+        <description summary="move to desk">
+        If |index| equals -1, requests that the server toggles whether client
+        is visible on all workspaces.
+        If |index| is not -1, requests that the server moves the client to the desk at
+        |index|.
+      </description>
+      <arg name="index" type="int"/>
+    </request>
+
+    <event name="desk_changed" since="22">
+      <description summary="window desk state changed">
+        Notifies when there is a change in the desk state of a window.
+        This is emitted when a window is moved to another desk or
+        when its assigned-to-all-desks state changes.
+      </description>
+      <arg name="state" type="int" summary="index of desk or -1 for a window assigned to all desks"/>
+    </event>
+
+    <!-- Version 23 additions -->
+    <request name="set_initial_workspace" since="23">
+      <description summary="initial workspace for restore">
+        If |initial_workspace| equals '-1', a window is restored and visible on all workspaces,
+        Otherwise, set the initial workspace to restore the window to the corresponding workspace.
+        This is not double buffered and must be set before attaching a buffer.
+      </description>
+      <arg name="initial_workspace" type="string" summary="intial workspace for restoring or '-1' for visible on all workspaces"/>
+    </request>
+
+    <!-- Version 25 additions -->
+    <request name="set_pin" since="25">
+      <description summary="pin a window (trusted or not)">
+	Requests that a window is pinned which means that the system does not allow
+  the user to leave the window until an exit criteria is met.
+
+	This is a request to get the window pinned so that the user cannot get to any
+	other window / application. There are two modes:
+  A. trusted is 0 - which is slightly less restrictive and allows the user to
+  get out of the window by a predefined way of authentication.
+  B. trusted is not 0 in which case a trusted application was locking down the
+  system and needs to unlock. This is used for e.g. School tests.
+      </description>
+      <arg name="trusted" type="int" summary="0 for non trusted"/>
+    </request>
+
+    <request name="unset_pin" since="25">
+      <description summary="unpin a window">
+	Requests that the user can leave a previously pinned window.
+
+	This is a request to unpin a previously pinned window. It does not matter if
+  the window was locked with the trusted state or not.
+      </description>
+    </request>
   </interface>
 
   <interface name="zaura_output" version="6">
@@ -498,4 +605,55 @@
     </event>
  </interface>
 
+  <interface name="zaura_toplevel" version="28">
+    <description summary="aura shell interface to the toplevel shell">
+      An interface to the toplevel shell, which allows the
+      client to access shell specific functionality.
+    </description>
+
+    <enum name="orientation_lock">
+      <description summary="orientation lock request">
+  Defines orientation request when a surface is in fullscreen.
+      </description>
+      <entry name="none" value="1" summary="no orientation lock"/>
+      <entry name="portrait" value="2" summary="primary or secondary portrait"/>
+      <entry name="landscape" value="3" summary="primary or secondary landscape"/>
+      <entry name="current" value="4" summary="keep current orientation"/>
+      <entry name="portrait_primary" value="5" summary="primary portrait"/>
+      <entry name="landscape_primary" value="6" summary="primary landscape"/>
+      <entry name="portrait_secondary" value="7" summary="secondary portrait"/>
+      <entry name="landscape_secondary" value="8" summary="secondary landscape"/>
+    </enum>
+
+    <request name="set_orientation_lock" since="26">
+      <description summary="set orientation lock for a remote surface">
+  Request a specific orientation behavior when this surface is in fullscreen.
+      </description>
+      <arg name="orientation_lock" type="uint" enum="orientation_lock"/>
+    </request>
+    <request name="surface_submission_in_pixel_coordinates" since="28">
+      <description summary="surface will be submitted in pixel coordinates">
+        Informs the server that when submitting this surface, this client will not
+        use wl_surface_set_buffer_scale to report the scales, nor will it apply
+        scale via vp_viewporter. Instead the server should apply an appropriate
+        scale transform for the submitted buffers to be composited correctly.
+      </description>
+    </request>
+  </interface>
+
+  <interface name="zaura_popup" version="28">
+    <description summary="aura shell interface to the popup shell">
+      An interface to the popup shell, which allows the
+      client to access shell specific functionality.
+    </description>
+
+   <request name="surface_submission_in_pixel_coordinates" since="28">
+      <description summary="surface will be submitted in pixel coordinates">
+        Informs the server that when submitting this surface, this client will not
+        use wl_surface_set_buffer_scale to report the scales, nor will it apply
+        scale via vp_viewporter. Instead the server should apply an appropriate
+        scale transform for the submitted buffers to be composited correctly.
+      </description>
+    </request>
+  </interface>
 </protocol>

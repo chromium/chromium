@@ -27,6 +27,12 @@ class DownloadOpenConfirmationDialog : public DownloadOpenPrompt,
       const std::string& extension_name,
       const base::FilePath& file_path,
       DownloadOpenPrompt::OpenCallback open_callback);
+
+  DownloadOpenConfirmationDialog(const DownloadOpenConfirmationDialog&) =
+      delete;
+  DownloadOpenConfirmationDialog& operator=(
+      const DownloadOpenConfirmationDialog&) = delete;
+
   ~DownloadOpenConfirmationDialog() override;
 
   std::u16string GetTitle() override;
@@ -44,8 +50,6 @@ class DownloadOpenConfirmationDialog : public DownloadOpenPrompt,
   std::string extension_name_;
 
   base::FilePath file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadOpenConfirmationDialog);
 };
 
 DownloadOpenConfirmationDialog::DownloadOpenConfirmationDialog(

@@ -1,11 +1,19 @@
 include_rules = [
+  "+ash/app_list/model",
   "+components/services/app_service/public",
 ]
 
 specific_include_rules = {
   "app_service_app_item_browsertest\.cc": [
     "+ash/app_list/app_list_controller_impl.h",
+    "+ash/app_list/app_list_model_provider.h",
     "+ash/app_list/model/app_list_item.h",
+    "+ash/shell.h",
+  ],
+
+  "app_list_sort_browsertest\.cc": [
+    "+ash/app_list/views/apps_grid_context_menu.h",
+    "+ash/app_list/views/apps_grid_view.h",
     "+ash/shell.h",
   ],
 }

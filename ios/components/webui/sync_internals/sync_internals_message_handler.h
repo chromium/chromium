@@ -26,6 +26,11 @@ class SyncInternalsMessageHandler : public web::WebUIIOSMessageHandler,
                                     public syncer::ProtocolEventObserver {
  public:
   SyncInternalsMessageHandler();
+
+  SyncInternalsMessageHandler(const SyncInternalsMessageHandler&) = delete;
+  SyncInternalsMessageHandler& operator=(const SyncInternalsMessageHandler&) =
+      delete;
+
   ~SyncInternalsMessageHandler() override;
 
   void RegisterMessages() override;
@@ -91,8 +96,6 @@ class SyncInternalsMessageHandler : public web::WebUIIOSMessageHandler,
   bool include_specifics_ = false;
 
   base::WeakPtrFactory<SyncInternalsMessageHandler> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncInternalsMessageHandler);
 };
 
 #endif  // IOS_COMPONENTS_WEBUI_SYNC_INTERNALS_SYNC_INTERNALS_MESSAGE_HANDLER_H_

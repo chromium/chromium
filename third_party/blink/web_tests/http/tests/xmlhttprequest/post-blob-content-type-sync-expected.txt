@@ -1,5 +1,4 @@
-CONSOLE WARNING: line 49: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
-CONSOLE ERROR: line 52: Access to XMLHttpRequest at 'http://localhost:8000/xmlhttprequest/resources/access-control-allow-lists.php' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+CONSOLE ERROR: Access to XMLHttpRequest at 'http://localhost:8000/xmlhttprequest/resources/access-control-allow-lists.php' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
 Test verifies that content MIME type is set correctly when Blob is sent using XMLHttpRequest synchronously.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

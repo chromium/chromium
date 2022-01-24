@@ -56,6 +56,10 @@ class CSSCustomFontData final : public CustomFontData {
   bool IsLoadingFallback() const override { return true; }
   void ClearFontFaceSource() override { font_face_source_ = nullptr; }
 
+  bool IsPendingDataUrl() const override {
+    return font_face_source_ && font_face_source_->IsPendingDataUrl();
+  }
+
  private:
   CSSCustomFontData(CSSFontFaceSource* source, FallbackVisibility visibility)
       : font_face_source_(source),

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DialogType} from '../../common/js/dialog_type.js';
 import {metrics} from '../../common/js/metrics.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -9,7 +10,6 @@ import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {AppStateController} from './app_state_controller.js';
-import {DialogType} from './dialog_type.js';
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileSelectionHandler} from './file_selection.js';

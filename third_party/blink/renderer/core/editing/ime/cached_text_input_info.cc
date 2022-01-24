@@ -40,6 +40,17 @@ EphemeralRange ComputeWholeContentRange(const ContainerNode& container) {
                         Position::AfterNode(*before_placeholder));
 }
 
+LayoutObject* FindLayoutObject(const ContainerNode& container) {
+  for (const Node& node : FlatTreeTraversal::InclusiveAncestorsOf(container)) {
+    if (auto* layout_object = node.GetLayoutObject())
+      return layout_object;
+  }
+  // Because |LayoutView| is derived from |LayoutBlockFlow|, |layout_object_|
+  // should not be null.
+  NOTREACHED() << container;
+  return nullptr;
+}
+
 }  // namespace
 
 // static
@@ -50,15 +61,24 @@ TextIteratorBehavior CachedTextInputInfo::Behavior() {
       .Build();
 }
 
-void CachedTextInputInfo::ClearIfNeeded(const LayoutObject& layout_object) {
-  if (layout_object_ != &layout_object)
-    return;
+void CachedTextInputInfo::Clear() const {
   container_ = nullptr;
   layout_object_ = nullptr;
   text_ = g_empty_string;
   composition_.Clear();
   selection_.Clear();
   offset_map_.clear();
+}
+
+void CachedTextInputInfo::ClearIfNeeded(const LayoutObject& layout_object) {
+  if (layout_object_ != &layout_object)
+    return;
+  Clear();
+}
+
+void CachedTextInputInfo::DidChangeVisibility(
+    const LayoutObject& layout_object) {
+  DidLayoutSubtree(layout_object);
 }
 
 void CachedTextInputInfo::DidLayoutSubtree(const LayoutObject& layout_object) {
@@ -70,9 +90,9 @@ void CachedTextInputInfo::DidLayoutSubtree(const LayoutObject& layout_object) {
     return;
   const ContainerNode* const container =
       RootEditableElementOrTreeScopeRootNodeOf(Position(node, 0));
-  if (!container || !container->GetLayoutObject())
+  if (container != container_)
     return;
-  ClearIfNeeded(*container->GetLayoutObject());
+  Clear();
 }
 
 void CachedTextInputInfo::DidUpdateLayout(const LayoutObject& layout_object) {
@@ -82,12 +102,21 @@ void CachedTextInputInfo::DidUpdateLayout(const LayoutObject& layout_object) {
 void CachedTextInputInfo::EnsureCached(const ContainerNode& container) const {
   if (IsValidFor(container))
     return;
-  offset_map_.clear();
+  Clear();
   container_ = &container;
   layout_object_ = container.GetLayoutObject();
-  composition_.Clear();
-  selection_.Clear();
-  text_ = g_empty_string;
+
+  if (!layout_object_) {
+    if (auto* shadow_root = DynamicTo<ShadowRoot>(container)) {
+      // See http://crbug.com/1228373
+      layout_object_ = FindLayoutObject(shadow_root->host());
+    } else {
+      layout_object_ = FindLayoutObject(container);
+    }
+    // Because we use |layout_object_| as a cache key, |layout_object_| can
+    // not be null.
+    DCHECK(layout_object_) << container;
+  }
 
   TextIteratorAlgorithm<EditingStrategy> it(ComputeWholeContentRange(container),
                                             Behavior());
@@ -159,10 +188,13 @@ PlainTextRange CachedTextInputInfo::GetPlainTextRange(
       range.IsCollapsed()
           ? start_offset
           : RangeLength(EphemeralRange(container_start, range.EndPosition()));
+// TODO(crbug.com/1256635): This DCHECK is triggered by Crostini on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK_EQ(
       static_cast<unsigned>(TextIterator::RangeLength(
           EphemeralRange(container_start, range.EndPosition()), Behavior())),
       end_offset);
+#endif
   return PlainTextRange(start_offset, end_offset);
 }
 
@@ -198,10 +230,14 @@ unsigned CachedTextInputInfo::RangeLength(const EphemeralRange& range) const {
           TextIterator::RangeLength(
               EphemeralRange(Position(node, 0), range.EndPosition()),
               Behavior());
+// TODO(crbug.com/1256635): Revert https://crrev.com/c/3221041 to re-enable this
+// DCHECK on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
       DCHECK_EQ(
           static_cast<unsigned>(TextIterator::RangeLength(range, Behavior())),
           length)
           << it->value << " " << range;
+#endif
       return length;
     }
   }
@@ -210,6 +246,7 @@ unsigned CachedTextInputInfo::RangeLength(const EphemeralRange& range) const {
 
 void CachedTextInputInfo::Trace(Visitor* visitor) const {
   visitor->Trace(container_);
+  visitor->Trace(layout_object_);
   visitor->Trace(composition_);
   visitor->Trace(offset_map_);
   visitor->Trace(selection_);

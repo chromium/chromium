@@ -21,7 +21,7 @@ namespace proxy_resolver {
 // `kTtl`, and evicts oldest entries when filled past capacity.
 class ProxyHostResolverCache {
  public:
-  static constexpr auto kTtl = base::TimeDelta::FromSeconds(5);
+  static constexpr auto kTtl = base::Seconds(5);
 
   explicit ProxyHostResolverCache(size_t max_entries = 500u);
   ~ProxyHostResolverCache();

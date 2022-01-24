@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_dedicated_worker.h"
 #include "third_party/blink/public/platform/web_dedicated_worker_host_factory_client.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/core/workers/abstract_worker.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/platform/graphics/begin_frame_provider.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -91,8 +93,12 @@ class CORE_EXPORT DedicatedWorker final
           browser_interface_broker,
       CrossVariantMojoRemote<mojom::blink::DedicatedWorkerHostInterfaceBase>
           dedicated_worker_host) override;
-  void OnScriptLoadStarted(std::unique_ptr<WorkerMainScriptLoadParameters>
-                               worker_main_script_load_params) override;
+  void OnScriptLoadStarted(
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
+      CrossVariantMojoRemote<
+          mojom::blink::BackForwardCacheControllerHostInterfaceBase>
+          back_forward_cache_controller_host) override;
   void OnScriptLoadStartFailed() override;
 
   void DispatchErrorEventForScriptFetchFailure();
@@ -116,12 +122,18 @@ class CORE_EXPORT DedicatedWorker final
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
       network::mojom::ReferrerPolicy,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+          response_content_security_policies,
       absl::optional<network::mojom::IPAddressSpace> response_address_space,
       const String& source_code,
-      RejectCoepUnsafeNone reject_coep_unsafe_none);
+      RejectCoepUnsafeNone reject_coep_unsafe_none,
+      mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+          back_forward_cache_controller_host);
   std::unique_ptr<GlobalScopeCreationParams> CreateGlobalScopeCreationParams(
       const KURL& script_url,
       network::mojom::ReferrerPolicy,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+          response_content_security_policies,
       absl::optional<network::mojom::IPAddressSpace> response_address_space);
   scoped_refptr<WebWorkerFetchContext> CreateWebWorkerFetchContext();
   // May return nullptr.
@@ -152,7 +164,6 @@ class CORE_EXPORT DedicatedWorker final
 
   Member<WorkerClassicScriptLoader> classic_script_loader_;
 
-  // Used only when PlzDedicatedWorker is enabled.
   std::unique_ptr<WebDedicatedWorkerHostFactoryClient> factory_client_;
 
   // Used for tracking cross-debugger calls.

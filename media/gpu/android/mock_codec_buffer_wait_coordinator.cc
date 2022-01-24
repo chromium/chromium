@@ -11,7 +11,7 @@ using testing::Return;
 
 MockCodecBufferWaitCoordinator::MockCodecBufferWaitCoordinator(
     scoped_refptr<NiceMock<gpu::MockTextureOwner>> texture_owner)
-    : CodecBufferWaitCoordinator(texture_owner),
+    : CodecBufferWaitCoordinator(texture_owner, /*lock=*/nullptr),
       mock_texture_owner(std::move(texture_owner)),
       expecting_frame_available(false) {
   ON_CALL(*this, texture_owner()).WillByDefault(Return(mock_texture_owner));

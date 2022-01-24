@@ -24,13 +24,9 @@ using base::android::ScopedJavaGlobalRef;
 class SurveyInfoBarDelegate : public infobars::InfoBarDelegate {
  public:
   SurveyInfoBarDelegate(JNIEnv* env,
-                        const std::string& siteId,
-                        bool showAsBottomSheet,
                         int displayLogoResourceId,
                         jobject surveyInfoBarDelegate)
-      : site_id_(siteId),
-        show_as_bottom_sheet_(showAsBottomSheet),
-        display_logo_resource_id_(displayLogoResourceId),
+      : display_logo_resource_id_(displayLogoResourceId),
         survey_info_bar_delegate_(
             ScopedJavaGlobalRef<jobject>(env, surveyInfoBarDelegate)) {}
 
@@ -43,14 +39,8 @@ class SurveyInfoBarDelegate : public infobars::InfoBarDelegate {
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override {
     if (delegate->GetIdentifier() != GetIdentifier())
       return false;
-    SurveyInfoBarDelegate* survey_delegate =
-        static_cast<SurveyInfoBarDelegate*>(delegate);
-    return site_id_ == survey_delegate->GetSiteId();
+    return true;
   }
-
-  std::string GetSiteId() { return site_id_; }
-
-  bool GetShowAsBottomSheet() { return show_as_bottom_sheet_; }
 
   int GetDisplayLogoResourceId() { return display_logo_resource_id_; }
 
@@ -59,8 +49,6 @@ class SurveyInfoBarDelegate : public infobars::InfoBarDelegate {
   }
 
  private:
-  std::string site_id_;
-  bool show_as_bottom_sheet_;
   int display_logo_resource_id_;
   ScopedJavaGlobalRef<jobject> survey_info_bar_delegate_;
 };
@@ -94,8 +82,6 @@ ScopedJavaLocalRef<jobject> SurveyInfoBar::CreateRenderInfoBar(
       static_cast<SurveyInfoBarDelegate*>(delegate());
   return Java_SurveyInfoBar_create(
       env,
-      base::android::ConvertUTF8ToJavaString(env, survey_delegate->GetSiteId()),
-      survey_delegate->GetShowAsBottomSheet(),
       survey_delegate->GetDisplayLogoResourceId(),
       survey_delegate->GetSurveyInfoBarDelegate());
 }
@@ -103,8 +89,6 @@ ScopedJavaLocalRef<jobject> SurveyInfoBar::CreateRenderInfoBar(
 void JNI_SurveyInfoBar_Create(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_web_contents,
-    const JavaParamRef<jstring>& j_site_id,
-    jboolean j_show_as_bottom_sheet,
     jint j_display_logo_resource_id,
     const JavaParamRef<jobject>& j_survey_info_bar_delegate) {
   infobars::ContentInfoBarManager* manager =
@@ -113,7 +97,5 @@ void JNI_SurveyInfoBar_Create(
 
   manager->AddInfoBar(
       std::make_unique<SurveyInfoBar>(std::make_unique<SurveyInfoBarDelegate>(
-          env, base::android::ConvertJavaStringToUTF8(env, j_site_id),
-          j_show_as_bottom_sheet, j_display_logo_resource_id,
-          j_survey_info_bar_delegate.obj())));
+          env, j_display_logo_resource_id, j_survey_info_bar_delegate.obj())));
 }

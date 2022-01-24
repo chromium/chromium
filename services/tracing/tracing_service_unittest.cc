@@ -45,6 +45,9 @@ class TracingServiceTest : public TracingUnitTest {
  public:
   TracingServiceTest() : service_(&perfetto_service_) {}
 
+  TracingServiceTest(const TracingServiceTest&) = delete;
+  TracingServiceTest& operator=(const TracingServiceTest&) = delete;
+
   void SetUp() override {
     TracingUnitTest::SetUp();
     perfetto_service()->SetActiveServicePidsInitialized();
@@ -117,8 +120,6 @@ class TracingServiceTest : public TracingUnitTest {
 
   std::unique_ptr<mojo::Receiver<tracing::mojom::TracedProcess>>
       traced_process_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TracingServiceTest);
 };
 
 class TestTracingClient : public mojom::TracingSessionClient {

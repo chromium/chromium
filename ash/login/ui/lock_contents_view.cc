@@ -332,8 +332,7 @@ class UserAddingScreenIndicator : public views::View {
     label_->SetText(message);
 
     SetPaintToLayer();
-    layer()->SetBackgroundBlur(
-        static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetFillsBoundsOpaquely(false);
   }
 
@@ -410,6 +409,10 @@ class LockContentsView::AutoLoginUserActivityHandler
     observation_.Observe(ui::UserActivityDetector::Get());
   }
 
+  AutoLoginUserActivityHandler(const AutoLoginUserActivityHandler&) = delete;
+  AutoLoginUserActivityHandler& operator=(const AutoLoginUserActivityHandler&) =
+      delete;
+
   ~AutoLoginUserActivityHandler() override = default;
 
   void OnUserActivity(const ui::Event* event) override {
@@ -421,8 +424,6 @@ class LockContentsView::AutoLoginUserActivityHandler
  private:
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutoLoginUserActivityHandler);
 };
 
 LockContentsView::TestApi::TestApi(LockContentsView* view) : view_(view) {}
@@ -556,6 +557,13 @@ bool LockContentsView::TestApi::IsOobeDialogVisible() const {
   return view_->oobe_dialog_visible_;
 }
 
+FingerprintState LockContentsView::TestApi::GetFingerPrintState(
+    const AccountId& account_id) const {
+  UserState* user_state = view_->FindStateForUser(account_id);
+  DCHECK(user_state);
+  return user_state->fingerprint_state;
+}
+
 LockContentsView::UserState::UserState(const LoginUserInfo& user_info)
     : account_id(user_info.basic_user_info.account_id) {
   fingerprint_state = user_info.fingerprint_state;
@@ -595,6 +603,7 @@ LockContentsView::LockContentsView(
   // switch to the system tray. LockContentsView should otherwise not be
   // focusable.
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -899,8 +908,9 @@ void LockContentsView::OnUsersChanged(const std::vector<LoginUserInfo>& users) {
   // getting focused. Make sure to clear internal references before that happens
   // so there is not stale-pointer usage. See crbug.com/884402.
   // TODO(crbug.com/1222096): We should figure out a better way of handling
-  // user info changes such as avatar changes. They should not cause view re-layouting.
-  main_view_->RemoveAllChildViews(true /*delete_children*/);
+  // user info changes such as avatar changes. They should not cause view
+  // re-layouting.
+  main_view_->RemoveAllChildViews();
 
   // Build user state list. Preserve previous state if the user already exists.
   std::vector<UserState> new_users;
@@ -1066,6 +1076,26 @@ void LockContentsView::OnFingerprintAuthResult(const AccountId& account_id,
   big_view->auth_user()->NotifyFingerprintAuthResult(success);
 }
 
+void LockContentsView::OnSmartLockStateChanged(const AccountId& account_id,
+                                               SmartLockState state) {
+  LoginBigUserView* big_view =
+      TryToFindBigUser(account_id, true /*require_auth_active*/);
+  if (!big_view || !big_view->auth_user())
+    return;
+
+  big_view->auth_user()->SetSmartLockState(state);
+}
+
+void LockContentsView::OnSmartLockAuthResult(const AccountId& account_id,
+                                             bool success) {
+  LoginBigUserView* big_view =
+      TryToFindBigUser(account_id, true /*require_auth_active*/);
+  if (!big_view || !big_view->auth_user())
+    return;
+
+  big_view->auth_user()->NotifySmartLockAuthResult(success);
+}
+
 void LockContentsView::OnAuthEnabledForUser(const AccountId& user) {
   LockContentsView::UserState* state = FindStateForUser(user);
   if (!state) {
@@ -1161,6 +1191,9 @@ void LockContentsView::OnForceOnlineSignInForUser(const AccountId& user) {
 void LockContentsView::OnShowEasyUnlockIcon(
     const AccountId& user,
     const EasyUnlockIconInfo& icon_info) {
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
+
   UserState* state = FindStateForUser(user);
   if (!state)
     return;
@@ -1443,14 +1476,15 @@ void LockContentsView::OnKeyboardVisibilityChanged(bool is_visible) {
     return;
 
   keyboard_shown_ = is_visible;
-  LayoutAuth(CurrentBigUserView(), nullptr /*opt_to_hide*/, true /*animate*/);
+  if (!ongoing_auth_layout_)
+    LayoutAuth(CurrentBigUserView(), nullptr /*opt_to_hide*/, true /*animate*/);
 }
 
 void LockContentsView::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
   LoginBigUserView* big_user = CurrentBigUserView();
   if (big_user && big_user->auth_user())
-    big_user->auth_user()->password_view()->Clear();
+    big_user->auth_user()->password_view()->Reset();
 }
 
 void LockContentsView::ShowAuthErrorMessageForDebug(int unlock_attempt) {
@@ -2001,6 +2035,7 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
       view->auth_user()->ApplyAnimationPostLayout(animate);
   };
 
+  ongoing_auth_layout_ = true;
   // The high-level layout flow:
   capture_animation_state_pre_layout(to_update);
   capture_animation_state_pre_layout(opt_to_hide);
@@ -2009,6 +2044,7 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
   Layout();
   apply_animation_post_layout(to_update);
   apply_animation_post_layout(opt_to_hide);
+  ongoing_auth_layout_ = false;
 }
 
 void LockContentsView::SwapToBigUser(int user_index) {
@@ -2343,8 +2379,15 @@ bool LockContentsView::OnKeyPressed(const ui::KeyEvent& event) {
 
 void LockContentsView::RegisterAccelerators() {
   for (size_t i = 0; i < kLoginAcceleratorDataLength; ++i) {
-    if (!kLoginAcceleratorData[i].global)
+    // We need to register global accelerators and a few additional ones that
+    // are handled by the WebUI (and normally registered by the WebUI).
+    // When WebUI is loaded on demand, we would need to start WebUI after
+    // accelerator is pressed. So we register WebUI acceleratos here
+    // and then start WebUI when needed and pass the accelerator.
+    if (!kLoginAcceleratorData[i].global &&
+        MapToWebUIAccelerator(kLoginAcceleratorData[i].action).empty()) {
       continue;
+    }
     if ((screen_type_ == LockScreen::ScreenType::kLogin) &&
         !(kLoginAcceleratorData[i].scope & kScopeLogin)) {
       continue;

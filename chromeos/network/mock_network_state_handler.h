@@ -14,6 +14,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkStateHandler
     : public NetworkStateHandler {
  public:
   MockNetworkStateHandler();
+
+  MockNetworkStateHandler(const MockNetworkStateHandler&) = delete;
+  MockNetworkStateHandler& operator=(const MockNetworkStateHandler&) = delete;
+
   virtual ~MockNetworkStateHandler();
 
   // Constructs and initializes an instance for testing.
@@ -23,8 +27,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkStateHandler
   MOCK_METHOD3(UpdateBlockedWifiNetworks,
                void(bool, bool, const std::vector<std::string>&));
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNetworkStateHandler);
+  MOCK_METHOD1(UpdateBlockedCellularNetworks, void(bool));
 };
 
 }  // namespace chromeos

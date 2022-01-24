@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_block.h"
-#include "base/macros.h"
 #include "cc/paint/paint_shader.h"
 #import "skia/ext/skia_utils_mac.h"
 #include "ui/base/ui_base_features.h"
@@ -24,7 +23,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_features.h"
@@ -148,9 +147,6 @@ SkColor NativeThemeMac::GetSystemColorDeprecated(ColorId color_id,
                                                  bool apply_processing) const {
   if (GetPreferredContrast() == PreferredContrast::kMore) {
     switch (color_id) {
-      case kColorId_SelectedMenuItemForegroundColor:
-        return color_scheme == ColorScheme::kDark ? SK_ColorBLACK
-                                                  : SK_ColorWHITE;
       case kColorId_FocusedMenuItemBackgroundColor:
         return color_scheme == ColorScheme::kDark ? SK_ColorLTGRAY
                                                   : SK_ColorDKGRAY;
@@ -178,41 +174,15 @@ absl::optional<SkColor> NativeThemeMac::GetOSColor(
   // Even with --secondary-ui-md, menus use the platform colors and styling, and
   // Mac has a couple of specific color overrides, documented below.
   switch (color_id) {
-    case kColorId_EnabledMenuItemForegroundColor:
-    case kColorId_HighlightedMenuItemForegroundColor:
-    case kColorId_SelectedMenuItemForegroundColor:
-      return skia::NSSystemColorToSkColor([NSColor controlTextColor]);
-    case kColorId_DisabledMenuItemForegroundColor:
-      return skia::NSSystemColorToSkColor([NSColor disabledControlTextColor]);
     case kColorId_MenuSeparatorColor:
       return color_scheme == ColorScheme::kDark
                  ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
                  : SkColorSetA(SK_ColorBLACK, 0x26);
-    case kColorId_MenuBorderColor:
-      return SkColorSetA(SK_ColorBLACK, 0x60);
-
-    // There's a system setting General > Highlight color which sets the
-    // background color for text selections. We honor that setting.
-    // TODO(ellyjones): Listen for NSSystemColorsDidChangeNotification somewhere
-    // and propagate it to the View hierarchy.
-    case kColorId_LabelTextSelectionBackgroundFocused:
-    case kColorId_TextfieldSelectionBackgroundFocused:
-      return skia::NSSystemColorToSkColor(
-          [NSColor selectedTextBackgroundColor]);
 
     case kColorId_FocusedBorderColor:
-    case kColorId_TableGroupingIndicatorColor:
       return SkColorSetA(
           skia::NSSystemColorToSkColor([NSColor keyboardFocusIndicatorColor]),
           0x66);
-
-    case kColorId_TableBackgroundAlternate:
-      if (@available(macOS 10.14, *)) {
-        return skia::NSSystemColorToSkColor(
-            NSColor.alternatingContentBackgroundColors[1]);
-      }
-      return skia::NSSystemColorToSkColor(
-          NSColor.controlAlternatingRowBackgroundColors[1]);
 
     default:
       return absl::nullopt;
@@ -444,9 +414,9 @@ void NativeThemeMac::PaintScrollbarTrackOuterBorder(
   }
 }
 
-gfx::Size NativeThemeMac::GetThumbMinSize(bool vertical) const {
-  constexpr int kLength = 18;
-  constexpr int kGirth = 6;
+gfx::Size NativeThemeMac::GetThumbMinSize(bool vertical, float scale) const {
+  const int kLength = 18 * scale;
+  const int kGirth = 6 * scale;
 
   return vertical ? gfx::Size(kGirth, kLength) : gfx::Size(kLength, kGirth);
 }
@@ -473,12 +443,16 @@ void NativeThemeMac::PaintMacScrollbarThumb(
       thumb_insets.set_top(
           thumb_insets.top() +
           ScrollbarTrackBorderWidth(scroll_thumb.scale_from_dip));
-      ConstrainedInset(&bounds, GetThumbMinSize(false), thumb_insets);
+      ConstrainedInset(&bounds,
+                       GetThumbMinSize(false, scroll_thumb.scale_from_dip),
+                       thumb_insets);
     } else {
       thumb_insets.set_left(
           thumb_insets.left() +
           ScrollbarTrackBorderWidth(scroll_thumb.scale_from_dip));
-      ConstrainedInset(&bounds, GetThumbMinSize(true), thumb_insets);
+      ConstrainedInset(&bounds,
+                       GetThumbMinSize(true, scroll_thumb.scale_from_dip),
+                       thumb_insets);
     }
   }
 
@@ -665,23 +639,6 @@ NativeThemeMacWeb::NativeThemeMacWeb()
 NativeThemeMacWeb* NativeThemeMacWeb::instance() {
   static base::NoDestructor<NativeThemeMacWeb> s_native_theme;
   return s_native_theme.get();
-}
-
-float NativeThemeMacWeb::AdjustBorderWidthByZoom(float border_width,
-                                                 float zoom_level) const {
-  float zoomed = floorf(border_width * zoom_level);
-  return std::max(1.0f, zoomed);
-}
-
-float NativeThemeMacWeb::AdjustBorderRadiusByZoom(Part part,
-                                                  float border_radius,
-                                                  float zoom_level) const {
-  if (part != kTextField && part != kPushButton) {
-    return NativeThemeAura::AdjustBorderRadiusByZoom(part, border_radius,
-                                                     zoom_level);
-  }
-  float zoomed = floorf(border_radius * zoom_level);
-  return std::max(1.0f, zoomed);
 }
 
 }  // namespace ui

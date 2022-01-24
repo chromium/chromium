@@ -9,7 +9,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "ui/gfx/geometry/point.h"
@@ -26,6 +25,10 @@ class TabContentManager;
 class StaticTabSceneLayer : public SceneLayer {
  public:
   StaticTabSceneLayer(JNIEnv* env, const base::android::JavaRef<jobject>& jobj);
+
+  StaticTabSceneLayer(const StaticTabSceneLayer&) = delete;
+  StaticTabSceneLayer& operator=(const StaticTabSceneLayer&) = delete;
+
   ~StaticTabSceneLayer() override;
 
   bool ShouldShowBackground() override;
@@ -56,8 +59,6 @@ class StaticTabSceneLayer : public SceneLayer {
   int last_set_tab_id_;
   int background_color_;
   float brightness_;
-
-  DISALLOW_COPY_AND_ASSIGN(StaticTabSceneLayer);
 };
 
 }  // namespace android

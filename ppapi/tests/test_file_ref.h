@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PAPPI_TESTS_TEST_FILE_REF_H_
-#define PAPPI_TESTS_TEST_FILE_REF_H_
+#ifndef PPAPI_TESTS_TEST_FILE_REF_H_
+#define PPAPI_TESTS_TEST_FILE_REF_H_
 
 #include <stdint.h>
 
@@ -44,4 +44,4 @@ class TestFileRef : public TestCase {
   std::string TestReadDirectoryEntries();
 };
 
-#endif  // PAPPI_TESTS_TEST_FILE_REF_H_
+#endif  // PPAPI_TESTS_TEST_FILE_REF_H_

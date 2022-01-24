@@ -14,8 +14,8 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
 

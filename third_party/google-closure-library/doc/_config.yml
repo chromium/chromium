@@ -2,7 +2,7 @@ title: Closure Library
 email: sdh@google.com
 description: Documentation for Google Closure Library.
 baseurl: "/closure-library" # the subpath of your site, e.g. /blog
-url: "https://google.github.com/closure-library"
+url: "https://google.github.io/closure-library"
 github_username: google
 destination: closure-library
 

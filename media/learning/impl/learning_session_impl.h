@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "media/learning/common/learning_session.h"
 #include "media/learning/common/learning_task_controller.h"

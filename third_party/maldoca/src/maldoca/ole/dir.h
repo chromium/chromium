@@ -94,9 +94,8 @@ class OLEDirectoryEntry {
   void Initialize(const std::string &name, DirectoryStorageType entry_type,
                   uint32_t node_index, uint32_t left_node_sector_index,
                   uint32_t right_node_sector_index,
-                  uint32_t child_node_sector_index,
-                  uint32_t stream_sector_index, uint32_t stream_size,
-                  const OleGuid &clsid, uint32_t user_flags,
+                  uint32_t child_node_sector_index, uint32_t stream_sector_index,
+                  uint32_t stream_size, const OleGuid &clsid, uint32_t user_flags,
                   uint64_t creation_timestamp, uint64_t modification_timestamp);
 
   // Add a direct child to a node. The parent will assume ownership of

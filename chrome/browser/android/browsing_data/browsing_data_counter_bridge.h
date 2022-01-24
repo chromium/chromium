@@ -21,6 +21,10 @@ class BrowsingDataCounterBridge {
                             jint data_type,
                             jint clear_browsing_data_tab);
 
+  BrowsingDataCounterBridge(const BrowsingDataCounterBridge&) = delete;
+  BrowsingDataCounterBridge& operator=(const BrowsingDataCounterBridge&) =
+      delete;
+
   ~BrowsingDataCounterBridge();
 
   // Called by the Java counterpart when it is getting garbage collected.
@@ -33,8 +37,6 @@ class BrowsingDataCounterBridge {
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
   std::unique_ptr<browsing_data::BrowsingDataCounter> counter_;
   browsing_data::ClearBrowsingDataTab clear_browsing_data_tab_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataCounterBridge);
 };
 
 #endif // CHROME_BROWSER_ANDROID_BROWSING_DATA_BROWSING_DATA_COUNTER_BRIDGE_H_

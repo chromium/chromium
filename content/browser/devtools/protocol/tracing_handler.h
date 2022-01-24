@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/tracing.h"
@@ -25,6 +24,8 @@
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace base {
+class DictionaryValue;
+
 namespace trace_event {
 class TraceConfig;
 }
@@ -49,6 +50,10 @@ namespace protocol {
 class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
  public:
   CONTENT_EXPORT explicit TracingHandler(DevToolsIOContext* io_context);
+
+  TracingHandler(const TracingHandler&) = delete;
+  TracingHandler& operator=(const TracingHandler&) = delete;
+
   CONTENT_EXPORT ~TracingHandler() override;
 
   static std::vector<TracingHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -133,9 +138,6 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
       bool return_as_stream,
       bool proto_format);
   void SetupProcessFilter(base::ProcessId gpu_pid, RenderFrameHost*);
-  void StartTracingWithGpuPid(std::unique_ptr<StartCallback>,
-                              perfetto::BackendType tracing_backend,
-                              base::ProcessId gpu_pid);
   void AppendProcessId(RenderFrameHost*,
                        std::unordered_set<base::ProcessId>* process_set);
   void OnProcessReady(RenderProcessHost*);
@@ -165,7 +167,6 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
 
   FRIEND_TEST_ALL_PREFIXES(TracingHandlerTest,
                            GetTraceConfigFromDevToolsConfig);
-  DISALLOW_COPY_AND_ASSIGN(TracingHandler);
 };
 
 }  // namespace protocol

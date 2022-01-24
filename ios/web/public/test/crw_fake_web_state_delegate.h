@@ -31,20 +31,6 @@
 // Whether |webState:didRequestHTTPAuthForProtectionSpace:...| has been called
 // or not.
 @property(nonatomic, readonly) BOOL authenticationRequested;
-// Specifies the return value of |webState:shouldPreviewLinkWithURL:|.
-@property(nonatomic) BOOL shouldPreviewLinkWithURLReturnValue;
-// linkURL received in |webState:shouldPreviewLinkWithURL:| and
-// |webState:previewingViewControllerForLinkWithURL:| calls.
-@property(nonatomic, readonly) GURL linkURL;
-// Specifies the return value of
-// |webState:previewingViewControllerForLinkWithURL:|.
-@property(nonatomic)
-    UIViewController* previewingViewControllerForLinkWithURLReturnValue;
-// previewingViewController received in
-// |webState:commitPreviewingViewController:| call.
-@property(nonatomic, readonly) UIViewController* previewingViewController;
-// Whether |webState:commitPreviewingViewController:| has been called or not.
-@property(nonatomic, readonly) BOOL commitPreviewingViewControllerRequested;
 // Specifies the return value of |isAppLaunchingAllowedForWebState:|.
 @property(nonatomic) BOOL isAppLaunchingAllowedForWebStateReturnValue;
 

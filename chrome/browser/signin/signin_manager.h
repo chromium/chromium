@@ -5,15 +5,20 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+
+class PrefService;
 
 class SigninManager : public KeyedService,
                       public signin::IdentityManager::Observer {
  public:
-  explicit SigninManager(signin::IdentityManager* identity_manger);
+  SigninManager(PrefService* prefs, signin::IdentityManager* identity_manger);
+  SigninManager(const SigninManager&) = delete;
+  SigninManager& operator=(const SigninManager&) = delete;
+
   ~SigninManager() override;
 
  private:
@@ -51,11 +56,15 @@ class SigninManager : public KeyedService,
       const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error) override;
 
+  void OnSigninAllowedPrefChanged();
+
+  PrefService* prefs_;
   signin::IdentityManager* identity_manager_;
 
-  base::WeakPtrFactory<SigninManager> weak_ptr_factory_{this};
+  // Helper object to listen for changes to the signin allowed preference.
+  BooleanPrefMember signin_allowed_;
 
-  DISALLOW_COPY_AND_ASSIGN(SigninManager);
+  base::WeakPtrFactory<SigninManager> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_

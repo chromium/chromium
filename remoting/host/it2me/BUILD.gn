@@ -103,13 +103,21 @@ source_set("common") {
     ]
   }
   if (is_chromeos_ash) {
-    deps += [ "//remoting/host/chromeos:chromeos" ]
+    deps += [
+      "//chromeos/ui/vector_icons",
+      "//remoting/host/chromeos",
+      "//ui/message_center",
+      "//ui/message_center/public/cpp",
+    ]
   }
   if (is_mac) {
     deps += [ "//ui/base:base" ]
   }
   if (is_win) {
-    deps += [ "//remoting/host/win:elevated_native_messaging_host" ]
+    deps += [
+      "//remoting/host/win",
+      "//remoting/host/win:elevated_native_messaging_host",
+    ]
   }
 }
 
@@ -148,6 +156,7 @@ if (is_chromeos_ash || is_chromeos_lacros) {
         "//extensions/browser/api/messaging:native_messaging",
         "//remoting/base:base",
         "//remoting/host:common",
+        "//remoting/host/chromeos:enterprise_support",
         "//remoting/host/mojom:mojom",
         "//remoting/host/native_messaging",
         "//skia",
@@ -285,6 +294,8 @@ if (!is_chromeos_ash && enable_remoting_host) {
       deps = [
         ":common",
         "//remoting/host",
+        "//remoting/host:host_main_headers",
+        "//remoting/host:resources",
         "//remoting/host/native_messaging",
         "//remoting/proto",
         "//third_party/webrtc_overrides:webrtc_component",
@@ -304,9 +315,9 @@ if (!is_chromeos_ash && enable_remoting_host) {
           "//remoting/base:base",
           "//remoting/base:breakpad",
           "//remoting/host:base",
-          "//remoting/host:host_settings",
           "//remoting/host:logging",
           "//remoting/host:remoting_infoplist_strings",
+          "//remoting/host:settings",
           "//remoting/host/mac:permission_checking",
           "//remoting/resources:copy_locales",
         ]
@@ -323,7 +334,7 @@ if (!is_chromeos_ash && enable_remoting_host) {
           "//remoting/base:base",
           "//remoting/base:breakpad",
           "//remoting/host:base",
-          "//remoting/host:host_settings",
+          "//remoting/host:settings",
           "//ui/events/platform/x11:x11",
         ]
       }

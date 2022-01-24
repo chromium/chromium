@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_UKM_TEST_UTIL_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_UKM_TEST_UTIL_H_
 
-#include <map>
 #include <set>
 #include <string>
 #include <utility>
@@ -27,6 +26,7 @@ const char kTriggerScriptFinishedEntry[] =
 const char kTriggerScriptOnboardingEntry[] =
     "AutofillAssistant.LiteScriptOnboarding";
 const char kInChromeTriggeringEntry[] = "AutofillAssistant.InChromeTriggering";
+const char kAutofillAssistantTimingEntry[] = "AutofillAssistant.Timing";
 
 // The identifiers for all UKM metrics that we currently record/test.
 const char kTriggerUiType[] = "TriggerUIType";
@@ -35,6 +35,7 @@ const char kTriggerScriptStarted[] = "LiteScriptStarted";
 const char kTriggerScriptFinished[] = "LiteScriptFinished";
 const char kTriggerScriptOnboarding[] = "LiteScriptOnboarding";
 const char kInChromeTriggerAction[] = "InChromeTriggerAction";
+const char kTriggerConditionTimingMs[] = "TriggerConditionEvaluationMs";
 
 // Convenience accessors for UKM metrics.
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
@@ -47,6 +48,8 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmTriggerScriptOnboarding(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmInChromeTriggering(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmTriggerConditionEvaluationTime(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 
 // Variant containing all UKM enums that we currently record/test.
 // NOTE: When adding entries, remember to also modify kUkmEnumMetricNames!

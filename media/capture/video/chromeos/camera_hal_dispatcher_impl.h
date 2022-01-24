@@ -80,22 +80,22 @@ class CAPTURE_EXPORT CameraActiveClientObserver : public base::CheckedObserver {
 // it from handling authentication failures.
 // TODO(b/170075468): Modify RegisterServerWithToken to return an optional
 // CameraHalServerCallbacks instead.
-class FailedCameraHalServerCallbacks
+class FailedCameraHalServerCallbacks final
     : public cros::mojom::CameraHalServerCallbacks {
  private:
   friend class CameraHalDispatcherImpl;
 
   FailedCameraHalServerCallbacks();
-  ~FailedCameraHalServerCallbacks() final;
+  ~FailedCameraHalServerCallbacks() override;
 
   mojo::PendingRemote<cros::mojom::CameraHalServerCallbacks> GetRemote();
 
   // CameraHalServerCallbacks implementations.
   void CameraDeviceActivityChange(int32_t camera_id,
                                   bool opened,
-                                  cros::mojom::CameraClientType type) final;
+                                  cros::mojom::CameraClientType type) override;
   void CameraPrivacySwitchStateChange(
-      cros::mojom::CameraPrivacySwitchState state) final;
+      cros::mojom::CameraPrivacySwitchState state) override;
 
   mojo::Receiver<cros::mojom::CameraHalServerCallbacks> callbacks_;
 };
@@ -132,6 +132,9 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       public base::trace_event::TraceLog::EnabledStateObserver {
  public:
   static CameraHalDispatcherImpl* GetInstance();
+
+  CameraHalDispatcherImpl(const CameraHalDispatcherImpl&) = delete;
+  CameraHalDispatcherImpl& operator=(const CameraHalDispatcherImpl&) = delete;
 
   bool Start(MojoMjpegDecodeAcceleratorFactoryCB jda_factory,
              MojoJpegEncodeAcceleratorFactoryCB jea_factory);
@@ -293,8 +296,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       privacy_switch_observers_;
 
   base::WeakPtrFactory<CameraHalDispatcherImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CameraHalDispatcherImpl);
 };
 
 }  // namespace media

@@ -103,7 +103,7 @@ LIGHTWEIGHT_TESTERS = [
 
 # This is an opt-in list for builders which uses dynamic sharding.
 DYNAMIC_SHARDING_TESTERS = [
-    'android-pixel2-perf', 'win-10_amd-perf', 'android-pixel2-perf-fyi',
+    'android-pixel2-perf', 'android-pixel2-perf-fyi',
     'android-pixel2-perf-calibration', 'linux-perf-calibration'
 ]
 
@@ -248,8 +248,9 @@ FYI_BUILDERS = {
             'extra_args': [
                 '--output-format=histograms',
                 '--experimental-tbmv3-metrics',
-                '--device=custom',
-                '--custom-device-target=internal.astro_target',
+                '-d',
+                '--system-image-dir=../../third_party/fuchsia-sdk/images-internal/astro-release/smart_display_eng_arrested',
+                '--os-check=update',
             ],
             'type':
             TEST_TYPES.TELEMETRY,
@@ -259,6 +260,29 @@ FYI_BUILDERS = {
         'dimension': {
             'cpu': None,
             'device_type': 'Astro',
+            'os': 'Fuchsia',
+            'pool': 'chrome.tests',
+        },
+    },
+    'fuchsia-perf-sherlock-fyi': {
+        'tests': [{
+            'isolate':
+            'performance_web_engine_test_suite',
+            'extra_args': [
+                '--output-format=histograms',
+                '--experimental-tbmv3-metrics',
+                '-d',
+                '--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested',
+                '--os-check=update',
+            ],
+            'type':
+            TEST_TYPES.TELEMETRY,
+        }],
+        'platform':
+        'fuchsia',
+        'dimension': {
+            'cpu': None,
+            'device_type': 'Sherlock',
             'os': 'Fuchsia',
             'pool': 'chrome.tests',
         },
@@ -316,8 +340,8 @@ FYI_BUILDERS = {
     },
     'fuchsia-builder-perf-fyi': {
         'additional_compile_targets': [
-            'web_engine_shell_pkg', 'http_pkg', 'cast_runner_pkg',
-            'web_runner_pkg', 'chromedriver', 'chromium_builder_perf'
+            'web_engine_shell_pkg', 'cast_runner_pkg', 'web_runner_pkg',
+            'chromedriver', 'chromium_builder_perf'
         ],
     },
 }
@@ -358,36 +382,57 @@ BUILDERS = {
                 'name': 'resource_sizes_monochrome_minimal_apks',
                 'isolate': 'resource_sizes_monochrome_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_monochrome_public_minimal_apks',
                 'isolate': 'resource_sizes_monochrome_public_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_chrome_modern_minimal_apks',
                 'isolate': 'resource_sizes_chrome_modern_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_chrome_modern_public_minimal_apks',
                 'isolate': 'resource_sizes_chrome_modern_public_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_trichrome_google',
                 'isolate': 'resource_sizes_trichrome_google',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_system_webview_bundle',
                 'isolate': 'resource_sizes_system_webview_bundle',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_system_webview_google_bundle',
                 'isolate': 'resource_sizes_system_webview_google_bundle',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
         ],
         'dimension': {
@@ -418,41 +463,65 @@ BUILDERS = {
                 'name': 'resource_sizes_monochrome_minimal_apks',
                 'isolate': 'resource_sizes_monochrome_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_monochrome_public_minimal_apks',
                 'isolate': 'resource_sizes_monochrome_public_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_chrome_modern_minimal_apks',
                 'isolate': 'resource_sizes_chrome_modern_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_chrome_modern_public_minimal_apks',
                 'isolate': 'resource_sizes_chrome_modern_public_minimal_apks',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_trichrome',
                 'isolate': 'resource_sizes_trichrome',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_trichrome_google',
                 'isolate': 'resource_sizes_trichrome_google',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_system_webview_bundle',
                 'isolate': 'resource_sizes_system_webview_bundle',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
             {
                 'name': 'resource_sizes_system_webview_google_bundle',
                 'isolate': 'resource_sizes_system_webview_google_bundle',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
         ],
         'dimension': {
@@ -469,6 +538,9 @@ BUILDERS = {
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
             'type': TEST_TYPES.GENERIC,
+            'resultdb': {
+                'has_native_resultdb_integration': True,
+            },
         }],
         'dimension': {
             'cpu': 'x86-64',
@@ -487,6 +559,9 @@ BUILDERS = {
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
             'type': TEST_TYPES.GENERIC,
+            'resultdb': {
+                'has_native_resultdb_integration': True,
+            },
         }],
         'dimension': {
             'cpu': 'x86-64',
@@ -502,6 +577,9 @@ BUILDERS = {
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
             'type': TEST_TYPES.GENERIC,
+            'resultdb': {
+                'has_native_resultdb_integration': True,
+            },
         }],
         'dimension': {
             'cpu': 'x86',
@@ -517,6 +595,9 @@ BUILDERS = {
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
             'type': TEST_TYPES.GENERIC,
+            'resultdb': {
+                'has_native_resultdb_integration': True,
+            },
         }],
         'dimension': {
             'cpu': 'x86',
@@ -532,6 +613,9 @@ BUILDERS = {
             'name': 'chrome_sizes',
             'isolate': 'chrome_sizes',
             'type': TEST_TYPES.GENERIC,
+            'resultdb': {
+                'has_native_resultdb_integration': True,
+            },
         }],
         'dimension': {
             'cpu': 'x86-64',
@@ -778,6 +862,30 @@ BUILDERS = {
             'synthetic_product_name': '11A5S4L300 [ThinkCentre M75q-1] (LENOVO)'
         },
     },
+    'win-10_amd_laptop-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            # Explicitly set GPU driver version and Windows OS version such
+            # that we can be informed if this
+            # version ever changes or becomes inconsistent. It is important
+            # that bots are homogeneous. See crbug.com/988045 for history.
+            'os': 'Windows-10-19043.1052',
+            'gpu': '1002:1638-10.0.19041.868',
+            'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
+        },
+    },
     'Win 7 Perf': {
         'tests': [
             {
@@ -954,6 +1062,9 @@ BUILDERS = {
                 'name': 'resource_sizes_chromecast',
                 'isolate': 'resource_sizes_chromecast',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
         ],
         'dimension': {
@@ -971,6 +1082,9 @@ BUILDERS = {
                 'name': 'resource_sizes_lacros_chrome',
                 'isolate': 'resource_sizes_lacros_chrome',
                 'type': TEST_TYPES.GENERIC,
+                'resultdb': {
+                    'has_native_resultdb_integration': True,
+                },
             },
         ],
         'dimension': {
@@ -1491,9 +1605,14 @@ def generate_performance_test(tester_config, test, builder_name):
     ]
   }
 
-  # Enable Result DB on all perf test bots. Builders with names including
-  # "builder-perf" are used for compiling only, and do not run perf tests.
-  if 'builder-perf' not in builder_name:
+  if test.get('resultdb'):
+    result['resultdb'] = test['resultdb'].copy()
+  elif 'builder-perf' not in builder_name:
+    # Enable Result DB on all perf test bots. Builders with names including
+    # "builder-perf" are used for compiling only, and do not run perf tests.
+    # TODO(crbug.com/1135718): Replace the following line by specifying either
+    # "result_format" for GTests, or "has_native_resultdb_integration" for all
+    # other tests.
     result['resultdb'] = {'enable': True}
 
   # For now we either get shards from the number of devices specified

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -129,13 +128,18 @@ bool SigninViewControllerDelegateViews::ShouldShowCloseButton() const {
 
 void SigninViewControllerDelegateViews::CloseModalSignin() {
   NotifyModalSigninClosed();
-  if (modal_signin_widget_)
+  // Either `modal_signin_widget_` or `owned_content_view_` is nullptr.
+  if (modal_signin_widget_) {
+    DCHECK(!owned_content_view_);
     modal_signin_widget_->Close();
+  } else {
+    DCHECK(owned_content_view_);
+    delete this;
+  }
 }
 
 void SigninViewControllerDelegateViews::ResizeNativeView(int height) {
-  int max_height = browser()
-                       ->window()
+  int max_height = browser_->window()
                        ->GetWebContentsModalDialogHost()
                        ->GetMaximumDialogSize()
                        .height();
@@ -162,7 +166,7 @@ void SigninViewControllerDelegateViews::SetWebContents(
 }
 
 bool SigninViewControllerDelegateViews::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Discard the context menu
   return true;
@@ -195,7 +199,7 @@ void SigninViewControllerDelegateViews::AddNewContents(
 
 web_modal::WebContentsModalDialogHost*
 SigninViewControllerDelegateViews::GetWebContentsModalDialogHost() {
-  return browser()->window()->GetWebContentsModalDialogHost();
+  return browser_->window()->GetWebContentsModalDialogHost();
 }
 
 SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
@@ -204,15 +208,17 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
     ui::ModalType dialog_modal_type,
     bool wait_for_size,
     bool should_show_close_button)
-    : web_contents_(content_view->GetWebContents()),
+    : owned_content_view_(std::move(content_view)),
+      web_contents_(owned_content_view_->GetWebContents()),
       browser_(browser),
-      content_view_(content_view.release()),
-      modal_signin_widget_(nullptr),
+      content_view_(owned_content_view_.get()),
       should_show_close_button_(should_show_close_button) {
   DCHECK(web_contents_);
   DCHECK(browser_);
   DCHECK(browser_->tab_strip_model()->GetActiveWebContents())
       << "A tab must be active to present the sign-in modal dialog.";
+  DCHECK(owned_content_view_);
+  DCHECK(content_view_);
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
@@ -263,15 +269,18 @@ SigninViewControllerDelegateViews::CreateDialogWebView(
 
 void SigninViewControllerDelegateViews::DisplayModal() {
   DCHECK(!modal_signin_widget_);
-
   content::WebContents* host_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser_->tab_strip_model()->GetActiveWebContents();
 
   // Avoid displaying the sign-in modal view if there are no active web
   // contents. This happens if the user closes the browser window before this
   // dialog has a chance to be displayed.
   if (!host_web_contents)
     return;
+
+  // Ownership of this and the content view is transferred to the view
+  // hierarchy, through `modal_signin_widget_`.
+  owned_content_view_.release();
 
   gfx::NativeWindow window = host_web_contents->GetTopLevelNativeWindow();
   switch (GetModalType()) {
@@ -296,6 +305,7 @@ void SigninViewControllerDelegateViews::DisplayModal() {
       NOTREACHED() << "Unsupported dialog modal type " << GetModalType();
   }
 
+  DCHECK(modal_signin_widget_);
   content_view_->RequestFocus();
 }
 

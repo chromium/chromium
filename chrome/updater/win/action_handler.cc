@@ -76,7 +76,7 @@ ActionHandler::Result ActionHandler::RunCommand(
   options.start_hidden = true;
   base::Process process = base::LaunchProcess(command_line, options);
   int exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::TimeDelta::FromSeconds(600);
+  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
   const bool succeeded =
       process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);
   return Result{succeeded, exit_code, 0};

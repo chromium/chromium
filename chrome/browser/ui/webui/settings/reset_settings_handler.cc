@@ -80,8 +80,7 @@ bool ResetSettingsHandler::ShouldShowResetProfileBanner(Profile* profile) {
 
   // Otherwise, only show the banner if it has been less than |kBannerShowTime|
   // since reset.
-  static constexpr base::TimeDelta kBannerShowTime =
-      base::TimeDelta::FromDays(5);
+  static constexpr base::TimeDelta kBannerShowTime = base::Days(5);
   const base::TimeDelta since_reset = base::Time::Now() - reset_time;
   return since_reset < kBannerShowTime;
 }
@@ -98,33 +97,33 @@ void ResetSettingsHandler::OnJavascriptDisallowed() {
 }
 
 void ResetSettingsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "performResetProfileSettings",
       base::BindRepeating(&ResetSettingsHandler::HandleResetProfileSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "onShowResetProfileDialog",
       base::BindRepeating(&ResetSettingsHandler::OnShowResetProfileDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getReportedSettings",
       base::BindRepeating(&ResetSettingsHandler::HandleGetReportedSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "onHideResetProfileDialog",
       base::BindRepeating(&ResetSettingsHandler::OnHideResetProfileDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "onHideResetProfileBanner",
       base::BindRepeating(&ResetSettingsHandler::OnHideResetProfileBanner,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getTriggeredResetToolName",
       base::BindRepeating(
           &ResetSettingsHandler::HandleGetTriggeredResetToolName,
           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "onPowerwashDialogShow",
       base::BindRepeating(&ResetSettingsHandler::OnShowPowerwashDialog,
                           base::Unretained(this)));
@@ -135,13 +134,10 @@ void ResetSettingsHandler::HandleResetProfileSettings(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(3U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-  bool send_settings = false;
-  CHECK(args->GetBoolean(1, &send_settings));
-  std::string request_origin_string;
-  CHECK(args->GetString(2, &request_origin_string));
+  CHECK_EQ(3U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
+  const bool& send_settings = args->GetList()[1].GetBool();
+  std::string request_origin_string = args->GetList()[2].GetString();
   reset_report::ChromeResetReport::ResetRequestOrigin request_origin =
       ResetRequestOriginFromString(request_origin_string);
 
@@ -181,9 +177,8 @@ void ResetSettingsHandler::HandleGetReportedSettings(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   setting_snapshot_->RequestShortcuts(
       base::BindOnce(&ResetSettingsHandler::OnGetReportedSettingsDone,
@@ -270,9 +265,8 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const base::Value& callback_id = args->GetList()[0];
 
   // Set up the localized strings for the triggered profile reset dialog.
   // Custom reset tool names are supported on Windows only.
@@ -296,7 +290,7 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
   }
 
   base::Value string_value(reset_tool_name);
-  ResolveJavascriptCallback(*callback_id, string_value);
+  ResolveJavascriptCallback(callback_id, string_value);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

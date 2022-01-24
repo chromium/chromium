@@ -39,8 +39,7 @@ constexpr int kBubbleBetweenChildSpacingDp = 16;
 constexpr int kBubbleBorderRadius = 8;
 
 // The amount of time for bubble show/hide animation.
-constexpr base::TimeDelta kBubbleAnimationDuration =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kBubbleAnimationDuration = base::Milliseconds(300);
 
 }  // namespace
 
@@ -51,6 +50,9 @@ class LoginBubbleHandler : public ui::EventHandler {
   explicit LoginBubbleHandler(LoginBaseBubbleView* bubble) : bubble_(bubble) {
     Shell::Get()->AddPreTargetHandler(this);
   }
+
+  LoginBubbleHandler(const LoginBubbleHandler&) = delete;
+  LoginBubbleHandler& operator=(const LoginBubbleHandler&) = delete;
 
   ~LoginBubbleHandler() override { Shell::Get()->RemovePreTargetHandler(this); }
 
@@ -115,8 +117,6 @@ class LoginBubbleHandler : public ui::EventHandler {
   }
 
   LoginBaseBubbleView* bubble_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginBubbleHandler);
 };
 
 LoginBaseBubbleView::LoginBaseBubbleView(views::View* anchor_view)
@@ -145,8 +145,7 @@ void LoginBaseBubbleView::EnsureLayer() {
       AshColorProvider::BaseLayerType::kTransparent80);
   SetBackground(views::CreateRoundedRectBackground(background_color,
                                                    kBubbleBorderRadius));
-  layer()->SetBackgroundBlur(
-      static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetFillsBoundsOpaquely(false);
 }
 

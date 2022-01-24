@@ -8,11 +8,10 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/discovery/media_sink_service_util.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
@@ -34,6 +33,10 @@ using OnDialSinkAddedCallback =
 class DialMediaSinkService {
  public:
   DialMediaSinkService();
+
+  DialMediaSinkService(const DialMediaSinkService&) = delete;
+  DialMediaSinkService& operator=(const DialMediaSinkService&) = delete;
+
   virtual ~DialMediaSinkService();
 
   // Starts discovery of DIAL sinks. Can only be called once.
@@ -68,8 +71,6 @@ class DialMediaSinkService {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DialMediaSinkService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DialMediaSinkService);
 };
 
 }  // namespace media_router

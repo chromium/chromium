@@ -7,7 +7,6 @@
 
 #include <cstring>
 
-#include "base/macros.h"
 #include "media/base/video_frame.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_helpers.h"
@@ -20,6 +19,10 @@ namespace media {
 class MojoCdmAllocatorTest : public testing::Test {
  public:
   MojoCdmAllocatorTest() = default;
+
+  MojoCdmAllocatorTest(const MojoCdmAllocatorTest&) = delete;
+  MojoCdmAllocatorTest& operator=(const MojoCdmAllocatorTest&) = delete;
+
   ~MojoCdmAllocatorTest() override = default;
 
  protected:
@@ -41,7 +44,6 @@ class MojoCdmAllocatorTest : public testing::Test {
 
  private:
   MojoCdmAllocator allocator_;
-  DISALLOW_COPY_AND_ASSIGN(MojoCdmAllocatorTest);
 };
 
 TEST_F(MojoCdmAllocatorTest, CreateCdmBuffer) {

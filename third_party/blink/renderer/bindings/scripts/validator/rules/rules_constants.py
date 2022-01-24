@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """
 Here are rule classes which validate whether constants violate the rules
-described in Web IDL https://heycam.github.io/webidl/.
+described in Web IDL https://webidl.spec.whatwg.org/.
 
 Each rule class must inherit RuleBase.
 """

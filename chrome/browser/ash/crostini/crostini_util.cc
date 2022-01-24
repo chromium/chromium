@@ -41,7 +41,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
+#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -59,13 +61,15 @@ const char kCrostiniDeletedTerminalId[] = "oajcgpnkmhaalajejhlfpacbiokdnnfe";
 //     GURL("chrome-untrusted://terminal/html/terminal.html"))
 const char kCrostiniTerminalSystemAppId[] = "fhicihalidkgcimdmhpohldehjmcabcf";
 
+const char kCrostiniImageAliasPattern[] = "debian/%s";
+const char kCrostiniContainerDefaultVersion[] = "bullseye";
+const char kCrostiniContainerFlag[] = "crostini-container-install-version";
+
 const char kCrostiniDefaultVmName[] = "termina";
 const char kCrostiniDefaultContainerName[] = "penguin";
 const char kCrostiniDefaultUsername[] = "emperor";
 const char kCrostiniDefaultImageServerUrl[] =
     "https://storage.googleapis.com/cros-containers/%d";
-const char kCrostiniStretchImageAlias[] = "debian/stretch";
-const char kCrostiniBusterImageAlias[] = "debian/buster";
 const char kCrostiniDlcName[] = "termina-dlc";
 
 const base::FilePath::CharType kHomeDirectory[] = FILE_PATH_LITERAL("/home");
@@ -211,6 +215,27 @@ ContainerId::ContainerId(std::string vm_name,
                          std::string container_name) noexcept
     : vm_name(std::move(vm_name)), container_name(std::move(container_name)) {}
 
+ContainerId::ContainerId(const base::Value& dict) {
+  const std::string* vm = dict.FindStringKey(prefs::kVmKey);
+  const std::string* container = dict.FindStringKey(prefs::kContainerKey);
+  vm_name = vm ? *vm : "";
+  container_name = container ? *container : "";
+}
+
+base::flat_map<std::string, std::string> ContainerId::ToMap() const {
+  base::flat_map<std::string, std::string> extras;
+  extras[prefs::kVmKey] = vm_name;
+  extras[prefs::kContainerKey] = container_name;
+  return extras;
+}
+
+base::Value ContainerId::ToDictValue() const {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey(prefs::kVmKey, vm_name);
+  dict.SetStringKey(prefs::kContainerKey, container_name);
+  return dict;
+}
+
 bool operator<(const ContainerId& lhs, const ContainerId& rhs) noexcept {
   const auto result = lhs.vm_name.compare(rhs.vm_name);
   return result < 0 || (result == 0 && lhs.container_name < rhs.container_name);
@@ -293,15 +318,13 @@ void LaunchCrostiniAppImpl(
     Profile* profile,
     const std::string& app_id,
     guest_os::GuestOsRegistryService::Registration registration,
+    const ContainerId container_id,
     int64_t display_id,
     const std::vector<LaunchArg>& args,
     CrostiniSuccessCallback callback) {
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
-  // Store these as we move |registration| into LaunchContainerApplication().
-  const ContainerId container_id(registration.VmName(),
-                                 registration.ContainerName());
 
   if (app_id == kCrostiniTerminalSystemAppId) {
     // If terminal is launched with a 'cwd' file, we may need to launch the VM
@@ -362,40 +385,60 @@ void LaunchCrostiniAppImpl(
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&AddSpinner, restart_id, app_id, profile),
-      base::TimeDelta::FromMilliseconds(kDelayBeforeSpinnerMs));
+      base::Milliseconds(kDelayBeforeSpinnerMs));
 }
 
-void LaunchCrostiniApp(Profile* profile,
-                       const std::string& app_id,
-                       int64_t display_id,
-                       const std::vector<LaunchArg>& args,
-                       CrostiniSuccessCallback callback) {
+void LaunchCrostiniAppWithIntent(Profile* profile,
+                                 const std::string& app_id,
+                                 int64_t display_id,
+                                 apps::mojom::IntentPtr intent,
+                                 const std::vector<LaunchArg>& args,
+                                 CrostiniSuccessCallback callback) {
   // Policies can change under us, and crostini may now be forbidden.
   std::string reason;
   if (!CrostiniFeatures::Get()->IsAllowedNow(profile, &reason)) {
     LOG(ERROR) << "Crostini not allowed: " << reason;
     return std::move(callback).Run(false, "Crostini UI not allowed");
   }
+
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);
+  auto* registry_service =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
+  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
+      registry_service->GetRegistration(app_id);
+
+  bool is_terminal_app_id = app_id == kCrostiniTerminalSystemAppId;
 
   // At this point, we know that Crostini UI is allowed.
-  if (app_id == kCrostiniTerminalSystemAppId &&
-      !CrostiniFeatures::Get()->IsEnabled(profile)) {
+  if (is_terminal_app_id && !CrostiniFeatures::Get()->IsEnabled(profile)) {
     crostini::CrostiniInstaller::GetForProfile(profile)->ShowDialog(
         CrostiniUISurface::kAppList);
     return std::move(callback).Run(false, "Crostini not installed");
   }
 
-  auto* registry_service =
-      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
-  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
-      registry_service->GetRegistration(app_id);
   if (!registration) {
     RecordAppLaunchHistogram(CrostiniAppLaunchAppType::kUnknownApp);
     RecordAppLaunchResultHistogram(CrostiniAppLaunchAppType::kUnknownApp,
                                    CrostiniResult::UNREGISTERED_APPLICATION);
     return std::move(callback).Run(
         false, "LaunchCrostiniApp called with an unknown app_id: " + app_id);
+  }
+  ContainerId container_id(registration->VmName(),
+                           registration->ContainerName());
+
+  if (intent && intent->extras.has_value()) {
+    for (const auto& extra : intent->extras.value()) {
+      // Possibly override the registration vm_name and container_name.
+      if (extra.first == "vm_name") {
+        if (is_terminal_app_id) {
+          container_id.vm_name = extra.second;
+        }
+      } else if (extra.first == "container_name") {
+        if (is_terminal_app_id) {
+          container_id.container_name = extra.second;
+        }
+      }
+    }
   }
 
   if (crostini_manager->IsUncleanStartup()) {
@@ -413,8 +456,18 @@ void LaunchCrostiniApp(Profile* profile,
         false, "LaunchCrostiniApp called while upgrade dialog showing");
     return;
   }
-  LaunchCrostiniAppImpl(profile, app_id, std::move(*registration), display_id,
-                        args, std::move(callback));
+
+  LaunchCrostiniAppImpl(profile, app_id, std::move(*registration), container_id,
+                        display_id, args, std::move(callback));
+}
+
+void LaunchCrostiniApp(Profile* profile,
+                       const std::string& app_id,
+                       int64_t display_id,
+                       const std::vector<LaunchArg>& args,
+                       CrostiniSuccessCallback callback) {
+  LaunchCrostiniAppWithIntent(profile, app_id, display_id, nullptr, args,
+                              std::move(callback));
 }
 
 std::string CryptohomeIdForProfile(Profile* profile) {
@@ -456,6 +509,7 @@ void AddNewLxdContainerToPrefs(Profile* profile,
                        base::Value(container_id.container_name));
   new_container.SetIntKey(prefs::kContainerOsVersionKey,
                           static_cast<int>(ContainerOsVersion::kUnknown));
+  new_container.SetStringKey(prefs::kContainerOsPrettyNameKey, "");
 
   ListPrefUpdate updater(pref_service, crostini::prefs::kCrostiniContainers);
   updater->Append(std::move(new_container));
@@ -520,12 +574,61 @@ void UpdateContainerPref(Profile* profile,
   }
 }
 
+SkColor GetContainerBadgeColor(Profile* profile,
+                               const ContainerId& container_id) {
+  const base::Value* badge_color_value =
+      GetContainerPrefValue(profile, container_id, prefs::kContainerColorKey);
+  if (badge_color_value) {
+    return badge_color_value->GetIfInt().value_or(SK_ColorTRANSPARENT);
+  } else {
+    return SK_ColorTRANSPARENT;
+  }
+}
+
+void SetContainerBadgeColor(Profile* profile,
+                            const ContainerId& container_id,
+                            SkColor badge_color) {
+  UpdateContainerPref(profile, container_id, prefs::kContainerColorKey,
+                      base::Value(static_cast<int>(badge_color)));
+
+  guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
+      ->ContainerBadgeColorChanged(container_id);
+}
+
+bool IsContainerVersionExpired(Profile* profile,
+                               const ContainerId& container_id) {
+  auto* value = GetContainerPrefValue(profile, container_id,
+                                      prefs::kContainerOsVersionKey);
+  if (!value)
+    return false;
+
+  auto version = static_cast<ContainerOsVersion>(value->GetInt());
+  return version == ContainerOsVersion::kDebianStretch;
+}
+
+bool ShouldWarnAboutExpiredVersion(Profile* profile,
+                                   const ContainerId& container_id) {
+  if (!CrostiniFeatures::Get()->IsContainerUpgradeUIAllowed(profile)) {
+    return false;
+  }
+  if (container_id != ContainerId::GetDefault()) {
+    return false;
+  }
+  // If the warning dialog is already open we can add more callbacks to it, but
+  // if we've moved to the upgrade dialog proper we should run them now as they
+  // may be part of the upgrade process.
+  if (chromeos::SystemWebDialogDelegate::FindInstance(
+          GURL{chrome::kChromeUICrostiniUpgraderUrl}.spec())) {
+    return false;
+  }
+  return IsContainerVersionExpired(profile, container_id);
+}
+
 std::u16string GetTimeRemainingMessage(base::TimeTicks start, int percent) {
   // Only estimate once we've spent at least 3 seconds OR gotten 10% of the way
   // through.
-  constexpr base::TimeDelta kMinTimeForEstimate =
-      base::TimeDelta::FromSeconds(3);
-  constexpr base::TimeDelta kTimeDeltaZero = base::TimeDelta::FromSeconds(0);
+  constexpr base::TimeDelta kMinTimeForEstimate = base::Seconds(3);
+  constexpr base::TimeDelta kTimeDeltaZero = base::Seconds(0);
   constexpr int kMinPercentForEstimate = 10;
   base::TimeDelta elapsed = base::TimeTicks::Now() - start;
   if ((elapsed >= kMinTimeForEstimate && percent > 0) ||

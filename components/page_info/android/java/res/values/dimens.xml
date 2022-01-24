@@ -10,4 +10,8 @@
     <dimen name="page_info_popup_padding_vertical">12dp</dimen>
     <dimen name="page_info_popup_corners_radius">16dp</dimen>
     <dimen name="page_info_popup_button_padding_sides">8dp</dimen>
+
+    <!-- Page Zoom dimensions -->
+    <dimen name="page_zoom_min_touch_target_size">48dp</dimen>
+    <dimen name="page_zoom_control_spacing">10dp</dimen>
 </resources>

@@ -24,6 +24,10 @@ class WebViewSigninClientFactory : public BrowserStateKeyedServiceFactory {
       ios_web_view::WebViewBrowserState* browser_state);
   static WebViewSigninClientFactory* GetInstance();
 
+  WebViewSigninClientFactory(const WebViewSigninClientFactory&) = delete;
+  WebViewSigninClientFactory& operator=(const WebViewSigninClientFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<WebViewSigninClientFactory>;
 
@@ -33,8 +37,6 @@ class WebViewSigninClientFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewSigninClientFactory);
 };
 
 }  // namespace ios_web_view

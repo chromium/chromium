@@ -17,7 +17,7 @@ console-log-side-effects.js:37 Window {window: Window, self: Window, document: 
 console-log-side-effects.js:43 
 console-log-side-effects.js:47 {foo: 1, bar: 2}
 console-log-side-effects.js:48 (3) [1, 2, 3]
-console-log-side-effects.js:50 Uint32Array(3) [1, 2, 3]
+console-log-side-effects.js:50 Uint32Array(3) [1, 2, 3, buffer: ArrayBuffer(12), byteLength: 12, byteOffset: 0, length: 3]
 console-log-side-effects.js:53 (4) [1, 2, 3, {…}]
 console-log-side-effects.js:56 {toString: ƒ}
 console-log-side-effects.js:59 (5) [1, 2, 3, {…}, {…}]

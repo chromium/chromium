@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that svg:style does not crash when the related element is inspected.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('resources/svg-style.xhtml');
 

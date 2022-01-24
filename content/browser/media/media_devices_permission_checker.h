@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_MEDIA_MEDIA_DEVICES_PERMISSION_CHECKER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 #include "content/common/content_export.h"
 
@@ -20,9 +19,14 @@ namespace content {
 class CONTENT_EXPORT MediaDevicesPermissionChecker {
  public:
   MediaDevicesPermissionChecker();
+
   // This constructor creates a MediaDevicesPermissionChecker that replies
   // |override_value| to all permission requests. Use only for testing.
   explicit MediaDevicesPermissionChecker(bool override_value);
+
+  MediaDevicesPermissionChecker(const MediaDevicesPermissionChecker&) = delete;
+  MediaDevicesPermissionChecker& operator=(
+      const MediaDevicesPermissionChecker&) = delete;
 
   // Checks if the origin associated to a render frame identified by
   // |render_process_id| and |render_frame_id| is allowed to access the media
@@ -66,8 +70,6 @@ class CONTENT_EXPORT MediaDevicesPermissionChecker {
  private:
   const bool use_override_;
   const bool override_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDevicesPermissionChecker);
 };
 
 }  // namespace content

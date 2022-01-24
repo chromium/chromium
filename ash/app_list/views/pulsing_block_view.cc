@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/rand_util.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -17,7 +18,10 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/animation/animation_builder.h"
+#include "ui/views/animation/animation_sequence_block.h"
 
 namespace {
 
@@ -32,40 +36,18 @@ void SchedulePulsingAnimation(ui::Layer* layer) {
   DCHECK(layer);
   DCHECK_EQ(base::size(kAnimationOpacity), base::size(kAnimationScale));
 
-  std::unique_ptr<ui::LayerAnimationSequence> opacity_sequence =
-      std::make_unique<ui::LayerAnimationSequence>();
-  std::unique_ptr<ui::LayerAnimationSequence> transform_sequence =
-      std::make_unique<ui::LayerAnimationSequence>();
-
-  // The animations loop infinitely.
-  opacity_sequence->set_is_repeating(true);
-  transform_sequence->set_is_repeating(true);
-
   const gfx::Rect local_bounds(layer->bounds().size());
+  views::AnimationBuilder builder;
+  views::AnimationSequenceBlock block = builder.Repeatedly();
   for (size_t i = 0; i < base::size(kAnimationOpacity); ++i) {
-    opacity_sequence->AddElement(
-        ui::LayerAnimationElement::CreateOpacityElement(
-            kAnimationOpacity[i],
-            base::TimeDelta::FromMilliseconds(kAnimationDurationInMs)));
-    transform_sequence->AddElement(
-        ui::LayerAnimationElement::CreateTransformElement(
-            gfx::GetScaleTransform(local_bounds.CenterPoint(),
-                                   kAnimationScale[i]),
-            base::TimeDelta::FromMilliseconds(kAnimationDurationInMs)));
+    block = block.SetDuration(base::Milliseconds(kAnimationDurationInMs))
+                .SetOpacity(layer, kAnimationOpacity[i])
+                .SetTransform(layer,
+                              gfx::GetScaleTransform(local_bounds.CenterPoint(),
+                                                     kAnimationScale[i]))
+                .Then();
   }
-
-  opacity_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::OPACITY,
-      base::TimeDelta::FromMilliseconds(kAnimationDurationInMs)));
-
-  transform_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::TRANSFORM,
-      base::TimeDelta::FromMilliseconds(kAnimationDurationInMs)));
-
-  std::vector<ui::LayerAnimationSequence*> animations;
-  animations.push_back(opacity_sequence.release());
-  animations.push_back(transform_sequence.release());
-  layer->GetAnimator()->ScheduleTogether(animations);
+  block.SetDuration(base::Milliseconds(kAnimationDurationInMs));
 }
 
 }  // namespace
@@ -78,8 +60,8 @@ PulsingBlockView::PulsingBlockView(const gfx::Size& size, bool start_delay) {
 
   const int max_delay = kAnimationDurationInMs * base::size(kAnimationOpacity);
   const int delay = start_delay ? base::RandInt(0, max_delay) : 0;
-  start_delay_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(delay),
-                           this, &PulsingBlockView::OnStartDelayTimer);
+  start_delay_timer_.Start(FROM_HERE, base::Milliseconds(delay), this,
+                           &PulsingBlockView::OnStartDelayTimer);
 }
 
 PulsingBlockView::~PulsingBlockView() {}

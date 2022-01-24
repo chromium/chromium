@@ -12,6 +12,8 @@ js_library("module") {
     "../..:i18n_setup",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_auto_img",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
   ]
 }
 

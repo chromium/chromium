@@ -89,11 +89,11 @@ NearbyInternalsContactHandler::NearbyInternalsContactHandler(
 NearbyInternalsContactHandler::~NearbyInternalsContactHandler() = default;
 
 void NearbyInternalsContactHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializeContacts",
       base::BindRepeating(&NearbyInternalsContactHandler::InitializeContents,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "downloadContacts",
       base::BindRepeating(
           &NearbyInternalsContactHandler::HandleDownloadContacts,

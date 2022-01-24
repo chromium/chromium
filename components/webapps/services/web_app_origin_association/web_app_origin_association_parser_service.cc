@@ -4,7 +4,7 @@
 
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser_service.h"
 
-#include "components/services/service_sandbox_type.h"
+#include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
 namespace webapps {

@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -57,11 +58,11 @@ class PLATFORM_EXPORT IntSize {
       : IntSize(s.width(), s.height()) {}
   constexpr explicit IntSize(const gfx::Vector2d& v) : IntSize(v.x(), v.y()) {}
 
-  constexpr int Width() const { return width_; }
-  constexpr int Height() const { return height_; }
+  constexpr int width() const { return width_; }
+  constexpr int height() const { return height_; }
 
-  void SetWidth(int width) { width_ = width; }
-  void SetHeight(int height) { height_ = height; }
+  void set_width(int width) { width_ = width; }
+  void set_height(int height) { height_ = height; }
 
   constexpr bool IsEmpty() const { return width_ <= 0 || height_ <= 0; }
   constexpr bool IsZero() const { return !width_ && !height_; }
@@ -70,7 +71,7 @@ class PLATFORM_EXPORT IntSize {
     return static_cast<float>(width_) / static_cast<float>(height_);
   }
 
-  void Expand(int width, int height) {
+  void Enlarge(int width, int height) {
     width_ += width;
     height_ += height;
   }
@@ -94,15 +95,15 @@ class PLATFORM_EXPORT IntSize {
 
   void ClampNegativeToZero() { *this = ExpandedTo(IntSize()); }
 
-  void ClampToMinimumSize(const IntSize& minimum_size) {
-    if (width_ < minimum_size.Width())
-      width_ = minimum_size.Width();
-    if (height_ < minimum_size.Height())
-      height_ = minimum_size.Height();
+  void SetToMin(const IntSize& minimum_size) {
+    if (width_ < minimum_size.width())
+      width_ = minimum_size.width();
+    if (height_ < minimum_size.height())
+      height_ = minimum_size.height();
   }
 
   // Return area in a uint64_t to avoid overflow.
-  uint64_t Area() const { return static_cast<uint64_t>(Width()) * Height(); }
+  uint64_t Area() const { return static_cast<uint64_t>(width()) * height(); }
 
   int DiagonalLengthSquared() const {
     return width_ * width_ + height_ * height_;
@@ -115,16 +116,10 @@ class PLATFORM_EXPORT IntSize {
   explicit operator CGSize() const;
 #endif
 
-  // Use this only for logical sizes, which can not be negative. Things that are
-  // offsets instead, and can be negative, should use a gfx::Vector2d.
-  constexpr explicit operator gfx::Size() const {
-    return gfx::Size(width_, height_);
-  }
-  // IntSize is used as an offset, which can be negative, but gfx::Size can not.
-  // The Vector2d type is used for offsets instead.
-  constexpr explicit operator gfx::Vector2d() const {
-    return gfx::Vector2d(width_, height_);
-  }
+  // These are deleted during blink geometry type to gfx migration.
+  // Use ToGfxSize() and ToGfxVector2d() instead.
+  operator gfx::Size() const = delete;
+  operator gfx::Vector2d() const = delete;
 
   String ToString() const;
 
@@ -133,35 +128,56 @@ class PLATFORM_EXPORT IntSize {
 };
 
 inline IntSize& operator+=(IntSize& a, const IntSize& b) {
-  a.SetWidth(a.Width() + b.Width());
-  a.SetHeight(a.Height() + b.Height());
+  a.set_width(a.width() + b.width());
+  a.set_height(a.height() + b.height());
   return a;
 }
 
 inline IntSize& operator-=(IntSize& a, const IntSize& b) {
-  a.SetWidth(a.Width() - b.Width());
-  a.SetHeight(a.Height() - b.Height());
+  a.set_width(a.width() - b.width());
+  a.set_height(a.height() - b.height());
   return a;
 }
 
 inline IntSize operator+(const IntSize& a, const IntSize& b) {
-  return IntSize(a.Width() + b.Width(), a.Height() + b.Height());
+  return IntSize(a.width() + b.width(), a.height() + b.height());
 }
 
 inline IntSize operator-(const IntSize& a, const IntSize& b) {
-  return IntSize(a.Width() - b.Width(), a.Height() - b.Height());
+  return IntSize(a.width() - b.width(), a.height() - b.height());
 }
 
 inline IntSize operator-(const IntSize& size) {
-  return IntSize(-size.Width(), -size.Height());
+  return IntSize(-size.width(), -size.height());
 }
 
 inline bool operator==(const IntSize& a, const IntSize& b) {
-  return a.Width() == b.Width() && a.Height() == b.Height();
+  return a.width() == b.width() && a.height() == b.height();
 }
 
 inline bool operator!=(const IntSize& a, const IntSize& b) {
-  return a.Width() != b.Width() || a.Height() != b.Height();
+  return a.width() != b.width() || a.height() != b.height();
+}
+
+// Temporary converter to replace ToIntSize(const IntPoint&).
+constexpr IntSize ToIntSize(const gfx::Point& p) {
+  return IntSize(p.x(), p.y());
+}
+
+// Temporary converter to replace IntPoint(const IntSize&).
+constexpr gfx::Point ToGfxPoint(const IntSize& s) {
+  return gfx::Point(s.width(), s.height());
+}
+
+// Use this only for logical sizes, which can not be negative. Things that are
+// offsets instead, and can be negative, should use a gfx::Vector2d.
+constexpr gfx::Size ToGfxSize(const IntSize& s) {
+  return gfx::Size(s.width(), s.height());
+}
+// IntSize is used as an offset, which can be negative, but gfx::Size can not.
+// The Vector2d type is used for offsets instead.
+constexpr gfx::Vector2d ToGfxVector2d(const IntSize& s) {
+  return gfx::Vector2d(s.width(), s.height());
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const IntSize&);

@@ -37,6 +37,27 @@ enum AshTextContext {
   // text. Usually 13pt.
   CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY,
 
+  // Text label in the Sharesheet bubble for small text. Medium weight.
+  // Usually 10pt.
+  CONTEXT_SHARESHEET_BUBBLE_SMALL,
+
+  // A month label that appears in the Calendar view.
+  CONTEXT_CALENDAR_LABEL,
+
+  // Date text in the Calendar view.
+  CONTEXT_CALENDAR_DATE,
+
+  // Title and details text label used in search result view. Usually 14 pt.
+  CONTEXT_SEARCH_RESULT_VIEW,
+
+  // Details text label used for inline answer search result view. Usually 12pt.
+  // Used when productivity launcher is enabled.
+  CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS,
+
+  // Label text for search result view categories. Usually 13 pt. Appears above
+  // one or more search result views.
+  CONTEXT_SEARCH_RESULT_CATEGORY_LABEL,
+
   ASH_TEXT_CONTEXT_END
 };
 
@@ -49,6 +70,12 @@ enum AshTextStyle {
 
   // Text styling specifically for the Chrome OS sharesheet.
   STYLE_SHARESHEET,
+
+  // Text styling for classic launcher's search result view.
+  STYLE_CLASSIC_LAUNCHER,
+
+  // Text styling for productivity launcher's search result view.
+  STYLE_PRODUCTIVITY_LAUNCHER,
 
   ASH_TEXT_STYLE_END
 };

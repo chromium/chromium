@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Use the <code>chrome.enterprise.platformKeys</code> API to generate
-// hardware-backed keys and to install certificates for these keys. The
-// certificates will be managed by the platform and can be used for TLS
-// authentication, network access or by other extension through
-// $(ref:platformKeys chrome.platformKeys).
+// Use the <code>chrome.enterprise.platformKeys</code> API to generate keys and
+// install certificates for these keys. The certificates will be managed by the
+// platform and can be used for TLS authentication, network access or by other
+// extension through $(ref:platformKeys chrome.platformKeys).
 [platforms = ("chromeos", "lacros")]
 namespace enterprise.platformKeys {
   [nocompile, noinline_doc] dictionary Token {
@@ -31,6 +30,22 @@ namespace enterprise.platformKeys {
     // created with <code>window.crypto.subtle</code> cannot be used with this
     // interface.</p>
     [instanceOf = SubtleCrypto] object subtleCrypto;
+
+    // Implements the WebCrypto's
+    // <a href="http://www.w3.org/TR/WebCryptoAPI/#subtlecrypto-interface">SubtleCrypto</a>
+    // interface. The cryptographic operations, including key generation, are
+    // software-backed. Protection of the keys, and thus implementation of the
+    // non-extractable property, is done in software, so the keys are less
+    // protected than hardware-backed keys.
+    // <p>Only non-extractable RSASSA-PKCS1-V1_5 keys with
+    // <code>modulusLength</code> up to 2048 can be generated. Each key can be
+    // used for signing data at most once.</p>
+    // <p>Keys generated on a specific <code>Token</code> cannot be used with
+    // any other Tokens, nor can they be used with
+    // <code>window.crypto.subtle</code>. Equally, <code>Key</code> objects
+    // created with <code>window.crypto.subtle</code> cannot be used with this
+    // interface.</p>
+    [instanceOf = SubtleCrypto] object softwareBackedSubtleCrypto;
   };
 
   // Invoked by <code>getTokens</code> with the list of available Tokens.

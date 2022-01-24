@@ -17,6 +17,10 @@ class AwMediaDrmBridgeClient : public media::MediaDrmBridgeClient {
   // pairs, in the format "key system name,UUID as string".
   explicit AwMediaDrmBridgeClient(
       const std::vector<std::string>& key_system_uuid_mappings);
+
+  AwMediaDrmBridgeClient(const AwMediaDrmBridgeClient&) = delete;
+  AwMediaDrmBridgeClient& operator=(const AwMediaDrmBridgeClient&) = delete;
+
   ~AwMediaDrmBridgeClient() override;
 
  private:
@@ -27,8 +31,6 @@ class AwMediaDrmBridgeClient : public media::MediaDrmBridgeClient {
 
   std::vector<std::string> key_system_uuid_mappings_;
   cdm::WidevineDrmDelegateAndroid widevine_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwMediaDrmBridgeClient);
 };
 
 }  // namespace android_webview

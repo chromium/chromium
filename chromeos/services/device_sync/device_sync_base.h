@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_DEVICE_SYNC_BASE_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_DEVICE_SYNC_BASE_H_
 
-#include "base/macros.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,6 +18,9 @@ namespace device_sync {
 // Base DeviceSync implementation.
 class DeviceSyncBase : public mojom::DeviceSync {
  public:
+  DeviceSyncBase(const DeviceSyncBase&) = delete;
+  DeviceSyncBase& operator=(const DeviceSyncBase&) = delete;
+
   ~DeviceSyncBase() override;
 
   // mojom::DeviceSync:
@@ -46,12 +48,17 @@ class DeviceSyncBase : public mojom::DeviceSync {
 
   mojo::RemoteSet<mojom::DeviceSyncObserver> observers_;
   mojo::ReceiverSet<mojom::DeviceSync> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncBase);
 };
 
 }  // namespace device_sync
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace device_sync {
+using ::chromeos::device_sync::DeviceSyncBase;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_DEVICE_SYNC_DEVICE_SYNC_BASE_H_

@@ -18,6 +18,10 @@ class XrDeviceService : public mojom::XRDeviceService {
   explicit XrDeviceService(
       mojo::PendingReceiver<mojom::XRDeviceService> receiver,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  XrDeviceService(const XrDeviceService&) = delete;
+  XrDeviceService& operator=(const XrDeviceService&) = delete;
+
   ~XrDeviceService() override;
 
  private:
@@ -31,8 +35,6 @@ class XrDeviceService : public mojom::XRDeviceService {
 
   mojo::Receiver<mojom::XRDeviceService> receiver_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(XrDeviceService);
 };
 
 }  // namespace device

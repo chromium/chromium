@@ -33,6 +33,10 @@ class ViewTreeHostRootView : public views::internal::RootView {
       base::RepeatingCallback<void(const gfx::PresentationFeedback&)>;
 
   explicit ViewTreeHostRootView(views::Widget* widget);
+
+  ViewTreeHostRootView(const ViewTreeHostRootView&) = delete;
+  ViewTreeHostRootView& operator=(const ViewTreeHostRootView&) = delete;
+
   ~ViewTreeHostRootView() override;
 
   // Set presentation callback.
@@ -90,8 +94,6 @@ class ViewTreeHostRootView : public views::internal::RootView {
   std::vector<std::unique_ptr<Resource>> returned_resources_;
   std::unique_ptr<LayerTreeViewTreeFrameSinkHolder> frame_sink_holder_;
   base::WeakPtrFactory<ViewTreeHostRootView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ViewTreeHostRootView);
 };
 
 }  // namespace ash

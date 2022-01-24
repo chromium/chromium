@@ -17,8 +17,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 
 namespace device {
@@ -62,6 +62,9 @@ class UsbService {
   // Creates a SequencedTaskRunner with kBlockingTaskTraits.
   static scoped_refptr<base::SequencedTaskRunner> CreateBlockingTaskRunner();
 
+  UsbService(const UsbService&) = delete;
+  UsbService& operator=(const UsbService&) = delete;
+
   virtual ~UsbService();
 
   scoped_refptr<UsbDevice> GetDevice(const std::string& guid);
@@ -98,8 +101,6 @@ class UsbService {
   std::unordered_map<std::string, scoped_refptr<UsbDevice>> devices_;
   std::unordered_set<std::string> testing_devices_;
   base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbService);
 };
 
 }  // namespace device

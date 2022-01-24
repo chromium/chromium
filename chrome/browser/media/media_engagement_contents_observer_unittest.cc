@@ -154,7 +154,7 @@ class MediaEngagementContentsObserverTest
   }
 
   void SimulatePlaybackStopped(int id) {
-    SimulatePlaybackStoppedWithTime(id, true, base::TimeDelta::FromSeconds(0));
+    SimulatePlaybackStoppedWithTime(id, true, base::Seconds(0));
   }
 
   void SimulateMutedStateChange(int id, bool muted) {
@@ -396,9 +396,7 @@ class MediaEngagementContentsObserverTest
 
   base::Time Now() { return test_clock_.Now(); }
 
-  void Advance15Minutes() {
-    test_clock_.Advance(base::TimeDelta::FromMinutes(15));
-  }
+  void Advance15Minutes() { test_clock_.Advance(base::Minutes(15)); }
 
   ukm::TestAutoSetUkmRecorder& test_ukm_recorder() {
     return test_ukm_recorder_;
@@ -420,7 +418,7 @@ class MediaEngagementContentsObserverTest
 
   const base::TimeDelta kMaxWaitingTime =
       MediaEngagementContentsObserver::kSignificantMediaPlaybackTime +
-      base::TimeDelta::FromSeconds(2);
+      base::Seconds(2);
 };
 
 // TODO(mlamouri): test that visits are not recorded multiple times when a
@@ -1217,20 +1215,20 @@ TEST_F(MediaEngagementContentsObserverTest, SignificantAudibleTabMuted_Off) {
 
 TEST_F(MediaEngagementContentsObserverTest, RecordPlaybackTime) {
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, false, base::TimeDelta::FromSeconds(3));
-  ExpectPlaybackTime(0, base::TimeDelta::FromSeconds(3));
+  SimulatePlaybackStoppedWithTime(0, false, base::Seconds(3));
+  ExpectPlaybackTime(0, base::Seconds(3));
 
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, false, base::TimeDelta::FromSeconds(6));
-  ExpectPlaybackTime(0, base::TimeDelta::FromSeconds(9));
+  SimulatePlaybackStoppedWithTime(0, false, base::Seconds(6));
+  ExpectPlaybackTime(0, base::Seconds(9));
 
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, true, base::TimeDelta::FromSeconds(2));
-  ExpectPlaybackTime(0, base::TimeDelta::FromSeconds(11));
+  SimulatePlaybackStoppedWithTime(0, true, base::Seconds(2));
+  ExpectPlaybackTime(0, base::Seconds(11));
 
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, false, base::TimeDelta::FromSeconds(2));
-  ExpectPlaybackTime(0, base::TimeDelta::FromSeconds(2));
+  SimulatePlaybackStoppedWithTime(0, false, base::Seconds(2));
+  ExpectPlaybackTime(0, base::Seconds(2));
 }
 
 TEST_F(MediaEngagementContentsObserverTest, ShortMediaIgnored) {
@@ -1241,14 +1239,14 @@ TEST_F(MediaEngagementContentsObserverTest, ShortMediaIgnored) {
   SimulateSignificantAudioPlayer(0);
   SimulateSignificantPlaybackTimeForPlayer(0);
   SimulateSignificantVideoPlayer(1);
-  SimulatePlaybackStoppedWithTime(1, true, base::TimeDelta::FromSeconds(1));
+  SimulatePlaybackStoppedWithTime(1, true, base::Seconds(1));
   SimulateSignificantVideoPlayer(2);
   SimulateSignificantPlaybackTimeForPlayer(2);
 
   // Navigate to a sub page and continue watching.
   Navigate(GURL("https://www.google.com/test"));
   SimulateSignificantAudioPlayer(1);
-  SimulatePlaybackStoppedWithTime(1, true, base::TimeDelta::FromSeconds(2));
+  SimulatePlaybackStoppedWithTime(1, true, base::Seconds(2));
 
   // Test that when we navigate to a new origin the audible players the scores
   // are recorded and we log extra UKM events with the times.
@@ -1262,12 +1260,12 @@ TEST_F(MediaEngagementContentsObserverTest, TotalTimeUsedInShortCalculation) {
   Navigate(origin.GetURL());
 
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, false, base::TimeDelta::FromSeconds(8));
+  SimulatePlaybackStoppedWithTime(0, false, base::Seconds(8));
   SimulateSignificantPlaybackTimeForPlayer(0);
 
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, true, base::TimeDelta::FromSeconds(2));
-  ExpectPlaybackTime(0, base::TimeDelta::FromSeconds(10));
+  SimulatePlaybackStoppedWithTime(0, true, base::Seconds(2));
+  ExpectPlaybackTime(0, base::Seconds(10));
 
   SimulateDestroy();
   ExpectScores(origin, 0, 1, 0);
@@ -1279,7 +1277,7 @@ TEST_F(MediaEngagementContentsObserverTest, OnlyIgnoreFinishedMedia) {
   Navigate(origin.GetURL());
 
   SimulateSignificantAudioPlayer(0);
-  SimulatePlaybackStoppedWithTime(0, false, base::TimeDelta::FromSeconds(2));
+  SimulatePlaybackStoppedWithTime(0, false, base::Seconds(2));
 
   SimulateDestroy();
   ExpectScores(origin, 0, 1, 0);

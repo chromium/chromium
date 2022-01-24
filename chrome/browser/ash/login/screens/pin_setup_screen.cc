@@ -174,8 +174,7 @@ bool PinSetupScreen::MaybeSkip(WizardContext* context) {
 void PinSetupScreen::ShowImpl() {
   token_lifetime_timeout_.Start(
       FROM_HERE,
-      base::TimeDelta::FromSeconds(
-          quick_unlock::AuthToken::kTokenExpirationSeconds),
+      base::Seconds(quick_unlock::AuthToken::kTokenExpirationSeconds),
       base::BindOnce(&PinSetupScreen::OnTokenTimedOut,
                      weak_ptr_factory_.GetWeakPtr()));
   quick_unlock::QuickUnlockStorage* quick_unlock_storage =

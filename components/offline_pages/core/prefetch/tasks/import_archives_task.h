@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_importer.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
@@ -21,6 +20,10 @@ class ImportArchivesTask : public Task {
  public:
   ImportArchivesTask(PrefetchStore* prefetch_store,
                      PrefetchImporter* prefetch_importer);
+
+  ImportArchivesTask(const ImportArchivesTask&) = delete;
+  ImportArchivesTask& operator=(const ImportArchivesTask&) = delete;
+
   ~ImportArchivesTask() override;
 
  private:
@@ -33,8 +36,6 @@ class ImportArchivesTask : public Task {
   PrefetchArchiveInfo archive_;
 
   base::WeakPtrFactory<ImportArchivesTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImportArchivesTask);
 };
 
 }  // namespace offline_pages

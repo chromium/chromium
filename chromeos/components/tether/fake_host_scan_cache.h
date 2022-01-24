@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "chromeos/components/tether/host_scan_cache.h"
 
 namespace chromeos {
@@ -20,6 +19,10 @@ namespace tether {
 class FakeHostScanCache : virtual public HostScanCache {
  public:
   FakeHostScanCache();
+
+  FakeHostScanCache(const FakeHostScanCache&) = delete;
+  FakeHostScanCache& operator=(const FakeHostScanCache&) = delete;
+
   ~FakeHostScanCache() override;
 
   // Getters for contents of the cache.
@@ -43,8 +46,6 @@ class FakeHostScanCache : virtual public HostScanCache {
 
  private:
   std::unordered_map<std::string, HostScanCacheEntry> cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostScanCache);
 };
 
 }  // namespace tether

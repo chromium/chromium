@@ -60,9 +60,6 @@ void SharingIconView::StopLoadingAnimation() {
   SchedulePaint();
 }
 
-// TODO(knollr): Introduce IconState / ControllerState {eg, Hidden, Success,
-// Sending} to define the various cases instead of a number of if else
-// statements.
 void SharingIconView::UpdateImpl() {
   auto* controller = GetController();
   if (!controller)

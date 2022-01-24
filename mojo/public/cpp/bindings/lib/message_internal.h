@@ -34,9 +34,10 @@ struct MessageHeader : internal::StructHeader {
   // A combination of zero or more of the flag constants defined within the
   // Message class.
   uint32_t flags;
-  // A unique (hopefully) id for a message. Used in tracing to match trace
-  // events for sending and receiving a message.
-  uint32_t trace_id;
+  // A unique (hopefully) value for a message. Used in tracing, forming the
+  // lower part of the 64-bit trace id, which is used to match trace events for
+  // sending and receiving a message (`name` forms the upper part).
+  uint32_t trace_nonce;
 };
 static_assert(sizeof(MessageHeader) == 24, "Bad sizeof(MessageHeader)");
 
@@ -59,6 +60,10 @@ static_assert(sizeof(MessageHeaderV2) == 48, "Bad sizeof(MessageHeaderV2)");
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
  public:
   explicit MessageDispatchContext(Message* message);
+
+  MessageDispatchContext(const MessageDispatchContext&) = delete;
+  MessageDispatchContext& operator=(const MessageDispatchContext&) = delete;
+
   ~MessageDispatchContext();
 
   static MessageDispatchContext* current();
@@ -68,8 +73,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
  private:
   MessageDispatchContext* outer_context_;
   Message* message_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageDispatchContext);
 };
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)

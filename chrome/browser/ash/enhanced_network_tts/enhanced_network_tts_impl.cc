@@ -11,6 +11,8 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_utils.h"
 #include "components/google/core/common/google_util.h"
@@ -22,13 +24,28 @@
 namespace ash {
 namespace enhanced_network_tts {
 
+constexpr base::Feature EnhancedNetworkTtsImpl::kOverrideParams;
+constexpr base::FeatureParam<std::string> EnhancedNetworkTtsImpl::kApiKey;
+
+EnhancedNetworkTtsImpl::ServerRequest::ServerRequest(
+    std::unique_ptr<network::SimpleURLLoader> url_loader,
+    int start_index,
+    bool is_last_request)
+    : url_loader(std::move(url_loader)),
+      start_index(start_index),
+      is_last_request(is_last_request) {}
+
+EnhancedNetworkTtsImpl::ServerRequest::~ServerRequest() = default;
+
 EnhancedNetworkTtsImpl& EnhancedNetworkTtsImpl::GetInstance() {
   static base::NoDestructor<EnhancedNetworkTtsImpl> tts_impl;
   return *tts_impl;
 }
 
 EnhancedNetworkTtsImpl::EnhancedNetworkTtsImpl()
-    : api_key_(google_apis::GetReadAloudAPIKey()) {}
+    : api_key_(kApiKey.Get().empty() ? google_apis::GetReadAloudAPIKey()
+                                     : kApiKey.Get()),
+      char_limit_per_request_(mojom::kEnhancedNetworkTtsMaxCharacterSize) {}
 EnhancedNetworkTtsImpl::~EnhancedNetworkTtsImpl() = default;
 
 void EnhancedNetworkTtsImpl::BindReceiverAndURLFactory(
@@ -43,40 +60,71 @@ void EnhancedNetworkTtsImpl::BindReceiverAndURLFactory(
 
 void EnhancedNetworkTtsImpl::GetAudioData(mojom::TtsRequestPtr request,
                                           GetAudioDataCallback callback) {
+  // Reset if we have bound observer from the prior TtsRequest.
+  if (on_data_received_observer_.is_bound()) {
+    ResetAndSendErrorResponse(mojom::TtsRequestError::kRequestOverride);
+    DVLOG(1) << "Multiple requests for Enhance Network TTS, override the "
+                "prior one.";
+  }
+
+  auto pending_receiver =
+      on_data_received_observer_.BindNewPipeAndPassReceiver();
+  std::move(callback).Run(std::move(pending_receiver));
+  // If the message pipe is disconnected, then the caller is no longer
+  // interested in receiving the result of processing `request`, so reset the
+  // internal state.
+  on_data_received_observer_.set_disconnect_handler(
+      base::BindOnce(&EnhancedNetworkTtsImpl::ResetServerRequestsAndObserver,
+                     weak_factory_.GetWeakPtr()));
+
   // Return early if the utterance is empty.
   if (request->utterance.empty()) {
-    std::move(callback).Run(
-        GetResultOnError(mojom::TtsRequestError::kEmptyUtterance));
+    ResetAndSendErrorResponse(mojom::TtsRequestError::kEmptyUtterance);
     return;
   }
 
-  // Return early if the utterance is over length limit.
-  if (request->utterance.size() > mojom::kEnhancedNetworkTtsMaxCharacterSize) {
-    std::move(callback).Run(
-        GetResultOnError(mojom::TtsRequestError::kOverLength));
-    return;
+  std::u16string utterance_u16string = base::UTF8ToUTF16(request->utterance);
+  // Ignore the whitespaces at start. The ICU break iterator does not work well
+  // with text that has whitespaces at start. We must trim the text before
+  // sending it to |FindTextBreaks|.
+  int start_offset = 0;
+  while (base::IsUnicodeWhitespace(utterance_u16string[start_offset])) {
+    start_offset++;
+  }
+  utterance_u16string = utterance_u16string.substr(start_offset);
+
+  // Chop the utterance into smaller text pieces and queue them into
+  // |server_requests_|.
+  std::vector<uint16_t> text_breaks =
+      FindTextBreaks(utterance_u16string, char_limit_per_request_);
+  uint16_t text_piece_start_index = 0;
+  for (int i = 0; i < text_breaks.size(); i++) {
+    uint16_t text_piece_end_index = text_breaks[i];
+    auto size = text_piece_end_index - text_piece_start_index + 1;
+    const std::string text_piece = base::UTF16ToUTF8(
+        utterance_u16string.substr(text_piece_start_index, size));
+
+    mojom::TtsRequestPtr new_tts_request = mojom::TtsRequest::New(
+        text_piece, request->rate, request->voice, request->lang);
+    std::unique_ptr<network::SimpleURLLoader> url_loader = MakeRequestLoader();
+    const bool last_request = i == text_breaks.size() - 1;
+    url_loader->AttachStringForUpload(
+        FormatJsonRequest(std::move(new_tts_request)),
+        kNetworkRequestUploadType);
+    server_requests_.emplace_back(std::move(url_loader),
+                                  text_piece_start_index + start_offset,
+                                  last_request);
+
+    // Prepare for the next text piece.
+    text_piece_start_index = text_piece_end_index + 1;
   }
 
-  // If the prior request is not finished, we override it and process any
-  // unfinished audio callback.
-  if (ongoing_server_request_)
-    ongoing_server_request_.reset();
+  // Kick off the server requests.
+  ProcessNextServerRequest();
+}
 
-  if (ProcessOngoingAudioCallback(
-          GetResultOnError(mojom::TtsRequestError::kRequestOverride)))
-    DVLOG(1) << "Multiple HTTP requests for Enhance Network TTS, override the "
-                "prior one.";
-
-  ongoing_audio_callback_ = std::move(callback);
-  ongoing_server_request_ = MakeRequestLoader();
-  ongoing_server_request_->AttachStringForUpload(
-      FormatJsonRequest(std::move(request)), kNetworkRequestUploadType);
-  network::SimpleURLLoader::BodyAsStringCallback body_as_string_callback =
-      base::BindOnce(&EnhancedNetworkTtsImpl::OnServerResponseReceived,
-                     weak_factory_.GetWeakPtr());
-  ongoing_server_request_->DownloadToString(url_loader_factory_.get(),
-                                            std::move(body_as_string_callback),
-                                            kEnhancedNetworkTtsMaxResponseSize);
+void EnhancedNetworkTtsImpl::SetCharLimitPerRequestForTesting(int limit) {
+  char_limit_per_request_ = limit;
 }
 
 data_decoder::mojom::JsonParser* EnhancedNetworkTtsImpl::GetJsonParser() {
@@ -109,23 +157,41 @@ EnhancedNetworkTtsImpl::MakeRequestLoader() {
                                           MISSING_TRAFFIC_ANNOTATION);
 }
 
-void EnhancedNetworkTtsImpl::OnServerResponseReceived(
-    const std::unique_ptr<std::string> json_response) {
-  // If the server request has been overridden, we process the audio callback
-  // if necessary.
-  if (!ongoing_server_request_) {
-    ProcessOngoingAudioCallback(
-        GetResultOnError(mojom::TtsRequestError::kRequestOverride));
-    DVLOG(1) << "Multiple HTTP requests for Enhance Network TTS, override the "
-                "prior one.";
+void EnhancedNetworkTtsImpl::ProcessNextServerRequest() {
+  // If there is no more request to process, resets the state variables and
+  // return early.
+  if (server_requests_.empty()) {
+    ResetServerRequestsAndObserver();
+    return;
   }
 
-  ongoing_server_request_.reset();
+  const ServerRequestList::iterator first_request_it = server_requests_.begin();
+  network::SimpleURLLoader::BodyAsStringCallback body_as_string_callback =
+      base::BindOnce(&EnhancedNetworkTtsImpl::OnServerResponseReceived,
+                     weak_factory_.GetWeakPtr(), first_request_it);
+  server_requests_.front().url_loader->DownloadToString(
+      url_loader_factory_.get(), std::move(body_as_string_callback),
+      kEnhancedNetworkTtsMaxResponseSize);
+}
+
+void EnhancedNetworkTtsImpl::OnServerResponseReceived(
+    const ServerRequestList::iterator server_request_it,
+    const std::unique_ptr<std::string> json_response) {
+  // This callback will not be called when the url_loader and its request are
+  // deleted. See simple_url_loader.h for more details.
+  DCHECK(!server_requests_.empty());
+  // The iterator should only point to the begin of the list.
+  DCHECK(server_requests_.begin() == server_request_it);
+
+  const int start_index = server_request_it->start_index;
+  const bool is_last_request = server_request_it->is_last_request;
+
+  // Remove the current request from the list.
+  server_requests_.erase(server_request_it);
 
   if (!json_response) {
     DVLOG(1) << "HTTP request for Enhance Network TTS failed.";
-    ProcessOngoingAudioCallback(
-        GetResultOnError(mojom::TtsRequestError::kServerError));
+    ResetAndSendErrorResponse(mojom::TtsRequestError::kServerError);
     return;
   }
 
@@ -133,32 +199,43 @@ void EnhancedNetworkTtsImpl::OnServerResponseReceived(
   GetJsonParser()->Parse(
       *json_response,
       base::BindOnce(&EnhancedNetworkTtsImpl::OnResponseJsonParsed,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), start_index, is_last_request));
 }
 
 void EnhancedNetworkTtsImpl::OnResponseJsonParsed(
+    const int start_index,
+    const bool is_last_request,
     const absl::optional<base::Value> json_data,
     const absl::optional<std::string>& error) {
   const bool success = json_data.has_value() && !error.has_value();
-
   // Extract results for the request.
   if (success) {
-    ProcessOngoingAudioCallback(UnpackJsonResponse(*json_data));
+    SendResponse(UnpackJsonResponse(*json_data, start_index, is_last_request));
+    // Only start the next request after finishing the current one. This method
+    // will also reset the internal state if there is no more request.
+    ProcessNextServerRequest();
   } else {
+    ResetAndSendErrorResponse(mojom::TtsRequestError::kReceivedUnexpectedData);
     DVLOG(1) << "Parsing server response JSON failed with error: "
              << error.value_or("No reason reported.");
-    ProcessOngoingAudioCallback(
-        GetResultOnError(mojom::TtsRequestError::kReceivedUnexpectedData));
   }
 }
 
-bool EnhancedNetworkTtsImpl::ProcessOngoingAudioCallback(
-    mojom::TtsResponsePtr response) {
-  if (!ongoing_audio_callback_.is_null()) {
-    std::move(ongoing_audio_callback_).Run(std::move(response));
-    return true;
+void EnhancedNetworkTtsImpl::SendResponse(mojom::TtsResponsePtr response) {
+  if (on_data_received_observer_.is_bound()) {
+    on_data_received_observer_->OnAudioDataReceived(std::move(response));
   }
-  return false;
+}
+
+void EnhancedNetworkTtsImpl::ResetServerRequestsAndObserver() {
+  server_requests_.clear();
+  on_data_received_observer_.reset();
+}
+
+void EnhancedNetworkTtsImpl::ResetAndSendErrorResponse(
+    mojom::TtsRequestError error_code) {
+  SendResponse(GetResultOnError(error_code));
+  ResetServerRequestsAndObserver();
 }
 
 }  // namespace enhanced_network_tts

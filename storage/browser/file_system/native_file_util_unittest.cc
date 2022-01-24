@@ -16,11 +16,24 @@
 #include "storage/browser/file_system/native_file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_WIN)
+#include "windows.h"
+#endif  // defined(OS_WIN)
+
 namespace storage {
+namespace {
+
+using CopyOrMoveOption = FileSystemOperation::CopyOrMoveOption;
+using CopyOrMoveOptionSet = FileSystemOperation::CopyOrMoveOptionSet;
+
+}  // namespace
 
 class NativeFileUtilTest : public testing::Test {
  public:
   NativeFileUtilTest() = default;
+
+  NativeFileUtilTest(const NativeFileUtilTest&) = delete;
+  NativeFileUtilTest& operator=(const NativeFileUtilTest&) = delete;
 
   void SetUp() override { ASSERT_TRUE(data_dir_.CreateUniqueTempDir()); }
 
@@ -41,10 +54,32 @@ class NativeFileUtilTest : public testing::Test {
     return info.size;
   }
 
+#if defined(OS_POSIX)
+  void ExpectFileHasPermissionsPosix(base::FilePath file, int expected_mode) {
+    base::File::Info file_info;
+    int mode;
+    ASSERT_TRUE(FileExists(file));
+
+    EXPECT_TRUE(base::GetPosixFilePermissions(file, &mode));
+    EXPECT_EQ(mode, expected_mode);
+  }
+#endif  // defined(OS_POSIX)
+
+#if defined(OS_WIN)
+  void ExpectFileHasPermissionsWin(base::FilePath file,
+                                   DWORD expected_attributes) {
+    base::File::Info file_info;
+    DWORD attributes;
+    ASSERT_TRUE(FileExists(file));
+
+    attributes = ::GetFileAttributes(file.value().c_str());
+    EXPECT_NE(attributes, INVALID_FILE_ATTRIBUTES);
+    EXPECT_EQ(attributes, expected_attributes);
+  }
+#endif  // defined(OS_WIN)
+
  private:
   base::ScopedTempDir data_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeFileUtilTest);
 };
 
 TEST_F(NativeFileUtilTest, CreateCloseAndDeleteFile) {
@@ -125,10 +160,8 @@ TEST_F(NativeFileUtilTest, TouchFileAndGetFileInfo) {
   ASSERT_EQ(info.last_accessed, native_info.last_accessed);
   ASSERT_EQ(info.creation_time, native_info.creation_time);
 
-  const base::Time new_accessed =
-      info.last_accessed + base::TimeDelta::FromHours(10);
-  const base::Time new_modified =
-      info.last_modified + base::TimeDelta::FromHours(5);
+  const base::Time new_accessed = info.last_accessed + base::Hours(10);
+  const base::Time new_modified = info.last_modified + base::Hours(5);
 
   EXPECT_EQ(base::File::FILE_OK,
             NativeFileUtil::Touch(file_name, new_accessed, new_modified));
@@ -216,11 +249,13 @@ TEST_F(NativeFileUtilTest, CopyFile) {
 
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
-                from_file, to_file1, FileSystemOperation::OPTION_NONE, nosync));
+                from_file, to_file1, FileSystemOperation::CopyOrMoveOptionSet(),
+                nosync));
 
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
-                from_file, to_file2, FileSystemOperation::OPTION_NONE, sync));
+                from_file, to_file2, FileSystemOperation::CopyOrMoveOptionSet(),
+                sync));
 
   EXPECT_TRUE(FileExists(from_file));
   EXPECT_EQ(1020, GetSize(from_file));
@@ -234,37 +269,40 @@ TEST_F(NativeFileUtilTest, CopyFile) {
             NativeFileUtil::CreateDirectory(dir, false, false));
   ASSERT_TRUE(base::DirectoryExists(dir));
   base::FilePath to_dir_file = dir.AppendASCII("file");
-  ASSERT_EQ(base::File::FILE_OK, NativeFileUtil::CopyOrMoveFile(
-                                     from_file, to_dir_file,
-                                     FileSystemOperation::OPTION_NONE, nosync));
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_file, to_dir_file,
+                FileSystemOperation::CopyOrMoveOptionSet(), nosync));
   EXPECT_TRUE(FileExists(to_dir_file));
   EXPECT_EQ(1020, GetSize(to_dir_file));
 
   // Following tests are error checking.
   // Source doesn't exist.
-  EXPECT_EQ(
-      base::File::FILE_ERROR_NOT_FOUND,
-      NativeFileUtil::CopyOrMoveFile(Path("nonexists"), Path("file"),
-                                     FileSystemOperation::OPTION_NONE, nosync));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            NativeFileUtil::CopyOrMoveFile(
+                Path("nonexists"), Path("file"),
+                FileSystemOperation::CopyOrMoveOptionSet(), nosync));
 
   // Source is not a file.
   EXPECT_EQ(base::File::FILE_ERROR_NOT_A_FILE,
             NativeFileUtil::CopyOrMoveFile(
-                dir, Path("file"), FileSystemOperation::OPTION_NONE, nosync));
+                dir, Path("file"), FileSystemOperation::CopyOrMoveOptionSet(),
+                nosync));
   // Destination is not a file.
-  EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION,
-            NativeFileUtil::CopyOrMoveFile(
-                from_file, dir, FileSystemOperation::OPTION_NONE, nosync));
+  EXPECT_EQ(
+      base::File::FILE_ERROR_INVALID_OPERATION,
+      NativeFileUtil::CopyOrMoveFile(
+          from_file, dir, FileSystemOperation::CopyOrMoveOptionSet(), nosync));
   // Destination's parent doesn't exist.
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, Path("nodir").AppendASCII("file"),
-                FileSystemOperation::OPTION_NONE, nosync));
+                FileSystemOperation::CopyOrMoveOptionSet(), nosync));
   // Destination's parent is a file.
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, Path("tofile1").AppendASCII("file"),
-                FileSystemOperation::OPTION_NONE, nosync));
+                FileSystemOperation::CopyOrMoveOptionSet(), nosync));
 }
 
 TEST_F(NativeFileUtilTest, MoveFile) {
@@ -283,7 +321,8 @@ TEST_F(NativeFileUtilTest, MoveFile) {
 
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
-                from_file, to_file, FileSystemOperation::OPTION_NONE, move));
+                from_file, to_file, FileSystemOperation::CopyOrMoveOptionSet(),
+                move));
 
   EXPECT_FALSE(FileExists(from_file));
   EXPECT_TRUE(FileExists(to_file));
@@ -299,43 +338,46 @@ TEST_F(NativeFileUtilTest, MoveFile) {
             NativeFileUtil::CreateDirectory(dir, false, false));
   ASSERT_TRUE(base::DirectoryExists(dir));
   base::FilePath to_dir_file = dir.AppendASCII("file");
-  ASSERT_EQ(base::File::FILE_OK, NativeFileUtil::CopyOrMoveFile(
-                                     from_file, to_dir_file,
-                                     FileSystemOperation::OPTION_NONE, move));
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_file, to_dir_file,
+                FileSystemOperation::CopyOrMoveOptionSet(), move));
   EXPECT_FALSE(FileExists(from_file));
   EXPECT_TRUE(FileExists(to_dir_file));
   EXPECT_EQ(1020, GetSize(to_dir_file));
 
   // Following is error checking.
   // Source doesn't exist.
-  EXPECT_EQ(
-      base::File::FILE_ERROR_NOT_FOUND,
-      NativeFileUtil::CopyOrMoveFile(Path("nonexists"), Path("file"),
-                                     FileSystemOperation::OPTION_NONE, move));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            NativeFileUtil::CopyOrMoveFile(
+                Path("nonexists"), Path("file"),
+                FileSystemOperation::CopyOrMoveOptionSet(), move));
 
   base::FilePath dir2 = Path("dir2");
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CreateDirectory(dir2, false, false));
   ASSERT_TRUE(base::DirectoryExists(dir2));
   // Source is a directory, destination is a file.
-  EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION,
-            NativeFileUtil::CopyOrMoveFile(
-                dir, to_file, FileSystemOperation::OPTION_NONE, move));
+  EXPECT_EQ(
+      base::File::FILE_ERROR_INVALID_OPERATION,
+      NativeFileUtil::CopyOrMoveFile(
+          dir, to_file, FileSystemOperation::CopyOrMoveOptionSet(), move));
 
 #if defined(OS_WIN)
   // Source is a directory, destination is a directory.
   EXPECT_EQ(base::File::FILE_ERROR_NOT_A_FILE,
             NativeFileUtil::CopyOrMoveFile(
-                dir, dir2, FileSystemOperation::OPTION_NONE, move));
+                dir, dir2, FileSystemOperation::CopyOrMoveOptionSet(), move));
 #endif
 
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::EnsureFileExists(from_file, &created));
   ASSERT_TRUE(FileExists(from_file));
   // Destination is not a file.
-  EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION,
-            NativeFileUtil::CopyOrMoveFile(
-                from_file, dir, FileSystemOperation::OPTION_NONE, move));
+  EXPECT_EQ(
+      base::File::FILE_ERROR_INVALID_OPERATION,
+      NativeFileUtil::CopyOrMoveFile(
+          from_file, dir, FileSystemOperation::CopyOrMoveOptionSet(), move));
 
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::EnsureFileExists(from_file, &created));
@@ -344,12 +386,12 @@ TEST_F(NativeFileUtilTest, MoveFile) {
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, Path("nodir").AppendASCII("file"),
-                FileSystemOperation::OPTION_NONE, move));
+                FileSystemOperation::CopyOrMoveOptionSet(), move));
   // Destination's parent is a file.
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, Path("tofile1").AppendASCII("file"),
-                FileSystemOperation::OPTION_NONE, move));
+                FileSystemOperation::CopyOrMoveOptionSet(), move));
 }
 
 TEST_F(NativeFileUtilTest, MoveFile_Directory) {
@@ -369,9 +411,10 @@ TEST_F(NativeFileUtilTest, MoveFile_Directory) {
   EXPECT_TRUE(FileExists(from_file));
   EXPECT_EQ(1020, GetSize(from_file));
 
-  ASSERT_EQ(base::File::FILE_OK, NativeFileUtil::CopyOrMoveFile(
-                                     from_directory, to_directory,
-                                     FileSystemOperation::OPTION_NONE, move));
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_directory, to_directory,
+                FileSystemOperation::CopyOrMoveOptionSet(), move));
 
   EXPECT_FALSE(base::DirectoryExists(from_directory));
   EXPECT_FALSE(FileExists(from_file));
@@ -399,9 +442,10 @@ TEST_F(NativeFileUtilTest, MoveFile_OverwriteEmptyDirectory) {
   EXPECT_TRUE(FileExists(from_file));
   EXPECT_EQ(1020, GetSize(from_file));
 
-  ASSERT_EQ(base::File::FILE_OK, NativeFileUtil::CopyOrMoveFile(
-                                     from_directory, to_directory,
-                                     FileSystemOperation::OPTION_NONE, move));
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_directory, to_directory,
+                FileSystemOperation::CopyOrMoveOptionSet(), move));
 
   EXPECT_FALSE(base::DirectoryExists(from_directory));
   EXPECT_FALSE(FileExists(from_file));
@@ -430,7 +474,7 @@ TEST_F(NativeFileUtilTest, PreserveLastModified) {
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, to_file1,
-                FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED,
+                CopyOrMoveOptionSet(CopyOrMoveOption::kPreserveLastModified),
                 NativeFileUtil::COPY_NOSYNC));
 
   base::File::Info file_info2;
@@ -443,7 +487,7 @@ TEST_F(NativeFileUtilTest, PreserveLastModified) {
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, to_file2,
-                FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED,
+                CopyOrMoveOptionSet(CopyOrMoveOption::kPreserveLastModified),
                 NativeFileUtil::COPY_SYNC));
 
   ASSERT_TRUE(FileExists(to_file2));
@@ -455,7 +499,7 @@ TEST_F(NativeFileUtilTest, PreserveLastModified) {
   ASSERT_EQ(base::File::FILE_OK,
             NativeFileUtil::CopyOrMoveFile(
                 from_file, to_file3,
-                FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED,
+                CopyOrMoveOptionSet(CopyOrMoveOption::kPreserveLastModified),
                 NativeFileUtil::MOVE));
 
   ASSERT_TRUE(FileExists(to_file3));
@@ -463,5 +507,200 @@ TEST_F(NativeFileUtilTest, PreserveLastModified) {
             NativeFileUtil::GetFileInfo(to_file2, &file_info2));
   EXPECT_EQ(file_info1.last_modified, file_info2.last_modified);
 }
+
+#if defined(OS_POSIX) || defined(OS_WIN)
+TEST_F(NativeFileUtilTest, PreserveDestinationPermissions) {
+  // Ensure both the src and dest files exist.
+  base::FilePath to_file = Path("to-file");
+  base::FilePath from_file = Path("from-file1");
+  bool created = false;
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::EnsureFileExists(to_file, &created));
+  ASSERT_TRUE(created);
+  EXPECT_TRUE(FileExists(to_file));
+
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::EnsureFileExists(from_file, &created));
+  ASSERT_TRUE(created);
+  EXPECT_TRUE(FileExists(from_file));
+
+#if defined(OS_POSIX)
+  int dest_initial_mode;
+  ASSERT_TRUE(base::GetPosixFilePermissions(to_file, &dest_initial_mode));
+#elif defined(OS_WIN)
+  DWORD dest_initial_attributes = ::GetFileAttributes(to_file.value().c_str());
+  ASSERT_NE(dest_initial_attributes, INVALID_FILE_ATTRIBUTES);
+#endif  // defined(OS_POSIX)
+
+  // Give dest file some distinct permissions it didn't have before.
+#if defined(OS_POSIX)
+  int old_dest_mode = dest_initial_mode | S_IRGRP | S_IXOTH;
+  EXPECT_NE(old_dest_mode, dest_initial_mode);
+  EXPECT_TRUE(base::SetPosixFilePermissions(to_file, old_dest_mode));
+#elif defined(OS_WIN)
+  DWORD old_dest_attributes = FILE_ATTRIBUTE_NORMAL;
+  EXPECT_NE(old_dest_attributes, dest_initial_attributes);
+  EXPECT_TRUE(
+      ::SetFileAttributes(to_file.value().c_str(), old_dest_attributes));
+#endif  // defined(OS_POSIX)
+
+  // Test for copy (nosync).
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_file, to_file,
+                CopyOrMoveOptionSet(
+                    CopyOrMoveOption::kPreserveDestinationPermissions),
+                NativeFileUtil::COPY_NOSYNC));
+#if defined(OS_POSIX)
+  ExpectFileHasPermissionsPosix(to_file, old_dest_mode);
+#elif defined(OS_WIN)
+  ExpectFileHasPermissionsWin(to_file, old_dest_attributes);
+#endif  // defined(OS_POSIX)
+
+  // Test for copy (sync).
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_file, to_file,
+                CopyOrMoveOptionSet(
+                    CopyOrMoveOption::kPreserveDestinationPermissions),
+                NativeFileUtil::COPY_SYNC));
+#if defined(OS_POSIX)
+  ExpectFileHasPermissionsPosix(to_file, old_dest_mode);
+#elif defined(OS_WIN)
+  ExpectFileHasPermissionsWin(to_file, old_dest_attributes);
+#endif  // defined(OS_POSIX)
+
+  // Test for move.
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_file, to_file,
+                CopyOrMoveOptionSet(
+                    CopyOrMoveOption::kPreserveDestinationPermissions),
+                NativeFileUtil::MOVE));
+#if defined(OS_POSIX)
+  ExpectFileHasPermissionsPosix(to_file, old_dest_mode);
+#elif defined(OS_WIN)
+  ExpectFileHasPermissionsWin(to_file, old_dest_attributes);
+#endif  // defined(OS_POSIX)
+}
+#endif  // defined(OS_POSIX) || defined(OS_WIN)
+
+#if defined(OS_POSIX) || defined(OS_WIN)
+TEST_F(NativeFileUtilTest, PreserveLastModifiedAndDestinationPermissions) {
+  base::FilePath from_file = Path("fromfile");
+  base::FilePath to_file1 = Path("tofile1");
+  base::FilePath to_file2 = Path("tofile2");
+  base::FilePath to_file3 = Path("tofile3");
+  bool created = false;
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::EnsureFileExists(from_file, &created));
+  ASSERT_TRUE(created);
+  EXPECT_TRUE(FileExists(from_file));
+
+  base::File::Info from_file_info;
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::GetFileInfo(from_file, &from_file_info));
+
+  // Create destination files.
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::EnsureFileExists(to_file1, &created));
+  ASSERT_TRUE(created);
+  EXPECT_TRUE(FileExists(to_file1));
+
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::EnsureFileExists(to_file2, &created));
+  ASSERT_TRUE(created);
+  EXPECT_TRUE(FileExists(to_file2));
+
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::EnsureFileExists(to_file3, &created));
+  ASSERT_TRUE(created);
+  EXPECT_TRUE(FileExists(to_file3));
+
+  // Get initial permissions of the dest files. We can assume that the 3
+  // destination files have the same permissions.
+#if defined(OS_POSIX)
+  int dest_initial_mode;
+  ASSERT_TRUE(base::GetPosixFilePermissions(to_file1, &dest_initial_mode));
+#elif defined(OS_WIN)
+  DWORD dest_initial_attributes = ::GetFileAttributes(to_file1.value().c_str());
+  ASSERT_NE(dest_initial_attributes, INVALID_FILE_ATTRIBUTES);
+#endif  // defined(OS_POSIX)
+
+  // Give dest files some distinct permissions they didn't have before.
+#if defined(OS_POSIX)
+  int old_dest_mode = dest_initial_mode | S_IRGRP | S_IXOTH;
+  EXPECT_NE(old_dest_mode, dest_initial_mode);
+  EXPECT_TRUE(base::SetPosixFilePermissions(to_file1, old_dest_mode));
+  EXPECT_TRUE(base::SetPosixFilePermissions(to_file2, old_dest_mode));
+  EXPECT_TRUE(base::SetPosixFilePermissions(to_file3, old_dest_mode));
+#elif defined(OS_WIN)
+  DWORD old_dest_attributes = FILE_ATTRIBUTE_NORMAL;
+  EXPECT_NE(old_dest_attributes, dest_initial_attributes);
+  EXPECT_TRUE(
+      ::SetFileAttributes(to_file1.value().c_str(), old_dest_attributes));
+  EXPECT_TRUE(
+      ::SetFileAttributes(to_file2.value().c_str(), old_dest_attributes));
+  EXPECT_TRUE(
+      ::SetFileAttributes(to_file3.value().c_str(), old_dest_attributes));
+#endif  // defined(OS_POSIX)
+
+  // Test for copy (nosync).
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_file, to_file1,
+                CopyOrMoveOptionSet(
+                    CopyOrMoveOption::kPreserveLastModified,
+                    CopyOrMoveOption::kPreserveDestinationPermissions),
+                NativeFileUtil::COPY_NOSYNC));
+  base::File::Info to_file_info;
+  ASSERT_TRUE(FileExists(to_file1));
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::GetFileInfo(to_file1, &to_file_info));
+  EXPECT_EQ(from_file_info.last_modified, to_file_info.last_modified);
+
+#if defined(OS_POSIX)
+  ExpectFileHasPermissionsPosix(to_file1, old_dest_mode);
+#elif defined(OS_WIN)
+  ExpectFileHasPermissionsWin(to_file1, old_dest_attributes);
+#endif  // defined(OS_POSIX)
+
+  // Test for copy (sync).
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_file, to_file2,
+                CopyOrMoveOptionSet(
+                    CopyOrMoveOption::kPreserveLastModified,
+                    CopyOrMoveOption::kPreserveDestinationPermissions),
+                NativeFileUtil::COPY_SYNC));
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::GetFileInfo(to_file2, &to_file_info));
+  EXPECT_EQ(from_file_info.last_modified, to_file_info.last_modified);
+
+#if defined(OS_POSIX)
+  ExpectFileHasPermissionsPosix(to_file2, old_dest_mode);
+#elif defined(OS_WIN)
+  ExpectFileHasPermissionsWin(to_file2, old_dest_attributes);
+#endif  // defined(OS_POSIX)
+
+  // Test for move.
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::CopyOrMoveFile(
+                from_file, to_file3,
+                CopyOrMoveOptionSet(
+                    CopyOrMoveOption::kPreserveLastModified,
+                    CopyOrMoveOption::kPreserveDestinationPermissions),
+                NativeFileUtil::MOVE));
+  ASSERT_EQ(base::File::FILE_OK,
+            NativeFileUtil::GetFileInfo(to_file3, &to_file_info));
+  EXPECT_EQ(from_file_info.last_modified, to_file_info.last_modified);
+
+#if defined(OS_POSIX)
+  ExpectFileHasPermissionsPosix(to_file3, old_dest_mode);
+#elif defined(OS_WIN)
+  ExpectFileHasPermissionsWin(to_file3, old_dest_attributes);
+#endif  // defined(OS_POSIX)
+}
+#endif  // defined(OS_POSIX) || defined(OS_WIN)
 
 }  // namespace storage

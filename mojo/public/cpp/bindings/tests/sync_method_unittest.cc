@@ -41,6 +41,9 @@ class TestSyncCommonImpl {
  public:
   TestSyncCommonImpl() = default;
 
+  TestSyncCommonImpl(const TestSyncCommonImpl&) = delete;
+  TestSyncCommonImpl& operator=(const TestSyncCommonImpl&) = delete;
+
   using PingHandler = base::RepeatingCallback<void(base::OnceClosure)>;
   template <typename Func>
   void set_ping_handler(Func handler) {
@@ -110,14 +113,15 @@ class TestSyncCommonImpl {
   AsyncEchoHandler async_echo_handler_;
   SendRemoteHandler send_remote_handler_;
   SendReceiverHandler send_receiver_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncCommonImpl);
 };
 
 class TestSyncImpl : public TestSync, public TestSyncCommonImpl {
  public:
   explicit TestSyncImpl(PendingReceiver<TestSync> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestSyncImpl(const TestSyncImpl&) = delete;
+  TestSyncImpl& operator=(const TestSyncImpl&) = delete;
 
   // TestSync implementation:
   void Ping(PingCallback callback) override { PingImpl(std::move(callback)); }
@@ -132,14 +136,15 @@ class TestSyncImpl : public TestSync, public TestSyncCommonImpl {
 
  private:
   Receiver<TestSync> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncImpl);
 };
 
 class TestSyncPrimaryImpl : public TestSyncPrimary, public TestSyncCommonImpl {
  public:
   explicit TestSyncPrimaryImpl(PendingReceiver<TestSyncPrimary> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestSyncPrimaryImpl(const TestSyncPrimaryImpl&) = delete;
+  TestSyncPrimaryImpl& operator=(const TestSyncPrimaryImpl&) = delete;
 
   // TestSyncPrimary implementation:
   void Ping(PingCallback callback) override { PingImpl(std::move(callback)); }
@@ -160,14 +165,15 @@ class TestSyncPrimaryImpl : public TestSyncPrimary, public TestSyncCommonImpl {
 
  private:
   Receiver<TestSyncPrimary> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncPrimaryImpl);
 };
 
 class TestSyncAssociatedImpl : public TestSync, public TestSyncCommonImpl {
  public:
   explicit TestSyncAssociatedImpl(PendingAssociatedReceiver<TestSync> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestSyncAssociatedImpl(const TestSyncAssociatedImpl&) = delete;
+  TestSyncAssociatedImpl& operator=(const TestSyncAssociatedImpl&) = delete;
 
   // TestSync implementation:
   void Ping(PingCallback callback) override { PingImpl(std::move(callback)); }
@@ -182,8 +188,6 @@ class TestSyncAssociatedImpl : public TestSync, public TestSyncCommonImpl {
 
  private:
   AssociatedReceiver<TestSync> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncAssociatedImpl);
 };
 
 template <typename Interface>
@@ -215,6 +219,9 @@ class RemoteWrapper {
 
   RemoteWrapper(RemoteWrapper&& other) = default;
 
+  RemoteWrapper(const RemoteWrapper&) = delete;
+  RemoteWrapper& operator=(const RemoteWrapper&) = delete;
+
   Interface* operator->() {
     return shared_remote_ ? shared_remote_.get() : remote_.get();
   }
@@ -232,8 +239,6 @@ class RemoteWrapper {
  private:
   Remote<Interface> remote_;
   SharedRemote<Interface> shared_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteWrapper);
 };
 
 // The type parameter for SyncMethodCommonTests and
@@ -266,6 +271,9 @@ class TestSyncServiceSequence {
       : task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
         ping_called_(false) {}
 
+  TestSyncServiceSequence(const TestSyncServiceSequence&) = delete;
+  TestSyncServiceSequence& operator=(const TestSyncServiceSequence&) = delete;
+
   void SetUp(InterfaceRequest<Interface> request) {
     CHECK(task_runner()->RunsTasksInCurrentSequence());
     impl_ = std::make_unique<ImplTypeFor<Interface>>(std::move(request));
@@ -296,8 +304,6 @@ class TestSyncServiceSequence {
 
   mutable base::Lock lock_;
   bool ping_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncServiceSequence);
 };
 
 class SyncMethodTest : public testing::Test {
@@ -1337,7 +1343,7 @@ class PingerImpl : public mojom::Pinger, public mojom::SimplePinger {
     pong_sender_.AsyncCall(&PongSender::SendPong).WithArgs(barrier);
     same_pipe_pong_sender_.AsyncCall(&PongSender::SendPong).WithArgs(barrier);
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, barrier, base::TimeDelta::FromMilliseconds(10));
+        FROM_HERE, barrier, base::Milliseconds(10));
     wait_to_reply.Run();
   }
 

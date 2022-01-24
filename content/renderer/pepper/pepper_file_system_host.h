@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ppapi/c/pp_file_info.h"
@@ -43,6 +42,10 @@ class PepperFileSystemHost
                        PP_Resource resource,
                        const GURL& root_url,
                        PP_FileSystemType type);
+
+  PepperFileSystemHost(const PepperFileSystemHost&) = delete;
+  PepperFileSystemHost& operator=(const PepperFileSystemHost&) = delete;
+
   ~PepperFileSystemHost() override;
 
   // ppapi::host::ResourceHost override.
@@ -70,7 +73,7 @@ class PepperFileSystemHost
       const std::string& fsid,
       PP_IsolatedFileSystemType_Private type);
 
-  blink::mojom::FileSystemManager& GetFileSystemManager();
+  blink::mojom::FileSystemManager* GetFileSystemManager();
 
   RendererPpapiHost* renderer_ppapi_host_;
   ppapi::host::ReplyMessageContext reply_context_;
@@ -79,9 +82,7 @@ class PepperFileSystemHost
   bool opened_;  // whether open is successful.
   GURL root_url_;
   bool called_open_;  // whether open has been called.
-  mojo::Remote<blink::mojom::FileSystemManager> file_system_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFileSystemHost);
+  mojo::Remote<blink::mojom::FileSystemManager> file_system_manager_remote_;
 };
 
 }  // namespace content

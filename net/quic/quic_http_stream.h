@@ -45,6 +45,9 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
       std::unique_ptr<QuicChromiumClientSession::Handle> session,
       std::vector<std::string> dns_aliases);
 
+  QuicHttpStream(const QuicHttpStream&) = delete;
+  QuicHttpStream& operator=(const QuicHttpStream&) = delete;
+
   ~QuicHttpStream() override;
 
   // HttpStream implementation.
@@ -232,8 +235,6 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   std::vector<std::string> dns_aliases_;
 
   base::WeakPtrFactory<QuicHttpStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicHttpStream);
 };
 
 }  // namespace net

@@ -1,8 +1,8 @@
-CONSOLE ERROR: line 41: Ignoring unrecogized 'integrity' attribute option 'foo=bar'.
-CONSOLE ERROR: line 41: Ignoring unrecogized 'integrity' attribute option 'foo=bar?baz=foz'.
-CONSOLE ERROR: line 41: Ignoring unrecogized 'integrity' attribute option 'foobar'.
-CONSOLE ERROR: line 41: Ignoring unrecogized 'integrity' attribute option 'foo=bar?'.
-CONSOLE ERROR: line 41: Ignoring unrecogized 'integrity' attribute option 'foo&bar?'.
+CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foo=bar'.
+CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foo=bar?baz=foz'.
+CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foobar'.
+CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foo=bar?'.
+CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foo&bar?'.
 This is a testharness.js-based test.
 PASS SRI with options
 PASS SRI with options 1

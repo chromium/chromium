@@ -9,6 +9,8 @@
 
 #if defined(OS_MAC) || defined(OS_WIN)
 #include "components/crash/core/browser/crash_upload_list_crashpad.h"
+#elif defined(OS_FUCHSIA)
+#include "chrome/browser/crash_upload_list/crash_upload_list_fuchsia.h"
 #else
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -41,6 +43,8 @@ scoped_refptr<UploadList> CreateCrashUploadList() {
       cache_dir.Append("Crash Reports")
           .AppendASCII(CrashUploadList::kReporterLogFilename);
   return new CrashUploadListAndroid(upload_log_path);
+#elif defined(OS_FUCHSIA)
+  return new CrashUploadListFuchsia();
 #else
 
 // ChromeOS uses crash_sender as its uploader even when Crashpad is enabled,

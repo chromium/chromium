@@ -5,10 +5,11 @@
 #include "ui/views/controls/highlight_path_generator.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "third_party/skia/include/core/SkRect.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -26,7 +27,7 @@ HighlightPathGenerator::~HighlightPathGenerator() = default;
 void HighlightPathGenerator::Install(
     View* host,
     std::unique_ptr<HighlightPathGenerator> generator) {
-  host->SetProperty(kHighlightPathGeneratorKey, generator.release());
+  host->SetProperty(kHighlightPathGeneratorKey, std::move(generator));
 }
 
 // static

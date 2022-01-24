@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 #if defined(OS_WIN)
+#include <intrin.h>
 #include <stddef.h>
 #include <windows.h>
 #include <winnt.h>

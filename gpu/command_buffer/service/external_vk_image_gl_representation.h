@@ -25,6 +25,12 @@ class ExternalVkImageGLRepresentationShared {
 
   ExternalVkImageGLRepresentationShared(SharedImageBacking* backing,
                                         GLuint texture_service_id);
+
+  ExternalVkImageGLRepresentationShared(
+      const ExternalVkImageGLRepresentationShared&) = delete;
+  ExternalVkImageGLRepresentationShared& operator=(
+      const ExternalVkImageGLRepresentationShared&) = delete;
+
   ~ExternalVkImageGLRepresentationShared();
 
   bool BeginAccess(GLenum mode);
@@ -41,8 +47,6 @@ class ExternalVkImageGLRepresentationShared {
   const GLuint texture_service_id_;
   GLenum current_access_mode_ = 0;
   std::vector<ExternalSemaphore> begin_access_semaphores_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalVkImageGLRepresentationShared);
 };
 
 class ExternalVkImageGLRepresentation
@@ -53,6 +57,12 @@ class ExternalVkImageGLRepresentation
                                   MemoryTypeTracker* tracker,
                                   gles2::Texture* texture,
                                   GLuint texture_service_id);
+
+  ExternalVkImageGLRepresentation(const ExternalVkImageGLRepresentation&) =
+      delete;
+  ExternalVkImageGLRepresentation& operator=(
+      const ExternalVkImageGLRepresentation&) = delete;
+
   ~ExternalVkImageGLRepresentation() override;
 
   // SharedImageRepresentationGLTexture implementation.
@@ -63,8 +73,6 @@ class ExternalVkImageGLRepresentation
  private:
   gles2::Texture* const texture_;
   ExternalVkImageGLRepresentationShared representation_shared_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalVkImageGLRepresentation);
 };
 
 class ExternalVkImageGLPassthroughRepresentation
@@ -74,6 +82,12 @@ class ExternalVkImageGLPassthroughRepresentation
                                              SharedImageBacking* backing,
                                              MemoryTypeTracker* tracker,
                                              GLuint texture_service_id);
+
+  ExternalVkImageGLPassthroughRepresentation(
+      const ExternalVkImageGLPassthroughRepresentation&) = delete;
+  ExternalVkImageGLPassthroughRepresentation& operator=(
+      const ExternalVkImageGLPassthroughRepresentation&) = delete;
+
   ~ExternalVkImageGLPassthroughRepresentation() override;
 
   // SharedImageRepresentationGLTexturePassthrough implementation.
@@ -84,8 +98,6 @@ class ExternalVkImageGLPassthroughRepresentation
 
  private:
   ExternalVkImageGLRepresentationShared representation_shared_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalVkImageGLPassthroughRepresentation);
 };
 
 }  // namespace gpu

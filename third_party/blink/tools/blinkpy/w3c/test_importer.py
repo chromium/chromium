@@ -40,7 +40,7 @@ TIMEOUT_SECONDS = 210 * 60
 
 # Sheriff calendar URL, used for getting the ecosystem infra sheriff to cc.
 ROTATIONS_URL = 'https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chrome-ecosystem-infra'
-SHERIFF_EMAIL_FALLBACK = 'smcgruer@google.com'
+SHERIFF_EMAIL_FALLBACK = 'weizhong@google.com'
 RUBBER_STAMPER_BOT = 'rubber-stamper@appspot.gserviceaccount.com'
 
 _log = logging.getLogger(__file__)
@@ -244,6 +244,12 @@ class TestImporter(object):
             self.fetch_new_expectations_and_baselines()
             self.fetch_wpt_override_expectations()
             if self.chromium_git.has_working_directory_changes():
+                # Skip slow and timeout tests so that presubmit check passes
+                port = self.host.port_factory.get()
+                if self._expectations_updater.skip_slow_timeout_tests(port):
+                    path = port.path_to_generic_test_expectations_file()
+                    self.chromium_git.add_list([path])
+
                 self._generate_manifest()
                 message = 'Update test expectations and baselines.'
                 self._commit_changes(message)
@@ -281,23 +287,33 @@ class TestImporter(object):
             self.git_cl.run(['set-close'])
             return False
 
-        _log.info(
-            'CQ appears to have passed; sending to the rubber-stamper bot for '
-            'CR+1 and commit.')
-        _log.info(
-            'If the rubber-stamper bot rejects the CL, you either need to '
-            'modify the benign file patterns, or manually CR+1 and land the '
-            'import yourself if it touches code files. See https://chromium.'
-            'googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/'
-            'appengine/rubber-stamper/README.md')
-
         # `--send-mail` is required to take the CL out of WIP mode.
-        self.git_cl.run([
-            'upload', '-f', '--send-mail', '--enable-auto-submit',
-            '--reviewers', RUBBER_STAMPER_BOT
-        ])
+        if self._need_sheriff_attention():
+            _log.info(
+                'CQ appears to have passed; sending to the sheriff for '
+                'CR+1 and commit. The sheriff has one hour to respond.')
+            self.git_cl.run([
+                'upload', '-f', '--send-mail', '--enable-auto-submit',
+                '--reviewers', self.sheriff_email()
+            ])
+            timeout = 3600
+        else:
+            _log.info(
+                'CQ appears to have passed; sending to the rubber-stamper bot for '
+                'CR+1 and commit.')
+            _log.info(
+                'If the rubber-stamper bot rejects the CL, you either need to '
+                'modify the benign file patterns, or manually CR+1 and land the '
+                'import yourself if it touches code files. See https://chromium.'
+                'googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/'
+                'appengine/rubber-stamper/README.md')
+            self.git_cl.run([
+                'upload', '-f', '--send-mail', '--enable-auto-submit',
+                '--reviewers', RUBBER_STAMPER_BOT
+            ])
+            timeout = 1800
 
-        if self.git_cl.wait_for_closed_status():
+        if self.git_cl.wait_for_closed_status(timeout_seconds=timeout):
             _log.info('Update completed.')
             return True
 
@@ -463,6 +479,17 @@ class TestImporter(object):
             self.finder.chromium_base())
         return changed_files == [wpt_base_manifest]
 
+    def _need_sheriff_attention(self):
+        # Per the rules defined for the rubber-stamper, it can not auto approve
+        # a CL that has .bat, .sh or .py files. Request the sheriff on rotation
+        # to approve the CL.
+        changed_files = self.chromium_git.changed_files()
+        for cf in changed_files:
+            extension = self.fs.splitext(cf)[1]
+            if extension in ['.bat', '.sh', '.py']:
+                return True
+        return False
+
     def _commit_message(self,
                         chromium_commit_sha,
                         import_commit_sha,
@@ -538,9 +565,7 @@ class TestImporter(object):
             '--bypass-hooks',
             '-f',
             '--message-file',
-            temp_path,
-            '--cc',
-            sheriff_email,
+            temp_path
         ])
 
         self.fs.remove(temp_path)
@@ -578,17 +603,7 @@ class TestImporter(object):
         # Move any No-Export tag to the end of the description.
         description = description.replace('No-Export: true', '')
         description = description.replace('\n\n\n\n', '\n\n')
-        description += 'No-Export: true\n'
-
-        # Add the wptrunner MVP tryjobs as blocking trybots, to catch any test
-        # changes or infrastructure changes from upstream.
-        #
-        # If this starts blocking the importer unnecessarily, revert
-        # https://chromium-review.googlesource.com/c/chromium/src/+/2451504
-        description += (
-            'Cq-Include-Trybots: luci.chromium.try:linux-wpt-identity-fyi-rel,'
-            'linux-wpt-input-fyi-rel')
-
+        description += 'No-Export: true'
         return description
 
     @staticmethod
@@ -638,6 +653,12 @@ class TestImporter(object):
         _log.info('Adding test expectations lines to TestExpectations.')
         self.rebaselined_tests, self.new_test_expectations = (
             self._expectations_updater.update_expectations())
+
+        _log.info('Adding test expectations lines for composite-after-paint')
+        self._expectations_updater.update_expectations_for_flag_specific('composite-after-paint')
+
+        _log.info('Adding test expectations lines for disable-layout-ng')
+        self._expectations_updater.update_expectations_for_flag_specific('disable-layout-ng')
 
     def fetch_wpt_override_expectations(self):
         """Modifies WPT Override expectations based on try job results.

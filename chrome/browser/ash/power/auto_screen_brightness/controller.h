@@ -7,9 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace ash {
@@ -28,6 +27,10 @@ class ModellerImpl;
 class Controller : public session_manager::SessionManagerObserver {
  public:
   Controller();
+
+  Controller(const Controller&) = delete;
+  Controller& operator=(const Controller&) = delete;
+
   ~Controller() override;
 
   // session_manager::SessionManagerObserver overrides:
@@ -53,22 +56,10 @@ class Controller : public session_manager::SessionManagerObserver {
   std::unique_ptr<ModelConfigLoaderImpl> model_config_loader_;
   std::unique_ptr<ModellerImpl> modeller_;
   std::unique_ptr<Adapter> adapter_;
-
-  DISALLOW_COPY_AND_ASSIGN(Controller);
 };
 
 }  // namespace auto_screen_brightness
 }  // namespace power
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-namespace power {
-namespace auto_screen_brightness {
-using ::ash::power::auto_screen_brightness::Controller;
-}  // namespace auto_screen_brightness
-}  // namespace power
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_CONTROLLER_H_

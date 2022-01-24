@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -65,6 +64,10 @@ class CONTENT_EXPORT MetricSource {
   };
 
   explicit MetricSource(Delegate* delegate);
+
+  MetricSource(const MetricSource&) = delete;
+  MetricSource& operator=(const MetricSource&) = delete;
+
   virtual ~MetricSource();
 
   // Must be called immediately after the constructor. This cannot be called
@@ -99,8 +102,6 @@ class CONTENT_EXPORT MetricSource {
   std::unique_ptr<MessageLoopObserver> message_loop_observer_io_;
 
   bool destroy_was_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricSource);
 };
 
 }  // namespace responsiveness

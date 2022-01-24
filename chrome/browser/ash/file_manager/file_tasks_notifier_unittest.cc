@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/scoped_observation.h"
@@ -15,8 +17,6 @@
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom-test-utils.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_download_item.h"

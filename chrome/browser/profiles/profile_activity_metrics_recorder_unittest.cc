@@ -23,9 +23,8 @@
 
 namespace {
 
-constexpr base::TimeDelta kInactivityTimeout = base::TimeDelta::FromMinutes(5);
-constexpr base::TimeDelta kLongTimeOfInactivity =
-    base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kInactivityTimeout = base::Minutes(5);
+constexpr base::TimeDelta kLongTimeOfInactivity = base::Minutes(30);
 
 }  // namespace
 
@@ -37,6 +36,11 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
   }
+
+  ProfileActivityMetricsRecorderTest(
+      const ProfileActivityMetricsRecorderTest&) = delete;
+  ProfileActivityMetricsRecorderTest& operator=(
+      const ProfileActivityMetricsRecorderTest&) = delete;
 
   void SetUp() override {
     Test::SetUp();
@@ -100,8 +104,6 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::vector<std::unique_ptr<Browser>> browsers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileActivityMetricsRecorderTest);
 };
 
 TEST_F(ProfileActivityMetricsRecorderTest, GuestProfile) {
@@ -173,7 +175,7 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
                                  /*count=*/0);
 
   // Profile 1: Session lasts 2 minutes.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment()->FastForwardBy(base::Minutes(2));
 
   // Profile 3: Browser is activated for the first time. The profile is assigned
   // bucket 2.
@@ -189,7 +191,7 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
                                   /*bucket=*/1, /*count=*/2);
 
   // Profile 3: Session lasts 2 minutes.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment()->FastForwardBy(base::Minutes(2));
 
   // Profile 2: Browser is activated for the first time. The profile is assigned
   // bucket 3.
@@ -215,7 +217,7 @@ TEST_F(ProfileActivityMetricsRecorderTest, SessionInactivityNotRecorded) {
                                   /*bucket=*/1, /*count=*/1);
 
   // Wait 2 minutes before doing another user interaction.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(2));
+  task_environment()->FastForwardBy(base::Minutes(2));
   SimulateUserEvent();
 
   // Stay inactive so the session ends.

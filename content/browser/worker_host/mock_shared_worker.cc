@@ -109,6 +109,7 @@ void MockSharedWorkerFactory::CreateSharedWorker(
     const blink::SharedWorkerToken& token,
     const url::Origin& constructor_origin,
     const std::string& user_agent,
+    const std::string& reduced_user_agent,
     const blink::UserAgentMetadata& ua_metadata,
     bool pause_on_start,
     const base::UnguessableToken& devtools_worker_token,
@@ -119,7 +120,6 @@ void MockSharedWorkerFactory::CreateSharedWorker(
         content_settings,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr
         service_worker_container_info,
-    const absl::optional<base::UnguessableToken>& appcache_host_id,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,

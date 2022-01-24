@@ -57,6 +57,10 @@ const char* kNoLuciAuth = "no-luci-auth";
 const char* kBypassSkiaGoldFunctionality = "bypass-skia-gold-functionality";
 const char* kDryRun = "dryrun";
 
+// The switch key for saving png file locally for debugging. This will allow
+// the framework to save the screenshot png file to this path.
+const char* kPngFilePathDebugging = "skia-gold-local-png-write-directory";
+
 namespace {
 
 base::FilePath GetAbsoluteSrcRelativePath(base::FilePath::StringType path) {
@@ -252,6 +256,27 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
     LOG(WARNING) << "Bypassing Skia Gold comparison due to "
                  << "--bypass-skia-gold-functionality being present.";
     return true;
+  }
+
+  // Copy the png file to another place for local debugging.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kPngFilePathDebugging)) {
+    base::FilePath path =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            kPngFilePathDebugging);
+    if (!base::PathExists(path)) {
+      base::CreateDirectory(path);
+    }
+    base::FilePath filepath;
+    if (remote_golden_image_name.length() <= 4 ||
+        (remote_golden_image_name.length() > 4 &&
+         remote_golden_image_name.substr(remote_golden_image_name.length() -
+                                         4) != ".png")) {
+      filepath = path.AppendASCII(remote_golden_image_name + ".png");
+    } else {
+      filepath = path.AppendASCII(remote_golden_image_name);
+    }
+    base::CopyFile(local_file_path, filepath);
   }
 
   base::ScopedAllowBlockingForTesting allow_blocking;

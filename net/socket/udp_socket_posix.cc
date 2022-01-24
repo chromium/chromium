@@ -27,8 +27,8 @@
 #include "base/rand_util.h"
 #include "base/task/current_thread.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -73,8 +73,7 @@ const int kPortStart = 1024;
 const int kPortEnd = 65535;
 const int kActivityMonitorBytesThreshold = 65535;
 const int kActivityMonitorMinimumSamplesForThroughputEstimate = 2;
-const base::TimeDelta kActivityMonitorMsThreshold =
-    base::TimeDelta::FromMilliseconds(100);
+const base::TimeDelta kActivityMonitorMsThreshold = base::Milliseconds(100);
 
 #if defined(OS_MAC)
 

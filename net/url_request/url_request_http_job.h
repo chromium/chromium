@@ -49,6 +49,9 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // them. Never returns nullptr.
   static std::unique_ptr<URLRequestJob> Create(URLRequest* request);
 
+  URLRequestHttpJob(const URLRequestHttpJob&) = delete;
+  URLRequestHttpJob& operator=(const URLRequestHttpJob&) = delete;
+
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
   void SetEarlyResponseHeadersCallback(
       ResponseHeadersCallback callback) override;
@@ -123,7 +126,9 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void OnHeadersReceivedCallback(int result);
   void OnStartCompleted(int result);
   void OnReadCompleted(int result);
-  void NotifyBeforeStartTransactionCallback(int result);
+  void NotifyBeforeStartTransactionCallback(
+      int result,
+      const absl::optional<HttpRequestHeaders>& headers);
   // This just forwards the call to URLRequestJob::NotifyConnected().
   // We need it because that method is protected and cannot be bound in a
   // callback in this class.
@@ -197,13 +202,19 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   bool ShouldFixMismatchedContentLength(int rv) const;
 
   // Returns the effective response headers, considering that they may be
-  // overridden by |override_response_headers_|.
+  // overridden by `override_response_headers_` or
+  // `override_response_info_::headers`.
   HttpResponseHeaders* GetResponseHeaders() const;
 
   RequestPriority priority_;
 
   HttpRequestInfo request_info_;
   const HttpResponseInfo* response_info_;
+
+  // Used for any logic, e.g. DNS-based scheme upgrade, that needs to synthesize
+  // response info to override the real response info. Transaction should be
+  // cleared before setting.
+  std::unique_ptr<HttpResponseInfo> override_response_info_;
 
   // Auth states for proxy and origin server.
   AuthState proxy_auth_state_;
@@ -265,8 +276,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   ResponseHeadersCallback response_headers_callback_;
 
   base::WeakPtrFactory<URLRequestHttpJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestHttpJob);
 };
 
 }  // namespace net

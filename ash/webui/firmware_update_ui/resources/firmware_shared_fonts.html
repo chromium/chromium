@@ -1,0 +1,35 @@
+<template>
+  <style>
+    :host {
+      /** Fonts */
+      --firmware-google-sans-font-family: "Google Sans", sans-serif;
+      --firmware-roboto-font-family: Roboto, sans-serif;
+      --firmware-default-font-size: 16px;
+
+      /** Font sizes */
+      --firmware-default-font-size: 14px;
+      --firmware-header-font-size: 16px;
+
+      /** Text colors */
+      --firmware-header-text-color: var(--google-grey-900);
+
+      /** Font weights */
+      --firmware-regular-font-weight: 400;
+      --firmware-medium-font-weight: 500;
+    }
+
+    .firmware-default-font {
+      font-family: var(--firmware-google-sans-font-family);
+      font-size: var(--firmware-default-font-size);
+      font-weight: var(--firmware-medium-font-weight);
+    }
+
+    .firmware-header-font {
+      color: var(--firmware-header-text-color);
+      font-family: var(--firmware-roboto-font-family);
+      font-size: var(--firmware-header-font-size);
+      font-weight: var(--firmware-medium-font-weight);
+    }
+
+  </style>
+</template>

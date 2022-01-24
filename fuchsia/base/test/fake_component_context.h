@@ -29,6 +29,10 @@ class FakeComponentContext
  public:
   FakeComponentContext(sys::OutgoingDirectory* outgoing_directory,
                        base::StringPiece component_url);
+
+  FakeComponentContext(const FakeComponentContext&) = delete;
+  FakeComponentContext& operator=(const FakeComponentContext&) = delete;
+
   ~FakeComponentContext() override;
 
   void RegisterCreateComponentStateCallback(
@@ -50,8 +54,6 @@ class FakeComponentContext
   fuchsia::sys::ServiceProviderPtr agent_services_;
 
   std::map<base::StringPiece, std::unique_ptr<AgentImpl>> agent_impl_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeComponentContext);
 };
 
 }  // namespace cr_fuchsia

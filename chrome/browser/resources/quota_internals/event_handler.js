@@ -318,8 +318,6 @@ function handlePerHostInfo(dataArray) {
  *     Storage type of the entry. 'temporary' or 'persistent'.
  *   |host|:
  *     Hostname of the entry.
- *   |inUse|:
- *     true if the origin is in use.
  *   |usedCount|:
  *     Used count of the storage from the origin.
  *   |lastAccessTime|:
@@ -329,13 +327,12 @@ function handlePerHostInfo(dataArray) {
  *     Last modified time of the storage from the origin.
  *     Number of milliseconds since UNIX epoch.
  *
- * |inUse|, |usedCount|, |lastAccessTime| and |lastModifiedTime| can be missing,
+ * |usedCount|, |lastAccessTime| and |lastModifiedTime| can be missing,
  * and some additional fields can be included.
  * @param {!Array<!{
  *     origin: string,
  *     type: string,
  *     host: string,
- *     inUse: ?boolean,
  *     usedCount: ?number,
  *     lastAccessTime: ?number,
  *     lastModifiedTime: ?number
@@ -400,8 +397,7 @@ function updateDescription() {
       ['type', 'Storage Type'], ['host', 'Host Name'], ['origin', 'Origin URL'],
       ['usage', 'Total Storage Usage', numBytesToText_],
       ['unlimitedUsage', 'Usage of Unlimited Origins', numBytesToText_],
-      ['quota', 'Quota', numBytesToText_], ['inUse', 'Origin is in use?'],
-      ['usedCount', 'Used count'],
+      ['quota', 'Quota', numBytesToText_], ['usedCount', 'Used count'],
       ['lastAccessTime', 'Last Access Time', dateToText],
       ['lastModifiedTime', 'Last Modified Time', dateToText]
     ];

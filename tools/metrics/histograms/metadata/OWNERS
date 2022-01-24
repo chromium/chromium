@@ -1,0 +1,12 @@
+# If a histogram subdirectory has individually listed owners in their OWNERS
+# file, they should be prioritized. Otherwise, CLs can be sent to
+# chromium-metrics-reviews@google.com. Googlers can read more about
+# chromium-metrics-reviews@google.com at go/gwsq-gerrit.
+file://base/metrics/OWNERS
+
+chrome-metrics-team+robot@google.com # For bot updates to expiry.
+
+per-file histogram_suffixes_list.xml=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
+
+# All metrics changes should be reviewed by metrics reviewers.
+set noparent

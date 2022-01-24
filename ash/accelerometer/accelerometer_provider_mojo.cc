@@ -22,12 +22,10 @@ namespace ash {
 namespace {
 
 // Delay of the reconnection to Sensor Hal Dispatcher.
-constexpr base::TimeDelta kDelayReconnect =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kDelayReconnect = base::Milliseconds(1000);
 
 // Timeout for the late-present devices: 10 seconds.
-constexpr base::TimeDelta kNewDevicesTimeout =
-    base::TimeDelta::FromMilliseconds(10000);
+constexpr base::TimeDelta kNewDevicesTimeout = base::Milliseconds(10000);
 
 }  // namespace
 
@@ -65,17 +63,7 @@ void AccelerometerProviderMojo::SetUpChannel(
       &AccelerometerProviderMojo::OnSensorServiceDisconnect, this));
   SetNewDevicesObserver();
 
-  if (GetECLidAngleDriverStatus() == ECLidAngleDriverStatus::UNKNOWN) {
-    sensor_service_remote_->GetDeviceIds(
-        chromeos::sensors::mojom::DeviceType::ANGL,
-        base::BindOnce(&AccelerometerProviderMojo::GetLidAngleIdsCallback,
-                       this));
-  }
-
-  sensor_service_remote_->GetDeviceIds(
-      chromeos::sensors::mojom::DeviceType::ACCEL,
-      base::BindOnce(&AccelerometerProviderMojo::GetAccelerometerIdsCallback,
-                     this));
+  QueryDevices();
 }
 
 void AccelerometerProviderMojo::OnNewDeviceAdded(
@@ -166,6 +154,35 @@ void AccelerometerProviderMojo::ResetSensorService() {
 
   new_devices_observer_.reset();
   sensor_service_remote_.reset();
+}
+
+void AccelerometerProviderMojo::ResetStates() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  initialization_state_ = MojoState::INITIALIZING;
+  accelerometers_.clear();
+  location_to_accelerometer_id_.clear();
+  update_.Reset();
+
+  if (sensor_service_remote_.is_bound())
+    QueryDevices();
+}
+
+void AccelerometerProviderMojo::QueryDevices() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(sensor_service_remote_.is_bound());
+
+  if (GetECLidAngleDriverStatus() == ECLidAngleDriverStatus::UNKNOWN) {
+    sensor_service_remote_->GetDeviceIds(
+        chromeos::sensors::mojom::DeviceType::ANGL,
+        base::BindOnce(&AccelerometerProviderMojo::GetLidAngleIdsCallback,
+                       this));
+  }
+
+  sensor_service_remote_->GetDeviceIds(
+      chromeos::sensors::mojom::DeviceType::ACCEL,
+      base::BindOnce(&AccelerometerProviderMojo::GetAccelerometerIdsCallback,
+                     this));
 }
 
 void AccelerometerProviderMojo::SetECLidAngleDriverSupported() {
@@ -401,11 +418,9 @@ void AccelerometerProviderMojo::RegisterAccelerometerWithId(int32_t id) {
     return;
   }
 
-  accelerometer.remote.reset();
-
   sensor_service_remote_->GetDevice(
       id, accelerometer.remote.BindNewPipeAndPassReceiver());
-  accelerometer.remote.set_disconnect_handler(base::BindOnce(
+  accelerometer.remote.set_disconnect_with_reason_handler(base::BindOnce(
       &AccelerometerProviderMojo::OnAccelerometerRemoteDisconnect, this, id));
 
   std::vector<std::string> attr_names;
@@ -434,14 +449,36 @@ void AccelerometerProviderMojo::RegisterAccelerometerWithId(int32_t id) {
                      id));
 }
 
-void AccelerometerProviderMojo::OnAccelerometerRemoteDisconnect(int32_t id) {
+void AccelerometerProviderMojo::OnAccelerometerRemoteDisconnect(
+    int32_t id,
+    uint32_t custom_reason_code,
+    const std::string& description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  LOG(ERROR)
-      << "OnAccelerometerRemoteDisconnect: " << id
-      << ", resetting SensorService as IIO Service should be destructed and "
-         "waiting for the relaunch of it.";
-  ResetSensorService();
+  auto& accelerometer = accelerometers_[id];
+  auto reason =
+      static_cast<chromeos::sensors::mojom::SensorDeviceDisconnectReason>(
+          custom_reason_code);
+  LOG(WARNING) << "OnAccelerometerRemoteDisconnect: " << id
+               << ", reason: " << reason << ", description: " << description;
+
+  switch (reason) {
+    case chromeos::sensors::mojom::SensorDeviceDisconnectReason::
+        IIOSERVICE_CRASHED:
+      ResetSensorService();
+      break;
+
+    case chromeos::sensors::mojom::SensorDeviceDisconnectReason::DEVICE_REMOVED:
+      // This accelerometer is not in use.
+      if (accelerometer.ignored || !accelerometer.location.has_value() ||
+          !accelerometer.scale.has_value()) {
+        accelerometers_.erase(id);
+      } else {
+        // Reset usages & states, and restart the mojo devices initialization.
+        ResetStates();
+      }
+      break;
+  }
 }
 
 void AccelerometerProviderMojo::GetAttributesCallback(

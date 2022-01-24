@@ -42,11 +42,9 @@ TEST(IceConfigTest, ParseValid) {
 
   // lifetimeDuration in the config is set to 12 hours. Verify that the
   // resulting expiration time is within 20 seconds before 12 hours after now.
-  EXPECT_TRUE(base::Time::Now() + base::TimeDelta::FromHours(12) -
-                  base::TimeDelta::FromSeconds(20) <
+  EXPECT_TRUE(base::Time::Now() + base::Hours(12) - base::Seconds(20) <
               config.expiration_time);
-  EXPECT_TRUE(config.expiration_time <
-              base::Time::Now() + base::TimeDelta::FromHours(12));
+  EXPECT_TRUE(config.expiration_time < base::Time::Now() + base::Hours(12));
 
   EXPECT_EQ(6U, config.turn_servers.size());
   EXPECT_TRUE(cricket::RelayServerConfig("8.8.8.8", 19234, "123", "abc",
@@ -95,11 +93,9 @@ TEST(IceConfigTest, ParseGetIceConfigResponse) {
 
   // lifetimeDuration in the config is set to 12 hours. Verify that the
   // resulting expiration time is within 20 seconds before 12 hours after now.
-  EXPECT_TRUE(base::Time::Now() + base::TimeDelta::FromHours(12) -
-                  base::TimeDelta::FromSeconds(20) <
+  EXPECT_TRUE(base::Time::Now() + base::Hours(12) - base::Seconds(20) <
               config.expiration_time);
-  EXPECT_TRUE(config.expiration_time <
-              base::Time::Now() + base::TimeDelta::FromHours(12));
+  EXPECT_TRUE(config.expiration_time < base::Time::Now() + base::Hours(12));
 
   EXPECT_EQ(6U, config.turn_servers.size());
   EXPECT_TRUE(cricket::RelayServerConfig("8.8.8.8", 19234, "123", "abc",

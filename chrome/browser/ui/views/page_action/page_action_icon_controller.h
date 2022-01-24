@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_CONTROLLER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"

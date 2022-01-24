@@ -39,7 +39,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.ref.WeakReference;
 
@@ -86,7 +86,6 @@ public class SecurePaymentConfirmationAuthnTest {
         Mockito.doReturn(new WeakReference<Context>(RuntimeEnvironment.application))
                 .when(windowAndroid)
                 .getContext();
-        Mockito.when(mWebContents.getVisibleUrl().getOrigin()).thenReturn(GURL.emptyGURL());
 
         // Create formatter mocks
         UrlFormatter.Natives urlFormatterJniMock = Mockito.mock(UrlFormatter.Natives.class);
@@ -141,7 +140,10 @@ public class SecurePaymentConfirmationAuthnTest {
 
         mIsPaymentConfirmed = false;
         mIsPaymentCancelled = false;
-        return mAuthnController.show(mDrawable, "paymentInstrumentLabel", mTotal, mCallback);
+        org.chromium.url.internal.mojom.Origin mojoOrigin =
+                new org.chromium.url.internal.mojom.Origin();
+        return mAuthnController.show(
+                mDrawable, "paymentInstrumentLabel", mTotal, mCallback, new Origin(mojoOrigin));
     }
 
     private void setWindowAndroid(WindowAndroid windowAndroid, WebContents webContents) {

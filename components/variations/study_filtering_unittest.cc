@@ -13,8 +13,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/variations_layers.h"
@@ -344,7 +346,7 @@ TEST(VariationsStudyFilteringTest, CheckStudyPolicyRestriction) {
 
 TEST(VariationsStudyFilteringTest, CheckStudyStartDate) {
   const base::Time now = base::Time::Now();
-  const base::TimeDelta delta = base::TimeDelta::FromHours(1);
+  const base::TimeDelta delta = base::Hours(1);
   const struct {
     const base::Time start_date;
     bool expected_result;
@@ -371,7 +373,7 @@ TEST(VariationsStudyFilteringTest, CheckStudyStartDate) {
 
 TEST(VariationsStudyFilteringTest, CheckStudyEndDate) {
   const base::Time now = base::Time::Now();
-  const base::TimeDelta delta = base::TimeDelta::FromHours(1);
+  const base::TimeDelta delta = base::Hours(1);
   const struct {
     const base::Time end_date;
     bool expected_result;
@@ -496,19 +498,19 @@ TEST(VariationsStudyFilteringTest, CheckStudyVersion) {
     const char* version;
     bool expected_result;
   } min_test_cases[] = {
-    { "1.2.2", "1.2.3", true },
-    { "1.2.3", "1.2.3", true },
-    { "1.2.4", "1.2.3", false },
-    { "1.3.2", "1.2.3", false },
-    { "2.1.2", "1.2.3", false },
-    { "0.3.4", "1.2.3", true },
-    // Wildcards.
-    { "1.*", "1.2.3", true },
-    { "1.2.*", "1.2.3", true },
-    { "1.2.3.*", "1.2.3", true },
-    { "1.2.4.*", "1.2.3", false },
-    { "2.*", "1.2.3", false },
-    { "0.3.*", "1.2.3", true },
+      {"1.2.2", "1.2.3", true},
+      {"1.2.3", "1.2.3", true},
+      {"1.2.4", "1.2.3", false},
+      {"1.3.2", "1.2.3", false},
+      {"2.1.2", "1.2.3", false},
+      {"0.3.4", "1.2.3", true},
+      // Wildcards.
+      {"1.*", "1.2.3", true},
+      {"1.2.*", "1.2.3", true},
+      {"1.2.3.*", "1.2.3", true},
+      {"1.2.4.*", "1.2.3", false},
+      {"2.*", "1.2.3", false},
+      {"0.3.*", "1.2.3", true},
   };
 
   const struct {
@@ -516,20 +518,20 @@ TEST(VariationsStudyFilteringTest, CheckStudyVersion) {
     const char* version;
     bool expected_result;
   } max_test_cases[] = {
-    { "1.2.2", "1.2.3", false },
-    { "1.2.3", "1.2.3", true },
-    { "1.2.4", "1.2.3", true },
-    { "2.1.1", "1.2.3", true },
-    { "2.1.1", "2.3.4", false },
-    // Wildcards
-    { "2.1.*", "2.3.4", false },
-    { "2.*", "2.3.4", true },
-    { "2.3.*", "2.3.4", true },
-    { "2.3.4.*", "2.3.4", true },
-    { "2.3.4.0.*", "2.3.4", true },
-    { "2.4.*", "2.3.4", true },
-    { "1.3.*", "2.3.4", false },
-    { "1.*", "2.3.4", false },
+      {"1.2.2", "1.2.3", false},
+      {"1.2.3", "1.2.3", true},
+      {"1.2.4", "1.2.3", true},
+      {"2.1.1", "1.2.3", true},
+      {"2.1.1", "2.3.4", false},
+      // Wildcards
+      {"2.1.*", "2.3.4", false},
+      {"2.*", "2.3.4", true},
+      {"2.3.*", "2.3.4", true},
+      {"2.3.4.*", "2.3.4", true},
+      {"2.3.4.0.*", "2.3.4", true},
+      {"2.4.*", "2.3.4", true},
+      {"1.3.*", "2.3.4", false},
+      {"1.*", "2.3.4", false},
   };
 
   Study::Filter filter;
@@ -692,7 +694,7 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudies) {
   AddExperiment("A", 10, study3);
   AddExperiment("Default", 25, study3);
 
-  ClientFilterableState client_state({});
+  ClientFilterableState client_state(base::BindOnce([] { return false; }));
   client_state.locale = "en-CA";
   client_state.reference_date = base::Time::Now();
   client_state.version = base::Version("20.0.0.0");
@@ -709,6 +711,110 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudies) {
   EXPECT_EQ(kTrial1Name, processed_studies[0].study()->name());
   EXPECT_EQ(kGroup1Name, processed_studies[0].study()->experiment(0).name());
   EXPECT_EQ(kTrial3Name, processed_studies[1].study()->name());
+}
+
+TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithBadFilters) {
+  const char* versions[] = {
+      "invalid",
+      "1.invalid.0",
+      "0.invalid.0",
+      "\001\000\000\003",
+  };
+  VariationsSeed seed;
+
+  Study baseStudy;
+  baseStudy.set_default_experiment_name("Default");
+  AddExperiment("Default", 100, &baseStudy);
+  baseStudy.mutable_filter()->add_platform(Study::PLATFORM_ANDROID);
+
+  // Add studies with invalid min_versions.
+  for (size_t i = 0; i < base::size(versions); ++i) {
+    Study* study = seed.add_study();
+    *study = baseStudy;
+    study->set_name(
+        base::StrCat({"min_version_study_", base::NumberToString(i)}));
+    study->mutable_filter()->set_min_version(versions[i]);
+  }
+
+  // Add studies with invalid max_versions.
+  for (size_t i = 0; i < base::size(versions); ++i) {
+    Study* study = seed.add_study();
+    *study = baseStudy;
+    study->set_name(
+        base::StrCat({"max_version_study_", base::NumberToString(i)}));
+    study->mutable_filter()->set_max_version(versions[i]);
+  }
+
+  // Add studies with invalid min_os_versions.
+  for (size_t i = 0; i < base::size(versions); ++i) {
+    Study* study = seed.add_study();
+    *study = baseStudy;
+    study->set_name(
+        base::StrCat({"min_os_version_study_", base::NumberToString(i)}));
+    study->mutable_filter()->set_min_os_version(versions[i]);
+  }
+
+  // Add studies with invalid max_os_versions.
+  for (size_t i = 0; i < base::size(versions); ++i) {
+    Study* study = seed.add_study();
+    *study = baseStudy;
+    study->set_name(
+        base::StrCat({"max_os_version_study_", base::NumberToString(i)}));
+    study->mutable_filter()->set_max_os_version(versions[i]);
+  }
+
+  ClientFilterableState client_state(base::BindOnce([] { return false; }));
+  client_state.locale = "en-CA";
+  client_state.reference_date = base::Time::Now();
+  client_state.version = base::Version("20.0.0.0");
+  client_state.channel = Study::STABLE;
+  client_state.form_factor = Study::DESKTOP;
+  client_state.platform = Study::PLATFORM_ANDROID;
+  client_state.os_version = base::Version("1.2.3");
+
+  base::HistogramTester histogram_tester;
+  std::vector<ProcessedStudy> processed_studies;
+  FilterAndValidateStudies(seed, client_state, VariationsLayers(),
+                           &processed_studies);
+
+  ASSERT_EQ(0U, processed_studies.size());
+  histogram_tester.ExpectTotalCount("Variations.InvalidStudyReason",
+                                    base::size(versions) * 4);
+  histogram_tester.ExpectBucketCount("Variations.InvalidStudyReason", 0,
+                                     base::size(versions));
+  histogram_tester.ExpectBucketCount("Variations.InvalidStudyReason", 1,
+                                     base::size(versions));
+  histogram_tester.ExpectBucketCount("Variations.InvalidStudyReason", 2,
+                                     base::size(versions));
+  histogram_tester.ExpectBucketCount("Variations.InvalidStudyReason", 3,
+                                     base::size(versions));
+}
+
+TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithBlankStudyName) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("");
+  study->set_default_experiment_name("Default");
+  AddExperiment("A", 100, study);
+  AddExperiment("Default", 0, study);
+
+  study->mutable_filter()->add_platform(Study::PLATFORM_ANDROID);
+
+  ClientFilterableState client_state(base::BindOnce([] { return false; }));
+  client_state.locale = "en-CA";
+  client_state.reference_date = base::Time::Now();
+  client_state.version = base::Version("20.0.0.0");
+  client_state.channel = Study::STABLE;
+  client_state.form_factor = Study::PHONE;
+  client_state.platform = Study::PLATFORM_ANDROID;
+
+  base::HistogramTester histogram_tester;
+  std::vector<ProcessedStudy> processed_studies;
+  FilterAndValidateStudies(seed, client_state, VariationsLayers(),
+                           &processed_studies);
+
+  ASSERT_EQ(0U, processed_studies.size());
+  histogram_tester.ExpectUniqueSample("Variations.InvalidStudyReason", 8, 1);
 }
 
 TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithCountry) {
@@ -752,7 +858,7 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithCountry) {
     if (test.filter_exclude_country)
       study->mutable_filter()->add_exclude_country(test.filter_exclude_country);
 
-    ClientFilterableState client_state({});
+    ClientFilterableState client_state(base::BindOnce([] { return false; }));
     client_state.locale = "en-CA";
     client_state.reference_date = base::Time::Now();
     client_state.version = base::Version("20.0.0.0");
@@ -771,7 +877,7 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithCountry) {
 }
 
 TEST(VariationsStudyFilteringTest, GetClientCountryForStudy_Session) {
-  ClientFilterableState client_state({});
+  ClientFilterableState client_state(base::BindOnce([] { return false; }));
   client_state.session_consistency_country = "session_country";
   client_state.permanent_consistency_country = "permanent_country";
 
@@ -782,7 +888,7 @@ TEST(VariationsStudyFilteringTest, GetClientCountryForStudy_Session) {
 }
 
 TEST(VariationsStudyFilteringTest, GetClientCountryForStudy_Permanent) {
-  ClientFilterableState client_state({});
+  ClientFilterableState client_state(base::BindOnce([] { return false; }));
   client_state.session_consistency_country = "session_country";
   client_state.permanent_consistency_country = "permanent_country";
 
@@ -794,7 +900,7 @@ TEST(VariationsStudyFilteringTest, GetClientCountryForStudy_Permanent) {
 
 TEST(VariationsStudyFilteringTest, IsStudyExpired) {
   const base::Time now = base::Time::Now();
-  const base::TimeDelta delta = base::TimeDelta::FromHours(1);
+  const base::TimeDelta delta = base::Hours(1);
   const struct {
     const base::Time expiry_date;
     bool expected_result;
@@ -819,6 +925,7 @@ TEST(VariationsStudyFilteringTest, IsStudyExpired) {
 
 TEST(VariationsStudyFilteringTest, ValidateStudy) {
   Study study;
+  study.set_name("study");
   study.set_default_experiment_name("def");
   AddExperiment("abc", 100, &study);
   Study::Experiment* default_group = AddExperiment("def", 200, &study);

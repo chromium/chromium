@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "eche_app_notification_controller\.cc": [
+    "+ui/message_center/message_center.h",
+  ]
+}

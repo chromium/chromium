@@ -216,8 +216,10 @@ gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
             window);
   } else {
     bounds_in_parent = (state_type == WindowStateType::kPrimarySnapped)
-                           ? GetDefaultLeftSnappedWindowBoundsInParent(window)
-                           : GetDefaultRightSnappedWindowBoundsInParent(window);
+                           ? GetDefaultSnappedWindowBoundsInParent(
+                                 window, SnapViewType::kPrimary)
+                           : GetDefaultSnappedWindowBoundsInParent(
+                                 window, SnapViewType::kSecondary);
   }
   return bounds_in_parent;
 }

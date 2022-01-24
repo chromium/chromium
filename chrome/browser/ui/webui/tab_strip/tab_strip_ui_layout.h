@@ -5,11 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_LAYOUT_H_
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_LAYOUT_H_
 
+#include "base/containers/flat_map.h"
 #include "ui/gfx/geometry/size.h"
-
-namespace base {
-class Value;
-}
 
 struct TabStripUILayout {
   static TabStripUILayout CalculateForWebViewportSize(
@@ -20,7 +17,7 @@ struct TabStripUILayout {
   static int GetContainerHeight();
 
   // Returns a dictionary of CSS variables.
-  base::Value AsDictionary() const;
+  base::flat_map<std::string, std::string> AsDictionary() const;
 
   int viewport_width = 0;
   gfx::Size tab_thumbnail_size;

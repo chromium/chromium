@@ -77,7 +77,7 @@
       "use_goma": true
     }
   },
-  "win10-blink-rel": {
+  "mac11.0.arm64-blink-rel": {
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
@@ -85,7 +85,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "target_cpu": "x86",
+      "target_cpu": "arm64",
       "use_goma": true
     }
   },

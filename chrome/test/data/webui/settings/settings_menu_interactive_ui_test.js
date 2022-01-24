@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {pageVisibility} from 'chrome://settings/settings.js';
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('SettingsMenuInteractiveUITest', () => {
   let settingsMenu;

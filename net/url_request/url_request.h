@@ -41,6 +41,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/log/net_log_event_type.h"
+#include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
 #include "net/socket/connection_attempts.h"
@@ -210,6 +211,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     virtual ~Delegate() {}
   };
 
+  URLRequest(const URLRequest&) = delete;
+  URLRequest& operator=(const URLRequest&) = delete;
+
   // If destroyed after Start() has been called but while IO is pending,
   // then the request will be effectively canceled and the delegate
   // will not have any more of its methods called.
@@ -230,6 +234,19 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // redirects, this vector will contain one element.
   const std::vector<GURL>& url_chain() const { return url_chain_; }
   const GURL& url() const { return url_chain_.back(); }
+
+  // Explicitly set the URL chain for this request.  This can be used to
+  // indicate a chain of redirects that happen at a layer above the network
+  // service; e.g. navigation redirects.
+  //
+  // Note, the last entry in the new `url_chain` will be ignored.  Instead
+  // the request will preserve its current URL.  This is done since the higher
+  // layer providing the explicit `url_chain` may not be aware of modifications
+  // to the request URL by throttles.
+  //
+  // This method should only be called on new requests that have a single
+  // entry in their existing `url_chain_`.
+  void SetURLChain(const std::vector<GURL>& url_chain);
 
   // The URL that should be consulted for the third-party cookie blocking
   // policy, as defined in Section 2.1.1 and 2.1.2 of
@@ -287,6 +304,16 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   }
   void set_force_ignore_top_frame_party_for_cookies(bool force) {
     force_ignore_top_frame_party_for_cookies_ = force;
+  }
+
+  // Indicates if the request should be treated as a main frame navigation for
+  // SameSite cookie computations.  This flag overrides the IsolationInfo
+  // request type associated with fetches from a service worker context.
+  bool force_main_frame_for_same_site_cookies() const {
+    return force_main_frame_for_same_site_cookies_;
+  }
+  void set_force_main_frame_for_same_site_cookies(bool value) {
+    force_main_frame_for_same_site_cookies_ = value;
   }
 
   // The first-party URL policy to apply when updating the first party URL
@@ -683,8 +710,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   }
 
   // The number of bytes in the raw response body (before any decompression,
-  // etc.). This is only available after the final Read completes. Not available
-  // for FTP responses.
+  // etc.). This is only available after the final Read completes.
   int64_t received_response_content_length() const {
     return received_response_content_length_;
   }
@@ -774,6 +800,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     send_client_certs_ = send_client_certs;
   }
 
+  bool is_for_websockets() const { return is_for_websockets_; }
+
   void SetIdempotency(Idempotency idempotency) { idempotency_ = idempotency; }
   Idempotency GetIdempotency() const { return idempotency_; }
 
@@ -818,7 +846,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
              RequestPriority priority,
              Delegate* delegate,
              const URLRequestContext* context,
-             NetworkTrafficAnnotationTag traffic_annotation);
+             NetworkTrafficAnnotationTag traffic_annotation,
+             bool is_for_websockets,
+             absl::optional<net::NetLogSource> net_log_source);
 
   // Resumes or blocks a request paused by the NetworkDelegate::OnBeforeRequest
   // handler. If |blocked| is true, the request is blocked and an error page is
@@ -906,6 +936,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   bool force_ignore_site_for_cookies_;
   bool force_ignore_top_frame_party_for_cookies_;
+  bool force_main_frame_for_same_site_cookies_;
   absl::optional<url::Origin> initiator_;
   GURL delegate_redirect_url_;
   std::string method_;  // "GET", "POST", etc. Should be all uppercase.
@@ -936,6 +967,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Never access methods of the |delegate_| directly. Always use the
   // Notify... methods for this.
   Delegate* delegate_;
+
+  const bool is_for_websockets_;
 
   // Current error status of the job, as a net::Error code. When the job is
   // busy, it is ERR_IO_PENDING. When the job is idle (either completed, or
@@ -1030,8 +1063,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<URLRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequest);
 };
 
 }  // namespace net

@@ -30,6 +30,10 @@ AX_BASE_EXPORT bool HasPresentationalChildren(const ax::mojom::Role role);
 // Returns true if the given role is an alert or alert-dialog type.
 AX_BASE_EXPORT bool IsAlert(const ax::mojom::Role role);
 
+// Returns true if the given role is a candidate to be labeled with a classname
+// of TextView on Android.
+AX_BASE_EXPORT bool IsAndroidTextViewCandidate(const ax::mojom::Role role);
+
 // Returns true if the provided role belongs to a native or an ARIA button.
 AX_BASE_EXPORT bool IsButton(const ax::mojom::Role role);
 
@@ -52,6 +56,9 @@ AX_BASE_EXPORT bool IsCellOrTableHeader(const ax::mojom::Role role);
 // so that users will know that they could activate them if they so choose.
 AX_BASE_EXPORT bool IsClickable(const ax::mojom::Role role);
 
+// Returns true if the provided role is any of the checkbox-related roles.
+AX_BASE_EXPORT bool IsCheckBox(ax::mojom::Role role);
+
 // Returns true if the provided role is any of the combobox-related roles.
 AX_BASE_EXPORT bool IsComboBox(ax::mojom::Role role);
 
@@ -66,6 +73,9 @@ AX_BASE_EXPORT bool IsControl(const ax::mojom::Role role);
 // Returns true if the provided role is a control on the Android platform.
 AX_BASE_EXPORT bool IsControlOnAndroid(const ax::mojom::Role role,
                                        bool isFocusable);
+
+// Returns true for an <input> used for a date or time.
+AX_BASE_EXPORT bool IsDateOrTimeInput(const ax::mojom::Role role);
 
 // Returns true if the provided role represents a dialog.
 AX_BASE_EXPORT bool IsDialog(const ax::mojom::Role role);
@@ -199,6 +209,10 @@ AX_BASE_EXPORT bool IsText(ax::mojom::Role role);
 // Returns true if the provided role belongs to a native text field, i.e.
 // <input> or <textarea>.
 AX_BASE_EXPORT bool IsTextField(ax::mojom::Role role);
+
+// Returns true if the provided role fits the description of a UIA embedded
+// objects. See the method definition for more details.
+AX_BASE_EXPORT bool IsUIAEmbeddedObject(ax::mojom::Role role);
 
 // Returns true if the node should be read only by default
 AX_BASE_EXPORT bool ShouldHaveReadonlyStateByDefault(

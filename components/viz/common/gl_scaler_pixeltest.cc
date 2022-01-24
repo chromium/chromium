@@ -6,12 +6,15 @@
 
 #include <sstream>
 
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test.h"
 #include "cc/test/pixel_test_utils.h"
-#include "components/viz/common/gl_scaler_test_util.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/test/gl_scaler_test_util.h"
+#include "components/viz/test/paths.h"
 #include "gpu/GLES2/gl2chromium.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -23,6 +26,32 @@
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
 #endif
+
+namespace {
+
+// Loads a PNG test image from the test directory, and converts it to GL_RGBA
+// byte order.
+SkBitmap LoadPNGTestImage(const std::string& basename) {
+  base::FilePath test_dir;
+  if (!base::PathService::Get(viz::Paths::DIR_TEST_DATA, &test_dir)) {
+    LOG(FATAL) << "Unable to get Paths::DIR_TEST_DATA from base::PathService.";
+    return SkBitmap();
+  }
+  const auto source_file = test_dir.AppendASCII(basename);
+  SkBitmap as_n32;
+  if (!cc::ReadPNGFile(source_file, &as_n32)) {
+    return SkBitmap();
+  }
+  SkBitmap as_rgba = viz::GLScalerTestUtil::AllocateRGBABitmap(
+      gfx::Size(as_n32.width(), as_n32.height()));
+  if (!as_n32.readPixels(SkPixmap(as_rgba.info(), as_rgba.getAddr(0, 0),
+                                  as_rgba.rowBytes()))) {
+    return SkBitmap();
+  }
+  return as_rgba;
+}
+
+}  // namespace
 
 namespace viz {
 
@@ -451,7 +480,7 @@ TEST_F(GLScalerPixelTest, Example_ScaleAndExportForScreenVideoCapture) {
       CreateVerticallyFlippedBitmap(CreateSMPTETestImage(kSourceSize)));
   constexpr gfx::Size kOutputSize = gfx::Size(1280, 720);
   SkBitmap expected = CreateSMPTETestImage(kOutputSize);
-  ConvertBitmapToYUV(&expected);
+  ConvertRGBABitmapToYUV(&expected);
 
   // While the output size is 1280x720, the packing of 4 pixels into one RGBA
   // quad means that the texture width must be divided by 4, and that size

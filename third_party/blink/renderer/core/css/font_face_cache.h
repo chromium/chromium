@@ -70,7 +70,7 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
   void Trace(Visitor*) const;
 
  private:
-  // Two lookup accelerating cashes are needed: For the font selection
+  // Two lookup accelerating caches are needed: For the font selection
   // algorithm to work and not perform font fallback across
   // FontSelectionCapabilities, we need to bin the incoming @font-faces by same
   // FontSelectionCapabilities, then run the font selection algorithm only by

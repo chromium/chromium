@@ -28,7 +28,7 @@ Vector<String> WorkerInternalsFetch::getInternalResponseURLList(
   return url_list;
 }
 
-ScriptPromise WorkerInternalsFetch::getResourcePriority(
+ScriptPromise WorkerInternalsFetch::getInitialResourcePriority(
     ScriptState* script_state,
     WorkerInternals& internals,
     const String& url,

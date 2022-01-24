@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -38,20 +37,26 @@ struct URLOverrides : public Extension::ManifestData {
 class DevToolsPageHandler : public ManifestHandler {
  public:
   DevToolsPageHandler();
+
+  DevToolsPageHandler(const DevToolsPageHandler&) = delete;
+  DevToolsPageHandler& operator=(const DevToolsPageHandler&) = delete;
+
   ~DevToolsPageHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsPageHandler);
 };
 
 // Parses the "chrome_url_overrides" manifest key.
 class URLOverridesHandler : public ManifestHandler {
  public:
   URLOverridesHandler();
+
+  URLOverridesHandler(const URLOverridesHandler&) = delete;
+  URLOverridesHandler& operator=(const URLOverridesHandler&) = delete;
+
   ~URLOverridesHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
@@ -61,8 +66,6 @@ class URLOverridesHandler : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(URLOverridesHandler);
 };
 
 }  // namespace extensions

@@ -23,6 +23,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.test.util.Batch;
@@ -48,6 +49,10 @@ public class StartupPaintPreviewTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
+    // Tell R8 not to break the ability to mock the class.
+    @Mock
+    private static PaintPreviewTabService sUnused;
+
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, true);
@@ -163,7 +168,9 @@ public class StartupPaintPreviewTest {
         showAndWaitForInflation(startupPaintPreview, tabbedPaintPreview, dismissCallback);
         assertAttachedAndShown(tabbedPaintPreview, true, true);
         // Should be removed on PageLoadFinished signal.
-        startupPaintPreview.getTabObserverForTesting().onPageLoadFinished(tab, null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            startupPaintPreview.getTabObserverForTesting().onPageLoadFinished(tab, null);
+        });
         assertAttachedAndShown(tabbedPaintPreview, false, false);
         Assert.assertEquals(
                 "Dismiss callback should have been called.", 1, dismissCallback.getCallCount());

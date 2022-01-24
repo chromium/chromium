@@ -84,8 +84,7 @@ struct NET_EXPORT SSLConfig {
   // If true, causes only ECDHE cipher suites to be enabled.
   bool require_ecdhe = false;
 
-  // If true, causes 3DES cipher suites and SHA-1 signature algorithms in
-  // TLS 1.2 to be disabled.
+  // If true, causes SHA-1 signature algorithms in TLS 1.2 to be disabled.
   bool disable_legacy_crypto = false;
 
   // TODO(wtc): move the following members to a new SSLParams structure.  They
@@ -137,6 +136,12 @@ struct NET_EXPORT SSLConfig {
   // If the PartitionSSLSessionsByNetworkIsolationKey feature is enabled, the
   // session cache is partitioned by this value.
   NetworkIsolationKey network_isolation_key;
+
+  // If non-empty, a serialized ECHConfigList to use to encrypt the ClientHello.
+  // If this field is non-empty, callers should handle |ERR_ECH_NOT_NEGOTIATED|
+  // errors from Connect() by calling GetECHRetryConfigs() to determine how to
+  // retry the connection.
+  std::vector<uint8_t> ech_config_list;
 
   // An additional boolean to partition the session cache by.
   //

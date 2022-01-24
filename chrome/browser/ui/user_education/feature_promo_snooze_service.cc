@@ -7,10 +7,10 @@
 #include <ostream>
 
 #include "base/feature_list.h"
+#include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -48,7 +48,7 @@ constexpr char kIPHShowCountPath[] = "show_count";
 // client side will be used.
 constexpr base::FeatureParam<base::TimeDelta> kOverriddenDuration{
     &feature_engagement::kIPHDesktopSnoozeFeature,
-    "x_iph_snooze_overridden_duration", base::TimeDelta::FromHours(0)};
+    "x_iph_snooze_overridden_duration", base::Hours(0)};
 
 constexpr base::FeatureParam<FeaturePromoSnoozeService::NonClickerPolicy>::
     Option kNonClickerPolicyOptions[] = {
@@ -66,14 +66,14 @@ enum class SnoozeType {
 };
 }  // namespace
 
-const int FeaturePromoSnoozeService::kUmaMaxSnoozeCount = 10;
+constexpr int FeaturePromoSnoozeService::kUmaMaxSnoozeCount;
 
 FeaturePromoSnoozeService::FeaturePromoSnoozeService(Profile* profile)
     : profile_(profile) {}
 
 void FeaturePromoSnoozeService::OnUserSnooze(const base::Feature& iph_feature,
                                              base::TimeDelta snooze_duration) {
-  DCHECK(snooze_duration > base::TimeDelta::FromSeconds(0));
+  DCHECK(snooze_duration > base::Seconds(0));
   auto snooze_data = ReadSnoozeData(iph_feature);
 
   if (!snooze_data)
@@ -163,8 +163,7 @@ bool FeaturePromoSnoozeService::IsBlocked(const base::Feature& iph_feature) {
     if (non_clicker_policy == NonClickerPolicy::kDismiss)
       return true;
 
-    return base::Time::Now() <
-           snooze_data->last_show_time + base::TimeDelta::FromDays(14);
+    return base::Time::Now() < snooze_data->last_show_time + base::Days(14);
   }
 }
 
@@ -194,11 +193,11 @@ FeaturePromoSnoozeService::ReadSnoozeData(const base::Feature& iph_feature) {
       profile_->GetPrefs()->GetDictionary(kIPHSnoozeDataPath);
   absl::optional<bool> is_dismissed =
       pref_data->FindBoolPath(path_prefix + kIPHIsDismissedPath);
-  absl::optional<base::Time> show_time = util::ValueToTime(
+  absl::optional<base::Time> show_time = base::ValueToTime(
       pref_data->FindPath(path_prefix + kIPHLastShowTimePath));
-  absl::optional<base::Time> snooze_time = util::ValueToTime(
+  absl::optional<base::Time> snooze_time = base::ValueToTime(
       pref_data->FindPath(path_prefix + kIPHLastSnoozeTimePath));
-  absl::optional<base::TimeDelta> snooze_duration = util::ValueToTimeDelta(
+  absl::optional<base::TimeDelta> snooze_duration = base::ValueToTimeDelta(
       pref_data->FindPath(path_prefix + kIPHLastSnoozeDurationPath));
   absl::optional<int> snooze_count =
       pref_data->FindIntPath(path_prefix + kIPHSnoozeCountPath);
@@ -219,7 +218,7 @@ FeaturePromoSnoozeService::ReadSnoozeData(const base::Feature& iph_feature) {
   if (!show_time || !show_count) {
     // This feature was shipped before without handling
     // non-clickers. Assume previous displays were all snooozed.
-    show_time = *snooze_time - base::TimeDelta::FromSeconds(1);
+    show_time = *snooze_time - base::Seconds(1);
     show_count = *snooze_count;
   }
 
@@ -245,11 +244,11 @@ void FeaturePromoSnoozeService::SaveSnoozeData(
   pref_data->SetBoolPath(path_prefix + kIPHIsDismissedPath,
                          snooze_data.is_dismissed);
   pref_data->SetPath(path_prefix + kIPHLastShowTimePath,
-                     util::TimeToValue(snooze_data.last_show_time));
+                     base::TimeToValue(snooze_data.last_show_time));
   pref_data->SetPath(path_prefix + kIPHLastSnoozeTimePath,
-                     util::TimeToValue(snooze_data.last_snooze_time));
+                     base::TimeToValue(snooze_data.last_snooze_time));
   pref_data->SetPath(path_prefix + kIPHLastSnoozeDurationPath,
-                     util::TimeDeltaToValue(snooze_data.last_snooze_duration));
+                     base::TimeDeltaToValue(snooze_data.last_snooze_duration));
   pref_data->SetIntPath(path_prefix + kIPHSnoozeCountPath,
                         snooze_data.snooze_count);
   pref_data->SetIntPath(path_prefix + kIPHShowCountPath,

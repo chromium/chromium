@@ -102,7 +102,6 @@ def render_runner_scripts(extra_args):
     for template_file in files:
       if not template_file.endswith(".scpt") and not template_file.endswith(
           ".swp"):
-        print(template_file)
         if template_file.startswith("safari"):
           # Generate for Safari
           render("", template_file, "", extra_args)
@@ -118,11 +117,14 @@ def generate_all(extra_args):
   modified by hand.
   """
 
+  args = {"hash_bang": "#!/usr/bin/osascript"}
+  args = {**args, **extra_args}
+
   shutil.rmtree("driver_scripts/", ignore_errors=True)
   os.makedirs("driver_scripts", exist_ok=True)
 
   # Generate scripts for all scenarios.
-  render_runner_scripts(extra_args)
+  render_runner_scripts(args)
 
   # Copy the files that don't need any substitutions.
   for _, _, files in os.walk("./driver_scripts_templates"):
@@ -140,7 +142,7 @@ if __name__ == "__main__":
                       required=False)
   args = parser.parse_args()
 
-  extra_args = {"hash_bang": "#!/usr/bin/osascript"}
+  extra_args = {}
   if args.meet_meeting_id:
     extra_args["meeting_id"] = args.meet_meeting_id
 

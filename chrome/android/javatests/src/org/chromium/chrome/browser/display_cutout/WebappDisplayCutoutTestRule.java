@@ -16,7 +16,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 
@@ -44,7 +44,7 @@ public class WebappDisplayCutoutTestRule extends DisplayCutoutTestRule<WebappAct
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface TestConfiguration {
-        @WebDisplayMode
+        @DisplayMode.EnumType
         int displayMode();
     }
 
@@ -68,7 +68,7 @@ public class WebappDisplayCutoutTestRule extends DisplayCutoutTestRule<WebappAct
         };
     }
 
-    private void startWebappActivity(@WebDisplayMode int displayMode) {
+    private void startWebappActivity(@DisplayMode.EnumType int displayMode) {
         Intent intent =
                 new Intent(InstrumentationRegistry.getTargetContext(), WebappActivity.class);
         intent.setData(Uri.parse(WebappActivity.WEBAPP_SCHEME + "://" + WEBAPP_ID));

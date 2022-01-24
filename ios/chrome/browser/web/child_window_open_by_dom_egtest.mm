@@ -57,7 +57,7 @@ std::unique_ptr<net::test_server::HttpResponse> SlowResponseHandler(
     const net::test_server::HttpRequest& request) {
   auto slow_http_response =
       std::make_unique<net::test_server::DelayedHttpResponse>(
-          base::TimeDelta::FromSeconds(kSlowPathDelay));
+          base::Seconds(kSlowPathDelay));
   slow_http_response->set_content_type("text/html");
   slow_http_response->set_content(kSlowPathContent);
   return std::move(slow_http_response);

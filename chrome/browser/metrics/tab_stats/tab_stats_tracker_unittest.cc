@@ -42,7 +42,7 @@ std::string GetHistogramNameWithBatteryStateSuffix(const char* histogram_name) {
 class TestTabStatsObserver : public TabStatsObserver {
  public:
   // Functions used to update the counts.
-  void OnMainFrameNavigationCommitted(
+  void OnPrimaryMainFrameNavigationCommitted(
       content::WebContents* web_contents) override {
     ++main_frame_committed_navigations_count_;
   }
@@ -64,6 +64,10 @@ class TestTabStatsTracker : public TabStatsTracker {
   using UmaStatsReportingDelegate = TabStatsTracker::UmaStatsReportingDelegate;
 
   explicit TestTabStatsTracker(PrefService* pref_service);
+
+  TestTabStatsTracker(const TestTabStatsTracker&) = delete;
+  TestTabStatsTracker& operator=(const TestTabStatsTracker&) = delete;
+
   ~TestTabStatsTracker() override {}
 
   // Helper functions to update the number of tabs/windows.
@@ -119,7 +123,7 @@ class TestTabStatsTracker : public TabStatsTracker {
             reporting_delegate_for_testing(), tab_stats_data_store()));
 
     // Update the daily event registry to the previous day and trigger it.
-    base::Time last_time = base::Time::Now() - base::TimeDelta::FromHours(25);
+    base::Time last_time = base::Time::Now() - base::Hours(25);
     pref_service_->SetInt64(prefs::kTabStatsDailySample,
                             last_time.since_origin().InMicroseconds());
     CheckDailyEventInterval();
@@ -133,8 +137,6 @@ class TestTabStatsTracker : public TabStatsTracker {
 
  private:
   PrefService* pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTabStatsTracker);
 };
 
 class TestUmaStatsReportingDelegate
@@ -144,13 +146,14 @@ class TestUmaStatsReportingDelegate
       GetIntervalHistogramName;
   TestUmaStatsReportingDelegate() {}
 
+  TestUmaStatsReportingDelegate(const TestUmaStatsReportingDelegate&) = delete;
+  TestUmaStatsReportingDelegate& operator=(
+      const TestUmaStatsReportingDelegate&) = delete;
+
  protected:
   // Skip the check that ensures that there's at least one visible window as
   // there's no window in the context of these tests.
   bool IsChromeBackgroundedWithoutWindows() override { return false; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestUmaStatsReportingDelegate);
 };
 
 class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
@@ -165,6 +168,9 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
     // using it.
     tab_stats_tracker_ = std::make_unique<TestTabStatsTracker>(&pref_service_);
   }
+
+  TabStatsTrackerTest(const TabStatsTrackerTest&) = delete;
+  TabStatsTrackerTest& operator=(const TabStatsTrackerTest&) = delete;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -195,9 +201,6 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<Browser> browser_;
   TabStripModel* tab_strip_model_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabStatsTrackerTest);
 };
 
 TestTabStatsTracker::TestTabStatsTracker(PrefService* pref_service)
@@ -405,7 +408,7 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
 }
 
 TEST_F(TabStatsTrackerTest, TabUsageGetsReported) {
-  constexpr base::TimeDelta kValidLongInterval = base::TimeDelta::FromHours(12);
+  constexpr base::TimeDelta kValidLongInterval = base::Hours(12);
   TabStatsDataStore::TabsStateDuringIntervalMap* interval_map =
       tab_stats_tracker_->data_store()->AddInterval();
 

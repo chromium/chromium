@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_async_file_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_watcher_manager.h"
@@ -20,6 +19,12 @@ class ArcDocumentsProviderBackendDelegate
     : public chromeos::FileSystemBackendDelegate {
  public:
   ArcDocumentsProviderBackendDelegate();
+
+  ArcDocumentsProviderBackendDelegate(
+      const ArcDocumentsProviderBackendDelegate&) = delete;
+  ArcDocumentsProviderBackendDelegate& operator=(
+      const ArcDocumentsProviderBackendDelegate&) = delete;
+
   ~ArcDocumentsProviderBackendDelegate() override;
 
   // FileSystemBackend::Delegate overrides.
@@ -43,8 +48,6 @@ class ArcDocumentsProviderBackendDelegate
  private:
   ArcDocumentsProviderAsyncFileUtil async_file_util_;
   ArcDocumentsProviderWatcherManager watcher_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderBackendDelegate);
 };
 
 }  // namespace arc

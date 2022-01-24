@@ -112,7 +112,7 @@ TEST_F(SnapFlingControllerTest, AnimatesTheCurve) {
       .WillOnce(testing::Return(gfx::Vector2dF(100, 100)));
   EXPECT_CALL(mock_client_, RequestAnimationForSnapFling()).Times(1);
   EXPECT_CALL(mock_client_, ScrollByForSnapFling(gfx::Vector2dF(100, 100)));
-  controller_->Animate(base::TimeTicks() + base::TimeDelta::FromSeconds(1));
+  controller_->Animate(base::TimeTicks() + base::Seconds(1));
   testing::Mock::VerifyAndClearExpectations(&mock_client_);
   testing::Mock::VerifyAndClearExpectations(curve);
 }
@@ -127,7 +127,7 @@ TEST_F(SnapFlingControllerTest, FinishesTheCurve) {
   EXPECT_CALL(mock_client_, RequestAnimationForSnapFling()).Times(0);
   EXPECT_CALL(mock_client_, ScrollByForSnapFling(testing::_)).Times(0);
   EXPECT_CALL(mock_client_, ScrollEndForSnapFling(true)).Times(1);
-  controller_->Animate(base::TimeTicks() + base::TimeDelta::FromSeconds(1));
+  controller_->Animate(base::TimeTicks() + base::Seconds(1));
   testing::Mock::VerifyAndClearExpectations(curve);
   testing::Mock::VerifyAndClearExpectations(&mock_client_);
 
@@ -135,7 +135,7 @@ TEST_F(SnapFlingControllerTest, FinishesTheCurve) {
   EXPECT_CALL(mock_client_, RequestAnimationForSnapFling()).Times(0);
   EXPECT_CALL(mock_client_, ScrollByForSnapFling(testing::_)).Times(0);
   EXPECT_CALL(mock_client_, ScrollEndForSnapFling(true)).Times(0);
-  controller_->Animate(base::TimeTicks() + base::TimeDelta::FromSeconds(2));
+  controller_->Animate(base::TimeTicks() + base::Seconds(2));
   testing::Mock::VerifyAndClearExpectations(curve);
   testing::Mock::VerifyAndClearExpectations(&mock_client_);
 }

@@ -238,6 +238,14 @@ Panel = class {
       return;
     }
 
+    // Change the title of ChromeVox menu based on menu's state.
+    $('menus_title')
+        .setAttribute(
+            'msgid',
+            mode === Panel.Mode.FULLSCREEN_MENUS ? 'menus_collapse_title' :
+                                                   'menus_title');
+    Msgs.addTranslatedMessagesToDom(document);
+
     Panel.mode_ = mode;
 
     document.title = Msgs.getMsg(Panel.ModeInfo[Panel.mode_].title);

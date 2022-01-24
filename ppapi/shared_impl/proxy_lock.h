@@ -34,6 +34,10 @@ namespace ppapi {
 // tracker, etc.
 class PPAPI_SHARED_EXPORT ProxyLock {
  public:
+  ProxyLock() = delete;
+  ProxyLock(const ProxyLock&) = delete;
+  ProxyLock& operator=(const ProxyLock&) = delete;
+
   // Return the global ProxyLock. Normally, you should not access this
   // directly but instead use ProxyAutoLock or ProxyAutoUnlock. But sometimes
   // you need access to the ProxyLock, for example to create a condition
@@ -73,8 +77,6 @@ class PPAPI_SHARED_EXPORT ProxyLock {
   // startup, before other threads that may access the ProxyLock have had a
   // chance to run.
   static void DisableLocking();
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ProxyLock);
 };
 
 // A simple RAII class for locking the PPAPI proxy lock on entry and releasing
@@ -83,10 +85,11 @@ class PPAPI_SHARED_EXPORT ProxyLock {
 class ProxyAutoLock {
  public:
   ProxyAutoLock() { ProxyLock::Acquire(); }
-  ~ProxyAutoLock() { ProxyLock::Release(); }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyAutoLock);
+  ProxyAutoLock(const ProxyAutoLock&) = delete;
+  ProxyAutoLock& operator=(const ProxyAutoLock&) = delete;
+
+  ~ProxyAutoLock() { ProxyLock::Release(); }
 };
 
 // The inverse of the above; unlock on construction, lock on destruction. This
@@ -96,10 +99,11 @@ class ProxyAutoLock {
 class ProxyAutoUnlock {
  public:
   ProxyAutoUnlock() { ProxyLock::Release(); }
-  ~ProxyAutoUnlock() { ProxyLock::Acquire(); }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyAutoUnlock);
+  ProxyAutoUnlock(const ProxyAutoUnlock&) = delete;
+  ProxyAutoUnlock& operator=(const ProxyAutoUnlock&) = delete;
+
+  ~ProxyAutoUnlock() { ProxyLock::Acquire(); }
 };
 
 // A set of function template overloads for invoking a function pointer while
@@ -206,6 +210,9 @@ class RunWhileLockedHelper<void()> {
     }
   }
 
+  RunWhileLockedHelper(const RunWhileLockedHelper&) = delete;
+  RunWhileLockedHelper& operator=(const RunWhileLockedHelper&) = delete;
+
   ~RunWhileLockedHelper() {
     // Check that the Callback is destroyed on the same thread as where
     // CallWhileLocked happened if CallWhileLocked happened. If we weren't
@@ -239,7 +246,6 @@ class RunWhileLockedHelper<void()> {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RunWhileLockedHelper);
   CallbackType callback_;
 
   // Used to ensure that the Callback is run and deleted on the same thread.
@@ -267,6 +273,10 @@ class RunWhileLockedHelper<void(P1)> {
       std::move(temp_callback).Run(p1);
     }
   }
+
+  RunWhileLockedHelper(const RunWhileLockedHelper&) = delete;
+  RunWhileLockedHelper& operator=(const RunWhileLockedHelper&) = delete;
+
   ~RunWhileLockedHelper() {
     DCHECK(thread_checker_.CalledOnValidThread());
     if (callback_) {
@@ -280,7 +290,6 @@ class RunWhileLockedHelper<void(P1)> {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RunWhileLockedHelper);
   CallbackType callback_;
   base::ThreadChecker thread_checker_;
 };
@@ -307,6 +316,10 @@ class RunWhileLockedHelper<void(P1, P2)> {
       std::move(temp_callback).Run(p1, p2);
     }
   }
+
+  RunWhileLockedHelper(const RunWhileLockedHelper&) = delete;
+  RunWhileLockedHelper& operator=(const RunWhileLockedHelper&) = delete;
+
   ~RunWhileLockedHelper() {
     DCHECK(thread_checker_.CalledOnValidThread());
     if (callback_) {
@@ -320,7 +333,6 @@ class RunWhileLockedHelper<void(P1, P2)> {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RunWhileLockedHelper);
   CallbackType callback_;
   base::ThreadChecker thread_checker_;
 };
@@ -348,6 +360,10 @@ class RunWhileLockedHelper<void(P1, P2, P3)> {
       std::move(temp_callback).Run(p1, p2, p3);
     }
   }
+
+  RunWhileLockedHelper(const RunWhileLockedHelper&) = delete;
+  RunWhileLockedHelper& operator=(const RunWhileLockedHelper&) = delete;
+
   ~RunWhileLockedHelper() {
     DCHECK(thread_checker_.CalledOnValidThread());
     if (callback_) {
@@ -361,7 +377,6 @@ class RunWhileLockedHelper<void(P1, P2, P3)> {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RunWhileLockedHelper);
   CallbackType callback_;
   base::ThreadChecker thread_checker_;
 };

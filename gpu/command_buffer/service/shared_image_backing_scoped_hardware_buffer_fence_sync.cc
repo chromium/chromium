@@ -179,6 +179,13 @@ class SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync
     DCHECK(texture_);
   }
 
+  SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync(
+      const SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync&) =
+      delete;
+  SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync& operator=(
+      const SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync&) =
+      delete;
+
   ~SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync() override {
     if (texture_)
       texture_->RemoveLightweightRef(has_context());
@@ -206,9 +213,6 @@ class SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync
   }
 
   gles2::Texture* texture_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync);
 };
 
 class SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync
@@ -226,6 +230,14 @@ class SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync
     // TODO(https://crbug.com/1172769): Remove this CHECK.
     CHECK(texture_);
   }
+
+  SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync(
+      const SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync&) =
+      delete;
+  SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync&
+  operator=(
+      const SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync&) =
+      delete;
 
   ~SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync()
       override {
@@ -258,9 +270,6 @@ class SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync
   }
 
   scoped_refptr<gles2::TexturePassthrough> texture_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync);
 };
 
 class SharedImageRepresentationSkiaVkScopedHardwareBufferFenceSync

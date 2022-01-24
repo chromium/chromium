@@ -41,7 +41,7 @@ namespace {
 
 // Computes ideal band-limited half-band filter coefficients.
 // In other words, filter out all frequencies higher than 0.25 * Nyquist.
-std::unique_ptr<AudioFloatArray> MakeReducedKernel(size_t size) {
+std::unique_ptr<AudioFloatArray> MakeReducedKernel(int size) {
   auto reduced_kernel = std::make_unique<AudioFloatArray>(size / 2);
 
   // Blackman window parameters.
@@ -82,7 +82,7 @@ std::unique_ptr<AudioFloatArray> MakeReducedKernel(size_t size) {
 
 }  // namespace
 
-DownSampler::DownSampler(size_t input_block_size)
+DownSampler::DownSampler(unsigned input_block_size)
     : input_block_size_(input_block_size),
       convolver_(input_block_size / 2,  // runs at 1/2 source sample-rate
                  MakeReducedKernel(kDefaultKernelSize)),
@@ -91,10 +91,10 @@ DownSampler::DownSampler(size_t input_block_size)
 
 void DownSampler::Process(const float* source_p,
                           float* dest_p,
-                          size_t source_frames_to_process) {
+                          uint32_t source_frames_to_process) {
   DCHECK_EQ(source_frames_to_process, input_block_size_);
 
-  size_t dest_frames_to_process = source_frames_to_process / 2;
+  uint32_t dest_frames_to_process = source_frames_to_process / 2;
 
   DCHECK_EQ(dest_frames_to_process, temp_buffer_.size());
   DCHECK_EQ(convolver_.ConvolutionKernelSize(),

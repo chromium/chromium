@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/performance/sync_timing_helper.h"
@@ -46,9 +45,10 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 
 class ExtensionsSyncPerfTest : public SyncTest {
  public:
-  ExtensionsSyncPerfTest()
-      : SyncTest(TWO_CLIENT),
-        extension_number_(0) {}
+  ExtensionsSyncPerfTest() : SyncTest(TWO_CLIENT), extension_number_(0) {}
+
+  ExtensionsSyncPerfTest(const ExtensionsSyncPerfTest&) = delete;
+  ExtensionsSyncPerfTest& operator=(const ExtensionsSyncPerfTest&) = delete;
 
   // Adds |num_extensions| new unique extensions to |profile|.
   void AddExtensions(int profile, int num_extensions);
@@ -64,7 +64,6 @@ class ExtensionsSyncPerfTest : public SyncTest {
 
  private:
   int extension_number_;
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsSyncPerfTest);
 };
 
 void ExtensionsSyncPerfTest::AddExtensions(int profile, int num_extensions) {

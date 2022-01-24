@@ -55,6 +55,9 @@ class CC_EXPORT FrameSorter {
   // added by an earlier call to |AddNewFrame()|.
   void AddFrameResult(const viz::BeginFrameArgs& args, bool is_dropped);
 
+  // Check if a frame has been previously reported as dropped.
+  bool IsFrameDropped(const viz::BeginFrameId& id) const;
+
   void Reset();
 
  private:

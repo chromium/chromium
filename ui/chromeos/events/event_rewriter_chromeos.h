@@ -13,17 +13,16 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 class ImeKeyboard;
-}  // namespace input_method
-}  // namespace chromeos
+}
+}  // namespace ash
 
 namespace ui {
 
@@ -101,6 +100,10 @@ class EventRewriterChromeOS : public EventRewriter {
   class Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() {}
 
     // Returns true only if the the key event was rewritten to ALTGR. For most
@@ -143,9 +146,6 @@ class EventRewriterChromeOS : public EventRewriter {
     // is only sent once per user session, and this function returns true if
     // the notification was shown.
     virtual bool NotifyDeprecatedSixPackKeyRewrite(KeyboardCode key_code) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Does not take ownership of the |sticky_keys_controller|, which may also be
@@ -160,7 +160,9 @@ class EventRewriterChromeOS : public EventRewriter {
   EventRewriterChromeOS(Delegate* delegate,
                         EventRewriter* sticky_keys_controller,
                         bool privacy_screen_supported,
-                        ::chromeos::input_method::ImeKeyboard* ime_keyboard);
+                        ash::input_method::ImeKeyboard* ime_keyboard);
+  EventRewriterChromeOS(const EventRewriterChromeOS&) = delete;
+  EventRewriterChromeOS& operator=(const EventRewriterChromeOS&) = delete;
   ~EventRewriterChromeOS() override;
 
   // Calls KeyboardDeviceAdded.
@@ -370,7 +372,7 @@ class EventRewriterChromeOS : public EventRewriter {
   int latched_modifier_latches_;
   int used_modifier_latches_;
 
-  ::chromeos::input_method::ImeKeyboard* const ime_keyboard_;
+  ash::input_method::ImeKeyboard* const ime_keyboard_;
 
   // True if alt + key and mouse event remapping is allowed. In some scenario,
   // such as clicking a button in the Alt-Tab UI, this remapping undesirably
@@ -378,8 +380,6 @@ class EventRewriterChromeOS : public EventRewriter {
   // user needs to be able to use an up arrow key to navigate and focus
   // different component, but remapping can turn alt + up arrow into PageUp.
   bool is_alt_down_remapping_enabled_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(EventRewriterChromeOS);
 };
 
 }  // namespace ui

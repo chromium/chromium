@@ -13,9 +13,10 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/idle_manager.h"
 
 namespace content {
+
+class IdleTimeProvider;
 
 // Polls the system to determine whether the user is idle or the screen is
 // locked and notifies observers.
@@ -41,8 +42,7 @@ class CONTENT_EXPORT IdlePollingService {
 
   const State& GetIdleState();
 
-  void SetProviderForTest(
-      std::unique_ptr<IdleManager::IdleTimeProvider> provider);
+  void SetProviderForTest(std::unique_ptr<IdleTimeProvider> provider);
   bool IsPollingForTest();
 
  private:
@@ -54,7 +54,7 @@ class CONTENT_EXPORT IdlePollingService {
   void PollIdleState();
 
   base::RepeatingTimer timer_;
-  std::unique_ptr<IdleManager::IdleTimeProvider> provider_;
+  std::unique_ptr<IdleTimeProvider> provider_;
   State last_state_;
   base::ObserverList<Observer> observers_;
 };

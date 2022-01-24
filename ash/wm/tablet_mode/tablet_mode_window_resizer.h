@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_resizer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -29,6 +28,10 @@ class ASH_EXPORT TabletModeWindowResizer : public WindowResizer {
   TabletModeWindowResizer(
       WindowState* window_state,
       std::unique_ptr<TabletModeWindowDragDelegate> drag_delegate);
+
+  TabletModeWindowResizer(const TabletModeWindowResizer&) = delete;
+  TabletModeWindowResizer& operator=(const TabletModeWindowResizer&) = delete;
+
   ~TabletModeWindowResizer() override;
 
   // WindowResizer:
@@ -53,8 +56,6 @@ class ASH_EXPORT TabletModeWindowResizer : public WindowResizer {
   // Used to determine if this has been deleted during a drag such as when a tab
   // gets dragged into another browser window.
   base::WeakPtrFactory<TabletModeWindowResizer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeWindowResizer);
 };
 
 }  // namespace ash

@@ -410,6 +410,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
                 mNativeWebContentsAndroid, id.childId(), id.frameRoutingId());
     }
 
+    // The RenderFrameHosts that are every RenderFrameHost in this WebContents.
+    // See C++'s WebContents::ForEachRenderFrameHost for details.
     public List<RenderFrameHost> getAllRenderFrameHosts() {
         checkNotDestroyed();
         RenderFrameHost[] frames = WebContentsImplJni.get().getAllRenderFrameHosts(

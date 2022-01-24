@@ -567,6 +567,18 @@ void ProtoDatabaseSelector::LoadKeysAndEntriesInRange(
   db_->LoadKeysAndEntriesInRange(start, end, std::move(callback));
 }
 
+void ProtoDatabaseSelector::LoadKeysAndEntriesWhile(
+    const std::string& start,
+    const KeyIteratorController& controller,
+    typename Callbacks::LoadKeysAndEntriesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_) {
+    std::move(callback).Run(false, nullptr);
+    return;
+  }
+  db_->LoadKeysAndEntriesWhile(start, controller, std::move(callback));
+}
+
 void ProtoDatabaseSelector::LoadKeys(Callbacks::LoadKeysCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_) {

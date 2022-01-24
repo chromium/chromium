@@ -24,6 +24,10 @@ class ServiceWorkerData {
       ActivationSequence activation_sequence,
       ScriptContext* context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
+
+  ServiceWorkerData(const ServiceWorkerData&) = delete;
+  ServiceWorkerData& operator=(const ServiceWorkerData&) = delete;
+
   ~ServiceWorkerData();
 
   V8SchemaRegistry* v8_schema_registry() { return v8_schema_registry_.get(); }
@@ -45,8 +49,6 @@ class ServiceWorkerData {
 
   std::unique_ptr<V8SchemaRegistry> v8_schema_registry_;
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerData);
 };
 
 }  // namespace extensions

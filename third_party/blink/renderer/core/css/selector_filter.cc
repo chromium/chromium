@@ -208,6 +208,12 @@ void SelectorFilter::CollectIdentifierHashes(
         skip_over_subselectors = false;
         CollectDescendantSelectorIdentifierHashes(*current, hash);
         break;
+      case CSSSelector::kRelativeDescendant:
+      case CSSSelector::kRelativeChild:
+      case CSSSelector::kRelativeDirectAdjacent:
+      case CSSSelector::kRelativeIndirectAdjacent:
+        NOTREACHED();
+        break;
     }
     if (hash == end)
       return;

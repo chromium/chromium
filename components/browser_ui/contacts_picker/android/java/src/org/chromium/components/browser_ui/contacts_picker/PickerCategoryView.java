@@ -176,8 +176,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
         int titleId = multiSelectionAllowed ? R.string.contacts_picker_select_contacts
                                             : R.string.contacts_picker_select_contact;
         mToolbar = (ContactsPickerToolbar) mSelectableListLayout.initializeToolbar(
-                R.layout.contacts_picker_toolbar, mSelectionDelegate, titleId, 0, 0, null, false,
-                false);
+                R.layout.contacts_picker_toolbar, mSelectionDelegate, titleId, 0, 0, null, false);
         mToolbar.setNavigationOnClickListener(this);
         mToolbar.initializeSearchView(this, R.string.contacts_picker_search, 0);
         mToolbar.setDelegate(delegate);

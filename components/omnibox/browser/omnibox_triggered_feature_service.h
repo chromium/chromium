@@ -6,7 +6,6 @@
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_TRIGGERED_FEATURE_SERVICE_H_
 
 #include <set>
-#include <vector>
 
 // Tracks the features that trigger during an omnibox session and records them
 // to the logs. This is used for counterfactual slicing metrics by feature.

@@ -94,7 +94,8 @@ class PaymentRequestStateTest : public testing::Test,
         GURL("https://example.com/pay"),
         url::Origin::Create(GURL("https://example.com")), spec_->AsWeakPtr(),
         weak_ptr_factory_.GetWeakPtr(), "en-US", &test_personal_data_manager_,
-        &test_payment_request_delegate_, &journey_logger_);
+        test_payment_request_delegate_.GetContentWeakPtr(),
+        journey_logger_.GetWeakPtr());
     state_->AddObserver(this);
   }
 

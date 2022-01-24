@@ -66,6 +66,9 @@ class TabActivityWatcher::WebContentsData
       public content::WebContentsUserData<WebContentsData>,
       public content::RenderWidgetHost::InputEventObserver {
  public:
+  WebContentsData(const WebContentsData&) = delete;
+  WebContentsData& operator=(const WebContentsData&) = delete;
+
   ~WebContentsData() override = default;
 
   // Calculates the tab reactivation score for a background tab. Returns nullopt
@@ -265,9 +268,6 @@ class TabActivityWatcher::WebContentsData
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-    // frames. This caller was converted automatically to the primary main frame
-    // to preserve its semantics. Follow up to confirm correctness.
     if (!navigation_handle->HasCommitted() ||
         !navigation_handle->IsInPrimaryMainFrame() ||
         navigation_handle->IsSameDocument()) {
@@ -482,11 +482,9 @@ class TabActivityWatcher::WebContentsData
   FrecencyScore frecency_score_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsData);
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabActivityWatcher::WebContentsData)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabActivityWatcher::WebContentsData);
 
 TabActivityWatcher::TabActivityWatcher()
     : tab_metrics_logger_(std::make_unique<TabMetricsLogger>()),

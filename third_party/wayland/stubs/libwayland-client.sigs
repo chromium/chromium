@@ -42,3 +42,18 @@ void wl_log_set_handler_client(wl_log_func_t handler);
 // void wl_proxy_marshal(struct wl_proxy* p, uint32_t opcode, ...);
 // struct wl_proxy* wl_proxy_marshal_constructor(struct wl_proxy* proxy, uint32_t opcode, const struct wl_interface* interface, ...);
 // struct wl_proxy* wl_proxy_marshal_constructor_versioned(struct wl_proxy* proxy, uint32_t opcode, const struct wl_interface* interface, uint32_t version, ...);
+
+// These signatures are obtained by hand from wayland-util.h.
+// Wayland utility is not a separate library, but rather included in libwayland-* libraries.
+// It must be enough to include these in libwayland-client and dlopen should successfully
+// resolve these symbols.
+void wl_list_init(struct wl_list *list);
+void wl_list_insert(struct wl_list *list, struct wl_list *elm);
+void wl_list_remove(struct wl_list *elm);
+int wl_list_length(const struct wl_list *list);
+int wl_list_empty(const struct wl_list *list);
+void wl_list_insert_list(struct wl_list *list, struct wl_list *other);
+void wl_array_init(struct wl_array *array);
+void wl_array_release(struct wl_array *array);
+void *wl_array_add(struct wl_array *array, size_t size);
+int wl_array_copy(struct wl_array *array, struct wl_array *source);

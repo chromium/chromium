@@ -59,6 +59,9 @@
 @property(nonatomic, strong)
     DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
 
+// Whether or not the feed is visible.
+@property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;
+
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
@@ -76,7 +79,8 @@
 // set the initial scroll position.
 - (void)setSavedContentOffset:(CGFloat)offset;
 
-// Sets the feed collection contentOffset to the top of the page.
+// Sets the feed collection contentOffset to the top of the page. Resets fake
+// omnibox back to initial state.
 - (void)setContentOffsetToTop;
 
 // Updates the ContentSuggestionsViewController and its header for the current
@@ -90,6 +94,9 @@
 
 // Scrolls up the collection view enough to focus the omnibox.
 - (void)focusFakebox;
+
+// Returns whether the NTP is scrolled to the top or not.
+- (BOOL)isNTPScrolledToTop;
 
 @end
 

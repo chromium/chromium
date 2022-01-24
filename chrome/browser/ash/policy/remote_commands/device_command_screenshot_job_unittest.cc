@@ -10,9 +10,8 @@
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -190,6 +189,10 @@ std::unique_ptr<UploadJob> MockScreenshotDelegate::CreateUploadJob(
 
 class DeviceCommandScreenshotTest : public ChromeAshTestBase {
  public:
+  DeviceCommandScreenshotTest(const DeviceCommandScreenshotTest&) = delete;
+  DeviceCommandScreenshotTest& operator=(const DeviceCommandScreenshotTest&) =
+      delete;
+
   void VerifyResults(RemoteCommandJob* job,
                      RemoteCommandJob::Status expected_status,
                      std::string expected_payload);
@@ -213,8 +216,6 @@ class DeviceCommandScreenshotTest : public ChromeAshTestBase {
 
  private:
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandScreenshotTest);
 };
 
 DeviceCommandScreenshotTest::DeviceCommandScreenshotTest()

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PROFILES_REPORTING_UTIL_H_
 #define CHROME_BROWSER_PROFILES_REPORTING_UTIL_H_
 
+#include "components/enterprise/common/proto/connectors.pb.h"
+
 class Profile;
 
 namespace base {
@@ -17,6 +19,11 @@ namespace reporting {
 // returns corresponding info to a Device, Browser and Profile protos defined in
 // google3/google/internal/chrome/reporting/v1/chromereporting.proto.
 base::Value GetContext(Profile* profile);
+
+// Fetches the same information as GetContext, but in a protobuf instead of a
+// Value.
+enterprise_connectors::ClientMetadata GetContextAsClientMetadata(
+    Profile* profile);
 
 }  // namespace reporting
 

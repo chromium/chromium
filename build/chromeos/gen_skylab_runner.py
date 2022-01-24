@@ -9,7 +9,7 @@ import os
 import sys
 
 
-class SkylabClientTestTest(object):
+class SkylabClientTestTest:
 
   # The basic shell script for client test run in Skylab. The arguments listed
   # here will be fed by autotest at the run time.

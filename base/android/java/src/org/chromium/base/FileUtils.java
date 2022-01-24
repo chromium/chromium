@@ -110,22 +110,6 @@ public class FileUtils {
     }
 
     /**
-     * Extracts an asset from the app's APK to a file.
-     * @param context
-     * @param assetName Name of the asset to extract.
-     * @param outFile File to extract the asset to.
-     * @return true on success.
-     */
-    public static boolean extractAsset(Context context, String assetName, File outFile) {
-        try (InputStream inputStream = context.getAssets().open(assetName)) {
-            copyStreamToFile(inputStream, outFile);
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-    /**
      * Performs a simple copy of inputStream to outputStream.
      */
     public static void copyStream(InputStream inputStream, OutputStream outputStream)

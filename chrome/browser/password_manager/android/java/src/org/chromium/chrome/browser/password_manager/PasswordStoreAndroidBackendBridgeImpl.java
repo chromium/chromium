@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import com.google.android.gms.common.api.ApiException;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.sync.protocol.PasswordSpecificsData;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -15,35 +16,92 @@ import java.lang.annotation.Target;
 
 /**
  * Java-counterpart of the native PasswordStoreAndroidBackendBridgeImpl. It's part of the password
- * store backend that forwards password store operations to Google Mobile Services.
+ * store backend that forwards password store operations to a downstream implementation.
  */
 class PasswordStoreAndroidBackendBridgeImpl {
     /**
-     * Each operation sent to the passwords API will be assigned a TaskId. The native side uses
-     * this ID to map an API response to the task that invoked it.
+     * Each operation sent to the passwords API will be assigned a JobId. The native side uses
+     * this ID to map an API response to the job that invoked it.
      */
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
-    @interface TaskId {}
+    @interface JobId {}
 
+    private final PasswordStoreAndroidBackend mBackend;
     private long mNativeBackendBridge;
 
-    private PasswordStoreAndroidBackendBridgeImpl(long nativeBackendBridge) {
+    PasswordStoreAndroidBackendBridgeImpl(
+            long nativeBackendBridge, PasswordStoreAndroidBackend backend) {
         mNativeBackendBridge = nativeBackendBridge;
+        mBackend = backend;
+        assert mBackend != null;
     }
 
     @CalledByNative
-    private static PasswordStoreAndroidBackendBridgeImpl create(long nativeBackendBridge) {
-        return new PasswordStoreAndroidBackendBridgeImpl(nativeBackendBridge);
+    static PasswordStoreAndroidBackendBridgeImpl create(long nativeBackendBridge) {
+        return new PasswordStoreAndroidBackendBridgeImpl(nativeBackendBridge,
+                PasswordStoreAndroidBackendFactory.getInstance().createBackend());
     }
 
     @CalledByNative
-    private void getAllLogins(@TaskId int taskId) {
-        // TODO(crbug.com/1229654):Implement.
-        if (mNativeBackendBridge != 0) {
+    static boolean canCreateBackend() {
+        return PasswordStoreAndroidBackendFactory.getInstance().canCreateBackend();
+    }
+
+    @CalledByNative
+    void getAllLogins(@JobId int jobId) {
+        mBackend.getAllLogins(passwords -> {
+            if (mNativeBackendBridge == 0) return;
             PasswordStoreAndroidBackendBridgeImplJni.get().onCompleteWithLogins(
-                    mNativeBackendBridge, taskId, new PasswordSpecificsData[0]);
+                    mNativeBackendBridge, jobId, passwords);
+        }, exception -> handleAndroidBackendException(jobId, exception));
+    }
+
+    @CalledByNative
+    void addLogin(@JobId int jobId, byte[] pwdWithLocalData) {
+        mBackend.addLogin(pwdWithLocalData, () -> {
+            if (mNativeBackendBridge == 0) return;
+            PasswordStoreAndroidBackendBridgeImplJni.get().onLoginAdded(
+                    mNativeBackendBridge, jobId, pwdWithLocalData);
+        }, exception -> handleAndroidBackendException(jobId, exception));
+    }
+
+    @CalledByNative
+    void updateLogin(@JobId int jobId, byte[] pwdWithLocalData) {
+        mBackend.updateLogin(pwdWithLocalData, () -> {
+            if (mNativeBackendBridge == 0) return;
+            PasswordStoreAndroidBackendBridgeImplJni.get().onLoginUpdated(
+                    mNativeBackendBridge, jobId, pwdWithLocalData);
+        }, exception -> handleAndroidBackendException(jobId, exception));
+    }
+
+    @CalledByNative
+    void removeLogin(@JobId int jobId, byte[] pwdSpecificsData) {
+        mBackend.removeLogin(pwdSpecificsData, () -> {
+            if (mNativeBackendBridge == 0) return;
+            PasswordStoreAndroidBackendBridgeImplJni.get().onLoginDeleted(
+                    mNativeBackendBridge, jobId, pwdSpecificsData);
+        }, exception -> handleAndroidBackendException(jobId, exception));
+    }
+
+    private void handleAndroidBackendException(@JobId int jobId, Exception exception) {
+        if (mNativeBackendBridge == 0) return;
+
+        @AndroidBackendErrorType
+        int error = AndroidBackendErrorType.UNCATEGORIZED;
+        int api_error_code = 0; // '0' means SUCCESS.
+
+        if (exception instanceof PasswordStoreAndroidBackend.BackendException) {
+            error = ((PasswordStoreAndroidBackend.BackendException) exception).errorCode;
         }
+
+        if (exception instanceof ApiException) {
+            error = AndroidBackendErrorType.EXTERNAL_ERROR;
+            api_error_code = ((ApiException) exception).getStatusCode();
+        }
+
+        PasswordStoreAndroidBackendBridgeImplJni.get().onError(
+                mNativeBackendBridge, jobId, error, api_error_code);
     }
 
     @CalledByNative
@@ -54,6 +112,14 @@ class PasswordStoreAndroidBackendBridgeImpl {
     @NativeMethods
     interface Natives {
         void onCompleteWithLogins(long nativePasswordStoreAndroidBackendBridgeImpl,
-                @TaskId int taskId, PasswordSpecificsData[] passwords);
+                @JobId int jobId, byte[] passwords);
+        void onLoginAdded(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId,
+                byte[] pwdWithLocalData);
+        void onLoginUpdated(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId,
+                byte[] pwdWithLocalData);
+        void onLoginDeleted(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId,
+                byte[] pwdSpecificsData);
+        void onError(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId,
+                int errorType, int apiErrorCode);
     }
 }

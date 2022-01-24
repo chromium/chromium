@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/escape.h"
@@ -39,40 +40,44 @@ class DownloadResponse : public net::test_server::BasicHttpResponse {
  public:
   DownloadResponse(int length) : length_(length) {}
 
-  void SendResponse(const net::test_server::SendBytesCallback& send,
-                    net::test_server::SendCompleteCallback done) override {
-    send.Run(base::StringPrintf("HTTP/1.1 200 OK\r\n"
-                                "Content-Type:%s\r\n\r\n"
-                                "Content-Length:%d\r\n\r\n",
-                                kTestDownloadMimeType, length_),
-             base::BindOnce(&DownloadResponse::Send, send, std::move(done),
-                            length_));
+  DownloadResponse(const DownloadResponse&) = delete;
+  DownloadResponse& operator=(const DownloadResponse&) = delete;
+
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
+    base::StringPairs headers = {
+        {"content-type", kTestDownloadMimeType},
+        {"content-length", base::StringPrintf("%d", length_)}};
+
+    delegate->SendResponseHeaders(net::HTTP_OK, "OK", headers);
+    Send(delegate, length_);
   }
 
  private:
   // Sends "0" |count| times using 1KB blocks. Using blocks with smaller size is
   // performance inefficient and can cause unnecessary delays especially when
   // multiple tests run in parallel on a single machine.
-  static void Send(const net::test_server::SendBytesCallback& send,
-                   net::test_server::SendCompleteCallback done,
-                   int count) {
+  static void Send(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate,
+      int count) {
     if (!count) {
-      std::move(done).Run();
+      if (delegate)
+        delegate->FinishResponse();
       return;
     }
+    int block_size = std::min(count, 1000);
+    std::string content_block(block_size, 0);
+    auto next_send =
+        base::BindOnce(&DownloadResponse::Send, delegate, count - block_size);
 
-    const int block_size = std::min(count, 1000);
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(send, std::string(block_size, 0),
-                       base::BindOnce(&DownloadResponse::Send, send,
-                                      std::move(done), count - block_size)),
-        base::TimeDelta::FromMilliseconds(100));
+        base::BindOnce(&net::test_server::HttpResponseDelegate::SendContents,
+                       delegate, content_block, std::move(next_send)),
+        base::Milliseconds(100));
   }
 
   int length_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadResponse);
 };
 
 }  // namespace

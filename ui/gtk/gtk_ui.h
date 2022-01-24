@@ -10,12 +10,12 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gtk/gtk_ui_platform.h"
 #include "ui/views/linux_ui/linux_ui.h"
+#include "ui/views/linux_ui/window_frame_provider.h"
 #include "ui/views/window/frame_buttons.h"
 
 typedef struct _GParamSpec GParamSpec;
@@ -35,6 +35,10 @@ class SettingsProvider;
 class GtkUi : public views::LinuxUI {
  public:
   GtkUi();
+
+  GtkUi(const GtkUi&) = delete;
+  GtkUi& operator=(const GtkUi&) = delete;
+
   ~GtkUi() override;
 
   // Static delegate getter, used by different objects (created by GtkUi), e.g:
@@ -102,6 +106,7 @@ class GtkUi : public views::LinuxUI {
   bool PreferDarkTheme() const override;
   bool AnimationsEnabled() const override;
   std::unique_ptr<views::NavButtonProvider> CreateNavButtonProvider() override;
+  views::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
   std::string GetCursorThemeName() override;
   int GetCursorThemeSize() override;
@@ -207,7 +212,11 @@ class GtkUi : public views::LinuxUI {
 
   float device_scale_factor_ = 1.0f;
 
-  DISALLOW_COPY_AND_ASSIGN(GtkUi);
+  // Paints a native window frame.  Typically only one of these will be
+  // non-null.  The exception is when the user starts or stops their compositor
+  // while Chrome is running.
+  std::unique_ptr<views::WindowFrameProvider> solid_frame_provider_;
+  std::unique_ptr<views::WindowFrameProvider> transparent_frame_provider_;
 };
 
 }  // namespace gtk

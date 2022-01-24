@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
@@ -36,6 +35,10 @@ const char kExampleKeyword[] = "example.com";
 class OmniboxResultTest : public AppListTestBase {
  public:
   OmniboxResultTest() {}
+
+  OmniboxResultTest(const OmniboxResultTest&) = delete;
+  OmniboxResultTest& operator=(const OmniboxResultTest&) = delete;
+
   ~OmniboxResultTest() override {}
 
   // AppListTestBase overrides:
@@ -77,8 +80,6 @@ class OmniboxResultTest : public AppListTestBase {
  private:
   std::unique_ptr<::test::TestAppListControllerDelegate>
       app_list_controller_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxResultTest);
 };
 
 TEST_F(OmniboxResultTest, Basic) {

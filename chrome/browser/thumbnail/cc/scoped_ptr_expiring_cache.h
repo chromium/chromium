@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "net/third_party/quiche/src/common/quiche_linked_hash_map.h"
 
 template <class Key, class Value>
@@ -22,6 +21,9 @@ class ScopedPtrExpiringCache {
 
   explicit ScopedPtrExpiringCache(size_t max_cache_size)
       : max_cache_size_(max_cache_size) {}
+
+  ScopedPtrExpiringCache(const ScopedPtrExpiringCache&) = delete;
+  ScopedPtrExpiringCache& operator=(const ScopedPtrExpiringCache&) = delete;
 
   ~ScopedPtrExpiringCache() {}
 
@@ -71,8 +73,6 @@ class ScopedPtrExpiringCache {
 
   size_t max_cache_size_;
   LinkedHashMap map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPtrExpiringCache);
 };
 
 #endif  // CHROME_BROWSER_THUMBNAIL_CC_SCOPED_PTR_EXPIRING_CACHE_H_

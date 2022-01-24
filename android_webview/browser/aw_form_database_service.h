@@ -22,6 +22,9 @@ class AwFormDatabaseService : public WebDataServiceConsumer {
  public:
   AwFormDatabaseService(const base::FilePath path);
 
+  AwFormDatabaseService(const AwFormDatabaseService&) = delete;
+  AwFormDatabaseService& operator=(const AwFormDatabaseService&) = delete;
+
   ~AwFormDatabaseService() override;
 
   void Shutdown();
@@ -47,8 +50,6 @@ class AwFormDatabaseService : public WebDataServiceConsumer {
 
   scoped_refptr<autofill::AutofillWebDataService> autofill_data_;
   scoped_refptr<WebDatabaseService> web_database_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwFormDatabaseService);
 };
 
 }  // namespace android_webview

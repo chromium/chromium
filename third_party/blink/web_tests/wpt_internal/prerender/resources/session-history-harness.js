@@ -60,7 +60,7 @@ if (document.prerendering) {
         prerenderChannel.postMessage("Missing test: " + testName);
         return;
       }
-      testFn();
+      await testFn();
       prerenderChannel.postMessage("Passed");
     } catch (e) {
       prerenderChannel.postMessage(

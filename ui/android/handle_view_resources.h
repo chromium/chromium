@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/touch_selection/touch_handle.h"
@@ -20,6 +19,10 @@ namespace ui {
 class UI_ANDROID_EXPORT HandleViewResources {
  public:
   HandleViewResources();
+
+  HandleViewResources(const HandleViewResources&) = delete;
+  HandleViewResources& operator=(const HandleViewResources&) = delete;
+
   void LoadIfNecessary(const JavaRef<jobject>& context);
   const SkBitmap& GetBitmap(ui::TouchHandleOrientation orientation);
   float GetDrawableHorizontalPaddingRatio() const;
@@ -30,8 +33,6 @@ class UI_ANDROID_EXPORT HandleViewResources {
   SkBitmap center_bitmap_;
   float drawable_horizontal_padding_ratio_;
   bool loaded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HandleViewResources);
 };
 
 }  // namespace ui

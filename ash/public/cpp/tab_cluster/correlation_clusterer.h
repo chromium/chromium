@@ -19,7 +19,7 @@ class UndirectedGraph;
 class EdgeSum;
 
 // Adapted from
-// https://github.com/google-research/google-research/blob/master/parallel_clustering/clustering/config.proto#L66
+// https://github.com/google-research/google-research/blob/HEAD/parallel_clustering/clustering/config.proto#L66
 // Consider a graph with vertex set V, edge set E, non-negative vertex weights
 // k_u, edge weights w_uv, and a "resolution" parameter which must be
 // non-negative. We define "rescaled" edge weights w'_uv for all u, v, in V as:

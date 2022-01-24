@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -37,6 +36,11 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
     : public VideoEncodeAccelerator {
  public:
   AndroidVideoEncodeAccelerator();
+
+  AndroidVideoEncodeAccelerator(const AndroidVideoEncodeAccelerator&) = delete;
+  AndroidVideoEncodeAccelerator& operator=(
+      const AndroidVideoEncodeAccelerator&) = delete;
+
   ~AndroidVideoEncodeAccelerator() override;
 
   // VideoEncodeAccelerator implementation.
@@ -107,8 +111,6 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
 
   // True if there is encoder error.
   bool error_occurred_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidVideoEncodeAccelerator);
 };
 
 }  // namespace media

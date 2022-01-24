@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<details>target</details>
+<script>
+  window.addEventListener('message', event => {
+    if (event.data === 'find') {
+      testRunner.findString('target', []);
+    } else if (event.data === 'isexpanded') {
+      const expanded = document.querySelector('details').hasAttribute('open');
+      event.source.postMessage('expanded: ' + expanded, '*');
+    }
+  });
+</script>

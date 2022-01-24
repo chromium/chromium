@@ -23,6 +23,6 @@ void ShellExtensionWebContentsObserver::CreateForWebContents(
   FromWebContents(web_contents)->Initialize();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ShellExtensionWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ShellExtensionWebContentsObserver);
 
 }  // namespace extensions

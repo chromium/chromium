@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_layout_delegate.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -101,12 +102,20 @@ constexpr CGFloat kContentMargin = 16.;
   // If |screenHeight| is undefined during a transition, use |rowHeight|.
   CGFloat height =
       screenHeight == 0 ? rowHeight : MIN(screenHeight / 2, rowHeight);
+  CGFloat safeAreaInsetsHeight = 0;
+  switch (self.layoutDelegate.displayStyle) {
+    case ConsistencySheetDisplayStyleBottom:
+      safeAreaInsetsHeight +=
+          self.navigationController.view.window.safeAreaInsets.bottom;
+      break;
+    case ConsistencySheetDisplayStyleCentered:
+      break;
+  }
 
   // Note that there is an additional unaccounted margin height from the footer
   // and header margins that are not accounted for here.
-  return height + self.navigationController.navigationBar.frame.size.height +
-         self.navigationController.view.window.safeAreaInsets.bottom +
-         kContentMargin;
+  return self.navigationController.navigationBar.frame.size.height + height +
+         kContentMargin + safeAreaInsetsHeight;
 }
 
 @end

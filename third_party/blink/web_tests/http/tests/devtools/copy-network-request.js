@@ -8,7 +8,9 @@
   await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
-  var logView = UI.panels.network._networkLogView;
+  var logView = UI.panels.network.networkLogView;
+  const BROWSER = 0;
+  const NODE_JS = 1;
 
   function newRequest(isBlob, headers, data, opt_url, method = null) {
     var request = SDK.NetworkRequest.create(
@@ -31,11 +33,11 @@
 
   async function dumpRequest(headers, data, opt_url, method) {
     const request = newRequest(false, headers, data, opt_url, method);
-    var curlWin = await logView._generateCurlCommand(request, 'win');
-    var curlUnix = await logView._generateCurlCommand(request, 'unix');
-    var powershell = await logView._generatePowerShellCommand(request);
-    var fetchForBrowser = await logView._generateFetchCall(request, false);
-    var fetchForNodejs = await logView._generateFetchCall(request, true);
+    var curlWin = await logView.generateCurlCommand(request, 'win');
+    var curlUnix = await logView.generateCurlCommand(request, 'unix');
+    var powershell = await logView.generatePowerShellCommand(request);
+    var fetchForBrowser = await logView.generateFetchCall(request, BROWSER);
+    var fetchForNodejs = await logView.generateFetchCall(request, NODE_JS);
     TestRunner.addResult(`cURL Windows:\n${curlWin}\n\n`);
     TestRunner.addResult(`cURL Unix:\n${curlUnix}\n\n`);
     TestRunner.addResult(`Powershell:\n${powershell}\n\n`);
@@ -48,11 +50,11 @@
     const data = 'baz';
     const allRequests = blobPattern.map(isBlob => newRequest(isBlob, header, data));
 
-    var allCurlWin = await logView._generateAllCurlCommand(allRequests, 'win');
-    var allCurlUnix = await logView._generateAllCurlCommand(allRequests, 'unix');
-    var allPowershell = await logView._generateAllPowerShellCommand(allRequests);
-    var allFetchForBrowser = await logView._generateAllFetchCall(allRequests, false);
-    var allFetchForNodejs = await logView._generateAllFetchCall(allRequests, true);
+    var allCurlWin = await logView.generateAllCurlCommand(allRequests, 'win');
+    var allCurlUnix = await logView.generateAllCurlCommand(allRequests, 'unix');
+    var allPowershell = await logView.generateAllPowerShellCommand(allRequests);
+    var allFetchForBrowser = await logView.generateAllFetchCall(allRequests, BROWSER);
+    var allFetchForNodejs = await logView.generateAllFetchCall(allRequests, NODE_JS);
     TestRunner.addResult(`cURL Windows:\n${allCurlWin}\n\n`);
     TestRunner.addResult(`cURL Unix:\n${allCurlUnix}\n\n`);
     TestRunner.addResult(`Powershell:\n${allPowershell}\n\n`);
@@ -84,6 +86,7 @@
   await dumpRequest({'Cookie': '_x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117'});
   await dumpRequest({}, null, null, '|evilcommand|');
   await dumpRequest({'Content-Type':'application/x-www-form-urlencoded'}, '@/etc/passwd');
+  await dumpRequest({'Referer' : 'https://example.com'});
 
   await dumpMultipleRequests([]);
   await dumpMultipleRequests([true]);

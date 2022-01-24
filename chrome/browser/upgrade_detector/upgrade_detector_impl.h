@@ -7,7 +7,6 @@
 
 #include <array>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
@@ -28,13 +27,11 @@ class UpgradeDetectorImpl : public UpgradeDetector,
                             public BuildStateObserver,
                             public variations::VariationsService::Observer {
  public:
-  // Returns the currently installed Chrome version, which may be newer than the
-  // one currently running. Not supported on Android, iOS or ChromeOS. Must be
-  // run on a thread where I/O operations are allowed.
-  static base::Version GetCurrentlyInstalledVersion();
-
   // Returns the global instance.
   static UpgradeDetectorImpl* GetInstance();
+
+  UpgradeDetectorImpl(const UpgradeDetectorImpl&) = delete;
+  UpgradeDetectorImpl& operator=(const UpgradeDetectorImpl&) = delete;
 
   // UpgradeDetector:
   void Init() override;
@@ -135,8 +132,6 @@ class UpgradeDetectorImpl : public UpgradeDetector,
   base::Time build_date_;
 
   base::WeakPtrFactory<UpgradeDetectorImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpgradeDetectorImpl);
 };
 
 #endif  // CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_DETECTOR_IMPL_H_

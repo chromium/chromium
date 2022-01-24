@@ -9,7 +9,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "components/services/font/public/cpp/font_loader.h"
@@ -29,6 +28,10 @@ namespace content {
 class WebSandboxSupportLinux : public blink::WebSandboxSupport {
  public:
   explicit WebSandboxSupportLinux(sk_sp<font_service::FontLoader> font_loader);
+
+  WebSandboxSupportLinux(const WebSandboxSupportLinux&) = delete;
+  WebSandboxSupportLinux& operator=(const WebSandboxSupportLinux&) = delete;
+
   ~WebSandboxSupportLinux() override;
 
   // |fallback_font| will be filled with a font family which provides glyphs for
@@ -69,8 +72,6 @@ class WebSandboxSupportLinux : public blink::WebSandboxSupport {
       GUARDED_BY(lock_);
 
   sk_sp<font_service::FontLoader> font_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSandboxSupportLinux);
 };
 
 }  // namespace content

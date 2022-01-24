@@ -17,7 +17,6 @@
 #endif
 
 class Profile;
-class TestingValueStore;
 
 namespace base {
 class CommandLine;
@@ -28,9 +27,12 @@ namespace content {
 class BrowserContext;
 }
 
-namespace extensions {
-
+namespace value_store {
+class TestingValueStore;
 class TestValueStoreFactory;
+}  // namespace value_store
+
+namespace extensions {
 
 // Test ExtensionSystem, for use with TestingProfile.
 class TestExtensionSystem : public ExtensionSystem {
@@ -58,14 +60,14 @@ class TestExtensionSystem : public ExtensionSystem {
   void InitForRegularProfile(bool extensions_enabled) override {}
   void SetExtensionService(ExtensionService* service);
   ExtensionService* extension_service() override;
-  RuntimeData* runtime_data() override;
   ManagementPolicy* management_policy() override;
   ServiceWorkerManager* service_worker_manager() override;
   UserScriptManager* user_script_manager() override;
   StateStore* state_store() override;
   StateStore* rules_store() override;
-  scoped_refptr<ValueStoreFactory> store_factory() override;
-  TestingValueStore* value_store();
+  StateStore* dynamic_user_scripts_store() override;
+  scoped_refptr<value_store::ValueStoreFactory> store_factory() override;
+  value_store::TestingValueStore* value_store();
   InfoMap* info_map() override;
   QuotaService* quota_service() override;
   AppSorting* app_sorting() override;
@@ -101,11 +103,10 @@ class TestExtensionSystem : public ExtensionSystem {
   Profile* profile_;
 
  private:
-  scoped_refptr<TestValueStoreFactory> store_factory_;
+  scoped_refptr<value_store::TestValueStoreFactory> store_factory_;
   // This depends on store_factory_.
   std::unique_ptr<StateStore> state_store_;
   std::unique_ptr<ManagementPolicy> management_policy_;
-  std::unique_ptr<RuntimeData> runtime_data_;
   std::unique_ptr<ExtensionService> extension_service_;
   scoped_refptr<InfoMap> info_map_;
   std::unique_ptr<QuotaService> quota_service_;

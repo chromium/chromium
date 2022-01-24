@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/android/chrome_jni_headers/AccountChooserDialog_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/password_manager/android/credential_android.h"
@@ -18,12 +17,14 @@
 #include "chrome/browser/ui/passwords/account_avatar_fetcher.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -55,6 +56,9 @@ class AvatarFetcherAndroid : public AccountAvatarFetcher {
       int index,
       const base::android::ScopedJavaGlobalRef<jobject>& java_dialog);
 
+  AvatarFetcherAndroid(const AvatarFetcherAndroid&) = delete;
+  AvatarFetcherAndroid& operator=(const AvatarFetcherAndroid&) = delete;
+
  private:
   ~AvatarFetcherAndroid() override = default;
 
@@ -63,8 +67,6 @@ class AvatarFetcherAndroid : public AccountAvatarFetcher {
 
   int index_;
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvatarFetcherAndroid);
 };
 
 AvatarFetcherAndroid::AvatarFetcherAndroid(
@@ -121,7 +123,7 @@ AccountChooserDialogAndroid::AccountChooserDialogAndroid(
 AccountChooserDialogAndroid::~AccountChooserDialogAndroid() {
   if (authenticator_) {
     authenticator_->Cancel(
-        password_manager::BiometricAuthRequester::kAccountChooserDialog);
+        device_reauth::BiometricAuthRequester::kAccountChooserDialog);
   }
 
   // |dialog_jobject_| can be null in tests or if the dialog could not
@@ -240,14 +242,14 @@ bool AccountChooserDialogAndroid::HandleCredentialChosen(
     return true;
   }
 
-  scoped_refptr<password_manager::BiometricAuthenticator> authenticator =
+  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
       client_->GetBiometricAuthenticator();
-  if (authenticator &&
-      authenticator->CanAuthenticate() ==
-          password_manager::BiometricsAvailability::kAvailable) {
+  if (password_manager_util::CanUseBiometricAuth(
+          authenticator.get(),
+          device_reauth::BiometricAuthRequester::kAccountChooserDialog)) {
     authenticator_ = std::move(authenticator);
     authenticator_->Authenticate(
-        password_manager::BiometricAuthRequester::kAccountChooserDialog,
+        device_reauth::BiometricAuthRequester::kAccountChooserDialog,
         base::BindOnce(&AccountChooserDialogAndroid::OnReauthCompleted,
                        base::Unretained(this), index));
     // The credential handling will only happen after the authentication

@@ -92,8 +92,8 @@ class SwitchToTabButton : public TabSharingInfoBarDelegateButton {
     }
     return l10n_util::GetStringFUTF16(
         IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
-        url_formatter::FormatUrlForSecurityDisplay(
-            rfh->GetLastCommittedURL().GetOrigin(),
+        url_formatter::FormatOriginForSecurityDisplay(
+            rfh->GetLastCommittedOrigin(),
             url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
   }
 

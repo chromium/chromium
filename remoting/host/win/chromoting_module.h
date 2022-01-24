@@ -33,6 +33,10 @@ class ChromotingModule : public ATL::CAtlModuleT<ChromotingModule> {
   // Initializes the module. |classes| and |classes_end| must outlive |this|.
   ChromotingModule(ATL::_ATL_OBJMAP_ENTRY* classes,
                    ATL::_ATL_OBJMAP_ENTRY* classes_end);
+
+  ChromotingModule(const ChromotingModule&) = delete;
+  ChromotingModule& operator=(const ChromotingModule&) = delete;
+
   ~ChromotingModule() override;
 
   // Returns the task runner used by the module. Returns nullptr if the task
@@ -59,8 +63,6 @@ class ChromotingModule : public ATL::CAtlModuleT<ChromotingModule> {
   // Point to the vector of classes registered by this module.
   ATL::_ATL_OBJMAP_ENTRY* classes_;
   ATL::_ATL_OBJMAP_ENTRY* classes_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingModule);
 };
 
 } // namespace remoting

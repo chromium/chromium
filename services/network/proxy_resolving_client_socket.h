@@ -61,6 +61,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
       const net::NetworkIsolationKey& network_isolation_key,
       bool use_tls,
       const net::ConnectJobFactory* connect_job_factory);
+
+  ProxyResolvingClientSocket(const ProxyResolvingClientSocket&) = delete;
+  ProxyResolvingClientSocket& operator=(const ProxyResolvingClientSocket&) =
+      delete;
+
   ~ProxyResolvingClientSocket() override;
 
   // net::StreamSocket implementation.
@@ -149,8 +154,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
   State next_state_;
 
   base::WeakPtrFactory<ProxyResolvingClientSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolvingClientSocket);
 };
 
 }  // namespace network

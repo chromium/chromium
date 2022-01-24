@@ -27,6 +27,9 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
   explicit GPURenderPassEncoder(GPUDevice* device,
                                 WGPURenderPassEncoder render_pass_encoder);
 
+  GPURenderPassEncoder(const GPURenderPassEncoder&) = delete;
+  GPURenderPassEncoder& operator=(const GPURenderPassEncoder&) = delete;
+
   // gpu_render_pass_encoder.idl
   void setBindGroup(uint32_t index, DawnObject<WGPUBindGroup>* bindGroup) {
     GetProcs().renderPassEncoderSetBindGroup(
@@ -58,7 +61,6 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
 
   void setBlendConstant(const V8GPUColor* color,
                         ExceptionState& exception_state);
-  void setBlendColor(const V8GPUColor* color, ExceptionState& exception_state);
   void setStencilReference(uint32_t reference) {
     GetProcs().renderPassEncoderSetStencilReference(GetHandle(), reference);
   }
@@ -77,6 +79,13 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
   }
   void setIndexBuffer(const DawnObject<WGPUBuffer>* buffer,
                       const V8GPUIndexFormat& format,
+                      uint64_t offset) {
+    GetProcs().renderPassEncoderSetIndexBuffer(GetHandle(), buffer->GetHandle(),
+                                               AsDawnEnum(format), offset,
+                                               WGPU_WHOLE_SIZE);
+  }
+  void setIndexBuffer(const DawnObject<WGPUBuffer>* buffer,
+                      const V8GPUIndexFormat& format,
                       uint64_t offset,
                       uint64_t size) {
     GetProcs().renderPassEncoderSetIndexBuffer(
@@ -84,8 +93,14 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
   }
   void setVertexBuffer(uint32_t slot,
                        const DawnObject<WGPUBuffer>* buffer,
-                       const uint64_t offset,
-                       const uint64_t size) {
+                       uint64_t offset) {
+    GetProcs().renderPassEncoderSetVertexBuffer(
+        GetHandle(), slot, buffer->GetHandle(), offset, WGPU_WHOLE_SIZE);
+  }
+  void setVertexBuffer(uint32_t slot,
+                       const DawnObject<WGPUBuffer>* buffer,
+                       uint64_t offset,
+                       uint64_t size) {
     GetProcs().renderPassEncoderSetVertexBuffer(
         GetHandle(), slot, buffer->GetHandle(), offset, size);
   }
@@ -128,9 +143,6 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
         GetHandle(), querySet->GetHandle(), queryIndex);
   }
   void endPass() { GetProcs().renderPassEncoderEndPass(GetHandle()); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPURenderPassEncoder);
 };
 
 }  // namespace blink

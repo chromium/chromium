@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -38,7 +37,8 @@ class StartupAppLauncher : public KioskAppLauncher,
   StartupAppLauncher(Profile* profile,
                      const std::string& app_id,
                      Delegate* delegate);
-
+  StartupAppLauncher(const StartupAppLauncher&) = delete;
+  StartupAppLauncher& operator=(const StartupAppLauncher&) = delete;
   ~StartupAppLauncher() override;
 
  private:
@@ -121,8 +121,6 @@ class StartupAppLauncher : public KioskAppLauncher,
       install_observation_{this};
 
   base::WeakPtrFactory<StartupAppLauncher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StartupAppLauncher);
 };
 
 }  // namespace ash

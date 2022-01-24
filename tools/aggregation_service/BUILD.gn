@@ -5,11 +5,23 @@
 executable("aggregation_service_tool") {
   testonly = true
 
-  sources = [ "aggregation_service_tool_main.cc" ]
+  sources = [
+    "aggregation_service_tool.cc",
+    "aggregation_service_tool.h",
+    "aggregation_service_tool_main.cc",
+    "aggregation_service_tool_network_initializer.cc",
+    "aggregation_service_tool_network_initializer.h",
+  ]
 
   deps = [
     "//base",
     "//content/test:test_support",
+    "//mojo/core/embedder:embedder",
+    "//net",
+    "//services/cert_verifier:lib",
+    "//services/network:network_service",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//url",
   ]
 }

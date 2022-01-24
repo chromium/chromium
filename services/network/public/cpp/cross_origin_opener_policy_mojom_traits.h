@@ -35,6 +35,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::CrossOriginOpenerPolicy& coop) {
     return coop.report_only_reporting_endpoint;
   }
+  static network::mojom::CrossOriginOpenerPolicyValue soap_by_default_value(
+      const network::CrossOriginOpenerPolicy& coop) {
+    return coop.soap_by_default_value;
+  }
 
   static bool Read(network::mojom::CrossOriginOpenerPolicyDataView view,
                    network::CrossOriginOpenerPolicy* out);

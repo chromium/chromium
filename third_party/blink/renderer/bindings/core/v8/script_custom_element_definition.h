@@ -37,6 +37,11 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   ScriptCustomElementDefinition(const ScriptCustomElementDefinitionData& data,
                                 const CustomElementDescriptor&,
                                 CustomElementDefinition::Id);
+
+  ScriptCustomElementDefinition(const ScriptCustomElementDefinition&) = delete;
+  ScriptCustomElementDefinition& operator=(
+      const ScriptCustomElementDefinition&) = delete;
+
   ~ScriptCustomElementDefinition() override = default;
 
   void Trace(Visitor*) const override;
@@ -94,8 +99,6 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   Member<V8VoidFunction> form_reset_callback_;
   Member<V8CustomElementFormDisabledCallback> form_disabled_callback_;
   Member<V8CustomElementFormStateRestoreCallback> form_state_restore_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptCustomElementDefinition);
 };
 
 }  // namespace blink

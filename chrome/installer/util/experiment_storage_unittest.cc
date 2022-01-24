@@ -18,6 +18,10 @@ namespace installer {
 // Individual tests provide a parameter, which is true if Chrome is installed
 // in system level.
 class ExperimentStorageTest : public ::testing::TestWithParam<bool> {
+ public:
+  ExperimentStorageTest(const ExperimentStorageTest&) = delete;
+  ExperimentStorageTest& operator=(const ExperimentStorageTest&) = delete;
+
  protected:
   ExperimentStorageTest()
       : system_level_install_(GetParam()),
@@ -45,8 +49,6 @@ class ExperimentStorageTest : public ::testing::TestWithParam<bool> {
  private:
   install_static::ScopedInstallDetails scoped_install_details_;
   registry_util::RegistryOverrideManager override_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExperimentStorageTest);
 };
 
 TEST_P(ExperimentStorageTest, TestEncodeDecodeMetrics) {
@@ -74,13 +76,12 @@ TEST_P(ExperimentStorageTest, TestEncodeDecodeForMax) {
   experiment.SetInactiveDays(ExperimentMetrics::kMaxLastUsed);
   experiment.SetToastCount(ExperimentMetrics::kMaxToastCount);
   experiment.SetUserSessionUptime(
-      base::TimeDelta::FromMinutes(ExperimentMetrics::kMaxSessionLength));
-  experiment.SetActionDelay(
-      base::TimeDelta::FromSeconds(ExperimentMetrics::kMaxActionDelay));
+      base::Minutes(ExperimentMetrics::kMaxSessionLength));
+  experiment.SetActionDelay(base::Seconds(ExperimentMetrics::kMaxActionDelay));
   experiment.SetDisplayTime(
       base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(ExperimentMetrics::kExperimentStartSeconds) +
-      base::TimeDelta::FromDays(ExperimentMetrics::kMaxFirstToastOffsetDays));
+      base::Seconds(ExperimentMetrics::kExperimentStartSeconds) +
+      base::Days(ExperimentMetrics::kMaxFirstToastOffsetDays));
   experiment.SetState(ExperimentMetrics::kUserLogOff);  // Max state.
   ExperimentMetrics metrics = experiment.metrics();
   // toast_hour uses LocalMidnight whose value depend on local time. So, reset

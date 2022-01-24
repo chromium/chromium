@@ -6,7 +6,6 @@
 #define MEDIA_FILTERS_DECRYPTING_DEMUXER_STREAM_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -40,6 +39,9 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       MediaLog* media_log,
       const WaitingCB& waiting_cb);
+
+  DecryptingDemuxerStream(const DecryptingDemuxerStream&) = delete;
+  DecryptingDemuxerStream& operator=(const DecryptingDemuxerStream&) = delete;
 
   // Cancels all pending operations immediately and fires all pending callbacks.
   ~DecryptingDemuxerStream() override;
@@ -184,8 +186,6 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
   std::unique_ptr<CallbackRegistration> event_cb_registration_;
 
   base::WeakPtrFactory<DecryptingDemuxerStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DecryptingDemuxerStream);
 };
 
 }  // namespace media

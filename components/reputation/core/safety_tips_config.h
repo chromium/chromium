@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "components/reputation/core/safety_tips.pb.h"
 #include "components/security_state/core/security_state.h"

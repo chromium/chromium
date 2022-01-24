@@ -819,9 +819,8 @@ bool V8ScriptValueSerializer::WriteFile(File* file,
 void V8ScriptValueSerializer::ThrowDataCloneError(
     v8::Local<v8::String> v8_message) {
   DCHECK(exception_state_);
-  ExceptionState exception_state(
-      script_state_->GetIsolate(), exception_state_->Context(),
-      exception_state_->InterfaceName(), exception_state_->PropertyName());
+  ExceptionState exception_state(script_state_->GetIsolate(),
+                                 exception_state_->GetContext());
   exception_state.ThrowDOMException(
       DOMExceptionCode::kDataCloneError,
       ToBlinkString<String>(v8_message, kDoNotExternalize));
@@ -832,9 +831,7 @@ v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(
     v8::Local<v8::Object> object) {
   DCHECK(exception_state_);
   DCHECK_EQ(isolate, script_state_->GetIsolate());
-  ExceptionState exception_state(isolate, exception_state_->Context(),
-                                 exception_state_->InterfaceName(),
-                                 exception_state_->PropertyName());
+  ExceptionState exception_state(isolate, exception_state_->GetContext());
 
   if (!V8DOMWrapper::IsWrapper(isolate, object)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
@@ -894,9 +891,7 @@ v8::Maybe<uint32_t> V8ScriptValueSerializer::GetWasmModuleTransferId(
   if (for_storage_) {
     DCHECK(exception_state_);
     DCHECK_EQ(isolate, script_state_->GetIsolate());
-    ExceptionState exception_state(isolate, exception_state_->Context(),
-                                   exception_state_->InterfaceName(),
-                                   exception_state_->PropertyName());
+    ExceptionState exception_state(isolate, exception_state_->GetContext());
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataCloneError,
         "A WebAssembly.Module can not be serialized for storage.");
@@ -910,9 +905,7 @@ v8::Maybe<uint32_t> V8ScriptValueSerializer::GetWasmModuleTransferId(
     case Options::kBlockedInNonSecureContext: {
       // This happens, currently, when we try to serialize to IndexedDB
       // in an non-secure context.
-      ExceptionState exception_state(isolate, exception_state_->Context(),
-                                     exception_state_->InterfaceName(),
-                                     exception_state_->PropertyName());
+      ExceptionState exception_state(isolate, exception_state_->GetContext());
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "Serializing WebAssembly modules in "
                                         "non-secure contexts is not allowed.");

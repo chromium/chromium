@@ -1,23 +1,14 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.cssomTest');
 goog.setTestOnly();
 
 const CssRuleType = goog.require('goog.cssom.CssRuleType');
 const cssom = goog.require('goog.cssom');
-const googArray = goog.require('goog.array');
 const testSuite = goog.require('goog.testing.testSuite');
 const userAgent = goog.require('goog.userAgent');
 
@@ -31,9 +22,6 @@ let cssText = '.css-link-1 { display: block; } ' +
     '.css-style-3 { display: block; }';
 
 const replacementCssText = '.css-repl-1 { display: block; }';
-
-const isIe7 =
-    userAgent.IE && (userAgent.compare(userAgent.VERSION, '7.0') == 0);
 
 // We're going to toLowerCase cssText before testing, because IE returns
 // CSS property names in UPPERCASE, and the function shouldn't
@@ -53,24 +41,30 @@ function fixCssTextForIe(cssText) {
 
 testSuite({
   testGetFileNameFromStyleSheet() {
-    let styleSheet = {'href': 'http://foo.com/something/filename.css'};
+    // cast to create mock object.
+    let styleSheet =
+        /** @type {?} */ ({'href': 'http://foo.com/something/filename.css'});
     assertEquals('filename.css', cssom.getFileNameFromStyleSheet(styleSheet));
 
-    styleSheet = {'href': 'https://foo.com:123/something/filename.css'};
+    styleSheet = /** @type {?} */ (
+        {'href': 'https://foo.com:123/something/filename.css'});
     assertEquals('filename.css', cssom.getFileNameFromStyleSheet(styleSheet));
 
-    styleSheet = {'href': 'http://foo.com/something/filename.css?bar=bas'};
+    styleSheet = /** @type {?} */ (
+        {'href': 'http://foo.com/something/filename.css?bar=bas'});
     assertEquals('filename.css', cssom.getFileNameFromStyleSheet(styleSheet));
 
-    styleSheet = {'href': 'filename.css?bar=bas'};
+    styleSheet = /** @type {?} */ ({'href': 'filename.css?bar=bas'});
     assertEquals('filename.css', cssom.getFileNameFromStyleSheet(styleSheet));
 
-    styleSheet = {'href': 'filename.css'};
+    styleSheet = /** @type {?} */ ({'href': 'filename.css'});
     assertEquals('filename.css', cssom.getFileNameFromStyleSheet(styleSheet));
   },
 
   testGetAllCssStyleSheets() {
-    const styleSheets = cssom.getAllCssStyleSheets();
+    // NOTE: getAllCssStyleSheets return type is wrong, it should be
+    // !Array<!Stylesheet> rather than nullable array entries
+    const styleSheets = /** @type {?} */ (cssom.getAllCssStyleSheets());
     assertEquals(4, styleSheets.length);
     // Makes sure they're in the right cascade order.
     assertEquals(
@@ -88,14 +82,7 @@ testSuite({
 
   testGetAllCssText() {
     const allCssText = cssom.getAllCssText();
-    // In IE7, a CSSRule object gets included twice and replaces another
-    // existing CSSRule object. We aren't using
-    // goog.testing.ExpectedFailures since it brings in additional CSS
-    // which breaks a lot of our expectations about the number of rules
-    // present in a style sheet.
-    if (!isIe7) {
-      assertEquals(cssText, fixCssTextForIe(allCssText));
-    }
+    assertEquals(cssText, fixCssTextForIe(allCssText));
   },
 
   testGetAllCssStyleRules() {
@@ -111,20 +98,7 @@ testSuite({
 
     const allCssText = cssom.getAllCssText();
 
-    // In IE7, a CSSRule object gets included twice and replaces another
-    // existing CSSRule object. We aren't using
-    // goog.testing.ExpectedFailures since it brings in additional CSS
-    // which breaks a lot of our expectations about the number of rules
-    // present in a style sheet.
-    if (!isIe7) {
-      // Opera inserts the CSSRule to the first position. And fixCssText
-      // is also needed to clean up whitespace.
-      if (userAgent.OPERA) {
-        assertEquals(`${newCssText} ${cssText}`, fixCssTextForIe(allCssText));
-      } else {
-        assertEquals(`${cssText} ${newCssText}`, fixCssTextForIe(allCssText));
-      }
-    }
+    assertEquals(`${cssText} ${newCssText}`, fixCssTextForIe(allCssText));
 
     let cssRules = cssom.getAllCssStyleRules();
     assertEquals(7, cssRules.length);
@@ -137,6 +111,7 @@ testSuite({
     assertEquals(6, cssRules.length);
   },
 
+  /** @suppress {missingProperties} cssRules not defined on StyleSheet */
   testAddCssRule() {
     // test that addCssRule correctly adds the rule to the style
     // sheet.
@@ -156,6 +131,7 @@ testSuite({
     cssom.removeCssRule(styleSheet, 1);
   },
 
+  /** @suppress {missingProperties} cssRules not defined on StyleSheet */
   testAddCssRuleAtPos() {
     // test that addCssRule correctly adds the rule to the style
     // sheet at the specified position.
@@ -177,8 +153,8 @@ testSuite({
     // references to anything but CSSStyleRules.
     let pos = 0;
     if (styleSheet.cssRules) {
-      pos =
-          googArray.findIndex(rules, (rule) => rule.type == CssRuleType.STYLE);
+      pos = Array.prototype.findIndex.call(
+          rules, rule => rule.type == CssRuleType.STYLE);
     }
     cssom.addCssRule(styleSheet, newCssRule, pos);
 
@@ -227,6 +203,7 @@ testSuite({
     assertEquals(styleSheet, parentStyleSheet);
   },
 
+  /** @suppress {missingProperties} cssRules not defined on StyleSheet */
   testGetCssRuleIndexInParentStyleSheetAfterGetAllCssStyleRules() {
     const cssRules = cssom.getAllCssStyleRules();
     const cssRule = cssRules[4];
@@ -239,6 +216,7 @@ testSuite({
     assertEquals(ruleIndex, cssom.getCssRuleIndexInParentStyleSheet(cssRule));
   },
 
+  /** @suppress {missingProperties} cssRules not defined on StyleSheet */
   testGetCssRuleIndexInParentStyleSheetNonStyleRule() {
     // IE's styleSheet.rules only contain CSSStyleRules.
     if (!userAgent.IE) {
@@ -281,6 +259,7 @@ testSuite({
     assertEquals(origCssText, fixCssTextForIe(nowCssText));
   },
 
+  /** @suppress {missingProperties} cssRules not defined on StyleSheet */
   testReplaceCssRuleUsingGetAllCssStyleRules() {
     const cssRules = cssom.getAllCssStyleRules();
     const origCssRule = cssRules[4];

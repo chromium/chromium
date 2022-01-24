@@ -16,8 +16,11 @@ class UnifiedVolumeView : public UnifiedSliderView,
                           public CrasAudioHandler::AudioObserver {
  public:
   UnifiedVolumeView(UnifiedVolumeSliderController* controller,
-                    UnifiedVolumeSliderController::Delegate* delegate,
-                    bool in_bubble);
+                    UnifiedVolumeSliderController::Delegate* delegate);
+
+  UnifiedVolumeView(const UnifiedVolumeView&) = delete;
+  UnifiedVolumeView& operator=(const UnifiedVolumeView&) = delete;
+
   ~UnifiedVolumeView() override;
 
   // views::View:
@@ -36,16 +39,7 @@ class UnifiedVolumeView : public UnifiedSliderView,
   // UnifiedSliderView:
   void ChildVisibilityChanged(views::View* child) override;
 
-  // views::Button::PressedCallback
-  void OnLiveCaptionButtonPressed();
-
-  // Whether the volume slider is in the bubble, as opposed to the system tray.
-  const bool in_bubble_;
-
-  views::ToggleImageButton* const live_caption_button_;
   views::Button* const more_button_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedVolumeView);
 };
 
 }  // namespace ash

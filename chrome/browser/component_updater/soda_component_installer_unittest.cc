@@ -25,10 +25,13 @@ class SodaComponentMockComponentUpdateService
     : public component_updater::MockComponentUpdateService {
  public:
   SodaComponentMockComponentUpdateService() = default;
-  ~SodaComponentMockComponentUpdateService() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SodaComponentMockComponentUpdateService);
+  SodaComponentMockComponentUpdateService(
+      const SodaComponentMockComponentUpdateService&) = delete;
+  SodaComponentMockComponentUpdateService& operator=(
+      const SodaComponentMockComponentUpdateService&) = delete;
+
+  ~SodaComponentMockComponentUpdateService() override = default;
 };
 
 }  // namespace
@@ -47,7 +50,7 @@ class SodaComponentInstallerTest : public ::testing::Test {
     local_state_.registry()->RegisterTimePref(prefs::kSodaScheduledDeletionTime,
                                               base::Time());
     profile_prefs_.registry()->RegisterStringPref(
-        prefs::kLiveCaptionLanguageCode, "en-US");
+        prefs::kLiveCaptionLanguageCode, speech::kUsEnglishLocale);
   }
 
  protected:

@@ -20,6 +20,10 @@ class JavaScriptDialogBlockingState
     : public web::WebStateUserData<JavaScriptDialogBlockingState>,
       public web::WebStateObserver {
  public:
+  JavaScriptDialogBlockingState(const JavaScriptDialogBlockingState&) = delete;
+  JavaScriptDialogBlockingState& operator=(
+      const JavaScriptDialogBlockingState&) = delete;
+
   ~JavaScriptDialogBlockingState() override;
 
   // Whether to show the blocking option for the next JavaScript dialog from its
@@ -57,8 +61,6 @@ class JavaScriptDialogBlockingState
   web::NavigationItem* blocked_item_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptDialogBlockingState);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_DIALOGS_JAVA_SCRIPT_DIALOG_BLOCKING_STATE_H_

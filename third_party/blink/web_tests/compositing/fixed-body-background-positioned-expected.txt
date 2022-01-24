@@ -2,20 +2,20 @@
   "layers": [
     {
       "name": "LayoutView #document",
-      "bounds": [800, 600],
+      "bounds": [785, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutNGBlockFlow HTML",
       "bounds": [785, 3700],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

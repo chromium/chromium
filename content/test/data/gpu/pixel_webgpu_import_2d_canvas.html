@@ -40,7 +40,8 @@
         c2d.fillStyle = "rgb(0, 0, 255)";
         c2d.fillRect(100, 0, 100, 100);
 
-        webGpuUtils.importCanvasTest(gpuDevice, gpuContext, canvas2d);
+        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, canvas2d,
+                                           {useImport: true, isWebGLCanvas: false});
 
         waitForFinish();
       };

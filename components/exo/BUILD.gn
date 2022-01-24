@@ -13,7 +13,10 @@ import("//ui/base/ui_features.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_WESTON_TEST=$enable_weston_test" ]
+  flags = [
+    "ENABLE_COLOR_MANAGER=$enable_color_manager",
+    "ENABLE_WESTON_TEST=$enable_weston_test",
+  ]
 }
 
 if (use_xkbcommon) {
@@ -26,6 +29,8 @@ static_library("exo") {
   sources = [
     "buffer.cc",
     "buffer.h",
+    "capabilities.cc",
+    "capabilities.h",
     "data_device.cc",
     "data_device.h",
     "data_device_delegate.h",
@@ -79,6 +84,8 @@ static_library("exo") {
     "touch_delegate.h",
     "vsync_timing_manager.cc",
     "vsync_timing_manager.h",
+    "window_properties.cc",
+    "window_properties.h",
     "wm_helper.cc",
     "wm_helper.h",
   ]
@@ -140,7 +147,7 @@ static_library("exo") {
       "//chromeos/crosapi/cpp",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
-      "//components/full_restore",
+      "//components/app_restore",
       "//components/fullscreen_control",
       "//components/strings",
       "//ui/base",

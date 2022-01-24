@@ -140,28 +140,28 @@ void PeerConnectionRemoteAudioSource::OnData(const void* audio_data,
   // TODO(tommi): We should get the timestamp from WebRTC.
   base::TimeTicks playout_time(base::TimeTicks::Now());
 
-  if (!audio_bus_ ||
-      static_cast<size_t>(audio_bus_->channels()) != number_of_channels ||
-      static_cast<size_t>(audio_bus_->frames()) != number_of_frames) {
-    audio_bus_ = media::AudioBus::Create(number_of_channels, number_of_frames);
+  int channels_int = base::checked_cast<int>(number_of_channels);
+  int frames_int = base::checked_cast<int>(number_of_frames);
+  if (!audio_bus_ || audio_bus_->channels() != channels_int ||
+      audio_bus_->frames() != frames_int) {
+    audio_bus_ = media::AudioBus::Create(channels_int, frames_int);
   }
 
   // Only 16 bits per sample is ever used. The FromInterleaved() call should
   // be updated if that is no longer the case.
   DCHECK_EQ(bits_per_sample, 16);
   audio_bus_->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-      reinterpret_cast<const int16_t*>(audio_data), number_of_frames);
+      reinterpret_cast<const int16_t*>(audio_data), frames_int);
 
   media::AudioParameters params = MediaStreamAudioSource::GetAudioParameters();
   if (!params.IsValid() ||
       params.format() != media::AudioParameters::AUDIO_PCM_LOW_LATENCY ||
-      static_cast<size_t>(params.channels()) != number_of_channels ||
+      params.channels() != channels_int ||
       params.sample_rate() != sample_rate ||
-      static_cast<size_t>(params.frames_per_buffer()) != number_of_frames) {
-    MediaStreamAudioSource::SetFormat(
-        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               media::GuessChannelLayout(number_of_channels),
-                               sample_rate, number_of_frames));
+      params.frames_per_buffer() != frames_int) {
+    MediaStreamAudioSource::SetFormat(media::AudioParameters(
+        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        media::GuessChannelLayout(channels_int), sample_rate, frames_int));
   }
 
   MediaStreamAudioSource::DeliverDataToTracks(*audio_bus_, playout_time);

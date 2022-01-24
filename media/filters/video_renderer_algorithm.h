@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -51,6 +50,10 @@ class MEDIA_EXPORT VideoRendererAlgorithm {
  public:
   VideoRendererAlgorithm(const TimeSource::WallClockTimeCB& wall_clock_time_cb,
                          MediaLog* media_log);
+
+  VideoRendererAlgorithm(const VideoRendererAlgorithm&) = delete;
+  VideoRendererAlgorithm& operator=(const VideoRendererAlgorithm&) = delete;
+
   ~VideoRendererAlgorithm();
 
   // Chooses the best frame for the interval [deadline_min, deadline_max] based
@@ -345,8 +348,6 @@ class MEDIA_EXPORT VideoRendererAlgorithm {
   // Current number of effective frames in the |frame_queue_|.  Updated by calls
   // to UpdateEffectiveFramesQueued() whenever the |frame_queue_| is changed.
   size_t effective_frames_queued_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoRendererAlgorithm);
 };
 
 }  // namespace media

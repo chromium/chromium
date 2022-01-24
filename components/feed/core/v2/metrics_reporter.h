@@ -29,10 +29,21 @@ class MetricsReporter {
   // sheet.
   static const int kUnknownCardIndex = INT_MAX;
 
+  class Delegate {
+   public:
+    // Calls `callback` with the number of Web Feeds for which the user is
+    // subscribed.
+    virtual void SubscribedWebFeedCount(
+        base::OnceCallback<void(int)> callback) = 0;
+  };
+
   explicit MetricsReporter(PrefService* profile_prefs);
   virtual ~MetricsReporter();
   MetricsReporter(const MetricsReporter&) = delete;
   MetricsReporter& operator=(const MetricsReporter&) = delete;
+
+  // Two-step initialization, required for circular dependency.
+  void Initialize(Delegate* delegate);
 
   // User interactions. See |FeedApi| for definitions.
 
@@ -58,9 +69,10 @@ class MetricsReporter {
 
   // Network metrics.
 
+  void NetworkRefreshRequestStarted(const StreamType& stream_type,
+                                    ContentOrder content_order);
   static void NetworkRequestComplete(NetworkRequestType type,
-                                     int http_status_code,
-                                     base::TimeDelta latency);
+                                     const NetworkResponseInfo& response_info);
 
   // Stream events.
 
@@ -70,20 +82,23 @@ class MetricsReporter {
                             bool is_initial_load,
                             bool loaded_new_content_from_network,
                             base::TimeDelta stored_content_age,
-                            int content_count,
+                            const ContentStats& content_stats,
+                            const RequestMetadata& request_metadata,
                             std::unique_ptr<LoadLatencyTimes> load_latencies);
   virtual void OnBackgroundRefresh(const StreamType& stream_type,
                                    LoadStreamStatus final_status);
   virtual void OnLoadMoreBegin(const StreamType& stream_type,
                                SurfaceId surface_id);
-  virtual void OnLoadMore(LoadStreamStatus final_status);
+  virtual void OnLoadMore(const StreamType& stream_type,
+                          LoadStreamStatus final_status,
+                          const ContentStats& content_stats);
   virtual void OnClearAll(base::TimeDelta time_since_last_clear);
   // Called each time the surface receives new content.
   void SurfaceReceivedContent(SurfaceId surface_id);
   // Called when Chrome is entering the background.
   void OnEnterBackground();
 
-  static void OnImageFetched(int net_error_or_http_status);
+  static void OnImageFetched(const GURL& url, int net_error_or_http_status);
 
   // Actions upload.
   static void OnUploadActionsBatch(UploadActionsBatchStatus status);
@@ -104,12 +119,22 @@ class MetricsReporter {
                                           WebFeedRefreshStatus status,
                                           int subscribed_web_feed_count);
 
+  // Notice events.
+  void OnNoticeCreated(const StreamType& stream_type, const std::string& key);
+  void OnNoticeViewed(const StreamType& stream_type, const std::string& key);
+  void OnNoticeOpenAction(const StreamType& stream_type,
+                          const std::string& key);
+  void OnNoticeDismissed(const StreamType& stream_type, const std::string& key);
+  void OnNoticeAcknowledged(const StreamType& stream_type,
+                            const std::string& key,
+                            NoticeAcknowledgementPath acknowledgement_path);
+
  private:
   // State replicated for reporting per-stream-type metrics.
   struct StreamStats {
-    bool engaged_simple_reported_ = false;
-    bool engaged_reported_ = false;
-    bool scrolled_reported_ = false;
+    bool engaged_simple_reported = false;
+    bool engaged_reported = false;
+    bool scrolled_reported = false;
   };
   struct SurfaceWaiting {
     explicit operator bool() const { return !wait_start.is_null(); }
@@ -137,18 +162,25 @@ class MetricsReporter {
   void RecordEngagement(const StreamType& stream_type,
                         int scroll_distance_dp,
                         bool interacted);
+  void LogContentStats(const StreamType& stream_type,
+                       const ContentStats& content_stats);
   void TrackTimeSpentInFeed(bool interacted_or_scrolled);
   void RecordInteraction(const StreamType& stream_type);
   void ReportOpenFeedIfNeeded(SurfaceId surface_id, bool success);
   void ReportGetMoreIfNeeded(SurfaceId surface_id, bool success);
   void FinalizeMetrics();
   void FinalizeVisit();
+  void ReportSubscriptionCountAtEngagementTime(int subscription_count);
+  void ReportFollowCountOnLoad(bool content_shown, int subscription_count);
+
   StreamStats& ForStream(const StreamType& stream_type);
 
   PrefService* profile_prefs_;
+  Delegate* delegate_ = nullptr;
 
   StreamStats for_you_stats_;
   StreamStats web_feed_stats_;
+  StreamStats combined_stats_;
 
   // State below here is shared between all stream types.
 

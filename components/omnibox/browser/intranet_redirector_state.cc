@@ -13,10 +13,7 @@ namespace omnibox {
 
 IntranetRedirectorBehavior GetInterceptionChecksBehavior(
     const PrefService* pref_service) {
-  // Here, setting the policy will always take precedence.
-  // If policy is not set, users are eligible for an experiment.
-  // The experiment check happens after the policy check to register the users
-  // in an A/B Finch group at that point.
+  // Check policy first.
   const PrefService::Preference* behavior_pref = nullptr;
   // Expected to exist unless unregistered in tests.
   if (pref_service) {
@@ -24,7 +21,6 @@ IntranetRedirectorBehavior GetInterceptionChecksBehavior(
         pref_service->FindPreference(omnibox::kIntranetRedirectBehavior);
   }
   if (behavior_pref && !behavior_pref->IsDefaultValue()) {
-    // If policy has set the value, use it and ignore the experiment.
     // We filter the integer pref value to known policy/setting options.
     int pref_value = behavior_pref->GetValue()->GetInt();
     if (pref_value ==
@@ -42,15 +38,8 @@ IntranetRedirectorBehavior GetInterceptionChecksBehavior(
           ENABLE_INTERCEPTION_CHECKS_AND_INFOBARS;
   }
 
-  // When the relevant policy is not set, the experiment defaults the feature
-  // off.
-  if (base::FeatureList::IsEnabled(
-          omnibox::kIntranetRedirectBehaviorPolicyRollout)) {
-    return IntranetRedirectorBehavior::DISABLE_FEATURE;
-  }
-
-  // Current behavior for users not in the experiment rollout.
-  return IntranetRedirectorBehavior::ENABLE_INTERCEPTION_CHECKS_AND_INFOBARS;
+  // The default behavior is no interception checks and no infobar.
+  return IntranetRedirectorBehavior::DISABLE_FEATURE;
 }
 
 }  // namespace omnibox

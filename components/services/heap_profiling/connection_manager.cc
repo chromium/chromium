@@ -73,7 +73,7 @@ struct ConnectionManager::Connection {
 };
 
 ConnectionManager::ConnectionManager() {
-  metrics_timer_.Start(FROM_HERE, base::TimeDelta::FromHours(24),
+  metrics_timer_.Start(FROM_HERE, base::Hours(24),
                        base::BindRepeating(&ConnectionManager::ReportMetrics,
                                            base::Unretained(this)));
 }

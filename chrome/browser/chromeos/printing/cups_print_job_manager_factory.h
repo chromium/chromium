@@ -22,6 +22,10 @@ class CupsPrintJobManagerFactory : public BrowserContextKeyedServiceFactory {
   static CupsPrintJobManager* GetForBrowserContext(
       content::BrowserContext* context);
 
+  CupsPrintJobManagerFactory(const CupsPrintJobManagerFactory&) = delete;
+  CupsPrintJobManagerFactory& operator=(const CupsPrintJobManagerFactory&) =
+      delete;
+
  protected:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
@@ -34,8 +38,6 @@ class CupsPrintJobManagerFactory : public BrowserContextKeyedServiceFactory {
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CupsPrintJobManagerFactory);
 };
 
 }  // namespace chromeos

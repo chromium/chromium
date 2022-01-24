@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.editor.plugins.LinkBubbleTest');
 goog.setTestOnly();
@@ -31,6 +23,7 @@ const TestHelper = goog.require('goog.testing.editor.TestHelper');
 const dom = goog.require('goog.dom');
 const events = goog.require('goog.testing.events');
 const googString = goog.require('goog.string');
+const googWindow = goog.require('goog.window');
 const style = goog.require('goog.style');
 const testSuite = goog.require('goog.testing.testSuite');
 const userAgent = goog.require('goog.userAgent');
@@ -52,18 +45,25 @@ function closeBox() {
   events.fireClickSequence(closeBox[0]);
 }
 
+/** @suppress {visibility} suppression added to enable type checking */
 function assertBubble() {
   assertTrue('Link bubble visible', linkBubble.isVisible());
   assertNotNull('Link bubble created', dom.$(LinkBubble.LINK_DIV_ID_));
 }
 
+/** @suppress {visibility} suppression added to enable type checking */
 function assertNoBubble() {
   assertFalse('Link bubble not visible', linkBubble.isVisible());
   assertNull('Link bubble not created', dom.$(LinkBubble.LINK_DIV_ID_));
 }
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 function createMouseEvent(target) {
   const eventObj = new GoogEvent(EventType.MOUSEUP, target);
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   eventObj.button = BrowserEvent.MouseButton.LEFT;
 
   return new BrowserEvent(eventObj, target);
@@ -81,13 +81,18 @@ testSuite({
     FIELDMOCK = new FieldMock();
 
     linkBubble = new LinkBubble();
+    /**
+     * @suppress {visibility,checkTypes} suppression added to enable type
+     * checking
+     */
     linkBubble.fieldObject = FIELDMOCK;
 
     link = fieldDiv.firstChild;
     linkChild = link.lastChild;
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     mockWindowOpen = new FunctionMock('open');
-    stubs.set(window, 'open', mockWindowOpen);
+    stubs.set(googWindow, 'open', mockWindowOpen);
   },
 
   tearDown() {
@@ -142,6 +147,10 @@ testSuite({
     FIELDMOCK.$verify();
   },
 
+  /**
+     @suppress {missingProperties,visibility} suppression added to enable type
+     checking
+   */
   testChangeClicked() {
     FIELDMOCK.execCommand(Command.MODAL_LINK_EDITOR, new Link(link, false));
     FIELDMOCK.$registerArgumentListVerifier(
@@ -163,6 +172,7 @@ testSuite({
     FIELDMOCK.$verify();
   },
 
+  /** @suppress {missingProperties} suppression added to enable type checking */
   testChangePressed() {
     FIELDMOCK.execCommand(Command.MODAL_LINK_EDITOR, new Link(link, false));
     FIELDMOCK.$registerArgumentListVerifier(
@@ -179,6 +189,7 @@ testSuite({
     linkBubble.handleSelectionChange(createMouseEvent(link));
     assertBubble();
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const defaultPrevented = !events.fireKeySequence(
         dom.$(LinkBubble.CHANGE_LINK_ID_), KeyCodes.ENTER);
     assertTrue(defaultPrevented);
@@ -186,6 +197,10 @@ testSuite({
     FIELDMOCK.$verify();
   },
 
+  /**
+     @suppress {missingProperties,visibility} suppression added to enable type
+     checking
+   */
   testDeleteClicked() {
     FIELDMOCK.dispatchBeforeChange();
     FIELDMOCK.$times(1);
@@ -213,6 +228,7 @@ testSuite({
     FIELDMOCK.$verify();
   },
 
+  /** @suppress {missingProperties} suppression added to enable type checking */
   testDeletePressed() {
     FIELDMOCK.dispatchBeforeChange();
     FIELDMOCK.$times(1);
@@ -227,6 +243,7 @@ testSuite({
     linkBubble.handleSelectionChange(createMouseEvent(link));
     assertBubble();
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const defaultPrevented = !events.fireKeySequence(
         dom.$(LinkBubble.DELETE_LINK_ID_), KeyCodes.ENTER);
     assertTrue(defaultPrevented);
@@ -242,6 +259,7 @@ testSuite({
     FIELDMOCK.$verify();
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testActionClicked() {
     const SPAN = 'actionSpanId';
     const LINK = 'actionLinkId';
@@ -259,6 +277,10 @@ testSuite({
         });
 
     linkBubble = new LinkBubble(linkAction);
+    /**
+     * @suppress {visibility,checkTypes} suppression added to enable type
+     * checking
+     */
     linkBubble.fieldObject = FIELDMOCK;
     FIELDMOCK.$replay();
     linkBubble.enable(FIELDMOCK);
@@ -291,8 +313,11 @@ testSuite({
     FIELDMOCK.$verify();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testLinkTextClicked() {
-    mockWindowOpen('http://www.google.com/', '_blank', '');
+    mockWindowOpen(
+        'http://www.google.com/', {'target': '_blank', 'noreferrer': false},
+        window);
     mockWindowOpen.$replay();
     FIELDMOCK.$replay();
     linkBubble.enable(FIELDMOCK);
@@ -307,8 +332,11 @@ testSuite({
     FIELDMOCK.$verify();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testLinkTextClickedCustomUrlFn() {
-    mockWindowOpen('http://images.google.com/', '_blank', '');
+    mockWindowOpen(
+        'http://images.google.com/', {'target': '_blank', 'noreferrer': false},
+        window);
     mockWindowOpen.$replay();
     FIELDMOCK.$replay();
     linkBubble.enable(FIELDMOCK);
@@ -328,6 +356,7 @@ testSuite({
   /**
    * Urls with invalid schemes shouldn't be linkified.
    * @bug 2585360
+   * @suppress {visibility} suppression added to enable type checking
    */
   testDontLinkifyInvalidScheme() {
     mockWindowOpen.$replay();
@@ -349,6 +378,7 @@ testSuite({
     FIELDMOCK.$verify();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testIsSafeSchemeToOpen() {
     // Urls with no scheme at all are ok too since 'http://' will be prepended.
     const good = [
@@ -387,6 +417,7 @@ testSuite({
     }
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testShouldOpenWithWhitelist() {
     linkBubble.setSafeToOpenSchemes(['abc']);
 
@@ -422,6 +453,7 @@ testSuite({
     linkBubble.handleSelectionChange(createMouseEvent(longLink));
     assertBubble();
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const testLinkEl = dom.$(LinkBubble.TEST_LINK_ID_);
     assertEquals(
         'The test link\'s anchor text should be the truncated URL.',
@@ -436,10 +468,16 @@ testSuite({
     FIELDMOCK.$replay();
     linkBubble.enable(FIELDMOCK);
 
-    stubs.set(linkBubble, 'createBubbleContents', (elem) => {
-      // getTargetUrl would cause an NPE if urlUtil_ wasn't defined yet.
-      linkBubble.getTargetUrl();
-    });
+    stubs.set(
+        linkBubble,
+        'createBubbleContents', /**
+                                   @suppress {visibility} suppression added to
+                                   enable type checking
+                                 */
+        (elem) => {
+          // getTargetUrl would cause an NPE if urlUtil_ wasn't defined yet.
+          linkBubble.getTargetUrl();
+        });
     assertNotThrows(
         'Accessing this.urlUtil_ should not NPE',
         goog.bind(
@@ -449,7 +487,11 @@ testSuite({
     FIELDMOCK.$verify();
   },
 
-  /** @bug 15379294 */
+  /**
+   * @bug 15379294
+   * @suppress {visibility} suppression added to enable type
+   *      checking
+   */
   testUpdateLinkCommandDoesNotTriggerAnException() {
     FIELDMOCK.$replay();
     linkBubble.enable(FIELDMOCK);

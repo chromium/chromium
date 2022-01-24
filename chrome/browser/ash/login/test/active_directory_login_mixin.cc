@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_password_change_screen_handler.h"
@@ -18,8 +19,7 @@
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
 #include "content/public/test/browser_test_utils.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kAdOfflineAuthId[] = "offline-ad-login";
@@ -60,6 +60,8 @@ void ActiveDirectoryLoginMixin::SetUpInProcessBrowserTestFixture() {
 }
 
 void ActiveDirectoryLoginMixin::SetUpOnMainThread() {
+  test::WaitForOobeJSReady();
+
   // Set the threshold to a max value to disable the offline message screen on
   // slow configurations like MSAN, where it otherwise triggers on every run.
   LoginDisplayHost::default_host()
@@ -109,7 +111,7 @@ void ActiveDirectoryLoginMixin::TestLoginVisible() {
 
   test::OobeJS().ExpectElementText(autocomplete_realm_, kAdAutocompleteRealm);
 
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsLoginShelfShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
 }
 
 // Checks if Active Directory password change screen is shown.
@@ -231,4 +233,4 @@ void ActiveDirectoryLoginMixin::WaitForAuthError() {
 
 ActiveDirectoryLoginMixin::~ActiveDirectoryLoginMixin() = default;
 
-}  // namespace chromeos
+}  // namespace ash

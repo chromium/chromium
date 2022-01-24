@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -46,6 +47,12 @@ const int kCleanUpIntervalSecond = 1800;
 // The longest duration that a cache can be stored. If a cache is stored
 // longer than the upper bound, it will be evicted.
 const int kCacheDurationUpperBoundSecond = 7 * 24 * 60 * 60;  // 7 days
+
+// The length of a randomly generated page load token.
+const int kPageLoadTokenBytes = 32;
+
+// The expiration time of a page load token.
+const int kPageLoadTokenExpireMinute = 5;
 
 // A helper class to include all match params. It is used as a centralized
 // place to determine if the current cache entry should be considered as a
@@ -367,6 +374,11 @@ typename T::VerdictType GetMostMatchingCachedVerdictWithHostAndPathMatching(
   return most_matching_verdict_type;
 }
 
+bool HasPageLoadTokenExpired(int64_t token_time_msec) {
+  return base::Time::Now() - base::Time::FromJavaTime(token_time_msec) >
+         base::Minutes(kPageLoadTokenExpireMinute);
+}
+
 }  // namespace
 
 VerdictCacheManager::VerdictCacheManager(
@@ -379,8 +391,7 @@ VerdictCacheManager::VerdictCacheManager(
   if (history_service)
     history_service_observation_.Observe(history_service);
   if (!content_settings->IsOffTheRecord()) {
-    ScheduleNextCleanUpAfterInterval(
-        base::TimeDelta::FromSeconds(kCleanUpIntervalInitSecond));
+    ScheduleNextCleanUpAfterInterval(base::Seconds(kCleanUpIntervalInitSecond));
   }
   CacheArtificialRealTimeUrlVerdict();
   CacheArtificialPhishGuardVerdict();
@@ -582,6 +593,33 @@ VerdictCacheManager::GetCachedRealTimeUrlVerdict(
       kRealTimeThreatInfoProto, out_threat_info);
 }
 
+ChromeUserPopulation::PageLoadToken VerdictCacheManager::CreatePageLoadToken(
+    const GURL& url) {
+  std::string hostname = url.host();
+  ChromeUserPopulation::PageLoadToken token;
+  token.set_token_source(
+      ChromeUserPopulation::PageLoadToken::CLIENT_GENERATION);
+  token.set_token_time_msec(base::Time::Now().ToJavaTime());
+  token.set_token_value(base::RandBytesAsString(kPageLoadTokenBytes));
+
+  page_load_token_map_[hostname] = token;
+
+  return token;
+}
+
+ChromeUserPopulation::PageLoadToken VerdictCacheManager::GetPageLoadToken(
+    const GURL& url) {
+  std::string hostname = url.host();
+  if (!base::Contains(page_load_token_map_, hostname)) {
+    return ChromeUserPopulation::PageLoadToken();
+  }
+
+  ChromeUserPopulation::PageLoadToken token = page_load_token_map_[hostname];
+  return HasPageLoadTokenExpired(token.token_time_msec())
+             ? ChromeUserPopulation::PageLoadToken()
+             : token;
+}
+
 void VerdictCacheManager::ScheduleNextCleanUpAfterInterval(
     base::TimeDelta interval) {
   cleanup_timer_.Stop();
@@ -594,8 +632,8 @@ void VerdictCacheManager::CleanUpExpiredVerdicts() {
   SCOPED_UMA_HISTOGRAM_TIMER("SafeBrowsing.RT.CacheManager.CleanUpTime");
   CleanUpExpiredPhishGuardVerdicts();
   CleanUpExpiredRealTimeUrlCheckVerdicts();
-  ScheduleNextCleanUpAfterInterval(
-      base::TimeDelta::FromSeconds(kCleanUpIntervalSecond));
+  CleanUpExpiredPageLoadTokens();
+  ScheduleNextCleanUpAfterInterval(base::Seconds(kCleanUpIntervalSecond));
 }
 
 void VerdictCacheManager::CleanUpExpiredPhishGuardVerdicts() {
@@ -673,6 +711,15 @@ void VerdictCacheManager::CleanUpExpiredRealTimeUrlCheckVerdicts() {
       return;
     }
   }
+}
+
+void VerdictCacheManager::CleanUpExpiredPageLoadTokens() {
+  base::EraseIf(page_load_token_map_, [&](const auto& hostname_token_pair) {
+    ChromeUserPopulation::PageLoadToken token = hostname_token_pair.second;
+    return HasPageLoadTokenExpired(token.token_time_msec());
+  });
+  base::UmaHistogramCounts10000("SafeBrowsing.PageLoadToken.TokenCount",
+                                page_load_token_map_.size());
 }
 
 // Overridden from history::HistoryServiceObserver.
@@ -895,6 +942,13 @@ void VerdictCacheManager::StopCleanUpTimerForTesting() {
   if (cleanup_timer_.IsRunning()) {
     cleanup_timer_.AbandonAndStop();
   }
+}
+
+void VerdictCacheManager::SetPageLoadTokenForTesting(
+    const GURL& url,
+    ChromeUserPopulation::PageLoadToken token) {
+  std::string hostname = url.host();
+  page_load_token_map_[hostname] = token;
 }
 
 // static

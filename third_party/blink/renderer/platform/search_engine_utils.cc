@@ -9,8 +9,11 @@
 
 namespace blink {
 
-bool IsKnownSearchEngine(const AtomicString& url) {
-  GURL gurl(url.GetString().Utf8());
+bool IsKnownSearchEngine(const String& url) {
+  GURL gurl(url.Utf8());
+  if (!gurl.is_valid()) {
+    return false;
+  }
 
   return SearchEngineUtils::GetEngineType(gurl) > 0;
 }

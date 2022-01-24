@@ -50,6 +50,7 @@ void PersistentDesksBarView::RefreshDeskButtons() {
                      });
     if (iter != to_be_removed.end()) {
       (*iter)->SetShouldPaintBackground(desk->is_active());
+      (*iter)->UpdateText(desk->name());
       to_be_removed.erase(iter);
       continue;
     }

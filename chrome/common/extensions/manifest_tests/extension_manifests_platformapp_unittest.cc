@@ -55,12 +55,12 @@ TEST_F(PlatformAppsManifestTest, PlatformApps) {
           "apps, but this is a packaged app."),
       Testcase("init_invalid_platform_app_4.json",
                "'background' is only allowed for extensions, legacy packaged "
-               "apps, hosted apps, and login screen extensions, but this is a "
-               "packaged app."),
+               "apps, hosted apps, login screen extensions, and chromeos "
+               "system extensions, but this is a packaged app."),
       Testcase("init_invalid_platform_app_5.json",
                "'background' is only allowed for extensions, legacy packaged "
-               "apps, hosted apps, and login screen extensions, but this is a "
-               "packaged app."),
+               "apps, hosted apps, login screen extensions, and chromeos "
+               "system extensions, but this is a packaged app."),
       Testcase("incognito_invalid_platform_app.json",
                "'incognito' is only allowed for extensions and legacy packaged "
                "apps, "
@@ -121,7 +121,8 @@ TEST_F(PlatformAppsManifestTest, CertainApisRequirePlatformApps) {
   // testing. The requirements are that (1) it be a valid platform app, and (2)
   // it contain no permissions dictionary.
   std::string error;
-  base::Value manifest = LoadManifest("init_valid_platform_app.json", &error);
+  base::Value platform_app_manifest =
+      LoadManifest("init_valid_platform_app.json", &error);
 
   std::vector<std::unique_ptr<ManifestData>> manifests;
   // Create each manifest.
@@ -129,8 +130,9 @@ TEST_F(PlatformAppsManifestTest, CertainApisRequirePlatformApps) {
     base::Value permissions(base::Value::Type::LIST);
     permissions.Append(base::Value("experimental"));
     permissions.Append(base::Value(api_name));
-    manifest.SetKey("permissions", std::move(permissions));
-    manifests.push_back(std::make_unique<ManifestData>(manifest.Clone(), ""));
+    platform_app_manifest.SetKey("permissions", std::move(permissions));
+    manifests.push_back(
+        std::make_unique<ManifestData>(platform_app_manifest.Clone(), ""));
   }
   // First try to load without any flags. This should warn for every API.
   for (const std::unique_ptr<ManifestData>& manifest : manifests) {

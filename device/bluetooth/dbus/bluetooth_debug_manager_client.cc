@@ -36,6 +36,11 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
  public:
   BluetoothDebugManagerClientImpl() = default;
 
+  BluetoothDebugManagerClientImpl(const BluetoothDebugManagerClientImpl&) =
+      delete;
+  BluetoothDebugManagerClientImpl& operator=(
+      const BluetoothDebugManagerClientImpl&) = delete;
+
   ~BluetoothDebugManagerClientImpl() override = default;
 
   // BluetoothDebugManagerClient override.
@@ -122,8 +127,6 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
   dbus::ObjectManager* object_manager_;
 
   base::WeakPtrFactory<BluetoothDebugManagerClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDebugManagerClientImpl);
 };
 
 BluetoothDebugManagerClient::BluetoothDebugManagerClient() = default;

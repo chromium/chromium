@@ -1,0 +1,3341 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Password histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="PasswordProtectionTriggerType">
+  <variant name="AnyPasswordEntry" summary="password reuse event"/>
+  <variant name="PasswordFieldOnFocus" summary="on focus event"/>
+</variants>
+
+<histogram name="KeyboardAccessory.AccessoryActionImpression"
+    enum="AccessoryAction" expires_after="2022-04-17">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Android only. Records whenever users faces an action in the accessory bar or
+    one of its sheets.
+  </summary>
+</histogram>
+
+<histogram name="KeyboardAccessory.AccessoryActionSelected"
+    enum="AccessoryAction" expires_after="2022-04-17">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Android only. Records whenever users select an action in the accessory bar
+    or one of its sheets.
+  </summary>
+</histogram>
+
+<histogram name="KeyboardAccessory.AccessoryBarShown"
+    enum="AccessoryBarContents" expires_after="2022-04-17">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Android only. Records how often users encounter the keyboard accessory bar.
+    Its buckets show the contents when it came up. Every bucket may be logged up
+    to one time per impression.
+  </summary>
+</histogram>
+
+<histogram name="KeyboardAccessory.AccessorySheetSuggestionCount" units="count"
+    expires_after="2022-04-17">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Android only. Records how many suggestions a user faced when opening a
+    sheet. The base histogram counts impressions across all sheets.
+  </summary>
+</histogram>
+
+<histogram name="KeyboardAccessory.AccessorySheetSuggestionsSelected"
+    enum="AccessorySuggestionType" expires_after="2022-04-17">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Android only. Records which type of suggestion was selected from an open
+    sheet.
+  </summary>
+</histogram>
+
+<histogram name="KeyboardAccessory.AccessorySheetTriggered"
+    enum="AccessorySheetTrigger" expires_after="2022-04-17">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Android only. Records how often the bottom sheet was opened or closed by a
+    user and the overall count of closures. Closing buckets may be logged up to
+    one time per trigger. There are suffixes for each specific sheet type.
+  </summary>
+</histogram>
+
+<histogram name="KeyboardAccessory.AccessoryToggleClicked"
+    enum="AccessoryToggleType" expires_after="2022-04-17">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Android only. Records how often the user clicks on a certain toggle when
+    opening an accessory sheet together with the state the toggle was in before
+    clicking.
+  </summary>
+</histogram>
+
+<histogram name="KeyboardAccessory.AccessoryToggleImpression"
+    enum="AccessoryToggleType" expires_after="2022-04-17">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Android only. Records how often the user sees a certain toggle when opening
+    an accessory sheet together with the state the toggle was in.
+  </summary>
+</histogram>
+
+<histogram name="KeyboardAccessory.DisabledSavingAccessoryImpressions"
+    enum="BooleanShown" expires_after="M102">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Android only. Records the number of times that the keyboard accessory was
+    shown on a form for which saving is disabled (with a crossed-out key icon).
+    Recorded when the user focuses the password field.
+
+    Note: Only the &quot;Shown&quot; bucket should contain samples.
+  </summary>
+</histogram>
+
+<histogram name="KeyboardAccessory.GenerationDialogChoice.{GenerationType}"
+    enum="GenerationDialogChoice" expires_after="M102">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Android only. Records the interactions with the password generation dialog
+    for {GenerationType}. Recorded when the user taps a button in the dialog or
+    dismsses it.
+  </summary>
+  <token key="GenerationType">
+    <variant name="Automatic" summary="automatic generation"/>
+    <variant name="Manual" summary="manual generation"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordBubble.CompromisedBubble.CheckClicked"
+    enum="BooleanClicked" expires_after="2022-05-01">
+  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Whether the user proceeded to the list of the left compromised passwords
+    from the bubble following save/update password.
+  </summary>
+</histogram>
+
+<histogram name="PasswordBubble.CompromisedBubble.Type"
+    enum="PasswordBubbleFollowupType" expires_after="2022-05-01">
+  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    The state of the bubble shown after users saves/updates a password. It
+    notifies the user about leftover compromised passwords.
+  </summary>
+</histogram>
+
+<histogram name="PasswordBubble.DisplayDisposition"
+    enum="PasswordBubbleDisplayDisposition" expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    When the password management bubble opened, what state was it in?
+  </summary>
+</histogram>
+
+<histogram name="PasswordGeneration.Event" enum="PasswordGenerationEvent"
+    expires_after="2022-04-17">
+  <owner>kazinova@google.com</owner>
+  <owner>kolos@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Measures the frequency of various password generation events.
+
+    Note that this histogram is logged from the renderer process, and
+    consequently the numbers should not be directly compared to the other
+    PasswordGeneration.* histograms, which are logged from the browser process.
+    Histograms logged in different processes are lost at different rates, which
+    introduces systematic bias between histograms logged in the renderer process
+    vs. those logged in the browser process.
+  </summary>
+</histogram>
+
+<histogram name="PasswordGeneration.GeneratedPasswordWasEdited"
+    enum="BooleanGeneratedPasswordWasEdited" expires_after="2022-04-24">
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    Measures the frequency of user editing of generated passwords. Uploaded once
+    per generated password save. Applicable to automatic and manual generations.
+  </summary>
+</histogram>
+
+<histogram name="PasswordGeneration.IsTriggeredManually"
+    enum="BooleanIsGenerationTriggeredManually" expires_after="M81">
+  <obsolete>
+    Expired in M82; deleted in M90.
+  </obsolete>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    Measures the frequency of manually triggered password generations.
+  </summary>
+</histogram>
+
+<histogram name="PasswordGeneration.PopupShown"
+    enum="PasswordGenerationPopupShown" expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>Records an entry if (and only if) a popup was shown.</summary>
+</histogram>
+
+<histogram name="PasswordGeneration.SubmissionAvailableEvent"
+    enum="PasswordSubmissionEvent" expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    Measures the frequency of submission events for passwords that could have
+    been generated, but the user didn't choose to use the feature. This is to
+    compare with PasswordGeneration.SubmssionEvent.
+  </summary>
+</histogram>
+
+<histogram name="PasswordGeneration.SubmissionEvent"
+    enum="PasswordSubmissionEvent" expires_after="2022-04-03">
+  <owner>kazinova@google.com</owner>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    Measures the frequency of submission events for generated passwords. This is
+    similar to PasswordManager.ActionsTakenWithPsl but only tracks events which
+    are interesting for generated passwords.
+  </summary>
+</histogram>
+
+<histogram name="PasswordGeneration.UploadStarted" enum="Boolean"
+    expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>kolos@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of times that we try to upload a form that we believe should
+    trigger password generation. False means that something about the form would
+    not allow us to try upload (not an Autofillable field, uploading disabled,
+    Autofill servers in backoff, etc.). True does not mean that the upload
+    actually completed successfully, just that it was started.
+  </summary>
+</histogram>
+
+<histogram name="PasswordGeneration.UserDecision"
+    enum="PasswordGenerationUserEvent" expires_after="2022-04-10">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records user-triggered events related to a generated password. Only the last
+    occurring event is logged. The recording takes place when the password form
+    is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="PasswordHash.CreateTime" units="units" expires_after="M85">
+  <owner>mlerman@chromium.org</owner>
+  <summary>
+    Time required to create the local hash of the user's GAIA password.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AbleToSavePasswordsOnSuccessfulLogin"
+    enum="BooleanSuccess" expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <owner>src/components/password_manager/OWNERS</owner>
+  <summary>
+    Records attempts to prompt user to save a password when password store is
+    not ready for saving passwords due to an initialization error. Recorded once
+    per form submission.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AcceptedSaveUpdateSubmissionIndicatorEvent"
+    enum="SubmissionIndicatorEvent" expires_after="2022-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The type of event that the Password Manager used for detecting a password
+    form submission when saving or updating a password. Recorded each time a
+    user accepts a password save/update prompt.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccessPasswordInSettings"
+    enum="AccessPasswordInSettingsEvent" expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Recorded whenever the user accesses the passwords in the settings page.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountChooserDialogMultipleAccounts"
+    enum="AccountChooserDismissalReason" expires_after="2022-01-02">
+  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    The dismissal reason of the account chooser with multiple accounts. Recorded
+    when the account chooser is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountChooserDialogOneAccount"
+    enum="AccountChooserDismissalReason" expires_after="2022-01-02">
+  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    The dismissal reason of the account chooser with one account. Recorded when
+    the account chooser is dismissed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="PasswordManager.AccountsPerSiteHiRes"
+    units="units" expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of accounts stored per site in the password manager's
+    profile-scoped store. Records one event per site, split by whether created
+    by the user or generated by Chrome, and further by whether the user used
+    sync with custom passphrase or not.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountStorage.ClearedOnStartup"
+    enum="PasswordAccountStoreClearedOnStartup" expires_after="2022-05-31">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records whether the account-scoped password storage had to be cleared during
+    profile initialization.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountStorage.ClearedOptInForAllAccounts"
+    units="accounts" expires_after="2022-05-31">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Recorded whenever the opt-in for the account-scoped password storage is
+    cleared for all Google Accounts. This typically happens because the signin
+    cookies were cleared. The recorded value is the number of opt-ins that were
+    cleared.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted"
+    enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2022-05-31">
+  <owner>treib@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    When the user accepts to move a password from the profile store to the
+    account store, this records what user action caused the moving flow to be
+    offered. If the flow is offered but rejected by the user, the histogram is
+    not recorded. Recorded only in Win/Mac/Linux.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered"
+    enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2022-05-31">
+  <owner>treib@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    When the user is offered to move a password from the profile store to the
+    account store, this records what user action caused the moving flow to be
+    offered. Recorded only in Win/Mac/Linux.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.AccountStorage.MoveToAccountStorePasswordsCount"
+    units="credentials" expires_after="2022-05-31">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records the number of credentials the user decided to move from the device
+    store to the account store from moving multiple passwords dialog in
+    settings. Recorded after the user hits the action button in the dialog.
+    Recorded only in Win/Mac/Linux.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn"
+    units="accounts" expires_after="2022-05-31">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Recorded whenever a user opts in to the account-scoped password storage. The
+    recorded value is the total number of opted-in accounts in this profile,
+    including the new opt-in.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut"
+    units="accounts" expires_after="2022-05-31">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Recorded whenever a user opts out of the account-scoped password storage.
+    The recorded value is the total number of opted-in accounts remaining in
+    this profile after the current opt-out.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.AccountStorage.SignedInAccountFoundDuringOptOut"
+    enum="Boolean" expires_after="2022-05-31">
+  <owner>treib@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Records whether a signed-in account was still found by the time Chrome
+    attempted to opt out the user of passwords account storage and clear the
+    associated settings. If no signed-in account is found, the opt-out and clean
+    up won't happen. Recorded only in Win/Mac/Linux, when opting out of the
+    account-scoped passwords storage. One example would be when the user clicks
+    the opt-out button in chrome://settings/passwords.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.AccountStorage.UnsyncedPasswordsFoundDuringSignOut"
+    units="passwords" expires_after="2022-05-31">
+  <owner>treib@chromium.org</owner>
+  <owner>victorvianna@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Records how many passwords in the account store were unsynced when the user
+    signed out of their Google Account. Recorded only in Win/Mac/Linux when a
+    user of the account-scoped password storage signs out.
+  </summary>
+</histogram>
+
+<histogram base="true" name="PasswordManager.AccountStorageUserStateDuration"
+    units="ms" expires_after="2022-05-31">
+<!-- Name completed by histogram_suffixes name="PasswordAccountStorageUserState" -->
+
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The amount of active browsing time that was spent in different user states
+    related to the PasswordManager's account-scoped storage.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser (as determined by
+    DesktopSessionDurationTracker) or their user state changes. These end-points
+    are when the metric is emitted.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is only recorded on Win/Mac/Linux.
+
+    Note: As part of crbug/1223007, we discovered that histogram
+    PasswordManager.AccountStorageUserStateDuration.SignedOutUser was recorded
+    for Guest and System profiles which wasn't intentional. This was fixed in
+    M93.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+  </summary>
+</histogram>
+
+<histogram base="true" name="PasswordManager.AccountStore.AccountsPerSiteHiRes"
+    units="units" expires_after="2022-05-01">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of accounts stored per site in the password manager's
+    account-scoped store. Records one event per site, split by whether created
+    by the user or generated by Chrome, and further by whether the user used
+    sync with custom passphrase or not.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="PasswordManager.AccountStore.BlacklistedSitesHiRes" units="sites"
+    expires_after="2021-12-12">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The total number of sites that the user has blacklisted in the password
+    manager's account-scoped store. Recorded by iterating over stored passwords
+    once per run of Chrome.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountStore.EmptyUsernames.CountInDatabase"
+    units="units" expires_after="M95">
+  <obsolete>
+    Obsolete since M95.
+  </obsolete>
+  <owner>vasilii@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Number of password forms with empty username in the account-scoped Login
+    Database. This is recorded on startup.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountStore.InaccessiblePasswords"
+    units="saved passwords" expires_after="2022-02-20">
+  <owner>vasilii@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The number of saved passwords in the account-scoped store that could not be
+    decrypted. Recorded once for the profile on startup.
+  </summary>
+</histogram>
+
+<histogram base="true" name="PasswordManager.AccountStore.TimesPasswordUsed"
+    units="PasswordUses" expires_after="2022-05-31">
+  <owner>battre@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The number of times each saved password from the account-scoped storage has
+    been used to log in. Split by whether created by the user or generated by
+    Chrome, and further by whether the user used sync with custom passphrase or
+    not. Recorded by iterating over stored passwords once per browser run, soon
+    after startup.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="PasswordManager.AccountStore.TotalAccountsHiRes.ByType" units="units"
+    expires_after="2022-05-31">
+  <owner>battre@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of accounts stored in the password manager's account-scoped store
+    (across all sites), split by whether created by the user or generated by
+    Chrome, and further by whether the user used sync with custom passphrase or
+    not.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="PasswordManager.AccountStore.TotalAccountsHiRes.WithScheme"
+    units="accounts" expires_after="2022-05-31">
+  <owner>battre@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of accounts stored in the password manager's account-scoped store
+    (across all sites) for origins with the scheme (e.g., HTTP, HTTPS, FTP) as
+    given in the histogram suffix. For each scheme, the count is recorded once
+    per browser start-up. (In case of multiple profiles, the counts are for the
+    profile that first has a WebContents created.)
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn"
+    units="credentials" expires_after="2022-05-31">
+  <owner>treib@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Records how many blocklisting entries are downloaded to the account store
+    after unlocking account store.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountStoreCredentialsAfterOptIn"
+    units="credentials" expires_after="2022-05-31">
+  <owner>treib@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Records how many non-blacklisting credentials are downloaded to the account
+    store after unlocking account store.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountStoreVsProfileStore.{DifferenceType}"
+    units="accounts" expires_after="M95">
+  <obsolete>
+    Obsolete since M95.
+  </obsolete>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The number of accounts {DifferenceType}. Recorded once per run of Chrome,
+    soon after startup. Recorded independent of whether the user is opted in to
+    the account-scoped storage or not, i.e. will contain a lot of useless
+    entries - you might want to look at AccountStoreVsProfileStore2 instead.
+  </summary>
+  <token key="DifferenceType">
+    <variant name="Additional"
+        summary="stored in the password manager's account-scoped store that
+                 don't exist in the profile-scoped store"/>
+    <variant name="Conflicting"
+        summary="stored in the password manager with a conflicting password
+                 between the account-scoped store and profile-scoped store
+                 (i.e. the signon realm and username match, but the password
+                 does not)"/>
+    <variant name="Identical"
+        summary="stored in both the password manager's account-scoped store
+                 and profile-scoped store"/>
+    <variant name="Missing"
+        summary="stored in the password manager's profile-scoped store that
+                 don't exist in the account-scoped store"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.AccountStoreVsProfileStore2.{DifferenceType}"
+    units="accounts" expires_after="2022-05-31">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The number of accounts {DifferenceType}. Recorded once per run of Chrome,
+    soon after startup, only for users who are opted in to the account-scoped
+    storage.
+  </summary>
+  <token key="DifferenceType">
+    <variant name="Additional"
+        summary="stored in the password manager's account-scoped store that
+                 don't exist in the profile-scoped store"/>
+    <variant name="Conflicting"
+        summary="stored in the password manager with a conflicting password
+                 between the account-scoped store and profile-scoped store
+                 (i.e. the signon realm and username match, but the password
+                 does not)"/>
+    <variant name="Identical"
+        summary="stored in both the password manager's account-scoped store
+                 and profile-scoped store"/>
+    <variant name="Missing"
+        summary="stored in the password manager's profile-scoped store that
+                 don't exist in the account-scoped store"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.AffiliationBackend.FetchSize" units="facets"
+    expires_after="2022-04-10">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of facets for which affiliation information was requested in a
+    network fetch. Recorded for each network fetch. Warning: this histogram was
+    expired from M90 to M92; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AffiliationBackend.FirstFetchDelay" units="ms"
+    expires_after="2022-05-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time elapsed between creation of the AffiliationBackend and the first
+    time it needed to issue a network fetch. Warning: this histogram was expired
+    from M90 to M92; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AffiliationBackend.SubsequentFetchDelay"
+    units="ms" expires_after="2022-04-24">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The elapsed time between subsequent network fetches. Recorded whenever the
+    AffiliationBackend initiated a network fetch, regardless of success or
+    failure. Warning: this histogram was expired from M90 to M92; data may be
+    missing.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AffiliationFetcher.FetchErrorCode"
+    enum="NetErrorCodes" expires_after="2022-05-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The network error code, as reported by the underlying URLFetcher. Recorded
+    only for each network fetch that failed due to network/server errors.
+    Warning: this histogram was expired from M90 to M92; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AffiliationFetcher.FetchHttpResponseCode"
+    enum="HttpResponseCode" expires_after="2022-05-01">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The HTTP response code, as reported by the underlying URLFetcher. Recorded
+    only for each network fetch that failed due to network/server errors.
+    Warning: this histogram was expired from M90 to M92; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AffiliationFetcher.FetchResult"
+    enum="AffiliationFetchResult" expires_after="2022-04-17">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Whether the network fetch succeeded, failed due to network/server errors, or
+    contained malformed data. Recorded for each network fetch.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AffiliationService.GetChangePasswordUsage"
+    enum="GetChangePasswordUrlMetric" expires_after="2022-04-03">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Usage and timing of the Affiliation Service GetChangePasswordUrl call.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AllPasswordsBottomSheet.UserAction"
+    enum="AllPasswordsBottomSheetActions" expires_after="M96">
+  <obsolete>
+    Obsolete since M96.
+  </obsolete>
+  <owner>redatawfik@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Android only. Records the user action on the all passwords bottom sheet.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AllPasswordsBottomSheet.WarningActions"
+    enum="AllPasswordsWarningActions" expires_after="M90">
+  <obsolete>
+    Obsolete since M88.
+  </obsolete>
+  <owner>redatawfik@google.com</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Android only. Records the number of times the all passwords warning dialog
+    is shown and user action on it.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.Android.PasswordCredentialEntry"
+    enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M95">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the action taken with a password credential entry in the preferences
+    on Android. This includes opening the UI surface.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.Android.PasswordCredentialEntry.Password"
+    enum="PasswordManagerAndroidPasswordActions" expires_after="M95">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the action taken with a password of a password credential entry in
+    the preferences on Android.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.Android.PasswordCredentialEntry.Username"
+    enum="PasswordManagerAndroidUsernameActions" expires_after="M95">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the action taken with a username of a password credential entry in
+    the preferences on Android. It can be analyzed together with
+    PasswordManager.Android.PasswordCredentialEntry which records how many times
+    this UI was shown.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.Android.PasswordCredentialEntry.Website"
+    enum="PasswordManagerAndroidWebsiteActions" expires_after="M95">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the action taken with a website of a password credential entry on
+    Android. It can be analyzed together with
+    PasswordManager.Android.PasswordCredentialEntry which records how many times
+    this UI was shown.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.Android.PasswordExceptionEntry"
+    enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M95">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the action taken with a password exception entry in the preferences
+    on Android. This includes opening the UI surface.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.Android.PasswordExceptionEntry.Website"
+    enum="PasswordManagerAndroidWebsiteActions" expires_after="M95">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the action taken with a website of a password exception entry in the
+    preferences on Android. It can be analyzed together with
+    PasswordManager.Android.PasswordExceptionEntry which records how many times
+    this UI was shown.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ApplySyncChanges.AddLoginSyncError"
+    enum="PasswordAddLoginSyncError" expires_after="2022-04-24">
+  <owner>mamir@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records different results upon adding a remote password to the password
+    manager. It is recorded every time after receiving remote password
+    incremental updates from the server.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ApplySyncChanges.UpdateLoginSyncError"
+    enum="PasswordUpdateLoginSyncError" expires_after="2021-07-31">
+  <owner>mamir@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records different results upon updating a remote password to the password
+    manager. It is recorded every time after receiving remote password
+    incremental updates from the server.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ApplySyncChangesState"
+    enum="PasswordApplySyncChangesState" expires_after="2021-07-31">
+  <owner>mamir@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records different states upon applying remote sync changes to the password
+    manager. It recorded every time after receiving remote password incremental
+    updates from the server.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AutomaticChange.AcceptanceWithAutoButton"
+    enum="PasswordCheckResolutionAction" expires_after="2022-04-24">
+  <owner>kolos@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Resolution action to fix a compromised credential when there is a
+    &quot;Change password automatically&quot; button.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton"
+    enum="PasswordCheckResolutionAction" expires_after="2022-04-17">
+  <owner>kolos@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Resolution action to fix a compromised credential when there is no
+    &quot;Change password automatically&quot; button.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AutomaticChange.ForSitesWithScripts"
+    enum="PasswordCheckResolutionAction" expires_after="2022-03-13">
+  <owner>kolos@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Resolution action to fix a compromised credential when there is a password
+    change script for the credential's domain. The metric is reported also if
+    the automated password change feature is disabled.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AutoSigninFirstRunDialog"
+    enum="AutoSigninFirstRun" expires_after="2022-04-30">
+  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    The dismissal reason of the auto-signin first run experience.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BiometricAuthPwdFill.AuthRequester"
+    enum="BiometricAuthRequester" expires_after="2022-04-03">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Recorded when a password filling surface or the account chooser dialog
+    requests to re-auth the user via biometrics. It records the UI surface that
+    made the request.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BiometricAuthPwdFill.AuthResult"
+    enum="BiometricAuthResult" expires_after="2022-04-03">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Records the result of the attempt to re-auth the user via biometrics when
+    filling a password or signing in from the account chooser dialog. From M97,
+    CancelledByChrome is recorded when the auth is cancelled and before the auth
+    result actually returns.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BiometricAuthPwdFill.CanAuthenticate"
+    enum="BiometricsAvailability" expires_after="2022-04-10">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Recorded whenever a password filling surface or the account chooser dialog
+    checks whether it can use biometrics to re-authenticate the user.
+  </summary>
+</histogram>
+
+<histogram base="true" name="PasswordManager.BlacklistedSitesHiRes"
+    units="sites" expires_after="2022-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The total number of sites that the user has blacklisted. Recorded by
+    iterating over stored passwords once per run of Chrome.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BubbleSuppression.AccountsInStatisticsTable"
+    units="accounts" expires_after="2022-05-31">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of accounts stored in password_manager::StatisticsTable. These
+    are accounts for which the user ignored the save bubble at least once. The
+    count is recorded once per browser start-up. (In case of multiple profiles,
+    the counts are for the profile that first has a WebContents created.)
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.CanceledCredentials"
+    units="credentials" expires_after="2021-07-01">
+  <obsolete>
+    Deprecated in M93.
+  </obsolete>
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Count of credentials initially to be checked when the password bulk check
+    was canceled.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.CanceledTime" units="ms"
+    expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    The time the password bulk check was running until canceled by the user.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.CheckedCredentials"
+    units="credentials" expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Count of credentials analyzed when the password bulk check completed
+    successfully (see '.CheckedCredentialsOnErrorOrCanceled' for non-success
+    cases). Note that this counts unique username+password pairs, so in the case
+    of password reuse, this does not correspond to the number of user-visible
+    credentials.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled"
+    units="credentials" expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Count of credentials that were supposed to be analyzed if the password bulk
+    check encountered an error or was canceled (see '.CheckedCredentials' for
+    the success case). Note that this counts unique username+password pairs, so
+    in the case of password reuse, this does not correspond to the number of
+    user-visible credentials.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.BulkCheck.CompromisedCredentialsCountAfterCheckAndroid"
+    units="credentials" expires_after="2022-04-24">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Count of compromised credentials shown in the UI, recorded whenever a bulk
+    leak check finished successfully. As opposed to 'BulkCheck.LeaksFound', this
+    metric includes duplicates (i.e. same username+password pair saved for
+    multiple domains), and it also includes other types of compromised
+    credentials (e.g. phished).
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.BulkCheck.CompromisedCredentialsCountWithAutoChangeAfterCheckAndroid"
+    units="credentials" expires_after="2022-04-24">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Count of compromised credentials that have a 'Change automatically' button,
+    recorded whenever a bulk leak check finished successfully. Should be
+    compared to 'CompromisedCredentialsCountAfterCheckAndroid'.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.Error"
+    enum="PasswordLeakDetectionError" expires_after="2022-04-17">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>Error encountered during the password bulk check.</summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.LeaksFound" units="credentials"
+    expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Count of leaked credentials found when the password bulk check completed
+    successfully (see '.LeaksFoundOnErrorOrCanceled' for non-success cases).
+    Note that this counts unique username+password pairs, so in the case of
+    password reuse, this does not correspond to the number of user-visible
+    credentials.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.LeaksFoundOnErrorOrCanceled"
+    units="credentials" expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Count of leaked credentials found when the password bulk check encountered
+    an error or was canceled (see '.LeaksFound' for the success case). Note that
+    this counts unique username+password pairs, so in the case of password
+    reuse, this does not correspond to the number of user-visible credentials.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.PasswordCheckReferrer"
+    enum="PasswordCheckReferrer" expires_after="2022-04-17">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Referrer of a navigation to the Password Check page. Recorded when the user
+    visits the Password Check settings page, either via native or Web UI.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.PasswordCheckReferrerAndroid"
+    enum="PasswordCheckReferrerAndroid" expires_after="2022-04-10">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Referrer of a navigation to the Password Check UI Settings view. Recorded
+    when the user enters the view.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.Time" units="ms"
+    expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    The time it took for the password bulk check to complete successfully.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.TimePerCredential" units="ms"
+    expires_after="2022-04-17">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    The average time per credential when the password bulk check completed
+    successfully.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.UserAction"
+    enum="PasswordCheckInteraction" expires_after="2022-04-24">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>User actions performed on the Password Check settings page.</summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.UserActionAndroid"
+    enum="PasswordCheckUIUserActionAndroid" expires_after="2022-04-24">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschigg@chromium.org</owner>
+  <summary>User actions performed on the Password Check settings view.</summary>
+</histogram>
+
+<histogram name="PasswordManager.ButtonTitlePerformance.HasFormTag"
+    units="units" expires_after="2019-07-01">
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    The time (ms) it takes to infer button titles within a form tag.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ButtonTitlePerformance.NoFormTag"
+    units="units" expires_after="2019-07-01">
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    The time (ms) it takes to infer button titles outside of form tags.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.CertificateErrorsWhileSeeingForms"
+    enum="PasswordCertificateError" expires_after="M99">
+  <owner>battre@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    When the password manager sees new forms on the page, it records in this
+    histogram whether there were any SSL certificate errors. The presence of SSL
+    errors likely means that the password manger will stop working, so the
+    reporting is done at the last point when password manager is still
+    guaranteed to be active. Some particular errors are distinguished, with the
+    rest being reported in a catch-all bucket.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ChromeSignInPageHashSaved"
+    enum="ChromeSignInPageHashSaved" expires_after="2021-02-01">
+  <obsolete>
+    Removed in 10-2021, since it expired long ago.
+  </obsolete>
+  <owner>vakh@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether a password hash was saved or not on Chrome sign-in page.
+    Recorded whenever the user types a password on Chrome sign-in page.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.CleanedUpPasswords" units="units"
+    expires_after="2022-12-05">
+  <owner>vasilii@chromium.org</owner>
+  <owner>src/components/password_manager/OWNERS</owner>
+  <summary>
+    Collects positive number of undecryptable passwords that were successfully
+    deleted when syncing was enabled. Recorded for sync users for each profile
+    if there is at least one password deleted when merging logins from Sync and
+    local database.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.CompromisedCredentials"
+    enum="InsecureCredentialsType" expires_after="2021-12-05">
+  <obsolete>
+    Removed 07/2021
+  </obsolete>
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Collects the type of insecure credential when it is added to or removed from
+    the table. Insecure credentials are properties of saved passwords that are
+    added when they are identified as leaked, phished, weak, or reused. They are
+    removed when the password is dropped from the password_manager or the
+    password has changed.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.CompromisedCredentials.CountLeaked"
+    units="credentials" expires_after="2022-04-10">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Count of known leaked credentials in the database on start-up.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.CompromisedCredentials.CountLeakedAfterBulkCheck"
+    units="credentials" expires_after="2022-04-10">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Count of known leaked credentials in the database on start-up if the
+    password bulk check was executed at least once.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.CompromisedCredentials.CountPhished"
+    units="credentials" expires_after="2022-04-17">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Count of known phished credentials in the database on start-up.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.CredentialEditError"
+    enum="CredentialEditError" expires_after="M101">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Records the errors displayed by the saved credential entry editor, when the
+    user encounters them. Android-only for now.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.CredentialEntryActions.{CredentialEntryType}"
+    enum="CredentialEntryAction" expires_after="M101">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Records actions performed by the users in the {CredentialEntryType} view.
+    Android-only for now.
+  </summary>
+  <token key="CredentialEntryType">
+    <variant name="BlockedCredential"/>
+    <variant name="FederatedCredential"/>
+    <variant name="SavedPassword"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.CredentialsCountFromAccountStoreAfterUnlock"
+    units="credentials" expires_after="2022-05-31">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Recorded after unlocking the account store from the password filling flow.
+    Records how many credentials from the account store can be used to fill the
+    current password form. If a credential is an exact duplicate with a local
+    credential, it still counts into this metric.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.CredentialsWithDuplicates" units="units"
+    expires_after="2022-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of stored (non-blacklisted) credentials for which
+    &quot;duplicates&quot; exist. A duplicate is a credential with the same
+    signon realm, username, and password - i.e. indistinguishable from the
+    user's point of view. This records the number of *sets* of duplicated
+    credentials; the number of credentials in each set of duplicates is not
+    recorded. Recorded once per browser start-up. (In case of multiple profiles,
+    the counts are for the profile that first has a WebContents created.)
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.CredentialsWithMismatchedDuplicates"
+    units="units" expires_after="2022-06-30">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of stored (non-blacklisted) credentials for which
+    &quot;mismatched duplicates&quot; exist. A mismatched duplicate is a
+    credential with the same signon realm and username, but different password.
+    This records the number of *sets* of duplicated credentials; the number of
+    credentials in each set of duplicates is not recorded. Recorded once per
+    browser start-up. (In case of multiple profiles, the counts are for the
+    profile that first has a WebContents created.)
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.DefaultPasswordStoreSet"
+    enum="PasswordManager.Store" expires_after="2022-04-10">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The default store for newly-saved passwords (profile-scoped store or
+    account-scoped store), recorded whenever it is set explicitly.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.DeleteUndecryptableLoginsReturnValue"
+    enum="DeleteCorruptedPasswordsResult" expires_after="2022-05-01">
+  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Records the return value of the DeleteUndecryptableLogins method in the
+    LoginDatabase class. Called for sync user and for each profile when merging
+    logins from Sync and local database.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.DropdownShown.OffTheRecord" units="units"
+    expires_after="2022-05-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <summary>
+    Records availability of password manager suggestions in regular and
+    off-the-record modes.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.DynamicFormChanges" units="units"
+    expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Records a bitmask of password form changes after the first time this form is
+    seen by Password Manager. Recorded once per a form when the form is removed
+    from DOM. Bit 0 - changes in number of fields, bit 1 - changes in fields
+    renderer ids, bit 2 - changes in autocomplete attributes, bit 3 - changes in
+    form control types, bit 4 - changes in field names.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.EditsInSaveBubble"
+    enum="PasswordManagerEditsInSaveBubbleEnum" expires_after="2022-04-17">
+  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Indication whether users change the credentials (username and password) in
+    the save bubble of the password manager, considering only cases where the
+    user saves a new credential or updates a credential.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.EmptyUsernames.CountInDatabase" units="units"
+    expires_after="M89">
+  <obsolete>
+    Obsolete since M90.
+  </obsolete>
+  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Number of password forms with empty username in the profile-scoped Login
+    Database. This is recorded on startup.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.Enabled" enum="BooleanEnabled"
+    expires_after="M96">
+  <obsolete>
+    Obsolete since M97. This histogram changed semantics in M95, but was only
+    replaced by PasswordManager.Enabled2 in M97.
+  </obsolete>
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Indicates whether the password manager is enabled when a tab is opened. This
+    includes prerendered tabs.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.Enabled2" enum="BooleanEnabled"
+    expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Indicates whether the password manager is enabled. Recorded 30 seconds after
+    PasswordStore is created which happens once per profile.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FieldInfoTableRows" units="rows"
+    expires_after="M92">
+  <obsolete>
+    Obsolete since M92.
+  </obsolete>
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records number of rows in FieldInfoTable, which contains locally learned
+    predictions about field types. Recorded once for the profile on startup.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FieldNameCollisionInVotes" enum="Boolean"
+    expires_after="2022-04-20">
+  <owner>kolos@chromium.org</owner>
+  <owner>koerber@google.com</owner>
+  <summary>
+    Measures whether a password vote had a field name collision, i.e. multiple
+    fields that should have an Autofill type uploaded have the same name.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FilledCredentialWasFromAndroidApp"
+    enum="PasswordManagerFilledAndroidCredentials" expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    When a credential is filled, whether it comes from an Android app.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FillingAssistance"
+    enum="PasswordManagerFillingAssistance" expires_after="2022-04-17">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    This metric records the user experience with regards to passwords filling.
+    It is only recorded on password form submissions that are considered to be
+    successful.
+
+    The first 4 buckets (0..3) are ranging from the best filling behavior
+    (automatic filling on page load without user interaction necessary) to the
+    worst (the user had to manually type a password that was already saved).
+
+    The following buckets (4..5) indicate cases when it was impossible to fill
+    credentials because unknown credentials were submitted, meaning that the
+    submitted password was not saved before.
+
+    The last bucket (6) corresponds to the strange cases, where the submitted
+    form has neither user input nor autofilled data in password fields. This
+    might indicate third-party password manager use, or might be a
+    measurement/submission classification error.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FillingSource"
+    enum="PasswordManagerFillingSource" expires_after="2022-04-03">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    This metric records the source of filled passwords: The profile-scoped
+    store, the account-scoped store, both of them, or none of them (if the user
+    typed the password manually). It is only recorded on password form
+    submissions that are considered to be successful.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FillSuggestionsIncludeAndroidAppCredentials"
+    enum="PasswordManagerOfferedAndroidCredentials" expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    When offering to fill the username and password, whether at least one of the
+    credentials in the dropdown comes from an Android app.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FirstRendererFillingResult"
+    enum="PasswordManagerFirstRendererFillingResult" expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Records whether the PasswordAutofillAgent in the renderer manages to fill
+    credentials as instructed by the browser or records a failure reason
+    otherwise. Only the outcome of the first attempt to fill is recorded.
+
+    This is replicated as PasswordForm.Fill.FirstFillingResultInRenderer in UKM.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FirstWaitForUsernameReason"
+    enum="PasswordManagerFirstWaitForUsernameReason" expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    This metric records why the browser instructs the renderer not to fill the
+    credentials on page load but to wait for the user to confirm the credential
+    to be filled. Only the value of the first decision to fill is recorded.
+
+    This is replicated as PasswordForm.Fill.FirstWaitForUsernameReason in UKM.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FormDataDeserializationStatus"
+    enum="FormDataDeserializationStatus" expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The success or failure of deserializing saved FormData. Failure either
+    indicates corrupted data or the presence of bugs in the serialization or
+    deserialization code.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FormSubmission.PerProfileType"
+    enum="BrowserProfileType" expires_after="2022-02-02">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <summary>
+    This histogram records the browser profile type when a password form is
+    submitted.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.FormVisited.PerProfileType"
+    enum="BrowserProfileType" expires_after="2022-04-10">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <summary>
+    This histogram records the browser profile type when a password form is
+    visited. This is recorded once for each frame.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.GeneratedFormHasNoFormManager"
+    enum="BooleanFormManager" expires_after="2022-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    When the generation state of a password was changed, records whether an
+    existing form corresponding to the password was found.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.GooglePasswordManager.NavigationResult"
+    enum="GooglePasswordManagerNavigationResult" expires_after="2019-12-31">
+  <obsolete>
+    Expired in M80. Removed in M92.
+  </obsolete>
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The result of an attempted navigation to the Google Password Manager.
+    Recorded when a signed-in and password syncing user navigates to
+    https://passwords.google.com by clicking a link.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.GooglePasswordManager.TimeToFailure"
+    units="units" expires_after="2019-12-31">
+  <obsolete>
+    Expired in M80. Removed in M92.
+  </obsolete>
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time it took for a failed navigation to the Google Password Manager.
+    Recorded when a signed-in and password syncing user navigates to
+    https://passwords.google.com by clicking a link and the navigation fails
+    before timing out.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.GooglePasswordManager.TimeToSuccess"
+    units="units" expires_after="2019-12-31">
+  <obsolete>
+    Expired in M80. Removed in M92.
+  </obsolete>
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time it took for a successful navigation to the Google Password Manager.
+    Recorded when a signed-in and password syncing user navigates to
+    https://passwords.google.com by clicking a link and the navigation succeeds
+    before timing out.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.HttpCredentials"
+    enum="PasswordManagerHttpCredentialType" expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Breakdown of HTTP credentials with regard to the existence of a HTTPS
+    credential with the same username and whether the corresponding website has
+    HSTS enabled. Recorded once for each HTTP credential of the profile on
+    startup.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.HttpPasswordMigrationCount"
+    units="saved credentials" expires_after="2022-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Number of HTTP saved passwords that were migrated to HTTPS. Recorded on
+    HTTPS password form load when there are no credentials saved.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.HttpPasswordMigrationMode"
+    enum="HttpPasswordMigrationMode" expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The mode of migration applied to HTTP passwords migrating to HTTPS. Recorded
+    on HTTPS password form load when there are no credentials saved.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ImportedPasswordsPerUserInCSV" units="units"
+    expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <owner>src/components/password_manager/OWNERS</owner>
+  <summary>
+    The number of passwords imported in CSV format per user. Recorded when the
+    user imports passwords within the password settings.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ImportPasswordFromCSVResult"
+    enum="PasswordImportFromCSVResult" expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <owner>src/components/password_manager/OWNERS</owner>
+  <summary>
+    The response code of successful or failed password import attempt from a CSV
+    file. Recorded when the user imports passwords within the password settings.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.InaccessiblePasswords" units="saved passwords"
+    expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    The number of saved passwords in the profile-scoped store that could not be
+    decrypted. Recorded once for the profile on startup.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.iOS.InfoBar.PasswordSave" enum="Boolean"
+    expires_after="2022-06-01">
+  <owner>djean@chromium.org</owner>
+  <owner>sczs@google.com</owner>
+  <summary>
+    This metric counts how many times the Save Password infobar is shown.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.iOS.InfoBar.PasswordUpdate" enum="Boolean"
+    expires_after="2022-06-01">
+  <owner>djean@chromium.org</owner>
+  <owner>sczs@google.com</owner>
+  <summary>
+    This metric counts how many times the Update Password infobar is shown.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.IsSyncPasswordHashSaved"
+    enum="IsSyncPasswordHashSaved" expires_after="2022-05-01">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This metric reports whether a sync password hash is saved. Recorded shortly
+    after Chrome startup.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.IsSyncPasswordHashSavedForAdvancedProtectionUser"
+    enum="IsSyncPasswordHashSaved" expires_after="2022-10-11">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This metric is recorded shortly after Chrome Startup, only for Advanced
+    Protection users. This is a subset of
+    PasswordManager.IsSyncPasswordHashSaved.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ItemSelected.OffTheRecord" units="units"
+    expires_after="2022-05-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <summary>
+    Records selection of password manager suggestions in regular and
+    off-the-record modes.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.JavaScriptOnlyValueInSubmittedForm"
+    enum="JavaScriptOnlyValueInPasswordForm" expires_after="2022-02-28">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Records whether a successfully submitted password form has only values that
+    came from JavaScript.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.AccessTokenFetchStatus"
+    enum="GoogleServiceAuthError" expires_after="2021-08-09">
+  <obsolete>
+    Removed in M93.
+  </obsolete>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Status of an attempted fetch of an access token. Recorded when a token fetch
+    completes.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.AccessTokenNetErrorCode"
+    enum="NetErrorCodes" expires_after="2021-08-09">
+  <obsolete>
+    Removed in M93.
+  </obsolete>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Net Error Code of a failed attempt to fetch an access token. Recorded when a
+    token fetch completes with an error state.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.AnalyzeSingleLeakResponseResult"
+    enum="PasswordAnalyzeLeakResponseResult" expires_after="2022-04-24">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>Result of analyzing a single leak response.</summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.AnalyzeSingleLeakResponseTime"
+    units="ms" expires_after="2021-08-09">
+  <obsolete>
+    Removed in M93.
+  </obsolete>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>The time it took to analyze a single leak lookup response.</summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.DialogDismissalReason"
+    enum="PasswordLeakDetectionDialogDismissalReason"
+    expires_after="2022-04-17">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Reason of the dismissal of the leak detection dialog. Recorded when a leaked
+    credential is detected and the dialog is shown.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.Enabled" enum="BooleanEnabled"
+    expires_after="M92">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Indicates whether the password manager leak detection feature is enabled.
+    Recorded for each profile on browser start-up.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.Error"
+    enum="PasswordLeakDetectionError" expires_after="2022-04-17">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Shows the error that happened in password leak detection on sign-in.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.HttpResponseCode"
+    enum="HttpResponseCode" expires_after="2022-04-17">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    HTTP response code of a leak lookup request. Only recoded for each network
+    fetch that failed due to network/server errors.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.IsPasswordReused" enum="Boolean"
+    expires_after="2022-04-03">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    When a password is determined as leaked, records if it's saved for other
+    sites.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.IsPasswordSaved" enum="Boolean"
+    expires_after="2022-04-10">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    When a password is determined as leaked, records if it's saved in Chrome.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.IsSyncing" enum="Boolean"
+    expires_after="M92">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    When a password is determined as leaked, records if the user is syncing
+    passwords without passphrase.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.LookupSingleLeakResponseResult"
+    enum="PasswordLeakLookupResponseResult" expires_after="2022-04-10">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Whether the network fetch succeeded, failed due to network/server errors, or
+    contained malformed data. Recorded for each leak lookup.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.NetErrorCode"
+    enum="NetErrorCodes" expires_after="M92">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Network error code of a leak lookup request. Only recoded for each network
+    fetch that failed due to network/server errors.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.NotifyIsLeakedTime" units="ms"
+    expires_after="2022-04-24">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time it took from starting a leak check to notifying the user about a
+    leak.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.ObtainAccessTokenTime"
+    units="ms" expires_after="2022-04-24">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time it took to obtain an access token for an authenticated leak lookup
+    request.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.PrepareSingleLeakRequestTime"
+    units="ms" expires_after="2022-04-24">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time it took to prepare the payload for a single leak lookup request.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.ReceiveSingleLeakResponseTime"
+    units="ms" expires_after="2022-04-24">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time it took to receive a server response after issuing a request for a
+    single leak lookup.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.SingleLeakResponsePrefixes"
+    units="prefixes" expires_after="2022-04-24">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of matched prefixes in a single leak lookup response. Only
+    recorded if the network response was wellformed.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LeakDetection.SingleLeakResponseSize"
+    units="bytes" expires_after="2022-04-24">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The size of a single leak lookup response in bytes. Only recorded if there
+    was no network or server error.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.LoginDatabaseInit"
+    enum="LoginDatabaseInitError" expires_after="2022-04-17">
+  <owner>vasilii@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>An error on LoginDatabase initialization.</summary>
+</histogram>
+
+<histogram name="PasswordManager.ManagePasswordsReferrer"
+    enum="ManagePasswordsReferrer" expires_after="2022-04-17">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Referrer of a navigation to the &quot;Manage Passwords&quot; page. Recorded
+    when the user attempts to see their list of passwords, either via native or
+    Web UI.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ManagePasswordsReferrerSignedInAndSyncing"
+    enum="ManagePasswordsReferrer" expires_after="M87">
+  <obsolete>
+    Removed in M87.
+  </obsolete>
+  <owner>ioanap@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Referrer of a navigation to the &quot;Manage Passwords&quot; page. Recorded
+    only for signed in users syncing passwords without a custom passprase, when
+    the user attempts to see their list of passwords.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.MatchedFormType"
+    enum="PasswordManagerMatchedFormType" expires_after="2022-04-24">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    This metric records the type of the preferred password for filling. It is
+    recorded when the browser instructs the renderer to fill the credentials on
+    page load.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.MediationOptional"
+    enum="CredentialManagerGetResult" expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Tracks result of navigator.credentials.get() with
+    mediation=&quot;optional&quot;. That is the result of account chooser.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.MediationRequired"
+    enum="CredentialManagerGetResult" expires_after="2022-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Tracks result of navigator.credentials.get() with
+    mediation=&quot;required&quot;. That is the result of forced account
+    chooser.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.MediationSilent"
+    enum="CredentialManagerGetResult" expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Tracks result of navigator.credentials.get() with
+    mediation=&quot;silent&quot;. That is the result of auto sign-in.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.MergeSyncData.AddLoginSyncError"
+    enum="PasswordAddLoginSyncError" expires_after="2022-05-01">
+  <owner>mamir@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records different results upon adding a remote password to the password
+    manager. It is recorded during the initial sync when merging remote and
+    local data.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.MergeSyncData.UpdateLoginSyncError"
+    enum="PasswordUpdateLoginSyncError" expires_after="2021-07-31">
+  <owner>mamir@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Records different results upon updating a remote password in the password
+    manager. It is recorded during the initial sync when merging remote and
+    local data.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.MoveUIDismissalReason"
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-04-10">
+<!-- Name completed by histogram_suffixes name="PasswordAccountStorageUserState" -->
+
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Why was the &quot;move password to account?&quot; bubble closed? Recorded
+    whenever the bubble is closed, either because the user clicked one of the
+    buttons or it went away automatically (lost focus).
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.NewlySavedPasswordIsGenerated"
+    enum="BooleanNewlySavedPasswordIsGenerated" expires_after="2022-04-17">
+  <owner>nepper@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    For a newly saved password, whether the password was generated by Chrome or
+    typed manually by the user.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.NonSyncPasswordHashChange"
+    enum="GaiaPasswordHashChange" expires_after="2022-10-04">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This metric reports a type of a password hash change event where the
+    associated account is not syncing. Recorded when a non sync password hash is
+    saved or cleared.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.NumFormManagersCleared" units="count"
+    expires_after="2021-09-19">
+  <obsolete>
+    Removed in M96.
+  </obsolete>
+  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Records how many FormManagers are deleted on the main frame navigation. This
+    metric is useful for estimation of memory footprint.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.NumPasswordsNotShown" units="count"
+    expires_after="M79">
+  <obsolete>
+    Removed in M79.
+  </obsolete>
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The password manager only shows those credentials that are considered the
+    best match for a particular form. This stat keep track of the credentials
+    that were not as good of a match and were suppressed.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.OsPasswordStatus"
+    enum="PasswordManagerOsPasswordStatus" expires_after="2021-09-23">
+  <obsolete>
+    Removed in M96.
+  </obsolete>
+  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Indicates whether the user's OS password is blank or not at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.OtherPossibleUsernamesUsage"
+    enum="OtherPossibleUsernamesUsage" expires_after="M90">
+  <obsolete>
+    Obsolete since M90.
+  </obsolete>
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Breakdown of how other possible usernames are displayed. Recorded every time
+    we autofill a password form.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordDropdownItemSelected"
+    enum="PasswordDropdownSelectedOption" expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Logs the type of the suggestion in the password dropdown when selected.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordDropdownShown"
+    enum="PasswordDropdownState" expires_after="2022-02-28">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>Logs the state of the password dropdown when it's shown.</summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordEditUpdatedValues"
+    enum="PasswordEditUpdatedValues" expires_after="2022-04-24">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    This metric shows what exactly users change in the password edit dialog:
+    nothing, username, password or both.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordReuse.NumberOfMatches"
+    units="credentials" expires_after="2022-04-03">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This metric shows how many saved credentials (num unique registry-controlled
+    domains) have password that's equal to the reused password.
+
+    Before M63 this logged a &quot;0&quot; for sync-reuse.
+
+    A &quot;password reuse&quot; is when the user typed a string that is equal
+    to a saved password on another domain or is equal to the sync password on a
+    non google-login domain.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordReuse.PasswordFieldDetected"
+    enum="PasswordReusePasswordFieldDetected" expires_after="2021-09-19">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This metric reports whether a password field had been detected on a page
+    when a password reuse happened.
+
+    A &quot;password reuse&quot; is when the user typed a string that is equal
+    to a saved password on another domain or is equal to the sync password on a
+    non google-login domain.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordReuse.PasswordLength"
+    units="characters" expires_after="2021-01-30">
+  <obsolete>
+    Removed 10-2021 due to lack of use.
+  </obsolete>
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This metric shows the length of the reused password.
+
+    Change in M63: If multiple passwords are matched simultaneously, this logs
+    the length of the longest password. Also, before M63, a &quot;0&quot; was
+    logged for sync-reuse.
+
+    A &quot;password reuse&quot; is when the user typed a string that is equal
+    to a saved password on another domain or is equal to the sync password on a
+    non google-login domain.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordReuse.TotalPasswords"
+    units="credentials" expires_after="2022-04-10">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This metric shows how many credentials are stored in Password Manager when a
+    password reuse happened. This counts unique registry-controlled domains with
+    passwords saved.
+
+    A &quot;password reuse&quot; is when the user typed a string that is equal
+    to a saved password on another domain or is equal to the sync password on a
+    non google-login domain.
+
+    During M61/M62 this metric logged a &quot;1&quot; for every sync-reuse. It
+    was fixed in M63 such that it logs actual Password Manager credential count.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordSavedWithManualFallback"
+    enum="BooleanPasswordSavedWithFallback" expires_after="2020-05-24">
+  <obsolete>
+    Obsolete since M90.
+  </obsolete>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    Measures whether users save passwords with automatic prompt or manual
+    fallback.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordScriptsFetcher.CacheState"
+    enum="PasswordScriptsFetcherCacheState" expires_after="2022-04-17">
+  <owner>kolos@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    PasswordScriptsFetcher's cache state when the fetcher is requested to return
+    script availability.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordScriptsFetcher.HttpResponseAndNetErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-04-17">
+  <owner>kolos@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    HTTP response code or network error code of fetching a list of available
+    password scripts.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordScriptsFetcher.ParsingResult"
+    enum="PasswordScriptsFetcherParsingResult" expires_after="2022-04-17">
+  <owner>kolos@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>Result of parsing of a list of available password scripts.</summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordScriptsFetcher.ResponseTime"
+    units="ms" expires_after="2022-04-24">
+  <owner>kolos@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Response time for fetching a list of available password scripts.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordStore.GetAllLoginsAsync" units="ms"
+    expires_after="2021-09-29">
+  <obsolete>
+    Renamed to PasswordManager.PasswordStore.GetAllLoginsAsync.Latency on
+    2021-09-29.
+  </obsolete>
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous call to get all logins from the
+    PasswordStore backend.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Latency"
+    units="ms" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous call to add a login to the
+    PasswordStore Android backend. Recorded when the asynchronous job has
+    returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Success"
+    enum="BooleanSuccess" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records whether AddLoginAsync() succeeded in adding a login in the
+    PasswordStore Android backend. Recorded when the asynchronous job has
+    returned. False is emitted if an error occurs; otherwise true is emitted.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordStoreAndroidBackend.APIError"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The error codes returned by the GMS Core ChromeSync 1P API. Recorded when
+    the asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordStoreAndroidBackend.APIErros"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="2022-06-30">
+  <obsolete>
+    Deleted due to a typo in the name. Changed to
+    PasswordManager.PasswordStoreAndroidBackend.APIError on 2021-11-03.
+  </obsolete>
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The error codes returned by the GMS Core ChromeSync 1P API. Recorded when
+    the asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordStoreAndroidBackend.ErrorCode"
+    enum="PasswordStoreAndroidBackendError" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    This metric reports the error observed when retrieving/adding/updating or
+    removing logins from the PasswordStore Android backend. Recorded when the
+    asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Latency"
+    units="ms" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous call to retrieve all logins from the
+    PasswordStore Android backend. Recorded when the asynchronous job has
+    returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Success"
+    enum="BooleanSuccess" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records whether GetAllLoginsAsync() succeeded in retrieving all logins from
+    the PasswordStore Android backend. Recorded when the asynchronous job has
+    returned. False is emitted if an error occurs; otherwise true is emitted.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.RemoveLoginAsync.Latency"
+    units="ms" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous call to remove a login from the
+    PasswordStore Android backend. Recorded when the asynchronous job has
+    returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.RemoveLoginAsync.Success"
+    enum="BooleanSuccess" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records whether RemoveLoginAsync() succeeded in removing a login from the
+    PasswordStore Android backend. Recorded when the asynchronous job has
+    returned. False is emitted if an error occurs; otherwise true is emitted.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.UpdateLoginAsync.Latency"
+    units="ms" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Real-time duration of the asynchronous call to update a login in the
+    PasswordStore Android backend. Recorded when the asynchronous job has
+    returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.UpdateLoginAsync.Success"
+    enum="BooleanSuccess" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records whether UpdateLoginAsync() succeeded in updating a login in the
+    PasswordStore Android backend. Recorded when the asynchronous job has
+    returned. False is emitted if an error occurs; otherwise true is emitted.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordStoreDeletionsHaveSynced"
+    enum="BooleanSuccess" expires_after="M92">
+  <obsolete>
+    Removed in M93.
+  </obsolete>
+  <owner>dullweber@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Records how often browsing data succeeds to delete account store passwords
+    from the Sync server. False is emitted in the rare situations when the
+    operation times out or the user disables Sync before the deletions are fully
+    propagated to the Sync server. True is emitted when the password deletion is
+    successfully propagated to the server.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordStoreInitResult" enum="BooleanSuccess"
+    expires_after="M100">
+  <owner>vasilii@chromium.org</owner>
+  <owner>src/components/password_manager/OWNERS</owner>
+  <summary>
+    Success rate of initialization of password store. Recorded for every user
+    once on the Chrome profile startup.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.Diff.Abs"
+    units="count" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the number of logins in either the main or the shadow backend but
+    not in both of them. In other words, it records |(M \ S) ∪ (S \ M)|, where M
+    and S are the sets of logins from the main and shadow backends,
+    respectively. Recorded when the asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.Diff.Rel"
+    units="count" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the number of logins in either the main or the shadow backend but
+    not in both of them, divided by the total number of logins, as a percentage
+    rounded up to the next integer. In other words, it records ⌈|(M \ S) ∪ (S \
+    M)| / |M ∪ S| %⌉, where M and S are the sets of logins from the main and
+    shadow backends, respectively. If the denominator is zero, no value is
+    emitted. Recorded when the asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.InconsistentPasswords.Abs"
+    units="count" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the number of logins that occur in both the main and the shadow
+    backend but differ in their stored passwords. In other words, it records
+    |{(m,s) ∈ M × S | m.password ≠ s.password}|, where M and S are the sets of
+    logins from the main and shadow backends, respectively. Recorded when the
+    asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.InconsistentPasswords.Rel"
+    units="count" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the number of logins that occur in both the main and the shadow
+    backend but differ in their stored passwords, divided by the number of
+    logins in both the main and the shadow backend, as a percentage rounded up
+    to the next integer. In other words, it records ⌈|{(m,s) ∈ M × S |
+    m.password ≠ s.password}| / |M ∩ S| %⌉, where M and S are the sets of logins
+    from the main and shadow backends, respectively. If the denominator is zero,
+    no value is emitted. Recorded when the asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.MainMinusShadow.Abs"
+    units="count" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the number of logins in the main backend that are not the shadow
+    backend. In other words, it records |M \ S|, where M and S are the sets of
+    logins from the main and shadow backends, respectively. Recorded when the
+    asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.MainMinusShadow.Rel"
+    units="count" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the number of logins in the main backend that are not the shadow
+    backend, divided by the total number of logins, as a percentage rounded up
+    to the next integer. In other words, it records ⌈|M \ S| / |M ∪ S| %⌉, where
+    M and S are the sets of logins from the main and shadow backends,
+    respectively. If the denominator is zero, no value is emitted. Recorded when
+    the asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.ShadowMinusMain.Abs"
+    units="count" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the number of logins in the shadow backend that are not the main
+    backend. In other words, it records |S \ M|, where M and S are the sets of
+    logins from the main and shadow backends, respectively. Recorded when the
+    asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.ShadowMinusMain.Rel"
+    units="count" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records the number of logins in the shadow backend that are not the main
+    backend, divided by the total number of logins, as a percentage rounded up
+    to the next integer. In other words, it records ⌈|S \ M| / |M ∪ S| %⌉, where
+    M and S are the sets of logins from the main and shadow backends,
+    respectively. If the denominator is zero, no value is emitted. Recorded when
+    the asynchronous job has returned.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordSyncState" enum="PasswordSyncState"
+    expires_after="2022-04-10">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Whether the passwords are syncing and, if not, then what's causing sync
+    failures. Recorded after the first sync attempt either succeeds or fails.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PrefilledUsernameFillOutcome"
+    enum="PrefilledUsernameFillOutcome" expires_after="M86">
+  <owner>koerber@google.com</owner>
+  <summary>
+    Records successful fills of prefilled username values known as placeholders
+    and unsuccessful fills that were blocked because the prefilled value was not
+    identified as a placeholder. Recorded once per PasswordAutofillAgent
+    instance, when attempting to fill a password form that contains a username
+    value which was prepopulated by the website.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ProvisionalSaveFailure"
+    enum="ProvisionalSaveFailure" expires_after="M95">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Breakdown of cases where a password is submitted, but we don't even try and
+    save it. Recorded for every password form submit.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ReauthToAccessPasswordInSettings"
+    enum="PasswordManager.ReauthResult" expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Recorded whenever the user interacts with reauthentication in order to
+    access the passwords in settings, or when such reauthentication is skipped
+    for a well-defined reason.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.RemoveCompromisedCredentials"
+    enum="PasswordStoreChange" expires_after="2021-08-09">
+  <obsolete>
+    Obsolete since M91.
+  </obsolete>
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Collects the cause of the change in the Password Store login which causes a
+    call of a remove SQL statement on the compromised credentials table.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.RemoveCompromisedCredentials.RemoveReason"
+    enum="RemoveCompromisedCredentialsReason" expires_after="2021-12-12">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Collects the cause of why remove SQL statement is called on the compromised
+    credentials table.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.RequirementsSpecFetcher.HttpResponseCode"
+    enum="HttpResponseCode" expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    HTTP response code of fetching a password requirements file.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.RequirementsSpecFetcher.NetErrorCode"
+    enum="NetErrorCodes" expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Network error code of fetching a password requirements file.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.RequirementsSpecFetcher.NetworkDuration"
+    units="ms" expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Time until the lookup for a password requirements file completed (or was
+    aborted).
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.RequirementsSpecFetcher.Result"
+    enum="PasswordRequirementsFetcherResult" expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Result of fetching requirements for password during password generation.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ReusedPasswordType" enum="ReusedPasswordType"
+    expires_after="2022-03-27">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the type of password (e.g saved password, sync password, enterprise
+    password etc) reused by the user. This is logged when a password reuse
+    happens.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SavedEnterprisePasswordHashCount"
+    units="units" expires_after="2021-01-30">
+  <obsolete>
+    Removed 10-2021 due to lack of use.
+  </obsolete>
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of enterprise password hashes that have been saved for
+    password reuse detection. This is logged during the initialization of
+    PasswordStore class.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SavedGaiaPasswordHashCount" units="count"
+    expires_after="2021-11-14">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of Gaia password hashes that have been saved for password
+    reuse detection. This is logged during the initialization of PasswordStore
+    class.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SaveUIDismissalReason"
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-04-17">
+<!-- Name completed by histogram_suffixes name="PasswordAccountStorageUserState" -->
+
+  <owner>vasilii@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>Why was the save password UI (bubble or infobar) closed?</summary>
+</histogram>
+
+<histogram name="PasswordManager.SaveUIDismissalReasonAfterUnblacklisting"
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-05-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Why was the save password UI (bubble or infobar) closed? This is currently
+    recorded only for Android and only after the user has unblacklisted an
+    origin for saving from the accessory sheet.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.SaveUIOnClearedPasswordChangeFormDismissalReason"
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-05-31">
+  <owner>kazinova@google.com</owner>
+  <owner>khamutov@google.com</owner>
+  <summary>
+    Why was the save password UI closed on a cleared change password form?
+    Recorded when the save bubble/infobar is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SavingOnUsernameFirstFlow"
+    enum="SavingOnUsernameFirstFlow" expires_after="2022-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records user actions when Chrome offers to save a username on a page which
+    is considered to be a username first flow. Recorded on a successful
+    submission.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.StoreDecryptionResult"
+    enum="PasswordDecryptionResult" expires_after="2022-05-01">
+  <owner>cfroussios@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <summary>
+    Describes the result of decrypting a password value from the LoginDatabase.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.StoresUsedForFillingInLast28Days"
+    enum="PasswordManagerFillingSource" expires_after="2022-04-03">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Which of the password manager's stores (the profile-scoped one and/or the
+    account-scoped one) were used within the last 28 days for filling passwords.
+    Recorded whenever a password form is successfully submitted. This should
+    typically only be used with &quot;Count unique clients&quot;.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.StoresUsedForFillingInLast7Days"
+    enum="PasswordManagerFillingSource" expires_after="2022-01-31">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Which of the password manager's stores (the profile-scoped one and/or the
+    account-scoped one) were used within the last 7 days for filling passwords.
+    Recorded whenever a password form is successfully submitted. This should
+    typically only be used with &quot;Count unique clients&quot;.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SubmittedFormFrame"
+    enum="SubmittedPasswordFormFrame" expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records a frame type (eg. main frame, iframe with the same url as the main
+    frame) of a submitted password form.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SubmittedFormType" enum="PasswordFormType"
+    expires_after="M99">
+  <owner>kazinova@google.com</owner>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    The type (e.g. signup, login, change password) of all submitted password
+    forms. This is logged on form submission, but doesn't require that the
+    password manager saves.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SubmittedNonSecureFormType"
+    enum="PasswordFormType" expires_after="M77">
+  <owner>estark@chromium.org</owner>
+  <summary>
+    The type (e.g. signup, login, change password) of all submitted password
+    forms on non-secure pages. This is logged on form submission, but doesn't
+    require that the password manager saves.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SuccessfulLoginHappened"
+    enum="BooleanSuccessfulLoginHappenedOnHttps" expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    For a successful login, whether the origin is HTTPS or HTTP. A succesful
+    login is detected by local heuristics. The heuristics can misclassify
+    whether a login succeeded, so this is an approximation.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SuccessfulSubmissionIndicatorEvent"
+    enum="SubmissionIndicatorEvent" expires_after="2022-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The type of event that the Password Manager used for detecting a password
+    form submission. Recorded for each successful password form submission.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SyncingAccountState"
+    enum="PasswordManagerSyncingAccountState" expires_after="2022-06-30">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Information about the user's current sync status crossed with whether their
+    synced password is saved.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SyncMetadataReadError"
+    enum="PasswordSyncMetadataReadError" expires_after="2022-04-10">
+  <owner>mamir@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    This metric reports the error observed when trying to read the Sync metadata
+    from the password store during the start of Password sync.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SyncPasswordHashChange"
+    enum="GaiaPasswordHashChange" expires_after="2021-12-05">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    This metric reports a type of a sync password hash change event. Recorded
+    when a sync password hash is saved or cleared.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.TimeBetweenStoreAndServer" units="ms"
+    expires_after="2022-04-25">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    The time between receiving saved credentials from the password store and
+    predictions from the Autofill server. Recorded each time when predictions
+    for a form are received.
+  </summary>
+</histogram>
+
+<histogram base="true" name="PasswordManager.TimesPasswordUsed"
+    units="PasswordUses" expires_after="2022-04-28">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    The number of times each saved password from the profile-scoped storage has
+    been used to log in. Split by whether created by the user or generated by
+    Chrome, and further by whether the user used sync with custom passphrase or
+    not. Recorded by iterating over stored passwords once per run. This
+    information is persisted and synced.
+  </summary>
+</histogram>
+
+<histogram base="true" name="PasswordManager.TotalAccountsHiRes.ByType"
+    units="units" expires_after="2022-04-03">
+  <owner>battre@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of accounts stored in the password manager's profile-scoped store
+    (across all sites), split by whether created by the user or generated by
+    Chrome, and further by whether the user used sync with custom passphrase or
+    not.
+  </summary>
+</histogram>
+
+<histogram base="true" name="PasswordManager.TotalAccountsHiRes.WithScheme"
+    units="accounts" expires_after="2022-04-17">
+  <owner>battre@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of accounts stored in the password manager's profile-scoped store
+    (across all sites) for origins with the scheme (e.g., HTTP, HTTPS, FTP) as
+    given in the histogram suffix. For each scheme, the count is recorded once
+    per browser start-up. (In case of multiple profiles, the counts are for the
+    profile that first has a WebContents created.)
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.TouchToFill.CredentialIndex" units="index"
+    expires_after="2022-04-17">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    The index of a selected credential in the Touch To Fill sheet. Only recorded
+    when the sheet showed at least two entries.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.TouchToFill.DismissalReason"
+    enum="BottomSheet.StateChangeReason" expires_after="2022-04-17">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    The reason why a user dismissed the Touch To Fill sheet. Recorded once for
+    each dismissal.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.TouchToFill.NumCredentialsShown"
+    units="credentials" expires_after="M92">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>The number of credentials shown in the Touch To Fill sheet.</summary>
+</histogram>
+
+<histogram name="PasswordManager.TouchToFill.UserAction"
+    enum="TouchToFill.UserAction" expires_after="M92">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    The action a user took when interacting with the Touch To Fill sheet.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.UIDismissalReason"
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-04-17">
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Why was the password manager's UI (bubble or infobar) closed? Save and
+    update UI are tracked separately.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.UpdateLoginPasswordIssuesHasValue"
+    enum="BooleanSet" expires_after="2021-09-30">
+  <obsolete>
+    Obsolete since Aug 2021.
+  </obsolete>
+  <owner>ioanap@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Recorded when UpdateLogin is called on the login database. Records whether
+    the form passed to the method has a value set for password_issues or not.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.UpdateUIDismissalReason"
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <summary>Why was the update password UI (bubble or infobar) closed?</summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.UpdateUIOnClearedPasswordChangeFormDismissalReason"
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-05-31">
+  <owner>kazinova@google.com</owner>
+  <owner>khamutov@google.com</owner>
+  <summary>
+    Why was the update password UI closed on a cleared change password form?
+    Recorded when the update bubble/infobar is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.UsernameCorrectionFound"
+    enum="BooleanUsernameCorrectionVote" expires_after="M85">
+  <obsolete>
+    Obsolete since M86.
+  </obsolete>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    Chrome saves locally all fields a user typed on a sign-up form. If Chrome
+    saved an incorrect username and the user changes the username on a sign-in
+    form to a value of another field from the sign-up form, then Chrome uploads
+    a username correction vote which points to the correct username field. This
+    histogram measures how many correction votes are uploaded.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.UsernameDetectionMethod"
+    enum="UsernameDetectionMethod" expires_after="2022-01-23">
+  <owner>kazinova@google.com</owner>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    Measures what method was used for username field detection in the renderer
+    code. The metric may be recorded several times for page visit because it is
+    recorded at every PasswordForm creation. If a site changes HTML attributes
+    of fields or server-side predictions is received, different values can be
+    recorded for the same form. If an outcome of HTML classifier or a
+    server-side prediction coincides with the outcome of base heuristic, the
+    metric points to base heuristic method.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.WeakCheck.CheckedPasswords" units="passwords"
+    expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of passwords analyzed during the passwords weak check.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.WeakCheck.PasswordScore"
+    enum="PasswordWeaknessScore" expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The score of the password that was checked by the passwords weak check. The
+    score indicates how guessable the password is.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.WeakCheck.Time" units="ms"
+    expires_after="2022-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>The time it took to complete the passwords weak check.</summary>
+</histogram>
+
+<histogram name="PasswordManager.WeakCheck.WeakPasswords" units="passwords"
+    expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of weak passwords found when the passwords weak check completed.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.WellKnownChangePassword.GetChangePasswordUsage"
+    enum="GetChangePasswordUrlMetric" expires_after="2021-12-12">
+  <obsolete>
+    Obsolete since M93.
+  </obsolete>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    A JSON file with change password form url is fetched from gstatic. This
+    metric logs if the response arrived in time and if the url override was
+    available for a given origin.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.WellKnownChangePassword.GstaticFetchErrorCode"
+    enum="NetErrorCodes" expires_after="2021-09-05">
+  <obsolete>
+    Obsolete since M93.
+  </obsolete>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Logs the error code when the fetch to the gstatic file failed.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.WellKnownChangePassword.GstaticFetchHttpResponseCode"
+    enum="HttpResponseCode" expires_after="2021-09-05">
+  <obsolete>
+    Obsolete since M93.
+  </obsolete>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Logs the response code when the fetch to the gstatic file failed.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.WellKnownChangePassword.GstaticFetchResult"
+    enum="ChangePasswordUrlFetchResult" expires_after="2021-12-12">
+  <obsolete>
+    Obsolete since M93.
+  </obsolete>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Logs if the request for the gstatic file succeeded, failed or if the
+    response was malformed.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.WellKnownChangePassword.GstaticFetchTime"
+    units="ms" expires_after="2021-12-12">
+  <obsolete>
+    Obsolete since M93.
+  </obsolete>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>Logs the loading time for the gstatic file request.</summary>
+</histogram>
+
+<histogram name="PasswordProtection.AndroidVisualFeaturesNativeViewHeight"
+    units="dip" expires_after="2021-10-04">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the height of the content area, according to the NativeView on
+    Android. This is logged on every ping by an SBER user due to an unfamiliar
+    login page, when the NativeView is available.
+
+    Added as part of https://crbug.com/1211045
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.AndroidVisualFeaturesNativeViewNull"
+    enum="BooleanNull" expires_after="2021-10-04">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether or not we were able to get a NativeView to query the size of
+    the content area on Android. This is logged on every ping by an SBER user
+    due to an unfamiliar login page, when the RenderWidgetHostView is not null.
+
+    Added as part of https://crbug.com/1211045
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.AndroidVisualFeaturesNativeViewWidth"
+    units="dip" expires_after="2021-10-04">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the width of the content area, according to the NativeView on
+    Android. This is logged on every ping by an SBER user due to an unfamiliar
+    login page, when the NativeView is available.
+
+    Added as part of https://crbug.com/1211045
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.AndroidVisualFeaturesViewNull"
+    enum="BooleanNull" expires_after="2021-10-04">
+  <obsolete>
+    Removed 09-2021
+  </obsolete>
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether or not we were able to get a RenderWidgetHostView to query
+    the size of the content area on Android. This is logged on every ping by an
+    SBER user due to an unfamiliar login page.
+
+    Added as part of https://crbug.com/1211045
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.DomFeatureExtractionDuration" units="ms"
+    expires_after="2022-05-01">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The time it takes to extract the DOM features of a login page before sending
+    a PasswordProtectionRequest. Logged on every password reuse PhishGuard ping.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordProtection.GaiaPasswordReusesBeforeGaiaPasswordChanged"
+    units="reuses" expires_after="2021-01-30">
+  <obsolete>
+    Removed 10-2021 due to lack of use
+  </obsolete>
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The number of Gaia password reuse warnings shown to user before user changes
+    their password. Logged when we see that user has changed their Gaia
+    password. The number of reuses will be reset to zero if current session of
+    browser process ends. This count doesn't include the reuses that user marked
+    as legitimate.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.InterstitialAction"
+    enum="PasswordProtectionWarningAction" expires_after="2022-10-25">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records how a user interacts with the password protection interstitial
+    (a.k.a chrome://reset-password page). Logged when the interstitial is shown
+    and when the user chooses to change their password. Warning: this histogram
+    was expired from 2021-01-30 to 2021-10-25; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.InterstitialString"
+    enum="PasswordProtectionInterstitialStringType" expires_after="2021-12-26">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the type of strings shown to the user on chrome://reset-password
+    page. Logged when the interstitial in initialized.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.ModalWarningDialogAction"
+    enum="PasswordProtectionWarningAction" expires_after="2022-04-03">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records how a user interacts with the password protection modal warning
+    dialog. Logged when the dialog is shown and when the user chooses to change
+    their password, ignore warning, or navigate away.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.ModalWarningDialogLifetime" units="ms"
+    expires_after="2022-10-06">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the interval between when the password protection modal warning
+    dialog is constructed and when the dialog is destructed. The dialog can be
+    destructed when the user takes action or the web content is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.PageInfoAction"
+    enum="PasswordProtectionWarningAction" expires_after="2022-08-15">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records how a user interacts with page info bubble that displays the
+    password protection warning. Logged when such page info bubble is shown and
+    when the user chooses to change their password, ignore warning, or mark site
+    as legitimate via buttons on the page info bubble.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.PageZoomFactor" units="units"
+    expires_after="2021-01-30">
+  <obsolete>
+    Removed 10-2021 due to lack of use
+  </obsolete>
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Reports the zoom factor for a login page, when the protected password is
+    entered.
+  </summary>
+</histogram>
+
+<histogram base="true" name="PasswordProtection.PasswordAlertModeOutcome"
+    enum="PasswordProtectionRequestOutcome" expires_after="2022-10-25">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the outcome of the password alert mode, indicating if password alert
+    warning is shown successfully or if it is skipped for some reason. Warning:
+    this histogram was expired from 2021-01-30 to 2021-10-25; data may be
+    missing.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.PasswordProtectionResponseOrErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-04-24">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Response or error codes for PasswordProtectionRequest. Logged after chrome
+    receives response of PasswordProtectionRequest from Safe Browsing service.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.PasswordReuseSyncAccountType"
+    enum="PasswordProtectionSyncAccountType" expires_after="2022-08-27">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    When password protection service detects a reuse of Chrome sync password,
+    record the type of Chrome sync account on which the reuse happens (e.g.
+    @gmail.com, @googlemail.com, or other dasher account).
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.RendererDomFeatureResult"
+    enum="ClientSidePhishingResult" expires_after="2020-05-23">
+  <obsolete>
+    Removed 10-2021 due to being long-expired.
+  </obsolete>
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The result from the renderer after DOM feature extraction. This is collected
+    when Chrome password protection detects password reuse, or (for SBER users),
+    when the user focuses on a password field.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.RequestNetworkDuration" units="ms"
+    expires_after="2022-10-10">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The time it takes for PasswordProtectionService request. It is not recorded
+    for requests that were canceled.
+  </summary>
+</histogram>
+
+<histogram base="true" name="PasswordProtection.RequestOutcome"
+    enum="PasswordProtectionRequestOutcome" expires_after="2022-04-17">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the outcome of the password protection request, indicating if
+    request is sent out successfully or if it is skipped or canceled for some
+    reason.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.RequestReferringAppSource"
+    enum="PasswordProtectionReferringAppSource" expires_after="2022-04-24">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the referring app source of the password protection request,
+    indicating the source of the referring app name in the request. This metric
+    is only logged on Android.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.RequestWithToken.{TriggerType}"
+    units="BooleanSent" expires_after="2022-04-06">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records if the password protection request, triggered by a(n) {TriggerType},
+    was sent with a GAIA-tied OAuth2 token. This token is sent only for
+    signed-in Enhanced Safe Browsing users.
+  </summary>
+  <token key="TriggerType" variants="PasswordProtectionTriggerType"/>
+</histogram>
+
+<histogram name="PasswordProtection.SampleReportSent" units="Boolean"
+    expires_after="2022-10-31">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs when an event where users reuse their password or focus on a password
+    field is sent as a sample ping when the URL in the allowlist to Safe
+    Browsing. Events only happen 1% of the time when URLs match the allowlist.
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.Verdict" enum="PasswordProtectionVerdict"
+    expires_after="2022-04-17">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Verdict types returned by Safe Browsing server for a password protection
+    request. Request can be triggered when user focuses on a password field or
+    enters a protected password (syncing, signed-in, or saved).
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.VisualFeatureExtractionDuration" units="ms"
+    expires_after="2022-08-03">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The time it takes to extract the visual features of a login page before
+    sending a PasswordProtectionRequest. Logged every time visual features are
+    extracted (when an SBER user sends an On Focus ping).
+  </summary>
+</histogram>
+
+<histogram name="PasswordProtection.{TriggerType}.UserPopulation{Moment}"
+    enum="SafeBrowsingUserPopulation" expires_after="M98">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-core@chromium.org</owner>
+  <summary>
+    Records the user population for the profile triggering a password protection
+    check, due to {TriggerType}, {Moment}.
+  </summary>
+  <token key="TriggerType">
+    <variant name="OnFocus" summary="focusing on an unfamiliar login page"/>
+    <variant name="PasswordEntry"
+        summary="entering a password on the wrong login page"/>
+  </token>
+  <token key="Moment">
+    <variant name="OnPing" summary="when we decide to contact Safe Browsing"/>
+    <variant name="Start" summary="when the check is triggered"/>
+  </token>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

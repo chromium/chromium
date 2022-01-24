@@ -6,7 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_FEATURES_UTIL_H_
 
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace syncer {
 class SyncService;
@@ -100,6 +100,17 @@ void SetDefaultPasswordStore(PrefService* pref_service,
 PasswordForm::Store GetDefaultPasswordStore(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service);
+
+// Returns whether the default storage location for newly-saved passwords is
+// explicitly set, i.e. whether the user has made an explicit choice where to
+// save. This can be used to detect "new" users, i.e. those that have never
+// interacted with an account-storage-enabled Save flow yet.
+// |pref_service| must not be null.
+// |sync_service| may be null (commonly the case in incognito mode), in which
+// case this will return false.
+// See PasswordFeatureManager::IsDefaultPasswordStoreSet.
+bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
+                               const syncer::SyncService* sync_service);
 
 // Clears all account-storage-related settings for all users *except* the ones
 // in the passed-in |gaia_ids|. Most notably, this includes the opt-in, but also

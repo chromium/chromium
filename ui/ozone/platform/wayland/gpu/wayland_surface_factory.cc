@@ -38,6 +38,10 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
   GLOzoneEGLWayland(WaylandConnection* connection,
                     WaylandBufferManagerGpu* buffer_manager)
       : connection_(connection), buffer_manager_(buffer_manager) {}
+
+  GLOzoneEGLWayland(const GLOzoneEGLWayland&) = delete;
+  GLOzoneEGLWayland& operator=(const GLOzoneEGLWayland&) = delete;
+
   ~GLOzoneEGLWayland() override {}
 
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
@@ -56,8 +60,6 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
  private:
   WaylandConnection* const connection_;
   WaylandBufferManagerGpu* const buffer_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGLWayland);
 };
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
@@ -150,6 +152,8 @@ WaylandSurfaceFactory::GetAllowedGLImplementations() {
         gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
     impls.emplace_back(
         gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL));
+    impls.emplace_back(
+        gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader));
   }
   return impls;
 }
@@ -159,6 +163,7 @@ GLOzone* WaylandSurfaceFactory::GetGLOzone(
   switch (implementation.gl) {
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationSwiftShaderGL:
+    case gl::kGLImplementationEGLANGLE:
       return egl_implementation_.get();
     default:
       return nullptr;
@@ -215,8 +220,17 @@ WaylandSurfaceFactory::CreateNativePixmapFromHandle(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::NativePixmapHandle handle) {
-  NOTIMPLEMENTED();
+#if defined(WAYLAND_GBM)
+  scoped_refptr<GbmPixmapWayland> pixmap =
+      base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
+
+  if (!pixmap->InitializeBufferFromHandle(widget, size, format,
+                                          std::move(handle)))
+    return nullptr;
+  return pixmap;
+#else
   return nullptr;
+#endif
 }
 
 }  // namespace ui

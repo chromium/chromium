@@ -15,10 +15,10 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/thread.h"
@@ -72,6 +72,9 @@ class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
   void SetLatencyAndTaskDurationCallbacks(
       SampledDurationCallback task_latency_callback,
       SampledDurationCallback task_duration_callback);
+
+  JingleThreadWrapper(const JingleThreadWrapper&) = delete;
+  JingleThreadWrapper& operator=(const JingleThreadWrapper&) = delete;
 
   ~JingleThreadWrapper() override;
 
@@ -175,8 +178,6 @@ class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
 
   base::WeakPtr<JingleThreadWrapper> weak_ptr_;
   base::WeakPtrFactory<JingleThreadWrapper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JingleThreadWrapper);
 };
 
 }  // namespace jingle_glue

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that elements panel updates dom tree structure upon node insertion.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container"><div id="child1"></div><div id="child2"></div><div id="child3"></div></div>

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CONTINUOUS_SEARCH_RENDERER_SEARCH_RESULT_EXTRACTOR_IMPL_H_
 #define COMPONENTS_CONTINUOUS_SEARCH_RENDERER_SEARCH_RESULT_EXTRACTOR_IMPL_H_
 
+#include <vector>
+
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -26,6 +28,7 @@ class SearchResultExtractorImpl : public content::RenderFrameObserver,
       delete;
 
   void ExtractCurrentSearchResults(
+      const std::vector<mojom::ResultType>& result_types,
       ExtractCurrentSearchResultsCallback callback) override;
 
  private:

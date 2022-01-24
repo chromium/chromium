@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/download_database.h"
 #include "components/history/core/browser/history_types.h"
@@ -69,6 +68,9 @@ class HistoryDatabase : public DownloadDatabase,
   // database cleanup.
   HistoryDatabase(DownloadInterruptReason download_interrupt_reason_none,
                   DownloadInterruptReason download_interrupt_reason_crash);
+
+  HistoryDatabase(const HistoryDatabase&) = delete;
+  HistoryDatabase& operator=(const HistoryDatabase&) = delete;
 
   ~HistoryDatabase() override;
 
@@ -201,8 +203,6 @@ class HistoryDatabase : public DownloadDatabase,
   sql::MetaTable meta_table_;
 
   base::Time cached_early_expiration_threshold_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryDatabase);
 };
 
 }  // namespace history

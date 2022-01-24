@@ -28,11 +28,11 @@ namespace blink {
 #define EXPECT_EQ_SELECTED_TEXT(text) \
   EXPECT_EQ(text, Selection().SelectedText().Utf8())
 
-IntPoint VisiblePositionToContentsPoint(const VisiblePosition& pos) {
-  IntPoint result = AbsoluteSelectionBoundsOf(pos).MinXMaxYCorner();
+gfx::Point VisiblePositionToContentsPoint(const VisiblePosition& pos) {
+  gfx::Point result = AbsoluteSelectionBoundsOf(pos).bottom_left();
   // Need to move the point at least by 1 - caret's minXMaxYCorner is not
   // evaluated to the same line as the text by hit testing.
-  result.Move(0, -1);
+  result.Offset(0, -1);
   return result;
 }
 
@@ -73,10 +73,10 @@ class GranularityStrategyTest : public EditingTestBase {
 
   // Pixel coordinates of the positions for each letter within the text being
   // tested.
-  Vector<IntPoint> letter_pos_;
+  Vector<gfx::Point> letter_pos_;
   // Pixel coordinates of the middles of the words in the text being tested.
   // (y coordinate is based on y coordinates of letter_pos_)
-  Vector<IntPoint> word_middles_;
+  Vector<gfx::Point> word_middles_;
 };
 
 void GranularityStrategyTest::SetUp() {
@@ -116,10 +116,10 @@ void GranularityStrategyTest::ParseText(const TextNodeVector& text_nodes) {
         word_start_index = i + word_start_index_offset;
         word_started = true;
       } else if (!IsASCIIAlphanumeric(c) && word_started) {
-        IntPoint word_middle((letter_pos_[word_start_index].X() +
-                              letter_pos_[i + word_start_index_offset].X()) /
-                                 2,
-                             letter_pos_[word_start_index].Y());
+        gfx::Point word_middle((letter_pos_[word_start_index].x() +
+                                letter_pos_[i + word_start_index_offset].x()) /
+                                   2,
+                               letter_pos_[word_start_index].y());
         word_middles_.push_back(word_middle);
         word_started = false;
       }
@@ -130,9 +130,9 @@ void GranularityStrategyTest::ParseText(const TextNodeVector& text_nodes) {
     int x_end = VisiblePositionToContentsPoint(
                     CreateVisiblePosition(
                         Position(last_node, last_node->wholeText().length())))
-                    .X();
-    IntPoint word_middle((letter_pos_[word_start_index].X() + x_end) / 2,
-                         letter_pos_[word_start_index].Y());
+                    .x();
+    gfx::Point word_middle((letter_pos_[word_start_index].x() + x_end) / 2,
+                           letter_pos_[word_start_index].y());
     word_middles_.push_back(word_middle);
   }
 }
@@ -229,8 +229,8 @@ void GranularityStrategyTest::SetupTextSpan(String str1,
 
   UpdateAllLifecyclePhasesForTest();
 
-  Vector<IntPoint> letter_pos;
-  Vector<IntPoint> word_middle_pos;
+  Vector<gfx::Point> letter_pos;
+  Vector<gfx::Point> word_middle_pos;
 
   TextNodeVector text_nodes;
   text_nodes.push_back(text1);
@@ -324,11 +324,11 @@ void GranularityStrategyTest::TestDirectionExpand() {
   // "abcdef ghij kl mno^pqr >st|uvwi inm  mnii,"
   Selection().MoveRangeSelectionExtent(letter_pos_[24]);
   EXPECT_EQ_SELECTED_TEXT("pqr ");
-  IntPoint p = word_middles_[4];
-  p.Move(-1, 0);
+  gfx::Point p = word_middles_[4];
+  p.Offset(-1, 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("pqr ");
-  p.Move(1, 0);
+  p.Offset(1, 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("pqr stuvwi");
   // Selection should stay the same until the end of the word is reached.
@@ -342,10 +342,10 @@ void GranularityStrategyTest::TestDirectionExpand() {
   Selection().MoveRangeSelectionExtent(letter_pos_[29]);
   EXPECT_EQ_SELECTED_TEXT("pqr stuvwi ");
   // Now expand slowly to the middle of word #5.
-  int y = letter_pos_[29].Y();
-  for (int x = letter_pos_[29].X() + 1; x < word_middles_[5].X(); x++) {
-    Selection().MoveRangeSelectionExtent(IntPoint(x, y));
-    Selection().MoveRangeSelectionExtent(IntPoint(x, y));
+  int y = letter_pos_[29].y();
+  for (int x = letter_pos_[29].x() + 1; x < word_middles_[5].x(); x++) {
+    Selection().MoveRangeSelectionExtent(gfx::Point(x, y));
+    Selection().MoveRangeSelectionExtent(gfx::Point(x, y));
     EXPECT_EQ_SELECTED_TEXT("pqr stuvwi ");
   }
   Selection().MoveRangeSelectionExtent(word_middles_[5]);
@@ -353,10 +353,10 @@ void GranularityStrategyTest::TestDirectionExpand() {
   // Jump over quickly to just before the middle of the word #6 and then
   // move over it.
   p = word_middles_[6];
-  p.Move(-1, 0);
+  p.Offset(-1, 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("pqr stuvwi inm ");
-  p.Move(1, 0);
+  p.Offset(1, 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("pqr stuvwi inm mnii");
 }
@@ -370,27 +370,27 @@ void GranularityStrategyTest::TestDirectionShrink() {
   // extent and the selection end will be equal to half the width of "iiinmni".
   Selection().MoveRangeSelectionExtent(word_middles_[4]);
   EXPECT_EQ_SELECTED_TEXT("pqr iiinmni");
-  IntPoint p = word_middles_[4];
-  p.Move(letter_pos_[28].X() - letter_pos_[29].X(), 0);
+  gfx::Point p = word_middles_[4];
+  p.Offset(letter_pos_[28].x() - letter_pos_[29].x(), 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("pqr iiinmn");
-  p.Move(letter_pos_[27].X() - letter_pos_[28].X(), 0);
+  p.Offset(letter_pos_[27].x() - letter_pos_[28].x(), 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("pqr iiinm");
-  p.Move(letter_pos_[26].X() - letter_pos_[27].X(), 0);
+  p.Offset(letter_pos_[26].x() - letter_pos_[27].x(), 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("pqr iiin");
   // Move right by the width of char 30 ('m'). Selection shouldn't change,
   // but offset should be reduced.
-  p.Move(letter_pos_[27].X() - letter_pos_[26].X(), 0);
+  p.Offset(letter_pos_[27].x() - letter_pos_[26].x(), 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("pqr iiin");
   // Move back a couple of character widths and confirm the selection still
   // updates accordingly.
-  p.Move(letter_pos_[25].X() - letter_pos_[26].X(), 0);
+  p.Offset(letter_pos_[25].x() - letter_pos_[26].x(), 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("pqr iii");
-  p.Move(letter_pos_[24].X() - letter_pos_[25].X(), 0);
+  p.Offset(letter_pos_[24].x() - letter_pos_[25].x(), 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("pqr ii");
   // "Catch up" with the handle - move the extent to where the handle is.
@@ -409,7 +409,7 @@ void GranularityStrategyTest::TestDirectionShrink() {
   // It's possible to get a move when position doesn't change.
   // It shouldn't affect anything.
   p = letter_pos_[22];
-  p.Move(1, 0);
+  p.Offset(1, 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("pqr ");
   // "abcdef ghij kl mno^pqr i|>iinmni, abc"
@@ -427,45 +427,45 @@ void GranularityStrategyTest::TestDirectionSwitchSide() {
   Selection().MoveRangeSelectionExtent(word_middles_[4]);
   EXPECT_EQ_SELECTED_TEXT("pqr iiinmni");
   // Move back leaving only one letter selected.
-  IntPoint p = word_middles_[4];
-  p.Move(letter_pos_[19].X() - letter_pos_[29].X(), 0);
+  gfx::Point p = word_middles_[4];
+  p.Offset(letter_pos_[19].x() - letter_pos_[29].x(), 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("p");
   // Confirm selection doesn't change if extent is positioned at base.
-  p.Move(letter_pos_[18].X() - letter_pos_[19].X(), 0);
+  p.Offset(letter_pos_[18].x() - letter_pos_[19].x(), 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("p");
   // Move over to the other side of the base. Confirm the offset is preserved.
   // (i.e. the selection start stays on the right of the extent)
   // Confirm we stay in character granularity until the beginning of the word
   // is passed.
-  p.Move(letter_pos_[17].X() - letter_pos_[18].X(), 0);
+  p.Offset(letter_pos_[17].x() - letter_pos_[18].x(), 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("o");
-  p.Move(letter_pos_[16].X() - letter_pos_[17].X(), 0);
+  p.Offset(letter_pos_[16].x() - letter_pos_[17].x(), 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("no");
-  p.Move(letter_pos_[14].X() - letter_pos_[16].X(), 0);
+  p.Offset(letter_pos_[14].x() - letter_pos_[16].x(), 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT(" mno");
   // Move to just one pixel on the right before the middle of the word #2.
   // We should switch to word granularity, so the selection shouldn't change.
-  p.Move(word_middles_[2].X() - letter_pos_[14].X() + 1, 0);
+  p.Offset(word_middles_[2].x() - letter_pos_[14].x() + 1, 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT(" mno");
   // Move over the middle of the word. The word should get selected.
   // This should reduce the offset, but it should still stay greated than 0,
   // since the width of "iiinmni" is greater than the width of "ijkl".
-  p.Move(-2, 0);
+  p.Offset(-2, 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("ijkl mno");
   // Move to just one pixel on the right of the middle of word #1.
   // The selection should now include the space between the words.
-  p.Move(word_middles_[1].X() - letter_pos_[10].X() + 1, 0);
+  p.Offset(word_middles_[1].x() - letter_pos_[10].x() + 1, 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT(" ijkl mno");
   // Move over the middle of the word. The word should get selected.
-  p.Move(-2, 0);
+  p.Offset(-2, 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("efgh ijkl mno");
 }
@@ -509,15 +509,15 @@ TEST_F(GranularityStrategyTest, DirectionRotate) {
           .Build(),
       SetSelectionOptions());
   EXPECT_EQ_SELECTED_TEXT("a");
-  IntPoint p = letter_pos_[9];
+  gfx::Point p = letter_pos_[9];
   // Need to move by one pixel, otherwise this point is not evaluated
   // to the same line as the text by hit testing.
-  p.Move(1, 0);
+  p.Offset(1, 0);
   // "Foo B^ar B|>az,"
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("ar B");
   p = letter_pos_[1];
-  p.Move(1, 0);
+  p.Offset(1, 0);
   // "F<|oo B^ar Baz,"
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("oo B");
@@ -660,12 +660,12 @@ TEST_F(GranularityStrategyTest, DirectionSwitchSideWordGranularityThenShrink) {
   // side of the base, and we should enter word granularity since we pass
   // the word boundary. The offset should become negative since the width
   // of "efghjkkl" is greater than that of "iiin".
-  int offset = letter_pos_[26].X() - word_middles_[4].X();
-  IntPoint p =
-      IntPoint(word_middles_[2].X() - offset - 1, word_middles_[2].Y());
+  int offset = letter_pos_[26].x() - word_middles_[4].x();
+  gfx::Point p =
+      gfx::Point(word_middles_[2].x() - offset - 1, word_middles_[2].y());
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("efghijkl mno");
-  p.Move(letter_pos_[7].X() - letter_pos_[6].X(), 0);
+  p.Offset(letter_pos_[7].x() - letter_pos_[6].x(), 0);
   Selection().MoveRangeSelectionExtent(p);
   EXPECT_EQ_SELECTED_TEXT("fghijkl mno");
 }
@@ -725,13 +725,13 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullPositionForCharacter) {
   // position, we verify here.
   ASSERT_EQ(Position(), CreateVisiblePosition(
                             PositionForContentsPointRespectingEditingBoundary(
-                                IntPoint(0, 0), &GetFrame()))
+                                gfx::Point(0, 0), &GetFrame()))
                             .DeepEquivalent())
       << "This test requires null position.";
 
   // Point to RANGE inside shadow root to get null position from
   // |visiblePositionForContentsPoint()|.
-  Selection().MoveRangeSelectionExtent(IntPoint(0, 0));
+  Selection().MoveRangeSelectionExtent(gfx::Point(0, 0));
   EXPECT_EQ(selection_in_dom_tree, Selection().GetSelectionInDOMTree());
 }
 
@@ -763,13 +763,13 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullPositionForDirectional) {
   // position, we verify here.
   ASSERT_EQ(Position(), CreateVisiblePosition(
                             PositionForContentsPointRespectingEditingBoundary(
-                                IntPoint(0, 0), &GetFrame()))
+                                gfx::Point(0, 0), &GetFrame()))
                             .DeepEquivalent())
       << "This test requires null position.";
 
   // Point to RANGE inside shadow root to get null position from
   // |visiblePositionForContentsPoint()|.
-  Selection().MoveRangeSelectionExtent(IntPoint(0, 0));
+  Selection().MoveRangeSelectionExtent(gfx::Point(0, 0));
 
   EXPECT_EQ(selection_in_dom_tree, Selection().GetSelectionInDOMTree());
 }
@@ -785,10 +785,10 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullNextWordBound) {
   ASSERT_EQ(
       Position(*GetDocument().getElementById("target"), 0),
       CreateVisiblePosition(PositionForContentsPointRespectingEditingBoundary(
-                                IntPoint(0, 0), &GetFrame()))
+                                gfx::Point(0, 0), &GetFrame()))
           .DeepEquivalent())
       << "We extend selection inside content editable.";
-  Selection().MoveRangeSelectionExtent(IntPoint(0, 0));
+  Selection().MoveRangeSelectionExtent(gfx::Point(0, 0));
 
   EXPECT_EQ(selection, Selection().GetSelectionInDOMTree());
 }

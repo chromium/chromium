@@ -13,7 +13,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/password_entry_edit/android/credential_edit_bridge.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -48,6 +47,10 @@ class PasswordUIViewAndroid : public PasswordUIView {
   };
 
   PasswordUIViewAndroid(JNIEnv* env, jobject);
+
+  PasswordUIViewAndroid(const PasswordUIViewAndroid&) = delete;
+  PasswordUIViewAndroid& operator=(const PasswordUIViewAndroid&) = delete;
+
   ~PasswordUIViewAndroid() override;
 
   // PasswordUIView implementation.
@@ -159,7 +162,7 @@ class PasswordUIViewAndroid : public PasswordUIView {
   PasswordManagerPresenter password_manager_presenter_;
 
   // Handle to the password store, powering `saved_passwords_presenter_`
-  scoped_refptr<password_manager::PasswordStore> password_store_ =
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store_ =
       PasswordStoreFactory::GetForProfile(ProfileManager::GetLastUsedProfile(),
                                           ServiceAccessType::EXPLICIT_ACCESS);
 
@@ -178,8 +181,6 @@ class PasswordUIViewAndroid : public PasswordUIView {
 
   // Used to open the view/edit/delete UI.
   std::unique_ptr<CredentialEditBridge> credential_edit_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordUIViewAndroid);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_UI_VIEW_ANDROID_H_

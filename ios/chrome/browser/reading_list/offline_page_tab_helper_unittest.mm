@@ -12,6 +12,7 @@
 #include "base/time/default_clock.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/reading_list/fake_reading_list_model.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -29,136 +30,6 @@ const char kTestTitle[] = "title";
 const char kTestDistilledPath[] = "distilled.html";
 const char kTestDistilledURL[] = "http://foo.bar/distilled";
 const char kTestDirectory[] = "ios/testing/data/";
-
-// A simple implementation of ReadingListModel that only support functions
-// needed to load an offline page.
-class FakeReadingListModel : public ReadingListModel {
- public:
-  ~FakeReadingListModel() override {}
-  bool loaded() const override { return loaded_; }
-
-  syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override {
-    NOTREACHED();
-    return nullptr;
-  }
-
-  const std::vector<GURL> Keys() const override {
-    NOTREACHED();
-    return std::vector<GURL>();
-  }
-
-  size_t size() const override {
-    DCHECK(loaded_);
-    return 0;
-  }
-
-  size_t unread_size() const override {
-    NOTREACHED();
-    return 0;
-  }
-
-  size_t unseen_size() const override {
-    NOTREACHED();
-    return 0;
-  }
-
-  void MarkAllSeen() override { NOTREACHED(); }
-
-  bool DeleteAllEntries() override {
-    NOTREACHED();
-    return false;
-  }
-
-  bool GetLocalUnseenFlag() const override {
-    NOTREACHED();
-    return false;
-  }
-
-  void ResetLocalUnseenFlag() override { NOTREACHED(); }
-
-  const ReadingListEntry* GetEntryByURL(const GURL& gurl) const override {
-    DCHECK(loaded_);
-    if (entry_->URL() == gurl) {
-      return entry_;
-    }
-    return nullptr;
-  }
-
-  const ReadingListEntry* GetFirstUnreadEntry(bool distilled) const override {
-    NOTREACHED();
-    return nullptr;
-  }
-
-  bool IsUrlSupported(const GURL& url) override {
-    NOTREACHED();
-    return false;
-  }
-
-  const ReadingListEntry& AddEntry(const GURL& url,
-                                   const std::string& title,
-                                   reading_list::EntrySource source) override {
-    NOTREACHED();
-    return *entry_;
-  }
-
-  const ReadingListEntry& AddEntry(
-      const GURL& url,
-      const std::string& title,
-      reading_list::EntrySource source,
-      base::TimeDelta estimated_read_time) override {
-    NOTREACHED();
-    return *entry_;
-  }
-
-  void RemoveEntryByURL(const GURL& url) override { NOTREACHED(); }
-
-  void SetReadStatus(const GURL& url, bool read) override {
-    if (entry_->URL() == url) {
-      entry_->SetRead(true, base::Time());
-    }
-  }
-
-  void SetEntryTitle(const GURL& url, const std::string& title) override {
-    NOTREACHED();
-  }
-
-  void SetEntryDistilledState(
-      const GURL& url,
-      ReadingListEntry::DistillationState state) override {
-    NOTREACHED();
-  }
-
-  void SetEstimatedReadTime(const GURL& url,
-                            base::TimeDelta estimated_read_time) override {
-    NOTREACHED();
-  }
-
-  void SetEntryDistilledInfo(const GURL& url,
-                             const base::FilePath& distilled_path,
-                             const GURL& distilled_url,
-                             int64_t distilation_size,
-                             const base::Time& distilation_time) override {
-    NOTREACHED();
-  }
-
-  void SetContentSuggestionsExtra(
-      const GURL& url,
-      const reading_list::ContentSuggestionsExtra& extra) override {
-    NOTREACHED();
-  }
-
-  void SetEntry(ReadingListEntry* entry) { entry_ = entry; }
-  void SetLoaded() {
-    loaded_ = true;
-    for (auto& observer : observers_) {
-      observer.ReadingListModelLoaded(this);
-    }
-  }
-
- private:
-  ReadingListEntry* entry_ = nullptr;
-  bool loaded_ = false;
-};
 }
 
 // Test fixture to test loading of Reading list offline pages.

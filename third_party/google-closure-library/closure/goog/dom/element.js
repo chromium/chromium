@@ -1,16 +1,8 @@
-// Copyright 2019 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.dom.element');
 goog.module.declareLegacyNamespace();
@@ -27,7 +19,8 @@ const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
  * @return {boolean}
  */
 const isElement = (value) => {
-  return goog.isObject(value) && value.nodeType === NodeType.ELEMENT;
+  return goog.isObject(value) &&
+      /** @type {!Node} */ (value).nodeType === NodeType.ELEMENT;
 };
 
 /**
@@ -38,7 +31,8 @@ const isElement = (value) => {
 const isHtmlElement = (value) => {
   return goog.isObject(value) && isElement(value) &&
       // namespaceURI of old browsers (FF < 3.6, IE < 9) will be null.
-      (!value.namespaceURI || value.namespaceURI === HTML_NAMESPACE);
+      (!/** @type {!Element} */ (value).namespaceURI ||
+       /** @type {!Element} */ (value).namespaceURI === HTML_NAMESPACE);
 };
 
 /**
@@ -53,7 +47,8 @@ const isHtmlElementOfType = (value, tagName) => {
   return goog.isObject(value) && isHtmlElement(value) &&
       // Some uncommon JS environments (e.g. Cobalt 9) have issues with tag
       // capitalization.
-      value.tagName.toUpperCase() === tagName.toString();
+      (/** @type {!HTMLElement} */ (value).tagName.toUpperCase() ===
+       tagName.toString());
 };
 
 /**

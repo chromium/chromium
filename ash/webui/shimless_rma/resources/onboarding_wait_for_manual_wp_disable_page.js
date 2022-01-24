@@ -5,22 +5,36 @@
 import './shimless_rma_shared_css.js';
 import './base_page.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {HardwareWriteProtectionStateObserverInterface, HardwareWriteProtectionStateObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {HardwareWriteProtectionStateObserverInterface, HardwareWriteProtectionStateObserverReceiver, QrCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
-// TODO(gavindodd): Update text for i18n
-const openDeviceMessage = 'Open your device and disconnect the battery.';
-const hwwpDisabledMessage = 'HWWP disabled.';
+// The size of each tile in pixels.
+const QR_CODE_TILE_SIZE = 5;
+// Amount of padding around the QR code in pixels.
+const QR_CODE_PADDING = 4 * QR_CODE_TILE_SIZE;
+// Styling for filled tiles in the QR code.
+const QR_CODE_FILL_STYLE = '#000000';
 
 /**
  * @fileoverview
  * 'onboarding-wait-for-manual-wp-disable-page' wait for the manual HWWP disable
  * to be completed.
  */
-export class OnboardingWaitForManualWpDisablePageElement extends
-    PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const OnboardingWaitForManualWpDisablePageBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class OnboardingWaitForManualWpDisablePage extends
+    OnboardingWaitForManualWpDisablePageBase {
   static get is() {
     return 'onboarding-wait-for-manual-wp-disable-page';
   }
@@ -31,62 +45,45 @@ export class OnboardingWaitForManualWpDisablePageElement extends
 
   static get properties() {
     return {
-      /** @private {ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: {},
-      },
-
-      /** @protected {boolean} */
+      /** @protected */
       hwwpEnabled_: {
         type: Boolean,
         value: true,
       },
 
-      /**
-       * Receiver responsible for observing hardware write protection state.
-       * @private {
-       *  ?HardwareWriteProtectionStateObserverReceiver}
-       */
-      hardwareWriteProtectionStateObserverReceiver_: {
-        type: Object,
-        value: null,
+      /** @protected */
+      canvasSize_: {
+        type: Number,
+        value: 0,
       },
 
+      /** @protected */
+      helpUrl_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
-  // TODO: battery_status_card.js uses created() and detached() to create and
-  // close observer.
+  // TODO(gavindodd): battery_status_card.js uses created() and detached() to
+  // create and close observer. Is that the pattern that should be used here?
 
-  /** @override */
-  ready() {
-    super.ready();
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
-    this.observeHardwareWriteProtectionState_();
-  }
-
-  /** @private */
-  observeHardwareWriteProtectionState_() {
+    /** @private {?HardwareWriteProtectionStateObserverReceiver} */
     this.hardwareWriteProtectionStateObserverReceiver_ =
         new HardwareWriteProtectionStateObserverReceiver(
-            /**
-             * @type {!HardwareWriteProtectionStateObserverInterface}
-             */
+            /** @type {!HardwareWriteProtectionStateObserverInterface} */
             (this));
 
     this.shimlessRmaService_.observeHardwareWriteProtectionState(
         this.hardwareWriteProtectionStateObserverReceiver_.$
             .bindNewPipeAndPassRemote());
-  }
-
-  /**
-   * @protected
-   * @param {boolean} hwwpEnabled
-   * @return {string}
-   */
-  getBodyText_(hwwpEnabled) {
-    return this.hwwpEnabled_ ? openDeviceMessage : hwwpDisabledMessage;
+    this.shimlessRmaService_.getWriteProtectManuallyDisabledInstructions().then(
+        /*@type {!{string: displayUrl, qrCode: ?QrCode}}*/ (response) =>
+            this.updateHelpInstructions_(response));
   }
 
   /**
@@ -95,23 +92,71 @@ export class OnboardingWaitForManualWpDisablePageElement extends
    */
   onHardwareWriteProtectionStateChanged(enabled) {
     this.hwwpEnabled_ = enabled;
-    // TODO(gavindodd): enable/disable next button. Or should it automatically
-    // progress to the next state?
+
+    if(!this.hidden) {
+      // TODO(gavindodd): Should this automatically progress to the next state?
+      this.dispatchEvent(new CustomEvent(
+          'disable-next-button',
+          {bubbles: true, composed: true, detail: this.hwwpEnabled_},
+          ));
+    }
   }
 
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
     if (!this.hwwpEnabled_) {
-      // TODO(crbug.com/1218180): Replace with a state specific function e.g.
-      // WriteProtectManuallyDisabled()
-      return this.shimlessRmaService_.transitionNextState();
+      return this.shimlessRmaService_.writeProtectManuallyDisabled();
     } else {
       return Promise.reject(
           new Error('Hardware Write Protection is not disabled.'));
     }
   }
-};
+
+  /**
+   * @param {!{displayUrl: string, qrCode: ?QrCode}} response
+   * @private
+   */
+  updateHelpInstructions_(response) {
+    this.helpUrl_ = response.displayUrl;
+    this.updateQrCode_(response.qrCode);
+  }
+
+  /**
+   * @param {?QrCode} qrCode
+   * @private
+   */
+  updateQrCode_(qrCode) {
+    if (!qrCode) {
+      return;
+    }
+
+    this.canvasSize_ = qrCode.size * QR_CODE_TILE_SIZE + 2 * QR_CODE_PADDING;
+    const context = this.getCanvasContext_();
+    context.clearRect(0, 0, this.canvasSize_, this.canvasSize_);
+    context.fillStyle = QR_CODE_FILL_STYLE;
+    let index = 0;
+    for (let x = 0; x < qrCode.size; x++) {
+      for (let y = 0; y < qrCode.size; y++) {
+        if (qrCode.data[index]) {
+          context.fillRect(
+              x * QR_CODE_TILE_SIZE + QR_CODE_PADDING,
+              y * QR_CODE_TILE_SIZE + QR_CODE_PADDING, QR_CODE_TILE_SIZE,
+              QR_CODE_TILE_SIZE);
+        }
+        index++;
+      }
+    }
+  }
+
+  /**
+   * @return {!CanvasRenderingContext2D}
+   * @private
+   */
+  getCanvasContext_() {
+    return this.shadowRoot.querySelector('#qrCodeCanvas').getContext('2d');
+  }
+}
 
 customElements.define(
-    OnboardingWaitForManualWpDisablePageElement.is,
-    OnboardingWaitForManualWpDisablePageElement);
+    OnboardingWaitForManualWpDisablePage.is,
+    OnboardingWaitForManualWpDisablePage);

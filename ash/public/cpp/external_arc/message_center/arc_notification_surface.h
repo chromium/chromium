@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -25,6 +24,10 @@ namespace ash {
 class ArcNotificationSurface {
  public:
   ArcNotificationSurface() = default;
+
+  ArcNotificationSurface(const ArcNotificationSurface&) = delete;
+  ArcNotificationSurface& operator=(const ArcNotificationSurface&) = delete;
+
   virtual ~ArcNotificationSurface() = default;
 
   // Returns the content size of the notification surface.
@@ -61,9 +64,6 @@ class ArcNotificationSurface {
 
   // Returns AXTreeId of this surface.
   virtual ui::AXTreeID GetAXTreeId() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationSurface);
 };
 
 }  // namespace ash

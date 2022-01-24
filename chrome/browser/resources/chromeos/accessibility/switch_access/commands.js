@@ -31,7 +31,7 @@ export class Commands {
     ]);
 
     chrome.accessibilityPrivate.onSwitchAccessCommand.addListener(
-        this.runCommand_.bind(this));
+        command => this.runCommand_(command));
   }
 
   static initialize() {

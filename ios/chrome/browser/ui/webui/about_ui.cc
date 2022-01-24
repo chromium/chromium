@@ -36,6 +36,9 @@ class AboutUIHTMLSource : public web::URLDataSourceIOS {
   // Construct a data source for the specified |source_name|.
   explicit AboutUIHTMLSource(const std::string& source_name);
 
+  AboutUIHTMLSource(const AboutUIHTMLSource&) = delete;
+  AboutUIHTMLSource& operator=(const AboutUIHTMLSource&) = delete;
+
   // web::URLDataSourceIOS implementation.
   std::string GetSource() const override;
   void StartDataRequest(
@@ -52,8 +55,6 @@ class AboutUIHTMLSource : public web::URLDataSourceIOS {
   ~AboutUIHTMLSource() override;
 
   std::string source_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(AboutUIHTMLSource);
 };
 
 void AppendHeader(std::string* output,
@@ -128,9 +129,13 @@ void AboutUIHTMLSource::StartDataRequest(
   } else if (source_name_ == kChromeUIHistogramHost) {
     // Note: On other platforms, this is implemented in //content. If there is
     // ever a need for embedders other than //ios/chrome to use
-    // chrome://histograms, this code could likely be moved to //io/web.
+    // chrome://histograms, this code could likely be moved to //ios/web.
     for (base::HistogramBase* histogram : base::StatisticsRecorder::Sort(
              base::StatisticsRecorder::GetHistograms())) {
+      std::string histogram_name = histogram->histogram_name();
+      if (histogram_name.find(path) == std::string::npos) {
+        continue;
+      }
       base::Value histogram_dict = histogram->ToGraphDict();
       std::string* header = histogram_dict.FindStringKey("header");
       std::string* body = histogram_dict.FindStringKey("body");

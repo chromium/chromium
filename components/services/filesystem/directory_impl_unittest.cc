@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "components/services/filesystem/directory_test_helper.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
@@ -26,6 +25,9 @@ class DirectoryImplTest : public testing::Test {
  public:
   DirectoryImplTest() = default;
 
+  DirectoryImplTest(const DirectoryImplTest&) = delete;
+  DirectoryImplTest& operator=(const DirectoryImplTest&) = delete;
+
   mojo::Remote<mojom::Directory> CreateTempDir() {
     return test_helper_.CreateTempDir();
   }
@@ -33,8 +35,6 @@ class DirectoryImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   DirectoryTestHelper test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectoryImplTest);
 };
 
 constexpr char kData[] = "one two three";

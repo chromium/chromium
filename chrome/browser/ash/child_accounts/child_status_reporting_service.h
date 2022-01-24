@@ -19,7 +19,7 @@ class BrowserContext;
 namespace policy {
 class CloudPolicyClient;
 class StatusUploader;
-class UserCloudPolicyManagerChromeOS;
+class UserCloudPolicyManagerAsh;
 }  // namespace policy
 
 namespace ash {
@@ -28,7 +28,7 @@ namespace ash {
 // Child user should be registered with DMServer and periodically upload the
 // information about the device usage. The reports are only sent during user's
 // session and they do not interfere with enterprise reporting that is
-// controlled by DeviceCloudPolicyManagerChromeOS.
+// controlled by DeviceCloudPolicyManagerAsh.
 class ChildStatusReportingService : public KeyedService {
  public:
   explicit ChildStatusReportingService(content::BrowserContext* context);
@@ -64,7 +64,7 @@ class ChildStatusReportingService : public KeyedService {
 
   content::BrowserContext* const context_;
 
-  policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager_;
+  policy::UserCloudPolicyManagerAsh* user_cloud_policy_manager_;
 };
 
 }  // namespace ash

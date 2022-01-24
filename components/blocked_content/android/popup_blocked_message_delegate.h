@@ -29,7 +29,6 @@ class PopupBlockedMessageDelegate
  public:
   bool ShowMessage(int num_popups,
                    HostContentSettingsMap* settings_map,
-                   base::RepeatingCallback<int(int)> resource_id_mapper,
                    base::OnceClosure on_accept_callback);
 
   ~PopupBlockedMessageDelegate() override;

@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/active_install_data.h"
@@ -35,6 +34,10 @@ class InstallTracker : public KeyedService,
  public:
   InstallTracker(content::BrowserContext* browser_context,
                  extensions::ExtensionPrefs* prefs);
+
+  InstallTracker(const InstallTracker&) = delete;
+  InstallTracker& operator=(const InstallTracker&) = delete;
+
   ~InstallTracker() override;
 
   static InstallTracker* Get(content::BrowserContext* context);
@@ -99,8 +102,6 @@ class InstallTracker : public KeyedService,
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InstallTracker);
 };
 
 }  // namespace extensions

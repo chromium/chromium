@@ -44,7 +44,7 @@ class CustomStateSet final : public ScriptWrappable,
   void InvalidateStyle() const;
 
   Member<Element> element_;
-  // We use neither LinkedHashSet nor ListHashSet because it's difficult to
+  // We don't use LinkedHashSet because it's difficult to
   // implement "live" iterators with them.
   // See crbug.com/1184020.
   //

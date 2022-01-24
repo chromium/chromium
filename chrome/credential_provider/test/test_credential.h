@@ -197,8 +197,7 @@ HRESULT CTestCredentialBase<T>::SetGaiaFullNameOverride(
 
 template <class T>
 HRESULT CTestCredentialBase<T>::WaitForGls() {
-  return !gls_process_started_ ||
-                 gls_done_.TimedWait(base::TimeDelta::FromSeconds(30))
+  return !gls_process_started_ || gls_done_.TimedWait(base::Seconds(30))
              ? S_OK
              : HRESULT_FROM_WIN32(WAIT_TIMEOUT);
 }

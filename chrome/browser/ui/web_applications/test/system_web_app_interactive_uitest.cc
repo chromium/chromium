@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -64,7 +65,7 @@ class SystemWebAppLinkCaptureBrowserTest
   SystemWebAppLinkCaptureBrowserTest()
       : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    WebAppProvider::EnableSystemWebAppsInLacrosForTesting();
+    EnableSystemWebAppsInLacrosForTesting();
 #endif
     maybe_installation_ =
         TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
@@ -91,6 +92,7 @@ class SystemWebAppLinkCaptureBrowserTest
   const SystemAppType kInitiatingAppType = SystemAppType::SETTINGS;
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        OmniboxTypeURLAndNavigate) {
   WaitForTestSystemAppInstall();
@@ -130,14 +132,13 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
 }
 
 // This test is flaky on MacOS with ASAN or DBG. https://crbug.com/1173317
-#if defined(OS_MAC)
-#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+#if defined(OS_MAC) && (defined(ADDRESS_SANITIZER) || !defined(NDEBUG))
 #define MAYBE_AnchorLinkClick DISABLED_AnchorLinkClick
 #else
 #define MAYBE_AnchorLinkClick AnchorLinkClick
-#endif  // ADDRESS_SANITIZER || !NDEBUG
-#endif  // OS_MAC
-IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
+#endif  // OS_MAC && (ADDRESS_SANITIZER || !NDEBUG)
+IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
+                       MAYBE_AnchorLinkClick) {
   WaitForTestSystemAppInstall();
 
   GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
@@ -210,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   observer.StartWatchingNewWebContents();
 
   TestRenderViewContextMenu menu(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
       context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
@@ -253,7 +254,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   observer.StartWatchingNewWebContents();
 
   TestRenderViewContextMenu menu(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
       context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW, 0);
@@ -458,6 +459,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class SystemWebAppManagerWindowSizeControlsTest
     : public SystemWebAppManagerBrowserTest {
@@ -499,10 +501,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWindowSizeControlsTest,
 // it's less complicated to add SWA to LoginManagerTest than adding multi-logins
 // to SWA browsertest.
 class SystemWebAppManagerMultiDesktopLaunchBrowserTest
-    : public chromeos::LoginManagerTest {
+    : public ash::LoginManagerTest {
  public:
-  SystemWebAppManagerMultiDesktopLaunchBrowserTest()
-      : chromeos::LoginManagerTest() {
+  SystemWebAppManagerMultiDesktopLaunchBrowserTest() : ash::LoginManagerTest() {
     login_mixin_.AppendRegularUsers(2);
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;
@@ -544,7 +545,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     auto launch_params = apps::AppLaunchParams(
         app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
-        apps::mojom::AppLaunchSource::kSourceAppLauncher);
+        apps::mojom::LaunchSource::kFromAppListGrid);
 
     content::TestNavigationObserver navigation_observer(
         installation_->GetAppUrl());
@@ -571,7 +572,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
 
  protected:
   std::unique_ptr<TestSystemWebAppInstallation> installation_;
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
   AccountId account_id1_;
   AccountId account_id2_;
 };
@@ -659,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
         GetAppId(profile2),
         apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
-        apps::mojom::AppLaunchSource::kSourceAppLauncher);
+        apps::mojom::LaunchSource::kFromAppListGrid);
     content::WebContents* web_contents =
         apps::AppServiceProxyFactory::GetForProfile(profile2)
             ->BrowserAppLauncher()
@@ -672,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
         GetAppId(profile1),
         apps::mojom::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::CURRENT_TAB,
-        apps::mojom::AppLaunchSource::kSourceAppLauncher);
+        apps::mojom::LaunchSource::kFromAppListGrid);
     content::WebContents* web_contents =
         apps::AppServiceProxyFactory::GetForProfile(profile1)
             ->BrowserAppLauncher()
@@ -821,7 +822,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerCloseFromScriptsTest, WindowClose) {
   LaunchApp(maybe_installation_->GetType(), &app_browser);
 
   const GURL kPageURL = maybe_installation_->GetAppUrl().Resolve("/page2.html");
-  ui_test_utils::NavigateToURL(app_browser, kPageURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, kPageURL));
   EXPECT_EQ(kPageURL, app_browser->tab_strip_model()
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
@@ -854,7 +855,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShouldNotCloseFromScriptsTest,
   LaunchApp(maybe_installation_->GetType(), &app_browser);
 
   const GURL kPageURL = maybe_installation_->GetAppUrl().Resolve("/page2.html");
-  ui_test_utils::NavigateToURL(app_browser, kPageURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, kPageURL));
   EXPECT_EQ(kPageURL, app_browser->tab_strip_model()
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
@@ -947,8 +948,10 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppNewWindowMenuItemTest, OpensNewWindow) {
 }
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppLinkCaptureBrowserTest);
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

@@ -77,7 +77,6 @@ class PeopleSection : public OsSettingsSection,
   void FetchAccounts();
   void UpdateAccountManagerSearchTags(
       const std::vector<::account_manager::Account>& accounts);
-  void UpdateRemoveFingerprintSearchTags();
 
   account_manager::AccountManager* account_manager_ = nullptr;
   account_manager::AccountManagerFacade* account_manager_facade_ = nullptr;
@@ -85,7 +84,6 @@ class PeopleSection : public OsSettingsSection,
   SupervisedUserService* supervised_user_service_;
   signin::IdentityManager* identity_manager_;
   PrefService* pref_service_;
-  PrefChangeRegistrar fingerprint_pref_change_registrar_;
 
   // An observer for `AccountManagerFacade`. Automatically deregisters when
   // `this` is destructed.

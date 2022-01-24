@@ -54,7 +54,7 @@ class ReceiverTimeOffsetEstimatorImplTest : public ::testing::Test {
 // Then the bound after all 3 events have arrived is [130-60=70, 130-20=110].
 TEST_F(ReceiverTimeOffsetEstimatorImplTest, EstimateOffset) {
   int64_t true_offset_ms = 100;
-  receiver_clock_.Advance(base::TimeDelta::FromMilliseconds(true_offset_ms));
+  receiver_clock_.Advance(base::Milliseconds(true_offset_ms));
 
   base::TimeDelta lower_bound;
   base::TimeDelta upper_bound;
@@ -64,7 +64,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, EstimateOffset) {
   const RtpTimeTicks rtp_timestamp;
   FrameId frame_id = FrameId::first();
 
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(20));
+  AdvanceClocks(base::Milliseconds(20));
 
   std::unique_ptr<FrameEvent> encode_event(new FrameEvent());
   encode_event->timestamp = sender_clock_.NowTicks();
@@ -92,7 +92,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, EstimateOffset) {
 
   EXPECT_FALSE(estimator_.GetReceiverOffsetBounds(&lower_bound, &upper_bound));
 
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(10));
+  AdvanceClocks(base::Milliseconds(10));
   std::unique_ptr<FrameEvent> ack_sent_event(new FrameEvent());
   ack_sent_event->timestamp = receiver_clock_.NowTicks();
   ack_sent_event->type = FRAME_ACK_SENT;
@@ -114,7 +114,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, EstimateOffset) {
 
   EXPECT_FALSE(estimator_.GetReceiverOffsetBounds(&lower_bound, &upper_bound));
 
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(30));
+  AdvanceClocks(base::Milliseconds(30));
   std::unique_ptr<FrameEvent> ack_event(new FrameEvent());
   ack_event->timestamp = sender_clock_.NowTicks();
   ack_event->type = FRAME_ACK_RECEIVED;
@@ -137,7 +137,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, EstimateOffset) {
 // event C occurred before event B.
 TEST_F(ReceiverTimeOffsetEstimatorImplTest, EventCArrivesBeforeEventB) {
   int64_t true_offset_ms = 100;
-  receiver_clock_.Advance(base::TimeDelta::FromMilliseconds(true_offset_ms));
+  receiver_clock_.Advance(base::Milliseconds(true_offset_ms));
 
   base::TimeDelta lower_bound;
   base::TimeDelta upper_bound;
@@ -147,7 +147,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, EventCArrivesBeforeEventB) {
   const RtpTimeTicks rtp_timestamp;
   FrameId frame_id = FrameId::first();
 
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(20));
+  AdvanceClocks(base::Milliseconds(20));
 
   std::unique_ptr<FrameEvent> encode_event(new FrameEvent());
   encode_event->timestamp = sender_clock_.NowTicks();
@@ -175,9 +175,9 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, EventCArrivesBeforeEventB) {
 
   EXPECT_FALSE(estimator_.GetReceiverOffsetBounds(&lower_bound, &upper_bound));
 
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(10));
+  AdvanceClocks(base::Milliseconds(10));
   base::TimeTicks event_b_time = receiver_clock_.NowTicks();
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(30));
+  AdvanceClocks(base::Milliseconds(30));
   base::TimeTicks event_c_time = sender_clock_.NowTicks();
 
   std::unique_ptr<FrameEvent> ack_event(new FrameEvent());
@@ -221,7 +221,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, EventCArrivesBeforeEventB) {
 
 TEST_F(ReceiverTimeOffsetEstimatorImplTest, MultipleIterations) {
   int64_t true_offset_ms = 100;
-  receiver_clock_.Advance(base::TimeDelta::FromMilliseconds(true_offset_ms));
+  receiver_clock_.Advance(base::Milliseconds(true_offset_ms));
 
   base::TimeDelta lower_bound;
   base::TimeDelta upper_bound;
@@ -240,7 +240,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, MultipleIterations) {
   // Frame 3 times: [77, 80+100, 110]
   // Bound should end up at [95, 103]
   // Events times in chronological order: 20, 30 x2, 50, 55, 60, 77, 80, 110
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(20));
+  AdvanceClocks(base::Milliseconds(20));
   std::unique_ptr<FrameEvent> encode_event(new FrameEvent());
   encode_event->timestamp = sender_clock_.NowTicks();
   encode_event->type = FRAME_ENCODED;
@@ -265,7 +265,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, MultipleIterations) {
   send_event->size = 1500;
   cast_environment_->logger()->DispatchPacketEvent(std::move(send_event));
 
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(10));
+  AdvanceClocks(base::Milliseconds(10));
   encode_event = std::make_unique<FrameEvent>();
   encode_event->timestamp = sender_clock_.NowTicks();
   encode_event->type = FRAME_ENCODED;
@@ -298,7 +298,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, MultipleIterations) {
   ack_sent_event->frame_id = frame_id_a;
   cast_environment_->logger()->DispatchFrameEvent(std::move(ack_sent_event));
 
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(20));
+  AdvanceClocks(base::Milliseconds(20));
 
   std::unique_ptr<PacketEvent> receive_event(new PacketEvent());
   receive_event->timestamp = receiver_clock_.NowTicks();
@@ -319,7 +319,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, MultipleIterations) {
   ack_sent_event->frame_id = frame_id_b;
   cast_environment_->logger()->DispatchFrameEvent(std::move(ack_sent_event));
 
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(5));
+  AdvanceClocks(base::Milliseconds(5));
   std::unique_ptr<FrameEvent> ack_event(new FrameEvent());
   ack_event->timestamp = sender_clock_.NowTicks();
   ack_event->type = FRAME_ACK_RECEIVED;
@@ -328,7 +328,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, MultipleIterations) {
   ack_event->frame_id = frame_id_b;
   cast_environment_->logger()->DispatchFrameEvent(std::move(ack_event));
 
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(5));
+  AdvanceClocks(base::Milliseconds(5));
   ack_event = std::make_unique<FrameEvent>();
   ack_event->timestamp = sender_clock_.NowTicks();
   ack_event->type = FRAME_ACK_RECEIVED;
@@ -337,7 +337,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, MultipleIterations) {
   ack_event->frame_id = frame_id_a;
   cast_environment_->logger()->DispatchFrameEvent(std::move(ack_event));
 
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(17));
+  AdvanceClocks(base::Milliseconds(17));
   encode_event = std::make_unique<FrameEvent>();
   encode_event->timestamp = sender_clock_.NowTicks();
   encode_event->type = FRAME_ENCODED;
@@ -362,7 +362,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, MultipleIterations) {
   send_event->size = 1500;
   cast_environment_->logger()->DispatchPacketEvent(std::move(send_event));
 
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(3));
+  AdvanceClocks(base::Milliseconds(3));
   receive_event = std::make_unique<PacketEvent>();
   receive_event->timestamp = receiver_clock_.NowTicks();
   receive_event->type = PACKET_RECEIVED;
@@ -382,7 +382,7 @@ TEST_F(ReceiverTimeOffsetEstimatorImplTest, MultipleIterations) {
   ack_sent_event->frame_id = frame_id_c;
   cast_environment_->logger()->DispatchFrameEvent(std::move(ack_sent_event));
 
-  AdvanceClocks(base::TimeDelta::FromMilliseconds(30));
+  AdvanceClocks(base::Milliseconds(30));
   ack_event = std::make_unique<FrameEvent>();
   ack_event->timestamp = sender_clock_.NowTicks();
   ack_event->type = FRAME_ACK_RECEIVED;

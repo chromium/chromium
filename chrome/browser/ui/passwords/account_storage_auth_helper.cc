@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
 

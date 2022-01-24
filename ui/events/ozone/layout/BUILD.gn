@@ -5,8 +5,7 @@
 import("//build/config/linux/pkg_config.gni")
 import("//ui/base/ui_features.gni")
 
-# Chromedriver uses this in X11 builds for StubKeyboardLayoutEngine.
-assert(use_ozone || use_x11)
+assert(use_ozone)
 
 if (use_xkbcommon) {
   pkg_config("xkbcommon") {
@@ -81,7 +80,8 @@ source_set("test_support") {
 
   sources = [
     "keyboard_layout_engine_test_utils.cc",
-    "keyboard_layout_engine_test_utils.h", ]
+    "keyboard_layout_engine_test_utils.h",
+  ]
 
   deps = [
     ":layout",

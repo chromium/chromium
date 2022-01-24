@@ -24,6 +24,7 @@ constexpr char kUri[] = "ipp://192.168.1.5:631";
 
 constexpr char kTitle[] = "title";
 constexpr char kId[] = "id";
+constexpr char kPrinterId[] = "printerId";
 constexpr char kSourceId[] = "extension:123";
 constexpr int64_t kJobCreationTime = 1000;
 constexpr int64_t kJobDuration = 10 * 1000;
@@ -57,12 +58,11 @@ TEST(PrintJobInfoProtoConversionsTest, CupsPrintJobToProto) {
   // Override time so that base::Time::Now() always returns 1 second after the
   // epoch in Unix-like system (Jan 1, 1970).
   base::subtle::ScopedTimeClockOverrides time_override(
-      []() {
-        return base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1);
-      },
-      nullptr, nullptr);
+      []() { return base::Time::UnixEpoch() + base::Seconds(1); }, nullptr,
+      nullptr);
 
   chromeos::Printer printer;
+  printer.set_id(kPrinterId);
   printer.set_display_name(kName);
   printer.SetUri(kUri);
   printer.set_source(chromeos::Printer::Source::SRC_POLICY);
@@ -77,8 +77,7 @@ TEST(PrintJobInfoProtoConversionsTest, CupsPrintJobToProto) {
                               kSourceId, settings);
   cups_print_job.set_state(CupsPrintJob::State::STATE_FAILED);
   cups_print_job.set_error_code(PrinterErrorCode::OUT_OF_PAPER);
-  base::Time completion_time =
-      base::Time::Now() + base::TimeDelta::FromSeconds(10);
+  base::Time completion_time = base::Time::Now() + base::Seconds(10);
 
   proto::PrintJobInfo print_job_info_proto =
       CupsPrintJobToProto(cups_print_job, kId, completion_time);
@@ -94,6 +93,7 @@ TEST(PrintJobInfoProtoConversionsTest, CupsPrintJobToProto) {
   EXPECT_EQ(kJobCreationTime, print_job_info_proto.creation_time());
   EXPECT_EQ(kJobCreationTime + kJobDuration,
             print_job_info_proto.completion_time());
+  EXPECT_EQ(kPrinterId, printer_proto.id());
   EXPECT_EQ(kName, printer_proto.name());
   EXPECT_EQ(kUri, printer_proto.uri());
   EXPECT_EQ(proto::Printer_PrinterSource_POLICY, printer_proto.source());

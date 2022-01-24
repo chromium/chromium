@@ -8,7 +8,7 @@
   }
 
   .list-item:focus-within {
-    background-color: var(--google-blue-50);
+    background-color: var(--cros-highlight-color);
     outline: none;
   }
 </style>
@@ -42,7 +42,8 @@
           aria-label$="[[getSetupButtonAria_()]]"
           focus-row-control
           focus-type="setupPrinterButton"
-          disabled="[[savingPrinter]]">
+          disabled="[[isConfigureDisabled_(userPrintersAllowed,
+              savingPrinter)]]">
         $i18n{setupPrinter}
       </cr-button>
     </template>
@@ -53,7 +54,8 @@
           aria-label$="[[getSaveButtonAria_()]]"
           focus-row-control
           focus-type="automaticPrinterButton"
-          disabled="[[savingPrinter]]">
+          disabled="[[isConfigureDisabled_(userPrintersAllowed,
+              savingPrinter)]]">
         $i18n{savePrinter}
       </cr-button>
     </template>
@@ -64,7 +66,8 @@
           aria-label$="[[getSaveButtonAria_()]]"
           focus-row-control
           focus-type="savePrinterButton"
-          disabled="[[savingPrinter]]">
+          disabled="[[isConfigureDisabled_(userPrintersAllowed,
+              savingPrinter)]]">
         $i18n{savePrinter}
       </cr-button>
     </template>

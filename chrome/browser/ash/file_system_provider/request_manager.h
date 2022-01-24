@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -111,6 +110,10 @@ class RequestManager {
   RequestManager(Profile* profile,
                  const std::string& provider_id,
                  NotificationManagerInterface* notification_manager);
+
+  RequestManager(const RequestManager&) = delete;
+  RequestManager& operator=(const RequestManager&) = delete;
+
   virtual ~RequestManager();
 
   // Creates a request and returns its request id (greater than 0). Returns 0 in
@@ -148,6 +151,10 @@ class RequestManager {
  private:
   struct Request {
     Request();
+
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     ~Request();
 
     // Timer for discarding the request during a timeout.
@@ -155,9 +162,6 @@ class RequestManager {
 
     // Handler tied to this request.
     std::unique_ptr<HandlerInterface> handler;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
   // Destroys the request with the passed |request_id|.
@@ -187,8 +191,6 @@ class RequestManager {
   base::TimeDelta timeout_;
   base::ObserverList<Observer>::Unchecked observers_;
   base::WeakPtrFactory<RequestManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RequestManager);
 };
 
 }  // namespace file_system_provider

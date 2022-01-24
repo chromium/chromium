@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
@@ -27,6 +26,12 @@ constexpr const ConnectionPriority kTestConnectionPriority =
     ConnectionPriority::kLow;
 
 class SecureChannelBleListenerOperationTest : public testing::Test {
+ public:
+  SecureChannelBleListenerOperationTest(
+      const SecureChannelBleListenerOperationTest&) = delete;
+  SecureChannelBleListenerOperationTest& operator=(
+      const SecureChannelBleListenerOperationTest&) = delete;
+
  protected:
   SecureChannelBleListenerOperationTest()
       : device_id_pair_(kTestRemoteDeviceId, kTestLocalDeviceId) {}
@@ -106,8 +111,6 @@ class SecureChannelBleListenerOperationTest : public testing::Test {
   absl::optional<BleListenerFailureType> failure_type_from_callback_;
 
   std::unique_ptr<ConnectToDeviceOperation<BleListenerFailureType>> operation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelBleListenerOperationTest);
 };
 
 TEST_F(SecureChannelBleListenerOperationTest, UpdateThenFailThenCancel) {

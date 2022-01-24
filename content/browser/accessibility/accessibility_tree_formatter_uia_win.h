@@ -26,7 +26,6 @@ class AccessibilityTreeFormatterUia : public ui::AXTreeFormatterBase {
 
   // AccessibilityTreeFormatterBase:
   base::Value BuildTree(ui::AXPlatformNodeDelegate* start) const override;
-  base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 

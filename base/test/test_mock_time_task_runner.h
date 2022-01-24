@@ -16,9 +16,9 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_pending_task.h"
 #include "base/threading/thread_checker_impl.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -115,12 +115,15 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
     // pending tasks (the contrary would break the SequencedTaskRunner
     // contract).
     explicit ScopedContext(scoped_refptr<TestMockTimeTaskRunner> scope);
+
+    ScopedContext(const ScopedContext&) = delete;
+    ScopedContext& operator=(const ScopedContext&) = delete;
+
     ~ScopedContext();
 
    private:
     ThreadTaskRunnerHandleOverrideForTesting
         thread_task_runner_handle_override_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedContext);
   };
 
   enum class Type {
@@ -142,6 +145,9 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
   TestMockTimeTaskRunner(Time start_time,
                          TimeTicks start_ticks,
                          Type type = Type::kStandalone);
+
+  TestMockTimeTaskRunner(const TestMockTimeTaskRunner&) = delete;
+  TestMockTimeTaskRunner& operator=(const TestMockTimeTaskRunner&) = delete;
 
   // Fast-forwards virtual time by |delta|, causing all tasks with a remaining
   // delay less than or equal to |delta| to be executed. |delta| must be
@@ -229,6 +235,9 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
     explicit MockClock(TestMockTimeTaskRunner* task_runner)
         : task_runner_(task_runner) {}
 
+    MockClock(const MockClock&) = delete;
+    MockClock& operator=(const MockClock&) = delete;
+
     // TickClock:
     TimeTicks NowTicks() const override;
 
@@ -237,8 +246,6 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
 
    private:
     TestMockTimeTaskRunner* task_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(MockClock);
   };
 
   struct TestOrderedPendingTask;
@@ -306,8 +313,6 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
   bool quit_run_loop_ = false;
 
   mutable MockClock mock_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMockTimeTaskRunner);
 };
 
 }  // namespace base

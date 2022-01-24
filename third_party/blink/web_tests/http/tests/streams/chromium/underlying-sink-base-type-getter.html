@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+test(t => {
+  Object.defineProperty(Object.prototype, 'type',
+                        {
+                          configurable: true,
+                          get() {
+                            throw Error();
+                          }
+                        });
+  t.add_cleanup(() => {
+    delete Object.prototype.type;
+  });
+  const generator = new MediaStreamTrackGenerator('video');
+  // The WritableStream is created lazily, so access it to trigger creation.
+  generator.writable.getWriter();
+}, 'a throwing getter on Object.prototype.type should not interfere with ' +
+     'native writable stream creation');
+
+test(t => {
+  Object.defineProperty(Object.prototype, 'type',
+                        {
+                          configurable: true,
+                          get() {
+                            this.start(0x414141);
+                          }
+                        });
+  t.add_cleanup(() => {
+    delete Object.prototype.type;
+  });
+  const generator = new MediaStreamTrackGenerator('video');
+  generator.writable.getWriter();
+}, 'a getter that calls start() with a number on Object.prototype.type ' +
+     'should not interfere with native writable stream creation');
+
+test(t => {
+  Object.defineProperty(Object.prototype, 'type',
+                        {
+                          configurable: true,
+                          get() {
+                            this.start({});
+                          }
+                        });
+  t.add_cleanup(() => {
+    delete Object.prototype.type;
+  });
+  const generator = new MediaStreamTrackGenerator('video');
+  generator.writable.getWriter();
+}, 'a getter that calls start() with an object on Object.prototype.type ' +
+     'should not interfere with native writable stream creation');
+
+</script>

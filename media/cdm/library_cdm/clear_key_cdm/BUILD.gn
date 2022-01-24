@@ -23,9 +23,6 @@ loadable_module("clear_key_cdm") {
     "clear_key_persistent_session_cdm.h",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   defines = [ "CDM_IMPLEMENTATION" ]
 
   deps = [

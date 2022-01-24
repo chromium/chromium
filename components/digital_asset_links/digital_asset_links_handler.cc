@@ -20,6 +20,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/origin.h"
 
 namespace {
@@ -124,8 +125,11 @@ const char kDigitalAssetLinksCheckResponseKeyLinked[] = "linked";
 DigitalAssetLinksHandler::DigitalAssetLinksHandler(
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      shared_url_loader_factory_(std::move(factory)) {}
+    : shared_url_loader_factory_(std::move(factory)) {
+  if (web_contents) {
+    web_contents_ = web_contents->GetWeakPtr();
+  }
+}
 
 DigitalAssetLinksHandler::~DigitalAssetLinksHandler() = default;
 
@@ -142,14 +146,14 @@ void DigitalAssetLinksHandler::OnURLLoadComplete(
     int net_error = url_loader_->NetError();
     if (net_error == net::ERR_INTERNET_DISCONNECTED ||
         net_error == net::ERR_NAME_NOT_RESOLVED) {
-      AddMessageToConsole(web_contents(),
+      AddMessageToConsole(web_contents_.get(),
                           "Digital Asset Links connection failed.");
       std::move(callback_).Run(RelationshipCheckResult::kNoConnection);
       return;
     }
 
     AddMessageToConsole(
-        web_contents(),
+        web_contents_.get(),
         base::StringPrintf(
             "Digital Asset Links endpoint responded with code %d.",
             response_code));
@@ -173,7 +177,7 @@ void DigitalAssetLinksHandler::OnJSONParseResult(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
     AddMessageToConsole(
-        web_contents(),
+        web_contents_.get(),
         "Digital Asset Links response parsing failed with message: " +
             *result.error);
     std::move(callback_).Run(RelationshipCheckResult::kFailure);
@@ -183,7 +187,7 @@ void DigitalAssetLinksHandler::OnJSONParseResult(
   auto& statement_list = *result.value;
   if (!statement_list.is_list()) {
     std::move(callback_).Run(RelationshipCheckResult::kFailure);
-    AddMessageToConsole(web_contents(), "Statement List is not a list.");
+    AddMessageToConsole(web_contents_.get(), "Statement List is not a list.");
     return;
   }
 
@@ -225,7 +229,7 @@ void DigitalAssetLinksHandler::OnJSONParseResult(
   }
 
   for (const auto& failure_reason : failures)
-    AddMessageToConsole(web_contents(), failure_reason);
+    AddMessageToConsole(web_contents_.get(), failure_reason);
 
   std::move(callback_).Run(RelationshipCheckResult::kFailure);
 }

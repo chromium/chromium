@@ -97,21 +97,17 @@ class ServiceWorkerPageLoadMetricsObserverTest
       page_load_metrics::mojom::PageLoadTiming* timing) {
     page_load_metrics::InitPageLoadTimingForTest(timing);
     timing->navigation_start = base::Time::FromDoubleT(1);
-    timing->interactive_timing->first_input_delay =
-        base::TimeDelta::FromMilliseconds(50);
-    timing->interactive_timing->first_input_timestamp =
-        base::TimeDelta::FromMilliseconds(712);
-    timing->parse_timing->parse_start = base::TimeDelta::FromMilliseconds(100);
-    timing->paint_timing->first_paint = base::TimeDelta::FromMilliseconds(200);
-    timing->paint_timing->first_contentful_paint =
-        base::TimeDelta::FromMilliseconds(300);
+    timing->interactive_timing->first_input_delay = base::Milliseconds(50);
+    timing->interactive_timing->first_input_timestamp = base::Milliseconds(712);
+    timing->parse_timing->parse_start = base::Milliseconds(100);
+    timing->paint_timing->first_paint = base::Milliseconds(200);
+    timing->paint_timing->first_contentful_paint = base::Milliseconds(300);
     timing->document_timing->dom_content_loaded_event_start =
-        base::TimeDelta::FromMilliseconds(600);
-    timing->document_timing->load_event_start =
-        base::TimeDelta::FromMilliseconds(1000);
+        base::Milliseconds(600);
+    timing->document_timing->load_event_start = base::Milliseconds(1000);
 
     timing->paint_timing->largest_contentful_paint->largest_image_paint =
-        base::TimeDelta::FromMilliseconds(4780);
+        base::Milliseconds(4780);
     timing->paint_timing->largest_contentful_paint->largest_image_paint_size =
         100u;
 

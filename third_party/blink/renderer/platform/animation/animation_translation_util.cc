@@ -73,6 +73,7 @@ void ToCompositorTransformOperations(
       }
       case TransformOperation::kRotateX:
       case TransformOperation::kRotateY:
+      case TransformOperation::kRotateZ:
       case TransformOperation::kRotate3D:
       case TransformOperation::kRotate: {
         auto* transform =

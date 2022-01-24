@@ -8,14 +8,12 @@
 #include <unordered_map>
 
 #include "base/base64.h"
-#include "base/macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -41,6 +39,9 @@ class TestPreviewsUKMObserver : public PreviewsUKMObserver {
   explicit TestPreviewsUKMObserver(bool save_data_enabled)
       : save_data_enabled_(save_data_enabled) {}
 
+  TestPreviewsUKMObserver(const TestPreviewsUKMObserver&) = delete;
+  TestPreviewsUKMObserver& operator=(const TestPreviewsUKMObserver&) = delete;
+
   ~TestPreviewsUKMObserver() override {}
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
@@ -56,14 +57,16 @@ class TestPreviewsUKMObserver : public PreviewsUKMObserver {
   }
 
   const bool save_data_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPreviewsUKMObserver);
 };
 
 class PreviewsUKMObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  public:
   PreviewsUKMObserverTest() {}
+
+  PreviewsUKMObserverTest(const PreviewsUKMObserverTest&) = delete;
+  PreviewsUKMObserverTest& operator=(const PreviewsUKMObserverTest&) = delete;
+
   ~PreviewsUKMObserverTest() override {}
 
   void RunTest(bool save_data_enabled) {
@@ -105,8 +108,6 @@ class PreviewsUKMObserverTest
 
  private:
   bool save_data_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PreviewsUKMObserverTest);
 };
 
 

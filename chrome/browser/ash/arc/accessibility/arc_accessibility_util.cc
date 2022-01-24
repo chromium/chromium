@@ -153,7 +153,7 @@ absl::optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
     case ax::mojom::Action::kDoDefault:
       return arc::mojom::AccessibilityActionType::CLICK;
     case ax::mojom::Action::kFocus:
-      // Fallthrough
+      return arc::mojom::AccessibilityActionType::FOCUS;
     case ax::mojom::Action::kSetSequentialFocusNavigationStartingPoint:
       return arc::mojom::AccessibilityActionType::ACCESSIBILITY_FOCUS;
     case ax::mojom::Action::kScrollToMakeVisible:
@@ -198,6 +198,8 @@ ax::mojom::Action ConvertToChromeAction(
   switch (action) {
     case arc::mojom::AccessibilityActionType::CLICK:
       return ax::mojom::Action::kDoDefault;
+    case arc::mojom::AccessibilityActionType::FOCUS:
+      return ax::mojom::Action::kFocus;
     case arc::mojom::AccessibilityActionType::ACCESSIBILITY_FOCUS:
       // TODO(hirokisato): there are multiple actions converted to
       // ACCESSIBILITY_FOCUS. Consider if this is appropriate.
@@ -233,7 +235,6 @@ ax::mojom::Action ConvertToChromeAction(
     case arc::mojom::AccessibilityActionType::LONG_CLICK:
       return ax::mojom::Action::kShowContextMenu;
     // Below are actions not mapped in ConvertToAndroidAction().
-    case arc::mojom::AccessibilityActionType::FOCUS:
     case arc::mojom::AccessibilityActionType::CLEAR_FOCUS:
     case arc::mojom::AccessibilityActionType::SELECT:
     case arc::mojom::AccessibilityActionType::CLEAR_SELECTION:

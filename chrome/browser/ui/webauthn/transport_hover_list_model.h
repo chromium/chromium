@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 
@@ -21,6 +20,10 @@ class TransportHoverListModel : public HoverListModel {
  public:
   explicit TransportHoverListModel(
       base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms);
+
+  TransportHoverListModel(const TransportHoverListModel&) = delete;
+  TransportHoverListModel& operator=(const TransportHoverListModel&) = delete;
+
   ~TransportHoverListModel() override;
 
   // HoverListModel:
@@ -39,8 +42,6 @@ class TransportHoverListModel : public HoverListModel {
  private:
   const base::span<const AuthenticatorRequestDialogModel::Mechanism>
       mechanisms_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransportHoverListModel);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_TRANSPORT_HOVER_LIST_MODEL_H_

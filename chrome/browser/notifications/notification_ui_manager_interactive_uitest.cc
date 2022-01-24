@@ -54,8 +54,8 @@ class NotificationUIManagerInteractiveUITest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    ui_test_utils::NavigateToURL(
-        browser(), https_server_->GetURL(std::string("/") + kTestFileName));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server_->GetURL(std::string("/") + kTestFileName)));
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
@@ -64,7 +64,8 @@ class NotificationUIManagerInteractiveUITest : public InProcessBrowserTest {
   // page that's being used in this browser test.
   void GrantNotificationPermissionForTest() const {
     NotificationPermissionContext::UpdatePermission(
-        browser()->profile(), TestPageUrl().GetOrigin(), CONTENT_SETTING_ALLOW);
+        browser()->profile(), TestPageUrl().DeprecatedGetOriginAsURL(),
+        CONTENT_SETTING_ALLOW);
   }
 
   // Executes |script| and stores the result as a string in |result|. A boolean

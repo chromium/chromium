@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_EXECUTOR_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_EXECUTOR_DELEGATE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,9 +14,11 @@
 #include "components/autofill_assistant/browser/details.h"
 #include "components/autofill_assistant/browser/info_box.h"
 #include "components/autofill_assistant/browser/state.h"
+#include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -65,7 +66,7 @@ class ScriptExecutorDelegate {
   virtual WebsiteLoginManager* GetWebsiteLoginManager() = 0;
   virtual content::WebContents* GetWebContents() = 0;
   virtual std::string GetEmailAddressForAccessTokenAccount() = 0;
-  virtual std::string GetLocale() = 0;
+  virtual ukm::UkmRecorder* GetUkmRecorder() = 0;
 
   // Enters the given state. Returns true if the state was changed.
   virtual bool EnterState(AutofillAssistantState state) = 0;
@@ -80,6 +81,10 @@ class ScriptExecutorDelegate {
   virtual std::string GetStatusMessage() const = 0;
   virtual void SetBubbleMessage(const std::string& message) = 0;
   virtual std::string GetBubbleMessage() const = 0;
+  virtual void SetTtsMessage(const std::string& message) = 0;
+  virtual std::string GetTtsMessage() const = 0;
+  virtual TtsButtonState GetTtsButtonState() const = 0;
+  virtual void MaybePlayTtsMessage() = 0;
   virtual void SetDetails(std::unique_ptr<Details> details,
                           base::TimeDelta delay) = 0;
   virtual void AppendDetails(std::unique_ptr<Details> details,
@@ -95,7 +100,6 @@ class ScriptExecutorDelegate {
   virtual void WriteUserData(
       base::OnceCallback<void(UserData*, UserData::FieldChange*)>
           write_callback) = 0;
-  virtual void SetProgress(int progress) = 0;
   virtual bool SetProgressActiveStepIdentifier(
       const std::string& active_step_identifier) = 0;
   virtual void SetProgressActiveStep(int active_step) = 0;
@@ -112,6 +116,8 @@ class ScriptExecutorDelegate {
   virtual ConfigureBottomSheetProto::PeekMode GetPeekMode() = 0;
   virtual void ExpandBottomSheet() = 0;
   virtual void CollapseBottomSheet() = 0;
+  virtual void SetClientSettings(
+      const ClientSettingsProto& client_settings) = 0;
   virtual bool SetForm(
       std::unique_ptr<FormProto> form,
       base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,
@@ -203,6 +209,10 @@ class ScriptExecutorDelegate {
   // Whether the slow connection or website warning should be shown. Depends on
   // the state at the moment of the invocation.
   virtual bool ShouldShowWarning() = 0;
+
+  // Get modifiable log information gathered while executing the action. This
+  // gets attached to the action's response if non empty.
+  virtual ProcessedActionStatusDetailsProto& GetLogInfo() = 0;
 
  protected:
   virtual ~ScriptExecutorDelegate() {}

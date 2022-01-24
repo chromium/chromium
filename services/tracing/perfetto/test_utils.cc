@@ -440,12 +440,10 @@ TracingUnitTest::~TracingUnitTest() {
 void TracingUnitTest::SetUp() {
   setup_called_ = true;
 
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // Also tell PerfettoTracedProcess to use the current task environment.
-  PerfettoTracedProcess::ResetTaskRunnerForTesting(
+  test_handle_ = PerfettoTracedProcess::SetupForTesting(
       base::ThreadTaskRunnerHandle::Get());
-  PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  PerfettoTracedProcess::Get()->OnThreadPoolAvailable();
 
   // Wait for any posted construction tasks to execute.
   RunUntilIdle();
@@ -461,12 +459,11 @@ void TracingUnitTest::TearDown() {
   // From here on, no more tasks should be posted.
   task_environment_.reset();
 
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // Clear task runner and data sources.
   PerfettoTracedProcess::Get()->GetTaskRunner()->ResetTaskRunnerForTesting(
       nullptr);
   PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  test_handle_.reset();
 }
 
 }  // namespace tracing

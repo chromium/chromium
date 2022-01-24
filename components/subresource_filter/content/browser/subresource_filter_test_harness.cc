@@ -15,6 +15,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
@@ -57,8 +58,6 @@ void SubresourceFilterTestHarness::SetUp() {
       mojom::ActivationLevel::kEnabled, ActivationScope::ACTIVATION_LIST,
       ActivationList::SUBRESOURCE_FILTER));
 
-  NavigateAndCommit(GURL("https://example.first"));
-
   // Set up the ruleset service.
   ASSERT_TRUE(ruleset_service_dir_.CreateUniqueTempDir());
   IndexedRulesetVersion::RegisterPrefs(pref_service_.registry());
@@ -93,13 +92,15 @@ void SubresourceFilterTestHarness::SetUp() {
       std::make_unique<ThrottleManagerTestSupport>(web_contents());
   database_manager_ = base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
   infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
-  ContentSubresourceFilterThrottleManager::CreateForWebContents(
+  ContentSubresourceFilterWebContentsHelper::CreateForWebContents(
       web_contents(), throttle_manager_test_support_->profile_context(),
       database_manager_, dealer);
 
   // Observe web_contents() to add subresource filter navigation throttles at
   // the start of navigations.
   Observe(web_contents());
+
+  NavigateAndCommit(GURL("https://example.first"));
 
   base::RunLoop().RunUntilIdle();
 }
@@ -117,7 +118,8 @@ void SubresourceFilterTestHarness::DidStartNavigation(
     return;
 
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-  ContentSubresourceFilterThrottleManager::FromWebContents(web_contents())
+  ContentSubresourceFilterThrottleManager::FromNavigationHandle(
+      *navigation_handle)
       ->MaybeAppendNavigationThrottles(navigation_handle, &throttles);
 
   AppendCustomNavigationThrottles(navigation_handle, &throttles);
@@ -169,7 +171,8 @@ SubresourceFilterTestHarness::GetSettingsManager() {
 void SubresourceFilterTestHarness::SetIsAdSubframe(
     content::RenderFrameHost* render_frame_host,
     bool is_ad_subframe) {
-  ContentSubresourceFilterThrottleManager::FromWebContents(web_contents())
+  ContentSubresourceFilterThrottleManager::FromPage(
+      render_frame_host->GetPage())
       ->SetIsAdSubframeForTesting(render_frame_host, is_ad_subframe);
 }
 

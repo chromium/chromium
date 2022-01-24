@@ -29,6 +29,10 @@ class ExtensionNavigationUIData {
                             int tab_id,
                             int window_id);
 
+  ExtensionNavigationUIData(const ExtensionNavigationUIData&) = delete;
+  ExtensionNavigationUIData& operator=(const ExtensionNavigationUIData&) =
+      delete;
+
   static std::unique_ptr<ExtensionNavigationUIData>
   CreateForMainFrameNavigation(content::WebContents* web_contents,
                                int tab_id,
@@ -65,8 +69,6 @@ class ExtensionNavigationUIData {
   // ID for the parent RenderFrameHost of this navigation. Will only have a
   // valid value for sub-frame navigations.
   content::GlobalRenderFrameHostId parent_routing_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionNavigationUIData);
 };
 
 }  // namespace extensions

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 #include "media/base/overlay_info.h"
@@ -33,6 +32,10 @@ class VideoDecoder;
 class MEDIA_EXPORT DecoderFactory {
  public:
   DecoderFactory();
+
+  DecoderFactory(const DecoderFactory&) = delete;
+  DecoderFactory& operator=(const DecoderFactory&) = delete;
+
   virtual ~DecoderFactory();
 
   // Creates audio decoders and append them to the end of |audio_decoders|.
@@ -58,9 +61,6 @@ class MEDIA_EXPORT DecoderFactory {
       RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space,
       std::vector<std::unique_ptr<VideoDecoder>>* video_decoders);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DecoderFactory);
 };
 
 }  // namespace media

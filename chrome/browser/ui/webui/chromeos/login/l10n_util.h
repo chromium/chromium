@@ -71,12 +71,10 @@ std::string FindMostRelevantLocale(
 // will also always contain the US keyboard layout. If `selected` matches the ID
 // of any entry in the resulting list, that entry will be marked as selected.
 // In addition to returning the list of keyboard layouts, this function also
-// activates them if `activate_keyboards` is true, so that they can be selected
-// by the user (e.g. by cycling through keyboard layouts via keyboard
-// shortcuts).
+// activates them, so that they can be selected by the user (e.g. by cycling
+// through keyboard layouts via keyboard shortcuts).
 base::ListValue GetAndActivateLoginKeyboardLayouts(const std::string& locale,
-                                                   const std::string& selected,
-                                                   bool activate_keyboards);
+                                                   const std::string& selected);
 
 // Invokes `callback` with a list of keyboard layouts that can be used for
 // `locale`. Each list entry is a dictionary that contains data such as an ID
@@ -95,6 +93,7 @@ void GetKeyboardLayoutsForLocale(GetKeyboardLayoutsForLocaleCallback callback,
 // to ash.
 namespace ash {
 using ::chromeos::FindMostRelevantLocale;
+using ::chromeos::GetKeyboardLayoutsForLocale;
 using ::chromeos::GetUILanguageList;
 using ::chromeos::kMostRelevantLanguagesDivider;
 using ::chromeos::ResolveUILanguageList;

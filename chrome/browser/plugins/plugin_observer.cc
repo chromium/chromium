@@ -185,12 +185,6 @@ void PluginObserver::RemovePluginPlaceholderHost(
   plugin_placeholders_.erase(placeholder);
 }
 
-void PluginObserver::ShowFlashPermissionBubble() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // TODO(tommycli): This is a no-op now. Delete this method in a followup.
-}
-
 void PluginObserver::CouldNotLoadPlugin(const base::FilePath& plugin_path) {
   g_browser_process->GetMetricsServicesManager()->OnPluginLoadingError(
       plugin_path);
@@ -265,4 +259,4 @@ void PluginObserver::OpenPDF(const GURL& url) {
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PluginObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PluginObserver);

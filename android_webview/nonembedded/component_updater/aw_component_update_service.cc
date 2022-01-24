@@ -35,11 +35,13 @@ AwComponentUpdateService* AwComponentUpdateService::GetInstance() {
 // static
 void JNI_AwComponentUpdateService_StartComponentUpdateService(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_finished_callback) {
+    const base::android::JavaParamRef<jobject>& j_finished_callback,
+    jboolean j_on_demand_update) {
   AwComponentUpdateService::GetInstance()->StartComponentUpdateService(
       base::BindOnce(
           &base::android::RunIntCallbackAndroid,
-          base::android::ScopedJavaGlobalRef<jobject>(j_finished_callback)));
+          base::android::ScopedJavaGlobalRef<jobject>(j_finished_callback)),
+      j_on_demand_update);
 }
 
 AwComponentUpdateService::AwComponentUpdateService()
@@ -55,7 +57,8 @@ AwComponentUpdateService::~AwComponentUpdateService() = default;
 
 // Start ComponentUpdateService once.
 void AwComponentUpdateService::StartComponentUpdateService(
-    UpdateCallback finished_callback) {
+    UpdateCallback finished_callback,
+    bool on_demand_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RegisterComponents(
@@ -63,7 +66,8 @@ void AwComponentUpdateService::StartComponentUpdateService(
                           base::Unretained(this)),
       base::BindOnce(
           &AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents,
-          weak_ptr_factory_.GetWeakPtr(), std::move(finished_callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(finished_callback),
+          on_demand_update));
 }
 
 bool AwComponentUpdateService::RegisterComponent(
@@ -90,7 +94,8 @@ bool AwComponentUpdateService::RegisterComponent(
   return true;
 }
 
-void AwComponentUpdateService::CheckForUpdates(UpdateCallback on_finished) {
+void AwComponentUpdateService::CheckForUpdates(UpdateCallback on_finished,
+                                               bool on_demand_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/1180595): Add the histograms being logged in
@@ -126,7 +131,7 @@ void AwComponentUpdateService::CheckForUpdates(UpdateCallback on_finished) {
         unsecure_ids,
         base::BindOnce(&AwComponentUpdateService::GetCrxComponents,
                        base::Unretained(this)),
-        {}, false,
+        {}, on_demand_update,
         base::BindOnce(&AwComponentUpdateService::OnUpdateComplete,
                        weak_ptr_factory_.GetWeakPtr(),
                        secure_ids.empty() ? std::move(on_finished_callback)
@@ -139,7 +144,7 @@ void AwComponentUpdateService::CheckForUpdates(UpdateCallback on_finished) {
         secure_ids,
         base::BindOnce(&AwComponentUpdateService::GetCrxComponents,
                        base::Unretained(this)),
-        {}, false,
+        {}, on_demand_update,
         base::BindOnce(&AwComponentUpdateService::OnUpdateComplete,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(on_finished_callback),
@@ -177,9 +182,10 @@ AwComponentUpdateService::GetCrxComponents(
 }
 
 void AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents(
-    UpdateCallback on_finished_updates) {
+    UpdateCallback on_finished_updates,
+    bool on_demand_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CheckForUpdates(std::move(on_finished_updates));
+  CheckForUpdates(std::move(on_finished_updates), on_demand_update);
 }
 
 void AwComponentUpdateService::RegisterComponents(

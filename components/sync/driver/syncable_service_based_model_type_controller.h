@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/model_type_controller.h"
@@ -34,14 +33,17 @@ class SyncableServiceBasedModelTypeController : public ModelTypeController {
       const base::RepeatingClosure& dump_stack,
       DelegateMode delegate_mode = DelegateMode::kFullSyncModeOnly);
 
+  SyncableServiceBasedModelTypeController(
+      const SyncableServiceBasedModelTypeController&) = delete;
+  SyncableServiceBasedModelTypeController& operator=(
+      const SyncableServiceBasedModelTypeController&) = delete;
+
   ~SyncableServiceBasedModelTypeController() override;
 
  private:
   // Delegate owned by this instance; delegate instances passed to the base
   // class forward their calls to |delegate_|.
   std::unique_ptr<ModelTypeControllerDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncableServiceBasedModelTypeController);
 };
 
 }  // namespace syncer

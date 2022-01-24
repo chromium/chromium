@@ -39,7 +39,7 @@ InstallableAmbientBadgeInfoBarDelegate::GetVisibleAmbientBadgeInfoBar(
 // static
 void InstallableAmbientBadgeInfoBarDelegate::Create(
     content::WebContents* web_contents,
-    base::WeakPtr<Client> weak_client,
+    base::WeakPtr<InstallableAmbientBadgeClient> weak_client,
     const std::u16string& app_name,
     const SkBitmap& primary_icon,
     const bool is_primary_icon_maskable,
@@ -87,7 +87,7 @@ bool InstallableAmbientBadgeInfoBarDelegate::GetIsPrimaryIconMaskable() const {
 }
 
 InstallableAmbientBadgeInfoBarDelegate::InstallableAmbientBadgeInfoBarDelegate(
-    base::WeakPtr<Client> weak_client,
+    base::WeakPtr<InstallableAmbientBadgeClient> weak_client,
     const std::u16string& app_name,
     const SkBitmap& primary_icon,
     const bool is_primary_icon_maskable,

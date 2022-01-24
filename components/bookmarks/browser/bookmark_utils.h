@@ -40,6 +40,19 @@ struct QueryFields {
   std::unique_ptr<std::u16string> title;
 };
 
+class VectorIterator {
+ public:
+  explicit VectorIterator(std::vector<const BookmarkNode*>* nodes);
+  VectorIterator(const VectorIterator& other) = delete;
+  VectorIterator& operator=(const VectorIterator& other) = delete;
+  bool has_next();
+  const BookmarkNode* Next();
+
+ private:
+  std::vector<const BookmarkNode*>* nodes_;
+  std::vector<const BookmarkNode*>::iterator current_;
+};
+
 // Clones bookmark node, adding newly created nodes to |parent| starting at
 // |index_to_add_at|. If |reset_node_times| is true cloned bookmarks and
 // folders will receive new creation times and folder modification times

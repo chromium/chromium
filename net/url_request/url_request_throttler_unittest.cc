@@ -22,7 +22,6 @@
 #include "net/url_request/url_request_throttler_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace net {
@@ -117,7 +116,7 @@ class MockURLRequestThrottlerManager : public URLRequestThrottlerManager {
   void CreateEntry(bool is_outdated) {
     TimeTicks time = TimeTicks::Now();
     if (is_outdated) {
-      time -= TimeDelta::FromMilliseconds(
+      time -= base::Milliseconds(
           MockURLRequestThrottlerEntry::kDefaultEntryLifetimeMs + 1000);
     }
     std::string fake_url_string("http://www.fakeurl.com/");
@@ -191,8 +190,8 @@ std::ostream& operator<<(std::ostream& out, const base::TimeTicks& time) {
 
 TEST_F(URLRequestThrottlerEntryTest, InterfaceDuringExponentialBackoff) {
   base::HistogramTester histogram_tester;
-  entry_->set_exponential_backoff_release_time(
-      entry_->ImplGetTimeNow() + TimeDelta::FromMilliseconds(1));
+  entry_->set_exponential_backoff_release_time(entry_->ImplGetTimeNow() +
+                                               base::Milliseconds(1));
   EXPECT_TRUE(entry_->ShouldRejectRequest(*request_));
 
   histogram_tester.ExpectBucketCount(kRequestThrottledHistogramName, 0, 0);
@@ -203,8 +202,8 @@ TEST_F(URLRequestThrottlerEntryTest, InterfaceNotDuringExponentialBackoff) {
   base::HistogramTester histogram_tester;
   entry_->set_exponential_backoff_release_time(entry_->ImplGetTimeNow());
   EXPECT_FALSE(entry_->ShouldRejectRequest(*request_));
-  entry_->set_exponential_backoff_release_time(
-      entry_->ImplGetTimeNow() - TimeDelta::FromMilliseconds(1));
+  entry_->set_exponential_backoff_release_time(entry_->ImplGetTimeNow() -
+                                               base::Milliseconds(1));
   EXPECT_FALSE(entry_->ShouldRejectRequest(*request_));
 
   histogram_tester.ExpectBucketCount(kRequestThrottledHistogramName, 0, 2);
@@ -235,9 +234,9 @@ TEST_F(URLRequestThrottlerEntryTest, InterfaceUpdateSuccessThenFailure) {
 }
 
 TEST_F(URLRequestThrottlerEntryTest, IsEntryReallyOutdated) {
-  TimeDelta lifetime = TimeDelta::FromMilliseconds(
-      MockURLRequestThrottlerEntry::kDefaultEntryLifetimeMs);
-  const TimeDelta kFiveMs = TimeDelta::FromMilliseconds(5);
+  base::TimeDelta lifetime =
+      base::Milliseconds(MockURLRequestThrottlerEntry::kDefaultEntryLifetimeMs);
+  const base::TimeDelta kFiveMs = base::Milliseconds(5);
 
   TimeAndBool test_values[] = {
       TimeAndBool(now_, false, __LINE__),
@@ -259,7 +258,7 @@ TEST_F(URLRequestThrottlerEntryTest, MaxAllowedBackoff) {
     entry_->UpdateWithResponse(503);
   }
 
-  TimeDelta delay = entry_->GetExponentialBackoffReleaseTime() - now_;
+  base::TimeDelta delay = entry_->GetExponentialBackoffReleaseTime() - now_;
   EXPECT_EQ(delay.InMilliseconds(),
             MockURLRequestThrottlerEntry::kDefaultMaximumBackoffMs);
 }
@@ -285,14 +284,15 @@ TEST_F(URLRequestThrottlerEntryTest, SlidingWindow) {
   int sliding_window =
       URLRequestThrottlerEntry::kDefaultSlidingWindowPeriodMs;
 
-  TimeTicks time_1 = entry_->ImplGetTimeNow() +
-      TimeDelta::FromMilliseconds(sliding_window / 3);
-  TimeTicks time_2 = entry_->ImplGetTimeNow() +
-      TimeDelta::FromMilliseconds(2 * sliding_window / 3);
-  TimeTicks time_3 = entry_->ImplGetTimeNow() +
-      TimeDelta::FromMilliseconds(sliding_window);
-  TimeTicks time_4 = entry_->ImplGetTimeNow() +
-      TimeDelta::FromMilliseconds(sliding_window + 2 * sliding_window / 3);
+  TimeTicks time_1 =
+      entry_->ImplGetTimeNow() + base::Milliseconds(sliding_window / 3);
+  TimeTicks time_2 =
+      entry_->ImplGetTimeNow() + base::Milliseconds(2 * sliding_window / 3);
+  TimeTicks time_3 =
+      entry_->ImplGetTimeNow() + base::Milliseconds(sliding_window);
+  TimeTicks time_4 =
+      entry_->ImplGetTimeNow() +
+      base::Milliseconds(sliding_window + 2 * sliding_window / 3);
 
   entry_->set_exponential_backoff_release_time(time_1);
 
@@ -404,7 +404,7 @@ TEST_F(URLRequestThrottlerManagerTest, LocalHostOptedOut) {
   // so add a 100 ms buffer to avoid flakiness (that should always
   // give enough time to get from the TimeTicks::Now() call here
   // to the TimeTicks::Now() call in the entry class).
-  EXPECT_GT(TimeTicks::Now() + TimeDelta::FromMilliseconds(100),
+  EXPECT_GT(TimeTicks::Now() + base::Milliseconds(100),
             localhost_entry->GetExponentialBackoffReleaseTime());
 }
 

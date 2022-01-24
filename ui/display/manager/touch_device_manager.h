@@ -10,7 +10,6 @@
 #include <ostream>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_constants.h"
@@ -101,6 +100,7 @@ struct DISPLAY_MANAGER_EXPORT TouchCalibrationData {
   TouchCalibrationData(const CalibrationPointPairQuad& point_pairs,
                        const gfx::Size& bounds);
   TouchCalibrationData(const TouchCalibrationData& calibration_data);
+  TouchCalibrationData& operator=(const TouchCalibrationData& calibration_data);
 
   bool operator==(const TouchCalibrationData& other) const;
 
@@ -135,6 +135,10 @@ class DISPLAY_MANAGER_EXPORT TouchDeviceManager {
   using PortAssociationMap = ActiveTouchAssociationMap;
 
   TouchDeviceManager();
+
+  TouchDeviceManager(const TouchDeviceManager&) = delete;
+  TouchDeviceManager& operator=(const TouchDeviceManager&) = delete;
+
   ~TouchDeviceManager();
 
   // Given a list of displays and a list of touchscreens, associate them. The
@@ -249,8 +253,6 @@ class DISPLAY_MANAGER_EXPORT TouchDeviceManager {
   // This map only contains items (displays and touch devices) that are
   // currently active.
   ActiveTouchAssociationMap active_touch_associations_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchDeviceManager);
 };
 
 DISPLAY_MANAGER_EXPORT std::ostream& operator<<(

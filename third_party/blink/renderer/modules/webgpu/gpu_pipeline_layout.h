@@ -21,8 +21,8 @@ class GPUPipelineLayout : public DawnObject<WGPUPipelineLayout> {
   explicit GPUPipelineLayout(GPUDevice* device,
                              WGPUPipelineLayout pipeline_layout);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUPipelineLayout);
+  GPUPipelineLayout(const GPUPipelineLayout&) = delete;
+  GPUPipelineLayout& operator=(const GPUPipelineLayout&) = delete;
 };
 
 }  // namespace blink

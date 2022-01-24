@@ -53,6 +53,10 @@ class TestContentInputDelegate : public MockContentInputDelegate {
 class TestPlatformInputHandler : public PlatformInputHandler {
  public:
   TestPlatformInputHandler() {}
+
+  TestPlatformInputHandler(const TestPlatformInputHandler&) = delete;
+  TestPlatformInputHandler& operator=(const TestPlatformInputHandler&) = delete;
+
   ~TestPlatformInputHandler() override {}
 
   void ForwardEventToPlatformUi(std::unique_ptr<InputEvent>) override {}
@@ -87,8 +91,6 @@ class TestPlatformInputHandler : public PlatformInputHandler {
   TextEdits edits_;
   bool clear_focus_called_ = false;
   std::queue<TextStateUpdateCallback> web_input_text_requests;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPlatformInputHandler);
 };
 
 class ContentElementSceneTest : public UiTest {

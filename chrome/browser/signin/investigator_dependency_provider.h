@@ -15,13 +15,18 @@ class InvestigatorDependencyProvider
     : public SigninInvestigator::DependencyProvider {
  public:
   explicit InvestigatorDependencyProvider(Profile* profile);
+
+  InvestigatorDependencyProvider(const InvestigatorDependencyProvider&) =
+      delete;
+  InvestigatorDependencyProvider& operator=(
+      const InvestigatorDependencyProvider&) = delete;
+
   ~InvestigatorDependencyProvider() override;
   PrefService* GetPrefs() override;
 
  private:
   // Non-owning pointer.
   Profile* profile_;
-  DISALLOW_COPY_AND_ASSIGN(InvestigatorDependencyProvider);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_INVESTIGATOR_DEPENDENCY_PROVIDER_H_

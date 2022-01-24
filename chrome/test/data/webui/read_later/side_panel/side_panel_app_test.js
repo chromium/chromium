@@ -9,7 +9,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import {LOCAL_STORAGE_TAB_ID_KEY, SidePanelAppElement} from 'chrome://read-later.top-chrome/side_panel/app.js';
 
 import {assertEquals} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.js';
 
 suite('SidePanelAppElementTest', () => {
   /** @type {!SidePanelAppElement} */

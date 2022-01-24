@@ -1,3 +1,0 @@
-This adds and removes lots of input elements, to test the behavior of ListHashSet when it has more elements than will fit in its pool.
-
-The test was run. If it failed you would have seen an assertion failure or crash. In some cases the crash won't occur until you move on to the next page.

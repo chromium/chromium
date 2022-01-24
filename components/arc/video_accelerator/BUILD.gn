@@ -12,11 +12,16 @@ static_library("video_accelerator") {
     "gpu_arc_video_encode_accelerator.h",
     "gpu_arc_video_protected_buffer_allocator.cc",
     "gpu_arc_video_protected_buffer_allocator.h",
-    "protected_buffer_manager.cc",
-    "protected_buffer_manager.h",
     "protected_buffer_manager_proxy.cc",
     "protected_buffer_manager_proxy.h",
   ]
+
+  if (use_v4l2_codec || use_vaapi) {
+    sources += [
+      "gpu_arc_video_decoder.cc",
+      "gpu_arc_video_decoder.h",
+    ]
+  }
 
   deps = [
     ":common",
@@ -24,7 +29,6 @@ static_library("video_accelerator") {
     "//components/arc/mojom:media",
     "//gpu/ipc/common:common",
     "//media",
-    "//ui/ozone",
   ]
 }
 
@@ -32,6 +36,8 @@ source_set("common") {
   sources = [
     "arc_video_accelerator_util.cc",
     "arc_video_accelerator_util.h",
+    "protected_buffer_manager.cc",
+    "protected_buffer_manager.h",
     "video_frame_plane.h",
   ]
 
@@ -40,6 +46,7 @@ source_set("common") {
     "//media/gpu:gpu",
     "//mojo/public/cpp/system:system",
     "//ui/gfx:memory_buffer",
+    "//ui/ozone",
   ]
 
   if (use_v4l2_codec || use_vaapi) {

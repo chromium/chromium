@@ -98,7 +98,7 @@ class SlideOutControllerTest : public ViewsTestBase {
 
   void PostSequentialGestureEvent(const ui::GestureEventDetails& details) {
     // Set the timestamp ahead one microsecond.
-    sequential_event_timestamp_ += base::TimeDelta::FromMicroseconds(1);
+    sequential_event_timestamp_ += base::Microseconds(1);
 
     ui::GestureEvent gesture_event(
         0, 0, ui::EF_NONE, base::TimeTicks() + sequential_event_timestamp_,

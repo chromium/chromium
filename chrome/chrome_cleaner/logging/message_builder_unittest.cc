@@ -50,7 +50,7 @@ TEST(MessageBuilderTest, ScopedIndentation) {
     EXPECT_EQ(expected, builder.content());
 
     {
-      auto scoped_indent = builder.Indent();
+      auto indent = builder.Indent();
       builder.Add(L"*", L"*", L"*").NewLine();
       expected += L"\t\t***\n";
       EXPECT_EQ(expected, builder.content());

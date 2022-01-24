@@ -27,6 +27,10 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
   explicit UnixDomainServerSocketFactory(const std::string& socket_name)
       : socket_name_(socket_name) {}
 
+  UnixDomainServerSocketFactory(const UnixDomainServerSocketFactory&) = delete;
+  UnixDomainServerSocketFactory& operator=(
+      const UnixDomainServerSocketFactory&) = delete;
+
  private:
   // content::DevToolsAgentHost::ServerSocketFactory.
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
@@ -54,8 +58,6 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
 
   std::string socket_name_;
   int last_tethering_socket_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(UnixDomainServerSocketFactory);
 };
 
 }  // namespace

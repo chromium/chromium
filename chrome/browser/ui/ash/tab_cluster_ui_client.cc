@@ -7,6 +7,7 @@
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
 #include "base/containers/contains.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -19,7 +20,8 @@ ash::TabClusterUIItem::Info GenerateTabItemInfo(
     content::WebContents* web_contents) {
   ash::TabClusterUIItem::Info info;
   info.title = base::UTF16ToUTF8(web_contents->GetTitle());
-  info.source = web_contents->GetVisibleURL().spec();
+  info.source = base::StrCat({web_contents->GetVisibleURL().host(),
+                              web_contents->GetVisibleURL().path()});
   info.browser_window = chrome::FindBrowserWithWebContents(web_contents)
                             ->window()
                             ->GetNativeWindow();
@@ -78,6 +80,11 @@ void TabClusterUIClient::OnTabStripModelChanged(
       break;
     case TabStripModelChange::kSelectionOnly:
       break;
+  }
+  if (selection.active_tab_changed() && !tab_strip_model->empty()) {
+    controller_->ChangeActiveCandidate(
+        contents_item_map_[selection.old_contents],
+        contents_item_map_[selection.new_contents]);
   }
 }
 

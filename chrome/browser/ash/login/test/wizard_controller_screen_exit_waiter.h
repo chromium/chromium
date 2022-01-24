@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_WIZARD_CONTROLLER_SCREEN_EXIT_WAITER_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_WIZARD_CONTROLLER_SCREEN_EXIT_WAITER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -16,7 +15,7 @@ namespace base {
 class RunLoop;
 }
 
-namespace chromeos {
+namespace ash {
 
 // A waiter that blocks until the the current WizardController screen is
 // different than the target screen, or the WizardController is destroyed.
@@ -24,7 +23,6 @@ class WizardControllerExitWaiter : public test::TestConditionWaiter,
                                    public WizardController::ScreenObserver {
  public:
   explicit WizardControllerExitWaiter(OobeScreenId screen_id);
-  explicit WizardControllerExitWaiter(BaseScreen* target_screen);
   ~WizardControllerExitWaiter() override;
 
   // WizardController::ScreenObserver:
@@ -39,7 +37,7 @@ class WizardControllerExitWaiter : public test::TestConditionWaiter,
 
   void EndWait();
 
-  const BaseScreen* target_screen_;
+  const OobeScreenId target_screen_id_ = OobeScreen::SCREEN_UNKNOWN;
 
   State state_ = State::IDLE;
 
@@ -49,12 +47,6 @@ class WizardControllerExitWaiter : public test::TestConditionWaiter,
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::WizardControllerExitWaiter;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_WIZARD_CONTROLLER_SCREEN_EXIT_WAITER_H_

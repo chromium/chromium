@@ -37,11 +37,11 @@ syncer::SyncService::TransportState FakeSyncService::GetTransportState() const {
   return TransportState::DISABLED;
 }
 
-CoreAccountInfo FakeSyncService::GetAuthenticatedAccountInfo() const {
+CoreAccountInfo FakeSyncService::GetAccountInfo() const {
   return CoreAccountInfo();
 }
 
-bool FakeSyncService::IsAuthenticatedAccountPrimary() const {
+bool FakeSyncService::HasSyncConsent() const {
   return true;
 }
 

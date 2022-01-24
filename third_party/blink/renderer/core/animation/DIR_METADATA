@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>Animation"
-}
+mixins: "//third_party/blink/renderer/core/animation/COMMON_METADATA"
 
-team_email: "animations-dev@chromium.org"

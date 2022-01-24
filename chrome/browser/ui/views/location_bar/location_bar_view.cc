@@ -15,8 +15,10 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/accuracy_tips/accuracy_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/command_updater.h"
@@ -77,12 +79,13 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/security_state/core/security_state.h"
@@ -114,10 +117,10 @@
 #include "ui/events/event.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/background.h"
@@ -159,11 +162,12 @@ LocationBarView::LocationBarView(Browser* browser,
                                  Delegate* delegate,
                                  bool is_popup_mode)
     : AnimationDelegateViews(this),
-      ChromeOmniboxEditController(command_updater),
+      ChromeOmniboxEditController(browser, profile, command_updater),
       browser_(browser),
       profile_(profile),
       delegate_(delegate),
       is_popup_mode_(is_popup_mode) {
+  set_suppress_default_focus_handling();
   if (!is_popup_mode_) {
     views::FocusRing::Install(this);
     views::FocusRing::Get(this)->SetHasFocusPredicate([](View* view) -> bool {
@@ -183,6 +187,12 @@ LocationBarView::LocationBarView(Browser* browser,
     geolocation_permission_observation_.Observe(
         g_browser_process->platform_part()->geolocation_manager());
 #endif
+
+    if (base::FeatureList::IsEnabled(safe_browsing::kAccuracyTipsFeature)) {
+      if (auto* accuracy_service =
+              AccuracyServiceFactory::GetForProfile(profile))
+        accuracy_service_observation_.Observe(accuracy_service);
+    }
   }
 }
 
@@ -330,12 +340,11 @@ void LocationBarView::Init() {
   }
   if (browser_) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (base::FeatureList::IsEnabled(features::kChromeOSSharingHub) &&
-        base::FeatureList::IsEnabled(features::kSharesheet)) {
+    if (base::FeatureList::IsEnabled(features::kChromeOSSharingHub)) {
       params.types_enabled.push_back(PageActionIconType::kSharingHub);
     }
 #else
-    if (base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopOmnibox))
+    if (sharing_hub::SharingHubOmniboxEnabled(profile_) && !is_popup_mode_)
       params.types_enabled.push_back(PageActionIconType::kSharingHub);
 #endif
   }
@@ -366,7 +375,7 @@ void LocationBarView::Init() {
   // visible when the location entry has just been initialized.
   Update(nullptr);
 
-  hover_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(200));
+  hover_animation_.SetSlideDuration(base::Milliseconds(200));
 
   is_initialized_ = true;
 }
@@ -602,7 +611,7 @@ void LocationBarView::Layout() {
   // label/chip.
   const double kLeadingDecorationMaxFraction = 0.5;
 
-  if (chip_ && !ShouldShowKeywordBubble()) {
+  if (chip_ && chip_->GetVisible() && !ShouldShowKeywordBubble()) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
                                       0, edge_padding, chip_);
   }
@@ -820,9 +829,11 @@ bool LocationBarView::ActivateFirstInactiveBubbleForAccessibility() {
 }
 
 PermissionChip* LocationBarView::DisplayChip(
-    permissions::PermissionPrompt::Delegate* delegate) {
+    permissions::PermissionPrompt::Delegate* delegate,
+    bool should_bubble_start_open) {
   DCHECK(delegate);
-  return AddChip(std::make_unique<PermissionRequestChip>(browser(), delegate));
+  return AddChip(std::make_unique<PermissionRequestChip>(
+      browser(), delegate, should_bubble_start_open));
 }
 
 PermissionChip* LocationBarView::DisplayQuietChip(
@@ -878,6 +889,14 @@ void LocationBarView::OnSystemPermissionUpdated(
   UpdateContentSettingsIcons();
 }
 
+void LocationBarView::OnAccuracyTipShown() {
+  location_icon_view_->Update(/*suppress_animations=*/false);
+}
+
+void LocationBarView::OnAccuracyTipClosed() {
+  location_icon_view_->Update(/*suppress_animations=*/false);
+}
+
 WebContents* LocationBarView::GetWebContentsForPageActionIconView() {
   return GetWebContents();
 }
@@ -893,7 +912,7 @@ bool LocationBarView::ShouldHidePageActionIcons() const {
 
   // Also hide them if the popup is open for any other reason, e.g. ZeroSuggest.
   // The page action icons are not relevant to the displayed suggestions.
-  return omnibox_view_->model()->popup_model()->IsOpen();
+  return omnibox_view_->model()->PopupIsOpen();
 }
 
 // static
@@ -1038,7 +1057,7 @@ bool LocationBarView::ShouldShowKeywordBubble() const {
 
 OmniboxPopupView* LocationBarView::GetOmniboxPopupView() {
   DCHECK(IsInitialized());
-  return omnibox_view_->model()->popup_model()->view();
+  return omnibox_view_->model()->get_popup_view();
 }
 
 void LocationBarView::KeywordHintViewPressed(const ui::Event& event) {
@@ -1227,9 +1246,8 @@ void LocationBarView::WriteDragDataForView(views::View* sender,
   favicon::FaviconDriver* favicon_driver =
       favicon::ContentFaviconDriver::FromWebContents(web_contents);
   gfx::ImageSkia favicon = favicon_driver->GetFavicon().AsImageSkia();
-  button_drag_utils::SetURLAndDragImage(web_contents->GetURL(),
-                                        web_contents->GetTitle(), favicon,
-                                        nullptr, *sender->GetWidget(), data);
+  button_drag_utils::SetURLAndDragImage(
+      web_contents->GetURL(), web_contents->GetTitle(), favicon, nullptr, data);
 }
 
 int LocationBarView::GetDragOperationsForView(views::View* sender,
@@ -1395,10 +1413,16 @@ bool LocationBarView::ShowPageInfoDialog() {
     return false;
 
   DCHECK(GetWidget());
+
+  auto initialized_callback =
+      GetPageInfoDialogCreatedCallbackForTesting()
+          ? std::move(GetPageInfoDialogCreatedCallbackForTesting())
+          : base::DoNothing();
+
   views::BubbleDialogDelegateView* bubble =
       PageInfoBubbleView::CreatePageInfoBubble(
-          this, gfx::Rect(), GetWidget()->GetNativeWindow(), profile_, contents,
-          entry->GetVirtualURL(),
+          this, gfx::Rect(), GetWidget()->GetNativeWindow(), contents,
+          entry->GetVirtualURL(), std::move(initialized_callback),
           base::BindOnce(&LocationBarView::OnPageInfoBubbleClosed,
                          weak_factory_.GetWeakPtr()));
   bubble->SetHighlightedButton(location_icon_view_);

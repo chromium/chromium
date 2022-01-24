@@ -87,8 +87,15 @@ enum class CryptAuthFeatureType {
   kEcheClientSupported = 26,
   kEcheClientEnabled = 27,
 
+  // Camera Roll, which allows users to view and download recent photos and
+  // videos from the Phone Hub tray.
+  kPhoneHubCameraRollHostSupported = 28,
+  kPhoneHubCameraRollHostEnabled = 29,
+  kPhoneHubCameraRollClientSupported = 30,
+  kPhoneHubCameraRollClientEnabled = 31,
+
   // Used for UMA logs.
-  kMaxValue = kEcheClientEnabled
+  kMaxValue = kPhoneHubCameraRollClientEnabled
 };
 
 const base::flat_set<CryptAuthFeatureType>& GetAllCryptAuthFeatureTypes();

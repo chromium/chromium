@@ -489,9 +489,11 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
              << ", depth=" << details.reporting_upload_depth << ") for "
              << details.uri;
 
+    // A null reporting source token is used since this report is not associated
+    // with any particular document.
     reporting_service_->QueueReport(
-        details.uri, details.network_isolation_key, details.user_agent,
-        policy->report_to, kReportType,
+        details.uri, absl::nullopt, details.network_isolation_key,
+        details.user_agent, policy->report_to, kReportType,
         CreateReportBody(phase_string, type_string, sampling_fraction.value(),
                          details),
         details.reporting_upload_depth);
@@ -537,9 +539,11 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
       return;
     }
 
+    // A null reporting source token is used since this report is not associated
+    // with any particular document.
     reporting_service_->QueueReport(
-        details.outer_url, details.network_isolation_key, details.user_agent,
-        policy->report_to, kReportType,
+        details.outer_url, absl::nullopt, details.network_isolation_key,
+        details.user_agent, policy->report_to, kReportType,
         CreateSignedExchangeReportBody(details, sampling_fraction.value()),
         0 /* depth */);
     RecordSignedExchangeRequestOutcome(RequestOutcome::kQueued);
@@ -629,9 +633,8 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     policy_out->include_subdomains = include_subdomains;
     policy_out->success_fraction = success_fraction;
     policy_out->failure_fraction = failure_fraction;
-    policy_out->expires = max_age_sec > 0
-                              ? now + base::TimeDelta::FromSeconds(max_age_sec)
-                              : base::Time();
+    policy_out->expires =
+        max_age_sec > 0 ? now + base::Seconds(max_age_sec) : base::Time();
     return true;
   }
 

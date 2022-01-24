@@ -44,6 +44,12 @@ class PPAPI_PROXY_EXPORT IsolatedFileSystemPrivateResource
  public:
   IsolatedFileSystemPrivateResource(
       Connection connection, PP_Instance instance);
+
+  IsolatedFileSystemPrivateResource(const IsolatedFileSystemPrivateResource&) =
+      delete;
+  IsolatedFileSystemPrivateResource& operator=(
+      const IsolatedFileSystemPrivateResource&) = delete;
+
   ~IsolatedFileSystemPrivateResource() override;
 
   // Resource overrides.
@@ -62,8 +68,6 @@ class PPAPI_PROXY_EXPORT IsolatedFileSystemPrivateResource
                              scoped_refptr<TrackedCallback> callback,
                              const ResourceMessageReplyParams& params,
                              const std::string& fsid);
-
-  DISALLOW_COPY_AND_ASSIGN(IsolatedFileSystemPrivateResource);
 };
 
 }  // namespace proxy

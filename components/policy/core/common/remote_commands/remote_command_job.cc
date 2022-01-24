@@ -13,10 +13,8 @@ namespace policy {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultCommandTimeout =
-    base::TimeDelta::FromMinutes(10);
-constexpr base::TimeDelta kDefaultCommandExpirationTime =
-    base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kDefaultCommandTimeout = base::Minutes(10);
+constexpr base::TimeDelta kDefaultCommandExpirationTime = base::Minutes(10);
 
 }  // namespace
 
@@ -50,8 +48,7 @@ bool RemoteCommandJob::Init(
     // time we got it from server.
     // It's just an estimation since we lost the time the response was
     // transmitted over the network.
-    issued_time_ =
-        now - base::TimeDelta::FromMilliseconds(command.age_of_command());
+    issued_time_ = now - base::Milliseconds(command.age_of_command());
   } else {
     SYSLOG(WARNING) << "No age_of_command provided by server for command "
                     << unique_id_ << ".";

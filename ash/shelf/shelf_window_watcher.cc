@@ -147,11 +147,9 @@ void ShelfWindowWatcher::AddShelfItem(aura::Window* window) {
   ShelfItem item;
   UpdateShelfItemForWindow(&item, window);
 
-  model_->SetShelfItemDelegate(
-      item.id,
+  model_->AddAt(
+      model_->item_count(), item,
       std::make_unique<ShelfWindowWatcherItemDelegate>(item.id, window));
-
-  model_->AddAt(model_->item_count(), item);
 }
 
 void ShelfWindowWatcher::RemoveShelfItem(aura::Window* window) {

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "content/common/input/synthetic_gesture_params.h"
 #include "content/common/input/synthetic_pointer_action_params.h"
@@ -19,10 +18,17 @@ class SyntheticGestureTarget;
 class CONTENT_EXPORT SyntheticPointerDriver {
  public:
   SyntheticPointerDriver();
+
+  SyntheticPointerDriver(const SyntheticPointerDriver&) = delete;
+  SyntheticPointerDriver& operator=(const SyntheticPointerDriver&) = delete;
+
   virtual ~SyntheticPointerDriver();
 
   static std::unique_ptr<SyntheticPointerDriver> Create(
       content::mojom::GestureSourceType gesture_source_type);
+  static std::unique_ptr<SyntheticPointerDriver> Create(
+      content::mojom::GestureSourceType gesture_source_type,
+      bool from_devtools_debugger);
 
   virtual void DispatchEvent(SyntheticGestureTarget* target,
                              const base::TimeTicks& timestamp) = 0;
@@ -70,8 +76,8 @@ class CONTENT_EXPORT SyntheticPointerDriver {
   virtual bool UserInputCheck(
       const SyntheticPointerActionParams& params) const = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyntheticPointerDriver);
+ protected:
+  bool from_devtools_debugger_ = false;
 };
 
 }  // namespace content

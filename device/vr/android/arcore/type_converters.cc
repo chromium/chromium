@@ -4,7 +4,7 @@
 
 #include "device/vr/android/arcore/type_converters.h"
 
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace mojo {
 

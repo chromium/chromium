@@ -1,5 +1,4 @@
-CONSOLE WARNING: line 10: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
-CONSOLE WARNING: line 11: A preload for 'http://127.0.0.1:8000/preload/warning/resources/hello.txt' is found, but is not used because the new request is synchronous.
+CONSOLE WARNING: A preload for 'http://127.0.0.1:8000/preload/warning/resources/hello.txt' is found, but is not used because the new request is synchronous.
 This is a testharness.js-based test.
 PASS Preload match fails because the request is synchronous (see the console log).
 Harness: the test ran to completion.

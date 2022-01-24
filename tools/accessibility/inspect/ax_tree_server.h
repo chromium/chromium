@@ -5,8 +5,6 @@
 #ifndef AX_TREE_SERVER_H_
 #define AX_TREE_SERVER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
@@ -17,31 +15,30 @@
 #include "base/win/scoped_com_initializer.h"
 #endif
 
+namespace ui {
+class AXInspectScenario;
+}  // namespace ui
+
 namespace content {
 
 class AXTreeServer final {
  public:
-  AXTreeServer(gfx::AcceleratedWidget widget,
-               const base::FilePath& filters_path);
   AXTreeServer(const ui::AXTreeSelector& selector,
                const base::FilePath& filters_path);
 
+  AXTreeServer(const AXTreeServer&) = delete;
+  AXTreeServer& operator=(const AXTreeServer&) = delete;
+
  private:
-  using BuildTree = base::OnceCallback<base::Value(const ui::AXTreeFormatter*)>;
-
-  // Builds and formats the accessible tree.
-  void Run(BuildTree build_tree, const base::FilePath& filters_path);
-
-  // Generates property filters.
-  absl::optional<std::vector<ui::AXPropertyFilter>> GetPropertyFilters(
+  // Extracts filters and directives for the formatter from the specified
+  // filter file.
+  absl::optional<ui::AXInspectScenario> GetInspectScenario(
       const base::FilePath& filters_path);
 
 #if defined(OS_WIN)
   // Only one COM initializer per thread is permitted.
   base::win::ScopedCOMInitializer com_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeServer);
 };
 
 }  // namespace content

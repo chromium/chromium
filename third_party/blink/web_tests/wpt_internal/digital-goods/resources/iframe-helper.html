@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script type="module">
+  import './mock-digital-goods-service.js';
+
+  window.onmessage = async message => {
+    if (message.data !== 'Ready') {
+      return;
+    }
+
+    try {
+      await window.getDigitalGoodsService('https://example.com/billing');
+      parent.postMessage('Success', '*');
+    } catch (error) {
+      parent.postMessage('Failure: ' + error.name + ': ' + error.message, '*');
+    }
+  };
+</script>
+</body>
+</html>

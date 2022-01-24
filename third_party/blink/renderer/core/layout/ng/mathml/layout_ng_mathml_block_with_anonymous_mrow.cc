@@ -24,7 +24,7 @@ void LayoutNGMathMLBlockWithAnonymousMrow::AddChild(
             StyleRef(), EDisplay::kBlockMath);
 
     UpdateAnonymousChildStyle(nullptr, *new_style);
-    anonymous_mrow = new LayoutNGMathMLBlock(nullptr);
+    anonymous_mrow = MakeGarbageCollected<LayoutNGMathMLBlock>(nullptr);
     anonymous_mrow->SetDocumentForAnonymous(&GetDocument());
     anonymous_mrow->SetStyle(std::move(new_style));
     LayoutBox::AddChild(anonymous_mrow);

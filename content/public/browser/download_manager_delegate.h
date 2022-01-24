@@ -79,6 +79,10 @@ using DownloadIdCallback = base::OnceCallback<void(uint32_t /* next_id */)>;
 // Called on whether a download is allowed to continue.
 using CheckDownloadAllowedCallback = base::OnceCallback<void(bool /*allow*/)>;
 
+// Called by CheckSavePackageAllowed when the content of a save package is known
+// to be allowed or not.
+using SavePackageAllowedCallback = base::OnceCallback<void(bool /*allow*/)>;
+
 // Browser's download manager: manages all downloads and destination view.
 class CONTENT_EXPORT DownloadManagerDelegate {
  public:
@@ -221,6 +225,13 @@ class CONTENT_EXPORT DownloadManagerDelegate {
 
   // Gets a |DownloadItem| from the GUID, or null if no such GUID is available.
   virtual download::DownloadItem* GetDownloadByGuid(const std::string& guid);
+
+  // Allows the delegate to delay completion of a SavePackage's final renaming
+  // step so it can be disallowed.
+  virtual void CheckSavePackageAllowed(
+      download::DownloadItem* download_item,
+      base::flat_map<base::FilePath, base::FilePath> save_package_files,
+      SavePackageAllowedCallback callback);
 
  protected:
   virtual ~DownloadManagerDelegate();

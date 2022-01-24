@@ -217,6 +217,13 @@ bool DoCanonicalize(const CHAR* spec,
                     CharsetConverter* charset_converter,
                     CanonOutput* output,
                     Parsed* output_parsed) {
+  // Trim leading C0 control characters and spaces.
+  int begin = 0;
+  TrimURL(spec, &begin, &spec_len, trim_path_end);
+  DCHECK(0 <= begin && begin <= spec_len);
+  spec += begin;
+  spec_len -= begin;
+
   output->ReserveSizeIfNeeded(spec_len);
 
   // Remove any whitespace from the middle of the relative URL if necessary.

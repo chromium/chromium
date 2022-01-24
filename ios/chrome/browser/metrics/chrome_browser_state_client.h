@@ -14,6 +14,9 @@ namespace metrics {
 class ChromeBrowserStateClient
     : public metrics::DemographicMetricsProvider::ProfileClient {
  public:
+  ChromeBrowserStateClient(const ChromeBrowserStateClient&) = delete;
+  ChromeBrowserStateClient& operator=(const ChromeBrowserStateClient&) = delete;
+
   ~ChromeBrowserStateClient() override;
   ChromeBrowserStateClient() = default;
 
@@ -22,8 +25,6 @@ class ChromeBrowserStateClient
   syncer::SyncService* GetSyncService() override;
   PrefService* GetPrefService() override;
   base::Time GetNetworkTime() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserStateClient);
 };
 
 }  //    namespace metrics

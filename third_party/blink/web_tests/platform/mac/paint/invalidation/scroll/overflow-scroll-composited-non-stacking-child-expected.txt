@@ -1,8 +1,10 @@
 {
   "layers": [
     {
-      "name": "LayoutNGBlockFlow HTML",
-      "bounds": [800, 268]
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='back'",
@@ -13,30 +15,29 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow HTML (foreground) Layer",
-      "bounds": [800, 268]
+      "name": "LayoutNGBlockFlow HTML",
+      "position": [8, 60],
+      "bounds": [784, 200],
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutNGBlockFlow DIV class='scroller'",
-      "bounds": [310, 200],
+      "position": [5, 5],
+      "bounds": [285, 175],
+      "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [5, 180],
-      "bounds": [285, 15],
+      "bounds": [300, 15],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [290, 5],
       "bounds": [15, 175],
-      "transform": 1
-    },
-    {
-      "name": "Scroll Corner Layer",
-      "position": [290, 180],
-      "bounds": [15, 15],
       "transform": 1
     },
     {
@@ -50,13 +51,8 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='list'",
       "position": [25, 25],
       "bounds": [180, 250],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
-      "transform": 2
-    },
-    {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (relative positioned) DIV class='commit')",
-      "position": [25, 25],
-      "bounds": [180, 250],
       "transform": 2
     }
   ],

@@ -10,7 +10,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
@@ -38,6 +37,10 @@ namespace {
 class TestSyncService : public syncer::TestSyncService {
  public:
   TestSyncService() {}
+
+  TestSyncService(const TestSyncService&) = delete;
+  TestSyncService& operator=(const TestSyncService&) = delete;
+
   ~TestSyncService() override {}
 
   // syncer::SyncService:
@@ -56,8 +59,6 @@ class TestSyncService : public syncer::TestSyncService {
 
  private:
   syncer::SyncServiceObserver* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncService);
 };
 
 std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
@@ -79,6 +80,9 @@ class TestExternalPrefLoader : public ExternalPrefLoader {
             profile),
         load_callback_(std::move(load_callback)) {}
 
+  TestExternalPrefLoader(const TestExternalPrefLoader&) = delete;
+  TestExternalPrefLoader& operator=(const TestExternalPrefLoader&) = delete;
+
   void LoadOnFileThread() override {
     content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
                                                  std::move(load_callback_));
@@ -87,14 +91,12 @@ class TestExternalPrefLoader : public ExternalPrefLoader {
  private:
   ~TestExternalPrefLoader() override {}
   base::OnceClosure load_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExternalPrefLoader);
 };
 
-class ExternalPrefLoaderTest : public testing::Test {
+class ExternalPrefLoaderTestBase : public ::testing::Test {
  public:
-  ExternalPrefLoaderTest() {}
-  ~ExternalPrefLoaderTest() override {}
+  ExternalPrefLoaderTestBase(ExternalPrefLoaderTestBase&) = delete;
+  ExternalPrefLoaderTestBase& operator=(ExternalPrefLoaderTestBase&) = delete;
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
@@ -110,24 +112,52 @@ class ExternalPrefLoaderTest : public testing::Test {
 
   TestSyncService* sync_service() { return sync_service_; }
 
+ protected:
+  ExternalPrefLoaderTestBase() = default;
+  ~ExternalPrefLoaderTestBase() override = default;
+
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   TestSyncService* sync_service_ = nullptr;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(ExternalPrefLoaderTest);
+// TODO(https://crbug.com/1249845): Remove parameterization after rolling out
+//                                  SyncSettingsCategorization.
+class ExternalPrefLoaderTest : public ExternalPrefLoaderTestBase,
+                               public ::testing::WithParamInterface<bool> {
+ public:
+  ExternalPrefLoaderTest() {
+    if (ShouldEnableSyncSettingsCategorization()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{chromeos::features::
+                                    kSyncSettingsCategorization},
+          /*disabled_features=*/{chromeos::features::kSyncConsentOptional});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              chromeos::features::kSyncSettingsCategorization,
+              chromeos::features::kSyncConsentOptional});
+    }
+  }
+  ~ExternalPrefLoaderTest() override = default;
+  ExternalPrefLoaderTest(ExternalPrefLoaderTest&) = delete;
+  ExternalPrefLoaderTest& operator=(ExternalPrefLoaderTest&) = delete;
+
+ private:
+  bool ShouldEnableSyncSettingsCategorization() const { return GetParam(); }
 };
 
 // TODO(lazyboy): Add a test to cover
 // PrioritySyncReadyWaiter::OnIsSyncingChanged().
 
 // Tests that we fire pref reading correctly after priority sync state
-// is resolved by ExternalPrefLoader.
-TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
-  // This test is only relevant pre-SplitSettingsSync.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(chromeos::features::kSplitSettingsSync);
-
+// is resolved by ExternalPrefLoader. This test checks that the flow works
+// without SyncSettingsCategorization and SyncConsentOptional.
+TEST_P(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
   base::RunLoop run_loop;
   scoped_refptr<ExternalPrefLoader> loader(
       new TestExternalPrefLoader(profile(), run_loop.QuitWhenIdleClosure()));
@@ -145,18 +175,27 @@ TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
   run_loop.Run();
 }
 
-class ExternalPrefLoaderSplitSettingsSyncTest : public ExternalPrefLoaderTest {
- public:
-  ExternalPrefLoaderSplitSettingsSyncTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
-  }
-  ~ExternalPrefLoaderSplitSettingsSyncTest() override = default;
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         ExternalPrefLoaderTest,
+                         ::testing::Bool());
 
- private:
-  base::test::ScopedFeatureList feature_list_;
+class ExternalPrefLoaderSyncConsentOptionalTest
+    : public ExternalPrefLoaderTestBase {
+ public:
+  ExternalPrefLoaderSyncConsentOptionalTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kSyncSettingsCategorization,
+                              chromeos::features::kSyncConsentOptional},
+        /*disabled_features=*/{});
+  }
+  ~ExternalPrefLoaderSyncConsentOptionalTest() override = default;
+  ExternalPrefLoaderSyncConsentOptionalTest(
+      ExternalPrefLoaderSyncConsentOptionalTest&) = delete;
+  ExternalPrefLoaderSyncConsentOptionalTest& operator=(
+      ExternalPrefLoaderSyncConsentOptionalTest&) = delete;
 };
 
-TEST_F(ExternalPrefLoaderSplitSettingsSyncTest, OsSyncEnabled) {
+TEST_F(ExternalPrefLoaderSyncConsentOptionalTest, OsSyncEnabled) {
   base::RunLoop run_loop;
   scoped_refptr<ExternalPrefLoader> loader =
       base::MakeRefCounted<TestExternalPrefLoader>(
@@ -190,7 +229,7 @@ TEST_F(ExternalPrefLoaderSplitSettingsSyncTest, OsSyncEnabled) {
   // |loader| completed loading.
 }
 
-TEST_F(ExternalPrefLoaderSplitSettingsSyncTest, OsSyncDisable) {
+TEST_F(ExternalPrefLoaderSyncConsentOptionalTest, OsSyncDisable) {
   base::RunLoop run_loop;
   scoped_refptr<ExternalPrefLoader> loader =
       base::MakeRefCounted<TestExternalPrefLoader>(
@@ -213,7 +252,7 @@ TEST_F(ExternalPrefLoaderSplitSettingsSyncTest, OsSyncDisable) {
   // |loader| completed loading.
 }
 
-TEST_F(ExternalPrefLoaderSplitSettingsSyncTest, SyncDisabledByPolicy) {
+TEST_F(ExternalPrefLoaderSyncConsentOptionalTest, SyncDisabledByPolicy) {
   sync_service()->SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   ASSERT_FALSE(sync_service()->CanSyncFeatureStart());

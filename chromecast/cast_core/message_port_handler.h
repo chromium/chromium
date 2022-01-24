@@ -12,11 +12,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/cast_core/grpc_method.h"
 #include "components/cast/message_port/message_port.h"
-#include "third_party/openscreen/src/cast/cast_core/api/v2/core_application_service.grpc.pb.h"
-#include "third_party/openscreen/src/cast/cast_core/api/web/message_channel.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace chromecast {
 

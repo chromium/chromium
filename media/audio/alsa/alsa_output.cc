@@ -156,7 +156,7 @@ AlsaPcmOutputStream::AlsaPcmOutputStream(const std::string& device_name,
       bytes_per_frame_(params.GetBytesPerFrame(kSampleFormat)),
       packet_size_(params.GetBytesPerBuffer(kSampleFormat)),
       latency_(std::max(
-          base::TimeDelta::FromMicroseconds(kMinLatencyMicros),
+          base::Microseconds(kMinLatencyMicros),
           AudioTimestampHelper::FramesToTime(params.frames_per_buffer() * 2,
                                              sample_rate_))),
       bytes_per_output_frame_(bytes_per_frame_),
@@ -525,7 +525,7 @@ void AlsaPcmOutputStream::ScheduleNextWrite(bool source_exhausted) {
     // Polling in this manner allows us to ensure a more consistent callback
     // schedule.  In testing this yields a variance of +/- 5ms versus the non-
     // polling strategy which is around +/- 30ms and bimodal.
-    next_fill_time = base::TimeDelta::FromMilliseconds(5);
+    next_fill_time = base::Milliseconds(5);
   } else if (available_frames < kTargetFramesAvailable) {
     // Schedule the next write for the moment when the available buffer of the
     // sound card hits |kTargetFramesAvailable|.
@@ -538,7 +538,7 @@ void AlsaPcmOutputStream::ScheduleNextWrite(bool source_exhausted) {
   } else {
     // The sound card has frames available, but our source is exhausted, so
     // avoid busy looping by delaying a bit.
-    next_fill_time = base::TimeDelta::FromMilliseconds(10);
+    next_fill_time = base::Milliseconds(10);
   }
 
   task_runner_->PostDelayedTask(FROM_HERE,

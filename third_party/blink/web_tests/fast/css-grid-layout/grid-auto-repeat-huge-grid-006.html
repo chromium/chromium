@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<title>Test for auto-fit and auto-fill with huge grids (lots of tracks)</title>
+<link href="resources/grid.css" rel="stylesheet">
+<link href="../css-intrinsic-dimensions/resources/width-keyword-classes.css" rel="stylesheet">
+<link href="../css-intrinsic-dimensions/resources/height-keyword-classes.css" rel="stylesheet">
+<link href="resources/huge-grids.css" rel="stylesheet">
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/grid-definitions-parsing-utils.js"></script>
+<script src="resources/grid-tracks-length.js"></script>
+
+<div id="moreThanAThousandFixedZeroAutoFillRows" class="grid height25k autoFillAndMoreThanThousandFixedRows"></div>
+<div id="moreThanAThousandFixedZeroAutoFitRows" class="grid height25k autoFitAndMoreThanThousandFixedRows">
+    <div>Item1</div>
+    <div>Item2</div>
+    <div class="lastRow">Item3</div>
+</div>
+
+<div id="moreThanAThousandFixedZeroAutoFillCols" class="grid width25k autoFillAndMoreThanThousandFixedCols"></div>
+<div id="moreThanAThousandFixedZeroAutoFitCols" class="grid width25k autoFitAndMoreThanThousandFixedCols">
+    <div>Item1</div>
+    <div>Item2</div>
+    <div class="lastColumn">Item3</div>
+</div>
+
+<script>
+
+test(function() {
+     var autoFillGrid = testElement("moreThanAThousandFixedZeroAutoFillRows", "grid-template-rows", 1648);
+     var autoFitGrid = testElement("moreThanAThousandFixedZeroAutoFitRows", "grid-template-rows", 1630);
+
+     assert_equals(autoFillGrid[1648 - 1], "6px");
+     assert_equals(autoFillGrid[0], "7px");
+     assert_equals(autoFitGrid[1630 - 1], "6px");
+     assert_equals(autoFitGrid[0], "7px");
+}, "Test that we don't crash when there are more than kGridMaxTracks non auto-repeat rows on very tall grids.");
+
+test(function() {
+     var autoFillGrid = testElement("moreThanAThousandFixedZeroAutoFillCols", "grid-template-columns", 1648);
+     var autoFitGrid = testElement("moreThanAThousandFixedZeroAutoFitCols", "grid-template-columns", 1630);
+
+     assert_equals(autoFillGrid[1648 - 1], "6px");
+     assert_equals(autoFillGrid[0], "7px");
+     assert_equals(autoFitGrid[1630 - 1], "6px");
+     assert_equals(autoFitGrid[0], "7px");
+}, "Test that we don't crash when there are more than kGridMaxTracks non auto-repeat columns on very wide grids.");
+
+</script>

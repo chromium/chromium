@@ -15,7 +15,7 @@ namespace base {
 class TimeDelta;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Static utility methods used at startup time to get/change bits of device
 // state.
@@ -66,7 +66,8 @@ class StartupUtils {
   // Registers OOBE local state preferences .
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Registers OOBE preferences that are associated with a profile.
+  // Registers OOBE and login related preferences that are associated with a
+  // profile.
   static void RegisterOobeProfilePrefs(PrefRegistrySimple* registry);
 
   // Returns whether the device is owned by a consumer or has been enterprise
@@ -74,12 +75,12 @@ class StartupUtils {
   static bool IsDeviceOwned();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::StartupUtils;
+namespace chromeos {
+using ::ash::StartupUtils;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_STARTUP_UTILS_H_

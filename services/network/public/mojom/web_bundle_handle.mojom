@@ -11,6 +11,7 @@ enum WebBundleErrorType {
   kMemoryQuotaExceeded,
   kServingConstraintsNotMet,
   kWebBundleFetchFailed,
+  kWebBundleRedirected,
 };
 
 // A handle to a WebBundle instance in the Network Service. Created by a

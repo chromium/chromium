@@ -37,7 +37,7 @@ message DeviceInfoSpecifics {
 
   // The Chrome instance's version.  Updated (if necessary) on every startup.
   // DEPRECATED in M92. Still populated for backward compatibility.
-  optional string chrome_version = 5 [deprecated=true];
+  optional string chrome_version = 5 [deprecated = true];
 
   // Last time when pre-sync data on the device was saved. The device can be
   // restored to state back to this time. In millisecond since UNIX epoch.
@@ -135,6 +135,8 @@ message SharingSpecificFields {
     CLICK_TO_CALL_V2 = 7;
     // Suppots Shared Clipboard via both VAPID and sender ID.
     SHARED_CLIPBOARD_V2 = 8;
+    // Supports optimization guide push notification.
+    OPTIMIZATION_GUIDE_PUSH_NOTIFICATION = 9;
   }
 
   // A list of enabled Sharing features.

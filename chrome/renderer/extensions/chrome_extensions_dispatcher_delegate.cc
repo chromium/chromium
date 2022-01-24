@@ -145,8 +145,6 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   source_map->RegisterSource("enterprise.platformKeys",
                              IDR_ENTERPRISE_PLATFORM_KEYS_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("enterprise.platformKeys.internalAPI",
-                             IDR_ENTERPRISE_PLATFORM_KEYS_INTERNAL_API_JS);
   source_map->RegisterSource("enterprise.platformKeys.KeyPair",
                              IDR_ENTERPRISE_PLATFORM_KEYS_KEY_PAIR_JS);
   source_map->RegisterSource("enterprise.platformKeys.SubtleCrypto",
@@ -157,8 +155,6 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_PLATFORM_KEYS_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("platformKeys.getPublicKeyUtil",
                              IDR_PLATFORM_KEYS_GET_PUBLIC_KEY_JS);
-  source_map->RegisterSource("platformKeys.internalAPI",
-                             IDR_PLATFORM_KEYS_INTERNAL_API_JS);
   source_map->RegisterSource("platformKeys.Key", IDR_PLATFORM_KEYS_KEY_JS);
   source_map->RegisterSource("platformKeys.SubtleCrypto",
                              IDR_PLATFORM_KEYS_SUBTLE_CRYPTO_JS);

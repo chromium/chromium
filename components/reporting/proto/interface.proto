@@ -8,8 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package reporting;
 
-import "components/reporting/proto/record_constants.proto";
-import "components/reporting/proto/record.proto";
+import "components/reporting/proto/synced/record_constants.proto";
+import "components/reporting/proto/synced/record.proto";
 import "components/reporting/util/status.proto";
 
 // ------------ CLIENT/USER REQUEST AND RESPONSES -----------------
@@ -20,7 +20,7 @@ message EnqueueRecordRequest {
   optional Record record = 1;
 
   // Priority from
-  // //chrome/cros/reporting/api/proto/record_constants.proto
+  // //chrome/cros/reporting/api/proto/synced/record_constants.proto
   // indicates what priority queue the record should be included in.
   optional Priority priority = 2;
 }
@@ -103,15 +103,15 @@ message UploadEncryptedRecordResponse {
 
 // ConfirmRecordUploadRequest is expected to only come from
 // Chrome and indicates the record with the provided
-// SequencingInformation successfully uploaded. It is
+// SequenceInformation successfully uploaded. It is
 // only sent by Chrome after a successful upload.
 message ConfirmRecordUploadRequest {
-  // SequencingInformation of the successfully uploaded record.
-  // SequencingInformation is part of the UploadEncryptedRecordRequest
+  // SequenceInformation of the successfully uploaded record.
+  // SequenceInformation is part of the UploadEncryptedRecordRequest
   // sent to Chrome.
-  optional SequencingInformation sequencing_information = 1;
+  optional SequenceInformation sequence_information = 1;
 
-  // If true, daemon should update to the provided sequencing_information
+  // If true, daemon should update to the provided sequence_information
   // regardless of its current state.
   optional bool force_confirm = 2;
 }
@@ -120,7 +120,7 @@ message ConfirmRecordUploadRequest {
 // successfully resolved. In the event that the daemon is unable
 // to process the ConfirmRecordUploadeRequest it is safe to drop it.
 // On the next upload, the server will ignore all records with
-// SequencingInformation lower than the highest it has processed.
+// SequenceInformation lower than the highest it has processed.
 // The next ConfirmRecordUploadRequest will ensure that they are
 // deleted from disk. Some data transmission will be repeated, but
 // data will not be lost.

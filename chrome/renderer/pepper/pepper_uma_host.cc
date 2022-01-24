@@ -46,12 +46,12 @@ const char* const kPredefinedAllowedUMAOrigins[] = {
     "97B23E01B2AA064E8332EE43A7A85C628AADC3F2",  // see http://crbug.com/521189
 };
 
-const char* const kWhitelistedHistogramPrefixes[] = {
+const char* const kAllowedHistogramPrefixes[] = {
     "22F67DA2061FFC4DC9A4974036348D9C38C22919",  // see http://crbug.com/390221
     "3FEA4650221C5E6C39CF5C5C9F464FF74EAB6CE1",  // see http://crbug.com/521189
 };
 
-const base::FilePath::CharType* const kWhitelistedPluginBaseNames[] = {
+const base::FilePath::CharType* const kAllowedPluginBaseNames[] = {
     ChromeContentClient::kPDFPluginPath,
 };
 
@@ -77,10 +77,10 @@ PepperUMAHost::PepperUMAHost(content::RendererPpapiHost* host,
 
   for (size_t i = 0; i < base::size(kPredefinedAllowedUMAOrigins); ++i)
     allowed_origins_.insert(kPredefinedAllowedUMAOrigins[i]);
-  for (size_t i = 0; i < base::size(kWhitelistedHistogramPrefixes); ++i)
-    allowed_histogram_prefixes_.insert(kWhitelistedHistogramPrefixes[i]);
-  for (size_t i = 0; i < base::size(kWhitelistedPluginBaseNames); ++i)
-    allowed_plugin_base_names_.insert(kWhitelistedPluginBaseNames[i]);
+  for (size_t i = 0; i < base::size(kAllowedHistogramPrefixes); ++i)
+    allowed_histogram_prefixes_.insert(kAllowedHistogramPrefixes[i]);
+  for (size_t i = 0; i < base::size(kAllowedPluginBaseNames); ++i)
+    allowed_plugin_base_names_.insert(kAllowedPluginBaseNames[i]);
 }
 
 PepperUMAHost::~PepperUMAHost() {}
@@ -101,9 +101,9 @@ int32_t PepperUMAHost::OnResourceMessageReceived(
   return PP_ERROR_FAILED;
 }
 
-bool PepperUMAHost::IsPluginWhitelisted() {
+bool PepperUMAHost::IsPluginAllowed() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  return ChromeContentRendererClient::IsExtensionOrSharedModuleWhitelisted(
+  return ChromeContentRendererClient::IsExtensionOrSharedModuleAllowed(
       document_url_, allowed_origins_);
 #else
   return false;
@@ -116,7 +116,7 @@ bool PepperUMAHost::IsHistogramAllowed(const std::string& histogram) {
     return true;
   }
 
-  if (IsPluginWhitelisted() &&
+  if (IsPluginAllowed() &&
       base::Contains(allowed_histogram_prefixes_, HashPrefix(histogram))) {
     return true;
   }
@@ -147,15 +147,12 @@ int32_t PepperUMAHost::OnHistogramCustomTimes(
   RETURN_IF_BAD_ARGS(min, max, bucket_count);
 
   base::HistogramBase* counter = base::Histogram::FactoryTimeGet(
-      name,
-      base::TimeDelta::FromMilliseconds(min),
-      base::TimeDelta::FromMilliseconds(max),
-      bucket_count,
+      name, base::Milliseconds(min), base::Milliseconds(max), bucket_count,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   // The histogram can be NULL if it is constructed with bad arguments.  Ignore
   // that data for this API.  An error message will be logged.
   if (counter)
-    counter->AddTime(base::TimeDelta::FromMilliseconds(sample));
+    counter->AddTime(base::Milliseconds(sample));
   return PP_OK;
 }
 
@@ -209,7 +206,7 @@ int32_t PepperUMAHost::OnHistogramEnumeration(
 
 int32_t PepperUMAHost::OnIsCrashReportingEnabled(
     ppapi::host::HostMessageContext* context) {
-  if (!IsPluginWhitelisted())
+  if (!IsPluginAllowed())
     return PP_ERROR_NOACCESS;
   bool enabled = false;
   mojo::Remote<chrome::mojom::MetricsService> metrics_service;

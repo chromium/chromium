@@ -5,11 +5,8 @@
 #include "ash/accessibility/ui/accessibility_layer.h"
 
 #include "ui/aura/window.h"
-#include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 
 namespace ui {
@@ -48,10 +45,6 @@ void AccessibilityLayer::SetSubpixelPositionOffset(
   layer_->SetSubpixelPositionOffset(offset);
 }
 
-bool AccessibilityLayer::CanAnimate() const {
-  return animation_observation_.IsObserving();
-}
-
 void AccessibilityLayer::CreateOrUpdateLayer(aura::Window* root_window,
                                              const char* layer_name,
                                              const gfx::Rect& bounds,
@@ -80,17 +73,6 @@ void AccessibilityLayer::CreateOrUpdateLayer(aura::Window* root_window,
   layer_->SetBounds(bounds);
   gfx::Rect layer_bounds(0, 0, bounds.width(), bounds.height());
   layer_->SchedulePaint(layer_bounds);
-
-  if (NeedToAnimate()) {
-    // Update the animation observer.
-    display::Display display =
-        display::Screen::GetScreen()->GetDisplayMatching(bounds);
-    ui::Compositor* compositor = root_window->layer()->GetCompositor();
-    if (compositor && !animation_observation_.IsObservingSource(compositor)) {
-      Reset();
-      animation_observation_.Observe(compositor);
-    }
-  }
 }
 
 void AccessibilityLayer::OnDeviceScaleFactorChanged(
@@ -98,29 +80,6 @@ void AccessibilityLayer::OnDeviceScaleFactorChanged(
     float new_device_scale_factor) {
   if (delegate_)
     delegate_->OnDeviceScaleFactorChanged();
-}
-
-void AccessibilityLayer::OnAnimationStep(base::TimeTicks timestamp) {
-  // Require the |delegate_| get forwarded the call after the first such
-  // callback from the compositor. This avoids a crash within tests under low
-  // resource situations.
-  if (got_first_animation_step_ && delegate_->OnAnimationStep(timestamp)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AccessibilityLayer::Reset, weak_factory_.GetWeakPtr()));
-  }
-
-  got_first_animation_step_ = true;
-}
-
-void AccessibilityLayer::OnCompositingShuttingDown(ui::Compositor* compositor) {
-  if (compositor && animation_observation_.IsObservingSource(compositor))
-    Reset();
-}
-
-void AccessibilityLayer::Reset() {
-  animation_observation_.Reset();
-  got_first_animation_step_ = false;
 }
 
 }  // namespace ash

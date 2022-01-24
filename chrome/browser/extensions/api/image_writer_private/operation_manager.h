@@ -9,7 +9,6 @@
 #include <string>
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/image_writer_private/image_writer_private_api.h"
@@ -44,6 +43,10 @@ class OperationManager : public BrowserContextKeyedAPI,
                          public base::SupportsWeakPtr<OperationManager> {
  public:
   explicit OperationManager(content::BrowserContext* context);
+
+  OperationManager(const OperationManager&) = delete;
+  OperationManager& operator=(const OperationManager&) = delete;
+
   ~OperationManager() override;
 
   void Shutdown() override;
@@ -124,8 +127,6 @@ class OperationManager : public BrowserContextKeyedAPI,
       process_manager_observation_{this};
 
   base::WeakPtrFactory<OperationManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OperationManager);
 };
 
 }  // namespace image_writer

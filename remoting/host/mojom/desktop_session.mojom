@@ -1,0 +1,91 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+import "mojo/public/mojom/base/byte_string.mojom";
+
+// Contains clipboard event data.
+// This struct mirrors the remoting::protocol::ClipboardEvents protobuf struct.
+struct ClipboardEvent {
+  // The MIME type of |data|.
+  string mime_type;
+
+  // The clipboard data. The original protobuf type is string but we use a
+  // ByteString because that is the preferred mojom type.
+  mojo_base.mojom.ByteString data;
+};
+
+// The state of the URL forwarder setup.
+enum UrlForwarderState {
+  kUnknown = 0,
+
+  // The URL forwarder has been set up properly.
+  kSetUp = 1,
+
+  // The URL forwarder has not been set up.
+  kNotSetUp = 2,
+
+  // We have attempted to set up the URL forwarder but it failed.
+  kFailed = 3,
+
+  // The URL forwarder is being set up but it requires user intervention.
+  kSetupPendingUserIntervention = 4,
+};
+
+// Allows the desktop process to request that the daemon process perform an
+// action on its behalf. Though both processes are high-privilege, the daemon
+// process brokers the IPC channel between the desktop and network processes and
+// owns the lifetime of the network process. It also has the ability to execute
+// actions from session 0 (whereas the desktop process runs in a user session)
+// on Windows.
+// The remote for this interface is owned in the high-privilege desktop
+// integration process and the receiver is bound in the high-privilege daemon
+// process.
+interface DesktopSessionRequestHandler {
+  // Ask the daemon process to forward the |desktop_pipe| handle to the network
+  // process in order to establish an IPC connection between the desktop and
+  // network processes.
+  ConnectDesktopChannel(handle<message_pipe> desktop_pipe);
+
+  // Ask the daemon process to inject the secure attention sequence for the
+  // remoted session.
+  InjectSecureAttentionSequence();
+
+  // Ask the daemon process to crash the network process. The desktop process
+  // will request this when it receives invalid IPC requests or messages from
+  // the network process.
+  CrashNetworkProcess();
+};
+
+// Allows the network process to inject input events and control A/V capture in
+// the desktop session.
+// The remote for this interface is owned in the low-privilege network process
+// and the receiver is bound in the high-privilege desktop integration process.
+interface DesktopSessionControl {
+  // Used to inject clipboard events received from the client.
+  InjectClipboardEvent(ClipboardEvent event);
+
+  // Used to set up the URL forwarder as the default browser.  State changes
+  // will be reported via the
+  // DesktopSessionEventHandler::OnUrlForwarderStateChange() method.
+  SetUpUrlForwarder();
+};
+
+// Allows the desktop process to forward events and data to the network process
+// which may process it (e.g. encode a video frame) or forward it to the client
+// (in the case of updated clipboard contents).
+// Forwards local clipboard events from the host to the client.
+// The remote for this interface is owned in the high-privilege desktop
+// integration process and the receiver is bound in the low-privilege network
+// process.
+interface DesktopSessionEventHandler {
+  // Used to forward clipboard events from the host to the client.
+  OnClipboardEvent(ClipboardEvent event);
+
+  // OnUrlForwarderStateChange is immediately called once the desktop agent
+  // starts to provide the initial state, then it will be called to report state
+  // changes caused by calling DesktopSessionControl::SetUpUrlForwarder().
+  OnUrlForwarderStateChange(UrlForwarderState state);
+};

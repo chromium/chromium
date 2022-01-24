@@ -4,7 +4,7 @@
 
 // https://github.com/WICG/web-codecs
 
-typedef (ArrayBuffer or ArrayBufferView or ReadableStream) ImageBufferSource;
+typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView or ReadableStream) ImageBufferSource;
 dictionary ImageDecoderInit {
   required ImageBufferSource data;
 

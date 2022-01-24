@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
@@ -50,6 +49,11 @@ class AutofillProfileSyncBridge
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       const std::string& app_locale,
       AutofillWebDataBackend* backend);
+
+  AutofillProfileSyncBridge(const AutofillProfileSyncBridge&) = delete;
+  AutofillProfileSyncBridge& operator=(const AutofillProfileSyncBridge&) =
+      delete;
+
   ~AutofillProfileSyncBridge() override;
 
   // Constructor that hides dealing with change_processor and also stores the
@@ -110,8 +114,6 @@ class AutofillProfileSyncBridge
   base::ScopedObservation<AutofillWebDataBackend,
                           AutofillWebDataServiceObserverOnDBSequence>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncBridge);
 };
 
 }  // namespace autofill

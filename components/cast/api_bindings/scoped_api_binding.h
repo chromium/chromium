@@ -19,7 +19,7 @@ class Manager;
 // Manages the registration of bindings Javascript and establishment of
 // communication channels, as well as unregistration on object teardown, using
 // RAII semantics.
-class CAST_COMPONENT_EXPORT ScopedApiBinding
+class CAST_COMPONENT_EXPORT ScopedApiBinding final
     : public cast_api_bindings::MessagePort::Receiver {
  public:
   // Methods for handling message I/O with bindings scripts.
@@ -58,7 +58,7 @@ class CAST_COMPONENT_EXPORT ScopedApiBinding
                    Delegate* delegate,
                    base::StringPiece js_bindings_id,
                    base::StringPiece js_bindings);
-  ~ScopedApiBinding() final;
+  ~ScopedApiBinding() override;
 
   ScopedApiBinding(const ScopedApiBinding&) = delete;
   ScopedApiBinding& operator=(const ScopedApiBinding&) = delete;
@@ -72,10 +72,10 @@ class CAST_COMPONENT_EXPORT ScopedApiBinding
   void OnPortConnected(std::unique_ptr<cast_api_bindings::MessagePort> port);
 
   // cast_api_bindings::MessagePort::Receiver implementation:
-  bool OnMessage(
-      base::StringPiece message,
-      std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) final;
-  void OnPipeError() final;
+  bool OnMessage(base::StringPiece message,
+                 std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>
+                     ports) override;
+  void OnPipeError() override;
 
   Manager* const bindings_manager_;
   Delegate* const delegate_;

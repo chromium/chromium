@@ -110,7 +110,6 @@ about an HTTP proxy.
 
 When using an HTTP proxy in Chrome, name resolution is always deferred to the
 proxy. HTTP proxies can proxy `http://`, `https://`, `ws://` and `wss://` URLs.
-(Chrome's FTP support is deprecated, and HTTP proxies cannot proxy `ftp://` anymore)
 
 Communication to HTTP proxy servers is insecure, meaning proxied `http://`
 requests are sent in the clear. When proxying `https://` requests through an

@@ -7,7 +7,9 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/ui/views/download/download_item_view.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/page_navigator.h"
@@ -86,5 +88,13 @@ void DownloadShelfContextMenuView::ExecuteCommand(int command_id,
         DownloadCommands::KEEP);
   } else {
     DownloadShelfContextMenu::ExecuteCommand(command_id, event_flags);
+  }
+
+  if (!download_commands_executed_recorded_[command_id]) {
+    base::UmaHistogramEnumeration(
+        "Download.ShelfContextMenuAction",
+        DownloadCommandToShelfAction(command,
+                                     /*clicked=*/true));
+    download_commands_executed_recorded_[command_id] = true;
   }
 }

@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/transport_security_state.h"
@@ -40,6 +41,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
   ExpectCTReporter(net::URLRequestContext* request_context,
                    const base::RepeatingClosure& success_callback,
                    const base::RepeatingClosure& failure_callback);
+
+  ExpectCTReporter(const ExpectCTReporter&) = delete;
+  ExpectCTReporter& operator=(const ExpectCTReporter&) = delete;
+
   ~ExpectCTReporter() override;
 
   // net::TransportSecurityState::ExpectCTReporter:
@@ -116,8 +121,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ExpectCTReporter
   // preflight's OnResponseStarted() is called.
   std::map<net::URLRequest*, std::unique_ptr<PreflightInProgress>>
       inflight_preflights_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpectCTReporter);
 };
 
 }  // namespace network

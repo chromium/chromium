@@ -4,18 +4,16 @@
 
 #include "net/proxy_resolution/win/windows_system_proxy_resolution_service.h"
 
-#include <limits>
 #include <memory>
 #include <string>
-#include <unordered_map>
 
-#include "base/logging.h"
-#include "base/memory/ptr_util.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -23,10 +21,9 @@
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolution_request.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolver.h"
-#include "net/proxy_resolution/win/winhttp_api_wrapper.h"
+#include "net/proxy_resolution/win/winhttp_status.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -39,86 +36,62 @@ namespace {
 
 const GURL kResourceUrl("https://example.test:8080/");
 
-class MockWindowsSystemProxyResolver : public WindowsSystemProxyResolver {
+class MockRequest : public WindowsSystemProxyResolver::Request {
  public:
-  MockWindowsSystemProxyResolver() : WindowsSystemProxyResolver(nullptr) {}
-
-  void set_get_proxy_for_url_success(bool get_proxy_for_url_success) {
-    get_proxy_for_url_success_ = get_proxy_for_url_success;
-  }
-  bool GetProxyForUrl(WindowsSystemProxyResolutionRequest* callback_target,
-                      const std::string& url) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!get_proxy_for_url_success_)
-      return false;
-
-    const int request_handle = proxy_resolver_identifier_++;
-    pending_callback_target_map_[callback_target] = request_handle;
+  MockRequest(WindowsSystemProxyResolutionRequest* callback_target,
+              const ProxyList& proxy_list,
+              WinHttpStatus winhttp_status,
+              int windows_error) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(&MockWindowsSystemProxyResolver::DoQueryComplete,
-                       base::Unretained(this), callback_target,
-                       request_handle));
+        base::BindOnce(&MockRequest::DoCallback, weak_ptr_factory_.GetWeakPtr(),
+                       callback_target, proxy_list, winhttp_status,
+                       windows_error));
+  }
+  ~MockRequest() override = default;
 
-    return get_proxy_for_url_success_;
+ private:
+  void DoCallback(WindowsSystemProxyResolutionRequest* callback_target,
+                  const ProxyList& proxy_list,
+                  WinHttpStatus winhttp_status,
+                  int windows_error) {
+    callback_target->ProxyResolutionComplete(proxy_list, winhttp_status,
+                                             windows_error);
   }
 
-  void RemovePendingCallbackTarget(
-      WindowsSystemProxyResolutionRequest* callback_target) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    pending_callback_target_map_.erase(callback_target);
-  }
+  base::WeakPtrFactory<MockRequest> weak_ptr_factory_{this};
+};
 
-  bool HasPendingCallbackTarget(
-      WindowsSystemProxyResolutionRequest* callback_target) const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return (pending_callback_target_map_.find(callback_target) !=
-            pending_callback_target_map_.end());
-  }
+class MockWindowsSystemProxyResolver : public WindowsSystemProxyResolver {
+ public:
+  MockWindowsSystemProxyResolver() = default;
+  ~MockWindowsSystemProxyResolver() override = default;
 
   void add_server_to_proxy_list(const ProxyServer& proxy_server) {
     proxy_list_.AddProxyServer(proxy_server);
   }
 
-  void set_net_error(int net_error) { net_error_ = net_error; }
+  void set_winhttp_status(WinHttpStatus winhttp_status) {
+    winhttp_status_ = winhttp_status;
+  }
 
   void set_windows_error(int windows_error) { windows_error_ = windows_error; }
 
- private:
-  ~MockWindowsSystemProxyResolver() override {
-    if (!pending_callback_target_map_.empty())
-      ADD_FAILURE()
-          << "The WindowsSystemProxyResolutionRequests must account for all "
-             "pending requests in the WindowsSystemProxyResolver.";
-  }
-
-  void DoQueryComplete(WindowsSystemProxyResolutionRequest* callback_target,
-                       int request_handle) {
+  std::unique_ptr<Request> GetProxyForUrl(
+      const std::string& url,
+      WindowsSystemProxyResolutionRequest* callback_target) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (HasPendingCallbackTarget(callback_target) &&
-        pending_callback_target_map_[callback_target] == request_handle)
-      callback_target->AsynchronousProxyResolutionComplete(
-          proxy_list_, net_error_, windows_error_);
+    return std::make_unique<MockRequest>(callback_target, proxy_list_,
+                                         winhttp_status_, windows_error_);
   }
 
-  bool get_proxy_for_url_success_ = true;
+ private:
   ProxyList proxy_list_;
-  int net_error_ = OK;
-  // TODO(https://crbug.com/1032820): Add tests for the |windows_error_|
-  // code when it is used.
+  WinHttpStatus winhttp_status_ = WinHttpStatus::kOk;
   int windows_error_ = 0;
-
-  int proxy_resolver_identifier_ = 1;
-  std::unordered_map<WindowsSystemProxyResolutionRequest*, int>
-      pending_callback_target_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
-
-scoped_refptr<WindowsSystemProxyResolver>
-CreateWindowsSystemProxyResolverFails() {
-  return nullptr;
-}
 
 }  // namespace
 
@@ -134,47 +107,20 @@ class WindowsSystemProxyResolutionServiceTest : public TestWithTaskEnvironment {
           << "Windows System Proxy Resolution is only supported on Windows 8+.";
     }
 
-    proxy_resolver_ = base::MakeRefCounted<MockWindowsSystemProxyResolver>();
-    proxy_resolution_service_ =
-        WindowsSystemProxyResolutionService::Create(/*net_log=*/nullptr);
-    proxy_resolution_service_->SetWindowsSystemProxyResolverForTesting(
-        proxy_resolver_);
+    auto proxy_resolver = std::make_unique<MockWindowsSystemProxyResolver>();
+    proxy_resolver_ = proxy_resolver.get();
+    proxy_resolution_service_ = WindowsSystemProxyResolutionService::Create(
+        std::move(proxy_resolver), /*net_log=*/nullptr);
+    ASSERT_TRUE(proxy_resolution_service_);
   }
 
   WindowsSystemProxyResolutionService* service() {
     return proxy_resolution_service_.get();
   }
 
-  scoped_refptr<MockWindowsSystemProxyResolver> resolver() {
-    return proxy_resolver_;
-  }
-
-  size_t PendingRequestSizeForTesting() {
-    return proxy_resolution_service_->PendingRequestSizeForTesting();
-  }
+  MockWindowsSystemProxyResolver* resolver() { return proxy_resolver_; }
 
   void ResetProxyResolutionService() { proxy_resolution_service_.reset(); }
-
-  void DoResolveProxyCompletedSynchronouslyTest() {
-    // Make sure there would be a proxy result on success.
-    const ProxyServer proxy_server =
-        ProxyServer::FromPacString("HTTPS foopy:8443");
-    resolver()->add_server_to_proxy_list(proxy_server);
-
-    ProxyInfo info;
-    TestCompletionCallback callback;
-    NetLogWithSource log;
-    std::unique_ptr<ProxyResolutionRequest> request;
-    const int result = service()->ResolveProxy(
-        kResourceUrl, std::string(), NetworkIsolationKey(), &info,
-        callback.callback(), &request, log);
-
-    EXPECT_THAT(result, IsOk());
-    EXPECT_TRUE(info.is_direct());
-    EXPECT_FALSE(callback.have_result());
-    EXPECT_EQ(PendingRequestSizeForTesting(), 0u);
-    EXPECT_EQ(request, nullptr);
-  }
 
   void DoResolveProxyTest(const ProxyList& expected_proxy_list) {
     ProxyInfo info;
@@ -186,49 +132,34 @@ class WindowsSystemProxyResolutionServiceTest : public TestWithTaskEnvironment {
                                          callback.callback(), &request, log);
 
     ASSERT_THAT(result, IsError(ERR_IO_PENDING));
-    ASSERT_EQ(PendingRequestSizeForTesting(), 1u);
     ASSERT_NE(request, nullptr);
 
     // Wait for result to come back.
     EXPECT_THAT(callback.GetResult(result), IsOk());
 
     EXPECT_TRUE(expected_proxy_list.Equals(info.proxy_list()));
-    EXPECT_EQ(PendingRequestSizeForTesting(), 0u);
     EXPECT_NE(request, nullptr);
-  }
-
-  scoped_refptr<WindowsSystemProxyResolver>
-  CreateMockWindowsSystemProxyResolver() {
-    return proxy_resolver_;
   }
 
  private:
   std::unique_ptr<WindowsSystemProxyResolutionService>
       proxy_resolution_service_;
-  scoped_refptr<MockWindowsSystemProxyResolver> proxy_resolver_;
+  MockWindowsSystemProxyResolver* proxy_resolver_;
 };
 
-TEST_F(WindowsSystemProxyResolutionServiceTest,
-       ResolveProxyFailedToCreateResolver) {
-  service()->SetWindowsSystemProxyResolverForTesting(nullptr);
-  service()->SetCreateWindowsSystemProxyResolverFunctionForTesting(
-      &CreateWindowsSystemProxyResolverFails);
-  DoResolveProxyCompletedSynchronouslyTest();
+TEST_F(WindowsSystemProxyResolutionServiceTest, CreateWithNullResolver) {
+  std::unique_ptr<WindowsSystemProxyResolutionService>
+      proxy_resolution_service = WindowsSystemProxyResolutionService::Create(
+          /*windows_system_proxy_resolver=*/nullptr, /*net_log=*/nullptr);
+  EXPECT_FALSE(proxy_resolution_service);
 }
 
-TEST_F(WindowsSystemProxyResolutionServiceTest,
-       ResolveProxyCompletedSynchronously) {
-  resolver()->set_get_proxy_for_url_success(false);
-  DoResolveProxyCompletedSynchronouslyTest();
-}
-
-TEST_F(WindowsSystemProxyResolutionServiceTest,
-       ResolveProxyFailedAsynchronously) {
-  resolver()->set_net_error(ERR_FAILED);
+TEST_F(WindowsSystemProxyResolutionServiceTest, ResolveProxyFailed) {
+  resolver()->set_winhttp_status(WinHttpStatus::kAborted);
 
   // Make sure there would be a proxy result on success.
   const ProxyServer proxy_server =
-      ProxyServer::FromPacString("HTTPS foopy:8443");
+      PacResultElementToProxyServer("HTTPS foopy:8443");
   resolver()->add_server_to_proxy_list(proxy_server);
 
   ProxyInfo info;
@@ -240,15 +171,38 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
                                        callback.callback(), &request, log);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
-  ASSERT_EQ(PendingRequestSizeForTesting(), 1u);
   ASSERT_NE(request, nullptr);
 
   // Wait for result to come back.
   EXPECT_THAT(callback.GetResult(result), IsOk());
 
   EXPECT_TRUE(info.is_direct());
-  EXPECT_EQ(PendingRequestSizeForTesting(), 0u);
   EXPECT_NE(request, nullptr);
+}
+
+TEST_F(WindowsSystemProxyResolutionServiceTest, ResolveProxyCancelled) {
+  // Make sure there would be a proxy result on success.
+  const ProxyServer proxy_server =
+      PacResultElementToProxyServer("HTTPS foopy:8443");
+  resolver()->add_server_to_proxy_list(proxy_server);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  NetLogWithSource log;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int result = service()->ResolveProxy(kResourceUrl, std::string(),
+                                       NetworkIsolationKey(), &info,
+                                       callback.callback(), &request, log);
+
+  ASSERT_THAT(result, IsError(ERR_IO_PENDING));
+  ASSERT_NE(request, nullptr);
+
+  // Cancel the request.
+  request.reset();
+
+  // The proxy shouldn't resolve.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(callback.have_result());
 }
 
 TEST_F(WindowsSystemProxyResolutionServiceTest, ResolveProxyEmptyResults) {
@@ -259,7 +213,7 @@ TEST_F(WindowsSystemProxyResolutionServiceTest, ResolveProxyEmptyResults) {
 TEST_F(WindowsSystemProxyResolutionServiceTest, ResolveProxyWithResults) {
   ProxyList expected_proxy_list;
   const ProxyServer proxy_server =
-      ProxyServer::FromPacString("HTTPS foopy:8443");
+      PacResultElementToProxyServer("HTTPS foopy:8443");
   resolver()->add_server_to_proxy_list(proxy_server);
   expected_proxy_list.AddProxyServer(proxy_server);
 
@@ -270,7 +224,7 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
        MultipleProxyResolutionRequests) {
   ProxyList expected_proxy_list;
   const ProxyServer proxy_server =
-      ProxyServer::FromPacString("HTTPS foopy:8443");
+      PacResultElementToProxyServer("HTTPS foopy:8443");
   resolver()->add_server_to_proxy_list(proxy_server);
   expected_proxy_list.AddProxyServer(proxy_server);
   NetLogWithSource log;
@@ -282,7 +236,6 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
       kResourceUrl, std::string(), NetworkIsolationKey(), &first_proxy_info,
       first_callback.callback(), &first_request, log);
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
-  ASSERT_EQ(PendingRequestSizeForTesting(), 1u);
   ASSERT_NE(first_request, nullptr);
 
   ProxyInfo second_proxy_info;
@@ -292,7 +245,6 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
       kResourceUrl, std::string(), NetworkIsolationKey(), &second_proxy_info,
       second_callback.callback(), &second_request, log);
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
-  ASSERT_EQ(PendingRequestSizeForTesting(), 2u);
   ASSERT_NE(second_request, nullptr);
 
   // Wait for results to come back.
@@ -303,15 +255,13 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
   EXPECT_NE(first_request, nullptr);
   EXPECT_TRUE(expected_proxy_list.Equals(second_proxy_info.proxy_list()));
   EXPECT_NE(second_request, nullptr);
-
-  EXPECT_EQ(PendingRequestSizeForTesting(), 0u);
 }
 
 TEST_F(WindowsSystemProxyResolutionServiceTest,
        ProxyResolutionServiceDestructionWithInFlightRequests) {
   ProxyList expected_proxy_list;
   const ProxyServer proxy_server =
-      ProxyServer::FromPacString("HTTPS foopy:8443");
+      PacResultElementToProxyServer("HTTPS foopy:8443");
   resolver()->add_server_to_proxy_list(proxy_server);
   expected_proxy_list.AddProxyServer(proxy_server);
   NetLogWithSource log;
@@ -323,7 +273,6 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
       kResourceUrl, std::string(), NetworkIsolationKey(), &first_proxy_info,
       first_callback.callback(), &first_request, log);
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
-  ASSERT_EQ(PendingRequestSizeForTesting(), 1u);
   ASSERT_NE(first_request, nullptr);
 
   ProxyInfo second_proxy_info;
@@ -333,7 +282,6 @@ TEST_F(WindowsSystemProxyResolutionServiceTest,
       kResourceUrl, std::string(), NetworkIsolationKey(), &second_proxy_info,
       second_callback.callback(), &second_request, log);
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
-  ASSERT_EQ(PendingRequestSizeForTesting(), 2u);
   ASSERT_NE(second_request, nullptr);
 
   // There are now 2 in-flight proxy resolution requests. Deleting the proxy

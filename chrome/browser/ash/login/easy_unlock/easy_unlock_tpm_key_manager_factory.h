@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
@@ -31,6 +30,11 @@ class EasyUnlockTpmKeyManagerFactory
   static EasyUnlockTpmKeyManager* Get(content::BrowserContext* context);
   static EasyUnlockTpmKeyManager* GetForUser(const std::string& user_id);
 
+  EasyUnlockTpmKeyManagerFactory(const EasyUnlockTpmKeyManagerFactory&) =
+      delete;
+  EasyUnlockTpmKeyManagerFactory& operator=(
+      const EasyUnlockTpmKeyManagerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<EasyUnlockTpmKeyManagerFactory>;
 
@@ -42,8 +46,6 @@ class EasyUnlockTpmKeyManagerFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockTpmKeyManagerFactory);
 };
 
 }  // namespace ash

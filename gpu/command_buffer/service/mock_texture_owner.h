@@ -51,7 +51,6 @@ class MockTextureOwner : public TextureOwner {
   gl::GLContext* fake_context;
   gl::GLSurface* fake_surface;
   int get_a_hardware_buffer_count = 0;
-  bool expect_update_tex_image;
 
  protected:
   ~MockTextureOwner();

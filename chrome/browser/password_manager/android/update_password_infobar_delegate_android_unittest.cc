@@ -48,6 +48,12 @@ class UpdatePasswordInfoBarDelegateTest
     : public ChromeRenderViewHostTestHarness {
  public:
   UpdatePasswordInfoBarDelegateTest();
+
+  UpdatePasswordInfoBarDelegateTest(const UpdatePasswordInfoBarDelegateTest&) =
+      delete;
+  UpdatePasswordInfoBarDelegateTest& operator=(
+      const UpdatePasswordInfoBarDelegateTest&) = delete;
+
   ~UpdatePasswordInfoBarDelegateTest() override {}
 
   void SetUp() override;
@@ -74,8 +80,6 @@ class UpdatePasswordInfoBarDelegateTest
 
  private:
   password_manager::FakeFormFetcher fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdatePasswordInfoBarDelegateTest);
 };
 
 UpdatePasswordInfoBarDelegateTest::UpdatePasswordInfoBarDelegateTest() {
@@ -115,7 +119,9 @@ UpdatePasswordInfoBarDelegateTest::CreateTestFormManager() {
   auto manager = std::make_unique<password_manager::PasswordFormManager>(
       &client_, driver_.AsWeakPtr(), observed_form_, &fetcher_,
       std::make_unique<PasswordSaveManagerImpl>(
-          std::make_unique<password_manager::StubFormSaver>()),
+          /*profile_form_saver=*/std::make_unique<
+              password_manager::StubFormSaver>(),
+          /*account_form_saver=*/nullptr),
       nullptr /* metrics_recorder */);
   manager->ProvisionallySave(observed_form_, &driver_, nullptr);
   return manager;

@@ -1,7 +1,7 @@
-From bc79e6d9c90e8586d841ddf9cdfaaf591c33996d Mon Sep 17 00:00:00 2001
+From a46ecfad6b70f941c0817c24a03598624bde17e6 Mon Sep 17 00:00:00 2001
 From: Mohamed Heikal <mheikal@google.com>
 Date: Wed, 26 May 2021 19:03:39 -0400
-Subject: [PATCH 3/4] Add disassemble command to keeps
+Subject: [PATCH 3/3] Add disassemble command to keeps
 
 ---
  src/main/keep.txt | 1 +
@@ -20,5 +20,5 @@ index e03ef61f8..5454561a4 100644
  -keep public class com.android.tools.r8.dexsplitter.DexSplitter { public static void main(java.lang.String[]); }
  
 -- 
-2.32.0.288.g62a8d224e6-goog
+2.33.0.882.g93a45727a2-goog
 

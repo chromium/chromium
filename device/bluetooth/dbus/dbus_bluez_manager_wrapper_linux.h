@@ -15,11 +15,13 @@ namespace bluez {
 // implementations.
 class DEVICE_BLUETOOTH_EXPORT DBusBluezManagerWrapperLinux {
  public:
+  DBusBluezManagerWrapperLinux() = delete;
+  DBusBluezManagerWrapperLinux(const DBusBluezManagerWrapperLinux&) = delete;
+  DBusBluezManagerWrapperLinux& operator=(const DBusBluezManagerWrapperLinux&) =
+      delete;
+
   static void Initialize();
   static void Shutdown();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DBusBluezManagerWrapperLinux);
 };
 
 }  // namespace bluez

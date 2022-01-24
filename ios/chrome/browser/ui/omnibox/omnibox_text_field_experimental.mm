@@ -152,15 +152,34 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (NSString*)autocompleteText {
   if (self.autocompleteTextLength > 0) {
-    return [self.text
-        substringFromIndex:(self.text.length - self.autocompleteTextLength)];
+    // In crbug.com/1237851, sometimes self.autocompleteTextLength is greater
+    // than self.text.length, causing the subtraction below to overflow,
+    // breaking
+    // |-substringToIndex:|. This shouldn't happen, so use the DCHECK to catch
+    // it to help debug and default to the end of the string if an overflow
+    // would occur.
+    DCHECK(self.text.length >= self.autocompleteTextLength);
+    NSUInteger userTextEndIndex =
+        self.text.length >= self.autocompleteTextLength
+            ? self.text.length - self.autocompleteTextLength
+            : self.text.length;
+    return [self.text substringFromIndex:userTextEndIndex];
   }
   return @"";
 }
 
 - (NSString*)userText {
-  return [self.text
-      substringToIndex:(self.text.length - self.autocompleteTextLength)];
+  // In crbug.com/1237851, sometimes self.autocompleteTextLength is greater than
+  // self.text.length, causing the subtraction below to overflow, breaking
+  // |-substringToIndex:|. This shouldn't happen, so use the DCHECK to catch it
+  // to help debug and default to the end of the string if an overflow would
+  // occur.
+  DCHECK(self.text.length >= self.autocompleteTextLength);
+  NSUInteger userTextEndIndex =
+      self.text.length >= self.autocompleteTextLength
+          ? self.text.length - self.autocompleteTextLength
+          : self.text.length;
+  return [self.text substringToIndex:userTextEndIndex];
 }
 
 - (NSString*)markedText {
@@ -424,6 +443,11 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   return editRect;
 }
 
+- (CGRect)caretRectForPosition:(UITextPosition*)position {
+  return ([self hasAutocompleteText]) ? CGRectZero
+                                      : [super caretRectForPosition:position];
+}
+
 #pragma mark - UITextInput
 
 - (void)beginFloatingCursorAtPoint:(CGPoint)point {
@@ -596,6 +620,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
                           modifierFlags:0
                                  action:@selector(keyCommandDown)];
 
+#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
+  if (@available(iOS 15, *)) {
+    commandUp.wantsPriorityOverSystemBehavior = YES;
+    commandDown.wantsPriorityOverSystemBehavior = YES;
+  }
+#endif
+
   return @[ commandUp, commandDown ];
 }
 
@@ -633,6 +664,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
       [UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow
                           modifierFlags:0
                                  action:@selector(keyCommandRight)];
+
+#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
+  if (@available(iOS 15, *)) {
+    commandLeft.wantsPriorityOverSystemBehavior = YES;
+    commandRight.wantsPriorityOverSystemBehavior = YES;
+  }
+#endif
 
   return @[ commandLeft, commandRight ];
 }
@@ -767,6 +805,12 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     UITextPosition* endOfUserText =
         [self positionFromPosition:self.endOfDocument
                             offset:-autocompleteLength];
+    // Move the cursor to the beginning of the field before setting the position
+    // to the end of the user input so if the text is very wide, the user sees
+    // the beginning of the text instead of the end.
+    self.selectedTextRange =
+        [self textRangeFromPosition:self.beginningOfDocument
+                         toPosition:self.beginningOfDocument];
     // Preserve the cursor position at the end of the user input.
     self.selectedTextRange = [self textRangeFromPosition:endOfUserText
                                               toPosition:endOfUserText];

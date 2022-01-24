@@ -34,6 +34,12 @@ class ASH_EXPORT DetachableBaseNotificationController
 
   explicit DetachableBaseNotificationController(
       DetachableBaseHandler* detachable_base_handler);
+
+  DetachableBaseNotificationController(
+      const DetachableBaseNotificationController&) = delete;
+  DetachableBaseNotificationController& operator=(
+      const DetachableBaseNotificationController&) = delete;
+
   ~DetachableBaseNotificationController() override;
 
   // DetachableBaseObserver:
@@ -63,8 +69,6 @@ class ASH_EXPORT DetachableBaseNotificationController
   base::ScopedObservation<DetachableBaseHandler, DetachableBaseObserver>
       detachable_base_observation_{this};
   ScopedSessionObserver session_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DetachableBaseNotificationController);
 };
 
 }  // namespace ash

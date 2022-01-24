@@ -63,7 +63,12 @@ if (ozone_platform_x11) {
 if (ozone_platform_scenic) {
   ozone_platforms += [ "scenic" ]
   ozone_platform_deps += [ "platform/scenic" ]
-  ozone_platform_test_deps += [ "platform/scenic:scenic_unittests" ]
+}
+
+if (ozone_platform_flatland) {
+  ozone_platforms += [ "flatland" ]
+  ozone_platform_deps += [ "platform/flatland" ]
+  ozone_platform_test_deps += [ "platform/flatland:flatland_unittests" ]
 }
 
 platform_list_cc_file = "$target_gen_dir/platform_list.cc"
@@ -150,7 +155,7 @@ component("ozone_base") {
     # Everyone should depend on //ui/ozone instead except a handful of
     # things that would otherwise create a cycle.
     "//chromeos/system:system",
-    "//ui/base/ime/chromeos/*",
+    "//ui/base/ime/ash/*",
     "//ui/events/ozone/*",
     "//ui/ozone/common/*",
     "//ui/ozone/platform/*",
@@ -247,6 +252,7 @@ source_set("test_support_internal") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/platform_window:platform_window",

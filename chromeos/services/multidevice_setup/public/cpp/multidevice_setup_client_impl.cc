@@ -44,7 +44,8 @@ MultiDeviceSetupClientImpl::MultiDeviceSetupClientImpl(
     : multidevice_setup_remote_(std::move(remote_setup)),
       remote_device_cache_(multidevice::RemoteDeviceCache::Factory::Create()),
       host_status_with_device_(GenerateDefaultHostStatusWithDevice()),
-      feature_states_map_(GenerateDefaultFeatureStatesMap()) {
+      feature_states_map_(GenerateDefaultFeatureStatesMap(
+          mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady)) {
   multidevice_setup_remote_->AddHostStatusObserver(
       GenerateHostStatusObserverRemote());
   multidevice_setup_remote_->AddFeatureStateObserver(
@@ -94,6 +95,9 @@ void MultiDeviceSetupClientImpl::SetFeatureEnabledState(
 
 const MultiDeviceSetupClient::FeatureStatesMap&
 MultiDeviceSetupClientImpl::GetFeatureStates() const {
+  PA_LOG(VERBOSE)
+      << "Responding to GetFeaturesStates() with the following cached map: "
+      << FeatureStatesMapToString(feature_states_map_);
   return feature_states_map_;
 }
 
@@ -127,6 +131,8 @@ void MultiDeviceSetupClientImpl::OnHostStatusChanged(
 
 void MultiDeviceSetupClientImpl::OnFeatureStatesChanged(
     const FeatureStatesMap& feature_states_map) {
+  PA_LOG(INFO) << "Feature states have changed. New feature map: "
+               << FeatureStatesMapToString(feature_states_map);
   feature_states_map_ = feature_states_map;
   NotifyFeatureStateChanged(feature_states_map_);
 }

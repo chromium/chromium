@@ -10,8 +10,10 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/trace_event/traced_value.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace gfx {
@@ -37,6 +39,9 @@ struct DrmOverlayPlane {
                   const gfx::RectF& crop_rect,
                   bool enable_blend,
                   std::unique_ptr<gfx::GpuFence> gpu_fence);
+  DrmOverlayPlane(const scoped_refptr<DrmFramebuffer>& buffer,
+                  const gfx::OverlayPlaneData& overlay_plane_data,
+                  std::unique_ptr<gfx::GpuFence> gpu_fence);
   DrmOverlayPlane(DrmOverlayPlane&& other);
   DrmOverlayPlane& operator=(DrmOverlayPlane&& other);
 
@@ -52,6 +57,8 @@ struct DrmOverlayPlane {
       const DrmOverlayPlaneList& overlays);
 
   DrmOverlayPlane Clone() const;
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
   static std::vector<DrmOverlayPlane> Clone(
       const std::vector<DrmOverlayPlane>& planes);

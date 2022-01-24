@@ -11,7 +11,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/bluetooth/bluetooth_detailed_view.h"
+#include "ash/system/bluetooth/bluetooth_detailed_view_legacy.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -78,7 +78,7 @@ UnifiedBluetoothDetailedViewController::
 
 views::View* UnifiedBluetoothDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::BluetoothDetailedView(
+  view_ = new tray::BluetoothDetailedViewLegacy(
       detailed_view_delegate_.get(),
       Shell::Get()->session_controller()->login_status());
   OnBluetoothSystemStateChanged();

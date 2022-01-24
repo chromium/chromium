@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** Overrides timeout and interval callbacks to mock timing behavior. */
-/* #export */ class MockTimer {
+export class MockTimer {
   constructor() {
     /**
      * Default versions of the timing functions.

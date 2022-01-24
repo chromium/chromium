@@ -48,7 +48,12 @@ struct PaintPreviewCaptureParams {
   mojo_base.mojom.UnguessableToken guid;
 
   // Clip rect for the capture. An empty |clip_rect| will be treated as
-  // unclipped and will default to the frame (document) size.
+  // unclipped and will default to the frame (document) size. Values for
+  // width/height larger than the document size will be clamped to the
+  // size of the document.
+  //
+  // A value of -1 for x/y will center the x/y position of the capture
+  // about the current scroll offset if a width/height are specified.
   gfx.mojom.Rect clip_rect;
 
   // Set to true if the clip rect is only a hint as to size.
@@ -108,9 +113,13 @@ struct PaintPreviewCaptureResponse {
   // The size of the resulting serialized capture.
   uint64 serialized_size;
 
-  // Scroll offsets of the frame at capture time.
-  // TODO(crbug.com/738465): This should likely be a gfx.mojom.ScrollOffset.
-  gfx.mojom.Size scroll_offsets;
+  // Scroll offsets of the viewport relative to the captured region of the
+  // frame at capture time.
+  gfx.mojom.Point scroll_offsets;
+
+  // Offset of the captured content relative to the top-left corner of the
+  // captured frame.
+  gfx.mojom.Point frame_offsets;
 
   // The serialized skia picture. See |SerializedRecording| for details on
   // contents.

@@ -35,7 +35,7 @@ class Size;
 namespace printing {
 
 // This class plays metafiles from data stream (usually PDF or EMF).
-class COMPONENT_EXPORT(PRINTING) MetafilePlayer {
+class COMPONENT_EXPORT(PRINTING_METAFILE) MetafilePlayer {
  public:
   MetafilePlayer();
   MetafilePlayer(const MetafilePlayer&) = delete;
@@ -66,6 +66,9 @@ class COMPONENT_EXPORT(PRINTING) MetafilePlayer {
   // called after the metafile is closed. Returns true if writing succeeded.
   virtual bool GetDataAsVector(std::vector<char>* buffer) const = 0;
 
+  // Identifies the type of encapsulated.
+  virtual mojom::MetafileDataType GetDataType() const = 0;
+
 #if defined(OS_ANDROID)
   // Similar to bool SaveTo(base::File* file) const, but write the data to the
   // file descriptor directly. This is because Android doesn't allow file
@@ -81,7 +84,7 @@ class COMPONENT_EXPORT(PRINTING) MetafilePlayer {
 
 // This class creates a graphics context that renders into a data stream
 // (usually PDF or EMF).
-class COMPONENT_EXPORT(PRINTING) Metafile : public MetafilePlayer {
+class COMPONENT_EXPORT(PRINTING_METAFILE) Metafile : public MetafilePlayer {
  public:
   Metafile();
   Metafile(const Metafile&) = delete;

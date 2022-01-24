@@ -90,10 +90,13 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/overlay_plane_data.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/dc_renderer_layer_params.h"
@@ -118,10 +121,6 @@
 // Note that this must be included after gl_bindings.h to avoid conflicts.
 #include <OpenGL/CGLIOSurface.h>
 #endif  // OS_MAC
-
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"  // nogncheck
-#endif
 
 // Note: this undefs far and near so include this after other Windows headers.
 #include "third_party/angle/src/image_util/loadimage.h"
@@ -289,11 +288,14 @@ class ScopedGLErrorSuppressor {
  public:
   explicit ScopedGLErrorSuppressor(
       const char* function_name, ErrorState* error_state);
+
+  ScopedGLErrorSuppressor(const ScopedGLErrorSuppressor&) = delete;
+  ScopedGLErrorSuppressor& operator=(const ScopedGLErrorSuppressor&) = delete;
+
   ~ScopedGLErrorSuppressor();
  private:
   const char* function_name_;
   ErrorState* error_state_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedGLErrorSuppressor);
 };
 
 // Temporarily changes a decoder's bound texture and restore it when this
@@ -305,13 +307,16 @@ class ScopedTextureBinder {
                                ErrorState* error_state,
                                GLuint id,
                                GLenum target);
+
+  ScopedTextureBinder(const ScopedTextureBinder&) = delete;
+  ScopedTextureBinder& operator=(const ScopedTextureBinder&) = delete;
+
   ~ScopedTextureBinder();
 
  private:
   ContextState* state_;
   ErrorState* error_state_;
   GLenum target_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedTextureBinder);
 };
 
 // Temporarily changes a decoder's bound render buffer and restore it when this
@@ -321,12 +326,15 @@ class ScopedRenderBufferBinder {
   explicit ScopedRenderBufferBinder(ContextState* state,
                                     ErrorState* error_state,
                                     GLuint id);
+
+  ScopedRenderBufferBinder(const ScopedRenderBufferBinder&) = delete;
+  ScopedRenderBufferBinder& operator=(const ScopedRenderBufferBinder&) = delete;
+
   ~ScopedRenderBufferBinder();
 
  private:
   ContextState* state_;
   ErrorState* error_state_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedRenderBufferBinder);
 };
 
 // Temporarily changes a decoder's bound frame buffer and restore it when this
@@ -334,11 +342,14 @@ class ScopedRenderBufferBinder {
 class ScopedFramebufferBinder {
  public:
   explicit ScopedFramebufferBinder(GLES2DecoderImpl* decoder, GLuint id);
+
+  ScopedFramebufferBinder(const ScopedFramebufferBinder&) = delete;
+  ScopedFramebufferBinder& operator=(const ScopedFramebufferBinder&) = delete;
+
   ~ScopedFramebufferBinder();
 
  private:
   GLES2DecoderImpl* decoder_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedFramebufferBinder);
 };
 
 // Temporarily changes a decoder's bound frame buffer to a resolved version of
@@ -350,12 +361,17 @@ class ScopedResolvedFramebufferBinder {
   explicit ScopedResolvedFramebufferBinder(GLES2DecoderImpl* decoder,
                                            bool enforce_internal_framebuffer,
                                            bool internal);
+
+  ScopedResolvedFramebufferBinder(const ScopedResolvedFramebufferBinder&) =
+      delete;
+  ScopedResolvedFramebufferBinder& operator=(
+      const ScopedResolvedFramebufferBinder&) = delete;
+
   ~ScopedResolvedFramebufferBinder();
 
  private:
   GLES2DecoderImpl* decoder_;
   bool resolve_and_bind_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedResolvedFramebufferBinder);
 };
 
 // Temporarily create and bind a single sample copy of the currently bound
@@ -370,6 +386,10 @@ class ScopedFramebufferCopyBinder {
                                        GLint width = 0,
                                        GLint height = 0);
 
+  ScopedFramebufferCopyBinder(const ScopedFramebufferCopyBinder&) = delete;
+  ScopedFramebufferCopyBinder& operator=(const ScopedFramebufferCopyBinder&) =
+      delete;
+
   ~ScopedFramebufferCopyBinder();
 
  private:
@@ -377,7 +397,6 @@ class ScopedFramebufferCopyBinder {
   std::unique_ptr<ScopedFramebufferBinder> framebuffer_binder_;
   GLuint temp_texture_;
   GLuint temp_framebuffer_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedFramebufferCopyBinder);
 };
 
 // Temporarily changes a decoder's PIXEL_UNPACK_BUFFER to 0 and set pixel unpack
@@ -385,17 +404,24 @@ class ScopedFramebufferCopyBinder {
 class ScopedPixelUnpackState {
  public:
   explicit ScopedPixelUnpackState(ContextState* state);
+
+  ScopedPixelUnpackState(const ScopedPixelUnpackState&) = delete;
+  ScopedPixelUnpackState& operator=(const ScopedPixelUnpackState&) = delete;
+
   ~ScopedPixelUnpackState();
 
  private:
   ContextState* state_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedPixelUnpackState);
 };
 
 // Encapsulates an OpenGL texture.
 class BackTexture {
  public:
   explicit BackTexture(GLES2DecoderImpl* decoder);
+
+  BackTexture(const BackTexture&) = delete;
+  BackTexture& operator=(const BackTexture&) = delete;
+
   ~BackTexture();
 
   // Create a new render texture.
@@ -450,14 +476,16 @@ class BackTexture {
   // The image that backs the texture, if its backed by a native
   // GpuMemoryBuffer.
   scoped_refptr<gl::GLImage> image_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackTexture);
 };
 
 // Encapsulates an OpenGL render buffer of any format.
 class BackRenderbuffer {
  public:
   explicit BackRenderbuffer(GLES2DecoderImpl* decoder);
+
+  BackRenderbuffer(const BackRenderbuffer&) = delete;
+  BackRenderbuffer& operator=(const BackRenderbuffer&) = delete;
+
   ~BackRenderbuffer();
 
   // Create a new render buffer.
@@ -485,13 +513,16 @@ class BackRenderbuffer {
   MemoryTypeTracker memory_tracker_;
   size_t bytes_allocated_;
   GLuint id_;
-  DISALLOW_COPY_AND_ASSIGN(BackRenderbuffer);
 };
 
 // Encapsulates an OpenGL frame buffer.
 class BackFramebuffer {
  public:
   explicit BackFramebuffer(GLES2DecoderImpl* decoder);
+
+  BackFramebuffer(const BackFramebuffer&) = delete;
+  BackFramebuffer& operator=(const BackFramebuffer&) = delete;
+
   ~BackFramebuffer();
 
   // Create a new frame buffer.
@@ -524,7 +555,6 @@ class BackFramebuffer {
  private:
   GLES2DecoderImpl* decoder_;
   GLuint id_;
-  DISALLOW_COPY_AND_ASSIGN(BackFramebuffer);
 };
 
 struct FenceCallback {
@@ -615,6 +645,10 @@ class GLES2DecoderImpl : public GLES2Decoder,
                    CommandBufferServiceBase* command_buffer_service,
                    Outputter* outputter,
                    ContextGroup* group);
+
+  GLES2DecoderImpl(const GLES2DecoderImpl&) = delete;
+  GLES2DecoderImpl& operator=(const GLES2DecoderImpl&) = delete;
+
   ~GLES2DecoderImpl() override;
 
   error::Error DoCommands(unsigned int num_commands,
@@ -2828,8 +2862,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   std::set<scoped_refptr<TextureRef>> texture_refs_pending_destruction_;
 
   base::WeakPtrFactory<GLES2DecoderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GLES2DecoderImpl);
 };
 
 constexpr GLES2DecoderImpl::CommandInfo GLES2DecoderImpl::command_info[] = {
@@ -3230,8 +3262,7 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
     // buffer queue and is as a result guaranteed to work on all devices.
     // TODO(reveman): Define this format in one place instead of having to
     // duplicate BGRX_8888.
-    if (features::IsUsingOzonePlatform())
-      buffer_format = gfx::BufferFormat::BGRX_8888;
+    buffer_format = gfx::BufferFormat::BGRX_8888;
 #endif
   }
   scoped_refptr<gl::GLImage> image =
@@ -4595,9 +4626,6 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
   // Initialize uninitialized locals by default
   if (!workarounds().dont_initialize_uninitialized_locals)
     driver_bug_workarounds |= SH_INITIALIZE_UNINITIALIZED_LOCALS;
-
-  resources.WEBGL_debug_shader_precision =
-      group_->gpu_preferences().emulate_shader_precision;
 
   ShShaderOutput shader_output_language =
       ShaderTranslator::GetShaderOutputLanguageForContext(gl_version_info());
@@ -13733,10 +13761,17 @@ error::Error GLES2DecoderImpl::HandleScheduleOverlayPlaneCHROMIUM(
     }
   }
   if (!surface_->ScheduleOverlayPlane(
-          c.plane_z_order, transform, image,
-          gfx::Rect(c.bounds_x, c.bounds_y, c.bounds_width, c.bounds_height),
-          gfx::RectF(c.uv_x, c.uv_y, c.uv_width, c.uv_height), c.enable_blend,
-          std::move(gpu_fence))) {
+          image, std::move(gpu_fence),
+          gfx::OverlayPlaneData(
+              c.plane_z_order, transform,
+              gfx::Rect(c.bounds_x, c.bounds_y, c.bounds_width,
+                        c.bounds_height),
+              gfx::RectF(c.uv_x, c.uv_y, c.uv_width, c.uv_height),
+              c.enable_blend,
+              /*damage_rect=*/gfx::Rect(), /*opacity*/ 1.0f,
+              gfx::OverlayPriorityHint::kNone,
+              /*rounded_corners*/ gfx::RRectF(), image->color_space(),
+              /*hdr_metadata=*/absl::nullopt))) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION,
                        "glScheduleOverlayPlaneCHROMIUM",
                        "failed to schedule overlay");
@@ -16440,7 +16475,8 @@ bool GLES2DecoderImpl::GetUniformSetup(GLuint program_id,
   }
   uint32_t checked_size = 0;
   if (!SizedResult<T>::ComputeSize(num_elements).AssignIfValid(&checked_size)) {
-    return error::kOutOfBounds;
+    *error = error::kOutOfBounds;
+    return false;
   }
   result = GetSharedMemoryAs<SizedResult<T>*>(shm_id, shm_offset, checked_size);
   if (!result) {
@@ -18487,7 +18523,7 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
       source_type, dest_binding_target, dest_level, dest_internal_format,
       unpack_flip_y == GL_TRUE, unpack_premultiply_alpha == GL_TRUE,
       unpack_unmultiply_alpha == GL_TRUE, dither == GL_TRUE);
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_X86_FAMILY)
+#if defined(OS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY)
   // glDrawArrays is faster than glCopyTexSubImage2D on IA Mesa driver,
   // although opposite in Android.
   // TODO(dshwang): After Mesa fixes this issue, remove this hack.

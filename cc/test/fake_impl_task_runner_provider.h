@@ -5,7 +5,7 @@
 #ifndef CC_TEST_FAKE_IMPL_TASK_RUNNER_PROVIDER_H_
 #define CC_TEST_FAKE_IMPL_TASK_RUNNER_PROVIDER_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/task_runner_provider.h"

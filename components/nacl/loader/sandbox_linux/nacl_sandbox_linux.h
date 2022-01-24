@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 
 namespace sandbox {
 class SetuidSandboxClient;
@@ -38,6 +37,10 @@ namespace nacl {
 class NaClSandbox {
  public:
   NaClSandbox();
+
+  NaClSandbox(const NaClSandbox&) = delete;
+  NaClSandbox& operator=(const NaClSandbox&) = delete;
+
   ~NaClSandbox();
 
   // This API will only work if the layer-1 sandbox is not sealed and the
@@ -79,7 +82,6 @@ class NaClSandbox {
   // enforcing.
   base::ScopedFD proc_fd_;
   std::unique_ptr<sandbox::SetuidSandboxClient> setuid_sandbox_client_;
-  DISALLOW_COPY_AND_ASSIGN(NaClSandbox);
 };
 
 }  // namespace nacl

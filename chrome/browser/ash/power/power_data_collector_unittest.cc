@@ -55,13 +55,13 @@ TEST_F(PowerDataCollectorTest, PowerChanged) {
 }
 
 TEST_F(PowerDataCollectorTest, SuspendDone) {
-  power_data_collector_->SuspendDone(base::TimeDelta::FromSeconds(10));
+  power_data_collector_->SuspendDone(base::Seconds(10));
   const base::circular_deque<PowerDataCollector::SystemResumedSample>& data1 =
       power_data_collector_->system_resumed_data();
   ASSERT_EQ(static_cast<size_t>(1), data1.size());
   ASSERT_EQ(static_cast<int64_t>(10), data1[0].sleep_duration.InSeconds());
 
-  power_data_collector_->SuspendDone(base::TimeDelta::FromSeconds(20));
+  power_data_collector_->SuspendDone(base::Seconds(20));
   const base::circular_deque<PowerDataCollector::SystemResumedSample>& data2 =
       power_data_collector_->system_resumed_data();
   ASSERT_EQ(static_cast<size_t>(2), data2.size());
@@ -72,8 +72,8 @@ TEST_F(PowerDataCollectorTest, AddSample) {
   base::circular_deque<PowerDataCollector::PowerSupplySample> sample_deque;
   PowerDataCollector::PowerSupplySample sample1, sample2;
   sample1.time = base::Time::FromInternalValue(1000);
-  sample2.time = sample1.time +
-      base::TimeDelta::FromSeconds(PowerDataCollector::kSampleTimeLimitSec + 1);
+  sample2.time =
+      sample1.time + base::Seconds(PowerDataCollector::kSampleTimeLimitSec + 1);
 
   AddSample(&sample_deque, sample1);
   ASSERT_EQ(static_cast<size_t>(1), sample_deque.size());

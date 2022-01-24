@@ -59,6 +59,24 @@ export function assertTabItemAndNeighborsInViewBounds(
 }
 
 /**
+ * Initialize a mock ProfileData object with defaults that would be set
+ * by the Mojo IPC logic.
+ * @param {!ProfileData} profileData
+ */
+export function initProfileDataWithDefaults(profileData) {
+  // Initialize undefined array properties
+  ['tabGroups', 'recentlyClosedTabs', 'recentlyClosedTabGroups'].forEach(
+      (arrayProp) => {
+        if (!profileData.hasOwnProperty(arrayProp)) {
+          profileData[arrayProp] = [];
+        }
+      });
+  if (!profileData.hasOwnProperty('recentlyClosedSectionExpanded')) {
+    profileData.recentlyClosedSectionExpanded = false;
+  }
+}
+
+/**
  * Initialize the loadTimeData with the provided data and defaults.
  * @param {Object=} loadTimeOverriddenData
  */

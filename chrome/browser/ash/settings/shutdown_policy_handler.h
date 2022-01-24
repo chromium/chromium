@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_SETTINGS_SHUTDOWN_POLICY_HANDLER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 
@@ -28,6 +27,10 @@ class ShutdownPolicyHandler {
   };
 
   ShutdownPolicyHandler(CrosSettings* cros_settings, Delegate* delegate);
+
+  ShutdownPolicyHandler(const ShutdownPolicyHandler&) = delete;
+  ShutdownPolicyHandler& operator=(const ShutdownPolicyHandler&) = delete;
+
   ~ShutdownPolicyHandler();
 
   // Once a trusted set of policies is established, this function notifies
@@ -42,8 +45,6 @@ class ShutdownPolicyHandler {
   base::CallbackListSubscription shutdown_policy_subscription_;
 
   base::WeakPtrFactory<ShutdownPolicyHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownPolicyHandler);
 };
 
 }  // namespace ash

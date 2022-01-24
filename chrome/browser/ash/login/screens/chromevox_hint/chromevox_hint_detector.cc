@@ -9,15 +9,14 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "chrome/browser/chromeos/idle_detector.h"
+#include "chrome/browser/ash/idle_detector.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 
 namespace ash {
 namespace {
 
 // Amount of time the user has to be idle for before giving the ChromeVox hint.
-const base::TimeDelta kChromeVoxHintIdleDuration =
-    base::TimeDelta::FromSeconds(20);
+const base::TimeDelta kChromeVoxHintIdleDuration = base::Seconds(20);
 
 }  // namespace
 

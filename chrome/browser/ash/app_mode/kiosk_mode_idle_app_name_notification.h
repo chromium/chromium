@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/base/user_activity/user_activity_observer.h"
@@ -26,6 +25,10 @@ class KioskModeIdleAppNameNotification
   static void Shutdown();
 
   KioskModeIdleAppNameNotification();
+  KioskModeIdleAppNameNotification(const KioskModeIdleAppNameNotification&) =
+      delete;
+  KioskModeIdleAppNameNotification& operator=(
+      const KioskModeIdleAppNameNotification&) = delete;
   ~KioskModeIdleAppNameNotification() override;
 
  private:
@@ -54,8 +57,6 @@ class KioskModeIdleAppNameNotification
 
   // The notification object which owns and shows the notification.
   std::unique_ptr<IdleAppNameNotificationView> notification_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskModeIdleAppNameNotification);
 };
 
 }  // namespace ash

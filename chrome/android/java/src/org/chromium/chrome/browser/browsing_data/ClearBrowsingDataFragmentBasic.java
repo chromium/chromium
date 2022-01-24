@@ -27,9 +27,11 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.ModelType;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -76,7 +78,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
 
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
-        if (identityManager.hasPrimaryAccount()) {
+        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             // Update the Clear Browsing History text based on the sign-in/sync state and whether
             // the link to MyActivity is displayed inline or at the bottom of the page.
             // Note: when the flag is enabled but sync is disabled, the default string is used, so
@@ -100,8 +102,9 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         super.onCreatePreferences(savedInstanceState, rootKey);
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
-        Preference googleDataTextPref =
-                findPreference(ClearBrowsingDataFragment.PREF_GOOGLE_DATA_TEXT);
+        ClickableSpansTextMessagePreference googleDataTextPref =
+                (ClickableSpansTextMessagePreference) findPreference(
+                        ClearBrowsingDataFragment.PREF_GOOGLE_DATA_TEXT);
         Preference nonGoogleSearchHistoryTextPref =
                 findPreference(ClearBrowsingDataFragment.PREF_SEARCH_HISTORY_NON_GOOGLE_TEXT);
         TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
@@ -110,7 +113,8 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
 
         // Google-related links to delete search history and other browsing activity.
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)
-                || defaultSearchEngine == null || !identityManager.hasPrimaryAccount()) {
+                || defaultSearchEngine == null
+                || !identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             // One of three cases:
             // 1. The feature is disabled.
             // 2. The default search engine is disabled.

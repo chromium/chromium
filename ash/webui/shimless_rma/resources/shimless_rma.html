@@ -36,7 +36,7 @@
   <div class="shimless-header">
     <cr-button
       id="back" on-click="onBackButtonClicked_"
-      disabled="[[isButtonDisabled_(currentPage_.buttonBack)]]"
+      disabled="[[isButtonDisabled_(currentPage_.buttonBack, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonBack)]]">
       Back
     </cr-button>
@@ -46,13 +46,13 @@
   <div class="shimless-footer">
     <cr-button
       id="cancel" on-click="onCancelButtonClicked_"
-      disabled="[[isButtonDisabled_(currentPage_.buttonCancel)]]"
+      disabled="[[isButtonDisabled_(currentPage_.buttonCancel, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonCancel)]]">
       Cancel
     </cr-button>
     <cr-button
       id="next" on-click="onNextButtonClicked_"
-      disabled="[[isButtonDisabled_(currentPage_.buttonNext)]]"
+      disabled="[[isButtonDisabled_(currentPage_.buttonNext, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonNext)]]">
       Next
     </cr-button>

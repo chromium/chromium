@@ -36,6 +36,8 @@ class CredentialManagerImpl
       public CredentialManagerPasswordFormManagerDelegate {
  public:
   explicit CredentialManagerImpl(PasswordManagerClient* client);
+  CredentialManagerImpl(const CredentialManagerImpl&) = delete;
+  CredentialManagerImpl& operator=(const CredentialManagerImpl&) = delete;
   ~CredentialManagerImpl() override;
 
   void Store(const CredentialInfo& credential, StoreCallback callback);
@@ -96,8 +98,6 @@ class CredentialManagerImpl
 
   // Helper for making the requests on leak detection.
   LeakDetectionDelegate leak_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerImpl);
 };
 
 }  // namespace password_manager

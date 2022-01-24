@@ -63,9 +63,29 @@ def backward_compatible_api_func(cg_context):
     """
     assert isinstance(cg_context, CodeGenContext)
 
-    name = (cg_context.member_like.code_generator_info.property_implemented_as
-            or cg_context.member_like.identifier
-            or cg_context.property_.identifier)
+    name = cg_context.member_like.code_generator_info.property_implemented_as
+    if name:
+        pass
+    elif cg_context.constructor:
+        if cg_context.is_named_constructor:
+            name = "CreateForJSConstructor"
+        else:
+            name = "Create"
+    else:
+        name = (cg_context.member_like.identifier
+                or cg_context.property_.identifier)
+        if name:
+            pass
+        elif cg_context.indexed_property_getter:
+            name = "AnonymousIndexedGetter"
+        elif cg_context.indexed_property_setter:
+            name = "AnonymousIndexedSetter"
+        elif cg_context.named_property_getter:
+            name = "AnonymousNamedGetter"
+        elif cg_context.named_property_setter:
+            name = "AnonymousNamedSetter"
+        elif cg_context.named_property_deleter:
+            name = "AnonymousNamedDeleter"
 
     if cg_context.attribute_get:
         # modules/webaudio/biquad_filter_node.idl has readonly attribute "Q"
@@ -81,17 +101,6 @@ def backward_compatible_api_func(cg_context):
             tokens[0] = tokens[0].capitalize()
         tokens.insert(0, "set")
         name = "".join(tokens)
-
-    if cg_context.indexed_property_getter and not name:
-        name = "AnonymousIndexedGetter"
-    if cg_context.indexed_property_setter and not name:
-        name = "AnonymousIndexedSetter"
-    if cg_context.named_property_getter and not name:
-        name = "AnonymousNamedGetter"
-    if cg_context.named_property_setter and not name:
-        name = "AnonymousNamedSetter"
-    if cg_context.named_property_deleter and not name:
-        name = "AnonymousNamedDeleter"
 
     return name
 
@@ -245,7 +254,7 @@ def bind_blink_api_arguments(code_node, cg_context):
         real_type = cg_context.attribute.idl_type.unwrap(typedef=True)
         if real_type.is_enumeration:
             pattern = """\
-// https://heycam.github.io/webidl/#dfn-attribute-setter
+// https://webidl.spec.whatwg.org/#dfn-attribute-setter
 // step 4.6.1. Let S be ? ToString(V).
 const auto&& arg1_value_string =
     NativeValueTraits<IDLString>::NativeValue(
@@ -325,8 +334,9 @@ def bind_callback_local_vars(code_node, cg_context):
                                "V8PerIsolateData::From(${isolate});")),
         S("property_name",
           "const char* const ${property_name} = \"${property.identifier}\";"),
-        S("receiver_context", ("v8::Local<v8::Context> ${receiver_context} = "
-                               "${v8_receiver}->CreationContext();")),
+        S("receiver_context",
+          ("v8::Local<v8::Context> ${receiver_context} = "
+           "${v8_receiver}->GetCreationContextChecked();")),
         S("receiver_script_state",
           ("ScriptState* ${receiver_script_state} = "
            "ScriptState::From(${receiver_context});")),
@@ -388,23 +398,23 @@ def bind_callback_local_vars(code_node, cg_context):
         "const ExceptionState::ContextType ${exception_state_context_type} = "
         "{_1};")
     if cg_context.attribute_get:
-        _1 = "ExceptionState::kGetterContext"
+        _1 = "ExceptionContext::Context::kAttributeGet"
     elif cg_context.attribute_set:
-        _1 = "ExceptionState::kSetterContext"
+        _1 = "ExceptionContext::Context::kAttributeSet"
     elif cg_context.constructor_group:
-        _1 = "ExceptionState::kConstructionContext"
+        _1 = "ExceptionContext::Context::kConstructorOperationInvoke"
     elif cg_context.indexed_property_getter:
-        _1 = "ExceptionState::kIndexedGetterContext"
+        _1 = "ExceptionContext::Context::kIndexedPropertyGet"
     elif cg_context.indexed_property_setter:
-        _1 = "ExceptionState::kIndexedSetterContext"
+        _1 = "ExceptionContext::Context::kIndexedPropertySet"
     elif cg_context.named_property_getter:
-        _1 = "ExceptionState::kNamedGetterContext"
+        _1 = "ExceptionContext::Context::kNamedPropertyGet"
     elif cg_context.named_property_setter:
-        _1 = "ExceptionState::kNamedSetterContext"
+        _1 = "ExceptionContext::Context::kNamedPropertySet"
     elif cg_context.named_property_deleter:
-        _1 = "ExceptionState::kNamedDeletionContext"
+        _1 = "ExceptionContext::Context::kNamedPropertyDelete"
     else:
-        _1 = "ExceptionState::kExecutionContext"
+        _1 = "ExceptionContext::Context::kOperationInvoke"
     local_vars.append(
         S("exception_state_context_type", _format(pattern, _1=_1)))
 
@@ -709,11 +719,6 @@ def _make_blink_api_call(code_node,
         arguments.append("${exception_state}")
 
     func_name = backward_compatible_api_func(cg_context)
-    if cg_context.constructor:
-        if cg_context.is_named_constructor:
-            func_name = "CreateForJSConstructor"
-        else:
-            func_name = "Create"
     if "Reflect" in ext_attrs:  # [Reflect]
         func_name = _make_reflect_accessor_func_name(cg_context)
 
@@ -1051,7 +1056,7 @@ def make_log_activity(cg_context):
 
 def _make_overload_dispatcher_per_arg_size(cg_context, items):
     """
-    https://heycam.github.io/webidl/#dfn-overload-resolution-algorithm
+    https://webidl.spec.whatwg.org/#dfn-overload-resolution-algorithm
 
     Args:
         items: Partial list of an "effective overload set" with the same
@@ -1184,8 +1189,9 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
         dispatch_if("{value}->IsDataView()")
 
     # 12.7. if Type(V) is Object, V has a [[TypedArrayName]] internal slot, ...
-    typed_array_types = ("Int8Array", "Int16Array", "Int32Array", "Uint8Array",
-                         "Uint16Array", "Uint32Array", "Uint8ClampedArray",
+    typed_array_types = ("Int8Array", "Int16Array", "Int32Array",
+                         "BigInt64Array", "Uint8Array", "Uint16Array",
+                         "Uint32Array", "BigUint64Array", "Uint8ClampedArray",
                          "Float32Array", "Float64Array")
     for typed_array_type in typed_array_types:
         func_like = find(lambda t, u: u.keyword_typename == typed_array_type)
@@ -1245,7 +1251,7 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
 
 
 def make_overload_dispatcher(cg_context):
-    # https://heycam.github.io/webidl/#dfn-overload-resolution-algorithm
+    # https://webidl.spec.whatwg.org/#dfn-overload-resolution-algorithm
 
     assert isinstance(cg_context, CodeGenContext)
 
@@ -1708,6 +1714,11 @@ def make_v8_set_return_value(cg_context):
             args.append("${blink_receiver}")
         return T("bindings::V8SetReturnValue({});".format(", ".join(args)))
 
+    if return_type_body.is_observable_array:
+        return T("bindings::V8SetReturnValue"
+                 "(${info}, ${return_value}->GetExoticObject(), "
+                 "${blink_receiver});")
+
     if return_type.is_promise:
         return T("bindings::V8SetReturnValue"
                  "(${info}, ${return_value}.V8Value());")
@@ -1944,8 +1955,24 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
     body.extend([
         make_steps_of_ce_reactions(cg_context),
         EmptyNode(),
-        make_v8_set_return_value(cg_context),
     ])
+
+    if cg_context.attribute.idl_type.unwrap(typedef=True).is_observable_array:
+        # Make an expression of "attribute get" instead of "attribute set" in
+        # order to acquire the observable array (backing list) object.
+        attribute_get_call = _make_blink_api_call(
+            body, cg_context.make_copy(attribute_get=True,
+                                       attribute_set=False))
+        body.extend([
+            FormatNode("auto&& observable_array = {attribute_get_call};",
+                       attribute_get_call=attribute_get_call),
+            TextNode("observable_array->PerformAttributeSet("
+                     "${script_state}, ${v8_property_value}, "
+                     "${exception_state});"),
+        ])
+        return func_def
+
+    body.append(make_v8_set_return_value(cg_context))
 
     return func_def
 
@@ -2279,13 +2306,94 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
             self.symbol_node = symbol_node
 
     def v8_type_and_symbol_node(argument, v8_arg_name, blink_arg_name):
-        if argument.idl_type.unwrap().is_interface:
+        unwrapped_idl_type = argument.idl_type.unwrap()
+        if unwrapped_idl_type.is_interface:
             return ("v8::Local<v8::Value>",
                     make_v8_to_blink_value(blink_arg_name,
                                            "${{{}}}".format(v8_arg_name),
                                            argument.idl_type,
                                            argument=argument,
                                            cg_context=cg_context))
+        elif unwrapped_idl_type.is_sequence:
+
+            def create_definition(symbol_node):
+                binds = {
+                    "v8_arg_name":
+                    v8_arg_name,
+                    "blink_arg_name":
+                    blink_arg_name,
+                    "native_value_tag":
+                    native_value_tag(argument.idl_type, argument=argument),
+                    "element_native_value_tag":
+                    native_value_tag(unwrapped_idl_type.element_type,
+                                     argument=argument),
+                }
+                try_convert = F(
+                    "!v8::TryToCopyAndConvertArrayToCppBuffer<"
+                    "V8CTypeTraits<"
+                    "{element_native_value_tag}>::kCTypeInfo.GetId()"
+                    ">({v8_arg_name}, {blink_arg_name}.data(),"
+                    "{blink_arg_name}.size())", **binds)
+                nodes = [
+                    F(
+                        "typename NativeValueTraits<"
+                        "{native_value_tag}"
+                        ">::ImplType {blink_arg_name}("
+                        "{v8_arg_name}->Length());", **binds),
+                    CxxUnlikelyIfNode(
+                        cond=try_convert,
+                        body=[
+                            T("${v8_arg_callback_options}.fallback = true;"),
+                            T("return;")
+                        ])
+                ]
+                symbol_def_node = SymbolDefinitionNode(symbol_node, nodes)
+                symbol_def_node.accumulate(
+                    CodeGenAccumulator.require_include_headers([
+                        "third_party/blink/renderer/bindings/core/v8/v8_ctype_traits.h",
+                    ]))
+                return symbol_def_node
+
+            return ("v8::Local<v8::Array>",
+                    S(blink_arg_name,
+                      definition_constructor=create_definition))
+        elif argument.idl_type.unwrap().is_typed_array_type:
+            assert "AllowShared" in argument.idl_type.effective_annotations
+            unwrapped_idl_type = argument.idl_type.unwrap()
+            element_type_map = {
+                'Int8Array': 'int8_t',
+                'Int16Array': 'int16_t',
+                'Int32Array': 'int32_t',
+                'BigInt64Array': 'int64_t',
+                'Uint8Array': 'uint8_t',
+                'Uint16Array': 'uint16_t',
+                'Uint32Array': 'uint32_t',
+                'BigUint64Array': 'uint64_t',
+                'Uint8ClampedArray': 'uint8_t',
+                'Float32Array': 'float',
+                'Float64Array': 'double',
+            }
+            element_type = element_type_map.get(
+                unwrapped_idl_type.keyword_typename)
+
+            def create_definition(symbol_node):
+                binds = {
+                    "v8_arg_name": v8_arg_name,
+                    "blink_arg_name": blink_arg_name,
+                }
+
+                symbol_def_node = SymbolDefinitionNode(
+                    symbol_node,
+                    [F("auto& {blink_arg_name} = {v8_arg_name};", **binds)])
+                symbol_def_node.accumulate(
+                    CodeGenAccumulator.require_include_headers([
+                        "third_party/blink/renderer/core/typed_arrays/nadc_typed_array_view.h",
+                    ]))
+                return symbol_def_node
+
+            return ("const v8::FastApiTypedArray<{}>&".format(element_type),
+                    S(blink_arg_name,
+                      definition_constructor=create_definition))
         else:
             return (blink_type_info(argument.idl_type).value_t,
                     S(blink_arg_name,
@@ -2301,6 +2409,7 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
                                        argument.identifier)
         v8_type, symbol_node = v8_type_and_symbol_node(argument, v8_arg_name,
                                                        blink_arg_name)
+
         arg_list.append(
             ArgumentInfo(v8_type, v8_arg_name, blink_arg_name, symbol_node))
 
@@ -2668,7 +2777,7 @@ ${class_name}::NamedPropertyGetterCallback(property_name, ${info});
     body.extend([
         TextNode("""\
 // LegacyPlatformObjectGetOwnProperty
-// https://heycam.github.io/webidl/#LegacyPlatformObjectGetOwnProperty
+// https://webidl.spec.whatwg.org/#LegacyPlatformObjectGetOwnProperty
 // step 1.2. If index is a supported property index, then:
 // step 3. Return OrdinaryGetOwnProperty(O, P).
 if (${index} >= ${blink_receiver}->length())
@@ -2710,15 +2819,16 @@ ${class_name}::NamedPropertySetterCallback(
         body.append(
             TextNode("""\
 // 3.9.2. [[Set]]
-// https://heycam.github.io/webidl/#legacy-platform-object-set
+// https://webidl.spec.whatwg.org/#legacy-platform-object-set
 // OrdinarySetWithOwnDescriptor will end up calling DefineOwnProperty,
 // which will fail when the receiver object is this legacy platform
 // object.
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedSetterContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertySet,
+      "${interface.identifier}");
   exception_state.ThrowTypeError(
       "Indexed property setter is not supported.");
 }
@@ -2739,7 +2849,7 @@ if (${info}.ShouldThrowOnError()) {
     body.extend([
         TextNode("""\
 // 3.9.2. [[Set]]
-// https://heycam.github.io/webidl/#legacy-platform-object-set
+// https://webidl.spec.whatwg.org/#legacy-platform-object-set
 // step 1. If O and Receiver are the same object, then:\
 """),
         CxxLikelyIfNode(cond="${info}.Holder() == ${info}.This()",
@@ -2790,15 +2900,16 @@ ${class_name}::NamedPropertyDeleterCallback(property_name, ${info});
     body.append(
         TextNode("""\
 // 3.9.4. [[Delete]]
-// https://heycam.github.io/webidl/#legacy-platform-object-delete
+// https://webidl.spec.whatwg.org/#legacy-platform-object-delete
 // step 1.2. If index is not a supported property index, then return true.
 // step 1.3. Return false.
 const bool is_supported = ${index} < ${blink_receiver}->length();
 bindings::V8SetReturnValue(${info}, !is_supported);
 if (is_supported and ${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedDeletionContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertyDelete,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Index property deleter is not supported.");
 }
 """))
@@ -2835,15 +2946,16 @@ ${class_name}::NamedPropertyDefinerCallback(
     body.append(
         TextNode("""\
 // 3.9.3. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#legacy-platform-object-defineownproperty
+// https://webidl.spec.whatwg.org/#legacy-platform-object-defineownproperty
 // step 1.1. If the result of calling IsDataDescriptor(Desc) is false, then
 //   return false.
 if (v8_property_desc.has_get() || v8_property_desc.has_set()) {
   bindings::V8SetReturnValue(${info}, nullptr);
   if (${info}.ShouldThrowOnError()) {
-    ExceptionState exception_state(${info}.GetIsolate(),
-                                   ExceptionState::kIndexedSetterContext,
-                                   "${interface.identifier}");
+    ExceptionState exception_state(
+        ${info}.GetIsolate(),
+        ExceptionContext::Context::kIndexedPropertySet,
+        "${interface.identifier}");
     exception_state.ThrowTypeError("Accessor properties are not allowed.");
   }
   return;
@@ -2857,9 +2969,10 @@ if (v8_property_desc.has_get() || v8_property_desc.has_set()) {
 //   setter, then return false.
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedSetterContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertySet,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Index property setter is not supported.");
 }
 """))
@@ -2868,7 +2981,11 @@ if (${info}.ShouldThrowOnError()) {
             TextNode("""\
 // step 1.3. Invoke the indexed property setter with P and Desc.[[Value]].
 ${class_name}::IndexedPropertySetterCallback(
-    ${index}, ${v8_property_desc}.value(), ${info});
+    ${index},
+    ${v8_property_desc}.has_value()
+        ? ${v8_property_desc}.value()
+        : v8::Undefined(${isolate}).As<v8::Value>(),
+    ${info});
 """))
 
     return func_decl, func_def
@@ -2900,7 +3017,7 @@ ${class_name}::NamedPropertyDescriptorCallback(property_name, ${info});
 
     pattern = """\
 // LegacyPlatformObjectGetOwnProperty
-// https://heycam.github.io/webidl/#LegacyPlatformObjectGetOwnProperty
+// https://webidl.spec.whatwg.org/#LegacyPlatformObjectGetOwnProperty
 // step 1.2.3. If operation was defined without an identifier, then set
 //   value to the result of performing the steps listed in the interface
 //   description to determine the value of an indexed property with index
@@ -2950,7 +3067,7 @@ def make_indexed_property_enumerator_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.9.6. [[OwnPropertyKeys]]
-// https://heycam.github.io/webidl/#legacy-platform-object-ownpropertykeys
+// https://webidl.spec.whatwg.org/#legacy-platform-object-ownpropertykeys
 // step 2. If O supports indexed properties, then for each index of O's
 //   supported property indices, in ascending numerical order, append
 //   ! ToString(index) to keys.
@@ -3009,7 +3126,7 @@ def make_named_property_getter_callback(cg_context, function_name):
     body.extend([
         TextNode("""\
 // LegacyPlatformObjectGetOwnProperty
-// https://heycam.github.io/webidl/#LegacyPlatformObjectGetOwnProperty
+// https://webidl.spec.whatwg.org/#LegacyPlatformObjectGetOwnProperty
 // step 2.1. If the result of running the named property visibility
 //   algorithm with property name P and object O is true, then:\
 """),
@@ -3054,7 +3171,7 @@ def make_named_property_setter_callback(cg_context, function_name):
         body.append(
             TextNode("""\
 // 3.9.2. [[Set]]
-// https://heycam.github.io/webidl/#legacy-platform-object-set
+// https://webidl.spec.whatwg.org/#legacy-platform-object-set
 // step 3. Perform ? OrdinarySetWithOwnDescriptor(O, P, V, Receiver, ownDesc).\
 """))
         if ("LegacyOverrideBuiltIns" in
@@ -3074,9 +3191,10 @@ const bool is_creating = ${info}.GetReturnValue().Get()->IsUndefined();
 if (!is_creating) {
   bindings::V8SetReturnValue(${info}, nullptr);
   if (${info}.ShouldThrowOnError()) {
-    ExceptionState exception_state(${info}.GetIsolate(),
-                                   ExceptionState::kNamedSetterContext,
-                                   "${interface.identifier}");
+    ExceptionState exception_state(
+        ${info}.GetIsolate(),
+        ExceptionContext::Context::kNamedPropertySet,
+        "${interface.identifier}");
     exception_state.ThrowTypeError(
         "Named property setter is not supported.");
   }
@@ -3109,7 +3227,7 @@ if (!is_creating) {
     body.extend([
         TextNode("""\
 // 3.9.2. [[Set]]
-// https://heycam.github.io/webidl/#legacy-platform-object-set
+// https://webidl.spec.whatwg.org/#legacy-platform-object-set
 // step 1. If O and Receiver are the same object, then:\
 """),
         CxxLikelyIfNode(cond="${info}.Holder() == ${info}.This()",
@@ -3159,7 +3277,7 @@ def make_named_property_deleter_callback(cg_context, function_name):
         body.append(
             TextNode("""\
 // 3.9.4. [[Delete]]
-// https://heycam.github.io/webidl/#legacy-platform-object-delete
+// https://webidl.spec.whatwg.org/#legacy-platform-object-delete
 // step 2. If O supports named properties, O does not implement an interface
 //   with the [Global] extended attribute and the result of calling the
 //   named property visibility algorithm with property name P and object O
@@ -3174,7 +3292,7 @@ def make_named_property_deleter_callback(cg_context, function_name):
         body.append(
             TextNode("""\
 // 3.9.4. [[Delete]]
-// https://heycam.github.io/webidl/#legacy-platform-object-delete
+// https://webidl.spec.whatwg.org/#legacy-platform-object-delete
 // step 2. If O supports named properties, O does not implement an interface
 //   with the [Global] extended attribute and the result of calling the
 //   named property visibility algorithm with property name P and object O
@@ -3182,7 +3300,7 @@ def make_named_property_deleter_callback(cg_context, function_name):
 // step 2.1. If O does not implement an interface with a named property
 //   deleter, then return false.
 ExceptionState exception_state(${info}.GetIsolate(),
-                               ExceptionState::kNamedDeletionContext,
+                               ExceptionContext::Context::kNamedPropertyDelete,
                                "${interface.identifier}");
 bool does_exist = ${blink_receiver}->NamedPropertyQuery(
     ${blink_property_name}, exception_state);
@@ -3212,7 +3330,7 @@ if (does_exist) {
     body.extend([
         TextNode("""\
 // 3.9.4. [[Delete]]
-// https://heycam.github.io/webidl/#legacy-platform-object-delete\
+// https://webidl.spec.whatwg.org/#legacy-platform-object-delete\
 """),
         make_steps_of_ce_reactions(cg_context),
         EmptyNode(),
@@ -3220,10 +3338,11 @@ if (does_exist) {
         TextNode("""\
 if (${return_value} == NamedPropertyDeleterResult::kDidNotDelete) {
   if (${info}.ShouldThrowOnError()) {
-    ExceptionState exception_state(${info}.GetIsolate(),
-                                   ExceptionState::kNamedDeletionContext,
-                                   "${interface.identifier}");
-    exception_state.ThrowTypeError("Failed to delete a property.");
+    ExceptionState deletion_exception_state(
+        ${info}.GetIsolate(),
+        ExceptionContext::Context::kNamedPropertyDelete,
+        "${interface.identifier}");
+    deletion_exception_state.ThrowTypeError("Failed to delete a property.");
   }
   return;
 }"""),
@@ -3265,7 +3384,7 @@ def make_named_property_definer_callback(cg_context, function_name):
         body.append(
             TextNode("""\
 // 3.9.3. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#legacy-platform-object-defineownproperty
+// https://webidl.spec.whatwg.org/#legacy-platform-object-defineownproperty
 // step 2.1. Let creating be true if P is not a supported property name, and
 //   false otherwise.
 // step 2.2.1. If creating is false and O does not implement an interface
@@ -3275,9 +3394,10 @@ const bool is_creating = ${info}.GetReturnValue().Get()->IsUndefined();
 if (!is_creating) {
   bindings::V8SetReturnValue(${info}, nullptr);
   if (${info}.ShouldThrowOnError()) {
-    ExceptionState exception_state(${info}.GetIsolate(),
-                                   ExceptionState::kNamedSetterContext,
-                                   "${interface.identifier}");
+    ExceptionState exception_state(
+        ${info}.GetIsolate(),
+        ExceptionContext::Context::kNamedPropertySet,
+        "${interface.identifier}");
     exception_state.ThrowTypeError("Named property setter is not supported.");
   }
   return;
@@ -3289,7 +3409,7 @@ if (!is_creating) {
         body.append(
             TextNode("""\
 // 3.9.3. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#legacy-platform-object-defineownproperty
+// https://webidl.spec.whatwg.org/#legacy-platform-object-defineownproperty
 // step 2.2.2. If O implements an interface with a named property setter,
 //   then:
 // step 2.2.2.1. If the result of calling IsDataDescriptor(Desc) is false,
@@ -3297,9 +3417,10 @@ if (!is_creating) {
 if (v8_property_desc.has_get() || v8_property_desc.has_set()) {
   bindings::V8SetReturnValue(${info}, nullptr);
   if (${info}.ShouldThrowOnError()) {
-    ExceptionState exception_state(${info}.GetIsolate(),
-                                   ExceptionState::kNamedSetterContext,
-                                   "${interface.identifier}");
+    ExceptionState exception_state(
+        ${info}.GetIsolate(),
+        ExceptionContext::Context::kNamedPropertySet,
+        "${interface.identifier}");
     exception_state.ThrowTypeError("Accessor properties are not allowed.");
   }
   return;
@@ -3307,7 +3428,11 @@ if (v8_property_desc.has_get() || v8_property_desc.has_set()) {
 
 // step 2.2.2.2. Invoke the named property setter with P and Desc.[[Value]].
 ${class_name}::NamedPropertySetterCallback(
-    ${v8_property_name}, ${v8_property_desc}.value(), ${info});
+    ${v8_property_name},
+    ${v8_property_desc}.has_value()
+        ? ${v8_property_desc}.value()
+        : v8::Undefined(${isolate}).As<v8::Value>(),
+    ${info});
 bindings::V8SetReturnValue(${info}, nullptr);
 """))
 
@@ -3332,7 +3457,7 @@ def make_named_property_descriptor_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // LegacyPlatformObjectGetOwnProperty
-// https://heycam.github.io/webidl/#LegacyPlatformObjectGetOwnProperty\
+// https://webidl.spec.whatwg.org/#LegacyPlatformObjectGetOwnProperty\
 """))
 
     if ("LegacyOverrideBuiltIns" not in
@@ -3425,7 +3550,7 @@ def make_named_property_query_callback(cg_context, function_name):
     body.extend([
         TextNode("""\
 ExceptionState exception_state(${isolate},
-                               ExceptionState::kNamedGetterContext,
+                               ExceptionContext::Context::kNamedPropertyGet,
                                "${interface.identifier}");
 bool does_exist = ${blink_receiver}->NamedPropertyQuery(
     ${blink_property_name}, exception_state);
@@ -3461,14 +3586,15 @@ def make_named_property_enumerator_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.9.6. [[OwnPropertyKeys]]
-// https://heycam.github.io/webidl/#legacy-platform-object-ownpropertykeys
+// https://webidl.spec.whatwg.org/#legacy-platform-object-ownpropertykeys
 // step 3. If O supports named properties, then for each P of O's supported
 //   property names that is visible according to the named property
 //   visibility algorithm, append P to keys.
 Vector<String> blink_property_names;
-ExceptionState exception_state(${info}.GetIsolate(),
-                               ExceptionState::kEnumerationContext,
-                               "${interface.identifier}");
+ExceptionState exception_state(
+    ${info}.GetIsolate(),
+    ExceptionContext::Context::kNamedPropertyEnumerate,
+    "${interface.identifier}");
 ${blink_receiver}->NamedPropertyEnumerator(
     blink_property_names, exception_state);
 if (UNLIKELY(exception_state.HadException()))
@@ -3530,12 +3656,13 @@ def make_named_props_obj_indexed_setter_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.2. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#named-properties-object-defineownproperty
+// https://webidl.spec.whatwg.org/#named-properties-object-defineownproperty
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedSetterContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertySet,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Named property setter is not supported.");
 }
 """))
@@ -3562,9 +3689,10 @@ def make_named_props_obj_indexed_deleter_callback(cg_context, function_name):
         TextNode("""\
 bindings::V8SetReturnValue(${info}, false);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedDeletionContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertyDelete,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Named property deleter is not supported.");
 }
 """))
@@ -3591,12 +3719,13 @@ def make_named_props_obj_indexed_definer_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.2. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#named-properties-object-defineownproperty
+// https://webidl.spec.whatwg.org/#named-properties-object-defineownproperty
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedSetterContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertySet,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Named property setter is not supported.");
 }
 """))
@@ -3648,7 +3777,7 @@ def make_named_props_obj_named_getter_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.1. [[GetOwnProperty]]
-// https://heycam.github.io/webidl/#named-properties-object-getownproperty
+// https://webidl.spec.whatwg.org/#named-properties-object-getownproperty
 //
 // TODO(yukishiino): Update the following hard-coded call to an appropriate
 // one.
@@ -3677,11 +3806,11 @@ def make_named_props_obj_named_setter_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.2. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#named-properties-object-defineownproperty
+// https://webidl.spec.whatwg.org/#named-properties-object-defineownproperty
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
   ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kNamedSetterContext,
+                                 ExceptionContext::Context::kNamedPropertySet,
                                  "${interface.identifier}");
   exception_state.ThrowTypeError("Named property setter is not supported.");
 }
@@ -3708,12 +3837,13 @@ def make_named_props_obj_named_deleter_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.3. [[Delete]]
-// https://heycam.github.io/webidl/#named-properties-object-delete
+// https://webidl.spec.whatwg.org/#named-properties-object-delete
 bindings::V8SetReturnValue(${info}, false);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kNamedDeletionContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kNamedPropertyDelete,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Named property deleter is not supported.");
 }
 """))
@@ -3740,11 +3870,11 @@ def make_named_props_obj_named_definer_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.2. [[DefineOwnProperty]]
-// https://heycam.github.io/webidl/#named-properties-object-defineownproperty
+// https://webidl.spec.whatwg.org/#named-properties-object-defineownproperty
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
   ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kNamedSetterContext,
+                                 ExceptionContext::Context::kNamedPropertySet,
                                  "${interface.identifier}");
   exception_state.ThrowTypeError("Named property setter is not supported.");
 }
@@ -3771,7 +3901,7 @@ def make_named_props_obj_named_descriptor_callback(cg_context, function_name):
     body.append(
         TextNode("""\
 // 3.6.4.1. [[GetOwnProperty]]
-// https://heycam.github.io/webidl/#named-properties-object-getownproperty
+// https://webidl.spec.whatwg.org/#named-properties-object-getownproperty
 // step 4. If the result of running the named property visibility algorithm
 //   with property name P and object object is true, then:
 if (${v8_receiver}->GetRealNamedPropertyAttributesInPrototypeChain(
@@ -4385,9 +4515,10 @@ def make_same_origin_indexed_setter_callback(cg_context, function_name):
         TextNode("""\
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedSetterContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertySet,
+      "${interface.identifier}");
   exception_state.ThrowTypeError(
       "Indexed property setter is not supported.");
 }
@@ -4418,9 +4549,10 @@ def make_same_origin_indexed_deleter_callback(cg_context, function_name):
 const bool is_supported = ${index} < ${blink_receiver}->length();
 bindings::V8SetReturnValue(${info}, !is_supported);
 if (is_supported and ${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedDeletionContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertyDelete,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Index property deleter is not supported.");
 }
 """))
@@ -4450,9 +4582,10 @@ def make_same_origin_indexed_definer_callback(cg_context, function_name):
 // https://html.spec.whatwg.org/C/#windowproxy-defineownproperty
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedSetterContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertySet,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Index property setter is not supported.");
 }
 """))
@@ -4645,7 +4778,7 @@ def bind_installer_local_vars(code_node, cg_context):
     elif (interface and "Global" in interface.extended_attributes
           and interface.indexed_and_named_properties
           and interface.indexed_and_named_properties.has_named_properties):
-        # https://heycam.github.io/webidl/#named-properties-object
+        # https://webidl.spec.whatwg.org/#named-properties-object
         _1 = " = ${npo_interface_template}"  # npo = named properties object
     elif interface.inherited:
         _1 = (" = ${wrapper_type_info}->parent_class"
@@ -4676,7 +4809,7 @@ ${npo_prototype_template}->Set(
 // the named properties object to behave just like the global object (= the
 // wrapper object of the global object) from the point of view of named
 // properties.
-// https://heycam.github.io/webidl/#named-properties-object
+// https://webidl.spec.whatwg.org/#named-properties-object
 ${npo_prototype_template}->SetInternalFieldCount(
     kV8DefaultWrapperInternalFieldCount);
 """
@@ -4756,10 +4889,23 @@ def _make_property_entry_v8_property_attribute(property_):
 
 
 def _make_property_entry_v8_side_effect(property_):
-    if property_.extended_attributes.value_of("Affects") == "Nothing":
+    value = property_.extended_attributes.value_of("Affects")
+    if value:
+        if value == "Everything":
+            return "unsigned(v8::SideEffectType::kHasSideEffect)"
+        elif value == "Nothing":
+            return "unsigned(v8::SideEffectType::kHasNoSideEffect)"
+        else:
+            assert False
+    elif isinstance(property_, web_idl.Attribute):
         return "unsigned(v8::SideEffectType::kHasNoSideEffect)"
-    else:
+    elif isinstance(property_, web_idl.Operation):
+        assert property_.identifier == "toString"
+        # The stringifier should have no side effect.
+        return "unsigned(v8::SideEffectType::kHasNoSideEffect)"
+    elif isinstance(property_, web_idl.OperationGroup):
         return "unsigned(v8::SideEffectType::kHasSideEffect)"
+    assert False
 
 
 def _make_property_entry_world(world):
@@ -5377,7 +5523,7 @@ def _make_install_prototype_object(cg_context):
             TextNode("""\
 // [Unscopable]
 // 3.7.3. Interface prototype object
-// https://heycam.github.io/webidl/#interface-prototype-object
+// https://webidl.spec.whatwg.org/#interface-prototype-object
 // step 10. If interface has any member declared with the [Unscopable]
 //   extended attribute, then:\
 """),
@@ -5401,7 +5547,7 @@ bindings::InstallUnscopablePropertyNames(
             TextNode("""\
 // [LegacyNoInterfaceObject]
 // 3.7.3. Interface prototype object
-// https://heycam.github.io/webidl/#interface-prototype-object
+// https://webidl.spec.whatwg.org/#interface-prototype-object
 // step 13. If the [LegacyNoInterfaceObject] extended attribute was not
 //   specified on interface, then:
 //
@@ -5454,7 +5600,7 @@ ${prototype_object}->Delete(
             and class_like.indexed_and_named_properties.has_named_properties):
         nodes.append(
             TextNode("""\
-// https://heycam.github.io/webidl/#named-properties-object
+// https://webidl.spec.whatwg.org/#named-properties-object
 // V8 defines "constructor" property on the prototype object by default.
 // Named properties object is currently implemented as a prototype object
 // (implemented with v8::FunctionTemplate::PrototypeTemplate()).
@@ -5617,7 +5763,7 @@ def make_install_interface_template(cg_context, function_name, class_name,
         body.append(
             T("""\
 // DOMException-specific settings
-// https://heycam.github.io/webidl/#es-DOMException-specialness
+// https://webidl.spec.whatwg.org/#es-DOMException-specialness
 {
   v8::Local<v8::FunctionTemplate> intrinsic_error_prototype_interface_template =
       v8::FunctionTemplate::New(${isolate}, nullptr, v8::Local<v8::Value>(),
@@ -5662,7 +5808,7 @@ ${instance_object_template}->MarkAsUndetectable();
         body.append(
             T("""\
 // Iterator-specific settings
-// https://heycam.github.io/webidl/#es-iterator-prototype-object
+// https://webidl.spec.whatwg.org/#es-iterator-prototype-object
 {
   v8::Local<v8::FunctionTemplate>
       intrinsic_iterator_prototype_interface_template =
@@ -5712,7 +5858,7 @@ ${prototype_object_template}->SetImmutableProto();
         body.append(
             T("""\
 // @@iterator for indexed properties
-// https://heycam.github.io/webidl/#define-the-iteration-methods
+// https://webidl.spec.whatwg.org/#define-the-iteration-methods
 ${prototype_template}->SetIntrinsicDataProperty(
     v8::Symbol::GetIterator(${isolate}), v8::kArrayProto_values, v8::DontEnum);
 """))
@@ -5720,7 +5866,7 @@ ${prototype_template}->SetIntrinsicDataProperty(
         body.append(
             T("""\
 // Value iterator's properties
-// https://heycam.github.io/webidl/#define-the-iteration-methods
+// https://webidl.spec.whatwg.org/#define-the-iteration-methods
 ${prototype_template}->SetIntrinsicDataProperty(
     V8AtomicString(${isolate}, "entries"), v8::kArrayProto_entries, v8::None);
 ${prototype_template}->SetIntrinsicDataProperty(
@@ -5745,7 +5891,7 @@ ${prototype_template}->SetIntrinsicDataProperty(
             TextNode("""\
 // [Global]
 // 3.7.1. [[SetPrototypeOf]]
-// https://heycam.github.io/webidl/#platform-object-setprototypeof
+// https://webidl.spec.whatwg.org/#platform-object-setprototypeof
 ${instance_object_template}->SetImmutableProto();
 ${prototype_object_template}->SetImmutableProto();
 """))
@@ -5755,7 +5901,7 @@ ${prototype_object_template}->SetImmutableProto();
             TextNode("""\
 // [Global] - prototype object in the prototype chain of global objects
 // 3.7.1. [[SetPrototypeOf]]
-// https://heycam.github.io/webidl/#platform-object-setprototypeof
+// https://webidl.spec.whatwg.org/#platform-object-setprototypeof
 ${prototype_object_template}->SetImmutableProto();
 """))
 
@@ -6049,7 +6195,7 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
 def make_indexed_and_named_property_callbacks_and_install_node(cg_context):
     """
     Implements non-ordinary internal methods of legacy platform objects.
-    https://heycam.github.io/webidl/#es-legacy-platform-objects
+    https://webidl.spec.whatwg.org/#es-legacy-platform-objects
 
     Also implements the same origin case of indexed access to WindowProxy
     objects just same as indexed properties of legacy platform objects.
@@ -6111,8 +6257,8 @@ def make_indexed_and_named_property_callbacks_and_install_node(cg_context):
         flags = ["v8::PropertyHandlerFlags::kOnlyInterceptStrings"]
         if "LegacyOverrideBuiltIns" not in interface.extended_attributes:
             flags.append("v8::PropertyHandlerFlags::kNonMasking")
-        if (props.named_getter.extended_attributes.value_of("Affects") ==
-                "Nothing"):
+        if (props.named_getter.extended_attributes.value_of("Affects") !=
+                "Everything"):
             flags.append("v8::PropertyHandlerFlags::kHasNoSideEffect")
         property_handler_flags = (
             "static_cast<v8::PropertyHandlerFlags>({})".format(" | ".join(
@@ -6170,8 +6316,9 @@ interface.indexed_and_named_properties.named_getter.extended_attributes:
                 props.named_setter and props.named_setter.owner,
                 props.named_deleter and props.named_deleter.owner))
         flags = []
-        if (props.indexed_getter and props.indexed_getter.extended_attributes.
-                value_of("Affects") == "Nothing"):
+        if (props.indexed_getter and
+                props.indexed_getter.extended_attributes.value_of("Affects") !=
+                "Everything"):
             flags.append("v8::PropertyHandlerFlags::kHasNoSideEffect")
         else:
             flags.append("v8::PropertyHandlerFlags::kNone")
@@ -6209,7 +6356,7 @@ ${instance_object_template}->SetHandler(
 def make_named_properties_object_callbacks_and_install_node(cg_context):
     """
     Implements non-ordinary internal methods of named properties objects.
-    https://heycam.github.io/webidl/#named-properties-object
+    https://webidl.spec.whatwg.org/#named-properties-object
     """
 
     assert isinstance(cg_context, CodeGenContext)
@@ -6594,10 +6741,16 @@ def make_wrapper_type_info(cg_context, function_name,
 
     member_var_def = TextNode(
         "static const WrapperTypeInfo wrapper_type_info_;")
+    member_var_def.accumulate(
+        CodeGenAccumulator.require_struct_decls(["WrapperTypeInfo"]))
 
     wrapper_type_info_def = ListNode()
     wrapper_type_info_def.set_base_template_vars(
         cg_context.template_bindings())
+    wrapper_type_info_def.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
+        ]))
 
     pattern = """\
 // Construction of WrapperTypeInfo may require non-trivial initialization due
@@ -7104,8 +7257,7 @@ def generate_class_like(class_like):
                     "v8::Local<v8::Value>",
                     "const v8::FunctionCallbackInfo<v8::Value>&",
                 ])
-            if is_cross_origin and (not cross_origin_values
-                                    or "Setter" in cross_origin_values):
+            if is_cross_origin and "Setter" in cross_origin_values:
                 add_custom_callback_impl_decl(
                     attribute=attribute,
                     attribute_set=True,

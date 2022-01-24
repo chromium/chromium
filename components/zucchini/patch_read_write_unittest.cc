@@ -63,6 +63,7 @@ ByteVector CreatePatchElement() {
       0x03, 0, 0, 0,       // new_offset
       0x13, 0, 0, 0,       // new_length
       'P', 'x', '8', '6',  // exe_type = EXE_TYPE_WIN32_X86
+      0x01, 0x00,          // element version
       // EquivalenceSource
       1, 0, 0, 0,  // src_skip size
       0x10,        // src_skip content
@@ -95,11 +96,12 @@ ByteVector CreatePatchElement() {
 ByteVector CreateElementMatch() {
   return {
       // PatchElementHeader
-      0x01, 0,   0,   0,    // old_offset
-      0x02, 0,   0,   0,    // old_length
-      0x03, 0,   0,   0,    // new_offset
-      0x04, 0,   0,   0,    // new_length
-      'D',  'E', 'X', ' ',  // exe_type = kExeTypeDex
+      0x01, 0,    0,   0,    // old_offset
+      0x02, 0,    0,   0,    // old_length
+      0x03, 0,    0,   0,    // new_offset
+      0x04, 0,    0,   0,    // new_length
+      'D',  'E',  'X', ' ',  // exe_type = kExeTypeDex
+      0x01, 0x00,            // element version
   };
 }
 
@@ -586,10 +588,26 @@ TEST(PatchElementTest, WrongExtraData) {
   }
 }
 
+TEST(PatchElementTest, WrongVersion) {
+  // Bump element version to 2.
+  {
+    ByteVector data = CreatePatchElement();
+    ModifyByte(offsetof(PatchElementHeader, version), 0x01, 0x02, &data);
+    TestInvalidInitialize<PatchElementReader>(&data);
+  }
+  // Bump element version to 0.
+  {
+    ByteVector data = CreatePatchElement();
+    ModifyByte(offsetof(PatchElementHeader, version), 0x01, 0x00, &data);
+    TestInvalidInitialize<PatchElementReader>(&data);
+  }
+}
+
 TEST(EnsemblePatchTest, RawPatch) {
   ByteVector data = {
       // PatchHeader
-      0x5A, 0x75, 0x63, 0x00,  // magic
+      0x5A, 0x75, 0x63, 0x63,  // magic
+      0x01, 0x00, 0x00, 0x00,  // major/minor version
       0x10, 0x32, 0x54, 0x76,  // old_size
       0x00, 0x11, 0x22, 0x33,  // old_crc
       0x01, 0, 0, 0,           // new_size
@@ -602,7 +620,8 @@ TEST(EnsemblePatchTest, RawPatch) {
       0x02, 0, 0, 0,       // old_length
       0x00, 0, 0, 0,       // new_offset
       0x01, 0, 0, 0,       // new_length
-      'P', 'x', '8', '6',  // exe_type = EXE_TYPE_WIN32_X86
+      'P', 'x', '8', '6',  // exe_type = EXE_TYPE_WIN32_X8
+      0x01, 0x00,          // element version
       // EquivalenceSource
       0, 0, 0, 0,  // src_skip size
       0, 0, 0, 0,  // dst_skip size
@@ -624,6 +643,8 @@ TEST(EnsemblePatchTest, RawPatch) {
 
   PatchHeader header = ensemble_patch_reader.header();
   EXPECT_EQ(PatchHeader::kMagic, header.magic);
+  EXPECT_EQ(kMajorVersion, header.major_version);
+  EXPECT_EQ(kMinorVersion, header.minor_version);
   EXPECT_EQ(0x76543210U, header.old_size);
   EXPECT_EQ(0x33221100U, header.old_crc);
   EXPECT_EQ(0x01U, header.new_size);
@@ -647,7 +668,8 @@ TEST(EnsemblePatchTest, RawPatch) {
 TEST(EnsemblePatchTest, CheckFile) {
   ByteVector data = {
       // PatchHeader
-      0x5A, 0x75, 0x63, 0x00,  // magic
+      0x5A, 0x75, 0x63, 0x63,  // magic
+      0x01, 0x00, 0x00, 0x00,  // major/minor version
       0x05, 0x00, 0x00, 0x00,  // old_size
       0xDF, 0x13, 0xE4, 0x10,  // old_crc
       0x03, 0x00, 0x00, 0x00,  // new_size
@@ -661,6 +683,7 @@ TEST(EnsemblePatchTest, CheckFile) {
       0x00, 0, 0, 0,       // new_offset
       0x03, 0, 0, 0,       // new_length
       'P', 'x', '8', '6',  // exe_type = EXE_TYPE_WIN32_X86
+      0x01, 0x00,          // element version
       // EquivalenceSource
       0, 0, 0, 0,  // src_skip size
       0, 0, 0, 0,  // dst_skip size
@@ -695,7 +718,8 @@ TEST(EnsemblePatchTest, CheckFile) {
 TEST(EnsemblePatchTest, InvalidMagic) {
   ByteVector data = {
       // PatchHeader
-      0x42, 0x42, 0x42, 0x00,  // magic
+      0x42, 0x42, 0x42, 0x42,  // magic
+      0x01, 0x00, 0x00, 0x00,  // major/minor version
       0x10, 0x32, 0x54, 0x76,  // old_size
       0x00, 0x11, 0x22, 0x33,  // old_crc
       0x03, 0x00, 0x00, 0x00,  // new_size
@@ -709,6 +733,44 @@ TEST(EnsemblePatchTest, InvalidMagic) {
       0x00, 0, 0, 0,       // new_offset
       0x03, 0, 0, 0,       // new_length
       'P', 'x', '8', '6',  // exe_type = EXE_TYPE_WIN32_X86
+      0x01, 0x00,          // element version
+      // EquivalenceSource
+      0, 0, 0, 0,  // src_skip size
+      0, 0, 0, 0,  // dst_skip size
+      0, 0, 0, 0,  // copy_count size
+      // ExtraDataSource
+      0, 0, 0, 0,  // extra_data size
+      // RawDeltaSource
+      0, 0, 0, 0,  // raw_delta_skip size
+      0, 0, 0, 0,  // raw_delta_diff size
+      // ReferenceDeltaSource
+      0, 0, 0, 0,  // reference_delta size
+      // PatchElementReader
+      0, 0, 0, 0,  // pool count
+  };
+
+  TestInvalidInitialize<EnsemblePatchReader>(&data);
+}
+
+TEST(EnsemblePatchTest, InvalidVersion) {
+  ByteVector data = {
+      // PatchHeader
+      0x5A, 0x75, 0x63, 0x63,  // magic
+      0x02, 0x01, 0x00, 0x00,  // major/minor version
+      0x10, 0x32, 0x54, 0x76,  // old_size
+      0x00, 0x11, 0x22, 0x33,  // old_crc
+      0x03, 0x00, 0x00, 0x00,  // new_size
+      0x44, 0x55, 0x66, 0x77,  // new_crc
+
+      1, 0, 0, 0,  // number of element
+
+      // PatchElementHeader
+      0x01, 0, 0, 0,       // old_offset
+      0x02, 0, 0, 0,       // old_length
+      0x00, 0, 0, 0,       // new_offset
+      0x03, 0, 0, 0,       // new_length
+      'P', 'x', '8', '6',  // exe_type = EXE_TYPE_WIN32_X86
+      0x01, 0x00,          // element version
       // EquivalenceSource
       0, 0, 0, 0,  // src_skip size
       0, 0, 0, 0,  // dst_skip size

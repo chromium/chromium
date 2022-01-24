@@ -3,34 +3,30 @@
 // found in the LICENSE file.
 
 import 'chrome://new-tab-page/lazy_load.js';
-import {$$, NewTabPageProxy, PromoBrowserCommandProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
+
+import {$$, BrowserCommandProxy, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
+import {installMock} from 'chrome://test/new_tab_page/test_support.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 
 suite('NewTabPageMiddleSlotPromoTest', () => {
-  /**
-   * @implements {newTabPage.mojom.PageHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let newTabPageHandler;
 
-  /**
-   * @implements {promoBrowserCommand.mojom.CommandHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let promoBrowserCommandHandler;
 
   setup(() => {
     PolymerTest.clearBody();
-    newTabPageHandler =
-        TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
-    NewTabPageProxy.setInstance(
-        newTabPageHandler, new newTabPage.mojom.PageCallbackRouter());
+    newTabPageHandler = installMock(
+        newTabPage.mojom.PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(
+            mock, new newTabPage.mojom.PageCallbackRouter()));
 
-    promoBrowserCommandHandler = TestBrowserProxy.fromClass(
-        promoBrowserCommand.mojom.CommandHandlerRemote);
-    const promoBrowserCommandTestProxy = PromoBrowserCommandProxy.getInstance();
-    promoBrowserCommandTestProxy.handler = promoBrowserCommandHandler;
+    promoBrowserCommandHandler = installMock(
+        CommandHandlerRemote,
+        mock => BrowserCommandProxy.setInstance({handler: mock}));
   });
 
   /**
@@ -74,15 +70,15 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     }));
 
     promoBrowserCommandHandler.setResultFor(
-        'canShowPromoWithCommand', Promise.resolve({canShow: canShowPromo}));
+        'canExecuteCommand', Promise.resolve({canExecute: canShowPromo}));
 
     const middleSlotPromo = document.createElement('ntp-middle-slot-promo');
     document.body.appendChild(middleSlotPromo);
     const loaded =
         eventToPromise('ntp-middle-slot-promo-loaded', document.body);
-    await promoBrowserCommandHandler.whenCalled('canShowPromoWithCommand');
+    await promoBrowserCommandHandler.whenCalled('canExecuteCommand');
     assertEquals(
-        2, promoBrowserCommandHandler.getCallCount('canShowPromoWithCommand'));
+        2, promoBrowserCommandHandler.getCallCount('canExecuteCommand'));
     if (canShowPromo) {
       await newTabPageHandler.whenCalled('onPromoRendered');
     } else {
@@ -151,8 +147,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
           await promoBrowserCommandHandler.whenCalled('executeCommand');
       // Unsupported commands get resolved to the default command before being
       // sent to the browser.
-      assertEquals(
-          promoBrowserCommand.mojom.Command.kUnknownCommand, expectedCommand);
+      assertEquals(Command.kUnknownCommand, expectedCommand);
       assertDeepEquals(
           {
             middleButton: false,
@@ -175,8 +170,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       document.body.appendChild(middleSlotPromo);
       await flushTasks();
       assertEquals(
-          0,
-          promoBrowserCommandHandler.getCallCount('canShowPromoWithCommand'));
+          0, promoBrowserCommandHandler.getCallCount('canExecuteCommand'));
       assertEquals(0, newTabPageHandler.getCallCount('onPromoRendered'));
       assertHasContent(false, middleSlotPromo);
     });

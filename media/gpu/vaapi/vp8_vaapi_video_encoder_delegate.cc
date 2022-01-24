@@ -12,6 +12,7 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
+#include "third_party/libvpx/source/libvpx/vp8/vp8_ratectrl_rtc.h"
 
 namespace media {
 
@@ -19,69 +20,138 @@ namespace {
 // Keyframe period.
 constexpr size_t kKFPeriod = 3000;
 
-// Arbitrarily chosen bitrate window size for rate control, in ms.
-constexpr int kCPBWindowSizeMs = 1500;
-
 // Quantization parameter. They are vp8 ac/dc indices and their ranges are
 // 0-127. Based on WebRTC's defaults.
 constexpr uint8_t kMinQP = 4;
 // b/110059922, crbug.com/1001900: Tuned 112->117 for bitrate issue in a lower
 // resolution (180p).
 constexpr uint8_t kMaxQP = 117;
-// This stands for 32 as a real ac value (see rfc 14.1. table ac_qlookup).
-constexpr uint8_t kDefaultQP = 28;
 
-void FillVAEncRateControlParams(
-    uint32_t bps,
-    uint32_t window_size,
-    uint32_t initial_qp,
-    uint32_t min_qp,
-    uint32_t max_qp,
-    uint32_t framerate,
-    uint32_t buffer_size,
-    VAEncMiscParameterRateControl& rate_control_param,
-    VAEncMiscParameterFrameRate& framerate_param,
-    VAEncMiscParameterHRD& hrd_param) {
-  memset(&rate_control_param, 0, sizeof(rate_control_param));
-  rate_control_param.bits_per_second = bps;
-  rate_control_param.window_size = window_size;
-  rate_control_param.initial_qp = initial_qp;
-  rate_control_param.min_qp = min_qp;
-  rate_control_param.max_qp = max_qp;
-  rate_control_param.rc_flags.bits.disable_frame_skip = true;
+// The upper limitation of the quantization parameter for the software rate
+// controller. This is larger than |kMaxQP| because a driver might ignore the
+// specified maximum quantization parameter when the driver determines the
+// value, but it doesn't ignore the quantization parameter by the software rate
+// controller.
+constexpr uint8_t kMaxQPForSoftwareRateCtrl = 127;
 
-  memset(&framerate_param, 0, sizeof(framerate_param));
-  framerate_param.framerate = framerate;
+// Convert Qindex, whose range is 0-127, to the quantizer parameter used in
+// libvpx vp8 rate control, whose range is 0-63.
+// Cited from //third_party/libvpx/source/libvpx/vp8/vp8_ratectrl_rtc.cc
+uint8_t QindexToQuantizer(uint8_t q_index) {
+  constexpr uint8_t kQuantizerToQindex[] = {
+      0,  1,  2,  3,  4,  5,  7,   8,   9,   10,  12,  13,  15,  17,  18,  19,
+      20, 21, 23, 24, 25, 26, 27,  28,  29,  30,  31,  33,  35,  37,  39,  41,
+      43, 45, 47, 49, 51, 53, 55,  57,  59,  61,  64,  67,  70,  73,  76,  79,
+      82, 85, 88, 91, 94, 97, 100, 103, 106, 109, 112, 115, 118, 121, 124, 127,
+  };
 
-  memset(&hrd_param, 0, sizeof(hrd_param));
-  hrd_param.buffer_size = buffer_size;
-  hrd_param.initial_buffer_fullness = buffer_size / 2;
+  for (size_t q = 0; q < base::size(kQuantizerToQindex); ++q) {
+    if (kQuantizerToQindex[q] >= q_index)
+      return q;
+  }
+  return base::size(kQuantizerToQindex) - 1;
 }
 
-static scoped_refptr<base::RefCountedBytes> MakeRefCountedBytes(void* ptr,
-                                                                size_t size) {
-  return base::MakeRefCounted<base::RefCountedBytes>(
-      reinterpret_cast<uint8_t*>(ptr), size);
+// The return value is expressed as a percentage of the average. For example,
+// to allocate no more than 4.5 frames worth of bitrate to a keyframe, the
+// return value is 450.
+uint32_t MaxSizeOfKeyframeAsPercentage(uint32_t optimal_buffer_size,
+                                       uint32_t max_framerate) {
+  // Set max to the optimal buffer level (normalized by target BR),
+  // and scaled by a scale_par.
+  // Max target size = scale_par * optimal_buffer_size * targetBR[Kbps].
+  // This value is presented in percentage of perFrameBw:
+  // perFrameBw = targetBR[Kbps] * 1000 / framerate.
+  // The target in % is as follows:
+  const double target_size_byte_per_frame = optimal_buffer_size * 0.5;
+  const uint32_t target_size_kbyte =
+      target_size_byte_per_frame * max_framerate / 1000;
+  const uint32_t target_size_kbyte_as_percent = target_size_kbyte * 100;
+
+  // Don't go below 3 times the per frame bandwidth.
+  constexpr uint32_t kMinIntraSizePercentage = 300u;
+  return std::max(kMinIntraSizePercentage, target_size_kbyte_as_percent);
 }
 
+libvpx::VP8RateControlRtcConfig CreateRateControlConfig(
+    const gfx::Size encode_size,
+    const VP8VaapiVideoEncoderDelegate::EncodeParams& encode_params,
+    const VideoBitrateAllocation& bitrate_allocation) {
+  libvpx::VP8RateControlRtcConfig rc_cfg{};
+  rc_cfg.width = encode_size.width();
+  rc_cfg.height = encode_size.height();
+  rc_cfg.rc_mode = VPX_CBR;
+  rc_cfg.max_quantizer = QindexToQuantizer(encode_params.max_qp);
+  rc_cfg.min_quantizer = QindexToQuantizer(encode_params.min_qp);
+  // libvpx::VP8RateControlRtcConfig is kbps.
+  rc_cfg.target_bandwidth = encode_params.bitrate_allocation.GetSumBps() / 1000;
+  // These default values come from
+  // //third_party/webrtc/modules/video_coding/codecs/vp8/libvpx_vp8_encoder.cc
+  rc_cfg.buf_initial_sz = 500;
+  rc_cfg.buf_optimal_sz = 600;
+  rc_cfg.buf_sz = 1000;
+  rc_cfg.undershoot_pct = 100;
+  rc_cfg.overshoot_pct = 15;
+  rc_cfg.max_intra_bitrate_pct = MaxSizeOfKeyframeAsPercentage(
+      rc_cfg.buf_optimal_sz, encode_params.framerate);
+  rc_cfg.framerate = encode_params.framerate;
+
+  // Fill temporal layers variables.
+  rc_cfg.ts_number_layers = 1;
+  rc_cfg.layer_target_bitrate[0] =
+      bitrate_allocation.GetBitrateBps(0, 0) / 1000;
+  rc_cfg.ts_rate_decimator[0] = 1u;
+  return rc_cfg;
+}
+
+scoped_refptr<VP8Picture> GetVP8Picture(
+    const VaapiVideoEncoderDelegate::EncodeJob& job) {
+  return base::WrapRefCounted(
+      reinterpret_cast<VP8Picture*>(job.picture().get()));
+}
+
+Vp8FrameHeader GetDefaultVp8FrameHeader(bool keyframe,
+                                        const gfx::Size& visible_size) {
+  Vp8FrameHeader hdr;
+  DCHECK(!visible_size.IsEmpty());
+  hdr.width = visible_size.width();
+  hdr.height = visible_size.height();
+  hdr.show_frame = true;
+  hdr.frame_type =
+      keyframe ? Vp8FrameHeader::KEYFRAME : Vp8FrameHeader::INTERFRAME;
+
+  // TODO(sprang): Make this dynamic. Value based on reference implementation
+  // in libyami (https://github.com/intel/libyami).
+
+  // Sets the highest loop filter level.
+  // TODO(b/188853141): Set a loop filter level computed by a rate controller
+  // every frame once the rate controller supports it.
+  hdr.loopfilter_hdr.level = 63;
+
+  // A VA-API driver recommends to set forced_lf_adjustment on keyframe.
+  // Set loop_filter_adj_enable to 1 here because forced_lf_adjustment is read
+  // only when a macroblock level loop filter adjustment.
+  hdr.loopfilter_hdr.loop_filter_adj_enable = true;
+
+  // Set mb_no_skip_coeff to 1 that some decoders (e.g. kepler) could not decode
+  // correctly a stream encoded with mb_no_skip_coeff=0. It also enables an
+  // encoder to produce a more optimized stream than when mb_no_skip_coeff=0.
+  hdr.mb_no_skip_coeff = true;
+
+  return hdr;
+}
 }  // namespace
 
 VP8VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
     : kf_period_frames(kKFPeriod),
       framerate(0),
-      cpb_window_size_ms(kCPBWindowSizeMs),
-      cpb_size_bits(0),
-      initial_qp(kDefaultQP),
       min_qp(kMinQP),
-      max_qp(kMaxQP),
-      error_resilient_mode(false) {}
+      max_qp(kMaxQP) {}
 
 void VP8VaapiVideoEncoderDelegate::Reset() {
   current_params_ = EncodeParams();
   reference_frames_.Clear();
   frame_num_ = 0;
-
-  InitializeFrameHeader();
 }
 
 VP8VaapiVideoEncoderDelegate::VP8VaapiVideoEncoderDelegate(
@@ -98,7 +168,8 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
     const VaapiVideoEncoderDelegate::Config& ave_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (VideoCodecProfileToVideoCodec(config.output_profile) != kCodecVP8) {
+  if (VideoCodecProfileToVideoCodec(config.output_profile) !=
+      VideoCodec::kVP8) {
     DVLOGF(1) << "Invalid profile: " << GetProfileName(config.output_profile);
     return false;
   }
@@ -108,6 +179,16 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
     return false;
   }
 
+  // Even though VP8VaapiVideoEncoderDelegate might support other bitrate
+  // control modes, only the kConstantQuantizationParameter is used.
+  if (ave_config.bitrate_control != VaapiVideoEncoderDelegate::BitrateControl::
+                                        kConstantQuantizationParameter) {
+    DVLOGF(1) << "Only CQ bitrate control is supported";
+    return false;
+  }
+
+  native_input_mode_ = ave_config.native_input_mode;
+
   visible_size_ = config.input_visible_size;
   coded_size_ = gfx::Size(base::bits::AlignUp(visible_size_.width(), 16),
                           base::bits::AlignUp(visible_size_.height(), 16));
@@ -116,6 +197,17 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
 
   VideoBitrateAllocation initial_bitrate_allocation;
   initial_bitrate_allocation.SetBitrate(0, 0, config.bitrate.target());
+
+  current_params_.max_qp = kMaxQPForSoftwareRateCtrl;
+
+  // |rate_ctrl_| might be injected for tests.
+  if (!rate_ctrl_) {
+    rate_ctrl_ = VP8RateControl::Create(CreateRateControlConfig(
+        visible_size_, current_params_, initial_bitrate_allocation));
+    if (!rate_ctrl_)
+      return false;
+  }
+
   return UpdateRates(initial_bitrate_allocation,
                      config.initial_framerate.value_or(
                          VideoEncodeAccelerator::kDefaultFramerate));
@@ -138,29 +230,28 @@ std::vector<gfx::Size> VP8VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
   return {visible_size_};
 }
 
-bool VP8VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
+bool VP8VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (encode_job->IsKeyframeRequested())
+  if (encode_job.IsKeyframeRequested())
     frame_num_ = 0;
 
   if (frame_num_ == 0)
-    encode_job->ProduceKeyframe();
+    encode_job.ProduceKeyframe();
 
   frame_num_++;
   frame_num_ %= current_params_.kf_period_frames;
 
-  scoped_refptr<VP8Picture> picture = GetPicture(encode_job);
+  scoped_refptr<VP8Picture> picture = GetVP8Picture(encode_job);
   DCHECK(picture);
 
-  UpdateFrameHeader(encode_job->IsKeyframeRequested());
-  *picture->frame_hdr = current_frame_hdr_;
+  SetFrameHeader(*picture, encode_job.IsKeyframeRequested());
 
   // We only use |last_frame| for a reference frame. This follows the behavior
   // of libvpx encoder in chromium webrtc use case.
   std::array<bool, kNumVp8ReferenceBuffers> ref_frames_used{true, false, false};
 
-  if (current_frame_hdr_.IsKeyframe()) {
+  if (picture->frame_hdr->IsKeyframe()) {
     // A driver should ignore |ref_frames_used| values if keyframe is requested.
     // But we fill false in |ref_frames_used| just in case.
     std::fill(std::begin(ref_frames_used), std::end(ref_frames_used), false);
@@ -176,77 +267,72 @@ bool VP8VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
   return true;
 }
 
+void VP8VaapiVideoEncoderDelegate::BitrateControlUpdate(
+    uint64_t encoded_chunk_size_bytes) {
+  if (!rate_ctrl_) {
+    DLOG(ERROR) << __func__ << "() is called when no bitrate controller exists";
+    return;
+  }
+
+  DVLOGF(4) << "|encoded_chunk_size_bytes|=" << encoded_chunk_size_bytes;
+  rate_ctrl_->PostEncodeUpdate(encoded_chunk_size_bytes);
+}
+
 bool VP8VaapiVideoEncoderDelegate::UpdateRates(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (bitrate_allocation.GetSumBps() == 0 || framerate == 0)
+  uint32_t bitrate = bitrate_allocation.GetSumBps();
+  if (bitrate == 0 || framerate == 0)
     return false;
 
   if (current_params_.bitrate_allocation == bitrate_allocation &&
       current_params_.framerate == framerate) {
     return true;
   }
-  VLOGF(2) << "New bitrate: " << bitrate_allocation.GetSumBps()
+  VLOGF(2) << "New bitrate: " << bitrate_allocation.ToString()
            << ", new framerate: " << framerate;
 
   current_params_.bitrate_allocation = bitrate_allocation;
   current_params_.framerate = framerate;
 
-  current_params_.cpb_size_bits =
-      current_params_.bitrate_allocation.GetSumBps() *
-      current_params_.cpb_window_size_ms / 1000;
+  rate_ctrl_->UpdateRateControl(CreateRateControlConfig(
+      visible_size_, current_params_, bitrate_allocation));
 
   return true;
 }
 
-void VP8VaapiVideoEncoderDelegate::InitializeFrameHeader() {
+void VP8VaapiVideoEncoderDelegate::SetFrameHeader(VP8Picture& picture,
+                                                  bool keyframe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  current_frame_hdr_ = {};
-  DCHECK(!visible_size_.IsEmpty());
-  current_frame_hdr_.width = visible_size_.width();
-  current_frame_hdr_.height = visible_size_.height();
-  current_frame_hdr_.quantization_hdr.y_ac_qi = kDefaultQP;
-  current_frame_hdr_.show_frame = true;
-  // TODO(sprang): Make this dynamic. Value based on reference implementation
-  // in libyami (https://github.com/intel/libyami).
-
-  // A VA-API driver recommends to set forced_lf_adjustment on keyframe.
-  // Set loop_filter_adj_enable to 1 here because forced_lf_adjustment is read
-  // only when a macroblock level loop filter adjustment.
-  current_frame_hdr_.loopfilter_hdr.loop_filter_adj_enable = true;
-
-  // Set mb_no_skip_coeff to 1 that some decoders (e.g. kepler) could not decode
-  // correctly a stream encoded with mb_no_skip_coeff=0. It also enables an
-  // encoder to produce a more optimized stream than when mb_no_skip_coeff=0.
-  current_frame_hdr_.mb_no_skip_coeff = true;
-}
-
-void VP8VaapiVideoEncoderDelegate::UpdateFrameHeader(bool keyframe) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+ *picture.frame_hdr = GetDefaultVp8FrameHeader(keyframe, visible_size_);
+  picture.frame_hdr->refresh_last = true;
   if (keyframe) {
-    current_frame_hdr_.frame_type = Vp8FrameHeader::KEYFRAME;
-    current_frame_hdr_.refresh_last = true;
-    current_frame_hdr_.refresh_golden_frame = true;
-    current_frame_hdr_.refresh_alternate_frame = true;
-    current_frame_hdr_.copy_buffer_to_golden =
+    picture.frame_hdr->refresh_golden_frame = true;
+    picture.frame_hdr->refresh_alternate_frame = true;
+    picture.frame_hdr->copy_buffer_to_golden =
         Vp8FrameHeader::NO_GOLDEN_REFRESH;
-    current_frame_hdr_.copy_buffer_to_alternate =
+    picture.frame_hdr->copy_buffer_to_alternate =
         Vp8FrameHeader::NO_ALT_REFRESH;
   } else {
-    current_frame_hdr_.frame_type = Vp8FrameHeader::INTERFRAME;
-    // TODO(sprang): Add temporal layer support.
-    current_frame_hdr_.refresh_last = true;
-    current_frame_hdr_.refresh_golden_frame = false;
-    current_frame_hdr_.refresh_alternate_frame = false;
-    current_frame_hdr_.copy_buffer_to_golden =
+    picture.frame_hdr->refresh_golden_frame = false;
+    picture.frame_hdr->refresh_alternate_frame = false;
+    picture.frame_hdr->copy_buffer_to_golden =
         Vp8FrameHeader::COPY_LAST_TO_GOLDEN;
-    current_frame_hdr_.copy_buffer_to_alternate =
+    picture.frame_hdr->copy_buffer_to_alternate =
         Vp8FrameHeader::COPY_GOLDEN_TO_ALT;
   }
+
+  libvpx::VP8FrameParamsQpRTC frame_params{};
+  frame_params.frame_type =
+      keyframe ? FRAME_TYPE::KEY_FRAME : FRAME_TYPE::INTER_FRAME;
+  frame_params.temporal_layer_id = 0;
+
+  rate_ctrl_->ComputeQP(frame_params);
+  picture.frame_hdr->quantization_hdr.y_ac_qi = rate_ctrl_->GetQP();
+  DVLOGF(4) << "qp="
+            << static_cast<int>(picture.frame_hdr->quantization_hdr.y_ac_qi);
 }
 
 void VP8VaapiVideoEncoderDelegate::UpdateReferenceFrames(
@@ -256,16 +342,8 @@ void VP8VaapiVideoEncoderDelegate::UpdateReferenceFrames(
   reference_frames_.Refresh(picture);
 }
 
-scoped_refptr<VP8Picture> VP8VaapiVideoEncoderDelegate::GetPicture(
-    VaapiVideoEncoderDelegate::EncodeJob* job) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return base::WrapRefCounted(
-      reinterpret_cast<VP8Picture*>(job->picture().get()));
-}
-
 bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
-    VaapiVideoEncoderDelegate::EncodeJob* job,
+    EncodeJob& job,
     const EncodeParams& encode_params,
     scoped_refptr<VP8Picture> pic,
     const Vp8ReferenceFrameVector& ref_frames,
@@ -300,7 +378,7 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
   pic_param.ref_arf_frame =
       alt_frame ? alt_frame->AsVaapiVP8Picture()->GetVASurfaceID()
                 : VA_INVALID_ID;
-  pic_param.coded_buf = job->coded_buffer_id();
+  pic_param.coded_buf = job.coded_buffer_id();
   DCHECK_NE(pic_param.coded_buf, VA_INVALID_ID);
   pic_param.ref_flags.bits.no_ref_last =
       !ref_frames_used[Vp8RefType::VP8_FRAME_LAST];
@@ -370,7 +448,7 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
   pic_param.clamp_qindex_low = encode_params.min_qp;
 
   VAQMatrixBufferVP8 qmatrix_buf = {};
-  for (auto index : qmatrix_buf.quantization_index)
+  for (auto& index : qmatrix_buf.quantization_index)
     index = frame_header->quantization_hdr.y_ac_qi;
 
   qmatrix_buf.quantization_index_delta[0] =
@@ -384,50 +462,10 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
   qmatrix_buf.quantization_index_delta[4] =
       frame_header->quantization_hdr.uv_ac_delta;
 
-  VAEncMiscParameterRateControl rate_control_param;
-  VAEncMiscParameterFrameRate framerate_param;
-  VAEncMiscParameterHRD hrd_param;
-  FillVAEncRateControlParams(
-      base::checked_cast<uint32_t>(
-          encode_params.bitrate_allocation.GetSumBps()),
-      base::strict_cast<uint32_t>(encode_params.cpb_window_size_ms),
-      base::strict_cast<uint32_t>(encode_params.initial_qp),
-      base::strict_cast<uint32_t>(encode_params.min_qp),
-      base::strict_cast<uint32_t>(encode_params.max_qp),
-      encode_params.framerate,
-      base::strict_cast<uint32_t>(encode_params.cpb_size_bits),
-      rate_control_param, framerate_param, hrd_param);
-
-  job->AddSetupCallback(
-      base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
-                     base::Unretained(this), VAEncSequenceParameterBufferType,
-                     MakeRefCountedBytes(&seq_param, sizeof(seq_param))));
-
-  job->AddSetupCallback(
-      base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
-                     base::Unretained(this), VAEncPictureParameterBufferType,
-                     MakeRefCountedBytes(&pic_param, sizeof(pic_param))));
-
-  job->AddSetupCallback(
-      base::BindOnce(&VaapiVideoEncoderDelegate::SubmitBuffer,
-                     base::Unretained(this), VAQMatrixBufferType,
-                     MakeRefCountedBytes(&qmatrix_buf, sizeof(qmatrix_buf))));
-
-  job->AddSetupCallback(base::BindOnce(
-      &VaapiVideoEncoderDelegate::SubmitVAEncMiscParamBuffer,
-      base::Unretained(this), VAEncMiscParameterTypeRateControl,
-      MakeRefCountedBytes(&rate_control_param, sizeof(rate_control_param))));
-
-  job->AddSetupCallback(base::BindOnce(
-      &VaapiVideoEncoderDelegate::SubmitVAEncMiscParamBuffer,
-      base::Unretained(this), VAEncMiscParameterTypeFrameRate,
-      MakeRefCountedBytes(&framerate_param, sizeof(framerate_param))));
-
-  job->AddSetupCallback(
-      base::BindOnce(&VaapiVideoEncoderDelegate::SubmitVAEncMiscParamBuffer,
-                     base::Unretained(this), VAEncMiscParameterTypeHRD,
-                     MakeRefCountedBytes(&hrd_param, sizeof(hrd_param))));
-
-  return true;
+  return vaapi_wrapper_->SubmitBuffer(VAEncSequenceParameterBufferType,
+                                      &seq_param) &&
+         vaapi_wrapper_->SubmitBuffer(VAEncPictureParameterBufferType,
+                                      &pic_param) &&
+         vaapi_wrapper_->SubmitBuffer(VAQMatrixBufferType, &qmatrix_buf);
 }
 }  // namespace media

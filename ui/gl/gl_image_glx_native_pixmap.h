@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_IMAGE_GLX_NATIVE_PIXMAP_H_
 #define UI_GL_GL_IMAGE_GLX_NATIVE_PIXMAP_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -17,7 +16,13 @@ namespace gl {
 
 class GL_EXPORT GLImageGLXNativePixmap : public GLImageGLX {
  public:
-  GLImageGLXNativePixmap(const gfx::Size& size, gfx::BufferFormat format);
+  GLImageGLXNativePixmap(const gfx::Size& size,
+                         gfx::BufferFormat format,
+                         gfx::BufferPlane plane = gfx::BufferPlane::DEFAULT);
+
+  GLImageGLXNativePixmap(const GLImageGLXNativePixmap&) = delete;
+  GLImageGLXNativePixmap& operator=(const GLImageGLXNativePixmap&) = delete;
+
   bool Initialize(scoped_refptr<gfx::NativePixmap> pixmap);
 
  protected:
@@ -25,8 +30,6 @@ class GL_EXPORT GLImageGLXNativePixmap : public GLImageGLX {
 
  private:
   scoped_refptr<gfx::NativePixmap> native_pixmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageGLXNativePixmap);
 };
 
 }  // namespace gl

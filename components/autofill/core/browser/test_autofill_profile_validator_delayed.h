@@ -25,6 +25,11 @@ class TestAutofillProfileValidatorDelayed : public AutofillProfileValidator {
       std::unique_ptr<::i18n::addressinput::Source> source,
       std::unique_ptr<::i18n::addressinput::Storage> storage);
 
+  TestAutofillProfileValidatorDelayed(
+      const TestAutofillProfileValidatorDelayed&) = delete;
+  TestAutofillProfileValidatorDelayed& operator=(
+      const TestAutofillProfileValidatorDelayed&) = delete;
+
   ~TestAutofillProfileValidatorDelayed() override;
 
   // Starts loading the rules for the specified |region_code|.
@@ -32,8 +37,6 @@ class TestAutofillProfileValidatorDelayed : public AutofillProfileValidator {
 
  private:
   void LoadRulesInstantly(const std::string& region_code);
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillProfileValidatorDelayed);
 };
 
 }  // namespace autofill

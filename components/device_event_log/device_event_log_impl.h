@@ -10,10 +10,9 @@
 #include <list>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/device_event_log/device_event_log.h"
 
@@ -48,6 +47,10 @@ class DEVICE_EVENT_LOG_EXPORT DeviceEventLogImpl {
   explicit DeviceEventLogImpl(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       size_t max_entries);
+
+  DeviceEventLogImpl(const DeviceEventLogImpl&) = delete;
+  DeviceEventLogImpl& operator=(const DeviceEventLogImpl&) = delete;
+
   ~DeviceEventLogImpl();
 
   // Implements device_event_log::AddEntry.
@@ -101,8 +104,6 @@ class DEVICE_EVENT_LOG_EXPORT DeviceEventLogImpl {
   size_t max_entries_;
   LogEntryList entries_;
   base::WeakPtrFactory<DeviceEventLogImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceEventLogImpl);
 };
 
 }  // namespace device_event_log

@@ -73,6 +73,10 @@ class Client {
   // Returns whether a11y (talkback and touch exploration) is enabled or not.
   virtual bool IsAccessibilityEnabled() const = 0;
 
+  // Returns whether an accessibility service with "FEEDBACK_SPOKEN" feedback
+  // type is enabled or not.
+  virtual bool IsSpokenFeedbackAccessibilityServiceEnabled() const = 0;
+
   // Returns the width and height of the window.
   virtual absl::optional<std::pair<int, int>> GetWindowSize() const = 0;
 

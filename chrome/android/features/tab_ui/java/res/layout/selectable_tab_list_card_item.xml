@@ -20,5 +20,5 @@
         android:id="@+id/content_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/popup_bg_tinted" />
+        android:background="@drawable/dialog_bg_tinted" />
 </FrameLayout>

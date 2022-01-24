@@ -140,7 +140,8 @@ class OCSPBrowserTest : public PlatformBrowserTest,
     server.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(server.Start());
 
-    ui_test_utils::NavigateToURL(browser(), server.GetURL("/ssl/google.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), server.GetURL("/ssl/google.html")));
   }
 
   net::CertStatus GetCurrentCertStatus() {

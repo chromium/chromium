@@ -27,6 +27,10 @@ namespace {
 class TestUpstartClient : public chromeos::FakeUpstartClient {
  public:
   TestUpstartClient() = default;
+
+  TestUpstartClient(const TestUpstartClient&) = delete;
+  TestUpstartClient& operator=(const TestUpstartClient&) = delete;
+
   ~TestUpstartClient() override = default;
 
   void StartJob(const std::string& job,
@@ -40,13 +44,14 @@ class TestUpstartClient : public chromeos::FakeUpstartClient {
 
  private:
   bool arc_available_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUpstartClient);
 };
 
 class ArcDataRemoverTest : public testing::Test {
  public:
   ArcDataRemoverTest() = default;
+
+  ArcDataRemoverTest(const ArcDataRemoverTest&) = delete;
+  ArcDataRemoverTest& operator=(const ArcDataRemoverTest&) = delete;
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
@@ -74,8 +79,6 @@ class ArcDataRemoverTest : public testing::Test {
   const cryptohome::Identification cryptohome_id_{EmptyAccountId()};
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestUpstartClient> test_upstart_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDataRemoverTest);
 };
 
 TEST_F(ArcDataRemoverTest, NotScheduled) {

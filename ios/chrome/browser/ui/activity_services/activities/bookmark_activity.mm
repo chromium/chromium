@@ -94,10 +94,15 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 }
 
 - (void)performActivity {
-  BookmarkAddCommand* command =
-      [[BookmarkAddCommand alloc] initWithURL:self.URL title:self.title];
-  [self.handler bookmarkPage:command];
+  // Activity must be marked finished first, otherwise it may dismiss UI
+  // presented by the bookmark command below.
   [self activityDidFinish:YES];
+
+  BookmarkAddCommand* command =
+      [[BookmarkAddCommand alloc] initWithURL:self.URL
+                                        title:self.title
+                         presentFolderChooser:NO];
+  [self.handler bookmark:command];
 }
 
 #pragma mark - Private

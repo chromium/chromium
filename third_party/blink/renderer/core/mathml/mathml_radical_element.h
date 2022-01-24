@@ -20,6 +20,8 @@ class CORE_EXPORT MathMLRadicalElement : public MathMLRowElement {
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&,
                                    LegacyLayout legacy) override;
+
+  bool IsGroupingElement() const final { return false; }
 };
 
 template <>

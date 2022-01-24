@@ -546,7 +546,7 @@ void EventTarget::AddedEventListener(
 bool EventTarget::removeEventListener(const AtomicString& event_type,
                                       V8EventListener* listener) {
   EventListener* event_listener = JSEventListener::CreateOrNull(listener);
-  return removeEventListener(event_type, event_listener);
+  return removeEventListener(event_type, event_listener, /*use_capture=*/false);
 }
 
 bool EventTarget::removeEventListener(
@@ -979,7 +979,7 @@ void EventTarget::DispatchEnqueuedEvent(Event* event,
 }
 
 void EventTargetWithInlineData::Trace(Visitor* visitor) const {
-  EventTargetData::Trace(visitor);
+  visitor->Trace(data_);
   EventTarget::Trace(visitor);
 }
 

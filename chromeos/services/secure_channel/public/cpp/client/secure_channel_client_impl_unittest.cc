@@ -8,7 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -116,6 +116,11 @@ class TestConnectionAttemptDelegate : public ConnectionAttempt::Delegate {
 }  // namespace
 
 class SecureChannelClientImplTest : public testing::Test {
+ public:
+  SecureChannelClientImplTest(const SecureChannelClientImplTest&) = delete;
+  SecureChannelClientImplTest& operator=(const SecureChannelClientImplTest&) =
+      delete;
+
  protected:
   SecureChannelClientImplTest()
       : test_remote_device_list_(
@@ -223,9 +228,6 @@ class SecureChannelClientImplTest : public testing::Test {
 
   const multidevice::RemoteDeviceList test_remote_device_list_;
   const multidevice::RemoteDeviceRefList test_remote_device_ref_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelClientImplTest);
 };
 
 TEST_F(SecureChannelClientImplTest, TestInitiateConnectionToDevice) {

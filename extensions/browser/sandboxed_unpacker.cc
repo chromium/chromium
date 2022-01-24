@@ -20,17 +20,19 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crx_file/crx_verifier.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/api/declarative_net_request/index_helper.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
+#include "extensions/browser/api/declarative_net_request/install_index_helper.h"
+#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/computed_hashes.h"
 #include "extensions/browser/content_verifier/content_verifier_key.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -556,19 +558,20 @@ void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value manifest) {
   std::set<base::FilePath> image_paths =
       ExtensionsClient::Get()->GetBrowserImagePaths(extension_.get());
   image_sanitizer_ = ImageSanitizer::CreateAndStart(
-      &data_decoder_, extension_root_, image_paths,
-      base::BindRepeating(&SandboxedUnpacker::ImageSanitizerDecodedImage, this),
-      base::BindOnce(&SandboxedUnpacker::ImageSanitizationDone, this),
-      unpacker_io_task_runner_);
+      this, extension_root_, image_paths, unpacker_io_task_runner_);
 }
 
-void SandboxedUnpacker::ImageSanitizerDecodedImage(const base::FilePath& path,
-                                                   SkBitmap image) {
+data_decoder::DataDecoder* SandboxedUnpacker::GetDataDecoder() {
+  return &data_decoder_;
+}
+
+void SandboxedUnpacker::OnImageDecoded(const base::FilePath& path,
+                                       SkBitmap image) {
   if (path == install_icon_path_)
     install_icon_ = image;
 }
 
-void SandboxedUnpacker::ImageSanitizationDone(
+void SandboxedUnpacker::OnImageSanitizationDone(
     ImageSanitizer::Status status,
     const base::FilePath& file_path_for_error) {
   if (status == ImageSanitizer::Status::kSuccess) {
@@ -610,12 +613,6 @@ void SandboxedUnpacker::ImageSanitizationDone(
       failure_reason = SandboxedUnpackerFailureReason::ERROR_SAVING_THEME_IMAGE;
       error = l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
                                          u"ERROR_SAVING_THEME_IMAGE");
-      break;
-    case ImageSanitizer::Status::kServiceError:
-      failure_reason = SandboxedUnpackerFailureReason::
-          UTILITY_PROCESS_CRASHED_WHILE_TRYING_TO_INSTALL;
-      error = l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_INSTALL_ERROR,
-                                         u"ERROR_UTILITY_PROCESS_CRASH");
       break;
     default:
       NOTREACHED();
@@ -695,13 +692,22 @@ void SandboxedUnpacker::IndexAndPersistJSONRulesetsIfNeeded() {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(extension_);
 
-  declarative_net_request::IndexHelper::IndexStaticRulesets(
-      *extension_,
+  // Defer ruleset indexing for disabled rulesets to speed up extension
+  // installation.
+  auto ruleset_filter = declarative_net_request::FileBackedRulesetSource::
+      RulesetFilter::kIncludeManifestEnabled;
+
+  // Ignore rule parsing errors since ruleset indexing (and therefore rule
+  // parsing) is deferred until the ruleset is enabled for packed extensions.
+  auto parse_flags = declarative_net_request::RulesetSource::kNone;
+
+  declarative_net_request::InstallIndexHelper::IndexStaticRulesets(
+      *extension_, ruleset_filter, parse_flags,
       base::BindOnce(&SandboxedUnpacker::OnJSONRulesetsIndexed, this));
 }
 
 void SandboxedUnpacker::OnJSONRulesetsIndexed(
-    declarative_net_request::IndexHelper::Result result) {
+    declarative_net_request::InstallIndexHelper::Result result) {
   if (result.error) {
     ReportFailure(
         SandboxedUnpackerFailureReason::ERROR_INDEXING_DNR_RULESET,

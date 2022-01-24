@@ -20,7 +20,7 @@ TEST(AudioServiceMetricsTest, CreateDestroy_LogsUptime) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<ServiceMetrics> metrics =
       std::make_unique<ServiceMetrics>(&test_clock);
-  test_clock.Advance(base::TimeDelta::FromDays(6));
+  test_clock.Advance(base::Days(6));
   metrics.reset();
 }
 
@@ -31,11 +31,10 @@ TEST(AudioServiceMetricsTest, AddRemoveConnection_LogsHasConnectionDuration) {
   base::HistogramTester histogram_tester;
   ServiceMetrics metrics(&test_clock);
   metrics.HasConnections();
-  test_clock.Advance(base::TimeDelta::FromMinutes(42));
+  test_clock.Advance(base::Minutes(42));
   metrics.HasNoConnections();
   histogram_tester.ExpectTimeBucketCount(
-      "Media.AudioService.HasConnectionsDuration",
-      base::TimeDelta::FromMinutes(42), 1);
+      "Media.AudioService.HasConnectionsDuration", base::Minutes(42), 1);
   histogram_tester.ExpectTotalCount("Media.AudioService.HasConnectionsDuration",
                                     1);
 }
@@ -47,13 +46,12 @@ TEST(AudioServiceMetricsTest, RemoveAddConnection_LogsHasNoConnectionDuration) {
   base::HistogramTester histogram_tester;
   ServiceMetrics metrics(&test_clock);
   metrics.HasConnections();
-  test_clock.Advance(base::TimeDelta::FromMinutes(5));
+  test_clock.Advance(base::Minutes(5));
   metrics.HasNoConnections();
-  test_clock.Advance(base::TimeDelta::FromMilliseconds(10));
+  test_clock.Advance(base::Milliseconds(10));
   metrics.HasConnections();
   histogram_tester.ExpectTimeBucketCount(
-      "Media.AudioService.HasNoConnectionsDuration",
-      base::TimeDelta::FromMilliseconds(10), 1);
+      "Media.AudioService.HasNoConnectionsDuration", base::Milliseconds(10), 1);
   histogram_tester.ExpectTotalCount(
       "Media.AudioService.HasNoConnectionsDuration", 1);
 }

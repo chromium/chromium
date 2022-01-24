@@ -30,7 +30,7 @@
 
 #include "base/location.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "cc/layers/texture_layer.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -57,13 +57,13 @@ namespace blink {
 
 Canvas2DLayerBridge::Canvas2DLayerBridge(const IntSize& size,
                                          RasterMode raster_mode,
-                                         const CanvasColorParams& color_params)
+                                         OpacityMode opacity_mode)
     : logger_(std::make_unique<Logger>()),
       have_recorded_draw_commands_(false),
       is_hidden_(false),
       is_being_displayed_(false),
       raster_mode_(raster_mode),
-      color_params_(color_params),
+      opacity_mode_(opacity_mode),
       size_(size),
       snapshot_state_(kInitialSnapshotState),
       resource_host_(nullptr),
@@ -264,8 +264,8 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
     layer_ = cc::TextureLayer::CreateForMailbox(this);
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);
-    layer_->SetContentsOpaque(ColorParams().GetOpacityMode() == kOpaque);
-    layer_->SetBlendBackgroundColor(ColorParams().GetOpacityMode() != kOpaque);
+    layer_->SetContentsOpaque(opacity_mode_ == kOpaque);
+    layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
     layer_->SetNearestNeighbor(resource_host_->FilterQuality() ==
                                cc::PaintFlags::FilterQuality::kNone);
   }
@@ -369,8 +369,8 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
   if (!GetOrCreateResourceProvider())
     return false;
 
-  if (x <= 0 && y <= 0 && x + orig_info.width() >= size_.Width() &&
-      y + orig_info.height() >= size_.Height()) {
+  if (x <= 0 && y <= 0 && x + orig_info.width() >= size_.width() &&
+      y + orig_info.height() >= size_.height()) {
     SkipQueuedDrawCommands();
   } else {
     FlushRecording();
@@ -437,12 +437,12 @@ void Canvas2DLayerBridge::FinishRasterTimers(
     raster_interface->GetQueryObjectuivEXT(it->gl_query_id, GL_QUERY_RESULT_EXT,
                                            &raw_gpu_duration);
     base::TimeDelta gpu_duration_microseconds =
-        base::TimeDelta::FromMicroseconds(raw_gpu_duration);
+        base::Microseconds(raw_gpu_duration);
     base::TimeDelta total_time =
         gpu_duration_microseconds + it->cpu_raster_duration;
 
-    base::TimeDelta min = base::TimeDelta::FromMicroseconds(1);
-    base::TimeDelta max = base::TimeDelta::FromMilliseconds(100);
+    base::TimeDelta min = base::Microseconds(1);
+    base::TimeDelta max = base::Milliseconds(100);
     int num_buckets = 100;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Blink.Canvas.RasterDuration.Accelerated.GPU",
@@ -498,12 +498,15 @@ void Canvas2DLayerBridge::FlushRecording() {
     timer.emplace();
   }
 
-  last_recording_ = ResourceProvider()->FlushCanvas();
-  last_record_tainted_by_write_pixels_ = false;
   if (!clear_frame_ || !resource_host_ || !resource_host_->IsPrinting()) {
+    ResourceProvider()->FlushCanvas();
     last_recording_ = nullptr;
     clear_frame_ = false;
+  } else {
+    last_recording_ = ResourceProvider()->FlushCanvasAndPreserveRecording();
   }
+
+  last_record_tainted_by_write_pixels_ = false;
 
   // Finish up the timing operation
   if (measure_raster_metric) {
@@ -514,8 +517,7 @@ void Canvas2DLayerBridge::FlushRecording() {
     } else {
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Blink.Canvas.RasterDuration.Unaccelerated", timer->Elapsed(),
-          base::TimeDelta::FromMicroseconds(1),
-          base::TimeDelta::FromMilliseconds(100), 100);
+          base::Microseconds(1), base::Milliseconds(100), 100);
     }
   }
 
@@ -640,8 +642,6 @@ cc::Layer* Canvas2DLayerBridge::Layer() {
 }
 
 void Canvas2DLayerBridge::DidDraw() {
-  if (ResourceProvider() && ResourceProvider()->needs_flush())
-    FinalizeFrame();
   have_recorded_draw_commands_ = true;
 }
 
@@ -673,7 +673,7 @@ void Canvas2DLayerBridge::FinalizeFrame() {
 
 void Canvas2DLayerBridge::DoPaintInvalidation(const IntRect& dirty_rect) {
   if (layer_ && raster_mode_ == RasterMode::kGPU)
-    layer_->SetNeedsDisplayRect(dirty_rect);
+    layer_->SetNeedsDisplayRect(ToGfxRect(dirty_rect));
 }
 
 scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot() {

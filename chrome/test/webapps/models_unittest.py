@@ -48,6 +48,22 @@ class ModelsTest(unittest.TestCase):
             TestPlatform.get_platforms_from_browsertest_filename(
                 "browsertest_name.cc"))
 
+    def test_platforms_to_fixture_suffix(self):
+        self.assertEqual(
+            "MacWinLinux",
+            TestPlatform.get_test_fixture_suffix(
+                {TestPlatform.MAC, TestPlatform.WINDOWS, TestPlatform.LINUX}))
+        self.assertEqual(
+            "Cros",
+            TestPlatform.get_test_fixture_suffix({TestPlatform.CHROME_OS}))
+        self.assertEqual(
+            "",
+            TestPlatform.get_test_fixture_suffix({
+                TestPlatform.MAC, TestPlatform.WINDOWS, TestPlatform.LINUX,
+                TestPlatform.CHROME_OS
+            }))
+        self.assertEqual("", TestPlatform.get_test_fixture_suffix({}))
+
 
 if __name__ == '__main__':
     unittest.main()

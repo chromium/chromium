@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -27,12 +28,13 @@ class SelfDestroyingEventProcessor : public TestEventProcessor {
  public:
   SelfDestroyingEventProcessor() {}
 
+  SelfDestroyingEventProcessor(const SelfDestroyingEventProcessor&) = delete;
+  SelfDestroyingEventProcessor& operator=(const SelfDestroyingEventProcessor&) =
+      delete;
+
  protected:
   EventDispatchDetails PostDispatchEvent(EventTarget* target,
                                          const Event& event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelfDestroyingEventProcessor);
 };
 
 class SelfDestroyingTestEventTarget : public TestEventTarget {
@@ -40,14 +42,16 @@ class SelfDestroyingTestEventTarget : public TestEventTarget {
   SelfDestroyingTestEventTarget()
       : processor_(new SelfDestroyingEventProcessor()) {}
 
+  SelfDestroyingTestEventTarget(const SelfDestroyingTestEventTarget&) = delete;
+  SelfDestroyingTestEventTarget& operator=(
+      const SelfDestroyingTestEventTarget&) = delete;
+
   TestEventProcessor* processor() { return processor_.get(); }
 
   void DestroyProcessor() { processor_.reset(); }
 
  private:
   std::unique_ptr<SelfDestroyingEventProcessor> processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelfDestroyingTestEventTarget);
 };
 
 EventDispatchDetails SelfDestroyingEventProcessor::PostDispatchEvent(
@@ -60,6 +64,10 @@ EventDispatchDetails SelfDestroyingEventProcessor::PostDispatchEvent(
 class EventProcessorTest : public testing::Test {
  public:
   EventProcessorTest() {}
+
+  EventProcessorTest(const EventProcessorTest&) = delete;
+  EventProcessorTest& operator=(const EventProcessorTest&) = delete;
+
   ~EventProcessorTest() override {}
 
  protected:
@@ -90,8 +98,6 @@ class EventProcessorTest : public testing::Test {
 
  private:
   TestEventProcessor processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventProcessorTest);
 };
 
 TEST_F(EventProcessorTest, Basic) {
@@ -122,6 +128,10 @@ class ReDispatchEventHandler : public TestEventHandler {
  public:
   ReDispatchEventHandler(EventProcessor* processor, EventTarget* target)
       : processor_(processor), expected_target_(target) {}
+
+  ReDispatchEventHandler(const ReDispatchEventHandler&) = delete;
+  ReDispatchEventHandler& operator=(const ReDispatchEventHandler&) = delete;
+
   ~ReDispatchEventHandler() override {}
 
   // TestEventHandler:
@@ -146,8 +156,6 @@ class ReDispatchEventHandler : public TestEventHandler {
  private:
   EventProcessor* processor_;
   EventTarget* expected_target_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReDispatchEventHandler);
 };
 
 // Verifies that the phase and target information of an event is not mutated

@@ -4,14 +4,20 @@
 
 #include "chromeos/services/secure_channel/public/cpp/client/client_channel_impl.h"
 
+#include <vector>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -24,6 +30,7 @@
 #include "chromeos/services/secure_channel/public/cpp/client/fake_client_channel_observer.h"
 #include "chromeos/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/secure_channel_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,6 +40,12 @@ namespace chromeos {
 namespace secure_channel {
 
 class SecureChannelClientChannelImplTest : public testing::Test {
+ public:
+  SecureChannelClientChannelImplTest(
+      const SecureChannelClientChannelImplTest&) = delete;
+  SecureChannelClientChannelImplTest& operator=(
+      const SecureChannelClientChannelImplTest&) = delete;
+
  protected:
   SecureChannelClientChannelImplTest() = default;
 
@@ -49,7 +62,8 @@ class SecureChannelClientChannelImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    client_channel_->RemoveObserver(fake_observer_.get());
+    if (client_channel_)
+      client_channel_->RemoveObserver(fake_observer_.get());
   }
 
   mojom::ConnectionMetadataPtr CallGetConnectionMetadata() {
@@ -97,6 +111,26 @@ class SecureChannelClientChannelImplTest : public testing::Test {
     static_cast<ClientChannelImpl*>(client_channel_.get())->FlushForTesting();
   }
 
+  mojom::PayloadFilesPtr CreatePayloadFiles() {
+    base::FilePath file_path;
+    base::CreateTemporaryFile(&file_path);
+    base::File input_file(
+        file_path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
+    base::File output_file(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
+                                          base::File::Flags::FLAG_WRITE);
+    return mojom::PayloadFiles::New(std::move(input_file),
+                                    std::move(output_file));
+  }
+
+  void ExpectFileTransferUpdate(const mojom::FileTransferUpdate* update,
+                                mojom::FileTransferStatus status,
+                                uint64_t total_bytes,
+                                uint64_t bytes_transferred) {
+    EXPECT_EQ(status, update->status);
+    EXPECT_EQ(total_bytes, update->total_bytes);
+    EXPECT_EQ(bytes_transferred, update->bytes_transferred);
+  }
+
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<FakeChannel> fake_channel_;
@@ -121,8 +155,6 @@ class SecureChannelClientChannelImplTest : public testing::Test {
     message_counters_received_.insert(message_counter);
     std::move(message_sent_callback_).Run();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelClientChannelImplTest);
 };
 
 TEST_F(SecureChannelClientChannelImplTest, TestGetConnectionMetadata) {
@@ -173,6 +205,148 @@ TEST_F(SecureChannelClientChannelImplTest, TestDisconnectRemotely) {
   SendPendingMojoMessages();
 
   VerifyChannelDisconnected();
+}
+
+TEST_F(SecureChannelClientChannelImplTest, ReceiveMultipleFileTransferUpdates) {
+  std::vector<mojom::FileTransferUpdatePtr> updates;
+
+  client_channel_->RegisterPayloadFile(
+      /*payload_id=*/1234, CreatePayloadFiles(),
+      base::BindLambdaForTesting([&](mojom::FileTransferUpdatePtr update) {
+        updates.push_back(std::move(update));
+      }),
+      base::BindLambdaForTesting([&](bool success) { EXPECT_TRUE(success); }));
+  SendPendingMojoMessages();
+  EXPECT_EQ(1ul, fake_channel_->file_payload_listeners().size());
+  EXPECT_TRUE(fake_channel_->file_payload_listeners().contains(1234));
+
+  fake_channel_->SendFileTransferUpdate(
+      /*payload_id=*/1234, mojom::FileTransferStatus::kInProgress,
+      /*total_bytes=*/1000, /*bytes_transferred=*/100);
+  fake_channel_->SendFileTransferUpdate(
+      /*payload_id=*/1234, mojom::FileTransferStatus::kSuccess,
+      /*total_bytes=*/1000, /*bytes_transferred=*/1000);
+  EXPECT_EQ(2ul, updates.size());
+  ExpectFileTransferUpdate(updates.at(0).get(),
+                           mojom::FileTransferStatus::kInProgress,
+                           /*total_bytes=*/1000, /*bytes_transferred=*/100);
+  ExpectFileTransferUpdate(updates.at(1).get(),
+                           mojom::FileTransferStatus::kSuccess,
+                           /*total_bytes=*/1000, /*bytes_transferred=*/1000);
+}
+
+TEST_F(SecureChannelClientChannelImplTest, RegisterMultiplePayloadFiles) {
+  std::vector<mojom::FileTransferUpdatePtr> first_payload_updates;
+  std::vector<mojom::FileTransferUpdatePtr> second_payload_updates;
+
+  client_channel_->RegisterPayloadFile(
+      /*payload_id=*/1234, CreatePayloadFiles(),
+      base::BindLambdaForTesting([&](mojom::FileTransferUpdatePtr update) {
+        first_payload_updates.push_back(std::move(update));
+      }),
+      base::BindLambdaForTesting([&](bool success) { EXPECT_TRUE(success); }));
+  client_channel_->RegisterPayloadFile(
+      /*payload_id=*/-5678, CreatePayloadFiles(),
+      base::BindLambdaForTesting([&](mojom::FileTransferUpdatePtr update) {
+        second_payload_updates.push_back(std::move(update));
+      }),
+      base::BindLambdaForTesting([&](bool success) { EXPECT_TRUE(success); }));
+  SendPendingMojoMessages();
+  EXPECT_EQ(2ul, fake_channel_->file_payload_listeners().size());
+  EXPECT_TRUE(fake_channel_->file_payload_listeners().contains(1234));
+  EXPECT_TRUE(fake_channel_->file_payload_listeners().contains(-5678));
+
+  fake_channel_->SendFileTransferUpdate(
+      /*payload_id=*/1234, mojom::FileTransferStatus::kSuccess,
+      /*total_bytes=*/1000, /*bytes_transferred=*/1000);
+  fake_channel_->SendFileTransferUpdate(
+      /*payload_id=*/-5678, mojom::FileTransferStatus::kFailure,
+      /*total_bytes=*/2000, /*bytes_transferred=*/0);
+  EXPECT_EQ(1ul, first_payload_updates.size());
+  ExpectFileTransferUpdate(first_payload_updates.at(0).get(),
+                           mojom::FileTransferStatus::kSuccess,
+                           /*total_bytes=*/1000, /*bytes_transferred=*/1000);
+  EXPECT_EQ(1ul, second_payload_updates.size());
+  ExpectFileTransferUpdate(second_payload_updates.at(0).get(),
+                           mojom::FileTransferStatus::kFailure,
+                           /*total_bytes=*/2000, /*bytes_transferred=*/0);
+}
+
+TEST_F(SecureChannelClientChannelImplTest,
+       RemoteDisconnectsBeforeTransferComplete) {
+  std::vector<mojom::FileTransferUpdatePtr> first_payload_updates;
+  std::vector<mojom::FileTransferUpdatePtr> second_payload_updates;
+
+  client_channel_->RegisterPayloadFile(
+      /*payload_id=*/1234, CreatePayloadFiles(),
+      base::BindLambdaForTesting([&](mojom::FileTransferUpdatePtr update) {
+        first_payload_updates.push_back(std::move(update));
+      }),
+      base::BindLambdaForTesting([&](bool success) { EXPECT_TRUE(success); }));
+  client_channel_->RegisterPayloadFile(
+      /*payload_id=*/-5678, CreatePayloadFiles(),
+      base::BindLambdaForTesting([&](mojom::FileTransferUpdatePtr update) {
+        second_payload_updates.push_back(std::move(update));
+      }),
+      base::BindLambdaForTesting([&](bool success) { EXPECT_TRUE(success); }));
+  SendPendingMojoMessages();
+
+  fake_channel_->SendFileTransferUpdate(
+      /*payload_id=*/1234, mojom::FileTransferStatus::kSuccess,
+      /*total_bytes=*/1000, /*bytes_transferred=*/1000);
+  fake_channel_->SendFileTransferUpdate(
+      /*payload_id=*/-5678, mojom::FileTransferStatus::kInProgress,
+      /*total_bytes=*/2000, /*bytes_transferred=*/1000);
+
+  fake_channel_->file_payload_listeners().at(1234).reset();
+  fake_channel_->file_payload_listeners().at(-5678).reset();
+  // Flush so the FilePayloadListener Receivers can get the disconnect message.
+  SendPendingMojoMessages();
+
+  EXPECT_EQ(1ul, first_payload_updates.size());
+  // Incomplete transfers should get an additional cancelation update upon
+  // disconnection.
+  EXPECT_EQ(2ul, second_payload_updates.size());
+  ExpectFileTransferUpdate(second_payload_updates.at(1).get(),
+                           mojom::FileTransferStatus::kCanceled,
+                           /*total_bytes=*/0, /*bytes_transferred=*/0);
+}
+
+TEST_F(SecureChannelClientChannelImplTest,
+       ConnectionDestroyedBeforeTransferComplete) {
+  std::vector<mojom::FileTransferUpdatePtr> first_payload_updates;
+  std::vector<mojom::FileTransferUpdatePtr> second_payload_updates;
+
+  client_channel_->RegisterPayloadFile(
+      /*payload_id=*/1234, CreatePayloadFiles(),
+      base::BindLambdaForTesting([&](mojom::FileTransferUpdatePtr update) {
+        first_payload_updates.push_back(std::move(update));
+      }),
+      base::BindLambdaForTesting([&](bool success) { EXPECT_TRUE(success); }));
+  client_channel_->RegisterPayloadFile(
+      /*payload_id=*/-5678, CreatePayloadFiles(),
+      base::BindLambdaForTesting([&](mojom::FileTransferUpdatePtr update) {
+        second_payload_updates.push_back(std::move(update));
+      }),
+      base::BindLambdaForTesting([&](bool success) { EXPECT_TRUE(success); }));
+  SendPendingMojoMessages();
+
+  fake_channel_->SendFileTransferUpdate(
+      /*payload_id=*/1234, mojom::FileTransferStatus::kSuccess,
+      /*total_bytes=*/1000, /*bytes_transferred=*/1000);
+  fake_channel_->SendFileTransferUpdate(
+      /*payload_id=*/-5678, mojom::FileTransferStatus::kInProgress,
+      /*total_bytes=*/2000, /*bytes_transferred=*/1000);
+
+  client_channel_.reset();
+
+  EXPECT_EQ(1ul, first_payload_updates.size());
+  // Incomplete transfers should get an additional cancelation update upon
+  // disconnection.
+  EXPECT_EQ(2ul, second_payload_updates.size());
+  ExpectFileTransferUpdate(second_payload_updates.at(1).get(),
+                           mojom::FileTransferStatus::kCanceled,
+                           /*total_bytes=*/0, /*bytes_transferred=*/0);
 }
 
 }  // namespace secure_channel

@@ -23,7 +23,8 @@ constexpr CGFloat kLogoMultiplier = 0.381966;
 constexpr CGFloat kBrandWidth = 107;
 
 constexpr CGFloat kStatusWidth = 195;
-
+constexpr CGFloat kSpacingHeight = 10;
+constexpr CGFloat kPaddingHeight = 50;
 }  // namespace
 
 @interface EnterpriseLoadScreenViewController ()
@@ -121,12 +122,25 @@ constexpr CGFloat kStatusWidth = 195;
   UIActivityIndicatorView* spinner = [[UIActivityIndicatorView alloc] init];
   [spinner startAnimating];
 
-  UIStackView* statusStackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ spinner, self.loadingLabel ]];
+  UIView* spacing = [[UIView alloc] init];
+  spacing.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIView* bottomPadding = [[UIView alloc] init];
+  bottomPadding.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIStackView* statusStackView =
+      [[UIStackView alloc] initWithArrangedSubviews:@[
+        spinner, spacing, self.loadingLabel, bottomPadding
+      ]];
   statusStackView.axis = UILayoutConstraintAxisVertical;
   statusStackView.translatesAutoresizingMaskIntoConstraints = NO;
   statusStackView.alignment = UIStackViewAlignmentCenter;
   statusStackView.spacing = UIStackViewSpacingUseSystem;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [spacing.heightAnchor constraintEqualToConstant:kSpacingHeight],
+    [bottomPadding.heightAnchor constraintEqualToConstant:kPaddingHeight]
+  ]];
   return statusStackView;
 }
 

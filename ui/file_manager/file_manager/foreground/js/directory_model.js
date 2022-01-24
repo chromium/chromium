@@ -1443,7 +1443,8 @@ export class DirectoryModel extends EventTarget {
             /** @type {!DirectoryEntry} */ (entry));
       };
     }
-    if (locationInfo && locationInfo.isSpecialSearchRoot) {
+    if (locationInfo && locationInfo.isRootEntry &&
+        locationInfo.isSpecialSearchRoot) {
       // Drive special search.
       let searchType;
       switch (locationInfo.rootType) {

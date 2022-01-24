@@ -195,6 +195,10 @@ class VIEWS_EXPORT BoxLayout : public LayoutManager {
    public:
     ViewWrapper();
     ViewWrapper(const BoxLayout* layout, View* view);
+
+    ViewWrapper(const ViewWrapper&) = delete;
+    ViewWrapper& operator=(const ViewWrapper&) = delete;
+
     ~ViewWrapper();
 
     int GetHeightForWidth(int width) const;
@@ -208,8 +212,6 @@ class VIEWS_EXPORT BoxLayout : public LayoutManager {
     View* view_ = nullptr;
     const BoxLayout* layout_ = nullptr;
     gfx::Insets margins_;
-
-    DISALLOW_COPY_AND_ASSIGN(ViewWrapper);
   };
 
   struct Flex {

@@ -52,6 +52,11 @@ class PermissionMessagesUnittest : public testing::Test {
  public:
   PermissionMessagesUnittest()
       : message_provider_(new ChromePermissionMessageProvider()) {}
+
+  PermissionMessagesUnittest(const PermissionMessagesUnittest&) = delete;
+  PermissionMessagesUnittest& operator=(const PermissionMessagesUnittest&) =
+      delete;
+
   ~PermissionMessagesUnittest() override {}
 
  protected:
@@ -114,8 +119,6 @@ class PermissionMessagesUnittest : public testing::Test {
   extensions::TestExtensionEnvironment env_;
   std::unique_ptr<ChromePermissionMessageProvider> message_provider_;
   scoped_refptr<const Extension> app_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionMessagesUnittest);
 };
 
 // If an app has both the 'history' and 'tabs' permission, one should hide the

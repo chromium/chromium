@@ -32,6 +32,10 @@ class ArcPipBridge : public KeyedService,
 
   ArcPipBridge(content::BrowserContext* context,
                ArcBridgeService* bridge_service);
+
+  ArcPipBridge(const ArcPipBridge&) = delete;
+  ArcPipBridge& operator=(const ArcPipBridge&) = delete;
+
   ~ArcPipBridge() override;
 
   // ConnectionObserver<mojom::PipInstance> overrides.
@@ -51,8 +55,6 @@ class ArcPipBridge : public KeyedService,
       pip_window_controller_;
 
   bool prevent_closing_pip_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPipBridge);
 };
 
 }  // namespace arc

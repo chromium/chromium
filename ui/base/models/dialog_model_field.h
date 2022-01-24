@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/types/pass_key.h"
@@ -21,6 +22,7 @@ class DialogModelButton;
 class DialogModelBodyText;
 class DialogModelCheckbox;
 class DialogModelCombobox;
+class DialogModelCustomField;
 class DialogModelHost;
 class DialogModelTextfield;
 class Event;
@@ -104,7 +106,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
 // stays in sync with the visible dialog (through DialogModelHosts).
 class COMPONENT_EXPORT(UI_BASE) DialogModelField {
  public:
-  enum Type { kButton, kBodyText, kCheckbox, kCombobox, kTextfield };
+  enum Type { kButton, kBodyText, kCheckbox, kCombobox, kTextfield, kCustom };
 
   DialogModelField(const DialogModelField&) = delete;
   DialogModelField& operator=(const DialogModelField&) = delete;
@@ -123,6 +125,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   DialogModelCheckbox* AsCheckbox(base::PassKey<DialogModelHost>);
   DialogModelCombobox* AsCombobox(base::PassKey<DialogModelHost>);
   DialogModelTextfield* AsTextfield(base::PassKey<DialogModelHost>);
+  DialogModelCustomField* AsCustomField(base::PassKey<DialogModelHost>);
 
  protected:
   // Children of this class need to be constructed through DialogModel to help
@@ -138,6 +141,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   DialogModelCheckbox* AsCheckbox();
   DialogModelCombobox* AsCombobox();
   DialogModelTextfield* AsTextfield();
+  DialogModelCustomField* AsCustomField();
 
  private:
   friend class DialogModel;
@@ -398,6 +402,40 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
   const std::u16string label_;
   const std::u16string accessible_name_;
   std::u16string text_;
+};
+
+// Field base class representing a "custom" field. Used for instance to inject
+// custom Views into dialogs that use DialogModel.
+class COMPONENT_EXPORT(UI_BASE) DialogModelCustomField
+    : public DialogModelField {
+ public:
+  class COMPONENT_EXPORT(UI_BASE) Factory {
+   public:
+    virtual ~Factory();
+  };
+
+  // Note that this is constructed through a DialogModel which adds it to model
+  // fields.
+  DialogModelCustomField(
+      base::PassKey<DialogModel> pass_key,
+      DialogModel* model,
+      int unique_id,
+      std::unique_ptr<DialogModelCustomField::Factory> factory);
+  DialogModelCustomField(const DialogModelTextfield&) = delete;
+  DialogModelCustomField& operator=(const DialogModelTextfield&) = delete;
+  ~DialogModelCustomField() override;
+
+  // Methods with base::PassKey<DialogModelHost> are only intended to be called
+  // by the DialogModelHost implementation.
+  DialogModelCustomField::Factory* factory(
+      base::PassKey<DialogModelHost>) const {
+    return factory_.get();
+  }
+
+ private:
+  friend class DialogModel;
+
+  std::unique_ptr<DialogModelCustomField::Factory> factory_;
 };
 
 }  // namespace ui

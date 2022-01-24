@@ -193,6 +193,25 @@ message CertLoggerRequest {
   }
   // The non-error status results of validating the chain.
   repeated CertStatus cert_status = 14;
+
+  // Chrome version string, e.g. "95.0.4629.0".
+  optional string chrome_version = 15;
+
+  // The OS type that Chrome was compiled for, e.g. "Mac OS X", "Windows", etc.
+  optional string os_type = 16;
+
+  // The OS version Chrome is running on, e.g. "11.5.1".
+  optional string os_version = 17;
+
+  // The hardware name of the system Chrome is running on, e.g. "MacPro6,1".
+  optional string hardware_model_name = 18;
+
+  // The architecture of the OS Chrome is running on, e.g. "x86", "x86_64", etc.
+  optional string os_architecture = 19;
+
+  // The architecture that Chrome was compiled for. May be different than
+  // |os_architecture|.
+  optional string process_architecture = 20;
 };
 
 message MacCertEvidenceInfo {
@@ -215,6 +234,15 @@ message MacPlatformDebugInfo {
   // The CSSM_TP_APPLE_EVIDENCE_INFO statusChain from SecTrustGetResult. Each
   // entry corresponds to one of the certs in the verified chain (leaf first).
   repeated MacCertEvidenceInfo status_chain = 3;
+}
+
+message WinPlatformDebugInfo {
+  // The ThisUpdate of AuthRoot, as reflected in the registry, in usec since
+  // the Windows epoch.
+  optional int64 authroot_this_update_time_usec = 1;
+
+  // The Sequence Number of AuthRoot, as reflected in the registry.
+  optional bytes authroot_sequence_number = 2;
 }
 
 // Contains the results of verification by the trial verifier. All fields
@@ -259,6 +287,7 @@ message TrialVerificationInfo {
     MAC_TRUST_SETTINGS_DICT_CONTAINS_RESULT = 9;
     MAC_TRUST_SETTINGS_DICT_INVALID_RESULT_TYPE = 10;
     MAC_TRUST_SETTINGS_DICT_CONTAINS_ALLOWED_ERROR = 11;
+    MAC_COPY_TRUST_SETTINGS_ERROR = 12;
   }
   // Debug flags from the trial verifier path building attempt, only populated
   // on reports from macOS.  Contains the union of flags from all the GetTrust
@@ -290,4 +319,7 @@ message TrialVerificationInfo {
   // DER encoded SignedCertificateTimestampList from the TLS extension, if
   // present.
   optional bytes sct_list = 12;
+
+  // Debug information from CertVerifyProcWin (if it was the primary verifier).
+  optional WinPlatformDebugInfo win_platform_debug_info = 14;
 }

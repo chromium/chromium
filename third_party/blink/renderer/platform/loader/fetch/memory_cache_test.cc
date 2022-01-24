@@ -231,7 +231,7 @@ static void TestResourcePruningLater(ResourceFetcher* fetcher,
   platform->RunUntilIdle();
 
   // Now, the resources was pruned.
-  unsigned size_without_decode =
+  size_t size_without_decode =
       resource1->EncodedSize() + resource1->OverheadSize() +
       resource2->EncodedSize() + resource2->OverheadSize();
   EXPECT_EQ(size_without_decode, GetMemoryCache()->size());
@@ -315,7 +315,7 @@ static void TestClientRemoval(ResourceFetcher* fetcher,
   WeakPersistent<Resource> resource2_weak = resource2;
 
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   // Resources are garbage-collected (WeakMemoryCache) and thus removed
   // from MemoryCache.
   EXPECT_FALSE(resource1_weak);

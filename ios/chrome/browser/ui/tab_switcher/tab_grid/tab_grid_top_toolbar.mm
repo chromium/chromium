@@ -19,7 +19,8 @@
 namespace {
 // The space after the new tab toolbar button item. Calculated to have
 // approximately 33 pts between the plus button and the done button.
-const int kNewTabButtonTrailingSpace = 20;
+const int kIconButtonAdditionalSpace = 20;
+const int kSelectionModeButtonSize = 17;
 }
 
 @interface TabGridTopToolbar () <UIToolbarDelegate>
@@ -29,14 +30,16 @@ const int kNewTabButtonTrailingSpace = 20;
   UIBarButtonItem* _leadingButton;
   UIBarButtonItem* _spaceItem;
   UIBarButtonItem* _newTabButton;
-  UIBarButtonItem* _fixedTrailingSpaceItem;
+  UIBarButtonItem* _iconButtonAdditionalSpaceItem;
+  UIBarButtonItem* _selectionModeFixedSpace;
   UIBarButtonItem* _selectAllButton;
   UIBarButtonItem* _selectedTabsItem;
+  UIBarButtonItem* _searchButton;
   UIBarButtonItem* _doneButton;
   UIBarButtonItem* _closeAllOrUndoButton;
   UIBarButtonItem* _editButton;
   UIBarButtonItem* _pageControlItem;
-  UILabel* _selectedTabsLabel;
+  BOOL _undoActive;
 }
 
 - (UIBarButtonItem*)anchorItem {
@@ -54,17 +57,18 @@ const int kNewTabButtonTrailingSpace = 20;
   _mode = mode;
   // Reset selected tabs count when mode changes.
   self.selectedTabsCount = 0;
+  // Reset the Select All button to its default title.
+  [self configureSelectAllButtonTitle];
   [self setItemsForTraitCollection:self.traitCollection];
 }
 
 - (void)setSelectedTabsCount:(int)count {
   _selectedTabsCount = count;
   if (_selectedTabsCount == 0) {
-    _selectedTabsLabel.text =
+    _selectedTabsItem.title =
         l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_TABS_TITLE);
-
   } else {
-    _selectedTabsLabel.text = l10n_util::GetPluralNSStringF(
+    _selectedTabsItem.title = l10n_util::GetPluralNSStringF(
         IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE, _selectedTabsCount);
   }
 }
@@ -77,6 +81,11 @@ const int kNewTabButtonTrailingSpace = 20;
 - (void)setSelectAllButtonTarget:(id)target action:(SEL)action {
   _selectAllButton.target = target;
   _selectAllButton.action = action;
+}
+
+- (void)setSearchButtonTarget:(id)target action:(SEL)action {
+  _searchButton.target = target;
+  _searchButton.action = action;
 }
 
 - (void)setDoneButtonTarget:(id)target action:(SEL)action {
@@ -95,6 +104,10 @@ const int kNewTabButtonTrailingSpace = 20;
 
 - (void)setCloseAllButtonEnabled:(BOOL)enabled {
   _closeAllOrUndoButton.enabled = enabled;
+}
+
+- (void)setSelectAllButtonEnabled:(BOOL)enabled {
+  _selectAllButton.enabled = enabled;
 }
 
 - (void)setDoneButtonEnabled:(BOOL)enabled {
@@ -123,6 +136,10 @@ const int kNewTabButtonTrailingSpace = 20;
       _closeAllOrUndoButton.accessibilityIdentifier =
           kTabGridCloseAllButtonIdentifier;
     }
+  }
+  if (_undoActive != useUndo) {
+    _undoActive = useUndo;
+    [self setItemsForTraitCollection:self.traitCollection];
   }
 }
 
@@ -187,24 +204,33 @@ const int kNewTabButtonTrailingSpace = 20;
 - (void)setItemsForTraitCollection:(UITraitCollection*)traitCollection {
   UIBarButtonItem* centralItem = _pageControlItem;
   UIBarButtonItem* trailingButton = _doneButton;
-
+  _selectionModeFixedSpace.width = 0;
   if (traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
       traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+    if (IsTabsSearchEnabled() && _mode == TabGridModeNormal)
+      _leadingButton = _searchButton;
+    else
+      _leadingButton = _spaceItem;
     if (_mode == TabGridModeSelection) {
+      // In the selection mode, Done button is much smaller than SelectAll
+      // we need to calculate the difference on the width and use it as a
+      // fixed space to make sure that the title is still centered.
+      _selectionModeFixedSpace.width = [self selectionModeFixedSpaceWidth];
       [self setItems:@[
         _selectAllButton, _spaceItem, _selectedTabsItem, _spaceItem,
-        trailingButton
+        _selectionModeFixedSpace, trailingButton
       ]];
     } else {
-      [self setItems:@[ _spaceItem, centralItem, _spaceItem ]];
+      trailingButton = _spaceItem;
+      [self setItems:@[
+        _leadingButton, _spaceItem, centralItem, _spaceItem, trailingButton
+      ]];
     }
     return;
   }
-  // In Landscape normal mode trailig button is always "done".
-  trailingButton = _doneButton;
   // In Landscape normal mode leading button is always "closeAll", or "Edit" if
   // bulk actions feature is enabled.
-  if (IsTabsBulkActionsEnabled())
+  if (IsTabsBulkActionsEnabled() && !_undoActive)
     _leadingButton = _editButton;
   else
     _leadingButton = _closeAllOrUndoButton;
@@ -214,19 +240,47 @@ const int kNewTabButtonTrailingSpace = 20;
     // cases, there is a floating new tab button on the bottom.
     [self setItems:@[
       _leadingButton, _spaceItem, centralItem, _spaceItem, _newTabButton,
-      _fixedTrailingSpaceItem, trailingButton
+      _iconButtonAdditionalSpaceItem, trailingButton
     ]];
     return;
   }
 
   if (IsTabsBulkActionsEnabled() && _mode == TabGridModeSelection) {
+    // In the selection mode, Done button is much smaller than SelectAll
+    // we need to calculate the difference on the width and use it as a
+    // fixed space to make sure that the title is still centered.
+    _selectionModeFixedSpace.width = [self selectionModeFixedSpaceWidth];
     centralItem = _selectedTabsItem;
     _leadingButton = _selectAllButton;
   }
 
+  if (IsTabsSearchEnabled() && _mode == TabGridModeNormal) {
+    [self setItems:@[
+      _leadingButton, _iconButtonAdditionalSpaceItem, _searchButton, _spaceItem,
+      centralItem, _spaceItem, trailingButton
+    ]];
+    return;
+  }
+
   [self setItems:@[
-    _leadingButton, _spaceItem, centralItem, _spaceItem, trailingButton
+    _leadingButton, _spaceItem, centralItem, _spaceItem,
+    _selectionModeFixedSpace, trailingButton
   ]];
+}
+
+// Calculates the space width to use for selection mode.
+- (CGFloat)selectionModeFixedSpaceWidth {
+  NSDictionary* selectAllFontAttrs = @{
+    NSFontAttributeName : [UIFont systemFontOfSize:kSelectionModeButtonSize]
+  };
+  CGFloat selectAllTextWidth =
+      [_selectAllButton.title sizeWithAttributes:selectAllFontAttrs].width;
+  NSDictionary* DonefontAttr = @{
+    NSFontAttributeName : [UIFont systemFontOfSize:kSelectionModeButtonSize
+                                            weight:UIFontWeightSemibold]
+  };
+  return selectAllTextWidth -
+         [_doneButton.title sizeWithAttributes:DonefontAttr].width;
 }
 
 - (void)setupViews {
@@ -241,12 +295,6 @@ const int kNewTabButtonTrailingSpace = 20;
   _closeAllOrUndoButton.tintColor =
       UIColorFromRGB(kTabGridToolbarTextButtonColor);
   [self useUndoCloseAll:NO];
-  _selectAllButton = [[UIBarButtonItem alloc] init];
-  _selectAllButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
-  _selectAllButton.title =
-      l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
-  _selectAllButton.accessibilityIdentifier =
-      kTabGridEditSelectAllButtonIdentifier;
 
   // The segmented control has an intrinsic size.
   _pageControl = [[TabGridPageControl alloc] init];
@@ -265,15 +313,38 @@ const int kNewTabButtonTrailingSpace = 20;
     _editButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_EDIT_BUTTON);
     _editButton.accessibilityIdentifier = kTabGridEditButtonIdentifier;
 
-    _selectedTabsLabel = [[UILabel alloc] init];
-    _selectedTabsLabel.text =
-        l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_TABS_TITLE);
-    _selectedTabsLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _selectedTabsLabel.tintColor =
-        UIColorFromRGB(kTabGridToolbarTextButtonColor);
+    _selectAllButton = [[UIBarButtonItem alloc] init];
+    _selectAllButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+    _selectAllButton.title =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
+    _selectAllButton.accessibilityIdentifier =
+        kTabGridEditSelectAllButtonIdentifier;
 
-    _selectedTabsItem =
-        [[UIBarButtonItem alloc] initWithCustomView:_selectedTabsLabel];
+    _selectedTabsItem = [[UIBarButtonItem alloc] init];
+    _selectedTabsItem.title =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_TABS_TITLE);
+    _selectedTabsItem.tintColor =
+        UIColorFromRGB(kTabGridToolbarTextButtonColor);
+    _selectedTabsItem.action = nil;
+    _selectedTabsItem.target = nil;
+    _selectedTabsItem.enabled = NO;
+    [_selectedTabsItem setTitleTextAttributes:@{
+      NSForegroundColorAttributeName :
+          UIColorFromRGB(kTabGridToolbarTextButtonColor),
+      NSFontAttributeName : [[UIFontMetrics
+          metricsForTextStyle:UIFontTextStyleBody]
+          scaledFontForFont:[UIFont systemFontOfSize:kSelectionModeButtonSize
+                                              weight:UIFontWeightSemibold]]
+    }
+                                     forState:UIControlStateDisabled];
+  }
+
+  if (IsTabsSearchEnabled()) {
+    _searchButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                             target:nil
+                             action:nil];
+    _searchButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
   }
 
   _newTabButton = [[UIBarButtonItem alloc]
@@ -282,14 +353,19 @@ const int kNewTabButtonTrailingSpace = 20;
                            action:nil];
   _newTabButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
 
-  _fixedTrailingSpaceItem = [[UIBarButtonItem alloc]
+  _iconButtonAdditionalSpaceItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                            target:nil
                            action:nil];
-  _fixedTrailingSpaceItem.width = kNewTabButtonTrailingSpace;
+  _iconButtonAdditionalSpaceItem.width = kIconButtonAdditionalSpace;
 
   _spaceItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                           target:nil
+                           action:nil];
+
+  _selectionModeFixedSpace = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                            target:nil
                            action:nil];
 

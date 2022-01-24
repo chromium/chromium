@@ -101,9 +101,6 @@ class ExtensionMessagePort : public MessagePort {
   class FrameTracker;
   struct IPCTarget;
 
-  // Clears the `frames_` set.
-  void ClearFrames();
-
   // Registers a frame as a receiver / sender.
   void RegisterFrame(content::RenderFrameHost* rfh);
 

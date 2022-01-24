@@ -124,8 +124,16 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     FontFallbackPriority fallback_priority) {
   sk_sp<SkFontMgr> fm(SkFontMgr::RefDefault());
 
+  // Pass "serif" to |matchFamilyStyleCharacter| if the `font-family` list
+  // contains `serif`, so that it fallbacks to i18n serif fonts that has the
+  // specified character. Do this only for `serif` because other generic
+  // families do not have the lang-specific fallback list.
+  const char* generic_family_name = nullptr;
+  if (font_description.GenericFamily() == FontDescription::kSerifFamily)
+    generic_family_name = "serif";
+
   AtomicString family_name = GetFamilyNameForCharacter(
-      fm.get(), c, font_description, nullptr, fallback_priority);
+      fm.get(), c, font_description, generic_family_name, fallback_priority);
 
   // Return the GMS Core emoji font if FontFallbackPriority is kEmojiEmoji and
   // a) no system fallback was found or b) the system fallback font's PostScript
@@ -181,6 +189,54 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
       GetFontPlatformData(font_description,
                           FontFaceCreationParams(family_name)),
       kDoNotRetain);
+}
+
+// static
+AtomicString FontCache::GetGenericFamilyNameForScript(
+    const AtomicString& family_name,
+    const FontDescription& font_description) {
+  // If this is a locale-specifc family name, |FontCache| can handle different
+  // typefaces per locale. Let it handle.
+  if (GetLocaleSpecificFamilyName(family_name))
+    return family_name;
+
+  // If monospace, do not apply CJK hack to find i18n fonts, because
+  // i18n fonts are likely not monospace. Monospace is mostly used
+  // for code, but when i18n characters appear in monospace, system
+  // fallback can still render the characters.
+  if (family_name == font_family_names::kMonospace)
+    return family_name;
+
+  // The CJK hack below should be removed, at latest when we have
+  // serif and sans-serif versions of CJK fonts. Until then, limit it
+  // to only when the content locale is available. crbug.com/652146
+  const LayoutLocale* content_locale = font_description.Locale();
+  if (!content_locale)
+    return family_name;
+
+  // This is a hack to use the preferred font for CJK scripts.
+  // TODO(kojii): This logic disregards either generic family name
+  // or locale. We need an API that honors both to find appropriate
+  // fonts. crbug.com/642340
+  UChar32 exampler_char;
+  switch (content_locale->GetScript()) {
+    case USCRIPT_SIMPLIFIED_HAN:
+    case USCRIPT_TRADITIONAL_HAN:
+    case USCRIPT_KATAKANA_OR_HIRAGANA:
+      exampler_char = 0x4E00;  // A common character in Japanese and Chinese.
+      break;
+    case USCRIPT_HANGUL:
+      exampler_char = 0xAC00;
+      break;
+    default:
+      // For other scripts, use the default generic family mapping logic.
+      return family_name;
+  }
+
+  sk_sp<SkFontMgr> font_manager(SkFontMgr::RefDefault());
+  return GetFamilyNameForCharacter(font_manager.get(), exampler_char,
+                                   font_description, nullptr,
+                                   FontFallbackPriority::kText);
 }
 
 }  // namespace blink

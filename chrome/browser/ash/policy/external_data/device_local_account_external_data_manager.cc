@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_service.h"
 #include "components/policy/core/common/cloud/cloud_external_data_store.h"
 #include "components/policy/core/common/cloud/resource_cache.h"

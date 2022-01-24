@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,6 +16,9 @@ namespace media {
 class MemoryDataSourceTest : public ::testing::Test {
  public:
   MemoryDataSourceTest() = default;
+
+  MemoryDataSourceTest(const MemoryDataSourceTest&) = delete;
+  MemoryDataSourceTest& operator=(const MemoryDataSourceTest&) = delete;
 
  protected:
   void Initialize(size_t size) {
@@ -58,8 +60,6 @@ class MemoryDataSourceTest : public ::testing::Test {
  private:
   std::vector<uint8_t> data_;
   std::unique_ptr<MemoryDataSource> memory_data_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryDataSourceTest);
 };
 
 TEST_F(MemoryDataSourceTest, EmptySource) {

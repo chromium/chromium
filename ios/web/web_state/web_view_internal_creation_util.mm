@@ -64,10 +64,6 @@ WKWebView* BuildWKWebView(CGRect frame,
   // reasonable value.
   web_view.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
 
-  // Uses the default value for |allowsLinkPreview| i.e., YES in iOS 10 or
-  // later, and NO for iOS 9 or before. But the link preview is still disabled
-  // by default on iOS 10 or later. You need to return true from
-  // web::WebStateDelegate::ShouldPreviewLink() to enable the preview.
   return web_view;
 }
 

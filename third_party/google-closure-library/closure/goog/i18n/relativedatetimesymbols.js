@@ -1,21 +1,12 @@
-// Copyright 2018 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 /**
  * @fileoverview Relative date time formatting symbols.
  *
- * File generated from CLDR ver. 36
+ * File generated from CLDR ver. 39
  *
  * To reduce the file size (which may cause issues in some JS
  * developing environments), this file will only contain locales
@@ -80,7 +71,7 @@ exports.StyleElement;
 
 /**
  * Map of direction options for RELATIVE data with integer keys.
- * @typedef {!Object<number, string>}
+ * @typedef {!Object<string, string>}
  */
 let RelativeDateTimeDirectionMap;
 
@@ -766,17 +757,17 @@ exports.RelativeDateTimeSymbols_br =  {
   },
   MINUTE: {
     LONG:{
-      R:{'0':'this minute'},
+      R:{'0':'ar munut-mañ'},
       P:'few{# munut zo}many{# a vunutoù zo}one{# munut zo}other{# munut zo}two{# vunut zo}',
       F:'few{a-benn # munut}many{a-benn # a vunutoù}one{a-benn # munut}other{a-benn # munut}two{a-benn # vunut}',
     },
     SHORT:{
-      R:{'0':'this minute'},
+      R:{'0':'ar munut-mañ'},
       P:'few{# min zo}many{# min zo}one{# min zo}other{# min zo}two{# min zo}',
       F:'few{a-benn # min}many{a-benn # min}one{a-benn # min}other{a-benn # min}two{a-benn # min}',
     },
     NARROW:{
-      R:{'0':'this minute'},
+      R:{'0':'ar munut-mañ'},
       P:'few{-# min}many{-# min}one{-# min}other{-# min}two{-# min}',
       F:'few{+# min}many{+# min}one{+# min}other{+# min}two{+# min}',
     },
@@ -1287,13 +1278,13 @@ exports.RelativeDateTimeSymbols_cy =  {
     },
     SHORT:{
       R:{'0':'y funud hon'},
-      P:'few{# munud yn ôl}many{# munud yn ôl}one{# munud yn ôl}other{# munud yn ôl}two{# fun. yn ôl}zero{# munud yn ôl}',
-      F:'few{ymhen # munud}many{ymhen # munud}one{ymhen # mun.}other{ymhen # munud}two{ymhen # fun.}zero{ymhen # munud}',
+      P:'few{# munud yn ôl}many{# munud yn ôl}one{# mun. yn ôl}other{# mun. yn ôl}two{# funud yn ôl}zero{# munud yn ôl}',
+      F:'few{ymhen # munud}many{ymhen # munud}one{ymhen # mun.}other{ymhen # mun.}two{ymhen # fun.}zero{ymhen # munud}',
     },
     NARROW:{
       R:{'0':'y funud hon'},
-      P:'few{# mun. yn ôl}many{# mun. yn ôl}one{# mun. yn ôl}other{# mun. yn ôl}two{# mun. yn ôl}zero{# mun. yn ôl}',
-      F:'few{ymhen # mun.}many{ymhen # mun.}one{ymhen # mun.}other{ymhen # mun.}two{ymhen # mun.}zero{ymhen # mun.}',
+      P:'few{# mun. yn ôl}many{# munud yn ôl}one{# mun. yn ôl}other{# mun. yn ôl}two{# mun. yn ôl}zero{# munud yn ôl}',
+      F:'few{ymhen # munud}many{ymhen # munud}one{ymhen # mun.}other{ymhen # mun.}two{ymhen # mun.}zero{ymhen # munud}',
     },
   },
   MONTH: {
@@ -1319,9 +1310,24 @@ exports.RelativeDateTimeSymbols_cy =  {
       P:'few{# chwarter yn ôl}many{# chwarter yn ôl}one{# chwarter yn ôl}other{# o chwarteri yn ôl}two{# chwarter yn ôl}zero{# o chwarteri yn ôl}',
       F:'few{ymhen # chwarter}many{ymhen # chwarter}one{ymhen # chwarter}other{ymhen # chwarter}two{ymhen # chwarter}zero{ymhen # chwarter}',
     },
+    SHORT:{
+      R:{'-1':'chwarter olaf','0':'chwarter hwn','1':'chwarter nesaf'},
+      P:'few{# chwarter yn ôl}many{# chwarter yn ôl}one{# chw. yn ôl}other{# chw. yn ôl}two{# chwarter yn ôl}zero{# o chwarteri yn ôl}',
+      F:'few{ymhen # chwarter}many{ymhen # chwarter}one{ymhen # chw.}other{ymhen # chw.}two{ymhen # chwarter}zero{ymhen # chwarter}',
+    },
   },
   SECOND: {
     LONG:{
+      R:{'0':'nawr'},
+      P:'few{# eiliad yn ôl}many{# eiliad yn ôl}one{# eiliad yn ôl}other{# eiliad yn ôl}two{# eiliad yn ôl}zero{# eiliad yn ôl}',
+      F:'few{ymhen # eiliad}many{ymhen # eiliad}one{ymhen # eiliad}other{ymhen # eiliad}two{ymhen # eiliad}zero{ymhen # eiliad}',
+    },
+    SHORT:{
+      R:{'0':'nawr'},
+      P:'few{# eiliad yn ôl}many{# eiliad yn ôl}one{# eil. yn ôl}other{# eil. yn ôl}two{# eiliad yn ôl}zero{# eiliad yn ôl}',
+      F:'few{ymhen # eiliad}many{ymhen # eiliad}one{ymhen # eil.}other{ymhen # eil.}two{ymhen # eiliad}zero{ymhen # eiliad}',
+    },
+    NARROW:{
       R:{'0':'nawr'},
       P:'few{# eiliad yn ôl}many{# eiliad yn ôl}one{# eiliad yn ôl}other{# eiliad yn ôl}two{# eiliad yn ôl}zero{# eiliad yn ôl}',
       F:'few{ymhen # eiliad}many{ymhen # eiliad}one{ymhen # eiliad}other{ymhen # eiliad}two{ymhen # eiliad}zero{ymhen # eiliad}',
@@ -1334,14 +1340,14 @@ exports.RelativeDateTimeSymbols_cy =  {
       F:'few{ymhen # wythnos}many{ymhen # wythnos}one{ymhen wythnos}other{ymhen # wythnos}two{ymhen pythefnos}zero{ymhen # wythnos}',
     },
     SHORT:{
-      R:{'-1':'wythnos ddiwethaf','0':'yr wythnos hon','1':'wythnos nesaf'},
-      P:'few{# wythnos yn ôl}many{# wythnos yn ôl}one{# wythnos yn ôl}other{# wythnos yn ôl}two{pythefnos yn ôl}zero{# wythnos yn ôl}',
-      F:'few{ymhen # wythnos}many{ymhen # wythnos}one{ymhen wythnos}other{ymhen # wythnos}two{ymhen pythefnos}zero{ymhen # wythnos}',
+      R:{'-1':'ws. ddiwethaf','0':'yr ws. hon','1':'ws. nesaf'},
+      P:'few{# wythnos yn ôl}many{# wythnos yn ôl}one{# ws. yn ôl}other{# ws yn ôl.}two{pythefnos yn ôl}zero{# wythnos yn ôl}',
+      F:'few{ymhen # wythnos}many{ymhen # wythnos}one{ymhen ws.}other{ymhen # ws.}two{ymhen pythefnos}zero{ymhen # wythnos}',
     },
     NARROW:{
-      R:{'-1':'wythnos ddiwethaf','0':'yr wythnos hon','1':'wythnos nesaf'},
-      P:'few{# wythnos yn ôl}many{# wythnos yn ôl}one{# wythnos yn ôl}other{# wythnos yn ôl}two{pythefnos yn ôl}zero{# wythnos yn ôl}',
-      F:'few{ymhen # wythnos}many{ymhen # wythnos}one{ymhen # wythnos}other{ymhen # wythnos}two{ymhen # wythnos}zero{ymhen # wythnos}',
+      R:{'-1':'ws. ddiwethaf','0':'yr ws. hon','1':'ws. nesaf'},
+      P:'few{# wythnos yn ôl}many{# wythnos yn ôl}one{# ws. yn ôl}other{# ws. yn ôl}two{pythefnos yn ôl}zero{# wythnos yn ôl}',
+      F:'few{ymhen # wythnos}many{ymhen # wythnos}one{ymhen # ws.}other{ymhen # ws.}two{ymhen # wythnos}zero{ymhen # wythnos}',
     },
   },
   YEAR: {
@@ -1349,6 +1355,16 @@ exports.RelativeDateTimeSymbols_cy =  {
       R:{'-1':'llynedd','0':'eleni','1':'blwyddyn nesaf'},
       P:'few{# blynedd yn ôl}many{# blynedd yn ôl}one{blwyddyn yn ôl}other{# o flynyddoedd yn ôl}two{# flynedd yn ôl}zero{# o flynyddoedd yn ôl}',
       F:'few{ymhen # blynedd}many{ymhen # blynedd}one{ymhen blwyddyn}other{ymhen # mlynedd}two{ymhen # flynedd}zero{ymhen # mlynedd}',
+    },
+    SHORT:{
+      R:{'-1':'llynedd','0':'eleni','1':'blwyddyn nesaf'},
+      P:'few{# blynedd yn ôl}many{# blynedd yn ôl}one{# bl. yn ôl}other{# bl. yn ôl}two{# flynedd yn ôl}zero{# o flynyddoedd yn ôl}',
+      F:'few{ymhen # blynedd}many{ymhen # blynedd}one{ymhen blwyddyn}other{ymhen # mlynedd}two{ymhen # flynedd}zero{ymhen # mlynedd}',
+    },
+    NARROW:{
+      R:{'-1':'llynedd','0':'eleni','1':'bl. nesaf'},
+      P:'few{# blynedd yn ôl}many{# blynedd yn ôl}one{blwyddyn yn ôl}other{# bl. yn ôl}two{# flynedd yn ôl}zero{# o flynyddoedd yn ôl}',
+      F:'few{ymhen # blynedd}many{ymhen # blynedd}one{ymhen bl.}other{ymhen # mlynedd}two{ymhen # flynedd}zero{ymhen # mlynedd}',
     },
   },
 };
@@ -1361,23 +1377,33 @@ exports.RelativeDateTimeSymbols_da =  {
       P:'one{for # dag siden}other{for # dage siden}',
       F:'one{om # dag}other{om # dage}',
     },
+    SHORT:{
+      R:{'-1':'i går','-2':'i forgårs','0':'i dag','1':'i morgen','2':'i overmorgen'},
+      P:'one{# dag siden}other{# dage siden}',
+      F:'one{om # dag}other{om # dage}',
+    },
   },
   HOUR: {
     LONG:{
-      R:{'0':'i den kommende time'},
+      R:{'0':'denne time'},
       P:'one{for # time siden}other{for # timer siden}',
+      F:'one{om # time}other{om # timer}',
+    },
+    SHORT:{
+      R:{'0':'denne time'},
+      P:'one{# time siden}other{# timer siden}',
       F:'one{om # time}other{om # timer}',
     },
   },
   MINUTE: {
     LONG:{
-      R:{'0':'i det kommende minut'},
+      R:{'0':'dette minut'},
       P:'one{for # minut siden}other{for # minutter siden}',
       F:'one{om # minut}other{om # minutter}',
     },
     SHORT:{
-      R:{'0':'i det kommende minut'},
-      P:'one{for # min. siden}other{for # min. siden}',
+      R:{'0':'dette minut'},
+      P:'one{# min. siden}other{# min. siden}',
       F:'one{om # min.}other{om # min.}',
     },
   },
@@ -1389,7 +1415,7 @@ exports.RelativeDateTimeSymbols_da =  {
     },
     SHORT:{
       R:{'-1':'sidste md.','0':'denne md.','1':'næste md.'},
-      P:'one{for # md. siden}other{for # mdr. siden}',
+      P:'one{# md. siden}other{# mdr. siden}',
       F:'one{om # md.}other{om # mdr.}',
     },
   },
@@ -1401,7 +1427,7 @@ exports.RelativeDateTimeSymbols_da =  {
     },
     SHORT:{
       R:{'-1':'sidste kvt.','0':'dette kvt.','1':'næste kvt.'},
-      P:'one{for # kvt. siden}other{for # kvt. siden}',
+      P:'one{# kvt. siden}other{# kvt. siden}',
       F:'one{om # kvt.}other{om # kvt.}',
     },
   },
@@ -1413,7 +1439,7 @@ exports.RelativeDateTimeSymbols_da =  {
     },
     SHORT:{
       R:{'0':'nu'},
-      P:'one{for # sek. siden}other{for # sek. siden}',
+      P:'one{# sek. siden}other{# sek. siden}',
       F:'one{om # sek.}other{om # sek.}',
     },
   },
@@ -1423,11 +1449,21 @@ exports.RelativeDateTimeSymbols_da =  {
       P:'one{for # uge siden}other{for # uger siden}',
       F:'one{om # uge}other{om # uger}',
     },
+    SHORT:{
+      R:{'-1':'sidste uge','0':'denne uge','1':'næste uge'},
+      P:'one{# uge siden}other{# uger siden}',
+      F:'one{om # uge}other{om # uger}',
+    },
   },
   YEAR: {
     LONG:{
       R:{'-1':'sidste år','0':'i år','1':'næste år'},
       P:'one{for # år siden}other{for # år siden}',
+      F:'one{om # år}other{om # år}',
+    },
+    SHORT:{
+      R:{'-1':'sidste år','0':'i år','1':'næste år'},
+      P:'one{# år siden}other{# år siden}',
       F:'one{om # år}other{om # år}',
     },
   },
@@ -2666,7 +2702,7 @@ exports.RelativeDateTimeSymbols_es_MX =  {
     NARROW:{
       R:{'-1':'ayer','-2':'anteayer','0':'hoy','1':'mañana','2':'pasado mañana'},
       P:'one{hace # día}other{hace # días}',
-      F:'one{+# día}other{en # días}',
+      F:'one{dentro de # día}other{en # días}',
     },
   },
   HOUR: {
@@ -2695,7 +2731,7 @@ exports.RelativeDateTimeSymbols_es_MX =  {
     SHORT:{
       R:{'0':'este minuto'},
       P:'one{hace # min}other{hace # min}',
-      F:'one{en # min}other{en # min}',
+      F:'one{dentro de # min}other{dentro de # min}',
     },
   },
   MONTH: {
@@ -2711,8 +2747,8 @@ exports.RelativeDateTimeSymbols_es_MX =  {
     },
     NARROW:{
       R:{'-1':'el mes pasado','0':'este mes','1':'el próximo mes'},
-      P:'one{-# m}other{-# m}',
-      F:'one{+# m}other{+# m}',
+      P:'one{hace # m}other{hace # m}',
+      F:'one{dentro de # m}other{dentro de # m}',
     },
   },
   QUARTER: {
@@ -2728,7 +2764,7 @@ exports.RelativeDateTimeSymbols_es_MX =  {
     },
     NARROW:{
       R:{'-1':'el trimestre pasado','0':'este trimestre','1':'el próximo trimestre'},
-      P:'one{-# T}other{-# T}',
+      P:'one{hace # trim.}other{hace # trim.}',
       F:'one{en # trim.}other{en # trim.}',
     },
   },
@@ -2746,7 +2782,7 @@ exports.RelativeDateTimeSymbols_es_MX =  {
     NARROW:{
       R:{'0':'ahora'},
       P:'one{hace # s}other{hace # s}',
-      F:'one{+# s}other{+# s}',
+      F:'one{dentro de # s}other{dentro de # s}',
     },
   },
   WEEK: {
@@ -2775,11 +2811,6 @@ exports.RelativeDateTimeSymbols_es_MX =  {
     SHORT:{
       R:{'-1':'el año pasado','0':'este año','1':'el próximo año'},
       P:'one{hace # a}other{hace # a}',
-      F:'one{en # a}other{en # a}',
-    },
-    NARROW:{
-      R:{'-1':'el año pasado','0':'este año','1':'el próximo año'},
-      P:'one{-# a}other{-# a}',
       F:'one{en # a}other{en # a}',
     },
   },
@@ -2834,7 +2865,7 @@ exports.RelativeDateTimeSymbols_es_US =  {
     LONG:{
       R:{'-1':'el trimestre pasado','0':'este trimestre','1':'el próximo trimestre'},
       P:'one{hace # trimestre}other{hace # trimestres}',
-      F:'one{dentro de # trimetre}other{dentro de # trimetres}',
+      F:'one{dentro de # trimestre}other{dentro de # trimestres}',
     },
     SHORT:{
       R:{'-1':'el trimestre pasado','0':'este trimestre','1':'el próximo trimestre'},
@@ -2861,7 +2892,7 @@ exports.RelativeDateTimeSymbols_es_US =  {
       F:'one{dentro de # semana}other{dentro de # semanas}',
     },
     SHORT:{
-      R:{'-1':'sem. pas.','0':'esta sem.','1':'próx. sem.'},
+      R:{'-1':'sem. pasada','0':'esta sem.','1':'próxima sem.'},
       P:'one{hace # sem.}other{hace # sem.}',
       F:'one{dentro de # sem.}other{dentro de # sem.}',
     },
@@ -3632,8 +3663,8 @@ exports.RelativeDateTimeSymbols_ga =  {
   HOUR: {
     LONG:{
       R:{'0':'an uair seo'},
-      P:'few{# huaire an chloig ó shin}many{# n-uaire an chloig ó shin}one{# uair an chloig ó shin}other{# uair an chloig ó shin}two{# uair an chloig ó shin}',
-      F:'few{i gceann # huaire an chloig}many{i gceann # n-uaire an chloig}one{i gceann # uair an chloig}other{i gceann # uair an chloig}two{i gceann # uair an chloig}',
+      P:'few{# uair an chloig ó shin}many{# n-uaire an chloig ó shin}one{# uair an chloig ó shin}other{# uair an chloig ó shin}two{# uair an chloig ó shin}',
+      F:'few{i gceann # uair an chloig}many{i gceann # n-uaire an chloig}one{i gceann # uair an chloig}other{i gceann # uair an chloig}two{i gceann # uair an chloig}',
     },
     SHORT:{
       R:{'0':'an uair seo'},
@@ -3723,17 +3754,17 @@ exports.RelativeDateTimeSymbols_ga =  {
   },
   YEAR: {
     LONG:{
-      R:{'-1':'anuraidh','0':'an bhliain seo','1':'an bhliain seo chugainn'},
+      R:{'-1':'anuraidh','0':'i mbliana','1':'an bhliain seo chugainn'},
       P:'few{# bliana ó shin}many{# mbliana ó shin}one{# bhliain ó shin}other{# bliain ó shin}two{# bhliain ó shin}',
       F:'few{i gceann # bliana}many{i gceann # mbliana}one{i gceann # bhliain}other{i gceann # bliain}two{i gceann # bhliain}',
     },
     SHORT:{
-      R:{'-1':'anuraidh','0':'an bhl. seo','1':'an bhl. seo chugainn'},
+      R:{'-1':'anuraidh','0':'i mbl.','1':'an bhl. seo chugainn'},
       P:'few{# bl. ó shin}many{# mbl. ó shin}one{# bhl. ó shin}other{# bl. ó shin}two{# bhl. ó shin}',
       F:'few{i gceann # bl.}many{i gceann # mbl.}one{i gceann # bl.}other{i gceann # bl.}two{i gceann # bhl.}',
     },
     NARROW:{
-      R:{'-1':'anuraidh','0':'an bhl. seo','1':'an bhl. seo chugainn'},
+      R:{'-1':'anuraidh','0':'i mbl.','1':'an bhl. seo chugainn'},
       P:'few{-# bl.}many{-# mbl.}one{-# bhl.}other{-# bl.}two{-# bhl.}',
       F:'few{+# bl.}many{+# mbl.}one{+# bhl.}other{+# bl.}two{+# bhl.}',
     },
@@ -4890,8 +4921,8 @@ exports.RelativeDateTimeSymbols_it =  {
     },
     SHORT:{
       R:{'0':'ora'},
-      P:'one{# s fa}other{# sec. fa}',
-      F:'one{tra # s}other{tra # sec.}',
+      P:'one{# sec. fa}other{# sec. fa}',
+      F:'one{tra # sec.}other{tra # sec.}',
     },
     NARROW:{
       R:{'0':'ora'},
@@ -4906,7 +4937,7 @@ exports.RelativeDateTimeSymbols_it =  {
       F:'one{tra # settimana}other{tra # settimane}',
     },
     SHORT:{
-      R:{'-1':'settimana scorsa','0':'questa settimana','1':'settimana prossima'},
+      R:{'-1':'sett. scorsa','0':'questa sett.','1':'sett. prossima'},
       P:'one{# sett. fa}other{# sett. fa}',
       F:'one{tra # sett.}other{tra # sett.}',
     },
@@ -7295,7 +7326,12 @@ exports.RelativeDateTimeSymbols_or =  {
       F:'one{# ତ୍ରୟମାସରେ}other{# ତ୍ରୟମାସରେ}',
     },
     SHORT:{
-      R:{'-1':'ଗତ ତ୍ରୟମାସ','0':'ଗତ ତ୍ରୟମାସ','1':'ଆଗାମୀ ତ୍ରୟମାସ'},
+      R:{'-1':'ଗତ ତିନିମାସ','0':'ଏହି ତ୍ରୟମାସ','1':'ଆଗାମୀ ତ୍ରୟମାସ'},
+      P:'one{# ତ୍ରୟ. ପୂର୍ବେ}other{# ତ୍ରୟ. ପୂର୍ବେ}',
+      F:'one{# ତ୍ରୟ. ରେ}other{# ତ୍ରୟ. ରେ}',
+    },
+    NARROW:{
+      R:{'-1':'ଗତ ତିନିମାସ','0':'ଏହି ତିନିମାସ','1':'ଆଗାମୀ ତିନିମାସ'},
       P:'one{# ତ୍ରୟ. ପୂର୍ବେ}other{# ତ୍ରୟ. ପୂର୍ବେ}',
       F:'one{# ତ୍ରୟ. ରେ}other{# ତ୍ରୟ. ରେ}',
     },
@@ -7621,7 +7657,7 @@ exports.RelativeDateTimeSymbols_pt_PT =  {
     },
     NARROW:{
       R:{'-1':'ontem','0':'hoje','1':'amanhã'},
-      P:'one{há # dias}other{há # dias}',
+      P:'one{-# dia}other{-# dias}',
       F:'one{+# dia}other{+# dias}',
     },
   },
@@ -9780,6 +9816,11 @@ exports.RelativeDateTimeSymbols_vi =  {
       F:'other{sau # ngày nữa}',
     },
     SHORT:{
+      R:{'-1':'hôm qua','-2':'Hôm kia','0':'hôm nay','1':'ngày mai','2':'Ngày kia'},
+      P:'other{# ngày trước}',
+      F:'other{sau # ngày nữa}',
+    },
+    NARROW:{
       R:{'-2':'Hôm kia','2':'Ngày kia'},
       P:'other{# ngày trước}',
       F:'other{sau # ngày nữa}',

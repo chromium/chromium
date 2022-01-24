@@ -38,6 +38,10 @@ class MockJobInterceptor : public URLRequestInterceptor {
                      bool map_all_requests_to_base_path)
       : base_path_(base_path),
         map_all_requests_to_base_path_(map_all_requests_to_base_path) {}
+
+  MockJobInterceptor(const MockJobInterceptor&) = delete;
+  MockJobInterceptor& operator=(const MockJobInterceptor&) = delete;
+
   ~MockJobInterceptor() override = default;
 
   // URLRequestJobFactory::ProtocolHandler implementation
@@ -63,8 +67,6 @@ class MockJobInterceptor : public URLRequestInterceptor {
 
   const base::FilePath base_path_;
   const bool map_all_requests_to_base_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockJobInterceptor);
 };
 
 std::string DoFileIO(const base::FilePath& file_path) {

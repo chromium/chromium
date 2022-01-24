@@ -14,7 +14,10 @@ def RunTypescriptTests(input_api, output_api):
   presubmit_path = input_api.PresubmitLocalPath()
   sources = ['ts_library_test.py']
   tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
-  return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
+  return input_api.canned_checks.RunUnitTests(input_api,
+                                              output_api,
+                                              tests,
+                                              skip_shebang_check=True)
 
 
 def _CheckChangeOnUploadOrCommit(input_api, output_api):

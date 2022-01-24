@@ -10,8 +10,7 @@ namespace chromeos {
 
 namespace {
 
-constexpr base::TimeDelta kCookieDelay = base::TimeDelta::FromSeconds(20);
-
+constexpr base::TimeDelta kCookieDelay = base::Seconds(20);
 }
 
 CookieWaiter::CookieWaiter(network::mojom::CookieManager* cookie_manager,

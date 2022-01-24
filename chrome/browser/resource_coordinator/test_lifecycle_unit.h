@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TEST_LIFECYCLE_UNIT_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TEST_LIFECYCLE_UNIT_H_
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"
 
@@ -23,6 +22,10 @@ class TestLifecycleUnit : public LifecycleUnitBase {
                     bool can_discard = true);
   TestLifecycleUnit(content::Visibility visibility, UsageClock* usage_clock);
   explicit TestLifecycleUnit(LifecycleUnitSourceBase* source);
+
+  TestLifecycleUnit(const TestLifecycleUnit&) = delete;
+  TestLifecycleUnit& operator=(const TestLifecycleUnit&) = delete;
+
   ~TestLifecycleUnit() override;
 
   void SetLastFocusedTime(base::TimeTicks last_focused_time) {
@@ -54,8 +57,6 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   base::ProcessHandle process_handle_;
   LifecycleUnit::SortKey sort_key_;
   bool can_discard_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLifecycleUnit);
 };
 
 // Helper funtions for testing CanDiscard policy.

@@ -5134,16 +5134,20 @@ void GLES2Implementation::BindFramebufferHelper(GLenum target,
       }
       break;
     case GL_READ_FRAMEBUFFER:
+#if EXPENSIVE_DCHECKS_ARE_ON()
       DCHECK(capabilities_.major_version >= 3 ||
              IsChromiumFramebufferMultisampleAvailable());
+#endif
       if (bound_read_framebuffer_ != framebuffer) {
         bound_read_framebuffer_ = framebuffer;
         changed = true;
       }
       break;
     case GL_DRAW_FRAMEBUFFER:
+#if EXPENSIVE_DCHECKS_ARE_ON()
       DCHECK(capabilities_.major_version >= 3 ||
              IsChromiumFramebufferMultisampleAvailable());
+#endif
       if (bound_framebuffer_ != framebuffer) {
         bound_framebuffer_ = framebuffer;
         changed = true;
@@ -7367,8 +7371,7 @@ bool GLES2Implementation::PackStringsToBucket(GLsizei count,
       if (copy_size < buffer.size()) {
         // Append NULL in the end.
         DCHECK(copy_size + 1 == buffer.size());
-        char* str = reinterpret_cast<char*>(buffer.address());
-        str[copy_size] = 0;
+        reinterpret_cast<char*>(buffer.address())[copy_size] = 0;
       }
       helper_->SetBucketData(kResultBucketId, offset, buffer.size(),
                              buffer.shm_id(), buffer.offset());

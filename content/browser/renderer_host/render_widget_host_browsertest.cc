@@ -169,7 +169,7 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
         host_(nullptr),
         router_(nullptr),
         last_simulated_event_time_(ui::EventTimeForNow()),
-        simulated_event_time_delta_(base::TimeDelta::FromMilliseconds(100)) {}
+        simulated_event_time_delta_(base::Milliseconds(100)) {}
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -512,6 +512,9 @@ class DocumentLoadObserver : WebContentsObserver {
   DocumentLoadObserver(WebContents* contents, const GURL& url)
       : WebContentsObserver(contents), document_origin_(url) {}
 
+  DocumentLoadObserver(const DocumentLoadObserver&) = delete;
+  DocumentLoadObserver& operator=(const DocumentLoadObserver&) = delete;
+
   void Wait() {
     if (loaded_)
       return;
@@ -529,8 +532,6 @@ class DocumentLoadObserver : WebContentsObserver {
   bool loaded_ = false;
   const GURL document_origin_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentLoadObserver);
 };
 
 // This test verifies that when a cross-process child frame loads, the initial
@@ -548,8 +549,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   child_frame_observer.Wait();
   auto* filter = GetTouchActionFilterForWidget(web_contents()
-                                                   ->GetFrameTree()
-                                                   ->root()
+                                                   ->GetPrimaryFrameTree()
+                                                   .root()
                                                    ->child_at(0)
                                                    ->current_frame_host()
                                                    ->GetRenderWidgetHost());
@@ -584,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   auto* contents = static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = contents->GetFrameTree()->root();
+  FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* root_frame_host = root->current_frame_host();
   RenderProcessHost* process = root_frame_host->GetProcess();
 
@@ -676,8 +677,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostBrowserTest,
   ASSERT_FALSE(web_contents()->IsFullscreen());
 
   // While not fullscreened, expect the screen size to not be overridden.
-  display::ScreenInfo screen_info;
-  host()->GetScreenInfo(&screen_info);
+  display::ScreenInfo screen_info = host()->GetScreenInfo();
   WaitForVisualPropertiesAck();
   EXPECT_EQ(screen_info.rect.size().ToString(),
             EvalJs(web_contents(), "`${screen.width}x${screen.height}`"));
@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostBrowserTest,
   // Exit fullscreen mode, and then the page should see the screen size again.
   ASSERT_TRUE(ExecJs(web_contents(), "document.exitFullscreen();"));
   FullscreenWaiter(web_contents()).Wait(false);
-  host()->GetScreenInfo(&screen_info);
+  screen_info = host()->GetScreenInfo();
   WaitForVisualPropertiesAck();
   EXPECT_EQ(screen_info.rect.size().ToString(),
             EvalJs(web_contents(), "`${screen.width}x${screen.height}`"));
@@ -717,19 +717,42 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   const char kTestPageURL[] =
       R"HTML(data:text/html,<!DOCTYPE html>
       <style>
-        div {
-          margin: env(fold-top, 1px) env(fold-right, 1px)
-                  env(fold-bottom, 1px) env(fold-left, 1px);
-          width: env(fold-width, 1px);
-          height: env(fold-height, 1px);
+      /* The following styles set the margin top/left/bottom/right to the
+         values where the display feature between segments is, and the width and
+         height of the div to the width and height of the display feature */
+        @media (horizontal-viewport-segments: 2) {
+          div {
+            margin: env(viewport-segment-top 0 0, 10px)
+                    env(viewport-segment-left 1 0, 10px)
+                    env(viewport-segment-bottom 0 0, 10px)
+                    env(viewport-segment-right 0 0, 10px);
+            width: calc(env(viewport-segment-left 1 0, 10px) -
+                        env(viewport-segment-right 0 0, 0px));
+            height: env(viewport-segment-height 0 0, 10px);
+          }
         }
-        @media (screen-spanning: none) {
-          div { opacity: 0.1; }
+
+        @media (vertical-viewport-segments: 2) {
+          div {
+            margin: env(viewport-segment-bottom 0 0, 11px)
+                    env(viewport-segment-right 0 1, 11px)
+                    env(viewport-segment-top 0 1, 11px)
+                    env(viewport-segment-left 0 0, 11px);
+            width: env(viewport-segment-width 0 0, 11px);
+            height: calc(env(viewport-segment-top 0 1, 11px) -
+                         env(viewport-segment-bottom 0 0, 0px));
+          }
         }
-        @media (screen-spanning: single-fold-vertical) {
+        @media (horizontal-viewport-segments: 1) and
+               (vertical-viewport-segments: 1) {
+          div { opacity: 0.1; margin: 1px; width: 1px; height: 1px; }
+        }
+        @media (horizontal-viewport-segments: 2) and
+               (vertical-viewport-segments: 1) {
           div { opacity: 0.2; }
         }
-        @media (screen-spanning: single-fold-horizontal) {
+        @media (horizontal-viewport-segments: 1) and
+               (vertical-viewport-segments: 2) {
           div { opacity: 0.3; }
         }
       </style>
@@ -852,8 +875,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   const char kTestPageURL[] =
       R"HTML(data:text/html,<!DOCTYPE html>
       <style>
-        @media (screen-spanning: single-fold-vertical) {
-          div { margin-left: env(fold-left, 10px); }
+        @media (horizontal-viewport-segments: 2) and
+               (vertical-viewport-segments: 1) {
+          div { margin-left: env(viewport-segment-right 0 0, 10px); }
         }
       </style>
       <div id='target'></div>)HTML";

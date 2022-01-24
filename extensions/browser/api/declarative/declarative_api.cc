@@ -14,9 +14,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
-#include "base/task_runner_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/values.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -90,7 +90,7 @@ void RecordUMAHelper(DeclarativeAPIFunctionType type) {
                             kDeclarativeApiFunctionCallTypeMax);
 }
 
-void ConvertBinaryDictionaryValuesToBase64(base::Value* dict);
+void ConvertBinaryDictionaryValuesToBase64(base::Value& dict);
 
 // Encodes |binary| as base64 and returns a new StringValue populated with the
 // encoded string.
@@ -104,14 +104,14 @@ base::Value ConvertBinaryToBase64(const base::Value& binary) {
 // Parses through |args| replacing any BinaryValues with base64 encoded
 // StringValues. Recurses over any nested ListValues, and calls
 // ConvertBinaryDictionaryValuesToBase64 for any nested DictionaryValues.
-void ConvertBinaryListElementsToBase64(base::Value* args) {
-  for (auto& value : args->GetList()) {
+void ConvertBinaryListElementsToBase64(base::Value::ListView args) {
+  for (auto& value : args) {
     if (value.is_blob()) {
       value = ConvertBinaryToBase64(value);
     } else if (value.is_list()) {
-      ConvertBinaryListElementsToBase64(&value);
+      ConvertBinaryListElementsToBase64(value.GetList());
     } else if (value.is_dict()) {
-      ConvertBinaryDictionaryValuesToBase64(&value);
+      ConvertBinaryDictionaryValuesToBase64(value);
     }
   }
 }
@@ -119,15 +119,15 @@ void ConvertBinaryListElementsToBase64(base::Value* args) {
 // Parses through |dict| replacing any BinaryValues with base64 encoded
 // StringValues. Recurses over any nested DictionaryValues, and calls
 // ConvertBinaryListElementsToBase64 for any nested ListValues.
-void ConvertBinaryDictionaryValuesToBase64(base::Value* dict) {
-  for (auto it : dict->DictItems()) {
+void ConvertBinaryDictionaryValuesToBase64(base::Value& dict) {
+  for (auto it : dict.DictItems()) {
     auto& value = it.second;
     if (value.is_blob()) {
       value = ConvertBinaryToBase64(value);
     } else if (value.is_list()) {
-      ConvertBinaryListElementsToBase64(&value);
+      ConvertBinaryListElementsToBase64(value.GetList());
     } else if (value.is_dict()) {
-      ConvertBinaryDictionaryValuesToBase64(&value);
+      ConvertBinaryDictionaryValuesToBase64(value);
     }
   }
 }
@@ -140,11 +140,9 @@ RulesFunction::~RulesFunction() {}
 
 ExtensionFunction::ResponseAction RulesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(CreateParams());
-
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 2);
-  const auto& event_name_value = list[0];
-  const auto& web_view_instance_id_value = list[1];
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  const auto& event_name_value = args()[0];
+  const auto& web_view_instance_id_value = args()[1];
   EXTENSION_FUNCTION_VALIDATE(event_name_value.is_string());
   EXTENSION_FUNCTION_VALIDATE(web_view_instance_id_value.is_int());
   std::string event_name = event_name_value.GetString();
@@ -207,14 +205,13 @@ EventsEventAddRulesFunction::EventsEventAddRulesFunction() = default;
 EventsEventAddRulesFunction::~EventsEventAddRulesFunction() = default;
 
 bool EventsEventAddRulesFunction::CreateParams() {
-  params_ = AddRules::Params::Create(*args_);
+  ConvertBinaryListElementsToBase64(mutable_args());
+  params_ = AddRules::Params::Create(args());
   return params_ != nullptr;
 }
 
 ExtensionFunction::ResponseValue
 EventsEventAddRulesFunction::RunAsyncOnCorrectThread() {
-  ConvertBinaryListElementsToBase64(args_.get());
-
   std::vector<const api::events::Rule*> rules_out;
   std::string error = rules_registry_->AddRules(
       extension_id(), std::move(params_->rules), &rules_out);
@@ -252,7 +249,7 @@ EventsEventRemoveRulesFunction::EventsEventRemoveRulesFunction() = default;
 EventsEventRemoveRulesFunction::~EventsEventRemoveRulesFunction() = default;
 
 bool EventsEventRemoveRulesFunction::CreateParams() {
-  params_ = RemoveRules::Params::Create(*args_);
+  params_ = RemoveRules::Params::Create(args());
   return params_ != nullptr;
 }
 
@@ -294,7 +291,7 @@ EventsEventGetRulesFunction::EventsEventGetRulesFunction() = default;
 EventsEventGetRulesFunction::~EventsEventGetRulesFunction() = default;
 
 bool EventsEventGetRulesFunction::CreateParams() {
-  params_ = GetRules::Params::Create(*args_);
+  params_ = GetRules::Params::Create(args());
   return params_ != nullptr;
 }
 

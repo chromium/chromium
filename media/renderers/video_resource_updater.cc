@@ -50,7 +50,7 @@
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/trace_util.h"
 
@@ -65,7 +65,8 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     GLuint target,
     int num_textures,
     gfx::BufferFormat buffer_formats[VideoFrame::kMaxPlanes],
-    bool use_stream_video_draw_quad) {
+    bool use_stream_video_draw_quad,
+    bool dcomp_surface) {
   switch (format) {
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_XRGB:
@@ -84,7 +85,12 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
 
       switch (target) {
         case GL_TEXTURE_EXTERNAL_OES:
-          if (use_stream_video_draw_quad)
+          // `use_stream_video_draw_quad` is set on Android and `dcomp_surface`
+          // is used on Windows.
+          // TODO(sunnyps): It's odd to reuse the Android path on Windows. There
+          // could be other unknown assumptions in other parts of the rendering
+          // stack about stream video quads. Investigate alternative solutions.
+          if (use_stream_video_draw_quad || dcomp_surface)
             return VideoFrameResourceType::STREAM_TEXTURE;
           FALLTHROUGH;
         case GL_TEXTURE_2D:
@@ -134,6 +140,8 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       }
       // TODO(mcasas): Support other formats such as e.g. P012.
       buffer_formats[0] = gfx::BufferFormat::R_16;
+      // TODO(https://crbug.com/1233228): This needs to be
+      // gfx::BufferFormat::RG_1616.
       buffer_formats[1] = gfx::BufferFormat::RG_88;
       return VideoFrameResourceType::YUV;
 
@@ -178,6 +186,10 @@ class SyncTokenClientImpl : public VideoFrame::SyncTokenClient {
     // Only one interface should be used.
     DCHECK((gl_ && !sii_) || (!gl_ && sii_));
   }
+
+  SyncTokenClientImpl(const SyncTokenClientImpl&) = delete;
+  SyncTokenClientImpl& operator=(const SyncTokenClientImpl&) = delete;
+
   ~SyncTokenClientImpl() override = default;
 
   void GenerateSyncToken(gpu::SyncToken* sync_token) override {
@@ -214,7 +226,6 @@ class SyncTokenClientImpl : public VideoFrame::SyncTokenClient {
   gpu::gles2::GLES2Interface* gl_;
   gpu::SharedImageInterface* sii_;
   gpu::SyncToken sync_token_;
-  DISALLOW_COPY_AND_ASSIGN(SyncTokenClientImpl);
 };
 
 // Sync tokens passed downstream to the compositor can be unverified.
@@ -259,6 +270,10 @@ class VideoResourceUpdater::PlaneResource {
         resource_size_(resource_size),
         resource_format_(resource_format),
         is_software_(is_software) {}
+
+  PlaneResource(const PlaneResource&) = delete;
+  PlaneResource& operator=(const PlaneResource&) = delete;
+
   virtual ~PlaneResource() = default;
 
   // Casts |this| to SoftwarePlaneResource for software compositing.
@@ -310,8 +325,6 @@ class VideoResourceUpdater::PlaneResource {
   size_t plane_index_ = 0u;
   // Indicates if the above two members have been set or not.
   bool has_unique_frame_id_and_plane_index_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PlaneResource);
 };
 
 class VideoResourceUpdater::SoftwarePlaneResource
@@ -336,6 +349,10 @@ class VideoResourceUpdater::SoftwarePlaneResource
     shared_bitmap_reporter_->DidAllocateSharedBitmap(std::move(shm.region),
                                                      shared_bitmap_id_);
   }
+
+  SoftwarePlaneResource(const SoftwarePlaneResource&) = delete;
+  SoftwarePlaneResource& operator=(const SoftwarePlaneResource&) = delete;
+
   ~SoftwarePlaneResource() override {
     shared_bitmap_reporter_->DidDeleteSharedBitmap(shared_bitmap_id_);
   }
@@ -354,8 +371,6 @@ class VideoResourceUpdater::SoftwarePlaneResource
   viz::SharedBitmapReporter* const shared_bitmap_reporter_;
   const viz::SharedBitmapId shared_bitmap_id_;
   base::WritableSharedMemoryMapping shared_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwarePlaneResource);
 };
 
 class VideoResourceUpdater::HardwarePlaneResource
@@ -420,6 +435,9 @@ class VideoResourceUpdater::HardwarePlaneResource
         sii->GenUnverifiedSyncToken().GetConstData());
   }
 
+  HardwarePlaneResource(const HardwarePlaneResource&) = delete;
+  HardwarePlaneResource& operator=(const HardwarePlaneResource&) = delete;
+
   ~HardwarePlaneResource() override {
     gpu::SyncToken sync_token;
     ContextGL()->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
@@ -452,8 +470,6 @@ class VideoResourceUpdater::HardwarePlaneResource
   gpu::Mailbox mailbox_;
   GLenum texture_target_ = GL_TEXTURE_2D;
   bool overlay_candidate_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HardwarePlaneResource);
 };
 
 VideoResourceUpdater::SoftwarePlaneResource*
@@ -664,8 +680,6 @@ void VideoResourceUpdater::AppendQuads(
                            nearest_neighbor, false, protected_video_type);
       texture_quad->set_resource_size_in_pixels(coded_size);
       texture_quad->is_video_frame = true;
-      texture_quad->hw_protected_validation_id =
-          frame->metadata().hw_protected_validation_id;
       for (viz::ResourceId resource_id : texture_quad->resources) {
         resource_provider_->ValidateResource(resource_id);
       }
@@ -860,7 +874,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
   gfx::BufferFormat buffer_formats[VideoFrame::kMaxPlanes];
   external_resources.type = ExternalResourceTypeForHardwarePlanes(
       video_frame->format(), target, video_frame->NumTextures(), buffer_formats,
-      use_stream_video_draw_quad_);
+      use_stream_video_draw_quad_, video_frame->metadata().dcomp_surface);
 
   if (external_resources.type == VideoFrameResourceType::NONE) {
     DLOG(ERROR) << "Unsupported Texture format"

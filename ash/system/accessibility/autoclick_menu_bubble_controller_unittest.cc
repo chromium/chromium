@@ -42,6 +42,12 @@ ui::GestureEvent CreateTapEvent() {
 class AutoclickMenuBubbleControllerTest : public AshTestBase {
  public:
   AutoclickMenuBubbleControllerTest() = default;
+
+  AutoclickMenuBubbleControllerTest(const AutoclickMenuBubbleControllerTest&) =
+      delete;
+  AutoclickMenuBubbleControllerTest& operator=(
+      const AutoclickMenuBubbleControllerTest&) = delete;
+
   ~AutoclickMenuBubbleControllerTest() override = default;
 
   // testing::Test:
@@ -93,9 +99,6 @@ class AutoclickMenuBubbleControllerTest : public AshTestBase {
                      ->GetBoundsInScreen()
                : gfx::Rect(-kMenuViewBoundsBuffer, -kMenuViewBoundsBuffer);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutoclickMenuBubbleControllerTest);
 };
 
 TEST_F(AutoclickMenuBubbleControllerTest, ExistsOnlyWhenAutoclickIsRunning) {

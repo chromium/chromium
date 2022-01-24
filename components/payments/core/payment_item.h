@@ -15,7 +15,7 @@
 // https://w3c.github.io/payment-request/#dom-paymentitem
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace payments {
@@ -35,11 +35,10 @@ class PaymentItem {
 
   // Populates the properties of this PaymentItem from |value|. Returns true if
   // the required values are present.
-  bool FromDictionaryValue(const base::DictionaryValue& value);
+  bool FromValue(const base::Value& value);
 
-  // Creates a base::DictionaryValue with the properties of this
-  // PaymentItem.
-  std::unique_ptr<base::DictionaryValue> ToDictionaryValue() const;
+  // Creates a dictionary base::Value with the properties of this PaymentItem.
+  base::Value ToValue() const;
 
   // A human-readable description of the item.
   std::string label;

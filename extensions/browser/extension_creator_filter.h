@@ -17,6 +17,9 @@ class ExtensionCreatorFilter : public base::RefCounted<ExtensionCreatorFilter> {
  public:
   ExtensionCreatorFilter(const base::FilePath& extension_dir);
 
+  ExtensionCreatorFilter(const ExtensionCreatorFilter&) = delete;
+  ExtensionCreatorFilter& operator=(const ExtensionCreatorFilter&) = delete;
+
   // Returns true if the given |file_path| should be included in a packed
   // extension.
   bool ShouldPackageFile(const base::FilePath& file_path);
@@ -26,8 +29,6 @@ class ExtensionCreatorFilter : public base::RefCounted<ExtensionCreatorFilter> {
   ~ExtensionCreatorFilter() {}
 
   const base::FilePath reserved_metadata_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCreatorFilter);
 };
 
 }  // namespace extensions

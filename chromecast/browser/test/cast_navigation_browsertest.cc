@@ -28,6 +28,10 @@ class CastNavigationBrowserTest : public CastBrowserTest {
  public:
   CastNavigationBrowserTest() {}
 
+  CastNavigationBrowserTest(const CastNavigationBrowserTest&) = delete;
+  CastNavigationBrowserTest& operator=(const CastNavigationBrowserTest&) =
+      delete;
+
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory(
         ::media::GetTestDataPath());
@@ -85,8 +89,6 @@ class CastNavigationBrowserTest : public CastBrowserTest {
     title_watcher.AlsoWaitForTitle(kFailed);
     return title_watcher.WaitAndGetTitle();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CastNavigationBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CastNavigationBrowserTest, EmptyTest) {

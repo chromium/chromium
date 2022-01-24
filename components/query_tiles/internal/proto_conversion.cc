@@ -24,7 +24,7 @@ int64_t TimeToMilliseconds(const base::Time& time) {
 // deserialization. Loses precision beyond milliseconds.
 base::Time MillisecondsToTime(int64_t serialized_time_ms) {
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMilliseconds(serialized_time_ms));
+      base::Milliseconds(serialized_time_ms));
 }
 
 // Use to convert TileInfo in response proto to the local Tile structure.

@@ -18,8 +18,8 @@
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
-#include "third_party/blink/public/mojom/page/drag.mojom.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/file_info.h"
 #include "url/gurl.h"
@@ -79,7 +79,6 @@ blink::mojom::DragDataPtr DropDataToDragData(
     int child_id) {
   // These fields are currently unused when dragging into Blink.
   DCHECK(drop_data.download_metadata.empty());
-  DCHECK(drop_data.file_contents.empty());
   DCHECK(drop_data.file_contents_content_disposition.empty());
 
   std::vector<blink::mojom::DragItemPtr> items;
@@ -118,7 +117,16 @@ blink::mojom::DragDataPtr DropDataToDragData(
     item->file_system_id = file_system_file.filesystem_id;
     items.push_back(blink::mojom::DragItem::NewFileSystemFile(std::move(item)));
   }
-  for (const std::pair<std::u16string, std::u16string> data :
+  if (drop_data.file_contents_source_url.is_valid()) {
+    blink::mojom::DragItemBinaryPtr item = blink::mojom::DragItemBinary::New();
+    item->data = mojo_base::BigBuffer(
+        base::as_bytes(base::make_span(drop_data.file_contents)));
+    item->source_url = drop_data.file_contents_source_url;
+    item->filename_extension =
+        base::FilePath(drop_data.file_contents_filename_extension);
+    items.push_back(blink::mojom::DragItem::NewBinary(std::move(item)));
+  }
+  for (const std::pair<const std::u16string, std::u16string>& data :
        drop_data.custom_data) {
     blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
     item->string_type = base::UTF16ToUTF8(data.first);
@@ -181,6 +189,14 @@ blink::mojom::DragDataPtr DropMetaDataToDragData(
           blink::mojom::DragItem::NewFileSystemFile(std::move(item)));
       continue;
     }
+
+    if (meta_data_item.kind == DropData::Kind::BINARY) {
+      blink::mojom::DragItemBinaryPtr item =
+          blink::mojom::DragItemBinary::New();
+      item->source_url = meta_data_item.file_contents_url;
+      items.push_back(blink::mojom::DragItem::NewBinary(std::move(item)));
+      continue;
+    }
   }
   return blink::mojom::DragData::New(std::move(items), absl::nullopt,
                                      network::mojom::ReferrerPolicy::kDefault);
@@ -222,6 +238,8 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
         const blink::mojom::DragItemBinaryPtr& binary_item = item->get_binary();
         base::span<const uint8_t> contents = base::make_span(binary_item->data);
         result.file_contents.assign(contents.begin(), contents.end());
+        result.file_contents_accessible_from_start_frame =
+            binary_item->is_accessible_from_start_frame;
         result.file_contents_source_url = binary_item->source_url;
         result.file_contents_filename_extension =
             binary_item->filename_extension.value();

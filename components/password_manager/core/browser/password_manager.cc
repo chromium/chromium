@@ -241,6 +241,10 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kPasswordLeakDetectionEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#if defined(OS_ANDROID)
+  registry->RegisterIntegerPref(
+      prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
+#endif
 }
 
 // static
@@ -357,14 +361,17 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
     }
   }
 
+  // Reset |possible_username_| if the navigation cannot be a result of form
+  // submission.
+  if (!form_may_be_submitted)
+    possible_username_.reset();
+
   for (std::unique_ptr<PasswordFormManager>& manager : form_managers_) {
     if (form_may_be_submitted && manager->is_submitted()) {
       owned_submitted_form_manager_ = std::move(manager);
       break;
     }
   }
-  UMA_HISTOGRAM_COUNTS_1000("PasswordManager.NumFormManagersCleared",
-                            form_managers_.size());
   form_managers_.clear();
 
   TryToFindPredictionsToPossibleUsernameData();
@@ -519,11 +526,6 @@ void PasswordManager::OnInformAboutUserInput(PasswordManagerDriver* driver,
                                              const FormData& form_data) {
   PasswordFormManager* manager = ProvisionallySaveForm(form_data, driver, true);
 
-  if (manager && form_data.is_gaia_with_skip_save_password_form) {
-    manager->GetMetricsRecorder()
-        ->set_user_typed_password_on_chrome_sign_in_page();
-  }
-
   auto availability =
       manager ? PasswordManagerMetricsRecorder::FormManagerAvailable::kSuccess
               : PasswordManagerMetricsRecorder::FormManagerAvailable::
@@ -626,8 +628,7 @@ PasswordFormManager* PasswordManager::CreateFormManager(
   form_managers_.push_back(std::make_unique<PasswordFormManager>(
       client_,
       driver ? driver->AsWeakPtr() : base::WeakPtr<PasswordManagerDriver>(),
-      form, nullptr,
-      PasswordSaveManagerImpl::CreatePasswordSaveManagerImpl(client_),
+      form, nullptr, std::make_unique<PasswordSaveManagerImpl>(client_),
       nullptr));
   form_managers_.back()->ProcessServerPredictions(predictions_);
   return form_managers_.back().get();
@@ -896,7 +897,7 @@ void PasswordManager::OnPasswordFormsRendered(
     return;
   }
 
-  if (!driver->IsMainFrame() &&
+  if (!driver->IsInPrimaryMainFrame() &&
       submitted_manager->driver_id() != driver->GetId()) {
     // Frames different from the main frame and the frame of the submitted form
     // are unlikely relevant to success of submission.
@@ -956,6 +957,10 @@ void PasswordManager::OnLoginSuccessful() {
   DCHECK(submitted_manager);
   const PasswordForm* submitted_form = submitted_manager->GetSubmittedForm();
   DCHECK(submitted_form);
+  client_->MaybeReportEnterpriseLoginEvent(
+      submitted_form->url, submitted_form->IsFederatedCredential(),
+      submitted_form->federation_origin,
+      submitted_manager->GetPendingCredentials().username_value);
   if (!client_->IsSavingAndFillingEnabled(submitted_form->url))
     return;
 
@@ -963,8 +968,7 @@ void PasswordManager::OnLoginSuccessful() {
   // Check for leaks only if there are no muted credentials.
   if (!HasMutedCredentials(
           submitted_manager->GetInsecureCredentials(),
-          submitted_manager->GetSubmittedForm()->username_value) ||
-      !base::FeatureList::IsEnabled(features::kMutingCompromisedCredentials)) {
+          submitted_manager->GetSubmittedForm()->username_value)) {
     leak_delegate_.StartLeakCheck(submitted_manager->GetPendingCredentials());
   }
 
@@ -1063,11 +1067,6 @@ void PasswordManager::MaybeSavePasswordHash(
 
   if (!should_save_enterprise_pw && !should_save_gaia_pw)
     return;
-
-  if (submitted_form->form_data.is_gaia_with_skip_save_password_form) {
-    submitted_manager->GetMetricsRecorder()
-        ->set_password_hash_saved_on_chrome_sing_in_page();
-  }
 
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
@@ -1235,8 +1234,9 @@ void PasswordManager::ReportSubmittedFormFrameMetric(
     const PasswordForm& form) {
   if (!driver)
     return;
+
   metrics_util::SubmittedFormFrame frame;
-  if (driver->IsMainFrame()) {
+  if (driver->IsInPrimaryMainFrame()) {
     frame = metrics_util::SubmittedFormFrame::MAIN_FRAME;
   } else if (form.url == client()->GetLastCommittedURL()) {
     frame =

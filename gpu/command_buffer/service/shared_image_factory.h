@@ -131,6 +131,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                                     gfx::BufferFormat format,
                                     const gfx::Size& size,
                                     uint32_t usage);
+  bool CopyToGpuMemoryBuffer(const Mailbox& mailbox);
 #endif
 
 #if defined(OS_ANDROID)
@@ -215,6 +216,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
   std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
       const Mailbox& mailbox);
   std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(
+      const Mailbox& mailbox);
+  std::unique_ptr<SharedImageRepresentationRaster> ProduceRaster(
       const Mailbox& mailbox);
 
  private:

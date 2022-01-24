@@ -58,6 +58,11 @@ WidgetDelegate::WidgetDelegate()
 
 WidgetDelegate::~WidgetDelegate() {
   CHECK(can_delete_this_) << "A WidgetDelegate must outlive its Widget";
+  if (!contents_view_taken_ && default_contents_view_ &&
+      !default_contents_view_->parent()) {
+    delete default_contents_view_;
+    default_contents_view_ = nullptr;
+  }
   if (destructor_ran_) {
     DCHECK(!*destructor_ran_);
     *destructor_ran_ = true;
@@ -433,13 +438,11 @@ void WidgetDelegate::SetOverlayViewFactory(OverlayViewFactory factory) {
   overlay_view_factory_ = std::move(factory);
 }
 
-void WidgetDelegate::SetContentsViewImpl(View* contents) {
-  // Note: DCHECKing the ownership of contents is done in the public setters,
-  // which are inlined in the header.
+void WidgetDelegate::SetContentsViewImpl(std::unique_ptr<View> contents) {
+  DCHECK(!contents->owned_by_client());
   DCHECK(!unowned_contents_view_);
-  if (!contents->owned_by_client())
-    owned_contents_view_ = base::WrapUnique(contents);
-  unowned_contents_view_ = contents;
+  owned_contents_view_ = std::move(contents);
+  unowned_contents_view_ = owned_contents_view_.get();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"

@@ -6,6 +6,7 @@
 
       --diagnostics-default-font-size: 14px;
       --diagnostics-header-font-size: 16px;
+      --diagnostics-card-drawer-font-size: 13px;
       --diagnostics-card-title-font-size: 14px;
       --diagnostics-data-point-title-font-size: 13px;
       --diagnostics-data-point-subtitle-font-size: 13px;
@@ -19,6 +20,7 @@
       --diagnostics-test-status-text-font-size: 13px;
       --diagnostics-button-font-size: 13px;
       --diagnostics-caution-banner-font-size: 14px;
+      --diagnostics-troubleshooting-font-size: 13px;
 
       --diagnostics-regular-font-weight: 400;
       --diagnostics-medium-font-weight: 500;
@@ -33,7 +35,7 @@
       --diagnostics-chart-title-color: var(--google-grey-700);
       --diagnostics-test-status-text-color: var(--google-grey-700);
       --diagnostics-caution-banner-text-color: var(--google-grey-900);
-      --diagnostics-link-text-color: var(--google-blue-300);
+      --diagnostics-link-text-color: var(--google-blue-600);
       --diagnostics-settings-link-text-color: var(--google-grey-700);
 
       --diagnostics-default-font: {
@@ -49,21 +51,29 @@
           font-weight: var(--diagnostics-medium-font-weight);
       };
 
+      --diagnostics-card-drawer-font: {
+          color: var(--diagnostics-header-text-color);
+          font-family: var(--diagnostics-roboto-font-family);
+          font-size: var(--diagnostics-card-drawer-font-size);
+          font-weight: var(--diagnostics-regular-font-weight);
+      };
+
       --diagnostics-card-title-font: {
           color: var(--diagnostics-card-title-text-color);
           font-family: var(--diagnostics-roboto-font-family);
           font-size: var(--diagnostics-card-title-font-size);
           font-weight: var(--diagnostics-medium-font-weight);
       };
+
       --diagnostics-data-point-title-font: {
           color: var(--diagnostics-data-point-title-color);
-          font-family: var(--diagnostics-roboto-font-family)
+          font-family: var(--diagnostics-roboto-font-family);
           font-size: var(--diagnostics-data-point-title-font-size);
           font-weight: var(--diagnostics-regular-font-weight);
       };
       --diagnostics-data-point-subtitle-font: {
           color: var(--diagnostics-data-point-subtitle-color);
-          font-family: var(--diagnostics-data-point-font-family);
+          font-family: var(--diagnostics-roboto-font-family);
           font-size: var(--diagnostics-data-point-subtitle-font-size);
           font-weight: var(--diagnostics-regular-font-weight);
       };
@@ -128,16 +138,16 @@
         font-size: var(--diagnostics-caution-banner-font-size);
         font-weight: var(--diagnostics-regular-font-weight);
       };
-      --diagnostics-no-ethernet-font: {
+      --diagnostics-troubleshooting-font: {
           color: var(--diagnostics-header-text-color);
           font-family: var(--diagnostics-roboto-font-family);
-          font-size: var(--diagnostics-default-font-size);
-          font-weight: var(--diagnostics-medium-font-weight);
+          font-size: var(--diagnostics-troubleshooting-font-size);
+          font-weight: var(--diagnostics-regular-font-weight);
       };
       --diagnostics-connecting-link-font: {
           color: var(--diagnostics-link-text-color);
           font-family: var(--diagnostics-roboto-font-family);
-          font-size: var(--diagnostics-default-font-size);
+          font-size: var(--diagnostics-troubleshooting-font-size);
           font-weight: var(--diagnostics-regular-font-weight);
       };
       --diagnostics-settings-link-font: {

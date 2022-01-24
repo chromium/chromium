@@ -233,8 +233,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
  private:
   void VerifyInitialization() {
     // Verify updater inputs.
-    EXPECT_LT(base::TimeDelta::FromSeconds(1),
-              updater_factory_.latest_timeout());
+    EXPECT_LT(base::Seconds(1), updater_factory_.latest_timeout());
     EXPECT_EQ(&http_client_factory_, updater_factory_.latest_client_factory());
     ASSERT_EQ(num_manager_creations_, updater_factory_.instances().size());
     EXPECT_EQ(manager_->GetId(),
@@ -246,8 +245,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
             scheduler_factory_.pref_name_to_periodic_instance().at(
                 prefs::kNearbySharingSchedulerDownloadDeviceDataPrefName);
     EXPECT_TRUE(device_data_scheduler_instance.fake_scheduler);
-    EXPECT_EQ(base::TimeDelta::FromHours(12),
-              device_data_scheduler_instance.request_period);
+    EXPECT_EQ(base::Hours(12), device_data_scheduler_instance.request_period);
     EXPECT_TRUE(device_data_scheduler_instance.retry_failures);
     EXPECT_TRUE(device_data_scheduler_instance.require_connectivity);
     EXPECT_EQ(&pref_service_, device_data_scheduler_instance.pref_service);

@@ -43,6 +43,10 @@ CSSKeywordValue* CSSKeywordValue::FromCSSValue(const CSSValue& value) {
     return MakeGarbageCollected<CSSKeywordValue>(
         getValueName(CSSValueID::kRevert));
   }
+  if (value.IsRevertLayerValue()) {
+    return MakeGarbageCollected<CSSKeywordValue>(
+        getValueName(CSSValueID::kRevertLayer));
+  }
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     return MakeGarbageCollected<CSSKeywordValue>(
         getValueName(identifier_value->GetValueID()));

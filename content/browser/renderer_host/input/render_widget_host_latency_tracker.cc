@@ -84,6 +84,7 @@ RenderWidgetHostLatencyTracker::RenderWidgetHostLatencyTracker(
     RenderWidgetHostDelegate* delegate)
     : has_seen_first_gesture_scroll_update_(false),
       gesture_scroll_id_(-1),
+      touch_trace_id_(-1),
       active_multi_finger_gesture_(false),
       touch_start_default_prevented_(false),
       render_widget_host_delegate_(delegate) {}
@@ -168,6 +169,16 @@ void RenderWidgetHostLatencyTracker::OnInputEvent(
   } else if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd) {
     latency->set_gesture_scroll_id(gesture_scroll_id_);
     gesture_scroll_id_ = -1;
+  } else if (blink::WebInputEvent::IsTouchEventType(event.GetType())) {
+    // Store the trace id for the TouchStart event on all other Touch events
+    // until the corresponding end or cancel event so they can be grouped
+    // together.
+    if (event.GetType() == blink::WebInputEvent::Type::kTouchStart)
+      touch_trace_id_ = latency->trace_id();
+    latency->set_touch_trace_id(touch_trace_id_);
+    if (event.GetType() == blink::WebInputEvent::Type::kTouchEnd ||
+        event.GetType() == blink::WebInputEvent::Type::kTouchCancel)
+      touch_trace_id_ = -1;
   }
 }
 

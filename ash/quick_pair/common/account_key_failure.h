@@ -15,7 +15,7 @@ enum class AccountKeyFailure {
   // Failed to find the Account Key GATT characteristic.
   kAccountKeyCharacteristicDiscovery = 0,
   // Failed to write to the Account Key GATT characteristic.
-  kKeyBasedPairingCharacteristicWrite = 1,
+  kAccountKeyCharacteristicWrite = 1,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

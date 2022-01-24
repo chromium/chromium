@@ -6,15 +6,11 @@
 
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -27,14 +23,14 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chrome/common/webui_url_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -111,34 +107,12 @@ absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
   // TODO(crbug/1113502): Plumb through better launch sources from callsites.
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
       app_id.value(), /*event_flags=*/0,
-      apps::mojom::AppLaunchSource::kSourceChromeInternal, display_id,
+      apps::mojom::LaunchSource::kFromChromeInternal, display_id,
       /*fallback_container=*/
       ConvertDisplayModeToAppLaunchContainer(display_mode));
 
   return params;
 }
-
-namespace {
-base::FilePath GetLaunchDirectory(
-    const std::vector<base::FilePath>& launch_files) {
-  // |launch_dir| is the directory that contains all |launch_files|. If
-  // there are no launch files, launch_dir is empty.
-  base::FilePath launch_dir =
-      launch_files.size() ? launch_files[0].DirName() : base::FilePath();
-
-#if DCHECK_IS_ON()
-  // Check |launch_files| all come from the same directory.
-  if (!launch_dir.empty()) {
-    for (auto path : launch_files) {
-      DCHECK_EQ(launch_dir, path.DirName());
-    }
-  }
-#endif
-
-  return launch_dir;
-}
-
-}  // namespace
 
 SystemAppLaunchParams::SystemAppLaunchParams() = default;
 SystemAppLaunchParams::~SystemAppLaunchParams() = default;
@@ -188,8 +162,7 @@ void LaunchSystemWebAppAsync(Profile* profile,
     DCHECK(!params.url.has_value())
         << "Launch URL can't be used with launch_paths.";
     app_service->LaunchAppWithFiles(
-        *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-        event_flags, params.launch_source,
+        *app_id, event_flags, params.launch_source,
         apps::mojom::FilePaths::New(params.launch_paths));
     return;
   }
@@ -208,7 +181,7 @@ void LaunchSystemWebAppAsync(Profile* profile,
 Browser* LaunchSystemWebAppImpl(Profile* profile,
                                 SystemAppType app_type,
                                 const GURL& url,
-                                apps::AppLaunchParams& params) {
+                                const apps::AppLaunchParams& params) {
   // Exit early if we can't create browser windows (e.g. when browser is
   // shutting down, or a wrong profile is given).
   if (Browser::GetCreationStatusForProfile(profile) !=
@@ -220,62 +193,21 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   if (!provider)
     return nullptr;
 
-  DCHECK(url.GetOrigin() ==
-         provider->registrar().GetAppLaunchUrl(params.app_id).GetOrigin());
+  DCHECK(url.DeprecatedGetOriginAsURL() == provider->registrar()
+                                               .GetAppLaunchUrl(params.app_id)
+                                               .DeprecatedGetOriginAsURL());
 
-  // Make sure we have a browser for app.  Always reuse an existing browser for
-  // popups, otherwise check app type whether we should use a single window.
-  // TODO(crbug.com/1060423): Allow apps to control whether popups are single.
-  Browser* browser = nullptr;
-  Browser::Type browser_type = Browser::TYPE_APP;
-  if (params.disposition == WindowOpenDisposition::NEW_POPUP)
-    browser_type = Browser::TYPE_APP_POPUP;
-  if (browser_type == Browser::TYPE_APP_POPUP ||
-      provider->system_web_app_manager().IsSingleWindow(app_type)) {
-    browser = FindSystemWebAppBrowser(profile, app_type, browser_type);
+  auto* system_app = provider->system_web_app_manager().GetSystemApp(app_type);
+  if (!system_app) {
+    LOG(ERROR) << "Can't find delegate for system app url: " << url
+               << " Not launching.";
+    return nullptr;
   }
 
-  bool can_resize =
-      provider->system_web_app_manager().IsResizeableWindow(app_type);
-
-  bool can_maximize =
-      provider->system_web_app_manager().IsMaximizableWindow(app_type);
-
-  // System Web App windows can't be properly restored without storing the app
-  // type. Until that is implemented, skip them for session restore.
-  // TODO(crbug.com/1003170): Enable session restore for System Web Apps by
-  // passing through the underlying value of params.omit_from_session_restore.
-  const bool omit_from_session_restore = true;
-
+  Browser* browser =
+      system_app->LaunchAndNavigateSystemWebApp(profile, provider, url, params);
   if (!browser) {
-    browser = CreateWebApplicationWindow(
-        profile, params.app_id, params.disposition, params.restore_id,
-        omit_from_session_restore, can_resize, can_maximize);
-  }
-
-  // Navigate application window to application's |url| if necessary.
-  // Help app always navigates because its url might not match the url inside
-  // the iframe, and the iframe's url is the one that matters.
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetWebContentsAt(0);
-  if (!web_contents || web_contents->GetURL() != url ||
-      app_type == SystemAppType::HELP) {
-    web_contents = NavigateWebApplicationWindow(
-        browser, params.app_id, url, WindowOpenDisposition::CURRENT_TAB);
-  }
-
-  // Send launch files.
-  if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
-          params.app_id)) {
-    if (provider->system_web_app_manager().AppShouldReceiveLaunchDirectory(
-            app_type)) {
-      web_launch::WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
-          web_contents, web_contents->GetURL(),
-          GetLaunchDirectory(params.launch_files), params.launch_files);
-    } else {
-      web_launch::WebLaunchFilesHelper::SetLaunchPaths(
-          web_contents, web_contents->GetURL(), params.launch_files);
-    }
+    return nullptr;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -318,27 +250,35 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
   if (!provider->registrar().IsInstalled(app_id.value()))
     return nullptr;
 
+  Browser* browser_to_return = nullptr;
+  // Look through all the windows, find a browser for this app. Prefer the app
+  // window that's currently active if there is one.
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile || browser->type() != browser_type)
       continue;
 
-    if (GetAppIdFromApplicationName(browser->app_name()) == app_id.value())
+    if (GetAppIdFromApplicationName(browser->app_name()) != app_id.value())
+      continue;
+
+    if (browser->window()->IsActive()) {
       return browser;
+    }
+
+    browser_to_return = browser;
   }
 
-  return nullptr;
+  return browser_to_return;
 }
 
 bool IsSystemWebApp(Browser* browser) {
   DCHECK(browser);
-  return browser->app_controller() &&
-         browser->app_controller()->is_for_system_web_app();
+  return browser->app_controller() && browser->app_controller()->system_app();
 }
 
 bool IsBrowserForSystemWebApp(Browser* browser, SystemAppType type) {
   DCHECK(browser);
-  return browser->app_controller() &&
-         browser->app_controller()->system_app_type() == type;
+  return browser->app_controller() && browser->app_controller()->system_app() &&
+         browser->app_controller()->system_app()->GetType() == type;
 }
 
 absl::optional<SystemAppType> GetCapturingSystemAppForURL(Profile* profile,
@@ -353,19 +293,10 @@ absl::optional<SystemAppType> GetCapturingSystemAppForURL(Profile* profile,
 
 gfx::Size GetSystemWebAppMinimumWindowSize(Browser* browser) {
   DCHECK(browser);
-  if (!browser->app_controller())
-    return gfx::Size();  // Not an app.
+  if (browser->app_controller() && browser->app_controller()->system_app())
+    return browser->app_controller()->system_app()->GetMinimumWindowSize();
 
-  auto* app_controller = browser->app_controller();
-  if (!app_controller->HasAppId())
-    return gfx::Size();
-
-  auto* provider = WebAppProvider::GetForSystemWebApps(browser->profile());
-  if (!provider)
-    return gfx::Size();
-
-  return provider->system_web_app_manager().GetMinimumWindowSize(
-      app_controller->GetAppId());
+  return gfx::Size();
 }
 
 }  // namespace web_app

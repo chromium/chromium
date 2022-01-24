@@ -43,7 +43,8 @@ StandaloneBrowserExtensionAppsFactory::StandaloneBrowserExtensionAppsFactory()
 KeyedService* StandaloneBrowserExtensionAppsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new StandaloneBrowserExtensionApps(
-      Profile::FromBrowserContext(context));
+      AppServiceProxyFactory::GetForProfile(
+          Profile::FromBrowserContext(context)));
 }
 
 }  // namespace apps

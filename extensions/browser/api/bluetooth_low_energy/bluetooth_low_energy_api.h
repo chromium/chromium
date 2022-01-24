@@ -63,6 +63,10 @@ class BluetoothLowEnergyAPI : public BrowserContextKeyedAPI {
   static BluetoothLowEnergyAPI* Get(content::BrowserContext* context);
 
   explicit BluetoothLowEnergyAPI(content::BrowserContext* context);
+
+  BluetoothLowEnergyAPI(const BluetoothLowEnergyAPI&) = delete;
+  BluetoothLowEnergyAPI& operator=(const BluetoothLowEnergyAPI&) = delete;
+
   ~BluetoothLowEnergyAPI() override;
 
   // KeyedService implementation..
@@ -81,8 +85,6 @@ class BluetoothLowEnergyAPI : public BrowserContextKeyedAPI {
   friend class BrowserContextKeyedAPIFactory<BluetoothLowEnergyAPI>;
 
   std::unique_ptr<BluetoothLowEnergyEventRouter> event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyAPI);
 };
 
 namespace api {
@@ -93,6 +95,11 @@ namespace api {
 class BluetoothLowEnergyExtensionFunction : public ExtensionFunction {
  public:
   BluetoothLowEnergyExtensionFunction();
+
+  BluetoothLowEnergyExtensionFunction(
+      const BluetoothLowEnergyExtensionFunction&) = delete;
+  BluetoothLowEnergyExtensionFunction& operator=(
+      const BluetoothLowEnergyExtensionFunction&) = delete;
 
  protected:
   ~BluetoothLowEnergyExtensionFunction() override;
@@ -117,8 +124,6 @@ class BluetoothLowEnergyExtensionFunction : public ExtensionFunction {
  private:
   // Internal method to do common setup before actual DoWork is called.
   void PreDoWork();
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyExtensionFunction);
 };
 
 // Base class for bluetoothLowEnergy API peripheral mode functions. This class
@@ -130,14 +135,16 @@ class BLEPeripheralExtensionFunction
  public:
   BLEPeripheralExtensionFunction();
 
+  BLEPeripheralExtensionFunction(const BLEPeripheralExtensionFunction&) =
+      delete;
+  BLEPeripheralExtensionFunction& operator=(
+      const BLEPeripheralExtensionFunction&) = delete;
+
  protected:
   ~BLEPeripheralExtensionFunction() override;
 
   // ExtensionFunction override.
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BLEPeripheralExtensionFunction);
 };
 
 class BluetoothLowEnergyConnectFunction
@@ -479,6 +486,11 @@ class BluetoothLowEnergyAdvertisementFunction
  public:
   BluetoothLowEnergyAdvertisementFunction();
 
+  BluetoothLowEnergyAdvertisementFunction(
+      const BluetoothLowEnergyAdvertisementFunction&) = delete;
+  BluetoothLowEnergyAdvertisementFunction& operator=(
+      const BluetoothLowEnergyAdvertisementFunction&) = delete;
+
  protected:
   ~BluetoothLowEnergyAdvertisementFunction() override;
 
@@ -495,8 +507,6 @@ class BluetoothLowEnergyAdvertisementFunction
   void Initialize();
 
   ApiResourceManager<BluetoothApiAdvertisement>* advertisements_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyAdvertisementFunction);
 };
 
 class BluetoothLowEnergyRegisterAdvertisementFunction

@@ -4,6 +4,7 @@
 
 import("//net/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 enable_built_in_dns = !is_ios
 
@@ -496,12 +497,22 @@ if (use_fuzzing_engine) {
   }
 }
 
+proto_library("host_cache_fuzzer_proto") {
+  proto_in_dir = "//"
+  sources = [ "host_cache_fuzzer.proto" ]
+  deps = [ "//testing/libfuzzer/proto:json_proto" ]
+}
+
 fuzzer_test("net_dns_host_cache_fuzzer") {
   sources = [ "host_cache_fuzzer.cc" ]
   deps = [
+    ":host_cache_fuzzer_proto",
     "//base",
     "//net",
     "//net:net_fuzzer_test_support",
+    "//testing/libfuzzer/proto:json_proto",
+    "//testing/libfuzzer/proto:json_proto_converter",
+    "//third_party/libprotobuf-mutator",
   ]
   dict = "//testing/libfuzzer/fuzzers/dicts/json.dict"
 }

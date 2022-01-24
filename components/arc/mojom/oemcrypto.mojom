@@ -17,10 +17,11 @@
 // Version 3 maintains backwards compatibility with version 2 and supports
 // OEMCrypto v15.
 // Version 4 maintains backwards compatibility and supports OEMCrypto v16.
+// Version 5 adds the v16 CopyBuffer variant.
 
 module arc.mojom;
 
-[Extensible]
+[Stable, Extensible]
 enum OemCryptoResult {
   SUCCESS = 0,
   ERROR_INIT_FAILED = 1,
@@ -90,6 +91,7 @@ enum OemCryptoResult {
   [MinVersion=4] ODK_STALE_RENEWAL = 1005,
 };
 
+[Stable]
 struct OemCryptoSecureBuffer {
   // buffer_handle should be passed to the ProtectedBufferManager service in
   // the GPU in order to retrieve the shared memory handle that corresponds
@@ -100,24 +102,25 @@ struct OemCryptoSecureBuffer {
   uint32 offset;
 };
 
-[Extensible]
+[Stable, Extensible]
 enum OemCryptoCipherMode {
   CIPHER_MODE_CTR = 0,
   CIPHER_MODE_CBC = 1,
 };
 
-[Extensible, MinVersion=2]
+[Stable, Extensible, MinVersion=2]
 enum OemCryptoLicenseType {
   CONTENT_LICENSE = 0,
   ENTITLEMENT_LICENSE = 1,
 };
 
-[MinVersion=3]
+[Stable, MinVersion=3]
 struct OemCryptoSubstring {
   uint32 offset;
   uint32 length;
 };
 
+[Stable]
 struct OemCryptoKeyObjectV14 {
   uint32 key_id_offset;
   uint32 key_id_length;
@@ -129,7 +132,7 @@ struct OemCryptoKeyObjectV14 {
   OemCryptoCipherMode cipher_mode;
 };
 
-[MinVersion=3]
+[Stable, MinVersion=3]
 struct OemCryptoKeyObject {
   OemCryptoSubstring key_id;
   OemCryptoSubstring key_data_iv;
@@ -138,7 +141,7 @@ struct OemCryptoKeyObject {
   OemCryptoSubstring key_control;
 };
 
-[MinVersion=2]
+[Stable, MinVersion=2]
 struct OemCryptoEntitledContentKeyObjectV14 {
   array<uint8> entitlement_key_id;
   array<uint8> content_key_id;
@@ -146,7 +149,7 @@ struct OemCryptoEntitledContentKeyObjectV14 {
   array<uint8> content_key_data;
 };
 
-[MinVersion=3]
+[Stable, MinVersion=3]
 struct OemCryptoEntitledContentKeyObject {
   OemCryptoSubstring entitlement_key_id;
   OemCryptoSubstring content_key_id;
@@ -154,6 +157,7 @@ struct OemCryptoEntitledContentKeyObject {
   OemCryptoSubstring content_key_data;
 };
 
+[Stable]
 struct OemCryptoKeyRefreshObjectV14 {
   uint32 key_id_offset;
   uint32 key_id_length;
@@ -162,26 +166,27 @@ struct OemCryptoKeyRefreshObjectV14 {
   uint32 key_control_offset;
 };
 
-[MinVersion=3]
+[Stable, MinVersion=3]
 struct OemCryptoKeyRefreshObject {
   OemCryptoSubstring key_id;
   OemCryptoSubstring key_control_iv;
   OemCryptoSubstring key_control;
 };
 
-[Extensible]
+[Stable, Extensible]
 enum OemCryptoAlgorithm {
   AES_CBC_128_NO_PADDING = 0,
   HMAC_SHA265 = 1,
 };
 
+[Stable]
 struct OemCryptoCencEncryptPatternDesc {
   uint32 encrypt;
   uint32 skip;
   uint32 offset;
 };
 
-[Extensible, MinVersion=2]
+[Stable, Extensible, MinVersion=2]
 enum OemCryptoUsageEntryStatus {
   UNUSED = 0,
   ACTIVE = 1,
@@ -190,6 +195,7 @@ enum OemCryptoUsageEntryStatus {
   INACTIVE_UNUSED = 4,
 };
 
+[Stable]
 struct OemCryptoPstReport {
   array<uint8, 20> signature;
   uint8 status;
@@ -199,13 +205,13 @@ struct OemCryptoPstReport {
   uint64 seconds_since_last_decrypt;
 };
 
-[Extensible]
+[Stable, Extensible]
 enum OemCryptoRsaPaddingScheme {
   SIGN_RSASSA_PSS = 1,
   SIGN_PKCS1_BLOCK1 = 2,
 };
 
-[Extensible]
+[Stable, Extensible]
 enum OemCryptoHdcpCapability {
   HDCP_NONE = 0,
   HDCP_V1   = 1,
@@ -216,7 +222,7 @@ enum OemCryptoHdcpCapability {
   HDCP_NO_DIGITAL_OUTPUT = 0xFF,
 };
 
-[Extensible, MinVersion=2]
+[Stable, Extensible, MinVersion=2]
 enum OemCryptoProvisioningMethod {
   PROVISIONING_ERROR = 0,
   DRM_CERTIFICATE = 1,
@@ -224,13 +230,13 @@ enum OemCryptoProvisioningMethod {
   OEM_CERTIFICATE = 3,
 };
 
-[Extensible, MinVersion=4]
+[Stable, Extensible, MinVersion=4]
 enum OemCryptoPrivateKey {
   RSA_PRIVATE_KEY = 0,
   ECC_PRIVATE_KEY = 1,
 };
 
-[MinVersion=4]
+[Stable, MinVersion=4]
 struct SubSampleDescription {
   uint32 num_bytes_clear;
   uint32 num_bytes_encrypted;
@@ -240,7 +246,8 @@ struct SubSampleDescription {
 
 // This is the interface that implements all the calls that map to the
 // OEMCrypto API itself.
-// Next method ID: 76
+// Next method ID: 77
+[Stable, Uuid="ed3807bc-7bce-472d-be4f-68774e613ace"]
 interface OemCryptoService {
   InitializeDeprecated@0() => (OemCryptoResult result);
   [MinVersion=2] Initialize@36(uint32 oemcrypto_version)
@@ -289,7 +296,7 @@ interface OemCryptoService {
   GenericVerify@15(uint32 session, array<uint8> data,
                    OemCryptoAlgorithm algorithm, array<uint8> signature) =>
                   (OemCryptoResult result);
-  CopyBuffer@16(array<uint8> data, OemCryptoSecureBuffer out_buffer)
+  CopyBufferV14@16(array<uint8> data, OemCryptoSecureBuffer out_buffer)
       => (OemCryptoResult result);
   LoadTestKeyboxV13@17() => (OemCryptoResult result);
   IsRootKeyCertificateValid@18() => (OemCryptoResult result);
@@ -463,6 +470,10 @@ interface OemCryptoService {
                                 OemCryptoCencEncryptPatternDesc pattern,
                                 OemCryptoSecureBuffer? secure_buffer)
       => (OemCryptoResult result, array<uint8>? decrypted_data);
+  [MinVersion=5] CopyBuffer@76(uint32 session, array<uint8> data,
+                               OemCryptoSecureBuffer out_buffer,
+                               uint8 subsample_flags)
+      => (OemCryptoResult result);
 };
 
 // OemCryptoService is implemented as another service outside of the Browser

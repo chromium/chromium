@@ -7,10 +7,8 @@
 
 #include <map>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -40,6 +38,10 @@ class PasswordManagerDriver
       base::StrongAlias<class ShowVirtualKeyboardTag, bool>;
 
   PasswordManagerDriver() = default;
+
+  PasswordManagerDriver(const PasswordManagerDriver&) = delete;
+  PasswordManagerDriver& operator=(const PasswordManagerDriver&) = delete;
+
   virtual ~PasswordManagerDriver() = default;
 
   // Returns driver id which is unique in the current tab.
@@ -110,7 +112,7 @@ class PasswordManagerDriver
   virtual void SendLoggingAvailability() {}
 
   // Return true iff the driver corresponds to the main frame.
-  virtual bool IsMainFrame() const = 0;
+  virtual bool IsInPrimaryMainFrame() const = 0;
 
   // Returns true iff a popup can be shown on the behalf of the associated
   // frame.
@@ -126,9 +128,6 @@ class PasswordManagerDriver
   // corresponding HTML attributes. It is used only for debugging.
   virtual void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerDriver);
 };
 
 }  // namespace password_manager

@@ -127,6 +127,9 @@ class SetupSingletonTest : public base::MultiProcessTest {
  public:
   SetupSingletonTest() = default;
 
+  SetupSingletonTest(const SetupSingletonTest&) = delete;
+  SetupSingletonTest& operator=(const SetupSingletonTest&) = delete;
+
   void SetUp() override { ASSERT_TRUE(install_dir_.CreateUniqueTempDir()); }
 
   base::CommandLine MakeCmdLine(const std::string& procname) override {
@@ -148,8 +151,6 @@ class SetupSingletonTest : public base::MultiProcessTest {
 
  private:
   base::ScopedTempDir install_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetupSingletonTest);
 };
 
 }  // namespace

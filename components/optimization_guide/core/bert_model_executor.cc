@@ -7,7 +7,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/bert_nl_classifier.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/bert_nl_classifier.h"
 
 namespace optimization_guide {
 
@@ -39,20 +39,5 @@ BertModelExecutor::BuildModelExecutionTask(base::MemoryMappedFile* model_file) {
               << maybe_nl_classifier.status().ToString();
   return nullptr;
 }
-
-BertModelExecutorHandle::BertModelExecutorHandle(
-    OptimizationGuideModelProvider* model_provider,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    proto::OptimizationTarget optimization_target,
-    const absl::optional<proto::Any>& model_metadata)
-    : ModelHandler<std::vector<tflite::task::core::Category>,
-                   const std::string&>(
-          model_provider,
-          background_task_runner,
-          std::make_unique<BertModelExecutor>(optimization_target),
-          optimization_target,
-          model_metadata) {}
-
-BertModelExecutorHandle::~BertModelExecutorHandle() = default;
 
 }  // namespace optimization_guide

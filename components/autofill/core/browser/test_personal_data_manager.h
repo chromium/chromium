@@ -24,6 +24,10 @@ namespace autofill {
 class TestPersonalDataManager : public PersonalDataManager {
  public:
   TestPersonalDataManager();
+
+  TestPersonalDataManager(const TestPersonalDataManager&) = delete;
+  TestPersonalDataManager& operator=(const TestPersonalDataManager&) = delete;
+
   ~TestPersonalDataManager() override;
 
   using PersonalDataManager::GetProfileSaveStrikeDatabase;
@@ -174,8 +178,6 @@ class TestPersonalDataManager : public PersonalDataManager {
       &inmemory_strike_database_};
   AutofillProfileUpdateStrikeDatabase inmemory_profile_update_strike_database_{
       &inmemory_strike_database_};
-
-  DISALLOW_COPY_AND_ASSIGN(TestPersonalDataManager);
 };
 
 }  // namespace autofill

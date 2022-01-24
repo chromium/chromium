@@ -5,6 +5,9 @@
 #include "chrome/browser/ash/hats/hats_dialog.h"
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -22,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
@@ -37,12 +41,24 @@ namespace {
 const int kDefaultWidth = 384;
 const int kDefaultHeight = 428;
 
+// There are 5 possible choices, from very_dissatisfied to very_satisfied.
+const int kMaxFeedbackScore = 5;
+
+// Possible requested actions from the HTML+JS client.
+// Client is ready to close the page.
+const char kClientActionClose[] = "close";
+// There was an unhandled error and we need to log and close the page.
+const char kClientActionUnhandledError[] = "survey-loading-error";
+// A smiley was selected, so we'd like to track that.
+const char kClientSmileySelected[] = "smiley-selected-";
+
 constexpr char kCrOSHaTSURL[] =
     "https://storage.googleapis.com/chromeos-hats-web-stable/index.html";
 
-// Keyword used to join the separate device info elements into a single string
-// to be used as site context.
+// Delimiters used to join the separate device info elements into a single
+// string to be used as site context.
 const char kDeviceInfoStopKeyword[] = "&";
+const char kDeviceInfoKeyValueDelimiter[] = "=";
 const char kDefaultProfileLocale[] = "en-US";
 
 enum class DeviceInfoKey : unsigned int {
@@ -70,32 +86,84 @@ const std::string KeyEnumToString(DeviceInfoKey key) {
   }
 }
 
-// Must be run on a blocking thread pool.
-// Gathers the browser version info, firmware info and platform info and returns
-// them in a single encoded string, the format of which is defined below.
-// Currently the format is "<key>=<value>&<key>=<value>&<key>=<value>".
-std::string GetFormattedSiteContext(const std::string& user_locale,
-                                    base::StringPiece join_keyword) {
-  std::vector<std::string> pairs;
-  pairs.push_back(KeyEnumToString(DeviceInfoKey::BROWSER) + "=" +
-                  version_info::GetVersionNumber());
-
-  pairs.push_back(KeyEnumToString(DeviceInfoKey::PLATFORM) + "=" +
-                  version_loader::GetVersion(version_loader::VERSION_FULL));
-
-  pairs.push_back(KeyEnumToString(DeviceInfoKey::FIRMWARE) + "=" +
-                  version_loader::GetFirmware());
-
-  pairs.push_back(KeyEnumToString(DeviceInfoKey::LOCALE) + "=" + user_locale);
-
-  return base::JoinString(pairs, join_keyword);
-}
-
 }  // namespace
 
 // static
+std::string HatsDialog::GetFormattedSiteContext(
+    const std::string& user_locale,
+    const base::flat_map<std::string, std::string>& product_specific_data) {
+  base::flat_map<std::string, std::string> context;
+
+  context[KeyEnumToString(DeviceInfoKey::BROWSER)] =
+      version_info::GetVersionNumber();
+
+  context[KeyEnumToString(DeviceInfoKey::PLATFORM)] =
+      version_loader::GetVersion(version_loader::VERSION_FULL);
+
+  context[KeyEnumToString(DeviceInfoKey::FIRMWARE)] =
+      version_loader::GetFirmware();
+
+  context[KeyEnumToString(DeviceInfoKey::LOCALE)] = user_locale;
+
+  for (const auto& pair : context) {
+    if (product_specific_data.contains(pair.first)) {
+      LOG(WARNING) << "Product specific data contains reserved key "
+                   << pair.first << ". Value will be overwritten.";
+    }
+  }
+  context.insert(product_specific_data.begin(), product_specific_data.end());
+
+  std::stringstream stream;
+  bool first_iteration = true;
+  for (const auto& pair : context) {
+    if (!first_iteration)
+      stream << kDeviceInfoStopKeyword;
+
+    stream << net::EscapeQueryParamValue(pair.first, /*use_plus=*/false)
+           << kDeviceInfoKeyValueDelimiter
+           << net::EscapeQueryParamValue(pair.second, /*use_plus=*/false);
+
+    first_iteration = false;
+  }
+  return stream.str();
+}
+
+// static
+bool HatsDialog::HandleClientTriggeredAction(
+    const std::string& action,
+    const std::string& histogram_name) {
+  DVLOG(1) << "HandleClientTriggeredAction: Received " << action;
+
+  // Page asks to be closed.
+  if (action == kClientActionClose) {
+    return true;
+  }
+  // An unhandled error in our client, log and close.
+  if (base::StartsWith(action, kClientActionUnhandledError)) {
+    LOG(ERROR) << "Error while loading a HaTS Survey " << action;
+    return true;
+  }
+  // A Smiley (score) was selected.
+  if (base::StartsWith(action, kClientSmileySelected)) {
+    int score;
+    if (!base::StringToInt(action.substr(strlen(kClientSmileySelected)),
+                           &score)) {
+      LOG(ERROR) << "Can't parse Survey score";
+      return false;  // It's a client error, but don't close the page.
+    }
+    DVLOG(1) << "Setting UMA Metric for smiley " << score;
+    base::UmaHistogramExactLinear(histogram_name, score, kMaxFeedbackScore + 1);
+    return false;  // Don't close the page.
+  }
+
+  // Future proof - ignore unimplemented commands.
+  return false;
+}
+
+// static
 std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow(
-    const HatsConfig& hats_config) {
+    const HatsConfig& hats_config,
+    const base::flat_map<std::string, std::string>& product_specific_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -106,7 +174,8 @@ std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow(
     user_locale = kDefaultProfileLocale;
 
   std::unique_ptr<HatsDialog> hats_dialog(
-      new HatsDialog(HatsFinchHelper::GetTriggerID(hats_config), profile));
+      new HatsDialog(HatsFinchHelper::GetTriggerID(hats_config), profile,
+                     hats_config.histogram_name));
 
   // Raw pointer is used here since the dialog is owned by the hats
   // notification controller which lives until the end of the user session. The
@@ -114,7 +183,7 @@ std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&GetFormattedSiteContext, user_locale,
-                     kDeviceInfoStopKeyword),
+                     product_specific_data),
       base::BindOnce(&HatsDialog::Show, base::Unretained(hats_dialog.get())));
 
   return hats_dialog;
@@ -130,8 +199,12 @@ void HatsDialog::Show(const std::string& site_context) {
   chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(), this);
 }
 
-HatsDialog::HatsDialog(const std::string& trigger_id, Profile* user_profile)
-    : trigger_id_(trigger_id), user_profile_(user_profile) {
+HatsDialog::HatsDialog(const std::string& trigger_id,
+                       Profile* user_profile,
+                       const std::string& histogram_name)
+    : trigger_id_(trigger_id),
+      user_profile_(user_profile),
+      histogram_name_(histogram_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   set_can_resize(false);
 }
@@ -164,10 +237,18 @@ std::string HatsDialog::GetDialogArgs() const {
   return std::string();
 }
 
-void HatsDialog::OnDialogClosed(const std::string& json_retval) {}
-
 void HatsDialog::OnCloseContents(WebContents* source, bool* out_close_dialog) {
   *out_close_dialog = true;
+}
+
+void HatsDialog::OnDialogClosed(const std::string& json_retval) {}
+
+void HatsDialog::OnLoadingStateChanged(WebContents* source) {
+  const std::string ref = source->GetURL().ref();
+
+  if (HandleClientTriggeredAction(ref, histogram_name_)) {
+    source->ClosePage();
+  }
 }
 
 bool HatsDialog::ShouldShowDialogTitle() const {
@@ -178,7 +259,7 @@ bool HatsDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-bool HatsDialog::HandleContextMenu(content::RenderFrameHost* render_frame_host,
+bool HatsDialog::HandleContextMenu(content::RenderFrameHost& render_frame_host,
                                    const content::ContextMenuParams& params) {
   // Disable context menu
   return true;

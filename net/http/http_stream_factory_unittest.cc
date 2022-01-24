@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -221,6 +222,9 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
  public:
   StreamRequestWaiter() : error_status_(OK) {}
 
+  StreamRequestWaiter(const StreamRequestWaiter&) = delete;
+  StreamRequestWaiter& operator=(const StreamRequestWaiter&) = delete;
+
   // HttpStreamRequest::Delegate
 
   void OnStreamReady(const SSLConfig& used_ssl_config,
@@ -318,8 +322,6 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
   SSLConfig used_ssl_config_;
   ProxyInfo used_proxy_info_;
   int error_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamRequestWaiter);
 };
 
 class WebSocketBasicHandshakeStream : public MockWebSocketHandshakeStream {
@@ -868,6 +870,9 @@ TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
     session_context.http_server_properties = &http_server_properties;
     session_context.quic_context = &quic_context;
 
+    host_resolver.rules()->AddRule("www.google.com", "2.3.4.5");
+    host_resolver.rules()->AddRule("bad", "1.2.3.4");
+
     auto session =
         std::make_unique<HttpNetworkSession>(session_params, session_context);
     session->quic_stream_factory()
@@ -998,7 +1003,7 @@ TEST_F(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
     HttpServerProperties http_server_properties;
     const AlternativeService alternative_service(kProtoQUIC, url.host().c_str(),
                                                  url.IntPort());
-    base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+    base::Time expiration = base::Time::Now() + base::Days(1);
     HostPortPair host_port_pair(alternative_service.host_port_pair());
     url::SchemeHostPort server("https", host_port_pair.host(),
                                host_port_pair.port());
@@ -2047,7 +2052,7 @@ class HttpStreamFactoryBidirectionalQuicTest
                                  const std::string& alternative_destination) {
     const AlternativeService alternative_service(kProtoQUIC,
                                                  alternative_destination, 443);
-    base::Time expiration = base::Time::Now() + base::TimeDelta::FromDays(1);
+    base::Time expiration = base::Time::Now() + base::Days(1);
     http_server_properties_.SetQuicAlternativeService(
         request_url, NetworkIsolationKey(), alternative_service, expiration,
         session_->context().quic_context->params()->supported_versions);
@@ -2095,7 +2100,9 @@ class HttpStreamFactoryBidirectionalQuicTest
   HttpServerProperties http_server_properties_;
   TransportSecurityState transport_security_state_;
   DefaultCTPolicyEnforcer ct_policy_enforcer_;
-  MockHostResolver host_resolver_;
+  MockHostResolver host_resolver_{
+      /*default_result=*/
+      MockHostResolverBase::RuleResolver::GetLocalhostResult()};
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<SSLConfigServiceDefaults> ssl_config_service_;
   HttpNetworkSessionParams params_;
@@ -3567,8 +3574,7 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcClear) {
   http_server_properties_.SetAlternativeServices(
       origin, network_isolation_key,
       {AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
-          {kProtoQUIC, "", 443},
-          base::Time::Now() + base::TimeDelta::FromSeconds(30),
+          {kProtoQUIC, "", 443}, base::Time::Now() + base::Seconds(30),
           quic::AllSupportedVersions())});
 
   EXPECT_FALSE(http_server_properties_

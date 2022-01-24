@@ -11,6 +11,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/session/shutdown_confirmation_dialog.h"
 #include "base/bind.h"
@@ -20,7 +21,9 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -40,6 +43,13 @@ bool CheckForSlowBoot(const base::FilePath& slow_boot_file_path) {
     return true;
   }
   return false;
+}
+
+std::u16string GetEnterpriseDomainManager() {
+  return base::UTF8ToUTF16(Shell::Get()
+                               ->system_tray_model()
+                               ->enterprise_domain()
+                               ->enterprise_domain_manager());
 }
 
 }  // namespace
@@ -68,15 +78,16 @@ void UpdateNotificationController::GenerateUpdateNotification(
   }
 
   const bool is_rollback = model_->rollback();
-  const NotificationStyle notification_style = model_->notification_style();
 
   message_center::SystemNotificationWarningLevel warning_level =
-      (is_rollback || notification_style == NotificationStyle::kAdminRequired)
+      (is_rollback || model_->relaunch_notification_state().requirement_type ==
+                          RelaunchNotificationState::kRequired)
           ? message_center::SystemNotificationWarningLevel::WARNING
           : message_center::SystemNotificationWarningLevel::NORMAL;
   const gfx::VectorIcon& notification_icon =
       is_rollback ? kSystemMenuRollbackIcon
-                  : (notification_style == NotificationStyle::kDefault)
+                  : (model_->relaunch_notification_state().requirement_type ==
+                     RelaunchNotificationState::kNone)
                         ? kSystemMenuUpdateIcon
                         : vector_icons::kBusinessIcon;
   std::unique_ptr<Notification> notification = CreateSystemNotification(
@@ -93,7 +104,8 @@ void UpdateNotificationController::GenerateUpdateNotification(
       notification_icon, warning_level);
   notification->set_pinned(true);
 
-  if (model_->notification_style() == NotificationStyle::kAdminRequired)
+  if (model_->relaunch_notification_state().requirement_type ==
+      RelaunchNotificationState::kRequired)
     notification->SetSystemPriority();
 
   if (model_->update_required()) {
@@ -127,7 +139,7 @@ std::u16string UpdateNotificationController::GetNotificationMessage() const {
   if (model_->update_type() == UpdateType::kLacros)
     return l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_MESSAGE_LACROS);
 
-  std::u16string system_app_name =
+  const std::u16string system_app_name =
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME);
   if (model_->rollback()) {
     return l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_MESSAGE_ROLLBACK);
@@ -137,11 +149,27 @@ std::u16string UpdateNotificationController::GetNotificationMessage() const {
                                       system_app_name);
   }
 
-  const std::u16string notification_body = model_->notification_body();
+  absl::optional<int> body_message_id = absl::nullopt;
+  switch (model_->relaunch_notification_state().requirement_type) {
+    case RelaunchNotificationState::kRecommendedNotOverdue:
+      body_message_id = IDS_RELAUNCH_RECOMMENDED_BODY;
+      break;
+    case RelaunchNotificationState::kRecommendedAndOverdue:
+      body_message_id = IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY;
+      break;
+    case RelaunchNotificationState::kRequired:
+      body_message_id = IDS_RELAUNCH_REQUIRED_BODY;
+      break;
+    case RelaunchNotificationState::kNone:
+      break;
+  }
+
   std::u16string update_text;
-  if (model_->update_type() == UpdateType::kSystem &&
-      !notification_body.empty()) {
-    update_text = notification_body;
+  if (body_message_id.has_value() &&
+      model_->update_type() == UpdateType::kSystem) {
+    update_text = l10n_util::GetStringFUTF16(*body_message_id,
+                                             GetEnterpriseDomainManager(),
+                                             ui::GetChromeOSDeviceName());
   } else {
     update_text = l10n_util::GetStringFUTF16(
         IDS_UPDATE_NOTIFICATION_MESSAGE_LEARN_MORE, system_app_name);
@@ -158,13 +186,38 @@ std::u16string UpdateNotificationController::GetNotificationTitle() const {
   if (model_->update_type() == UpdateType::kLacros)
     return l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_TITLE_LACROS);
 
-  const std::u16string notification_title = model_->notification_title();
-  if (!notification_title.empty())
-    return notification_title;
+  switch (model_->relaunch_notification_state().requirement_type) {
+    case RelaunchNotificationState::kRecommendedAndOverdue:
+      return l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_OVERDUE_TITLE);
 
-  return model_->rollback()
-             ? l10n_util::GetStringUTF16(IDS_ROLLBACK_NOTIFICATION_TITLE)
-             : l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_TITLE);
+    case RelaunchNotificationState::kRecommendedNotOverdue:
+      return l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_TITLE);
+
+    case RelaunchNotificationState::kRequired: {
+      const base::TimeDelta& rounded_offset =
+          model_->relaunch_notification_state()
+              .rounded_time_until_reboot_required;
+      if (rounded_offset.InDays() >= 2) {
+        return l10n_util::GetPluralStringFUTF16(
+            IDS_RELAUNCH_REQUIRED_TITLE_DAYS, rounded_offset.InDays());
+      }
+      if (rounded_offset.InHours() >= 1) {
+        return l10n_util::GetPluralStringFUTF16(
+            IDS_RELAUNCH_REQUIRED_TITLE_HOURS, rounded_offset.InHours());
+      }
+      if (rounded_offset.InMinutes() >= 1) {
+        return l10n_util::GetPluralStringFUTF16(
+            IDS_RELAUNCH_REQUIRED_TITLE_MINUTES, rounded_offset.InMinutes());
+      }
+
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_RELAUNCH_REQUIRED_TITLE_SECONDS, rounded_offset.InSeconds());
+    }
+    case RelaunchNotificationState::kNone:
+      return model_->rollback()
+                 ? l10n_util::GetStringUTF16(IDS_ROLLBACK_NOTIFICATION_TITLE)
+                 : l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_TITLE);
+  }
 }
 
 void UpdateNotificationController::RestartForUpdate() {

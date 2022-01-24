@@ -31,7 +31,7 @@ TEST(NativeMessagingHostListPolicyHandlerTest, CheckPolicySettings) {
     EXPECT_TRUE(errors.empty());
   }
 
-  list.AppendString("test.a.b");
+  list.Append("test.a.b");
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
@@ -41,7 +41,7 @@ TEST(NativeMessagingHostListPolicyHandlerTest, CheckPolicySettings) {
     EXPECT_TRUE(errors.empty());
   }
 
-  list.AppendString("*");
+  list.Append("*");
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
@@ -51,7 +51,7 @@ TEST(NativeMessagingHostListPolicyHandlerTest, CheckPolicySettings) {
     EXPECT_TRUE(errors.empty());
   }
 
-  list.AppendString("invalid Name");
+  list.Append("invalid Name");
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
@@ -73,8 +73,8 @@ TEST(NativeMessagingHostListPolicyHandlerTest, ApplyPolicySettings) {
   NativeMessagingHostListPolicyHandler handler(
       policy::key::kNativeMessagingBlocklist, kTestPref, true);
 
-  policy.AppendString("com.example.test");
-  expected.AppendString("com.example.test");
+  policy.Append("com.example.test");
+  expected.Append("com.example.test");
 
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -83,8 +83,8 @@ TEST(NativeMessagingHostListPolicyHandlerTest, ApplyPolicySettings) {
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(expected, *value);
 
-  policy.AppendString("*");
-  expected.AppendString("*");
+  policy.Append("*");
+  expected.Append("*");
 
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -93,7 +93,7 @@ TEST(NativeMessagingHostListPolicyHandlerTest, ApplyPolicySettings) {
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(expected, *value);
 
-  policy.AppendString("invalid Name");
+  policy.Append("invalid Name");
   policy_map.Set(policy::key::kNativeMessagingBlocklist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_CLOUD, policy.Clone(), nullptr);

@@ -11,10 +11,10 @@
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_util.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 OobeConfiguration* OobeConfiguration::instance = nullptr;
@@ -88,8 +88,7 @@ void OobeConfiguration::OnConfigurationCheck(bool has_configuration,
   if (!parsed_json.value) {
     LOG(ERROR) << "Error parsing OOBE configuration: "
                << parsed_json.error_message;
-  } else if (!chromeos::configuration::ValidateConfiguration(
-                 *parsed_json.value)) {
+  } else if (!configuration::ValidateConfiguration(*parsed_json.value)) {
     LOG(ERROR) << "Invalid OOBE configuration";
   } else {
     configuration_ =
@@ -103,8 +102,7 @@ void OobeConfiguration::UpdateConfigurationValues() {
   auto* ime_value = configuration_->FindKeyOfType(configuration::kInputMethod,
                                                   base::Value::Type::STRING);
   if (ime_value) {
-    chromeos::input_method::InputMethodManager* imm =
-        chromeos::input_method::InputMethodManager::Get();
+    auto* imm = input_method::InputMethodManager::Get();
     configuration_->SetKey(
         configuration::kInputMethod,
         base::Value(imm->GetInputMethodUtil()->MigrateInputMethod(
@@ -117,4 +115,4 @@ void OobeConfiguration::NotifyObservers() {
     observer.OnOobeConfigurationChanged();
 }
 
-}  // namespace chromeos
+}  // namespace ash

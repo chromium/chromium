@@ -26,8 +26,7 @@ void RecordEventWithValue(const char* name, int64_t value) {
   RecordEventWithValueAt(name, value, base::TimeTicks::Now());
 }
 
-constexpr base::TimeDelta kBitrateReportPeriod =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kBitrateReportPeriod = base::Seconds(5);
 
 }  // namespace
 

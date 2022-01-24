@@ -40,7 +40,7 @@
 
 namespace blink {
 
-void FFTFrame::DoPaddedFFT(const float* data, size_t data_size) {
+void FFTFrame::DoPaddedFFT(const float* data, unsigned data_size) {
   // Zero-pad the impulse response
   AudioFloatArray padded_response(FftSize());  // zero-initialized
   padded_response.CopyToRange(data, 0, data_size);

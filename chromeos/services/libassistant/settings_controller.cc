@@ -8,14 +8,16 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/sequence_checker.h"
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/proto/shared/proto/settings_ui.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/proto/assistant_device_settings_ui.pb.h"
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
 #include "chromeos/services/libassistant/callback_utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
-#include "libassistant/shared/public/assistant_manager.h"
+#include "chromeos/services/libassistant/grpc/utils/settings_utils.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
 namespace chromeos {
@@ -45,21 +47,6 @@ const char* LocaleOrDefault(const std::string& locale) {
   }
 }
 
-assistant_client::InternalOptions* WARN_UNUSED_RESULT CreateInternalOptions(
-    assistant_client::AssistantManagerInternal* assistant_manager_internal,
-    const std::string& locale,
-    bool spoken_feedback_enabled) {
-  auto* result = assistant_manager_internal->CreateDefaultInternalOptions();
-  assistant::SetAssistantOptions(result, locale, spoken_feedback_enabled);
-
-  result->SetClientControlEnabled(assistant::features::IsRoutinesEnabled());
-
-  if (!assistant::features::IsVoiceMatchDisabled())
-    result->EnableRequireVoiceMatchVerification();
-
-  return result;
-}
-
 }  // namespace
 
 // Will be created as Libassistant is started, and will update the device
@@ -70,14 +57,14 @@ class SettingsController::DeviceSettingsUpdater
     : public AssistantClientObserver {
  public:
   DeviceSettingsUpdater(SettingsController* parent,
-                        assistant_client::AssistantManager* assistant_manager)
-      : parent_(*parent), assistant_manager_(*assistant_manager) {}
+                        AssistantClient* assistant_client)
+      : parent_(*parent), assistant_client_(*assistant_client) {}
   DeviceSettingsUpdater(const DeviceSettingsUpdater&) = delete;
   DeviceSettingsUpdater& operator=(const DeviceSettingsUpdater&) = delete;
   ~DeviceSettingsUpdater() override = default;
 
   void UpdateSettings(const std::string& locale, bool hotword_enabled) {
-    const std::string device_id = assistant_manager_.GetDeviceId();
+    const std::string device_id = assistant_client_.GetDeviceId();
     if (device_id.empty())
       return;
 
@@ -108,7 +95,7 @@ class SettingsController::DeviceSettingsUpdater
   }
 
   SettingsController& parent_;
-  assistant_client::AssistantManager& assistant_manager_;
+  AssistantClient& assistant_client_;
 };
 
 // Sends a 'get settings' requests to Libassistant,
@@ -126,23 +113,21 @@ class GetSettingsResponseWaiter : public AbortableTask {
       delete;
   ~GetSettingsResponseWaiter() override { DCHECK(!callback_); }
 
-  void SendRequest(
-      assistant_client::AssistantManagerInternal* assistant_manager_internal,
-      const std::string& selector) {
-    if (!assistant_manager_internal) {
+  void SendRequest(AssistantClient* assistant_client,
+                   const std::string& selector) {
+    if (!assistant_client) {
       VLOG(1) << "Assistant: 'get settings' request while Libassistant is not "
                  "running.";
       Abort();
       return;
     }
 
-    std::string serialized_proto =
-        assistant::SerializeGetSettingsUiRequest(selector);
-    assistant_manager_internal->SendGetSettingsUiRequest(
-        serialized_proto, /*user_id=*/std::string(),
-        ToStdFunction(BindToCurrentSequence(
-            base::BindOnce(&GetSettingsResponseWaiter::OnResponse,
-                           weak_factory_.GetWeakPtr()))));
+    ::assistant::ui::SettingsUiSelector selector_proto;
+    selector_proto.ParseFromString(selector);
+    assistant_client->GetAssistantSettings(
+        selector_proto, /*user_id=*/std::string(),
+        base::BindOnce(&GetSettingsResponseWaiter::OnResponse,
+                       weak_factory_.GetWeakPtr()));
   }
 
   // AbortableTask implementation:
@@ -153,11 +138,19 @@ class GetSettingsResponseWaiter : public AbortableTask {
   }
 
  private:
-  void OnResponse(const assistant_client::VoicelessResponse& response) {
-    std::string result =
-        assistant::UnwrapGetSettingsUiResponse(response, include_header_);
-    std::move(callback_).Run(result);
+  void OnResponse(
+      const ::assistant::api::GetAssistantSettingsResponse& response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // |settings_ui| is either a serialized proto message of |SettingsUi|
+    // or |GetSettingsUiResponse| upon success, or an empty string otherwise.
+    std::string settings_ui =
+        UnwrapGetAssistantSettingsResponse(response, include_header_);
+    std::move(callback_).Run(settings_ui);
   }
+
+  // Ensures all callbacks are called on the current sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   SettingsController::GetSettingsCallback callback_;
   // Whether to include header in response. If this is true, a serialized proto
@@ -182,23 +175,21 @@ class UpdateSettingsResponseWaiter : public AbortableTask {
       delete;
   ~UpdateSettingsResponseWaiter() override = default;
 
-  void SendRequest(
-      assistant_client::AssistantManagerInternal* assistant_manager_internal,
-      const std::string& settings) {
-    if (!assistant_manager_internal) {
+  void SendRequest(AssistantClient* assistant_client,
+                   const std::string& settings) {
+    if (!assistant_client) {
       VLOG(1) << "Assistant: 'update settings' request while Libassistant is "
                  "not running.";
       Abort();
       return;
     }
 
-    std::string serialized_proto =
-        assistant::SerializeUpdateSettingsUiRequest(settings);
-    assistant_manager_internal->SendUpdateSettingsUiRequest(
-        serialized_proto, /*user_id=*/std::string(),
-        ToStdFunction(BindToCurrentSequence(
-            base::BindOnce(&UpdateSettingsResponseWaiter::OnResponse,
-                           weak_factory_.GetWeakPtr()))));
+    ::assistant::ui::SettingsUiUpdate update;
+    update.ParseFromString(settings);
+    assistant_client->UpdateAssistantSettings(
+        update, /*user_id=*/std::string(),
+        base::BindOnce(&UpdateSettingsResponseWaiter::OnResponse,
+                       weak_factory_.GetWeakPtr()));
   }
 
   // AbortableTask implementation:
@@ -206,10 +197,18 @@ class UpdateSettingsResponseWaiter : public AbortableTask {
   void Abort() override { std::move(callback_).Run(std::string()); }
 
  private:
-  void OnResponse(const assistant_client::VoicelessResponse& response) {
-    std::string result = assistant::UnwrapUpdateSettingsUiResponse(response);
-    std::move(callback_).Run(result);
+  void OnResponse(
+      const ::assistant::api::UpdateAssistantSettingsResponse& response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // |update_result| is either a serialized proto message of
+    // |SettingsUiUpdateResult| or an empty string.
+    std::string update_result = UnwrapUpdateAssistantSettingsResponse(response);
+    std::move(callback_).Run(update_result);
   }
+
+  // Ensures all callbacks are called on the current sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   SettingsController::UpdateSettingsCallback callback_;
   base::WeakPtrFactory<UpdateSettingsResponseWaiter> weak_factory_{this};
@@ -232,7 +231,7 @@ void SettingsController::SetAuthenticationTokens(
 
 void SettingsController::SetLocale(const std::string& value) {
   locale_ = LocaleOrDefault(value);
-  UpdateInternalOptions(locale_, spoken_feedback_enabled_);
+  UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
   UpdateDeviceSettings(locale_, hotword_enabled_);
 }
 
@@ -243,7 +242,12 @@ void SettingsController::SetListeningEnabled(bool value) {
 
 void SettingsController::SetSpokenFeedbackEnabled(bool value) {
   spoken_feedback_enabled_ = value;
-  UpdateInternalOptions(locale_, spoken_feedback_enabled_);
+  UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
+}
+
+void SettingsController::SetDarkModeEnabled(bool value) {
+  dark_mode_enabled_ = value;
+  UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
 }
 
 void SettingsController::SetHotwordEnabled(bool value) {
@@ -257,52 +261,52 @@ void SettingsController::GetSettings(const std::string& selector,
   auto* waiter =
       pending_response_waiters_.Add(std::make_unique<GetSettingsResponseWaiter>(
           std::move(callback), include_header));
-  waiter->SendRequest(assistant_manager_internal_, selector);
+  waiter->SendRequest(assistant_client_, selector);
 }
 
 void SettingsController::UpdateSettings(const std::string& settings,
                                         UpdateSettingsCallback callback) {
   auto* waiter = pending_response_waiters_.Add(
       std::make_unique<UpdateSettingsResponseWaiter>(std::move(callback)));
-  waiter->SendRequest(assistant_manager_internal_, settings);
+  waiter->SendRequest(assistant_client_, settings);
 }
 
 void SettingsController::UpdateListeningEnabled(
     absl::optional<bool> listening_enabled) {
-  if (!assistant_manager_)
+  if (!assistant_client_)
     return;
   if (!listening_enabled.has_value())
     return;
 
-  assistant_manager_->EnableListening(listening_enabled.value());
+  assistant_client_->EnableListening(listening_enabled.value());
 }
 
 void SettingsController::UpdateAuthenticationTokens(
     const absl::optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens) {
-  if (!assistant_manager_)
+  if (!assistant_client_)
     return;
   if (!tokens.has_value())
     return;
 
-  assistant_manager_->SetAuthTokens(ToAuthTokens(tokens.value()));
+  assistant_client_->SetAuthenticationInfo(ToAuthTokens(tokens.value()));
 }
 
 void SettingsController::UpdateInternalOptions(
     const absl::optional<std::string>& locale,
-    absl::optional<bool> spoken_feedback_enabled) {
-  if (!assistant_manager_internal_)
+    absl::optional<bool> spoken_feedback_enabled,
+    absl::optional<bool> dark_mode_enabled) {
+  if (!assistant_client_)
     return;
 
   if (locale.has_value())
-    assistant_manager_internal_->SetLocaleOverride(locale.value());
+    assistant_client_->SetLocaleOverride(locale.value());
 
-  if (locale.has_value() && spoken_feedback_enabled.has_value()) {
-    assistant_manager_internal_->SetOptions(
-        *CreateInternalOptions(assistant_manager_internal_, locale.value(),
-                               spoken_feedback_enabled.value()),
-        [](bool success) { DVLOG(2) << "set options: " << success; });
+  if (locale.has_value() && spoken_feedback_enabled.has_value() &&
+      dark_mode_enabled.has_value()) {
+    assistant_client_->SetDeviceAttributes(dark_mode_enabled.value());
+    assistant_client_->SetInternalOptions(locale.value(),
+                                          spoken_feedback_enabled.value());
   }
-  return;
 }
 
 void SettingsController::UpdateDeviceSettings(
@@ -319,28 +323,26 @@ void SettingsController::UpdateDeviceSettings(
 
 void SettingsController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
-  assistant_manager_ = assistant_client->assistant_manager();
-  assistant_manager_internal_ = assistant_client->assistant_manager_internal();
+  assistant_client_ = assistant_client;
 
   // Note we do not enable the device settings updater here, as it requires
   // Libassistant to be started.
   UpdateAuthenticationTokens(authentication_tokens_);
-  UpdateInternalOptions(locale_, spoken_feedback_enabled_);
+  UpdateInternalOptions(locale_, spoken_feedback_enabled_, dark_mode_enabled_);
   UpdateListeningEnabled(listening_enabled_);
 }
 
 void SettingsController::OnAssistantClientStarted(
     AssistantClient* assistant_client) {
-  device_settings_updater_ = std::make_unique<DeviceSettingsUpdater>(
-      this, assistant_client->assistant_manager());
+  device_settings_updater_ =
+      std::make_unique<DeviceSettingsUpdater>(this, assistant_client);
 
   UpdateDeviceSettings(locale_, hotword_enabled_);
 }
 
 void SettingsController::OnDestroyingAssistantClient(
     AssistantClient* assistant_client) {
-  assistant_manager_ = nullptr;
-  assistant_manager_internal_ = nullptr;
+  assistant_client_ = nullptr;
   device_settings_updater_ = nullptr;
   pending_response_waiters_.AbortAll();
 

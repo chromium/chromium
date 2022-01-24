@@ -341,8 +341,8 @@ class CleanerTestBase : public ::testing::Test {
     }
 
     int exit_code = -1;
-    bool exited_within_timeout = process.WaitForExitWithTimeout(
-        base::TimeDelta::FromMinutes(10), &exit_code);
+    bool exited_within_timeout =
+        process.WaitForExitWithTimeout(base::Minutes(10), &exit_code);
     EXPECT_TRUE(exited_within_timeout);
     EXPECT_EQ(expected_exit_code, exit_code);
     if (!exited_within_timeout || expected_exit_code != exit_code)

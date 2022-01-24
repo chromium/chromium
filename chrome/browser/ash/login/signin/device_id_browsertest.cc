@@ -170,7 +170,7 @@ class DeviceIDTest : public OobeBaseTest,
   }
 
   std::unique_ptr<base::RunLoop> user_removal_loop_;
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
 // Add the first user and check that device ID is consistent.

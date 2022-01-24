@@ -46,7 +46,8 @@ namespace {
 // given |web_contents|.
 bool ShouldBlockNavigationToPlatformAppResource(
     const Extension* platform_app,
-    content::WebContents* web_contents) {
+    content::NavigationHandle& navigation_handle) {
+  content::WebContents* web_contents = navigation_handle.GetWebContents();
   mojom::ViewType view_type = GetViewType(web_contents);
   DCHECK_NE(mojom::ViewType::kInvalid, view_type);
 
@@ -72,6 +73,18 @@ bool ShouldBlockNavigationToPlatformAppResource(
 
   // Navigation within a guest web contents.
   if (view_type == mojom::ViewType::kExtensionGuest) {
+    // Navigating within a PDF viewer extension (see crbug.com/1252154). This
+    // exemption is only for the PDF resource. The initial navigation to the PDF
+    // loads the PDF viewer extension, which would have already passed the
+    // checks in this navigation throttle.
+    if (navigation_handle.IsPdf()) {
+      const url::Origin& initiator_origin =
+          navigation_handle.GetInitiatorOrigin().value();
+      CHECK_EQ(initiator_origin.scheme(), kExtensionScheme);
+      CHECK_EQ(initiator_origin.host(), extension_misc::kPdfExtensionId);
+      return false;
+    }
+
     // Platform apps can be embedded by other platform apps using an <appview>
     // tag.
     AppViewGuest* app_view = AppViewGuest::FromWebContents(web_contents);
@@ -238,24 +251,23 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
 
   if (target_extension->is_platform_app() &&
       ShouldBlockNavigationToPlatformAppResource(target_extension,
-                                                 web_contents)) {
+                                                 *navigation_handle())) {
     RecordExtensionResourceAccessResult(
         source_id, url, ExtensionResourceAccessResult::kFailure);
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
 
-  // Navigations with no initiator (e.g. browser-initiated requests) are always
-  // considered trusted, and thus allowed.
-  //
-  // Note that GuestView navigations initiated by the embedder also count as a
-  // browser-initiated navigation.
-  if (!navigation_handle()->GetInitiatorOrigin().has_value()) {
-    DCHECK(!navigation_handle()->IsRendererInitiated());
+  // A browser-initiated navigation is always considered trusted, and thus
+  // allowed.
+  if (!navigation_handle()->IsRendererInitiated())
     return content::NavigationThrottle::PROCEED;
-  }
 
-  // All renderer-initiated navigations must have an initiator.
-  DCHECK(navigation_handle()->GetInitiatorOrigin().has_value());
+  // A renderer-initiated request without an initiator origin is a history
+  // traversal to an entry that was originally loaded in a browser-initiated
+  // navigation. Those are trusted, too.
+  if (!navigation_handle()->GetInitiatorOrigin().has_value())
+    return content::NavigationThrottle::PROCEED;
+
   const url::Origin& initiator_origin =
       navigation_handle()->GetInitiatorOrigin().value();
 

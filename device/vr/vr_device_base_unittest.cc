@@ -25,6 +25,10 @@ namespace {
 class VRDeviceBaseForTesting : public VRDeviceBase {
  public:
   VRDeviceBaseForTesting() : VRDeviceBase(mojom::XRDeviceId::FAKE_DEVICE_ID) {}
+
+  VRDeviceBaseForTesting(const VRDeviceBaseForTesting&) = delete;
+  VRDeviceBaseForTesting& operator=(const VRDeviceBaseForTesting&) = delete;
+
   ~VRDeviceBaseForTesting() override = default;
 
   void SetVRDisplayInfoForTest(mojom::VRDisplayInfoPtr display_info) {
@@ -34,10 +38,6 @@ class VRDeviceBaseForTesting : public VRDeviceBase {
   void RequestSession(
       mojom::XRRuntimeSessionOptionsPtr options,
       mojom::XRRuntime::RequestSessionCallback callback) override {}
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(VRDeviceBaseForTesting);
 };
 
 class StubVRDeviceEventListener : public mojom::XRRuntimeEventListener {
@@ -66,6 +66,10 @@ class StubVRDeviceEventListener : public mojom::XRRuntimeEventListener {
 class VRDeviceTest : public testing::Test {
  public:
   VRDeviceTest() {}
+
+  VRDeviceTest(const VRDeviceTest&) = delete;
+  VRDeviceTest& operator=(const VRDeviceTest&) = delete;
+
   ~VRDeviceTest() override {}
 
  protected:
@@ -77,8 +81,6 @@ class VRDeviceTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(VRDeviceTest);
 };
 
 // Tests VRDevice class default behaviour when it dispatches "vrdevicechanged"

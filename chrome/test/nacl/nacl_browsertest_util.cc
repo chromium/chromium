@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -114,6 +113,10 @@ class NaClIntegrationMessageHandler : public StructuredMessageHandler {
  public:
   NaClIntegrationMessageHandler();
 
+  NaClIntegrationMessageHandler(const NaClIntegrationMessageHandler&) = delete;
+  NaClIntegrationMessageHandler& operator=(
+      const NaClIntegrationMessageHandler&) = delete;
+
   void Log(const std::string& message);
 
   MessageResponse HandleStructuredMessage(const std::string& type,
@@ -125,8 +128,6 @@ class NaClIntegrationMessageHandler : public StructuredMessageHandler {
 
  private:
   bool test_passed_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClIntegrationMessageHandler);
 };
 
 NaClIntegrationMessageHandler::NaClIntegrationMessageHandler()
@@ -229,7 +230,7 @@ bool NaClBrowserTestBase::RunJavascriptTest(
   content::JavascriptTestObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(),
       handler);
-  ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   return observer.Run();
 }
 

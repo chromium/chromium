@@ -43,7 +43,7 @@ class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
 
   void RemoveAllClientsFromCache() override;
 
-  FloatRect ResourceBoundingBox(const FloatRect& reference_box,
+  FloatRect ResourceBoundingBox(const gfx::RectF& reference_box,
                                 float reference_box_zoom);
 
   SVGUnitTypes::SVGUnitType MaskUnits() const;

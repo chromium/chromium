@@ -68,6 +68,8 @@ class StructuredHeaderParser {
     // Discard any leading OWS from input_string.
     SkipWhitespaces();
   }
+  StructuredHeaderParser(const StructuredHeaderParser&) = delete;
+  StructuredHeaderParser& operator=(const StructuredHeaderParser&) = delete;
 
   // Callers should call this after ReadSomething(), to check if parser has
   // consumed all the input successfully.
@@ -541,8 +543,6 @@ class StructuredHeaderParser {
 
   base::StringPiece input_;
   DraftVersion version_;
-
-  DISALLOW_COPY_AND_ASSIGN(StructuredHeaderParser);
 };
 
 // Serializer for (a subset of) Structured Headers for HTTP defined in [SH15].

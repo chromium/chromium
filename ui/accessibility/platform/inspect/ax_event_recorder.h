@@ -34,6 +34,10 @@ using AXEventCallback = base::RepeatingCallback<void(const std::string&)>;
 class AX_EXPORT AXEventRecorder {
  public:
   AXEventRecorder();
+
+  AXEventRecorder(const AXEventRecorder&) = delete;
+  AXEventRecorder& operator=(const AXEventRecorder&) = delete;
+
   virtual ~AXEventRecorder();
 
   // Scopes/unscopes events to a web area.
@@ -66,8 +70,6 @@ class AX_EXPORT AXEventRecorder {
   mutable base::Lock on_event_lock_;
   std::vector<std::string> event_logs_;
   AXEventCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXEventRecorder);
 };
 
 }  // namespace ui

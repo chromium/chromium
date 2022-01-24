@@ -21,9 +21,9 @@
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/win_util.h"
 #include "build/build_config.h"
@@ -45,6 +45,7 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "printing/emf_win.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "sandbox/win/src/sandbox_policy.h"
@@ -77,6 +78,11 @@ class ServiceSandboxedProcessLauncherDelegate
  public:
   ServiceSandboxedProcessLauncherDelegate() {}
 
+  ServiceSandboxedProcessLauncherDelegate(
+      const ServiceSandboxedProcessLauncherDelegate&) = delete;
+  ServiceSandboxedProcessLauncherDelegate& operator=(
+      const ServiceSandboxedProcessLauncherDelegate&) = delete;
+
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
     // Ignore result of SetAlternateDesktop. Service process may run as windows
     // service and it fails to create a window station.
@@ -84,12 +90,9 @@ class ServiceSandboxedProcessLauncherDelegate
     return true;
   }
 
-  sandbox::policy::SandboxType GetSandboxType() override {
-    return sandbox::policy::SandboxType::kPdfConversion;
+  sandbox::mojom::Sandbox GetSandboxType() override {
+    return sandbox::mojom::Sandbox::kPdfConversion;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceSandboxedProcessLauncherDelegate);
 };
 
 // This implementation does not do any font pre-caching.
@@ -339,8 +342,8 @@ bool ServiceUtilityProcessHost::Launch(base::CommandLine* cmd_line,
         cmd_line, delegate.GetSandboxType());
 
     base::Process process;
-    sandbox::ResultCode result = content::StartSandboxedProcess(
-        &delegate, cmd_line, handles, &process);
+    sandbox::ResultCode result =
+        content::StartSandboxedProcess(&delegate, *cmd_line, handles, &process);
     if (result != sandbox::SBOX_ALL_OK)
       return false;
 

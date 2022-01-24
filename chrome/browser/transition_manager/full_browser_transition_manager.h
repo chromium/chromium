@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/simple_factory_key.h"
@@ -27,6 +26,10 @@ class FullBrowserTransitionManager {
 
   // Return the singleton instance of the class
   static FullBrowserTransitionManager* Get();
+
+  FullBrowserTransitionManager(const FullBrowserTransitionManager&) = delete;
+  FullBrowserTransitionManager& operator=(const FullBrowserTransitionManager&) =
+      delete;
 
   // Register a |callback| to be called on profile creation. If a profile
   // matching the |key| has already been created (i.e. full browser has been
@@ -51,7 +54,6 @@ class FullBrowserTransitionManager {
   std::map<SimpleFactoryKey*, std::vector<OnProfileCreationCallback>>
       on_profile_creation_callbacks_;
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(FullBrowserTransitionManager);
 };
 
 #endif  // CHROME_BROWSER_TRANSITION_MANAGER_FULL_BROWSER_TRANSITION_MANAGER_H_

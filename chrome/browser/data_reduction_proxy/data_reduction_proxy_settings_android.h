@@ -13,7 +13,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/data_reduction_proxy/proto/data_store.pb.h"
 #include "components/prefs/pref_member.h"
@@ -32,6 +31,11 @@ class DataReductionProxySettingsAndroid {
   DataReductionProxySettingsAndroid(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
+
+  DataReductionProxySettingsAndroid(const DataReductionProxySettingsAndroid&) =
+      delete;
+  DataReductionProxySettingsAndroid& operator=(
+      const DataReductionProxySettingsAndroid&) = delete;
 
   virtual ~DataReductionProxySettingsAndroid();
 
@@ -116,8 +120,6 @@ class DataReductionProxySettingsAndroid {
   virtual data_reduction_proxy::DataReductionProxySettings* Settings();
 
   base::WeakPtrFactory<DataReductionProxySettingsAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionProxySettingsAndroid);
 };
 
 #endif  // CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROXY_SETTINGS_ANDROID_H_

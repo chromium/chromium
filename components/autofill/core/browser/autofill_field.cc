@@ -50,7 +50,8 @@ std::unique_ptr<AutofillField> AutofillField::CreateForPasswordManagerUpload(
 ServerFieldType AutofillField::server_type() const {
   return server_predictions_.empty()
              ? NO_SERVER_DATA
-             : static_cast<ServerFieldType>(server_predictions_[0].type());
+             : ToSafeServerFieldType(server_predictions_[0].type(),
+                                     NO_SERVER_DATA);
 }
 
 bool AutofillField::server_type_prediction_is_override() const {
@@ -85,12 +86,10 @@ void AutofillField::set_server_predictions(
         predictions) {
   server_predictions_ = std::move(predictions);
   overall_type_ = AutofillType(NO_SERVER_DATA);
-  // Chrome no longer supports fax numbers, but the server still does.
+  // Ensures that AutofillField::server_type() is a valid enum value.
   for (auto& prediction : server_predictions_) {
-    if (prediction.type() >= PHONE_FAX_NUMBER &&
-        prediction.type() <= PHONE_FAX_WHOLE_NUMBER) {
-      prediction.set_type(NO_SERVER_DATA);
-    }
+    prediction.set_type(
+        ToSafeServerFieldType(prediction.type(), NO_SERVER_DATA));
   }
 }
 

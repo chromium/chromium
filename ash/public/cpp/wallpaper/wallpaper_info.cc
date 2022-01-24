@@ -4,12 +4,26 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 
+#include <iostream>
+
+#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
+
 namespace ash {
 
 WallpaperInfo::WallpaperInfo() {
   layout = WALLPAPER_LAYOUT_CENTER;
-  type = WALLPAPER_TYPE_COUNT;
+  type = WallpaperType::kCount;
 }
+
+WallpaperInfo::WallpaperInfo(
+    const OnlineWallpaperParams& online_wallpaper_params)
+    : WallpaperInfo(online_wallpaper_params.url.spec(),
+                    online_wallpaper_params.asset_id,
+                    online_wallpaper_params.collection_id,
+                    online_wallpaper_params.layout,
+                    WallpaperType::kOnline,
+                    base::Time::Now()) {}
 
 WallpaperInfo::WallpaperInfo(const std::string& in_location,
                              const absl::optional<uint64_t>& in_asset_id,
@@ -31,8 +45,10 @@ WallpaperInfo::WallpaperInfo(const std::string& in_location,
     : location(in_location), layout(in_layout), type(in_type), date(in_date) {}
 
 WallpaperInfo::WallpaperInfo(const WallpaperInfo& other) = default;
-
 WallpaperInfo& WallpaperInfo::operator=(const WallpaperInfo& other) = default;
+
+WallpaperInfo::WallpaperInfo(WallpaperInfo&& other) = default;
+WallpaperInfo& WallpaperInfo::operator=(WallpaperInfo&& other) = default;
 
 bool WallpaperInfo::operator==(const WallpaperInfo& other) const {
   return (location == other.location) && (asset_id == other.asset_id) &&
@@ -45,5 +61,16 @@ bool WallpaperInfo::operator!=(const WallpaperInfo& other) const {
 }
 
 WallpaperInfo::~WallpaperInfo() = default;
+
+std::ostream& operator<<(std::ostream& os, const WallpaperInfo& info) {
+  os << "WallpaperInfo:" << std::endl;
+  os << "  location: " << info.location << std::endl;
+  os << "  asset_id: " << info.asset_id.value_or(-1) << std::endl;
+  os << "  collection_id: " << info.collection_id << std::endl;
+  os << "  layout: " << info.layout << std::endl;
+  os << "  type: " << static_cast<int>(info.type) << std::endl;
+  os << "  date: " << info.date << std::endl;
+  return os;
+}
 
 }  // namespace ash

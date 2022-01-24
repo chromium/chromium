@@ -6,9 +6,7 @@
 #define COMPONENTS_SEARCH_ENGINES_DEFAULT_SEARCH_POLICY_HANDLER_H_
 
 #include <memory>
-#include <vector>
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 namespace policy {
@@ -17,6 +15,11 @@ namespace policy {
 class DefaultSearchPolicyHandler : public ConfigurationPolicyHandler {
  public:
   DefaultSearchPolicyHandler();
+
+  DefaultSearchPolicyHandler(const DefaultSearchPolicyHandler&) = delete;
+  DefaultSearchPolicyHandler& operator=(const DefaultSearchPolicyHandler&) =
+      delete;
+
   ~DefaultSearchPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
@@ -57,8 +60,6 @@ class DefaultSearchPolicyHandler : public ConfigurationPolicyHandler {
   // Make sure that the |path| is present in |prefs_| and is a ListValue.  If
   // not, set it to an empty list.
   void EnsureListPrefExists(PrefValueMap* prefs, const std::string& path);
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultSearchPolicyHandler);
 };
 
 }  // namespace policy

@@ -37,6 +37,7 @@ extern const char kUserName[];
 extern const char kAuthServiceWithToken[];
 extern const char kLocalJid[];
 extern const char kDirectoryBotJidValue[];
+extern const char kIsEnterpriseAdminUser[];
 extern const char kSuppressUserDialogs[];
 extern const char kSuppressNotifications[];
 extern const char kTerminateUponInput[];

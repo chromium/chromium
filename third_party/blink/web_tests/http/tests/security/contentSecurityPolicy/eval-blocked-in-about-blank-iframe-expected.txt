@@ -1,4 +1,0 @@
-ALERT: /PASS/
-CONSOLE ERROR: line 1: Uncaught EvalError: Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'unsafe-inline'".
-
- Eval should be blocked in the iframe, but inline script should be allowed.

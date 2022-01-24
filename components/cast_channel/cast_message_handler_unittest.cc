@@ -108,6 +108,9 @@ class CastMessageHandlerTest : public testing::Test {
         .WillByDefault(testing::Return(&cast_socket_));
   }
 
+  CastMessageHandlerTest(const CastMessageHandlerTest&) = delete;
+  CastMessageHandlerTest& operator=(const CastMessageHandlerTest&) = delete;
+
   ~CastMessageHandlerTest() override = default;
 
   void OnMessage(const CastMessage& message) {
@@ -234,9 +237,6 @@ class CastMessageHandlerTest : public testing::Test {
   base::MockCallback<GetAppAvailabilityCallback> get_app_availability_callback_;
   base::MockCallback<ResultCallback> set_volume_callback_;
   base::MockCallback<ResultCallback> stop_session_callback_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastMessageHandlerTest);
 };
 
 TEST_F(CastMessageHandlerTest, VirtualConnectionCreatedOnlyOnce) {
@@ -320,7 +320,7 @@ TEST_F(CastMessageHandlerTest, RequestAppAvailabilityTimesOut) {
                      base::Unretained(this)));
   EXPECT_CALL(*this, DoOnAppAvailability("ABCDEFAB",
                                          GetAppAvailabilityResult::kUnknown));
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
 }
 
 TEST_F(CastMessageHandlerTest, AppAvailabilitySentOnlyOnceWhilePending) {
@@ -395,7 +395,7 @@ TEST_F(CastMessageHandlerTest, LaunchSession) {
   const absl::optional<base::Value> json = base::JSONReader::Read(kAppParams);
 
   handler_.LaunchSession(
-      channel_id_, kAppId1, base::TimeDelta::FromSeconds(30), {"WEB"}, json,
+      channel_id_, kAppId1, base::Seconds(30), {"WEB"}, json,
       base::BindOnce(&CastMessageHandlerTest::ExpectSessionLaunchResult,
                      base::Unretained(this),
                      LaunchSessionResponse::Result::kOk));
@@ -436,13 +436,13 @@ TEST_F(CastMessageHandlerTest, LaunchSessionTimedOut) {
   ExpectEnsureConnectionThen(CastMessageType::kLaunch);
 
   handler_.LaunchSession(
-      channel_id_, kAppId1, base::TimeDelta::FromSeconds(30), {"WEB"},
+      channel_id_, kAppId1, base::Seconds(30), {"WEB"},
       /* appParams */ absl::nullopt,
       base::BindOnce(&CastMessageHandlerTest::ExpectSessionLaunchResult,
                      base::Unretained(this),
                      LaunchSessionResponse::Result::kTimedOut));
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment_.FastForwardBy(base::Seconds(30));
   EXPECT_EQ(1, session_launch_response_count_);
 }
 
@@ -451,7 +451,7 @@ TEST_F(CastMessageHandlerTest, LaunchSessionMessageExceedsSizeLimit) {
   base::Value json(base::Value::Type::DICTIONARY);
   json.SetKey("key", base::Value(invalid_URL));
   handler_.LaunchSession(
-      channel_id_, kAppId1, base::TimeDelta::FromSeconds(30), {"WEB"},
+      channel_id_, kAppId1, base::Seconds(30), {"WEB"},
       absl::make_optional<base::Value>(std::move(json)),
       base::BindOnce(&CastMessageHandlerTest::ExpectSessionLaunchResult,
                      base::Unretained(this),
@@ -585,7 +585,7 @@ TEST_F(CastMessageHandlerTest, SendVolumeCommand) {
     "type": "SET_VOLUME",
   })";
   handler_.SendSetVolumeRequest(channel_id_, ParseJson(message_str),
-                                "theSourceId", base::DoNothing::Once<Result>());
+                                "theSourceId", base::DoNothing());
 }
 
 // Check that closing a socket removes pending requests, and that the pending

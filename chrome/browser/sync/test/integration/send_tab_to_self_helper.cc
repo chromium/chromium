@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/send_tab_to_self_helper.h"
 
+#include <map>
 #include <sstream>
 
 #include "base/check_op.h"
@@ -12,6 +13,8 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info_tracker.h"
 
 namespace send_tab_to_self_helper {
 
@@ -212,7 +215,12 @@ SendTabToSelfMultiDeviceActiveChecker::
 bool SendTabToSelfMultiDeviceActiveChecker::IsExitConditionSatisfied(
     std::ostream* os) {
   *os << "Waiting for multiple devices to be active.";
-  return tracker_->CountActiveDevices() > 1;
+  const std::map<sync_pb::SyncEnums_DeviceType, int> device_count_by_type =
+      tracker_->CountActiveDevicesByType();
+  int total = 0;
+  for (const auto& type_and_count : device_count_by_type)
+    total += type_and_count.second;
+  return total > 1;
 }
 
 void SendTabToSelfMultiDeviceActiveChecker::OnDeviceInfoChange() {

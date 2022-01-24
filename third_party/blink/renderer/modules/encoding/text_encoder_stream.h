@@ -30,6 +30,10 @@ class TextEncoderStream final : public ScriptWrappable {
   static TextEncoderStream* Create(ScriptState*, ExceptionState&);
 
   TextEncoderStream(ScriptState*, ExceptionState&);
+
+  TextEncoderStream(const TextEncoderStream&) = delete;
+  TextEncoderStream& operator=(const TextEncoderStream&) = delete;
+
   ~TextEncoderStream() override;
 
   // From text_encoder_stream.idl
@@ -43,8 +47,6 @@ class TextEncoderStream final : public ScriptWrappable {
   class Transformer;
 
   const Member<TransformStream> transform_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextEncoderStream);
 };
 
 }  // namespace blink

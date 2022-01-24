@@ -42,18 +42,6 @@ Polymer({
     },
 
     /**
-     * Whether new OOBE layout is enabled.
-     * @type {boolean}
-     */
-    newLayoutEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('newLayoutEnabled') &&
-            loadTimeData.getBoolean('newLayoutEnabled');
-      }
-    },
-
-    /**
      * Indicates whether user is minor mode user (e.g. under age of 18).
      */
     isMinorMode_: {
@@ -88,7 +76,7 @@ Polymer({
    * @private {string}
    */
   urlTemplate_:
-      'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v3_omni_$.html',
+      'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v4_omni_$.html',
 
   /**
    * Whether try to reload with the default url when a 404 error occurred.
@@ -124,6 +112,13 @@ Polymer({
    * @private
    */
   headerReceived_: false,
+
+  /**
+   * Whether the webview has been successfully loaded.
+   * @type {boolean}
+   * @private
+   */
+  webViewLoaded_: false,
 
   /**
    * Whether all the setting zippy has been successfully loaded.
@@ -189,13 +184,17 @@ Polymer({
 
   /**
    * Sets learn more content text and shows it as overlay dialog.
+   * @param {string} title Title of the dialog.
    * @param {string} content HTML formatted text to show.
+   * @param {string} buttonText Text on the button that closes the dialog.
    */
-  showLearnMoreOverlay(title, additionalInfo) {
+  showLearnMoreOverlay(title, content, buttonText) {
     this.$['overlay-title-text'].innerHTML =
         this.sanitizer_.sanitizeHtml(title);
     this.$['overlay-additional-info-text'].innerHTML =
-        this.sanitizer_.sanitizeHtml(additionalInfo);
+        this.sanitizer_.sanitizeHtml(content);
+    this.$['overlay-close-button-text'].textContent = buttonText;
+    this.$['overlay-close-button'].labelForAria = buttonText;
     this.$['learn-more-overlay'].setTitleAriaLabel(title);
 
     this.$['learn-more-overlay'].showModal();
@@ -225,6 +224,7 @@ Polymer({
       this.consentStringLoaded_ = false;
     }
 
+    this.reloadWebView();
     this.buttonsDisabled = true;
     this.currentConsentStep_ = 0;
   },
@@ -235,6 +235,7 @@ Polymer({
   reloadWebView() {
     this.loadingError_ = false;
     this.headerReceived_ = false;
+    this.webViewLoaded_ = false;
     let locale = this.locale.replace('-', '_').toLowerCase();
     this.valuePropView_.src = this.urlTemplate_.replace('$', locale);
   },
@@ -263,7 +264,7 @@ Polymer({
       this.reloadWithDefaultUrl_ = false;
       return;
     }
-
+    this.webViewLoaded_ = true;
     if (this.settingZippyLoaded_ && this.consentStringLoaded_) {
       this.onPageLoaded();
     }
@@ -296,8 +297,6 @@ Polymer({
     this.$['value-prop-dialog'].setAttribute(
         'aria-label', data['valuePropTitle']);
     this.$['title-text'].textContent = data['valuePropTitle'];
-    this.$['user-image'].src = data['valuePropUserImage'];
-    this.$['user-name'].textContent = data['valuePropIdentity'];
     this.$['next-button'].labelForAria = data['valuePropNextButton'];
     this.$['next-button-text'].textContent = data['valuePropNextButton'];
     this.$['skip-button'].labelForAria = data['valuePropSkipButton'];
@@ -307,8 +306,8 @@ Polymer({
     this.equalWeightButtons_ = data['equalWeightButtons'];
 
     this.consentStringLoaded_ = true;
-    if (this.settingZippyLoaded_) {
-      this.reloadWebView();
+    if (this.settingZippyLoaded_ && this.webViewLoaded_) {
+      this.onPageLoaded();
     }
   },
 
@@ -317,8 +316,8 @@ Polymer({
    */
   addSettingZippy(zippy_data) {
     if (this.settingZippyLoaded_) {
-      if (this.consentStringLoaded_) {
-        this.reloadWebView();
+      if (this.consentStringLoaded_ && this.webViewLoaded_) {
+        this.onPageLoaded();
       }
       return;
     }
@@ -341,15 +340,14 @@ Polymer({
       for (var j in zippy_data[i]) {
         var data = zippy_data[i][j];
         var zippy = document.createElement('setting-zippy');
+        let background = this.isMinorMode_ ? '#e8f0fe' /* gblue50 */ : 'white';
         zippy.setAttribute(
             'icon-src',
             'data:text/html;charset=utf-8,' +
-                encodeURIComponent(
-                    zippy.getWrappedIcon(data['iconUri'], data['title'])));
+                encodeURIComponent(zippy.getWrappedIcon(
+                    data['iconUri'], data['title'], background)));
         zippy.setAttribute('step', i);
-        if (!this.newLayoutEnabled_) {
-          zippy.setAttribute('hide-line', true);
-        } else if (this.isMinorMode_) {
+        if (this.isMinorMode_) {
           zippy.setAttribute('hide-line', true);
           zippy.setAttribute('card-style', true);
         }
@@ -370,15 +368,23 @@ Polymer({
         var learnMoreLink = document.createElement('a');
         learnMoreLink.textContent = data['popupLink'];
         learnMoreLink.setAttribute('href', 'javascript:void(0)');
-        learnMoreLink.onclick = function(title, additionalInfo, focus) {
+        learnMoreLink.onclick =
+            function(title, content, buttonText, focus) {
           this.lastFocusedElement = focus;
-          this.showLearnMoreOverlay(title, additionalInfo);
-        }.bind(this, data['title'], data['additionalInfo'], learnMoreLink);
+          this.showLearnMoreOverlay(title, content, buttonText);
+        }.bind(this, data['learnMoreDialogTitle'],
+               data['learnMoreDialogContent'], data['learnMoreDialogButton'],
+               learnMoreLink);
         description.appendChild(learnMoreLink);
         content.appendChild(description);
 
-        // TODO(https://crbug.com/1224850) Add additionalInfo in setting zippys
-        // and update content in learn more dialog.
+        if (this.isMinorMode_) {
+          var additionalInfo = document.createElement('div');
+          additionalInfo.innerHTML =
+              this.sanitizer_.sanitizeHtml(data['additionalInfo']);
+          content.appendChild(document.createElement('br'));
+          content.appendChild(additionalInfo);
+        }
 
         zippy.appendChild(content);
         this.$['consents-container'].appendChild(zippy);
@@ -387,8 +393,8 @@ Polymer({
     this.showContentForStep_(this.currentConsentStep_);
 
     this.settingZippyLoaded_ = true;
-    if (this.consentStringLoaded_) {
-      this.reloadWebView();
+    if (this.consentStringLoaded_ && this.webViewLoaded_) {
+      this.onPageLoaded();
     }
   },
 
@@ -398,7 +404,7 @@ Polymer({
   addSubtitle_(data, step) {
     var subtitle = document.createElement('div');
     subtitle.setAttribute('step', step);
-    if (this.newLayoutEnabled_ && this.isMinorMode_) {
+    if (this.isMinorMode_) {
       var title = document.createElement('div');
       title.innerHTML = this.sanitizer_.sanitizeHtml(data['title']);
       title.classList.add('subtitle-text');
@@ -424,8 +430,13 @@ Polymer({
   onPageLoaded() {
     this.fire('loaded');
 
-    this.buttonsDisabled = false;
-    this.$['next-button'].focus();
+    // The webview animation only starts playing when it is focused (in order
+    // to make sure the animation and the caption are in sync).
+    this.valuePropView_.focus();
+    this.async(() => {
+      this.buttonsDisabled = false;
+      this.$['next-button'].focus();
+    }, 300);
 
     if (!this.hidden && !this.screenShown_) {
       this.browserProxy_.screenShown(VALUE_PROP_SCREEN_ID);
@@ -438,17 +449,13 @@ Polymer({
    */
   onShow() {
     this.$['overlay-close-button'].addEventListener(
-        'click', this.hideOverlay.bind(this));
+        'click', () => this.hideOverlay());
 
     Polymer.RenderStatus.afterNextRender(
         this, () => this.$['next-button'].focus());
 
     if (!this.initialized_) {
-      if (this.newLayoutEnabled_) {
-        this.valuePropView_ = this.$['value-prop-view'];
-      } else {
-        this.valuePropView_ = this.$['value-prop-view-old'];
-      }
+      this.valuePropView_ = this.$['value-prop-view'];
       this.initializeWebview_(this.valuePropView_);
       this.reloadPage();
       this.initialized_ = true;
@@ -464,6 +471,7 @@ Polymer({
     this.currentConsentStep_ += 1;
     this.showContentForStep_(this.currentConsentStep_);
     this.buttonsDisabled = false;
+    this.$['next-button'].focus();
   },
 
   /**
@@ -482,11 +490,11 @@ Polymer({
   initializeWebview_(webview) {
     const requestFilter = {urls: ['<all_urls>'], types: ['main_frame']};
     webview.request.onErrorOccurred.addListener(
-        this.onWebViewErrorOccurred.bind(this), requestFilter);
+        details => this.onWebViewErrorOccurred(details), requestFilter);
     webview.request.onHeadersReceived.addListener(
-        this.onWebViewHeadersReceived.bind(this), requestFilter);
+        details => this.onWebViewHeadersReceived(details), requestFilter);
     webview.addEventListener(
-        'contentload', this.onWebViewContentLoad.bind(this));
+        'contentload', details => this.onWebViewContentLoad(details));
     webview.addContentScripts([webviewStripLinksContentScript]);
   },
 

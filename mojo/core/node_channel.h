@@ -14,8 +14,8 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/connection_params.h"
@@ -89,6 +89,9 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
       Channel::HandlePolicy channel_handle_policy,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       const ProcessErrorCallback& process_error_callback);
+
+  NodeChannel(const NodeChannel&) = delete;
+  NodeChannel& operator=(const NodeChannel&) = delete;
 
   static Channel::MessagePtr CreateEventMessage(size_t capacity,
                                                 size_t payload_size,
@@ -219,8 +222,6 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
 
   base::Lock remote_process_handle_lock_;
   base::Process remote_process_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(NodeChannel);
 };
 
 }  // namespace core

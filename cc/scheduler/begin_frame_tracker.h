@@ -12,6 +12,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace perfetto {
+class EventContext;
 namespace protos {
 namespace pbzero {
 class BeginImplFrameArgs;
@@ -71,6 +72,7 @@ class CC_EXPORT BeginFrameTracker {
   base::TimeDelta Interval() const;
 
   void AsProtozeroInto(
+      perfetto::EventContext& ctx,
       base::TimeTicks now,
       perfetto::protos::pbzero::BeginImplFrameArgs* dict) const;
 

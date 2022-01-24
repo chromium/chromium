@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -40,6 +39,12 @@ class SubresourceFilterSafeBrowsingClientRequest
           database_manager,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       SubresourceFilterSafeBrowsingClient* client);
+
+  SubresourceFilterSafeBrowsingClientRequest(
+      const SubresourceFilterSafeBrowsingClientRequest&) = delete;
+  SubresourceFilterSafeBrowsingClientRequest& operator=(
+      const SubresourceFilterSafeBrowsingClientRequest&) = delete;
+
   ~SubresourceFilterSafeBrowsingClientRequest() override;
 
   void Start(const GURL& url);
@@ -56,8 +61,7 @@ class SubresourceFilterSafeBrowsingClientRequest
   // verify a URL. After this amount of time the outstanding check will be
   // aborted, and the URL will be treated as if it didn't belong to the
   // Subresource Filter only list.
-  static constexpr base::TimeDelta kCheckURLTimeout =
-      base::TimeDelta::FromSeconds(5);
+  static constexpr base::TimeDelta kCheckURLTimeout = base::Seconds(5);
 
  private:
   // Callback for when the safe browsing check has taken longer than
@@ -84,8 +88,6 @@ class SubresourceFilterSafeBrowsingClientRequest
   base::OneShotTimer timer_;
 
   bool request_completed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterSafeBrowsingClientRequest);
 };
 
 }  // namespace subresource_filter

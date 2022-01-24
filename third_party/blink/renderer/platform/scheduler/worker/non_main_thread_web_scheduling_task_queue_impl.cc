@@ -14,7 +14,7 @@ NonMainThreadWebSchedulingTaskQueueImpl::
     NonMainThreadWebSchedulingTaskQueueImpl(
         scoped_refptr<NonMainThreadTaskQueue> task_queue)
     : task_runner_(
-          task_queue->CreateTaskRunner(TaskType::kExperimentalWebScheduling)),
+          task_queue->CreateTaskRunner(TaskType::kWebSchedulingPostedTask)),
       task_queue_(std::move(task_queue)) {}
 
 void NonMainThreadWebSchedulingTaskQueueImpl::SetPriority(

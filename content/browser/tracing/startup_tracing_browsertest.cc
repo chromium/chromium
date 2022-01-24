@@ -72,6 +72,10 @@ class StartupTracingInProcessTest : public ContentBrowserTest {
 class LargeTraceEventData : public base::trace_event::ConvertableToTraceFormat {
  public:
   LargeTraceEventData() = default;
+
+  LargeTraceEventData(const LargeTraceEventData&) = delete;
+  LargeTraceEventData& operator=(const LargeTraceEventData&) = delete;
+
   ~LargeTraceEventData() override = default;
 
   const size_t kLargeMessageSize = 100 * 1024;
@@ -79,9 +83,6 @@ class LargeTraceEventData : public base::trace_event::ConvertableToTraceFormat {
     std::string large_string(kLargeMessageSize, '.');
     out->append(large_string);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LargeTraceEventData);
 };
 
 // This will fill a massive amount of startup tracing data into a
@@ -191,15 +192,11 @@ class StartupTracingTest
  public:
   StartupTracingTest() = default;
 
+  StartupTracingTest(const StartupTracingTest&) = delete;
+  StartupTracingTest& operator=(const StartupTracingTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(crbug/1220772): Ideally we shouldn't remove any categories and all
-    // should be well formed, however gpu.angle.* events don't correctly end
-    // their trace events causing stack depths to explode, this triggers a
-    // DCHECK failure on debug builds causing test failures. So remove them
-    // until https://bugs.chromium.org/p/angleproject/issues/detail?id=6158 is
-    // fixed.
-    command_line->AppendSwitchASCII(switches::kTraceStartup,
-                                    "-gpu.angle,-gpu.angle.gpu");
+    command_line->AppendSwitch(switches::kTraceStartup);
     if (GetFinishType() == FinishType::kWaitForTimeout) {
       command_line->AppendSwitchASCII(switches::kTraceStartupDuration, "3");
     } else {
@@ -307,8 +304,6 @@ class StartupTracingTest
  private:
   base::test::ScopedRunLoopTimeout increased_timeout_{
       FROM_HERE, TestTimeouts::test_launcher_timeout()};
-
-  DISALLOW_COPY_AND_ASSIGN(StartupTracingTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(

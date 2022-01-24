@@ -1,0 +1,5 @@
+specific_include_rules = {
+    "eye_dropper.cc": [
+        "+ui/base/ui_base_features.h",
+    ],
+}

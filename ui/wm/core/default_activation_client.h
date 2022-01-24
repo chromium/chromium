@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/core/wm_core_export.h"
@@ -27,6 +26,9 @@ class WM_CORE_EXPORT DefaultActivationClient : public ActivationClient,
                                                public aura::WindowObserver {
  public:
   explicit DefaultActivationClient(aura::Window* root_window);
+
+  DefaultActivationClient(const DefaultActivationClient&) = delete;
+  DefaultActivationClient& operator=(const DefaultActivationClient&) = delete;
 
   // Overridden from ActivationClient:
   void AddObserver(ActivationChangeObserver* observer) override;
@@ -61,8 +63,6 @@ class WM_CORE_EXPORT DefaultActivationClient : public ActivationClient,
   aura::Window* last_active_;
 
   base::ObserverList<ActivationChangeObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultActivationClient);
 };
 
 }  // namespace wm

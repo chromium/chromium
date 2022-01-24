@@ -28,6 +28,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) KeepaliveStatisticsRecorder
   };
 
   KeepaliveStatisticsRecorder();
+
+  KeepaliveStatisticsRecorder(const KeepaliveStatisticsRecorder&) = delete;
+  KeepaliveStatisticsRecorder& operator=(const KeepaliveStatisticsRecorder&) =
+      delete;
+
   ~KeepaliveStatisticsRecorder();
 
   // Registers / Unregisters |top_level_frame| to this object.
@@ -61,8 +66,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) KeepaliveStatisticsRecorder
       per_top_level_frame_records_;
   int num_inflight_requests_ = 0;
   int peak_inflight_requests_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(KeepaliveStatisticsRecorder);
 };
 
 }  // namespace network

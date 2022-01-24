@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/exo/surface_observer.h"
@@ -53,6 +52,10 @@ class Pointer : public SurfaceTreeHost,
                 public aura::client::FocusChangeObserver {
  public:
   Pointer(PointerDelegate* delegate, Seat* seat);
+
+  Pointer(const Pointer&) = delete;
+  Pointer& operator=(const Pointer&) = delete;
+
   ~Pointer() override;
 
   PointerDelegate* delegate() const { return delegate_; }
@@ -224,8 +227,6 @@ class Pointer : public SurfaceTreeHost,
 
   // Weak pointer factory used for cursor capture callbacks.
   base::WeakPtrFactory<Pointer> cursor_capture_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Pointer);
 };
 
 }  // namespace exo

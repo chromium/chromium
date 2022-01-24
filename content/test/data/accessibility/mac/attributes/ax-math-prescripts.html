@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--
+@SCRIPT:
+  multiscripts1.AXMathPrescripts.count
+  multiscripts1.AXMathPrescripts[0].AXMathSuperscript.AXChildren[0].AXValue
+  multiscripts1.AXMathPrescripts[1].AXMathSubscript.AXChildren[0].AXValue
+  multiscripts1.AXMathPrescripts[1].AXMathSuperscript.AXChildren[0].AXValue
+  multiscripts1.AXMathPrescripts[2].AXMathSubscript.AXChildren[0].AXValue
+  multiscripts1.AXMathPrescripts[2].AXMathSuperscript.AXChildren[0].AXValue
+
+@SCRIPT:
+  multiscripts2.AXMathPrescripts.count
+  multiscripts2.AXMathPrescripts[0].AXMathSubscript.AXChildren[0].AXValue
+  multiscripts2.AXMathPrescripts[0].AXMathSuperscript.AXChildren.count
+  multiscripts2.AXMathPrescripts[1].AXMathSubscript.AXChildren.count
+  multiscripts2.AXMathPrescripts[1].AXMathSuperscript.AXChildren[0].AXValue
+
+@SCRIPT:
+  multiscripts3.AXMathPrescripts
+
+@SCRIPT:
+  multiscripts4.AXMathPrescripts.count
+  multiscripts4.AXMathPrescripts[0].AXMathSuperscript.AXChildren[0].AXValue
+  multiscripts4.AXMathPrescripts[0].AXMathSubscript.AXChildren[0].AXValue
+-->
+<math>
+  <mmultiscripts id="multiscripts1">
+    <mtext>base</mtext>
+    <mtext>post1</mtext>
+    <mtext>post2</mtext>
+    <mtext>post3</mtext>
+    <mtext>post4</mtext>
+    <mtext>post5</mtext>
+    <mtext>post6</mtext>
+    <mprescripts/>
+    <mtext>pre1</mtext>
+    <mtext>pre2</mtext>
+    <mtext>pre3</mtext>
+    <mtext>pre4</mtext>
+    <mtext>pre5</mtext>
+    <mtext>pre6</mtext>
+  </mmultiscripts>
+  <mmultiscripts id="multiscripts2">
+    <mtext>base</mtext>
+    <mtext>post1</mtext>
+    <none/>
+    <none/>
+    <mtext>post4</mtext>
+    <mprescripts/>
+    <mtext>pre1</mtext>
+    <none/>
+    <none/>
+    <mtext>pre4</mtext>
+  </mmultiscripts>
+  <mmultiscripts id="multiscripts3">
+    <mtext>base</mtext>
+    <mn>1</mn>
+    <mn>2</mn>
+  </mmultiscripts>
+  <mmultiscripts id="multiscripts4">
+    <mtext>base</mtext>
+    <mprescripts/>
+    <mn>1</mn>
+    <mn>2</mn>
+  </mmultiscripts>
+</math>

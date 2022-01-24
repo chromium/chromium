@@ -9,13 +9,8 @@
 [
     Exposed=Window
 ] interface RTCEncodedAudioFrame {
-    readonly attribute unsigned long long timestamp;  // microseconds
+    readonly attribute unsigned long long timestamp;  // RTP timestamp.
     attribute ArrayBuffer data;
     RTCEncodedAudioFrameMetadata getMetadata();
-    // TODO(crbug.com/1052765): Remove the following fields before enabling
-    // by default.
-    [RuntimeEnabled=RTCInsertableStreams] readonly attribute ArrayBuffer additionalData;
-    [RuntimeEnabled=RTCInsertableStreams] readonly attribute unsigned long synchronizationSource;
-    [RuntimeEnabled=RTCInsertableStreams] readonly attribute FrozenArray<unsigned long> contributingSources;
     stringifier;
 };

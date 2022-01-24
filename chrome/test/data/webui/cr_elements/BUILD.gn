@@ -21,7 +21,6 @@ js_type_check("closure_compile") {
     ":cr_card_radio_button_test",
     ":cr_checkbox_test",
     ":cr_container_shadow_behavior_test",
-    ":cr_container_shadow_mixin_test",
     ":cr_dialog_test",
     ":cr_drawer_tests",
     ":cr_expand_button_tests",
@@ -49,6 +48,7 @@ js_type_check("closure_compile") {
     ":cr_toggle_test",
     ":cr_toolbar_focus_tests",
     ":cr_toolbar_search_field_tests",
+    ":cr_toolbar_test",
     ":cr_view_manager_test",
     ":iron_list_focus_test",
   ]
@@ -61,7 +61,7 @@ js_type_check("closure_compile") {
 js_library("cr_action_menu_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
@@ -76,7 +76,7 @@ js_library("cr_action_menu_test") {
 js_library("cr_button_tests") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -85,7 +85,7 @@ js_library("cr_button_tests") {
 js_library("cr_checkbox_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
   ]
@@ -101,19 +101,10 @@ js_library("cr_container_shadow_behavior_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-js_library("cr_container_shadow_mixin_test") {
-  deps = [
-    "..:chai_assert",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:cr_container_shadow_mixin",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
 js_library("cr_dialog_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -124,7 +115,7 @@ js_library("cr_dialog_test") {
 js_library("cr_drawer_tests") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer",
   ]
@@ -143,7 +134,7 @@ js_library("cr_expand_button_tests") {
 js_library("cr_fingerprint_progress_arc_tests") {
   deps = [
     "..:chai_assert",
-    "..:mock_controller.m",
+    "..:mock_controller",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_fingerprint:cr_fingerprint_progress_arc.m",
     "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
@@ -154,7 +145,7 @@ js_library("cr_fingerprint_progress_arc_tests") {
 js_library("cr_icon_button_tests") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
   ]
@@ -169,7 +160,7 @@ js_library("cr_auto_img_test") {
 js_library("cr_input_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
   ]
@@ -179,7 +170,7 @@ js_library("cr_input_test") {
 js_library("cr_grid_focus_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//ui/webui/resources/cr_elements/cr_grid",
     "//ui/webui/resources/js:util.m",
@@ -209,7 +200,7 @@ js_library("cr_link_row_tests") {
 js_library("cr_lottie_tests") {
   deps = [
     "..:chai_assert",
-    "..:mock_controller.m",
+    "..:mock_controller",
     "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -280,7 +271,7 @@ js_library("cr_card_radio_button_test") {
 js_library("cr_radio_group_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
@@ -292,7 +283,7 @@ js_library("cr_radio_group_test") {
 js_library("cr_scrollable_behavior_tests") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
@@ -303,7 +294,7 @@ js_library("cr_scrollable_behavior_tests") {
 js_library("cr_search_field_tests") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
   ]
@@ -313,7 +304,7 @@ js_library("cr_search_field_tests") {
 js_library("cr_slider_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
@@ -332,7 +323,7 @@ js_library("cr_splitter_test") {
 js_library("cr_tabs_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//ui/webui/resources/cr_elements/cr_tabs:cr_tabs",
     "//ui/webui/resources/js:util.m",
@@ -343,9 +334,9 @@ js_library("cr_tabs_test") {
 js_library("cr_toast_manager_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
+    "..:test_util",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -353,8 +344,8 @@ js_library("cr_toast_manager_test") {
 js_library("cr_toast_test") {
   deps = [
     "..:chai_assert",
-    "..:mock_timer.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
+    "..:mock_timer",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -362,7 +353,7 @@ js_library("cr_toast_test") {
 js_library("cr_toggle_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
   ]
@@ -382,8 +373,17 @@ js_library("cr_toolbar_search_field_tests") {
 js_library("cr_toolbar_focus_tests") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("cr_toolbar_test") {
+  deps = [
+    "..:chai_assert",
+    "..:test_util",
     "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -392,7 +392,7 @@ js_library("cr_toolbar_focus_tests") {
 js_library("cr_view_manager_test") {
   deps = [
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -413,7 +413,7 @@ if (is_chromeos_ash) {
       "..:chai_assert",
       "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
       "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-      "//ui/webui/resources/cr_elements/cr_searchable_drop_down:cr_searchable_drop_down.m",
+      "//ui/webui/resources/cr_elements/cr_searchable_drop_down:cr_searchable_drop_down",
     ]
     externs_list = [ "$externs_path/mocha-2.5.js" ]
   }

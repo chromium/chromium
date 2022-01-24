@@ -10,11 +10,11 @@
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
-#include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_view.h"
@@ -26,15 +26,13 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/search_box/search_box_view_base.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -53,21 +51,14 @@ namespace ash {
 
 AppListMainView::AppListMainView(AppListViewDelegate* delegate,
                                  AppListView* app_list_view)
-    : delegate_(delegate),
-      model_(delegate->GetModel()),
-      search_model_(delegate->GetSearchModel()),
-      app_list_view_(app_list_view) {
+    : delegate_(delegate), app_list_view_(app_list_view) {
   // We need a layer to apply transform to in small display so that the apps
   // grid fits in the display.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-
-  model_->AddObserver(this);
 }
 
-AppListMainView::~AppListMainView() {
-  model_->RemoveObserver(this);
-}
+AppListMainView::~AppListMainView() = default;
 
 void AppListMainView::Init(int initial_apps_page,
                            SearchBoxView* search_box_view) {
@@ -83,14 +74,12 @@ void AppListMainView::Init(int initial_apps_page,
 void AppListMainView::AddContentsViews() {
   DCHECK(search_box_view_);
   auto contents_view = std::make_unique<ContentsView>(app_list_view_);
-  contents_view->Init(model_);
+  contents_view->Init();
   contents_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   contents_view->layer()->SetMasksToBounds(true);
   contents_view_ = AddChildView(std::move(contents_view));
 
   search_box_view_->set_contents_view(contents_view_);
-  search_box_view_->SetResultSelectionController(
-      contents_view_->search_result_page_view()->result_selection_controller());
 }
 
 void AppListMainView::ShowAppListWhenReady() {
@@ -104,18 +93,6 @@ void AppListMainView::ShowAppListWhenReady() {
     GetWidget()->ShowInactive();
   else
     GetWidget()->Show();
-}
-
-void AppListMainView::ModelChanged() {
-  model_->RemoveObserver(this);
-  model_ = delegate_->GetModel();
-  model_->AddObserver(this);
-  search_model_ = delegate_->GetSearchModel();
-  search_box_view_->ModelChanged();
-  delete contents_view_;
-  contents_view_ = nullptr;
-  AddContentsViews();
-  Layout();
 }
 
 void AppListMainView::SetDragAndDropHostOfCurrentAppList(
@@ -147,50 +124,16 @@ void AppListMainView::Layout() {
     contents_view_->SetBoundsRect(rect);
 }
 
-void AppListMainView::ActivateApp(AppListItem* item, int event_flags) {
-  // TODO(jennyz): Activate the folder via AppListModel notification.
-  if (IsFolderItem(item)) {
-    contents_view_->ShowFolderContent(static_cast<AppListFolderItem*>(item));
-    UMA_HISTOGRAM_ENUMERATION("Apps.AppListFolderOpened",
-                              kFullscreenAppListFolders, kMaxFolderOpened);
-  } else {
-    base::RecordAction(base::UserMetricsAction("AppList_ClickOnApp"));
-
-    // Avoid using |item->id()| as the parameter. In some rare situations,
-    // activating the item may destruct it. Using the reference to an object
-    // which may be destroyed during the procedure as the function parameter
-    // may bring the crash like https://crbug.com/990282.
-    const std::string id = item->id();
-    delegate_->ActivateItem(id, event_flags,
-                            AppListLaunchedFrom::kLaunchedFromGrid);
-  }
-}
-
-void AppListMainView::CancelDragInActiveFolder() {
-  contents_view_->apps_container_view()
-      ->app_list_folder_view()
-      ->items_grid_view()
-      ->EndDrag(true);
-}
-
-// AppListModelObserver overrides:
-void AppListMainView::OnAppListStateChanged(AppListState new_state,
-                                            AppListState old_state) {
-  if (new_state == AppListState::kStateEmbeddedAssistant) {
-    search_box_view_->SetVisible(false);
-  } else {
-    search_box_view_->SetVisible(true);
-  }
-}
-
 void AppListMainView::QueryChanged(SearchBoxViewBase* sender) {
-  std::u16string raw_query = search_model_->search_box()->text();
+  SearchModel* const search_model = AppListModelProvider::Get()->search_model();
+  const std::u16string raw_query = search_model->search_box()->text();
   std::u16string query;
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
   contents_view_->ShowSearchResults(search_box_view_->is_search_box_active() ||
                                     !query.empty());
 
   delegate_->StartSearch(raw_query);
+  contents_view_->search_result_page_view()->UpdateResultContainersVisibility();
 }
 
 void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
@@ -201,7 +144,9 @@ void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
   if (search_box_view_->is_search_box_active()) {
     // Show zero state suggestions when search box is activated with an empty
     // query.
-    std::u16string raw_query = search_model_->search_box()->text();
+    SearchModel* const search_model =
+        AppListModelProvider::Get()->search_model();
+    const std::u16string raw_query = search_model->search_box()->text();
     std::u16string query;
     base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
     if (query.empty())

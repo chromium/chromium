@@ -10,7 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 

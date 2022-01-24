@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_METRICS_FINALIZATION_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_METRICS_FINALIZATION_TASK_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -21,6 +20,10 @@ class PrefetchStore;
 class MetricsFinalizationTask : public Task {
  public:
   explicit MetricsFinalizationTask(PrefetchStore* prefetch_store);
+
+  MetricsFinalizationTask(const MetricsFinalizationTask&) = delete;
+  MetricsFinalizationTask& operator=(const MetricsFinalizationTask&) = delete;
+
   ~MetricsFinalizationTask() override;
 
  private:
@@ -31,7 +34,6 @@ class MetricsFinalizationTask : public Task {
   PrefetchStore* prefetch_store_;
 
   base::WeakPtrFactory<MetricsFinalizationTask> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MetricsFinalizationTask);
 };
 
 }  // namespace offline_pages

@@ -13,7 +13,6 @@
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -114,10 +113,11 @@ class DefaultWidgetDelegate : public WidgetDelegate {
     SetOwnedByWidget(true);
     SetFocusTraversesOut(true);
   }
-  ~DefaultWidgetDelegate() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultWidgetDelegate);
+  DefaultWidgetDelegate(const DefaultWidgetDelegate&) = delete;
+  DefaultWidgetDelegate& operator=(const DefaultWidgetDelegate&) = delete;
+
+  ~DefaultWidgetDelegate() override = default;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -814,7 +814,7 @@ bool Widget::IsMinimized() const {
   return native_widget_->IsMinimized();
 }
 
-void Widget::SetFullscreen(bool fullscreen, bool delay) {
+void Widget::SetFullscreen(bool fullscreen, base::TimeDelta delay) {
   if (IsFullscreen() == fullscreen)
     return;
 
@@ -869,15 +869,8 @@ const ui::ThemeProvider* Widget::GetThemeProvider() const {
                                               : nullptr;
 }
 
-const ui::ColorProvider* Widget::GetColorProvider() const {
-  auto color_scheme = GetNativeTheme()->GetDefaultSystemColorScheme();
-  return ui::ColorProviderManager::Get().GetColorProviderFor(
-      {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
-           ? ui::ColorProviderManager::ColorMode::kDark
-           : ui::ColorProviderManager::ColorMode::kLight,
-       (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
-           ? ui::ColorProviderManager::ContrastMode::kHigh
-           : ui::ColorProviderManager::ContrastMode::kNormal});
+ui::ColorProviderManager::InitializerSupplier* Widget::GetCustomTheme() const {
+  return nullptr;
 }
 
 FocusManager* Widget::GetFocusManager() {
@@ -985,7 +978,7 @@ void Widget::UpdateWindowIcon() {
     non_client_view_->UpdateWindowIcon();
 
   gfx::ImageSkia window_icon = GetImageSkiaFromImageModel(
-      widget_delegate_->GetWindowIcon(), GetNativeTheme());
+      widget_delegate_->GetWindowIcon(), GetColorProvider());
 
   // In general, icon information is read from a |widget_delegate_| and then
   // passed to |native_widget_|. On ChromeOS, for lacros-chrome to support the
@@ -1001,7 +994,7 @@ void Widget::UpdateWindowIcon() {
   }
 
   gfx::ImageSkia app_icon = GetImageSkiaFromImageModel(
-      widget_delegate_->GetWindowAppIcon(), GetNativeTheme());
+      widget_delegate_->GetWindowAppIcon(), GetColorProvider());
   if (app_icon.isNull()) {
     const gfx::ImageSkia* icon = native_widget_->GetWindowAppIcon();
     if (icon && !icon->isNull())
@@ -1020,6 +1013,8 @@ void Widget::ThemeChanged() {
 
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetThemeChanged(this);
+
+  NotifyColorProviderChanged();
 }
 
 void Widget::DeviceScaleFactorChanged(float old_device_scale_factor,
@@ -1222,6 +1217,12 @@ bool Widget::ShouldPaintAsActive() const {
 
 void Widget::OnParentShouldPaintAsActiveChanged() {
   DCHECK(parent());
+  // |native_widget_| has already been deleted and |this| is being deleted so
+  // that we don't have to handle the event and also it's unsafe to reference
+  // |native_widget_| in this case.
+  if (native_widget_destroyed_)
+    return;
+
   // |native_widget_active| is being updated in
   // OnNativeWidgetActivationChanged(). Notification will be handled there.
   if (native_widget_active_ != native_widget_->IsActive())
@@ -1676,6 +1677,9 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
     return true;
 
   for (View* view : base::Reversed(views_with_layers)) {
+    // Skip views that don't process events.
+    if (!view->GetCanProcessEventsWithinSubtree())
+      continue;
     ui::Layer* layer = view->layer();
     DCHECK(layer);
     if (layer->visible() && layer->bounds().Contains(location)) {
@@ -1686,6 +1690,10 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
         return true;
       }
 
+      // TODO(pbos): Does this need to be made more robust through hit testing
+      // or using ViewTargeter? This for instance does not take into account
+      // whether the view is enabled/drawn/etc.
+      //
       // Event targeting uses the visible bounds of the View, which may differ
       // from the bounds of the layer. Verify the view hosting the layer
       // actually contains |location|. Use GetVisibleBounds(), which is
@@ -1741,6 +1749,14 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Widget, ui::ColorProviderSource:
+
+const ui::ColorProvider* Widget::GetColorProvider() const {
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      GetNativeTheme()->GetColorProviderKey(GetCustomTheme()));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Widget, protected:
 
 internal::RootView* Widget::CreateRootView() {
@@ -1754,7 +1770,7 @@ void Widget::DestroyRootView() {
   // Remove all children before the unique_ptr reset so that
   // GetWidget()->GetRootView() doesn't return nullptr while the views hierarchy
   // is being torn down.
-  root_view_->RemoveAllChildViews(true);
+  root_view_->RemoveAllChildViews();
   root_view_.reset();
 }
 

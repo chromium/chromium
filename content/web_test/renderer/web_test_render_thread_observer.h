@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -22,6 +21,11 @@ class WebTestRenderThreadObserver : public RenderThreadObserver,
   static WebTestRenderThreadObserver* GetInstance();
 
   WebTestRenderThreadObserver();
+
+  WebTestRenderThreadObserver(const WebTestRenderThreadObserver&) = delete;
+  WebTestRenderThreadObserver& operator=(const WebTestRenderThreadObserver&) =
+      delete;
+
   ~WebTestRenderThreadObserver() override;
 
   TestRunner* test_runner() const { return test_runner_.get(); }
@@ -49,8 +53,6 @@ class WebTestRenderThreadObserver : public RenderThreadObserver,
   std::unique_ptr<TestRunner> test_runner_;
 
   mojo::AssociatedReceiver<mojom::WebTestRenderThread> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestRenderThreadObserver);
 };
 
 }  // namespace content

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_ERROR_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_ERROR_BUBBLE_VIEW_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_error/global_error_bubble_view_base.h"
 #include "ui/base/metadata/metadata_header_macros.h"

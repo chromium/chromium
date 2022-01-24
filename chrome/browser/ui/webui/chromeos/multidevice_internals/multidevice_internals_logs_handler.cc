@@ -44,7 +44,7 @@ MultideviceLogsHandler::MultideviceLogsHandler() {}
 MultideviceLogsHandler::~MultideviceLogsHandler() = default;
 
 void MultideviceLogsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getMultideviceLogMessages",
       base::BindRepeating(&MultideviceLogsHandler::HandleGetLogMessages,
                           base::Unretained(this)));

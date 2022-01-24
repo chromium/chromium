@@ -9,7 +9,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "content/public/browser/notification_observer.h"
@@ -24,6 +23,9 @@ class PrinterQuery;
 class PrintQueriesQueue : public base::RefCountedThreadSafe<PrintQueriesQueue> {
  public:
   PrintQueriesQueue();
+
+  PrintQueriesQueue(const PrintQueriesQueue&) = delete;
+  PrintQueriesQueue& operator=(const PrintQueriesQueue&) = delete;
 
   // Queues a semi-initialized worker thread. Can be called from any thread.
   // Current use case is queuing from the I/O thread.
@@ -53,13 +55,15 @@ class PrintQueriesQueue : public base::RefCountedThreadSafe<PrintQueriesQueue> {
   base::Lock lock_;
 
   PrinterQueries queued_queries_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintQueriesQueue);
 };
 
 class PrintJobManager : public content::NotificationObserver {
  public:
   PrintJobManager();
+
+  PrintJobManager(const PrintJobManager&) = delete;
+  PrintJobManager& operator=(const PrintJobManager&) = delete;
+
   ~PrintJobManager() override;
 
   // On browser quit, we should wait to have the print job finished.
@@ -96,8 +100,6 @@ class PrintJobManager : public content::NotificationObserver {
   scoped_refptr<PrintQueriesQueue> queue_;
 
   bool is_shutdown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobManager);
 };
 
 }  // namespace printing

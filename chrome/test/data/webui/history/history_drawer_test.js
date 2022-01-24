@@ -4,7 +4,7 @@
 
 import {BrowserService, ensureLazyLoaded} from 'chrome://history/history.js';
 import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {flushTasks} from 'chrome://test/test_util.js';
 
 suite('drawer-test', function() {
   let app;

@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/android/arch/lifecycle/livedata/1.1.1/livedata-1.1.1.aar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/android/arch/lifecycle/livedata/1.1.1/livedata-1.1.1.aar'
 _FILE_NAME = 'livedata-1.1.1.aar'
 _FILE_VERSION = '1.1.1'
 

@@ -4,13 +4,13 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/external_constants_builder.h"
@@ -58,7 +58,7 @@ void ExternalConstantsBuilderTests::TearDown() {
 TEST_F(ExternalConstantsBuilderTests, TestOverridingNothing) {
   EXPECT_TRUE(ExternalConstantsBuilder().Overwrite());
 
-  std::unique_ptr<ExternalConstantsOverrider> verifier =
+  scoped_refptr<ExternalConstantsOverrider> verifier =
       ExternalConstantsOverrider::FromDefaultJSONFile(
           CreateDefaultExternalConstants());
 
@@ -80,7 +80,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
       .SetServerKeepAliveSeconds(2);
   EXPECT_TRUE(builder.Overwrite());
 
-  std::unique_ptr<ExternalConstantsOverrider> verifier =
+  scoped_refptr<ExternalConstantsOverrider> verifier =
       ExternalConstantsOverrider::FromDefaultJSONFile(
           CreateDefaultExternalConstants());
 
@@ -101,7 +101,7 @@ TEST_F(ExternalConstantsBuilderTests, TestPartialOverrideWithMultipleURLs) {
                       "https://www.google.com", "https://www.example.com"})
                   .Overwrite());
 
-  std::unique_ptr<ExternalConstantsOverrider> verifier =
+  scoped_refptr<ExternalConstantsOverrider> verifier =
       ExternalConstantsOverrider::FromDefaultJSONFile(
           CreateDefaultExternalConstants());
 
@@ -129,7 +129,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
                   .ClearServerKeepAliveSeconds()
                   .Overwrite());
 
-  std::unique_ptr<ExternalConstantsOverrider> verifier =
+  scoped_refptr<ExternalConstantsOverrider> verifier =
       ExternalConstantsOverrider::FromDefaultJSONFile(
           CreateDefaultExternalConstants());
   EXPECT_TRUE(verifier->UseCUP());
@@ -156,7 +156,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
           .Overwrite());
 
   // Only the second set of values should be observed.
-  std::unique_ptr<ExternalConstantsOverrider> verifier =
+  scoped_refptr<ExternalConstantsOverrider> verifier =
       ExternalConstantsOverrider::FromDefaultJSONFile(
           CreateDefaultExternalConstants());
   EXPECT_FALSE(verifier->UseCUP());
@@ -179,7 +179,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .Overwrite());
 
-  std::unique_ptr<ExternalConstantsOverrider> verifier =
+  scoped_refptr<ExternalConstantsOverrider> verifier =
       ExternalConstantsOverrider::FromDefaultJSONFile(
           CreateDefaultExternalConstants());
 
@@ -199,7 +199,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
                   .Overwrite());
 
   // We need a new overrider to verify because it only loads once.
-  std::unique_ptr<ExternalConstantsOverrider> verifier2 =
+  scoped_refptr<ExternalConstantsOverrider> verifier2 =
       ExternalConstantsOverrider::FromDefaultJSONFile(
           CreateDefaultExternalConstants());
 

@@ -12,12 +12,14 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -54,6 +56,18 @@ const char kActiveTimeKey[] = "active_time";
 const char kMetricsBucketIndex[] = "metrics_bucket_index";
 const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
+const char kUserAcceptedAccountManagement[] =
+    "user_accepted_account_management";
+
+// All accounts info. This is a dictionary containing sub-dictionaries of
+// account information, keyed by the gaia ID. The sub-dictionaries are empty for
+// now but can be populated in the future. Example for two accounts:
+//
+// "all_accounts": {
+//   "gaia_id1": {},
+//   "gaia_id2": {}
+// }
+const char kAllAccountsKey[] = "all_accounts";
 
 // Avatar info.
 const char kLastDownloadedGAIAPictureUrlWithSizeKey[] =
@@ -171,7 +185,7 @@ void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
   }
 
   if (signin_util::IsForceSigninEnabled()) {
-    if (!IsAuthenticated())
+    if (!CanBeManaged())
       SetBool(kForceSigninProfileLockedKey, true);
   } else {
     // Reset the locked state to avoid a profile being locked after the force
@@ -459,6 +473,18 @@ bool ProfileAttributesEntry::IsAuthenticated() const {
   return GetBool(kIsConsentedPrimaryAccountKey);
 }
 
+bool ProfileAttributesEntry::CanBeManaged() const {
+  switch (GetSigninState()) {
+    case SigninState::kSignedInWithConsentedPrimaryAccount:
+      return true;
+    case SigninState::kSignedInWithUnconsentedPrimaryAccount:
+      return base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
+             GetBool(kUserAcceptedAccountManagement);
+    case SigninState::kNotSignedIn:
+      return false;
+  }
+}
+
 bool ProfileAttributesEntry::IsUsingDefaultAvatar() const {
   return GetBool(kIsUsingDefaultAvatarKey);
 }
@@ -534,6 +560,27 @@ std::string ProfileAttributesEntry::GetAccountIdKey() const {
   return GetString(kAccountIdKey);
 }
 
+base::flat_set<std::string> ProfileAttributesEntry::GetGaiaIds() const {
+  const base::Value* accounts = GetValue(kAllAccountsKey);
+  if (!accounts || !accounts->is_dict())
+    return base::flat_set<std::string>();
+
+  return base::MakeFlatSet<std::string>(
+      accounts->DictItems(), {}, [](const auto& it) { return it.first; });
+}
+
+void ProfileAttributesEntry::SetGaiaIds(
+    const base::flat_set<std::string>& gaia_ids) {
+  base::Value accounts(base::Value::Type::DICTIONARY);
+  for (const auto& gaia_id : gaia_ids) {
+    base::Value dict(base::Value::Type::DICTIONARY);
+    // The dictionary is empty for now, but can hold account-specific info in
+    // the future.
+    accounts.SetKey(gaia_id, std::move(dict));
+  }
+  SetValue(kAllAccountsKey, std::move(accounts));
+}
+
 void ProfileAttributesEntry::SetLocalProfileName(const std::u16string& name,
                                                  bool is_default_name) {
   bool changed = SetString16(kNameKey, name);
@@ -548,7 +595,7 @@ void ProfileAttributesEntry::SetShortcutName(const std::u16string& name) {
 
 void ProfileAttributesEntry::SetActiveTimeToNow() {
   if (IsDouble(kActiveTimeKey) &&
-      base::Time::Now() - GetActiveTime() < base::TimeDelta::FromHours(1)) {
+      base::Time::Now() - GetActiveTime() < base::Hours(1)) {
     return;
   }
   SetDouble(kActiveTimeKey, base::Time::Now().ToDoubleT());
@@ -650,6 +697,16 @@ void ProfileAttributesEntry::SetIsEphemeral(bool value) {
   SetBool(kProfileIsEphemeral, value);
 }
 
+void ProfileAttributesEntry::SetUserAcceptedAccountManagement(bool value) {
+  if (SetBool(kUserAcceptedAccountManagement, value))
+    profile_attributes_storage_->NotifyProfileUserManagementAcceptanceChanged(
+        GetPath());
+}
+
+bool ProfileAttributesEntry::UserAcceptedAccountManagement() const {
+  return GetBool(kUserAcceptedAccountManagement);
+}
+
 void ProfileAttributesEntry::SetIsUsingDefaultName(bool value) {
   if (SetBool(kIsUsingDefaultNameKey, value))
     profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
@@ -719,16 +776,23 @@ void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,
     return;
   }
 
-  const base::Value* old_data = GetEntryData();
-  base::Value new_data = old_data ? GetEntryData()->Clone()
-                                  : base::Value(base::Value::Type::DICTIONARY);
-  new_data.SetStringKey(kGAIAIdKey, gaia_id);
-  new_data.SetStringKey(kUserNameKey, user_name);
-  DCHECK(!is_consented_primary_account || !gaia_id.empty() ||
-         !user_name.empty());
-  new_data.SetBoolKey(kIsConsentedPrimaryAccountKey,
+  {
+    // Bundle the changes in a single update.
+    DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+    base::DictionaryValue* attributes_dict = update.Get();
+    base::Value* entry = attributes_dict->FindDictKey(storage_key_);
+    if (!entry) {
+      entry = attributes_dict->SetKey(
+          storage_key_, base::Value(base::Value::Type::DICTIONARY));
+    }
+    entry->SetStringKey(kGAIAIdKey, gaia_id);
+    entry->SetStringKey(kUserNameKey, user_name);
+    DCHECK(!is_consented_primary_account || !gaia_id.empty() ||
+           !user_name.empty());
+    entry->SetBoolKey(kIsConsentedPrimaryAccountKey,
                       is_consented_primary_account);
-  SetEntryData(std::move(new_data));
+  }
+
   profile_attributes_storage_->NotifyProfileAuthInfoChanged(profile_path_);
 }
 
@@ -840,15 +904,7 @@ void ProfileAttributesEntry::RecordAccountNamesMetric() const {
 const base::Value* ProfileAttributesEntry::GetEntryData() const {
   const base::DictionaryValue* attributes =
       prefs_->GetDictionary(prefs::kProfileAttributes);
-  return attributes->FindKeyOfType(storage_key_, base::Value::Type::DICTIONARY);
-}
-
-void ProfileAttributesEntry::SetEntryData(base::Value data) {
-  DCHECK(data.is_dict());
-
-  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::DictionaryValue* attributes = update.Get();
-  attributes->SetKey(storage_key_, std::move(data));
+  return attributes->FindDictKey(storage_key_);
 }
 
 const base::Value* ProfileAttributesEntry::GetValue(const char* key) const {
@@ -891,6 +947,8 @@ int ProfileAttributesEntry::GetInteger(const char* key) const {
 
 absl::optional<SkColor> ProfileAttributesEntry::GetProfileThemeColor(
     const char* key) const {
+  // Do not use GetInteger(), as it defaults to kIntegerNotSet which is
+  // undistinguishable from a valid color.
   const base::Value* value = GetValue(key);
   if (!value || !value->is_int())
     return absl::nullopt;
@@ -905,91 +963,54 @@ bool ProfileAttributesEntry::IsDouble(const char* key) const {
 }
 
 // Internal setters using keys;
-bool ProfileAttributesEntry::SetString(const char* key, std::string value) {
-  const base::Value* old_data = GetEntryData();
-  if (old_data) {
-    const base::Value* old_value = old_data->FindKey(key);
-    if (old_value && old_value->is_string() && old_value->GetString() == value)
-      return false;
-  }
-
-  base::Value new_data = old_data ? GetEntryData()->Clone()
-                                  : base::Value(base::Value::Type::DICTIONARY);
-  new_data.SetKey(key, base::Value(value));
-  SetEntryData(std::move(new_data));
-  return true;
+bool ProfileAttributesEntry::SetString(const char* key,
+                                       const std::string& value) {
+  return SetValue(key, base::Value(value));
 }
 
 bool ProfileAttributesEntry::SetString16(const char* key,
-                                         std::u16string value) {
-  const base::Value* old_data = GetEntryData();
-  if (old_data) {
-    const base::Value* old_value = old_data->FindKey(key);
-    if (old_value && old_value->is_string() &&
-        base::UTF8ToUTF16(old_value->GetString()) == value)
-      return false;
-  }
-
-  base::Value new_data = old_data ? GetEntryData()->Clone()
-                                  : base::Value(base::Value::Type::DICTIONARY);
-  new_data.SetKey(key, base::Value(value));
-  SetEntryData(std::move(new_data));
-  return true;
+                                         const std::u16string& value) {
+  return SetValue(key, base::Value(value));
 }
 
 bool ProfileAttributesEntry::SetDouble(const char* key, double value) {
-  const base::Value* old_data = GetEntryData();
-  if (old_data) {
-    const base::Value* old_value = old_data->FindKey(key);
-    if (old_value && old_value->is_double() && old_value->GetDouble() == value)
-      return false;
-  }
-
-  base::Value new_data = old_data ? GetEntryData()->Clone()
-                                  : base::Value(base::Value::Type::DICTIONARY);
-  new_data.SetKey(key, base::Value(value));
-  SetEntryData(std::move(new_data));
-  return true;
+  return SetValue(key, base::Value(value));
 }
 
 bool ProfileAttributesEntry::SetBool(const char* key, bool value) {
-  const base::Value* old_data = GetEntryData();
-  if (old_data) {
-    const base::Value* old_value = old_data->FindKey(key);
-    if (old_value && old_value->is_bool() && old_value->GetBool() == value)
-      return false;
-  }
-
-  base::Value new_data = old_data ? GetEntryData()->Clone()
-                                  : base::Value(base::Value::Type::DICTIONARY);
-  new_data.SetKey(key, base::Value(value));
-  SetEntryData(std::move(new_data));
-  return true;
+  return SetValue(key, base::Value(value));
 }
 
 bool ProfileAttributesEntry::SetInteger(const char* key, int value) {
-  const base::Value* old_data = GetEntryData();
-  if (old_data) {
-    const base::Value* old_value = old_data->FindKey(key);
-    if (old_value && old_value->is_int() && old_value->GetInt() == value)
-      return false;
-  }
+  return SetValue(key, base::Value(value));
+}
 
-  base::Value new_data = old_data ? GetEntryData()->Clone()
-                                  : base::Value(base::Value::Type::DICTIONARY);
-  new_data.SetKey(key, base::Value(value));
-  SetEntryData(std::move(new_data));
+bool ProfileAttributesEntry::SetValue(const char* key, base::Value value) {
+  const base::Value* old_value = GetValue(key);
+  if (old_value && *old_value == value)
+    return false;
+
+  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::DictionaryValue* attributes_dict = update.Get();
+  base::Value* entry = attributes_dict->FindDictKey(storage_key_);
+  if (!entry) {
+    entry = attributes_dict->SetKey(storage_key_,
+                                    base::Value(base::Value::Type::DICTIONARY));
+  }
+  entry->SetKey(key, std::move(value));
   return true;
 }
 
 bool ProfileAttributesEntry::ClearValue(const char* key) {
-  const base::Value* old_data = GetEntryData();
-  if (!old_data || !old_data->FindKey(key))
+  const base::Value* old_value = GetValue(key);
+  if (!old_value)
     return false;
 
-  base::Value new_data = GetEntryData()->Clone();
-  new_data.RemoveKey(key);
-  SetEntryData(std::move(new_data));
+  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::DictionaryValue* attributes_dict = update.Get();
+  base::Value* entry = attributes_dict->FindDictKey(storage_key_);
+  DCHECK(entry);
+  entry->RemoveKey(key);
   return true;
 }
 

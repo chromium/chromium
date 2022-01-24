@@ -8,7 +8,6 @@
 #include <list>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/media_export.h"
@@ -42,6 +41,10 @@ class MEDIA_EXPORT Decryptor {
   enum StreamType { kAudio, kVideo, kStreamTypeMax = kVideo };
 
   Decryptor();
+
+  Decryptor(const Decryptor&) = delete;
+  Decryptor& operator=(const Decryptor&) = delete;
+
   virtual ~Decryptor();
 
   // Indicates completion of a decryption operation.
@@ -148,9 +151,6 @@ class MEDIA_EXPORT Decryptor {
 
   // Returns whether or not the decryptor implementation supports decrypt-only.
   virtual bool CanAlwaysDecrypt();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Decryptor);
 };
 
 }  // namespace media

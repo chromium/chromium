@@ -19,6 +19,10 @@ class AudioPacket;
 class AudioDecoderOpus : public AudioDecoder {
  public:
   AudioDecoderOpus();
+
+  AudioDecoderOpus(const AudioDecoderOpus&) = delete;
+  AudioDecoderOpus& operator=(const AudioDecoderOpus&) = delete;
+
   ~AudioDecoderOpus() override;
 
   // AudioDecoder interface.
@@ -33,8 +37,6 @@ class AudioDecoderOpus : public AudioDecoder {
   int sampling_rate_;
   int channels_;
   OpusDecoder* decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderOpus);
 };
 
 }  // namespace remoting

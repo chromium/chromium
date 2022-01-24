@@ -15,6 +15,10 @@ namespace device {
 class DEVICE_VR_EXPORT FakeOrientationSensor : public mojom::Sensor {
  public:
   FakeOrientationSensor(mojo::PendingReceiver<mojom::Sensor> receiver);
+
+  FakeOrientationSensor(const FakeOrientationSensor&) = delete;
+  FakeOrientationSensor& operator=(const FakeOrientationSensor&) = delete;
+
   ~FakeOrientationSensor() override;
 
   void AddConfiguration(const PlatformSensorConfiguration& configuration,
@@ -30,8 +34,6 @@ class DEVICE_VR_EXPORT FakeOrientationSensor : public mojom::Sensor {
 
  private:
   mojo::Receiver<mojom::Sensor> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeOrientationSensor);
 };
 
 }  // namespace device

@@ -11,11 +11,13 @@ Refer to README.md for content description and update process.
  <item id="CRD_relay_session_request" added_in_milestone="62" hash_code="24058523" type="0" deprecated="2019-07-22" content_hash_code="36997811" file_path=""/>
  <item id="accounts_image_fetcher" added_in_milestone="66" hash_code="98658519" type="0" content_hash_code="45432230" os_list="linux,windows" file_path="components/signin/internal/identity_manager/account_fetcher_service.cc"/>
  <item id="adb_client_socket" added_in_milestone="65" hash_code="87775794" type="0" content_hash_code="56654828" os_list="linux,windows" file_path="chrome/browser/devtools/device/adb/adb_client_socket.cc"/>
- <item id="affiliation_lookup" added_in_milestone="62" hash_code="111904019" type="0" content_hash_code="81061452" os_list="linux,windows" file_path="components/password_manager/core/browser/android_affiliation/affiliation_fetcher.cc"/>
+ <item id="affiliation_lookup" added_in_milestone="62" hash_code="111904019" type="0" deprecated="2021-07-27" content_hash_code="81061452" file_path=""/>
  <item id="affiliation_lookup_by_hash" added_in_milestone="87" hash_code="57748571" type="0" content_hash_code="40566404" os_list="linux,windows" file_path="components/password_manager/core/browser/site_affiliation/hash_affiliation_fetcher.cc"/>
+ <item id="aggregation_service_helper_keys" added_in_milestone="96" hash_code="49783589" type="0" content_hash_code="68319105" os_list="linux,windows" file_path="content/browser/aggregation_service/aggregation_service_network_fetcher_impl.cc"/>
+ <item id="aggregation_service_report" added_in_milestone="95" hash_code="95942194" type="0" content_hash_code="44673922" os_list="linux,windows" file_path="content/browser/aggregation_service/aggregatable_report_sender.cc"/>
  <item id="android_device_manager_socket" added_in_milestone="65" hash_code="37249086" type="0" content_hash_code="6436865" os_list="linux,windows" file_path="chrome/browser/devtools/device/android_device_manager.cc"/>
  <item id="android_web_socket" added_in_milestone="65" hash_code="39356976" type="0" content_hash_code="12310113" os_list="linux,windows" file_path="chrome/browser/devtools/device/android_web_socket.cc"/>
- <item id="appcache_update_job" added_in_milestone="62" hash_code="25790702" type="0" content_hash_code="27424887" os_list="linux,windows" file_path="content/browser/appcache/appcache_update_url_loader_request.cc"/>
+ <item id="appcache_update_job" added_in_milestone="62" hash_code="25790702" type="0" deprecated="2021-10-27" content_hash_code="27424887" file_path=""/>
  <item id="auction_downloader" added_in_milestone="92" hash_code="27833508" type="0" content_hash_code="118747666" os_list="linux,windows" file_path="content/services/auction_worklet/auction_downloader.cc"/>
  <item id="auction_report_sender" added_in_milestone="92" hash_code="96136865" type="0" content_hash_code="62368950" os_list="linux,windows" file_path="content/browser/interest_group/ad_auction_service_impl.cc"/>
  <item id="autofill_image_fetcher_card_art_image" added_in_milestone="93" hash_code="90561372" type="0" content_hash_code="24622412" os_list="linux,windows" file_path="components/autofill/core/browser/ui/autofill_image_fetcher.cc"/>
@@ -25,7 +27,6 @@ Refer to README.md for content description and update process.
  <item id="backdrop_collection_names_download" added_in_milestone="68" hash_code="49246286" type="0" content_hash_code="93501319" os_list="linux,windows" file_path="chrome/browser/search/background/ntp_background_service.cc"/>
  <item id="backdrop_next_image_download" added_in_milestone="77" hash_code="7754485" type="0" content_hash_code="98537970" os_list="linux,windows" file_path="chrome/browser/search/background/ntp_background_service.cc"/>
  <item id="background_fetch_context" added_in_milestone="62" hash_code="16469669" type="0" content_hash_code="52235434" os_list="linux,windows" file_path="content/browser/background_fetch/background_fetch_delegate_proxy.cc"/>
- <item id="background_performance_tracer" added_in_milestone="62" hash_code="84575287" type="0" content_hash_code="120154250" os_list="linux,windows" file_path="chrome/browser/tracing/crash_service_uploader.cc"/>
  <item id="bidirectional_stream" added_in_milestone="67" hash_code="108665132" type="0" content_hash_code="130038340" os_list="linux,windows" file_path="net/http/bidirectional_stream.cc"/>
  <item id="blink_extension_resource_loader" added_in_milestone="63" hash_code="84165821" type="0" content_hash_code="63536185" os_list="linux,windows" file_path="third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.cc"/>
  <item id="blink_resource_loader" added_in_milestone="62" hash_code="101845102" type="0" content_hash_code="75331172" os_list="linux,windows" file_path="third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.cc"/>
@@ -58,14 +59,12 @@ Refer to README.md for content description and update process.
  <item id="cloud_print" added_in_milestone="65" hash_code="111712433" type="2" content_hash_code="60926140" os_list="linux,windows" semantics_fields="1,5" policy_fields="-1,3,4" file_path="chrome/service/cloud_print/cloud_print_url_fetcher.cc"/>
  <item id="cloud_print_backend" added_in_milestone="62" hash_code="71578042" type="1" second_id="111712433" content_hash_code="85425333" os_list="linux,windows" semantics_fields="2,3,4" file_path="chrome/service/cloud_print/cloud_print_proxy_backend.cc"/>
  <item id="cloud_print_credential_update" added_in_milestone="66" hash_code="137420486" type="0" content_hash_code="1179808" os_list="linux,windows" file_path="chrome/service/cloud_print/cloud_print_proxy_backend.cc"/>
- <item id="cloud_print_privet_register" added_in_milestone="62" hash_code="24978481" type="0" content_hash_code="131359002" os_list="linux,windows" file_path="chrome/browser/printing/cloud_print/gcd_api_flow_impl.cc"/>
  <item id="cloud_print_proxy" added_in_milestone="62" hash_code="50859288" type="1" second_id="111712433" content_hash_code="90868083" os_list="linux,windows" semantics_fields="2,3,4" file_path="chrome/service/cloud_print/cloud_print_proxy.cc"/>
- <item id="cloud_print_search" added_in_milestone="62" hash_code="132055347" type="0" content_hash_code="123783474" os_list="linux,windows" file_path="chrome/browser/printing/cloud_print/gcd_api_flow_impl.cc"/>
  <item id="cloud_speech_recognition" added_in_milestone="85" hash_code="61001455" type="0" content_hash_code="114921835" os_list="linux,windows" file_path="chrome/services/speech/cloud_speech_recognition_client.cc"/>
  <item id="content_hash_verification_job" added_in_milestone="62" hash_code="64733114" type="0" content_hash_code="127912411" os_list="linux,windows" file_path="extensions/browser/content_hash_fetcher.cc"/>
  <item id="content_resource_fetcher" added_in_milestone="63" hash_code="70796791" type="0" deprecated="2017-09-16" content_hash_code="135648626" file_path=""/>
  <item id="content_suggestion_get_favicon" added_in_milestone="62" hash_code="16653985" type="0" content_hash_code="134280933" os_list="linux,windows" file_path="components/ntp_snippets/content_suggestions_service.cc"/>
- <item id="conversion_measurement_report" added_in_milestone="84" hash_code="113422320" type="0" content_hash_code="60688877" os_list="linux,windows" file_path="content/browser/conversions/conversion_network_sender_impl.cc"/>
+ <item id="conversion_measurement_report" added_in_milestone="84" hash_code="113422320" type="0" content_hash_code="102111798" os_list="linux,windows" file_path="content/browser/attribution_reporting/attribution_network_sender_impl.cc"/>
  <item id="credenential_avatar" added_in_milestone="62" hash_code="53695122" type="0" content_hash_code="113035371" os_list="linux,windows" file_path="chrome/browser/ui/passwords/account_avatar_fetcher.cc"/>
  <item id="cros_recovery_image_download" added_in_milestone="62" hash_code="101725581" type="0" content_hash_code="10999698" os_list="linux,windows" file_path="chrome/browser/extensions/api/image_writer_private/write_from_url_operation.cc"/>
  <item id="cryptauth_device_sync_tickle" added_in_milestone="62" hash_code="96565489" type="1" second_id="29188932" deprecated="2018-03-15" content_hash_code="115714668" file_path=""/>
@@ -80,6 +79,7 @@ Refer to README.md for content description and update process.
  <item id="data_reduction_proxy_secure_proxy_check" added_in_milestone="62" hash_code="131236802" type="0" deprecated="2020-03-13" content_hash_code="122297136" file_path=""/>
  <item id="data_reduction_proxy_warmup" added_in_milestone="62" hash_code="8250451" type="0" deprecated="2020-03-13" content_hash_code="6321249" file_path=""/>
  <item id="desktop_ios_promotion" added_in_milestone="63" hash_code="13694792" type="0" deprecated="2018-11-04" content_hash_code="19776951" file_path=""/>
+ <item id="desktop_screenshot_save" added_in_milestone="94" hash_code="18870110" type="0" content_hash_code="26509513" os_list="linux,windows" file_path="chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.cc"/>
  <item id="device_geolocation_request" added_in_milestone="62" hash_code="77673751" type="0" deprecated="2017-10-20" content_hash_code="97181773" file_path=""/>
  <item id="device_management_service" added_in_milestone="62" hash_code="117782019" type="0" content_hash_code="104419970" os_list="linux,windows" file_path="components/policy/core/common/cloud/device_management_service.cc"/>
  <item id="devtools_cdp_network_resource" added_in_milestone="87" hash_code="60744935" type="0" content_hash_code="85833926" os_list="linux,windows" file_path="content/browser/devtools/protocol/devtools_network_resource_loader.cc"/>
@@ -172,13 +172,14 @@ Refer to README.md for content description and update process.
  <item id="indexed_db_internals_handler" added_in_milestone="62" hash_code="131180348" type="0" content_hash_code="59026406" os_list="linux,windows" file_path="content/browser/indexed_db/indexed_db_internals_ui.cc"/>
  <item id="interest_feedv2_image_send" added_in_milestone="86" hash_code="92245202" type="0" content_hash_code="107508312" os_list="linux,windows" file_path="components/feed/core/v2/image_fetcher.cc"/>
  <item id="interest_feedv2_send" added_in_milestone="83" hash_code="85742023" type="0" content_hash_code="49706671" os_list="linux,windows" file_path="components/feed/core/v2/feed_network_impl.cc"/>
+ <item id="interest_group_update_fetcher" added_in_milestone="94" hash_code="110915076" type="0" content_hash_code="41071213" os_list="linux,windows" file_path="content/browser/interest_group/interest_group_manager.cc"/>
  <item id="intranet_redirect_detector" added_in_milestone="62" hash_code="21785164" type="0" content_hash_code="62025595" os_list="linux,windows" file_path="chrome/browser/intranet_redirect_detector.cc"/>
  <item id="invalidation_service" added_in_milestone="62" hash_code="72354423" type="0" deprecated="2020-01-23" content_hash_code="78425687" file_path=""/>
  <item id="javascript_report_error" added_in_milestone="87" hash_code="109607776" type="0" content_hash_code="7229012" os_list="linux" file_path="chrome/browser/error_reporting/chrome_js_error_report_processor_nonchromeos.cc"/>
  <item id="kids_chrome_management_client_classify_url" added_in_milestone="77" hash_code="109987793" type="0" deprecated="2019-07-30" content_hash_code="112740597" file_path=""/>
  <item id="lib_address_input" added_in_milestone="62" hash_code="50816767" type="0" content_hash_code="57977576" os_list="linux,windows" file_path="third_party/libaddressinput/chromium/chrome_metadata_source.cc"/>
  <item id="litepages_robots_rules" added_in_milestone="89" hash_code="50910588" type="0" content_hash_code="72567080" os_list="linux,windows" file_path="chrome/browser/subresource_redirect/origin_robots_rules.cc"/>
- <item id="load_autofill_gstatic_data" added_in_milestone="78" hash_code="119416099" type="0" content_hash_code="8433621" os_list="linux,windows" file_path="chrome/browser/autofill/autofill_gstatic_reader.cc"/>
+ <item id="load_autofill_gstatic_data" added_in_milestone="78" hash_code="119416099" type="0" content_hash_code="128051538" os_list="linux,windows" file_path="chrome/browser/autofill/autofill_gstatic_reader.cc"/>
  <item id="logo_service" added_in_milestone="73" hash_code="35473769" type="0" content_hash_code="20271299" os_list="linux,windows" file_path="components/search_provider_logos/logo_service_impl.cc"/>
  <item id="logo_tracker" added_in_milestone="62" hash_code="36859107" type="0" deprecated="2018-12-07" content_hash_code="67588075" file_path=""/>
  <item id="lookup_single_password_leak" added_in_milestone="78" hash_code="16927377" type="0" content_hash_code="12158296" os_list="linux,windows" file_path="components/password_manager/core/browser/leak_detection/leak_detection_request.cc"/>
@@ -203,7 +204,7 @@ Refer to README.md for content description and update process.
  <item id="new_tab_page_handler" added_in_milestone="84" hash_code="48673144" type="0" content_hash_code="49174657" os_list="linux,windows" file_path="chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.cc"/>
  <item id="notification_client" added_in_milestone="79" hash_code="78479125" type="0" content_hash_code="129874070" os_list="linux,windows" file_path="remoting/client/notification/notification_client.cc"/>
  <item id="ntp_contextual_suggestions_fetch" added_in_milestone="62" hash_code="95711309" type="0" deprecated="2019-04-18" content_hash_code="107035434" file_path=""/>
- <item id="ntp_custom_background" added_in_milestone="76" hash_code="92125886" type="0" content_hash_code="61176452" os_list="linux,windows" file_path="chrome/browser/search/instant_service.cc"/>
+ <item id="ntp_custom_background" added_in_milestone="76" hash_code="92125886" type="0" deprecated="2021-07-30" content_hash_code="61176452" file_path=""/>
  <item id="ntp_custom_link_checker_request" added_in_milestone="71" hash_code="78408551" type="0" deprecated="2018-10-26" content_hash_code="13407730" file_path=""/>
  <item id="ntp_snippets_fetch" added_in_milestone="62" hash_code="15418154" type="0" content_hash_code="10078959" os_list="linux,windows" file_path="components/ntp_snippets/remote/json_request.cc"/>
  <item id="nux_ntp_background_preview" added_in_milestone="74" hash_code="124847649" type="0" content_hash_code="31404656" os_list="linux,windows" file_path="chrome/browser/ui/webui/welcome/ntp_background_fetcher.cc"/>
@@ -214,7 +215,7 @@ Refer to README.md for content description and update process.
  <item id="ocsp_start_url_request" added_in_milestone="62" hash_code="60921996" type="0" deprecated="2020-04-28" content_hash_code="6288676" file_path=""/>
  <item id="offline_prefetch" added_in_milestone="62" hash_code="19185953" type="0" content_hash_code="112039446" os_list="linux,windows" file_path="components/offline_pages/core/prefetch/prefetch_request_fetcher.cc"/>
  <item id="omnibox_documentsuggest" added_in_milestone="69" hash_code="6055066" type="0" content_hash_code="126973249" os_list="linux,windows" file_path="components/omnibox/browser/document_suggestions_service.cc"/>
- <item id="omnibox_navigation_observer" added_in_milestone="62" hash_code="61684939" type="0" content_hash_code="2642036" os_list="linux,windows" file_path="chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.cc"/>
+ <item id="omnibox_navigation_observer" added_in_milestone="62" hash_code="61684939" type="0" content_hash_code="70941231" os_list="linux,windows" file_path="chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.cc"/>
  <item id="omnibox_result_change" added_in_milestone="62" hash_code="73107389" type="0" content_hash_code="24802647" os_list="linux,windows" file_path="chrome/browser/bitmap_fetcher/bitmap_fetcher_service.cc"/>
  <item id="omnibox_suggest" added_in_milestone="62" hash_code="47815025" type="0" content_hash_code="86297726" os_list="linux,windows" file_path="components/omnibox/browser/search_provider.cc"/>
  <item id="omnibox_suggest_deletion" added_in_milestone="62" hash_code="84212388" type="0" content_hash_code="24981550" os_list="linux,windows" file_path="components/omnibox/browser/base_search_provider.cc"/>
@@ -257,10 +258,9 @@ Refer to README.md for content description and update process.
  <item id="previews_litepage_prober" added_in_milestone="78" hash_code="33813109" type="0" deprecated="2020-04-23" content_hash_code="52572789" file_path="chrome/browser/previews/previews_lite_page_redirect_decider.cc"/>
  <item id="previews_prober" added_in_milestone="77" hash_code="41010697" type="0" deprecated="2019-07-24" content_hash_code="51581107" file_path=""/>
  <item id="printer_job_handler" added_in_milestone="62" hash_code="67638271" type="1" second_id="111712433" content_hash_code="75712693" os_list="linux,windows" semantics_fields="2,3,4" file_path="chrome/service/cloud_print/printer_job_handler.cc"/>
- <item id="privet_http_impl" added_in_milestone="62" hash_code="71251498" type="0" content_hash_code="107348604" os_list="linux,windows" file_path="chrome/browser/printing/cloud_print/privet_http_impl.cc"/>
  <item id="profile_avatar" added_in_milestone="62" hash_code="51164680" type="0" content_hash_code="113550845" os_list="linux,windows" file_path="chrome/browser/profiles/profile_avatar_downloader.cc"/>
  <item id="profile_resetter_upload" added_in_milestone="62" hash_code="105330607" type="0" content_hash_code="129329171" os_list="linux,windows" file_path="chrome/browser/profile_resetter/reset_report_uploader.cc"/>
- <item id="promo_service" added_in_milestone="72" hash_code="67052219" type="0" content_hash_code="32939033" os_list="linux,windows" file_path="chrome/browser/search/promos/promo_service.cc"/>
+ <item id="promo_service" added_in_milestone="72" hash_code="67052219" type="0" content_hash_code="32939033" os_list="linux,windows" file_path="chrome/browser/new_tab_page/promos/promo_service.cc"/>
  <item id="proxy_config_direct" added_in_milestone="67" hash_code="119015679" type="0" content_hash_code="119931568" os_list="linux,windows" file_path="net/proxy_resolution/proxy_config_with_annotation.cc"/>
  <item id="proxy_config_headless" added_in_milestone="67" hash_code="133221587" type="0" content_hash_code="77459277" os_list="linux,windows" file_path="headless/lib/browser/headless_request_context_manager.cc"/>
  <item id="proxy_config_settings" added_in_milestone="67" hash_code="136468456" type="0" content_hash_code="19527377" os_list="linux,windows" file_path="components/proxy_config/pref_proxy_config_tracker_impl.cc"/>
@@ -305,7 +305,7 @@ Refer to README.md for content description and update process.
  <item id="safe_browsing_feedback" added_in_milestone="62" hash_code="44583821" type="0" content_hash_code="27116846" os_list="linux,windows" file_path="chrome/browser/safe_browsing/download_protection/download_feedback.cc"/>
  <item id="safe_browsing_get_full_hash" added_in_milestone="62" hash_code="68745894" type="0" deprecated="2018-08-14" content_hash_code="21739198" file_path=""/>
  <item id="safe_browsing_incident" added_in_milestone="62" hash_code="124950347" type="0" content_hash_code="7306531" os_list="linux,windows" file_path="chrome/browser/safe_browsing/incident_reporting/incident_report_uploader_impl.cc"/>
- <item id="safe_browsing_module_loader" added_in_milestone="62" hash_code="6019475" type="0" content_hash_code="49511650" os_list="linux,windows" file_path="components/safe_browsing/content/browser/client_side_model_loader.cc"/>
+ <item id="safe_browsing_module_loader" added_in_milestone="62" hash_code="6019475" type="0" deprecated="2021-10-01" content_hash_code="49511650" file_path=""/>
  <item id="safe_browsing_realtime_url_lookup" added_in_milestone="78" hash_code="119324658" type="0" content_hash_code="71236226" os_list="linux,windows" file_path="components/safe_browsing/core/browser/realtime/url_lookup_service.cc"/>
  <item id="safe_browsing_v4_get_hash" added_in_milestone="62" hash_code="8561691" type="0" content_hash_code="132435617" os_list="linux,windows" file_path="components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.cc"/>
  <item id="safe_browsing_v4_update" added_in_milestone="70" hash_code="82509217" type="0" content_hash_code="5247849" os_list="linux,windows" file_path="components/safe_browsing/core/browser/db/v4_update_protocol_manager.cc"/>
@@ -316,13 +316,14 @@ Refer to README.md for content description and update process.
  <item id="sct_auditing" added_in_milestone="87" hash_code="48603483" type="0" content_hash_code="43567503" os_list="linux,windows" file_path="chrome/browser/ssl/sct_reporting_service.cc"/>
  <item id="sdch_dictionary_fetch" added_in_milestone="62" hash_code="47152935" type="0" deprecated="2017-09-16" content_hash_code="16764294" file_path=""/>
  <item id="search_prefetch_service" added_in_milestone="88" hash_code="108986091" type="0" content_hash_code="125257414" os_list="windows,linux" file_path="chrome/browser/prefetch/search_prefetch/base_search_prefetch_request.cc"/>
- <item id="search_suggest_service" added_in_milestone="73" hash_code="57785193" type="0" content_hash_code="132247652" os_list="linux,windows" file_path="chrome/browser/search/search_suggest/search_suggest_loader_impl.cc"/>
+ <item id="search_suggest_service" added_in_milestone="73" hash_code="57785193" type="0" deprecated="2021-09-02" content_hash_code="132247652" file_path=""/>
  <item id="security_key_socket" added_in_milestone="66" hash_code="31074955" type="0" content_hash_code="13741232" os_list="linux,windows" file_path="remoting/host/security_key/security_key_socket.cc"/>
  <item id="send_message_express" added_in_milestone="85" hash_code="23527666" type="0" deprecated="2020-09-21" content_hash_code="96850228" file_path=""/>
  <item id="service_worker_navigation_preload" added_in_milestone="63" hash_code="129872904" type="0" content_hash_code="79473248" os_list="linux,windows" file_path="content/browser/service_worker/service_worker_fetch_dispatcher.cc"/>
  <item id="service_worker_script_load" added_in_milestone="90" hash_code="21498113" type="0" content_hash_code="56275791" os_list="linux,windows" file_path="content/browser/service_worker/service_worker_new_script_fetcher.cc"/>
  <item id="service_worker_update_checker" added_in_milestone="71" hash_code="130931413" type="0" content_hash_code="32441998" os_list="linux,windows" file_path="content/browser/service_worker/service_worker_single_script_update_checker.cc"/>
  <item id="services_http_server_error_response" added_in_milestone="68" hash_code="59302801" type="0" content_hash_code="127774041" os_list="linux,windows" file_path="services/network/public/cpp/server/http_server.cc"/>
+ <item id="shared_storage_worklet_module_script_downloader" added_in_milestone="95" hash_code="79084529" type="0" content_hash_code="57126817" os_list="linux,windows" file_path="content/services/shared_storage_worklet/module_script_downloader.cc"/>
  <item id="sigined_exchange_cert_fetcher" added_in_milestone="66" hash_code="79442849" type="0" content_hash_code="8138156" os_list="linux,windows" file_path="content/browser/web_package/signed_exchange_cert_fetcher.cc"/>
  <item id="sigined_exchange_validity_pinger" added_in_milestone="75" hash_code="57114284" type="0" content_hash_code="119482488" os_list="linux,windows" file_path="content/browser/web_package/signed_exchange_validity_pinger.cc"/>
  <item id="signed_in_profile_avatar" added_in_milestone="62" hash_code="108903331" type="0" content_hash_code="72850619" os_list="linux,windows" file_path="chrome/browser/profiles/profile_downloader.cc"/>
@@ -382,6 +383,9 @@ Refer to README.md for content description and update process.
  <item id="webstore_installer" added_in_milestone="62" hash_code="18764319" type="0" content_hash_code="70871152" os_list="linux,windows" file_path="chrome/browser/extensions/webstore_installer.cc"/>
  <item id="webui_content_scripts_download" added_in_milestone="62" hash_code="100545943" type="0" content_hash_code="119898059" os_list="linux,windows" file_path="extensions/browser/guest_view/web_view/web_ui/web_ui_url_fetcher.cc"/>
  <item id="well_known_path_that_should_not_exist" added_in_milestone="86" hash_code="134618785" type="0" content_hash_code="55913167" os_list="linux,windows" file_path="components/password_manager/core/browser/well_known_change_password_state.cc"/>
+ <item id="whats_new_handler" added_in_milestone="94" hash_code="127739401" type="0" content_hash_code="94869759" os_list="linux,windows" file_path="chrome/browser/ui/webui/whats_new/whats_new_util.cc"/>
  <item id="worker_script_load" added_in_milestone="72" hash_code="72087791" type="0" content_hash_code="24889169" os_list="linux,windows" file_path="content/browser/worker_host/worker_script_fetcher.cc"/>
  <item id="xmpp_signal_strategy" added_in_milestone="66" hash_code="88906454" type="0" deprecated="2019-07-16" content_hash_code="88958321" file_path=""/>
+ <item id="tailored_security_service" added_in_milestone="97" hash_code="126267513" type="0" content_hash_code="35290543" os_list="linux,windows" file_path="components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.cc"/>
+ <item id="managed_acccount_signin_restrictions_secure_connect" added_in_milestone="97" hash_code="80836426" type="0" content_hash_code="18471055" os_list="linux,windows" file_path="components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.cc"/>
 </annotations>

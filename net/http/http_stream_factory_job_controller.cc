@@ -18,6 +18,9 @@
 #include "base/values.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/base/load_flags.h"
+#include "net/base/privacy_mode.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/url_util.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/transport_security_state.h"
@@ -43,9 +46,10 @@ base::Value NetLogHttpStreamJobProxyServerResolved(
     const ProxyServer& proxy_server) {
   base::Value dict(base::Value::Type::DICTIONARY);
 
-  dict.SetStringKey("proxy_server", proxy_server.is_valid()
-                                        ? proxy_server.ToPacString()
-                                        : std::string());
+  dict.SetStringKey("proxy_server",
+                    proxy_server.is_valid()
+                        ? ProxyServerToPacResultElement(proxy_server)
+                        : std::string());
   return dict;
 }
 
@@ -79,16 +83,34 @@ void ConvertWsToHttp(url::SchemeHostPort& input) {
   input = url::SchemeHostPort(url::kHttpsScheme, input.host(), input.port());
 }
 
+void HistogramProxyUsed(const ProxyInfo& proxy_info, bool success) {
+  const ProxyServer::Scheme max_scheme = ProxyServer::Scheme::SCHEME_QUIC;
+  ProxyServer::Scheme proxy_scheme = ProxyServer::Scheme::SCHEME_DIRECT;
+  if (!proxy_info.is_empty())
+    proxy_scheme = proxy_info.proxy_server().scheme();
+  if (success) {
+    UMA_HISTOGRAM_ENUMERATION("Net.HttpJob.ProxyTypeSuccess", proxy_scheme,
+                              max_scheme);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("Net.HttpJob.ProxyTypeFailed", proxy_scheme,
+                              max_scheme);
+  }
+}
+
 }  // namespace
 
 // The maximum time to wait for the alternate job to complete before resuming
 // the main job.
 const int kMaxDelayTimeForMainJobSecs = 3;
 
-base::Value NetLogJobControllerParams(const GURL& url, bool is_preconnect) {
+base::Value NetLogJobControllerParams(const HttpRequestInfo& request_info,
+                                      bool is_preconnect) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", url.possibly_invalid_spec());
+  dict.SetStringKey("url", request_info.url.possibly_invalid_spec());
   dict.SetBoolKey("is_preconnect", is_preconnect);
+  dict.SetStringKey("privacy_mode",
+                    PrivacyModeToDebugString(request_info.privacy_mode));
+
   return dict;
 }
 
@@ -149,7 +171,7 @@ HttpStreamFactory::JobController::JobController(
                                           url::kWssScheme));
 
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB_CONTROLLER, [&] {
-    return NetLogJobControllerParams(request_info.url, is_preconnect);
+    return NetLogJobControllerParams(request_info, is_preconnect);
   });
 }
 
@@ -278,6 +300,8 @@ void HttpStreamFactory::JobController::OnStreamReady(
   CHECK(request_);
 
   DCHECK(request_->completed());
+
+  HistogramProxyUsed(job->proxy_info(), /*success=*/true);
   delegate_->OnStreamReady(used_ssl_config, job->proxy_info(),
                            std::move(stream));
 }
@@ -383,6 +407,8 @@ void HttpStreamFactory::JobController::OnStreamFailed(
     RunLoop(status);
     return;
   }
+
+  HistogramProxyUsed(job->proxy_info(), /*success=*/false);
   delegate_->OnStreamFailed(status, *job->net_error_details(), used_ssl_config,
                             job->proxy_info(), job->resolve_error_info());
 }
@@ -575,8 +601,8 @@ const NetLogWithSource* HttpStreamFactory::JobController::GetNetLog() const {
 void HttpStreamFactory::JobController::MaybeSetWaitTimeForMainJob(
     const base::TimeDelta& delay) {
   if (main_job_is_blocked_) {
-    main_job_wait_time_ = std::min(
-        delay, base::TimeDelta::FromSeconds(kMaxDelayTimeForMainJobSecs));
+    main_job_wait_time_ =
+        std::min(delay, base::Seconds(kMaxDelayTimeForMainJobSecs));
   }
 }
 
@@ -586,11 +612,6 @@ bool HttpStreamFactory::JobController::HasPendingMainJob() const {
 
 bool HttpStreamFactory::JobController::HasPendingAltJob() const {
   return alternative_job_.get() != nullptr;
-}
-
-size_t HttpStreamFactory::JobController::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(main_job_) +
-         base::trace_event::EstimateMemoryUsage(alternative_job_);
 }
 
 WebSocketHandshakeStreamBase::CreateHelper*

@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
  * Interface to abstract embedder specific partition serialization logic. Partitions being the keys

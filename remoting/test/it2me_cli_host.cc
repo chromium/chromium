@@ -35,7 +35,8 @@ std::unique_ptr<It2MeNativeMessagingHost> CreateNativeMessagingHost(
     scoped_refptr<AutoThreadTaskRunner> ui_task_runner) {
   auto context = ChromotingHostContext::Create(ui_task_runner);
   std::unique_ptr<PolicyWatcher> policy_watcher =
-      PolicyWatcher::CreateWithTaskRunner(context->file_task_runner());
+      PolicyWatcher::CreateWithTaskRunner(context->file_task_runner(),
+                                          context->management_service());
   auto factory = std::make_unique<It2MeHostFactory>();
   return std::make_unique<It2MeNativeMessagingHost>(
       /* needs_elevation */ false, std::move(policy_watcher),
@@ -289,8 +290,7 @@ void It2MeCliHost::OnStateReceivedAccessCode(const base::Value& message) {
   command_awaiting_crd_access_code_ = false;
 
   // Prints the access code.
-  base::TimeDelta expires_in =
-      base::TimeDelta::FromSeconds(code_lifetime_value->GetInt());
+  base::TimeDelta expires_in = base::Seconds(code_lifetime_value->GetInt());
   HOST_LOG << "It2Me access code is generated: " << code_value->GetString();
   HOST_LOG << "Expires at: " << (base::Time::Now() + expires_in);
 }

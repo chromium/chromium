@@ -67,13 +67,13 @@ AccessibilityFocusRingController::AccessibilityFocusRingController(
     : root_window_(root_window) {
   DCHECK(root_window);
   focus_animation_info_.fade_in_time =
-      base::TimeDelta::FromMilliseconds(kFocusFadeInTimeMilliseconds);
+      base::Milliseconds(kFocusFadeInTimeMilliseconds);
   focus_animation_info_.fade_out_time =
-      base::TimeDelta::FromMilliseconds(kFocusFadeOutTimeMilliseconds);
+      base::Milliseconds(kFocusFadeOutTimeMilliseconds);
   caret_animation_info_.fade_in_time =
-      base::TimeDelta::FromMilliseconds(kCaretFadeInTimeMilliseconds);
+      base::Milliseconds(kCaretFadeInTimeMilliseconds);
   caret_animation_info_.fade_out_time =
-      base::TimeDelta::FromMilliseconds(kCaretFadeOutTimeMilliseconds);
+      base::Milliseconds(kCaretFadeOutTimeMilliseconds);
 }
 
 AccessibilityFocusRingController::~AccessibilityFocusRingController() = default;
@@ -195,9 +195,9 @@ void AccessibilityFocusRingController::HideCaretRing() {
 
 void AccessibilityFocusRingController::SetNoFadeForTesting() {
   focus_animation_info_.fade_in_time = base::TimeDelta();
-  focus_animation_info_.fade_out_time = base::TimeDelta::FromHours(1);
+  focus_animation_info_.fade_out_time = base::Hours(1);
   caret_animation_info_.fade_in_time = base::TimeDelta();
-  caret_animation_info_.fade_out_time = base::TimeDelta::FromHours(1);
+  caret_animation_info_.fade_out_time = base::Hours(1);
 }
 
 void AccessibilityFocusRingController::RectsToRings(
@@ -429,7 +429,7 @@ void AccessibilityFocusRingController::AnimateFocusRings(
   if (focus_ring_behavior_ == FocusRingBehavior::PERSIST_FOCUS_RING) {
     base::TimeDelta delta = timestamp - focus_animation_info_.change_time;
     base::TimeDelta transition_time =
-        base::TimeDelta::FromMilliseconds(kTransitionTimeMilliseconds);
+        base::Milliseconds(kTransitionTimeMilliseconds);
     if (delta >= transition_time) {
       focus_layers_[0]->Set(focus_rings_[0]);
       return;

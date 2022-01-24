@@ -8,9 +8,12 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "net/cert/pem.h"
+#include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 
 #if defined(OS_MAC)
 #include <Security/Security.h>
@@ -175,4 +178,22 @@ void PrintDebugData(const base::SupportsUserData* debug_data) {
         mac_trust_debug_info->combined_trust_debug_info());
   }
 #endif
+}
+
+std::string FingerPrintCryptoBuffer(const CRYPTO_BUFFER* cert_handle) {
+  net::SHA256HashValue hash =
+      net::X509Certificate::CalculateFingerprint256(cert_handle);
+  return base::HexEncode(hash.data, base::size(hash.data));
+}
+
+std::string SubjectFromX509Certificate(const net::X509Certificate* cert) {
+  return cert->subject().GetDisplayName();
+}
+
+std::string SubjectFromCryptoBuffer(CRYPTO_BUFFER* cert_handle) {
+  scoped_refptr<net::X509Certificate> cert =
+      net::X509Certificate::CreateFromBuffer(bssl::UpRef(cert_handle), {});
+  if (!cert)
+    return std::string();
+  return SubjectFromX509Certificate(cert.get());
 }

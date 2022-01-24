@@ -102,21 +102,35 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
     const PipelineInfo& player_info) {
   constexpr char kPipelineUmaPrefix[] = "Media.PipelineStatus.AudioVideo.";
   std::string uma_name = kPipelineUmaPrefix;
-  if (player_info.video_codec == kCodecVP8)
+  // TODO(xhwang): Use a helper function to simply the codec name mapping.
+  if (player_info.video_codec == VideoCodec::kVP8)
     uma_name += "VP8.";
-  else if (player_info.video_codec == kCodecVP9)
+  else if (player_info.video_codec == VideoCodec::kVP9)
     uma_name += "VP9.";
-  else if (player_info.video_codec == kCodecH264)
+  else if (player_info.video_codec == VideoCodec::kH264)
     uma_name += "H264.";
-  else if (player_info.video_codec == kCodecAV1)
+  else if (player_info.video_codec == VideoCodec::kAV1)
     uma_name += "AV1.";
+  else if (player_info.video_codec == VideoCodec::kHEVC)
+    uma_name += "HEVC.";
+  else if (player_info.video_codec == VideoCodec::kDolbyVision)
+    uma_name += "DolbyVision.";
   else
     return uma_name + "Other";
 
+  // Add Renderer name when not using the default RendererImpl.
+  if (renderer_type_ == RendererType::kMediaFoundation) {
+    return uma_name + GetRendererName(RendererType::kMediaFoundation);
+  } else if (renderer_type_ != RendererType::kDefault) {
+    return uma_name + "UnknownRenderer";
+  }
+
+  // Using default RendererImpl. Put more detailed info into the UMA name.
 #if !defined(OS_ANDROID)
   if (player_info.video_pipeline_info.decoder_type ==
-      VideoDecoderType::kDecrypting)
+      VideoDecoderType::kDecrypting) {
     return uma_name + "DVD";
+  }
 #endif
 
   if (player_info.video_pipeline_info.has_decrypting_demuxer_stream)
@@ -126,6 +140,7 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
   // reported as HW forever, regardless of the underlying platform
   // implementation.
   uma_name += player_info.video_pipeline_info.is_platform_decoder ? "HW" : "SW";
+
   return uma_name;
 }
 

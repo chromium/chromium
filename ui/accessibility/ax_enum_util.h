@@ -70,6 +70,9 @@ AX_BASE_EXPORT const char* ToString(ax::mojom::ListStyle list_style);
 // ax::mojom::MarkerType
 AX_BASE_EXPORT const char* ToString(ax::mojom::MarkerType marker_type);
 
+// ax::mojom::HighlightType
+AX_BASE_EXPORT const char* ToString(ax::mojom::HighlightType highlight_type);
+
 // ax::mojom::MoveDirection
 AX_BASE_EXPORT const char* ToString(ax::mojom::MoveDirection move_direction);
 

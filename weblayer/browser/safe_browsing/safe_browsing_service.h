@@ -7,11 +7,11 @@
 
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 
+#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "weblayer/browser/safe_browsing/safe_browsing_ui_manager.h"
 
 namespace content {
 class NavigationHandle;
@@ -31,11 +31,13 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace safe_browsing {
+class PingManager;
 class UrlCheckerDelegate;
 class RealTimeUrlLookupServiceBase;
 class RemoteSafeBrowsingDatabaseManager;
 class SafeBrowsingApiHandler;
 class SafeBrowsingNetworkContext;
+class TriggerManager;
 }  // namespace safe_browsing
 
 namespace weblayer {
@@ -47,6 +49,10 @@ class UrlCheckerDelegateImpl;
 class SafeBrowsingService {
  public:
   explicit SafeBrowsingService(const std::string& user_agent);
+
+  SafeBrowsingService(const SafeBrowsingService&) = delete;
+  SafeBrowsingService& operator=(const SafeBrowsingService&) = delete;
+
   ~SafeBrowsingService();
 
   // Executed on UI thread
@@ -56,7 +62,8 @@ class SafeBrowsingService {
       int frame_tree_node_id,
       safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service);
   std::unique_ptr<content::NavigationThrottle>
-  CreateSafeBrowsingNavigationThrottle(content::NavigationHandle* handle);
+  MaybeCreateSafeBrowsingNavigationThrottleFor(
+      content::NavigationHandle* handle);
   void AddInterface(service_manager::BinderRegistry* registry,
                     content::RenderProcessHost* render_process_host);
   void StopDBManager();
@@ -70,7 +77,12 @@ class SafeBrowsingService {
   scoped_refptr<safe_browsing::RemoteSafeBrowsingDatabaseManager>
   GetSafeBrowsingDBManager();
 
-  scoped_refptr<SafeBrowsingUIManager> GetSafeBrowsingUIManager();
+  safe_browsing::PingManager* GetPingManager();
+
+  scoped_refptr<safe_browsing::SafeBrowsingUIManager>
+  GetSafeBrowsingUIManager();
+
+  safe_browsing::TriggerManager* GetTriggerManager();
 
  private:
   // Executed on IO thread
@@ -80,6 +92,7 @@ class SafeBrowsingService {
   // Safe to call multiple times; invocations after the first will be no-ops.
   void StartSafeBrowsingDBManagerOnIOThread();
   void CreateSafeBrowsingUIManager();
+  void CreateTriggerManager();
   void CreateAndStartSafeBrowsingDBManager();
   scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactoryOnIOThread();
@@ -89,7 +102,7 @@ class SafeBrowsingService {
 
   // The UI manager handles showing interstitials. Accessed on both UI and IO
   // thread.
-  scoped_refptr<SafeBrowsingUIManager> ui_manager_;
+  scoped_refptr<safe_browsing::SafeBrowsingUIManager> ui_manager_;
 
   // This is what owns the URLRequestContext inside the network service. This
   // is used by SimpleURLLoader for Safe Browsing requests.
@@ -113,11 +126,15 @@ class SafeBrowsingService {
 
   std::string user_agent_;
 
+  // Provides phishing and malware statistics. Accessed on UI thread.
+  std::unique_ptr<safe_browsing::PingManager> ping_manager_;
+
   // Whether |safe_browsing_db_manager_| has been started. Accessed only on the
   // IO thread.
   bool started_db_manager_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingService);
+  // Collects data and sends reports to Safe Browsing. Accessed on UI thread.
+  std::unique_ptr<safe_browsing::TriggerManager> trigger_manager_;
 };
 
 }  // namespace weblayer

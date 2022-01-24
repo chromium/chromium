@@ -9,7 +9,6 @@
 
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,13 +23,16 @@ namespace {
 class OverrideLocaleHolder {
  public:
   OverrideLocaleHolder() {}
+
+  OverrideLocaleHolder(const OverrideLocaleHolder&) = delete;
+  OverrideLocaleHolder& operator=(const OverrideLocaleHolder&) = delete;
+
   const std::vector<std::string>& value() const { return value_; }
   void swap_value(std::vector<std::string>* override_value) {
     value_.swap(*override_value);
   }
  private:
   std::vector<std::string> value_;
-  DISALLOW_COPY_AND_ASSIGN(OverrideLocaleHolder);
 };
 
 base::LazyInstance<OverrideLocaleHolder>::DestructorAtExit

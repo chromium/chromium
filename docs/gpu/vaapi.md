@@ -1,24 +1,88 @@
-# VaAPI
+# VA-API
 
 This page documents tracing and debugging the Video Acceleration API (VaAPI or
-VA-API) on ChromeOS. The VA-API is an open-source library and API specification,
+VA-API) on ChromeOS. VA-API is an open-source library and API specification,
 providing access to graphics hardware acceleration capabilities for video and
-image processing. The VaAPI is used on ChromeOS on both Intel and AMD platforms.
+image processing. VA-API is used on ChromeOS on both Intel and AMD platforms.
 
 [TOC]
 
-## Overview
+VA-API is implemented by a generic `libva` library, developed upstream on
+the [VaAPI GitHub repository], from which ChromeOS is a downstream client via
+the [libva] package. Several backends are available for it, notably the legacy
+[Intel i965], the modern [Intel iHD] and the [AMD].
 
-VaAPI code is developed upstream on the [VaAPI GitHub repository], from which
-ChromeOS is a downstream client via the [libva] package, with packaged backends
-for e.g. both [Intel] and [AMD].
+![](https://i.imgur.com/skS8Ged.png)
 
 [VaAPI GitHub repository]: https://github.com/intel/libva
 [libva]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/x11-libs/libva/
-[Intel]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/x11-libs/libva-intel-driver/
+[Intel i965]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/x11-libs/libva-intel-driver/
+[Intel iHD]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/x11-libs/libva-intel-media-driver/
 [AMD]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/media-libs/libva-amdgpu-driver/
 
-## Tracing VaAPI video decoding
+## `libva` tracing
+
+The environment variable `LIBVA_TRACE=/path/to/file` can be exposed to libva to
+store tracing information (see [va_trace.c]). `libva` will create a number of
+e.g. `libva.log.033807.thd-0x00000b25 ` files (one per thread) with a list of
+the actions taken and semi-disassembled parameters.
+
+[va_trace.c]: https://github.com/intel/libva/blob/64520e9ec90ed30e016d7c633d746b3bf538c702/va/va_trace.c#L59
+
+### `libva` logging
+
+The environment variable `LIBVA_MESSAGING_LEVEL=0` (or `1` or `2`) can be used
+to configure increasing logging verbosity to stdout (see [va.c]). Chromium uses
+a level `0` by default in `vaapi_wrapper.cc`.
+
+[va.c]: https://github.com/intel/libva/blob/2ece7099061ba4ea821545c8b6712b5c421c4dea/va/va.c#L194
+
+### Tracing power consumption
+
+Power consumption is available on ChromeOS test/dev images via the command line
+binary [`dump_intel_rapl_consumption`]; this tool averages the power
+consumption of the four SoC domains over a configurable period of time, usually
+a few seconds. These domains are, in the order presented by the tool:
+
+* `pkg`: estimated power consumption of the whole SoC; in particular, this is a
+  superset of pp0 and pp1, including all accessory silicon, e.g. video
+  processing.
+* `pp0`: CPU set.
+* `pp1`/`gfx`: Integrated GPU or GPUs.
+* `dram`: estimated power consumption of the DRAM, from the bus activity.
+
+
+`dump_intel_rapl_consumption` results should be a subset and of the same
+numerical value as those produced with e.g. `turbostat`. Note that despite the
+name, the tool works on AMD platforms as well, since they provide the same type
+of measurement registers, albeit a subset of Intel's. Googlers can read more
+about this topic under [go/power-consumption-meas-in-intel].
+
+`dump_intel_rapl_consumption` is usually run while a given workload is active
+(e.g. a video playback) with an interval larger than a second to smooth out all
+kinds of system services that would show up in smaller periods, e.g. WiFi.
+
+```shell
+dump_intel_rapl_consumption --interval_ms=2000 --repeat --verbose
+```
+
+E.g. on a nocturne main1, the average power consumption while playing back the
+first minute of a 1080p VP9 [video], the average consumptions in watts are:
+
+|`pkg` |`pp0` |`pp1`/`gfx` |`dram`|
+| ---: | ---: | ---:       | ---: |
+| 2.63 | 1.44 | 0.29       | 0.87 |
+
+As can be seen, `pkg` ~= `pp0` + `pp1` + 1W, this extra watt is the cost of all
+the associated silicon, e.g. bridges, bus controllers, caches, and the media
+processing engine.
+
+
+[`dump_intel_rapl_consumption`]: https://chromium.googlesource.com/chromiumos/platform2/+/main/power_manager/tools/dump_intel_rapl_consumption.cc
+[video]: https://commons.wikimedia.org/wiki/File:Big_Buck_Bunny_4K.webm
+[go/power-consumption-meas-in-intel]: http://go/power-consumption-meas-in-intel
+
+## Tracing VaAPI video decoding (**LEGACY VDA API**)
 
 A simplified diagram of the buffer circulation is provided below. The "client"
 is always a Renderer process via a Mojo/IPC communication. Essentially the VaAPI
@@ -104,46 +168,6 @@ the desired `context_group` can be tricky.
 [crbug.com/514914]: https://crbug.com/514914
 [the probe-gpu example]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/memory-infra/probe-gpu.md#example
 [crbug.com/721674]: https://crbug.com/721674
-
-### Tracing power consumption
-
-Power consumption is available on ChromeOS test/dev images via the command line
-binary [`dump_intel_rapl_consumption`]; this tool averages the power
-consumption of the four SoC domains over a configurable period of time, usually
-a few seconds. These domains are, in the order presented by the tool:
-
-* `pkg`: estimated power consumption of the whole SoC; in particular, this is a
-  superset of pp0 and pp1, including all accessory silicon, e.g. video
-  processing.
-* `pp0`: CPU set.
-* `pp1`/`gfx`: Integrated GPU or GPUs.
-* `dram`: estimated power consumption of the DRAM, from the bus activity.
-
-Googlers can read more about this topic under
-[go/power-consumption-meas-in-intel].
-
-`dump_intel_rapl_consumption` is usually run while a given workload is active
-(e.g. a video playback) with an interval larger than a second to smooth out all
-kinds of system services that would show up in smaller periods, e.g. WiFi.
-
-```shell
-dump_intel_rapl_consumption --interval_ms=2000 --repeat --verbose
-```
-
-E.g. on a nocturne main1, the average power consumption while playing back the
-first minute of a 1080p VP9 [video], the average consumptions in watts are:
-
-|`pkg` |`pp0` |`pp1`/`gfx` |`dram`|
-| ---: | ---: | ---:       | ---: |
-| 2.63 | 1.44 | 0.29       | 0.87 |
-
-As can be seen, `pkg` ~= `pp0` + `pp1` + 1W, this extra watt is the cost of all
-the associated silicon, e.g. bridges, bus controllers, caches, and the media
-processing engine.
-
-[`dump_intel_rapl_consumption`]: https://chromium.googlesource.com/chromiumos/platform2/+/main/power_manager/tools/dump_intel_rapl_consumption.cc
-[video]: https://commons.wikimedia.org/wiki/File:Big_Buck_Bunny_4K.webm
-[go/power-consumption-meas-in-intel]: http://go/power-consumption-meas-in-intel
 
 ### Tracing CPU cycles and instantaneous buffer usage
 

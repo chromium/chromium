@@ -41,13 +41,13 @@ TEST_F(LitePagesServiceBypassDeciderTest, TestRandomBypass) {
       "SubresourceRedirect.LitePagesService.BypassResult", true, 1);
 
   // Subsequent fetches are bypassed until a minimum of one minute.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(59));
+  task_environment_.FastForwardBy(base::Seconds(59));
   EXPECT_FALSE(litepages_service_bypass_decider_.ShouldAllowNow());
   histogram_tester_.ExpectBucketCount(
       "SubresourceRedirect.LitePagesService.BypassResult", true, 2);
 
   // After another 5 minutes, bypass should get disabled.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
+  task_environment_.FastForwardBy(base::Minutes(5));
   EXPECT_TRUE(litepages_service_bypass_decider_.ShouldAllowNow());
   histogram_tester_.ExpectBucketCount(
       "SubresourceRedirect.LitePagesService.BypassResult", false, 1);
@@ -55,15 +55,14 @@ TEST_F(LitePagesServiceBypassDeciderTest, TestRandomBypass) {
 
 TEST_F(LitePagesServiceBypassDeciderTest, TestExactBypass) {
   // Bypass for 30 seconds
-  litepages_service_bypass_decider_.NotifyFetchFailure(
-      base::TimeDelta::FromSeconds(30));
+  litepages_service_bypass_decider_.NotifyFetchFailure(base::Seconds(30));
   histogram_tester_.ExpectUniqueSample("SubresourceRedirect.BypassDuration",
                                        30000, 1);
   EXPECT_FALSE(litepages_service_bypass_decider_.ShouldAllowNow());
   histogram_tester_.ExpectUniqueSample(
       "SubresourceRedirect.LitePagesService.BypassResult", true, 1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(31));
+  task_environment_.FastForwardBy(base::Seconds(31));
   EXPECT_TRUE(litepages_service_bypass_decider_.ShouldAllowNow());
   histogram_tester_.ExpectBucketCount(
       "SubresourceRedirect.LitePagesService.BypassResult", false, 1);
@@ -71,15 +70,14 @@ TEST_F(LitePagesServiceBypassDeciderTest, TestExactBypass) {
 
 TEST_F(LitePagesServiceBypassDeciderTest, TestInvalidBypassDuration) {
   // Bypass for too long duration will limit the bypass to only 5 minutes.
-  litepages_service_bypass_decider_.NotifyFetchFailure(
-      base::TimeDelta::FromMinutes(6));
+  litepages_service_bypass_decider_.NotifyFetchFailure(base::Minutes(6));
   histogram_tester_.ExpectUniqueSample("SubresourceRedirect.BypassDuration",
                                        5 * 60 * 1000, 1);
   EXPECT_FALSE(litepages_service_bypass_decider_.ShouldAllowNow());
   histogram_tester_.ExpectUniqueSample(
       "SubresourceRedirect.LitePagesService.BypassResult", true, 1);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(6));
+  task_environment_.FastForwardBy(base::Minutes(6));
   EXPECT_TRUE(litepages_service_bypass_decider_.ShouldAllowNow());
   histogram_tester_.ExpectBucketCount(
       "SubresourceRedirect.LitePagesService.BypassResult", false, 1);

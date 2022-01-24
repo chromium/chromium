@@ -1,0 +1,15 @@
+<!--
+@BLINK-ALLOW:htmlTag=*
+-->
+
+<!-- Tests that loading this page doesn't result in crash -->
+<div id="div">
+<script>
+junk = document.createElementNS("http://www.w3.org/2000/svg", "junk");
+div.appendChild(junk);
+slot = document.createElementNS("http://www.w3.org/1999/xhtml", "slot");
+junk.appendChild(slot);
+p = document.createElementNS("http://www.w3.org/1999/xhtml", "p");
+p.innerText ="paragraph"
+div.appendChild(p);
+</script>

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/values.h"
@@ -30,6 +29,10 @@ class HistoryEventRouter : public history::HistoryServiceObserver {
  public:
   HistoryEventRouter(Profile* profile,
                      history::HistoryService* history_service);
+
+  HistoryEventRouter(const HistoryEventRouter&) = delete;
+  HistoryEventRouter& operator=(const HistoryEventRouter&) = delete;
+
   ~HistoryEventRouter() override;
 
  private:
@@ -51,8 +54,6 @@ class HistoryEventRouter : public history::HistoryServiceObserver {
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryEventRouter);
 };
 
 class HistoryAPI : public BrowserContextKeyedAPI, public EventRouter::Observer {

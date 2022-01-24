@@ -30,6 +30,12 @@
 #include "ppapi/shared_impl/var_tracker.h"
 #include "third_party/blink/public/web/web_array_buffer.h"
 #include "third_party/blink/public/web/web_array_buffer_converter.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-microtask-queue.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 using ppapi::ArrayBufferVar;
 using ppapi::ArrayVar;

@@ -184,7 +184,7 @@ void BookmarkBubbleView::ShowBubble(
           .SetTitle(l10n_util::GetStringUTF16(
               already_bookmarked ? IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARK
                                  : IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARKED))
-          .SetWindowClosingCallback(
+          .SetDialogDestroyingCallback(
               base::BindOnce(&BookmarkBubbleDelegate::OnWindowClosing,
                              base::Unretained(bubble_delegate)))
           .AddOkButton(base::BindOnce(&BookmarkBubbleDelegate::ApplyEdits,

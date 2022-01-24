@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -33,8 +33,7 @@ constexpr char kUserActionCancel[] = "cancel";
 
 // Amount of time the user has to be idle for before showing the online login
 // page.
-constexpr const base::TimeDelta kIdleTimeDelta =
-    base::TimeDelta::FromMinutes(3);
+constexpr const base::TimeDelta kIdleTimeDelta = base::Minutes(3);
 
 // These values should not be renumbered and numeric values should never
 // be reused. This must be kept in sync with ChromeOSHiddenUserPodsOfflineLogin
@@ -47,8 +46,8 @@ enum class OfflineLoginEvent {
 };
 
 inline std::string GetEnterpriseDomainManager() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetEnterpriseDomainManager();
 }
 
@@ -106,10 +105,9 @@ void OfflineLoginScreen::HideImpl() {
     view_->Hide();
 }
 
-void OfflineLoginScreen::LoadOffline(std::string email) {
+void OfflineLoginScreen::LoadOffline() {
   base::DictionaryValue params;
 
-  params.SetString("email", email);
   const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
   if (!enterprise_domain_manager.empty())
     params.SetString("enterpriseDomainManager", enterprise_domain_manager);
@@ -146,9 +144,7 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
     LOG(ERROR) << "OfflineLoginScreen::HandleCompleteAuth: User not found! "
                   "account type="
                << AccountId::AccountTypeToString(account_id.GetAccountType());
-    LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
-        SigninError::kOfflineFailedNetworkNotConnected,
-        /*details=*/std::string());
+    view_->ShowPasswordMismatchMessage();
     return;
   }
 

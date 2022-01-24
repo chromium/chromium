@@ -1,2 +1,2 @@
-CONSOLE ERROR: line 19: XPathNSResolver does not have a lookupNamespaceURI method.
+CONSOLE ERROR: XPathNSResolver does not have a lookupNamespaceURI method.
 SUCCESS

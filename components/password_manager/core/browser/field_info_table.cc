@@ -54,7 +54,7 @@ std::vector<FieldInfo> StatementToFieldInfo(sql::Statement* s) {
     results.back().field_type = static_cast<autofill::ServerFieldType>(
         s->ColumnInt(GetColumnNumber(FieldInfoTableColumn::kFieldType)));
     results.back().create_time = base::Time::FromDeltaSinceWindowsEpoch(
-        (base::TimeDelta::FromMicroseconds(s->ColumnInt64(
+        (base::Microseconds(s->ColumnInt64(
             GetColumnNumber(FieldInfoTableColumn::kCreateTime)))));
   }
   return results;

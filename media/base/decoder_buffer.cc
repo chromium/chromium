@@ -10,6 +10,12 @@
 
 namespace media {
 
+DecoderBuffer::TimeInfo::TimeInfo() = default;
+DecoderBuffer::TimeInfo::~TimeInfo() = default;
+DecoderBuffer::TimeInfo::TimeInfo(const TimeInfo&) = default;
+DecoderBuffer::TimeInfo& DecoderBuffer::TimeInfo::operator=(const TimeInfo&) =
+    default;
+
 DecoderBuffer::DecoderBuffer(size_t size)
     : size_(size), side_data_size_(0), is_key_frame_(false) {
   Initialize();
@@ -170,15 +176,15 @@ std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {
 
   std::ostringstream s;
 
-  s << "{timestamp=" << timestamp_.InMicroseconds()
-    << " duration=" << duration_.InMicroseconds() << " size=" << size_
+  s << "{timestamp=" << time_info_.timestamp.InMicroseconds()
+    << " duration=" << time_info_.duration.InMicroseconds() << " size=" << size_
     << " is_key_frame=" << is_key_frame_
     << " encrypted=" << (decrypt_config_ != nullptr);
 
   if (verbose) {
     s << " side_data_size=" << side_data_size_ << " discard_padding (us)=("
-      << discard_padding_.first.InMicroseconds() << ", "
-      << discard_padding_.second.InMicroseconds() << ")";
+      << time_info_.discard_padding.first.InMicroseconds() << ", "
+      << time_info_.discard_padding.second.InMicroseconds() << ")";
 
     if (decrypt_config_)
       s << " decrypt_config=" << (*decrypt_config_);
@@ -191,7 +197,7 @@ std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {
 
 void DecoderBuffer::set_timestamp(base::TimeDelta timestamp) {
   DCHECK(!end_of_stream());
-  timestamp_ = timestamp;
+  time_info_.timestamp = timestamp;
 }
 
 void DecoderBuffer::CopySideDataFrom(const uint8_t* side_data,

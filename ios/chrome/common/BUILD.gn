@@ -68,10 +68,6 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
-  if (use_xcode_clang) {
-    # TODO(crbug.com/939749): Remove once Xcode's Clang has Clang r355012.
-    defines = [ "XCODE_CLANG" ]
-  }
 }
 
 # The block_unittest.mm has been duplicated during the migration of iOS code

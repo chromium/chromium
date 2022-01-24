@@ -72,7 +72,19 @@ extern "C" {
 //          - WEBAUTHN_EXTENSIONS_IDENTIFIER_CRED_PROTECT
 //
 
-#define WEBAUTHN_API_CURRENT_VERSION WEBAUTHN_API_VERSION_2
+#define WEBAUTHN_API_VERSION_3 3
+// WEBAUTHN_API_VERSION_3 : Delta From WEBAUTHN_API_VERSION_2
+//      Data Structures and their sub versions:
+//          - WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS    :   4
+//          - WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS      :   5
+//          - WEBAUTHN_CREDENTIAL_ATTESTATION                   :   4
+//          - WEBAUTHN_ASSERTION                                :   2
+//      Added Extensions:
+//          - WEBAUTHN_EXTENSIONS_IDENTIFIER_CRED_BLOB
+//          - WEBAUTHN_EXTENSIONS_IDENTIFIER_MIN_PIN_LENGTH
+//
+
+#define WEBAUTHN_API_CURRENT_VERSION WEBAUTHN_API_VERSION_3
 
 //+------------------------------------------------------------------------------------------
 // Information about an RP Entity
@@ -310,6 +322,53 @@ typedef const WEBAUTHN_CRED_PROTECT_EXTENSION_IN*
 // GetAssertion Output Type:    Not Supported
 
 //+------------------------------------------------------------------------------------------
+//  credBlob  extension
+//-------------------------------------------------------------------------------------------
+
+typedef struct _WEBAUTHN_CRED_BLOB_EXTENSION {
+  // Size of pbCredBlob.
+  DWORD cbCredBlob;
+  _Field_size_bytes_(cbCredBlob) PBYTE pbCredBlob;
+} WEBAUTHN_CRED_BLOB_EXTENSION, *PWEBAUTHN_CRED_BLOB_EXTENSION;
+typedef const WEBAUTHN_CRED_BLOB_EXTENSION* PCWEBAUTHN_CRED_BLOB_EXTENSION;
+
+#define WEBAUTHN_EXTENSIONS_IDENTIFIER_CRED_BLOB L"credBlob"
+// Below type definitions is for WEBAUTHN_EXTENSIONS_IDENTIFIER_CRED_BLOB
+// MakeCredential Input Type:   WEBAUTHN_CRED_BLOB_EXTENSION.
+//      - pvExtension must point to a WEBAUTHN_CRED_BLOB_EXTENSION struct
+//      - cbExtension must contain the sizeof(WEBAUTHN_CRED_BLOB_EXTENSION).
+// MakeCredential Output Type:  BOOL.
+//      - pvExtension will point to a BOOL with the value TRUE if credBlob was
+//      successfully created
+//      - cbExtension will contain the sizeof(BOOL).
+// GetAssertion Input Type:     BOOL.
+//      - pvExtension must point to a BOOL with the value TRUE to request the
+//      credBlob.
+//      - cbExtension must contain the sizeof(BOOL).
+// GetAssertion Output Type:    WEBAUTHN_CRED_BLOB_EXTENSION.
+//      - pvExtension will point to a WEBAUTHN_CRED_BLOB_EXTENSION struct if the
+//      authenticator
+//        returns the credBlob in the signed extensions
+//      - cbExtension will contain the sizeof(WEBAUTHN_CRED_BLOB_EXTENSION).
+
+//+------------------------------------------------------------------------------------------
+//  minPinLength  extension
+//-------------------------------------------------------------------------------------------
+
+#define WEBAUTHN_EXTENSIONS_IDENTIFIER_MIN_PIN_LENGTH L"minPinLength"
+// Below type definitions is for WEBAUTHN_EXTENSIONS_IDENTIFIER_MIN_PIN_LENGTH
+// MakeCredential Input Type:   BOOL.
+//      - pvExtension must point to a BOOL with the value TRUE to request the
+//      minPinLength.
+//      - cbExtension must contain the sizeof(BOOL).
+// MakeCredential Output Type:  DWORD.
+//      - pvExtension will point to a DWORD with the minimum pin length if
+//      returned by the authenticator
+//      - cbExtension will contain the sizeof(DWORD).
+// GetAssertion Input Type:     Not Supported
+// GetAssertion Output Type:    Not Supported
+
+//+------------------------------------------------------------------------------------------
 // Information about Extensions.
 //-------------------------------------------------------------------------------------------
 typedef struct _WEBAUTHN_EXTENSION {
@@ -345,10 +404,20 @@ typedef const WEBAUTHN_EXTENSIONS *PCWEBAUTHN_EXTENSIONS;
 #define WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_INDIRECT                 2
 #define WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT                   3
 
+#define WEBAUTHN_ENTERPRISE_ATTESTATION_NONE 0
+#define WEBAUTHN_ENTERPRISE_ATTESTATION_VENDOR_FACILITATED 1
+#define WEBAUTHN_ENTERPRISE_ATTESTATION_PLATFORM_MANAGED 2
+
+#define WEBAUTHN_LARGE_BLOB_SUPPORT_NONE 0
+#define WEBAUTHN_LARGE_BLOB_SUPPORT_REQUIRED 1
+#define WEBAUTHN_LARGE_BLOB_SUPPORT_PREFERRED 2
+
 #define WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_1            1
 #define WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_2            2
 #define WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_3            3
-#define WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_CURRENT_VERSION      WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_3
+#define WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_4 4
+#define WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_CURRENT_VERSION \
+  WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_4
 
 typedef struct _WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS {
     // Version of this structure, to allow for modifications in the future.
@@ -367,7 +436,7 @@ typedef struct _WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS {
     // Optional. Platform vs Cross-Platform Authenticators.
     DWORD dwAuthenticatorAttachment;
 
-    // Optional. Require key to be resident or not. Defaulting to FALSE;
+    // Optional. Require key to be resident or not. Defaulting to FALSE.
     BOOL bRequireResidentKey;
 
     // User Verification Requirement.
@@ -393,15 +462,39 @@ typedef struct _WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS {
     // Exclude Credential List. If present, "CredentialList" will be ignored.
     PWEBAUTHN_CREDENTIAL_LIST pExcludeCredentialList;
 
+    //
+    // The following fields have been added in
+    // WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_4
+    //
+
+    // Enterprise Attestation
+    DWORD dwEnterpriseAttestation;
+
+    // Large Blob Support: none, required or preferred
+    //
+    // NTE_INVALID_PARAMETER when large blob required or preferred and
+    //   both bRequireResidentKey and bPreferResidentKey are set to FALSE.
+    DWORD dwLargeBlobSupport;
+
+    // Optional. Prefer key to be resident. Defaulting to FALSE. When TRUE,
+    // overrides the above bRequireResidentKey.
+    BOOL bPreferResidentKey;
+
 } WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS, *PWEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS;
 typedef const WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS *PCWEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS;
 
+#define WEBAUTHN_CRED_LARGE_BLOB_OPERATION_NONE 0
+#define WEBAUTHN_CRED_LARGE_BLOB_OPERATION_GET 1
+#define WEBAUTHN_CRED_LARGE_BLOB_OPERATION_SET 2
+#define WEBAUTHN_CRED_LARGE_BLOB_OPERATION_DELETE 3
 
 #define WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_1          1
 #define WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_2          2
 #define WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_3          3
 #define WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_4          4
-#define WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_CURRENT_VERSION    WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_4
+#define WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_5 5
+#define WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_CURRENT_VERSION \
+  WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_5
 
 typedef struct _WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS {
     // Version of this structure, to allow for modifications in the future.
@@ -451,6 +544,16 @@ typedef struct _WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS {
     // Allow Credential List. If present, "CredentialList" will be ignored.
     PWEBAUTHN_CREDENTIAL_LIST pAllowCredentialList;
 
+    //
+    // The following fields have been added in
+    // WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_5
+    //
+
+    DWORD dwCredLargeBlobOperation;
+
+    // Size of pbCredLargeBlob
+    DWORD cbCredLargeBlob;
+    _Field_size_bytes_(cbCredLargeBlob) PBYTE pbCredLargeBlob;
 } WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS,  *PWEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS;
 typedef const WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS  *PCWEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS;
 
@@ -526,7 +629,9 @@ typedef const WEBAUTHN_COMMON_ATTESTATION *PCWEBAUTHN_COMMON_ATTESTATION;
 #define WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_1               1
 #define WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_2               2
 #define WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_3               3
-#define WEBAUTHN_CREDENTIAL_ATTESTATION_CURRENT_VERSION         WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_3
+#define WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_4 4
+#define WEBAUTHN_CREDENTIAL_ATTESTATION_CURRENT_VERSION \
+  WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_4
 
 typedef struct _WEBAUTHN_CREDENTIAL_ATTESTATION {
     // Version of this structure, to allow for modifications in the future.
@@ -581,6 +686,15 @@ typedef struct _WEBAUTHN_CREDENTIAL_ATTESTATION {
     // the transport that was used.
     DWORD dwUsedTransport;
 
+    //
+    // Following fields have been added in
+    // WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_4
+    //
+
+    BOOL bEpAtt;
+    BOOL bLargeBlobSupported;
+    BOOL bResidentKey;
+
 } WEBAUTHN_CREDENTIAL_ATTESTATION, *PWEBAUTHN_CREDENTIAL_ATTESTATION;
 typedef const WEBAUTHN_CREDENTIAL_ATTESTATION *PCWEBAUTHN_CREDENTIAL_ATTESTATION;
 
@@ -589,7 +703,20 @@ typedef const WEBAUTHN_CREDENTIAL_ATTESTATION *PCWEBAUTHN_CREDENTIAL_ATTESTATION
 // authenticatorGetAssertion output.
 //-------------------------------------------------------------------------------------------
 
-#define WEBAUTHN_ASSERTION_CURRENT_VERSION                              1
+#define WEBAUTHN_CRED_LARGE_BLOB_STATUS_NONE 0
+#define WEBAUTHN_CRED_LARGE_BLOB_STATUS_SUCCESS 1
+#define WEBAUTHN_CRED_LARGE_BLOB_STATUS_NOT_SUPPORTED 2
+#define WEBAUTHN_CRED_LARGE_BLOB_STATUS_INVALID_DATA 3
+#define WEBAUTHN_CRED_LARGE_BLOB_STATUS_INVALID_PARAMETER 4
+#define WEBAUTHN_CRED_LARGE_BLOB_STATUS_NOT_FOUND 5
+#define WEBAUTHN_CRED_LARGE_BLOB_STATUS_MULTIPLE_CREDENTIALS 6
+#define WEBAUTHN_CRED_LARGE_BLOB_STATUS_LACK_OF_SPACE 7
+#define WEBAUTHN_CRED_LARGE_BLOB_STATUS_PLATFORM_ERROR 8
+#define WEBAUTHN_CRED_LARGE_BLOB_STATUS_AUTHENTICATOR_ERROR 9
+
+#define WEBAUTHN_ASSERTION_VERSION_1 1
+#define WEBAUTHN_ASSERTION_VERSION_2 2
+#define WEBAUTHN_ASSERTION_CURRENT_VERSION WEBAUTHN_ASSERTION_VERSION_2
 
 typedef struct _WEBAUTHN_ASSERTION {
     // Version of this structure, to allow for modifications in the future.
@@ -615,6 +742,19 @@ typedef struct _WEBAUTHN_ASSERTION {
     // UserId
     _Field_size_bytes_(cbUserId)
     PBYTE pbUserId;
+
+    //
+    // Following fields have been added in WEBAUTHN_ASSERTION_VERSION_2
+    //
+
+    WEBAUTHN_EXTENSIONS Extensions;
+
+    // Size of pbCredLargeBlob
+    DWORD cbCredLargeBlob;
+    _Field_size_bytes_(cbCredLargeBlob) PBYTE pbCredLargeBlob;
+
+    DWORD dwCredLargeBlobStatus;
+
 } WEBAUTHN_ASSERTION, *PWEBAUTHN_ASSERTION;
 typedef const WEBAUTHN_ASSERTION *PCWEBAUTHN_ASSERTION;
 

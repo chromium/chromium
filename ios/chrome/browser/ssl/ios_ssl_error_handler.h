@@ -41,6 +41,10 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
       bool overridable,
       int64_t navigation_id,
       base::OnceCallback<void(NSString*)> blocking_page_callback);
+
+  IOSSSLErrorHandler(const IOSSSLErrorHandler&) = delete;
+  IOSSSLErrorHandler& operator=(const IOSSSLErrorHandler&) = delete;
+
   ~IOSSSLErrorHandler() override;
 
  private:
@@ -107,8 +111,6 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
   base::WeakPtrFactory<IOSSSLErrorHandler> weak_factory_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(IOSSSLErrorHandler);
 };
 
 #endif  // IOS_CHROME_BROWSER_SSL_IOS_SSL_ERROR_HANDLER_H_

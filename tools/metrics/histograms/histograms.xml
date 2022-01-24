@@ -6,7 +6,7 @@ found in the LICENSE file.
 
 <!--
 This file will soon be removed. Please put all new histograms into the correct
-folder in tools/metrics/histograms/histograms_xml/.
+folder in tools/metrics/histograms/metadata/.
 -->
 
 <histogram-configuration>

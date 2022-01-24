@@ -8,8 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
-
 class AccountId;
 class PrefService;
 
@@ -24,6 +22,10 @@ namespace ash {
 class TestPrefServiceProvider {
  public:
   TestPrefServiceProvider();
+
+  TestPrefServiceProvider(const TestPrefServiceProvider&) = delete;
+  TestPrefServiceProvider& operator=(const TestPrefServiceProvider&) = delete;
+
   ~TestPrefServiceProvider();
 
   void CreateSigninPrefsIfNeeded();
@@ -38,8 +40,6 @@ class TestPrefServiceProvider {
  private:
   std::unique_ptr<PrefService> signin_prefs_;
   std::map<AccountId, std::unique_ptr<PrefService>> user_prefs_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPrefServiceProvider);
 };
 
 }  // namespace ash

@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
-#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_service_factory.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -38,13 +38,6 @@
 namespace chromeos {
 
 namespace multidevice_setup {
-
-namespace {
-
-constexpr int kPreferredDialogHeightPx = 640;
-constexpr int kPreferredDialogWidthPx = 768;
-
-}  // namespace
 
 // static
 MultiDeviceSetupDialog* MultiDeviceSetupDialog::current_instance_ = nullptr;
@@ -98,19 +91,8 @@ MultiDeviceSetupDialog::~MultiDeviceSetupDialog() {
 }
 
 void MultiDeviceSetupDialog::GetDialogSize(gfx::Size* size) const {
-  if (features::IsNewOobeLayoutEnabled()) {
-    const gfx::Size dialog_size = CalculateOobeDialogSizeForPrimaryDisplay();
-    size->SetSize(dialog_size.width(), dialog_size.height());
-  } else {
-    // Note: The size is calculated once based on the current screen orientation
-    // and is not ever updated. It might be possible to resize the dialog upon
-    // each screen rotation, but https://crbug.com/1030993 prevents this from
-    // working.
-    // TODO(https://crbug.com/1030993): Explore resizing the dialog dynamically.
-    static const gfx::Size dialog_size = ComputeDialogSizeForInternalScreen(
-        gfx::Size(kPreferredDialogWidthPx, kPreferredDialogHeightPx));
-    size->SetSize(dialog_size.width(), dialog_size.height());
-  }
+  const gfx::Size dialog_size = CalculateOobeDialogSizeForPrimaryDisplay();
+  size->SetSize(dialog_size.width(), dialog_size.height());
 }
 
 void MultiDeviceSetupDialog::OnDialogClosed(const std::string& json_retval) {

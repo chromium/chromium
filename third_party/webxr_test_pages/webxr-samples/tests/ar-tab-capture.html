@@ -67,7 +67,7 @@ and show the contents of the page via the WebRTC APIs.
         <div id="warning-zone"></div>
 
         <button id="xr-button" class="barebones-button" disabled>XR not found</button>
-        <button id="capture-button" class="barebones-button" disabled>Start Screen Capture</button>
+        <button id="capture-button" class="barebones-button">Start Screen Capture</button>
         <video id="capture-video" autoplay playsinline muted height=100></video>
 
       </details>
@@ -84,7 +84,6 @@ and show the contents of the page via the WebRTC APIs.
 
       // getDisplayMedia globals.
       const captureButton = document.getElementById('capture-button');
-      captureButton.disabled = (navigator.mediaDevices.getCurrentBrowsingContextMedia == null);
       const video = document.getElementById('capture-video');
       let videoStream = null;
 
@@ -122,7 +121,7 @@ and show the contents of the page via the WebRTC APIs.
 
       function oncaptureButtonClicked() {
         if (!videoStream) {
-          navigator.mediaDevices.getCurrentBrowsingContextMedia({video: true})
+          navigator.mediaDevices.getDisplayMedia({video: true, preferCurrentTab: true})
             .then(onCaptureSuccess, onCaptureError);
         } else {
           // Before we stop the tracks we need to cleanup the state of anything

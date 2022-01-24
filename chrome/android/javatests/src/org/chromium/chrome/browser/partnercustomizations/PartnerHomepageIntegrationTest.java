@@ -160,17 +160,14 @@ public class PartnerHomepageIntegrationTest {
     public void testCloseAllTabs() {
         final CallbackHelper tabClosed = new CallbackHelper();
         final TabModel tabModel = mActivityTestRule.getActivity().getCurrentTabModel();
-        mActivityTestRule.getActivity().getCurrentTabModel().addObserver(new TabModelObserver() {
-            @Override
-            public void didCloseTab(int tabId, boolean incognito) {
-                if (tabModel.getCount() == 0) tabClosed.notifyCalled();
-            }
-        });
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                mActivityTestRule.getActivity().getTabModelSelector().closeAllTabs();
-            }
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            tabModel.addObserver(new TabModelObserver() {
+                @Override
+                public void didCloseTab(int tabId, boolean incognito) {
+                    if (tabModel.getCount() == 0) tabClosed.notifyCalled();
+                }
+            });
+            mActivityTestRule.getActivity().getTabModelSelector().closeAllTabs();
         });
 
         try {

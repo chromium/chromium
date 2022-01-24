@@ -6,14 +6,12 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
-#include "components/safe_browsing/content/browser/safe_browsing_subresource_tab_helper.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
@@ -25,6 +23,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
@@ -59,7 +58,8 @@ void SafeBrowsingUIManager::Stop(bool shutdown) {
 
 void SafeBrowsingUIManager::CreateAndSendHitReport(
     const UnsafeResource& resource) {
-  WebContents* web_contents = resource.web_contents_getter.Run();
+  WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
   DCHECK(web_contents);
   HitReport hit_report;
   hit_report.malicious_url = resource.url;
@@ -101,7 +101,8 @@ void SafeBrowsingUIManager::CreateAndSendHitReport(
 
 void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     const security_interstitials::UnsafeResource& resource) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
 
   if (!web_contents) {
     // Tab is gone.
@@ -117,6 +118,31 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     // Tab is being prerendered.
     resource.DispatchCallback(FROM_HERE, false /*proceed*/,
                               false /*showed_interstitial*/);
+    return;
+  }
+
+  // Whether we have a FrameTreeNode id or a RenderFrameHost id depends on
+  // whether SB was triggered for a frame navigation or a document's subresource
+  // load respectively. We consider both cases here.
+  const content::GlobalRenderFrameHostId rfh_id(resource.render_process_id,
+                                                resource.render_frame_id);
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
+  const bool is_prerender =
+      web_contents->IsPrerenderedFrame(resource.frame_tree_node_id) ||
+      (rfh && rfh->GetLifecycleState() ==
+                  content::RenderFrameHost::LifecycleState::kPrerendering);
+
+  if (is_prerender) {
+    // TODO(mcnee): If we were to indicate that this does not show an
+    // interstitial, the loader throttle would cancel with ERR_ABORTED to
+    // suppress an error page, instead of blocking using ERR_BLOCKED_BY_CLIENT.
+    // Prerendering code needs to distiguish these cases, so we pretend that
+    // we've shown an interstitial to get a meaningful error code.
+    // Given that the only thing the |showed_interstitial| parameter is used for
+    // is controlling the error code, perhaps this should be renamed to better
+    // indicate its purpose.
+    resource.DispatchCallback(FROM_HERE, false /*proceed*/,
+                              true /*showed_interstitial*/);
     return;
   }
 
@@ -147,12 +173,12 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   DisplayBlockingPage(resource);
 }
 
-// static
 bool SafeBrowsingUIManager::ShouldSendHitReport(const HitReport& hit_report,
                                                 WebContents* web_contents) {
   return web_contents &&
          hit_report.extended_reporting_level != SBER_LEVEL_OFF &&
-         !web_contents->GetBrowserContext()->IsOffTheRecord();
+         !web_contents->GetBrowserContext()->IsOffTheRecord() &&
+         delegate_->IsSendingOfHitReportsEnabled();
 }
 
 // A SafeBrowsing hit is sent after a blocking page for malware/phishing
@@ -297,15 +323,10 @@ BaseBlockingPage* SafeBrowsingUIManager::CreateBlockingPageForSubresource(
     content::WebContents* contents,
     const GURL& blocked_url,
     const UnsafeResource& unsafe_resource) {
-  SafeBrowsingSubresourceTabHelper::CreateForWebContents(contents, this);
-  // This blocking page is only used to retrieve the HTML for the page, so we
-  // set |should_trigger_reporting| to false. Reports for subresources are
-  // triggered when creating the blocking page that gets associated in
-  // SafeBrowsingSubresourceTabHelper.
   SafeBrowsingBlockingPage* blocking_page =
       blocking_page_factory_->CreateSafeBrowsingPage(
           this, contents, blocked_url, {unsafe_resource},
-          /*should_trigger_reporting=*/false);
+          /*should_trigger_reporting=*/true);
 
   // Report that we showed an interstitial.
   ForwardSecurityInterstitialShownExtensionEventToEmbedder(

@@ -13,8 +13,8 @@
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "fuchsia/base/test/fit_adapter.h"
-#include "fuchsia/base/test/result_receiver.h"
 #include "fuchsia/engine/browser/cookie_manager_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/cookie_access_result.h"
@@ -58,6 +58,10 @@ class CookieManagerImplTest : public testing::Test {
         cookie_manager_(
             base::BindRepeating(&CookieManagerImplTest::GetNetworkContext,
                                 base::Unretained(this))) {}
+
+  CookieManagerImplTest(const CookieManagerImplTest&) = delete;
+  CookieManagerImplTest& operator=(const CookieManagerImplTest&) = delete;
+
   ~CookieManagerImplTest() override = default;
 
  protected:
@@ -140,20 +144,20 @@ class CookieManagerImplTest : public testing::Test {
   mojo::Remote<network::mojom::CookieManager> mojo_cookie_manager_;
 
   CookieManagerImpl cookie_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieManagerImplTest);
 };
 
 // Calls GetNext() on the supplied |iterator| and lets the caller express
 // expectations on the results.
 class GetNextCookiesIteratorResult {
  public:
-  explicit GetNextCookiesIteratorResult(fuchsia::web::CookiesIterator* iterator)
-      : result_(loop_.QuitClosure()) {
-    iterator->GetNext(
-        cr_fuchsia::CallbackToFitFunction(result_.GetReceiveCallback()));
+  explicit GetNextCookiesIteratorResult(
+      fuchsia::web::CookiesIterator* iterator) {
+    iterator->GetNext(cr_fuchsia::CallbackToFitFunction(result_.GetCallback()));
   }
+
+  GetNextCookiesIteratorResult(const GetNextCookiesIteratorResult&) = delete;
+  GetNextCookiesIteratorResult& operator=(const GetNextCookiesIteratorResult&) =
+      delete;
 
   ~GetNextCookiesIteratorResult() = default;
 
@@ -170,11 +174,10 @@ class GetNextCookiesIteratorResult {
   // Deletions expectations are specified by using absl::nullopt as the value.
   void ExpectCookieUpdates(
       std::map<base::StringPiece, absl::optional<base::StringPiece>> expected) {
-    loop_.Run();
-    ASSERT_TRUE(result_.has_value());
-    ASSERT_EQ(result_->size(), expected.size());
+    ASSERT_TRUE(result_.Wait());
+    ASSERT_EQ(result_.Get().size(), expected.size());
     std::map<base::StringPiece, base::StringPiece> result_updates;
-    for (auto& cookie_update : *result_) {
+    for (const auto& cookie_update : result_.Get()) {
       ASSERT_TRUE(cookie_update.has_id());
       ASSERT_TRUE(cookie_update.id().has_name());
       auto it = expected.find(cookie_update.id().name());
@@ -191,14 +194,11 @@ class GetNextCookiesIteratorResult {
     // If we ran |loop_| then this would hang, so just ensure any pending work
     // has been processed.
     base::RunLoop().RunUntilIdle();
-    EXPECT_FALSE(result_.has_value());
+    EXPECT_FALSE(result_.IsReady());
   }
 
  protected:
-  base::RunLoop loop_;
-  cr_fuchsia::ResultReceiver<std::vector<fuchsia::web::Cookie>> result_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetNextCookiesIteratorResult);
+  base::test::TestFuture<std::vector<fuchsia::web::Cookie>> result_;
 };
 
 }  // namespace

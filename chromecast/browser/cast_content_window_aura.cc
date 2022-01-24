@@ -46,6 +46,9 @@ class TouchBlocker : public ui::EventHandler, public aura::WindowObserver {
     }
   }
 
+  TouchBlocker(const TouchBlocker&) = delete;
+  TouchBlocker& operator=(const TouchBlocker&) = delete;
+
   ~TouchBlocker() override {
     if (window_) {
       window_->RemoveObserver(this);
@@ -82,24 +85,21 @@ class TouchBlocker : public ui::EventHandler, public aura::WindowObserver {
 
   aura::Window* window_;
   bool activated_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchBlocker);
 };
 
-CastContentWindowAura::CastContentWindowAura(base::WeakPtr<Delegate> delegate,
-                                             mojom::CastWebViewParamsPtr params,
+CastContentWindowAura::CastContentWindowAura(mojom::CastWebViewParamsPtr params,
                                              CastWindowManager* window_manager)
-    : CastContentWindow(delegate, std::move(params)),
+    : CastContentWindow(std::move(params)),
       window_manager_(window_manager),
       gesture_dispatcher_(
-          std::make_unique<CastContentGestureHandler>(delegate_)),
+          std::make_unique<CastContentGestureHandler>(gesture_router())),
       window_(nullptr),
       has_screen_access_(false),
       resize_window_when_navigation_starts_(true) {}
 
 CastContentWindowAura::~CastContentWindowAura() {
   content::WebContentsObserver::Observe(nullptr);
-  CastWebContents::Observer::Observe(nullptr);
+  CastWebContentsObserver::Observe(nullptr);
   if (window_manager_) {
     window_manager_->RemoveGestureHandler(gesture_dispatcher_.get());
   }
@@ -113,7 +113,7 @@ void CastContentWindowAura::CreateWindow(
     VisibilityPriority visibility_priority) {
   DCHECK(window_manager_) << "A CastWindowManager must be provided before "
                           << "creating a window for WebContents.";
-  CastWebContents::Observer::Observe(cast_web_contents());
+  CastWebContentsObserver::Observe(cast_web_contents());
   content::WebContentsObserver::Observe(WebContents());
   window_ = WebContents()->GetNativeView();
   if (!window_->HasObserver(this)) {
@@ -163,12 +163,6 @@ mojom::MediaControlUi* CastContentWindowAura::media_controls() {
   return media_controls_.get();
 }
 
-void CastContentWindowAura::MainFrameResized(const gfx::Rect& bounds) {
-  if (media_controls_) {
-    media_controls_->SetBounds(bounds);
-  }
-}
-
 void CastContentWindowAura::RequestVisibility(
     VisibilityPriority visibility_priority) {}
 
@@ -178,11 +172,8 @@ void CastContentWindowAura::SetHostContext(base::Value host_context) {}
 
 void CastContentWindowAura::NotifyVisibilityChange(
     VisibilityType visibility_type) {
-  if (delegate_) {
-    delegate_->OnVisibilityChange(visibility_type);
-  }
-  for (auto& observer : observer_list_) {
-    observer.OnVisibilityChange(visibility_type);
+  for (auto& observer : observers_) {
+    observer->OnVisibilityChange(visibility_type);
   }
 }
 
@@ -209,6 +200,14 @@ void CastContentWindowAura::DidStartNavigation(
   }
   resize_window_when_navigation_starts_ = false;
   SetFullWindowBounds();
+}
+
+void CastContentWindowAura::PrimaryMainFrameWasResized(bool width_changed) {
+  if (!web_contents())
+    return;
+  if (media_controls_) {
+    media_controls_->SetBounds(web_contents()->GetContainerBounds());
+  }
 }
 
 void CastContentWindowAura::SetFullWindowBounds() {

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/test/oobe_configuration_waiter.h"
 
-namespace chromeos {
+namespace ash {
 
 OOBEConfigurationWaiter::OOBEConfigurationWaiter() {}
 
@@ -32,4 +32,4 @@ bool OOBEConfigurationWaiter::IsConfigurationLoaded(
   return false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

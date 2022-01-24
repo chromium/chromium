@@ -65,6 +65,9 @@ class DragDropOperation : public DataSourceObserver,
       const gfx::PointF& drag_start_point,
       ui::mojom::DragEventSource event_source);
 
+  DragDropOperation(const DragDropOperation&) = delete;
+  DragDropOperation& operator=(const DragDropOperation&) = delete;
+
   // Abort the operation if it hasn't been started yet, otherwise do nothing.
   void AbortIfPending();
 
@@ -108,6 +111,8 @@ class DragDropOperation : public DataSourceObserver,
   void OnFileContentsRead(const std::string& mime_type,
                           const base::FilePath& filename,
                           const std::vector<uint8_t>& data);
+  void OnWebCustomDataRead(const std::string& mime_type,
+                           const std::vector<uint8_t>& data);
 
   void ScheduleStartDragDropOperation();
 
@@ -151,8 +156,6 @@ class DragDropOperation : public DataSourceObserver,
 #endif
 
   base::WeakPtrFactory<DragDropOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DragDropOperation);
 };
 
 }  // namespace exo

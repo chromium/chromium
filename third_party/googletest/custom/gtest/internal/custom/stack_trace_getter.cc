@@ -7,17 +7,14 @@
 #include <algorithm>
 #include <iterator>
 
-#include "base/check.h"
-
 std::string StackTraceGetter::CurrentStackTrace(int max_depth, int skip_count) {
-  DCHECK(stack_trace_upon_leaving_gtest_)
-      << "Missing call to UponLeavingGTest. Are you using GoogleTest's "
-         "RUN_ALL_TESTS()?";
   base::debug::StackTrace stack_trace;
 
   size_t departure_frame_count = 0;
   const void* const* departure_addresses =
-      stack_trace_upon_leaving_gtest_->Addresses(&departure_frame_count);
+      stack_trace_upon_leaving_gtest_.has_value()
+          ? stack_trace_upon_leaving_gtest_->Addresses(&departure_frame_count)
+          : nullptr;
 
   size_t current_frame_count = 0;
   const void* const* current_addresses =

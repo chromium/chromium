@@ -38,6 +38,10 @@ namespace remoting {
 class ContinueWindowMac : public ContinueWindow {
  public:
   ContinueWindowMac();
+
+  ContinueWindowMac(const ContinueWindowMac&) = delete;
+  ContinueWindowMac& operator=(const ContinueWindowMac&) = delete;
+
   ~ContinueWindowMac() override;
 
  protected:
@@ -47,8 +51,6 @@ class ContinueWindowMac : public ContinueWindow {
 
  private:
   base::scoped_nsobject<ContinueWindowMacController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContinueWindowMac);
 };
 
 ContinueWindowMac::ContinueWindowMac() {

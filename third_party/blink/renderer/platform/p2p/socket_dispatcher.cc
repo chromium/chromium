@@ -96,7 +96,7 @@ void P2PSocketDispatcher::NetworkListChanged(
   // gets moved from blink/public to blink/renderer, and operate over
   // WTF::Vector.
   std::vector<net::NetworkInterface> copy(networks.size());
-  for (size_t i = 0; i < networks.size(); i++)
+  for (wtf_size_t i = 0; i < networks.size(); i++)
     copy[i] = networks[i];
 
   network_list_observers_->Notify(
@@ -119,7 +119,7 @@ void P2PSocketDispatcher::RequestNetworkEventsIfNecessary() {
     // gets moved from blink/public to blink/renderer, and operate over
     // WTF::Vector.
     std::vector<net::NetworkInterface> copy(networks_.size());
-    for (size_t i = 0; i < networks_.size(); i++)
+    for (wtf_size_t i = 0; i < networks_.size(); i++)
       copy[i] = networks_[i];
 
     network_list_observers_->Notify(

@@ -68,12 +68,10 @@ class CONTENT_EXPORT NavigatorDelegate {
   // NavigationController's last committed entry is for this navigation.
   virtual void DidNavigateMainFramePostCommit(
       RenderFrameHostImpl* render_frame_host,
-      const LoadCommittedDetails& details,
-      const mojom::DidCommitProvisionalLoadParams& params) = 0;
+      const LoadCommittedDetails& details) = 0;
   virtual void DidNavigateAnyFramePostCommit(
       RenderFrameHostImpl* render_frame_host,
-      const LoadCommittedDetails& details,
-      const mojom::DidCommitProvisionalLoadParams& params) = 0;
+      const LoadCommittedDetails& details) = 0;
 
   // Notification to the Navigator embedder that navigation state has
   // changed. This method corresponds to
@@ -133,6 +131,13 @@ class CONTENT_EXPORT NavigatorDelegate {
   virtual void RegisterExistingOriginToPreventOptInIsolation(
       const url::Origin& origin,
       NavigationRequest* navigation_request_to_exclude) = 0;
+
+  // Returns true if activation navigations are disallowed in the
+  // Navigator.
+  // TODO(https://crbug.com/1234857): Remove this. This is a temporary
+  // workaround to avoid breaking features that must be taught to deal with
+  // activation navigations.
+  virtual bool IsActivationNavigationDisallowedForBug1234857() = 0;
 };
 
 }  // namespace content

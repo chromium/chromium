@@ -17,8 +17,7 @@ TEST_F(ThroughputReporterTest, ThreadCheck) {
   Layer layer;
   root_layer()->Add(&layer);
 
-  LayerAnimator* animator =
-      new LayerAnimator(base::TimeDelta::FromMilliseconds(32));
+  LayerAnimator* animator = new LayerAnimator(base::Milliseconds(32));
   layer.SetAnimator(animator);
 
   ThroughputReportChecker checker(this);

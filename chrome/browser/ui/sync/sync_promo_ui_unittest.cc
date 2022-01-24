@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_switches.h"
@@ -21,6 +20,9 @@
 class SyncPromoUITest : public testing::Test {
  public:
   SyncPromoUITest() {}
+
+  SyncPromoUITest(const SyncPromoUITest&) = delete;
+  SyncPromoUITest& operator=(const SyncPromoUITest&) = delete;
 
   // testing::Test:
   void SetUp() override {
@@ -37,9 +39,6 @@ class SyncPromoUITest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncPromoUITest);
 };
 
 // Verifies that ShouldShowSyncPromo returns false if sync is disabled by

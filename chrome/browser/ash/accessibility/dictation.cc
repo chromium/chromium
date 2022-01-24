@@ -18,6 +18,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/network_speech_recognizer.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "chrome/common/extensions/api/accessibility_private.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
@@ -29,26 +31,18 @@
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
+#include "ui/accessibility/accessibility_switches.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/ime_input_context_handler_interface.h"
+#include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/ime/composition_text.h"
 
 namespace ash {
 namespace {
 
 // Length of timeout to cancel recognition if there's no speech heard.
-static const base::TimeDelta kNetworkNoSpeechTimeout =
-    base::TimeDelta::FromSeconds(5);
-static const base::TimeDelta kDeviceNoSpeechTimeout =
-    base::TimeDelta::FromSeconds(10);
-
-// Length of timeout to cancel recognition if no different results are received.
-static const base::TimeDelta kNetworkNoNewSpeechTimeout =
-    base::TimeDelta::FromSeconds(2);
-static const base::TimeDelta kDeviceNoNewSpeechTimeout =
-    base::TimeDelta::FromSeconds(5);
+static const base::TimeDelta kNoSpeechTimeout = base::Seconds(10);
 
 const char kDefaultProfileLocale[] = "en-US";
 
@@ -60,7 +54,7 @@ std::string GetUserLangOrLocaleFromSystem(Profile* profile) {
   input_method_ids.push_back(
       profile->GetPrefs()->GetString(::prefs::kLanguageCurrentInputMethod));
   std::vector<std::string> languages;
-  chromeos::input_method::InputMethodManager::Get()
+  input_method::InputMethodManager::Get()
       ->GetInputMethodUtil()
       ->GetLanguageCodesFromInputMethodIds(input_method_ids, &languages);
 
@@ -177,7 +171,7 @@ std::string GetSupportedLocale(const std::string& lang_or_locale) {
 
 // Returns the current input context. This may change during the session, even
 // if the IME engine does not change, because remote mojo applications have
-// their own instance of InputMethodChromeOS. See comment on InputMethodBridge.
+// their own instance of `InputMethodAsh`. See comment on `InputMethodBridge`.
 ui::IMEInputContextHandlerInterface* GetInputContext() {
   return ui::IMEBridge::Get()->GetInputContextHandler();
 }
@@ -185,8 +179,12 @@ ui::IMEInputContextHandlerInterface* GetInputContext() {
 }  // namespace
 
 // static
-const base::flat_map<std::string, bool> Dictation::GetAllSupportedLocales() {
-  base::flat_map<std::string, bool> supported_locales;
+const base::flat_map<std::string, Dictation::LocaleData>
+Dictation::GetAllSupportedLocales() {
+  base::flat_map<std::string, LocaleData> supported_locales;
+  // If new RTL locales are added, ensure that
+  // accessibility_common/dictation/commands.js RTLLocales is updated
+  // appropriately.
   static const char* kWebSpeechSupportedLocales[] = {
       "af-ZA",       "am-ET",      "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-IL",
       "ar-IQ",       "ar-JO",      "ar-KW", "ar-LB", "ar-MA", "ar-OM", "ar-PS",
@@ -211,14 +209,19 @@ const base::flat_map<std::string, bool> Dictation::GetAllSupportedLocales() {
 
   for (const char* locale : kWebSpeechSupportedLocales) {
     // By default these languages are not supported offline.
-    supported_locales[locale] = false;
+    supported_locales[locale] = LocaleData();
   }
-  if (features::IsExperimentalAccessibilityDictationOfflineEnabled()) {
-    std::vector<std::string> offline_languages =
-        speech::SodaInstaller::GetInstance()->GetAvailableLanguages();
-    for (auto language : offline_languages) {
+  if (features::IsDictationOfflineAvailableAndEnabled()) {
+    speech::SodaInstaller* soda_installer =
+        speech::SodaInstaller::GetInstance();
+    std::vector<std::string> offline_locales =
+        soda_installer->GetAvailableLanguages();
+    for (auto locale : offline_locales) {
       // These are supported offline.
-      supported_locales[language] = true;
+      supported_locales[locale] = LocaleData();
+      supported_locales[locale].works_offline = true;
+      supported_locales[locale].installed =
+          soda_installer->IsSodaInstalled(speech::GetLanguageCode(locale));
     }
   }
   return supported_locales;
@@ -244,9 +247,8 @@ std::string Dictation::DetermineDefaultSupportedLocale(Profile* profile,
 Dictation::Dictation(Profile* profile)
     : current_state_(SPEECH_RECOGNIZER_OFF),
       composition_(std::make_unique<ui::CompositionText>()),
-      profile_(profile),
-      no_speech_timeout_(kNetworkNoSpeechTimeout),
-      no_new_speech_timeout_(kNetworkNoNewSpeechTimeout) {
+      profile_(profile) {
+  DCHECK(!switches::IsExperimentalAccessibilityDictationExtensionEnabled());
   if (GetInputContext() && GetInputContext()->GetInputMethod())
     GetInputContext()->GetInputMethod()->AddObserver(this);
 }
@@ -257,17 +259,27 @@ Dictation::~Dictation() {
 }
 
 bool Dictation::OnToggleDictation() {
-  if (speech_recognizer_) {
+  if (is_started_) {
     DictationOff();
     return false;
   }
+  is_started_ = true;
   has_committed_text_ = false;
   const std::string locale = GetUserLocale(profile_);
   // Log the locale used with LocaleCodeISO639 values.
   base::UmaHistogramSparse("Accessibility.CrosDictation.Language",
                            base::HashMetricName(locale));
 
-  if (features::IsExperimentalAccessibilityDictationOfflineEnabled() &&
+  if (features::IsDictationOfflineAvailableAndEnabled() &&
+      speech::SodaInstaller::GetInstance()->IsSodaDownloading(
+          speech::GetLanguageCode(locale))) {
+    // Don't allow Dictation to be used while SODA is downloading.
+    audio::SoundsManager::Get()->Play(
+        static_cast<int>(Sound::kDictationCancel));
+    return false;
+  }
+
+  if (features::IsDictationOfflineAvailableAndEnabled() &&
       OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(locale)) {
     // On-device recognition is behind a flag and then only available if
     // SODA is installed on-device.
@@ -276,8 +288,6 @@ bool Dictation::OnToggleDictation() {
         /*recognition_mode_ime=*/true, /*enable_formatting=*/false);
     base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
                               true);
-    no_speech_timeout_ = kDeviceNoSpeechTimeout;
-    no_new_speech_timeout_ = kDeviceNoNewSpeechTimeout;
     used_on_device_speech_ = true;
   } else {
     speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(
@@ -288,11 +298,6 @@ bool Dictation::OnToggleDictation() {
         locale);
     base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
                               false);
-    no_speech_timeout_ =
-        features::IsExperimentalAccessibilityDictationListeningEnabled()
-            ? kDeviceNoSpeechTimeout
-            : kNetworkNoSpeechTimeout;
-    no_new_speech_timeout_ = kNetworkNoNewSpeechTimeout;
     used_on_device_speech_ = false;
   }
   listening_duration_timer_ = base::ElapsedTimer();
@@ -307,7 +312,7 @@ void Dictation::OnSpeechResult(
   // NetworkSpeechRecognizer adds the preceding space but
   // OnDeviceSpeechRecognizer does not. This is also done in
   // CaptionBubbleModel::CommitPartialText.
-  // TODO(crbug.com/1055150): This feature is launching for English first.
+  // TODO(crbug.com/1237583): This feature is launching for English first.
   // Make sure spacing is correct for all languages.
   if (has_committed_text_ && transcription.size() > 0 &&
       transcription.compare(0, 1, u" ") != 0) {
@@ -319,13 +324,10 @@ void Dictation::OnSpeechResult(
   // Restart the timer when we have a final result. If we receive any new or
   // changed text, restart the timer to give the user more time to speak. (The
   // timer is recording the amount of time since the most recent utterance.)
+  StartSpeechTimeout(kNoSpeechTimeout);
   if (is_final) {
-    StartSpeechTimeout(no_speech_timeout_);
+    CommitCurrentText();
   } else {
-    StartSpeechTimeout(
-        features::IsExperimentalAccessibilityDictationListeningEnabled()
-            ? no_speech_timeout_
-            : no_new_speech_timeout_);
     // If ChromeVox is enabled, we don't want to show intermediate results
     if (AccessibilityManager::Get()->IsSpokenFeedbackEnabled())
       return;
@@ -333,13 +335,6 @@ void Dictation::OnSpeechResult(
     ui::IMEInputContextHandlerInterface* input_context = GetInputContext();
     if (input_context)
       input_context->UpdateCompositionText(*composition_, 0, true);
-    return;
-  }
-  if (features::IsExperimentalAccessibilityDictationListeningEnabled()) {
-    CommitCurrentText();
-  } else {
-    // Turn off after finalized speech.
-    DictationOff();
   }
 }
 
@@ -353,7 +348,7 @@ void Dictation::OnSpeechRecognitionStateChanged(
     audio::SoundsManager::Get()->Play(static_cast<int>(Sound::kDictationStart));
     // Start a timeout to ensure if no speech happens we will eventually turn
     // ourselves off.
-    StartSpeechTimeout(no_speech_timeout_);
+    StartSpeechTimeout(kNoSpeechTimeout);
   } else if (new_state == SPEECH_RECOGNIZER_ERROR) {
     DictationOff();
     next_state = SPEECH_RECOGNIZER_OFF;
@@ -384,6 +379,11 @@ void Dictation::OnTextInputStateChanged(const ui::TextInputClient* client) {
 }
 
 void Dictation::DictationOff() {
+  is_started_ = false;
+  AccessibilityStatusEventDetails details(
+      AccessibilityNotificationType::kToggleDictation, false /* enabled */);
+  AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(details);
+
   current_state_ = SPEECH_RECOGNIZER_OFF;
   StopSpeechTimeout();
   if (!speech_recognizer_)
@@ -399,10 +399,6 @@ void Dictation::DictationOff() {
     audio::SoundsManager::Get()->Play(
         static_cast<int>(Sound::kDictationCancel));
   }
-
-  AccessibilityStatusEventDetails details(
-      AccessibilityNotificationType::kToggleDictation, false /* enabled */);
-  AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(details);
   speech_recognizer_.reset();
 
   // Duration matches the lifetime of the speech recognizer.

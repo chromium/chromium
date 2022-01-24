@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_APP_MODE_ARC_ARC_KIOSK_APP_SERVICE_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
@@ -94,6 +93,8 @@ class ArcKioskAppService : public KeyedService,
 
  private:
   explicit ArcKioskAppService(Profile* profile);
+  ArcKioskAppService(const ArcKioskAppService&) = delete;
+  ArcKioskAppService& operator=(const ArcKioskAppService&) = delete;
   ~ArcKioskAppService() override;
 
   std::string GetAppId();
@@ -122,8 +123,6 @@ class ArcKioskAppService : public KeyedService,
   bool compliance_report_received_ = false;
   // Keeps track whether the app is already launched
   std::unique_ptr<ArcKioskAppLauncher> app_launcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskAppService);
 };
 
 }  // namespace ash

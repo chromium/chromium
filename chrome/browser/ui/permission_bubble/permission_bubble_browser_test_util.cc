@@ -38,6 +38,20 @@ GURL TestPermissionBubbleViewDelegate::GetEmbeddingOrigin() const {
   return GURL("https://embedder.example.com");
 }
 
+absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+TestPermissionBubbleViewDelegate::ReasonForUsingQuietUi() const {
+  return absl::nullopt;
+}
+
+bool TestPermissionBubbleViewDelegate::ShouldCurrentRequestUseQuietUI() const {
+  return false;
+}
+
+bool TestPermissionBubbleViewDelegate::
+    ShouldDropCurrentRequestIfCannotShowQuietly() const {
+  return false;
+}
+
 bool TestPermissionBubbleViewDelegate::WasCurrentRequestAlreadyDisplayed() {
   return false;
 }
@@ -66,8 +80,7 @@ content::WebContents* PermissionBubbleBrowserTest::OpenExtensionAppWindow() {
   apps::AppLaunchParams params(
       extension->id(),
       apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated,
-      WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::AppLaunchSource::kSourceTest);
+      WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
 
   content::WebContents* app_contents =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())

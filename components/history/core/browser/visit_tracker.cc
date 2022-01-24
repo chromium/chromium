@@ -25,7 +25,7 @@ VisitTracker::~VisitTracker() {}
 // This function is potentially slow because it may do up to two brute-force
 // searches of the transitions list. This transitions list is kept to a
 // relatively small number by CleanupTransitionList so it shouldn't be a big
-// deal. However, if this ends up being noticable for performance, we may want
+// deal. However, if this ends up being noticeable for performance, we may want
 // to optimize lookup.
 VisitID VisitTracker::GetLastVisit(ContextID context_id,
                                    int nav_entry_id,
@@ -55,11 +55,11 @@ VisitID VisitTracker::GetLastVisit(ContextID context_id,
   // the user goes back). We can ignore future transitions because if you
   // navigate, go back, and navigate some more, we'd like to have one node with
   // two out edges in our visit graph.
-  for (int i = static_cast<int>(transitions.size()) - 1; i >= 0; i--) {
-    if (transitions[i].nav_entry_id <= nav_entry_id &&
-        transitions[i].url == url) {
+  for (int j = static_cast<int>(transitions.size()) - 1; j >= 0; j--) {
+    if (transitions[j].nav_entry_id <= nav_entry_id &&
+        transitions[j].url == url) {
       // Found it.
-      return transitions[i].visit_id;
+      return transitions[j].visit_id;
     }
   }
 

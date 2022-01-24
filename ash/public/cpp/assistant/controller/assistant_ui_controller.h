@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_ASSISTANT_CONTROLLER_ASSISTANT_UI_CONTROLLER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -35,12 +36,17 @@ class ASH_PUBLIC_EXPORT AssistantUiController {
   // session.
   virtual bool HasShownOnboarding() const = 0;
 
-  // Invoke to show/close/toggle Assistant UI.
+  // Invoke to show/toggle Assistant UI.
   virtual void ShowUi(chromeos::assistant::AssistantEntryPoint) = 0;
-  virtual void CloseUi(chromeos::assistant::AssistantExitPoint) = 0;
   virtual void ToggleUi(
       absl::optional<chromeos::assistant::AssistantEntryPoint>,
       absl::optional<chromeos::assistant::AssistantExitPoint>) = 0;
+
+  // Returns a closure to close Assistant UI. If the return value is ignored,
+  // the Assistant UI is closed instantly; otherwise, the UI is in closing
+  // state until the closure is run.
+  virtual absl::optional<base::ScopedClosureRunner> CloseUi(
+      chromeos::assistant::AssistantExitPoint) = 0;
 
  protected:
   AssistantUiController();

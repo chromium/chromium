@@ -16,6 +16,7 @@
 <translation id="1066060668811609597">सिंक व्यवस्थापित करा</translation>
 <translation id="1076421457278169141">कोड स्कॅन केला</translation>
 <translation id="1084365883616172403">Facebook पोस्ट पूर्ण केले.</translation>
+<translation id="1086486568852410168">Google Lens वापरून शोधा</translation>
 <translation id="1103523840287552314">नेहमी भाषांतर करा <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">स्वीकारा आणि सुरू ठेवा</translation>
 <translation id="110724200315609752">उघड्या विंडोवर स्विच करा</translation>
@@ -23,12 +24,10 @@
 <translation id="1125564390852150847">नवीन टॅब तयार करा.</translation>
 <translation id="1145536944570833626">विद्यमान डेटा हटवा.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> म्हणून साइन इन केले</translation>
-<translation id="1154984953698510061">इतर टॅब पाहा</translation>
-<translation id="1157749421655780457">स्थानासाठी अनुमती द्या...</translation>
+<translation id="1154984953698510061">इतर टॅब पहा</translation>
 <translation id="1165039591588034296">एरर</translation>
 <translation id="1172898394251786223">पुढील फील्ड</translation>
 <translation id="1176932207622159128">इमेज सेव्ह करू शकत नाही</translation>
-<translation id="1180526666083833456">डिव्हाइसवर सिंक आणि पर्सनलाइझ करा</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1207113853726624428">नवीन शोध</translation>
 <translation id="1209206284964581585">आतासाठी लपवा</translation>
@@ -40,6 +39,7 @@
 <translation id="1254117744268754948">फोल्डर निवडा</translation>
 <translation id="1265739287306757398">कसे ते जाणून घ्या</translation>
 <translation id="1272079795634619415">थांबा</translation>
+<translation id="1275718070701477396">निवडलेले</translation>
 <translation id="1282311502488501110">साइन इन करू नका</translation>
 <translation id="1283524564873030414">मागील २४ तासांचा</translation>
 <translation id="1285320974508926690">या साइटचा कधीही भाषांतर करु नका</translation>
@@ -53,10 +53,12 @@
 <translation id="1375321115329958930">सेव्ह केलेले पासवर्ड</translation>
 <translation id="1377255359165588604">संकालनाने कार्य करणे थांबविले आहे.</translation>
 <translation id="1377321085342047638">कार्ड नंबर</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">शोधा</translation>
 <translation id="1400642268715879018">मागील 4 आठवडे</translation>
+<translation id="1404330357948037222">तुम्ही साइन आउट केले आहे</translation>
 <translation id="1407135791313364759">सर्व उघडा</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
+<translation id="1434356225517321998">तुमचा ब्राउझर व्यवस्थापित केला आहे. <ph name="BEGIN_LINK" />तपशील<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">पासवर्ड लपवा</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> आयटम</translation>
 <translation id="149095475893949513">ही वेबसाइट प्रोफाइल कॉंफिगरेशन डाउनलोड करण्याचा प्रयत्न करत आहे.</translation>
@@ -66,6 +68,7 @@
 <translation id="1509960214886564027">अनेक साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो</translation>
 <translation id="152234381334907219">कधीही सेव्ह न केलेले</translation>
 <translation id="1523341279170789507">सर्व कुकीजना परवानगी द्या</translation>
+<translation id="1524563461097350801">नाही, नको</translation>
 <translation id="1535268707340844072">तुमच्या सद्य सेटिंगमुळे काही साइट खंडित होऊ शकतात. सर्व साइटसाठी कुकी व्यवस्थापित करण्यासाठी <ph name="BEGIN_LINK" />कुकी सेटिंग्ज<ph name="END_LINK" /> पहा.</translation>
 <translation id="1540800554400757039">पत्ता 1</translation>
 <translation id="1545749641540134597">QR कोड स्कॅन करा</translation>
@@ -104,21 +107,25 @@
 <translation id="1894205589103145703">साइन-इन करताना काहीतरी चूक झाली.</translation>
 <translation id="1911619930368729126">Google ड्राइव्हवर अपलोड करा</translation>
 <translation id="1923342640370224680">शेवटचा तास</translation>
+<translation id="1930989359703290198">तुमची संस्था तुम्हाला फक्त ठरावीक खाती वापरून साइन इन करण्याची अनुमती देते. अनुमती नसलेली खाती लपवली जातात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">कॉपी करण्‍यासाठी दोनदा टॅप करा.</translation>
 <translation id="1952172573699511566">वेबसाइट शक्य असताना तुमच्या प्राधान्य असलेल्‍या भाषेमध्ये मजकूर दाखवेल.</translation>
 <translation id="1965935827552890526">तुम्ही इतर उघड्या Chrome विंडोमध्ये काय करत होतात ते पूर्ण करा.</translation>
+<translation id="196896377990863006">लिंक पूर्वावलोकन दाखवा</translation>
 <translation id="1973912524893600642">स्टोअर करायचा असलेला डेटा</translation>
 <translation id="1974060860693918893">प्रगत</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
+<translation id="199425419756152024">पासवर्ड पहा</translation>
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="2021670401941426298">लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, तुमच्या शोध इंजीनच्या सूचना पहा.</translation>
-<translation id="2022352537516230970">तुमच्या iPhone साठी तयार केलेले</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> दिवसांपूर्वी ॲक्टिव्ह होते</translation>
 <translation id="2074131957428911366">तुम्ही काय सिंक करायचे हे <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कधीही निवडू शकता.</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
+<translation id="2080769225927880590">योग्य खाते वापरून साइन इन करा</translation>
 <translation id="209018056901015185">डेस्कटॉप साइटची विनंती करा</translation>
 <translation id="2103075008456228677">history.google.com उघडा</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> आयटम हलविले</translation>
+<translation id="2122754583996902531">तुमचा ब्राउझर व्यवस्थापित केला आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">वाचन सूची मध्ये जोडण्याची विनंती करा</translation>
 <translation id="2139867232736819575">तुम्ही कॉपी केलेला मजकूर शोधा</translation>
 <translation id="214201757571129614">साइन इन करा…</translation>
@@ -127,6 +134,7 @@
 <translation id="2218443599109088993">झूम आउट करा</translation>
 <translation id="2230173723195178503">वेबपेज लोड केले</translation>
 <translation id="2239626343334228536">ब्राउझिंग डेटा साफ करत आहे...</translation>
+<translation id="2256933947031277845">तुमची संस्था तुम्हाला फक्त ठरावीक खाती वापरून साइन इन करण्याची अनुमती देते.</translation>
 <translation id="225943865679747347">एरर कोड: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">खाते जोडा</translation>
 <translation id="2268044343513325586">सुधारित करा</translation>
@@ -134,9 +142,9 @@
 <translation id="2302742851632557585">वेबसाइट वर पासवर्ड बदला</translation>
 <translation id="2316709634732130529">सुचवलेला पासवर्ड वापरा</translation>
 <translation id="2320166752086256636">कीबोर्ड लपवा</translation>
-<translation id="2339560363438331454">सिंक आणि Google सेवा</translation>
 <translation id="2351097562818989364">आपल्या भाषांतर सेटिंग्ज रीसेट करण्यात आल्या आहेत.</translation>
-<translation id="2359043044084662842">Translate</translation>
+<translation id="235789365079050412">Google गोपनीयता धोरण</translation>
+<translation id="2359043044084662842">भाषांतर</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2360196772093551345">मोबाइल साइटची विनंती करा</translation>
 <translation id="236977714248711277">तुमच्या ब्राउझिंग अनुभवात सुधारणा करण्यासाठी, उदाहरणार्थ, तुम्हाला साइन इन केलेले ठेवण्यासाठी किंवा तुमच्या शॉपिंग कार्टमधील आयटम लक्षात ठेवण्यासाठी साइट कुकी वापरू शकत नाहीत.
@@ -146,7 +154,10 @@
 <translation id="2386793615875593361">1 निवडले</translation>
 <translation id="2421004566762153674">तृतीय पक्षाच्या कुकी ब्लॉक करत आहे</translation>
 <translation id="2421044535038393232">संपादन करणे सुरू ठेवा</translation>
+<translation id="2434405374328098816">तुम्ही <ph name="WEBSITE" /> वर "<ph name="USERNAME" />" चा पासवर्ड आधीच सेव्ह केला आहे</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
+<translation id="2473876017985765807">तुम्ही <ph name="WEBSITE" /> साठी आधीच पासवर्ड सेव्ह केला आहे</translation>
+<translation id="2476359652512522418">न निवडलेले</translation>
 <translation id="2497852260688568942">तुमच्या ॲडमिनिस्ट्रेटरने सिंक अक्षम केले आहे</translation>
 <translation id="2500374554657206846">पासवर्ड सेव्ह करण्यासाठी पर्याय</translation>
 <translation id="2523363575747517183">ही वेबसाइट वारंवार दुसरे अ‍ॅप्लिकेशन उघडण्याचा प्रयत्न करत आहे.</translation>
@@ -182,8 +193,8 @@
 <translation id="2820289420301699633">तुमच्या अ‍ॅडमिनिस्ट्रेटरचे Chrome वर नियंत्रण आहे आणि तो त्याचा डेटा अ‍ॅक्सेस करू शकतो</translation>
 <translation id="2830972654601096923">पत्ते व्यवस्थापित करा...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
-<translation id="2840687315230832938">सुरुवातीचे सिंक सेट करणे पूर्ण झाले नाही</translation>
 <translation id="2843803966603263712">भाषांतर सेटिंग्‍ज रीसेट करा</translation>
+<translation id="2848086008667475748">सेटिंग्ज मध्ये डीफॉल्ट बनवा…</translation>
 <translation id="2858204748079866344">तुमच्या गोपनीयतेचे संरक्षण करण्‍यासाठी, Chrome या भागामध्ये तुमचा पासवर्ड ऑटोफिल करणार नाही.</translation>
 <translation id="285960592395650245">पुन्हा डाउनलोड करण्याचा प्रयत्न करा</translation>
 <translation id="2870560284913253234">साइट</translation>
@@ -215,12 +226,12 @@
 <translation id="3080525922482950719">तुम्‍ही नंतर किंवा ऑफलाइन वाचण्यासाठी पेज सेव्‍ह करू शकता</translation>
 <translation id="3081338492074632642">तुम्ही सेव्ह करत असलेला पासवर्ड तुमच्या <ph name="WEBSITE" /> च्या पासवर्डशी जुळत असल्याची खात्री करा</translation>
 <translation id="3112556859945124369">चिन्हांकित करा…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />तुम्ही काय सिंक करू शकता ते पहा<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">सर्व ब्लॉक करा</translation>
 <translation id="313283613037595347">नवीन गुप्त टॅब तयार करा.</translation>
 <translation id="3153862085237805241">कार्ड सेव्ह करा</translation>
 <translation id="3157387275655328056">वाचन सूचीमध्ये जोडा</translation>
 <translation id="3157684681743766797">सर्व चिन्हांकित करा…</translation>
-<translation id="3161291298470460782">हे या डिव्हाइसमधून तुम्हाला साइन आउट करेल, सिंक बंद करेल आणि सर्व Chrome डेटा साफ करेल. तुमचा सिंक केलेला डेटा तुमचे Google खाते यामध्ये राहील.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">वेब सेवा</translation>
 <translation id="3178650076442119961">आज ॲक्टिव्ह होते</translation>
@@ -229,10 +240,10 @@
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> वापरून अनलॉक करा</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
 <translation id="3224641773458703735">पासवर्ड एक्सपोर्ट करण्यासाठी, तुम्ही प्रथम तुमच्या डिव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
+<translation id="3230318355092723906">सिंक करणे बंद असते तेव्हा, तुम्ही तरीही या डिव्हाइसवर तुमचे सर्व बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज पाहू शकता. तुम्ही बदल केल्यास, ते तुमच्या खात्याशी सिंक केले जाणार नाहीत.</translation>
 <translation id="3240426699337459095">लिंक कॉपी केला</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> पैकी <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
-<translation id="3261971309013797455">तुमची वाचन सूची ऑफलाइन उपलब्ध आहे. तुमच्या वाचन सूचीमध्‍ये पेज जोडण्‍यासाठी, <ph name="SHARE_OPENING_ICON" /> त्यानंतर <ph name="ADD_TO_READING_LIST_TEXT" /> वर टॅप करा.</translation>
 <translation id="3268451620468152448">उघडे Tabs</translation>
 <translation id="3272527697863656322">रद्द करा</translation>
 <translation id="3277021493514034324">साइट पत्ता कॉपी केला</translation>
@@ -263,7 +274,6 @@
 <translation id="3494788280727468875">ब्राउझिंग डेटा साफ करता याची पुष्टी करा</translation>
 <translation id="35083190962747987">${url} उघडा</translation>
 <translation id="3519193562722059437">वेब ब्राउझ करण्‍यासाठी एक टॅब उघडा.</translation>
-<translation id="3523473570015918798">साइन आउट केल्याने तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर Chrome डेटा यापुढे तुमचे Google खाते याच्याशी सिंक केला जाणार नाही.</translation>
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3529024052484145543">सुरक्षित नाही</translation>
 <translation id="3533202363250687977">सर्व गुप्त टॅब बंद करा</translation>
@@ -277,19 +287,24 @@
 <translation id="3603009562372709545">लिंक URL कॉपी करा</translation>
 <translation id="3607167657931203000">ऑटोफिल डेटा</translation>
 <translation id="3609785682760573515">सिंक करत आहे...</translation>
+<translation id="3631443864840848029">या साइटसाठी तुम्ही तुमचा सध्याचा पासवर्ड सेव्ह करत असल्याची खात्री करा.</translation>
 <translation id="3638472932233958418">वेबपृष्ठे प्रीलोड करा</translation>
 <translation id="3661160521073045932">प्रोफाइल कॉंफिगरेशन उपलब्ध आहे</translation>
 <translation id="3670030362669914947">नंबर</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> मध्ये बुकमार्क केले</translation>
+<translation id="369349502275246497">पासवर्ड सेव्ह करायचे आहेत का हे विचारा</translation>
 <translation id="3709582977625132201">न वाचलेले म्हणून मार्क करा</translation>
 <translation id="3740397331642243698">इनपुट केलेल्या URL ना Google Chrome मध्ये गुप्त मोड मध्ये उघडते.</translation>
+<translation id="3762232513783804601">तुमच्या iPad साठी तयार केलेले</translation>
 <translation id="3771033907050503522">गुप्त टॅब</translation>
 <translation id="3775743491439407556">सिंक काम करत नाही</translation>
 <translation id="3779810277399252432">कोणतेही इंटरनेट कनेक्शन नाही.</translation>
 <translation id="3783017676699494206">इमेज सेव्ह करा</translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
+<translation id="380329542618494757">नाव</translation>
 <translation id="3803696231112616155">ही साइट भाषांतरित करण्यासाठी ऑफर</translation>
 <translation id="385051799172605136">मागील</translation>
+<translation id="3858860766373142691">नाव</translation>
 <translation id="3892144330757387737">तुमचा इतिहास तुम्हाला येथे सापडेल</translation>
 <translation id="3897092660631435901">मेनू</translation>
 <translation id="3913386780052199712">Chrome मध्ये साइन इन केले</translation>
@@ -309,10 +324,9 @@
 <translation id="4038354071007134711">या डिव्हाइसवरील कोणतीही ॲप्लिकेशन फाइल उघडू शकत नाही.</translation>
 <translation id="4042870976416480368">पेजमध्ये शोधा</translation>
 <translation id="4049507953662678203">आपल्याकडे नेटवर्क कनेक्शन आहे हे सुनिश्चित करा आणि पुन्हा प्रयत्न करा.</translation>
-<translation id="4079195788735381731">तुमच्या संस्थेने तुम्हाला साइन आउट केले</translation>
 <translation id="408404951701638773">शोध बारवर पोहोचणे आता आणखी सोपे आहे</translation>
 <translation id="411254640334432676">डाउनलोड अयशस्वी.</translation>
-<translation id="4112644173421521737">Search</translation>
+<translation id="4112644173421521737">शोधा</translation>
 <translation id="4113030288477039509">तुमच्या ॲडमिनिस्ट्रेटरद्वारे व्यवस्थापित</translation>
 <translation id="4121993058175073134">निव्वळ-एक्सपोर्ट डेटा पाठविण्यासाठी, कृपया सेटिंग्ज ॲप मध्ये तुमचे ईमेल खाते कॉंफिगर करा.</translation>
 <translation id="4124987746317609294">वेळ वर्गवारी</translation>
@@ -320,7 +334,7 @@
 <translation id="4172051516777682613">नेहमी दर्शवा</translation>
 <translation id="418156467088430727">नवीन टॅबमध्‍ये ऑफलाइन आवृत्ती पहा</translation>
 <translation id="4181841719683918333">भाषा</translation>
-<translation id="4184011057600693970">तुमच्या iPad साठी तयार केलेले</translation>
+<translation id="4237377247299956313"><ph name="BEGIN_BOLD" />डीफॉल्ट ब्राउझर अ‍ॅप<ph name="END_BOLD" /> वर टॅप करा</translation>
 <translation id="424315890655130736">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="4263576668337963058">उपलब्ध असलेल्या पेज क्रिया दाखवा</translation>
 <translation id="4267380167363222949">पुढील टॅब</translation>
@@ -336,8 +350,10 @@
 <translation id="4375040482473363939">QR कोड शोध</translation>
 <translation id="4378154925671717803">फोन</translation>
 <translation id="4389019817280890563">भाषा बदलण्यासाठी टॅप करा.</translation>
+<translation id="4442550905108052454"><ph name="BEGIN_BOLD" />सेटिंग्ज<ph name="END_BOLD" /> उघडा</translation>
 <translation id="4454246407045105932">भाषा जोडा</translation>
 <translation id="4469418912670346607">सेटअप सुरू ठेवा</translation>
+<translation id="4474494258097106883">तुमच्या iPhone साठी तयार केलेले</translation>
 <translation id="4476574785019001431">सेटिंग्ज</translation>
 <translation id="4496373720959965247">टॅब जोडा आणि पेजदरम्यान स्विच करा</translation>
 <translation id="4502566650163919158">आता तपासा</translation>
@@ -352,6 +368,7 @@
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="4619615317237390068">अन्य डिव्हाइसेसमधील टॅब</translation>
 <translation id="4620246317052452550">तुम्ही वाचलेली पृष्‍ठे</translation>
+<translation id="4620888520263267479">लिंकची पूर्वावलोकने दाखवा</translation>
 <translation id="4630540211544979320">पेजचे भाषांतर करा</translation>
 <translation id="4634124774493850572">पासवर्ड वापरा</translation>
 <translation id="4636930964841734540">माहिती</translation>
@@ -372,6 +389,8 @@
 <translation id="4802417911091824046">पासफ्रेज एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो.
 
 हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />सिंक रीसेट करा<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">तुमच्या संस्थेने व्यवस्थापित केलेले.
+<ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">कार्डाचा नंबर चुकीचा आहे</translation>
 <translation id="4808744395915275922">अपडेट</translation>
 <translation id="4818522717893377262">भाषा जोडा…</translation>
@@ -380,7 +399,7 @@
 <translation id="4826218269716039351">तृतीय पक्ष ब्लॉक करा</translation>
 <translation id="48274138579728272">वाचलेले म्हणून मार्क करा</translation>
 <translation id="4833686396768033263">अलीकडील टॅब उपलब्ध नाहीत</translation>
-<translation id="4833786495304741580">Google ला वापर आकडेवारी आणि क्रॅश अहवाल आपोआप पाठवते.</translation>
+<translation id="4833786495304741580">Google ला वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप पाठवते.</translation>
 <translation id="4840495572919996524">तुमचे बुकमार्क, इतिहास, पासवर्ड आणि बरेच काही आता तुमच्या Google खातेमध्ये सिंक केले जाणार नाही</translation>
 <translation id="4854345657858711387">पासकोड सेट करा</translation>
 <translation id="4860895144060829044">कॉल करा</translation>
@@ -427,9 +446,8 @@
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> हे खाते काढून टाकायचे आहे का?</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
-<translation id="5327248766486351172">नाव</translation>
 <translation id="5339316356165661760">सिंक सुरू करा</translation>
-<translation id="5360976571138293719">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> पाहा.</translation>
+<translation id="5360976571138293719">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> पहा.</translation>
 <translation id="5388358297987318779">इमेज उघडा</translation>
 <translation id="5407969256130905701">बदल काढून टाका</translation>
 <translation id="5416022985862681400">मागील सात दिवस</translation>
@@ -440,7 +458,6 @@
 <translation id="5457226814769348910">ऑफलाइन आवृत्ती उघडा</translation>
 <translation id="5489208564673669003">सर्व साइटसाठी कुकी व्यवस्थापित करण्यासाठी <ph name="BEGIN_LINK" />कुकी सेटिंग्ज<ph name="END_LINK" /> पहा.</translation>
 <translation id="5490005495580364134">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
-<translation id="5508435575041083207">या डिव्हाइसमधून साइन आउट करा आणि डेटा साफ करा</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> तासांपूर्वी</translation>
 <translation id="5525269841082836315">सांकेतिक पासफ्रेझ तयार करा</translation>
 <translation id="5532698011560297095">साइन इन करणे शक्य नाही</translation>
@@ -451,21 +468,24 @@
 <translation id="5556459405103347317">रीलोड करा</translation>
 <translation id="5580834567471114021">नंतर वाचण्यासाठी वाचन सूची मध्ये जोडायचे आहे का?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> साठी सिंक सुरू करा</translation>
+<translation id="560322036295180549">तुमच्या संस्थेने बंद केले</translation>
 <translation id="5614553682702429503">पासवर्ड सेव्ह करायचा आहे का?</translation>
 <translation id="5626245204502895507">यावेळी फाईल डाऊनलोड केली जाऊ शकली नाही.</translation>
 <translation id="5631164295104953411">पेमेंट पद्धत जोडा</translation>
-<translation id="5653058065071344726">तुमच्या संस्थेने व्यवस्थापित केलेले. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5659593005791499971">ई-मेल</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">आवृत्ती <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{आता एक Chrome विंडो दाखवत आहे}other{आता {count} Chrome विंडो दाखवत आहे}}</translation>
 <translation id="5706552126692816153">एका दिवसापूर्वी ॲक्टिव्ह होते</translation>
-<translation id="5711039611392265845">गोपनीयता, सुरक्षितता आणि डेटा संग्रहाशी संबंधित अधिक सेटिंग्जसाठी, <ph name="BEGIN_LINK" />सिंक आणि Google सेवा<ph name="END_LINK" /> पाहा.</translation>
+<translation id="5711039611392265845">गोपनीयता, सुरक्षितता आणि डेटा संग्रहाशी संबंधित अधिक सेटिंग्जसाठी, <ph name="BEGIN_LINK" />सिंक आणि Google सेवा<ph name="END_LINK" /> पहा.</translation>
 <translation id="5724941645893276623">वेब खाजगीरीत्‍या ब्राउझ करण्यासाठी नवीन टॅब जोडा</translation>
 <translation id="5728700505257787410">क्षमस्व, आपल्या खात्यामध्ये साइन इन करताना काहीतरी समस्या आली.</translation>
+<translation id="5731784586962650619">इतर अ‍ॅप्समधील पासवर्ड</translation>
 <translation id="5737974891429562743">खाते साइन-इन तपशील कालबाह्य झाले आहेत. सिंक सुरू करण्यासाठी अपडेट करा.</translation>
 <translation id="5738887413654608789">हे तुम्हाला आपल्या सभोवतालच्या गोष्टींवर आधारित संबंधित वेब पेज शोधू देते.</translation>
 <translation id="5758631781033351321">तुमची वाचन सूची तुम्हाला येथे सापडेल</translation>
+<translation id="575902488528307720">इमेज शोधा</translation>
+<translation id="5781453543752460388">Photos मध्ये जोडा</translation>
 <translation id="5782227691023083829">भाषांतर करीत आहे...</translation>
 <translation id="5803566855766646066">तुम्हाला हे नवीन कार्ड नक्की काढून टाकायचे आहे का?</translation>
 <translation id="5812974770859303494">यामध्ये जोडा...</translation>
@@ -475,6 +495,7 @@
 <translation id="5846482154967366008">शोध इंजीन</translation>
 <translation id="5854790677617711513">30 दिवसांपेक्षा जुना</translation>
 <translation id="5857090052475505287">नवीन फोल्डर</translation>
+<translation id="5857675236236529683">तुम्ही तयार असता तेव्हा, तुमची वाचन सूची येथे मिळवा</translation>
 <translation id="5857770089550859117">सिंक सुरू करण्यासाठी सांकेतिक पासफ्रेझ आवश्यक आहे.</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5869029295770560994">ठीक आहे, समजले</translation>
@@ -496,12 +517,14 @@
 <translation id="5988851877894965432">Chrome URL उघडा</translation>
 <translation id="6012140227487808125">कूटबद्ध करीत आहे...</translation>
 <translation id="6021332621416007159">यामध्ये उघडा...</translation>
+<translation id="6027945736510816438">तुम्हाला <ph name="WEBSITE" /> म्हणायचे आहे का?</translation>
 <translation id="6036514205982097558">एका ब्राउझरमध्ये तुमचे सर्व टॅब</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6042308850641462728">अधिक</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">तुमच्या स्टोरी आणि अ‍ॅक्टिव्हिटी येथे नियंत्रित करा</translation>
+<translation id="6064824697233747382">तुमच्या संस्थेनुसार तुम्ही सिंक बंद करणे आवश्यक आहे.</translation>
 <translation id="6066301408025741299">रद्द करण्यासाठी टॅप करा.</translation>
 <translation id="60829778314739003">स्वीकारा आणि पुढे सुरू ठेवा</translation>
 <translation id="6084848228346514841">टॅब निवडा</translation>
@@ -511,6 +534,7 @@
 <translation id="6127379762771434464">आयटम काढला</translation>
 <translation id="6136914049981179737">सेकंदांपूर्वी</translation>
 <translation id="6144589619057374135">${url} गुप्त मोडमध्ये उघडा</translation>
+<translation id="6159839020698489198">पर्यायी</translation>
 <translation id="6177442314419606057">Chrome मध्ये शोधा</translation>
 <translation id="6184086493125982861">टॅब दर्शवा</translation>
 <translation id="6187302354554850004">अखेरचे संंकालित: <ph name="LAST_USED_TIME" /></translation>
@@ -568,6 +592,7 @@
 प्रत्येक साइटसाठी युनिक पासवर्ड वापरण्याचा प्रयत्न करा.</translation>
 <translation id="651505212789431520">सिंक रद्द करायचे का? तुम्ही सेटिंग्ज मध्ये कधीही सिंक करणे सुरू करू शकता.</translation>
 <translation id="6524918542306337007">गुप्त मोड उपलब्ध नाही</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">झूम इन करा</translation>
 <translation id="6585618849026997638">बुकमार्क जोडून तुम्ही तुमच्यासाठी महत्त्वाच्या असलेल्या पेजवर परत जाऊ शकता</translation>
 <translation id="6603393121510733479">तुमच्या संस्थेने खाजगी ब्राउझिंग बंद केले आहे.
@@ -578,7 +603,6 @@
 <translation id="6628106477656132239">एक्स्पायरीची तारीख चुकीची आहे</translation>
 <translation id="6634432609054530164">तुमच्या संस्थेने गुप्त मोड बंद केलेला आहे</translation>
 <translation id="6638511529934826365">मजकूर झूम करा…</translation>
-<translation id="6639730758971422557">सुरक्षित ब्राउझिंग सुरू करण्यासाठी, <ph name="BEGIN_LINK" />सिंक आणि Google सेवा<ph name="END_LINK" /> उघडा व सुरक्षित ब्राउझिंग वर टॅप करा.</translation>
 <translation id="6642362222295953972">विद्यमान टॅबवर स्विच करा</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6645899968535965230">QR कोड: <ph name="PAGE_TITLE" /></translation>
@@ -596,18 +620,21 @@
 <translation id="6730682669179532099">पासवर्ड एक्सपोर्ट करू शकत नाही</translation>
 <translation id="6748108480210050150">प्रेषक</translation>
 <translation id="6760509555861141183">अलीकडील टॅब वर जा</translation>
+<translation id="6762812039470893796">सर्व निवडी रद्द करा</translation>
 <translation id="6780034285637185932">पिनकोड</translation>
 <translation id="6785453220513215166">क्रॅश अहवाल पाठवत आहे...</translation>
 <translation id="6797885426782475225">व्हॉइस शोध</translation>
 <translation id="6801927553864092214">खाजगीरीत्या ब्राउझ करण्यासाठी, गुप्त टॅब उघडा</translation>
 <translation id="6807889908376551050">सर्व दर्शवा...</translation>
 <translation id="681368974849482173">तयार केलेला आयटम</translation>
+<translation id="681450999322335505">तुमच्या संस्थेने सिंक करणे बंद केले आहे.</translation>
 <translation id="6830804042318138535">आणखी वाचा</translation>
-<translation id="6831043979455480757">Translate</translation>
+<translation id="6831043979455480757">भाषांतर करा</translation>
 <translation id="6842136130964845393">तुम्ही तुमचे सेव्ह केलेले पासवर्ड कधीही ॲक्सेस करू शकता याची खात्री करण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="6851516051005285358">डेस्कटॉप साइटची विनंती करा</translation>
 <translation id="6858855187367714033">स्कॅन केलेले</translation>
 <translation id="6859944681507688231">QR कोड किंवा क्रेडिट कार्ड स्कॅन करण्यासाठी सेटिंग्जमध्ये कॅमेरा सुरू करा.</translation>
+<translation id="6867369562105931222">पासवर्ड</translation>
 <translation id="6869389390665537774">तुम्ही भेट दिलेली पेज पाहू शकता किंवा ती तुमच्या इतिहासामधून साफ करू शकता</translation>
 <translation id="6873263987691478642">विभाजित दृश्य</translation>
 <translation id="6888009575607455378">तुम्हाला तुमचे बदल नक्की काढून टाकायचे आहेत का?</translation>
@@ -627,7 +654,6 @@
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">अलीकडील टॅब</translation>
 <translation id="7006788746334555276">आशय सेटिंग्ज</translation>
-<translation id="7015203776128479407">सुरुवातीचे सिंक सेट करणे पूर्ण झाले नाही. सिंक बंद आहे.</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7053983685419859001">अवरोधित करा</translation>
 <translation id="7062545763355031412">स्वीकार करा आणि खाती स्विच करा</translation>
@@ -650,7 +676,6 @@
 <translation id="7265758999917665941">या साइटसाठी कधीही नाही</translation>
 <translation id="7272437679830969316">तुमच्या ओळखीची पडताळणी करता आली नाही. पासवर्ड कॉपी केला नाही.</translation>
 <translation id="7291368939935408496">पासवर्ड तयार करत आहे…</translation>
-<translation id="7293171162284876153">सिंक सुरू करण्यासाठी, "तुमचा Chrome डेटा सिंक करा" सुरू करा.</translation>
 <translation id="7313347584264171202">तुमचे गुप्त टॅब तुम्हाला येथे सापडतील</translation>
 <translation id="7319242366286515846">पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK" />सेवा अटी<ph name="END_LINK" /> यांना सहमती दर्शवता</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> टक्के डाउनलोड केले</translation>
@@ -675,10 +700,10 @@
 <translation id="7472734401283673885">कंपनीचे नाव</translation>
 <translation id="7473891865547856676">नाही, नको</translation>
 <translation id="7481312909269577407">पुढील</translation>
-<translation id="7483467499335917849">तुमचे सध्याचे स्थान वापरा</translation>
 <translation id="750493650310597496">0 निवडले</translation>
 <translation id="7508728395076009983">तुमचे गुप्त टॅब लॉक करण्यासाठी, टच आयडी, फेस आयडी किंवा पासकोड सेट करा.</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>
+<translation id="753094929961314545">लिंक पूर्वावलोकन लपवा</translation>
 <translation id="7537586195939242955">क्षमस्व, यावेळी तुमचा पास पासबुकमध्ये इंस्टॉल केला जाऊ शकत नाही.</translation>
 <translation id="7554791636758816595">नवीन टॅब</translation>
 <translation id="7561196759112975576">नेहमी</translation>
@@ -694,9 +719,6 @@
 <translation id="7701040980221191251">काहीही नाही</translation>
 <translation id="7741325291586284254">नवीन गुप्त टॅब पेज</translation>
 <translation id="7765158879357617694">हलवा</translation>
-<translation id="7771470029643830783">साइन आउट केल्याने तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर Chrome डेटा यापुढे तुमचे Google खाते याच्याशी सिंक केला जाणार नाही.
-
-तुमचे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले जात असल्याने साइन आउट करताना या डिव्हाइसमधून तुमचा Chrome डेटा हटवला जाईल. तुमचा सिंक केलेला डेटा तुमचे Google खाते यामध्ये राहील.</translation>
 <translation id="7772032839648071052">सांकेतिक पासफ्रेझ निश्चित करा</translation>
 <translation id="7778472311864276518">या डिव्हाइसवरून खाते काढून टाका</translation>
 <translation id="7781011649027948662">पेजचे भाषांतर करायचे?</translation>
@@ -709,6 +731,7 @@
 <translation id="7856733331829174190">डाउनलोड करता आले नाही</translation>
 <translation id="7859704718976024901">ब्राउझिंग इतिहास</translation>
 <translation id="7887198238286927132">तुमच्या गोपनीयतेचे संरक्षण करण्‍यासाठी, Chrome हा भाग ऑटोफिल करणार नाही.</translation>
+<translation id="7911190106180361398">तुमची संस्था तुम्हाला सर्व गोष्टी सिंक करण्याची परवानगी देत नाही.</translation>
 <translation id="7938254975914653459">फेसटाइम</translation>
 <translation id="7939128259257418052">पासवर्ड एक्सपोर्ट करा...</translation>
 <translation id="794799177247607889">लॉग इन करणे थांबवा</translation>
@@ -718,6 +741,7 @@
 
 वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकतात, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी.</translation>
 <translation id="7971521879845308059">पॉप-अप अवरोधित करा</translation>
+<translation id="797413074872316787">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, सिंक सुरू करा.</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7993619969781047893">काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो</translation>
 <translation id="800361585186029508">Google Chrome मध्ये इनपुट केलेल्या URL उघडते.</translation>
@@ -736,8 +760,9 @@
 <translation id="8080028325999236607">सर्व टॅब बंद करा</translation>
 <translation id="8105368624971345109">बंद करा</translation>
 <translation id="8114753159095730575">फाइल डाउनलोड उपलब्ध आहे. स्क्रीनच्या तळाशी पर्याय उपलब्ध आहेत.</translation>
-<translation id="8131740175452115882">पुष्टी करा</translation>
+<translation id="8132598642024322408">आता <ph name="PRICE" /> आहे, आधी <ph name="PREVIOUS_PRICE" /> होती.</translation>
 <translation id="8156478151976189188">पासवर्ड सिंक काम करत नाही</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />तुमची डिव्हाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">पेजचे भाषांतर करा</translation>
 <translation id="8205564605687841303">रद्द करा</translation>
 <translation id="8206354486702514201">या सेटिंगची अंमलबजावणी तुमच्या ॲडमिनिस्ट्रेटरकडून होते.</translation>
@@ -749,10 +774,10 @@
 <translation id="8283172974887967105">सेट करा…</translation>
 <translation id="8299417921174340354">पासवर्ड वापरण्यासाठी, तुम्ही आधी तुमच्या डिव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="8299613349954694191">वेब खाजगीरीत्या ब्राउझ करण्‍यासाठी गुप्त टॅब उघडा.</translation>
-<translation id="83100941411593607">साइन-इन बंद केले आहे</translation>
 <translation id="8319076807703933069">नवीन शोध</translation>
 <translation id="8323906514956095947">आणखी टॅब पर्यायांसाठी स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="8328777765163860529">सर्व बंद करा</translation>
+<translation id="8378714024927312812">तुमच्या संस्थेकडून व्यवस्थापित केलेले</translation>
 <translation id="8386068868580335421">रीसेट करा</translation>
 <translation id="8407669440184693619">या साइटसाठी पासवर्ड सापडले नाहीत</translation>
 <translation id="842017693807136194">यासह साइन इन केले</translation>
@@ -764,10 +789,8 @@
 <translation id="8487667956631253959">सुरू करा</translation>
 <translation id="8487700953926739672">ऑफलाइन उपलब्ध</translation>
 <translation id="8490978609246021741">बदल सेव्ह करा</translation>
-<translation id="8495097701594799854">तुमच्या संस्थेने बंद केले.</translation>
 <translation id="8503813439785031346">वापरकर्ता नाव</translation>
 <translation id="850600235656508448">गुप्त प्रकारात उघडा</translation>
-<translation id="8510057420705599706">हे तुम्हाला साइन आउट करेल आणि सिंक बंद करेल पण तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर Chrome डेटा या डिव्हाइसवर राहील.</translation>
 <translation id="8517375800490286174">मुक्त स्रोत परवाने</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> पैकी <ph name="LAST_VISIBLE_TAB" /> ते <ph name="FIRST_VISIBLE_TAB" /> <ph name="INCOGNITO" /> टॅब</translation>
 <translation id="8529767659511976195">नवीन</translation>
@@ -801,14 +824,16 @@
 <translation id="8803639129939845298">सुरक्षित</translation>
 <translation id="8806823403540278281">तुमच्या संस्थेनुसार तुम्ही खाजगीरीत्या ब्राउझ करणे आवश्यक आहे. गुप्त मोडमध्ये टॅब सेव्ह केले जात नाहीत.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
-<translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="8840513115188359703">तुम्हाला आपल्या Google खात्यामधून साइन आउट केले जाणार नाही.</translation>
+<translation id="8843129975935593190">तुम्ही काय सिंक करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} टॅब}other{{count} टॅब}}</translation>
 <translation id="8870413625673593573">अलीकडे बंद</translation>
 <translation id="8876882697946675716">तुमची डिव्हाइस सिंकमध्ये ठेवा</translation>
 <translation id="8881801611828450202">या इमेजसाठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="8909135823018751308">शेअर करा...</translation>
 <translation id="8917490105272468696">होय, मला मान्य आहे</translation>
+<translation id="8952559610785099500">पासवर्ड जोडा</translation>
 <translation id="895541991026785598">समस्या नोंदवा</translation>
 <translation id="8976382372951310360">मदत</translation>
 <translation id="8976414606286374109">कार्ड तुमच्या Google खाते मध्ये सेव्ह केली जातात.</translation>
@@ -838,6 +863,7 @@
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">क्रॅश अहवाल पाठवला.</translation>
 <translation id="952704832371081537">रद्द करा</translation>
+<translation id="981498610235328462">तुमची संस्था तुम्हाला फक्त ठरावीक खाती वापरून साइन इन करण्याची अनुमती देते. अनुमती नसलेली खाती लपवली जातात.</translation>
 <translation id="984509647832111802">सिंक काम करत नाही.</translation>
 <translation id="988141524645182168">इतर डिव्हायसेस</translation>
 <translation id="989988560359834682">पत्ता संपादित करा</translation>

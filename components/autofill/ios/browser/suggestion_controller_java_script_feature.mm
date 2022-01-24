@@ -131,7 +131,7 @@ void SuggestionControllerJavaScriptFeature::
       frame, "suggestion.hasPreviousNextElements", parameters,
       base::BindOnce(&ProcessPreviousAndNextElementsPresenceResult,
                      std::move(completion_handler)),
-      base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
+      base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
 void SuggestionControllerJavaScriptFeature::CloseKeyboardForFrame(

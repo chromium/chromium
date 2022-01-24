@@ -296,6 +296,12 @@ bool FormFieldData::WasAutofilled() const {
   return properties_mask & kAutofilled;
 }
 
+// static
+bool FormFieldData::DeepEqual(const FormFieldData& a, const FormFieldData& b) {
+  return a.unique_renderer_id == b.unique_renderer_id &&
+         IdentityTuple(a) == IdentityTuple(b);
+}
+
 void SerializeFormFieldData(const FormFieldData& field_data,
                             base::Pickle* pickle) {
   pickle->WriteInt(kFormFieldDataPickleVersion);

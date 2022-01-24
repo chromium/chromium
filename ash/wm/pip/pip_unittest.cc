@@ -47,6 +47,10 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* context) {
 class PipTest : public AshTestBase {
  public:
   PipTest() = default;
+
+  PipTest(const PipTest&) = delete;
+  PipTest& operator=(const PipTest&) = delete;
+
   ~PipTest() override = default;
 
   void SetUp() override {
@@ -56,9 +60,6 @@ class PipTest : public AshTestBase {
   }
 
   void TearDown() override { AshTestBase::TearDown(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PipTest);
 };
 
 TEST_F(PipTest, ShowInactive) {
@@ -146,7 +147,7 @@ TEST_F(PipTest, ShortcutNavigation) {
 }
 
 TEST_F(PipTest, PipInitialPositionAvoidsObstacles) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 300, 100, 100)));
   WindowState* window_state = WindowState::Get(window.get());
@@ -167,7 +168,7 @@ TEST_F(PipTest, PipInitialPositionAvoidsObstacles) {
 }
 
 TEST_F(PipTest, TargetBoundsAffectedByWorkAreaChange) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
 
   // Place a keyboard window at the initial position of a PIP window.
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
@@ -191,7 +192,7 @@ TEST_F(PipTest, TargetBoundsAffectedByWorkAreaChange) {
 
 TEST_F(PipTest, PipRestoresToPreviousBoundsOnMovementAreaChangeIfTheyExist) {
   ForceHideShelvesForTest();
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 200, 100, 100)));
   WindowState* window_state = WindowState::Get(window.get());
@@ -201,7 +202,7 @@ TEST_F(PipTest, PipRestoresToPreviousBoundsOnMovementAreaChangeIfTheyExist) {
 
   // Position the PIP window on the side of the screen where it will be next
   // to an edge and therefore in a resting position for the whole test.
-  const gfx::Rect bounds = gfx::Rect(292, 200, 100, 100);
+  const gfx::Rect bounds = gfx::Rect(392, 200, 100, 100);
   // Set restore position to where the window currently is.
   window->SetBounds(bounds);
   PipPositioner::SaveSnapFraction(window_state, window->GetBoundsInScreen());
@@ -215,19 +216,19 @@ TEST_F(PipTest, PipRestoresToPreviousBoundsOnMovementAreaChangeIfTheyExist) {
   EXPECT_EQ(gfx::Rect(292, 76, 100, 100), window->GetBoundsInScreen());
 
   // Restore the original work area.
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   ForceHideShelvesForTest();
 
   // Changing the work area with the same PIP size causes snap fraction change,
   // so PIP doesn't restore to the original position. Instead ensure that the
   // fraction is calculated correctly.
-  EXPECT_EQ(gfx::Rect(292, 239, 100, 100), window->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(392, 239, 100, 100), window->GetBoundsInScreen());
 }
 
 TEST_F(
     PipTest,
     PipRestoresToPreviousBoundsOnMovementAreaChangeIfTheyExistOnExternalDisplay) {
-  UpdateDisplay("400x400,400x400");
+  UpdateDisplay("500x400,500x400");
   ForceHideShelvesForTest();
   auto* root_window = Shell::GetAllRootWindows()[1];
 
@@ -246,25 +247,25 @@ TEST_F(
   EXPECT_TRUE(PipPositioner::HasSnapFraction(window_state));
 
   // Update the work area so that the PIP window should be pushed upward.
-  UpdateDisplay("400x400,400x200");
+  UpdateDisplay("500x400,400x200");
   ForceHideShelvesForTest();
 
   // PIP should move up to accommodate the new work area.
-  EXPECT_EQ(gfx::Rect(408, 92, 100, 100), window->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(508, 92, 100, 100), window->GetBoundsInScreen());
 
   // Restore the original work area.
-  UpdateDisplay("400x400,400x400");
+  UpdateDisplay("500x400,500x400");
   ForceHideShelvesForTest();
 
   // Changing the work area with the same PIP size causes snap fraction change,
   // so PIP doesn't restore to the original position. Instead ensure that the
   // fraction is calculated correctly.
-  EXPECT_EQ(gfx::Rect(408, 292, 100, 100), window->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(508, 292, 100, 100), window->GetBoundsInScreen());
 }
 
 TEST_F(PipTest, PipRestoreOnWorkAreaChangeDoesNotChangeWindowSize) {
   ForceHideShelvesForTest();
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 200, 100, 100)));
   WindowState* window_state = WindowState::Get(window.get());
@@ -291,7 +292,7 @@ TEST_F(PipTest, PipRestoreOnWorkAreaChangeDoesNotChangeWindowSize) {
 
 TEST_F(PipTest, PipSnappedToEdgeWhenSavingSnapFraction) {
   ForceHideShelvesForTest();
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 200, 100, 100)));
   WindowState* window_state = WindowState::Get(window.get());

@@ -20,6 +20,11 @@ class SerialDeviceEnumeratorWin : public SerialDeviceEnumerator {
  public:
   SerialDeviceEnumeratorWin(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+  SerialDeviceEnumeratorWin(const SerialDeviceEnumeratorWin&) = delete;
+  SerialDeviceEnumeratorWin& operator=(const SerialDeviceEnumeratorWin&) =
+      delete;
+
   ~SerialDeviceEnumeratorWin() override;
 
   void OnPathAdded(const std::wstring& device_path);
@@ -29,14 +34,14 @@ class SerialDeviceEnumeratorWin : public SerialDeviceEnumerator {
   class UiThreadHelper;
 
   void DoInitialEnumeration();
-  void EnumeratePort(HDEVINFO dev_info, SP_DEVINFO_DATA* dev_info_data);
+  void EnumeratePort(HDEVINFO dev_info,
+                     SP_DEVINFO_DATA* dev_info_data,
+                     bool check_port_name);
 
   std::map<base::FilePath, base::UnguessableToken> paths_;
 
   std::unique_ptr<UiThreadHelper, base::OnTaskRunnerDeleter> helper_;
   base::WeakPtrFactory<SerialDeviceEnumeratorWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SerialDeviceEnumeratorWin);
 };
 
 }  // namespace device

@@ -10,13 +10,12 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/apps/apk_web_app_installer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/web_applications/components/app_registrar_observer.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -44,6 +43,10 @@ class ApkWebAppService : public KeyedService,
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   explicit ApkWebAppService(Profile* profile);
+
+  ApkWebAppService(const ApkWebAppService&) = delete;
+  ApkWebAppService& operator=(const ApkWebAppService&) = delete;
+
   ~ApkWebAppService() override;
 
   void SetArcAppListPrefsForTesting(ArcAppListPrefs* prefs);
@@ -90,6 +93,7 @@ class ApkWebAppService : public KeyedService,
   void OnPackageRemoved(const std::string& package_name,
                         bool uninstalled) override;
   void OnPackageListInitialRefreshed() override;
+  void OnArcAppListPrefsDestroyed() override;
 
   // web_app::AppRegistrarObserver overrides.
   void OnWebAppWillBeUninstalled(const web_app::AppId& web_app_id) override;
@@ -121,8 +125,6 @@ class ApkWebAppService : public KeyedService,
 
   // Must go last.
   base::WeakPtrFactory<ApkWebAppService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ApkWebAppService);
 };
 
 }  // namespace ash

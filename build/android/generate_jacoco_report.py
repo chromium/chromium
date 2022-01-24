@@ -35,29 +35,28 @@ _PARTIAL_PACKAGE_NAMES = ['com/google', 'org/chromium']
 
 _SOURCES_JSON_FILES_SUFFIX = '__jacoco_sources.json'
 
-# These should match the jar class files generated in internal_rules.gni
-_DEVICE_CLASS_EXCLUDE_SUFFIX = 'host_filter.jar'
-_HOST_CLASS_EXCLUDE_SUFFIX = 'device_filter.jar'
 
-
-def _CreateClassfileArgs(class_files, exclude_suffix=None, include_substr=None):
+def _CreateClassfileArgs(class_files, report_type, include_substr=None):
   """Returns a filtered list of files with classfile option.
 
   Args:
     class_files: A list of class files.
-    exclude_suffix: Suffix to look for to exclude.
+    report_type: A string indicating if device or host files are desired.
     include_substr: A substring that must be present to include the file.
-        exclude_suffix takes precedence over this.
 
   Returns:
     A list of files that don't use the suffix.
   """
+  # These should match the jar class files generated in internal_rules.gni
+  search_jar_suffix = '%s.filter.jar' % report_type
   result_class_files = []
   for f in class_files:
-    include_file = True
-    if exclude_suffix and f.endswith(exclude_suffix):
-      include_file = False
-    # Exclude overrides include.
+    include_file = False
+    if f.endswith(search_jar_suffix):
+      include_file = True
+
+    # If include_substr is specified, remove files that don't have the
+    # required substring.
     if include_file and include_substr and include_substr not in f:
       include_file = False
     if include_file:
@@ -67,13 +66,7 @@ def _CreateClassfileArgs(class_files, exclude_suffix=None, include_substr=None):
 
 
 def _GenerateReportOutputArgs(args, class_files, report_type):
-  class_jar_exclude = None
-  if report_type == 'device':
-    class_jar_exclude = _DEVICE_CLASS_EXCLUDE_SUFFIX
-  elif report_type == 'host':
-    class_jar_exclude = _HOST_CLASS_EXCLUDE_SUFFIX
-
-  cmd = _CreateClassfileArgs(class_files, class_jar_exclude,
+  cmd = _CreateClassfileArgs(class_files, report_type,
                              args.include_substr_filter)
   if args.format == 'html':
     report_dir = os.path.join(args.output_dir, report_type)

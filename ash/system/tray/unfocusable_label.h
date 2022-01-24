@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_TRAY_UNFOCUSABLE_LABEL_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -15,11 +14,12 @@ namespace ash {
 class ASH_EXPORT UnfocusableLabel : public views::Label {
  public:
   UnfocusableLabel() = default;
+
+  UnfocusableLabel(const UnfocusableLabel&) = delete;
+  UnfocusableLabel& operator=(const UnfocusableLabel&) = delete;
+
   ~UnfocusableLabel() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnfocusableLabel);
 };
 
 }  // namespace ash

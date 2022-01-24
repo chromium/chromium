@@ -84,7 +84,7 @@ PepperPrintSettingsManagerImpl::ComputeDefaultPrintSettings() {
   std::unique_ptr<printing::PrintingContext> context(
       printing::PrintingContext::Create(&delegate));
   if (!context.get() ||
-      context->UseDefaultSettings() != printing::PrintingContext::OK) {
+      context->UseDefaultSettings() != printing::mojom::ResultCode::kSuccess) {
     return PepperPrintSettingsManager::Result(PP_PrintSettings_Dev(),
                                               PP_ERROR_FAILED);
   }

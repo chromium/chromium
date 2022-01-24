@@ -13,7 +13,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "ui/display/manager/managed_display_info.h"
 
 namespace ash {
@@ -23,6 +23,10 @@ namespace ash {
 class ASH_EXPORT ScreenLayoutObserver : public WindowTreeHostManager::Observer {
  public:
   ScreenLayoutObserver();
+
+  ScreenLayoutObserver(const ScreenLayoutObserver&) = delete;
+  ScreenLayoutObserver& operator=(const ScreenLayoutObserver&) = delete;
+
   ~ScreenLayoutObserver() override;
 
   static const char kNotificationId[];
@@ -94,8 +98,6 @@ class ASH_EXPORT ScreenLayoutObserver : public WindowTreeHostManager::Observer {
   std::set<int64_t> displays_changed_from_settings_ui_;
 
   bool show_notifications_for_testing_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenLayoutObserver);
 };
 
 }  // namespace ash

@@ -93,9 +93,8 @@ void NetBiosHostLocator::FindHosts(FindHostsCallback callback) {
     return;
   }
 
-  timer_->Start(FROM_HERE,
-                base::TimeDelta::FromSeconds(kNetBiosDiscoveryTimeoutSeconds),
-                this, &NetBiosHostLocator::StopDiscovery);
+  timer_->Start(FROM_HERE, base::Seconds(kNetBiosDiscoveryTimeoutSeconds), this,
+                &NetBiosHostLocator::StopDiscovery);
 }
 
 net::NetworkInterfaceList NetBiosHostLocator::GetNetworkInterfaceList() {

@@ -26,6 +26,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace WTF {
@@ -54,14 +55,14 @@ const float kNormalFrameTimeoutInFrameIntervals = 25.0f;
 
 // Min delta time between two frames allowed without being dropped if a max
 // frame rate is specified.
-const double kMinTimeInMsBetweenFrames = 5;
+constexpr base::TimeDelta kMinTimeInMsBetweenFrames = base::Milliseconds(5);
 // If the delta between two frames is bigger than this, we will consider it to
 // be invalid and reset the fps calculation.
-const double kMaxTimeInMsBetweenFrames = 1000;
+constexpr base::TimeDelta kMaxTimeInMsBetweenFrames = base::Milliseconds(1000);
 
-const double kFrameRateChangeIntervalInSeconds = 1;
+constexpr base::TimeDelta kFrameRateChangeIntervalInSeconds = base::Seconds(1);
 const double kFrameRateChangeRate = 0.01;
-const double kFrameRateUpdateIntervalInSeconds = 5;
+constexpr base::TimeDelta kFrameRateUpdateIntervalInSeconds = base::Seconds(5);
 
 struct ComputedSettings {
   gfx::Size frame_size;
@@ -102,7 +103,7 @@ bool MaybeUpdateFrameRate(ComputedSettings* settings) {
   // reported value.
   if (std::abs(settings->frame_rate - settings->last_updated_frame_rate) >
       settings->last_updated_frame_rate * kFrameRateChangeRate) {
-    if ((now - settings->new_frame_rate_timestamp).InSecondsF() >
+    if (now - settings->new_frame_rate_timestamp >
         kFrameRateChangeIntervalInSeconds) {
       settings->new_frame_rate_timestamp = now;
       settings->last_update_timestamp = now;
@@ -115,7 +116,7 @@ bool MaybeUpdateFrameRate(ComputedSettings* settings) {
 
   // Update frame rate if it hasn't been updated in the last
   // kFrameRateUpdateIntervalInSeconds seconds.
-  if ((now - settings->last_update_timestamp).InSecondsF() >
+  if (now - settings->last_update_timestamp >
       kFrameRateUpdateIntervalInSeconds) {
     settings->last_update_timestamp = now;
     settings->last_updated_frame_rate = settings->frame_rate;
@@ -144,6 +145,10 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
       scoped_refptr<base::SingleThreadTaskRunner> render_message_loop,
       const VideoTrackAdapterSettings& settings,
       base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);
+
+  VideoFrameResolutionAdapter(const VideoFrameResolutionAdapter&) = delete;
+  VideoFrameResolutionAdapter& operator=(const VideoFrameResolutionAdapter&) =
+      delete;
 
   // Add |frame_callback|, |encoded_frame_callback| to receive video frames on
   // the IO-thread and |settings_callback| to set track settings on the main
@@ -230,8 +235,6 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   ComputedSettings source_format_settings_;
 
   base::flat_map<const MediaStreamVideoTrack*, VideoTrackCallbacks> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameResolutionAdapter);
 };
 
 VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(
@@ -269,6 +272,15 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::AddCallbacks(
     VideoTrackSettingsInternalCallback settings_callback,
     VideoTrackFormatInternalCallback format_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+
+  // The new track's settings should match the resolution adapter's current
+  // |track_settings_| as set for existing track(s) with matching
+  // VideoTrackAdapterSettings.
+  if (!callbacks_.empty() && track_settings_.frame_size.width() > 0 &&
+      track_settings_.frame_size.height() > 0) {
+    settings_callback.Run(track_settings_.frame_size,
+                          track_settings_.frame_rate);
+  }
 
   VideoTrackCallbacks track_callbacks = {
       std::move(frame_callback), std::move(encoded_frame_callback),
@@ -438,11 +450,10 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
     return false;
   }
 
-  const double delta_ms =
-      (frame.timestamp() - last_time_stamp_).InMillisecondsF();
+  const base::TimeDelta delta_ms = (frame.timestamp() - last_time_stamp_);
 
   // Check if the time since the last frame is completely off.
-  if (delta_ms < 0 || delta_ms > kMaxTimeInMsBetweenFrames) {
+  if (delta_ms.is_negative() || delta_ms > kMaxTimeInMsBetweenFrames) {
     // Reset |last_time_stamp_| and fps calculation.
     last_time_stamp_ = frame.timestamp();
     frame_rate_ = MediaStreamVideoSource::kDefaultFrameRate;
@@ -460,7 +471,7 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
     // Most likely the back to back problem is caused by software and not the
     // actual camera.
     DVLOG(3) << "Drop frame since delta time since previous frame is "
-             << delta_ms << "ms.";
+             << delta_ms.InMillisecondsF() << "ms.";
     *reason = media::VideoCaptureFrameDropReason::
         kResolutionAdapterTimestampTooCloseToPrevious;
     return true;
@@ -468,7 +479,7 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
   last_time_stamp_ = frame.timestamp();
   // Calculate the frame rate using a simple AR filter.
   // Use a simple filter with 0.1 weight of the current sample.
-  frame_rate_ = 100 / delta_ms + 0.9 * frame_rate_;
+  frame_rate_ = 100 / delta_ms.InMillisecondsF() + 0.9 * frame_rate_;
 
   // Prefer to not drop frames.
   if (settings_.max_frame_rate() + 0.5f > frame_rate_)
@@ -533,19 +544,22 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::
 
 VideoTrackAdapter::VideoTrackAdapter(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    scoped_refptr<MetronomeProvider> metronome_provider,
     base::WeakPtr<MediaStreamVideoSource> media_stream_video_source)
     : io_task_runner_(io_task_runner),
+      metronome_provider_(std::move(metronome_provider)),
       media_stream_video_source_(media_stream_video_source),
       renderer_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      monitoring_frame_rate_(false),
       muted_state_(false),
       frame_counter_(0),
+      old_frame_counter_snapshot_(0),
       source_frame_rate_(0.0f) {
   DCHECK(io_task_runner);
 }
 
 VideoTrackAdapter::~VideoTrackAdapter() {
   DCHECK(adapters_.IsEmpty());
+  DCHECK(!monitoring_frame_rate_timer_);
 }
 
 void VideoTrackAdapter::AddTrack(const MediaStreamVideoTrack* track,
@@ -710,9 +724,13 @@ void VideoTrackAdapter::StartFrameMonitoringOnIO(
     OnMutedInternalCallback on_muted_callback,
     double source_frame_rate) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  DCHECK(!monitoring_frame_rate_);
+  DCHECK(!monitoring_frame_rate_timer_);
 
-  monitoring_frame_rate_ = true;
+  on_muted_callback_ = std::move(on_muted_callback);
+  monitoring_frame_rate_timer_ = std::make_unique<WebRtcTimer>(
+      metronome_provider_, io_task_runner_,
+      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+          &VideoTrackAdapter::CheckFramesReceivedOnIO, WrapRefCounted(this))));
 
   // If the source does not know the frame rate, set one by default.
   if (source_frame_rate == 0.0f)
@@ -720,18 +738,20 @@ void VideoTrackAdapter::StartFrameMonitoringOnIO(
   source_frame_rate_ = source_frame_rate;
   DVLOG(1) << "Monitoring frame creation, first (large) delay: "
            << (kFirstFrameTimeoutInFrameIntervals / source_frame_rate_) << "s";
-  PostDelayedCrossThreadTask(
-      *io_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&VideoTrackAdapter::CheckFramesReceivedOnIO,
-                          WrapRefCounted(this), std::move(on_muted_callback),
-                          frame_counter_),
-      base::TimeDelta::FromSecondsD(kFirstFrameTimeoutInFrameIntervals /
-                                    source_frame_rate_));
+  old_frame_counter_snapshot_ = frame_counter_;
+  monitoring_frame_rate_timer_->StartOneShot(
+      base::Seconds(kFirstFrameTimeoutInFrameIntervals / source_frame_rate_));
 }
 
 void VideoTrackAdapter::StopFrameMonitoringOnIO() {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  monitoring_frame_rate_ = false;
+  if (!monitoring_frame_rate_timer_) {
+    // Already stopped.
+    return;
+  }
+  monitoring_frame_rate_timer_->Shutdown();
+  monitoring_frame_rate_timer_.reset();
+  on_muted_callback_ = OnMutedInternalCallback();
 }
 
 void VideoTrackAdapter::SetSourceFrameSizeOnIO(
@@ -819,20 +839,14 @@ void VideoTrackAdapter::DeliverEncodedVideoFrameOnIO(
     adapter->DeliverEncodedVideoFrame(frame, estimated_capture_time);
 }
 
-void VideoTrackAdapter::CheckFramesReceivedOnIO(
-    OnMutedInternalCallback set_muted_state_callback,
-    uint64_t old_frame_counter_snapshot) {
+void VideoTrackAdapter::CheckFramesReceivedOnIO() {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
-  if (!monitoring_frame_rate_)
-    return;
-
-  DVLOG_IF(1, old_frame_counter_snapshot == frame_counter_)
+  DVLOG_IF(1, old_frame_counter_snapshot_ == frame_counter_)
       << "No frames have passed, setting source as Muted.";
-
-  bool muted_state = old_frame_counter_snapshot == frame_counter_;
+  bool muted_state = old_frame_counter_snapshot_ == frame_counter_;
   if (muted_state_ != muted_state) {
-    set_muted_state_callback.Run(muted_state);
+    on_muted_callback_.Run(muted_state);
     muted_state_ = muted_state;
     if (muted_state_) {
       for (const auto& adapter : adapters_)
@@ -840,13 +854,9 @@ void VideoTrackAdapter::CheckFramesReceivedOnIO(
     }
   }
 
-  PostDelayedCrossThreadTask(
-      *io_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&VideoTrackAdapter::CheckFramesReceivedOnIO,
-                          WrapRefCounted(this),
-                          std::move(set_muted_state_callback), frame_counter_),
-      base::TimeDelta::FromSecondsD(kNormalFrameTimeoutInFrameIntervals /
-                                    source_frame_rate_));
+  old_frame_counter_snapshot_ = frame_counter_;
+  monitoring_frame_rate_timer_->StartOneShot(
+      base::Seconds(kNormalFrameTimeoutInFrameIntervals / source_frame_rate_));
 }
 
 }  // namespace blink

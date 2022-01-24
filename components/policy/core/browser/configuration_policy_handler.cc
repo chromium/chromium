@@ -15,7 +15,6 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_export.h"
 #include "components/user_manager/user_type.h"
@@ -24,6 +23,15 @@ class RemoveUserDelegate;
 // A list pref of the the regular users known on this device, arranged in LRU
 // order, stored in local state.
 USER_MANAGER_EXPORT extern const char kRegularUsersPref[];
+
+enum class UserRemovalReason : int32_t {
+  UNKNOWN = 0,
+  LOCAL_USER_INITIATED = 1,
+  REMOTE_ADMIN_INITIATED = 2,
+  LOCAL_USER_INITIATED_ON_REQUIRED_UPDATE = 3,
+  DEVICE_EPHEMERAL_USERS_ENABLED = 4,
+  GAIA_REMOVED = 5
+};
 
 // Interface for UserManagerBase - that provides base implementation for
 // Chrome OS user management. Typical features:
@@ -55,6 +63,13 @@ class USER_MANAGER_EXPORT UserManager {
     // user sign in are changed.
     virtual void OnUsersSignInConstraintsChanged();
 
+    // Called just before a user of the device will be removed.
+    virtual void OnUserToBeRemoved(const AccountId& account_id);
+
+    // Called just after a user of the device has been removed.
+    virtual void OnUserRemoved(const AccountId& account_id,
+                               UserRemovalReason reason);
+
    protected:
     virtual ~Observer();
   };
@@ -84,6 +99,10 @@ class USER_MANAGER_EXPORT UserManager {
     UserAccountData(const std::u16string& display_name,
                     const std::u16string& given_name,
                     const std::string& locale);
+
+    UserAccountData(const UserAccountData&) = delete;
+    UserAccountData& operator=(const UserAccountData&) = delete;
+
     ~UserAccountData();
     const std::u16string& display_name() const { return display_name_; }
     const std::u16string& given_name() const { return given_name_; }
@@ -93,8 +112,6 @@ class USER_MANAGER_EXPORT UserManager {
     const std::u16string display_name_;
     const std::u16string given_name_;
     const std::string locale_;
-
-    DISALLOW_COPY_AND_ASSIGN(UserAccountData);
   };
 
   // Initializes UserManager instance to this. Normally should be called right
@@ -156,6 +173,9 @@ class USER_MANAGER_EXPORT UserManager {
   // no owner for the device.
   virtual const AccountId& GetOwnerAccountId() const = 0;
 
+  // Returns account Id of the user that was active in the previous session.
+  virtual const AccountId& GetLastSessionActiveAccountId() const = 0;
+
   // Indicates that a user with the given |account_id| has just logged in. The
   // persistent list is updated accordingly if the user is not ephemeral.
   // |browser_restart| is true when reloading Chrome after crash to distinguish
@@ -177,10 +197,12 @@ class USER_MANAGER_EXPORT UserManager {
   // Invoked by session manager to inform session start.
   virtual void OnSessionStarted() = 0;
 
-  // Removes the user from the device. Note, it will verify that the given user
-  // isn't the owner, so calling this method for the owner will take no effect.
-  // Note, |delegate| can be NULL.
+  // Removes the user from the device while providing a reason for enterprise
+  // reporting. Note, it will verify that the given user isn't the owner, so
+  // calling this method for the owner will take no effect. Note, |delegate|
+  // can be NULL.
   virtual void RemoveUser(const AccountId& account_id,
+                          UserRemovalReason reason,
                           RemoveUserDelegate* delegate) = 0;
 
   // Removes the user from the persistent list only. Also removes the user's
@@ -315,6 +337,9 @@ class USER_MANAGER_EXPORT UserManager {
       const User& user,
       const gfx::ImageSkia& profile_image) = 0;
   virtual void NotifyUsersSignInConstraintsChanged() = 0;
+  virtual void NotifyUserToBeRemoved(const AccountId& account_id) = 0;
+  virtual void NotifyUserRemoved(const AccountId& account_id,
+                                 UserRemovalReason reason) = 0;
 
   // Returns true if guest user is allowed.
   virtual bool IsGuestSessionAllowed() const = 0;

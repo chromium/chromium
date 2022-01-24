@@ -8,7 +8,6 @@
 #include <presentation-time-server-protocol.h>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
@@ -19,6 +18,10 @@ extern const struct wp_presentation_interface kMockWpPresentationImpl;
 class MockWpPresentation : public GlobalObject {
  public:
   MockWpPresentation();
+
+  MockWpPresentation(const MockWpPresentation&) = delete;
+  MockWpPresentation& operator=(const MockWpPresentation&) = delete;
+
   ~MockWpPresentation() override;
 
   MOCK_METHOD2(Destroy,
@@ -41,8 +44,6 @@ class MockWpPresentation : public GlobalObject {
 
  private:
   wl_resource* presentation_callback_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWpPresentation);
 };
 
 }  // namespace wl

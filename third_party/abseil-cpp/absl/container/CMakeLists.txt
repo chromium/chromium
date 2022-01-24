@@ -548,6 +548,7 @@ absl_cc_library(
     absl::base
     absl::exponential_biased
     absl::have_sse
+    absl::sample_recorder
     absl::synchronization
 )
 
@@ -666,7 +667,6 @@ absl_cc_library(
     absl::hash_policy_traits
     absl::hashtable_debug_hooks
     absl::have_sse
-    absl::layout
     absl::memory
     absl::meta
     absl::optional
@@ -892,5 +892,20 @@ absl_cc_test(
     absl::unordered_map_lookup_test
     absl::unordered_map_members_test
     absl::unordered_map_modifiers_test
+    GTest::gmock_main
+)
+
+absl_cc_test(
+  NAME
+    sample_element_size_test
+  SRCS
+    "sample_element_size_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::flat_hash_map
+    absl::flat_hash_set
+    absl::node_hash_map
+    absl::node_hash_set
     GTest::gmock_main
 )

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -36,6 +35,10 @@ namespace {
 class TestSliderListener : public views::SliderListener {
  public:
   TestSliderListener();
+
+  TestSliderListener(const TestSliderListener&) = delete;
+  TestSliderListener& operator=(const TestSliderListener&) = delete;
+
   ~TestSliderListener() override;
 
   int last_event_epoch() { return last_event_epoch_; }
@@ -72,8 +75,6 @@ class TestSliderListener : public views::SliderListener {
   views::Slider* last_drag_started_sender_ = nullptr;
   // The sender from the last SliderDragEnded call.
   views::Slider* last_drag_ended_sender_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSliderListener);
 };
 
 TestSliderListener::TestSliderListener() = default;
@@ -125,6 +126,10 @@ class SliderTest : public views::ViewsTestBase,
                    public testing::WithParamInterface<TestSliderType> {
  public:
   SliderTest() = default;
+
+  SliderTest(const SliderTest&) = delete;
+  SliderTest& operator=(const SliderTest&) = delete;
+
   ~SliderTest() override = default;
 
  protected:
@@ -171,8 +176,6 @@ class SliderTest : public views::ViewsTestBase,
   views::UniqueWidgetPtr widget_;
   // An event generator.
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(SliderTest);
 };
 
 void SliderTest::ClickAt(int x, int y) {
@@ -318,14 +321,14 @@ TEST_P(SliderTest, SliderValueForScrollGesture) {
   slider()->SetValue(0.5);
   event_generator()->GestureScrollSequence(
       gfx::Point(0.5 * max_x(), 0.5 * max_y()), gfx::Point(0, 0),
-      base::TimeDelta::FromMilliseconds(10), 5 /* steps */);
+      base::Milliseconds(10), 5 /* steps */);
   EXPECT_EQ(GetMinValue(), slider()->GetValue());
 
   // Scroll above the maximum.
   slider()->SetValue(0.5);
   event_generator()->GestureScrollSequence(
       gfx::Point(0.5 * max_x(), 0.5 * max_y()), gfx::Point(max_x(), max_y()),
-      base::TimeDelta::FromMilliseconds(10), 5 /* steps */);
+      base::Milliseconds(10), 5 /* steps */);
   EXPECT_EQ(GetMaxValue(), slider()->GetValue());
 
   // Scroll somewhere in the middle.
@@ -333,8 +336,8 @@ TEST_P(SliderTest, SliderValueForScrollGesture) {
   slider()->SetValue(0.25);
   event_generator()->GestureScrollSequence(
       gfx::Point(0.25 * max_x(), 0.25 * max_y()),
-      gfx::Point(0.78 * max_x(), 0.78 * max_y()),
-      base::TimeDelta::FromMilliseconds(10), 5 /* steps */);
+      gfx::Point(0.78 * max_x(), 0.78 * max_y()), base::Milliseconds(10),
+      5 /* steps */);
   if (GetParam() == TestSliderType::kContinuousTest) {
     // Continuous slider.
     EXPECT_NEAR(0.78, slider()->GetValue(), 0.03);
@@ -403,8 +406,8 @@ TEST_P(SliderTest, SliderListenerEventsForScrollGesture) {
 
   event_generator()->GestureScrollSequence(
       gfx::Point(0.25 * max_x(), 0.25 * max_y()),
-      gfx::Point(0.75 * max_x(), 0.75 * max_y()),
-      base::TimeDelta::FromMilliseconds(0), 5 /* steps */);
+      gfx::Point(0.75 * max_x(), 0.75 * max_y()), base::Milliseconds(0),
+      5 /* steps */);
 
   EXPECT_EQ(1, slider_listener().last_drag_started_epoch());
   EXPECT_GT(slider_listener().last_drag_ended_epoch(),

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_METHOD_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_METHOD_VIEW_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/payments/payment_request_item_list.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 
@@ -23,6 +22,11 @@ class PaymentMethodViewController : public PaymentRequestSheetController {
   PaymentMethodViewController(base::WeakPtr<PaymentRequestSpec> spec,
                               base::WeakPtr<PaymentRequestState> state,
                               base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  PaymentMethodViewController(const PaymentMethodViewController&) = delete;
+  PaymentMethodViewController& operator=(const PaymentMethodViewController&) =
+      delete;
+
   ~PaymentMethodViewController() override;
 
  private:
@@ -39,8 +43,6 @@ class PaymentMethodViewController : public PaymentRequestSheetController {
 
   // Whether or not adding a new card is allowed.
   bool enable_add_card_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentMethodViewController);
 };
 
 }  // namespace payments

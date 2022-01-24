@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/network/managed_state.h"
 #include "chromeos/network/network_util.h"
@@ -22,6 +21,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   typedef std::vector<CellularSIMSlotInfo> CellularSIMSlotInfos;
 
   explicit DeviceState(const std::string& path);
+
+  DeviceState(const DeviceState&) = delete;
+  DeviceState& operator=(const DeviceState&) = delete;
+
   ~DeviceState() override;
 
   // ManagedState overrides
@@ -136,8 +139,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
 
   // Dictionary of IPConfig properties, keyed by IpConfig path.
   base::DictionaryValue ip_configs_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceState);
 };
 
 }  // namespace chromeos

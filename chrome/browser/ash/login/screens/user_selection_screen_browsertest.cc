@@ -37,10 +37,8 @@ constexpr char kGaia2ID[] = "222222";
 constexpr char kUser3Email[] = "test-user3@gmail.com";
 constexpr char kGaia3ID[] = "333333";
 
-constexpr base::TimeDelta kLoginOnlineShortDelay =
-    base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kLoginOnlineLongDelay =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kLoginOnlineShortDelay = base::Seconds(10);
+constexpr base::TimeDelta kLoginOnlineLongDelay = base::Seconds(20);
 
 const test::UIPath kErrorMessageGuestSigninLink = {"error-message",
                                                    "error-guest-signin-link"};
@@ -138,7 +136,7 @@ class UserSelectionScreenEnforceOnlineTest : public LoginManagerTest,
   UserSelectionScreenEnforceOnlineTest& operator=(
       const UserSelectionScreenEnforceOnlineTest&) = delete;
 
-  // chromeos::LocalStateMixin::Delegate:
+  // LocalStateMixin::Delegate:
   void SetUpLocalState() override {
     const auto& users = login_manager_mixin_.users();
     const base::Time now = base::DefaultClock::GetInstance()->Now();
@@ -157,7 +155,7 @@ class UserSelectionScreenEnforceOnlineTest : public LoginManagerTest,
 
  protected:
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
-  chromeos::LocalStateMixin local_state_mixin_{&mixin_host_, this};
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 IN_PROC_BROWSER_TEST_F(UserSelectionScreenEnforceOnlineTest,
@@ -181,7 +179,7 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
   UserSelectionScreenBlockOfflineTest& operator=(
       const UserSelectionScreenBlockOfflineTest&) = delete;
 
-  // chromeos::LocalStateMixin::Delegate:
+  // LocalStateMixin::Delegate:
   void SetUpLocalState() override {
     const base::Time now = base::DefaultClock::GetInstance()->Now();
 
@@ -222,7 +220,7 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
       {test_user_over_the_limit_, test_user_under_the_limit_,
        test_user_limit_not_set_}};
   OfflineLoginTestMixin offline_login_test_mixin_{&mixin_host_};
-  chromeos::LocalStateMixin local_state_mixin_{&mixin_host_, this};
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 // Tests that offline login link is hidden on the network error screen when

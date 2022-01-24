@@ -36,6 +36,10 @@ const char kImageData[] = "abc";
 
 // Test fixture for ImageFetchTabHelper class.
 class ImageFetchTabHelperTest : public ChromeWebTest {
+ public:
+  ImageFetchTabHelperTest(const ImageFetchTabHelperTest&) = delete;
+  ImageFetchTabHelperTest& operator=(const ImageFetchTabHelperTest&) = delete;
+
  protected:
   ImageFetchTabHelperTest()
       : ChromeWebTest(std::make_unique<web::FakeWebClient>(),
@@ -75,19 +79,6 @@ class ImageFetchTabHelperTest : public ChromeWebTest {
                                          kImageData, status);
   }
 
-  // Executes the given |script| in the appropriate content world for this iOS
-  // version.
-  // TODO(crbug.com/1206328): Convert this into a shared (test-only) helper that
-  // automatically executes JavaScript in the appropriate world for a given
-  // feature.
-  id ExecuteJavaScriptInContentWorld(NSString* script) {
-    if (@available(iOS 14.0, *)) {
-      return ExecuteJavaScript(WKContentWorld.defaultClientWorld, script);
-    } else {
-      return ExecuteJavaScript(script);
-    }
-  }
-
   ImageFetchTabHelper* image_fetch_tab_helper() {
     return ImageFetchTabHelper::FromWebState(web_state());
   }
@@ -100,21 +91,21 @@ class ImageFetchTabHelperTest : public ChromeWebTest {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetchTabHelperTest);
 };
 
 // Tests that ImageFetchTabHelper::GetImageData can get image data from Js.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromCanvas) {
   // Inject fake |__gCrWeb.imageFetch.getImageData| that returns |kImageData|
   // in base64 format.
-  id script_result = ExecuteJavaScriptInContentWorld([NSString
-      stringWithFormat:
-          @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
-           "function(id, url) { "
-           "__gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler', "
-           "{'id': id, 'data': btoa('%s'), 'from':'canvas'}); }; true;",
-          kImageData]);
+  id script_result = ExecuteJavaScriptForFeature(
+      [NSString
+          stringWithFormat:
+              @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
+               "function(id, url) { "
+               "__gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler', "
+               "{'id': id, 'data': btoa('%s'), 'from':'canvas'}); }; true;",
+              kImageData],
+      ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
 
   __block bool callback_invoked = false;
@@ -138,13 +129,15 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromCanvas) {
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromXmlHttpRequest) {
   // Inject fake |__gCrWeb.imageFetch.getImageData| that returns |kImageData|
   // in base64 format.
-  id script_result = ExecuteJavaScriptInContentWorld([NSString
-      stringWithFormat:
-          @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
-           "function(id, url) { "
-           "__gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler', "
-           "{'id': id, 'data': btoa('%s'), 'from':'xhr'}); }; true;",
-          kImageData]);
+  id script_result = ExecuteJavaScriptForFeature(
+      [NSString
+          stringWithFormat:
+              @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
+               "function(id, url) { "
+               "__gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler', "
+               "{'id': id, 'data': btoa('%s'), 'from':'xhr'}); }; true;",
+              kImageData],
+      ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
 
   __block bool callback_invoked = false;
@@ -167,11 +160,12 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsSucceedFromXmlHttpRequest) {
 // Tests that ImageFetchTabHelper::GetImageData gets image data from server when
 // Js fails.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsFail) {
-  id script_result = ExecuteJavaScriptInContentWorld(
+  id script_result = ExecuteJavaScriptForFeature(
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
        "function(id, url) { "
        "__gCrWeb.common.sendWebKitMessage('ImageFetchMessageHandler', "
-       "{'id': id}); }; true;");
+       "{'id': id}); }; true;",
+      ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
 
   __block bool callback_invoked = false;
@@ -194,9 +188,10 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsFail) {
 // Js does not send a message back.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsTimeout) {
   // Inject fake |__gCrWeb.imageFetch.getImageData| that does not do anything.
-  id script_result = ExecuteJavaScriptInContentWorld(
+  id script_result = ExecuteJavaScriptForFeature(
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
-      @"function(id, url) {}; true;");
+      @"function(id, url) {}; true;",
+      ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
 
   __block bool callback_invoked = false;
@@ -220,9 +215,10 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithJsTimeout) {
 // WebState is destroyed.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateDestroy) {
   // Inject fake |__gCrWeb.imageFetch.getImageData| that does not do anything.
-  id script_result = ExecuteJavaScriptInContentWorld(
+  id script_result = ExecuteJavaScriptForFeature(
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
-      @"function(id, url) {}; true;");
+      @"function(id, url) {}; true;",
+      ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
 
   __block bool callback_invoked = false;
@@ -246,9 +242,10 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateDestroy) {
 // WebState navigates to a new web page.
 TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateNavigate) {
   // Inject fake |__gCrWeb.imageFetch.getImageData| that does not do anything.
-  id script_result = ExecuteJavaScriptInContentWorld(
+  id script_result = ExecuteJavaScriptForFeature(
       @"__gCrWeb.imageFetch = {}; __gCrWeb.imageFetch.getImageData = "
-      @"function(id, url) {}; true;");
+      @"function(id, url) {}; true;",
+      ImageFetchJavaScriptFeature::GetInstance());
   ASSERT_NSEQ(@YES, script_result);
 
   __block bool callback_invoked = false;

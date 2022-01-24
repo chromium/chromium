@@ -9,6 +9,7 @@ class GURL;
 
 namespace content {
 class WebContents;
+class RenderFrameHost;
 
 class PermissionUtil {
  public:
@@ -18,6 +19,8 @@ class PermissionUtil {
   // ultimately all call sites should be migrated to determine the authoritative
   // security origin based on the requesting RenderFrameHost.
   static GURL GetLastCommittedOriginAsURL(content::WebContents* web_contents);
+  static GURL GetLastCommittedOriginAsURL(
+      content::RenderFrameHost* render_frame_host);
 };
 
 }  // namespace content

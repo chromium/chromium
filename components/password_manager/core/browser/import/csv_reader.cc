@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
 
@@ -65,6 +64,10 @@ base::StringPiece ConsumeLine(base::StringPiece* input) {
 class CSVParser {
  public:
   explicit CSVParser(base::StringPiece csv);
+
+  CSVParser(const CSVParser&) = delete;
+  CSVParser& operator=(const CSVParser&) = delete;
+
   ~CSVParser();
 
   // Reads and unescapes values from the next row, and writes them to |fields|.
@@ -76,8 +79,6 @@ class CSVParser {
 
  private:
   base::StringPiece remaining_csv_piece_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSVParser);
 };
 
 CSVParser::CSVParser(base::StringPiece csv) : remaining_csv_piece_(csv) {}

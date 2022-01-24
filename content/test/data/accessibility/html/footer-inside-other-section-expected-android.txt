@@ -1,10 +1,10 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='article'
 ++++android.view.View
-++++++android.view.View name='footer inside article.'
+++++++android.widget.TextView name='footer inside article.'
 ++android.view.View
 ++++android.view.View
-++++++android.view.View name='footer inside section.'
+++++++android.widget.TextView name='footer inside section.'
 ++android.view.View role_description='main'
 ++++android.view.View
-++++++android.view.View name='footer inside main.'
+++++++android.widget.TextView name='footer inside main.'

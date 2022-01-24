@@ -41,6 +41,10 @@ const int kScrollToMenuBoundsBuffer = 18;
 class MouseEventCapturer : public ui::EventHandler {
  public:
   MouseEventCapturer() { Reset(); }
+
+  MouseEventCapturer(const MouseEventCapturer&) = delete;
+  MouseEventCapturer& operator=(const MouseEventCapturer&) = delete;
+
   ~MouseEventCapturer() override = default;
 
   void Reset() {
@@ -96,14 +100,16 @@ class MouseEventCapturer : public ui::EventHandler {
  private:
   std::vector<ui::MouseEvent> events_;
   std::vector<ui::MouseWheelEvent> wheel_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseEventCapturer);
 };
 
 class AutoclickTest : public AshTestBase {
  public:
   AutoclickTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  AutoclickTest(const AutoclickTest&) = delete;
+  AutoclickTest& operator=(const AutoclickTest&) = delete;
+
   ~AutoclickTest() override = default;
 
   void SetUp() override {
@@ -139,8 +145,7 @@ class AutoclickTest : public AshTestBase {
   }
 
   void FastForwardBy(int milliseconds) {
-    task_environment()->FastForwardBy(
-        base::TimeDelta::FromMilliseconds(milliseconds));
+    task_environment()->FastForwardBy(base::Milliseconds(milliseconds));
   }
 
   AutoclickController* GetAutoclickController() {
@@ -153,8 +158,7 @@ class AutoclickTest : public AshTestBase {
     float ratio =
         GetAutoclickController()->GetStartGestureDelayRatioForTesting();
     int full_delay = ceil(1.0 / ratio) * animation_delay;
-    GetAutoclickController()->SetAutoclickDelay(
-        base::TimeDelta::FromMilliseconds(full_delay));
+    GetAutoclickController()->SetAutoclickDelay(base::Milliseconds(full_delay));
     return full_delay;
   }
 
@@ -204,8 +208,6 @@ class AutoclickTest : public AshTestBase {
 
  private:
   MouseEventCapturer mouse_event_capturer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoclickTest);
 };
 
 TEST_F(AutoclickTest, ToggleEnabled) {
@@ -482,16 +484,14 @@ TEST_F(AutoclickTest, UserInputCancelsAutoclick) {
   // Test another gesture.
   GetEventGenerator()->MoveMouseTo(100, 100);
   GetEventGenerator()->GestureScrollSequence(
-      gfx::Point(100, 100), gfx::Point(200, 200),
-      base::TimeDelta::FromMilliseconds(200), 3);
+      gfx::Point(100, 100), gfx::Point(200, 200), base::Milliseconds(200), 3);
   events = WaitForMouseEvents();
   EXPECT_EQ(0u, events.size());
 
   // Test scroll events.
   GetEventGenerator()->MoveMouseTo(200, 200);
   GetEventGenerator()->ScrollSequence(gfx::Point(100, 100),
-                                      base::TimeDelta::FromMilliseconds(200), 0,
-                                      100, 3, 2);
+                                      base::Milliseconds(200), 0, 100, 3, 2);
   events = WaitForMouseEvents();
   EXPECT_EQ(0u, events.size());
 

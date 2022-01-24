@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,11 +26,14 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_save_manager.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
+
+// Filling timeout for waiting server predictions
+constexpr base::TimeDelta kMaxFillingDelayForServerPredictions =
+    base::Milliseconds(500);
 
 class PasswordFormMetricsRecorder;
 class PasswordManagerClient;
@@ -63,6 +65,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       PasswordFormDigest observed_http_auth_digest,
       FormFetcher* form_fetcher,
       std::unique_ptr<PasswordSaveManager> password_save_manager);
+
+  PasswordFormManager(const PasswordFormManager&) = delete;
+  PasswordFormManager& operator=(const PasswordFormManager&) = delete;
 
   ~PasswordFormManager() override;
 
@@ -237,8 +242,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
     wait_for_server_predictions_for_filling_ = value;
   }
 
-  FormSaver* form_saver() const {
-    return password_save_manager_->GetFormSaver();
+  FormSaver* profile_store_form_saver() const {
+    return password_save_manager_->GetProfileStoreFormSaverForTesting();
   }
 
   const VotesUploader& votes_uploader() const { return votes_uploader_; }
@@ -331,6 +336,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const autofill::FormData& observed_form_data,
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
+  // Delays form filling by |kMaxFillingDelayForServerPredictions| while waiting
+  // for server-side predictions.
+  void DelayFillForServerSidePredictions();
+
   // The client which implements embedder-specific PasswordManager operations.
   PasswordManagerClient* client_;
 
@@ -393,8 +402,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   FormDataParser parser_;
 
   base::WeakPtrFactory<PasswordFormManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordFormManager);
 };
 
 }  // namespace password_manager

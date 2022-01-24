@@ -17,6 +17,12 @@ class VirtualAuthenticatorRequestDelegate
  public:
   // The |frame_tree_node| must outlive this instance.
   VirtualAuthenticatorRequestDelegate();
+
+  VirtualAuthenticatorRequestDelegate(
+      const VirtualAuthenticatorRequestDelegate&) = delete;
+  VirtualAuthenticatorRequestDelegate& operator=(
+      const VirtualAuthenticatorRequestDelegate&) = delete;
+
   ~VirtualAuthenticatorRequestDelegate() override;
 
   // AuthenticatorRequestClientDelegate:
@@ -24,9 +30,6 @@ class VirtualAuthenticatorRequestDelegate
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VirtualAuthenticatorRequestDelegate);
 };
 
 }  // namespace content

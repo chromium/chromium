@@ -27,6 +27,11 @@ void UserManager::Observer::OnUserProfileImageUpdated(
 
 void UserManager::Observer::OnUsersSignInConstraintsChanged() {}
 
+void UserManager::Observer::OnUserRemoved(const AccountId& account_id,
+                                          UserRemovalReason reason) {}
+
+void UserManager::Observer::OnUserToBeRemoved(const AccountId& account_id) {}
+
 void UserManager::UserSessionStateObserver::ActiveUserChanged(
     User* active_user) {}
 

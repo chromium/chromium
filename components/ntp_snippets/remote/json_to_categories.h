@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_NTP_SNIPPETS_REMOTE_JSON_TO_CATEGORIES_H_
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_JSON_TO_CATEGORIES_H_
 
+#include <vector>
+
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/ntp_snippets/category.h"

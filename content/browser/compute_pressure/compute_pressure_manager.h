@@ -39,8 +39,7 @@ class CONTENT_EXPORT ComputePressureManager {
  public:
   // The sampling interval must be smaller or equal to the rate-limit for
   // observer updates.
-  static constexpr base::TimeDelta kDefaultSamplingInterval =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kDefaultSamplingInterval = base::Seconds(1);
 
   // Factory method for production instances.
   static std::unique_ptr<ComputePressureManager> Create();
@@ -95,7 +94,8 @@ class CONTENT_EXPORT ComputePressureManager {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to determine when it's safe to stop the ComputePressureSampler.
-  std::set<url::Origin> hosts_with_observers_;
+  std::set<url::Origin> hosts_with_observers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

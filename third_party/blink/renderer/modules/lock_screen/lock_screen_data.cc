@@ -40,7 +40,7 @@ ScriptPromise LockScreenData::getKeys(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   // TODO(crbug.com/1006642): This should call out to a mojo service.
-
+  resolver->Reject("Not implemented");
   return resolver->Promise();
 }
 
@@ -49,7 +49,7 @@ ScriptPromise LockScreenData::getData(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   // TODO(crbug.com/1006642): This should call out to a mojo service.
-
+  resolver->Reject("Not implemented");
   return resolver->Promise();
 }
 
@@ -59,7 +59,7 @@ ScriptPromise LockScreenData::setData(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   // TODO(crbug.com/1006642): This should call out to a mojo service.
-
+  resolver->Reject("Not implemented");
   return resolver->Promise();
 }
 
@@ -68,7 +68,7 @@ ScriptPromise LockScreenData::deleteData(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   // TODO(crbug.com/1006642): This should call out to a mojo service.
-
+  resolver->Reject("Not implemented");
   return resolver->Promise();
 }
 

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -24,6 +23,9 @@ namespace libassistant {
 class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
  public:
   FakeAudioOutputDelegate() : thread_("assistant") { thread_.Start(); }
+
+  FakeAudioOutputDelegate(const FakeAudioOutputDelegate&) = delete;
+  FakeAudioOutputDelegate& operator=(const FakeAudioOutputDelegate&) = delete;
 
   ~FakeAudioOutputDelegate() override = default;
 
@@ -81,8 +83,6 @@ class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
   std::unique_ptr<base::RunLoop> run_loop_;
   int num_bytes_to_fill_ = 0;
   bool end_of_stream_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioOutputDelegate);
 };
 
 class FakeAudioOutputDelegateMojom
@@ -110,12 +110,14 @@ class AssistantAudioDeviceOwnerTest : public testing::Test {
             base::test::TaskEnvironment::MainThreadType::DEFAULT,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
+  AssistantAudioDeviceOwnerTest(const AssistantAudioDeviceOwnerTest&) = delete;
+  AssistantAudioDeviceOwnerTest& operator=(
+      const AssistantAudioDeviceOwnerTest&) = delete;
+
   ~AssistantAudioDeviceOwnerTest() override { task_env_.RunUntilIdle(); }
 
  private:
   base::test::TaskEnvironment task_env_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantAudioDeviceOwnerTest);
 };
 
 TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
@@ -141,7 +143,7 @@ TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
   audio_output_delegate.Reset();
   audio_bus->Zero();
   // On first render, it will push the data to |audio_bus|.
-  owner->Render(base::TimeDelta::FromMicroseconds(0), base::TimeTicks::Now(), 0,
+  owner->Render(base::Microseconds(0), base::TimeTicks::Now(), 0,
                 audio_bus.get());
   audio_output_delegate.Wait();
   EXPECT_FALSE(audio_bus->AreFramesZero());
@@ -149,7 +151,7 @@ TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
 
   // The subsequent Render call will detect no data available and notify
   // delegate for OnEndOfStream().
-  owner->Render(base::TimeDelta::FromMicroseconds(0), base::TimeTicks::Now(), 0,
+  owner->Render(base::Microseconds(0), base::TimeTicks::Now(), 0,
                 audio_bus.get());
   EXPECT_TRUE(audio_output_delegate.end_of_stream());
 }

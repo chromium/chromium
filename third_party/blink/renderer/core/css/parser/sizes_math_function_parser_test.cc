@@ -181,7 +181,6 @@ TEST(SizesMathFunctionParserTest, Basic) {
   data.color_bits_per_component = 24;
   data.monochrome_bits_per_component = 0;
   data.primary_pointer_type = mojom::blink::PointerType::kPointerFineType;
-  data.default_font_size = 16;
   data.three_d_enabled = true;
   data.media_type = media_type_names::kScreen;
   data.strict_mode = true;
@@ -201,8 +200,8 @@ TEST(SizesMathFunctionParserTest, Basic) {
     if (test_cases[i].dont_run_in_css_calc)
       continue;
     VerifyCSSCalc(test_cases[i].input, test_cases[i].output,
-                  test_cases[i].valid, data.default_font_size,
-                  data.viewport_width, data.viewport_height);
+                  test_cases[i].valid, data.em_size, data.viewport_width,
+                  data.viewport_height);
   }
 }
 

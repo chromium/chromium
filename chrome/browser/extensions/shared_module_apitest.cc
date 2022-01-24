@@ -30,10 +30,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, SharedModule) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, SharedModuleAllowlist) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("shared_module")
-                                .AppendASCII("shared_whitelist")));
+                                .AppendASCII("shared_allowlist")));
 
   EXPECT_FALSE(InstallExtension(test_data_dir_.AppendASCII("shared_module")
-                                    .AppendASCII("import_not_in_whitelist"),
+                                    .AppendASCII("import_not_in_allowlist"),
                                 0));
 }
 

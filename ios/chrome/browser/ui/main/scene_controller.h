@@ -39,6 +39,10 @@
 // YES if the scene is presenting the signin view.
 @property(nonatomic, readonly) BOOL isPresentingSigninView;
 
+// The view controller that is active. Can be either a BrowserViewController or
+// TabGridViewController.
+@property(nonatomic, readonly) UIViewController* activeViewController;
+
 // Handler for the UIWindowSceneDelegate callback with the same selector.
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:

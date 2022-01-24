@@ -5,22 +5,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_SVG_INLINE_NODE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_SVG_INLINE_NODE_DATA_H_
 
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_character_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class LayoutObject;
-class LayoutText;
-
 struct SvgTextContentRange {
   DISALLOW_NEW();
+
+  void Trace(Visitor* visitor) const { visitor->Trace(layout_object); }
 
   // This must be a LayoutSVGTextPath for |SVGInlineNodeData::
   // text_path_range_list|, and must be a LayoutObject for SVGTextContentElement
   // for SVGInlineNodeData::text_length_range_list
-  const LayoutObject* layout_object;
+  Member<const LayoutObject> layout_object;
   unsigned start_index;
   unsigned end_index;
 };
@@ -31,13 +31,19 @@ WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::SvgTextContentRange)
 
 namespace blink {
 
-using SvgTextChunkOffsets = HashMap<const LayoutText*, Vector<unsigned>>;
+using SvgTextChunkOffsets =
+    HeapHashMap<Member<const LayoutText>, Vector<unsigned>>;
 
 // SVG-specific data stored in NGInlineNodeData.
-struct SvgInlineNodeData final {
+struct SvgInlineNodeData final : public GarbageCollected<SvgInlineNodeData> {
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(text_length_range_list);
+    visitor->Trace(text_path_range_list);
+    visitor->Trace(chunk_offsets);
+  }
   Vector<std::pair<unsigned, NGSvgCharacterData>> character_data_list;
-  Vector<SvgTextContentRange> text_length_range_list;
-  Vector<SvgTextContentRange> text_path_range_list;
+  HeapVector<SvgTextContentRange> text_length_range_list;
+  HeapVector<SvgTextContentRange> text_path_range_list;
   SvgTextChunkOffsets chunk_offsets;
 };
 

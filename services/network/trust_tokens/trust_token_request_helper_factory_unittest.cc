@@ -67,7 +67,6 @@ class TrustTokenRequestHelperFactoryTest : public ::testing::Test {
   const mojom::TrustTokenParams& suitable_signing_params() const {
     return *suitable_params_;
   }
-  const net::NetLog& net_log() const { return *maker_.net_log(); }
 
   std::unique_ptr<net::URLRequest> CreateSuitableRequest() {
     auto ret = maker_.MakeURLRequest("https://destination.example");

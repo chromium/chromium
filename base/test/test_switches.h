@@ -24,6 +24,7 @@ extern const char kTestLauncherInteractive[];
 extern const char kTestLauncherJobs[];
 extern const char kTestLauncherListTests[];
 extern const char kTestLauncherOutput[];
+extern const char kTestLauncherOutputBytesLimit[];
 extern const char kTestLauncherPrintTempLeaks[];
 extern const char kTestLauncherPrintTestStdio[];
 extern const char kTestLauncherPrintTimestamps[];

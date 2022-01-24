@@ -11,6 +11,10 @@ namespace views {
 class Widget;
 }  // namespace views
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace arc {
 
 class ArcResizeLockPrefDelegate;
@@ -32,6 +36,7 @@ void EnableResizingWithConfirmationIfNeeded(
     ArcResizeLockPrefDelegate* pref_delegate);
 
 ResizeCompatMode PredictCurrentMode(const views::Widget* widget);
+ResizeCompatMode PredictCurrentMode(const aura::Window* window);
 
 bool ShouldShowSplashScreenDialog(ArcResizeLockPrefDelegate* pref_delegate);
 

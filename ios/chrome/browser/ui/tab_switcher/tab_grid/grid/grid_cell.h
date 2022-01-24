@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/commerce/price_card/price_card_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_to_tab_transition_view.h"
 
@@ -42,6 +43,10 @@ typedef NS_ENUM(NSUInteger, GridCellState) {
 @property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
 // The current state which the cell should display.
 @property(nonatomic, assign) GridCellState state;
+@property(nonatomic, weak) PriceCardView* priceCardView;
+
+// Sets the price drop and displays the PriceViewCard.
+- (void)setPriceDrop:(NSString*)price previousPrice:(NSString*)previousPrice;
 @end
 
 // A GridCell for use in animated transitions that only shows selection state

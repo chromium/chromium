@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_EULA_SCREEN_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "components/login/secure_module_util_chromeos.h"
 
@@ -20,7 +21,6 @@ class DictionaryValue;
 }
 
 namespace chromeos {
-class HelpAppLauncher;
 
 // Interface between eula screen and its representation, either WebUI
 // or Views one. Note, do not forget to call OnViewDestroyed in the
@@ -47,6 +47,10 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   using TView = EulaView;
 
   explicit EulaScreenHandler(JSCallsContainer* js_calls_container);
+
+  EulaScreenHandler(const EulaScreenHandler&) = delete;
+  EulaScreenHandler& operator=(const EulaScreenHandler&) = delete;
+
   ~EulaScreenHandler() override;
 
   // EulaView implementation:
@@ -80,8 +84,6 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
   scoped_refptr<HelpAppLauncher> help_app_;
 
   base::WeakPtrFactory<EulaScreenHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EulaScreenHandler);
 };
 
 }  // namespace chromeos

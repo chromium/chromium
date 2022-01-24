@@ -17,16 +17,21 @@ class
     : public PlatformSensorFusionAlgorithm {
  public:
   AbsoluteOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndMagnetometer();
+
+  AbsoluteOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndMagnetometer(
+      const AbsoluteOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndMagnetometer&) =
+      delete;
+  AbsoluteOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndMagnetometer&
+  operator=(
+      const AbsoluteOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndMagnetometer&) =
+      delete;
+
   ~AbsoluteOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndMagnetometer()
       override;
 
  protected:
   bool GetFusedDataInternal(mojom::SensorType which_sensor_changed,
                             SensorReading* fused_reading) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      AbsoluteOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndMagnetometer);
 };
 
 }  // namespace device

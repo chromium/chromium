@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"
 #include "content/renderer/pepper/pepper_audio_input_host.h"

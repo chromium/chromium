@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller_delegate.h"
 
@@ -26,6 +25,11 @@ class ScreenRotationAnimatorTestApi
       public ui::test::MultiLayerAnimatorTestControllerDelegate {
  public:
   explicit ScreenRotationAnimatorTestApi(ScreenRotationAnimator* animator);
+
+  ScreenRotationAnimatorTestApi(const ScreenRotationAnimatorTestApi&) = delete;
+  ScreenRotationAnimatorTestApi& operator=(
+      const ScreenRotationAnimatorTestApi&) = delete;
+
   ~ScreenRotationAnimatorTestApi() override;
 
   // Wrapper functions for ScreenRotationAnimator.
@@ -37,8 +41,6 @@ class ScreenRotationAnimatorTestApi
   std::vector<ui::LayerAnimator*> GetLayerAnimators() override;
 
   ScreenRotationAnimator* animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenRotationAnimatorTestApi);
 };
 
 }  // namespace ash

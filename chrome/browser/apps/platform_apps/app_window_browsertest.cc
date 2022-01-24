@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceTest));
+          apps::mojom::LaunchSource::kFromTest));
 
   ExtensionTestMessageListener geometry_listener("ListenGeometryChange", true);
 

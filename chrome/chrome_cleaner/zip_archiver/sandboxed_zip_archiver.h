@@ -12,10 +12,10 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
-#include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
 #include "chrome/chrome_cleaner/ipc/sandbox.h"
+#include "chrome/chrome_cleaner/mojom/zip_archiver.mojom.h"
 #include "chrome/chrome_cleaner/zip_archiver/broker/sandbox_setup.h"
 #include "chrome/chrome_cleaner/zip_archiver/zip_archiver.h"
 

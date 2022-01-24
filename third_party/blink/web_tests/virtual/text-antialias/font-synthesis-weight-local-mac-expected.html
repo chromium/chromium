@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8"/>
+<title>CSS Test: font-synthesis-weight: none disables fake bold</title>
+<!--Zapfino is only available in Regular style in the Mac set of test fonts that are used as system fonts in Mac testing -->
+<style>
+    @font-face {
+        font-family: "Zapfino local";
+        src: local("Zapfino");
+    }
+    .test {
+        font-family: "Zapfino local";
+        font-size: 3em;
+    }
+</style>
+
+<p>Test passes if the two lines below are identical (the second line is <em>not bold</em>), and there is no red.</p>
+<section class="test">
+    <p>Filler text</p>
+    <p class="nosynth">Filler text</p>
+</section>

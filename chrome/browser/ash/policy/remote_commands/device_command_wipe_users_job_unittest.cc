@@ -11,12 +11,11 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/remote_commands/device_commands_factory_chromeos.h"
+#include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/system/user_removal_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
@@ -33,17 +32,22 @@
 
 namespace policy {
 
-constexpr base::TimeDelta kCommandAge = base::TimeDelta::FromMinutes(10);
-constexpr base::TimeDelta kVeryoldCommandAge = base::TimeDelta::FromDays(175);
+constexpr base::TimeDelta kCommandAge = base::Minutes(10);
+constexpr base::TimeDelta kVeryoldCommandAge = base::Days(175);
 
 class TestingRemoteCommandsService : public RemoteCommandsService {
  public:
   explicit TestingRemoteCommandsService(MockCloudPolicyClient* client)
-      : RemoteCommandsService(std::make_unique<DeviceCommandsFactoryChromeOS>(
+      : RemoteCommandsService(std::make_unique<DeviceCommandsFactoryAsh>(
                                   /*policy_manager=*/nullptr),
                               client,
                               /*store=*/nullptr,
                               PolicyInvalidationScope::kDevice) {}
+
+  TestingRemoteCommandsService(const TestingRemoteCommandsService&) = delete;
+  TestingRemoteCommandsService& operator=(const TestingRemoteCommandsService&) =
+      delete;
+
   // RemoteCommandsService:
   void SetOnCommandAckedCallback(base::OnceClosure callback) override {
     on_command_acked_callback_ = std::move(callback);
@@ -55,9 +59,6 @@ class TestingRemoteCommandsService : public RemoteCommandsService {
 
  protected:
   base::OnceClosure on_command_acked_callback_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingRemoteCommandsService);
 };
 
 std::unique_ptr<policy::RemoteCommandJob> CreateWipeUsersJob(
@@ -82,6 +83,11 @@ std::unique_ptr<policy::RemoteCommandJob> CreateWipeUsersJob(
 }
 
 class DeviceCommandWipeUsersJobTest : public testing::Test {
+ public:
+  DeviceCommandWipeUsersJobTest(const DeviceCommandWipeUsersJobTest&) = delete;
+  DeviceCommandWipeUsersJobTest& operator=(
+      const DeviceCommandWipeUsersJobTest&) = delete;
+
  protected:
   DeviceCommandWipeUsersJobTest();
   ~DeviceCommandWipeUsersJobTest() override;
@@ -92,9 +98,6 @@ class DeviceCommandWipeUsersJobTest : public testing::Test {
   ScopedTestingLocalState local_state_;
   const std::unique_ptr<MockCloudPolicyClient> client_;
   const std::unique_ptr<TestingRemoteCommandsService> service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandWipeUsersJobTest);
 };
 
 DeviceCommandWipeUsersJobTest::DeviceCommandWipeUsersJobTest()

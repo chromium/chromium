@@ -52,6 +52,10 @@ void OnSignalConnected(const std::string& interface_name,
 class KerberosClientImpl : public KerberosClient {
  public:
   KerberosClientImpl() = default;
+
+  KerberosClientImpl(const KerberosClientImpl&) = delete;
+  KerberosClientImpl& operator=(const KerberosClientImpl&) = delete;
+
   ~KerberosClientImpl() override = default;
 
   // KerberosClient overrides:
@@ -228,7 +232,6 @@ class KerberosClientImpl : public KerberosClient {
   KerberosTicketExpiringCallback kerberos_ticket_expiring_callback_;
 
   base::WeakPtrFactory<KerberosClientImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(KerberosClientImpl);
 };
 
 }  // namespace

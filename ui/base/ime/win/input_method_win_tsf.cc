@@ -15,6 +15,9 @@ class InputMethodWinTSF::TSFEventObserver : public TSFEventRouterObserver {
  public:
   TSFEventObserver() = default;
 
+  TSFEventObserver(const TSFEventObserver&) = delete;
+  TSFEventObserver& operator=(const TSFEventObserver&) = delete;
+
   // Returns true if we know for sure that a candidate window (or IME suggest,
   // etc.) is open.
   bool IsCandidatePopupOpen() const { return is_candidate_popup_open_; }
@@ -27,8 +30,6 @@ class InputMethodWinTSF::TSFEventObserver : public TSFEventRouterObserver {
  private:
   // True if we know for sure that a candidate window is open.
   bool is_candidate_popup_open_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TSFEventObserver);
 };
 
 InputMethodWinTSF::InputMethodWinTSF(internal::InputMethodDelegate* delegate,
@@ -62,7 +63,7 @@ void InputMethodWinTSF::OnBlur() {
 }
 
 bool InputMethodWinTSF::OnUntranslatedIMEMessage(
-    const MSG event,
+    const CHROME_MSG event,
     InputMethod::NativeEventResult* result) {
   LRESULT original_result = 0;
   BOOL handled = FALSE;

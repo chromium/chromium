@@ -17,6 +17,10 @@ namespace ash {
 class ASH_EXPORT TrayInfoLabel : public views::View {
  public:
   explicit TrayInfoLabel(int message_id);
+
+  TrayInfoLabel(const TrayInfoLabel&) = delete;
+  TrayInfoLabel& operator=(const TrayInfoLabel&) = delete;
+
   ~TrayInfoLabel() override;
 
   // Updates the TrayInfoLabel to display the message associated with
@@ -28,8 +32,6 @@ class ASH_EXPORT TrayInfoLabel : public views::View {
 
  private:
   views::Label* const label_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayInfoLabel);
 };
 
 }  // namespace ash

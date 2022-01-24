@@ -101,7 +101,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                     return false;
                 }
                 return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                        || DeviceClassManager.enableAccessibilityLayout();
+                        || DeviceClassManager.enableAccessibilityLayout(mContext);
             }
 
             @Override

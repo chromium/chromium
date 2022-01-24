@@ -46,6 +46,21 @@ bool IsDraggedTab(const ui::OSExchangeData& drop_data);
 bool DropTabsInNewBrowser(Browser* new_browser,
                           const ui::OSExchangeData& drop_data);
 
+// Handles dropping tabs not destined for an existing tab strip.
+// |new_browser| should be the newly created Browser with no tabs, and
+// must have the same profile as the drag source. |tab_id| and/or
+// |tab_group_id| must have originated from a drag in a WebUI tab strip.
+// If successful, the tabs reflected in either |tab_id| or |tab_group_id|
+// will be moved from the source browser to |new_browser|.
+bool DropTabsInNewBrowser(Browser* new_browser,
+                          const std::u16string& tab_id,
+                          const std::u16string& tab_group_id);
+
+// Helper that extracts tab_id and/or tab_group_id of a given |drop_data|.
+bool ExtractTabData(const ui::OSExchangeData& drop_data,
+                    std::u16string* tab_id,
+                    std::u16string* tab_group_id);
+
 }  // namespace tab_strip_ui
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_UTIL_H_

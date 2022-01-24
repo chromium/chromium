@@ -188,10 +188,10 @@ std::vector<Frame> StackSamplerImpl::WalkStack(
 
     // The unwinder with the lowest priority should be the only one that returns
     // COMPLETED since the stack starts in native code.
-    DCHECK(result != UnwindResult::COMPLETED ||
+    DCHECK(result != UnwindResult::kCompleted ||
            unwinder->get() == unwinders.back().get());
-  } while (result != UnwindResult::ABORTED &&
-           result != UnwindResult::COMPLETED &&
+  } while (result != UnwindResult::kAborted &&
+           result != UnwindResult::kCompleted &&
            // Give up if the authoritative unwinder for the module was unable to
            // unwind.
            stack.size() > prior_stack_size);

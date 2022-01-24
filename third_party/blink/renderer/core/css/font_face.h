@@ -46,6 +46,7 @@
 namespace blink {
 
 class CSSFontFace;
+class CSSFontFamilyValue;
 class CSSPropertyValueSet;
 class CSSValue;
 class DOMArrayBuffer;
@@ -70,9 +71,11 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
       const AtomicString& family,
       const V8UnionArrayBufferOrArrayBufferViewOrString* source,
       const FontFaceDescriptors* descriptors);
-  static FontFace* Create(Document*, const StyleRuleFontFace*);
+  static FontFace* Create(Document*,
+                          const StyleRuleFontFace*,
+                          bool is_user_style);
 
-  explicit FontFace(ExecutionContext*);
+  FontFace(ExecutionContext*, const StyleRuleFontFace*, bool is_user_style);
   FontFace(ExecutionContext*,
            const AtomicString& family,
            const FontFaceDescriptors*);
@@ -153,6 +156,11 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   bool HasSizeAdjust() const { return size_adjust_; }
   float GetSizeAdjust() const;
 
+  Document* GetDocument() const;
+
+  const StyleRuleFontFace* GetStyleRule() const { return style_rule_; }
+  bool IsUserStyle() const { return is_user_style_; }
+
  private:
   static FontFace* Create(ExecutionContext*,
                           const AtomicString& family,
@@ -175,7 +183,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
                              ExceptionState* = nullptr);
   bool SetPropertyFromStyle(const CSSPropertyValueSet&, AtRuleDescriptorID);
   bool SetPropertyValue(const CSSValue*, AtRuleDescriptorID);
-  bool SetFamilyValue(const CSSValue&);
+  void SetFamilyValue(const CSSFontFamilyValue&);
   ScriptPromise FontStatusPromise(ScriptState*);
   void RunCallbacks();
 
@@ -201,7 +209,12 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
 
   Member<LoadedProperty> loaded_property_;
   Member<CSSFontFace> css_font_face_;
+  Member<const StyleRuleFontFace> style_rule_;
   HeapVector<Member<LoadFontCallback>> callbacks_;
+
+  // Note that we will also need to distinguish font faces in different tree
+  // scopes when we allow @font-face in shadow DOM. See crbug.com/336876.
+  bool is_user_style_ = false;
 };
 
 using FontFaceArray = HeapVector<Member<FontFace>>;

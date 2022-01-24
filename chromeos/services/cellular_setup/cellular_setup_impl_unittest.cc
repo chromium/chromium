@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/network/network_handler_test_helper.h"
@@ -29,6 +28,10 @@ namespace {
 class FakeOtaActivatorFactory : public OtaActivatorImpl::Factory {
  public:
   FakeOtaActivatorFactory() = default;
+
+  FakeOtaActivatorFactory(const FakeOtaActivatorFactory&) = delete;
+  FakeOtaActivatorFactory& operator=(const FakeOtaActivatorFactory&) = delete;
+
   ~FakeOtaActivatorFactory() override = default;
 
   std::vector<FakeOtaActivator*>& created_instances() {
@@ -58,13 +61,15 @@ class FakeOtaActivatorFactory : public OtaActivatorImpl::Factory {
   }
 
   std::vector<FakeOtaActivator*> created_instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeOtaActivatorFactory);
 };
 
 }  // namespace
 
 class CellularSetupImplTest : public testing::Test {
+ public:
+  CellularSetupImplTest(const CellularSetupImplTest&) = delete;
+  CellularSetupImplTest& operator=(const CellularSetupImplTest&) = delete;
+
  protected:
   CellularSetupImplTest() = default;
   ~CellularSetupImplTest() override = default;
@@ -114,8 +119,6 @@ class CellularSetupImplTest : public testing::Test {
   CellularSetupImpl cellular_setup_;
 
   size_t num_carrier_portal_handlers_received_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(CellularSetupImplTest);
 };
 
 TEST_F(CellularSetupImplTest, StartActivation_SingleAttempt) {

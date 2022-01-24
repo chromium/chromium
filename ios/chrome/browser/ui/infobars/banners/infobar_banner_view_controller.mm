@@ -9,9 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_container.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -99,8 +97,6 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 @end
 
 @implementation InfobarBannerViewController
-// Synthesized from InfobarBannerContained.
-@synthesize infobarBannerContainer = _infobarBannerContainer;
 // Synthesized from InfobarBannerInteractable.
 @synthesize interactionDelegate = _interactionDelegate;
 
@@ -132,14 +128,10 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   [self.view.layer setShadowOpacity:kBannerViewShadowOpacity];
   // If dark mode is set when the banner is presented, the semantic color will
   // need to be set here.
-  if (@available(iOS 13, *)) {
-    [self.traitCollection performAsCurrentTraitCollection:^{
-      [self.view.layer
-          setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
-    }];
-  } else {
-    [self.view.layer setShadowColor:[UIColor blackColor].CGColor];
-  }
+  [self.traitCollection performAsCurrentTraitCollection:^{
+    [self.view.layer
+        setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
+  }];
   self.view.accessibilityIdentifier = kInfobarBannerViewIdentifier;
   self.view.isAccessibilityElement = YES;
   self.view.accessibilityLabel = [self accessibilityLabel];
@@ -237,17 +229,15 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
                forControlEvents:UIControlEventTouchUpInside];
   self.infobarButton.accessibilityIdentifier =
       kInfobarBannerAcceptButtonIdentifier;
-  if (@available(iOS 13.4, *)) {
-      self.infobarButton.pointerInteractionEnabled = YES;
-      self.infobarButton.pointerStyleProvider =
-          ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
-                           UIPointerShape* proposedShape) {
-        UIPointerShape* shape =
-            [UIPointerShape shapeWithRoundedRect:button.frame
-                                    cornerRadius:kBannerViewCornerRadius];
-        return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
-      };
-  }
+  self.infobarButton.pointerInteractionEnabled = YES;
+  self.infobarButton.pointerStyleProvider =
+      ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
+                       UIPointerShape* proposedShape) {
+    UIPointerShape* shape =
+        [UIPointerShape shapeWithRoundedRect:button.frame
+                                cornerRadius:kBannerViewCornerRadius];
+    return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
+  };
 
   UIView* buttonSeparator = [[UIView alloc] init];
   buttonSeparator.translatesAutoresizingMaskIntoConstraints = NO;
@@ -282,11 +272,9 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   [containerStack addArrangedSubview:self.openModalButton];
   // Hide open modal button if user shouldn't be allowed to open the modal.
   self.openModalButton.hidden = !self.presentsModal;
-  if (@available(iOS 13.4, *)) {
-      self.openModalButton.pointerInteractionEnabled = YES;
-      self.openModalButton.pointerStyleProvider =
-          CreateDefaultEffectCirclePointerStyleProvider();
-  }
+  self.openModalButton.pointerInteractionEnabled = YES;
+  self.openModalButton.pointerStyleProvider =
+      CreateDefaultEffectCirclePointerStyleProvider();
 
   // Add accept button.
   [containerStack addArrangedSubview:self.infobarButton];
@@ -351,12 +339,6 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   [super viewDidAppear:animated];
   [self.metricsRecorder recordBannerEvent:MobileMessagesBannerEvent::Presented];
   self.bannerAppearedTime = [NSDate timeIntervalSinceReferenceDate];
-  // Once the Banner animation has completed check if the banner container
-  // should still present banners.
-  if ([self.infobarBannerContainer shouldDismissBanner]) {
-    [self.presentingViewController dismissViewControllerAnimated:NO
-                                                      completion:nil];
-  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -373,8 +355,6 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   // this banner was dismissed in case it needs to present a queued one.
   if (self.delegate) {
     [self.delegate infobarBannerWasDismissed];
-  } else {
-    [self.infobarBannerContainer infobarBannerFinishedPresenting];
   }
   [super viewDidDisappear:animated];
 }
@@ -383,13 +363,11 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 // presented.
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 13, *)) {
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      [self.view.layer
-          setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
-    }
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    [self.view.layer
+        setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
   }
 }
 
@@ -428,15 +406,6 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   _presentsModal = presentsModal;
   self.openModalButton.hidden = !presentsModal;
   self.view.accessibilityCustomActions = [self accessibilityActions];
-}
-
-- (void)setInfobarBannerContainer:
-    (id<InfobarBannerContainer>)infobarBannerContainer {
-  _infobarBannerContainer = infobarBannerContainer;
-  // infobarBannerContainer should only be set when the banner by the
-  // InfobarContainerCoordinator and not Overlays. Once we migrate to Overlays
-  // InfobarBannerContainer shouldn't be necessary.
-  DCHECK(!IsInfobarOverlayUIEnabled());
 }
 
 - (void)setUseIconBackgroundTint:(BOOL)useIconBackgroundTint {

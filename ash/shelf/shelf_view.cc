@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/constants/ash_features.h"
-#include "ash/drag_drop/drag_image_view.h"
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
@@ -50,13 +50,13 @@
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_features.h"
@@ -73,7 +73,6 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -125,9 +124,11 @@ class BoundsAnimatorDisabler {
   explicit BoundsAnimatorDisabler(views::BoundsAnimator* bounds_animator)
       : old_duration_(bounds_animator->GetAnimationDuration()),
         bounds_animator_(bounds_animator) {
-    bounds_animator_->SetAnimationDuration(
-        base::TimeDelta::FromMilliseconds(1));
+    bounds_animator_->SetAnimationDuration(base::Milliseconds(1));
   }
+
+  BoundsAnimatorDisabler(const BoundsAnimatorDisabler&) = delete;
+  BoundsAnimatorDisabler& operator=(const BoundsAnimatorDisabler&) = delete;
 
   ~BoundsAnimatorDisabler() {
     bounds_animator_->SetAnimationDuration(old_duration_);
@@ -138,8 +139,6 @@ class BoundsAnimatorDisabler {
   base::TimeDelta old_duration_;
   // The bounds animator which gets used.
   views::BoundsAnimator* bounds_animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoundsAnimatorDisabler);
 };
 
 // Custom FocusSearch used to navigate the shelf in the order items are in
@@ -148,6 +147,10 @@ class ShelfFocusSearch : public views::FocusSearch {
  public:
   explicit ShelfFocusSearch(ShelfView* shelf_view)
       : FocusSearch(nullptr, true, true), shelf_view_(shelf_view) {}
+
+  ShelfFocusSearch(const ShelfFocusSearch&) = delete;
+  ShelfFocusSearch& operator=(const ShelfFocusSearch&) = delete;
+
   ~ShelfFocusSearch() override = default;
 
   // views::FocusSearch:
@@ -187,23 +190,18 @@ class ShelfFocusSearch : public views::FocusSearch {
 
  private:
   ShelfView* shelf_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfFocusSearch);
 };
 
 void ReportMoveAnimationSmoothness(int smoothness) {
-  base::UmaHistogramPercentageObsoleteDoNotUse(kShelfIconMoveAnimationHistogram,
-                                               smoothness);
+  base::UmaHistogramPercentage(kShelfIconMoveAnimationHistogram, smoothness);
 }
 
 void ReportFadeInAnimationSmoothness(int smoothness) {
-  base::UmaHistogramPercentageObsoleteDoNotUse(
-      kShelfIconFadeInAnimationHistogram, smoothness);
+  base::UmaHistogramPercentage(kShelfIconFadeInAnimationHistogram, smoothness);
 }
 
 void ReportFadeOutAnimationSmoothness(int smoothness) {
-  base::UmaHistogramPercentageObsoleteDoNotUse(
-      kShelfIconFadeOutAnimationHistogram, smoothness);
+  base::UmaHistogramPercentage(kShelfIconFadeOutAnimationHistogram, smoothness);
 }
 
 // Returns the id of the display on which |view| is shown.
@@ -247,6 +245,15 @@ bool IsRemoteApp(const std::string& app_id) {
   return cache && cache->GetAppType(app_id) == apps::mojom::AppType::kRemote;
 }
 
+bool IsStandaloneBrowser(const std::string& app_id) {
+  AccountId account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  apps::AppRegistryCache* cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
+  return cache &&
+         cache->GetAppType(app_id) == apps::mojom::AppType::kStandaloneBrowser;
+}
+
 // Records the user metric action for whenever a shelf item is pinned or
 // unpinned.
 void RecordPinUnpinUserAction(bool pinned) {
@@ -255,6 +262,37 @@ void RecordPinUnpinUserAction(bool pinned) {
 }
 
 }  // namespace
+
+// Helper class that resets a view opacity when called. Used to reset drag view
+// opacity after animation to drop the drag icon proxy to its final bounds ends.
+// The resetter is no-op if the target view gets destroyed before the resetter
+// get run.
+class ShelfView::ViewOpacityResetter : public views::ViewObserver {
+ public:
+  explicit ViewOpacityResetter(views::View* view) : view_(view) {
+    view_observer_.Observe(view);
+  }
+  ViewOpacityResetter(const ViewOpacityResetter&) = delete;
+  ViewOpacityResetter& operator=(const ViewOpacityResetter&) = delete;
+
+  ~ViewOpacityResetter() override { Run(); }
+
+  // views::ViewObserver:
+  void OnViewIsDeleting(View* observed_view) override {
+    view_ = nullptr;
+    view_observer_.Reset();
+  }
+
+  void Run() {
+    if (view_ && view_->layer())
+      view_->layer()->SetOpacity(1.0f);
+  }
+
+ private:
+  views::View* view_;
+  base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
+      this};
+};
 
 // ImplicitAnimationObserver used when adding an item.
 class ShelfView::FadeInAnimationDelegate
@@ -279,6 +317,10 @@ class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
  public:
   FadeOutAnimationDelegate(ShelfView* host, std::unique_ptr<views::View> view)
       : shelf_view_(host), view_(std::move(view)) {}
+
+  FadeOutAnimationDelegate(const FadeOutAnimationDelegate&) = delete;
+  FadeOutAnimationDelegate& operator=(const FadeOutAnimationDelegate&) = delete;
+
   ~FadeOutAnimationDelegate() override = default;
 
   // AnimationDelegate overrides:
@@ -299,8 +341,6 @@ class ShelfView::FadeOutAnimationDelegate : public gfx::AnimationDelegate {
  private:
   ShelfView* shelf_view_;
   std::unique_ptr<views::View> view_;
-
-  DISALLOW_COPY_AND_ASSIGN(FadeOutAnimationDelegate);
 };
 
 // AnimationDelegate used to trigger fading an element in. When an item is
@@ -310,6 +350,11 @@ class ShelfView::StartFadeAnimationDelegate : public gfx::AnimationDelegate {
  public:
   StartFadeAnimationDelegate(ShelfView* host, views::View* view)
       : shelf_view_(host), view_(view) {}
+
+  StartFadeAnimationDelegate(const StartFadeAnimationDelegate&) = delete;
+  StartFadeAnimationDelegate& operator=(const StartFadeAnimationDelegate&) =
+      delete;
+
   ~StartFadeAnimationDelegate() override = default;
 
   // AnimationDelegate overrides:
@@ -323,8 +368,6 @@ class ShelfView::StartFadeAnimationDelegate : public gfx::AnimationDelegate {
  private:
   ShelfView* shelf_view_;
   views::View* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartFadeAnimationDelegate);
 };
 
 // static
@@ -332,7 +375,7 @@ const int ShelfView::kMinimumDragDistance = 8;
 
 ShelfView::ShelfView(ShelfModel* model,
                      Shelf* shelf,
-                     ApplicationDragAndDropHost* drag_and_drop_host,
+                     Delegate* delegate,
                      ShelfButtonDelegate* shelf_button_delegate)
     : model_(model),
       shelf_(shelf),
@@ -341,7 +384,7 @@ ShelfView::ShelfView(ShelfModel* model,
           std::make_unique<views::BoundsAnimator>(this,
                                                   /*use_transforms=*/true)),
       focus_search_(std::make_unique<ShelfFocusSearch>(this)),
-      drag_and_drop_host_(drag_and_drop_host),
+      delegate_(delegate),
       shelf_button_delegate_(shelf_button_delegate) {
   DCHECK(model_);
   DCHECK(shelf_);
@@ -457,14 +500,6 @@ ShelfAppButton* ShelfView::GetShelfAppButton(const ShelfID& id) {
 void ShelfView::StopAnimatingViewIfAny(views::View* view) {
   if (bounds_animator_->IsAnimating(view))
     bounds_animator_->StopAnimatingView(view);
-}
-
-bool ShelfView::IsShelfViewHandlingDragAndDrop() const {
-  // If the ShelfView has a drag icon proxy, the drag originated from the
-  // AppsGridView. When the drag originates from the shelf, the
-  // ScrollableShelfView is the ApplicationDragAndDropHost, so ShelfView will
-  // not have a drag proxy.
-  return !!drag_image_widget_;
 }
 
 int ShelfView::GetButtonSize() const {
@@ -727,7 +762,7 @@ void ShelfView::ButtonPressed(views::Button* sender,
       FROM_HERE,
       base::BindOnce(&ShelfView::DestroyScopedDisplay,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(100));
+      base::Milliseconds(100));
 
   // Slow down activation animations if Control key is pressed.
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> slowing_animations;
@@ -869,53 +904,6 @@ bool ShelfView::ShouldEventActivateButton(View* view, const ui::Event& event) {
   if (index == -1)
     return false;
   return !repost || last_pressed_index_ != index;
-}
-
-void ShelfView::CreateDragIconProxyByLocationWithNoAnimation(
-    const gfx::Point& origin_in_screen_coordinates,
-    const gfx::ImageSkia& icon,
-    views::View* replaced_view,
-    float scale_factor,
-    int blur_radius) {
-  drag_replaced_view_ = replaced_view;
-  aura::Window* root_window =
-      drag_replaced_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
-  drag_image_widget_ =
-      DragImageView::Create(root_window, ui::mojom::DragEventSource::kMouse);
-  DragImageView* drag_image = GetDragImage();
-  if (blur_radius > 0)
-    SetDragImageBlur(icon.size(), blur_radius);
-  drag_image->SetImage(icon);
-  gfx::Size size = drag_image->GetPreferredSize();
-  size.set_width(size.width() * scale_factor);
-  size.set_height(size.height() * scale_factor);
-  gfx::Rect drag_image_bounds(origin_in_screen_coordinates, size);
-  drag_image->SetBoundsInScreen(drag_image_bounds);
-
-  // Turn off the default visibility animation.
-  drag_image_widget_->SetVisibilityAnimationTransition(
-      views::Widget::ANIMATE_NONE);
-  drag_image->SetWidgetVisible(true);
-  // Add a layer in order to ensure the icon properly animates when a drag
-  // starts from AppsGridView and ends in the Shelf.
-  drag_image->SetPaintToLayer();
-  drag_image->layer()->SetFillsBoundsOpaquely(false);
-}
-
-void ShelfView::UpdateDragIconProxy(
-    const gfx::Point& location_in_screen_coordinates) {
-  // TODO(jennyz): Investigate why drag_image_widget_ becomes null at this point
-  // per crbug.com/34722, while the app list item is still being dragged around.
-  if (drag_image_widget_) {
-    GetDragImage()->SetScreenPosition(location_in_screen_coordinates -
-                                      drag_image_offset_);
-  }
-}
-
-void ShelfView::UpdateDragIconProxyByLocation(
-    const gfx::Point& origin_in_screen_coordinates) {
-  if (drag_image_widget_)
-    GetDragImage()->SetScreenPosition(origin_in_screen_coordinates);
 }
 
 bool ShelfView::IsDraggedView(const views::View* view) const {
@@ -1112,37 +1100,33 @@ void ShelfView::UpdateSeparatorIndex() {
   separator_index_ = last_pinned_index;
 }
 
-void ShelfView::DestroyDragIconProxy() {
-  drag_image_widget_.reset();
-  drag_image_offset_ = gfx::Vector2d(0, 0);
-}
-
-views::UniqueWidgetPtr
-ShelfView::RetrieveDragIconProxyAndClearDragProxyState() {
-  // TODO(https://crub.com/1045186): Make ScrollableShelfView the only
-  // ApplicationDragAndDropHost in the view hierarchy, and remove this.
-  views::UniqueWidgetPtr temp_drag_image_view = std::move(drag_image_widget_);
-  DestroyDragIconProxy();
-  return temp_drag_image_view;
-}
-
-bool ShelfView::ShouldStartDrag(
-    const std::string& app_id,
-    const gfx::Point& location_in_screen_coordinates) const {
+bool ShelfView::ShouldHandleDrag(const std::string& app_id,
+                                 const gfx::Point& location_in_screen) const {
   // Remote Apps are not pinnable.
   if (IsRemoteApp(app_id))
     return false;
 
-  // Do not start drag if an operation is already going on - or the cursor is
-  // not inside. This could happen if mouse / touch operations overlap.
-  return (drag_and_drop_shelf_id_.IsNull() && !app_id.empty() &&
-          GetBoundsInScreen().Contains(location_in_screen_coordinates));
+  // Do not handle drag if an operation for another app is already in progress,
+  // or the cursor is not inside the shelf bounds. This could happen if mouse /
+  // touch operations overlap.
+  return !app_id.empty() &&
+         (drag_and_drop_shelf_id_.IsNull() ||
+          drag_and_drop_shelf_id_.app_id == app_id) &&
+         GetBoundsInScreen().Contains(location_in_screen);
 }
 
 bool ShelfView::StartDrag(const std::string& app_id,
-                          const gfx::Point& location_in_screen_coordinates) {
-  if (!ShouldStartDrag(app_id, location_in_screen_coordinates))
+                          const gfx::Point& location_in_screen,
+                          const gfx::Rect& drag_icon_bounds_in_screen) {
+  // Don't start a drag if another one is in progress.
+  if (!drag_and_drop_shelf_id_.IsNull())
     return false;
+
+  if (!ShouldHandleDrag(app_id, location_in_screen))
+    return false;
+
+  DCHECK(!is_active_drag_and_drop_host_);
+  is_active_drag_and_drop_host_ = true;
 
   // If the AppsGridView (which was dispatching this event) was opened by our
   // button, ShelfView dragging operations are locked and we have to unlock.
@@ -1154,9 +1138,15 @@ bool ShelfView::StartDrag(const std::string& app_id,
   // to be pinned to give them the same (order) possibilities as a shortcut.
   if (!model_->IsAppPinned(app_id)) {
     ShelfModel::ScopedUserTriggeredMutation user_triggered(model_);
-    model_->PinAppWithID(app_id);
-    drag_and_drop_item_pinned_ = true;
+
+    if (model_->ItemIndexByAppID(app_id) >= 0) {
+      model_->PinExistingItemWithID(app_id);
+    } else {
+      model_->AddAndPinAppWithFactoryConstructedDelegate(app_id);
+      drag_and_drop_item_pinned_ = true;
+    }
   }
+
   views::View* drag_and_drop_view =
       view_model_->view_at(model_->ItemIndexByID(drag_and_drop_shelf_id_));
   DCHECK(drag_and_drop_view);
@@ -1173,44 +1163,49 @@ bool ShelfView::StartDrag(const std::string& app_id,
   gfx::Point pt = start_point_in_screen;
   views::View::ConvertPointFromScreen(drag_and_drop_view, &pt);
   gfx::Point point_in_root = start_point_in_screen;
-  wm::ConvertPointFromScreen(
-      window_util::GetRootWindowAt(location_in_screen_coordinates),
-      &point_in_root);
+  wm::ConvertPointFromScreen(window_util::GetRootWindowAt(location_in_screen),
+                             &point_in_root);
   ui::MouseEvent event(ui::ET_MOUSE_PRESSED, pt, point_in_root,
                        ui::EventTimeForNow(), 0, 0);
   PointerPressedOnButton(drag_and_drop_view, DRAG_AND_DROP, event);
 
   // Drag the item where it really belongs.
-  Drag(location_in_screen_coordinates);
+  Drag(location_in_screen, drag_icon_bounds_in_screen);
   return true;
 }
 
-bool ShelfView::Drag(const gfx::Point& location_in_screen_coordinates) {
+bool ShelfView::Drag(const gfx::Point& location_in_screen,
+                     const gfx::Rect& drag_icon_bounds_in_screen) {
   if (drag_and_drop_shelf_id_.IsNull() ||
-      !GetBoundsInScreen().Contains(location_in_screen_coordinates))
+      !GetBoundsInScreen().Contains(location_in_screen))
     return false;
 
-  gfx::Point pt = location_in_screen_coordinates;
+  drag_icon_bounds_in_screen_ = drag_icon_bounds_in_screen;
+  gfx::Point pt = location_in_screen;
   views::View* drag_and_drop_view =
       view_model_->view_at(model_->ItemIndexByID(drag_and_drop_shelf_id_));
   ConvertPointFromScreen(drag_and_drop_view, &pt);
-  gfx::Point point_in_root = location_in_screen_coordinates;
-  wm::ConvertPointFromScreen(
-      window_util::GetRootWindowAt(location_in_screen_coordinates),
-      &point_in_root);
+  gfx::Point point_in_root = location_in_screen;
+  wm::ConvertPointFromScreen(window_util::GetRootWindowAt(location_in_screen),
+                             &point_in_root);
   ui::MouseEvent event(ui::ET_MOUSE_DRAGGED, pt, point_in_root,
                        ui::EventTimeForNow(), 0, 0);
   PointerDraggedOnButton(drag_and_drop_view, DRAG_AND_DROP, event);
   return true;
 }
 
-void ShelfView::EndDrag(bool cancel) {
+void ShelfView::EndDrag(bool cancel,
+                        std::unique_ptr<AppDragIconProxy> icon_proxy) {
   drag_scroll_dir_ = 0;
   scrolling_timer_.Stop();
   speed_up_drag_scrolling_.Stop();
 
-  if (drag_and_drop_shelf_id_.IsNull())
+  if (drag_and_drop_shelf_id_.IsNull()) {
+    is_active_drag_and_drop_host_ = false;
     return;
+  }
+
+  drag_icon_proxy_ = std::move(icon_proxy);
 
   views::View* drag_and_drop_view =
       view_model_->view_at(model_->ItemIndexByID(drag_and_drop_shelf_id_));
@@ -1240,8 +1235,9 @@ void ShelfView::EndDrag(bool cancel) {
       drag_and_drop_view->SetSize(pre_drag_and_drop_size_);
     }
   }
-
+  drag_icon_bounds_in_screen_ = gfx::Rect();
   drag_and_drop_shelf_id_ = ShelfID();
+  is_active_drag_and_drop_host_ = false;
 }
 
 void ShelfView::SwapButtons(views::View* button_to_swap, bool with_next) {
@@ -1282,6 +1278,11 @@ void ShelfView::PointerPressedOnButton(views::View* view,
   if (index == -1 || view_model_->view_size() < 1)
     return;  // View is being deleted, ignore request.
 
+  // Reset drag icon proxy from previous drag (which could be set if the drop
+  // animation is still in progress), as drag icon proxy is not expected to be
+  // reused after it starts animating out.
+  drag_icon_proxy_.reset();
+
   // Only when the repost event occurs on the same shelf item, we should ignore
   // the call in ShelfView::ButtonPressed(...).
   is_repost_event_on_same_item_ =
@@ -1299,7 +1300,7 @@ void ShelfView::PointerPressedOnButton(views::View* view,
                             SHELF_ALIGNMENT_UMA_ENUM_VALUE_COUNT);
 }
 
-void ShelfView::PointerDraggedOnButton(views::View* view,
+void ShelfView::PointerDraggedOnButton(const views::View* view,
                                        Pointer pointer,
                                        const ui::LocatedEvent& event) {
   if (CanPrepareForDrag(pointer, event))
@@ -1309,7 +1310,7 @@ void ShelfView::PointerDraggedOnButton(views::View* view,
     ContinueDrag(event);
 }
 
-void ShelfView::PointerReleasedOnButton(views::View* view,
+void ShelfView::PointerReleasedOnButton(const views::View* view,
                                         Pointer pointer,
                                         bool canceled) {
   drag_scroll_dir_ = 0;
@@ -1334,7 +1335,7 @@ void ShelfView::PointerReleasedOnButton(views::View* view,
         if (model_->IsAppPinned(drag_app_id)) {
           model_->UnpinAppWithID(drag_app_id);
         } else {
-          model_->PinAppWithID(drag_app_id);
+          model_->PinExistingItemWithID(drag_app_id);
         }
       }
     }
@@ -1344,12 +1345,44 @@ void ShelfView::PointerReleasedOnButton(views::View* view,
   if (drag_pointer_ != NONE)
     return;
 
-  drag_and_drop_host_->DestroyDragIconProxy();
+  delegate_->CancelScrollForItemDrag();
+
+  if (!drag_view_ || dragged_off_shelf_)
+    drag_icon_proxy_.reset();
+
+  if (drag_icon_proxy_) {
+    const gfx::Rect drag_view_ideal_bounds =
+        view_model_->ideal_bounds(view_model_->GetIndexOfView(drag_view_));
+    gfx::Rect target_bounds_in_screen =
+        drag_view_->GetIdealIconBounds(drag_view_ideal_bounds.size(),
+                                       /*icon_scale=*/1.0f);
+    target_bounds_in_screen.Offset(drag_view_ideal_bounds.x(),
+                                   drag_view_ideal_bounds.y());
+    target_bounds_in_screen = GetMirroredRect(target_bounds_in_screen);
+    views::View::ConvertRectToScreen(this, &target_bounds_in_screen);
+
+    if (!delegate_->AreBoundsWithinVisibleSpace(target_bounds_in_screen)) {
+      drag_icon_proxy_.reset();
+      drag_view_->layer()->SetOpacity(1.0f);
+    } else {
+      drag_icon_proxy_->AnimateToBoundsAndCloseWidget(
+          target_bounds_in_screen,
+          base::BindOnce(&ShelfView::OnDragIconProxyAnimatedOut,
+                         base::Unretained(this),
+                         std::make_unique<ViewOpacityResetter>(drag_view_)));
+    }
+  }
 
   // If the drag pointer is NONE, no drag operation is going on and the
   // |drag_view_| can be released.
   drag_view_ = nullptr;
   drag_view_relative_to_ideal_bounds_ = RelativePosition::kNotAvailable;
+}
+
+void ShelfView::OnDragIconProxyAnimatedOut(
+    std::unique_ptr<ViewOpacityResetter> opacity_resetter) {
+  opacity_resetter->Run();
+  drag_icon_proxy_.reset();
 }
 
 void ShelfView::LayoutToIdealBounds() {
@@ -1388,8 +1421,7 @@ void ShelfView::AnimateToIdealBounds() {
     bounds_animator_->AnimateViewTo(view, view_model_->ideal_bounds(i));
     // Now that the item animation starts, we have to make sure that the
     // padding of the first gets properly transferred to the new first item.
-    if (view->border())
-      view->SetBorder(views::NullBorder());
+    view->SetBorder(nullptr);
   }
   UpdateVisibleShelfItemBoundsUnion();
 }
@@ -1439,10 +1471,22 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
 
   drag_view_->OnDragStarted(&event);
 
+  // Drag icon proxy from previous drag may be around if the icon is still
+  // animating to the final position. Reset it here to cancel the animation.
+  drag_icon_proxy_.reset();
+  delegate_->CancelScrollForItemDrag();
+
   drag_view_->layer()->SetOpacity(0.0f);
-  drag_and_drop_host_->CreateDragIconProxyByLocationWithNoAnimation(
-      event.root_location(), drag_view_->GetImage(), drag_view_,
-      /*scale_factor=*/1.0f, /*blur_radius=*/0);
+  if (!is_active_drag_and_drop_host_) {
+    aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
+    gfx::Point screen_location = event.root_location();
+    ::wm::ConvertPointToScreen(root_window, &screen_location);
+
+    drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
+        root_window, drag_view_->GetImage(), screen_location, gfx::Vector2d(),
+        /*scale_factor=*/1.0f,
+        /*use_blurred_background=*/false);
+  }
 }
 
 void ShelfView::ContinueDrag(const ui::LocatedEvent& event) {
@@ -1477,8 +1521,18 @@ void ShelfView::ContinueDrag(const ui::LocatedEvent& event) {
   ConvertPointToTarget(drag_view_, this, &drag_point);
   MoveDragViewTo(shelf_->PrimaryAxisValue(drag_point.x() - drag_origin_.x(),
                                           drag_point.y() - drag_origin_.y()));
-  drag_and_drop_host_->UpdateDragIconProxy(drag_point_in_screen -
-                                           drag_origin_.OffsetFromOrigin());
+
+  if (drag_icon_proxy_)
+    drag_icon_proxy_->UpdatePosition(drag_point_in_screen);
+
+  // If drag_icon_proxy_ is available, get its item bounds, otherwise (in case
+  // of an ApplicationDragAndDropHost drag), last drag icon bounds are cached in
+  // `drag_icon_bounds_in_screen_`.
+  const gfx::Rect drag_icon_bounds_in_screen =
+      drag_icon_proxy_ ? drag_icon_proxy_->GetBoundsInScreen()
+                       : drag_icon_bounds_in_screen_;
+  delegate_->ScheduleScrollForItemDragIfNeeded(drag_icon_bounds_in_screen);
+
   if (dragged_off_shelf_before)
     model_->OnItemReturnedFromRipOff(view_model_->GetIndexOfView(drag_view_));
 }
@@ -1543,43 +1597,14 @@ void ShelfView::MoveDragViewTo(int primary_axis_coordinate) {
   bounds_animator_->StopAnimatingView(drag_view_);
 }
 
-void ShelfView::CreateDragIconProxy(
-    const gfx::Point& location_in_screen_coordinates,
-    const gfx::ImageSkia& icon,
-    views::View* replaced_view,
-    const gfx::Vector2d& cursor_offset_from_center,
-    float scale_factor,
-    bool animate_visibility) {
-  drag_replaced_view_ = replaced_view;
-  aura::Window* root_window =
-      drag_replaced_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
-  drag_image_widget_ =
-      DragImageView::Create(root_window, ui::mojom::DragEventSource::kMouse);
-  DragImageView* drag_image = GetDragImage();
-  drag_image->SetImage(icon);
-  gfx::Size size = drag_image->GetPreferredSize();
-  size.set_width(std::round(size.width() * scale_factor));
-  size.set_height(std::round(size.height() * scale_factor));
-  drag_image_offset_ = gfx::Vector2d(size.width() / 2, size.height() / 2) +
-                       cursor_offset_from_center;
-  gfx::Rect drag_image_bounds(
-      location_in_screen_coordinates - drag_image_offset_, size);
-  drag_image->SetBoundsInScreen(drag_image_bounds);
-  if (!animate_visibility) {
-    drag_image_widget_->SetVisibilityAnimationTransition(
-        views::Widget::ANIMATE_NONE);
-  }
-  drag_image->SetWidgetVisible(true);
-}
-
 void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
   int current_index = view_model_->GetIndexOfView(drag_view_);
   DCHECK_NE(-1, current_index);
   std::string dragged_app_id = model_->items()[current_index].id.app_id;
 
+  aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   gfx::Point screen_location = event.root_location();
-  ::wm::ConvertPointToScreen(GetWidget()->GetNativeWindow()->GetRootWindow(),
-                             &screen_location);
+  ::wm::ConvertPointToScreen(root_window, &screen_location);
 
   // To avoid ugly forwards and backwards flipping we use different constants
   // for ripping off / re-inserting the items.
@@ -1587,20 +1612,21 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
     // If the shelf/overflow bubble bounds contains |screen_location| we insert
     // the item back into the shelf.
     if (GetBoundsForDragInsertInScreen().Contains(screen_location)) {
-      drag_and_drop_host_->CreateDragIconProxyByLocationWithNoAnimation(
-          event.root_location(), drag_view_->GetImage(), GetDragImage(),
-          /*scale_factor=*/1.0f, /*blur_radius=*/0);
+      if (!is_active_drag_and_drop_host_) {
+        drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
+            root_window, drag_view_->GetImage(), screen_location,
+            /*cursor_offset_from_center=*/gfx::Vector2d(),
+            kDragAndDropProxyScale,
+            /*use_blurred_background=*/false);
+      }
 
-      // Destroy our proxy view item.
-      DestroyDragIconProxy();
       // Re-insert the item and return simply false since the caller will handle
       // the move as in any normal case.
       dragged_off_shelf_ = false;
 
       return;
     }
-    // Move our proxy view item.
-    UpdateDragIconProxy(screen_location);
+    drag_icon_proxy_->UpdatePosition(screen_location);
     return;
   }
 
@@ -1610,20 +1636,19 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
   bool dragged_off_shelf = delta > kRipOffDistance;
 
   if (dragged_off_shelf) {
-    // Replaces a proxy icon provided by drag_and_drop_host_ - keep cursor
-    // position consistent with the host provided icon, and disable
-    // visibility animations (to prevent the proxy icon from lingering on
-    // when replaced with the icon provided by the host).
-    const gfx::Point center = drag_view_->GetLocalBounds().CenterPoint();
-    const gfx::Vector2d cursor_offset_from_center = drag_origin_ - center;
-    // Create a proxy view item which can be moved anywhere.
-    CreateDragIconProxy(event.root_location(), drag_view_->GetImage(),
-                        drag_view_, cursor_offset_from_center,
-                        kDragAndDropProxyScale, /*animate_visibility=*/false);
+    if (!is_active_drag_and_drop_host_) {
+      // Create a new, scaled up drag icon proxy when the item is dragged off
+      // shelf - keep cursor position consistent with the  host provided icon.
+      const gfx::Point center = drag_view_->GetLocalBounds().CenterPoint();
+      const gfx::Vector2d cursor_offset_from_center = drag_origin_ - center;
+      drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
+          root_window, drag_view_->GetImage(), screen_location,
+          cursor_offset_from_center, kDragAndDropProxyScale,
+          /*use_blurred_background=*/false);
+      delegate_->CancelScrollForItemDrag();
+    }
 
     dragged_off_shelf_ = true;
-
-    drag_and_drop_host_->DestroyDragIconProxy();
 
     if (RemovableByRipOff(current_index) == REMOVABLE) {
       // Move the item to the back and hide it. ShelfItemMoved() callback will
@@ -1632,7 +1657,7 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
         model_->Move(current_index, model_->item_count() - 1);
       // Make the item partially disappear to show that it will get removed if
       // dropped.
-      GetDragImage()->SetOpacity(kDraggedImageOpacity);
+      drag_icon_proxy_->SetOpacity(kDraggedImageOpacity);
     }
   }
 }
@@ -1645,12 +1670,16 @@ void ShelfView::FinalizeRipOffDrag(bool cancel) {
 
   // Coming here we should always have a |drag_view_|.
   DCHECK(drag_view_);
+  DCHECK(drag_icon_proxy_);
+
+  delegate_->CancelScrollForItemDrag();
+
   int current_index = view_model_->GetIndexOfView(drag_view_);
   // If the view isn't part of the model anymore (|current_index| == -1), a sync
   // operation must have removed it. In that case we shouldn't change the model
   // and only delete the proxy image.
   if (current_index == -1) {
-    DestroyDragIconProxy();
+    drag_icon_proxy_.reset();
     return;
   }
 
@@ -1673,7 +1702,7 @@ void ShelfView::FinalizeRipOffDrag(bool cancel) {
   if (cancel || snap_back) {
     if (!cancelling_drag_model_changed_) {
       // Only do something if the change did not come through a model change.
-      gfx::Rect drag_bounds = GetDragImage()->GetBoundsInScreen();
+      gfx::Rect drag_bounds = drag_icon_proxy_->GetBoundsInScreen();
       gfx::Point relative_to = GetBoundsInScreen().origin();
       gfx::Rect target(
           gfx::PointAtOffsetFromOrigin(drag_bounds.origin() - relative_to),
@@ -1692,7 +1721,7 @@ void ShelfView::FinalizeRipOffDrag(bool cancel) {
     drag_view_->layer()->SetOpacity(1.0f);
     model_->OnItemReturnedFromRipOff(model_->item_count() - 1);
   }
-  DestroyDragIconProxy();
+  drag_icon_proxy_.reset();
 }
 
 ShelfView::RemovableState ShelfView::RemovableByRipOff(int index) const {
@@ -1706,6 +1735,11 @@ ShelfView::RemovableState ShelfView::RemovableByRipOff(int index) const {
 
   // Note: Only pinned app shortcuts can be removed!
   const std::string& app_id = model_->items()[index].id.app_id;
+
+  // Pinned standalone browser apps should not be removable.
+  if (IsStandaloneBrowser(app_id))
+    return DRAGGABLE;
+
   return (type == TYPE_PINNED_APP && model_->IsAppPinned(app_id)) ? REMOVABLE
                                                                   : DRAGGABLE;
 }
@@ -1871,6 +1905,12 @@ bool ShelfView::IsAnimating() const {
   return bounds_animator_->IsAnimating();
 }
 
+gfx::Rect ShelfView::GetDragIconBoundsInScreenForTest() const {
+  if (!drag_icon_proxy_)
+    return gfx::Rect();
+  return drag_icon_proxy_->GetBoundsInScreen();
+}
+
 void ShelfView::AnnounceShelfAutohideBehavior() {
   std::u16string announcement;
   switch (shelf_->auto_hide_behavior()) {
@@ -1933,6 +1973,10 @@ int ShelfView::CancelDrag(int modified_index) {
   speed_up_drag_scrolling_.Stop();
 
   FinalizeRipOffDrag(true);
+
+  delegate_->CancelScrollForItemDrag();
+  drag_icon_proxy_.reset();
+
   if (!drag_view_)
     return modified_index;
   bool was_dragging = dragging();
@@ -1969,13 +2013,18 @@ void ShelfView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void ShelfView::ShelfItemAdded(int model_index) {
+  // ShelfView must keep view_model_ in sync with ShelfModel::items_ as its very
+  // first response to ShelfModel changes. Failure to do so can result in UaF in
+  // methods like ShelfView::ShelfItemForView, which can be implicitly called by
+  // other classes. See https://crbug.com/1238959 for more details.
+  const ShelfItem& item(model_->items()[model_index]);
+  views::View* view = CreateViewForItem(item);
+
   {
     base::AutoReset<bool> cancelling_drag(&cancelling_drag_model_changed_,
                                           true);
     model_index = CancelDrag(model_index);
   }
-  const ShelfItem& item(model_->items()[model_index]);
-  views::View* view = CreateViewForItem(item);
   // Hide the view, it'll be made visible when the animation is done. Using
   // opacity 0 here to avoid messing with CalculateIdealBounds which touches
   // the view's visibility.
@@ -2017,13 +2066,18 @@ void ShelfView::ShelfItemAdded(int model_index) {
 }
 
 void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
-  if (old_item.id == context_menu_id_ && shelf_menu_model_adapter_)
-    shelf_menu_model_adapter_->Cancel();
-
+  // ShelfView must keep view_model_ in sync with ShelfModel::items_ as its very
+  // first response to ShelfModel changes. Failure to do so can result in UaF in
+  // methods like ShelfView::ShelfItemForView, which can be implicitly called by
+  // other classes. See https://crbug.com/1238959 for more details.
+  //
   // If std::move is not called on |view|, |view| will be deleted once out of
   // scope.
   std::unique_ptr<views::View> view(view_model_->view_at(model_index));
   view_model_->Remove(model_index);
+
+  if (old_item.id == context_menu_id_ && shelf_menu_model_adapter_)
+    shelf_menu_model_adapter_->Cancel();
 
   {
     base::AutoReset<bool> cancelling_drag(&cancelling_drag_model_changed_,
@@ -2437,15 +2491,6 @@ bool ShelfView::CanPrepareForDrag(Pointer pointer,
   return true;
 }
 
-void ShelfView::SetDragImageBlur(const gfx::Size& size, int blur_radius) {
-  DragImageView* drag_image = GetDragImage();
-  drag_image->SetPaintToLayer();
-  drag_image->layer()->SetFillsBoundsOpaquely(false);
-  const float radius = size.width() / 2.0f;
-  drag_image->layer()->SetRoundedCornerRadius({radius, radius, radius, radius});
-  drag_image->layer()->SetBackgroundBlur(blur_radius);
-}
-
 bool ShelfView::ShouldHandleGestures(const ui::GestureEvent& event) const {
   if (event.type() == ui::ET_GESTURE_SCROLL_BEGIN) {
     float x_offset = event.details().scroll_x_hint();
@@ -2498,10 +2543,6 @@ int ShelfView::CalculateAppIconsLayoutOffset() const {
 
   return shelf_->IsHorizontalAlignment() ? edge_padding_insets.left()
                                          : edge_padding_insets.top();
-}
-
-DragImageView* ShelfView::GetDragImage() {
-  return static_cast<DragImageView*>(drag_image_widget_->GetContentsView());
 }
 
 gfx::Rect ShelfView::GetChildViewTargetMirroredBounds(

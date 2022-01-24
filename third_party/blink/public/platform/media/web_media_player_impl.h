@@ -269,6 +269,8 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
   void UpdateFrameIfStale() override;
 
   base::WeakPtr<WebMediaPlayer> AsWeakPtr() override;
+  void RegisterFrameSinkHierarchy() override;
+  void UnregisterFrameSinkHierarchy() override;
 
   bool IsBackgroundMediaSuspendEnabled() const {
     return is_background_suspend_enabled_;

@@ -47,15 +47,28 @@ SupervisedUserNavigationObserver::~SupervisedUserNavigationObserver() {
 SupervisedUserNavigationObserver::SupervisedUserNavigationObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      receiver_(web_contents,
-                this,
-                content::WebContentsFrameReceiverSetPassKey()) {
+      receivers_(web_contents, this) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   supervised_user_service_ =
       SupervisedUserServiceFactory::GetForProfile(profile);
   url_filter_ = supervised_user_service_->GetURLFilter();
   supervised_user_service_->AddObserver(this);
+}
+
+// static
+void SupervisedUserNavigationObserver::BindSupervisedUserCommands(
+    mojo::PendingAssociatedReceiver<
+        supervised_user::mojom::SupervisedUserCommands> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* navigation_observer =
+      SupervisedUserNavigationObserver::FromWebContents(web_contents);
+  if (!navigation_observer)
+    return;
+  navigation_observer->receivers_.Bind(rfh, std::move(receiver));
 }
 
 // static
@@ -106,9 +119,6 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
 
   // Only filter same page navigations (eg. pushState/popState); others will
   // have been filtered by the NavigationThrottle.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsSameDocument() &&
       navigation_handle->IsInPrimaryMainFrame()) {
     auto* render_frame_host = web_contents()->GetMainFrame();
@@ -298,7 +308,7 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
 }
 
 void SupervisedUserNavigationObserver::GoBack() {
-  auto* render_frame_host = receiver_.GetCurrentTargetFrame();
+  auto* render_frame_host = receivers_.GetCurrentTargetFrame();
   auto id = render_frame_host->GetFrameTreeNodeId();
 
   // Request can come only from the main frame.
@@ -309,24 +319,42 @@ void SupervisedUserNavigationObserver::GoBack() {
     supervised_user_interstitials_[id]->GoBack();
 }
 
-void SupervisedUserNavigationObserver::RequestPermission(
-    RequestPermissionCallback callback) {
-  auto* render_frame_host = receiver_.GetCurrentTargetFrame();
+void SupervisedUserNavigationObserver::RequestUrlAccessRemote(
+    RequestUrlAccessRemoteCallback callback) {
+  auto* render_frame_host = receivers_.GetCurrentTargetFrame();
   int id = render_frame_host->GetFrameTreeNodeId();
 
-  if (base::Contains(supervised_user_interstitials_, id)) {
-    SupervisedUserInterstitial* interstitial =
-        supervised_user_interstitials_[id].get();
-
-    interstitial->RequestPermission(
-        base::BindOnce(&SupervisedUserNavigationObserver::RequestCreated,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                       interstitial->url().host()));
+  if (!base::Contains(supervised_user_interstitials_, id)) {
+    DLOG(WARNING) << "Interstitial with id not found: " << id;
+    return;
   }
+
+  SupervisedUserInterstitial* interstitial =
+      supervised_user_interstitials_[id].get();
+  interstitial->RequestUrlAccessRemote(
+      base::BindOnce(&SupervisedUserNavigationObserver::RequestCreated,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     interstitial->url().host()));
+}
+
+void SupervisedUserNavigationObserver::RequestUrlAccessLocal(
+    RequestUrlAccessLocalCallback callback) {
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame();
+  int id = render_frame_host->GetFrameTreeNodeId();
+
+  if (!base::Contains(supervised_user_interstitials_, id)) {
+    DLOG(WARNING) << "Interstitial with id not found: " << id;
+    return;
+  }
+
+  SupervisedUserInterstitial* interstitial =
+      supervised_user_interstitials_[id].get();
+  interstitial->RequestUrlAccessLocal(std::move(callback));
 }
 
 void SupervisedUserNavigationObserver::Feedback() {
-  auto* render_frame_host = receiver_.GetCurrentTargetFrame();
+  auto* render_frame_host = receivers_.GetCurrentTargetFrame();
   int id = render_frame_host->GetFrameTreeNodeId();
 
   if (base::Contains(supervised_user_interstitials_, id))
@@ -334,7 +362,7 @@ void SupervisedUserNavigationObserver::Feedback() {
 }
 
 void SupervisedUserNavigationObserver::RequestCreated(
-    RequestPermissionCallback callback,
+    RequestUrlAccessRemoteCallback callback,
     const std::string& host,
     bool successfully_created_request) {
   if (successfully_created_request)
@@ -358,4 +386,4 @@ void SupervisedUserNavigationObserver::MaybeUpdateRequestedHosts() {
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SupervisedUserNavigationObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SupervisedUserNavigationObserver);

@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/box_shadow_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -103,6 +104,7 @@
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
+#include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -163,9 +165,9 @@
 #include "third_party/blink/renderer/core/page/plugin_script_forbidden_scope.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
-#include "third_party/blink/renderer/core/page/scrolling/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -204,7 +206,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 #if defined(OS_MAC)
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -232,7 +234,7 @@ const int kBurstDownloadLimit = 10;
 
 // Maximum number of bytes that can be buffered in total (per-process) by all
 // network requests in one renderer process while in back-forward cache.
-constexpr size_t kDefaultMaxBufferedBodyBytesPerProcess = 512 * 1000;
+constexpr size_t kDefaultMaxBufferedBodyBytesPerProcess = 1024 * 1000;
 
 // Singleton utility class for process-wide back-forward cache buffer limit
 // tracking.
@@ -308,6 +310,30 @@ RemoteFrame* SourceFrameForOptionalToken(
   return RemoteFrame::FromFrameToken(source_frame_token.value());
 }
 
+void SetViewportSegmentVariablesForRect(StyleEnvironmentVariables& vars,
+                                        gfx::Rect segment_rect,
+                                        unsigned first_dimension,
+                                        unsigned second_dimension) {
+  vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentTop,
+                   first_dimension, second_dimension,
+                   StyleEnvironmentVariables::FormatPx(segment_rect.y()));
+  vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentRight,
+                   first_dimension, second_dimension,
+                   StyleEnvironmentVariables::FormatPx(segment_rect.right()));
+  vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentBottom,
+                   first_dimension, second_dimension,
+                   StyleEnvironmentVariables::FormatPx(segment_rect.bottom()));
+  vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentLeft,
+                   first_dimension, second_dimension,
+                   StyleEnvironmentVariables::FormatPx(segment_rect.x()));
+  vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentWidth,
+                   first_dimension, second_dimension,
+                   StyleEnvironmentVariables::FormatPx(segment_rect.width()));
+  vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentHeight,
+                   first_dimension, second_dimension,
+                   StyleEnvironmentVariables::FormatPx(segment_rect.height()));
+}
+
 }  // namespace
 
 template class CORE_TEMPLATE_EXPORT Supplement<LocalFrame>;
@@ -326,9 +352,6 @@ void LocalFrame::Init(Frame* opener,
 
   CoreInitializer::GetInstance().InitLocalFrame(*this);
 
-  GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-      back_forward_cache_controller_host_remote_.BindNewEndpointAndPassReceiver(
-          GetTaskRunner(blink::TaskType::kInternalDefault)));
   GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &LocalFrame::BindTextFragmentReceiver, WrapWeakPersistent(this)));
   DCHECK(!mojo_handler_);
@@ -397,6 +420,7 @@ LocalFrame::~LocalFrame() {
   // Verify that the LocalFrameView has been cleared as part of detaching
   // the frame owner.
   DCHECK(!view_);
+  DCHECK(!frame_color_overlay_);
   if (IsAdSubframe())
     InstanceCounters::DecrementCounter(InstanceCounters::kAdSubframeCounter);
 }
@@ -421,11 +445,12 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(system_clipboard_);
   visitor->Trace(virtual_keyboard_overlay_changed_observers_);
   visitor->Trace(pause_handle_receivers_);
-  visitor->Trace(back_forward_cache_controller_host_remote_);
+  visitor->Trace(frame_color_overlay_);
   visitor->Trace(mojo_handler_);
   visitor->Trace(text_fragment_handler_);
   visitor->Trace(saved_scroll_offsets_);
   visitor->Trace(background_color_paint_image_generator_);
+  visitor->Trace(box_shadow_paint_image_generator_);
   visitor->Trace(clip_path_paint_image_generator_);
   Frame::Trace(visitor);
   Supplementable<LocalFrame>::Trace(visitor);
@@ -487,12 +512,12 @@ bool LocalFrame::NavigationShouldReplaceCurrentHistoryEntry(
 }
 
 bool LocalFrame::ShouldMaintainTrivialSessionHistory() const {
-  // TODO(https://crbug.com/1197384): We may have to add fenced frames. This
-  // should be kept in sync with NavigationControllerImpl version,
+  // This should be kept in sync with
   // NavigationControllerImpl::ShouldMaintainTrivialSessionHistory.
   //
   // TODO(mcnee): Similarly, we need to restrict orphaned contexts.
-  return GetPage()->InsidePortal() || GetDocument()->IsPrerendering();
+  return GetPage()->InsidePortal() || GetDocument()->IsPrerendering() ||
+         IsInFencedFrameTree();
 }
 
 bool LocalFrame::DetachImpl(FrameDetachType type) {
@@ -572,7 +597,8 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   DCHECK(!IsDetached());
 
-  frame_color_overlay_.reset();
+  if (frame_color_overlay_)
+    frame_color_overlay_.Release()->Destroy();
 
   if (IsLocalRoot()) {
     performance_monitor_->Shutdown();
@@ -582,6 +608,8 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
     // was created on LocalRoot.
     if (background_color_paint_image_generator_)
       background_color_paint_image_generator_->Shutdown();
+    if (box_shadow_paint_image_generator_)
+      box_shadow_paint_image_generator_->Shutdown();
     if (clip_path_paint_image_generator_)
       clip_path_paint_image_generator_->Shutdown();
   }
@@ -644,6 +672,20 @@ LocalFrame::GetBackgroundColorPaintImageGenerator() {
         BackgroundColorPaintImageGenerator::Create(local_root);
   }
   return local_root.background_color_paint_image_generator_.Get();
+}
+
+BoxShadowPaintImageGenerator* LocalFrame::GetBoxShadowPaintImageGenerator() {
+  // There is no compositor thread in certain testing environment, and we should
+  // not composite background color animation in those cases.
+  if (!Thread::CompositorThread())
+    return nullptr;
+  LocalFrame& local_root = LocalFrameRoot();
+  // One box shadow paint worklet per root frame.
+  if (!local_root.box_shadow_paint_image_generator_) {
+    local_root.box_shadow_paint_image_generator_ =
+        BoxShadowPaintImageGenerator::Create(local_root);
+  }
+  return local_root.box_shadow_paint_image_generator_.Get();
 }
 
 ClipPathPaintImageGenerator* LocalFrame::GetClipPathPaintImageGenerator() {
@@ -760,17 +802,6 @@ bool LocalFrame::IsPaymentRequestTokenActive() const {
 
 bool LocalFrame::ConsumePaymentRequestToken() {
   return payment_request_token_.ConsumeIfActive();
-}
-
-void LocalFrame::SetOptimizationGuideHints(
-    mojom::blink::BlinkOptimizationGuideHintsPtr hints) {
-  DCHECK(hints);
-  optimization_guide_hints_ = std::move(hints);
-  if (optimization_guide_hints_->delay_competing_low_priority_requests_hints) {
-    GetDocument()->Fetcher()->SetOptimizationGuideHints(
-        std::move(optimization_guide_hints_
-                      ->delay_competing_low_priority_requests_hints));
-  }
 }
 
 void LocalFrame::Reload(WebFrameLoadType load_type) {
@@ -1203,15 +1234,15 @@ FloatSize LocalFrame::ResizePageRectsKeepingRatio(
     return FloatSize();
 
   bool is_horizontal = layout_object->StyleRef().IsHorizontalWritingMode();
-  float width = original_size.Width();
-  float height = original_size.Height();
+  float width = original_size.width();
+  float height = original_size.height();
   if (!is_horizontal)
     std::swap(width, height);
   DCHECK_GT(fabs(width), std::numeric_limits<float>::epsilon());
   float ratio = height / width;
 
   float result_width =
-      floorf(is_horizontal ? expected_size.Width() : expected_size.Height());
+      floorf(is_horizontal ? expected_size.width() : expected_size.height());
   float result_height = floorf(result_width * ratio);
   if (!is_horizontal)
     std::swap(result_width, result_height);
@@ -1302,15 +1333,15 @@ void LocalFrame::WindowSegmentsChanged(
   DCHECK(IsLocalRoot());
 
   // A change in the window segments requires re-evaluation of media queries
-  // for the local frame subtree (the segments affect the "screen-spanning"
-  // feature).
+  // for the local frame subtree (the segments affect the
+  // "horizontal-viewport-segments" and "vertical-viewport-segments" features).
   MediaQueryAffectingValueChangedForLocalSubtree(MediaValueChange::kOther);
 
   // Also need to update the environment variables related to window segments.
-  UpdateCSSFoldEnvironmentVariables(window_segments);
+  UpdateViewportSegmentCSSEnvironmentVariables(window_segments);
 }
 
-void LocalFrame::UpdateCSSFoldEnvironmentVariables(
+void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
     const WebVector<gfx::Rect>& window_segments) {
   DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
 
@@ -1319,52 +1350,51 @@ void LocalFrame::UpdateCSSFoldEnvironmentVariables(
   StyleEnvironmentVariables& vars =
       StyleEnvironmentVariables::GetRootInstance();
 
-  // CSS environment variables related to window segments currently only
-  // expose values for a single fold (i.e. if there are two segments). In all
-  // other cases, these variables will not be defined - see the else clause for
-  // where these are unset.
-  if (window_segments.size() == 2) {
-    // We need to determine the rectangle between the two segments, which
-    // describes the fold area (note that this may have a zero width or height,
-    // but not negative).
-    gfx::Rect fold_rect;
-    if (window_segments[0].y() == window_segments[1].y()) {
-      int fold_width = window_segments[1].x() - window_segments[0].width();
-      DCHECK_GE(fold_width, 0);
-      fold_rect.SetRect(window_segments[0].width(), window_segments[0].y(),
-                        fold_width, window_segments[0].height());
-    } else if (window_segments[0].x() == window_segments[1].x()) {
-      int fold_height = window_segments[1].y() - window_segments[0].height();
-      DCHECK_GE(fold_height, 0);
-      fold_rect.SetRect(window_segments[0].x(), window_segments[0].height(),
-                        window_segments[0].width(), fold_height);
-    }
+  // Unset all variables, since they will be set as a whole by the code below.
+  // Since the number and configurations of the segments can change, and
+  // removing variables clears all values that have previously been set,
+  // we will recalculate all the values on each change.
+  const UADefinedTwoDimensionalVariable vars_to_remove[] = {
+      UADefinedTwoDimensionalVariable::kViewportSegmentTop,
+      UADefinedTwoDimensionalVariable::kViewportSegmentRight,
+      UADefinedTwoDimensionalVariable::kViewportSegmentBottom,
+      UADefinedTwoDimensionalVariable::kViewportSegmentLeft,
+      UADefinedTwoDimensionalVariable::kViewportSegmentWidth,
+      UADefinedTwoDimensionalVariable::kViewportSegmentHeight,
+  };
+  for (auto var : vars_to_remove) {
+    vars.RemoveVariable(var);
+  }
 
-    vars.SetVariable(UADefinedVariable::kFoldTop,
-                     StyleEnvironmentVariables::FormatPx(fold_rect.y()));
-    vars.SetVariable(UADefinedVariable::kFoldRight,
-                     StyleEnvironmentVariables::FormatPx(fold_rect.right()));
-    vars.SetVariable(UADefinedVariable::kFoldBottom,
-                     StyleEnvironmentVariables::FormatPx(fold_rect.bottom()));
-    vars.SetVariable(UADefinedVariable::kFoldLeft,
-                     StyleEnvironmentVariables::FormatPx(fold_rect.x()));
-    vars.SetVariable(UADefinedVariable::kFoldWidth,
-                     StyleEnvironmentVariables::FormatPx(fold_rect.width()));
-    vars.SetVariable(UADefinedVariable::kFoldHeight,
-                     StyleEnvironmentVariables::FormatPx(fold_rect.height()));
-  } else {
-    // If there is not a single fold, we treat the variable as undefined
-    // (i.e. the fallback value specified in the env() function).
-    const UADefinedVariable vars_to_remove[] = {
-        UADefinedVariable::kFoldTop,    UADefinedVariable::kFoldRight,
-        UADefinedVariable::kFoldBottom, UADefinedVariable::kFoldLeft,
-        UADefinedVariable::kFoldWidth,  UADefinedVariable::kFoldHeight,
-    };
-    for (auto var : vars_to_remove) {
-      vars.RemoveVariable(StyleEnvironmentVariables::GetVariableName(
-          var, /*feature_context=*/nullptr));
+  // Per [css-env-1], only set the segment variables if there is more than one.
+  if (window_segments.size() >= 2) {
+    // Iterate the segments in row-major order, setting the segment variables
+    // based on x and y index.
+    int current_y_position = window_segments[0].y();
+    unsigned x_index = 0;
+    unsigned y_index = 0;
+    SetViewportSegmentVariablesForRect(vars, window_segments[0], x_index,
+                                       y_index);
+    for (size_t i = 1; i < window_segments.size(); i++) {
+      if (window_segments[i].y() == current_y_position) {
+        x_index++;
+        SetViewportSegmentVariablesForRect(vars, window_segments[i], x_index,
+                                           y_index);
+      } else {
+        // If there is a different y value, this is the next row so increase
+        // y index and start again from 0 for x.
+        y_index++;
+        x_index = 0;
+        current_y_position = window_segments[i].y();
+        SetViewportSegmentVariablesForRect(vars, window_segments[i], x_index,
+                                           y_index);
+      }
     }
   }
+}
+
+device::mojom::blink::DevicePostureType LocalFrame::GetDevicePosture() {
+  return mojo_handler_->GetDevicePosture();
 }
 
 double LocalFrame::DevicePixelRatio() const {
@@ -1523,7 +1553,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
   if (IsMainFrame()) {
-    text_fragment_handler_ = MakeGarbageCollected<TextFragmentHandler>(this);
+    CreateTextFragmentHandler();
   }
 
   Initialize();
@@ -1792,7 +1822,7 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
           "The frame attempting navigation is targeting its top-level window, "
           "but is neither same-origin with its target nor has it received a "
           "user gesture. See "
-          "https://www.chromestatus.com/features/5851021045661696.");
+          "https://www.chromestatus.com/feature/5851021045661696.");
       initiating_frame.GetLocalFrameHostRemote().DidBlockNavigation(
           destination_url, initiating_frame.GetDocument()->Url(),
           mojom::NavigationBlockedReason::kRedirectWithNoUserGesture);
@@ -2052,7 +2082,7 @@ void LocalFrame::SetViewportIntersectionFromParent(
 
     // Return <0, 0, 0, 0> if there is no area.
     if (rect.IsEmpty())
-      rect.SetLocation(IntPoint(0, 0));
+      rect.set_origin(gfx::Point(0, 0));
     Client()->OnMainFrameIntersectionChanged(rect);
   }
 
@@ -2078,17 +2108,16 @@ IntSize LocalFrame::GetMainFrameViewportSize() const {
              ? local_root.View()
                    ->GetScrollableArea()
                    ->VisibleContentRect()
-                   .Size()
+                   .size()
              : IntSize(local_root.intersection_state_.main_frame_viewport_size);
 }
 
-IntPoint LocalFrame::GetMainFrameScrollOffset() const {
+gfx::Point LocalFrame::GetMainFrameScrollOffset() const {
   LocalFrame& local_root = LocalFrameRoot();
   return local_root.IsMainFrame()
              ? FlooredIntPoint(
                    local_root.View()->GetScrollableArea()->GetScrollOffset())
-             : IntPoint(
-                   local_root.intersection_state_.main_frame_scroll_offset);
+             : local_root.intersection_state_.main_frame_scroll_offset;
 }
 
 void LocalFrame::SetOpener(Frame* opener_frame) {
@@ -2283,9 +2312,10 @@ void LocalFrame::UpdateTaskTime(base::TimeDelta time) {
   Client()->DidChangeCpuTiming(time);
 }
 
-void LocalFrame::UpdateActiveSchedulerTrackedFeatures(uint64_t features_mask) {
-  GetLocalFrameHostRemote().DidChangeActiveSchedulerTrackedFeatures(
-      features_mask);
+void LocalFrame::UpdateBackForwardCacheDisablingFeatures(
+    uint64_t features_mask) {
+  GetBackForwardCacheControllerHostRemote()
+      .DidChangeBackForwardCacheDisablingFeatures(features_mask);
 }
 
 const base::UnguessableToken& LocalFrame::GetAgentClusterId() const {
@@ -2304,8 +2334,9 @@ void LocalFrame::NotifyUserActivation(
     LocalFrame* frame,
     mojom::blink::UserActivationNotificationType notification_type,
     bool need_browser_verification) {
-  if (frame)
+  if (frame) {
     frame->NotifyUserActivation(notification_type, need_browser_verification);
+  }
 }
 
 // static
@@ -2333,6 +2364,7 @@ void LocalFrame::NotifyUserActivation(
                                                       notification_type);
   Client()->NotifyUserActivation();
   NotifyUserActivationInFrameTree(notification_type);
+  DomWindow()->DidReceiveUserActivation();
 }
 
 bool LocalFrame::ConsumeTransientUserActivation(
@@ -2369,9 +2401,12 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
       return;
     DrawingRecorder recorder(graphics_context, frame_overlay,
                              DisplayItem::kFrameOverlay,
-                             IntRect(IntPoint(), view->Size()));
+                             gfx::Rect(ToGfxSize(view->Size())));
     FloatRect rect(0, 0, view->Width(), view->Height());
-    graphics_context.FillRect(rect, color_);
+    graphics_context.FillRect(
+        rect, color_,
+        PaintAutoDarkMode(view->GetLayoutView()->StyleRef(),
+                          DarkModeFilter::ElementRole::kBackground));
   }
 
   SkColor color_;
@@ -2391,12 +2426,13 @@ void LocalFrame::SetSubframeColorOverlay(SkColor color) {
 }
 
 void LocalFrame::SetFrameColorOverlay(SkColor color) {
-  frame_color_overlay_.reset();
+  if (frame_color_overlay_)
+    frame_color_overlay_.Release()->Destroy();
 
   if (color == Color::kTransparent)
     return;
 
-  frame_color_overlay_ = std::make_unique<FrameOverlay>(
+  frame_color_overlay_ = MakeGarbageCollected<FrameOverlay>(
       this, std::make_unique<FrameColorOverlay>(this, color));
 }
 
@@ -2686,7 +2722,7 @@ void LocalFrame::SetInitialFocus(bool reverse) {
 
 #if defined(OS_MAC)
 void LocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {
-  HitTestLocation location(View()->ViewportToFrame(IntPoint(point)));
+  HitTestLocation location(View()->ViewportToFrame(gfx::Point(point)));
   HitTestResult result = GetEventHandler().HitTestResultAtLocation(
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
   uint32_t index =
@@ -2749,8 +2785,7 @@ void LocalFrame::UpdateWindowControlsOverlay(
         UADefinedVariable::kTitlebarAreaHeight,
     };
     for (auto var_to_remove : vars_to_remove) {
-      vars.RemoveVariable(StyleEnvironmentVariables::GetVariableName(
-          var_to_remove, vars.GetFeatureContext()));
+      vars.RemoveVariable(var_to_remove);
     }
   }
 
@@ -2766,8 +2801,8 @@ void LocalFrame::UpdateWindowControlsOverlay(
 }
 
 HitTestResult LocalFrame::HitTestResultForVisualViewportPos(
-    const IntPoint& pos_in_viewport) {
-  IntPoint root_frame_point(
+    const gfx::Point& pos_in_viewport) {
+  gfx::Point root_frame_point(
       GetPage()->GetVisualViewport().ViewportToRootFrame(pos_in_viewport));
   HitTestLocation location(View()->ConvertFromRootFrame(root_frame_point));
   HitTestResult result = GetEventHandler().HitTestResultAtLocation(
@@ -2813,7 +2848,7 @@ mojom::blink::LocalFrameHost& LocalFrame::GetLocalFrameHostRemote() const {
 
 mojom::blink::BackForwardCacheControllerHost&
 LocalFrame::GetBackForwardCacheControllerHostRemote() {
-  return *back_forward_cache_controller_host_remote_.get();
+  return mojo_handler_->BackForwardCacheControllerHostRemote();
 }
 
 void LocalFrame::NotifyUserActivation(
@@ -2841,7 +2876,7 @@ void LocalFrame::AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr info) {
   }
 }
 
-void LocalFrame::CopyImageAtViewportPoint(const IntPoint& viewport_point) {
+void LocalFrame::CopyImageAtViewportPoint(const gfx::Point& viewport_point) {
   HitTestResult result = HitTestResultForVisualViewportPos(viewport_point);
   if (!IsA<HTMLCanvasElement>(result.InnerNodeOrImageMapImage()) &&
       result.AbsoluteImageURL().IsEmpty()) {
@@ -2865,9 +2900,8 @@ void LocalFrame::CopyImageAtViewportPoint(const IntPoint& viewport_point) {
 void LocalFrame::SaveImageAt(const gfx::Point& window_point) {
   gfx::Point viewport_position =
       GetWidgetForLocalRoot()->DIPsToRoundedBlinkSpace(window_point);
-  IntPoint location(viewport_position);
-  Node* node =
-      HitTestResultForVisualViewportPos(location).InnerNodeOrImageMapImage();
+  Node* node = HitTestResultForVisualViewportPos(viewport_position)
+                   .InnerNodeOrImageMapImage();
   if (!node || !(IsA<HTMLCanvasElement>(*node) || IsA<HTMLImageElement>(*node)))
     return;
 
@@ -2882,7 +2916,7 @@ void LocalFrame::SaveImageAt(const gfx::Point& window_point) {
 }
 
 void LocalFrame::MediaPlayerActionAtViewportPoint(
-    const IntPoint& viewport_position,
+    const gfx::Point& viewport_position,
     const blink::mojom::blink::MediaPlayerActionType type,
     bool enable) {
   HitTestResult result = HitTestResultForVisualViewportPos(viewport_position);
@@ -2961,6 +2995,7 @@ void LocalFrame::DownloadURL(
     params->suggested_name = *request.GetSuggestedFilename();
   params->cross_origin_redirects = cross_origin_redirect_behavior;
   params->blob_url_token = std::move(blob_url_token);
+  params->has_user_gesture = request.HasUserGesture();
 
   GetLocalFrameHostRemote().DownloadURL(std::move(params));
 }
@@ -3017,8 +3052,12 @@ void LocalFrame::PostMessageEvent(
         message.user_activation->was_active);
   }
 
-  if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled() &&
+  if (GetDocument() &&
+      RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
+          GetDocument()->GetExecutionContext()) &&
       message.delegate_payment_request) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kCapabilityDelegationOfPaymentRequest);
     payment_request_token_.Activate();
   }
 
@@ -3045,8 +3084,7 @@ bool LocalFrame::ShouldThrottleDownload() {
   if (num_burst_download_requests_ == 0) {
     burst_download_start_time_ = now;
   } else if (num_burst_download_requests_ >= kBurstDownloadLimit) {
-    static constexpr auto kBurstDownloadLimitResetInterval =
-        base::TimeDelta::FromSeconds(1);
+    static constexpr auto kBurstDownloadLimitResetInterval = base::Seconds(1);
     if (now - burst_download_start_time_ > kBurstDownloadLimitResetInterval) {
       num_burst_download_requests_ = 1;
       burst_download_start_time_ = now;
@@ -3082,8 +3120,8 @@ namespace {
 // TODO(editing-dev): We should move |CreateMarkupInRect()| to
 // "core/editing/serializers/Serialization.cpp".
 String CreateMarkupInRect(LocalFrame* frame,
-                          const IntPoint& start_point,
-                          const IntPoint& end_point) {
+                          const gfx::Point& start_point,
+                          const gfx::Point& end_point) {
   VisiblePosition start_visible_position = CreateVisiblePosition(
       PositionForContentsPointRespectingEditingBoundary(start_point, frame));
   VisiblePosition end_visible_position = CreateVisiblePosition(
@@ -3117,13 +3155,17 @@ void LocalFrame::ExtractSmartClipDataInternal(const gfx::Rect& rect_in_viewport,
   SmartClipData clip_data =
       SmartClip(this).DataForRect(IntRect(rect_in_viewport));
   clip_text = clip_data.ClipData();
-  clip_rect = clip_data.RectInViewport();
+  clip_rect = ToGfxRect(clip_data.RectInViewport());
 
-  IntPoint start_point(rect_in_viewport.x(), rect_in_viewport.y());
-  IntPoint end_point(rect_in_viewport.x() + rect_in_viewport.width(),
-                     rect_in_viewport.y() + rect_in_viewport.height());
+  gfx::Point start_point(rect_in_viewport.x(), rect_in_viewport.y());
+  gfx::Point end_point(rect_in_viewport.x() + rect_in_viewport.width(),
+                       rect_in_viewport.y() + rect_in_viewport.height());
   clip_html = CreateMarkupInRect(this, View()->ViewportToFrame(start_point),
                                  View()->ViewportToFrame(end_point));
+}
+
+void LocalFrame::CreateTextFragmentHandler() {
+  text_fragment_handler_ = MakeGarbageCollected<TextFragmentHandler>(this);
 }
 
 void LocalFrame::BindTextFragmentReceiver(
@@ -3131,9 +3173,8 @@ void LocalFrame::BindTextFragmentReceiver(
   if (IsDetached())
     return;
 
-  if (!text_fragment_handler_) {
-    text_fragment_handler_ = MakeGarbageCollected<TextFragmentHandler>(this);
-  }
+  if (!text_fragment_handler_)
+    CreateTextFragmentHandler();
 
   text_fragment_handler_->BindTextFragmentReceiver(std::move(receiver));
 }

@@ -117,9 +117,7 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     _separator.hidden = YES;
 
     self.backgroundColor = UIColor.clearColor;
-    if (@available(iOS 13.4, *)) {
-        [self addInteraction:[[ViewPointerInteraction alloc] init]];
-    }
+    [self addInteraction:[[ViewPointerInteraction alloc] init]];
   }
   return self;
 }

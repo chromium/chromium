@@ -19,7 +19,7 @@
 
 namespace webrtc_logging {
 
-const base::TimeDelta kTimeToKeepLogs = base::TimeDelta::FromDays(5);
+const base::TimeDelta kTimeToKeepLogs = base::Days(5);
 
 namespace {
 

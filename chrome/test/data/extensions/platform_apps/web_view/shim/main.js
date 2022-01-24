@@ -1671,24 +1671,6 @@ function testRemoveSrcAttribute() {
   document.body.appendChild(webview);
 }
 
-function testPluginLoadInternalResource() {
-  var first = document.createElement('webview');
-  first.addEventListener('loadabort', function(e) {
-    var second = document.createElement('webview');
-    second.addEventListener('permissionrequest', function(e) {
-      e.preventDefault();
-      embedder.test.assertEq('loadplugin', e.permission);
-      embedder.test.succeed();
-    });
-    e.preventDefault();
-    second.partition = 'foobar';
-    second.setAttribute('src', 'test.pdf');
-    document.body.appendChild(second);
-  });
-  first.setAttribute('src', 'test.pdf');
-  document.body.appendChild(first);
-}
-
 function testPluginLoadPermission() {
   var pluginIdentifier = 'unknown platform';
   if (navigator.platform.match(/linux/i))
@@ -3451,7 +3433,6 @@ embedder.test.testList = {
   'testNestedSubframes': testNestedSubframes,
   'testReassignSrcAttribute': testReassignSrcAttribute,
   'testRemoveSrcAttribute': testRemoveSrcAttribute,
-  'testPluginLoadInternalResource': testPluginLoadInternalResource,
   'testPluginLoadPermission': testPluginLoadPermission,
   'testNewWindow': testNewWindow,
   'testNewWindowTwoListeners': testNewWindowTwoListeners,

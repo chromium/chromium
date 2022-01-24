@@ -31,11 +31,13 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/device/public/mojom/device_posture_provider.mojom-blink-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/payment_request_token.h"
@@ -43,7 +45,7 @@
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
@@ -54,7 +56,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom-blink.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -65,6 +67,7 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_impl.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -77,7 +80,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -86,7 +89,7 @@ class SingleThreadTaskRunner;
 namespace gfx {
 class Point;
 class Range;
-}
+}  // namespace gfx
 
 namespace blink {
 
@@ -119,6 +122,7 @@ class LocalWindowProxy;
 class LocalFrameClient;
 class LocalFrameMojoHandler;
 class BackgroundColorPaintImageGenerator;
+class BoxShadowPaintImageGenerator;
 class ClipPathPaintImageGenerator;
 class Node;
 class NodeTraversal;
@@ -150,9 +154,11 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
 // needs to call a function that is exposed as a Mojo method, the function
 // implementation should be in LocalFrame, and LocalFrameMojoHandler should
 // delegate to LocalFrame's implementation.
-class CORE_EXPORT LocalFrame final : public Frame,
-                                     public FrameScheduler::Delegate,
-                                     public Supplementable<LocalFrame> {
+class CORE_EXPORT LocalFrame final
+    : public Frame,
+      public FrameScheduler::Delegate,
+      public BackForwardCacheLoaderHelperImpl::Delegate,
+      public Supplementable<LocalFrame> {
  public:
   // Returns the LocalFrame instance for the given |frame_token|.
   static LocalFrame* FromFrameToken(const LocalFrameToken& frame_token);
@@ -209,18 +215,11 @@ class CORE_EXPORT LocalFrame final : public Frame,
   void DidFocus() override;
   bool IsAdSubframe() const override;
 
-  // Triggers eviction of this frame by notifying the browser side.
-  void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason reason);
-  // Called when a network request buffered an additional `num_bytes` while the
-  // frame is in back-forward cache. Updates the total amount of bytes buffered
-  // for back-forward cache in the frame and in the process. Note that
-  // `num_bytes` is the amount of additional bytes that are newly buffered, on
-  // top of any previously buffered bytes for this frame.
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
-  // Returns true if the total amount of bytes buffered while in back-forward
-  // cache in the whole renderer process is still under the per-process limit,
-  // false otherwise.
-  bool CanContinueBufferingWhileInBackForwardCache();
+  // BackForwardCacheLoaderHelperImpl::Delegate:
+  void EvictFromBackForwardCache(
+      mojom::blink::RendererEvictionReason reason) override;
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
+  bool CanContinueBufferingWhileInBackForwardCache() override;
 
   void DidChangeThemeColor(bool update_theme_color_cache);
   void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
@@ -258,6 +257,7 @@ class CORE_EXPORT LocalFrame final : public Frame,
   SpellChecker& GetSpellChecker() const;
   FrameConsole& Console() const;
   BackgroundColorPaintImageGenerator* GetBackgroundColorPaintImageGenerator();
+  BoxShadowPaintImageGenerator* GetBoxShadowPaintImageGenerator();
   ClipPathPaintImageGenerator* GetClipPathPaintImageGenerator();
 
   // A local root is the root of a connected subtree that contains only
@@ -357,8 +357,10 @@ class CORE_EXPORT LocalFrame final : public Frame,
   void MediaQueryAffectingValueChangedForLocalSubtree(MediaValueChange);
 
   void WindowSegmentsChanged(const WebVector<gfx::Rect>& window_segments);
-  void UpdateCSSFoldEnvironmentVariables(
+  void UpdateViewportSegmentCSSEnvironmentVariables(
       const WebVector<gfx::Rect>& window_segments);
+
+  device::mojom::blink::DevicePostureType GetDevicePosture();
 
   String SelectedText() const;
   String SelectedTextForClipboard() const;
@@ -453,7 +455,7 @@ class CORE_EXPORT LocalFrame final : public Frame,
       const mojom::blink::ViewportIntersectionState& intersection_state);
 
   IntSize GetMainFrameViewportSize() const override;
-  IntPoint GetMainFrameScrollOffset() const override;
+  gfx::Point GetMainFrameScrollOffset() const override;
 
   void SetOpener(Frame* opener) override;
 
@@ -611,9 +613,9 @@ class CORE_EXPORT LocalFrame final : public Frame,
   void SetPrescientNetworkingForTesting(
       std::unique_ptr<WebPrescientNetworking> prescient_networking);
 
-  void CopyImageAtViewportPoint(const IntPoint& viewport_point);
+  void CopyImageAtViewportPoint(const gfx::Point& viewport_point);
   void MediaPlayerActionAtViewportPoint(
-      const IntPoint& viewport_position,
+      const gfx::Point& viewport_position,
       const blink::mojom::blink::MediaPlayerActionType type,
       bool enable);
 
@@ -661,23 +663,22 @@ class CORE_EXPORT LocalFrame final : public Frame,
   // Return true if the frame has a transient affordance to enter fullscreen.
   bool IsTransientAllowFullscreenActive() const;
 
+  // Activate the transient affordance to enter fullscreen.
+  void ActivateTransientAllowFullscreen() {
+    transient_allow_fullscreen_.Activate();
+  }
+
   // Returns the state of the |PaymentRequestToken| in the current |Frame|.
   bool IsPaymentRequestTokenActive() const;
 
   // Consumes the |PaymentRequestToken| of the current |Frame| if it was active.
   bool ConsumePaymentRequestToken();
 
-  void SetOptimizationGuideHints(
-      mojom::blink::BlinkOptimizationGuideHintsPtr hints);
-  mojom::blink::BlinkOptimizationGuideHints* GetOptimizationGuideHints() {
-    return optimization_guide_hints_.get();
-  }
-
   LocalFrameToken GetLocalFrameToken() const;
 
   TextFragmentHandler* GetTextFragmentHandler() const {
-    // |text_fragment_handler_| is always set on the main frame, and null
-    // otherwise.
+    // |text_fragment_handler_| is always set on the main frame and created
+    // lazily for child frames.
     return text_fragment_handler_;
   }
 
@@ -708,6 +709,8 @@ class CORE_EXPORT LocalFrame final : public Frame,
 
   void BindTextFragmentReceiver(
       mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver);
+
+  void CreateTextFragmentHandler();
 
 #if defined(OS_MAC)
   void ResetTextInputHostForTesting();
@@ -756,7 +759,7 @@ class CORE_EXPORT LocalFrame final : public Frame,
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
   void UpdateTaskTime(base::TimeDelta time) override;
-  void UpdateActiveSchedulerTrackedFeatures(uint64_t features_mask) override;
+  void UpdateBackForwardCacheDisablingFeatures(uint64_t features_mask) override;
   const base::UnguessableToken& GetAgentClusterId() const override;
 
   // Activates the user activation states of this frame and all its ancestors.
@@ -777,7 +780,7 @@ class CORE_EXPORT LocalFrame final : public Frame,
   void SetContextPaused(bool);
 
   HitTestResult HitTestResultForVisualViewportPos(
-      const IntPoint& pos_in_viewport);
+      const gfx::Point& pos_in_viewport);
 
   bool ShouldThrottleDownload();
 
@@ -883,7 +886,7 @@ class CORE_EXPORT LocalFrame final : public Frame,
 
   IsCapturingMediaCallback is_capturing_media_callback_;
 
-  std::unique_ptr<FrameOverlay> frame_color_overlay_;
+  Member<FrameOverlay> frame_color_overlay_;
 
   absl::optional<base::UnguessableToken> embedding_token_;
 
@@ -891,9 +894,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
 
   std::unique_ptr<WebPrescientNetworking> prescient_networking_;
 
-  // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoAssociatedRemote<mojom::blink::BackForwardCacheControllerHost>
-      back_forward_cache_controller_host_remote_{nullptr};
   Member<LocalFrameMojoHandler> mojo_handler_;
 
   // Variable to control burst of download requests.
@@ -908,6 +908,13 @@ class CORE_EXPORT LocalFrame final : public Frame,
   Member<BackgroundColorPaintImageGenerator>
       background_color_paint_image_generator_;
 
+  // TODO(crbug.com/1264553) : use a map from property id to
+  // NativePaintImageGenerator, then we could avoid needing to switch on the
+  // property in compositor_animations.cc
+  // Access to box shadow paint image
+  // generator. Initialized per local root and reused among sub frames.
+  Member<BoxShadowPaintImageGenerator> box_shadow_paint_image_generator_;
+
   // Access to clip-path paint image generator. Initialized per local root and
   // reused among sub frames.
   Member<ClipPathPaintImageGenerator> clip_path_paint_image_generator_;
@@ -915,9 +922,8 @@ class CORE_EXPORT LocalFrame final : public Frame,
   using SavedScrollOffsets = HeapHashMap<Member<Node>, ScrollOffset>;
   Member<SavedScrollOffsets> saved_scroll_offsets_;
 
-  mojom::blink::BlinkOptimizationGuideHintsPtr optimization_guide_hints_;
-
-  // Always non-null for the main frame; null otherwise.
+  // Always non-null for the main frame and created lazily for child frames;
+  // null otherwise.
   Member<TextFragmentHandler> text_fragment_handler_;
 
   // Manages a transient affordance for this frame to enter fullscreen.

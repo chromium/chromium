@@ -8,9 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "base/values.h"
+#include "base/strings/string_piece.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cast_core/public/src/proto/bindings/media_capabilities.pb.h"
 
 namespace chromecast {
 
@@ -35,31 +36,23 @@ class PlatformInfoSerializer {
 
   PlatformInfoSerializer();
   PlatformInfoSerializer(PlatformInfoSerializer&& other);
-
   ~PlatformInfoSerializer();
-
   PlatformInfoSerializer& operator=(PlatformInfoSerializer&& other);
-  bool operator==(const PlatformInfoSerializer& other) const;
-  bool operator!=(const PlatformInfoSerializer& other) const;
 
-  // Tries to parse the provided json, returning absl::nullopt on failure.
-  static absl::optional<PlatformInfoSerializer> TryParse(
-      base::StringPiece json);
+  cast::bindings::MediaCapabilitiesMessage* platform_info();
 
-  // Serializes |platform_info_| into json.
-  std::string ToJson() const;
-
-  // Returns true if this object contains all "required fields" for the binding.
-  bool IsValid() const;
+  std::string Serialize() const;
+  static absl::optional<PlatformInfoSerializer> Deserialize(
+      base::StringPiece base64);
 
   // Setters for known valid properties.
   void SetMaxWidth(int max_width);
   void SetMaxHeight(int max_height);
   void SetMaxFrameRate(int max_frame_rate);
-  void SetSupportedCryptoBlockFormat(std::string format);
+  void SetSupportedCryptoBlockFormat(const std::string& format);
   void SetMaxChannels(int max_channels);
   void SetPcmSurroundSoundSupported(bool is_supported);
-  void SetPlatformDobleVisionEnabled(bool is_enabled);
+  void SetPlatformDolbyVisionEnabled(bool is_enabled);
   void SetDolbyVisionSupported(bool is_supported);
   void SetDolbyVision4kP60Supported(bool is_supported);
   void SetDolbyVisionSupportedByCurrentHdmiMode(bool is_supported);
@@ -68,7 +61,7 @@ class PlatformInfoSerializer {
   void SetHdmiModeHdrCheckEnforced(bool is_enforced);
   void SetHdrSupportedByCurrentHdmiMode(bool is_supported);
   void SetSmpteSt2084Supported(bool is_supported);
-  void SetHglSupported(bool is_supported);
+  void SetHlgSupported(bool is_supported);
   void SetHdrFeatureEnabled(bool is_enabled);
   void SetHdcpVersion(int hdcp_version);
   void SetSpatialRenderingSupportMask(int mask);
@@ -84,7 +77,7 @@ class PlatformInfoSerializer {
   absl::optional<std::string> SupportedCryptoBlockFormat() const;
   absl::optional<int> MaxChannels() const;
   absl::optional<bool> PcmSurroundSoundSupported() const;
-  absl::optional<bool> IsPlatformDobleVisionEnabled() const;
+  absl::optional<bool> IsPlatformDolbyVisionEnabled() const;
   absl::optional<bool> IsDolbyVisionSupported() const;
   absl::optional<bool> IsDolbyVision4kP60Supported() const;
   absl::optional<bool> IsDolbyVisionSupportedByCurrentHdmiMode() const;
@@ -93,7 +86,7 @@ class PlatformInfoSerializer {
   absl::optional<bool> IsHdmiModeHdrCheckEnforced() const;
   absl::optional<bool> IsHdrSupportedByCurrentHdmiMode() const;
   absl::optional<bool> IsSmpteSt2084Supported() const;
-  absl::optional<bool> IsHglSupported() const;
+  absl::optional<bool> IsHlgSupported() const;
   absl::optional<bool> IsHdrFeatureEnabled() const;
   absl::optional<int> HdcpVersion() const;
   absl::optional<int> SpatialRenderingSupportMask() const;
@@ -107,7 +100,7 @@ class PlatformInfoSerializer {
 
  private:
   // All currently produced values.
-  base::DictionaryValue platform_info_;
+  cast::bindings::MediaCapabilitiesMessage platform_info_;
 };
 
 bool operator==(const PlatformInfoSerializer::AudioCodecInfo& first,

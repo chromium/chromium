@@ -32,15 +32,8 @@ WGPUComputePipelineDescriptor AsDawnType(
     dawn_desc.label = label->c_str();
   }
 
-  if (webgpu_desc->hasCompute()) {
-    *computeStageDescriptor = AsDawnType(webgpu_desc->compute());
-  } else if (webgpu_desc->hasComputeStage()) {
-    device->AddConsoleWarning(
-        "computeStage is deprecated. Use compute instead.");
-    *computeStageDescriptor = AsDawnType(webgpu_desc->computeStage());
-  }
-
-  dawn_desc.computeStage = std::get<0>(*computeStageDescriptor);
+  *computeStageDescriptor = AsDawnType(webgpu_desc->compute());
+  dawn_desc.compute = std::get<0>(*computeStageDescriptor);
 
   return dawn_desc;
 }

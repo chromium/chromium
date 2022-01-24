@@ -22,6 +22,10 @@ class Tab;
 class FullscreenCallbackProxy : public FullscreenDelegate {
  public:
   FullscreenCallbackProxy(JNIEnv* env, jobject obj, Tab* tab);
+
+  FullscreenCallbackProxy(const FullscreenCallbackProxy&) = delete;
+  FullscreenCallbackProxy& operator=(const FullscreenCallbackProxy&) = delete;
+
   ~FullscreenCallbackProxy() override;
 
   // FullscreenDelegate:
@@ -35,8 +39,6 @@ class FullscreenCallbackProxy : public FullscreenDelegate {
   Tab* tab_;
   base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
   base::OnceClosure exit_fullscreen_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenCallbackProxy);
 };
 
 }  // namespace weblayer

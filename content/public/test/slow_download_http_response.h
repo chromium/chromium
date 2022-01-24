@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_SLOW_DOWNLOAD_HTTP_RESPONSE_H_
 #define CONTENT_PUBLIC_TEST_SLOW_DOWNLOAD_HTTP_RESPONSE_H_
 
+#include "base/strings/string_split.h"
 #include "content/public/test/slow_http_response.h"
 
 namespace content {
@@ -32,7 +33,7 @@ class SlowDownloadHttpResponse : public SlowHttpResponse {
   SlowDownloadHttpResponse& operator=(const SlowDownloadHttpResponse&) = delete;
 
   // SlowHttpResponse:
-  void AddResponseHeaders(std::string* response) override;
+  base::StringPairs ResponseHeaders() override;
 
  private:
   std::string url_;

@@ -35,6 +35,9 @@ enum Zoom {
 class FontSizeTabHelper : public web::WebStateObserver,
                           public web::WebStateUserData<FontSizeTabHelper> {
  public:
+  FontSizeTabHelper(const FontSizeTabHelper&) = delete;
+  FontSizeTabHelper& operator=(const FontSizeTabHelper&) = delete;
+
   ~FontSizeTabHelper() override;
 
   // Performs a zoom in the given direction on the WebState this is attached to.
@@ -119,8 +122,6 @@ class FontSizeTabHelper : public web::WebStateObserver,
   bool text_zoom_ui_active_ = false;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(FontSizeTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_FONT_SIZE_FONT_SIZE_TAB_HELPER_H_

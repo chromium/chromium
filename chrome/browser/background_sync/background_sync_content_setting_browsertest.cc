@@ -21,6 +21,12 @@ const char kExampleUrl[] = "https://www.example.com/foo/";
 class BackgroundSyncContentSettingBrowserTest : public InProcessBrowserTest {
  public:
   BackgroundSyncContentSettingBrowserTest() = default;
+
+  BackgroundSyncContentSettingBrowserTest(
+      const BackgroundSyncContentSettingBrowserTest&) = delete;
+  BackgroundSyncContentSettingBrowserTest& operator=(
+      const BackgroundSyncContentSettingBrowserTest&) = delete;
+
   ~BackgroundSyncContentSettingBrowserTest() override = default;
 
   // ---------------------------------------------------------------------------
@@ -36,9 +42,6 @@ class BackgroundSyncContentSettingBrowserTest : public InProcessBrowserTest {
         /* primary_url= */ url, /* secondary_url= */ url,
         ContentSettingsType::BACKGROUND_SYNC, setting);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncContentSettingBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundSyncContentSettingBrowserTest,

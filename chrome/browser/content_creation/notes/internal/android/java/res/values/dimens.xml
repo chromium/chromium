@@ -13,4 +13,6 @@
 
     <dimen name="note_title_min_top_margin">64dp</dimen>
     <dimen name="note_title_top_margin_offset">640dp</dimen>
+
+    <dimen name="min_dialog_height">424dp</dimen>
 </resources>

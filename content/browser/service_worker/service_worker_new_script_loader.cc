@@ -241,7 +241,7 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
     bool has_header = response_head->headers->EnumerateHeader(
         nullptr, ServiceWorkerConsts::kServiceWorkerAllowed,
         &service_worker_allowed);
-    if (!ServiceWorkerUtils::IsPathRestrictionSatisfied(
+    if (!service_worker_loader_helpers::IsPathRestrictionSatisfied(
             version_->scope(), request_url_,
             has_header ? &service_worker_allowed : nullptr, &error_message)) {
       CommitCompleted(

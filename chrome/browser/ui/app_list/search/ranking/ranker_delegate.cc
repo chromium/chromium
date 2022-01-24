@@ -11,19 +11,28 @@ RankerDelegate::RankerDelegate(Profile* profile,
 
 RankerDelegate::~RankerDelegate() {}
 
-void RankerDelegate::Start(const std::u16string& query) {
+void RankerDelegate::Start(const std::u16string& query,
+                           ResultsMap& results,
+                           CategoriesMap& categories) {
   for (auto& ranker : rankers_)
-    ranker->Start(query);
+    ranker->Start(query, results, categories);
 }
 
-void RankerDelegate::Rank(ResultsMap& results, ProviderType provider) {
+void RankerDelegate::Rank(ResultsMap& results,
+                          CategoriesMap& categories,
+                          ProviderType provider) {
   for (auto& ranker : rankers_)
-    ranker->Rank(results, provider);
+    ranker->Rank(results, categories, provider);
 }
 
 void RankerDelegate::Train(const LaunchData& launch) {
   for (auto& ranker : rankers_)
     ranker->Train(launch);
+}
+
+void RankerDelegate::Remove(ChromeSearchResult* result) {
+  for (auto& ranker : rankers_)
+    ranker->Remove(result);
 }
 
 void RankerDelegate::AddRanker(std::unique_ptr<Ranker> ranker) {

@@ -6,12 +6,14 @@
 
 #include <string>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/attestation/attestation_key_payload.pb.h"
 #include "chrome/browser/ash/attestation/fake_certificate.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
@@ -19,7 +21,6 @@
 #include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -180,8 +181,8 @@ class MachineCertificateUploaderTestBase : public ::testing::Test {
   void RunUploader() {
     MachineCertificateUploaderImpl uploader(&policy_client_,
                                             &attestation_flow_);
-    uploader.set_retry_limit(kRetryLimit);
-    uploader.set_retry_delay(0);
+    uploader.set_retry_limit_for_testing(kRetryLimit);
+    uploader.set_retry_delay_for_testing(base::TimeDelta());
     if (GetShouldRefreshCert())
       uploader.RefreshAndUploadCertificate(base::DoNothing());
     else
@@ -302,8 +303,7 @@ TEST_P(MachineCertificateUploaderTest, WaitForUploadFail) {
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsNotUploaded) {
   std::string certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(kCertValid),
-                                    &certificate));
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(kCertValid), &certificate));
   SetupMocks(MOCK_KEY_EXISTS, certificate);
   RunUploader();
   EXPECT_EQ(CreatePayload(),
@@ -315,24 +315,22 @@ TEST_P(MachineCertificateUploaderTest, KeyExistsNotUploaded) {
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsAlreadyUploaded) {
   std::string certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(kCertValid),
-                                    &certificate));
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(kCertValid), &certificate));
   SetupMocks(MOCK_KEY_EXISTS | MOCK_KEY_UPLOADED, certificate);
   RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsCertExpiringSoon) {
   std::string certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(
-      base::TimeDelta::FromDays(kCertExpiringSoon), &certificate));
+  ASSERT_TRUE(
+      GetFakeCertificatePEM(base::Days(kCertExpiringSoon), &certificate));
   SetupMocks(MOCK_KEY_EXISTS | MOCK_KEY_UPLOADED | MOCK_NEW_KEY, certificate);
   RunUploader();
 }
 
 TEST_P(MachineCertificateUploaderTest, KeyExistsCertExpired) {
   std::string certificate;
-  ASSERT_TRUE(GetFakeCertificatePEM(base::TimeDelta::FromDays(kCertExpired),
-                                    &certificate));
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(kCertExpired), &certificate));
   SetupMocks(MOCK_KEY_EXISTS | MOCK_KEY_UPLOADED | MOCK_NEW_KEY, certificate);
   RunUploader();
 }

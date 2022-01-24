@@ -42,8 +42,7 @@ void ConfigureBottomSheetAction::InternalProcessAction(
     if (expect_resize) {
       callback_ = std::move(callback);
 
-      timer_.Start(FROM_HERE,
-                   base::TimeDelta::FromMilliseconds(proto.resize_timeout_ms()),
+      timer_.Start(FROM_HERE, base::Milliseconds(proto.resize_timeout_ms()),
                    base::BindOnce(&ConfigureBottomSheetAction::OnTimeout,
                                   weak_ptr_factory_.GetWeakPtr()));
 

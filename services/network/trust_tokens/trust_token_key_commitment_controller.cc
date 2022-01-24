@@ -20,6 +20,7 @@
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace network {
 

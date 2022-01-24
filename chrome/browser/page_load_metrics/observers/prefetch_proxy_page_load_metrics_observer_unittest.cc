@@ -42,6 +42,11 @@ class PrefetchProxyPageLoadMetricsObserverTest
  public:
   PrefetchProxyPageLoadMetricsObserverTest() = default;
 
+  PrefetchProxyPageLoadMetricsObserverTest(
+      const PrefetchProxyPageLoadMetricsObserverTest&) = delete;
+  PrefetchProxyPageLoadMetricsObserverTest& operator=(
+      const PrefetchProxyPageLoadMetricsObserverTest&) = delete;
+
   TestPrefetchProxyPageLoadMetricsObserver* plm_observer() {
     return plm_observer_;
   }
@@ -133,12 +138,11 @@ class PrefetchProxyPageLoadMetricsObserverTest
 
     page_load_metrics::InitPageLoadTimingForTest(&timing_);
     timing_.navigation_start = base::Time::FromDoubleT(2);
-    timing_.response_start = base::TimeDelta::FromSeconds(3);
-    timing_.parse_timing->parse_start = base::TimeDelta::FromSeconds(4);
-    timing_.paint_timing->first_contentful_paint =
-        base::TimeDelta::FromSeconds(5);
-    timing_.paint_timing->first_image_paint = base::TimeDelta::FromSeconds(6);
-    timing_.document_timing->load_event_start = base::TimeDelta::FromSeconds(7);
+    timing_.response_start = base::Seconds(3);
+    timing_.parse_timing->parse_start = base::Seconds(4);
+    timing_.paint_timing->first_contentful_paint = base::Seconds(5);
+    timing_.paint_timing->first_image_paint = base::Seconds(6);
+    timing_.document_timing->load_event_start = base::Seconds(7);
     PopulateRequiredTimingFields(&timing_);
   }
 
@@ -147,8 +151,6 @@ class PrefetchProxyPageLoadMetricsObserverTest
 
   GURL navigation_url_{"https://chromium.org"};
   bool in_main_frame_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchProxyPageLoadMetricsObserverTest);
 };
 
 TEST_F(PrefetchProxyPageLoadMetricsObserverTest, BeforeFCP_CSS) {
@@ -511,7 +513,7 @@ TEST_F(PrefetchProxyPageLoadMetricsObserverTest, LastVisitToHost_Today) {
 TEST_F(PrefetchProxyPageLoadMetricsObserverTest, LastVisitToHost_Yesterday) {
   StartTest();
   plm_observer()->CallOnOriginLastVisitResult(
-      {true /* success */, base::Time::Now() - base::TimeDelta::FromDays(1)});
+      {true /* success */, base::Time::Now() - base::Days(1)});
 
   tester()->NavigateToUntrackedUrl();
 
@@ -527,7 +529,7 @@ TEST_F(PrefetchProxyPageLoadMetricsObserverTest, LastVisitToHost_Yesterday) {
 TEST_F(PrefetchProxyPageLoadMetricsObserverTest, LastVisitToHost_MaxUKM) {
   StartTest();
   plm_observer()->CallOnOriginLastVisitResult(
-      {true /* success */, base::Time::Now() - base::TimeDelta::FromDays(181)});
+      {true /* success */, base::Time::Now() - base::Days(181)});
 
   tester()->NavigateToUntrackedUrl();
 

@@ -14,7 +14,7 @@ class GetExpectationFilepathsUnittest(unittest.TestCase):
   def testGetExpectationFilepathsFindsSomething(self):
     """Tests that the _GetExpectationFilepaths finds something in the dir."""
     expectations = gpu_expectations.GpuExpectations()
-    self.assertTrue(len(expectations._GetExpectationFilepaths()) > 0)
+    self.assertTrue(len(expectations.GetExpectationFilepaths()) > 0)
 
 
 if __name__ == '__main__':

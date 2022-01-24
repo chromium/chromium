@@ -38,9 +38,10 @@ class LeakDetectionCheckFactory {
   LeakDetectionCheckFactory(LeakDetectionCheckFactory&&) = delete;
   LeakDetectionCheckFactory& operator=(LeakDetectionCheckFactory&&) = delete;
 
-  // The leak check is available only for signed-in users.
+  // The leak check is available for all signed-in users. If the feature is
+  // enabled, it is also available for signed-out users.
   // |delegate| gets the results for the fetch.
-  // |identity_manager| is used to obtain the token.
+  // |identity_manager| is used to obtain the token for signed in users.
   // |url_loader_factory| does the actual network request.
   virtual std::unique_ptr<LeakDetectionCheck> TryCreateLeakCheck(
       LeakDetectionDelegateInterface* delegate,

@@ -34,7 +34,7 @@ def main_run(args):
 
 
 def main_compile_targets(args):
-  json.dump(['shipped_binaries'], args.output)
+  json.dump(['traffic_annotation_proto'], args.output)
 
 
 if __name__ == '__main__':

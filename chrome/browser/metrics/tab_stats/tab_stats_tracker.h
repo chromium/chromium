@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
@@ -44,6 +43,10 @@ class TabStatsTracker : public TabStripModelObserver,
  public:
   // Constructor. |pref_service| must outlive this object.
   explicit TabStatsTracker(PrefService* pref_service);
+
+  TabStatsTracker(const TabStatsTracker&) = delete;
+  TabStatsTracker& operator=(const TabStatsTracker&) = delete;
+
   ~TabStatsTracker() override;
 
   // Sets the |TabStatsTracker| global instance.
@@ -89,6 +92,10 @@ class TabStatsTracker : public TabStripModelObserver,
     TabStatsDailyObserver(UmaStatsReportingDelegate* reporting_delegate,
                           TabStatsDataStore* data_store)
         : reporting_delegate_(reporting_delegate), data_store_(data_store) {}
+
+    TabStatsDailyObserver(const TabStatsDailyObserver&) = delete;
+    TabStatsDailyObserver& operator=(const TabStatsDailyObserver&) = delete;
+
     ~TabStatsDailyObserver() override {}
 
     // Callback called when the daily event happen.
@@ -100,8 +107,6 @@ class TabStatsTracker : public TabStripModelObserver,
 
     // The data store that houses the metrics.
     TabStatsDataStore* data_store_;
-
-    DISALLOW_COPY_AND_ASSIGN(TabStatsDailyObserver);
   };
 
   // Accessors, exposed for unittests:
@@ -219,8 +224,6 @@ class TabStatsTracker : public TabStripModelObserver,
       web_contents_usage_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TabStatsTracker);
 };
 
 // The reporting delegate, which reports metrics via UMA.
@@ -261,6 +264,11 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   static const char kCollapsedTabHistogramName[];
 
   UmaStatsReportingDelegate() = default;
+
+  UmaStatsReportingDelegate(const UmaStatsReportingDelegate&) = delete;
+  UmaStatsReportingDelegate& operator=(const UmaStatsReportingDelegate&) =
+      delete;
+
   virtual ~UmaStatsReportingDelegate() = default;
 
   // Called at resume from sleep/hibernate.
@@ -293,9 +301,6 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   // Checks if Chrome is running in background with no visible windows, virtual
   // for unittesting.
   virtual bool IsChromeBackgroundedWithoutWindows();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UmaStatsReportingDelegate);
 };
 
 }  // namespace metrics

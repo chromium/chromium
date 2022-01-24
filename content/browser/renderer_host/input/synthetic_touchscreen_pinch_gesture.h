@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TOUCHSCREEN_PINCH_GESTURE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TOUCHSCREEN_PINCH_GESTURE_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
@@ -22,6 +21,12 @@ class CONTENT_EXPORT SyntheticTouchscreenPinchGesture
  public:
   explicit SyntheticTouchscreenPinchGesture(
       const SyntheticPinchGestureParams& params);
+
+  SyntheticTouchscreenPinchGesture(const SyntheticTouchscreenPinchGesture&) =
+      delete;
+  SyntheticTouchscreenPinchGesture& operator=(
+      const SyntheticTouchscreenPinchGesture&) = delete;
+
   ~SyntheticTouchscreenPinchGesture() override;
 
   SyntheticGesture::Result ForwardInputEvents(
@@ -58,9 +63,6 @@ class CONTENT_EXPORT SyntheticTouchscreenPinchGesture
   GestureState state_;
   base::TimeTicks start_time_;
   base::TimeTicks stop_time_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyntheticTouchscreenPinchGesture);
 };
 
 }  // namespace content

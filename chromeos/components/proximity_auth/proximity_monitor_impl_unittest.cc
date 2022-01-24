@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/gmock_move_support.h"
@@ -45,12 +44,14 @@ const int kRssiThreshold = -70;
 class MockProximityMonitorObserver : public ProximityMonitorObserver {
  public:
   MockProximityMonitorObserver() {}
+
+  MockProximityMonitorObserver(const MockProximityMonitorObserver&) = delete;
+  MockProximityMonitorObserver& operator=(const MockProximityMonitorObserver&) =
+      delete;
+
   ~MockProximityMonitorObserver() override {}
 
   MOCK_METHOD0(OnProximityStateChanged, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockProximityMonitorObserver);
 };
 
 // Creates a mock Bluetooth adapter and sets it as the global adapter for

@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_math.h"
 #include "base/thread_annotations.h"
@@ -96,8 +96,8 @@ class CC_EXPORT SoftwareImageDecodeCache
     base::CheckedNumeric<size_t> current_usage_bytes_;
   };
 
-  using ImageMRUCache = base::
-      HashingMRUCache<CacheKey, std::unique_ptr<CacheEntry>, CacheKeyHash>;
+  using ImageLRUCache = base::
+      HashingLRUCache<CacheKey, std::unique_ptr<CacheEntry>, CacheKeyHash>;
 
   // Get the decoded draw image for the given key and paint_image. Note that
   // when used internally, we still require that DrawWithImageFinished() is
@@ -140,7 +140,7 @@ class CC_EXPORT SoftwareImageDecodeCache
 
   base::Lock lock_;
   // Decoded images and ref counts (predecode path).
-  ImageMRUCache decoded_images_ GUARDED_BY(lock_);
+  ImageLRUCache decoded_images_ GUARDED_BY(lock_);
 
   // A map of PaintImage::FrameKey to the ImageKeys for cached decodes of this
   // PaintImage.

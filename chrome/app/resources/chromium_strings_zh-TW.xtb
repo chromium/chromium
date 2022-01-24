@@ -18,6 +18,7 @@
 <translation id="1774152462503052664">讓 Chromium 在背景執行</translation>
 <translation id="1779356040007214683">為了讓 Chromium 的安全性更有保障，我們已將部分未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，它們可能在你不知情的情況下加入瀏覽器。</translation>
 <translation id="1808667845054772817">重新安裝 Chromium</translation>
+<translation id="185970820835152459">你可以管理已登入的 Google 帳戶。Google 帳戶可用於 Chromium 瀏覽器、Play 商店和 Gmail 等服務。如要添加他人 (例如家庭成員) 的帳戶，請改為將使用者新增至你的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1881322772814446296">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chromium 設定檔。你的 Chromium 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。如要另行保留現有的 Chromium 資料，你可以選擇建立新的設定檔。<ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">關閉這項功能後，你可以單獨登入 Gmail 等這類 Google 網站，不必同時登入 Chromium</translation>
 <translation id="1929939181775079593">Chromium 沒有回應，要立即重新啟動嗎？</translation>
@@ -29,18 +30,20 @@
 <translation id="2185166961232948079">Chromium - 網路登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">如果你與親朋好友共用電腦，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium。</translation>
 <translation id="2294245788148774212">選用：自動將診斷資料和使用資料傳送給 Google，協助改善 Chromium 作業系統的功能與效能。</translation>
+<translation id="2313870531055795960">可使用儲存在 Chromium 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能。</translation>
 <translation id="2343156876103232566">如要將號碼從這裡傳送到 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
 <translation id="2347108572062610441">這個擴充功能已變更 Chromium 啟動時所顯示的網頁。</translation>
 <translation id="2396765026452590966">擴充功能「<ph name="EXTENSION_NAME" />」已變更 Chromium 啟動時所顯示的網頁。</translation>
+<translation id="2401032172288869980">Chromium 需要相機權限和麥克風權限，才能執行這個網站要求的功能</translation>
 <translation id="2483889755041906834">在 Chromium 中</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2535480412977113886">你的帳戶登入詳細資料尚未更新，因此 Chromium 作業系統無法同步處理你的資料。</translation>
 <translation id="2560420686485554789">Chromium 需要儲存空間存取權，才能下載檔案</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
 <translation id="2577788541081224677">如要透過所有裝置存取你的 Chromium 資料，請先登入，這樣才能開啟同步處理功能。</translation>
-<translation id="2580426763510374355">安裝 Chromium 作業系統</translation>
 <translation id="2583187216237139145">凡是在使用這個資料夾期間產生的 Chromium 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，工作資料夾管理員皆可予以移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium 作業系統必須重新啟動，才能套用更新。</translation>
+<translation id="2614883797045469742">預設設定適用於大多數使用者，但你也可以根據自己習慣使用 Chromium 的方式自訂設定</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請重新下載 Chromium。</translation>
 <translation id="2661879430930417727">如果你與親朋好友共用裝置，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium</translation>
 <translation id="2711502716910134313">Chromium 分頁</translation>
@@ -49,9 +52,11 @@
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2837693172913560447">這項操作會為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chromium 設定檔</translation>
 <translation id="2847479871509788944">從 Chromium 中移除...</translation>
+<translation id="2850691299438350830">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chromium 使用體驗，也有助於提升其他 Google 應用程式的安全機制</translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2910007522516064972">關於 Chromium(&amp;C)</translation>
 <translation id="2977470724722393594">Chromium 目前是最新版本</translation>
+<translation id="2977506796191543575">如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能</translation>
 <translation id="2983934633046890458">Chromium 正在嘗試編輯密碼。</translation>
 <translation id="3032706164202344641">Chromium 無法檢查你的密碼，請稍後再試。</translation>
 <translation id="3032787606318309379">正在新增至 Chromium...</translation>
@@ -74,13 +79,11 @@
 <translation id="3350761136195634146">該帳戶已有相關聯的 Chromium 設定檔</translation>
 <translation id="3406848076815591792">要切換至現有的 Chromium 設定檔嗎？</translation>
 <translation id="3430503420100763906">你可以運用 Chromium 設定檔區隔各種 Chromium 資料，例如建立親朋好友的專屬設定檔，或是依工作和娛樂需要建立不同設定檔。</translation>
-<translation id="3433271666494956603">正在安裝 Chromium OS</translation>
 <translation id="347328004046849135">如果你使用遭外洩的密碼登入帳戶，Chromium 會通知你</translation>
 <translation id="3474745554856756813">登出後，系統會將 <ph name="ITEMS_COUNT" /> 個項目從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chromium。</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> 可以切換不同的 Chromium 設定檔</translation>
 <translation id="3509308970982693815">請關閉所有 Chromium 視窗，然後再試一次。</translation>
 <translation id="3575459661164320785">你的電腦安裝了有害軟體。Chromium 可以移除該軟體、復原設定及停用擴充功能，讓你的瀏覽器恢復正常運作。</translation>
-<translation id="3610776674893128619">清除硬碟資料並安裝 Chromium OS</translation>
 <translation id="3639635944603682591">這位使用者的瀏覽資料將從這個裝置上刪除。如要還原資料，請使用 <ph name="USER_EMAIL" /> 登入 Chromium。</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有可用的更新，重新啟動後即可套用。}=1{Chromium 有可用的更新，重新啟動後即可套用。你的無痕式視窗不會重新開啟。}other{Chromium 有可用的更新，重新啟動後即可套用。你的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="3651803019964686660">如要將號碼從 <ph name="ORIGIN" /> 傳送到 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
@@ -103,7 +106,6 @@
 <translation id="4264410486868823224">根據 <ph name="MANAGER" /> 的規定，您必須先詳閱並接受下列《服務條款》，才能使用這部裝置。這些條款不會擴充、修改或限制《Chromium 作業系統條款》。</translation>
 <translation id="4271805377592243930">前往 Chromium 說明頁面</translation>
 <translation id="4285930937574705105">不明錯誤導致安裝失敗。如果目前 Chromium 正在執行，請關閉 Chromium，然後再試一次。</translation>
-<translation id="429583012151745428">正在執行安裝作業，請勿關閉裝置。安裝作業應會在二十分鐘內完成。完成後，電腦會自動關機。</translation>
 <translation id="4407044323746248786">確定要結束 Chromium 嗎？</translation>
 <translation id="4415566066719264597">讓 Chromium 在背景執行</translation>
 <translation id="4423735387467980091">自訂及控制 Chromium</translation>
@@ -133,7 +135,6 @@
 <translation id="5386450000063123300">正在更新 Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">允許登入 Chromium</translation>
 <translation id="5398878173008909840">新版 Chromium 現已推出。</translation>
-<translation id="5416696090975899932">缺乏內建的 PDF 檢視器時，Chromium 無法顯示列印預覽畫面。</translation>
 <translation id="5427571867875391349">將 Chromium 設為預設瀏覽器</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium 測試版</translation>
 <translation id="5479196819031988440">Chromium 作業系統無法開啟這個網頁。</translation>
@@ -148,6 +149,7 @@
 <translation id="5820394555380036790">Chromium 作業系統</translation>
 <translation id="5854740544000584380">Chromium 作業系統藉助了其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />的相關技術才得以問世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也是如此。</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
+<translation id="5883558403894052917">Chromium 偵測到下列項目含有惡意軟體：</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 網路登入</translation>
 <translation id="5987687638152509985">如要開始同步處理，請更新 Chromium</translation>
@@ -162,18 +164,11 @@
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 並不安全，因此遭到 Chromium 封鎖。</translation>
 <translation id="6134968993075716475">安全瀏覽功能已停用。Chromium 建議啟用這項功能。</translation>
 <translation id="6145820983052037069">你可以在這裡切換不同的 Chromium 設定檔</translation>
-<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Chromium OS 安裝程序已就緒！一旦繼續執行：
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />系統會清除你的檔案、資料和目前的作業系統。
-          <ph name="LIST_ITEM" />Chromium OS 將進行安裝。
-          <ph name="LIST_ITEM" />你的裝置會在安裝完成後關機。
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />最後請注意，安裝程序會清除整個硬碟的資料。請確認重要資料皆已完成備份。<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />安裝程序開始後就無法取消。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">請確認你已在「<ph name="TARGET_DEVICE_NAME" />」上登入 Chromium，然後再傳送一次。</translation>
 <translation id="6212496753309875659">這台電腦已安裝較新的 Chromium 版本。如果軟體無法順利運作，請解除安裝 Chromium，然後再試一次。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium 將立即重新啟動}=1{Chromium 將在 1 秒後重新啟動}other{Chromium 將在 # 秒後重新啟動}}</translation>
+<translation id="6241367896540709610">Chromium 需要儲存空間存取權才能下載檔案</translation>
+<translation id="6245734527075554892">可使用儲存在 Chromium 中的不安全網站清單檢查網址</translation>
 <translation id="6248213926982192922">將 Chromium 設為預設瀏覽器</translation>
 <translation id="6266342355635466082">Chromium 無法檢查更新，請查看你的網際網路連線狀態。</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
@@ -188,25 +183,25 @@
 <translation id="6434250628340475518">Chromium 作業系統</translation>
 <translation id="6455857529632101747">歡迎使用 Chromium 設定檔</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium 將於 1 秒後重新啟動}other{Chromium 將於 # 秒後重新啟動}}</translation>
-<translation id="646620589868199210">現在可以安裝 Chromium OS 了</translation>
 <translation id="6475912303565314141">這個擴充功能也會控管你啟動 Chromium 時所顯示的網頁。</translation>
 <translation id="6510925080656968729">解除安裝 Chromium</translation>
 <translation id="6542839706527980775">每個設定檔都有獨立專屬的 Chromium 資訊，例如書籤、歷史記錄和密碼等等</translation>
 <translation id="6570579332384693436">為修正拼字錯誤，Chromium 會將你在文字欄位輸入的文字傳送給 Google</translation>
 <translation id="6598877126913850652">前往 Chromium 通知設定</translation>
 <translation id="6613594504749178791">你的變更將於下次重新啟動 Chromium 時生效。</translation>
+<translation id="665732753414869868">Chromium 需要相機權限，才能根據你的周遭環境製作 3D 地圖</translation>
 <translation id="6676384891291319759">連線到網際網路</translation>
+<translation id="6709350901466051922">Chromium 需要麥克風權限，才能執行這個網站要求的功能</translation>
 <translation id="6717134281241384636">由於你的設定檔是來自較新版本的 Chromium，所以系統無法使用該檔案。
 
 這表示你可能無法使用部分功能。請指定另一個設定檔目錄，或使用較新版本的 Chromium。</translation>
-<translation id="6734080038664603509">更新 Chromium(&amp;C)</translation>
 <translation id="6734291798041940871">電腦上的所有使用者都已經安裝 Chromium 了。</translation>
 <translation id="673636774878526923">如要透過所有裝置存取你的 Chromium 資料，請登入並開啟同步處理功能。</translation>
 <translation id="6774082503108938489">你的家長已停用 Chromium 的「網站、應用程式和擴充功能的權限」設定，因此你無法啟用這個<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
-<translation id="6827182711503025204">安裝 Chrome OS 將會覆寫裝置上的所有資料。</translation>
 <translation id="6847869444787758381">Chromium 會通知你密碼是否曾遭外洩</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (已複製到 Chromium)</translation>
+<translation id="6873893289264747459">Chromium 偵測到「<ph name="EXTENSION_NAME" />」含有惡意軟體</translation>
 <translation id="6893813176749746474">Chromium 已更新，但你至少超過 30 天沒有使用 Chromium 了。</translation>
 <translation id="691026815377248078">Chromium 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
@@ -214,10 +209,12 @@
 <translation id="6990124437352146030">Chromium 需要相關權限，才能讓這個網站使用你的麥克風</translation>
 <translation id="705851970750939768">更新 Chromium</translation>
 <translation id="7067091210845072982">如果圖片缺少有用的說明，Chromium 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。</translation>
+<translation id="7147279922647361552">自訂 Chromium 最重要的部分隱私權選項</translation>
+<translation id="718435575166326686">Chromium 需要相機權限，才能執行這個網站要求的功能</translation>
 <translation id="7196312274710523067">無法啟動 Chromium，請再試一次。</translation>
 <translation id="7197677400338048821">Chromium 無法檢查你的密碼，請於 24 小時後再試。</translation>
+<translation id="7218568399872925918">在 Chromium 關閉前，你造訪的網站會記住你的資訊</translation>
 <translation id="7223968959479464213">工作管理員 - Chromium</translation>
-<translation id="731644333568559921">更新 Chromium 作業系統(&amp;C)</translation>
 <translation id="731795002583552498">正在更新 Chromium</translation>
 <translation id="7318036098707714271">你的偏好設定檔案已毀損或無效。
 
@@ -237,10 +234,6 @@ Chromium 無法復原你的設定。</translation>
       Chromium 作業系統設定<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium 正在使用你的攝影機和麥克風。</translation>
 <translation id="7617377681829253106">Chromium 變得更進步了</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />開始之前，請務必準備好最新的備份資料。安裝 Chromium OS 將會覆寫硬碟上的所有資料。<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google 對任何資料遺失情形概不負責，也不保證 Chromium OS 能夠在未經認證的機型上正常運作。如要進一步瞭解獲得認證的機型，請前往[TBD]。<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />進一步瞭解如何安裝 Chromium OS 及清除資料：[TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />如果準備好繼續作業，請按一下 [安裝 Chromium OS]，系統接著會引導你執行幾個簡單步驟以完成安裝作業。請放心，系統會先讓你再次確認，才對你的電腦做出變更。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium 不是你的預設瀏覽器</translation>
 <translation id="7689606757190482937">進行同步處理即可在你的所有裝置上享有個人化的 Chromium 體驗</translation>
 <translation id="7729447699958282447">你的網域無法使用「同步功能」，因此 Chromium 無法同步處理你的資料。</translation>
@@ -254,6 +247,8 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7937630085815544518">你使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chromium，請使用相同帳戶重新登入。</translation>
 <translation id="7975919845073681630">這是以並存形式安裝的次要 Chromium，無法設為您的預設瀏覽器。</translation>
 <translation id="8013436988911883588">Chromium 取得存取權後，網站將可要求你授予存取權。</translation>
+<translation id="8045118833343856403">下列帳戶未登入任何 Chromium 設定檔。如要將帳戶用於其他設定檔，請先移除該設定檔。</translation>
+<translation id="8105840573057009683">Chromium 需要位置存取權，才能執行這個網站要求的功能</translation>
 <translation id="81770708095080097">這個檔案並不安全，因此遭到 Chromium 封鎖。</translation>
 <translation id="8248265253516264921">如果圖片缺少有用的說明，Chromium 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。你隨時可以在設定中關閉這項功能。</translation>
 <translation id="8266560134891435528">你尚未登入帳戶，因此 Chromium 無法檢查你的密碼</translation>
@@ -272,6 +267,8 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8621669128220841554">不明錯誤導致安裝失敗，請重新下載 Chromium。</translation>
 <translation id="8697124171261953979">這個擴充功能也會控管 Chromium 啟動時或你使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="8704119203788522458">這是你專屬的 Chromium</translation>
+<translation id="8713679423359107094">當你關閉所有 Chromium 視窗時，系統會自動清除 Cookie 和網站資料</translation>
+<translation id="8796443464227412154">關閉 Chromium 會導致你<ph name="BEGIN_BOLD" />從大部分的網站登出<ph name="END_BOLD" />。如果關閉同步處理功能，你也會<ph name="BEGIN_BOLD" />從 Google 服務和 Chromium 登出<ph name="END_BOLD" />。</translation>
 <translation id="8796602469536043152">Chromium 需要相關權限，才能讓這個網站使用你的攝影機和麥克風</translation>
 <translation id="8803635938069941624">Chromium 作業系統條款</translation>
 <translation id="8821041990367117597">你的帳戶登入詳細資料尚未更新，因此 Chromium 無法同步處理你的資料。</translation>

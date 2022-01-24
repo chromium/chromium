@@ -4,17 +4,18 @@
 
 #include "chromecast/shared/platform_info_serializer.h"
 
+#include "chromecast/public/media/decoder_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromecast {
 
 PlatformInfoSerializer ConvertAndValidate(
     const PlatformInfoSerializer& parser) {
-  std::string json = parser.ToJson();
+  std::string base64 = parser.Serialize();
   absl::optional<PlatformInfoSerializer> deserialized_parser =
-      PlatformInfoSerializer::TryParse(json);
-  EXPECT_TRUE(deserialized_parser.has_value());
-  EXPECT_EQ(parser, deserialized_parser.value());
+      PlatformInfoSerializer::Deserialize(base64);
+  EXPECT_TRUE(deserialized_parser);
+  EXPECT_EQ(parser.Serialize(), deserialized_parser->Serialize());
   return std::move(deserialized_parser.value());
 }
 
@@ -97,14 +98,14 @@ TEST_F(PlatformInfoSerializerTest, PcmSurroundSoundSupported) {
       ConvertAndValidate(serializer_).PcmSurroundSoundSupported().value());
 }
 
-TEST_F(PlatformInfoSerializerTest, PlatformDobleVisionEnabled) {
-  serializer_.SetPlatformDobleVisionEnabled(true);
+TEST_F(PlatformInfoSerializerTest, PlatformDolbyVisionEnabled) {
+  serializer_.SetPlatformDolbyVisionEnabled(true);
   EXPECT_TRUE(
-      ConvertAndValidate(serializer_).IsPlatformDobleVisionEnabled().value());
+      ConvertAndValidate(serializer_).IsPlatformDolbyVisionEnabled().value());
 
-  serializer_.SetPlatformDobleVisionEnabled(false);
+  serializer_.SetPlatformDolbyVisionEnabled(false);
   EXPECT_FALSE(
-      ConvertAndValidate(serializer_).IsPlatformDobleVisionEnabled().value());
+      ConvertAndValidate(serializer_).IsPlatformDolbyVisionEnabled().value());
 }
 
 TEST_F(PlatformInfoSerializerTest, DolbyVisionSupported) {
@@ -187,12 +188,12 @@ TEST_F(PlatformInfoSerializerTest, SmpteSt2084Supported) {
       ConvertAndValidate(serializer_).IsSmpteSt2084Supported().value());
 }
 
-TEST_F(PlatformInfoSerializerTest, HglSupported) {
-  serializer_.SetHglSupported(true);
-  EXPECT_TRUE(ConvertAndValidate(serializer_).IsHglSupported().value());
+TEST_F(PlatformInfoSerializerTest, Hlg) {
+  serializer_.SetHlgSupported(true);
+  EXPECT_TRUE(ConvertAndValidate(serializer_).IsHlgSupported().value());
 
-  serializer_.SetHglSupported(false);
-  EXPECT_FALSE(ConvertAndValidate(serializer_).IsHglSupported().value());
+  serializer_.SetHlgSupported(false);
+  EXPECT_FALSE(ConvertAndValidate(serializer_).IsHlgSupported().value());
 }
 
 TEST_F(PlatformInfoSerializerTest, HdrFeatureEnabled) {
@@ -251,26 +252,6 @@ TEST_F(PlatformInfoSerializerTest, MaxFillRate) {
 
   serializer_.SetMaxFillRate(7);
   EXPECT_EQ(7, ConvertAndValidate(serializer_).MaxFillRate().value());
-}
-
-TEST_F(PlatformInfoSerializerTest, IsValid) {
-  serializer_.SetMaxWidth(0);
-  EXPECT_FALSE(serializer_.IsValid());
-
-  serializer_.SetMaxHeight(0);
-  EXPECT_FALSE(serializer_.IsValid());
-
-  serializer_.SetMaxFrameRate(0);
-  EXPECT_FALSE(serializer_.IsValid());
-
-  serializer_.SetSupportedCryptoBlockFormat("");
-  EXPECT_FALSE(serializer_.IsValid());
-
-  serializer_.SetMaxChannels(0);
-  EXPECT_FALSE(serializer_.IsValid());
-
-  serializer_.SetPcmSurroundSoundSupported(false);
-  EXPECT_TRUE(serializer_.IsValid());
 }
 
 TEST_F(PlatformInfoSerializerTest, AudioCodecInfo) {

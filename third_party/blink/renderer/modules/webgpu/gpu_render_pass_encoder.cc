@@ -63,15 +63,6 @@ void GPURenderPassEncoder::setBlendConstant(const V8GPUColor* color,
   GetProcs().renderPassEncoderSetBlendConstant(GetHandle(), &dawn_color);
 }
 
-void GPURenderPassEncoder::setBlendColor(
-    const V8GPUColor* color,
-    ExceptionState& exception_state) {
-  device_->AddConsoleWarning(
-      "setBlendColor is deprecated. Use setBlendConstant instead.");
-
-  setBlendConstant(color, exception_state);
-}
-
 void GPURenderPassEncoder::executeBundles(
     const HeapVector<Member<GPURenderBundle>>& bundles) {
   std::unique_ptr<WGPURenderBundle[]> dawn_bundles = AsDawnType(bundles);

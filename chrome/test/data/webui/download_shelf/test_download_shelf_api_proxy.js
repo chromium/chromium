@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DownloadItem, PageCallbackRouter, PageRemote} from 'chrome://download-shelf.top-chrome/download_shelf.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 export class TestDownloadShelfApiProxy extends TestBrowserProxy {
   constructor() {

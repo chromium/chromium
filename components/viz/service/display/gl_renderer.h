@@ -15,7 +15,6 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
@@ -80,6 +79,10 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
              DisplayResourceProviderGL* resource_provider,
              OverlayProcessorInterface* overlay_processor,
              scoped_refptr<base::SingleThreadTaskRunner> current_task_runner);
+
+  GLRenderer(const GLRenderer&) = delete;
+  GLRenderer& operator=(const GLRenderer&) = delete;
+
   ~GLRenderer() override;
 
   bool use_swap_with_bounds() const { return use_swap_with_bounds_; }
@@ -506,8 +509,6 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   // MessageLoop.
   scoped_refptr<base::SingleThreadTaskRunner> current_task_runner_;
   base::WeakPtrFactory<GLRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GLRenderer);
 };
 
 }  // namespace viz

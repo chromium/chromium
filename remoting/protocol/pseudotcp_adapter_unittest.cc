@@ -15,7 +15,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "jingle/glue/thread_wrapper.h"
@@ -141,7 +141,7 @@ class FakeSocket : public P2PDatagramSocket {
           base::BindOnce(&FakeSocket::AppendInputPacket,
                          base::Unretained(peer_socket_),
                          std::vector<char>(buf->data(), buf->data() + buf_len)),
-          base::TimeDelta::FromMilliseconds(latency_ms_));
+          base::Milliseconds(latency_ms_));
     }
 
     return buf_len;

@@ -80,9 +80,9 @@ class ExplicitlyAllowedNetworkPortsBackgroundFetchBrowserTest
     auto handle = embedded_test_server()->StartAndReturnHandle();
     // We don't actually use the functions on this page, we just need a URL
     // that is in the right scope for the service worker.
-    ui_test_utils::NavigateToURL(
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(
-                       "/background_fetch/background_fetch.html"));
+                       "/background_fetch/background_fetch.html")));
 
     return EvalJs(chrome_test_utils::GetActiveWebContents(this), R"(
 (async () => {

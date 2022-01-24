@@ -282,7 +282,7 @@ void CSSImageSliceInterpolationType::ApplyStandardPropertyValue(
       To<CSSImageSliceNonInterpolableValue>(non_interpolable_value)->Types();
   const auto& convert_side = [&types, &list, &style](wtf_size_t index) {
     float value =
-        clampTo<float>(To<InterpolableNumber>(list.Get(index))->Value(), 0);
+        ClampTo<float>(To<InterpolableNumber>(list.Get(index))->Value(), 0);
     return types.is_number[index] ? Length::Fixed(value * style.EffectiveZoom())
                                   : Length::Percent(value);
   };

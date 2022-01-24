@@ -28,6 +28,10 @@ class NET_EXPORT_PRIVATE SocketPosix
     : public base::MessagePumpForIO::FdWatcher {
  public:
   SocketPosix();
+
+  SocketPosix(const SocketPosix&) = delete;
+  SocketPosix& operator=(const SocketPosix&) = delete;
+
   ~SocketPosix() override;
 
   // Opens a socket and returns net::OK if |address_family| is AF_INET, AF_INET6
@@ -152,8 +156,6 @@ class NET_EXPORT_PRIVATE SocketPosix
   std::unique_ptr<SockaddrStorage> peer_address_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketPosix);
 };
 
 }  // namespace net

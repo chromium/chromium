@@ -23,6 +23,11 @@ namespace ui {
 class ModifierKeyboardHookWinTest : public testing::Test {
  public:
   ModifierKeyboardHookWinTest();
+
+  ModifierKeyboardHookWinTest(const ModifierKeyboardHookWinTest&) = delete;
+  ModifierKeyboardHookWinTest& operator=(const ModifierKeyboardHookWinTest&) =
+      delete;
+
   ~ModifierKeyboardHookWinTest() override;
 
   // testing::Test overrides.
@@ -50,8 +55,6 @@ class ModifierKeyboardHookWinTest : public testing::Test {
   std::unique_ptr<KeyboardHookWinBase> keyboard_hook_;
   std::vector<KeyEvent> key_events_;
   std::unique_ptr<ScopedKeyboardLayout> keyboard_layout_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModifierKeyboardHookWinTest);
 };
 
 ModifierKeyboardHookWinTest::ModifierKeyboardHookWinTest() = default;

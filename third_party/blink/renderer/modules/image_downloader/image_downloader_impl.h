@@ -30,6 +30,10 @@ class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
   static const char kSupplementName[];
 
   explicit ImageDownloaderImpl(LocalFrame&);
+
+  ImageDownloaderImpl(const ImageDownloaderImpl&) = delete;
+  ImageDownloaderImpl& operator=(const ImageDownloaderImpl&) = delete;
+
   ~ImageDownloaderImpl() override;
 
   using DownloadCallback =
@@ -49,7 +53,7 @@ class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
   // image. When done, |callback| will be called.
   void DownloadImage(const KURL& url,
                      bool is_favicon,
-                     uint32_t preferred_size,
+                     const gfx::Size& preferred_size,
                      uint32_t max_bitmap_size,
                      bool bypass_cache,
                      DownloadImageCallback callback) override;
@@ -98,8 +102,6 @@ class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
                    ImageDownloaderImpl,
                    HeapMojoWrapperMode::kForceWithoutContextObserver>
       receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDownloaderImpl);
 };
 
 }  // namespace blink

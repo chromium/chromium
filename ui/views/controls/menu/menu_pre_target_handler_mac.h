@@ -16,14 +16,16 @@ namespace views {
 class MenuPreTargetHandlerMac : public MenuPreTargetHandler {
  public:
   MenuPreTargetHandlerMac(MenuController* controller, Widget* widget);
+
+  MenuPreTargetHandlerMac(const MenuPreTargetHandlerMac&) = delete;
+  MenuPreTargetHandlerMac& operator=(const MenuPreTargetHandlerMac&) = delete;
+
   ~MenuPreTargetHandlerMac() override;
 
  private:
   MenuController* controller_;  // Weak. Owns |this|.
   id monitor_;
   ui::WeakPtrNSObjectFactory<MenuPreTargetHandlerMac> factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuPreTargetHandlerMac);
 };
 
 }  // namespace views

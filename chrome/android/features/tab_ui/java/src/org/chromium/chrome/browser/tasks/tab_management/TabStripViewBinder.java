@@ -69,7 +69,7 @@ class TabStripViewBinder {
                 button.getBackground().setAlpha(FAVICON_BACKGROUND_DEFAULT_ALPHA);
             }
         } else if (TabProperties.FAVICON == propertyKey) {
-            Drawable faviconDrawable = model.get(TabProperties.FAVICON);
+            Drawable faviconDrawable = model.get(TabProperties.FAVICON).getDefaultDrawable();
             ImageButton button = (ImageButton) view.fastFindViewById(R.id.tab_strip_item_button);
             button.setBackgroundResource(R.drawable.tabstrip_favicon_background);
             ViewCompat.setBackgroundTintList(button,

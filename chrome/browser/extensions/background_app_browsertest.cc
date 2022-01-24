@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"

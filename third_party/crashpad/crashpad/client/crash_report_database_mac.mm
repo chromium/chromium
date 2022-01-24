@@ -28,6 +28,7 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_piece.h"
@@ -127,6 +128,10 @@ std::string XattrNameInternal(const base::StringPiece& name, bool new_name) {
 class CrashReportDatabaseMac : public CrashReportDatabase {
  public:
   explicit CrashReportDatabaseMac(const base::FilePath& path);
+
+  CrashReportDatabaseMac(const CrashReportDatabaseMac&) = delete;
+  CrashReportDatabaseMac& operator=(const CrashReportDatabaseMac&) = delete;
+
   virtual ~CrashReportDatabaseMac();
 
   bool Initialize(bool may_create);
@@ -243,8 +248,6 @@ class CrashReportDatabaseMac : public CrashReportDatabase {
   Settings settings_;
   bool xattr_new_names_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashReportDatabaseMac);
 };
 
 FileWriter* CrashReportDatabase::NewReport::AddAttachment(

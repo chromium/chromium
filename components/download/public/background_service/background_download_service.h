@@ -8,9 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/task/download_task_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -98,13 +97,14 @@ class BackgroundDownloadService : public KeyedService {
   // components in the larger system.
   virtual Logger* GetLogger() = 0;
 
+  BackgroundDownloadService(const BackgroundDownloadService&) = delete;
+  BackgroundDownloadService& operator=(const BackgroundDownloadService&) =
+      delete;
+
   ~BackgroundDownloadService() override = default;
 
  protected:
   BackgroundDownloadService() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundDownloadService);
 };
 
 }  // namespace download

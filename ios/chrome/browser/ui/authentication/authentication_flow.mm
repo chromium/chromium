@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#include "base/strings/sys_string_conversions.h"
 
 #include "base/check_op.h"
 #import "base/ios/block_types.h"
@@ -16,9 +17,8 @@
 #include "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#include "ios/public/provider/chrome/browser/signin/signin_error_provider.h"
+#import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -39,21 +39,12 @@ enum AuthenticationState {
   SIGN_OUT_IF_NEEDED,
   CLEAR_DATA,
   SIGN_IN,
-  START_SYNC,
+  COMMIT_SYNC,
   COMPLETE_WITH_SUCCESS,
   COMPLETE_WITH_FAILURE,
   CLEANUP_BEFORE_DONE,
   DONE
 };
-
-NSError* IdentityMissingError() {
-  ios::SigninErrorProvider* provider =
-      ios::GetChromeBrowserProvider().GetSigninErrorProvider();
-  return [NSError
-      errorWithDomain:provider->GetSigninErrorDomain()
-                 code:provider->GetCode(ios::SigninError::MISSING_IDENTITY)
-             userInfo:nil];
-}
 
 }  // namespace
 
@@ -94,10 +85,11 @@ NSError* IdentityMissingError() {
   BOOL _failedOrCancelled;
   BOOL _shouldSignIn;
   BOOL _shouldSignOut;
+  // YES if the signed in account is a managed account and the sign-in flow
+  // includes sync.
   BOOL _shouldShowManagedConfirmation;
-  BOOL _shouldStartSync;
+  BOOL _shouldCommitSync;
   Browser* _browser;
-  ChromeIdentity* _browserStateIdentity;
   ChromeIdentity* _identityToSignIn;
   NSString* _identityToSignInHostedDomain;
 
@@ -120,6 +112,7 @@ NSError* IdentityMissingError() {
   if ((self = [super init])) {
     DCHECK(browser);
     DCHECK(presentingViewController);
+    DCHECK(identity);
     _browser = browser;
     _identityToSignIn = identity;
     _shouldClearData = shouldClearData;
@@ -176,7 +169,7 @@ NSError* IdentityMissingError() {
     case SIGN_OUT_IF_NEEDED:
     case CLEAR_DATA:
     case SIGN_IN:
-    case START_SYNC:
+    case COMMIT_SYNC:
       return COMPLETE_WITH_FAILURE;
     case COMPLETE_WITH_SUCCESS:
     case COMPLETE_WITH_FAILURE:
@@ -229,11 +222,11 @@ NSError* IdentityMissingError() {
     case CLEAR_DATA:
       return SIGN_IN;
     case SIGN_IN:
-      if (_shouldStartSync)
-        return START_SYNC;
+      if (_shouldCommitSync)
+        return COMMIT_SYNC;
       else
         return COMPLETE_WITH_SUCCESS;
-    case START_SYNC:
+    case COMMIT_SYNC:
       return COMPLETE_WITH_SUCCESS;
     case COMPLETE_WITH_SUCCESS:
     case COMPLETE_WITH_FAILURE:
@@ -268,14 +261,14 @@ NSError* IdentityMissingError() {
       return;
 
     case CHECK_MERGE_CASE:
-      if ([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
-                                          browserState:browserState]) {
-        if (_shouldClearData == SHOULD_CLEAR_DATA_USER_CHOICE) {
-          [_performer promptMergeCaseForIdentity:_identityToSignIn
-                                         browser:_browser
-                                  viewController:_presentingViewController];
-          return;
-        }
+      if (([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
+                                           browserState:browserState]) &&
+          (_shouldClearData == SHOULD_CLEAR_DATA_USER_CHOICE) &&
+          (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC)) {
+        [_performer promptMergeCaseForIdentity:_identityToSignIn
+                                       browser:_browser
+                                viewController:_presentingViewController];
+        return;
       }
       [self continueSignin];
       return;
@@ -299,7 +292,7 @@ NSError* IdentityMissingError() {
       [self signInIdentity:_identityToSignIn];
       return;
 
-    case START_SYNC:
+    case COMMIT_SYNC:
       [_performer commitSyncForBrowserState:browserState];
       [self continueSignin];
       return;
@@ -334,15 +327,17 @@ NSError* IdentityMissingError() {
 }
 
 - (void)checkSigninSteps {
-  _browserStateIdentity =
+  ChromeIdentity* currentIdentity =
       AuthenticationServiceFactory::GetForBrowserState(
           _browser->GetBrowserState())
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (_browserStateIdentity)
+  if (currentIdentity && ![currentIdentity isEqual:_identityToSignIn]) {
+    // If the identity to sign-in is different than the current identity,
+    // sign-out is required.
     _shouldSignOut = YES;
-
+  }
   _shouldSignIn = YES;
-  _shouldStartSync = _postSignInAction == POST_SIGNIN_ACTION_START_SYNC;
+  _shouldCommitSync = _postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC;
 }
 
 - (void)signInIdentity:(ChromeIdentity*)identity {
@@ -358,15 +353,31 @@ NSError* IdentityMissingError() {
     [self continueSignin];
   } else {
     // Handle the case where the identity is no longer valid.
-    [self handleAuthenticationError:IdentityMissingError()];
+    NSError* error = ios::provider::CreateMissingIdentitySigninError();
+    [self handleAuthenticationError:error];
   }
 }
 
 - (void)completeSignInWithSuccess:(BOOL)success {
   DCHECK(_signInCompletion)
       << "|completeSignInWithSuccess| should not be called twice.";
-  _signInCompletion(success);
-  _signInCompletion = nil;
+  if (success) {
+    bool isManagedAccount = _identityToSignInHostedDomain.length > 0;
+    signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSignin,
+                                            isManagedAccount);
+    if (_shouldCommitSync)
+      signin_metrics::RecordSigninAccountType(signin::ConsentLevel::kSync,
+                                              isManagedAccount);
+  }
+  if (_signInCompletion) {
+    // Make sure the completion callback is always called after
+    // -[AuthenticationFlow startSignInWithCompletion:] returns.
+    CompletionCallback signInCompletion = _signInCompletion;
+    _signInCompletion = nil;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      signInCompletion(success);
+    });
+  }
   [self continueSignin];
 }
 
@@ -424,7 +435,9 @@ NSError* IdentityMissingError() {
 
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {
   DCHECK_EQ(FETCH_MANAGED_STATUS, _state);
-  _shouldShowManagedConfirmation = [hostedDomain length] > 0;
+  _shouldShowManagedConfirmation =
+      [hostedDomain length] > 0 &&
+      (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC);
   _identityToSignInHostedDomain = hostedDomain;
   [self continueSignin];
 }

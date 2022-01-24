@@ -44,10 +44,22 @@ function fetchDiff() {
 
 /**
  * Gets the query string from the URL.
- * For example, if the URL is chrome://histograms/abc, then query is "abc".
+ *
+ * For example, if the URL is
+ *   - "chrome://histograms/#abc" or
+ *   - "chrome://histograms/abc"
+ * then the query is "abc". The "#" format is canonical. The bare format is
+ * historical. "Blink.ImageDecodeTimes.Png" is a valid histogram name but the
+ * ".Png" pathname suffix can cause the bare histogram page to be served as
+ * image/png instead of text/html.
+ *
+ * See WebUIDataSourceImpl::GetMimeType in
+ * content/browser/webui/web_ui_data_source_impl.cc for Content-Type sniffing.
  */
 function getQuery() {
-  if (document.location.pathname) {
+  if (document.location.hash) {
+    return document.location.hash.substring(1);
+  } else if (document.location.pathname) {
     return document.location.pathname.substring(1);
   }
   return '';
@@ -127,7 +139,7 @@ function addHistograms(histograms) {
     headerNode.onclick = onHistogramHeaderClick;
     clone.querySelector('.histogram-header-text').textContent = header;
     const link = clone.querySelector('.histogram-header-link');
-    link.href = '/' + name;
+    link.href = '/#' + name;
     // Don't run expand/collapse handler on link click.
     link.onclick = e => e.stopPropagation();
     clone.querySelector('p').textContent = body;
@@ -152,3 +164,8 @@ document.addEventListener('DOMContentLoaded', function() {
   $('disable_monitoring').onclick = disableMonitoring;
   requestHistograms();
 });
+
+/**
+ * Reload histograms when the "#abc" in "chrome://histograms/#abc" changes.
+ */
+window.onhashchange = requestHistograms;

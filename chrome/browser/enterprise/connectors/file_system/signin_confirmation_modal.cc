@@ -7,6 +7,7 @@
 #include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -65,6 +66,17 @@ FileSystemConfirmationModal::FileSystemConfirmationModal(
   SetAcceptCallback(base::BindOnce(&FileSystemConfirmationModal::OnConfirmation,
                                    weak_factory_.GetWeakPtr()));
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_OK, accept_button);
+  // Set the message to be shown.
+  std::unique_ptr<views::Label> view = std::make_unique<views::Label>(message_);
+  view->SetBorder(
+      views::CreateEmptyBorder(kMessageMarginHorizontal, kMessageMarginLeft,
+                               kMessageMarginHorizontal, kMessageMarginRight));
+  view->SetMultiLine(true);
+  view->SizeToFit(kModalWidth);
+  view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  SetContentsView(std::move(view));
+  // For accessiblity features. This role will read title + message on pop up.
+  SetAccessibleRole(ax::mojom::Role::kAlertDialog);
 }
 
 FileSystemConfirmationModal::~FileSystemConfirmationModal() = default;
@@ -78,17 +90,6 @@ ui::ImageModel FileSystemConfirmationModal::GetWindowIcon() {
   return ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
       gfx::IconDescription(vector_icons::kBusinessIcon, kBusinessIconSize,
                            gfx::kGoogleBlue500)));
-}
-
-views::View* FileSystemConfirmationModal::GetContentsView() {
-  auto* view = new views::Label(message_);
-  view->SetBorder(
-      views::CreateEmptyBorder(kMessageMarginHorizontal, kMessageMarginLeft,
-                               kMessageMarginHorizontal, kMessageMarginRight));
-  view->SetMultiLine(true);
-  view->SizeToFit(kModalWidth);
-  view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
-  return view;
 }
 
 ui::ModalType FileSystemConfirmationModal::GetModalType() const {

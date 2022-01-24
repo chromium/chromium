@@ -119,6 +119,8 @@ proto::PrintJobInfo_PrinterErrorCode PrinterErrorCodeToProto(
       return proto::PrintJobInfo_PrinterErrorCode_FILTER_FAILED;
     case PrinterErrorCode::UNKNOWN_ERROR:
       return proto::PrintJobInfo_PrinterErrorCode_UNKNOWN_ERROR;
+    case PrinterErrorCode::CLIENT_UNAUTHORIZED:
+      return proto::PrintJobInfo_PrinterErrorCode_CLIENT_UNAUTHORIZED;
     default:
       // Be sure to update the above case statements whenever a new printer
       // error is introduced.
@@ -135,6 +137,7 @@ int64_t TimeToMillisecondsPastUnixEpoch(const base::Time& time) {
 
 proto::Printer PrinterToProto(const chromeos::Printer& printer) {
   proto::Printer printer_proto;
+  printer_proto.set_id(printer.id());
   printer_proto.set_name(printer.display_name());
   printer_proto.set_uri(printer.uri().GetNormalized());
   printer_proto.set_source(PrinterSourceToProto(printer.source()));

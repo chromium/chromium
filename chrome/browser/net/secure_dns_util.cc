@@ -71,12 +71,7 @@ void RegisterProbesSettingBackupPref(PrefRegistrySimple* registry) {
 void MigrateProbesSettingToOrFromBackup(PrefService* prefs) {
 // TODO(crbug.com/1177778): remove this code around M97 to make sure the vast
 // majority of the clients are migrated.
-#if defined(OS_ANDROID)
-  if (!prefs->HasPrefPath(kAlternateErrorPagesBackup) &&
-      base::FeatureList::IsEnabled(features::kLinkDoctorDeprecationAndroid)) {
-#else
   if (!prefs->HasPrefPath(kAlternateErrorPagesBackup)) {
-#endif  // defined(OS_ANDROID)
     // If the user never changed the value of the preference and still uses
     // the hardcoded default value, we'll consider it to be the user value for
     // the purposes of this migration.
@@ -92,19 +87,6 @@ void MigrateProbesSettingToOrFromBackup(PrefService* prefs) {
     prefs->SetBoolean(kAlternateErrorPagesBackup, user_value->GetBool());
     prefs->ClearPref(embedder_support::kAlternateErrorPagesEnabled);
   }
-// The reverse migration should only occur on Android at the time of rollout.
-// TODO(crbug.com/1177778): remove this part once the rollout is complete.
-#if defined(OS_ANDROID)
-  // If the Link Doctor deprecation is rolled back and there is a backed up
-  // value of the preference, restore it to the original preference, and clear
-  // the backup.
-  if (prefs->HasPrefPath(kAlternateErrorPagesBackup) &&
-      !base::FeatureList::IsEnabled(features::kLinkDoctorDeprecationAndroid)) {
-    prefs->SetBoolean(embedder_support::kAlternateErrorPagesEnabled,
-                      prefs->GetBoolean(kAlternateErrorPagesBackup));
-    prefs->ClearPref(kAlternateErrorPagesBackup);
-  }
-#endif  // defined(OS_ANDROID)
 }
 
 net::DohProviderEntry::List ProvidersForCountry(

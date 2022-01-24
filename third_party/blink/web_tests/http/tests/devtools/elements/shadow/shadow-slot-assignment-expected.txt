@@ -1,0 +1,257 @@
+Tests that elements panel updates dom tree structure when shadow dom slots are reassigned.
+
+
+Running: createHost1
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot1">
+          </slot>
+        - <slot id="slot2" name="slot2">
+          </slot>
+        - <slot id="slot3">
+          </slot>
+  </div>
+
+Running: createChild1
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot1">
+          </slot>
+        - <slot id="slot2" name="slot2">
+              ↪ <span> reveal
+          </slot>
+        - <slot id="slot3">
+          </slot>
+      <span id="child1" slot="slot2"></span>
+  </div>
+
+Running: createChild2
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot1">
+          </slot>
+        - <slot id="slot2" name="slot2">
+              ↪ <span> reveal
+          </slot>
+        - <slot id="slot3">
+              ↪ <div> reveal
+          </slot>
+      <span id="child1" slot="slot2"></span>
+      <div id="child2"></div>
+  </div>
+
+Running: createChild3
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot1">
+          </slot>
+        - <slot id="slot2" name="slot2">
+              ↪ <span> reveal
+              ↪ <h1> reveal
+          </slot>
+        - <slot id="slot3">
+              ↪ <div> reveal
+          </slot>
+      <span id="child1" slot="slot2"></span>
+      <div id="child2"></div>
+      <h1 id="child3" slot="slot2"></h1>
+  </div>
+
+Running: createChild4
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot1">
+              ↪ <h2> reveal
+          </slot>
+        - <slot id="slot2" name="slot2">
+              ↪ <span> reveal
+              ↪ <h1> reveal
+          </slot>
+        - <slot id="slot3">
+              ↪ <div> reveal
+          </slot>
+      <span id="child1" slot="slot2"></span>
+      <div id="child2"></div>
+      <h1 id="child3" slot="slot2"></h1>
+      <h2 id="child4" slot="slot1"></h2>
+  </div>
+
+Running: createChild5
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot1">
+              ↪ <h2> reveal
+          </slot>
+        - <slot id="slot2" name="slot2">
+              ↪ <span> reveal
+              ↪ <h1> reveal
+          </slot>
+        - <slot id="slot3">
+              ↪ <div> reveal
+          </slot>
+      <span id="child1" slot="slot2"></span>
+      <div id="child2"></div>
+      <h1 id="child3" slot="slot2"></h1>
+      <h2 id="child4" slot="slot1"></h2>
+      <h3 id="child5" slot="slot3"></h3>
+  </div>
+
+Running: modifyChild1
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot1">
+              ↪ <span> reveal
+              ↪ <h2> reveal
+          </slot>
+        - <slot id="slot2" name="slot2">
+              ↪ <h1> reveal
+          </slot>
+        - <slot id="slot3">
+              ↪ <div> reveal
+          </slot>
+      <span id="child1" slot="slot1"></span>
+      <div id="child2"></div>
+      <h1 id="child3" slot="slot2"></h1>
+      <h2 id="child4" slot="slot1"></h2>
+      <h3 id="child5" slot="slot3"></h3>
+  </div>
+
+Running: modifyChild4
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot1">
+              ↪ <span> reveal
+          </slot>
+        - <slot id="slot2" name="slot2">
+              ↪ <h1> reveal
+          </slot>
+        - <slot id="slot3">
+              ↪ <div> reveal
+              ↪ <h2> reveal
+          </slot>
+      <span id="child1" slot="slot1"></span>
+      <div id="child2"></div>
+      <h1 id="child3" slot="slot2"></h1>
+      <h2 id="child4"></h2>
+      <h3 id="child5" slot="slot3"></h3>
+  </div>
+
+Running: modifySlot1
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot3">
+              ↪ <h3> reveal
+          </slot>
+        - <slot id="slot2" name="slot2">
+              ↪ <h1> reveal
+          </slot>
+        - <slot id="slot3">
+              ↪ <div> reveal
+              ↪ <h2> reveal
+          </slot>
+      <span id="child1" slot="slot1"></span>
+      <div id="child2"></div>
+      <h1 id="child3" slot="slot2"></h1>
+      <h2 id="child4"></h2>
+      <h3 id="child5" slot="slot3"></h3>
+  </div>
+
+Running: modifySlot2
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot3">
+              ↪ <h3> reveal
+          </slot>
+        - <slot id="slot2" name="slot1">
+              ↪ <span> reveal
+          </slot>
+        - <slot id="slot3">
+              ↪ <div> reveal
+              ↪ <h2> reveal
+          </slot>
+      <span id="child1" slot="slot1"></span>
+      <div id="child2"></div>
+      <h1 id="child3" slot="slot2"></h1>
+      <h2 id="child4"></h2>
+      <h3 id="child5" slot="slot3"></h3>
+  </div>
+
+Running: removeChild3
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot3">
+              ↪ <h3> reveal
+          </slot>
+        - <slot id="slot2" name="slot1">
+              ↪ <span> reveal
+          </slot>
+        - <slot id="slot3">
+              ↪ <div> reveal
+              ↪ <h2> reveal
+          </slot>
+      <span id="child1" slot="slot1"></span>
+      <div id="child2"></div>
+      <h2 id="child4"></h2>
+      <h3 id="child5" slot="slot3"></h3>
+  </div>
+
+Running: removeChild1
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot3">
+              ↪ <h3> reveal
+          </slot>
+        - <slot id="slot2" name="slot1">
+          </slot>
+        - <slot id="slot3">
+              ↪ <div> reveal
+              ↪ <h2> reveal
+          </slot>
+      <div id="child2"></div>
+      <h2 id="child4"></h2>
+      <h3 id="child5" slot="slot3"></h3>
+  </div>
+
+Running: removeSlot1
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot2" name="slot1">
+          </slot>
+        - <slot id="slot3">
+              ↪ <div> reveal
+              ↪ <h2> reveal
+          </slot>
+      <div id="child2"></div>
+      <h2 id="child4"></h2>
+      <h3 id="child5" slot="slot3"></h3>
+  </div>
+
+Running: createHost2
+- <div id="host2">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot3">
+          </slot>
+  </div>
+
+Running: moveChild5FromHost1ToHost2
+- <div id="host2">
+    - #shadow-root (open)
+        - <slot id="slot1" name="slot3">
+              ↪ <h3> reveal
+          </slot>
+      <h3 id="child5" slot="slot3"></h3>
+  </div>
+
+Running: modifyChild4
+- <div id="host1">
+    - #shadow-root (open)
+        - <slot id="slot2" name="slot1">
+              ↪ <h2> reveal
+          </slot>
+        - <slot id="slot3">
+              ↪ <div> reveal
+          </slot>
+      <div id="child2"></div>
+      <h2 id="child4" slot="slot1"></h2>
+  </div>
+

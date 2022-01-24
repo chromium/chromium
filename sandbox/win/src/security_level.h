@@ -297,6 +297,19 @@ const MitigationFlags MITIGATION_CET_DISABLED = 0x00400000;
 // calls to consume the kernel transaction manager.
 const MitigationFlags MITIGATION_KTM_COMPONENT = 0x00800000;
 
+// CET in default state (i.e. not disabled where it is supported) and
+// CetDynamicApisOutOfProcOnly will be false inside the process. Should not
+// be mixed with MITIGATION_CET_DISABLED or MITIGATION_DYNAMIC_CODE_DISABLE
+// as it does not make sense without CET, nor where dynamic code cannot be
+// created in the first place. Corresponds to
+// PROCESS_CREATION_MITIGATION_POLICY2_CET_DYNAMIC_APIS_OUT_OF_PROC_ONLY_ALWAYS_OFF.
+const MitigationFlags MITIGATION_CET_ALLOW_DYNAMIC_APIS = 0x01000000;
+
+// CET in strict mode. Be cautious if applying to processes that might
+// include third party code. Corresponds to
+// PROCESS_CREATION_MITIGATION_POLICY2_CET_USER_SHADOW_STACKS_STRICT_MODE.
+const MitigationFlags MITIGATION_CET_STRICT_MODE = 0x02000000;
+
 }  // namespace sandbox
 
 #endif  // SANDBOX_WIN_SRC_SECURITY_LEVEL_H_

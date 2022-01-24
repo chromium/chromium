@@ -30,6 +30,11 @@ class CONTENT_EXPORT EmbeddedFrameSinkProviderImpl
   EmbeddedFrameSinkProviderImpl(
       viz::HostFrameSinkManager* host_frame_sink_manager,
       uint32_t renderer_client_id);
+
+  EmbeddedFrameSinkProviderImpl(const EmbeddedFrameSinkProviderImpl&) = delete;
+  EmbeddedFrameSinkProviderImpl& operator=(
+      const EmbeddedFrameSinkProviderImpl&) = delete;
+
   ~EmbeddedFrameSinkProviderImpl() override;
 
   void Add(
@@ -41,8 +46,18 @@ class CONTENT_EXPORT EmbeddedFrameSinkProviderImpl
       const viz::FrameSinkId& frame_sink_id,
       mojo::PendingRemote<blink::mojom::EmbeddedFrameSinkClient> client)
       override;
+  void RegisterEmbeddedFrameSinkBundle(
+      const viz::FrameSinkBundleId& bundle_id,
+      mojo::PendingReceiver<viz::mojom::FrameSinkBundle> receiver,
+      mojo::PendingRemote<viz::mojom::FrameSinkBundleClient> client) override;
   void CreateCompositorFrameSink(
       const viz::FrameSinkId& frame_sink_id,
+      mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> sink_client,
+      mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink_receiver)
+      override;
+  void CreateBundledCompositorFrameSink(
+      const viz::FrameSinkId& frame_sink_id,
+      const viz::FrameSinkBundleId& bundle_id,
       mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> sink_client,
       mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink_receiver)
       override;
@@ -58,6 +73,10 @@ class CONTENT_EXPORT EmbeddedFrameSinkProviderImpl
   void ConnectToEmbedder(const viz::FrameSinkId& child_frame_sink_id,
                          mojo::PendingReceiver<blink::mojom::SurfaceEmbedder>
                              surface_embedder_receiver) override;
+  void RegisterFrameSinkHierarchy(
+      const viz::FrameSinkId& frame_sink_id) override;
+  void UnregisterFrameSinkHierarchy(
+      const viz::FrameSinkId& frame_sink_id) override;
 
  private:
   friend class EmbeddedFrameSinkProviderImplTest;
@@ -75,8 +94,6 @@ class CONTENT_EXPORT EmbeddedFrameSinkProviderImpl
 
   base::flat_map<viz::FrameSinkId, std::unique_ptr<EmbeddedFrameSinkImpl>>
       frame_sink_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedFrameSinkProviderImpl);
 };
 
 }  // namespace content

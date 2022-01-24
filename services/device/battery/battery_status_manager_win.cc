@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/win/message_window.h"
 #include "services/device/battery/battery_status_manager.h"
 
@@ -21,35 +20,6 @@ typedef BatteryStatusService::BatteryUpdateCallback BatteryCallback;
 
 const wchar_t kWindowClassName[] = L"BatteryStatusMessageWindow";
 
-// This enum is used for histogram. Don't change the order of the existing
-// values.
-enum NumberBatteriesType {
-  UNKNOWN_BATTERIES = 0,
-  NO_BATTERY = 1,
-  ONE_OR_MORE_BATTERIES = 2,
-  BATTERY_TYPES_COUNT = 3,
-};
-
-void UpdateNumberBatteriesHistogram(NumberBatteriesType count) {
-  UMA_HISTOGRAM_ENUMERATION("BatteryStatus.NumberBatteriesWin", count,
-                            BATTERY_TYPES_COUNT);
-}
-
-void UpdateNumberBatteriesHistogram() {
-  SYSTEM_POWER_STATUS win_status;
-  if (!GetSystemPowerStatus(&win_status)) {
-    UpdateNumberBatteriesHistogram(UNKNOWN_BATTERIES);
-    return;
-  }
-
-  if (win_status.BatteryFlag == 255)
-    UpdateNumberBatteriesHistogram(UNKNOWN_BATTERIES);
-  else if (win_status.BatteryFlag == 128)
-    UpdateNumberBatteriesHistogram(NO_BATTERY);
-  else
-    UpdateNumberBatteriesHistogram(ONE_OR_MORE_BATTERIES);
-}
-
 // Message-only window for handling battery changes on Windows.
 class BatteryStatusObserver {
  public:
@@ -57,6 +27,9 @@ class BatteryStatusObserver {
       : power_handle_(nullptr),
         battery_change_handle_(nullptr),
         callback_(callback) {}
+
+  BatteryStatusObserver(const BatteryStatusObserver&) = delete;
+  BatteryStatusObserver& operator=(const BatteryStatusObserver&) = delete;
 
   ~BatteryStatusObserver() { DCHECK(!window_); }
 
@@ -76,8 +49,6 @@ class BatteryStatusObserver {
       // values.
       callback_.Run(mojom::BatteryStatus());
     }
-
-    UpdateNumberBatteriesHistogram();
   }
 
   void Stop() {
@@ -145,14 +116,16 @@ class BatteryStatusObserver {
   HPOWERNOTIFY battery_change_handle_;
   BatteryCallback callback_;
   std::unique_ptr<base::win::MessageWindow> window_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusObserver);
 };
 
 class BatteryStatusManagerWin : public BatteryStatusManager {
  public:
   explicit BatteryStatusManagerWin(const BatteryCallback& callback)
       : battery_observer_(std::make_unique<BatteryStatusObserver>(callback)) {}
+
+  BatteryStatusManagerWin(const BatteryStatusManagerWin&) = delete;
+  BatteryStatusManagerWin& operator=(const BatteryStatusManagerWin&) = delete;
+
   ~BatteryStatusManagerWin() override { battery_observer_->Stop(); }
 
  public:
@@ -166,8 +139,6 @@ class BatteryStatusManagerWin : public BatteryStatusManager {
 
  private:
   std::unique_ptr<BatteryStatusObserver> battery_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusManagerWin);
 };
 
 }  // namespace

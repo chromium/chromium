@@ -39,6 +39,8 @@
 
 #if defined(OS_WIN)
 
+#include "base/win/windows_types.h"
+
 // Declare Chrome versions of some Windows structures. These are needed for
 // when we need a concrete type but don't want to pull in Windows.h. We can't
 // declare the Windows types so we declare our types and cast to the Windows

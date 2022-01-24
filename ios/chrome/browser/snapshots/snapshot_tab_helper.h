@@ -25,6 +25,9 @@ class WebState;
 class SnapshotTabHelper : public web::WebStateObserver,
                           public web::WebStateUserData<SnapshotTabHelper> {
  public:
+  SnapshotTabHelper(const SnapshotTabHelper&) = delete;
+  SnapshotTabHelper& operator=(const SnapshotTabHelper&) = delete;
+
   ~SnapshotTabHelper() override;
 
   // Creates the tab helper for |web_state| if it does not exists. The
@@ -110,8 +113,6 @@ class SnapshotTabHelper : public web::WebStateObserver,
   base::WeakPtrFactory<SnapshotTabHelper> weak_ptr_factory_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SnapshotTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_TAB_HELPER_H_

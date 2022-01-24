@@ -40,6 +40,9 @@ class MessagePipeDispatcher : public Dispatcher {
                         uint64_t pipe_id,
                         int endpoint);
 
+  MessagePipeDispatcher(const MessagePipeDispatcher&) = delete;
+  MessagePipeDispatcher& operator=(const MessagePipeDispatcher&) = delete;
+
   // Fuses this pipe with |other|. Returns |true| on success or |false| on
   // failure. Regardless of the return value, both dispatchers are closed by
   // this call.
@@ -108,8 +111,6 @@ class MessagePipeDispatcher : public Dispatcher {
   absl::optional<uint64_t> receive_queue_length_limit_;
   absl::optional<uint64_t> receive_queue_memory_size_limit_;
   absl::optional<uint64_t> unread_message_count_limit_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePipeDispatcher);
 };
 
 }  // namespace core

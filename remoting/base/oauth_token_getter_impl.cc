@@ -26,8 +26,7 @@ const int kMaxRetries = 3;
 const int kTokenUpdateTimeBeforeExpirySeconds = 120;
 
 // Max time we wait for the response before giving up.
-constexpr base::TimeDelta kResponseTimeoutDuration =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kResponseTimeoutDuration = base::Seconds(30);
 
 }  // namespace
 
@@ -133,8 +132,8 @@ void OAuthTokenGetterImpl::UpdateAccessToken(const std::string& access_token,
                                              int expires_seconds) {
   oauth_access_token_ = access_token;
   base::TimeDelta token_expiration =
-      base::TimeDelta::FromSeconds(expires_seconds) -
-      base::TimeDelta::FromSeconds(kTokenUpdateTimeBeforeExpirySeconds);
+      base::Seconds(expires_seconds) -
+      base::Seconds(kTokenUpdateTimeBeforeExpirySeconds);
   access_token_expiry_time_ = base::Time::Now() + token_expiration;
 
   if (refresh_timer_) {

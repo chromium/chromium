@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using base::win::RegKey;
 
 class GCAPIReactivationTest : public ::testing::Test {
@@ -118,7 +117,7 @@ TEST_F(GCAPIReactivationTest, CanOfferReactivation_Basic) {
       CanOfferReactivation(L"GAGA", GCAPI_INVOKED_STANDARD_SHELL, &error));
 
   // Now set a recent last_run value. CanOfferReactivation should fail again.
-  Time hkcu_last_run = Time::NowFromSystemTime() - TimeDelta::FromDays(20);
+  Time hkcu_last_run = Time::NowFromSystemTime() - base::Days(20);
   EXPECT_TRUE(
       SetLastRunTime(HKEY_CURRENT_USER, hkcu_last_run.ToInternalValue()));
   EXPECT_FALSE(
@@ -126,8 +125,8 @@ TEST_F(GCAPIReactivationTest, CanOfferReactivation_Basic) {
   EXPECT_EQ(static_cast<DWORD>(REACTIVATE_ERROR_NOTDORMANT), error);
 
   // Now set a last_run value that exceeds the threshold.
-  hkcu_last_run = Time::NowFromSystemTime() -
-                  TimeDelta::FromDays(kReactivationMinDaysDormant);
+  hkcu_last_run =
+      Time::NowFromSystemTime() - base::Days(kReactivationMinDaysDormant);
   EXPECT_TRUE(
       SetLastRunTime(HKEY_CURRENT_USER, hkcu_last_run.ToInternalValue()));
   EXPECT_TRUE(
@@ -156,8 +155,8 @@ TEST_F(GCAPIReactivationTest, Reactivation_Flow) {
   // Set us up as a candidate for reactivation.
   EXPECT_TRUE(SetChromeInstallMarker(HKEY_CURRENT_USER));
 
-  Time hkcu_last_run = Time::NowFromSystemTime() -
-                       TimeDelta::FromDays(kReactivationMinDaysDormant);
+  Time hkcu_last_run =
+      Time::NowFromSystemTime() - base::Days(kReactivationMinDaysDormant);
   EXPECT_TRUE(
       SetLastRunTime(HKEY_CURRENT_USER, hkcu_last_run.ToInternalValue()));
 
@@ -184,8 +183,8 @@ TEST_F(GCAPIReactivationTest, ExperimentLabelCheck) {
   // Set us up as a candidate for reactivation.
   EXPECT_TRUE(SetChromeInstallMarker(HKEY_CURRENT_USER));
 
-  Time hkcu_last_run = Time::NowFromSystemTime() -
-                       TimeDelta::FromDays(kReactivationMinDaysDormant);
+  Time hkcu_last_run =
+      Time::NowFromSystemTime() - base::Days(kReactivationMinDaysDormant);
   EXPECT_TRUE(
       SetLastRunTime(HKEY_CURRENT_USER, hkcu_last_run.ToInternalValue()));
 

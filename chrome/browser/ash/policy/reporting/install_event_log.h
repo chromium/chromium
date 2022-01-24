@@ -16,7 +16,6 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/reporting/single_install_event_log.h"
 
 namespace policy {

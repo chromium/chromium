@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/public/browser/background_sync_controller.h"
 #include "content/public/browser/background_sync_parameters.h"
@@ -21,6 +20,11 @@ namespace content {
 class MockBackgroundSyncController : public BackgroundSyncController {
  public:
   MockBackgroundSyncController();
+
+  MockBackgroundSyncController(const MockBackgroundSyncController&) = delete;
+  MockBackgroundSyncController& operator=(const MockBackgroundSyncController&) =
+      delete;
+
   ~MockBackgroundSyncController() override;
 
   // BackgroundSyncController:
@@ -84,8 +88,6 @@ class MockBackgroundSyncController : public BackgroundSyncController {
   BackgroundSyncParameters background_sync_parameters_;
   std::set<url::Origin> suspended_periodic_sync_origins_;
   std::set<url::Origin> periodic_sync_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBackgroundSyncController);
 };
 
 }  // namespace content

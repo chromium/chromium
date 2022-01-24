@@ -44,7 +44,7 @@ _GN_PATH = os.path.join(_SRC_ROOT, 'third_party', 'depot_tools', 'gn')
 _DiffResult = collections.namedtuple('DiffResult', ['name', 'value', 'units'])
 
 
-class BaseDiff(object):
+class BaseDiff:
   """Base class capturing binary size diffs."""
   def __init__(self, name):
     self.name = name
@@ -96,7 +96,7 @@ class NativeDiff(BaseDiff):
     self._size_name = size_name
     self._supersize_path = supersize_path
     self._diff = []
-    super(NativeDiff, self).__init__('Native Diff')
+    super().__init__('Native Diff')
 
   @property
   def summary_stat(self):
@@ -131,7 +131,7 @@ class ResourceSizesDiff(BaseDiff):
     self._diff = None  # Set by |ProduceDiff()|
     self._filename = filename
     self._include_sections = include_sections
-    super(ResourceSizesDiff, self).__init__('Resource Sizes Diff')
+    super().__init__('Resource Sizes Diff')
 
   @property
   def summary_stat(self):
@@ -230,7 +230,7 @@ class ResourceSizesDiff(BaseDiff):
     return ret
 
 
-class _BuildHelper(object):
+class _BuildHelper:
   """Helper class for generating and building targets."""
   def __init__(self, args):
     self.clean = args.clean
@@ -401,7 +401,7 @@ class _BuildHelper(object):
     return self.target_os == 'linux'
 
 
-class _BuildArchive(object):
+class _BuildArchive:
   """Class for managing a directory with build results and build metadata."""
 
   def __init__(self, rev, base_archive_dir, build, subrepo, save_unstripped):
@@ -478,7 +478,7 @@ class _BuildArchive(object):
     _RunCmd(supersize_cmd)
 
 
-class _DiffArchiveManager(object):
+class _DiffArchiveManager:
   """Class for maintaining BuildArchives and their related diff artifacts."""
 
   def __init__(self, revs, archive_dir, diffs, build, subrepo, save_unstripped):
@@ -622,7 +622,7 @@ class _DiffArchiveManager(object):
     return diff_path
 
 
-class _Metadata(object):
+class _Metadata:
 
   def __init__(self, archives, build, path, subrepo):
     self.data = {
@@ -981,6 +981,8 @@ def main():
     diff_mngr.GenerateHtmlReport(
         0, i, is_internal=args.enable_chrome_android_internal)
     diff_mngr.Summarize()
+
+  return 0
 
 
 if __name__ == '__main__':

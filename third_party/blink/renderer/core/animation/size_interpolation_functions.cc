@@ -183,7 +183,7 @@ static Length CreateLength(
     return Length::Auto();
   }
   return To<InterpolableLength>(interpolable_value)
-      .CreateLength(conversion_data, kValueRangeNonNegative);
+      .CreateLength(conversion_data, Length::ValueRange::kNonNegative);
 }
 
 FillSize SizeInterpolationFunctions::CreateFillSize(

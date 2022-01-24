@@ -373,9 +373,8 @@ TEST_F(LoadingDataCollectorTest, ManyNavigations) {
 
   GURL url5("http://www.google.com");
   // Change this creation time so that it will go away on the next insert.
-  collector_->RecordStartNavigation(
-      navigation_id2, ukm::SourceId(), url5,
-      base::TimeTicks::Now() - base::TimeDelta::FromDays(1));
+  collector_->RecordStartNavigation(navigation_id2, ukm::SourceId(), url5,
+                                    base::TimeTicks::Now() - base::Days(1));
   EXPECT_EQ(3U, collector_->inflight_navigations_.size());
 
   auto navigation_id6 = GetNextId();

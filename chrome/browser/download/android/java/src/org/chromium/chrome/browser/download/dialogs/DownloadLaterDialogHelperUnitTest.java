@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -26,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
@@ -37,14 +39,13 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Unit test for {@link DownloadLaterDialogHelper}.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class DownloadLaterDialogHelperUnitTest {
     private static final long START_TIME = 100;
 
@@ -65,6 +66,9 @@ public class DownloadLaterDialogHelperUnitTest {
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
+
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     @Mock
     private DownloadDialogBridge.Natives mNativeMock;

@@ -14,6 +14,9 @@ cr.define('nearby_share', function() {
   /**
    * @typedef {{
    *            enabled:boolean,
+   *            fastInitiationNotificationState:
+   *                nearbyShare.mojom.FastInitiationNotificationState,
+   *            isFastInitiationHardwareSupported:boolean,
    *            deviceName:string,
    *            dataUsage:nearbyShare.mojom.DataUsage,
    *            visibility:nearbyShare.mojom.Visibility,
@@ -57,6 +60,8 @@ cr.define('nearby_share', function() {
             this.nearbyShareSettings_.getVisibility(),
             this.nearbyShareSettings_.getAllowedContacts(),
             this.nearbyShareSettings_.isOnboardingComplete(),
+            this.nearbyShareSettings_.getFastInitiationNotificationState(),
+            this.nearbyShareSettings_.getIsFastInitiationHardwareSupported(),
           ])
           .then((results) => {
             this.set('settings.enabled', results[0].enabled);
@@ -65,6 +70,11 @@ cr.define('nearby_share', function() {
             this.set('settings.visibility', results[3].visibility);
             this.set('settings.allowedContacts', results[4].allowedContacts);
             this.set('settings.isOnboardingComplete', results[5].completed);
+            this.set(
+                'settings.fastInitiationNotificationState', results[6].state);
+            this.set(
+                'settings.isFastInitiationHardwareSupported',
+                results[7].supported);
             this.onSettingsRetrieved();
           });
     },
@@ -84,6 +94,20 @@ cr.define('nearby_share', function() {
      */
     onEnabledChanged(enabled) {
       this.set('settings.enabled', enabled);
+    },
+
+    /**
+     * @param {!boolean} supported
+     */
+    onIsFastInitiationHardwareSupportedChanged(supported) {
+      this.set('settings.isFastInitiationHardwareSupported', supported);
+    },
+
+    /**
+     * @param {!nearbyShare.mojom.FastInitiationNotificationState} state
+     */
+    onFastInitiationNotificationStateChanged(state) {
+      this.set('settings.fastInitiationNotificationState', state);
     },
 
     /**
@@ -115,6 +139,13 @@ cr.define('nearby_share', function() {
     },
 
     /**
+     * @param {!boolean} is_complete
+     */
+    onIsOnboardingCompleteChanged(is_complete) {
+      this.set('settings.isOnboardingComplete', is_complete);
+    },
+
+    /**
      * TODO(vecore): Type is actually PolymerDeepPropertyChange but the externs
      *    definition needs to be fixed so the value can be cast to primitive
      *    types.
@@ -125,6 +156,10 @@ cr.define('nearby_share', function() {
       switch (change.path) {
         case 'settings.enabled':
           this.nearbyShareSettings_.setEnabled(change.value);
+          break;
+        case 'settings.fastInitiationNotificationState':
+          this.nearbyShareSettings_.setFastInitiationNotificationState(
+              change.value);
           break;
         case 'settings.deviceName':
           this.nearbyShareSettings_.setDeviceName(change.value);
@@ -137,6 +172,9 @@ cr.define('nearby_share', function() {
           break;
         case 'settings.allowedContacts':
           this.nearbyShareSettings_.setAllowedContacts(change.value);
+          break;
+        case 'settings.isOnboardingComplete':
+          this.nearbyShareSettings_.setIsOnboardingComplete(change.value);
           break;
       }
     },

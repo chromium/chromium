@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DATA_REDUCTION_PROXY_CORE_COMMON_DATA_REDUCTION_PROXY_PARAMS_H_
 #define COMPONENTS_DATA_REDUCTION_PROXY_CORE_COMMON_DATA_REDUCTION_PROXY_PARAMS_H_
 
-#include "base/macros.h"
 #include "url/gurl.h"
 
 namespace data_reduction_proxy {

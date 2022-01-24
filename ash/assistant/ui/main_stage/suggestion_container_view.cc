@@ -18,6 +18,7 @@
 #include "ash/assistant/ui/main_stage/element_animator.h"
 #include "ash/assistant/util/animation_util.h"
 #include "ash/assistant/util/assistant_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
@@ -38,13 +39,18 @@ using assistant::util::CreateOpacityElement;
 using assistant::util::StartLayerAnimationSequence;
 
 // Animation.
-constexpr base::TimeDelta kChipFadeInDuration =
-    base::TimeDelta::FromMilliseconds(250);
-constexpr base::TimeDelta kChipFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kChipFadeInDuration = base::Milliseconds(250);
+constexpr base::TimeDelta kChipFadeOutDuration = base::Milliseconds(200);
 
-// Appearance.
-constexpr int kPreferredHeightDip = 48;
+// Metrics.
+constexpr char kAssistantSuggestionChipHistogram[] =
+    "Ash.Assistant.AnimationSmoothness.SuggestionChip";
+
+// Returns the preferred height in DIPs. Not named GetPreferredHeight() so it
+// looks less like a views::View method.
+int GetPreferredHeightDip() {
+  return features::IsProductivityLauncherEnabled() ? 64 : 48;
+}
 
 }  // namespace
 
@@ -55,22 +61,24 @@ class SuggestionChipAnimator : public ElementAnimator {
   SuggestionChipAnimator(SuggestionChipView* chip,
                          const SuggestionContainerView* parent)
       : ElementAnimator(chip), parent_(parent) {}
+
+  SuggestionChipAnimator(const SuggestionChipAnimator&) = delete;
+  SuggestionChipAnimator& operator=(const SuggestionChipAnimator&) = delete;
+
   ~SuggestionChipAnimator() override = default;
 
   void AnimateIn(ui::CallbackLayerAnimationObserver* observer) override {
     StartLayerAnimationSequence(
         layer()->GetAnimator(), CreateAnimateInAnimation(), observer,
         base::BindRepeating<void(const std::string&, int)>(
-            base::UmaHistogramPercentageObsoleteDoNotUse,
-            assistant::ui::kAssistantSuggestionChipHistogram));
+            base::UmaHistogramPercentage, kAssistantSuggestionChipHistogram));
   }
 
   void AnimateOut(ui::CallbackLayerAnimationObserver* observer) override {
     StartLayerAnimationSequence(
         layer()->GetAnimator(), CreateAnimateOutAnimation(), observer,
         base::BindRepeating<void(const std::string&, int)>(
-            base::UmaHistogramPercentageObsoleteDoNotUse,
-            assistant::ui::kAssistantSuggestionChipHistogram));
+            base::UmaHistogramPercentage, kAssistantSuggestionChipHistogram));
   }
 
   void FadeOut(ui::CallbackLayerAnimationObserver* observer) override {
@@ -93,8 +101,6 @@ class SuggestionChipAnimator : public ElementAnimator {
   }
 
   const SuggestionContainerView* const parent_;  // |parent_| owns |this|.
-
-  DISALLOW_COPY_AND_ASSIGN(SuggestionChipAnimator);
 };
 
 // SuggestionContainerView -----------------------------------------------------
@@ -122,7 +128,7 @@ gfx::Size SuggestionContainerView::CalculatePreferredSize() const {
 }
 
 int SuggestionContainerView::GetHeightForWidth(int width) const {
-  return kPreferredHeightDip;
+  return GetPreferredHeightDip();
 }
 
 void SuggestionContainerView::OnContentsPreferredSizeChanged(
@@ -131,7 +137,7 @@ void SuggestionContainerView::OnContentsPreferredSizeChanged(
   // showing conversation starters we will be center aligned.
   const int width =
       std::max(content_view->GetPreferredSize().width(), this->width());
-  content_view->SetSize(gfx::Size(width, kPreferredHeightDip));
+  content_view->SetSize(gfx::Size(width, GetPreferredHeightDip()));
 }
 
 void SuggestionContainerView::OnAssistantControllerDestroying() {
@@ -154,7 +160,8 @@ void SuggestionContainerView::InitLayout() {
   layout_manager_ =
       content_view()->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(0, kPaddingDip), kSpacingDip));
+          gfx::Insets(0, assistant::ui::GetHorizontalPadding()),
+          /*between_child_spacing=*/kSpacingDip));
 
   layout_manager_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);

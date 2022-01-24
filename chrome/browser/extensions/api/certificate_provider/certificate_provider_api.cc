@@ -11,9 +11,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/security_token_pin/constants.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
@@ -21,19 +21,18 @@
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/common/extensions/api/certificate_provider.h"
 #include "chrome/common/extensions/api/certificate_provider_internal.h"
-#include "chromeos/components/security_token_pin/constants.h"
 #include "extensions/browser/quota_service.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
-namespace api_cp = extensions::api::certificate_provider;
-namespace api_cpi = extensions::api::certificate_provider_internal;
-using PinCodeType = chromeos::security_token_pin::CodeType;
-using PinErrorLabel = chromeos::security_token_pin::ErrorLabel;
-
 namespace {
+
+namespace api_cp = ::extensions::api::certificate_provider;
+namespace api_cpi = ::extensions::api::certificate_provider_internal;
+using PinCodeType = ::ash::security_token_pin::CodeType;
+using PinErrorLabel = ::ash::security_token_pin::ErrorLabel;
 
 PinErrorLabel GetErrorLabelForDialog(api_cp::PinRequestErrorType error_type) {
   switch (error_type) {
@@ -75,6 +74,8 @@ const char kCertificateProviderErrorTimeout[] =
 const char kCertificateProviderErrorInvalidId[] = "Invalid requestId";
 const char kCertificateProviderErrorUnexpectedError[] =
     "Error supplied with non-empty data.";
+const char kCertificateProviderErrorNeitherResultNorError[] =
+    "Neither the result nor an error supplied.";
 const char kCertificateProviderErrorNoAlgorithms[] = "Algorithm list is empty.";
 
 // requestPin constants.
@@ -283,7 +284,7 @@ CertificateProviderInternalReportCertificatesFunction::
 ExtensionFunction::ResponseAction
 CertificateProviderInternalReportCertificatesFunction::Run() {
   std::unique_ptr<api_cpi::ReportCertificates::Params> params(
-      api_cpi::ReportCertificates::Params::Create(*args_));
+      api_cpi::ReportCertificates::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   ash::CertificateProviderService* const service =
@@ -336,7 +337,7 @@ CertificateProviderStopPinRequestFunction::
 ExtensionFunction::ResponseAction
 CertificateProviderStopPinRequestFunction::Run() {
   std::unique_ptr<api_cp::StopPinRequest::Params> params(
-      api_cp::StopPinRequest::Params::Create(*args_));
+      api_cp::StopPinRequest::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
@@ -419,7 +420,7 @@ void CertificateProviderRequestPinFunction::GetQuotaLimitHeuristics(
 
   QuotaLimitHeuristic::Config short_limit_config = {
       api::certificate_provider::kMaxClosedDialogsPerMinute - 1,
-      base::TimeDelta::FromMinutes(1)};
+      base::Minutes(1)};
   heuristics->push_back(std::make_unique<QuotaService::TimedLimit>(
       short_limit_config,
       std::make_unique<RequestPinExceptFirstQuotaBucketMapper>(),
@@ -427,7 +428,7 @@ void CertificateProviderRequestPinFunction::GetQuotaLimitHeuristics(
 
   QuotaLimitHeuristic::Config long_limit_config = {
       api::certificate_provider::kMaxClosedDialogsPer10Minutes - 1,
-      base::TimeDelta::FromMinutes(10)};
+      base::Minutes(10)};
   heuristics->push_back(std::make_unique<QuotaService::TimedLimit>(
       long_limit_config,
       std::make_unique<RequestPinExceptFirstQuotaBucketMapper>(),
@@ -436,7 +437,7 @@ void CertificateProviderRequestPinFunction::GetQuotaLimitHeuristics(
 
 ExtensionFunction::ResponseAction CertificateProviderRequestPinFunction::Run() {
   std::unique_ptr<api_cp::RequestPin::Params> params(
-      api_cp::RequestPin::Params::Create(*args_));
+      api_cp::RequestPin::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const api_cp::PinRequestType pin_request_type =
@@ -524,7 +525,7 @@ CertificateProviderSetCertificatesFunction::
 ExtensionFunction::ResponseAction
 CertificateProviderSetCertificatesFunction::Run() {
   std::unique_ptr<api_cp::SetCertificates::Params> params(
-      api_cp::SetCertificates::Params::Create(*args_));
+      api_cp::SetCertificates::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!params->details.client_certificates.empty() && params->details.error) {
@@ -576,7 +577,7 @@ CertificateProviderInternalReportSignatureFunction::
 ExtensionFunction::ResponseAction
 CertificateProviderInternalReportSignatureFunction::Run() {
   std::unique_ptr<api_cpi::ReportSignature::Params> params(
-      api_cpi::ReportSignature::Params::Create(*args_));
+      api_cpi::ReportSignature::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   ash::CertificateProviderService* const service =
@@ -605,12 +606,17 @@ CertificateProviderReportSignatureFunction::
 ExtensionFunction::ResponseAction
 CertificateProviderReportSignatureFunction::Run() {
   std::unique_ptr<api_cp::ReportSignature::Params> params(
-      api_cp::ReportSignature::Params::Create(*args_));
+      api_cp::ReportSignature::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->details.signature && !params->details.signature->empty() &&
       params->details.error) {
     return RespondNow(Error(kCertificateProviderErrorUnexpectedError));
+  }
+  if ((!params->details.signature || params->details.signature->empty()) &&
+      !params->details.error) {
+    // It's not allowed to supply empty result without an error code.
+    return RespondNow(Error(kCertificateProviderErrorNeitherResultNorError));
   }
 
   ash::CertificateProviderService* const service =

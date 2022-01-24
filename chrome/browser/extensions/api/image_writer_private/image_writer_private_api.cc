@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -80,7 +79,7 @@ ImageWriterPrivateWriteFromUrlFunction::Run() {
   }
 #endif
   std::unique_ptr<image_writer_api::WriteFromUrl::Params> params(
-      image_writer_api::WriteFromUrl::Params::Create(*args_));
+      image_writer_api::WriteFromUrl::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GURL url(params->image_url);
@@ -124,13 +123,14 @@ ImageWriterPrivateWriteFromFileFunction::Run() {
     return RespondNow(Error(image_writer::error::kDeviceWriteError));
   }
 #endif
-  std::string filesystem_name;
-  std::string filesystem_path;
-  std::string storage_unit_id;
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 3);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[2].is_string());
 
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &storage_unit_id));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filesystem_name));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(2, &filesystem_path));
+  const std::string& storage_unit_id = args()[0].GetString();
+  const std::string& filesystem_name = args()[1].GetString();
+  const std::string& filesystem_path = args()[2].GetString();
 
   base::FilePath path;
 
@@ -197,7 +197,7 @@ ImageWriterPrivateDestroyPartitionsFunction::Run() {
 #endif
 
   std::unique_ptr<image_writer_api::DestroyPartitions::Params> params(
-      image_writer_api::DestroyPartitions::Params::Create(*args_));
+      image_writer_api::DestroyPartitions::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

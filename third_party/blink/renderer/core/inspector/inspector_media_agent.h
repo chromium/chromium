@@ -8,7 +8,7 @@
 #include "third_party/blink/public/web/web_media_inspector.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Media.h"
+#include "third_party/blink/renderer/core/inspector/protocol/media.h"
 
 namespace blink {
 

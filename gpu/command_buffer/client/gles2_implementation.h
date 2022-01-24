@@ -89,6 +89,9 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
                       bool support_client_side_arrays,
                       GpuControl* gpu_control);
 
+  GLES2Implementation(const GLES2Implementation&) = delete;
+  GLES2Implementation& operator=(const GLES2Implementation&) = delete;
+
   ~GLES2Implementation() override;
 
   gpu::ContextResult Initialize(const SharedMemoryLimits& limits);
@@ -872,8 +875,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   gl::GpuPreference active_gpu_heuristic_ = gl::GpuPreference::kDefault;
 
   base::WeakPtrFactory<GLES2Implementation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GLES2Implementation);
 };
 
 inline bool GLES2Implementation::GetBufferParameteri64vHelper(

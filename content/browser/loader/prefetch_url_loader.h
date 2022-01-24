@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/network_isolation_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -76,6 +76,10 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
           prefetched_signed_exchange_cache,
       const std::string& accept_langs,
       RecursivePrefetchTokenGenerator recursive_prefetch_token_generator);
+
+  PrefetchURLLoader(const PrefetchURLLoader&) = delete;
+  PrefetchURLLoader& operator=(const PrefetchURLLoader&) = delete;
+
   ~PrefetchURLLoader() override;
 
   // Sends an empty response's body to |forwarding_client_|. If failed to create
@@ -157,8 +161,6 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
   // TODO(kinuko): This value can become stale if the preference is updated.
   // Make this listen to the changes if it becomes a real concern.
   bool is_signed_exchange_handling_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchURLLoader);
 };
 
 }  // namespace content

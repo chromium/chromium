@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -91,12 +91,12 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
     Navigate(&params);
   }
   Browser* const app_browser = browser_list->GetLastActive();
-  EXPECT_TRUE(app_browser->app_controller()->HasAppId());
+  const AppId app_id = app_browser->app_controller()->app_id();
 
   {
     NavigateParams params(MakeNavigateParams());
     params.disposition = WindowOpenDisposition::NEW_WINDOW;
-    params.extension_app_id = app_browser->app_controller()->GetAppId();
+    params.app_id = app_id;
     Navigate(&params);
   }
   content::WebContents* const web_contents =
@@ -114,10 +114,11 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
   {
     // From a browser tab, an app window opens if app_id is specified.
     NavigateParams params(MakeNavigateParams());
-    params.extension_app_id = app_browser->app_controller()->GetAppId();
+    params.app_id = app_id;
     params.disposition = WindowOpenDisposition::NEW_POPUP;
     Navigate(&params);
-    EXPECT_TRUE(browser_list->GetLastActive()->app_controller()->HasAppId());
+    EXPECT_EQ(browser_list->GetLastActive()->app_controller()->app_id(),
+              app_id);
   }
 
   {
@@ -126,7 +127,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
     params.browser = app_browser;
     params.disposition = WindowOpenDisposition::NEW_POPUP;
     Navigate(&params);
-    EXPECT_TRUE(browser_list->GetLastActive()->app_controller()->HasAppId());
+    EXPECT_EQ(browser_list->GetLastActive()->app_controller()->app_id(),
+              app_id);
   }
 }
 

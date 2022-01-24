@@ -23,7 +23,7 @@
 #include "services/device/public/mojom/hid.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
+#include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {

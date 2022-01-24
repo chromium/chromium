@@ -26,6 +26,10 @@ class CodedFrameProvider {
       ReadCB;
 
   CodedFrameProvider();
+
+  CodedFrameProvider(const CodedFrameProvider&) = delete;
+  CodedFrameProvider& operator=(const CodedFrameProvider&) = delete;
+
   virtual ~CodedFrameProvider();
 
   // Request a coded frame which is provided asynchronously through callback
@@ -42,9 +46,6 @@ class CodedFrameProvider {
   // callback will not be invoked.
   // TODO(alokp): Delete this function once CmaRenderer is deprecated.
   virtual void Flush(base::OnceClosure flush_cb) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CodedFrameProvider);
 };
 
 }  // namespace media

@@ -150,6 +150,11 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
         return null;
     }
 
+    @Override
+    public TabModelSelector getTabModelSelectorById(int index) {
+        return mSelectors.get(index);
+    }
+
     // ActivityStateListener
     @Override
     public void onActivityStateChange(Activity activity, int newState) {

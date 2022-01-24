@@ -24,6 +24,12 @@ class UserAvatarImageExternalDataHandler
   UserAvatarImageExternalDataHandler(
       ash::CrosSettings* cros_settings,
       DeviceLocalAccountPolicyService* policy_service);
+
+  UserAvatarImageExternalDataHandler(
+      const UserAvatarImageExternalDataHandler&) = delete;
+  UserAvatarImageExternalDataHandler& operator=(
+      const UserAvatarImageExternalDataHandler&) = delete;
+
   ~UserAvatarImageExternalDataHandler() override;
 
   // CloudExternalDataPolicyHandler:
@@ -39,8 +45,6 @@ class UserAvatarImageExternalDataHandler
 
  private:
   CloudExternalDataPolicyObserver user_avatar_image_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserAvatarImageExternalDataHandler);
 };
 
 }  // namespace policy

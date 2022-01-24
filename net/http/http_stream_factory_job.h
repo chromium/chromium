@@ -164,6 +164,10 @@ class HttpStreamFactory::Job
       bool is_websocket,
       bool enable_ip_based_pooling,
       NetLog* net_log);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job() override;
 
   // Start initiates the process of creating a new HttpStream.
@@ -200,9 +204,6 @@ class HttpStreamFactory::Job
   std::unique_ptr<BidirectionalStreamImpl> ReleaseBidirectionalStream() {
     return std::move(bidirectional_stream_impl_);
   }
-
-  // Returns the estimated memory usage in bytes.
-  size_t EstimateMemoryUsage() const;
 
   bool is_waiting() const { return next_state_ == STATE_WAIT_COMPLETE; }
   const SSLConfig& server_ssl_config() const;
@@ -461,8 +462,6 @@ class HttpStreamFactory::Job
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> spdy_session_request_;
 
   base::WeakPtrFactory<Job> ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 // Factory for creating Jobs.

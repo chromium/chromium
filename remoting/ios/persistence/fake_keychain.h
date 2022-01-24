@@ -17,6 +17,10 @@ namespace remoting {
 class FakeKeychain : public Keychain {
  public:
   FakeKeychain();
+
+  FakeKeychain(const FakeKeychain&) = delete;
+  FakeKeychain& operator=(const FakeKeychain&) = delete;
+
   ~FakeKeychain() override;
 
   size_t GetNumberOfEntries() const;
@@ -30,8 +34,6 @@ class FakeKeychain : public Keychain {
 
  private:
   std::map<std::string, std::string> entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeKeychain);
 };
 
 }  // namespace remoting

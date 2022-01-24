@@ -82,6 +82,18 @@ TEST_F(OfflineMeasurementsPageLoadMetricsObserverTest, RecordUkmOnCommit) {
   system_state4->set_probe_result(
       offline_measurements_system_state::proto::SystemState::CANCELLED);
 
+  // In some cases, we can encounter an error while checking whether a network
+  // is roaming or not. When this happens, we do not set the IsRoaming field.
+  offline_measurements_system_state::proto::SystemState* system_state5 =
+      system_state_list.add_system_states();
+  system_state5->set_user_state(offline_measurements_system_state::proto::
+                                    SystemState::USING_PHONE_NOT_CHROME);
+  system_state5->set_probe_result(offline_measurements_system_state::proto::
+                                      SystemState::UNEXPECTED_RESPONSE);
+  system_state5->set_is_airplane_mode_enabled(false);
+  system_state5->set_local_hour_of_day_start(20);
+  system_state5->set_time_since_last_check_millis(4000);
+
   // Add the test data to prefs.
   AddSystemStateListToPrefs(system_state_list);
 
@@ -149,11 +161,22 @@ TEST_F(OfflineMeasurementsPageLoadMetricsObserverTest, RecordUkmOnCommit) {
                    INVALID_USER_STATE},
               {UkmEntry::kProbeResultName, offline_measurements_system_state::
                                                proto::SystemState::CANCELLED},
-              {UkmEntry::kIsRoamingName, false},
               {UkmEntry::kIsAirplaneModeEnabledName, false},
               {UkmEntry::kLocalHourOfDayStartName, 0},
               {UkmEntry::kDurationMillisName,
                ukm::GetExponentialBucketMinForUserTiming(0)},
+          },
+          {
+              {UkmEntry::kUserStateName,
+               offline_measurements_system_state::proto::SystemState::
+                   USING_PHONE_NOT_CHROME},
+              {UkmEntry::kProbeResultName,
+               offline_measurements_system_state::proto::SystemState::
+                   UNEXPECTED_RESPONSE},
+              {UkmEntry::kIsAirplaneModeEnabledName, false},
+              {UkmEntry::kLocalHourOfDayStartName, 20},
+              {UkmEntry::kDurationMillisName,
+               ukm::GetExponentialBucketMinForUserTiming(4000)},
           },
       };
 

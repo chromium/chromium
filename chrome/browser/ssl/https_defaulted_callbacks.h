@@ -14,7 +14,7 @@ class NavigationHandle;
 // it should not trigger SSL error interstitials. These features that upgrade
 // navigations to HTTPS have special handling for error cases -- see
 // `TypedNavigationUpgradeThrottle` and `HttpsOnlyModeNavigationThrottle`.
-bool ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps(
+bool ShouldIgnoreSslInterstitialBecauseNavigationDefaultedToHttps(
     content::NavigationHandle* handle);
 
 #endif  // CHROME_BROWSER_SSL_HTTPS_DEFAULTED_CALLBACKS_H_

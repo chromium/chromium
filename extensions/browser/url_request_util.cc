@@ -16,6 +16,7 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/manifest_handlers/webview_info.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 
@@ -93,8 +94,7 @@ bool AllowCrossRendererResourceLoad(
   // When navigating in subframe, allow if it is the same origin
   // as the top-level frame. This can only be the case if the subframe
   // request is coming from the extension process.
-  if ((destination == network::mojom::RequestDestination::kIframe ||
-       destination == network::mojom::RequestDestination::kFrame) &&
+  if (network::IsRequestDestinationEmbeddedFrame(destination) &&
       process_map.Contains(child_id)) {
     *allowed = true;
     return true;

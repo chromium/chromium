@@ -35,7 +35,8 @@ interface ImageDecoder {
   DecodeImage(mojo_base.mojom.BigBuffer encoded_data, ImageCodec codec,
               bool shrink_to_fit, int64 max_size_in_bytes,
               gfx.mojom.Size desired_image_frame_size)
-      => (skia.mojom.BitmapN32? decoded_image);
+      => (mojo_base.mojom.TimeDelta decoding_duration,
+          skia.mojom.BitmapN32? decoded_image);
 
   // Decodes the image in |encoded_data|. This will return all frames in the
   // image and assumes it is an animation (instead of say, a multi-sized image).

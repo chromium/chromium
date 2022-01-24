@@ -40,6 +40,10 @@ class SandboxDirectoryDatabaseTest : public testing::Test {
     InitDatabase();
   }
 
+  SandboxDirectoryDatabaseTest(const SandboxDirectoryDatabaseTest&) = delete;
+  SandboxDirectoryDatabaseTest& operator=(const SandboxDirectoryDatabaseTest&) =
+      delete;
+
   SandboxDirectoryDatabase* db() { return db_.get(); }
 
   void InitDatabase() {
@@ -136,9 +140,6 @@ class SandboxDirectoryDatabaseTest : public testing::Test {
   // Common temp base for nondestructive uses.
   base::ScopedTempDir base_;
   std::unique_ptr<SandboxDirectoryDatabase> db_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SandboxDirectoryDatabaseTest);
 };
 
 TEST_F(SandboxDirectoryDatabaseTest, TestMissingFileGetInfo) {

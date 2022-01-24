@@ -67,7 +67,7 @@ constexpr SystemNotificationWarningLevel kWarningLevel =
     SystemNotificationWarningLevel::WARNING;
 
 // A time-delta of length one minute.
-constexpr base::TimeDelta kOneMinute = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kOneMinute = base::Minutes(1);
 
 std::u16string GetBodyText() {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_EXPIRY_CALL_TO_ACTION);

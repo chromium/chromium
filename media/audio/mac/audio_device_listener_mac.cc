@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/mac/core_audio_util_mac.h"
 #include "media/base/bind_to_current_loop.h"

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_FONT_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_FONT_TEST_HELPERS_H_
 
+#include "build/build_config.h"
+#include "third_party/blink/public/platform/web_font_prewarmer.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -19,6 +21,32 @@ Font CreateTestFont(const AtomicString& family_name,
                     const String& font_path,
                     float size,
                     const FontDescription::VariantLigatures* = nullptr);
+
+#if defined(OS_WIN)
+class TestFontPrewarmer : public WebFontPrewarmer {
+ public:
+  void PrewarmFamily(const WebString& family_name) override;
+
+  const Vector<String>& PrewarmedFamilyNames() const { return family_names_; }
+
+ private:
+  Vector<String> family_names_;
+};
+
+class ScopedTestFontPrewarmer {
+ public:
+  ScopedTestFontPrewarmer();
+  ~ScopedTestFontPrewarmer();
+
+  const Vector<String>& PrewarmedFamilyNames() const {
+    return current_.PrewarmedFamilyNames();
+  }
+
+ private:
+  TestFontPrewarmer current_;
+  WebFontPrewarmer* saved_;
+};
+#endif
 
 }  // namespace test
 }  // namespace blink

@@ -12,7 +12,7 @@ package metrics;
 // One structured metrics event, containing several hashed and unhashed metrics
 // related to a single event type, tied to a single pseudonymous user.
 //
-// Next tag: 4
+// Next tag: 5
 message StructuredEventProto {
   // A per-client, per-profile, per-project ID that is used only for structured
   // metrics. For projects recorded from Chrome OS's platform2 repository, this
@@ -31,10 +31,14 @@ message StructuredEventProto {
   // 1. Metric name. This is a string, and the first 8 bytes of its MD5 hash is
   //    recorded as name_hash.
   //
-  // 2. Kind. Each metric can store two kinds of values.
+  // 2. Kind. Each metric can store three kinds of values.
   //
   //    - int64. The client supplies an int64 value for the metric, and that
-  //      value is recorded as-is in value_raw.
+  //      value is recorded as-is in value_int64.
+  //
+  //    - string. The client supplies a string value for the metric, which is
+  //      recorded as-is in value_string. This is sometimes referred to as a
+  //      "raw string" to differentiate from the following.
   //
   //    - hashed-string. The client supplies an arbitrary string for the metric.
   //      The string itself is not recorded, instead, value_hmac records the
@@ -50,9 +54,21 @@ message StructuredEventProto {
     oneof value {
       fixed64 value_hmac = 2;
       int64 value_int64 = 3;
+      string value_string = 4;
     }
   }
   repeated Metric metrics = 3;
+
+  // Type of this event, which determines which log source the event is saved
+  // into. An event should have type RAW_STRING if and only if the event may
+  // contain raw string metrics, ie. strings that have not been HMAC'd. The
+  // UNKNOWN value is considered an error and should never be sent.
+  enum EventType {
+    UNKNOWN = 0;
+    REGULAR = 1;
+    RAW_STRING = 2;
+  }
+  optional EventType event_type = 4;
 }
 
 // The top-level proto for structured metrics. One StructuredDataProto is

@@ -47,7 +47,7 @@ WindowController::TypeFilter WindowController::GetFilterFromWindowTypesValues(
   WindowController::TypeFilter filter = WindowController::kNoWindowFilter;
   if (!types)
     return filter;
-  for (size_t i = 0; i < types->GetSize(); i++) {
+  for (size_t i = 0; i < types->GetList().size(); i++) {
     std::string window_type;
     if (types->GetString(i, &window_type))
       filter |= 1 << api::windows::ParseWindowType(window_type);

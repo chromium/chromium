@@ -70,3 +70,15 @@ message JoinSecurityDomainsResponse {
 message JoinSecurityDomainsErrorDetail {
   JoinSecurityDomainsResponse already_exists_response = 1;
 }
+
+// TODO(crbug.com/1234719): figure out how to link google.protobuf.Any and use
+// it instead.
+message Proto3Any {
+  string type_url = 1;
+  bytes value = 2;
+}
+
+// Forked version of google.rpc.Status.
+message RPCStatus {
+  repeated Proto3Any details = 3;
+}

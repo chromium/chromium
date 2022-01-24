@@ -111,6 +111,7 @@ class LocalWindowProxy final : public WindowProxy {
 
   Member<ScriptState> script_state_;
   bool context_was_created_from_snapshot_ = false;
+  static int v8_context_count_;
 };
 
 template <>

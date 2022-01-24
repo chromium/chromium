@@ -6,6 +6,7 @@
 
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -33,7 +34,7 @@ class NotificationPlatformBridgeMacUtilsTest : public testing::Test {
   BuildDefaultNotificationResponse() {
     auto meta = CreateNotificationMetadata();
     return mac_notifications::mojom::NotificationActionInfo::New(
-        std::move(meta), NotificationOperation::NOTIFICATION_CLICK,
+        std::move(meta), NotificationOperation::kClick,
         /*button_index=*/-1, /*reply=*/absl::nullopt);
   }
 
@@ -174,12 +175,6 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
 
 TEST_F(NotificationPlatformBridgeMacUtilsTest, TestNotificationUnknownType) {
   response_->meta->type = 210581;
-  EXPECT_FALSE(VerifyMacNotificationData(response_));
-}
-
-TEST_F(NotificationPlatformBridgeMacUtilsTest,
-       TestNotificationVerifyUnknownOperation) {
-  response_->operation = static_cast<NotificationOperation>(40782);
   EXPECT_FALSE(VerifyMacNotificationData(response_));
 }
 

@@ -13,8 +13,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/voice/speech_input_locale_match.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -50,14 +48,8 @@ SpeechInputLocaleConfigImpl::SpeechInputLocaleConfigImpl(
     NSArray<SpeechInputLocaleMatch*>* locale_matches) {
   InitializeAvailableLocales(languages);
   InitializeLocaleMatches(locale_matches);
-  InitializeTextToSpeechLangauges();
+  InitializeTextToSpeechLanguages();
 }
-
-SpeechInputLocaleConfigImpl::SpeechInputLocaleConfigImpl()
-    : SpeechInputLocaleConfigImpl(ios::GetChromeBrowserProvider()
-                                      .GetVoiceSearchProvider()
-                                      ->GetAvailableLanguages(),
-                                  LoadSpeechInputLocaleMatches()) {}
 
 SpeechInputLocaleConfigImpl::~SpeechInputLocaleConfigImpl() {}
 
@@ -191,7 +183,7 @@ void SpeechInputLocaleConfigImpl::InitializeLocaleMatches(
   }
 }
 
-void SpeechInputLocaleConfigImpl::InitializeTextToSpeechLangauges() {
+void SpeechInputLocaleConfigImpl::InitializeTextToSpeechLanguages() {
   text_to_speech_languages_ = {"de", "en", "es", "fr", "it", "ja", "ko"};
 }
 

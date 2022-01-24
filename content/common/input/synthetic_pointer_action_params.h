@@ -7,7 +7,6 @@
 
 #include "base/check_op.h"
 #include "content/common/content_export.h"
-#include "content/common/content_param_traits_macros.h"
 #include "content/common/input/synthetic_gesture_params.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"

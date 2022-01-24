@@ -757,4 +757,8 @@ TopDomainEntry LookupSkeletonInTopDomains(const std::string& skeleton,
   return g_idn_spoof_checker.Get().LookupSkeletonInTopDomains(skeleton, type);
 }
 
+std::u16string MaybeRemoveDiacritics(const std::u16string& host) {
+  return g_idn_spoof_checker.Get().MaybeRemoveDiacritics(host);
+}
+
 }  // namespace url_formatter

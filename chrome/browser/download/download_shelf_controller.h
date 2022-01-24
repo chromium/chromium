@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_CONTROLLER_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/download/offline_item_model.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
@@ -24,6 +23,10 @@ using UpdateDelta = offline_items_collection::UpdateDelta;
 class DownloadShelfController : public OfflineContentProvider::Observer {
  public:
   explicit DownloadShelfController(Profile* profile);
+
+  DownloadShelfController(const DownloadShelfController&) = delete;
+  DownloadShelfController& operator=(const DownloadShelfController&) = delete;
+
   ~DownloadShelfController() override;
 
  private:
@@ -43,8 +46,6 @@ class DownloadShelfController : public OfflineContentProvider::Observer {
   base::ScopedObservation<OfflineContentProvider,
                           OfflineContentProvider::Observer>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadShelfController);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_CONTROLLER_H_

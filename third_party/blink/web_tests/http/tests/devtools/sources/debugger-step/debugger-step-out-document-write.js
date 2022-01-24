@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that debugger StepOut will skip inlined scripts created by document.write().\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   var numberOfStepOut = 5;

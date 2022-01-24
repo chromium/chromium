@@ -1,6 +1,12 @@
 # Traffic Annotation Scripts
 This file describes the scripts in `tools/traffic_annotation/scripts`.
 
+# auditor/auditor.py
+
+The new implementation of `traffic_annotation_auditor`. It is meant as a
+drop-in replacement, i.e. you can call it with the same command-line arguments
+and it should give similar output.
+
 # check_annotations.py
 Runs traffic annotation tests on the changed files or all repository. The tests
 are run in error resilient mode. Requires a compiled build directory to run.

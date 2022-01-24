@@ -13,7 +13,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -84,6 +83,9 @@ class NetExportFileWriter {
   // Constructs a NetExportFileWriter. Only one instance is created in browser
   // process.
   NetExportFileWriter();
+
+  NetExportFileWriter(const NetExportFileWriter&) = delete;
+  NetExportFileWriter& operator=(const NetExportFileWriter&) = delete;
 
   ~NetExportFileWriter();
 
@@ -224,8 +226,6 @@ class NetExportFileWriter {
   DirectoryGetter default_log_base_dir_getter_;
 
   base::WeakPtrFactory<NetExportFileWriter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetExportFileWriter);
 };
 
 }  // namespace net_log

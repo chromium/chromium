@@ -31,6 +31,11 @@ ContextualSearchTabHelper::ContextualSearchTabHelper(JNIEnv* env,
       base::BindRepeating(
           &ContextualSearchTabHelper::OnContextualSearchPrefChanged,
           weak_factory_.GetWeakPtr()));
+  pref_change_registrar_->Add(
+      prefs::kContextualSearchWasFullyPrivacyEnabled,
+      base::BindRepeating(
+          &ContextualSearchTabHelper::OnContextualSearchPrefChanged,
+          weak_factory_.GetWeakPtr()));
 }
 
 ContextualSearchTabHelper::~ContextualSearchTabHelper() {

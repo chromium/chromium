@@ -62,7 +62,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   }
   if (request.GetURL().path() == "/image_delayed") {
     auto result = std::make_unique<net::test_server::DelayedHttpResponse>(
-        base::TimeDelta::FromMilliseconds(kImageDelayInMs));
+        base::Milliseconds(kImageDelayInMs));
     result->set_content_type("image/png");
     result->set_content(image_binary);
     result->AddCustomHeader("Access-Control-Allow-Origin", "*");

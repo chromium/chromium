@@ -13,14 +13,17 @@ namespace extensions {
 class ShellWebViewGuestDelegate : public WebViewGuestDelegate {
  public:
   ShellWebViewGuestDelegate();
+
+  ShellWebViewGuestDelegate(const ShellWebViewGuestDelegate&) = delete;
+  ShellWebViewGuestDelegate& operator=(const ShellWebViewGuestDelegate&) =
+      delete;
+
   ~ShellWebViewGuestDelegate() override;
 
   // WebViewGuestDelegate:
-  bool HandleContextMenu(const content::ContextMenuParams& params) override;
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override;
   void OnShowContextMenu(int request_id) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellWebViewGuestDelegate);
 };
 
 }  // namespace extensions

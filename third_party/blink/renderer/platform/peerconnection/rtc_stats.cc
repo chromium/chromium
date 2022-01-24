@@ -10,7 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_scoped_refptr_cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -302,8 +302,8 @@ Vector<String> RTCStatsMember::ValueSequenceString() const {
   DCHECK(IsDefined());
   const std::vector<std::string>& sequence =
       *member_->cast_to<webrtc::RTCStatsMember<std::vector<std::string>>>();
-  Vector<String> wtf_sequence(sequence.size());
-  for (size_t i = 0; i < sequence.size(); ++i)
+  Vector<String> wtf_sequence(base::checked_cast<wtf_size_t>(sequence.size()));
+  for (wtf_size_t i = 0; i < wtf_sequence.size(); ++i)
     wtf_sequence[i] = String::FromUTF8(sequence[i]);
   return wtf_sequence;
 }

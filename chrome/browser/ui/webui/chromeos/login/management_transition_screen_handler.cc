@@ -23,11 +23,17 @@
 
 namespace {
 
-constexpr base::TimeDelta kWaitingTimeout = base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kWaitingTimeout = base::Minutes(2);
 
 }  // namespace
 
 namespace chromeos {
+namespace {
+
+// Management transition screen step names.
+const char kManagementTransitionStepError[] = "error";
+
+}  // namespace
 
 constexpr StaticOobeScreenId ManagementTransitionScreenView::kScreenId;
 
@@ -133,6 +139,10 @@ void ManagementTransitionScreenHandler::Initialize() {
   show_on_init_ = false;
 }
 
+void ManagementTransitionScreenHandler::ShowStep(const char* step) {
+  CallJS("login.ManagementTransitionScreen.showStep", std::string(step));
+}
+
 void ManagementTransitionScreenHandler::OnManagementTransitionFailed() {
   LOG(ERROR) << "Management transition failed; resetting ARC++ data.";
   // Prevent ARC++ data removal below from triggering the success flow (since it
@@ -141,10 +151,7 @@ void ManagementTransitionScreenHandler::OnManagementTransitionFailed() {
   timed_out_ = true;
   arc::ArcSessionManager::Get()->RequestArcDataRemoval();
   arc::ArcSessionManager::Get()->StopAndEnableArc();
-  if (screen_) {
-    AllowJavascript();
-    FireWebUIListener("management-transition-failed");
-  }
+  ShowStep(kManagementTransitionStepError);
 }
 
 void ManagementTransitionScreenHandler::OnManagementTransitionFinished() {

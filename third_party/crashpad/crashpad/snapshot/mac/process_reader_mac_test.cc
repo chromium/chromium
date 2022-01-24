@@ -82,6 +82,9 @@ class ProcessReaderChild final : public MachMultiprocess {
  public:
   ProcessReaderChild() : MachMultiprocess() {}
 
+  ProcessReaderChild(const ProcessReaderChild&) = delete;
+  ProcessReaderChild& operator=(const ProcessReaderChild&) = delete;
+
   ~ProcessReaderChild() {}
 
  private:
@@ -118,8 +121,6 @@ class ProcessReaderChild final : public MachMultiprocess {
     // the pipe.
     CheckedReadFileAtEOF(ReadPipeHandle());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderChild);
 };
 
 TEST(ProcessReaderMac, ChildBasic) {
@@ -165,6 +166,9 @@ class TestThreadPool {
   };
 
   TestThreadPool() : thread_infos_() {}
+
+  TestThreadPool(const TestThreadPool&) = delete;
+  TestThreadPool& operator=(const TestThreadPool&) = delete;
 
   // Resumes suspended threads, signals each thread’s exit semaphore asking it
   // to exit, and joins each thread, blocking until they have all exited.
@@ -289,8 +293,6 @@ class TestThreadPool {
   // This is a vector of pointers because the address of a ThreadInfo object is
   // passed to each thread’s ThreadMain(), so they cannot move around in memory.
   std::vector<std::unique_ptr<ThreadInfo>> thread_infos_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestThreadPool);
 };
 
 using ThreadMap = std::map<uint64_t, TestThreadPool::ThreadExpectation>;
@@ -432,6 +434,10 @@ class ProcessReaderThreadedChild final : public MachMultiprocess {
   explicit ProcessReaderThreadedChild(size_t thread_count)
       : MachMultiprocess(), thread_count_(thread_count) {}
 
+  ProcessReaderThreadedChild(const ProcessReaderThreadedChild&) = delete;
+  ProcessReaderThreadedChild& operator=(const ProcessReaderThreadedChild&) =
+      delete;
+
   ~ProcessReaderThreadedChild() {}
 
  private:
@@ -498,8 +504,7 @@ class ProcessReaderThreadedChild final : public MachMultiprocess {
     // Write an entry for everything in the thread pool.
     for (size_t thread_index = 0; thread_index < thread_count_;
          ++thread_index) {
-      uint64_t thread_id =
-          thread_pool.GetThreadInfo(thread_index, &expectation);
+      thread_id = thread_pool.GetThreadInfo(thread_index, &expectation);
 
       CheckedWriteFile(write_handle, &thread_id, sizeof(thread_id));
       CheckedWriteFile(write_handle,
@@ -516,8 +521,6 @@ class ProcessReaderThreadedChild final : public MachMultiprocess {
   }
 
   size_t thread_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderThreadedChild);
 };
 
 TEST(ProcessReaderMac, ChildOneThread) {
@@ -622,6 +625,9 @@ class ScopedOpenCLNoOpKernel {
         kernel_(nullptr),
         success_(false) {}
 
+  ScopedOpenCLNoOpKernel(const ScopedOpenCLNoOpKernel&) = delete;
+  ScopedOpenCLNoOpKernel& operator=(const ScopedOpenCLNoOpKernel&) = delete;
+
   ~ScopedOpenCLNoOpKernel() {
     if (kernel_) {
       cl_int rv = clReleaseKernel(kernel_);
@@ -720,8 +726,6 @@ class ScopedOpenCLNoOpKernel {
   cl_program program_;
   cl_kernel kernel_;
   bool success_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedOpenCLNoOpKernel);
 };
 
 // Although Mac OS X 10.6 has OpenCL and can compile and execute OpenCL code,
@@ -732,7 +736,9 @@ bool ExpectCLKernels() {
          MacOSVersionNumber() >= 10'07'00;
 }
 
-TEST(ProcessReaderMac, SelfModules) {
+// Disabled to investigate crbug.com/1268776.
+// TODO(crbug.com/1268776): Re-enable or remove if no longer relevant.
+TEST(ProcessReaderMac, DISABLED_SelfModules) {
   ScopedOpenCLNoOpKernel ensure_cl_kernels;
   ASSERT_NO_FATAL_FAILURE(ensure_cl_kernels.SetUp());
 
@@ -808,6 +814,10 @@ class ProcessReaderModulesChild final : public MachMultiprocess {
   explicit ProcessReaderModulesChild(bool ensure_cl_kernels_success)
       : MachMultiprocess(),
         ensure_cl_kernels_success_(ensure_cl_kernels_success) {}
+
+  ProcessReaderModulesChild(const ProcessReaderModulesChild&) = delete;
+  ProcessReaderModulesChild& operator=(const ProcessReaderModulesChild&) =
+      delete;
 
   ~ProcessReaderModulesChild() {}
 
@@ -925,11 +935,11 @@ class ProcessReaderModulesChild final : public MachMultiprocess {
   }
 
   bool ensure_cl_kernels_success_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderModulesChild);
 };
 
-TEST(ProcessReaderMac, ChildModules) {
+// Disabled to investigate crbug.com/1268776.
+// TODO(crbug.com/1268776): Re-enable or remove if no longer relevant.
+TEST(ProcessReaderMac, DISABLED_ChildModules) {
   ScopedOpenCLNoOpKernel ensure_cl_kernels;
   ASSERT_NO_FATAL_FAILURE(ensure_cl_kernels.SetUp());
 

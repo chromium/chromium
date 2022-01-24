@@ -127,6 +127,11 @@ bool GetTabId(int tab_id_value,
 class TestNetworkChangeNotifier : public net::NetworkChangeNotifier {
  public:
   TestNetworkChangeNotifier() : online_(true) {}
+
+  TestNetworkChangeNotifier(const TestNetworkChangeNotifier&) = delete;
+  TestNetworkChangeNotifier& operator=(const TestNetworkChangeNotifier&) =
+      delete;
+
   ~TestNetworkChangeNotifier() override {}
 
   net::NetworkChangeNotifier::ConnectionType GetCurrentConnectionType()
@@ -140,8 +145,6 @@ class TestNetworkChangeNotifier : public net::NetworkChangeNotifier {
 
  private:
   bool online_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkChangeNotifier);
 };
 
 class TestURLLoaderClient : public network::mojom::URLLoaderClient {
@@ -159,6 +162,10 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   };
 
   explicit TestURLLoaderClient(Observer* observer) : observer_(observer) {}
+
+  TestURLLoaderClient(const TestURLLoaderClient&) = delete;
+  TestURLLoaderClient& operator=(const TestURLLoaderClient&) = delete;
+
   ~TestURLLoaderClient() override {}
 
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
@@ -215,8 +222,6 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
   mojo::ScopedDataPipeConsumerHandle response_body_;
   network::URLLoaderCompletionStatus completion_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestURLLoaderClient);
 };
 
 // Helper function to make a character array filled with |size| bytes of
@@ -291,6 +296,11 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
 class OfflinePageRequestHandlerTest : public testing::Test {
  public:
   OfflinePageRequestHandlerTest();
+
+  OfflinePageRequestHandlerTest(const OfflinePageRequestHandlerTest&) = delete;
+  OfflinePageRequestHandlerTest& operator=(
+      const OfflinePageRequestHandlerTest&) = delete;
+
   ~OfflinePageRequestHandlerTest() override {}
 
   void SetUp() override;
@@ -456,8 +466,6 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   base::OnceClosure async_operation_completed_callback_;
 
   OfflinePageURLLoaderBuilder interceptor_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageRequestHandlerTest);
 };
 
 OfflinePageRequestHandlerTest::OfflinePageRequestHandlerTest()

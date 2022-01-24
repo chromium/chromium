@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 
@@ -123,8 +124,14 @@ void GetRendererContentSettingRules(const HostContentSettingsMap* map,
   map->GetSettingsForOneType(ContentSettingsType::IMAGES,
                              &(rules->image_rules));
   map->GetSettingsForOneType(ContentSettingsType::MIXEDSCRIPT,
-
                              &(rules->mixed_content_rules));
+  // Auto dark web content settings is available only for Android, so ALLOW rule
+  // is added for all origins.
+  rules->auto_dark_content_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      base::Value::FromUniquePtrValue(
+          ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+      std::string(), map->IsOffTheRecord()));
 #else
   // Android doesn't use image content settings, so ALLOW rule is added for
   // all origins.
@@ -140,6 +147,8 @@ void GetRendererContentSettingRules(const HostContentSettingsMap* map,
       base::Value::FromUniquePtrValue(
           ContentSettingToValue(CONTENT_SETTING_BLOCK)),
       std::string(), map->IsOffTheRecord()));
+  map->GetSettingsForOneType(ContentSettingsType::AUTO_DARK_WEB_CONTENT,
+                             &(rules->auto_dark_content_rules));
 #endif
   map->GetSettingsForOneType(ContentSettingsType::JAVASCRIPT,
                              &(rules->script_rules));

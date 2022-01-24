@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/optimization_guide/core/prediction_model.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
@@ -21,6 +20,10 @@ class DecisionTreePredictionModel : public PredictionModel {
  public:
   explicit DecisionTreePredictionModel(
       const proto::PredictionModel& prediction_model);
+
+  DecisionTreePredictionModel(const DecisionTreePredictionModel&) = delete;
+  DecisionTreePredictionModel& operator=(const DecisionTreePredictionModel&) =
+      delete;
 
   ~DecisionTreePredictionModel() override;
 
@@ -87,8 +90,6 @@ class DecisionTreePredictionModel : public PredictionModel {
   bool ValidateTreeNode(const proto::DecisionTree& tree,
                         const proto::TreeNode& node,
                         int node_index) const;
-
-  DISALLOW_COPY_AND_ASSIGN(DecisionTreePredictionModel);
 };
 
 }  // namespace optimization_guide

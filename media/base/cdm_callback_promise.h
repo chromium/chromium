@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/media_export.h"
 
@@ -26,6 +25,10 @@ class MEDIA_EXPORT CdmCallbackPromise : public CdmPromiseTemplate<T...> {
  public:
   CdmCallbackPromise(base::OnceCallback<void(const T&...)> resolve_cb,
                      PromiseRejectedCB reject_cb);
+
+  CdmCallbackPromise(const CdmCallbackPromise&) = delete;
+  CdmCallbackPromise& operator=(const CdmCallbackPromise&) = delete;
+
   virtual ~CdmCallbackPromise();
 
   // CdmPromiseTemplate<T> implementation.
@@ -41,8 +44,6 @@ class MEDIA_EXPORT CdmCallbackPromise : public CdmPromiseTemplate<T...> {
 
   base::OnceCallback<void(const T&...)> resolve_cb_;
   PromiseRejectedCB reject_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmCallbackPromise);
 };
 
 }  // namespace media

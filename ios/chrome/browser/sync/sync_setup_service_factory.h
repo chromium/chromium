@@ -25,6 +25,9 @@ class SyncSetupServiceFactory : public BrowserStateKeyedServiceFactory {
 
   static SyncSetupServiceFactory* GetInstance();
 
+  SyncSetupServiceFactory(const SyncSetupServiceFactory&) = delete;
+  SyncSetupServiceFactory& operator=(const SyncSetupServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<SyncSetupServiceFactory>;
 
@@ -34,8 +37,6 @@ class SyncSetupServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSetupServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_SYNC_SETUP_SERVICE_FACTORY_H_

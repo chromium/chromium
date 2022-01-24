@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 
 namespace ui {
@@ -44,6 +43,8 @@ class ZXDGToplevelV6WrapperImpl : public ShellToplevelWrapper {
   void SetMaxSize(int32_t width, int32_t height) override;
   void SetAppId(const std::string& app_id) override;
   void SetDecoration(DecorationMode decoration) override;
+  void Lock(WaylandOrientationLockType lock_type) override;
+  void Unlock() override;
 
   ZXDGSurfaceV6WrapperImpl* zxdg_surface_v6_wrapper() const;
 

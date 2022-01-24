@@ -11,8 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace safe_browsing {
 namespace dmg {
 
@@ -39,6 +37,10 @@ class HFSIterator {
  public:
   // Constructs an iterator from a stream.
   explicit HFSIterator(ReadStream* stream);
+
+  HFSIterator(const HFSIterator&) = delete;
+  HFSIterator& operator=(const HFSIterator&) = delete;
+
   ~HFSIterator();
 
   // Opens the filesystem and initializes the iterator. The iterator is
@@ -89,8 +91,6 @@ class HFSIterator {
       catalog_file_;  // Data of the catalog file.
   std::unique_ptr<HFSBTreeIterator>
       catalog_;  // Iterator over the catalog file.
-
-  DISALLOW_COPY_AND_ASSIGN(HFSIterator);
 };
 
 }  // namespace dmg

@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gl/child_window_win.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -45,12 +45,17 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
     bool use_angle_texture_offset = false;
     bool force_root_surface_full_damage = false;
     bool force_root_surface_full_damage_always = false;
+    bool no_downscaled_overlay_promotion = false;
   };
 
   DirectCompositionSurfaceWin(
       HWND parent_window,
       VSyncCallback vsync_callback,
       const DirectCompositionSurfaceWin::Settings& settings);
+
+  DirectCompositionSurfaceWin(const DirectCompositionSurfaceWin&) = delete;
+  DirectCompositionSurfaceWin& operator=(const DirectCompositionSurfaceWin&) =
+      delete;
 
   // Returns true if direct composition is supported.  We prefer to use direct
   // composition even without hardware overlays, because it allows us to bypass
@@ -215,8 +220,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectCompositionSurfaceWin);
 };
 
 }  // namespace gl

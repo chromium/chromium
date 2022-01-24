@@ -22,7 +22,9 @@ Details on Chrome UI.
 * [UI Debugging](/docs/ui/learn/ui_debugging.md)
 * [UI Devtools](/docs/ui/ui_devtools/index.md)
 * [Input Event Routing](/docs/ui/input_event/index.md)
+* [Activation and Focus](/docs/ui/learn/activation_and_focus.md)
 * [Metadata and Properties](/docs/ui/views/metadata_properties.md)
+* [Layer Animation Builder](/docs/ui/animation_builder/animation_builder.md)
 
 Archival Documentation on Chrome UI.
 * [Aura](/docs/ui/aura/index.md)

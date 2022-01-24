@@ -11,9 +11,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_writer.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -208,16 +208,14 @@ void It2MeNativeMessagingHost::ProcessConnect(
   // Requests that the support host is launched with UiAccess on Windows.
   // This value, in conjuction with the platform policy, is used to determine
   // if an elevated host should be used.
-  bool use_elevated_host = false;
-  message->GetBoolean(kUseElevatedHost, &use_elevated_host);
+  bool use_elevated_host =
+      message->FindBoolKey(kUseElevatedHost).value_or(false);
 
   if (!is_process_elevated_) {
     auto allow_elevation_policy = GetAllowElevatedHostPolicyValue();
     // Honor the platform policy value if it is set, otherwise use the value
     // provided through the native messaging host.
-    use_elevated_host_ = allow_elevation_policy.has_value()
-                             ? allow_elevation_policy.value()
-                             : use_elevated_host;
+    use_elevated_host_ = allow_elevation_policy.value_or(use_elevated_host);
   }
 #else
   CHECK(!is_process_elevated_) << "Unexpected value for this platform";
@@ -242,20 +240,23 @@ void It2MeNativeMessagingHost::ProcessConnect(
     return;
   }
 
-  bool use_signaling_proxy = false;
-  message->GetBoolean(kUseSignalingProxy, &use_signaling_proxy);
+  bool use_signaling_proxy =
+      message->FindBoolKey(kUseSignalingProxy).value_or(false);
 
   std::string username;
   message->GetString(kUserName, &username);
 
-  bool suppress_user_dialogs = false;
-  message->GetBoolean(kSuppressUserDialogs, &suppress_user_dialogs);
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  bool suppress_user_dialogs =
+      message->FindBoolKey(kSuppressUserDialogs).value_or(false);
+  bool suppress_notifications =
+      message->FindBoolKey(kSuppressNotifications).value_or(false);
+  bool terminate_upon_input =
+      message->FindBoolKey(kTerminateUponInput).value_or(false);
+#endif
 
-  bool suppress_notifications = false;
-  message->GetBoolean(kSuppressNotifications, &suppress_notifications);
-
-  bool terminate_upon_input = false;
-  message->GetBoolean(kTerminateUponInput, &terminate_upon_input);
+  bool is_enterprise_admin_user =
+      message->FindBoolKey(kIsEnterpriseAdminUser).value_or(false);
 
   It2MeHost::CreateDeferredConnectContext create_connection_context;
   std::unique_ptr<RegisterSupportHostRequest> register_host_request;
@@ -349,11 +350,15 @@ void It2MeNativeMessagingHost::ProcessConnect(
   it2me_host_->set_enable_dialogs(!suppress_user_dialogs);
   it2me_host_->set_enable_notifications(!suppress_notifications);
   it2me_host_->set_terminate_upon_input(terminate_upon_input);
+  it2me_host_->set_is_enterprise_session(is_enterprise_admin_user);
 #endif
-  it2me_host_->Connect(host_context_->Copy(), std::move(policies),
-                       std::make_unique<It2MeConfirmationDialogFactory>(),
-                       weak_ptr_, std::move(create_connection_context),
-                       username, ice_config);
+  it2me_host_->Connect(
+      host_context_->Copy(), std::move(policies),
+      std::make_unique<It2MeConfirmationDialogFactory>(
+          is_enterprise_admin_user
+              ? It2MeConfirmationDialog::DialogStyle::kEnterprise
+              : It2MeConfirmationDialog::DialogStyle::kConsumer),
+      weak_ptr_, std::move(create_connection_context), username, ice_config);
 
   SendMessageToClient(std::move(response));
 }

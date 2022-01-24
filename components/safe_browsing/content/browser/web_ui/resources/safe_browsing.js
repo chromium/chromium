@@ -29,6 +29,15 @@ function initialize() {
     addFullHashCacheInfo(fullHashCacheState);
   });
 
+  sendWithPromise('getDownloadUrlsChecked', []).then((urlsChecked) => {
+    urlsChecked.forEach(function(url_and_result) {
+      addDownloadUrlChecked(url_and_result);
+    });
+  });
+  addWebUIListener('download-url-checked-update', function(url_and_result) {
+    addDownloadUrlChecked(url_and_result);
+  });
+
   sendWithPromise('getSentClientDownloadRequests', [])
       .then((sentClientDownloadRequests) => {
         sentClientDownloadRequests.forEach(function(cdr) {
@@ -269,6 +278,11 @@ function addDatabaseManagerInfo(result) {
 
 function addFullHashCacheInfo(result) {
   $('full-hash-cache-info').textContent = result;
+}
+
+function addDownloadUrlChecked(url_and_result) {
+  const logDiv = $('download-urls-checked-list');
+  appendChildWithInnerText(logDiv, url_and_result);
 }
 
 function addSentClientDownloadRequestsInfo(result) {

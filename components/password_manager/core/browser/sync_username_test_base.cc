@@ -62,6 +62,7 @@ PasswordForm SyncUsernameTestBase::SimpleGaiaForm(const char* username) {
   form.signon_realm = "https://accounts.google.com";
   form.username_value = ASCIIToUTF16(username);
   form.form_data = CreateSigninFormData(GURL(form.signon_realm), username);
+  form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
 
@@ -71,6 +72,7 @@ PasswordForm SyncUsernameTestBase::SimpleNonGaiaForm(const char* username) {
   form.signon_realm = "https://site.com";
   form.username_value = ASCIIToUTF16(username);
   form.form_data = CreateSigninFormData(GURL(form.signon_realm), username);
+  form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
 
@@ -82,6 +84,7 @@ PasswordForm SyncUsernameTestBase::SimpleNonGaiaForm(const char* username,
   form.username_value = ASCIIToUTF16(username);
   form.url = GURL(origin);
   form.form_data = CreateSigninFormData(GURL(form.signon_realm), username);
+  form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
 

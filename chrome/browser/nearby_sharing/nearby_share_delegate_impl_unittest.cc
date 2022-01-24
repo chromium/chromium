@@ -69,6 +69,7 @@ class NearbyShareDelegateImplTest : public ::testing::Test {
   }
 
   void SetUp() override {
+    settings_->SetIsOnboardingComplete(true);
     settings_->SetEnabled(false);
 
     EXPECT_CALL(nearby_share_service_, GetSettings())
@@ -119,7 +120,7 @@ TEST_F(NearbyShareDelegateImplTest, StartHighVisibilityAndTimeout) {
   EXPECT_CALL(controller_, HighVisibilityEnabledChanged(false));
 
   // DisableHighVisibility will be called automatically after the timer fires.
-  FastForward(base::TimeDelta::FromMinutes(10));
+  FastForward(base::Minutes(10));
   SetHighVisibilityOn(false);
 }
 
@@ -162,48 +163,6 @@ TEST_F(NearbyShareDelegateImplTest, TestIsEnableOnHighVisibilityRequest) {
   EXPECT_FALSE(delegate_.IsEnableHighVisibilityRequestActive());
 }
 
-TEST_F(NearbyShareDelegateImplTest, ShowOnboardingAndTurnOnHighVisibility) {
-  settings()->SetEnabled(false);
-
-  // Called once to start onboarding and once to enter high visibility
-  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_)).Times(2);
-
-  delegate_.EnableHighVisibility();
-
-  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(true));
-
-  // Delegate will observe Nearby Share enabled within onboarding wait period
-  // and will turn on high visibility.
-  settings()->SetEnabled(true);
-  SetHighVisibilityOn(true);
-
-  EXPECT_CALL(nearby_share_service_, ClearForegroundReceiveSurfaces());
-  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(false));
-
-  // DisableHighVisibility will be called automatically after the timer fires.
-  FastForward(base::TimeDelta::FromMinutes(10));
-  SetHighVisibilityOn(false);
-}
-
-TEST_F(NearbyShareDelegateImplTest, ShowOnboardingAndTimeout) {
-  settings()->SetEnabled(false);
-
-  EXPECT_CALL(nearby_share_service_, GetSettings())
-      .WillRepeatedly(Return(settings()));
-  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_));
-
-  delegate_.EnableHighVisibility();
-
-  EXPECT_CALL(controller_, HighVisibilityEnabledChanged(_)).Times(0);
-
-  // Wait for longer than the onboarding wait period.
-  FastForward(base::TimeDelta::FromMinutes(10));
-
-  // Delegate will observe Nearby Share enabled outside of onboarding wait
-  // period and will not turn on high visibility.
-  settings()->SetEnabled(true);
-}
-
 TEST_F(NearbyShareDelegateImplTest, StopHighVisibilityOnScreenLock) {
   settings()->SetEnabled(true);
 
@@ -219,24 +178,6 @@ TEST_F(NearbyShareDelegateImplTest, StopHighVisibilityOnScreenLock) {
   // DisableHighVisibility will be called when the screen locks.
   delegate_.OnLockStateChanged(/*locked=*/true);
   SetHighVisibilityOn(false);
-}
-
-TEST_F(NearbyShareDelegateImplTest, AutomaticallyEnableFeature) {
-  settings()->SetEnabled(false);
-
-  // If onboarding is not completed, settings should not be enabled and the user
-  // should go through onboarding process.
-  test_pref_service_.SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
-                                false);
-  delegate_.EnableHighVisibility();
-  EXPECT_FALSE(settings()->GetEnabled());
-
-  // If onboarding is completed, the feature should automatically be enabled
-  // when open high visibility
-  test_pref_service_.SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
-                                true);
-  delegate_.EnableHighVisibility();
-  EXPECT_TRUE(settings()->GetEnabled());
 }
 
 TEST_F(NearbyShareDelegateImplTest, ShowNearbyShareSettings) {

@@ -20,7 +20,7 @@ constexpr int kSampleRate = 44100;
 constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
 constexpr int kNumChannels = 2;
 constexpr uint64_t kTestSessionId = 42;
-constexpr base::TimeDelta kPeriod = base::TimeDelta::FromMilliseconds(10);
+constexpr base::TimeDelta kPeriod = base::Milliseconds(10);
 constexpr int kFramesPerPeriod = 441;
 
 class TestRenderer : public AudioRendererSink::RenderCallback {
@@ -99,7 +99,7 @@ class FuchsiaAudioOutputDeviceTest : public testing::Test {
 
   void CallPumpSamples() {
     output_device_->PumpSamples(base::TimeTicks::Now() +
-                                base::TimeDelta::FromMilliseconds(200));
+                                base::Milliseconds(200));
   }
 
   void ValidatePresentationTime() {
@@ -110,8 +110,8 @@ class FuchsiaAudioOutputDeviceTest : public testing::Test {
     auto lead_time =
         renderer_.last_presentation_time() - base::TimeTicks::Now();
     EXPECT_GT(lead_time, FakeAudioConsumer::kMinLeadTime);
-    EXPECT_LT(lead_time, FakeAudioConsumer::kMinLeadTime +
-                             base::TimeDelta::FromMilliseconds(30));
+    EXPECT_LT(lead_time,
+              FakeAudioConsumer::kMinLeadTime + base::Milliseconds(30));
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -127,7 +127,7 @@ TEST_F(FuchsiaAudioOutputDeviceTest, Start) {
   Initialize();
 
   // Verify that playback doesn't start before Start().
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment_.FastForwardBy(base::Seconds(2));
   EXPECT_EQ(renderer_.frames_rendered(), 0);
 
   // Rendering should start after Start().
@@ -167,7 +167,7 @@ TEST_F(FuchsiaAudioOutputDeviceTest, Pause) {
 
   // Render() should not be called while paused.
   output_device_->Pause();
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(renderer_.frames_rendered(), 0);
 
   // Unpause the stream and verify that Render() is being called now.

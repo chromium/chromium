@@ -11,40 +11,44 @@ namespace payments {
 
 // Tests the success case when populating a PaymentCurrencyAmount from a
 // dictionary.
-TEST(PaymentRequestTest, PaymentCurrencyAmountFromDictionaryValueSuccess) {
+TEST(PaymentRequestTest, PaymentCurrencyAmountFromValueSuccess) {
   mojom::PaymentCurrencyAmount expected;
   expected.currency = "AUD";
   expected.value = "-438.23";
 
-  base::DictionaryValue amount_dict;
-  amount_dict.SetString("currency", "AUD");
-  amount_dict.SetString("value", "-438.23");
+  base::Value amount_dict(base::Value::Type::DICTIONARY);
+  amount_dict.SetStringKey("currency", "AUD");
+  amount_dict.SetStringKey("value", "-438.23");
 
   mojom::PaymentCurrencyAmount actual;
-  EXPECT_TRUE(PaymentCurrencyAmountFromDictionaryValue(amount_dict, &actual));
+  EXPECT_TRUE(PaymentCurrencyAmountFromValue(amount_dict, &actual));
 
   EXPECT_TRUE(expected.Equals(actual));
 
-  EXPECT_TRUE(PaymentCurrencyAmountFromDictionaryValue(amount_dict, &actual));
+  EXPECT_TRUE(PaymentCurrencyAmountFromValue(amount_dict, &actual));
   EXPECT_TRUE(expected.Equals(actual));
 }
 
 // Tests the failure case when populating a PaymentCurrencyAmount from a
 // dictionary.
-TEST(PaymentRequestTest, PaymentCurrencyAmountFromDictionaryValueFailure) {
-  // Both a currency and a value are required.
+TEST(PaymentRequestTest, PaymentCurrencyAmountFromValueFailure) {
   mojom::PaymentCurrencyAmount actual;
-  base::DictionaryValue amount_dict;
-  EXPECT_FALSE(PaymentCurrencyAmountFromDictionaryValue(amount_dict, &actual));
+
+  // Test non-dictionary input.
+  EXPECT_FALSE(PaymentCurrencyAmountFromValue(base::Value("hello"), &actual));
+
+  // Both a currency and a value are required.
+  base::Value amount_dict(base::Value::Type::DICTIONARY);
+  EXPECT_FALSE(PaymentCurrencyAmountFromValue(amount_dict, &actual));
 
   // Both values must be strings.
-  amount_dict.SetInteger("currency", 842);
-  amount_dict.SetString("value", "-438.23");
-  EXPECT_FALSE(PaymentCurrencyAmountFromDictionaryValue(amount_dict, &actual));
+  amount_dict.SetIntKey("currency", 842);
+  amount_dict.SetStringKey("value", "-438.23");
+  EXPECT_FALSE(PaymentCurrencyAmountFromValue(amount_dict, &actual));
 
-  amount_dict.SetString("currency", "NZD");
-  amount_dict.SetDouble("value", -438.23);
-  EXPECT_FALSE(PaymentCurrencyAmountFromDictionaryValue(amount_dict, &actual));
+  amount_dict.SetStringKey("currency", "NZD");
+  amount_dict.SetDoubleKey("value", -438.23);
+  EXPECT_FALSE(PaymentCurrencyAmountFromValue(amount_dict, &actual));
 }
 
 // Tests that two currency amount objects are not equal if their property values
@@ -72,30 +76,30 @@ TEST(PaymentRequestTest, PaymentCurrencyAmountEquality) {
 // Tests that serializing a default PaymentCurrencyAmount yields the expected
 // result.
 TEST(PaymentRequestTest, EmptyPaymentCurrencyAmountDictionary) {
-  base::DictionaryValue expected_value;
+  base::Value expected_value(base::Value::Type::DICTIONARY);
 
-  expected_value.SetString("currency", "");
-  expected_value.SetString("value", "");
+  expected_value.SetStringKey("currency", "");
+  expected_value.SetStringKey("value", "");
 
   mojom::PaymentCurrencyAmount payment_currency_amount;
-  EXPECT_TRUE(expected_value.Equals(
-      PaymentCurrencyAmountToDictionaryValue(payment_currency_amount).get()));
+  EXPECT_EQ(expected_value,
+            PaymentCurrencyAmountToValue(payment_currency_amount));
 }
 
 // Tests that serializing a populated PaymentCurrencyAmount yields the expected
 // result.
 TEST(PaymentRequestTest, PopulatedCurrencyAmountDictionary) {
-  base::DictionaryValue expected_value;
+  base::Value expected_value(base::Value::Type::DICTIONARY);
 
-  expected_value.SetString("currency", "AUD");
-  expected_value.SetString("value", "-438.23");
+  expected_value.SetStringKey("currency", "AUD");
+  expected_value.SetStringKey("value", "-438.23");
 
   mojom::PaymentCurrencyAmount payment_currency_amount;
   payment_currency_amount.currency = "AUD";
   payment_currency_amount.value = "-438.23";
 
-  EXPECT_TRUE(expected_value.Equals(
-      PaymentCurrencyAmountToDictionaryValue(payment_currency_amount).get()));
+  EXPECT_EQ(expected_value,
+            PaymentCurrencyAmountToValue(payment_currency_amount));
 }
 
 }  // namespace payments

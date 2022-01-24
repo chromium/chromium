@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that writing an ARIA attribute causes the accessibility node to be updated.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadModule('panels/accessibility');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('panels/accessibility');
   await TestRunner.loadTestModule('accessibility_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
@@ -20,9 +20,9 @@
     TestRunner.addResult('=== Before attribute modification ===');
     AccessibilityTestRunner.dumpSelectedElementAccessibilityNode();
     var treeElement = AccessibilityTestRunner.findARIAAttributeTreeElement('aria-checked');
-    treeElement._startEditing();
-    treeElement._prompt._element.textContent = 'false';
-    treeElement._prompt._element.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    treeElement.startEditing();
+    treeElement.prompt.element().textContent = 'false';
+    treeElement.prompt.element().dispatchEvent(TestRunner.createKeyEvent('Enter'));
     Accessibility.AccessibilitySidebarView.instance().doUpdate().then(() => {
       editRole();
     });
@@ -32,9 +32,9 @@
     TestRunner.addResult('=== After attribute modification ===');
     AccessibilityTestRunner.dumpSelectedElementAccessibilityNode();
     var treeElement = AccessibilityTestRunner.findARIAAttributeTreeElement('role');
-    treeElement._startEditing();
-    treeElement._prompt._element.textContent = 'radio';
-    treeElement._prompt._element.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    treeElement.startEditing();
+    treeElement.prompt.element().textContent = 'radio';
+    treeElement.prompt.element().dispatchEvent(TestRunner.createKeyEvent('Enter'));
     // Give the document lifecycle a chance to run before updating the view.
     window.setTimeout(() => {
       Accessibility.AccessibilitySidebarView.instance().doUpdate().then(() => {

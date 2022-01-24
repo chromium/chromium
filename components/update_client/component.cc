@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -346,31 +347,21 @@ void Component::SetParseResult(const ProtocolParser::Result& result) {
   }
 }
 
-void Component::Uninstall(const base::Version& version, int reason) {
+void Component::Uninstall(const CrxComponent& crx_component, int reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   DCHECK_EQ(ComponentState::kNew, state());
-
-  crx_component_ = CrxComponent();
-  crx_component_->version = version;
-
-  previous_version_ = version;
+  crx_component_ = crx_component;
+  previous_version_ = crx_component_->version;
   next_version_ = base::Version("0");
   extra_code1_ = reason;
-
   state_ = std::make_unique<StateUninstalled>(this);
 }
 
-void Component::Registration(const base::Version& version) {
+void Component::Registration(const CrxComponent& crx_component) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   DCHECK_EQ(ComponentState::kNew, state());
-
-  crx_component_ = CrxComponent();
-  crx_component_->version = version;
-
-  next_version_ = version;
-
+  crx_component_ = crx_component;
+  next_version_ = crx_component_->version;
   state_ = std::make_unique<StateRegistration>(this);
 }
 
@@ -427,7 +418,7 @@ base::TimeDelta Component::GetUpdateDuration() const {
   const base::TimeDelta update_cost(base::TimeTicks::Now() - update_begin_);
   DCHECK_GE(update_cost, base::TimeDelta());
   const base::TimeDelta max_update_delay =
-      base::TimeDelta::FromSeconds(update_context_.config->UpdateDelay());
+      base::Seconds(update_context_.config->UpdateDelay());
   return std::min(update_cost, max_update_delay);
 }
 

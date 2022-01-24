@@ -70,6 +70,8 @@ class JsonRequest {
     Builder();
     Builder(Builder&&);
     ~Builder();
+    Builder(const Builder&) = delete;
+    Builder& operator=(const Builder&) = delete;
 
     // Builds a Request object that contains all data to fetch new snippets.
     std::unique_ptr<JsonRequest> Build() const;
@@ -129,14 +131,14 @@ class JsonRequest {
     std::string user_class_;
     std::string display_capability_;
     const language::UrlLanguageHistogram* language_histogram_;
-
-    DISALLOW_COPY_AND_ASSIGN(Builder);
   };
 
   JsonRequest(absl::optional<Category> exclusive_category,
               const base::Clock* clock,
               const ParseJSONCallback& callback);
   JsonRequest(JsonRequest&&);
+  JsonRequest(const JsonRequest&) = delete;
+  JsonRequest& operator=(const JsonRequest&) = delete;
   ~JsonRequest();
 
   void Start(CompletedCallback callback);
@@ -184,8 +186,6 @@ class JsonRequest {
   std::string last_response_string_;
 
   base::WeakPtrFactory<JsonRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JsonRequest);
 };
 
 }  // namespace internal

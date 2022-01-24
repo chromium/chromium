@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/shelf_types.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/app_icon_loader.h"
@@ -37,6 +36,9 @@ class ArcAppWindow : public AppWindowBase,
                views::Widget* widget,
                ArcAppWindowDelegate* owner,
                Profile* profile);
+
+  ArcAppWindow(const ArcAppWindow&) = delete;
+  ArcAppWindow& operator=(const ArcAppWindow&) = delete;
 
   ~ArcAppWindow() override;
 
@@ -81,8 +83,6 @@ class ArcAppWindow : public AppWindowBase,
   // Loads the ARC app icon to the window icon keys. Nullptr once a custom icon
   // has been successfully set.
   std::unique_ptr<AppServiceAppIconLoader> app_icon_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppWindow);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_ARC_APP_WINDOW_H_

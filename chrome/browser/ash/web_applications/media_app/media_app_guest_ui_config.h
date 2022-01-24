@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_
 
-#include "chromeos/components/media_app_ui/media_app_guest_ui.h"
+#include "ash/webui/media_app_ui/media_app_guest_ui.h"
 #include "ui/webui/webui_config.h"
 
 namespace content {
@@ -16,7 +16,7 @@ class WebUI;
 
 // Implementation of the chromeos::MediaAppGuestUIDelegate to expose some
 // //chrome functions to //chromeos.
-class ChromeMediaAppGuestUIDelegate : public chromeos::MediaAppGuestUIDelegate {
+class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
  public:
   ChromeMediaAppGuestUIDelegate();
   ChromeMediaAppGuestUIDelegate(const ChromeMediaAppGuestUIDelegate&) = delete;

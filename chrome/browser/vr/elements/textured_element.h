@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_TEXTURED_ELEMENT_H_
 #define CHROME_BROWSER_VR_ELEMENTS_TEXTURED_ELEMENT_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "device/vr/gl_bindings.h"
@@ -21,6 +20,9 @@ class UiTexture;
 class VR_UI_EXPORT TexturedElement : public UiElement {
  public:
   TexturedElement();
+
+  TexturedElement(const TexturedElement&) = delete;
+  TexturedElement& operator=(const TexturedElement&) = delete;
 
   ~TexturedElement() override;
 
@@ -60,8 +62,6 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
 
   sk_sp<SkSurface> surface_;
   SkiaSurfaceProvider* provider_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TexturedElement);
 };
 
 }  // namespace vr

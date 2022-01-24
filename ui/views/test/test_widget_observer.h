@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
@@ -18,6 +17,10 @@ namespace test {
 class TestWidgetObserver : public WidgetObserver {
  public:
   explicit TestWidgetObserver(Widget* widget);
+
+  TestWidgetObserver(const TestWidgetObserver&) = delete;
+  TestWidgetObserver& operator=(const TestWidgetObserver&) = delete;
+
   ~TestWidgetObserver() override;
 
   bool widget_closed() const { return widget_ == nullptr; }
@@ -27,8 +30,6 @@ class TestWidgetObserver : public WidgetObserver {
   void OnWidgetDestroying(Widget* widget) override;
 
   Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWidgetObserver);
 };
 
 }  // namespace test

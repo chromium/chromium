@@ -15,7 +15,7 @@
 namespace {
 
 // Timeout to stop the Session when no data is received.
-constexpr base::TimeDelta kNoDataTimeout = base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kNoDataTimeout = base::Seconds(15);
 
 bool CreateDataPipeForStreamType(media::DemuxerStream::Type type,
                                  mojo::ScopedDataPipeProducerHandle* producer,
@@ -30,7 +30,7 @@ bool CreateDataPipeForStreamType(media::DemuxerStream::Type type,
 }
 
 // Timeout to end the Session when no offer message is sent.
-constexpr base::TimeDelta kInitTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kInitTimeout = base::Seconds(5);
 
 }  // namespace
 
@@ -124,8 +124,7 @@ CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
   // overlapping video frames but this is fine since the media pipeline mostly
   // considers the playout time when deciding which frame to present or play
   video_consumer_ = std::make_unique<StreamConsumer>(
-      video_receiver, base::TimeDelta::FromMinutes(10),
-      std::move(data_pipe_producer),
+      video_receiver, base::Minutes(10), std::move(data_pipe_producer),
       base::BindRepeating(&CastStreamingSession::Client::OnVideoBufferReceived,
                           base::Unretained(client_)),
       base::BindRepeating(&base::OneShotTimer::Reset,

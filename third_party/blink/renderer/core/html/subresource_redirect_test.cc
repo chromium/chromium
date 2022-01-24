@@ -36,10 +36,18 @@ class SubresourceRedirectSimTest
     : public ::testing::WithParamInterface<std::tuple<bool, bool, bool, bool>>,
       public SimTest {
  protected:
-  SubresourceRedirectSimTest()
-      : scoped_lazy_image_loading_for_test_(is_lazyload_image_enabled()),
-        scoped_automatic_lazy_image_loading_for_test_(
-            is_lazyload_image_enabled()) {
+  SubresourceRedirectSimTest() = default;
+
+  void SetUp() override {
+    SimTest::SetUp();
+
+    scoped_lazy_image_loading_for_test_ =
+        std::make_unique<ScopedLazyImageLoadingForTest>(
+            is_lazyload_image_enabled());
+    scoped_automatic_lazy_image_loading_for_test_ =
+        std::make_unique<ScopedAutomaticLazyImageLoadingForTest>(
+            is_lazyload_image_enabled());
+
     if (is_subresource_redirect_enabled()) {
       base::FieldTrialParams params;
       if (allow_javascript_crossorigin_images())
@@ -47,7 +55,17 @@ class SubresourceRedirectSimTest
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{features::kSubresourceRedirect, params}}, {});
     }
-    GetNetworkStateNotifier().SetSaveDataEnabled(is_save_data_enabled());
+    GetNetworkStateNotifier().SetSaveDataEnabledOverride(
+        is_save_data_enabled());
+  }
+
+  void TearDown() override {
+    GetNetworkStateNotifier().ClearOverride();
+    scoped_feature_list_.Reset();
+    scoped_automatic_lazy_image_loading_for_test_.reset();
+    scoped_lazy_image_loading_for_test_.reset();
+
+    SimTest::TearDown();
   }
 
   bool is_subresource_redirect_enabled() const {
@@ -106,16 +124,21 @@ class SubresourceRedirectSimTest
               (previews_state & PreviewsTypes::kSubresourceRedirectOn) != 0);
   }
 
-  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test_;
-  ScopedAutomaticLazyImageLoadingForTest
+  std::unique_ptr<ScopedLazyImageLoadingForTest>
+      scoped_lazy_image_loading_for_test_;
+  std::unique_ptr<ScopedAutomaticLazyImageLoadingForTest>
       scoped_automatic_lazy_image_loading_for_test_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
+// TODO(crbug/1228072): All tests disabled due to high flakiness. The feature
+// experiment has been disabled, all the tests will be re-enabled and deflaked
+// before restarting.
+
 // This test verifies subresource redirect previews state based on different
 // states of SaveData, LazyLoad, SubresourceRedirect features.
-TEST_P(SubresourceRedirectSimTest, CSSBackgroundImage) {
+TEST_P(SubresourceRedirectSimTest, DISABLED_CSSBackgroundImage) {
   LoadMainResourceAndImage(R"HTML(
         <style>
         #deferred_image {
@@ -135,7 +158,7 @@ TEST_P(SubresourceRedirectSimTest, CSSBackgroundImage) {
       is_save_data_enabled() && is_subresource_redirect_enabled());
 }
 
-TEST_P(SubresourceRedirectSimTest, ImgElement) {
+TEST_P(SubresourceRedirectSimTest, DISABLED_ImgElement) {
   LoadMainResourceAndImage(R"HTML(
         <body>
           <img src='https://example.com/img.png' loading='lazy'/>
@@ -153,7 +176,7 @@ TEST_P(SubresourceRedirectSimTest, ImgElement) {
                                      0);
 }
 
-TEST_P(SubresourceRedirectSimTest, JavascriptCreatedSameOriginImage) {
+TEST_P(SubresourceRedirectSimTest, DISABLED_JavascriptCreatedSameOriginImage) {
   LoadMainResourceAndImage(R"HTML(
         <body>
         <div></div>
@@ -180,7 +203,7 @@ TEST_P(SubresourceRedirectSimTest, JavascriptCreatedSameOriginImage) {
   }
 }
 
-TEST_P(SubresourceRedirectSimTest, JavascriptCreatedCrossOriginImage) {
+TEST_P(SubresourceRedirectSimTest, DISABLED_JavascriptCreatedCrossOriginImage) {
   LoadMainResourceAndImage(R"HTML(
         <body>
         <div></div>
@@ -211,7 +234,8 @@ TEST_P(SubresourceRedirectSimTest, JavascriptCreatedCrossOriginImage) {
   }
 }
 
-TEST_P(SubresourceRedirectSimTest, ImgElementWithCrossOriginAttribute) {
+TEST_P(SubresourceRedirectSimTest,
+       DISABLED_ImgElementWithCrossOriginAttribute) {
   LoadMainResourceAndImage(R"HTML(
         <body>
           <img src='https://example.com/img.png' loading='lazy' crossorigin='anonymous'/>
@@ -233,7 +257,7 @@ TEST_P(SubresourceRedirectSimTest, ImgElementWithCrossOriginAttribute) {
 }
 
 TEST_P(SubresourceRedirectSimTest,
-       RestrictedByContentSecurityPolicyDefaultSrc) {
+       DISABLED_RestrictedByContentSecurityPolicyDefaultSrc) {
   LoadMainResourceAndImage(R"HTML(
         <head>
           <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
@@ -258,7 +282,9 @@ TEST_P(SubresourceRedirectSimTest,
   }
 }
 
-TEST_P(SubresourceRedirectSimTest, RestrictedByContentSecurityPolicyImgSrc) {
+// TODO(crbug/1223916): Disabled due to high flakiness and build failures.
+TEST_P(SubresourceRedirectSimTest,
+       DISABLED_RestrictedByContentSecurityPolicyImgSrc) {
   LoadMainResourceAndImage(R"HTML(
         <head>
           <meta http-equiv="Content-Security-Policy" content="img-src 'self'">
@@ -296,19 +322,26 @@ class SubresourceRedirectCSPSimTest : public ::testing::WithParamInterface<
                                           bool /*allow_csp_restricted_images*/>,
                                       public SimTest {
  protected:
-  SubresourceRedirectCSPSimTest() {
+  SubresourceRedirectCSPSimTest() = default;
+
+  void SetUp() override {
+    SimTest::SetUp();
+
     base::FieldTrialParams params;
     params["allow_csp_restricted_images"] =
         allow_csp_restricted_images() ? "true" : "false";
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kSubresourceRedirect, params}}, {});
-    GetNetworkStateNotifier().SetSaveDataEnabled(true);
-  }
 
-  void SetUp() override {
-    SimTest::SetUp();
+    GetNetworkStateNotifier().SetSaveDataEnabledOverride(true);
     WebView().GetPage()->GetSettings().SetLitePageSubresourceRedirectOrigin(
         "https://litepages.googlezip.net");
+  }
+
+  void TearDown() override {
+    GetNetworkStateNotifier().ClearOverride();
+    scoped_feature_list_.Reset();
+    SimTest::TearDown();
   }
 
   bool allow_csp_restricted_images() const { return GetParam(); }
@@ -350,7 +383,7 @@ class SubresourceRedirectCSPSimTest : public ::testing::WithParamInterface<
 };
 
 // cross-origin image disallowed by CSP default-src directive should not load.
-TEST_P(SubresourceRedirectCSPSimTest, ImageDisallowedByDefaultSrc) {
+TEST_P(SubresourceRedirectCSPSimTest, DISABLED_ImageDisallowedByDefaultSrc) {
   LoadMainResource(R"HTML(
         <head>
           <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
@@ -368,7 +401,7 @@ TEST_P(SubresourceRedirectCSPSimTest, ImageDisallowedByDefaultSrc) {
 }
 
 // cross-origin image disallowed by CSP img-src directive should not load.
-TEST_P(SubresourceRedirectCSPSimTest, ImageDisallowedByImgSrc) {
+TEST_P(SubresourceRedirectCSPSimTest, DISABLED_ImageDisallowedByImgSrc) {
   LoadMainResource(R"HTML(
         <head>
           <meta http-equiv="Content-Security-Policy" content="img-src 'self'">
@@ -385,7 +418,7 @@ TEST_P(SubresourceRedirectCSPSimTest, ImageDisallowedByImgSrc) {
                           }));
 }
 
-TEST_P(SubresourceRedirectCSPSimTest, RestrictedByDefaultSrc) {
+TEST_P(SubresourceRedirectCSPSimTest, DISABLED_RestrictedByDefaultSrc) {
   std::unique_ptr<SimSubresourceRequest> redirected_image;
   WTF::String img_url = "https://example.com/img.png";
   SimRequestBase::Params params;

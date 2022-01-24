@@ -207,6 +207,22 @@ void FakeConciergeClient::StartTerminaVm(
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(tremplin_started_signal)),
       send_tremplin_started_signal_delay_);
+
+  // Trigger VmStartedSignal
+  vm_tools::concierge::VmStartedSignal vm_started_signal;
+  vm_started_signal.set_name(request.name());
+  vm_started_signal.set_owner_id(request.owner_id());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&FakeConciergeClient::NotifyVmStarted,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                std::move(vm_started_signal)));
+}
+
+void FakeConciergeClient::StartTerminaVmWithFd(
+    base::ScopedFD fd,
+    const vm_tools::concierge::StartVmRequest& request,
+    DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
+  StartTerminaVm(std::move(request), std::move(callback));
 }
 
 void FakeConciergeClient::NotifyTremplinStarted(
@@ -264,6 +280,14 @@ void FakeConciergeClient::GetVmEnterpriseReportingInfo(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 get_vm_enterprise_reporting_info_response_));
+}
+
+void FakeConciergeClient::MakeRtVcpu(
+    const vm_tools::concierge::MakeRtVcpuRequest& request,
+    DBusMethodCallback<vm_tools::concierge::MakeRtVcpuResponse> callback) {
+  make_rt_vcpu_call_count_++;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), make_rt_vcpu_response_));
 }
 
 void FakeConciergeClient::SetVmCpuRestriction(
@@ -356,12 +380,16 @@ void FakeConciergeClient::ReclaimVmMemory(
 
 void FakeConciergeClient::NotifyVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
+  // Now GetVmInfo can return success.
+  get_vm_info_response_->set_success(true);
   for (auto& observer : vm_observer_list_)
     observer.OnVmStarted(signal);
 }
 
 void FakeConciergeClient::NotifyVmStopped(
     const vm_tools::concierge::VmStoppedSignal& signal) {
+  // Now GetVmInfo can return success.
+  get_vm_info_response_->set_success(false);
   for (auto& observer : vm_observer_list_)
     observer.OnVmStopped(signal);
 }
@@ -402,10 +430,14 @@ void FakeConciergeClient::InitializeProtoResponses() {
   resume_vm_response_->set_success(true);
 
   get_vm_info_response_.emplace();
-  get_vm_info_response_->set_success(true);
+  get_vm_info_response_->set_success(false);
   get_vm_info_response_->mutable_vm_info()->set_seneschal_server_handle(1);
 
   get_vm_enterprise_reporting_info_response_.emplace();
+
+  make_rt_vcpu_response_.emplace();
+  make_rt_vcpu_response_->set_success(true);
+
   set_vm_cpu_restriction_response_.emplace();
 
   container_ssh_keys_response_.emplace();

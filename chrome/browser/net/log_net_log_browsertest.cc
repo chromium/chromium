@@ -2,27 +2,72 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
+#include "base/path_service.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_browser_net {
 namespace {
+
+// Test fixture for running tests with --log-net-log with no explicit file
+// specified.
+class LogNetLogTest : public InProcessBrowserTest {
+ public:
+  LogNetLogTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(network::switches::kLogNetLog);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override { VerifyNetLog(); }
+
+ private:
+  // Verify that the netlog file was written to the user data dir.
+  void VerifyNetLog() {
+    base::FilePath user_data_dir;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
+    auto net_log_path = user_data_dir.AppendASCII("netlog.json");
+
+    // Read the netlog from disk.
+    std::string file_contents;
+    ASSERT_TRUE(base::ReadFileToString(net_log_path, &file_contents))
+        << "Could not read: " << net_log_path;
+
+    // Parse it as JSON.
+    auto parsed = base::JSONReader::Read(file_contents);
+    EXPECT_TRUE(parsed);
+
+    // Detailed checking is done by LogNetLogExplicitFileTest, so this test just
+    // accepts any valid JSON.
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LogNetLogTest, Exists) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/simple.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+}
 
 // Test fixture for running tests with --log-net-log, and a parameterized value
 // for --net-log-capture-mode.
 //
 // Asserts that a netlog file was created, appears valid, and stripped cookies
 // in accordance to the --net-log-capture-mode flag.
-class LogNetLogTest : public InProcessBrowserTest,
-                      public testing::WithParamInterface<const char*> {
+class LogNetLogExplicitFileTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<const char*> {
  public:
-  LogNetLogTest() = default;
+  LogNetLogExplicitFileTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
@@ -83,18 +128,16 @@ class LogNetLogTest : public InProcessBrowserTest,
 
   base::FilePath net_log_path_;
   base::ScopedTempDir tmp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogNetLogTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         LogNetLogTest,
+                         LogNetLogExplicitFileTest,
                          ::testing::Values(nullptr, "IncludeSensitive"));
 
-IN_PROC_BROWSER_TEST_P(LogNetLogTest, Basic) {
+IN_PROC_BROWSER_TEST_P(LogNetLogExplicitFileTest, Basic) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/set_cookie_header.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 }
 
 }  // namespace

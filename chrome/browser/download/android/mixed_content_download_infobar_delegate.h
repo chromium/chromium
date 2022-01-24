@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/download/public/common/download_item.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -28,6 +27,11 @@ class MixedContentDownloadInfoBarDelegate : public ConfirmInfoBarDelegate {
       const base::FilePath& basename,
       download::DownloadItem::MixedContentStatus mixed_content_status,
       ResultCallback callback);
+
+  MixedContentDownloadInfoBarDelegate(
+      const MixedContentDownloadInfoBarDelegate&) = delete;
+  MixedContentDownloadInfoBarDelegate& operator=(
+      const MixedContentDownloadInfoBarDelegate&) = delete;
 
   ~MixedContentDownloadInfoBarDelegate() override;
 
@@ -53,8 +57,6 @@ class MixedContentDownloadInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string message_text_;
   download::DownloadItem::MixedContentStatus mixed_content_status_;
   ResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MixedContentDownloadInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_MIXED_CONTENT_DOWNLOAD_INFOBAR_DELEGATE_H_

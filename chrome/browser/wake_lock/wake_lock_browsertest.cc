@@ -69,8 +69,8 @@ void WakeLockBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 void WakeLockBrowserTest::NavigateToSimplePage() {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
 }
 
 void WakeLockBrowserTest::NavigateToAndRespondWithScript(
@@ -80,7 +80,8 @@ void WakeLockBrowserTest::NavigateToAndRespondWithScript(
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &RespondWithJS, "/js-response", script, loop.QuitClosure()));
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), embedded_test_server()->GetURL(path));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(path)));
   loop.Run();
 }
 

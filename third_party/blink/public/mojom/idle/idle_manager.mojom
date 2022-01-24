@@ -6,19 +6,9 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 
-// Implementation of the proposed "Idle Detection API".
+// Interfaces for implementing the Idle Detection API.
 //
-// Proposal: https://github.com/inexorabletash/idle-detection
-
-enum UserIdleState {
-  kActive,
-  kIdle
-};
-
-enum ScreenIdleState {
-  kLocked,
-  kUnlocked
-};
+// https://wicg.github.io/idle-detection/
 
 enum IdleManagerError {
   kSuccess,
@@ -26,20 +16,33 @@ enum IdleManagerError {
 };
 
 struct IdleState {
-  UserIdleState user;
-  ScreenIdleState screen;
+  // If not null, the time since it was detected that the user has been idle for
+  // at least IdleManager.kUserInputThresholdMs milliseconds.
+  mojo_base.mojom.TimeDelta? idle_time;
+
+  // Whether the screen is currently locked.
+  bool screen_locked;
 };
 
+// Interface implemented by a client of the IdleManager interface which allows
+// the manager to update the client with the current idle state.
 interface IdleMonitor {
-  Update(IdleState state);
+  // Called when the idle state has changed. If |is_overridden_by_devtools| is
+  // passed this update represents a DevTools override and should be applied
+  // without waiting for the developer's configured threshold.
+  Update(IdleState state, bool is_overridden_by_devtools);
 };
 
+// Interface implemented by the browser process to provide clients with the
+// current idle state.
 interface IdleManager {
+  // The amount of time which must pass without input before the user is
+  // considered idle.
+  const uint32 kUserInputThresholdMs = 60000;
+
   // Register an IdleMonitor instance. When registered, it will return the
-  // initial state. It will be notified by calls to Update() per the threshold
-  // registered for this instance. It can be unregistered by simply closing
-  // the pipe.
-  AddMonitor(mojo_base.mojom.TimeDelta threshold,
-             pending_remote<IdleMonitor> monitor)
+  // initial state. It will be notified by calls to Update() when the idle
+  // state changes. It can be unregistered by closing the pipe.
+  AddMonitor(pending_remote<IdleMonitor> monitor)
       => (IdleManagerError error, IdleState? state);
 };

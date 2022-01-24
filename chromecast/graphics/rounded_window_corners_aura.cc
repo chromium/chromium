@@ -74,6 +74,10 @@ END_METADATA
 class RoundedWindowCornersAura : public RoundedWindowCorners {
  public:
   explicit RoundedWindowCornersAura(CastWindowManager* window_manager);
+
+  RoundedWindowCornersAura(const RoundedWindowCornersAura&) = delete;
+  RoundedWindowCornersAura& operator=(const RoundedWindowCornersAura&) = delete;
+
   ~RoundedWindowCornersAura() override;
 
   void SetEnabled(bool enable) override;
@@ -87,8 +91,6 @@ class RoundedWindowCornersAura : public RoundedWindowCorners {
   std::vector<BlackCornerView*> corners_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RoundedWindowCornersAura);
 };
 
 RoundedWindowCornersAura::RoundedWindowCornersAura(

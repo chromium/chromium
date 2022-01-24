@@ -6,10 +6,8 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_USER_ACTION_H_
 
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/autofill_assistant/browser/chip.h"
 #include "components/autofill_assistant/browser/direct_action.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -28,13 +26,16 @@ class UserAction {
 
   UserAction(UserAction&&);
   UserAction();
+
+  UserAction(const UserAction&) = delete;
+  UserAction& operator=(const UserAction&) = delete;
+
   ~UserAction();
   UserAction& operator=(UserAction&&);
 
   // Initializes user action from proto.
   UserAction(const UserActionProto& action);
   UserAction(const ChipProto& chip,
-             const DirectActionProto& direct_action,
              bool enabled,
              const std::string& identifier);
 
@@ -69,11 +70,6 @@ class UserAction {
     callback_ = std::move(callback);
   }
 
-  // Intercept calls to this action.
-  void AddInterceptor(
-      base::OnceCallback<void(UserAction::Callback,
-                              std::unique_ptr<TriggerContext>)> interceptor);
-
   // Call this action within the specific context, if a callback is set.
   void Call(std::unique_ptr<TriggerContext> context) {
     if (!callback_)
@@ -89,6 +85,7 @@ class UserAction {
 
   // Specifies how the user can perform the action as a direct action. Might be
   // empty.
+  // TODO(b/204057224): Extract script execution logic from this class.
   DirectAction direct_action_;
 
   // Whether the action is enabled. The chip for a disabled action might still
@@ -100,8 +97,6 @@ class UserAction {
 
   // Optional identifier to uniquely identify this user action.
   std::string identifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserAction);
 };
 
 }  // namespace autofill_assistant

@@ -11,6 +11,7 @@ const tests = [
         document.body.querySelector('#viewer'));
     chrome.test.assertEq(
         {
+          direction: 2,
           defaultPageOrientation: 0,
           twoUpViewEnabled: false,
         },

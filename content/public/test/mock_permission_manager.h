@@ -20,6 +20,9 @@ class MockPermissionManager : public PermissionControllerDelegate {
  public:
   MockPermissionManager();
 
+  MockPermissionManager(const MockPermissionManager&) = delete;
+  MockPermissionManager& operator=(const MockPermissionManager&) = delete;
+
   ~MockPermissionManager() override;
 
   // PermissionManager:
@@ -59,9 +62,6 @@ class MockPermissionManager : public PermissionControllerDelegate {
                        callback));
   MOCK_METHOD1(UnsubscribePermissionStatusChange,
                void(SubscriptionId subscription_id));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPermissionManager);
 };
 
 }  // namespace content

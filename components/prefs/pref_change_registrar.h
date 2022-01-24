@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/prefs_export.h"
 
@@ -26,6 +25,10 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
   using NamedChangeCallback = base::RepeatingCallback<void(const std::string&)>;
 
   PrefChangeRegistrar();
+
+  PrefChangeRegistrar(const PrefChangeRegistrar&) = delete;
+  PrefChangeRegistrar& operator=(const PrefChangeRegistrar&) = delete;
+
   ~PrefChangeRegistrar();
 
   // Must be called before adding or removing observers. Can be called more
@@ -74,8 +77,6 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
 
   ObserverMap observers_;
   PrefService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefChangeRegistrar);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_CHANGE_REGISTRAR_H_

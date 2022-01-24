@@ -58,7 +58,7 @@ TEST_F(AppHistoryTest, NavigateEventCtrlClick) {
   EXPECT_TRUE(client.BeginNavigationCalled());
 }
 
-TEST_F(AppHistoryTest, NavigateEventCancelable) {
+TEST_F(AppHistoryTest, BrowserInitiatedSameDocumentBackForwardUncancelable) {
   url_test_helpers::RegisterMockedURLLoad(
       url_test_helpers::ToKURL(
           "https://example.com/apphistory/onnavigate-preventDefault.html"),
@@ -77,7 +77,8 @@ TEST_F(AppHistoryTest, NavigateEventCancelable) {
       ClientRedirectPolicy::kNotClientRedirect,
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
       false /* is_synchronously_committed */,
-      mojom::blink::TriggeringEventInfo::kUnknown, nullptr);
+      mojom::blink::TriggeringEventInfo::kNotFromEvent,
+      true /* is_browser_initiated */, nullptr);
 
   EXPECT_EQ(result, mojom::blink::CommitResult::Ok);
 }

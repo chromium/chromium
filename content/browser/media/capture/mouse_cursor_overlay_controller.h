@@ -8,10 +8,9 @@
 #include <atomic>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
@@ -37,6 +36,11 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   using Overlay = viz::mojom::FrameSinkVideoCaptureOverlay;
 
   MouseCursorOverlayController();
+
+  MouseCursorOverlayController(const MouseCursorOverlayController&) = delete;
+  MouseCursorOverlayController& operator=(const MouseCursorOverlayController&) =
+      delete;
+
   ~MouseCursorOverlayController();
 
   // Sets a new target view to monitor for mouse cursor updates.
@@ -168,10 +172,7 @@ class CONTENT_EXPORT MouseCursorOverlayController {
 
   // Amount of time to elapse with no mouse activity before the cursor should
   // stop showing.
-  static constexpr base::TimeDelta kIdleTimeout =
-      base::TimeDelta::FromSeconds(2);
-
-  DISALLOW_COPY_AND_ASSIGN(MouseCursorOverlayController);
+  static constexpr base::TimeDelta kIdleTimeout = base::Seconds(2);
 };
 
 }  // namespace content

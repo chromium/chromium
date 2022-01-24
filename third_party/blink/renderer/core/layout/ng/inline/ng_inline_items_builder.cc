@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping_builder.h"
@@ -126,7 +127,7 @@ bool ShouldRemoveNewline(const StringBuilder& before,
                                  after_style);
 }
 
-inline NGInlineItem& AppendItem(Vector<NGInlineItem>* items,
+inline NGInlineItem& AppendItem(HeapVector<NGInlineItem>* items,
                                 NGInlineItem::NGInlineItemType type,
                                 unsigned start,
                                 unsigned end,
@@ -177,7 +178,7 @@ inline bool MoveToEndOfCollapsibleSpaces(const StringView& string,
 // Find the last item to compute collapsing with. Opaque items such as
 // open/close or bidi controls are ignored.
 // Returns nullptr if there were no previous items.
-NGInlineItem* LastItemToCollapseWith(Vector<NGInlineItem>* items) {
+NGInlineItem* LastItemToCollapseWith(HeapVector<NGInlineItem>* items) {
   for (auto& item : base::Reversed(*items)) {
     if (item.EndCollapseType() != NGInlineItem::kOpaqueToCollapsing)
       return &item;
@@ -217,7 +218,7 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::
 
 template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::
-    SetShouldCreateBoxFragment(Vector<NGInlineItem>* items) {
+    SetShouldCreateBoxFragment(HeapVector<NGInlineItem>* items) {
   DCHECK(!should_create_box_fragment);
   should_create_box_fragment = true;
   (*items)[item_index].SetShouldCreateBoxFragment();
@@ -245,8 +246,6 @@ NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextItem(
   NGInlineItem& item =
       AppendItem(items_, type, start_offset, text_.length(), layout_object);
   DCHECK(!item.IsEmptyItem());
-  // text item is not empty.
-  is_empty_inline_ = false;
   is_block_level_ = false;
   return item;
 }
@@ -270,6 +269,8 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendEmptyTextItem(
 template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::
     AppendGeneratedBreakOpportunity(LayoutObject* layout_object) {
+  if (block_flow_->IsNGSVGText())
+    return;
   DCHECK(layout_object);
   typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                        nullptr);
@@ -406,7 +407,6 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     // itself may be reused.
     if (item.StartOffset() == start) {
       items_->push_back(item);
-      is_empty_inline_ &= item.IsEmptyItem();
       is_block_level_ &= item.IsBlockLevel();
       continue;
     }
@@ -437,7 +437,6 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
 #endif
 
     items_->push_back(adjusted_item);
-    is_empty_inline_ &= adjusted_item.IsEmptyItem();
     is_block_level_ &= adjusted_item.IsBlockLevel();
   }
   return true;
@@ -538,7 +537,7 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextChunks(
   EWhiteSpace whitespace = style.WhiteSpace();
   unsigned start = 0;
   for (unsigned offset : iter->value) {
-    DCHECK_LT(offset, string.length());
+    DCHECK_LE(offset, string.length());
     if (start < offset) {
       if (!ComputedStyle::CollapseWhiteSpace(whitespace)) {
         AppendPreserveWhitespace(string.Substring(start, offset - start),
@@ -551,6 +550,8 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextChunks(
     ExitAndEnterSvgTextChunk(layout_text);
     start = offset;
   }
+  if (start >= string.length())
+    return true;
   if (!ComputedStyle::CollapseWhiteSpace(whitespace)) {
     AppendPreserveWhitespace(string.Substring(start), &style, &layout_text);
   } else {
@@ -754,8 +755,6 @@ void NGInlineItemsBuilderTemplate<
                                   text_.length(), layout_object);
   item.SetEndCollapseType(end_collapse, space_run_has_newline);
   DCHECK(!item.IsEmptyItem());
-  // text item is not empty.
-  is_empty_inline_ = false;
   is_block_level_ = false;
 }
 
@@ -991,7 +990,6 @@ NGInlineItem& NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::Append(
   unsigned end_offset = text_.length();
   NGInlineItem& item =
       AppendItem(items_, type, end_offset - 1, end_offset, layout_object);
-  is_empty_inline_ &= item.IsEmptyItem();
   is_block_level_ &= item.IsBlockLevel();
   return item;
 }
@@ -1056,7 +1054,6 @@ NGInlineItem& NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
   NGInlineItem& item =
       AppendItem(items_, type, end_offset - 1, end_offset, layout_object);
   item.SetEndCollapseType(NGInlineItem::kOpaqueToCollapsing);
-  is_empty_inline_ &= item.IsEmptyItem();
   is_block_level_ &= item.IsBlockLevel();
   return item;
 }
@@ -1069,7 +1066,6 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
   NGInlineItem& item =
       AppendItem(items_, type, end_offset, end_offset, layout_object);
   item.SetEndCollapseType(NGInlineItem::kOpaqueToCollapsing);
-  is_empty_inline_ &= item.IsEmptyItem();
   is_block_level_ &= item.IsBlockLevel();
 }
 
@@ -1217,10 +1213,8 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBlock(
                      kPopDirectionalFormattingCharacter);
   }
 
-  if (style->Display() == EDisplay::kListItem && style->ListStyleType()) {
-    is_empty_inline_ = false;
+  if (style->Display() == EDisplay::kListItem && style->ListStyleType())
     is_block_level_ = false;
-  }
 }
 
 template <typename OffsetMappingBuilder>
@@ -1365,12 +1359,7 @@ void NGInlineItemsBuilderTemplate<
   // |SegmentText()| will analyze the text and reset |is_bidi_enabled_| if it
   // doesn't contain any RTL characters.
   data->is_bidi_enabled_ = MayBeBidiEnabled();
-  // Note: Even if |IsEmptyInline()| is true, |text_| isn't empty, e.g. it
-  // holds U+FFFC(ORC) for float or abspos.
-  data->has_line_even_if_empty_ =
-      IsEmptyInline() && block_flow_->HasLineIfEmpty();
   data->has_ruby_ = has_ruby_;
-  data->is_empty_inline_ = IsEmptyInline();
   data->is_block_level_ = IsBlockLevel();
   data->changes_may_affect_earlier_lines_ = HasUnicodeBidiPlainText();
 }
@@ -1425,6 +1414,12 @@ void NGInlineItemsBuilderTemplate<NGOffsetMappingBuilder>::ClearInlineFragment(
 template <>
 void NGInlineItemsBuilderTemplate<
     NGOffsetMappingBuilder>::UpdateShouldCreateBoxFragment(LayoutInline*) {}
+
+template <typename OffsetMappingBuilder>
+void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::BidiContext::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(node);
+}
 
 template class CORE_TEMPLATE_EXPORT
     NGInlineItemsBuilderTemplate<EmptyOffsetMappingBuilder>;

@@ -25,8 +25,7 @@ const int kPresentationDelayMs = 18;
 }  // namespace
 
 FastInkPointerController::FastInkPointerController()
-    : presentation_delay_(
-          base::TimeDelta::FromMilliseconds(kPresentationDelayMs)) {
+    : presentation_delay_(base::Milliseconds(kPresentationDelayMs)) {
   auto* local_state = ash::Shell::Get()->local_state();
   // |local_state| could be null in tests.
   if (!local_state)

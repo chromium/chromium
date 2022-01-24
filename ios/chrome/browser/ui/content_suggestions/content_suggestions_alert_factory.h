@@ -9,28 +9,11 @@
 
 @class AlertCoordinator;
 class Browser;
-@class ContentSuggestionsItem;
-@class ContentSuggestionsMostVisitedItem;
 @protocol ContentSuggestionsGestureCommands;
+@class ContentSuggestionsMostVisitedItem;
 
 // Factory for AlertCoordinators for ContentSuggestions.
 @interface ContentSuggestionsAlertFactory : NSObject
-
-// Returns an AlertCoordinator for a suggestions |item| with the indexPath
-// |indexPath|. The alert will be presented on the |viewController| at the
-// |touchLocation|, in the coordinates of the |viewController|'s collectionView.
-// The |commandHandler| will receive callbacks when the user chooses one of the
-// options displayed by the alert.
-+ (AlertCoordinator*)
-    alertCoordinatorForSuggestionItem:(ContentSuggestionsItem*)item
-                     onViewController:
-                         (UICollectionViewController*)viewController
-                              atPoint:(CGPoint)touchLocation
-                          atIndexPath:(NSIndexPath*)indexPath
-                      readLaterAction:(BOOL)readLaterAction
-                       commandHandler:
-                           (id<ContentSuggestionsGestureCommands>)commandHandler
-                              browser:(Browser*)browser;
 
 // Same as above but for a MostVisited item.
 + (AlertCoordinator*)

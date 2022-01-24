@@ -23,8 +23,6 @@
 namespace gpu {
 namespace {
 
-uint64_t g_submit_count = 0u;
-
 #if defined(OS_ANDROID)
 int GetEMUIVersion() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
@@ -119,14 +117,6 @@ std::string VkVersionToString(uint32_t version) {
                             VK_VERSION_PATCH(version));
 }
 
-VkResult QueueSubmitHook(VkQueue queue,
-                         uint32_t submitCount,
-                         const VkSubmitInfo* pSubmits,
-                         VkFence fence) {
-  g_submit_count++;
-  return vkQueueSubmit(queue, submitCount, pSubmits, fence);
-}
-
 VkResult CreateGraphicsPipelinesHook(
     VkDevice device,
     VkPipelineCache pipelineCache,
@@ -138,19 +128,12 @@ VkResult CreateGraphicsPipelinesHook(
       [](base::Time time) {
         UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
             "GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines",
-            base::Time::Now() - time, base::TimeDelta::FromMicroseconds(100),
-            base::TimeDelta::FromMicroseconds(50000), 50);
+            base::Time::Now() - time, base::Microseconds(100),
+            base::Microseconds(50000), 50);
       },
       base::Time::Now()));
   return vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount,
                                    pCreateInfos, pAllocator, pPipelines);
-}
-
-void ReportUMAPerSwapBuffers() {
-  static uint64_t last_submit_count = 0u;
-  UMA_HISTOGRAM_CUSTOM_COUNTS("GPU.Vulkan.QueueSubmitPerSwapBuffers",
-                              g_submit_count - last_submit_count, 1, 50, 50);
-  last_submit_count = g_submit_count;
 }
 
 bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,

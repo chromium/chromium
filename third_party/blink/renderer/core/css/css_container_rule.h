@@ -27,6 +27,7 @@ class CSSContainerRule final : public CSSConditionRule {
  private:
   // TODO(crbug.com/1214810): Don't lean on MediaList.
   friend class InspectorCSSAgent;
+  friend class InspectorDOMAgent;
   friend class InspectorStyleSheet;
 
   CSSRule::Type GetType() const override { return kContainerRule; }

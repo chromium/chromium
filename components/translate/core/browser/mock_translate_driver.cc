@@ -16,7 +16,10 @@ MockTranslateDriver::MockTranslateDriver()
       on_translate_enabled_changed_called_(false),
       translate_page_is_called_(false),
       language_state_(this),
-      last_committed_url_(GURL::EmptyGURL()) {}
+      last_committed_url_(GURL::EmptyGURL()),
+      visible_url_(GURL::EmptyGURL()) {}
+
+MockTranslateDriver::~MockTranslateDriver() = default;
 
 void MockTranslateDriver::TranslatePage(int page_seq_no,
                                         const std::string& translate_script,
@@ -55,7 +58,7 @@ const GURL&  MockTranslateDriver::GetLastCommittedURL() {
 }
 
 const GURL& MockTranslateDriver::GetVisibleURL() {
-  return GURL::EmptyGURL();
+  return visible_url_;
 }
 
 ukm::SourceId MockTranslateDriver::GetUkmSourceId() {
@@ -79,7 +82,10 @@ void MockTranslateDriver::SetPageMimeType(
   page_mime_type_ = mime_type;
 }
 
+void MockTranslateDriver::SetVisibleURL(const GURL& url) {
+  visible_url_ = url;
+}
+
 }  // namespace testing
 
 }  // namespace translate
-

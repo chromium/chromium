@@ -166,6 +166,9 @@ class CacheDumper {
         current_hash_(0),
         next_addr_(0) {}
 
+  CacheDumper(const CacheDumper&) = delete;
+  CacheDumper& operator=(const CacheDumper&) = delete;
+
   bool Init();
 
   // Reads an entry from disk. Return false when all entries have been already
@@ -188,7 +191,6 @@ class CacheDumper {
   int current_hash_;
   disk_cache::CacheAddr next_addr_;
   std::set<disk_cache::CacheAddr> dumped_entries_;
-  DISALLOW_COPY_AND_ASSIGN(CacheDumper);
 };
 
 bool CacheDumper::Init() {

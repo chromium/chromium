@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_LOAD_TIMING_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "services/network/public/mojom/load_timing_info.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"

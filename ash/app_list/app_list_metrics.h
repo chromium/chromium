@@ -12,8 +12,6 @@
 
 namespace ash {
 
-class AppListModel;
-class SearchModel;
 class SearchResult;
 
 // The UMA histogram that logs how the app list transitions from peeking to
@@ -212,8 +210,8 @@ void RecordAppListUserJourneyTime(AppListShowSource source,
 void RecordPeriodicAppListMetrics();
 
 ASH_EXPORT void RecordSearchResultOpenSource(const SearchResult* result,
-                                             const AppListModel* model,
-                                             const SearchModel* search_model);
+                                             AppListViewState state,
+                                             bool is_tablet_mode);
 
 ASH_EXPORT void RecordSearchLaunchIndexAndQueryLength(
     SearchResultLaunchLocation launch_location,

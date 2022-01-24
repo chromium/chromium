@@ -1081,8 +1081,7 @@ bool URLIndexPrivateData::RestorePrivateData(
       base::Time::FromInternalValue(cache.last_rebuild_timestamp());
   const base::TimeDelta rebuilt_ago =
       base::Time::Now() - last_time_rebuilt_from_history_;
-  if ((rebuilt_ago > base::TimeDelta::FromDays(7)) ||
-      (rebuilt_ago < base::TimeDelta::FromDays(-1))) {
+  if ((rebuilt_ago > base::Days(7)) || (rebuilt_ago < base::Days(-1))) {
     // Cache is more than a week old or, somehow, from some time in the future.
     // It's probably a good time to rebuild the index from history to
     // allow synced entries to now appear, expired entries to disappear, etc.

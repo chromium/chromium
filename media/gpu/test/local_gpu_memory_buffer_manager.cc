@@ -96,6 +96,8 @@ uint32_t GetGbmUsage(gfx::BufferUsage usage) {
 
 class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
  public:
+  GpuMemoryBufferImplGbm() = delete;
+
   GpuMemoryBufferImplGbm(gfx::BufferFormat format, gbm_bo* buffer_object)
       : format_(format), buffer_object_(buffer_object), mapped_(false) {
     handle_.type = gfx::NATIVE_PIXMAP;
@@ -111,6 +113,9 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
           base::ScopedFD(gbm_bo_get_plane_fd(buffer_object, i))));
     }
   }
+
+  GpuMemoryBufferImplGbm(const GpuMemoryBufferImplGbm&) = delete;
+  GpuMemoryBufferImplGbm& operator=(const GpuMemoryBufferImplGbm&) = delete;
 
   ~GpuMemoryBufferImplGbm() override {
     if (mapped_) {
@@ -224,7 +229,6 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
   gfx::GpuMemoryBufferHandle handle_;
   bool mapped_;
   std::vector<MappedPlane> mapped_planes_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(GpuMemoryBufferImplGbm);
 };
 
 }  // namespace

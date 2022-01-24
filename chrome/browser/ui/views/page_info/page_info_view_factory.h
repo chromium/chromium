@@ -10,6 +10,12 @@
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 
+namespace page_info {
+namespace proto {
+class SiteInfo;
+}
+}  // namespace page_info
+
 class ChromePageInfoUiDelegate;
 class PageInfo;
 class PageInfoNavigationHandler;
@@ -26,7 +32,7 @@ class PageInfoViewFactory {
   static constexpr int kMaxBubbleWidth = 1000;
 
   enum PageInfoViewID {
-    VIEW_ID_NONE = 0,
+    VIEW_ID_PAGE_INFO_NONE = 0,
     VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD,
     VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE,
     VIEW_ID_PAGE_INFO_LABEL_EV_CERTIFICATE_DETAILS,
@@ -45,6 +51,7 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_CLOSE_BUTTON,
     VIEW_ID_PAGE_INFO_CURRENT_VIEW,
     VIEW_ID_PAGE_INFO_RESET_PERMISSIONS_BUTTON,
+    VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
   };
 
   // Creates a separator view with padding on top and bottom. Use with flex
@@ -96,10 +103,16 @@ class PageInfoViewFactory {
   static const ui::ImageModel GetManagedPermissionIcon(
       const PageInfo::PermissionInfo& info);
 
-  std::unique_ptr<views::View> CreateMainPageView() WARN_UNUSED_RESULT;
+  // Returns the icon for 'About this site' button.
+  static const ui::ImageModel GetAboutThisSiteIcon();
+
+  std::unique_ptr<views::View> CreateMainPageView(
+      base::OnceClosure initialized_callback) WARN_UNUSED_RESULT;
   std::unique_ptr<views::View> CreateSecurityPageView() WARN_UNUSED_RESULT;
   std::unique_ptr<views::View> CreatePermissionPageView(
       ContentSettingsType type) WARN_UNUSED_RESULT;
+  std::unique_ptr<views::View> CreateAboutThisSitePageView(
+      const page_info::proto::SiteInfo& info) WARN_UNUSED_RESULT;
 
  private:
   // Creates a subpage header with back button that opens the main page, a

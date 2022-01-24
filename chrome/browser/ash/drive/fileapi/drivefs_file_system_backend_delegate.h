@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend_delegate.h"
 
 class Profile;
@@ -31,6 +30,12 @@ class DriveFsFileSystemBackendDelegate
     : public chromeos::FileSystemBackendDelegate {
  public:
   explicit DriveFsFileSystemBackendDelegate(Profile* profile);
+
+  DriveFsFileSystemBackendDelegate(const DriveFsFileSystemBackendDelegate&) =
+      delete;
+  DriveFsFileSystemBackendDelegate& operator=(
+      const DriveFsFileSystemBackendDelegate&) = delete;
+
   ~DriveFsFileSystemBackendDelegate() override;
 
   // FileSystemBackend::Delegate overrides.
@@ -53,8 +58,6 @@ class DriveFsFileSystemBackendDelegate
 
  private:
   std::unique_ptr<storage::AsyncFileUtil> async_file_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsFileSystemBackendDelegate);
 };
 
 }  // namespace drive

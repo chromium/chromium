@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/media_gpu_export.h"
@@ -22,9 +21,11 @@ namespace media {
 
 class MEDIA_GPU_EXPORT ImageProcessorFactory {
  public:
-  // Callback to pick a valid format from given |candidates| formats.
+  // Callback to pick a valid format from the given |candidates| formats giving
+  // preference to |preferred_fourcc| if provided.
   using PickFormatCB = base::RepeatingCallback<absl::optional<Fourcc>(
-      const std::vector<Fourcc>& /* candidates */)>;
+      const std::vector<Fourcc>& /* candidates */,
+      absl::optional<Fourcc> /* preferred_fourcc */)>;
 
   // Factory method to create ImageProcessor.
   // Given input and output PortConfig, it tries to find out the most suitable
@@ -59,20 +60,26 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       ImageProcessor::ErrorCB error_cb);
 
-  // Factory method to create ImageProcessor.
-  // Unlike Create(), caller gives a list of valid input for the
-  // ImageProcessor, |candidates|; frame's |input_size|; |out_format_picker| for
-  // caller to pick a valid output. With the parameters the factory can
-  // instantiate a suitable ImageProcessor if exists.
+  // Factory method to create an ImageProcessor.
+  // Unlike Create(), the caller passes a list of supported inputs,
+  // |input_candidates|. It also passes the |input_visible_rect| and the desired
+  // |output_size|. |out_format_picker| allows us to negotiate the output
+  // format: we'll call it with a list of supported formats and (possibly) a
+  // preferred one and the callback picks one. With the rest of the parameters
+  // the factory can instantiate a suitable ImageProcessor. Returns nullptr if
+  // an ImageProcessor can't be created.
   static std::unique_ptr<ImageProcessor> CreateWithInputCandidates(
       const std::vector<std::pair<Fourcc, gfx::Size>>& input_candidates,
-      const gfx::Size& visible_size,
+      const gfx::Rect& input_visible_rect,
+      const gfx::Size& output_size,
       size_t num_buffers,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       PickFormatCB out_format_picker,
       ImageProcessor::ErrorCB error_cb);
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ImageProcessorFactory);
+  ImageProcessorFactory() = delete;
+  ImageProcessorFactory(const ImageProcessorFactory&) = delete;
+  ImageProcessorFactory& operator=(const ImageProcessorFactory&) = delete;
 };
 
 }  // namespace media

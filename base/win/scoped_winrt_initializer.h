@@ -30,6 +30,10 @@ class BASE_EXPORT ScopedWinrtInitializer
     : public ScopedWindowsThreadEnvironment {
  public:
   ScopedWinrtInitializer();
+
+  ScopedWinrtInitializer(const ScopedWinrtInitializer&) = delete;
+  ScopedWinrtInitializer& operator=(const ScopedWinrtInitializer&) = delete;
+
   ~ScopedWinrtInitializer() override;
 
   // ScopedWindowsThreadEnvironment:
@@ -38,8 +42,6 @@ class BASE_EXPORT ScopedWinrtInitializer
  private:
   const HRESULT hr_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedWinrtInitializer);
 };
 
 }  // namespace win

@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
-
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -11,6 +12,7 @@ import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
@@ -29,11 +31,26 @@ class CreditCardAccessorySheetViewBinder {
                         parent, R.layout.keyboard_accessory_sheet_tab_title);
             case AccessorySheetDataPiece.Type.CREDIT_CARD_INFO:
                 return new CreditCardInfoViewHolder(parent);
+            case AccessorySheetDataPiece.Type.PROMO_CODE_INFO:
+                return new PromoCodeInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
         assert false : "Unhandled type of data piece: " + viewType;
         return null;
+    }
+
+    private static void bindChipView(ChipView chip, UserInfoField field) {
+        chip.getPrimaryTextView().setText(field.getDisplayText());
+        chip.getPrimaryTextView().setContentDescription(field.getA11yDescription());
+        chip.setVisibility(field.getDisplayText().isEmpty() ? View.GONE : View.VISIBLE);
+        if (!field.isSelectable()) {
+            chip.setEnabled(false);
+        } else {
+            chip.setOnClickListener(src -> field.triggerSelection());
+            chip.setClickable(true);
+            chip.setEnabled(true);
+        }
     }
 
     /**
@@ -57,22 +74,21 @@ class CreditCardAccessorySheetViewBinder {
                                     || view.getExpMonth().getVisibility() == View.VISIBLE
                             ? View.VISIBLE
                             : View.GONE);
-
-            view.setIcon(AppCompatResources.getDrawable(
-                    view.getContext(), getDrawableForOrigin(info.getOrigin())));
-        }
-
-        private static void bindChipView(ChipView chip, UserInfoField field) {
-            chip.getPrimaryTextView().setText(field.getDisplayText());
-            chip.getPrimaryTextView().setContentDescription(field.getA11yDescription());
-            chip.setVisibility(field.getDisplayText().isEmpty() ? View.GONE : View.VISIBLE);
-            if (!field.isSelectable()) {
-                chip.setEnabled(false);
-                return;
+            // If the icon url is present, fetch the bitmap from the PersonalDataManager. In
+            // the event that the bitmap is not present in the PersonalDataManager, fall back to the
+            // icon corresponding to the `mOrigin`.
+            Bitmap iconBitmap = null;
+            if (info.getIconUrl() != null && info.getIconUrl().isValid()) {
+                iconBitmap =
+                        PersonalDataManager.getInstance()
+                                .getCustomImageForAutofillSuggestionIfAvailable(info.getIconUrl());
             }
-            chip.setOnClickListener(src -> field.triggerSelection());
-            chip.setClickable(true);
-            chip.setEnabled(true);
+            if (iconBitmap != null) {
+                view.setIcon(new BitmapDrawable(view.getContext().getResources(), iconBitmap));
+            } else {
+                view.setIcon(AppCompatResources.getDrawable(
+                        view.getContext(), getDrawableForOrigin(info.getOrigin())));
+            }
         }
 
         private static @DrawableRes int getDrawableForOrigin(String origin) {
@@ -102,11 +118,35 @@ class CreditCardAccessorySheetViewBinder {
         }
     }
 
+    /**
+     * View which represents a single Promo Code Offer and its fields.
+     */
+    static class PromoCodeInfoViewHolder
+            extends ElementViewHolder<KeyboardAccessoryData.PromoCodeInfo,
+                    PromoCodeAccessoryInfoView> {
+        PromoCodeInfoViewHolder(ViewGroup parent) {
+            super(parent, R.layout.keyboard_accessory_sheet_tab_promo_code_info);
+        }
+
+        @Override
+        protected void bind(
+                KeyboardAccessoryData.PromoCodeInfo info, PromoCodeAccessoryInfoView view) {
+            bindChipView(view.getPromoCode(), info.getPromoCode());
+            view.getDetailsText().setText(info.getDetailsText());
+            view.getDetailsText().setVisibility(
+                    info.getDetailsText().isEmpty() ? View.GONE : View.VISIBLE);
+
+            view.setIcon(AppCompatResources.getDrawable(
+                    view.getContext(), R.drawable.ic_logo_googleg_24dp));
+        }
+    }
+
     static void initializeView(RecyclerView view, AccessorySheetTabModel model) {
         view.setAdapter(new RecyclerViewAdapter<>(
                 new SimpleRecyclerViewMcp<>(model, AccessorySheetDataPiece::getType,
                         AccessorySheetTabViewBinder.ElementViewHolder::bind),
                 CreditCardAccessorySheetViewBinder::create));
         view.addItemDecoration(new DynamicInfoViewBottomSpacer(CreditCardAccessoryInfoView.class));
+        view.addItemDecoration(new DynamicInfoViewBottomSpacer(PromoCodeAccessoryInfoView.class));
     }
 }

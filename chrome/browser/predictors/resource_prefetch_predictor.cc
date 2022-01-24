@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -75,6 +74,7 @@ PreconnectRequest::PreconnectRequest(
       num_sockets(num_sockets),
       network_isolation_key(network_isolation_key) {
   DCHECK_GE(num_sockets, 0);
+  DCHECK(!network_isolation_key.IsEmpty());
 }
 
 PrefetchRequest::PrefetchRequest(
@@ -85,6 +85,7 @@ PrefetchRequest::PrefetchRequest(
       network_isolation_key(network_isolation_key),
       destination(destination) {
   DCHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+  DCHECK(!network_isolation_key.IsEmpty());
 }
 
 PreconnectPrediction::PreconnectPrediction() = default;
@@ -261,10 +262,10 @@ void ResourcePrefetchPredictor::StartInitialization() {
   // Create local caches using the database as loaded.
   auto host_redirect_data = std::make_unique<RedirectDataMap>(
       tables_, tables_->host_redirect_table(), config_.max_hosts_to_track,
-      base::TimeDelta::FromSeconds(config_.flush_data_to_disk_delay_seconds));
+      base::Seconds(config_.flush_data_to_disk_delay_seconds));
   auto origin_data = std::make_unique<OriginDataMap>(
       tables_, tables_->origin_table(), config_.max_hosts_to_track,
-      base::TimeDelta::FromSeconds(config_.flush_data_to_disk_delay_seconds));
+      base::Seconds(config_.flush_data_to_disk_delay_seconds));
 
   // Get raw pointers to pass to the first task. Ownership of the unique_ptrs
   // will be passed to the reply task.
@@ -309,7 +310,8 @@ void ResourcePrefetchPredictor::RecordPageRequestSummary(
   LearnRedirect(summary->initial_url.host(), summary->main_frame_url,
                 host_redirect_data_.get());
   LearnOrigins(summary->main_frame_url.host(),
-               summary->main_frame_url.GetOrigin(), summary->origins);
+               summary->main_frame_url.DeprecatedGetOriginAsURL(),
+               summary->origins);
 
   if (observer_)
     observer_->OnNavigationLearned(*summary);

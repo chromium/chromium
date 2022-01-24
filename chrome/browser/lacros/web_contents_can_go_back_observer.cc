@@ -64,4 +64,4 @@ void WebContentsCanGoBackObserver::UpdateLatestFocusedWebContentsStatus() {
   wayland_extension->SetCanGoBack(can_go_back);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsCanGoBackObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsCanGoBackObserver);

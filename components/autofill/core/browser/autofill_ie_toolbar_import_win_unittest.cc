@@ -121,14 +121,16 @@ class AutofillIeToolbarImportTest : public testing::Test {
  public:
   AutofillIeToolbarImportTest();
 
+  AutofillIeToolbarImportTest(const AutofillIeToolbarImportTest&) = delete;
+  AutofillIeToolbarImportTest& operator=(const AutofillIeToolbarImportTest&) =
+      delete;
+
   // testing::Test method overrides:
   void SetUp() override;
   void TearDown() override;
 
  private:
   RegKey temp_hkcu_hive_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillIeToolbarImportTest);
 };
 
 AutofillIeToolbarImportTest::AutofillIeToolbarImportTest() {

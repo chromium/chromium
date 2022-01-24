@@ -37,6 +37,10 @@ class CertDbContentWatcher {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       base::FilePath cert_watch_path,
       base::TimeDelta read_delay);
+
+  CertDbContentWatcher(const CertDbContentWatcher&) = delete;
+  CertDbContentWatcher& operator=(const CertDbContentWatcher&) = delete;
+
   ~CertDbContentWatcher();
 
   void StartWatching();
@@ -82,8 +86,6 @@ class CertDbContentWatcher {
   // FileWatcher detects changes, the code is re-computed and compared with
   // this stored value.
   HashValue current_hash_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertDbContentWatcher);
 };
 
 CertDbContentWatcher::CertDbContentWatcher(
@@ -175,7 +177,7 @@ CertificateWatcher::CertificateWatcher(
     : restart_action_(restart_action),
       caller_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       io_task_runner_(io_task_runner),
-      delay_(base::TimeDelta::FromSeconds(kReadDelayInSeconds)) {
+      delay_(base::Seconds(kReadDelayInSeconds)) {
   if (!base::PathService::Get(base::DIR_HOME, &cert_watch_path_)) {
     LOG(FATAL) << "Failed to get path of the home directory.";
   }

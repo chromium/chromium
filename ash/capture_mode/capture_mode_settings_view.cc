@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_settings_entry_view.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -34,13 +35,17 @@ constexpr gfx::RoundedCornersF kBorderRadius{10.f};
 
 }  // namespace
 
-CaptureModeSettingsView::CaptureModeSettingsView()
+CaptureModeSettingsView::CaptureModeSettingsView(bool projector_mode)
     : microphone_view_(
           AddChildView(std::make_unique<CaptureModeSettingsEntryView>(
               base::BindRepeating(&CaptureModeSettingsView::OnMicrophoneToggled,
                                   base::Unretained(this)),
               kCaptureModeMicOffIcon,
               IDS_ASH_SCREEN_CAPTURE_LABEL_MICROPHONE))) {
+  // Users are not allowed to disable audio recording when in a projector mode
+  // session.
+  microphone_view_->toggle_button_view()->SetEnabled(!projector_mode);
+
   SetPaintToLayer();
   auto* color_provider = AshColorProvider::Get();
   SkColor background_color = color_provider->GetBaseLayerColor(
@@ -48,9 +53,8 @@ CaptureModeSettingsView::CaptureModeSettingsView()
   SetBackground(views::CreateSolidBackground(background_color));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(kBorderRadius);
-  layer()->SetBackgroundBlur(
-      static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
-  layer()->SetBackdropFilterQuality(capture_mode::kBlurQuality);
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kSettingsPadding,

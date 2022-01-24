@@ -40,7 +40,6 @@ def build(build_config, target_device, extra_gn_options, extra_ninja_options):
       'target_os="ios"',
       'enable_websockets=false',
       'is_component_build=false',
-      'use_xcode_clang=false',
       'disable_file_support=true',
       'disable_ftp_support=true',
       'disable_brotli_filter=true',

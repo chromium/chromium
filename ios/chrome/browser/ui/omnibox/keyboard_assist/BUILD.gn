@@ -37,8 +37,7 @@ source_set("keyboard_assist") {
     "//ios/chrome/browser/voice",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/voice",
+    "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ui/base",
     "//ui/gfx",
   ]

@@ -102,7 +102,8 @@ void TestWebTransportCreator::Connect(
   mojo::PendingRemote<network::mojom::blink::WebTransportClient> client_remote;
   handshake_client->OnConnectionEstablished(
       std::move(web_transport_to_pass),
-      client_remote.InitWithNewPipeAndPassReceiver());
+      client_remote.InitWithNewPipeAndPassReceiver(),
+      network::mojom::blink::HttpResponseHeaders::New());
   client_remote_.Bind(std::move(client_remote));
 }
 
@@ -111,6 +112,11 @@ void TestWebTransportCreator::BindConnector(
   connector_receiver_.Bind(
       mojo::PendingReceiver<mojom::blink::WebTransportConnector>(
           std::move(handle)));
+}
+
+void TestWebTransportCreator::Reset() {
+  client_remote_.reset();
+  connector_receiver_.reset();
 }
 
 }  // namespace blink

@@ -5,6 +5,12 @@
 source_set("password_details") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "add_password_coordinator.h",
+    "add_password_coordinator.mm",
+    "add_password_coordinator_delegate.h",
+    "add_password_mediator.h",
+    "add_password_mediator.mm",
+    "add_password_mediator_delegate.h",
     "password_details_coordinator.h",
     "password_details_coordinator.mm",
     "password_details_coordinator_delegate.h",
@@ -15,6 +21,7 @@ source_set("password_details") {
     ":password_details_ui",
     "//base",
     "//components/autofill/core/common",
+    "//components/password_manager/core/browser/form_parsing",
     "//components/strings",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
@@ -26,7 +33,6 @@ source_set("password_details") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication",
@@ -39,6 +45,8 @@ source_set("password_details") {
 source_set("password_details_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "add_password_details_consumer.h",
+    "add_password_handler.h",
     "password_details.h",
     "password_details.mm",
     "password_details_consumer.h",
@@ -69,6 +77,8 @@ source_set("password_details_ui") {
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/autofill",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/password:password_constants",
+    "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/browser/ui/util",

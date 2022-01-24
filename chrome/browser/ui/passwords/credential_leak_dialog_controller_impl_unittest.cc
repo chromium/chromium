@@ -16,6 +16,7 @@
 namespace {
 
 using password_manager::CreateLeakType;
+using password_manager::HasChangeScript;
 using password_manager::IsReused;
 using password_manager::IsSaved;
 using password_manager::IsSyncing;
@@ -26,11 +27,11 @@ class MockCredentialLeakPrompt : public CredentialLeakPrompt {
  public:
   MockCredentialLeakPrompt() = default;
 
+  MockCredentialLeakPrompt(const MockCredentialLeakPrompt&) = delete;
+  MockCredentialLeakPrompt& operator=(const MockCredentialLeakPrompt&) = delete;
+
   MOCK_METHOD0(ShowCredentialLeakPrompt, void());
   MOCK_METHOD0(ControllerGone, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCredentialLeakPrompt);
 };
 
 class CredentialLeakDialogControllerTest : public testing::Test {
@@ -58,8 +59,8 @@ class CredentialLeakDialogControllerTest : public testing::Test {
 };
 
 TEST_F(CredentialLeakDialogControllerTest, CredentialLeakDialogClose) {
-  SetUpController(
-      CreateLeakType(IsSaved(false), IsReused(false), IsSyncing(false)));
+  SetUpController(CreateLeakType(IsSaved(false), IsReused(false),
+                                 IsSyncing(false), HasChangeScript(false)));
 
   EXPECT_CALL(leak_prompt(), ShowCredentialLeakPrompt());
   controller().ShowCredentialLeakPrompt(&leak_prompt());
@@ -79,8 +80,8 @@ TEST_F(CredentialLeakDialogControllerTest, CredentialLeakDialogClose) {
 }
 
 TEST_F(CredentialLeakDialogControllerTest, CredentialLeakDialogOk) {
-  SetUpController(
-      CreateLeakType(IsSaved(true), IsReused(false), IsSyncing(false)));
+  SetUpController(CreateLeakType(IsSaved(true), IsReused(false),
+                                 IsSyncing(false), HasChangeScript(false)));
 
   EXPECT_CALL(leak_prompt(), ShowCredentialLeakPrompt());
   controller().ShowCredentialLeakPrompt(&leak_prompt());
@@ -100,8 +101,8 @@ TEST_F(CredentialLeakDialogControllerTest, CredentialLeakDialogOk) {
 }
 
 TEST_F(CredentialLeakDialogControllerTest, CredentialLeakDialogCancel) {
-  SetUpController(
-      CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true)));
+  SetUpController(CreateLeakType(IsSaved(false), IsReused(true),
+                                 IsSyncing(true), HasChangeScript(false)));
 
   EXPECT_CALL(leak_prompt(), ShowCredentialLeakPrompt());
   controller().ShowCredentialLeakPrompt(&leak_prompt());
@@ -121,8 +122,8 @@ TEST_F(CredentialLeakDialogControllerTest, CredentialLeakDialogCancel) {
 }
 
 TEST_F(CredentialLeakDialogControllerTest, CredentialLeakDialogCheckPasswords) {
-  SetUpController(
-      CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true)));
+  SetUpController(CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true),
+                                 HasChangeScript(false)));
 
   EXPECT_CALL(leak_prompt(), ShowCredentialLeakPrompt());
   controller().ShowCredentialLeakPrompt(&leak_prompt());

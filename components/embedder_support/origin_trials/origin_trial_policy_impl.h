@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 
@@ -20,6 +19,10 @@ namespace embedder_support {
 class OriginTrialPolicyImpl : public blink::OriginTrialPolicy {
  public:
   OriginTrialPolicyImpl();
+
+  OriginTrialPolicyImpl(const OriginTrialPolicyImpl&) = delete;
+  OriginTrialPolicyImpl& operator=(const OriginTrialPolicyImpl&) = delete;
+
   ~OriginTrialPolicyImpl() override;
 
   // blink::OriginTrialPolicy interface
@@ -39,8 +42,6 @@ class OriginTrialPolicyImpl : public blink::OriginTrialPolicy {
   std::vector<blink::OriginTrialPublicKey> public_keys_;
   std::set<std::string> disabled_features_;
   std::set<std::string> disabled_tokens_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginTrialPolicyImpl);
 };
 
 }  // namespace embedder_support

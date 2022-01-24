@@ -5,7 +5,7 @@
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests that Elements properly populate and select after immediate updates crbug.com/829884\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <!DOCTYPE HTML">
@@ -23,8 +23,8 @@
     TestRunner.addResult(`BEFORE: children: ${node.children()}, childNodeCount: ${node.childNodeCount()}`);
 
     // Any operation that modifies the node, followed by an immediate, synchronous update.
-    TestRunner.domModel._childNodeCountUpdated(node.id, 3);
-    treeOutline._updateModifiedNodes();
+    TestRunner.domModel.childNodeCountUpdated(node.id, 3);
+    treeOutline.updateModifiedNodes();
 
     TestRunner.addResult(`AFTER: children: ${node.children()}, childNodeCount: ${node.childNodeCount()}`);
     ElementsTestRunner.expandElementsTree(afterExpand);

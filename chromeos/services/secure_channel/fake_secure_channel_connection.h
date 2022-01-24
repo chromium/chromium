@@ -5,9 +5,13 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_SECURE_CHANNEL_CONNECTION_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_SECURE_CHANNEL_CONNECTION_H_
 
+#include <vector>
+
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/connection.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "chromeos/services/secure_channel/register_payload_file_request.h"
 #include "chromeos/services/secure_channel/secure_channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,6 +23,11 @@ namespace secure_channel {
 class FakeSecureChannelConnection : public SecureChannel {
  public:
   FakeSecureChannelConnection(std::unique_ptr<Connection> connection);
+
+  FakeSecureChannelConnection(const FakeSecureChannelConnection&) = delete;
+  FakeSecureChannelConnection& operator=(const FakeSecureChannelConnection&) =
+      delete;
+
   ~FakeSecureChannelConnection() override;
 
   void set_destructor_callback(base::OnceClosure destructor_callback) {
@@ -51,10 +60,20 @@ class FakeSecureChannelConnection : public SecureChannel {
 
   std::vector<SentMessage> sent_messages() { return sent_messages_; }
 
+  const std::vector<RegisterPayloadFileRequest>&
+  register_payload_file_requests() const {
+    return register_payload_file_requests_;
+  }
+
   // SecureChannel:
   void Initialize() override;
   int SendMessage(const std::string& feature,
                   const std::string& payload) override;
+  void RegisterPayloadFile(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) override;
   void Disconnect() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -67,12 +86,11 @@ class FakeSecureChannelConnection : public SecureChannel {
   bool was_initialized_ = false;
   std::vector<Observer*> observers_;
   std::vector<SentMessage> sent_messages_;
+  std::vector<RegisterPayloadFileRequest> register_payload_file_requests_;
   absl::optional<int32_t> rssi_to_return_;
   absl::optional<std::string> channel_binding_data_;
 
   base::OnceClosure destructor_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecureChannelConnection);
 };
 
 }  // namespace secure_channel

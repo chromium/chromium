@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/url_with_title.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -113,6 +114,32 @@ const int64_t kLastUsedFolderNone = -1;
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
   message.action = action;
+  message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
+  return message;
+}
+
+- (MDCSnackbarMessage*)addBookmarks:(NSArray<URLWithTitle*>*)URLs
+                           toFolder:(const BookmarkNode*)folder {
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
+
+  BookmarkModel* bookmarkModel =
+      ios::BookmarkModelFactory::GetForBrowserState(self.browserState);
+
+  for (URLWithTitle* urlWithTitle in URLs) {
+    base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
+    bookmarkModel->AddURL(folder, folder->children().size(),
+                          base::SysNSStringToUTF16(urlWithTitle.title),
+                          urlWithTitle.URL);
+  }
+
+  NSString* folderTitle = bookmark_utils_ios::TitleForBookmarkNode(folder);
+  NSString* text =
+      folderTitle && [folderTitle length]
+          ? l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER,
+                                    base::SysNSStringToUTF16(folderTitle))
+          : l10n_util::GetNSString(IDS_IOS_BOOKMARK_PAGE_SAVED);
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+  MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
   message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
   return message;
 }

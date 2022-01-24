@@ -8,10 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/test/aura_test_base.h"
+#include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/compositor/layer.h"
@@ -26,6 +26,10 @@ namespace wm {
 class ShadowControllerTest : public aura::test::AuraTestBase {
  public:
   ShadowControllerTest() {}
+
+  ShadowControllerTest(const ShadowControllerTest&) = delete;
+  ShadowControllerTest& operator=(const ShadowControllerTest&) = delete;
+
   ~ShadowControllerTest() override {}
 
   void SetUp() override {
@@ -54,8 +58,6 @@ class ShadowControllerTest : public aura::test::AuraTestBase {
 
  private:
   std::unique_ptr<ShadowController> shadow_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShadowControllerTest);
 };
 
 // Tests that various methods in Window update the Shadow object as expected.
@@ -113,6 +115,30 @@ TEST_F(ShadowControllerTest, ShadowBounds) {
   window->SetBounds(kNewBounds);
   EXPECT_EQ(gfx::Rect(kNewBounds.size()).ToString(),
             shadow->content_bounds().ToString());
+}
+
+// Tests that the window's shadow's bounds are not updated if not following
+// the window bounds.
+TEST_F(ShadowControllerTest, ShadowBoundsDetached) {
+  const gfx::Rect kInitialBounds(20, 30, 400, 300);
+  std::unique_ptr<aura::Window> window(
+      aura::test::CreateTestWindowWithBounds(kInitialBounds, root_window()));
+  window->Show();
+  const ui::Shadow* shadow = ShadowController::GetShadowForWindow(window.get());
+  ASSERT_TRUE(shadow);
+  EXPECT_EQ(gfx::Rect(kInitialBounds.size()), shadow->content_bounds());
+
+  // When we change the window's bounds, the shadow's should be updated too.
+  const gfx::Rect kBounds1(30, 40, 100, 200);
+  window->SetBounds(kBounds1);
+  EXPECT_EQ(gfx::Rect(kBounds1.size()), shadow->content_bounds());
+
+  // Once |kUseWindowBoundsForShadow| is false, the shadow's bounds should no
+  // longer follow the window bounds.
+  window->SetProperty(aura::client::kUseWindowBoundsForShadow, false);
+  gfx::Rect kBounds2(50, 60, 500, 400);
+  window->SetBounds(kBounds2);
+  EXPECT_EQ(gfx::Rect(kBounds1.size()), shadow->content_bounds());
 }
 
 // Tests that activating a window changes the shadow style.
@@ -233,14 +259,16 @@ namespace {
 class TestShadowControllerDelegate : public wm::ShadowControllerDelegate {
  public:
   TestShadowControllerDelegate() {}
+
+  TestShadowControllerDelegate(const TestShadowControllerDelegate&) = delete;
+  TestShadowControllerDelegate& operator=(const TestShadowControllerDelegate&) =
+      delete;
+
   ~TestShadowControllerDelegate() override {}
 
   bool ShouldShowShadowForWindow(const aura::Window* window) override {
     return window->parent();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestShadowControllerDelegate);
 };
 
 }  // namespace

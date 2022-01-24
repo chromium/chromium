@@ -19,7 +19,7 @@ import androidx.browser.trusted.TrustedWebActivityCallback;
 import org.chromium.base.Log;
 import org.chromium.mojo_base.mojom.TimeDelta;
 import org.chromium.payments.mojom.BillingResponseCode;
-import org.chromium.payments.mojom.DigitalGoods.ListPurchasesResponse;
+import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
 import org.chromium.payments.mojom.PurchaseDetails;
 import org.chromium.payments.mojom.PurchaseState;
 
@@ -51,7 +51,7 @@ class ListPurchasesConverter {
      * Produces a {@link TrustedWebActivityCallback} that calls the given
      * {@link ListPurchasesResponse}.
      */
-    static TrustedWebActivityCallback convertCallback(ListPurchasesResponse callback) {
+    static TrustedWebActivityCallback convertCallback(ListPurchases_Response callback) {
         return new TrustedWebActivityCallback() {
             @Override
             public void onExtraCallback(@NonNull String callbackName, @Nullable Bundle args) {
@@ -121,11 +121,11 @@ class ListPurchasesConverter {
         }
     }
 
-    static void returnClientAppUnavailable(ListPurchasesResponse callback) {
+    static void returnClientAppUnavailable(ListPurchases_Response callback) {
         callback.call(BillingResponseCode.CLIENT_APP_UNAVAILABLE, new PurchaseDetails[0]);
     }
 
-    static void returnClientAppError(ListPurchasesResponse callback) {
+    static void returnClientAppError(ListPurchases_Response callback) {
         callback.call(BillingResponseCode.CLIENT_APP_ERROR, new PurchaseDetails[0]);
     }
 

@@ -15,7 +15,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/widget/widget.h"
@@ -74,6 +74,10 @@ class TestImeControllerObserver : public ImeControllerImpl::Observer {
  public:
   TestImeControllerObserver() = default;
 
+  TestImeControllerObserver(const TestImeControllerObserver&) = delete;
+  TestImeControllerObserver& operator=(const TestImeControllerObserver&) =
+      delete;
+
   // IMEController::Observer:
   void OnCapsLockChanged(bool enabled) override { ++caps_lock_count_; }
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override {
@@ -87,8 +91,6 @@ class TestImeControllerObserver : public ImeControllerImpl::Observer {
  private:
   int caps_lock_count_ = 0;
   std::string last_keyboard_layout_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestImeControllerObserver);
 };
 
 using ImeControllerImplTest = AshTestBase;
@@ -247,7 +249,7 @@ TEST_F(ImeControllerImplTest, SwitchImeWithAccelerator) {
   EXPECT_FALSE(controller->CanSwitchImeWithAccelerator(wide_half_2));
 
   // Install both a test IME and Japanese IMEs.
-  using chromeos::extension_ime_util::GetInputMethodIDByEngineID;
+  using extension_ime_util::GetInputMethodIDByEngineID;
   const std::string nacl_mozc_jp = GetInputMethodIDByEngineID("nacl_mozc_jp");
   const std::string xkb_jp_jpn = GetInputMethodIDByEngineID("xkb:jp::jpn");
   RefreshImes("ime1", {"ime1", nacl_mozc_jp, xkb_jp_jpn});
@@ -368,7 +370,7 @@ TEST_F(ImeControllerImplTest, ShowModeIndicator) {
 }
 
 TEST_F(ImeControllerImplTest, MirroringChanged) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
   // The controller is already an observer of the display_manager
   ImeControllerImpl* controller = Shell::Get()->ime_controller();
   TestImeControllerClient client;
@@ -379,11 +381,26 @@ TEST_F(ImeControllerImplTest, MirroringChanged) {
   display_manager->UpdateDisplays();
   EXPECT_TRUE(client.is_mirroring_);
 
-  UpdateDisplay("500x500");
+  UpdateDisplay("600x500");
   EXPECT_FALSE(client.is_mirroring_);
 
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
   EXPECT_TRUE(client.is_mirroring_);
+}
+
+TEST_F(ImeControllerImplTest, MeetMirroringChanged) {
+  ImeControllerImpl* controller = Shell::Get()->ime_controller();
+  TestImeControllerClient client;
+  controller->SetClient(&client);
+
+  EXPECT_FALSE(client.is_casting_);
+
+  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
+      base::DoNothing(), base::DoNothing(), u"");
+  EXPECT_TRUE(client.is_casting_);
+
+  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStop();
+  EXPECT_FALSE(client.is_casting_);
 }
 
 }  // namespace

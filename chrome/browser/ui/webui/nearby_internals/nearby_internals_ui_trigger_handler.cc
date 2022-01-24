@@ -243,57 +243,57 @@ NearbyInternalsUiTriggerHandler::NearbyInternalsUiTriggerHandler(
 NearbyInternalsUiTriggerHandler::~NearbyInternalsUiTriggerHandler() = default;
 
 void NearbyInternalsUiTriggerHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializeUiTrigger",
       base::BindRepeating(&NearbyInternalsUiTriggerHandler::InitializeContents,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "sendText",
       base::BindRepeating(&NearbyInternalsUiTriggerHandler::SendText,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "accept", base::BindRepeating(&NearbyInternalsUiTriggerHandler::Accept,
                                     base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "reject", base::BindRepeating(&NearbyInternalsUiTriggerHandler::Reject,
                                     base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "cancel", base::BindRepeating(&NearbyInternalsUiTriggerHandler::Cancel,
                                     base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "open", base::BindRepeating(&NearbyInternalsUiTriggerHandler::Open,
                                   base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "registerSendSurfaceForeground",
       base::BindRepeating(
           &NearbyInternalsUiTriggerHandler::RegisterSendSurfaceForeground,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "registerSendSurfaceBackground",
       base::BindRepeating(
           &NearbyInternalsUiTriggerHandler::RegisterSendSurfaceBackground,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "unregisterSendSurface",
       base::BindRepeating(
           &NearbyInternalsUiTriggerHandler::UnregisterSendSurface,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "registerReceiveSurfaceForeground",
       base::BindRepeating(
           &NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceForeground,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "registerReceiveSurfaceBackground",
       base::BindRepeating(
           &NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceBackground,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "unregisterReceiveSurface",
       base::BindRepeating(
           &NearbyInternalsUiTriggerHandler::UnregisterReceiveSurface,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getStates",
       base::BindRepeating(&NearbyInternalsUiTriggerHandler::GetState,
                           base::Unretained(this)));

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--
+This file cannot be upstreamed to WPT until:
+* Cross-origin subframe navigation is aligned with the spec. Currently the test
+  expects the navigation to be deferred until prerendering activation. Also
+  document.prerendering state is unexpectedly unstable on resuming navigation.
+  (https://crbug.com/1222547)
+* `unload` event handling matches what the specification expects. The current
+  specification expects that the unload event handler is never fired, and the
+  test passes whether or not it is fired.
+* `pageshow` and `pagehide` behaviors during prerendering is clearly defined
+  in the specification. This test just checks current behaviors.
+  (https://crbug.com/1222551)
+-->
+<title>unload event handlers</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/unload-utils.js"></script>
+<script>
+promise_test(async t => {
+  const gotMessages = waitChannelMessage('Done');
+  const url =
+      'resources/unload-on-prerender-cross-origin-subframe-navigation.html';
+  window.open(url, '_blank', 'noopener');
+  const result = await gotMessages;
+
+  const expected = [
+    'load start',
+    'load prerendering',
+    'load same-origin-frame',
+    'request activation',
+    'visibilitychange same-origin-frame in prerendering',
+    'pagehide same-origin-frame',
+    'visibilitychange same-origin-frame',
+    'unload same-origin-frame',
+    'load cross-origin-frame',
+    'Done',
+  ];
+  assert_array_equals(result, expected, 'gotMessages');
+}, 'unload after activation on cross origin subframe navigation');
+</script>

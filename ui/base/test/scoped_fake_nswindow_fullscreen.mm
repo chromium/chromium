@@ -11,7 +11,6 @@
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_nsobject.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -41,6 +40,9 @@ class ScopedFakeNSWindowFullscreen::Impl {
         set_style_mask_swizzler_([NSWindow class],
                                  [ToggleFullscreenDonorForWindow class],
                                  @selector(setStyleMask:)) {}
+
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
 
   ~Impl() {
     // If there's a pending transition, it means there's a task in the queue to
@@ -186,8 +188,6 @@ class ScopedFakeNSWindowFullscreen::Impl {
   // NSFullScreenWindowMask in the swizzled styleMask so that client code can
   // read it.
   bool style_as_fullscreen_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 ScopedFakeNSWindowFullscreen::ScopedFakeNSWindowFullscreen() {

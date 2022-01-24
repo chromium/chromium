@@ -98,17 +98,18 @@ class NavigationData
   bool is_allowed_by_login_state_ = false;
 };
 
-NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationData)
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationData);
 
 }  // namespace
 
 ImageCompressionAppliedDocument::ImageCompressionAppliedDocument(
     content::RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host) {}
+    : content::DocumentUserData<ImageCompressionAppliedDocument>(
+          render_frame_host) {}
 
 ImageCompressionAppliedDocument::~ImageCompressionAppliedDocument() = default;
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(ImageCompressionAppliedDocument)
+DOCUMENT_USER_DATA_KEY_IMPL(ImageCompressionAppliedDocument);
 
 // static
 ImageCompressionAppliedDocument::State
@@ -167,9 +168,8 @@ bool SubresourceRedirectObserver::IsHttpsImageCompressionApplied(
 SubresourceRedirectObserver::SubresourceRedirectObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      receivers_(web_contents,
-                 this,
-                 content::WebContentsFrameReceiverSetPassKey()) {
+      content::WebContentsUserData<SubresourceRedirectObserver>(*web_contents),
+      receivers_(web_contents, this) {
   DCHECK(ShouldEnablePublicImageHintsBasedCompression() ||
          ShouldEnableRobotsRulesFetching());
   if (ShouldEnablePublicImageHintsBasedCompression()) {
@@ -215,6 +215,18 @@ void SubresourceRedirectObserver::ReadyToCommitNavigation(
   NavigationData::SetIsAllowedByLoginState(*navigation_handle,
                                            is_allowed_by_login_state);
   hints_receiver->SetLoggedInState(!is_allowed_by_login_state);
+}
+
+void SubresourceRedirectObserver::BindSubresourceRedirectService(
+    mojo::PendingAssociatedReceiver<mojom::SubresourceRedirectService> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper = SubresourceRedirectObserver::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->receivers_.Bind(rfh, std::move(receiver));
 }
 
 void SubresourceRedirectObserver::DidFinishNavigation(
@@ -380,6 +392,6 @@ bool SubresourceRedirectObserver::IsAllowedForCurrentLoginState(
   return true;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SubresourceRedirectObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SubresourceRedirectObserver);
 
 }  // namespace subresource_redirect

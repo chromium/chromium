@@ -19,7 +19,7 @@ void V8PromiseRejectionEvent::PromiseAttributeGetterCustom(
   v8::Isolate* isolate = info.GetIsolate();
 
   // This attribute returns a Promise.
-  // Per https://heycam.github.io/webidl/#dfn-attribute-getter, all exceptions
+  // Per https://webidl.spec.whatwg.org/#dfn-attribute-getter, all exceptions
   // must be turned into a Promise rejection. Returning a Promise type requires
   // us to disable some of V8's type checks, so we have to manually check that
   // info.Holder() really points to an instance of the type.

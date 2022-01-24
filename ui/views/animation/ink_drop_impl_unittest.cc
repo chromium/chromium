@@ -7,7 +7,6 @@
 #include "ui/views/animation/ink_drop_impl.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -29,6 +28,10 @@ class InkDropImplTest : public testing::Test {
  public:
   explicit InkDropImplTest(InkDropImpl::AutoHighlightMode auto_highlight_mode =
                                InkDropImpl::AutoHighlightMode::NONE);
+
+  InkDropImplTest(const InkDropImplTest&) = delete;
+  InkDropImplTest& operator=(const InkDropImplTest&) = delete;
+
   ~InkDropImplTest() override;
 
  protected:
@@ -78,8 +81,6 @@ class InkDropImplTest : public testing::Test {
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropImplTest);
 };
 
 InkDropImplTest::InkDropImplTest(
@@ -113,10 +114,12 @@ class InkDropImplAutoHighlightTest
           testing::tuple<InkDropImpl::AutoHighlightMode>> {
  public:
   InkDropImplAutoHighlightTest();
-  ~InkDropImplAutoHighlightTest() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(InkDropImplAutoHighlightTest);
+  InkDropImplAutoHighlightTest(const InkDropImplAutoHighlightTest&) = delete;
+  InkDropImplAutoHighlightTest& operator=(const InkDropImplAutoHighlightTest&) =
+      delete;
+
+  ~InkDropImplAutoHighlightTest() override;
 };
 
 InkDropImplAutoHighlightTest::InkDropImplAutoHighlightTest()

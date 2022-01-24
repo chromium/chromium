@@ -19,6 +19,9 @@ class AssistantHeaderDelegate {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller);
 
+  void OnTtsButtonClicked(JNIEnv* env,
+                          const base::android::JavaParamRef<jobject>& jcaller);
+
   base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const;
 
  private:

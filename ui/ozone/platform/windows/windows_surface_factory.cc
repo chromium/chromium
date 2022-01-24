@@ -7,13 +7,12 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "ui/gfx/codec/png_codec.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/vsync_provider_win.h"
@@ -29,6 +28,10 @@ namespace {
 class GLOzoneEGLWindows : public GLOzoneEGL {
  public:
   GLOzoneEGLWindows() = default;
+
+  GLOzoneEGLWindows(const GLOzoneEGLWindows&) = delete;
+  GLOzoneEGLWindows& operator=(const GLOzoneEGLWindows&) = delete;
+
   ~GLOzoneEGLWindows() override = default;
 
   // GLOzone:
@@ -54,9 +57,6 @@ class GLOzoneEGLWindows : public GLOzoneEGL {
       const gl::GLImplementationParts& implementation) override {
     return LoadDefaultEGLGLES2Bindings(implementation);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGLWindows);
 };
 
 }  // namespace

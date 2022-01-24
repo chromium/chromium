@@ -1,6 +1,0 @@
-per-file OWNERS=file://tools/metrics/histograms/histograms_xml/METRIC_REVIEWER_OWNERS
-
-# Use either chromium-metrics-reviews@google.com or the below owners.
-csharrison@chromium.org
-dschinazi@chromium.org
-toyoshim@chromium.org

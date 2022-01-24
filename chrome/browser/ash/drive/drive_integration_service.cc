@@ -9,19 +9,19 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/drivefs/drivefs_bootstrap.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -38,7 +38,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/drive_notification_manager.h"
@@ -56,7 +55,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/user_agent.h"
-#include "google_apis/drive/auth_service.h"
+#include "google_apis/common/auth_service.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -321,6 +320,29 @@ void UmaEmitFirstLaunch(const base::TimeTicks& time_started) {
                              base::TimeTicks::Now() - time_started);
 }
 
+// Clears the cache folder at |cache_path|, but preserve |logs_path|.
+// |logs_path| should be a descendent of |cache_path|.
+bool ClearCache(base::FilePath cache_path, base::FilePath logs_path) {
+  DCHECK(cache_path.IsParent(logs_path));
+  bool success = true;
+  base::FileEnumerator content_enumerator(
+      cache_path, false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
+          base::FileEnumerator::SHOW_SYM_LINKS);
+  for (base::FilePath path = content_enumerator.Next(); !path.empty();
+       path = content_enumerator.Next()) {
+    // Keep the logs folder as it's useful for debugging.
+    if (path == logs_path) {
+      continue;
+    }
+    if (!base::DeletePathRecursively(path)) {
+      success = false;
+      break;
+    }
+  }
+  return success;
+}
+
 }  // namespace
 
 // Observes drive disable Preference's change.
@@ -341,6 +363,9 @@ class DriveIntegrationService::PreferenceWatcher
         base::BindRepeating(&PreferenceWatcher::UpdateSyncPauseState,
                             weak_ptr_factory_.GetWeakPtr()));
   }
+
+  PreferenceWatcher(const PreferenceWatcher&) = delete;
+  PreferenceWatcher& operator=(const PreferenceWatcher&) = delete;
 
   ~PreferenceWatcher() override {
     if (integration_service_) {
@@ -397,7 +422,7 @@ class DriveIntegrationService::PreferenceWatcher
           base::BindOnce(&DriveIntegrationService::PreferenceWatcher::
                              AddNetworkPortalDetectorObserver,
                          weak_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromSeconds(5));
+          base::Seconds(5));
     }
   }
 
@@ -435,7 +460,6 @@ class DriveIntegrationService::PreferenceWatcher
       chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN;
 
   base::WeakPtrFactory<PreferenceWatcher> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PreferenceWatcher);
 };
 
 class DriveIntegrationService::DriveFsHolder
@@ -456,6 +480,9 @@ class DriveIntegrationService::DriveFsHolder
                       base::DefaultClock::GetInstance(),
                       chromeos::disks::DiskMountManager::GetInstance(),
                       std::make_unique<base::OneShotTimer>()) {}
+
+  DriveFsHolder(const DriveFsHolder&) = delete;
+  DriveFsHolder& operator=(const DriveFsHolder&) = delete;
 
   drivefs::DriveFsHost* drivefs_host() { return &drivefs_host_; }
 
@@ -556,8 +583,6 @@ class DriveIntegrationService::DriveFsHolder
   drivefs::DriveFsHost drivefs_host_;
 
   std::string profile_salt_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsHolder);
 };
 
 DriveIntegrationService::DriveIntegrationService(
@@ -613,6 +638,9 @@ void DriveIntegrationService::Shutdown() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   RemoveDriveMountPoint();
+
+  for (auto& observer : observers_)
+    observer.OnDriveIntegrationServiceDestroyed();
 }
 
 void DriveIntegrationService::SetEnabled(bool enabled) {
@@ -718,42 +746,35 @@ void DriveIntegrationService::ClearCacheAndRemountFileSystem(
   }
   in_clear_cache_ = true;
 
+  base::TimeDelta delay;
   if (IsMounted()) {
     RemoveDriveMountPoint();
     // TODO(crbug/1069328): We wait 2 seconds here so that DriveFS can unmount
     // completely. Ideally we'd wait for an unmount complete callback.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&DriveIntegrationService::
-                           ClearCacheAndRemountFileSystemAfterUnmount,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::TimeDelta::FromSeconds(2));
-  } else {
-    ClearCacheAndRemountFileSystemAfterUnmount(std::move(callback));
+    delay = base::Seconds(2);
   }
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &DriveIntegrationService::ClearCacheAndRemountFileSystemAfterDelay,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      delay);
 }
 
-void DriveIntegrationService::ClearCacheAndRemountFileSystemAfterUnmount(
+void DriveIntegrationService::ClearCacheAndRemountFileSystemAfterDelay(
     base::OnceCallback<void(bool)> callback) {
-  bool success = true;
-  base::FilePath cache_path = GetDriveFsHost()->GetDataPath();
-  base::FilePath logs_path = GetDriveFsLogPath().DirName();
-  base::FileEnumerator content_enumerator(
-      cache_path, false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
-          base::FileEnumerator::SHOW_SYM_LINKS);
-  for (base::FilePath path = content_enumerator.Next(); !path.empty();
-       path = content_enumerator.Next()) {
-    // Keep the logs folder as it's useful for debugging.
-    if (path == logs_path) {
-      continue;
-    }
-    if (!base::DeletePathRecursively(path)) {
-      success = false;
-      break;
-    }
-  }
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ClearCache, GetDriveFsHost()->GetDataPath(),
+                     GetDriveFsLogPath().DirName()),
+      base::BindOnce(
+          &DriveIntegrationService::MaybeRemountFileSystemAfterClearCache,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 
+void DriveIntegrationService::MaybeRemountFileSystemAfterClearCache(
+    base::OnceCallback<void(bool)> callback,
+    bool success) {
   if (is_enabled()) {
     AddDriveMountPoint();
   }
@@ -903,8 +924,8 @@ void DriveIntegrationService::MaybeRemountFileSystem(
         observer.OnFileSystemMountFailed();
       return;
     }
-    remount_delay = base::TimeDelta::FromSeconds(
-        5 * (1 << (drivefs_consecutive_failures_count_ - 1)));
+    remount_delay =
+        base::Seconds(5 * (1 << (drivefs_consecutive_failures_count_ - 1)));
     logger_->Log(logging::LOG_WARNING, "DriveFs died, retry in %d seconds",
                  static_cast<int>(remount_delay.value().InSeconds()));
   }
@@ -1144,6 +1165,18 @@ void DriveIntegrationService::LocateFilesByItemIds(
     return;
   }
   GetDriveFsInterface()->LocateFilesByItemIds(item_ids, std::move(callback));
+}
+
+void DriveIntegrationService::GetQuotaUsage(
+    drivefs::mojom::DriveFs::GetQuotaUsageCallback callback) {
+  if (!IsMounted() || !GetDriveFsInterface()) {
+    std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr);
+    return;
+  }
+
+  GetDriveFsInterface()->GetQuotaUsage(
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback), drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr));
 }
 
 void DriveIntegrationService::RestartDrive() {

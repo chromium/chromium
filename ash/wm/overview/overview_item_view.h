@@ -5,9 +5,9 @@
 #ifndef ASH_WM_OVERVIEW_OVERVIEW_ITEM_VIEW_H_
 #define ASH_WM_OVERVIEW_OVERVIEW_ITEM_VIEW_H_
 
-#include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/window_mini_view.h"
-#include "base/macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace aura {
@@ -23,10 +23,11 @@ namespace ash {
 class OverviewItem;
 
 // OverviewItemView covers the overview window and listens for events.
-class ASH_EXPORT OverviewItemView
-    : public WindowMiniView,
-      public OverviewHighlightController::OverviewHighlightableView {
+class ASH_EXPORT OverviewItemView : public WindowMiniView,
+                                    public OverviewHighlightableView {
  public:
+  METADATA_HEADER(OverviewItemView);
+
   // The visibility of the header. It may be fully visible or invisible, or
   // everything but the close button is visible.
   enum class HeaderVisibility {
@@ -41,6 +42,10 @@ class ASH_EXPORT OverviewItemView
                    views::Button::PressedCallback close_callback,
                    aura::Window* window,
                    bool show_preview);
+
+  OverviewItemView(const OverviewItemView&) = delete;
+  OverviewItemView& operator=(const OverviewItemView&) = delete;
+
   ~OverviewItemView() override;
 
   // Fades the app icon and title out if |visibility| is kInvisible, in
@@ -67,7 +72,7 @@ class ASH_EXPORT OverviewItemView
   gfx::Rect GetHeaderBounds() const override;
   gfx::Size GetPreviewViewSize() const override;
 
-  // OverviewHighlightController::OverviewHighlightableView:
+  // OverviewHighlightableView:
   views::View* GetView() override;
   void MaybeActivateHighlightedView() override;
   void MaybeCloseHighlightedView() override;
@@ -82,7 +87,6 @@ class ASH_EXPORT OverviewItemView
 
  protected:
   // views::View:
-  const char* GetClassName() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -98,8 +102,6 @@ class ASH_EXPORT OverviewItemView
   views::ImageButton* close_button_;
 
   HeaderVisibility current_header_visibility_ = HeaderVisibility::kVisible;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewItemView);
 };
 
 }  // namespace ash

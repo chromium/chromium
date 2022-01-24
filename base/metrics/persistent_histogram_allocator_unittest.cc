@@ -17,6 +17,12 @@
 namespace base {
 
 class PersistentHistogramAllocatorTest : public testing::Test {
+ public:
+  PersistentHistogramAllocatorTest(const PersistentHistogramAllocatorTest&) =
+      delete;
+  PersistentHistogramAllocatorTest& operator=(
+      const PersistentHistogramAllocatorTest&) = delete;
+
  protected:
   const int32_t kAllocatorMemorySize = 64 << 10;  // 64 KiB
 
@@ -47,9 +53,6 @@ class PersistentHistogramAllocatorTest : public testing::Test {
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
   std::unique_ptr<char[]> allocator_memory_;
   PersistentMemoryAllocator* allocator_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PersistentHistogramAllocatorTest);
 };
 
 TEST_F(PersistentHistogramAllocatorTest, CreateAndIterate) {

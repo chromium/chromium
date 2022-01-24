@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.device_dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
@@ -115,15 +116,14 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
         SpannableString statusIdleNoneFound = new SpannableString("statusIdleNoneFound");
         SpannableString statusIdleSomeFound = new SpannableString("statusIdleSomeFound");
         String positiveButton = new String("positiveButton");
-        final ItemChooserDialog.ItemChooserLabels labels =
+        ItemChooserDialog.ItemChooserLabels labels =
                 new ItemChooserDialog.ItemChooserLabels(title, searching, noneFound, statusActive,
                         statusIdleNoneFound, statusIdleSomeFound, positiveButton);
-        ItemChooserDialog dialog = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            ItemChooserDialog dialog1 = new ItemChooserDialog(
-                    sActivityTestRule.getActivity(), ItemChooserDialogTest.this, labels);
-            return dialog1;
+        Activity activity = sActivityTestRule.getActivity();
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new ItemChooserDialog(
+                    activity, activity.getWindow(), ItemChooserDialogTest.this, labels);
         });
-        return dialog;
     }
 
     private void selectItem(Dialog dialog, int position, String expectedItemId,

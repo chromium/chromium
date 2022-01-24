@@ -154,21 +154,22 @@ static_library("utility") {
       deps += [ "//chrome/services/util_win:lib" ]
     }
 
-    if (is_win || is_mac) {
+    if (is_win || is_mac || is_fuchsia) {
       deps += [ "//components/wifi" ]
     }
   }
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/services/ime:lib",
+      "//ash/services/ime/public/mojom",
+      "//ash/services/quick_pair",
       "//ash/services/recording",
       "//chrome/services/file_util",
       "//chrome/services/sharing",
       "//chromeos/assistant:buildflags",
       "//chromeos/components/local_search_service:local_search_service",
       "//chromeos/components/local_search_service/public/mojom",
-      "//chromeos/services/ime:lib",
-      "//chromeos/services/ime/public/mojom",
       "//chromeos/services/nearby/public/mojom:mojom",
       "//chromeos/services/tts",
       "//chromeos/services/tts/public/mojom",
@@ -220,6 +221,7 @@ static_library("utility") {
         "printing_handler.h",
       ]
       public_deps += [ "//chrome/common:cloud_print_utility_mojom" ]
+      deps += [ "//printing/backend" ]
     }
   }
 

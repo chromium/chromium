@@ -239,6 +239,7 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     sources = [
       "libdav1d/src/x86/cpu.c",
       "libdav1d/src/x86/cpu.h",
+      "libdav1d/src/x86/refmvs_init.c",
     ]
 
     # x86/msac.h redefines macros in msac.h if x86/msac.h is included and
@@ -262,6 +263,7 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     sources = [
       "libdav1d/src/arm/cpu.c",
       "libdav1d/src/arm/cpu.h",
+      "libdav1d/src/arm/refmvs_init.c",
     ]
 
     # These are not template based so should only be built once.

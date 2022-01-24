@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
@@ -49,6 +48,10 @@ class ArcNetHostImpl : public KeyedService,
   // The constructor will register an Observer with ArcBridgeService.
   ArcNetHostImpl(content::BrowserContext* context,
                  ArcBridgeService* arc_bridge_service);
+
+  ArcNetHostImpl(const ArcNetHostImpl&) = delete;
+  ArcNetHostImpl& operator=(const ArcNetHostImpl&) = delete;
+
   ~ArcNetHostImpl() override;
 
   void SetPrefService(PrefService* pref_service);
@@ -80,6 +83,11 @@ class ArcNetHostImpl : public KeyedService,
   void AndroidVpnConnected(mojom::AndroidVpnConfigurationPtr cfg) override;
 
   void AndroidVpnStateChanged(mojom::ConnectionStateType state) override;
+
+  void AddPasspointCredentials(
+      mojom::PasspointCredentialsPtr credentials) override;
+
+  void RemovePasspointCredentials(const std::string& package_name) override;
 
   void SetAlwaysOnVpn(const std::string& vpnPackage, bool lockdown) override;
 
@@ -169,8 +177,6 @@ class ArcNetHostImpl : public KeyedService,
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ArcNetHostImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNetHostImpl);
 };
 
 }  // namespace arc

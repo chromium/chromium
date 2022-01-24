@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/extension_install_prompt.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_install_prompt_test_helper.h"

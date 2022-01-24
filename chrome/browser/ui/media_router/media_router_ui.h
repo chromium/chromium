@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -29,7 +29,9 @@
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/media_source.h"
-#include "url/gurl.h"
+#include "url/origin.h"
+
+class GURL;
 
 namespace content {
 struct PresentationRequest;
@@ -56,6 +58,10 @@ class MediaRouterUI
       public MediaRouterFileDialog::MediaRouterFileDialogDelegate {
  public:
   explicit MediaRouterUI(content::WebContents* initiator);
+
+  MediaRouterUI(const MediaRouterUI&) = delete;
+  MediaRouterUI& operator=(const MediaRouterUI&) = delete;
+
   ~MediaRouterUI() override;
 
   // CastDialogController:
@@ -135,7 +141,7 @@ class MediaRouterUI
 
  private:
   friend class MediaRouterViewsUITest;
-  friend class MediaRouterUiForTest;
+  friend class MediaRouterCastUiForTest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, SetDialogHeader);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest,
                            UpdateSinksWhenDialogMovesToAnotherDisplay);
@@ -176,6 +182,10 @@ class MediaRouterUI
   class UiIssuesObserver : public IssuesObserver {
    public:
     UiIssuesObserver(IssueManager* issue_manager, MediaRouterUI* ui);
+
+    UiIssuesObserver(const UiIssuesObserver&) = delete;
+    UiIssuesObserver& operator=(const UiIssuesObserver&) = delete;
+
     ~UiIssuesObserver() override;
 
     // IssuesObserver:
@@ -185,8 +195,6 @@ class MediaRouterUI
    private:
     // Reference back to the owning MediaRouterUI instance.
     MediaRouterUI* const ui_;
-
-    DISALLOW_COPY_AND_ASSIGN(UiIssuesObserver);
   };
 
   class UIMediaRoutesObserver : public MediaRoutesObserver {
@@ -197,6 +205,10 @@ class MediaRouterUI
     UIMediaRoutesObserver(MediaRouter* router,
                           const MediaSource::Id& source_id,
                           const RoutesUpdatedCallback& callback);
+
+    UIMediaRoutesObserver(const UIMediaRoutesObserver&) = delete;
+    UIMediaRoutesObserver& operator=(const UIMediaRoutesObserver&) = delete;
+
     ~UIMediaRoutesObserver() override;
 
     // MediaRoutesObserver:
@@ -207,8 +219,6 @@ class MediaRouterUI
    private:
     // Callback to the owning MediaRouterUI instance.
     RoutesUpdatedCallback callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(UIMediaRoutesObserver);
   };
 
   std::vector<MediaSource> GetSourcesForCastMode(MediaCastMode cast_mode) const;
@@ -237,9 +247,9 @@ class MediaRouterUI
       const MediaSink::Id& sink_id,
       MediaCastMode cast_mode);
 
-  // Returns the default PresentationRequest's frame URL if there is one.
-  // Otherwise returns an empty GURL.
-  GURL GetFrameURL() const;
+  // Returns the default PresentationRequest's frame origin if there is one.
+  // Otherwise returns an opaque origin.
+  url::Origin GetFrameOrigin() const;
 
   // Creates and sends an issue if route creation timed out.
   void SendIssueForRouteTimeout(
@@ -422,8 +432,6 @@ class MediaRouterUI
   // NOTE: Weak pointers must be invalidated before all other member variables.
   // Therefore |weak_factory_| must be placed at the end.
   base::WeakPtrFactory<MediaRouterUI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterUI);
 };
 
 }  // namespace media_router

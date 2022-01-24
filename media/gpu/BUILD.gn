@@ -20,6 +20,7 @@ buildflag_header("buildflags") {
     "USE_VAAPI_IMAGE_CODECS=$use_vaapi_image_codecs",
     "USE_V4L2_CODEC=$use_v4l2_codec",
     "USE_LIBV4L2=$use_v4lplugin",
+    "USE_VAAPI_X11=$use_vaapi_x11",
   ]
 }
 
@@ -184,6 +185,7 @@ component("gpu") {
       "windows/d3d11_h264_accelerator.h",
       "windows/d3d11_picture_buffer.cc",
       "windows/d3d11_picture_buffer.h",
+      "windows/d3d11_status.h",
       "windows/d3d11_texture_selector.cc",
       "windows/d3d11_texture_selector.h",
       "windows/d3d11_texture_wrapper.cc",
@@ -215,11 +217,7 @@ component("gpu") {
       "windows/supported_profile_helpers.cc",
       "windows/supported_profile_helpers.h",
     ]
-    configs += [
-      # TODO(https://crbug.com/167187): Fix size_t to int truncations.
-      "//build/config/compiler:no_size_t_to_int_warning",
-      "//third_party/khronos:khronos_headers",
-    ]
+    configs += [ "//third_party/khronos:khronos_headers" ]
     public_deps += [ "//media/base/win:media_foundation_util" ]
     deps += [
       "//gpu/ipc/common:common",
@@ -276,7 +274,7 @@ source_set("common") {
     "vp9_reference_frame_vector.h",
   ]
 
-  if (proprietary_codecs && enable_platform_hevc) {
+  if (enable_platform_hevc_decoding) {
     sources += [
       "h265_decoder.cc",
       "h265_decoder.h",
@@ -487,7 +485,7 @@ source_set("unit_tests") {
     "//ui/gl:test_support",
   ]
   sources = [ "h264_decoder_unittest.cc" ]
-  if (proprietary_codecs && enable_platform_hevc) {
+  if (enable_platform_hevc_decoding) {
     sources += [ "h265_decoder_unittest.cc" ]
   }
   if (is_chromeos_ash && (use_v4l2_codec || use_vaapi)) {
@@ -604,7 +602,7 @@ if (use_v4l2_codec || use_vaapi) {
   }
 }
 
-if (proprietary_codecs && enable_platform_hevc) {
+if (enable_platform_hevc_decoding) {
   fuzzer_test("media_h265_decoder_fuzzer") {
     sources = [ "h265_decoder_fuzzertest.cc" ]
     deps = [

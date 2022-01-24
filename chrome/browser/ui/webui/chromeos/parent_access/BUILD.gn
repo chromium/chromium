@@ -1,0 +1,14 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [ "parent_access_callback.proto" ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "parent_access_ui.mojom" ]
+}

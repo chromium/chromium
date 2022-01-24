@@ -30,7 +30,6 @@ const char kHttpUrl[] = "http://foo.test/";
 const char kLocalhostUrl[] = "http://localhost";
 const char kFileOrigin[] = "file://example_file";
 const char kWssUrl[] = "wss://foo.test/";
-const char kFtpUrl[] = "ftp://example.test/";
 const char kDataUrl[] = "data:text/html,<html>test</html>";
 
 // This list doesn't include data: URL, as data: URLs will be explicitly marked
@@ -235,13 +234,6 @@ TEST(SecurityStateTest, AlwaysWarnOnDataUrls) {
   EXPECT_EQ(WARNING, helper.GetSecurityLevel());
 }
 
-// Tests that FTP URLs always cause an WARNING to be shown.
-TEST(SecurityStateTest, AlwaysWarnOnFtpUrls) {
-  TestSecurityStateHelper helper;
-  helper.SetUrl(GURL(kFtpUrl));
-  EXPECT_EQ(WARNING, helper.GetSecurityLevel());
-}
-
 // Tests that the security level is downgraded to WARNING on
 // pseudo URLs.
 TEST(SecurityStateTest, WarningOnPseudoUrls) {
@@ -431,9 +423,6 @@ TEST(SecurityStateTest, NonCryptoHasNoCertificateErrors) {
                          net::CERT_STATUS_REVOKED);
 
   helper.SetUrl(GURL(kHttpUrl));
-  EXPECT_FALSE(helper.HasMajorCertificateError());
-
-  helper.SetUrl(GURL(kFtpUrl));
   EXPECT_FALSE(helper.HasMajorCertificateError());
 
   helper.SetUrl(GURL(kDataUrl));

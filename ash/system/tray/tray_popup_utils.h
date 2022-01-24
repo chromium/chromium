@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/ash_export.h"
 #include "ash/login_status.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
@@ -31,7 +32,7 @@ class HoverHighlightView;
 class UnfocusableLabel;
 
 // Factory/utility functions used by the system menu.
-class TrayPopupUtils {
+class ASH_EXPORT TrayPopupUtils {
  public:
   enum class FontStyle {
     // Topmost header rows for default view and detailed view.
@@ -48,6 +49,10 @@ class TrayPopupUtils {
     // devices..." seen in the Bluetooth detailed view, etc).
     kSystemInfo,
   };
+
+  TrayPopupUtils() = delete;
+  TrayPopupUtils(const TrayPopupUtils&) = delete;
+  TrayPopupUtils& operator=(const TrayPopupUtils&) = delete;
 
   // Creates a default container view to be used by system menu rows that are
   // either a single targetable area or not targetable at all. The caller takes
@@ -180,6 +185,11 @@ class TrayPopupUtils {
       views::View* host,
       TrayPopupInkDropStyle ink_drop_style);
 
+  // Create a horizontal separator line to be drawn between rows in a detailed
+  // view above the sub-header rows. Caller assumes ownership of the returned
+  // view.
+  static views::Separator* CreateListSubHeaderSeparator();
+
   // Creates and returns a horizontal separator line to be drawn between rows
   // in a detailed view. If |left_inset| is true, then the separator is inset on
   // the left by the width normally occupied by an icon. Caller assumes
@@ -203,9 +213,6 @@ class TrayPopupUtils {
 
   // Sets the font list for |label| based on |style|.
   static void SetLabelFontList(views::Label* label, FontStyle style);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TrayPopupUtils);
 };
 
 }  // namespace ash

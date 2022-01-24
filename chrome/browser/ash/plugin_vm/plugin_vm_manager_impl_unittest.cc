@@ -60,7 +60,8 @@ class PluginVmManagerImplTest : public testing::Test {
         testing_profile_.get());
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
-        testing_profile_.get(), shelf_model_.get());
+        testing_profile_.get(), shelf_model_.get(),
+        /*shelf_item_factory=*/nullptr);
     chrome_shelf_controller_->SetProfileForTest(testing_profile_.get());
     chrome_shelf_controller_->SetShelfControllerHelperForTest(
         std::make_unique<ShelfControllerHelper>(testing_profile_.get()));
@@ -68,6 +69,9 @@ class PluginVmManagerImplTest : public testing::Test {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     chromeos::DlcserviceClient::InitializeFake();
   }
+
+  PluginVmManagerImplTest(const PluginVmManagerImplTest&) = delete;
+  PluginVmManagerImplTest& operator=(const PluginVmManagerImplTest&) = delete;
 
   ~PluginVmManagerImplTest() override {
     chromeos::DlcserviceClient::Shutdown();
@@ -126,6 +130,14 @@ class PluginVmManagerImplTest : public testing::Test {
     VmPluginDispatcherClient().NotifyVmStateChanged(state_changed_signal);
   }
 
+  void NotifyVmStarted() {
+    vm_tools::concierge::VmStartedSignal signal;
+    signal.set_name(kPluginVmName);
+    signal.set_owner_id(
+        ash::ProfileHelper::GetUserIdHashFromProfile(testing_profile_.get()));
+    ConciergeClient().NotifyVmStarted(signal);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<PluginVmTestHelper> test_helper_;
@@ -134,9 +146,6 @@ class PluginVmManagerImplTest : public testing::Test {
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PluginVmManagerImplTest);
 };
 
 TEST_F(PluginVmManagerImplTest, LaunchPluginVmRequiresPluginVmAllowed) {
@@ -245,6 +254,7 @@ TEST_F(PluginVmManagerImplTest, OnStateChangedRunningStoppedSuspended) {
   EXPECT_TRUE(
       chrome_shelf_controller_->IsOpen(ash::ShelfID(kPluginVmShelfAppId)));
 
+  NotifyVmStarted();
   NotifyVmStateChanged(vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);
   task_environment_.RunUntilIdle();
   EXPECT_GE(ConciergeClient().get_vm_info_call_count(), 1);

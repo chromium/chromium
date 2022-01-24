@@ -86,7 +86,6 @@ constexpr const char kUserActionActivateRemoraRequisition[] =
     "activateRemoraRequisition";
 constexpr const char kUserActionEditDeviceRequisition[] =
     "editDeviceRequisition";
-constexpr const char kUserActionStartOsInstall[] = "startOsInstall";
 
 struct WelcomeScreenA11yUserAction {
   const char* name_;
@@ -166,12 +165,12 @@ std::string WelcomeScreen::GetResultString(Result result) {
   switch (result) {
     case Result::NEXT:
       return "Next";
+    case Result::NEXT_OS_INSTALL:
+      return "StartOsInstall";
     case Result::SETUP_DEMO:
       return "SetupDemo";
     case Result::ENABLE_DEBUGGING:
       return "EnableDebugging";
-    case Result::START_OS_INSTALL:
-      return "StartOsInstall";
   }
 }
 
@@ -267,7 +266,7 @@ void WelcomeScreen::SetInputMethod(const std::string& input_method) {
   const std::vector<std::string>& input_methods =
       input_method::InputMethodManager::Get()
           ->GetActiveIMEState()
-          ->GetActiveInputMethodIds();
+          ->GetEnabledInputMethodIds();
   if (input_method.empty() || !base::Contains(input_methods, input_method)) {
     LOG(WARNING) << "The input method is empty or ineligible!";
     return;
@@ -414,11 +413,6 @@ void WelcomeScreen::OnUserAction(const std::string& action_id) {
     return;
   }
 
-  if (action_id == kUserActionStartOsInstall) {
-    OnStartOsInstall();
-    return;
-  }
-
   if (IsA11yUserAction(action_id)) {
     RecordA11yUserAction(action_id);
     if (action_id == kUserActionEnableSpokenFeedback) {
@@ -515,7 +509,11 @@ void WelcomeScreen::InputMethodChanged(
 
 void WelcomeScreen::OnContinueButtonPressed() {
   demo_mode_detector_.reset();
-  exit_callback_.Run(Result::NEXT);
+
+  if (switches::IsOsInstallAllowed())
+    exit_callback_.Run(Result::NEXT_OS_INSTALL);
+  else
+    exit_callback_.Run(Result::NEXT);
 }
 
 void WelcomeScreen::OnSetupDemoMode() {
@@ -526,11 +524,6 @@ void WelcomeScreen::OnSetupDemoMode() {
 void WelcomeScreen::OnEnableDebugging() {
   demo_mode_detector_.reset();
   exit_callback_.Run(Result::ENABLE_DEBUGGING);
-}
-
-void WelcomeScreen::OnStartOsInstall() {
-  demo_mode_detector_.reset();
-  exit_callback_.Run(Result::START_OS_INSTALL);
 }
 
 void WelcomeScreen::OnLanguageChangedCallback(

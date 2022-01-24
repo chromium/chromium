@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_LANGUAGES_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_LANGUAGES_HANDLER_H_
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
@@ -27,6 +26,10 @@ class LanguagesHandler : public SettingsPageUIHandler {
 #else
   LanguagesHandler();
 #endif
+
+  LanguagesHandler(const LanguagesHandler&) = delete;
+  LanguagesHandler& operator=(const LanguagesHandler&) = delete;
+
   ~LanguagesHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -47,8 +50,6 @@ class LanguagesHandler : public SettingsPageUIHandler {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile_;  // Weak pointer.
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(LanguagesHandler);
 };
 
 }  // namespace settings

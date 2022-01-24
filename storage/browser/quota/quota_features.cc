@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "storage/browser/quota/quota_features.h"
+#include "base/feature_list.h"
 
 namespace storage {
 

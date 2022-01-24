@@ -58,6 +58,10 @@ class CastWMHelper : public WMHelper, public VSyncTimingManager::Delegate {
  public:
   CastWMHelper(chromecast::CastWindowManagerAura* cast_window_manager_aura,
                chromecast::CastScreen* cast_screen);
+
+  CastWMHelper(const CastWMHelper&) = delete;
+  CastWMHelper& operator=(const CastWMHelper&) = delete;
+
   ~CastWMHelper() override;
 
   // Overridden from WMHelper
@@ -96,8 +100,6 @@ class CastWMHelper : public WMHelper, public VSyncTimingManager::Delegate {
   double GetDefaultDeviceScaleFactor() const override;
   double GetDeviceScaleFactorForWindow(aura::Window* window) const override;
   void SetDefaultScaleCancellation(bool default_scale_cancellation) override;
-  void SetImeBlocked(aura::Window* window, bool ime_blocked) override;
-  bool IsImeBlocked(aura::Window* window) const override;
 
   LifetimeManager* GetLifetimeManager() override;
   aura::client::CaptureClient* GetCaptureClient() override;
@@ -145,8 +147,6 @@ class CastWMHelper : public WMHelper, public VSyncTimingManager::Delegate {
   CastDisplayObserver display_observer_;
   LifetimeManager lifetime_manager_;
   VSyncTimingManager vsync_timing_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastWMHelper);
 };
 
 }  // namespace exo

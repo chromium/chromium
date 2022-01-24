@@ -301,7 +301,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             outList.add(EligibilityFailureReason.NON_GOOGLE_SEARCH_ENGINE);
         }
 
-        if (!mIdentityManager.hasPrimaryAccount()) {
+        if (!mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
             if (returnImmediately) return false;
             outList.add(EligibilityFailureReason.NO_CHROME_ACCOUNT);
         }

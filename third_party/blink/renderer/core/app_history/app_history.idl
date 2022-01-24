@@ -7,20 +7,23 @@
   Exposed=Window,
   RuntimeEnabled=AppHistory
 ] interface AppHistory : EventTarget {
-  readonly attribute AppHistoryEntry current;
+  readonly attribute AppHistoryEntry? current;
   sequence<AppHistoryEntry> entries();
+  [RaisesException, MeasureAs=AppHistory] void updateCurrent(AppHistoryUpdateCurrentOptions options);
+  readonly attribute AppHistoryTransition? transition;
 
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
 
-  [CallWith=ScriptState, RaisesException] Promise<void> navigate(USVString url, optional AppHistoryNavigateOptions options = {});
-  [CallWith=ScriptState, RaisesException] Promise<void> navigate(AppHistoryNavigateOptions options);
+  [CallWith=ScriptState, MeasureAs=AppHistory] AppHistoryResult navigate(USVString url, optional AppHistoryNavigateOptions options = {});
+  [CallWith=ScriptState, MeasureAs=AppHistory] AppHistoryResult reload(optional AppHistoryReloadOptions options = {});
 
-  [CallWith=ScriptState, RaisesException] Promise<void> goTo(DOMString key, optional AppHistoryNavigationOptions options = {});
-  [CallWith=ScriptState, RaisesException] Promise<void> back(optional AppHistoryNavigationOptions options = {});
-  [CallWith=ScriptState, RaisesException] Promise<void> forward(optional AppHistoryNavigationOptions options = {});
+  [CallWith=ScriptState, MeasureAs=AppHistory] AppHistoryResult goTo(DOMString key, optional AppHistoryNavigationOptions options = {});
+  [CallWith=ScriptState, MeasureAs=AppHistory] AppHistoryResult back(optional AppHistoryNavigationOptions options = {});
+  [CallWith=ScriptState, MeasureAs=AppHistory] AppHistoryResult forward(optional AppHistoryNavigationOptions options = {});
 
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
   attribute EventHandler onnavigateerror;
+  attribute EventHandler oncurrentchange;
 };

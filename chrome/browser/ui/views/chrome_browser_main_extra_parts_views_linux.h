@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "ui/display/display_observer.h"
@@ -20,6 +19,12 @@ class ChromeBrowserMainExtraPartsViewsLinux
       public display::DisplayObserver {
  public:
   ChromeBrowserMainExtraPartsViewsLinux();
+
+  ChromeBrowserMainExtraPartsViewsLinux(
+      const ChromeBrowserMainExtraPartsViewsLinux&) = delete;
+  ChromeBrowserMainExtraPartsViewsLinux& operator=(
+      const ChromeBrowserMainExtraPartsViewsLinux&) = delete;
+
   ~ChromeBrowserMainExtraPartsViewsLinux() override;
 
   // Overridden from ChromeBrowserMainExtraParts:
@@ -31,8 +36,6 @@ class ChromeBrowserMainExtraPartsViewsLinux
   void OnCurrentWorkspaceChanged(const std::string& new_workspace) override;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsViewsLinux);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_BROWSER_MAIN_EXTRA_PARTS_VIEWS_LINUX_H_

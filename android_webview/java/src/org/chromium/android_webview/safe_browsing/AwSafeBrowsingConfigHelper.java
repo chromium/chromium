@@ -29,7 +29,6 @@ public class AwSafeBrowsingConfigHelper {
     private static final String TAG = "AwSafeBrowsingConfi-";
 
     private static final String OPT_IN_META_DATA_STR = "android.webkit.WebView.EnableSafeBrowsing";
-    private static final boolean DEFAULT_USER_OPT_IN = false;
 
     private static volatile boolean sSafeBrowsingUserOptIn;
     private static volatile boolean sEnabledByManifest;
@@ -76,10 +75,8 @@ public class AwSafeBrowsingConfigHelper {
             setSafeBrowsingEnabledByManifest(
                     appOptIn == null ? !isDisabledByCommandLine() : appOptIn);
 
-            Callback<Boolean> cb = verifyAppsValue -> {
-                setSafeBrowsingUserOptIn(
-                        verifyAppsValue == null ? DEFAULT_USER_OPT_IN : verifyAppsValue);
-            };
+            Callback<Boolean> cb = verifyAppsValue
+                    -> setSafeBrowsingUserOptIn(Boolean.TRUE.equals(verifyAppsValue));
             PlatformServiceBridge.getInstance().querySafeBrowsingUserConsent(cb);
         }
     }

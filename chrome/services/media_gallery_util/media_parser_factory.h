@@ -15,6 +15,10 @@ class MediaParserFactory : public chrome::mojom::MediaParserFactory {
  public:
   explicit MediaParserFactory(
       mojo::PendingReceiver<chrome::mojom::MediaParserFactory> receiver);
+
+  MediaParserFactory(const MediaParserFactory&) = delete;
+  MediaParserFactory& operator=(const MediaParserFactory&) = delete;
+
   ~MediaParserFactory() override;
 
  private:
@@ -24,8 +28,6 @@ class MediaParserFactory : public chrome::mojom::MediaParserFactory {
                          CreateMediaParserCallback callback) override;
 
   mojo::Receiver<chrome::mojom::MediaParserFactory> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaParserFactory);
 };
 
 #endif  // CHROME_SERVICES_MEDIA_GALLERY_UTIL_MEDIA_PARSER_FACTORY_H_

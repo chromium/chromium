@@ -14,8 +14,9 @@ ScopedNewBadgeTracker::ScopedNewBadgeTracker(content::BrowserContext* profile)
           feature_engagement::TrackerFactory::GetForBrowserContext(profile)) {}
 
 ScopedNewBadgeTracker::~ScopedNewBadgeTracker() {
-  for (const base::Feature* new_badge_feature : active_badge_features_)
-    tracker_->Dismissed(*new_badge_feature);
+  // TODO(crbug.com/1258216): When we have the ability to do concurrent FE
+  // promos, dismiss all of the badge promos here instead of in
+  // TryShowNewBadge().
 }
 
 bool ScopedNewBadgeTracker::TryShowNewBadge(
@@ -35,8 +36,18 @@ bool ScopedNewBadgeTracker::TryShowNewBadge(
     return false;
 
   const bool result = tracker_->ShouldTriggerHelpUI(badge_feature);
-  if (result)
+  if (result) {
     active_badge_features_.insert(&badge_feature);
+    // TODO(crbug.com/1258216): Immediately dismiss to work around an issue
+    // where the FE backend disallows concurrent promos; move the call to
+    // Dismiss() to the destructor when concurrency is added.
+    //
+    // Note that "Dismiss" in this case does not dismiss the UI. It's telling
+    // the FE backend that the promo is done so that other promos can run. A
+    // badge showing in a menu should not block e.g. other badges from
+    // displaying (never mind help bubbles).
+    tracker_->Dismissed(badge_feature);
+  }
   return result;
 }
 

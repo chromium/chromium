@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser;
 
+import android.content.Intent;
+import android.os.Bundle;
+
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+
 /**
  * A subclass of ChromeTabbedActivity, used in Android N multi-window mode.
  *
@@ -19,5 +24,23 @@ public class ChromeTabbedActivity2 extends ChromeTabbedActivity {
     @Override
     protected boolean isFirstActivity() {
         return false;
+    }
+
+    @Override
+    protected @LaunchIntentDispatcher.Action int maybeDispatchLaunchIntent(
+            Intent intent, Bundle savedInstanceState) {
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            // ChromeTabbedActivity2 can be launched in multi-instance configuration if a CTA2-task
+            // survives Chrome upgrade and gets to the foreground to have the activity re-created.
+            // Bounce to ChromeTabbedActivity and kill the CTA2-task.
+            int windowId = MultiWindowUtils.INVALID_INSTANCE_ID;
+            if (savedInstanceState != null) {
+                windowId = savedInstanceState.getInt(WINDOW_INDEX, windowId);
+            }
+            Intent newIntent = MultiWindowUtils.createNewWindowIntent(this, windowId, false, false);
+            startActivity(newIntent, savedInstanceState);
+            return LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK;
+        }
+        return super.maybeDispatchLaunchIntent(intent, savedInstanceState);
     }
 }

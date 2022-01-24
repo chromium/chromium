@@ -1,7 +1,19 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './toggle_row.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
+
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementUserAction} from './constants.js';
+import {recordAppManagementUserAction} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-resize-lock-item',
 
   properties: {
@@ -53,15 +65,14 @@ Polymer({
   toggleSetting_() {
     const newState = !this.app.resizeLocked;
     assert(newState === this.$['toggle-row'].isChecked());
-    app_management.BrowserProxy.getInstance().handler.setResizeLocked(
+    BrowserProxy.getInstance().handler.setResizeLocked(
         this.app.id,
         newState,
     );
-    settings.recordSettingChange();
+    recordSettingChange();
     const userAction = newState ? AppManagementUserAction.ResizeLockTurnedOn :
                                   AppManagementUserAction.ResizeLockTurnedOff;
-    app_management.util.recordAppManagementUserAction(
-        this.app.type, userAction);
+    recordAppManagementUserAction(this.app.type, userAction);
   },
 
   /**

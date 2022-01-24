@@ -62,7 +62,7 @@ CastURLLoaderThrottleProvider::CreateThrottles(
         activity_url_filter));
   }
 
-  auto* settings_manager =
+  auto settings_manager =
       settings_manager_store_->GetSettingsManagerFromRenderFrameID(
           render_frame_id);
   if (settings_manager) {

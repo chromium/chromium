@@ -54,11 +54,7 @@ public class ContextMenuLoadUrlParamsTest {
 
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
-
-    // Test activity type that does not restore tab on cold restart.
-    // Any type other than ActivityType.TABBED works.
-    private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
+            new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
     private static final String HTML_PATH =
             "/chrome/test/data/android/contextmenu/context_menu_test.html";
@@ -82,7 +78,8 @@ public class ContextMenuLoadUrlParamsTest {
             super(null, tabCreatorManager, tabModelFilterFactory,
                     ()
                             -> NextTabPolicy.HIERARCHICAL,
-                    AsyncTabParamsManagerSingleton.getInstance(), false, NO_RESTORE_TYPE, false);
+                    AsyncTabParamsManagerSingleton.getInstance(), false, ActivityType.TABBED,
+                    false);
         }
     }
 

@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -41,6 +40,10 @@ class OptOutBlocklist {
   OptOutBlocklist(std::unique_ptr<OptOutStore> opt_out_store,
                   base::Clock* clock,
                   OptOutBlocklistDelegate* blocklist_delegate);
+
+  OptOutBlocklist(const OptOutBlocklist&) = delete;
+  OptOutBlocklist& operator=(const OptOutBlocklist&) = delete;
+
   virtual ~OptOutBlocklist();
 
   // Creates the BlocklistData that backs the blocklist.
@@ -173,8 +176,6 @@ class OptOutBlocklist {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<OptOutBlocklist> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OptOutBlocklist);
 };
 
 }  // namespace blocklist

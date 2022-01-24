@@ -51,7 +51,7 @@ bool ignore_user_gesture_for_tests = false;
 
 ExtensionFunction::ResponseAction PermissionsContainsFunction::Run() {
   std::unique_ptr<api::permissions::Contains::Params> params(
-      api::permissions::Contains::Params::Create(*args_));
+      api::permissions::Contains::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;
@@ -110,7 +110,7 @@ ExtensionFunction::ResponseAction PermissionsGetAllFunction::Run() {
 
 ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
   std::unique_ptr<api::permissions::Remove::Params> params(
-      api::permissions::Remove::Params::Create(*args_));
+      api::permissions::Remove::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;
@@ -202,7 +202,7 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
     return RespondNow(Error("Could not find an active window."));
 
   std::unique_ptr<api::permissions::Request::Params> params(
-      api::permissions::Request::Params::Create(*args_));
+      api::permissions::Request::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;

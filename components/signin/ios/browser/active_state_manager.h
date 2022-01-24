@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_IOS_BROWSER_ACTIVE_STATE_MANAGER_H_
 #define COMPONENTS_SIGNIN_IOS_BROWSER_ACTIVE_STATE_MANAGER_H_
 
-#include "base/macros.h"
-
 namespace web {
 class BrowserState;
 }  // namespace web

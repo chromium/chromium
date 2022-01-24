@@ -42,6 +42,8 @@ class KioskAppDataBase : public KioskAppIconLoader::Delegate {
   KioskAppDataBase(const std::string& dictionary_name,
                    const std::string& app_id,
                    const AccountId& account_id);
+  KioskAppDataBase(const KioskAppDataBase&) = delete;
+  KioskAppDataBase& operator=(const KioskAppDataBase&) = delete;
   ~KioskAppDataBase() override;
 
   // Helper to save name and icon to provided dictionary.
@@ -77,8 +79,6 @@ class KioskAppDataBase : public KioskAppIconLoader::Delegate {
   const AccountId account_id_;
 
   base::FilePath icon_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppDataBase);
 };
 
 }  // namespace ash

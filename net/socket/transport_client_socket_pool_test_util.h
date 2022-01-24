@@ -72,6 +72,12 @@ class MockTransportClientSocketFactory : public ClientSocketFactory {
   };
 
   explicit MockTransportClientSocketFactory(NetLog* net_log);
+
+  MockTransportClientSocketFactory(const MockTransportClientSocketFactory&) =
+      delete;
+  MockTransportClientSocketFactory& operator=(
+      const MockTransportClientSocketFactory&) = delete;
+
   ~MockTransportClientSocketFactory() override;
 
   std::unique_ptr<DatagramClientSocket> CreateDatagramClientSocket(
@@ -135,8 +141,6 @@ class MockTransportClientSocketFactory : public ClientSocketFactory {
   base::TimeDelta delay_;
   base::queue<base::OnceClosure> triggerable_sockets_;
   base::OnceClosure run_loop_quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTransportClientSocketFactory);
 };
 
 }  // namespace net

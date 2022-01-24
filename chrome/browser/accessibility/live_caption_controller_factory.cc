@@ -4,12 +4,11 @@
 
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
 
-#include "build/build_config.h"
-#include "chrome/browser/accessibility/live_caption_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/live_caption/live_caption_controller.h"
 
 namespace captions {
 

@@ -116,16 +116,4 @@ scoped_refptr<StaticBitmapImage> ToStaticBitmapImage(
   return UnacceleratedStaticBitmapImage::Create(std::move(image));
 }
 
-absl::optional<SkBitmap> ToSkBitmap(
-    const scoped_refptr<blink::StaticBitmapImage>& static_bitmap_image) {
-  const sk_sp<SkImage> image =
-      static_bitmap_image->PaintImageForCurrentFrame().GetSwSkImage();
-  SkBitmap result;
-  if (image && image->asLegacyBitmap(
-                   &result, SkImage::LegacyBitmapMode::kRO_LegacyBitmapMode)) {
-    return result;
-  }
-  return absl::nullopt;
-}
-
 }  // namespace blink

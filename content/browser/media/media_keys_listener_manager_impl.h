@@ -80,6 +80,10 @@ class CONTENT_EXPORT MediaKeysListenerManagerImpl
   // as it is treated differently.
   struct ListeningData {
     ListeningData();
+
+    ListeningData(const ListeningData&) = delete;
+    ListeningData& operator=(const ListeningData&) = delete;
+
     ~ListeningData();
 
     // True if the ActiveMediaSessionController is listening for this key.
@@ -87,9 +91,6 @@ class CONTENT_EXPORT MediaKeysListenerManagerImpl
 
     // Contains non-ActiveMediaSessionController listeners.
     base::ObserverList<ui::MediaKeysListener::Delegate> listeners;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ListeningData);
   };
 
   void MaybeSendKeyCode(ui::KeyboardCode key_code);

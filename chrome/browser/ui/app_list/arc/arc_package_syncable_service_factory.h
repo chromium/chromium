@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_ARC_ARC_PACKAGE_SYNCABLE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_UI_APP_LIST_ARC_ARC_PACKAGE_SYNCABLE_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -16,6 +15,11 @@ class ArcPackageSyncableService;
 class ArcPackageSyncableServiceFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  ArcPackageSyncableServiceFactory(const ArcPackageSyncableServiceFactory&) =
+      delete;
+  ArcPackageSyncableServiceFactory& operator=(
+      const ArcPackageSyncableServiceFactory&) = delete;
+
   static ArcPackageSyncableService* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -31,8 +35,6 @@ class ArcPackageSyncableServiceFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPackageSyncableServiceFactory);
 };
 
 }  // namespace arc

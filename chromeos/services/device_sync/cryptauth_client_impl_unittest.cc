@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_move_support.h"
@@ -81,6 +80,10 @@ class MockCryptAuthApiCallFlow : public CryptAuthApiCallFlow {
   MockCryptAuthApiCallFlow() : CryptAuthApiCallFlow() {
     SetPartialNetworkTrafficAnnotation(PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS);
   }
+
+  MockCryptAuthApiCallFlow(const MockCryptAuthApiCallFlow&) = delete;
+  MockCryptAuthApiCallFlow& operator=(const MockCryptAuthApiCallFlow&) = delete;
+
   virtual ~MockCryptAuthApiCallFlow() {}
 
   void StartPostRequest(
@@ -123,9 +126,6 @@ class MockCryptAuthApiCallFlow : public CryptAuthApiCallFlow {
            const std::string& access_token,
            ResultCallback& result_callback,
            ErrorCallback& error_callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCryptAuthApiCallFlow);
 };
 
 // Callback that should never be invoked.

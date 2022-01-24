@@ -26,10 +26,11 @@ enum class RefreshTaskId {
   kRefreshWebFeed,
 };
 
-// Information about the Chrome build.
+// Information about the Chrome build and feature flags.
 struct ChromeInfo {
   version_info::Channel channel{};
   base::Version version;
+  bool start_surface = false;
 };
 // Device display metrics.
 struct DisplayMetrics {
@@ -61,6 +62,7 @@ struct NetworkResponseInfo {
   std::string bless_nonce;
   GURL base_request_url;
   size_t response_body_bytes = 0;
+  size_t encoded_size_bytes = 0;
   bool was_signed_in = false;
   base::TimeTicks fetch_time_ticks;
   base::TimeTicks loader_start_time_ticks;
@@ -134,24 +136,36 @@ enum class WebFeedSubscriptionStatus {
 };
 std::ostream& operator<<(std::ostream& out, WebFeedSubscriptionStatus value);
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.webfeed
+enum class WebFeedAvailabilityStatus {
+  kStateUnspecified = 0,
+  kInactive = 1,
+  kActive = 2,
+  kWaitingForContent = 4,
+};
+std::ostream& operator<<(std::ostream& out, WebFeedAvailabilityStatus value);
+
 // Information about a web feed.
 struct WebFeedMetadata {
   WebFeedMetadata();
   WebFeedMetadata(const WebFeedMetadata&);
   WebFeedMetadata(WebFeedMetadata&&);
+  ~WebFeedMetadata();
   WebFeedMetadata& operator=(const WebFeedMetadata&);
   WebFeedMetadata& operator=(WebFeedMetadata&&);
 
   // Unique ID of the web feed. Empty if the client knows of no web feed.
   std::string web_feed_id;
   // Whether the subscribed Web Feed has content available for fetching.
-  bool is_active = false;
+  WebFeedAvailabilityStatus availability_status =
+      WebFeedAvailabilityStatus::kStateUnspecified;
   // Whether the Web Feed is recommended by the web feeds service.
   bool is_recommended = false;
   std::string title;
   GURL publisher_url;
   WebFeedSubscriptionStatus subscription_status =
       WebFeedSubscriptionStatus::kUnknown;
+  GURL favicon_url;
 };
 std::ostream& operator<<(std::ostream& out, const WebFeedMetadata& value);
 

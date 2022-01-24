@@ -32,6 +32,12 @@ class SingleSampleMetricsFactoryImpl : public base::SingleSampleMetricsFactory {
   // service_manager::Connector() for simplicitly and to avoid the need for
   // using the service test harness just for instantiating this class.
   explicit SingleSampleMetricsFactoryImpl(CreateProviderCB create_provider_cb);
+
+  SingleSampleMetricsFactoryImpl(const SingleSampleMetricsFactoryImpl&) =
+      delete;
+  SingleSampleMetricsFactoryImpl& operator=(
+      const SingleSampleMetricsFactoryImpl&) = delete;
+
   ~SingleSampleMetricsFactoryImpl() override;
 
   // base::SingleSampleMetricsFactory:
@@ -64,8 +70,6 @@ class SingleSampleMetricsFactoryImpl : public base::SingleSampleMetricsFactory {
   // Per thread storage slot for the mojo provider.
   base::ThreadLocalPointer<mojo::Remote<mojom::SingleSampleMetricsProvider>>
       provider_tls_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleSampleMetricsFactoryImpl);
 };
 
 }  // namespace metrics

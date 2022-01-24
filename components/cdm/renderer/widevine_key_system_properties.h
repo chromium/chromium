@@ -6,7 +6,6 @@
 #define COMPONENTS_CDM_RENDERER_WIDEVINE_KEY_SYSTEM_PROPERTIES_H_
 
 #include <string>
-#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "media/base/key_system_properties.h"

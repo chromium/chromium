@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
@@ -47,6 +46,10 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
                           int id,
                           const EventDeviceInfo& devinfo,
                           std::unique_ptr<Delegate> delegate);
+
+  EventReaderLibevdevCros(const EventReaderLibevdevCros&) = delete;
+  EventReaderLibevdevCros& operator=(const EventReaderLibevdevCros&) = delete;
+
   ~EventReaderLibevdevCros() override;
 
   // EventConverterEvdev:
@@ -86,8 +89,6 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
 
   // Delegate for event processing.
   std::unique_ptr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventReaderLibevdevCros);
 };
 
 }  // namspace ui

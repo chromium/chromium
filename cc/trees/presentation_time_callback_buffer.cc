@@ -107,7 +107,7 @@ PresentationTimeCallbackBuffer::GetOrMakeRegistration(uint32_t frame_token) {
   if (frame_token_infos_.empty() ||
       viz::FrameTokenGT(frame_token, frame_token_infos_.back().token)) {
     frame_token_infos_.emplace_back(frame_token);
-    DCHECK_LE(frame_token_infos_.size(), 25u);
+    DCHECK_LE(frame_token_infos_.size(), kMaxBufferSize);
   }
 
   // Registrations should use monotonically increasing frame tokens.

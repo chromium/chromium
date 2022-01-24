@@ -40,6 +40,11 @@ class TestTabStripModelObserver : public TabStripModelObserver {
       : model_(model), desired_count_(0) {
     model->AddObserver(this);
   }
+
+  TestTabStripModelObserver(const TestTabStripModelObserver&) = delete;
+  TestTabStripModelObserver& operator=(const TestTabStripModelObserver&) =
+      delete;
+
   ~TestTabStripModelObserver() override = default;
 
   void WaitForTabCount(int count) {
@@ -62,8 +67,6 @@ class TestTabStripModelObserver : public TabStripModelObserver {
   TabStripModel* model_;
   int desired_count_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTabStripModelObserver);
 };
 
 }  // namespace
@@ -110,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, UnloadWithContentScripts) {
   std::string id = extension->id();
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   GURL test_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   // The content script sends an XHR with the webpage's (rather than
   // extension's) Origin header - this should succeed (given that
@@ -239,11 +242,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, CrashedTabs) {
   test_tab_strip_model_observer.WaitForTabCount(1);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_NE(extension->url().GetOrigin(), browser()
-                                              ->tab_strip_model()
-                                              ->GetActiveWebContents()
-                                              ->GetLastCommittedURL()
-                                              .GetOrigin());
+  EXPECT_NE(extension->url().DeprecatedGetOriginAsURL(),
+            browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetLastCommittedURL()
+                .DeprecatedGetOriginAsURL());
 }
 
 // TODO(devlin): Investigate what to do for embedded iframes.

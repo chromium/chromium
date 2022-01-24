@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_MODAL_DELEGATE_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_MODAL_DELEGATE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 
 namespace chromeos {
@@ -20,6 +19,12 @@ class InlineLoginHandlerModalDelegate
   // (|InlineLoginHandlerDialogChromeOS|).
   explicit InlineLoginHandlerModalDelegate(
       web_modal::WebContentsModalDialogHost* host);
+
+  InlineLoginHandlerModalDelegate(const InlineLoginHandlerModalDelegate&) =
+      delete;
+  InlineLoginHandlerModalDelegate& operator=(
+      const InlineLoginHandlerModalDelegate&) = delete;
+
   ~InlineLoginHandlerModalDelegate() override;
 
   // web_modal::WebContentsModalDialogManagerDelegate overrides.
@@ -29,8 +34,6 @@ class InlineLoginHandlerModalDelegate
  private:
   // Non-owning pointer.
   web_modal::WebContentsModalDialogHost* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(InlineLoginHandlerModalDelegate);
 };
 
 }  // namespace chromeos

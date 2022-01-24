@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "content/public/browser/context_menu_params.h"
@@ -17,6 +16,12 @@ class ContextMenuNotificationObserver {
  public:
   // Wait for a context menu to be shown, and then execute |command_to_execute|.
   explicit ContextMenuNotificationObserver(int command_to_execute);
+
+  ContextMenuNotificationObserver(const ContextMenuNotificationObserver&) =
+      delete;
+  ContextMenuNotificationObserver& operator=(
+      const ContextMenuNotificationObserver&) = delete;
+
   ~ContextMenuNotificationObserver();
 
  private:
@@ -25,14 +30,16 @@ class ContextMenuNotificationObserver {
   void ExecuteCommand(RenderViewContextMenu* context_menu);
 
   int command_to_execute_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuNotificationObserver);
 };
 
 class ContextMenuWaiter {
  public:
   ContextMenuWaiter();
   explicit ContextMenuWaiter(int command_to_execute);
+
+  ContextMenuWaiter(const ContextMenuWaiter&) = delete;
+  ContextMenuWaiter& operator=(const ContextMenuWaiter&) = delete;
+
   ~ContextMenuWaiter();
 
   content::ContextMenuParams& params();
@@ -51,8 +58,6 @@ class ContextMenuWaiter {
 
   base::RunLoop run_loop_;
   absl::optional<int> maybe_command_to_execute_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuWaiter);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_

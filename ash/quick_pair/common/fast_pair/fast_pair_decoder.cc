@@ -19,6 +19,12 @@ constexpr int kHeaderVersionOffset = 5;
 constexpr int kMaxModelIdLength = 14;
 constexpr int kHeaderLength = 1;
 
+}  // namespace
+
+namespace ash {
+namespace quick_pair {
+namespace fast_pair_decoder {
+
 int GetVersion(const std::vector<uint8_t>* service_data) {
   return service_data->size() == kMinModelIdLength
              ? 0
@@ -38,12 +44,6 @@ bool IsIdLengthValid(const std::vector<uint8_t>* service_data) {
   return kMinModelIdLength <= id_length && id_length <= kMaxModelIdLength &&
          id_length + kHeaderLength <= static_cast<int>(service_data->size());
 }
-
-}  // namespace
-
-namespace ash {
-namespace quick_pair {
-namespace fast_pair_decoder {
 
 bool HasModelId(const std::vector<uint8_t>* service_data) {
   return service_data != nullptr &&

@@ -63,14 +63,14 @@ class MockObserver : public DistillabilityObserver {
 // so 100ms should be pretty safe to catch extra calls.
 //
 // If there are no extra calls, changing this doesn't change the test result.
-const auto kWaitAfterLastCall = base::TimeDelta::FromMilliseconds(100);
+const auto kWaitAfterLastCall = base::Milliseconds(100);
 
 // Wait a bit if no calls are expected to make sure any unexpected calls are
 // caught. Expected calls happen within 100ms after content::WaitForLoadStop()
 // on linux release build, so 1s provides a safe margin.
 //
 // If there are no extra calls, changing this doesn't change the test result.
-const auto kWaitNoExpectedCall = base::TimeDelta::FromSeconds(1);
+const auto kWaitNoExpectedCall = base::Seconds(1);
 
 }  // namespace
 
@@ -101,7 +101,7 @@ class TestOption : public InProcessBrowserTest {
     }
 
     // This blocks until the navigation has completely finished.
-    ui_test_utils::NavigateToURL(browser(), article_url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents_));
 
     if (!test_timeout.is_zero())
@@ -114,7 +114,7 @@ class TestOption : public InProcessBrowserTest {
   void QuitSoon() { QuitAfter(kWaitAfterLastCall); }
 
   void QuitAfter(base::TimeDelta delta) {
-    DCHECK(delta > base::TimeDelta());
+    DCHECK(delta.is_positive());
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop_->QuitClosure(), delta);
   }

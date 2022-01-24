@@ -1,0 +1,174 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.personalization_app.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "url/mojom/url.mojom";
+
+// This should be kept in sync with |ash::WallpaperLayout|
+enum WallpaperLayout {
+  // Center the wallpaper on the desktop without scaling it. The wallpaper
+  // may be cropped.
+  kCenter,
+  // Scale the wallpaper (while preserving its aspect ratio) to cover the
+  // desktop; the wallpaper may be cropped.
+  kCenterCropped,
+  // Scale the wallpaper (without preserving its aspect ratio) to match the
+  // desktop's size.
+  kStretch,
+  // Tile the wallpaper over the background without scaling it.
+  kTile,
+};
+
+// This should be kept in sync with |ash::WallpaperType|
+enum WallpaperType {
+  kDaily = 0,         // Surprise wallpaper. Changes once a day if enabled.
+  kCustomized = 1,    // Selected by user.
+  kDefault = 2,       // Default.
+  /* kUnknown = 3 */  // Removed.
+  kOnline = 4,        // WallpaperInfo.location denotes an URL.
+  kPolicy = 5,        // Controlled by policy, can't be changed by the user.
+  kThirdParty = 6,    // Current wallpaper is set by a third party app.
+  kDevice = 7,        // Current wallpaper is the device policy controlled
+                     // wallpaper. It shows on the login screen if the device
+                     // is an enterprise managed device.
+  kOneShot = 8,      // Current wallpaper is shown one-time only, which doesn't
+                     // belong to a particular user and isn't saved to file. It
+                     // goes away when another wallpaper is shown or the browser
+                     // process exits. Note: the image will never be blurred or
+                     // dimmed.
+};
+
+// The image type specific to online wallpapers. This should be kept in sync
+// with |backdrop::Image::ImageType|.
+enum OnlineImageType {
+  kUnknown = 0,
+  kLight = 1,
+  kDark = 2,
+};
+
+// WallpaperCollection contains a list of |WallpaperImage| objects.
+struct WallpaperCollection {
+    // This ID is used as the argument to |FetchImagesForCollection|.
+    string id;
+
+    // Name of this collection to be displayed to the user.
+    string name;
+
+    // The url for the preview image of this collection.
+    url.mojom.Url? preview;
+};
+
+// Represents a single image that can be set as user wallpaper.
+struct WallpaperImage {
+    // URL of the image file to be displayed in the UI.
+    url.mojom.Url url;
+
+    // Localized attribution text such as "Photo by John Doe".
+    array<string> attribution;
+
+    // Unique opaque identifier for this image.
+    uint64 asset_id;
+
+    // The identifier of a unit of images e.g. Dark/Light variants of the same
+    // wallpaper.
+    int32 unit_id;
+
+    // The type of the online image .i.e kLight, kDark, etc.
+    OnlineImageType type;
+};
+
+// Represents the currently selected wallpaper image.
+struct CurrentWallpaper {
+  // URL of the currently selected wallpaper image in data scheme.
+  url.mojom.Url url;
+
+  // Attribution text such as "Photo by John Doe" or the file name of the local
+  // image.
+  array<string> attribution;
+
+  // The layout of the image.
+  WallpaperLayout layout;
+
+  // The type of the image.
+  WallpaperType type;
+
+  // A unique identifier for the image. This is used to identify which
+  // |WallpaperImage| or local image the user has selected.
+  string key;
+};
+
+// Receives updated wallpaper information whenever it is changed.
+interface WallpaperObserver {
+  // Triggered by |WallpaperControllerObserver::OnWallpaperChanged|. Retrieves
+  // updated wallpaper information and calls the observer. |image| will be null
+  // if there is an error retrieving wallpaper information.
+  OnWallpaperChanged(CurrentWallpaper? image);
+};
+
+// Provides APIs to retrieve Wallpaper information. This API is exposed only to
+// the Personalization App (chrome://personalization). It is a mojom wrapper for
+// APIs found in |backdrop_wallpaper.proto|.
+interface WallpaperProvider {
+    // Called to force the browser window to make the native views transparent
+    // so that the user can see wallpaper in fullscreen on their desktop. Safe
+    // to call multiple times.
+    MakeTransparent();
+
+    // Fetch a list of WallpaperCollection objects from the Backdrop API. Will
+    // be displayed to the user to allow them to select an individual collection
+    // to view in more detail. |collections| will be null on error.
+    FetchCollections() => (array<WallpaperCollection>? collections);
+
+    // Fetch a list of WallpaperImage objects from the Backdrop API that can be
+    // set as the user's wallpaper. |images| will be null on error.
+    FetchImagesForCollection(string collection_id) => (
+        array<WallpaperImage>? images);
+
+    // Fetch a list of FilePath objects from the local file system. |images|
+    // will be null on failure.
+    GetLocalImages() => (array<mojo_base.mojom.FilePath>? images);
+
+    // Fetch a thumbnail data url for the given local image path. |data| will be
+    // empty string on failure.
+    GetLocalImageThumbnail(mojo_base.mojom.FilePath file_path) =>
+        (string data);
+
+    // Binds a listener to start receiving updates on wallpaper changes.
+    SetWallpaperObserver(pending_remote<WallpaperObserver> observer);
+
+    // Sets the given backdrop wallpaper as the user's background.
+    SelectWallpaper(uint64 image_asset_id, bool preview_mode) =>
+        (bool success);
+
+    // Sets the given local wallpaper as the user's background. Validated
+    // against list of file paths returned by |GetLocalImages|.
+    SelectLocalImage(mojo_base.mojom.FilePath path, WallpaperLayout layout,
+        bool preview_mode) => (bool success);
+
+    // Sets the custom layout for current wallpaper
+    SetCustomWallpaperLayout(WallpaperLayout layout);
+
+    // Set and enable daily refresh for the given |collection_id|.
+    SetDailyRefreshCollectionId(string collection_id);
+
+    // Get the daily refresh collection id. It can be empty if daily refresh is
+    // not enabled.
+    GetDailyRefreshCollectionId() => (string collection_id);
+
+    // Refresh the wallpaper. Noop if daily refresh is not enabled.
+    UpdateDailyRefreshWallpaper() => (bool success);
+
+    // Indicates whether the device is in tablet mode.
+    IsInTabletMode() => (bool tablet_mode);
+
+    // Confirms the wallpaper being previewed to be set as the actual user
+    // wallpaper. Must be called in preview mode.
+    ConfirmPreviewWallpaper();
+
+    // Cancels the wallpaper preview and reverts to the user wallpaper. Must be
+    // called in preview mode.
+    CancelPreviewWallpaper();
+};

@@ -52,8 +52,9 @@ bool JsonStringToFormData(NSString* json_string,
   if (!formValue)
     return false;
 
-  return autofill::ExtractFormData(*formValue, false, std::u16string(),
-                                   page_url, page_url.GetOrigin(), form_data);
+  return autofill::ExtractFormData(
+      *formValue, false, std::u16string(), page_url,
+      page_url.DeprecatedGetOriginAsURL(), form_data);
 }
 
 }  // namespace password_manager

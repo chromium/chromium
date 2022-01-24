@@ -1,0 +1,147 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//build/config/locales.gni")
+import("//build/config/locales.gni")
+import("//build/config/zip.gni")
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+
+# The animated_poodle_java target is overridden downstream and used
+# instead of this one if the enable_chrome_android_internal flag is
+# enabled.
+android_library("animated_poodle_java") {
+  deps = [
+    ":animated_poodle_resources",
+    "//base:base_java",
+    "//chrome/android:chrome_java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+  ]
+
+  sources = [ "internal/java/src/org/chromium/chrome/browser/" +
+              "autofill_assistant/header/AnimatedPoodle.java" ]
+  resources_package = "org.chromium.chrome.autofill_assistant.poodle"
+}
+
+android_resources("animated_poodle_resources") {
+  sources =
+      [ "internal/java/res_poodle/drawable/ic_autofill_assistant_24dp.xml" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "internal/java/res/drawable/autofill_assistant_actions_gradient.xml",
+    "internal/java/res/drawable/autofill_assistant_circle_background.xml",
+    "internal/java/res/drawable/autofill_assistant_default_details.xml",
+    "internal/java/res/drawable/autofill_assistant_details_bg.xml",
+    "internal/java/res/drawable/autofill_assistant_details_list_divider.xml",
+    "internal/java/res/drawable/autofill_assistant_lightblue_rect_bg.xml",
+    "internal/java/res/drawable/autofill_assistant_rounded_corner_background.xml",
+    "internal/java/res/drawable/autofill_assistant_swipe_indicator.xml",
+    "internal/java/res/drawable/ic_add_outline_white_24dp.xml",
+    "internal/java/res/drawable/ic_airline_seat_recline_normal_black_24dp.xml",
+    "internal/java/res/drawable/ic_autofill_assistant_add_circle_24dp.xml",
+    "internal/java/res/drawable/ic_autofill_assistant_default_progress_start_black_24dp.xml",
+    "internal/java/res/drawable/ic_check_circle_black_24dp.xml",
+    "internal/java/res/drawable/ic_clear_black_chrome_24dp.xml",
+    "internal/java/res/drawable/ic_confirmation_number_black_24dp.xml",
+    "internal/java/res/drawable/ic_directions_car_black_24dp.xml",
+    "internal/java/res/drawable/ic_done_black_24dp.xml",
+    "internal/java/res/drawable/ic_fastfood_black_24dp.xml",
+    "internal/java/res/drawable/ic_grocery_black_24dp.xml",
+    "internal/java/res/drawable/ic_local_dining_black_24dp.xml",
+    "internal/java/res/drawable/ic_overflow_black_24dp.xml",
+    "internal/java/res/drawable/ic_payment_black_24dp.xml",
+    "internal/java/res/drawable/ic_refresh_black_24dp.xml",
+    "internal/java/res/drawable/ic_remove_outline_white_24dp.xml",
+    "internal/java/res/drawable/ic_settings_black_24dp.xml",
+    "internal/java/res/drawable/ic_shopping_basket_black_24dp.xml",
+    "internal/java/res/drawable/ic_shopping_basket_black_24dp.xml",
+    "internal/java/res/drawable/ic_vpn_key_black_24dp.xml",
+    "internal/java/res/layout/autofill_assistant_address_full.xml",
+    "internal/java/res/layout/autofill_assistant_address_summary.xml",
+    "internal/java/res/layout/autofill_assistant_base_onboarding.xml",
+    "internal/java/res/layout/autofill_assistant_bottom_sheet_content.xml",
+    "internal/java/res/layout/autofill_assistant_bottom_sheet_toolbar.xml",
+    "internal/java/res/layout/autofill_assistant_button_assistive.xml",
+    "internal/java/res/layout/autofill_assistant_button_filled.xml",
+    "internal/java/res/layout/autofill_assistant_button_hairline.xml",
+    "internal/java/res/layout/autofill_assistant_contact_full.xml",
+    "internal/java/res/layout/autofill_assistant_contact_summary.xml",
+    "internal/java/res/layout/autofill_assistant_datetime.xml",
+    "internal/java/res/layout/autofill_assistant_details.xml",
+    "internal/java/res/layout/autofill_assistant_form_checkbox.xml",
+    "internal/java/res/layout/autofill_assistant_form_counter.xml",
+    "internal/java/res/layout/autofill_assistant_form_counter_input.xml",
+    "internal/java/res/layout/autofill_assistant_form_information.xml",
+    "internal/java/res/layout/autofill_assistant_form_radiobutton.xml",
+    "internal/java/res/layout/autofill_assistant_form_selection_input.xml",
+    "internal/java/res/layout/autofill_assistant_header.xml",
+    "internal/java/res/layout/autofill_assistant_info_box.xml",
+    "internal/java/res/layout/autofill_assistant_login.xml",
+    "internal/java/res/layout/autofill_assistant_onboarding_no_button.xml",
+    "internal/java/res/layout/autofill_assistant_onboarding_yes_button.xml",
+    "internal/java/res/layout/autofill_assistant_payment_method_full.xml",
+    "internal/java/res/layout/autofill_assistant_payment_method_summary.xml",
+    "internal/java/res/layout/autofill_assistant_payment_request_section_divider.xml",
+    "internal/java/res/layout/autofill_assistant_payment_request_section_title.xml",
+    "internal/java/res/layout/autofill_assistant_payment_request_terms_and_conditions.xml",
+    "internal/java/res/layout/autofill_assistant_popup_list_section.xml",
+    "internal/java/res/layout/autofill_assistant_static_text_section.xml",
+    "internal/java/res/menu/profile_icon_menu.xml",
+    "internal/java/res/values-night-v17/colors.xml",
+    "internal/java/res/values-v17/attrs.xml",
+    "internal/java/res/values-v17/colors.xml",
+    "internal/java/res/values-v17/dimens.xml",
+    "internal/java/res/values-v17/styles.xml",
+  ]
+  deps = [
+    ":java_strings_grd",
+    "//chrome/android:chrome_app_java_resources",
+    "//components/browser_ui/styles/android:java_resources",
+  ]
+}
+
+java_strings_grd("java_strings_grd") {
+  defines = chrome_grit_defines
+  grd_file =
+      "internal/java/strings/android_chrome_autofill_assistant_strings.grd"
+  outputs = [ "values/android_chrome_autofill_assistant_strings.xml" ] + process_file_template(
+                android_bundle_locales_as_resources,
+                [ "values-{{source_name_part}}/android_chrome_autofill_assistant_strings.xml" ])
+}
+
+if (!incremental_install) {
+  zip("password_change_tests_runner") {
+    testonly = true
+    inputs = [
+      "$root_build_dir/test_runner/ChromePublicTest.apk",
+      "$root_build_dir/test_runner/ChromiumNetTestSupport.apk",
+      "$root_build_dir/test_runner/config_example.cfg",
+      "$root_build_dir/test_runner/parse_logs.py",
+      "$root_build_dir/test_runner/runner.py",
+    ]
+    output = "$root_build_dir/test_runner/password_change_tests_runner.zip"
+    deps = [ ":copy_password_change_tests_runner" ]
+  }
+
+  copy("copy_password_change_tests_runner") {
+    testonly = true
+    sources = [
+      "$root_build_dir/apks/ChromePublicTest.apk",
+      "$root_build_dir/apks/ChromiumNetTestSupport.apk",
+      "internal/tools/password_change_tests_runner/config_example.cfg",
+      "internal/tools/password_change_tests_runner/parse_logs.py",
+      "internal/tools/password_change_tests_runner/runner.py",
+    ]
+    outputs = [ "$root_out_dir/test_runner/{{source_file_part}}" ]
+    deps = [
+      "//chrome/android:chrome_public_test_apk__test_apk__create",
+      "//net/android:net_test_support_apk__create",
+    ]
+  }
+}

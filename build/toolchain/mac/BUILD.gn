@@ -21,14 +21,13 @@ template("mac_toolchain") {
       current_os = "mac"
 
       if (target_os == "ios") {
+        # Use LLD for the host part of a chrome/ios build.
+        use_lld = true
+
         # TODO(crbug.com/753445): the use_sanitizer_coverage arg is currently
         # not supported by the Chromium mac_clang_x64 toolchain on iOS
         # distribution.
         use_sanitizer_coverage = false
-
-        # Do not use Xcode version of clang when building macOS tools for the
-        # host even if this is the version used to build for the iOS target.
-        use_xcode_clang = false
       }
     }
   }

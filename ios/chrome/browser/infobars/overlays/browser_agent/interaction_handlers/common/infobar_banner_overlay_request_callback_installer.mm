@@ -72,7 +72,7 @@ void InfobarBannerOverlayRequestCallbackInstaller::RemoveInfobar(
   InfoBarControllerDelegate* infobar_controller_delegate =
       static_cast<InfoBarControllerDelegate*>(infobar);
   if (!infobar || !infobar_controller_delegate->IsOwned() ||
-      !infobar->delegate())
+      !infobar->delegate() || infobar->removed_from_owner())
     return;
 
   infobar_controller_delegate->RemoveInfoBar();

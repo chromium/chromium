@@ -19,6 +19,7 @@
 
 #include "absl/container/inlined_vector.h"
 #include "absl/strings/internal/cord_rep_btree.h"
+#include "absl/strings/internal/cord_rep_crc.h"
 #include "absl/strings/internal/cord_rep_flat.h"
 #include "absl/strings/internal/cord_rep_ring.h"
 
@@ -31,6 +32,7 @@ ABSL_CONST_INIT std::atomic<bool> cord_ring_buffer_enabled(
     kCordEnableRingBufferDefault);
 ABSL_CONST_INIT std::atomic<bool> shallow_subcords_enabled(
     kCordShallowSubcordsDefault);
+ABSL_CONST_INIT std::atomic<bool> cord_btree_exhaustive_validation(false);
 
 void CordRep::Destroy(CordRep* rep) {
   assert(rep != nullptr);
@@ -69,6 +71,9 @@ void CordRep::Destroy(CordRep* rep) {
         rep = child;
         continue;
       }
+    } else if (rep->tag == CRC) {
+      CordRepCrc::Destroy(rep->crc());
+      rep = nullptr;
     } else {
       CordRepFlat::Delete(rep);
       rep = nullptr;

@@ -20,8 +20,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
@@ -486,7 +486,7 @@ bool ModellerImpl::ApplyCustomization() {
     return false;
 
   log_als_values_ = std::make_unique<AmbientLightSampleBuffer>(
-      base::TimeDelta::FromSeconds(model_config_.model_als_horizon_seconds));
+      base::Seconds(model_config_.model_als_horizon_seconds));
 
   // TODO(jiameng): the following params are probably not useful and can be
   // removed.
@@ -500,7 +500,7 @@ bool ModellerImpl::ApplyCustomization() {
       features::kAutoScreenBrightness, "training_delay_in_seconds",
       training_delay_.InSeconds());
   if (training_delay_in_seconds >= 0) {
-    training_delay_ = base::TimeDelta::FromSeconds(training_delay_in_seconds);
+    training_delay_ = base::Seconds(training_delay_in_seconds);
   }
 
   curve_error_tolerance_ = GetFieldTrialParamByFeatureAsDouble(

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
@@ -24,6 +23,10 @@ class ShelfContextMenu;
 class ShelfSpinnerItemController : public ash::ShelfItemDelegate {
  public:
   explicit ShelfSpinnerItemController(const std::string& app_id);
+
+  ShelfSpinnerItemController(const ShelfSpinnerItemController&) = delete;
+  ShelfSpinnerItemController& operator=(const ShelfSpinnerItemController&) =
+      delete;
 
   ~ShelfSpinnerItemController() override;
 
@@ -45,8 +48,6 @@ class ShelfSpinnerItemController : public ash::ShelfItemDelegate {
   const base::Time start_time_;
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfSpinnerItemController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_SHELF_SPINNER_ITEM_CONTROLLER_H_

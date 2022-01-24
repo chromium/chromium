@@ -12,6 +12,9 @@ namespace ui_devtools {
 
 class DOMAgentViews : public DOMAgent {
  public:
+  DOMAgentViews(const DOMAgentViews&) = delete;
+  DOMAgentViews& operator=(const DOMAgentViews&) = delete;
+
   ~DOMAgentViews() override;
   static std::unique_ptr<DOMAgentViews> Create();
 
@@ -27,9 +30,6 @@ class DOMAgentViews : public DOMAgent {
 
   std::unique_ptr<protocol::DOM::Node> BuildTreeForUIElement(
       UIElement* ui_element) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DOMAgentViews);
 };
 
 }  // namespace ui_devtools

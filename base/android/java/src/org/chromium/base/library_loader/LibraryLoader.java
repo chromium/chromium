@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.system.Os;
@@ -71,6 +70,10 @@ public class LibraryLoader {
     private static final String REACHED_CODE_SAMPLING_INTERVAL_KEY =
             "reached_code_sampling_interval";
 
+    // Compile time switch for sharing RELRO between the browser and the app zygote.
+    // TODO(crbug.com/1154224): remove when the issue is closed.
+    private static final boolean ALLOW_CHROMIUM_LINKER_IN_ZYGOTE = true;
+
     // Default sampling interval for reached code profiler in microseconds.
     private static final int DEFAULT_REACHED_CODE_SAMPLING_INTERVAL_US = 10000;
 
@@ -85,6 +88,11 @@ public class LibraryLoader {
     // library_loader_hooks.cc). Note that this member should remain a one-way switch, since it
     // accessed from multiple threads without a lock.
     private volatile boolean mInitialized;
+
+    // One way switch used by initInAppZygote() when the current platform does not support loading
+    // using a Chromium Linker in the App Zygote. Because of this limited usage it can avoid
+    // synchronization.
+    private boolean mFallbackToSystemLinker;
 
     // State that only transitions one-way from 0->1->2. Volatile for the same reasons as
     // mInitialized.
@@ -155,6 +163,27 @@ public class LibraryLoader {
         int CHILD_WITHOUT_ZYGOTE = 2;
     }
 
+    // Used to override ALLOW_CHROMIUM_LINKER_IN_ZYGOTE outside Local/Dev/Canary.
+    private static boolean sChannelAllowsLinkerInZygote = true;
+
+    /**
+     * Disallow attempts to share RELRO between the App Zygote and the other processes. Must be
+     * called in both the zygote and the browser process because it affects the communication
+     * protocol on both sides. Must be called early to avoid data races - before the LibraryLoader
+     * starts being called from different threads.
+     */
+    public static void setDisallowChromiumLinkerInZygote() {
+        sChannelAllowsLinkerInZygote = false;
+    }
+
+    // Returns true when sharing RELRO between the browser process and the app zygote should *not*
+    // be attempted. In other words, returns true iff the zygote is not allowed to load the library
+    // with the Chromium linker.
+    public static boolean mainProcessIntendsToProvideRelroFd() {
+        return !ALLOW_CHROMIUM_LINKER_IN_ZYGOTE || Build.VERSION.SDK_INT <= Build.VERSION_CODES.R
+                || !sChannelAllowsLinkerInZygote;
+    }
+
     /**
      * Inner class encapsulating points of communication between instances of LibraryLoader in
      * different processes.
@@ -207,6 +236,12 @@ public class LibraryLoader {
             mLoadAddress = Linker.extractLoadAddressFromBundle(bundle);
         }
 
+        private long getLoadAddress() {
+            synchronized (mLock) {
+                return mLoadAddress;
+            }
+        }
+
         /**
          * Initializes the Main (Browser) process side of communication. This process coordinates
          * creation of other processes. Can be called more than once, subsequent calls are ignored.
@@ -214,9 +249,26 @@ public class LibraryLoader {
         public void ensureInitializedInMainProcess() {
             if (mInitDone) return;
             if (useChromiumLinker()) {
-                // In the main process choose the loading address at random.
-                getLinker().ensureInitialized(/* asRelroProducer= */ true,
-                        Linker.PreferAddress.RESERVE_RANDOM, /* addressHint= */ 0);
+                boolean attemptProduceRelro = mainProcessIntendsToProvideRelroFd();
+                // When the main process creates the shared region with relocations, it is faster
+                // to randomize the load address than to find the reserved one
+                // in /proc. When the main process relies on RELRO from the
+                // zygote, then it should scan /proc to find the reserved range
+                // because waiting for zygote to reveal its address would have
+                // delayed startup.
+                if (DEBUG) {
+                    Log.i(TAG, "ensureInitializedInMainProcess, producing RELRO FD: %b",
+                            attemptProduceRelro);
+                }
+                // For devices avoiding the App Zygote in
+                // ChildConnectionAllocator.createVariableSize() the FIND_RESERVED search can be
+                // avoided: a random region is sufficient. TODO(pasko): Investigate whether it is
+                // worth coordinating with the ChildConnectionAllocator. To speed up process
+                // creation.
+                int preferAddress = attemptProduceRelro ? Linker.PreferAddress.RESERVE_RANDOM
+                                                        : Linker.PreferAddress.FIND_RESERVED;
+                getLinker().ensureInitialized(
+                        attemptProduceRelro, preferAddress, /* addressHint= */ 0);
             }
             mCreatedIn = CreatedIn.MAIN;
             mInitDone = true;
@@ -240,19 +292,67 @@ public class LibraryLoader {
          */
         public void initInAppZygote() {
             assert !mInitDone;
+            if (useChromiumLinker() && !mainProcessIntendsToProvideRelroFd()) {
+                getLinker().ensureInitialized(
+                        /* asRelroProducer= */ true, Linker.PreferAddress.FIND_RESERVED, 0);
+            } else {
+                // The main process will attempt to create RELRO FD without coordination. Fall back
+                // to loading with the system linker. Can happen in tests and on dev builds with
+                // forceSystemLinker(), should not happen in the field.
+                mFallbackToSystemLinker = true;
+            }
             mCreatedIn = CreatedIn.ZYGOTE;
             // The initInChildProcess() will set |mInitDone| to |true| after fork(2).
         }
 
         /**
-         * Initializes in processes other than Main and App Zygote. Can be called only once in each
-         * non-main process.
+         * Initializes in processes other than "Main". Can be called only once in each non-main
+         * process.
          */
         public void initInChildProcess() {
             assert !mInitDone;
-            if (useChromiumLinker()) {
+            if (!useChromiumLinker()) {
+                mInitDone = true;
+                return;
+            }
+            if (mainProcessIntendsToProvideRelroFd()) {
+                if (DEBUG) {
+                    Log.i(TAG, "initInChildProcess: RELRO FD not provided by App Zygote");
+                }
                 getLinker().ensureInitialized(/* asRelroProducer= */ false,
-                        Linker.PreferAddress.RESERVE_HINT, mLoadAddress);
+                        Linker.PreferAddress.RESERVE_HINT, getLoadAddress());
+            } else if (isLoadedByZygote()) {
+                if (DEBUG) {
+                    Log.i(TAG,
+                            "initInChildProcess: already loaded by app zygote "
+                                    + "(mFallbackToSystemLinker=%b)",
+                            mFallbackToSystemLinker);
+                }
+            } else if (mCreatedIn == CreatedIn.ZYGOTE) {
+                if (DEBUG) {
+                    Log.i(TAG, "initInChildProcess: the app zygote failed to produce RELRO FD");
+                }
+                getLinker().ensureInitialized(/* asRelroProducer= */ false,
+                        Linker.PreferAddress.RESERVE_HINT, getLoadAddress());
+            } else {
+                // The main process expects the app zygote to provide the RELRO FD, but this process
+                // does not inherit from the app zygote. This could be because:
+                // 1. Running in a privileged process - very common
+                // 2. Running in a renderer process - App Zygote was disabled due to opt out on
+                //    low end devices - somewhat common
+                // To cover both cases start with FIND_RESERVED, and proceed with fallbacks built
+                // into the Linker initialization.
+                //
+                // TODO(pasko): Investigate whether searching with FIND_RESERVED affects startup
+                // speed on Go devices.
+                if (DEBUG) {
+                    Log.i(TAG,
+                            "initInChildProcess: child process not from app zygote, with address "
+                                    + "hint: 0x%x",
+                            getLoadAddress());
+                }
+                getLinker().ensureInitialized(/* asRelroProducer= */ false,
+                        Linker.PreferAddress.FIND_RESERVED, getLoadAddress());
             }
             if (mCreatedIn != CreatedIn.ZYGOTE) mCreatedIn = CreatedIn.CHILD_WITHOUT_ZYGOTE;
             mInitDone = true;
@@ -264,7 +364,7 @@ public class LibraryLoader {
          * @param bundle Where to deserialize from.
          */
         public void takeSharedRelrosFromBundle(Bundle bundle) {
-            if (useChromiumLinker() && !isLoadedByZygote()) {
+            if (useChromiumLinker()) {
                 getLinker().takeSharedRelrosFromBundle(bundle);
             }
         }
@@ -281,22 +381,41 @@ public class LibraryLoader {
             }
         }
 
-        private String getLoadHistogramName() {
+        private void recordLinkerHistogramsAfterLibraryLoad() {
+            if (!useChromiumLinker()) return;
+            // When recording a sample in the App Zygote it gets copied to each forked process and
+            // hence gets duplicated in the uploads. Avoiding such duplication would require
+            // serializing the samples, sending them to the browser process and disambiguating by,
+            // for example, Zygote PID in ChildProcessConnection.java. A few rough performance
+            // estimations do not require this complexity.
+            getLinker().recordHistograms(creationAsString());
+        }
+
+        private String creationAsString() {
             switch (mCreatedIn) {
                 case CreatedIn.MAIN:
-                    return "ChromiumAndroidLinker.BrowserLoadTime2";
+                    return "Browser";
                 case CreatedIn.ZYGOTE:
-                    return "ChromiumAndroidLinker.ZygoteLoadTime2";
+                    return "Zygote";
                 case CreatedIn.CHILD_WITHOUT_ZYGOTE:
-                    return "ChromiumAndroidLinker.ChildLoadTime2";
+                    return "Child";
                 default:
                     assert false : "Must initialize as one of {Browser,Zygote,Child}";
                     return "";
             }
         }
 
+        private static final String LINKER_HISTOGRAM_PREFIX = "ChromiumAndroidLinker.";
+
         private void recordLoadTimeHistogram(long loadTimeMs) {
-            RecordHistogram.recordTimesHistogram(getLoadHistogramName(), loadTimeMs);
+            RecordHistogram.recordTimesHistogram(
+                    LINKER_HISTOGRAM_PREFIX + creationAsString() + "LoadTime2", loadTimeMs);
+        }
+
+        public void recordLoadThreadTimeHistogram(long threadLoadTimeMs) {
+            RecordHistogram.recordTimesHistogram(
+                    LINKER_HISTOGRAM_PREFIX + creationAsString() + "ThreadLoadTime",
+                    threadLoadTimeMs);
         }
     }
 
@@ -340,8 +459,9 @@ public class LibraryLoader {
     }
 
     /**
-     * Set native library preloader, if set, the NativeLibraryPreloader.loadLibrary will be invoked
-     * before calling System.loadLibrary, this only applies when not using the chromium linker.
+     * Set native library preloader. If set and the Chromium linker is not used, the
+     * {@link NativeLibraryPreloader#loadLibrary(String)} ()} will be invoked before calling
+     * System.loadLibrary().
      *
      * @param loader the NativeLibraryPreloader, it shall only be set once and before the
      *               native library is loaded.
@@ -400,7 +520,8 @@ public class LibraryLoader {
     // Note: This cannot be done in the build configuration, as otherwise chrome_public_apk cannot
     // both be used as the basis to ship on L, and the default APK used by developers on 10+.
     private boolean forceSystemLinker() {
-        return mUseChromiumLinker && !mUseModernLinker && Build.VERSION.SDK_INT >= VERSION_CODES.Q;
+        return mUseChromiumLinker && !mUseModernLinker
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
     }
 
     // Whether a Linker subclass is used for loading. Even if returns |true|, the Linker can
@@ -533,7 +654,7 @@ public class LibraryLoader {
         synchronized (mLock) {
             setLinkerImplementationIfNeededAlreadyLocked();
             if (useChromiumLinker()) return;
-            preloadAlreadyLocked(packageName, false /* inZygote */);
+            preloadAlreadyLocked(packageName, /* inZygote= */ false);
         }
     }
 
@@ -541,7 +662,7 @@ public class LibraryLoader {
     private void preloadAlreadyLocked(String packageName, boolean inZygote) {
         try (TraceEvent te = TraceEvent.scoped("LibraryLoader.preloadAlreadyLocked")) {
             // Preloader uses system linker, we shouldn't preload if Chromium linker is used.
-            assert !useChromiumLinker() || inZygote;
+            assert !useChromiumLinker() || (inZygote && mainProcessIntendsToProvideRelroFd());
             if (mLibraryPreloader != null && !mLibraryPreloaderCalled) {
                 mLibraryPreloader.loadLibrary(packageName);
                 mLibraryPreloaderCalled = true;
@@ -585,7 +706,7 @@ public class LibraryLoader {
                     && appContext != ContextUtils.getApplicationContext()) {
                 throw new IllegalStateException("Attempt to load again from alternate context.");
             }
-            loadMainDexAlreadyLocked(appContext.getApplicationInfo(), false /* inZygote */);
+            loadMainDexAlreadyLocked(appContext.getApplicationInfo(), /* inZygote= */ false);
         }
         loadNonMainDex();
     }
@@ -593,7 +714,7 @@ public class LibraryLoader {
     public void loadNowInZygote(ApplicationInfo appInfo) {
         synchronized (mLock) {
             assert mLoadState == LoadState.NOT_LOADED;
-            loadMainDexAlreadyLocked(appInfo, true /* inZygote */);
+            loadMainDexAlreadyLocked(appInfo, /* inZygote= */ true);
             loadNonMainDex();
             mLoadedByZygote = true;
         }
@@ -689,6 +810,7 @@ public class LibraryLoader {
         }
 
         linker.loadLibrary(library); // May throw UnsatisfiedLinkError.
+        getMediator().recordLinkerHistogramsAfterLibraryLoad();
     }
 
     @GuardedBy("mLock")
@@ -699,7 +821,7 @@ public class LibraryLoader {
 
         // If the libraries are located in the zip file, assert that the device API level is M or
         // higher. On devices <=M, the libraries should always be loaded by LegacyLinker.
-        assert !isInZipFile() || Build.VERSION.SDK_INT >= VERSION_CODES.M;
+        assert !isInZipFile() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
 
         // Load libraries using the system linker.
         for (String library : NativeLibraries.LIBRARIES) {
@@ -735,8 +857,9 @@ public class LibraryLoader {
             setLinkerImplementationIfNeededAlreadyLocked();
 
             long startTime = SystemClock.uptimeMillis();
+            long startThreadTime = SystemClock.currentThreadTimeMillis();
 
-            if (useChromiumLinker() && !inZygote) {
+            if (useChromiumLinker() && !mFallbackToSystemLinker) {
                 if (DEBUG) Log.i(TAG, "Loading with the Chromium linker.");
                 // See base/android/linker/config.gni, the chromium linker is only enabled when
                 // we have a single library.
@@ -750,6 +873,8 @@ public class LibraryLoader {
 
             long loadTimeMs = SystemClock.uptimeMillis() - startTime;
             getMediator().recordLoadTimeHistogram(loadTimeMs);
+            getMediator().recordLoadThreadTimeHistogram(
+                    SystemClock.currentThreadTimeMillis() - startThreadTime);
             if (DEBUG) Log.i(TAG, "Time to load native libraries: %d ms", loadTimeMs);
             mLoadState = LoadState.MAIN_DEX_LOADED;
         } catch (UnsatisfiedLinkError e) {

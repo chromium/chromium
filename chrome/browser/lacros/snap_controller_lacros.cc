@@ -16,10 +16,10 @@ ui::WaylandWindowSnapDirection ToWaylandWindowSnapDirection(
   switch (snap) {
     case chromeos::SnapDirection::kNone:
       return ui::WaylandWindowSnapDirection::kNone;
-    case chromeos::SnapDirection::kLeft:
-      return ui::WaylandWindowSnapDirection::kLeft;
-    case chromeos::SnapDirection::kRight:
-      return ui::WaylandWindowSnapDirection::kRight;
+    case chromeos::SnapDirection::kPrimary:
+      return ui::WaylandWindowSnapDirection::kPrimary;
+    case chromeos::SnapDirection::kSecondary:
+      return ui::WaylandWindowSnapDirection::kSecondary;
   }
 }
 

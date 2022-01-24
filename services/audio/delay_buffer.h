@@ -45,6 +45,9 @@ class DelayBuffer {
   // recorded.
   explicit DelayBuffer(int history_size);
 
+  DelayBuffer(const DelayBuffer&) = delete;
+  DelayBuffer& operator=(const DelayBuffer&) = delete;
+
   ~DelayBuffer();
 
   // Inserts a copy of the given audio into the buffer. |position| must be
@@ -80,6 +83,9 @@ class DelayBuffer {
     // Constructor for an InputChunk with data.
     InputChunk(FrameTicks p, std::unique_ptr<media::AudioBus> b);
 
+    InputChunk(const InputChunk&) = delete;
+    InputChunk& operator=(const InputChunk&) = delete;
+
     // Move constructor/assignment.
     InputChunk(InputChunk&& other);
     InputChunk& operator=(InputChunk&& other);
@@ -88,9 +94,6 @@ class DelayBuffer {
 
     // Returns the position just after the last frame's position.
     FrameTicks GetEndPosition() const;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(InputChunk);
   };
 
   // The minimum number of un-read frames that must be kept.
@@ -100,8 +103,6 @@ class DelayBuffer {
   // always in-order, chronologically increasing by InputChunk::position, and do
   // not overlap.
   base::circular_deque<InputChunk> chunks_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayBuffer);
 };
 
 }  // namespace audio

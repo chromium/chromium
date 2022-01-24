@@ -83,6 +83,10 @@ class PLATFORM_EXPORT ScaleTransformOperation final
 
   bool HasNonTrivial3DComponent() const override { return z_ != 1.0; }
 
+  void CommonPrimitiveForInterpolation(
+      const TransformOperation* from,
+      TransformOperation::OperationType& common_type) const;
+
   scoped_refptr<TransformOperation> Zoom(double factor) final { return this; }
 
   bool PreservesAxisAlignment() const final { return true; }

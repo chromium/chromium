@@ -20,11 +20,6 @@ namespace {
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
-using ::testing::IsEmpty;
-using ::testing::IsNull;
-using ::testing::Pointee;
-using ::testing::Property;
-using ::testing::SizeIs;
 
 class ConfigureBottomSheetActionTest : public testing::Test {
  public:
@@ -77,8 +72,8 @@ class ConfigureBottomSheetActionTest : public testing::Test {
   // Fast forward time enough for an action created by RunWithTimeout() to time
   // out.
   void ForceTimeout() {
-    task_env_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
-    task_env_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+    task_env_.FastForwardBy(base::Milliseconds(100));
+    task_env_.FastForwardBy(base::Milliseconds(100));
   }
 
   // task_env_ must be first to guarantee other field

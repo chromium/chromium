@@ -85,7 +85,7 @@ TEST(ExperimentTest, TestSetDisplayTime) {
   EXPECT_EQ(zero_day, experiment.first_display_time());
   EXPECT_EQ(zero_day, experiment.latest_display_time());
 
-  base::Time one_day = zero_day + base::TimeDelta::FromDays(1);
+  base::Time one_day = zero_day + base::Days(1);
   experiment.SetDisplayTime(one_day);
   EXPECT_EQ(1, experiment.metrics().first_toast_offset_days);
   EXPECT_EQ(one_day, experiment.first_display_time());
@@ -93,7 +93,7 @@ TEST(ExperimentTest, TestSetDisplayTime) {
 
   // Test that calling SetDisplayTime again will not reset
   // first_toast_offset_days.
-  base::Time two_day = zero_day + base::TimeDelta::FromDays(2);
+  base::Time two_day = zero_day + base::Days(2);
   experiment.SetDisplayTime(two_day);
   EXPECT_EQ(1, experiment.metrics().first_toast_offset_days);
   EXPECT_EQ(one_day, experiment.first_display_time());
@@ -103,8 +103,7 @@ TEST(ExperimentTest, TestSetDisplayTime) {
   Experiment new_experiment;
   new_experiment.AssignGroup(5);
   base::Time max_day =
-      zero_day +
-      base::TimeDelta::FromDays(ExperimentMetrics::kMaxFirstToastOffsetDays);
+      zero_day + base::Days(ExperimentMetrics::kMaxFirstToastOffsetDays);
   new_experiment.SetDisplayTime(max_day);
   EXPECT_EQ(ExperimentMetrics::kMaxFirstToastOffsetDays,
             new_experiment.metrics().first_toast_offset_days);
@@ -114,7 +113,7 @@ TEST(ExperimentTest, TestSetDisplayTime) {
   // Test setting toast_hour. Since it depends on local time it is
   // tested by setting toast hour for two consecutive hours and verifying the
   // difference is 1.
-  base::Time two_day_one_hour = two_day + base::TimeDelta::FromHours(1);
+  base::Time two_day_one_hour = two_day + base::Hours(1);
   Experiment hour_experiment;
   hour_experiment.AssignGroup(5);
   hour_experiment.SetDisplayTime(two_day_one_hour);
@@ -126,26 +125,26 @@ TEST(ExperimentTest, TestSetDisplayTime) {
 TEST(ExperimentTest, TestSetUserSessionUptime) {
   Experiment experiment;
   experiment.AssignGroup(5);
-  experiment.SetUserSessionUptime(base::TimeDelta::FromMinutes(0));
+  experiment.SetUserSessionUptime(base::Minutes(0));
   EXPECT_EQ(0, experiment.metrics().session_length_bucket);
   EXPECT_EQ(0, experiment.user_session_uptime().InMinutes());
 
-  experiment.SetUserSessionUptime(base::TimeDelta::FromMinutes(60));
+  experiment.SetUserSessionUptime(base::Minutes(60));
   EXPECT_EQ(24, experiment.metrics().session_length_bucket);
   EXPECT_EQ(60, experiment.user_session_uptime().InMinutes());
 
-  experiment.SetUserSessionUptime(base::TimeDelta::FromMinutes(60 * 24));
+  experiment.SetUserSessionUptime(base::Minutes(60 * 24));
   EXPECT_EQ(43, experiment.metrics().session_length_bucket);
   EXPECT_EQ(60 * 24, experiment.user_session_uptime().InMinutes());
 
   experiment.SetUserSessionUptime(
-      base::TimeDelta::FromMinutes(ExperimentMetrics::kMaxSessionLength));
+      base::Minutes(ExperimentMetrics::kMaxSessionLength));
   EXPECT_EQ(63, experiment.metrics().session_length_bucket);
   EXPECT_EQ(ExperimentMetrics::kMaxSessionLength,
             experiment.user_session_uptime().InMinutes());
 
   experiment.SetUserSessionUptime(
-      base::TimeDelta::FromMinutes(2 * ExperimentMetrics::kMaxSessionLength));
+      base::Minutes(2 * ExperimentMetrics::kMaxSessionLength));
   EXPECT_EQ(63, experiment.metrics().session_length_bucket);
   EXPECT_EQ(2 * ExperimentMetrics::kMaxSessionLength,
             experiment.user_session_uptime().InMinutes());
@@ -154,26 +153,25 @@ TEST(ExperimentTest, TestSetUserSessionUptime) {
 TEST(ExperimentTest, TestSetActionDelay) {
   Experiment experiment;
   experiment.AssignGroup(5);
-  experiment.SetActionDelay(base::TimeDelta::FromSeconds(0));
+  experiment.SetActionDelay(base::Seconds(0));
   EXPECT_EQ(0, experiment.metrics().action_delay_bucket);
   EXPECT_EQ(0, experiment.user_session_uptime().InSeconds());
 
-  experiment.SetActionDelay(base::TimeDelta::FromSeconds(60));
+  experiment.SetActionDelay(base::Seconds(60));
   EXPECT_EQ(10, experiment.metrics().action_delay_bucket);
   EXPECT_EQ(60, experiment.action_delay().InSeconds());
 
-  experiment.SetActionDelay(base::TimeDelta::FromSeconds(60 * 60));
+  experiment.SetActionDelay(base::Seconds(60 * 60));
   EXPECT_EQ(19, experiment.metrics().action_delay_bucket);
   EXPECT_EQ(60 * 60, experiment.action_delay().InSeconds());
 
-  experiment.SetActionDelay(
-      base::TimeDelta::FromSeconds(ExperimentMetrics::kMaxActionDelay));
+  experiment.SetActionDelay(base::Seconds(ExperimentMetrics::kMaxActionDelay));
   EXPECT_EQ(31, experiment.metrics().action_delay_bucket);
   EXPECT_EQ(ExperimentMetrics::kMaxActionDelay,
             experiment.action_delay().InSeconds());
 
   experiment.SetActionDelay(
-      base::TimeDelta::FromSeconds(2 * ExperimentMetrics::kMaxActionDelay));
+      base::Seconds(2 * ExperimentMetrics::kMaxActionDelay));
   EXPECT_EQ(31, experiment.metrics().action_delay_bucket);
   EXPECT_EQ(2 * ExperimentMetrics::kMaxActionDelay,
             experiment.action_delay().InSeconds());
@@ -188,12 +186,11 @@ TEST(ExperimentTest, TestAllSetters) {
   experiment.SetToastCount(1);
   base::Time test_display_time =
       (base::Time::UnixEpoch() +
-       base::TimeDelta::FromSeconds(
-           ExperimentMetrics::kExperimentStartSeconds) +
-       base::TimeDelta::FromDays(30) + base::TimeDelta::FromHours(3));
+       base::Seconds(ExperimentMetrics::kExperimentStartSeconds) +
+       base::Days(30) + base::Hours(3));
   experiment.SetDisplayTime(test_display_time);
-  experiment.SetUserSessionUptime(base::TimeDelta::FromMinutes(3962));
-  experiment.SetActionDelay(base::TimeDelta::FromSeconds(32875));
+  experiment.SetUserSessionUptime(base::Minutes(3962));
+  experiment.SetActionDelay(base::Seconds(32875));
 
   EXPECT_EQ(ExperimentMetrics::kGroupAssigned, experiment.state());
   EXPECT_EQ(5, experiment.group());
@@ -202,9 +199,8 @@ TEST(ExperimentTest, TestAllSetters) {
   EXPECT_EQ(1, experiment.toast_count());
   EXPECT_EQ(test_display_time, experiment.first_display_time());
   EXPECT_EQ(test_display_time, experiment.latest_display_time());
-  EXPECT_EQ(base::TimeDelta::FromMinutes(3962),
-            experiment.user_session_uptime());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(32875), experiment.action_delay());
+  EXPECT_EQ(base::Minutes(3962), experiment.user_session_uptime());
+  EXPECT_EQ(base::Seconds(32875), experiment.action_delay());
 
   EXPECT_EQ(ExperimentMetrics::kGroupAssigned, experiment.metrics().state);
   EXPECT_EQ(5, experiment.metrics().group);

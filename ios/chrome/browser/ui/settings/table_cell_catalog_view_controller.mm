@@ -34,10 +34,8 @@
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
+#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -128,7 +126,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewTextItem alloc] initWithType:ItemTypeText];
   textItem.text = @"Simple Text Cell";
   textItem.textAlignment = NSTextAlignmentCenter;
-  textItem.textColor = UIColor.cr_labelColor;
+  textItem.textColor = [UIColor colorNamed:kTextPrimaryColor];
   [model addItem:textItem toSectionWithIdentifier:SectionIdentifierText];
 
   textItem = [[TableViewTextItem alloc] initWithType:ItemTypeText];
@@ -508,11 +506,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   signinPromo.text = @"Signin promo text example";
   [model addItem:signinPromo toSectionWithIdentifier:SectionIdentifierAccount];
 
+  UIImage* defaultAvatar = ios::provider::GetSigninDefaultAvatar();
+
   TableViewAccountItem* accountItemDetailWithError =
       [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
-  // TODO(crbug.com/754032): ios_default_avatar image is from a downstream iOS
-  // internal repository. It should be used through a provider API instead.
-  accountItemDetailWithError.image = [UIImage imageNamed:@"ios_default_avatar"];
+  accountItemDetailWithError.image = defaultAvatar;
   accountItemDetailWithError.text = @"Account User Name";
   accountItemDetailWithError.detailText =
       @"Syncing to AccountUserNameAccount@example.com";
@@ -524,9 +522,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewAccountItem* accountItemCheckMark =
       [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
-  // TODO(crbug.com/754032): ios_default_avatar image is from a downstream iOS
-  // internal repository. It should be used through a provider API instead.
-  accountItemCheckMark.image = [UIImage imageNamed:@"ios_default_avatar"];
+  accountItemCheckMark.image = defaultAvatar;
   accountItemCheckMark.text = @"Lorem ipsum dolor sit amet, consectetur "
                               @"adipiscing elit, sed do eiusmod tempor "
                               @"incididunt ut labore et dolore magna aliqua.";

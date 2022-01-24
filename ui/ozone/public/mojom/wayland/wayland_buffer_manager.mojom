@@ -5,6 +5,7 @@
 module ui.ozone.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/accelerated_widget.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
@@ -59,6 +60,17 @@ interface WaylandBufferManagerHost {
                        gfx.mojom.Size size,
                        uint32 buffer_id);
 
+  // Creates a browser side solid color wl_buffer that is cleared to a given
+  // |color| on the Wayland compositor side without any performance penalties
+  // compared to creation of dmabuf/shm backed buffers cleared to a certain
+  // color. |color| is a requested color. |size| is a requested size of the
+  // solid color buffer. And |buffer_id| is a unique id for the buffer, which is
+  // used to identify imported wl_buffers on the browser process side and map
+  // them with the buffer objects on the gpu process side.
+  CreateSolidColorBuffer(gfx.mojom.Size size,
+                         skia.mojom.SkColor color,
+                         uint32 buffer_id);
+
   // These two methods are independent from the type of rendering.
   //
   // Destroys a wl_buffer created by WaylandConnection based on the |buffer_id|
@@ -93,12 +105,17 @@ interface WaylandBufferManagerGpu {
   // |supports_acquire_fence| indicates whether acquire fences can be submitted
   // with buffers for wayland servers to wait on before accessing buffer
   // contents.
+  // |supports_non_backed_solid_color_buffers| indicates whether the buffer
+  // manager is able to create a non-backed solid color wl_buffer. The value of
+  // this variable depends on the availability of the surface-augmenter
+  // protocol.
   Initialize(pending_remote<WaylandBufferManagerHost> remote_host,
              map<gfx.mojom.BufferFormat,
                  array<uint64>> buffer_formats_with_modifiers,
              bool supports_dma_buf,
              bool supports_viewporter,
-             bool supports_acquire_fence);
+             bool supports_acquire_fence,
+             bool supports_non_backed_solid_color_buffers);
 
   // Signals about swap completion.
   OnSubmission(gfx.mojom.AcceleratedWidget widget,

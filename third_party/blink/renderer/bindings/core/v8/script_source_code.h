@@ -43,26 +43,13 @@
 namespace blink {
 
 class ScriptResource;
+class ScriptCacheConsumer;
 class SingleCachedMetadataHandler;
 
 class CORE_EXPORT ScriptSourceCode final {
   DISALLOW_NEW();
 
  public:
-  // Return whether chrome should use the request URL or the response URL as the
-  // 'url' of the script. This can be observed in:
-  // 1) The 'source-file' in CSP violations reports.
-  // 2) The URL(s) in javascript stack traces.
-  // 3) How relative source map are resolved.
-  //
-  // This returns false by default. This corresponds to the current
-  // specification and matches Firefox behavior. This also avoids leaking
-  // post-redirect data cross-origin. See https://crbug.com/1074317.
-  //
-  // This can be enabled using the switch:
-  // --enable-features=UnsafeScriptReportPostRedirectURL
-  static bool UsePostRedirectURL();
-
   // For inline scripts.
   ScriptSourceCode(
       const String& source,
@@ -76,6 +63,7 @@ class CORE_EXPORT ScriptSourceCode final {
   // We lose the encoding information from ScriptResource.
   // Not sure if that matters.
   ScriptSourceCode(ScriptStreamer*,
+                   ScriptCacheConsumer*,
                    ScriptResource*,
                    ScriptStreamer::NotStreamingReason);
 
@@ -109,6 +97,8 @@ class CORE_EXPORT ScriptSourceCode final {
     return not_streaming_reason_;
   }
 
+  ScriptCacheConsumer* CacheConsumer() const { return cache_consumer_; }
+
  private:
   ScriptSourceCode(
       const ParkableString& source,
@@ -120,6 +110,7 @@ class CORE_EXPORT ScriptSourceCode final {
   const ParkableString source_;
   Member<SingleCachedMetadataHandler> cache_handler_;
   Member<ScriptStreamer> streamer_;
+  Member<ScriptCacheConsumer> cache_consumer_;
   ScriptStreamer::NotStreamingReason not_streaming_reason_;
 
   // The URL of the source code, which is primarily intended for DevTools

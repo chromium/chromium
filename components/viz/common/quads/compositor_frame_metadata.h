@@ -15,6 +15,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/frame_deadline.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/common/viz_common_export.h"
@@ -80,6 +81,8 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
 
   bool may_contain_video = false;
+
+  bool may_throttle_if_undrawn_frames = true;
 
   // WebView makes quality decisions for rastering resourceless software frames
   // based on information that a scroll or animation is active.
@@ -168,6 +171,14 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // This represents a list of directives to execute in order to support the
   // document transitions.
   std::vector<CompositorFrameTransitionDirective> transition_directives;
+
+  // A map of region capture crop ids associated with this frame to the
+  // gfx::Rect of the region that they represent.
+  RegionCaptureBounds capture_bounds;
+
+  // Indicates if this frame references shared element resources that need to
+  // be replaced with ResourceIds in the Viz process.
+  bool has_shared_element_resources = false;
 
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);

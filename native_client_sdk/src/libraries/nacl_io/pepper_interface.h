@@ -150,6 +150,10 @@ class ScopedResource {
   // Does not AddRef.
   explicit ScopedResource(PepperInterface* ppapi);
   ScopedResource(PepperInterface* ppapi, PP_Resource resource);
+
+  ScopedResource(const ScopedResource&) = delete;
+  ScopedResource& operator=(const ScopedResource&) = delete;
+
   ~ScopedResource();
 
   PP_Resource pp_resource() const { return resource_; }
@@ -164,8 +168,6 @@ class ScopedResource {
  private:
   PepperInterface* ppapi_;
   PP_Resource resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedResource);
 };
 
 class ScopedVar {
@@ -173,6 +175,10 @@ class ScopedVar {
   // Does not AddRef.
   explicit ScopedVar(PepperInterface* ppapi);
   ScopedVar(PepperInterface* ppapi, PP_Var var);
+
+  ScopedVar(const ScopedVar&) = delete;
+  ScopedVar& operator=(const ScopedVar&) = delete;
+
   ~ScopedVar();
 
   PP_Var pp_var() const { return var_; }
@@ -187,8 +193,6 @@ class ScopedVar {
  private:
   PepperInterface* ppapi_;
   PP_Var var_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVar);
 };
 
 }  // namespace nacl_io

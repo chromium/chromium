@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission_set.h"
@@ -50,6 +49,10 @@ struct IndividualSettings {
 
   IndividualSettings();
   explicit IndividualSettings(const IndividualSettings* default_settings);
+
+  IndividualSettings(const IndividualSettings&) = delete;
+  IndividualSettings& operator=(const IndividualSettings&) = delete;
+
   ~IndividualSettings();
 
   void Reset();
@@ -144,14 +147,15 @@ struct IndividualSettings {
   // all times.
   ExtensionManagement::ToolbarPinMode toolbar_pin =
       ExtensionManagement::ToolbarPinMode::kDefaultUnpinned;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndividualSettings);
 };
 
 // Global extension management settings, applicable to all extensions.
 struct GlobalSettings {
   GlobalSettings();
+
+  GlobalSettings(const GlobalSettings&) = delete;
+  GlobalSettings& operator=(const GlobalSettings&) = delete;
+
   ~GlobalSettings();
 
   void Reset();
@@ -165,9 +169,6 @@ struct GlobalSettings {
   // only of |has_restricted_allowed_types| is set to true.
   std::vector<Manifest::Type> allowed_types;
   bool has_restricted_allowed_types;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GlobalSettings);
 };
 
 }  // namespace internal

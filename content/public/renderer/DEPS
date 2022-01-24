@@ -2,7 +2,7 @@ include_rules = [
   "+content/common/media",
   "+content/public/child",
   "+gin",
-  "+v8/include/v8.h",
+  "+v8/include",
 ]
 
 specific_include_rules = {

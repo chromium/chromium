@@ -24,12 +24,10 @@
 
 namespace {
 
-const base::Time t0 =
-    base::Time::UnixEpoch() + base::TimeDelta::FromDays(365 * 50);
+const base::Time t0 = base::Time::UnixEpoch() + base::Days(365 * 50);
 
 // Copied from nearby_share_certificate_manager_impl.cc.
-constexpr base::TimeDelta kListPublicCertificatesTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kListPublicCertificatesTimeout = base::Seconds(30);
 
 const char kPageTokenPrefix[] = "page_token_";
 const char kSecretIdPrefix[] = "secret_id_";

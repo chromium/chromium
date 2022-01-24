@@ -72,13 +72,6 @@ class InputRouter {
   // to viewport.
   virtual void SetDeviceScaleFactor(float device_scale_factor) = 0;
 
-  // Sets the frame tree node id of associated frame, used when tracing
-  // input event latencies to relate events to their target frames. Since
-  // input always flows to Local Frame Roots, the |frameTreeNodeId| is
-  // relative to the Frame associated with the Local Frame Root for the
-  // widget owning this InputRouter.
-  virtual void SetFrameTreeNodeId(int frameTreeNodeId) = 0;
-
   // Return the currently allowed touch-action.
   virtual absl::optional<cc::TouchAction> AllowedTouchAction() = 0;
 

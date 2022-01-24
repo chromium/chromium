@@ -6,31 +6,21 @@
 [
     ActiveScriptWrappable,
     Exposed=(Window,Worker),
+    SecureContext,
     RuntimeEnabled=WebTransport
 ] interface WebTransport {
   [CallWith=ScriptState, RaisesException, MeasureAs=WebTransport] constructor(USVString url, optional WebTransportOptions options = {});
-  [CallWith=ScriptState, RaisesException] Promise<SendStream>
+  [CallWith=ScriptState, RaisesException] Promise<WritableStream>
       createUnidirectionalStream();
   readonly attribute ReadableStream incomingUnidirectionalStreams;
 
-  [CallWith=ScriptState, RaisesException] Promise<BidirectionalStream>
+  [CallWith=ScriptState, RaisesException] Promise<WebTransportBidirectionalStream>
       createBidirectionalStream();
   readonly attribute ReadableStream incomingBidirectionalStreams;
 
-  readonly attribute DatagramDuplexStream datagrams;
-
-  // datagramWritable and datagramReadable are retained for backwards
-  // compatibility.
-  // TODO(ricea): Remove these before shipping.
-  readonly attribute WritableStream datagramWritable;
-  readonly attribute ReadableStream datagramReadable;
+  readonly attribute WebTransportDatagramDuplexStream datagrams;
 
   void close(optional WebTransportCloseInfo closeInfo = {});
   readonly attribute Promise<void> ready;
   readonly attribute Promise<WebTransportCloseInfo> closed;
-
-  // This is an experimental and non-standard function. Sets the duration
-  // which determines whether an outgoing datagram should be discarded due to
-  // being in the queue for too long, in milliseconds.
-  void setDatagramWritableQueueExpirationDuration(double ms);
 };

@@ -56,7 +56,7 @@ TEST(TrustTokenStoreTest, RecordsIssuances) {
   // since last issuance being correctly returned.
 
   my_store->RecordIssuance(issuer);
-  auto delta = base::TimeDelta::FromSeconds(1);
+  auto delta = base::Seconds(1);
   env.AdvanceClock(delta);
 
   EXPECT_THAT(my_store->TimeSinceLastIssuance(issuer), Optional(delta));
@@ -94,8 +94,7 @@ TEST(TrustTokenStoreTest, DoesntReportNegativeTimeSinceLastIssuance) {
   auto my_store = TrustTokenStore::CreateForTesting(std::move(my_persister));
   SuitableTrustTokenOrigin issuer =
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com"));
-  base::Time later_than_now =
-      base::Time::Now() + base::TimeDelta::FromSeconds(1);
+  base::Time later_than_now = base::Time::Now() + base::Seconds(1);
 
   auto issuer_config_with_future_time =
       std::make_unique<TrustTokenIssuerConfig>();
@@ -128,7 +127,7 @@ TEST(TrustTokenStore, RecordsRedemptions) {
   // since last redemption being correctly returned.
 
   my_store->RecordRedemption(issuer, toplevel);
-  auto delta = base::TimeDelta::FromSeconds(1);
+  auto delta = base::Seconds(1);
   env.AdvanceClock(delta);
 
   EXPECT_THAT(my_store->TimeSinceLastRedemption(issuer, toplevel),
@@ -174,8 +173,7 @@ TEST(TrustTokenStoreTest, DoesntReportNegativeTimeSinceLastRedemption) {
   SuitableTrustTokenOrigin toplevel =
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com"));
 
-  base::Time later_than_now =
-      base::Time::Now() + base::TimeDelta::FromSeconds(1);
+  base::Time later_than_now = base::Time::Now() + base::Seconds(1);
 
   auto config_with_future_time =
       std::make_unique<TrustTokenIssuerToplevelPairConfig>();

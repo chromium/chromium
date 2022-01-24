@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.crypt.AesTest');
 goog.setTestOnly();
@@ -19,7 +11,8 @@ const Aes = goog.require('goog.crypt.Aes');
 const crypt = goog.require('goog.crypt');
 const testSuite = goog.require('goog.testing.testSuite');
 
-Aes.ENABLE_TEST_MODE = true;
+/** Override define value */
+Aes['ENABLE_TEST_MODE'] = true;
 
 /*
  * Unit test for goog.crypt.Aes using the test vectors from the spec:
@@ -144,6 +137,10 @@ function encodeByte(val) {
 const v128 = [];
 (function v128_init() {
   for (let i = 0; i <= 10; i++) v128[i] = {};
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   v128.name = '128';
   v128[0].input = '00112233445566778899aabbccddeeff';
   v128[0].k_sch = '000102030405060708090a0b0c0d0e0f';
@@ -202,6 +199,10 @@ const v128 = [];
 const v128d = [];
 (function v128d_init() {
   for (let i = 0; i <= 10; i++) v128d[i] = {};
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   v128d.name = '128d';
   v128d[0].input = '69c4e0d86a7b0430d8cdb78070b4c55a';
   v128d[0].k_sch = '13111d7fe3944a17f307a78b4d2b30c5';
@@ -260,6 +261,10 @@ const v128d = [];
 const v192 = [];
 (function v192_init() {
   for (let i = 0; i <= 12; i++) v192[i] = {};
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   v192.name = '192';
   v192[0].input = '00112233445566778899aabbccddeeff';
   v192[0].k_sch = '000102030405060708090a0b0c0d0e0f';
@@ -328,6 +333,10 @@ const v192 = [];
 const v192d = [];
 (function v192d_init() {
   for (let i = 0; i <= 12; i++) v192d[i] = {};
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   v192d.name = '192d';
   v192d[0].input = 'dda97ca4864cdfe06eaf70a0ec0d7191';
   v192d[0].k_sch = 'a4970a331a78dc09c418c271e3a41d5d';
@@ -396,6 +405,10 @@ const v192d = [];
 const v256 = [];
 (function v256_init() {
   for (let i = 0; i <= 14; i++) v256[i] = {};
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   v256.name = '256';
   v256[0].input = '00112233445566778899aabbccddeeff';
   v256[0].k_sch = '000102030405060708090a0b0c0d0e0f';
@@ -474,6 +487,10 @@ const v256 = [];
 const v256d = [];
 (function v256d_init() {
   for (let i = 0; i <= 14; i++) v256d[i] = {};
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   v256d.name = '256d';
   v256d[0].input = '8ea2b7ca516745bfeafc49904b496089';
   v256d[0].k_sch = '24fc79ccbf0979e9371ac23c6d68de36';

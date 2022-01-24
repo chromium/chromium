@@ -21,8 +21,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -34,10 +34,12 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl.h"
-#include "chrome/browser/nearby_sharing/fast_initiation_advertiser.h"
+#include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_advertiser.h"
+#include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_scanner.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
+#include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
@@ -70,16 +72,14 @@ using NearbyProcessShutdownReason =
     chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason;
 
 constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMin =
-    base::TimeDelta::FromMinutes(12);
+    base::Minutes(12);
 // 870 seconds represents 14:30 minutes
 constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMax =
-    base::TimeDelta::FromSeconds(870);
+    base::Seconds(870);
 constexpr base::TimeDelta kInvalidateSurfaceStateDelayAfterTransferDone =
-    base::TimeDelta::FromMilliseconds(3000);
-constexpr base::TimeDelta kProcessShutdownPendingTimerDelay =
-    base::TimeDelta::FromSeconds(15);
-constexpr base::TimeDelta kProcessNetworkChangeTimerDelay =
-    base::TimeDelta::FromSeconds(1);
+    base::Milliseconds(3000);
+constexpr base::TimeDelta kProcessShutdownPendingTimerDelay = base::Seconds(15);
+constexpr base::TimeDelta kProcessNetworkChangeTimerDelay = base::Seconds(1);
 
 // The maximum number of certificate downloads that can be performed during a
 // discovery session.
@@ -88,7 +88,7 @@ constexpr size_t kMaxCertificateDownloadsDuringDiscovery = 3u;
 // download is only attempted if there are discovered, contact-based
 // advertisements that cannot decrypt any currently stored public certificates.
 constexpr base::TimeDelta kCertificateDownloadDuringDiscoveryPeriod =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 // Used to hash a token into a 4 digit string.
 constexpr int kHashModulo = 9973;
@@ -97,23 +97,13 @@ constexpr int kHashBaseMultiplier = 31;
 // Length of the window during which we count the amount of times the nearby
 // process stops unexpectedly.
 constexpr base::TimeDelta kClearNearbyProcessUnexpectedShutdownCountDelay =
-    base::TimeDelta::FromMinutes(1);
+    base::Minutes(1);
 
 bool IsBackgroundScanningFeatureEnabled() {
   return base::FeatureList::IsEnabled(
              features::kNearbySharingBackgroundScanning) &&
          chromeos::features::IsBluetoothAdvertisementMonitoringEnabled();
 }
-
-// Background scanning filter values.
-constexpr base::TimeDelta kBackgroundScanningDeviceFoundTimeout =
-    base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kBackgroundScanningDeviceLostTimeout =
-    base::TimeDelta::FromSeconds(3);
-// This pattern value encodes the Fast Initiation service ID of 0xfe2c and the
-// model ID of 0xfc128e.
-constexpr uint8_t kBackgroundScanningFilterPatternValue[] = {0x2c, 0xfe, 0xfc,
-                                                             0x12, 0x8e};
 
 std::string ReceiveSurfaceStateToString(
     NearbySharingService::ReceiveSurfaceState state) {
@@ -323,8 +313,12 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   DCHECK(nearby_connections_manager_);
   DCHECK(power_client_);
 
-  RecordNearbyShareEnabledMetric(
-      feature_usage_metrics_.GetNearbyShareEnabledState());
+  if (IsBackgroundScanningFeatureEnabled()) {
+    fast_initiation_scanning_metrics_ =
+        std::make_unique<FastInitiationScannerFeatureUsageMetrics>(prefs_);
+  }
+
+  RecordNearbyShareEnabledMetric(GetNearbyShareEnabledState(prefs_));
 
   auto* session_controller = ash::SessionController::Get();
   if (session_controller) {
@@ -367,7 +361,7 @@ void NearbySharingServiceImpl::Shutdown() {
 
   StopAdvertising();
   if (IsBackgroundScanningFeatureEnabled()) {
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
   }
   StopFastInitiationAdvertising();
   StopScanning();
@@ -945,12 +939,37 @@ void NearbySharingServiceImpl::OpenURL(GURL url) {
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 }
 
+void NearbySharingServiceImpl::SetArcTransferCleanupCallback(
+    base::OnceCallback<void()> callback) {
+  // In the case where multiple Nearby Share sessions are started, successive
+  // Nearby Share bubbles shown will prevent the user from sharing while the
+  // initial bubble is still active. For the successive bubble(s), we want to
+  // make sure only the original cleanup callback is valid.
+  // Also in the following case:
+  // 1. CrOS starts a receive transfer.
+  // 2. ARC starts a send transfer and |arc_transfer_cleanup_callback_| is set
+  //    erroneously if |is_transferring_| check is missing.
+  // As multiple transfers cannot occur at the same time, a "Can't Share" error
+  // will occur. When the transfer in [1] finishes and another ARC Nearby Share
+  // session starts, the |arc_transfer_cleanup_callback_| can't be set if a
+  // value is already set to ensure all clean up is performed. Hence, check if
+  // not |is_transferring_| before setting |arc_transfer_cleanup_callback_|.
+  if (!is_transferring_ && arc_transfer_cleanup_callback_.is_null()) {
+    arc_transfer_cleanup_callback_ = std::move(callback);
+  }
+}
+
 NearbyNotificationDelegate* NearbySharingServiceImpl::GetNotificationDelegate(
     const std::string& notification_id) {
   if (!nearby_notification_manager_)
     return nullptr;
 
   return nearby_notification_manager_->GetNotificationDelegate(notification_id);
+}
+
+void NearbySharingServiceImpl::RecordFastInitiationNotificationUsage(
+    bool success) {
+  fast_initiation_scanning_metrics_->RecordUsage(success);
 }
 
 NearbyShareSettings* NearbySharingServiceImpl::GetSettings() {
@@ -1024,6 +1043,14 @@ void NearbySharingServiceImpl::CleanupAfterNearbyProcessStopped() {
   process_shutdown_pending_timer_.Stop();
   certificate_download_during_discovery_timer_.Stop();
   rotate_background_advertisement_timer_.Stop();
+
+  if (arc_transfer_cleanup_callback_) {
+    // Cleanup send transfer resources where the user started ARC Nearby Share
+    // but did not complete (i.e. cancel, abort, utility process stopped, etc.)
+    // prior to shutdown.
+    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                               std::move(arc_transfer_cleanup_callback_));
+  }
 }
 
 void NearbySharingServiceImpl::RestartNearbyProcessIfAppropriate(
@@ -1062,7 +1089,6 @@ bool NearbySharingServiceImpl::ShouldRestartNearbyProcess(
   switch (shutdown_reason) {
     case NearbyProcessShutdownReason::kNormal:
       return false;
-      break;
     case NearbyProcessShutdownReason::kCrash:
     case NearbyProcessShutdownReason::kConnectionsMojoPipeDisconnection:
     case NearbyProcessShutdownReason::kDecoderMojoPipeDisconnection:
@@ -1174,8 +1200,7 @@ void NearbySharingServiceImpl::FlushMojoForTesting() {
 
 void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RecordNearbyShareEnabledMetric(
-      feature_usage_metrics_.GetNearbyShareEnabledState());
+  RecordNearbyShareEnabledMetric(GetNearbyShareEnabledState(prefs_));
   base::UmaHistogramBoolean("Nearby.Share.EnabledStateChanged", enabled);
   if (enabled) {
     NS_LOG(VERBOSE) << __func__ << ": Nearby sharing enabled!";
@@ -1193,7 +1218,20 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
     certificate_manager_->Stop();
     process_reference_.reset();
   }
+
   InvalidateSurfaceState();
+}
+
+void NearbySharingServiceImpl::OnFastInitiationNotificationStateChanged(
+    FastInitiationNotificationState state) {
+  if (!IsBackgroundScanningFeatureEnabled()) {
+    return;
+  }
+  NS_LOG(VERBOSE) << __func__
+                  << ": Fast Initiation Notification state: " << state;
+  // Runs through a series of checks to determine if background scanning should
+  // be started or stopped.
+  InvalidateReceiveSurfaceState();
 }
 
 void NearbySharingServiceImpl::OnDeviceNameChanged(
@@ -1293,51 +1331,6 @@ void NearbySharingServiceImpl::SuspendDone() {
   InvalidateSurfaceState();
 }
 
-void NearbySharingServiceImpl::OnSessionStarted(
-    device::BluetoothLowEnergyScanSession* scan_session,
-    absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
-        error_code) {
-  if (error_code) {
-    NS_LOG(WARNING) << __func__ << ": Error";
-    StopBackgroundScanning();
-    return;
-  }
-
-  NS_LOG(VERBOSE) << __func__ << ": Success";
-}
-
-void NearbySharingServiceImpl::OnDeviceFound(
-    device::BluetoothLowEnergyScanSession* scan_session,
-    device::BluetoothDevice* device) {
-  NS_LOG(VERBOSE) << __func__;
-
-  devices_attempting_to_share_.insert(device->GetAddress());
-  // This shows a notification indicating that a device nearby is attempting to
-  // share. When the notification is clicked it will take the user through the
-  // onboarding flow if needed and then enable high visibility mode.
-  nearby_notification_manager_->ShowOnboarding();
-}
-
-void NearbySharingServiceImpl::OnDeviceLost(
-    device::BluetoothLowEnergyScanSession* scan_session,
-    device::BluetoothDevice* device) {
-  NS_LOG(VERBOSE) << __func__;
-  devices_attempting_to_share_.erase(device->GetAddress());
-  if (devices_attempting_to_share_.size() != 0) {
-    return;
-  }
-
-  // This will just dismiss the "onboarding" notification, it does not have any
-  // effect on the actual onboarding or high visibility UI.
-  nearby_notification_manager_->CloseOnboarding();
-}
-
-void NearbySharingServiceImpl::OnSessionInvalidated(
-    device::BluetoothLowEnergyScanSession* scan_session) {
-  NS_LOG(INFO) << __func__;
-  StopBackgroundScanning();
-}
-
 base::ObserverList<TransferUpdateCallback>&
 NearbySharingServiceImpl::GetReceiveCallbacksFromState(
     ReceiveSurfaceState state) {
@@ -1419,6 +1412,10 @@ void NearbySharingServiceImpl::OnGetBluetoothAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   bluetooth_adapter_ = adapter;
   bluetooth_adapter_->AddObserver(this);
+
+  if (IsBackgroundScanningFeatureEnabled()) {
+    fast_initiation_scanning_metrics_->SetBluetoothAdapter(adapter);
+  }
 
   // TODO(crbug/1147652): The call to update the advertising interval is
   // removed to prevent a Bluez crash. We need to either reduce the global
@@ -1873,7 +1870,7 @@ void NearbySharingServiceImpl::InvalidateFastInitiationAdvertising() {
 void NearbySharingServiceImpl::InvalidateReceiveSurfaceState() {
   InvalidateAdvertisingState();
   if (IsBackgroundScanningFeatureEnabled()) {
-    InvalidateBackgroundScanning();
+    InvalidateFastInitiationScanning();
   }
 }
 
@@ -2117,16 +2114,46 @@ void NearbySharingServiceImpl::StopAdvertisingAndInvalidateSurfaceState() {
   InvalidateSurfaceState();
 }
 
-void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
+void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
+  bool is_hardware_offloading_supported =
+      IsBluetoothPresent() &&
+      FastInitiationScanner::Factory::IsHardwareSupportAvailable(
+          bluetooth_adapter_.get());
+
+  // Hardware offloading support is computed when the bluetooth adapter becomes
+  // available. We set the hardware supported state on |settings_| to notify the
+  // UI of state changes. InvalidateFastInitiationScanning gets triggered on
+  // adapter change events.
+  settings_.SetIsFastInitiationHardwareSupported(
+      is_hardware_offloading_supported);
+
   // Nothing to do if we're shutting down the profile.
   if (!profile_)
     return;
+
+  if (settings_.GetFastInitiationNotificationState() !=
+      FastInitiationNotificationState::kEnabled) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning; fast initiation "
+                       "notification is disabled";
+    StopFastInitiationScanning();
+    return;
+  }
+
+  if (GetNearbyShareEnabledState(prefs_) ==
+      NearbyShareEnabledState::kDisallowedByPolicy) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning because Nearby Sharing "
+                       "is disallowed by policy ";
+    StopFastInitiationScanning();
+    return;
+  }
 
   if (power_client_->IsSuspended()) {
     NS_LOG(VERBOSE)
         << __func__
         << ": Stopping background scanning because the system is suspended.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
     return;
   }
 
@@ -2135,7 +2162,7 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
     NS_LOG(VERBOSE)
         << __func__
         << ": Stopping background scanning because the screen is locked.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
     return;
   }
 
@@ -2143,17 +2170,7 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
     NS_LOG(VERBOSE)
         << __func__
         << ": Stopping background scanning because bluetooth is powered down.";
-    StopBackgroundScanning();
-    return;
-  }
-
-  // User has explicitly disabled Nearby Sharing after onboarding. Don't
-  // background scan.
-  if (settings_.IsOnboardingComplete() && !settings_.GetEnabled()) {
-    NS_LOG(VERBOSE)
-        << __func__
-        << ": Stopping background scanning because Nearby Sharing is disabled.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
     return;
   }
 
@@ -2162,7 +2179,7 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping background scanning because we're scanning "
                        "for other devices.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
     return;
   }
 
@@ -2171,7 +2188,7 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
                     << ": Stopping background scanning because we're currently "
                        "in the midst of "
                        "a transfer.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
     return;
   }
 
@@ -2179,54 +2196,68 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping background scanning because we're already "
                        "in high visibility mode.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
+    return;
+  }
+
+  if (!is_hardware_offloading_supported) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning because hardware "
+                       "support is not available or not ready.";
+    StopFastInitiationScanning();
     return;
   }
 
   process_shutdown_pending_timer_.Stop();
 
-  if (background_scan_session_) {
+  if (fast_initiation_scanner_) {
     NS_LOG(VERBOSE) << __func__ << ": Ignoring, already background scanning.";
     return;
   }
 
-  StartBackgroundScanning();
+  StartFastInitiationScanning();
 }
 
-void NearbySharingServiceImpl::StartBackgroundScanning() {
-  DCHECK(!background_scan_session_);
+void NearbySharingServiceImpl::StartFastInitiationScanning() {
+  DCHECK(!fast_initiation_scanner_);
   NS_LOG(VERBOSE) << __func__ << ": Starting background scanning.";
-
-  auto pattern_value =
-      std::vector<uint8_t>(std::begin(kBackgroundScanningFilterPatternValue),
-                           std::end(kBackgroundScanningFilterPatternValue));
-  device::BluetoothLowEnergyScanFilter::Pattern pattern(
-      /*start_position=*/0,
-      device::BluetoothLowEnergyScanFilter::AdvertisementDataType::kServiceData,
-      std::move(pattern_value));
-  auto filter = device::BluetoothLowEnergyScanFilter::Create(
-      device::BluetoothLowEnergyScanFilter::Range::kNear,
-      kBackgroundScanningDeviceFoundTimeout,
-      kBackgroundScanningDeviceLostTimeout, {pattern});
-  if (!filter) {
-    NS_LOG(ERROR) << __func__
-                  << ": Failed to start background scanning due to failure to "
-                     "create filter.";
-    return;
-  }
-
-  background_scan_session_ = bluetooth_adapter_->StartLowEnergyScanSession(
-      std::move(filter), /*delegate=*/weak_ptr_factory_.GetWeakPtr());
+  fast_initiation_scanner_ =
+      FastInitiationScanner::Factory::Create(bluetooth_adapter_);
+  fast_initiation_scanner_->StartScanning(
+      base::BindRepeating(
+          &NearbySharingServiceImpl::OnFastInitiationDevicesDetected,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &NearbySharingServiceImpl::OnFastInitiationDevicesNotDetected,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&NearbySharingServiceImpl::StopFastInitiationScanning,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbySharingServiceImpl::StopBackgroundScanning() {
-  if (!background_scan_session_) {
+void NearbySharingServiceImpl::OnFastInitiationDevicesDetected() {
+  NS_LOG(VERBOSE) << __func__;
+  for (auto& observer : observers_) {
+    observer.OnFastInitiationDevicesDetected();
+  }
+}
+
+void NearbySharingServiceImpl::OnFastInitiationDevicesNotDetected() {
+  NS_LOG(VERBOSE) << __func__;
+  for (auto& observer : observers_) {
+    observer.OnFastInitiationDevicesNotDetected();
+  }
+}
+
+void NearbySharingServiceImpl::StopFastInitiationScanning() {
+  if (!fast_initiation_scanner_) {
     NS_LOG(VERBOSE) << __func__ << ": Ignoring, not background scanning.";
     return;
   }
-  devices_attempting_to_share_.clear();
-  nearby_notification_manager_->CloseOnboarding();
-  background_scan_session_.reset();
+
+  fast_initiation_scanner_.reset();
+  for (auto& observer : observers_) {
+    observer.OnFastInitiationScanningStopped();
+  }
   NS_LOG(VERBOSE) << __func__ << ": Stopped background scanning.";
 }
 
@@ -2240,8 +2271,7 @@ void NearbySharingServiceImpl::ScheduleRotateBackgroundAdvertisementTimer() {
           kBackgroundAdvertisementRotationDelayMin.InMilliseconds());
   rotate_background_advertisement_timer_.Start(
       FROM_HERE,
-      base::TimeDelta::FromMilliseconds(
-          base::checked_cast<uint64_t>(delayMilliseconds)),
+      base::Milliseconds(base::checked_cast<uint64_t>(delayMilliseconds)),
       base::BindOnce(
           &NearbySharingServiceImpl::OnRotateBackgroundAdvertisementTimerFired,
           weak_ptr_factory_.GetWeakPtr()));
@@ -2291,6 +2321,14 @@ void NearbySharingServiceImpl::OnTransferComplete() {
   is_receiving_files_ = false;
   is_transferring_ = false;
   is_sending_files_ = false;
+
+  // Cleanup ARC after send transfer completes since reading from file
+  // descriptor(s) are done at this point even though there could be Nearby
+  // Connection frames cached that are not yet sent to the remote device.
+  if (was_sending_files && arc_transfer_cleanup_callback_) {
+    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                               std::move(arc_transfer_cleanup_callback_));
+  }
 
   NS_LOG(VERBOSE) << __func__
                   << ": NearbySharing state change transfer finished";

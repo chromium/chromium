@@ -22,7 +22,7 @@ class CORE_EXPORT ComputedStyleCSSValueMapping {
       const PropertyRegistry*);
 
  private:
-  static const CSSValue* Get(const AtomicString custom_property_name,
+  static const CSSValue* Get(const AtomicString& custom_property_name,
                              const ComputedStyle&,
                              const PropertyRegistry*);
 };

@@ -12,12 +12,12 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/ozone/platform/wayland/common/data_util.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
@@ -25,10 +25,8 @@ namespace ui {
 WaylandDataDevice::WaylandDataDevice(WaylandConnection* connection,
                                      wl_data_device* data_device)
     : WaylandDataDeviceBase(connection), data_device_(data_device) {
-  static const struct wl_data_device_listener kDataDeviceListener = {
-      WaylandDataDevice::OnOffer, WaylandDataDevice::OnEnter,
-      WaylandDataDevice::OnLeave, WaylandDataDevice::OnMotion,
-      WaylandDataDevice::OnDrop,  WaylandDataDevice::OnSelection};
+  static constexpr wl_data_device_listener kDataDeviceListener = {
+      &OnOffer, &OnEnter, &OnLeave, &OnMotion, &OnDrop, &OnSelection};
   wl_data_device_add_listener(data_device_.get(), &kDataDeviceListener, this);
 }
 
@@ -36,6 +34,7 @@ WaylandDataDevice::~WaylandDataDevice() = default;
 
 void WaylandDataDevice::StartDrag(const WaylandDataSource& data_source,
                                   const WaylandWindow& origin_window,
+                                  uint32_t serial,
                                   wl_surface* icon_surface,
                                   DragDelegate* delegate) {
   DCHECK(delegate);
@@ -44,7 +43,7 @@ void WaylandDataDevice::StartDrag(const WaylandDataSource& data_source,
 
   wl_data_device_start_drag(data_device_.get(), data_source.data_source(),
                             origin_window.root_surface()->surface(),
-                            icon_surface, connection()->serial());
+                            icon_surface, serial);
   drag_delegate_->DrawIcon();
   connection()->ScheduleFlush();
 }
@@ -58,7 +57,7 @@ void WaylandDataDevice::RequestData(WaylandDataOffer* offer,
                                     const std::string& mime_type,
                                     RequestDataCallback callback) {
   DCHECK(offer);
-  DCHECK(wl::IsMimeTypeSupported(mime_type));
+  DCHECK(IsMimeTypeSupported(mime_type));
 
   base::ScopedFD fd = offer->Receive(mime_type);
   if (!fd.is_valid()) {
@@ -75,9 +74,13 @@ void WaylandDataDevice::RequestData(WaylandDataOffer* offer,
 }
 
 void WaylandDataDevice::SetSelectionSource(WaylandDataSource* source) {
+  auto serial = GetSerialForSelection();
+  if (!serial.has_value()) {
+    LOG(ERROR) << "Failed to set selection. No serial found.";
+    return;
+  }
   auto* data_source = source ? source->data_source() : nullptr;
-  wl_data_device_set_selection(data_device_.get(), data_source,
-                               connection()->serial());
+  wl_data_device_set_selection(data_device_.get(), data_source, serial->value);
   connection()->ScheduleFlush();
 }
 
@@ -130,6 +133,8 @@ void WaylandDataDevice::OnEnter(void* data,
 
   gfx::PointF point(wl_fixed_to_double(x), wl_fixed_to_double(y));
   self->drag_delegate_->OnDragEnter(window, point, serial);
+
+  self->connection()->ScheduleFlush();
 }
 
 void WaylandDataDevice::OnMotion(void* data,
@@ -146,19 +151,25 @@ void WaylandDataDevice::OnMotion(void* data,
 
 void WaylandDataDevice::OnDrop(void* data, wl_data_device* data_device) {
   auto* self = static_cast<WaylandDataDevice*>(data);
-  if (self->drag_delegate_)
+  if (self->drag_delegate_) {
     self->drag_delegate_->OnDragDrop();
+    self->connection()->ScheduleFlush();
+  }
 }
 
 void WaylandDataDevice::OnLeave(void* data, wl_data_device* data_device) {
   auto* self = static_cast<WaylandDataDevice*>(data);
-  if (self->drag_delegate_)
+  if (self->drag_delegate_) {
     self->drag_delegate_->OnDragLeave();
+    self->connection()->ScheduleFlush();
+  }
 
   // When in a DND session initiated by an external application,
   // |drag_delegate_| is set at OnEnter, and must be reset here to avoid
-  // potential use-after-free. Above call to OnDragLeave() may result in
-  // |drag_delegate_| being reset, so it must be checked here as well.
+  // potential use-after-free.
+  //
+  // NOTE: Above call to OnDragLeave() may result in |drag_delegate_| being
+  // reset, so it must be checked here as well.
   if (self->drag_delegate_ && !self->drag_delegate_->IsDragSource())
     self->ResetDragDelegate();
 }
@@ -179,8 +190,7 @@ void WaylandDataDevice::OnSelection(void* data,
     self->data_offer()->EnsureTextMimeTypeIfNeeded();
   }
 
-  if (self->selection_delegate())
-    self->selection_delegate()->OnSelectionOffer(self->data_offer());
+  self->NotifySelectionOffer(self->data_offer());
 }
 
 }  // namespace ui

@@ -117,6 +117,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     private View mFullscreenView;
     private String mWebViewVersion;
     private boolean mEnableTracing;
+    private boolean mIsStoppingTracing;
 
     // Each time we make a request, store it here with an int key. onRequestPermissionsResult will
     // look up the request in order to grant the approprate permissions.
@@ -196,7 +197,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         }
     }
 
-    private static class TracingLogger extends FileOutputStream {
+    private class TracingLogger extends FileOutputStream {
         private long mByteCount;
         private long mChunkCount;
         private final Activity mActivity;
@@ -217,6 +218,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         public void close() throws IOException {
             super.close();
             showDialog(mByteCount);
+            mIsStoppingTracing = false;
         }
 
         private void showDialog(long nbBytes) {
@@ -587,8 +589,12 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.TRACING_CONTROLLER_BASIC_USAGE)) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.TRACING_CONTROLLER_BASIC_USAGE)
+                && !mIsStoppingTracing) {
+            menu.findItem(R.id.menu_enable_tracing).setEnabled(true);
             menu.findItem(R.id.menu_enable_tracing).setChecked(mEnableTracing);
+        } else {
+            menu.findItem(R.id.menu_enable_tracing).setEnabled(false);
         }
         if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
             int forceDarkState = WebSettingsCompat.getForceDark(mWebView.getSettings());
@@ -643,6 +649,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                     try {
                         tracingController.stop(new TracingLogger(outFileName, this),
                                 Executors.newSingleThreadExecutor());
+                        mIsStoppingTracing = true;
                     } catch (FileNotFoundException e) {
                         throw new RuntimeException(e);
                     }
@@ -694,20 +701,16 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     // but we still use it because we support api level 19 and up.
     @SuppressWarnings("deprecation")
     private void initializeSettings(WebSettings settings) {
-        File appcache = null;
         File geolocation = null;
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            appcache = getDir("appcache", 0);
             geolocation = getDir("geolocation", 0);
         }
 
         settings.setJavaScriptEnabled(true);
 
         // configure local storage apis and their database paths.
-        settings.setAppCachePath(appcache.getPath());
         settings.setGeolocationDatabasePath(geolocation.getPath());
 
-        settings.setAppCacheEnabled(true);
         settings.setGeolocationEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setDomStorageEnabled(true);

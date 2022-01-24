@@ -16,7 +16,6 @@
 #endif
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #define IN_PROC_BROWSER_TEST_(                                               \

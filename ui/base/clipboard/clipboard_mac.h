@@ -27,14 +27,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   ClipboardMac& operator=(const ClipboardMac&) = delete;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageRetina_Bitmap);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageNonRetina_Bitmap);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, EmptyImage_Bitmap);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, PDFImage_Bitmap);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageRetina_Png);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageNonRetina_Png);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, EmptyImage_Png);
-  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, PDFImage_Png);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageRetina);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, ReadImageNonRetina);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, EmptyImage);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardMacTest, PDFImage);
   friend class Clipboard;
 
   ClipboardMac();
@@ -45,6 +41,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const override;
+  std::vector<std::u16string> GetStandardFormats(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_dst) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
                          const DataTransferEndpoint* data_dst) const override;
@@ -54,9 +53,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const DataTransferEndpoint* data_dst,
                           std::vector<std::u16string>* types) const override;
-  std::vector<std::u16string> ReadAvailablePlatformSpecificFormatNames(
-      ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst) const override;
   void ReadText(ClipboardBuffer buffer,
                 const DataTransferEndpoint* data_dst,
                 std::u16string* result) const override;
@@ -78,9 +74,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   void ReadPng(ClipboardBuffer buffer,
                const DataTransferEndpoint* data_dst,
                ReadPngCallback callback) const override;
-  void ReadImage(ClipboardBuffer buffer,
-                 const DataTransferEndpoint* data_dst,
-                 ReadImageCallback callback) const override;
   void ReadCustomData(ClipboardBuffer buffer,
                       const std::u16string& type,
                       const DataTransferEndpoint* data_dst,
@@ -119,8 +112,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
 
   std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer,
                                        NSPasteboard* pasteboard) const;
-  SkBitmap ReadImageInternal(ClipboardBuffer buffer,
-                             NSPasteboard* pasteboard) const;
 
   // Mapping of OS-provided sequence number to a unique token.
   mutable struct {

@@ -390,10 +390,11 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
       base::JSONReader::ReadDeprecated(onc_certificates_json);
   ASSERT_TRUE(onc_certificates);
 
-  OncParsedCertificates master(*onc_certificates);
-  EXPECT_EQ(master.server_or_authority_certificates(),
-            master.server_or_authority_certificates());
-  EXPECT_EQ(master.client_certificates(), master.client_certificates());
+  OncParsedCertificates authority_and_client_certs(*onc_certificates);
+  EXPECT_EQ(authority_and_client_certs.server_or_authority_certificates(),
+            authority_and_client_certs.server_or_authority_certificates());
+  EXPECT_EQ(authority_and_client_certs.client_certificates(), 
+            authority_and_client_certs.client_certificates());
 
   // Mangle the TrustBits part and assume that authorities will not be equal
   // anymore.
@@ -409,9 +410,9 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
         authority_web_trust_mangled);
     EXPECT_FALSE(parsed_authority_web_trust_mangled.has_error());
     EXPECT_NE(
-        master.server_or_authority_certificates(),
+        authority_and_client_certs.server_or_authority_certificates(),
         parsed_authority_web_trust_mangled.server_or_authority_certificates());
-    EXPECT_EQ(master.client_certificates(),
+    EXPECT_EQ(authority_and_client_certs.client_certificates(),
               parsed_authority_web_trust_mangled.client_certificates());
   }
 
@@ -423,9 +424,9 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
 
     OncParsedCertificates parsed_authority_guid_mangled(authority_guid_mangled);
     EXPECT_FALSE(parsed_authority_guid_mangled.has_error());
-    EXPECT_NE(master.server_or_authority_certificates(),
+    EXPECT_NE(authority_and_client_certs.server_or_authority_certificates(),
               parsed_authority_guid_mangled.server_or_authority_certificates());
-    EXPECT_EQ(master.client_certificates(),
+    EXPECT_EQ(authority_and_client_certs.client_certificates(),
               parsed_authority_guid_mangled.client_certificates());
   }
 
@@ -436,9 +437,9 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
 
     OncParsedCertificates parsed_authority_type_mangled(authority_type_mangled);
     EXPECT_FALSE(parsed_authority_type_mangled.has_error());
-    EXPECT_NE(master.server_or_authority_certificates(),
+    EXPECT_NE(authority_and_client_certs.server_or_authority_certificates(),
               parsed_authority_type_mangled.server_or_authority_certificates());
-    EXPECT_EQ(master.client_certificates(),
+    EXPECT_EQ(authority_and_client_certs.client_certificates(),
               parsed_authority_type_mangled.client_certificates());
   }
 
@@ -476,9 +477,9 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
 
     OncParsedCertificates parsed_authority_x509_mangled(authority_x509_mangled);
     EXPECT_FALSE(parsed_authority_x509_mangled.has_error());
-    EXPECT_NE(master.server_or_authority_certificates(),
+    EXPECT_NE(authority_and_client_certs.server_or_authority_certificates(),
               parsed_authority_x509_mangled.server_or_authority_certificates());
-    EXPECT_EQ(master.client_certificates(),
+    EXPECT_EQ(authority_and_client_certs.client_certificates(),
               parsed_authority_x509_mangled.client_certificates());
   }
 
@@ -489,9 +490,9 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
 
     OncParsedCertificates parsed_client_guid_mangled(client_guid_mangled);
     EXPECT_FALSE(parsed_client_guid_mangled.has_error());
-    EXPECT_EQ(master.server_or_authority_certificates(),
+    EXPECT_EQ(authority_and_client_certs.server_or_authority_certificates(),
               parsed_client_guid_mangled.server_or_authority_certificates());
-    EXPECT_NE(master.client_certificates(),
+    EXPECT_NE(authority_and_client_certs.client_certificates(),
               parsed_client_guid_mangled.client_certificates());
   }
 
@@ -502,9 +503,9 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
 
     OncParsedCertificates parsed_client_pkcs12_mangled(client_pkcs12_mangled);
     EXPECT_FALSE(parsed_client_pkcs12_mangled.has_error());
-    EXPECT_EQ(master.server_or_authority_certificates(),
+    EXPECT_EQ(authority_and_client_certs.server_or_authority_certificates(),
               parsed_client_pkcs12_mangled.server_or_authority_certificates());
-    EXPECT_NE(master.client_certificates(),
+    EXPECT_NE(authority_and_client_certs.client_certificates(),
               parsed_client_pkcs12_mangled.client_certificates());
   }
 }

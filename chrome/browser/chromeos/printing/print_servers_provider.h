@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/printing/print_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -48,6 +47,10 @@ class PrintServersProvider
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static std::unique_ptr<PrintServersProvider> Create();
+
+  PrintServersProvider(const PrintServersProvider&) = delete;
+  PrintServersProvider& operator=(const PrintServersProvider&) = delete;
+
   virtual ~PrintServersProvider() = default;
 
   // This method sets the allowlist to calculate resultant list of servers.
@@ -70,9 +73,6 @@ class PrintServersProvider
 
  protected:
   PrintServersProvider() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrintServersProvider);
 };
 
 }  // namespace chromeos

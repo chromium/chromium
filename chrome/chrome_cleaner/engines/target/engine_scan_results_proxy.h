@@ -6,7 +6,7 @@
 #define CHROME_CHROME_CLEANER_ENGINES_TARGET_ENGINE_SCAN_RESULTS_PROXY_H_
 
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/chrome_cleaner/mojom/engine_sandbox.mojom.h"
 #include "chrome/chrome_cleaner/pup_data/pup_data.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

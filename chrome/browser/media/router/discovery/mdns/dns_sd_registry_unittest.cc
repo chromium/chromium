@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::NiceMock;
 
 namespace media_router {
 
@@ -53,7 +54,7 @@ class TestDnsSdRegistry : public DnsSdRegistry {
       local_discovery::ServiceDiscoverySharedClient* discovery_client)
       override {
     delegate_ = delegate;
-    MockDnsSdDeviceLister* lister = new MockDnsSdDeviceLister();
+    MockDnsSdDeviceLister* lister = new NiceMock<MockDnsSdDeviceLister>();
     listers_[service_type] = lister;
     return lister;
   }

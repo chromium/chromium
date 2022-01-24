@@ -4,7 +4,7 @@
 
 #include "extensions/browser/mock_extension_system.h"
 
-#include "extensions/browser/value_store/value_store_factory.h"
+#include "components/value_store/value_store_factory.h"
 #include "extensions/common/extension_set.h"
 
 namespace extensions {
@@ -22,10 +22,6 @@ void MockExtensionSystem::SetReady() {
 void MockExtensionSystem::InitForRegularProfile(bool extensions_enabled) {}
 
 ExtensionService* MockExtensionSystem::extension_service() {
-  return nullptr;
-}
-
-RuntimeData* MockExtensionSystem::runtime_data() {
   return nullptr;
 }
 
@@ -49,7 +45,12 @@ StateStore* MockExtensionSystem::rules_store() {
   return nullptr;
 }
 
-scoped_refptr<ValueStoreFactory> MockExtensionSystem::store_factory() {
+StateStore* MockExtensionSystem::dynamic_user_scripts_store() {
+  return nullptr;
+}
+
+scoped_refptr<value_store::ValueStoreFactory>
+MockExtensionSystem::store_factory() {
   return nullptr;
 }
 

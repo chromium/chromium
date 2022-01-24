@@ -76,7 +76,7 @@ class GuestViewInternalCustomBindings : public ObjectBackedNativeHandler {
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
   // Runs a JavaScript function that may use window.customElements.define
-  // with whitelisted custom element names.
+  // with allowlisted custom element names.
   void AllowGuestViewElementDefinition(
       const v8::FunctionCallbackInfo<v8::Value>& args);
 };

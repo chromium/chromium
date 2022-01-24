@@ -29,7 +29,7 @@ LayoutNGTextCombine::~LayoutNGTextCombine() = default;
 LayoutNGTextCombine* LayoutNGTextCombine::CreateAnonymous(
     LayoutText* text_child) {
   DCHECK(ShouldBeParentOf(*text_child)) << text_child;
-  auto* const layout_object = new LayoutNGTextCombine();
+  auto* const layout_object = MakeGarbageCollected<LayoutNGTextCombine>();
   auto& document = text_child->GetDocument();
   layout_object->SetDocumentForAnonymous(&document);
   scoped_refptr<ComputedStyle> new_style =
@@ -56,6 +56,7 @@ void LayoutNGTextCombine::AssertStyleIsValid(const ComputedStyle& style) {
   DCHECK_EQ(style.GetWritingMode(), WritingMode::kHorizontalTb);
   DCHECK_EQ(style.LetterSpacing(), 0.0f);
   DCHECK_EQ(style.TextDecorationsInEffect(), TextDecoration::kNone);
+  DCHECK_EQ(style.TextIndent(), Length::Fixed());
   DCHECK_EQ(style.GetFont().GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
 #endif
@@ -227,7 +228,8 @@ PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow() const {
 
   if (!style.AppliedTextDecorations().IsEmpty()) {
     const LayoutRect decoration_rect =
-        NGInkOverflow::ComputeTextDecorationOverflow(style, ink_overflow);
+        NGInkOverflow::ComputeTextDecorationOverflow(style, style.GetFont(),
+                                                     ink_overflow);
     ink_overflow.Unite(decoration_rect);
   }
 
@@ -244,11 +246,12 @@ PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow() const {
   return local_ink_overflow;
 }
 
-IntRect LayoutNGTextCombine::VisualRectForPaint(
+gfx::Rect LayoutNGTextCombine::VisualRectForPaint(
     const PhysicalOffset& paint_offset) const {
-  PhysicalRect ink_overflow = CurrentFragment()->InkOverflow();
+  DCHECK_EQ(PhysicalFragmentCount(), 1u);
+  PhysicalRect ink_overflow = GetPhysicalFragment(0)->InkOverflow();
   ink_overflow.Move(paint_offset);
-  return EnclosingIntRect(ink_overflow);
+  return ToGfxRect(EnclosingIntRect(ink_overflow));
 }
 
 void LayoutNGTextCombine::SetScaleX(float new_scale_x) {

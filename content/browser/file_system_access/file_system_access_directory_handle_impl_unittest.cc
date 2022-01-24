@@ -15,17 +15,22 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 
 namespace content {
 
 using storage::FileSystemURL;
+using WriteLockType = FileSystemAccessWriteLockManager::WriteLockType;
 
 class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
  public:
@@ -47,46 +52,45 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
         /*permission_context=*/nullptr,
         /*off_the_record=*/false);
 
-    auto url_and_fs = manager_->CreateFileSystemURLFromPath(
-        test_src_origin_, FileSystemAccessEntryFactory::PathType::kLocal,
-        dir_.GetPath());
+    auto url = manager_->CreateFileSystemURLFromPath(
+        FileSystemAccessEntryFactory::PathType::kLocal, dir_.GetPath());
     handle_ = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
-            test_src_origin_, test_src_url_, /*worker_process_id=*/1),
-        url_and_fs.url,
-        FileSystemAccessManagerImpl::SharedHandleState(
-            allow_grant_, allow_grant_, url_and_fs.file_system));
+            test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
+        url,
+        FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                       allow_grant_));
     denied_handle_ = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
-            test_src_origin_, test_src_url_, /*worker_process_id=*/1),
-        url_and_fs.url,
-        FileSystemAccessManagerImpl::SharedHandleState(
-            deny_grant_, deny_grant_, std::move(url_and_fs.file_system)));
+            test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
+        url,
+        FileSystemAccessManagerImpl::SharedHandleState(deny_grant_,
+                                                       deny_grant_));
   }
 
   void TearDown() override { task_environment_.RunUntilIdle(); }
 
   std::unique_ptr<FileSystemAccessDirectoryHandleImpl>
   GetHandleWithPermissions(const base::FilePath& path, bool read, bool write) {
-    auto url_and_fs = manager_->CreateFileSystemURLFromPath(
-        test_src_origin_, FileSystemAccessEntryFactory::PathType::kLocal, path);
+    auto url = manager_->CreateFileSystemURLFromPath(
+        FileSystemAccessEntryFactory::PathType::kLocal, path);
     auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
-            test_src_origin_, test_src_url_, /*worker_process_id=*/1),
-        url_and_fs.url,
+            test_src_storage_key_, test_src_url_, /*worker_process_id=*/1),
+        url,
         FileSystemAccessManagerImpl::SharedHandleState(
             /*read_grant=*/read ? allow_grant_ : deny_grant_,
-            /*write_grant=*/write ? allow_grant_ : deny_grant_,
-            url_and_fs.file_system));
+            /*write_grant=*/write ? allow_grant_ : deny_grant_));
     return handle;
   }
 
  protected:
   const GURL test_src_url_ = GURL("http://example.com/foo");
-  const url::Origin test_src_origin_ = url::Origin::Create(test_src_url_);
+  const blink::StorageKey test_src_storage_key_ =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com/foo");
 
   BrowserTaskEnvironment task_environment_;
 
@@ -319,6 +323,88 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, Remove_HasWriteAccess) {
         EXPECT_FALSE(base::DirectoryExists(dir));
       }).Then(loop.QuitClosure()));
   loop.Run();
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
+  base::FilePath dir = dir_.GetPath().AppendASCII("dirname");
+  ASSERT_TRUE(base::CreateDirectory(dir));
+  base::FilePath file;
+  storage::FileSystemURL file_url;
+  base::CreateTemporaryFileInDir(dir, &file);
+
+  auto handle = GetHandleWithPermissions(dir, /*read=*/true, /*write=*/true);
+
+  // Calling removeEntry() on an unlocked file should succeed.
+  {
+    base::CreateTemporaryFileInDir(dir, &file);
+    auto base_name = storage::FilePathToString(file.BaseName());
+    EXPECT_EQ(handle->GetChildURL(base_name, &file_url)->file_error,
+              base::File::Error::FILE_OK);
+
+    base::RunLoop loop;
+    handle->RemoveEntry(
+        base_name,
+        /*recurse=*/false,
+        base::BindLambdaForTesting([&](blink::mojom::FileSystemAccessErrorPtr
+                                           result) {
+          EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+          EXPECT_FALSE(base::PathExists(file));
+          // The write lock acquired during the operation should be released by
+          // the time the callback runs.
+          auto write_lock =
+              manager_->TakeWriteLock(file_url, WriteLockType::kExclusive);
+          EXPECT_TRUE(write_lock.has_value());
+        }).Then(loop.QuitClosure()));
+    loop.Run();
+  }
+
+  // Acquire an exclusive lock on a file before removing to similate when the
+  // file has an open access handle. This should fail.
+  {
+    base::CreateTemporaryFileInDir(dir, &file);
+    auto base_name = storage::FilePathToString(file.BaseName());
+    EXPECT_EQ(handle->GetChildURL(base_name, &file_url)->file_error,
+              base::File::Error::FILE_OK);
+    auto write_lock =
+        manager_->TakeWriteLock(file_url, WriteLockType::kExclusive);
+    EXPECT_TRUE(write_lock.has_value());
+
+    base::RunLoop loop;
+    handle->RemoveEntry(base_name,
+                        /*recurse=*/false,
+                        base::BindLambdaForTesting(
+                            [&](blink::mojom::FileSystemAccessErrorPtr result) {
+                              EXPECT_EQ(result->status,
+                                        blink::mojom::FileSystemAccessStatus::
+                                            kNoModificationAllowedError);
+                              EXPECT_TRUE(base::PathExists(file));
+                            })
+                            .Then(loop.QuitClosure()));
+    loop.Run();
+  }
+
+  // Acquire a shared lock on a file before removing to simulate when the file
+  // has an open writable.
+  {
+    base::CreateTemporaryFileInDir(dir, &file);
+    auto base_name = storage::FilePathToString(file.BaseName());
+    EXPECT_EQ(handle->GetChildURL(base_name, &file_url)->file_error,
+              base::File::Error::FILE_OK);
+    auto write_lock = manager_->TakeWriteLock(file_url, WriteLockType::kShared);
+    EXPECT_TRUE(write_lock.has_value());
+    EXPECT_TRUE(write_lock.value()->type() == WriteLockType::kShared);
+
+    base::RunLoop loop;
+    handle->RemoveEntry(
+        base_name,
+        /*recurse=*/false,
+        base::BindLambdaForTesting([&](blink::mojom::FileSystemAccessErrorPtr
+                                           result) {
+          EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+          EXPECT_FALSE(base::PathExists(file));
+        }).Then(loop.QuitClosure()));
+    loop.Run();
+  }
 }
 
 }  // namespace content

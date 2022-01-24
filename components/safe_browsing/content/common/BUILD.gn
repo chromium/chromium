@@ -6,15 +6,6 @@ import("//build/config/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-source_set("common") {
-  sources = [ "resource_type_compat_checker.cc" ]
-
-  deps = [
-    "//components/safe_browsing/core/common",
-    "//third_party/blink/public/mojom:mojom_platform_headers",
-  ]
-}
-
 mojom("interfaces") {
   sources = [ "safe_browsing.mojom" ]
 
@@ -30,8 +21,7 @@ mojom("interfaces") {
   }
 }
 
-# TODO(crbug/1056278): Enable this on Fuchsia
-if (safe_browsing_mode != 0 && !is_fuchsia) {
+if (safe_browsing_mode != 0) {
   source_set("file_type_policies") {
     sources = [
       "file_type_policies.cc",

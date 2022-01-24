@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
@@ -49,6 +48,9 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesProfileClient
                             HermesResponseCallback callback) override;
   void DisableCarrierProfile(const dbus::ObjectPath& object_path,
                              HermesResponseCallback callback) override;
+  void RenameProfile(const dbus::ObjectPath& object_path,
+                     const std::string& new_name,
+                     HermesResponseCallback callback) override;
   HermesProfileClient::Properties* GetProperties(
       const dbus::ObjectPath& object_path) override;
   HermesProfileClient::TestInterface* GetTestInterface() override;

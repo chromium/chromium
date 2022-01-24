@@ -5,6 +5,7 @@
 #ifndef UI_GFX_DELEGATED_INK_POINT_H_
 #define UI_GFX_DELEGATED_INK_POINT_H_
 
+#include <limits>
 #include <string>
 
 #include "base/time/time.h"
@@ -14,6 +15,7 @@
 
 namespace gfx {
 
+class DelegatedInkMetadata;
 namespace mojom {
 class DelegatedInkPointDataView;
 }  // namespace mojom
@@ -33,13 +35,15 @@ class GFX_EXPORT DelegatedInkPoint {
   DelegatedInkPoint() = default;
   DelegatedInkPoint(const PointF& pt,
                     base::TimeTicks timestamp,
-                    int32_t pointer_id)
+                    int32_t pointer_id = std::numeric_limits<int32_t>::min())
       : point_(pt), timestamp_(timestamp), pointer_id_(pointer_id) {}
 
   const PointF& point() const { return point_; }
   base::TimeTicks timestamp() const { return timestamp_; }
   int32_t pointer_id() const { return pointer_id_; }
   std::string ToString() const;
+
+  bool MatchesDelegatedInkMetadata(const DelegatedInkMetadata* metadata) const;
 
  private:
   friend struct mojo::StructTraits<mojom::DelegatedInkPointDataView,

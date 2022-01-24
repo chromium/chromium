@@ -125,8 +125,11 @@ class InstalledVersionPollerTest : public ::testing::Test {
 // Tests that a poll returning the current version does not update the
 // BuildState.
 TEST_F(InstalledVersionPollerTest, TestNoUpdate) {
-  base::MockRepeatingCallback<InstalledAndCriticalVersion()> callback;
-  EXPECT_CALL(callback, Run()).WillOnce(Return(ByMove(MakeNoUpdateVersions())));
+  base::MockRepeatingCallback<void(InstalledVersionCallback)> callback;
+  EXPECT_CALL(callback, Run(_)).WillOnce([](InstalledVersionCallback callback) {
+    std::move(callback).Run(MakeNoUpdateVersions());
+  });
+
   InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
                                 task_environment_.GetMockTickClock());
   task_environment_.RunUntilIdle();
@@ -134,7 +137,9 @@ TEST_F(InstalledVersionPollerTest, TestNoUpdate) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer_);
 
   // A second poll with the same version likewise does nothing.
-  EXPECT_CALL(callback, Run()).WillOnce(Return(ByMove(MakeNoUpdateVersions())));
+  EXPECT_CALL(callback, Run(_)).WillOnce([](InstalledVersionCallback callback) {
+    std::move(callback).Run(MakeNoUpdateVersions());
+  });
   task_environment_.FastForwardBy(
       InstalledVersionPoller::kDefaultPollingInterval);
   ::testing::Mock::VerifyAndClearExpectations(&callback);
@@ -143,10 +148,12 @@ TEST_F(InstalledVersionPollerTest, TestNoUpdate) {
 
 // Tests that a poll with an update is reported to the BuildState.
 TEST_F(InstalledVersionPollerTest, TestUpgrade) {
-  base::MockRepeatingCallback<InstalledAndCriticalVersion()> callback;
+  base::MockRepeatingCallback<void(InstalledVersionCallback)> callback;
 
   // No update the first time.
-  EXPECT_CALL(callback, Run()).WillOnce(Return(ByMove(MakeNoUpdateVersions())));
+  EXPECT_CALL(callback, Run(_)).WillOnce([](InstalledVersionCallback callback) {
+    std::move(callback).Run(MakeNoUpdateVersions());
+  });
   InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
                                 task_environment_.GetMockTickClock());
   task_environment_.RunUntilIdle();
@@ -154,7 +161,9 @@ TEST_F(InstalledVersionPollerTest, TestUpgrade) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer_);
 
   // Followed by an update, which is reported.
-  EXPECT_CALL(callback, Run()).WillOnce(Return(ByMove(MakeUpgradeVersions())));
+  EXPECT_CALL(callback, Run(_)).WillOnce([](InstalledVersionCallback callback) {
+    std::move(callback).Run(MakeUpgradeVersions());
+  });
   EXPECT_CALL(
       mock_observer_,
       OnUpdate(AllOf(
@@ -171,7 +180,9 @@ TEST_F(InstalledVersionPollerTest, TestUpgrade) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer_);
 
   // Followed by the same update, which is not reported.
-  EXPECT_CALL(callback, Run()).WillOnce(Return(ByMove(MakeUpgradeVersions())));
+  EXPECT_CALL(callback, Run(_)).WillOnce([](InstalledVersionCallback callback) {
+    std::move(callback).Run(MakeUpgradeVersions());
+  });
   task_environment_.FastForwardBy(
       InstalledVersionPoller::kDefaultPollingInterval);
   ::testing::Mock::VerifyAndClearExpectations(&callback);
@@ -181,10 +192,12 @@ TEST_F(InstalledVersionPollerTest, TestUpgrade) {
 // Tests that a poll with an update is reported to the BuildState and that a
 // subsequent poll back to the original version is also reported.
 TEST_F(InstalledVersionPollerTest, TestUpgradeThenDowngrade) {
-  base::MockRepeatingCallback<InstalledAndCriticalVersion()> callback;
+  base::MockRepeatingCallback<void(InstalledVersionCallback)> callback;
 
   // An update is found.
-  EXPECT_CALL(callback, Run()).WillOnce(Return(ByMove(MakeUpgradeVersions())));
+  EXPECT_CALL(callback, Run(_)).WillOnce([](InstalledVersionCallback callback) {
+    std::move(callback).Run(MakeUpgradeVersions());
+  });
   EXPECT_CALL(
       mock_observer_,
       OnUpdate(AllOf(
@@ -202,7 +215,9 @@ TEST_F(InstalledVersionPollerTest, TestUpgradeThenDowngrade) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer_);
 
   // Which is then reverted back to the running version.
-  EXPECT_CALL(callback, Run()).WillOnce(Return(ByMove(MakeNoUpdateVersions())));
+  EXPECT_CALL(callback, Run(_)).WillOnce([](InstalledVersionCallback callback) {
+    std::move(callback).Run(MakeNoUpdateVersions());
+  });
   EXPECT_CALL(
       mock_observer_,
       OnUpdate(AllOf(
@@ -219,10 +234,11 @@ TEST_F(InstalledVersionPollerTest, TestUpgradeThenDowngrade) {
 
 // Tests that a poll with a critical update is reported to the BuildState.
 TEST_F(InstalledVersionPollerTest, TestCriticalUpgrade) {
-  base::MockRepeatingCallback<InstalledAndCriticalVersion()> callback;
+  base::MockRepeatingCallback<void(InstalledVersionCallback)> callback;
 
-  EXPECT_CALL(callback, Run())
-      .WillOnce(Return(ByMove(MakeCriticalUpgradeVersions())));
+  EXPECT_CALL(callback, Run(_)).WillOnce([](InstalledVersionCallback callback) {
+    std::move(callback).Run(MakeCriticalUpgradeVersions());
+  });
   EXPECT_CALL(
       mock_observer_,
       OnUpdate(AllOf(
@@ -244,9 +260,11 @@ TEST_F(InstalledVersionPollerTest, TestCriticalUpgrade) {
 
 // Tests that a poll that failed to find a version reports an update anyway.
 TEST_F(InstalledVersionPollerTest, TestMissingVersion) {
-  base::MockRepeatingCallback<InstalledAndCriticalVersion()> callback;
+  base::MockRepeatingCallback<void(InstalledVersionCallback)> callback;
 
-  EXPECT_CALL(callback, Run()).WillOnce(Return(ByMove(MakeErrorVersions())));
+  EXPECT_CALL(callback, Run(_)).WillOnce([](InstalledVersionCallback callback) {
+    std::move(callback).Run(MakeErrorVersions());
+  });
   EXPECT_CALL(
       mock_observer_,
       OnUpdate(AllOf(Eq(&build_state_),
@@ -263,9 +281,11 @@ TEST_F(InstalledVersionPollerTest, TestMissingVersion) {
 
 // Tests that a version downgrade (a rollback) is reported as such.
 TEST_F(InstalledVersionPollerTest, TestRollback) {
-  base::MockRepeatingCallback<InstalledAndCriticalVersion()> callback;
+  base::MockRepeatingCallback<void(InstalledVersionCallback)> callback;
 
-  EXPECT_CALL(callback, Run()).WillOnce(Return(ByMove(MakeRollbackVersions())));
+  EXPECT_CALL(callback, Run(_)).WillOnce([](InstalledVersionCallback callback) {
+    std::move(callback).Run(MakeRollbackVersions());
+  });
   EXPECT_CALL(
       mock_observer_,
       OnUpdate(AllOf(
@@ -288,11 +308,12 @@ TEST_F(InstalledVersionPollerTest, TestMonitor) {
   // Provide a GetInstalledVersionCallback that always reports no update, and
   // don't make any noise about it being called.
   ::testing::NiceMock<
-      base::MockRepeatingCallback<InstalledAndCriticalVersion()>>
+      base::MockRepeatingCallback<void(InstalledVersionCallback)>>
       callback;
-  ON_CALL(callback, Run()).WillByDefault([]() {
-    return MakeNoUpdateVersions();
-  });
+  ON_CALL(callback, Run(_))
+      .WillByDefault([](InstalledVersionCallback callback) {
+        std::move(callback).Run(MakeNoUpdateVersions());
+      });
 
   InstalledVersionPoller poller(&build_state_, callback.Get(), MakeMonitor(),
                                 task_environment_.GetMockTickClock());
@@ -303,6 +324,6 @@ TEST_F(InstalledVersionPollerTest, TestMonitor) {
   ::testing::Mock::VerifyAndClearExpectations(&callback);
 
   // Expect a poll in ten seconds.
-  EXPECT_CALL(callback, Run());
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  EXPECT_CALL(callback, Run(_));
+  task_environment_.FastForwardBy(base::Seconds(10));
 }

@@ -31,7 +31,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/security_interstitials/core/features.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/content/content_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -113,19 +112,13 @@ SecurityStateTabHelper::GetVisibleSecurityState() {
           : security_state::SafetyTipInfo(
                 {security_state::SafetyTipStatus::kUnknown, GURL()});
 
-  // If both the on-form warning and the on-submit warning are enabled for mixed
-  // forms (and they are not disabled by policy) we don't degrade the lock icon
-  // for sites with mixed forms present.
-  if (base::FeatureList::IsEnabled(
-          security_interstitials::kInsecureFormSubmissionInterstitial) &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillPreventMixedFormsFilling)) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    if (profile &&
-        profile->GetPrefs()->GetBoolean(prefs::kMixedFormsWarningsEnabled)) {
-      state->should_treat_displayed_mixed_forms_as_secure = true;
-    }
+  // If both the mixed form warnings are not disabled by policy we don't degrade
+  // the lock icon for sites with mixed forms present.
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  if (profile &&
+      profile->GetPrefs()->GetBoolean(prefs::kMixedFormsWarningsEnabled)) {
+    state->should_treat_displayed_mixed_forms_as_secure = true;
   }
 
   auto* https_only_mode_tab_helper =
@@ -186,17 +179,8 @@ void SecurityStateTabHelper::DidFinishNavigation(
     return;
   }
 
-  content::NavigationEntry* entry = navigation_handle->GetNavigationEntry();
-  if (entry) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Security.CertificateTransparency.MainFrameNavigationCompliance",
-        entry->GetSSL().ct_policy_compliance,
-        net::ct::CTPolicyCompliance::CT_POLICY_COUNT);
-  }
-
-  std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
-      GetVisibleSecurityState();
-  if (net::IsCertStatusError(visible_security_state->cert_status) &&
+  net::CertStatus cert_status = GetVisibleSecurityState()->cert_status;
+  if (net::IsCertStatusError(cert_status) &&
       !navigation_handle->IsErrorPage()) {
     // Record each time a user visits a site after having clicked through a
     // certificate warning interstitial. This is used as a baseline for
@@ -206,8 +190,7 @@ void SecurityStateTabHelper::DidFinishNavigation(
     UMA_HISTOGRAM_BOOLEAN("interstitial.ssl.visited_site_after_warning", true);
   }
 
-  MaybeShowKnownInterceptionDisclosureDialog(
-      web_contents(), visible_security_state->cert_status);
+  MaybeShowKnownInterceptionDisclosureDialog(web_contents(), cert_status);
 }
 
 void SecurityStateTabHelper::DidChangeVisibleSecurityState() {
@@ -313,4 +296,4 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
   return security_state::MALICIOUS_CONTENT_STATUS_NONE;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SecurityStateTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SecurityStateTabHelper);

@@ -39,48 +39,6 @@ namespace policy {
 
 namespace {
 
-const char* kProxyPolicies[] = {
-    key::kProxyMode,   key::kProxyServerMode, key::kProxyServer,
-    key::kProxyPacUrl, kProxyPacMandatory,    key::kProxyBypassList,
-};
-
-// Maps the separate policies for proxy settings into a single Dictionary
-// policy. This allows to keep the logic of merging policies from different
-// sources simple, as all separate proxy policies should be considered as a
-// single whole during merging.
-void RemapProxyPolicies(PolicyMap* policies) {
-  // The highest (level, scope) pair for an existing proxy policy is determined
-  // first, and then only policies with those exact attributes are merged.
-  PolicyMap::Entry current_priority;  // Defaults to the lowest priority.
-  PolicySource inherited_source = POLICY_SOURCE_ENTERPRISE_DEFAULT;
-  base::Value proxy_settings(base::Value::Type::DICTIONARY);
-  for (size_t i = 0; i < base::size(kProxyPolicies); ++i) {
-    const PolicyMap::Entry* entry = policies->Get(kProxyPolicies[i]);
-    if (entry) {
-      if (entry->has_higher_priority_than(current_priority)) {
-        proxy_settings = base::Value(base::Value::Type::DICTIONARY);
-        current_priority = entry->DeepCopy();
-        if (entry->source > inherited_source)  // Higher priority?
-          inherited_source = entry->source;
-      }
-      if (!entry->has_higher_priority_than(current_priority) &&
-          !current_priority.has_higher_priority_than(*entry)) {
-        proxy_settings.SetKey(kProxyPolicies[i], entry->value()->Clone());
-      }
-      policies->Erase(kProxyPolicies[i]);
-    }
-  }
-  // Sets the new |proxy_settings| if kProxySettings isn't set yet, or if the
-  // new priority is higher.
-  const PolicyMap::Entry* existing = policies->Get(key::kProxySettings);
-  if (!proxy_settings.DictEmpty() &&
-      (!existing || current_priority.has_higher_priority_than(*existing))) {
-    policies->Set(key::kProxySettings, current_priority.level,
-                  current_priority.scope, inherited_source,
-                  std::move(proxy_settings), nullptr);
-  }
-}
-
 // Maps the separate renamed policies into a single Dictionary policy. This
 // allows to keep the logic of merging policies from different sources simple,
 // as all separate renamed policies should be considered as a single whole
@@ -113,9 +71,11 @@ void RemapRenamedPolicies(PolicyMap* policies) {
       {policy::key::kNativeMessagingWhitelist,
        policy::key::kNativeMessagingAllowlist},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
       {policy::key::kAttestationExtensionWhitelist,
        policy::key::kAttestationExtensionAllowlist},
+#endif  // defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       {policy::key::kExternalPrintServersWhitelist,
        policy::key::kExternalPrintServersAllowlist},
       {policy::key::kNativePrintersBulkBlacklist,
@@ -137,8 +97,8 @@ void RemapRenamedPolicies(PolicyMap* policies) {
   for (const auto& policy_pair : renamed_policies) {
     PolicyMap::Entry* old_policy = policies->GetMutable(policy_pair.first);
     const PolicyMap::Entry* new_policy = policies->Get(policy_pair.second);
-    if (old_policy &&
-        (!new_policy || old_policy->has_higher_priority_than(*new_policy))) {
+    if (old_policy && (!new_policy || policies->EntryHasHigherPriority(
+                                          *old_policy, *new_policy))) {
       PolicyMap::Entry policy_entry = old_policy->DeepCopy();
       policy_entry.AddMessage(PolicyMap::MessageType::kWarning,
                               IDS_POLICY_MIGRATED_NEW_POLICY,
@@ -151,6 +111,23 @@ void RemapRenamedPolicies(PolicyMap* policies) {
     if (policy_lists_to_merge.contains(policy_pair.first) &&
         !policy_lists_to_merge.contains(policy_pair.second)) {
       merge_list->Append(base::Value(policy_pair.second));
+    }
+  }
+}
+
+// Precedence policies cannot be set at the user cloud level regardless of
+// affiliation status. This is done to prevent cloud users from potentially
+// giving themselves increased priority, causing a security issue.
+void IgnoreUserCloudPrecedencePolicies(PolicyMap* policies) {
+  for (auto* policy_name : metapolicy::kPrecedence) {
+    const PolicyMap::Entry* policy_entry = policies->Get(policy_name);
+    if (policy_entry && policy_entry->scope == POLICY_SCOPE_USER &&
+        policy_entry->source == POLICY_SOURCE_CLOUD) {
+      PolicyMap::Entry* policy_entry_mutable =
+          policies->GetMutable(policy_name);
+      policy_entry_mutable->SetIgnored();
+      policy_entry_mutable->AddMessage(PolicyMap::MessageType::kError,
+                                       IDS_POLICY_IGNORED_CHROME_PROFILE);
     }
   }
 }
@@ -375,8 +352,8 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   for (auto* provider : providers_) {
     PolicyBundle provided_bundle;
     provided_bundle.CopyFrom(provider->policies());
-    RemapProxyPolicies(&provided_bundle.Get(chrome_namespace));
     RemapRenamedPolicies(&provided_bundle.Get(chrome_namespace));
+    IgnoreUserCloudPrecedencePolicies(&provided_bundle.Get(chrome_namespace));
     DowngradeMetricsReportingToRecommendedPolicy(
         &provided_bundle.Get(chrome_namespace));
     bundle.MergeFrom(provided_bundle);
@@ -400,10 +377,8 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   bool atomic_policy_group_enabled =
       atomic_policy_group_enabled_policy_value &&
       atomic_policy_group_enabled_policy_value->value()->GetBool() &&
-      !((atomic_policy_group_enabled_policy_value->source ==
-             POLICY_SOURCE_CLOUD ||
-         atomic_policy_group_enabled_policy_value->source ==
-             POLICY_SOURCE_PRIORITY_CLOUD) &&
+      !(atomic_policy_group_enabled_policy_value->source ==
+            POLICY_SOURCE_CLOUD &&
         atomic_policy_group_enabled_policy_value->scope == POLICY_SCOPE_USER);
 
   PolicyListMerger policy_list_merger(std::move(policy_lists_to_merge));
@@ -411,14 +386,14 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
       std::move(policy_dictionaries_to_merge));
 
   // Pass affiliation and CloudUserPolicyMerge values to both mergers.
-  const bool is_affiliated = chrome_policies.IsUserAffiliated();
+  const bool is_user_affiliated = chrome_policies.IsUserAffiliated();
   const bool is_user_cloud_merging_enabled =
       chrome_policies.GetValue(key::kCloudUserPolicyMerge) &&
       chrome_policies.GetValue(key::kCloudUserPolicyMerge)->GetBool();
   policy_list_merger.SetAllowUserCloudPolicyMerging(
-      is_affiliated && is_user_cloud_merging_enabled);
+      is_user_affiliated && is_user_cloud_merging_enabled);
   policy_dictionary_merger.SetAllowUserCloudPolicyMerging(
-      is_affiliated && is_user_cloud_merging_enabled);
+      is_user_affiliated && is_user_cloud_merging_enabled);
 
   std::vector<PolicyMerger*> mergers{&policy_list_merger,
                                      &policy_dictionary_merger};

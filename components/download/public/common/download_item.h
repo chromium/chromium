@@ -29,8 +29,11 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
+#include "components/download/public/common/download_item_rename_progress_update.h"
 #include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_source.h"
+#include "net/base/isolation_info.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
@@ -47,14 +50,9 @@ namespace net {
 class HttpResponseHeaders;
 }
 
-namespace enterprise_connectors {
-class DownloadItemRerouteInfo;
-}
-
 namespace download {
 class DownloadFile;
 class DownloadItemRenameHandler;
-using enterprise_connectors::DownloadItemRerouteInfo;
 
 // One DownloadItem per download. This is the model class that stores all the
 // state for a download.
@@ -181,6 +179,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
 
   // Called when the user has validated the download of a mixed content file.
   virtual void ValidateMixedContentDownload() = 0;
+
+  // Called when user accepts Incognito download warning.
+  virtual void AcceptIncognitoWarning() = 0;
 
   // Called to acquire a dangerous download. If |delete_file_afterward| is true,
   // invokes |callback| on the UI thread with the path to the downloaded file,
@@ -355,6 +356,13 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // DownloadSource prompting this download.
   virtual DownloadSource GetDownloadSource() const = 0;
 
+  // The credentials mode of the request.
+  virtual ::network::mojom::CredentialsMode GetCredentialsMode() const = 0;
+
+  // The isolation mode of the request.
+  virtual const absl::optional<net::IsolationInfo>& GetIsolationInfo()
+      const = 0;
+
   //    Destination State accessors --------------------------------------------
 
   // Full path to the downloaded or downloading file. This is the path to the
@@ -424,6 +432,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // and we will require a call to ValidateMixedContentDownload() to complete.
   // False if not mixed content or that function has been called.
   virtual bool IsMixedContent() const = 0;
+
+  // True if file is downloaded in Incognito and user has not accepted it yet.
+  // False if file is downloaded in regular mode or has accepted the incognito
+  // warning.
+  virtual bool ShouldShowIncognitoWarning() const = 0;
 
   // Why |safety_state_| is not SAFE.
   virtual DownloadDangerType GetDangerType() const = 0;

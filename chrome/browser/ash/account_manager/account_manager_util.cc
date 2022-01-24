@@ -8,10 +8,10 @@
 
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_ui_impl.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/net/delay_network_call.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -60,9 +60,8 @@ void InitializeAccountManager(const base::FilePath& cryptohome_root_dir,
       cryptohome_root_dir,
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
-      base::BindRepeating(&chromeos::DelayNetworkCall,
-                          base::TimeDelta::FromMilliseconds(
-                              chromeos::kDefaultNetworkRetryDelayMS)),
+      base::BindRepeating(&DelayNetworkCall,
+                          base::Milliseconds(kDefaultNetworkRetryDelayMS)),
       std::move(initialization_callback));
 
   crosapi::AccountManagerMojoService* account_manager_mojo_service =

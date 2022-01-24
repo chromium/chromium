@@ -1,17 +1,13 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
+/**
+ * @fileoverview
+ * @suppress {missingRequire} swapping implementation using fully qualified name
+ */
 goog.module('goog.i18n.DateTimeFormatTest');
 goog.setTestOnly();
 
@@ -72,6 +68,7 @@ function timezoneString(date) {
  * Gets timezone id from the date.
  * @param {!DateDate} date
  * @return {string}
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function timezoneId(date) {
   const timeZone = TimeZone.createTimeZone(date.getTimezoneOffset());
@@ -232,6 +229,7 @@ testSuite({
     goog.i18n.DateTimePatterns = DateTimePatterns_de;
     goog.i18n.DateTimeSymbols = DateTimeSymbols_de;
     date = new Date(Date.UTC(2006, 6, 27, 13, 10, 10, 250));
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const timeZone = TimeZone.createTimeZone(420, DateTimeSymbols_de);
     const fmt = new DateTimeFormat('yyyy.MM.dd G \'at\' HH:mm:ss vvvv');
     assertEquals(
@@ -310,6 +308,7 @@ testSuite({
     assertEquals('Q4 2006', fmt.format(date));
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testMMddyyyyHHmmsszzz() {
     goog.i18n.DateTimePatterns = DateTimePatterns_de;
     goog.i18n.DateTimeSymbols = DateTimeSymbols_de;
@@ -319,6 +318,7 @@ testSuite({
         '07/27/2006 13:10:10 ' + timezoneString(date), fmt.format(date));
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testMMddyyyyHHmmssZ() {
     goog.i18n.DateTimePatterns = DateTimePatterns_de;
     goog.i18n.DateTimeSymbols = DateTimeSymbols_de;
@@ -391,7 +391,7 @@ testSuite({
     goog.i18n.DateTimePatterns = DateTimePatterns_bg;
     const fmtBg = new DateTimeFormat(
         goog.i18n.DateTimePatterns.MONTH_DAY_TIME_ZONE_SHORT);
-    assertEquals('28.06, 13:10 UTC-7', fmtBg.format(date));
+    assertEquals('28.06, 13:10 ч. UTC-7', fmtBg.format(date));
 
     goog.i18n.DateTimePatterns = DateTimePatterns_zh_HK;
     const fmtZhHk = new DateTimeFormat(
@@ -403,11 +403,14 @@ testSuite({
     assertEquals('6月29日 AM6:10 [UTC+10]', fmtZhHk.format(date, timeZone));
 
     // And some from the extended patterns.
+    /** @suppress {checkTypes} suppression added to enable type checking */
     goog.i18n.DateTimePatterns = DateTimePatterns_en_XA;
     const fmtEnXa = new DateTimeFormat(
         goog.i18n.DateTimePatterns.MONTH_DAY_TIME_ZONE_SHORT);
-    assertEquals('[[Jun 28], [1:10 PM UTC-7]]', fmtEnXa.format(date));
+    assertEquals(
+        '[[Jun 28 one], [13:10 UTC-7 one two] one two]', fmtEnXa.format(date));
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     goog.i18n.DateTimePatterns = DateTimePatterns_zh_Hant_TW;
     const fmtZhHantTw = new DateTimeFormat(
         goog.i18n.DateTimePatterns.MONTH_DAY_TIME_ZONE_SHORT);
@@ -454,6 +457,7 @@ testSuite({
     assertEquals('10:25600', fmt.format(date));
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testPredefinedFormatter() {
     goog.i18n.DateTimePatterns = DateTimePatterns_de;
     goog.i18n.DateTimeSymbols = DateTimeSymbols_de;
@@ -738,7 +742,7 @@ testSuite({
     assertEquals('٢٠٠٦/٠٧/٢٧ ١٣:١٠:١٠٫٢٥', fmt.format(date));
 
     fmt = new DateTimeFormat(11);
-    assertEquals('٢٧\u200f/٧\u200f/٢٠٠٦ ١:١٠ م', fmt.format(date));
+    assertEquals('٢٧\u200f/٧\u200f/٢٠٠٦, ١:١٠ م', fmt.format(date));
 
     // Make sure standardized timezone formats don't use native digits
     fmt = new DateTimeFormat('Z');
@@ -756,7 +760,7 @@ testSuite({
     assertEquals('2006/07/27 13:10:10٫25', fmt.format(date));
 
     fmt = new DateTimeFormat(11);
-    assertEquals('27/7/2006 1:10 م', fmt.format(date));
+    assertEquals('27/7/2006, 1:10 م', fmt.format(date));
 
     // Make sure standardized timezone formats don't use native digits
     fmt = new DateTimeFormat('Z');
@@ -945,10 +949,10 @@ testSuite({
     const fmt = new DateTimeFormat(DateTimeFormat.Format.MEDIUM_DATETIME);
 
     const date = new Date(2006, 6, 27, 13, 10, 42, 250);
-    assertEquals('27 juil. 2006 à 13:10:42', fmt.format(date));
+    assertEquals('27 juil. 2006, 13:10:42', fmt.format(date));
 
     const gdatetime = new DateTime(2006, 6, 27, 13, 10, 42, 250);
-    assertEquals('27 juil. 2006 à 13:10:42', fmt.format(gdatetime));
+    assertEquals('27 juil. 2006, 13:10:42', fmt.format(gdatetime));
 
     const gdate = new DateDate(2006, 6, 27);
     const fmtDate = new DateTimeFormat(DateTimeFormat.Format.MEDIUM_DATE);

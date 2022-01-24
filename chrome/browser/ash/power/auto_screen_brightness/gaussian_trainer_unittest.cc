@@ -35,6 +35,9 @@ class GaussianTrainerTest : public testing::Test {
     gaussian_trainer_ = std::make_unique<GaussianTrainer>();
   }
 
+  GaussianTrainerTest(const GaussianTrainerTest&) = delete;
+  GaussianTrainerTest& operator=(const GaussianTrainerTest&) = delete;
+
   ~GaussianTrainerTest() override = default;
 
  protected:
@@ -79,9 +82,6 @@ class GaussianTrainerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<GaussianTrainer> gaussian_trainer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GaussianTrainerTest);
 };
 
 // Tests the effect of |brightness_bound_scale| on outlier checks. A larger

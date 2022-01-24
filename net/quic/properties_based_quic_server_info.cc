@@ -61,8 +61,4 @@ void PropertiesBasedQuicServerInfo::Persist() {
                                              encoded);
 }
 
-size_t PropertiesBasedQuicServerInfo::EstimateMemoryUsage() const {
-  return 0;
-}
-
 }  // namespace net

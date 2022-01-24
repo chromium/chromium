@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_session_state.h"
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Protocol.h"
+#include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -90,7 +90,8 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
     // Post a task to the worker or main renderer thread that will interrupt V8
     // and be run immediately. Only methods that do not run JS code are safe.
     Vector<uint8_t> message_copy;
-    message_copy.Append(message.data(), message.size());
+    message_copy.Append(message.data(),
+                        base::checked_cast<wtf_size_t>(message.size()));
     if (ShouldInterruptForMethod(method)) {
       inspector_task_runner_->AppendTask(CrossThreadBindOnce(
           &::blink::DevToolsSession::DispatchProtocolCommandImpl, session_,

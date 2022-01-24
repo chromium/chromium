@@ -44,6 +44,10 @@ int SuspendCount(task_t task) {
 class ScopedTaskSuspendTest final : public MachMultiprocess {
  public:
   ScopedTaskSuspendTest() : MachMultiprocess() {}
+
+  ScopedTaskSuspendTest(const ScopedTaskSuspendTest&) = delete;
+  ScopedTaskSuspendTest& operator=(const ScopedTaskSuspendTest&) = delete;
+
   ~ScopedTaskSuspendTest() {}
 
  private:
@@ -71,8 +75,6 @@ class ScopedTaskSuspendTest final : public MachMultiprocess {
 
   void MachMultiprocessChild() override {
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTaskSuspendTest);
 };
 
 TEST(ScopedTaskSuspend, ScopedTaskSuspend) {

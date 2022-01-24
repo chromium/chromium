@@ -104,6 +104,8 @@ test("elevation_service_unittests") {
   sources = [
     "elevated_recovery_unittest.cc",
     "run_all_unittests.cc",
+    "scoped_mock_context.cc",
+    "scoped_mock_context.h",
     "service_main_unittest.cc",
   ]
 

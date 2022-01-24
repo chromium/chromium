@@ -14,7 +14,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -83,6 +82,10 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
       bool off_the_record,
       NaClAppProcessType process_type,
       const base::FilePath& profile_directory);
+
+  NaClProcessHost(const NaClProcessHost&) = delete;
+  NaClProcessHost& operator=(const NaClProcessHost&) = delete;
+
   ~NaClProcessHost() override;
 
   void OnProcessCrashed(int exit_status) override;
@@ -247,8 +250,6 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   static unsigned keepalive_throttle_interval_milliseconds_;
 
   base::WeakPtrFactory<NaClProcessHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NaClProcessHost);
 };
 
 }  // namespace nacl

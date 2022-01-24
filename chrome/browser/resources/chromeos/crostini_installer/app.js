@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
@@ -11,13 +10,14 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
-import './strings.m.js';
+import 'chrome://crostini-installer/strings.m.js';
+import 'chrome://resources/cros_elements/button/button.js';
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 
+import {BrowserProxy} from 'chrome://crostini-installer/browser_proxy.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {BrowserProxy} from './browser_proxy.js';
 
 /**
  * Enum for the state of `crostini-installer-app`. Not to confused with
@@ -201,7 +201,7 @@ Polymer({
       }
     });
 
-    this.$$('.action-button:not([hidden])').focus();
+    this.$$('[primary]:not([hidden])').focus();
   },
 
   /** @override */
@@ -443,12 +443,6 @@ Polymer({
         messageId = 'startLxdMessage';
         break;
       case InstallerState.kCreateContainer:
-        // TODO(crbug.com/1015722): we are using the same message as for
-        // |START_CONTAINER|, which is weird because user is going to see
-        // message "start container" then "setup container" and then "start
-        // container" again.
-        messageId = 'startContainerMessage';
-        break;
       case InstallerState.kSetupContainer:
         messageId = 'setupContainerMessage';
         break;

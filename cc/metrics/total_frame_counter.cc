@@ -66,7 +66,7 @@ size_t TotalFrameCounter::ComputeTotalVisibleFrames(
 
   DCHECK_GE(until, last_shown_timestamp_);
   auto frames_since =
-      std::round((until - last_shown_timestamp_) / latest_interval_);
+      std::ceil((until - last_shown_timestamp_) / latest_interval_);
   return total_frames_ + frames_since;
 }
 

@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/chromeos/point_transformer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/event.h"
@@ -29,6 +29,12 @@ class LocalKeyboardInputMonitorChromeos : public LocalKeyboardInputMonitor {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       LocalInputMonitor::KeyPressedCallback key_pressed_callback);
+
+  LocalKeyboardInputMonitorChromeos(const LocalKeyboardInputMonitorChromeos&) =
+      delete;
+  LocalKeyboardInputMonitorChromeos& operator=(
+      const LocalKeyboardInputMonitorChromeos&) = delete;
+
   ~LocalKeyboardInputMonitorChromeos() override;
 
  private:
@@ -36,6 +42,10 @@ class LocalKeyboardInputMonitorChromeos : public LocalKeyboardInputMonitor {
    public:
     Core(scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
          LocalInputMonitor::KeyPressedCallback on_key_event_callback);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     ~Core() override;
 
     void Start();
@@ -47,15 +57,11 @@ class LocalKeyboardInputMonitorChromeos : public LocalKeyboardInputMonitor {
    private:
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
     LocalInputMonitor::KeyPressedCallback key_pressed_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   // Task runner on which ui::events are received.
   scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalKeyboardInputMonitorChromeos);
 };
 
 LocalKeyboardInputMonitorChromeos::LocalKeyboardInputMonitorChromeos(

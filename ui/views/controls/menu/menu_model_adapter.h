@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/base/models/menu_model_delegate.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
@@ -31,6 +30,10 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   explicit MenuModelAdapter(ui::MenuModel* menu_model);
   MenuModelAdapter(ui::MenuModel* menu_model,
                    base::RepeatingClosure on_menu_closed_callback);
+
+  MenuModelAdapter(const MenuModelAdapter&) = delete;
+  MenuModelAdapter& operator=(const MenuModelAdapter&) = delete;
+
   ~MenuModelAdapter() override;
 
   // Populate a MenuItemView menu with the ui::MenuModel items
@@ -109,8 +112,6 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
 
   // Optional callback triggered during OnMenuClosed().
   base::RepeatingClosure on_menu_closed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuModelAdapter);
 };
 
 }  // namespace views

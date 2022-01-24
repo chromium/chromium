@@ -33,6 +33,7 @@ source_set("internal") {
     "//base",
     "//chrome/browser/video_tutorials:public",
     "//chrome/browser/video_tutorials/proto",
+    "//components/language/core/browser:browser",
     "//components/leveldb_proto",
     "//content/public/browser",
   ]

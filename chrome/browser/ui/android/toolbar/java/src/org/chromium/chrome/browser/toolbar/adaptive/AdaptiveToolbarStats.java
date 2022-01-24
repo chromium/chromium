@@ -37,12 +37,14 @@ public class AdaptiveToolbarStats {
 
     /**
      * Called to record the selected radio button on the adaptive toolbar preference page.
+     *
      * @param onStartup Whether this is called on startup.
      */
-    public static void recordRadioButtonStateAsync(boolean onStartup) {
+    public static void recordRadioButtonStateAsync(
+            AdaptiveToolbarStatePredictor adaptiveToolbarStatePredictor, boolean onStartup) {
         String histogramName = onStartup ? "Android.AdaptiveToolbarButton.Settings.Startup"
                                          : "Android.AdaptiveToolbarButton.Settings.Changed";
-        new AdaptiveToolbarStatePredictor().recomputeUiState(uiState -> {
+        adaptiveToolbarStatePredictor.recomputeUiState(uiState -> {
             RecordHistogram.recordEnumeratedHistogram(histogramName,
                     getRadioButtonStateForMetrics(uiState),
                     AdaptiveToolbarRadioButtonState.NUM_ENTRIES);
@@ -63,8 +65,9 @@ public class AdaptiveToolbarStats {
     /**
      * Called on startup to record the selected segment from the backend.
      */
-    public static void recordSelectedSegmentFromSegmentationPlatformAsync() {
-        new AdaptiveToolbarStatePredictor().readFromSegmentationPlatform(result -> {
+    public static void recordSelectedSegmentFromSegmentationPlatformAsync(
+            AdaptiveToolbarStatePredictor adaptiveToolbarStatePredictor) {
+        adaptiveToolbarStatePredictor.readFromSegmentationPlatform(result -> {
             RecordHistogram.recordEnumeratedHistogram(
                     "SegmentationPlatform.AdaptiveToolbar.SegmentSelected.Startup", result.second,
                     AdaptiveToolbarButtonVariant.NUM_ENTRIES);

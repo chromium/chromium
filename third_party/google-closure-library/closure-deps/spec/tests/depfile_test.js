@@ -26,9 +26,7 @@ describe('depfile', function() {
         depGraph.DependencyType.CLOSURE_PROVIDE, PATH_TO_CLOSURE + 'example.js',
         ['my.ns0', 'my.ns1'], []);
     expect(depFile.getDepFileText(PATH_TO_CLOSURE, [d]))
-        .toBe(
-            `goog.addDependency('example.js', ['my.ns0', 'my.ns1'], [], ` +
-            '{});\n');
+        .toBe(`goog.addDependency('example.js', ['my.ns0', 'my.ns1'], []);\n`);
   });
 
   it('closure module', function() {
@@ -48,8 +46,7 @@ describe('depfile', function() {
         [new depGraph.GoogRequire('my.r0'), new depGraph.GoogRequire('my.r1')]);
     expect(depFile.getDepFileText(PATH_TO_CLOSURE, [d]))
         .toBe(
-            `goog.addDependency('example.js', ['my.ns'], ['my.r0', 'my.r1'], ` +
-            `{});\n`);
+            `goog.addDependency('example.js', ['my.ns'], ['my.r0', 'my.r1']);\n`);
   });
 
   it('path is relative to closure', function() {
@@ -57,13 +54,13 @@ describe('depfile', function() {
         depGraph.DependencyType.CLOSURE_PROVIDE,
         PATH_TO_CLOSURE + '/nested/example.js', [], []);
     expect(depFile.getDepFileText(PATH_TO_CLOSURE, [d]))
-        .toBe(`goog.addDependency('nested/example.js', [], [], {});\n`);
+        .toBe(`goog.addDependency('nested/example.js', [], []);\n`);
 
     d = new depGraph.Dependency(
         depGraph.DependencyType.CLOSURE_PROVIDE, '/root/foo/bar/example.js', [],
         []);
     expect(depFile.getDepFileText(PATH_TO_CLOSURE, [d]))
-        .toBe(`goog.addDependency('../../foo/bar/example.js', [], [], {});\n`);
+        .toBe(`goog.addDependency('../../foo/bar/example.js', [], []);\n`);
   });
 
   it('langugage level', function() {
@@ -74,18 +71,20 @@ describe('depfile', function() {
         .toBe(`goog.addDependency('example.js', [], [], {'lang': 'es5'});\n`);
   });
 
-  it('simple script is not written', function() {
+  it('script', function() {
     let d = new depGraph.Dependency(
         depGraph.DependencyType.SCRIPT, PATH_TO_CLOSURE + '/example.js', [],
         []);
-    expect(depFile.getDepFileText(PATH_TO_CLOSURE, [d])).toBe(`\n`);
+    expect(depFile.getDepFileText(PATH_TO_CLOSURE, [d]))
+        .toBe(`goog.addDependency('example.js', [], []);\n`);
   });
 
-  it('script with requires not written', function() {
+  it('script with requires', function() {
     let d = new depGraph.Dependency(
         depGraph.DependencyType.SCRIPT, PATH_TO_CLOSURE + '/example.js', [],
         [new depGraph.GoogRequire('stuff')]);
-    expect(depFile.getDepFileText(PATH_TO_CLOSURE, [d])).toBe(`\n`);
+    expect(depFile.getDepFileText(PATH_TO_CLOSURE, [d]))
+        .toBe(`goog.addDependency('example.js', [], ['stuff']);\n`);
   });
 
   describe('es6 module', function() {

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_PEER_CONNECTION_DEPENDENCY_FACTORY_H_
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
@@ -14,11 +14,15 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/webrtc_overrides/metronome_provider.h"
+#include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace base {
 class WaitableEvent;
@@ -67,6 +71,12 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   PeerConnectionDependencyFactory(
       ExecutionContext& context,
       base::PassKey<PeerConnectionDependencyFactory>);
+
+  PeerConnectionDependencyFactory(const PeerConnectionDependencyFactory&) =
+      delete;
+  PeerConnectionDependencyFactory& operator=(
+      const PeerConnectionDependencyFactory&) = delete;
+
   ~PeerConnectionDependencyFactory() override;
 
   // Create a RTCPeerConnectionHandler object.
@@ -98,6 +108,9 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
       blink::WebLocalFrame* web_frame,
       webrtc::PeerConnectionObserver* observer,
       ExceptionState& exception_state);
+  size_t open_peer_connections() const;
+  void OnPeerConnectionClosed();
+  scoped_refptr<MetronomeProvider> metronome_provider() const;
 
   // Creates a PortAllocator that uses Chrome IPC sockets and enforces privacy
   // controls according to the permissions granted on the page.
@@ -147,6 +160,9 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   // Helper method to create a WebRtcAudioDeviceImpl.
   void EnsureWebRtcAudioDeviceImpl();
 
+  // Number of non-closed peer connections in existence.
+  size_t open_peer_connections_ = 0u;
+
  private:
   // ExecutionContextLifecycleObserver:
   void ContextDestroyed() override;
@@ -180,6 +196,10 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   std::unique_ptr<IpcPacketSocketFactory> socket_factory_;
 
   scoped_refptr<webrtc::PeerConnectionFactoryInterface> pc_factory_;
+  // The metronome should only be used if kWebRtcMetronomeTaskQueue is enabled
+  // and there exists open RTCPeerConnection objects.
+  scoped_refptr<MetronomeProvider> metronome_provider_;
+  scoped_refptr<MetronomeSource> metronome_source_;
 
   // Dispatches all P2P sockets.
   Member<P2PSocketDispatcher> p2p_socket_dispatcher_;
@@ -188,9 +208,9 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
 
   media::GpuVideoAcceleratorFactories* gpu_factories_;
 
-  THREAD_CHECKER(thread_checker_);
+  bool encode_decode_capabilities_reported_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(PeerConnectionDependencyFactory);
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace blink

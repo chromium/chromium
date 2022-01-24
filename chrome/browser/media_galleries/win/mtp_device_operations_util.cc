@@ -139,8 +139,8 @@ void GetLastModifiedTime(IPortableDeviceValues* properties_values,
   // Some PTP devices don't provide an mtime. Try using the ctime instead.
   if (last_modified_date.get().vt != VT_DATE) {
     last_modified_date.Reset();
-    HRESULT hr = properties_values->GetValue(WPD_OBJECT_DATE_CREATED,
-                                             last_modified_date.Receive());
+    hr = properties_values->GetValue(WPD_OBJECT_DATE_CREATED,
+                                     last_modified_date.Receive());
     if (FAILED(hr))
       return;
   }

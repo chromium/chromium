@@ -29,7 +29,7 @@ TEST_F(HeapProfilerControllerTest, EmptyProfileIsNotEmitted) {
           }));
   controller.Start();
 
-  task_environment.FastForwardBy(base::TimeDelta::FromDays(365));
+  task_environment.FastForwardBy(base::Days(365));
 }
 
 // Sampling profiler is not capable of unwinding stack on Android under tests.

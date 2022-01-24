@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {

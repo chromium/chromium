@@ -34,6 +34,11 @@ class ThirdPartyClientAuthenticator : public ThirdPartyAuthenticatorBase {
   ThirdPartyClientAuthenticator(
       const CreateBaseAuthenticatorCallback& create_base_authenticator_callback,
       const FetchThirdPartyTokenCallback& fetch_token_callback);
+
+  ThirdPartyClientAuthenticator(const ThirdPartyClientAuthenticator&) = delete;
+  ThirdPartyClientAuthenticator& operator=(
+      const ThirdPartyClientAuthenticator&) = delete;
+
   ~ThirdPartyClientAuthenticator() override;
 
  protected:
@@ -53,8 +58,6 @@ class ThirdPartyClientAuthenticator : public ThirdPartyAuthenticatorBase {
   std::string token_;
 
   base::WeakPtrFactory<ThirdPartyClientAuthenticator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyClientAuthenticator);
 };
 
 

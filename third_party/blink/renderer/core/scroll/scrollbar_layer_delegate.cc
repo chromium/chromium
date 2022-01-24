@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -24,15 +24,15 @@ class ScopedScrollbarPainter {
  public:
   ScopedScrollbarPainter(cc::PaintCanvas& canvas, float device_scale_factor)
       : canvas_(canvas) {
-    builder_.Context().SetDeviceScaleFactor(device_scale_factor);
+    builder_->Context().SetDeviceScaleFactor(device_scale_factor);
   }
-  ~ScopedScrollbarPainter() { canvas_.drawPicture(builder_.EndRecording()); }
+  ~ScopedScrollbarPainter() { canvas_.drawPicture(builder_->EndRecording()); }
 
-  GraphicsContext& Context() { return builder_.Context(); }
+  GraphicsContext& Context() { return builder_->Context(); }
 
  private:
   cc::PaintCanvas& canvas_;
-  PaintRecordBuilder builder_;
+  PaintRecordBuilder* builder_ = MakeGarbageCollected<PaintRecordBuilder>();
 };
 
 }  // namespace
@@ -76,14 +76,14 @@ bool ScrollbarLayerDelegate::IsOverlay() const {
 
 gfx::Rect ScrollbarLayerDelegate::ThumbRect() const {
   IntRect track_rect = scrollbar_->GetTheme().ThumbRect(*scrollbar_);
-  track_rect.MoveBy(-scrollbar_->Location());
-  return track_rect;
+  track_rect.Offset(-ToIntSize(scrollbar_->Location()));
+  return ToGfxRect(track_rect);
 }
 
 gfx::Rect ScrollbarLayerDelegate::TrackRect() const {
   IntRect track_rect = scrollbar_->GetTheme().TrackRect(*scrollbar_);
-  track_rect.MoveBy(-scrollbar_->Location());
-  return track_rect;
+  track_rect.Offset(-ToIntSize(scrollbar_->Location()));
+  return ToGfxRect(track_rect);
 }
 
 bool ScrollbarLayerDelegate::SupportsDragSnapBack() const {
@@ -97,16 +97,16 @@ bool ScrollbarLayerDelegate::JumpOnTrackClick() const {
 gfx::Rect ScrollbarLayerDelegate::BackButtonRect() const {
   IntRect back_button_rect = scrollbar_->GetTheme().BackButtonRect(*scrollbar_);
   if (!back_button_rect.IsEmpty())
-    back_button_rect.MoveBy(-scrollbar_->Location());
-  return back_button_rect;
+    back_button_rect.Offset(-ToIntSize(scrollbar_->Location()));
+  return ToGfxRect(back_button_rect);
 }
 
 gfx::Rect ScrollbarLayerDelegate::ForwardButtonRect() const {
   IntRect forward_button_rect =
       scrollbar_->GetTheme().ForwardButtonRect(*scrollbar_);
   if (!forward_button_rect.IsEmpty())
-    forward_button_rect.MoveBy(-scrollbar_->Location());
-  return forward_button_rect;
+    forward_button_rect.Offset(-ToIntSize(scrollbar_->Location()));
+  return ToGfxRect(forward_button_rect);
 }
 
 float ScrollbarLayerDelegate::Opacity() const {
@@ -125,13 +125,13 @@ bool ScrollbarLayerDelegate::UsesNinePatchThumbResource() const {
 
 gfx::Size ScrollbarLayerDelegate::NinePatchThumbCanvasSize() const {
   DCHECK(scrollbar_->GetTheme().UsesNinePatchThumbResource());
-  return static_cast<gfx::Size>(
+  return ToGfxSize(
       scrollbar_->GetTheme().NinePatchThumbCanvasSize(*scrollbar_));
 }
 
 gfx::Rect ScrollbarLayerDelegate::NinePatchThumbAperture() const {
   DCHECK(scrollbar_->GetTheme().UsesNinePatchThumbResource());
-  return scrollbar_->GetTheme().NinePatchThumbAperture(*scrollbar_);
+  return ToGfxRect(scrollbar_->GetTheme().NinePatchThumbAperture(*scrollbar_));
 }
 
 bool ScrollbarLayerDelegate::ShouldPaint() const {
@@ -168,9 +168,8 @@ void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
       scrollbar_->ClearThumbNeedsRepaint();
       break;
     case cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS: {
-      DCHECK_EQ(IntSize(rect.size()), scrollbar_->FrameRect().Size());
-      IntPoint offset(IntPoint(rect.origin()) -
-                      scrollbar_->FrameRect().Location());
+      DCHECK_EQ(IntSize(rect.size()), scrollbar_->FrameRect().size());
+      gfx::Vector2d offset = rect.origin() - scrollbar_->FrameRect().origin();
       theme.PaintTrackButtonsTickmarks(painter.Context(), *scrollbar_, offset);
       scrollbar_->ClearTrackNeedsRepaint();
       break;

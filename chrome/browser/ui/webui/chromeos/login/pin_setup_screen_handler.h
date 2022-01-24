@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PIN_SETUP_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PIN_SETUP_SCREEN_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace ash {
@@ -41,6 +40,10 @@ class PinSetupScreenHandler : public BaseScreenHandler,
   using TView = PinSetupScreenView;
 
   explicit PinSetupScreenHandler(JSCallsContainer* js_calls_container);
+
+  PinSetupScreenHandler(const PinSetupScreenHandler&) = delete;
+  PinSetupScreenHandler& operator=(const PinSetupScreenHandler&) = delete;
+
   ~PinSetupScreenHandler() override;
 
   // BaseScreenHandler:
@@ -58,8 +61,6 @@ class PinSetupScreenHandler : public BaseScreenHandler,
 
  private:
   ash::PinSetupScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PinSetupScreenHandler);
 };
 
 }  // namespace chromeos

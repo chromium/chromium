@@ -13,7 +13,6 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -48,6 +47,10 @@ class RegisterAppTaskTest : public testing::Test {
   RegisterAppTaskTest()
       : next_file_id_(1000),
         next_tracker_id_(10000) {}
+
+  RegisterAppTaskTest(const RegisterAppTaskTest&) = delete;
+  RegisterAppTaskTest& operator=(const RegisterAppTaskTest&) = delete;
+
   ~RegisterAppTaskTest() override {}
 
   void SetUp() override {
@@ -273,8 +276,6 @@ class RegisterAppTaskTest : public testing::Test {
 
   std::unique_ptr<SyncEngineContext> context_;
   std::unique_ptr<FakeDriveServiceHelper> fake_drive_service_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegisterAppTaskTest);
 };
 
 TEST_F(RegisterAppTaskTest, AlreadyRegistered) {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_PRECONNECT_CLIENT_H_
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_PRECONNECT_CLIENT_H_
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/visibility.h"
@@ -25,6 +24,11 @@ class NavigationPredictorPreconnectClient
     : public content::WebContentsObserver,
       public content::WebContentsUserData<NavigationPredictorPreconnectClient> {
  public:
+  NavigationPredictorPreconnectClient(
+      const NavigationPredictorPreconnectClient&) = delete;
+  NavigationPredictorPreconnectClient& operator=(
+      const NavigationPredictorPreconnectClient&) = delete;
+
   ~NavigationPredictorPreconnectClient() override;
 
   static void EnablePreconnectsForLocalIPsForTesting(
@@ -82,8 +86,6 @@ class NavigationPredictorPreconnectClient
   SEQUENCE_CHECKER(sequence_checker_);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationPredictorPreconnectClient);
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_PRECONNECT_CLIENT_H_

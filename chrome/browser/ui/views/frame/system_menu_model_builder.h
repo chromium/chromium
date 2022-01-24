@@ -7,11 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/frame/system_menu_model_delegate.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace chromeos {
 class MoveToDesksMenuModel;
 }
@@ -30,6 +29,10 @@ class SimpleMenuModel;
 class SystemMenuModelBuilder {
  public:
   SystemMenuModelBuilder(ui::AcceleratorProvider* provider, Browser* browser);
+
+  SystemMenuModelBuilder(const SystemMenuModelBuilder&) = delete;
+  SystemMenuModelBuilder& operator=(const SystemMenuModelBuilder&) = delete;
+
   ~SystemMenuModelBuilder();
 
   // Populates the menu.
@@ -49,7 +52,7 @@ class SystemMenuModelBuilder {
   // Adds items for toggling the frame type (if necessary).
   void AddFrameToggleItems(ui::SimpleMenuModel* model);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Add the submenu for move to desks.
   void AppendMoveToDesksMenu(ui::SimpleMenuModel* model);
 #endif
@@ -60,11 +63,9 @@ class SystemMenuModelBuilder {
   SystemMenuModelDelegate menu_delegate_;
   std::unique_ptr<ui::MenuModel> menu_model_;
   std::unique_ptr<ZoomMenuModel> zoom_menu_contents_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<chromeos::MoveToDesksMenuModel> move_to_desks_model_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMenuModelBuilder);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_MODEL_BUILDER_H_

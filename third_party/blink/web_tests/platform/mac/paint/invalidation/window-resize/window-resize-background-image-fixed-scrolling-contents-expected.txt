@@ -2,7 +2,7 @@
   "layers": [
     {
       "name": "LayoutView #document",
-      "bounds": [600, 250],
+      "bounds": [585, 250],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
@@ -10,14 +10,15 @@
       ]
     },
     {
-      "name": "Scrolling Contents Layer",
-      "bounds": [585, 3016]
+      "name": "LayoutNGBlockFlow HTML",
+      "bounds": [585, 3016],
+      "contentsOpaqueForText": true,
+      "drawsContent": false
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [585, 0],
-      "bounds": [15, 250],
-      "contentsOpaque": true
+      "bounds": [15, 250]
     }
   ]
 }
@@ -25,22 +26,23 @@
   "layers": [
     {
       "name": "LayoutView #document",
-      "bounds": [400, 250],
+      "bounds": [385, 250],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [0, 0, 400, 250]
+        [0, 0, 385, 250]
       ]
     },
     {
-      "name": "Scrolling Contents Layer",
-      "bounds": [385, 3016]
+      "name": "LayoutNGBlockFlow HTML",
+      "bounds": [385, 3016],
+      "contentsOpaqueForText": true,
+      "drawsContent": false
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [385, 0],
-      "bounds": [15, 250],
-      "contentsOpaque": true
+      "bounds": [15, 250]
     }
   ]
 }
@@ -48,7 +50,7 @@
   "layers": [
     {
       "name": "LayoutView #document",
-      "bounds": [400, 600],
+      "bounds": [385, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
@@ -56,14 +58,15 @@
       ]
     },
     {
-      "name": "Scrolling Contents Layer",
-      "bounds": [385, 3016]
+      "name": "LayoutNGBlockFlow HTML",
+      "bounds": [385, 3016],
+      "contentsOpaqueForText": true,
+      "drawsContent": false
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [385, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ]
 }
@@ -71,7 +74,7 @@
   "layers": [
     {
       "name": "LayoutView #document",
-      "bounds": [800, 600],
+      "bounds": [785, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
@@ -79,14 +82,15 @@
       ]
     },
     {
-      "name": "Scrolling Contents Layer",
-      "bounds": [785, 3016]
+      "name": "LayoutNGBlockFlow HTML",
+      "bounds": [785, 3016],
+      "contentsOpaqueForText": true,
+      "drawsContent": false
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ]
 }

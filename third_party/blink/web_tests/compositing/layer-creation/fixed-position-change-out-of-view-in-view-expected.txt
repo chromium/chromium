@@ -2,49 +2,15 @@ Layer tree when the fixed elements are out-of-view (should have just a root laye
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 4016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed1'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed2'",
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "transform": 2
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
-    }
-  ],
-  "transforms": [
-    {
-      "id": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [100, -100, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [100, 100, 0, 1]
-      ]
+      "bounds": [15, 600]
     }
   ]
 }
@@ -53,7 +19,7 @@ Layer tree when the fixed elements are in-view (both fixed elements should have 
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 4016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -73,10 +39,9 @@ Layer tree when the fixed elements are in-view (both fixed elements should have 
       "transform": 2
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -105,49 +70,15 @@ Layer tree when the fixed elements are out-of-view again (should have just a roo
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 4016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed1'",
-      "bounds": [10, 10],
-      "contentsOpaque": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed2'",
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "transform": 2
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
-    }
-  ],
-  "transforms": [
-    {
-      "id": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [100, -100, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [100, 100, 0, 1]
-      ]
+      "bounds": [15, 600]
     }
   ]
 }

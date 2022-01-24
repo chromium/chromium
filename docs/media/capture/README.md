@@ -96,9 +96,22 @@ request.
   * `//chrome/browser/media/webrtc`
   * `//chrome/browser/ui/views/desktop_capture`
 * Issues
-  * `UI>Browser>MediaCapture`
+  * [`UI>Browser>MediaCapture`](https://bugs.chromium.org/p/chromium/issues/list?q=component%3AUI%3EBrowser%3EMediaCapture&can=2)
 * Docs
-  * To be added later.
+  * [Enterprise policies to restrict available sources in chooser](https://docs.google.com/document/d/e/2PACX-1vQi8P2f493UgVNCJzcdxLUqqSlIdixlybO0mEPAvqnea_8l5bcUWSSZCi4M4EzSTCrFGQodmDX4LZ_u/pub)
+
+
+## Conditional Focus
+
+Not a UI surface, but an API that allows a web application using
+`getDisplayMedia()` to control whether or not the captured tab/window is focused
+(activated) or not when tab/window capture begins.
+
+* Code
+  * [`//chrome/browser/media/webrtc/media_stream_focus_delegate.cc`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/media/webrtc/media_stream_focus_delegate.cc)
+* Issues
+  * [`UI>Browser>MediaCapture`](https://bugs.chromium.org/p/chromium/issues/list?q=component%3AUI%3EBrowser%3EMediaCapture&can=2)
+* Design doc: [Conditional Focus](https://docs.google.com/document/d/e/2PACX-1vQIlFPntWbJaA9prNfxt5SXoCJCiBONPjj9VJVuOLqrYoHOArsvQahO6WhjP8DflF1YL6FXIt524NFA/pub)
 
 
 ## Screen capture indicator
@@ -110,7 +123,7 @@ Widget that tells the user when the desktop is being captured.
   * `//chrome/browser/ui/views/screen_capture_notification_ui_views.cc`
   * ChromeOS: `//chrome/browser/chromeos/ui/screen_capture_notification_ui_chromeos.cc`
 * Issues
-  * `UI>Browser>MediaCapture`
+  * [`UI>Browser>MediaCapture`](https://bugs.chromium.org/p/chromium/issues/list?q=component%3AUI%3EBrowser%3EMediaCapture&can=2)
 * Docs
   * To be added later.
 
@@ -124,22 +137,21 @@ Shows the user what tab is being captured and allows them to stop or switch tabs
   * `//chrome/browser/ui/tab_sharing`
   * `//chrome/browser/ui/views/tab_sharing.cc`
 * Issues
-  * `UI>Browser>MediaCapture`
+  * [`UI>Browser>MediaCapture`](https://bugs.chromium.org/p/chromium/issues/list?q=component%3AUI%3EBrowser%3EMediaCapture&can=2)
 * Docs
   * To be added later.
 
 
 ## Capture device chooser
 
-Allows the user to switch the camera/microphone used for capture.
+Allows the user to switch the camera/microphone used for capture via an icon in the omnibox.
 
 * Code
   * `//chrome/browser/ui/content_settings/content_settings_bubble_model.cc`
 * Issues
-  * `UI>Browser>MediaCapture`
+  * [`UI>Browser>MediaCapture`](https://bugs.chromium.org/p/chromium/issues/list?q=component%3AUI%3EBrowser%3EMediaCapture&can=2)
 * Docs
   * To be added later.
-
 
 # APIs
 
@@ -166,13 +178,13 @@ Web API for Web applications to capture screen contents and system/tab audio.
 * Docs
   * To be added later.
 
-
 # Additional features
 
 Not all media capture features are listed above; here are some additional
-capture capabilities in Chrome.  For more information about these, contact
+capture features in Chrome.  For more information about these, contact
 developers at the address below.
 
+* [Capture Handle API](http://wicg.github.io/capture-handle/)
 * Tab casting to Chromecast
 * Screen casting from the ChromeOS system tray
 * Presentation API 1-UA mode

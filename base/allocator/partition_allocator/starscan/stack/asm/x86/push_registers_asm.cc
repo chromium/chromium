@@ -15,15 +15,19 @@
 // The following assumes cdecl calling convention.
 // Source: https://en.wikipedia.org/wiki/X86_calling_conventions#cdecl
 asm(
-#ifdef _WIN32
+#ifdef __APPLE__
+    ".globl _PAPushAllRegistersAndIterateStack            \n"
+    ".private_extern _PAPushAllRegistersAndIterateStack   \n"
+    "_PAPushAllRegistersAndIterateStack:                  \n"
+#elif defined(_WIN32)
     ".globl _PAPushAllRegistersAndIterateStack            \n"
     "_PAPushAllRegistersAndIterateStack:                  \n"
-#else   // !_WIN32
+#else  // !__APPLE__ && !_WIN32
     ".globl PAPushAllRegistersAndIterateStack             \n"
     ".type PAPushAllRegistersAndIterateStack, %function   \n"
     ".hidden PAPushAllRegistersAndIterateStack            \n"
     "PAPushAllRegistersAndIterateStack:                   \n"
-#endif  // !_WIN32
+#endif
     // [ IterateStackCallback ]
     // [ StackVisitor*        ]
     // [ Stack*               ]

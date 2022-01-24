@@ -494,7 +494,8 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
     // Rules inheriting CSSGroupingRule
     case CSSRule::kMediaRule:
     case CSSRule::kSupportsRule:
-    case CSSRule::kContainerRule: {
+    case CSSRule::kContainerRule:
+    case CSSRule::kLayerBlockRule: {
       CSSRuleList* rule_list = rule->cssRules();
       for (unsigned i = 0; i < rule_list->length(); ++i)
         SerializeCSSRule(rule_list->item(i));
@@ -520,6 +521,7 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
     case CSSRule::kScrollTimelineRule:
     case CSSRule::kNamespaceRule:
     case CSSRule::kViewportRule:
+    case CSSRule::kLayerStatementRule:
       break;
   }
 }

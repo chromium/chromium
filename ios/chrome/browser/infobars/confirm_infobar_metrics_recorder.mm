@@ -36,7 +36,7 @@ const char kInfobarTypeBlockPopupsAcceptTimeHistogram[] =
 
 + (void)recordConfirmAcceptTime:(NSTimeInterval)duration
           forInfobarConfirmType:(InfobarConfirmType)infobarConfirmType {
-  base::TimeDelta timeDelta = base::TimeDelta::FromSecondsD(duration);
+  base::TimeDelta timeDelta = base::Seconds(duration);
   switch (infobarConfirmType) {
     case InfobarConfirmType::kInfobarConfirmTypeRestore:
       UMA_HISTOGRAM_MEDIUM_TIMES(kInfobarTypeRestoreAcceptTimeHistogram,

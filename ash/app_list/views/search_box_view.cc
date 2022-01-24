@@ -52,6 +52,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -67,6 +68,12 @@ constexpr int kSearchBoxFocusRingCornerRadius = 28;
 
 // Minimum amount of characters required to enable autocomplete.
 constexpr int kMinimumLengthToAutocomplete = 2;
+
+// Border insets for SearchBoxView in bubble launcher.
+constexpr gfx::Insets kBorderInsetsForAppListBubble(4, 4, 4, 0);
+
+// Margins for the search box text field in bubble launcher.
+constexpr gfx::Insets kTextFieldMarginsForAppListBubble(8, 0, 0, 0);
 
 float GetAssistantButtonOpacityForState(AppListState state) {
   if (state == AppListState::kStateSearchResults)
@@ -89,16 +96,28 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
       view_delegate_(view_delegate),
       app_list_view_(app_list_view),
       is_app_list_bubble_(!app_list_view_),
-      is_tablet_mode_(view_delegate_->IsInTabletMode()) {}
+      is_tablet_mode_(view_delegate_->IsInTabletMode()) {
+  AppListModelProvider* const model_provider = AppListModelProvider::Get();
+  model_provider->AddObserver(this);
+  search_box_model_observer_.Observe(
+      model_provider->search_model()->search_box());
+}
 
 SearchBoxView::~SearchBoxView() {
-  search_model_->search_box()->RemoveObserver(this);
+  AppListModelProvider::Get()->RemoveObserver(this);
 }
 
 void SearchBoxView::Init(const InitParams& params) {
   SearchBoxViewBase::Init(params);
   UpdatePlaceholderTextAndAccessibleName();
   current_query_ = search_box()->GetText();
+  if (is_app_list_bubble_) {
+    // Add margins to the text field because the BoxLayout vertical centering
+    // does not properly align the text baseline with the icons.
+    search_box()->SetProperty(views::kMarginsKey,
+                              kTextFieldMarginsForAppListBubble);
+  }
+  ShowAssistantChanged();
 }
 
 void SearchBoxView::SetResultSelectionController(
@@ -123,8 +142,10 @@ void SearchBoxView::ResetForShow() {
     return;
 
   ClearSearchAndDeactivateSearchBox();
-  SetSearchBoxBackgroundCornerRadius(
-      GetSearchBoxBorderCornerRadiusForState(contents_view_->GetActiveState()));
+  if (contents_view_) {
+    SetSearchBoxBackgroundCornerRadius(GetSearchBoxBorderCornerRadiusForState(
+        contents_view_->GetActiveState()));
+  }
 }
 
 void SearchBoxView::ClearSearch() {
@@ -150,15 +171,13 @@ void SearchBoxView::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
   SearchBoxViewBase::HandleSearchBoxEvent(located_event);
 }
 
-void SearchBoxView::ModelChanged() {
-  if (search_model_)
-    search_model_->search_box()->RemoveObserver(this);
+void SearchBoxView::OnActiveAppListModelsChanged(AppListModel* model,
+                                                 SearchModel* search_model) {
+  search_box_model_observer_.Reset();
+  search_box_model_observer_.Observe(search_model->search_box());
 
-  search_model_ = view_delegate_->GetSearchModel();
-  DCHECK(search_model_);
+  ResetForShow();
   UpdateSearchIcon();
-  search_model_->search_box()->AddObserver(this);
-
   OnWallpaperColorsChanged();
   ShowAssistantChanged();
 }
@@ -184,18 +203,21 @@ void SearchBoxView::UpdateKeyboardVisibility() {
 
 void SearchBoxView::UpdateModel(bool initiated_by_user) {
   // Temporarily remove from observer to ignore notifications caused by us.
-  search_model_->search_box()->RemoveObserver(this);
-  search_model_->search_box()->Update(search_box()->GetText(),
-                                      initiated_by_user);
-  search_model_->search_box()->AddObserver(this);
+  search_box_model_observer_.Reset();
+
+  SearchBoxModel* const search_box_model =
+      AppListModelProvider::Get()->search_model()->search_box();
+  search_box_model->Update(search_box()->GetText(), initiated_by_user);
+  search_box_model_observer_.Observe(search_box_model);
 }
 
 void SearchBoxView::UpdateSearchIcon() {
+  const bool search_engine_is_google =
+      AppListModelProvider::Get()->search_model()->search_engine_is_google();
   const gfx::VectorIcon& google_icon =
       is_search_box_active() ? kGoogleColorIcon : kGoogleBlackIcon;
-  const gfx::VectorIcon& icon = search_model_->search_engine_is_google()
-                                    ? google_icon
-                                    : kSearchEngineNotGoogleIcon;
+  const gfx::VectorIcon& icon =
+      search_engine_is_google ? google_icon : kSearchEngineNotGoogleIcon;
   SetSearchIconImage(
       gfx::CreateVectorIcon(icon, kSearchBoxIconSize,
                             AppListColorProvider::Get()->GetSearchBoxIconColor(
@@ -230,11 +252,30 @@ void SearchBoxView::UpdatePlaceholderTextStyle() {
 }
 
 void SearchBoxView::UpdateSearchBoxBorder() {
-  // Creates an empty border to create a region for the focus ring to appear.
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(GetFocusRingSpacing())));
+  gfx::Insets border_insets;
+  if (!is_app_list_bubble_) {
+    // Creates an empty border to create a region for the focus ring to appear.
+    border_insets = gfx::Insets(GetFocusRingSpacing());
+  } else {
+    // Bubble search box does not use a focus ring.
+    border_insets = kBorderInsetsForAppListBubble;
+  }
+  SetBorder(views::CreateEmptyBorder(border_insets));
 }
 
 void SearchBoxView::OnPaintBackground(gfx::Canvas* canvas) {
+  if (is_app_list_bubble_) {
+    // When the search box is focused, paint a vertical focus bar along the left
+    // edge, vertically aligned with the search icon.
+    if (search_box()->HasFocus() && search_box()->GetText().empty()) {
+      gfx::Point icon_origin;
+      views::View::ConvertPointToTarget(search_icon(), this, &icon_origin);
+      PaintFocusBar(canvas, gfx::Point(0, icon_origin.y()),
+                    /*height=*/kSearchBoxIconSize);
+    }
+    return;
+  }
+
   // Paints the focus ring if the search box is focused.
   if (search_box()->HasFocus() && !is_search_box_active() &&
       view_delegate_->KeyboardTraversalEngaged()) {
@@ -324,13 +365,21 @@ void SearchBoxView::OnSearchBoxActiveChanged(bool active) {
   if (active) {
     result_selection_controller_->ResetSelection(nullptr,
                                                  true /* default_selection */);
-    search_box()->SetAccessibleName(std::u16string());
   } else {
     result_selection_controller_->ClearSelection();
-    search_box()->SetAccessibleName(l10n_util::GetStringUTF16(
-        is_tablet_mode_
-            ? IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET
-            : IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
+  }
+
+  // In the non-bubble launcher, when the search box is active there are no
+  // apps to navigate with arrow keys, so remove the accessibility hint.
+  if (!is_app_list_bubble_) {
+    if (active) {
+      search_box()->SetAccessibleName(std::u16string());
+    } else {
+      search_box()->SetAccessibleName(l10n_util::GetStringUTF16(
+          is_tablet_mode_
+              ? IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET
+              : IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
+    }
   }
 }
 
@@ -348,40 +397,30 @@ void SearchBoxView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-void SearchBoxView::UpdateBackground(double progress,
-                                     AppListState current_state,
-                                     AppListState target_state) {
-  SetSearchBoxBackgroundCornerRadius(gfx::Tween::LinearIntValueBetween(
-      progress, GetSearchBoxBorderCornerRadiusForState(current_state),
-      GetSearchBoxBorderCornerRadiusForState(target_state)));
-  const SkColor color = gfx::Tween::ColorValueBetween(
-      progress, GetBackgroundColorForState(current_state),
-      GetBackgroundColorForState(target_state));
-  UpdateBackgroundColor(color);
+void SearchBoxView::UpdateBackground(AppListState target_state) {
+  SetSearchBoxBackgroundCornerRadius(
+      GetSearchBoxBorderCornerRadiusForState(target_state));
+  UpdateBackgroundColor(GetBackgroundColorForState(target_state));
   UpdateTextColor();
+  current_app_list_state_ = target_state;
 }
 
-void SearchBoxView::UpdateLayout(double progress,
-                                 AppListState current_state,
-                                 int current_state_height,
-                                 AppListState target_state,
+void SearchBoxView::UpdateLayout(AppListState target_state,
                                  int target_state_height) {
   // Horizontal margins are selected to match search box icon's vertical
   // margins.
-  const int horizontal_spacing = gfx::Tween::LinearIntValueBetween(
-      progress, (current_state_height - kSearchBoxIconSize) / 2,
-      (target_state_height - kSearchBoxIconSize) / 2);
+  const int horizontal_spacing = (target_state_height - kSearchBoxIconSize) / 2;
   const int horizontal_right_padding =
       horizontal_spacing - (kSearchBoxButtonSizeDip - kSearchBoxIconSize) / 2;
   box_layout()->set_inside_border_insets(
       gfx::Insets(0, horizontal_spacing, 0, horizontal_right_padding));
   box_layout()->set_between_child_spacing(horizontal_spacing);
   if (show_assistant_button()) {
-    assistant_button()->layer()->SetOpacity(gfx::Tween::LinearIntValueBetween(
-        progress, GetAssistantButtonOpacityForState(current_state),
-        GetAssistantButtonOpacityForState(target_state)));
+    assistant_button()->layer()->SetOpacity(
+        GetAssistantButtonOpacityForState(target_state));
   }
   InvalidateLayout();
+  current_app_list_state_ = target_state;
 }
 
 int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
@@ -395,7 +434,7 @@ int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
 
 SkColor SearchBoxView::GetBackgroundColorForState(AppListState state) const {
   if (state == AppListState::kStateSearchResults) {
-    if (features::IsDarkLightModeEnabled())
+    if (features::IsDarkLightModeEnabled() && search_result_page_visible_)
       return SK_ColorTRANSPARENT;
     return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor();
   }
@@ -470,6 +509,14 @@ void SearchBoxView::ProcessAutocomplete(
   // Current text in the search_box does not match the first result's url or
   // search result text.
   ClearAutocompleteText();
+}
+
+void SearchBoxView::OnResultContainerVisibilityChanged(bool visible) {
+  if (search_result_page_visible_ == visible)
+    return;
+  search_result_page_visible_ = visible;
+  UpdateBackgroundColor(GetBackgroundColorForState(current_app_list_state_));
+  SchedulePaint();
 }
 
 void SearchBoxView::UpdateTextColor() {
@@ -800,8 +847,9 @@ void SearchBoxView::UpdateSearchBoxTextForSelectedResult(
 }
 
 void SearchBoxView::Update() {
-  search_box()->SetText(search_model_->search_box()->text());
-  UpdateButtonsVisisbility();
+  search_box()->SetText(
+      AppListModelProvider::Get()->search_model()->search_box()->text());
+  UpdateButtonsVisibility();
   NotifyQueryChanged();
 }
 
@@ -810,10 +858,10 @@ void SearchBoxView::SearchEngineChanged() {
 }
 
 void SearchBoxView::ShowAssistantChanged() {
-  if (search_model_) {
-    SetShowAssistantButton(
-        search_model_->search_box()->show_assistant_button());
-  }
+  SetShowAssistantButton(AppListModelProvider::Get()
+                             ->search_model()
+                             ->search_box()
+                             ->show_assistant_button());
 }
 
 bool SearchBoxView::ShouldProcessAutocomplete() {
@@ -830,10 +878,6 @@ void SearchBoxView::ResetHighlightRange() {
 }
 
 void SearchBoxView::SetupAssistantButton() {
-  if (search_model_ && !search_model_->search_box()->show_assistant_button()) {
-    return;
-  }
-
   views::ImageButton* assistant = assistant_button();
   assistant->SetImage(
       views::ImageButton::STATE_NORMAL,

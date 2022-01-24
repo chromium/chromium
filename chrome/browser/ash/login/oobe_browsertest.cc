@@ -9,8 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
@@ -50,11 +49,15 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 class OobeTest : public OobeBaseTest {
  public:
   OobeTest() = default;
+
+  OobeTest(const OobeTest&) = delete;
+  OobeTest& operator=(const OobeTest&) = delete;
+
   ~OobeTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -84,9 +87,7 @@ class OobeTest : public OobeBaseTest {
   }
 
  private:
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
-
-  DISALLOW_COPY_AND_ASSIGN(OobeTest);
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(OobeTest, NewUser) {
@@ -201,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(DisplayOobeTest, OobeMeets4kDisplay) {
       policy::EnrollmentRequisitionManager::kRemoraRequisition);
 
   std::string display_spec("0+0-3840x2160");
-  ash::ShellTestApi shell_test_api;
+  ShellTestApi shell_test_api;
   display::test::DisplayManagerTestApi(shell_test_api.display_manager())
       .UpdateDisplay(display_spec);
 
@@ -210,8 +211,7 @@ IN_PROC_BROWSER_TEST_F(DisplayOobeTest, OobeMeets4kDisplay) {
   EXPECT_EQ(display.width(), 2560);
   EXPECT_EQ(display.height(), 1440);
 
-  display::DisplayManager* display_manager =
-      ash::Shell::Get()->display_manager();
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display_manager->ResetDisplayZoom(screen->GetPrimaryDisplay().id());
   display = screen->GetPrimaryDisplay().size();
   EXPECT_EQ(display.width(), 3840);
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(DisplayOobeTest, OobeMeets2kDisplay) {
       policy::EnrollmentRequisitionManager::kRemoraRequisition);
 
   std::string display_spec("0+0-2560x1440");
-  ash::ShellTestApi shell_test_api;
+  ShellTestApi shell_test_api;
   display::test::DisplayManagerTestApi(shell_test_api.display_manager())
       .UpdateDisplay(display_spec);
 
@@ -232,12 +232,11 @@ IN_PROC_BROWSER_TEST_F(DisplayOobeTest, OobeMeets2kDisplay) {
   EXPECT_EQ(display.width(), 1920);
   EXPECT_EQ(display.height(), 1080);
 
-  display::DisplayManager* display_manager =
-      ash::Shell::Get()->display_manager();
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display_manager->ResetDisplayZoom(screen->GetPrimaryDisplay().id());
   display = screen->GetPrimaryDisplay().size();
   EXPECT_EQ(display.width(), 2560);
   EXPECT_EQ(display.height(), 1440);
 }
 
-}  // namespace chromeos
+}  // namespace ash

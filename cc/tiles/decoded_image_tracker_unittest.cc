@@ -131,7 +131,7 @@ TEST_F(DecodedImageTrackerTest, ImagesTimeOut) {
   EXPECT_EQ(1u, image_controller()->num_locked_images());
 
   // Advance by 150ms, the image should still be locked.
-  task_runner()->FastForwardBy(base::TimeDelta::FromMilliseconds(150));
+  task_runner()->FastForwardBy(base::Milliseconds(150));
   EXPECT_EQ(1u, image_controller()->num_locked_images());
 
   // Add an image, this will not start a new timeout, as one is pending.
@@ -144,11 +144,11 @@ TEST_F(DecodedImageTrackerTest, ImagesTimeOut) {
 
   // Advance by 100ms, we our first image should be released.
   // Trigger a single commit, the first image should be unlocked.
-  task_runner()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_runner()->FastForwardBy(base::Milliseconds(100));
   EXPECT_EQ(1u, image_controller()->num_locked_images());
 
   // Advance by another 250ms, our second image should release.
-  task_runner()->FastForwardBy(base::TimeDelta::FromMilliseconds(250));
+  task_runner()->FastForwardBy(base::Milliseconds(250));
   EXPECT_EQ(0u, image_controller()->num_locked_images());
 }
 

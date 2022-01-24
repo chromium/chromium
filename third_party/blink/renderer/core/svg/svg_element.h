@@ -153,8 +153,8 @@ class CORE_EXPORT SVGElement : public Element {
   }
 
   const HeapHashSet<WeakMember<SVGElement>>& InstancesForElement() const;
-  void MapInstanceToElement(SVGElement*);
-  void RemoveInstanceMapping(SVGElement*);
+  void AddInstance(SVGElement*);
+  void RemoveInstance(SVGElement*);
 
   SVGElement* CorrespondingElement() const;
   void SetCorrespondingElement(SVGElement*);

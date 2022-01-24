@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -45,6 +44,10 @@ class InstanceIDHandler {
                               const std::string& extra_data)>;
 
   InstanceIDHandler();
+
+  InstanceIDHandler(const InstanceIDHandler&) = delete;
+  InstanceIDHandler& operator=(const InstanceIDHandler&) = delete;
+
   virtual ~InstanceIDHandler();
 
   // Token service.
@@ -72,9 +75,6 @@ class InstanceIDHandler {
   virtual void RemoveInstanceIDData(const std::string& app_id) = 0;
   virtual void GetInstanceIDData(const std::string& app_id,
                                  GetInstanceIDDataCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDHandler);
 };
 
 // Bridge between GCM users in Chrome and the platform-specific implementation.
@@ -111,6 +111,10 @@ class GCMDriver {
   GCMDriver(
       const base::FilePath& store_path,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
+
+  GCMDriver(const GCMDriver&) = delete;
+  GCMDriver& operator=(const GCMDriver&) = delete;
+
   virtual ~GCMDriver();
 
   // Registers |sender_ids| for an app. *Use |InstanceID| instead in new code.*
@@ -384,8 +388,6 @@ class GCMDriver {
   GCMAppHandlerMap app_handlers_;
 
   base::WeakPtrFactory<GCMDriver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDriver);
 };
 
 }  // namespace gcm

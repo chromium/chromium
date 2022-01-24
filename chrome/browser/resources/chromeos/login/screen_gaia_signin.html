@@ -71,10 +71,10 @@
       <h1 slot="title">
         [[i18nDynamic(locale, 'loginWelcomeMessage')]]
       </h1>
-      <div slot="subtitle" hidden="[[isEmpty_(samlInterstitialDomain_)]]">
+      <div slot="subtitle" hidden="[[isEmpty_(samlInterstitialDomainManager_)]]">
         <iron-icon class="icon20" icon="cr20:domain"></iron-icon>
         [[i18nDynamic(locale, 'samlInterstitialMessage',
-                      samlInterstitialDomain_)]]
+                      samlInterstitialDomainManager_)]]
         <p>
           <a class="oobe-local-link" on-click="onSamlPageChangeAccount_"
               id="interstitial-change-account" is="action-link">

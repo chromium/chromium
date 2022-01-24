@@ -36,10 +36,8 @@ namespace predictors {
 
 namespace {
 
-const base::TimeDelta kMinDelayBetweenPreresolveRequests =
-    base::TimeDelta::FromSeconds(60);
-const base::TimeDelta kMinDelayBetweenPreconnectRequests =
-    base::TimeDelta::FromSeconds(10);
+const base::TimeDelta kMinDelayBetweenPreresolveRequests = base::Seconds(60);
+const base::TimeDelta kMinDelayBetweenPreconnectRequests = base::Seconds(10);
 
 // Returns true iff |prediction| is not empty.
 bool AddInitialUrlToPreconnectPrediction(const GURL& initial_url,
@@ -259,7 +257,7 @@ void LoadingPredictor::CleanupAbandonedHintsAndNavigations(
     NavigationId navigation_id) {
   base::TimeTicks time_now = base::TimeTicks::Now();
   const base::TimeDelta max_navigation_age =
-      base::TimeDelta::FromSeconds(config_.max_navigation_lifetime_seconds);
+      base::Seconds(config_.max_navigation_lifetime_seconds);
 
   // Hints.
   for (auto it = active_hints_.begin(); it != active_hints_.end();) {

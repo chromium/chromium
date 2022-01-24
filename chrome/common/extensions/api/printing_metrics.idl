@@ -142,7 +142,7 @@ namespace printingMetrics {
 
   interface Functions {
     // Returns the list of the finished print jobs.
-    static void getPrintJobs(GetPrintJobsCallback callback);
+    [supportsPromises] static void getPrintJobs(GetPrintJobsCallback callback);
   };
 
   interface Events {

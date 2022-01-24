@@ -220,6 +220,7 @@ TEST_F(
       case network::mojom::RequestDestination::kDocument:
       case network::mojom::RequestDestination::kIframe:
       case network::mojom::RequestDestination::kFrame:
+      case network::mojom::RequestDestination::kFencedframe:
         EXPECT_TRUE(enabled);
         break;
       default:

@@ -34,6 +34,9 @@ namespace device {
 
 namespace {
 
+// Client name for logging in BLE scanning.
+constexpr char kScanClientName[] = "FIDO";
+
 // Construct advertisement data with different formats depending on client's
 // operating system. Ideally, we advertise EIDs as part of Service Data, but
 // this isn't available on all platforms. On Windows we use Manufacturer Data
@@ -342,7 +345,7 @@ void FidoCableDiscovery::AdapterPoweredChanged(BluetoothAdapter* adapter,
       FROM_HERE,
       base::BindOnce(&FidoCableDiscovery::StartCableDiscovery,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 #else
   StartCableDiscovery();
 #endif  // defined(OS_WIN)
@@ -381,6 +384,7 @@ void FidoCableDiscovery::StartCableDiscovery() {
   adapter()->StartDiscoverySessionWithFilter(
       std::make_unique<BluetoothDiscoveryFilter>(
           BluetoothTransport::BLUETOOTH_TRANSPORT_LE),
+      kScanClientName,
       base::BindOnce(&FidoCableDiscovery::OnStartDiscoverySession,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&FidoCableDiscovery::OnStartDiscoverySessionError,
@@ -401,7 +405,7 @@ void FidoCableDiscovery::OnStartDiscoverySession(
       FROM_HERE,
       base::BindOnce(&FidoCableDiscovery::StartAdvertisement,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 }
 
 void FidoCableDiscovery::OnStartDiscoverySessionError() {

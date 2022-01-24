@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "media/media_buildflags.h"
 
@@ -16,6 +15,10 @@ namespace content {
 
 class CONTENT_EXPORT WebRtcLog {
  public:
+  WebRtcLog() = delete;
+  WebRtcLog(const WebRtcLog&) = delete;
+  WebRtcLog& operator=(const WebRtcLog&) = delete;
+
   // When set, |callback| receives log messages regarding, for example, media
   // devices (webcams, mics, etc) that were initially requested in the render
   // process associated with the RenderProcessHost with |render_process_id|.
@@ -23,9 +26,6 @@ class CONTENT_EXPORT WebRtcLog {
       int render_process_id,
       base::RepeatingCallback<void(const std::string&)> callback);
   static void ClearLogMessageCallback(int render_process_id);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebRtcLog);
 };
 
 }  // namespace content

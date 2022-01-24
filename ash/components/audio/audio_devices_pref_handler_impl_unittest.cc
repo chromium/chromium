@@ -11,7 +11,6 @@
 #include "ash/components/audio/audio_device.h"
 #include "ash/components/audio/audio_devices_pref_handler.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/dbus/audio/audio_node.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -96,6 +95,11 @@ AudioDevice CreateAudioDevice(const AudioNodeInfo& info, int version) {
 class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
  public:
   AudioDevicesPrefHandlerTest() = default;
+
+  AudioDevicesPrefHandlerTest(const AudioDevicesPrefHandlerTest&) = delete;
+  AudioDevicesPrefHandlerTest& operator=(const AudioDevicesPrefHandlerTest&) =
+      delete;
+
   ~AudioDevicesPrefHandlerTest() override = default;
 
   void SetUp() override {
@@ -216,9 +220,6 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
 
   scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioDevicesPrefHandlerTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(Input, AudioDevicesPrefHandlerTest, Values(true));

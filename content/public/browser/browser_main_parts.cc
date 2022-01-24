@@ -20,4 +20,8 @@ int BrowserMainParts::PreMainMessageLoopRun() {
   return RESULT_CODE_NORMAL_EXIT;
 }
 
+bool BrowserMainParts::ShouldInterceptMainMessageLoopRun() {
+  return true;
+}
+
 }  // namespace content

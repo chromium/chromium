@@ -22,7 +22,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/posix/eintr_wrapper.h"
@@ -65,6 +64,9 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
             {base::MayBlock(),
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
         callback_(std::move(callback)) {}
+
+  PipeReaderWrapper(const PipeReaderWrapper&) = delete;
+  PipeReaderWrapper& operator=(const PipeReaderWrapper&) = delete;
 
   base::ScopedFD Initialize() {
     return pipe_reader_.StartIO(
@@ -111,8 +113,6 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
 
   PipeReader pipe_reader_;
   DebugDaemonClient::GetLogsCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PipeReaderWrapper);
 };
 
 // Convert the string representation of a D-Bus error into a
@@ -136,6 +136,9 @@ DbusLibraryError DbusLibraryErrorFromString(
 class DebugDaemonClientImpl : public DebugDaemonClient {
  public:
   DebugDaemonClientImpl() : debugdaemon_proxy_(nullptr) {}
+
+  DebugDaemonClientImpl(const DebugDaemonClientImpl&) = delete;
+  DebugDaemonClientImpl& operator=(const DebugDaemonClientImpl&) = delete;
 
   ~DebugDaemonClientImpl() override = default;
 
@@ -1100,8 +1103,6 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   scoped_refptr<base::TaskRunner> stop_agent_tracing_task_runner_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<DebugDaemonClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DebugDaemonClientImpl);
 };
 
 DebugDaemonClient::DebugDaemonClient() = default;

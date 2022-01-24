@@ -42,13 +42,6 @@
       #attributePromptMessage {
         color: black;
       }
-
-      :host-context(html:not(html[new-layout])) .illustration {
-        display: none;
-      }
-      :host-context(html[new-layout]) .illustration-old {
-        display: none;
-      }
     </style>
     <!-- OAUTH GAIA DIALOG -->
     <gaia-dialog id="step-signin" class="flex" for-step="signin"
@@ -72,6 +65,12 @@
     <!-- ACCOUNT CHECK IN PROGRESS (SPINNER) DIALOG -->
     <oobe-loading-dialog title-key="enrollmentAccountCheckTitle"
         id="step-checking" for-step="checking">
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+    </oobe-loading-dialog>
+
+    <oobe-loading-dialog id="step-tpm-checking" for-step="tpm-checking"
+        title-key="TPMCheckTitle" subtitle-key="TPMCheckSubtitle"
+        can-cancel on-cancel-loading="onTPMCheckCanceled_">
       <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
     </oobe-loading-dialog>
 
@@ -99,11 +98,7 @@
       <div id="errorMsg" slot="subtitle">[[errorText_]]</div>
       <div slot="content"
           class="flex layout vertical center center-justified">
-        <img srcset="images/1x/error.svg 1x,
-                     images/2x/error.svg 2x"
-            alt$="[[i18nDynamic(locale,
-                'enrollmentErrorIllustrationTitle')]]"
-            class="oobe-illustration">
+        <img src="images/error.svg" class="oobe-illustration">
       </div>
       <div slot="back-navigation">
         <!-- BACK - Shown when the generic cancel button is hidden -->
@@ -163,19 +158,10 @@
         </div>
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
-        <img srcset="images/enrollment_success_illustration_1x.png 1x,
-                     images/enrollment_success_illustration_2x.png 2x"
-            alt$="[[i18nDynamic(locale,
-                'enrollmentSuccessIllustrationTitle')]]"
-            class="oobe-illustration illustration-old">
         <img src="images/enrollment_complete.svg"
-            alt$="[[i18nDynamic(locale,
-                  'enrollmentSuccessIllustrationTitle')]]"
-            class="oobe-illustration illustration" hidden="[[isMeet_]]">
+            class="oobe-illustration" hidden="[[isMeet_]]">
         <img src="images/cfm/enrollment.svg"
-            alt$="[[i18nDynamic(locale,
-                'enrollmentSuccessIllustrationTitle')]]"
-            class="oobe-illustration illustration" hidden="[[!isMeet_]]">
+            class="oobe-illustration" hidden="[[!isMeet_]]">
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button inverse id="successDoneButton"

@@ -15,7 +15,7 @@
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
-#include "media/video/h265_parser.h"
+#include "media/video/h265_nalu_parser.h"
 
 namespace media {
 namespace mp4 {
@@ -146,12 +146,12 @@ bool HEVC::InsertParamSetsAnnexB(
   DCHECK(HEVC::AnalyzeAnnexB(buffer->data(), buffer->size(), *subsamples)
              .is_conformant.value_or(true));
 
-  std::unique_ptr<H265Parser> parser(new H265Parser());
+  std::unique_ptr<H265NaluParser> parser(new H265NaluParser());
   const uint8_t* start = buffer->data();
   parser->SetEncryptedStream(start, buffer->size(), *subsamples);
 
   H265NALU nalu;
-  if (parser->AdvanceToNextNALU(&nalu) != H265Parser::kOk)
+  if (parser->AdvanceToNextNALU(&nalu) != H265NaluParser::kOk)
     return false;
 
   std::vector<uint8_t>::iterator config_insert_point = buffer->begin();
@@ -225,7 +225,7 @@ BitstreamConverter::AnalysisResult HEVC::AnalyzeAnnexB(
     return result;
   }
 
-  H265Parser parser;
+  H265NaluParser parser;
   parser.SetEncryptedStream(buffer, size, subsamples);
 
   enum NALUOrderState {
@@ -243,13 +243,13 @@ BitstreamConverter::AnalysisResult HEVC::AnalyzeAnnexB(
   // 7.4.2.4.4 Order of NAL units and coded pictures and their association to
   // access units
   while (true) {
-    H265Parser::Result h265_result = parser.AdvanceToNextNALU(&nalu);
-    if (h265_result == H265Parser::kEOStream) {
+    H265NaluParser::Result h265_result = parser.AdvanceToNextNALU(&nalu);
+    if (h265_result == H265NaluParser::kEOStream) {
       break;
     }
 
-    if (h265_result != H265Parser::kOk) {
-      DCHECK_NE(h265_result, H265Parser::kUnsupportedStream)
+    if (h265_result != H265NaluParser::kOk) {
+      DCHECK_NE(h265_result, H265NaluParser::kUnsupportedStream)
           << "AdvanceToNextNALU() returned kUnsupportedStream!";
       return result;
     }

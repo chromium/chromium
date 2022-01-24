@@ -12,7 +12,6 @@
 #include "ash/frame/header_view.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -87,6 +86,7 @@ class ASH_EXPORT NonClientFrameViewAsh
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
+  views::View::Views GetChildrenInZOrder() override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

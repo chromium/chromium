@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
-
 namespace gfx {
 class Rect;
 class RenderText;
@@ -31,6 +29,9 @@ class TooltipAuraTestApi {
   explicit TooltipAuraTestApi(TooltipAura* tooltip_aura)
       : tooltip_aura_(tooltip_aura) {}
 
+  TooltipAuraTestApi(const TooltipAuraTestApi&) = delete;
+  TooltipAuraTestApi& operator=(const TooltipAuraTestApi&) = delete;
+
   gfx::RenderText* GetRenderText();
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data);
@@ -40,8 +41,6 @@ class TooltipAuraTestApi {
 
  private:
   TooltipAura* tooltip_aura_;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipAuraTestApi);
 };
 
 }  // namespace test

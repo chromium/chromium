@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
 namespace blink {
 
@@ -62,12 +62,7 @@ CachedMetadata::CachedMetadata(uint32_t data_type_id,
   DCHECK(data_type_id);
   DCHECK(data);
 
-  vector_.ReserveInitialCapacity(kCachedMetaDataStart + size);
-  uint32_t marker = CachedMetadataHandler::kSingleEntry;
-  vector_.Append(reinterpret_cast<const uint8_t*>(&marker), sizeof(uint32_t));
-  vector_.Append(reinterpret_cast<const uint8_t*>(&data_type_id),
-                 sizeof(uint32_t));
-  vector_.Append(data, size);
+  vector_ = CachedMetadata::GetSerializedData(data_type_id, data, size);
 }
 
 CachedMetadata::CachedMetadata(mojo_base::BigBuffer data) {

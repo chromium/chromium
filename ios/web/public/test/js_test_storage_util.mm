@@ -56,11 +56,10 @@ bool ExecuteJavaScriptInFrame(
 bool ExecuteJavaScriptInFrame(WebFrame* web_frame,
                               const std::string& name,
                               const std::vector<base::Value>& parameters) {
-  return ExecuteJavaScriptInFrame(
-      web_frame, name, parameters,
-      base::BindOnce(^(const base::Value*){
-      }),
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout));
+  return ExecuteJavaScriptInFrame(web_frame, name, parameters,
+                                  base::BindOnce(^(const base::Value*){
+                                  }),
+                                  base::Seconds(kWaitForJSCompletionTimeout));
 }
 
 // Saves |key|, |value| to a Javascript storage type in |web_frame| using the
@@ -87,7 +86,7 @@ bool SetStorage(WebFrame* web_frame,
           set_success = true;
         }
       }),
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout));
+      base::Seconds(kWaitForJSCompletionTimeout));
   if (error_message) {
     *error_message = block_error_message;
   }
@@ -122,7 +121,7 @@ bool GetStorage(WebFrame* web_frame,
           lookup_success = false;
         }
       }),
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout));
+      base::Seconds(kWaitForJSCompletionTimeout));
 
   if (error_message) {
     *error_message = block_error_message;
@@ -269,7 +268,7 @@ bool GetCookies(WebFrame* web_frame, NSString** cookies) {
         ASSERT_TRUE(value->is_string());
         result = base::SysUTF8ToNSString(value->GetString());
       }),
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout));
+      base::Seconds(kWaitForJSCompletionTimeout));
   if (cookies) {
     *cookies = result;
   }

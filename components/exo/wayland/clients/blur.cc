@@ -71,9 +71,11 @@ void DrawContents(SkImage* background_grid_image,
                   base::TimeDelta elapsed_time,
                   SkCanvas* canvas) {
   // Draw background grid.
-  SkPaint paint;
-  paint.setBlendMode(SkBlendMode::kSrc);
-  canvas->drawImage(background_grid_image, 0, 0, SkSamplingOptions(), &paint);
+  {
+    SkPaint paint;
+    paint.setBlendMode(SkBlendMode::kSrc);
+    canvas->drawImage(background_grid_image, 0, 0, SkSamplingOptions(), &paint);
+  }
 
   // Draw rotated rectangles.
   SkScalar rect_size =

@@ -52,7 +52,7 @@ component("prefs") {
 
   defines = [ "COMPONENTS_PREFS_IMPLEMENTATION" ]
 
-  deps = [ "//base/util/values:values_util" ]
+  deps = []
 
   public_deps = [ "//base" ]
 

@@ -29,6 +29,10 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   EventEmitter(bool supports_filters,
                std::unique_ptr<APIEventListeners> listeners,
                ExceptionHandler* exception_handler);
+
+  EventEmitter(const EventEmitter&) = delete;
+  EventEmitter& operator=(const EventEmitter&) = delete;
+
   ~EventEmitter() override;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -103,8 +107,6 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   // The map of EventFilteringInfos for events that are pending dispatch (since
   // JS is suspended).
   std::map<int, EventFilteringInfo> pending_filters_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventEmitter);
 };
 
 }  // namespace extensions

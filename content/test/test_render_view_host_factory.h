@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 
 namespace content {
@@ -26,6 +25,11 @@ class TestRenderViewHostFactory : public RenderViewHostFactory {
  public:
   TestRenderViewHostFactory(RenderProcessHostFactory* rph_factory,
                             AgentSchedulingGroupHostFactory* asgh_factory);
+
+  TestRenderViewHostFactory(const TestRenderViewHostFactory&) = delete;
+  TestRenderViewHostFactory& operator=(const TestRenderViewHostFactory&) =
+      delete;
+
   ~TestRenderViewHostFactory() override;
 
   virtual void set_render_process_host_factory(
@@ -39,9 +43,6 @@ class TestRenderViewHostFactory : public RenderViewHostFactory {
       int32_t main_frame_routing_id,
       int32_t widget_routing_id,
       bool swapped_out) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestRenderViewHostFactory);
 };
 
 }  // namespace content

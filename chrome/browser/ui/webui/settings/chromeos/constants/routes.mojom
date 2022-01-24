@@ -46,6 +46,7 @@ enum Subpage {
 
   // Bluetooth section.
   kBluetoothDevices = 100,
+  kBluetoothDeviceDetail = 101,
 
   // MultiDevice section.
   kMultiDeviceFeatures = 200,
@@ -57,9 +58,10 @@ enum Subpage {
   kSync = 301,
   kSyncDeprecated = 302,  // Used if split-sync flag is off.
   kSyncDeprecatedAdvanced = 303,  // Used if split-sync flag is off.
-  kSecurityAndSignIn = 304,
-  kFingerprint = 305,
-  kManageOtherPeople = 306,
+  // Note: Value 304 was for kSecurityAndSignIn. Do not reuse.
+  // Note: Value 305 was for kFingerprint. Do not reuse.
+  // Note: Value 306 was for kManageOtherPeople. Do not reuse.
+
   // Note: Value 307 was for Kerberos Accounts Subpage, which has been migrated
   // to a separate section - see https://crbug.com/1186190. Do not reuse.
 
@@ -104,6 +106,7 @@ enum Subpage {
   kCrostiniBackupAndRestore = 803,
   kCrostiniDevelopAndroidApps = 804,
   kCrostiniPortForwarding = 805,
+  kCrostiniExtraContainers = 806,
 
   // Note: Deprecated Plugin VM section has no subpages.
 
@@ -114,6 +117,7 @@ enum Subpage {
   kManageOtherPeopleV2 = 1100,
   kSecurityAndSignInV2 = 1101,
   kFingerprintV2 = 1102,
+  kSmartPrivacy = 1103,
 
   // Languages and Input section.
   // 1200 was used for kLanguagesAndInputDetails. Do not reuse.
@@ -161,6 +165,7 @@ const string kVpnDetailsSubpagePath = "networkDetail";
 // Bluetooth section.
 const string kBluetoothSectionPath = "bluetooth";
 const string kBluetoothDevicesSubpagePath = "bluetoothDevices";
+const string kBluetoothDeviceDetailSubpagePath = "bluetoothDeviceDetail";
 
 // MultiDevice section.
 const string kMultiDeviceSectionPath = "multidevice";
@@ -174,9 +179,6 @@ const string kMyAccountsSubpagePath = "accountManager";
 const string kSyncSubpagePath = "osSync";
 const string kSyncDeprecatedSubpagePath = "syncSetup";
 const string kSyncDeprecatedAdvancedSubpagePath = "syncSetup/advanced";
-const string kSecurityAndSignInSubpagePath = "lockScreen";
-const string kFingerprintSubpagePath = "lockScreen/fingerprint";
-const string kManageOtherPeopleSubpagePath = "accounts";
 
 // Device section.
 const string kDeviceSectionPath = "device";
@@ -222,6 +224,7 @@ const string kCrostiniUsbPreferencesSubpagePath = "crostini/sharedUsbDevices";
 const string kCrostiniBackupAndRestoreSubpagePath = "crostini/exportImport";
 const string kCrostiniDevelopAndroidAppsSubpagePath = "crostini/androidAdb";
 const string kCrostiniPortForwardingSubpagePath = "crostini/portForwarding";
+const string kCrostiniExtraContainersSubpagePath = "crostini/extraContainers";
 
 // Date and Time section.
 const string kDateAndTimeSectionPath = "dateTime";
@@ -232,6 +235,7 @@ const string kPrivacyAndSecuritySectionPath = "osPrivacy";
 const string kManageOtherPeopleSubpagePathV2 = "osPrivacy/accounts";
 const string kSecurityAndSignInSubpagePathV2 = "osPrivacy/lockScreen";
 const string kFingerprintSubpagePathV2 = "osPrivacy/lockScreen/fingerprint";
+const string kSmartPrivacySubpagePath = "osPrivacy/smartPrivacy";
 
 // Languages and Input section.
 const string kLanguagesAndInputSectionPath = "osLanguages";

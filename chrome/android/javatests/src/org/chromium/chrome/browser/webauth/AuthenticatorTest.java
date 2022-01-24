@@ -26,6 +26,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.webauthn.Fido2ApiHandler;
 import org.chromium.components.webauthn.MockFido2ApiHandler;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -81,13 +82,13 @@ public class AuthenticatorTest {
         mUrl = mTestServer.getURLWithHostName("subdomain.example.test", TEST_FILE);
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mUpdateWaiter = new AuthenticatorUpdateWaiter();
-        mTab.addObserver(mUpdateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
         mMockHandler = new MockFido2ApiHandler();
     }
 
     @After
     public void tearDown() {
-        mTab.removeObserver(mUpdateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
         mTestServer.stopAndDestroyServer();
     }
 

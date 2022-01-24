@@ -31,6 +31,7 @@ source_set("broker") {
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//sandbox",
+    "//sandbox/policy/mojom",
     "//services/service_manager/public/cpp",
   ]
 
@@ -104,7 +105,6 @@ if (current_cpu == "x86") {
       "//chrome/install_static:install_static_util",
       "//components/crash/content/app:deprecated_breakpad_win",
       "//components/nacl/loader:nacl_helper_win_64",
-      "//content/public/common:static_features",
       "//content/public/common:static_switches",
       "//ppapi/proxy:ipc",
       "//sandbox",

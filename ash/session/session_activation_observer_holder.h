@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/account_id/account_id.h"
 
@@ -19,6 +18,12 @@ class SessionActivationObserver;
 class SessionActivationObserverHolder {
  public:
   SessionActivationObserverHolder();
+
+  SessionActivationObserverHolder(const SessionActivationObserverHolder&) =
+      delete;
+  SessionActivationObserverHolder& operator=(
+      const SessionActivationObserverHolder&) = delete;
+
   ~SessionActivationObserverHolder();
 
   void AddForAccountId(const AccountId& account_id,
@@ -35,8 +40,6 @@ class SessionActivationObserverHolder {
 
   using Observers = base::ObserverList<SessionActivationObserver>;
   std::map<AccountId, std::unique_ptr<Observers>> observer_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionActivationObserverHolder);
 };
 
 }  // namespace ash

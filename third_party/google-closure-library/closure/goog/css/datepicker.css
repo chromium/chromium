@@ -7,9 +7,9 @@
 
 /*
  * Standard styling for a goog.ui.DatePicker.
- *
- * @provide {goog.css.datepicker}
  */
+
+@provide 'goog.css.datepicker';
 
 .goog-date-picker,
 .goog-date-picker th,

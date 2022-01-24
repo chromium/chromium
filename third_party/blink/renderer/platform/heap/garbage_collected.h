@@ -5,12 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_GARBAGE_COLLECTED_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_GARBAGE_COLLECTED_H_
 
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
+#include "v8/include/cppgc/garbage-collected.h"
+#include "v8/include/cppgc/type-traits.h"
 
-#if BUILDFLAG(USE_V8_OILPAN)
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/garbage_collected.h"
-#else  // !USE_V8_OILPAN
-#include "third_party/blink/renderer/platform/heap/impl/garbage_collected.h"
-#endif  // !USE_V8_OILPAN
+namespace blink {
+
+using GarbageCollectedMixin = cppgc::GarbageCollectedMixin;
+
+template <typename T>
+struct IsGarbageCollectedMixin {
+ public:
+  static const bool value = cppgc::IsGarbageCollectedMixinTypeV<T>;
+};
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_GARBAGE_COLLECTED_H_

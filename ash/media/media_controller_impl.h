@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/media_controller.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -46,6 +46,10 @@ class ASH_EXPORT MediaControllerImpl
       public media_session::mojom::MediaControllerObserver {
  public:
   MediaControllerImpl();
+
+  MediaControllerImpl(const MediaControllerImpl&) = delete;
+  MediaControllerImpl& operator=(const MediaControllerImpl&) = delete;
+
   ~MediaControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -156,8 +160,6 @@ class ASH_EXPORT MediaControllerImpl
   MediaClient* client_ = nullptr;
 
   base::ObserverList<MediaCaptureObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControllerImpl);
 };
 
 }  // namespace ash

@@ -98,6 +98,9 @@ requires the device to be rooted):
 src$ tools/perf/run_benchmark benchmark_name --story-filter story_name
 ```
 
+If the run crashes, it is often helpful to add the `-v` flag in order to better
+understand what is causing the crash.
+
 ### Can I get a trace?
 
 For most metrics, yes. Here are the steps:

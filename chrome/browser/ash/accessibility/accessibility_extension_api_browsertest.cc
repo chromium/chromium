@@ -19,17 +19,15 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
 
-namespace extensions {
+namespace ash {
 
-using ::ash::AccessibilityManager;
-
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = ::extensions::ExtensionBrowserTest::ContextType;
 
 class AccessibilityPrivateApiTest
-    : public ExtensionApiTest,
+    : public extensions::ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  AccessibilityPrivateApiTest() = default;
+  AccessibilityPrivateApiTest() : ExtensionApiTest(GetParam()) {}
   ~AccessibilityPrivateApiTest() override = default;
   AccessibilityPrivateApiTest& operator=(const AccessibilityPrivateApiTest&) =
       delete;
@@ -37,9 +35,7 @@ class AccessibilityPrivateApiTest
 
  protected:
   bool RunSubtest(const char* subtest) WARN_UNUSED_RESULT {
-    return RunExtensionTest(
-        "accessibility_private", {.custom_arg = subtest},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+    return RunExtensionTest("accessibility_private", {.custom_arg = subtest});
   }
 };
 
@@ -52,17 +48,11 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
   ASSERT_TRUE(RunSubtest("testGetDisplayNameForLocale")) << message_;
 }
 
-// Flaky on a debug build, see crbug.com/1030507.
-#if !defined(NDEBUG)
-#define MAYBE_OpenSettingsSubpage DISABLED_OpenSettingsSubpage
-#else
-#define MAYBE_OpenSettingsSubpage OpenSettingsSubpage
-#endif
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, OpenSettingsSubpage) {
   Profile* profile = AccessibilityManager::Get()->profile();
 
   // Install the Settings App.
-  web_app::WebAppProvider::Get(profile)
+  web_app::WebAppProvider::GetForTest(profile)
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 
@@ -88,7 +78,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
   Profile* profile = AccessibilityManager::Get()->profile();
 
   // Install the Settings App.
-  web_app::WebAppProvider::Get(profile)
+  web_app::WebAppProvider::GetForTest(profile)
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 
@@ -108,10 +98,10 @@ class AccessibilityPrivateApiFeatureTest : public AccessibilityPrivateApiTest {
   AccessibilityPrivateApiFeatureTest() {
     if (enabled) {
       scoped_feature_list_.InitAndEnableFeature(
-          ::features::kSelectToSpeakNavigationControl);
+          ::features::kEnhancedNetworkVoices);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          ::features::kSelectToSpeakNavigationControl);
+          ::features::kEnhancedNetworkVoices);
     }
   }
   ~AccessibilityPrivateApiFeatureTest() override = default;
@@ -148,16 +138,14 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, AcceptConfirmationDialog) {
 
   // The test has requested to open the confirmation dialog. Check that
   // it was created, then confirm it.
-  ash::AccessibilityConfirmationDialog* dialog_ =
-      ash::Shell::Get()
-          ->accessibility_controller()
-          ->GetConfirmationDialogForTest();
+  AccessibilityConfirmationDialog* dialog_ =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
   ASSERT_NE(dialog_, nullptr);
 
   EXPECT_EQ(dialog_->GetWindowTitle(), u"Confirm me! 🐶");
 
   // Accept the dialog and wait for the JS test to get the confirmation.
-  ResultCatcher catcher;
+  extensions::ResultCatcher catcher;
   dialog_->Accept();
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
@@ -167,16 +155,14 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, CancelConfirmationDialog) {
 
   // The test has requested to open the confirmation dialog. Check that
   // it was created, then cancel it.
-  ash::AccessibilityConfirmationDialog* dialog_ =
-      ash::Shell::Get()
-          ->accessibility_controller()
-          ->GetConfirmationDialogForTest();
+  AccessibilityConfirmationDialog* dialog_ =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
   ASSERT_NE(dialog_, nullptr);
 
   EXPECT_EQ(dialog_->GetWindowTitle(), u"Cancel me!");
 
   // Cancel the dialog and wait for the JS test to get the callback.
-  ResultCatcher catcher;
+  extensions::ResultCatcher catcher;
   dialog_->Cancel();
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
@@ -186,16 +172,14 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, CloseConfirmationDialog) {
 
   // The test has requested to open the confirmation dialog. Check that
   // it was created, then close it.
-  ash::AccessibilityConfirmationDialog* dialog_ =
-      ash::Shell::Get()
-          ->accessibility_controller()
-          ->GetConfirmationDialogForTest();
+  AccessibilityConfirmationDialog* dialog_ =
+      Shell::Get()->accessibility_controller()->GetConfirmationDialogForTest();
   ASSERT_TRUE(dialog_ != nullptr);
 
   EXPECT_EQ(dialog_->GetWindowTitle(), u"Cancel me!");
 
   // Close the dialog and wait for the JS test to get the callback.
-  ResultCatcher catcher;
+  extensions::ResultCatcher catcher;
   dialog_->Close();
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
@@ -219,4 +203,4 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          AccessibilityPrivateApiFeatureEnabledTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-}  // namespace extensions
+}  // namespace ash

@@ -6,13 +6,13 @@
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_environment_variable_override.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
@@ -124,6 +124,11 @@ class ServiceWorkerStatusObserver : public ServiceWorkerContextCoreObserver {
 class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
  public:
   NetworkServiceRestartBrowserTest() {}
+
+  NetworkServiceRestartBrowserTest(const NetworkServiceRestartBrowserTest&) =
+      delete;
+  NetworkServiceRestartBrowserTest& operator=(
+      const NetworkServiceRestartBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -266,8 +271,6 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
  private:
   mutable base::Lock last_request_lock_;
   std::string last_request_relative_url_ GUARDED_BY(last_request_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceRestartBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
@@ -953,8 +956,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, SSLKeyLogFileMetrics) {
 
   // Test that env var causes the histogram to be recorded.
   {
-    base::test::ScopedEnvironmentVariableOverride scoped_env("SSLKEYLOGFILE",
-                                                             log_file_path_str);
+    base::ScopedEnvironmentVariableOverride scoped_env("SSLKEYLOGFILE",
+                                                       log_file_path_str);
     base::HistogramTester histograms;
     // Restart network service to cause SSLKeyLogger to be re-initialized.
     SimulateNetworkServiceCrash();

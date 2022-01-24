@@ -15,6 +15,10 @@ namespace ash {
 class ASH_EXPORT NetworkRowTitleView : public views::View {
  public:
   explicit NetworkRowTitleView(int title_message_id);
+
+  NetworkRowTitleView(const NetworkRowTitleView&) = delete;
+  NetworkRowTitleView& operator=(const NetworkRowTitleView&) = delete;
+
   ~NetworkRowTitleView() override;
 
   // views::View:
@@ -22,8 +26,6 @@ class ASH_EXPORT NetworkRowTitleView : public views::View {
 
  private:
   views::Label* const title_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkRowTitleView);
 };
 
 }  // namespace ash

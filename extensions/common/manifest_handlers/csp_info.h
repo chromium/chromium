@@ -63,6 +63,10 @@ struct CSPInfo : public Extension::ManifestData {
 class CSPHandler : public ManifestHandler {
  public:
   CSPHandler();
+
+  CSPHandler(const CSPHandler&) = delete;
+  CSPHandler& operator=(const CSPHandler&) = delete;
+
   ~CSPHandler() override;
 
   // ManifestHandler override:
@@ -77,7 +81,6 @@ class CSPHandler : public ManifestHandler {
   bool ParseExtensionPagesCSP(Extension* extension,
                               std::u16string* error,
                               base::StringPiece manifest_key,
-                              bool secure_only,
                               const base::Value* content_security_policy);
 
   // Parses the content security policy specified in the manifest for sandboxed
@@ -90,7 +93,6 @@ class CSPHandler : public ManifestHandler {
   // Helper to set the extension pages content security policy manifest data.
   bool SetExtensionPagesCSP(Extension* extension,
                             base::StringPiece manifest_key,
-                            bool secure_only,
                             std::string content_security_policy);
 
   // Helper to set the sandbox content security policy manifest data.
@@ -99,8 +101,6 @@ class CSPHandler : public ManifestHandler {
   // ManifestHandler overrides:
   bool AlwaysParseForType(Manifest::Type type) const override;
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPHandler);
 };
 
 }  // namespace extensions

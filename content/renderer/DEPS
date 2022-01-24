@@ -19,6 +19,7 @@ include_rules = [
   "+content/public/child",
   "+content/public/renderer",
   "+content/child",
+  "+content/services/shared_storage_worklet",
   "+device/base/synchronization",
   "+device/gamepad/public/cpp",
   "+device/gamepad/public/mojom",

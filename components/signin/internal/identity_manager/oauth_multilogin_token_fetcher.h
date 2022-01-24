@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -47,6 +46,10 @@ class OAuthMultiloginTokenFetcher : public OAuth2AccessTokenManager::Consumer {
                               SuccessCallback success_callback,
                               FailureCallback failure_callback);
 
+  OAuthMultiloginTokenFetcher(const OAuthMultiloginTokenFetcher&) = delete;
+  OAuthMultiloginTokenFetcher& operator=(const OAuthMultiloginTokenFetcher&) =
+      delete;
+
   ~OAuthMultiloginTokenFetcher() override;
 
  private:
@@ -75,8 +78,6 @@ class OAuthMultiloginTokenFetcher : public OAuth2AccessTokenManager::Consumer {
   std::set<CoreAccountId> retried_requests_;  // Requests are retried once.
 
   base::WeakPtrFactory<OAuthMultiloginTokenFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OAuthMultiloginTokenFetcher);
 };
 
 }  // namespace signin

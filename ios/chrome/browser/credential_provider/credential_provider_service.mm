@@ -14,12 +14,14 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
 #import "ios/chrome/browser/credential_provider/credential_provider_util.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
@@ -37,10 +39,10 @@ namespace {
 
 using password_manager::PasswordForm;
 using password_manager::AffiliatedMatchHelper;
-using password_manager::PasswordStore;
 using password_manager::PasswordStoreChange;
 using password_manager::PasswordStoreChangeList;
-using password_manager::AndroidAffiliationService;
+using password_manager::PasswordStoreInterface;
+using password_manager::AffiliationService;
 
 // ASCredentialIdentityStoreError enum to report UMA metrics. Must be in sync
 // with iOSCredentialIdentityStoreErrorForReporting in
@@ -130,21 +132,25 @@ void SyncASIdentityStore(id<CredentialStore> credential_store) {
 }  // namespace
 
 CredentialProviderService::CredentialProviderService(
-    scoped_refptr<PasswordStore> password_store,
+    PrefService* prefs,
+    scoped_refptr<PasswordStoreInterface> password_store,
     AuthenticationService* authentication_service,
     id<MutableCredentialStore> credential_store,
     signin::IdentityManager* identity_manager,
-    syncer::SyncService* sync_service)
+    syncer::SyncService* sync_service,
+    password_manager::AffiliationService* affiliation_service)
     : password_store_(password_store),
       authentication_service_(authentication_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
+      affiliation_service_(affiliation_service),
       credential_store_(credential_store) {
   DCHECK(password_store_);
   password_store_->AddObserver(this);
 
   DCHECK(authentication_service_);
-  UpdateAccountValidationId();
+  UpdateAccountId();
+  UpdateUserEmail();
 
   if (identity_manager_) {
     identity_manager_->AddObserver(this);
@@ -161,6 +167,15 @@ CredentialProviderService::CredentialProviderService(
   if (!is_sync_active) {
     RequestSyncAllCredentialsIfNeeded();
   }
+
+  saving_passwords_enabled_.Init(
+      password_manager::prefs::kCredentialsEnableService, prefs,
+      base::BindRepeating(
+          &CredentialProviderService::OnSavingPasswordsEnabledChanged,
+          base::Unretained(this)));
+
+  // Make sure the initial value of the pref is stored.
+  OnSavingPasswordsEnabledChanged();
 }
 
 CredentialProviderService::~CredentialProviderService() {}
@@ -176,7 +191,8 @@ void CredentialProviderService::Shutdown() {
 }
 
 void CredentialProviderService::RequestSyncAllCredentials() {
-  UpdateAccountValidationId();
+  UpdateAccountId();
+  UpdateUserEmail();
   password_store_->GetAutofillableLogins(this);
 }
 
@@ -219,10 +235,10 @@ void CredentialProviderService::SyncStore(bool set_first_time_sync_flag) {
 void CredentialProviderService::AddCredentials(
     std::vector<std::unique_ptr<PasswordForm>> forms) {
   for (const auto& form : forms) {
-    ArchivableCredential* credential = [[ArchivableCredential alloc]
-        initWithPasswordForm:*form
-                     favicon:nil
-        validationIdentifier:account_validation_id_];
+    ArchivableCredential* credential =
+        [[ArchivableCredential alloc] initWithPasswordForm:*form
+                                                   favicon:nil
+                                      validationIdentifier:account_id_];
     DCHECK(credential);
     [credential_store_ addCredential:credential];
   }
@@ -237,30 +253,43 @@ void CredentialProviderService::RemoveCredentials(
   }
 }
 
-void CredentialProviderService::UpdateAccountValidationId() {
+void CredentialProviderService::UpdateAccountId() {
+  ChromeIdentity* identity = authentication_service_->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
   if (authentication_service_->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin)) {
-    account_validation_id_ =
-        authentication_service_
-            ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-            .gaiaID;
+    account_id_ = identity.gaiaID;
   } else {
-    account_validation_id_ = nil;
+    account_id_ = nil;
   }
   [app_group::GetGroupUserDefaults()
-      setObject:account_validation_id_
-         forKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
+      setObject:account_id_
+         forKey:AppGroupUserDefaultsCredentialProviderUserID()];
+}
+
+void CredentialProviderService::UpdateUserEmail() {
+  ChromeIdentity* identity =
+      authentication_service_->GetPrimaryIdentity(signin::ConsentLevel::kSync);
+
+  bool sync_enabled = sync_service_->IsSyncFeatureEnabled();
+  bool passwords_sync_enabled =
+      sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPasswords);
+  NSString* user_email =
+      (sync_enabled && passwords_sync_enabled) ? identity.userEmail : nil;
+  [app_group::GetGroupUserDefaults()
+      setObject:user_email
+         forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
 }
 
 void CredentialProviderService::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   auto callback = base::BindOnce(&CredentialProviderService::SyncAllCredentials,
                                  weak_factory_.GetWeakPtr());
-  AffiliatedMatchHelper* matcher = password_store_->affiliated_match_helper();
-  if (matcher) {
-    matcher->InjectAffiliationAndBrandingInformation(
+  if (affiliation_service_) {
+    affiliation_service_->InjectAffiliationAndBrandingInformation(
         std::move(results),
-        AndroidAffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+        AffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
         std::move(callback));
   } else {
     std::move(callback).Run(std::move(results));
@@ -315,11 +344,10 @@ void CredentialProviderService::OnLoginsChanged(
       &CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged,
       weak_factory_.GetWeakPtr());
 
-  AffiliatedMatchHelper* matcher = password_store_->affiliated_match_helper();
-  if (matcher) {
-    matcher->InjectAffiliationAndBrandingInformation(
+  if (affiliation_service_) {
+    affiliation_service_->InjectAffiliationAndBrandingInformation(
         std::move(forms_to_add),
-        AndroidAffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+        AffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
         std::move(callback));
   } else {
     std::move(callback).Run(std::move(forms_to_add));
@@ -340,4 +368,17 @@ void CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged(
 void CredentialProviderService::OnSyncConfigurationCompleted(
     syncer::SyncService* sync) {
   RequestSyncAllCredentialsIfNeeded();
+}
+
+void CredentialProviderService::OnStateChanged(syncer::SyncService* sync) {
+  // When the state changes, it's possible that password syncing has
+  // started/stopped, so the user's email must be updated.
+  UpdateUserEmail();
+  RequestSyncAllCredentialsIfNeeded();
+}
+
+void CredentialProviderService::OnSavingPasswordsEnabledChanged() {
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:saving_passwords_enabled_.GetValue()]
+         forKey:AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()];
 }

@@ -15,16 +15,13 @@ namespace {
 
 // Delay to wait for a response to our geolocation request, if we get a response
 // after which, we will consider the request a failure.
-constexpr base::TimeDelta kGeolocationRequestTimeout =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kGeolocationRequestTimeout = base::Seconds(60);
 
 // Minimum delay to wait to fire a new request after a previous one failing.
-constexpr base::TimeDelta kMinimumDelayAfterFailure =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kMinimumDelayAfterFailure = base::Seconds(60);
 
 // Delay to wait to fire a new request after a previous one succeeding.
-constexpr base::TimeDelta kNextRequestDelayAfterSuccess =
-    base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kNextRequestDelayAfterSuccess = base::Days(1);
 
 }  // namespace
 
@@ -32,7 +29,7 @@ NightLightClient::NightLightClient(
     scoped_refptr<network::SharedURLLoaderFactory> factory)
     : provider_(
           std::move(factory),
-          chromeos::SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
+          ash::SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
       night_light_controller_(ash::NightLightController::GetInstance()),
       backoff_delay_(kMinimumDelayAfterFailure),
       timer_(std::make_unique<base::OneShotTimer>()) {}
@@ -40,11 +37,11 @@ NightLightClient::NightLightClient(
 NightLightClient::~NightLightClient() {
   if (night_light_controller_)
     night_light_controller_->RemoveObserver(this);
-  chromeos::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  ash::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
 }
 
 void NightLightClient::Start() {
-  auto* timezone_settings = chromeos::system::TimezoneSettings::GetInstance();
+  auto* timezone_settings = ash::system::TimezoneSettings::GetInstance();
   current_timezone_id_ = timezone_settings->GetCurrentTimezoneID();
   timezone_settings->AddObserver(this);
   night_light_controller_->AddObserver(this);
@@ -73,13 +70,13 @@ void NightLightClient::OnScheduleTypeChanged(
   // Next request is either immediate or kNextRequestDelayAfterSuccess later
   // than the last success time, whichever is greater.
   ScheduleNextRequest(std::max(
-      base::TimeDelta::FromSeconds(0),
+      base::Seconds(0),
       last_successful_geo_request_time_ + kNextRequestDelayAfterSuccess - now));
 }
 
 void NightLightClient::TimezoneChanged(const icu::TimeZone& timezone) {
   const std::u16string timezone_id =
-      chromeos::system::TimezoneSettings::GetTimezoneID(timezone);
+      ash::system::TimezoneSettings::GetTimezoneID(timezone);
   if (current_timezone_id_ == timezone_id)
     return;
 
@@ -89,7 +86,7 @@ void NightLightClient::TimezoneChanged(const icu::TimeZone& timezone) {
     return;
 
   // On timezone changes, request an immediate geoposition.
-  ScheduleNextRequest(base::TimeDelta::FromSeconds(0));
+  ScheduleNextRequest(base::Seconds(0));
 }
 
 // static
@@ -111,7 +108,7 @@ void NightLightClient::SetCurrentTimezoneIdForTesting(
   current_timezone_id_ = timezone_id;
 }
 
-void NightLightClient::OnGeoposition(const chromeos::Geoposition& position,
+void NightLightClient::OnGeoposition(const ash::Geoposition& position,
                                      bool server_error,
                                      const base::TimeDelta elapsed) {
   if (!using_geoposition_) {

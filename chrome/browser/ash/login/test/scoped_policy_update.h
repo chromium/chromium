@@ -6,11 +6,10 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_SCOPED_POLICY_UPDATE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 // Helper that is used by mixins to provide means for setting up user policy
 // values to tests that need that functionality. This does not build, nor apply
@@ -21,6 +20,10 @@ class ScopedUserPolicyUpdate {
  public:
   explicit ScopedUserPolicyUpdate(policy::UserPolicyBuilder* policy_builder,
                                   base::OnceClosure callback);
+
+  ScopedUserPolicyUpdate(const ScopedUserPolicyUpdate&) = delete;
+  ScopedUserPolicyUpdate& operator=(const ScopedUserPolicyUpdate&) = delete;
+
   ~ScopedUserPolicyUpdate();
 
   // Policy payload proto - use this to set up desired policy values.
@@ -37,8 +40,6 @@ class ScopedUserPolicyUpdate {
  private:
   policy::UserPolicyBuilder* const policy_builder_;
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUserPolicyUpdate);
 };
 
 // Helper that is used by mixins to provide means for setting up device policy
@@ -50,6 +51,10 @@ class ScopedDevicePolicyUpdate {
  public:
   explicit ScopedDevicePolicyUpdate(policy::DevicePolicyBuilder* policy_builder,
                                     base::OnceClosure callback);
+
+  ScopedDevicePolicyUpdate(const ScopedDevicePolicyUpdate&) = delete;
+  ScopedDevicePolicyUpdate& operator=(const ScopedDevicePolicyUpdate&) = delete;
+
   ~ScopedDevicePolicyUpdate();
 
   // Policy payload proto - use this to set up desired policy values.
@@ -65,15 +70,15 @@ class ScopedDevicePolicyUpdate {
  private:
   policy::DevicePolicyBuilder* const policy_builder_;
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDevicePolicyUpdate);
 };
-}  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::ScopedDevicePolicyUpdate;
-using ::chromeos::ScopedUserPolicyUpdate;
-}
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ScopedDevicePolicyUpdate;
+using ::ash::ScopedUserPolicyUpdate;
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_SCOPED_POLICY_UPDATE_H_

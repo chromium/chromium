@@ -5,7 +5,6 @@
 # This target is only used in routinely device checks. Thus, the target name is
 # different from other EG2 tests.
 source_set("device_check_eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -41,7 +40,6 @@ source_set("hooks") {
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -88,6 +86,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/metrics:eg_app_support+eg2",
     "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/optimization_guide:eg_app_support+eg2",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/passwords:eg_app_support+eg2",
     "//ios/chrome/browser/policy:eg_app_support+eg2",
@@ -119,14 +118,14 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/ntp",
-    "//ios/chrome/browser/ui/omnibox:app_support+eg2",
+    "//ios/chrome/browser/ui/omnibox:eg_app_support+eg2",
     "//ios/chrome/browser/ui/omnibox:omnibox_internal",
     "//ios/chrome/browser/ui/omnibox/keyboard_assist",
-    "//ios/chrome/browser/ui/passwords:app_support+eg2",
+    "//ios/chrome/browser/ui/passwords:eg_app_support+eg2",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/qr_scanner:eg_app_support+eg2",
     "//ios/chrome/browser/ui/reading_list:eg_app_support+eg2",
-    "//ios/chrome/browser/ui/recent_tabs:app_support+eg2",
+    "//ios/chrome/browser/ui/recent_tabs:eg_app_support+eg2",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui_constants",
     "//ios/chrome/browser/ui/safe_mode",
     "//ios/chrome/browser/ui/safe_mode:eg_app_support+eg2",
@@ -149,7 +148,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
-    "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/toolbar:eg_app_support+eg2",
     "//ios/chrome/browser/ui/toolbar:toolbar_ui",
@@ -163,6 +161,8 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/variations_smoke_test:eg_app_support+eg2",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/testing:block_swizzler",
     "//ios/testing:hardware_keyboarr_support",
     "//ios/testing:nserror_support",
@@ -189,7 +189,6 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -202,22 +201,27 @@ source_set("eg_test_support+eg2") {
     "chrome_actions.h",
     "chrome_actions.mm",
     "chrome_actions_app_interface.h",
+    "chrome_actions_app_interface_stub.mm",
     "chrome_earl_grey.h",
     "chrome_earl_grey.mm",
     "chrome_earl_grey_app_interface.h",
+    "chrome_earl_grey_app_interface_stub.mm",
     "chrome_earl_grey_ui.h",
     "chrome_earl_grey_ui.mm",
     "chrome_matchers.h",
     "chrome_matchers.mm",
     "chrome_matchers_app_interface.h",
+    "chrome_matchers_app_interface_stub.mm",
     "chrome_test_case.h",
     "chrome_test_case.mm",
     "chrome_test_case_app_interface.h",
+    "chrome_test_case_app_interface_stub.mm",
     "chrome_xcui_actions.h",
     "chrome_xcui_actions.mm",
     "earl_grey_scoped_block_swizzler.h",
     "earl_grey_scoped_block_swizzler.mm",
     "earl_grey_scoped_block_swizzler_app_interface.h",
+    "earl_grey_scoped_block_swizzler_app_interface_stub.mm",
     "scoped_block_popups_pref.h",
     "scoped_block_popups_pref.mm",
     "web_http_server_chrome_test_case.h",
@@ -261,7 +265,6 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("chrome_egtest_bundle_main+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",

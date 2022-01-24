@@ -7,10 +7,13 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -186,6 +189,11 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
 
     // Create the first tab so that web_contents() exists.
     AddTab(browser(), GURL("http://foo/1"));
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+      GTEST_SKIP();
+#endif
   }
 
   void TearDown() override {
@@ -309,7 +317,18 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowEnterpriseBubble) {
   EXPECT_TRUE(interceptor()->ShouldShowEnterpriseBubble(account_info));
 }
 
-TEST_F(DiceWebSigninInterceptorTest, ShouldEnforceEnterpriseProfileSeparation) {
+class DiceWebSigninInterceptorForcedSeparationTest
+    : public DiceWebSigninInterceptorTest {
+ public:
+  DiceWebSigninInterceptorForcedSeparationTest()
+      : feature_list_(kAccountPoliciesLoadedWithoutSync) {}
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
+       ShouldEnforceEnterpriseProfileSeparation) {
   profile()->GetPrefs()->SetBoolean(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -335,6 +354,7 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldEnforceEnterpriseProfileSeparation) {
   ASSERT_EQ(identity_test_env()->identity_manager()->GetPrimaryAccountId(
                 signin::ConsentLevel::kSignin),
             primary_account_info.account_id);
+  interceptor()->new_account_interception_ = true;
   // Consumer account not intercepted.
   EXPECT_FALSE(
       interceptor()->ShouldEnforceEnterpriseProfileSeparation(account_info));
@@ -345,7 +365,7 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldEnforceEnterpriseProfileSeparation) {
       interceptor()->ShouldEnforceEnterpriseProfileSeparation(account_info));
 }
 
-TEST_F(DiceWebSigninInterceptorTest,
+TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
        ShouldEnforceEnterpriseProfileSeparationWithoutUPA) {
   profile()->GetPrefs()->SetBoolean(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
@@ -357,6 +377,7 @@ TEST_F(DiceWebSigninInterceptorTest,
   account_info_1.hosted_domain = "example.com";
   identity_test_env()->UpdateAccountInfoForAccount(account_info_1);
 
+  interceptor()->new_account_interception_ = true;
   // Primary account is not set.
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
@@ -364,16 +385,7 @@ TEST_F(DiceWebSigninInterceptorTest,
       interceptor()->ShouldEnforceEnterpriseProfileSeparation(account_info_1));
 }
 
-class DiceWebSigninInterceptorReauthTest : public DiceWebSigninInterceptorTest {
- public:
-  DiceWebSigninInterceptorReauthTest()
-      : feature_list_(kAccountPoliciesLoadedWithoutSync) {}
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(DiceWebSigninInterceptorReauthTest,
+TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
        ShouldEnforceEnterpriseProfileSeparationReauth) {
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
                                    "primary_account_strict");
@@ -390,13 +402,16 @@ TEST_F(DiceWebSigninInterceptorReauthTest,
   EXPECT_TRUE(interceptor()->ShouldEnforceEnterpriseProfileSeparation(
       primary_account_info));
 
-  profile()->GetPrefs()->SetBoolean(prefs::kUserAcceptedAccountManagement,
-                                    true);
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage()->GetProfileAttributesWithPath(
+          profile()->GetPath());
+  entry->SetUserAcceptedAccountManagement(true);
+
   EXPECT_FALSE(interceptor()->ShouldEnforceEnterpriseProfileSeparation(
       primary_account_info));
 }
 
-TEST_F(DiceWebSigninInterceptorReauthTest,
+TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
        EnforceManagedAccountAsPrimaryReauth) {
   profile()->GetPrefs()->SetBoolean(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
@@ -427,7 +442,8 @@ TEST_F(DiceWebSigninInterceptorReauthTest,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
 
-TEST_F(DiceWebSigninInterceptorTest, EnforceManagedAccountAsPrimaryManaged) {
+TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
+       EnforceManagedAccountAsPrimaryManaged) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
   MakeValidAccountInfo(&account_info);
@@ -450,7 +466,7 @@ TEST_F(DiceWebSigninInterceptorTest, EnforceManagedAccountAsPrimaryManaged) {
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
 
-TEST_F(DiceWebSigninInterceptorTest,
+TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
        EnforceManagedAccountAsPrimaryProfileSwitch) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");

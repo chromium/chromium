@@ -6,7 +6,6 @@
 #define COMPONENTS_ARC_STORAGE_MANAGER_ARC_STORAGE_MANAGER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/arc/mojom/storage_manager.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -30,6 +29,10 @@ class ArcStorageManager : public KeyedService {
 
   ArcStorageManager(content::BrowserContext* context,
                     ArcBridgeService* bridge_service);
+
+  ArcStorageManager(const ArcStorageManager&) = delete;
+  ArcStorageManager& operator=(const ArcStorageManager&) = delete;
+
   ~ArcStorageManager() override;
 
   // Opens detailed preference screen of private volume on ARC.
@@ -46,8 +49,6 @@ class ArcStorageManager : public KeyedService {
 
  private:
   ArcBridgeService* const arc_bridge_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcStorageManager);
 };
 
 }  // namespace arc

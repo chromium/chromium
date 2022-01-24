@@ -37,6 +37,8 @@ class ModelTypeConnector {
   // This is the sync thread's chance to clear state associated with the type.
   // It also causes the syncer to stop requesting updates for this type, and to
   // abort any in-progress commit requests.
+  //
+  // No-op if the type is not connected.
   virtual void DisconnectDataType(ModelType type) = 0;
 
   // Propagates whether PROXY_TABS is enabled, which influences a bit exposed to

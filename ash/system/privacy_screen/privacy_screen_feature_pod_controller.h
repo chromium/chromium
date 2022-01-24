@@ -7,7 +7,6 @@
 
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -35,7 +34,7 @@ class PrivacyScreenFeaturePodController
   void UpdateButton();
 
   // PrivacyScreenController::Observer:
-  void OnPrivacyScreenSettingChanged(bool enabled) override;
+  void OnPrivacyScreenSettingChanged(bool enabled, bool notify_ui) override;
 
   // Unowned.
   FeaturePodButton* button_ = nullptr;

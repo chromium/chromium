@@ -36,13 +36,18 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
         : provider_(provider) {
       provider_->SecondaryCBDrawBegin(std::move(draw_context));
     }
+
+    ScopedSecondaryCBDraw(const ScopedSecondaryCBDraw&) = delete;
+    ScopedSecondaryCBDraw& operator=(const ScopedSecondaryCBDraw&) = delete;
+
     ~ScopedSecondaryCBDraw() { provider_->SecondaryCMBDrawSubmitted(); }
 
    private:
     AwVulkanContextProvider* const provider_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedSecondaryCBDraw);
   };
+
+  AwVulkanContextProvider(const AwVulkanContextProvider&) = delete;
+  AwVulkanContextProvider& operator=(const AwVulkanContextProvider&) = delete;
 
   static scoped_refptr<AwVulkanContextProvider> Create(
       AwDrawFn_InitVkParams* params);
@@ -92,8 +97,6 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
   sk_sp<GrVkSecondaryCBDrawContext> draw_context_;
   std::vector<base::OnceClosure> post_submit_tasks_;
   std::vector<VkSemaphore> post_submit_semaphores_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwVulkanContextProvider);
 };
 
 }  // namespace android_webview

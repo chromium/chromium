@@ -5,16 +5,18 @@
  */
 
 /**
- * Launches the PaymentRequest UI with Bob Pay and 'basic-card' as
- * payment methods, and Bob Pay modifier.
+ * Launches the PaymentRequest UI with Bob Pay and optionally
+ * 'basic-card' as payment methods, and Bob Pay modifier.
+ * @param {boolean} useBasicCard - Whether basic-card payment method should be
+ * used in PaymentRequest as well.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buyWithBasicCard(useBasicCard) { // eslint-disable-line no-unused-vars
+  let methodData = [{supportedMethods: 'https://bobpay.com'}];
+  if (useBasicCard) {
+    methodData.push({supportedMethods: 'basic-card'});
+  }
   try {
-    new PaymentRequest(
-        [
-          {supportedMethods: 'https://bobpay.com'},
-          {supportedMethods: 'basic-card'},
-        ],
+    new PaymentRequest(methodData,
         {
           total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
           modifiers: [{
@@ -48,6 +50,22 @@ function buy() { // eslint-disable-line no-unused-vars
   } catch (error) {
     print('exception thrown<br>' + error.message);
   }
+}
+
+/**
+ * Launches the PaymentRequest UI with Bob Pay and 'basic-card' as
+ * payment methods, and Bob Pay modifier.
+ */
+function buy() { // eslint-disable-line no-unused-vars
+  buyWithBasicCard(true);
+}
+
+/**
+ * Launches the PaymentRequest UI with Bob Pay as
+ * the payment method and Bob Pay modifier.
+ */
+function buyWithBobPay() { // eslint-disable-line no-unused-vars
+  buyWithBasicCard(false);
 }
 
 /**

@@ -11,22 +11,24 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/sync/model/syncable_service.h"
+#include "components/value_store/value_store_factory.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
-#include "extensions/browser/value_store/value_store_factory.h"
 
 namespace syncer {
 class SyncErrorFactory;
+}
+
+namespace value_store {
+class ValueStoreFactory;
 }
 
 namespace extensions {
 
 class SettingsSyncProcessor;
 class SyncableSettingsStorage;
-class ValueStoreFactory;
 
 // Manages ValueStore objects for extensions, including routing
 // changes from sync to them.
@@ -35,15 +37,19 @@ class SyncStorageBackend : public syncer::SyncableService {
  public:
   // |storage_factory| is use to create leveldb storage areas.
   // |observers| is the list of observers to settings changes.
-  SyncStorageBackend(scoped_refptr<ValueStoreFactory> storage_factory,
-                     const SettingsStorageQuotaEnforcer::Limits& quota,
-                     scoped_refptr<SettingsObserverList> observers,
-                     syncer::ModelType sync_type,
-                     const syncer::SyncableService::StartSyncFlare& flare);
+  SyncStorageBackend(
+      scoped_refptr<value_store::ValueStoreFactory> storage_factory,
+      const SettingsStorageQuotaEnforcer::Limits& quota,
+      scoped_refptr<SettingsObserverList> observers,
+      syncer::ModelType sync_type,
+      const syncer::SyncableService::StartSyncFlare& flare);
+
+  SyncStorageBackend(const SyncStorageBackend&) = delete;
+  SyncStorageBackend& operator=(const SyncStorageBackend&) = delete;
 
   ~SyncStorageBackend() override;
 
-  virtual ValueStore* GetStorage(const std::string& extension_id);
+  virtual value_store::ValueStore* GetStorage(const std::string& extension_id);
   virtual void DeleteStorage(const std::string& extension_id);
 
   // syncer::SyncableService implementation.
@@ -66,17 +72,12 @@ class SyncStorageBackend : public syncer::SyncableService {
       const std::string& extension_id,
       std::unique_ptr<base::DictionaryValue> sync_data) const;
 
-  // Gets all extension IDs known to extension settings.  This may not be all
-  // installed extensions.
-  std::set<std::string> GetKnownExtensionIDs(
-      ValueStoreFactory::ModelType model_type) const;
-
   // Creates a new SettingsSyncProcessor for an extension.
   std::unique_ptr<SettingsSyncProcessor> CreateSettingsSyncProcessor(
       const std::string& extension_id) const;
 
   // The Factory to use for creating new ValueStores.
-  const scoped_refptr<ValueStoreFactory> storage_factory_;
+  const scoped_refptr<value_store::ValueStoreFactory> storage_factory_;
 
   // Quota limits (see SettingsStorageQuotaEnforcer).
   const SettingsStorageQuotaEnforcer::Limits quota_;
@@ -100,8 +101,6 @@ class SyncStorageBackend : public syncer::SyncableService {
   std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory_;
 
   syncer::SyncableService::StartSyncFlare flare_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncStorageBackend);
 };
 
 }  // namespace extensions

@@ -67,7 +67,7 @@ int64_t TimeToWireFormat(Time time);
 // Note: 19 January 2038, this will cease to work.
 template <>
 Time ALLOW_UNUSED_TYPE TimeFromWireFormat<4>(int64_t value) {
-  return value ? Time::UnixEpoch() + TimeDelta::FromSeconds(value) : Time();
+  return value ? Time::UnixEpoch() + Seconds(value) : Time();
 }
 template <>
 int64_t ALLOW_UNUSED_TYPE TimeToWireFormat<4>(Time time) {

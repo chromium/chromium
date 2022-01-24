@@ -66,11 +66,13 @@ class AutoNativeLock {
  public:
   explicit AutoNativeLock(NativeLock& lock) : lock_(lock) { lock_.Lock(); }
 
+  AutoNativeLock(const AutoNativeLock&) = delete;
+  AutoNativeLock& operator=(const AutoNativeLock&) = delete;
+
   ~AutoNativeLock() { lock_.Unlock(); }
 
  private:
   NativeLock& lock_;
-  DISALLOW_COPY_AND_ASSIGN(AutoNativeLock);
 };
 
 ScopedHandleVerifierInfo::ScopedHandleVerifierInfo(
@@ -87,10 +89,10 @@ ScopedHandleVerifierInfo::ScopedHandleVerifierInfo(
 
 ScopedHandleVerifierInfo::~ScopedHandleVerifierInfo() = default;
 
-ScopedHandleVerifierInfo::ScopedHandleVerifierInfo(ScopedHandleVerifierInfo&&) =
-    default;
+ScopedHandleVerifierInfo::ScopedHandleVerifierInfo(
+    ScopedHandleVerifierInfo&&) noexcept = default;
 ScopedHandleVerifierInfo& ScopedHandleVerifierInfo::operator=(
-    ScopedHandleVerifierInfo&&) = default;
+    ScopedHandleVerifierInfo&&) noexcept = default;
 
 ScopedHandleVerifier::ScopedHandleVerifier(bool enabled)
     : enabled_(enabled), lock_(GetLock()) {}

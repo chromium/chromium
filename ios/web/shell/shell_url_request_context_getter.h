@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/url_request/url_request_context_getter.h"
 
 namespace net {
@@ -33,6 +33,10 @@ class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
       const base::FilePath& base_path,
       web::BrowserState* browser_state,
       const scoped_refptr<base::SingleThreadTaskRunner>& network_task_runner);
+
+  ShellURLRequestContextGetter(const ShellURLRequestContextGetter&) = delete;
+  ShellURLRequestContextGetter& operator=(const ShellURLRequestContextGetter&) =
+      delete;
 
   // net::URLRequestContextGetter implementation.
   net::URLRequestContext* GetURLRequestContext() override;
@@ -57,8 +61,6 @@ class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
   // created in constructor and cleared in GetURLRequestContext() where
   // net::URLRequestContextStorage is lazily created.
   std::unique_ptr<net::SystemCookieStore> system_cookie_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellURLRequestContextGetter);
 };
 
 }  // namespace web

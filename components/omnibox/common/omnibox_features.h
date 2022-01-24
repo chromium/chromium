@@ -36,6 +36,7 @@ extern const base::Feature kDynamicMaxAutocomplete;
 
 // On-Focus Suggestions a.k.a. ZeroSuggest.
 extern const base::Feature kClobberTriggersContextualWebZeroSuggest;
+extern const base::Feature kClobberTriggersSRPZeroSuggest;
 extern const base::Feature kOmniboxLocalZeroSuggestAgeThreshold;
 extern const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP;
 extern const base::Feature kOnFocusSuggestionsContextualWeb;
@@ -65,21 +66,19 @@ extern const base::Feature kDocumentProviderAso;
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 extern const base::Feature kAdaptiveSuggestionsCount;
 extern const base::Feature kClipboardSuggestionContentHidden;
-extern const base::Feature kCompactSuggestions;
 extern const base::Feature kMostVisitedTiles;
 extern const base::Feature kRichAutocompletion;
+extern const base::Feature kNtpRealboxPedals;
 extern const base::Feature kNtpRealboxSuggestionAnswers;
-extern const base::Feature kOmniboxPedalsBatch2;
 extern const base::Feature kOmniboxPedalsBatch2NonEnglish;
 extern const base::Feature kOmniboxPedalsBatch3;
-extern const base::Feature kOmniboxPedalsDefaultIconColored;
+extern const base::Feature kOmniboxPedalsBatch3NonEnglish;
 extern const base::Feature kOmniboxPedalsTranslationConsole;
 extern const base::Feature kOmniboxKeywordSearchButton;
 extern const base::Feature kWebUIOmniboxPopup;
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).
-extern const base::Feature kIntranetRedirectBehaviorPolicyRollout;
 extern const base::Feature kOmniboxAssistantVoiceSearch;
 
 // Settings Page - these affect the appearance of the Search Engines settings

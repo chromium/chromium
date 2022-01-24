@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests CSSLength.parse, CSSShadowModel.parseTextShadow, and CSSShadowModel.parseBoxShadow.\n`);
-  await TestRunner.loadModule("inline_editor");
+  await TestRunner.loadLegacyModule("inline_editor");
 
   TestRunner.addResult('-----CSSLengths-----');
   dumpCSSLength('10px');

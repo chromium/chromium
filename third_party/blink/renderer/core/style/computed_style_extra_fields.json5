@@ -109,16 +109,6 @@
       custom_copy: true,
       custom_compare: true,
     },
-    // Style has applied a non-inherited -internal-light-dark() value from a UA
-    // stylesheet. Since such values have a dependency on the used color-scheme,
-    // we cannot use the MatchedPropertyCache when this flag is set.
-    {
-      name: "HasNonInheritedLightDarkValue",
-      field_template: "monotonic_flag",
-      default_value: "false",
-      custom_copy: true,
-      custom_compare: true,
-    },
     // Whether this style is affected by these pseudo-classes.
     {
       name: "AffectedByFocusWithin",
@@ -147,6 +137,21 @@
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
+    },
+    // Whether this style is related with :has() pseudo-class
+    {
+      name: "AffectedByHas",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_copy: true,
+      custom_compare: true,
+    },
+    {
+      name: "AncestorsAffectedByHas",
+      field_template: "primitive",
+      default_value: "false",
+      type_name: "bool",
+      inherited: true,
     },
     // A non-inherited property references a variable or @apply is used
     {
@@ -504,6 +509,17 @@
       computed_style_custom_functions: ["getter", "setter"],
     },
     {
+      name: "HighlightData",
+      inherited: true,
+      field_template: "external",
+      type_name: "StyleHighlightData",
+      include_paths: ["third_party/blink/renderer/core/style/style_highlight_data.h"],
+      default_value: "nullptr",
+      wrapper_pointer_name: "scoped_refptr",
+      field_group: "*",
+      computed_style_custom_functions: ["setter"],
+    },
+    {
       name: "InitialData",
       inherited: true,
       field_template: "external",
@@ -652,6 +668,13 @@
       default_value: "false",
     },
     {
+      name: "HasCurrentClipPathAnimation",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
       name: "CompositablePaintAnimationChanged",
       field_template: "primitive",
       type_name: "bool",
@@ -735,6 +758,15 @@
     },
     {
       name: "HasAuthorBorderRadius",
+      field_template: "monotonic_flag",
+      default_value: "false",
+    },
+    // Paired cascade: in highlight pseudo styles, the presence of any highlight
+    // colors affects whether all other highlight color properties default to
+    // initial or the UA default.
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
+    {
+      name: "HasAuthorHighlightColors",
       field_template: "monotonic_flag",
       default_value: "false",
     },
@@ -868,14 +900,14 @@
     {
       name: "NamedGridAreaRowCount",
       field_template: "primitive",
-      type_name: "size_t",
+      type_name: "wtf_size_t",
       field_group: "*->grid",
       default_value: "0",
     },
     {
       name: "NamedGridAreaColumnCount",
       field_template: "primitive",
-      type_name: "size_t",
+      type_name: "wtf_size_t",
       field_group: "*->grid",
       default_value: "0",
     },
@@ -900,14 +932,14 @@
     {
       name: "GridAutoRepeatColumnsInsertionPoint",
       field_template: "primitive",
-      type_name: "size_t",
+      type_name: "wtf_size_t",
       field_group: "*->grid",
       default_value: "0",
     },
     {
       name: "GridAutoRepeatRowsInsertionPoint",
       field_template: "primitive",
-      type_name: "size_t",
+      type_name: "wtf_size_t",
       field_group: "*->grid",
       default_value: "0",
     },
@@ -959,7 +991,7 @@
       inherited: true,
     },
     {
-      name: "ColorSchemeOnly",
+      name: "ColorSchemeForced",
       field_template: "primitive",
       type_name: "bool",
       default_value: "false",
@@ -1116,6 +1148,23 @@
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",
+      default_value: "false",
+    },
+    {
+      name: "BaseData",
+      inherited: false,
+      field_template: "external",
+      type_name: "StyleBaseData",
+      include_paths: ["third_party/blink/renderer/core/style/style_base_data.h"],
+      default_value: "nullptr",
+      wrapper_pointer_name: "scoped_refptr",
+      custom_compare: true,
+      custom_copy: true,
+    },
+    {
+      // https://drafts.csswg.org/css-contain-2/#skips-its-contents
+      name: "SkipsContents",
+      field_template: "monotonic_flag",
       default_value: "false",
     },
   ],

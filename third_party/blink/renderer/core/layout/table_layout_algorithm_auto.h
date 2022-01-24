@@ -46,6 +46,8 @@ class TableLayoutAlgorithmAuto final : public TableLayoutAlgorithm {
   void UpdateLayout() override;
   void WillChangeTableLayout() override {}
 
+  void Trace(Visitor*) const override;
+
  private:
   enum CellsToProcess { kAllCells, kNonEmptyCells, kEmptyCells };
   enum DistributionMode { kExtraWidth, kInitialWidth, kLeftoverWidth };
@@ -90,7 +92,7 @@ class TableLayoutAlgorithmAuto final : public TableLayoutAlgorithm {
   };
 
   Vector<Layout, 4> layout_struct_;
-  Vector<LayoutTableCell*, 4> span_cells_;
+  HeapVector<Member<LayoutTableCell>, 4> span_cells_;
   bool has_percent_ : 1;
   mutable bool effective_logical_width_dirty_ : 1;
   LayoutUnit scaled_width_from_percent_columns_;

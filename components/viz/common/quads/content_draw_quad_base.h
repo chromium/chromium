@@ -23,22 +23,22 @@ class VIZ_COMMON_EXPORT ContentDrawQuadBase : public DrawQuad {
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              const gfx::RectF& tex_coord_rect,
-              const gfx::Size& texture_size,
-              bool is_premultiplied,
-              bool nearest_neighbor,
-              bool force_anti_aliasing_off);
+              const gfx::RectF& coord_rect,
+              const gfx::Size& size,
+              bool premultiplied,
+              bool nearest,
+              bool anti_aliasing_off);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               DrawQuad::Material material,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              const gfx::RectF& tex_coord_rect,
-              const gfx::Size& texture_size,
-              bool is_premultiplied,
-              bool nearest_neighbor,
-              bool force_anti_aliasing_off);
+              const gfx::RectF& coord_rect,
+              const gfx::Size& size,
+              bool premultiplied,
+              bool nearest,
+              bool anti_aliasing_off);
 
   gfx::RectF tex_coord_rect;
   gfx::Size texture_size;

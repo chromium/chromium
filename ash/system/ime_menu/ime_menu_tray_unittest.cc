@@ -19,7 +19,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -54,6 +54,10 @@ void SetCurrentIme(const std::string& current_ime_id,
 class ImeMenuTrayTest : public AshTestBase {
  public:
   ImeMenuTrayTest() = default;
+
+  ImeMenuTrayTest(const ImeMenuTrayTest&) = delete;
+  ImeMenuTrayTest& operator=(const ImeMenuTrayTest&) = delete;
+
   ~ImeMenuTrayTest() override = default;
 
  protected:
@@ -122,9 +126,6 @@ class ImeMenuTrayTest : public AshTestBase {
       return false;
     return ImeListViewTestApi(GetTray()->ime_list_view_).GetToggleView();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImeMenuTrayTest);
 };
 
 // Tests that visibility of IME menu tray should be consistent with the
@@ -323,7 +324,7 @@ TEST_F(ImeMenuTrayTest, ShowingEmojiKeysetHidesBubble) {
 
   TestImeControllerClient client;
   Shell::Get()->ime_controller()->SetClient(&client);
-  GetTray()->ShowKeyboardWithKeyset(chromeos::input_method::ImeKeyset::kEmoji);
+  GetTray()->ShowKeyboardWithKeyset(input_method::ImeKeyset::kEmoji);
 
   // The menu should be hidden.
   EXPECT_FALSE(IsBubbleShown());

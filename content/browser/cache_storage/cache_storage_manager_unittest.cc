@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -236,6 +235,9 @@ class CacheStorageManagerTest : public testing::Test {
             url::Origin::Create(GURL("http://example1.com")))),
         storage_key2_(blink::StorageKey(
             url::Origin::Create(GURL("http://example2.com")))) {}
+
+  CacheStorageManagerTest(const CacheStorageManagerTest&) = delete;
+  CacheStorageManagerTest& operator=(const CacheStorageManagerTest&) = delete;
 
   void SetUp() override {
     base::FilePath temp_dir_path;
@@ -795,9 +797,6 @@ class CacheStorageManagerTest : public testing::Test {
   const blink::StorageKey storage_key2_;
 
   int64_t callback_usage_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageManagerTest);
 };
 
 class CacheStorageManagerMemoryOnlyTest : public CacheStorageManagerTest {
@@ -1398,7 +1397,7 @@ TEST_F(CacheStorageManagerTest, TestErrorInitializingCache) {
   // in the following Size() call.
   base::FilePath cache_index_path =
       storage_path.AppendASCII(LegacyCacheStorage::kIndexFileName);
-  base::Time t = base::Time::Now() + base::TimeDelta::FromHours(-1);
+  base::Time t = base::Time::Now() + base::Hours(-1);
   EXPECT_TRUE(base::TouchFile(cache_index_path, t, t));
   EXPECT_FALSE(IsIndexFileCurrent(storage_path));
 
@@ -1762,7 +1761,7 @@ TEST_F(CacheStorageManagerTest, GetAllStorageKeysUsageWithOldIndex) {
   // older than the other directories in the store to trigger size
   // recalculation.
   EXPECT_TRUE(base::CopyFile(backup_index_path, index_path));
-  base::Time t = base::Time::Now() - base::TimeDelta::FromHours(1);
+  base::Time t = base::Time::Now() - base::Hours(1);
   EXPECT_TRUE(base::TouchFile(index_path, t, t));
   EXPECT_FALSE(IsIndexFileCurrent(storage_dir));
 
@@ -1821,7 +1820,7 @@ TEST_F(CacheStorageManagerTest, GetKeySizeWithOldIndex) {
 
   // Make the access/mod times of index file older than the other files in the
   // cache to trigger size recalculation.
-  base::Time t = base::Time::Now() - base::TimeDelta::FromHours(1);
+  base::Time t = base::Time::Now() - base::Hours(1);
   EXPECT_TRUE(base::TouchFile(index_path, t, t));
   EXPECT_FALSE(IsIndexFileCurrent(storage_dir));
 
@@ -2327,7 +2326,27 @@ TEST_P(CacheStorageManagerTestP, SlowPutCompletesWithoutExternalRef) {
   EXPECT_EQ(CacheStorageError::kSuccess, callback_error_);
 }
 
+TEST_P(CacheStorageManagerTestP, StoragePutPartialContentForBackgroundFetch) {
+  EXPECT_TRUE(Open(storage_key1_, "foo",
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
+  auto request = blink::mojom::FetchAPIRequest::New();
+  request->url = GURL("http://example.com/foo");
+  auto request_clone = BackgroundFetchSettledFetch::CloneRequest(request);
+
+  EXPECT_TRUE(CachePutWithStatusCode(callback_cache_handle_.value(),
+                                     std::move(request), 206));
+  EXPECT_TRUE(StorageMatchAllWithRequest(
+      storage_key1_, std::move(request_clone), /* match_options= */ nullptr,
+      storage::mojom::CacheStorageOwner::kBackgroundFetch));
+  EXPECT_EQ(206, callback_cache_handle_response_->status_code);
+}
+
 class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
+ public:
+  CacheStorageQuotaClientTest(const CacheStorageQuotaClientTest&) = delete;
+  CacheStorageQuotaClientTest& operator=(const CacheStorageQuotaClientTest&) =
+      delete;
+
  protected:
   CacheStorageQuotaClientTest() = default;
 
@@ -2399,9 +2418,6 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
   blink::mojom::QuotaStatusCode callback_status_;
   int64_t callback_quota_usage_ = 0;
   std::vector<blink::StorageKey> callback_storage_keys_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageQuotaClientTest);
 };
 
 class CacheStorageQuotaClientDiskOnlyTest : public CacheStorageQuotaClientTest {

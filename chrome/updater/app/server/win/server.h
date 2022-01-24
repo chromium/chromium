@@ -7,12 +7,10 @@
 
 #include <windows.h>
 
-#include <vector>
-
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_server.h"
@@ -22,6 +20,7 @@
 namespace updater {
 
 class Configurator;
+struct RegistrationRequest;
 
 // The COM objects involved in this server are free threaded. Incoming COM calls
 // arrive on COM RPC threads. Outgoing COM calls are posted from a blocking
@@ -71,6 +70,9 @@ class ComServerApp : public AppServer {
   void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) override;
   bool SwapRPCInterfaces() override;
+  bool ConvertLegacyUpdaters(
+      base::RepeatingCallback<void(const RegistrationRequest&)>
+          register_callback) override;
   void UninstallSelf() override;
 
   // Registers and unregisters the out-of-process COM class factories.
@@ -89,9 +91,6 @@ class ComServerApp : public AppServer {
 
   // Handles COM setup and registration.
   void Start(base::OnceCallback<HRESULT()> register_callback);
-
-  // Identifier of registered class objects used for unregistration.
-  std::vector<DWORD> cookies_;
 
   // While this object lives, COM can be used by all threads in the program.
   base::win::ScopedCOMInitializer com_initializer_;

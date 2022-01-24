@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
@@ -24,8 +23,8 @@ class DeviceStatusUtilTest : public testing::Test {
  public:
   DeviceStatusUtilTest() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceStatusUtilTest);
+  DeviceStatusUtilTest(const DeviceStatusUtilTest&) = delete;
+  DeviceStatusUtilTest& operator=(const DeviceStatusUtilTest&) = delete;
 };
 
 TEST_F(DeviceStatusUtilTest, TestNotPresent) {

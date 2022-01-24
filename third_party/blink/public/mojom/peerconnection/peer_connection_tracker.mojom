@@ -15,6 +15,9 @@ enum DeviceThermalState {
   kCritical,
 };
 
+// This constant mirrors base::PowerThermalObserver::kSpeedLimitMax
+const int32 kSpeedLimitMax = 100;
+
 struct PeerConnectionInfo {
   // ID of the peer connection. Unique only within the renderer process.
   int32 lid;
@@ -38,6 +41,10 @@ interface PeerConnectionManager {
 
     // Called when the browser process reports a new thermal state from the OS.
     OnThermalStateChange(DeviceThermalState thermal_state);
+
+    // Called when the browser process reports a new CPU speed limit change from
+    // the OS. Values are normally between 0 and 100.
+    OnSpeedLimitChange(int32 speed_limit);
 
     // Enable WebRtc event log output.
     StartEventLog(int32 peer_connection_local_id, int32 output_period_ms);

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<title>Test navigating an ancestor frame</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+// See documentation in `resources/navigate-ancestor-test-runner.html`. For each
+// test type here, this document opens a new auxiliary window that runs the
+// actual test. The tests in some way or another, direct a frame *inside* a
+// fenced frame to navigate an ancestor frame via an <a target="_parent|_top"></a>.
+// We need to run the real test in a new window so that if that window ends up
+// navigating unexpectedly (because the fenced frame can accidentally navigated
+// its embedder, for example) we can detect it from ths page, which never
+// navigates away.
+const navigate_ancestor_key = KEYS["navigate_ancestor"];
+const navigate_ancestor_from_nested_key = KEYS["navigate_ancestor_from_nested"];
+
+async function runTest(test_type, ancestor_type) {
+  const win = window.open("resources/navigate-ancestor-test-runner.html");
+  await new Promise(resolve => {
+    win.onload = resolve;
+  });
+
+  const unloadPromise = new Promise(resolve => {
+    win.onunload = resolve;
+  });
+
+  try {
+    await win.runTest(test_type, ancestor_type);
+    win.close();
+    await unloadPromise;
+  } catch (error) {
+    // If the test failed, then the destination page will still be navigated to
+    // and post a message to the server. We have to clean up this message so
+    // that it is not lingering around and the next test picks it up.
+    await nextValueFromServer(navigate_ancestor_key);
+
+    win.close();
+    await unloadPromise;
+    // It is possible that we have a lingering message on the server from this
+    // key, but not guaranteed. We need to clear it if it exists.
+    await readValueFromServer(navigate_ancestor_from_nested_key);
+
+    // Re-throw the error so that the test fails.
+    throw error;
+  }
+}
+
+promise_test(async t => {
+  await runTest("top-level fenced frame", "_parent");
+}, "Top-level fenced frames that navigate _parent end up navigating themselves");
+
+promise_test(async t => {
+  await runTest("top-level fenced frame", "_top");
+}, "Top-level fenced frames that navigate _top end up navigating themselves");
+
+promise_test(async t => {
+  await runTest("nested fenced frame", "_parent");
+}, "Nested fenced frames that navigate _parent end up navigating themselves");
+
+promise_test(async t => {
+  await runTest("nested fenced frame", "_top");
+}, "Nested fenced frames that navigate _top end up navigating themselves");
+
+promise_test(async t => {
+  await runTest("nested iframe", "_parent");
+}, "Iframes nested in fenced frames that navigate _parent end up navigating " +
+   "the fenced frame");
+
+promise_test(async t => {
+  await runTest("nested iframe", "_top");
+}, "Iframes nested in fenced frames that navigate _top end up navigating the " +
+   "fenced frame");
+
+</script>
+
+</body>

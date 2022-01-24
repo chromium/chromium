@@ -17,9 +17,9 @@ class FormForestTestApi {
   using FrameData = FormForest::FrameData;
   using FrameForm = FormForest::FrameAndForm;
 
-  static absl::optional<LocalFrameToken> Resolve(const FrameData& local,
-                                                 FrameToken other) {
-    return FormForest::Resolve(local, other);
+  absl::optional<LocalFrameToken> Resolve(const FrameData& local,
+                                          FrameToken other) {
+    return ff_->Resolve(local, other);
   }
 
   explicit FormForestTestApi(FormForest* ff) : ff_(ff) { DCHECK(ff_); }
@@ -42,8 +42,17 @@ class FormForestTestApi {
     return ff_->frame_datas_;
   }
 
-  // Prints debug information.
-  std::ostream& PrintTree(std::ostream& os);
+  // Prints all frames, in particular their frame token and child frame tokens.
+  // Intended for validating properties of the frame/form graph like acyclicity.
+  std::ostream& PrintFrames(std::ostream& os);
+
+  // Prints all trees of the forest by calling PrintForm() form each form. The
+  // parent/child relation is represented by indenting descendant nodes.
+  // Intended for validating that the frame/form trees match the DOMs.
+  std::ostream& PrintForest(std::ostream& os);
+
+  // Prints an individual form, in particular all identifiers of the form and
+  // its fields.
   std::ostream& PrintForm(std::ostream& os,
                           const FormData& form,
                           int level = 0);

@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/userdataauth/install_attributes_client.h"
@@ -61,6 +60,10 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
 
   explicit InstallAttributes(
       InstallAttributesClient* install_attributes_client);
+
+  InstallAttributes(const InstallAttributes&) = delete;
+  InstallAttributes& operator=(const InstallAttributes&) = delete;
+
   ~InstallAttributes();
 
   // Tries to read install attributes from |cache_file| to work around slow
@@ -231,8 +234,6 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) InstallAttributes {
   InstallAttributesClient* install_attributes_client_;
 
   base::WeakPtrFactory<InstallAttributes> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InstallAttributes);
 };
 
 }  // namespace chromeos

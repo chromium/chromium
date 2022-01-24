@@ -26,6 +26,10 @@ class ExtensionActionManagerTest
  public:
   ExtensionActionManagerTest();
 
+  ExtensionActionManagerTest(const ExtensionActionManagerTest&) = delete;
+  ExtensionActionManagerTest& operator=(const ExtensionActionManagerTest&) =
+      delete;
+
  protected:
   // ExtensionsTest:
   void SetUp() override;
@@ -36,8 +40,6 @@ class ExtensionActionManagerTest
  private:
   ExtensionRegistry* registry_;
   ExtensionActionManager* manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionManagerTest);
 };
 
 ExtensionActionManagerTest::ExtensionActionManagerTest() = default;

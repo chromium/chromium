@@ -5,6 +5,8 @@
 #include "net/base/test_proxy_delegate.h"
 
 #include "net/base/net_errors.h"
+#include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -41,7 +43,7 @@ void TestProxyDelegate::OnBeforeTunnelRequest(
     HttpRequestHeaders* extra_headers) {
   on_before_tunnel_request_called_ = true;
   if (extra_headers)
-    extra_headers->SetHeader("Foo", proxy_server.ToURI());
+    extra_headers->SetHeader("Foo", ProxyServerToProxyUri(proxy_server));
 }
 
 Error TestProxyDelegate::OnTunnelHeadersReceived(

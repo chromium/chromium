@@ -34,6 +34,7 @@ class CORE_EXPORT CachedTextInputInfo final {
   bool IsValidFor(const ContainerNode& element) const;
 
   // For cache invalidation
+  void DidChangeVisibility(const LayoutObject& layout_object);
   void DidLayoutSubtree(const LayoutObject& layout_object);
   void DidUpdateLayout(const LayoutObject& layout_object);
   void LayoutObjectWillBeDestroyed(const LayoutObject& layout_object);
@@ -66,6 +67,7 @@ class CORE_EXPORT CachedTextInputInfo final {
   };
 
   static TextIteratorBehavior Behavior();
+  void Clear() const;
   void ClearIfNeeded(const LayoutObject& layout_object);
   PlainTextRange GetPlainTextRangeWithCache(
       const EphemeralRange& range,
@@ -73,7 +75,7 @@ class CORE_EXPORT CachedTextInputInfo final {
   unsigned RangeLength(const EphemeralRange& range) const;
 
   mutable Member<const ContainerNode> container_;
-  mutable const LayoutObject* layout_object_ = nullptr;
+  mutable WeakMember<const LayoutObject> layout_object_;
   // Records offset of text node from start of |container_|.
   mutable HeapHashMap<Member<const Text>, unsigned> offset_map_;
   mutable String text_;

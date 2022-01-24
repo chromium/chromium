@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
@@ -45,6 +44,10 @@ class CONTENT_EXPORT ChildProcess {
       const std::string& thread_pool_name = "ContentChild",
       std::unique_ptr<base::ThreadPoolInstance::InitParams>
           thread_pool_init_params = nullptr);
+
+  ChildProcess(const ChildProcess&) = delete;
+  ChildProcess& operator=(const ChildProcess&) = delete;
+
   virtual ~ChildProcess();
 
   // May be NULL if the main thread hasn't been set explicitly.
@@ -103,8 +106,6 @@ class CONTENT_EXPORT ChildProcess {
 
   // Whether this ChildProcess initialized ThreadPoolInstance.
   bool initialized_thread_pool_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcess);
 };
 
 }  // namespace content

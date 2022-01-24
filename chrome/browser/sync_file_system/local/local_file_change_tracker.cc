@@ -12,8 +12,7 @@
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -45,6 +44,9 @@ class LocalFileChangeTracker::TrackerDB {
   TrackerDB(const base::FilePath& base_path,
             leveldb::Env* env_override);
 
+  TrackerDB(const TrackerDB&) = delete;
+  TrackerDB& operator=(const TrackerDB&) = delete;
+
   SyncStatusCode MarkDirty(const std::string& url);
   SyncStatusCode ClearDirty(const std::string& url);
   SyncStatusCode GetDirtyEntries(base::queue<FileSystemURL>* dirty_files);
@@ -65,8 +67,6 @@ class LocalFileChangeTracker::TrackerDB {
   leveldb::Env* env_override_;
   std::unique_ptr<leveldb::DB> db_;
   SyncStatusCode db_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackerDB);
 };
 
 LocalFileChangeTracker::ChangeInfo::ChangeInfo() : change_seq(-1) {}

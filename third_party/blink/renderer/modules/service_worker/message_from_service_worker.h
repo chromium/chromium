@@ -15,6 +15,10 @@ namespace blink {
 struct MessageFromServiceWorker {
   MessageFromServiceWorker(WebServiceWorkerObjectInfo source,
                            blink::TransferableMessage message);
+
+  MessageFromServiceWorker(const MessageFromServiceWorker&) = delete;
+  MessageFromServiceWorker& operator=(const MessageFromServiceWorker&) = delete;
+
   virtual ~MessageFromServiceWorker();
 
   // The service worker that posted the message.
@@ -22,9 +26,6 @@ struct MessageFromServiceWorker {
 
   // The message.
   blink::TransferableMessage message;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessageFromServiceWorker);
 };
 
 }  // namespace blink

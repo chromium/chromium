@@ -187,8 +187,9 @@ class FeedNetwork {
   virtual void CancelRequests() = 0;
 
  protected:
-  static void ParseAndForwardApiResponseBegin(NetworkRequestType request_type,
-                                              const RawResponse& raw_response);
+  static void ParseAndForwardApiResponseStarted(
+      NetworkRequestType request_type,
+      const RawResponse& raw_response);
   virtual void SendDiscoverApiRequest(
       NetworkRequestType request_type,
       base::StringPiece api_path,
@@ -202,7 +203,7 @@ class FeedNetwork {
       base::OnceCallback<void(FeedNetwork::ApiResult<typename API::Response>)>
           result_callback,
       RawResponse raw_response) {
-    ParseAndForwardApiResponseBegin(API::kRequestType, raw_response);
+    ParseAndForwardApiResponseStarted(API::kRequestType, raw_response);
     FeedNetwork::ApiResult<typename API::Response> result;
     result.response_info = raw_response.response_info;
     if (result.response_info.status_code == 200) {

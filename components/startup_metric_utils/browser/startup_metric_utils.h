@@ -86,12 +86,6 @@ void RecordBrowserWindowFirstPaint(base::TimeTicks ticks);
 // recorded yet. This method is expected to be called from the UI thread.
 base::TimeTicks MainEntryPointTicks();
 
-// Record metrics for the web-footer experiment. See https://crbug.com/993502.
-// These functions must be called after RecordApplicationStartTime(), because
-// they compute time deltas based on application start time.
-void RecordWebFooterDidFirstVisuallyNonEmptyPaint(base::TimeTicks ticks);
-void RecordWebFooterCreation(base::TimeTicks ticks);
-
 // Call this to record an arbitrary startup timing histogram with startup
 // temperature and a trace event. Records the time between `completion_ticks`
 // and the application start.

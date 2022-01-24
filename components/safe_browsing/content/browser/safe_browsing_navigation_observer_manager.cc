@@ -4,10 +4,12 @@
 
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 
+#include <iterator>
 #include <memory>
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -15,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager_util.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -72,7 +75,7 @@ ReferrerChainEntry::URLType GetURLTypeAndAdjustAttributionResult(
 }
 
 std::string GetOrigin(const std::string& url) {
-  return GURL(url).GetOrigin().spec();
+  return GURL(url).DeprecatedGetOriginAsURL().spec();
 }
 
 }  // namespace
@@ -122,27 +125,30 @@ NavigationEventList::NavigationEventList(std::size_t size_limit)
 
 NavigationEventList::~NavigationEventList() {}
 
-NavigationEvent* NavigationEventList::FindNavigationEvent(
+size_t NavigationEventList::FindNavigationEvent(
     const base::Time& last_event_timestamp,
     const GURL& target_url,
     const GURL& target_main_frame_url,
-    SessionID target_tab_id) {
+    SessionID target_tab_id,
+    size_t start_index) {
   if (target_url.is_empty() && target_main_frame_url.is_empty())
-    return nullptr;
+    return -1;
+
+  if (navigation_events_.size() == 0)
+    return -1;
 
   // If target_url is empty, we should back trace navigation based on its
   // main frame URL instead.
   GURL search_url = target_url.is_empty() ? target_main_frame_url : target_url;
 
-  // Since navigation events are recorded in chronological order, we traverse
-  // the vector in reverse order to get the latest match.
-  for (auto rit = navigation_events_.rbegin(); rit != navigation_events_.rend();
-       ++rit) {
-    auto* nav_event = rit->get();
+  for (int current_index = static_cast<int>(start_index); current_index >= 0;
+       current_index--) {
+    auto* nav_event = GetNavigationEvent(current_index);
 
     // The next event cannot come before the previous one.
-    if (nav_event->last_updated > last_event_timestamp)
+    if (nav_event->last_updated > last_event_timestamp) {
       continue;
+    }
 
     // If tab id is not valid, we only compare url, otherwise we compare both.
     if (nav_event->GetDestinationUrl() == search_url &&
@@ -154,12 +160,14 @@ NavigationEvent* NavigationEventList::FindNavigationEvent(
       // event.
       if (nav_event->source_url.is_empty() &&
           nav_event->source_main_frame_url.is_empty()) {
-        NavigationEvent* retargeting_nav_event = FindRetargetingNavigationEvent(
-            nav_event->last_updated, nav_event->target_tab_id);
-        if (!retargeting_nav_event)
-          return nav_event;
+        size_t retargeting_nav_event_index = FindRetargetingNavigationEvent(
+            nav_event->last_updated, nav_event->target_tab_id, start_index);
+        if (static_cast<int>(retargeting_nav_event_index) == -1)
+          return current_index;
         // If there is a server redirection immediately after retargeting, we
         // need to adjust our search url to the original request.
+        auto* retargeting_nav_event =
+            GetNavigationEvent(retargeting_nav_event_index);
         if (!nav_event->server_redirect_urls.empty()) {
           // Adjust retargeting navigation event's attributes.
           retargeting_nav_event->server_redirect_urls.push_back(
@@ -169,13 +177,13 @@ NavigationEvent* NavigationEventList::FindNavigationEvent(
           // that navigation can be canceled.
           retargeting_nav_event->original_request_url = std::move(search_url);
         }
-        return retargeting_nav_event;
+        return retargeting_nav_event_index;
       } else {
-        return nav_event;
+        return current_index;
       }
     }
   }
-  return nullptr;
+  return -1;
 }
 
 NavigationEvent* NavigationEventList::FindPendingNavigationEvent(
@@ -193,14 +201,15 @@ NavigationEvent* NavigationEventList::FindPendingNavigationEvent(
   return return_event;
 }
 
-NavigationEvent* NavigationEventList::FindRetargetingNavigationEvent(
+size_t NavigationEventList::FindRetargetingNavigationEvent(
     const base::Time& last_event_timestamp,
-    SessionID target_tab_id) {
+    SessionID target_tab_id,
+    size_t start_index) {
   // Since navigation events are recorded in chronological order, we traverse
   // the vector in reverse order to get the latest match.
-  for (auto rit = navigation_events_.rbegin(); rit != navigation_events_.rend();
-       ++rit) {
-    auto* nav_event = rit->get();
+  for (int current_index = static_cast<int>(start_index); current_index >= 0;
+       current_index--) {
+    auto* nav_event = GetNavigationEvent(current_index);
 
     // The next event cannot come before the previous one.
     if (nav_event->last_updated > last_event_timestamp)
@@ -210,10 +219,10 @@ NavigationEvent* NavigationEventList::FindRetargetingNavigationEvent(
     // source_tab_id and target_tab_id to make sure it is a retargeting event.
     if (nav_event->target_tab_id == target_tab_id &&
         nav_event->source_tab_id != nav_event->target_tab_id) {
-      return nav_event;
+      return current_index;
     }
   }
-  return nullptr;
+  return -1;
 }
 
 void NavigationEventList::RecordNavigationEvent(
@@ -296,8 +305,8 @@ GURL SafeBrowsingNavigationObserverManager::ClearURLRef(const GURL& url) {
 // static
 bool SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
     PrefService* prefs,
-    SafeBrowsingServiceInterface* safe_browsing_service) {
-  return IsSafeBrowsingEnabled(*prefs) && safe_browsing_service;
+    bool has_safe_browsing_service) {
+  return IsSafeBrowsingEnabled(*prefs) && has_safe_browsing_service;
 }
 
 // static
@@ -339,7 +348,7 @@ SafeBrowsingNavigationObserverManager::SafeBrowsingNavigationObserverManager(
       pref_service_(pref_service) {
   // Schedule clean up in 2 minutes.
   ScheduleNextCleanUpAfterInterval(
-      base::TimeDelta::FromSecondsD(kNavigationFootprintTTLInSecond));
+      base::Seconds(kNavigationFootprintTTLInSecond));
 }
 
 void SafeBrowsingNavigationObserverManager::RecordNavigationEvent(
@@ -428,7 +437,7 @@ void SafeBrowsingNavigationObserverManager::CleanUpStaleNavigationFootprints() {
   CleanUpUserGestures();
   CleanUpIpAddresses();
   ScheduleNextCleanUpAfterInterval(
-      base::TimeDelta::FromSecondsD(kNavigationFootprintTTLInSecond));
+      base::Seconds(kNavigationFootprintTTLInSecond));
 }
 
 SafeBrowsingNavigationObserverManager::AttributionResult
@@ -442,20 +451,35 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByEventURL(
   if (!event_url.is_valid())
     return INVALID_URL;
 
-  NavigationEvent* nav_event = navigation_event_list_.FindNavigationEvent(
-      base::Time::Now(), ClearURLRef(event_url), GURL(), event_tab_id);
-  if (!nav_event) {
+  size_t nav_event_index = navigation_event_list_.FindNavigationEvent(
+      base::Time::Now(), ClearURLRef(event_url), GURL(), event_tab_id,
+      navigation_event_list_.NavigationEventsSize() - 1);
+  if (static_cast<int>(nav_event_index) == -1) {
     // We cannot find a single navigation event related to this event.
     return NAVIGATION_EVENT_NOT_FOUND;
   }
+
+  auto* nav_event = navigation_event_list_.GetNavigationEvent(nav_event_index);
   AttributionResult result = SUCCESS;
   AddToReferrerChain(out_referrer_chain, nav_event, GURL(),
                      ReferrerChainEntry::EVENT_URL);
   int user_gesture_count = 0;
-  GetRemainingReferrerChain(nav_event, user_gesture_count,
+  GetRemainingReferrerChain(nav_event_index, user_gesture_count,
                             user_gesture_count_limit, out_referrer_chain,
                             &result);
-
+  bool omit_non_user_gestures_is_enabled = base::FeatureList::IsEnabled(
+      safe_browsing::kOmitNonUserGesturesFromReferrerChain);
+  DCHECK(omit_non_user_gestures_is_enabled ||
+         out_referrer_chain->size() <= kReferrerChainMaxLength);
+  if (omit_non_user_gestures_is_enabled) {
+    int extra_entries = out_referrer_chain->size() - kReferrerChainMaxLength;
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries."
+        "ClientRedirect",
+        extra_entries);
+    MaybeRemoveNonUserGestureReferrerEntries(out_referrer_chain,
+                                             kReferrerChainMaxLength);
+  }
   RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
   return result;
 }
@@ -468,20 +492,34 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByPendingEventURL(
   if (!event_url.is_valid())
     return INVALID_URL;
 
-  NavigationEvent* nav_event =
+  NavigationEvent* pending_nav_event =
       navigation_event_list_.FindPendingNavigationEvent(ClearURLRef(event_url));
-  if (!nav_event) {
+  if (!pending_nav_event) {
     // We cannot find a single navigation event related to this event.
     return NAVIGATION_EVENT_NOT_FOUND;
   }
+
   AttributionResult result = SUCCESS;
-  AddToReferrerChain(out_referrer_chain, nav_event, GURL(),
+  AddToReferrerChain(out_referrer_chain, pending_nav_event, GURL(),
                      ReferrerChainEntry::EVENT_URL);
   int user_gesture_count = 0;
-  GetRemainingReferrerChain(nav_event, user_gesture_count,
-                            user_gesture_count_limit, out_referrer_chain,
-                            &result);
-
+  GetRemainingReferrerChainForNavEvent(
+      pending_nav_event, navigation_event_list_.NavigationEventsSize(),
+      user_gesture_count, user_gesture_count_limit, out_referrer_chain,
+      &result);
+  bool omit_non_user_gestures_is_enabled = base::FeatureList::IsEnabled(
+      safe_browsing::kOmitNonUserGesturesFromReferrerChain);
+  DCHECK(omit_non_user_gestures_is_enabled ||
+         out_referrer_chain->size() <= kReferrerChainMaxLength);
+  if (omit_non_user_gestures_is_enabled) {
+    int extra_entries = out_referrer_chain->size() - kReferrerChainMaxLength;
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries."
+        "ClientRedirect",
+        extra_entries);
+    MaybeRemoveNonUserGestureReferrerEntries(out_referrer_chain,
+                                             kReferrerChainMaxLength);
+  }
   RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
   return result;
 }
@@ -516,13 +554,16 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByHostingPage(
   if (!initiating_frame_url.is_valid())
     return INVALID_URL;
 
-  NavigationEvent* nav_event = navigation_event_list_.FindNavigationEvent(
+  int nav_event_index = navigation_event_list_.FindNavigationEvent(
       base::Time::Now(), ClearURLRef(initiating_frame_url),
-      ClearURLRef(initiating_main_frame_url), tab_id);
-  if (!nav_event) {
+      ClearURLRef(initiating_main_frame_url), tab_id,
+      navigation_event_list_.NavigationEventsSize() - 1);
+  if (static_cast<int>(nav_event_index) == -1) {
     // We cannot find a single navigation event related to this hosting page.
     return NAVIGATION_EVENT_NOT_FOUND;
   }
+
+  auto* nav_event = navigation_event_list_.GetNavigationEvent(nav_event_index);
 
   AttributionResult result = SUCCESS;
 
@@ -539,10 +580,23 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByHostingPage(
                        ReferrerChainEntry::CLIENT_REDIRECT);
   }
 
-  GetRemainingReferrerChain(nav_event, user_gesture_count,
+  GetRemainingReferrerChain(nav_event_index, user_gesture_count,
                             user_gesture_count_limit, out_referrer_chain,
                             &result);
 
+  bool omit_non_user_gestures_is_enabled = base::FeatureList::IsEnabled(
+      safe_browsing::kOmitNonUserGesturesFromReferrerChain);
+  DCHECK(omit_non_user_gestures_is_enabled ||
+         out_referrer_chain->size() <= kReferrerChainMaxLength);
+  if (omit_non_user_gestures_is_enabled) {
+    int extra_entries = out_referrer_chain->size() - kReferrerChainMaxLength;
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries."
+        "ClientRedirect",
+        extra_entries);
+    MaybeRemoveNonUserGestureReferrerEntries(out_referrer_chain,
+                                             kReferrerChainMaxLength);
+  }
   RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
   return result;
 }
@@ -619,6 +673,10 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
       "SafeBrowsing.NavigationObserver.AppendRecentNavigationsTime");
   if (recent_navigation_count <= 0u)
     return;
+  size_t allowed_entries = recent_navigation_count;
+  bool omit_non_user_gestures_is_enabled = base::FeatureList::IsEnabled(
+      safe_browsing::kOmitNonUserGesturesFromReferrerChain);
+
   int current_referrer_chain_size = out_referrer_chain->size();
   double last_navigation_time_msec =
       current_referrer_chain_size == 0
@@ -626,17 +684,49 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
           : out_referrer_chain->Get(current_referrer_chain_size - 1)
                 .navigation_time_msec();
   auto it = navigation_event_list_.navigation_events().rbegin();
-  while (it != navigation_event_list_.navigation_events().rend() &&
-         recent_navigation_count > 0u) {
+  ReferrerChain navigation_chain;
+  UMA_HISTOGRAM_COUNTS_1000(
+      "SafeBrowsing.NavigationObserver.NavigationEventsRecordedLength",
+      navigation_event_list_.navigation_events().size());
+  size_t user_gesture_cnt = 0;
+  while (it != navigation_event_list_.navigation_events().rend()) {
     // Skip navigations that happened after |last_navigation_time_msec|.
     if (it->get()->last_updated.ToJavaTime() < last_navigation_time_msec) {
-      AddToReferrerChain(out_referrer_chain, it->get(), GURL(),
+      AddToReferrerChain(&navigation_chain, it->get(), GURL(),
                          ReferrerChainEntry::RECENT_NAVIGATION);
-      recent_navigation_count--;
+      allowed_entries--;
+      if (it->get()->IsUserInitiated()) {
+        user_gesture_cnt++;
+      }
+      if (allowed_entries == 0 && !omit_non_user_gestures_is_enabled) {
+        break;
+      }
+      // If the number of user gesture entries has reached the upper bound, stop
+      // adding new entries, since we can only omit non user gesture entries.
+      if (omit_non_user_gestures_is_enabled &&
+          user_gesture_cnt >= recent_navigation_count) {
+        break;
+      }
     }
     it++;
   }
 
+  DCHECK(omit_non_user_gestures_is_enabled ||
+         (size_t)navigation_chain.size() <= recent_navigation_count);
+  if (omit_non_user_gestures_is_enabled) {
+    int extra_entries = navigation_chain.size() - recent_navigation_count;
+    UMA_HISTOGRAM_COUNTS_1000(
+        "SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries."
+        "RecentNavigation",
+        extra_entries);
+    MaybeRemoveNonUserGestureReferrerEntries(&navigation_chain,
+                                             recent_navigation_count);
+  }
+
+  // Add the navigation entries into the referrer chain.
+  for (ReferrerChainEntry entry : navigation_chain) {
+    out_referrer_chain->Add()->Swap(&entry);
+  }
   RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
 }
 
@@ -654,16 +744,12 @@ void SafeBrowsingNavigationObserverManager::CleanUpUserGestures() {
 }
 
 void SafeBrowsingNavigationObserverManager::CleanUpIpAddresses() {
-  std::size_t remove_count = 0;
   for (auto it = host_to_ip_map_.begin(); it != host_to_ip_map_.end();) {
-    std::size_t size_before_removal = it->second.size();
     base::EraseIf(it->second, [](const ResolvedIPAddress& resolved_ip) {
       return IsEventExpired(resolved_ip.timestamp,
                             kNavigationFootprintTTLInSecond);
     });
-    std::size_t size_after_removal = it->second.size();
-    remove_count += (size_before_removal - size_after_removal);
-    if (size_after_removal == 0)
+    if (it->second.empty())
       it = host_to_ip_map_.erase(it);
     else
       ++it;
@@ -739,49 +825,78 @@ void SafeBrowsingNavigationObserverManager::AddToReferrerChain(
 }
 
 void SafeBrowsingNavigationObserverManager::GetRemainingReferrerChain(
-    NavigationEvent* last_nav_event_traced,
+    size_t last_nav_event_traced_index,
     int current_user_gesture_count,
     int user_gesture_count_limit,
     ReferrerChain* out_referrer_chain,
     SafeBrowsingNavigationObserverManager::AttributionResult* out_result) {
+  auto* last_nav_event_traced =
+      navigation_event_list_.GetNavigationEvent(last_nav_event_traced_index);
+
+  GetRemainingReferrerChainForNavEvent(
+      last_nav_event_traced, last_nav_event_traced_index,
+      current_user_gesture_count, user_gesture_count_limit, out_referrer_chain,
+      out_result);
+}
+
+void SafeBrowsingNavigationObserverManager::
+    GetRemainingReferrerChainForNavEvent(
+        NavigationEvent* last_nav_event_traced,
+        size_t last_nav_event_traced_index,
+        int current_user_gesture_count,
+        int user_gesture_count_limit,
+        ReferrerChain* out_referrer_chain,
+        SafeBrowsingNavigationObserverManager::AttributionResult* out_result) {
+  bool omit_non_user_gestures_is_enabled = base::FeatureList::IsEnabled(
+      safe_browsing::kOmitNonUserGesturesFromReferrerChain);
+
   GURL last_main_frame_url_traced(last_nav_event_traced->source_main_frame_url);
   while (current_user_gesture_count < user_gesture_count_limit) {
     // Back trace to the next nav_event that was initiated by the user.
     while (!last_nav_event_traced->IsUserInitiated()) {
-      last_nav_event_traced = navigation_event_list_.FindNavigationEvent(
+      last_nav_event_traced_index = navigation_event_list_.FindNavigationEvent(
           last_nav_event_traced->last_updated,
           last_nav_event_traced->source_url,
           last_nav_event_traced->source_main_frame_url,
-          last_nav_event_traced->source_tab_id);
-      if (!last_nav_event_traced)
+          last_nav_event_traced->source_tab_id,
+          last_nav_event_traced_index - 1);
+      if (static_cast<int>(last_nav_event_traced_index) == -1)
         return;
+      last_nav_event_traced = navigation_event_list_.GetNavigationEvent(
+          last_nav_event_traced_index);
       AddToReferrerChain(out_referrer_chain, last_nav_event_traced,
                          last_main_frame_url_traced,
                          ReferrerChainEntry::CLIENT_REDIRECT);
       // Stop searching if the size of out_referrer_chain already reached its
       // limit.
-      if (out_referrer_chain->size() == kReferrerChainMaxLength)
+      if (!omit_non_user_gestures_is_enabled &&
+          (out_referrer_chain->size() == kReferrerChainMaxLength)) {
         return;
+      }
       last_main_frame_url_traced = last_nav_event_traced->source_main_frame_url;
     }
 
     current_user_gesture_count++;
 
-    last_nav_event_traced = navigation_event_list_.FindNavigationEvent(
+    last_nav_event_traced_index = navigation_event_list_.FindNavigationEvent(
         last_nav_event_traced->last_updated, last_nav_event_traced->source_url,
         last_nav_event_traced->source_main_frame_url,
-        last_nav_event_traced->source_tab_id);
-    if (!last_nav_event_traced)
+        last_nav_event_traced->source_tab_id, last_nav_event_traced_index - 1);
+    if (static_cast<int>(last_nav_event_traced_index) == -1)
       return;
 
+    last_nav_event_traced =
+        navigation_event_list_.GetNavigationEvent(last_nav_event_traced_index);
     AddToReferrerChain(out_referrer_chain, last_nav_event_traced,
                        last_main_frame_url_traced,
                        GetURLTypeAndAdjustAttributionResult(
                            current_user_gesture_count, out_result));
     // Stop searching if the size of out_referrer_chain already reached its
     // limit.
-    if (out_referrer_chain->size() == kReferrerChainMaxLength)
+    if (!omit_non_user_gestures_is_enabled &&
+        (out_referrer_chain->size() == kReferrerChainMaxLength)) {
       return;
+    }
     last_main_frame_url_traced = last_nav_event_traced->source_main_frame_url;
   }
 }

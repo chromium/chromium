@@ -31,7 +31,7 @@
         $i18n{proxySettingsPolicyLabel}
       </div>
       <cr-icon-button class="icon-external"
-          hidden$="[[isProxyEnforcedByPolicy_]]"
+          hidden$="[[!isProxyDefault_]]"
           aria-label="$i18n{proxySettingsLabel}"></cr-icon-button>
       <template is="dom-if" if="[[isProxyEnforcedByPolicy_]]">
         <cr-policy-pref-indicator pref="[[prefs.proxy]]"

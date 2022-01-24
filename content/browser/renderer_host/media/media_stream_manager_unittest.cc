@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -81,6 +80,10 @@ class MockAudioManager : public AudioManagerPlatform {
                              &fake_audio_log_factory_),
         num_output_devices_(2),
         num_input_devices_(2) {}
+
+  MockAudioManager(const MockAudioManager&) = delete;
+  MockAudioManager& operator=(const MockAudioManager&) = delete;
+
   ~MockAudioManager() override {}
 
   void GetAudioInputDeviceNames(
@@ -136,7 +139,6 @@ class MockAudioManager : public AudioManagerPlatform {
   media::FakeAudioLogFactory fake_audio_log_factory_;
   size_t num_output_devices_;
   size_t num_input_devices_;
-  DISALLOW_COPY_AND_ASSIGN(MockAudioManager);
 };
 
 class MockMediaObserver : public MediaObserver {
@@ -207,6 +209,9 @@ class MediaStreamManagerTest : public ::testing::Test {
               std::move(result_callback).Run(stub_results);
             }));
   }
+
+  MediaStreamManagerTest(const MediaStreamManagerTest&) = delete;
+  MediaStreamManagerTest& operator=(const MediaStreamManagerTest&) = delete;
 
   ~MediaStreamManagerTest() override { audio_manager_->Shutdown(); }
 
@@ -402,9 +407,6 @@ class MediaStreamManagerTest : public ::testing::Test {
   std::unique_ptr<media::AudioSystem> audio_system_;
   MockVideoCaptureProvider* video_capture_provider_;
   base::RunLoop run_loop_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamManagerTest);
 };
 
 TEST_F(MediaStreamManagerTest, MakeMediaAccessRequest) {

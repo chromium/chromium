@@ -4,48 +4,50 @@
 
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+
+#include "components/services/app_service/public/cpp/icon_info.h"
 
 namespace web_app {
 
 namespace {
 
-absl::optional<blink::mojom::ManifestImageResource_Purpose>
-SyncPurposeToBlinkPurpose(sync_pb::WebAppIconInfo_Purpose purpose) {
+absl::optional<apps::IconInfo::Purpose> SyncPurposeToIconInfoPurpose(
+    sync_pb::WebAppIconInfo_Purpose purpose) {
   switch (purpose) {
     // Treat UNSPECIFIED purpose as invalid. It means a new purpose was added
     // that this client does not understand.
     case sync_pb::WebAppIconInfo_Purpose_UNSPECIFIED:
       return absl::nullopt;
     case sync_pb::WebAppIconInfo_Purpose_ANY:
-      return blink::mojom::ManifestImageResource_Purpose::ANY;
+      return apps::IconInfo::Purpose::kAny;
     case sync_pb::WebAppIconInfo_Purpose_MASKABLE:
-      return blink::mojom::ManifestImageResource_Purpose::MASKABLE;
+      return apps::IconInfo::Purpose::kMaskable;
     case sync_pb::WebAppIconInfo_Purpose_MONOCHROME:
-      return blink::mojom::ManifestImageResource_Purpose::MONOCHROME;
+      return apps::IconInfo::Purpose::kMonochrome;
   }
 }
 
-sync_pb::WebAppIconInfo_Purpose BlinkPurposeToSyncPurpose(
-    blink::mojom::ManifestImageResource_Purpose purpose) {
+sync_pb::WebAppIconInfo_Purpose IconInfoPurposeToSyncPurpose(
+    apps::IconInfo::Purpose purpose) {
   switch (purpose) {
-    case blink::mojom::ManifestImageResource_Purpose::ANY:
+    case apps::IconInfo::Purpose::kAny:
       return sync_pb::WebAppIconInfo_Purpose_ANY;
-    case blink::mojom::ManifestImageResource_Purpose::MONOCHROME:
+    case apps::IconInfo::Purpose::kMonochrome:
       return sync_pb::WebAppIconInfo_Purpose_MONOCHROME;
-    case blink::mojom::ManifestImageResource_Purpose::MASKABLE:
+    case apps::IconInfo::Purpose::kMaskable:
       return sync_pb::WebAppIconInfo_Purpose_MASKABLE;
   }
 }
 
 }  // namespace
 
-absl::optional<std::vector<WebApplicationIconInfo>> ParseWebAppIconInfos(
+absl::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
     const char* container_name_for_logging,
-    RepeatedIconInfosProto icon_infos_proto) {
-  std::vector<WebApplicationIconInfo> icon_infos;
-  for (const sync_pb::WebAppIconInfo& icon_info_proto : icon_infos_proto) {
-    WebApplicationIconInfo icon_info;
+    RepeatedIconInfosProto manifest_icons_proto) {
+  std::vector<apps::IconInfo> manifest_icons;
+  for (const sync_pb::WebAppIconInfo& icon_info_proto : manifest_icons_proto) {
+    apps::IconInfo icon_info;
 
     if (icon_info_proto.has_size_in_px())
       icon_info.square_size_px = icon_info_proto.size_in_px();
@@ -62,20 +64,20 @@ absl::optional<std::vector<WebApplicationIconInfo>> ParseWebAppIconInfos(
     }
 
     if (icon_info_proto.has_purpose()) {
-      absl::optional<blink::mojom::ManifestImageResource_Purpose> opt_purpose =
-          SyncPurposeToBlinkPurpose(icon_info_proto.purpose());
+      absl::optional<apps::IconInfo::Purpose> opt_purpose =
+          SyncPurposeToIconInfoPurpose(icon_info_proto.purpose());
       if (!opt_purpose.has_value())
         return absl::nullopt;
       icon_info.purpose = opt_purpose.value();
     } else {
       // Treat unset purpose as ANY so that old data without the field is
       // interpreted correctly.
-      icon_info.purpose = blink::mojom::ManifestImageResource_Purpose::ANY;
+      icon_info.purpose = apps::IconInfo::Purpose::kAny;
     }
 
-    icon_infos.push_back(std::move(icon_info));
+    manifest_icons.push_back(std::move(icon_info));
   }
-  return icon_infos;
+  return manifest_icons;
 }
 
 sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
@@ -97,21 +99,20 @@ sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
   }
   if (app.sync_fallback_data().scope.is_valid())
     sync_proto.set_scope(app.sync_fallback_data().scope.spec());
-  for (const WebApplicationIconInfo& icon_info :
-       app.sync_fallback_data().icon_infos) {
-    *(sync_proto.add_icon_infos()) = WebAppIconInfoToSyncProto(icon_info);
+  for (const apps::IconInfo& icon_info : app.sync_fallback_data().icon_infos) {
+    *(sync_proto.add_icon_infos()) = AppIconInfoToSyncProto(icon_info);
   }
   return sync_proto;
 }
 
-sync_pb::WebAppIconInfo WebAppIconInfoToSyncProto(
-    const WebApplicationIconInfo& icon_info) {
+sync_pb::WebAppIconInfo AppIconInfoToSyncProto(
+    const apps::IconInfo& icon_info) {
   sync_pb::WebAppIconInfo icon_info_proto;
   if (icon_info.square_size_px.has_value())
     icon_info_proto.set_size_in_px(icon_info.square_size_px.value());
   DCHECK(!icon_info.url.is_empty());
   icon_info_proto.set_url(icon_info.url.spec());
-  icon_info_proto.set_purpose(BlinkPurposeToSyncPurpose(icon_info.purpose));
+  icon_info_proto.set_purpose(IconInfoPurposeToSyncPurpose(icon_info.purpose));
   return icon_info_proto;
 }
 
@@ -133,9 +134,9 @@ absl::optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
     }
   }
 
-  absl::optional<std::vector<WebApplicationIconInfo>> parsed_icon_infos =
-      ParseWebAppIconInfos("WebAppSpecifics", sync_proto.icon_infos());
-  if (!parsed_icon_infos.has_value())
+  absl::optional<std::vector<apps::IconInfo>> parsed_icon_infos =
+      ParseAppIconInfos("WebAppSpecifics", sync_proto.icon_infos());
+  if (!parsed_icon_infos)
     return absl::nullopt;
 
   parsed_sync_fallback_data.icon_infos = std::move(parsed_icon_infos.value());
@@ -148,11 +149,12 @@ absl::optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
   switch (user_display_mode) {
     case DisplayMode::kBrowser:
       return ::sync_pb::WebAppSpecifics::BROWSER;
+    case DisplayMode::kTabbed:
+      return ::sync_pb::WebAppSpecifics::TABBED;
     case DisplayMode::kUndefined:
     case DisplayMode::kMinimalUi:
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
-    case DisplayMode::kTabbed:
       NOTREACHED();
       FALLTHROUGH;
     case DisplayMode::kStandalone:

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "content/common/content_export.h"
 #include "content/common/in_process_child_thread_params.h"
@@ -19,6 +18,10 @@ class ChildProcess;
 class InProcessUtilityThread : public base::Thread {
  public:
   InProcessUtilityThread(const InProcessChildThreadParams& params);
+
+  InProcessUtilityThread(const InProcessUtilityThread&) = delete;
+  InProcessUtilityThread& operator=(const InProcessUtilityThread&) = delete;
+
   ~InProcessUtilityThread() override;
 
  private:
@@ -30,8 +33,6 @@ class InProcessUtilityThread : public base::Thread {
 
   InProcessChildThreadParams params_;
   std::unique_ptr<ChildProcess> child_process_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessUtilityThread);
 };
 
 CONTENT_EXPORT base::Thread* CreateInProcessUtilityThread(

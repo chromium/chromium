@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/stylus_utils.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/prefs/pref_service.h"
@@ -221,15 +221,18 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, StylusSeen) {
 class ChromeOSInfoPrivateInternalStylusTest : public ChromeOSInfoPrivateTest {
  public:
   ChromeOSInfoPrivateInternalStylusTest() = default;
+
+  ChromeOSInfoPrivateInternalStylusTest(
+      const ChromeOSInfoPrivateInternalStylusTest&) = delete;
+  ChromeOSInfoPrivateInternalStylusTest& operator=(
+      const ChromeOSInfoPrivateInternalStylusTest&) = delete;
+
   ~ChromeOSInfoPrivateInternalStylusTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ChromeOSInfoPrivateTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(ash::switches::kHasInternalStylus);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeOSInfoPrivateInternalStylusTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateInternalStylusTest,
@@ -244,6 +247,11 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateInternalStylusTest,
 class ChromeOSArcInfoPrivateTest : public ChromeOSInfoPrivateTest {
  public:
   ChromeOSArcInfoPrivateTest() = default;
+
+  ChromeOSArcInfoPrivateTest(const ChromeOSArcInfoPrivateTest&) = delete;
+  ChromeOSArcInfoPrivateTest& operator=(const ChromeOSArcInfoPrivateTest&) =
+      delete;
+
   ~ChromeOSArcInfoPrivateTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -251,9 +259,6 @@ class ChromeOSArcInfoPrivateTest : public ChromeOSInfoPrivateTest {
     // Make ARC enabled for ArcAvailable/ArcEnabled tests.
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeOSArcInfoPrivateTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeOSArcInfoPrivateTest, ArcEnabled) {
@@ -279,14 +284,18 @@ IN_PROC_BROWSER_TEST_F(ChromeOSArcInfoPrivateTest, ArcAvailable) {
 class ChromeOSManagedDeviceInfoPrivateTest : public ChromeOSInfoPrivateTest {
  public:
   ChromeOSManagedDeviceInfoPrivateTest() = default;
+
+  ChromeOSManagedDeviceInfoPrivateTest(
+      const ChromeOSManagedDeviceInfoPrivateTest&) = delete;
+  ChromeOSManagedDeviceInfoPrivateTest& operator=(
+      const ChromeOSManagedDeviceInfoPrivateTest&) = delete;
+
   ~ChromeOSManagedDeviceInfoPrivateTest() override = default;
 
  private:
   chromeos::ScopedStubInstallAttributes test_install_attributes_{
       chromeos::StubInstallAttributes::CreateCloudManaged("fake-domain",
                                                           "fake-id")};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOSManagedDeviceInfoPrivateTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeOSManagedDeviceInfoPrivateTest, Managed) {

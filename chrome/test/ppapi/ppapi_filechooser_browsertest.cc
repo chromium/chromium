@@ -59,10 +59,10 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
       const std::vector<base::FilePath::StringType>& alternate_extensions,
       Profile* /* profile */,
       safe_browsing::CheckDownloadCallback callback) override {
-    const auto iter =
+    const auto it =
         test_configuration_->result_map.find(default_file_path.Extension());
-    if (iter != test_configuration_->result_map.end()) {
-      std::move(callback).Run(iter->second);
+    if (it != test_configuration_->result_map.end()) {
+      std::move(callback).Run(it->second);
       return;
     }
 

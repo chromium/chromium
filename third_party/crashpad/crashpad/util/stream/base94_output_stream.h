@@ -21,7 +21,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "util/stream/output_stream_interface.h"
 
 namespace crashpad {
@@ -47,6 +46,10 @@ class Base94OutputStream : public OutputStreamInterface {
   //! \param[in] output_stream The output_stream that this object writes to.
   Base94OutputStream(Mode mode,
                      std::unique_ptr<OutputStreamInterface> output_stream);
+
+  Base94OutputStream(const Base94OutputStream&) = delete;
+  Base94OutputStream& operator=(const Base94OutputStream&) = delete;
+
   ~Base94OutputStream() override;
 
   // OutputStreamInterface:
@@ -70,8 +73,6 @@ class Base94OutputStream : public OutputStreamInterface {
   char symbol_buffer_;
   bool flush_needed_;
   bool flushed_;
-
-  DISALLOW_COPY_AND_ASSIGN(Base94OutputStream);
 };
 
 }  // namespace crashpad

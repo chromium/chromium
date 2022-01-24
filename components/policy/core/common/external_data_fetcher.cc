@@ -37,7 +37,15 @@ bool ExternalDataFetcher::Equals(const ExternalDataFetcher* first,
 
 void ExternalDataFetcher::Fetch(FetchCallback callback) const {
   if (manager_)
-    manager_->Fetch(policy_, std::move(callback));
+    manager_->Fetch(policy_, std::string(), std::move(callback));
+  else
+    std::move(callback).Run(nullptr, base::FilePath());
+}
+
+void ExternalDataFetcher::Fetch(const std::string& field_name,
+                                FetchCallback callback) const {
+  if (manager_)
+    manager_->Fetch(policy_, field_name, std::move(callback));
   else
     std::move(callback).Run(nullptr, base::FilePath());
 }

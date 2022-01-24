@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "components/favicon/core/favicon_backend_delegate.h"
@@ -33,7 +33,7 @@ using favicon_base::IconType;
 using favicon_base::IconTypeSet;
 using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
-using RedirectCache = base::MRUCache<GURL, std::vector<GURL>>;
+using RedirectCache = base::LRUCache<GURL, std::vector<GURL>>;
 
 const int kTinyEdgeSize = 10;
 const int kSmallEdgeSize = 16;
@@ -930,8 +930,7 @@ TEST_F(FaviconBackendTest, MergeIdenticalFaviconDoesNotChangeLastUpdatedTime) {
                                                 &favicon_bitmaps));
 
   // Change the last updated time of the just added favicon bitmap.
-  const base::Time kLastUpdateTime =
-      base::Time::Now() - base::TimeDelta::FromDays(314);
+  const base::Time kLastUpdateTime = base::Time::Now() - base::Days(314);
   backend_->db()->SetFaviconBitmapLastUpdateTime(favicon_bitmaps[0].bitmap_id,
                                                  kLastUpdateTime);
 

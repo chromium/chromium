@@ -69,7 +69,7 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
     virtual ~Delegate() = default;
   };
 
-  FloatingAccessibilityView(Delegate* delegate);
+  explicit FloatingAccessibilityView(Delegate* delegate);
   FloatingAccessibilityView& operator=(const FloatingAccessibilityView&) =
       delete;
   ~FloatingAccessibilityView() override;

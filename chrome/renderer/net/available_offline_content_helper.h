@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/common/available_offline_content.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -25,6 +24,11 @@ class AvailableOfflineContentHelper {
                               const std::string& offline_content_json)>;
 
   AvailableOfflineContentHelper();
+
+  AvailableOfflineContentHelper(const AvailableOfflineContentHelper&) = delete;
+  AvailableOfflineContentHelper& operator=(
+      const AvailableOfflineContentHelper&) = delete;
+
   ~AvailableOfflineContentHelper();
 
   // Fetch available offline content and return a JSON representation.
@@ -63,8 +67,6 @@ class AvailableOfflineContentHelper {
   // Records if the last received content message indicated that prefetched
   // articles are available or not.
   bool has_prefetched_content_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AvailableOfflineContentHelper);
 };
 
 #endif  // CHROME_RENDERER_NET_AVAILABLE_OFFLINE_CONTENT_HELPER_H_

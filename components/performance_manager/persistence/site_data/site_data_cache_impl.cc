@@ -122,8 +122,8 @@ internal::SiteDataImpl* SiteDataCacheImpl::GetOrCreateFeatureImpl(
     return iter->second;
 
   // If not create a new one and add it to the map.
-  internal::SiteDataImpl* site_data =
-      new internal::SiteDataImpl(origin, this, data_store_.get());
+  internal::SiteDataImpl* site_data = new internal::SiteDataImpl(
+      origin, weak_factory_.GetWeakPtr(), data_store_.get());
 
   // internal::SiteDataImpl is a ref-counted object, it's safe to store a raw
   // pointer to it here as this class will get notified when it's about to be

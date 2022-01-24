@@ -76,6 +76,15 @@ TEST_F(TriggerScriptTest, AllOfSucceedsIfAllConditionsAreTrue) {
   *all_of->add_conditions()->mutable_selector() = ToSelectorProto("a");
   *all_of->add_conditions()->mutable_selector() = ToSelectorProto("b");
   *all_of->add_conditions()->mutable_selector() = ToSelectorProto("c");
+  auto* main_dom_ready_state_condition =
+      all_of->add_conditions()->mutable_document_ready_state();
+  main_dom_ready_state_condition->set_min_document_ready_state(
+      DocumentReadyState::DOCUMENT_INTERACTIVE);
+  auto* frame_dom_ready_state_condition =
+      all_of->add_conditions()->mutable_document_ready_state();
+  frame_dom_ready_state_condition->set_min_document_ready_state(
+      DocumentReadyState::DOCUMENT_COMPLETE);
+  *frame_dom_ready_state_condition->mutable_frame() = ToSelectorProto("frame");
 
   EXPECT_CALL(mock_dynamic_trigger_conditions_,
               GetSelectorMatches(Selector(ToSelectorProto("a"))))
@@ -86,6 +95,12 @@ TEST_F(TriggerScriptTest, AllOfSucceedsIfAllConditionsAreTrue) {
   EXPECT_CALL(mock_dynamic_trigger_conditions_,
               GetSelectorMatches(Selector(ToSelectorProto("c"))))
       .WillOnce(Return(true));
+  EXPECT_CALL(mock_dynamic_trigger_conditions_,
+              GetDocumentReadyState(Selector()))
+      .WillOnce(Return(DocumentReadyState::DOCUMENT_COMPLETE));
+  EXPECT_CALL(mock_dynamic_trigger_conditions_,
+              GetDocumentReadyState(Selector(ToSelectorProto("frame"))))
+      .WillOnce(Return(DocumentReadyState::DOCUMENT_COMPLETE));
 
   EXPECT_TRUE(trigger_script_.EvaluateTriggerConditions(
       mock_static_trigger_conditions_, mock_dynamic_trigger_conditions_));

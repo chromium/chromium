@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 
 namespace ui {
@@ -50,7 +51,9 @@ class ScanningAppDelegate {
 
   // Opens the Files app with |path_to_file| highlighted. Returns false if
   // |path_to_file| is not found in the filesystem.
-  virtual bool ShowFileInFilesApp(const base::FilePath& path_to_file) = 0;
+  virtual void ShowFileInFilesApp(
+      const base::FilePath& path_to_file,
+      base::OnceCallback<void(const bool)> callback) = 0;
 };
 
 }  // namespace ash

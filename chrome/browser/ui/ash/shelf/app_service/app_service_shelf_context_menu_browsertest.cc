@@ -12,12 +12,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/common/content_features.h"
@@ -47,7 +48,7 @@ class AppServiceShelfContextMenuWebAppBrowserTest
       int command_id) {
     MenuSection result;
     ash::ShelfModel* shelf_model = ash::ShelfModel::Get();
-    shelf_model->PinAppWithID(app_id);
+    PinAppWithIDToShelf(app_id);
     ash::ShelfItemDelegate* delegate =
         shelf_model->GetShelfItemDelegate(ash::ShelfID(app_id));
     base::RunLoop run_loop;
@@ -131,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->FlushMojoCallsForTesting();
 
-  EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Window"),
+  EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Tabbed"),
             1);
 
   // App window should have tab strip.

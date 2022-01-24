@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sessions/core/session_id.h"
 
@@ -29,6 +28,11 @@ struct UpdateResponseData;
 class RecentTabsBuilderTestHelper {
  public:
   RecentTabsBuilderTestHelper();
+
+  RecentTabsBuilderTestHelper(const RecentTabsBuilderTestHelper&) = delete;
+  RecentTabsBuilderTestHelper& operator=(const RecentTabsBuilderTestHelper&) =
+      delete;
+
   ~RecentTabsBuilderTestHelper();
 
   void AddSession();
@@ -80,8 +84,6 @@ class RecentTabsBuilderTestHelper {
 
   int max_tab_node_id_ = 0;
   int next_response_version_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(RecentTabsBuilderTestHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_BUILDER_TEST_HELPER_H_

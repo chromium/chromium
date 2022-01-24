@@ -42,8 +42,8 @@
 #include "third_party/skia/include/effects/SkShaderMaskFilter.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 namespace {
@@ -346,6 +346,7 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
     case DrawQuad::Material::kInvalid:
     case DrawQuad::Material::kYuvVideoContent:
     case DrawQuad::Material::kStreamVideoContent:
+    case DrawQuad::Material::kSharedElement:
       DrawUnsupportedQuad(quad);
       NOTREACHED();
       break;
@@ -438,9 +439,10 @@ void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
     return;
   }
 
-  // TODO(skaslev): Add support for non-premultiplied alpha.
   DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
-      resource_provider(), quad->resource_id());
+      resource_provider(), quad->resource_id(),
+      quad->premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
+
   if (!lock.valid())
     return;
   const SkImage* image = lock.sk_image();
@@ -485,7 +487,8 @@ void SoftwareRenderer::DrawTileQuad(const TileDrawQuad* quad) {
   DCHECK(IsSoftwareResource(quad->resource_id()));
 
   DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
-      resource_provider(), quad->resource_id());
+      resource_provider(), quad->resource_id(),
+      quad->is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
   if (!lock.valid())
     return;
 
@@ -557,7 +560,7 @@ void SoftwareRenderer::DrawRenderPassQuad(
 
   if (quad->mask_resource_id()) {
     DisplayResourceProviderSoftware::ScopedReadLockSkImage mask_lock(
-        resource_provider(), quad->mask_resource_id());
+        resource_provider(), quad->mask_resource_id(), kPremul_SkAlphaType);
     if (!mask_lock.valid())
       return;
 
@@ -651,20 +654,15 @@ void SoftwareRenderer::CopyDrawnRenderPass(
       return;
   }
 
-  // Deliver the result. SoftwareRenderer supports RGBA_BITMAP and I420_PLANES
-  // only. For legacy reasons, if a RGBA_TEXTURE request is being made, clients
-  // are prepared to accept RGBA_BITMAP results.
-  //
-  // TODO(crbug/754872): Get rid of the legacy behavior and send empty results
-  // for RGBA_TEXTURE requests once tab capture is moved into VIZ.
-  const CopyOutputResult::Format result_format =
-      (request->result_format() == CopyOutputResult::Format::RGBA_TEXTURE)
-          ? CopyOutputResult::Format::RGBA_BITMAP
-          : request->result_format();
-  // Note: The CopyOutputSkBitmapResult automatically provides I420 format
+  // Deliver the result. SoftwareRenderer supports system memory destinations
+  // only. For legacy reasons, if a RGBA texture request is being made, clients
+  // are prepared to accept system memory results.
+
+  // Note: The CopyOutputSkBitmapResult already implies that results are
+  // returned in system memory and automatically provides I420 format
   // conversion, if needed.
   request->SendResult(std::make_unique<CopyOutputSkBitmapResult>(
-      result_format, geometry.result_selection, std::move(bitmap)));
+      request->result_format(), geometry.result_selection, std::move(bitmap)));
 }
 
 void SoftwareRenderer::DidChangeVisibility() {

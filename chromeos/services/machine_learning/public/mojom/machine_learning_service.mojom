@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 // Top-level API of the Machine Learning Service: loading models for inference.
 
@@ -13,13 +13,14 @@
 // Example: A backwards-compatible mojom change (and corresponding
 // implementation change) can be made in Chrome OS first, then replicated to the
 // clients (Chromium, other downstream repos) later.
-// Use //chromeos/services/machine_learning/public/mojom/roll_mojom.sh to help
+// Use //chromeos/services/machine_learning/public/mojom/roll_mojoms.sh to help
 // replicate Chrome OS-side changes over to Chromium.
 
 module chromeos.machine_learning.mojom;
 
 // NOTE: The base directory for 'import' statements is expected to differ
 //       between Chromium and Chrome OS versions of this file.
+import "chromeos/services/machine_learning/public/mojom/document_scanner.mojom";
 import "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom";
 import "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom";
 import "chromeos/services/machine_learning/public/mojom/model.mojom";
@@ -41,7 +42,7 @@ enum LoadModelResult {
 
 // Top-level interface between Chromium browser process and the ML Service
 // daemon.
-// Next ordinal: 10
+// Next ordinal: 11
 [Stable, Uuid="9e5e4750-40cc-4eda-ac09-3457d06a45ab"]
 interface MachineLearningService {
   // Binds another pipe to this instance.
@@ -95,4 +96,8 @@ interface MachineLearningService {
       chromeos.machine_learning.web_platform.mojom.HandwritingRecognizer>
       receiver)
       => (LoadHandwritingModelResult result);
+  // Create and initialize a document scanner.
+  [MinVersion=4] LoadDocumentScanner@10(
+            pending_receiver<DocumentScanner> receiver)
+      => (LoadModelResult result);
 };

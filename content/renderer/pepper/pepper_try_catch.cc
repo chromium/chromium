@@ -9,6 +9,9 @@
 #include "gin/converter.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
 #include "ppapi/shared_impl/var_tracker.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-primitive.h"
 
 namespace content {
 

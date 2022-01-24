@@ -10,6 +10,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -108,7 +109,7 @@ class PopupMenuCSSFontSelector : public CSSFontSelector,
   // We don't override willUseFontData() for now because the old PopupListBox
   // only worked with fonts loaded when opening the popup.
   scoped_refptr<FontData> GetFontData(const FontDescription&,
-                                      const AtomicString&) override;
+                                      const FontFamily&) override;
 
   void Trace(Visitor*) const override;
 
@@ -129,8 +130,8 @@ PopupMenuCSSFontSelector::~PopupMenuCSSFontSelector() = default;
 
 scoped_refptr<FontData> PopupMenuCSSFontSelector::GetFontData(
     const FontDescription& description,
-    const AtomicString& name) {
-  return owner_font_selector_->GetFontData(description, name);
+    const FontFamily& font_family) {
+  return owner_font_selector_->GetFontData(description, font_family);
 }
 
 void PopupMenuCSSFontSelector::FontsNeedUpdate(FontSelector* font_selector,
@@ -195,13 +196,11 @@ class InternalPopupMenu::ItemIterationContext {
                     : String(),
                 buffer_);
 
-    PagePopupClient::AddString("fontFamily: [", buffer_);
-    for (const FontFamily* f = &BaseFont().Family(); f; f = f->Next()) {
-      AddJavaScriptString(f->Family().GetString(), buffer_);
-      if (f->Next())
-        PagePopupClient::AddString(",", buffer_);
-    }
-    PagePopupClient::AddString("]", buffer_);
+    AddProperty(
+        "fontFamily",
+        ComputedStyleUtils::ValueForFontFamily(BaseFont().Family())->CssText(),
+        buffer_);
+
     PagePopupClient::AddString("},\n", buffer_);
   }
 
@@ -274,7 +273,9 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
   float scale_factor = chrome_client_->WindowToViewportScalar(
       owner_element.GetDocument().GetFrame(), 1.f);
   PagePopupClient::AddString(
-      "<!DOCTYPE html><head><meta charset='UTF-8'><style>\n", data);
+      "<!DOCTYPE html><head><meta charset='UTF-8'><meta name='color-scheme' "
+      "content='light dark'><style>\n",
+      data);
 
   LayoutObject* owner_layout = owner_element.GetLayoutObject();
 
@@ -315,24 +316,20 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
 
   data->Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
   data->Append(ChooserResourceLoader::GetListPickerStyleSheet());
-  if (!RuntimeEnabledFeatures::ForceTallerSelectPopupEnabled())
-    PagePopupClient::AddString("@media (any-pointer:coarse) {", data);
-  int padding = static_cast<int>(roundf(4 * scale_factor));
-  int min_height = static_cast<int>(roundf(24 * scale_factor));
-  PagePopupClient::AddString(String::Format("option, optgroup {"
-                                            "padding-top: %dpx;"
-                                            "}\n"
-                                            "option {"
-                                            "padding-bottom: %dpx;"
-                                            "min-height: %dpx;"
-                                            "display: flex;"
-                                            "align-items: center;"
-                                            "}",
-                                            padding, padding, min_height),
-                             data);
-  if (!RuntimeEnabledFeatures::ForceTallerSelectPopupEnabled()) {
-    // Closes @media.
-    PagePopupClient::AddString("}", data);
+  if (taller_options_) {
+    int padding = static_cast<int>(roundf(4 * scale_factor));
+    int min_height = static_cast<int>(roundf(24 * scale_factor));
+    PagePopupClient::AddString(String::Format("option, optgroup {"
+                                              "padding-top: %dpx;"
+                                              "}\n"
+                                              "option {"
+                                              "padding-bottom: %dpx;"
+                                              "min-height: %dpx;"
+                                              "display: flex;"
+                                              "align-items: center;"
+                                              "}",
+                                              padding, padding, min_height),
+                               data);
   }
 
   PagePopupClient::AddString(
@@ -418,13 +415,11 @@ void InternalPopupMenu::AddElementStyle(ItemIterationContext& context,
     AddProperty("fontWeight", font_description.Weight().ToString(), data);
   }
   if (base_font.Family() != font_description.Family()) {
-    PagePopupClient::AddString("fontFamily: [\n", data);
-    for (const FontFamily* f = &font_description.Family(); f; f = f->Next()) {
-      AddJavaScriptString(f->Family().GetString(), data);
-      if (f->Next())
-        PagePopupClient::AddString(",\n", data);
-    }
-    PagePopupClient::AddString("],\n", data);
+    AddProperty(
+        "fontFamily",
+        ComputedStyleUtils::ValueForFontFamily(font_description.Family())
+            ->CssText(),
+        data);
   }
   if (base_font.Style() != font_description.Style()) {
     AddProperty("fontStyle",
@@ -598,8 +593,10 @@ void InternalPopupMenu::Dispose() {
     chrome_client_->ClosePagePopup(popup_);
 }
 
-void InternalPopupMenu::Show() {
+void InternalPopupMenu::Show(PopupMenu::ShowEventType type) {
   DCHECK(!popup_);
+  taller_options_ = type == PopupMenu::kTouch ||
+                    RuntimeEnabledFeatures::ForceTallerSelectPopupEnabled();
   popup_ = chrome_client_->OpenPagePopup(this);
 }
 
@@ -623,7 +620,7 @@ void InternalPopupMenu::Update(bool force_update) {
     return;
   needs_update_ = false;
 
-  if (!IntRect(IntPoint(), OwnerElement().GetDocument().View()->Size())
+  if (!IntRect(gfx::Point(), OwnerElement().GetDocument().View()->Size())
            .Intersects(OwnerElement().PixelSnappedBoundingBox())) {
     Hide();
     return;

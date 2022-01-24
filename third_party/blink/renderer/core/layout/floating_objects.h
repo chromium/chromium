@@ -28,8 +28,10 @@
 #include "base/dcheck_is_on.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/list_hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/pod_free_list_arena.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval_tree.h"
 
@@ -39,9 +41,7 @@ class LayoutBlockFlow;
 class LayoutBox;
 class RootInlineBox;
 
-class FloatingObject {
-  USING_FAST_MALLOC(FloatingObject);
-
+class FloatingObject : public GarbageCollected<FloatingObject> {
  public:
 #ifndef NDEBUG
   // Used by the PODIntervalTree for debugging the FloatingObject.
@@ -53,14 +53,13 @@ class FloatingObject {
   // for both left and right.
   enum Type { kFloatLeft = 1, kFloatRight = 2, kFloatLeftRight = 3 };
 
-  static std::unique_ptr<FloatingObject> Create(LayoutBox*, Type);
+  static FloatingObject* Create(LayoutBox*, Type);
 
-  std::unique_ptr<FloatingObject> CopyToNewContainer(
-      LayoutSize,
-      bool should_paint = false,
-      bool is_descendant = false) const;
+  FloatingObject* CopyToNewContainer(LayoutSize,
+                                     bool should_paint = false,
+                                     bool is_descendant = false) const;
 
-  std::unique_ptr<FloatingObject> UnsafeClone() const;
+  FloatingObject* UnsafeClone() const;
 
   Type GetType() const { return static_cast<Type>(type_); }
   LayoutBox* GetLayoutObject() const { return layout_object_; }
@@ -157,10 +156,11 @@ class FloatingObject {
                  bool is_lowest_non_overhanging_float_in_child);
   FloatingObject(const FloatingObject&) = delete;
   FloatingObject& operator=(const FloatingObject&) = delete;
+  void Trace(Visitor*) const;
 
  private:
-  LayoutBox* layout_object_;
-  RootInlineBox* originating_line_;
+  Member<LayoutBox> layout_object_;
+  Member<RootInlineBox> originating_line_;
   LayoutRect frame_rect_;
 
   unsigned type_ : 2;  // Type (left or right aligned)
@@ -183,18 +183,18 @@ struct FloatingObjectHashFunctions {
   static unsigned GetHash(FloatingObject* key) {
     return DefaultHash<LayoutBox*>::Hash::GetHash(key->GetLayoutObject());
   }
-  static unsigned GetHash(const std::unique_ptr<FloatingObject>& key) {
-    return GetHash(key.get());
+  static unsigned GetHash(const Member<FloatingObject>& key) {
+    return GetHash(key.Get());
   }
-  static bool Equal(std::unique_ptr<FloatingObject>& a, FloatingObject* b) {
+  static bool Equal(const Member<FloatingObject>& a, FloatingObject* b) {
     return a->GetLayoutObject() == b->GetLayoutObject();
   }
-  static bool Equal(std::unique_ptr<FloatingObject>& a,
-                    const std::unique_ptr<FloatingObject>& b) {
-    return Equal(a, b.get());
+  static bool Equal(const Member<FloatingObject>& a,
+                    const Member<FloatingObject>& b) {
+    return Equal(a, b.Get());
   }
 
-  static const bool safe_to_compare_to_empty_or_deleted = true;
+  static const bool safe_to_compare_to_empty_or_deleted = false;
 };
 struct FloatingObjectHashTranslator {
   STATIC_ONLY(FloatingObjectHashTranslator);
@@ -204,13 +204,14 @@ struct FloatingObjectHashTranslator {
   static bool Equal(FloatingObject* a, LayoutBox* b) {
     return a->GetLayoutObject() == b;
   }
-  static bool Equal(const std::unique_ptr<FloatingObject>& a, LayoutBox* b) {
+  static bool Equal(const Member<FloatingObject>& a, LayoutBox* b) {
     return a->GetLayoutObject() == b;
   }
 };
-typedef ListHashSet<std::unique_ptr<FloatingObject>,
-                    4,
-                    FloatingObjectHashFunctions>
+
+typedef HeapLinkedHashSet<Member<FloatingObject>,
+                          HashTraits<Member<FloatingObject>>,
+                          FloatingObjectHashFunctions>
     FloatingObjectSet;
 typedef FloatingObjectSet::const_iterator FloatingObjectSetIterator;
 typedef WTF::PODInterval<LayoutUnit, FloatingObject*> FloatingObjectInterval;
@@ -218,21 +219,20 @@ typedef WTF::PODIntervalTree<LayoutUnit, FloatingObject*> FloatingObjectTree;
 typedef WTF::PODFreeListArena<
     WTF::PODRedBlackTree<FloatingObjectInterval>::Node>
     IntervalArena;
-typedef HashMap<LayoutBox*, std::unique_ptr<FloatingObject>>
+typedef HeapHashMap<Member<LayoutBox>, Member<FloatingObject>>
     LayoutBoxToFloatInfoMap;
 
-class FloatingObjects {
-  USING_FAST_MALLOC(FloatingObjects);
-
+class FloatingObjects final : public GarbageCollected<FloatingObjects> {
  public:
   FloatingObjects(const LayoutBlockFlow*, bool horizontal_writing_mode);
   FloatingObjects(const FloatingObjects&) = delete;
   FloatingObjects& operator=(const FloatingObjects&) = delete;
   ~FloatingObjects();
+  void Trace(Visitor*) const;
 
   void Clear();
   void MoveAllToFloatInfoMap(LayoutBoxToFloatInfoMap&);
-  FloatingObject* Add(std::unique_ptr<FloatingObject>);
+  FloatingObject* Add(FloatingObject*);
   void Remove(FloatingObject*);
   void AddPlacedObject(FloatingObject&);
   void RemovePlacedObject(FloatingObject&);
@@ -297,11 +297,13 @@ class FloatingObjects {
   unsigned left_objects_count_;
   unsigned right_objects_count_;
   bool horizontal_writing_mode_;
-  const LayoutBlockFlow* layout_object_;
+  Member<const LayoutBlockFlow> layout_object_;
 
   struct FloatBottomCachedValue {
+    DISALLOW_NEW();
     FloatBottomCachedValue();
-    FloatingObject* floating_object = nullptr;
+    void Trace(Visitor*) const;
+    Member<FloatingObject> floating_object;
     bool dirty = true;
   };
   FloatBottomCachedValue lowest_float_bottom_cache_[2];

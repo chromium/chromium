@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /** @fileoverview Unit tests for functions. */
 
@@ -20,7 +12,6 @@ goog.setTestOnly();
 const MockClock = goog.require('goog.testing.MockClock');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const functions = goog.require('goog.functions');
-const googArray = goog.require('goog.array');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
 
@@ -36,6 +27,7 @@ const obj = {
   foo: 'obj'
 };
 
+/** @suppress {globalThis} suppression added to enable type checking */
 function getFoo(arg1, arg2) {
   return {foo: this.foo, arg1: arg1, arg2: arg2};
 }
@@ -61,6 +53,7 @@ function assertCallOrderAndReset(expectedArray) {
  *     mapping string command sequences (where 'f' is 'fire' and 'w' is 'wait')
  *     to the number times we expect a decorated function to be called during
  *     the execution of those commands.
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function assertAsyncDecoratorCommandSequenceCalls(
     decorator, expectedCommandSequenceCalls) {
@@ -69,6 +62,7 @@ function assertAsyncDecoratorCommandSequenceCalls(
   const mockClock = new MockClock(true);
   for (let commandSequence in expectedCommandSequenceCalls) {
     const recordedFunction = recordFunction();
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const f = decorator(recordedFunction, interval);
 
     for (let i = 0; i < commandSequence.length; ++i) {
@@ -86,10 +80,10 @@ function assertAsyncDecoratorCommandSequenceCalls(
     assertEquals(
         `Expected ${expectedCalls} calls for command sequence "` +
             commandSequence + '" (' +
-            googArray
-                .map(
+            Array.prototype.map
+                .call(
                     commandSequence,
-                    (command) => {
+                    command => {
                       switch (command) {
                         case 'f':
                           return 'fire';
@@ -158,9 +152,9 @@ testSuite({
     assertEquals(2, i(4, 2));
   },
 
-  testPartialRightUsesGlobal() {
+  testPartialRightFreeFunction() {
     const f = function(x, y) {
-      assertEquals(goog.global, this);
+      assertUndefined(this);
       return x / y;
     };
     const g = functions.partialRight(f, 2);
@@ -234,6 +228,7 @@ testSuite({
     assertEquals(obj, functions.identity(obj));
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testConstant() {
     assertEquals(3, functions.constant(3)());
     assertEquals(undefined, functions.constant()());
@@ -254,6 +249,7 @@ testSuite({
     assertEquals(obj, e);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testCompose() {
     const add2 = (x) => x + 2;
 
@@ -446,6 +442,7 @@ testSuite({
     assertEquals(1, recordedFunction.getCallCount());
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testDebounce() {
     // Encoded sequences of commands to perform mapped to expected # of calls.
     //   f: fire
@@ -534,6 +531,7 @@ testSuite({
     mockClock.uninstall();
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testThrottle() {
     // Encoded sequences of commands to perform mapped to expected # of calls.
     //   f: fire
@@ -627,6 +625,7 @@ testSuite({
     mockClock.uninstall();
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testRateLimit() {
     // Encoded sequences of commands to perform mapped to expected # of calls.
     //   f: fire
@@ -721,4 +720,17 @@ testSuite({
 
     mockClock.uninstall();
   },
+
+  testIsFunction() {
+    assertTrue(functions.isFunction(() => {}));
+    assertTrue(functions.isFunction(function() {}));
+    assertTrue(functions.isFunction(class {}));
+    assertTrue(functions.isFunction(function*() {}));
+    assertTrue(functions.isFunction(async function() {}));
+    assertFalse(functions.isFunction(0));
+    assertFalse(functions.isFunction(false));
+    assertFalse(functions.isFunction(''));
+    assertFalse(functions.isFunction({}));
+    assertFalse(functions.isFunction([]));
+  }
 });

@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -23,7 +23,6 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/cursor_manager.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_child_frame.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -37,6 +36,7 @@
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
+#include "ui/display/display_util.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -47,22 +47,23 @@ namespace content {
 // static
 RenderWidgetHostViewChildFrame* RenderWidgetHostViewChildFrame::Create(
     RenderWidgetHost* widget,
-    const display::ScreenInfo& parent_screen_info) {
+    const display::ScreenInfos& parent_screen_infos) {
   RenderWidgetHostViewChildFrame* view =
-      new RenderWidgetHostViewChildFrame(widget, parent_screen_info);
+      new RenderWidgetHostViewChildFrame(widget, parent_screen_infos);
   view->Init();
   return view;
 }
 
 RenderWidgetHostViewChildFrame::RenderWidgetHostViewChildFrame(
     RenderWidgetHost* widget_host,
-    const display::ScreenInfo& parent_screen_info)
+    const display::ScreenInfos& parent_screen_infos)
     : RenderWidgetHostViewBase(widget_host),
       frame_sink_id_(
           base::checked_cast<uint32_t>(widget_host->GetProcess()->GetID()),
           base::checked_cast<uint32_t>(widget_host->GetRoutingID())),
-      frame_connector_(nullptr),
-      parent_screen_info_(parent_screen_info) {
+      frame_connector_(nullptr) {
+  // TODO(enne): this appears to have a null current() in some tests.
+  screen_infos_ = parent_screen_infos;
   GetHostFrameSinkManager()->RegisterFrameSinkId(
       frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
   GetHostFrameSinkManager()->SetFrameSinkDebugLabel(
@@ -131,11 +132,7 @@ void RenderWidgetHostViewChildFrame::SetFrameConnector(
     SetParentFrameSinkId(parent_view->GetFrameSinkId());
   }
 
-  // TODO(crbug.com/1182855): Use the parent_view's entire display::DisplayList.
-  display::Display display = display_list_.GetCurrentDisplay();
-  display.set_device_scale_factor(
-      frame_connector_->screen_info().device_scale_factor);
-  display_list_.UpdateDisplay(display);
+  UpdateScreenInfo();
 
   auto* root_view = frame_connector_->GetRootRenderWidgetHostView();
   if (root_view) {
@@ -215,7 +212,8 @@ uint32_t RenderWidgetHostViewChildFrame::GetCaptureSequenceNumber() const {
   return frame_connector_->capture_sequence_number();
 }
 
-void RenderWidgetHostViewChildFrame::Show() {
+void RenderWidgetHostViewChildFrame::ShowWithVisibility(
+    PageVisibilityState /*page_visibility*/) {
   if (!host()->is_hidden())
     return;
 
@@ -330,6 +328,21 @@ void RenderWidgetHostViewChildFrame::SetDisplayFeatureForTesting(
   NOTREACHED();
 }
 
+void RenderWidgetHostViewChildFrame::NotifyHostAndDelegateOnWasShown(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr) {
+  NOTREACHED();
+}
+
+void RenderWidgetHostViewChildFrame::RequestPresentationTimeFromHostOrDelegate(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr) {
+  NOTREACHED();
+}
+
+void RenderWidgetHostViewChildFrame::
+    CancelPresentationTimeRequestForHostAndDelegate() {
+  NOTREACHED();
+}
+
 gfx::Size RenderWidgetHostViewChildFrame::GetCompositorViewportPixelSize() {
   if (frame_connector_)
     return frame_connector_->local_frame_size_in_pixels();
@@ -343,13 +356,19 @@ RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetRootView() {
 
 void RenderWidgetHostViewChildFrame::InitAsPopup(
     RenderWidgetHostView* parent_host_view,
-    const gfx::Rect& bounds) {
+    const gfx::Rect& bounds,
+    const gfx::Rect& anchor_rect) {
   NOTREACHED();
 }
 
 void RenderWidgetHostViewChildFrame::UpdateCursor(const WebCursor& cursor) {
   if (frame_connector_)
     frame_connector_->UpdateCursor(cursor);
+}
+
+void RenderWidgetHostViewChildFrame::UpdateScreenInfo() {
+  if (frame_connector_)
+    screen_infos_ = frame_connector_->screen_infos();
 }
 
 void RenderWidgetHostViewChildFrame::SendInitialPropertiesIfNeeded() {
@@ -432,6 +451,17 @@ void RenderWidgetHostViewChildFrame::UpdateTooltipFromKeyboard(
   gfx::Rect adjusted_bounds(TransformPointToRootCoordSpace(bounds.origin()),
                             bounds.size());
   root_view->UpdateTooltipFromKeyboard(tooltip_text, adjusted_bounds);
+}
+
+void RenderWidgetHostViewChildFrame::ClearKeyboardTriggeredTooltip() {
+  if (!frame_connector_)
+    return;
+
+  auto* root_view = frame_connector_->GetRootRenderWidgetHostView();
+  if (!root_view)
+    return;
+
+  root_view->ClearKeyboardTriggeredTooltip();
 }
 
 RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetParentView() {
@@ -678,8 +708,8 @@ void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
 
 bool RenderWidgetHostViewChildFrame::ScreenRectIsUnstableFor(
     const blink::WebInputEvent& event) {
-  if (event.TimeStamp() - base::TimeDelta::FromMilliseconds(
-                              blink::mojom::kMinScreenRectStableTimeMs) <
+  if (event.TimeStamp() -
+          base::Milliseconds(blink::mojom::kMinScreenRectStableTimeMs) <
       screen_rect_stable_since_) {
     return true;
   }
@@ -796,7 +826,8 @@ void RenderWidgetHostViewChildFrame::CopyFromSurface(
 
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(
               [](base::OnceCallback<void(const SkBitmap&)> callback,
                  std::unique_ptr<viz::CopyOutputResult> result) {
@@ -808,11 +839,9 @@ void RenderWidgetHostViewChildFrame::CopyFromSurface(
   if (src_subrect.IsEmpty()) {
     request->set_area(gfx::Rect(GetCompositorViewportPixelSize()));
   } else {
-    display::ScreenInfo screen_info;
-    GetScreenInfo(&screen_info);
     // |src_subrect| is in DIP coordinates; convert to Surface coordinates.
     request->set_area(
-        gfx::ScaleToRoundedRect(src_subrect, screen_info.device_scale_factor));
+        gfx::ScaleToRoundedRect(src_subrect, GetDeviceScaleFactor()));
   }
 
   if (!output_size.IsEmpty()) {
@@ -860,7 +889,7 @@ void RenderWidgetHostViewChildFrame::
     const cc::RenderFrameMetadata& metadata =
         host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
     selection_controller_client_->UpdateSelectionBoundsIfNeeded(
-        metadata.selection, GetCurrentDeviceScaleFactor());
+        metadata.selection, GetDeviceScaleFactor());
   }
 }
 
@@ -924,15 +953,6 @@ RenderWidgetHostViewChildFrame::FilterInputEvent(
   }
 
   return blink::mojom::InputEventResultState::kNotConsumed;
-}
-
-void RenderWidgetHostViewChildFrame::GetScreenInfo(
-    display::ScreenInfo* screen_info) {
-  // TODO(crbug.com/1182855): Propagate screen infos from the parent on changes
-  // and on connection init; avoid lazily updating the local cache like this.
-  if (frame_connector_)
-    parent_screen_info_ = frame_connector_->screen_info();
-  *screen_info = parent_screen_info_;
 }
 
 void RenderWidgetHostViewChildFrame::EnableAutoResize(

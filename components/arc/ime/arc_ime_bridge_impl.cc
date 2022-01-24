@@ -10,8 +10,8 @@
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_type.h"
@@ -19,6 +19,17 @@
 
 namespace arc {
 namespace {
+
+mojom::SegmentStyle GetSegmentStyle(const ui::ImeTextSpan& ime_text_span) {
+  if (ime_text_span.thickness == ui::ImeTextSpan::Thickness::kNone ||
+      ime_text_span.underline_style == ui::ImeTextSpan::UnderlineStyle::kNone) {
+    return mojom::SegmentStyle::NONE;
+  }
+  if (ime_text_span.thickness == ui::ImeTextSpan::Thickness::kThick) {
+    return mojom::SegmentStyle::EMPHASIZED;
+  }
+  return mojom::SegmentStyle::DEFAULT;
+}
 
 std::vector<mojom::CompositionSegmentPtr> ConvertSegments(
     const ui::CompositionText& composition) {
@@ -31,6 +42,7 @@ std::vector<mojom::CompositionSegmentPtr> ConvertSegments(
         (ime_text_span.thickness == ui::ImeTextSpan::Thickness::kThick ||
          (composition.selection.start() == ime_text_span.start_offset &&
           composition.selection.end() == ime_text_span.end_offset));
+    segment->style = GetSegmentStyle(ime_text_span);
     segments.push_back(std::move(segment));
   }
   return segments;
@@ -163,12 +175,6 @@ void ArcImeBridgeImpl::OnCursorRectChangedWithSurroundingText(
 
 void ArcImeBridgeImpl::RequestHideImeDeprecated() {
   DVLOG(1) << "RequestHideIme is deprecated.";
-}
-
-void ArcImeBridgeImpl::ShouldEnableKeyEventForwarding(
-    ShouldEnableKeyEventForwardingCallback callback) {
-  // TODO(b/190487153): Clean up this once the caller is removed.
-  std::move(callback).Run(true);
 }
 
 void ArcImeBridgeImpl::SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,

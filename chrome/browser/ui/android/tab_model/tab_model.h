@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -94,6 +93,8 @@ class TabModel {
     // Open from the long press context menu item 'Open in new tab in group'.
     // Will not be brought to the foreground.
     FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+    // Opened from an app widget.
+    FROM_APP_WIDGET,
     // Must be last.
     SIZE
   };
@@ -117,6 +118,9 @@ class TabModel {
     // Must be last.
     SIZE
   };
+
+  TabModel(const TabModel&) = delete;
+  TabModel& operator=(const TabModel&) = delete;
 
   virtual Profile* GetProfile() const;
   virtual bool IsOffTheRecord() const;
@@ -188,8 +192,6 @@ class TabModel {
   // unique within the current session, and is not guaranteed to be unique
   // across sessions.
   SessionID session_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabModel);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_H_

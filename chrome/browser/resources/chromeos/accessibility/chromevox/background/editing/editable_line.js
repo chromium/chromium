@@ -628,18 +628,15 @@ editing.EditableLine = class {
     const lineNodes =
         /** @type {Array<!AutomationNode>} */ (this.value_.getSpansInstanceOf(
             /** @type {function()} */ (this.startContainer_.constructor)));
-    let queueMode = QueueMode.CATEGORY_FLUSH;
     for (let i = 0, cur; cur = lineNodes[i]; i++) {
       if (cur.children.length) {
         continue;
       }
 
-      const o = new Output()
-                    .withRichSpeech(
-                        Range.fromNode(cur),
-                        prev ? Range.fromNode(prev) : Range.fromNode(cur),
-                        OutputEventType.NAVIGATE)
-                    .withQueueMode(queueMode);
+      const o = new Output().withRichSpeech(
+          Range.fromNode(cur),
+          prev ? Range.fromNode(prev) : Range.fromNode(cur),
+          OutputEventType.NAVIGATE);
 
       // Ignore whitespace only output except if it is leading content on the
       // line.
@@ -647,7 +644,6 @@ editing.EditableLine = class {
         o.go();
       }
       prev = cur;
-      queueMode = QueueMode.QUEUE;
     }
   }
 
@@ -659,7 +655,13 @@ editing.EditableLine = class {
   createCharRange() {
     const start = this.start_;
     let end = start.move(Unit.CHARACTER, Movement.DIRECTIONAL, Dir.FORWARD);
-    if (start.node !== end.node) {
+
+    // The following conditions detect when|start|moves across a node boundary
+    // to|end|.
+    if (start.node !== end.node ||
+        // When |start| and |end| are equal, that means we've reached
+        // the end of the document. This is a node boundary as well.
+        start.equals(end)) {
       end = new cursors.Cursor(start.node, start.index + 1);
     }
     return new Range(start, end);

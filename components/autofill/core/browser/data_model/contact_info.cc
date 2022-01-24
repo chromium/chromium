@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

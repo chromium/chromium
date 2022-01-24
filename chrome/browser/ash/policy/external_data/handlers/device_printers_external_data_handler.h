@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/external_data/handlers/device_cloud_external_data_policy_handler.h"
 
-namespace chromeos {
+namespace ash {
 class BulkPrintersCalculator;
-}  // namespace chromeos
+}  // namespace ash
 
 namespace policy {
 
@@ -24,7 +24,13 @@ class DevicePrintersExternalDataHandler
  public:
   DevicePrintersExternalDataHandler(
       PolicyService* policy_service,
-      base::WeakPtr<chromeos::BulkPrintersCalculator> device_calculator);
+      base::WeakPtr<ash::BulkPrintersCalculator> device_calculator);
+
+  DevicePrintersExternalDataHandler(const DevicePrintersExternalDataHandler&) =
+      delete;
+  DevicePrintersExternalDataHandler& operator=(
+      const DevicePrintersExternalDataHandler&) = delete;
+
   ~DevicePrintersExternalDataHandler() override;
 
   // DeviceCloudExternalDataPolicyHandler:
@@ -36,12 +42,10 @@ class DevicePrintersExternalDataHandler
   void Shutdown() override;
 
  private:
-  base::WeakPtr<chromeos::BulkPrintersCalculator> calculator_;
+  base::WeakPtr<ash::BulkPrintersCalculator> calculator_;
 
   std::unique_ptr<DeviceCloudExternalDataPolicyObserver>
       device_printers_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevicePrintersExternalDataHandler);
 };
 
 }  // namespace policy

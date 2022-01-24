@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
@@ -37,6 +36,10 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
                                         public CdmDocumentService {
  public:
   CdmAuxiliaryHelper();
+
+  CdmAuxiliaryHelper(const CdmAuxiliaryHelper&) = delete;
+  CdmAuxiliaryHelper& operator=(const CdmAuxiliaryHelper&) = delete;
+
   ~CdmAuxiliaryHelper() override;
 
   // Callback to report the size of file read by cdm::FileIO created by |this|.
@@ -69,11 +72,9 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
   void GetStorageId(uint32_t version, StorageIdCB callback) override;
 
 #if defined(OS_WIN)
-  void GetCdmOriginId(GetCdmOriginIdCB callback) override;
+  void GetMediaFoundationCdmData(GetMediaFoundationCdmDataCB callback) override;
+  void SetCdmClientToken(const std::vector<uint8_t>& client_token) override;
 #endif  // defined(OS_WIN)
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CdmAuxiliaryHelper);
 };
 
 }  // namespace media

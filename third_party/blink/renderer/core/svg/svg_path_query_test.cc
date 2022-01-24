@@ -7,17 +7,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace blink {
 namespace {
-
-void PointsApproximatelyEqual(const FloatPoint& p1,
-                              const FloatPoint& p2,
-                              float epsilon) {
-  EXPECT_NEAR(p1.X(), p2.X(), epsilon);
-  EXPECT_NEAR(p1.Y(), p2.Y(), epsilon);
-}
 
 TEST(SVGPathQueryTest, PointAtLength_ArcDecomposedToMultipleCubics) {
   SVGPathByteStream path_stream;
@@ -25,15 +19,16 @@ TEST(SVGPathQueryTest, PointAtLength_ArcDecomposedToMultipleCubics) {
                                       path_stream),
             SVGParseStatus::kNoError);
 
-  const float step = 7.80249691f;
-  PointsApproximatelyEqual(SVGPathQuery(path_stream).GetPointAtLength(0),
-                           FloatPoint(56.200f, 66.200f), 0.0005f);
-  PointsApproximatelyEqual(SVGPathQuery(path_stream).GetPointAtLength(step),
-                           FloatPoint(51.594f, 72.497f), 0.0005f);
-  PointsApproximatelyEqual(SVGPathQuery(path_stream).GetPointAtLength(2 * step),
-                           FloatPoint(47.270f, 78.991f), 0.0005f);
-  PointsApproximatelyEqual(SVGPathQuery(path_stream).GetPointAtLength(3 * step),
-                           FloatPoint(43.239f, 85.671f), 0.0005f);
+  constexpr float kStep = 7.80249691f;
+  constexpr float kTolerance = 0.0005f;
+  EXPECT_POINTF_NEAR(SVGPathQuery(path_stream).GetPointAtLength(0),
+                     gfx::PointF(56.200f, 66.200f), kTolerance);
+  EXPECT_POINTF_NEAR(SVGPathQuery(path_stream).GetPointAtLength(kStep),
+                     gfx::PointF(51.594f, 72.497f), kTolerance);
+  EXPECT_POINTF_NEAR(SVGPathQuery(path_stream).GetPointAtLength(2 * kStep),
+                     gfx::PointF(47.270f, 78.991f), kTolerance);
+  EXPECT_POINTF_NEAR(SVGPathQuery(path_stream).GetPointAtLength(3 * kStep),
+                     gfx::PointF(43.239f, 85.671f), kTolerance);
 }
 
 }  // namespace

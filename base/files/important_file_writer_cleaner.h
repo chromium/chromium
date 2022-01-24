@@ -34,12 +34,9 @@ class SequencedTaskRunner;
 // Start method at some point during startup to enable the cleaner.
 // ImportantFileWriter calls the AddDirectory method to provide the directory
 // hosting an "important" file. Hosting processes are expected to call the Stop
-// method at shutdown so that metrics of an in-process execution can be
-// recorded.
+// method at shutdown.
 //
-// The deletion scan takes place in a background task. Metrics are recorded when
-// a directory is fully processed, or shortly after the hosting process calls
-// the Stop method.
+// The deletion scan takes place in a background task.
 class BASE_EXPORT ImportantFileWriterCleaner {
  public:
   // Gets the process-wide single instance of the cleaner.
@@ -68,7 +65,7 @@ class BASE_EXPORT ImportantFileWriterCleaner {
   void Start();
 
   // Stops the instance. The background task, if it is active, is notified to
-  // record metrics on the directory in progress and exit.
+  // halt processing and return.
   void Stop();
 
   // Brings the instance back to the uninitialized state. This should be used in

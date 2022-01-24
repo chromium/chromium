@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2013 The Closure Library Authors
+# Copyright The Closure Library Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ set -e
 
 source googletest.sh || exit 1
 
-CLOSURE_SRCDIR=$TEST_SRCDIR/google3/javascript/closure/labs/bin/code/
+CLOSURE_SRCDIR=$TEST_SRCDIR/google3/third_party/javascript/closure/labs/bin/code
 
 PYTHONPATH=$CLOSURE_SRCDIR
 

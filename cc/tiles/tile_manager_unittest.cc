@@ -624,7 +624,7 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterTilePriorityQueueInvalidation) {
 }
 
 TEST_F(TileManagerTilePriorityQueueTest, ActivationComesBeforeSoon) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size layer_bounds(1000, 1000);
   SetupDefaultTrees(layer_bounds);
@@ -639,7 +639,7 @@ TEST_F(TileManagerTilePriorityQueueTest, ActivationComesBeforeSoon) {
 
   // Set a small viewport, so we have soon and eventually tiles.
   host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(200, 200));
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   host_impl()->SetRequiresHighResToDraw();
@@ -838,7 +838,7 @@ TEST_F(TileManagerTilePriorityQueueTest, EvictionTilePriorityQueue) {
 
 // Verifies LayerDebugInfo::name ends up memory dumps.
 TEST_F(TileManagerTilePriorityQueueTest, DebugNameAppearsInMemoryDump) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size layer_bounds(1000, 1000);
 
@@ -875,7 +875,7 @@ TEST_F(TileManagerTilePriorityQueueTest, DebugNameAppearsInMemoryDump) {
 
 TEST_F(TileManagerTilePriorityQueueTest,
        EvictionTilePriorityQueueWithOcclusion) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size layer_bounds(1000, 1000);
 
@@ -891,7 +891,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
   pending_child_layer->SetDrawsContent(true);
   CopyProperties(pending_layer(), pending_child_layer);
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   ActivateTree();
@@ -984,7 +984,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
 
 TEST_F(TileManagerTilePriorityQueueTest,
        EvictionTilePriorityQueueWithTransparentLayer) {
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size layer_bounds(1000, 1000);
 
@@ -1004,13 +1004,13 @@ TEST_F(TileManagerTilePriorityQueueTest,
   CreateEffectNode(pending_child_layer).render_surface_reason =
       RenderSurfaceReason::kTest;
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   UpdateDrawProperties(host_impl()->pending_tree());
 
   host_impl()->pending_tree()->SetOpacityMutated(
       pending_child_layer->element_id(), 0.0f);
 
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
   host_impl()->pending_tree()->UpdateDrawProperties();
 
   // Renew all of the tile priorities.
@@ -1834,7 +1834,7 @@ TEST_F(TileManagerOcclusionTest, OccludedTileEvictedForVisibleTile) {
 
   // Advance the frame to ensure PictureLayerTilingSet applies the occlusion to
   // the PictureLayerTiling. The amount of time advanced doesn't matter.
-  host_impl()->AdvanceToNextFrame(base::TimeDelta::FromSeconds(2));
+  host_impl()->AdvanceToNextFrame(base::Seconds(2));
 
   auto* picture_layer = AddLayer<FakePictureLayerImpl>(
       host_impl()->pending_tree(),

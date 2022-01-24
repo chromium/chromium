@@ -46,7 +46,6 @@ struct NET_EXPORT WlanApi {
     return ERROR_SUCCESS;
   }
 
-  HMODULE module;
   WlanOpenHandleFunc open_handle_func;
   WlanEnumInterfacesFunc enum_interfaces_func;
   WlanQueryInterfaceFunc query_interface_func;

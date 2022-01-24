@@ -15,7 +15,10 @@ mojom_component("mojom") {
     "tracing_service.mojom",
   ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
+  ]
 
   if (!is_nacl && !is_ios) {
     enabled_features = [ "is_perfetto_supported_os" ]

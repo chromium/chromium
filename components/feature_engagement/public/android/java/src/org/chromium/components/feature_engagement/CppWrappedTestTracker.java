@@ -66,6 +66,12 @@ public class CppWrappedTestTracker implements Tracker {
         return ourFeature(feature);
     }
 
+    @CheckResult
+    @Override
+    public TriggerDetails shouldTriggerHelpUIWithSnooze(String feature) {
+        return null;
+    }
+
     @CalledByNative
     @Override
     public boolean wouldTriggerHelpUI(String feature) {
@@ -89,6 +95,14 @@ public class CppWrappedTestTracker implements Tracker {
     @CalledByNative
     @Override
     public void dismissed(String feature) {
+        if (ourFeature(feature)) {
+            mWasDismissed = true;
+        }
+    }
+
+    @CalledByNative
+    @Override
+    public void dismissedWithSnooze(String feature, int snoozeAction) {
         if (ourFeature(feature)) {
             mWasDismissed = true;
         }

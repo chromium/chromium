@@ -165,8 +165,7 @@ public class OmniboxUrlEmphasizerTest {
                 ApiCompatibilityUtils.getColor(
                         mResources, R.color.url_emphasis_non_emphasized_text));
         spans[2].assertIsColoredSpan("www.google.com", 8,
-                ApiCompatibilityUtils.getColor(
-                        mResources, R.color.url_emphasis_domain_and_registry));
+                ApiCompatibilityUtils.getColor(mResources, R.color.url_emphasis_emphasized_text));
         spans[3].assertIsColoredSpan("/", 22,
                 ApiCompatibilityUtils.getColor(
                         mResources, R.color.url_emphasis_non_emphasized_text));
@@ -195,7 +194,7 @@ public class OmniboxUrlEmphasizerTest {
                         mResources, R.color.url_emphasis_light_non_emphasized_text));
         spans[2].assertIsColoredSpan("www.google.com", 8,
                 ApiCompatibilityUtils.getColor(
-                        mResources, R.color.url_emphasis_light_domain_and_registry));
+                        mResources, R.color.url_emphasis_light_emphasized_text));
         spans[3].assertIsColoredSpan("/", 22,
                 ApiCompatibilityUtils.getColor(
                         mResources, R.color.url_emphasis_light_non_emphasized_text));
@@ -224,8 +223,7 @@ public class OmniboxUrlEmphasizerTest {
                 ApiCompatibilityUtils.getColor(
                         mResources, R.color.url_emphasis_non_emphasized_text));
         spans[3].assertIsColoredSpan("www.google.com", 8,
-                ApiCompatibilityUtils.getColor(
-                        mResources, R.color.url_emphasis_domain_and_registry));
+                ApiCompatibilityUtils.getColor(mResources, R.color.url_emphasis_emphasized_text));
         spans[4].assertIsColoredSpan("/q?query=abc123&results=1", 22,
                 ApiCompatibilityUtils.getColor(
                         mResources, R.color.url_emphasis_non_emphasized_text));
@@ -247,8 +245,7 @@ public class OmniboxUrlEmphasizerTest {
 
         Assert.assertEquals("Unexpected number of spans:", 2, spans.length);
         spans[0].assertIsColoredSpan("m.w.co", 0,
-                ApiCompatibilityUtils.getColor(
-                        mResources, R.color.url_emphasis_domain_and_registry));
+                ApiCompatibilityUtils.getColor(mResources, R.color.url_emphasis_emphasized_text));
         spans[1].assertIsColoredSpan("/p", 6,
                 ApiCompatibilityUtils.getColor(
                         mResources, R.color.url_emphasis_non_emphasized_text));
@@ -276,8 +273,7 @@ public class OmniboxUrlEmphasizerTest {
                 ApiCompatibilityUtils.getColor(
                         mResources, R.color.url_emphasis_non_emphasized_text));
         spans[2].assertIsColoredSpan("blank", 6,
-                ApiCompatibilityUtils.getColor(
-                        mResources, R.color.url_emphasis_domain_and_registry));
+                ApiCompatibilityUtils.getColor(mResources, R.color.url_emphasis_emphasized_text));
     }
 
     /**
@@ -325,8 +321,7 @@ public class OmniboxUrlEmphasizerTest {
                 ApiCompatibilityUtils.getColor(
                         mResources, R.color.url_emphasis_non_emphasized_text));
         spans[2].assertIsColoredSpan("bookmarks", 9,
-                ApiCompatibilityUtils.getColor(
-                        mResources, R.color.url_emphasis_domain_and_registry));
+                ApiCompatibilityUtils.getColor(mResources, R.color.url_emphasis_emphasized_text));
     }
 
     /**
@@ -351,8 +346,7 @@ public class OmniboxUrlEmphasizerTest {
                 ApiCompatibilityUtils.getColor(
                         mResources, R.color.url_emphasis_non_emphasized_text));
         spans[2].assertIsColoredSpan("bookmarks", 16,
-                ApiCompatibilityUtils.getColor(
-                        mResources, R.color.url_emphasis_domain_and_registry));
+                ApiCompatibilityUtils.getColor(mResources, R.color.url_emphasis_emphasized_text));
     }
 
     /**
@@ -371,8 +365,7 @@ public class OmniboxUrlEmphasizerTest {
 
         Assert.assertEquals("Unexpected number of spans:", 1, spans.length);
         spans[0].assertIsColoredSpan("invalidurl", 0,
-                ApiCompatibilityUtils.getColor(
-                        mResources, R.color.url_emphasis_domain_and_registry));
+                ApiCompatibilityUtils.getColor(mResources, R.color.url_emphasis_emphasized_text));
     }
 
     /**

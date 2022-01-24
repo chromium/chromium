@@ -83,7 +83,7 @@ public final class FirstRunSignInProcessor {
     }
 
     private static void signinAndEnableSync(@NonNull Account account, Activity activity) {
-        final boolean setUp = getFirstRunFlowSignInSetup();
+        final boolean showAdvancedSyncSettings = getFirstRunFlowSignInSetup();
         IdentityServicesProvider.get()
                 .getSigninManager(Profile.getLastUsedRegularProfile())
                 .signinAndEnableSync(SigninAccessPoint.START_PAGE, account, new SignInCallback() {
@@ -92,8 +92,8 @@ public final class FirstRunSignInProcessor {
                         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                                 Profile.getLastUsedRegularProfile(), true);
                         // Show sync settings if user pressed the "Settings" button.
-                        if (setUp) {
-                            openSignInSettings(activity);
+                        if (showAdvancedSyncSettings) {
+                            openAdvancedSyncSettings(activity);
                         } else {
                             SyncService.get().setFirstSetupComplete(
                                     SyncFirstSetupCompleteSource.BASIC_FLOW);
@@ -111,9 +111,9 @@ public final class FirstRunSignInProcessor {
     }
 
     /**
-     * Opens sign in settings as requested in the FRE sign-in dialog.
+     * Opens advanced sync settings as requested in the FRE sync consent page.
      */
-    private static void openSignInSettings(Activity activity) {
+    private static void openAdvancedSyncSettings(Activity activity) {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         settingsLauncher.launchSettingsActivity(
                 activity, ManageSyncSettings.class, ManageSyncSettings.createArguments(true));
@@ -174,14 +174,14 @@ public final class FirstRunSignInProcessor {
 
     /**
      * Finalize the state of the FRE flow (mark is as "complete" and finalize parameters).
-     * @param signInAccountName The account name for the pending sign-in request. (Or null)
-     * @param showSignInSettings Whether the user selected to see the settings once signed in.
+     * @param syncConsentAccountName The account name for the pending sign-in request. (Or null)
+     * @param showAdvancedSyncSettings Whether the user selected to see the settings once signed in.
      */
     public static void finalizeFirstRunFlowState(
-            String signInAccountName, boolean showSignInSettings) {
+            String syncConsentAccountName, boolean showAdvancedSyncSettings) {
         FirstRunStatus.setFirstRunFlowComplete(true);
-        setFirstRunFlowSignInAccountName(signInAccountName);
-        setFirstRunFlowSignInSetup(showSignInSettings);
+        setFirstRunFlowSignInAccountName(syncConsentAccountName);
+        setFirstRunFlowSignInSetup(showAdvancedSyncSettings);
     }
 
     /**

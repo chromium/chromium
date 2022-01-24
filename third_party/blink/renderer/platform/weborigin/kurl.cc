@@ -104,8 +104,9 @@ class KURLCharsetConverter final : public url::CharsetConverter {
   void ConvertFromUTF16(const char16_t* input,
                         int input_length,
                         url::CanonOutput* output) override {
-    std::string encoded = encoding_->Encode(
-        String(input, input_length), WTF::kURLEncodedEntitiesForUnencodables);
+    std::string encoded =
+        encoding_->Encode(String(input, static_cast<unsigned>(input_length)),
+                          WTF::kURLEncodedEntitiesForUnencodables);
     output->Append(encoded.c_str(), static_cast<int>(encoded.length()));
   }
 
@@ -773,7 +774,7 @@ String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
       UTF8Encoding().Encode(not_encoded_string, WTF::kNoUnencodables);
 
   url::RawCanonOutputT<char> buffer;
-  int input_length = utf8.length();
+  int input_length = base::checked_cast<int>(utf8.length());
   if (buffer.capacity() < input_length * 3)
     buffer.Resize(input_length * 3);
 
@@ -886,12 +887,12 @@ void KURL::Init(const KURL& base,
     StringUTF8Adaptor relative_utf8(relative);
     is_valid_ = url::ResolveRelative(base_utf8.data(), base_utf8.size(),
                                      base.parsed_, relative_utf8.data(),
-                                     clampTo<int>(relative_utf8.size()),
+                                     ClampTo<int>(relative_utf8.size()),
                                      charset_converter, &output, &parsed_);
   } else {
     is_valid_ = url::ResolveRelative(base_utf8.data(), base_utf8.size(),
                                      base.parsed_, relative.Characters16(),
-                                     clampTo<int>(relative.length()),
+                                     ClampTo<int>(relative.length()),
                                      charset_converter, &output, &parsed_);
   }
 

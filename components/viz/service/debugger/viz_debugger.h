@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/debug/debugging_buildflags.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/viz/common/buildflags.h"

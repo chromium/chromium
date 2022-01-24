@@ -19,6 +19,11 @@ namespace sync_wifi {
 class FakeLocalNetworkCollector : public LocalNetworkCollector {
  public:
   FakeLocalNetworkCollector();
+
+  FakeLocalNetworkCollector(const FakeLocalNetworkCollector&) = delete;
+  FakeLocalNetworkCollector& operator=(const FakeLocalNetworkCollector&) =
+      delete;
+
   ~FakeLocalNetworkCollector() override;
 
   // sync_wifi::LocalNetworkCollector::
@@ -44,8 +49,6 @@ class FakeLocalNetworkCollector : public LocalNetworkCollector {
  private:
   std::vector<sync_pb::WifiConfigurationSpecifics> networks_;
   bool has_fixed_autoconnect_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeLocalNetworkCollector);
 };
 
 }  // namespace sync_wifi

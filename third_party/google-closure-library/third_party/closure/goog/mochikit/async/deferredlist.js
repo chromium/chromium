@@ -1,12 +1,13 @@
-// Copyright 2005 Bob Ippolito. All Rights Reserved.
-// Modifications Copyright 2009 The Closure Library Authors.
-// All Rights Reserved.
-
 /**
- * Portions of this code are from MochiKit, received by The Closure
- * Library Authors under the MIT license. All other code is Copyright
- * 2005-2009 The Closure Library Authors. All Rights Reserved.
+ * @license
+ * Copyright 2005, 2007 Bob Ippolito. All Rights Reserved.
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: MIT
  */
+
+// Portions of this code are from MochiKit, received by The Closure
+// Library Authors under the MIT license. All other code is Copyright
+// The Closure Library Authors.
 
 /**
  * @fileoverview Class for tracking multiple asynchronous operations and
@@ -17,7 +18,6 @@
  *
  * See: http://twistedmatrix.com/projects/core/documentation/howto/defer.html
  *
- * @author brenneman@google.com (Shawn Brenneman)
  */
 
 goog.provide('goog.async.DeferredList');
@@ -71,9 +71,9 @@ goog.require('goog.async.Deferred');
 goog.async.DeferredList = function(
     list, opt_fireOnOneCallback, opt_fireOnOneErrback, opt_consumeErrors,
     opt_canceler, opt_defaultScope) {
-
-  goog.async.DeferredList.base(this, 'constructor',
-      opt_canceler, opt_defaultScope);
+  'use strict';
+  goog.async.DeferredList.base(
+      this, 'constructor', opt_canceler, opt_defaultScope);
 
   /**
    * The list of Deferred objects to wait for.
@@ -121,8 +121,8 @@ goog.async.DeferredList = function(
    */
   this.numFinished_ = 0;
 
-  for (var i = 0; i < list.length; i++) {
-    var d = list[i];
+  for (let i = 0; i < list.length; i++) {
+    const d = list[i];
     d.addCallbacks(goog.bind(this.handleCallback_, this, i, true),
                    goog.bind(this.handleCallback_, this, i, false));
   }
@@ -149,7 +149,7 @@ goog.inherits(goog.async.DeferredList, goog.async.Deferred);
  */
 goog.async.DeferredList.prototype.handleCallback_ = function(
     index, success, result) {
-
+  'use strict';
   this.numFinished_++;
   this.deferredResults_[index] = [success, result];
 
@@ -173,10 +173,11 @@ goog.async.DeferredList.prototype.handleCallback_ = function(
 
 /** @override */
 goog.async.DeferredList.prototype.errback = function(res) {
+  'use strict';
   goog.async.DeferredList.base(this, 'errback', res);
 
   // On error, cancel any pending requests.
-  for (var i = 0; i < this.list_.length; i++) {
+  for (let i = 0; i < this.list_.length; i++) {
     this.list_[i].cancel();
   }
 };
@@ -195,10 +196,12 @@ goog.async.DeferredList.prototype.errback = function(res) {
  *     if they all succeed, or the error result of the first input to fail.
  */
 goog.async.DeferredList.gatherResults = function(list) {
-  return new goog.async.DeferredList(list, false, true).
-      addCallback(function(results) {
-        var output = [];
-        for (var i = 0; i < results.length; i++) {
+  'use strict';
+  return new goog.async.DeferredList(list, false, true)
+      .addCallback(function(results) {
+        'use strict';
+        const output = [];
+        for (let i = 0; i < results.length; i++) {
           output[i] = results[i][1];
         }
         return output;

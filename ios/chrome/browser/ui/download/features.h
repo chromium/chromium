@@ -7,7 +7,7 @@
 
 #include "base/feature_list.h"
 
-// Feature to download .mobileconfig files in SFSafariViewController.
-extern const base::Feature kDownloadMobileConfigFile;
+// Feature to download Vcard files.
+extern const base::Feature kDownloadVcard;
 
-#endif  // u'IOS_CHROME_BROWSER_UI_DOWNLOAD_FEATURES_H_
+#endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_FEATURES_H_

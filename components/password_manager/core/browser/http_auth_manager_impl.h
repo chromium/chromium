@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <vector>
 
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"

@@ -129,26 +129,16 @@ void SerialIoHandlerPosix::ReadImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsReadPending());
 
-  if (!file().IsValid()) {
-    QueueReadCompleted(0, mojom::SerialReceiveError::DISCONNECTED);
-    return;
-  }
-
   // Try to read immediately. This is needed because on some platforms
   // (e.g., OSX) there may not be a notification from the message loop
   // when the fd is ready to read immediately after it is opened. There
   // is no danger of blocking because the fd is opened with async flag.
-  AttemptRead(true);
+  AttemptRead();
 }
 
 void SerialIoHandlerPosix::WriteImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsWritePending());
-
-  if (!file().IsValid()) {
-    QueueWriteCompleted(0, mojom::SerialSendError::DISCONNECTED);
-    return;
-  }
 
   EnsureWatchingWrites();
 }
@@ -156,13 +146,13 @@ void SerialIoHandlerPosix::WriteImpl() {
 void SerialIoHandlerPosix::CancelReadImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StopWatchingFileRead();
-  QueueReadCompleted(0, read_cancel_reason());
+  ReadCompleted(0, read_cancel_reason());
 }
 
 void SerialIoHandlerPosix::CancelWriteImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StopWatchingFileWrite();
-  QueueWriteCompleted(0, write_cancel_reason());
+  WriteCompleted(0, write_cancel_reason());
 }
 
 bool SerialIoHandlerPosix::ConfigurePortImpl() {
@@ -297,7 +287,7 @@ bool SerialIoHandlerPosix::ConfigurePortImpl() {
 }
 
 bool SerialIoHandlerPosix::PostOpen() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // The Chrome OS permission broker does not open devices in async mode.
   return base::SetNonBlocking(file().GetPlatformFile());
 #else
@@ -317,7 +307,7 @@ SerialIoHandlerPosix::SerialIoHandlerPosix(
 
 SerialIoHandlerPosix::~SerialIoHandlerPosix() = default;
 
-void SerialIoHandlerPosix::AttemptRead(bool within_read) {
+void SerialIoHandlerPosix::AttemptRead() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsReadPending()) {
     int bytes_read = HANDLE_EINTR(read(file().GetPlatformFile(),
@@ -328,17 +318,15 @@ void SerialIoHandlerPosix::AttemptRead(bool within_read) {
         // The fd does not have data to read yet so continue waiting.
         EnsureWatchingReads();
       } else if (errno == ENXIO) {
-        RunReadCompleted(within_read, 0,
-                         mojom::SerialReceiveError::DEVICE_LOST);
         StopWatchingFileRead();
+        ReadCompleted(0, mojom::SerialReceiveError::DEVICE_LOST);
       } else {
         SERIAL_PLOG(DEBUG) << "Read failed";
-        RunReadCompleted(within_read, 0,
-                         mojom::SerialReceiveError::SYSTEM_ERROR);
+        ReadCompleted(0, mojom::SerialReceiveError::SYSTEM_ERROR);
       }
     } else if (bytes_read == 0) {
-      RunReadCompleted(within_read, 0, mojom::SerialReceiveError::DEVICE_LOST);
       StopWatchingFileRead();
+      ReadCompleted(0, mojom::SerialReceiveError::DEVICE_LOST);
     } else {
       bool break_detected = false;
       bool parity_error_detected = false;
@@ -347,34 +335,17 @@ void SerialIoHandlerPosix::AttemptRead(bool within_read) {
                             parity_error_detected);
 
       if (break_detected) {
-        RunReadCompleted(within_read, new_bytes_read,
-                         mojom::SerialReceiveError::BREAK);
+        ReadCompleted(new_bytes_read, mojom::SerialReceiveError::BREAK);
       } else if (parity_error_detected) {
-        RunReadCompleted(within_read, new_bytes_read,
-                         mojom::SerialReceiveError::PARITY_ERROR);
+        ReadCompleted(new_bytes_read, mojom::SerialReceiveError::PARITY_ERROR);
       } else {
-        RunReadCompleted(within_read, new_bytes_read,
-                         mojom::SerialReceiveError::NONE);
+        ReadCompleted(new_bytes_read, mojom::SerialReceiveError::NONE);
       }
     }
   } else {
     // Stop watching the fd if we get notifications with no pending
     // reads or writes to avoid starving the message loop.
     StopWatchingFileRead();
-  }
-}
-
-void SerialIoHandlerPosix::RunReadCompleted(bool within_read,
-                                            int bytes_read,
-                                            mojom::SerialReceiveError error) {
-  if (within_read) {
-    // Stop watching the fd to avoid more reads until the queued ReadCompleted()
-    // completes and releases the pending_read_buffer.
-    StopWatchingFileRead();
-
-    QueueReadCompleted(bytes_read, error);
-  } else {
-    ReadCompleted(bytes_read, error);
   }
 }
 
@@ -385,9 +356,9 @@ void SerialIoHandlerPosix::OnFileCanWriteWithoutBlocking() {
                                            pending_write_buffer().data(),
                                            pending_write_buffer().size()));
     if (bytes_written < 0) {
-      if (errno == ENXIO) {
-        WriteCompleted(0, mojom::SerialSendError::DISCONNECTED);
+      if (errno == EIO || errno == ENXIO) {
         StopWatchingFileWrite();
+        WriteCompleted(0, mojom::SerialSendError::DISCONNECTED);
       } else {
         SERIAL_PLOG(DEBUG) << "Write failed";
         WriteCompleted(0, mojom::SerialSendError::SYSTEM_ERROR);
@@ -409,7 +380,7 @@ void SerialIoHandlerPosix::EnsureWatchingReads() {
     file_read_watcher_ = base::FileDescriptorWatcher::WatchReadable(
         file().GetPlatformFile(),
         base::BindRepeating(&SerialIoHandlerPosix::AttemptRead,
-                            base::Unretained(this), false));
+                            base::Unretained(this)));
   }
 }
 

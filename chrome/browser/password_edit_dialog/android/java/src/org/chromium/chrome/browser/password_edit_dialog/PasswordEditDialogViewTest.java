@@ -86,10 +86,10 @@ public class PasswordEditDialogViewTest {
     @Test
     @MediumTest
     public void testProperties() {
-        PropertyModel model = populateDialogPropertiesBuilder()
-                                      .with(PasswordEditDialogProperties.FOOTER, FOOTER)
-                                      .build();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel model = populateDialogPropertiesBuilder()
+                                          .with(PasswordEditDialogProperties.FOOTER, FOOTER)
+                                          .build();
             PropertyModelChangeProcessor.create(model, mDialogView, PasswordEditDialogView::bind);
         });
         Assert.assertEquals("Initial selected username index doesn't match", INITIAL_USERNAME_INDEX,
@@ -105,18 +105,18 @@ public class PasswordEditDialogViewTest {
     @MediumTest
     public void testEmptyFooter() {
         // Test with null footer property.
-        PropertyModel nullModel = populateDialogPropertiesBuilder().build();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel nullModel = populateDialogPropertiesBuilder().build();
             PropertyModelChangeProcessor.create(
                     nullModel, mDialogView, PasswordEditDialogView::bind);
         });
         Assert.assertEquals("Footer should not be visible", View.GONE, mFooterView.getVisibility());
 
         // Test with footer property containing empty string.
-        PropertyModel emptyModel = populateDialogPropertiesBuilder()
-                                           .with(PasswordEditDialogProperties.FOOTER, "")
-                                           .build();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel emptyModel = populateDialogPropertiesBuilder()
+                                               .with(PasswordEditDialogProperties.FOOTER, "")
+                                               .build();
             PropertyModelChangeProcessor.create(
                     emptyModel, mDialogView, PasswordEditDialogView::bind);
         });
@@ -127,8 +127,8 @@ public class PasswordEditDialogViewTest {
     @Test
     @MediumTest
     public void testUsernameSelection() {
-        PropertyModel model = populateDialogPropertiesBuilder().build();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel model = populateDialogPropertiesBuilder().build();
             PropertyModelChangeProcessor.create(model, mDialogView, PasswordEditDialogView::bind);
             mUsernamesView.setSelection(SELECTED_USERNAME_INDEX);
         });

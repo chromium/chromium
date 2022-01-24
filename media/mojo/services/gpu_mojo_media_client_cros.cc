@@ -5,10 +5,14 @@
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
 #include "media/base/audio_decoder.h"
-#include "media/gpu/chromeos/chromeos_video_decoder_factory.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
+#include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/ipc/service/vda_video_decoder.h"
+
+#if defined(OS_CHROMEOS)
+#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
+#endif  // defined(OS_CHROMEOS)
 
 namespace media {
 namespace {
@@ -33,7 +37,7 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
         base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
                             base::Unretained(frame_pool.get())),
         traits.gpu_task_runner, traits.get_command_buffer_stub_cb);
-    return ChromeosVideoDecoderFactory::Create(
+    return VideoDecoderPipeline::Create(
         traits.task_runner, std::move(frame_pool), std::move(frame_converter),
         traits.media_log->Clone());
   }
@@ -43,13 +47,14 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
       *traits.gpu_workarounds, traits.get_command_buffer_stub_cb);
 }
 
-SupportedVideoDecoderConfigs GetPlatformSupportedVideoDecoderConfigs(
+absl::optional<SupportedVideoDecoderConfigs>
+GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
   SupportedVideoDecoderConfigs supported_configs;
   if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences)) {
-    return ChromeosVideoDecoderFactory::GetSupportedConfigs(gpu_workarounds);
+    return VideoDecoderPipeline::GetSupportedConfigs(gpu_workarounds);
   }
   return std::move(get_vda_configs).Run();
 }
@@ -68,15 +73,17 @@ std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
   return nullptr;
 }
 
-// When |IS_CHROMEOS_ASH|, gpu_mojo_media_client_cros_ash.cc is built, which
-// has the real implementation of this method.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
 class CdmFactory {};
+#endif  // !defined(OS_CHROMEOS)
 
 std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {
+#if defined(OS_CHROMEOS)
+  return std::make_unique<chromeos::ChromeOsCdmFactory>(frame_interfaces);
+#else   // defined(OS_CHROMEOS)
   return nullptr;
+#endif  // else defined(OS_CHROMEOS)
 }
-#endif
 
 }  // namespace media

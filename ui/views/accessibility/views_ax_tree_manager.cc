@@ -185,7 +185,8 @@ void ViewsAXTreeManager::UnserializeTreeUpdates(
   // AXEventGenerator to generate events based on the updates.
   for (const ui::AXEventGenerator::TargetedEvent& targeted_event :
        event_generator_) {
-    FireGeneratedEvent(targeted_event.event_params.event, *targeted_event.node);
+    if (ui::AXNode* node = ax_tree().GetFromId(targeted_event.node_id))
+      FireGeneratedEvent(targeted_event.event_params.event, *node);
   }
   event_generator_.ClearEvents();
 }

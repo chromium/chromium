@@ -16,7 +16,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-base::TimeDelta kScrollTimeInterval = base::TimeDelta::FromSeconds(1);
+base::TimeDelta kScrollTimeInterval = base::Seconds(1);
 }
 
 namespace ash {

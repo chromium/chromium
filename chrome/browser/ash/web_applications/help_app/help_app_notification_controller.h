@@ -14,10 +14,6 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace ash {
-class ReleaseNotesNotification;
-}  // namespace ash
-
-namespace chromeos {
 
 namespace help_app {
 namespace prefs {
@@ -29,6 +25,7 @@ extern const char kObsoleteDiscoverTabNotificationLastShownMilestone[];
 }  // namespace help_app
 
 class HelpAppDiscoverTabNotification;
+class ReleaseNotesNotification;
 
 // Class to show notifications under the Help App.
 class HelpAppNotificationController {
@@ -61,17 +58,11 @@ class HelpAppNotificationController {
  private:
   Profile* const profile_;
   std::unique_ptr<HelpAppDiscoverTabNotification> discover_tab_notification_;
-  std::unique_ptr<ash::ReleaseNotesNotification> release_notes_notification_;
+  std::unique_ptr<ReleaseNotesNotification> release_notes_notification_;
 
   base::WeakPtrFactory<HelpAppNotificationController> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::HelpAppNotificationController;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_NOTIFICATION_CONTROLLER_H_

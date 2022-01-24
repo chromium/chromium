@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
@@ -19,6 +18,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace policy {
+class EnrollmentHandler;
 class PolicyOAuth2TokenFetcher;
 }  // namespace policy
 
@@ -27,12 +27,17 @@ namespace ash {
 class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
  public:
   EnterpriseEnrollmentHelperImpl();
+
+  EnterpriseEnrollmentHelperImpl(const EnterpriseEnrollmentHelperImpl&) =
+      delete;
+  EnterpriseEnrollmentHelperImpl& operator=(
+      const EnterpriseEnrollmentHelperImpl&) = delete;
+
   ~EnterpriseEnrollmentHelperImpl() override;
 
   // EnterpriseEnrollmentHelper:
   void EnrollUsingAuthCode(const std::string& auth_code) override;
   void EnrollUsingToken(const std::string& token) override;
-  void EnrollUsingEnrollmentToken(const std::string& token) override;
   void EnrollUsingAttestation() override;
   void EnrollForOfflineDemo() override;
   void ClearAuth(base::OnceClosure callback) override;
@@ -76,7 +81,6 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
   // `callback` is a callback, that was passed to ClearAuth() before.
   void OnSigninProfileCleared(base::OnceClosure callback);
 
-
   policy::EnrollmentConfig enrollment_config_;
   std::string enrolling_user_domain_;
 
@@ -93,9 +97,10 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
 
   std::unique_ptr<policy::PolicyOAuth2TokenFetcher> oauth_fetcher_;
 
-  base::WeakPtrFactory<EnterpriseEnrollmentHelperImpl> weak_ptr_factory_{this};
+  // Non-nullptr from DoEnroll till OnEnrollmentFinished.
+  std::unique_ptr<policy::EnrollmentHandler> enrollment_handler_;
 
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseEnrollmentHelperImpl);
+  base::WeakPtrFactory<EnterpriseEnrollmentHelperImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

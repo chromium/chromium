@@ -33,8 +33,7 @@ Cleaner* EngineFacade::GetCleaner() {
 }
 
 base::TimeDelta EngineFacade::GetScanningWatchdogTimeout() const {
-  return base::TimeDelta::FromSeconds(
-      engine_client_->ScanningWatchdogTimeoutInSeconds());
+  return base::Seconds(engine_client_->ScanningWatchdogTimeoutInSeconds());
 }
 
 }  // namespace chrome_cleaner

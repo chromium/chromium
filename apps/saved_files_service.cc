@@ -13,15 +13,13 @@
 #include <utility>
 
 #include "apps/saved_files_service_factory.h"
-#include "base/util/values/values_util.h"
+#include "base/json/values_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/api/file_system/saved_file_entry.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -69,7 +67,7 @@ void AddSavedFileEntry(ExtensionPrefs* prefs,
   std::unique_ptr<base::DictionaryValue> file_entry_dict =
       std::make_unique<base::DictionaryValue>();
   file_entry_dict->SetKey(kFileEntryPath,
-                          util::FilePathToValue(file_entry.path));
+                          base::FilePathToValue(file_entry.path));
   file_entry_dict->SetBoolean(kFileEntryIsDirectory, file_entry.is_directory);
   file_entry_dict->SetInteger(kFileEntrySequenceNumber,
                               file_entry.sequence_number);
@@ -127,7 +125,7 @@ std::vector<SavedFileEntry> GetSavedFileEntries(
     if (!file_entry->Get(kFileEntryPath, &path_value))
       continue;
     absl::optional<base::FilePath> file_path =
-        util::ValueToFilePath(*path_value);
+        base::ValueToFilePath(*path_value);
     if (!file_path)
       continue;
     bool is_directory = false;
@@ -188,18 +186,15 @@ SavedFilesService* SavedFilesService::Get(content::BrowserContext* context) {
 
 SavedFilesService::SavedFilesService(content::BrowserContext* context)
     : context_(context) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-                 content::NotificationService::AllSources());
+  extension_host_registry_observation_.Observe(
+      extensions::ExtensionHostRegistry::Get(context_));
 }
 
 SavedFilesService::~SavedFilesService() = default;
 
-void SavedFilesService::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED, type);
-  ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
+void SavedFilesService::OnExtensionHostDestroyed(
+    content::BrowserContext* browser_context,
+    extensions::ExtensionHost* host) {
   const Extension* extension = host->extension();
   if (extension) {
     ClearQueueIfNoRetainPermission(extension);
@@ -252,9 +247,9 @@ void SavedFilesService::ClearQueue(const extensions::Extension* extension) {
 }
 
 void SavedFilesService::OnApplicationTerminating() {
-  // Stop listening to NOTIFICATION_EXTENSION_HOST_DESTROYED in particular
-  // as all extension hosts will be destroyed as a result of shutdown.
-  registrar_.RemoveAll();
+  // Stop listening to ExtensionHost shutdown as all extension hosts will be
+  // destroyed as a result of shutdown.
+  extension_host_registry_observation_.Reset();
 }
 
 SavedFilesService::SavedFiles* SavedFilesService::Get(
@@ -305,10 +300,10 @@ void SavedFilesService::SavedFiles::RegisterFileEntry(
 }
 
 void SavedFilesService::SavedFiles::EnqueueFileEntry(const std::string& id) {
-  auto it = registered_file_entries_.find(id);
-  DCHECK(it != registered_file_entries_.end());
+  auto id_it = registered_file_entries_.find(id);
+  DCHECK(id_it != registered_file_entries_.end());
 
-  SavedFileEntry* file_entry = it->second.get();
+  SavedFileEntry* file_entry = id_it->second.get();
   int old_sequence_number = file_entry->sequence_number;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -380,14 +375,14 @@ void SavedFilesService::SavedFiles::MaybeCompactSequenceNumbers() {
   DCHECK_GE(g_max_sequence_number, 0);
   DCHECK_GE(static_cast<size_t>(g_max_sequence_number),
             g_max_saved_file_entries);
-  std::map<int, SavedFileEntry*>::reverse_iterator it =
+  std::map<int, SavedFileEntry*>::reverse_iterator last_it =
       saved_file_lru_.rbegin();
-  if (it == saved_file_lru_.rend())
+  if (last_it == saved_file_lru_.rend())
     return;
 
   // Only compact sequence numbers if the last entry's sequence number is the
   // maximum value.  This should almost never be the case.
-  if (it->first < g_max_sequence_number)
+  if (last_it->first < g_max_sequence_number)
     return;
 
   int sequence_number = 0;

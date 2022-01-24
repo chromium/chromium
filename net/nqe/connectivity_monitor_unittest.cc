@@ -26,11 +26,9 @@
 namespace net {
 namespace {
 
-constexpr base::TimeDelta kInactivityThreshold{base::TimeDelta::FromSeconds(1)};
-constexpr base::TimeDelta kUpdateInterval{
-    base::TimeDelta::FromMilliseconds(100)};
-constexpr base::TimeDelta kMinFailureLoggingInterval{
-    base::TimeDelta::FromSeconds(45)};
+constexpr base::TimeDelta kInactivityThreshold{base::Seconds(1)};
+constexpr base::TimeDelta kUpdateInterval{base::Milliseconds(100)};
+constexpr base::TimeDelta kMinFailureLoggingInterval{base::Seconds(45)};
 
 class ConnectivityMonitorTest
     : public testing::Test,
@@ -139,7 +137,7 @@ TEST_P(ConnectivityMonitorTest, NetworkChangeResetsState) {
   FastForwardTimeBy(kInactivityThreshold);
   EXPECT_EQ(base::TimeDelta(), monitor().GetTimeSinceLastFailureForTesting());
 
-  FastForwardTimeBy(base::TimeDelta::FromDays(42));
+  FastForwardTimeBy(base::Days(42));
   SimulateSwitchToMobileNetwork();
   EXPECT_EQ(0u, monitor().num_active_requests_for_testing());
   EXPECT_EQ(absl::nullopt, monitor().GetTimeSinceLastFailureForTesting());
@@ -221,7 +219,7 @@ TEST_P(ConnectivityMonitorTest, HistogramLogging) {
 
   // Now trigger a network change after a long delay. This should log a
   // histogram sample conveying the time since the failure was first detected.
-  constexpr base::TimeDelta kArbitraryDelay{base::TimeDelta::FromSeconds(60)};
+  constexpr base::TimeDelta kArbitraryDelay{base::Seconds(60)};
   FastForwardTimeBy(kArbitraryDelay);
   SimulateSwitchToMobileNetwork();
   histograms.ExpectTotalCount(kHistogramName, 1);

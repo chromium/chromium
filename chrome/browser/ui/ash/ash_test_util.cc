@@ -24,6 +24,10 @@ class SnapWaiter : public aura::WindowObserver {
       : window_(window), type_(type) {
     window->AddObserver(this);
   }
+
+  SnapWaiter(const SnapWaiter&) = delete;
+  SnapWaiter& operator=(const SnapWaiter&) = delete;
+
   ~SnapWaiter() override { window_->RemoveObserver(this); }
 
   // aura::WindowObserver:
@@ -44,8 +48,6 @@ class SnapWaiter : public aura::WindowObserver {
   aura::Window* window_;
   chromeos::WindowStateType type_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapWaiter);
 };
 
 }  // namespace

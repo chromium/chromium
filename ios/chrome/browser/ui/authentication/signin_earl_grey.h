@@ -54,6 +54,9 @@
 // Induces a GREYAssert if there are no signed-in identities.
 - (void)verifyAuthenticated;
 
+// Induces a GREYAssert if the Sync state does not match |enabled|.
+- (void)verifySyncUIEnabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_EARL_GREY_H_

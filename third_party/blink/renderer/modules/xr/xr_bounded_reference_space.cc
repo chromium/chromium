@@ -27,8 +27,8 @@ float RoundCm(float val) {
 }
 
 Member<DOMPointReadOnly> RoundedDOMPoint(const FloatPoint3D& val) {
-  return DOMPointReadOnly::Create(RoundCm(val.X()), RoundCm(val.Y()),
-                                  RoundCm(val.Z()), 1.0);
+  return DOMPointReadOnly::Create(RoundCm(val.x()), RoundCm(val.y()),
+                                  RoundCm(val.z()), 1.0);
 }
 }  // anonymous namespace
 

@@ -93,17 +93,12 @@ void ChromeContentUtilityClient::PostIOThreadCreated(
     base::SingleThreadTaskRunner* io_thread_task_runner) {
   io_thread_task_runner->PostTask(
       FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                metrics::CallStackProfileParams::IO_THREAD));
+                                metrics::CallStackProfileParams::Thread::kIo));
 }
 
 void ChromeContentUtilityClient::RegisterIOThreadServices(
     mojo::ServiceFactory& services) {
   return ::RegisterIOThreadServices(services);
-}
-
-bool ChromeContentUtilityClient::GetDefaultUserDataDirectory(
-    base::FilePath* path) {
-  return base::PathService::Get(chrome::DIR_USER_DATA, path);
 }
 
 // static

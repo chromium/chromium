@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -14,6 +13,7 @@
 #include "ui/gfx/image/image.h"
 
 #if defined(OS_WIN)
+#include "base/win/windows_version.h"
 #include "ui/display/win/dpi.h"
 #endif
 
@@ -23,6 +23,9 @@ class TestIconLoader {
  public:
   explicit TestIconLoader(base::OnceClosure quit_closure)
       : quit_closure_(std::move(quit_closure)) {}
+
+  TestIconLoader(const TestIconLoader&) = delete;
+  TestIconLoader& operator=(const TestIconLoader&) = delete;
 
   ~TestIconLoader() {
     if (!quit_closure_.is_null()) {
@@ -58,8 +61,6 @@ class TestIconLoader {
 
   bool load_succeeded_ = false;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestIconLoader);
 };
 
 #if !((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(MEMORY_SANITIZER))
@@ -71,6 +72,11 @@ IN_PROC_BROWSER_TEST_F(IconLoaderBrowserTest, LoadGroup) {
   float scale = 1.0;
 #if defined(OS_WIN)
   scale = display::win::GetDPIScale();
+
+  // This test times out on Win7. Return early to avoid disabling test on
+  // all of Windows.
+  if (base::win::GetVersion() <= base::win::Version::WIN7)
+    return;
 #endif
 
   // Test that an icon for a file type (group) can be loaded even

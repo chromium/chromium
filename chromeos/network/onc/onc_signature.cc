@@ -57,6 +57,7 @@ const OncFieldSignature eap_fields[] = {
     {::onc::client_cert::kClientCertProvisioningProfileId, &kStringSignature},
     {::onc::client_cert::kClientCertRef, &kStringSignature},
     {::onc::client_cert::kClientCertType, &kStringSignature},
+    {::onc::eap::kDomainSuffixMatch, &kStringListSignature},
     {::onc::eap::kIdentity, &kStringSignature},
     {::onc::eap::kInner, &kStringSignature},
     {::onc::eap::kOuter, &kStringSignature},
@@ -310,6 +311,8 @@ const OncFieldSignature cellular_fields[] = {
     {::onc::cellular::kAPN, &kCellularApnSignature},
     {::onc::cellular::kAPNList, &kCellularApnListSignature},
     {::onc::cellular::kAutoConnect, &kBoolSignature},
+    {::onc::cellular::kICCID, &kStringSignature},
+    {::onc::cellular::kSMDPAddress, &kStringSignature},
     {nullptr}};
 
 const OncFieldSignature cellular_with_state_fields[] = {
@@ -322,7 +325,6 @@ const OncFieldSignature cellular_with_state_fields[] = {
     {::onc::cellular::kHardwareRevision, &kStringSignature},
     {::onc::cellular::kHomeProvider, &kCellularProviderSignature},
     {::onc::cellular::kEID, &kStringSignature},
-    {::onc::cellular::kICCID, &kStringSignature},
     {::onc::cellular::kIMEI, &kStringSignature},
     {::onc::cellular::kIMSI, &kStringSignature},
     {::onc::cellular::kLastGoodAPN, &kCellularApnSignature},
@@ -379,11 +381,13 @@ const OncFieldSignature network_with_state_fields[] = {
     {nullptr}};
 
 const OncFieldSignature global_network_configuration_fields[] = {
+    {::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
+     &kBoolSignature},
     {::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
      &kBoolSignature},
-    {::onc::global_network_config::kAllowOnlyPolicyNetworksToConnect,
+    {::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
      &kBoolSignature},
-    {::onc::global_network_config::kAllowOnlyPolicyNetworksToConnectIfAvailable,
+    {::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
      &kBoolSignature},
     {/* Deprecated */ ::onc::global_network_config::kBlacklistedHexSSIDs,
      &kStringListSignature},

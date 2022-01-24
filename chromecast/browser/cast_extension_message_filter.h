@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_observer.h"
@@ -30,6 +30,10 @@ class CastExtensionMessageFilter : public content::BrowserMessageFilter {
  public:
   CastExtensionMessageFilter(int render_process_id,
                              content::BrowserContext* context);
+
+  CastExtensionMessageFilter(const CastExtensionMessageFilter&) = delete;
+  CastExtensionMessageFilter& operator=(const CastExtensionMessageFilter&) =
+      delete;
 
   // content::BrowserMessageFilter methods:
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -54,8 +58,6 @@ class CastExtensionMessageFilter : public content::BrowserMessageFilter {
   content::BrowserContext* context_;
 
   scoped_refptr<extensions::InfoMap> extension_info_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionMessageFilter);
 };
 
 #endif  // CHROMECAST_BROWSER_CAST_EXTENSION_MESSAGE_FILTER_H_

@@ -19,13 +19,15 @@ class COMPONENTS_DOWNLOAD_EXPORT UrlDownloadRequestHandle {
       scoped_refptr<base::SequencedTaskRunner> downloader_task_runner);
   UrlDownloadRequestHandle(UrlDownloadRequestHandle&& other);
   UrlDownloadRequestHandle& operator=(UrlDownloadRequestHandle&& other);
+
+  UrlDownloadRequestHandle(const UrlDownloadRequestHandle&) = delete;
+  UrlDownloadRequestHandle& operator=(const UrlDownloadRequestHandle&) = delete;
+
   ~UrlDownloadRequestHandle();
 
  private:
   base::WeakPtr<UrlDownloadHandler> downloader_;
   scoped_refptr<base::SequencedTaskRunner> downloader_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlDownloadRequestHandle);
 };
 
 }  // namespace download

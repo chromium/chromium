@@ -49,7 +49,7 @@ interface DigitalGoodsFactory {
         pending_remote<DigitalGoods>? digital_goods);
 };
 
-[Extensible]
+[Extensible, Stable]
 enum BillingResponseCode {
   kOk,
   kError,
@@ -60,6 +60,7 @@ enum BillingResponseCode {
   kClientAppError,
 };
 
+[Stable]
 struct ItemDetails {
   string item_id;
   string title;
@@ -81,6 +82,7 @@ enum CreateDigitalGoodsResponseCode {
   kUnsupportedContext,
 };
 
+[Stable]
 struct PurchaseDetails {
   string item_id;
   string purchase_token;
@@ -91,7 +93,7 @@ struct PurchaseDetails {
   bool will_auto_renew;
 };
 
-[Extensible]
+[Extensible, Stable]
 enum PurchaseState {
   kUnknown,
   kPurchased,

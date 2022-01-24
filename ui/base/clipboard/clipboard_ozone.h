@@ -31,6 +31,9 @@ class ClipboardOzone : public Clipboard {
   DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const override;
+  std::vector<std::u16string> GetStandardFormats(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_dst) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
                          const DataTransferEndpoint* data_dst) const override;
@@ -38,9 +41,6 @@ class ClipboardOzone : public Clipboard {
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const DataTransferEndpoint* data_dst,
                           std::vector<std::u16string>* types) const override;
-  std::vector<std::u16string> ReadAvailablePlatformSpecificFormatNames(
-      ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst) const override;
   void ReadText(ClipboardBuffer buffer,
                 const DataTransferEndpoint* data_dst,
                 std::u16string* result) const override;
@@ -62,9 +62,6 @@ class ClipboardOzone : public Clipboard {
   void ReadPng(ClipboardBuffer buffer,
                const DataTransferEndpoint* data_dst,
                ReadPngCallback callback) const override;
-  void ReadImage(ClipboardBuffer buffer,
-                 const DataTransferEndpoint* data_dst,
-                 ReadImageCallback callback) const override;
   void ReadCustomData(ClipboardBuffer buffer,
                       const std::u16string& type,
                       const DataTransferEndpoint* data_dst,
@@ -104,7 +101,7 @@ class ClipboardOzone : public Clipboard {
                  const char* data_data,
                  size_t data_len) override;
 
-  std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer) const;
+  base::span<uint8_t> ReadPngInternal(const ClipboardBuffer buffer) const;
 
   class AsyncClipboardOzone;
 

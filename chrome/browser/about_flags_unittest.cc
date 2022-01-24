@@ -33,13 +33,7 @@ using SwitchToIdMap = std::map<std::string, Sample>;
 std::set<std::string> GetAllPublicSwitchesAndFeaturesForTesting() {
   std::set<std::string> result;
 
-  size_t num_entries = 0;
-  const flags_ui::FeatureEntry* entries =
-      testing::GetFeatureEntries(&num_entries);
-
-  for (size_t i = 0; i < num_entries; ++i) {
-    const flags_ui::FeatureEntry& entry = entries[i];
-
+  for (const auto& entry : testing::GetFeatureEntries()) {
     // Skip over flags that are part of the flags system itself - they don't
     // have any of the usual metadata or histogram entries for flags, since they
     // are synthesized during the build process.
@@ -79,22 +73,17 @@ std::set<std::string> GetAllPublicSwitchesAndFeaturesForTesting() {
 
 // Makes sure there are no separators in any of the entry names.
 TEST(AboutFlagsTest, NoSeparators) {
-  size_t count;
-  const flags_ui::FeatureEntry* entries = testing::GetFeatureEntries(&count);
-  for (size_t i = 0; i < count; ++i) {
-    std::string name = entries[i].internal_name;
+  for (const auto& entry : testing::GetFeatureEntries()) {
+    const std::string name(entry.internal_name);
     EXPECT_EQ(std::string::npos, name.find(flags_ui::testing::kMultiSeparator))
-        << i;
+        << name;
   }
 }
 
 // Makes sure that every flag has an owner and an expiry entry in
 // flag-metadata.json.
 TEST(AboutFlagsTest, EveryFlagHasMetadata) {
-  size_t count;
-  const flags_ui::FeatureEntry* entries = testing::GetFeatureEntries(&count);
-  flags_ui::testing::EnsureEveryFlagHasMetadata(
-      base::make_span(entries, count));
+  flags_ui::testing::EnsureEveryFlagHasMetadata(testing::GetFeatureEntries());
 }
 
 // Ensures that all flags marked as never expiring in flag-metadata.json is
@@ -121,33 +110,29 @@ TEST(AboutFlagsTest, FlagsListedInAlphabeticalOrder) {
 }
 
 TEST(AboutFlagsTest, RecentUnexpireFlagsArePresent) {
-  size_t count;
-  const flags_ui::FeatureEntry* entries = testing::GetFeatureEntries(&count);
   flags_ui::testing::EnsureRecentUnexpireFlagsArePresent(
-      base::make_span(entries, count), CHROME_VERSION_MAJOR);
+      testing::GetFeatureEntries(), CHROME_VERSION_MAJOR);
 }
 
 // Test that ScopedFeatureEntries restores existing feature entries on
 // destruction.
 TEST(AboutFlagsTest, ScopedFeatureEntriesRestoresFeatureEntries) {
-  size_t orig_num_features;
-  const flags_ui::FeatureEntry* cur_entries =
-      testing::GetFeatureEntries(&orig_num_features);
-  EXPECT_GT(orig_num_features, 0U);
-  const char* first_feature_name = cur_entries[0].internal_name;
+  const base::span<const flags_ui::FeatureEntry> old_entries =
+      testing::GetFeatureEntries();
+  EXPECT_GT(old_entries.size(), 0U);
+  const char* first_feature_name = old_entries[0].internal_name;
   {
     const base::Feature kTestFeature1{"FeatureName1",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
     testing::ScopedFeatureEntries feature_entries(
         {{"feature-1", "", "", flags_ui::FlagsState::GetCurrentPlatform(),
           FEATURE_VALUE_TYPE(kTestFeature1)}});
-    size_t num_features;
-    testing::GetFeatureEntries(&num_features);
-    EXPECT_EQ(num_features, 1U);
+    EXPECT_EQ(testing::GetFeatureEntries().size(), 1U);
   }
-  size_t new_num_features;
-  cur_entries = testing::GetFeatureEntries(&new_num_features);
-  EXPECT_EQ(orig_num_features, new_num_features);
+
+  const base::span<const flags_ui::FeatureEntry> new_entries =
+      testing::GetFeatureEntries();
+  EXPECT_EQ(old_entries.size(), new_entries.size());
   EXPECT_TRUE(about_flags::GetCurrentFlagsState()->FindFeatureEntryByName(
       first_feature_name));
 }
@@ -186,7 +171,7 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
          "tools/metrics/histograms/enums.xml.";
 
   // Build reverse map {switch_name => id} from login_custom_flags.
-  SwitchToIdMap histograms_xml_switches_ids;
+  SwitchToIdMap metadata_switches_ids;
 
   EXPECT_TRUE(
       login_custom_flags->count(flags_ui::testing::kBadSwitchFormatHistogramId))
@@ -199,7 +184,7 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
     if (entry.first == flags_ui::testing::kBadSwitchFormatHistogramId) {
       // Add error value with empty name.
       SetSwitchToHistogramIdMapping(std::string(), entry.first,
-                                    &histograms_xml_switches_ids);
+                                    &metadata_switches_ids);
       continue;
     }
     const Sample uma_id = flags_ui::GetSwitchUMAId(entry.second);
@@ -210,7 +195,7 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
         << uma_id << " is expected. Consider changing entry to:\n"
         << "  " << GetHistogramEnumEntryText(entry.second, uma_id);
     SetSwitchToHistogramIdMapping(entry.second, entry.first,
-                                  &histograms_xml_switches_ids);
+                                  &metadata_switches_ids);
   }
 
   // Check that all flags in about_flags.cc have entries in login_custom_flags.
@@ -226,11 +211,11 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
            "kBadSwitchFormatHistogramId="
         << flags_ui::testing::kBadSwitchFormatHistogramId
         << ". Please modify switch name.";
-    auto enum_entry = histograms_xml_switches_ids.lower_bound(flag);
+    auto enum_entry = metadata_switches_ids.lower_bound(flag);
 
     // Ignore case here when switch ID is incorrect - it has already been
     // reported in the previous loop.
-    EXPECT_TRUE(enum_entry != histograms_xml_switches_ids.end() &&
+    EXPECT_TRUE(enum_entry != metadata_switches_ids.end() &&
                 enum_entry->first == flag)
         << "tools/metrics/histograms/enums.xml enum LoginCustomFlags doesn't "
            "contain switch '"

@@ -28,6 +28,11 @@ class HeaderModificationDelegateImpl : public HeaderModificationDelegate {
   explicit HeaderModificationDelegateImpl(Profile* profile);
 #endif
 
+  HeaderModificationDelegateImpl(const HeaderModificationDelegateImpl&) =
+      delete;
+  HeaderModificationDelegateImpl& operator=(
+      const HeaderModificationDelegateImpl&) = delete;
+
   ~HeaderModificationDelegateImpl() override;
 
   // HeaderModificationDelegate
@@ -55,8 +60,6 @@ class HeaderModificationDelegateImpl : public HeaderModificationDelegate {
 #if defined(OS_ANDROID)
   bool incognito_enabled_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(HeaderModificationDelegateImpl);
 };
 
 }  // namespace signin

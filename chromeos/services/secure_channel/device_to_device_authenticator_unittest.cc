@@ -10,7 +10,7 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/timer/mock_timer.h"
@@ -19,6 +19,8 @@
 #include "chromeos/services/secure_channel/authenticator.h"
 #include "chromeos/services/secure_channel/connection.h"
 #include "chromeos/services/secure_channel/device_to_device_responder_operations.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/secure_context.h"
 #include "chromeos/services/secure_channel/session_keys.h"
 #include "chromeos/services/secure_channel/wire_message.h"
@@ -67,6 +69,10 @@ class FakeConnection : public Connection {
  public:
   explicit FakeConnection(multidevice::RemoteDeviceRef remote_device)
       : Connection(remote_device), connection_blocked_(false) {}
+
+  FakeConnection(const FakeConnection&) = delete;
+  FakeConnection& operator=(const FakeConnection&) = delete;
+
   ~FakeConnection() override {}
 
   // Connection:
@@ -96,12 +102,18 @@ class FakeConnection : public Connection {
     OnDidSendMessage(message_alias, !connection_blocked_);
   }
 
+  void RegisterPayloadFileImpl(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) override {
+    std::move(registration_result_callback).Run(/*success=*/false);
+  }
+
  private:
   std::vector<std::unique_ptr<WireMessage>> message_buffer_;
 
   bool connection_blocked_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnection);
 };
 
 // Harness for testing DeviceToDeviceAuthenticator.
@@ -114,6 +126,12 @@ class DeviceToDeviceAuthenticatorForTest : public DeviceToDeviceAuthenticator {
       : DeviceToDeviceAuthenticator(connection,
                                     std::move(secure_message_delegate)),
         timer_(nullptr) {}
+
+  DeviceToDeviceAuthenticatorForTest(
+      const DeviceToDeviceAuthenticatorForTest&) = delete;
+  DeviceToDeviceAuthenticatorForTest& operator=(
+      const DeviceToDeviceAuthenticatorForTest&) = delete;
+
   ~DeviceToDeviceAuthenticatorForTest() override {}
 
   base::MockOneShotTimer* timer() { return timer_; }
@@ -128,8 +146,6 @@ class DeviceToDeviceAuthenticatorForTest : public DeviceToDeviceAuthenticator {
 
   // This instance is owned by the super class.
   base::MockOneShotTimer* timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceAuthenticatorForTest);
 };
 
 }  // namespace
@@ -142,6 +158,12 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
         secure_message_delegate_(new multidevice::FakeSecureMessageDelegate),
         authenticator_(&connection_,
                        base::WrapUnique(secure_message_delegate_)) {}
+
+  SecureChannelDeviceToDeviceAuthenticatorTest(
+      const SecureChannelDeviceToDeviceAuthenticatorTest&) = delete;
+  SecureChannelDeviceToDeviceAuthenticatorTest& operator=(
+      const SecureChannelDeviceToDeviceAuthenticatorTest&) = delete;
+
   ~SecureChannelDeviceToDeviceAuthenticatorTest() override {}
 
   void SetUp() override {
@@ -241,8 +263,6 @@ class SecureChannelDeviceToDeviceAuthenticatorTest : public testing::Test {
 
   // Stores the SecureContext returned after authentication succeeds.
   std::unique_ptr<SecureContext> secure_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelDeviceToDeviceAuthenticatorTest);
 };
 
 TEST_F(SecureChannelDeviceToDeviceAuthenticatorTest, AuthenticateSucceeds) {

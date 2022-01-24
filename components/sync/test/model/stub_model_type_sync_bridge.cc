@@ -15,7 +15,7 @@ StubModelTypeSyncBridge::StubModelTypeSyncBridge(
     std::unique_ptr<ModelTypeChangeProcessor> change_processor)
     : ModelTypeSyncBridge(std::move(change_processor)) {}
 
-StubModelTypeSyncBridge::~StubModelTypeSyncBridge() {}
+StubModelTypeSyncBridge::~StubModelTypeSyncBridge() = default;
 
 std::unique_ptr<MetadataChangeList>
 StubModelTypeSyncBridge::CreateMetadataChangeList() {

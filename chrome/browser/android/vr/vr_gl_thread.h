@@ -8,9 +8,8 @@
 #include <memory>
 
 #include "base/android/java_handler_thread.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/vr/browser_renderer_factory.h"
 #include "chrome/browser/android/vr/gl_browser_interface.h"
 #include "chrome/browser/android/vr/gvr_keyboard_delegate.h"
@@ -56,6 +55,9 @@ class VrGLThread : public base::android::JavaHandlerThread,
       bool low_density,
       base::WaitableEvent* gl_surface_created_event,
       base::OnceCallback<gfx::AcceleratedWidget()> surface_callback);
+
+  VrGLThread(const VrGLThread&) = delete;
+  VrGLThread& operator=(const VrGLThread&) = delete;
 
   ~VrGLThread() override;
   base::WeakPtr<BrowserRenderer> GetBrowserRenderer();
@@ -182,8 +184,6 @@ class VrGLThread : public base::android::JavaHandlerThread,
 
   // This state is used for initializing the BrowserRenderer.
   std::unique_ptr<BrowserRendererFactory::Params> factory_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(VrGLThread);
 };
 
 }  // namespace vr

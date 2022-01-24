@@ -22,7 +22,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_extensions.h"
 #include "minidump/minidump_writable.h"
@@ -277,6 +276,10 @@ class TestUInt32MinidumpWritable final : public internal::MinidumpWritable {
   //! \brief Constructs the object to write a `uint32_t` with value \a value.
   explicit TestUInt32MinidumpWritable(uint32_t value);
 
+  TestUInt32MinidumpWritable(const TestUInt32MinidumpWritable&) = delete;
+  TestUInt32MinidumpWritable& operator=(const TestUInt32MinidumpWritable&) =
+      delete;
+
   ~TestUInt32MinidumpWritable() override;
 
  protected:
@@ -286,8 +289,6 @@ class TestUInt32MinidumpWritable final : public internal::MinidumpWritable {
 
  private:
   uint32_t value_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUInt32MinidumpWritable);
 };
 
 }  // namespace test

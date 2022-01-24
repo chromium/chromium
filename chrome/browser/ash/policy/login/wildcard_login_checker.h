@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -32,6 +31,10 @@ class WildcardLoginChecker : public UserInfoFetcher::Delegate {
   using StatusCallback = base::OnceCallback<void(Result)>;
 
   WildcardLoginChecker();
+
+  WildcardLoginChecker(const WildcardLoginChecker&) = delete;
+  WildcardLoginChecker& operator=(const WildcardLoginChecker&) = delete;
+
   virtual ~WildcardLoginChecker();
 
   // Starts checking with a provided refresh token.
@@ -61,8 +64,6 @@ class WildcardLoginChecker : public UserInfoFetcher::Delegate {
 
   std::unique_ptr<PolicyOAuth2TokenFetcher> token_fetcher_;
   std::unique_ptr<UserInfoFetcher> user_info_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WildcardLoginChecker);
 };
 
 }  // namespace policy

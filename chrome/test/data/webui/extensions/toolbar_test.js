@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isMac} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo, testVisible} from './test_util.js';

@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_unlock {
@@ -76,10 +77,14 @@ FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {
           kFingerprintUMAFeatureName, this);
 }
 
-FingerprintStorage::~FingerprintStorage() {}
+FingerprintStorage::~FingerprintStorage() = default;
 
 bool FingerprintStorage::IsEligible() const {
   return IsFingerprintSupported();
+}
+
+absl::optional<bool> FingerprintStorage::IsAccessible() const {
+  return IsFingerprintEnabled(profile_);
 }
 
 bool FingerprintStorage::IsEnabled() const {

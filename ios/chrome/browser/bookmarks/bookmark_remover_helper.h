@@ -21,6 +21,10 @@ class BookmarkRemoverHelper : public bookmarks::BaseBookmarkModelObserver {
   using Callback = base::OnceCallback<void(bool)>;
 
   explicit BookmarkRemoverHelper(ChromeBrowserState* browser_state);
+
+  BookmarkRemoverHelper(const BookmarkRemoverHelper&) = delete;
+  BookmarkRemoverHelper& operator=(const BookmarkRemoverHelper&) = delete;
+
   ~BookmarkRemoverHelper() override;
 
   // Removes all bookmarks and asynchronously invoke |completion| with
@@ -45,8 +49,6 @@ class BookmarkRemoverHelper : public bookmarks::BaseBookmarkModelObserver {
   ChromeBrowserState* browser_state_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkRemoverHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_REMOVER_HELPER_H_

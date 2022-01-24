@@ -21,29 +21,28 @@
 #include "gtest/gtest.h"
 #include "maldoca/base/digest.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
 #include "maldoca/base/testing/status_matchers.h"
+#include "maldoca/base/testing/test_utils.h"
 #include "maldoca/ole/dir.h"
 #include "maldoca/ole/fat.h"
 #include "maldoca/ole/header.h"
 #include "maldoca/ole/oss_utils.h"
 
-using maldoca::DirectoryStorageType;
-using maldoca::FAT;
-using maldoca::OLEDirectoryEntry;
-using maldoca::OLEHeader;
-using maldoca::OLEStream;
+using ::maldoca::DirectoryStorageType;
+using ::maldoca::FAT;
+using ::maldoca::OLEDirectoryEntry;
+using ::maldoca::OLEHeader;
+using ::maldoca::OLEStream;
 
 namespace {
 std::string TestFilename(absl::string_view filename) {
-  return maldoca::file::JoinPath(
-      maldoca::GetRunfilesDir(),
-      absl::StrCat("maldoca/ole/testdata/", filename));
+  return maldoca::testing::OleTestFilename(filename);
 }
 
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status =
+      maldoca::testing::GetTestContents(TestFilename(filename), &content);
   MALDOCA_EXPECT_OK(status) << status;
   return content;
 }
@@ -51,7 +50,7 @@ std::string GetTestContent(absl::string_view filename) {
 class StreamTest : public testing::Test {
  protected:
   void SetUp() override {
-    input = GetTestContent("vba1.bin");
+    input = GetTestContent("vba1_xor_0x42_encoded.bin");
     EXPECT_TRUE(OLEHeader::ParseHeader(input, &header));
     EXPECT_TRUE(header.IsInitialized());
     EXPECT_TRUE(FAT::Read(input, header, &fat));
@@ -79,10 +78,10 @@ class StreamTest : public testing::Test {
 TEST(StreamDecompression, BogusInputTest) {
   std::string output;
   ASSERT_DEATH(OLEStream::DecompressStream("", &output),
-               "Check failed: !input_string[.]empty[(][)]");
+               "Check failed: !input_string\\.empty\\(\\)");
   output = "content";
   ASSERT_DEATH(OLEStream::DecompressStream("abc", &output),
-               "Check failed: output->empty[(][)]");
+               "Check failed: output->empty\\(\\)");
 
   // TODO(somebody) So here we should really inspect what's logged
   // to make sure the right code path are activated. This requires
@@ -144,6 +143,10 @@ TEST_F(StreamTest, GoodInputTest) {
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
+#ifdef MALDOCA_CHROME
+  // mini_chromium needs InitLogging
+  maldoca::InitLogging();
+#endif
   ::benchmark::RunSpecifiedBenchmarks();
   return RUN_ALL_TESTS();
 }

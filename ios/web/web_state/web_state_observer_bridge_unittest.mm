@@ -91,6 +91,35 @@ TEST_F(WebStateObserverBridgeTest, DidStartNavigation) {
             actual_context->GetResponseHeaders());
 }
 
+// Tests |webState:didRedirectNavigation:| forwarding.
+TEST_F(WebStateObserverBridgeTest, DidRedirectNavigation) {
+  ASSERT_FALSE([observer_ didRedirectNavigationInfo]);
+
+  GURL url("https://chromium.test/");
+  std::unique_ptr<web::NavigationContext> context =
+      web::NavigationContextImpl::CreateNavigationContext(
+          &fake_web_state_, url, /*has_user_gesture=*/true,
+          ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK,
+          /*is_renderer_initiated=*/false);
+  observer_bridge_.DidRedirectNavigation(&fake_web_state_, context.get());
+
+  ASSERT_TRUE([observer_ didRedirectNavigationInfo]);
+  EXPECT_EQ(&fake_web_state_, [observer_ didRedirectNavigationInfo]->web_state);
+  web::NavigationContext* actual_context =
+      [observer_ didRedirectNavigationInfo]->context.get();
+  ASSERT_TRUE(actual_context);
+  EXPECT_EQ(&fake_web_state_, actual_context->GetWebState());
+  EXPECT_EQ(context->IsSameDocument(), actual_context->IsSameDocument());
+  EXPECT_EQ(context->GetError(), actual_context->GetError());
+  EXPECT_EQ(context->GetUrl(), actual_context->GetUrl());
+  EXPECT_EQ(context->HasUserGesture(), actual_context->HasUserGesture());
+  EXPECT_TRUE(PageTransitionTypeIncludingQualifiersIs(
+      ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK,
+      actual_context->GetPageTransition()));
+  EXPECT_EQ(context->GetResponseHeaders(),
+            actual_context->GetResponseHeaders());
+}
+
 // Tests |webState:didFinishNavigation:| forwarding.
 TEST_F(WebStateObserverBridgeTest, DidFinishNavigation) {
   ASSERT_FALSE([observer_ didFinishNavigationInfo]);
@@ -118,6 +147,24 @@ TEST_F(WebStateObserverBridgeTest, DidFinishNavigation) {
       actual_context->GetPageTransition()));
   EXPECT_EQ(context->GetResponseHeaders(),
             actual_context->GetResponseHeaders());
+}
+
+// Tests |webState:webStateDidStartLoading:| forwarding.
+TEST_F(WebStateObserverBridgeTest, DidStartLoading) {
+  ASSERT_FALSE([observer_ startLoadingInfo]);
+
+  observer_bridge_.DidStartLoading(&fake_web_state_);
+  ASSERT_TRUE([observer_ startLoadingInfo]);
+  EXPECT_EQ(&fake_web_state_, [observer_ startLoadingInfo]->web_state);
+}
+
+// Tests |webState:webStateDidStopLoading:| forwarding.
+TEST_F(WebStateObserverBridgeTest, DidStopLoading) {
+  ASSERT_FALSE([observer_ stopLoadingInfo]);
+
+  observer_bridge_.DidStopLoading(&fake_web_state_);
+  ASSERT_TRUE([observer_ stopLoadingInfo]);
+  EXPECT_EQ(&fake_web_state_, [observer_ stopLoadingInfo]->web_state);
 }
 
 // Tests |webState:didLoadPageWithSuccess:| forwarding.
@@ -148,6 +195,16 @@ TEST_F(WebStateObserverBridgeTest, LoadProgressChanged) {
   ASSERT_TRUE([observer_ changeLoadingProgressInfo]);
   EXPECT_EQ(&fake_web_state_, [observer_ changeLoadingProgressInfo]->web_state);
   EXPECT_EQ(kTestLoadProgress, [observer_ changeLoadingProgressInfo]->progress);
+}
+
+// Tests |webStateDidChangeBackForwardState:| forwarding.
+TEST_F(WebStateObserverBridgeTest, DidChangeBackForwardState) {
+  ASSERT_FALSE([observer_ changeBackForwardStateInfo]);
+
+  observer_bridge_.DidChangeBackForwardState(&fake_web_state_);
+  ASSERT_TRUE([observer_ changeBackForwardStateInfo]);
+  EXPECT_EQ(&fake_web_state_,
+            [observer_ changeBackForwardStateInfo]->web_state);
 }
 
 // Tests |webStateDidChangeTitle:| forwarding.
@@ -190,7 +247,7 @@ TEST_F(WebStateObserverBridgeTest, FaviconUrlUpdated) {
   EXPECT_EQ(url.icon_sizes[0].height(), actual_url.icon_sizes[0].height());
 }
 
-// Tests |webState:renderProcessGoneForWebState:| forwarding.
+// Tests |renderProcessGoneForWebState:| forwarding.
 TEST_F(WebStateObserverBridgeTest, RenderProcessGone) {
   ASSERT_FALSE([observer_ renderProcessGoneInfo]);
 
@@ -199,31 +256,22 @@ TEST_F(WebStateObserverBridgeTest, RenderProcessGone) {
   EXPECT_EQ(&fake_web_state_, [observer_ renderProcessGoneInfo]->web_state);
 }
 
-// Tests |webState:webStateDestroyed:| forwarding.
+// Tests |webStateRealized:| forwarding.
+TEST_F(WebStateObserverBridgeTest, WebStateRealized) {
+  ASSERT_FALSE([observer_ webStateRealizedInfo]);
+
+  observer_bridge_.WebStateRealized(&fake_web_state_);
+  ASSERT_TRUE([observer_ webStateRealizedInfo]);
+  EXPECT_EQ(&fake_web_state_, [observer_ webStateRealizedInfo]->web_state);
+}
+
+// Tests |webStateDestroyed:| forwarding.
 TEST_F(WebStateObserverBridgeTest, WebStateDestroyed) {
   ASSERT_FALSE([observer_ webStateDestroyedInfo]);
 
   observer_bridge_.WebStateDestroyed(&fake_web_state_);
   ASSERT_TRUE([observer_ webStateDestroyedInfo]);
   EXPECT_EQ(&fake_web_state_, [observer_ webStateDestroyedInfo]->web_state);
-}
-
-// Tests |webState:webStateDidStopLoading:| forwarding.
-TEST_F(WebStateObserverBridgeTest, DidStopLoading) {
-  ASSERT_FALSE([observer_ stopLoadingInfo]);
-
-  observer_bridge_.DidStopLoading(&fake_web_state_);
-  ASSERT_TRUE([observer_ stopLoadingInfo]);
-  EXPECT_EQ(&fake_web_state_, [observer_ stopLoadingInfo]->web_state);
-}
-
-// Tests |webState:webStateDidStartLoading:| forwarding.
-TEST_F(WebStateObserverBridgeTest, DidStartLoading) {
-  ASSERT_FALSE([observer_ startLoadingInfo]);
-
-  observer_bridge_.DidStartLoading(&fake_web_state_);
-  ASSERT_TRUE([observer_ startLoadingInfo]);
-  EXPECT_EQ(&fake_web_state_, [observer_ startLoadingInfo]->web_state);
 }
 
 }  // namespace web

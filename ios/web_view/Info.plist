@@ -11,7 +11,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleIdentifier</key>
-	<string>${IOS_BUNDLE_ID_PREFIX}.${EXECUTABLE_NAME:rfc1034identifier}</string>
+	<string>${BUNDLE_IDENTIFIER}</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleDevelopmentRegion</key>

@@ -7,7 +7,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 
@@ -15,6 +14,10 @@
 class ConcatMenuModel : public ui::MenuModel {
  public:
   ConcatMenuModel(ui::MenuModel* m1, ui::MenuModel* m2);
+
+  ConcatMenuModel(const ConcatMenuModel&) = delete;
+  ConcatMenuModel& operator=(const ConcatMenuModel&) = delete;
+
   ~ConcatMenuModel() override;
 
   // MenuModel:
@@ -52,8 +55,6 @@ class ConcatMenuModel : public ui::MenuModel {
 
   ui::MenuModel* const m1_;
   ui::MenuModel* const m2_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConcatMenuModel);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_CONCAT_MENU_MODEL_H_

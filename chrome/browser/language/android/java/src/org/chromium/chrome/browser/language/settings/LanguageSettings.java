@@ -210,7 +210,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
                 (LanguageItemListPreference) findPreference(NEVER_LANGUAGES_KEY);
         neverTranslatePreference.setFragmentListDelegate(
                 new NeverTranslateListFragment.ListDelegate());
-        mPrefChangeRegistrar.addObserver(Pref.FLUENT_LANGUAGES, neverTranslatePreference);
+        mPrefChangeRegistrar.addObserver(Pref.BLOCKED_LANGUAGES, neverTranslatePreference);
         setLanguageListPreferenceClickListener(neverTranslatePreference);
 
         // Setup translate switch to toggle advanced section on and off.
@@ -264,7 +264,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
             LanguagesManager.recordAction(
                     LanguagesManager.LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE);
             mAppLanguageDelegate.startLanguageSplitDownload(code);
-            if (TextUtils.equals(code, AppLocaleUtils.SYSTEM_LANGUAGE_VALUE)) {
+            if (AppLocaleUtils.isFollowSystemLanguage(code)) {
                 // Get the actual default system language to set as target language.
                 code = GlobalAppLocaleController.getInstance()
                                .getOriginalSystemLocale()
@@ -307,7 +307,12 @@ public class LanguageSettings extends PreferenceFragmentCompat
      * Set the action to restart Chrome for the App Language Snackbar.
      */
     public void setRestartAction(AppLanguagePreferenceDelegate.RestartAction action) {
-        mAppLanguageDelegate.setRestartAction(action);
+        AppLanguagePreferenceDelegate.RestartAction wrappedAction = () -> {
+            LanguagesManager.recordAction(
+                    LanguagesManager.LanguageSettingsActionType.RESTART_CHROME);
+            action.restart();
+        };
+        mAppLanguageDelegate.setRestartAction(wrappedAction);
     }
 
     /**

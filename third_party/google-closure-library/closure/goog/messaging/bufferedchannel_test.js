@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.messaging.BufferedChannelTest');
 goog.setTestOnly();
@@ -48,11 +40,11 @@ function assertMessageArraysEqual(ma1, ma2) {
 
 testSuite({
   setUpPage() {
-    if (goog.global.console) {
+    if (globalThis.console) {
       new DebugConsole().setCapturing(true);
     }
     const logger = log.getLogger('goog.messaging');
-    logger.setLevel(Level.ALL);
+    log.setLevel(logger, Level.ALL);
     log.addHandler(logger, (logRecord) => {
       const msg = dom.createDom(TagName.DIV);
       msg.innerHTML = logRecord.getMessage();
@@ -72,6 +64,7 @@ testSuite({
     mockControl.$tearDown();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testDelegationToWrappedChannel() {
     const mockChannel = new MockMessageChannel(mockControl);
     const channel = new BufferedChannel(mockChannel);
@@ -87,6 +80,7 @@ testSuite({
         BufferedChannel.USER_CHANNEL_NAME_ + ':message', 'payload');
 
     mockControl.$replayAll();
+    /** @suppress {visibility} suppression added to enable type checking */
     channel.peerReady_ = true;  // Prevent buffering so we delegate send calls.
     mockChannel.receive(
         BufferedChannel.USER_CHANNEL_NAME_ + ':defaultServiceName',
@@ -109,6 +103,7 @@ testSuite({
     mockControl.$verifyAll();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testSendExceptionsInSendReadyPingStopsTimerAndReraises() {
     const mockChannel = new MockMessageChannel(mockControl);
     const channel = new BufferedChannel(mockChannel);
@@ -120,17 +115,23 @@ testSuite({
                 BufferedChannel.PEER_READY_SERVICE_NAME_,
             /* payload */ '')
         .$throws(Error(errorMessage));
+    /** @suppress {visibility} suppression added to enable type checking */
     channel.timer_.enabled = true;
 
     mockControl.$replayAll();
-    const exception = assertThrows(() => {
-      channel.sendReadyPing_();
-    });
+    const exception = assertThrows(/**
+                                      @suppress {visibility} suppression added
+                                      to enable type checking
+                                    */
+                                   () => {
+                                     channel.sendReadyPing_();
+                                   });
     assertContains(errorMessage, exception.message);
     assertFalse(channel.timer_.enabled);
     mockControl.$verifyAll();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testPollingIntervalDefaultAndOverride() {
     const mockChannel = new MockMessageChannel(mockControl);
     const channel = new BufferedChannel(mockChannel);
@@ -143,6 +144,7 @@ testSuite({
     assertEquals(interval, longIntervalChannel.timer_.getInterval());
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testBidirectionalCommunicationBuffersUntilReadyPingsSucceed() {
     const mockChannel1 = new MockMessageChannel(mockControl);
     const mockChannel2 = new MockMessageChannel(mockControl);
@@ -150,19 +152,31 @@ testSuite({
     const bufferedChannel2 = new BufferedChannel(mockChannel2);
     mockChannel1
         .send(BufferedChannel.CONTROL_CHANNEL_NAME_ + ':setPeerReady_', '')
-        .$does(() => {
-          bufferedChannel2.setPeerReady_('');
-        });
+        .$does(/**
+                  @suppress {visibility} suppression added to enable type
+                  checking
+                */
+               () => {
+                 bufferedChannel2.setPeerReady_('');
+               });
     mockChannel2
         .send(BufferedChannel.CONTROL_CHANNEL_NAME_ + ':setPeerReady_', '1')
-        .$does(() => {
-          bufferedChannel1.setPeerReady_('1');
-        });
+        .$does(/**
+                  @suppress {visibility} suppression added to enable type
+                  checking
+                */
+               () => {
+                 bufferedChannel1.setPeerReady_('1');
+               });
     mockChannel1
         .send(BufferedChannel.CONTROL_CHANNEL_NAME_ + ':setPeerReady_', '1')
-        .$does(() => {
-          bufferedChannel2.setPeerReady_('1');
-        });
+        .$does(/**
+                  @suppress {visibility} suppression added to enable type
+                  checking
+                */
+               () => {
+                 bufferedChannel2.setPeerReady_('1');
+               });
     mockChannel1.send(
         BufferedChannel.USER_CHANNEL_NAME_ + ':' + messages[0].serviceName,
         messages[0].payload);
@@ -185,6 +199,7 @@ testSuite({
     mockControl.$verifyAll();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testBidirectionalCommunicationReconnectsAfterOneSideRestarts() {
     const mockChannel1 = new MockMessageChannel(mockControl);
     const mockChannel2 = new MockMessageChannel(mockControl);
@@ -196,19 +211,31 @@ testSuite({
     // First tick
     mockChannel1
         .send(BufferedChannel.CONTROL_CHANNEL_NAME_ + ':setPeerReady_', '')
-        .$does(() => {
-          bufferedChannel2.setPeerReady_('');
-        });
+        .$does(/**
+                  @suppress {visibility} suppression added to enable type
+                  checking
+                */
+               () => {
+                 bufferedChannel2.setPeerReady_('');
+               });
     mockChannel2
         .send(BufferedChannel.CONTROL_CHANNEL_NAME_ + ':setPeerReady_', '1')
-        .$does(() => {
-          bufferedChannel1.setPeerReady_('1');
-        });
+        .$does(/**
+                  @suppress {visibility} suppression added to enable type
+                  checking
+                */
+               () => {
+                 bufferedChannel1.setPeerReady_('1');
+               });
     mockChannel1
         .send(BufferedChannel.CONTROL_CHANNEL_NAME_ + ':setPeerReady_', '1')
-        .$does(() => {
-          bufferedChannel2.setPeerReady_('1');
-        });
+        .$does(/**
+                  @suppress {visibility} suppression added to enable type
+                  checking
+                */
+               () => {
+                 bufferedChannel2.setPeerReady_('1');
+               });
     mockChannel3.send(
         BufferedChannel.CONTROL_CHANNEL_NAME_ + ':setPeerReady_',
         '');  // pretend it's not ready to connect yet
@@ -216,21 +243,33 @@ testSuite({
     // Second tick
     mockChannel3
         .send(BufferedChannel.CONTROL_CHANNEL_NAME_ + ':setPeerReady_', '')
-        .$does(() => {
-          bufferedChannel1.setPeerReady_('');
-        });
+        .$does(/**
+                  @suppress {visibility} suppression added to enable type
+                  checking
+                */
+               () => {
+                 bufferedChannel1.setPeerReady_('');
+               });
 
     // Third tick
     mockChannel1
         .send(BufferedChannel.CONTROL_CHANNEL_NAME_ + ':setPeerReady_', '1')
-        .$does(() => {
-          bufferedChannel3.setPeerReady_('1');
-        });
+        .$does(/**
+                  @suppress {visibility} suppression added to enable type
+                  checking
+                */
+               () => {
+                 bufferedChannel3.setPeerReady_('1');
+               });
     mockChannel3
         .send(BufferedChannel.CONTROL_CHANNEL_NAME_ + ':setPeerReady_', '1')
-        .$does(() => {
-          bufferedChannel1.setPeerReady_('1');
-        });
+        .$does(/**
+                  @suppress {visibility} suppression added to enable type
+                  checking
+                */
+               () => {
+                 bufferedChannel1.setPeerReady_('1');
+               });
 
     mockChannel1.send(
         BufferedChannel.USER_CHANNEL_NAME_ + ':' + messages[0].serviceName,

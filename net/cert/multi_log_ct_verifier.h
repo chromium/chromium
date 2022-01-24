@@ -52,6 +52,10 @@ class NET_EXPORT MultiLogCTVerifier : public CTVerifier {
   };
 
   explicit MultiLogCTVerifier(CTLogProvider* notifier);
+
+  MultiLogCTVerifier(const MultiLogCTVerifier&) = delete;
+  MultiLogCTVerifier& operator=(const MultiLogCTVerifier&) = delete;
+
   ~MultiLogCTVerifier() override;
 
   void SetLogs(
@@ -89,8 +93,6 @@ class NET_EXPORT MultiLogCTVerifier : public CTVerifier {
   std::map<std::string, scoped_refptr<const CTLogVerifier>> logs_;
 
   base::CallbackListSubscription log_provider_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiLogCTVerifier);
 };
 
 }  // namespace net

@@ -5,6 +5,7 @@
 var defaultAudioInit = {
   type: 'key',
   timestamp: 1234,
+  duration: 9876,
   data: new Uint8Array([5, 6, 7, 8])
 };
 

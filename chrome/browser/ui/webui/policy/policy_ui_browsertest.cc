@@ -13,7 +13,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
@@ -71,6 +70,10 @@ class PolicySchemaAvailableWaiter : public policy::SchemaRegistry::Observer {
       : registry_(profile->GetPolicySchemaRegistryService()->registry()),
         policy_namespace_(policy_namespace) {}
 
+  PolicySchemaAvailableWaiter(const PolicySchemaAvailableWaiter&) = delete;
+  PolicySchemaAvailableWaiter& operator=(const PolicySchemaAvailableWaiter&) =
+      delete;
+
   ~PolicySchemaAvailableWaiter() override { registry_->RemoveObserver(this); }
 
   // Starts waiting for a policy schema to be available for the
@@ -101,8 +104,6 @@ class PolicySchemaAvailableWaiter : public policy::SchemaRegistry::Observer {
   policy::SchemaRegistry* const registry_;
   const policy::PolicyNamespace policy_namespace_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicySchemaAvailableWaiter);
 };
 
 std::vector<std::string> PopulateExpectedPolicy(
@@ -129,7 +130,7 @@ std::vector<std::string> PopulateExpectedPolicy(
             ? IDS_POLICY_SCOPE_DEVICE
             : IDS_POLICY_SCOPE_USER));
   } else {
-    expected_policy.push_back(std::string());
+    expected_policy.emplace_back();
   }
 
   // Populate expected level.
@@ -139,7 +140,7 @@ std::vector<std::string> PopulateExpectedPolicy(
             ? IDS_POLICY_LEVEL_RECOMMENDED
             : IDS_POLICY_LEVEL_MANDATORY));
   } else {
-    expected_policy.push_back(std::string());
+    expected_policy.emplace_back();
   }
 
   // Populate expected status.
@@ -198,6 +199,10 @@ base::FilePath export_policies_test_file_path;
 class PolicyUITest : public InProcessBrowserTest {
  public:
   PolicyUITest();
+
+  PolicyUITest(const PolicyUITest&) = delete;
+  PolicyUITest& operator=(const PolicyUITest&) = delete;
+
   ~PolicyUITest() override;
 
  protected:
@@ -216,9 +221,6 @@ class PolicyUITest : public InProcessBrowserTest {
 
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PolicyUITest);
 };
 
 // An artificial SelectFileDialog that immediately returns the location of test
@@ -249,7 +251,7 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
   bool HasMultipleFileTypeChoicesImpl() override { return false; }
 
  private:
-  ~TestSelectFileDialog() override {}
+  ~TestSelectFileDialog() override = default;
 };
 
 // A factory associated with the artificial file picker.
@@ -262,9 +264,9 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
   }
 };
 
-PolicyUITest::PolicyUITest() {}
+PolicyUITest::PolicyUITest() = default;
 
-PolicyUITest::~PolicyUITest() {}
+PolicyUITest::~PolicyUITest() = default;
 
 void PolicyUITest::SetUpInProcessBrowserTestFixture() {
   provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
@@ -290,7 +292,8 @@ void PolicyUITest::UpdateProviderPolicyForNamespace(
 
 void PolicyUITest::VerifyPolicies(
     const std::vector<std::vector<std::string>>& expected_policies) {
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIPolicyURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
 
   // Retrieve the text contents of the policy table cells for all policies.
   const std::string javascript =
@@ -342,7 +345,8 @@ void PolicyUITest::VerifyExportingPolicies(
   ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory());
 
   // Navigate to the about:policy page.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIPolicyURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
 
   // Click on 'save policies' button.
   const std::string javascript =
@@ -408,9 +412,9 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
   SetChromeMetaData(&expected_values);
 
   base::ListValue popups_blocked_for_urls;
-  popups_blocked_for_urls.AppendString("aaa");
-  popups_blocked_for_urls.AppendString("bbb");
-  popups_blocked_for_urls.AppendString("ccc");
+  popups_blocked_for_urls.Append("aaa");
+  popups_blocked_for_urls.Append("bbb");
+  popups_blocked_for_urls.Append("ccc");
   values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
              popups_blocked_for_urls.Clone(), nullptr);
@@ -463,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
   expected_values.RemovePath(std::string("chromePolicies.") +
                              std::string(policy::key::kDefaultImagesSetting));
 
-  popups_blocked_for_urls.AppendString("ddd");
+  popups_blocked_for_urls.Append("ddd");
   values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
              popups_blocked_for_urls.Clone(), nullptr);
@@ -483,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
   values.Set(policy::key::kAllowFileSelectionDialogs,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
              policy::POLICY_SOURCE_PLATFORM, base::Value(false), nullptr);
-  popups_blocked_for_urls.AppendString("eeeeee");
+  popups_blocked_for_urls.Append("eeeeee");
   values.Set(policy::key::kPopupsBlockedForUrls, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
              popups_blocked_for_urls.Clone(), nullptr);
@@ -511,6 +515,14 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyNames) {
     expected_policies.push_back(PopulateExpectedPolicy(
         it.key(), std::string(), std::string(), nullptr, false));
   }
+
+#if !defined(OS_CHROMEOS)
+  // Add policies found in the Policy Precedence table.
+  for (auto* policy : policy::metapolicy::kPrecedence) {
+    expected_policies.push_back(PopulateExpectedPolicy(
+        policy, std::string(), std::string(), nullptr, false));
+  }
+#endif  // !defined(OS_CHROMEOS)
 
   // Retrieve the contents of the policy table from the UI and verify that it
   // matches the expectation.
@@ -593,17 +605,114 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyValues) {
           kUnknownPolicyWithDots, expected_values[kUnknownPolicyWithDots],
           "Platform", values.Get(kUnknownPolicyWithDots), true));
 
+#if !defined(OS_CHROMEOS)
+  // Add policies found in the Policy Precedence table.
+  for (auto* policy : policy::metapolicy::kPrecedence) {
+    expected_policies.push_back(PopulateExpectedPolicy(
+        policy, std::string(), std::string(), values.Get(policy), false));
+  }
+#endif  // !defined(OS_CHROMEOS)
+
   // Retrieve the contents of the policy table from the UI and verify that it
   // matches the expectation.
   VerifyPolicies(expected_policies);
 }
+
+#if !defined(OS_CHROMEOS)
+class PolicyPrecedenceUITest
+    : public PolicyUITest,
+      public ::testing::WithParamInterface<std::tuple<
+          /*cloud_policy_overrides_platform_policy=*/bool,
+          /*cloud_user_policy_overrides_cloud_machine_policy=*/bool,
+          /*is_user_affiliated=*/bool>> {
+ public:
+  bool CloudPolicyOverridesPlatformPolicy() { return std::get<0>(GetParam()); }
+
+  bool CloudUserPolicyOverridesCloudMachinePolicy() {
+    return std::get<1>(GetParam());
+  }
+
+  bool IsUserAffiliated() { return std::get<2>(GetParam()); }
+
+  void ValidatePrecedenceValue(const std::string& precedence_row_value) {
+    if (CloudPolicyOverridesPlatformPolicy() &&
+        CloudUserPolicyOverridesCloudMachinePolicy() && IsUserAffiliated()) {
+      EXPECT_EQ(precedence_row_value,
+                "Cloud user > Cloud machine > Platform machine > "
+                "Platform user");
+    } else if (CloudPolicyOverridesPlatformPolicy()) {
+      EXPECT_EQ(precedence_row_value,
+                "Cloud machine > Platform machine > Platform user > "
+                "Cloud user");
+    } else if (CloudUserPolicyOverridesCloudMachinePolicy() &&
+               IsUserAffiliated()) {
+      EXPECT_EQ(precedence_row_value,
+                "Platform machine > Cloud user > Cloud machine > "
+                "Platform user");
+    } else {
+      EXPECT_EQ(precedence_row_value,
+                "Platform machine > Cloud machine > Platform user > "
+                "Cloud user");
+    }
+  }
+
+  // Used to retrieve the contents of the policy precedence rows.
+  const std::string kJavaScript =
+      "var precedence_row = document.getElementById('policy-ui')"
+      "  .querySelector('.policy-table .precedence.row > .value');"
+      "domAutomationController.send(precedence_row.textContent);";
+};
+
+// Verify that the precedence order displayed in the Policy Precedence table is
+// correct.
+IN_PROC_BROWSER_TEST_P(PolicyPrecedenceUITest, PrecedenceOrder) {
+  // Set precedence policies.
+  policy::PolicyMap policy_map;
+
+  if (IsUserAffiliated()) {
+    base::flat_set<std::string> affiliation_ids;
+    affiliation_ids.insert("12345");
+    // Treat user as affiliated by setting identical user and device IDs.
+    policy_map.SetUserAffiliationIds(affiliation_ids);
+    policy_map.SetDeviceAffiliationIds(affiliation_ids);
+  }
+
+  policy_map.Set(policy::key::kCloudPolicyOverridesPlatformPolicy,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_PLATFORM,
+                 base::Value(CloudPolicyOverridesPlatformPolicy()), nullptr);
+  policy_map.Set(policy::key::kCloudUserPolicyOverridesCloudMachinePolicy,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_PLATFORM,
+                 base::Value(CloudUserPolicyOverridesCloudMachinePolicy()),
+                 nullptr);
+  provider_.UpdateChromePolicy(policy_map);
+
+  // Retrieve the contents of the policy precedence rows.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::string precedence_row_value;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(contents, kJavaScript,
+                                                     &precedence_row_value));
+
+  ValidatePrecedenceValue(precedence_row_value);
+}
+
+INSTANTIATE_TEST_SUITE_P(PolicyPrecedenceUITestInstance,
+                         PolicyPrecedenceUITest,
+                         testing::Combine(testing::Values(false, true),
+                                          testing::Values(false, true),
+                                          testing::Values(false, true)));
+#endif  // !defined(OS_CHROMEOS)
 
 // TODO(https://crbug.com/1027135) Add tests to verify extension policies are
 // exported correctly.
 class ExtensionPolicyUITest : public PolicyUITest,
                               public ::testing::WithParamInterface<bool> {
  public:
-  ExtensionPolicyUITest() {}
+  ExtensionPolicyUITest() = default;
 
   bool UseSigninProfile() const { return GetParam(); }
 
@@ -729,6 +838,15 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
     expected_chrome_policies.push_back(PopulateExpectedPolicy(
         it.key(), std::string(), std::string(), nullptr, false));
   }
+
+#if !defined(OS_CHROMEOS)
+  // Add policies found in the precedence policy table.
+  for (auto* policy : policy::metapolicy::kPrecedence) {
+    expected_chrome_policies.push_back(PopulateExpectedPolicy(
+        policy, std::string(), std::string(), nullptr, false));
+  }
+#endif  // !defined(OS_CHROMEOS)
+
   // Add extension policy to expected policy list.
   std::vector<std::vector<std::string>> expected_policies =
       expected_chrome_policies;

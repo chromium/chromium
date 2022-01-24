@@ -86,4 +86,12 @@ export class WindowProxy {
   postMessage(iframe, message, targetOrigin) {
     iframe.contentWindow.postMessage(message, targetOrigin);
   }
+
+  /**
+   * Returns `window.location.href` wrapped in a URL object.
+   * @return {!URL}
+   */
+  get url() {
+    return new URL(window.location.href);
+  }
 }

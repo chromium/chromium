@@ -17,9 +17,8 @@
 
 namespace device {
 
-// static
 bool PlatformSensorProviderLinuxBase::IsFusionSensorType(
-    mojom::SensorType type) {
+    mojom::SensorType type) const {
   switch (type) {
     case mojom::SensorType::LINEAR_ACCELERATION:
     case mojom::SensorType::GRAVITY:

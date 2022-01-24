@@ -13,8 +13,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/exo/wm_helper.h"
-#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -52,14 +52,9 @@ WorkingSetTrimmerPolicyArcVm::WorkingSetTrimmerPolicyArcVm() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(arc::IsArcVmEnabled()) << "This is only for ARCVM builds";
 
-  // Ask SessionManager to notify when the user has signed in. In case the user
-  // has already signed in, call OnUserSessionStarted() now.
-  if (session_manager::SessionManager::Get()->IsSessionStarted())
-    OnUserSessionStarted(/*is_primary_user=*/true);
-  else
-    session_manager::SessionManager::Get()->AddObserver(this);
-
   auto* arc_session_manager = arc::ArcSessionManager::Get();
+  // ArcSessionManager is created very early in
+  // `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()`.
   DCHECK(arc_session_manager);
   arc_session_manager->AddObserver(this);
 
@@ -70,6 +65,16 @@ WorkingSetTrimmerPolicyArcVm::WorkingSetTrimmerPolicyArcVm() {
         wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
         helper->GetActiveWindow(), /*lost_active=*/nullptr);
   }
+
+  // If app() is already connected to the AppInstance in the guest, the
+  // OnConnectionReady() function is synchronously called before returning
+  // from AddObserver. See components/arc/session/connection_holder.h for
+  // more details, especially its AddObserver() function.
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  // ArcServiceManager and objects owned by the manager are created very early
+  // in `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()` too.
+  DCHECK(arc_service_manager);
+  arc_service_manager->arc_bridge_service()->app()->AddObserver(this);
 }
 
 WorkingSetTrimmerPolicyArcVm::~WorkingSetTrimmerPolicyArcVm() {
@@ -82,12 +87,11 @@ WorkingSetTrimmerPolicyArcVm::~WorkingSetTrimmerPolicyArcVm() {
         arc::ArcMetricsService::GetForBrowserContext(context);
     if (metrics_service)
       metrics_service->RemoveUserInteractionObserver(this);
-
-    auto* boot_phase_monitor_bridge =
-        arc::ArcBootPhaseMonitorBridge::GetForBrowserContext(context);
-    if (boot_phase_monitor_bridge)
-      boot_phase_monitor_bridge->RemoveObserver(this);
   }
+
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  if (arc_service_manager)
+    arc_service_manager->arc_bridge_service()->app()->RemoveObserver(this);
 
   if (exo::WMHelper::HasInstance())
     exo::WMHelper::GetInstance()->RemoveActivationObserver(this);
@@ -95,25 +99,21 @@ WorkingSetTrimmerPolicyArcVm::~WorkingSetTrimmerPolicyArcVm() {
   auto* arc_session_manager = arc::ArcSessionManager::Get();
   if (arc_session_manager)
     arc_session_manager->RemoveObserver(this);
-
-  auto* session_manager = session_manager::SessionManager::Get();
-  if (session_manager)
-    session_manager->RemoveObserver(this);
 }
 
 bool WorkingSetTrimmerPolicyArcVm::IsEligibleForReclaim(
-    const base::TimeDelta& arcvm_inactivity_time) {
+    const base::TimeDelta& arcvm_inactivity_time,
+    bool trim_once_after_arcvm_boot) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!is_boot_complete_and_connected_)
+    return false;
+  if (!trimmed_at_boot_ && trim_once_after_arcvm_boot) {
+    trimmed_at_boot_ = true;
+    return true;
+  }
   const bool is_inactive =
       (base::TimeTicks::Now() - last_user_interaction_) > arcvm_inactivity_time;
-  return is_boot_complete_ && !is_focused_ && is_inactive;
-}
-
-void WorkingSetTrimmerPolicyArcVm::OnBootCompleted() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  is_boot_complete_ = true;
-  // Now the user is able to interact with ARCVM. Reset the value.
-  last_user_interaction_ = base::TimeTicks::Now();
+  return !is_focused_ && is_inactive;
 }
 
 void WorkingSetTrimmerPolicyArcVm::OnUserInteraction(
@@ -125,11 +125,25 @@ void WorkingSetTrimmerPolicyArcVm::OnUserInteraction(
 void WorkingSetTrimmerPolicyArcVm::OnArcSessionStopped(
     arc::ArcStopReason stop_reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  is_boot_complete_ = false;
+  is_boot_complete_and_connected_ = false;
+  trimmed_at_boot_ = false;
 }
+
 void WorkingSetTrimmerPolicyArcVm::OnArcSessionRestarting() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  is_boot_complete_ = false;
+  is_boot_complete_and_connected_ = false;
+  trimmed_at_boot_ = false;
+}
+
+void WorkingSetTrimmerPolicyArcVm::OnConnectionReady() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  is_boot_complete_and_connected_ = true;
+  // Now the user is able to interact with ARCVM. Reset the value.
+  last_user_interaction_ = base::TimeTicks::Now();
+  if (!observing_user_interactions_) {
+    StartObservingUserInteractions();
+    observing_user_interactions_ = true;
+  }
 }
 
 void WorkingSetTrimmerPolicyArcVm::OnWindowActivated(
@@ -145,25 +159,21 @@ void WorkingSetTrimmerPolicyArcVm::OnWindowActivated(
   }
 }
 
-void WorkingSetTrimmerPolicyArcVm::OnUserSessionStarted(bool is_primary_user) {
+void WorkingSetTrimmerPolicyArcVm::StartObservingUserInteractions() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!is_primary_user)
-    return;
 
   content::BrowserContext* context =
       context_for_testing_ ? context_for_testing_ : GetContext();
   DCHECK(context);
 
-  // ArcBootPhaseMonitorBridge and ArcMetricsService are created when the
-  // primary user profile is created. In OnUserSessionStarted(), they always
-  // exist.
-  auto* boot_phase_monitor_bridge =
-      arc::ArcBootPhaseMonitorBridge::GetForBrowserContext(context);
-  DCHECK(boot_phase_monitor_bridge);
-  boot_phase_monitor_bridge->AddObserver(this);
-
+  // ArcMetricsService is created in OnPrimaryUserProfilePrepared() in
+  // ArcServiceLauncher which also initializes objects that are needed to start
+  // ARCVM e.g. ArcSessionManager. As long as the function is called after ARCVM
+  // is started, e.g. from OnConnectionReady(), the DCHECK below should never
+  // fail.
   auto* metrics_service = arc::ArcMetricsService::GetForBrowserContext(context);
   DCHECK(metrics_service);
+  DCHECK(!observing_user_interactions_);
   metrics_service->AddUserInteractionObserver(this);
 }
 

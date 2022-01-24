@@ -8,8 +8,6 @@
 #include <AudioUnit/AudioUnit.h>
 #include <CoreAudio/CoreAudio.h>
 
-#include "base/macros.h"
-
 namespace media {
 
 // For whatever reason Apple doesn't have constants defined for these; per the
@@ -24,6 +22,10 @@ class ScopedAudioUnit {
   // the operation fails, is_valid() will return false and audio_unit() will
   // return nullptr.
   ScopedAudioUnit(AudioDeviceID device, AUElement element);
+
+  ScopedAudioUnit(const ScopedAudioUnit&) = delete;
+  ScopedAudioUnit& operator=(const ScopedAudioUnit&) = delete;
+
   ~ScopedAudioUnit();
 
   bool is_valid() const { return audio_unit_ != nullptr; }
@@ -31,8 +33,6 @@ class ScopedAudioUnit {
 
  private:
   AudioUnit audio_unit_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAudioUnit);
 };
 
 }  // namespace media

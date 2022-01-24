@@ -5,7 +5,7 @@
 #include "chrome/browser/android/oom_intervention/near_oom_monitor.h"
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +24,9 @@ class MockNearOomMonitor : public NearOomMonitor {
     memory_info_.swap_total = kTestSwapTotalKB;
     memory_info_.swap_free = kTestSwapTotalKB / 2;
   }
+
+  MockNearOomMonitor(const MockNearOomMonitor&) = delete;
+  MockNearOomMonitor& operator=(const MockNearOomMonitor&) = delete;
 
   void SetSwapFree(int swap_free) { memory_info_.swap_free = swap_free; }
 
@@ -48,8 +51,6 @@ class MockNearOomMonitor : public NearOomMonitor {
 
   base::SystemMemoryInfoKB memory_info_;
   bool is_get_system_memory_info_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNearOomMonitor);
 };
 
 class TestNearOomObserver {
@@ -60,6 +61,9 @@ class TestNearOomObserver {
         &TestNearOomObserver::OnNearOomDetected, base::Unretained(this)));
   }
 
+  TestNearOomObserver(const TestNearOomObserver&) = delete;
+  TestNearOomObserver& operator=(const TestNearOomObserver&) = delete;
+
   void Unsubscribe() { subscription_ = {}; }
 
   bool is_detected() const { return is_detected_; }
@@ -69,8 +73,6 @@ class TestNearOomObserver {
 
   bool is_detected_ = false;
   base::CallbackListSubscription subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNearOomObserver);
 };
 
 class NearOomMonitorTest : public testing::Test {
@@ -88,7 +90,7 @@ class NearOomMonitorTest : public testing::Test {
 
 TEST_F(NearOomMonitorTest, Observe) {
   base::TimeDelta interval =
-      monitor_->GetMonitoringInterval() + base::TimeDelta::FromSeconds(1);
+      monitor_->GetMonitoringInterval() + base::Seconds(1);
 
   TestNearOomObserver observer1(monitor_.get());
   TestNearOomObserver observer2(monitor_.get());
@@ -111,9 +113,9 @@ TEST_F(NearOomMonitorTest, Observe) {
 
 TEST_F(NearOomMonitorTest, Cooldown) {
   base::TimeDelta interval =
-      monitor_->GetMonitoringInterval() + base::TimeDelta::FromSeconds(1);
+      monitor_->GetMonitoringInterval() + base::Seconds(1);
   base::TimeDelta cooldown_interval =
-      monitor_->GetCooldownInterval() + base::TimeDelta::FromSeconds(1);
+      monitor_->GetCooldownInterval() + base::Seconds(1);
 
   monitor_->SimulateNearOom();
 

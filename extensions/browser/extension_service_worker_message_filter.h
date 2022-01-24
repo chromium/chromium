@@ -10,7 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/activation_sequence.h"
@@ -38,6 +38,11 @@ class ExtensionServiceWorkerMessageFilter
       int render_process_id,
       content::BrowserContext* context,
       content::ServiceWorkerContext* service_worker_context);
+
+  ExtensionServiceWorkerMessageFilter(
+      const ExtensionServiceWorkerMessageFilter&) = delete;
+  ExtensionServiceWorkerMessageFilter& operator=(
+      const ExtensionServiceWorkerMessageFilter&) = delete;
 
   // content::BrowserMessageFilter:
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -96,8 +101,6 @@ class ExtensionServiceWorkerMessageFilter
       dispatcher_;
 
   std::unordered_set<std::string> active_request_uuids_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionServiceWorkerMessageFilter);
 };
 
 }  // namespace extensions

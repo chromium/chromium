@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.SuggestionListViewHolder;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionViewBinder;
@@ -125,6 +126,10 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         mProfileSupplier.removeObserver(mProfileChangeCallback);
         mQueryTileCoordinator.destroy();
         mMediator.destroy();
+        if (mDropdown != null) {
+            mDropdown.destroy();
+            mDropdown = null;
+        }
     }
 
     private ViewProvider<SuggestionListViewHolder> createViewProvider(
@@ -303,11 +308,10 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
 
     /**
      * Update the visuals of the autocomplete UI.
-     * @param useDarkColors Whether dark colors should be applied to the UI.
-     * @param isIncognito Whether the UI is for incognito mode or not.
+     * @param omniboxTheme The {@link @OmniboxTheme}.
      */
-    public void updateVisualsForState(boolean useDarkColors, boolean isIncognito) {
-        mMediator.updateVisualsForState(useDarkColors, isIncognito);
+    public void updateVisualsForState(@OmniboxTheme int omniboxTheme) {
+        mMediator.updateVisualsForState(omniboxTheme);
     }
 
     /**
@@ -379,7 +383,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      *         match built with the user's default search engine, or a NAVIGATION match.
      */
     @Deprecated
-    public static AutocompleteMatch classify(Profile profile, String query) {
+    public static AutocompleteMatch classify(@NonNull Profile profile, @NonNull String query) {
         return AutocompleteController.getForProfile(profile).classify(query, false);
     }
 

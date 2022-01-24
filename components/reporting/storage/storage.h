@@ -16,8 +16,8 @@
 #include "base/strings/string_piece.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_queue.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
@@ -48,7 +48,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
              base::OnceCallback<void(Status)> completion_cb);
 
   // Confirms acceptance of the records according to the priority up to
-  // |sequencing_id| (inclusively). All records with sequeincing ids <= this
+  // |sequencing_id| (inclusively). All records with sequencing ids <= this
   // one can be removed from the Storage, and can no longer be uploaded.
   // If |force| is false (which is used in most cases), |sequencing_id| is
   // only accepted if no higher ids were confirmed before; otherwise it is

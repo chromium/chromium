@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.GeneratePasswordForFormFieldProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PasswordManagerValue;
 import org.chromium.chrome.browser.autofill_assistant.proto.PasswordManagerValue.CredentialType;
@@ -164,8 +163,7 @@ public class AutofillAssistantPasswordManagerIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Password generation")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 

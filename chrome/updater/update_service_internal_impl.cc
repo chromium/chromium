@@ -10,7 +10,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service_impl.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 
 namespace updater {
@@ -21,7 +23,8 @@ void UpdateServiceInternalImpl::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // A ref to service is retained by the callback.
-  scoped_refptr<UpdateService> service = CreateUpdateService();
+  scoped_refptr<UpdateService> service =
+      CreateUpdateServiceProxy(GetUpdaterScope());
   service->RunPeriodicTasks(base::BindOnce(
       [](base::OnceClosure callback, scoped_refptr<UpdateService> service) {
         std::move(callback).Run();

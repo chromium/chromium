@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 class PrefService;
 class PrefRegistrySimple;
 
@@ -20,6 +18,10 @@ class SessionSyncPrefs {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   explicit SessionSyncPrefs(PrefService* pref_service);
+
+  SessionSyncPrefs(const SessionSyncPrefs&) = delete;
+  SessionSyncPrefs& operator=(const SessionSyncPrefs&) = delete;
+
   ~SessionSyncPrefs();
 
   std::string GetLegacySyncSessionsGUID() const;
@@ -29,8 +31,6 @@ class SessionSyncPrefs {
 
  private:
   PrefService* const pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionSyncPrefs);
 };
 
 }  // namespace sync_sessions

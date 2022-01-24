@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
 #include "cc/raster/lcd_text_disallowed_reason.h"
@@ -22,7 +22,7 @@ class RasterizeAndRecordBenchmarkImpl : public MicroBenchmarkImpl {
  public:
   explicit RasterizeAndRecordBenchmarkImpl(
       scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner,
-      base::Value* value,
+      int rasterize_repeat_count,
       MicroBenchmarkImpl::DoneCallback callback);
   ~RasterizeAndRecordBenchmarkImpl() override;
 

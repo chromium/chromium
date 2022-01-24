@@ -22,6 +22,7 @@
 #include "components/account_manager_core/chromeos/access_token_fetcher.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_ui.h"
+#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -78,13 +79,13 @@ class TestAccountManagerObserver
   int GetNumOnTokenUpsertedCalls() const { return num_token_upserted_calls_; }
 
   account_manager::Account GetLastUpsertedAccount() const {
-    return last_upserted_account_;
+    return last_upserted_account_.value();
   }
 
   int GetNumOnAccountRemovedCalls() const { return num_account_removed_calls_; }
 
   account_manager::Account GetLastRemovedAccount() const {
-    return last_removed_account_;
+    return last_removed_account_.value();
   }
 
  private:
@@ -94,79 +95,20 @@ class TestAccountManagerObserver
   // mojom::AccountManagerObserverInterceptorForTesting override:
   void OnTokenUpserted(mojom::AccountPtr account) override {
     ++num_token_upserted_calls_;
-    last_upserted_account_ = account_manager::FromMojoAccount(account).value();
+    last_upserted_account_ = account_manager::FromMojoAccount(account);
   }
 
   // mojom::AccountManagerObserverInterceptorForTesting override:
   void OnAccountRemoved(mojom::AccountPtr account) override {
     ++num_account_removed_calls_;
-    last_removed_account_ = account_manager::FromMojoAccount(account).value();
+    last_removed_account_ = account_manager::FromMojoAccount(account);
   }
 
   int num_token_upserted_calls_ = 0;
   int num_account_removed_calls_ = 0;
-  account_manager::Account last_upserted_account_;
-  account_manager::Account last_removed_account_;
+  absl::optional<account_manager::Account> last_upserted_account_;
+  absl::optional<account_manager::Account> last_removed_account_;
   mojo::Receiver<mojom::AccountManagerObserver> receiver_;
-};
-
-class FakeAccountManagerUI : public account_manager::AccountManagerUI {
- public:
-  FakeAccountManagerUI() = default;
-  FakeAccountManagerUI(const FakeAccountManagerUI&) = delete;
-  FakeAccountManagerUI& operator=(const FakeAccountManagerUI&) = delete;
-  ~FakeAccountManagerUI() override = default;
-
-  void SetIsDialogShown(bool is_dialog_shown) {
-    is_dialog_shown_ = is_dialog_shown;
-  }
-
-  void CloseDialog() {
-    if (!close_dialog_closure_.is_null()) {
-      std::move(close_dialog_closure_).Run();
-    }
-    is_dialog_shown_ = false;
-  }
-
-  int show_account_addition_dialog_calls() const {
-    return show_account_addition_dialog_calls_;
-  }
-
-  int show_account_reauthentication_dialog_calls() const {
-    return show_account_reauthentication_dialog_calls_;
-  }
-
-  int show_manage_accounts_settings_calls() const {
-    return show_manage_accounts_settings_calls_;
-  }
-
- private:
-  // AccountManagerUI overrides:
-  void ShowAddAccountDialog(base::OnceClosure close_dialog_closure) override {
-    close_dialog_closure_ = std::move(close_dialog_closure);
-    show_account_addition_dialog_calls_++;
-    is_dialog_shown_ = true;
-  }
-
-  void ShowReauthAccountDialog(
-      const std::string& email,
-      base::OnceClosure close_dialog_closure) override {
-    close_dialog_closure_ = std::move(close_dialog_closure);
-    show_account_reauthentication_dialog_calls_++;
-    is_dialog_shown_ = true;
-  }
-
-  bool IsDialogShown() override { return is_dialog_shown_; }
-
-  void ShowManageAccountsSettings() override {
-    show_manage_accounts_settings_calls_++;
-  }
-
-  base::OnceClosure close_dialog_closure_;
-  bool is_dialog_shown_ = false;
-  int show_account_addition_dialog_calls_ = 0;
-  int show_account_reauthentication_dialog_calls_ = 0;
-  int show_manage_accounts_settings_calls_ = 0;
 };
 
 // A test spy for intercepting AccountManager calls.
@@ -191,13 +133,14 @@ class AccountManagerSpy : public account_manager::AccountManager {
   int num_access_token_fetches() const { return num_access_token_fetches_; }
 
   account_manager::AccountKey last_access_token_account_key() const {
-    return last_access_token_account_key_;
+    return last_access_token_account_key_.value();
   }
 
  private:
   // Mutated by const CreateAccessTokenFetcher.
   mutable int num_access_token_fetches_ = 0;
-  mutable account_manager::AccountKey last_access_token_account_key_;
+  mutable absl::optional<account_manager::AccountKey>
+      last_access_token_account_key_;
 };
 
 class AccountManagerMojoServiceTest : public ::testing::Test {
@@ -463,8 +406,8 @@ TEST_F(AccountManagerMojoServiceTest,
   mojom::AccountAdditionResultPtr account_addition_result =
       ShowAddAccountDialog(run_loop.QuitClosure());
   // Simulate account addition.
-  CallAccountAdditionFinished(account_manager::AccountAdditionResult(
-      account_manager::AccountAdditionResult::Status::kSuccess, kFakeAccount));
+  CallAccountAdditionFinished(
+      account_manager::AccountAdditionResult::FromAccount(kFakeAccount));
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   run_loop.Run();
@@ -500,8 +443,8 @@ TEST_F(AccountManagerMojoServiceTest,
             account_addition_result_2->status);
 
   // Simulate account addition.
-  CallAccountAdditionFinished(account_manager::AccountAdditionResult(
-      account_manager::AccountAdditionResult::Status::kSuccess, kFakeAccount));
+  CallAccountAdditionFinished(
+      account_manager::AccountAdditionResult::FromAccount(kFakeAccount));
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   run_loop.Run();
@@ -527,8 +470,8 @@ TEST_F(AccountManagerMojoServiceTest,
   mojom::AccountAdditionResultPtr account_addition_result =
       ShowAddAccountDialog(run_loop.QuitClosure());
   // Simulate account addition.
-  CallAccountAdditionFinished(account_manager::AccountAdditionResult(
-      account_manager::AccountAdditionResult::Status::kSuccess, kFakeAccount));
+  CallAccountAdditionFinished(
+      account_manager::AccountAdditionResult::FromAccount(kFakeAccount));
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   run_loop.Run();
@@ -545,8 +488,8 @@ TEST_F(AccountManagerMojoServiceTest,
   mojom::AccountAdditionResultPtr account_addition_result_2 =
       ShowAddAccountDialog(run_loop_2.QuitClosure());
   // Simulate account addition.
-  CallAccountAdditionFinished(account_manager::AccountAdditionResult(
-      account_manager::AccountAdditionResult::Status::kSuccess, kFakeAccount));
+  CallAccountAdditionFinished(
+      account_manager::AccountAdditionResult::FromAccount(kFakeAccount));
   // Simulate closing the dialog.
   GetFakeAccountManagerUI()->CloseDialog();
   run_loop_2.Run();
@@ -604,23 +547,6 @@ TEST_F(AccountManagerMojoServiceTest, ShowManageAccountSettingsTest) {
   ShowManageAccountsSettings();
   EXPECT_EQ(1,
             GetFakeAccountManagerUI()->show_manage_accounts_settings_calls());
-}
-
-TEST_F(AccountManagerMojoServiceTest,
-       FetchingAccessTokenResultsInErrorForInvalidAccountKey) {
-  ASSERT_TRUE(InitializeAccountManager());
-  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
-  account_manager::AccountKey account_key{std::string(),
-                                          account_manager::AccountType::kGaia};
-  mojom::AccessTokenResultPtr result = FetchAccessToken(account_key);
-
-  ASSERT_TRUE(result->is_error());
-  EXPECT_EQ(mojom::GoogleServiceAuthError::State::kUserNotSignedUp,
-            result->get_error()->state);
-
-  // Check that requests are not leaking.
-  RunAllPendingTasks();
-  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
 }
 
 TEST_F(AccountManagerMojoServiceTest,

@@ -1,6 +1,7 @@
 include_rules = [
   "+components/keyed_service/core",
   "+components/prefs",
+  "+components/shared_highlighting",
   "+components/signin/public/identity_manager",
   "+components/strings/grit",
   "+components/version_info",

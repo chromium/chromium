@@ -486,7 +486,8 @@ bool VdaVideoDecoder::NeedsBitstreamConversion() const {
 
   // TODO(sandersd): Can we move bitstream conversion into VdaVideoDecoder and
   // always return false?
-  return config_.codec() == kCodecH264 || config_.codec() == kCodecHEVC;
+  return config_.codec() == VideoCodec::kH264 ||
+         config_.codec() == VideoCodec::kHEVC;
 }
 
 bool VdaVideoDecoder::CanReadWithoutStalling() const {

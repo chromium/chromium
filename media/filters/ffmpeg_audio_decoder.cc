@@ -11,7 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_decoder_config.h"
@@ -52,7 +52,7 @@ FFmpegAudioDecoder::FFmpegAudioDecoder(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     MediaLog* media_log)
     : task_runner_(task_runner),
-      state_(kUninitialized),
+      state_(DecoderState::kUninitialized),
       av_sample_format_(0),
       media_log_(media_log),
       pool_(new AudioBufferMemoryPool()) {
@@ -62,7 +62,7 @@ FFmpegAudioDecoder::FFmpegAudioDecoder(
 FFmpegAudioDecoder::~FFmpegAudioDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (state_ != kUninitialized)
+  if (state_ != DecoderState::kUninitialized)
     ReleaseFFmpegResources();
 }
 
@@ -105,7 +105,7 @@ void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
   // Success!
   config_ = config;
   output_cb_ = BindToCurrentLoop(output_cb);
-  state_ = kNormal;
+  state_ = DecoderState::kNormal;
   std::move(bound_init_cb).Run(OkStatus());
 }
 
@@ -113,16 +113,16 @@ void FFmpegAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                 DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(decode_cb);
-  CHECK_NE(state_, kUninitialized);
+  CHECK_NE(state_, DecoderState::kUninitialized);
   DecodeCB decode_cb_bound = BindToCurrentLoop(std::move(decode_cb));
 
-  if (state_ == kError) {
+  if (state_ == DecoderState::kError) {
     std::move(decode_cb_bound).Run(DecodeStatus::DECODE_ERROR);
     return;
   }
 
   // Do nothing if decoding has finished.
-  if (state_ == kDecodeFinished) {
+  if (state_ == DecoderState::kDecodeFinished) {
     std::move(decode_cb_bound).Run(DecodeStatus::OK);
     return;
   }
@@ -134,7 +134,7 @@ void FFmpegAudioDecoder::Reset(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   avcodec_flush_buffers(codec_context_.get());
-  state_ = kNormal;
+  state_ = DecoderState::kNormal;
   ResetTimestampState(config_);
   task_runner_->PostTask(FROM_HERE, std::move(closure));
 }
@@ -142,9 +142,9 @@ void FFmpegAudioDecoder::Reset(base::OnceClosure closure) {
 void FFmpegAudioDecoder::DecodeBuffer(const DecoderBuffer& buffer,
                                       DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(state_, kUninitialized);
-  DCHECK_NE(state_, kDecodeFinished);
-  DCHECK_NE(state_, kError);
+  DCHECK_NE(state_, DecoderState::kUninitialized);
+  DCHECK_NE(state_, DecoderState::kDecodeFinished);
+  DCHECK_NE(state_, DecoderState::kError);
 
   // Make sure we are notified if http://crbug.com/49709 returns.  Issue also
   // occurs with some damaged files.
@@ -155,13 +155,13 @@ void FFmpegAudioDecoder::DecodeBuffer(const DecoderBuffer& buffer,
   }
 
   if (!FFmpegDecode(buffer)) {
-    state_ = kError;
+    state_ = DecoderState::kError;
     std::move(decode_cb).Run(DecodeStatus::DECODE_ERROR);
     return;
   }
 
   if (buffer.end_of_stream())
-    state_ = kDecodeFinished;
+    state_ = DecoderState::kDecodeFinished;
 
   std::move(decode_cb).Run(DecodeStatus::OK);
 }
@@ -214,7 +214,8 @@ bool FFmpegAudioDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
   // Even if we didn't decode a frame this loop, we should still send the packet
   // to the discard helper for caching.
   if (!decoded_frame_this_loop && !buffer.end_of_stream()) {
-    const bool result = discard_helper_->ProcessBuffers(buffer, nullptr);
+    const bool result =
+        discard_helper_->ProcessBuffers(buffer.time_info(), nullptr);
     DCHECK(!result);
   }
 
@@ -282,7 +283,7 @@ bool FFmpegAudioDecoder::OnNewFrame(const DecoderBuffer& buffer,
     output->TrimEnd(unread_frames);
 
   *decoded_frame_this_loop = true;
-  if (discard_helper_->ProcessBuffers(buffer, output.get())) {
+  if (discard_helper_->ProcessBuffers(buffer.time_info(), output.get())) {
     if (is_config_change &&
         output->sample_rate() != config_.samples_per_second()) {
       // At the boundary of the config change, FFmpeg's AAC decoder gives the
@@ -320,7 +321,7 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
     codec_context_->flags2 |= AV_CODEC_FLAG2_SKIP_MANUAL;
 
   AVDictionary* codec_options = NULL;
-  if (config.codec() == kCodecOpus) {
+  if (config.codec() == AudioCodec::kOpus) {
     codec_context_->request_sample_fmt = AV_SAMPLE_FMT_FLT;
 
     // Disable phase inversion to avoid artifacts in mono downmix. See
@@ -337,7 +338,7 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
     DLOG(ERROR) << "Could not initialize audio decoder: "
                 << codec_context_->codec_id;
     ReleaseFFmpegResources();
-    state_ = kUninitialized;
+    state_ = DecoderState::kUninitialized;
     return false;
   }
   // Verify avcodec_open2() used all given options.
@@ -352,7 +353,7 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
         << " channels, but FFmpeg thinks the file contains "
         << codec_context_->channels << " channels";
     ReleaseFFmpegResources();
-    state_ = kUninitialized;
+    state_ = DecoderState::kUninitialized;
     return false;
   }
 
@@ -365,9 +366,10 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
 void FFmpegAudioDecoder::ResetTimestampState(const AudioDecoderConfig& config) {
   // Opus codec delay is handled by ffmpeg.
   const int codec_delay =
-      config.codec() == kCodecOpus ? 0 : config.codec_delay();
+      config.codec() == AudioCodec::kOpus ? 0 : config.codec_delay();
   discard_helper_ = std::make_unique<AudioDiscardHelper>(
-      config.samples_per_second(), codec_delay, config.codec() == kCodecVorbis);
+      config.samples_per_second(), codec_delay,
+      config.codec() == AudioCodec::kVorbis);
   discard_helper_->Reset(codec_delay);
 }
 

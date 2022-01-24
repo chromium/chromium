@@ -16,7 +16,6 @@ buildflag_header("buildflags") {
   enable_mojo_video_decoder = false
   enable_mojo_media_in_browser_process = false
   enable_mojo_media_in_gpu_process = false
-  enable_mojo_media_in_utility_process = false
 
   foreach(service, mojo_media_services) {
     if (service == "renderer") {
@@ -36,8 +35,6 @@ buildflag_header("buildflags") {
     enable_mojo_media_in_browser_process = true
   } else if (mojo_media_host == "gpu") {
     enable_mojo_media_in_gpu_process = true
-  } else if (mojo_media_host == "utility") {
-    enable_mojo_media_in_utility_process = true
   } else if (mojo_media_host != "") {
     assert(false, "Invalid mojo media host: $mojo_media_host")
   }
@@ -50,7 +47,6 @@ buildflag_header("buildflags") {
     "ENABLE_MOJO_VIDEO_DECODER=$enable_mojo_video_decoder",
     "ENABLE_MOJO_MEDIA_IN_BROWSER_PROCESS=$enable_mojo_media_in_browser_process",
     "ENABLE_MOJO_MEDIA_IN_GPU_PROCESS=$enable_mojo_media_in_gpu_process",
-    "ENABLE_MOJO_MEDIA_IN_UTILITY_PROCESS=$enable_mojo_media_in_utility_process",
   ]
 }
 

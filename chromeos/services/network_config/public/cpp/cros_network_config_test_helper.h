@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -32,6 +31,10 @@ class CrosNetworkConfigTestHelper {
   // separately initialized via Initialize(ManagedNetworkConfigurationHandler*).
   explicit CrosNetworkConfigTestHelper(bool initialize);
 
+  CrosNetworkConfigTestHelper(const CrosNetworkConfigTestHelper&) = delete;
+  CrosNetworkConfigTestHelper& operator=(const CrosNetworkConfigTestHelper&) =
+      delete;
+
   ~CrosNetworkConfigTestHelper();
 
   mojom::NetworkStatePropertiesPtr CreateStandaloneNetworkProperties(
@@ -55,9 +58,6 @@ class CrosNetworkConfigTestHelper {
   NetworkStateTestHelper network_state_helper_{
       /*use_default_devices_and_services=*/false};
   std::unique_ptr<CrosNetworkConfig> cros_network_config_impl_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrosNetworkConfigTestHelper);
 };
 
 }  // namespace network_config

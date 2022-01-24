@@ -100,7 +100,14 @@ MockTts.prototype = {
     }
   },
   getVoices(callback) {
-    callback([{voiceName: 'English US', lang: 'English'}]);
+    callback([{
+      voiceName: 'English US',
+      lang: 'en-US',
+      eventTypes: [
+        this.EventType.START, this.EventTypeEND, this.EventType.WORD,
+        this.EventType.CANCELLED
+      ]
+    }]);
   },
   isSpeaking(callback) {
     callback(this.currentlySpeaking_);

@@ -38,6 +38,10 @@ class HostResolverMojo : public ProxyHostResolver {
 
   // |impl| must outlive |this|.
   explicit HostResolverMojo(Impl* impl);
+
+  HostResolverMojo(const HostResolverMojo&) = delete;
+  HostResolverMojo& operator=(const HostResolverMojo&) = delete;
+
   ~HostResolverMojo() override;
 
   // ProxyHostResolver overrides.
@@ -57,8 +61,6 @@ class HostResolverMojo : public ProxyHostResolver {
       &host_cache_};
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostResolverMojo);
 };
 
 }  // namespace proxy_resolver

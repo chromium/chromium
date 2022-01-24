@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "chromeos/components/tether/asynchronous_shutdown_object_container.h"
 
 namespace chromeos {
@@ -22,6 +21,12 @@ class FakeAsynchronousShutdownObjectContainer
   // |deletion_callback| will be invoked when the object is deleted.
   FakeAsynchronousShutdownObjectContainer(
       base::OnceClosure deletion_callback = base::DoNothing());
+
+  FakeAsynchronousShutdownObjectContainer(
+      const FakeAsynchronousShutdownObjectContainer&) = delete;
+  FakeAsynchronousShutdownObjectContainer& operator=(
+      const FakeAsynchronousShutdownObjectContainer&) = delete;
+
   ~FakeAsynchronousShutdownObjectContainer() override;
 
   base::OnceClosure TakeShutdownCompleteCallback() {
@@ -64,8 +69,6 @@ class FakeAsynchronousShutdownObjectContainer
       nullptr;
   NetworkConfigurationRemover* network_configuration_remover_ = nullptr;
   WifiHotspotDisconnector* wifi_hotspot_disconnector_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAsynchronousShutdownObjectContainer);
 };
 
 }  // namespace tether

@@ -45,8 +45,5 @@ public class WebappConstants {
     // be correctly populated into the WebappRegistry/WebappDataStorage.
     public static final int WEBAPP_SHORTCUT_VERSION = 3;
 
-    // This value is equal to kInvalidOrMissingColor in the C++ blink::Manifest struct.
-    public static final long MANIFEST_COLOR_INVALID_OR_MISSING = ((long) Integer.MAX_VALUE) + 1;
-
     private WebappConstants() {}
 }

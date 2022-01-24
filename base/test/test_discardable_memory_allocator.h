@@ -19,6 +19,11 @@ class TestDiscardableMemoryAllocator : public DiscardableMemoryAllocator {
  public:
   TestDiscardableMemoryAllocator() = default;
 
+  TestDiscardableMemoryAllocator(const TestDiscardableMemoryAllocator&) =
+      delete;
+  TestDiscardableMemoryAllocator& operator=(
+      const TestDiscardableMemoryAllocator&) = delete;
+
   // Overridden from DiscardableMemoryAllocator:
   std::unique_ptr<DiscardableMemory> AllocateLockedDiscardableMemory(
       size_t size) override;
@@ -28,9 +33,6 @@ class TestDiscardableMemoryAllocator : public DiscardableMemoryAllocator {
   void ReleaseFreeMemory() override {
     // Do nothing since it is backed by heap memory.
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestDiscardableMemoryAllocator);
 };
 
 }  // namespace base

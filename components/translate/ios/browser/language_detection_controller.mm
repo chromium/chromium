@@ -106,7 +106,7 @@ void LanguageDetectionController::OnTextCaptured(const base::Value& command,
   }
 
   UMA_HISTOGRAM_TIMES(kTranslateCaptureText,
-                      base::TimeDelta::FromMillisecondsD(*capture_text_time));
+                      base::Milliseconds(*capture_text_time));
 
   // If there is no language defined in httpEquiv, use the HTTP header.
   if (http_content_language->empty())
@@ -117,8 +117,7 @@ void LanguageDetectionController::OnTextCaptured(const base::Value& command,
       base::BindRepeating(&LanguageDetectionController::OnTextRetrieved,
                           weak_method_factory_.GetWeakPtr(), *has_notranslate,
                           *http_content_language, *html_lang, url),
-      base::TimeDelta::FromMilliseconds(
-          web::kJavaScriptFunctionCallDefaultTimeout));
+      base::Milliseconds(web::kJavaScriptFunctionCallDefaultTimeout));
 }
 
 void LanguageDetectionController::OnTextRetrieved(

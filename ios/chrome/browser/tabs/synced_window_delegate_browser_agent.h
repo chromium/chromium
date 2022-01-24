@@ -17,7 +17,7 @@ namespace browser_sync {
 class SyncedTabDelegate;
 }
 
-// A TabModelSyncedWindowDelegate is the iOS-based implementation of
+// A SyncedWindowDelegateBrowserAgent is the iOS-based implementation of
 // SyncedWindowDelegate.
 class SyncedWindowDelegateBrowserAgent
     : public sync_sessions::SyncedWindowDelegate,

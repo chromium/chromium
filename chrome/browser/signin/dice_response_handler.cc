@@ -163,7 +163,7 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
   gaia_auth_fetcher_->StartAuthCodeForOAuth2TokenExchange(authorization_code_);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, timeout_closure_.callback(),
-      base::TimeDelta::FromSeconds(kDiceTokenFetchTimeoutSeconds));
+      base::Seconds(kDiceTokenFetchTimeoutSeconds));
 }
 
 DiceResponseHandler::DiceTokenFetcher::~DiceTokenFetcher() {}
@@ -286,8 +286,7 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
       // If there is already another lock, the timer will be reset and
       // we'll wait another full timeout.
       timer_->Start(
-          FROM_HERE,
-          base::TimeDelta::FromHours(kLockAccountReconcilorTimeoutHours),
+          FROM_HERE, base::Hours(kLockAccountReconcilorTimeoutHours),
           base::BindOnce(&DiceResponseHandler::OnTimeoutUnlockReconcilor,
                          base::Unretained(this)));
     }

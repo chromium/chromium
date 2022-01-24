@@ -36,12 +36,15 @@ namespace wayland {
 
 namespace {
 
-constexpr auto kTransitionDuration = base::TimeDelta::FromSeconds(3);
+constexpr auto kTransitionDuration = base::Seconds(3);
 
 class TestAuraSurface : public AuraSurface {
  public:
   explicit TestAuraSurface(Surface* surface)
       : AuraSurface(surface, /*resource=*/nullptr) {}
+
+  TestAuraSurface(const TestAuraSurface&) = delete;
+  TestAuraSurface& operator=(const TestAuraSurface&) = delete;
 
   float last_sent_occlusion_fraction() const {
     return last_sent_occlusion_fraction_;
@@ -67,8 +70,6 @@ class TestAuraSurface : public AuraSurface {
   aura::Window::OcclusionState last_sent_occlusion_state_ =
       aura::Window::OcclusionState::UNKNOWN;
   int num_occlusion_updates_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAuraSurface);
 };
 
 class MockSurfaceDelegate : public SurfaceDelegate {
@@ -94,11 +95,11 @@ class MockSurfaceDelegate : public SurfaceDelegate {
   MOCK_METHOD(void, OnActivationRequested, (), (override));
   MOCK_METHOD(void, OnNewOutputAdded, (), (override));
   MOCK_METHOD(void, OnSetServerStartResize, (), (override));
-  MOCK_METHOD(void, ShowSnapPreviewToLeft, (), (override));
-  MOCK_METHOD(void, ShowSnapPreviewToRight, (), (override));
+  MOCK_METHOD(void, ShowSnapPreviewToPrimary, (), (override));
+  MOCK_METHOD(void, ShowSnapPreviewToSecondary, (), (override));
   MOCK_METHOD(void, HideSnapPreview, (), (override));
-  MOCK_METHOD(void, SetSnappedToRight, (), (override));
-  MOCK_METHOD(void, SetSnappedToLeft, (), (override));
+  MOCK_METHOD(void, SetSnappedToSecondary, (), (override));
+  MOCK_METHOD(void, SetSnappedToPrimary, (), (override));
   MOCK_METHOD(void, UnsetSnap, (), (override));
   MOCK_METHOD(void, SetCanGoBack, (), (override));
   MOCK_METHOD(void, UnsetCanGoBack, (), (override));
@@ -108,6 +109,14 @@ class MockSurfaceDelegate : public SurfaceDelegate {
               SetAspectRatio,
               (const gfx::SizeF& aspect_ratio),
               (override));
+  MOCK_METHOD(void, MoveToDesk, (int desk_index), (override));
+  MOCK_METHOD(void, SetVisibleOnAllWorkspaces, (), (override));
+  MOCK_METHOD(void,
+              SetInitialWorkspace,
+              (const char* initial_workspace),
+              (override));
+  MOCK_METHOD(void, Pin, (bool trusted), (override));
+  MOCK_METHOD(void, Unpin, (), (override));
 };
 
 }  // namespace
@@ -116,6 +125,10 @@ class ZAuraSurfaceTest : public test::ExoTestBase,
                          public ::wm::ActivationChangeObserver {
  public:
   ZAuraSurfaceTest() {}
+
+  ZAuraSurfaceTest(const ZAuraSurfaceTest&) = delete;
+  ZAuraSurfaceTest& operator=(const ZAuraSurfaceTest&) = delete;
+
   ~ZAuraSurfaceTest() override {}
 
   // test::ExoTestBase overrides:
@@ -185,8 +198,6 @@ class ZAuraSurfaceTest : public test::ExoTestBase,
   std::unique_ptr<Surface> surface_;
   std::unique_ptr<views::Widget> parent_widget_;
   float occlusion_fraction_on_activation_loss_ = -1.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(ZAuraSurfaceTest);
 };
 
 TEST_F(ZAuraSurfaceTest, OcclusionTrackingStartsAfterCommit) {
@@ -324,7 +335,7 @@ TEST_F(ZAuraSurfaceTest,
 }
 
 TEST_F(ZAuraSurfaceTest, OcclusionIncludesOffScreenArea) {
-  UpdateDisplay("150x150");
+  UpdateDisplay("200x150");
 
   gfx::Size buffer_size(80, 100);
   std::unique_ptr<Buffer> buffer(
@@ -360,6 +371,26 @@ TEST_F(ZAuraSurfaceTest, CanSetFullscreenModeToPlain) {
   EXPECT_CALL(delegate, SetUseImmersiveForFullscreen(false));
 
   aura_surface().SetFullscreenMode(ZAURA_SURFACE_FULLSCREEN_MODE_PLAIN);
+}
+
+TEST_F(ZAuraSurfaceTest, CanPin) {
+  MockSurfaceDelegate delegate;
+  wl_resource resource;
+  resource.data = &aura_surface();
+  surface().SetSurfaceDelegate(&delegate);
+  EXPECT_CALL(delegate, Pin(true));
+
+  aura_surface().Pin(true);
+}
+
+TEST_F(ZAuraSurfaceTest, CanUnpin) {
+  MockSurfaceDelegate delegate;
+  wl_resource resource;
+  resource.data = &aura_surface();
+  surface().SetSurfaceDelegate(&delegate);
+  EXPECT_CALL(delegate, Unpin());
+
+  aura_surface().Unpin();
 }
 
 TEST_F(ZAuraSurfaceTest, CanSetFullscreenModeToImmersive) {

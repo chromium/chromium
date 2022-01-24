@@ -4,7 +4,7 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="../localized_link/localized_link.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
 <link rel="import" href="../../shared/nearby_page_template.html">
 <link rel="import" href="../../shared/nearby_shared_icons.html">
 
@@ -12,8 +12,8 @@
   <template>
     <style>
       #content {
-        background: linear-gradient(to top, var(--google-blue-50) 5%,
-            rgba(255, 255, 255, 0) 50%);
+        background: linear-gradient(to top,
+            var(--nearby-page-linear-gradient-color-start) 5%, transparent 50%);
         display: flex;
         flex-direction: column-reverse;
         height: 100%;
@@ -23,7 +23,7 @@
 
       #help {
         align-items: flex-start;
-        color: var(--google-gray-500);
+        color: var(--cros-text-color-disabled);
         display: flex;
         flex-direction: row;
         font-size: 9px;
@@ -44,8 +44,12 @@
         width: 20px;
       }
 
+      .icon-help-state {
+        fill: var(--cros-icon-color-disabled);
+      }
+
       .icon-error-state {
-        fill: var(--google-red-600);
+        fill: var(--cros-icon-color-alert);
       }
 
       #error {
@@ -56,13 +60,13 @@
       }
 
       #errorTitle {
-        color: var(--google-red-600);
+        color: var(--cros-text-color-alert);
         font-weight: bold;
         margin-bottom: 3px;
       }
 
       #errorDescription {
-        color: var(--google-grey-700);
+        color: var(--cros-text-color-secondary);
         line-height: 13px;
       }
 
@@ -82,17 +86,22 @@
         cancel-button-label="$i18n{cancel}"
         close-only="[[getErrorTitle_(errorState_)]]">
       <div id="content" slot="content">
-        <cr-lottie animation-url="nearby_share_pulse_animation.json"
-            autoplay="true">
+        <iron-media-query query="(prefers-color-scheme: dark)"
+            query-matches="{{isDarkModeActive_}}">
+        </iron-media-query>
+        <cr-lottie animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
+          autoplay="true">
         </cr-lottie>
         <div id="help">
           <template is="dom-if" if="[[!getErrorTitle_(errorState_)]]">
-            <iron-icon id="infoIcon" icon="nearby20:info"></iron-icon>
+            <iron-icon id="infoIcon" icon="nearby20:info"
+                class="icon-help-state">
+            </iron-icon>
             <div id="helpText">
-              <settings-localized-link
+              <localized-link
                   localized-string="$i18n{nearbyShareHighVisibilityHelpText}"
                   link-url="$i18n{nearbyShareLearnMoreLink}">
-              </settings-localized-link>
+              </localized-link>
             </div>
           </template>
           <template is="dom-if" if="[[getErrorTitle_(errorState_)]]">
@@ -105,10 +114,10 @@
                 [[getErrorTitle_(errorState_)]]
               </div>
               <div id="errorDescription" aria-hidden="true">
-                <settings-localized-link
+                <localized-link
                     localized-string="[[getErrorDescription_(errorState_)]]"
                     link-url="$i18n{nearbyShareLearnMoreLink}">
-                </settings-localized-link>
+                </localized-link>
               </div>
             </div>
           </template>

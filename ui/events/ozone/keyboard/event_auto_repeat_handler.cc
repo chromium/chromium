@@ -19,8 +19,8 @@ constexpr int kRepeatIntervalMs = 50;
 }  // namespace
 
 EventAutoRepeatHandler::EventAutoRepeatHandler(Delegate* delegate)
-    : repeat_delay_(base::TimeDelta::FromMilliseconds(kRepeatDelayMs)),
-      repeat_interval_(base::TimeDelta::FromMilliseconds(kRepeatIntervalMs)),
+    : repeat_delay_(base::Milliseconds(kRepeatDelayMs)),
+      repeat_interval_(base::Milliseconds(kRepeatIntervalMs)),
       delegate_(delegate) {
   DCHECK(delegate_);
 }

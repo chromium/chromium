@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -34,6 +33,11 @@ class ScopedTestNativeMessagingHost {
   static const char kExtensionId[];
 
   ScopedTestNativeMessagingHost();
+
+  ScopedTestNativeMessagingHost(const ScopedTestNativeMessagingHost&) = delete;
+  ScopedTestNativeMessagingHost& operator=(
+      const ScopedTestNativeMessagingHost&) = delete;
+
   ~ScopedTestNativeMessagingHost();
 
   void RegisterTestHost(bool user_level);
@@ -48,8 +52,6 @@ class ScopedTestNativeMessagingHost {
 #else
   std::unique_ptr<base::ScopedPathOverride> path_override_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestNativeMessagingHost);
 };
 
 }  // namespace extensions

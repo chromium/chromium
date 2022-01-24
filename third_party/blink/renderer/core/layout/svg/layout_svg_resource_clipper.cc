@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -54,6 +55,8 @@ ClipStrategy DetermineClipStrategy(const SVGGraphicsElement& element) {
   const LayoutObject* layout_object = element.GetLayoutObject();
   if (!layout_object)
     return ClipStrategy::kNone;
+  if (DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object))
+    return ClipStrategy::kNone;
   const ComputedStyle& style = layout_object->StyleRef();
   if (style.Display() == EDisplay::kNone ||
       style.Visibility() != EVisibility::kVisible)
@@ -74,8 +77,12 @@ ClipStrategy DetermineClipStrategy(const SVGElement& element) {
   // (https://drafts.fxtf.org/css-masking/#ClipPathElement)
   if (auto* svg_use_element = DynamicTo<SVGUseElement>(element)) {
     const LayoutObject* use_layout_object = element.GetLayoutObject();
-    if (!use_layout_object ||
-        use_layout_object->StyleRef().Display() == EDisplay::kNone)
+    if (!use_layout_object)
+      return ClipStrategy::kNone;
+    if (DisplayLockUtilities::LockedAncestorPreventingLayout(
+            *use_layout_object))
+      return ClipStrategy::kNone;
+    if (use_layout_object->StyleRef().Display() == EDisplay::kNone)
       return ClipStrategy::kNone;
     const SVGGraphicsElement* shape_element =
         svg_use_element->VisibleTargetGraphicsElementForClipping();
@@ -116,7 +123,7 @@ void LayoutSVGResourceClipper::RemoveAllClientsFromCache() {
   clip_content_path_validity_ = kClipContentPathUnknown;
   clip_content_path_.Clear();
   cached_paint_record_.reset();
-  local_clip_bounds_ = FloatRect();
+  local_clip_bounds_ = gfx::RectF();
   MarkAllClientsForInvalidation(kClipCacheInvalidation | kPaintInvalidation);
 }
 
@@ -177,14 +184,14 @@ sk_sp<const PaintRecord> LayoutSVGResourceClipper::CreatePaintRecord() {
   if (cached_paint_record_)
     return cached_paint_record_;
 
-  PaintRecordBuilder builder;
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   // Switch to a paint behavior where all children of this <clipPath> will be
   // laid out using special constraints:
   // - fill-opacity/stroke-opacity/opacity set to 1
   // - masker/filter not applied when laying out the children
   // - fill is set to the initial fill paint server (solid, black)
   // - stroke is set to the initial stroke paint server (none)
-  PaintInfo info(builder.Context(), CullRect::Infinite(),
+  PaintInfo info(builder->Context(), CullRect::Infinite(),
                  PaintPhase::kForeground, kGlobalPaintNormalPhase,
                  kPaintLayerPaintingRenderingClipPathAsMask |
                      kPaintLayerPaintingRenderingResourceSubtree);
@@ -199,7 +206,7 @@ sk_sp<const PaintRecord> LayoutSVGResourceClipper::CreatePaintRecord() {
     layout_object->Paint(info);
   }
 
-  cached_paint_record_ = builder.EndRecording();
+  cached_paint_record_ = builder->EndRecording();
   return cached_paint_record_;
 }
 
@@ -212,7 +219,7 @@ void LayoutSVGResourceClipper::CalculateLocalClipBounds() {
     if (!ContributesToClip(child_element))
       continue;
     const LayoutObject* layout_object = child_element.GetLayoutObject();
-    local_clip_bounds_.Unite(layout_object->LocalToSVGParentTransform().MapRect(
+    local_clip_bounds_.Union(layout_object->LocalToSVGParentTransform().MapRect(
         layout_object->VisualRectInLocalSVGCoordinates()));
   }
 }
@@ -225,20 +232,20 @@ SVGUnitTypes::SVGUnitType LayoutSVGResourceClipper::ClipPathUnits() const {
 }
 
 AffineTransform LayoutSVGResourceClipper::CalculateClipTransform(
-    const FloatRect& reference_box) const {
+    const gfx::RectF& reference_box) const {
   NOT_DESTROYED();
   AffineTransform transform =
       To<SVGClipPathElement>(GetElement())
           ->CalculateTransform(SVGElement::kIncludeMotionTransform);
   if (ClipPathUnits() == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
-    transform.Translate(reference_box.X(), reference_box.Y());
-    transform.ScaleNonUniform(reference_box.Width(), reference_box.Height());
+    transform.Translate(reference_box.x(), reference_box.y());
+    transform.ScaleNonUniform(reference_box.width(), reference_box.height());
   }
   return transform;
 }
 
 bool LayoutSVGResourceClipper::HitTestClipContent(
-    const FloatRect& object_bounding_box,
+    const gfx::RectF& object_bounding_box,
     const HitTestLocation& location) const {
   NOT_DESTROYED();
   if (!SVGLayoutSupport::IntersectsClipPath(*this, object_bounding_box,
@@ -267,10 +274,10 @@ bool LayoutSVGResourceClipper::HitTestClipContent(
   return false;
 }
 
-FloatRect LayoutSVGResourceClipper::ResourceBoundingBox(
-    const FloatRect& reference_box) {
+gfx::RectF LayoutSVGResourceClipper::ResourceBoundingBox(
+    const gfx::RectF& reference_box) {
   NOT_DESTROYED();
-  DCHECK(!NeedsLayout());
+  DCHECK(!SelfNeedsLayout());
 
   if (local_clip_bounds_.IsEmpty())
     CalculateLocalClipBounds();

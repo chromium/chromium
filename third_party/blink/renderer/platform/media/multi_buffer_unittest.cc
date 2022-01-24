@@ -16,7 +16,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/test_random.h"
@@ -235,7 +235,7 @@ class MultiBufferTest : public testing::Test {
     // Make sure we have nothing left to prune.
     lru_->Prune(1000000);
     // Run the outstanding callback to make sure everything is freed.
-    task_runner_->Sleep(base::TimeDelta::FromSeconds(30));
+    task_runner_->Sleep(base::Seconds(30));
   }
 
   void Advance() {
@@ -460,12 +460,12 @@ TEST_F(MultiBufferTest, LRUTestExpirationTest) {
   max_size -= 3;
 
   // There should be no change after 29 seconds.
-  task_runner_->Sleep(base::TimeDelta::FromSeconds(29));
+  task_runner_->Sleep(base::Seconds(29));
   EXPECT_EQ(current_size, lru_->Size());
   EXPECT_TRUE(lru_->Pruneable());
 
   // After 30 seconds, pruning should have happened.
-  task_runner_->Sleep(base::TimeDelta::FromSeconds(30));
+  task_runner_->Sleep(base::Seconds(30));
   current_size -= 3;
   EXPECT_EQ(current_size, lru_->Size());
   EXPECT_FALSE(lru_->Pruneable());
@@ -474,7 +474,7 @@ TEST_F(MultiBufferTest, LRUTestExpirationTest) {
   lru_->IncrementMaxSize(-max_size);
 
   // After another 30 seconds, everything should be pruned.
-  task_runner_->Sleep(base::TimeDelta::FromSeconds(30));
+  task_runner_->Sleep(base::Seconds(30));
   EXPECT_EQ(0, lru_->Size());
   EXPECT_FALSE(lru_->Pruneable());
 }
@@ -560,10 +560,10 @@ TEST_F(MultiBufferTest, RandomTest) {
         if (!writers.empty())
           Advance();
       } else {
-        size_t j = rnd_.Rand() % read_helpers.size();
+        size_t k = rnd_.Rand() % read_helpers.size();
         if (rnd_.Rand() % 100 < 3)
-          read_helpers[j]->Seek();
-        read_helpers[j]->StartRead();
+          read_helpers[k]->Seek();
+        read_helpers[k]->StartRead();
       }
     }
     multibuffer_.CheckLRUState();
@@ -591,10 +591,10 @@ TEST_F(MultiBufferTest, RandomTest_RangeSupported) {
         if (!writers.empty())
           Advance();
       } else {
-        size_t j = rnd_.Rand() % read_helpers.size();
+        size_t k = rnd_.Rand() % read_helpers.size();
         if (rnd_.Rand() % 100 < 3)
-          read_helpers[j]->Seek();
-        read_helpers[j]->StartRead();
+          read_helpers[k]->Seek();
+        read_helpers[k]->StartRead();
       }
     }
     multibuffer_.CheckLRUState();

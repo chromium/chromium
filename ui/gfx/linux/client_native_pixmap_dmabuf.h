@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap.h"
 #include "ui/gfx/geometry/size.h"
@@ -30,14 +29,19 @@ class ClientNativePixmapDmaBuf : public gfx::ClientNativePixmap {
       const gfx::Size& size,
       gfx::BufferFormat format);
 
+  ClientNativePixmapDmaBuf(const ClientNativePixmapDmaBuf&) = delete;
+  ClientNativePixmapDmaBuf& operator=(const ClientNativePixmapDmaBuf&) = delete;
+
   ~ClientNativePixmapDmaBuf() override;
 
   // Overridden from ClientNativePixmap.
   bool Map() override;
   void Unmap() override;
 
+  size_t GetNumberOfPlanes() const override;
   void* GetMemoryAddress(size_t plane) const override;
   int GetStride(size_t plane) const override;
+  NativePixmapHandle CloneHandleForIPC() const override;
 
  private:
   static constexpr size_t kMaxPlanes = 4;
@@ -58,8 +62,6 @@ class ClientNativePixmapDmaBuf : public gfx::ClientNativePixmap {
   const gfx::NativePixmapHandle pixmap_handle_;
   const gfx::Size size_;
   const std::array<PlaneInfo, kMaxPlanes> plane_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientNativePixmapDmaBuf);
 };
 
 }  // namespace gfx

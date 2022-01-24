@@ -18,6 +18,10 @@ class MockMediaCodecBridge : public MediaCodecBridge,
                              public DestructionObservable {
  public:
   MockMediaCodecBridge();
+
+  MockMediaCodecBridge(const MockMediaCodecBridge&) = delete;
+  MockMediaCodecBridge& operator=(const MockMediaCodecBridge&) = delete;
+
   ~MockMediaCodecBridge() override;
 
   // Helpers for conveniently setting expectations.
@@ -30,6 +34,8 @@ class MockMediaCodecBridge : public MediaCodecBridge,
   MOCK_METHOD1(GetOutputSize, MediaCodecStatus(gfx::Size* size));
   MOCK_METHOD1(GetOutputSamplingRate, MediaCodecStatus(int* sampling_rate));
   MOCK_METHOD1(GetOutputChannelCount, MediaCodecStatus(int* channel_count));
+  MOCK_METHOD1(GetOutputColorSpace,
+               MediaCodecStatus(gfx::ColorSpace* color_space));
   MOCK_METHOD4(QueueInputBuffer,
                MediaCodecStatus(int index,
                                 const uint8_t* data,
@@ -87,8 +93,6 @@ class MockMediaCodecBridge : public MediaCodecBridge,
   bool is_drained_ = true;
 
   CodecType codec_type_ = CodecType::kAny;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaCodecBridge);
 };
 
 }  // namespace media

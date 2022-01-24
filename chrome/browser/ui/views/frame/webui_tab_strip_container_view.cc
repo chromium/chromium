@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -55,8 +56,9 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/common/drop_data.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/aura/window.h"
@@ -67,6 +69,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/event_target.h"
 #include "ui/gfx/animation/tween.h"
@@ -123,10 +127,8 @@ base::TimeDelta GetBaseTabstripOpenCloseAnimationDuration(
   // These values were determined by UX; in the future we may want to change
   // values for fling animations to be consistent for both open and close
   // gestures.
-  constexpr base::TimeDelta kHideAnimationDuration =
-      base::TimeDelta::FromMilliseconds(200);
-  constexpr base::TimeDelta kShowAnimationDuration =
-      base::TimeDelta::FromMilliseconds(250);
+  constexpr base::TimeDelta kHideAnimationDuration = base::Milliseconds(200);
+  constexpr base::TimeDelta kShowAnimationDuration = base::Milliseconds(250);
   switch (direction) {
     case WebUITabStripDragDirection::kUp:
       return kHideAnimationDuration;
@@ -151,7 +153,7 @@ base::TimeDelta GetTimeDeltaForTabstripOpenClose(
   // fling is not granular enough to give consistent results.
   if (reason == WebUITabStripOpenCloseReason::kFling) {
     constexpr base::TimeDelta kMinimumAnimationDuration =
-        base::TimeDelta::FromMilliseconds(75);
+        base::Milliseconds(75);
     duration =
         std::max(kMinimumAnimationDuration, duration * percent_remaining);
   }
@@ -195,43 +197,6 @@ TabStripUI* GetTabStripUI(content::WebContents* web_contents) {
              ? webui->GetController()->template GetAs<TabStripUI>()
              : nullptr;
 }
-
-class WebUITabStripWebView : public views::WebView {
- public:
-  METADATA_HEADER(WebUITabStripWebView);
-  explicit WebUITabStripWebView(content::BrowserContext* context)
-      : views::WebView(context) {}
-
-  // content::WebContentsDelegate:
-  bool CanDragEnter(content::WebContents* source,
-                    const content::DropData& data,
-                    blink::DragOperationsMask operations_allowed) override {
-    // TODO(crbug.com/1032592): Prevent dragging across Chromium instances.
-    if (data.custom_data.find(base::ASCIIToUTF16(kWebUITabIdDataType)) !=
-        data.custom_data.end()) {
-      int tab_id;
-      bool found_tab_id = base::StringToInt(
-          data.custom_data.at(base::ASCIIToUTF16(kWebUITabIdDataType)),
-          &tab_id);
-      return found_tab_id && extensions::ExtensionTabUtil::GetTabById(
-                                 tab_id, GetBrowserContext(), false, nullptr);
-    }
-
-    if (data.custom_data.find(base::ASCIIToUTF16(kWebUITabGroupIdDataType)) !=
-        data.custom_data.end()) {
-      std::string group_id = base::UTF16ToUTF8(
-          data.custom_data.at(base::ASCIIToUTF16(kWebUITabGroupIdDataType)));
-      Browser* found_browser = tab_strip_ui::GetBrowserWithGroupId(
-          Profile::FromBrowserContext(GetBrowserContext()), group_id);
-      return found_browser != nullptr;
-    }
-
-    return false;
-  }
-};
-
-BEGIN_METADATA(WebUITabStripWebView, views::WebView)
-END_METADATA
 
 class WebUINewTabButton : public ToolbarButton {
  public:
@@ -482,7 +447,7 @@ WebUITabStripContainerView::WebUITabStripContainerView(
     views::View* omnibox)
     : browser_view_(browser_view),
       web_view_(AddChildView(
-          std::make_unique<WebUITabStripWebView>(browser_view_->GetProfile()))),
+          std::make_unique<views::WebView>(browser_view_->GetProfile()))),
       top_container_(top_container),
       tab_contents_container_(tab_contents_container),
       auto_closer_(std::make_unique<AutoCloser>(
@@ -499,6 +464,10 @@ WebUITabStripContainerView::WebUITabStripContainerView(
 
   SetVisible(false);
   animation_.Reset(0.0);
+
+  DCHECK(tab_contents_container);
+  view_observations_.AddObservation(tab_contents_container_);
+  view_observations_.AddObservation(top_container_);
 
   // TODO(crbug.com/1010589) WebContents are initially assumed to be visible by
   // default unless explicitly hidden. The WebContents need to be set to hidden
@@ -519,22 +488,11 @@ WebUITabStripContainerView::WebUITabStripContainerView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(base::BindRepeating(
           &WebUITabStripContainerView::FlexRule, base::Unretained(this))));
-
-  web_view_->LoadInitialURL(GURL(chrome::kChromeUITabStripURL));
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_view_->web_contents());
-  task_manager::WebContentsTags::CreateForTabContents(
-      web_view_->web_contents());
-
-  DCHECK(tab_contents_container);
-  view_observations_.AddObservation(tab_contents_container_);
-  view_observations_.AddObservation(top_container_);
-
-  if (TabStripUI* tab_strip_ui = GetTabStripUI(web_view_->GetWebContents()))
-    tab_strip_ui->Initialize(browser_view_->browser(), this);
+  InitializeWebView();
 }
 
 WebUITabStripContainerView::~WebUITabStripContainerView() {
+  content::WebContentsObserver::Observe(nullptr);
   // The TabCounter button uses |this| as a listener. We need to make
   // sure we outlive it.
   delete new_tab_button_;
@@ -756,6 +714,9 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     bool target_visible,
     WebUITabStripOpenCloseReason reason) {
   if (target_visible) {
+    if (web_view_->GetWebContents()->IsCrashed())
+      InitializeWebView();
+
     immersive_revealed_lock_.reset(
         browser_view_->immersive_mode_controller()->GetRevealedLock(
             ImmersiveModeController::ANIMATE_REVEAL_YES));
@@ -837,11 +798,14 @@ void WebUITabStripContainerView::ShowContextMenuAtPoint(
     return;
   ConvertPointToScreen(this, &point);
   context_menu_model_ = std::move(menu_model);
+  int menu_runner_flags =
+      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
+  if (!base::FeatureList::IsEnabled(
+          features::kWebUITabStripContextMenuAfterTap)) {
+    menu_runner_flags |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
+  }
   context_menu_runner_ = std::make_unique<views::MenuRunner>(
-      context_menu_model_.get(),
-      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU |
-          views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER,
-      on_menu_closed_callback);
+      context_menu_model_.get(), menu_runner_flags, on_menu_closed_callback);
   context_menu_runner_->RunMenuAt(
       GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
       views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE,
@@ -860,8 +824,15 @@ void WebUITabStripContainerView::ShowEditDialogForGroupAtPoint(
     tab_groups::TabGroupId group) {
   ConvertPointToScreen(this, &point);
   rect.set_origin(point);
-  TabGroupEditorBubbleView::Show(browser_view_->browser(), group, nullptr, rect,
-                                 this);
+  editor_bubble_widget_ = TabGroupEditorBubbleView::Show(
+      browser_view_->browser(), group, nullptr, rect, this);
+  scoped_widget_observation_.Observe(editor_bubble_widget_);
+}
+
+void WebUITabStripContainerView::HideEditDialogForGroup() {
+  if (editor_bubble_widget_)
+    editor_bubble_widget_->CloseWithReason(
+        BrowserFrame::ClosedReason::kUnspecified);
 }
 
 TabStripUILayout WebUITabStripContainerView::GetLayout() {
@@ -893,9 +864,9 @@ SkColor WebUITabStripContainerView::GetColor(int id) const {
   return GetThemeProvider()->GetColor(id);
 }
 
-SkColor WebUITabStripContainerView::GetSystemColor(
-    ui::NativeTheme::ColorId id) const {
-  return GetNativeTheme()->GetSystemColor(id);
+SkColor WebUITabStripContainerView::GetColorProviderColor(
+    ui::ColorId id) const {
+  return GetColorProvider()->GetColor(id);
 }
 
 int WebUITabStripContainerView::GetHeightForWidth(int w) const {
@@ -959,6 +930,14 @@ void WebUITabStripContainerView::OnViewIsDeleting(View* observed_view) {
     tab_contents_container_ = nullptr;
 }
 
+void WebUITabStripContainerView::OnWidgetDestroying(views::Widget* widget) {
+  if (widget != editor_bubble_widget_)
+    return;
+
+  scoped_widget_observation_.Reset();
+  editor_bubble_widget_ = nullptr;
+}
+
 bool WebUITabStripContainerView::SetPaneFocusAndFocusDefault() {
   // Make sure the pane first receives focus, then send a WebUI event to the
   // front-end so the correct HTML element receives focus.
@@ -967,4 +946,27 @@ bool WebUITabStripContainerView::SetPaneFocusAndFocusDefault() {
   if (received_focus && tab_strip_ui)
     tab_strip_ui->ReceivedKeyboardFocus();
   return received_focus;
+}
+
+void WebUITabStripContainerView::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  // Since all WebUI tab strips are sharing the same render process, if the
+  // render process has crashed, we close the container. When users click on
+  // the tab counter button WebUI tab strip should be able to recover.
+  CloseContainer();
+  content::WebContentsObserver::Observe(nullptr);
+}
+
+void WebUITabStripContainerView::InitializeWebView() {
+  DCHECK(web_view_);
+  web_view_->LoadInitialURL(GURL(chrome::kChromeUITabStripURL));
+  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
+      web_view_->web_contents());
+  task_manager::WebContentsTags::CreateForTabContents(
+      web_view_->web_contents());
+
+  if (TabStripUI* tab_strip_ui = GetTabStripUI(web_view_->GetWebContents()))
+    tab_strip_ui->Initialize(browser_view_->browser(), this);
+
+  content::WebContentsObserver::Observe(web_view_->GetWebContents());
 }

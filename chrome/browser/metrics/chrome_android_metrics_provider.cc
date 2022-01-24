@@ -11,7 +11,9 @@
 #include "chrome/browser/notifications/jni_headers/NotificationSystemStatusUtil_jni.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "system_profile.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace {
 
@@ -46,6 +48,22 @@ void EmitAppNotificationStatusHistogram() {
                             kAppNotificationStatusBoundary);
 }
 
+metrics::SystemProfileProto::OS::DarkModeState ToProtoDarkModeState(
+    chrome::android::DarkModeState state) {
+  switch (state) {
+    case chrome::android::DarkModeState::kDarkModeSystem:
+      return metrics::SystemProfileProto::OS::DARK_MODE_SYSTEM;
+    case chrome::android::DarkModeState::kDarkModeApp:
+      return metrics::SystemProfileProto::OS::DARK_MODE_APP;
+    case chrome::android::DarkModeState::kLightModeSystem:
+      return metrics::SystemProfileProto::OS::LIGHT_MODE_SYSTEM;
+    case chrome::android::DarkModeState::kLightModeApp:
+      return metrics::SystemProfileProto::OS::LIGHT_MODE_APP;
+    case chrome::android::DarkModeState::kUnknown:
+      return metrics::SystemProfileProto::OS::UNKNOWN;
+  }
+}
+
 }  // namespace
 
 ChromeAndroidMetricsProvider::ChromeAndroidMetricsProvider(
@@ -78,6 +96,13 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   UMA_HISTOGRAM_BOOLEAN("Android.MultiWindowMode.Active",
                         chrome::android::GetIsInMultiWindowModeValue());
+
+  metrics::SystemProfileProto::OS* os_proto =
+      uma_proto->mutable_system_profile()->mutable_os();
+
+  os_proto->set_dark_mode_state(
+      ToProtoDarkModeState(chrome::android::GetDarkModeState()));
+
   UmaSessionStats::GetInstance()->ProvideCurrentSessionData();
   EmitAppNotificationStatusHistogram();
   LocaleManager::RecordUserTypeMetrics();

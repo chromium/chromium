@@ -11,8 +11,9 @@ GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "build/chromeos_buildflags.h"');
 
+/* eslint-disable no-var */
+
 /** Test fixture for shared Polymer 3 elements. */
-// eslint-disable-next-line no-var
 var CrElementsBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -25,7 +26,6 @@ var CrElementsBrowserTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var CrElementsA11yAnnouncerTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -37,7 +37,6 @@ TEST_F('CrElementsA11yAnnouncerTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsButtonTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -49,7 +48,6 @@ TEST_F('CrElementsButtonTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsContainerShadowBehaviorTest =
     class extends CrElementsBrowserTest {
   /** @override */
@@ -62,7 +60,6 @@ TEST_F('CrElementsContainerShadowBehaviorTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsContainerShadowMixinTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -74,7 +71,6 @@ TEST_F('CrElementsContainerShadowMixinTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsDialogTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -86,7 +82,6 @@ TEST_F('CrElementsDialogTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsDrawerTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -105,7 +100,6 @@ TEST_F('CrElementsDrawerTest', 'MAYBE_Drawer', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsExpandButtonTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -117,7 +111,7 @@ TEST_F('CrElementsExpandButtonTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrElementsFindShortcutBehaviorTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -128,8 +122,19 @@ var CrElementsFindShortcutBehaviorTest = class extends CrElementsBrowserTest {
 TEST_F('CrElementsFindShortcutBehaviorTest', 'All', function() {
   mocha.run();
 });
+GEN('#endif');
 
-// eslint-disable-next-line no-var
+var CrElementsFindShortcutMixinTest = class extends CrElementsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_elements/find_shortcut_mixin_test.js';
+  }
+};
+
+TEST_F('CrElementsFindShortcutMixinTest', 'All', function() {
+  mocha.run();
+});
+
 var CrElementsFingerprintProgressArcTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -153,7 +158,6 @@ TEST_F('CrElementsFingerprintProgressArcTest', 'MAYBE_Fingerprint', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsIconButtonTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -165,7 +169,6 @@ TEST_F('CrElementsIconButtonTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsLazyRenderTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -177,7 +180,6 @@ TEST_F('CrElementsLazyRenderTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsLinkRowTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -189,7 +191,6 @@ TEST_F('CrElementsLinkRowTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsRadioButtonTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -201,7 +202,6 @@ TEST_F('CrElementsRadioButtonTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsCardRadioButtonTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -214,7 +214,6 @@ TEST_F('CrElementsCardRadioButtonTest', 'All', function() {
 });
 
 
-// eslint-disable-next-line no-var
 var CrElementsRadioGroupTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -226,7 +225,6 @@ TEST_F('CrElementsRadioGroupTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsScrollableBehaviorTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -238,7 +236,6 @@ TEST_F('CrElementsScrollableBehaviorTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsSearchFieldTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -251,7 +248,6 @@ TEST_F('CrElementsSearchFieldTest', 'All', function() {
 });
 
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
-// eslint-disable-next-line no-var
 var CrElementsSearchableDropDownTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -264,7 +260,6 @@ TEST_F('CrElementsSearchableDropDownTest', 'All', function() {
 });
 GEN('#endif');
 
-// eslint-disable-next-line no-var
 var CrElementsSliderTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -276,7 +271,6 @@ TEST_F('CrElementsSliderTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsSplitterTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -288,7 +282,6 @@ TEST_F('CrElementsSplitterTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsToastTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -300,7 +293,6 @@ TEST_F('CrElementsToastTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsToastManagerTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -312,7 +304,6 @@ TEST_F('CrElementsToastManagerTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsViewManagerTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -324,7 +315,6 @@ TEST_F('CrElementsViewManagerTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsPolicyIndicatorTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -336,7 +326,6 @@ TEST_F('CrElementsPolicyIndicatorTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsPolicyPrefIndicatorTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -349,7 +338,6 @@ TEST_F('CrElementsPolicyPrefIndicatorTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsPolicyIndicatorBehaviorTest =
     class extends CrElementsBrowserTest {
   /** @override */
@@ -362,7 +350,6 @@ TEST_F('CrElementsPolicyIndicatorBehaviorTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsLottieTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -379,7 +366,6 @@ TEST_F('CrElementsLottieTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrElementsAutoImgTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -388,5 +374,16 @@ var CrElementsAutoImgTest = class extends CrElementsBrowserTest {
 };
 
 TEST_F('CrElementsAutoImgTest', 'All', function() {
+  mocha.run();
+});
+
+var CrElementsToolbarTest = class extends CrElementsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_toolbar_test.js';
+  }
+};
+
+TEST_F('CrElementsToolbarTest', 'All', function() {
   mocha.run();
 });

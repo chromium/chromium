@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
@@ -352,17 +352,9 @@ class VIEWS_EXPORT WidgetDelegate {
 
   template <typename T>
   T* SetContentsView(std::unique_ptr<T> contents) {
-    DCHECK(!contents->owned_by_client());
     T* raw_contents = contents.get();
-    SetContentsViewImpl(contents.release());
+    SetContentsViewImpl(std::move(contents));
     return raw_contents;
-  }
-
-  template <typename T>
-  T* SetContentsView(T* contents) {
-    DCHECK(contents->owned_by_client());
-    SetContentsViewImpl(contents);
-    return contents;
   }
 
   // A convenience wrapper that does all three of SetCanMaximize,
@@ -405,7 +397,7 @@ class VIEWS_EXPORT WidgetDelegate {
 
   friend class Widget;
 
-  void SetContentsViewImpl(View* contents);
+  void SetContentsViewImpl(std::unique_ptr<View> contents);
 
   // The Widget that was initialized with this instance as its WidgetDelegate,
   // if any.

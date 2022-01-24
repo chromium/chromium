@@ -15,8 +15,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "cc/base/unique_notifier.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/raster_query_queue.h"

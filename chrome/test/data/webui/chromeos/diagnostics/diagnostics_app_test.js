@@ -6,14 +6,14 @@ import 'chrome://diagnostics/diagnostics_app.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeMemoryUsage, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeSystemInfoWithoutBattery, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeMemoryUsage, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setNetworkHealthProviderForTesting, setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
@@ -66,6 +66,77 @@ export function appTestSuite() {
     networkHealthProvider.reset();
   });
 
+  /** @return {!HTMLElement} */
+  function getCautionBanner() {
+    assertTrue(!!page);
+
+    return /** @type {!HTMLElement} */ (page.$$('diagnostics-sticky-banner'));
+  }
+
+  /** @return {!HTMLElement} */
+  function getCautionBannerMessage() {
+    return /** @type {!HTMLElement} */ (
+        getCautionBanner().shadowRoot.querySelector('#bannerMsg'));
+  }
+
+  /**
+   * @return {!HTMLElement}
+   */
+  function getSessionLogButton() {
+    assertTrue(!!page);
+
+    return /** @type {!HTMLElement} */ (page.$$('.session-log-button'));
+  }
+
+  /**
+   * @return {!HTMLElement}
+   */
+  function getBottomNavContentDrawer() {
+    assertTrue(!!page);
+
+    return /** @type {!HTMLElement} */ (
+        page.$$('[slot=bottom-nav-content-drawer]'));
+  }
+
+  /**
+   * @return {!HTMLElement}
+   */
+  function getBottomNavContentPanel() {
+    assertTrue(!!page);
+
+    return /** @type {!HTMLElement} */ (
+        page.$$('[slot=bottom-nav-content-panel]'));
+  }
+
+  /**
+   * Triggers 'dismiss-caution-banner' custom event.
+   * @return {!Promise}
+   */
+  function triggerDismissBannerEvent() {
+    window.dispatchEvent(new CustomEvent('dismiss-caution-banner', {
+      bubbles: true,
+      composed: true,
+    }));
+
+    return flushTasks();
+  }
+
+  /**
+   * Triggers 'show-caution-banner' custom event with correctly configured event
+   * detail object based on provided message.
+   * @param {string} message
+   * @return {!Promise}
+   */
+  function triggerShowBannerEvent(message) {
+    window.dispatchEvent(new CustomEvent('show-caution-banner', {
+      bubbles: true,
+      composed: true,
+      detail: {message},
+    }));
+
+    return flushTasks();
+  }
+
   /**
    * @param {!SystemInfo} systemInfo
    * @param {!Array<!BatteryChargeStatus>} batteryChargeStatus
@@ -108,10 +179,34 @@ export function appTestSuite() {
                  fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
           .then(() => {
             const systemPage =
-                dx_utils.getNavigationViewPanelElement(page, 'system-page');
+                dx_utils.getNavigationViewPanelElement(page, 'system');
             assertTrue(!!systemPage);
             assertTrue(isVisible(systemPage));
+            assertFalse(isVisible(getCautionBanner()));
+            assertFalse(isVisible(getBottomNavContentDrawer()));
+            assertTrue(isVisible(getBottomNavContentPanel()));
+            assertTrue(isVisible(getSessionLogButton()));
           });
+    });
+
+    test('BannerVisibliblityTogglesWithEvents', () => {
+      const bannerMessage = 'Diagnostics Banner Message';
+      return initializeDiagnosticsApp(
+                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+          .then(() => {
+            assertFalse(isVisible(getCautionBanner()));
+
+            return triggerShowBannerEvent(bannerMessage);
+          })
+          .then(() => {
+            assertTrue(isVisible(getCautionBanner()));
+            dx_utils.assertElementContainsText(
+                getCautionBannerMessage(), bannerMessage);
+
+            return triggerDismissBannerEvent();
+          })
+          .then(() => assertFalse(isVisible(getCautionBanner())));
     });
   }
 }

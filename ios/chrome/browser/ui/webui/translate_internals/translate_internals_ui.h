@@ -18,10 +18,11 @@ class WebUIIOS;
 class TranslateInternalsUI : public web::WebUIIOSController {
  public:
   explicit TranslateInternalsUI(web::WebUIIOS* web_ui, const std::string& host);
-  ~TranslateInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TranslateInternalsUI);
+  TranslateInternalsUI(const TranslateInternalsUI&) = delete;
+  TranslateInternalsUI& operator=(const TranslateInternalsUI&) = delete;
+
+  ~TranslateInternalsUI() override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_UI_H_

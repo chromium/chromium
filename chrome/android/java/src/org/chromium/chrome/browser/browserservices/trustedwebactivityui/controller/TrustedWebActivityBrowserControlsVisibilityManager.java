@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.browserservices.trustedwebactivityui.control
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -72,7 +72,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
         WebappExtras webappExtras = intentDataProvider.getWebappExtras();
         mShowBrowserControlsForChildTab = (webappExtras != null);
         mShowBrowserControlsInAppMode =
-                (webappExtras != null && webappExtras.displayMode == WebDisplayMode.MINIMAL_UI);
+                (webappExtras != null && webappExtras.displayMode == DisplayMode.MINIMAL_UI);
     }
 
     /**

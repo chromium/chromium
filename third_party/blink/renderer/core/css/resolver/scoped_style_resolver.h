@@ -41,6 +41,7 @@ namespace blink {
 class CounterStyleMap;
 class PageRuleCollector;
 class PartNames;
+class CascadeLayerMap;
 class StyleSheetContents;
 
 // ScopedStyleResolver collects the style sheets that occur within a TreeScope
@@ -62,6 +63,11 @@ class CORE_EXPORT ScopedStyleResolver final
 
   CounterStyleMap* GetCounterStyleMap() { return counter_style_map_; }
   static void CounterStyleRulesChanged(TreeScope& scope);
+
+  void RebuildCascadeLayerMap(const ActiveStyleSheetVector&);
+  const CascadeLayerMap* GetCascadeLayerMap() const {
+    return cascade_layer_map_;
+  }
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
   void CollectMatchingElementScopeRules(ElementRuleCollector&);
@@ -91,6 +97,9 @@ class CORE_EXPORT ScopedStyleResolver final
   void AddCounterStyleRules(const RuleSet&);
   void AddKeyframeRules(const RuleSet&);
   void AddKeyframeStyle(StyleRuleKeyframes*);
+  bool KeyframeStyleShouldOverride(
+      const StyleRuleKeyframes* new_rule,
+      const StyleRuleKeyframes* existing_rule) const;
 
   CounterStyleMap& EnsureCounterStyleMap();
 
@@ -105,21 +114,7 @@ class CORE_EXPORT ScopedStyleResolver final
   KeyframesRuleMap keyframes_rule_map_;
 
   Member<CounterStyleMap> counter_style_map_;
-
-  class RuleSubSet final : public GarbageCollected<RuleSubSet> {
-   public:
-    RuleSubSet(CSSStyleSheet* sheet, unsigned index, RuleSet* rules)
-        : parent_style_sheet_(sheet), parent_index_(index), rule_set_(rules) {}
-
-    Member<CSSStyleSheet> parent_style_sheet_;
-    unsigned parent_index_;
-    Member<RuleSet> rule_set_;
-
-    void Trace(Visitor*) const;
-  };
-  using CSSStyleSheetRuleSubSet = HeapVector<Member<RuleSubSet>>;
-
-  Member<CSSStyleSheetRuleSubSet> slotted_rule_set_;
+  Member<CascadeLayerMap> cascade_layer_map_;
 
   bool has_unresolved_keyframes_rule_ = false;
   bool needs_append_all_sheets_ = false;

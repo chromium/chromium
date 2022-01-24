@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 
+#include <cinttypes>
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
@@ -13,7 +15,7 @@ namespace blink {
 
 struct SameSizeAsDisplayItem {
   void* pointer;
-  IntRect rect;
+  gfx::Rect rect;
   uint32_t i1;
   uint32_t i2;
 };
@@ -34,7 +36,7 @@ void DisplayItem::Destruct() {
 bool DisplayItem::EqualsForUnderInvalidation(const DisplayItem& other) const {
   DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled());
   SECURITY_CHECK(!IsTombstone());
-  if (client_ != other.client_ || type_ != other.type_ ||
+  if (client_id_ != other.client_id_ || type_ != other.type_ ||
       fragment_ != other.fragment_ ||
       raster_effect_outset_ != other.raster_effect_outset_ ||
       draws_content_ != other.draws_content_)
@@ -168,6 +170,7 @@ static String ForeignLayerTypeAsDebugString(DisplayItem::Type type) {
     DEBUG_STRING_CASE(ForeignLayerLinkHighlight);
     DEBUG_STRING_CASE(ForeignLayerViewportScroll);
     DEBUG_STRING_CASE(ForeignLayerViewportScrollbar);
+    DEBUG_STRING_CASE(ForeignLayerDocumentTransitionContent);
     DEFAULT_CASE;
   }
 }
@@ -186,6 +189,7 @@ WTF::String DisplayItem::TypeAsDebugString(Type type) {
 
   switch (type) {
     DEBUG_STRING_CASE(HitTest);
+    DEBUG_STRING_CASE(RegionCapture);
     DEBUG_STRING_CASE(ScrollHitTest);
     DEBUG_STRING_CASE(ResizerScrollHitTest);
     DEBUG_STRING_CASE(PluginScrollHitTest);
@@ -199,33 +203,33 @@ WTF::String DisplayItem::TypeAsDebugString(Type type) {
   }
 }
 
-String DisplayItem::AsDebugString() const {
+String DisplayItem::AsDebugString(const PaintArtifact& paint_artifact) const {
   auto json = std::make_unique<JSONObject>();
-  PropertiesAsJSON(*json);
+  PropertiesAsJSON(*json, paint_artifact);
   return json->ToPrettyJSONString();
 }
 
-String DisplayItem::IdAsString() const {
+String DisplayItem::IdAsString(const PaintArtifact& paint_artifact) const {
   if (IsSubsequenceTombstone())
     return "SUBSEQUENCE TOMBSTONE";
   if (IsTombstone())
-    return "TOMBSTONE " + GetId().ToString();
-  return GetId().ToString();
+    return "TOMBSTONE " + paint_artifact.IdAsString(GetId());
+  return paint_artifact.IdAsString(GetId());
 }
 
 void DisplayItem::PropertiesAsJSON(JSONObject& json,
+                                   const PaintArtifact& paint_artifact,
                                    bool client_known_to_be_alive) const {
-  json.SetString("id", IdAsString());
+  json.SetString("id", IdAsString(paint_artifact));
   if (IsSubsequenceTombstone())
     return;
 
-  json.SetString("clientDebugName",
-                 Client().SafeDebugName(client_known_to_be_alive));
+  json.SetString("clientDebugName", paint_artifact.ClientDebugName(client_id_));
   if (client_known_to_be_alive) {
     json.SetString("invalidation", PaintInvalidationReasonToString(
                                        GetPaintInvalidationReason()));
   }
-  json.SetString("visualRect", VisualRect().ToString());
+  json.SetString("visualRect", String(VisualRect().ToString()));
   if (GetRasterEffectOutset() != RasterEffectOutset::kNone) {
     json.SetDouble(
         "outset",
@@ -247,12 +251,17 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json,
 
 String DisplayItem::Id::ToString() const {
 #if DCHECK_IS_ON()
-  return String::Format("%s:%s:%d", client.ToString().Utf8().c_str(),
-                        DisplayItem::TypeAsDebugString(type).Utf8().c_str(),
+  return String::Format("%" PRIuPTR ":%s:%d", client_id,
+                        DisplayItem::TypeAsDebugString(type).Utf8().data(),
                         fragment);
 #else
-  return String::Format("%p:%d:%d", &client, static_cast<int>(type), fragment);
+  return String::Format("%" PRIuPTR ":%d:%d", client_id, static_cast<int>(type),
+                        fragment);
 #endif
+}
+
+String DisplayItem::Id::ToString(const PaintArtifact& paint_artifact) const {
+  return paint_artifact.IdAsString(*this);
 }
 
 std::ostream& operator<<(std::ostream& os, DisplayItem::Type type) {
@@ -268,11 +277,7 @@ std::ostream& operator<<(std::ostream& os, const DisplayItem::Id& id) {
 }
 
 std::ostream& operator<<(std::ostream& os, const DisplayItem& item) {
-#if DCHECK_IS_ON()
-  return os << item.AsDebugString().Utf8();
-#else
   return os << "{\"id\": " << item.GetId() << "}";
-#endif
 }
 
 }  // namespace blink

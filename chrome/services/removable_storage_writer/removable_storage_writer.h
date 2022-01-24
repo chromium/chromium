@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_REMOVABLE_STORAGE_WRITER_REMOVABLE_STORAGE_WRITER_H_
 #define CHROME_SERVICES_REMOVABLE_STORAGE_WRITER_REMOVABLE_STORAGE_WRITER_H_
 
-#include "base/macros.h"
 #include "chrome/services/removable_storage_writer/public/mojom/removable_storage_writer.mojom.h"
 #include "chrome/utility/image_writer/image_writer_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,6 +18,10 @@ class RemovableStorageWriter : public chrome::mojom::RemovableStorageWriter {
  public:
   explicit RemovableStorageWriter(
       mojo::PendingReceiver<chrome::mojom::RemovableStorageWriter> receiver);
+
+  RemovableStorageWriter(const RemovableStorageWriter&) = delete;
+  RemovableStorageWriter& operator=(const RemovableStorageWriter&) = delete;
+
   ~RemovableStorageWriter() override;
 
  private:
@@ -35,8 +38,6 @@ class RemovableStorageWriter : public chrome::mojom::RemovableStorageWriter {
 
   mojo::Receiver<chrome::mojom::RemovableStorageWriter> receiver_;
   image_writer::ImageWriterHandler writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemovableStorageWriter);
 };
 
 #endif  // CHROME_SERVICES_REMOVABLE_STORAGE_WRITER_REMOVABLE_STORAGE_WRITER_H_

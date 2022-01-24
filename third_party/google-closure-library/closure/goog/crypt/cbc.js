@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Implementation of CBC mode for block ciphers.  See
@@ -38,7 +30,7 @@ goog.require('goog.crypt.BlockCipher');
  * @struct
  */
 goog.crypt.Cbc = function(cipher) {
-
+  'use strict';
   /**
    * Block cipher.
    * @type {!goog.crypt.BlockCipher}
@@ -58,7 +50,7 @@ goog.crypt.Cbc = function(cipher) {
  * @return {!Array<number>} Encrypted message.
  */
 goog.crypt.Cbc.prototype.encrypt = function(plainText, initialVector) {
-
+  'use strict';
   goog.asserts.assert(
       plainText.length % this.cipher_.BLOCK_SIZE == 0,
       'Data\'s length must be multiple of block size.');
@@ -77,7 +69,7 @@ goog.crypt.Cbc.prototype.encrypt = function(plainText, initialVector) {
   for (var blockStartIndex = 0; blockStartIndex < plainText.length;
        blockStartIndex += this.cipher_.BLOCK_SIZE) {
     // Takes one block from the input message.
-    var plainTextBlock = goog.array.slice(
+    var plainTextBlock = Array.prototype.slice.call(
         plainText, blockStartIndex, blockStartIndex + this.cipher_.BLOCK_SIZE);
 
     var input = goog.crypt.xorByteArray(plainTextBlock, vector);
@@ -101,7 +93,7 @@ goog.crypt.Cbc.prototype.encrypt = function(plainText, initialVector) {
  * @return {!Array<number>} Decrypted message.
  */
 goog.crypt.Cbc.prototype.decrypt = function(cipherText, initialVector) {
-
+  'use strict';
   goog.asserts.assert(
       cipherText.length % this.cipher_.BLOCK_SIZE == 0,
       'Data\'s length must be multiple of block size.');
@@ -120,7 +112,7 @@ goog.crypt.Cbc.prototype.decrypt = function(cipherText, initialVector) {
   // Generate each block of the decrypted plain text.
   while (blockStartIndex < cipherText.length) {
     // Takes one block.
-    var cipherTextBlock = goog.array.slice(
+    var cipherTextBlock = Array.prototype.slice.call(
         cipherText, blockStartIndex, blockStartIndex + this.cipher_.BLOCK_SIZE);
 
     var resultBlock = this.cipher_.decrypt(cipherTextBlock);

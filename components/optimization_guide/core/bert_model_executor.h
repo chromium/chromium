@@ -6,28 +6,9 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BERT_MODEL_EXECUTOR_H_
 
 #include "components/optimization_guide/core/model_executor.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/category.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace optimization_guide {
-
-// An implementation of a ModelHandler that executes BERT models.
-//
-// Note that sentencepiece tokenizers are not supported by Chromium's copy of
-// the TFLite Support library.
-class BertModelExecutorHandle
-    : public ModelHandler<std::vector<tflite::task::core::Category>,
-                          const std::string&> {
- public:
-  BertModelExecutorHandle(
-      OptimizationGuideModelProvider* model_provider,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      proto::OptimizationTarget optimization_target,
-      const absl::optional<proto::Any>& model_metadata);
-  ~BertModelExecutorHandle() override;
-
-  BertModelExecutorHandle(const BertModelExecutorHandle&) = delete;
-  BertModelExecutorHandle& operator=(const BertModelExecutorHandle&) = delete;
-};
 
 // A full implementation of a ModelExecutor that executes BERT models.
 class BertModelExecutor

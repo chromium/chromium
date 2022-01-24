@@ -28,6 +28,7 @@ include_rules = [
   "+components/navigation_interception",
   "+components/optimization_guide/core/bloom_filter.h",
   "+components/page_load_metrics/browser",
+  "+components/permissions",
   "+components/policy/core/browser",
   "+components/policy/core/common",
   "+components/policy/content",
@@ -96,6 +97,7 @@ include_rules = [
   "+storage/common/quota",
 
   "+third_party/blink/public/common/page_state/page_state.h",
+  "+third_party/blink/public/common/features.h",
   "+third_party/blink/public/common/storage_key/storage_key.h",
   "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
   "+third_party/crashpad/crashpad/client",

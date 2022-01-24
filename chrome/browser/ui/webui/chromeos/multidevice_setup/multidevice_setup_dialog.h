@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,6 +23,9 @@ namespace multidevice_setup {
 // Chromebook and a phone).
 class MultiDeviceSetupDialog : public SystemWebDialogDelegate {
  public:
+  MultiDeviceSetupDialog(const MultiDeviceSetupDialog&) = delete;
+  MultiDeviceSetupDialog& operator=(const MultiDeviceSetupDialog&) = delete;
+
   // Shows the dialog; if the dialog is already displayed, this function is a
   // no-op.
   static void Show();
@@ -52,13 +54,15 @@ class MultiDeviceSetupDialog : public SystemWebDialogDelegate {
   // List of callbacks that have registered themselves to be invoked once this
   // dialog is closed.
   std::vector<base::OnceClosure> on_close_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupDialog);
 };
 
 class MultiDeviceSetupDialogUI : public ui::MojoWebDialogUI {
  public:
   explicit MultiDeviceSetupDialogUI(content::WebUI* web_ui);
+
+  MultiDeviceSetupDialogUI(const MultiDeviceSetupDialogUI&) = delete;
+  MultiDeviceSetupDialogUI& operator=(const MultiDeviceSetupDialogUI&) = delete;
+
   ~MultiDeviceSetupDialogUI() override;
 
   // Instantiates implementor of the mojom::MultiDeviceSetup mojo interface
@@ -69,8 +73,6 @@ class MultiDeviceSetupDialogUI : public ui::MojoWebDialogUI {
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupDialogUI);
 };
 
 }  // namespace multidevice_setup

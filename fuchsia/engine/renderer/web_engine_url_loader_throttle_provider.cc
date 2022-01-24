@@ -33,7 +33,7 @@ WebEngineURLLoaderThrottleProvider::CreateThrottles(
   DCHECK_NE(render_frame_id, MSG_ROUTING_NONE);
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-  scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>& rules =
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules>& rules =
       content_renderer_client_
           ->GetWebEngineRenderFrameObserverForRenderFrameId(render_frame_id)
           ->url_request_rules_receiver()

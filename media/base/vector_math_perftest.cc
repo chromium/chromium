@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/aligned_memory.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -47,6 +46,9 @@ class VectorMathPerfTest : public testing::Test {
     fill(output_vector_.get(), output_vector_.get() + kVectorSize, 0.0f);
   }
 
+  VectorMathPerfTest(const VectorMathPerfTest&) = delete;
+  VectorMathPerfTest& operator=(const VectorMathPerfTest&) = delete;
+
   void RunBenchmark(void (*fn)(const float[], float, int, float[]),
                     bool aligned,
                     const std::string& metric_suffix,
@@ -82,8 +84,6 @@ class VectorMathPerfTest : public testing::Test {
  protected:
   std::unique_ptr<float, base::AlignedFreeDeleter> input_vector_;
   std::unique_ptr<float, base::AlignedFreeDeleter> output_vector_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorMathPerfTest);
 };
 
 // Define platform dependent function names for SIMD optimized methods.

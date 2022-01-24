@@ -102,6 +102,12 @@ class WaitableDownloadLoggerObserver : public download::Logger::Observer {
       base::OnceCallback<void(const std::string& guid)>;
 
   WaitableDownloadLoggerObserver() = default;
+
+  WaitableDownloadLoggerObserver(const WaitableDownloadLoggerObserver&) =
+      delete;
+  WaitableDownloadLoggerObserver& operator=(
+      const WaitableDownloadLoggerObserver&) = delete;
+
   ~WaitableDownloadLoggerObserver() override = default;
 
   // Sets the |callback| to be invoked when a download has been accepted.
@@ -129,8 +135,6 @@ class WaitableDownloadLoggerObserver : public download::Logger::Observer {
 
  private:
   DownloadAcceptedCallback download_accepted_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableDownloadLoggerObserver);
 };
 
 // Observes the offline item collection's content provider and then invokes the
@@ -145,6 +149,12 @@ class OfflineContentProviderObserver final
       base::OnceCallback<void(const OfflineItem&)>;
 
   OfflineContentProviderObserver() = default;
+
+  OfflineContentProviderObserver(const OfflineContentProviderObserver&) =
+      delete;
+  OfflineContentProviderObserver& operator=(
+      const OfflineContentProviderObserver&) = delete;
+
   ~OfflineContentProviderObserver() final = default;
 
   void set_items_added_callback(ItemsAddedCallback callback) {
@@ -224,8 +234,6 @@ class OfflineContentProviderObserver final
   bool resume_ = false;
 
   OfflineItem latest_item_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineContentProviderObserver);
 };
 
 }  // namespace
@@ -235,6 +243,11 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   BackgroundFetchBrowserTest()
       : offline_content_provider_observer_(
             std::make_unique<OfflineContentProviderObserver>()) {}
+
+  BackgroundFetchBrowserTest(const BackgroundFetchBrowserTest&) = delete;
+  BackgroundFetchBrowserTest& operator=(const BackgroundFetchBrowserTest&) =
+      delete;
+
   ~BackgroundFetchBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -270,7 +283,8 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   void SetUpBrowser(Browser* browser) {
     active_browser_ = browser;
     // Load the helper page that helps drive these tests.
-    ui_test_utils::NavigateToURL(browser, https_server_->GetURL(kHelperPage));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, https_server_->GetURL(kHelperPage)));
 
     // Register the Service Worker that's required for Background Fetch. The
     // behaviour without an activated worker is covered by layout tests.
@@ -479,8 +493,6 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
   Browser* active_browser_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DownloadService_Acceptance) {
@@ -544,8 +556,17 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
       -1);
 }
 
+#if defined(OS_MAC)
+// Flaky on Mac: https://crbug.com/1259680
+#define MAYBE_OfflineItemCollection_SingleFileMetadata \
+  DISABLED_OfflineItemCollection_SingleFileMetadata
+#else
+#define MAYBE_OfflineItemCollection_SingleFileMetadata \
+  OfflineItemCollection_SingleFileMetadata
+#endif
+
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       OfflineItemCollection_SingleFileMetadata) {
+                       MAYBE_OfflineItemCollection_SingleFileMetadata) {
   // Starts a Background Fetch for a single to-be-downloaded file and waits for
   // the fetch to be registered with the offline items collection. We then
   // verify that all the appropriate values have been set.

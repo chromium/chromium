@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
@@ -47,6 +48,10 @@ class DEVICE_BLUETOOTH_EXPORT
   void RemoveMonitor(const dbus::ObjectPath& monitor_path) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      BluetoothAdvertisementMonitorApplicationServiceProviderImplTest,
+      AddMonitorThenRemoveMonitor);
+
   // Returns true if the current thread is on the origin thread.
   bool OnOriginThread() const;
 

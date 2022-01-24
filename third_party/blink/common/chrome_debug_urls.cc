@@ -43,8 +43,6 @@ const char kChromeUIMemoryPressureModerateURL[] =
     "chrome://memory-pressure-moderate/";
 const char kChromeUINetworkErrorURL[] = "chrome://network-error/";
 const char kChromeUINetworkErrorsListingURL[] = "chrome://network-errors/";
-const char kChromeUIPpapiFlashCrashURL[] = "chrome://ppapiflashcrash/";
-const char kChromeUIPpapiFlashHangURL[] = "chrome://ppapiflashhang/";
 const char kChromeUIProcessInternalsURL[] = "chrome://process-internals";
 #if defined(OS_ANDROID)
 const char kChromeUIGpuJavaCrashURL[] = "chrome://gpu-java-crash/";
@@ -197,12 +195,12 @@ void HandleChromeDebugURL(const GURL& url) {
     LOG(ERROR) << "Intentionally hanging ourselves with sleep infinite loop"
                << " because user navigated to " << url.spec();
     for (;;) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+      base::PlatformThread::Sleep(base::Seconds(1));
     }
   } else if (url == kChromeUIShorthangURL) {
     LOG(ERROR) << "Intentionally sleeping renderer for 20 seconds"
                << " because user navigated to " << url.spec();
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(20));
+    base::PlatformThread::Sleep(base::Seconds(20));
   } else if (url == kChromeUIMemoryExhaustURL) {
     LOG(ERROR)
         << "Intentionally exhausting renderer memory because user navigated to "

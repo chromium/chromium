@@ -35,6 +35,10 @@ class SerialChooserContext : public permissions::ObjectPermissionContextBase,
   using PortObserver = content::SerialDelegate::Observer;
 
   explicit SerialChooserContext(Profile* profile);
+
+  SerialChooserContext(const SerialChooserContext&) = delete;
+  SerialChooserContext& operator=(const SerialChooserContext&) = delete;
+
   ~SerialChooserContext() override;
 
   // ObjectPermissionContextBase:
@@ -95,8 +99,6 @@ class SerialChooserContext : public permissions::ObjectPermissionContextBase,
   base::ObserverList<PortObserver> port_observer_list_;
 
   base::WeakPtrFactory<SerialChooserContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SerialChooserContext);
 };
 
 #endif  // CHROME_BROWSER_SERIAL_SERIAL_CHOOSER_CONTEXT_H_

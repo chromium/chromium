@@ -19,6 +19,12 @@ an automated way.
  - External contributors without tryjob access can ask committers to run
    tryjobs for them.
 
+*** note
+**Warning**: Please do not trigger more than ~5-10 tryjobs per builder per
+hour. We don't have enough spare capacity for more than that, and we don't have
+per-user quotas yet (https://crbug.com/1091070 to implement that).
+***
+
 ## Workflow
 
 1. Upload your change to gerrit via `git cl upload`

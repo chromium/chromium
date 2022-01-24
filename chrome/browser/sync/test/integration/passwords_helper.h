@@ -21,25 +21,16 @@ class KeyDerivationParams;
 }
 
 namespace password_manager {
-class PasswordStore;
 class PasswordStoreInterface;
 }
 
 namespace passwords_helper {
-
-// Adds |issue| to the password store |store|.
-void AddInsecureCredential(password_manager::PasswordStore* store,
-                           const password_manager::InsecureCredential& issue);
 
 // Returns all logins from |store| matching a fake signon realm (see
 // CreateTestPasswordForm()).
 // TODO(treib): Rename this to make clear how specific it is.
 std::vector<std::unique_ptr<password_manager::PasswordForm>> GetLogins(
     password_manager::PasswordStoreInterface* store);
-
-// Returns all insecure credentials from |store|.
-std::vector<password_manager::InsecureCredential> GetAllInsecureCredentials(
-    password_manager::PasswordStore* store);
 
 // Returns all logins from |store| (including blocklisted ones)
 std::vector<std::unique_ptr<password_manager::PasswordForm>> GetAllLogins(
@@ -50,25 +41,15 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> GetAllLogins(
 // finished on the background thread.
 void RemoveLogins(password_manager::PasswordStoreInterface* store);
 
-// Removes passed insecure credential from the |store|.
-void RemoveInsecureCredentials(
-    password_manager::PasswordStore* store,
-    const password_manager::InsecureCredential& credential);
-
 // Gets the password store of the profile with index |index|.
-// TODO(treib): Rename to GetProfilePasswordStore.
-password_manager::PasswordStore* GetPasswordStore(int index);
 password_manager::PasswordStoreInterface* GetProfilePasswordStoreInterface(
     int index);
 
 // Gets the password store of the verifier profile.
-// TODO(treib): Rename to GetVerifierProfilePasswordStore.
-password_manager::PasswordStore* GetVerifierPasswordStore();
 password_manager::PasswordStoreInterface*
 GetVerifierProfilePasswordStoreInterface();
 
 // Gets the account-scoped password store of the profile with index |index|.
-password_manager::PasswordStore* GetAccountPasswordStore(int index);
 password_manager::PasswordStoreInterface* GetAccountPasswordStoreInterface(
     int index);
 
@@ -99,13 +80,6 @@ int GetVerifierPasswordCount();
 // Creates a test password form with a well known fake signon realm based on
 // |index|.
 password_manager::PasswordForm CreateTestPasswordForm(int index);
-
-// Creates a test insecure credentials with a well known fake signon realm
-// and username based on |index|. Implementation aligned with
-// CreateTestPasswordForm(int index);
-password_manager::InsecureCredential CreateInsecureCredential(
-    int index,
-    password_manager::InsecureType type);
 
 // Injects the password entity based on given |form| and encrypted with key
 // derived from |key_derivation_params| into |fake_server|.
@@ -146,14 +120,9 @@ class PasswordSyncActiveChecker : public SingleClientStatusChangeChecker {
 // TODO(crbug.com/1010490): avoid re-entrance protection in checkers below or
 // factor it out to not duplicate in every checker.
 // Checker to block until all profiles contain the same password forms.
-// If |check_for_insecure_| is true, it checks that all profiles contains the
-// same insecure credentials too.
 class SamePasswordFormsChecker : public MultiClientStatusChangeChecker {
  public:
-  using CheckForInsecure = base::StrongAlias<class CheckForInsecureTag, bool>;
-
   SamePasswordFormsChecker();
-  explicit SamePasswordFormsChecker(CheckForInsecure check_for_insecure);
   ~SamePasswordFormsChecker() override;
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
@@ -161,7 +130,6 @@ class SamePasswordFormsChecker : public MultiClientStatusChangeChecker {
  private:
   bool in_progress_ = false;
   bool needs_recheck_ = false;
-  CheckForInsecure check_for_insecure_{false};
 };
 
 // Checker to block until specified profile contains the same password forms as

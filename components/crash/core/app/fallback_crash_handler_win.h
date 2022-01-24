@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/threading/platform_thread.h"
 
@@ -21,6 +20,10 @@ namespace crash_reporter {
 class FallbackCrashHandler {
  public:
   FallbackCrashHandler();
+
+  FallbackCrashHandler(const FallbackCrashHandler&) = delete;
+  FallbackCrashHandler& operator=(const FallbackCrashHandler&) = delete;
+
   ~FallbackCrashHandler();
 
   // Parses |cmd_line| for the following arguments:
@@ -53,8 +56,6 @@ class FallbackCrashHandler {
   // This is a pointer in process_, which is hopefully not this process.
   uintptr_t exception_ptrs_;
   base::FilePath database_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(FallbackCrashHandler);
 };
 
 }  // namespace crash_reporter

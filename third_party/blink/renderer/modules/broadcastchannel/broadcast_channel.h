@@ -12,8 +12,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -32,6 +32,10 @@ class BroadcastChannel final : public EventTargetWithInlineData,
                                   ExceptionState&);
 
   BroadcastChannel(ExecutionContext*, const String& name);
+
+  BroadcastChannel(const BroadcastChannel&) = delete;
+  BroadcastChannel& operator=(const BroadcastChannel&) = delete;
+
   ~BroadcastChannel() override;
   void Dispose();
 
@@ -63,9 +67,17 @@ class BroadcastChannel final : public EventTargetWithInlineData,
   // Called when the mojo binding disconnects.
   void OnError();
 
-  scoped_refptr<const SecurityOrigin> origin_;
+  // Close the mojo receivers and remotes.
+  void CloseInternal();
+
   String name_;
 
+  // Tracks whether this BroadcastChannel object has had close.
+  bool explicitly_closed_ = false;
+
+  // BroadcastChannelClient receiver for messages sent from the browser to
+  // this channel and BroadcastChannelClient remote for messages sent from
+  // this channel to the browser.
   mojo::AssociatedReceiver<mojom::blink::BroadcastChannelClient> receiver_{
       this};
   mojo::AssociatedRemote<mojom::blink::BroadcastChannelClient> remote_client_;
@@ -74,7 +86,13 @@ class BroadcastChannel final : public EventTargetWithInlineData,
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
 
-  DISALLOW_COPY_AND_ASSIGN(BroadcastChannel);
+  // When a BroadcastChannel is instantiated from a frame execution context,
+  // `associated_remote_` holds the AssociatedRemote used to send
+  // ConnectToChannel messages (with ordering preserved) to the
+  // RenderFrameHostImpl associated with this frame. When a BroadcastChannel is
+  // instantiated from a worker execution context, this member is not used.
+  mojo::AssociatedRemote<mojom::blink::BroadcastChannelProvider>
+      associated_remote_;
 };
 
 }  // namespace blink

@@ -106,8 +106,7 @@ void SendKeyboardInputWorker::Start(const std::string& frame_id,
   }
 
   callback_ = std::move(callback);
-  key_press_delay_ =
-      base::TimeDelta::FromMilliseconds(key_press_delay_in_millisecond);
+  key_press_delay_ = base::Milliseconds(key_press_delay_in_millisecond);
   frame_id_ = frame_id;
   key_events_ = key_events;
 
@@ -123,8 +122,8 @@ void SendKeyboardInputWorker::Start(const std::string& frame_id,
   // sort events by timestamp, we assign a unique,increasing timestamp to each
   // key events.
   pending_key_events_ = 2 * key_events.size();
-  base::Time base_ts = base::Time::Now() -
-                       base::TimeDelta::FromMilliseconds(2 * key_events.size());
+  base::Time base_ts =
+      base::Time::Now() - base::Milliseconds(2 * key_events.size());
 
   auto* devtools_input = devtools_client_->GetInput();
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
@@ -132,9 +131,8 @@ void SendKeyboardInputWorker::Start(const std::string& frame_id,
   // any time.
 
   for (size_t i = 0; i < key_events.size(); i++) {
-    base::Time keydown_ts = base_ts + base::TimeDelta::FromMilliseconds(2 * i);
-    base::Time keyup_ts =
-        base_ts + base::TimeDelta::FromMilliseconds(2 * i + 1);
+    base::Time keydown_ts = base_ts + base::Milliseconds(2 * i);
+    base::Time keyup_ts = base_ts + base::Milliseconds(2 * i + 1);
     devtools_input->DispatchKeyEvent(
         CreateKeyEventParamsForKeyEvent(input::DispatchKeyEventType::KEY_DOWN,
                                         keydown_ts, key_events[i]),

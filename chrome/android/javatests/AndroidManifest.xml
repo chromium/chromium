@@ -61,6 +61,9 @@
             android:theme="@style/Theme.Chromium.Activity"
             android:exported="true"/>
 
+        <activity android:name="org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetTest$DummyAddAccountActivity"
+            android:exported="true"/>
+
         <service
             android:name="org.chromium.components.browser_ui.photo_picker.TestImageDecoderService"
             android:exported="false"

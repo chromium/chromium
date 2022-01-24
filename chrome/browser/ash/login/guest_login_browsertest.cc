@@ -17,7 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 
-namespace chromeos {
+namespace ash {
 
 // Tests guest user log in.
 class GuestLoginTest : public MixinBasedInProcessBrowserTest {
@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_Login) {
   FakeSessionManagerClient::Get()->set_restart_job_callback(
       restart_job_waiter.QuitClosure());
 
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickGuestButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
   restart_job_waiter.Run();
   EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_ExitFullscreenOnSuspend) {
   FakeSessionManagerClient::Get()->set_restart_job_callback(
       restart_job_waiter.QuitClosure());
 
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickGuestButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
   restart_job_waiter.Run();
   EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest,
   FakeSessionManagerClient::Get()->set_restart_job_callback(
       restart_job_waiter.QuitClosure());
 
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickGuestButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
   restart_job_waiter.Run();
   EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest,
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
 
   keyboard::KeyboardConfig config =
-      ash::KeyboardController::Get()->GetKeyboardConfig();
+      KeyboardController::Get()->GetKeyboardConfig();
   EXPECT_TRUE(config.auto_capitalize);
   EXPECT_TRUE(config.auto_complete);
   EXPECT_TRUE(config.auto_correct);
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(GuestLoginWithLoginSwitchesTest, PRE_Login) {
 
   EXPECT_TRUE(
       base::CommandLine::ForCurrentProcess()->HasSwitch("feature-switch"));
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickGuestButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
   restart_job_waiter.Run();
   EXPECT_TRUE(FakeSessionManagerClient::Get()->restart_job_argv().has_value());
@@ -165,4 +165,4 @@ IN_PROC_BROWSER_TEST_F(GuestLoginWithLoginSwitchesTest, Login) {
       base::CommandLine::ForCurrentProcess()->HasSwitch("test_switch_2"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

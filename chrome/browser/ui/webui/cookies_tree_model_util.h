@@ -11,18 +11,21 @@
 #include <string>
 
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 
 class CookieTreeNode;
 
 namespace base {
-class DictionaryValue;
 class ListValue;
+class Value;
 }
 
 class CookiesTreeModelUtil {
  public:
   CookiesTreeModelUtil();
+
+  CookiesTreeModelUtil(const CookiesTreeModelUtil&) = delete;
+  CookiesTreeModelUtil& operator=(const CookiesTreeModelUtil&) = delete;
+
   ~CookiesTreeModelUtil();
 
   // Finds or creates an ID for given |node| and returns it as string.
@@ -60,15 +63,13 @@ class CookiesTreeModelUtil {
   // maps. Returns false if the |node| does not need to be shown.
   bool GetCookieTreeNodeDictionary(const CookieTreeNode& node,
                                    bool include_quota_nodes,
-                                   base::DictionaryValue* dict);
+                                   base::Value* dict);
 
   // IDMap to create unique ID and look up the object for an ID.
   CookiesTreeNodeIdMap id_map_;
 
   // Reverse look up map to find the ID for a node.
   CookieTreeNodeMap node_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookiesTreeModelUtil);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_COOKIES_TREE_MODEL_UTIL_H_

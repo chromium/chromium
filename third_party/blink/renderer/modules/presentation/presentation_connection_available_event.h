@@ -9,6 +9,10 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
+namespace WTF {
+class AtomicString;
+}  // namespace WTF
+
 namespace blink {
 
 class PresentationConnectionAvailableEventInit;

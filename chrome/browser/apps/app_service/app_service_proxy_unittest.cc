@@ -7,13 +7,31 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/intent_constants.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/intent_test_util.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/publisher_base.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_rep.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/test/scoped_feature_list.h"
+#include "chrome/common/chrome_features.h"
+#endif
+
+namespace apps {
 
 class AppServiceProxyTest : public testing::Test {
  protected:
@@ -73,7 +91,7 @@ class AppServiceProxyTest : public testing::Test {
                                            base::Unretained(this)));
   }
 
-  void OverrideAppServiceProxyInnerIconLoader(apps::AppServiceProxyBase* proxy,
+  void OverrideAppServiceProxyInnerIconLoader(AppServiceProxy* proxy,
                                               apps::IconLoader* icon_loader) {
     proxy->OverrideInnerIconLoaderForTesting(icon_loader);
   }
@@ -96,11 +114,7 @@ TEST_F(AppServiceProxyTest, IconCache) {
   // This tests an AppServiceProxy as a 'black box', which uses an
   // IconCache but also other IconLoader filters, such as an IconCoalescer.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  apps::AppServiceProxyChromeOs proxy(nullptr);
-#else
-  apps::AppServiceProxy proxy(nullptr);
-#endif
+  AppServiceProxy proxy(nullptr);
   FakeIconLoader fake;
   OverrideAppServiceProxyInnerIconLoader(&proxy, &fake);
 
@@ -146,11 +160,7 @@ TEST_F(AppServiceProxyTest, IconCoalescer) {
   // This tests an AppServiceProxy as a 'black box', which uses an
   // IconCoalescer but also other IconLoader filters, such as an IconCache.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  apps::AppServiceProxyChromeOs proxy(nullptr);
-#else
-  apps::AppServiceProxy proxy(nullptr);
-#endif
+  AppServiceProxy proxy(nullptr);
 
   FakeIconLoader fake;
   OverrideAppServiceProxyInnerIconLoader(&proxy, &fake);
@@ -232,3 +242,241 @@ TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
   EXPECT_TRUE(guest_proxy);
   EXPECT_NE(guest_proxy, proxy);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
+ public:
+  void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAppManagementIntentSettings);
+#endif
+
+    proxy_ = AppServiceProxyFactory::GetForProfile(&profile_);
+
+    auto* const provider = web_app::FakeWebAppProvider::Get(&profile_);
+    provider->SkipAwaitingExtensionSystem();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile_);
+  }
+
+  AppServiceProxy* proxy() { return proxy_; }
+
+  // Shortcut for adding apps to App Service without going through a real
+  // Publisher.
+  void OnApps(std::vector<mojom::AppPtr> apps, mojom::AppType type) {
+    proxy_->OnApps(std::move(apps), type, /*should_notify_initialized=*/false);
+  }
+
+ private:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
+
+  TestingProfile profile_;
+  AppServiceProxy* proxy_;
+};
+
+TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
+  constexpr char kTestAppId[] = "foo";
+  const GURL kTestUrl = GURL("https://www.example.com/");
+
+  // Install an app and set it as preferred for a URL.
+  {
+    std::vector<mojom::AppPtr> apps;
+    mojom::AppPtr app = PublisherBase::MakeApp(
+        mojom::AppType::kWeb, kTestAppId, mojom::Readiness::kReady, "Test App",
+        mojom::InstallReason::kUser);
+    app->intent_filters.push_back(
+        apps_util::CreateIntentFilterForUrlScope(kTestUrl));
+    apps.push_back(std::move(app));
+
+    OnApps(std::move(apps), mojom::AppType::kWeb);
+    proxy()->AddPreferredApp(kTestAppId, kTestUrl);
+    proxy()->FlushMojoCallsForTesting();
+
+    absl::optional<std::string> preferred_app =
+        proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl);
+    ASSERT_EQ(kTestAppId, preferred_app);
+  }
+
+  // Updating the app should not change its preferred app status.
+  {
+    std::vector<mojom::AppPtr> apps;
+    mojom::AppPtr app = mojom::App::New();
+    app->app_type = mojom::AppType::kWeb;
+    app->app_id = kTestAppId;
+    app->last_launch_time = base::Time();
+    apps.push_back(std::move(app));
+
+    OnApps(std::move(apps), mojom::AppType::kWeb);
+    proxy()->FlushMojoCallsForTesting();
+
+    absl::optional<std::string> preferred_app =
+        proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl);
+    ASSERT_EQ(kTestAppId, preferred_app);
+  }
+
+  // Uninstalling the app should remove it from the preferred app list.
+  {
+    std::vector<mojom::AppPtr> apps;
+    mojom::AppPtr app = mojom::App::New();
+    app->app_type = mojom::AppType::kWeb;
+    app->app_id = kTestAppId;
+    app->readiness = mojom::Readiness::kUninstalledByUser;
+    apps.push_back(std::move(app));
+
+    OnApps(std::move(apps), mojom::AppType::kWeb);
+    proxy()->FlushMojoCallsForTesting();
+
+    absl::optional<std::string> preferred_app =
+        proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl);
+    ASSERT_EQ(absl::nullopt, preferred_app);
+  }
+}
+
+TEST_F(AppServiceProxyPreferredAppsTest, SetPreferredApp) {
+  constexpr char kTestAppId1[] = "abc";
+  constexpr char kTestAppId2[] = "def";
+  const GURL kTestUrl1 = GURL("https://www.foo.com/");
+  const GURL kTestUrl2 = GURL("https://www.bar.com/");
+
+  auto url_filter_1 = apps_util::CreateIntentFilterForUrlScope(kTestUrl1);
+  auto url_filter_2 = apps_util::CreateIntentFilterForUrlScope(kTestUrl2);
+  auto send_filter = apps_util::CreateIntentFilterForSend("image/png");
+
+  std::vector<mojom::AppPtr> apps;
+  mojom::AppPtr app1 = PublisherBase::MakeApp(
+      mojom::AppType::kWeb, kTestAppId1, mojom::Readiness::kReady, "Test App",
+      mojom::InstallReason::kUser);
+  app1->intent_filters.push_back(url_filter_1.Clone());
+  app1->intent_filters.push_back(url_filter_2.Clone());
+  app1->intent_filters.push_back(send_filter.Clone());
+  apps.push_back(std::move(app1));
+
+  mojom::AppPtr app2 = PublisherBase::MakeApp(
+      mojom::AppType::kWeb, kTestAppId2, mojom::Readiness::kReady, "Test App",
+      mojom::InstallReason::kUser);
+  app2->intent_filters.push_back(url_filter_1.Clone());
+  apps.push_back(std::move(app2));
+
+  OnApps(std::move(apps), mojom::AppType::kWeb);
+
+  // Set app 1 as preferred. Both links should be set as preferred, but the
+  // non-link filter is ignored.
+
+  proxy()->SetSupportedLinksPreference(kTestAppId1);
+  proxy()->FlushMojoCallsForTesting();
+
+  ASSERT_EQ(kTestAppId1,
+            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl1));
+  ASSERT_EQ(kTestAppId1,
+            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl2));
+  apps::mojom::IntentPtr mime_intent = apps::mojom::Intent::New();
+  mime_intent->mime_type = "image/png";
+  mime_intent->action = apps_util::kIntentActionSend;
+  ASSERT_EQ(absl::nullopt,
+            proxy()->PreferredApps().FindPreferredAppForIntent(mime_intent));
+
+  // Set app 2 as preferred. Both of the previous preferences for app 1 should
+  // be removed.
+
+  proxy()->SetSupportedLinksPreference(kTestAppId2);
+  proxy()->FlushMojoCallsForTesting();
+
+  ASSERT_EQ(kTestAppId2,
+            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl1));
+  ASSERT_EQ(absl::nullopt,
+            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl2));
+
+  // Remove all supported link preferences for app 2.
+
+  proxy()->RemoveSupportedLinksPreference(kTestAppId2);
+  proxy()->FlushMojoCallsForTesting();
+
+  ASSERT_EQ(absl::nullopt,
+            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl1));
+}
+
+// Using AddPreferredApp to set a supported link should enable all supported
+// links for that app.
+TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppForLink) {
+  constexpr char kTestAppId[] = "aaa";
+  const GURL kTestUrl1 = GURL("https://www.foo.com/");
+  const GURL kTestUrl2 = GURL("https://www.bar.com/");
+  auto url_filter_1 = apps_util::CreateIntentFilterForUrlScope(kTestUrl1);
+  auto url_filter_2 = apps_util::CreateIntentFilterForUrlScope(kTestUrl2);
+
+  std::vector<mojom::AppPtr> apps;
+  mojom::AppPtr app1 = PublisherBase::MakeApp(
+      mojom::AppType::kWeb, kTestAppId, mojom::Readiness::kReady, "Test App",
+      mojom::InstallReason::kUser);
+  app1->intent_filters.push_back(url_filter_1.Clone());
+  app1->intent_filters.push_back(url_filter_2.Clone());
+  apps.push_back(std::move(app1));
+  OnApps(std::move(apps), mojom::AppType::kWeb);
+
+  proxy()->AddPreferredApp(kTestAppId, GURL("https://www.foo.com/something/"));
+  proxy()->FlushMojoCallsForTesting();
+
+  ASSERT_EQ(kTestAppId,
+            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl1));
+  ASSERT_EQ(kTestAppId,
+            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl2));
+}
+
+TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppBrowser) {
+  constexpr char kTestAppId1[] = "aaa";
+  constexpr char kTestAppId2[] = "bbb";
+  const GURL kTestUrl1 = GURL("https://www.foo.com/");
+  const GURL kTestUrl2 = GURL("https://www.bar.com/");
+  const GURL kTestUrl3 = GURL("https://www.baz.com/");
+
+  auto url_filter_1 = apps_util::CreateIntentFilterForUrlScope(kTestUrl1);
+  auto url_filter_2 = apps_util::CreateIntentFilterForUrlScope(kTestUrl2);
+  auto url_filter_3 = apps_util::CreateIntentFilterForUrlScope(kTestUrl3);
+
+  std::vector<mojom::AppPtr> apps;
+  mojom::AppPtr app1 = PublisherBase::MakeApp(
+      mojom::AppType::kWeb, kTestAppId1, mojom::Readiness::kReady, "Test App",
+      mojom::InstallReason::kUser);
+  app1->intent_filters.push_back(url_filter_1.Clone());
+  app1->intent_filters.push_back(url_filter_2.Clone());
+  apps.push_back(std::move(app1));
+
+  mojom::AppPtr app2 = PublisherBase::MakeApp(
+      mojom::AppType::kWeb, kTestAppId2, mojom::Readiness::kReady, "Test App",
+      mojom::InstallReason::kUser);
+  app2->intent_filters.push_back(url_filter_3.Clone());
+  apps.push_back(std::move(app2));
+
+  OnApps(std::move(apps), mojom::AppType::kWeb);
+
+  proxy()->AddPreferredApp(kTestAppId1, kTestUrl1);
+  proxy()->FlushMojoCallsForTesting();
+
+  // Setting "use browser" for a URL currently handled by App 1 should unset
+  // both of App 1's links.
+  proxy()->AddPreferredApp(apps::kUseBrowserForLink, kTestUrl1);
+  proxy()->FlushMojoCallsForTesting();
+
+  ASSERT_EQ(apps::kUseBrowserForLink,
+            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl1));
+  ASSERT_EQ(absl::nullopt,
+            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl2));
+
+  proxy()->AddPreferredApp(apps::kUseBrowserForLink, kTestUrl3);
+  proxy()->FlushMojoCallsForTesting();
+  ASSERT_EQ(apps::kUseBrowserForLink,
+            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl3));
+
+  // Changing the setting back from "use browser" to App 1 should only update
+  // that "use-browser" setting, settings for other URLs are unchanged.
+  proxy()->AddPreferredApp(kTestAppId1, kTestUrl1);
+  proxy()->FlushMojoCallsForTesting();
+  ASSERT_EQ(apps::kUseBrowserForLink,
+            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl3));
+}
+
+#endif  // !BUILDFLAG(OS_CHROMEOS_LACROS)
+
+}  // namespace apps

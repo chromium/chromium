@@ -9,7 +9,7 @@
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">तुमचे हे पेज प्रिंट करा</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">शोधा</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> किंवा <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">ओळीच्या शेवटी जा</translation>
 <translation id="1499072997694708844">कोणतीही उघडी असलेली शोध विंडो बंद करा किंवा तुमचे सध्याचे पेज लोड करणे थांबवा</translation>
@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">गुप्त मोडमध्ये नवीन विंडो उघडा</translation>
 <translation id="152892567002884378">आवाज मोठा करा</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, नंतर <ph name="ESC" /></translation>
-<translation id="1633761758045565086">कीबोर्ड शॉर्टकट मदत संवाद प्रदर्शित करते</translation>
 <translation id="1652741121070700329">&gt;मागील शब्दाच्या प्रारंभावर हलवा</translation>
 <translation id="1679841710523778799">उजळपणा वाढवा</translation>
 <translation id="168356808214100546"><ph name="ALT" /> दाबा आणि धरून ठेवा, तुम्हाला उघडायच्या असलेल्या विंडोवर जाईपर्यंत <ph name="TAB" /> टॅप करा, त्यानंतर सोडा.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">वेब पेज खालच्या दिशेला स्क्रोल करा</translation>
 <translation id="2530896289327917474">कॅरेट ब्राउझिंग सुरू किंवा बंद करा</translation>
 <translation id="2574014812750545982">पेजवर झूम स्तर रीसेट करा</translation>
-<translation id="2596078834055697711">विंडो स्क्रीनशॉट घ्या</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, त्यानंतर <ph name="TAB" /> किंवा <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">तुमचे हे पेज रीलोड करा</translation>
 <translation id="2764005613199379871">अ‍ॅड्रेस बार शोधण्यावर फोकस करा</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">शॉर्टकट</translation>
 <translation id="3084301071537457911">तुमच्या शेल्फवरील पुढील आयटम हायलाइट करा</translation>
 <translation id="309173601632226815">तुमच्या शेल्फवरील लॉंचर बटण हायलाइट करा</translation>
-<translation id="3105917916468784889">स्क्रीनशॉट घ्या</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">अ‍ॅड्रेस बारवर फोकस करा</translation>
 <translation id="3256109297135787951">तुमच्या शेल्फवरील आयटमवरील हायलाइट काढून टाका</translation>
 <translation id="3288816184963444640">ही विंडो बंद करा</translation>
+<translation id="3350805006883559974">अ‍ॅक्टिव्ह विंडो सर्वात वरती फ्लोट करा</translation>
 <translation id="3407560819924487926">टास्क मॅनेजर वर आणा</translation>
 <translation id="3417835166382867856">टॅब शोधा</translation>
 <translation id="3422679037938588196">तुमच्या शोधाच्या आधीच्या जुळणीवर जा</translation>
@@ -107,10 +105,9 @@
 <translation id="4458670250301149821">अ‍ॅप आयकन अ‍ॅप ग्रिडमधील फोल्डरच्या आत/बाहेर हलवा</translation>
 <translation id="4472417192667361414">सिस्टम आणि डिस्प्ले सेटिंग्ज</translation>
 <translation id="449214506787633354"><ph name="CTRL" />, त्यानंतर <ph name="LEFT" /> किंवा <ph name="RIGHT" /> किंवा <ph name="UP" /> किंवा <ph name="DOWN" /></translation>
-<translation id="4556221320735744018">कीबोर्ड शॉर्टकट मदतनीस पाहा</translation>
+<translation id="4556221320735744018">कीबोर्ड शॉर्टकट मदतनीस पहा</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> किंवा <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">स्थिती क्षेत्र (जेथे तुमच्या खात्यावरील फोटो दिसतो) उघडा</translation>
-<translation id="4642092649622328492">अर्धा स्क्रीनशॉट घ्या</translation>
 <translation id="4698850295812410683">स्टायलस टूल दाखवा</translation>
 <translation id="4801989101741319327">पुढील शब्दाच्या शेवटी हलवा</translation>
 <translation id="4866066940972151697">उजवीकडील डेस्क सुरू करा</translation>
@@ -206,11 +203,12 @@
 <translation id="8609384513243082612">नवीन टॅब उघडा</translation>
 <translation id="8644639153978066712">Files अ‍ॅप मध्ये लपवलेल्या फाइल डिस्प्ले करा</translation>
 <translation id="8717459106217102612">आधीचा शब्द किंवा अक्षर निवडा</translation>
-<translation id="8727232706774971183">तुमच्या सूचना पाहा</translation>
+<translation id="8727232706774971183">तुमच्या सूचना पहा</translation>
 <translation id="8855885154700222542">क्षेत्रे की</translation>
 <translation id="8881584919399569791">सुरू असलेली विंडो डेस्कच्या डाव्या बाजूला हलवा</translation>
 <translation id="88986195241502842">पृष्ठ खाली</translation>
 <translation id="8924883688469390268">मागील वापरकर्त्यावर स्विच करा</translation>
+<translation id="8941626538514548667">वेब आशय ब्राउझरमध्ये फोकस करा</translation>
 <translation id="8977648847395357314">ॲड्रेस बारमध्ये आशय निवडा</translation>
 <translation id="8982190978301344584">उपलब्ध IME ची सूची प्रदर्शित करणारा मेनू दाखवा</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> १ ते ८</translation>

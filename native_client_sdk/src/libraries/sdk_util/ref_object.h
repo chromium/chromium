@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef LIBRARIES_SDK_UTIL_REF_OBJECT
-#define LIBRARIES_SDK_UTIL_REF_OBJECT
+#ifndef LIBRARIES_SDK_UTIL_REF_OBJECT_H_
+#define LIBRARIES_SDK_UTIL_REF_OBJECT_H_
 
 #include <stdlib.h>
 #include "pthread.h"
@@ -70,5 +70,5 @@ class RefObject {
 
 }  // namespace sdk_util
 
-#endif  // LIBRARIES_SDK_UTIL_REF_OBJECT
+#endif  // LIBRARIES_SDK_UTIL_REF_OBJECT_H_
 

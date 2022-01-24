@@ -26,6 +26,8 @@ static const int kErrorReturnValue = -1;
 static const uint32_t kMaxBufferCount = 5;
 static const int kDefaultWidth = 640;
 static const int kDefaultHeight = 480;
+static const unsigned int kMaxWidth = 3840;
+static const unsigned int kMaxHeight = 2160;
 
 // 20 fps.
 static const int kDefaultFrameInternvalNumerator = 50;
@@ -98,7 +100,7 @@ class FakeV4L2Impl::OpenedDevice {
       }
     }
     return wait_for_outgoing_queue_event_.TimedWait(
-        base::TimeDelta::FromMilliseconds(timeout_in_milliseconds));
+        base::Milliseconds(timeout_in_milliseconds));
   }
 
   int enum_fmt(v4l2_fmtdesc* fmtdesc) {
@@ -159,8 +161,11 @@ class FakeV4L2Impl::OpenedDevice {
   }
 
   int s_fmt(v4l2_format* format) {
-    if (format->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
+    if (format->type != V4L2_BUF_TYPE_VIDEO_CAPTURE ||
+        format->fmt.pix.width > kMaxWidth ||
+        format->fmt.pix.height > kMaxHeight) {
       return EINVAL;
+    }
     v4l2_pix_format& pix_format = format->fmt.pix;
     // We only support YUV420 output for now. Tell this to the client by
     // overwriting whatever format it requested.
@@ -337,7 +342,7 @@ class FakeV4L2Impl::OpenedDevice {
       // Sleep for a bit.
       // We ignore the requested frame rate here, and just sleep for a fixed
       // duration.
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+      base::PlatformThread::Sleep(base::Milliseconds(100));
     }
   }
 

@@ -139,16 +139,13 @@ public class AssistViewStructureTest {
                         + "  android.webkit.WebView\n"
                         + "    android.widget.ListView\n"
                         + "      android.view.View\n"
-                        + "        android.view.View\n"
-                        + "          android.widget.TextView text='1. '\n"
+                        + "        android.view.View text='1. '\n"
                         + "        android.widget.TextView text='Kirk'\n"
                         + "      android.view.View\n"
-                        + "        android.view.View\n"
-                        + "          android.widget.TextView text='2. '\n"
+                        + "        android.view.View text='2. '\n"
                         + "        android.widget.TextView text='Picard'\n"
                         + "      android.view.View\n"
-                        + "        android.view.View\n"
-                        + "          android.widget.TextView text='3. '\n"
+                        + "        android.view.View text='3. '\n"
                         + "        android.widget.TextView text='Janeway'\n");
     }
 

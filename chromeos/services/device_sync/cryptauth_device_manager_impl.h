@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -52,6 +51,10 @@ class CryptAuthDeviceManagerImpl : public CryptAuthDeviceManager,
    private:
     static Factory* factory_instance_;
   };
+
+  CryptAuthDeviceManagerImpl(const CryptAuthDeviceManagerImpl&) = delete;
+  CryptAuthDeviceManagerImpl& operator=(const CryptAuthDeviceManagerImpl&) =
+      delete;
 
   ~CryptAuthDeviceManagerImpl() override;
 
@@ -134,8 +137,6 @@ class CryptAuthDeviceManagerImpl : public CryptAuthDeviceManager,
   std::unique_ptr<CryptAuthClient> cryptauth_client_;
 
   base::WeakPtrFactory<CryptAuthDeviceManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceManagerImpl);
 };
 
 }  // namespace device_sync

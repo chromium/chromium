@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -17,7 +16,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer_observer.h"
-#include "ui/display/display_list.h"
+#include "ui/display/screen_info.h"
 #include "ui/gfx/ca_layer_params.h"
 
 namespace ui {
@@ -35,6 +34,8 @@ class BrowserCompositorMacClient {
   virtual void DestroyCompositorForShutdown() = 0;
   virtual bool OnBrowserCompositorSurfaceIdChanged() = 0;
   virtual std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() = 0;
+  virtual display::ScreenInfo GetCurrentScreenInfo() const = 0;
+  virtual void SetCurrentDeviceScaleFactor(float device_scale_factor) = 0;
 };
 
 // This class owns a DelegatedFrameHost, and will dynamically attach and
@@ -52,7 +53,6 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
       ui::AcceleratedWidgetMacNSView* accelerated_widget_mac_ns_view,
       BrowserCompositorMacClient* client,
       bool render_widget_host_is_hidden,
-      const display::DisplayList& initial_display_list,
       const viz::FrameSinkId& frame_sink_id);
   ~BrowserCompositorMac() override;
 
@@ -73,11 +73,9 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
   void TakeFallbackContentFrom(BrowserCompositorMac* other);
 
   // Update the renderer's SurfaceId to reflect the current dimensions of the
-  // NSView. This will allocate a new SurfaceId if needed. This will return
-  // true if any properties that need to be communicated to the
-  // RenderWidgetHostImpl have changed.
-  bool UpdateSurfaceFromNSView(const gfx::Size& new_size_dip,
-                               const display::DisplayList& new_display_list);
+  // NSView. This will allocate a new SurfaceId, so should only be called
+  // when necessary.
+  void UpdateSurfaceFromNSView(const gfx::Size& new_size_dip);
 
   // Update the renderer's SurfaceId to reflect |new_size_in_pixels| in
   // anticipation of the NSView resizing during auto-resize.
@@ -104,12 +102,7 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
 
   viz::FrameSinkId GetRootFrameSinkId();
 
-  bool has_saved_frame_before_state_transition() const {
-    return has_saved_frame_before_state_transition_;
-  }
-
   const gfx::Size& GetRendererSize() const { return dfh_size_dip_; }
-  const display::DisplayList& display_list() const { return display_list_; }
   viz::ScopedSurfaceIdAllocator GetScopedRendererSurfaceIdAllocator(
       base::OnceCallback<void()> allocation_task);
   const viz::LocalSurfaceId& GetRendererLocalSurfaceId();
@@ -136,7 +129,7 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
 
   void DidNavigate();
 
-  bool ForceNewSurfaceForTesting();
+  void ForceNewSurfaceForTesting();
 
   ui::Compositor* GetCompositor() const;
 
@@ -184,24 +177,11 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
 
   // The viz::ParentLocalSurfaceIdAllocator for the delegated frame host
   // dispenses viz::LocalSurfaceIds that are renderered into by the renderer
-  // process.
+  // process.  These values are not updated during resize.
   viz::ParentLocalSurfaceIdAllocator dfh_local_surface_id_allocator_;
   gfx::Size dfh_size_pixels_;
   gfx::Size dfh_size_dip_;
-
-  // Cached info about the displays relevant to the RenderWidgetHostView.
-  // TODO(crbug.com/1169312): Consolidate this cache with that of RWHVBase.
-  display::DisplayList display_list_;
-
-  // This is used to cache the saved frame state to be used for tab switching
-  // metric. In tab switch in MacOS, DelegatedFrameHost::WasShown is called once
-  // inside BrowserCompositor::TransitionToState before it is called again by
-  // RenderWidgetHostViewMac::WasUnOccluded. Since tab switching metric begins
-  // inside RenderWidgetHostView(Mac|Aura), DelegatedFrameHost::HasSavedFrame
-  // will always return true in Mac when we check later.
-  // TODO(jonross): unify the order of DelegatedFrameHost::WasShown and
-  // RenderWidgetHostViewBase::WadUnOccluded across platforms.
-  bool has_saved_frame_before_state_transition_ = false;
+  float dfh_device_scale_factor_ = 1.f;
 
   bool is_first_navigation_ = true;
 

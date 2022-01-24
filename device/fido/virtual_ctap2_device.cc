@@ -667,9 +667,14 @@ void VirtualCtap2Device::SetMinPinLength(uint32_t min_pin_length) {
   device_info_->min_pin_length = min_pin_length;
 }
 
-// As all operations for VirtualCtap2Device are synchronous and we do not wait
-// for user touch, Cancel command is no-op.
-void VirtualCtap2Device::Cancel(CancelToken) {}
+// If there is a pending operation, resolve it with a cancel status. Operations
+// can be left pending if |SimulatePress()| returns false.
+void VirtualCtap2Device::Cancel(CancelToken) {
+  if (mutable_state()->transact_callback) {
+    ReturnCtap2Response(std::move(mutable_state()->transact_callback),
+                        mutable_state()->cancel_response_code);
+  }
+}
 
 FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
     std::vector<uint8_t> command,
@@ -1004,6 +1009,8 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   }
   CtapMakeCredentialRequest request = std::move(*opt_request);
 
+  mutable_state()->exclude_list_history.push_back(request.exclude_list);
+
   bool user_verified = false;
   const CheckUserVerificationMode check_uv_mode =
       (!request.resident_key_required && !request.pin_auth &&
@@ -1240,11 +1247,11 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
 
   if (request.resident_key_required) {
     // If there's already a registration for this RP and user ID, delete it.
-    for (const auto& registration : mutable_state()->registrations) {
-      if (registration.second.is_resident &&
-          rp_id_hash == registration.second.application_parameter &&
-          registration.second.user->id == request.user.id) {
-        mutable_state()->registrations.erase(registration.first);
+    for (const auto& reg : mutable_state()->registrations) {
+      if (reg.second.is_resident &&
+          rp_id_hash == reg.second.application_parameter &&
+          reg.second.user->id == request.user.id) {
+        mutable_state()->registrations.erase(reg.first);
         break;
       }
     }
@@ -1298,7 +1305,7 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
   }
   CtapGetAssertionRequest request = std::move(*opt_request);
 
-  mutable_state()->allow_list_sizes.push_back(request.allow_list.size());
+  mutable_state()->allow_list_history.push_back(request.allow_list);
 
   bool user_verified;
   const absl::optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(
@@ -1801,10 +1808,10 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
             subcommand,
             static_cast<int>(device::pin::Subcommand::
                                  kGetPinUvAuthTokenUsingPinWithPermissions));
-        CtapDeviceResponseCode response =
+        CtapDeviceResponseCode response_code =
             ExtractPermissions(request_map, config_, permissions);
-        if (response != CtapDeviceResponseCode::kSuccess) {
-          return response;
+        if (response_code != CtapDeviceResponseCode::kSuccess) {
+          return response_code;
         }
       }
 
@@ -1851,10 +1858,10 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
       }
 
       PinUvAuthTokenPermissions permissions;
-      CtapDeviceResponseCode response =
+      CtapDeviceResponseCode response_code =
           ExtractPermissions(request_map, config_, permissions);
-      if (response != CtapDeviceResponseCode::kSuccess) {
-        return response;
+      if (response_code != CtapDeviceResponseCode::kSuccess) {
+        return response_code;
       }
 
       if (device_info_->options.user_verification_availability ==
@@ -2105,6 +2112,62 @@ CtapDeviceResponseCode VirtualCtap2Device::OnCredentialManagement(
         return CtapDeviceResponseCode::kCtap2ErrNoCredentials;
       }
       mutable_state()->registrations.erase(credential_id->id());
+      *response = {};
+      return CtapDeviceResponseCode::kSuccess;
+    }
+    case CredentialManagementSubCommand::kUpdateUserInformation: {
+      request_state_.Reset();
+
+      const auto params_it = request_map.find(cbor::Value(
+          static_cast<int>(CredentialManagementRequestKey::kSubCommandParams)));
+      if (params_it == request_map.end() && !params_it->second.is_map()) {
+        return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
+      }
+      const cbor::Value::MapValue& params = params_it->second.GetMap();
+      std::vector<uint8_t> pinauth_bytes =
+          cbor::Writer::Write(cbor::Value(params)).value();
+      pinauth_bytes.insert(pinauth_bytes.begin(),
+                           static_cast<uint8_t>(subcommand));
+      CtapDeviceResponseCode pin_status = VerifyPINUVAuthToken(
+          *device_info_, mutable_state()->pin_token, request_map,
+          cbor::Value(
+              static_cast<int>(CredentialManagementRequestKey::kPinProtocol)),
+          cbor::Value(
+              static_cast<int>(CredentialManagementRequestKey::kPinAuth)),
+          pinauth_bytes);
+      if (pin_status != CtapDeviceResponseCode::kSuccess) {
+        return pin_status;
+      }
+
+      const auto credential_id_it = params.find(cbor::Value(static_cast<int>(
+          CredentialManagementRequestParamKey::kCredentialID)));
+      if (credential_id_it == params.end() ||
+          !credential_id_it->second.is_map()) {
+        return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
+      }
+      auto credential_id = PublicKeyCredentialDescriptor::CreateFromCBORValue(
+          cbor::Value(credential_id_it->second.GetMap()));
+      if (!credential_id) {
+        return CtapDeviceResponseCode::kCtap2ErrMissingParameter;
+      }
+      if (!base::Contains(mutable_state()->registrations,
+                          credential_id->id())) {
+        return CtapDeviceResponseCode::kCtap2ErrNoCredentials;
+      }
+
+      const auto new_user_it = params.find(cbor::Value(
+          static_cast<int>(CredentialManagementRequestParamKey::kUser)));
+      if (new_user_it == params.end() || !new_user_it->second.is_map()) {
+        return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
+      }
+      absl::optional<PublicKeyCredentialUserEntity> new_user =
+          PublicKeyCredentialUserEntity::CreateFromCBORValue(
+              cbor::Value(new_user_it->second.GetMap()));
+      if (!new_user) {
+        return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
+      }
+
+      mutable_state()->registrations[credential_id->id()].user = new_user;
       *response = {};
       return CtapDeviceResponseCode::kSuccess;
     }

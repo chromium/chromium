@@ -22,6 +22,10 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   explicit MdTextButton(PressedCallback callback = PressedCallback(),
                         const std::u16string& text = std::u16string(),
                         int button_context = style::CONTEXT_BUTTON_MD);
+
+  MdTextButton(const MdTextButton&) = delete;
+  MdTextButton& operator=(const MdTextButton&) = delete;
+
   ~MdTextButton() override;
 
   // See |is_prominent_|.
@@ -71,8 +75,6 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   // Used to override default padding.
   absl::optional<gfx::Insets> custom_padding_;
-
-  DISALLOW_COPY_AND_ASSIGN(MdTextButton);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)

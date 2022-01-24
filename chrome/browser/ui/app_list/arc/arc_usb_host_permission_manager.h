@@ -34,6 +34,7 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
                    uint16_t vendor_id,
                    uint16_t product_id);
     UsbDeviceEntry(const UsbDeviceEntry& other);
+    UsbDeviceEntry& operator=(const UsbDeviceEntry& other);
     // Returns if the device entry is considered as persistent. Granted
     // permission for persistent device will persist when device is
     // removed.
@@ -68,6 +69,10 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
             callback);
     UsbPermissionRequest(UsbPermissionRequest&& other);
     UsbPermissionRequest& operator=(UsbPermissionRequest&& other);
+
+    UsbPermissionRequest(const UsbPermissionRequest&) = delete;
+    UsbPermissionRequest& operator=(const UsbPermissionRequest&) = delete;
+
     ~UsbPermissionRequest();
 
     const std::string& package_name() const { return package_name_; }
@@ -91,11 +96,14 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
     // Callback of the device access reqeust. nullopt if this is a scan device
     // list request.
     absl::optional<RequestPermissionCallback> callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(UsbPermissionRequest);
   };
 
+  ArcUsbHostPermissionManager(const ArcUsbHostPermissionManager&) = delete;
+  ArcUsbHostPermissionManager& operator=(const ArcUsbHostPermissionManager&) =
+      delete;
+
   ~ArcUsbHostPermissionManager() override;
+
   static ArcUsbHostPermissionManager* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -208,8 +216,6 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
   ArcAppListPrefs* const arc_app_list_prefs_;
 
   base::WeakPtrFactory<ArcUsbHostPermissionManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcUsbHostPermissionManager);
 };
 
 }  // namespace arc

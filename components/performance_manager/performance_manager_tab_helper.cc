@@ -82,9 +82,13 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
   // only a single frame, and it is not yet created. We sanity check that here.
 #if DCHECK_IS_ON()
   DCHECK(!web_contents->GetMainFrame()->IsRenderFrameCreated());
-  std::vector<content::RenderFrameHost*> frames = web_contents->GetAllFrames();
-  DCHECK_EQ(1u, frames.size());
-  DCHECK_EQ(web_contents->GetMainFrame(), frames[0]);
+  size_t frame_count = 0;
+  web_contents->ForEachRenderFrameHost(base::BindRepeating(
+      [](size_t* frame_count, content::RenderFrameHost* render_frame_host) {
+        (*frame_count)++;
+      },
+      &frame_count));
+  DCHECK_EQ(1u, frame_count);
 #endif
 
   // Create the page node.
@@ -197,7 +201,6 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
   std::unique_ptr<FrameNodeImpl> frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node, primary_page_node(), parent_frame_node,
-          render_frame_host->GetFrameTreeNodeId(),
           render_frame_host->GetRoutingID(),
           blink::LocalFrameToken(render_frame_host->GetFrameToken()),
           site_instance->GetBrowsingInstanceId(), site_instance->GetId(),
@@ -362,7 +365,7 @@ void PerformanceManagerTabHelper::DidFinishNavigation(
                                 base::Unretained(frame_node), url,
                                 navigation_handle->IsSameDocument()));
 
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   // Make sure the hierarchical structure is constructed before sending signal
@@ -532,6 +535,6 @@ void PerformanceManagerTabHelper::OnMainFrameNavigation(int64_t navigation_id,
   primary_page_->first_time_favicon_set = false;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PerformanceManagerTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PerformanceManagerTabHelper);
 
 }  // namespace performance_manager

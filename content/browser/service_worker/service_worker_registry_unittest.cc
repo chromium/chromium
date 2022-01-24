@@ -19,6 +19,7 @@
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
+#include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
@@ -277,6 +278,10 @@ class ServiceWorkerRegistryTest : public testing::Test {
 
   storage::MockSpecialStoragePolicy* special_storage_policy() {
     return special_storage_policy_.get();
+  }
+
+  storage::QuotaManagerProxy* quota_manager_proxy() {
+    return registry()->quota_manager_proxy_.get();
   }
 
   size_t inflight_call_count() { return registry()->inflight_calls_.size(); }
@@ -605,6 +610,41 @@ TEST_F(ServiceWorkerRegistryTest, RegisteredStorageKeyCount) {
   }
 }
 
+TEST_F(ServiceWorkerRegistryTest, CreateNewRegistration) {
+  EnsureRemoteCallsAreExecuted();
+
+  const GURL kScope("http://www.test.not/scope/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
+
+  scoped_refptr<ServiceWorkerRegistration> registration;
+
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = kScope;
+
+  storage::QuotaManagerProxySync quota_manager_proxy_sync(
+      quota_manager_proxy());
+
+  base::RunLoop loop;
+  registry()->CreateNewRegistration(
+      std::move(options), kKey,
+      base::BindLambdaForTesting(
+          [&](scoped_refptr<ServiceWorkerRegistration> new_registration) {
+            EXPECT_EQ(new_registration->scope(), kScope);
+            registration = new_registration;
+            loop.Quit();
+          }));
+  loop.Run();
+
+  // Check default bucket exists.com.
+  storage::QuotaErrorOr<storage::BucketInfo> result =
+      quota_manager_proxy_sync.GetBucket(kKey, storage::kDefaultBucketName,
+                                         blink::mojom::StorageType::kTemporary);
+  ASSERT_TRUE(result.ok());
+  EXPECT_EQ(result->name, storage::kDefaultBucketName);
+  EXPECT_EQ(result->storage_key, kKey);
+  EXPECT_GT(result->id.value(), 0);
+}
+
 TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   const GURL kScope("http://www.test.not/scope/");
   const blink::StorageKey kKey(url::Origin::Create(kScope));
@@ -616,7 +656,7 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   const int64_t kRegistrationId = 0;
   const int64_t kVersionId = 0;
   const base::Time kToday = base::Time::Now();
-  const base::Time kYesterday = kToday - base::TimeDelta::FromDays(1);
+  const base::Time kYesterday = kToday - base::Days(1);
   std::set<blink::mojom::WebFeature> used_features = {
       blink::mojom::WebFeature::kServiceWorkerControlledPage,
       blink::mojom::WebFeature::kReferrerPolicyHeader,
@@ -1632,6 +1672,9 @@ TEST_F(ServiceWorkerRegistryTest,
   {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = kScope;
+    storage::QuotaManagerProxySync quota_manager_proxy_sync(
+        quota_manager_proxy());
+
     base::RunLoop loop;
     registry()->CreateNewRegistration(
         std::move(options), kKey,
@@ -1647,6 +1690,16 @@ TEST_F(ServiceWorkerRegistryTest,
 
     loop.Run();
     EXPECT_EQ(inflight_call_count(), 0U);
+
+    // Check default bucket exists.com.
+    storage::QuotaErrorOr<storage::BucketInfo> result =
+        quota_manager_proxy_sync.GetBucket(
+            kKey, storage::kDefaultBucketName,
+            blink::mojom::StorageType::kTemporary);
+    ASSERT_TRUE(result.ok());
+    EXPECT_EQ(result->name, storage::kDefaultBucketName);
+    EXPECT_EQ(result->storage_key, kKey);
+    EXPECT_GT(result->id.value(), 0);
   }
 
   {
@@ -2369,9 +2422,11 @@ TEST_F(ServiceWorkerRegistryResourceTest, DeleteRegistration_ActiveVersion) {
       base::DoNothing());
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      CreateContainerHostForWindow(33 /* dummy render process id */,
-                                   true /* is_parent_frame_secure */,
-                                   context()->AsWeakPtr(), &remote_endpoint);
+      CreateContainerHostForWindow(
+          GlobalRenderFrameHostId(/*mock process_id=*/33,
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+          &remote_endpoint);
   registration_->active_version()->AddControllee(container_host.get());
 
   // Deleting the registration should move the resources to the purgeable list
@@ -2405,9 +2460,11 @@ TEST_F(ServiceWorkerRegistryResourceTest, UpdateRegistration) {
                                   base::DoNothing());
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      CreateContainerHostForWindow(33 /* dummy render process id */,
-                                   true /* is_parent_frame_secure */,
-                                   context()->AsWeakPtr(), &remote_endpoint);
+      CreateContainerHostForWindow(
+          GlobalRenderFrameHostId(/*mock process_id=*/33,
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+          &remote_endpoint);
   registration_->active_version()->AddControllee(container_host.get());
 
   // Make an updated registration.
@@ -2496,9 +2553,11 @@ TEST_F(ServiceWorkerRegistryResourceTest, CleanupOnRestart) {
                                   base::DoNothing());
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      CreateContainerHostForWindow(33 /* dummy render process id */,
-                                   true /* is_parent_frame_secure */,
-                                   context()->AsWeakPtr(), &remote_endpoint);
+      CreateContainerHostForWindow(
+          GlobalRenderFrameHostId(/*mock process_id=*/33,
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+          &remote_endpoint);
   registration_->active_version()->AddControllee(container_host.get());
 
   // Deleting the registration should move the resources to the purgeable list

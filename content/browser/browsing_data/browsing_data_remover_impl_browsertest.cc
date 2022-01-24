@@ -199,7 +199,9 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
     bool login_requested = false;
     ShellContentBrowserClient::Get()->set_login_request_callback(
         base::BindLambdaForTesting(
-            [&](bool is_main_frame /* unused */) { login_requested = true; }));
+            [&](bool is_primary_main_frame /* unused */) {
+              login_requested = true;
+            }));
 
     GURL url = ssl_server_.GetURL(kHttpAuthPath);
     bool navigation_suceeded = NavigateToURL(shell(), url);

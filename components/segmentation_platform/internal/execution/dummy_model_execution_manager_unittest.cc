@@ -44,7 +44,7 @@ class DummyModelExecutionManagerTest : public testing::Test {
   void OnExecutionCallback(
       base::RepeatingClosure closure,
       const std::pair<float, ModelExecutionStatus>& actual) {
-    EXPECT_EQ(ModelExecutionStatus::EXECUTION_ERROR, actual.second);
+    EXPECT_EQ(ModelExecutionStatus::kExecutionError, actual.second);
     EXPECT_EQ(0, actual.first);
     std::move(closure).Run();
   }

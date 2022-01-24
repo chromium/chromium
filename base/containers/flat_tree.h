@@ -13,6 +13,7 @@
 
 #include "base/as_const.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/functional/not_fn.h"
 #include "base/ranges/algorithm.h"
 #include "base/template_util.h"
@@ -70,6 +71,16 @@ constexpr std::array<U, N> ToArrayImpl(const T (&data)[N],
 template <typename U, typename T, size_t N>
 constexpr std::array<U, N> ToArray(const T (&data)[N]) {
   return ToArrayImpl<U>(data, std::make_index_sequence<N>());
+}
+
+// Helper that calls `container.reserve(base::size(source))`.
+template <typename T, typename U>
+constexpr void ReserveIfSupported(const T&, const U&) {}
+
+template <typename T, typename U>
+auto ReserveIfSupported(T& container, const U& source)
+    -> decltype(container.reserve(base::size(source)), void()) {
+  container.reserve(base::size(source));
 }
 
 // std::pair's operator= is not constexpr prior to C++20. Thus we need this

@@ -42,6 +42,12 @@ MediaSinkInternal CreateSink(const std::string& id) {
 class CastAppAvailabilityTrackerTest : public testing::Test {
  public:
   CastAppAvailabilityTrackerTest() = default;
+
+  CastAppAvailabilityTrackerTest(const CastAppAvailabilityTrackerTest&) =
+      delete;
+  CastAppAvailabilityTrackerTest& operator=(
+      const CastAppAvailabilityTrackerTest&) = delete;
+
   ~CastAppAvailabilityTrackerTest() override = default;
 
   base::TimeTicks Now() const { return clock_.NowTicks(); }
@@ -57,9 +63,6 @@ class CastAppAvailabilityTrackerTest : public testing::Test {
  protected:
   base::SimpleTestTickClock clock_;
   CastAppAvailabilityTracker tracker_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastAppAvailabilityTrackerTest);
 };
 
 TEST_F(CastAppAvailabilityTrackerTest, RegisterSource) {

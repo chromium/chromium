@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
 import org.chromium.chrome.browser.ntp.LogoBridge.LogoObserver;
@@ -51,12 +53,14 @@ public class LogoDelegateImpl implements LogoView.Delegate {
 
     /**
      * Construct a new {@link LogoDelegateImpl}.
-     * @param navigationDelegate The delegate for loading the URL when the logo is clicked.
-     * @param logoView The view that shows the search provider logo.
+     * @param navigationDelegate The delegate for loading the URL when the logo is clicked. May be
+     *         null when click events are not supported.
+     * @param logoView The view that shows the search provider logo. Maybe null when the client is
+     *         controlling the View presentation itself.
      * @param profile The profile to show the logo for.
      */
-    public LogoDelegateImpl(
-            SuggestionsNavigationDelegate navigationDelegate, LogoView logoView, Profile profile) {
+    public LogoDelegateImpl(@Nullable SuggestionsNavigationDelegate navigationDelegate,
+            @Nullable LogoView logoView, Profile profile) {
         mNavigationDelegate = navigationDelegate;
         mLogoView = logoView;
         mLogoBridge = new LogoBridge(profile);
@@ -128,8 +132,10 @@ public class LogoDelegateImpl implements LogoView.Delegate {
                     mShouldRecordLoadTime = false;
                 }
 
-                mOnLogoClickUrl = logo != null ? logo.onClickUrl : null;
-                mAnimatedLogoUrl = logo != null ? logo.animatedLogoUrl : null;
+                mOnLogoClickUrl =
+                        (logo != null && mNavigationDelegate != null) ? logo.onClickUrl : null;
+                mAnimatedLogoUrl =
+                        (logo != null && mLogoView != null) ? logo.animatedLogoUrl : null;
 
                 logoObserver.onLogoAvailable(logo, fromCache);
             }

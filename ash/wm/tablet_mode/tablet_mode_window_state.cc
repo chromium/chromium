@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/tab_drag_drop_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
@@ -168,11 +169,18 @@ bool IsSnapped(WindowStateType state) {
 // Returns true if the bounds change of |window| is from VK request and can be
 // allowed by the current window's state.
 bool BoundsChangeIsFromVKAndAllowed(aura::Window* window) {
-  if (!window->GetProperty(wm::kVirtualKeyboardRestoreBoundsKey))
-    return false;
   WindowStateType state_type = WindowState::Get(window)->GetStateType();
-  return state_type == WindowStateType::kNormal ||
-         state_type == WindowStateType::kDefault;
+  if (state_type == WindowStateType::kNormal ||
+      state_type == WindowStateType::kDefault) {
+    return window->GetProperty(wm::kVirtualKeyboardRestoreBoundsKey) != nullptr;
+  }
+
+  if (state_type == WindowStateType::kPrimarySnapped ||
+      state_type == WindowStateType::kSecondarySnapped) {
+    return SplitViewController::Get(window)->BoundsChangeIsFromVKAndAllowed(
+        window);
+  }
+  return false;
 }
 
 }  // namespace
@@ -271,6 +279,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
         UpdateWindow(window_state, WindowStateType::kTrustedPinned,
                      true /* animated */);
       break;
+    case WM_EVENT_TOGGLE_FLOATING:
     case WM_EVENT_TOGGLE_MAXIMIZE_CAPTION:
     case WM_EVENT_TOGGLE_VERTICAL_MAXIMIZE:
     case WM_EVENT_TOGGLE_HORIZONTAL_MAXIMIZE:
@@ -493,9 +502,8 @@ void TabletModeWindowState::UpdateBounds(WindowState* window_state,
         // Just use the normal bounds animation with ZERO tween with long enough
         // duration for STEP_END. The animation will be stopped when the to
         // window's animation ends.
-        window_state->SetBoundsDirectAnimated(bounds_in_parent,
-                                              base::TimeDelta::FromSeconds(1),
-                                              gfx::Tween::ZERO);
+        window_state->SetBoundsDirectAnimated(
+            bounds_in_parent, base::Seconds(1), gfx::Tween::ZERO);
         return;
       }
       // If we animate (to) tablet mode, we want to use the cross fade to

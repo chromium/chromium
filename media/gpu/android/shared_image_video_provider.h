@@ -38,6 +38,9 @@ class MEDIA_GPU_EXPORT SharedImageVideoProvider {
     // Size of the underlying texture.
     gfx::Size coded_size;
 
+    // Color space used for the SharedImage.
+    gfx::ColorSpace color_space;
+
     // This is a hack to allow us to discard pooled images if the TextureOwner
     // changes.  We don't want to keep a ref to the TextureOwner here, so we
     // just use a generation counter.  Note that this is temporary anyway; we
@@ -60,6 +63,10 @@ class MEDIA_GPU_EXPORT SharedImageVideoProvider {
   struct ImageRecord {
     ImageRecord();
     ImageRecord(ImageRecord&&);
+
+    ImageRecord(const ImageRecord&) = delete;
+    ImageRecord& operator=(const ImageRecord&) = delete;
+
     ~ImageRecord();
 
     // Mailbox to which this shared image is bound.
@@ -76,12 +83,13 @@ class MEDIA_GPU_EXPORT SharedImageVideoProvider {
     // Is the underlying context Vulkan?  If so, then one must provide YCbCrInfo
     // with the VideoFrame.
     bool is_vulkan = false;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ImageRecord);
   };
 
   SharedImageVideoProvider() = default;
+
+  SharedImageVideoProvider(const SharedImageVideoProvider&) = delete;
+  SharedImageVideoProvider& operator=(const SharedImageVideoProvider&) = delete;
+
   virtual ~SharedImageVideoProvider() = default;
 
   using ImageReadyCB = base::OnceCallback<void(ImageRecord)>;
@@ -95,9 +103,6 @@ class MEDIA_GPU_EXPORT SharedImageVideoProvider {
   // Call |cb| when we have a shared image that matches |spec|.  We may call
   // |cb| back before returning, or we might post it for later.
   virtual void RequestImage(ImageReadyCB cb, const ImageSpec& spec) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedImageVideoProvider);
 };
 
 }  // namespace media

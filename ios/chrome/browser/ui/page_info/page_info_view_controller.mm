@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,8 +42,7 @@ float kPaddingSecurityHeader = 28.0f;
 
 }  // namespace
 
-@interface PageInfoViewController () <TableViewLinkHeaderFooterItemDelegate,
-                                      TableViewTextLinkCellDelegate>
+@interface PageInfoViewController () <TableViewLinkHeaderFooterItemDelegate>
 
 @property(nonatomic, strong)
     PageInfoSiteSecurityDescription* pageInfoSecurityDescription;
@@ -57,9 +55,7 @@ float kPaddingSecurityHeader = 28.0f;
 
 - (instancetype)initWithSiteSecurityDescription:
     (PageInfoSiteSecurityDescription*)siteSecurityDescription {
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? ChromeTableViewStyle()
-                               : UITableViewStylePlain;
+  UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
     _pageInfoSecurityDescription = siteSecurityDescription;
@@ -109,22 +105,13 @@ float kPaddingSecurityHeader = 28.0f;
   [self.tableViewModel addItem:securityHeader
        toSectionWithIdentifier:SectionIdentifierSecurityContent];
 
-  if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    TableViewLinkHeaderFooterItem* securityDescription =
-        [[TableViewLinkHeaderFooterItem alloc]
-            initWithType:ItemTypeSecurityDescription];
-    securityDescription.text = self.pageInfoSecurityDescription.message;
-    securityDescription.urls = std::vector<GURL>{GURL(kPageInfoHelpCenterURL)};
-    [self.tableViewModel setFooter:securityDescription
-          forSectionWithIdentifier:SectionIdentifierSecurityContent];
-  } else {
-    TableViewTextLinkItem* securityDescription = [[TableViewTextLinkItem alloc]
-        initWithType:ItemTypeSecurityDescription];
-    securityDescription.text = self.pageInfoSecurityDescription.message;
-    securityDescription.linkURL = GURL(kPageInfoHelpCenterURL);
-    [self.tableViewModel addItem:securityDescription
-         toSectionWithIdentifier:SectionIdentifierSecurityContent];
-  }
+  TableViewLinkHeaderFooterItem* securityDescription =
+      [[TableViewLinkHeaderFooterItem alloc]
+          initWithType:ItemTypeSecurityDescription];
+  securityDescription.text = self.pageInfoSecurityDescription.message;
+  securityDescription.urls = std::vector<GURL>{GURL(kPageInfoHelpCenterURL)};
+  [self.tableViewModel setFooter:securityDescription
+        forSectionWithIdentifier:SectionIdentifierSecurityContent];
 }
 
 #pragma mark - UITableViewDelegate
@@ -134,24 +121,6 @@ float kPaddingSecurityHeader = 28.0f;
   return kPaddingSecurityHeader;
 }
 
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cellToReturn = [super tableView:tableView
-                             cellForRowAtIndexPath:indexPath];
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-
-  if (item.type == ItemTypeSecurityDescription) {
-    DCHECK(!base::FeatureList::IsEnabled(kSettingsRefresh));
-    TableViewTextLinkCell* tableViewTextLinkCell =
-        base::mac::ObjCCastStrict<TableViewTextLinkCell>(cellToReturn);
-    tableViewTextLinkCell.delegate = self;
-  }
-
-  return cellToReturn;
-}
-
 - (UIView*)tableView:(UITableView*)tableView
     viewForFooterInSection:(NSInteger)section {
   UIView* view = [super tableView:tableView viewForFooterInSection:section];
@@ -159,32 +128,17 @@ float kPaddingSecurityHeader = 28.0f;
       [self.tableViewModel sectionIdentifierForSection:section];
   switch (sectionIdentifier) {
     case SectionIdentifierSecurityContent: {
-      if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-        TableViewLinkHeaderFooterView* linkView =
-            base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
-        linkView.delegate = self;
-      }
+      TableViewLinkHeaderFooterView* linkView =
+          base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+      linkView.delegate = self;
     } break;
-    default:
-      NOTREACHED();
-      break;
   }
   return view;
-}
-
-#pragma mark - TableViewTextLinkCellDelegate
-
-- (void)tableViewTextLinkCell:(TableViewTextLinkCell*)cell
-            didRequestOpenURL:(const GURL&)URL {
-  DCHECK(!base::FeatureList::IsEnabled(kSettingsRefresh));
-  DCHECK(URL == GURL(kPageInfoHelpCenterURL));
-  [self.handler showSecurityHelpPage];
 }
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
-  DCHECK(base::FeatureList::IsEnabled(kSettingsRefresh));
   DCHECK(URL == GURL(kPageInfoHelpCenterURL));
   [self.handler showSecurityHelpPage];
 }

@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace metrics {
 
 // This class is used by libmetrics (ChromeOS) to serialize
@@ -36,6 +34,9 @@ class MetricSample {
                const int min,
                const int max,
                const int bucket_count);
+
+  MetricSample(const MetricSample&) = delete;
+  MetricSample& operator=(const MetricSample&) = delete;
 
   ~MetricSample();
 
@@ -113,8 +114,6 @@ class MetricSample {
   const int min_;
   const int max_;
   const int bucket_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricSample);
 };
 
 }  // namespace metrics

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -211,7 +211,7 @@ scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
         FROM_HERE,
         base::BindOnce(&ParkableStringManager::RecordStatisticsAfter5Minutes,
                        base::Unretained(this)),
-        base::TimeDelta::FromMinutes(5));
+        base::Minutes(5));
     has_posted_unparking_time_accounting_task_ = true;
   }
 
@@ -272,10 +272,6 @@ void ParkableStringManager::ParkAll(ParkableStringImpl::ParkingMode mode) {
   DCHECK(IsMainThread());
   DCHECK(CompressionEnabled());
 
-  size_t total_size = 0;
-  for (const auto& kv : parked_strings_)
-    total_size += kv.value->CharactersSizeInBytes();
-
   // Parking may be synchronous, need to copy values first.
   // In case of synchronous parking, |ParkableStringImpl::Park()| calls
   // |OnParked()|, which moves the string from |unparked_strings_|
@@ -289,7 +285,6 @@ void ParkableStringManager::ParkAll(ParkableStringImpl::ParkingMode mode) {
 
   for (ParkableStringImpl* str : unparked) {
     str->Park(mode);
-    total_size += str->CharactersSizeInBytes();
   }
 }
 
@@ -308,24 +303,23 @@ void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
   }
   Statistics stats = ComputeStatistics();
   base::UmaHistogramCounts100000("Memory.ParkableString.TotalSizeKb.5min",
-                                 stats.original_size / 1000);
-  base::UmaHistogramCounts100000("Memory.ParkableString.CompressedSizeKb.5min",
-                                 stats.compressed_size / 1000);
+                                 static_cast<int>(stats.original_size / 1000));
+  base::UmaHistogramCounts100000(
+      "Memory.ParkableString.CompressedSizeKb.5min",
+      static_cast<int>(stats.compressed_size / 1000));
   size_t savings = stats.compressed_original_size - stats.compressed_size;
   base::UmaHistogramCounts100000("Memory.ParkableString.SavingsKb.5min",
-                                 savings / 1000);
+                                 static_cast<int>(savings / 1000));
   if (stats.compressed_original_size != 0) {
-    size_t ratio_percentage =
-        (100 * stats.compressed_size) / stats.compressed_original_size;
+    int ratio_percentage = static_cast<int>((100 * stats.compressed_size) /
+                                            stats.compressed_original_size);
     base::UmaHistogramPercentageObsoleteDoNotUse(
         "Memory.ParkableString.CompressionRatio.5min", ratio_percentage);
   }
 
   // May not be usable, e.g. Incognito, permission or write failure.
-  if (features::IsParkableStringsToDiskEnabled()) {
-    base::UmaHistogramBoolean("Memory.ParkableString.DiskIsUsable.5min",
-                              data_allocator().may_write());
-  }
+  base::UmaHistogramBoolean("Memory.ParkableString.DiskIsUsable.5min",
+                            data_allocator().may_write());
   // These metrics only make sense if the disk allocator is used.
   if (data_allocator().may_write()) {
     base::UmaHistogramTimes("Memory.ParkableString.DiskWriteTime.5min",
@@ -337,7 +331,7 @@ void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
         "Memory.ParkableString.MemorySavingsKb.5min",
         std::max(0, static_cast<int>(stats.savings_size)) / 1000);
     base::UmaHistogramCounts100000("Memory.ParkableString.OnDiskSizeKb.5min",
-                                   stats.on_disk_size / 1000);
+                                   static_cast<int>(stats.on_disk_size / 1000));
     base::UmaHistogramCounts100000(
         "Memory.ParkableString.OnDiskFootprintKb.5min",
         static_cast<int>(data_allocator().disk_footprint()) / 1000);
@@ -397,7 +391,7 @@ void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
       FROM_HERE,
       base::BindOnce(&ParkableStringManager::AgeStringsAndPark,
                      base::Unretained(this)),
-      base::TimeDelta::FromSeconds(kAgingIntervalInSeconds));
+      base::Seconds(kAgingIntervalInSeconds));
   has_pending_aging_task_ = true;
 }
 

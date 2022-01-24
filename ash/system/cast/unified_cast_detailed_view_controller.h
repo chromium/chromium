@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/system/unified/detailed_view_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 namespace tray {
@@ -22,6 +21,12 @@ class UnifiedCastDetailedViewController : public DetailedViewController {
  public:
   explicit UnifiedCastDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UnifiedCastDetailedViewController(const UnifiedCastDetailedViewController&) =
+      delete;
+  UnifiedCastDetailedViewController& operator=(
+      const UnifiedCastDetailedViewController&) = delete;
+
   ~UnifiedCastDetailedViewController() override;
 
   // DetailedViewControllerBase:
@@ -32,8 +37,6 @@ class UnifiedCastDetailedViewController : public DetailedViewController {
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
   tray::CastDetailedView* view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedCastDetailedViewController);
 };
 
 }  // namespace ash

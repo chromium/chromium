@@ -79,7 +79,8 @@ GetAssertionStatus WinCtapDeviceResponseCodeToGetAssertionStatus(
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 uint32_t ToWinAttestationConveyancePreference(
-    const AttestationConveyancePreference&);
+    const AttestationConveyancePreference&,
+    int api_version);
 
 }  // namespace device
 

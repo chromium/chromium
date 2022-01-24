@@ -7,28 +7,35 @@
 
 #include <map>
 #include <memory>
-#include <vector>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
-#include "content/public/browser/web_contents_observer.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace payments {
 
 // Android wrapper of the PaymentManifestWebDataService which provides access
 // from the Java layer.
-class PaymentManifestWebDataServiceAndroid
-    : public WebDataServiceConsumer,
-      public content::WebContentsObserver {
+class PaymentManifestWebDataServiceAndroid : public WebDataServiceConsumer {
  public:
   PaymentManifestWebDataServiceAndroid(JNIEnv* env,
                                        jobject obj,
                                        content::WebContents* web_contents);
+
+  PaymentManifestWebDataServiceAndroid(
+      const PaymentManifestWebDataServiceAndroid&) = delete;
+  PaymentManifestWebDataServiceAndroid& operator=(
+      const PaymentManifestWebDataServiceAndroid&) = delete;
+
   ~PaymentManifestWebDataServiceAndroid() override;
 
   // Override WebDataServiceConsumer interface.
@@ -81,6 +88,8 @@ class PaymentManifestWebDataServiceAndroid
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService();
 
+  base::WeakPtr<content::WebContents> web_contents_;
+
   // Pointer to the java counterpart.
   JavaObjectWeakGlobalRef weak_java_obj_;
 
@@ -88,8 +97,6 @@ class PaymentManifestWebDataServiceAndroid
   std::map<WebDataServiceBase::Handle,
            std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>>
       web_data_service_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestWebDataServiceAndroid);
 };
 
 }  // namespace payments

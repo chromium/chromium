@@ -12,9 +12,10 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -50,8 +51,8 @@ uint32_t GetTestingOptions() {
 // A GetInstalledVersionCallback implementation used when a regular or a
 // critical update is simulated via --simulate-upgrade or
 // --simulate-critical-update.
-InstalledAndCriticalVersion SimulateGetInstalledVersion(
-    uint32_t testing_options) {
+void SimulateGetInstalledVersion(uint32_t testing_options,
+                                 InstalledVersionCallback callback) {
   DCHECK_NE(0U, testing_options);
 
   std::vector<uint32_t> components = version_info::GetVersion().components();
@@ -64,7 +65,7 @@ InstalledAndCriticalVersion SimulateGetInstalledVersion(
     result.critical_version.emplace(std::move(components));
   }
 
-  return result;
+  std::move(callback).Run(std::move(result));
 }
 
 // Returns the callback to get the installed version. Use of any testing option
@@ -85,7 +86,7 @@ base::TimeDelta GetPollingInterval() {
       cmd_line.GetSwitchValueASCII(switches::kCheckForUpdateIntervalSec);
   int seconds;
   if (!seconds_str.empty() && base::StringToInt(seconds_str, &seconds))
-    return base::TimeDelta::FromSeconds(seconds);
+    return base::Seconds(seconds);
   return InstalledVersionPoller::kDefaultPollingInterval;
 }
 
@@ -114,7 +115,7 @@ enum class InstalledVersionPoller::PollType {
 
 // static
 const base::TimeDelta InstalledVersionPoller::kDefaultPollingInterval =
-    base::TimeDelta::FromHours(2);
+    base::Hours(2);
 
 InstalledVersionPoller::InstalledVersionPoller(BuildState* build_state)
     : InstalledVersionPoller(build_state,
@@ -159,7 +160,7 @@ void InstalledVersionPoller::OnMonitorResult(bool error) {
     // Wait ten seconds before polling for the new version in case the monitor
     // provides multiple notifications during a normal update. Repeat
     // notifications will push back the poll.
-    timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(10),
+    timer_.Start(FROM_HERE, base::Seconds(10),
                  base::BindOnce(&InstalledVersionPoller::Poll,
                                 base::Unretained(this), PollType::kMonitor));
   } else {
@@ -170,14 +171,10 @@ void InstalledVersionPoller::OnMonitorResult(bool error) {
 
 void InstalledVersionPoller::Poll(PollType poll_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Run the version getter in the background. Get the result back via a weak
-  // pointer so that the result is dropped on the floor should this instance be
-  // destroyed while polling.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
-      base::BindOnce(get_installed_version_),
+
+  // Get the result back via a weak pointer so that the result is dropped on the
+  // floor should this instance be destroyed while polling.
+  get_installed_version_.Run(
       base::BindOnce(&InstalledVersionPoller::OnInstalledVersion,
                      weak_ptr_factory_.GetWeakPtr(), poll_type));
 }

@@ -10,7 +10,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
@@ -19,7 +18,12 @@
 #include "components/sync/engine/data_type_debug_info_listener.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_manager.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/client_debug_info.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+
+namespace sync_pb {
+class EncryptedData;
+}
 
 namespace syncer {
 
@@ -37,6 +41,10 @@ class DebugInfoEventListener : public SyncManager::Observer,
                                public DataTypeDebugInfoListener {
  public:
   DebugInfoEventListener();
+
+  DebugInfoEventListener(const DebugInfoEventListener&) = delete;
+  DebugInfoEventListener& operator=(const DebugInfoEventListener&) = delete;
+
   ~DebugInfoEventListener() override;
 
   void InitializationComplete();
@@ -56,8 +64,7 @@ class DebugInfoEventListener : public SyncManager::Observer,
   void OnPassphraseAccepted() override;
   void OnTrustedVaultKeyRequired() override;
   void OnTrustedVaultKeyAccepted() override;
-  void OnBootstrapTokenUpdated(const std::string& bootstrap_token,
-                               BootstrapTokenType type) override;
+  void OnBootstrapTokenUpdated(const std::string& bootstrap_token) override;
   void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                bool encrypt_everything) override;
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
@@ -108,8 +115,6 @@ class DebugInfoEventListener : public SyncManager::Observer,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DebugInfoEventListener> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DebugInfoEventListener);
 };
 
 }  // namespace syncer

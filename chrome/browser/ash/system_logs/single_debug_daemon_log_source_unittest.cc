@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
@@ -22,6 +21,11 @@ using SupportedSource = SingleDebugDaemonLogSource::SupportedSource;
 class SingleDebugDaemonLogSourceTest : public ::testing::Test {
  public:
   SingleDebugDaemonLogSourceTest() : num_callback_calls_(0) {}
+
+  SingleDebugDaemonLogSourceTest(const SingleDebugDaemonLogSourceTest&) =
+      delete;
+  SingleDebugDaemonLogSourceTest& operator=(
+      const SingleDebugDaemonLogSourceTest&) = delete;
 
   void SetUp() override {
     // Since no debug daemon will be available during a unit test, use
@@ -59,8 +63,6 @@ class SingleDebugDaemonLogSourceTest : public ::testing::Test {
 
   // Stores results from the log source.
   SystemLogsResponse response_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleDebugDaemonLogSourceTest);
 };
 
 TEST_F(SingleDebugDaemonLogSourceTest, SingleCall) {

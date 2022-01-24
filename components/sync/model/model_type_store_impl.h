@@ -10,7 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_type_store.h"
 
@@ -30,6 +30,10 @@ class ModelTypeStoreImpl : public ModelTypeStore {
       std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
           backend_store,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
+
+  ModelTypeStoreImpl(const ModelTypeStoreImpl&) = delete;
+  ModelTypeStoreImpl& operator=(const ModelTypeStoreImpl&) = delete;
+
   ~ModelTypeStoreImpl() override;
 
   // ModelTypeStore implementation.
@@ -70,8 +74,6 @@ class ModelTypeStoreImpl : public ModelTypeStore {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ModelTypeStoreImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModelTypeStoreImpl);
 };
 
 }  // namespace syncer

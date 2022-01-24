@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -43,6 +42,11 @@ class MockRenderViewContextMenu : public ui::SimpleMenuModel::Delegate,
   };
 
   explicit MockRenderViewContextMenu(bool incognito);
+
+  MockRenderViewContextMenu(const MockRenderViewContextMenu&) = delete;
+  MockRenderViewContextMenu& operator=(const MockRenderViewContextMenu&) =
+      delete;
+
   ~MockRenderViewContextMenu() override;
 
   // SimpleMenuModel::Delegate implementation.
@@ -117,8 +121,6 @@ class MockRenderViewContextMenu : public ui::SimpleMenuModel::Delegate,
 
   // A list of menu items added.
   std::vector<MockMenuItem> items_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRenderViewContextMenu);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_MOCK_RENDER_VIEW_CONTEXT_MENU_H_

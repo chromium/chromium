@@ -12,13 +12,14 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "chromeos/network/network_profile.h"
 
 namespace chromeos {
+
+class CellularPolicyHandler;
 class NetworkUIData;
 
 // This class compares (entry point is Run()) |modified_policies| with the
@@ -30,6 +31,8 @@ class PolicyApplicator {
  public:
   class ConfigurationHandler {
    public:
+    ConfigurationHandler& operator=(const ConfigurationHandler&) = delete;
+
     virtual ~ConfigurationHandler() {}
     // Write the new configuration with the properties |shill_properties| to
     // Shill. This configuration comes from a policy. Any conflicting or
@@ -37,7 +40,7 @@ class PolicyApplicator {
     // before. |callback| will be called after the configuration update has been
     // reflected in NetworkStateHandler, or on error.
     virtual void CreateConfigurationFromPolicy(
-        const base::DictionaryValue& shill_properties,
+        const base::Value& shill_properties,
         base::OnceClosure callback) = 0;
 
     // before. |callback| will be called after the configuration update has been
@@ -50,9 +53,6 @@ class PolicyApplicator {
     // Called after all policies for |profile| were applied. At this point, the
     // list of networks should be updated.
     virtual void OnPoliciesApplied(const NetworkProfile& profile) = 0;
-
-   private:
-    DISALLOW_ASSIGN(ConfigurationHandler);
   };
 
   using GuidToPolicyMap =
@@ -64,7 +64,11 @@ class PolicyApplicator {
                    const GuidToPolicyMap& all_policies,
                    const base::DictionaryValue& global_network_config,
                    ConfigurationHandler* handler,
+                   CellularPolicyHandler* cellular_policy_handler,
                    std::set<std::string>* modified_policy_guids);
+
+  PolicyApplicator(const PolicyApplicator&) = delete;
+  PolicyApplicator& operator=(const PolicyApplicator&) = delete;
 
   ~PolicyApplicator();
 
@@ -140,6 +144,8 @@ class PolicyApplicator {
 
   std::set<std::string> remaining_policy_guids_;
   std::set<std::string> pending_get_entry_calls_;
+
+  CellularPolicyHandler* cellular_policy_handler_ = nullptr;
   ConfigurationHandler* handler_;
   NetworkProfile profile_;
   GuidToPolicyMap all_policies_;
@@ -148,8 +154,6 @@ class PolicyApplicator {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PolicyApplicator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyApplicator);
 };
 
 }  // namespace chromeos

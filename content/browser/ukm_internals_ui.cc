@@ -41,6 +41,10 @@ WebUIDataSource* CreateUkmHTMLSource() {
 class UkmMessageHandler : public WebUIMessageHandler {
  public:
   explicit UkmMessageHandler(const ukm::UkmService* ukm_service);
+
+  UkmMessageHandler(const UkmMessageHandler&) = delete;
+  UkmMessageHandler& operator=(const UkmMessageHandler&) = delete;
+
   ~UkmMessageHandler() override;
 
   // WebUIMessageHandler:
@@ -50,8 +54,6 @@ class UkmMessageHandler : public WebUIMessageHandler {
   void HandleRequestUkmData(const base::ListValue* args);
 
   const ukm::UkmService* ukm_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmMessageHandler);
 };
 
 UkmMessageHandler::UkmMessageHandler(const ukm::UkmService* ukm_service)
@@ -78,7 +80,7 @@ void UkmMessageHandler::RegisterMessages() {
 
   // We can use base::Unretained() here, as both the callback and this class are
   // owned by UkmInternalsUI.
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestUkmData",
       base::BindRepeating(&UkmMessageHandler::HandleRequestUkmData,
                           base::Unretained(this)));

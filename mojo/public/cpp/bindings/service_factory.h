@@ -71,6 +71,10 @@ struct ServiceFactoryTraits;
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
  public:
   ServiceFactory();
+
+  ServiceFactory(const ServiceFactory&) = delete;
+  ServiceFactory& operator=(const ServiceFactory&) = delete;
+
   ~ServiceFactory();
 
   // Adds a new service to the factory. The argument may be any function that
@@ -105,6 +109,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
   class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InstanceHolderBase {
    public:
     InstanceHolderBase();
+
+    InstanceHolderBase(const InstanceHolderBase&) = delete;
+    InstanceHolderBase& operator=(const InstanceHolderBase&) = delete;
+
     virtual ~InstanceHolderBase();
 
     void WatchPipe(MessagePipeHandle pipe,
@@ -115,8 +123,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
 
     SimpleWatcher watcher_;
     base::OnceClosure disconnect_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(InstanceHolderBase);
   };
 
   template <typename Interface>
@@ -124,12 +130,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
    public:
     explicit InstanceHolder(std::unique_ptr<Interface> instance)
         : instance_(std::move(instance)) {}
+
+    InstanceHolder(const InstanceHolder&) = delete;
+    InstanceHolder& operator=(const InstanceHolder&) = delete;
+
     ~InstanceHolder() override = default;
 
    private:
     const std::unique_ptr<Interface> instance_;
-
-    DISALLOW_COPY_AND_ASSIGN(InstanceHolder);
   };
 
   template <typename Func>
@@ -155,8 +163,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
       instances_;
 
   base::WeakPtrFactory<ServiceFactory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceFactory);
 };
 
 namespace internal {

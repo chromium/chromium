@@ -46,6 +46,28 @@ TEST(OptimizationGuideFeaturesTest,
             optimization_guide_service_url);
 }
 
+TEST(OptimizationGuideFeaturesTest, InvalidPageContentRAPPORMetrics) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPageContentAnnotations,
+      {{"num_bits_for_rappor_metrics", "-1"},
+       {"noise_prob_for_rappor_metrics", "-.5"}});
+  EXPECT_EQ(1, features::NumBitsForRAPPORMetrics());
+  EXPECT_EQ(0.0, features::NoiseProbabilityForRAPPORMetrics());
+}
+
+TEST(OptimizationGuideFeaturesTest, ValidPageContentRAPPORMetrics) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPageContentAnnotations,
+      {{"num_bits_for_rappor_metrics", "2"},
+       {"noise_prob_for_rappor_metrics", ".2"}});
+  EXPECT_EQ(2, features::NumBitsForRAPPORMetrics());
+  EXPECT_EQ(.2, features::NoiseProbabilityForRAPPORMetrics());
+}
+
 }  // namespace
 
 }  // namespace optimization_guide

@@ -27,6 +27,9 @@ class GetRequestBlobTask : public DatabaseTask {
       const scoped_refptr<BackgroundFetchRequestInfo>& request_info,
       GetRequestBlobCallback callback);
 
+  GetRequestBlobTask(const GetRequestBlobTask&) = delete;
+  GetRequestBlobTask& operator=(const GetRequestBlobTask&) = delete;
+
   ~GetRequestBlobTask() override;
 
   // DatabaseTask implementation:
@@ -49,8 +52,6 @@ class GetRequestBlobTask : public DatabaseTask {
 
   base::WeakPtrFactory<GetRequestBlobTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(GetRequestBlobTask);
 };
 
 }  // namespace background_fetch

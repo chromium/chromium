@@ -17,7 +17,6 @@
 
 #include "base/containers/queue.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -51,6 +50,9 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   VTVideoDecodeAccelerator(const GpuVideoDecodeGLClient& gl_client_,
                            const gpu::GpuDriverBugWorkarounds& workarounds,
                            MediaLog* media_log);
+
+  VTVideoDecodeAccelerator(const VTVideoDecodeAccelerator&) = delete;
+  VTVideoDecodeAccelerator& operator=(const VTVideoDecodeAccelerator&) = delete;
 
   ~VTVideoDecodeAccelerator() override;
 
@@ -147,6 +149,10 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
     // images.
     PictureInfo();
     PictureInfo(uint32_t client_texture_id, uint32_t service_texture_id);
+
+    PictureInfo(const PictureInfo&) = delete;
+    PictureInfo& operator=(const PictureInfo&) = delete;
+
     ~PictureInfo();
 
     // If true, then |scoped_shared_images| is used and |client_texture_id| and
@@ -163,9 +169,6 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
 
     // The shared image holder that will be passed to the client.
     std::vector<scoped_refptr<Picture::ScopedSharedImage>> scoped_shared_images;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(PictureInfo);
   };
 
   struct FrameOrder {
@@ -325,8 +328,6 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // other destructors run.
   base::WeakPtrFactory<VTVideoDecodeAccelerator> decoder_weak_this_factory_;
   base::WeakPtrFactory<VTVideoDecodeAccelerator> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VTVideoDecodeAccelerator);
 };
 
 }  // namespace media

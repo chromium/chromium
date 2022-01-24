@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_EVENT_BASED_STATUS_REPORTING_SERVICE_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_EVENT_BASED_STATUS_REPORTING_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -55,6 +54,12 @@ class EventBasedStatusReportingService
       "Supervision.StatusReport.Event";
 
   explicit EventBasedStatusReportingService(content::BrowserContext* context);
+
+  EventBasedStatusReportingService(const EventBasedStatusReportingService&) =
+      delete;
+  EventBasedStatusReportingService& operator=(
+      const EventBasedStatusReportingService&) = delete;
+
   ~EventBasedStatusReportingService() override;
 
   // ArcAppListPrefs::Observer:
@@ -87,8 +92,6 @@ class EventBasedStatusReportingService
 
   content::BrowserContext* const context_;
   bool session_just_started_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(EventBasedStatusReportingService);
 };
 
 }  // namespace ash

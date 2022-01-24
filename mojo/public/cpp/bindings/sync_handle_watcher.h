@@ -33,6 +33,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncHandleWatcher {
                     MojoHandleSignals handle_signals,
                     const SyncHandleRegistry::HandleCallback& callback);
 
+  SyncHandleWatcher(const SyncHandleWatcher&) = delete;
+  SyncHandleWatcher& operator=(const SyncHandleWatcher&) = delete;
+
   ~SyncHandleWatcher();
 
   // Registers |handle_| with SyncHandleRegistry, so that when others perform
@@ -66,8 +69,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncHandleWatcher {
   scoped_refptr<base::RefCountedData<bool>> destroyed_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SyncHandleWatcher);
 };
 
 }  // namespace mojo

@@ -49,7 +49,7 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
                        AccountTrackerService* account_tracker_service,
                        SigninClient* signin_client,
                        const account_manager::Account& device_account) {
-  if (device_account.key.account_type != account_manager::AccountType::kGaia)
+  if (device_account.key.account_type() != account_manager::AccountType::kGaia)
     return;
 
   // An account can be set as the Primary Account only if it exists in
@@ -59,7 +59,7 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
   // the account in `AccountTrackerService` to get around this issue.
   const CoreAccountId device_account_id =
       account_tracker_service->SeedAccountInfo(
-          /*gaia=*/device_account.key.id, device_account.raw_email);
+          /*gaia=*/device_account.key.id(), device_account.raw_email);
 
   // TODO(https://crbug.com/1194983): Figure out how split sync settings will
   // work here. For now, we will mimic Ash's behaviour of having sync turned on
@@ -76,11 +76,14 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
         signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE,
         signin_metrics::SignoutDelete::kIgnoreMetric);
   }
-  CHECK(identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      device_account_id, ConsentLevel::kSync));
+  PrimaryAccountMutator::PrimaryAccountError error =
+      identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          device_account_id, ConsentLevel::kSync);
+  CHECK_EQ(PrimaryAccountMutator::PrimaryAccountError::kNoError, error)
+      << "SetPrimaryAccount error: " << static_cast<int>(error);
   CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
   CHECK_EQ(identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia,
-           device_account.key.id);
+           device_account.key.id());
 }
 #endif
 
@@ -102,11 +105,15 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       signin_client_(parameters.signin_client),
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      account_manager_facade_(parameters.account_manager_facade),
+#endif
       identity_mutator_(std::move(parameters.primary_account_mutator),
                         std::move(parameters.accounts_mutator),
                         std::move(parameters.accounts_cookie_mutator),
                         std::move(parameters.device_accounts_synchronizer)),
-      diagnostics_provider_(std::move(parameters.diagnostics_provider)) {
+      diagnostics_provider_(std::move(parameters.diagnostics_provider)),
+      account_consistency_(parameters.account_consistency) {
   DCHECK(account_fetcher_service_);
   DCHECK(diagnostics_provider_);
 
@@ -137,10 +144,6 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
   java_identity_manager_ = Java_IdentityManager_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
       token_service_->GetDelegate()->GetJavaObject());
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash_account_manager_ = parameters.ash_account_manager;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -444,7 +447,7 @@ IdentityManager::GetIdentityMutatorJavaObject() {
       identity_mutator_.GetJavaObject());
 }
 
-void IdentityManager::ForceRefreshOfExtendedAccountInfo(
+void IdentityManager::RefreshAccountInfoIfStale(
     const CoreAccountId& account_id) {
   DCHECK(HasAccountWithRefreshToken(account_id));
   AccountInfo account_info =
@@ -452,13 +455,13 @@ void IdentityManager::ForceRefreshOfExtendedAccountInfo(
   if (account_info.account_image.IsEmpty()) {
     account_info_fetch_start_times_[account_id] = base::TimeTicks::Now();
   }
-  account_fetcher_service_->ForceRefreshOfAccountInfo(account_id);
+  account_fetcher_service_->RefreshAccountInfoIfStale(account_id);
 }
 
-void IdentityManager::ForceRefreshOfExtendedAccountInfo(
+void IdentityManager::RefreshAccountInfoIfStale(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_core_account_id) {
-  ForceRefreshOfExtendedAccountInfo(
+  RefreshAccountInfoIfStale(
       ConvertFromJavaCoreAccountId(env, j_core_account_id));
 }
 
@@ -529,9 +532,10 @@ GaiaCookieManagerService* IdentityManager::GetGaiaCookieManagerService() const {
   return gaia_cookie_manager_service_.get();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-account_manager::AccountManager* IdentityManager::GetAshAccountManager() const {
-  return ash_account_manager_;
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+account_manager::AccountManagerFacade*
+IdentityManager::GetAccountManagerFacade() const {
+  return account_manager_facade_;
 }
 #endif
 
@@ -584,6 +588,14 @@ void IdentityManager::OnRefreshTokenAvailable(const CoreAccountId& account_id) {
   for (auto& observer : observer_list_) {
     observer.OnRefreshTokenUpdatedForAccount(account_info);
   }
+#if defined(OS_ANDROID)
+  if (java_identity_manager_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_IdentityManager_onRefreshTokenUpdatedForAccount(
+        env, java_identity_manager_,
+        ConvertToJavaCoreAccountInfo(env, account_info));
+  }
+#endif
 }
 
 void IdentityManager::OnRefreshTokenRevoked(const CoreAccountId& account_id) {

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
@@ -21,6 +20,10 @@ namespace policy {
 class ScopedWakeLock {
  public:
   ScopedWakeLock(device::mojom::WakeLockType type, const std::string& reason);
+
+  ScopedWakeLock(const ScopedWakeLock&) = delete;
+  ScopedWakeLock& operator=(const ScopedWakeLock&) = delete;
+
   ~ScopedWakeLock();
 
   // Movable only.
@@ -35,8 +38,6 @@ class ScopedWakeLock {
 
  private:
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedWakeLock);
 };
 
 }  // namespace policy

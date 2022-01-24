@@ -78,8 +78,8 @@ absl::optional<int> TabStripModelOrderController::DetermineNewSelectedIndex(
   if (parent_opener) {
     // If the tab has an opener, shift selection to the next tab with the same
     // opener.
-    int index = model_->GetIndexOfNextWebContentsOpenedBy(parent_opener,
-                                                          removing_index);
+    index = model_->GetIndexOfNextWebContentsOpenedBy(parent_opener,
+                                                      removing_index);
     if (index != TabStripModel::kNoTab && !model_->IsTabCollapsed(index))
       return GetValidIndex(index, removing_index);
 

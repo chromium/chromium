@@ -23,6 +23,10 @@ namespace {
 class TestBadMessagesImpl : public TestBadMessages {
  public:
   TestBadMessagesImpl() = default;
+
+  TestBadMessagesImpl(const TestBadMessagesImpl&) = delete;
+  TestBadMessagesImpl& operator=(const TestBadMessagesImpl&) = delete;
+
   ~TestBadMessagesImpl() override = default;
 
   void Bind(PendingReceiver<TestBadMessages> receiver) {
@@ -55,8 +59,6 @@ class TestBadMessagesImpl : public TestBadMessages {
 
   ReportBadMessageCallback bad_message_callback_;
   mojo::Receiver<TestBadMessages> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestBadMessagesImpl);
 };
 
 class ReportBadMessageTest : public BindingsTestBase {

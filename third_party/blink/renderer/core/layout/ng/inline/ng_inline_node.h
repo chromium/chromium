@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_NODE_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
@@ -30,7 +31,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   explicit NGInlineNode(std::nullptr_t) : NGLayoutInputNode(nullptr) {}
 
   LayoutBlockFlow* GetLayoutBlockFlow() const {
-    return To<LayoutBlockFlow>(box_);
+    return To<LayoutBlockFlow>(box_.Get());
   }
   NGLayoutInputNode NextSibling() const { return nullptr; }
 
@@ -93,12 +94,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   bool IsBidiEnabled() const { return Data().is_bidi_enabled_; }
   TextDirection BaseDirection() const { return Data().BaseDirection(); }
 
-  bool HasLineEvenIfEmpty() { return EnsureData().has_line_even_if_empty_; }
   bool HasRuby() const { return Data().has_ruby_; }
-
-  bool IsEmptyInline() {
-    return !HasLineEvenIfEmpty() && EnsureData().is_empty_inline_;
-  }
 
   bool IsBlockLevel() { return EnsureData().is_block_level_; }
 
@@ -121,9 +117,9 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   const Vector<std::pair<unsigned, NGSvgCharacterData>>& SvgCharacterDataList()
       const;
   // This function is available after PrepareLayout(), only for SVG <text>.
-  const Vector<SvgTextContentRange>& SvgTextLengthRangeList() const;
+  const HeapVector<SvgTextContentRange>& SvgTextLengthRangeList() const;
   // This function is available after PrepareLayout(), only for SVG <text>.
-  const Vector<SvgTextContentRange>& SvgTextPathRangeList() const;
+  const HeapVector<SvgTextContentRange>& SvgTextPathRangeList() const;
 
   String ToString() const;
 
@@ -148,7 +144,7 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
 
   bool IsPrepareLayoutFinished() const;
 
-  void PrepareLayout(std::unique_ptr<NGInlineNodeData> previous_data) const;
+  void PrepareLayout(NGInlineNodeData* previous_data) const;
 
   void CollectInlines(NGInlineNodeData*,
                       NGInlineNodeData* previous_data = nullptr) const;
@@ -160,23 +156,23 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   void SegmentBidiRuns(NGInlineNodeData*) const;
   void ShapeText(NGInlineItemsData*,
                  const String* previous_text = nullptr,
-                 const Vector<NGInlineItem>* previous_items = nullptr,
+                 const HeapVector<NGInlineItem>* previous_items = nullptr,
                  const Font* override_font = nullptr) const;
   void ShapeTextForFirstLineIfNeeded(NGInlineNodeData*) const;
   void AssociateItemsWithInlines(NGInlineNodeData*) const;
 
   NGInlineNodeData* MutableData() const {
-    return To<LayoutBlockFlow>(box_)->GetNGInlineNodeData();
+    return To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();
   }
   const NGInlineNodeData& Data() const {
     DCHECK(IsPrepareLayoutFinished() &&
            !GetLayoutBlockFlow()->NeedsCollectInlines());
-    return *To<LayoutBlockFlow>(box_)->GetNGInlineNodeData();
+    return *To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();
   }
   // Same as |Data()| but can access even when |NeedsCollectInlines()| is set.
   const NGInlineNodeData& MaybeDirtyData() const {
     DCHECK(IsPrepareLayoutFinished());
-    return *To<LayoutBlockFlow>(box_)->GetNGInlineNodeData();
+    return *To<LayoutBlockFlow>(box_.Get())->GetNGInlineNodeData();
   }
   const NGInlineNodeData& EnsureData() const;
 

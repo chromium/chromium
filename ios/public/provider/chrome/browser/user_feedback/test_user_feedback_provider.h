@@ -12,10 +12,21 @@
 class TestUserFeedbackProvider : public UserFeedbackProvider {
  public:
   TestUserFeedbackProvider();
+
+  TestUserFeedbackProvider(const TestUserFeedbackProvider&) = delete;
+  TestUserFeedbackProvider& operator=(const TestUserFeedbackProvider&) = delete;
+
   ~TestUserFeedbackProvider() override;
 
+  // UserFeedbackProvider implementation.
+  void Synchronize() override;
+
+  // Helper methods for tests.
+  bool SynchronizeCalled() const;
+  void ResetSynchronizeCalled();
+
  private:
-  DISALLOW_COPY_AND_ASSIGN(TestUserFeedbackProvider);
+  bool synchronize_called_ = false;
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_USER_FEEDBACK_TEST_USER_FEEDBACK_PROVIDER_H_

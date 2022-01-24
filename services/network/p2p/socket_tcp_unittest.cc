@@ -622,7 +622,7 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
         context.host_resolver()->CreateRequest(kHostPortPair, other_nik,
                                                net::NetLogWithSource(), params);
     net::TestCompletionCallback callback2;
-    int result = request2->Start(callback2.callback());
+    result = request2->Start(callback2.callback());
     EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, callback2.GetResult(result));
   }
 }

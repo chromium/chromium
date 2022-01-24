@@ -11,10 +11,8 @@ namespace media {
 
 MediaFoundationServiceBroker::MediaFoundationServiceBroker(
     mojo::PendingReceiver<mojom::MediaFoundationServiceBroker> receiver,
-    const base::FilePath& user_data_dir,
     base::OnceClosure ensure_sandboxed_cb)
     : receiver_(this, std::move(receiver)),
-      user_data_dir_(user_data_dir),
       ensure_sandboxed_cb_(std::move(ensure_sandboxed_cb)) {}
 
 MediaFoundationServiceBroker::~MediaFoundationServiceBroker() = default;
@@ -32,8 +30,8 @@ void MediaFoundationServiceBroker::GetService(
   MediaFoundationCdmModule::GetInstance()->Initialize(cdm_path);
   std::move(ensure_sandboxed_cb_).Run();
 
-  media_foundation_service_ = std::make_unique<MediaFoundationService>(
-      std::move(service_receiver), user_data_dir_);
+  media_foundation_service_ =
+      std::make_unique<MediaFoundationService>(std::move(service_receiver));
 }
 
 }  // namespace media

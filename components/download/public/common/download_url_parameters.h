@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/download_source.h"
@@ -88,6 +87,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
       int render_frame_host_routing_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
+  DownloadUrlParameters(const DownloadUrlParameters&) = delete;
+  DownloadUrlParameters& operator=(const DownloadUrlParameters&) = delete;
+
   ~DownloadUrlParameters();
 
   // Should be set to true if the download was initiated by a script or a web
@@ -130,6 +132,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
 
   // HTTP method to use.
   void set_method(const std::string& method) { method_ = method; }
+
+  // The requests' credentials mode.
+  void set_credentials_mode(
+      ::network::mojom::CredentialsMode credentials_mode) {
+    credentials_mode_ = credentials_mode;
+  }
 
   // Body of the HTTP POST request.
   void set_post_body(scoped_refptr<network::ResourceRequestBody> post_body) {
@@ -260,12 +268,19 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     isolation_info_ = isolation_info;
   }
 
+  void set_has_user_gesture(bool has_user_gesture) {
+    has_user_gesture_ = has_user_gesture;
+  }
+
   OnStartedCallback& callback() { return callback_; }
   bool content_initiated() const { return content_initiated_; }
   const std::string& last_modified() const { return last_modified_; }
   const std::string& etag() const { return etag_; }
   bool use_if_range() const { return use_if_range_; }
   const std::string& method() const { return method_; }
+  ::network::mojom::CredentialsMode credentials_mode() const {
+    return credentials_mode_;
+  }
   scoped_refptr<network::ResourceRequestBody> post_body() { return post_body_; }
   int64_t post_id() const { return post_id_; }
   bool prefer_cache() const { return prefer_cache_; }
@@ -308,10 +323,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   const absl::optional<net::IsolationInfo>& isolation_info() const {
     return isolation_info_;
   }
+  bool has_user_gesture() const { return has_user_gesture_; }
 
   // STATE CHANGING: All save_info_ sub-objects will be in an indeterminate
   // state following this call.
-  DownloadSaveInfo GetSaveInfo() { return std::move(save_info_); }
+  DownloadSaveInfo TakeSaveInfo() { return std::move(save_info_); }
 
   const net::NetworkTrafficAnnotationTag& GetNetworkTrafficAnnotation() {
     return traffic_annotation_;
@@ -331,6 +347,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   std::string etag_;
   bool use_if_range_;
   std::string method_;
+  ::network::mojom::CredentialsMode credentials_mode_;
   scoped_refptr<network::ResourceRequestBody> post_body_;
   BlobStorageContextGetter blob_storage_context_getter_;
   int64_t post_id_;
@@ -354,8 +371,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   UploadProgressCallback upload_callback_;
   bool require_safety_checks_;
   absl::optional<net::IsolationInfo> isolation_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadUrlParameters);
+  bool has_user_gesture_;
 };
 
 }  // namespace download

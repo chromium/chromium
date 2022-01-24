@@ -92,7 +92,13 @@ void ClearChannelIdForTesting();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // defined(OS_MAC)
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if defined(OS_FUCHSIA) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Set/clears information used in determining the browser's channel.
+void SetChannelForTesting(version_info::Channel, bool is_extended_stable);
+void ClearChannelForTesting();
+#endif  // defined(OS_FUCHSIA) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+#if defined(OS_POSIX) && !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns a channel-specific suffix to use when constructing the path of the
 // default user data directory, allowing multiple channels to run side-by-side.
 // In the stable channel and in unbranded builds, this returns the empty string.

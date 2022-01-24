@@ -130,8 +130,8 @@
                         (const password_manager::PasswordForm&)password {
   if (![self.delegate willHandlePasswordDeletion:password]) {
     [self.mediator deletePassword:password];
-    [self.baseNavigationController popViewControllerAnimated:YES];
   }
+  [self.baseNavigationController popViewControllerAnimated:YES];
 }
 
 @end

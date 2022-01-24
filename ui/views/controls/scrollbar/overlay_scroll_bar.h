@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_SCROLLBAR_OVERLAY_SCROLL_BAR_H_
 #define UI_VIEWS_CONTROLS_SCROLLBAR_OVERLAY_SCROLL_BAR_H_
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
@@ -18,6 +17,10 @@ class VIEWS_EXPORT OverlayScrollBar : public ScrollBar {
   METADATA_HEADER(OverlayScrollBar);
 
   explicit OverlayScrollBar(bool horizontal);
+
+  OverlayScrollBar(const OverlayScrollBar&) = delete;
+  OverlayScrollBar& operator=(const OverlayScrollBar&) = delete;
+
   ~OverlayScrollBar() override;
 
   // ScrollBar:
@@ -32,6 +35,10 @@ class VIEWS_EXPORT OverlayScrollBar : public ScrollBar {
   class Thumb : public BaseScrollBarThumb {
    public:
     explicit Thumb(OverlayScrollBar* scroll_bar);
+
+    Thumb(const Thumb&) = delete;
+    Thumb& operator=(const Thumb&) = delete;
+
     ~Thumb() override;
 
     void Init();
@@ -45,8 +52,6 @@ class VIEWS_EXPORT OverlayScrollBar : public ScrollBar {
 
    private:
     OverlayScrollBar* scroll_bar_;
-
-    DISALLOW_COPY_AND_ASSIGN(Thumb);
   };
   friend class Thumb;
 
@@ -58,8 +63,6 @@ class VIEWS_EXPORT OverlayScrollBar : public ScrollBar {
   void StartHideCountdown();
 
   base::OneShotTimer hide_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayScrollBar);
 };
 
 }  // namespace views

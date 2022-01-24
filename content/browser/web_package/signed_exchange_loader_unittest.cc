@@ -50,6 +50,9 @@ class SignedExchangeLoaderTest : public testing::TestWithParam<bool> {
     }
   }
 
+  SignedExchangeLoaderTest(const SignedExchangeLoaderTest&) = delete;
+  SignedExchangeLoaderTest& operator=(const SignedExchangeLoaderTest&) = delete;
+
   ~SignedExchangeLoaderTest() override = default;
 
  protected:
@@ -58,6 +61,10 @@ class SignedExchangeLoaderTest : public testing::TestWithParam<bool> {
     explicit MockURLLoaderClient(
         mojo::PendingReceiver<network::mojom::URLLoaderClient> receiver)
         : loader_client_receiver_(this, std::move(receiver)) {}
+
+    MockURLLoaderClient(const MockURLLoaderClient&) = delete;
+    MockURLLoaderClient& operator=(const MockURLLoaderClient&) = delete;
+
     ~MockURLLoaderClient() override {}
 
     // network::mojom::URLLoaderClient overrides:
@@ -78,7 +85,6 @@ class SignedExchangeLoaderTest : public testing::TestWithParam<bool> {
 
    private:
     mojo::Receiver<network::mojom::URLLoaderClient> loader_client_receiver_;
-    DISALLOW_COPY_AND_ASSIGN(MockURLLoaderClient);
   };
 
   class MockURLLoader final : public network::mojom::URLLoader {
@@ -86,6 +92,10 @@ class SignedExchangeLoaderTest : public testing::TestWithParam<bool> {
     explicit MockURLLoader(
         mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver)
         : receiver_(this, std::move(url_loader_receiver)) {}
+
+    MockURLLoader(const MockURLLoader&) = delete;
+    MockURLLoader& operator=(const MockURLLoader&) = delete;
+
     ~MockURLLoader() override = default;
 
     // network::mojom::URLLoader overrides:
@@ -102,8 +112,6 @@ class SignedExchangeLoaderTest : public testing::TestWithParam<bool> {
 
    private:
     mojo::Receiver<network::mojom::URLLoader> receiver_;
-
-    DISALLOW_COPY_AND_ASSIGN(MockURLLoader);
   };
 
   // Used only when kSignedHTTPExchangePingValidity is enabled.
@@ -151,8 +159,6 @@ class SignedExchangeLoaderTest : public testing::TestWithParam<bool> {
   base::test::ScopedFeatureList feature_list_;
 
   MockValidityPingURLLoaderFactory ping_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeLoaderTest);
 };
 
 TEST_P(SignedExchangeLoaderTest, Simple) {

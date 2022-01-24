@@ -13,9 +13,9 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/cache_type.h"
@@ -52,12 +52,6 @@
 #include "net/url_request/url_request_throttler_manager.h"
 #include "url/url_constants.h"
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-#include "net/ftp/ftp_auth_cache.h"                // nogncheck
-#include "net/ftp/ftp_network_layer.h"             // nogncheck
-#include "net/url_request/ftp_protocol_handler.h"  // nogncheck
-#endif
-
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "net/network_error_logging/persistent_reporting_and_nel_store.h"
@@ -77,6 +71,10 @@ namespace {
 class ContainerURLRequestContext final : public URLRequestContext {
  public:
   explicit ContainerURLRequestContext() : storage_(this) {}
+
+  ContainerURLRequestContext(const ContainerURLRequestContext&) = delete;
+  ContainerURLRequestContext& operator=(const ContainerURLRequestContext&) =
+      delete;
 
   ~ContainerURLRequestContext() override {
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -116,8 +114,6 @@ class ContainerURLRequestContext final : public URLRequestContext {
  private:
   URLRequestContextStorage storage_;
   std::unique_ptr<TransportSecurityPersister> transport_security_persister_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContainerURLRequestContext);
 };
 
 }  // namespace
@@ -300,8 +296,6 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
       new ContainerURLRequestContext());
   URLRequestContextStorage* storage = context->storage();
 
-  if (!name_.empty())
-    context->set_name(name_);
   context->set_enable_brotli(enable_brotli_);
   context->set_network_quality_estimator(network_quality_estimator_);
 
@@ -378,7 +372,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
 
   storage->set_transport_security_state(
       std::make_unique<TransportSecurityState>(hsts_policy_bypass_list_));
-  if (!transport_security_persister_path_.empty()) {
+  if (!transport_security_persister_file_path_.empty()) {
     // Use a low priority because saving this should not block anything
     // user-visible. Block shutdown to ensure it does get persisted to disk,
     // since it contains security-relevant information.
@@ -389,8 +383,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
 
     context->set_transport_security_persister(
         std::make_unique<TransportSecurityPersister>(
-            context->transport_security_state(),
-            transport_security_persister_path_, task_runner));
+            context->transport_security_state(), task_runner,
+            transport_security_persister_file_path_));
   }
 
   if (http_server_properties_) {
@@ -546,22 +540,11 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
 
   std::unique_ptr<URLRequestJobFactory> job_factory =
       std::make_unique<URLRequestJobFactory>();
-  // Adds caller-provided protocol handlers first so that these handlers are
-  // used over the ftp handler below.
   for (auto& scheme_handler : protocol_handlers_) {
     job_factory->SetProtocolHandler(scheme_handler.first,
                                     std::move(scheme_handler.second));
   }
   protocol_handlers_.clear();
-
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  if (ftp_enabled_) {
-    storage->set_ftp_auth_cache(std::make_unique<FtpAuthCache>());
-    job_factory->SetProtocolHandler(
-        url::kFtpScheme, FtpProtocolHandler::Create(context->host_resolver(),
-                                                    context->ftp_auth_cache()));
-  }
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
   storage->set_job_factory(std::move(job_factory));
 

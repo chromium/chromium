@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INSTALL_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INSTALL_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -19,6 +18,10 @@ class WebApkInstallServiceFactory : public BrowserContextKeyedServiceFactory {
   static WebApkInstallService* GetForBrowserContext(
       content::BrowserContext* context);
 
+  WebApkInstallServiceFactory(const WebApkInstallServiceFactory&) = delete;
+  WebApkInstallServiceFactory& operator=(const WebApkInstallServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<WebApkInstallServiceFactory>;
 
@@ -30,8 +33,6 @@ class WebApkInstallServiceFactory : public BrowserContextKeyedServiceFactory {
 
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebApkInstallServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INSTALL_SERVICE_FACTORY_H_

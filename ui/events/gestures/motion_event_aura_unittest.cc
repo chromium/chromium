@@ -44,7 +44,7 @@ ui::TouchEvent TouchWithTapParams(ui::EventType type,
 }
 
 base::TimeTicks MsToTicks(int ms) {
-  return base::TimeTicks() + base::TimeDelta::FromMilliseconds(ms);
+  return base::TimeTicks() + base::Milliseconds(ms);
 }
 
 ui::TouchEvent TouchWithTime(ui::EventType type, int id, int ms) {

@@ -17,6 +17,7 @@
  *            icon_small_exists: boolean,
  *            id: string,
  *            is_component: boolean,
+ *            is_deprecated_app: boolean,
  *            is_webstore: boolean,
  *            isLocallyInstalled: boolean,
  *            kioskEnabled: boolean,

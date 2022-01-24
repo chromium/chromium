@@ -217,6 +217,7 @@ set(
 )
 
 add_library(LibXslt ${LIBXSLT_HDRS} ${LIBXSLT_SRCS})
+add_library(LibXslt::LibXslt ALIAS LibXslt)
 
 target_include_directories(
 	LibXslt
@@ -299,6 +300,7 @@ set(
 )
 
 add_library(LibExslt ${LIBEXSLT_HDRS} ${LIBEXSLT_SRCS})
+add_library(LibXslt::LibExslt ALIAS LibExslt)
 
 target_include_directories(
 	LibExslt
@@ -359,6 +361,7 @@ if(MSVC AND BUILD_SHARED_LIBS)
 endif()
 
 add_executable(xsltproc xsltproc/xsltproc.c)
+add_executable(LibXslt::xsltproc ALIAS xsltproc)
 target_include_directories(xsltproc PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(xsltproc LibExslt LibXslt)
 install(TARGETS xsltproc EXPORT LibXslt RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT programs)
@@ -472,7 +475,6 @@ set(XSLT_PRIVATE_LIBS "${M_LIBS}")
 
 set(EXSLT_INCLUDEDIR "-I\${includedir}")
 set(EXSLT_LIBDIR "-L\${libdir}")
-set(EXSLT_LIBS "-lexslt ${XSLT_LIBS}")
 set(EXSLT_PRIVATE_LIBS "${XSLT_PRIVATE_LIBS} ${LIBGCRYPT_LIBS}")
 
 file(RELATIVE_PATH PACKAGE_RELATIVE_PATH "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_PREFIX}")

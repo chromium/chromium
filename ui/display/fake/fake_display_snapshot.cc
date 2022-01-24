@@ -153,7 +153,9 @@ std::unique_ptr<FakeDisplaySnapshot> Builder::Build() {
 
   // Add a name if none is provided.
   if (name_.empty())
-    name_ = base::StringPrintf("Fake Display %" PRId64, id_);
+    name_ = base::StringPrintf("Fake Display with port_id=%" PRId64
+                               ", edid_id=%" PRId64,
+                               port_display_id_, edid_display_id_);
 
   // If there is no native mode set, use the first display mode.
   if (!native_mode_)
@@ -164,7 +166,8 @@ std::unique_ptr<FakeDisplaySnapshot> Builder::Build() {
       gfx::ScaleToRoundedSize(native_mode_->size(), PixelPitchMmFromDPI(dpi_));
 
   return std::make_unique<FakeDisplaySnapshot>(
-      id_, origin_, physical_size, type_, base_connector_id_, path_topology_,
+      id_, port_display_id_, edid_display_id_, connector_index_, origin_,
+      physical_size, type_, base_connector_id_, path_topology_,
       is_aspect_preserving_scaling_, has_overscan_, privacy_screen_state_,
       has_color_correction_matrix_, color_correction_in_linear_space_, name_,
       std::move(modes_), current_mode_, native_mode_, product_code_,
@@ -174,6 +177,21 @@ std::unique_ptr<FakeDisplaySnapshot> Builder::Build() {
 
 Builder& Builder::SetId(int64_t id) {
   id_ = id;
+  return *this;
+}
+
+Builder& Builder::SetPortDisplayId(int64_t id) {
+  port_display_id_ = id;
+  return *this;
+}
+
+Builder& Builder::SetEdidDisplayId(int64_t id) {
+  edid_display_id_ = id;
+  return *this;
+}
+
+Builder& Builder::SetConnectorIndex(uint16_t index) {
+  connector_index_ = index;
   return *this;
 }
 
@@ -324,6 +342,9 @@ const DisplayMode* Builder::AddOrFindDisplayMode(
 
 FakeDisplaySnapshot::FakeDisplaySnapshot(
     int64_t display_id,
+    int64_t port_display_id,
+    int64_t edid_display_id,
+    uint16_t connector_index,
     const gfx::Point& origin,
     const gfx::Size& physical_size,
     DisplayConnectionType type,
@@ -344,6 +365,9 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
     uint32_t bits_per_channel,
     const gfx::HDRStaticMetadata& hdr_static_metadata)
     : DisplaySnapshot(display_id,
+                      port_display_id,
+                      edid_display_id,
+                      connector_index,
                       origin,
                       physical_size,
                       type,

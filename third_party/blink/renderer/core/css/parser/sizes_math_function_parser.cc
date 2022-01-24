@@ -315,7 +315,7 @@ bool SizesMathFunctionParser::Calculate() {
     }
   }
   if (stack.size() == 1 && stack.back().is_length) {
-    result_ = std::max(clampTo<float>(stack.back().value), (float)0.0);
+    result_ = std::max(ClampTo<float>(stack.back().value), 0.0f);
     return true;
   }
   return false;

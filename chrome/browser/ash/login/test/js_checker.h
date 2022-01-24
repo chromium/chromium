@@ -18,9 +18,8 @@ class RenderFrameHost;
 class WebContents;
 }
 
-namespace chromeos {
+namespace ash {
 namespace test {
-
 class TestConditionWaiter;
 
 using UIPath = std::initializer_list<base::StringPiece>;
@@ -264,18 +263,17 @@ WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter> CreateOobeScreenWaiter(
     const std::string& oobe_screen_id);
 
 }  // namespace test
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace test {
-using ::chromeos::test::CreateOobeScreenWaiter;
-using ::chromeos::test::ExecuteOobeJS;
-using ::chromeos::test::GetOobeElementPath;
-using ::chromeos::test::JSChecker;
-using ::chromeos::test::OobeJS;
-using ::chromeos::test::UIPath;
-}  // namespace test
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace test {
+using ::ash::test::ExecuteOobeJS;
+using ::ash::test::GetOobeElementPath;
+using ::ash::test::OobeJS;
+using ::ash::test::UIPath;
+}  // namespace test
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_JS_CHECKER_H_

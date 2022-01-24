@@ -27,11 +27,8 @@ namespace password_manager {
 namespace {
 
 constexpr char kTestDomain[] = "http://example.com/";
-constexpr char kTestDomain2[] = "http://test.com/";
-constexpr char kTestDomain3[] = "http://google.com/";
 constexpr char16_t kUsername[] = u"user";
 constexpr char16_t kUsername2[] = u"user2";
-constexpr char16_t kUsername3[] = u"user3";
 
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -45,6 +42,10 @@ PasswordForm TestForm() {
   form.username_value = kUsername;
   form.password_value = u"1234";
   return form;
+}
+
+InsecurityMetadata ToInsecurityMetadata(const InsecureCredential& insecure) {
+  return InsecurityMetadata(insecure.create_time, insecure.is_muted);
 }
 
 class InsecureCredentialsTableTest : public testing::Test {
@@ -95,9 +96,11 @@ class InsecureCredentialsTableTest : public testing::Test {
 
 TEST_F(InsecureCredentialsTableTest, Reload) {
   EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  EXPECT_TRUE(db()->AddRow(test_data()));
+  EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(1),
+                                    test_data().insecure_type,
+                                    ToInsecurityMetadata(test_data())));
   ReloadDatabase();
-  EXPECT_THAT(db()->GetAllRows(), ElementsAre(test_data()));
+  EXPECT_THAT(db()->GetRows(FormPrimaryKey(1)), ElementsAre(test_data()));
 }
 
 TEST_F(InsecureCredentialsTableTest, IsMutedAccountedInCompare) {
@@ -107,52 +110,35 @@ TEST_F(InsecureCredentialsTableTest, IsMutedAccountedInCompare) {
   EXPECT_FALSE(credential1 == credential2);
 }
 
-TEST_F(InsecureCredentialsTableTest, AddWithoutPassword) {
-  // The call fails because there is no password stored.
-  EXPECT_FALSE(db()->AddRow(test_data()));
-  EXPECT_THAT(db()->GetAllRows(), IsEmpty());
-}
-
 TEST_F(InsecureCredentialsTableTest, CascadeDelete) {
   EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  EXPECT_TRUE(db()->AddRow(test_data()));
+  EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(1),
+                                    test_data().insecure_type,
+                                    ToInsecurityMetadata(test_data())));
+  ASSERT_THAT(db()->GetRows(FormPrimaryKey(1)), ElementsAre(test_data()));
   EXPECT_TRUE(login_db()->RemoveLogin(test_form(), nullptr));
   // The compromised entry is also gone silently.
-  EXPECT_THAT(db()->GetAllRows(), IsEmpty());
+  EXPECT_THAT(db()->GetRows(FormPrimaryKey(1)), IsEmpty());
 }
 
-TEST_F(InsecureCredentialsTableTest, SameSignonRealmDifferentUsername) {
+TEST_F(InsecureCredentialsTableTest,
+       InsecureCredentialsAddedForDifferentforms) {
   EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
   InsecureCredential compromised_credentials1 = test_data();
   InsecureCredential compromised_credentials2 = test_data();
   test_form().username_value = compromised_credentials2.username = kUsername2;
   EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
 
-  EXPECT_TRUE(db()->AddRow(compromised_credentials1));
-  EXPECT_TRUE(db()->AddRow(compromised_credentials2));
-  EXPECT_THAT(db()->GetAllRows(),
-              ElementsAre(compromised_credentials1, compromised_credentials2));
-  EXPECT_THAT(db()->GetRows(test_data().signon_realm),
-              ElementsAre(compromised_credentials1, compromised_credentials2));
-  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 2));
-}
-
-TEST_F(InsecureCredentialsTableTest, SameUsernameDifferentSignonRealm) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  InsecureCredential compromised_credentials1 = test_data();
-  InsecureCredential compromised_credentials2 = test_data();
-  test_form().signon_realm = compromised_credentials2.signon_realm =
-      kTestDomain2;
-  test_form().url = GURL(test_form().signon_realm);
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-
-  EXPECT_TRUE(db()->AddRow(compromised_credentials1));
-  EXPECT_TRUE(db()->AddRow(compromised_credentials2));
-  EXPECT_THAT(db()->GetAllRows(),
-              ElementsAre(compromised_credentials1, compromised_credentials2));
-  EXPECT_THAT(db()->GetRows(test_data().signon_realm),
+  EXPECT_TRUE(db()->InsertOrReplace(
+      FormPrimaryKey(1), compromised_credentials1.insecure_type,
+      ToInsecurityMetadata(compromised_credentials1)));
+  EXPECT_TRUE(db()->InsertOrReplace(
+      FormPrimaryKey(2), compromised_credentials2.insecure_type,
+      ToInsecurityMetadata(compromised_credentials2)));
+  EXPECT_THAT(db()->GetRows(FormPrimaryKey(1)),
               ElementsAre(compromised_credentials1));
-  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 2));
+  EXPECT_THAT(db()->GetRows(FormPrimaryKey(2)),
+              ElementsAre(compromised_credentials2));
 }
 
 TEST_F(InsecureCredentialsTableTest, SameSignonRealmAndUsernameDifferentTime) {
@@ -161,15 +147,22 @@ TEST_F(InsecureCredentialsTableTest, SameSignonRealmAndUsernameDifferentTime) {
   InsecureCredential compromised_credentials2 = test_data();
   compromised_credentials2.create_time = base::Time::FromTimeT(2);
 
-  EXPECT_TRUE(db()->AddRow(compromised_credentials1));
-  // It should return false because of unique constraints.
-  EXPECT_FALSE(db()->AddRow(compromised_credentials2));
-  EXPECT_THAT(db()->GetAllRows(), ElementsAre(compromised_credentials1));
-  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1));
+  EXPECT_TRUE(db()->InsertOrReplace(
+      FormPrimaryKey(1), compromised_credentials1.insecure_type,
+      ToInsecurityMetadata(compromised_credentials1)));
+  EXPECT_THAT(db()->GetRows(FormPrimaryKey(1)),
+              ElementsAre(compromised_credentials1));
+
+  EXPECT_TRUE(db()->InsertOrReplace(
+      FormPrimaryKey(1), compromised_credentials2.insecure_type,
+      ToInsecurityMetadata(compromised_credentials2)));
+  // Expect that the original credential has been updated.
+  EXPECT_THAT(db()->GetRows(FormPrimaryKey(1)),
+              ElementsAre(compromised_credentials2));
 }
 
 TEST_F(InsecureCredentialsTableTest,
-       SameSignonRealmAndUsernameAndDifferentInsecureType) {
+       AddSameSignonRealmAndUsernameAndDifferentInsecureType) {
   EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
   InsecureCredential compromised_credentials1 = test_data();
   InsecureCredential compromised_credentials2 = test_data();
@@ -177,30 +170,19 @@ TEST_F(InsecureCredentialsTableTest,
   InsecureCredential compromised_credentials3 = test_data();
   compromised_credentials3.insecure_type = InsecureType::kWeak;
 
-  EXPECT_TRUE(db()->AddRow(compromised_credentials1));
-  EXPECT_TRUE(db()->AddRow(compromised_credentials2));
-  EXPECT_TRUE(db()->AddRow(compromised_credentials3));
-  EXPECT_THAT(db()->GetAllRows(),
-              ElementsAre(compromised_credentials1, compromised_credentials2,
-                          compromised_credentials3));
-  EXPECT_THAT(db()->GetRows(test_data().signon_realm),
-              ElementsAre(compromised_credentials1, compromised_credentials2,
-                          compromised_credentials3));
-  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 1, 1));
-}
-
-TEST_F(InsecureCredentialsTableTest, RemoveRows) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  EXPECT_TRUE(db()->AddRow(test_data()));
-  EXPECT_THAT(db()->GetRows(test_data().signon_realm),
-              ElementsAre(test_data()));
-  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1));
-
-  EXPECT_TRUE(db()->RemoveRows(test_data().signon_realm, test_data().username,
-                               RemoveInsecureCredentialsReason::kUpdate));
-
-  EXPECT_THAT(db()->GetAllRows(), IsEmpty());
-  EXPECT_THAT(db()->GetRows(test_data().signon_realm), IsEmpty());
+  EXPECT_TRUE(db()->InsertOrReplace(
+      FormPrimaryKey(1), compromised_credentials1.insecure_type,
+      ToInsecurityMetadata(compromised_credentials1)));
+  EXPECT_TRUE(db()->InsertOrReplace(
+      FormPrimaryKey(1), compromised_credentials2.insecure_type,
+      ToInsecurityMetadata(compromised_credentials2)));
+  EXPECT_TRUE(db()->InsertOrReplace(
+      FormPrimaryKey(1), compromised_credentials3.insecure_type,
+      ToInsecurityMetadata(compromised_credentials3)));
+  EXPECT_THAT(
+      db()->GetRows(FormPrimaryKey(1)),
+      UnorderedElementsAre(compromised_credentials1, compromised_credentials2,
+                           compromised_credentials3));
 }
 
 TEST_F(InsecureCredentialsTableTest, RemoveRowMultipleTypes) {
@@ -209,15 +191,16 @@ TEST_F(InsecureCredentialsTableTest, RemoveRowMultipleTypes) {
   leaked.insecure_type = InsecureType::kLeaked;
   InsecureCredential phished = test_data();
   phished.insecure_type = InsecureType::kPhished;
-  EXPECT_TRUE(db()->AddRow(leaked));
-  EXPECT_TRUE(db()->AddRow(phished));
+  EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(1), leaked.insecure_type,
+                                    ToInsecurityMetadata(leaked)));
+  EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(1), phished.insecure_type,
+                                    ToInsecurityMetadata(phished)));
 
-  EXPECT_THAT(db()->GetRows(test_data().signon_realm),
+  EXPECT_THAT(db()->GetRows(FormPrimaryKey(1)),
               UnorderedElementsAre(leaked, phished));
-  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 1));
 
   EXPECT_TRUE(db()->RemoveRow(FormPrimaryKey(1), InsecureType::kPhished));
-  EXPECT_THAT(db()->GetRows(test_data().signon_realm), ElementsAre(leaked));
+  EXPECT_THAT(db()->GetRows(FormPrimaryKey(1)), ElementsAre(leaked));
 }
 
 TEST_F(InsecureCredentialsTableTest, UpdateRow) {
@@ -226,11 +209,12 @@ TEST_F(InsecureCredentialsTableTest, UpdateRow) {
   InsecureCredential insecure_credential = test_data();
   insecure_credential.is_muted = IsMuted(false);
   insecure_credential.parent_key = FormPrimaryKey(1);
-  EXPECT_TRUE(db()->AddRow(insecure_credential));
+  EXPECT_TRUE(db()->InsertOrReplace(FormPrimaryKey(1),
+                                    insecure_credential.insecure_type,
+                                    ToInsecurityMetadata(insecure_credential)));
 
-  EXPECT_THAT(db()->GetRows(test_data().signon_realm),
+  EXPECT_THAT(db()->GetRows(FormPrimaryKey(1)),
               UnorderedElementsAre(insecure_credential));
-  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1));
 
   InsecurityMetadata new_metadata(insecure_credential.create_time,
                                   IsMuted(true));
@@ -239,50 +223,8 @@ TEST_F(InsecureCredentialsTableTest, UpdateRow) {
   EXPECT_TRUE(db()->InsertOrReplace(insecure_credential.parent_key,
                                     insecure_credential.insecure_type,
                                     new_metadata));
-  EXPECT_THAT(db()->GetRows(test_data().signon_realm),
+  EXPECT_THAT(db()->GetRows(FormPrimaryKey(1)),
               ElementsAre(new_insecure_credential));
-}
-
-TEST_F(InsecureCredentialsTableTest, ReportMetricsBeforeBulkCheck) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  EXPECT_TRUE(db()->AddRow(test_data()));
-  test_form().signon_realm = test_data().signon_realm = kTestDomain2;
-  test_form().url = GURL(test_form().signon_realm);
-  test_form().username_value = test_data().username = kUsername2;
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  EXPECT_TRUE(db()->AddRow(test_data()));
-  test_form().signon_realm = test_data().signon_realm = kTestDomain3;
-  test_form().url = GURL(test_form().signon_realm);
-  test_form().username_value = test_data().username = kUsername3;
-  test_data().insecure_type = InsecureType::kPhished;
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  EXPECT_TRUE(db()->AddRow(test_data()));
-
-  base::HistogramTester histogram_tester;
-  db()->ReportMetrics(BulkCheckDone(false));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.CompromisedCredentials.CountLeaked", 2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.CompromisedCredentials.CountPhished", 1, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.CompromisedCredentials.CountLeakedAfterBulkCheck", 0);
-}
-
-TEST_F(InsecureCredentialsTableTest, ReportMetricsAfterBulkCheck) {
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  EXPECT_TRUE(db()->AddRow(test_data()));
-  test_form().signon_realm = test_data().signon_realm = kTestDomain2;
-  test_form().url = GURL(test_form().signon_realm);
-  test_form().username_value = test_data().username = kUsername2;
-  EXPECT_THAT(login_db()->AddLogin(test_form()), SizeIs(1));
-  EXPECT_TRUE(db()->AddRow(test_data()));
-
-  base::HistogramTester histogram_tester;
-  db()->ReportMetrics(BulkCheckDone(true));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.CompromisedCredentials.CountLeaked", 2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.CompromisedCredentials.CountLeakedAfterBulkCheck", 2, 1);
 }
 
 TEST_F(InsecureCredentialsTableTest, GetAllRowsWithId) {
@@ -291,13 +233,16 @@ TEST_F(InsecureCredentialsTableTest, GetAllRowsWithId) {
   InsecureCredential compromised_credentials2 = test_data();
   compromised_credentials2.insecure_type = InsecureType::kReused;
 
-  EXPECT_TRUE(db()->AddRow(compromised_credentials1));
-  EXPECT_TRUE(db()->AddRow(compromised_credentials2));
+  EXPECT_TRUE(db()->InsertOrReplace(
+      FormPrimaryKey(1), compromised_credentials1.insecure_type,
+      ToInsecurityMetadata(compromised_credentials1)));
+  EXPECT_TRUE(db()->InsertOrReplace(
+      FormPrimaryKey(1), compromised_credentials2.insecure_type,
+      ToInsecurityMetadata(compromised_credentials2)));
 
   EXPECT_THAT(
       db()->GetRows(FormPrimaryKey(1)),
       UnorderedElementsAre(compromised_credentials1, compromised_credentials2));
-  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 1));
 
   test_form().username_value = kUsername2;
   test_data().username = test_form().username_value;
@@ -306,10 +251,11 @@ TEST_F(InsecureCredentialsTableTest, GetAllRowsWithId) {
   EXPECT_THAT(db()->GetRows(FormPrimaryKey(2)), IsEmpty());
 
   compromised_credentials1 = test_data();
-  EXPECT_TRUE(db()->AddRow(compromised_credentials1));
+  EXPECT_TRUE(db()->InsertOrReplace(
+      FormPrimaryKey(2), compromised_credentials1.insecure_type,
+      ToInsecurityMetadata(compromised_credentials1)));
   EXPECT_THAT(db()->GetRows(FormPrimaryKey(2)),
               UnorderedElementsAre(compromised_credentials1));
-  EXPECT_THAT(GetParentIds(db()->GetAllRows()), ElementsAre(1, 1, 2));
 }
 
 }  // namespace

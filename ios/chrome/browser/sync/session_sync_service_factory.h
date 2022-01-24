@@ -27,6 +27,10 @@ class SessionSyncServiceFactory : public BrowserStateKeyedServiceFactory {
 
   static SessionSyncServiceFactory* GetInstance();
 
+  SessionSyncServiceFactory(const SessionSyncServiceFactory&) = delete;
+  SessionSyncServiceFactory& operator=(const SessionSyncServiceFactory&) =
+      delete;
+
   static bool ShouldSyncURLForTesting(const GURL& url);
 
  private:
@@ -38,8 +42,6 @@ class SessionSyncServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionSyncServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_SESSION_SYNC_SERVICE_FACTORY_H_

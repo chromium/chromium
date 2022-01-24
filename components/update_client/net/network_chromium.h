@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/network.h"
 
@@ -26,6 +25,10 @@ class NetworkFetcherChromiumFactory : public NetworkFetcherFactory {
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_network_factory,
       SendCookiesPredicate cookie_predicate);
 
+  NetworkFetcherChromiumFactory(const NetworkFetcherChromiumFactory&) = delete;
+  NetworkFetcherChromiumFactory& operator=(
+      const NetworkFetcherChromiumFactory&) = delete;
+
   std::unique_ptr<NetworkFetcher> Create() const override;
 
  protected:
@@ -34,8 +37,6 @@ class NetworkFetcherChromiumFactory : public NetworkFetcherFactory {
  private:
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_network_factory_;
   SendCookiesPredicate cookie_predicate_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkFetcherChromiumFactory);
 };
 
 }  // namespace update_client

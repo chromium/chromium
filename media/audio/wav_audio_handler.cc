@@ -304,8 +304,7 @@ bool WavAudioHandler::CopyTo(AudioBus* bus,
 }
 
 base::TimeDelta WavAudioHandler::GetDuration() const {
-  return base::TimeDelta::FromSecondsD(total_frames_ /
-                                       static_cast<double>(sample_rate_));
+  return base::Seconds(total_frames_ / static_cast<double>(sample_rate_));
 }
 
 }  // namespace media

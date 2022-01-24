@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -46,6 +47,10 @@ PLATFORM_EXPORT void ValidateTracingCategory(const char* category);
 PLATFORM_EXPORT double TimeDeltaToMilliseconds(const base::TimeDelta& value);
 
 PLATFORM_EXPORT const char* YesNoStateToString(bool is_yes);
+
+PLATFORM_EXPORT
+perfetto::protos::pbzero::RendererMainThreadTaskExecution::TaskType
+TaskTypeToProto(TaskType task_type);
 
 class TraceableVariable;
 

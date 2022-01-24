@@ -29,6 +29,14 @@ enum PrivateNetworkRequestPolicy {
 
   // Block the requests with a CORS error.
   kBlock,
+
+  // Send a preflight ahead of the actual request, and display a warning in
+  // DevTools if the preflight request fails.
+  kPreflightWarn,
+
+  // Send a preflight ahead of the actual request, and block the request if
+  // the preflight request fails.
+  kPreflightBlock,
 };
 
 struct ClientSecurityState {

@@ -57,6 +57,10 @@ const int kMetricsIntervalInMinutes = 60;
 class StoppedClock : public base::Clock {
  public:
   explicit StoppedClock(base::Time time) : time_(time) {}
+
+  StoppedClock(const StoppedClock&) = delete;
+  StoppedClock& operator=(const StoppedClock&) = delete;
+
   ~StoppedClock() override = default;
 
  protected:
@@ -65,8 +69,6 @@ class StoppedClock : public base::Clock {
 
  private:
   const base::Time time_;
-
-  DISALLOW_COPY_AND_ASSIGN(StoppedClock);
 };
 
 // Helpers for fetching content settings for one type.
@@ -582,14 +584,13 @@ void SiteEngagementService::SetLastEngagementTime(
 }
 
 base::TimeDelta SiteEngagementService::GetMaxDecayPeriod() const {
-  return base::TimeDelta::FromHours(
-             SiteEngagementScore::GetDecayPeriodInHours()) *
+  return base::Hours(SiteEngagementScore::GetDecayPeriodInHours()) *
          SiteEngagementScore::GetMaxDecaysPerScore();
 }
 
 base::TimeDelta SiteEngagementService::GetStalePeriod() const {
   return GetMaxDecayPeriod() +
-         base::TimeDelta::FromHours(
+         base::Hours(
              SiteEngagementScore::GetLastEngagementGracePeriodInHours());
 }
 

@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 

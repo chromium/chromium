@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SHOW_FORM_ACTION_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 
@@ -16,6 +15,10 @@ namespace autofill_assistant {
 class ShowFormAction : public Action {
  public:
   explicit ShowFormAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  ShowFormAction(const ShowFormAction&) = delete;
+  ShowFormAction& operator=(const ShowFormAction&) = delete;
+
   ~ShowFormAction() override;
 
  private:
@@ -38,8 +41,6 @@ class ShowFormAction : public Action {
 
   ProcessActionCallback callback_;
   base::WeakPtrFactory<ShowFormAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShowFormAction);
 };
 
 }  // namespace autofill_assistant

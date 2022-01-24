@@ -20,6 +20,7 @@ struct ProcessType {
 constexpr ProcessType kProcessTypes[] = {
     {"Browser", ChromeProcessDescriptor::PROCESS_BROWSER},
     {"Renderer", ChromeProcessDescriptor::PROCESS_RENDERER},
+    {"Extension Renderer", ChromeProcessDescriptor::PROCESS_RENDERER_EXTENSION},
     {"GPU Process", ChromeProcessDescriptor::PROCESS_GPU},
     {"HeadlessBrowser", ChromeProcessDescriptor::PROCESS_BROWSER},
     {"PPAPI Process", ChromeProcessDescriptor::PROCESS_PPAPI_PLUGIN},

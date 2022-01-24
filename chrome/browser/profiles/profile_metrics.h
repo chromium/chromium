@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/time/time.h"
 #include "build/build_config.h"
 
 class Profile;
@@ -62,7 +61,7 @@ class ProfileMetrics {
     kConsumerSyncSettings = 2,
     kEnterpriseSync = 3,
     kEnterpriseSigninOnly = 4,
-    kEnterpriseSigninOnlyNotLinked = 5,
+    // DEPRECATED: kEnterpriseSigninOnlyNotLinked = 5,
     kEnterpriseSyncSettings = 6,
     kEnterpriseSyncDisabled = 7,
     // Includes the case that the account is already syncing in another profile.
@@ -74,23 +73,29 @@ class ProfileMetrics {
     kMaxValue = kAbortedOnEnterpriseWelcome,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum ProfileDelete {
     // Delete profile from settings page.
     DELETE_PROFILE_SETTINGS = 0,
     // Delete profile from User Manager.
-    DELETE_PROFILE_USER_MANAGER,
+    DELETE_PROFILE_USER_MANAGER = 1,
     // Show the delete profile warning in the User Manager.
-    DELETE_PROFILE_USER_MANAGER_SHOW_WARNING,
+    DELETE_PROFILE_USER_MANAGER_SHOW_WARNING = 2,
     // Show the delete profile warning in the Settings page.
-    DELETE_PROFILE_SETTINGS_SHOW_WARNING,
+    DELETE_PROFILE_SETTINGS_SHOW_WARNING = 3,
     // Aborts profile deletion in an OnBeforeUnload event in any browser tab.
-    DELETE_PROFILE_ABORTED,
-    // Commented out as it is not used anymore (kept in the enum as it was used
-    // as a bucket in a histogram).
-    // DELETE_PROFILE_DICE_WEB_SIGNOUT
+    DELETE_PROFILE_ABORTED = 4,
+    // DELETE_PROFILE_DICE_WEB_SIGNOUT = 5,  // No longer used.
     // Delete profile internally when Chrome signout is prohibited and the
     // username is no longer allowed.
-    DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED = DELETE_PROFILE_ABORTED + 2,
+    DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED = 6,
+    // Delete profile internally when a profile cannot exist without a primary
+    // account and this account gets removed.
+    DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED_LACROS = 7,
+    // Delete profile internally at startup, if a Lacros profile using Mirror is
+    // not signed in (as it is not supported yet).
+    DELETE_PROFILE_SIGNIN_REQUIRED_MIRROR_LACROS = 8,
     NUM_DELETE_PROFILE_METRICS
   };
 
@@ -169,8 +174,6 @@ class ProfileMetrics {
   static void LogProfileDeleteUser(ProfileDelete metric);
   static void LogProfileSwitchGaia(ProfileGaia metric);
   static void LogProfileSyncInfo(ProfileSync metric);
-  static void LogProfileDelete(bool profile_was_signed_in);
-  static void LogTimeToOpenUserManager(const base::TimeDelta& time_to_open);
 
 #if defined(OS_ANDROID)
   static void LogProfileAndroidAccountManagementMenu(

@@ -24,6 +24,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl_map.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -82,29 +84,6 @@ const std::string GetVersionStatusString(
   return std::string();
 }
 
-void StopServiceWorkerOnCoreThread(
-    scoped_refptr<ServiceWorkerContextWrapper> context,
-    int64_t version_id) {
-  if (content::ServiceWorkerVersion* version =
-          context->GetLiveVersion(version_id)) {
-    version->StopWorker(base::DoNothing());
-  }
-}
-
-void GetDevToolsRouteInfoOnCoreThread(
-    scoped_refptr<ServiceWorkerContextWrapper> context,
-    int64_t version_id,
-    base::OnceCallback<void(int, int)> callback) {
-  if (content::ServiceWorkerVersion* version =
-          context->GetLiveVersion(version_id)) {
-    RunOrPostTaskOnThread(
-        FROM_HERE, BrowserThread::UI,
-        base::BindOnce(
-            std::move(callback), version->embedded_worker()->process_id(),
-            version->embedded_worker()->worker_devtools_agent_route_id()));
-  }
-}
-
 Response CreateDomainNotEnabledErrorResponse() {
   return Response::ServerError("ServiceWorker domain not enabled");
 }
@@ -117,7 +96,7 @@ Response CreateInvalidVersionIdErrorResponse() {
   return Response::InvalidParams("Invalid version ID");
 }
 
-void DidFindRegistrationForDispatchSyncEventOnCoreThread(
+void DidFindRegistrationForDispatchSyncEvent(
     scoped_refptr<BackgroundSyncContextImpl> sync_context,
     const std::string& tag,
     bool last_chance,
@@ -135,7 +114,7 @@ void DidFindRegistrationForDispatchSyncEventOnCoreThread(
       tag, std::move(version), last_chance, base::DoNothing());
 }
 
-void DidFindRegistrationForDispatchPeriodicSyncEventOnCoreThread(
+void DidFindRegistrationForDispatchPeriodicSyncEvent(
     scoped_refptr<BackgroundSyncContextImpl> sync_context,
     const std::string& tag,
     blink::ServiceWorkerStatusCode status,
@@ -152,32 +131,6 @@ void DidFindRegistrationForDispatchPeriodicSyncEventOnCoreThread(
   // Keep the registration while dispatching the sync event.
   background_sync_manager->EmulateDispatchPeriodicSyncEvent(
       tag, std::move(version), base::DoNothing());
-}
-
-void DispatchSyncEventOnCoreThread(
-    scoped_refptr<ServiceWorkerContextWrapper> context,
-    scoped_refptr<BackgroundSyncContextImpl> sync_context,
-    const url::Origin& origin,
-    int64_t registration_id,
-    const std::string& tag,
-    bool last_chance) {
-  context->FindReadyRegistrationForId(
-      registration_id, blink::StorageKey(origin),
-      base::BindOnce(&DidFindRegistrationForDispatchSyncEventOnCoreThread,
-                     sync_context, tag, last_chance));
-}
-
-void DispatchPeriodicSyncEventOnCoreThread(
-    scoped_refptr<ServiceWorkerContextWrapper> context,
-    scoped_refptr<BackgroundSyncContextImpl> sync_context,
-    const url::Origin& origin,
-    int64_t registration_id,
-    const std::string& tag) {
-  context->FindReadyRegistrationForId(
-      registration_id, blink::StorageKey(origin),
-      base::BindOnce(
-          &DidFindRegistrationForDispatchPeriodicSyncEventOnCoreThread,
-          sync_context, tag));
 }
 
 }  // namespace
@@ -251,7 +204,9 @@ Response ServiceWorkerHandler::Unregister(const std::string& scope_url) {
     return CreateDomainNotEnabledErrorResponse();
   if (!context_)
     return CreateContextErrorResponse();
-  context_->UnregisterServiceWorker(GURL(scope_url), base::DoNothing());
+  GURL url(scope_url);
+  blink::StorageKey key(url::Origin::Create(url));
+  context_->UnregisterServiceWorker(url, key, base::DoNothing());
   return Response::Success();
 }
 
@@ -261,7 +216,7 @@ Response ServiceWorkerHandler::StartWorker(const std::string& scope_url) {
   if (!context_)
     return CreateContextErrorResponse();
   context_->StartActiveServiceWorker(
-      GURL(scope_url), blink::StorageKey::CreateFromStringForTesting(scope_url),
+      GURL(scope_url), blink::StorageKey(url::Origin::Create(GURL(scope_url))),
       base::DoNothing());
   return Response::Success();
 }
@@ -272,8 +227,7 @@ Response ServiceWorkerHandler::SkipWaiting(const std::string& scope_url) {
   if (!context_)
     return CreateContextErrorResponse();
   context_->SkipWaitingWorker(
-      GURL(scope_url),
-      blink::StorageKey::CreateFromStringForTesting(scope_url));
+      GURL(scope_url), blink::StorageKey(url::Origin::Create(GURL(scope_url))));
   return Response::Success();
 }
 
@@ -285,9 +239,11 @@ Response ServiceWorkerHandler::StopWorker(const std::string& version_id) {
   int64_t id = 0;
   if (!base::StringToInt64(version_id, &id))
     return CreateInvalidVersionIdErrorResponse();
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&StopServiceWorkerOnCoreThread, context_, id));
+
+  if (content::ServiceWorkerVersion* version = context_->GetLiveVersion(id)) {
+    version->StopWorker(base::DoNothing());
+  }
+
   return Response::Success();
 }
 
@@ -312,8 +268,7 @@ Response ServiceWorkerHandler::UpdateRegistration(
   if (!context_)
     return CreateContextErrorResponse();
   context_->UpdateRegistration(
-      GURL(scope_url),
-      blink::StorageKey::CreateFromStringForTesting(scope_url));
+      GURL(scope_url), blink::StorageKey(url::Origin::Create(GURL(scope_url))));
   return Response::Success();
 }
 
@@ -327,12 +282,13 @@ Response ServiceWorkerHandler::InspectWorker(const std::string& version_id) {
   int64_t id = blink::mojom::kInvalidServiceWorkerVersionId;
   if (!base::StringToInt64(version_id, &id))
     return CreateInvalidVersionIdErrorResponse();
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &GetDevToolsRouteInfoOnCoreThread, context_, id,
-          base::BindOnce(&ServiceWorkerHandler::OpenNewDevToolsWindow,
-                         weak_factory_.GetWeakPtr())));
+
+  if (content::ServiceWorkerVersion* version = context_->GetLiveVersion(id)) {
+    OpenNewDevToolsWindow(
+        version->embedded_worker()->process_id(),
+        version->embedded_worker()->worker_devtools_agent_route_id());
+  }
+
   return Response::Success();
 }
 
@@ -378,14 +334,14 @@ Response ServiceWorkerHandler::DispatchSyncEvent(
   if (!base::StringToInt64(registration_id, &id))
     return CreateInvalidVersionIdErrorResponse();
 
-  BackgroundSyncContextImpl* sync_context =
-      storage_partition_->GetBackgroundSyncContext();
+  scoped_refptr<BackgroundSyncContextImpl> sync_context =
+      base::WrapRefCounted(storage_partition_->GetBackgroundSyncContext());
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&DispatchSyncEventOnCoreThread, context_,
-                     base::WrapRefCounted(sync_context),
-                     url::Origin::Create(GURL(origin)), id, tag, last_chance));
+  context_->FindReadyRegistrationForId(
+      id, blink::StorageKey(url::Origin::Create(GURL(origin))),
+      base::BindOnce(&DidFindRegistrationForDispatchSyncEvent,
+                     std::move(sync_context), tag, last_chance));
+
   return Response::Success();
 }
 
@@ -401,14 +357,14 @@ Response ServiceWorkerHandler::DispatchPeriodicSyncEvent(
   if (!base::StringToInt64(registration_id, &id))
     return CreateInvalidVersionIdErrorResponse();
 
-  BackgroundSyncContextImpl* sync_context =
-      storage_partition_->GetBackgroundSyncContext();
+  scoped_refptr<BackgroundSyncContextImpl> sync_context =
+      base::WrapRefCounted(storage_partition_->GetBackgroundSyncContext());
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&DispatchPeriodicSyncEventOnCoreThread, context_,
-                     base::WrapRefCounted(sync_context),
-                     url::Origin::Create(GURL(origin)), id, tag));
+  context_->FindReadyRegistrationForId(
+      id, blink::StorageKey(url::Origin::Create(GURL(origin))),
+      base::BindOnce(&DidFindRegistrationForDispatchPeriodicSyncEvent,
+                     std::move(sync_context), tag));
+
   return Response::Success();
 }
 
@@ -449,8 +405,8 @@ void ServiceWorkerHandler::OnWorkerVersionUpdated(
     for (const auto& client : version.clients) {
       if (client.second.type() ==
           blink::mojom::ServiceWorkerClientType::kWindow) {
-        WebContents* web_contents = WebContents::FromFrameTreeNodeId(
-            client.second.GetFrameTreeNodeId());
+        WebContents* web_contents = WebContentsImpl::FromRenderFrameHostID(
+            client.second.GetRenderFrameHostId());
         // There is a possibility that the frame is already deleted
         // because of the thread hopping.
         if (!web_contents)

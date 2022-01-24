@@ -22,7 +22,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/animation/bounds_animator.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -94,35 +94,16 @@ FadingView::FadingView() {
       gfx::RoundedCornersF(kCornerRadiusF));
   secondary_view_->layer()->SetOpacity(0.0f);
 
-  auto primary_sequence = std::make_unique<ui::LayerAnimationSequence>();
-  auto secondary_sequence = std::make_unique<ui::LayerAnimationSequence>();
-  primary_sequence->set_is_repeating(true);
-  secondary_sequence->set_is_repeating(true);
-
-  primary_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::OPACITY, base::TimeDelta::FromSeconds(2)));
-  primary_sequence->AddElement(ui::LayerAnimationElement::CreateOpacityElement(
-      0.0f, base::TimeDelta::FromSeconds(1)));
-  primary_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::OPACITY, base::TimeDelta::FromSeconds(2)));
-  primary_sequence->AddElement(ui::LayerAnimationElement::CreateOpacityElement(
-      1.0f, base::TimeDelta::FromSeconds(1)));
-
-  secondary_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::OPACITY, base::TimeDelta::FromSeconds(2)));
-  secondary_sequence->AddElement(
-      ui::LayerAnimationElement::CreateOpacityElement(
-          1.0f, base::TimeDelta::FromSeconds(1)));
-  secondary_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::OPACITY, base::TimeDelta::FromSeconds(2)));
-  secondary_sequence->AddElement(
-      ui::LayerAnimationElement::CreateOpacityElement(
-          0.0f, base::TimeDelta::FromSeconds(1)));
-
-  primary_view_->layer()->GetAnimator()->StartAnimation(
-      primary_sequence.release());
-  secondary_view_->layer()->GetAnimator()->StartAnimation(
-      secondary_sequence.release());
+  AnimationBuilder()
+      .Repeatedly()
+      .Offset(base::Seconds(2))
+      .SetDuration(base::Seconds(1))
+      .SetOpacity(primary_view_, 0.0f)
+      .SetOpacity(secondary_view_, 1.0f)
+      .Offset(base::Seconds(2))
+      .SetDuration(base::Seconds(1))
+      .SetOpacity(primary_view_, 1.0f)
+      .SetOpacity(secondary_view_, 0.0f);
 }
 
 FadingView::~FadingView() = default;

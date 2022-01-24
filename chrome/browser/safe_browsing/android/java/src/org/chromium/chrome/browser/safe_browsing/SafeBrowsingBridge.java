@@ -74,6 +74,13 @@ public final class SafeBrowsingBridge {
         return SafeBrowsingBridgeJni.get().hasAccountForLeakCheckRequest();
     }
 
+    /**
+     * @return Whether the Leak Detection for signed out users feature is enabled.
+     */
+    public static boolean isLeakDetectionUnauthenticatedEnabled() {
+        return SafeBrowsingBridgeJni.get().isLeakDetectionUnauthenticatedEnabled();
+    }
+
     @NativeMethods
     interface Natives {
         int umaValueForFile(String path);
@@ -83,7 +90,8 @@ public final class SafeBrowsingBridge {
         @SafeBrowsingState
         int getSafeBrowsingState();
         void setSafeBrowsingState(@SafeBrowsingState int state);
-        boolean hasAccountForLeakCheckRequest();
         boolean isSafeBrowsingManaged();
+        boolean hasAccountForLeakCheckRequest();
+        boolean isLeakDetectionUnauthenticatedEnabled();
     }
 }

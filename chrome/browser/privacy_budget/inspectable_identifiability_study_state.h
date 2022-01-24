@@ -5,27 +5,43 @@
 #ifndef CHROME_BROWSER_PRIVACY_BUDGET_INSPECTABLE_IDENTIFIABILITY_STUDY_STATE_H_
 #define CHROME_BROWSER_PRIVACY_BUDGET_INSPECTABLE_IDENTIFIABILITY_STUDY_STATE_H_
 
+#include "base/containers/flat_set.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
+#include "chrome/browser/privacy_budget/representative_surface_set.h"
+#include "chrome/browser/privacy_budget/surface_set_valuation.h"
 #include "chrome/common/privacy_budget/types.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
 namespace test_utils {
 
 // This class is a friend of IdentifiabilityStudyState and can reach into the
-// internals. Use this as a last resort.
+// internals.
 class InspectableIdentifiabilityStudyState : public IdentifiabilityStudyState {
  public:
-  explicit InspectableIdentifiabilityStudyState(PrefService* pref_service)
-      : IdentifiabilityStudyState(pref_service) {}
+  explicit InspectableIdentifiabilityStudyState(PrefService* pref_service);
 
-  const IdentifiableSurfaceSet& active_surfaces() const {
+  const SurfaceSetValuation& valuation() const { return valuation_; }
+  const SurfaceSetWithValuation& active_surfaces() const {
     return active_surfaces_;
   }
-  const IdentifiableSurfaceSet& retired_surfaces() const {
-    return retired_surfaces_;
+  const OrderPreservingSet<blink::IdentifiableSurface>& seen_surfaces() const {
+    return seen_surfaces_;
   }
-  int max_active_surfaces() const { return max_active_surfaces_; }
-  int surface_selection_rate() const { return surface_selection_rate_; }
-  uint64_t prng_seed() const { return prng_seed_; }
+  const base::flat_set<OffsetType>& selected_offsets() const {
+    return selected_offsets_;
+  }
+  int active_surface_budget() const { return active_surface_budget_; }
+  int selected_block_offset() const { return selected_block_offset_; }
+  bool is_using_assigned_block_sampling() const;
+
+  void SelectAllOffsetsForTesting();
+
+  // These are exposed for testing.
+  using IdentifiabilityStudyState::AdjustForDroppedOffsets;
+  using IdentifiabilityStudyState::kMaxSelectedSurfaceOffset;
+  using IdentifiabilityStudyState::StripDisallowedSurfaces;
+
+  using IdentifiabilityStudyState::InitializeGlobalStudySettings;
 };
 
 }  // namespace test_utils

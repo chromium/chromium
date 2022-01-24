@@ -31,8 +31,7 @@ namespace {
 // UserStatusPresenter).
 // TODO(yuweih): Chain this class with UserStatusPresenter on the
 // kUserDidUpdate event.
-constexpr base::TimeDelta kFetchNotificationDelay =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kFetchNotificationDelay = base::Seconds(2);
 
 enum NotificationUiState : unsigned int {
   NOT_SHOWN = 0,

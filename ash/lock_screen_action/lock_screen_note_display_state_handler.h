@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/screen_backlight_observer.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -32,6 +31,12 @@ class LockScreenNoteDisplayStateHandler : public ScreenBacklightObserver {
  public:
   explicit LockScreenNoteDisplayStateHandler(
       BacklightsForcedOffSetter* backlights_forced_off_setter);
+
+  LockScreenNoteDisplayStateHandler(const LockScreenNoteDisplayStateHandler&) =
+      delete;
+  LockScreenNoteDisplayStateHandler& operator=(
+      const LockScreenNoteDisplayStateHandler&) = delete;
+
   ~LockScreenNoteDisplayStateHandler() override;
 
   base::OneShotTimer* launch_timer_for_test() { return &launch_timer_; }
@@ -87,8 +92,6 @@ class LockScreenNoteDisplayStateHandler : public ScreenBacklightObserver {
 
   base::WeakPtrFactory<LockScreenNoteDisplayStateHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenNoteDisplayStateHandler);
 };
 
 }  // namespace ash

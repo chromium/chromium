@@ -15,7 +15,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/nacl/renderer/plugin/nacl_subprocess.h"
 #include "components/nacl/renderer/plugin/pnacl_coordinator.h"
 #include "components/nacl/renderer/plugin/service_runtime.h"
@@ -45,6 +44,9 @@ const PP_NaClFileInfo kInvalidNaClFileInfo = {
 class Plugin : public pp::Instance {
  public:
   explicit Plugin(PP_Instance instance);
+
+  Plugin(const Plugin&) = delete;
+  Plugin& operator=(const Plugin&) = delete;
 
   // ----- Methods inherited from pp::Instance:
 
@@ -135,8 +137,6 @@ class Plugin : public pp::Instance {
   PP_NaClFileInfo nexe_file_info_;
 
   pp::UMAPrivate uma_interface_;
-
-  DISALLOW_COPY_AND_ASSIGN(Plugin);
 };
 
 }  // namespace plugin

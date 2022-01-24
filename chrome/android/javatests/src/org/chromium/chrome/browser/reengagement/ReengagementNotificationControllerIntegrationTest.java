@@ -283,7 +283,10 @@ public class ReengagementNotificationControllerIntegrationTest {
                 tabAddedCallback.notifyCalled();
             }
         };
-        mTabbedActivityTestRule.getActivity().getTabModelSelector().addObserver(selectorObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTabbedActivityTestRule.getActivity().getTabModelSelector().addObserver(
+                    selectorObserver);
+        });
 
         Intent intent =
                 new Intent(InstrumentationRegistry.getTargetContext(), ReengagementActivity.class);

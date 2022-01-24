@@ -137,7 +137,7 @@ html.breadcrumb-elider-expanded #directory-tree {
 }
 
 #directory-tree[files-ng] .tree-item[section-start]::before {
-  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
+  border-bottom: 1px solid var(--cros-separator-color);
   content: '';
   display: block;
   margin: 8px 0;
@@ -156,7 +156,7 @@ html.breadcrumb-elider-expanded #directory-tree {
   border-inline-start-width: 0 !important;
   border-radius: 0 20px 20px 0;
   box-sizing: border-box;
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-primary);
   display: flex;
   height: 32px;
   margin-inline-end: 6px;
@@ -193,7 +193,7 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
 #directory-tree .tree-row > .file-row > .item-icon {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: currentColor;
+  background-color: var(--cros-icon-color-primary);
   background-image: none;
   flex: none;
   height: 20px;
@@ -201,6 +201,10 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
   position: relative;
   right: -4px;
   width: 20px;
+}
+
+#directory-tree .tree-row[active] > .file-row > .item-icon {
+  background-color: var(--cros-icon-color-selection);
 }
 
 #directory-tree .tree-row > .file-row > .item-icon[style*='background-image'] {
@@ -270,12 +274,12 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
 
 html:not(.col-resize) #directory-tree
     .tree-row:not([active]):not([selected]):hover > .file-row {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-ripple-color);
 }
 
 html.pointer-active #directory-tree
     .tree-row:not([active]):not([selected]) > .file-row:active {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-ripple-color);
 }
 
 html.pointer-active #directory-tree
@@ -292,16 +296,16 @@ html.drag-drop-active #directory-tree .tree-item.denies > .tree-row > .file-row 
 }
 
 html.drag-drop-active #directory-tree .tree-item.accepts > .tree-row > .file-row {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-ripple-color);
 }
 
 html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row {
-  border: 1px solid var(--google-blue-600);
+  border: 1px solid var(--cros-focus-ring-color);
 }
 
 #directory-tree .tree-row[active] > .file-row {
-  background-color: var(--google-blue-50);
-  color: var(--google-blue-600);
+  background-color: var(--cros-highlight-color);
+  color: var(--cros-text-color-selection);
 }
 
 #directory-tree .tree-row > .align-right-icon {
@@ -459,7 +463,6 @@ body.files-ng div.splitter.splitter-active .splitter-button .icon {
 /* Breadcrumbs and things under the title but above the list view. */
 .dialog-header {
   align-items: center;
-  background: rgb(51, 103, 214);
   box-sizing: border-box;
   color: white;
   display: flex;
@@ -471,21 +474,20 @@ body.files-ng div.splitter.splitter-active .splitter-button .icon {
 
 .dialog-header.files-ng {
   background: none;
-  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
-  color: var(--google-grey-700);
+  border-bottom: 1px solid var(--cros-separator-color);
+  color: var(--cros-text-color-secondary);
   font-size: 14px;
   height: 56px;
   overflow: hidden;
 }
 
 body.check-select .dialog-header {
-  background: white;
-  border-bottom: 1px solid rgb(219, 219, 219);
+  border-bottom: 1px solid var(--cros-separator-color);
   border-top: 1px solid transparent;
 }
 
 body.check-select .dialog-header.files-ng {
-  color: var(--google-blue-600);
+  color: var(--cros-text-color-prominent);
 }
 
 /* Display a grey border during check-select mode if we're in a dialog. (This
@@ -515,12 +517,14 @@ body[type='open-multi-file'].check-select .dialog-header {
 
 .dialog-header.files-ng cr-button,
 .dialog-header.files-ng button {
-  --hover-bg-color: rgba(0, 0, 0, 4%);
-  --ink-color: rgba(0, 0, 0, 88%);
+  --active-bg: var(--cros-ripple-color);
+  --hover-bg-color: var(--cros-ripple-color);
+  --ink-color: var(--cros-ripple-color);
+  --ripple-opacity: 100%;
   --text-color: currentColor;
   border: 1px solid transparent;
   border-radius: 18px;
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-primary);
   height: 36px;
   margin: 0 6px;
   min-width: 36px;
@@ -539,11 +543,13 @@ html.pointer-active .dialog-header.files-ng cr-button:not(:active):hover {
 }
 
 .dialog-header.files-ng button[menu-shown] {
-  background-color: rgba(0, 0, 0, 12%);
+  background: linear-gradient(var(--cros-ripple-color),
+                              var(--cros-ripple-color)),
+              var(--cros-ripple-color);
 }
 
 .dialog-header.files-ng button:not([menu-shown]):not(:active):hover {
-  background-color: rgba(0, 0, 0, 4%);
+  background-color: var(--cros-ripple-color);
 }
 
 html.pointer-active .dialog-header.files-ng button:not([menu-shown]):not(:active):hover {
@@ -552,12 +558,14 @@ html.pointer-active .dialog-header.files-ng button:not([menu-shown]):not(:active
 }
 
 .dialog-header.files-ng button:active {
-  background-color: rgba(0, 0, 0, 12%);
+  background: linear-gradient(var(--cros-ripple-color),
+                              var(--cros-ripple-color)),
+              var(--cros-ripple-color);
 }
 
 html.focus-outline-visible .dialog-header.files-ng cr-button:not(:active):focus,
 html.focus-outline-visible .dialog-header.files-ng button:not(:active):focus {
-  border: 1px solid var(--google-blue-600);
+  border: 1px solid var(--cros-focus-ring-color);
 }
 
 .dialog-header.files-ng files-ripple,
@@ -567,7 +575,7 @@ html.focus-outline-visible .dialog-header.files-ng button:not(:active):focus {
 
 body.check-select button,
 body.check-select button:hover {
-  color: rgb(90, 90, 90);
+  color: var(--cros-text-color-primary);
 }
 
 .dialog-header .icon-button > paper-ripple,
@@ -576,14 +584,14 @@ body.check-select button:hover {
 }
 
 body.check-select .dialog-header button paper-ripple {
-  color: rgb(90, 90, 90);
+  color: var(--cros-text-color-primary);
 }
 
 /** Avoid highlighting if element doesn't have focus by tab (tabindex=-1)
  *  or if focusing during mouse click event ":active" pseudo-selector. */
 html.focus-outline-visible.files-ng .dialog-header
     .menu-button:focus:not([tabindex='-1']):not(:active) {
-  background-color: rgba(255, 255, 255, 20%);
+  background-color: transparent;
 }
 
 body.check-select .dialog-header
@@ -677,7 +685,7 @@ html[dir='rtl'] .dialog-header button.icon-button > files-toggle-ripple {
 .dialog-header.files-ng #search-wrapper.has-cursor,
 .dialog-header.files-ng #search-wrapper.has-text,
 .dialog-header.files-ng #search-wrapper.hide-pending {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-textfield-background-color);
   margin-inline-end: 16px;
 }
 
@@ -695,16 +703,6 @@ html[dir='rtl'] .dialog-header button.icon-button > files-toggle-ripple {
 
 .dialog-header.files-ng #search-button > .icon {
   -webkit-mask-image: url(../images/files/ui/search.svg);
-}
-
-.dialog-header.files-ng #share-menu-button > .icon {
-  -webkit-mask-image: url(../images/files/ui/share_ng.svg);
-  height: 48px;
-  margin-inline-end: -7px;
-  margin-inline-start: -7px;
-  margin-top: -7px;
-  position: absolute;
-  width: 48px;
 }
 
 .dialog-header.files-ng #sharesheet-button > .icon {
@@ -941,7 +939,7 @@ body.check-select #files-selected-label {
 }
 
 #cancel-selection-button {
-  --ink-color: currentColor;
+  --ink-color: var(--cros-ripple-color);
   border: none;
   box-shadow: none;
   color: currentColor;
@@ -957,7 +955,7 @@ body.files-ng #cancel-selection-button {
 }
 
 html.focus-outline-visible body.files-ng #cancel-selection-button:focus:not([tabindex='-1']):not(:active) {
-  border: 1px solid var(--google-blue-600);
+  border: 1px solid var(--cros-icon-color-prominent);
 }
 
 body.files-ng #cancel-selection-button > span#cancel-selection-label {
@@ -968,7 +966,7 @@ body.files-ng #cancel-selection-button .icon-arrow-back {
   -webkit-mask-image: url(../images/files/ui/list_check.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--google-blue-600);
+  background-color: var(--cros-icon-color-prominent);
   flex: none;
   height: 20px;
   width: 20px;
@@ -1009,9 +1007,9 @@ body.check-select #search-button {
 
 .dialog-header.files-ng #search-box cr-input {
   --cr-input-border-bottom: transparent;
-  --cr-input-color: var(--google-grey-800);
+  --cr-input-color: var(--cros-text-color-primary);
   --cr-input-focus-color: transparent;
-  --cr-input-placeholder-color: rgba(0, 0, 0, 50%);
+  --cr-input-placeholder-color: var(--cros-text-color-secondary);
 }
 
 .dialog-header.files-ng #search-box cr-input::part(input) {
@@ -1080,9 +1078,25 @@ html[dir='rtl'] #search-box .clear {
 }
 
 .dialog-header.files-ng #pinned-toggle-label {
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-primary);
   margin-inline-end: 16px;
   margin-inline-start: 12px;
+}
+
+.dialog-header.files-ng cr-toggle {
+  --cr-toggle-checked-bar-color: var(--cros-switch-track-color-active);
+  --cr-toggle-checked-button-color: var(--cros-switch-knob-color-active);
+  --cr-toggle-checked-ripple-color: var(--cros-focus-aura-color);
+  --cr-toggle-unchecked-bar-color: var(--cros-switch-track-color-inactive);
+  --cr-toggle-unchecked-button-color: var(--cros-switch-knob-color-inactive);
+  --cr-toggle-unchecked-ripple-color: var(--cros-focus-aura-color);
+  --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
+  --cr-toggle-ripple-diameter: 32px;
+}
+
+/* only show the ripple ring for tab navigation */
+html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
+  --cr-toggle-ripple-ring: 2px solid var(--cros-focus-ring-color);
 }
 
 /* Container for the detail and thumbnail list views. */
@@ -1216,7 +1230,7 @@ body.files-ng .dialog-footer .select {
   background: -webkit-image-set(
      url(../images/common/disclosure_arrow_dk_grey_down.png) 1x,
      url(../images/common/2x/disclosure_arrow_dk_grey_down.png) 2x) no-repeat
-     right transparent;
+     calc(100% - 10px) transparent;
   background-color: var(--google-grey-100);
   border: 0;
   border-radius: 4px;
@@ -1226,7 +1240,7 @@ body.files-ng .dialog-footer .select {
   min-height: 32px;
   min-width: 104px;
   outline: none;
-  padding: 0 12px 0 16px;
+  padding: 0 36px 0 16px;
   position: relative;
 }
 
@@ -1418,7 +1432,7 @@ html[dir='rtl'] .breadcrumbs .separator {
 }
 
 body.files-ng #read-only-indicator {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-highlight-color-hover);
   margin-inline-start: 12px;
   padding-inline-end: 16px;
   padding-inline-start: 12px;
@@ -1430,6 +1444,7 @@ body.check-select #read-only-indicator {
 
 .dialog-header.files-ng #read-only-icon {
   -webkit-mask-image: url(../images/files/ui/visibility_ng.svg);
+  background-color: var(--cros-icon-color-secondary);
   height: 20px;
   margin-inline-end: 8px;
   width: 20px;
@@ -2009,31 +2024,18 @@ html[dir='rtl'] body.files-ng #default-tasks-list > li > * {
   background-position-x: calc(100% - 16px);
 }
 
-#list-container list > li[selected],
-#list-container list > li:active,
-#list-container list > li.accepts,
-#list-container list:focus > li[lead] {
-  background-color: rgb(232, 234, 237);
-}
-
 body.files-ng #list-container list > li[selected],
 body.files-ng #list-container list > li:active,
 body.files-ng #list-container list > li.accepts,
 body.files-ng #list-container list:focus > li[lead] {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-highlight-color-hover);
   border-radius: 2px;
-}
-
-#list-container list:focus > li[selected],
-#list-container list:focus > li.accepts[selected],
-#list-container list:focus > li[lead] {
-  background-color: rgb(216, 223, 240);
 }
 
 body.files-ng #list-container list:focus > li[selected],
 body.files-ng #list-container list:focus > li.accepts[selected],
 body.files-ng #list-container list:focus > li[lead] {
-  background-color: var(--google-blue-50);
+  background-color: var(--cros-highlight-color);
 }
 
 body.files-ng #default-tasks-list:focus > li[selected],
@@ -2060,28 +2062,23 @@ html[dir='rtl'] body.files-ng #default-tasks-list li[selected]::after {
   right: unset;
 }
 
+/* selector "li[lead]:not([selected])" is for the row just gets unselected */
 body.check-select #list-container list > li[lead]:not([selected]),
 #list-container list > li[lead]:not([selected]) {
-  background-color: rgba(232, 234, 237, 50%);
+  background-color: var(--cros-highlight-color-hover);
 }
 
 body.check-select #list-container list:focus > li[lead]:not([selected]),
 #list-container list > li[lead]:not([selected]):focus {
-  background-color: rgb(232, 234, 237);
+  background-color: var(--cros-highlight-color);
 }
 
 body.files-ng #list-container li {
   border: 1px solid transparent;
 }
 
-body.files-ng.check-select #list-container list:focus > li[lead] {
-  background-color: var(--google-blue-50);
-  border: 1px solid var(--google-blue-600);
-}
-
-body.files-ng.check-select #list-container list > li[lead] {
-  border: 1px solid var(--google-grey-700);
-  border-radius: 2px;
+html.focus-outline-visible body.files-ng #list-container list:focus > li[lead] {
+  border: 1px solid var(--cros-focus-ring-color);
 }
 
 #list-container.nohover grid > .accepts {
@@ -2124,7 +2121,20 @@ input.rename:focus,
 #directory-tree .tree-row > .file-row .rename-placeholder > input:focus,
 #directory-tree .tree-row > input:focus,
 #directory-tree .tree-row > .file-row > input:focus {
-  outline-color: rgb(77, 144, 254);
+  background-color: var(--cros-bg-color);
+  border: none;
+  border-radius: 2px;
+  caret-color: var(--cros-textfield-cursor-color-focus);
+  color: var(--cros-text-color-primary);
+  outline: 2px solid var(--cros-focus-ring-color);
+}
+
+input.rename::selection,
+#directory-tree .tree-row .rename-placeholder > input::selection,
+#directory-tree .tree-row > .file-row .rename-placeholder > input::selection,
+#directory-tree .tree-row > input::selection,
+#directory-tree .tree-row > .file-row > input::selection {
+  background-color: var(--cros-text-highlight-color);
 }
 
 input.rename {
@@ -2245,7 +2255,7 @@ li[renaming=''] .badge {
 }
 
 body.files-ng #list-container list li .detail-icon {
-  color: var(--google-grey-700);
+  color: var(--cros-icon-color-primary);
   height: 40px;
   margin-inline-end: 8px;
   margin-inline-start: 8px;
@@ -2293,23 +2303,13 @@ body.check-select #list-container list li[selected] .detail-thumbnail
   opacity: 0;
 }
 
-#share-menu cr-menu-item,
-#share-sub-menu cr-menu-item,
 #tasks-menu cr-menu-item:not(.change-default) {
   background-position: left 10px center;
   padding-inline-start: 32px;
 }
 
-html[dir='rtl'] #share-menu cr-menu-item,
-html[dir='rtl'] #share-sub-menu cr-menu-item,
 html[dir='rtl'] #tasks-menu cr-menu-item:not(.change-default) {
   background-position: right 10px center;
-}
-
-#share-menu cr-menu-item[command='#share'] {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/person_add.png) 1x,
-      url(../images/files/ui/2x/person_add.png) 2x);
 }
 
 #action-bar {
@@ -2346,7 +2346,7 @@ body[type='folder'] .file,
 body[type='upload-folder'] .file,
 .dialog-container[connection='OFFLINE'] .dim-offline,
 body[block-hosted-docs] .file.dim-hosted {
-  opacity: 0.4;
+  opacity: var(--cros-disabled-opacity);
 }
 
 /* Invisible container for elements representing files while dragging. */
@@ -2361,10 +2361,9 @@ body.files-ng #drag-container {
 }
 
 body.files-ng #drag-container .drag-box {
-  background-color: white;
+  background-color: var(--cros-bg-color-elevation-2);
   border-radius: 2px;
-  box-shadow: 0 1px 2px 0 rgba(var(--google-grey-800-rgb), 30%),
-              0 2px 6px 2px rgba(var(--google-grey-800-rgb), 15%);
+  box-shadow: var(--cros-elevation-2-shadow);
   box-sizing: border-box;
   height: 40px;
   position: absolute;
@@ -2393,11 +2392,11 @@ body.files-ng #drag-container .detail-icon {
 }
 
 body.files-ng #drag-container .detail-icon[file-type-icon] {
-  color: var(--google-grey-700);
+  color: var(--cros-icon-color-primary);
 }
 
 body.files-ng #drag-container .label {
-  color: var(--google-grey-900);
+  color: var(--cros-text-color-primary);
   overflow: hidden;
   padding: 0 10px;
   text-overflow: ellipsis;
@@ -2405,9 +2404,9 @@ body.files-ng #drag-container .label {
 }
 
 body.files-ng #drag-container .drag-bubble {
-  background-color: var(--google-blue-600);
+  background-color: var(--cros-icon-color-prominent);
   border-radius: 12px;
-  color: white;
+  color: var(--cros-bg-color);
   font-size: 14px;
   font-weight: 700;
   height: 24px;
@@ -2557,7 +2556,7 @@ body.files-ng #list-container .table-header-cell:first-child {
 
 body.files-ng .table-header {
   border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-secondary);
   font-family: 'Roboto Medium';
   height: 48px;
   line-height: 20px;
@@ -2588,6 +2587,7 @@ body.files-ng #list-container .table-header-cell:first-child
 body.files-ng .table-header-label .sort-icon {
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 32px;
+  --cr-icon-button-fill-color: var(--cros-icon-color-secondary);
   border-radius: 50%;
   cursor: default;
 }
@@ -2644,7 +2644,7 @@ body.files-ng #list-container list li .detail-thumbnail > .thumbnail {
 }
 
 body.files-ng .table-row-cell > * {
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-secondary);
   padding: 0;
   padding-inline-start: 32px;
   padding-top: 0 !important;
@@ -2661,7 +2661,11 @@ body.files-ng .table-header-splitter .splitter-icon {
   --cr-icon-button-icon-size: 32px;
   --cr-icon-button-size: 32px;
   --cr-icon-button-margin-start: 0px;
-  --cr-icon-button-fill-color: var(--google-grey-500);
+  /*
+   * TODO(crbug.com/1268206): the icon is not in disabled state, a new css
+   * variable needs to be created and applied here.
+   */
+  --cr-icon-button-fill-color: var(--cros-icon-color-disabled);
   cursor: default;
   height: 32px;
 }
@@ -2677,7 +2681,7 @@ body.files-ng #list-container .table-row-cell .size {
 }
 
 body.files-ng.check-select list:focus li[selected] .table-row-cell > * {
-  color: var(--google-blue-600);
+  color: var(--cros-text-color-selection);
 }
 
 body.files-ng .table-row-cell:first-child > * {
@@ -2692,7 +2696,7 @@ body.files-ng .table-row-cell .filename-label {
 
 body.files-ng.check-select list:focus li[selected] .table-row-cell
 .filename-label {
-  color: var(--google-blue-600);
+  color: var(--cros-text-color-selection);
 }
 
 body.files-ng #list-container li .detail-checkmark {
@@ -2710,11 +2714,11 @@ body.files-ng grid li .detail-checkmark {
 }
 
 body.files-ng #list-container :focus li .detail-checkmark {
-  color: var(--google-blue-600);
+  color: var(--cros-icon-color-selection);
 }
 
 body.files-ng #list-container li .detail-checkmark {
-  color: var(--google-grey-700);
+  color: var(--cros-icon-color-primary);
 }
 
 body.files-ng #list-container li .detail-thumbnail {
@@ -2966,4 +2970,35 @@ html.focus-outline-visible .file-type-filter-button:focus {
 cr-input:not(:defined),
 files-tooltip:not(:defined) {
   display: none;
+}
+
+/*
+ * Banner styles.
+ */
+#banners > * {
+  align-items: center;
+  display: flex !important;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 150ms ease 50ms;
+  visibility: hidden;
+}
+
+#banners > *:not([hidden]) {
+  border-radius: 8px;
+  box-shadow: var(--cros-elevation-1-shadow);
+  height: auto;
+  margin-bottom: 4px;
+  margin-inline-end: 16px;
+  margin-inline-start: 0;
+  margin-top: 16px;
+  max-height: 300px;
+  min-height: 46px;
+  opacity: 1;
+  padding-bottom: 12px;
+  padding-inline-end: 8px;
+  padding-inline-start: 0;
+  padding-top: 12px;
+  visibility: visible;
 }

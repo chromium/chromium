@@ -10,5 +10,5 @@ function FindProxyForURL(url, host) {
 
   alert('iteration: ' + g_iteration);
 
-  return 'PROXY ' + ips.join('-') + ':100';
+  return 'PROXY ' + ips.join('-') + '.test:100';
 }

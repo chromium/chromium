@@ -44,6 +44,8 @@ include_rules = [
   "+components/account_manager_core",
   "+components/assist_ranker",
   "+components/autofill_assistant/browser",
+  "+components/autofill_assistant/content/browser",
+  "+components/autofill_assistant/content/common",
   "+components/autofill/content/browser",
   "+components/autofill/content/common",
   "+components/autofill/core/browser",
@@ -59,6 +61,7 @@ include_rules = [
   "+components/bookmarks/common",
   "+components/bookmarks/managed",
   "+components/bookmarks/test",
+  "+components/breadcrumbs/core",
   "+components/browser_sync",
   "+components/browser_ui/bottomsheet",
   "+components/browser_ui/modaldialog",
@@ -85,12 +88,14 @@ include_rules = [
   "+components/chromeos_camera",
   "+components/client_hints/browser",
   "+components/cloud_devices/common",
+  "+components/commerce",
   "+components/component_updater",
   "+components/component_updater/installer_policies",
   "+components/consent_auditor",
   "+components/constrained_window",
   "+components/content_capture/browser",
   "+components/content_creation/notes/core",
+  "+components/content_creation/reactions/core",
   "+components/content_settings/browser",
   "+components/content_settings/core/browser",
   "+components/content_settings/core/test",
@@ -113,6 +118,7 @@ include_rules = [
   "+components/data_reduction_proxy/core/common",
   "+components/data_reduction_proxy/proto",
   "+components/data_use_measurement/core",
+  "+components/desks_storage",
   "+components/dbus",
   "+components/device_event_log",
   "+components/digital_asset_links",
@@ -143,8 +149,9 @@ include_rules = [
   "+components/feedback",
   "+components/find_in_page",
   "+components/flags_ui",
-  "+components/full_restore",
+  "+components/app_restore",
   "+components/gcm_driver",
+  "+components/global_media_controls",
   "+components/google/core/browser",
   "+components/google/core/common",
   "+components/grit",
@@ -183,6 +190,7 @@ include_rules = [
   "+components/media_message_center",
   "+components/media_router/browser",
   "+components/history_clusters/core",
+  "+components/memory_pressure",
   "+components/messages/android",
   "+components/metal_util",
   "+components/metrics",
@@ -338,6 +346,7 @@ include_rules = [
   "+components/url_pattern_index/proto",
   "+components/user_manager",
   "+components/user_prefs",
+  "+components/value_store",
   "+components/vector_icons",
   "+components/version_info",
   "+components/version_ui",
@@ -354,6 +363,7 @@ include_rules = [
   "+components/webrtc_logging/common",
   "+components/wifi",
   "+components/zoom",
+  "+content/public/android/java/src/org/chromium/content_public/browser",
   "+content/public/browser",
   "+content/public/common",
   "+courgette",
@@ -377,6 +387,7 @@ include_rules = [
   "+media/base",  # For media switches
   "+media/capabilities", # For InMemoryVideoDecodeStatsDB
   "+media/cdm/cdm_paths.h",
+  "+media/cdm/win/media_foundation_cdm.h",
   "+media/capture",
   "+media/midi",  # For midi switches
   "+media/mojo",  # For mojo media services.
@@ -433,6 +444,7 @@ include_rules = [
   "+ash/public",
   "+ash/keyboard/ui/grit",
   "+ash/keyboard/ui/resources",
+  "+ash/services",
 
   # The message center should only be accessed through
   # //chrome/browser/notifications.
@@ -474,10 +486,6 @@ include_rules = [
   # Explicitly disallow using SyncMessageFilter to prevent browser from
   # sending synchronous IPC messages on non-UI threads.
   "-ipc/ipc_sync_message_filter.h",
-
-  # Allows in-process use of NetworkService for URLRequestContext configuration.
-  # Should be removed once the actual network service ships.
-  "+content/public/network",
 
   # ASK TEXT-TO-SPEECH content/browser/speech/OWNERS BEFORE OVERRIDING THIS IN A
   # SUBDIRECTORY.
@@ -550,9 +558,6 @@ specific_include_rules = {
   "chrome_authenticator_request_delegate_unittest\.cc": [
     "+third_party/microsoft_webauthn/webauthn.h",
   ],
-  "chrome_find_request_manager_browsertest\.cc": [
-    "+pdf/document_loader_impl.h",
-  ],
   "chrome_content_browser_client_receiver_bindings\.cc" : [
     "+chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h",
   ],
@@ -567,5 +572,8 @@ specific_include_rules = {
   ],
   "app_controller_mac_browsertest\.mm" : [
     "+chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h",
+  ],
+  "dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
+    "+dbus",
   ]
 }

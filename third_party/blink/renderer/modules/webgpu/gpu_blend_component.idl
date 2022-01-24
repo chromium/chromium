@@ -24,14 +24,6 @@ enum GPUBlendFactor {
     "src-alpha-saturated",
     "constant",
     "one-minus-constant",
-
-    // Deprecated values
-    "src-color",
-    "one-minus-src-color",
-    "dst-color",
-    "one-minus-dst-color",
-    "blend-color",
-    "one-minus-blend-color"
 };
 
 enum GPUBlendOperation {

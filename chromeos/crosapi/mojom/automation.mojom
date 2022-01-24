@@ -14,8 +14,8 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Interface for automation clients. Implemented by lacros-chrome. Used by
 // ash-chrome to enable automation and to perform actions.
-// Next version: 2
-// Next method id: 5
+// Next version: 3
+// Next method id: 7
 [Stable, Uuid="8dd5f2a7-c24b-47c3-a096-a5d28c4764bb"]
 interface AutomationClient {
   // Deprecated.
@@ -43,6 +43,12 @@ interface AutomationClient {
   // resolved by each client based on tree id, action type and other action data
   // fields.
   [MinVersion=1] PerformAction@4(ax.mojom.AXActionData action_data);
+
+  // Notifies Lacros when all Ash automation extensions have been unloaded.
+  [MinVersion=2] NotifyAllAutomationExtensionsGone@5();
+
+  // Notifies Lacros when a new automation extension has added a listener.
+  [MinVersion=2] NotifyExtensionListenerAdded@6();
 };
 
 // Interface for automation. Implemented by ash-chrome.

@@ -10,8 +10,10 @@ absl_source_set("stacktrace") {
     "internal/stacktrace_aarch64-inl.inc",
     "internal/stacktrace_arm-inl.inc",
     "internal/stacktrace_config.h",
+    "internal/stacktrace_emscripten-inl.inc",
     "internal/stacktrace_generic-inl.inc",
     "internal/stacktrace_powerpc-inl.inc",
+    "internal/stacktrace_riscv-inl.inc",
     "internal/stacktrace_unimplemented-inl.inc",
     "internal/stacktrace_win32-inl.inc",
     "internal/stacktrace_x86-inl.inc",
@@ -31,6 +33,7 @@ absl_source_set("symbolize") {
     "symbolize.cc",
     "symbolize_darwin.inc",
     "symbolize_elf.inc",
+    "symbolize_emscripten.inc",
     "symbolize_unimplemented.inc",
     "symbolize_win32.inc",
   ]
@@ -93,6 +96,7 @@ absl_source_set("debugging_internal") {
     "internal/elf_mem_image.h",
     "internal/vdso_support.h",
   ]
+  visibility = [ ":*" ]
   deps = [
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
@@ -105,6 +109,7 @@ absl_source_set("debugging_internal") {
 absl_source_set("demangle_internal") {
   sources = [ "internal/demangle.cc" ]
   public = [ "internal/demangle.h" ]
+  visibility = [ ":*" ]
   deps = [
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",

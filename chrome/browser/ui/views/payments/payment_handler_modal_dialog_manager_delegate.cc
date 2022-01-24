@@ -16,9 +16,10 @@ namespace payments {
 PaymentHandlerModalDialogManagerDelegate::
     PaymentHandlerModalDialogManagerDelegate(
         content::WebContents* host_web_contents)
-    : content::WebContentsObserver(host_web_contents), web_contents_(nullptr) {
-  DCHECK(host_web_contents);
-}
+    : host_web_contents_(host_web_contents->GetWeakPtr()) {}
+
+PaymentHandlerModalDialogManagerDelegate::
+    ~PaymentHandlerModalDialogManagerDelegate() = default;
 
 void PaymentHandlerModalDialogManagerDelegate::SetWebContentsBlocked(
     content::WebContents* web_contents,
@@ -32,12 +33,12 @@ void PaymentHandlerModalDialogManagerDelegate::SetWebContentsBlocked(
 
 web_modal::WebContentsModalDialogHost*
 PaymentHandlerModalDialogManagerDelegate::GetWebContentsModalDialogHost() {
-  if (!web_contents())
+  if (!host_web_contents_)
     return nullptr;
 
   auto* dialog_manager =
       static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(
-          chrome::FindBrowserWithWebContents(web_contents()));
+          chrome::FindBrowserWithWebContents(host_web_contents_.get()));
   if (!dialog_manager)
     return nullptr;
 

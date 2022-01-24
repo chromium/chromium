@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CONNECTION_ATTEMPT_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CONNECTION_ATTEMPT_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_attempt_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,6 +18,10 @@ namespace secure_channel {
 class FakeConnectionAttempt : public ConnectionAttemptImpl {
  public:
   FakeConnectionAttempt();
+
+  FakeConnectionAttempt(const FakeConnectionAttempt&) = delete;
+  FakeConnectionAttempt& operator=(const FakeConnectionAttempt&) = delete;
+
   ~FakeConnectionAttempt() override;
 
   using ConnectionAttempt::NotifyConnectionAttemptFailure;
@@ -42,8 +45,6 @@ class FakeConnectionAttempt : public ConnectionAttemptImpl {
  private:
   base::OnceClosure on_connection_attempt_failure_callback_;
   base::OnceClosure on_connection_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionAttempt);
 };
 
 }  // namespace secure_channel

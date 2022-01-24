@@ -9,7 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/device/bluetooth/le/gatt_client_manager.h"
 #include "chromecast/device/bluetooth/le/mock_remote_device.h"
 #include "testing/gmock/include/gmock/gmock.h"

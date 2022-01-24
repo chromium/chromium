@@ -370,7 +370,7 @@ void SMILTimeContainer::ScheduleAnimationFrame(base::TimeDelta delay_time) {
   DCHECK(GetDocument().IsActive());
 
   const base::TimeDelta kLocalMinimumDelay =
-      base::TimeDelta::FromSecondsD(DocumentTimeline::kMinimumDelay);
+      base::Seconds(DocumentTimeline::kMinimumDelay);
   if (delay_time < kLocalMinimumDelay) {
     ServiceOnNextFrame();
   } else {
@@ -486,8 +486,7 @@ bool SMILTimeContainer::UpdateAnimationsAndScheduleFrameIfNeeded(
     return false;
   SMILTime delay_time = next_progress_time - update.TargetTime();
   DCHECK(delay_time.IsFinite());
-  ScheduleAnimationFrame(
-      base::TimeDelta::FromMicroseconds(delay_time.InMicroseconds()));
+  ScheduleAnimationFrame(base::Microseconds(delay_time.InMicroseconds()));
   return true;
 }
 

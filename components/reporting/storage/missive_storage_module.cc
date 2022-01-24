@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 
 namespace reporting {
@@ -49,9 +49,9 @@ void MissiveStorageModule::Flush(Priority priority,
 }
 
 void MissiveStorageModule::ReportSuccess(
-    SequencingInformation sequencing_information,
+    SequenceInformation sequence_information,
     bool force) {
-  delegate_->ReportSuccess(sequencing_information, force);
+  delegate_->ReportSuccess(sequence_information, force);
 }
 
 void MissiveStorageModule::UpdateEncryptionKey(

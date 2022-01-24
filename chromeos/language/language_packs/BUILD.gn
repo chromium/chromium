@@ -8,11 +8,14 @@ static_library("language_packs") {
   sources = [
     "language_pack_manager.cc",
     "language_pack_manager.h",
+    "language_packs_impl.cc",
+    "language_packs_impl.h",
   ]
   deps = [
     "//base",
     "//chromeos/dbus/dlcservice:dlcservice",
     "//chromeos/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/language/public/mojom",
   ]
 }
 
@@ -23,8 +26,7 @@ source_set("unit_tests") {
     ":language_packs",
     "//base",
     "//base/test:test_support",
-    "//chromeos/dbus/dlcservice:dlcservice",
-    "//chromeos/dbus/dlcservice:test_support",
+    "//chromeos/dbus/dlcservice",
     "//testing/gmock",
     "//testing/gtest",
   ]

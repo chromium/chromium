@@ -19,7 +19,8 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
@@ -31,7 +32,7 @@ namespace {
 // Animation
 // The animation duration for the translation of |active_button_selector_| on
 // mode change.
-constexpr auto kToggleSlideDuration = base::TimeDelta::FromMilliseconds(150);
+constexpr auto kToggleSlideDuration = base::Milliseconds(150);
 
 // The insets of the focus ring of the tab slider button.
 constexpr int kTabSliderButtonFocusInsets = 4;
@@ -121,6 +122,12 @@ WindowCycleTabSlider::WindowCycleTabSlider()
       Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk();
   all_desks_tab_slider_button_->SetToggled(!per_desk);
   current_desk_tab_slider_button_->SetToggled(per_desk);
+
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks. This crashes if fetching a11y node
+  // data during paint because `active_button_selector_` is null.
+  active_button_selector_->SetProperty(views::kSkipAccessibilityPaintChecks,
+                                       true);
   active_button_selector_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 }
 
@@ -158,11 +165,6 @@ void WindowCycleTabSlider::Layout() {
 
 gfx::Size WindowCycleTabSlider::CalculatePreferredSize() const {
   return buttons_container_->GetPreferredSize();
-}
-
-const views::View::Views& WindowCycleTabSlider::GetTabSliderButtonsForTesting()
-    const {
-  return buttons_container_->children();
 }
 
 //////////////////////////////////////////////////////////////////////////////

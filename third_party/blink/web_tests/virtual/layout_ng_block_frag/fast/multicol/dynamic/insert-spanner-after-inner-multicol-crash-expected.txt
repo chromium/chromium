@@ -1,6 +1,0 @@
-Insert a spanner right after an inner multicol container and before column content, splitting an existing column row.
-
-PASS if no crash or assertion failure.
-
- 
- 

@@ -4,7 +4,6 @@
 
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
 
-#include <map>
 #include <string>
 
 #include "base/numerics/clamped_math.h"
@@ -113,14 +112,13 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
     (*script_parameters)->MergeWith(trigger_context_->GetScriptParameters());
     trigger_context_->SetScriptParameters(std::move(*script_parameters));
   }
-  trigger_condition_check_interval_ =
-      base::TimeDelta::FromMilliseconds(check_interval_ms);
+  trigger_condition_check_interval_ = base::Milliseconds(check_interval_ms);
   if (trigger_condition_timeout_ms.has_value()) {
     // Note: add 1 for the initial, not-delayed check.
     initial_trigger_condition_evaluations_ =
-        1 + base::ClampCeil<int64_t>(base::TimeDelta::FromMilliseconds(
-                                         *trigger_condition_timeout_ms) /
-                                     trigger_condition_check_interval_);
+        1 + base::ClampCeil<int64_t>(
+                base::Milliseconds(*trigger_condition_timeout_ms) /
+                trigger_condition_check_interval_);
   } else {
     initial_trigger_condition_evaluations_ = -1;
   }
@@ -277,11 +275,10 @@ void TriggerScriptCoordinator::OnTriggerScriptShown(bool success) {
                                            .has_ui_timeout_ms()) {
     ui_timeout_timer_.Start(
         FROM_HERE,
-        base::TimeDelta::FromMilliseconds(
-            trigger_scripts_[visible_trigger_script_]
-                ->AsProto()
-                .user_interface()
-                .ui_timeout_ms()),
+        base::Milliseconds(trigger_scripts_[visible_trigger_script_]
+                               ->AsProto()
+                               .user_interface()
+                               .ui_timeout_ms()),
         base::BindOnce(&TriggerScriptCoordinator::OnUiTimeoutReached,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -324,47 +321,30 @@ void TriggerScriptCoordinator::Stop(Metrics::TriggerScriptFinishedState state) {
   RunCallback(trigger_ui_type, state, /* trigger_script = */ absl::nullopt);
 }
 
-void TriggerScriptCoordinator::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!is_checking_trigger_conditions_ || !navigation_handle->IsInMainFrame()) {
+void TriggerScriptCoordinator::PrimaryPageChanged(content::Page& page) {
+  // Ignore navigation events if any of the following is true:
+  // - not currently checking for preconditions (i.e., not yet started).
+  if (!is_checking_trigger_conditions_)
     return;
-  }
 
   // A navigation also serves as a boundary for NOT_NOW. This prevents possible
   // race conditions where the UI remains on screen even after navigations.
   for (auto& trigger_script : trigger_scripts_) {
     trigger_script->waiting_for_precondition_no_longer_true(false);
   }
-}
-
-void TriggerScriptCoordinator::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // Ignore navigation events if any of the following is true:
-  // - not currently checking for preconditions (i.e., not yet started).
-  // - not in the main frame.
-  // - document does not change (e.g., same page history navigation).
-  // - WebContents stays at the existing URL (e.g., downloads).
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!is_checking_trigger_conditions_ ||
-      !navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
 
   // Chrome has encountered an error and is now displaying an error message
   // (e.g., network connection lost). This will cancel the current trigger
   // script session.
-  if (navigation_handle->IsErrorPage()) {
+  if (page.GetMainDocument().IsErrorDocument()) {
     Stop(Metrics::TriggerScriptFinishedState::NAVIGATION_ERROR);
     return;
   }
 
   // The user has navigated away from the target domain. This will cancel the
   // current trigger script session.
-  if (!url_utils::IsSamePublicSuffixDomain(GetCurrentURL(), deeplink_url_) &&
+  if (!(url_utils::IsSamePublicSuffixDomain(deeplink_url_, GetCurrentURL()) &&
+        url_utils::IsAllowedSchemaTransition(deeplink_url_, GetCurrentURL())) &&
       !url_utils::IsInDomainOrSubDomain(GetCurrentURL(),
                                         additional_allowed_domains_)) {
 #ifndef NDEBUG
@@ -379,7 +359,7 @@ void TriggerScriptCoordinator::DidFinishNavigation(
     return;
   }
 
-  ukm_source_id_ = ukm::GetSourceIdForWebContentsDocument(web_contents());
+  ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
   dynamic_trigger_conditions_->SetURL(GetCurrentURL());
   RunOutOfScheduleTriggerConditionCheck();
 }
@@ -449,9 +429,9 @@ void TriggerScriptCoordinator::WebContentsDestroyed() {
 
 void TriggerScriptCoordinator::StartCheckingTriggerConditions() {
   is_checking_trigger_conditions_ = true;
-  dynamic_trigger_conditions_->ClearSelectors();
+  dynamic_trigger_conditions_->ClearConditions();
   for (const auto& trigger_script : trigger_scripts_) {
-    dynamic_trigger_conditions_->AddSelectorsFromTriggerScript(
+    dynamic_trigger_conditions_->AddConditionsFromTriggerScript(
         trigger_script->AsProto());
   }
   static_trigger_conditions_->Update(
@@ -466,7 +446,8 @@ void TriggerScriptCoordinator::CheckDynamicTriggerConditions() {
       base::BindOnce(
           &TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated,
           weak_ptr_factory_.GetWeakPtr(),
-          /* is_out_of_schedule = */ false));
+          /* is_out_of_schedule = */ false,
+          /* start_time = */ base::TimeTicks::Now()));
 }
 
 void TriggerScriptCoordinator::StopCheckingTriggerConditions() {
@@ -509,7 +490,8 @@ void TriggerScriptCoordinator::HideTriggerScript() {
 }
 
 void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated(
-    bool is_out_of_schedule) {
+    bool is_out_of_schedule,
+    absl::optional<base::TimeTicks> start_time) {
   if (!web_contents_visible_ || !is_checking_trigger_conditions_) {
     return;
   }
@@ -517,6 +499,11 @@ void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated(
       !dynamic_trigger_conditions_->HasResults()) {
     DCHECK(is_out_of_schedule);
     return;
+  }
+
+  if (start_time.has_value()) {
+    Metrics::RecordTriggerConditionEvaluationTime(
+        ukm_recorder_, ukm_source_id_, base::TimeTicks::Now() - *start_time);
   }
 
   VLOG(3) << "Evaluating trigger conditions...";
@@ -592,7 +579,8 @@ void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated(
 }
 
 void TriggerScriptCoordinator::RunOutOfScheduleTriggerConditionCheck() {
-  OnDynamicTriggerConditionsEvaluated(/* is_out_of_schedule = */ true);
+  OnDynamicTriggerConditionsEvaluated(/* is_out_of_schedule = */ true,
+                                      /* start_time = */ absl::nullopt);
 }
 
 void TriggerScriptCoordinator::RunCallback(
@@ -620,7 +608,7 @@ TriggerScriptCoordinator::GetTriggerUiTypeForVisibleScript() const {
 }
 
 GURL TriggerScriptCoordinator::GetCurrentURL() const {
-  GURL current_url = web_contents()->GetLastCommittedURL();
+  GURL current_url = web_contents()->GetMainFrame()->GetLastCommittedURL();
   if (current_url.is_empty()) {
     return deeplink_url_;
   }

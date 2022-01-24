@@ -24,6 +24,12 @@ namespace headless {
 class HeadlessOriginTrialsBrowserTest : public HeadlessBrowserTest {
  public:
   HeadlessOriginTrialsBrowserTest() = default;
+
+  HeadlessOriginTrialsBrowserTest(const HeadlessOriginTrialsBrowserTest&) =
+      delete;
+  HeadlessOriginTrialsBrowserTest& operator=(
+      const HeadlessOriginTrialsBrowserTest&) = delete;
+
   ~HeadlessOriginTrialsBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -50,8 +56,6 @@ class HeadlessOriginTrialsBrowserTest : public HeadlessBrowserTest {
 
  private:
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessOriginTrialsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,

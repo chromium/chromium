@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_PATCH_FILE_PATCHER_IMPL_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,6 +21,9 @@ class FilePatcherImpl : public mojom::FilePatcher {
   // Constructs a FilePatcherImpl bound to |receiver|.
   explicit FilePatcherImpl(mojo::PendingReceiver<mojom::FilePatcher> receiver);
 
+  FilePatcherImpl(const FilePatcherImpl&) = delete;
+  FilePatcherImpl& operator=(const FilePatcherImpl&) = delete;
+
   ~FilePatcherImpl() override;
 
  private:
@@ -36,8 +38,6 @@ class FilePatcherImpl : public mojom::FilePatcher {
                           PatchFileCourgetteCallback callback) override;
 
   mojo::Receiver<mojom::FilePatcher> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FilePatcherImpl);
 };
 
 }  // namespace patch

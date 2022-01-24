@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -45,6 +44,9 @@ class ContextMenuMatcher {
                      ui::SimpleMenuModel::Delegate* delegate,
                      ui::SimpleMenuModel* menu_model,
                      base::RepeatingCallback<bool(const MenuItem*)> filter);
+
+  ContextMenuMatcher(const ContextMenuMatcher&) = delete;
+  ContextMenuMatcher& operator=(const ContextMenuMatcher&) = delete;
 
   // This is a helper function to append items for one particular extension.
   // The |index| parameter is used for assigning id's, and is incremented for
@@ -122,8 +124,6 @@ class ContextMenuMatcher {
 
   // Keep track of and clean up menu models for submenus.
   std::vector<std::unique_ptr<ui::SimpleMenuModel>> extension_menu_models_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuMatcher);
 };
 
 }  // namespace extensions

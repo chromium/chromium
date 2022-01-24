@@ -15,7 +15,7 @@ import histogram_paths
 import path_util
 
 HISTOGRAM_SUFFIXES_LIST_PATH = path_util.GetInputFile(
-    'tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml')
+    'tools/metrics/histograms/metadata/histogram_suffixes_list.xml')
 
 
 def _ExtractObsoleteNode(node, recursive=True):
@@ -293,7 +293,7 @@ def ChooseFiles(args):
   """Chooses a set of files to process so that we can migrate incrementally."""
   paths = []
   for path in sorted(histogram_paths.HISTOGRAMS_XMLS):
-    if 'histograms_xml' in path and path.endswith('histograms.xml'):
+    if 'metadata' in path and path.endswith('histograms.xml'):
       name = os.path.basename(os.path.dirname(path))
       if args.start <= name[0] <= args.end:
         paths.append(path)

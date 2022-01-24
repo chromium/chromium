@@ -10,9 +10,8 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {SettingsPrefsElement} from 'chrome://settings/settings.js';
-
-import {FakeChromeEvent} from '../fake_chrome_event.m.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {FakeChromeEvent} from '../fake_chrome_event.js';
 
 /**
  * Fake of the chrome.languageSettingsPrivate API.
@@ -121,7 +120,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
       {
         // A fake language for ARC IMEs which is for internal use only. The
         // value of the |code| must be the same as |kArcImeLanguage| in
-        // ui/base/ime/chromeos/extension_ime_util.cc.
+        // ui/base/ime/ash/extension_ime_util.cc.
         code: '_arc_ime_language_',
         displayName: 'Keyboard apps',
       },
@@ -217,7 +216,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
     setTimeout(function() {
       callback(
           /** @type {!Array<!string>} */ (
-              this.settingsPrefs_.get('prefs.translate_whitelists.value')));
+              this.settingsPrefs_.get('prefs.translate_allowlists.value')));
     }.bind(this));
   }
 
@@ -228,7 +227,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    */
   setLanguageAlwaysTranslateState(languageCode, alwaysTranslate) {
     const alwaysTranslateList =
-        this.settingsPrefs_.get('prefs.translate_whitelists.value');
+        this.settingsPrefs_.get('prefs.translate_allowlists.value');
     if (alwaysTranslate) {
       if (!alwaysTranslateList.includes(languageCode)) {
         alwaysTranslateList.push(languageCode);
@@ -241,7 +240,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
       alwaysTranslateList.splice(index, 1);
     }
     this.settingsPrefs_.set(
-        'prefs.translate_whitelists.value', alwaysTranslateList);
+        'prefs.translate_allowlists.value', alwaysTranslateList);
   }
 
   /**
@@ -551,7 +550,7 @@ export function getFakeLanguagePrefs() {
     // of {always translate: target}, however only the keys are needed for
     // testing.
     {
-      key: 'translate_whitelists',
+      key: 'translate_allowlists',
       type: chrome.settingsPrivate.PrefType.LIST,
       value: [],
     },

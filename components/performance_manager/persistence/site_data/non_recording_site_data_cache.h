@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_inspector.h"
 
@@ -24,6 +23,11 @@ class NonRecordingSiteDataCache : public SiteDataCache,
   NonRecordingSiteDataCache(const std::string& browser_context_id,
                             SiteDataCacheInspector* data_cache_inspector,
                             SiteDataCache* data_cache_for_readers);
+
+  NonRecordingSiteDataCache(const NonRecordingSiteDataCache&) = delete;
+  NonRecordingSiteDataCache& operator=(const NonRecordingSiteDataCache&) =
+      delete;
+
   ~NonRecordingSiteDataCache() override;
 
   // SiteDataCache:
@@ -54,8 +58,6 @@ class NonRecordingSiteDataCache : public SiteDataCache,
 
   // The ID of the browser context this data store is associated with.
   const std::string browser_context_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(NonRecordingSiteDataCache);
 };
 
 }  // namespace performance_manager

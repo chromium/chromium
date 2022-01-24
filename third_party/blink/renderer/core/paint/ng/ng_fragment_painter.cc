@@ -26,18 +26,9 @@ void NGFragmentPainter::PaintOutline(const PaintInfo& paint_info,
   if (outline_rects.IsEmpty())
     return;
 
-  const DisplayItemClient& display_item_client = GetDisplayItemClient();
-  if (DrawingRecorder::UseCachedDrawingIfPossible(
-          paint_info.context, display_item_client, paint_info.phase))
-    return;
-
-  IntRect visual_rect =
-      PixelSnappedIntRect(UnionRectEvenIfEmpty(outline_rects));
-  visual_rect.Inflate(style_to_use.OutlineOutsetExtent());
-  DrawingRecorder recorder(paint_info.context, display_item_client,
-                           paint_info.phase, visual_rect);
-  OutlinePainter::PaintOutlineRects(paint_info.context, outline_rects,
-                                    style_to_use);
+  OutlinePainter::PaintOutlineRects(paint_info, GetDisplayItemClient(),
+                                    outline_rects, style_to_use,
+                                    fragment.GetLayoutObject()->GetDocument());
 }
 
 void NGFragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,

@@ -20,7 +20,7 @@ PolicyUrlBlockingTabHelper::PolicyUrlBlockingTabHelper(web::WebState* web_state)
 
 void PolicyUrlBlockingTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL gurl = net::GURLWithNSURL(request.URL);
   PolicyBlocklistService* blocklistService =

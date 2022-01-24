@@ -91,7 +91,7 @@ class ImageBitmapTest : public testing::Test {
     // test's memory cache; image resources are released, evicting
     // them from the cache.
     ThreadState::Current()->CollectAllGarbageForTesting(
-        BlinkGC::kNoHeapPointersOnStack);
+        ThreadState::StackState::kNoHeapPointers);
 
     ReplaceMemoryCacheForTesting(global_memory_cache_.Release());
     SharedGpuContext::ResetForTesting();
@@ -253,9 +253,8 @@ static void TestImageBitmapTextureBacked(
 TEST_F(ImageBitmapTest, AvoidGPUReadback) {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
       SharedGpuContext::ContextProviderWrapper();
-  CanvasResourceParams resource_params;
   auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-      IntSize(100, 100), cc::PaintFlags::FilterQuality::kLow, resource_params,
+      SkImageInfo::MakeN32Premul(100, 100), cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
       RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
@@ -268,9 +267,11 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
   EXPECT_TRUE(image_bitmap->BitmapImage()->IsTextureBacked());
 
   IntRect image_bitmap_rect(25, 25, 50, 50);
-  ImageBitmapOptions* image_bitmap_options = ImageBitmapOptions::Create();
-  TestImageBitmapTextureBacked(bitmap, image_bitmap_rect, image_bitmap_options,
-                               true);
+  {
+    ImageBitmapOptions* image_bitmap_options = ImageBitmapOptions::Create();
+    TestImageBitmapTextureBacked(bitmap, image_bitmap_rect,
+                                 image_bitmap_options, true);
+  }
 
   std::list<String> image_orientations = {"none", "flipY"};
   std::list<String> premultiply_alphas = {"none", "premultiply", "default"};
@@ -329,7 +330,7 @@ TEST_F(ImageBitmapTest,
   ImageBitmapOptions* options = ImageBitmapOptions::Create();
   options->setColorSpaceConversion("default");
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
-      image_data, IntRect(IntPoint(0, 0), image_data->Size()), options);
+      image_data, IntRect(gfx::Point(0, 0), image_data->Size()), options);
   DCHECK(image_bitmap);
 }
 

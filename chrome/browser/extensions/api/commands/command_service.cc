@@ -314,15 +314,14 @@ Command CommandService::FindCommandByName(const std::string& extension_id,
     std::string shortcut = it.key();
     if (!IsForCurrentPlatform(shortcut))
       continue;
-    bool global = false;
-    item->GetBoolean(kGlobal, &global);
+    absl::optional<bool> global = item->FindBoolKey(kGlobal);
 
     std::vector<base::StringPiece> tokens = base::SplitStringPiece(
         shortcut, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     CHECK(tokens.size() >= 2);
 
     return Command(command_name, std::u16string(), std::string(tokens[1]),
-                   global);
+                   global.value_or(false));
   }
 
   return Command();
@@ -609,7 +608,7 @@ bool CommandService::IsCommandShortcutUserModified(
     const std::string& command_name) {
   // Get the previous suggested key, if any.
   ui::Accelerator suggested_key;
-  bool suggested_key_was_assigned = false;
+  absl::optional<bool> suggested_key_was_assigned;
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
   const base::DictionaryValue* commands_prefs = NULL;
   const base::DictionaryValue* suggested_key_prefs = NULL;
@@ -623,16 +622,16 @@ bool CommandService::IsCommandShortcutUserModified(
                                                    command_name);
     }
 
-    suggested_key_prefs->GetBoolean(kSuggestedKeyWasAssigned,
-                                    &suggested_key_was_assigned);
+    suggested_key_was_assigned =
+        suggested_key_prefs->FindBoolKey(kSuggestedKeyWasAssigned);
   }
 
   // Get the active shortcut from the prefs, if any.
   Command active_command = FindCommandByName(extension->id(), command_name);
 
-  return suggested_key_was_assigned ?
-      active_command.accelerator() != suggested_key :
-      active_command.accelerator().key_code() != ui::VKEY_UNKNOWN;
+  return suggested_key_was_assigned.value_or(false)
+             ? active_command.accelerator() != suggested_key
+             : active_command.accelerator().key_code() != ui::VKEY_UNKNOWN;
 }
 
 void CommandService::RemoveKeybindingPrefs(const std::string& extension_id,

@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/file_observers.h"
@@ -28,6 +28,10 @@
 #include "storage/browser/file_system/sandbox_file_stream_writer.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/common/file_system/file_system_util.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 
@@ -59,13 +63,17 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
                                          public FileUpdateObserver {
  public:
   QuotaUtil() : usage_(0) {}
+
+  QuotaUtil(const QuotaUtil&) = delete;
+  QuotaUtil& operator=(const QuotaUtil&) = delete;
+
   ~QuotaUtil() override = default;
 
   // FileSystemQuotaUtil overrides.
-  base::File::Error DeleteOriginDataOnFileTaskRunner(
+  base::File::Error DeleteStorageKeyDataOnFileTaskRunner(
       FileSystemContext* context,
       QuotaManagerProxy* proxy,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type) override {
     NOTREACHED();
     return base::File::FILE_OK;
@@ -76,28 +84,29 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
                                              FileSystemType type) override {}
 
   scoped_refptr<QuotaReservation> CreateQuotaReservationOnFileTaskRunner(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type) override {
     NOTREACHED();
     return scoped_refptr<QuotaReservation>();
   }
 
-  std::vector<url::Origin> GetOriginsForTypeOnFileTaskRunner(
+  std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
       FileSystemType type) override {
     NOTREACHED();
-    return std::vector<url::Origin>();
+    return std::vector<blink::StorageKey>();
   }
 
-  std::vector<url::Origin> GetOriginsForHostOnFileTaskRunner(
+  std::vector<blink::StorageKey> GetStorageKeysForHostOnFileTaskRunner(
       FileSystemType type,
       const std::string& host) override {
     NOTREACHED();
-    return std::vector<url::Origin>();
+    return std::vector<blink::StorageKey>();
   }
 
-  int64_t GetOriginUsageOnFileTaskRunner(FileSystemContext* context,
-                                         const url::Origin& origin,
-                                         FileSystemType type) override {
+  int64_t GetStorageKeyUsageOnFileTaskRunner(
+      FileSystemContext* context,
+      const blink::StorageKey& storage_key,
+      FileSystemType type) override {
     return usage_;
   }
 
@@ -110,7 +119,6 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
 
  private:
   int64_t usage_;
-  DISALLOW_COPY_AND_ASSIGN(QuotaUtil);
 };
 
 TestFileSystemBackend::TestFileSystemBackend(
@@ -171,7 +179,8 @@ void TestFileSystemBackend::InitializeCopyOrMoveFileValidatorFactory(
     copy_or_move_file_validator_factory_ = std::move(factory);
 }
 
-FileSystemOperation* TestFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<FileSystemOperation>
+TestFileSystemBackend::CreateFileSystemOperation(
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {

@@ -8,6 +8,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
+namespace network {
+struct ResourceRequest;
+}
+
 namespace content {
 
 // Creates the data for chrome://network-error.

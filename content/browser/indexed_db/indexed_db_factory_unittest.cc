@@ -11,7 +11,6 @@
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -67,6 +66,9 @@ class IndexedDBFactoryTest : public testing::Test {
   explicit IndexedDBFactoryTest(
       std::unique_ptr<base::test::TaskEnvironment> task_environment)
       : task_environment_(std::move(task_environment)) {}
+
+  IndexedDBFactoryTest(const IndexedDBFactoryTest&) = delete;
+  IndexedDBFactoryTest& operator=(const IndexedDBFactoryTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -214,8 +216,6 @@ class IndexedDBFactoryTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<IndexedDBContextImpl> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBFactoryTest);
 };
 
 class IndexedDBFactoryTestWithMockTime : public IndexedDBFactoryTest {
@@ -224,8 +224,10 @@ class IndexedDBFactoryTestWithMockTime : public IndexedDBFactoryTest {
       : IndexedDBFactoryTest(std::make_unique<base::test::TaskEnvironment>(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBFactoryTestWithMockTime);
+  IndexedDBFactoryTestWithMockTime(const IndexedDBFactoryTestWithMockTime&) =
+      delete;
+  IndexedDBFactoryTestWithMockTime& operator=(
+      const IndexedDBFactoryTestWithMockTime&) = delete;
 };
 
 TEST_F(IndexedDBFactoryTest, BasicFactoryCreationAndTearDown) {
@@ -335,7 +337,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   EXPECT_EQ(IndexedDBStorageKeyState::ClosingState::kPreCloseGracePeriod,
             factory()->GetStorageKeyFactory(storage_key)->closing_stage());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
+  task_environment()->FastForwardBy(base::Seconds(2));
 
   // The factory should be closed, as the pre close tasks are delayed.
   EXPECT_FALSE(factory()->GetStorageKeyFactory(storage_key));
@@ -868,6 +870,12 @@ class LookingForQuotaErrorMockCallbacks : public IndexedDBCallbacks {
                            blink::StorageKey(),
                            mojo::NullAssociatedRemote(),
                            base::SequencedTaskRunnerHandle::Get()) {}
+
+  LookingForQuotaErrorMockCallbacks(const LookingForQuotaErrorMockCallbacks&) =
+      delete;
+  LookingForQuotaErrorMockCallbacks& operator=(
+      const LookingForQuotaErrorMockCallbacks&) = delete;
+
   void OnError(const IndexedDBDatabaseError& error) override {
     error_called_ = true;
     EXPECT_EQ(blink::mojom::IDBException::kQuotaError, error.code());
@@ -877,8 +885,6 @@ class LookingForQuotaErrorMockCallbacks : public IndexedDBCallbacks {
  private:
   ~LookingForQuotaErrorMockCallbacks() override = default;
   bool error_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LookingForQuotaErrorMockCallbacks);
 };
 
 TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
@@ -935,6 +941,9 @@ class ErrorCallbacks : public MockIndexedDBCallbacks {
  public:
   ErrorCallbacks() : MockIndexedDBCallbacks(false) {}
 
+  ErrorCallbacks(const ErrorCallbacks&) = delete;
+  ErrorCallbacks& operator=(const ErrorCallbacks&) = delete;
+
   void OnError(const IndexedDBDatabaseError& error) override {
     saw_error_ = true;
   }
@@ -943,8 +952,6 @@ class ErrorCallbacks : public MockIndexedDBCallbacks {
  private:
   ~ErrorCallbacks() override = default;
   bool saw_error_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorCallbacks);
 };
 
 TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
@@ -960,23 +967,25 @@ TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
   auto db_callbacks2 = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
 
   // Open at version 2.
-  const int64_t db_version = 2;
-  auto create_transaction_callback =
-      base::BindOnce(&CreateAndBindTransactionPlaceholder);
-
-  auto connection = std::make_unique<IndexedDBPendingConnection>(
-      callbacks, db_callbacks,
-      transaction_id, db_version, std::move(create_transaction_callback));
   {
-    base::RunLoop loop;
-    callbacks->CallOnUpgradeNeeded(
-        base::BindLambdaForTesting([&]() { loop.Quit(); }));
-    factory()->Open(db_name, std::move(connection), storage_key,
-                    context()->data_path());
-    loop.Run();
+    const int64_t db_version = 2;
+    auto create_transaction_callback =
+        base::BindOnce(&CreateAndBindTransactionPlaceholder);
+
+    auto connection = std::make_unique<IndexedDBPendingConnection>(
+        callbacks, db_callbacks, transaction_id, db_version,
+        std::move(create_transaction_callback));
+    {
+      base::RunLoop loop;
+      callbacks->CallOnUpgradeNeeded(
+          base::BindLambdaForTesting([&]() { loop.Quit(); }));
+      factory()->Open(db_name, std::move(connection), storage_key,
+                      context()->data_path());
+      loop.Run();
+    }
+    EXPECT_TRUE(callbacks->upgrade_called());
+    EXPECT_TRUE(factory()->IsDatabaseOpen(storage_key, db_name));
   }
-  EXPECT_TRUE(callbacks->upgrade_called());
-  EXPECT_TRUE(factory()->IsDatabaseOpen(storage_key, db_name));
 
   // Finish connecting, then close the connection.
   {

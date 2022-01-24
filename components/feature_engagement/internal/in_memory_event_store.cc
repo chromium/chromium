@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/feature_engagement/internal/event_store.h"
 

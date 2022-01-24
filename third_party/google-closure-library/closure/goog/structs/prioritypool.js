@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Datastructure: Priority Pool.
@@ -36,6 +28,7 @@ goog.require('goog.structs.PriorityQueue');
  * @template VALUE
  */
 goog.structs.PriorityPool = function(opt_minCount, opt_maxCount) {
+  'use strict';
   /**
    * The key for the most recent timeout created.
    * @private {number|undefined}
@@ -67,6 +60,7 @@ goog.structs.PriorityPool.DEFAULT_PRIORITY_ = 100;
 
 /** @override */
 goog.structs.PriorityPool.prototype.setDelay = function(delay) {
+  'use strict';
   goog.structs.PriorityPool.base(this, 'setDelay', delay);
 
   // If the pool hasn't been accessed yet, no need to do anything.
@@ -77,7 +71,7 @@ goog.structs.PriorityPool.prototype.setDelay = function(delay) {
   goog.global.clearTimeout(this.delayTimeout_);
   this.delayTimeout_ = goog.global.setTimeout(
       goog.bind(this.handleQueueRequests_, this),
-      this.delay + this.lastAccess - goog.now());
+      this.delay + this.lastAccess - Date.now());
 
   // Handle all requests.
   this.handleQueueRequests_();
@@ -85,7 +79,7 @@ goog.structs.PriorityPool.prototype.setDelay = function(delay) {
 
 
 /**
- * Get a new object from the the pool, if there is one available, otherwise
+ * Get a new object from the pool, if there is one available, otherwise
  * return undefined.
  * @param {Function=} opt_callback The function to callback when an object is
  *     available. This could be immediately. If this is not present, then an
@@ -98,6 +92,7 @@ goog.structs.PriorityPool.prototype.setDelay = function(delay) {
  */
 goog.structs.PriorityPool.prototype.getObject = function(
     opt_callback, opt_priority) {
+  'use strict';
   if (!opt_callback) {
     var result = goog.structs.PriorityPool.base(this, 'getObject');
     if (result && this.delay) {
@@ -125,6 +120,7 @@ goog.structs.PriorityPool.prototype.getObject = function(
  * @private
  */
 goog.structs.PriorityPool.prototype.handleQueueRequests_ = function() {
+  'use strict';
   var requestQueue = this.requestQueue_;
   while (requestQueue.getCount() > 0) {
     var obj = this.getObject();
@@ -149,6 +145,7 @@ goog.structs.PriorityPool.prototype.handleQueueRequests_ = function() {
  * @override
  */
 goog.structs.PriorityPool.prototype.addFreeObject = function(obj) {
+  'use strict';
   goog.structs.PriorityPool.superClass_.addFreeObject.call(this, obj);
 
   // Handle all requests.
@@ -166,6 +163,7 @@ goog.structs.PriorityPool.prototype.addFreeObject = function(obj) {
  * @override
  */
 goog.structs.PriorityPool.prototype.adjustForMinMax = function() {
+  'use strict';
   goog.structs.PriorityPool.superClass_.adjustForMinMax.call(this);
 
   // Handle all requests.
@@ -175,6 +173,7 @@ goog.structs.PriorityPool.prototype.adjustForMinMax = function() {
 
 /** @override */
 goog.structs.PriorityPool.prototype.disposeInternal = function() {
+  'use strict';
   goog.structs.PriorityPool.superClass_.disposeInternal.call(this);
   goog.global.clearTimeout(this.delayTimeout_);
   this.requestQueue_.clear();

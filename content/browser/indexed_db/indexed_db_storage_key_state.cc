@@ -45,13 +45,13 @@ const int kTombstoneSweeperRoundIterations = 1000;
 const int kTombstoneSweeperMaxIterations = 10 * 1000 * 1000;
 
 constexpr const base::TimeDelta kMinEarliestStorageKeySweepFromNow =
-    base::TimeDelta::FromDays(1);
+    base::Days(1);
 static_assert(kMinEarliestStorageKeySweepFromNow <
                   IndexedDBStorageKeyState::kMaxEarliestStorageKeySweepFromNow,
               "Min < Max");
 
 constexpr const base::TimeDelta kMinEarliestGlobalSweepFromNow =
-    base::TimeDelta::FromMinutes(5);
+    base::Minutes(5);
 static_assert(kMinEarliestGlobalSweepFromNow <
                   IndexedDBStorageKeyState::kMaxEarliestGlobalSweepFromNow,
               "Min < Max");
@@ -62,7 +62,7 @@ base::Time GenerateNextStorageKeySweepTime(base::Time now) {
                    kMinEarliestStorageKeySweepFromNow.InMilliseconds();
   int64_t rand_millis = kMinEarliestStorageKeySweepFromNow.InMilliseconds() +
                         static_cast<int64_t>(base::RandGenerator(range));
-  return now + base::TimeDelta::FromMilliseconds(rand_millis);
+  return now + base::Milliseconds(rand_millis);
 }
 
 base::Time GenerateNextGlobalSweepTime(base::Time now) {
@@ -71,18 +71,18 @@ base::Time GenerateNextGlobalSweepTime(base::Time now) {
                    kMinEarliestGlobalSweepFromNow.InMilliseconds();
   int64_t rand_millis = kMinEarliestGlobalSweepFromNow.InMilliseconds() +
                         static_cast<int64_t>(base::RandGenerator(range));
-  return now + base::TimeDelta::FromMilliseconds(rand_millis);
+  return now + base::Milliseconds(rand_millis);
 }
 
 constexpr const base::TimeDelta kMinEarliestStorageKeyCompactionFromNow =
-    base::TimeDelta::FromDays(1);
+    base::Days(1);
 static_assert(
     kMinEarliestStorageKeyCompactionFromNow <
         IndexedDBStorageKeyState::kMaxEarliestStorageKeyCompactionFromNow,
     "Min < Max");
 
 constexpr const base::TimeDelta kMinEarliestGlobalCompactionFromNow =
-    base::TimeDelta::FromMinutes(5);
+    base::Minutes(5);
 static_assert(kMinEarliestGlobalCompactionFromNow <
                   IndexedDBStorageKeyState::kMaxEarliestGlobalCompactionFromNow,
               "Min < Max");
@@ -95,7 +95,7 @@ base::Time GenerateNextStorageKeyCompactionTime(base::Time now) {
   int64_t rand_millis =
       kMinEarliestStorageKeyCompactionFromNow.InMilliseconds() +
       static_cast<int64_t>(base::RandGenerator(range));
-  return now + base::TimeDelta::FromMilliseconds(rand_millis);
+  return now + base::Milliseconds(rand_millis);
 }
 
 base::Time GenerateNextGlobalCompactionTime(base::Time now) {
@@ -104,7 +104,7 @@ base::Time GenerateNextGlobalCompactionTime(base::Time now) {
                    kMinEarliestGlobalCompactionFromNow.InMilliseconds();
   int64_t rand_millis = kMinEarliestGlobalCompactionFromNow.InMilliseconds() +
                         static_cast<int64_t>(base::RandGenerator(range));
-  return now + base::TimeDelta::FromMilliseconds(rand_millis);
+  return now + base::Milliseconds(rand_millis);
 }
 
 }  // namespace
@@ -345,7 +345,7 @@ void IndexedDBStorageKeyState::StartClosing() {
   DCHECK(!close_timer_.IsRunning());
   closing_stage_ = ClosingState::kPreCloseGracePeriod;
   close_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kBackingStoreGracePeriodSeconds),
+      FROM_HERE, base::Seconds(kBackingStoreGracePeriodSeconds),
       base::BindOnce(
           [](base::WeakPtr<IndexedDBStorageKeyState> factory) {
             if (!factory ||
@@ -390,7 +390,7 @@ void IndexedDBStorageKeyState::StartPreCloseTasks() {
   if (!tasks.empty()) {
     pre_close_task_queue_ = std::make_unique<IndexedDBPreCloseTaskQueue>(
         std::move(tasks), maybe_close_backing_store_runner.Release(),
-        base::TimeDelta::FromSeconds(kRunningPreCloseTasksMaxRunPeriodSeconds),
+        base::Seconds(kRunningPreCloseTasksMaxRunPeriodSeconds),
         std::make_unique<base::OneShotTimer>());
     pre_close_task_queue_->Start(
         base::BindOnce(&IndexedDBBackingStore::GetCompleteMetadata,

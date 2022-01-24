@@ -76,6 +76,12 @@ TEST_F(SharedHighlightingMetricsTest, LogTextFragmentLinkOpenSource) {
   histogram_tester_.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
                                       TextFragmentLinkOpenSource::kUnknown, 2);
   histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 3);
+
+  GURL google_non_search_domain("https://mail.google.com");
+  LogTextFragmentLinkOpenSource(google_non_search_domain);
+  histogram_tester_.ExpectBucketCount("TextFragmentAnchor.LinkOpenSource",
+                                      TextFragmentLinkOpenSource::kUnknown, 3);
+  histogram_tester_.ExpectTotalCount("TextFragmentAnchor.LinkOpenSource", 4);
 }
 
 TEST_F(SharedHighlightingMetricsTest, LogTextFragmentMatchRate) {
@@ -274,7 +280,7 @@ TEST_F(SharedHighlightingMetricsTest, LinkGeneratedUkmCustomRecorder) {
 
 // Tests that link generation success latency logs to the right histogram.
 TEST_F(SharedHighlightingMetricsTest, LinkGeneratedSuccessLatency) {
-  base::TimeDelta test_delta = base::TimeDelta::FromMilliseconds(2000);
+  base::TimeDelta test_delta = base::Milliseconds(2000);
 
   LogGenerateSuccessLatency(test_delta);
 
@@ -284,7 +290,7 @@ TEST_F(SharedHighlightingMetricsTest, LinkGeneratedSuccessLatency) {
 
 // Tests that link generation failure latency logs to the right histogram.
 TEST_F(SharedHighlightingMetricsTest, LinkGeneratedErrorLatency) {
-  base::TimeDelta test_delta = base::TimeDelta::FromMilliseconds(2000);
+  base::TimeDelta test_delta = base::Milliseconds(2000);
 
   LogGenerateErrorLatency(test_delta);
 

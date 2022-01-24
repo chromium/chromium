@@ -17,7 +17,7 @@ source_set("utils") {
     "//base",
     "//components/browser_sync",
     "//components/infobars/core",
-    "//components/strings",
+    "//components/strings:components_strings_grit",
     "//components/sync",
     "//google_apis",
     "//ios/chrome/app/strings",
@@ -27,6 +27,7 @@ source_set("utils") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/settings/google_services/resources:google_services_sync_error",
     "//ui/base",
     "//ui/gfx",
   ]
@@ -40,8 +41,6 @@ source_set("unit_tests") {
   deps = [
     ":utils",
     "//base",
-    "//base/test:test_support",
-    "//components/signin/public/base",
     "//components/sync/driver",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/infobars",
@@ -55,7 +54,6 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",

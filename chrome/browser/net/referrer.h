@@ -20,7 +20,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"

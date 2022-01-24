@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace sync_file_system {
@@ -22,6 +21,10 @@ namespace internal {
 class AbortHelper {
  public:
   explicit AbortHelper(CallbackTracker* tracker);
+
+  AbortHelper(const AbortHelper&) = delete;
+  AbortHelper& operator=(const AbortHelper&) = delete;
+
   ~AbortHelper();
   base::WeakPtr<AbortHelper> AsWeakPtr();
 
@@ -31,8 +34,6 @@ class AbortHelper {
  private:
   CallbackTracker* tracker_;  // Not owned.
   base::WeakPtrFactory<AbortHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AbortHelper);
 };
 
 template <typename>

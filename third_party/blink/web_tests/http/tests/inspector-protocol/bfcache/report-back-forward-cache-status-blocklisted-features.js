@@ -8,12 +8,15 @@
   await page.navigate(
       'https://devtools.test:8443/inspector-protocol/resources/empty.html');
 
-  // Use a sticky blocklisted feature (keyboard lock).
-  await session.evaluate('navigator.keyboard.lock()');
+  // Use a blocklisted feature (Idle detector).
+  await session.evaluate(`new Promise(async resolve => {
+    let idleDetector = new IdleDetector();
+    idleDetector.start();
+    resolve();
+  });`);
 
   // Navigate to Page B.
-  await page.navigate(
-      'https://devtools.test:8000/inspector-protocol/resources/empty.html');
+  await page.navigate('chrome://version');
 
   const {result: history} = await dp.Page.getNavigationHistory();
 

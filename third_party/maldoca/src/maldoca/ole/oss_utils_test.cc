@@ -50,9 +50,31 @@ class TestBufferToUtf8 : public BufferToUtf8 {
     return ConvertCp1252BufferToUTF8String(input, out_str, bytes_consumed,
                                            bytes_filled, error_char_count);
   }
+  void TestConvertEncodingBufferToUTF8String(absl::string_view input,
+                                             const char* encode_name,
+                                             absl::string_view expected_output,
+                                             const int expected_bytes_consumed,
+                                             const int expected_bytes_filled,
+                                             const int expected_error_cnt,
+                                             const bool expected_ret_value) {
+    int bytes_consumed = 0;
+    int bytes_filled = 0;
+    int error_cnt = 0;
+    std::string output;
+    bool ret = utils::ConvertEncodingBufferToUTF8String(
+        input, encode_name, &output, &bytes_consumed, &bytes_filled,
+        &error_cnt);
+
+    EXPECT_EQ(ret, expected_ret_value);
+    EXPECT_EQ(output, expected_output);
+    EXPECT_EQ(bytes_consumed, expected_bytes_consumed);
+    EXPECT_EQ(bytes_filled, expected_bytes_filled);
+    EXPECT_EQ(error_cnt, expected_error_cnt);
+    EXPECT_EQ(output.size(), expected_bytes_filled);
+  }
 };
 
-TEST(BufferToUtf8, ConvertLatin1BufferToUTF8String) {
+TEST(BufferToUtf8, InternalConvertLatin1BufferToUTF8String) {
   std::string input;
   // Create all > 0 chars in a string
   for (int i = 1; i < 256; ++i) {
@@ -92,10 +114,12 @@ TEST(BufferToUtf8, ConvertLatin1BufferToUTF8String) {
       "\xc3\xbf";
 
   EXPECT_EQ(expected, output);
+  EXPECT_EQ(bytes_consumed, input.size());
+  EXPECT_EQ(bytes_filled, expected.size());
   EXPECT_EQ(0, error_cnt);
 }
 
-TEST(BufferToUtf8, ConvertCp1251BufferToUTF8String) {
+TEST(BufferToUtf8, InternalConvertCp1251BufferToUTF8String) {
   std::string input;
   // Create all > 0 chars in a string
   for (int i = 1; i < 256; ++i) {
@@ -135,10 +159,12 @@ TEST(BufferToUtf8, ConvertCp1251BufferToUTF8String) {
       "\xd1\x87\xd1\x88\xd1\x89\xd1\x8a\xd1\x8b\xd1\x8c\xd1\x8d\xd1\x8e\xd1"
       "\x8f";
   EXPECT_EQ(expected, output);
+  EXPECT_EQ(bytes_consumed, input.size());
+  EXPECT_EQ(bytes_filled, expected.size());
   EXPECT_EQ(1, error_cnt);
 }
 
-TEST(BufferToUtf8, ConvertCp1252BufferToUTF8String) {
+TEST(BufferToUtf8, InternalConvertCp1252BufferToUTF8String) {
   std::string input;
   // Create all > 0 chars in a string
   for (int i = 1; i < 256; ++i) {
@@ -178,8 +204,45 @@ TEST(BufferToUtf8, ConvertCp1252BufferToUTF8String) {
       "\xbb\xc3\xbc\xc3\xbd\xc3\xbe\xc3\xbf";
 
   EXPECT_EQ(expected, output);
+  EXPECT_EQ(bytes_consumed, input.size());
+  EXPECT_EQ(bytes_filled, expected.size());
   EXPECT_EQ(5, error_cnt);
 }
+
+TEST(BufferToUtf8, Init) {
+  BufferToUtf8 converter("UTF-16LE");
+  EXPECT_TRUE(converter.IsValid());
+  BufferToUtf8 converter2("non-existing encoding");
+  EXPECT_FALSE(converter2.IsValid());
+}
+
+TEST(BufferToUtf8, ConvertEncodingBufferToUTF8String_EmptyString) {
+  absl::string_view input = "";
+  absl::string_view expected_output = "";
+  TestBufferToUtf8 tester;
+  tester.TestConvertEncodingBufferToUTF8String(input, "CP1252", expected_output,
+                                               input.size(),
+                                               expected_output.size(), 0, true);
+}
+
+TEST(BufferToUtf8, ConvertEncodingBufferToUTF8String_Latin1) {
+  absl::string_view input = "abc";
+  absl::string_view expected_output = "abc";
+  TestBufferToUtf8 tester;
+  tester.TestConvertEncodingBufferToUTF8String(input, "LATIN1", expected_output,
+                                               input.size(),
+                                               expected_output.size(), 0, true);
+}
+
+TEST(BufferToUtf8, ConvertEncodingBufferToUTF8String_UTF16) {
+  absl::string_view input = "\x3d\xd8\x0c\xdc\x21";
+  absl::string_view expected_output = "\xf0\x9f\x90\x8c";
+  TestBufferToUtf8 tester;
+  tester.TestConvertEncodingBufferToUTF8String(input, "UTF-16LE",
+                                               expected_output, input.size(),
+                                               expected_output.size(), 0, true);
+}
+
 }  // namespace
 }  // namespace utils
 }  // namespace maldoca

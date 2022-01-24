@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/dev/ppb_device_ref_dev.h"
@@ -71,6 +70,12 @@ class CONTENT_EXPORT PepperDeviceEnumerationHostHelper {
                                     base::WeakPtr<Delegate> delegate,
                                     PP_DeviceType_Dev device_type,
                                     const GURL& document_url);
+
+  PepperDeviceEnumerationHostHelper(const PepperDeviceEnumerationHostHelper&) =
+      delete;
+  PepperDeviceEnumerationHostHelper& operator=(
+      const PepperDeviceEnumerationHostHelper&) = delete;
+
   ~PepperDeviceEnumerationHostHelper();
 
   // Returns true if the message has been handled.
@@ -110,8 +115,6 @@ class CONTENT_EXPORT PepperDeviceEnumerationHostHelper {
   std::unique_ptr<ScopedMonitoringRequest> monitor_;
 
   ppapi::host::ReplyMessageContext enumerate_devices_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperDeviceEnumerationHostHelper);
 };
 
 }  // namespace content

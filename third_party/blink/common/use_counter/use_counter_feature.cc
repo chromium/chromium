@@ -34,6 +34,8 @@ bool UseCounterFeature::IsValid() const {
                           mojom::CSSSampleId::kMaxValue) +
                           1;
     case mojom::UseCounterFeatureType::kPermissionsPolicyViolationEnforce:
+    case mojom::UseCounterFeatureType::kPermissionsPolicyHeader:
+    case mojom::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
       return value_ < static_cast<UseCounterFeature::EnumValue>(
                           mojom::PermissionsPolicyFeature::kMaxValue) +
                           1;

@@ -16,10 +16,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/display/display_util.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "ash/style/scoped_light_mode_as_default.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/location.h"
@@ -410,20 +410,6 @@ bool ClipboardHistoryControllerImpl::DeleteClipboardItemById(
   return false;
 }
 
-bool ClipboardHistoryControllerImpl::DeleteClipboardItemByClipboardData(
-    ui::ClipboardData* data) {
-  if (!history() || !data)
-    return false;
-
-  for (const auto& item : history()->GetItems()) {
-    if (item.data() == *data) {
-      DeleteClipboardHistoryItem(item);
-      return true;
-    }
-  }
-  return false;
-}
-
 void ClipboardHistoryControllerImpl::OnClipboardHistoryItemAdded(
     const ClipboardHistoryItem& item,
     bool is_duplicate) {
@@ -644,7 +630,7 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
             GetClipboard()->WriteClipboardData(std::move(original_data));
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(original_data)),
-      base::TimeDelta::FromMilliseconds(200));
+      base::Milliseconds(200));
 }
 
 void ClipboardHistoryControllerImpl::DeleteSelectedMenuItemIfAny() {

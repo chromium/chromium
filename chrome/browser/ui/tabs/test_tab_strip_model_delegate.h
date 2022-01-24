@@ -38,7 +38,6 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   void DuplicateContentsAt(int index) override;
   void MoveToExistingWindow(const std::vector<int>& indices,
                             int browser_index) override;
-  std::vector<std::u16string> GetExistingWindowsForMoveMenu() override;
   bool CanMoveTabsToWindow(const std::vector<int>& indices) override;
   void MoveTabsToNewWindow(const std::vector<int>& indices) override;
   void MoveGroupToNewWindow(const tab_groups::TabGroupId& group) override;
@@ -52,6 +51,9 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   bool ShouldDisplayFavicon(content::WebContents* web_contents) const override;
   bool CanReload() const override;
   void AddToReadLater(content::WebContents* web_contents) override;
+  void CacheWebContents(
+      const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
+          web_contents) override;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TEST_TAB_STRIP_MODEL_DELEGATE_H_

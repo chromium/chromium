@@ -23,7 +23,6 @@
 #include <stdint.h>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "util/file/file_io.h"
@@ -46,6 +45,10 @@ namespace crashpad {
 class CrashpadClient {
  public:
   CrashpadClient();
+
+  CrashpadClient(const CrashpadClient&) = delete;
+  CrashpadClient& operator=(const CrashpadClient&) = delete;
+
   ~CrashpadClient();
 
   //! \brief Starts a Crashpad handler process, performing any necessary
@@ -462,7 +465,8 @@ class CrashpadClient {
   //! \param[in] database The path to a Crashpad database.
   //! \param[in] url The URL of an upload server.
   //! \param[in] annotations Process annotations to set in each crash report.
-  static void StartCrashpadInProcessHandler(
+  //! \return `true` on success, `false` on failure with a message logged.
+  static bool StartCrashpadInProcessHandler(
       const base::FilePath& database,
       const std::string& url,
       const std::map<std::string, std::string>& annotations);
@@ -500,7 +504,7 @@ class CrashpadClient {
       const std::map<std::string, std::string>& annotations = {});
 
   //! \brief Requests that the handler begin in-process uploading of any
-  //! pending reports.
+  //!     pending reports.
   //!
   //! Once called the handler will start looking for pending reports to upload
   //! on another thread. This method does not block.
@@ -744,8 +748,6 @@ class CrashpadClient {
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   std::set<int> unhandled_signals_;
 #endif  // OS_APPLE
-
-  DISALLOW_COPY_AND_ASSIGN(CrashpadClient);
 };
 
 }  // namespace crashpad

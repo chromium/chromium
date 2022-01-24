@@ -50,3 +50,78 @@ readable, standards-based JavaScript.
 
 Local Modifications:
 (none)
+
+
+Name: Type Definition for W3C MediaStream Recording
+Short Name: @types/dom-mediacapture-record
+URL: https://www.npmjs.com/package/@types/dom-mediacapture-record
+Version: 1.0.10
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for w3c MediaStream Recording
+(https://w3c.github.io/mediacapture-record).
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for CSS Typed OM Level 1
+Short Name: @types/w3c-css-typed-object-model-level-1
+URL: https://www.npmjs.com/package/@types/w3c-css-typed-object-model-level-1
+Version: 20180410.0.3
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for css-typed-object-model-level-1
+(https://www.w3.org/TR/css-typed-om-1/).
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for W3C Image Capture
+Short Name: @types/w3c-image-capture
+URL: https://www.npmjs.com/package/@types/w3c-image-capture
+Version: 1.0.4
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for W3C Image Capture
+(https://www.w3.org/TR/image-capture/).
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for webrtc
+Short Name: @types/webrtc
+URL: https://www.npmjs.com/package/@types/webrtc
+Version: 0.0.29
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for webrtc (https://webrtc.org/).
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for Google Analytics
+Short Name: @types/google.analytics
+URL: https://www.npmjs.com/package/@types/google.analytics
+Version: 0.0.42
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for Google Analytics (Classic and
+Universal)
+(https://developers.google.com/analytics/devguides/collection/gajs/).
+
+Local Modifications:
+(none)

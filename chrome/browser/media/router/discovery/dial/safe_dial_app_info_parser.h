@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_app_info.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -35,6 +34,10 @@ class SafeDialAppInfoParser {
   };
 
   SafeDialAppInfoParser();
+
+  SafeDialAppInfoParser(const SafeDialAppInfoParser&) = delete;
+  SafeDialAppInfoParser& operator=(const SafeDialAppInfoParser&) = delete;
+
   virtual ~SafeDialAppInfoParser();
 
   // Callback function invoked when done parsing DIAL app info XML.
@@ -60,8 +63,6 @@ class SafeDialAppInfoParser {
                         data_decoder::DataDecoder::ValueOrError result);
 
   base::WeakPtrFactory<SafeDialAppInfoParser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SafeDialAppInfoParser);
 };
 
 }  // namespace media_router

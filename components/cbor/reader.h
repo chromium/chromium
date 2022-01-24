@@ -79,6 +79,10 @@ class CBOR_EXPORT Reader {
   // Config contains configuration for a CBOR parsing operation.
   struct CBOR_EXPORT Config {
     Config();
+
+    Config(const Config&) = delete;
+    Config& operator=(const Config&) = delete;
+
     ~Config();
 
     // Used to report the number of bytes of input consumed. This suppresses the
@@ -103,10 +107,10 @@ class CBOR_EXPORT Reader {
     // the motivating case and because it adds complexity to handle the ordering
     // correctly.)
     bool allow_invalid_utf8 = false;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Config);
   };
+
+  Reader(const Reader&) = delete;
+  Reader& operator=(const Reader&) = delete;
 
   ~Reader();
 
@@ -186,8 +190,6 @@ class CBOR_EXPORT Reader {
 
   base::span<const uint8_t> rest_;
   DecoderError error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(Reader);
 };
 
 }  // namespace cbor

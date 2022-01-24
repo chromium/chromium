@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_test.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ppapi/c/pp_instance.h"
@@ -20,6 +19,12 @@ class PepperFileSystemBrowserHostTest : public testing::Test,
                                         public BrowserPpapiHostTest {
  public:
   PepperFileSystemBrowserHostTest() {}
+
+  PepperFileSystemBrowserHostTest(const PepperFileSystemBrowserHostTest&) =
+      delete;
+  PepperFileSystemBrowserHostTest& operator=(
+      const PepperFileSystemBrowserHostTest&) = delete;
+
   ~PepperFileSystemBrowserHostTest() override {}
 
   void SetUp() override {
@@ -41,8 +46,6 @@ class PepperFileSystemBrowserHostTest : public testing::Test,
   // Needed because |host_| has checks for UI/IO threads.
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<PepperFileSystemBrowserHost> host_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFileSystemBrowserHostTest);
 };
 
 TEST_F(PepperFileSystemBrowserHostTest, GeneratePluginId) {

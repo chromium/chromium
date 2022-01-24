@@ -99,19 +99,20 @@
       base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
 
   __weak IncognitoReauthSceneAgent* weakSelf = self;
-  [self.reauthModule
-      attemptReauthWithLocalizedReason:authReason
-                  canReusePreviousAuth:false
-                               handler:^(ReauthenticationResult result) {
-                                 BOOL success =
-                                     (result ==
-                                      ReauthenticationResult::kSuccess);
-                                 weakSelf.authenticatedSinceLastForeground =
-                                     success;
-                                 if (completion) {
-                                   completion(success);
-                                 }
-                               }];
+  void (^completionHandler)(ReauthenticationResult) =
+      ^(ReauthenticationResult result) {
+        BOOL success = (result == ReauthenticationResult::kSuccess);
+        base::UmaHistogramBoolean(
+            "IOS.Incognito.BiometricReauthAttemptSuccessful", success);
+
+        weakSelf.authenticatedSinceLastForeground = success;
+        if (completion) {
+          completion(success);
+        }
+      };
+  [self.reauthModule attemptReauthWithLocalizedReason:authReason
+                                 canReusePreviousAuth:false
+                                              handler:completionHandler];
 }
 
 - (void)addObserver:(id<IncognitoReauthObserver>)observer {
@@ -188,9 +189,6 @@
 - (void)logEnabledHistogramOnce {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    if (!base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
-      return;
-    }
     DCHECK(self.localState)
         << "Local state is not yet available when trying to log "
            "IOS.Incognito.BiometricAuthEnabled. This code is called too "
@@ -198,7 +196,8 @@
     BOOL settingEnabled =
         self.localState &&
         self.localState->GetBoolean(prefs::kIncognitoAuthenticationSetting);
-    UMA_HISTOGRAM_BOOLEAN("IOS.Incognito.BiometricAuthEnabled", settingEnabled);
+    base::UmaHistogramBoolean("IOS.Incognito.BiometricAuthEnabled",
+                              settingEnabled);
   });
 }
 
@@ -216,8 +215,7 @@
 // Convenience method to check the pref associated with the reauth setting and
 // the feature flag.
 - (BOOL)featureEnabled {
-  return base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
-         self.localState &&
+  return self.localState &&
          self.localState->GetBoolean(prefs::kIncognitoAuthenticationSetting);
 }
 

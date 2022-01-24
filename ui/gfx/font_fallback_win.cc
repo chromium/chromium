@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -112,6 +111,9 @@ class CachedFontLinkSettings {
  public:
   static CachedFontLinkSettings* GetInstance();
 
+  CachedFontLinkSettings(const CachedFontLinkSettings&) = delete;
+  CachedFontLinkSettings& operator=(const CachedFontLinkSettings&) = delete;
+
   // Returns the linked fonts list correspond to |font|. Returned value will
   // never be null.
   const std::vector<Font>* GetLinkedFonts(const Font& font);
@@ -127,8 +129,6 @@ class CachedFontLinkSettings {
 
   // Map from font names to vectors of linked fonts.
   std::map<std::string, std::vector<Font> > cached_linked_fonts_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedFontLinkSettings);
 };
 
 // static

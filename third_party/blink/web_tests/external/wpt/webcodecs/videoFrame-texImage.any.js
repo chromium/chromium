@@ -24,8 +24,8 @@ function testGLCanvas(gl, width, height, expectedPixel, assertCompares) {
 
 function testTexImage2DFromVideoFrame(
     width, height, useTexSubImage2D, expectedPixel) {
-  let vfInit = {format: 'RGBA', timestamp: 0, codedWidth: width,
-                codedHeight: height};
+  let vfInit =
+      {format: 'RGBA', timestamp: 0, codedWidth: width, codedHeight: height};
   let argbData = new Uint32Array(vfInit.codedWidth * vfInit.codedHeight);
   argbData.fill(0xFF966432);  // 'rgb(50, 100, 150)';
   let frame = new VideoFrame(argbData, vfInit);
@@ -82,18 +82,48 @@ function testTexImage2DFromVideoFrame(
   testGLCanvas(gl, width, height, expectedPixel, assert_equals);
 }
 
-test(() => {
-  return testTexImage2DFromVideoFrame(48, 36, false, kSRGBPixel);
-}, 'drawImage(VideoFrame) with texImage2D (48x36) srgb.');
+function testTexImageWithClosedVideoFrame(useTexSubImage2D) {
+  let width = 128;
+  let height = 128;
+  let vfInit =
+      {format: 'RGBA', timestamp: 0, codedWidth: width, codedHeight: height};
+  let argbData = new Uint32Array(vfInit.codedWidth * vfInit.codedHeight);
+  argbData.fill(0xFF966432);  // 'rgb(50, 100, 150)';
+  let frame = new VideoFrame(argbData, vfInit);
 
-test(() => {
-  return testTexImage2DFromVideoFrame(48, 36, true, kSRGBPixel);
-}, 'drawImage(VideoFrame) with texSubImage2D (48x36) srgb.');
+  let gl_canvas = new OffscreenCanvas(width, height);
+  let gl = gl_canvas.getContext('webgl');
 
-test(() => {
-  return testTexImage2DFromVideoFrame(480, 360, false, kSRGBPixel);
-}, 'drawImage(VideoFrame) with texImage2D (480x360) srgb.');
+  frame.close();
+  if (useTexSubImage2D) {
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, frame);
+  } else {
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, frame);
+  }
 
-test(() => {
-  return testTexImage2DFromVideoFrame(480, 360, true, kSRGBPixel);
-}, 'drawImage(VideoFrame) with texSubImage2D (480x360) srgb.');
+  assert_equals(gl.getError(), gl.INVALID_OPERATION);
+}
+
+test(_ => {
+  testTexImage2DFromVideoFrame(48, 36, false, kSRGBPixel);
+}, 'texImage2D with 48x36 srgb VideoFrame.');
+
+test(_ => {
+  testTexImage2DFromVideoFrame(48, 36, true, kSRGBPixel);
+}, 'texSubImage2D with 48x36 srgb VideoFrame.');
+
+test(_ => {
+  testTexImage2DFromVideoFrame(480, 360, false, kSRGBPixel);
+}, 'texImage2D with 480x360 srgb VideoFrame.');
+
+test(_ => {
+  testTexImage2DFromVideoFrame(480, 360, true, kSRGBPixel);
+}, 'texSubImage2D with 480x360 srgb VideoFrame.');
+
+test(_ => {
+  testTexImageWithClosedVideoFrame(false);
+}, 'texImage2D with a closed VideoFrame.');
+
+test(_ => {
+  testTexImageWithClosedVideoFrame(true);
+}, 'texSubImage2D with a closed VideoFrame.');

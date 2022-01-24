@@ -24,7 +24,6 @@
   switch (badgeType) {
     case BadgeType::kBadgeTypePasswordSave:
       return [self passwordsSaveBadgeButton];
-      break;
     case BadgeType::kBadgeTypePasswordUpdate:
       return [self passwordsUpdateBadgeButton];
     case BadgeType::kBadgeTypeSaveCard:

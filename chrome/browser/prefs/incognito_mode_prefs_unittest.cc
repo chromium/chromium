@@ -19,17 +19,17 @@ class IncognitoModePrefsTest : public testing::Test {
 };
 
 TEST_F(IncognitoModePrefsTest, IntToAvailability) {
-  ASSERT_EQ(0, IncognitoModePrefs::ENABLED);
-  ASSERT_EQ(1, IncognitoModePrefs::DISABLED);
-  ASSERT_EQ(2, IncognitoModePrefs::FORCED);
+  ASSERT_EQ(0, static_cast<int>(IncognitoModePrefs::Availability::kEnabled));
+  ASSERT_EQ(1, static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
+  ASSERT_EQ(2, static_cast<int>(IncognitoModePrefs::Availability::kForced));
 
   IncognitoModePrefs::Availability incognito;
   EXPECT_TRUE(IncognitoModePrefs::IntToAvailability(0, &incognito));
-  EXPECT_EQ(IncognitoModePrefs::ENABLED, incognito);
+  EXPECT_EQ(IncognitoModePrefs::Availability::kEnabled, incognito);
   EXPECT_TRUE(IncognitoModePrefs::IntToAvailability(1, &incognito));
-  EXPECT_EQ(IncognitoModePrefs::DISABLED, incognito);
+  EXPECT_EQ(IncognitoModePrefs::Availability::kDisabled, incognito);
   EXPECT_TRUE(IncognitoModePrefs::IntToAvailability(2, &incognito));
-  EXPECT_EQ(IncognitoModePrefs::FORCED, incognito);
+  EXPECT_EQ(IncognitoModePrefs::Availability::kForced, incognito);
 
   EXPECT_FALSE(IncognitoModePrefs::IntToAvailability(10, &incognito));
   EXPECT_EQ(IncognitoModePrefs::kDefaultAvailability, incognito);
@@ -38,21 +38,22 @@ TEST_F(IncognitoModePrefsTest, IntToAvailability) {
 }
 
 TEST_F(IncognitoModePrefsTest, GetAvailability) {
-  prefs_.SetUserPref(
-      prefs::kIncognitoModeAvailability,
-      std::make_unique<base::Value>(IncognitoModePrefs::ENABLED));
-  EXPECT_EQ(IncognitoModePrefs::ENABLED,
-            IncognitoModePrefs::GetAvailability(&prefs_));
-
-  prefs_.SetUserPref(
-      prefs::kIncognitoModeAvailability,
-      std::make_unique<base::Value>(IncognitoModePrefs::DISABLED));
-  EXPECT_EQ(IncognitoModePrefs::DISABLED,
+  prefs_.SetUserPref(prefs::kIncognitoModeAvailability,
+                     std::make_unique<base::Value>(static_cast<int>(
+                         IncognitoModePrefs::Availability::kEnabled)));
+  EXPECT_EQ(IncognitoModePrefs::Availability::kEnabled,
             IncognitoModePrefs::GetAvailability(&prefs_));
 
   prefs_.SetUserPref(prefs::kIncognitoModeAvailability,
-                     std::make_unique<base::Value>(IncognitoModePrefs::FORCED));
-  EXPECT_EQ(IncognitoModePrefs::FORCED,
+                     std::make_unique<base::Value>(static_cast<int>(
+                         IncognitoModePrefs::Availability::kDisabled)));
+  EXPECT_EQ(IncognitoModePrefs::Availability::kDisabled,
+            IncognitoModePrefs::GetAvailability(&prefs_));
+
+  prefs_.SetUserPref(prefs::kIncognitoModeAvailability,
+                     std::make_unique<base::Value>(static_cast<int>(
+                         IncognitoModePrefs::Availability::kForced)));
+  EXPECT_EQ(IncognitoModePrefs::Availability::kForced,
             IncognitoModePrefs::GetAvailability(&prefs_));
 }
 
@@ -64,6 +65,6 @@ TEST_F(IncognitoModePrefsDeathTest, GetAvailabilityBadValue) {
   EXPECT_DCHECK_DEATH({
     IncognitoModePrefs::Availability availability =
         IncognitoModePrefs::GetAvailability(&prefs_);
-    EXPECT_EQ(IncognitoModePrefs::ENABLED, availability);
+    EXPECT_EQ(IncognitoModePrefs::Availability::kEnabled, availability);
   });
 }

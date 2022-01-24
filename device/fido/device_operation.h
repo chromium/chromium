@@ -48,6 +48,9 @@ class DeviceOperation : public GenericDeviceOperation {
         request_(std::move(request)),
         callback_(std::move(callback)) {}
 
+  DeviceOperation(const DeviceOperation&) = delete;
+  DeviceOperation& operator=(const DeviceOperation&) = delete;
+
   ~DeviceOperation() override = default;
 
  protected:
@@ -71,8 +74,6 @@ class DeviceOperation : public GenericDeviceOperation {
   FidoDevice* const device_ = nullptr;
   Request request_;
   DeviceResponseCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceOperation);
 };
 
 }  // namespace device

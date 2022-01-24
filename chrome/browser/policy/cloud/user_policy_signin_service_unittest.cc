@@ -12,6 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -438,7 +439,7 @@ TEST_F(UserPolicySigninServiceTest, SignInWithNonEnterpriseUser) {
   // signed-in user.
   ASSERT_FALSE(manager_->core()->service());
 
-  // Now sign in a non-enterprise user (blacklisted gmail.com domain).
+  // Now sign in a non-enterprise user (gmail.com domain).
   identity_test_env()->SetPrimaryAccount("non_enterprise_user@gmail.com",
                                          signin::ConsentLevel::kSync);
 
@@ -502,9 +503,10 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
   ASSERT_FALSE(manager_->IsClientRegistered());
   ASSERT_FALSE(IsRequestActive());
 
-  mock_store_->policy_ = std::make_unique<enterprise_management::PolicyData>();
-  mock_store_->policy_->set_request_token("fake token");
-  mock_store_->policy_->set_device_id("fake client id");
+  auto data = std::make_unique<enterprise_management::PolicyData>();
+  data->set_request_token("fake token");
+  data->set_device_id("fake client id");
+  mock_store_->set_policy_data_for_testing(std::move(data));
 
   // Complete initialization of the store.
   mock_store_->NotifyStoreLoaded();

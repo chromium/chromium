@@ -41,9 +41,6 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsShowingInOverviewKey, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowManagerManagesOpacityKey, false)
-DEFINE_UI_CLASS_PROPERTY_KEY(WindowPinType,
-                             kWindowPinTypeKey,
-                             WindowPinType::kNone)
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string,
                                    kWindowOverviewTitleKey,

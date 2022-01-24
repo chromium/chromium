@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/content_renderer_pepper_host_factory.h"
 #include "ppapi/host/ppapi_host.h"
@@ -25,6 +24,10 @@ class MockRendererPpapiHost : public RendererPpapiHost {
   MockRendererPpapiHost(RenderView* render_view,
                         RenderFrame* render_frame,
                         PP_Instance instance);
+
+  MockRendererPpapiHost(const MockRendererPpapiHost&) = delete;
+  MockRendererPpapiHost& operator=(const MockRendererPpapiHost&) = delete;
+
   ~MockRendererPpapiHost() override;
 
   ppapi::proxy::ResourceMessageTestSink& sink() { return sink_; }
@@ -72,8 +75,6 @@ class MockRendererPpapiHost : public RendererPpapiHost {
   bool has_user_gesture_;
 
   std::unique_ptr<FakePepperPluginInstance> plugin_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRendererPpapiHost);
 };
 
 }  // namespace content

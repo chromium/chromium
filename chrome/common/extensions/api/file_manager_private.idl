@@ -343,6 +343,21 @@ enum SharesheetLaunchSource {
   unknown
 };
 
+enum IOTaskState {
+  queued,
+  in_progress,
+  success,
+  error,
+  cancelled
+};
+
+enum IOTaskType {
+  copy,
+  move,
+  delete,
+  zip
+};
+
 // These three fields together uniquely identify a task.
 dictionary FileTaskDescriptor {
   DOMString appId;
@@ -898,6 +913,60 @@ dictionary HoldingSpaceState {
   DOMString[] itemUrls;
 };
 
+dictionary OpenWindowParams {
+  // The desired target directory when opening a new window. If omitted Files
+  // app displays the default directory: MyFiles.
+  DOMString? currentDirectoryURL;
+
+  // The URL for a file or directory to be selected once a new window is
+  // spawned.
+  DOMString? selectionURL;
+};
+
+dictionary IOTaskParams {
+  // Destination folder for tasks that require one. Not required by |delete|
+  // task.
+  [instanceof=DirectoryEntry] object? destinationFolder;
+};
+
+// IO Task Progress status, see file_manager::io_task::ProgressStatus.
+dictionary ProgressStatus {
+
+  // Type of the task sending the progress.
+  IOTaskType type;
+
+  // Current state of the task sending the progress.
+  IOTaskState state;
+
+  // Name of the first source entry.
+  DOMString sourceName;
+
+  // Number of remaining entries to be processed.
+  long numRemainingItems;
+
+  // Total number of entries to be processed.
+  long itemCount;
+
+  // Name of the destination folder for operations that transfer files to a
+  // directory (e.g. copy or move).
+  DOMString destinationName;
+
+  // ProgressStatus over all |sources|.
+  long bytesTransferred;
+
+  // Total size of all |sources|.
+  long totalBytes;
+
+  // The task id for this progress status.
+  long taskId;
+
+  // The estimate time to finish the operation.
+  double remainingSeconds;
+
+  // The name of the last error that happened.
+  DOMString errorName;
+};
+
 // Callback that does not take arguments.
 callback SimpleCallback = void();
 
@@ -967,7 +1036,15 @@ callback SearchFilesCallback = void([instanceOf=Entry] object[] entries);
 // contain at most one path per hash.
 callback SearchFilesByHashesCallback = void(object paths);
 
-callback ZipSelectionCallback = void(optional boolean success);
+// |zipId| The ID of the ZIP operation.
+// |totalBytes| Total number of bytes to be zipped.
+callback ZipSelectionCallback = void(long zipId, double totalBytes);
+
+// |result| Less than 0 if the operation is still in progress, 0 if the
+// operation finished successfully, or greater than 0 if the operation finished
+// with an error.
+// |bytes| Total number of bytes having been zipped so far.
+callback ZipProgressCallback = void(long result, double bytes);
 
 callback GetDriveConnectionStateCallback = void(DriveConnectionState result);
 
@@ -1023,9 +1100,6 @@ callback GetLinuxPackageInfoCallback =
 // |failure_reason| Reason for failure for a 'failed' status
 callback InstallLinuxPackageCallback = void(
     InstallLinuxPackageResponse response, DOMString failure_reason);
-
-// |result| String representing the detected coding system.
-callback DetectCharacterEncodingCallback = void(DOMString result);
 
 // |thumbnailDataUrl| A data URL for the thumbnail; |thumbnailDataUrl| is empty
 // if no thumbnail was available.
@@ -1287,11 +1361,12 @@ interface Functions {
 
   // Cancels an ongoing ZIP operation.
   // Does nothing if there is no matching ongoing ZIP operation.
-  // |parentEntry| Entry of the directory where the ZIP file is being created.
-  // |destName| Name of the ZIP file to cancel.
-  [nocompile]
-  static void cancelZip([instanceof=DirectoryEntry] object parentEntry,
-                        DOMString destName);
+  // |zipId| ID of the ZIP operation.
+  static void cancelZip(long zipId);
+
+  // Gets the progress of an ongoing ZIP operation.
+  // |zipId| ID of the ZIP operation.
+  static void getZipProgress(long zipId, ZipProgressCallback callback);
 
   // Retrieves the state of the current drive connection.
   // |callback|
@@ -1461,15 +1536,6 @@ interface Functions {
                                                long heightHint,
                                                GetThumbnailCallback callback);
 
-  // Returns a guessed character encoding of a hex-encoded string. Every 2
-  // characters of |bytes| represent one byte by 2-digit hexadecimal number.
-  // The result is preferred MIME name of the detected character encoding
-  // system. It is slightly different from IANA name.
-  // See third_party/ced/src/util/encodings/encodings.cc
-  // Returns an empty string if failed.
-  static DOMString detectCharacterEncoding(DOMString bytes,
-    DetectCharacterEncodingCallback callback);
-
   // Returns a list of Android picker apps to be shown in file selector.
   static void getAndroidPickerApps(DOMString[] extensions,
                                    GetAndroidPickerAppsCallback callback);
@@ -1518,6 +1584,21 @@ interface Functions {
   // Notifies the browser of the result of a dialog displayed earlier as a
   // result of the onDriveConfirmDialog event.
   static void notifyDriveDialogResult(DriveDialogResult result);
+
+  // Creates a new Files app window in the directory provided in `params`.
+  static void openWindow(OpenWindowParams params, BooleanCallback callback);
+
+  // Starts an I/O task of type |type| on |entries|. Task type specific
+  // parameters are passed via |params|.
+  [nocompile]
+  static void startIOTask(
+      IOTaskType type,
+      [instanceof=Entry] object[] entries,
+      IOTaskParams params);
+
+  // Cancels an I/O task by id. Task ids are communicated to the Files App in
+  // each I/O task's progress status.
+  static void cancelIOTask(long taskId);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.
@@ -1549,5 +1630,7 @@ interface Events {
   static void onCrostiniChanged(CrostiniEvent event);
 
   static void onTabletModeChanged(boolean enabled);
+
+  static void onIOTaskProgressStatus(ProgressStatus status);
 };
 };

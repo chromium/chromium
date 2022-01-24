@@ -264,6 +264,8 @@ STATIC_ASSERT_ENUM(kPostScript2, FPDF_PRINTMODE_POSTSCRIPT2);
 STATIC_ASSERT_ENUM(kPostScript3, FPDF_PRINTMODE_POSTSCRIPT3);
 STATIC_ASSERT_ENUM(kEmfWithReducedRasterization,
                    FPDF_PRINTMODE_EMF_IMAGE_MASKS);
+STATIC_ASSERT_ENUM(kPostScript3WithType42Fonts,
+                   FPDF_PRINTMODE_POSTSCRIPT3_TYPE42);
 #endif
 
 }  // namespace chrome_pdf

@@ -111,24 +111,3 @@ void TrustedVaultKeysChangedStateChecker::OnTrustedVaultKeysChanged() {
 
 void TrustedVaultKeysChangedStateChecker::
     OnTrustedVaultRecoverabilityChanged() {}
-
-ScopedScryptFeatureToggler::ScopedScryptFeatureToggler(
-    bool force_disabled,
-    bool use_for_new_passphrases) {
-  std::vector<base::Feature> enabled_features;
-  std::vector<base::Feature> disabled_features;
-  if (force_disabled) {
-    enabled_features.push_back(
-        switches::kSyncForceDisableScryptForCustomPassphrase);
-  } else {
-    disabled_features.push_back(
-        switches::kSyncForceDisableScryptForCustomPassphrase);
-  }
-  if (use_for_new_passphrases) {
-    enabled_features.push_back(switches::kSyncUseScryptForNewCustomPassphrases);
-  } else {
-    disabled_features.push_back(
-        switches::kSyncUseScryptForNewCustomPassphrases);
-  }
-  feature_list_.InitWithFeatures(enabled_features, disabled_features);
-}

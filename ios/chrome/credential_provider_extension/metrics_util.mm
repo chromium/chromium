@@ -15,3 +15,11 @@ void UpdateUMACountForKey(NSString* key) {
   NSInteger numberOfDisplay = [sharedDefaults integerForKey:key];
   [sharedDefaults setInteger:numberOfDisplay + 1 forKey:key];
 }
+
+void UpdateHistogramCount(NSString* histogram, int bucket) {
+  NSString* key = app_group::HistogramCountKey(histogram, bucket);
+
+  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
+  NSInteger count = [sharedDefaults integerForKey:key];
+  [sharedDefaults setInteger:count + 1 forKey:key];
+}

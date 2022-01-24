@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
@@ -26,13 +28,17 @@ namespace apps {
 
 // An app publisher (in the App Service sense) of Borealis apps.
 // See components/services/app_service/README.md.
+//
+// TODO(crbug.com/1253250):
+// 1. Remove the parent class apps::PublisherBase.
+// 2. Remove all apps::mojom related code.
 class BorealisApps
     : public apps::PublisherBase,
+      public AppPublisher,
       public guest_os::GuestOsRegistryService::Observer,
       public borealis::BorealisWindowManager::AnonymousAppObserver {
  public:
-  BorealisApps(const mojo::Remote<apps::mojom::AppService>& app_service,
-               Profile* profile);
+  explicit BorealisApps(AppServiceProxy* proxy);
   ~BorealisApps() override;
 
   // Disallow copy and assign.
@@ -44,9 +50,22 @@ class BorealisApps
   guest_os::GuestOsRegistryService* Registry();
 
   // Turns GuestOsRegistry's "app" into one the AppService can use.
+  std::unique_ptr<App> CreateApp(
+      const guest_os::GuestOsRegistryService::Registration& registration,
+      bool generate_new_icon_key);
+
+  // Turns GuestOsRegistry's "app" into one the AppService can use.
   apps::mojom::AppPtr Convert(
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool new_icon_key);
+
+  // apps::AppPublisher overrides.
+  void LoadIcon(const std::string& app_id,
+                const IconKey& icon_key,
+                IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                apps::LoadIconCallback callback) override;
 
   // apps::PublisherBase overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

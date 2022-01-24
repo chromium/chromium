@@ -167,6 +167,8 @@ viz_component("common") {
     "frame_sinks/begin_frame_args.h",
     "frame_sinks/begin_frame_source.cc",
     "frame_sinks/begin_frame_source.h",
+    "frame_sinks/blit_request.cc",
+    "frame_sinks/blit_request.h",
     "frame_sinks/copy_output_request.cc",
     "frame_sinks/copy_output_request.h",
     "frame_sinks/copy_output_result.cc",
@@ -179,6 +181,8 @@ viz_component("common") {
     "frame_timing_details_map.h",
     "gl_i420_converter.cc",
     "gl_i420_converter.h",
+    "gl_nv12_converter.cc",
+    "gl_nv12_converter.h",
     "gl_scaler.cc",
     "gl_scaler.h",
     "gpu/context_cache_controller.cc",
@@ -229,6 +233,8 @@ viz_component("common") {
     "quads/render_pass_io.cc",
     "quads/render_pass_io.h",
     "quads/selection.h",
+    "quads/shared_element_draw_quad.cc",
+    "quads/shared_element_draw_quad.h",
     "quads/shared_quad_state.cc",
     "quads/shared_quad_state.h",
     "quads/solid_color_draw_quad.cc",
@@ -259,10 +265,13 @@ viz_component("common") {
     "resources/shared_bitmap.h",
     "resources/transferable_resource.cc",
     "resources/transferable_resource.h",
+    "shared_element_resource_id.cc",
+    "shared_element_resource_id.h",
     "skia_helper.cc",
     "skia_helper.h",
     "surfaces/child_local_surface_id_allocator.cc",
     "surfaces/child_local_surface_id_allocator.h",
+    "surfaces/frame_sink_bundle_id.h",
     "surfaces/frame_sink_id.cc",
     "surfaces/frame_sink_id.h",
     "surfaces/frame_sink_id_allocator.cc",
@@ -271,6 +280,8 @@ viz_component("common") {
     "surfaces/local_surface_id.h",
     "surfaces/parent_local_surface_id_allocator.cc",
     "surfaces/parent_local_surface_id_allocator.h",
+    "surfaces/region_capture_bounds.cc",
+    "surfaces/region_capture_bounds.h",
     "surfaces/scoped_surface_id_allocator.cc",
     "surfaces/scoped_surface_id_allocator.h",
     "surfaces/subtree_capture_id.cc",
@@ -296,7 +307,6 @@ viz_component("common") {
 
   deps = [
     "//base",
-    "//base/util/values:values_util",
     "//build:chromeos_buildflags",
 
     # TODO(staraz): cc/base was added because SharedQuadState includes
@@ -317,8 +327,8 @@ viz_component("common") {
     "//third_party/libyuv",
     "//ui/gfx",
     "//ui/gfx:color_space",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
     "//ui/gl",
     "//ui/latency",
   ]
@@ -382,15 +392,14 @@ viz_source_set("unit_tests") {
     "yuv_readback_unittest.cc",
   ]
 
-  if (enable_gl_backend_tests) {
+  if (enable_gl_renderer_tests) {
     sources += [
       "gl_i420_converter_pixeltest.cc",
       "gl_i420_converter_unittest.cc",
+      "gl_nv12_converter_pixeltest.cc",
       "gl_scaler_overscan_pixeltest.cc",
       "gl_scaler_pixeltest.cc",
       "gl_scaler_shader_pixeltest.cc",
-      "gl_scaler_test_util.cc",
-      "gl_scaler_test_util.h",
       "gl_scaler_unittest.cc",
     ]
   }
@@ -412,6 +421,7 @@ viz_source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx",
     "//ui/gfx:color_space",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/latency",
   ]

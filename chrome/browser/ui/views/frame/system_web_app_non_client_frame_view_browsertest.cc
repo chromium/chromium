@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
@@ -15,6 +17,7 @@
 using SystemWebAppNonClientFrameViewBrowserTest =
     web_app::SystemWebAppManagerBrowserTest;
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // System Web Apps don't get the web app menu button.
 IN_PROC_BROWSER_TEST_P(SystemWebAppNonClientFrameViewBrowserTest,
                        HideWebAppMenuButton) {
@@ -45,3 +48,4 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppNonClientFrameViewBrowserTest,
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppNonClientFrameViewBrowserTest);
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

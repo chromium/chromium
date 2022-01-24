@@ -79,12 +79,12 @@ public class AllPasswordsBottomSheetViewTest {
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
-        mModel = AllPasswordsBottomSheetProperties.createDefaultModel(
-                EXAMPLE_ORIGIN, mDismissHandler, mSearchQueryCallback);
-        mBottomSheetController = mActivityTestRule.getActivity()
-                                         .getRootUiCoordinatorForTesting()
-                                         .getBottomSheetController();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel = AllPasswordsBottomSheetProperties.createDefaultModel(
+                    EXAMPLE_ORIGIN, mDismissHandler, mSearchQueryCallback);
+            mBottomSheetController = mActivityTestRule.getActivity()
+                                             .getRootUiCoordinatorForTesting()
+                                             .getBottomSheetController();
             mAllPasswordsBottomSheetView =
                     new AllPasswordsBottomSheetView(getActivity(), mBottomSheetController);
             AllPasswordsBottomSheetCoordinator.setUpModelChangeProcessor(

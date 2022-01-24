@@ -17,9 +17,9 @@
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/mac/io_surface.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
 #include "ui/gfx/video_types.h"
 
 @class AVSampleBufferDisplayLayer;
@@ -45,6 +45,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
  public:
   CARendererLayerTree(bool allow_av_sample_buffer_display_layer,
                       bool allow_solid_color_layers);
+
+  CARendererLayerTree(const CARendererLayerTree&) = delete;
+  CARendererLayerTree& operator=(const CARendererLayerTree&) = delete;
 
   // This will remove all CALayers from this tree from their superlayer.
   ~CARendererLayerTree();
@@ -83,6 +86,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
    public:
     RootLayer();
 
+    RootLayer(const RootLayer&) = delete;
+    RootLayer& operator=(const RootLayer&) = delete;
+
     // This will remove |ca_layer| from its superlayer, if |ca_layer| is
     // non-nil.
     ~RootLayer();
@@ -112,9 +118,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
     std::vector<ClipAndSortingLayer> clip_and_sorting_layers_;
     base::scoped_nsobject<CALayer> ca_layer_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(RootLayer);
   };
   class ClipAndSortingLayer {
    public:
@@ -124,6 +127,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
                         unsigned sorting_context_id,
                         bool is_singleton_sorting_context);
     ClipAndSortingLayer(ClipAndSortingLayer&& layer);
+
+    ClipAndSortingLayer(const ClipAndSortingLayer&) = delete;
+    ClipAndSortingLayer& operator=(const ClipAndSortingLayer&) = delete;
 
     // See the behavior of RootLayer for the effects of these functions on the
     // |ca_layer| member and |old_layer| argument.
@@ -142,14 +148,14 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     bool is_singleton_sorting_context_ = false;
     base::scoped_nsobject<CALayer> clipping_ca_layer_;
     base::scoped_nsobject<CALayer> rounded_corner_ca_layer_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ClipAndSortingLayer);
   };
   class TransformLayer {
    public:
     TransformLayer(const gfx::Transform& transform);
     TransformLayer(TransformLayer&& layer);
+
+    TransformLayer(const TransformLayer&) = delete;
+    TransformLayer& operator=(const TransformLayer&) = delete;
 
     // See the behavior of RootLayer for the effects of these functions on the
     // |ca_layer| member and |old_layer| argument.
@@ -163,9 +169,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     gfx::Transform transform_;
     std::vector<ContentLayer> content_layers_;
     base::scoped_nsobject<CALayer> ca_layer_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TransformLayer);
   };
   class ContentLayer {
    public:
@@ -181,6 +184,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
                  unsigned filter,
                  gfx::ProtectedVideoType protected_video_type);
     ContentLayer(ContentLayer&& layer);
+
+    ContentLayer(const ContentLayer&) = delete;
+    ContentLayer& operator=(const ContentLayer&) = delete;
 
     // See the behavior of RootLayer for the effects of these functions on the
     // |ca_layer| member and |old_layer| argument.
@@ -226,9 +232,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // Layer used to colorize content when it updates, if borders are
     // enabled.
     base::scoped_nsobject<CALayer> update_indicator_layer_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ContentLayer);
   };
 
   RootLayer root_layer_;
@@ -236,9 +239,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   bool has_committed_ = false;
   const bool allow_av_sample_buffer_display_layer_ = true;
   const bool allow_solid_color_layers_ = true;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CARendererLayerTree);
 };
 
 }  // namespace ui

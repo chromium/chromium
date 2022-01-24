@@ -9,9 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/insecure_credentials_helper.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/ios/browser/password_protection/password_protection_service.h"
@@ -38,8 +41,16 @@ class ChromePasswordProtectionService
     : public safe_browsing::PasswordProtectionService,
       public KeyedService {
  public:
-  ChromePasswordProtectionService(SafeBrowsingService* sb_service,
-                                  ChromeBrowserState* browser_state);
+  using ChangePhishedCredentialsCallback = base::RepeatingCallback<void(
+      password_manager::PasswordStoreInterface*,
+      const password_manager::MatchingReusedCredential&)>;
+  ChromePasswordProtectionService(
+      SafeBrowsingService* sb_service,
+      ChromeBrowserState* browser_state,
+      ChangePhishedCredentialsCallback add_phished_credentials =
+          base::BindRepeating(&password_manager::AddPhishedCredentials),
+      ChangePhishedCredentialsCallback remove_phished_credentials =
+          base::BindRepeating(&password_manager::RemovePhishedCredentials));
   ~ChromePasswordProtectionService() override;
 
   // PasswordProtectionServiceBase:
@@ -123,7 +134,10 @@ class ChromePasswordProtectionService
 
   AccountInfo GetAccountInfo() const override;
 
-  AccountInfo GetSignedInNonSyncAccount(
+  safe_browsing::ChromeUserPopulation::UserPopulation GetUserPopulationPref()
+      const override;
+
+  AccountInfo GetAccountInfoForUsername(
       const std::string& username) const override;
 
   safe_browsing::LoginReputationClientRequest::PasswordReuseEvent::
@@ -153,9 +167,7 @@ class ChromePasswordProtectionService
 
   bool IsPrimaryAccountSignedIn() const override;
 
-  bool IsPrimaryAccountGmail() const override;
-
-  bool IsOtherGaiaAccountGmail(const std::string& username) const override;
+  bool IsAccountGmail(const std::string& username) const override;
 
   bool IsInExcludedCountry() override;
 
@@ -189,30 +201,9 @@ class ChromePasswordProtectionService
           InteractionResult interaction_result);
 
   // Gets the detailed warning text that should show in the modal warning
-  // dialog. |placeholder_offsets| are the start points/indices of the
-  // placeholders that are passed into the resource string. It is only set for
-  // saved passwords.
+  // dialog.
   std::u16string GetWarningDetailText(
-      safe_browsing::ReusedPasswordAccountType password_type,
-      std::vector<size_t>* placeholder_offsets) const;
-
-  // Gets the warning text for saved password reuse warnings.
-  // |placeholder_offsets| are the start points/indices of the placeholders that
-  // are passed into the resource string.
-  std::u16string GetWarningDetailTextForSavedPasswords(
-      std::vector<size_t>* placeholder_offsets) const;
-
-  // Gets the warning text of the saved password reuse warnings that tells the
-  // user to check their saved passwords. |placeholder_offsets| are the start
-  // points/indices of the placeholders that are passed into the resource
-  // string.
-  std::u16string GetWarningDetailTextToCheckSavedPasswords(
-      std::vector<size_t>* placeholder_offsets) const;
-
-  // Get placeholders for the warning detail text for saved password reuse
-  // warnings.
-  std::vector<std::u16string> GetPlaceholdersForSavedPasswordWarningText()
-      const;
+      safe_browsing::ReusedPasswordAccountType password_type) const;
 
   // Creates, starts, and tracks a new request.
   void StartRequest(
@@ -237,6 +228,7 @@ class ChromePasswordProtectionService
                            VerifySendsPingForAboutBlank);
 
   void FillUserPopulation(
+      const GURL& main_frame_url,
       safe_browsing::LoginReputationClientRequest* request_proto) override;
 
  private:
@@ -245,16 +237,16 @@ class ChromePasswordProtectionService
   // Removes all warning requests for |web_state|.
   void RemoveWarningRequestsByWebState(web::WebState* web_state);
 
-  password_manager::PasswordStore* GetStoreForReusedCredential(
+  password_manager::PasswordStoreInterface* GetStoreForReusedCredential(
       const password_manager::MatchingReusedCredential& reused_credential);
 
   // Returns the profile PasswordStore associated with this instance.
-  password_manager::PasswordStore* GetProfilePasswordStore() const;
+  password_manager::PasswordStoreInterface* GetProfilePasswordStore() const;
 
   // Returns the GAIA-account-scoped PasswordStore associated with this
   // instance. The account password store contains passwords stored in the
   // account and is accessible only when the user is signed in and non syncing.
-  password_manager::PasswordStore* GetAccountPasswordStore() const;
+  password_manager::PasswordStoreInterface* GetAccountPasswordStore() const;
 
   // Gets prefs associated with |browser_state_|.
   PrefService* GetPrefs() const;
@@ -268,6 +260,14 @@ class ChromePasswordProtectionService
       show_warning_callbacks_;
 
   ChromeBrowserState* browser_state_;
+
+  // Calls `password_manager::AddPhishedCredentials`. Used to facilitate
+  // testing.
+  ChangePhishedCredentialsCallback add_phished_credentials_;
+
+  // Calls `password_manager::RemovePhishedCredentials`. Used to facilitate
+  // testing.
+  ChangePhishedCredentialsCallback remove_phished_credentials_;
 
   base::WeakPtrFactory<ChromePasswordProtectionService> weak_factory_{this};
 };

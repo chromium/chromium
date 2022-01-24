@@ -35,12 +35,16 @@ class CheckLockStateInDestructor
     : public base::RefCounted<CheckLockStateInDestructor> {
  public:
   CheckLockStateInDestructor() {}
+
+  CheckLockStateInDestructor(const CheckLockStateInDestructor&) = delete;
+  CheckLockStateInDestructor& operator=(const CheckLockStateInDestructor&) =
+      delete;
+
   void Method() { ++called_num; }
 
  private:
   friend class base::RefCounted<CheckLockStateInDestructor>;
   ~CheckLockStateInDestructor() { CheckLockState(); }
-  DISALLOW_COPY_AND_ASSIGN(CheckLockStateInDestructor);
 };
 
 void TestCallback_0() {

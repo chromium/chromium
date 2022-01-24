@@ -55,9 +55,12 @@ XRCanvasInputProvider::XRCanvasInputProvider(XRSession* session,
                                              HTMLCanvasElement* canvas)
     : session_(session), canvas_(canvas) {
   listener_ = MakeGarbageCollected<XRCanvasInputEventListener>(this);
-  canvas->addEventListener(event_type_names::kPointerdown, listener_);
-  canvas->addEventListener(event_type_names::kPointerup, listener_);
-  canvas->addEventListener(event_type_names::kPointercancel, listener_);
+  canvas->addEventListener(event_type_names::kPointerdown, listener_,
+                           /*use_capture=*/false);
+  canvas->addEventListener(event_type_names::kPointerup, listener_,
+                           /*use_capture=*/false);
+  canvas->addEventListener(event_type_names::kPointercancel, listener_,
+                           /*use_capture=*/false);
 }
 
 XRCanvasInputProvider::~XRCanvasInputProvider() {}
@@ -66,9 +69,12 @@ void XRCanvasInputProvider::Stop() {
   if (!listener_) {
     return;
   }
-  canvas_->removeEventListener(event_type_names::kPointerdown, listener_);
-  canvas_->removeEventListener(event_type_names::kPointerup, listener_);
-  canvas_->removeEventListener(event_type_names::kPointercancel, listener_);
+  canvas_->removeEventListener(event_type_names::kPointerdown, listener_,
+                               /*use_capture=*/false);
+  canvas_->removeEventListener(event_type_names::kPointerup, listener_,
+                               /*use_capture=*/false);
+  canvas_->removeEventListener(event_type_names::kPointercancel, listener_,
+                               /*use_capture=*/false);
   canvas_ = nullptr;
   listener_ = nullptr;
 }

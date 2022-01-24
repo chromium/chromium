@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/media/media_devices_util.h"
@@ -73,6 +73,9 @@ class AudioOutputAuthorizationHandler::TraceScope {
                                       "device id", device_id);
   }
 
+  TraceScope(const TraceScope&) = delete;
+  TraceScope& operator=(const TraceScope&) = delete;
+
   ~TraceScope() {
     if (waiting_for_params_) {
       TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "Getting audio parameters", this,
@@ -124,8 +127,6 @@ class AudioOutputAuthorizationHandler::TraceScope {
  private:
   bool checking_access_ = false;
   bool waiting_for_params_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceScope);
 };
 
 AudioOutputAuthorizationHandler::AudioOutputAuthorizationHandler(
@@ -219,8 +220,8 @@ void AudioOutputAuthorizationHandler::UMALogDeviceAuthorizationTime(
     base::TimeTicks auth_start_time) {
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.Audio.OutputDeviceAuthorizationTime",
                              base::TimeTicks::Now() - auth_start_time,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMilliseconds(5000), 50);
+                             base::Milliseconds(1), base::Milliseconds(5000),
+                             50);
 }
 
 void AudioOutputAuthorizationHandler::HashDeviceId(

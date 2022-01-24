@@ -25,8 +25,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "components/storage_monitor/media_storage_util.h"
@@ -255,8 +255,7 @@ void EjectDeviceInThreadPool(
                                 0, nullptr, 0, &bytes_returned, nullptr);
   if (!locked) {
     const int kNumLockRetries = 1;
-    const base::TimeDelta kLockRetryInterval =
-        base::TimeDelta::FromMilliseconds(500);
+    const base::TimeDelta kLockRetryInterval = base::Milliseconds(500);
     if (iteration < kNumLockRetries) {
       // Try again -- the lock may have been a transient one. This happens on
       // things like AV disk lock for some reason, or another process

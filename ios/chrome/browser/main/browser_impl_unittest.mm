@@ -6,7 +6,6 @@
 
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/fake_browser_observer.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -48,11 +47,6 @@ TEST_F(BrowserImplTest, BrowserDestroyed) {
   std::unique_ptr<Browser> browser =
       std::make_unique<BrowserImpl>(chrome_browser_state_.get());
   FakeBrowserObserver observer(browser.get());
-  // Simulate shut down order from BrowserViewWrangler, where the TabModel's
-  // |-browserStateDestroyed| is expected to be executed before the
-  // TabModelList's destructor.
-  // TODO(crbug.com/783777): Remove when TabModel is no longer used.
-  [browser->GetTabModel() disconnect];
   browser = nullptr;
   EXPECT_TRUE(observer.browser_destroyed());
 }

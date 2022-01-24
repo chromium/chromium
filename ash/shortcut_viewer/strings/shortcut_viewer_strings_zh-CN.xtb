@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">在无痕模式下打开新窗口</translation>
 <translation id="152892567002884378">调高音量</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />，然后按 <ph name="ESC" /> 键</translation>
-<translation id="1633761758045565086">将焦点移至一个帮助对话框</translation>
 <translation id="1652741121070700329">移到上一个字词的开头</translation>
 <translation id="1679841710523778799">调高亮度</translation>
 <translation id="168356808214100546">在按住 <ph name="ALT" /> 键的同时，多次点按 <ph name="TAB" /> 键直到切换至您要打开的窗口，然后松开手指。</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">向下滚动网页</translation>
 <translation id="2530896289327917474">开启或关闭光标浏览模式</translation>
 <translation id="2574014812750545982">重置网页的缩放级别</translation>
-<translation id="2596078834055697711">截取窗口屏幕截图</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />，然后按 <ph name="TAB" /> 键或<ph name="RIGHT" />键</translation>
 <translation id="2750942583782703988">重新加载当前网页</translation>
 <translation id="2764005613199379871">将焦点置于搜索地址栏中</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">快捷键</translation>
 <translation id="3084301071537457911">突出显示任务栏中的下一项</translation>
 <translation id="309173601632226815">突出显示任务栏中的启动器按钮</translation>
-<translation id="3105917916468784889">生成屏幕截图</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">将地址栏设为焦点</translation>
 <translation id="3256109297135787951">取消任务栏中某项内容的突出显示状态</translation>
 <translation id="3288816184963444640">关闭当前窗口</translation>
+<translation id="3350805006883559974">在顶部悬浮活动窗口</translation>
 <translation id="3407560819924487926">启动任务管理器</translation>
 <translation id="3417835166382867856">搜索标签页</translation>
 <translation id="3422679037938588196">转到上一个相符的搜索结果</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">查看键盘快捷键助手</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> 或 <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">打开状态区（其中显示了您的帐号头像）</translation>
-<translation id="4642092649622328492">截取局部屏幕截图</translation>
 <translation id="4698850295812410683">显示触控笔工具</translation>
 <translation id="4801989101741319327">移到下一个字词的末尾</translation>
 <translation id="4866066940972151697">启用右侧桌面</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">将活动窗口移至左侧的桌面</translation>
 <translation id="88986195241502842">向下翻页</translation>
 <translation id="8924883688469390268">切换回上一位用户</translation>
+<translation id="8941626538514548667">聚焦于浏览器中的网络内容</translation>
 <translation id="8977648847395357314">选择地址栏中的内容</translation>
 <translation id="8982190978301344584">显示包含可用 IME 列表的菜单</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 至 8</translation>

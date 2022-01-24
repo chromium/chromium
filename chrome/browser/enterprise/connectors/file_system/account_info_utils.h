@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_ACCOUNT_INFO_UTILS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_ACCOUNT_INFO_UTILS_H_
 
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "components/prefs/pref_service.h"
 
 class PrefRegistrySimple;
@@ -42,13 +43,18 @@ bool GetFileSystemOAuth2Tokens(PrefService* prefs,
                                const std::string& service_provider,
                                std::string* access_token,
                                std::string* refresh_token);
+// Retrieves a list of prefs paths for connector account info.
+std::vector<std::string> GetFileSystemConnectorAccountInfoPrefs(
+    const std::string& service_provider);
 
-// Stores/retrieves the default folder id and name stored for the given service
-// provider.
+// Stores/retrieves/clears the default folder id and name stored for the given
+// service provider.
 void SetDefaultFolder(PrefService* prefs,
                       const std::string& service_provider,
                       std::string folder_id,
                       std::string folder_name);
+void ClearDefaultFolder(PrefService* prefs,
+                        const std::string& service_provider);
 std::string GetDefaultFolderId(PrefService* prefs,
                                const std::string& service_provider);
 std::string GetDefaultFolderLink(PrefService* prefs,
@@ -60,11 +66,26 @@ std::string GetDefaultFolderName(PrefService* prefs,
 // provider.
 void SetFileSystemAccountInfo(PrefService* prefs,
                               const std::string& service_provider,
-                              base::DictionaryValue account_info);
+                              base::Value account_info);
 bool ClearFileSystemAccountInfo(PrefService* prefs,
                                 const std::string& service_provider);
 base::Value GetFileSystemAccountInfo(PrefService* prefs,
                                      const std::string& service_provider);
+
+struct AccountInfo {
+  std::string account_name;
+  std::string account_login;
+  std::string folder_link;
+  std::string folder_name;
+
+  AccountInfo();
+  ~AccountInfo();
+  AccountInfo(const AccountInfo& other);
+};
+
+absl::optional<AccountInfo> GetFileSystemAccountInfoFromPrefs(
+    const FileSystemSettings& settings,
+    PrefService* prefs);
 
 }  // namespace enterprise_connectors
 

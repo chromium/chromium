@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PatternMatcher;
 import android.os.Process;
@@ -178,13 +177,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     public void updateCredentials(
             Account account, Activity activity, final Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
-        if (!hasManageAccountsPermission()) {
-            if (callback != null) {
-                ThreadUtils.postOnUiThread(callback.bind(false));
-            }
-            return;
-        }
-
         AccountManagerCallback<Bundle> realCallback = future -> {
             Bundle bundle = null;
             try {
@@ -224,15 +216,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
     protected boolean hasGetAccountsPermission() {
         return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
                        Manifest.permission.GET_ACCOUNTS, Process.myPid(), Process.myUid())
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
-    protected boolean hasManageAccountsPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return true;
-        }
-        return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
-                       "android.permission.MANAGE_ACCOUNTS", Process.myPid(), Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
     }
 }

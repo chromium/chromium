@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 

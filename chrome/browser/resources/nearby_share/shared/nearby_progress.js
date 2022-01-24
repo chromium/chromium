@@ -35,19 +35,6 @@ Polymer({
       value: false,
     },
 
-    // TODO(crbug.com/1165852) Remove percentage option, not used in practice
-    /**
-     * The progress percentage to display, expressed as a number between 0 and
-     * 100. If null, then an animation representing an indeterminate state is
-     * shown, unless |hasError| is true.
-     * @type {number}
-     */
-    progressPercentage: {
-      type: Number,
-      value: 0,
-      observer: 'updateProgress_',
-    },
-
     /**
      * If true, then set progress stroke to red, stop any animation, show
      * 100% instead, and set icons to grey. If |showProgress| is |NONE|, then
@@ -83,18 +70,10 @@ Polymer({
     }
     if (this.showIndeterminateProgress) {
       classes.push('indeterminate-progress');
-    } else if (!this.progressPercentage) {
+    } else {
       classes.push('hidden');
     }
     return classes.join(' ');
-  },
-
-  /**
-   * Updates the css to set the progress percentage displayed to |value|.
-   * @param {?number} value
-   */
-  updateProgress_(value) {
-    this.updateStyles({'--progress-percentage': value});
   },
 
   /**

@@ -14,8 +14,8 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -47,6 +47,7 @@ class ProfileShortcutManagerTest : public testing::Test {
   }
 
   void SetUp() override {
+    ProfileShortcutManagerWin::DisableUnpinningForUnitTests();
     TestingBrowserProcess* browser_process =
         TestingBrowserProcess::GetGlobal();
     profile_manager_ = std::make_unique<TestingProfileManager>(browser_process);

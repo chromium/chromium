@@ -74,6 +74,10 @@ namespace android {
 class CPPClass {
  public:
   CPPClass();
+
+  CPPClass(const CPPClass&) = delete;
+  CPPClass& operator=(const CPPClass&) = delete;
+
   ~CPPClass();
 
   // Java @CalledByNative methods implicitly available to C++ via the _jni.h
@@ -103,8 +107,6 @@ class CPPClass {
 
  private:
   std::map<long, std::string> map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CPPClass);
 };
 
 }  // namespace android

@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_TYPECD_FAKE_TYPECD_CLIENT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/typecd/typecd_client.h"
 
 namespace chromeos {

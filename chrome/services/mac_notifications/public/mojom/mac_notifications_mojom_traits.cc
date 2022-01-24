@@ -11,13 +11,13 @@ mac_notifications::mojom::NotificationOperation
 EnumTraits<mac_notifications::mojom::NotificationOperation,
            NotificationOperation>::ToMojom(NotificationOperation input) {
   switch (input) {
-    case NotificationOperation::NOTIFICATION_CLICK:
+    case NotificationOperation::kClick:
       return mac_notifications::mojom::NotificationOperation::kClick;
-    case NotificationOperation::NOTIFICATION_CLOSE:
+    case NotificationOperation::kClose:
       return mac_notifications::mojom::NotificationOperation::kClose;
-    case NotificationOperation::NOTIFICATION_SETTINGS:
+    case NotificationOperation::kSettings:
       return mac_notifications::mojom::NotificationOperation::kSettings;
-    case NotificationOperation::NOTIFICATION_DISABLE_PERMISSION:
+    case NotificationOperation::kDisablePermission:
       // This is not supported in macOS notifications.
       break;
   }
@@ -32,13 +32,13 @@ bool EnumTraits<mac_notifications::mojom::NotificationOperation,
               NotificationOperation* output) {
   switch (input) {
     case mac_notifications::mojom::NotificationOperation::kClick:
-      *output = NotificationOperation::NOTIFICATION_CLICK;
+      *output = NotificationOperation::kClick;
       return true;
     case mac_notifications::mojom::NotificationOperation::kClose:
-      *output = NotificationOperation::NOTIFICATION_CLOSE;
+      *output = NotificationOperation::kClose;
       return true;
     case mac_notifications::mojom::NotificationOperation::kSettings:
-      *output = NotificationOperation::NOTIFICATION_SETTINGS;
+      *output = NotificationOperation::kSettings;
       return true;
   }
   NOTREACHED();

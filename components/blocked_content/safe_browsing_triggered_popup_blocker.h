@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_BLOCKED_CONTENT_SAFE_BROWSING_TRIGGERED_POPUP_BLOCKER_H_
 #define COMPONENTS_BLOCKED_CONTENT_SAFE_BROWSING_TRIGGERED_POPUP_BLOCKER_H_
 
-#include <memory>
-
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
@@ -77,6 +75,12 @@ class SafeBrowsingTriggeredPopupBlocker
   // Creates a SafeBrowsingTriggeredPopupBlocker and attaches it (via UserData)
   // to |web_contents|.
   static void MaybeCreate(content::WebContents* web_contents);
+
+  SafeBrowsingTriggeredPopupBlocker(const SafeBrowsingTriggeredPopupBlocker&) =
+      delete;
+  SafeBrowsingTriggeredPopupBlocker& operator=(
+      const SafeBrowsingTriggeredPopupBlocker&) = delete;
+
   ~SafeBrowsingTriggeredPopupBlocker() override;
 
   bool ShouldApplyAbusivePopupBlocker(content::Page& page);
@@ -112,6 +116,9 @@ class SafeBrowsingTriggeredPopupBlocker
    public:
     explicit PageData(content::Page& page);
 
+    PageData(const PageData&) = delete;
+    PageData& operator=(const PageData&) = delete;
+
     // Logs UMA in the destructor based on the number of popups blocked.
     ~PageData() override;
 
@@ -129,8 +136,6 @@ class SafeBrowsingTriggeredPopupBlocker
     // Whether the current committed page load should trigger the stronger popup
     // blocker.
     bool is_triggered_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(PageData);
   };
 
   class NavigationHandleData
@@ -161,8 +166,6 @@ class SafeBrowsingTriggeredPopupBlocker
       scoped_observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingTriggeredPopupBlocker);
 };
 
 }  // namespace blocked_content

@@ -76,6 +76,7 @@ enum class SiteSettingSource {
   kDefault,
   kEmbargo,
   kExtension,
+  kHostedApp,
   kInsecureOrigin,
   kKillSwitch,
   kPolicy,

@@ -86,6 +86,7 @@ class GLSurfaceEglReadbackWayland : public GLSurfaceEglReadback,
 
   // Size of the buffer.
   gfx::Size size_;
+  float surface_scale_factor_ = 1.f;
 
   // Available pixel buffers based on shared memory.
   std::vector<std::unique_ptr<PixelBuffer>> available_buffers_;

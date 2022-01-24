@@ -42,6 +42,10 @@ class RunServerThread : public Thread {
   RunServerThread(ExceptionHandlerServer* server,
                   ExceptionHandlerServer::Delegate* delegate)
       : server_(server), delegate_(delegate) {}
+
+  RunServerThread(const RunServerThread&) = delete;
+  RunServerThread& operator=(const RunServerThread&) = delete;
+
   ~RunServerThread() override {}
 
  private:
@@ -50,8 +54,6 @@ class RunServerThread : public Thread {
 
   ExceptionHandlerServer* server_;
   ExceptionHandlerServer::Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunServerThread);
 };
 
 // During destruction, ensures that the server is stopped and the background
@@ -60,6 +62,11 @@ class ScopedStopServerAndJoinThread {
  public:
   ScopedStopServerAndJoinThread(ExceptionHandlerServer* server, Thread* thread)
       : server_(server), thread_(thread) {}
+
+  ScopedStopServerAndJoinThread(const ScopedStopServerAndJoinThread&) = delete;
+  ScopedStopServerAndJoinThread& operator=(
+      const ScopedStopServerAndJoinThread&) = delete;
+
   ~ScopedStopServerAndJoinThread() {
     server_->Stop();
     thread_->Join();
@@ -68,7 +75,6 @@ class ScopedStopServerAndJoinThread {
  private:
   ExceptionHandlerServer* server_;
   Thread* thread_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedStopServerAndJoinThread);
 };
 
 class CrashingDelegate : public ExceptionHandlerServer::Delegate {
@@ -77,6 +83,10 @@ class CrashingDelegate : public ExceptionHandlerServer::Delegate {
       : server_ready_(server_ready),
         completed_test_event_(completed_test_event),
         break_near_(0) {}
+
+  CrashingDelegate(const CrashingDelegate&) = delete;
+  CrashingDelegate& operator=(const CrashingDelegate&) = delete;
+
   ~CrashingDelegate() {}
 
   void set_break_near(WinVMAddress break_near) { break_near_ = break_near; }
@@ -120,8 +130,6 @@ class CrashingDelegate : public ExceptionHandlerServer::Delegate {
   HANDLE server_ready_;  // weak
   HANDLE completed_test_event_;  // weak
   WinVMAddress break_near_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashingDelegate);
 };
 
 void TestCrashingChild(TestPaths::Architecture architecture) {
@@ -192,6 +200,10 @@ class SimulateDelegate : public ExceptionHandlerServer::Delegate {
       : server_ready_(server_ready),
         completed_test_event_(completed_test_event),
         dump_near_(0) {}
+
+  SimulateDelegate(const SimulateDelegate&) = delete;
+  SimulateDelegate& operator=(const SimulateDelegate&) = delete;
+
   ~SimulateDelegate() {}
 
   void set_dump_near(WinVMAddress dump_near) { dump_near_ = dump_near; }
@@ -240,8 +252,6 @@ class SimulateDelegate : public ExceptionHandlerServer::Delegate {
   HANDLE server_ready_;  // weak
   HANDLE completed_test_event_;  // weak
   WinVMAddress dump_near_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimulateDelegate);
 };
 
 void TestDumpWithoutCrashingChild(TestPaths::Architecture architecture) {

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_SEARCH_ENGINE_PRECONNECTOR_H_
 
 #include "base/feature_list.h"
-#include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "url/origin.h"
 
@@ -54,8 +53,6 @@ class SearchEnginePreconnector {
 
   // Used to preconnect regularly.
   base::OneShotTimer timer_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_SEARCH_ENGINE_PRECONNECTOR_H_

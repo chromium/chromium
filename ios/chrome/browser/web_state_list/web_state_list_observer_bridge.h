@@ -85,6 +85,11 @@
 class WebStateListObserverBridge final : public WebStateListObserver {
  public:
   explicit WebStateListObserverBridge(id<WebStateListObserving> observer);
+
+  WebStateListObserverBridge(const WebStateListObserverBridge&) = delete;
+  WebStateListObserverBridge& operator=(const WebStateListObserverBridge&) =
+      delete;
+
   ~WebStateListObserverBridge() final;
 
  private:
@@ -120,8 +125,6 @@ class WebStateListObserverBridge final : public WebStateListObserver {
   void BatchOperationEnded(WebStateList* web_state_list) final;
 
   __weak id<WebStateListObserving> observer_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateListObserverBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_BRIDGE_H_

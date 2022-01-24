@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Protocol Buffer 2 Serializer which serializes messages
@@ -23,6 +15,7 @@ goog.require('goog.asserts');
 goog.require('goog.proto2.FieldDescriptor');
 goog.require('goog.proto2.Serializer');
 goog.require('goog.string');
+goog.requireType('goog.proto2.Message');
 
 
 
@@ -42,8 +35,12 @@ goog.require('goog.string');
  */
 goog.proto2.ObjectSerializer = function(
     opt_keyOption, opt_serializeBooleanAsNumber, opt_ignoreUnknownFields) {
+  'use strict';
+  /** @const */
   this.keyOption_ = opt_keyOption;
+  /** @const */
   this.serializeBooleanAsNumber_ = opt_serializeBooleanAsNumber;
+  /** @const */
   this.ignoreUnknownFields_ = opt_ignoreUnknownFields;
 };
 goog.inherits(goog.proto2.ObjectSerializer, goog.proto2.Serializer);
@@ -92,6 +89,7 @@ goog.proto2.ObjectSerializer.KeyOption = {
  * @override
  */
 goog.proto2.ObjectSerializer.prototype.serialize = function(message) {
+  'use strict';
   var descriptor = message.getDescriptor();
   var fields = descriptor.getFields();
 
@@ -147,7 +145,14 @@ goog.proto2.ObjectSerializer.prototype.serialize = function(message) {
   }
 
   // Add the unknown fields, if any.
-  message.forEachUnknown(function(tag, value) { objectValue[tag] = value; });
+  message.forEachUnknown(function(tag, value) {
+    'use strict';
+    // Do not set null values. This is possible when using pbliteserializer to
+    // convert jsbp to closure object and then passed to this method.
+    if (value !== null) {
+      objectValue[tag] = value;
+    }
+  });
 
   return objectValue;
 };
@@ -156,7 +161,7 @@ goog.proto2.ObjectSerializer.prototype.serialize = function(message) {
 /** @override */
 goog.proto2.ObjectSerializer.prototype.getSerializedValue = function(
     field, value) {
-
+  'use strict';
   // Handle the case where a boolean should be serialized as 0/1.
   // Some deserialization libraries, such as GWT, can use this notation.
   if (this.serializeBooleanAsNumber_ &&
@@ -173,7 +178,7 @@ goog.proto2.ObjectSerializer.prototype.getSerializedValue = function(
 /** @override */
 goog.proto2.ObjectSerializer.prototype.getDeserializedValue = function(
     field, value) {
-
+  'use strict';
   // Gracefully handle the case where a boolean is represented by 0/1.
   // Some serialization libraries, such as GWT, can use this notation.
   if (field.getFieldType() == goog.proto2.FieldDescriptor.FieldType.BOOL &&
@@ -196,6 +201,7 @@ goog.proto2.ObjectSerializer.prototype.getDeserializedValue = function(
  * @override
  */
 goog.proto2.ObjectSerializer.prototype.deserializeTo = function(message, data) {
+  'use strict';
   var descriptor = message.getDescriptor();
 
   for (var key in data) {
@@ -232,7 +238,7 @@ goog.proto2.ObjectSerializer.prototype.deserializeTo = function(message, data) {
     if (field) {
       if (field.isRepeated()) {
         goog.asserts.assert(
-            goog.isArray(value),
+            Array.isArray(value),
             'Value for repeated field ' + field + ' must be an array.');
 
         for (var j = 0; j < value.length; j++) {
@@ -240,7 +246,7 @@ goog.proto2.ObjectSerializer.prototype.deserializeTo = function(message, data) {
         }
       } else {
         goog.asserts.assert(
-            !goog.isArray(value),
+            !Array.isArray(value),
             'Value for non-repeated field ' + field + ' must not be an array.');
         message.set(field, this.getDeserializedValue(field, value));
       }

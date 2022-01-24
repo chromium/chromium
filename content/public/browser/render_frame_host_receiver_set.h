@@ -55,7 +55,13 @@ class CONTENT_EXPORT RenderFrameHostReceiverSet : public WebContentsObserver {
   }
 
   RenderFrameHost* GetCurrentTargetFrame() {
+    if (current_target_frame_for_testing_)
+      return current_target_frame_for_testing_;
     return receivers_.current_context();
+  }
+
+  void SetCurrentTargetFrameForTesting(RenderFrameHost* render_frame_host) {
+    current_target_frame_for_testing_ = render_frame_host;
   }
 
  private:
@@ -78,6 +84,8 @@ class CONTENT_EXPORT RenderFrameHostReceiverSet : public WebContentsObserver {
   // be removed them when a RenderFrameHost is removed.
   std::map<RenderFrameHost*, std::vector<mojo::ReceiverId>>
       frame_to_receivers_map_;
+
+  RenderFrameHost* current_target_frame_for_testing_ = nullptr;
 
   // Must outlive this class.
   Interface* const impl_;

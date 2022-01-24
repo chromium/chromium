@@ -13,6 +13,7 @@
 #include "chromecast/device/bluetooth/le/remote_characteristic_impl.h"
 #include "chromecast/device/bluetooth/le/remote_descriptor_impl.h"
 #include "chromecast/device/bluetooth/le/remote_service_impl.h"
+#include "chromecast/public/bluetooth/gatt.h"
 
 namespace chromecast {
 namespace bluetooth {
@@ -69,8 +70,9 @@ RemoteDeviceImpl::RemoteDeviceImpl(
 
 RemoteDeviceImpl::~RemoteDeviceImpl() = default;
 
-void RemoteDeviceImpl::Connect(ConnectCallback cb) {
-  MAKE_SURE_IO_THREAD(Connect, BindToCurrentSequence(std::move(cb)));
+void RemoteDeviceImpl::Connect(ConnectCallback cb,
+                               bluetooth_v2_shlib::Gatt::Client::Transport transport) {
+  MAKE_SURE_IO_THREAD(Connect, BindToCurrentSequence(std::move(cb)), transport);
   LOG(INFO) << "Connect(" << util::AddrLastByteString(addr_) << ")";
 
   if (!gatt_client_manager_) {
@@ -85,7 +87,7 @@ void RemoteDeviceImpl::Connect(ConnectCallback cb) {
 
   gatt_client_manager_->NotifyConnect(addr_);
   connect_cb_ = std::move(cb);
-  gatt_client_manager_->EnqueueConnectRequest(addr_, true);
+  gatt_client_manager_->EnqueueConnectRequest(addr_, true, transport);
 }
 
 void RemoteDeviceImpl::Disconnect(StatusCallback cb) {

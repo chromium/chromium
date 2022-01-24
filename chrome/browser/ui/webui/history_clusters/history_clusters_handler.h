@@ -25,13 +25,15 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-#if !defined(CHROME_BRANDED)
-namespace history {
-class QueryResults;
-}  // namespace history
-#endif
-
 namespace history_clusters {
+
+// Not in an anonymous namespace so that it can be tested.
+// TODO(manukh) Try to setup a complete `HistoryClusterHandler` for testing so
+//  that we can test the public method `QueryClusters` directly instead.
+mojom::QueryResultPtr QueryClustersResultToMojom(Profile* profile,
+                                                 const std::string& query,
+                                                 bool is_continuation,
+                                                 QueryClustersResult result);
 
 // Handles bidirectional communication between the history clusters page and the
 // browser.
@@ -48,42 +50,25 @@ class HistoryClustersHandler : public mojom::PageHandler,
 
   // mojom::PageHandler:
   void SetPage(mojo::PendingRemote<mojom::Page> pending_page) override;
+  void ToggleVisibility(bool visible,
+                        ToggleVisibilityCallback callback) override;
   void QueryClusters(mojom::QueryParamsPtr query_params) override;
   void RemoveVisits(std::vector<mojom::URLVisitPtr> visits,
                     RemoveVisitsCallback callback) override;
+  void OpenVisitUrlsInTabGroup(std::vector<mojom::URLVisitPtr> visits) override;
 
   // HistoryClustersService::Observer:
-  void OnMemoriesDebugMessage(const std::string& message) override;
+  void OnDebugMessage(const std::string& message) override;
 
  private:
-  // Called with the original `query_params`, `continuation_end_time` which is
-  // created in anticipation of the next query, and `cluster_mojoms` when the
-  // results of querying the HistoryClustersService are available. Subsequently
-  // creates a QueryResult instance using the parameters and sends it to the JS.
-  void OnClustersQueryResult(
-      mojom::QueryParamsPtr original_query_params,
-      const absl::optional<base::Time>& continuation_end_time,
-      std::vector<mojom::ClusterPtr> cluster_mojoms);
+  // Called with the result of querying clusters. Subsequently, `query_result`
+  // is sent to the JS to update the UI. `query_start_time` is also passed to
+  // allow for performance logging.
+  void OnClustersQueryResult(base::TimeTicks query_start_time,
+                             mojom::QueryResultPtr query_result);
   // Called with the set of removed visits. Subsequently, `visits` is sent to
   // the JS to update the UI.
   void OnVisitsRemoved(std::vector<mojom::URLVisitPtr> visits);
-
-#if !defined(CHROME_BRANDED)
-  using QueryResultsCallback =
-      base::OnceCallback<void(const absl::optional<base::Time>&,
-                              std::vector<mojom::ClusterPtr>)>;
-  void QueryHistoryService(const std::string& query,
-                           base::Time end_time,
-                           size_t max_count,
-                           std::vector<mojom::ClusterPtr> cluster_mojoms,
-                           QueryResultsCallback callback);
-  void OnHistoryQueryResults(const std::string& query,
-                             base::Time end_time,
-                             size_t max_count,
-                             std::vector<mojom::ClusterPtr> cluster_mojoms,
-                             QueryResultsCallback callback,
-                             history::QueryResults results);
-#endif
 
   Profile* profile_;
   content::WebContents* web_contents_;

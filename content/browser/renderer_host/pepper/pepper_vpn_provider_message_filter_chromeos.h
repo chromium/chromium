@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
@@ -38,6 +37,11 @@ class CONTENT_EXPORT PepperVpnProviderMessageFilter
  public:
   PepperVpnProviderMessageFilter(BrowserPpapiHostImpl* host,
                                  PP_Instance instance);
+
+  PepperVpnProviderMessageFilter(const PepperVpnProviderMessageFilter&) =
+      delete;
+  PepperVpnProviderMessageFilter& operator=(
+      const PepperVpnProviderMessageFilter&) = delete;
 
   // ppapi::host::ResourceMessageFilter overrides.
   scoped_refptr<base::SequencedTaskRunner> OverrideTaskRunnerForMessage(
@@ -106,8 +110,6 @@ class CONTENT_EXPORT PepperVpnProviderMessageFilter
   base::queue<std::vector<char>> received_packets_;
 
   base::WeakPtrFactory<PepperVpnProviderMessageFilter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperVpnProviderMessageFilter);
 };
 
 }  // namespace content

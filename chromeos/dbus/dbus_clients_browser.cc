@@ -29,6 +29,8 @@
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/dbus/easy_unlock/fake_easy_unlock_client.h"
+#include "chromeos/dbus/fwupd/fake_fwupd_client.h"
+#include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "chromeos/dbus/gnubby/fake_gnubby_client.h"
 #include "chromeos/dbus/gnubby/gnubby_client.h"
 #include "chromeos/dbus/image_burner/fake_image_burner_client.h"
@@ -88,6 +90,7 @@ DBusClientsBrowser::DBusClientsBrowser(bool use_real_clients) {
   debug_daemon_client_ =
       CREATE_DBUS_CLIENT(DebugDaemonClient, use_real_clients);
   easy_unlock_client_ = CREATE_DBUS_CLIENT(EasyUnlockClient, use_real_clients);
+  fwupd_client_ = CREATE_DBUS_CLIENT(FwupdClient, use_real_clients);
   gnubby_client_ = CREATE_DBUS_CLIENT(GnubbyClient, use_real_clients);
   image_burner_client_ =
       CREATE_DBUS_CLIENT(ImageBurnerClient, use_real_clients);
@@ -129,6 +132,7 @@ void DBusClientsBrowser::Initialize(dbus::Bus* system_bus) {
   cros_disks_client_->Init(system_bus);
   debug_daemon_client_->Init(system_bus);
   easy_unlock_client_->Init(system_bus);
+  fwupd_client_->Init(system_bus);
   gnubby_client_->Init(system_bus);
   image_burner_client_->Init(system_bus);
   image_loader_client_->Init(system_bus);

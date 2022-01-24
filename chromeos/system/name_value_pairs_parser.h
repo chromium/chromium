@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 
 namespace base {
 class FilePath;
@@ -27,6 +26,9 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
 
   // The obtained info will be written into the given map.
   explicit NameValuePairsParser(NameValueMap* map);
+
+  NameValuePairsParser(const NameValuePairsParser&) = delete;
+  NameValuePairsParser& operator=(const NameValuePairsParser&) = delete;
 
   // Parses name-value pairs from the file.
   // Returns false if there was any error in the file. Valid pairs will still be
@@ -51,6 +53,8 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
   FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser,
                            TestParseNameValuePairsWithComments);
 
+  friend class NameValuePairsParserFuzzer;
+
   void AddNameValuePair(const std::string& key, const std::string& value);
 
   // These will parse strings with output in the format:
@@ -60,8 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
   // be added to the map.
   bool ParseNameValuePairs(const std::string& in_string,
                            const std::string& eq,
-                           const std::string& delim,
-                           const std::string& debug_source);
+                           const std::string& delim);
 
   // This version allows for values which end with a comment beginning with
   // |comment_delim|.
@@ -71,12 +74,9 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
   bool ParseNameValuePairsWithComments(const std::string& in_string,
                                        const std::string& eq,
                                        const std::string& delim,
-                                       const std::string& comment_delim,
-                                       const std::string& debug_source);
+                                       const std::string& comment_delim);
 
   NameValueMap* map_;
-
-  DISALLOW_COPY_AND_ASSIGN(NameValuePairsParser);
 };
 
 }  // namespace system

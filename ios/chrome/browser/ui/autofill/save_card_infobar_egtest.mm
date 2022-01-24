@@ -6,6 +6,7 @@
 
 #import "base/test/ios/wait_util.h"
 #include "build/branding_buildflags.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
@@ -100,6 +101,22 @@ id<GREYMatcher> UploadBannerMatcher() {
 @end
 
 @implementation SaveCardInfobarEGTest
+
+// TODO(crbug.com/1245213)
+// Some tests are not compatible with explicit save prompts for addresses.
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testUserData_LocalSave_UserAccepts)] ||
+      [self
+          isRunningTest:@selector(testOfferLocalSave_FullData_RequestFails)] ||
+      [self isRunningTest:@selector(testUserData_LocalSave_UserDeclines)] ||
+      [self isRunningTest:@selector
+            (testOfferLocalSave_FullData_PaymentsDeclines)]) {
+    config.features_disabled.push_back(
+        autofill::features::kAutofillAddressProfileSavePrompt);
+  }
+  return config;
+}
 
 - (void)setUp {
   [super setUp];

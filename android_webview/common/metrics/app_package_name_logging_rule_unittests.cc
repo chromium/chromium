@@ -29,8 +29,7 @@ class AppPackageNameLoggingRuleTest : public testing::Test {
 
 TEST_F(AppPackageNameLoggingRuleTest, TestFromDictionary) {
   base::Version version(kTestAllowlistVersion);
-  base::Time one_day_from_now =
-      base::Time::Now() + base::TimeDelta::FromDays(1);
+  base::Time one_day_from_now = base::Time::Now() + base::Days(1);
   {
     AppPackageNameLoggingRule expected_record(version, one_day_from_now);
     absl::optional<AppPackageNameLoggingRule> record =

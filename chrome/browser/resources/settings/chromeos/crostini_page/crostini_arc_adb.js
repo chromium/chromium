@@ -7,13 +7,33 @@
  * 'crostini-arc-adb' is the ARC adb sideloading subpage for Crostini.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import './crostini_arc_adb_confirmation_dialog.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '../../settings_shared_css.js';
+
+import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-crostini-arc-adb',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -88,20 +108,18 @@ Polymer({
           this.canChangeAdbSideloading_ = can_change_arc_adb_sideloading;
         });
 
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .requestArcAdbSideloadStatus();
+    CrostiniBrowserProxyImpl.getInstance().requestArcAdbSideloadStatus();
 
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .getCanChangeArcAdbSideloading();
+    CrostiniBrowserProxyImpl.getInstance().getCanChangeArcAdbSideloading();
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.CROSTINI_ANDROID_ADB) {
+    if (route !== routes.CROSTINI_ANDROID_ADB) {
       return;
     }
 

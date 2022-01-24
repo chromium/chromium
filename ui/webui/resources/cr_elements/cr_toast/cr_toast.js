@@ -4,27 +4,47 @@
 /**
  * @fileoverview A lightweight toast.
  */
-Polymer({
-  is: 'cr-toast',
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '../shared_vars_css.m.js';
 
-  properties: {
-    duration: {
-      type: Number,
-      value: 0,
-    },
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    open: {
-      readOnly: true,
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-  },
+/** @polymer */
+export class CrToastElement extends PolymerElement {
+  static get is() {
+    return 'cr-toast';
+  }
 
-  observers: ['resetAutoHide_(duration, open)'],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private {number|null} */
-  hideTimeoutId_: null,
+  static get properties() {
+    return {
+      duration: {
+        type: Number,
+        value: 0,
+      },
+
+      open: {
+        readOnly: true,
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+    };
+  }
+
+  static get observers() {
+    return ['resetAutoHide_(duration, open)'];
+  }
+
+  constructor() {
+    super();
+
+    /** @private {?number} */
+    this.hideTimeoutId_ = null;
+  }
 
   /**
    * Cancels existing auto-hide, and sets up new auto-hide.
@@ -41,7 +61,7 @@ Polymer({
         this.hide();
       }, this.duration);
     }
-  },
+  }
 
   /**
    * Shows the toast and auto-hides after |this.duration| milliseconds has
@@ -69,7 +89,7 @@ Polymer({
     if (shouldResetAutohide) {
       this.resetAutoHide_();
     }
-  },
+  }
 
   /**
    * Hides the toast and ensures that screen readers cannot its contents while
@@ -78,6 +98,7 @@ Polymer({
   hide() {
     this.setAttribute('aria-hidden', 'true');
     this._setOpen(false);
-  },
-});
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
+  }
+}
+
+customElements.define(CrToastElement.is, CrToastElement);

@@ -12,7 +12,7 @@
 
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "services/device/usb/usb_device_handle.h"
 
 struct usbdevfs_urb;

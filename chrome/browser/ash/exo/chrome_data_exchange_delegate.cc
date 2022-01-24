@@ -34,6 +34,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -42,6 +43,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace ash {
 
@@ -78,7 +80,7 @@ void GetFileSystemUrlsFromPickle(
 
   for (const auto& file_system_file : file_system_files) {
     const storage::FileSystemURL file_system_url =
-        file_system_context->CrackURL(file_system_file.url);
+        file_system_context->CrackURLInFirstPartyContext(file_system_file.url);
     if (file_system_url.is_valid())
       file_system_urls->push_back(std::move(file_system_url));
   }
@@ -195,7 +197,7 @@ std::vector<FileInfo> CrackPaths(std::vector<base::FilePath> paths) {
     storage::FileSystemURL url;
     if (mount_points->GetVirtualPath(path, &virtual_path)) {
       url = mount_points->CreateCrackedFileSystemURL(
-          url::Origin(), storage::kFileSystemTypeExternal, virtual_path);
+          blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
     }
     file_info.push_back({std::move(path), std::move(url)});
   }
@@ -433,7 +435,9 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(
            base::SPLIT_WANT_NONEMPTY)) {
     if (line.empty() || line[0] == '#')
       continue;
-    storage::FileSystemURL url = mount_points->CrackURL(GURL(line));
+    const GURL gurl(line);
+    storage::FileSystemURL url = mount_points->CrackURL(
+        gurl, blink::StorageKey(url::Origin::Create(gurl)));
     if (!url.is_valid()) {
       LOG(WARNING) << "Invalid clipboard FileSystemURL: " << line;
       continue;

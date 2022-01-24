@@ -39,7 +39,6 @@ TEST(CookieOptionsTest, SameSiteCookieContext) {
   metadata1.cross_site_redirect_downgrade = SameSiteCookieContext::
       ContextMetadata::ContextDowngradeType::kStrictToLax;
   SameSiteCookieContext::ContextMetadata metadata2;
-  metadata2.affected_by_bugfix_1166211 = true;
   metadata2.cross_site_redirect_downgrade = SameSiteCookieContext::
       ContextMetadata::ContextDowngradeType::kStrictToLax;
   SameSiteCookieContext context_with_metadata(
@@ -80,8 +79,7 @@ TEST(CookieOptionsTest, SameSiteCookieContext) {
   EXPECT_EQ(
       "{ context: 3, schemeful_context: 3, "
       "metadata: { cross_site_redirect_downgrade: 1 }, "
-      "schemeful_metadata: { affected_by_bugfix_1166211, "
-      "cross_site_redirect_downgrade: 1 } }",
+      "schemeful_metadata: { cross_site_redirect_downgrade: 1 } }",
       ::testing::PrintToString(context_with_metadata));
 }
 

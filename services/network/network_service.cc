@@ -18,6 +18,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -43,6 +44,7 @@
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/http/http_auth_handler_factory.h"
+#include "net/http/transport_security_state.h"
 #include "net/log/file_net_log_observer.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
@@ -59,7 +61,6 @@
 #include "services/network/net_log_proxy_sink.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/crash_keys.h"
-#include "services/network/public/cpp/cross_origin_read_blocking.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/cpp/load_info_util.h"
@@ -190,7 +191,7 @@ std::unique_ptr<net::HttpAuthMechanism> CreateAuthSystem(
 // NetworkService is running in a separate process - otherwise the existing bad
 // message handling inside the Browser process is sufficient).
 void HandleBadMessage(const std::string& error) {
-  LOG(WARNING) << "Mojo error in NetworkService:" << error;
+  LOG(WARNING) << "Mojo error in NetworkService: " << error;
   mojo::debug::ScopedMessageErrorCrashKey crash_key_value(error);
   base::debug::DumpWithoutCrashing();
   network::debug::ClearDeserializationCrashKeyString();
@@ -200,7 +201,7 @@ void HandleBadMessage(const std::string& error) {
 
 // static
 const base::TimeDelta NetworkService::kInitialDohProbeTimeout =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 // Handler of delaying calls to NetworkContext::ActivateDohProbes() until after
 // an initial service startup delay.
@@ -343,8 +344,7 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
   }
 
   first_party_sets_ = std::make_unique<FirstPartySets>();
-  if (net::cookie_util::IsFirstPartySetsEnabled() &&
-      command_line->HasSwitch(switches::kUseFirstPartySet)) {
+  if (net::cookie_util::IsFirstPartySetsEnabled()) {
     first_party_sets_->SetManuallySpecifiedSet(
         command_line->GetSwitchValueASCII(switches::kUseFirstPartySet));
   }
@@ -782,7 +782,26 @@ void NetworkService::BindTestInterface(
 }
 
 void NetworkService::SetFirstPartySets(const std::string& raw_sets) {
-  first_party_sets_->ParseAndSet(raw_sets);
+  bool is_v1_format = raw_sets.find('[') < raw_sets.find('{');
+  if (is_v1_format) {
+    // The file is a single list of records; V1 format.
+    first_party_sets_->ParseAndSet(raw_sets);
+  } else {
+    // The file is invalid, or is a newline-delimited sequence of
+    // records; V2 format.
+    std::istringstream stream(raw_sets);
+    first_party_sets_->ParseAndSetFromStream(stream);
+  }
+  base::UmaHistogramBoolean("Cookie.FirstPartySets.ComponentIsV1Format",
+                            is_v1_format);
+}
+
+void NetworkService::SetPersistedFirstPartySetsAndGetCurrentSets(
+    const std::string& persisted_sets,
+    mojom::NetworkService::SetPersistedFirstPartySetsAndGetCurrentSetsCallback
+        callback) {
+  first_party_sets_->SetPersistedSets(persisted_sets);
+  first_party_sets_->SetOnSiteDataCleared(std::move(callback));
 }
 
 void NetworkService::SetExplicitlyAllowedPorts(

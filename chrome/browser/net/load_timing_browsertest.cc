@@ -8,10 +8,9 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -114,7 +113,7 @@ class LoadTimingBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTP) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/chunked?waitBeforeHeaders=100");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TimingDeltas navigation_deltas;
   GetResultDeltas(&navigation_deltas);
@@ -135,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, DISABLED_HTTPS) {
   https_server.AddDefaultHandlers();
   ASSERT_TRUE(https_server.Start());
   GURL url = https_server.GetURL("/chunked?waitBeforeHeaders=100");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TimingDeltas navigation_deltas;
   GetResultDeltas(&navigation_deltas);
@@ -161,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, Proxy) {
 
   // This request will fail if it doesn't go through proxy.
   GURL url("http://does.not.resolve.test/chunked?waitBeforeHeaders=100");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TimingDeltas navigation_deltas;
   GetResultDeltas(&navigation_deltas);
@@ -173,38 +172,6 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, Proxy) {
   EXPECT_LT(navigation_deltas.send_start,
             navigation_deltas.receive_headers_end);
 
-  EXPECT_EQ(navigation_deltas.ssl_start, -1);
-}
-
-// Test fixture for tests that depend on FTP support. Moved out to a separate
-// fixture since remaining functionality should be tested without FTP support.
-//
-// TODO(https://crbug.com/333943): Remove FTP specific tests and test fixtures.
-class LoadTimingBrowserTestWithFtp : public LoadTimingBrowserTest {
- public:
-  LoadTimingBrowserTestWithFtp() {
-    scoped_feature_list_.InitAndEnableFeature(network::features::kFtpProtocol);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTestWithFtp, FTP) {
-  net::SpawnedTestServer ftp_server(net::SpawnedTestServer::TYPE_FTP,
-                                    base::FilePath());
-  ASSERT_TRUE(ftp_server.Start());
-  GURL url = ftp_server.GetURL("/");
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  TimingDeltas navigation_deltas;
-  GetResultDeltas(&navigation_deltas);
-
-  EXPECT_EQ(navigation_deltas.dns_start, 0);
-  EXPECT_EQ(navigation_deltas.dns_end, 0);
-  EXPECT_EQ(navigation_deltas.connect_start, 0);
-  EXPECT_EQ(navigation_deltas.connect_end, 0);
-  EXPECT_EQ(navigation_deltas.receive_headers_end, 0);
   EXPECT_EQ(navigation_deltas.ssl_start, -1);
 }
 

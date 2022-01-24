@@ -145,6 +145,8 @@ void HTMLObjectElement::ParametersForPlugin(PluginParameters& plugin_params) {
     // to a plugin.
     if (url_.IsEmpty() && !EqualIgnoringASCIICase(name, "data") &&
         HTMLParamElement::IsURLParameter(name)) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kHTMLParamElementURLParameter);
       SetUrl(StripLeadingAndTrailingHTMLSpaces(p->Value()));
     }
     // TODO(schenney): crbug.com/572908 serviceType calculation does not belong

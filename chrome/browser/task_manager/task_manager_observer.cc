@@ -17,9 +17,8 @@ bool TaskManagerObserver::IsResourceRefreshEnabled(RefreshType refresh_type,
 TaskManagerObserver::TaskManagerObserver(base::TimeDelta refresh_time,
                                          int64_t resources_flags)
     : observed_task_manager_(nullptr),
-      desired_refresh_time_(refresh_time < base::TimeDelta::FromSeconds(1)
-                                ? base::TimeDelta::FromSeconds(1)
-                                : refresh_time),
+      desired_refresh_time_(refresh_time < base::Seconds(1) ? base::Seconds(1)
+                                                            : refresh_time),
       desired_resources_flags_(resources_flags) {}
 
 TaskManagerObserver::~TaskManagerObserver() {

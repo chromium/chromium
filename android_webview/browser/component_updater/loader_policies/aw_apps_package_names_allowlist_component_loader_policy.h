@@ -44,6 +44,19 @@ using AllowListLookupCallback =
 class AwAppsPackageNamesAllowlistComponentLoaderPolicy
     : public component_updater::ComponentLoaderPolicy {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AllowlistPraseStatus {
+    kSuccess = 0,
+    kUsingCache = 1,
+    kMissingFields = 2,
+    kExpiredAllowlist = 3,
+    kMissingAllowlistFile = 4,
+    kIOError = 5,
+    kMalformedBloomFilter = 6,
+    kMaxValue = kMalformedBloomFilter,
+  };
+
   // `app_package_name` the embedding app package name.
   // `cached_record`    the cached lookup result of a previous successfully
   //                    loaded allowlist, if any.
@@ -66,12 +79,11 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicy
       base::flat_map<std::string, base::ScopedFD>& fd_map,
       std::unique_ptr<base::DictionaryValue> manifest) override;
   void ComponentLoadFailed(
-      component_updater::ComponentLoadError error) override;
+      component_updater::ComponentLoadResult error) override;
   void GetHash(std::vector<uint8_t>* hash) const override;
+  std::string GetMetricsSuffix() const override;
 
  private:
-  void ComponentLoadFailedInternal();
-
   std::string app_package_name_;
   absl::optional<AppPackageNameLoggingRule> cached_record_;
 

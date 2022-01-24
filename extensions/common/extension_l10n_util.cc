@@ -128,7 +128,7 @@ bool LocalizeManifestListValue(const std::string& key,
     return true;
 
   bool ret = true;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     std::string result;
     if (list->GetString(i, &result)) {
       if (messages.ReplaceMessages(&result, error))
@@ -263,7 +263,7 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
   base::ListValue* file_handlers = NULL;
   if (manifest->GetList(keys::kFileBrowserHandlers, &file_handlers)) {
     key.assign(keys::kFileBrowserHandlers);
-    for (size_t i = 0; i < file_handlers->GetSize(); i++) {
+    for (size_t i = 0; i < file_handlers->GetList().size(); i++) {
       base::DictionaryValue* handler = NULL;
       if (!file_handlers->GetDictionary(i, &handler)) {
         *error = errors::kInvalidFileBrowserHandler;
@@ -278,7 +278,7 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
   // Initialize all input_components
   base::ListValue* input_components = NULL;
   if (manifest->GetList(keys::kInputComponents, &input_components)) {
-    for (size_t i = 0; i < input_components->GetSize(); ++i) {
+    for (size_t i = 0; i < input_components->GetList().size(); ++i) {
       base::DictionaryValue* module = NULL;
       if (!input_components->GetDictionary(i, &module)) {
         *error = errors::kInvalidInputComponents;

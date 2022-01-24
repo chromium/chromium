@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
@@ -58,12 +57,15 @@ class ANIMATION_EXPORT MultiAnimation : public Animation {
   };
   using Parts = std::vector<Part>;
 
-  static constexpr auto kDefaultTimerInterval =
-      base::TimeDelta::FromMilliseconds(20);
+  static constexpr auto kDefaultTimerInterval = base::Milliseconds(20);
 
   explicit MultiAnimation(
       const Parts& parts,
       base::TimeDelta timer_interval = kDefaultTimerInterval);
+
+  MultiAnimation(const MultiAnimation&) = delete;
+  MultiAnimation& operator=(const MultiAnimation&) = delete;
+
   ~MultiAnimation() override;
 
   // Sets whether the animation continues after it reaches the end. If true, the
@@ -102,8 +104,6 @@ class ANIMATION_EXPORT MultiAnimation : public Animation {
 
   // See description above setter.
   bool continuous_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiAnimation);
 };
 
 }  // namespace gfx

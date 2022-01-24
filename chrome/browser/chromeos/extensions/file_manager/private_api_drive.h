@@ -13,10 +13,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "base/files/file.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 
 namespace google_apis {

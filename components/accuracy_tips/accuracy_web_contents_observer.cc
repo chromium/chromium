@@ -9,9 +9,11 @@
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/page_visibility_state.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/gurl.h"
 
 namespace accuracy_tips {
@@ -60,17 +62,28 @@ void AccuracyWebContentsObserver::DidFinishNavigation(
 void AccuracyWebContentsObserver::OnAccuracyStatusObtained(
     const GURL& url,
     AccuracyTipStatus result) {
-  UMA_HISTOGRAM_ENUMERATION("Privacy.AccuracyTip.PageStatus", result);
-
-  if (result == AccuracyTipStatus::kNone)
-    return;
-
   // We are not on this site any more, so the result is invalid.
   if (url != web_contents()->GetLastCommittedURL())
+    return;
+
+  // Don't show tip on insecure pages. This can't be checked in the
+  // AccuracyService because it requires a WebContents.
+  if (result == AccuracyTipStatus::kShowAccuracyTip &&
+      !accuracy_service_->IsSecureConnection(web_contents())) {
+    result = AccuracyTipStatus::kNotSecure;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("Privacy.AccuracyTip.PageStatus", result);
+  ukm::builders::AccuracyTipStatus(
+      ukm::GetSourceIdForWebContentsDocument(web_contents()))
+      .SetStatus(static_cast<int>(result))
+      .Record(ukm::UkmRecorder::Get());
+
+  if (result != AccuracyTipStatus::kShowAccuracyTip)
     return;
 
   accuracy_service_->MaybeShowAccuracyTip(web_contents());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AccuracyWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AccuracyWebContentsObserver);
 }  // namespace accuracy_tips

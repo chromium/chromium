@@ -5,8 +5,6 @@
 #ifndef UI_DISPLAY_TEST_SCOPED_SCREEN_OVERRIDE_H_
 #define UI_DISPLAY_TEST_SCOPED_SCREEN_OVERRIDE_H_
 
-#include "base/macros.h"
-
 namespace display {
 
 class Screen;
@@ -20,11 +18,14 @@ namespace test {
 class ScopedScreenOverride {
  public:
   explicit ScopedScreenOverride(Screen* screen);
+
+  ScopedScreenOverride(const ScopedScreenOverride&) = delete;
+  ScopedScreenOverride& operator=(const ScopedScreenOverride&) = delete;
+
   ~ScopedScreenOverride();
 
  private:
   Screen* original_screen_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedScreenOverride);
 };
 
 }  // namespace test

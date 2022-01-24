@@ -85,6 +85,10 @@ class WaylandDataSourceDelegate : public DataSourceDelegate {
       : client_(client),
         data_source_resource_(source) {}
 
+  WaylandDataSourceDelegate(const WaylandDataSourceDelegate&) = delete;
+  WaylandDataSourceDelegate& operator=(const WaylandDataSourceDelegate&) =
+      delete;
+
   // Overridden from DataSourceDelegate:
   void OnDataSourceDestroying(DataSource* device) override { delete this; }
   bool CanAcceptDataEventsForSurface(Surface* surface) const override {
@@ -131,8 +135,6 @@ class WaylandDataSourceDelegate : public DataSourceDelegate {
  private:
   wl_client* const client_;
   wl_resource* const data_source_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataSourceDelegate);
 };
 
 void data_source_offer(wl_client* client,
@@ -163,6 +165,9 @@ class WaylandDataOfferDelegate : public DataOfferDelegate {
   explicit WaylandDataOfferDelegate(wl_resource* offer)
       : data_offer_resource_(offer) {}
 
+  WaylandDataOfferDelegate(const WaylandDataOfferDelegate&) = delete;
+  WaylandDataOfferDelegate& operator=(const WaylandDataOfferDelegate&) = delete;
+
   // Overridden from DataOfferDelegate:
   void OnDataOfferDestroying(DataOffer* device) override { delete this; }
   void OnOffer(const std::string& mime_type) override {
@@ -190,8 +195,6 @@ class WaylandDataOfferDelegate : public DataOfferDelegate {
 
  private:
   wl_resource* const data_offer_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataOfferDelegate);
 };
 
 void data_offer_accept(wl_client* client,
@@ -245,6 +248,10 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       : client_(client),
         data_device_resource_(device_resource),
         serial_tracker_(serial_tracker) {}
+
+  WaylandDataDeviceDelegate(const WaylandDataDeviceDelegate&) = delete;
+  WaylandDataDeviceDelegate& operator=(const WaylandDataDeviceDelegate&) =
+      delete;
 
   // Overridden from DataDeviceDelegate:
   void OnDataDeviceDestroying(DataDevice* device) override { delete this; }
@@ -343,8 +350,6 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
 
   // Owned by Server, which always outlives this delegate.
   SerialTracker* const serial_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataDeviceDelegate);
 };
 
 void data_device_start_drag(wl_client* client,

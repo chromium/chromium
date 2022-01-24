@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Functions for dealing with Date formatting & Parsing,
@@ -33,6 +25,7 @@ goog.require('goog.locale.nativeNameConstants');
  *     in CLDR, but can make a few compromise for existing name compatibility.
  */
 goog.locale.setLocale = function(localeName) {
+  'use strict';
   // it is common to see people use '-' as locale part separator, normalize it.
   localeName = localeName.replace(/-/g, '_');
   goog.locale.activeLocale_ = localeName;
@@ -45,6 +38,7 @@ goog.locale.setLocale = function(localeName) {
  * @deprecated Use goog.LOCALE and goog.i18n instead.
  */
 goog.locale.getLocale = function() {
+  'use strict';
   if (!goog.locale.activeLocale_) {
     goog.locale.activeLocale_ = 'en';
   }
@@ -93,6 +87,7 @@ goog.locale.Resource = {
  * @return {string} Language subtag (in lowercase).
  */
 goog.locale.getLanguageSubTag = function(languageCode) {
+  'use strict';
   var result = languageCode.match(/^\w{2,3}([-_]|$)/);
   return result ? result[0].replace(/[_-]/g, '') : '';
 };
@@ -105,6 +100,7 @@ goog.locale.getLanguageSubTag = function(languageCode) {
  * @return {string} Region sub-tag (in uppercase).
  */
 goog.locale.getRegionSubTag = function(languageCode) {
+  'use strict';
   var result = languageCode.match(/[-_]([a-zA-Z]{2}|\d{3})([-_]|$)/);
   return result ? result[0].replace(/[_-]/g, '') : '';
 };
@@ -118,6 +114,7 @@ goog.locale.getRegionSubTag = function(languageCode) {
  * @return {string} Script subtag.
  */
 goog.locale.getScriptSubTag = function(languageCode) {
+  'use strict';
   var result = languageCode.split(/[-_]/g);
   return result.length > 1 && result[1].match(/^[a-zA-Z]{4}$/) ? result[1] : '';
 };
@@ -130,6 +127,7 @@ goog.locale.getScriptSubTag = function(languageCode) {
  * @return {string} Variant sub-tag.
  */
 goog.locale.getVariantSubTag = function(languageCode) {
+  'use strict';
   var result = languageCode.match(/[-_]([a-z]{2,})/);
   return result ? result[1] : '';
 };
@@ -147,6 +145,7 @@ goog.locale.getVariantSubTag = function(languageCode) {
  * @return {string} Country name for the provided language code.
  */
 goog.locale.getNativeCountryName = function(countryCode) {
+  'use strict';
   var key = goog.locale.getLanguageSubTag(countryCode) + '_' +
       goog.locale.getRegionSubTag(countryCode);
   return key in goog.locale.nativeNameConstants['COUNTRY'] ?
@@ -171,6 +170,7 @@ goog.locale.getNativeCountryName = function(countryCode) {
  */
 goog.locale.getLocalizedCountryName = function(
     languageCode, opt_localeSymbols) {
+  'use strict';
   var code = goog.locale.getRegionSubTag(languageCode);
   var name =
       goog.locale.getLocalizedRegionNameFromRegionCode(code, opt_localeSymbols);
@@ -194,6 +194,7 @@ goog.locale.getLocalizedCountryName = function(
  */
 goog.locale.getLocalizedRegionNameFromRegionCode = function(
     regionCode, opt_localeSymbols) {
+  'use strict';
   if (!opt_localeSymbols) {
     opt_localeSymbols =
         goog.locale.getResource('LocaleNameConstants', goog.locale.getLocale());
@@ -215,6 +216,7 @@ goog.locale.getLocalizedRegionNameFromRegionCode = function(
  * @return {string} Language name for the provided language code.
  */
 goog.locale.getNativeLanguageName = function(languageCode) {
+  'use strict';
   if (languageCode in goog.locale.nativeNameConstants['LANGUAGE'])
     return goog.locale.nativeNameConstants['LANGUAGE'][languageCode];
   var code = goog.locale.getLanguageSubTag(languageCode);
@@ -239,6 +241,7 @@ goog.locale.getNativeLanguageName = function(languageCode) {
  */
 goog.locale.getLocalizedLanguageName = function(
     languageCode, opt_localeSymbols) {
+  'use strict';
   if (!opt_localeSymbols) {
     opt_localeSymbols =
         goog.locale.getResource('LocaleNameConstants', goog.locale.getLocale());
@@ -260,6 +263,7 @@ goog.locale.getLocalizedLanguageName = function(
  * @param {string} localeName Locale ID.
  */
 goog.locale.registerResource = function(dataObj, resourceName, localeName) {
+  'use strict';
   if (!goog.locale.resourceRegistry_[resourceName]) {
     goog.locale.resourceRegistry_[resourceName] = {};
   }
@@ -280,6 +284,7 @@ goog.locale.registerResource = function(dataObj, resourceName, localeName) {
  * @return {boolean} Whether the required resource has already been registered.
  */
 goog.locale.isResourceRegistered = function(resourceName, localeName) {
+  'use strict';
   return resourceName in goog.locale.resourceRegistry_ &&
       localeName in goog.locale.resourceRegistry_[resourceName];
 };
@@ -300,6 +305,7 @@ goog.locale.resourceRegistry_ = {};
  * @deprecated Use goog.i18n.TimeZone, no longer need this.
  */
 goog.locale.registerTimeZoneConstants = function(dataObj, localeName) {
+  'use strict';
   goog.locale.registerResource(
       dataObj, goog.locale.Resource.TIME_ZONE_CONSTANTS, localeName);
 };
@@ -311,6 +317,7 @@ goog.locale.registerTimeZoneConstants = function(dataObj, localeName) {
  * @param {string} localeName Locale ID.
  */
 goog.locale.registerLocaleNameConstants = function(dataObj, localeName) {
+  'use strict';
   goog.locale.registerResource(
       dataObj, goog.locale.Resource.LOCAL_NAME_CONSTANTS, localeName);
 };
@@ -322,6 +329,7 @@ goog.locale.registerLocaleNameConstants = function(dataObj, localeName) {
  * @param {string} localeName Locale ID.
  */
 goog.locale.registerTimeZoneSelectedIds = function(dataObj, localeName) {
+  'use strict';
   goog.locale.registerResource(
       dataObj, goog.locale.Resource.TIME_ZONE_SELECTED_IDS, localeName);
 };
@@ -334,6 +342,7 @@ goog.locale.registerTimeZoneSelectedIds = function(dataObj, localeName) {
  * @param {string} localeName Locale ID.
  */
 goog.locale.registerTimeZoneSelectedShortNames = function(dataObj, localeName) {
+  'use strict';
   goog.locale.registerResource(
       dataObj, goog.locale.Resource.TIME_ZONE_SELECTED_SHORT_NAMES, localeName);
 };
@@ -346,6 +355,7 @@ goog.locale.registerTimeZoneSelectedShortNames = function(dataObj, localeName) {
  * @param {string} localeName Locale ID.
  */
 goog.locale.registerTimeZoneSelectedLongNames = function(dataObj, localeName) {
+  'use strict';
   goog.locale.registerResource(
       dataObj, goog.locale.Resource.TIME_ZONE_SELECTED_LONG_NAMES, localeName);
 };
@@ -357,6 +367,7 @@ goog.locale.registerTimeZoneSelectedLongNames = function(dataObj, localeName) {
  * @param {string} localeName Locale ID.
  */
 goog.locale.registerTimeZoneAllLongNames = function(dataObj, localeName) {
+  'use strict';
   goog.locale.registerResource(
       dataObj, goog.locale.Resource.TIME_ZONE_ALL_LONG_NAMES, localeName);
 };
@@ -371,6 +382,7 @@ goog.locale.registerTimeZoneAllLongNames = function(dataObj, localeName) {
  *     data, or undefined if not available.
  */
 goog.locale.getResource = function(resourceName, opt_locale) {
+  'use strict';
   var locale = opt_locale ? opt_locale : goog.locale.getLocale();
 
   if (!(resourceName in goog.locale.resourceRegistry_)) {
@@ -392,6 +404,7 @@ goog.locale.getResource = function(resourceName, opt_locale) {
  * @return {Object|undefined} The resource object for desired locale.
  */
 goog.locale.getResourceWithFallback = function(resourceName, opt_locale) {
+  'use strict';
   var locale = opt_locale ? opt_locale : goog.locale.getLocale();
 
   if (!(resourceName in goog.locale.resourceRegistry_)) {

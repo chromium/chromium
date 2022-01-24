@@ -659,8 +659,7 @@ TEST_F(ProofVerifierChromiumTest, IsFatalErrorSetForFatalError) {
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_,
                                   ERR_CERT_DATE_INVALID);
 
-  const base::Time expiry =
-      base::Time::Now() + base::TimeDelta::FromSeconds(1000);
+  const base::Time expiry = base::Time::Now() + base::Seconds(1000);
   transport_security_state_.AddHSTS(kTestHostname, expiry, true);
 
   ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
@@ -790,7 +789,7 @@ TEST_F(ProofVerifierChromiumTest, PKPReport) {
 
   GURL report_uri("https://foo.test/");
   transport_security_state_.AddHPKP(
-      kCTAndPKPHost, base::Time::Now() + base::TimeDelta::FromDays(1),
+      kCTAndPKPHost, base::Time::Now() + base::Days(1),
       false /* include_subdomains */, spki_hashes, report_uri);
   ScopedTransportSecurityStateSource scoped_security_state_source;
 

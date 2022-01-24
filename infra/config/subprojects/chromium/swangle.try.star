@@ -14,7 +14,6 @@ try_.defaults.set(
             path = "win_toolchain",
         ),
     ],
-    configure_kitchen = True,
     cores = 8,
     cpu = cpu.X86_64,
     cq_group = "cq",
@@ -27,7 +26,6 @@ try_.defaults.set(
     pool = "luci.chromium.try",
     service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     subproject_list_view = "luci.chromium.try",
-    swarming_tags = ["vpython:native-python-wrapper"],
     task_template_canary_percentage = 5,
 )
 

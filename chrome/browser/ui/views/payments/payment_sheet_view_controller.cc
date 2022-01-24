@@ -43,6 +43,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font.h"
@@ -250,6 +251,9 @@ class PaymentSheetRowBuilder {
                          const std::u16string& section_name)
       : controller_(controller), section_name_(section_name) {}
 
+  PaymentSheetRowBuilder(const PaymentSheetRowBuilder&) = delete;
+  PaymentSheetRowBuilder& operator=(const PaymentSheetRowBuilder&) = delete;
+
   PaymentSheetRowBuilder& Closure(base::RepeatingClosure closure) {
     closure_ = std::move(closure);
     return *this;
@@ -281,8 +285,7 @@ class PaymentSheetRowBuilder {
       std::unique_ptr<views::View> extra_content_view) {
     auto chevron =
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kSubmenuArrowIcon,
-            ui::NativeTheme::kColorId_DefaultIconColor,
+            vector_icons::kSubmenuArrowIcon, ui::kColorIcon,
             gfx::GetDefaultSizeOfVectorIcon(vector_icons::kSubmenuArrowIcon)));
     chevron->SetCanProcessEventsWithinSubtree(false);
     std::unique_ptr<PaymentRequestRowView> section = CreatePaymentSheetRow(
@@ -360,7 +363,6 @@ class PaymentSheetRowBuilder {
   std::u16string accessible_content_;
   base::RepeatingClosure closure_;
   int id_;
-  DISALLOW_COPY_AND_ASSIGN(PaymentSheetRowBuilder);
 };
 
 }  // namespace

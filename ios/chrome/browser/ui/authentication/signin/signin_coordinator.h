@@ -30,11 +30,6 @@ class PrefRegistrySyncable;
 // This completion needs to be set before calling -[SigninCoordinator start].
 @property(nonatomic, copy) SigninCoordinatorCompletionCallback signinCompletion;
 
-// Returns YES if the Advanced settings sign-in. This view has to present the
-// Google services settings.
-@property(nonatomic, assign, readonly, getter=isSettingsViewPresented)
-    BOOL settingsViewPresented;
-
 // Registers preferences related to sign-in coordinator.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
@@ -63,6 +58,12 @@ class PrefRegistrySyncable;
                     (UINavigationController*)navigationController
                                                         browser:
                                                             (Browser*)browser;
+
+// Returns a coordinator for forced sign-in workflow.
+// |viewController| presents the sign-in.
++ (instancetype)forcedSigninCoordinatorWithBaseViewController:
+                    (UIViewController*)viewController
+                                                      browser:(Browser*)browser;
 
 // Returns a coordinator for upgrade sign-in workflow.
 // |viewController| presents the sign-in.

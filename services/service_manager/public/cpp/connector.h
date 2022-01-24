@@ -67,6 +67,10 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT Connector {
 
   explicit Connector(mojo::PendingRemote<mojom::Connector> unbound_state);
   explicit Connector(mojo::Remote<mojom::Connector> connector);
+
+  Connector(const Connector&) = delete;
+  Connector& operator=(const Connector&) = delete;
+
   ~Connector();
 
   // Creates a new Connector instance and fills in |*receiver| with a request
@@ -264,8 +268,6 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT Connector {
       local_binder_overrides_;
 
   base::WeakPtrFactory<Connector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Connector);
 };
 
 }  // namespace service_manager

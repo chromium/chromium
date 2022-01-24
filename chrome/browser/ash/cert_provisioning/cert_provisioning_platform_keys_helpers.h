@@ -10,13 +10,15 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): forward declare PlatformKeysService
-// after //chrom/browser/chromeos/platform_keys is moved to ash.
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
+namespace platform_keys {
+class PlatformKeysService;
+}
+
 namespace cert_provisioning {
 
 // ========= CertIterator ======================================================

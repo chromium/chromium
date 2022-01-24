@@ -1,0 +1,11 @@
+{
+   "Cellular": {
+      "ICCID": "test_iccid",
+      "RoamingState": "Home",
+      "Scanning": false
+   },
+   "IPAddressConfigType": "DHCP",
+   "Name": "",
+   "NameServersConfigType": "DHCP",
+   "Type": "Cellular"
+}

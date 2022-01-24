@@ -58,10 +58,10 @@ void ReadRegistryTree(const base::win::RegKey& src, RegistryKeyData* data) {
     for (; i.Valid(); ++i) {
       RegistryValue& value = *data->values.insert(data->values.end(),
                                                   RegistryValue());
-      const uint8_t* data = reinterpret_cast<const uint8_t*>(i.Value());
+      const uint8_t* value_bytes = reinterpret_cast<const uint8_t*>(i.Value());
       value.name.assign(i.Name());
       value.type = i.Type();
-      value.data.assign(data, data + i.ValueSize());
+      value.data.assign(value_bytes, value_bytes + i.ValueSize());
     }
   }
 

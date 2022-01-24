@@ -123,22 +123,24 @@ void SchedulerHelper::ReclaimMemory() {
   sequence_manager_->ReclaimMemory();
 }
 
-TimeDomain* SchedulerHelper::real_time_domain() const {
+absl::optional<base::sequence_manager::DelayedWakeUp>
+SchedulerHelper::GetNextDelayedWakeUp() const {
   CheckOnValidThread();
   DCHECK(sequence_manager_);
-  return sequence_manager_->GetRealTimeDomain();
+  return sequence_manager_->GetNextDelayedWakeUp();
 }
 
-void SchedulerHelper::RegisterTimeDomain(TimeDomain* time_domain) {
+void SchedulerHelper::SetTimeDomain(
+    base::sequence_manager::TimeDomain* time_domain) {
   CheckOnValidThread();
   DCHECK(sequence_manager_);
-  sequence_manager_->RegisterTimeDomain(time_domain);
+  return sequence_manager_->SetTimeDomain(time_domain);
 }
 
-void SchedulerHelper::UnregisterTimeDomain(TimeDomain* time_domain) {
+void SchedulerHelper::ResetTimeDomain() {
   CheckOnValidThread();
-  if (sequence_manager_)
-    sequence_manager_->UnregisterTimeDomain(time_domain);
+  DCHECK(sequence_manager_);
+  return sequence_manager_->ResetTimeDomain();
 }
 
 void SchedulerHelper::OnBeginNestedRunLoop() {
@@ -170,14 +172,6 @@ void SchedulerHelper::SetTimerSlack(base::TimerSlack timer_slack) {
         sequence_manager_)
         ->SetTimerSlack(timer_slack);
   }
-}
-
-double SchedulerHelper::GetSamplingRateForRecordingCPUTime() const {
-  if (sequence_manager_) {
-    return sequence_manager_->GetMetricRecordingSettings()
-        .task_sampling_rate_for_recording_cpu_time;
-  }
-  return 0;
 }
 
 bool SchedulerHelper::HasCPUTimingForEachTask() const {

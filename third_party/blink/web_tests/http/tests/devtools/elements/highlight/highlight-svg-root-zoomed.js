@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `This test verifies the position and size of the highlight rectangles overlayed on an SVG root element when the page is zoomed.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <!DOCTYPE html>

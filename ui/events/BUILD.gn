@@ -54,7 +54,7 @@ static_library("dom_keyboard_layout") {
     "//base",
   ]
 
-  if (is_win || is_mac || use_ozone || use_x11) {
+  if (is_win || is_mac || use_ozone) {
     public += [ "keycodes/dom/dom_keyboard_layout_map.h" ]
 
     sources += [
@@ -90,6 +90,8 @@ source_set("event_constants") {
 
 source_set("platform_event") {
   sources = [ "platform_event.h" ]
+
+  public_deps = [ "//base" ]
 }
 
 component("events_base") {
@@ -138,6 +140,8 @@ component("events_base") {
     sources += [
       "keycodes/keyboard_code_conversion_win.cc",
       "keycodes/keyboard_code_conversion_win.h",
+      "keycodes/keyboard_codes_win.h",
+      "keycodes/keyboard_defines_win.h",
     ]
   }
 
@@ -167,7 +171,7 @@ component("events_base") {
     deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3" ]
   }
 
-  if (use_x11 || ozone_platform_x11) {
+  if (ozone_platform_x11) {
     public_deps += [ "//ui/events/keycodes:x11" ]
 
     # TODO(https://crbug.com/1076277): This dependency on //ui/gfx/x
@@ -285,7 +289,7 @@ component("events") {
   # template which generates different target names on different platforms.
   friend = [ ":*" ]
 
-  if (use_x11 || ozone_platform_x11) {
+  if (ozone_platform_x11) {
     public += [ "x/x11_event_translation.h" ]
     sources += [ "x/x11_event_translation.cc" ]
     deps += [
@@ -301,7 +305,7 @@ component("events") {
     configs += [ "//build/config/linux:glib" ]
   }
 
-  if (use_ozone || use_x11) {
+  if (use_ozone) {
     sources += [ "events_default.cc" ]
   }
 
@@ -333,7 +337,7 @@ component("events") {
     deps += [ "//build:chromeos_buildflags" ]
   }
 
-  if (is_win || is_mac || use_x11 || use_ozone) {
+  if (is_win || is_mac || use_ozone) {
     sources -= [ "events_stub.cc" ]
   }
 
@@ -414,25 +418,6 @@ component("keyboard_hook") {
 
   if (is_mac) {
     sources += [ "mac/keyboard_hook_mac.mm" ]
-  }
-
-  if (use_x11) {
-    sources += [
-      "x/keyboard_hook_x11.cc",
-      "x/keyboard_hook_x11.h",
-    ]
-    deps += [
-      "//ui/base/x",
-      "//ui/gfx/x",
-    ]
-  }
-
-  if (use_ozone || use_x11) {
-    if (is_linux || is_chromeos) {
-      # TODO(https://crbug.com/1099225): refactor X11 kbd hook and implement
-      # that for Ozone.
-      sources += [ "keyboard_hook_linux.cc" ]
-    }
   }
 
   if (use_ozone) {
@@ -578,7 +563,7 @@ static_library("test_support") {
     frameworks = [ "Carbon.framework" ]
   }
 
-  if (use_x11 || ozone_platform_x11) {
+  if (ozone_platform_x11) {
     sources += [
       "test/events_test_utils_x11.cc",
       "test/events_test_utils_x11.h",
@@ -681,7 +666,7 @@ if (!is_ios) {
       data_deps = [ "//third_party/mesa_headers" ]
     }
 
-    if (use_x11 || use_ozone) {
+    if (use_ozone) {
       sources += [ "devices/device_data_manager_unittest.cc" ]
     }
 

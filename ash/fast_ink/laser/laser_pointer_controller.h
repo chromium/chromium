@@ -30,6 +30,10 @@ class ASH_EXPORT LaserPointerController
     : public fast_ink::FastInkPointerController {
  public:
   LaserPointerController();
+
+  LaserPointerController(const LaserPointerController&) = delete;
+  LaserPointerController& operator=(const LaserPointerController&) = delete;
+
   ~LaserPointerController() override;
 
   // Adds/removes the specified |observer|.
@@ -65,8 +69,6 @@ class ASH_EXPORT LaserPointerController
   base::ObserverList<LaserPointerObserver> observers_;
 
   std::unique_ptr<ScopedLockedHiddenCursor> scoped_locked_hidden_cursor_;
-
-  DISALLOW_COPY_AND_ASSIGN(LaserPointerController);
 };
 
 }  // namespace ash

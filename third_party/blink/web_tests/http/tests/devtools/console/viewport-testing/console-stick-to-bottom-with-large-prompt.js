@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies viewport stick-to-bottom behavior when prompt has space below editable area.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function populateConsoleWithMessages(count)
@@ -20,8 +20,8 @@
   await ConsoleTestRunner.waitForPendingViewportUpdates();
 
   const consoleView = Console.ConsoleView.instance();
-  const viewport = consoleView._viewport;
-  const heightBelowPromptEditor = consoleView._prompt.belowEditorElement().offsetHeight;
+  const viewport = consoleView.viewport;
+  const heightBelowPromptEditor = consoleView.prompt.belowEditorElement().offsetHeight;
   const messagesCount = 150;
 
   TestRunner.runTestSuite([
@@ -33,7 +33,7 @@
 
     async function testScrollViewportToBottom(next) {
       viewport.element.scrollTop = 0;
-      consoleView._immediatelyScrollToBottom();
+      consoleView.immediatelyScrollToBottom();
       await ConsoleTestRunner.waitForPendingViewportUpdates();
       dumpAndContinue(next);
     },
@@ -44,7 +44,7 @@
 
       // Simulate scroll on type.
       viewport.element.scrollTop = viewport.element.scrollHeight - viewport.element.clientHeight - heightBelowPromptEditor;
-      consoleView._prompt.setText('a');
+      consoleView.prompt.setText('a');
 
       await ConsoleTestRunner.waitForPendingViewportUpdates();
       dumpAndContinue(next);
@@ -52,13 +52,13 @@
 
     async function testDoNotJumpToBottomWhenTypingAboveLastPromptLine(next) {
       const multilineText = `Multiline text\n\n\nfoo`;
-      consoleView._prompt.setText(multilineText);
+      consoleView.prompt.setText(multilineText);
       viewport.element.scrollTop = 0;
       await ConsoleTestRunner.waitForPendingViewportUpdates();
 
       // Simulate scroll on type.
       viewport.element.scrollTop = viewport.element.scrollHeight - viewport.element.clientHeight - heightBelowPromptEditor - 3;
-      consoleView._prompt.setText(multilineText + 'a');
+      consoleView.prompt.setText(multilineText + 'a');
 
       await ConsoleTestRunner.waitForPendingViewportUpdates();
       dumpAndContinue(next);

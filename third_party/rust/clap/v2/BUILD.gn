@@ -1,0 +1,40 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "clap"
+  epoch = "2"
+  crate_type = "rlib"
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  crate_root = "crate/src/lib.rs"
+
+  # Unit tests skipped. Generate with --with-tests to include them
+  skip_unit_tests = true
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2015"
+  deps = [
+    "//third_party/rust/atty/v0_2:lib",
+    "//third_party/rust/bitflags/v1:lib",
+    "//third_party/rust/strsim/v0_8:lib",
+    "//third_party/rust/textwrap/v0_11:lib",
+    "//third_party/rust/unicode_width/v0_1:lib",
+    "//third_party/rust/vec_map/v0_8:lib",
+  ]
+  if (!is_win) {
+    deps += [ "//third_party/rust/ansi_term/v0_11:lib" ]
+  }
+  features = [
+    "ansi_term",
+    "atty",
+    "color",
+    "strsim",
+    "suggestions",
+    "vec_map",
+  ]
+}

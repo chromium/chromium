@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
@@ -95,7 +95,7 @@ void MockFrameConsumer::OnNewFrame(
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MockFrameConsumer::ReadFrame, base::Unretained(this)),
-        base::TimeDelta::FromMilliseconds(1));
+        base::Milliseconds(1));
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,

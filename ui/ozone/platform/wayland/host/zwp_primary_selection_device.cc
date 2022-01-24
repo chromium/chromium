@@ -6,6 +6,7 @@
 
 #include <primary-selection-unstable-v1-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_offer.h"
@@ -17,9 +18,8 @@ ZwpPrimarySelectionDevice::ZwpPrimarySelectionDevice(
     WaylandConnection* connection,
     zwp_primary_selection_device_v1* data_device)
     : WaylandDataDeviceBase(connection), data_device_(data_device) {
-  static const struct zwp_primary_selection_device_v1_listener kListener = {
-      ZwpPrimarySelectionDevice::OnDataOffer,
-      ZwpPrimarySelectionDevice::OnSelection};
+  static constexpr zwp_primary_selection_device_v1_listener kListener = {
+      &OnDataOffer, &OnSelection};
   zwp_primary_selection_device_v1_add_listener(data_device_.get(), &kListener,
                                                this);
 }
@@ -28,9 +28,14 @@ ZwpPrimarySelectionDevice::~ZwpPrimarySelectionDevice() = default;
 
 void ZwpPrimarySelectionDevice::SetSelectionSource(
     ZwpPrimarySelectionSource* source) {
+  auto serial = GetSerialForSelection();
+  if (!serial.has_value()) {
+    LOG(ERROR) << "Failed to set selection. No serial found.";
+    return;
+  }
   auto* data_source = source ? source->data_source() : nullptr;
   zwp_primary_selection_device_v1_set_selection(data_device_.get(), data_source,
-                                                connection()->serial());
+                                                serial->value);
   connection()->ScheduleFlush();
 }
 
@@ -61,8 +66,7 @@ void ZwpPrimarySelectionDevice::OnSelection(
     self->data_offer()->EnsureTextMimeTypeIfNeeded();
   }
 
-  if (self->selection_delegate())
-    self->selection_delegate()->OnSelectionOffer(self->data_offer());
+  self->NotifySelectionOffer(self->data_offer());
 }
 
 }  // namespace ui

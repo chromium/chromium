@@ -28,7 +28,7 @@ using RegisterSupportHostResponseCallback = base::OnceCallback<void(
     std::unique_ptr<apis::v1::RegisterSupportHostResponse>)>;
 
 constexpr char kSupportId[] = "123321456654";
-constexpr base::TimeDelta kSupportIdLifetime = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kSupportIdLifetime = base::Minutes(5);
 constexpr char kFtlId[] = "fake_user@domain.com/chromoting_ftl_abc123";
 
 void ValidateRegisterHost(const apis::v1::RegisterSupportHostRequest& request) {

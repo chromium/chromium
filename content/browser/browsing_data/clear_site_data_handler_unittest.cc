@@ -134,10 +134,11 @@ class ClearSiteDataHandlerTest : public testing::Test {
   ClearSiteDataHandlerTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
 
+  ClearSiteDataHandlerTest(const ClearSiteDataHandlerTest&) = delete;
+  ClearSiteDataHandlerTest& operator=(const ClearSiteDataHandlerTest&) = delete;
+
  private:
   BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClearSiteDataHandlerTest);
 };
 
 TEST_F(ClearSiteDataHandlerTest, ParseHeaderAndExecuteClearingTask) {

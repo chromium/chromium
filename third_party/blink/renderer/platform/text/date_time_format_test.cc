@@ -237,7 +237,7 @@ TEST_F(DateTimeFormatTest, Quote) {
 }
 
 TEST_F(DateTimeFormatTest, SingleLowerCaseCharacter) {
-  EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('b'));
+  EXPECT_EQ(DateTimeFormat::kFieldTypePeriodAmPmNoonMidnight, Single('b'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeLocalDayOfWeekStandAlon, Single('c'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeDayOfMonth, Single('d'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeLocalDayOfWeek, Single('e'));
@@ -246,10 +246,12 @@ TEST_F(DateTimeFormatTest, SingleLowerCaseCharacter) {
   EXPECT_EQ(DateTimeFormat::kFieldTypeHour24, Single('k'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeMinute, Single('m'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeQuaterStandAlone, Single('q'));
+  EXPECT_EQ(DateTimeFormat::kFieldTypeYearRelatedGregorian, Single('r'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeSecond, Single('s'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeExtendedYear, Single('u'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeNonLocationZone, Single('v'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeWeekOfMonth, Single('W'));
+  EXPECT_EQ(DateTimeFormat::kFieldTypeZoneIso8601, Single('x'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeYear, Single('y'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeZone, Single('z'));
 }
@@ -263,13 +265,12 @@ TEST_F(DateTimeFormatTest, SingleLowerCaseInvalid) {
   EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('n'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('o'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('p'));
-  EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('r'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('t'));
-  EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('x'));
 }
 
 TEST_F(DateTimeFormatTest, SingleUpperCaseCharacter) {
   EXPECT_EQ(DateTimeFormat::kFieldTypeMillisecondsInDay, Single('A'));
+  EXPECT_EQ(DateTimeFormat::kFieldTypePeriodFlexible, Single('B'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeDayOfYear, Single('D'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeDayOfWeek, Single('E'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeDayOfWeekInMonth, Single('F'));
@@ -278,26 +279,25 @@ TEST_F(DateTimeFormatTest, SingleUpperCaseCharacter) {
   EXPECT_EQ(DateTimeFormat::kFieldTypeHour11, Single('K'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeMonthStandAlone, Single('L'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeMonth, Single('M'));
+  EXPECT_EQ(DateTimeFormat::kFieldTypeZoneLocalized, Single('O'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeQuater, Single('Q'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeFractionalSecond, Single('S'));
+  EXPECT_EQ(DateTimeFormat::kFieldTypeYearCyclicName, Single('U'));
+  EXPECT_EQ(DateTimeFormat::kFieldTypeZoneId, Single('V'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeWeekOfYear, Single('w'));
+  EXPECT_EQ(DateTimeFormat::kFieldTypeZoneIso8601Z, Single('X'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeYearOfWeekOfYear, Single('Y'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeRFC822Zone, Single('Z'));
 }
 
 TEST_F(DateTimeFormatTest, SingleUpperCaseInvalid) {
-  EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('B'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('C'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('I'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('J'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('N'));
-  EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('O'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('P'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('R'));
   EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('T'));
-  EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('U'));
-  EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('V'));
-  EXPECT_EQ(DateTimeFormat::kFieldTypeInvalid, Single('X'));
 }
 
 }  // namespace blink

@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
@@ -32,6 +31,9 @@ class SandboxedZipAnalyzer
       const base::FilePath& zip_file,
       ResultCallback callback,
       mojo::PendingRemote<chrome::mojom::FileUtilService> service);
+
+  SandboxedZipAnalyzer(const SandboxedZipAnalyzer&) = delete;
+  SandboxedZipAnalyzer& operator=(const SandboxedZipAnalyzer&) = delete;
 
   // Starts the analysis. Must be called on the UI thread.
   void Start();
@@ -63,8 +65,6 @@ class SandboxedZipAnalyzer
   // Remote interfaces to the file util service. Only used from the UI thread.
   mojo::Remote<chrome::mojom::FileUtilService> service_;
   mojo::Remote<chrome::mojom::SafeArchiveAnalyzer> remote_analyzer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxedZipAnalyzer);
 };
 
 #endif  // CHROME_SERVICES_FILE_UTIL_PUBLIC_CPP_SANDBOXED_ZIP_ANALYZER_H_

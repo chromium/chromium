@@ -14,6 +14,10 @@ namespace protocol {
 class FakeAudioSource : public AudioSource {
  public:
   FakeAudioSource();
+
+  FakeAudioSource(const FakeAudioSource&) = delete;
+  FakeAudioSource& operator=(const FakeAudioSource&) = delete;
+
   ~FakeAudioSource() override;
 
   // AudioSource interface.
@@ -23,8 +27,6 @@ class FakeAudioSource : public AudioSource {
 
  private:
   PacketCapturedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioSource);
 };
 
 }  // namespace protocol

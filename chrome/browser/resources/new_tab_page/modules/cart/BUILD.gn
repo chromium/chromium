@@ -14,7 +14,7 @@ js_library("module") {
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
     "//ui/webui/resources/cr_elements/cr_auto_img",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
   ]
 }
 

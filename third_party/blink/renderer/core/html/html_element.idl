@@ -30,7 +30,7 @@
     [CEReactions] attribute DOMString dir;
 
     // user interaction
-    [Affects=Nothing, CEReactions, Reflect] attribute boolean hidden;
+    [CEReactions, Reflect] attribute boolean hidden;
     [RuntimeCallStatsCounter=HTMLElementClick] void click();
     [CEReactions, RuntimeEnabled=InertAttribute, Reflect] attribute boolean inert;
     [CEReactions, Reflect] attribute DOMString accessKey;
@@ -54,19 +54,19 @@
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extensions-to-the-htmlelement-interface
-    [Affects=Nothing, PerWorldBindings, ImplementedAs=unclosedOffsetParent] readonly attribute Element? offsetParent;
-    [Affects=Nothing, ImplementedAs=offsetTopForBinding] readonly attribute long offsetTop;
-    [Affects=Nothing, ImplementedAs=offsetLeftForBinding] readonly attribute long offsetLeft;
-    [Affects=Nothing, ImplementedAs=offsetWidthForBinding] readonly attribute long offsetWidth;
-    [Affects=Nothing, ImplementedAs=offsetHeightForBinding] readonly attribute long offsetHeight;
+    [PerWorldBindings, ImplementedAs=unclosedOffsetParent] readonly attribute Element? offsetParent;
+    [ImplementedAs=offsetTopForBinding] readonly attribute long offsetTop;
+    [ImplementedAs=offsetLeftForBinding] readonly attribute long offsetLeft;
+    [ImplementedAs=offsetWidthForBinding] readonly attribute long offsetWidth;
+    [ImplementedAs=offsetHeightForBinding] readonly attribute long offsetHeight;
 
     // CSS Object Model (CSSOM)
     // https://drafts.csswg.org/cssom/#the-elementcssinlinestyle-interface
-    [Affects=Nothing, SameObject, PerWorldBindings, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
+    [SameObject, PerWorldBindings, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
 
     // Non-standard APIs
-    [Affects=Nothing, CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([TreatNullAs=EmptyString] DOMString or TrustedScript) innerText;
-    [Affects=Nothing, CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [TreatNullAs=EmptyString] DOMString outerText;
+    [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([TreatNullAs=EmptyString] DOMString or TrustedScript) innerText;
+    [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [TreatNullAs=EmptyString] DOMString outerText;
 };
 
 HTMLElement includes GlobalEventHandlers;

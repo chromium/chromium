@@ -27,10 +27,6 @@
 namespace base {
 class FilePath;
 
-namespace trace_event {
-class ProcessMemoryDump;
-}
-
 namespace android {
 class ApplicationStatusListener;
 }  // namespace android
@@ -266,11 +262,6 @@ class NET_EXPORT Backend {
   // Called whenever an external cache in the system reuses the resource
   // referred to by |key|.
   virtual void OnExternalCacheHit(const std::string& key) = 0;
-
-  // Returns the estimate of dynamically allocated memory in bytes.
-  virtual size_t DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_absolute_name) const = 0;
 
   // Backends can optionally permit one to store, probabilistically, up to a
   // byte associated with a key of an existing entry in memory.
@@ -550,6 +541,13 @@ struct NET_EXPORT RangeResult {
   // Valid iff net_error is net::OK.
   int available_len = 0;
 };
+
+// The maximum size of cache that can be created for type
+// GENERATED_WEBUI_BYTE_CODE_CACHE. There are only a handful of commonly
+// accessed WebUI pages, which can each cache 0.5 - 1.5 MB of code. There is no
+// point in having a very large WebUI code cache, even if lots of disk space is
+// available.
+constexpr int kMaxWebUICodeCacheSize = 5 * 1024 * 1024;
 
 }  // namespace disk_cache
 

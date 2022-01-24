@@ -19,18 +19,25 @@
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace device {
+
+class BluetoothAdapter;
+
+}  // namespace device
+
 namespace ash {
 namespace quick_pair {
 
 struct Device;
 class FastPairPairer;
+class FastPairUnpairHandler;
 
-class PairerBrokerImpl : public PairerBroker {
+class PairerBrokerImpl final : public PairerBroker {
  public:
   PairerBrokerImpl();
   PairerBrokerImpl(const PairerBrokerImpl&) = delete;
   PairerBrokerImpl& operator=(const PairerBrokerImpl&) = delete;
-  ~PairerBrokerImpl() final;
+  ~PairerBrokerImpl() override;
 
   // PairingBroker:
   void AddObserver(Observer* observer) override;
@@ -46,8 +53,14 @@ class PairerBrokerImpl : public PairerBroker {
                            AccountKeyFailure failure);
   void OnFastPairProcedureComplete(scoped_refptr<Device> device);
 
+  // Internal method called by BluetoothAdapterFactory to provide the adapter
+  // object.
+  void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
+
   base::flat_map<std::string, std::unique_ptr<FastPairPairer>>
       fast_pair_pairers_;
+  scoped_refptr<device::BluetoothAdapter> adapter_;
+  std::unique_ptr<FastPairUnpairHandler> fast_pair_unpair_handler_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<PairerBrokerImpl> weak_pointer_factory_{this};
 };

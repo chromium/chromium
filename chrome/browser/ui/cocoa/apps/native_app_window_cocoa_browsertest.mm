@@ -10,7 +10,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_cftyperef.h"
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -55,6 +54,11 @@ class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
  protected:
   NativeAppWindowCocoaBrowserTest() {}
 
+  NativeAppWindowCocoaBrowserTest(const NativeAppWindowCocoaBrowserTest&) =
+      delete;
+  NativeAppWindowCocoaBrowserTest& operator=(
+      const NativeAppWindowCocoaBrowserTest&) = delete;
+
   void SetUpAppWithWindows(int num_windows) {
     app_ = InstallExtension(
         test_data_dir_.AppendASCII("platform_apps").AppendASCII("minimal"), 1);
@@ -69,15 +73,12 @@ class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
           ->LaunchAppWithParams(apps::AppLaunchParams(
               app_->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
               WindowOpenDisposition::NEW_WINDOW,
-              apps::mojom::AppLaunchSource::kSourceTest));
+              apps::mojom::LaunchSource::kFromTest));
       app_loaded_observer.Wait();
     }
   }
 
   const extensions::Extension* app_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeAppWindowCocoaBrowserTest);
 };
 
 }  // namespace

@@ -35,7 +35,8 @@ test(function() {
     // is not constant, this means letter spacing is not linearly changing
     // with font size, which means varying tracking is applied. At font sizes
     // above 78px, the tracking table ends and values become constant again.
-    var expectedRatios = [11.873046875,
+    var expectedRatios_pre_big_sur = [
+      11.873046875,
       11.443359375,
       11.306640625,
       11.189453125,
@@ -54,8 +55,31 @@ test(function() {
       9.856770833333334,
       9.798177083333334,
       9.798177083333334,
-      9.798177083333334
-    ];
+      9.798177083333334 ];
+
+    // Measured using this test August 2021
+    // from Safari Technology Preview on Big Sur 11.5.1
+    var expectedRatios = [
+      11.87109375,
+      11.44140625,
+      11.3046875,
+      11.1875,
+      11.0703125,
+      10.953125,
+      10.85546875,
+      10.7578125,
+      10.6796875,
+      10.5625,
+      10.319661458333334,
+      10.164713541666666,
+      10.070963541666666,
+      10.051432291666666,
+      10.002604166666666,
+      9.934244791666666,
+      9.865885416666666,
+      9.797526041666666,
+      9.797526041666666,
+      9.797526041666666 ];
 
     var theDivs = document.querySelectorAll(".macsystemfont");
     assert_equals(theDivs.length, expectedRatios.length);
@@ -66,8 +90,9 @@ test(function() {
       var width = theDivs[i].getBoundingClientRect().width;
       var ptSize = fontSize / kCssPixelsPerPoint;
       var ratio = width / ptSize;
+      var expectation_pre_big_sur = expectedRatios_pre_big_sur[i];
       var expectation = expectedRatios[i];
-      assert_less_than(Math.abs(ratio - expectation), 0.01);
+      assert_true(Math.abs(ratio - expectation_pre_big_sur) < 0.015 || Math.abs(ratio - expectation) < 0.015);
     }
     testDivs.style.display = "none";
   },

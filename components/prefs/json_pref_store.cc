@@ -17,14 +17,13 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram.h"
 #include "base/ranges/algorithm.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
@@ -318,28 +317,6 @@ void JsonPrefStore::CommitPendingWrite(
   if (reply_callback) {
     file_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
                                         std::move(reply_callback));
-  }
-}
-
-void JsonPrefStore::CommitPendingWriteSynchronously() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Schedule a write for any lossy writes that are outstanding to ensure that
-  // they get flushed when this function is called.
-  SchedulePendingLossyWrites();
-  if (!writer_.HasPendingWrite() || read_only_)
-    return;
-
-  const base::FilePath path = writer_.path();
-  std::string data;
-  if (!SerializeData(&data)) {
-    DVLOG(1) << "Failed to serialize data to be saved in " << path.value();
-    return;
-  }
-
-  const std::string suffix = GetHistogramSuffix(path);
-  if (!base::ImportantFileWriter::WriteFileAtomically(path, data, suffix)) {
-    DVLOG(1) << "Could not write " << suffix << " into " << path.value();
   }
 }
 

@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "remoting/codec/audio_decoder.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/protocol/audio_stub.h"

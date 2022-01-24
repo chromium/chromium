@@ -18,6 +18,7 @@
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
+#import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/policy_decision_state_tracker.h"
 #include "ui/gfx/image/image.h"
 
@@ -81,6 +82,15 @@ WebStateDelegate* FakeWebState::GetDelegate() {
 }
 
 void FakeWebState::SetDelegate(WebStateDelegate* delegate) {}
+
+bool FakeWebState::IsRealized() const {
+  // FakeWebState cannot be unrealized.
+  return true;
+}
+
+WebState* FakeWebState::ForceRealized() {
+  return this;
+}
 
 BrowserState* FakeWebState::GetBrowserState() const {
   return browser_state_;
@@ -356,7 +366,7 @@ void FakeWebState::OnWebFrameWillBecomeUnavailable(WebFrame* frame) {
 
 void FakeWebState::ShouldAllowRequest(
     NSURLRequest* request,
-    const WebStatePolicyDecider::RequestInfo& request_info,
+    WebStatePolicyDecider::RequestInfo request_info,
     WebStatePolicyDecider::PolicyDecisionCallback callback) {
   auto request_state_tracker =
       std::make_unique<PolicyDecisionStateTracker>(std::move(callback));
@@ -380,7 +390,7 @@ void FakeWebState::ShouldAllowRequest(
 
 void FakeWebState::ShouldAllowResponse(
     NSURLResponse* response,
-    bool for_main_frame,
+    WebStatePolicyDecider::ResponseInfo response_info,
     WebStatePolicyDecider::PolicyDecisionCallback callback) {
   auto response_state_tracker =
       std::make_unique<PolicyDecisionStateTracker>(std::move(callback));
@@ -391,7 +401,7 @@ void FakeWebState::ShouldAllowResponse(
       base::Owned(std::move(response_state_tracker)));
   int num_decisions_requested = 0;
   for (auto& policy_decider : policy_deciders_) {
-    policy_decider.ShouldAllowResponse(response, for_main_frame,
+    policy_decider.ShouldAllowResponse(response, response_info,
                                        policy_decider_callback);
     num_decisions_requested++;
     if (response_state_tracker_ptr->DeterminedFinalResult())
@@ -487,6 +497,25 @@ bool FakeWebState::SetSessionStateData(NSData* data) {
 
 NSData* FakeWebState::SessionStateData() {
   return nil;
+}
+
+FakeWebStateWithPolicyCache::FakeWebStateWithPolicyCache(
+    BrowserState* browser_state)
+    : FakeWebState(),
+      certificate_policy_cache_(
+          std::make_unique<web::SessionCertificatePolicyCacheImpl>(
+              browser_state)) {}
+
+FakeWebStateWithPolicyCache::~FakeWebStateWithPolicyCache() {}
+
+const SessionCertificatePolicyCache*
+FakeWebStateWithPolicyCache::GetSessionCertificatePolicyCache() const {
+  return certificate_policy_cache_.get();
+}
+
+SessionCertificatePolicyCache*
+FakeWebStateWithPolicyCache::GetSessionCertificatePolicyCache() {
+  return certificate_policy_cache_.get();
 }
 
 }  // namespace web

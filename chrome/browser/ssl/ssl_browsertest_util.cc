@@ -138,11 +138,13 @@ void SecurityStateWebContentsObserver::DidChangeVisibleSecurityState() {
 bool UsingBuiltinCertVerifier() {
 #if defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   return true;
-#elif BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+#else
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
   if (base::FeatureList::IsEnabled(net::features::kCertVerifierBuiltinFeature))
     return true;
 #endif
   return false;
+#endif
 }
 
 bool SystemSupportsHardFailRevocationChecking() {
@@ -193,7 +195,7 @@ bool CertVerifierSupportsCRLSetBlocking() {
 
 void SetHSTSForHostName(content::BrowserContext* context,
                         const std::string& hostname) {
-  const base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
+  const base::Time expiry = base::Time::Now() + base::Days(1000);
   bool include_subdomains = false;
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
   content::StoragePartition* partition = context->GetDefaultStoragePartition();

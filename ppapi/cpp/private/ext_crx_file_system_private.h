@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_CPP_PRIVATE_EXTENSION_CRX_FILE_SYSTEM_PRIVATE_H_
-#define PPAPI_CPP_PRIVATE_EXTENSION_CRX_FILE_SYSTEM_PRIVATE_H_
+#ifndef PPAPI_CPP_PRIVATE_EXT_CRX_FILE_SYSTEM_PRIVATE_H_
+#define PPAPI_CPP_PRIVATE_EXT_CRX_FILE_SYSTEM_PRIVATE_H_
 
 #include <stdint.h>
 
@@ -28,4 +28,4 @@ class ExtCrxFileSystemPrivate {
 
 }  // namespace pp
 
-#endif  // PPAPI_CPP_PRIVATE_EXTENSION_CRX_FILE_SYSTEM_PRIVATE_H_
+#endif  // PPAPI_CPP_PRIVATE_EXT_CRX_FILE_SYSTEM_PRIVATE_H_

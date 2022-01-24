@@ -20,6 +20,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1774152462503052664">Låt Chromium köras i bakgrunden</translation>
 <translation id="1779356040007214683">Vi har gjort Chromium säkrare genom att inaktivera vissa tillägg som inte finns i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och som kan ha lagts till utan att du vet om det.</translation>
 <translation id="1808667845054772817">Installera om Chromium</translation>
+<translation id="185970820835152459">Du kan hantera dina inloggade Google-konton. Dina Google-konton används för webbläsaren Chromium, Play Butik, Gmail med mera. Om du vill lägga till ett konto åt någon annan, till exempel en familjemedlem, lägger du till en ny person på <ph name="DEVICE_TYPE" /> i stället. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1881322772814446296">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Chromium-profil. Dina uppgifter i Chromium, t.ex. dina appar, bokmärken, din historik, ditt lösenord och andra inställningar, kopplas då permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dem till något annat konto. Du kan skapa en ny profil om du vill hålla dina befintliga Chromium-uppgifter separata. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chromium</translation>
 <translation id="1929939181775079593">Chromium svarar inte. Vill du starta om?</translation>
@@ -31,18 +32,20 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2185166961232948079">Chromium – nätverksinloggning – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Om du delar en dator med vänner och familj kan de konfigurera Chromium precis som de vill och surfa separat.</translation>
 <translation id="2294245788148774212">Valfritt: Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i Chromium OS.</translation>
+<translation id="2313870531055795960">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chromium. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chromium till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="2343156876103232566">Logga in på Chromium på båda enheterna om du vill skicka ett nummer från Android-telefonen.</translation>
 <translation id="2347108572062610441">Det här tillägget har ändrat vilken sida som visas när du startar Chromium.</translation>
 <translation id="2396765026452590966">Tillägget <ph name="EXTENSION_NAME" /> har ändrat vilken sida som visas när du startar Chromium.</translation>
+<translation id="2401032172288869980">Du behöver ge Chromium kamera- och mikrofonbehörighet för den här webbplatsen</translation>
 <translation id="2483889755041906834">I Chromium</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
 <translation id="2535480412977113886">Det gick inte att synkronisera data med Chromium eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="2560420686485554789">Du behöver ge Chromium åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="2572494885440352020">Hjälp för Chromium</translation>
 <translation id="2577788541081224677">Logga in och aktivera synkronisering om du vill få tillgång till dina saker i Chromium på olika enheter.</translation>
-<translation id="2580426763510374355">Installera Chromium OS</translation>
 <translation id="2583187216237139145">All data i Chromium som uppstår när den här profilen används (t.ex. bokmärken, historik, lösenord och andra inställningar) kan tas bort av jobbprofilens administratör. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS måste startas om för att uppdateringen ska börja gälla.</translation>
+<translation id="2614883797045469742">Standardinställningarna passar de flesta, men du kan anpassa dem efter hur du använder Chromium</translation>
 <translation id="2648074677641340862">Ett operativsystemsfel inträffade under installationen. Ladda ned Chromium igen.</translation>
 <translation id="2661879430930417727">Om du delar en enhet med vänner och familj kan de konfigurera Chromium precis som de vill och surfa separat.</translation>
 <translation id="2711502716910134313">Chromium-flik</translation>
@@ -51,9 +54,11 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2799223571221894425">Starta om</translation>
 <translation id="2837693172913560447">En ny Chromium-profil skapas för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Ta bort från Chromium …</translation>
+<translation id="2850691299438350830">Skyddar dig i Chromium och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad.</translation>
 <translation id="2885378588091291677">Aktivitetshanteraren</translation>
 <translation id="2910007522516064972">Om &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium är uppdaterat</translation>
+<translation id="2977506796191543575">Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chromium till Säker webbsökning tillsammans med delar av sidinnehållet</translation>
 <translation id="2983934633046890458">Lösenorden i Chromium redigeras.</translation>
 <translation id="3032706164202344641">Chromium kan inte kontrollera dina lösenord. Försök igen senare.</translation>
 <translation id="3032787606318309379">Lägger till i Chromium ...</translation>
@@ -76,13 +81,11 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3350761136195634146">Det finns redan en Chromium-profil med detta konto</translation>
 <translation id="3406848076815591792">Vill du byta till befintlig Chromium-profil?</translation>
 <translation id="3430503420100763906">Du kan hålla dina saker i Chromium åtskilda med hjälp av Chromium-profiler. Skapa profiler för vänner och familjemedlemmar eller dela upp jobb och nöje.</translation>
-<translation id="3433271666494956603">Installationen av Chromium OS pågår</translation>
 <translation id="347328004046849135">Chromium aviserar dig om du loggar in med ett utsatt lösenord</translation>
 <translation id="3474745554856756813"><ph name="ITEMS_COUNT" /> objekt tas bort från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="3497319089134299931">Du kan använda <ph name="SHORTCUT" /> för att byta mellan Chromium-profiler</translation>
 <translation id="3509308970982693815">Stäng alla Chromium-fönster och försök igen.</translation>
 <translation id="3575459661164320785">Det finns skadlig programvara på datorn. Den skadliga programvaran kan tas bort, inställningarna återställas och tillägg inaktiveras så att webbläsaren fungerar som den ska igen.</translation>
-<translation id="3610776674893128619">Rensa hårddisken och installera Chromium OS</translation>
 <translation id="3639635944603682591">Den här personens webbläsardata tas bort från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill återställa data.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Det finns en ny Chromium-uppdatering som tillämpas så snart du startar om.}=1{Det finns en ny Chromium-uppdatering som tillämpas så snart du startar om. Inkognitofönstret öppnas inte igen.}other{Det finns en ny Chromium-uppdatering som tillämpas så snart du startar om. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="3651803019964686660">Logga in på Chromium på båda enheterna om du vill skicka ett nummer från <ph name="ORIGIN" /> till Android-telefonen.</translation>
@@ -105,7 +108,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4264410486868823224"><ph name="MANAGER" /> kräver att du läser och godkänner följande användarvillkor innan du använder enheten. Villkoren varken utökar, ändrar eller begränsar villkoren för Chromium OS.</translation>
 <translation id="4271805377592243930">Få hjälp med Chromium</translation>
 <translation id="4285930937574705105">Installationen misslyckades på grund av ett ospecificerat fel. Stäng Chromium om det är igång och försök sedan igen.</translation>
-<translation id="429583012151745428">Installation pågår. Stäng inte av enheten Installationen bör ta högst 20 minuter. Datorn stängs av automatiskt när installationen är klar.</translation>
 <translation id="4407044323746248786">Vill du avsluta Chromium ändå?</translation>
 <translation id="4415566066719264597">Låt Chromium köras i bakgrunden</translation>
 <translation id="4423735387467980091">Anpassa och kontrollera Chromium</translation>
@@ -135,7 +137,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5386450000063123300">Chromium uppdateras (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Tillåt inloggning i Chromium</translation>
 <translation id="5398878173008909840">Det finns en ny version av Chromium.</translation>
-<translation id="5416696090975899932">Chromium kan inte visa förhandsgranskning av en utskrift när det inbyggda PDF-visningsprogrammet saknas.</translation>
 <translation id="5427571867875391349">Använd Chromium som standardwebbläsare</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Chromium Beta</translation>
 <translation id="5479196819031988440">Det går inte att öppna den här sidan i Chromium OS.</translation>
@@ -150,6 +151,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
+<translation id="5883558403894052917">Chromium har upptäckt att dessa objekt innehåller skadlig programvara:</translation>
 <translation id="5895138241574237353">Starta om</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – nätverksinloggning</translation>
 <translation id="5987687638152509985">Du måste uppdatera Chromium innan synkroniseringen kan starta</translation>
@@ -164,18 +166,11 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> är skadlig och har blockerats av Chromium.</translation>
 <translation id="6134968993075716475">Säker webbsökning har inaktiverats. Du rekommenderas att aktivera funktionen i Chromium.</translation>
 <translation id="6145820983052037069">Du kan byta mellan Chromium-profiler här</translation>
-<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Vi är redo att installera Chromium OS. När du fortsätter sker följande:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Filer, data och ditt nuvarande operativsystem rensas.
-          <ph name="LIST_ITEM" />Chromium OS installeras.
-          <ph name="LIST_ITEM" />Enheten stängs av när installationen har slutförts.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />En sista påminnelse: installationen rensar hårddisken fullständigt. Se till att du har säkerhetskopierat all data som du vill behålla.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />När installationen har påbörjats går den inte att avbryta.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">Se till att du är inloggad i Chromium på <ph name="TARGET_DEVICE_NAME" /> och försök skicka igen.</translation>
 <translation id="6212496753309875659">Det finns redan en nyare version av Chromium på den här datorn. Avinstallera Chromium och försök igen om programvaran inte fungerar.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium startas om nu}=1{Om en sekund startas Chromium om}other{Om # sekunder startas Chromium om}}</translation>
+<translation id="6241367896540709610">Du behöver ge Chromium åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
+<translation id="6245734527075554892">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chromium</translation>
 <translation id="6248213926982192922">Använd Chromium som standardwebbläsare</translation>
 <translation id="6266342355635466082">Chromium kan inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="6268381023930128611">Vill du logga ut från Chromium?</translation>
@@ -190,25 +185,25 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="6434250628340475518">Chromium OS-system</translation>
 <translation id="6455857529632101747">Välkommen till Chromium-profiler</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium startas om om en sekund}other{Chromium startas om om # sekunder}}</translation>
-<translation id="646620589868199210">Redo att installera Chromium OS</translation>
 <translation id="6475912303565314141">Det styr också vilken sida som visas när du startar Chromium.</translation>
 <translation id="6510925080656968729">Avinstallera Chromium</translation>
 <translation id="6542839706527980775">I alla profiler sparas egen Chromium-information som bokmärken, historik, lösenord och annat</translation>
 <translation id="6570579332384693436">Chromium skickar det du skriver i textfält till Google för att kontrollera stavningen</translation>
 <translation id="6598877126913850652">Öppna aviseringsinställningarna för Chromium</translation>
 <translation id="6613594504749178791">Ändringarna tillämpas nästa gång du startar om Chromium.</translation>
+<translation id="665732753414869868">Du behöver ge Chromium kamerabehörighet om du vill skapa en 3D-karta över dina omgivningar</translation>
 <translation id="6676384891291319759">Gå ut på Internet</translation>
+<translation id="6709350901466051922">Du behöver ge Chromium mikrofonbehörighet för den här webbplatsen</translation>
 <translation id="6717134281241384636">Din profil kan inte användas eftersom den kommer från en nyare version av Chromium.
 
 Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog eller använd en nyare version av Chromium.</translation>
-<translation id="6734080038664603509">Uppdatera &amp;Chromium</translation>
 <translation id="6734291798041940871">Chromium har redan installerats för alla användare på datorn.</translation>
 <translation id="673636774878526923">Logga in och aktivera synkronisering om du vill få tillgång till dina saker i Chromium på olika enheter.</translation>
 <translation id="6774082503108938489">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chromium. Det är inte tillåtet att aktivera denna <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="6827182711503025204">All data på enheten skrivs över när du installerar Chromium OS.</translation>
 <translation id="6847869444787758381">Om dina lösenord någonsin skulle läcka ut får du veta det i Chromium</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (har kopierats till Chromium)</translation>
+<translation id="6873893289264747459">Chromium har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig programvara</translation>
 <translation id="6893813176749746474">Chromium har uppdaterats men du har inte använt det på över 30 dagar.</translation>
 <translation id="691026815377248078">Chromium behöver åtkomst för Bluetooth för att fortsätta 
  parkoppla. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -217,10 +212,12 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6990124437352146030">Du behöver ge Chromium behörighet att använda mikrofonen på webbplatsen</translation>
 <translation id="705851970750939768">Uppdatera Chromium</translation>
 <translation id="7067091210845072982">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chromium. Bilderna skickas till Google så att beskrivningen kan genereras.</translation>
+<translation id="7147279922647361552">Anpassa några av Chromiums viktigaste integritetsval</translation>
+<translation id="718435575166326686">Du behöver ge Chromium kamerabehörighet för den här webbplatsen</translation>
 <translation id="7196312274710523067">Det gick inte att starta Chromium. Försök igen.</translation>
 <translation id="7197677400338048821">Chromium kan inte kontrollera dina lösenord. Försök igen om ett dygn.</translation>
+<translation id="7218568399872925918">Webbplatser du besöker kommer ihåg dina uppgifter tills du stänger Chromium</translation>
 <translation id="7223968959479464213">Aktivitetshanteraren – Chromium</translation>
-<translation id="731644333568559921">Uppdatera &amp;Chromium OS</translation>
 <translation id="731795002583552498">Chromium uppdateras</translation>
 <translation id="7318036098707714271">Inställningsfilen är skadad eller ogiltig.
 
@@ -240,10 +237,6 @@ Chromium kan inte återställa dina inställningar.</translation>
       inställningarna för Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium använder din kamera och mikrofon.</translation>
 <translation id="7617377681829253106">Vi har förbättrat Chromium</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Innan vi sätter igång bör du kontrollera att du har en aktuell säkerhetskopia av din data. All data på hårddisken skrivs över när du installerar Chromium OS.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google ansvarar inte för eventuell dataförlust och garanterar inte heller att Chromium OS fungerar på ocertifierade modeller. Om du vill läsa mer om certifierade modeller besöker du [TBD].<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Läs mer om att installera Chromium OS och att rensa data på [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Om du är redo att fortsätta klickar du på Installera Chromium OS. Vi guidar dig genom installationen i några enkla steg. Du har möjlighet att bekräfta innan vi gör några ändringar på din dator.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium är inte din standardwebbläsare</translation>
 <translation id="7689606757190482937">Synkronisera och anpassa Chromium på alla enheter du använder</translation>
 <translation id="7729447699958282447">Chromium kunde inte synkronisera data eftersom synkronisering inte är tillgängligt för domänen.</translation>
@@ -257,6 +250,8 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7937630085815544518">Du var inloggad i Chromium som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>
 <translation id="7975919845073681630">Det här är en sekundär installation av Chromium. Det går inte att göra den till standardwebbläsare.</translation>
 <translation id="8013436988911883588">När du har gett Chromium åtkomst kan webbplatser begära att få åtkomst.</translation>
+<translation id="8045118833343856403">Följande konton är inte inloggade i någon Chromium-profil. Om du vill använda ett konto som finns i en annan profil tar du bort den profilen först.</translation>
+<translation id="8105840573057009683">Du behöver ge Chromium platsbehörighet för den här webbplatsen</translation>
 <translation id="81770708095080097">Filen är farlig och har blockerats av Chromium.</translation>
 <translation id="8248265253516264921">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chromium. Bilderna skickas till Google så att beskrivningen kan genereras. Du kan när som helst inaktivera den här inställningen.</translation>
 <translation id="8266560134891435528">Chromium kan inte kontrollera dina lösenord eftersom du inte är inloggad</translation>
@@ -275,6 +270,8 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8621669128220841554">Installationen misslyckades på grund av ett okänt fel. Ladda ned Chromium igen.</translation>
 <translation id="8697124171261953979">Det styr också vilken sida som visas när du startar Chromium eller söker i adressfältet.</translation>
 <translation id="8704119203788522458">Det här är Chromium</translation>
+<translation id="8713679423359107094">När du stänger alla öppna fönster i Chromium rensas cookies och webbplatsdata automatiskt</translation>
+<translation id="8796443464227412154">Du <ph name="BEGIN_BOLD" />loggas ut från de flesta webbplatser<ph name="END_BOLD" /> när du stänger Chromium. Om synkronisering har inaktiverats <ph name="BEGIN_BOLD" />loggas du även ut från Googles tjänster och Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Du behöver ge Chromium behörighet att använda kameran och mikrofonen på webbplatsen</translation>
 <translation id="8803635938069941624">Villkor för Chromium OS</translation>
 <translation id="8821041990367117597">Chromium kunde inte synkronisera data eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>

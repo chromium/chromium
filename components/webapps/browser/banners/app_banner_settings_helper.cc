@@ -12,8 +12,8 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/util/values/values_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/permissions/permissions_client.h"
@@ -219,12 +219,12 @@ absl::optional<NextInstallTextAnimation> NextInstallTextAnimation::Get(
     return absl::nullopt;
 
   absl::optional<base::Time> last_shown =
-      util::ValueToTime(next_dict->FindKey(kLastShownKey));
+      base::ValueToTime(next_dict->FindKey(kLastShownKey));
   if (!last_shown)
     return absl::nullopt;
 
   absl::optional<base::TimeDelta> delay =
-      util::ValueToTimeDelta(next_dict->FindKey(kDelayKey));
+      base::ValueToTimeDelta(next_dict->FindKey(kDelayKey));
   if (!delay)
     return absl::nullopt;
 
@@ -238,8 +238,8 @@ void NextInstallTextAnimation::RecordToPrefs(content::WebContents* web_contents,
     return;
 
   base::Value next_dict(base::Value::Type::DICTIONARY);
-  next_dict.SetKey(kLastShownKey, util::TimeToValue(last_shown));
-  next_dict.SetKey(kDelayKey, util::TimeDeltaToValue(delay));
+  next_dict.SetKey(kLastShownKey, base::TimeToValue(last_shown));
+  next_dict.SetKey(kDelayKey, base::TimeDeltaToValue(delay));
   app_prefs.dict()->SetKey(kNextInstallTextAnimation, std::move(next_dict));
   app_prefs.Save();
 }
@@ -337,9 +337,8 @@ bool AppBannerSettingsHelper::WasBannerRecentlyBlocked(
   DCHECK(!package_name_or_start_url.empty());
 
   absl::optional<bool> in_period = WasEventWithinPeriod(
-      APP_BANNER_EVENT_DID_BLOCK,
-      base::TimeDelta::FromDays(gDaysAfterDismissedToShow), web_contents,
-      origin_url, package_name_or_start_url, now);
+      APP_BANNER_EVENT_DID_BLOCK, base::Days(gDaysAfterDismissedToShow),
+      web_contents, origin_url, package_name_or_start_url, now);
   return in_period.value_or(true);
 }
 
@@ -351,9 +350,8 @@ bool AppBannerSettingsHelper::WasBannerRecentlyIgnored(
   DCHECK(!package_name_or_start_url.empty());
 
   absl::optional<bool> in_period = WasEventWithinPeriod(
-      APP_BANNER_EVENT_DID_SHOW,
-      base::TimeDelta::FromDays(gDaysAfterIgnoredToShow), web_contents,
-      origin_url, package_name_or_start_url, now);
+      APP_BANNER_EVENT_DID_SHOW, base::Days(gDaysAfterIgnoredToShow),
+      web_contents, origin_url, package_name_or_start_url, now);
 
   return in_period.value_or(true);
 }
@@ -405,7 +403,7 @@ bool AppBannerSettingsHelper::WasLaunchedRecently(
     base::Time now) {
   HostContentSettingsMap* settings =
       permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
-  std::unique_ptr<base::DictionaryValue> origin_dict =
+  std::unique_ptr<base::Value> origin_dict =
       GetOriginAppBannerData(settings, origin_url);
 
   if (!origin_dict)
@@ -415,22 +413,20 @@ bool AppBannerSettingsHelper::WasLaunchedRecently(
   // dictionaries per app path. If we find one that has been added to
   // homescreen recently, return true.
   base::TimeDelta recent_last_launch_in_days =
-      base::TimeDelta::FromDays(kRecentLastLaunchInDays);
-  for (base::DictionaryValue::Iterator it(*origin_dict); !it.IsAtEnd();
-       it.Advance()) {
-    if (it.value().is_dict()) {
-      const base::DictionaryValue* value;
-      it.value().GetAsDictionary(&value);
+      base::Days(kRecentLastLaunchInDays);
+  for (auto path_dicts : origin_dict->DictItems()) {
+    if (path_dicts.second.is_dict()) {
+      base::Value* value = &path_dicts.second;
 
-      double internal_time;
-      if (it.key() == kInstantAppsKey ||
-          !value->GetDouble(
-              kBannerEventKeys[APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN],
-              &internal_time)) {
+      if (path_dicts.first == kInstantAppsKey)
         continue;
-      }
 
-      if ((now - base::Time::FromInternalValue(internal_time)) <=
+      absl::optional<double> internal_time = value->FindDoubleKey(
+          kBannerEventKeys[APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN]);
+      if (!internal_time)
+        continue;
+
+      if ((now - base::Time::FromInternalValue(*internal_time)) <=
           recent_last_launch_in_days) {
         return true;
       }
@@ -480,10 +476,8 @@ void AppBannerSettingsHelper::RecordInstallTextAnimationShown(
     const GURL& scope) {
   DCHECK(scope.is_valid());
 
-  constexpr base::TimeDelta kInitialAnimationSuppressionPeriod =
-      base::TimeDelta::FromDays(1);
-  constexpr base::TimeDelta kMaxAnimationSuppressionPeriod =
-      base::TimeDelta::FromDays(90);
+  constexpr base::TimeDelta kInitialAnimationSuppressionPeriod = base::Days(1);
+  constexpr base::TimeDelta kMaxAnimationSuppressionPeriod = base::Days(90);
   constexpr double kExponentialBackoffFactor = 2;
 
   NextInstallTextAnimation next_prompt = {AppBannerManager::GetCurrentTime(),

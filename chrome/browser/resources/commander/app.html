@@ -25,6 +25,15 @@
     width: 100%;
   }
 
+  #noResults {
+    border-top: 1px #aaa;
+    box-sizing: border-box;
+    font-weight: bold;
+    height: 48px;
+    padding: 1em;
+    width: 100%;
+  }
+
   .chip {
     background-color: var(--google-blue-50);
     border-radius: 100px;
@@ -55,7 +64,7 @@
   </template>
   <input id="input" type="text" on-input="onInput_"
       on-keydown="onKeydown_" aria-autocomplete="list" aria-controls="options"
-      autofocus></input>
+      placeholder="$i18n{placeholder}"></input>
 </div>
 <div id="options" role="listbox">
 <template is="dom-repeat" on-dom-change="onDomChange_" items="[[options_]]">
@@ -64,5 +73,9 @@
       role="option" id="[[getOptionId_(index)]]"
       class$="[[getOptionClass_(index, focusedIndex_)]]"
       model="[[item]]" on-click="onOptionClick_"></commander-option>
+</template>
+<template is="dom-if" if="[[showNoResults_]]"
+    on-dom-change="onDomChange_">
+  <div id="noResults">$i18n{noResults}</div>
 </template>
 </div>

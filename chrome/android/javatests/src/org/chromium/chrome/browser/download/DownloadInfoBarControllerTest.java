@@ -35,8 +35,8 @@ import java.util.UUID;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Features.EnableFeatures(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)
+@Features.DisableFeatures(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE)
 @Batch(Batch.PER_CLASS)
-@Batch.SplitByFeature
 public class DownloadInfoBarControllerTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
@@ -145,44 +145,6 @@ public class DownloadInfoBarControllerTest {
     public void testOfflinePageDownloadStarted() {
         mTestController.onDownloadStarted();
         mTestController.verify(MESSAGE_DOWNLOADING_FILE);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Download"})
-    @Features.DisableFeatures(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
-    public void testAccelerated() {
-        OfflineItem offlineItem = createOfflineItem(OfflineItemState.IN_PROGRESS);
-        offlineItem.isAccelerated = true;
-        mTestController.onDownloadItemUpdated(createDownloadItem(offlineItem));
-        mTestController.verify(MESSAGE_SPEEDING_UP);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Download"})
-    @Features.DisableFeatures(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
-    public void testMultipleDownloadInProgress() {
-        OfflineItem item1 = createOfflineItem(OfflineItemState.IN_PROGRESS);
-        mTestController.onDownloadItemUpdated(createDownloadItem(item1));
-        mTestController.verify(MESSAGE_DOWNLOADING_FILE);
-
-        OfflineItem item2 = createOfflineItem(OfflineItemState.IN_PROGRESS);
-        mTestController.onDownloadItemUpdated(createDownloadItem(item2));
-        mTestController.verify(MESSAGE_DOWNLOADING_TWO_FILES);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Download"})
-    @Features.DisableFeatures(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)
-    public void testAcceleratedChangesToDownloadingAfterDelay() {
-        OfflineItem item1 = createOfflineItem(OfflineItemState.IN_PROGRESS);
-        item1.isAccelerated = true;
-        mTestController.onDownloadItemUpdated(createDownloadItem(item1));
-        mTestController.verify(MESSAGE_SPEEDING_UP);
-
-        waitForMessage(MESSAGE_DOWNLOADING_FILE);
     }
 
     @Test

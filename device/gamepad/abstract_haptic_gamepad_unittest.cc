@@ -30,7 +30,7 @@ constexpr double kStrongMagnitude = 1.0;  // 100% intensity
 constexpr double kWeakMagnitude = 0.5;    // 50% intensity
 
 constexpr base::TimeDelta kPendingTaskDuration =
-    base::TimeDelta::FromMillisecondsD(kDurationMillis);
+    base::Milliseconds(kDurationMillis);
 
 // An implementation of AbstractHapticGamepad that records how many times its
 // SetVibration and SetZeroVibration methods have been called.
@@ -65,6 +65,10 @@ class AbstractHapticGamepadTest : public testing::Test {
         second_callback_result_(
             mojom::GamepadHapticsResult::GamepadHapticsResultError),
         gamepad_(std::make_unique<FakeHapticGamepad>()) {}
+
+  AbstractHapticGamepadTest(const AbstractHapticGamepadTest&) = delete;
+  AbstractHapticGamepadTest& operator=(const AbstractHapticGamepadTest&) =
+      delete;
 
   void TearDown() override { gamepad_->Shutdown(); }
 
@@ -107,8 +111,6 @@ class AbstractHapticGamepadTest : public testing::Test {
   std::unique_ptr<FakeHapticGamepad> gamepad_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  DISALLOW_COPY_AND_ASSIGN(AbstractHapticGamepadTest);
 };
 
 TEST_F(AbstractHapticGamepadTest, PlayEffectTest) {

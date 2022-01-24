@@ -12,9 +12,6 @@
 #include <utility>
 
 #include "base/check.h"
-// TODO(crbug.com/1010217) Remove once no #includers are getting base/macros.h
-// by including this header.
-#include "base/macros.h"
 
 namespace base {
 

@@ -105,12 +105,14 @@ class COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) ScopedIPCSupport {
   ScopedIPCSupport(
       scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
       ShutdownPolicy shutdown_policy);
+
+  ScopedIPCSupport(const ScopedIPCSupport&) = delete;
+  ScopedIPCSupport& operator=(const ScopedIPCSupport&) = delete;
+
   ~ScopedIPCSupport();
 
  private:
   const ShutdownPolicy shutdown_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedIPCSupport);
 };
 
 }  // namespace core

@@ -24,6 +24,10 @@ class BackendDecryptor : public StreamDecryptor,
                          MediaPipelineBackend::AudioDecryptor::Delegate {
  public:
   explicit BackendDecryptor(EncryptionScheme scheme);
+
+  BackendDecryptor(const BackendDecryptor&) = delete;
+  BackendDecryptor& operator=(const BackendDecryptor&) = delete;
+
   ~BackendDecryptor() override;
 
   // StreamDecryptor implementation:
@@ -49,8 +53,6 @@ class BackendDecryptor : public StreamDecryptor,
   std::unique_ptr<MediaPipelineBackend::AudioDecryptor> decryptor_;
 
   DecryptCB decrypt_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackendDecryptor);
 };
 
 }  // namespace media

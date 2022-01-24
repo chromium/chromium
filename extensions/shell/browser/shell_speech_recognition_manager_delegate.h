@@ -17,6 +17,12 @@ class ShellSpeechRecognitionManagerDelegate
       public content::SpeechRecognitionEventListener {
  public:
   ShellSpeechRecognitionManagerDelegate();
+
+  ShellSpeechRecognitionManagerDelegate(
+      const ShellSpeechRecognitionManagerDelegate&) = delete;
+  ShellSpeechRecognitionManagerDelegate& operator=(
+      const ShellSpeechRecognitionManagerDelegate&) = delete;
+
   ~ShellSpeechRecognitionManagerDelegate() override;
 
  private:
@@ -51,8 +57,6 @@ class ShellSpeechRecognitionManagerDelegate
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
       int render_process_id,
       int render_frame_id);
-
-  DISALLOW_COPY_AND_ASSIGN(ShellSpeechRecognitionManagerDelegate);
 };
 
 }  // namespace speech

@@ -19,10 +19,10 @@ void CastStreamingTestReceiver::Start(
   VLOG(1) << __func__;
   auto stream_config =
       std::make_unique<cast_streaming::ReceiverSession::AVConstraints>(
-          ToVideoCaptureConfigCodecs(media::VideoCodec::kCodecH264,
-                                     media::VideoCodec::kCodecVP8),
-          ToAudioCaptureConfigCodecs(media::AudioCodec::kCodecAAC,
-                                     media::AudioCodec::kCodecOpus));
+          ToVideoCaptureConfigCodecs(media::VideoCodec::kH264,
+                                     media::VideoCodec::kVP8),
+          ToAudioCaptureConfigCodecs(media::AudioCodec::kAAC,
+                                     media::AudioCodec::kOpus));
   receiver_session_.Start(this, std::move(stream_config),
                           std::move(message_port),
                           base::SequencedTaskRunnerHandle::Get());

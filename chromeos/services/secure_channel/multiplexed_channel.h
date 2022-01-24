@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/connection_details.h"
 
@@ -28,6 +27,9 @@ class MultiplexedChannel {
     virtual void OnDisconnected(
         const ConnectionDetails& connection_details) = 0;
   };
+
+  MultiplexedChannel(const MultiplexedChannel&) = delete;
+  MultiplexedChannel& operator=(const MultiplexedChannel&) = delete;
 
   virtual ~MultiplexedChannel();
 
@@ -54,8 +56,6 @@ class MultiplexedChannel {
  private:
   Delegate* delegate_;
   const ConnectionDetails connection_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiplexedChannel);
 };
 
 }  // namespace secure_channel

@@ -9,7 +9,6 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/exo/wm_helper.h"

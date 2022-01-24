@@ -6,8 +6,8 @@
 
 namespace syncer {
 
-SyncErrorFactoryMock::SyncErrorFactoryMock() {}
+SyncErrorFactoryMock::SyncErrorFactoryMock() = default;
 
-SyncErrorFactoryMock::~SyncErrorFactoryMock() {}
+SyncErrorFactoryMock::~SyncErrorFactoryMock() = default;
 
 }  // namespace syncer

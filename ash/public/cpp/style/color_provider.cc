@@ -13,6 +13,12 @@ ColorProvider* g_instance = nullptr;
 }
 
 // static
+constexpr float ColorProvider::kBackgroundBlurSigma;
+
+// static
+constexpr float ColorProvider::kBackgroundBlurQuality;
+
+// static
 ColorProvider* ColorProvider::Get() {
   return g_instance;
 }

@@ -16,6 +16,11 @@ class CastExtensionWebContentsObserver
     : public ExtensionWebContentsObserver,
       public content::WebContentsUserData<CastExtensionWebContentsObserver> {
  public:
+  CastExtensionWebContentsObserver(const CastExtensionWebContentsObserver&) =
+      delete;
+  CastExtensionWebContentsObserver& operator=(
+      const CastExtensionWebContentsObserver&) = delete;
+
   ~CastExtensionWebContentsObserver() override;
 
   // Creates and initializes an instance of this class for the given
@@ -28,8 +33,6 @@ class CastExtensionWebContentsObserver
   explicit CastExtensionWebContentsObserver(content::WebContents* web_contents);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionWebContentsObserver);
 };
 
 }  // namespace extensions

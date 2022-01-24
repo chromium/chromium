@@ -5,7 +5,7 @@
 import 'chrome://scanning/multi_page_checkbox.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.js';
 
 export function multiPageCheckboxTest() {
   /** @type {?MultiPageCheckboxElement} */

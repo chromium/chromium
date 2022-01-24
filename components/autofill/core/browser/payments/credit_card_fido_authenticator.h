@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -101,13 +102,21 @@ class CreditCardFIDOAuthenticator
     virtual void OnFidoAuthorizationComplete(bool did_succeed) = 0;
   };
   CreditCardFIDOAuthenticator(AutofillDriver* driver, AutofillClient* client);
+
+  CreditCardFIDOAuthenticator(const CreditCardFIDOAuthenticator&) = delete;
+  CreditCardFIDOAuthenticator& operator=(const CreditCardFIDOAuthenticator&) =
+      delete;
+
   ~CreditCardFIDOAuthenticator() override;
 
   // Invokes Authentication flow. Responds to |accessor_| with full pan.
-  void Authenticate(const CreditCard* card,
-                    base::WeakPtr<Requester> requester,
-                    base::TimeTicks form_parsed_timestamp,
-                    base::Value request_options);
+  // |context_token| is used to share context between different requests. It
+  // will be populated only for virtual card unmasking.
+  virtual void Authenticate(
+      const CreditCard* card,
+      base::WeakPtr<Requester> requester,
+      base::Value request_options,
+      absl::optional<std::string> context_token = absl::nullopt);
 
   // Invokes Registration flow. Sends credentials created from
   // |creation_options| along with the |card_authorization_token| to Payments in
@@ -247,7 +256,7 @@ class CreditCardFIDOAuthenticator
   void UpdateUserPref();
 
   // Gets or creates Authenticator pointer to facilitate WebAuthn.
-  InternalAuthenticator* authenticator();
+  webauthn::InternalAuthenticator* authenticator();
 
   // Card being unmasked.
   const CreditCard* card_;
@@ -259,9 +268,6 @@ class CreditCardFIDOAuthenticator
   // together in order to support FIDO-only unmasking on future attempts.
   std::string card_authorization_token_;
 
-  // Meant for histograms recorded in FullCardRequest.
-  base::TimeTicks form_parsed_timestamp_;
-
   // The associated autofill driver. Weak reference.
   AutofillDriver* const autofill_driver_;
 
@@ -272,7 +278,7 @@ class CreditCardFIDOAuthenticator
   payments::PaymentsClient* const payments_client_;
 
   // Authenticator pointer to facilitate WebAuthn.
-  InternalAuthenticator* authenticator_ = nullptr;
+  webauthn::InternalAuthenticator* authenticator_ = nullptr;
 
   // Responsible for getting the full card details, including the PAN and the
   // CVC.
@@ -293,9 +299,11 @@ class CreditCardFIDOAuthenticator
   // Signaled when callback for IsUserVerifiable() is invoked.
   base::WaitableEvent user_is_verifiable_callback_received_;
 
-  base::WeakPtrFactory<CreditCardFIDOAuthenticator> weak_ptr_factory_{this};
+  // The context token used for sharing context between different server
+  // requests. Will be populated only for virtual card unmasking.
+  absl::optional<std::string> context_token_;
 
-  DISALLOW_COPY_AND_ASSIGN(CreditCardFIDOAuthenticator);
+  base::WeakPtrFactory<CreditCardFIDOAuthenticator> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

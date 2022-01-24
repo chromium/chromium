@@ -40,6 +40,9 @@ class TestClipboard : public Clipboard {
   DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const override;
+  std::vector<std::u16string> GetStandardFormats(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_dst) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
                          const DataTransferEndpoint* data_dst) const override;
@@ -47,9 +50,6 @@ class TestClipboard : public Clipboard {
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const DataTransferEndpoint* data_dst,
                           std::vector<std::u16string>* types) const override;
-  std::vector<std::u16string> ReadAvailablePlatformSpecificFormatNames(
-      ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst) const override;
   void ReadText(ClipboardBuffer buffer,
                 const DataTransferEndpoint* data_dst,
                 std::u16string* result) const override;
@@ -71,9 +71,6 @@ class TestClipboard : public Clipboard {
   void ReadPng(ClipboardBuffer buffer,
                const DataTransferEndpoint* data_dst,
                ReadPngCallback callback) const override;
-  void ReadImage(ClipboardBuffer buffer,
-                 const DataTransferEndpoint* data_dst,
-                 ReadImageCallback callback) const override;
   void ReadCustomData(ClipboardBuffer buffer,
                       const std::u16string& type,
                       const DataTransferEndpoint* data_dst,
@@ -122,7 +119,7 @@ class TestClipboard : public Clipboard {
     DataStore& operator=(const DataStore& other);
     ~DataStore();
     void Clear();
-    void SetDataSource(std::unique_ptr<DataTransferEndpoint> data_src);
+    void SetDataSource(std::unique_ptr<DataTransferEndpoint> new_data_src);
     DataTransferEndpoint* GetDataSource() const;
     ClipboardSequenceNumberToken sequence_number;
     base::flat_map<ClipboardFormatType, std::string> data;

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "content/browser/speech/tts_platform_impl.h"
 
 namespace content {
@@ -42,6 +41,9 @@ class TtsPlatformImplAndroid : public TtsPlatformImpl {
   // Static functions.
   static TtsPlatformImplAndroid* GetInstance();
 
+  TtsPlatformImplAndroid(const TtsPlatformImplAndroid&) = delete;
+  TtsPlatformImplAndroid& operator=(const TtsPlatformImplAndroid&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<TtsPlatformImplAndroid>;
 
@@ -65,7 +67,8 @@ class TtsPlatformImplAndroid : public TtsPlatformImpl {
   bool StartSpeakingNow(int utterance_id,
                         const std::string& lang,
                         const UtteranceContinuousParameters& params,
-                        const std::string& parsed_utterance);
+                        const std::string& parsed_utterance,
+                        const std::string& engine_id);
 
   // Called when TtsEnvironmentAndroid::CanSpeakNow() may have changed.
   void OnCanSpeakNowChanged();
@@ -76,8 +79,6 @@ class TtsPlatformImplAndroid : public TtsPlatformImpl {
   std::unique_ptr<TtsEnvironmentAndroid> environment_android_;
 
   base::WeakPtrFactory<TtsPlatformImplAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TtsPlatformImplAndroid);
 };
 
 }  // namespace content

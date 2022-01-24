@@ -10,8 +10,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace password_manager {
 
 // DataAccessor is an encapsulation over the input string delivered by the
@@ -25,6 +23,9 @@ class DataAccessor {
   // advances it with each Consume* operation to avoid generating data from the
   // same part of input twice.
   DataAccessor(const uint8_t* data, size_t size);
+
+  DataAccessor(const DataAccessor&) = delete;
+  DataAccessor& operator=(const DataAccessor&) = delete;
 
   ~DataAccessor();
 
@@ -60,8 +61,6 @@ class DataAccessor {
   const uint8_t* data_;
   size_t bits_consumed_;
   size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataAccessor);
 };
 
 }  // namespace password_manager

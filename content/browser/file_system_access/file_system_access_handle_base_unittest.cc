@@ -15,6 +15,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -79,19 +80,18 @@ class FileSystemAccessHandleBaseTest : public testing::Test {
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
 
   FileSystemAccessManagerImpl::SharedHandleState handle_state_ = {read_grant_,
-                                                                  write_grant_,
-                                                                  {}};
+                                                                  write_grant_};
 };
 
 TEST_F(FileSystemAccessHandleBaseTest, GetReadPermissionStatus) {
   auto url = FileSystemURL::CreateForTest(
       kTestStorageKey, storage::kFileSystemTypeTest,
       base::FilePath::FromUTF8Unsafe("/test"));
-  TestFileSystemAccessHandle handle(manager_.get(),
-                                    FileSystemAccessManagerImpl::BindingContext(
-                                        kTestStorageKey.origin(), kTestURL,
-                                        /*worker_process_id=*/1),
-                                    url, handle_state_);
+  TestFileSystemAccessHandle handle(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  /*worker_process_id=*/1),
+      url, handle_state_);
 
   EXPECT_CALL(*read_grant_, GetStatus())
       .WillOnce(testing::Return(PermissionStatus::ASK));
@@ -107,11 +107,11 @@ TEST_F(FileSystemAccessHandleBaseTest,
   auto url = FileSystemURL::CreateForTest(
       kTestStorageKey, storage::kFileSystemTypeTest,
       base::FilePath::FromUTF8Unsafe("/test"));
-  TestFileSystemAccessHandle handle(manager_.get(),
-                                    FileSystemAccessManagerImpl::BindingContext(
-                                        kTestStorageKey.origin(), kTestURL,
-                                        /*worker_process_id=*/1),
-                                    url, handle_state_);
+  TestFileSystemAccessHandle handle(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  /*worker_process_id=*/1),
+      url, handle_state_);
 
   EXPECT_CALL(*read_grant_, GetStatus())
       .WillOnce(testing::Return(PermissionStatus::ASK));
@@ -127,11 +127,11 @@ TEST_F(FileSystemAccessHandleBaseTest,
   auto url = FileSystemURL::CreateForTest(
       kTestStorageKey, storage::kFileSystemTypeTest,
       base::FilePath::FromUTF8Unsafe("/test"));
-  TestFileSystemAccessHandle handle(manager_.get(),
-                                    FileSystemAccessManagerImpl::BindingContext(
-                                        kTestStorageKey.origin(), kTestURL,
-                                        /*worker_process_id=*/1),
-                                    url, handle_state_);
+  TestFileSystemAccessHandle handle(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  /*worker_process_id=*/1),
+      url, handle_state_);
 
   EXPECT_CALL(*read_grant_, GetStatus())
       .WillOnce(testing::Return(PermissionStatus::GRANTED));
@@ -144,11 +144,11 @@ TEST_F(FileSystemAccessHandleBaseTest, RequestWritePermission_AlreadyGranted) {
   auto url = FileSystemURL::CreateForTest(
       kTestStorageKey, storage::kFileSystemTypeTest,
       base::FilePath::FromUTF8Unsafe("/test"));
-  TestFileSystemAccessHandle handle(manager_.get(),
-                                    FileSystemAccessManagerImpl::BindingContext(
-                                        kTestStorageKey.origin(), kTestURL,
-                                        /*worker_process_id=*/1),
-                                    url, handle_state_);
+  TestFileSystemAccessHandle handle(
+      manager_.get(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  /*worker_process_id=*/1),
+      url, handle_state_);
 
   EXPECT_CALL(*read_grant_, GetStatus())
       .WillOnce(testing::Return(PermissionStatus::GRANTED));
@@ -176,11 +176,10 @@ TEST_F(FileSystemAccessHandleBaseTest, RequestWritePermission) {
   auto url = FileSystemURL::CreateForTest(
       kTestStorageKey, storage::kFileSystemTypeTest,
       base::FilePath::FromUTF8Unsafe("/test"));
-  TestFileSystemAccessHandle handle(
-      manager_.get(),
-      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey.origin(),
-                                                  kTestURL, kFrameId),
-      url, handle_state_);
+  TestFileSystemAccessHandle handle(manager_.get(),
+                                    FileSystemAccessManagerImpl::BindingContext(
+                                        kTestStorageKey, kTestURL, kFrameId),
+                                    url, handle_state_);
 
   EXPECT_CALL(*read_grant_, GetStatus())
       .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));

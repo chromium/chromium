@@ -1135,19 +1135,22 @@ void UpdateElasticOverscroll(
     return;
   }
   if (overscroll_elasticity_effect_element_id) {
-    if (elastic_overscroll.IsZero()) {
+    if (elastic_overscroll.IsZero() || !inner_viewport) {
       property_trees->effect_tree.OnFilterAnimated(
           overscroll_elasticity_effect_element_id, FilterOperations());
       return;
     }
+    // The inner viewport container size takes into account the size change as a
+    // result of the top controls, see ScrollTree::container_bounds.
+    gfx::Size scroller_size =
+        property_trees->scroll_tree.container_bounds(inner_viewport->id);
+
     property_trees->effect_tree.OnFilterAnimated(
         overscroll_elasticity_effect_element_id,
         FilterOperations(
             std::vector<FilterOperation>({FilterOperation::CreateStretchFilter(
-                -elastic_overscroll.x() /
-                    inner_viewport->container_bounds.width(),
-                -elastic_overscroll.y() /
-                    inner_viewport->container_bounds.height())})));
+                -elastic_overscroll.x() / scroller_size.width(),
+                -elastic_overscroll.y() / scroller_size.height())})));
     return;
   }
 
@@ -1159,22 +1162,24 @@ void UpdateElasticOverscroll(
       !elastic_overscroll.IsZero();
 
   if (!elastic_overscroll.IsZero() && inner_viewport) {
+    // The inner viewport container size takes into account the size change as a
+    // result of the top controls, see ScrollTree::container_bounds.
+    gfx::Size scroller_size =
+        property_trees->scroll_tree.container_bounds(inner_viewport->id);
+
     overscroll_elasticity_transform_node->local.Scale(
-        1.f + std::abs(elastic_overscroll.x()) /
-                  inner_viewport->container_bounds.width(),
-        1.f + std::abs(elastic_overscroll.y()) /
-                  inner_viewport->container_bounds.height());
+        1.f + std::abs(elastic_overscroll.x()) / scroller_size.width(),
+        1.f + std::abs(elastic_overscroll.y()) / scroller_size.height());
 
     // If overscrolling to the right, stretch from right.
     if (elastic_overscroll.x() > 0.f) {
-      overscroll_elasticity_transform_node->origin.set_x(
-          inner_viewport->container_bounds.width());
+      overscroll_elasticity_transform_node->origin.set_x(scroller_size.width());
     }
 
     // If overscrolling off the bottom, stretch from bottom.
     if (elastic_overscroll.y() > 0.f) {
       overscroll_elasticity_transform_node->origin.set_y(
-          inner_viewport->container_bounds.height());
+          scroller_size.height());
     }
   }
   overscroll_elasticity_transform_node->needs_local_transform_update = true;
@@ -1187,12 +1192,10 @@ void UpdateElasticOverscroll(
 
   // On other platforms, we modify the translation offset to match the
   // overscroll amount.
-  if (overscroll_elasticity_transform_node->scroll_offset ==
-      gfx::ScrollOffset(elastic_overscroll))
+  if (overscroll_elasticity_transform_node->scroll_offset == elastic_overscroll)
     return;
 
-  overscroll_elasticity_transform_node->scroll_offset =
-      gfx::ScrollOffset(elastic_overscroll);
+  overscroll_elasticity_transform_node->scroll_offset = elastic_overscroll;
 
   overscroll_elasticity_transform_node->needs_local_transform_update = true;
   property_trees->transform_tree.set_needs_update(true);

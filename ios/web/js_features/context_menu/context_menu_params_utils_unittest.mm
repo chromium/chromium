@@ -26,8 +26,6 @@ const char kSrcUrl[] = "http://src.url/";
 const char kTitle[] = "title";
 const char kReferrerPolicy[] = "always";
 const char kLinkText[] = "link text";
-const char kJavaScriptLinkUrl[] = "javascript://src.url/";
-const char kDataUrl[] = "data://foo.bar/";
 const char kAlt[] = "alt text";
 }
 
@@ -40,14 +38,14 @@ typedef PlatformTest ContextMenuParamsUtilsTest;
 TEST_F(ContextMenuParamsUtilsTest, EmptyParams) {
   ContextMenuParams params;
   EXPECT_TRUE(params.is_main_frame);
-  EXPECT_EQ(params.menu_title, nil);
-  EXPECT_EQ(params.menu_title_origin, ContextMenuTitleOrigin::kUnknown);
   EXPECT_FALSE(params.link_url.is_valid());
   EXPECT_FALSE(params.src_url.is_valid());
   EXPECT_EQ(params.referrer_policy, ReferrerPolicyDefault);
   EXPECT_EQ(params.view, nil);
   EXPECT_TRUE(CGPointEqualToPoint(params.location, CGPointZero));
-  EXPECT_EQ(params.link_text, nil);
+  EXPECT_NSEQ(params.link_text, nil);
+  EXPECT_NSEQ(params.title_attribute, nil);
+  EXPECT_NSEQ(params.alt_text, nil);
 }
 
 // Tests the parsing of the element NSDictionary.
@@ -58,12 +56,11 @@ TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTest) {
   element_dict.SetStringKey(kContextMenuElementTitle, kTitle);
   element_dict.SetStringKey(kContextMenuElementReferrerPolicy, kReferrerPolicy);
   element_dict.SetStringKey(kContextMenuElementInnerText, kLinkText);
+  element_dict.SetStringKey(kContextMenuElementAlt, kAlt);
   ContextMenuParams params =
       ContextMenuParamsFromElementDictionary(&element_dict);
 
   EXPECT_TRUE(params.is_main_frame);
-  EXPECT_NSEQ(params.menu_title, @(kTitle));
-  EXPECT_EQ(params.menu_title_origin, ContextMenuTitleOrigin::kImageTitle);
   EXPECT_EQ(params.link_url, GURL(kLinkUrl));
   EXPECT_EQ(params.src_url, GURL(kSrcUrl));
   EXPECT_NSEQ(params.link_text, @(kLinkText));
@@ -71,57 +68,11 @@ TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTest) {
 
   EXPECT_EQ(params.view, nil);
   EXPECT_TRUE(CGPointEqualToPoint(params.location, CGPointZero));
+
+  EXPECT_NSEQ(params.title_attribute, @(kTitle));
+  EXPECT_NSEQ(params.alt_text, @(kAlt));
 }
 
-// Tests title is set as the formatted URL when there is no title.
-TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTestNoTitle) {
-  base::Value element_dict(base::Value::Type::DICTIONARY);
-  element_dict.SetStringKey(kContextMenuElementHyperlink, kLinkUrl);
-  ContextMenuParams params =
-      ContextMenuParamsFromElementDictionary(&element_dict);
-
-  std::u16string urlText = url_formatter::FormatUrl(GURL(kLinkUrl));
-  NSString* title = base::SysUTF16ToNSString(urlText);
-
-  EXPECT_NSEQ(params.menu_title, title);
-  EXPECT_EQ(params.menu_title_origin, ContextMenuTitleOrigin::kURL);
-}
-
-// Tests title is set to "JavaScript" if there is no title and "href" links to
-// JavaScript URL.
-TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTestJavascriptTitle) {
-  base::Value element_dict(base::Value::Type::DICTIONARY);
-  element_dict.SetStringKey(kContextMenuElementHyperlink, kJavaScriptLinkUrl);
-  ContextMenuParams params =
-      ContextMenuParamsFromElementDictionary(&element_dict);
-
-  EXPECT_NSEQ(params.menu_title, @"JavaScript");
-  EXPECT_EQ(params.menu_title_origin, ContextMenuTitleOrigin::kURL);
-}
-
-// Tests title is set to |src_url| if there is no title.
-TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTestSrcTitle) {
-  base::Value element_dict(base::Value::Type::DICTIONARY);
-  element_dict.SetStringKey(kContextMenuElementSource, kSrcUrl);
-  ContextMenuParams params =
-      ContextMenuParamsFromElementDictionary(&element_dict);
-
-  EXPECT_EQ(params.src_url, GURL(kSrcUrl));
-  EXPECT_NSEQ(params.menu_title, @(kSrcUrl));
-  EXPECT_EQ(params.menu_title_origin, ContextMenuTitleOrigin::kURL);
-}
-
-// Tests title is set to nil if there is no title and src is a data URL.
-TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTestDataTitle) {
-  base::Value element_dict(base::Value::Type::DICTIONARY);
-  element_dict.SetStringKey(kContextMenuElementSource, kDataUrl);
-  ContextMenuParams params =
-      ContextMenuParamsFromElementDictionary(&element_dict);
-
-  EXPECT_EQ(params.src_url, GURL(kDataUrl));
-  EXPECT_NSEQ(params.menu_title, nil);
-  EXPECT_EQ(params.menu_title_origin, ContextMenuTitleOrigin::kURL);
-}
 
 // Tests that a context menu will not be shown for empty params.
 TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestEmptyDictionary) {
@@ -147,7 +98,6 @@ TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestInvalidHyperlink) {
 TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestImageWithTitle) {
   ContextMenuParams params;
   params.src_url = GURL("http://example.com/image.jpeg");
-  params.menu_title = @"Image";
   EXPECT_TRUE(CanShowContextMenuForParams(params));
 }
 
@@ -166,37 +116,6 @@ TEST_F(ContextMenuParamsUtilsTest, CanShowContextMenuTestLinkedImage) {
   params.link_url = GURL("http://example.com");
   params.src_url = GURL("http://example.com/image.jpeg");
   EXPECT_TRUE(CanShowContextMenuForParams(params));
-}
-
-// Tests that the menu title prepends the element's alt text if it is an image
-// without a link.
-TEST_F(ContextMenuParamsUtilsTest,
-       DictionaryConstructorTestPrependAltForImage) {
-  base::Value element_dict(base::Value::Type::DICTIONARY);
-  element_dict.SetStringKey(kContextMenuElementSource, kSrcUrl);
-  element_dict.SetStringKey(kContextMenuElementAlt, kAlt);
-  ContextMenuParams params =
-      ContextMenuParamsFromElementDictionary(&element_dict);
-
-  EXPECT_TRUE([params.menu_title hasPrefix:@(kAlt)]);
-  EXPECT_TRUE([params.menu_title hasSuffix:@(kSrcUrl)]);
-  EXPECT_EQ(params.menu_title_origin, ContextMenuTitleOrigin::kImageAltText);
-}
-
-// Tests that the menu title prepends the element's alt text if it is an image
-// without a link.
-TEST_F(ContextMenuParamsUtilsTest,
-       DictionaryConstructorTestPrependAltForImageWithTitle) {
-  base::Value element_dict(base::Value::Type::DICTIONARY);
-  element_dict.SetStringKey(kContextMenuElementSource, kSrcUrl);
-  element_dict.SetStringKey(kContextMenuElementTitle, kTitle);
-  element_dict.SetStringKey(kContextMenuElementAlt, kAlt);
-  ContextMenuParams params =
-      ContextMenuParamsFromElementDictionary(&element_dict);
-
-  EXPECT_TRUE([params.menu_title hasPrefix:@(kAlt)]);
-  EXPECT_TRUE([params.menu_title hasSuffix:@(kTitle)]);
-  EXPECT_EQ(params.menu_title_origin, ContextMenuTitleOrigin::kImageTitle);
 }
 
 }  // namespace web

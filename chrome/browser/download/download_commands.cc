@@ -9,7 +9,6 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -28,7 +27,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+    defined(OS_MAC) || defined(OS_FUCHSIA)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -47,6 +46,11 @@ const int64_t kMaxImageClipboardSize = 20 * 1024 * 1024;  // 20 MB
 
 class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
  public:
+  ImageClipboardCopyManager() = delete;
+  ImageClipboardCopyManager(const ImageClipboardCopyManager&) = delete;
+  ImageClipboardCopyManager& operator=(const ImageClipboardCopyManager&) =
+      delete;
+
   static void Start(const base::FilePath& file_path,
                     base::SequencedTaskRunner* task_runner) {
     new ImageClipboardCopyManager(file_path, task_runner);
@@ -85,7 +89,7 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
 
     // Note: An image over 128MB (uncompressed) may fail, due to the limitation
     // of IPC message size.
-    ImageDecoder::Start(this, data);
+    ImageDecoder::Start(this, std::move(data));
   }
 
   void OnImageDecoded(const SkBitmap& decoded_image) override {
@@ -115,8 +119,6 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
   }
 
   const base::FilePath file_path_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ImageClipboardCopyManager);
 };
 
 }  // namespace
@@ -166,7 +168,7 @@ void DownloadCommands::ExecuteCommand(Command command) {
 }
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
 Browser* DownloadCommands::GetBrowser() const {
   if (!model_)
@@ -195,13 +197,13 @@ bool DownloadCommands::CanOpenPdfInSystemViewer() const {
   return IsDownloadPdf() &&
          (IsAdobeReaderDefaultPDFViewer() ? is_adobe_pdf_reader_up_to_date
                                           : true);
-#elif defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#else  // defined(OS_WIN)
   return IsDownloadPdf();
 #endif
 }
 
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
+        // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
 void DownloadCommands::CopyFileAsImageToClipboard() {
   if (!model_)

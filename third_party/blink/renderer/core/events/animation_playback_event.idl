@@ -9,6 +9,6 @@
     Exposed=Window
 ] interface AnimationPlaybackEvent : Event {
     constructor(DOMString type, optional AnimationPlaybackEventInit eventInitDict = {});
-    readonly attribute double? currentTime;
-    readonly attribute double? timelineTime;
+    readonly attribute CSSNumberish? currentTime;
+    readonly attribute CSSNumberish? timelineTime;
 };

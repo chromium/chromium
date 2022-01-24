@@ -3,16 +3,22 @@ When the parent document becomes composited, the layer trees should get connecte
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [285, 230],
-      "contentsOpaqueForText": true,
+      "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
+      "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [285, 0],
+      "bounds": [15, 150],
       "transform": 1
     },
     {
@@ -21,12 +27,6 @@ When the parent document becomes composited, the layer trees should get connecte
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 2
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [285, 0],
-      "bounds": [15, 150],
-      "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow DIV id='box' class='composited'",

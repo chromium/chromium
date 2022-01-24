@@ -145,7 +145,6 @@ static_library("protocol") {
     "port_allocator_factory.h",
     "port_range.cc",
     "port_range.h",
-    "process_stats_stub.h",
     "pseudotcp_adapter.cc",
     "pseudotcp_adapter.h",
     "pseudotcp_channel_factory.cc",
@@ -215,7 +214,6 @@ static_library("protocol") {
 
   configs += [
     "//build/config:precompiled_headers",
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config/compiler:wexit_time_destructors",
   ]
 
@@ -274,11 +272,11 @@ static_library("protocol") {
       "webrtc_audio_stream.h",
       "webrtc_connection_to_client.cc",
       "webrtc_connection_to_client.h",
-      "webrtc_dummy_video_encoder.cc",
-      "webrtc_dummy_video_encoder.h",
       "webrtc_frame_scheduler.h",
       "webrtc_frame_scheduler_simple.cc",
       "webrtc_frame_scheduler_simple.h",
+      "webrtc_video_encoder_factory.cc",
+      "webrtc_video_encoder_factory.h",
       "webrtc_video_encoder_wrapper.cc",
       "webrtc_video_encoder_wrapper.h",
       "webrtc_video_frame_adapter.cc",

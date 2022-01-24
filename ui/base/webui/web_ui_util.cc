@@ -72,17 +72,13 @@ std::string GetPngDataUrl(const unsigned char* data, size_t size) {
 
 WindowOpenDisposition GetDispositionFromClick(const base::ListValue* args,
                                               int start_index) {
-  double button = 0.0;
-  bool alt_key = false;
-  bool ctrl_key = false;
-  bool meta_key = false;
-  bool shift_key = false;
+  base::Value::ConstListView list = args->GetList();
+  double button = list[start_index].GetDouble();
+  bool alt_key = list[start_index + 1].GetBool();
+  bool ctrl_key = list[start_index + 2].GetBool();
+  bool meta_key = list[start_index + 3].GetBool();
+  bool shift_key = list[start_index + 4].GetBool();
 
-  CHECK(args->GetDouble(start_index++, &button));
-  CHECK(args->GetBoolean(start_index++, &alt_key));
-  CHECK(args->GetBoolean(start_index++, &ctrl_key));
-  CHECK(args->GetBoolean(start_index++, &meta_key));
-  CHECK(args->GetBoolean(start_index++, &shift_key));
   return ui::DispositionFromClick(
       button == 1.0, alt_key, ctrl_key, meta_key, shift_key);
 }

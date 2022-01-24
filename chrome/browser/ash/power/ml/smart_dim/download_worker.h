@@ -21,6 +21,10 @@ using ComponentFileContents = std::tuple<std::string, std::string, std::string>;
 class DownloadWorker : public SmartDimWorker {
  public:
   DownloadWorker();
+
+  DownloadWorker(const DownloadWorker&) = delete;
+  DownloadWorker& operator=(const DownloadWorker&) = delete;
+
   ~DownloadWorker() override;
 
   // SmartDimWorker overrides:
@@ -53,8 +57,6 @@ class DownloadWorker : public SmartDimWorker {
   void LoadModelAndCreateGraphExecutor(const std::string& model_flatbuffer);
   void OnJsonParsed(const std::string& model_flatbuffer,
                     const data_decoder::DataDecoder::ValueOrError result);
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadWorker);
 };
 
 }  // namespace ml

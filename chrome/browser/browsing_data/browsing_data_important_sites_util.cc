@@ -17,6 +17,10 @@ class BrowsingDataTaskObserver : public content::BrowsingDataRemover::Observer {
   BrowsingDataTaskObserver(content::BrowsingDataRemover* remover,
                            base::OnceCallback<void(uint64_t)> callback,
                            int task_count);
+
+  BrowsingDataTaskObserver(const BrowsingDataTaskObserver&) = delete;
+  BrowsingDataTaskObserver& operator=(const BrowsingDataTaskObserver&) = delete;
+
   ~BrowsingDataTaskObserver() override;
 
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override;
@@ -28,8 +32,6 @@ class BrowsingDataTaskObserver : public content::BrowsingDataRemover::Observer {
       remover_observation_{this};
   int task_count_;
   uint64_t failed_data_types_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataTaskObserver);
 };
 
 BrowsingDataTaskObserver::BrowsingDataTaskObserver(

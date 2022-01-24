@@ -98,6 +98,7 @@ std::unique_ptr<base::DictionaryValue> TestRuleQueryKeyValue::ToValue() const {
   auto dict = std::make_unique<base::DictionaryValue>();
   SetValue(dict.get(), kQueryKeyKey, key);
   SetValue(dict.get(), kQueryValueKey, value);
+  SetValue(dict.get(), kQueryReplaceOnlyKey, replace_only);
   return dict;
 }
 
@@ -257,7 +258,7 @@ std::unique_ptr<base::DictionaryValue> CreateManifest(
   std::vector<std::string> permissions = hosts;
 
   if (!(flags & kConfig_OmitDeclarativeNetRequestPermission))
-    permissions.push_back(kAPIPermission);
+    permissions.push_back(kDeclarativeNetRequestPermission);
 
   // These permissions are needed for some tests. TODO(karandeepb): Add a
   // ConfigFlag for these.
@@ -269,6 +270,9 @@ std::unique_ptr<base::DictionaryValue> CreateManifest(
 
   if (flags & kConfig_HasActiveTab)
     permissions.push_back("activeTab");
+
+  if (flags & kConfig_HasDelarativeNetRequestWithHostAccessPermission)
+    permissions.push_back("declarativeNetRequestWithHostAccess");
 
   std::vector<std::string> background_scripts;
   if (flags & kConfig_HasBackgroundScript)

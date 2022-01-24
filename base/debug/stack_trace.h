@@ -12,7 +12,6 @@
 
 #include "base/base_export.h"
 #include "base/debug/debugging_buildflags.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_POSIX)
@@ -229,14 +228,16 @@ BASE_EXPORT size_t TraceStackFramePointersFromBuffer(
 class BASE_EXPORT ScopedStackFrameLinker {
  public:
   ScopedStackFrameLinker(void* fp, void* parent_fp);
+
+  ScopedStackFrameLinker(const ScopedStackFrameLinker&) = delete;
+  ScopedStackFrameLinker& operator=(const ScopedStackFrameLinker&) = delete;
+
   ~ScopedStackFrameLinker();
 
  private:
   void* fp_;
   void* parent_fp_;
   void* original_parent_fp_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedStackFrameLinker);
 };
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)

@@ -226,6 +226,27 @@ CSSSelectorList CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
   return CSSSelectorList::AdoptSelectorVector(selector_list);
 }
 
+CSSSelectorList CSSSelectorParser::ConsumeRelativeSelectorList(
+    CSSParserTokenRange& range) {
+  Vector<std::unique_ptr<CSSParserSelector>> selector_list;
+  std::unique_ptr<CSSParserSelector> selector = ConsumeRelativeSelector(range);
+  if (!selector)
+    return CSSSelectorList();
+  selector_list.push_back(std::move(selector));
+  while (!range.AtEnd() && range.Peek().GetType() == kCommaToken) {
+    range.ConsumeIncludingWhitespace();
+    selector = ConsumeRelativeSelector(range);
+    if (!selector)
+      return CSSSelectorList();
+    selector_list.push_back(std::move(selector));
+  }
+
+  if (failed_parsing_)
+    return CSSSelectorList();
+
+  return CSSSelectorList::AdoptSelectorVector(selector_list);
+}
+
 namespace {
 
 enum CompoundSelectorFlags {
@@ -249,6 +270,41 @@ unsigned ExtractCompoundFlags(const CSSParserSelector& simple_selector,
 
 }  // namespace
 
+std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeRelativeSelector(
+    CSSParserTokenRange& range) {
+  std::unique_ptr<CSSParserSelector> selector =
+      std::make_unique<CSSParserSelector>();
+  selector->SetMatch(CSSSelector::kPseudoClass);
+  selector->UpdatePseudoType("-internal-relative-leftmost", *context_,
+                             false /*has_arguments*/, context_->Mode());
+  DCHECK_EQ(selector->GetPseudoType(), CSSSelector::kPseudoRelativeLeftmost);
+
+  CSSSelector::RelationType combinator = ConsumeCombinator(range);
+  switch (combinator) {
+    case CSSSelector::kSubSelector:
+    case CSSSelector::kDescendant:
+      combinator = CSSSelector::kRelativeDescendant;
+      break;
+    case CSSSelector::kChild:
+      combinator = CSSSelector::kRelativeChild;
+      break;
+    case CSSSelector::kDirectAdjacent:
+      combinator = CSSSelector::kRelativeDirectAdjacent;
+      break;
+    case CSSSelector::kIndirectAdjacent:
+      combinator = CSSSelector::kRelativeIndirectAdjacent;
+      break;
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
+
+  unsigned previous_compound_flags = 0;
+
+  return ConsumePartialComplexSelector(range, combinator, std::move(selector),
+                                       previous_compound_flags);
+}
+
 std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeComplexSelector(
     CSSParserTokenRange& range) {
   std::unique_ptr<CSSParserSelector> selector = ConsumeCompoundSelector(range);
@@ -261,7 +317,21 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeComplexSelector(
        simple && !previous_compound_flags; simple = simple->TagHistory())
     previous_compound_flags |= ExtractCompoundFlags(*simple, context_->Mode());
 
-  while (CSSSelector::RelationType combinator = ConsumeCombinator(range)) {
+  if (CSSSelector::RelationType combinator = ConsumeCombinator(range)) {
+    return ConsumePartialComplexSelector(range, combinator, std::move(selector),
+                                         previous_compound_flags);
+  }
+
+  return selector;
+}
+
+std::unique_ptr<CSSParserSelector>
+CSSSelectorParser::ConsumePartialComplexSelector(
+    CSSParserTokenRange& range,
+    CSSSelector::RelationType& combinator,
+    std::unique_ptr<CSSParserSelector> selector,
+    unsigned& previous_compound_flags) {
+  do {
     std::unique_ptr<CSSParserSelector> next_selector =
         ConsumeCompoundSelector(range);
     if (!next_selector)
@@ -280,7 +350,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeComplexSelector(
     end->SetTagHistory(std::move(selector));
 
     selector = std::move(next_selector);
-  }
+  } while ((combinator = ConsumeCombinator(range)));
 
   return selector;
 }
@@ -798,15 +868,18 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       return selector;
     }
     case CSSSelector::kPseudoHas: {
-      if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled())
-        break;
+      if (!RuntimeEnabledFeatures::CSSPseudoHasInSnapshotProfileEnabled() ||
+          (context_->IsLiveProfile() &&
+           !RuntimeEnabledFeatures::CSSPseudoHasEnabled())) {
+        return nullptr;
+      }
 
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
 
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
-      *selector_list = ConsumeNestedSelectorList(block);
+      *selector_list = ConsumeRelativeSelectorList(block);
       if (!selector_list->IsValid() || !block.AtEnd())
         return nullptr;
 
@@ -966,7 +1039,7 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenRange& range,
   const CSSParserToken& token = range.Consume();
   if (token.GetType() == kNumberToken &&
       token.GetNumericValueType() == kIntegerValueType) {
-    result = std::make_pair(0, clampTo<int>(token.NumericValue()));
+    result = std::make_pair(0, ClampTo<int>(token.NumericValue()));
     return true;
   }
   if (token.GetType() == kIdentToken) {
@@ -990,7 +1063,7 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenRange& range,
     n_string = range.Consume().Value().ToString();
   } else if (token.GetType() == kDimensionToken &&
              token.GetNumericValueType() == kIntegerValueType) {
-    result.first = clampTo<int>(token.NumericValue());
+    result.first = ClampTo<int>(token.NumericValue());
     n_string = token.Value().ToString();
   } else if (token.GetType() == kIdentToken) {
     if (token.Value()[0] == '-') {
@@ -1037,7 +1110,7 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenRange& range,
     return false;
   if ((b.GetNumericSign() == kNoSign) == (sign == kNoSign))
     return false;
-  result.second = clampTo<int>(b.NumericValue());
+  result.second = ClampTo<int>(b.NumericValue());
   if (sign == kMinusSign) {
     // Negating minimum integer returns itself, instead return max integer.
     if (UNLIKELY(result.second == std::numeric_limits<int>::min()))
@@ -1374,8 +1447,14 @@ void CSSSelectorParser::RecordUsageAndDeprecations(
           feature = WebFeature::kCSSSelectorPseudoDir;
           break;
         case CSSSelector::kPseudoHas:
-          DCHECK(RuntimeEnabledFeatures::CSSPseudoHasEnabled());
-          feature = WebFeature::kCSSSelectorPseudoHas;
+          if (context_->IsLiveProfile()) {
+            DCHECK(RuntimeEnabledFeatures::CSSPseudoHasEnabled());
+            feature = WebFeature::kCSSSelectorPseudoHasInLiveProfile;
+          } else {
+            DCHECK(
+                RuntimeEnabledFeatures::CSSPseudoHasInSnapshotProfileEnabled());
+            feature = WebFeature::kCSSSelectorPseudoHasInSnapshotProfile;
+          }
           break;
         default:
           break;

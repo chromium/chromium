@@ -4,7 +4,6 @@
 
 #include "chrome/browser/media/router/mojo/media_router_mojo_metrics.h"
 
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"

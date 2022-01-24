@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_info.h"
@@ -46,6 +45,11 @@ class GpuVideoDecodeAccelerator
       gpu::CommandBufferStub* stub,
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
       const AndroidOverlayMojoFactoryCB& factory);
+
+  GpuVideoDecodeAccelerator() = delete;
+  GpuVideoDecodeAccelerator(const GpuVideoDecodeAccelerator&) = delete;
+  GpuVideoDecodeAccelerator& operator=(const GpuVideoDecodeAccelerator&) =
+      delete;
 
   // Static query for the capabilities, which includes the supported profiles.
   // This query calls the appropriate platform-specific version.  The returned
@@ -159,8 +163,6 @@ class GpuVideoDecodeAccelerator
   // cleared.
   std::map<int32_t, std::vector<scoped_refptr<gpu::gles2::TextureRef>>>
       uncleared_textures_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(GpuVideoDecodeAccelerator);
 };
 
 }  // namespace media

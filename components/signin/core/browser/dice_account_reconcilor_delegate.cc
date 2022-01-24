@@ -16,13 +16,8 @@
 
 namespace signin {
 
-DiceAccountReconcilorDelegate::DiceAccountReconcilorDelegate(
-    SigninClient* signin_client,
-    bool migration_completed)
-    : signin_client_(signin_client),
-      migration_completed_(migration_completed) {
-  DCHECK(signin_client_);
-}
+DiceAccountReconcilorDelegate::DiceAccountReconcilorDelegate() = default;
+DiceAccountReconcilorDelegate::~DiceAccountReconcilorDelegate() = default;
 
 bool DiceAccountReconcilorDelegate::IsReconcileEnabled() const {
   return true;
@@ -289,15 +284,6 @@ AccountReconcilorDelegate::RevokeTokenOption
 DiceAccountReconcilorDelegate::ShouldRevokeSecondaryTokensBeforeReconcile(
     const std::vector<gaia::ListedAccount>& gaia_accounts) {
   return RevokeTokenOption::kRevokeIfInError;
-}
-
-bool DiceAccountReconcilorDelegate::ShouldRevokeTokensNotInCookies() const {
-  return !migration_completed_;
-}
-
-void DiceAccountReconcilorDelegate::OnRevokeTokensNotInCookiesCompleted() {
-  migration_completed_ = true;
-  signin_client_->SetDiceMigrationCompleted();
 }
 
 bool DiceAccountReconcilorDelegate::ShouldRevokeTokensOnCookieDeleted() {

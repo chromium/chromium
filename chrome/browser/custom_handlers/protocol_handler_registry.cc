@@ -12,18 +12,17 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_io_data.h"
-#include "chrome/common/custom_handlers/protocol_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
@@ -689,12 +688,13 @@ ProtocolHandlerRegistry::GetHandlersFromPref(const char* pref_name) const {
 
   const base::ListValue* handlers = prefs->GetList(pref_name);
   if (handlers) {
-    for (size_t i = 0; i < handlers->GetSize(); ++i) {
-      const base::DictionaryValue* dict;
-      if (!handlers->GetDictionary(i, &dict))
+    for (const auto& dict : handlers->GetList()) {
+      if (!dict.is_dict())
         continue;
-      if (ProtocolHandler::IsValidDict(dict)) {
-        result.push_back(dict);
+      const base::DictionaryValue* dict_value =
+          static_cast<const base::DictionaryValue*>(&dict);
+      if (ProtocolHandler::IsValidDict(dict_value)) {
+        result.push_back(dict_value);
       }
     }
   }

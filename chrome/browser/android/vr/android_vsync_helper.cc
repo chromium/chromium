@@ -21,7 +21,7 @@ AndroidVSyncHelper::AndroidVSyncHelper(Callback callback)
   j_object_.Reset(
       Java_AndroidVSyncHelper_create(env, reinterpret_cast<jlong>(this)));
   float refresh_rate = Java_AndroidVSyncHelper_getRefreshRate(env, j_object_);
-  display_vsync_interval_ = base::TimeDelta::FromSecondsD(1.0 / refresh_rate);
+  display_vsync_interval_ = base::Seconds(1.0 / refresh_rate);
   DVLOG(1) << "display_vsync_interval_=" << display_vsync_interval_;
 }
 
@@ -38,7 +38,7 @@ void AndroidVSyncHelper::OnVSync(JNIEnv* env,
   DCHECK_EQ(base::TimeTicks::GetClock(),
             base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
   base::TimeTicks frame_time =
-      base::TimeTicks() + base::TimeDelta::FromNanoseconds(time_nanos);
+      base::TimeTicks() + base::Nanoseconds(time_nanos);
   last_interval_ = frame_time - last_vsync_;
   last_vsync_ = frame_time;
   callback_.Run(frame_time);

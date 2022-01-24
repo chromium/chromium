@@ -36,6 +36,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
  public:
   explicit LayoutSVGContainer(SVGElement*);
   ~LayoutSVGContainer() override;
+  void Trace(Visitor*) const override;
 
   // If you have a LayoutSVGContainer, use firstChild or lastChild instead.
   void SlowFirstChild() const = delete;
@@ -74,7 +75,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
     return "LayoutSVGContainer";
   }
 
-  FloatRect ObjectBoundingBox() const final {
+  gfx::RectF ObjectBoundingBox() const final {
     NOT_DESTROYED();
     return content_.ObjectBoundingBox();
   }
@@ -101,7 +102,7 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
                 LayoutObject* before_child = nullptr) final;
   void RemoveChild(LayoutObject*) final;
 
-  FloatRect StrokeBoundingBox() const final {
+  gfx::RectF StrokeBoundingBox() const final {
     NOT_DESTROYED();
     return content_.StrokeBoundingBox();
   }

@@ -9,13 +9,12 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/fontconfig_util_linux.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/linux/fontconfig_util.h"
 #include "ui/gfx/skia_font_delegate.h"
@@ -41,6 +40,10 @@ const char kFontconfigMatchFooter[] = "  </match>\n";
 class TestFontDelegate : public SkiaFontDelegate {
  public:
   TestFontDelegate() {}
+
+  TestFontDelegate(const TestFontDelegate&) = delete;
+  TestFontDelegate& operator=(const TestFontDelegate&) = delete;
+
   ~TestFontDelegate() override {}
 
   void set_params(const FontRenderParams& params) { params_ = params; }
@@ -58,8 +61,6 @@ class TestFontDelegate : public SkiaFontDelegate {
 
  private:
   FontRenderParams params_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFontDelegate);
 };
 
 // Loads XML-formatted |data| into the current font configuration.
@@ -128,6 +129,9 @@ class FontRenderParamsTest : public testing::Test {
     OverrideGlobalFontConfigForTesting(override_config_);
   }
 
+  FontRenderParamsTest(const FontRenderParamsTest&) = delete;
+  FontRenderParamsTest& operator=(const FontRenderParamsTest&) = delete;
+
   ~FontRenderParamsTest() override {
     OverrideGlobalFontConfigForTesting(original_config_);
     FcConfigDestroy(override_config_);
@@ -142,9 +146,6 @@ class FontRenderParamsTest : public testing::Test {
 
   FcConfig* override_config_ = nullptr;
   FcConfig* original_config_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FontRenderParamsTest);
 };
 
 TEST_F(FontRenderParamsTest, Default) {

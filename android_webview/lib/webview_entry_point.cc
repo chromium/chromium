@@ -23,19 +23,15 @@ bool NativeInit(base::android::LibraryProcessType library_process_type) {
     // process types from tests.
     case base::android::PROCESS_CHILD:
     case base::android::PROCESS_BROWSER:
-
       return android_webview::OnJNIOnLoadInit();
-      break;
 
     case base::android::PROCESS_WEBVIEW_NONEMBEDDED:
       return base::android::OnJNIOnLoadInit();
-      break;
 
 #if defined(WEBVIEW_INCLUDES_WEBLAYER)
     case base::android::PROCESS_WEBLAYER:
     case base::android::PROCESS_WEBLAYER_CHILD:
       return weblayer::OnJNIOnLoadInit();
-      break;
 #endif
 
     default:

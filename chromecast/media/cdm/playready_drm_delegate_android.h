@@ -16,6 +16,11 @@ namespace media {
 class PlayreadyDrmDelegateAndroid : public ::media::MediaDrmBridgeDelegate {
  public:
   PlayreadyDrmDelegateAndroid();
+
+  PlayreadyDrmDelegateAndroid(const PlayreadyDrmDelegateAndroid&) = delete;
+  PlayreadyDrmDelegateAndroid& operator=(const PlayreadyDrmDelegateAndroid&) =
+      delete;
+
   ~PlayreadyDrmDelegateAndroid() override;
 
   // ::media::MediaDrmBridgeDelegate implementation:
@@ -25,9 +30,6 @@ class PlayreadyDrmDelegateAndroid : public ::media::MediaDrmBridgeDelegate {
       const std::vector<uint8_t>& init_data,
       std::vector<uint8_t>* init_data_out,
       std::vector<std::string>* optional_parameters_out) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlayreadyDrmDelegateAndroid);
 };
 
 }  // namespace media

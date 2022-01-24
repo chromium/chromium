@@ -28,6 +28,9 @@ using CanonicalRelativePath = content_verifier_utils::CanonicalRelativePath;
 // corruption of extension files on local disk.
 class VerifiedContents {
  public:
+  VerifiedContents(const VerifiedContents&) = delete;
+  VerifiedContents& operator=(const VerifiedContents&) = delete;
+
   ~VerifiedContents();
 
   // Returns verified contents after successfully parsing verified_contents.json
@@ -107,8 +110,6 @@ class VerifiedContents {
   // statically detect.
   typedef std::multimap<CanonicalRelativePath, std::string> RootHashes;
   RootHashes root_hashes_;
-
-  DISALLOW_COPY_AND_ASSIGN(VerifiedContents);
 };
 
 }  // namespace extensions

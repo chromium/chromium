@@ -33,6 +33,10 @@ namespace content {
 class OriginPolicyBrowserTest : public InProcessBrowserTest {
  public:
   OriginPolicyBrowserTest() : status_(net::HTTP_OK) {}
+
+  OriginPolicyBrowserTest(const OriginPolicyBrowserTest&) = delete;
+  OriginPolicyBrowserTest& operator=(const OriginPolicyBrowserTest&) = delete;
+
   ~OriginPolicyBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -55,7 +59,8 @@ class OriginPolicyBrowserTest : public InProcessBrowserTest {
   // the bulk of the test logic.
   std::u16string NavigateToAndReturnTitle(const char* url) {
     EXPECT_TRUE(server());
-    ui_test_utils::NavigateToURL(browser(), GURL(server()->GetURL(url)));
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(server()->GetURL(url))));
     std::u16string title;
     ui_test_utils::GetCurrentTabTitle(browser(), &title);
     return title;
@@ -93,8 +98,6 @@ class OriginPolicyBrowserTest : public InProcessBrowserTest {
 
   net::HttpStatusCode status_;
   absl::optional<std::string> location_header_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginPolicyBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, PageWithoutPolicy) {

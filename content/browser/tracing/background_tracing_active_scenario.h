@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
@@ -27,15 +26,20 @@ class BackgroundTracingActiveScenario {
   BackgroundTracingActiveScenario(
       std::unique_ptr<BackgroundTracingConfigImpl> config,
       BackgroundTracingManager::ReceiveCallback receive_callback,
-      base::OnceClosure on_aborted_callback,
-      bool use_local_output);
+      base::OnceClosure on_aborted_callback);
+
+  BackgroundTracingActiveScenario(const BackgroundTracingActiveScenario&) =
+      delete;
+  BackgroundTracingActiveScenario& operator=(
+      const BackgroundTracingActiveScenario&) = delete;
+
   virtual ~BackgroundTracingActiveScenario();
 
   void StartTracingIfConfigNeedsIt();
   void AbortScenario();
 
   CONTENT_EXPORT const BackgroundTracingConfigImpl* GetConfig() const;
-  void GenerateMetadataDict(base::DictionaryValue* metadata_dict);
+  base::Value GenerateMetadataDict();
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata);
   State state() const { return scenario_state_; }
@@ -49,9 +53,6 @@ class BackgroundTracingActiveScenario {
       const BackgroundTracingRule* triggered_rule,
       BackgroundTracingManager::StartedFinalizingCallback callback);
 
-  // Called by TracingSession when the final trace data is ready for legacy JSON
-  // traces.
-  void OnJSONDataComplete(std::unique_ptr<std::string>);
   // Called by TracingSession when the final trace data is ready for proto
   // traces.
   void OnProtoDataComplete(std::unique_ptr<std::string>);
@@ -94,13 +95,8 @@ class BackgroundTracingActiveScenario {
   class TracingTimer;
   std::unique_ptr<TracingTimer> tracing_timer_;
 
-  // True if the trace should be output to a local location using a
-  // ReceiveCallback instead of uploading through UMA.
-  bool use_local_output_;
-
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<BackgroundTracingActiveScenario> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTracingActiveScenario);
 };
 
 }  // namespace content

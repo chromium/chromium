@@ -21,8 +21,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -69,6 +69,8 @@
 
 using device::BluetoothAdapter;
 using device::BluetoothDevice;
+using BatteryInfo = device::BluetoothDevice::BatteryInfo;
+using BatteryType = device::BluetoothDevice::BatteryType;
 using UUIDSet = device::BluetoothDevice::UUIDSet;
 using device::BluetoothDiscoveryFilter;
 using device::BluetoothSocket;
@@ -81,6 +83,8 @@ namespace {
 // exist per D-Bus connection, it just has to be unique within Chromium.
 const char kAgentPath[] = "/org/chromium/bluetooth_agent";
 const char kGattApplicationObjectPath[] = "/gatt_application";
+
+const char kDeviceNameArcTouch[] = "Arc Touch BT Mouse";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // This root path identifies the application registering low energy scanners
@@ -136,6 +140,17 @@ device::BluetoothDevice::ManufacturerDataMap ConvertManufacturerDataMap(
                                                       input.end());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+bool IsBatteryDisplayBlocklisted(const BluetoothDevice* device) {
+  if (!device->GetName())
+    return false;
+
+  // b/191919291: Arc Touch BT Mouse battery values change back and forth.
+  if (device->GetName()->find(kDeviceNameArcTouch) != std::string::npos)
+    return true;
+
+  return false;
+}
 
 }  // namespace
 
@@ -782,6 +797,12 @@ void BluetoothAdapterBlueZ::DeviceAdded(const dbus::ObjectPath& object_path) {
                                       properties->eir.value());
   }
 
+  // There is no guarantee that BatteryAdded is called after DeviceAdded
+  // (for the same device). So always update the battery value of this newly
+  // detected device in case we ignored BatteryAdded calls for it before this
+  // DeviceAdded call.
+  UpdateDeviceBatteryLevelFromBatteryClient(object_path);
+
   for (auto& observer : observers_)
     observer.DeviceAdded(this, device_bluez);
 }
@@ -1287,6 +1308,10 @@ void BluetoothAdapterBlueZ::RemoveAdapter() {
   }
 
   PresentChanged(false);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  is_advertisement_monitor_application_provider_registered_ = false;
+#endif
 }
 
 void BluetoothAdapterBlueZ::DiscoverableChanged(bool discoverable) {
@@ -1616,6 +1641,45 @@ BluetoothAdapterBlueZ::StartLowEnergyScanSession(
   }
 
   return low_energy_scan_session;
+}
+
+BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+BluetoothAdapterBlueZ::GetLowEnergyScanSessionHardwareOffloadingStatus() {
+  if (!chromeos::features::IsBluetoothAdvertisementMonitoringEnabled())
+    return LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
+
+  // If the adapter is not present, reset any cached value.
+  if (!IsPresent()) {
+    low_energy_scan_session_hardware_offloading_status_ =
+        LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
+    return low_energy_scan_session_hardware_offloading_status_;
+  }
+
+  // Return the cached value if we've previously looked it up.
+  if (low_energy_scan_session_hardware_offloading_status_ !=
+      LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined)
+    return low_energy_scan_session_hardware_offloading_status_;
+
+  BluetoothAdvertisementMonitorManagerClient::Properties* properties =
+      bluez::BluezDBusManager::Get()
+          ->GetBluetoothAdvertisementMonitorManagerClient()
+          ->GetProperties(object_path_);
+  if (!properties) {
+    return LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
+  }
+
+  // Cache the response to avoid D-Bus traffic from repeated calls.
+  bool supported = base::Contains(properties->supported_features.value(),
+                                  bluetooth_advertisement_monitor_manager::
+                                      kSupportedFeaturesControllerPatterns);
+  if (supported) {
+    low_energy_scan_session_hardware_offloading_status_ =
+        LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
+  } else {
+    low_energy_scan_session_hardware_offloading_status_ =
+        LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
+  }
+  return low_energy_scan_session_hardware_offloading_status_;
 }
 #endif
 
@@ -2076,20 +2140,30 @@ void BluetoothAdapterBlueZ::UpdateDeviceBatteryLevelFromBatteryClient(
     return;
   }
 
+  if (IsBatteryDisplayBlocklisted(device)) {
+    // Some peripherals are known to send unreliable battery values. So don't
+    // display the battery value if such device is detected (best effort).
+    BLUETOOTH_LOG(DEBUG)
+        << "Filtering out a device from having battery value set: "
+        << (device->GetName() ? *(device->GetName()) : "<Unknown name>");
+    return;
+  }
+
   bluez::BluetoothBatteryClient::Properties* properties =
       bluez::BluezDBusManager::Get()
           ->GetBluetoothBatteryClient()
           ->GetProperties(object_path);
 
   if (properties && properties->percentage.is_valid()) {
-    device->SetBatteryPercentage(properties->percentage.value());
+    device->SetBatteryInfo(
+        BatteryInfo(BatteryType::kDefault, properties->percentage.value()));
     return;
   }
 
   // |properties| is null or properties->percentage is not valid, that means
   // BlueZ has removed the battery info from the device and we should clear our
   // value as well.
-  device->SetBatteryPercentage(absl::nullopt);
+  device->RemoveBatteryInfo(BatteryType::kDefault);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

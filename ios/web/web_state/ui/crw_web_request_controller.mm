@@ -297,7 +297,8 @@ enum class BackForwardNavigationType {
     // pending navigation item.
     // Do not do it for localhost address as this is needed to have
     // pre-rendering in tests.
-    if (item->GetURL().GetOrigin() == requestURL.GetOrigin() &&
+    if (item->GetURL().DeprecatedGetOriginAsURL() ==
+            requestURL.DeprecatedGetOriginAsURL() &&
         !net::IsLocalhost(requestURL)) {
       self.navigationManagerImpl->UpdatePendingItemUrl(requestURL);
     }
@@ -508,13 +509,34 @@ enum class BackForwardNavigationType {
   }
 
   WKNavigation* navigation = nil;
+#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
+  if (@available(iOS 15, *)) {
+    if (base::FeatureList::IsEnabled(web::features::kSetRequestAttribution)) {
+      request.attribution = NSURLRequestAttributionUser;
+    }
+  }
+#endif
+
   if (navigationURL.SchemeIsFile() &&
       web::GetWebClient()->IsAppSpecificURL(virtualURL)) {
     // file:// URL navigations are allowed for app-specific URLs, which
     // already have elevated privileges.
+    // TODO(crbug.com/1267899): Remove this #if once Xcode 13 is required for
+    // building iOS-related code.
+#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
+    if (@available(iOS 15, *)) {
+      navigation = [self.webView loadFileRequest:request
+                         allowingReadAccessToURL:request.URL];
+    } else {
+      NSURL* navigationNSURL = net::NSURLWithGURL(navigationURL);
+      navigation = [self.webView loadFileURL:navigationNSURL
+                     allowingReadAccessToURL:navigationNSURL];
+    }
+#else
     NSURL* navigationNSURL = net::NSURLWithGURL(navigationURL);
     navigation = [self.webView loadFileURL:navigationNSURL
                    allowingReadAccessToURL:navigationNSURL];
+#endif
   } else {
     navigation = [self.webView loadRequest:request];
   }

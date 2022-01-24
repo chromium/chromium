@@ -12,13 +12,13 @@
 namespace blink {
 class ExceptionState;
 class ExecutionContext;
+class TaskControllerInit;
 
 class MODULES_EXPORT DOMTaskController final : public AbortController {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DOMTaskController* Create(ExecutionContext*,
-                                   const AtomicString& priority);
+  static DOMTaskController* Create(ExecutionContext*, TaskControllerInit*);
   DOMTaskController(ExecutionContext*, const AtomicString& priority);
 
   void setPriority(const AtomicString& priority, ExceptionState&);

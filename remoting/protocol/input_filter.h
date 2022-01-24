@@ -19,6 +19,10 @@ class InputFilter : public InputStub {
  public:
   InputFilter();
   explicit InputFilter(InputStub* input_stub);
+
+  InputFilter(const InputFilter&) = delete;
+  InputFilter& operator=(const InputFilter&) = delete;
+
   ~InputFilter() override;
 
   // Set the InputStub that events will be forwarded to.
@@ -43,8 +47,6 @@ class InputFilter : public InputStub {
  private:
   InputStub* input_stub_;
   bool enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputFilter);
 };
 
 } // namespace protocol

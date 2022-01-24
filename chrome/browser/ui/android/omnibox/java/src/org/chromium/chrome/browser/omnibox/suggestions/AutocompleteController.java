@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.AutocompleteResult.VerificationPoint;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -164,7 +165,7 @@ public class AutocompleteController {
      */
     void deleteSuggestion(int position) {
         if (mNativeController == 0) return;
-        if (!mAutocompleteResult.verifyCoherency()) return;
+        if (!mAutocompleteResult.verifyCoherency(position, VerificationPoint.DELETE_MATCH)) return;
         AutocompleteControllerJni.get().deleteSuggestion(mNativeController, position);
     }
 
@@ -202,7 +203,9 @@ public class AutocompleteController {
             @NonNull String currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
             int completedLength, @Nullable WebContents webContents) {
         if (mNativeController == 0) return;
-        if (!mAutocompleteResult.verifyCoherency()) return;
+        if (!mAutocompleteResult.verifyCoherency(selectedIndex, VerificationPoint.SELECT_MATCH)) {
+            return;
+        }
         AutocompleteControllerJni.get().onSuggestionSelected(mNativeController, selectedIndex,
                 disposition, currentPageUrl, pageClassification, elapsedTimeSinceModified,
                 completedLength, webContents);
@@ -237,8 +240,6 @@ public class AutocompleteController {
     @Nullable
     GURL updateMatchDestinationUrlWithQueryFormulationTime(
             int selectedIndex, long elapsedTimeSinceInputChange) {
-        if (mNativeController == 0) return null;
-        if (!mAutocompleteResult.verifyCoherency()) return null;
         return updateMatchDestinationUrlWithQueryFormulationTime(
                 selectedIndex, elapsedTimeSinceInputChange, null, null);
     }
@@ -270,23 +271,30 @@ public class AutocompleteController {
             long elapsedTimeSinceInputChange, @Nullable String newQueryText,
             @Nullable List<String> newQueryParams) {
         if (mNativeController == 0) return null;
-        if (!mAutocompleteResult.verifyCoherency()) return null;
-        return AutocompleteControllerJni.get().updateMatchDestinationURLWithQueryFormulationTime(
-                mNativeController, selectedIndex, elapsedTimeSinceInputChange, newQueryText,
-                newQueryParams == null ? null
-                                       : newQueryParams.toArray(new String[newQueryParams.size()]));
+        if (!mAutocompleteResult.verifyCoherency(selectedIndex, VerificationPoint.UPDATE_MATCH)) {
+            return null;
+        }
+        return AutocompleteControllerJni.get()
+                .updateMatchDestinationURLWithAdditionalAssistedQueryStats(mNativeController,
+                        selectedIndex, elapsedTimeSinceInputChange, newQueryText,
+                        newQueryParams == null
+                                ? null
+                                : newQueryParams.toArray(new String[newQueryParams.size()]));
     }
 
     /**
-     * To find out if there is an open tab with the given |url|. Return the matching tab.
+     * Retrieves matching tab for suggestion at specific index.
+     * TODO(crbug.com/1266558): move this to AutocompleteMatch object when Tab is no longer part
+     * of the //chrome/browser directory.
      *
-     * @param url The URL which the tab opened with.
-     * @return The tab opens |url|.
+     * @param index Index of the suggestion to retrieve Tab info for.
+     * @return Tab that hosts matching URL.
      */
     @Nullable
-    Tab findMatchingTabWithUrl(@NonNull GURL url) {
+    Tab getMatchingTabForSuggestion(int index) {
         if (mNativeController == 0) return null;
-        return AutocompleteControllerJni.get().findMatchingTabWithUrl(mNativeController, url);
+        return AutocompleteControllerJni.get().getMatchingTabForSuggestion(
+                mNativeController, index);
     }
 
     /**
@@ -297,6 +305,8 @@ public class AutocompleteController {
      *         AutocompleteController associated with the supplied profile.
      */
     static AutocompleteController getForProfile(Profile profile) {
+        assert profile != null : "AutocompleteController cannot be created for null profile";
+        if (profile == null) return null;
         return AutocompleteControllerJni.get().getForProfile(profile);
     }
 
@@ -318,10 +328,10 @@ public class AutocompleteController {
         void onOmniboxFocused(long nativeAutocompleteControllerAndroid, String omniboxText,
                 String currentUrl, int pageClassification, String currentTitle);
         void deleteSuggestion(long nativeAutocompleteControllerAndroid, int selectedIndex);
-        GURL updateMatchDestinationURLWithQueryFormulationTime(
+        GURL updateMatchDestinationURLWithAdditionalAssistedQueryStats(
                 long nativeAutocompleteControllerAndroid, int selectedIndex,
                 long elapsedTimeSinceInputChange, String newQueryText, String[] newQueryParams);
-        Tab findMatchingTabWithUrl(long nativeAutocompleteControllerAndroid, GURL url);
+        Tab getMatchingTabForSuggestion(long nativeAutocompleteControllerAndroid, int index);
         void setVoiceMatches(long nativeAutocompleteControllerAndroid, String[] matches,
                 float[] confidenceScores);
 

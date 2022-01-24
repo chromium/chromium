@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_SIGNIN_EXPERIENCE_H_
 
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_dialog_delegate.h"
 
 namespace content {
@@ -32,16 +33,11 @@ using AuthorizationCompletedCallback =
 void StartFileSystemConnectorSigninExperienceForDownloadItem(
     content::WebContents* web_contents,
     const FileSystemSettings& settings,
+    PrefService* prefs,
     AuthorizationCompletedCallback callback,
     SigninExperienceTestObserver* test_observer = nullptr);
 
-// Start the sign in experience as triggered by the settings page.
-void StartFileSystemConnectorSigninExperienceForSettingsPage(
-    Profile* profile,
-    base::OnceCallback<void(bool)> callback,
-    SigninExperienceTestObserver* test_observer = nullptr);
-
-// If |enable_link| = true, start the sign in experience as triggered by
+// If `enable_link` is true, start the sign in experience as triggered by
 // settings page; else, unlink the existing account.
 void SetFileSystemConnectorAccountLinkForSettingsPage(
     bool enable_link,
@@ -49,24 +45,18 @@ void SetFileSystemConnectorAccountLinkForSettingsPage(
     base::OnceCallback<void(bool)> callback,
     SigninExperienceTestObserver* test_observer = nullptr);
 
-absl::optional<base::DictionaryValue>
-GetFileSystemConnectorLinkedAccountInfoForSettingsPage(
+// Prefs for the settings page to observe to refresh the connection section.
+std::vector<std::string> GetFileSystemConnectorPrefsForSettingsPage(
+    Profile* profile);
+
+absl::optional<AccountInfo> GetFileSystemConnectorLinkedAccountInfo(
     const FileSystemSettings& settings,
     PrefService* prefs);
-
-// Clear authentication tokens and stored account info.
-bool ClearFileSystemConnectorLinkedAccount(const FileSystemSettings& settings,
-                                           PrefService* prefs);
 
 // Run |callback| with a GoogleServiceAuthError that indicates cancellation.
 void ReturnCancellation(AuthorizationCompletedCallback callback);
 
 // Helper function/classes for testing.
-void ExtractAccountInfoFromDictionary(const base::DictionaryValue& dict,
-                                      base::Value* account,
-                                      std::string* folder_name,
-                                      std::string* folder_link);
-
 class SigninExperienceTestObserver {
  public:
   SigninExperienceTestObserver();
@@ -75,8 +65,10 @@ class SigninExperienceTestObserver {
   virtual void InitForTesting(FileSystemRenameHandler* rename_handler);
   virtual void OnConfirmationDialogCreated(
       views::DialogDelegate* dialog_delegate) {}
-  virtual void OnSignInDialogCreated(content::WebContents* dialog_web_content,
-                                     views::Widget* dialog_widget) {}
+  virtual void OnSignInDialogCreated(
+      content::WebContents* dialog_web_content,
+      FileSystemSigninDialogDelegate* dialog_delegate,
+      views::Widget* dialog_widget) {}
 
  private:
   base::WeakPtr<FileSystemRenameHandler> rename_handler_;

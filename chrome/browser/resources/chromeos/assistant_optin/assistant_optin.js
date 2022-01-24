@@ -5,8 +5,8 @@
 HTMLImports.whenReady(() => {
 // <include src="../login/components/behaviors/multi_step_behavior.js">
 // Need the display manager to imitate the oobe flow.
-// <include src="../login/display_manager.js">
 // <include src="../login/components/display_manager_types.js">
+// <include src="../login/display_manager.js">
 // <include src="../login/components/oobe_types.js">
 // <include src="assistant_optin_flow.js">
 // <include src="browser_proxy.js">

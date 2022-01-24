@@ -20,13 +20,18 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   // AccountSelectionView:
   void Show(const GURL& rp_url,
             const GURL& idp_url,
-            base::span<const Account> accounts) override;
+            base::span<const Account> accounts,
+            const content::IdentityProviderMetadata& idp_metadata,
+            const content::ClientIdData& client_data,
+            Account::SignInMode sign_in_mode) override;
 
   void OnAccountSelected(
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& account_string_fields,
-      const base::android::JavaParamRef<jobject>& account_picture_url);
+      const base::android::JavaParamRef<jobject>& account_picture_url,
+      bool is_sign_in);
   void OnDismiss(JNIEnv* env);
+  void OnAutoSignInCancelled(JNIEnv* env);
 
  private:
   // Returns either true if the java counterpart of this bridge is initialized

@@ -5,7 +5,7 @@
 #include "services/audio/in_process_audio_manager_accessor.h"
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/audio/audio_manager.h"
 
 namespace audio {

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 

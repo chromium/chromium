@@ -7,9 +7,11 @@
 #include <dlfcn.h>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gtk/gtk_stubs.h"
 
@@ -19,6 +21,8 @@ namespace gtk {
 // functions should be annotated with DISABLE_CFI_ICALL.
 
 namespace {
+
+const char kGtkVersionFlag[] = "gtk-version";
 
 struct Gdk3Rgba {
   gdouble r;
@@ -77,8 +81,8 @@ void* GetLibGtk3(bool check = true) {
   return libgtk3;
 }
 
-void* GetLibGtk4() {
-  static void* libgtk4 = DlOpen("libgtk-4.so.1");
+void* GetLibGtk4(bool check = true) {
+  static void* libgtk4 = DlOpen("libgtk-4.so.1", check);
   return libgtk4;
 }
 
@@ -88,24 +92,39 @@ void* GetLibGtk() {
   return GetLibGtk3();
 }
 
-bool LoadGtkImpl(int gtk_version) {
-  // Prefer GTK3 for now as the GTK4 ecosystem is still immature.
-  if (GetLibGtk3(false)) {
-    ui_gtk::InitializeGdk_pixbuf(GetLibGdkPixbuf());
-    ui_gtk::InitializeGdk(GetLibGdk3());
-    ui_gtk::InitializeGtk(GetLibGtk3());
-  } else {
-    // In GTK4 mode, we require some newer gio symbols that aren't available in
-    // Ubuntu Xenial or Debian Stretch.  Fortunately, GTK4 itself depends on a
-    // newer version of glib (which provides gio), so if we're using GTK4, we
-    // can safely assume the system has the required gio symbols.
-    ui_gtk::InitializeGio(GetLibGio());
-    // In GTK4, libgtk provides all gdk_*, gsk_*, and gtk_* symbols.
-    ui_gtk::InitializeGdk(GetLibGtk4());
-    ui_gtk::InitializeGsk(GetLibGtk4());
-    ui_gtk::InitializeGtk(GetLibGtk4());
-  }
+bool LoadGtk3() {
+  if (!GetLibGtk3(false))
+    return false;
+  ui_gtk::InitializeGdk_pixbuf(GetLibGdkPixbuf());
+  ui_gtk::InitializeGdk(GetLibGdk3());
+  ui_gtk::InitializeGtk(GetLibGtk3());
   return true;
+}
+
+bool LoadGtk4() {
+  if (!GetLibGtk4(false))
+    return false;
+  // In GTK4 mode, we require some newer gio symbols that aren't available
+  // in Ubuntu Xenial or Debian Stretch.  Fortunately, GTK4 itself depends
+  // on a newer version of glib (which provides gio), so if we're using
+  // GTK4, we can safely assume the system has the required gio symbols.
+  ui_gtk::InitializeGio(GetLibGio());
+  // In GTK4, libgtk provides all gdk_*, gsk_*, and gtk_* symbols.
+  ui_gtk::InitializeGdk(GetLibGtk4());
+  ui_gtk::InitializeGsk(GetLibGtk4());
+  ui_gtk::InitializeGtk(GetLibGtk4());
+  return true;
+}
+
+bool LoadGtkImpl() {
+  auto* cmd = base::CommandLine::ForCurrentProcess();
+  unsigned int gtk_version;
+  if (!base::StringToUint(cmd->GetSwitchValueASCII(kGtkVersionFlag),
+                          &gtk_version)) {
+    gtk_version = 0;
+  }
+  // Prefer GTK3 for now as the GTK4 ecosystem is still immature.
+  return gtk_version == 4 ? LoadGtk4() || LoadGtk3() : LoadGtk3() || LoadGtk4();
 }
 
 gfx::Insets InsetsFromGtkBorder(const GtkBorder& border) {
@@ -115,7 +134,7 @@ gfx::Insets InsetsFromGtkBorder(const GtkBorder& border) {
 }  // namespace
 
 bool LoadGtk() {
-  static bool loaded = LoadGtkImpl(GTK_MAJOR_VERSION);
+  static bool loaded = LoadGtkImpl();
   return loaded;
 }
 
@@ -268,12 +287,12 @@ void GtkRenderIcon(GtkStyleContext* context,
                    double x,
                    double y) {
   static void* render = DlSym(GetLibGtk(), "gtk_render_icon");
-  if (GtkCheckVersion(4)) {
-    DCHECK(texture);
+  if (texture) {
+    DCHECK(GtkCheckVersion(4));
     DlCast<void(GtkStyleContext*, cairo_t*, GdkTexture*, double, double)>(
         render)(context, cr, texture, x, y);
-  } else {
-    DCHECK(pixbuf);
+  } else if (pixbuf) {
+    DCHECK(!GtkCheckVersion(4));
     DlCast<void(GtkStyleContext*, cairo_t*, GdkPixbuf*, double, double)>(
         render)(context, cr, pixbuf, x, y);
   }

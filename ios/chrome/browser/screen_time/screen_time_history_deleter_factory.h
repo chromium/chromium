@@ -24,6 +24,11 @@ class API_AVAILABLE(ios(14.0)) ScreenTimeHistoryDeleterFactory
 
   static ScreenTimeHistoryDeleterFactory* GetInstance();
 
+  ScreenTimeHistoryDeleterFactory(const ScreenTimeHistoryDeleterFactory&) =
+      delete;
+  ScreenTimeHistoryDeleterFactory& operator=(
+      const ScreenTimeHistoryDeleterFactory&) = delete;
+
  private:
   friend class base::NoDestructor<ScreenTimeHistoryDeleterFactory>;
 
@@ -36,8 +41,6 @@ class API_AVAILABLE(ios(14.0)) ScreenTimeHistoryDeleterFactory
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenTimeHistoryDeleterFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_SCREEN_TIME_SCREEN_TIME_HISTORY_DELETER_FACTORY_H_

@@ -8,6 +8,7 @@
 #include "content/public/browser/overlay_window.h"
 
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
@@ -38,6 +39,9 @@ class OverlayWindowViews : public content::OverlayWindow,
   static std::unique_ptr<OverlayWindowViews> Create(
       content::PictureInPictureWindowController* controller);
 
+  OverlayWindowViews(const OverlayWindowViews&) = delete;
+  OverlayWindowViews& operator=(const OverlayWindowViews&) = delete;
+
   ~OverlayWindowViews() override;
 
   enum class WindowQuadrant { kBottomLeft, kBottomRight, kTopLeft, kTopRight };
@@ -66,6 +70,7 @@ class OverlayWindowViews : public content::OverlayWindow,
   // views::Widget:
   bool IsActive() const override;
   bool IsVisible() const override;
+  void OnNativeFocus() override;
   void OnNativeBlur() override;
   void OnNativeWidgetDestroyed() override;
   gfx::Size GetMinimumSize() const override;
@@ -111,6 +116,7 @@ class OverlayWindowViews : public content::OverlayWindow,
   ToggleCameraButton* toggle_camera_button_for_testing() const;
   HangUpButton* hang_up_button_for_testing() const;
   BackToTabLabelButton* back_to_tab_label_button_for_testing() const;
+  views::CloseImageButton* close_button_for_testing() const;
   gfx::Point close_image_position_for_testing() const;
   gfx::Point resize_handle_position_for_testing() const;
   OverlayWindowViews::PlaybackState playback_state_for_testing() const;
@@ -192,7 +198,7 @@ class OverlayWindowViews : public content::OverlayWindow,
   void TogglePlayPause();
 
   // Returns the current frame sink id for the surface displayed in the
-  // |video_view_]. If |video_view_| is not currently displaying a surface then
+  // |video_view_|. If |video_view_| is not currently displaying a surface then
   // returns nullptr.
   const viz::FrameSinkId* GetCurrentFrameSinkId() const;
 
@@ -213,9 +219,6 @@ class OverlayWindowViews : public content::OverlayWindow,
   // changes. http://crbug.com/819673
   gfx::Size min_size_;
   gfx::Size max_size_;
-
-  // Bounds of |video_view_|.
-  gfx::Rect video_bounds_;
 
   // The natural size of the video to show. This is used to compute sizing and
   // ensuring factors such as aspect ratio is maintained.
@@ -282,7 +285,9 @@ class OverlayWindowViews : public content::OverlayWindow,
   // ForceControlsVisibleForTesting().
   absl::optional<bool> force_controls_visible_;
 
-  DISALLOW_COPY_AND_ASSIGN(OverlayWindowViews);
+  // Whether or not the current frame sink for the surface displayed in the
+  // |video_view_| is registered as the child of the overlay window frame sink.
+  bool has_registered_frame_sink_hierarchy_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_OVERLAY_WINDOW_VIEWS_H_

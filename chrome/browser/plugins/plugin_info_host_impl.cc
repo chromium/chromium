@@ -15,7 +15,7 @@
 #include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -78,6 +78,11 @@ class PluginInfoHostImplShutdownNotifierFactory
     return base::Singleton<PluginInfoHostImplShutdownNotifierFactory>::get();
   }
 
+  PluginInfoHostImplShutdownNotifierFactory(
+      const PluginInfoHostImplShutdownNotifierFactory&) = delete;
+  PluginInfoHostImplShutdownNotifierFactory& operator=(
+      const PluginInfoHostImplShutdownNotifierFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       PluginInfoHostImplShutdownNotifierFactory>;
@@ -87,8 +92,6 @@ class PluginInfoHostImplShutdownNotifierFactory
             "PluginInfoHostImpl") {}
 
   ~PluginInfoHostImplShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(PluginInfoHostImplShutdownNotifierFactory);
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -240,14 +243,6 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
 
   DCHECK(plugin_setting != CONTENT_SETTING_DEFAULT);
 
-  if (*status == chrome::mojom::PluginStatus::kFlashHiddenPreferHtml) {
-    if (plugin_setting == CONTENT_SETTING_BLOCK) {
-      *status = is_managed ? chrome::mojom::PluginStatus::kBlockedByPolicy
-                           : chrome::mojom::PluginStatus::kBlockedNoLoading;
-    }
-    return;
-  }
-
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Check if the plugin is outdated.
   if (security_status == PluginMetadata::SECURITY_STATUS_OUT_OF_DATE &&
@@ -303,10 +298,11 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
 #endif
 }
 
+// TODO(crbug.com/850278): Remove unused parameters.
 bool PluginInfoHostImpl::Context::FindEnabledPlugin(
-    int render_frame_id,
+    int /*render_frame_id*/,
     const GURL& url,
-    const url::Origin& main_frame_origin,
+    const url::Origin& /*main_frame_origin*/,
     const std::string& mime_type,
     chrome::mojom::PluginStatus* status,
     WebPluginInfo* plugin,
@@ -334,8 +330,7 @@ bool PluginInfoHostImpl::Context::FindEnabledPlugin(
   size_t i = 0;
   for (; i < matching_plugins.size(); ++i) {
     if (!filter ||
-        filter->IsPluginAvailable(render_process_id_, render_frame_id, url,
-                                  main_frame_origin, &matching_plugins[i])) {
+        filter->IsPluginAvailable(render_process_id_, matching_plugins[i])) {
       break;
     }
   }

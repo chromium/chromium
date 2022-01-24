@@ -9,22 +9,10 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/consent_level.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace signin_metrics {
-
-// Enum for the ways in which primary account detection is done.
-enum DifferentPrimaryAccounts {
-  // token and cookie had same primary accounts.
-  ACCOUNTS_SAME = 0,
-  // Deprecated. Indicates different primary accounts.
-  UNUSED_ACCOUNTS_DIFFERENT,
-  // No GAIA cookie present, so the primaries are considered different.
-  NO_COOKIE_PRESENT,
-  // There was at least one cookie and one token, and the primaries differed.
-  COOKIE_AND_TOKEN_PRIMARIES_DIFFERENT,
-  NUM_DIFFERENT_PRIMARY_ACCOUNT_METRICS,
-};
 
 // Track all the ways a profile can become signed out as a histogram.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
@@ -176,6 +164,7 @@ enum class AccessPoint : int {
   ACCESS_POINT_WEB_SIGNIN = 31,
   ACCESS_POINT_SAFETY_CHECK = 32,
   ACCESS_POINT_KALEIDOSCOPE = 33,
+  ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR = 34,
   ACCESS_POINT_MAX,  // This must be last.
 };
 
@@ -268,22 +257,6 @@ enum class AccountConsistencyPromoAction : int {
 
   MAX = 17,
 };
-
-// This class is used to record web sign-in events within 2 minutes after
-// account picker bottom sheet was dismissed.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class AccountConsistencyPromoAfterDismissal {
-  // User signed in with the default device account. This account is the first
-  // account in the cookies.
-  kSignedInOnWebWithDefaultDeviceAccount = 0,
-  // User signed in with non-default device account.
-  kSignedInOnWebWithNonDefaultDeviceAccount = 1,
-  // User signed in with an account not present on device.
-  kSignedInOnWebWithOtherAccount = 2,
-
-  kMaxValue = kSignedInOnWebWithOtherAccount,
-};
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
 // Enum values which enumerates all reasons to start sign in process.
@@ -345,6 +318,17 @@ enum class AccountEquality : int {
   HISTOGRAM_COUNT,
 };
 
+// Values of Signin.AccountType histogram. This histogram records if the user
+// uses a gmail account or a managed account when signing in.
+enum class SigninAccountType : int {
+  // Gmail account.
+  kRegular = 0,
+  // Managed account.
+  kManaged = 1,
+  // Always the last enumerated type.
+  kMaxValue = kManaged,
+};
+
 // When the user is give a choice of deleting their profile or not when signing
 // out, the |kDeleted| or |kKeeping| metric should be used. If the user is not
 // given any option, then use the |kIgnoreMetric| value should be used.
@@ -393,28 +377,28 @@ enum class AccountRelation : int {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class SourceForRefreshTokenOperation {
-  kUnknown,
-  kTokenService_LoadCredentials,
-  // NOTE: This is no longer used but is kept per the comment above about not
-  // renumbering.
-  kDeprecatedSupervisedUser_InitSync,
-  kInlineLoginHandler_Signin,
-  kPrimaryAccountManager_ClearAccount,
-  kPrimaryAccountManager_LegacyPreDiceSigninFlow,
-  kUserMenu_RemoveAccount,
-  kUserMenu_SignOutAllAccounts,
-  kSettings_Signout,
-  kSettings_PauseSync,
-  kAccountReconcilor_GaiaCookiesDeletedByUser,
-  kAccountReconcilor_GaiaCookiesUpdated,
-  kAccountReconcilor_Reconcile,
-  kDiceResponseHandler_Signin,
-  kDiceResponseHandler_Signout,
-  kDiceTurnOnSyncHelper_Abort,
-  kMachineLogon_CredentialProvider,
-  kTokenService_ExtractCredentials,
-  kAccountReconcilor_RevokeTokensNotInCookies,
-  kLogoutTabHelper_DidFinishNavigation,
+  kUnknown = 0,
+  kTokenService_LoadCredentials = 1,
+  // DEPRECATED
+  // kSupervisedUser_InitSync = 2,
+  kInlineLoginHandler_Signin = 3,
+  kPrimaryAccountManager_ClearAccount = 4,
+  kPrimaryAccountManager_LegacyPreDiceSigninFlow = 5,
+  kUserMenu_RemoveAccount = 6,
+  kUserMenu_SignOutAllAccounts = 7,
+  kSettings_Signout = 8,
+  kSettings_PauseSync = 9,
+  kAccountReconcilor_GaiaCookiesDeletedByUser = 10,
+  kAccountReconcilor_GaiaCookiesUpdated = 11,
+  kAccountReconcilor_Reconcile = 12,
+  kDiceResponseHandler_Signin = 13,
+  kDiceResponseHandler_Signout = 14,
+  kDiceTurnOnSyncHelper_Abort = 15,
+  kMachineLogon_CredentialProvider = 16,
+  kTokenService_ExtractCredentials = 17,
+  // DEPRECATED on 09/2021 (used for force migration to DICE)
+  // kAccountReconcilor_RevokeTokensNotInCookies = 18,
+  kLogoutTabHelper_DidFinishNavigation = 19,
 
   kMaxValue = kLogoutTabHelper_DidFinishNavigation,
 };
@@ -460,27 +444,6 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
 
 // Tracks the reason of sign in.
 void LogSigninReason(Reason reason);
-
-// Log to UMA histograms and UserCounts stats about a single execution of the
-// AccountReconciler.
-// |total_number_accounts| - How many accounts are in the browser for this
-//                           profile.
-// |count_added_to_cookie_jar| - How many accounts were in the browser but not
-//                               in the cookie jar.
-// |count_removed_from_cookie_jar| - How many accounts were in the cookie jar
-//                                   but not in the browser.
-// |primary_accounts_same| - False if the primary account for the cookie jar
-//                           and the token service were different; else true.
-// |is_first_reconcile| - True if these stats are from the first execution of
-//                        the AccountReconcilor.
-// |pre_count_gaia_cookies| - How many GAIA cookies were present before
-//                            the AccountReconcilor began modifying the state.
-void LogSigninAccountReconciliation(int total_number_accounts,
-                                    int count_added_to_cookie_jar,
-                                    int count_removed_from_cookie_jar,
-                                    bool primary_accounts_same,
-                                    bool is_first_reconcile,
-                                    int pre_count_gaia_cookies);
 
 // Logs to UMA histograms how many accounts are in the browser for this
 // profile.
@@ -547,6 +510,10 @@ void RecordRefreshTokenUpdatedFromSource(bool refresh_token_is_valid,
 
 // Records the source that revoked a refresh token.
 void RecordRefreshTokenRevokedFromSource(SourceForRefreshTokenOperation source);
+
+// Records the account type when the user signs in.
+void RecordSigninAccountType(signin::ConsentLevel consent_level,
+                             bool is_managed_account);
 
 // -----------------------------------------------------------------------------
 // User actions

@@ -15,14 +15,16 @@ namespace device {
 class BluetoothAdapterCastTest : public testing::Test {
  public:
   BluetoothAdapterCastTest() = default;
+
+  BluetoothAdapterCastTest(const BluetoothAdapterCastTest&) = delete;
+  BluetoothAdapterCastTest& operator=(const BluetoothAdapterCastTest&) = delete;
+
   ~BluetoothAdapterCastTest() override {
     BluetoothAdapterCast::ResetFactoryForTest();
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterCastTest);
 };
 
 TEST_F(BluetoothAdapterCastTest, TestSetFactory) {

@@ -4,6 +4,7 @@
 
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 
+#include <cstring>
 #include <utility>
 
 #include "base/check.h"

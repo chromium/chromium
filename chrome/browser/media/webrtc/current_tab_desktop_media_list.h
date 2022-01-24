@@ -13,6 +13,11 @@
 class CurrentTabDesktopMediaList : public DesktopMediaListBase {
  public:
   explicit CurrentTabDesktopMediaList(content::WebContents* web_contents);
+
+  CurrentTabDesktopMediaList(const CurrentTabDesktopMediaList&) = delete;
+  CurrentTabDesktopMediaList& operator=(const CurrentTabDesktopMediaList&) =
+      delete;
+
   ~CurrentTabDesktopMediaList() override;
 
  private:
@@ -52,8 +57,6 @@ class CurrentTabDesktopMediaList : public DesktopMediaListBase {
   scoped_refptr<base::SequencedTaskRunner> thumbnail_task_runner_;
 
   base::WeakPtrFactory<CurrentTabDesktopMediaList> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CurrentTabDesktopMediaList);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_CURRENT_TAB_DESKTOP_MEDIA_LIST_H_

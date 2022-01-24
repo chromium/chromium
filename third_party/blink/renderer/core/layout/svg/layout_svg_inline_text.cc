@@ -103,6 +103,10 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
   }
 }
 
+bool LayoutSVGInlineText::IsFontFallbackValid() const {
+  return LayoutText::IsFontFallbackValid() && ScaledFont().IsFallbackValid();
+}
+
 void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
   NOT_DESTROYED();
   if (!IsFontFallbackValid()) {
@@ -114,8 +118,8 @@ void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
 
 InlineTextBox* LayoutSVGInlineText::CreateTextBox(int start, uint16_t length) {
   NOT_DESTROYED();
-  InlineTextBox* box =
-      new SVGInlineTextBox(LineLayoutItem(this), start, length);
+  InlineTextBox* box = MakeGarbageCollected<SVGInlineTextBox>(
+      LineLayoutItem(this), start, length);
   box->SetHasVirtualLogicalHeight();
   return box;
 }
@@ -147,11 +151,11 @@ LayoutRect LayoutSVGInlineText::LocalCaretRect(const InlineBox* box,
   return LayoutRect(x, rect.Y(), GetFrameView()->CaretWidth(), rect.Height());
 }
 
-FloatRect LayoutSVGInlineText::FloatLinesBoundingBox() const {
+gfx::RectF LayoutSVGInlineText::FloatLinesBoundingBox() const {
   NOT_DESTROYED();
-  FloatRect bounding_box;
+  gfx::RectF bounding_box;
   for (InlineTextBox* box : TextBoxes())
-    bounding_box.Unite(FloatRect(box->FrameRect()));
+    bounding_box.Union(gfx::RectF(box->FrameRect()));
   return bounding_box;
 }
 
@@ -178,18 +182,18 @@ bool LayoutSVGInlineText::CharacterStartsNewTextChunk(int position) const {
   return it->value.HasX() || it->value.HasY();
 }
 
-FloatRect LayoutSVGInlineText::ObjectBoundingBox() const {
+gfx::RectF LayoutSVGInlineText::ObjectBoundingBox() const {
   NOT_DESTROYED();
   if (!IsInLayoutNGInlineFormattingContext())
     return FloatLinesBoundingBox();
 
-  FloatRect bounds;
+  gfx::RectF bounds;
   NGInlineCursor cursor;
   cursor.MoveTo(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const NGFragmentItem& item = *cursor.CurrentItem();
     if (item.Type() == NGFragmentItem::kSvgText)
-      bounds.Unite(item.ObjectBoundingBox());
+      bounds.Union(cursor.Current().ObjectBoundingBox(cursor));
   }
   return bounds;
 }
@@ -248,10 +252,11 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
 
   // Map local point to absolute point, as the character origins stored in the
   // text fragments use absolute coordinates.
-  FloatPoint absolute_point(point);
-  absolute_point.MoveBy(FloatPoint(containing_block->Location()));
+  gfx::PointF absolute_point(point);
+  absolute_point +=
+      gfx::PointF(containing_block->Location()).OffsetFromOrigin();
 
-  float closest_distance = std::numeric_limits<float>::max();
+  double closest_distance = std::numeric_limits<double>::max();
   float position_in_fragment = 0;
   const SVGTextFragment* closest_distance_fragment = nullptr;
   SVGInlineTextBox* closest_distance_box = nullptr;
@@ -262,12 +267,11 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
       continue;
 
     for (const SVGTextFragment& fragment : text_box->TextFragments()) {
-      FloatRect fragment_rect = fragment.BoundingBox(baseline);
+      gfx::RectF fragment_rect = fragment.BoundingBox(baseline);
 
-      float distance = 0;
-      if (!fragment_rect.Contains(absolute_point))
-        distance = fragment_rect.SquaredDistanceTo(absolute_point);
-
+      double distance =
+          (fragment_rect.ClosestPoint(absolute_point) - absolute_point)
+              .LengthSquared();
       if (distance <= closest_distance) {
         closest_distance = distance;
         closest_distance_box = text_box;
@@ -277,8 +281,8 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
         // to apply the inverse transformation for the fragment and then map
         // against the (untransformed) fragment rect.
         position_in_fragment = fragment.is_vertical
-                                   ? absolute_point.Y() - fragment_rect.Y()
-                                   : absolute_point.X() - fragment_rect.X();
+                                   ? absolute_point.y() - fragment_rect.y()
+                                   : absolute_point.x() - fragment_rect.x();
       }
     }
   }
@@ -525,7 +529,7 @@ PhysicalRect LayoutSVGInlineText::VisualRectInDocument(
   return Parent()->VisualRectInDocument(flags);
 }
 
-FloatRect LayoutSVGInlineText::VisualRectInLocalSVGCoordinates() const {
+gfx::RectF LayoutSVGInlineText::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   return Parent()->VisualRectInLocalSVGCoordinates();
 }

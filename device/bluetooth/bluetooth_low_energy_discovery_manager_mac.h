@@ -33,6 +33,11 @@ class BluetoothLowEnergyDiscoveryManagerMac {
     virtual ~Observer() {}
   };
 
+  BluetoothLowEnergyDiscoveryManagerMac(
+      const BluetoothLowEnergyDiscoveryManagerMac&) = delete;
+  BluetoothLowEnergyDiscoveryManagerMac& operator=(
+      const BluetoothLowEnergyDiscoveryManagerMac&) = delete;
+
   virtual ~BluetoothLowEnergyDiscoveryManagerMac();
 
   // Returns true, if discovery is currently being performed.
@@ -85,8 +90,6 @@ class BluetoothLowEnergyDiscoveryManagerMac {
 
   // List of service UUIDs to scan.
   BluetoothDevice::UUIDList services_uuids_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyDiscoveryManagerMac);
 };
 
 }  // namespace device

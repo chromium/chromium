@@ -72,7 +72,7 @@ CommitDeferringCondition::Result
 MockCommitDeferringCondition::WillCommitNavigation(base::OnceClosure resume) {
   if (on_will_commit_navigation_)
     std::move(on_will_commit_navigation_).Run(std::move(resume));
-  return is_ready_to_commit_ ? kProceed : kDefer;
+  return is_ready_to_commit_ ? Result::kProceed : Result::kDefer;
 }
 
 base::WeakPtr<MockCommitDeferringCondition>

@@ -26,6 +26,7 @@ class BatteryLevelProvider {
                  bool on_battery,
                  base::TimeTicks capture_time);
     BatteryState(const BatteryState&);
+    BatteryState& operator=(const BatteryState&);
 
     // Number of device interfaces that accept a battery on the system.
     size_t interface_count = 0;

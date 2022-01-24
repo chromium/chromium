@@ -49,8 +49,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/core:unit_test_support",
     "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
   ]
 }

@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "url/origin.h"
 
@@ -17,6 +16,11 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
     : public BrowsingDataFilterBuilder {
  public:
   explicit BrowsingDataFilterBuilderImpl(Mode mode);
+
+  BrowsingDataFilterBuilderImpl(const BrowsingDataFilterBuilderImpl&) = delete;
+  BrowsingDataFilterBuilderImpl& operator=(
+      const BrowsingDataFilterBuilderImpl&) = delete;
+
   ~BrowsingDataFilterBuilderImpl() override;
 
   // BrowsingDataFilterBuilder implementation:
@@ -39,8 +43,6 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
 
   std::set<url::Origin> origins_;
   std::set<std::string> domains_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataFilterBuilderImpl);
 };
 
 }  // content

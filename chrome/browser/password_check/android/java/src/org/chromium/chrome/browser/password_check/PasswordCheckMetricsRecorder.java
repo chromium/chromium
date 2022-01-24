@@ -23,6 +23,16 @@ public final class PasswordCheckMetricsRecorder {
                 userAction, PasswordCheckUserAction.COUNT);
     }
 
+    public static void recordCompromisedCredentialsCountAfterCheck(
+            int countTotal, int countWithAutoChange) {
+        RecordHistogram.recordCount1000Histogram(
+                "PasswordManager.BulkCheck.CompromisedCredentialsCountAfterCheckAndroid",
+                countTotal);
+        RecordHistogram.recordCount1000Histogram("PasswordManager.BulkCheck."
+                        + "CompromisedCredentialsCountWithAutoChangeAfterCheckAndroid",
+                countWithAutoChange);
+    }
+
     public static void recordCheckResolutionAction(
             @PasswordCheckResolutionAction int action, CompromisedCredential credential) {
         if (credential.hasStartableScript()) {

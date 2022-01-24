@@ -32,8 +32,8 @@ class CORE_EXPORT BoxPaintInvalidator {
 
   bool HasEffectiveBackground();
   bool BackgroundGeometryDependsOnLayoutOverflowRect();
-  bool BackgroundPaintsOntoScrollingContentsLayer();
-  bool BackgroundPaintsOntoMainGraphicsLayer();
+  bool BackgroundPaintsInContentsSpace();
+  bool BackgroundPaintsInBorderBoxSpace();
   bool ShouldFullyInvalidateBackgroundOnLayoutOverflowChange(
       const PhysicalRect& old_layout_overflow,
       const PhysicalRect& new_layout_overflow);

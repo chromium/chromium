@@ -14,7 +14,6 @@
 #ifndef CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_EMBEDDER_H_
 #define CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_EMBEDDER_H_
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -29,6 +28,9 @@ struct NativeWebKeyboardEvent;
 // Perhaps "WebContentsEmbedderDelegate" would be better?
 class CONTENT_EXPORT BrowserPluginEmbedder {
  public:
+  BrowserPluginEmbedder(const BrowserPluginEmbedder&) = delete;
+  BrowserPluginEmbedder& operator=(const BrowserPluginEmbedder&) = delete;
+
   ~BrowserPluginEmbedder();
 
   static BrowserPluginEmbedder* Create(WebContentsImpl* web_contents);
@@ -63,8 +65,6 @@ class CONTENT_EXPORT BrowserPluginEmbedder {
 
   // Pointer to the WebContentsImpl that owns this object.
   WebContentsImpl* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPluginEmbedder);
 };
 
 }  // namespace content

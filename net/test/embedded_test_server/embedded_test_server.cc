@@ -4,9 +4,14 @@
 
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+#include <stdint.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -20,11 +25,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_executor.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "crypto/rsa_private_key.h"
+#include "net/base/hex_utils.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
@@ -32,21 +38,23 @@
 #include "net/cert/pem.h"
 #include "net/cert/test_root_certs.h"
 #include "net/log/net_log_source.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/ssl_server_socket.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/tcp_server_socket.h"
+#include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
-#include "net/test/embedded_test_server/http_connection.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/revocation_builder.h"
 #include "net/test/test_data_directory.h"
+#include "net/third_party/quiche/src/spdy/core/spdy_frame_builder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -160,13 +168,13 @@ bool MaybeCreateOCSPResponse(CertBuilder* target,
   using OCSPProduced = EmbeddedTestServer::OCSPConfig::Produced;
   switch (config.produced) {
     case OCSPProduced::kValid:
-      produced_at = now - base::TimeDelta::FromDays(1);
+      produced_at = now - base::Days(1);
       break;
     case OCSPProduced::kBeforeCert:
-      produced_at = target_not_before - base::TimeDelta::FromDays(1);
+      produced_at = target_not_before - base::Days(1);
       break;
     case OCSPProduced::kAfterCert:
-      produced_at = target_not_after + base::TimeDelta::FromDays(1);
+      produced_at = target_not_after + base::Days(1);
       break;
   }
 
@@ -180,34 +188,29 @@ bool MaybeCreateOCSPResponse(CertBuilder* target,
     }
     response.cert_status = config_response.cert_status;
     // |revocation_time| is ignored if |cert_status| is not REVOKED.
-    response.revocation_time = now - base::TimeDelta::FromDays(1000);
+    response.revocation_time = now - base::Days(1000);
 
     using OCSPDate = EmbeddedTestServer::OCSPConfig::SingleResponse::Date;
     switch (config_response.ocsp_date) {
       case OCSPDate::kValid:
-        response.this_update = now - base::TimeDelta::FromDays(1);
-        response.next_update =
-            response.this_update + base::TimeDelta::FromDays(7);
+        response.this_update = now - base::Days(1);
+        response.next_update = response.this_update + base::Days(7);
         break;
       case OCSPDate::kOld:
-        response.this_update = now - base::TimeDelta::FromDays(8);
-        response.next_update =
-            response.this_update + base::TimeDelta::FromDays(7);
+        response.this_update = now - base::Days(8);
+        response.next_update = response.this_update + base::Days(7);
         break;
       case OCSPDate::kEarly:
-        response.this_update = now + base::TimeDelta::FromDays(1);
-        response.next_update =
-            response.this_update + base::TimeDelta::FromDays(7);
+        response.this_update = now + base::Days(1);
+        response.next_update = response.this_update + base::Days(7);
         break;
       case OCSPDate::kLong:
-        response.this_update = now - base::TimeDelta::FromDays(365);
-        response.next_update =
-            response.this_update + base::TimeDelta::FromDays(366);
+        response.this_update = now - base::Days(365);
+        response.next_update = response.this_update + base::Days(366);
         break;
       case OCSPDate::kLonger:
-        response.this_update = now - base::TimeDelta::FromDays(367);
-        response.next_update =
-            response.this_update + base::TimeDelta::FromDays(368);
+        response.this_update = now - base::Days(367);
+        response.next_update = response.this_update + base::Days(368);
         break;
     }
 
@@ -277,12 +280,16 @@ EmbeddedTestServer::ServerCertificateConfig::operator=(
 
 EmbeddedTestServer::EmbeddedTestServer() : EmbeddedTestServer(TYPE_HTTP) {}
 
-EmbeddedTestServer::EmbeddedTestServer(Type type)
+EmbeddedTestServer::EmbeddedTestServer(Type type,
+                                       HttpConnection::Protocol protocol)
     : is_using_ssl_(type == TYPE_HTTPS),
+      protocol_(protocol),
       connection_listener_(nullptr),
       port_(0),
       cert_(CERT_OK) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  // HTTP/2 is only valid by negotiation via TLS ALPN
+  DCHECK(protocol_ != HttpConnection::Protocol::kHttp2 || type == TYPE_HTTPS);
 
   if (!is_using_ssl_)
     return;
@@ -492,6 +499,10 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
       intermediate->SetCertificatePolicies(cert_config_.policy_oids);
   }
 
+  if (!cert_config_.dns_names.empty() || !cert_config_.ip_addresses.empty()) {
+    leaf->SetSubjectAltNames(cert_config_.dns_names, cert_config_.ip_addresses);
+  }
+
   const std::string leaf_serial_text =
       base::NumberToString(leaf->GetSerialNumber());
   const std::string intermediate_serial_text =
@@ -578,6 +589,50 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
     if (!GenerateCertAndKey())
       return false;
   }
+
+  if (protocol_ == HttpConnection::Protocol::kHttp2) {
+    ssl_config_.alpn_protos = {NextProto::kProtoHTTP2};
+    if (!alps_accept_ch_.empty()) {
+      base::StringPairs origin_accept_ch;
+      size_t frame_size = spdy::kFrameHeaderSize;
+      // Figure out size and generate origins
+      for (const auto& pair : alps_accept_ch_) {
+        const std::string& hostname = pair.first;
+        std::string accept_ch = pair.second;
+
+        GURL url =
+            hostname.empty() ? GetURL("/") : GetURL(std::string(hostname), "/");
+        std::string origin = url::Origin::Create(url).Serialize();
+
+        frame_size += accept_ch.size() + origin.size() +
+                      (sizeof(uint16_t) * 2);  // = Origin-Len + Value-Len
+
+        origin_accept_ch.push_back({std::move(origin), std::move(accept_ch)});
+      }
+
+      spdy::SpdyFrameBuilder builder(frame_size);
+      builder.BeginNewFrame(spdy::SpdyFrameType::ACCEPT_CH, 0, 0);
+      for (const auto& pair : origin_accept_ch) {
+        const std::string& origin = pair.first;
+        const std::string& accept_ch = pair.second;
+
+        builder.WriteUInt16(origin.size());
+        builder.WriteBytes(origin.data(), origin.size());
+
+        builder.WriteUInt16(accept_ch.size());
+        builder.WriteBytes(accept_ch.data(), accept_ch.size());
+      }
+
+      spdy::SpdySerializedFrame serialized_frame = builder.take();
+      DCHECK_EQ(frame_size, serialized_frame.size());
+
+      ssl_config_.application_settings[NextProto::kProtoHTTP2] =
+          std::vector<uint8_t>(
+              serialized_frame.data(),
+              serialized_frame.data() + serialized_frame.size());
+    }
+  }
+
   context_ =
       CreateSSLServerContext(x509_cert_.get(), private_key_.get(), ssl_config_);
   return true;
@@ -635,17 +690,11 @@ void EmbeddedTestServer::ShutdownOnIOThread() {
   connections_.clear();
 }
 
-void EmbeddedTestServer::HandleRequest(HttpConnection* connection,
-                                       std::unique_ptr<HttpRequest> request) {
+void EmbeddedTestServer::HandleRequest(
+    base::WeakPtr<HttpResponseDelegate> delegate,
+    std::unique_ptr<HttpRequest> request) {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   request->base_url = base_url_;
-
-  SSLInfo ssl_info;
-  if (connection->socket_->GetSSLInfo(&ssl_info)) {
-    request->ssl_info = ssl_info;
-    if (ssl_info.early_data_received)
-      request->headers["Early-Data"] = "1";
-  }
 
   for (const auto& monitor : request_monitors_)
     monitor.Run(*request);
@@ -675,12 +724,8 @@ void EmbeddedTestServer::HandleRequest(HttpConnection* connection,
   }
 
   HttpResponse* const response_ptr = response.get();
-  response_ptr->SendResponse(
-      base::BindRepeating(&HttpConnection::SendResponseBytes,
-                          connection->GetWeakPtr()),
-      base::BindOnce(&EmbeddedTestServer::OnResponseCompleted,
-                     weak_factory_.GetWeakPtr(), connection,
-                     std::move(response)));
+  delegate->AddResponse(std::move(response));
+  response_ptr->SendResponse(delegate);
 }
 
 GURL EmbeddedTestServer::GetURL(const std::string& relative_url) const {
@@ -690,9 +735,8 @@ GURL EmbeddedTestServer::GetURL(const std::string& relative_url) const {
   return base_url_.Resolve(relative_url);
 }
 
-GURL EmbeddedTestServer::GetURL(
-    const std::string& hostname,
-    const std::string& relative_url) const {
+GURL EmbeddedTestServer::GetURL(const std::string& hostname,
+                                const std::string& relative_url) const {
   GURL local_url = GetURL(relative_url);
   GURL::Replacements replace_host;
   replace_host.SetHostStr(hostname);
@@ -870,7 +914,7 @@ void EmbeddedTestServer::RegisterDefaultHandler(
   default_request_handlers_.push_back(callback);
 }
 
-std::unique_ptr<StreamSocket> EmbeddedTestServer::DoSSLUpgrade(
+std::unique_ptr<SSLServerSocket> EmbeddedTestServer::DoSSLUpgrade(
     std::unique_ptr<StreamSocket> connection) {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
 
@@ -878,10 +922,14 @@ std::unique_ptr<StreamSocket> EmbeddedTestServer::DoSSLUpgrade(
 }
 
 void EmbeddedTestServer::DoAcceptLoop() {
-  while (listen_socket_->Accept(
-             &accepted_socket_,
-             base::BindOnce(&EmbeddedTestServer::OnAcceptCompleted,
-                            base::Unretained(this))) == OK) {
+  while (true) {
+    int rv = listen_socket_->Accept(
+        &accepted_socket_,
+        base::BindOnce(&EmbeddedTestServer::OnAcceptCompleted,
+                       base::Unretained(this)));
+    if (rv != OK)
+      return;
+
     HandleAcceptResult(std::move(accepted_socket_));
   }
 }
@@ -896,6 +944,11 @@ void EmbeddedTestServer::FlushAllSocketsAndConnections() {
   connections_.clear();
 }
 
+void EmbeddedTestServer::SetAlpsAcceptCH(const std::string& hostname,
+                                         const std::string& accept_ch) {
+  alps_accept_ch_[hostname] = accept_ch;
+}
+
 void EmbeddedTestServer::OnAcceptCompleted(int rv) {
   DCHECK_NE(ERR_IO_PENDING, rv);
   HandleAcceptResult(std::move(accepted_socket_));
@@ -903,120 +956,69 @@ void EmbeddedTestServer::OnAcceptCompleted(int rv) {
 }
 
 void EmbeddedTestServer::OnHandshakeDone(HttpConnection* connection, int rv) {
-  if (connection->socket_->IsConnected())
-    ReadData(connection);
-  else
-    DidClose(connection);
+  if (connection->Socket()->IsConnected()) {
+    connection->OnSocketReady();
+  } else {
+    RemoveConnection(connection);
+  }
 }
 
 void EmbeddedTestServer::HandleAcceptResult(
-    std::unique_ptr<StreamSocket> socket) {
+    std::unique_ptr<StreamSocket> socket_ptr) {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   if (connection_listener_)
-    socket = connection_listener_->AcceptedSocket(std::move(socket));
+    socket_ptr = connection_listener_->AcceptedSocket(std::move(socket_ptr));
 
-  if (is_using_ssl_)
-    socket = DoSSLUpgrade(std::move(socket));
-
-  std::unique_ptr<HttpConnection> http_connection_ptr =
-      std::make_unique<HttpConnection>(
-          std::move(socket),
-          base::BindRepeating(&EmbeddedTestServer::HandleRequest,
-                              base::Unretained(this)));
-  HttpConnection* http_connection = http_connection_ptr.get();
-  connections_[http_connection->socket_.get()] = std::move(http_connection_ptr);
-
-  if (is_using_ssl_) {
-    SSLServerSocket* ssl_socket =
-        static_cast<SSLServerSocket*>(http_connection->socket_.get());
-    int rv = ssl_socket->Handshake(
-        base::BindOnce(&EmbeddedTestServer::OnHandshakeDone,
-                       base::Unretained(this), http_connection));
-    if (rv != ERR_IO_PENDING)
-      OnHandshakeDone(http_connection, rv);
-  } else {
-    ReadData(http_connection);
-  }
-}
-
-void EmbeddedTestServer::ReadData(HttpConnection* connection) {
-  while (true) {
-    int rv = connection->ReadData(
-        base::BindOnce(&EmbeddedTestServer::OnReadCompleted,
-                       base::Unretained(this), connection));
-    if (rv == ERR_IO_PENDING)
-      return;
-    if (!HandleReadResult(connection, rv))
-      return;
-  }
-}
-
-void EmbeddedTestServer::OnReadCompleted(HttpConnection* connection, int rv) {
-  DCHECK_NE(ERR_IO_PENDING, rv);
-  if (HandleReadResult(connection, rv))
-    ReadData(connection);
-}
-
-bool EmbeddedTestServer::HandleReadResult(HttpConnection* connection, int rv) {
-  DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
-  if (connection_listener_)
-    connection_listener_->ReadFromSocket(*connection->socket_, rv);
-  if (rv <= 0) {
-    DidClose(connection);
-    return false;
+  if (!is_using_ssl_) {
+    AddConnection(std::move(socket_ptr))->OnSocketReady();
+    return;
   }
 
-  // Once a single complete request has been received, there is no further need
-  // for the connection and it may be destroyed once the response has been sent.
-  if (connection->ConsumeData(rv))
-    return false;
+  socket_ptr = DoSSLUpgrade(std::move(socket_ptr));
 
-  return true;
+  StreamSocket* socket = socket_ptr.get();
+  HttpConnection* connection = AddConnection(std::move(socket_ptr));
+
+  int rv = static_cast<SSLServerSocket*>(socket)->Handshake(
+      base::BindOnce(&EmbeddedTestServer::OnHandshakeDone,
+                     base::Unretained(this), connection));
+  if (rv != ERR_IO_PENDING)
+    OnHandshakeDone(connection, rv);
 }
 
-void EmbeddedTestServer::OnResponseCompleted(
+HttpConnection* EmbeddedTestServer::AddConnection(
+    std::unique_ptr<StreamSocket> socket_ptr) {
+  StreamSocket* socket = socket_ptr.get();
+  std::unique_ptr<HttpConnection> connection_ptr = HttpConnection::Create(
+      std::move(socket_ptr), connection_listener_, this, protocol_);
+  HttpConnection* connection = connection_ptr.get();
+  connections_[socket] = std::move(connection_ptr);
+
+  return connection;
+}
+
+void EmbeddedTestServer::RemoveConnection(
     HttpConnection* connection,
-    std::unique_ptr<HttpResponse> response) {
+    EmbeddedTestServerConnectionListener* listener) {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   DCHECK(connection);
-  DCHECK_EQ(1u, connections_.count(connection->socket_.get()));
+  DCHECK_EQ(1u, connections_.count(connection->Socket()));
 
-  std::unique_ptr<StreamSocket> socket = std::move(connection->socket_);
-  connections_.erase(socket.get());
+  StreamSocket* raw_socket = connection->Socket();
+  std::unique_ptr<StreamSocket> socket = connection->TakeSocket();
+  connections_.erase(raw_socket);
 
-  // |connection| is now invalid, don't use it again.
-
-  // Only allow the connection listener to take the socket if it is still open.
-  if (socket->IsConnected() && connection_listener_) {
-    connection_listener_->OnResponseCompletedSuccessfully(std::move(socket));
-  }
-}
-
-void EmbeddedTestServer::DidClose(HttpConnection* connection) {
-  DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
-  DCHECK(connection);
-  DCHECK_EQ(1u, connections_.count(connection->socket_.get()));
-
-  connections_.erase(connection->socket_.get());
-}
-
-HttpConnection* EmbeddedTestServer::FindConnection(StreamSocket* socket) {
-  DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
-
-  auto it = connections_.find(socket);
-  if (it == connections_.end()) {
-    return nullptr;
-  }
-  return it->second.get();
+  if (listener && socket && socket->IsConnected())
+    listener->OnResponseCompletedSuccessfully(std::move(socket));
 }
 
 bool EmbeddedTestServer::PostTaskToIOThreadAndWait(base::OnceClosure closure) {
   // Note that PostTaskAndReply below requires
   // base::ThreadTaskRunnerHandle::Get() to return a task runner for posting
   // the reply task. However, in order to make EmbeddedTestServer universally
-  // usable, it needs to cope with the situation where it's running on a thread
-  // on which a task executor is not (yet) available or as has been destroyed
-  // already.
+  // usable, it needs to cope with the situation where it's running on a
+  // thread on which a task executor is not (yet) available or has been
+  // destroyed already.
   //
   // To handle this situation, create temporary task executor to support the
   // PostTaskAndReply operation if the current thread has no task executor.
@@ -1041,9 +1043,9 @@ bool EmbeddedTestServer::PostTaskToIOThreadAndWaitWithResult(
   // Note that PostTaskAndReply below requires
   // base::ThreadTaskRunnerHandle::Get() to return a task runner for posting
   // the reply task. However, in order to make EmbeddedTestServer universally
-  // usable, it needs to cope with the situation where it's running on a thread
-  // on which a task executor is not (yet) available or as has been destroyed
-  // already.
+  // usable, it needs to cope with the situation where it's running on a
+  // thread on which a task executor is not (yet) available or has been
+  // destroyed already.
   //
   // To handle this situation, create temporary task executor to support the
   // PostTaskAndReply operation if the current thread has no task executor.

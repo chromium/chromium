@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "content/public/common/page_zoom.h"
 
 namespace content {
@@ -22,6 +21,9 @@ namespace zoom {
 // to create custom sets of zoom levels.
 class PageZoom {
  public:
+  PageZoom(const PageZoom&) = delete;
+  PageZoom& operator=(const PageZoom&) = delete;
+
   // Return a sorted vector of zoom factors. The vector will consist of preset
   // values along with a custom value (if the custom value is not already
   // represented.)
@@ -38,7 +40,6 @@ class PageZoom {
  private:
   // We don't expect (currently) to create instances of this class.
   PageZoom() {}
-  DISALLOW_COPY_AND_ASSIGN(PageZoom);
 };
 
 }  // namespace zoom

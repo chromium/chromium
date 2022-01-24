@@ -54,7 +54,7 @@ class ASH_EXPORT PrivacyScreenToastController
   std::u16string GetAccessibleNameForBubble() override;
 
   // PrivacyScreenController::Observer:
-  void OnPrivacyScreenSettingChanged(bool enabled) override;
+  void OnPrivacyScreenSettingChanged(bool enabled, bool notify_ui) override;
 
   UnifiedSystemTray* const tray_;
   TrayBubbleView* bubble_view_ = nullptr;

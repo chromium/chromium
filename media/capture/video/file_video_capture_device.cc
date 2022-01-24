@@ -13,11 +13,10 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/image_capture_types.h"
@@ -158,6 +157,9 @@ class Y4mFileParser final : public VideoFileParser {
  public:
   explicit Y4mFileParser(const base::FilePath& file_path);
 
+  Y4mFileParser(const Y4mFileParser&) = delete;
+  Y4mFileParser& operator=(const Y4mFileParser&) = delete;
+
   // VideoFileParser implementation, class methods.
   ~Y4mFileParser() override;
   bool Initialize(VideoCaptureFormat* capture_format) override;
@@ -166,13 +168,14 @@ class Y4mFileParser final : public VideoFileParser {
  private:
   std::unique_ptr<base::File> file_;
   std::unique_ptr<uint8_t[]> video_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(Y4mFileParser);
 };
 
 class MjpegFileParser final : public VideoFileParser {
  public:
   explicit MjpegFileParser(const base::FilePath& file_path);
+
+  MjpegFileParser(const MjpegFileParser&) = delete;
+  MjpegFileParser& operator=(const MjpegFileParser&) = delete;
 
   // VideoFileParser implementation, class methods.
   ~MjpegFileParser() override;
@@ -181,8 +184,6 @@ class MjpegFileParser final : public VideoFileParser {
 
  private:
   std::unique_ptr<base::MemoryMappedFile> mapped_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(MjpegFileParser);
 };
 
 VideoFileParser::VideoFileParser(const base::FilePath& file_path)
@@ -327,8 +328,11 @@ std::unique_ptr<VideoFileParser> FileVideoCaptureDevice::GetVideoFileParser(
 
 std::unique_ptr<uint8_t[]> FileVideoCaptureDevice::CropPTZRegion(
     const uint8_t* frame,
-    size_t frame_buffer_size) {
+    size_t frame_buffer_size,
+    VideoPixelFormat* final_pixel_format) {
   CHECK(frame);
+
+  *final_pixel_format = capture_format_.pixel_format;
 
   const gfx::Size& frame_size = capture_format_.frame_size;
   uint32_t fourcc;
@@ -368,7 +372,8 @@ std::unique_ptr<uint8_t[]> FileVideoCaptureDevice::CropPTZRegion(
       frame = jpeg_to_i420_buffer_.get();
       frame_buffer_size =
           VideoFrame::AllocationSize(PIXEL_FORMAT_I420, frame_size);
-      ABSL_FALLTHROUGH_INTENDED;
+      *final_pixel_format = PIXEL_FORMAT_I420;
+      FALLTHROUGH;
     case PIXEL_FORMAT_I420:
       fourcc = libyuv::FOURCC_I420;
       break;
@@ -641,7 +646,12 @@ void FileVideoCaptureDevice::OnCaptureTask() {
   const uint8_t* frame_ptr = file_parser_->GetNextFrame(&frame_size);
   CHECK(frame_ptr);
 
-  auto ptz_frame = CropPTZRegion(frame_ptr, frame_size);
+  VideoPixelFormat ptz_pixel_format;
+  auto ptz_frame = CropPTZRegion(frame_ptr, frame_size, &ptz_pixel_format);
+
+  VideoCaptureFormat ptz_format = capture_format_;
+  ptz_format.pixel_format = ptz_pixel_format;
+
   CHECK(ptz_frame);
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
@@ -675,19 +685,19 @@ void FileVideoCaptureDevice::OnCaptureTask() {
         src_v_plane, buffer_size.width() / 2, scoped_mapping.y_plane(),
         scoped_mapping.y_stride(), scoped_mapping.uv_plane(),
         scoped_mapping.uv_stride(), buffer_size.width(), buffer_size.height());
-    VideoCaptureFormat modified_format = capture_format_;
     // When GpuMemoryBuffer is used, the frame data is opaque to the CPU for
     // most of the time.  Currently the only supported underlying format is
     // NV12.
-    modified_format.pixel_format = PIXEL_FORMAT_NV12;
-    client_->OnIncomingCapturedBuffer(std::move(capture_buffer),
-                                      modified_format, current_time,
+    VideoCaptureFormat gmb_format = ptz_format;
+    gmb_format.pixel_format = PIXEL_FORMAT_NV12;
+    client_->OnIncomingCapturedBuffer(std::move(capture_buffer), gmb_format,
+                                      current_time,
                                       current_time - first_ref_time_);
   } else {
     // Leave the color space unset for compatibility purposes but this
     // information should be retrieved from the container when possible.
     client_->OnIncomingCapturedData(
-        ptz_frame.get(), frame_size, capture_format_, gfx::ColorSpace(),
+        ptz_frame.get(), frame_size, ptz_format, gfx::ColorSpace(),
         0 /* clockwise_rotation */, false /* flip_y */, current_time,
         current_time - first_ref_time_);
   }
@@ -698,7 +708,7 @@ void FileVideoCaptureDevice::OnCaptureTask() {
     take_photo_callbacks_.pop();
 
     mojom::BlobPtr blob =
-        RotateAndBlobify(ptz_frame.get(), frame_size, capture_format_, 0);
+        RotateAndBlobify(ptz_frame.get(), frame_size, ptz_format, 0);
     if (!blob)
       continue;
 
@@ -707,7 +717,7 @@ void FileVideoCaptureDevice::OnCaptureTask() {
 
   // Reschedule next CaptureTask.
   const base::TimeDelta frame_interval =
-      base::TimeDelta::FromMicroseconds(1E6 / capture_format_.frame_rate);
+      base::Microseconds(1E6 / capture_format_.frame_rate);
   if (next_frame_time_.is_null()) {
     next_frame_time_ = current_time + frame_interval;
   } else {

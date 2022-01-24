@@ -28,6 +28,9 @@ class MarkRequestCompleteTask : public DatabaseTask {
       scoped_refptr<BackgroundFetchRequestInfo> request_info,
       MarkRequestCompleteCallback callback);
 
+  MarkRequestCompleteTask(const MarkRequestCompleteTask&) = delete;
+  MarkRequestCompleteTask& operator=(const MarkRequestCompleteTask&) = delete;
+
   ~MarkRequestCompleteTask() override;
 
   // DatabaseTask implementation:
@@ -81,8 +84,6 @@ class MarkRequestCompleteTask : public DatabaseTask {
 
   base::WeakPtrFactory<MarkRequestCompleteTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(MarkRequestCompleteTask);
 };
 
 }  // namespace background_fetch

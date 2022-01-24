@@ -21,6 +21,9 @@ class PagePlaceholderTabHelper
     : public web::WebStateUserData<PagePlaceholderTabHelper>,
       public web::WebStateObserver {
  public:
+  PagePlaceholderTabHelper(const PagePlaceholderTabHelper&) = delete;
+  PagePlaceholderTabHelper& operator=(const PagePlaceholderTabHelper&) = delete;
+
   ~PagePlaceholderTabHelper() override;
 
   // Displays placeholder between DidStartNavigation and PageLoaded
@@ -80,8 +83,6 @@ class PagePlaceholderTabHelper
   base::WeakPtrFactory<PagePlaceholderTabHelper> weak_factory_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PagePlaceholderTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_PAGE_PLACEHOLDER_TAB_HELPER_H_

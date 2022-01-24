@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/sender/size_adaptable_video_encoder_base.h"
@@ -37,6 +36,9 @@ class ExternalVideoEncoder final : public VideoEncoder {
       FrameId first_frame_id,
       StatusChangeCallback status_change_cb,
       const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
+
+  ExternalVideoEncoder(const ExternalVideoEncoder&) = delete;
+  ExternalVideoEncoder& operator=(const ExternalVideoEncoder&) = delete;
 
   ~ExternalVideoEncoder() final;
 
@@ -77,8 +79,6 @@ class ExternalVideoEncoder final : public VideoEncoder {
   // Provides a weak pointer for the OnCreateVideoEncoderAccelerator() callback.
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<ExternalVideoEncoder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalVideoEncoder);
 };
 
 // An implementation of SizeAdaptableVideoEncoderBase to proxy for
@@ -92,6 +92,11 @@ class SizeAdaptableExternalVideoEncoder final
       StatusChangeCallback status_change_cb,
       const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
 
+  SizeAdaptableExternalVideoEncoder(const SizeAdaptableExternalVideoEncoder&) =
+      delete;
+  SizeAdaptableExternalVideoEncoder& operator=(
+      const SizeAdaptableExternalVideoEncoder&) = delete;
+
   ~SizeAdaptableExternalVideoEncoder() final;
 
  protected:
@@ -100,8 +105,6 @@ class SizeAdaptableExternalVideoEncoder final
  private:
   // Special callbacks needed by media::cast::ExternalVideoEncoder.
   const CreateVideoEncodeAcceleratorCallback create_vea_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(SizeAdaptableExternalVideoEncoder);
 };
 
 // A utility class for examining the sequence of frames sent to an external
@@ -117,6 +120,10 @@ class QuantizerEstimator {
   };
 
   QuantizerEstimator();
+
+  QuantizerEstimator(const QuantizerEstimator&) = delete;
+  QuantizerEstimator& operator=(const QuantizerEstimator&) = delete;
+
   ~QuantizerEstimator();
 
   // Discard any state related to the processing of prior frames.
@@ -148,8 +155,6 @@ class QuantizerEstimator {
   // turn is used to compute the entropy and quantizer.
   std::unique_ptr<uint8_t[]> last_frame_pixel_buffer_;
   gfx::Size last_frame_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuantizerEstimator);
 };
 
 }  // namespace cast

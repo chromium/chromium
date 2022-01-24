@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -58,6 +57,10 @@ bool User::TypeHasGaiaAccount(UserType user_type) {
 class RegularUser : public User {
  public:
   RegularUser(const AccountId& account_id, const UserType user_type);
+
+  RegularUser(const RegularUser&) = delete;
+  RegularUser& operator=(const RegularUser&) = delete;
+
   ~RegularUser() override;
 
   // Overridden from User:
@@ -67,8 +70,6 @@ class RegularUser : public User {
 
  private:
   bool is_child_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegularUser);
 };
 
 class ActiveDirectoryUser : public RegularUser {
@@ -83,17 +84,22 @@ class ActiveDirectoryUser : public RegularUser {
 class GuestUser : public User {
  public:
   explicit GuestUser(const AccountId& guest_account_id);
+
+  GuestUser(const GuestUser&) = delete;
+  GuestUser& operator=(const GuestUser&) = delete;
+
   ~GuestUser() override;
 
   // Overridden from User:
   UserType GetType() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GuestUser);
 };
 
 class DeviceLocalAccountUserBase : public User {
  public:
+  DeviceLocalAccountUserBase(const DeviceLocalAccountUserBase&) = delete;
+  DeviceLocalAccountUserBase& operator=(const DeviceLocalAccountUserBase&) =
+      delete;
+
   // User:
   bool IsAffiliated() const override;
 
@@ -103,57 +109,58 @@ class DeviceLocalAccountUserBase : public User {
   // User:
   void SetAffiliation(bool) override;
   bool IsDeviceLocalAccount() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountUserBase);
 };
 
 class KioskAppUser : public DeviceLocalAccountUserBase {
  public:
   explicit KioskAppUser(const AccountId& kiosk_app_account_id);
+
+  KioskAppUser(const KioskAppUser&) = delete;
+  KioskAppUser& operator=(const KioskAppUser&) = delete;
+
   ~KioskAppUser() override;
 
   // Overridden from User:
   UserType GetType() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KioskAppUser);
 };
 
 class ArcKioskAppUser : public DeviceLocalAccountUserBase {
  public:
   explicit ArcKioskAppUser(const AccountId& arc_kiosk_account_id);
+
+  ArcKioskAppUser(const ArcKioskAppUser&) = delete;
+  ArcKioskAppUser& operator=(const ArcKioskAppUser&) = delete;
+
   ~ArcKioskAppUser() override;
 
   // Overridden from User:
   UserType GetType() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskAppUser);
 };
 
 class WebKioskAppUser : public DeviceLocalAccountUserBase {
  public:
   explicit WebKioskAppUser(const AccountId& web_kiosk_account_id);
+
+  WebKioskAppUser(const WebKioskAppUser&) = delete;
+  WebKioskAppUser& operator=(const WebKioskAppUser&) = delete;
+
   ~WebKioskAppUser() override;
 
   // Overridden from User:
   UserType GetType() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebKioskAppUser);
 };
 
 class PublicAccountUser : public DeviceLocalAccountUserBase {
  public:
   explicit PublicAccountUser(const AccountId& account_id);
+
+  PublicAccountUser(const PublicAccountUser&) = delete;
+  PublicAccountUser& operator=(const PublicAccountUser&) = delete;
+
   ~PublicAccountUser() override;
 
   // Overridden from User:
   UserType GetType() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PublicAccountUser);
 };
 
 User::User(const AccountId& account_id)

@@ -289,7 +289,13 @@ TEST_F(SamplingHeapProfilerTest, StartStop) {
   EXPECT_EQ(0, GetRunningSessionsCount());
 }
 
-TEST_F(SamplingHeapProfilerTest, ConcurrentStartStop) {
+// TODO(crbug.com/1116543): Test is crashing on Mac.
+#if defined(OS_MAC)
+#define MAYBE_ConcurrentStartStop DISABLED_ConcurrentStartStop
+#else
+#define MAYBE_ConcurrentStartStop ConcurrentStartStop
+#endif
+TEST_F(SamplingHeapProfilerTest, MAYBE_ConcurrentStartStop) {
   auto* profiler = SamplingHeapProfiler::Get();
   WaitableEvent event;
   StartStopThread thread(&event);

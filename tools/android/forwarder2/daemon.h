@@ -50,6 +50,9 @@ class Daemon {
          ServerDelegate* server_delegate,
          GetExitNotifierFDCallback get_exit_fd_callback);
 
+  Daemon(const Daemon&) = delete;
+  Daemon& operator=(const Daemon&) = delete;
+
   ~Daemon();
 
   // Returns whether the daemon was successfully spawned. Note that this does
@@ -66,8 +69,6 @@ class Daemon {
   ClientDelegate* const client_delegate_;
   ServerDelegate* const server_delegate_;
   const GetExitNotifierFDCallback get_exit_fd_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Daemon);
 };
 
 }  // namespace forwarder2

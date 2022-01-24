@@ -5,7 +5,7 @@
 #include "content/public/browser/device_service.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "build/build_config.h"
@@ -36,6 +36,10 @@ namespace {
 class DeviceServiceURLLoaderFactory : public network::SharedURLLoaderFactory {
  public:
   DeviceServiceURLLoaderFactory() = default;
+
+  DeviceServiceURLLoaderFactory(const DeviceServiceURLLoaderFactory&) = delete;
+  DeviceServiceURLLoaderFactory& operator=(
+      const DeviceServiceURLLoaderFactory&) = delete;
 
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
@@ -71,8 +75,6 @@ class DeviceServiceURLLoaderFactory : public network::SharedURLLoaderFactory {
  private:
   friend class base::RefCounted<DeviceServiceURLLoaderFactory>;
   ~DeviceServiceURLLoaderFactory() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceServiceURLLoaderFactory);
 };
 
 void BindDeviceServiceReceiver(

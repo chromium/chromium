@@ -43,7 +43,6 @@
 namespace feed {
 namespace {
 
-using base::TimeDelta;
 using testing::ElementsAre;
 using QueryRequestResult = FeedNetwork::QueryRequestResult;
 
@@ -356,14 +355,13 @@ TEST_F(FeedNetworkTest, RequestTimeout) {
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
                                    GetTestFeedRequest(), gaia(),
                                    receiver.Bind());
-  task_environment_.FastForwardBy(TimeDelta::FromSeconds(30));
+  task_environment_.FastForwardBy(base::Seconds(30));
 
   ASSERT_TRUE(receiver.GetResult());
   const QueryRequestResult& result = *receiver.GetResult();
   EXPECT_EQ(net::ERR_TIMED_OUT, result.response_info.status_code);
   histogram_tester.ExpectTimeBucketCount(
-      "ContentSuggestions.Feed.Network.Duration", TimeDelta::FromSeconds(30),
-      1);
+      "ContentSuggestions.Feed.Network.Duration", base::Seconds(30), 1);
 }
 
 TEST_F(FeedNetworkTest, ParallelRequests) {
@@ -456,7 +454,7 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForNoSignedInUser) {
 TEST_F(FeedNetworkTest, TestDurationHistogram) {
   base::HistogramTester histogram_tester;
   CallbackReceiver<QueryRequestResult> receiver;
-  const TimeDelta kDuration = TimeDelta::FromMilliseconds(12345);
+  const base::TimeDelta kDuration = base::Milliseconds(12345);
 
   feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
                                    GetTestFeedRequest(), gaia(),

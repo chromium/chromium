@@ -31,6 +31,7 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -72,9 +73,9 @@ class DOMStorageBrowserTest : public ContentBrowserTest {
     return usage;
   }
 
-  void DeletePhysicalOrigin(url::Origin origin) {
+  void DeletePhysicalStorageKey(blink::StorageKey storage_key) {
     base::RunLoop loop;
-    partition()->GetDOMStorageContext()->DeleteLocalStorage(origin,
+    partition()->GetDOMStorageContext()->DeleteLocalStorage(storage_key,
                                                             loop.QuitClosure());
     loop.Run();
   }
@@ -124,12 +125,12 @@ IN_PROC_BROWSER_TEST_F(DOMStorageBrowserTest, MAYBE_DataPersists) {
   SimpleTest(GetTestUrl("dom_storage", "verify_data.html"), kNotIncognito);
 }
 
-IN_PROC_BROWSER_TEST_F(DOMStorageBrowserTest, DeletePhysicalOrigin) {
+IN_PROC_BROWSER_TEST_F(DOMStorageBrowserTest, DeletePhysicalStorageKey) {
   EXPECT_EQ(0U, GetUsage().size());
   SimpleTest(GetTestUrl("dom_storage", "store_data.html"), kNotIncognito);
   std::vector<StorageUsageInfo> usage = GetUsage();
   ASSERT_EQ(1U, usage.size());
-  DeletePhysicalOrigin(usage[0].origin);
+  DeletePhysicalStorageKey(blink::StorageKey(usage[0].origin));
   EXPECT_EQ(0U, GetUsage().size());
 }
 

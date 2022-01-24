@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/ash/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/dlp/dbus-constants.h"

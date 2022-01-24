@@ -17,6 +17,7 @@
 #include "third_party/metrics_proto/user_demographics.pb.h"
 #include "url/gurl.h"
 
+@class FakeChromeIdentity;
 @class ElementSelector;
 @protocol GREYMatcher;
 
@@ -139,8 +140,18 @@ UIWindow* GetAnyKeyWindow();
 // Waits for the matcher to return an element.
 - (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher;
 
+// Waits for the matcher to return an element. If the condition is not met
+// within the given |timeout| a GREYAssert is induced.
+- (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher
+                                    timeout:(NSTimeInterval)timeout;
+
 // Waits for the matcher to not return any elements.
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher;
+
+// Waits for the matcher to not return any elements. If the condition is not met
+// within the given |timeout| a GREYAssert is induced.
+- (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher
+                                       timeout:(NSTimeInterval)timeout;
 
 // Waits for there to be |count| number of non-incognito tabs within a timeout,
 // or a GREYAssert is induced.
@@ -166,13 +177,8 @@ UIWindow* GetAnyKeyWindow();
 // Clears fake sync server data if the server is running.
 - (void)clearSyncServerData;
 
-// Revokes the sync consent for the primary account. The user will continue
-// to be signed-in to Chrome.
-- (void)revokeSyncConsent;
-
-// Clears the first sync setup preference. The user will be effectively in
-// the signed-in state with no syncing consent.
-- (void)clearSyncFirstSetupComplete;
+// Signs in with |identity| without sync consent.
+- (void)signInWithoutSyncWithIdentity:(FakeChromeIdentity*)identity;
 
 // Starts the sync server. The server should not be running when calling this.
 - (void)startSync;
@@ -336,7 +342,7 @@ UIWindow* GetAnyKeyWindow();
 - (NSUInteger)evictedMainTabCount WARN_UNUSED_RESULT;
 
 // Evicts the tabs associated with the non-current browser mode.
-- (void)evictOtherTabModelTabs;
+- (void)evictOtherBrowserTabs;
 
 // Sets the normal tabs as 'cold start' tabs and raises an EarlGrey exception if
 // operation not succeeded.
@@ -385,6 +391,11 @@ UIWindow* GetAnyKeyWindow();
 // Opens a new window.
 - (void)openNewWindow;
 
+// After opening a new window (through openNewWindow or otherwise) a call
+// to this should be made to make sure the new window is ready to interact
+// or to be closed. Closing while setting up leads to crashes.
+- (void)waitUntilReadyWindowWithNumber:(int)windowNumber;
+
 // Opens a new tab in window with given number and waits for the new tab
 // animation to complete within a timeout, or a GREYAssert is induced.
 - (void)openNewTabInWindowWithNumber:(int)windowNumber;
@@ -421,6 +432,9 @@ UIWindow* GetAnyKeyWindow();
 
 // Returns YES if the window with given number's current WebState is loading.
 - (BOOL)isLoadingInWindowWithNumber:(int)windowNumber WARN_UNUSED_RESULT;
+
+// Waits for the current web state for window to be visible.
+- (void)waitForWebStateVisible;
 
 // Waits for the current web state for window with given number, to contain
 // |UTF8Text|. If the condition is not met within a timeout a GREYAssert is
@@ -631,8 +645,11 @@ UIWindow* GetAnyKeyWindow();
 // can, open multiple windows.
 - (BOOL)areMultipleWindowsSupported;
 
-// Returns whether the Close All Tabs Confirmation feature is enabled.
-- (BOOL)isCloseAllTabsConfirmationEnabled;
+// Returns whether the ContextMenuActionsRefresh feature is enabled.
+- (BOOL)isContextMenuActionsRefreshEnabled;
+
+// Returns whether the TabGridBulkActions feature is enabled.
+- (BOOL)isTabGridBulkActionsEnabled;
 
 #pragma mark - Popup Blocking
 
@@ -664,13 +681,20 @@ UIWindow* GetAnyKeyWindow();
 - (int)localStateIntegerPref:(const std::string&)prefName;
 - (std::string)localStateStringPref:(const std::string&)prefName;
 
+// Sets the integer values for the local state pref with |prefName|. |value|
+// can be either a casted enum or any other numerical value. Local State
+// contains the preferences that are shared between all browser states.
+- (void)setIntegerValue:(int)value
+      forLocalStatePref:(const std::string&)prefName;
+
 // Gets the value of a user pref in the original browser state.
 - (bool)userBooleanPref:(const std::string&)prefName;
 - (int)userIntegerPref:(const std::string&)prefName;
 - (std::string)userStringPref:(const std::string&)prefName;
 
-// Sets the value of a boolean user pref in the original browser state.
+// Sets the value of a user pref in the original browser state.
 - (void)setBoolValue:(BOOL)value forUserPref:(const std::string&)UTF8PrefName;
+- (void)setIntegerValue:(int)value forUserPref:(const std::string&)UTF8PrefName;
 
 // Resets the BrowsingDataPrefs, which defines if its selected or not when
 // clearing Browsing data.

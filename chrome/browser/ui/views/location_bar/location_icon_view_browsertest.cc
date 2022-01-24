@@ -16,6 +16,11 @@
 class LocationIconViewBrowserTest : public InProcessBrowserTest {
  public:
   LocationIconViewBrowserTest() {}
+
+  LocationIconViewBrowserTest(const LocationIconViewBrowserTest&) = delete;
+  LocationIconViewBrowserTest& operator=(const LocationIconViewBrowserTest&) =
+      delete;
+
   ~LocationIconViewBrowserTest() override {}
 
  protected:
@@ -36,8 +41,6 @@ class LocationIconViewBrowserTest : public InProcessBrowserTest {
   LocationBarView* location_bar_;
 
   std::unique_ptr<LocationIconView> icon_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocationIconViewBrowserTest);
 };
 
 // Check to see if the InkDropMode is off when the omnibox is editing.

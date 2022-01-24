@@ -40,7 +40,7 @@ class PLATFORM_EXPORT MediaMultiChannelResampler {
   // frames of the AudioBus to be filled by |read_cb|.
   MediaMultiChannelResampler(int channels,
                              double io_sample_rate_ratio,
-                             size_t request_frames,
+                             uint32_t request_frames,
                              ReadCB read_cb);
 
   MediaMultiChannelResampler(const MediaMultiChannelResampler&) = delete;

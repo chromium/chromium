@@ -418,10 +418,8 @@ void UserActivityManager::OnReceiveSwitchStates(
 void UserActivityManager::OnReceiveInactivityDelays(
     absl::optional<power_manager::PowerManagementPolicy::Delays> delays) {
   if (delays.has_value()) {
-    screen_dim_delay_ =
-        base::TimeDelta::FromMilliseconds(delays->screen_dim_ms());
-    screen_off_delay_ =
-        base::TimeDelta::FromMilliseconds(delays->screen_off_ms());
+    screen_dim_delay_ = base::Milliseconds(delays->screen_dim_ms());
+    screen_off_delay_ = base::Milliseconds(delays->screen_off_ms());
   }
 }
 

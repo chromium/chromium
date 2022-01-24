@@ -41,6 +41,10 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
   // origin is secure.
   typedef std::pair<std::string, bool> CookieOrigin;
 
+  // Port number to use for cookies whose source port is unknown at the time of
+  // database migration to V13. The value -1 comes from url::PORT_UNSPECIFIED.
+  static const int kDefaultUnknownPort = -1;
+
   // All blocking database accesses will be performed on
   // |background_task_runner|, while |client_task_runner| is used to invoke
   // callbacks.
@@ -50,6 +54,10 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
       bool restore_old_session_cookies,
       CookieCryptoDelegate* crypto_delegate);
+
+  SQLitePersistentCookieStore(const SQLitePersistentCookieStore&) = delete;
+  SQLitePersistentCookieStore& operator=(const SQLitePersistentCookieStore&) =
+      delete;
 
   // Deletes the cookies whose origins match those given in |cookies|.
   void DeleteAllInList(const std::list<CookieOrigin>& cookies);
@@ -84,8 +92,6 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
 
   const scoped_refptr<Backend> backend_;
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(SQLitePersistentCookieStore);
 };
 
 }  // namespace net

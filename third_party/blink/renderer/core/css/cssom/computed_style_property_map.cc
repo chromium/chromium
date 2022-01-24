@@ -92,7 +92,7 @@ const CSSValue* ComputedStylePropertyMap::GetProperty(
 }
 
 const CSSValue* ComputedStylePropertyMap::GetCustomProperty(
-    AtomicString property_name) const {
+    const AtomicString& property_name) const {
   const ComputedStyle* style = UpdateStyle();
   if (!style)
     return nullptr;

@@ -25,6 +25,8 @@ class HoldingSpaceProgressRingAnimation;
 class HoldingSpaceProgressRing : public ui::LayerOwner,
                                  public ui::LayerDelegate {
  public:
+  static constexpr float kProgressComplete = 1.f;
+
   HoldingSpaceProgressRing(const HoldingSpaceProgressRing&) = delete;
   HoldingSpaceProgressRing& operator=(const HoldingSpaceProgressRing&) = delete;
   ~HoldingSpaceProgressRing() override;

@@ -199,13 +199,12 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   }
 
   bool HasLineIfEmpty() const {
-    if (const auto* block = DynamicTo<LayoutBlock>(box_))
+    if (const auto* block = DynamicTo<LayoutBlock>(box_.Get()))
       return block->HasLineIfEmpty();
     return false;
   }
-  LayoutUnit EmptyLineBlockSize() const {
-    return box_->LogicalHeightForEmptyLine();
-  }
+  LayoutUnit EmptyLineBlockSize(
+      const NGBlockBreakToken* incoming_break_token) const;
 
   // After we run the layout algorithm, this function copies back the fragment
   // position to the layout box.
@@ -214,6 +213,11 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       PhysicalOffset,
       const NGPhysicalBoxFragment& container_fragment,
       const NGBlockBreakToken* previous_container_break_token = nullptr) const;
+
+  // If extra columns are added after a multicol has been written back to
+  // legacy, for example for an OOF positioned element, we need to update the
+  // legacy flow thread to encompass those extra columns.
+  void MakeRoomForExtraColumns(LayoutUnit block_size) const;
 
   String ToString() const;
 

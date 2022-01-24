@@ -50,6 +50,10 @@ class PPAPI_PROXY_EXPORT PluginGlobals : public PpapiGlobals {
   PluginGlobals(
       PpapiGlobals::PerThreadForTest,
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner);
+
+  PluginGlobals(const PluginGlobals&) = delete;
+  PluginGlobals& operator=(const PluginGlobals&) = delete;
+
   ~PluginGlobals() override;
 
   // Getter for the global singleton. Generally, you should use
@@ -186,8 +190,6 @@ class PPAPI_PROXY_EXPORT PluginGlobals : public PpapiGlobals {
 
   // Member variables should appear before the WeakPtrFactory, see weak_ptr.h.
   base::WeakPtrFactory<PluginGlobals> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginGlobals);
 };
 
 }  // namespace proxy

@@ -44,11 +44,13 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -701,7 +703,8 @@ public class VrShellDelegate
         sVrBroadcastReceiver = receiver;
         Intent vrIntent = new Intent(VR_ENTRY_RESULT_ACTION);
         vrIntent.setPackage(activity.getPackageName());
-        return PendingIntent.getBroadcast(activity, 0, vrIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(activity, 0, vrIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     private static boolean isVrBrowsingSupported(ChromeActivity activity) {
@@ -1049,8 +1052,10 @@ public class VrShellDelegate
         // Decouple the compositor size from the view size, or we'll get an unnecessary resize due
         // to the orientation change when entering VR, then another resize once VR has settled on
         // the content size.
-        if (mActivity.getCompositorViewHolder() != null) {
-            mActivity.getCompositorViewHolder().onEnterVr();
+        Supplier<CompositorViewHolder> compositorViewHolderSupplier =
+                mActivity.getCompositorViewHolderSupplier();
+        if (compositorViewHolderSupplier.hasValue()) {
+            compositorViewHolderSupplier.get().onEnterVr();
         }
         ScreenOrientationProvider.getInstance().setOrientationDelegate(this);
 
@@ -1084,8 +1089,10 @@ public class VrShellDelegate
                     flags & ~VrDelegate.VR_SYSTEM_UI_FLAGS);
         }
         mRestoreSystemUiVisibility = false;
-        if (mActivity.getCompositorViewHolder() != null) {
-            mActivity.getCompositorViewHolder().onExitVr();
+        Supplier<CompositorViewHolder> compositorViewHolderSupplier =
+                mActivity.getCompositorViewHolderSupplier();
+        if (compositorViewHolderSupplier.hasValue()) {
+            compositorViewHolderSupplier.get().onExitVr();
         }
 
         mActivity.getWindow().getAttributes().rotationAnimation =
@@ -1569,7 +1576,7 @@ public class VrShellDelegate
     @VisibleForTesting
     protected boolean createVrShell() {
         assert mVrShell == null;
-        if (mActivity.getCompositorViewHolder() == null) return false;
+        if (!mActivity.getCompositorViewHolderSupplier().hasValue()) return false;
         TabModelSelector tabModelSelector = mActivity.getTabModelSelector();
         if (tabModelSelector == null) return false;
         try {

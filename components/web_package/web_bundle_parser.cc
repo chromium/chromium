@@ -26,7 +26,9 @@ namespace web_package {
 namespace {
 
 // The maximum length of the CBOR item header (type and argument).
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#parse-type-argument
+// https://datatracker.ietf.org/doc/html/rfc8949.html#section-3
+// When the additional information (the low-order 5 bits of the first byte) is
+// 27, the argument's value is held in the following 8 bytes.
 constexpr uint64_t kMaxCBORItemHeaderSize = 9;
 
 // The maximum size of the section-lengths CBOR item.
@@ -41,27 +43,43 @@ constexpr uint64_t kMaxResponseHeaderLength = 512 * 1024;
 // The initial buffer size for reading an item from the response section.
 constexpr uint64_t kInitialBufferSizeForResponse = 4096;
 
-// Step 2. of
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#load-metadata
+// CBOR of the magic string "🌐📦".
+// MetadataParser::ParseMagicBytes() check the first byte (86 or 85) and this.
+//
+// The first 10 bytes of the web bundle format are:
+//   86 or 85                       -- Array of length 6 (b1) or 5(b2)
+//      48                          -- Byte string of length 8
+//         F0 9F 8C 90 F0 9F 93 A6  -- "🌐📦" in UTF-8
+// Note: The length of the top level array is 6 in version b1 (magic, version,
+// primary, section-lengths, sections, length), and 5 in version b2 (magic,
+// version, section-lengths, sections, length).
 const uint8_t kBundleMagicBytes[] = {
-    0x86, 0x48, 0xF0, 0x9F, 0x8C, 0x90, 0xF0, 0x9F, 0x93, 0xA6,
+    0x48, 0xF0, 0x9F, 0x8C, 0x90, 0xF0, 0x9F, 0x93, 0xA6,
 };
 
-// Step 7. of
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#load-metadata
-// We use an implementation-specific version string "b1\0\0".
+// CBOR of the version string "b1\0\0".
+//   44               -- Byte string of length 4
+//       62 31 00 00  -- "b1\0\0"
 const uint8_t kVersionB1MagicBytes[] = {
     0x44, 0x62, 0x31, 0x00, 0x00,
+};
+
+// CBOR of the version string "b2\0\0".
+//   44               -- Byte string of length 4
+//       62 32 00 00  -- "b2\0\0"
+const uint8_t kVersionB2MagicBytes[] = {
+    0x44, 0x62, 0x32, 0x00, 0x00,
 };
 
 // Section names.
 constexpr char kCriticalSection[] = "critical";
 constexpr char kIndexSection[] = "index";
 constexpr char kManifestSection[] = "manifest";
+constexpr char kPrimarySection[] = "primary";
 constexpr char kResponsesSection[] = "responses";
 constexpr char kSignaturesSection[] = "signatures";
 
-// https://tools.ietf.org/html/draft-ietf-cbor-7049bis-05#section-3.1
+// https://datatracker.ietf.org/doc/html/rfc8949.html#section-3.1
 enum class CBORType {
   kByteString = 2,
   kTextString = 3,
@@ -76,11 +94,13 @@ using SectionOffsets = std::map<std::string, std::pair<uint64_t, uint64_t>>;
 
 bool IsMetadataSection(const std::string& name) {
   return (name == kCriticalSection || name == kIndexSection ||
-          name == kManifestSection || name == kSignaturesSection);
+          name == kManifestSection || name == kPrimarySection ||
+          name == kSignaturesSection);
 }
 
 // Parses a `section-lengths` CBOR item.
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#load-metadata
+// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-bundle-sections
+//   section-lengths = [* (section-name: tstr, length: uint) ]
 absl::optional<SectionLengths> ParseSectionLengths(
     base::span<const uint8_t> data) {
   cbor::Reader::DecoderError error;
@@ -106,62 +126,50 @@ struct ParsedHeaders {
   base::flat_map<std::string, std::string> pseudos;
 };
 
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#cbor-headers
+// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-responses
+//   headers = {* bstr => bstr}
 absl::optional<ParsedHeaders> ConvertCBORValueToHeaders(
     const cbor::Value& headers_value) {
-  // Step 1. If item doesn’t match the headers rule in the above CDDL, return
-  // an error.
+  // |headers_value| of headers must be a map.
   if (!headers_value.is_map())
     return absl::nullopt;
 
-  // Step 2. Let headers be a new header list ([FETCH]).
-  // Step 3. Let pseudos be an empty map ([INFRA]).
   ParsedHeaders result;
 
-  // Step 4. For each pair (name, value) in item:
   for (const auto& item : headers_value.GetMap()) {
     if (!item.first.is_bytestring() || !item.second.is_bytestring())
       return absl::nullopt;
     base::StringPiece name = item.first.GetBytestringAsString();
     base::StringPiece value = item.second.GetBytestringAsString();
 
-    // Step 4.1. If name contains any upper-case or non-ASCII characters, return
-    // an error. This matches the requirement in Section 8.1.2 of [RFC7540].
+    // If name contains any upper-case or non-ASCII characters, return an error.
+    // This matches the requirement in Section 8.1.2 of [RFC7540].
     if (!base::IsStringASCII(name) ||
         std::any_of(name.begin(), name.end(), base::IsAsciiUpper<char>))
       return absl::nullopt;
 
-    // Step 4.2. If name starts with a ‘:’:
     if (!name.empty() && name[0] == ':') {
-      // Step 4.2.1. Assert: pseudos[name] does not exist, because CBOR maps
-      // cannot contain duplicate keys.
-      // This is ensured by cbor::Reader.
+      // pseudos[name] must not exist, because CBOR maps cannot contain
+      // duplicate keys. This is ensured by cbor::Reader.
       DCHECK(!result.pseudos.contains(name));
-      // Step 4.2.2. Set pseudos[name] to value.
       result.pseudos.insert(
           std::make_pair(std::string(name), std::string(value)));
-      // Step 4.3.3. Continue.
       continue;
     }
 
-    // Step 4.3. If name or value doesn’t satisfy the requirements for a header
-    // in [FETCH], return an error.
+    // Both name and value must be valid.
     if (!net::HttpUtil::IsValidHeaderName(name) ||
         !net::HttpUtil::IsValidHeaderValue(value))
       return absl::nullopt;
 
-    // Step 4.4. Assert: headers does not contain ([FETCH]) name, because CBOR
-    // maps cannot contain duplicate keys and an earlier step rejected
-    // upper-case bytes.
-    // This is ensured by cbor::Reader.
+    // headers[name] must not exist, because CBOR maps cannot contain duplicate
+    // keys. This is ensured by cbor::Reader.
     DCHECK(!result.headers.contains(name));
 
-    // Step 4.5. Append (name, value) to headers.
     result.headers.insert(
         std::make_pair(std::string(name), std::string(value)));
   }
 
-  // Step 5. Return (headers, pseudos).
   return result;
 }
 
@@ -169,6 +177,9 @@ absl::optional<ParsedHeaders> ConvertCBORValueToHeaders(
 class InputReader {
  public:
   explicit InputReader(base::span<const uint8_t> buf) : buf_(buf) {}
+
+  InputReader(const InputReader&) = delete;
+  InputReader& operator=(const InputReader&) = delete;
 
   uint64_t CurrentOffset() const { return current_offset_; }
   size_t Size() const { return buf_.size(); }
@@ -220,7 +231,7 @@ class InputReader {
   }
 
  private:
-  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#parse-type-argument
+  // https://datatracker.ietf.org/doc/html/rfc8949.html#section-3
   absl::optional<std::pair<CBORType, uint64_t>> ReadTypeAndArgument() {
     absl::optional<uint8_t> first_byte = ReadByte();
     if (!first_byte)
@@ -266,15 +277,15 @@ class InputReader {
 
   base::span<const uint8_t> buf_;
   uint64_t current_offset_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(InputReader);
 };
 
-GURL ParseExchangeURL(base::StringPiece str) {
+GURL ParseExchangeURL(base::StringPiece str, const GURL& base_url) {
+  DCHECK(base_url.is_empty() || base_url.is_valid());
+
   if (!base::IsStringUTF8(str))
     return GURL();
 
-  GURL url(str);
+  GURL url = base_url.is_valid() ? base_url.Resolve(str) : GURL(str);
   if (!url.is_valid())
     return GURL();
 
@@ -282,12 +293,14 @@ GURL ParseExchangeURL(base::StringPiece str) {
   if (url.has_ref() || url.has_username() || url.has_password())
     return GURL();
 
-  // For now, we allow only http:, https: and urn:uuid URLs in Web Bundles.
+  // For now, we allow only http:, https:, urn:uuid and uuid-in-package: URLs in
+  // Web Bundles.
   // TODO(crbug.com/966753): Revisit this once
   // https://github.com/WICG/webpackage/issues/468 is resolved.
-  if (!url.SchemeIsHTTPOrHTTPS() && !IsValidUrnUuidURL(url))
+  if (!url.SchemeIsHTTPOrHTTPS() && !IsValidUrnUuidURL(url) &&
+      !IsValidUuidInPackageURL(url)) {
     return GURL();
-
+  }
   return url;
 }
 
@@ -296,10 +309,12 @@ GURL ParseExchangeURL(base::StringPiece str) {
 class WebBundleParser::SharedBundleDataSource::Observer {
  public:
   Observer() {}
+
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+
   virtual ~Observer() {}
   virtual void OnDisconnect() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
 };
 
 // A parser for bundle's metadata. This class owns itself and will self destruct
@@ -308,41 +323,62 @@ class WebBundleParser::MetadataParser
     : WebBundleParser::SharedBundleDataSource::Observer {
  public:
   MetadataParser(scoped_refptr<SharedBundleDataSource> data_source,
+                 const GURL& base_url,
                  ParseMetadataCallback callback)
-      : data_source_(data_source), callback_(std::move(callback)) {
+      : data_source_(data_source),
+        base_url_(base_url),
+        callback_(std::move(callback)) {
+    DCHECK(base_url_.is_empty() || base_url_.is_valid());
     data_source_->AddObserver(this);
   }
+
+  MetadataParser(const MetadataParser&) = delete;
+  MetadataParser& operator=(const MetadataParser&) = delete;
+
   ~MetadataParser() override { data_source_->RemoveObserver(this); }
 
   void Start() {
-    // First, we will parse `magic`, `version`, and the CBOR header of
-    // `primary-url`.
-    // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#top-level
-    const uint64_t length = sizeof(kBundleMagicBytes) +
-                            sizeof(kVersionB1MagicBytes) +
-                            kMaxCBORItemHeaderSize;
+    // First, we will parse one byte at the very beginning to determine the size
+    // of the CBOR top level array (hence the "1+"), then `magic` and `version`
+    // bytes.
+    const uint64_t length =
+        1 + sizeof(kBundleMagicBytes) + sizeof(kVersionB1MagicBytes);
     data_source_->Read(0, length,
                        base::BindOnce(&MetadataParser::ParseMagicBytes,
                                       weak_factory_.GetWeakPtr()));
   }
 
  private:
-  // Step 1-4 of
-  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#load-metadata
+  // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-top-level-structure
   void ParseMagicBytes(const absl::optional<std::vector<uint8_t>>& data) {
     if (!data) {
       RunErrorCallbackAndDestroy("Error reading bundle magic bytes.");
       return;
     }
 
-    // Step 1. "Seek to offset 0 in stream. Assert: this operation doesn't
-    // fail."
     InputReader input(*data);
 
-    // Step 2. "If reading 10 bytes from stream returns an error or doesn't
-    // return the bytes with hex encoding "86 48 F0 9F 8C 90 F0 9F 93 A6"
-    // (the CBOR encoding of the 6-item array initial byte and 8-byte bytestring
-    // initial byte, followed by 🌐📦 in UTF-8), return a "format error"."
+    // Read the first byte denoting a CBOR array size. For bundles of b1
+    // version, it will be equal to 0x86 (6), as there's a primary url
+    // present in the top level structure. For newer bundles it must be
+    // equal to 0x85 (5).
+    const auto array_size = input.ReadByte();
+    if (!array_size) {
+      RunErrorCallbackAndDestroy("Missing CBOR array size byte.");
+      return;
+    }
+
+    if (*array_size != 0x86 && *array_size != 0x85) {
+      RunErrorCallbackAndDestroy(
+          "Wrong CBOR array size of the top-level structure");
+      return;
+    }
+
+    if (array_size == 0x86) {
+      bundle_version_is_b1_ = true;
+    }
+
+    // Check the magic bytes "48 F0 9F 8C 90 F0 9F 93 A6".
     const auto magic = input.ReadBytes(sizeof(kBundleMagicBytes));
     if (!magic ||
         !std::equal(magic->begin(), magic->end(), std::begin(kBundleMagicBytes),
@@ -351,44 +387,107 @@ class WebBundleParser::MetadataParser
       return;
     }
 
-    // Step 3. "Let version be the result of reading 5 bytes from stream. If
-    // this is an error, return a "format error"."
+    // Let version be the result of reading 5 bytes from stream.
     const auto version = input.ReadBytes(sizeof(kVersionB1MagicBytes));
     if (!version) {
       RunErrorCallbackAndDestroy("Cannot read version bytes.");
       return;
     }
-    if (!std::equal(version->begin(), version->end(),
-                    std::begin(kVersionB1MagicBytes),
-                    std::end(kVersionB1MagicBytes))) {
-      version_mismatch_ = true;
-      // Continue parsing until Step 7 where we get a fallback URL, and
-      // then return "version error" with the fallback URL.
+    if (bundle_version_is_b1_) {
+      if (!std::equal(version->begin(), version->end(),
+                      std::begin(kVersionB1MagicBytes),
+                      std::end(kVersionB1MagicBytes))) {
+        RunErrorCallbackAndDestroy(
+            "Version error: bundle format does not correspond to the specifed "
+            "version. Currently supported version are: 'b1' and 'b2'",
+            mojom::BundleParseErrorType::kVersionError);
+        return;
+      }
+      data_source_->Read(
+          input.CurrentOffset(), kMaxCBORItemHeaderSize,
+          base::BindOnce(&MetadataParser::ReadCBORHeaderOfPrimaryURL,
+                         weak_factory_.GetWeakPtr(), input.CurrentOffset()));
+    } else {
+      // The only other version we support is "b2", in case of a mismatch we
+      // should return with "version error" later.
+      if (!std::equal(version->begin(), version->end(),
+                      std::begin(kVersionB2MagicBytes),
+                      std::end(kVersionB2MagicBytes))) {
+        RunErrorCallbackAndDestroy(
+            "Version error: bundle format does not correspond to the specifed "
+            "version. Currently supported version are: 'b1' and 'b2'",
+            mojom::BundleParseErrorType::kVersionError);
+        return;
+      }
+      ReadBundleHeader(input.CurrentOffset());
     }
+  }
 
-    // Step 4. "Let urlType and urlLength be the result of reading the type and
-    // argument of a CBOR item from stream (Section 3.5.3). If this is an error
-    // or urlType is not 3 (a CBOR text string), return a "format error"."
+  void ReadCBORHeaderOfPrimaryURL(
+      uint64_t offset_in_stream,
+      const absl::optional<std::vector<uint8_t>>& data) {
+    DCHECK(bundle_version_is_b1_);
+    if (!data) {
+      RunErrorCallbackAndDestroy("Error reading bundle header.");
+      return;
+    }
+    InputReader input(*data);
+
     const auto url_length = input.ReadCBORHeader(CBORType::kTextString);
     if (!url_length) {
-      RunErrorCallbackAndDestroy("Cannot parse the size of fallback URL.");
+      RunErrorCallbackAndDestroy("Cannot parse the size of primary URL.");
       return;
     }
 
-    // In the next step, we will parse the content of `primary-url`,
-    // `section-lengths`, and the CBOR header of `sections`.
-    const uint64_t length =
-        *url_length + kMaxSectionLengthsCBORSize + kMaxCBORItemHeaderSize * 2;
-    data_source_->Read(input.CurrentOffset(), length,
-                       base::BindOnce(&MetadataParser::ParseBundleHeader,
+    offset_in_stream += input.CurrentOffset();
+    data_source_->Read(offset_in_stream, *url_length,
+                       base::BindOnce(&MetadataParser::ParsePrimaryURL,
                                       weak_factory_.GetWeakPtr(), *url_length,
-                                      input.CurrentOffset()));
+                                      offset_in_stream));
   }
 
-  // Step 5-21 of
-  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#load-metadata
-  void ParseBundleHeader(uint64_t url_length,
-                         uint64_t offset_in_stream,
+  void ParsePrimaryURL(uint64_t url_length,
+                       uint64_t offset_in_stream,
+                       const absl::optional<std::vector<uint8_t>>& data) {
+    DCHECK(bundle_version_is_b1_);
+    if (!data) {
+      RunErrorCallbackAndDestroy("Error reading bundle header.");
+      return;
+    }
+    InputReader input(*data);
+
+    const auto primary_url_string = input.ReadString(url_length);
+    if (!primary_url_string) {
+      RunErrorCallbackAndDestroy("Cannot read primary URL.");
+      return;
+    }
+
+    // TODO(crbug.com/966753): Revisit URL requirements here once
+    // https://github.com/WICG/webpackage/issues/469 is resolved.
+    GURL primary_url = ParseExchangeURL(*primary_url_string, base_url_);
+    if (!primary_url.is_valid()) {
+      RunErrorCallbackAndDestroy("Cannot parse primary URL.");
+      return;
+    }
+
+    primary_url_ = std::move(primary_url);
+
+    ReadBundleHeader(input.CurrentOffset() + offset_in_stream);
+  }
+
+  void ReadBundleHeader(uint64_t offset_in_stream) {
+    // In the next step, we will parse the content of `section-lengths`,
+    // and the CBOR header of `sections`.
+    const uint64_t length =
+        kMaxSectionLengthsCBORSize + kMaxCBORItemHeaderSize * 2;
+
+    data_source_->Read(
+        offset_in_stream, length,
+        base::BindOnce(&MetadataParser::ParseBundleHeader,
+                       weak_factory_.GetWeakPtr(), offset_in_stream));
+  }
+
+  void ParseBundleHeader(uint64_t offset_in_stream,
                          const absl::optional<std::vector<uint8_t>>& data) {
     if (!data) {
       RunErrorCallbackAndDestroy("Error reading bundle header.");
@@ -396,127 +495,72 @@ class WebBundleParser::MetadataParser
     }
     InputReader input(*data);
 
-    // Step 5. "Let fallbackUrlBytes be the result of reading urlLength bytes
-    // from stream. If this is an error, return a "format error"."
-    const auto fallback_url_string = input.ReadString(url_length);
-    if (!fallback_url_string) {
-      RunErrorCallbackAndDestroy("Cannot read fallback URL.");
-      return;
-    }
-
-    // Step 6. "Let fallbackUrl be the result of parsing ([URL]) the UTF-8
-    // decoding of fallbackUrlBytes with no base URL. If either the UTF-8
-    // decoding or parsing fails, return a "format error"."
-    // For now, we enforce the same restriction as exchages' request URL.
-    // TODO(crbug.com/966753): Revisit URL requirements here once
-    // https://github.com/WICG/webpackage/issues/469 is resolved.
-    GURL fallback_url = ParseExchangeURL(*fallback_url_string);
-    if (!fallback_url.is_valid()) {
-      RunErrorCallbackAndDestroy("Cannot parse fallback URL.");
-      return;
-    }
-
-    // "Note: From this point forward, errors also include the fallback URL to
-    // help clients recover."
-    fallback_url_ = std::move(fallback_url);
-
-    // Step 7. "If version does not have the hex encoding "44 31 00 00 00" (the
-    // CBOR encoding of a 4-byte byte string holding an ASCII "1" followed by
-    // three 0 bytes), return a "version error" with fallbackUrl. "
-    // Note: We use an implementation-specific version string
-    // kVersionB1MagicBytes.
-    if (version_mismatch_) {
-      RunErrorCallbackAndDestroy(
-          "Version error: this implementation only supports "
-          "bundle format of version b1.",
-          mojom::BundleParseErrorType::kVersionError);
-      return;
-    }
-
-    // Step 8. "Let sectionLengthsLength be the result of getting the length of
-    // the CBOR bytestring header from stream (Section 3.5.2). If this is an
-    // error, return a "format error" with fallbackUrl."
     const auto section_lengths_length =
         input.ReadCBORHeader(CBORType::kByteString);
     if (!section_lengths_length) {
       RunErrorCallbackAndDestroy("Cannot parse the size of section-lengths.");
       return;
     }
-    // Step 9. "If sectionLengthsLength is 8192 (8*1024) or greater, return a
-    // "format error" with fallbackUrl."
+
+    // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-top-level-structure
+    // "The section-lengths array is embedded in a byte string to facilitate
+    // reading it from a network. This byte string MUST be less than 8192
+    // (8*1024) bytes long, and parsers MUST NOT load any data from a
+    // section-lengths item longer than this."
     if (*section_lengths_length >= kMaxSectionLengthsCBORSize) {
       RunErrorCallbackAndDestroy(
           "The section-lengths CBOR must be smaller than 8192 bytes.");
       return;
     }
 
-    // Step 10. "Let sectionLengthsBytes be the result of reading
-    // sectionLengthsLength bytes from stream. If sectionLengthsBytes is an
-    // error, return a "format error" with fallbackUrl."
+    // webbundle = [
+    //    magic: h'F0 9F 8C 90 F0 9F 93 A6',
+    //    version: bytes .size 4,
+    //    section-lengths: bytes .cbor section-lengths,  <==== here
+    //    sections: [* any ],
+    //    length: bytes .size 8,  ; Big-endian number of bytes in the bundle.
+    // ]
     const auto section_lengths_bytes = input.ReadBytes(*section_lengths_length);
     if (!section_lengths_bytes) {
       RunErrorCallbackAndDestroy("Cannot read section-lengths.");
       return;
     }
-
-    // Step 11. "Let sectionLengths be the result of parsing one CBOR item
-    // (Section 3.5) from sectionLengthsBytes, matching the section-lengths
-    // rule in the CDDL ([I-D.ietf-cbor-cddl]) above. If sectionLengths is an
-    // error, return a "format error" with fallbackUrl."
+    // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-bundle-sections
+    //   section-lengths = [* (section-name: tstr, length: uint) ]
     const auto section_lengths = ParseSectionLengths(*section_lengths_bytes);
     if (!section_lengths) {
       RunErrorCallbackAndDestroy("Cannot parse section-lengths.");
       return;
     }
 
-    // Step 12. "Let (sectionsType, numSections) be the result of parsing the
-    // type and argument of a CBOR item from stream (Section 3.5.3)."
+    // webbundle = [
+    //    magic: h'F0 9F 8C 90 F0 9F 93 A6',
+    //    version: bytes .size 4,
+    //    section-lengths: bytes .cbor section-lengths,
+    //    sections: [* any ],  <==== here
+    //    length: bytes .size 8,  ; Big-endian number of bytes in the bundle.
+    // ]
     const auto num_sections = input.ReadCBORHeader(CBORType::kArray);
     if (!num_sections) {
       RunErrorCallbackAndDestroy("Cannot parse the number of sections.");
       return;
     }
 
-    // Step 13. "If sectionsType is not 4 (a CBOR array) or numSections is not
-    // half of the length of sectionLengths, return a "format error" with
-    // fallbackUrl."
+    // "The sections array contains the sections' content. The length of this
+    // array MUST be exactly half the length of the section-lengths array, and
+    // parsers MUST NOT load any data if that is not the case."
     if (*num_sections != section_lengths->size()) {
       RunErrorCallbackAndDestroy("Unexpected number of sections.");
       return;
     }
 
-    // Step 14. "Let sectionsStart be the current offset within stream."
-    // Note: This doesn't exceed |size_|.
     const uint64_t sections_start = offset_in_stream + input.CurrentOffset();
-
-    // Step 15. "Let knownSections be the subset of the Section 6.2 that this
-    // client has implemented."
-    // Step 16. "Let ignoredSections be an empty set."
-
-    // This implementation doesn't use knownSections nor ignoredSections.
-
-    // Step 17. "Let sectionOffsets be an empty map ([INFRA]) from section names
-    // to (offset, length) pairs. These offsets are relative to the start of
-    // stream."
-
-    // |section_offsets_| is defined as a class member field.
-
-    // Step 18. "Let currentOffset be sectionsStart."
     uint64_t current_offset = sections_start;
 
-    // Step 19. "For each ("name", length) pair of adjacent elements in
-    // sectionLengths:"
+    // Convert |section_lengths| to |section_offsets_|.
     for (const auto& pair : *section_lengths) {
       const std::string& name = pair.first;
       const uint64_t length = pair.second;
-      // Step 19.1. "If "name"'s specification in knownSections says not to
-      // process other sections, add those sections' names to ignoredSections."
-
-      // There're no such sections at the moment.
-
-      // Step 19.2. "If sectionOffsets["name"] exists, return a "format error"
-      // with fallbackUrl. That is, duplicate sections are forbidden."
-      // Step 19.3. "Set sectionOffsets["name"] to (currentOffset, length)."
       bool added = section_offsets_
                        .insert(std::make_pair(
                            name, std::make_pair(current_offset, length)))
@@ -526,7 +570,6 @@ class WebBundleParser::MetadataParser
         return;
       }
 
-      // Step 19.4. "Set currentOffset to currentOffset + length."
       if (!base::CheckAdd(current_offset, length)
                .AssignIfValid(&current_offset)) {
         RunErrorCallbackAndDestroy(
@@ -535,10 +578,9 @@ class WebBundleParser::MetadataParser
       }
     }
 
-    // Step 20. "If the "responses" section is not last in sectionLengths,
-    // return a "format error" with fallbackUrl. This allows a streaming parser
-    // to assume that it'll know the requests by the time their responses
-    // arrive."
+    // "The "responses" section MUST appear after the other three sections
+    // defined here, and parsers MUST NOT load any data if that is not the
+    // case."
     if (section_lengths->empty() ||
         section_lengths->back().first != kResponsesSection) {
       RunErrorCallbackAndDestroy(
@@ -546,31 +588,22 @@ class WebBundleParser::MetadataParser
       return;
     }
 
-    // Step 21. "Let metadata be a map ([INFRA]) initially containing the single
-    // key/value pair "primaryUrl"/fallbackUrl."
+    // Initialize |metadata_|.
     metadata_ = mojom::BundleMetadata::New();
-    metadata_->primary_url = fallback_url_;
+    if (bundle_version_is_b1_) {
+      DCHECK(!primary_url_.is_empty());
+      metadata_->primary_url = primary_url_;
+    }
 
     ReadMetadataSections(section_offsets_.begin());
   }
 
-  // Step 22-25 of
-  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#load-metadata
+  // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-bundle-sections
   void ReadMetadataSections(SectionOffsets::const_iterator section_iter) {
-    // Step 22. "For each "name" -> (offset, length) triple in sectionOffsets:"
     for (; section_iter != section_offsets_.end(); ++section_iter) {
       const auto& name = section_iter->first;
-      // Step 22.1. "If "name" isn't in knownSections, continue to the next
-      // triple."
-      // Step 22.2. "If "name"'s Metadata field (Section 6.2) is "No", continue
-      // to the next triple."
       if (!IsMetadataSection(name))
         continue;
-
-      // Step 22.3. "If "name" is in ignoredSections, continue to the next
-      // triple."
-      // In the current spec, ignoredSections is always empty.
-
       const uint64_t section_offset = section_iter->second.first;
       const uint64_t section_length = section_iter->second.second;
       if (section_length > kMaxMetadataSectionSize) {
@@ -587,17 +620,12 @@ class WebBundleParser::MetadataParser
       return;
     }
 
-    // Step 23. "Assert: metadata has an entry with the key "primaryUrl"."
-    DCHECK(!metadata_->primary_url.is_empty());
-
-    // Step 24. "If metadata doesn't have an entry with the key "requests",
-    // return a "format error" with fallbackUrl."
+    // The bundle MUST contain the "index" and "responses" sections.
     if (metadata_->requests.empty()) {
       RunErrorCallbackAndDestroy("Bundle must have an index section.");
       return;
     }
 
-    // Step 25. "Return metadata."
     RunSuccessCallbackAndDestroy();
   }
 
@@ -620,10 +648,6 @@ class WebBundleParser::MetadataParser
       return;
     }
 
-    // Step 22.6. "Follow "name"'s specification from knownSections to process
-    // the section, passing sectionContents, stream, sectionOffsets, and
-    // metadata. If this returns an error, return a "format error" with
-    // fallbackUrl."
     const auto& name = section_iter->first;
     // Note: Parse*Section() delete |this| on failure.
     if (name == kIndexSection) {
@@ -638,41 +662,39 @@ class WebBundleParser::MetadataParser
     } else if (name == kCriticalSection) {
       if (!ParseCriticalSection(*section_value))
         return;
+    } else if (name == kPrimarySection) {
+      if (!ParsePrimarySection(*section_value))
+        return;
     } else {
       NOTREACHED();
     }
-    // Resume the loop of Step 22.
+    // Read the next metadata section.
     ReadMetadataSections(++section_iter);
   }
 
-  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#index-section
+  // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-the-index-section
+  // For 'b1' bundles, index section has the following structure:
+  //   index = {* whatwg-url => [ variants-value, +location-in-responses ] }
+  //   variants-value = bstr
+  //   location-in-responses = (offset: uint, length: uint)
+  // For 'b2' bundles however, it's different:
+  //   index = {* whatwg-url => [ location-in-responses ] }
+  //   location-in-responses = (offset: uint, length: uint)
   bool ParseIndexSection(const cbor::Value& section_value) {
-    // Step 1. "Let index be the result of parsing sectionContents as a CBOR
-    // item matching the index rule in the above CDDL (Section 3.5). If index is
-    // an error, return an error."
+    // |section_value| of index section must be a map.
     if (!section_value.is_map()) {
       RunErrorCallbackAndDestroy("Index section must be a map.");
       return false;
     }
 
-    // Step 2. "Let requests be an initially-empty map ([INFRA]) from URLs to
-    // response descriptions, each of which is either a single
-    // location-in-stream value or a pair of a Variants header field value
-    // ([I-D.ietf-httpbis-variants]) and a map from that value's possible
-    // Variant-Keys to location-in-stream values, as described in Section 2.2."
     base::flat_map<GURL, mojom::BundleIndexValuePtr> requests;
 
-    // Step 3. "Let MakeRelativeToStream be a function that takes a
-    // location-in-responses value (offset, length) and returns a
-    // ResponseMetadata struct or error by running the following
-    // sub-steps:"
-    // The logic of MakeRelativeToStream is inlined at the callsite below.
     auto responses_section = section_offsets_.find(kResponsesSection);
     DCHECK(responses_section != section_offsets_.end());
     const uint64_t responses_section_offset = responses_section->second.first;
     const uint64_t responses_section_length = responses_section->second.second;
 
-    // Step 4. "For each (url, responses) entry in the index map:"
+    // For each (url, responses) entry in the index map.
     for (const auto& item : section_value.GetMap()) {
       if (!item.first.is_string()) {
         RunErrorCallbackAndDestroy("Index section: key must be a string.");
@@ -685,50 +707,63 @@ class WebBundleParser::MetadataParser
       const std::string& url = item.first.GetString();
       const cbor::Value::ArrayValue& responses_array = item.second.GetArray();
 
-      // Step 4.1. "Let parsedUrl be the result of parsing ([URL]) url with no
-      // base URL."
-      GURL parsed_url = ParseExchangeURL(url);
+      GURL parsed_url = ParseExchangeURL(url, base_url_);
 
-      // Step 4.2. "If parsedUrl is a failure, its fragment is not null, or it
-      // includes credentials, return an error."
       if (!parsed_url.is_valid()) {
         RunErrorCallbackAndDestroy("Index section: exchange URL is not valid.");
         return false;
       }
 
-      // Step 4.3. "If the first element of responses is the empty string:"
-      if (responses_array.empty() || !responses_array[0].is_bytestring()) {
-        RunErrorCallbackAndDestroy(
-            "Index section: the first element of responses array must be a "
-            "bytestring.");
-        return false;
-      }
-      base::StringPiece variants_value =
-          responses_array[0].GetBytestringAsString();
-      if (variants_value.empty()) {
-        // Step 4.3.1. "If the length of responses is not 3 (i.e. there is more
-        // than one location-in-responses in responses), return an error."
-        if (responses_array.size() != 3) {
+      // To support BundleIndexValue with |variants_value| defined and without
+      // we first initialize it as an empty string (default value for 'b2'
+      // version) and then fill it with an actual value if present (in 'b1'
+      // bundles).
+      base::StringPiece variants_value = "";
+      if (bundle_version_is_b1_) {
+        // Parse |variants_value|.
+        if (responses_array.empty() || !responses_array[0].is_bytestring()) {
           RunErrorCallbackAndDestroy(
-              "Index section: unexpected size of responses array.");
+              "Index section: the first element of responses array must be a "
+              "bytestring.");
           return false;
         }
+        variants_value = responses_array[0].GetBytestringAsString();
+        if (variants_value.empty()) {
+          // When |variants_value| is an empty string, the length of responses
+          // must be 3 (variants-value, offset, length).
+          if (responses_array.size() != 3) {
+            RunErrorCallbackAndDestroy(
+                "Index section: unexpected size of responses array.");
+            return false;
+          }
+        } else {
+          // TODO(crbug.com/969596): Parse variants_value to compute the number
+          // of variantKeys, and check that responses_array has (2 *
+          // #variantKeys + 1) elements.
+          if (responses_array.size() < 3 || responses_array.size() % 2 != 1) {
+            RunErrorCallbackAndDestroy(
+                "Index section: unexpected size of responses array.");
+            return false;
+          }
+        }
       } else {
-        // Step 4.4. "Otherwise:"
-        // TODO(crbug.com/969596): Parse variants_value to compute the number of
-        // variantKeys, and check that responses_array has
-        // (2 * #variantKeys + 1) elements.
-        if (responses_array.size() < 3 || responses_array.size() % 2 != 1) {
+        if (responses_array.size() != 2) {
           RunErrorCallbackAndDestroy(
-              "Index section: unexpected size of responses array.");
+              "Index section: the size of a response array per URL should be "
+              "exactly 2 for bundles without variant support ('b2').");
           return false;
         }
       }
       // Instead of constructing a map from Variant-Keys to location-in-stream,
       // this implementation just returns the responses array's structure as
       // a BundleIndexValue.
+      // When parsing a 'b1' bundle, we start the array lookup from 1, as the
+      // first element is |variants_value|. For 'b2' bundles and forward, we
+      // start from zero, as the array only consists of 2 values: offset and
+      // length.
       std::vector<mojom::BundleResponseLocationPtr> response_locations;
-      for (size_t i = 1; i < responses_array.size(); i += 2) {
+      for (size_t i = bundle_version_is_b1_ ? 1 : 0; i < responses_array.size();
+           i += 2) {
         if (!responses_array[i].is_unsigned() ||
             !responses_array[i + 1].is_unsigned()) {
           RunErrorCallbackAndDestroy(
@@ -738,21 +773,12 @@ class WebBundleParser::MetadataParser
         uint64_t offset = responses_array[i].GetUnsigned();
         uint64_t length = responses_array[i + 1].GetUnsigned();
 
-        // MakeRelativeToStream (Step 3.) is inlined here.
-        // Step 3.1. "If offset + length is larger than
-        // sectionOffsets["responses"].length, return an error."
         uint64_t response_end;
         if (!base::CheckAdd(offset, length).AssignIfValid(&response_end) ||
             response_end > responses_section_length) {
           RunErrorCallbackAndDestroy("Index section: response out of range.");
           return false;
         }
-        // Step 3.2. "Otherwise, return a ResponseMetadata struct whose offset
-        // is sectionOffsets["responses"].offset + offset and whose length is
-        // length."
-
-        // This doesn't wrap because (offset <= responses_section_length) and
-        // (responses_section_offset + responses_section_length) doesn't wrap.
         uint64_t offset_within_stream = responses_section_offset + offset;
 
         response_locations.push_back(
@@ -764,39 +790,54 @@ class WebBundleParser::MetadataParser
                                        std::move(response_locations))));
     }
 
-    // Step 5. "Set metadata["requests"] to requests."
     metadata_->requests = std::move(requests);
     return true;
   }
 
-  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#manifest-section
+  // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-the-manifest-section
+  //   manifest = whatwg-url
   bool ParseManifestSection(const cbor::Value& section_value) {
-    // Step 1. "Let urlString be the result of parsing sectionContents as a CBOR
-    // item matching the above manifest rule (Section 3.5). If urlString is an
-    // error, return that error."
     if (!section_value.is_string()) {
       RunErrorCallbackAndDestroy("Manifest section must be a string.");
       return false;
     }
-    // Step 2. "Let url be the result of parsing ([URL]) urlString with no base
-    // URL."
-    GURL parsed_url = ParseExchangeURL(section_value.GetString());
+    GURL parsed_url = ParseExchangeURL(section_value.GetString(), base_url_);
 
-    // Step 3. "If url is a failure, its fragment is not null, or it includes
-    // credentials, return an error."
     if (!parsed_url.is_valid()) {
       RunErrorCallbackAndDestroy("Manifest URL is not a valid exchange URL.");
       return false;
     }
-    // Step 4. "Set metadata["manifest"] to url."
     metadata_->manifest_url = std::move(parsed_url);
     return true;
   }
 
-  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#signatures-section
+  // https://github.com/WICG/webpackage/blob/main/extensions/signatures-section.md
+  // signatures = [
+  //   authorities: [*authority],
+  //   vouched-subsets: [*{
+  //     authority: index-in-authorities,
+  //     sig: bstr,
+  //     signed: bstr  ; Expected to hold a signed-subset item.
+  //   }],
+  // ]
+  // authority = augmented-certificate
+  // index-in-authorities = uint
+  //
+  // signed-subset = {
+  //   validity-url: whatwg-url,
+  //   auth-sha256: bstr,
+  //   date: uint,
+  //   expires: uint,
+  //   subset-hashes: {+
+  //     whatwg-url => [variants-value, +resource-integrity]
+  //   },
+  //   * tstr => any,
+  // }
+  // resource-integrity = (
+  //   header-sha256: bstr,
+  //   payload-integrity-header: tstr
+  // )
   bool ParseSignaturesSection(const cbor::Value& section_value) {
-    // Step 1. "Let signatures be the result of parsing sectionContents as a
-    // CBOR item matching the signatures rule in the above CDDL (Section 3.5)."
     if (!section_value.is_array() || section_value.GetArray().size() != 2) {
       RunErrorCallbackAndDestroy(
           "Signatures section must be an array of size 2.");
@@ -866,28 +907,22 @@ class WebBundleParser::MetadataParser
           authority, sig, raw_signed, std::move(parsed_signed)));
     }
 
-    // Step 2. "Set metadata["authorities"] to the list of authorities in the
-    // first element of the signatures array."
     metadata_->authorities = std::move(authorities);
 
-    // Step 3. "Set metadata["vouched-subsets"] to the second element of the
-    // signatures array."
     metadata_->vouched_subsets = std::move(vouched_subsets);
 
     return true;
   }
 
-  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#critical-section
+  // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#critical-section
+  //   critical = [*tstr]
   bool ParseCriticalSection(const cbor::Value& section_value) {
-    // Step 1. "Let critical be the result of parsing sectionContents as a CBOR
-    // item matching the above critical rule (Section 3.5). If critical is an
-    // error, return that error."
     if (!section_value.is_array()) {
       RunErrorCallbackAndDestroy("Critical section must be an array.");
       return false;
     }
-    // Step 2. "For each value sectionName in the critical list, if the client
-    // has not implemented sections named sectionName, return an error."
+    // "If the client has not implemented a section named by one of the items in
+    // this list, the client MUST fail to parse the bundle as a whole."
     for (const cbor::Value& elem : section_value.GetArray()) {
       if (!elem.is_string()) {
         RunErrorCallbackAndDestroy(
@@ -901,6 +936,32 @@ class WebBundleParser::MetadataParser
         return false;
       }
     }
+    return true;
+  }
+
+  // https://github.com/WICG/webpackage/blob/main/extensions/primary-section.md
+  //  primary = whatwg-url
+  bool ParsePrimarySection(const cbor::Value& section_value) {
+    // Check if the WebBundle version is equal to "b1", in which case this
+    // section should not even be parsed.
+    if (bundle_version_is_b1_) {
+      RunErrorCallbackAndDestroy(
+          "Primary section is present but the bundle version 'b1' does not "
+          "support it.");
+      return false;
+    }
+    if (!section_value.is_string()) {
+      RunErrorCallbackAndDestroy("Primary section must be a string.");
+      return false;
+    }
+
+    GURL parsed_url = ParseExchangeURL(section_value.GetString(), base_url_);
+
+    if (!parsed_url.is_valid()) {
+      RunErrorCallbackAndDestroy("Primary URL is not a valid exchange URL.");
+      return false;
+    }
+    metadata_->primary_url = std::move(parsed_url);
     return true;
   }
 
@@ -941,7 +1002,7 @@ class WebBundleParser::MetadataParser
     return authority;
   }
 
-  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#signatures-section
+  // https://github.com/WICG/webpackage/blob/main/extensions/signatures-section.md
   mojom::SignedSubsetPtr ParseSignedSubset(
       const cbor::Value::BinaryValue& signed_bytes) {
     // Parse |signed_bytes| as a CBOR item.
@@ -969,6 +1030,7 @@ class WebBundleParser::MetadataParser
     }
     // TODO(crbug.com/966753): Revisit this once requirements for validity URL
     // are speced.
+    // TODO(crbug.com/1247939): Consider supporting relative validity URL.
     GURL validity_url(validity_url_value->GetString());
     if (!validity_url.is_valid()) {
       RunErrorCallbackAndDestroy("Cannot parse validity-url.");
@@ -1019,7 +1081,9 @@ class WebBundleParser::MetadataParser
       const std::string& url = item.first.GetString();
       const cbor::Value::ArrayValue& value_array = item.second.GetArray();
 
-      GURL parsed_url = ParseExchangeURL(url);
+      // TODO(crbug.com/1247939): Consider supporting relative URL in the
+      // signature section.
+      GURL parsed_url = ParseExchangeURL(url, /*base_url=*/GURL());
       if (!parsed_url.is_valid()) {
         RunErrorCallbackAndDestroy("subset-hashes: exchange URL is not valid.");
         return nullptr;
@@ -1079,8 +1143,7 @@ class WebBundleParser::MetadataParser
       mojom::BundleParseErrorType error_type =
           mojom::BundleParseErrorType::kFormatError) {
     mojom::BundleMetadataParseErrorPtr err =
-        mojom::BundleMetadataParseError::New(error_type, fallback_url_,
-                                             message);
+        mojom::BundleMetadataParseError::New(error_type, primary_url_, message);
     std::move(callback_).Run(nullptr, std::move(err));
     delete this;
   }
@@ -1091,15 +1154,13 @@ class WebBundleParser::MetadataParser
   }
 
   scoped_refptr<SharedBundleDataSource> data_source_;
+  const GURL base_url_;
   ParseMetadataCallback callback_;
-  bool version_mismatch_ = false;
-  GURL fallback_url_;
+  GURL primary_url_;
   SectionOffsets section_offsets_;
   mojom::BundleMetadataPtr metadata_;
-
+  bool bundle_version_is_b1_ = false;
   base::WeakPtrFactory<MetadataParser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MetadataParser);
 };
 
 // A parser for reading single item from the responses section. This class owns
@@ -1117,6 +1178,10 @@ class WebBundleParser::ResponseParser
         callback_(std::move(callback)) {
     data_source_->AddObserver(this);
   }
+
+  ResponseParser(const ResponseParser&) = delete;
+  ResponseParser& operator=(const ResponseParser&) = delete;
+
   ~ResponseParser() override { data_source_->RemoveObserver(this); }
 
   void Start(uint64_t buffer_size = kInitialBufferSizeForResponse) {
@@ -1127,36 +1192,34 @@ class WebBundleParser::ResponseParser
   }
 
  private:
-  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#load-response
+  // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-responses
+  //   responses = [*response]
+  //   response = [headers: bstr .cbor headers, payload: bstr]
+  //   headers = {* bstr => bstr}
   void ParseResponseHeader(uint64_t expected_data_length,
                            const absl::optional<std::vector<uint8_t>>& data) {
-    // Step 1. "Seek to offset requestMetadata.offset in stream. If this fails,
-    // return an error."
     if (!data || data->size() != expected_data_length) {
       RunErrorCallbackAndDestroy("Error reading response header.");
       return;
     }
     InputReader input(*data);
 
-    // Step 2. "Read 1 byte from stream. If this is an error or isn't 0x82,
-    // return an error."
+    // |response| must be an array of length 2 (headers and payload).
     auto num_elements = input.ReadCBORHeader(CBORType::kArray);
     if (!num_elements || *num_elements != 2) {
       RunErrorCallbackAndDestroy("Array size of response must be 2.");
       return;
     }
 
-    // Step 3. "Let headerLength be the result of getting the length of a CBOR
-    // bytestring header from stream (Section 3.5.2). If headerLength is an
-    // error, return that error."
     auto header_length = input.ReadCBORHeader(CBORType::kByteString);
     if (!header_length) {
       RunErrorCallbackAndDestroy("Cannot parse response header length.");
       return;
     }
 
-    // Step 4. "If headerLength is 524288 (512*1024) or greater, return an
-    // error."
+    // "The length of the headers byte string in a response MUST be less than
+    // 524288 (512*1024) bytes, and recipients MUST fail to load a response with
+    // longer headers"
     if (*header_length >= kMaxResponseHeaderLength) {
       RunErrorCallbackAndDestroy("Response header is too big.");
       return;
@@ -1174,9 +1237,7 @@ class WebBundleParser::ResponseParser
       return;
     }
 
-    // Step 5. "Let headerCbor be the result of reading headerLength bytes from
-    // stream and parsing a CBOR item from them matching the headers CDDL rule.
-    // If either the read or parse returns an error, return that error."
+    // Parse headers.
     auto headers_bytes = input.ReadBytes(*header_length);
     if (!headers_bytes) {
       RunErrorCallbackAndDestroy("Cannot read response headers.");
@@ -1190,17 +1251,15 @@ class WebBundleParser::ResponseParser
       return;
     }
 
-    // Step 6. "Let (headers, pseudos) be the result of converting headerCbor
-    // to a header list and pseudoheaders using the algorithm in Section 3.6.
-    // If this returns an error, return that error."
     auto parsed_headers = ConvertCBORValueToHeaders(*headers_value);
     if (!parsed_headers) {
       RunErrorCallbackAndDestroy("Cannot parse response headers.");
       return;
     }
 
-    // Step 7. "If pseudos does not have a key named ':status' or its size
-    // isn't 1, return an error."
+    // "Each response's headers MUST include a :status pseudo-header with
+    // exactly 3 ASCII decimal digits and MUST NOT include any other
+    // pseudo-headers."
     const auto pseudo_status = parsed_headers->pseudos.find(":status");
     if (parsed_headers->pseudos.size() != 1 ||
         pseudo_status == parsed_headers->pseudos.end()) {
@@ -1208,9 +1267,6 @@ class WebBundleParser::ResponseParser
           "Response headers map must have exactly one pseudo-header, :status.");
       return;
     }
-
-    // Step 8. "If pseudos[':status'] isn't exactly 3 ASCII decimal digits,
-    // return an error."
     int status;
     const auto& status_str = pseudo_status->second;
     if (status_str.size() != 3 ||
@@ -1221,17 +1277,15 @@ class WebBundleParser::ResponseParser
       return;
     }
 
-    // Step 9. "Let payloadLength be the result of getting the length of a CBOR
-    // bytestring header from stream (Section 3.5.2). If payloadLength is an
-    // error, return that error."
+    // Parse payload.
     auto payload_length = input.ReadCBORHeader(CBORType::kByteString);
     if (!payload_length) {
       RunErrorCallbackAndDestroy("Cannot parse response payload length.");
       return;
     }
 
-    // Step 10. "If payloadLength is greater than 0 and headers does not contain
-    // a Content-Type header, return an error."
+    // "If a response's payload is not empty, its headers MUST include a
+    // Content-Type header (Section 8.3 of [I-D.ietf-httpbis-semantics])."
     if (*payload_length > 0 &&
         !parsed_headers->headers.contains("content-type")) {
       RunErrorCallbackAndDestroy(
@@ -1239,22 +1293,11 @@ class WebBundleParser::ResponseParser
       return;
     }
 
-    // Step 11. "If stream.currentOffset + payloadLength !=
-    // requestMetadata.offset + requestMetadata.length, return an error."
     if (input.CurrentOffset() + *payload_length != response_length_) {
       RunErrorCallbackAndDestroy("Unexpected payload length.");
       return;
     }
 
-    // Step 12. "Let body be a new body ([FETCH]) whose stream is a tee'd copy
-    // of stream starting at the current offset and ending after payloadLength
-    // bytes."
-
-    // Step 13. "Let response be a new response ([FETCH]) whose:
-    // - Url list is request's url list,
-    // - status is pseudos[':status'],
-    // - header list is headers, and
-    // - body is body."
     mojom::BundleResponsePtr response = mojom::BundleResponse::New();
     response->response_code = status;
     response->response_headers = std::move(parsed_headers->headers);
@@ -1288,8 +1331,6 @@ class WebBundleParser::ResponseParser
   ParseResponseCallback callback_;
 
   base::WeakPtrFactory<ResponseParser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResponseParser);
 };
 
 WebBundleParser::SharedBundleDataSource::SharedBundleDataSource(
@@ -1327,10 +1368,13 @@ void WebBundleParser::SharedBundleDataSource::Read(
 
 WebBundleParser::WebBundleParser(
     mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-    mojo::PendingRemote<mojom::BundleDataSource> data_source)
+    mojo::PendingRemote<mojom::BundleDataSource> data_source,
+    const GURL& base_url)
     : receiver_(this, std::move(receiver)),
-      data_source_(base::MakeRefCounted<SharedBundleDataSource>(
-          std::move(data_source))) {
+      data_source_(
+          base::MakeRefCounted<SharedBundleDataSource>(std::move(data_source))),
+      base_url_(base_url) {
+  DCHECK(base_url_.is_empty() || base_url_.is_valid());
   receiver_.set_disconnect_handler(base::BindOnce(
       &base::DeletePointer<WebBundleParser>, base::Unretained(this)));
 }
@@ -1339,7 +1383,7 @@ WebBundleParser::~WebBundleParser() = default;
 
 void WebBundleParser::ParseMetadata(ParseMetadataCallback callback) {
   MetadataParser* parser =
-      new MetadataParser(data_source_, std::move(callback));
+      new MetadataParser(data_source_, base_url_, std::move(callback));
   parser->Start();
 }
 

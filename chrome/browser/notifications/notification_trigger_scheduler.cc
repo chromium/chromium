@@ -25,34 +25,6 @@
 using content::BrowserContext;
 using content::BrowserThread;
 
-namespace {
-
-void TriggerNotificationsForProfile(Profile* profile) {
-  auto* service = PlatformNotificationServiceFactory::GetForProfile(profile);
-  base::Time next_trigger = service->ReadNextTriggerTimestamp();
-
-  // Skip this profile if there are no pending notifications.
-  if (next_trigger > base::Time::Now()) {
-    // Reschedule in case there are some in the future.
-    if (next_trigger < base::Time::Max())
-      service->ScheduleTrigger(next_trigger);
-    return;
-  }
-
-  // Reset the next trigger time. It will be set again if there are more
-  // scheduled notifications for any storage partition of this profile.
-  profile->GetPrefs()->SetTime(prefs::kNotificationNextTriggerTime,
-                               base::Time::Max());
-
-  // Unretained is safe here because BrowserContext::ForEachStoragePartition is
-  // synchronous and the profile just got fetched via GetLoadedProfiles.
-  profile->ForEachStoragePartition(base::BindRepeating(
-      &NotificationTriggerScheduler::TriggerNotificationsForStoragePartition,
-      base::Unretained(service->GetNotificationTriggerScheduler())));
-}
-
-}  // namespace
-
 // static
 std::unique_ptr<NotificationTriggerScheduler>
 NotificationTriggerScheduler::Create() {
@@ -73,7 +45,7 @@ void NotificationTriggerScheduler::TriggerNotifications() {
   for (Profile* profile : profiles) {
     TriggerNotificationsForProfile(profile);
     // Notifications are technically not supported in OffTheRecord, but in case
-    //  weever change that lets handle these profiles too.
+    // we ever change that lets handle these profiles too.
     if (profile->HasAnyOffTheRecordProfile()) {
       std::vector<Profile*> otr_profiles =
           profile->GetAllOffTheRecordProfiles();
@@ -103,4 +75,29 @@ void NotificationTriggerScheduler::ScheduleTrigger(base::Time timestamp) {
 void NotificationTriggerScheduler::TriggerNotificationsForStoragePartition(
     content::StoragePartition* partition) {
   partition->GetPlatformNotificationContext()->TriggerNotifications();
+}
+
+void NotificationTriggerScheduler::TriggerNotificationsForProfile(
+    Profile* profile) {
+  auto* service = PlatformNotificationServiceFactory::GetForProfile(profile);
+  base::Time next_trigger = service->ReadNextTriggerTimestamp();
+
+  // Skip this profile if there are no pending notifications.
+  if (next_trigger > base::Time::Now()) {
+    // Reschedule in case there are some in the future.
+    if (next_trigger < base::Time::Max())
+      service->ScheduleTrigger(next_trigger);
+    return;
+  }
+
+  // Reset the next trigger time. It will be set again if there are more
+  // scheduled notifications for any storage partition of this profile.
+  profile->GetPrefs()->SetTime(prefs::kNotificationNextTriggerTime,
+                               base::Time::Max());
+
+  // Unretained is safe here because BrowserContext::ForEachStoragePartition is
+  // synchronous and the profile just got fetched via GetLoadedProfiles.
+  profile->ForEachStoragePartition(base::BindRepeating(
+      &NotificationTriggerScheduler::TriggerNotificationsForStoragePartition,
+      base::Unretained(service->GetNotificationTriggerScheduler())));
 }

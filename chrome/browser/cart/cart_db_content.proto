@@ -9,6 +9,7 @@ option optimize_for = LITE_RUNTIME;
 package cart_db;
 
 // Represents an amount of money with its currency type.
+// Next id: 4
 message MoneyProto {
   // Three-letter currency code defined in ISO 4217.
   string currency_code = 1;
@@ -27,7 +28,8 @@ message MoneyProto {
 }
 
 // Used storing discount for a specific rule.
-message DiscountInfoProto {
+// Next id: 6
+message RuleDiscountInfoProto {
   // This should be a int64_t, use string because base::Value does not support
   // int64_t.
   string rule_id = 1;
@@ -43,6 +45,7 @@ message DiscountInfoProto {
 }
 
 // Used for storing the discount information of this cart.
+// Next id: 7
 message ChromeCartDiscountProto {
   // String indicating the content of the discount on this cart (e.g. 15% off).
   string discount_text = 1;
@@ -53,10 +56,15 @@ message ChromeCartDiscountProto {
   // int64_t.
   string merchant_id = 3;
 
-  repeated DiscountInfoProto discount_info = 4;
+  reserved 4;
+
+  repeated RuleDiscountInfoProto rule_discount_info = 5;
+
+  bool has_coupons = 6;
 }
 
 // Used for storing information of products within the cart.
+// Next id: 10
 message ChromeCartProductProto {
   // String indicating the ID of the product. The format of IDs may vary among
   // different merchants.

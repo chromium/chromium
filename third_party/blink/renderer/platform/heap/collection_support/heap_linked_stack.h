@@ -50,7 +50,7 @@ class HeapLinkedStack final : public GarbageCollected<HeapLinkedStack<T>> {
  public:
   HeapLinkedStack() { CheckType(); }
 
-  inline size_t size() const;
+  inline wtf_size_t size() const;
   inline bool IsEmpty() const;
 
   inline void Push(const T&);
@@ -81,7 +81,7 @@ class HeapLinkedStack final : public GarbageCollected<HeapLinkedStack<T>> {
   }
 
   Member<Node> head_;
-  size_t size_ = 0;
+  wtf_size_t size_ = 0;
 };
 
 template <typename T>
@@ -113,7 +113,7 @@ void HeapLinkedStack<T>::Pop() {
 }
 
 template <typename T>
-size_t HeapLinkedStack<T>::size() const {
+wtf_size_t HeapLinkedStack<T>::size() const {
   return size_;
 }
 

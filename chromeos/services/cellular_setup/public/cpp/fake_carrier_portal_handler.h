@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -20,6 +19,10 @@ namespace cellular_setup {
 class FakeCarrierPortalHandler : public mojom::CarrierPortalHandler {
  public:
   FakeCarrierPortalHandler();
+
+  FakeCarrierPortalHandler(const FakeCarrierPortalHandler&) = delete;
+  FakeCarrierPortalHandler& operator=(const FakeCarrierPortalHandler&) = delete;
+
   ~FakeCarrierPortalHandler() override;
 
   mojo::PendingRemote<mojom::CarrierPortalHandler> GenerateRemote();
@@ -35,8 +38,6 @@ class FakeCarrierPortalHandler : public mojom::CarrierPortalHandler {
  private:
   std::vector<mojom::CarrierPortalStatus> status_updates_;
   mojo::ReceiverSet<mojom::CarrierPortalHandler> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCarrierPortalHandler);
 };
 
 }  // namespace cellular_setup

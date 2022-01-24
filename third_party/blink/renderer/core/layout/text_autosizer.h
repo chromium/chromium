@@ -33,8 +33,6 @@
 
 #include <unicode/uchar.h>
 
-#include <memory>
-
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom-blink.h"
@@ -142,8 +140,8 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
   };
 
  private:
-  typedef HashSet<LayoutBlock*> BlockSet;
-  typedef HashSet<const LayoutBlock*> ConstBlockSet;
+  typedef HeapHashSet<Member<LayoutBlock>> BlockSet;
+  typedef HeapHashSet<Member<const LayoutBlock>> ConstBlockSet;
 
   enum HasEnoughTextToAutosize {
     kUnknownAmountOfText,
@@ -187,38 +185,37 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
   // more blocks that all have the same fingerprint. Clusters whose roots
   // belong to a supercluster will share a common multiplier and
   // text-length-based autosizing status.
-  struct Supercluster {
-    USING_FAST_MALLOC(Supercluster);
-
+  struct Supercluster : public GarbageCollected<Supercluster> {
    public:
     explicit Supercluster(const BlockSet* roots)
         : roots_(roots),
           has_enough_text_to_autosize_(kUnknownAmountOfText),
           multiplier_(0),
           inherit_parent_multiplier_(kUnknown) {}
+    void Trace(Visitor*) const;
 
-    const BlockSet* roots_;
+    Member<const BlockSet> roots_;
     HasEnoughTextToAutosize has_enough_text_to_autosize_;
     float multiplier_;
     InheritParentMultiplier inherit_parent_multiplier_;
   };
 
-  struct Cluster {
-    USING_FAST_MALLOC(Cluster);
-
+  struct Cluster : public GarbageCollected<Cluster> {
    public:
     explicit Cluster(const LayoutBlock* root,
                      BlockFlags,
                      Cluster* parent,
                      Supercluster* = nullptr);
 
-    const LayoutBlock* const root_;
+    void Trace(Visitor*) const;
+
+    Member<const LayoutBlock> const root_;
     BlockFlags flags_;
     // The deepest block containing all text is computed lazily (see:
     // deepestBlockContainingAllText). A value of 0 indicates the value has not
     // been computed yet.
-    const LayoutBlock* deepest_block_containing_all_text_;
-    Cluster* parent_;
+    Member<const LayoutBlock> deepest_block_containing_all_text_;
+    Member<Cluster> parent_;
     // The multiplier is computed lazily (see: clusterMultiplier) because it
     // must be calculated after the lowest block containing all text has entered
     // layout (the m_blocksThatHaveBegunLayout assertions cover this). Note: the
@@ -227,7 +224,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
     float multiplier_;
     HasEnoughTextToAutosize has_enough_text_to_autosize_;
     // A set of blocks that are similar to this block.
-    Supercluster* supercluster_;
+    Member<Supercluster> supercluster_;
     bool has_table_ancestor_;
   };
 
@@ -256,7 +253,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
                 "sizeof(FingerprintSourceData) must be a multiple of UChar");
 
   typedef unsigned Fingerprint;
-  typedef Vector<std::unique_ptr<Cluster>> ClusterStack;
+  typedef HeapVector<Member<Cluster>> ClusterStack;
 
   // Fingerprints are computed during style recalc, for (some subset of)
   // blocks that will become cluster roots.
@@ -273,15 +270,16 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
     BlockSet* GetTentativeClusterRoots(Fingerprint);
     Supercluster* CreateSuperclusterIfNeeded(LayoutBlock*, bool& is_new_entry);
     bool HasFingerprints() const { return !fingerprints_.IsEmpty(); }
-    HashSet<Supercluster*>& GetPotentiallyInconsistentSuperclusters() {
+    HeapHashSet<Member<Supercluster>>&
+    GetPotentiallyInconsistentSuperclusters() {
       return potentially_inconsistent_superclusters_;
     }
+    void Trace(Visitor* visitor) const;
 
    private:
-    typedef HashMap<const LayoutObject*, Fingerprint> FingerprintMap;
-    typedef HashMap<Fingerprint, std::unique_ptr<BlockSet>>
-        ReverseFingerprintMap;
-    typedef HashMap<Fingerprint, std::unique_ptr<Supercluster>> SuperclusterMap;
+    typedef HeapHashMap<Member<const LayoutObject>, Fingerprint> FingerprintMap;
+    typedef HeapHashMap<Fingerprint, Member<BlockSet>> ReverseFingerprintMap;
+    typedef HeapHashMap<Fingerprint, Member<Supercluster>> SuperclusterMap;
 
     FingerprintMap fingerprints_;
     ReverseFingerprintMap blocks_for_fingerprint_;
@@ -289,7 +287,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
     SuperclusterMap superclusters_;
     // Superclusters that need to be checked for consistency at the start of the
     // next layout.
-    HashSet<Supercluster*> potentially_inconsistent_superclusters_;
+    HeapHashSet<Member<Supercluster>> potentially_inconsistent_superclusters_;
 #if DCHECK_IS_ON()
     void AssertMapsAreConsistent();
 #endif
@@ -371,7 +369,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
   void ReportIfCrossSiteFrame();
 
   Member<const Document> document_;
-  const LayoutBlock* first_block_to_begin_layout_;
+  Member<const LayoutBlock> first_block_to_begin_layout_;
 #if DCHECK_IS_ON()
   // Used to ensure we don't compute properties of a block before beginLayout()
   // is called on it.

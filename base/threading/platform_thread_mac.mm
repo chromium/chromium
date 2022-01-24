@@ -155,8 +155,7 @@ TimeDelta GetCurrentThreadRealtimePeriod() {
   NSNumber* period = mac::ObjCCast<NSNumber>(
       [[NSThread currentThread] threadDictionary][kRealtimePeriodNsKey]);
 
-  return period ? TimeDelta::FromNanoseconds(period.longLongValue)
-                : TimeDelta();
+  return period ? Nanoseconds(period.longLongValue) : TimeDelta();
 }
 
 // Calculates time constrints for THREAD_TIME_CONSTRAINT_POLICY.
@@ -267,12 +266,12 @@ void SetPriorityRealtimeAudio(TimeDelta realtime_period) {
 
   UmaHistogramCustomMicrosecondsTimes(
       "PlatformThread.Mac.AttemptedRealtimePeriod", realtime_period,
-      base::TimeDelta(), base::TimeDelta::FromMilliseconds(100), 100);
+      base::TimeDelta(), base::Milliseconds(100), 100);
 
   if (result == KERN_SUCCESS) {
     UmaHistogramCustomMicrosecondsTimes(
         "PlatformThread.Mac.SucceededRealtimePeriod", realtime_period,
-        base::TimeDelta(), base::TimeDelta::FromMilliseconds(100), 100);
+        base::TimeDelta(), base::Milliseconds(100), 100);
   }
   return;
 }
@@ -280,7 +279,8 @@ void SetPriorityRealtimeAudio(TimeDelta realtime_period) {
 }  // anonymous namespace
 
 // static
-bool PlatformThread::CanIncreaseThreadPriority(ThreadPriority priority) {
+bool PlatformThread::CanChangeThreadPriority(ThreadPriority from,
+                                             ThreadPriority to) {
   return true;
 }
 

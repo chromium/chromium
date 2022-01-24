@@ -78,7 +78,7 @@ bool CheckFundamentalBounds(T value,
 ArgumentSpec::ArgumentSpec(const base::Value& value) {
   const base::DictionaryValue* dict = nullptr;
   CHECK(value.GetAsDictionary(&dict));
-  dict->GetBoolean("optional", &optional_);
+  optional_ = dict->FindBoolKey("optional").value_or(optional_);
   dict->GetString("name", &name_);
 
   InitializeType(dict);
@@ -99,7 +99,7 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
     if (dict->GetList("choices", &choices)) {
       DCHECK(!choices->GetList().empty());
       type_ = ArgumentType::CHOICES;
-      choices_.reserve(choices->GetSize());
+      choices_.reserve(choices->GetList().size());
       for (const auto& choice : choices->GetList())
         choices_.push_back(std::make_unique<ArgumentSpec>(choice));
       return;
@@ -129,26 +129,25 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
   else
     NOTREACHED();
 
-  int min = 0;
-  if (dict->GetInteger("minimum", &min))
-    minimum_ = min;
+  if (absl::optional<int> minimum = dict->FindIntKey("minimum"))
+    minimum_ = *minimum;
+  if (absl::optional<int> maximum = dict->FindIntKey("maximum"))
+    maximum_ = *maximum;
 
-  int max = 0;
-  if (dict->GetInteger("maximum", &max))
-    maximum_ = max;
-
-  int min_length = 0;
-  if (dict->GetInteger("minLength", &min_length) ||
-      dict->GetInteger("minItems", &min_length)) {
-    DCHECK_GE(min_length, 0);
-    min_length_ = min_length;
+  absl::optional<int> min_length = dict->FindIntKey("minLength");
+  if (!min_length)
+    min_length = dict->FindIntKey("minItems");
+  if (min_length) {
+    DCHECK_GE(*min_length, 0);
+    min_length_ = *min_length;
   }
 
-  int max_length = 0;
-  if (dict->GetInteger("maxLength", &max_length) ||
-      dict->GetInteger("maxItems", &max_length)) {
-    DCHECK_GE(max_length, 0);
-    max_length_ = max_length;
+  absl::optional<int> max_length = dict->FindIntKey("maxLength");
+  if (!max_length)
+    max_length = dict->FindIntKey("maxItems");
+  if (max_length) {
+    DCHECK_GE(*max_length, 0);
+    max_length_ = *max_length;
   }
 
   if (type_ == ArgumentType::OBJECT) {
@@ -177,15 +176,17 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
     // always update this if need be.
     const base::ListValue* enums = nullptr;
     if (dict->GetList("enum", &enums)) {
-      size_t size = enums->GetSize();
+      size_t size = enums->GetList().size();
       CHECK_GT(size, 0u);
       for (size_t i = 0; i < size; ++i) {
         std::string enum_value;
         // Enum entries come in two versions: a list of possible strings, and
         // a dictionary with a field 'name'.
         if (!enums->GetString(i, &enum_value)) {
-          const base::DictionaryValue* enum_value_dictionary = nullptr;
-          CHECK(enums->GetDictionary(i, &enum_value_dictionary));
+          const base::Value& value = enums->GetList()[i];
+          CHECK(value.is_dict());
+          const base::DictionaryValue* enum_value_dictionary =
+              static_cast<const base::DictionaryValue*>(&value);
           CHECK(enum_value_dictionary->GetString("name", &enum_value));
         }
         enum_values_.insert(std::move(enum_value));
@@ -200,7 +201,7 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
   // on arguments of type object and any (in fact, it's only used in the storage
   // API), but it could potentially make sense for lists or functions as well.
   if (type_ == ArgumentType::OBJECT || type_ == ArgumentType::ANY)
-    dict->GetBoolean("preserveNull", &preserve_null_);
+    preserve_null_ = dict->FindBoolKey("preserveNull").value_or(preserve_null_);
 
   if (type_ == ArgumentType::OBJECT || type_ == ArgumentType::BINARY) {
     std::string instance_of;

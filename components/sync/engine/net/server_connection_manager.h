@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 
@@ -92,6 +91,10 @@ class ServerConnectionEventListener {
 class ServerConnectionManager {
  public:
   ServerConnectionManager();
+
+  ServerConnectionManager(const ServerConnectionManager&) = delete;
+  ServerConnectionManager& operator=(const ServerConnectionManager&) = delete;
+
   virtual ~ServerConnectionManager();
 
   // POSTs |buffer_in| and reads the body of the response into |buffer_out|.
@@ -148,8 +151,6 @@ class ServerConnectionManager {
   HttpResponse server_response_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ServerConnectionManager);
 };
 
 std::ostream& operator<<(std::ostream& s, const struct HttpResponse& hr);

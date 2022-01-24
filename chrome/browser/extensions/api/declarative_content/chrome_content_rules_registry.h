@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/declarative_content/content_action.h"
 #include "chrome/browser/extensions/api/declarative_content/content_condition.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
@@ -59,6 +58,10 @@ class ChromeContentRulesRegistry
                              RulesCacheDelegate* cache_delegate,
                              PredicateEvaluatorsFactory evaluators_factory);
 
+  ChromeContentRulesRegistry(const ChromeContentRulesRegistry&) = delete;
+  ChromeContentRulesRegistry& operator=(const ChromeContentRulesRegistry&) =
+      delete;
+
   // ContentRulesRegistry:
   void MonitorWebContentsForRuleEvaluation(
       content::WebContents* contents) override;
@@ -98,15 +101,16 @@ class ChromeContentRulesRegistry
                 std::vector<std::unique_ptr<const ContentCondition>> conditions,
                 std::vector<std::unique_ptr<const ContentAction>> actions,
                 int priority);
+
+    ContentRule(const ContentRule&) = delete;
+    ContentRule& operator=(const ContentRule&) = delete;
+
     ~ContentRule();
 
     const Extension* extension;
     std::vector<std::unique_ptr<const ContentCondition>> conditions;
     std::vector<std::unique_ptr<const ContentAction>> actions;
     int priority;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ContentRule);
   };
 
   // Specifies what to do with evaluation requests.
@@ -173,8 +177,6 @@ class ChromeContentRulesRegistry
   // Contains WebContents which require rule evaluation. Only used while
   // |evaluation_disposition_| is DEFER.
   std::set<content::WebContents*> evaluation_pending_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentRulesRegistry);
 };
 
 }  // namespace extensions

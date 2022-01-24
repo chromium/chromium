@@ -33,6 +33,10 @@ namespace internal {
 class NET_EXPORT_PRIVATE DnsConfigServicePosix : public DnsConfigService {
  public:
   DnsConfigServicePosix();
+
+  DnsConfigServicePosix(const DnsConfigServicePosix&) = delete;
+  DnsConfigServicePosix& operator=(const DnsConfigServicePosix&) = delete;
+
   ~DnsConfigServicePosix() override;
 
   void RefreshConfig() override;
@@ -52,9 +56,7 @@ class NET_EXPORT_PRIVATE DnsConfigServicePosix : public DnsConfigService {
   class ConfigReader;
 
   std::unique_ptr<Watcher> watcher_;
-  scoped_refptr<ConfigReader> config_reader_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsConfigServicePosix);
+  std::unique_ptr<ConfigReader> config_reader_;
 };
 
 // Returns nullopt iff a valid config could not be determined.

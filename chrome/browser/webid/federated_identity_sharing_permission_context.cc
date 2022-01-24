@@ -120,7 +120,7 @@ void FederatedIdentitySharingPermissionContext::
   auto& account_list = *new_object.FindListKey(kAccountIdsKey);
   account_list.EraseListValue(base::Value(account_id));
 
-  // Remove the permission object if there is no account left  .
+  // Remove the permission object if there is no account left.
   if (account_list.GetList().size() == 0) {
     RevokeObjectPermission(identity_provider, key);
   } else {

@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Px;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.ui.widget.ChipView;
 
@@ -24,6 +25,10 @@ public class ContinuousSearchChipView extends ChipView {
     public ContinuousSearchChipView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mIsTwoLineChipView = false;
+        // One-row chip padding modification.
+        int padding =
+                getResources().getDimensionPixelOffset(R.dimen.csn_single_row_chip_side_padding);
+        ViewCompat.setPaddingRelative(this, padding, 0, padding, 0);
     }
 
     /**
@@ -41,14 +46,7 @@ public class ContinuousSearchChipView extends ChipView {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         layout.setOrientation(VERTICAL);
 
-        // Modify chip  to accommodate vertically stacked TextViews
-        @Px
-        int sidePadding = getResources().getDimensionPixelSize(R.dimen.csn_chip_side_padding);
-        @Px
-        int verticalPadding =
-                getResources().getDimensionPixelSize(R.dimen.csn_chip_vertical_padding);
-        setPaddingRelative(sidePadding, getPaddingTop(), sidePadding, getPaddingBottom());
-        layout.setPaddingRelative(0, verticalPadding, 0, verticalPadding);
+        // Modify TextViews to have them vertically stacked.
         setupTextView(primaryText);
         setupTextView(secondaryText);
 
@@ -59,6 +57,16 @@ public class ContinuousSearchChipView extends ChipView {
         layout.addView(primaryText);
         layout.addView(secondaryText);
         addView(layout);
+
+        // Adjust chip paddings
+        @Px
+        int sidePadding =
+                getResources().getDimensionPixelSize(R.dimen.csn_double_row_chip_side_padding);
+        @Px
+        int verticalPadding =
+                getResources().getDimensionPixelSize(R.dimen.csn_double_row_chip_vertical_padding);
+        ViewCompat.setPaddingRelative(
+                this, sidePadding, verticalPadding, sidePadding, verticalPadding);
         mIsTwoLineChipView = true;
     }
 

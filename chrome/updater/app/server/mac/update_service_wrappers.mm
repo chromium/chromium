@@ -29,7 +29,7 @@ static NSString* const kCRUPriority = @"priority";
 static NSString* const kCRUErrorCategory = @"errorCategory";
 
 using StateChangeCallback =
-    base::RepeatingCallback<void(updater::UpdateService::UpdateState)>;
+    base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>;
 
 @implementation CRUUpdateStateObserver {
   scoped_refptr<base::SequencedTaskRunner> _callbackRunner;

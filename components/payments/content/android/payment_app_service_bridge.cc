@@ -59,11 +59,14 @@ void OnPaymentAppCreated(const JavaRef<jobject>& jcallback,
       payments::JniPaymentApp::Create(env, std::move(payment_app)));
 }
 
-void OnPaymentAppCreationError(const JavaRef<jobject>& jcallback,
-                               const std::string& error_message) {
+void OnPaymentAppCreationError(
+    const JavaRef<jobject>& jcallback,
+    const std::string& error_message,
+    payments::AppCreationFailureReason error_reason) {
   JNIEnv* env = AttachCurrentThread();
   Java_PaymentAppServiceCallback_onPaymentAppCreationError(
-      env, jcallback, ConvertUTF8ToJavaString(env, error_message));
+      env, jcallback, ConvertUTF8ToJavaString(env, error_message),
+      static_cast<jint>(error_reason));
 }
 
 void OnDoneCreatingPaymentApps(const JavaRef<jobject>& jcallback) {
@@ -204,9 +207,7 @@ PaymentAppServiceBridge::PaymentAppServiceBridge(
     base::OnceClosure done_creating_payment_apps_callback,
     base::RepeatingClosure set_can_make_payment_even_without_apps_callback)
     : number_of_pending_factories_(number_of_factories),
-      frame_routing_id_(content::GlobalRenderFrameHostId(
-          render_frame_host->GetProcess()->GetID(),
-          render_frame_host->GetRoutingID())),
+      frame_routing_id_(render_frame_host->GetGlobalId()),
       top_origin_(top_origin),
       frame_origin_(url_formatter::FormatUrlForSecurityDisplay(
           render_frame_host->GetLastCommittedURL())),
@@ -265,7 +266,7 @@ PaymentAppServiceBridge::GetMethodData() const {
   return spec_->method_data();
 }
 
-std::unique_ptr<autofill::InternalAuthenticator>
+std::unique_ptr<webauthn::InternalAuthenticator>
 PaymentAppServiceBridge::CreateInternalAuthenticator() const {
   // This authenticator can be used in a cross-origin iframe only if the
   // top-level frame allowed it with Permissions Policy, e.g., with
@@ -274,8 +275,7 @@ PaymentAppServiceBridge::CreateInternalAuthenticator() const {
   // [Verify] button to invoke this authenticator.
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
   return rfh && rfh->IsActive()
-             ? std::make_unique<InternalAuthenticatorAndroid>(
-                   rfh->GetMainFrame())
+             ? std::make_unique<InternalAuthenticatorAndroid>(rfh)
              : nullptr;
 }
 
@@ -307,7 +307,7 @@ bool PaymentAppServiceBridge::IsRequestedAutofillDataAvailable() {
   return false;
 }
 
-ContentPaymentRequestDelegate*
+base::WeakPtr<ContentPaymentRequestDelegate>
 PaymentAppServiceBridge::GetPaymentRequestDelegate() const {
   // PaymentAppService flow should have short-circuited before this point.
   NOTREACHED();
@@ -339,8 +339,9 @@ bool PaymentAppServiceBridge::SkipCreatingNativePaymentApps() const {
 }
 
 void PaymentAppServiceBridge::OnPaymentAppCreationError(
-    const std::string& error_message) {
-  payment_app_creation_error_callback_.Run(error_message);
+    const std::string& error_message,
+    AppCreationFailureReason error_reason) {
+  payment_app_creation_error_callback_.Run(error_message, error_reason);
 }
 
 void PaymentAppServiceBridge::OnDoneCreatingPaymentApps() {

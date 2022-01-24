@@ -16,13 +16,12 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
@@ -619,9 +618,8 @@ void DevToolsHttpHandler::OnJsonRequest(
       return;
     }
     std::string host = info.GetHeaderValue("host");
-    std::unique_ptr<base::DictionaryValue> dictionary(
-        SerializeDescriptor(agent_host, host));
-    SendJson(connection_id, net::HTTP_OK, dictionary.get(), std::string());
+    base::Value descriptor = SerializeDescriptor(agent_host, host);
+    SendJson(connection_id, net::HTTP_OK, &descriptor, std::string());
     return;
   }
 
@@ -690,8 +688,15 @@ void DevToolsHttpHandler::RespondToJsonList(
 }
 
 void DevToolsHttpHandler::OnDiscoveryPageRequest(int connection_id) {
-  std::string response = delegate_->GetDiscoveryPageHTML();
-  Send200(connection_id, response, "text/html; charset=UTF-8");
+  net::HttpServerResponseInfo response(net::HTTP_OK);
+  response.AddHeader("X-Frame-Options", "DENY");
+  response.SetBody(delegate_->GetDiscoveryPageHTML(),
+                   "text/html; charset=UTF-8");
+
+  thread_->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&ServerWrapper::SendResponse,
+                                base::Unretained(server_wrapper_.get()),
+                                connection_id, response));
 }
 
 void DevToolsHttpHandler::OnFrontendResourceRequest(
@@ -861,33 +866,35 @@ void DevToolsHttpHandler::AcceptWebSocket(
                                 connection_id, request));
 }
 
-std::unique_ptr<base::DictionaryValue> DevToolsHttpHandler::SerializeDescriptor(
+base::Value DevToolsHttpHandler::SerializeDescriptor(
     scoped_refptr<DevToolsAgentHost> agent_host,
     const std::string& host) {
-  std::unique_ptr<base::DictionaryValue> dictionary(new base::DictionaryValue);
+  base::Value dictionary(base::Value::Type::DICTIONARY);
   std::string id = agent_host->GetId();
-  dictionary->SetString(kTargetIdField, id);
+  dictionary.SetStringKey(kTargetIdField, id);
   std::string parent_id = agent_host->GetParentId();
   if (!parent_id.empty())
-    dictionary->SetString(kTargetParentIdField, parent_id);
-  dictionary->SetString(kTargetTypeField, agent_host->GetType());
-  dictionary->SetString(kTargetTitleField,
-                        net::EscapeForHTML(agent_host->GetTitle()));
-  dictionary->SetString(kTargetDescriptionField, agent_host->GetDescription());
+    dictionary.SetStringKey(kTargetParentIdField, parent_id);
+  dictionary.SetStringKey(kTargetTypeField, agent_host->GetType());
+  dictionary.SetStringKey(kTargetTitleField,
+                          net::EscapeForHTML(agent_host->GetTitle()));
+  dictionary.SetStringKey(kTargetDescriptionField,
+                          agent_host->GetDescription());
 
   GURL url = agent_host->GetURL();
-  dictionary->SetString(kTargetUrlField, url.spec());
+  dictionary.SetStringKey(kTargetUrlField, url.spec());
 
   GURL favicon_url = agent_host->GetFaviconURL();
   if (favicon_url.is_valid())
-    dictionary->SetString(kTargetFaviconUrlField, favicon_url.spec());
+    dictionary.SetStringKey(kTargetFaviconUrlField, favicon_url.spec());
 
-  dictionary->SetString(kTargetWebSocketDebuggerUrlField,
-                        base::StringPrintf("ws://%s%s%s", host.c_str(),
-                                           kPageUrlPrefix, id.c_str()));
+  dictionary.SetStringKey(kTargetWebSocketDebuggerUrlField,
+                          base::StringPrintf("ws://%s%s%s", host.c_str(),
+                                             kPageUrlPrefix, id.c_str()));
   std::string devtools_frontend_url =
       GetFrontendURLInternal(agent_host, id, host);
-  dictionary->SetString(kTargetDevtoolsFrontendUrlField, devtools_frontend_url);
+  dictionary.SetStringKey(kTargetDevtoolsFrontendUrlField,
+                          devtools_frontend_url);
 
   return dictionary;
 }

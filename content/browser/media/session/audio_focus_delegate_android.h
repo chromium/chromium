@@ -23,6 +23,11 @@ namespace content {
 class AudioFocusDelegateAndroid : public AudioFocusDelegate {
  public:
   explicit AudioFocusDelegateAndroid(MediaSessionImpl* media_session);
+
+  AudioFocusDelegateAndroid(const AudioFocusDelegateAndroid&) = delete;
+  AudioFocusDelegateAndroid& operator=(const AudioFocusDelegateAndroid&) =
+      delete;
+
   ~AudioFocusDelegateAndroid() override;
 
   void Initialize();
@@ -64,7 +69,6 @@ class AudioFocusDelegateAndroid : public AudioFocusDelegate {
   // Weak pointer because |this| is owned by |media_session_|.
   MediaSessionImpl* media_session_;
   base::android::ScopedJavaGlobalRef<jobject> j_media_session_delegate_;
-  DISALLOW_COPY_AND_ASSIGN(AudioFocusDelegateAndroid);
 };
 
 }  // namespace content

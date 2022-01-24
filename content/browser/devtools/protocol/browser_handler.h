@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_BROWSER_HANDLER_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "components/download/public/common/download_item.h"
 #include "content/browser/devtools/protocol/browser.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
@@ -23,6 +22,10 @@ class BrowserHandler : public DevToolsDomainHandler,
                        public download::DownloadItem::Observer {
  public:
   explicit BrowserHandler(bool allow_set_download_behavior);
+
+  BrowserHandler(const BrowserHandler&) = delete;
+  BrowserHandler& operator=(const BrowserHandler&) = delete;
+
   ~BrowserHandler() override;
 
   static Response FindBrowserContext(
@@ -98,8 +101,6 @@ class BrowserHandler : public DevToolsDomainHandler,
   bool download_events_enabled_;
   const bool allow_set_download_behavior_;
   base::flat_set<download::DownloadItem*> pending_downloads_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserHandler);
 };
 
 }  // namespace protocol

@@ -2,564 +2,2006 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/path_service.h"
-#include "chrome/browser/ui/views/web_apps/web_app_integration_browsertest_base.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+#include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 #include "content/public/test/browser_test.h"
-#include "services/network/public/cpp/network_switches.h"
 
 namespace web_app {
 
-namespace {
+// Manual tests:
 
-const std::string kTestCaseFileName =
-    "web_app_integration_browsertest_cases.csv";
-
-// Returns the path of the requested file in the test data directory.
-base::FilePath GetTestFileDir() {
-  base::FilePath file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
-  file_path = file_path.Append(FILE_PATH_LITERAL("chrome"));
-  file_path = file_path.Append(FILE_PATH_LITERAL("test"));
-  file_path = file_path.Append(FILE_PATH_LITERAL("data"));
-  return file_path.Append(FILE_PATH_LITERAL("web_apps"));
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, UninstallFromList) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.UninstallFromList("SiteA");
+  helper_.CheckAppNotInList("SiteA");
 }
 
-std::vector<std::string> BuildAllPlatformTestCaseSet() {
-  return WebAppIntegrationBrowserTestBase::BuildAllPlatformTestCaseSet(
-      GetTestFileDir(), kTestCaseFileName);
-}
+// Automated tests:
 
-}  // anonymous namespace
-
-class WebAppIntegrationBrowserTest
-    : public InProcessBrowserTest,
-      public WebAppIntegrationBrowserTestBase::TestDelegate,
-      public testing::WithParamInterface<std::string> {
- public:
-  WebAppIntegrationBrowserTest() : helper_(this) {}
-
-  // InProcessBrowserTest
-  void SetUp() override {
-    helper_.SetUp(GetChromeTestDataDir());
-    InProcessBrowserTest::SetUp();
-  }
-
-  // BrowserTestBase
-  void SetUpOnMainThread() override { helper_.SetUpOnMainThread(); }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ASSERT_TRUE(embedded_test_server()->Start());
-    command_line->AppendSwitchASCII(
-        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        helper_.GetInstallableAppURL("site_a").GetOrigin().spec());
-    command_line->AppendSwitchASCII(
-        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        helper_.GetInstallableAppURL("site_b").GetOrigin().spec());
-    command_line->AppendSwitchASCII(
-        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        helper_.GetInstallableAppURL("site_c").GetOrigin().spec());
-    command_line->AppendSwitchASCII(
-        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        helper_.GetInstallableAppURL("site_a_foo").GetOrigin().spec());
-    command_line->AppendSwitchASCII(
-        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        helper_.GetInstallableAppURL("site_a_bar").GetOrigin().spec());
-  }
-
-  // WebAppIntegrationBrowserTestBase::TestDelegate
-  Browser* CreateBrowser(Profile* profile) override {
-    return InProcessBrowserTest::CreateBrowser(profile);
-  }
-
-  void AddBlankTabAndShow(Browser* browser) override {
-    InProcessBrowserTest::AddBlankTabAndShow(browser);
-  }
-
-  net::EmbeddedTestServer* EmbeddedTestServer() override {
-    return embedded_test_server();
-  }
-
-  std::vector<Profile*> GetAllProfiles() override {
-    return std::vector<Profile*>{browser()->profile()};
-  }
-
-  bool IsSyncTest() override { return false; }
-
-  bool UserSigninInternal() override {
-    NOTREACHED();
-    return false;
-  }
-  void TurnSyncOff() override { NOTREACHED(); }
-  void TurnSyncOn() override { NOTREACHED(); }
-
-  WebAppIntegrationBrowserTestBase helper_;
-};
-
-// This test is a part of the web app integration test suite, which is
-// documented in //chrome/browser/ui/views/web_apps/README.md. For information
-// about diagnosing, debugging and/or disabling tests, please look to the
-// README file.
-IN_PROC_BROWSER_TEST_P(WebAppIntegrationBrowserTest, Default) {
-  helper_.ParseParams(GetParam());
-  // Since this test framework differs from traditional browser tests, print
-  // some useful information for sheriffs and developers to help identify,
-  // diagnose, and disable failing tests.
-  LOG(INFO) << helper_.BuildLogForTest(helper_.testing_actions(), IsSyncTest());
-
-  for (auto& action : helper_.testing_actions()) {
-    helper_.ExecuteAction(action);
-  }
-  helper_.ResetRegistrarObserver();
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppIntegrationBrowserTest,
-                         testing::ValuesIn(BuildAllPlatformTestCaseSet()));
-
-// TODO(jarrydg@chromium.org): Remove the macro disabling the following tests
-// when they can compile. https://crbug.com/1215791
-#if false
-namespace {
-
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InstPlcyTabShctSiteA_NavSiteA_LaunchIconShown) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_NavSiteA_LaunchIconShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallOmniboxIcon("SiteA");
-  CheckWindowCreated();
-  InstallPolicyAppTabbedShortcut("SiteA");
-  NavigateBrowser("SiteA");
-  CheckLaunchIconShown();
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckLaunchIconShown();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InstPlcyTabShctSiteA_UninstallPlcySiteA) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallOmniboxIcon("SiteA");
-  CheckWindowCreated();
-  InstallPolicyAppTabbedShortcut("SiteA");
-  UninstallPolicyApp("SiteA");
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstOmniboxSiteA_WindowCreated_NavSiteA_InstIconNotShown_LaunchIconShown) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_UninstallPlcySiteA_InListWinSiteA) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallOmniboxIcon("SiteA");
-  CheckWindowCreated();
-  NavigateBrowser("SiteA");
-  CheckInstallIconNotShown();
-  CheckLaunchIconShown();
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstOmniboxSiteA_WindowCreated_ClosePWA_MnfstUpdateDsplMinimalSiteA) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyWinNoShctSiteA_UninstallPlcySiteA_InListWinSiteA) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallOmniboxIcon("SiteA");
-  CheckWindowCreated();
-  ClosePwa();
-  ManifestUpdateDisplayMinimal("SiteA");
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstOmniboxSiteA_WindowCreated_SetOpenTabSiteA_NavSiteA_InstIconShown) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyTabShctSiteA_InListWinSiteA_NavSiteA_LaunchIconShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallOmniboxIcon("SiteA");
-  CheckWindowCreated();
-  SetOpenInTab("SiteA");
-  NavigateBrowser("SiteA");
-  CheckInstallIconShown();
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckLaunchIconShown();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstOmniboxSiteA_WindowCreated_NavSiteAFoo_InstIconNotShown_LaunchIconShown) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyTabShctSiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallOmniboxIcon("SiteA");
-  CheckWindowCreated();
-  NavigateBrowser("SiteAFoo");
-  CheckInstallIconNotShown();
-  CheckLaunchIconShown();
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InstPlcyWinShctSiteA_UninstallPlcySiteA) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyTabShctSiteA_InListWinSiteA_UninstallPlcySiteA_InListWinSiteA) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallOmniboxIcon("SiteA");
-  CheckWindowCreated();
-  InstallPolicyAppWindowedShortcut("SiteA");
-  UninstallPolicyApp("SiteA");
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InstPlcyTabShctSiteA_NavSiteA_LaunchIconShown) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallMenuOption("SiteA");
-  CheckWindowCreated();
-  InstallPolicyAppTabbedShortcut("SiteA");
-  NavigateBrowser("SiteA");
-  CheckLaunchIconShown();
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InstPlcyTabShctSiteA_UninstallPlcySiteA) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_ClosePWA_MnfstUpdateDsplMinimalSiteA_LaunchFromListSiteA_Minimal) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallMenuOption("SiteA");
-  CheckWindowCreated();
-  InstallPolicyAppTabbedShortcut("SiteA");
-  UninstallPolicyApp("SiteA");
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.ClosePwa();
+  helper_.ManifestUpdateDisplayMinimal("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowDisplayMinimal();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_NavSiteA_InstIconNotShown_LaunchIconShown) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_LaunchFromListSiteA_WindowCreated_Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallMenuOption("SiteA");
-  CheckWindowCreated();
-  NavigateBrowser("SiteA");
-  CheckInstallIconNotShown();
-  CheckLaunchIconShown();
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_ClosePWA_MnfstUpdateDsplMinimalSiteA) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SetOpenTabSiteA_InListTabbedSiteA_LaunchFromListSiteA_TabCreated) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallMenuOption("SiteA");
-  CheckWindowCreated();
-  ClosePwa();
-  ManifestUpdateDisplayMinimal("SiteA");
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.SetOpenInTab("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckTabCreated();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_SetOpenTabSiteA_NavSiteA_InstIconShown) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SetOpenTabSiteA_InListTabbedSiteA_NavSiteA_InstIconShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallMenuOption("SiteA");
-  CheckWindowCreated();
-  SetOpenInTab("SiteA");
-  NavigateBrowser("SiteA");
-  CheckInstallIconShown();
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.SetOpenInTab("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_NavSiteAFoo_InstIconNotShown_LaunchIconShown) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_NavSiteAFoo_InstIconNotShown_LaunchIconShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallMenuOption("SiteA");
-  CheckWindowCreated();
-  NavigateBrowser("SiteAFoo");
-  CheckInstallIconNotShown();
-  CheckLaunchIconShown();
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteAFoo");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InstPlcyWinShctSiteA_UninstallPlcySiteA) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_NavSiteB_InstIconShown_LaunchIconNotShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallMenuOption("SiteA");
-  CheckWindowCreated();
-  InstallPolicyAppWindowedShortcut("SiteA");
-  UninstallPolicyApp("SiteA");
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteB");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstPlcyWinShctSiteA_UninstallPlcySiteA_NotInListSiteA) {
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyWinShctSiteA_UninstallPlcySiteA_InListWinSiteA) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppWindowedShortcut("SiteA");
-  UninstallPolicyApp("SiteA");
-  CheckAppNotInList("SiteA");
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstPlcyWinShctSiteA_NavSiteA_InstIconNotShown_LaunchIconShown) {
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_NavSiteA_LaunchIconShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppWindowedShortcut("SiteA");
-  NavigateBrowser("SiteA");
-  CheckInstallIconNotShown();
-  CheckLaunchIconShown();
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckLaunchIconShown();
 }
 
-IN_PROC_BROWSER_TEST(WebAppIntegrationBrowserTest,
-                     WebAppIntegration_InstPlcyWinShctSiteA_SetOpenTabSiteA) {
-  // Test contents are generated by script. Please do not modify!
-  // See `chrome/test/webapps/README.md` for more info.
-  // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppWindowedShortcut("SiteA");
-  SetOpenInTab("SiteA");
-}
-
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstPlcyWinShctSiteA_NavSiteAFoo_InstIconNotShown_LaunchIconShown) {
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppWindowedShortcut("SiteA");
-  NavigateBrowser("SiteAFoo");
-  CheckInstallIconNotShown();
-  CheckLaunchIconShown();
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstPlcyTabShctSiteA_UninstallPlcySiteA_NotInListSiteA_NavSiteA_InstIconShown_LaunchIconShown) {
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_UninstallPlcySiteA_InListWinSiteA) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppTabbedShortcut("SiteA");
-  UninstallPolicyApp("SiteA");
-  CheckAppNotInList("SiteA");
-  NavigateBrowser("SiteA");
-  CheckInstallIconShown();
-  CheckLaunchIconNotShown();
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstPlcyTabShctSiteA_InstOmniboxSiteA_WindowCreated_UninstallPlcySiteA) {
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_InstPlcyWinNoShctSiteA_UninstallPlcySiteA_InListWinSiteA) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppTabbedShortcut("SiteA");
-  InstallOmniboxIcon("SiteA");
-  CheckWindowCreated();
-  UninstallPolicyApp("SiteA");
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstPlcyTabShctSiteA_InstMenuOptionSiteA_WindowCreated_UninstallPlcySiteA) {
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_InstPlcyTabShctSiteA_InListWinSiteA_NavSiteA_LaunchIconShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppTabbedShortcut("SiteA");
-  InstallMenuOption("SiteA");
-  CheckWindowCreated();
-  UninstallPolicyApp("SiteA");
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckLaunchIconShown();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstPlcyTabShctSiteA_NavSiteA_InstIconShown_LaunchIconShown) {
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_InstPlcyTabShctSiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppTabbedShortcut("SiteA");
-  NavigateBrowser("SiteA");
-  CheckInstallIconShown();
-  CheckLaunchIconNotShown();
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstPlcyTabShctSiteA_SetOpenWindowSiteA) {
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_InstPlcyTabShctSiteA_InListWinSiteA_UninstallPlcySiteA_InListWinSiteA) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppTabbedShortcut("SiteA");
-  SetOpenInWindow("SiteA");
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstPlcyTabShctSiteC_NavSiteC_InstIconNotShown_LaunchIconShown) {
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppTabbedShortcut("SiteC");
-  NavigateBrowser("SiteC");
-  CheckInstallIconNotShown();
-  CheckLaunchIconNotShown();
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstPlcyWinShctSiteC_NavSiteC_InstIconNotShown_LaunchIconShown) {
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_ClosePWA_MnfstUpdateDsplMinimalSiteA_LaunchFromListSiteA_Minimal) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppWindowedShortcut("SiteC");
-  NavigateBrowser("SiteC");
-  CheckInstallIconNotShown();
-  CheckLaunchIconShown();
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.ClosePwa();
+  helper_.ManifestUpdateDisplayMinimal("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowDisplayMinimal();
 }
 
-IN_PROC_BROWSER_TEST(WebAppIntegrationBrowserTest,
-                     WebAppIntegration_InstOmniboxSiteAFoo_ClosePWA) {
-  // Test contents are generated by script. Please do not modify!
-  // See `chrome/test/webapps/README.md` for more info.
-  // Sheriffs: Disabling this test is supported.
-  InstallOmniboxIcon("SiteAFoo");
-  ClosePwa();
-}
-
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstOmniboxSiteAFoo_NavSiteABar_InstIconShown_LaunchIconShown) {
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_LaunchFromListSiteA_WindowCreated_Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallOmniboxIcon("SiteAFoo");
-  NavigateBrowser("SiteABar");
-  CheckInstallIconShown();
-  CheckLaunchIconNotShown();
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
 }
 
-IN_PROC_BROWSER_TEST(WebAppIntegrationBrowserTest,
-                     WebAppIntegration_InstMenuOptionSiteAFoo_ClosePWA) {
-  // Test contents are generated by script. Please do not modify!
-  // See `chrome/test/webapps/README.md` for more info.
-  // Sheriffs: Disabling this test is supported.
-  InstallMenuOption("SiteAFoo");
-  ClosePwa();
-}
-
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstMenuOptionSiteAFoo_NavSiteABar_InstIconShown_LaunchIconShown) {
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SetOpenTabSiteA_InListTabbedSiteA_LaunchFromListSiteA_TabCreated) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallMenuOption("SiteAFoo");
-  NavigateBrowser("SiteABar");
-  CheckInstallIconShown();
-  CheckLaunchIconNotShown();
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.SetOpenInTab("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckTabCreated();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
-    WebAppIntegration_InstPlcyWinShctSiteAFoo_NavSiteABar_InstIconShown_LaunchIconShown) {
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SetOpenTabSiteA_InListTabbedSiteA_NavSiteA_InstIconShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppWindowedShortcut("SiteAFoo");
-  NavigateBrowser("SiteABar");
-  CheckInstallIconShown();
-  CheckLaunchIconNotShown();
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.SetOpenInTab("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
 }
 
-IN_PROC_BROWSER_TEST(WebAppIntegrationBrowserTest,
-                     WebAppIntegration_NavSiteAFoo_InstIconShown) {
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_NavSiteAFoo_InstIconNotShown_LaunchIconShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  NavigateBrowser("SiteAFoo");
-  CheckInstallIconShown();
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteAFoo");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
 }
 
-IN_PROC_BROWSER_TEST(WebAppIntegrationBrowserTest,
-                     WebAppIntegration_NavSiteA_NotInListSiteA) {
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_NavSiteB_InstIconShown_LaunchIconNotShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  NavigateBrowser("SiteA");
-  CheckAppNotInList("SiteA");
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteB");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
 }
 
-IN_PROC_BROWSER_TEST(
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_InstPlcyWinShctSiteA_UninstallPlcySiteA_InListWinSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_NavSiteA_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_UninstallPlcySiteA_InListWinSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_InstPlcyWinNoShctSiteA_UninstallPlcySiteA_InListWinSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_InstPlcyTabShctSiteA_InListWinSiteA_NavSiteA_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_InstPlcyTabShctSiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_InstPlcyTabShctSiteA_InListWinSiteA_UninstallPlcySiteA_InListWinSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_ClosePWA_MnfstUpdateDsplMinimalSiteA_LaunchFromListSiteA_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.ClosePwa();
+  helper_.ManifestUpdateDisplayMinimal("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_LaunchFromListSiteA_WindowCreated_Standalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SetOpenTabSiteA_InListTabbedSiteA_LaunchFromListSiteA_TabCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.SetOpenInTab("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckTabCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SetOpenTabSiteA_InListTabbedSiteA_NavSiteA_InstIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.SetOpenInTab("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_NavSiteAFoo_InstIconNotShown_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteAFoo");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_NavSiteB_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteB");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_InstPlcyWinShctSiteA_UninstallPlcySiteA_InListWinSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteA_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated_Standalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteA_InListWinSiteA_SetOpenTabSiteA_LaunchFromListSiteA_TabCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.SetOpenInTab("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckTabCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteA_InListWinSiteA_NavSiteAFoo_InstIconNotShown_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteAFoo");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteA_InListWinSiteA_UninstallPlcySiteA_NotInListSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppNotInList("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteA_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated_Standalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteA_InListWinSiteA_SetOpenTabSiteA_LaunchFromListSiteA_TabCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.SetOpenInTab("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckTabCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteA_InListWinSiteA_NavSiteAFoo_InstIconNotShown_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteAFoo");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteA_InListWinSiteA_UninstallPlcySiteA_NotInListSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppNotInList("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabNoShctSiteA_InListTabbedSiteA_InstCrtShctWindowedSiteA_InListWinSiteA_WindowCreated_UninstallPlcySiteA_InListWinSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabNoShctSiteA_InListTabbedSiteA_InstOmniboxSiteA_InListWinSiteA_WindowCreated_UninstallPlcySiteA_InListWinSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabNoShctSiteA_InListTabbedSiteA_InstMenuOptionSiteA_InListWinSiteA_WindowCreated_UninstallPlcySiteA_InListWinSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabNoShctSiteA_InListTabbedSiteA_NavSiteA_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabNoShctSiteA_InListTabbedSiteA_SetOpenWindowSiteA_LaunchFromListSiteA_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.SetOpenInWindow("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabNoShctSiteA_InListTabbedSiteA_UninstallPlcySiteA_NotInListSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppNotInList("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_InstPlcyWinNoShctSiteA_InListTabbedSiteA_NavSiteA_InstIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_InstPlcyWinNoShctSiteA_InListTabbedSiteA_LaunchFromListSiteA_TabCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckTabCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_InstPlcyWinNoShctSiteA_InListTabbedSiteA_UninstallPlcySiteA_InListTabbedSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_InstPlcyWinShctSiteA_InListTabbedSiteA_NavSiteA_InstIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_InstPlcyWinShctSiteA_InListTabbedSiteA_LaunchFromListSiteA_TabCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckTabCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_InstPlcyWinShctSiteA_InListTabbedSiteA_UninstallPlcySiteA_InListTabbedSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_NavSiteA_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_SetOpenWindowSiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.SetOpenInWindow("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_SetOpenWindowSiteA_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.SetOpenInWindow("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_InstPlcyTabNoShctSiteA_UninstallPlcySiteA_InListTabbedSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_InstPlcyTabShctSiteA_UninstallPlcySiteA_InListTabbedSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabShctSiteA_InListTabbedSiteA_InstCrtShctWindowedSiteA_InListWinSiteA_WindowCreated_UninstallPlcySiteA_InListWinSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabShctSiteA_InListTabbedSiteA_InstOmniboxSiteA_InListWinSiteA_WindowCreated_UninstallPlcySiteA_InListWinSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabShctSiteA_InListTabbedSiteA_InstMenuOptionSiteA_InListWinSiteA_WindowCreated_UninstallPlcySiteA_InListWinSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabShctSiteA_InListTabbedSiteA_NavSiteA_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabShctSiteA_InListTabbedSiteA_SetOpenWindowSiteA_LaunchFromListSiteA_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.SetOpenInWindow("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabShctSiteA_InListTabbedSiteA_UninstallPlcySiteA_NotInListSiteA_NavSiteA_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckAppNotInList("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteC_InListWinSiteC_NavSiteC_InstIconNotShown_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutWindowed("SiteC");
+  helper_.CheckAppInListWindowed("SiteC");
+  helper_.NavigateBrowser("SiteC");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteC_InListWinSiteC_LaunchFromListSiteC_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutWindowed("SiteC");
+  helper_.CheckAppInListWindowed("SiteC");
+  helper_.LaunchFromChromeApps("SiteC");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteC_InListTabbedSiteC_NavSiteC_InstIconNotShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteC");
+  helper_.CheckAppInListTabbed("SiteC");
+  helper_.NavigateBrowser("SiteC");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteC_InListTabbedSiteC_LaunchFromListSiteC_TabCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteC");
+  helper_.CheckAppInListTabbed("SiteC");
+  helper_.LaunchFromChromeApps("SiteC");
+  helper_.CheckTabCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteC_InListWinSiteC_NavSiteC_InstIconNotShown_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteC");
+  helper_.CheckAppInListWindowed("SiteC");
+  helper_.NavigateBrowser("SiteC");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteC_InListWinSiteC_LaunchFromListSiteC_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteC");
+  helper_.CheckAppInListWindowed("SiteC");
+  helper_.LaunchFromChromeApps("SiteC");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabNoShctSiteC_InListTabbedSiteC_NavSiteC_InstIconNotShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteC");
+  helper_.CheckAppInListTabbed("SiteC");
+  helper_.NavigateBrowser("SiteC");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabNoShctSiteC_InListTabbedSiteC_LaunchFromListSiteC_TabCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteC");
+  helper_.CheckAppInListTabbed("SiteC");
+  helper_.LaunchFromChromeApps("SiteC");
+  helper_.CheckTabCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabShctSiteC_InListTabbedSiteC_NavSiteC_InstIconNotShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedShortcut("SiteC");
+  helper_.CheckAppInListTabbed("SiteC");
+  helper_.NavigateBrowser("SiteC");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabShctSiteC_InListTabbedSiteC_LaunchFromListSiteC_TabCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedShortcut("SiteC");
+  helper_.CheckAppInListTabbed("SiteC");
+  helper_.LaunchFromChromeApps("SiteC");
+  helper_.CheckTabCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteB_NavSiteB_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutWindowed("SiteB");
+  helper_.NavigateBrowser("SiteB");
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteB_LaunchFromListSiteB_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutWindowed("SiteB");
+  helper_.LaunchFromChromeApps("SiteB");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteB_NavSiteB_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon("SiteB");
+  helper_.NavigateBrowser("SiteB");
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteB_LaunchFromListSiteB_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon("SiteB");
+  helper_.LaunchFromChromeApps("SiteB");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteB_NavSiteB_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteB");
+  helper_.NavigateBrowser("SiteB");
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteB_LaunchFromListSiteB_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteB");
+  helper_.LaunchFromChromeApps("SiteB");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteB_NavSiteB_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteB");
+  helper_.NavigateBrowser("SiteB");
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteB_LaunchFromListSiteB_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteB");
+  helper_.LaunchFromChromeApps("SiteB");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteB_NavSiteB_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteB");
+  helper_.NavigateBrowser("SiteB");
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteB_LaunchFromListSiteB_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteB");
+  helper_.LaunchFromChromeApps("SiteB");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteC_InListWinSiteC_NavSiteC_InstIconNotShown_LaunchIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteC");
+  helper_.CheckAppInListWindowed("SiteC");
+  helper_.NavigateBrowser("SiteC");
+  helper_.CheckInstallIconNotShown();
+  helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteC_InListWinSiteC_LaunchFromListSiteC_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteC");
+  helper_.CheckAppInListWindowed("SiteC");
+  helper_.LaunchFromChromeApps("SiteC");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
+                       WebAppIntegration_InstCrtShctWindowedSiteAFoo_ClosePWA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutWindowed("SiteAFoo");
+  helper_.ClosePwa();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteAFoo_NavSiteABar_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutWindowed("SiteAFoo");
+  helper_.NavigateBrowser("SiteABar");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
+                       WebAppIntegration_InstOmniboxSiteAFoo_ClosePWA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon("SiteAFoo");
+  helper_.ClosePwa();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteAFoo_NavSiteABar_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon("SiteAFoo");
+  helper_.NavigateBrowser("SiteABar");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
+                       WebAppIntegration_InstMenuOptionSiteAFoo_ClosePWA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteAFoo");
+  helper_.ClosePwa();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteAFoo_NavSiteABar_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteAFoo");
+  helper_.NavigateBrowser("SiteABar");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteAFoo_NavSiteABar_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteAFoo");
+  helper_.NavigateBrowser("SiteABar");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteAFoo_NavSiteABar_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteAFoo");
+  helper_.NavigateBrowser("SiteABar");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
+                       WebAppIntegration_NavSiteAFoo_InstIconShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.NavigateBrowser("SiteAFoo");
+  helper_.CheckInstallIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
+                       WebAppIntegration_NavSiteA_NotInListSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckAppNotInList("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
     WebAppIntegration_NavSiteC_NotInListSiteA_InstIconNotShown) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  NavigateBrowser("SiteC");
-  CheckAppNotInList("SiteA");
-  CheckInstallIconNotShown();
+  helper_.NavigateBrowser("SiteC");
+  helper_.CheckAppNotInList("SiteA");
+  helper_.CheckInstallIconNotShown();
 }
 
-IN_PROC_BROWSERTEST_F(WebAppIntegrationBrowserTest, WebAppIntegration_InstOmniboxSiteA_WindowCreated_NavSiteB_InstIconShown_LaunchIconShown){
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallOmniboxIcon("SiteA");
-  CheckWindowCreated();
-  NavigateBrowser("SiteB");
-  CheckInstallIconShown();
-  CheckLaunchIconNotShown();
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
 }
 
-IN_PROC_BROWSERTEST_F(WebAppIntegrationBrowserTest, WebAppIntegration_InstMenuOptionSiteA_WindowCreated_NavSiteB_InstIconShown_LaunchIconShown){
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyTabShctSiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallMenuOption("SiteA");
-  CheckWindowCreated();
-  NavigateBrowser("SiteB");
-  CheckInstallIconShown();
-  CheckLaunchIconNotShown();
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
 }
 
-IN_PROC_BROWSERTEST_F(WebAppIntegrationBrowserTest, WebAppIntegration_InstOmniboxSiteB_NavSiteB_LaunchIconShown){
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_ClosePWA_MnfstUpdateDsplMinimalSiteA_LaunchFromIconSiteA_Minimal) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallOmniboxIcon("SiteB");
-  NavigateBrowser("SiteB");
-  CheckLaunchIconShown();
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.ClosePwa();
+  helper_.ManifestUpdateDisplayMinimal("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowDisplayMinimal();
 }
 
-IN_PROC_BROWSERTEST_F(WebAppIntegrationBrowserTest, WebAppIntegration_InstPlcyWinShctSiteB_NavSiteB_LaunchIconShown){
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_LaunchFromIconSiteA_WindowCreated_Standalone) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallPolicyAppWindowedShortcut("SiteB");
-  NavigateBrowser("SiteB");
-  CheckLaunchIconShown();
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
 }
 
-IN_PROC_BROWSERTEST_F(WebAppIntegrationBrowserTest, WebAppIntegration_InstMenuOptionSiteB_NavSiteB_LaunchIconShown){
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated) {
   // Test contents are generated by script. Please do not modify!
   // See `chrome/test/webapps/README.md` for more info.
   // Sheriffs: Disabling this test is supported.
-  InstallMenuOption("SiteB");
-  NavigateBrowser("SiteB");
-  CheckLaunchIconShown();
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
 }
 
-}  // namespace
-#endif
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_InstPlcyTabShctSiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_ClosePWA_MnfstUpdateDsplMinimalSiteA_LaunchFromIconSiteA_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.ClosePwa();
+  helper_.ManifestUpdateDisplayMinimal("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_LaunchFromIconSiteA_WindowCreated_Standalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_InstPlcyTabShctSiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_ClosePWA_MnfstUpdateDsplMinimalSiteA_LaunchFromIconSiteA_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.ClosePwa();
+  helper_.ManifestUpdateDisplayMinimal("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_LaunchFromIconSiteA_WindowCreated_Standalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated_Standalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated_Standalone) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayStandalone();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabNoShctSiteA_InListTabbedSiteA_SetOpenWindowSiteA_LaunchFromIconSiteA_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.SetOpenInWindow("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_SetOpenWindowSiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.SetOpenInWindow("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyTabShctSiteA_InListTabbedSiteA_SetOpenWindowSiteA_LaunchFromIconSiteA_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppTabbedShortcut("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.SetOpenInWindow("SiteA");
+  helper_.LaunchFromLaunchIcon("SiteA");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteC_InListWinSiteC_LaunchFromIconSiteC_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutWindowed("SiteC");
+  helper_.CheckAppInListWindowed("SiteC");
+  helper_.LaunchFromLaunchIcon("SiteC");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteC_InListWinSiteC_LaunchFromIconSiteC_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteC");
+  helper_.CheckAppInListWindowed("SiteC");
+  helper_.LaunchFromLaunchIcon("SiteC");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteB_LaunchFromIconSiteB_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutWindowed("SiteB");
+  helper_.LaunchFromLaunchIcon("SiteB");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteB_LaunchFromIconSiteB_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon("SiteB");
+  helper_.LaunchFromLaunchIcon("SiteB");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinNoShctSiteB_LaunchFromIconSiteB_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteB");
+  helper_.LaunchFromLaunchIcon("SiteB");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteB_LaunchFromIconSiteB_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteB");
+  helper_.LaunchFromLaunchIcon("SiteB");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteB_LaunchFromIconSiteB_Minimal) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteB");
+  helper_.LaunchFromLaunchIcon("SiteB");
+  helper_.CheckWindowDisplayMinimal();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstPlcyWinShctSiteC_InListWinSiteC_LaunchFromIconSiteC_WindowCreated) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteC");
+  helper_.CheckAppInListWindowed("SiteC");
+  helper_.LaunchFromLaunchIcon("SiteC");
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
+                       WebAppIntegration_NavNotfound_InstIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.NavigateNotfoundUrl();
+  helper_.CheckInstallIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_NavPWASiteAToSiteB_Toolbar_CloseToolbar_IsAtStartUrl) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigatePwaSiteATo("SiteB");
+  helper_.CheckCustomToolbar();
+  helper_.CloseCustomToolbar();
+  helper_.CheckAppNavigationIsStartUrl();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_NavPWASiteAToSiteB_Toolbar_CloseToolbar_IsAtStartUrl) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigatePwaSiteATo("SiteB");
+  helper_.CheckCustomToolbar();
+  helper_.CloseCustomToolbar();
+  helper_.CheckAppNavigationIsStartUrl();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_NavPWASiteAToSiteB_Toolbar_CloseToolbar_IsAtStartUrl) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigatePwaSiteATo("SiteB");
+  helper_.CheckCustomToolbar();
+  helper_.CloseCustomToolbar();
+  helper_.CheckAppNavigationIsStartUrl();
+}
+
+// crbug.com/1264574 - Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    DISABLED_WebAppIntegration_InstPlcyWinNoShctSiteA_InListWinSiteA_NavPWASiteAToSiteB_CloseToolbar_IsAtStartUrl) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedNoShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigatePwaSiteATo("SiteB");
+  helper_.CloseCustomToolbar();
+  helper_.CheckAppNavigationIsStartUrl();
+}
+
+// crbug.com/1264681 - disabled due to flakiness.
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    DISABLED_WebAppIntegration_InstPlcyWinShctSiteA_InListWinSiteA_NavPWASiteAToSiteB_CloseToolbar_IsAtStartUrl) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.NavigatePwaSiteATo("SiteB");
+  helper_.CloseCustomToolbar();
+  helper_.CheckAppNavigationIsStartUrl();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_UninstallFromListSiteA_NotInListSiteA_NavSiteA_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.UninstallFromList("SiteA");
+  helper_.CheckAppNotInList("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_UninstallFromListSiteA_NotInListSiteA_NavSiteA_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallOmniboxIcon("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.UninstallFromList("SiteA");
+  helper_.CheckAppNotInList("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_UninstallFromListSiteA_NotInListSiteA_NavSiteA_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallMenuOption("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.UninstallFromList("SiteA");
+  helper_.CheckAppNotInList("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_UninstallFromListSiteA_NotInListSiteA_NavSiteA_InstIconShown_LaunchIconNotShown) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteA");
+  helper_.CheckAppInListTabbed("SiteA");
+  helper_.UninstallFromList("SiteA");
+  helper_.CheckAppNotInList("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckInstallIconShown();
+  helper_.CheckLaunchIconNotShown();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctWindowedSiteC_InListWinSiteC_UninstallFromListSiteC_NotInListSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutWindowed("SiteC");
+  helper_.CheckAppInListWindowed("SiteC");
+  helper_.UninstallFromList("SiteC");
+  helper_.CheckAppNotInList("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppIntegrationBrowserTest,
+    WebAppIntegration_InstCrtShctTabbedSiteC_InListTabbedSiteC_UninstallFromListSiteC_NotInListSiteA) {
+  // Test contents are generated by script. Please do not modify!
+  // See `chrome/test/webapps/README.md` for more info.
+  // Sheriffs: Disabling this test is supported.
+  helper_.InstallCreateShortcutTabbed("SiteC");
+  helper_.CheckAppInListTabbed("SiteC");
+  helper_.UninstallFromList("SiteC");
+  helper_.CheckAppNotInList("SiteA");
+}
 
 }  // namespace web_app

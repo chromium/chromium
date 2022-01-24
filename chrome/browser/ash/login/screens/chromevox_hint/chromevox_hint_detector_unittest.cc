@@ -17,7 +17,7 @@ namespace {
 
 // The ChromeVox hint idle duration is 20s. We set this to 25s, since it's safer
 // for this to be slightly longer than the true idle duration.
-const base::TimeDelta kFullIdleDuration = base::TimeDelta::FromSeconds(25);
+const base::TimeDelta kFullIdleDuration = base::Seconds(25);
 const base::TimeDelta kThreeFourthIdleDuration =
     kFullIdleDuration - kFullIdleDuration / 4;
 

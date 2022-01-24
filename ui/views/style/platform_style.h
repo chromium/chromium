@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -25,6 +24,10 @@ class ScrollBar;
 // Cross-platform API for providing platform-specific styling for toolkit-views.
 class VIEWS_EXPORT PlatformStyle {
  public:
+  PlatformStyle() = delete;
+  PlatformStyle(const PlatformStyle&) = delete;
+  PlatformStyle& operator=(const PlatformStyle&) = delete;
+
   // Whether the ok button is in the leading position (left in LTR) in a
   // typical Cancel/OK button group.
   static const bool kIsOkButtonLeading;
@@ -65,10 +68,6 @@ class VIEWS_EXPORT PlatformStyle {
   // dragging but available to do so.
   static const bool kTextfieldUsesDragCursorWhenDraggable;
 
-  // The thickness and inset amount of focus ring halos.
-  static const float kFocusHaloThickness;
-  static const float kFocusHaloInset;
-
   // Whether controls in inactive widgets appear disabled.
   static const bool kInactiveWidgetControlsAppearDisabled;
 
@@ -97,9 +96,6 @@ class VIEWS_EXPORT PlatformStyle {
   // pairs on other platforms.
   static gfx::Range RangeToDeleteBackwards(const std::u16string& text,
                                            size_t cursor_position);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PlatformStyle);
 };
 
 }  // namespace views

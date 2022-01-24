@@ -83,16 +83,8 @@ id<GREYMatcher> PopupBlocker() {
 - (void)testWindowOpenWithSpecialURL {
   [ChromeEarlGrey
       tapWebStateElementWithID:@"webScenarioWindowOpenWithSpecialURL"];
-  if (@available(iOS 13, *)) {
-    // Starting from iOS 13 WebKit does not rewrite URL that ends with /..;
-    [ChromeEarlGrey waitForMainTabCount:2];
-  } else {
-    // Prior to iOS 13 WebKit rewries URL that ends with /..; to invalid URL
-    // so Chrome opens about:blank for that invalid URL.
-    [ChromeEarlGrey waitForMainTabCount:2];
-    [[EarlGrey selectElementWithMatcher:OmniboxText("about:blank")]
-        assertWithMatcher:grey_notNil()];
-  }
+  // Starting from iOS 13 WebKit does not rewrite URL that ends with /..;
+  [ChromeEarlGrey waitForMainTabCount:2];
 }
 
 // Tests executing script that clicks a link with target="_blank".
@@ -171,7 +163,7 @@ id<GREYMatcher> PopupBlocker() {
   [ChromeEarlGrey
       tapWebStateElementWithID:@"webScenarioWindowOpenWithDelayedClose"];
   [ChromeEarlGrey waitForMainTabCount:2];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(5));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 

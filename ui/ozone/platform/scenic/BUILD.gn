@@ -94,14 +94,3 @@ source_set("scenic") {
     ]
   }
 }
-
-source_set("scenic_unittests") {
-  testonly = true
-  sources = [ "scenic_window_unittest.cc" ]
-  deps = [
-    ":scenic",
-    "//base",
-    "//testing/gtest",
-    "//ui/ozone:platform",
-  ]
-}

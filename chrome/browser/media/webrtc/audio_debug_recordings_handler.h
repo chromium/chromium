@@ -42,6 +42,10 @@ class AudioDebugRecordingsHandler
   explicit AudioDebugRecordingsHandler(
       content::BrowserContext* browser_context);
 
+  AudioDebugRecordingsHandler(const AudioDebugRecordingsHandler&) = delete;
+  AudioDebugRecordingsHandler& operator=(const AudioDebugRecordingsHandler&) =
+      delete;
+
   // Starts an audio debug recording. The recording lasts the given |delay|,
   // unless |delay| is zero, in which case recording will continue until
   // StopAudioDebugRecordings() is explicitly invoked.
@@ -67,14 +71,14 @@ class AudioDebugRecordingsHandler
   virtual ~AudioDebugRecordingsHandler();
 
   // Helper for starting audio debug recordings.
-  void DoStartAudioDebugRecordings(content::RenderProcessHost* host,
+  void DoStartAudioDebugRecordings(int render_process_host_id,
                                    base::TimeDelta delay,
                                    RecordingDoneCallback callback,
                                    RecordingErrorCallback error_callback,
                                    const base::FilePath& log_directory);
 
   // Helper for stopping audio debug recordings.
-  void DoStopAudioDebugRecordings(content::RenderProcessHost* host,
+  void DoStopAudioDebugRecordings(int render_process_host_id,
                                   bool is_manual_stop,
                                   uint64_t audio_debug_recordings_id,
                                   RecordingDoneCallback callback,
@@ -90,8 +94,6 @@ class AudioDebugRecordingsHandler
   // Used for controlling debug recordings.
   std::unique_ptr<media::AudioDebugRecordingSession>
       audio_debug_recording_session_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDebugRecordingsHandler);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_AUDIO_DEBUG_RECORDINGS_HANDLER_H_

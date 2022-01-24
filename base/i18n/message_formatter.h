@@ -39,6 +39,10 @@ class BASE_I18N_EXPORT MessageArg {
   MessageArg(int64_t i);
   MessageArg(double d);
   MessageArg(const Time& t);
+
+  MessageArg(const MessageArg&) = delete;
+  MessageArg& operator=(const MessageArg&) = delete;
+
   ~MessageArg();
 
  private:
@@ -47,7 +51,6 @@ class BASE_I18N_EXPORT MessageArg {
   // Tests if this argument has a value, and if so increments *count.
   bool has_value(int* count) const;
   std::unique_ptr<icu::Formattable> formattable;
-  DISALLOW_COPY_AND_ASSIGN(MessageArg);
 };
 
 }  // namespace internal
@@ -89,6 +92,10 @@ class BASE_I18N_EXPORT MessageArg {
 
 class BASE_I18N_EXPORT MessageFormatter {
  public:
+  MessageFormatter() = delete;
+  MessageFormatter(const MessageFormatter&) = delete;
+  MessageFormatter& operator=(const MessageFormatter&) = delete;
+
   static std::u16string FormatWithNamedArgs(
       StringPiece16 msg,
       StringPiece name0 = StringPiece(),
@@ -115,10 +122,6 @@ class BASE_I18N_EXPORT MessageFormatter {
       const internal::MessageArg& arg4 = internal::MessageArg(),
       const internal::MessageArg& arg5 = internal::MessageArg(),
       const internal::MessageArg& arg6 = internal::MessageArg());
-
- private:
-  MessageFormatter() = delete;
-  DISALLOW_COPY_AND_ASSIGN(MessageFormatter);
 };
 
 }  // namespace i18n

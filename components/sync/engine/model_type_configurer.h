@@ -23,9 +23,14 @@ class ModelTypeConfigurer {
   // Utility struct for holding ConfigureDataTypes options.
   struct ConfigureParams {
     ConfigureParams();
+
+    ConfigureParams(const ConfigureParams&) = delete;
+    ConfigureParams& operator=(const ConfigureParams&) = delete;
+
     ConfigureParams(ConfigureParams&& other);
-    ~ConfigureParams();
     ConfigureParams& operator=(ConfigureParams&& other);
+
+    ~ConfigureParams();
 
     ConfigureReason reason;
     ModelTypeSet to_download;
@@ -36,9 +41,6 @@ class ModelTypeConfigurer {
 
     // Whether full sync (or sync the feature) is enabled;
     bool is_sync_feature_enabled;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ConfigureParams);
   };
 
   ModelTypeConfigurer();
@@ -47,14 +49,18 @@ class ModelTypeConfigurer {
   // Changes the set of data types that are currently being synced.
   virtual void ConfigureDataTypes(ConfigureParams params) = 0;
 
-  // Activates change processing for the given data type.
-  // This must be called before initial sync for data type.
-  virtual void ActivateDataType(
+  // Connects the datatype |type|, which means the sync engine will propagate
+  // changes between the server and datatype's processor, as provided in
+  // |activation_response|. This must be called before requesting the initial
+  // download of a datatype via ConfigureDataTypes().
+  virtual void ConnectDataType(
       ModelType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) = 0;
 
-  // Deactivates change processing for the given data type.
-  virtual void DeactivateDataType(ModelType type) = 0;
+  // Opposite of the above: stops treating |type| as a datatype that is
+  // propagating changes between the server and the processor. No-op if the
+  // type is not connected.
+  virtual void DisconnectDataType(ModelType type) = 0;
 
   // Propagates whether PROXY_TABS is enabled, which influences a bit exposed to
   // the server during commits.

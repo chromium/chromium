@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -28,7 +29,7 @@ class RenderFrameHost;
 // Monitors the WebContents instance and notifies the parent
 // WebContentsVideoCaptureDevice |device| class any time the frame sink or
 // main render frame's view changes.
-class CONTENT_EXPORT WebContentsFrameTracker
+class CONTENT_EXPORT WebContentsFrameTracker final
     : public WebContentsObserver,
       public base::SupportsWeakPtr<WebContentsFrameTracker> {
  public:
@@ -65,7 +66,7 @@ class CONTENT_EXPORT WebContentsFrameTracker
   WebContentsFrameTracker& operator=(const WebContentsFrameTracker&&) = delete;
   WebContentsFrameTracker& operator=(const WebContentsFrameTracker&) = delete;
 
-  ~WebContentsFrameTracker() final;
+  ~WebContentsFrameTracker() override;
 
   void WillStartCapturingWebContents(const gfx::Size& capture_size);
   void DidStopCapturingWebContents();
@@ -78,14 +79,22 @@ class CONTENT_EXPORT WebContentsFrameTracker
   gfx::Size CalculatePreferredSize(const gfx::Size& capture_size);
 
   // WebContentsObserver overrides.
-  void RenderFrameCreated(RenderFrameHost* render_frame_host) final;
-  void RenderFrameDeleted(RenderFrameHost* render_frame_host) final;
+  void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
-                              RenderFrameHost* new_host) final;
-  void WebContentsDestroyed() final;
-  void CaptureTargetChanged() final;
+                              RenderFrameHost* new_host) override;
+  void WebContentsDestroyed() override;
+  void CaptureTargetChanged() override;
 
   void SetWebContentsAndContextFromRoutingId(const GlobalRenderFrameHostId& id);
+
+  // Start/stop cropping.
+  // Must only be called on the UI thread.
+  // Non-empty |crop_id| sets (or changes) the crop-target.
+  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // The callback reports success/failure.
+  void Crop(const base::Token& crop_id,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
 
   // WebContents are retrieved on the UI thread normally, from the render IDs,
   // so this method is provided for tests to set the web contents directly.
@@ -120,6 +129,7 @@ class CONTENT_EXPORT WebContentsFrameTracker
   // We may not have a frame sink ID target at all times.
   std::unique_ptr<Context> context_;
   absl::optional<viz::FrameSinkId> target_frame_sink_id_;
+  base::Token crop_id_;
   gfx::NativeView target_native_view_ = gfx::NativeView();
 
   // Indicates whether the WebContents's capturer count needs to be

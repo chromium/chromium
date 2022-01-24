@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_AUTH_CHROME_CRYPTOHOME_AUTHENTICATOR_H_
 #define CHROME_BROWSER_ASH_LOGIN_AUTH_CHROME_CRYPTOHOME_AUTHENTICATOR_H_
 
-#include "base/macros.h"
 #include "chromeos/login/auth/cryptohome_authenticator.h"
 
 namespace ash {
@@ -14,10 +13,12 @@ class ChromeCryptohomeAuthenticator : public CryptohomeAuthenticator {
  public:
   explicit ChromeCryptohomeAuthenticator(AuthStatusConsumer* consumer);
 
+  ChromeCryptohomeAuthenticator(const ChromeCryptohomeAuthenticator&) = delete;
+  ChromeCryptohomeAuthenticator& operator=(
+      const ChromeCryptohomeAuthenticator&) = delete;
+
  protected:
   ~ChromeCryptohomeAuthenticator() override;
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeCryptohomeAuthenticator);
 };
 
 }  // namespace ash

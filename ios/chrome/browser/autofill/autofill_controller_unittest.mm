@@ -15,9 +15,9 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -186,6 +186,10 @@ class AutofillControllerTest : public ChromeWebTest {
  public:
   AutofillControllerTest()
       : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
+
+  AutofillControllerTest(const AutofillControllerTest&) = delete;
+  AutofillControllerTest& operator=(const AutofillControllerTest&) = delete;
+
   ~AutofillControllerTest() override {}
 
  protected:
@@ -239,8 +243,6 @@ class AutofillControllerTest : public ChromeWebTest {
   FormInputAccessoryMediator* accessory_mediator_;
 
   PasswordController* passwordController_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillControllerTest);
 };
 
 void AutofillControllerTest::SetUp() {

@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/glx.h"
@@ -27,6 +26,9 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_X) VisualPickerGlx {
  public:
   static VisualPickerGlx* GetInstance();
+
+  VisualPickerGlx(const VisualPickerGlx&) = delete;
+  VisualPickerGlx& operator=(const VisualPickerGlx&) = delete;
 
   ~VisualPickerGlx();
 
@@ -61,8 +63,6 @@ class COMPONENT_EXPORT(UI_BASE_X) VisualPickerGlx {
       config_map_;
 
   VisualPickerGlx();
-
-  DISALLOW_COPY_AND_ASSIGN(VisualPickerGlx);
 };
 
 }  // namespace ui

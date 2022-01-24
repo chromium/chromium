@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/beacon.h"
@@ -55,6 +54,10 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
       DomainReliabilityDispatcher* dispatcher,
       DomainReliabilityUploader* uploader,
       std::unique_ptr<const DomainReliabilityConfig> config);
+
+  DomainReliabilityContext(const DomainReliabilityContext&) = delete;
+  DomainReliabilityContext& operator=(const DomainReliabilityContext&) = delete;
+
   ~DomainReliabilityContext();
 
   // Notifies the context of a beacon on its domain(s); may or may not save the
@@ -135,8 +138,6 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
   const UploadAllowedCallback& upload_allowed_callback_;
 
   base::WeakPtrFactory<DomainReliabilityContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityContext);
 };
 
 }  // namespace domain_reliability

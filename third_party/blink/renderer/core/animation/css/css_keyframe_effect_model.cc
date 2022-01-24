@@ -78,16 +78,11 @@ void ResolveComputedValues(Element* element, StringKeyframe* keyframe) {
       keyframe->RemoveCustomCSSProperty(property);
     } else if (property.IsCSSProperty()) {
       const CSSValue& value = keyframe->CssPropertyValue(property);
-      const CSSPropertyName property_name =
-          property.IsCSSCustomProperty()
-              ? CSSPropertyName(property.CustomPropertyName())
-              : CSSPropertyName(property.GetCSSProperty().PropertyID());
+      const CSSPropertyName property_name = property.GetCSSPropertyName();
       const CSSValue* computed_value =
           StyleResolver::ComputeValue(element, property_name, value);
-      if (computed_value) {
-        keyframe->SetCSSPropertyValue(property.GetCSSProperty(),
-                                      *computed_value);
-      }
+      if (computed_value)
+        keyframe->SetCSSPropertyValue(property_name, *computed_value);
     }
   }
 }

@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/download_manager_delegate.h"
 
@@ -20,6 +19,11 @@ class DownloadManager;
 class ShellDownloadManagerDelegate : public DownloadManagerDelegate {
  public:
   ShellDownloadManagerDelegate();
+
+  ShellDownloadManagerDelegate(const ShellDownloadManagerDelegate&) = delete;
+  ShellDownloadManagerDelegate& operator=(const ShellDownloadManagerDelegate&) =
+      delete;
+
   ~ShellDownloadManagerDelegate() override;
 
   void SetDownloadManager(DownloadManager* manager);
@@ -58,8 +62,6 @@ class ShellDownloadManagerDelegate : public DownloadManagerDelegate {
   base::FilePath default_download_path_;
   bool suppress_prompting_;
   base::WeakPtrFactory<ShellDownloadManagerDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShellDownloadManagerDelegate);
 };
 
 }  // namespace content

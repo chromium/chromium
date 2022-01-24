@@ -24,6 +24,10 @@ enum class BackgroundServiceWorkerType {
 class BackgroundInfo : public Extension::ManifestData {
  public:
   BackgroundInfo();
+
+  BackgroundInfo(const BackgroundInfo&) = delete;
+  BackgroundInfo& operator=(const BackgroundInfo&) = delete;
+
   ~BackgroundInfo() override;
 
   static GURL GetBackgroundURL(const Extension* extension);
@@ -95,14 +99,17 @@ class BackgroundInfo : public Extension::ManifestData {
   // allowing them to run in different processes.
   // Defaults to true.
   bool allow_js_access_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundInfo);
 };
 
 // Parses all background/event page-related keys in the manifest.
 class BackgroundManifestHandler : public ManifestHandler {
  public:
   BackgroundManifestHandler();
+
+  BackgroundManifestHandler(const BackgroundManifestHandler&) = delete;
+  BackgroundManifestHandler& operator=(const BackgroundManifestHandler&) =
+      delete;
+
   ~BackgroundManifestHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
@@ -113,8 +120,6 @@ class BackgroundManifestHandler : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundManifestHandler);
 };
 
 }  // namespace extensions

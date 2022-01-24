@@ -6,6 +6,7 @@
 #define BASE_ANDROID_CONTENT_URI_UTILS_H_
 
 #include <jni.h>
+#include <string>
 
 #include "base/base_export.h"
 #include "base/files/file.h"

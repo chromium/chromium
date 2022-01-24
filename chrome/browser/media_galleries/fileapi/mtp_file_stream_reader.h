@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
@@ -28,6 +27,9 @@ class MTPFileStreamReader : public storage::FileStreamReader {
                       int64_t initial_offset,
                       const base::Time& expected_modification_time,
                       bool do_media_header_validation);
+
+  MTPFileStreamReader(const MTPFileStreamReader&) = delete;
+  MTPFileStreamReader& operator=(const MTPFileStreamReader&) = delete;
 
   ~MTPFileStreamReader() override;
 
@@ -69,8 +71,6 @@ class MTPFileStreamReader : public storage::FileStreamReader {
   bool media_header_validated_;
 
   base::WeakPtrFactory<MTPFileStreamReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MTPFileStreamReader);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_MTP_FILE_STREAM_READER_H_

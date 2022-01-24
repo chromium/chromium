@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_P(BrowserEncodingTest, TestEncodingAliasMapping) {
 
   GURL url =
       embedded_test_server()->GetURL("/" + test_file_path.MaybeAsASCII());
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(GetParam().encoding_name,
             browser()->tab_strip_model()->GetActiveWebContents()->
                 GetEncoding());
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(BrowserEncodingTest, TestEncodingAutoDetect) {
     test_file_path = test_file_path.AppendASCII(kTestDatas[i].test_file_name);
     GURL url =
         embedded_test_server()->GetURL("/" + test_file_path.MaybeAsASCII());
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     // Get the encoding of page. It should return the real encoding now.
     EXPECT_EQ(kTestDatas[i].expected_encoding, web_contents->GetEncoding());

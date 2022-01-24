@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_EVENT_LOG_MANAGER_KEYED_SERVICE_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_EVENT_LOG_MANAGER_KEYED_SERVICE_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -21,6 +20,11 @@ class WebRtcEventLogManagerKeyedService : public KeyedService {
   explicit WebRtcEventLogManagerKeyedService(
       content::BrowserContext* browser_context);
 
+  WebRtcEventLogManagerKeyedService(const WebRtcEventLogManagerKeyedService&) =
+      delete;
+  WebRtcEventLogManagerKeyedService& operator=(
+      const WebRtcEventLogManagerKeyedService&) = delete;
+
   ~WebRtcEventLogManagerKeyedService() override = default;
 
   void Shutdown() override;
@@ -34,8 +38,6 @@ class WebRtcEventLogManagerKeyedService : public KeyedService {
   // BrowserContext was loaded.
   // See usage for rationale.
   bool reported_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcEventLogManagerKeyedService);
 };
 
 }  // namespace webrtc_event_logging

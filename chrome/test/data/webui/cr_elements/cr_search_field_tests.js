@@ -8,7 +8,7 @@ import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_fie
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from '../chai_assert.js';
-import {flushTasks} from '../test_util.m.js';
+import {flushTasks} from '../test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-search-field. */

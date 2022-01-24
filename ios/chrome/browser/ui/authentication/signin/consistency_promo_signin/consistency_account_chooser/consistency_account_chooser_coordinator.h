@@ -7,8 +7,9 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-@class ConsistencyAccountChooserCoordinator;
 @class ChromeIdentity;
+@class ConsistencyAccountChooserCoordinator;
+@protocol ConsistencyLayoutDelegate;
 
 // Delegate for ConsistencyAccountChooserCoordinator.
 @protocol ConsistencyAccountChooserCoordinatorDelegate <NSObject>
@@ -32,6 +33,7 @@
 @property(nonatomic, strong, readonly) UIViewController* viewController;
 @property(nonatomic, weak) id<ConsistencyAccountChooserCoordinatorDelegate>
     delegate;
+@property(nonatomic, weak) id<ConsistencyLayoutDelegate> layoutDelegate;
 
 - (void)start NS_UNAVAILABLE;
 // Starts the coordinator with the selected identity.

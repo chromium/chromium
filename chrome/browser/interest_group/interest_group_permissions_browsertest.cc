@@ -21,13 +21,15 @@
 
 namespace interest_group {
 
-class FledgePermissionsBrowserTest : public InProcessBrowserTest {
+class InterestGroupPermissionsBrowserTest : public InProcessBrowserTest {
  public:
-  FledgePermissionsBrowserTest() {
+  InterestGroupPermissionsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {blink::features::kFledgeInterestGroups,
-         blink::features::kFledgeInterestGroupAPI},
-        {});
+        /*enabled_features=*/
+        {blink::features::kInterestGroupStorage,
+         blink::features::kAdInterestGroupAPI, blink::features::kFledge},
+        /*disabled_features=*/
+        {blink::features::kFencedFrames});
   }
 
   void SetUpOnMainThread() override {
@@ -40,8 +42,9 @@ class FledgePermissionsBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(https_server_->Start());
 
     // Prime the interest groups if the API is enabled.
-    ui_test_utils::NavigateToURL(browser(), test_url());
-    if (HasInterestGroupApi(web_contents())) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+    if (HasInterestGroupApi(web_contents()) &&
+        HasRunAdAuctionApi(web_contents())) {
       JoinInterestGroup(web_contents());
       WaitUntilCanRunAuction(web_contents());
     }
@@ -76,6 +79,27 @@ class FledgePermissionsBrowserTest : public InProcessBrowserTest {
   bool HasInterestGroupApi(const content::ToRenderFrameHost& adapter) {
     return EvalJs(adapter, R"(
       navigator.joinAdInterestGroup instanceof Function
+    )")
+        .ExtractBool();
+  }
+
+  bool HasRunAdAuctionApi(const content::ToRenderFrameHost& adapter) {
+    return EvalJs(adapter, R"(
+      navigator.runAdAuction instanceof Function
+    )")
+        .ExtractBool();
+  }
+
+  bool HasCreateAdRequestApi(const content::ToRenderFrameHost& adapter) {
+    return EvalJs(adapter, R"(
+      navigator.createAdRequest instanceof Function
+    )")
+        .ExtractBool();
+  }
+
+  bool HasFinalizeAdApi(const content::ToRenderFrameHost& adapter) {
+    return EvalJs(adapter, R"(
+      navigator.finalizeAd instanceof Function
     )")
         .ExtractBool();
   }
@@ -146,7 +170,7 @@ class FledgePermissionsBrowserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     base::RetainingOneShotTimer check_done;
     check_done.Start(
-        FROM_HERE, base::TimeDelta::FromMicroseconds(10),
+        FROM_HERE, base::Microseconds(10),
         base::BindLambdaForTesting([&adapter, &check_done, &run_loop, this]() {
           if (!CanRunAuction(adapter)) {
             check_done.Reset();
@@ -169,80 +193,172 @@ class FledgePermissionsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
-IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest, CookiesAllowed) {
+class InterestGroupOffBrowserTest : public InterestGroupPermissionsBrowserTest {
+ public:
+  InterestGroupOffBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kInterestGroupStorage},
+        {blink::features::kAdInterestGroupAPI, blink::features::kFledge,
+         blink::features::kParakeet});
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupOffBrowserTest, AdAPIsOffWithoutFlags) {
+  // No APIs should be exposed when all features are off.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+
+  ASSERT_FALSE(HasInterestGroupApi(web_contents()));
+  ASSERT_FALSE(HasRunAdAuctionApi(web_contents()));
+  ASSERT_FALSE(HasCreateAdRequestApi(web_contents()));
+  ASSERT_FALSE(HasFinalizeAdApi(web_contents()));
+}
+
+class InterestGroupFledgeOnBrowserTest
+    : public InterestGroupPermissionsBrowserTest {
+ public:
+  InterestGroupFledgeOnBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kInterestGroupStorage, blink::features::kFledge},
+        {blink::features::kAdInterestGroupAPI, blink::features::kParakeet});
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupFledgeOnBrowserTest, FledgeOnWithAPIFlag) {
+  // kFledge should turn on the runAdAuction and correspondingly the
+  // interestgroup API.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+
+  ASSERT_TRUE(HasInterestGroupApi(web_contents()));
+  ASSERT_TRUE(HasRunAdAuctionApi(web_contents()));
+  ASSERT_FALSE(HasCreateAdRequestApi(web_contents()));
+  ASSERT_FALSE(HasFinalizeAdApi(web_contents()));
+}
+
+class InterestGroupParakeetOnBrowserTest
+    : public InterestGroupPermissionsBrowserTest {
+ public:
+  InterestGroupParakeetOnBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kInterestGroupStorage, blink::features::kParakeet},
+        {blink::features::kAdInterestGroupAPI, blink::features::kFledge});
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupParakeetOnBrowserTest,
+                       ParakeetOnWithAPIFlag) {
+  // kParakeet should turn on the createAdRequest/finalizeAd and correspondingly
+  // the interestgroup API.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+
+  ASSERT_TRUE(HasInterestGroupApi(web_contents()));
+  ASSERT_FALSE(HasRunAdAuctionApi(web_contents()));
+  ASSERT_TRUE(HasCreateAdRequestApi(web_contents()));
+  ASSERT_TRUE(HasFinalizeAdApi(web_contents()));
+}
+
+class InterestGroupAPIOnBrowserTest
+    : public InterestGroupPermissionsBrowserTest {
+ public:
+  InterestGroupAPIOnBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kInterestGroupStorage,
+         blink::features::kAdInterestGroupAPI},
+        {blink::features::kParakeet, blink::features::kFledge});
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAPIOnBrowserTest,
+                       InterestGroupsOnWithAPIFlag) {
+  // kAdInterestGroupAPI should turn on only the interestgroup API.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+
+  ASSERT_TRUE(HasInterestGroupApi(web_contents()));
+  ASSERT_FALSE(HasRunAdAuctionApi(web_contents()));
+  ASSERT_FALSE(HasCreateAdRequestApi(web_contents()));
+  ASSERT_FALSE(HasFinalizeAdApi(web_contents()));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupPermissionsBrowserTest, CookiesAllowed) {
   // With cookies, API works.
   SetGlobalCookiesAllowed(true);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_TRUE(CanRunAuction(web_contents()));
 }
 
-IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest, CookiesAllowedForSite) {
+IN_PROC_BROWSER_TEST_F(InterestGroupPermissionsBrowserTest,
+                       CookiesAllowedForSite) {
   // With cookies, API works.
   SetGlobalCookiesAllowed(false);
   SetAllowCookiesForURL(test_url(), true);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_TRUE(CanRunAuction(web_contents()));
 }
 
-IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupPermissionsBrowserTest,
                        ThirdPartyCookiesAllowedForSite) {
   // With cookies, API works.
   SetAllowThirdPartyCookies(false);
   SetAllowThirdPartyCookiesForURL(test_url(), true);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_TRUE(CanRunAuction(web_contents()));
 }
 
-IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest, CookiesBlocked) {
+IN_PROC_BROWSER_TEST_F(InterestGroupPermissionsBrowserTest, CookiesBlocked) {
   // With no cookies, API does nothing.
   SetGlobalCookiesAllowed(false);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_FALSE(CanRunAuction(web_contents()));
 }
 
-IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest, CookiesBlockedForSite) {
+IN_PROC_BROWSER_TEST_F(InterestGroupPermissionsBrowserTest,
+                       CookiesBlockedForSite) {
   // With no cookies, API does nothing.
   SetAllowCookiesForURL(test_url(), false);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_FALSE(CanRunAuction(web_contents()));
 }
 
-IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest, ThirdPartyCookiesBlocked) {
+IN_PROC_BROWSER_TEST_F(InterestGroupPermissionsBrowserTest,
+                       ThirdPartyCookiesBlocked) {
   // With no cookies, API does nothing.
   SetAllowThirdPartyCookies(false);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_FALSE(CanRunAuction(web_contents()));
 }
 
-IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupPermissionsBrowserTest,
                        ThirdPartyCookiesBlockedForSite) {
   // With no cookies, API does nothing.
   SetAllowThirdPartyCookiesForURL(test_url(), false);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_FALSE(CanRunAuction(web_contents()));
 }
 
 class FledgePermissionBrowserTestBaseFeatureDisabled
-    : public FledgePermissionsBrowserTest {
+    : public InterestGroupPermissionsBrowserTest {
  public:
   FledgePermissionBrowserTestBaseFeatureDisabled() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kFledgeInterestGroups);
+        blink::features::kInterestGroupStorage);
   }
 };
 
@@ -251,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(FledgePermissionBrowserTestBaseFeatureDisabled,
   // Even with cookies no feature means no API.
   SetGlobalCookiesAllowed(true);
   SetAllowCookiesForURL(test_url(), true);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_FALSE(HasInterestGroupApi(web_contents()));
 }

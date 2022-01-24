@@ -114,6 +114,8 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
                                                  std::unique_ptr<FailureInfo>,
                                                  std::unique_ptr<PausedState>)>;
 
+  ServiceWorkerSingleScriptUpdateChecker() = delete;
+
   // Both |compare_reader| and |copy_reader| should be created from the same
   // resource ID, and this ID should locate where the script specified with
   // |script_url| is stored. |writer| should be created with a new resource ID.
@@ -137,6 +139,11 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
       mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer,
       int64_t write_resource_id,
       ResultCallback callback);
+
+  ServiceWorkerSingleScriptUpdateChecker(
+      const ServiceWorkerSingleScriptUpdateChecker&) = delete;
+  ServiceWorkerSingleScriptUpdateChecker& operator=(
+      const ServiceWorkerSingleScriptUpdateChecker&) = delete;
 
   ~ServiceWorkerSingleScriptUpdateChecker() override;
 
@@ -258,8 +265,6 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
 
   base::WeakPtrFactory<ServiceWorkerSingleScriptUpdateChecker> weak_factory_{
       this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ServiceWorkerSingleScriptUpdateChecker);
 };
 
 }  // namespace content

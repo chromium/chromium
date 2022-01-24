@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "components/arc/mojom/process.mojom-forward.h"
 
@@ -25,6 +24,10 @@ class ArcProcess {
              mojom::ProcessState process_state,
              bool is_focused,
              int64_t last_activity_time);
+
+  ArcProcess(const ArcProcess&) = delete;
+  ArcProcess& operator=(const ArcProcess&) = delete;
+
   ~ArcProcess();
 
   ArcProcess(ArcProcess&& other);
@@ -84,8 +87,6 @@ class ArcProcess {
 
   friend std::ostream& operator<<(std::ostream& out,
                                   const ArcProcess& arc_process);
-
-  DISALLOW_COPY_AND_ASSIGN(ArcProcess);
 };
 
 }  // namespace arc

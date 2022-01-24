@@ -37,13 +37,13 @@ void LockScreenProfileCreatorImpl::OnPreferredNoteTakingAppUpdated(
   if (profile != primary_profile_)
     return;
 
-  std::unique_ptr<chromeos::NoteTakingAppInfo> note_taking_app =
-      chromeos::NoteTakingHelper::Get()->GetPreferredLockScreenAppInfo(
+  std::unique_ptr<ash::NoteTakingAppInfo> note_taking_app =
+      ash::NoteTakingHelper::Get()->GetPreferredLockScreenAppInfo(
           primary_profile_);
 
   if (!note_taking_app || !note_taking_app->preferred ||
       note_taking_app->lock_screen_support !=
-          chromeos::NoteTakingLockScreenSupport::kEnabled) {
+          ash::NoteTakingLockScreenSupport::kEnabled) {
     return;
   }
 
@@ -73,7 +73,7 @@ void LockScreenProfileCreatorImpl::InitializeImpl() {
 }
 
 void LockScreenProfileCreatorImpl::OnExtensionSystemReady() {
-  note_taking_helper_observation_.Observe(chromeos::NoteTakingHelper::Get());
+  note_taking_helper_observation_.Observe(ash::NoteTakingHelper::Get());
 
   // Determine the current note taking state.
   OnPreferredNoteTakingAppUpdated(primary_profile_);

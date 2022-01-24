@@ -38,6 +38,10 @@ class TestChromeUpdateClientConfig
         update_url_(update_url),
         ping_url_(ping_url) {}
 
+  TestChromeUpdateClientConfig(const TestChromeUpdateClientConfig&) = delete;
+  TestChromeUpdateClientConfig& operator=(const TestChromeUpdateClientConfig&) =
+      delete;
+
   // Overrides for update_client::Configurator.
   std::vector<GURL> UpdateUrl() const final { return update_url_; }
 
@@ -56,8 +60,6 @@ class TestChromeUpdateClientConfig
  private:
   std::vector<GURL> update_url_;
   std::vector<GURL> ping_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChromeUpdateClientConfig);
 };
 
 // This class implements a simple Chrome extra part that is used to
@@ -67,6 +69,12 @@ class TestChromeBrowserMainExtraParts : public ChromeBrowserMainExtraParts {
  public:
   explicit TestChromeBrowserMainExtraParts(ExtensionUpdateClientBaseTest* test)
       : test_(test) {}
+
+  TestChromeBrowserMainExtraParts(const TestChromeBrowserMainExtraParts&) =
+      delete;
+  TestChromeBrowserMainExtraParts& operator=(
+      const TestChromeBrowserMainExtraParts&) = delete;
+
   ~TestChromeBrowserMainExtraParts() override = default;
 
   // ChromeBrowserMainExtraParts:
@@ -74,8 +82,6 @@ class TestChromeBrowserMainExtraParts : public ChromeBrowserMainExtraParts {
 
  private:
   ExtensionUpdateClientBaseTest* test_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChromeBrowserMainExtraParts);
 };
 
 class UpdateClientCompleteEventWaiter
@@ -85,6 +91,11 @@ class UpdateClientCompleteEventWaiter
 
   explicit UpdateClientCompleteEventWaiter(const std::string& id)
       : id_(id), event_(UpdateClientEvents::COMPONENT_UPDATE_ERROR) {}
+
+  UpdateClientCompleteEventWaiter(const UpdateClientCompleteEventWaiter&) =
+      delete;
+  UpdateClientCompleteEventWaiter& operator=(
+      const UpdateClientCompleteEventWaiter&) = delete;
 
   ~UpdateClientCompleteEventWaiter() override = default;
 
@@ -107,8 +118,6 @@ class UpdateClientCompleteEventWaiter
   const std::string id_;
   UpdateClientEvents event_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateClientCompleteEventWaiter);
 };
 
 }  // namespace

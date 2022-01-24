@@ -29,6 +29,10 @@ class MEDIA_MOJO_EXPORT VideoDecodeStatsRecorder
                            learning::FeatureValue origin,
                            bool is_top_frame,
                            uint64_t player_id);
+
+  VideoDecodeStatsRecorder(const VideoDecodeStatsRecorder&) = delete;
+  VideoDecodeStatsRecorder& operator=(const VideoDecodeStatsRecorder&) = delete;
+
   ~VideoDecodeStatsRecorder() override;
 
   // mojom::VideoDecodeStatsRecorder implementation:
@@ -48,8 +52,6 @@ class MEDIA_MOJO_EXPORT VideoDecodeStatsRecorder
 
   mojom::PredictionFeatures features_;
   mojom::PredictionTargets targets_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecodeStatsRecorder);
 };
 
 }  // namespace media

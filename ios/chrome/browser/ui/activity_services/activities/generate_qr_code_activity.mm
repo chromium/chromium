@@ -63,10 +63,10 @@ NSString* const kGenerateQrCodeActivityType =
 }
 
 - (void)performActivity {
+  [self activityDidFinish:YES];
   [self.handler
       generateQRCode:[[GenerateQRCodeCommand alloc] initWithURL:_activityURL
                                                           title:self.title]];
-  [self activityDidFinish:YES];
 }
 
 @end

@@ -32,4 +32,14 @@ void TabClusterUIItem::Init(const TabClusterUIItem::Info& info) {
   current_info_ = info;
 }
 
+void TabClusterUIItem::SetCurrentClusterId(int cluster_id) {
+  old_info_ = current_info_;
+  current_info_.cluster_id = cluster_id;
+}
+
+void TabClusterUIItem::SetCurrentBoundaryStrength(double boundary_strength) {
+  old_info_ = current_info_;
+  current_info_.boundary_strength = boundary_strength;
+}
+
 }  // namespace ash

@@ -35,6 +35,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/media/display_type.h"
@@ -53,7 +54,6 @@ class PaintFlags;
 }  // namespace cc
 
 namespace media {
-class VideoFrame;
 class PaintCanvasVideoRenderer;
 }
 
@@ -129,6 +129,7 @@ class WebMediaPlayer {
     int height;
     base::TimeDelta media_time;
     media::VideoFrameMetadata metadata;
+    scoped_refptr<media::VideoFrame> frame;
     base::TimeDelta rendering_interval;
     base::TimeDelta average_frame_duration;
   };
@@ -179,9 +180,6 @@ class WebMediaPlayer {
   // calls are still made periodically.
   virtual void OnTimeUpdate() {}
 
-  virtual void RequestRemotePlayback() {}
-  virtual void RequestRemotePlaybackControl() {}
-  virtual void RequestRemotePlaybackStop() {}
   virtual void RequestRemotePlaybackDisabled(bool disabled) {}
   virtual void FlingingStarted() {}
   virtual void FlingingStopped() {}
@@ -208,6 +206,9 @@ class WebMediaPlayer {
   // Getters of playback state.
   virtual bool Paused() const = 0;
   virtual bool Seeking() const = 0;
+  // MSE allows authors to assign double values for duration.
+  // Here, we return double rather than TimeDelta to ensure
+  // that authors are returned exactly the value that they assign.
   virtual double Duration() const = 0;
   virtual double CurrentTime() const = 0;
   virtual bool IsEnded() const = 0;
@@ -374,6 +375,10 @@ class WebMediaPlayer {
   virtual void UpdateFrameIfStale() {}
 
   virtual base::WeakPtr<WebMediaPlayer> AsWeakPtr() = 0;
+
+  // Adjusts the frame sink hierarchy for the media frame sink.
+  virtual void RegisterFrameSinkHierarchy() {}
+  virtual void UnregisterFrameSinkHierarchy() {}
 };
 
 }  // namespace blink

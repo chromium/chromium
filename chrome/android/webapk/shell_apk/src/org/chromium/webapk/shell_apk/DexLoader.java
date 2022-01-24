@@ -47,29 +47,16 @@ public class DexLoader {
      * @param dexName The name of the .dex file in the APK.
      * @param canaryClassName Name of class in the .dex file. Used for testing the ClassLoader
      *                        before returning it.
-     * @param remoteDexFile Location of already extracted .dex file from APK.
      * @param localDexDir Writable directory for caching data to speed up future calls to
      *                    {@link #load()}.
      * @return The ClassLoader. Returns null on an error.
      */
-    public ClassLoader load(Context remoteContext, String dexName, String canaryClassName,
-            File remoteDexFile, File localDexDir) {
+    public ClassLoader load(
+            Context remoteContext, String dexName, String canaryClassName, File localDexDir) {
         File localDexFile = new File(localDexDir, dexName);
 
-        // If {@link localDexFile} exists, technique #2 was previously used to create the
-        // ClassLoader. Skip right to the technique which worked last time.
-        if (remoteDexFile != null && remoteDexFile.exists() && !localDexFile.exists()) {
-            // Technique #1: At startup, Chrome code extracts the .dex file from its assets and
-            // guesses where DexClassLoader searches for the odex by default and puts the odex
-            // there. Try using the odex from Chrome's data directory.
-            ClassLoader loader = tryCreatingClassLoader(canaryClassName, remoteDexFile, null);
-            if (loader != null) {
-                return loader;
-            }
-        }
-
-        // Technique #2: Extract the .dex file from the remote context's APK. Create a
-        // ClassLoader from the extracted file.
+        // Extract the .dex file from the remote context's APK. Create a ClassLoader from the
+        // extracted file.
         if (!localDexFile.exists() || localDexFile.length() == 0) {
             if (!localDexDir.exists() && !localDexDir.mkdirs()) {
                 return null;
@@ -140,8 +127,7 @@ public class DexLoader {
      * @param canaryClassName Name of class in the .dex file. Used for testing the ClassLoader
      *                        before returning it.
      * @param dexFile .dex file to create ClassLoader for.
-     * @param optimizedDir Directory for storing the optimized dex file. If null, an OS-defined
-     *                     path based on {@link dexFile} is used.
+     * @param optimizedDir Directory for storing the optimized dex file.
      * @return The ClassLoader. Returns null on an error.
      */
     private static ClassLoader tryCreatingClassLoader(

@@ -128,7 +128,7 @@ void WaveShaperDSPKernel::WaveShaperCurveValues(float* destination,
   float* virtual_index = virtual_index_.Data();
 
   // virtual_index[k] =
-  //   clampTo(0.5 * (source[k] + 1) * (curve_length - 1),
+  //   ClampTo(0.5 * (source[k] + 1) * (curve_length - 1),
   //           0.0f,
   //           static_cast<float>(curve_length - 1))
 
@@ -191,14 +191,14 @@ void WaveShaperDSPKernel::WaveShaperCurveValues(float* destination,
       // Get the curve_data values and save them in v1 and v2,
       // carfully clamping the values.  If the input is NaN, index1
       // could be 0x8000000.
-      v1[k] = curve_data[clampTo(i1[0], 0, max_index)];
-      v2[k] = curve_data[clampTo(i2[0], 0, max_index)];
-      v1[k + 1] = curve_data[clampTo(i1[1], 0, max_index)];
-      v2[k + 1] = curve_data[clampTo(i2[1], 0, max_index)];
-      v1[k + 2] = curve_data[clampTo(i1[2], 0, max_index)];
-      v2[k + 2] = curve_data[clampTo(i2[2], 0, max_index)];
-      v1[k + 3] = curve_data[clampTo(i1[3], 0, max_index)];
-      v2[k + 3] = curve_data[clampTo(i2[3], 0, max_index)];
+      v1[k] = curve_data[ClampTo(i1[0], 0, max_index)];
+      v2[k] = curve_data[ClampTo(i2[0], 0, max_index)];
+      v1[k + 1] = curve_data[ClampTo(i1[1], 0, max_index)];
+      v2[k + 1] = curve_data[ClampTo(i2[1], 0, max_index)];
+      v1[k + 2] = curve_data[ClampTo(i1[2], 0, max_index)];
+      v2[k + 2] = curve_data[ClampTo(i2[2], 0, max_index)];
+      v1[k + 3] = curve_data[ClampTo(i1[3], 0, max_index)];
+      v2[k + 3] = curve_data[ClampTo(i2[3], 0, max_index)];
     }
   }
 #elif defined(CPU_ARM_NEON)
@@ -253,8 +253,8 @@ void WaveShaperDSPKernel::WaveShaperCurveValues(float* destination,
   // Compute values for index1 and load the curve_data corresponding to indices.
   for (; k < frames_to_process; ++k) {
     unsigned index1 =
-        clampTo(static_cast<unsigned>(virtual_index[k]), 0, max_index);
-    unsigned index2 = clampTo(index1 + 1, 0, max_index);
+        ClampTo(static_cast<unsigned>(virtual_index[k]), 0, max_index);
+    unsigned index2 = ClampTo(index1 + 1, 0, max_index);
     index[k] = index1;
     v1[k] = curve_data[index1];
     v2[k] = curve_data[index2];

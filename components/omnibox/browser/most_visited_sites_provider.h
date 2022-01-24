@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/omnibox/browser/autocomplete_input.h"

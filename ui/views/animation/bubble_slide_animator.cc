@@ -18,7 +18,7 @@ BubbleSlideAnimator::BubbleSlideAnimator(
   widget_observation_.Observe(widget);
 
   constexpr base::TimeDelta kDefaultBubbleSlideAnimationTime =
-      base::TimeDelta::FromMilliseconds(200);
+      base::Milliseconds(200);
   slide_animation_.SetDuration(kDefaultBubbleSlideAnimationTime);
 }
 

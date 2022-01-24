@@ -11,8 +11,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 class WorkItemList;
 
 // This class represents a single registry entry (a key and its value). A
@@ -54,6 +52,9 @@ class RegistryEntry {
   RegistryEntry(const std::wstring& key_path,
                 const std::wstring& name,
                 DWORD value);
+
+  RegistryEntry(const RegistryEntry&) = delete;
+  RegistryEntry& operator=(const RegistryEntry&) = delete;
 
   // Flags this RegistryKey with |removal_flag|, indicating that it should be
   // removed rather than created. Note that this will not result in cleaning up
@@ -122,8 +123,6 @@ class RegistryEntry {
   // Returns the RegistryStatus of the current registry entry in
   // |root|\|key_path_|\|name_|.
   RegistryStatus StatusInRegistryUnderRoot(HKEY root) const;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryEntry);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_REGISTRY_ENTRY_H_

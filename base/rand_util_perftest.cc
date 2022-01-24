@@ -36,7 +36,6 @@ TEST(RandUtilPerfTest, RandUint64) {
 
 TEST(RandUtilPerfTest, InsecureRandomRandUint64) {
   base::InsecureRandomGenerator gen;
-  gen.Seed();
 
   uint64_t inclusive_or = 0;
   constexpr int kIterations = 1e7;

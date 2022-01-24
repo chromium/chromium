@@ -32,6 +32,9 @@ class DictionaryValueUpdate {
                         base::DictionaryValue* value,
                         std::vector<std::string> path);
 
+  DictionaryValueUpdate(const DictionaryValueUpdate&) = delete;
+  DictionaryValueUpdate& operator=(const DictionaryValueUpdate&) = delete;
+
   ~DictionaryValueUpdate();
   bool HasKey(base::StringPiece key) const;
 
@@ -155,8 +158,6 @@ class DictionaryValueUpdate {
   UpdateCallback report_update_;
   base::DictionaryValue* const value_;
   const std::vector<std::string> path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DictionaryValueUpdate);
 };
 
 }  // namespace prefs

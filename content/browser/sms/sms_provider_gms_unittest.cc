@@ -34,6 +34,10 @@ namespace {
 class MockObserver : public SmsProvider::Observer {
  public:
   MockObserver() = default;
+
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
+
   ~MockObserver() override = default;
 
   MOCK_METHOD3(OnReceive,
@@ -41,9 +45,6 @@ class MockObserver : public SmsProvider::Observer {
                     const std::string& one_time_code,
                     SmsFetcher::UserConsent));
   MOCK_METHOD1(OnFailure, bool(SmsFetchFailureType));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockObserver);
 };
 
 // SmsProviderGmsBaseTest tests the JNI bindings to the android provider, the
@@ -51,6 +52,10 @@ class MockObserver : public SmsProvider::Observer {
 // It creates and injects a fake sms retriver client to trigger various actions
 // for testing purposes.
 class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
+ public:
+  SmsProviderGmsBaseTest(const SmsProviderGmsBaseTest&) = delete;
+  SmsProviderGmsBaseTest& operator=(const SmsProviderGmsBaseTest&) = delete;
+
  protected:
   SmsProviderGmsBaseTest() = default;
   virtual ~SmsProviderGmsBaseTest() override = default;
@@ -116,16 +121,14 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
       SmsFetchType fetch_type = SmsFetchType::kLocal) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_FakeSmsRetrieverClient_triggerUserDeniesPermission(
-        env, j_fake_sms_retriever_client_, test_window_->GetJavaObject(),
-        fetch_type == SmsFetchType::kLocal);
+        env, j_fake_sms_retriever_client_, fetch_type == SmsFetchType::kLocal);
   }
 
   void TriggerUserGrantsPermission(
       SmsFetchType fetch_type = SmsFetchType::kLocal) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_FakeSmsRetrieverClient_triggerUserGrantsPermission(
-        env, j_fake_sms_retriever_client_, test_window_->GetJavaObject(),
-        fetch_type == SmsFetchType::kLocal);
+        env, j_fake_sms_retriever_client_, fetch_type == SmsFetchType::kLocal);
   }
 
   void TriggerAPIFailure(const std::string& failure_type,
@@ -149,8 +152,6 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
   base::android::ScopedJavaGlobalRef<jobject> j_fake_sms_retriever_client_;
   base::test::ScopedFeatureList feature_list_;
   ui::WindowAndroid* test_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmsProviderGmsBaseTest);
 };
 
 class SmsProviderGmsTest : public ::testing::WithParamInterface<std::string>,

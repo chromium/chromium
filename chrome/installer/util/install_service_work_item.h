@@ -16,7 +16,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/installer/util/work_item.h"
 
 namespace base {
@@ -58,6 +57,9 @@ class InstallServiceWorkItem : public WorkItem {
                          const std::vector<GUID>& clsids,
                          const std::vector<GUID>& iids);
 
+  InstallServiceWorkItem(const InstallServiceWorkItem&) = delete;
+  InstallServiceWorkItem& operator=(const InstallServiceWorkItem&) = delete;
+
   ~InstallServiceWorkItem() override;
 
   static bool DeleteService(const std::wstring& service_name,
@@ -73,8 +75,6 @@ class InstallServiceWorkItem : public WorkItem {
   void RollbackImpl() override;
 
   std::unique_ptr<InstallServiceWorkItemImpl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallServiceWorkItem);
 };
 
 }  // namespace installer

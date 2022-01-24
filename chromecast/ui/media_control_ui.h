@@ -29,6 +29,10 @@ class CastWindowManager;
 class MediaControlUi : public mojom::MediaControlUi {
  public:
   explicit MediaControlUi(CastWindowManager* window_manager);
+
+  MediaControlUi(const MediaControlUi&) = delete;
+  MediaControlUi& operator=(const MediaControlUi&) = delete;
+
   ~MediaControlUi() override;
 
   void SetBounds(const gfx::Rect& new_bounds);
@@ -96,8 +100,6 @@ class MediaControlUi : public mojom::MediaControlUi {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<MediaControlUi> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControlUi);
 };
 
 }  // namespace chromecast

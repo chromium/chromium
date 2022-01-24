@@ -164,7 +164,10 @@ String XSLTProcessor::getParameter(const String& /*namespaceURI*/,
                                    const String& local_name) const {
   // FIXME: namespace support?
   // should make a QualifiedName here but we'd have to expose the impl
-  return parameters_.at(local_name);
+  auto it = parameters_.find(local_name);
+  if (it == parameters_.end())
+    return String();
+  return it->value;
 }
 
 void XSLTProcessor::removeParameter(const String& /*namespaceURI*/,

@@ -11,7 +11,7 @@
 
 namespace blink {
 
-using NamedGridLinesMap = HashMap<String, Vector<size_t>>;
+using NamedGridLinesMap = HashMap<String, Vector<wtf_size_t>>;
 
 }  // namespace blink
 

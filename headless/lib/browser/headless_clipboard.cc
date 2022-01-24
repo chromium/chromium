@@ -46,6 +46,26 @@ void HeadlessClipboard::Clear(ui::ClipboardBuffer buffer) {
   GetStore(buffer).Clear();
 }
 
+std::vector<std::u16string> HeadlessClipboard::GetStandardFormats(
+    ui::ClipboardBuffer buffer,
+    const ui::DataTransferEndpoint* data_dst) const {
+  std::vector<std::u16string> types;
+  if (IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(), buffer,
+                        data_dst)) {
+    types.push_back(base::UTF8ToUTF16(ui::kMimeTypeText));
+  }
+  if (IsFormatAvailable(ui::ClipboardFormatType::HtmlType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(ui::kMimeTypeHTML));
+  if (IsFormatAvailable(ui::ClipboardFormatType::SvgType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(ui::kMimeTypeSvg));
+  if (IsFormatAvailable(ui::ClipboardFormatType::RtfType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(ui::kMimeTypeRTF));
+  if (IsFormatAvailable(ui::ClipboardFormatType::PngType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(ui::kMimeTypePNG));
+
+  return types;
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void HeadlessClipboard::ReadAvailableTypes(
@@ -54,34 +74,7 @@ void HeadlessClipboard::ReadAvailableTypes(
     std::vector<std::u16string>* types) const {
   DCHECK(types);
   types->clear();
-
-  if (IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(), buffer,
-                        data_dst))
-    types->push_back(base::UTF8ToUTF16(ui::kMimeTypeText));
-  if (IsFormatAvailable(ui::ClipboardFormatType::HtmlType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(ui::kMimeTypeHTML));
-
-  if (IsFormatAvailable(ui::ClipboardFormatType::RtfType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(ui::kMimeTypeRTF));
-  if (IsFormatAvailable(ui::ClipboardFormatType::PngType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(ui::kMimeTypePNG));
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-std::vector<std::u16string>
-HeadlessClipboard::ReadAvailablePlatformSpecificFormatNames(
-    ui::ClipboardBuffer buffer,
-    const ui::DataTransferEndpoint* data_dst) const {
-  const auto& data = GetStore(buffer).data;
-  std::vector<std::u16string> types;
-  types.reserve(data.size());
-  for (const auto& it : data) {
-    std::u16string type = base::UTF8ToUTF16(it.first.GetName());
-    types.push_back(type);
-  }
-
-  return types;
+  *types = GetStandardFormats(buffer, data_dst);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -155,17 +148,6 @@ void HeadlessClipboard::ReadPng(ui::ClipboardBuffer buffer,
                                 const ui::DataTransferEndpoint* data_dst,
                                 ReadPngCallback callback) const {
   std::move(callback).Run(GetStore(buffer).png);
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-void HeadlessClipboard::ReadImage(ui::ClipboardBuffer buffer,
-                                  const ui::DataTransferEndpoint* data_dst,
-                                  ReadImageCallback callback) const {
-  const std::vector<uint8_t>& png_data = GetStore(buffer).png;
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
-  std::move(callback).Run(bitmap);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

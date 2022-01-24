@@ -42,9 +42,9 @@ BeginFrameArgs CreateBeginFrameArgsForTesting(
     int64_t interval) {
   return BeginFrameArgs::Create(
       location, source_id, sequence_number,
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(frame_time),
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(deadline),
-      base::TimeDelta::FromMicroseconds(interval), BeginFrameArgs::NORMAL);
+      base::TimeTicks() + base::Microseconds(frame_time),
+      base::TimeTicks() + base::Microseconds(deadline),
+      base::Microseconds(interval), BeginFrameArgs::NORMAL);
 }
 
 BeginFrameArgs CreateBeginFrameArgsForTesting(
@@ -57,9 +57,9 @@ BeginFrameArgs CreateBeginFrameArgsForTesting(
     BeginFrameArgs::BeginFrameArgsType type) {
   return BeginFrameArgs::Create(
       location, source_id, sequence_number,
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(frame_time),
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(deadline),
-      base::TimeDelta::FromMicroseconds(interval), type);
+      base::TimeTicks() + base::Microseconds(frame_time),
+      base::TimeTicks() + base::Microseconds(deadline),
+      base::Microseconds(interval), type);
 }
 
 BeginFrameArgs CreateBeginFrameArgsForTesting(

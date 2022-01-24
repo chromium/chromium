@@ -72,8 +72,6 @@ void WebComponent::StartComponent() {
   if (!debug_name_.empty())
     create_params.set_debug_name(debug_name_);
   create_params.set_enable_remote_debugging(enable_remote_debugging_);
-  create_params.set_autoplay_policy(
-      fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION);
   runner_->CreateFrameWithParams(std::move(create_params), frame_.NewRequest());
 
   // If the Frame unexpectedly disconnects then tear-down this Component.
@@ -87,6 +85,11 @@ void WebComponent::StartComponent() {
     }
     DestroyComponent(status, fuchsia::sys::TerminationReason::EXITED);
   });
+
+  fuchsia::web::ContentAreaSettings settings;
+  settings.set_autoplay_policy(
+      fuchsia::web::AutoplayPolicy::REQUIRE_USER_ACTIVATION);
+  frame_->SetContentAreaSettings(std::move(settings));
 
   // Observe the Frame for failures, via navigation state change events.
   frame_->SetNavigationEventListener(navigation_listener_binding_.NewBinding());
@@ -161,6 +164,22 @@ void WebComponent::CreateViewWithViewRef(
   view_token.value = std::move(view_token_value);
   frame_->CreateViewWithViewRef(std::move(view_token), std::move(control_ref),
                                 std::move(view_ref));
+
+  view_is_bound_ = true;
+}
+
+void WebComponent::CreateView2(fuchsia::ui::app::CreateView2Args view_args) {
+  DCHECK(frame_);
+  if (view_is_bound_) {
+    LOG(ERROR) << "CreateView() called more than once.";
+    DestroyComponent(ZX_ERR_BAD_STATE, fuchsia::sys::TerminationReason::EXITED);
+    return;
+  }
+
+  fuchsia::web::CreateView2Args web_view_args;
+  web_view_args.set_view_creation_token(
+      std::move(*view_args.mutable_view_creation_token()));
+  frame_->CreateView2(std::move(web_view_args));
 
   view_is_bound_ = true;
 }

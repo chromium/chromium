@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "ui/views/window/frame_caption_button.h"
@@ -28,6 +27,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
     : public views::FrameCaptionButton {
  public:
   FrameSizeButton(PressedCallback callback, FrameSizeButtonDelegate* delegate);
+
+  FrameSizeButton(const FrameSizeButton&) = delete;
+  FrameSizeButton& operator=(const FrameSizeButton&) = delete;
 
   ~FrameSizeButton() override;
 
@@ -99,8 +101,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // Whether the buttons adjacent to the size button snap the window left and
   // right.
   bool in_snap_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSizeButton);
 };
 
 }  // namespace chromeos

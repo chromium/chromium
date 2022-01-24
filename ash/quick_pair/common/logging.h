@@ -29,7 +29,7 @@ namespace quick_pair {
 
 // Disables all logging while in scope. Intended to be called only from test
 // code, to clean up test output.
-class ScopedDisableLoggingForTesting {
+class COMPONENT_EXPORT(QUICK_PAIR_COMMON) ScopedDisableLoggingForTesting {
  public:
   ScopedDisableLoggingForTesting();
   ~ScopedDisableLoggingForTesting();

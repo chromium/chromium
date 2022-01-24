@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/borealis/borealis_shutdown_monitor.h"
 
+#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
@@ -11,7 +12,7 @@
 namespace {
 
 // The default time period used when initiating delayed shutdowns.
-constexpr base::TimeDelta kDefaultDelay = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kDefaultDelay = base::Seconds(60);
 
 }  // namespace
 
@@ -26,8 +27,9 @@ void BorealisShutdownMonitor::ShutdownWithDelay() {
   // Reset() cancels the previous request if it was already there. Also,
   // Unretained() is safe because the callback is cancelled when
   // |in_progress_request_| is destroyed.
-  in_progress_request_.Reset(base::BindOnce(
-      &BorealisShutdownMonitor::ShutdownNow, base::Unretained(this)));
+  in_progress_request_.Reset(
+      base::BindOnce(&BorealisShutdownMonitor::OnShutdownTimerElapsed,
+                     base::Unretained(this)));
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, in_progress_request_.callback(), delay_);
 }
@@ -43,6 +45,12 @@ void BorealisShutdownMonitor::CancelDelayedShutdown() {
 void BorealisShutdownMonitor::SetShutdownDelayForTesting(
     base::TimeDelta delay) {
   delay_ = delay;
+}
+
+void BorealisShutdownMonitor::OnShutdownTimerElapsed() {
+  // TODO(b/198698779): Remove this log line when it is no longer needed.
+  LOG(WARNING) << "Automatic shutdown triggered";
+  ShutdownNow();
 }
 
 }  // namespace borealis

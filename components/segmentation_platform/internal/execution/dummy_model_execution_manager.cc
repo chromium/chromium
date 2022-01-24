@@ -24,7 +24,7 @@ namespace {
 void RunModelExecutionCallback(
     ModelExecutionManager::ModelExecutionCallback callback) {
   std::move(callback).Run(
-      std::make_pair(0, ModelExecutionStatus::EXECUTION_ERROR));
+      std::make_pair(0, ModelExecutionStatus::kExecutionError));
 }
 }  // namespace
 

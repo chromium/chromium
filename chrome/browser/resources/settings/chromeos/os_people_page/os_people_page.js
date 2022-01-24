@@ -26,10 +26,11 @@ Polymer({
       notify: true,
     },
 
-    splitSettingsSyncEnabled_: {
+    /** @private */
+    syncSettingsCategorizationEnabled_: {
       type: Boolean,
       value() {
-        return loadTimeData.getBoolean('splitSettingsSyncEnabled');
+        return loadTimeData.getBoolean('syncSettingsCategorizationEnabled');
       },
     },
 
@@ -102,18 +103,6 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('isAccountManagerEnabled');
-      },
-      readOnly: true,
-    },
-
-    /**
-     * True if redesign of account management flows is enabled.
-     * @private
-     */
-    isAccountManagementFlowsV2Enabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
       },
       readOnly: true,
     },
@@ -348,23 +337,12 @@ Polymer({
     this.authToken_ = e.detail;
   },
 
-  /** @private */
-  getPasswordState_(hasPin, enableScreenLock) {
-    if (!enableScreenLock) {
-      return this.i18n('lockScreenNone');
-    }
-    if (hasPin) {
-      return this.i18n('lockScreenPinOrPassword');
-    }
-    return this.i18n('lockScreenPasswordOnly');
-  },
-
   /**
    * @return {string}
    * @private
    */
   getSyncRowLabel_() {
-    if (this.splitSettingsSyncEnabled_) {
+    if (this.syncSettingsCategorizationEnabled_) {
       return this.i18n('osSyncPageTitle');
     } else {
       return this.i18n('syncAndNonPersonalizedServices');
@@ -425,25 +403,13 @@ Polymer({
    * @private
    */
   async setProfileLabel(accounts) {
-    if (this.isAccountManagementFlowsV2Enabled_) {
-      // Template: "$1 Google accounts" with correct plural of "account".
-      const labelTemplate = await cr.sendWithPromise(
-          'getPluralString', 'profileLabel', accounts.length);
-
-      // Final output: "X Google accounts"
-      this.profileLabel_ = loadTimeData.substituteString(
-          labelTemplate, accounts[0].email, accounts.length);
-      return;
-    }
-    const moreAccounts = accounts.length - 1;
-    // Template: "$1, +$2 more accounts" with correct plural of "account".
-    // Localization handles the case of 0 more accounts.
+    // Template: "$1 Google accounts" with correct plural of "account".
     const labelTemplate = await cr.sendWithPromise(
-        'getPluralString', 'profileLabel', moreAccounts);
+        'getPluralString', 'profileLabel', accounts.length);
 
-    // Final output: "alice@gmail.com, +2 more accounts"
+    // Final output: "X Google accounts"
     this.profileLabel_ = loadTimeData.substituteString(
-        labelTemplate, accounts[0].email, moreAccounts);
+        labelTemplate, accounts[0].email, accounts.length);
   },
 
   /**
@@ -460,11 +426,6 @@ Polymer({
         syncStatus.signedInUsername) {
       this.profileLabel_ = syncStatus.signedInUsername;
     }
-  },
-
-  /** @private */
-  onSigninTap_() {
-    this.syncBrowserProxy_.startSignIn();
   },
 
   /** @private */
@@ -485,7 +446,7 @@ Polymer({
 
   /** @private */
   onSyncTap_() {
-    if (this.splitSettingsSyncEnabled_) {
+    if (this.syncSettingsCategorizationEnabled_) {
       settings.Router.getInstance().navigateTo(settings.routes.OS_SYNC);
       return;
     }
@@ -498,30 +459,10 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onConfigureLockTap_(e) {
-    // Navigating to the lock screen will always open the password prompt
-    // dialog, so prevent the end of the tap event to focus what is underneath
-    // it, which takes focus from the dialog.
-    e.preventDefault();
-    settings.Router.getInstance().navigateTo(settings.routes.LOCK_SCREEN);
-  },
-
-  /**
-   * @param {!Event} e
-   * @private
-   */
   onAccountManagerTap_(e) {
     if (this.isAccountManagerEnabled_) {
       settings.Router.getInstance().navigateTo(settings.routes.ACCOUNT_MANAGER);
     }
-  },
-
-  /** @private */
-  onManageOtherPeople_() {
-    assert(
-        !this.isAccountManagementFlowsV2Enabled_,
-        'onManageOtherPeople_ was called when kAccountManagementFlowsV2 is enabled');
-    settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS);
   },
 
   /**
@@ -538,19 +479,10 @@ Polymer({
    * @private
    */
   getProfileName_() {
-    if (this.isAccountManagerEnabled_ &&
-        this.isAccountManagementFlowsV2Enabled_) {
+    if (this.isAccountManagerEnabled_) {
       return loadTimeData.getString('osProfileName');
     }
     return this.profileName_;
-  },
-
-  /**
-   * @return {string}
-   * @private
-   */
-  getSyncSetupIcon_() {
-    return this.isAccountManagementFlowsV2Enabled_ ? 'cr:sync' : '';
   },
 
   /**
@@ -560,18 +492,6 @@ Polymer({
    */
   showSignin_(syncStatus) {
     return loadTimeData.getBoolean('signinAllowed') && !syncStatus.signedIn;
-  },
-
-  /**
-   * Looks up the translation id, which depends on PIN login support.
-   * @param {boolean} hasPinLogin
-   * @private
-   */
-  selectLockScreenTitleString(hasPinLogin) {
-    if (hasPinLogin) {
-      return this.i18n('lockScreenTitleLoginLock');
-    }
-    return this.i18n('lockScreenTitleLock');
   },
 
   /**

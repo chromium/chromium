@@ -61,6 +61,9 @@ class IdleEventNotifierTest : public testing::Test {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
+  IdleEventNotifierTest(const IdleEventNotifierTest&) = delete;
+  IdleEventNotifierTest& operator=(const IdleEventNotifierTest&) = delete;
+
   ~IdleEventNotifierTest() override = default;
 
   void SetUp() override {
@@ -87,9 +90,6 @@ class IdleEventNotifierTest : public testing::Test {
   power_manager::PowerSupplyProperties ac_power_;
   power_manager::PowerSupplyProperties disconnected_power_;
   ui::UserActivityDetector user_activity_detector_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IdleEventNotifierTest);
 };
 
 // After initialization, |external_power_| is not set up.
@@ -125,7 +125,7 @@ TEST_F(IdleEventNotifierTest, PowerSourceNotChanged) {
   data.recent_time_active = base::TimeDelta();
   EXPECT_EQ(data, idle_event_notifier_->GetActivityDataAndReset());
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   idle_event_notifier_->PowerChanged(ac_power_);
   EXPECT_EQ(data, idle_event_notifier_->GetActivityDataAndReset());
 }
@@ -143,7 +143,7 @@ TEST_F(IdleEventNotifierTest, PowerSourceChanged) {
   data_1.recent_time_active = base::TimeDelta();
   EXPECT_EQ(data_1, idle_event_notifier_->GetActivityDataAndReset());
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(100));
+  scoped_task_env_.FastForwardBy(base::Seconds(100));
   const base::Time now_2 = base::Time::Now();
   idle_event_notifier_->PowerChanged(disconnected_power_);
   IdleEventNotifier::ActivityData data_2;
@@ -163,7 +163,7 @@ TEST_F(IdleEventNotifierTest, ShortSuspendDone) {
   scoped_task_env_.FastForwardBy(IdleEventNotifier::kIdleDelay / 2);
   idle_event_notifier_->SuspendDone(IdleEventNotifier::kIdleDelay / 2);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(5));
+  scoped_task_env_.FastForwardBy(base::Seconds(5));
   idle_event_notifier_->PowerChanged(disconnected_power_);
   const base::Time now_2 = base::Time::Now();
 
@@ -181,12 +181,12 @@ TEST_F(IdleEventNotifierTest, LongSuspendDone) {
   idle_event_notifier_->PowerChanged(ac_power_);
 
   scoped_task_env_.FastForwardBy(IdleEventNotifier::kIdleDelay +
-                                 base::TimeDelta::FromSeconds(10));
+                                 base::Seconds(10));
   const base::Time now_1 = base::Time::Now();
   idle_event_notifier_->SuspendDone(IdleEventNotifier::kIdleDelay +
-                                    base::TimeDelta::FromSeconds(10));
+                                    base::Seconds(10));
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   const base::Time now_2 = base::Time::Now();
   idle_event_notifier_->PowerChanged(disconnected_power_);
 
@@ -209,9 +209,9 @@ TEST_F(IdleEventNotifierTest, UserActivityKey) {
   data.last_activity_time_of_day = time_of_day;
   data.last_user_activity_time_of_day = time_of_day;
   data.recent_time_active = base::TimeDelta();
-  data.time_since_last_key = base::TimeDelta::FromSeconds(10);
+  data.time_since_last_key = base::Seconds(10);
   data.key_events_in_last_hour = 1;
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(data, idle_event_notifier_->GetActivityDataAndReset());
 }
 
@@ -227,9 +227,9 @@ TEST_F(IdleEventNotifierTest, UserActivityMouse) {
   data.last_activity_time_of_day = time_of_day;
   data.last_user_activity_time_of_day = time_of_day;
   data.recent_time_active = base::TimeDelta();
-  data.time_since_last_mouse = base::TimeDelta::FromSeconds(10);
+  data.time_since_last_mouse = base::Seconds(10);
   data.mouse_events_in_last_hour = 1;
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(data, idle_event_notifier_->GetActivityDataAndReset());
 }
 
@@ -245,7 +245,7 @@ TEST_F(IdleEventNotifierTest, UserActivityOther) {
   data.last_activity_time_of_day = time_of_day;
   data.last_user_activity_time_of_day = time_of_day;
   data.recent_time_active = base::TimeDelta();
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(data, idle_event_notifier_->GetActivityDataAndReset());
 }
 
@@ -257,7 +257,7 @@ TEST_F(IdleEventNotifierTest, TwoQuickUserActivities) {
                              gfx::Point(0, 0), base::TimeTicks(), 0, 0);
   idle_event_notifier_->OnUserActivity(&mouse_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  scoped_task_env_.FastForwardBy(base::Seconds(2));
   const base::Time now_2 = base::Time::Now();
   ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
   idle_event_notifier_->OnUserActivity(&key_event);
@@ -268,12 +268,11 @@ TEST_F(IdleEventNotifierTest, TwoQuickUserActivities) {
   data.last_activity_time_of_day = time_of_day;
   data.last_user_activity_time_of_day = time_of_day;
   data.recent_time_active = now_2 - now_1;
-  data.time_since_last_key = base::TimeDelta::FromSeconds(10);
-  data.time_since_last_mouse =
-      base::TimeDelta::FromSeconds(10) + (now_2 - now_1);
+  data.time_since_last_key = base::Seconds(10);
+  data.time_since_last_mouse = base::Seconds(10) + (now_2 - now_1);
   data.key_events_in_last_hour = 1;
   data.mouse_events_in_last_hour = 1;
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(data, idle_event_notifier_->GetActivityDataAndReset());
 }
 
@@ -283,11 +282,11 @@ TEST_F(IdleEventNotifierTest, ActivityAfterVideoStarts) {
   const base::Time now_1 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityStarted();
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  scoped_task_env_.FastForwardBy(base::Seconds(1));
   const base::Time now_2 = base::Time::Now();
   idle_event_notifier_->OnUserActivity(&mouse_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  scoped_task_env_.FastForwardBy(base::Seconds(2));
   const base::Time now_3 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityEnded();
 
@@ -296,11 +295,11 @@ TEST_F(IdleEventNotifierTest, ActivityAfterVideoStarts) {
   data.last_activity_time_of_day = GetTimeSinceMidnight(now_3);
   data.last_user_activity_time_of_day = GetTimeSinceMidnight(now_2);
   data.recent_time_active = now_3 - now_1;
-  data.time_since_last_mouse = base::TimeDelta::FromSeconds(10) + now_3 - now_2;
+  data.time_since_last_mouse = base::Seconds(10) + now_3 - now_2;
   data.video_playing_time = now_3 - now_1;
-  data.time_since_video_ended = base::TimeDelta::FromSeconds(10);
+  data.time_since_video_ended = base::Seconds(10);
   data.mouse_events_in_last_hour = 1;
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(data, idle_event_notifier_->GetActivityDataAndReset());
 }
 
@@ -309,7 +308,7 @@ TEST_F(IdleEventNotifierTest, IdleEventFieldReset) {
   ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
   idle_event_notifier_->OnUserActivity(&key_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   const base::Time now_2 = base::Time::Now();
   ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
                              gfx::Point(0, 0), base::TimeTicks(), 0, 0);
@@ -321,11 +320,11 @@ TEST_F(IdleEventNotifierTest, IdleEventFieldReset) {
   data_1.last_activity_time_of_day = time_of_day_2;
   data_1.last_user_activity_time_of_day = time_of_day_2;
   data_1.recent_time_active = now_2 - now_1;
-  data_1.time_since_last_key = base::TimeDelta::FromSeconds(10) + now_2 - now_1;
-  data_1.time_since_last_mouse = base::TimeDelta::FromSeconds(10);
+  data_1.time_since_last_key = base::Seconds(10) + now_2 - now_1;
+  data_1.time_since_last_mouse = base::Seconds(10);
   data_1.key_events_in_last_hour = 1;
   data_1.mouse_events_in_last_hour = 1;
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(data_1, idle_event_notifier_->GetActivityDataAndReset());
 
   idle_event_notifier_->PowerChanged(ac_power_);
@@ -337,12 +336,11 @@ TEST_F(IdleEventNotifierTest, IdleEventFieldReset) {
   data_2.last_activity_time_of_day = time_of_day_3;
   data_2.last_user_activity_time_of_day = time_of_day_3;
   data_2.recent_time_active = base::TimeDelta();
-  data_2.time_since_last_key = base::TimeDelta::FromSeconds(20) + now_3 - now_1;
-  data_2.time_since_last_mouse =
-      base::TimeDelta::FromSeconds(20) + now_3 - now_2;
+  data_2.time_since_last_key = base::Seconds(20) + now_3 - now_1;
+  data_2.time_since_last_mouse = base::Seconds(20) + now_3 - now_2;
   data_2.key_events_in_last_hour = 1;
   data_2.mouse_events_in_last_hour = 1;
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+  scoped_task_env_.FastForwardBy(base::Seconds(20));
   EXPECT_EQ(data_2, idle_event_notifier_->GetActivityDataAndReset());
 }
 
@@ -352,17 +350,17 @@ TEST_F(IdleEventNotifierTest, TwoConsecutiveVideoPlaying) {
   const base::Time now_1 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityStarted();
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  scoped_task_env_.FastForwardBy(base::Seconds(2));
   idle_event_notifier_->OnVideoActivityEnded();
 
   scoped_task_env_.FastForwardBy(IdleEventNotifier::kIdleDelay / 2);
   idle_event_notifier_->OnVideoActivityStarted();
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+  scoped_task_env_.FastForwardBy(base::Seconds(20));
   const base::Time now_2 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityEnded();
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   const base::Time now_3 = base::Time::Now();
   ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
                              gfx::Point(0, 0), base::TimeTicks(), 0, 0);
@@ -373,12 +371,11 @@ TEST_F(IdleEventNotifierTest, TwoConsecutiveVideoPlaying) {
   data.last_activity_time_of_day = GetTimeSinceMidnight(now_3);
   data.last_user_activity_time_of_day = GetTimeSinceMidnight(now_3);
   data.recent_time_active = now_3 - now_1;
-  data.time_since_last_mouse = base::TimeDelta::FromSeconds(25);
+  data.time_since_last_mouse = base::Seconds(25);
   data.mouse_events_in_last_hour = 1;
   data.video_playing_time = now_2 - now_1;
-  data.time_since_video_ended =
-      base::TimeDelta::FromSeconds(25) + now_3 - now_2;
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(25));
+  data.time_since_video_ended = base::Seconds(25) + now_3 - now_2;
+  scoped_task_env_.FastForwardBy(base::Seconds(25));
   EXPECT_EQ(data, idle_event_notifier_->GetActivityDataAndReset());
 }
 
@@ -387,20 +384,20 @@ TEST_F(IdleEventNotifierTest, TwoVideoPlayingFarApartOneIdleEvent) {
   const base::Time now_1 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityStarted();
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  scoped_task_env_.FastForwardBy(base::Seconds(2));
   idle_event_notifier_->OnVideoActivityEnded();
 
   ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(0, 0),
                              gfx::Point(0, 0), base::TimeTicks(), 0, 0);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+  scoped_task_env_.FastForwardBy(base::Seconds(20));
   idle_event_notifier_->OnUserActivity(&mouse_event);
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+  scoped_task_env_.FastForwardBy(base::Seconds(20));
   idle_event_notifier_->OnUserActivity(&mouse_event);
 
   const base::Time now_2 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityStarted();
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+  scoped_task_env_.FastForwardBy(base::Seconds(20));
   const base::Time now_3 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityEnded();
 
@@ -409,11 +406,11 @@ TEST_F(IdleEventNotifierTest, TwoVideoPlayingFarApartOneIdleEvent) {
   data.last_activity_time_of_day = GetTimeSinceMidnight(now_3);
   data.last_user_activity_time_of_day = GetTimeSinceMidnight(now_2);
   data.recent_time_active = now_3 - now_1;
-  data.time_since_last_mouse = base::TimeDelta::FromSeconds(25) + now_3 - now_2;
+  data.time_since_last_mouse = base::Seconds(25) + now_3 - now_2;
   data.mouse_events_in_last_hour = 2;
   data.video_playing_time = now_3 - now_2;
-  data.time_since_video_ended = base::TimeDelta::FromSeconds(25);
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(25));
+  data.time_since_video_ended = base::Seconds(25);
+  scoped_task_env_.FastForwardBy(base::Seconds(25));
   EXPECT_EQ(data, idle_event_notifier_->GetActivityDataAndReset());
 }
 
@@ -423,7 +420,7 @@ TEST_F(IdleEventNotifierTest, TwoVideoPlayingFarApartTwoIdleEvents) {
   const base::Time now_1 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityStarted();
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  scoped_task_env_.FastForwardBy(base::Seconds(2));
   const base::Time now_2 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityEnded();
 
@@ -433,14 +430,14 @@ TEST_F(IdleEventNotifierTest, TwoVideoPlayingFarApartTwoIdleEvents) {
   data_1.recent_time_active = now_2 - now_1;
   data_1.video_playing_time = now_2 - now_1;
   data_1.time_since_video_ended =
-      IdleEventNotifier::kIdleDelay + base::TimeDelta::FromSeconds(10);
+      IdleEventNotifier::kIdleDelay + base::Seconds(10);
   scoped_task_env_.FastForwardBy(IdleEventNotifier::kIdleDelay +
-                                 base::TimeDelta::FromSeconds(10));
+                                 base::Seconds(10));
   EXPECT_EQ(data_1, idle_event_notifier_->GetActivityDataAndReset());
 
   const base::Time now_3 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityStarted();
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+  scoped_task_env_.FastForwardBy(base::Seconds(20));
   const base::Time now_4 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityEnded();
 
@@ -459,7 +456,7 @@ TEST_F(IdleEventNotifierTest, TwoVideoPlayingSeparatedByAnIdleEvent) {
   const base::Time kNow1 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityStarted();
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  scoped_task_env_.FastForwardBy(base::Seconds(2));
   const base::Time kNow2 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityEnded();
 
@@ -468,13 +465,13 @@ TEST_F(IdleEventNotifierTest, TwoVideoPlayingSeparatedByAnIdleEvent) {
   data_1.last_activity_time_of_day = GetTimeSinceMidnight(kNow2);
   data_1.recent_time_active = kNow2 - kNow1;
   data_1.video_playing_time = kNow2 - kNow1;
-  data_1.time_since_video_ended = base::TimeDelta::FromSeconds(1);
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  data_1.time_since_video_ended = base::Seconds(1);
+  scoped_task_env_.FastForwardBy(base::Seconds(1));
   EXPECT_EQ(data_1, idle_event_notifier_->GetActivityDataAndReset());
 
   const base::Time kNow3 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityStarted();
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+  scoped_task_env_.FastForwardBy(base::Seconds(20));
   const base::Time kNow4 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityEnded();
 
@@ -491,11 +488,11 @@ TEST_F(IdleEventNotifierTest, VideoPlayingPausedByShortSuspend) {
   const base::Time now_1 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityStarted();
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(100));
+  scoped_task_env_.FastForwardBy(base::Seconds(100));
   const base::Time now_2 = base::Time::Now();
   idle_event_notifier_->SuspendDone(IdleEventNotifier::kIdleDelay / 2);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+  scoped_task_env_.FastForwardBy(base::Seconds(20));
   const base::Time now_3 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityEnded();
 
@@ -516,7 +513,7 @@ TEST_F(IdleEventNotifierTest, VideoPlayingPausedByLongSuspend) {
   const base::Time now_1 = base::Time::Now();
   idle_event_notifier_->SuspendDone(2 * IdleEventNotifier::kIdleDelay);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+  scoped_task_env_.FastForwardBy(base::Seconds(20));
   const base::Time now_2 = base::Time::Now();
   idle_event_notifier_->OnVideoActivityEnded();
 
@@ -542,32 +539,32 @@ TEST_F(IdleEventNotifierTest, UserInputEventsOneIdleEvent) {
   // This key event will be too old to be counted.
   idle_event_notifier_->OnUserActivity(&key_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   const base::Time video_start_time = base::Time::Now();
   idle_event_notifier_->OnVideoActivityStarted();
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromMinutes(11));
+  scoped_task_env_.FastForwardBy(base::Minutes(11));
   const base::Time last_key_time = base::Time::Now();
   idle_event_notifier_->OnUserActivity(&key_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromMinutes(11));
+  scoped_task_env_.FastForwardBy(base::Minutes(11));
   idle_event_notifier_->OnUserActivity(&mouse_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromMinutes(11));
+  scoped_task_env_.FastForwardBy(base::Minutes(11));
   idle_event_notifier_->OnUserActivity(&touch_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromMinutes(11));
+  scoped_task_env_.FastForwardBy(base::Minutes(11));
   idle_event_notifier_->OnUserActivity(&touch_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromMinutes(11));
+  scoped_task_env_.FastForwardBy(base::Minutes(11));
   const base::Time last_touch_time = base::Time::Now();
   idle_event_notifier_->OnUserActivity(&touch_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromMinutes(11));
+  scoped_task_env_.FastForwardBy(base::Minutes(11));
   const base::Time last_mouse_time = base::Time::Now();
   idle_event_notifier_->OnUserActivity(&mouse_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   const base::Time video_end_time = base::Time::Now();
   idle_event_notifier_->OnVideoActivityEnded();
 
@@ -577,19 +574,18 @@ TEST_F(IdleEventNotifierTest, UserInputEventsOneIdleEvent) {
   data.last_user_activity_time_of_day = GetTimeSinceMidnight(last_mouse_time);
   data.recent_time_active = video_end_time - first_activity_time;
   data.video_playing_time = video_end_time - video_start_time;
-  data.time_since_video_ended = base::TimeDelta::FromSeconds(30);
-  data.time_since_last_key =
-      base::TimeDelta::FromSeconds(30) + video_end_time - last_key_time;
+  data.time_since_video_ended = base::Seconds(30);
+  data.time_since_last_key = base::Seconds(30) + video_end_time - last_key_time;
   data.time_since_last_mouse =
-      base::TimeDelta::FromSeconds(30) + video_end_time - last_mouse_time;
+      base::Seconds(30) + video_end_time - last_mouse_time;
   data.time_since_last_touch =
-      base::TimeDelta::FromSeconds(30) + video_end_time - last_touch_time;
+      base::Seconds(30) + video_end_time - last_touch_time;
 
   data.key_events_in_last_hour = 1;
   data.mouse_events_in_last_hour = 2;
   data.touch_events_in_last_hour = 3;
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(30));
+  scoped_task_env_.FastForwardBy(base::Seconds(30));
   EXPECT_EQ(data, idle_event_notifier_->GetActivityDataAndReset());
 }
 
@@ -609,38 +605,38 @@ TEST_F(IdleEventNotifierTest, UserInputEventsTwoIdleEvents) {
   data_1.last_activity_time_of_day = GetTimeSinceMidnight(now_1);
   data_1.last_user_activity_time_of_day = GetTimeSinceMidnight(now_1);
   data_1.recent_time_active = base::TimeDelta();
-  data_1.time_since_last_key = base::TimeDelta::FromSeconds(30);
+  data_1.time_since_last_key = base::Seconds(30);
   data_1.key_events_in_last_hour = 1;
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(30));
+  scoped_task_env_.FastForwardBy(base::Seconds(30));
   EXPECT_EQ(data_1, idle_event_notifier_->GetActivityDataAndReset());
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromMinutes(11));
+  scoped_task_env_.FastForwardBy(base::Minutes(11));
   const base::Time last_key_time = base::Time::Now();
   idle_event_notifier_->OnUserActivity(&key_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   const base::Time video_start_time = base::Time::Now();
   // Keep playing video so we won't run into an idle event.
   idle_event_notifier_->OnVideoActivityStarted();
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromMinutes(11));
+  scoped_task_env_.FastForwardBy(base::Minutes(11));
   idle_event_notifier_->OnUserActivity(&mouse_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromMinutes(11));
+  scoped_task_env_.FastForwardBy(base::Minutes(11));
   idle_event_notifier_->OnUserActivity(&touch_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromMinutes(11));
+  scoped_task_env_.FastForwardBy(base::Minutes(11));
   idle_event_notifier_->OnUserActivity(&touch_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromMinutes(11));
+  scoped_task_env_.FastForwardBy(base::Minutes(11));
   const base::Time last_touch_time = base::Time::Now();
   idle_event_notifier_->OnUserActivity(&touch_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromMinutes(11));
+  scoped_task_env_.FastForwardBy(base::Minutes(11));
   const base::Time last_mouse_time = base::Time::Now();
   idle_event_notifier_->OnUserActivity(&mouse_event);
 
-  scoped_task_env_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  scoped_task_env_.FastForwardBy(base::Seconds(10));
   const base::Time video_end_time = base::Time::Now();
   idle_event_notifier_->OnVideoActivityEnded();
 

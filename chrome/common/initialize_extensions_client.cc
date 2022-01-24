@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/apps/platform_apps/chrome_apps_api_provider.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
 #include "extensions/common/extensions_client.h"

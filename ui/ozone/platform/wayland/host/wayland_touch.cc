@@ -9,6 +9,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
@@ -17,9 +18,8 @@ WaylandTouch::WaylandTouch(wl_touch* touch,
                            WaylandConnection* connection,
                            Delegate* delegate)
     : obj_(touch), connection_(connection), delegate_(delegate) {
-  static const wl_touch_listener listener = {
-      &WaylandTouch::Down,  &WaylandTouch::Up,     &WaylandTouch::Motion,
-      &WaylandTouch::Frame, &WaylandTouch::Cancel,
+  static constexpr wl_touch_listener listener = {
+      &Down, &Up, &Motion, &Frame, &Cancel,
   };
 
   wl_touch_add_listener(obj_.get(), &listener, this);
@@ -42,12 +42,13 @@ void WaylandTouch::Down(void* data,
 
   WaylandTouch* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
-  touch->connection_->set_serial(serial, ET_TOUCH_PRESSED);
+
+  touch->connection_->serial_tracker().UpdateSerial(wl::SerialType::kTouchPress,
+                                                    serial);
 
   WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
   gfx::PointF location(wl_fixed_to_double(x), wl_fixed_to_double(y));
-  base::TimeTicks timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
   touch->delegate_->OnTouchPressEvent(window, location, timestamp, id);
 }
 
@@ -59,15 +60,14 @@ void WaylandTouch::Up(void* data,
   WaylandTouch* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
 
-  touch->connection_->set_serial(serial, ET_TOUCH_RELEASED);
-
-  base::TimeTicks timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
   touch->delegate_->OnTouchReleaseEvent(timestamp, id);
 
-  // Do not store the |serial| on UP events. Otherwise, Ozone can't create popup
-  // windows, which (according to the spec) can only be created on reaction to
-  // button/touch down serials.
+  // Reset kTouchPress serial only after dispatching touch-up event, so popups
+  // may detect if they were triggered by a tap gesture, and avoid grab in such
+  // case, which, per the spec, is illegal and may lead to instant popup
+  // dismissal by the compositor.
+  touch->connection_->serial_tracker().ResetSerial(wl::SerialType::kTouchPress);
 }
 
 void WaylandTouch::Motion(void* data,
@@ -80,8 +80,7 @@ void WaylandTouch::Motion(void* data,
   DCHECK(touch);
 
   gfx::PointF location(wl_fixed_to_double(x), wl_fixed_to_double(y));
-  base::TimeTicks timestamp =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time);
+  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
   touch->delegate_->OnTouchMotionEvent(location, timestamp, id);
 }
 

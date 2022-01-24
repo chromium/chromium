@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 
@@ -31,6 +30,11 @@ class EasyUnlockChallengeWrapper {
                              const std::string& channel_binding_data,
                              const AccountId& account_id,
                              EasyUnlockTpmKeyManager* key_manager);
+
+  EasyUnlockChallengeWrapper(const EasyUnlockChallengeWrapper&) = delete;
+  EasyUnlockChallengeWrapper& operator=(const EasyUnlockChallengeWrapper&) =
+      delete;
+
   virtual ~EasyUnlockChallengeWrapper();
 
   // Wraps the challenge and invokes `callback` with the `wrapped_challenge`
@@ -68,8 +72,6 @@ class EasyUnlockChallengeWrapper {
   WrappedChallengeCallback callback_;
 
   base::WeakPtrFactory<EasyUnlockChallengeWrapper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockChallengeWrapper);
 };
 
 }  // namespace ash

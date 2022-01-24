@@ -212,9 +212,14 @@ void AddDrmGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
 }
 
 void AddAmdGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
-  static const char* const kReadOnlyList[] = {"/etc/ld.so.cache",
-                                              "/usr/lib64/libEGL.so.1",
-                                              "/usr/lib64/libGLESv2.so.2"};
+  static const char* const kReadOnlyList[] = {
+      "/etc/ld.so.cache",
+      "/usr/lib64/libEGL.so.1",
+      "/usr/lib64/libGLESv2.so.2",
+      "/usr/share/vulkan/icd.d",
+      "/usr/share/vulkan/icd.d/radeon_icd.x86_64.json",
+      "/usr/lib64/libvulkan.so.1",
+      "/usr/lib64/libvulkan_radeon.so"};
   for (const char* item : kReadOnlyList)
     permissions->push_back(BrokerFilePermission::ReadOnly(item));
 
@@ -244,7 +249,24 @@ void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char* const kReadOnlyList[] = {
       "/usr/share/vulkan/icd.d",
       "/usr/share/vulkan/icd.d/intel_icd.x86_64.json",
-      "/usr/lib64/libvulkan_intel.so"};
+      // TODO(hob): libvulkan.so is broadly applicable across all platforms
+      // for WebGPU, but let's allowlist only on Intel for now since it's the
+      // first platform to support WebGPU. As we start rolling out WebGPU on
+      // more platforms, we should move this into |AddStandardGpuPermissions|.
+      "/usr/lib64/libvulkan.so.1",
+      "/usr/lib64/libvulkan_intel.so",
+      // To support threads in mesa we use --gpu-sandbox-start-early and
+      // that requires the following libs and files to be accessible.
+      "/usr/lib64/libEGL.so.1",
+      "/usr/lib64/libGLESv2.so.2",
+      "/usr/lib64/libglapi.so.0",
+      "/usr/lib64/dri/i965_dri.so",
+      "/usr/lib64/dri/iris_dri.so",
+      // Allow libglvnd files and libs.
+      "/usr/share/glvnd/egl_vendor.d",
+      "/usr/share/glvnd/egl_vendor.d/50_mesa.json",
+      "/usr/lib64/libEGL_mesa.so.0",
+      "/usr/lib64/libGLdispatch.so.0"};
   for (const char* item : kReadOnlyList)
     permissions->push_back(BrokerFilePermission::ReadOnly(item));
 

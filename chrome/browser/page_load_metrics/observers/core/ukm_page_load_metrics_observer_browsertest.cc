@@ -47,18 +47,19 @@ class UkmPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   }
 
   void NavigateTo(const GURL& url) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     base::RunLoop().RunUntilIdle();
   }
 
   void NavigateToOriginPath(const std::string& path) {
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("origin.com", path));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("origin.com", path)));
     base::RunLoop().RunUntilIdle();
   }
 
   void NavigateAway() {
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
     base::RunLoop().RunUntilIdle();
   }
 

@@ -26,11 +26,11 @@ AccessibilityMainHandler::AccessibilityMainHandler() = default;
 AccessibilityMainHandler::~AccessibilityMainHandler() = default;
 
 void AccessibilityMainHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "a11yPageReady",
       base::BindRepeating(&AccessibilityMainHandler::HandleA11yPageReady,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "confirmA11yImageLabels",
       base::BindRepeating(
           &AccessibilityMainHandler::HandleCheckAccessibilityImageLabels,

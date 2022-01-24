@@ -22,6 +22,7 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -112,6 +113,7 @@ public class RestoreMigrateTest {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false);
         TabbedModeTabPersistencePolicy.resetMigrationTaskForTesting();
+        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
         ContextUtils.initApplicationContextForTests(mAppContextToRestore);
     }
 
@@ -120,8 +122,9 @@ public class RestoreMigrateTest {
         return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<TabPersistentStore>() {
             @Override
             public TabPersistentStore call() {
-                TabPersistencePolicy persistencePolicy =
-                        new TabbedModeTabPersistencePolicy(selectorIndex, false, true);
+                TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(
+                        selectorIndex, false, true,
+                        TabWindowManagerSingleton.getInstance().getMaxSimultaneousSelectors());
                 TabPersistentStore store =
                         new TabPersistentStore(persistencePolicy, selector, null);
                 return store;

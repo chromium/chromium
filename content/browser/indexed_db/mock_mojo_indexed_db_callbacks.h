@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <string>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,6 +23,11 @@ namespace content {
 class MockMojoIndexedDBCallbacks : public blink::mojom::IDBCallbacks {
  public:
   explicit MockMojoIndexedDBCallbacks();
+
+  MockMojoIndexedDBCallbacks(const MockMojoIndexedDBCallbacks&) = delete;
+  MockMojoIndexedDBCallbacks& operator=(const MockMojoIndexedDBCallbacks&) =
+      delete;
+
   ~MockMojoIndexedDBCallbacks() override;
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
@@ -75,8 +79,6 @@ class MockMojoIndexedDBCallbacks : public blink::mojom::IDBCallbacks {
 
  private:
   mojo::AssociatedReceiver<blink::mojom::IDBCallbacks> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockMojoIndexedDBCallbacks);
 };
 
 }  // namespace content

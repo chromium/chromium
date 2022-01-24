@@ -11,16 +11,21 @@
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -133,6 +138,10 @@ class CastDialogViewTest : public ChromeViewsTestBase {
   views::View* no_sinks_view() { return dialog_->no_sinks_view_for_test(); }
 
   views::Button* sources_button() { return dialog_->sources_button_for_test(); }
+
+  HoverButton* access_code_cast_button() {
+    return dialog_->access_code_cast_button_for_test();
+  }
 
   ui::SimpleMenuModel* sources_menu_model() {
     return dialog_->sources_menu_model_for_test();
@@ -367,6 +376,27 @@ TEST_F(CastDialogViewTest, SwitchToNoDeviceView) {
   dialog_->OnModelUpdated(model);
   EXPECT_TRUE(no_sinks_view()->GetVisible());
   EXPECT_FALSE(scroll_view());
+}
+
+TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kEnterpriseCastingUI);
+  profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, false);
+
+  CastDialogModel model = CreateModelWithSinks({CreateAvailableSink()});
+  InitializeDialogWithModel(model);
+  EXPECT_FALSE(access_code_cast_button());
+}
+
+TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kEnterpriseCastingUI);
+  profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
+
+  CastDialogModel model = CreateModelWithSinks({CreateAvailableSink()});
+  InitializeDialogWithModel(model);
+
+  EXPECT_TRUE(access_code_cast_button());
 }
 
 }  // namespace media_router

@@ -31,6 +31,9 @@ class UsbDeviceWin;
 // UsbDeviceHandle class provides basic I/O related functionalities.
 class UsbDeviceHandleWin : public UsbDeviceHandle {
  public:
+  UsbDeviceHandleWin(const UsbDeviceHandleWin&) = delete;
+  UsbDeviceHandleWin& operator=(const UsbDeviceHandleWin&) = delete;
+
   scoped_refptr<UsbDevice> GetDevice() const override;
   void Close() override;
   void SetConfiguration(int configuration_value,
@@ -80,9 +83,13 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
   // Constructor used to build a connection to the device.
   UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device);
 
-  // Constructor used to build a connection to the device's parent hub.
-  UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device,
-                     base::win::ScopedHandle handle);
+  // Constructor used to build a connection to the device's parent hub. To avoid
+  // bugs in USB hub drivers a single global sequenced task runner is used for
+  // all calls to the driver.
+  UsbDeviceHandleWin(
+      scoped_refptr<UsbDeviceWin> device,
+      base::win::ScopedHandle handle,
+      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
 
   ~UsbDeviceHandleWin() override;
 
@@ -98,6 +105,10 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
 
   struct Interface {
     Interface();
+
+    Interface(const Interface&) = delete;
+    Interface& operator=(const Interface&) = delete;
+
     ~Interface();
 
     // This may be nullptr in the rare case of a device which doesn't have any
@@ -129,8 +140,6 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
 
     // Closures to execute when |function_path| has been populated.
     std::vector<OpenInterfaceCallback> ready_callbacks;
-
-    DISALLOW_COPY_AND_ASSIGN(Interface);
   };
 
   struct Endpoint {
@@ -222,8 +231,6 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   base::WeakPtrFactory<UsbDeviceHandleWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsbDeviceHandleWin);
 };
 
 }  // namespace device

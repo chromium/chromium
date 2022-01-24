@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -30,6 +29,11 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
   MultiUserContextMenuChromeOSTest()
       : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
+
+  MultiUserContextMenuChromeOSTest(const MultiUserContextMenuChromeOSTest&) =
+      delete;
+  MultiUserContextMenuChromeOSTest& operator=(
+      const MultiUserContextMenuChromeOSTest&) = delete;
 
   void SetUp() override;
   void TearDown() override;
@@ -59,8 +63,6 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
   // Owned by |user_manager_enabler_|.
   FakeChromeUserManager* fake_user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiUserContextMenuChromeOSTest);
 };
 
 void MultiUserContextMenuChromeOSTest::SetUp() {

@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -43,6 +42,9 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) TPMTokenInfoGetter {
   static std::unique_ptr<TPMTokenInfoGetter> CreateForSystemToken(
       CryptohomePkcs11Client* cryptohome_pkcs11_client,
       const scoped_refptr<base::TaskRunner>& delayed_task_runner);
+
+  TPMTokenInfoGetter(const TPMTokenInfoGetter&) = delete;
+  TPMTokenInfoGetter& operator=(const TPMTokenInfoGetter&) = delete;
 
   ~TPMTokenInfoGetter();
 
@@ -117,8 +119,6 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) TPMTokenInfoGetter {
   CryptohomePkcs11Client* cryptohome_pkcs11_client_;
 
   base::WeakPtrFactory<TPMTokenInfoGetter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TPMTokenInfoGetter);
 };
 
 }  // namespace chromeos

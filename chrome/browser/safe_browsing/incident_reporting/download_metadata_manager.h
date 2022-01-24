@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/download_manager.h"
 
@@ -42,6 +41,10 @@ class DownloadMetadataManager : public content::DownloadManager::Observer {
       GetDownloadDetailsCallback;
 
   DownloadMetadataManager();
+
+  DownloadMetadataManager(const DownloadMetadataManager&) = delete;
+  DownloadMetadataManager& operator=(const DownloadMetadataManager&) = delete;
+
   ~DownloadMetadataManager() override;
 
   // Adds |download_manager| to the set observed by the metadata manager.
@@ -82,8 +85,6 @@ class DownloadMetadataManager : public content::DownloadManager::Observer {
   // Contexts for each DownloadManager that has been added and has not yet
   // "gone down".
   ManagerToContextMap contexts_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadMetadataManager);
 };
 
 }  // namespace safe_browsing

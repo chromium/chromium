@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -104,6 +103,9 @@ class SandboxedRarAnalyzerTest : public testing::Test {
                   safe_browsing::ArchiveAnalyzerResults* results)
         : next_closure_(next_closure), results_(results) {}
 
+    ResultsGetter(const ResultsGetter&) = delete;
+    ResultsGetter& operator=(const ResultsGetter&) = delete;
+
     SandboxedRarAnalyzer::ResultCallback GetCallback() {
       return base::BindOnce(&ResultsGetter::ResultsCallback,
                             base::Unretained(this));
@@ -117,8 +119,6 @@ class SandboxedRarAnalyzerTest : public testing::Test {
 
     base::RepeatingClosure next_closure_;
     safe_browsing::ArchiveAnalyzerResults* results_;
-
-    DISALLOW_COPY_AND_ASSIGN(ResultsGetter);
   };
   // |analzyer_| should be destroyed after task_environment, so that any other
   // threads with objects holding references to it will be shut down first.

@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -32,6 +31,10 @@ typedef std::map<std::string, std::string> Statistics;
 class QuotaInternalsHandler : public content::WebUIMessageHandler {
  public:
   QuotaInternalsHandler();
+
+  QuotaInternalsHandler(const QuotaInternalsHandler&) = delete;
+  QuotaInternalsHandler& operator=(const QuotaInternalsHandler&) = delete;
+
   ~QuotaInternalsHandler() override;
   void RegisterMessages() override;
 
@@ -48,8 +51,6 @@ class QuotaInternalsHandler : public content::WebUIMessageHandler {
   void OnTriggerStoragePressure(const base::ListValue*);
 
   scoped_refptr<QuotaInternalsProxy> proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaInternalsHandler);
 };
 }  // namespace quota_internals
 

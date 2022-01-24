@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/sw_reporter_invocation_win.h"
@@ -112,6 +111,9 @@ class ChromeCleanerController {
   // Returns the global controller object.
   static ChromeCleanerController* GetInstance();
 
+  ChromeCleanerController(const ChromeCleanerController&) = delete;
+  ChromeCleanerController& operator=(const ChromeCleanerController&) = delete;
+
   virtual State state() const = 0;
   virtual IdleReason idle_reason() const = 0;
 
@@ -211,9 +213,6 @@ class ChromeCleanerController {
  protected:
   ChromeCleanerController();
   virtual ~ChromeCleanerController();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeCleanerController);
 };
 
 // Registers the reporter scan completion time preference.

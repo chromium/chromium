@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
@@ -26,6 +25,10 @@ class StatusIconObserver;
 class StatusIcon {
  public:
   StatusIcon();
+
+  StatusIcon(const StatusIcon&) = delete;
+  StatusIcon& operator=(const StatusIcon&) = delete;
+
   virtual ~StatusIcon();
 
   // Sets the image associated with this status icon.
@@ -83,8 +86,6 @@ class StatusIcon {
 
   // Context menu, if any.
   std::unique_ptr<StatusIconMenuModel> context_menu_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIcon);
 };
 
 #endif  // CHROME_BROWSER_STATUS_ICONS_STATUS_ICON_H_

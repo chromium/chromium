@@ -49,6 +49,17 @@ CWV_EXPORT
 // Deletes the password.
 - (void)deletePassword:(CWVPassword*)password;
 
+// Adds a new password created from the iOS credential provider extension.
+// |username| The login username for this password.
+// |serviceIdentifier| The service for which this password is for. This should
+// be derived from a -[ASCredentialServiceIdentifier identifier].
+// |keychainIdentifier| Used to retrieve the password value from the keychain.
+// This should identify a password previously stored using the APIs in
+// CWVCredentialProviderUtils.
+- (void)addNewPasswordForUsername:(NSString*)username
+                serviceIdentifier:(NSString*)serviceIdentifier
+               keychainIdentifier:(NSString*)keychainIdentifier;
+
 @end
 
 NS_ASSUME_NONNULL_END

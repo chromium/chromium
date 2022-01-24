@@ -48,7 +48,6 @@ gfx::Size CalculateOobeDialogSizeForPrimaryDisplay();
 void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
                                int shelf_height,
                                bool is_horizontal,
-                               bool is_new_oobe_layout_enabled,
                                gfx::Rect* result,
                                OobeDialogPaddingMode* result_padding);
 

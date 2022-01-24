@@ -17,6 +17,10 @@ namespace remoting {
 class Canvas {
  public:
   Canvas() {}
+
+  Canvas(const Canvas&) = delete;
+  Canvas& operator=(const Canvas&) = delete;
+
   virtual ~Canvas() {}
 
   // Clears the frame.
@@ -67,9 +71,6 @@ class Canvas {
 
   // Intended to be given to a Drawable to draw onto.
   virtual base::WeakPtr<Canvas> GetWeakPtr() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Canvas);
 };
 
 }  // namespace remoting

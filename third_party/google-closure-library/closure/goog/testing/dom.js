@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Testing utilities for DOM related tests.
@@ -43,6 +35,7 @@ goog.require('goog.userAgent');
  * @private
  */
 goog.testing.dom.createEndTagMarker_ = function() {
+  'use strict';
   var marker = goog.dom.createElement(goog.dom.TagName.DIV);
   marker.id = goog.getUid(marker);
   return marker;
@@ -70,8 +63,10 @@ goog.testing.dom.END_TAG_MARKER_ = goog.testing.dom.createEndTagMarker_();
  *         other string: Match the text node's contents.
  */
 goog.testing.dom.assertNodesMatch = function(it, array) {
+  'use strict';
   var i = 0;
   goog.iter.forEach(it, function(node) {
+    'use strict';
     if (array.length <= i) {
       fail(
           'Got more nodes than expected: ' +
@@ -113,6 +108,7 @@ goog.testing.dom.assertNodesMatch = function(it, array) {
  * @return {string} A string representation of the node.
  */
 goog.testing.dom.exposeNode = function(node) {
+  'use strict';
   node = /** @type {!Element} */ (node);
   var result = node.nodeName || node.nodeValue;
   if (node.id) {
@@ -129,6 +125,7 @@ goog.testing.dom.exposeNode = function(node) {
  * @return {string} A string representation of the range.
  */
 goog.testing.dom.exposeRange = function(range) {
+  'use strict';
   // This is deliberately not implemented as
   // goog.dom.AbstractRange.prototype.toString, because it is non-authoritative.
   // Two equivalent ranges may have very different exposeRange values, and
@@ -154,6 +151,7 @@ goog.testing.dom.exposeRange = function(range) {
  * @private
  */
 goog.testing.dom.checkUserAgents_ = function(userAgents) {
+  'use strict';
   if (goog.string.startsWith(userAgents, '!')) {
     if (goog.string.contains(userAgents, ' ')) {
       throw new Error('Only a single negative user agent may be specified');
@@ -186,6 +184,7 @@ goog.testing.dom.checkUserAgents_ = function(userAgents) {
  * @private
  */
 goog.testing.dom.endTagMap_ = function(node, ignore, iterator) {
+  'use strict';
   goog.asserts.assertInstanceof(iterator, goog.dom.TagIterator);
   return iterator.isEndTag() ? goog.testing.dom.END_TAG_MARKER_ : node;
 };
@@ -204,6 +203,7 @@ goog.testing.dom.endTagMap_ = function(node, ignore, iterator) {
  * @private
  */
 goog.testing.dom.nodeFilter_ = function(node) {
+  'use strict';
   if (node.nodeType == goog.dom.NodeType.TEXT) {
     // If a node is part of a string of text nodes and it has spaces in it,
     // we allow it since it's going to affect the merging of nodes done below.
@@ -242,6 +242,7 @@ goog.testing.dom.nodeFilter_ = function(node) {
  * @private
  */
 goog.testing.dom.getExpectedText_ = function(node) {
+  'use strict';
   // Strip off the browser specifications.
   return node.nodeValue.match(/^(\[\[.+\]\])?([\s\S]*)/)[2];
 };
@@ -254,6 +255,7 @@ goog.testing.dom.getExpectedText_ = function(node) {
  * @private
  */
 goog.testing.dom.describeNode_ = function(node) {
+  'use strict';
   if (node.nodeType == goog.dom.NodeType.TEXT) {
     return '[Text: ' + node.nodeValue + ']';
   } else {
@@ -283,6 +285,7 @@ goog.testing.dom.describeNode_ = function(node) {
  */
 goog.testing.dom.assertHtmlContentsMatch = function(
     htmlPattern, actual, opt_strictAttributes) {
+  'use strict';
   var div = goog.dom.createDom(goog.dom.TagName.DIV);
   div.innerHTML = htmlPattern;
 
@@ -300,6 +303,7 @@ goog.testing.dom.assertHtmlContentsMatch = function(
   var actualNode;
   var preIterated = false;
   var advanceActualNode = function() {
+    'use strict';
     // If the iterator has already been advanced, don't advance it again.
     if (!preIterated) {
       actualNode = goog.iter.nextOrValue(actualIt, null);
@@ -312,20 +316,10 @@ goog.testing.dom.assertHtmlContentsMatch = function(
     }
   };
 
-  // HACK(brenneman): IE has unique ideas about whitespace handling when setting
-  // innerHTML. This results in elision of leading whitespace in the expected
-  // nodes where doing so doesn't affect visible rendering. As a workaround, we
-  // remove the leading whitespace in the actual nodes where necessary.
-  //
-  // The collapsible variable tracks whether we should collapse the whitespace
-  // in the next Text node we encounter.
-  var IE_TEXT_COLLAPSE =
-      goog.userAgent.IE && !goog.userAgent.isVersionOrHigher('9');
-
-  var collapsible = true;
 
   var number = 0;
   goog.iter.forEach(expectedIt, function(expectedNode) {
+    'use strict';
     advanceActualNode();
     assertNotNull(
         'Finished actual HTML before finishing expected HTML at ' +
@@ -361,12 +355,6 @@ goog.testing.dom.assertHtmlContentsMatch = function(
       goog.testing.dom.assertAttributesEqual_(
           errorSuffix, expectedElem, actualElem, !!opt_strictAttributes);
 
-      if (IE_TEXT_COLLAPSE &&
-          goog.style.getCascadedStyle(actualElem, 'display') != 'inline') {
-        // Text may be collapsed after any non-inline element.
-        collapsible = true;
-      }
-
       // Contents of template tags belong to a separate document and are not
       // iterated on by the current iterator, unless the browser is too old to
       // treat template tags differently. We recursively assert equality of the
@@ -387,17 +375,6 @@ goog.testing.dom.assertHtmlContentsMatch = function(
       while ((actualNode = goog.iter.nextOrValue(actualIt, null)) &&
              actualNode.nodeType == goog.dom.NodeType.TEXT) {
         actualText += actualNode.nodeValue;
-      }
-
-      if (IE_TEXT_COLLAPSE) {
-        // Collapse the leading whitespace, unless the string consists entirely
-        // of whitespace.
-        if (collapsible && !goog.string.isEmptyOrWhitespace(actualText)) {
-          actualText = goog.string.trimLeft(actualText);
-        }
-        // Prepare to collapse whitespace in the next Text node if this one does
-        // not end in a whitespace character.
-        collapsible = /\s$/.test(actualText);
       }
 
       var expectedText = goog.testing.dom.getExpectedText_(expectedNode);
@@ -438,6 +415,7 @@ goog.testing.dom.assertHtmlContentsMatch = function(
  */
 goog.testing.dom.assertHtmlMatches = function(
     htmlPattern, actual, opt_strictAttributes) {
+  'use strict';
   var div = goog.dom.createDom(goog.dom.TagName.DIV);
   div.innerHTML = actual;
 
@@ -456,8 +434,10 @@ goog.testing.dom.assertHtmlMatches = function(
  * @return {?Node} The first text node that matches, or null if none is found.
  */
 goog.testing.dom.findTextNode = function(textOrRegexp, root) {
+  'use strict';
   var it = new goog.dom.NodeIterator(root);
   var ret = goog.iter.nextOrValue(goog.iter.filter(it, function(node) {
+    'use strict';
     if (node.nodeType == goog.dom.NodeType.TEXT) {
       if (typeof textOrRegexp === 'string') {
         return node.nodeValue == textOrRegexp;
@@ -488,6 +468,7 @@ goog.testing.dom.findTextNode = function(textOrRegexp, root) {
  */
 goog.testing.dom.assertRangeEquals = function(
     start, startOffset, end, endOffset, range) {
+  'use strict';
   assertEquals('Unexpected start node', start, range.getStartNode());
   assertEquals('Unexpected end node', end, range.getEndNode());
   assertEquals('Unexpected start offset', startOffset, range.getStartOffset());
@@ -503,6 +484,7 @@ goog.testing.dom.assertRangeEquals = function(
  * @private
  */
 goog.testing.dom.getAttributeValue_ = function(node, name) {
+  'use strict';
   // These hacks avoid nondetermistic results in the following cases:
   // WebKit: Two radio buttons with the same name can't be checked at the same
   //      time, even if only one of them is in the document.
@@ -542,6 +524,7 @@ goog.testing.dom.getAttributeValue_ = function(node, name) {
  */
 goog.testing.dom.assertAttributesEqual_ = function(
     errorSuffix, expectedElem, actualElem, strictAttributes) {
+  'use strict';
   if (strictAttributes) {
     goog.testing.dom.compareClassAttribute_(expectedElem, actualElem);
   }
@@ -614,6 +597,7 @@ goog.testing.dom.assertAttributesEqual_ = function(
  * @private
  */
 goog.testing.dom.compareClassAttribute_ = function(expectedElem, actualElem) {
+  'use strict';
   var classes = goog.dom.classlist.get(expectedElem);
 
   var expectedClasses = [];
@@ -651,6 +635,7 @@ goog.testing.dom.BAD_IE_ATTRIBUTES_ = goog.object.createSet(
  * @private
  */
 goog.testing.dom.ignoreAttribute_ = function(name) {
+  'use strict';
   if (name == 'style' || name == 'class' || name == 'xmlns') {
     return true;
   }
@@ -671,6 +656,7 @@ goog.testing.dom.ignoreAttribute_ = function(name) {
  */
 goog.testing.dom.compareIdAttributeForIe_ = function(
     expectedValue, actualAttribute, strictAttributes, errorSuffix) {
+  'use strict';
   if (expectedValue === '') {
     if (strictAttributes) {
       assertTrue(

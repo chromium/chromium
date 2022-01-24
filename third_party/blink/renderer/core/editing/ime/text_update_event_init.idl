@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// The initial parameters for the textupdate event.
+
+// Spec draft:
+// https://w3c.github.io/editing/docs/EditContext/index.html#textupdateevent
+
 dictionary TextUpdateEventInit {
     unsigned long updateRangeStart;
     unsigned long updateRangeEnd;

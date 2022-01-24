@@ -119,8 +119,8 @@ std::unique_ptr<InputPredictor::InputData> KalmanPredictor::GeneratePrediction(
 
 base::TimeDelta KalmanPredictor::TimeInterval() const {
   return time_filter_.GetPosition()
-             ? std::max(kMinTimeInterval, base::TimeDelta::FromMilliseconds(
-                                              time_filter_.GetPosition()))
+             ? std::max(kMinTimeInterval,
+                        base::Milliseconds(time_filter_.GetPosition()))
              : kTimeInterval;
 }
 

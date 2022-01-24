@@ -47,7 +47,9 @@
       :host([is-p-sim-unactivated-network_]) #divText,
       :host([is-p-sim-unactivated-network_]) #networkIconContainer,
       :host([is-p-sim-activating-network_]) #divText,
-      :host([is-p-sim-activating-network_]) #networkIconContainer {
+      :host([is-p-sim-activating-network_]) #networkIconContainer,
+      :host([is-blocked-network_]) #divText,
+      :host([is-blocked-network_]) #networkIconContainer {
         opacity: var(--network-list-item-disabled-opacity);
       }
 
@@ -83,11 +85,11 @@
       }
 
       #networkStateText[active] {
-        color: var(--google-green-500);
+        color: var(--cros-text-color-positive);
       }
 
       .warning {
-        color: var(--google-yellow-700);
+        color: var(--cros-text-color-warning);
       }
 
       cr-policy-indicator {
@@ -103,11 +105,11 @@
       }
 
       :host(:not([disabled_])) cr-button iron-icon {
-        --iron-icon-fill-color: #1A73E8;
+        --iron-icon-fill-color: var(--cros-tab-icon-color-active);
       }
 
       :host([disabled_]) cr-button iron-icon {
-        --iron-icon-fill-color: var(--google-grey-600);
+        --iron-icon-fill-color: var(--cros-icon-color-disabled);
       }
 
       paper-spinner-lite {
@@ -164,7 +166,6 @@
               networkState.source)]]">
           </cr-policy-indicator>
         </template>
-        <!-- This can only be shown if isUpdatedCellularUiEnabled_ is enabled. -->
         <template is="dom-if"
             if="[[shouldShowActivateButton_(isPSimPendingActivationNetwork_,
               showButtons)]]" restamp>
@@ -176,7 +177,6 @@
           </cr-button>
           <div class="separator"></div>
         </template>
-        <!-- This can only be shown if isUpdatedCellularUiEnabled_ is enabled. -->
         <template is="dom-if" if="[[isPSimActivatingNetwork_]]" restamp>
           <paper-spinner-lite id="activatingPSimSpinner" active>
           </paper-spinner-lite>

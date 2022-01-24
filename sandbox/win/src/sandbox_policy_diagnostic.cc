@@ -193,6 +193,8 @@ std::string GetIpcTagAsString(IpcTag service) {
       return "CreateThread";
     case IpcTag::NTCREATESECTION:
       return "NtCreateSection";
+    case IpcTag::WS2SOCKET:
+      return "WSA_Socket";
     case IpcTag::LAST:
       DCHECK(false) << "Unknown IpcTag";
       return "Unknown";

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/updater/external_constants.h"
 
 class GURL;
@@ -24,16 +25,15 @@ class ExternalConstantsOverrider : public ExternalConstants {
  public:
   ExternalConstantsOverrider(
       base::flat_map<std::string, base::Value> override_values,
-      std::unique_ptr<ExternalConstants> next_provider);
-  ~ExternalConstantsOverrider() override;
+      scoped_refptr<ExternalConstants> next_provider);
 
   // Loads a dictionary from overrides.json in the local application data
   // directory to construct a ExternalConstantsOverrider.
   //
   // Returns nullptr (and logs appropriate errors) if the file cannot be found
   // or cannot be parsed.
-  static std::unique_ptr<ExternalConstantsOverrider> FromDefaultJSONFile(
-      std::unique_ptr<ExternalConstants> next_provider);
+  static scoped_refptr<ExternalConstantsOverrider> FromDefaultJSONFile(
+      scoped_refptr<ExternalConstants> next_provider);
 
   // Overrides of ExternalConstants:
   std::vector<GURL> UpdateURL() const override;
@@ -43,6 +43,7 @@ class ExternalConstantsOverrider : public ExternalConstants {
 
  private:
   const base::flat_map<std::string, base::Value> override_values_;
+  ~ExternalConstantsOverrider() override;
 };
 
 }  // namespace updater

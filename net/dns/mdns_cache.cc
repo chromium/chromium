@@ -189,9 +189,9 @@ base::Time MDnsCache::GetEffectiveExpiration(const RecordParsed* record) {
   base::TimeDelta ttl;
 
   if (record->ttl()) {
-    ttl = base::TimeDelta::FromSeconds(record->ttl());
+    ttl = base::Seconds(record->ttl());
   } else {
-    ttl = base::TimeDelta::FromSeconds(kZeroTTLSeconds);
+    ttl = base::Seconds(kZeroTTLSeconds);
   }
 
   return record->time_created() + ttl;

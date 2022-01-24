@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
@@ -37,6 +36,11 @@ class SettingsPrivateEventRouter
  public:
   static SettingsPrivateEventRouter* Create(
       content::BrowserContext* browser_context);
+
+  SettingsPrivateEventRouter(const SettingsPrivateEventRouter&) = delete;
+  SettingsPrivateEventRouter& operator=(const SettingsPrivateEventRouter&) =
+      delete;
+
   ~SettingsPrivateEventRouter() override;
 
   // settings_private::GeneratedPref::Observer implementation.
@@ -85,8 +89,6 @@ class SettingsPrivateEventRouter
   std::unique_ptr<PrefsUtil> prefs_util_;
 
   base::WeakPtrFactory<SettingsPrivateEventRouter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsPrivateEventRouter);
 };
 
 }  // namespace extensions

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_DETECTOR_CHROMEOS_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -25,6 +24,9 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
                                 public BuildStateObserver,
                                 public chromeos::UpdateEngineClient::Observer {
  public:
+  UpgradeDetectorChromeos(const UpgradeDetectorChromeos&) = delete;
+  UpgradeDetectorChromeos& operator=(const UpgradeDetectorChromeos&) = delete;
+
   ~UpgradeDetectorChromeos() override;
 
   // Register ChromeOS specific Prefs.
@@ -102,8 +104,6 @@ class UpgradeDetectorChromeos : public UpgradeDetector,
 
   // Indicates whether there is an update in progress.
   bool update_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpgradeDetectorChromeos);
 };
 
 #endif  // CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_DETECTOR_CHROMEOS_H_

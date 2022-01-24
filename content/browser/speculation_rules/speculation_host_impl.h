@@ -9,8 +9,9 @@
 
 #include "base/containers/flat_set.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/speculation_host_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
@@ -22,7 +23,8 @@ class Page;
 // Receiver for speculation rules from the web platform. See
 // third_party/blink/renderer/core/speculation_rules/README.md
 class CONTENT_EXPORT SpeculationHostImpl final
-    : public content::DocumentServiceBase<blink::mojom::SpeculationHost> {
+    : public content::DocumentService<blink::mojom::SpeculationHost>,
+      public WebContentsObserver {
  public:
   // Creates and binds an instance of this per-frame.
   static void Bind(

@@ -328,6 +328,25 @@ public class StripLayoutHelperManager implements SceneOverlay {
         return getActiveStripLayoutHelper().getBrightness();
     }
 
+    /** Update the title cache for the available tabs in the model. */
+    private void updateTitleCacheForInit() {
+        TitleCache titleCache = mTitleCacheSupplier.get();
+        if (mTabModelSelector == null || titleCache == null) return;
+
+        // Make sure any tabs already restored get loaded into the title cache.
+        List<TabModel> models = mTabModelSelector.getModels();
+        for (int i = 0; i < models.size(); i++) {
+            TabModel model = models.get(i);
+            for (int j = 0; j < model.getCount(); j++) {
+                Tab tab = model.getTabAt(j);
+                if (tab != null) {
+                    titleCache.getUpdatedTitle(
+                            tab, tab.getContext().getString(R.string.tab_loading_default_title));
+                }
+            }
+        }
+    }
+
     /**
      * Sets the {@link TabModelSelector} that this {@link StripLayoutHelperManager} will visually
      * represent, and various objects associated with it.
@@ -348,6 +367,8 @@ public class StripLayoutHelperManager implements SceneOverlay {
         modelSelector.getTabModelFilterProvider().addTabModelFilterObserver(mTabModelObserver);
 
         mTabModelSelector = modelSelector;
+
+        updateTitleCacheForInit();
 
         if (mTabModelSelector.isTabStateInitialized()) {
             updateModelSwitcherButton();
@@ -391,6 +412,11 @@ public class StripLayoutHelperManager implements SceneOverlay {
             public void tabClosureUndone(Tab tab) {
                 getStripLayoutHelper(tab.isIncognito()).tabClosureCancelled(time(), tab.getId());
                 updateModelSwitcherButton();
+            }
+
+            @Override
+            public void tabClosureCommitted(Tab tab) {
+                if (mTitleCacheSupplier.hasValue()) mTitleCacheSupplier.get().remove(tab.getId());
             }
 
             @Override

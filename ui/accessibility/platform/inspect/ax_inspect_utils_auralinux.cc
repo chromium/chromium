@@ -394,6 +394,11 @@ const char* AtkRoleToString(AtkRole role) {
 }
 
 AtspiAccessible* FindAccessible(const AXTreeSelector& selector) {
+  if (selector.empty()) {
+    LOG(ERROR) << "No PID or application title provided by selector.";
+    return nullptr;
+  }
+
   std::string title;
   if (selector.types & AXTreeSelector::Chrome) {
     title = kChromeTitle;
@@ -417,18 +422,32 @@ AtspiAccessible* FindAccessible(const AXTreeSelector& selector) {
         atspi_accessible_get_child_at_index(desktop, i, &error);
     CHECK_ATSPI_ERROR_NULLPTR(error)
 
-    char* name = atspi_accessible_get_name(child, &error);
-    if (!error && name) {
-      if ((!title.empty() && title == name) ||
-          base::MatchPattern(name, selector.pattern)) {
-        matched_children.emplace_back(name, child);
+    if (selector.widget) {
+      uint application_pid = atspi_accessible_get_process_id(child, &error);
+      CHECK_ATSPI_ERROR_NULLPTR(error)
+      if (selector.widget == application_pid) {
+        return child;
       }
+    } else if (!title.empty()) {
+      char* name = atspi_accessible_get_name(child, &error);
+      if (!error && name) {
+        if ((!title.empty() && title == name) ||
+            base::MatchPattern(name, selector.pattern)) {
+          matched_children.emplace_back(name, child);
+        }
+      }
+      free(name);
     }
-    free(name);
   }
 
   if (matched_children.size() == 0) {
-    LOG(ERROR) << "No application matched.";
+    std::string selectorType;
+    if (selector.widget) {
+      selectorType = "the provided pid.";
+    } else if (!title.empty()) {
+      selectorType = "the provided browser.";
+    }
+    LOG(ERROR) << "No application matched " << selectorType;
     return nullptr;
   }
 

@@ -5,6 +5,7 @@
 #include "components/remote_cocoa/app_shim/application_bridge.h"
 
 #include "base/bind.h"
+#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/remote_cocoa/app_shim/alert.h"
 #include "components/remote_cocoa/app_shim/color_panel_bridge.h"
@@ -91,6 +92,7 @@ class NativeWidgetBridgeOwner : public NativeWidgetNSWindowHostHelper {
     // Text input doesn't work across mojo yet.
     return nullptr;
   }
+  bool MustPostTaskToRunModalSheetAnimation() const override { return true; }
 
   mojo::AssociatedRemote<mojom::NativeWidgetNSWindowHost> host_remote_;
   mojo::AssociatedRemote<mojom::TextInputHost> text_input_host_remote_;

@@ -60,6 +60,9 @@ class CastCdmContextForTest : public CastCdmContext {
  public:
   CastCdmContextForTest() : license_installed_(false) {}
 
+  CastCdmContextForTest(const CastCdmContextForTest&) = delete;
+  CastCdmContextForTest& operator=(const CastCdmContextForTest&) = delete;
+
   void SetLicenseInstalled() {
     license_installed_ = true;
     event_callbacks_.Notify(
@@ -92,8 +95,6 @@ class CastCdmContextForTest : public CastCdmContext {
   bool license_installed_;
   ::media::CallbackRegistry<::media::CdmContext::EventCB::RunType>
       event_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastCdmContextForTest);
 };
 
 // Helper class for managing pipeline setup, teardown, feeding data, stop/start
@@ -109,6 +110,9 @@ class PipelineHelper {
         pipeline_backend_(nullptr),
         audio_decoder_delegate_(nullptr),
         video_decoder_delegate_(nullptr) {}
+
+  PipelineHelper(const PipelineHelper&) = delete;
+  PipelineHelper& operator=(const PipelineHelper&) = delete;
 
   void Setup() {
     if (encrypted_) {
@@ -132,7 +136,7 @@ class PipelineHelper {
 
     if (have_audio_) {
       ::media::AudioDecoderConfig audio_config(
-          ::media::kCodecMP3, ::media::kSampleFormatS16,
+          ::media::AudioCodec::kMP3, ::media::kSampleFormatS16,
           ::media::CHANNEL_LAYOUT_STEREO, 44100, ::media::EmptyExtraData(),
           ::media::EncryptionScheme::kUnencrypted);
       AvPipelineClient client;
@@ -151,7 +155,7 @@ class PipelineHelper {
     if (have_video_) {
       std::vector<::media::VideoDecoderConfig> video_configs;
       video_configs.push_back(::media::VideoDecoderConfig(
-          ::media::kCodecH264, ::media::H264PROFILE_MAIN,
+          ::media::VideoCodec::kH264, ::media::H264PROFILE_MAIN,
           ::media::VideoDecoderConfig::AlphaMode::kIsOpaque,
           ::media::VideoColorSpace(), ::media::kNoTransformation,
           gfx::Size(640, 480), gfx::Rect(0, 0, 640, 480), gfx::Size(640, 480),
@@ -204,8 +208,7 @@ class PipelineHelper {
         .Times(1)
         .WillOnce(Return(true));
 
-    media_pipeline_->StartPlayingFrom(
-        base::TimeDelta::FromMilliseconds(start_pts));
+    media_pipeline_->StartPlayingFrom(base::Milliseconds(start_pts));
     media_pipeline_->SetPlaybackRate(1.0f);
   }
   void SetCdm() { media_pipeline_->SetCdm(cdm_context_.get()); }
@@ -234,8 +237,7 @@ class PipelineHelper {
     frame_specs.resize(kNumFrames);
     for (size_t k = 0; k < frame_specs.size() - 1; k++) {
       frame_specs[k].has_config = (k == 0);
-      frame_specs[k].timestamp =
-          base::TimeDelta::FromMicroseconds(kFrameDurationUs) * k;
+      frame_specs[k].timestamp = base::Microseconds(kFrameDurationUs) * k;
       frame_specs[k].size = kFrameSize;
       frame_specs[k].has_decrypt_config = encrypted_;
     }
@@ -273,8 +275,6 @@ class PipelineHelper {
   CmaBackend::Decoder::Delegate* audio_decoder_delegate_;
   CmaBackend::Decoder::Delegate* video_decoder_delegate_;
   std::unique_ptr<MediaPipelineImpl> media_pipeline_;
-
-  DISALLOW_COPY_AND_ASSIGN(PipelineHelper);
 };
 
 using AudioVideoTuple = ::testing::tuple<bool, bool>;
@@ -283,6 +283,10 @@ class AudioVideoPipelineImplTest
     : public ::testing::TestWithParam<AudioVideoTuple> {
  public:
   AudioVideoPipelineImplTest() {}
+
+  AudioVideoPipelineImplTest(const AudioVideoPipelineImplTest&) = delete;
+  AudioVideoPipelineImplTest& operator=(const AudioVideoPipelineImplTest&) =
+      delete;
 
  protected:
   void SetUp() override {
@@ -293,8 +297,6 @@ class AudioVideoPipelineImplTest
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PipelineHelper> pipeline_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioVideoPipelineImplTest);
 };
 
 static void VerifyPlay(PipelineHelper* pipeline_helper) {
@@ -376,6 +378,10 @@ class EncryptedAVPipelineImplTest : public ::testing::Test {
  public:
   EncryptedAVPipelineImplTest() {}
 
+  EncryptedAVPipelineImplTest(const EncryptedAVPipelineImplTest&) = delete;
+  EncryptedAVPipelineImplTest& operator=(const EncryptedAVPipelineImplTest&) =
+      delete;
+
  protected:
   void SetUp() override {
     pipeline_helper_.reset(new PipelineHelper(true, true, true));
@@ -384,8 +390,6 @@ class EncryptedAVPipelineImplTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PipelineHelper> pipeline_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncryptedAVPipelineImplTest);
 };
 
 // Sets a CDM with license already installed before starting the pipeline.

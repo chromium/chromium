@@ -40,7 +40,7 @@ CreateReportQueueConfigGetter(Profile* profile) {
                base::OnceCallback<void(
                    ::reporting::StatusOr<std::unique_ptr<
                        ::reporting::ReportQueueConfiguration>>)> complete_cb) {
-              auto dm_token = GetDMToken(profile, /*only_affiliated=*/false);
+              auto dm_token = GetDMToken(profile);
               if (!dm_token.is_valid()) {
                 std::move(complete_cb)
                     .Run(::reporting::Status(
@@ -250,7 +250,7 @@ void ExtensionInstallEventLogUploader::PostTaskForStartSerialization() {
       FROM_HERE,
       base::BindOnce(&ExtensionInstallEventLogUploader::StartSerialization,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(retry_backoff_ms_));
+      base::Milliseconds(retry_backoff_ms_));
 }
 
 void ExtensionInstallEventLogUploader::OnSerialized(

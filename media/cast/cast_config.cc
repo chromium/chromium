@@ -29,8 +29,7 @@ FrameSenderConfig::FrameSenderConfig()
       // All three delays are set to the same value due to adaptive latency
       // being disabled in Chrome. This will be fixed as part of the migration
       // to libcast.
-      min_playout_delay(
-          base::TimeDelta::FromMilliseconds(kDefaultRtpMaxDelayMs)),
+      min_playout_delay(base::Milliseconds(kDefaultRtpMaxDelayMs)),
       max_playout_delay(min_playout_delay),
       animated_playout_delay(min_playout_delay),
       rtp_payload_type(RtpPayloadType::UNKNOWN),

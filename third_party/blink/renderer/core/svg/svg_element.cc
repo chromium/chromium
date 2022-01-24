@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/svg_interpolation_types_map.h"
-#include "third_party/blink/renderer/core/css/css_property_id_templates.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -364,8 +363,12 @@ void SVGElement::RemovedFrom(ContainerNode& root_parent) {
   Element::RemovedFrom(root_parent);
 
   if (was_in_document) {
-    if (HasSVGRareData() && SvgRareData()->CorrespondingElement())
-      SvgRareData()->CorrespondingElement()->RemoveInstanceMapping(this);
+    if (SVGElement* corresponding_element =
+            HasSVGRareData() ? SvgRareData()->CorrespondingElement()
+                             : nullptr) {
+      corresponding_element->RemoveInstance(this);
+      SvgRareData()->SetCorrespondingElement(nullptr);
+    }
     RebuildAllIncomingReferences();
     RemoveAllIncomingReferences();
   }
@@ -460,7 +463,10 @@ CSSPropertyID SVGElement::CssPropertyIdForSVGAttributeName(
     }
   }
 
-  return property_name_to_id_map->at(attr_name.LocalName().Impl());
+  auto it = property_name_to_id_map->find(attr_name.LocalName().Impl());
+  if (it == property_name_to_id_map->end())
+    return CSSPropertyID::kInvalid;
+  return it->value;
 }
 
 void SVGElement::UpdateRelativeLengthsInformation(
@@ -577,7 +583,7 @@ SVGElement* SVGElement::viewportElement() const {
   return nullptr;
 }
 
-void SVGElement::MapInstanceToElement(SVGElement* instance) {
+void SVGElement::AddInstance(SVGElement* instance) {
   DCHECK(instance);
   DCHECK(instance->InUseShadowTree());
 
@@ -588,7 +594,7 @@ void SVGElement::MapInstanceToElement(SVGElement* instance) {
   instances.insert(instance);
 }
 
-void SVGElement::RemoveInstanceMapping(SVGElement* instance) {
+void SVGElement::RemoveInstance(SVGElement* instance) {
   DCHECK(instance);
   // Called during instance->RemovedFrom() after removal from shadow tree
   DCHECK(!instance->isConnected());
@@ -746,7 +752,10 @@ AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
     for (size_t i = 0; i < base::size(attr_to_types); i++)
       css_property_map.Set(attr_to_types[i].attr, attr_to_types[i].prop_type);
   }
-  return css_property_map.at(attribute_name);
+  auto it = css_property_map.find(attribute_name);
+  if (it == css_property_map.end())
+    return kAnimatedUnknown;
+  return it->value;
 }
 
 void SVGElement::AddToPropertyMap(SVGAnimatedPropertyBase* property) {

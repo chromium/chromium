@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
@@ -31,13 +30,16 @@ class CONTENT_EXPORT RenderFrameAudioInputStreamFactory final {
       MediaStreamManager* media_stream_manager,
       RenderFrameHost* render_frame_host);
 
+  RenderFrameAudioInputStreamFactory(
+      const RenderFrameAudioInputStreamFactory&) = delete;
+  RenderFrameAudioInputStreamFactory& operator=(
+      const RenderFrameAudioInputStreamFactory&) = delete;
+
   ~RenderFrameAudioInputStreamFactory();
 
  private:
   class Core;
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameAudioInputStreamFactory);
 };
 
 }  // namespace content

@@ -46,7 +46,6 @@ let RemoteDevice;
 const ProximityAuth = {
   cryptauthController_: null,
   remoteDevicesController_: null,
-  findEligibleDevicesController_: null,
 
   /**
    * Initializes all UI elements of the ProximityAuth debug page.
@@ -54,8 +53,7 @@ const ProximityAuth = {
   init: function() {
     ProximityAuth.cryptauthController_ = new CryptAuthController();
     ProximityAuth.remoteDevicesController_ = new DeviceListController(
-        document.getElementById('remote-devices-control'), true, false);
-    ProximityAuth.eligibleDevicesController_ = new EligibleDevicesController();
+        document.getElementById('remote-devices-control'));
     WebUI.getLocalState();
   }
 };
@@ -250,10 +248,8 @@ class CryptAuthController {
  * number of locations on the debug page.
  */
 class DeviceListController {
-  constructor(rootElement, showScanButton, showToggleUnlockKeyButton) {
+  constructor(rootElement) {
     this.rootElement_ = rootElement;
-    this.showScanButton_ = showScanButton;
-    this.showToggleUnlockKeyButton_ = showToggleUnlockKeyButton;
     this.remoteDeviceTemplate_ =
         document.getElementById('remote-device-template');
   }
@@ -310,74 +306,7 @@ class DeviceListController {
           remoteDevice.bluetoothAddress;
     }
 
-    var scanButton = t.querySelector('.device-scan');
-    scanButton.classList.toggle(
-        'hidden', !this.showScanButton_ || !isUnlockKey);
-    scanButton.textContent =
-        remoteDevice.connectionStatus == 'disconnected'
-            ? 'EasyUnlock Scan' : 'EasyUnlock Disconnect';
-    t.querySelector('.device-toggle-key').classList.toggle(
-        'hidden', !this.showToggleUnlockKeyButton_ || !isUnlockKey);
-
-    var element = document.importNode(this.remoteDeviceTemplate_.content, true);
-
-    // Initialize buttons on new element.
-    element.querySelector('.device-scan').onclick =
-        this.scanForDevice_.bind(this, remoteDevice.publicKey);
-    element.querySelector('.device-toggle-key').onclick =
-        this.toggleUnlockKey_.bind(
-            this, remoteDevice.publicKey, !remoteDevice.unlockKey);
-
-    return element;
-  }
-
-  /**
-   * Button handler to start scanning and connecting to a device.
-   * @param {string} publicKey
-   */
-  scanForDevice_(publicKey) {
-    WebUI.toggleConnection(publicKey);
-  }
-
-  /**
-   * Button handler to toggle a device as an unlock key.
-   * @param {string} publicKey
-   * @param {boolean} makeUnlockKey
-   */
-  toggleUnlockKey_(publicKey, makeUnlockKey) {
-    console.log(publicKey);
-    WebUI.toggleUnlockKey(publicKey, makeUnlockKey);
-  }
-}
-
-/**
- * Controller for the 'Eligible Unlock Keys' controls.
- */
-class EligibleDevicesController {
-  constructor() {
-    this.eligibleDeviceList_ = new DeviceListController(
-        document.getElementById('eligible-devices-list'), false, true);
-    this.ineligibleDeviceList_ = new DeviceListController(
-        document.getElementById('ineligible-devices-list'), false, false);
-    this.button_ = document.getElementById('find-eligible-devices');
-    this.button_.onclick = this.findEligibleUnlockDevices_.bind(this);
-  }
-
-  /**
-   * Updates the UI with the fetched eligible and ineligible devices.
-   * @param {!Array<!RemoteDevice>} eligibleDevices
-   * @param {!Array<!RemoteDevice>} ineligibleDevices
-   */
-  updateEligibleDevices(eligibleDevices, ineligibleDevices) {
-    this.eligibleDeviceList_.updateRemoteDevices(eligibleDevices);
-    this.ineligibleDeviceList_.updateRemoteDevices(ineligibleDevices);
-  }
-
-  /**
-   * Button handler to fetch eligible unlock devices.
-   */
-  findEligibleUnlockDevices_() {
-    WebUI.findEligibleUnlockDevices();
+    return document.importNode(this.remoteDeviceTemplate_.content, true);
   }
 }
 
@@ -417,20 +346,6 @@ const LocalStateInterface = {
   /** @param {!Array<!RemoteDevice>} remoteDevices */
   onRemoteDevicesChanged: function(remoteDevices) {
     ProximityAuth.remoteDevicesController_.updateRemoteDevices(remoteDevices);
-  }
-};
-
-/**
- * Interface for the native WebUI to call into our JS.
- */
-const CryptAuthInterface = {
-  /**
-   * @param {!Array<!RemoteDevice>} eligibleDevices
-   * @param {!Array<!RemoteDevice>} ineligibleDevices
-   */
-  onGotEligibleDevices: function(eligibleDevices, ineligibleDevices) {
-    ProximityAuth.eligibleDevicesController_.updateEligibleDevices(
-        eligibleDevices, ineligibleDevices);
   }
 };
 

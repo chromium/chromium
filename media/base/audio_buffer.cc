@@ -6,7 +6,6 @@
 
 #include <cmath>
 
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "media/base/audio_bus.h"
@@ -40,8 +39,8 @@ void CopyConvertFromInterleaved(
 
 static base::TimeDelta CalculateDuration(int frames, double sample_rate) {
   DCHECK_GT(sample_rate, 0);
-  return base::TimeDelta::FromMicroseconds(
-      frames * base::Time::kMicrosecondsPerSecond / sample_rate);
+  return base::Microseconds(frames * base::Time::kMicrosecondsPerSecond /
+                            sample_rate);
 }
 
 AudioBufferMemoryPool::AudioBufferMemoryPool() = default;
@@ -301,8 +300,7 @@ std::unique_ptr<AudioBus> AudioBuffer::WrapOrCopyToAudioBus(
 
     // Keep |buffer| alive as long as |audio_bus|.
     audio_bus->SetWrappedDataDeleter(
-        base::BindOnce(base::DoNothing::Once<scoped_refptr<AudioBuffer>>(),
-                       std::move(buffer)));
+        base::BindOnce([](scoped_refptr<AudioBuffer>) {}, std::move(buffer)));
 
     return audio_bus;
   }

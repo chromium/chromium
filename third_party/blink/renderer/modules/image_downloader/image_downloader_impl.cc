@@ -166,29 +166,33 @@ void ImageDownloaderImpl::CreateMojoService(
 // ImageDownloader methods:
 void ImageDownloaderImpl::DownloadImage(const KURL& image_url,
                                         bool is_favicon,
-                                        uint32_t preferred_size,
+                                        const gfx::Size& preferred_size,
                                         uint32_t max_bitmap_size,
                                         bool bypass_cache,
                                         DownloadImageCallback callback) {
   // Constrain the preferred size by the max bitmap size. This will prevent
   // resizing of the resulting image if the preferred size is used.
-  if (max_bitmap_size)
-    preferred_size = std::min(preferred_size, max_bitmap_size);
+  gfx::Size constrained_preferred_size(preferred_size);
+  uint32_t max_preferred_dimension =
+      std::max(preferred_size.width(), preferred_size.height());
+  if (max_bitmap_size && max_bitmap_size < max_preferred_dimension) {
+    float scale = float(max_bitmap_size) / max_preferred_dimension;
+    constrained_preferred_size = gfx::ScaleToFlooredSize(preferred_size, scale);
+  }
 
   auto download_callback =
       WTF::Bind(&ImageDownloaderImpl::DidDownloadImage, WrapPersistent(this),
                 max_bitmap_size, std::move(callback));
 
-  const gfx::Size preferred_dimensions(preferred_size, preferred_size);
   if (!image_url.ProtocolIsData()) {
-    FetchImage(image_url, is_favicon, preferred_dimensions, bypass_cache,
+    FetchImage(image_url, is_favicon, constrained_preferred_size, bypass_cache,
                std::move(download_callback));
     // Will complete asynchronously via ImageDownloaderImpl::DidFetchImage.
     return;
   }
 
   WTF::Vector<SkBitmap> result_images =
-      ImagesFromDataUrl(image_url, preferred_dimensions);
+      ImagesFromDataUrl(image_url, constrained_preferred_size);
   std::move(download_callback).Run(0, result_images);
 }
 

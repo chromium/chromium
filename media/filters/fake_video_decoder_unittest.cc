@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/decoder_buffer.h"
@@ -49,6 +48,9 @@ class FakeVideoDecoderTest
         last_decode_status_(DecodeStatus::OK),
         pending_decode_requests_(0),
         is_reset_pending_(false) {}
+
+  FakeVideoDecoderTest(const FakeVideoDecoderTest&) = delete;
+  FakeVideoDecoderTest& operator=(const FakeVideoDecoderTest&) = delete;
 
   virtual ~FakeVideoDecoderTest() {
     Destroy();
@@ -135,9 +137,8 @@ class FakeVideoDecoderTest
 
     if (num_input_buffers_ < kTotalBuffers) {
       buffer = CreateFakeVideoBufferForTest(
-          current_config_,
-          base::TimeDelta::FromMilliseconds(kDurationMs * num_input_buffers_),
-          base::TimeDelta::FromMilliseconds(kDurationMs));
+          current_config_, base::Milliseconds(kDurationMs * num_input_buffers_),
+          base::Milliseconds(kDurationMs));
       total_bytes_in_buffers_ += buffer->data_size();
     } else {
       buffer = DecoderBuffer::CreateEOSBuffer();
@@ -244,9 +245,6 @@ class FakeVideoDecoderTest
   scoped_refptr<VideoFrame> last_decoded_frame_;
   int pending_decode_requests_;
   bool is_reset_pending_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoDecoderTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(NoParallelDecode,

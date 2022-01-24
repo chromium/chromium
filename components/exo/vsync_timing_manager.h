@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/frame_throttler/frame_throttling_observer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -41,6 +40,10 @@ class VSyncTimingManager : public viz::mojom::VSyncParameterObserver,
   };
 
   explicit VSyncTimingManager(Delegate* delegate);
+
+  VSyncTimingManager(const VSyncTimingManager&) = delete;
+  VSyncTimingManager& operator=(const VSyncTimingManager&) = delete;
+
   ~VSyncTimingManager() override;
 
   void AddObserver(Observer* obs);
@@ -73,8 +76,6 @@ class VSyncTimingManager : public viz::mojom::VSyncParameterObserver,
   mojo::Receiver<viz::mojom::VSyncParameterObserver> receiver_{this};
 
   base::WeakPtrFactory<VSyncTimingManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VSyncTimingManager);
 };
 
 }  // namespace exo

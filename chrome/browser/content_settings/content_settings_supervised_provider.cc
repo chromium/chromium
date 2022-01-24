@@ -93,7 +93,8 @@ void SupervisedProvider::OnSupervisedSettingsAvailable(
     }
   }
   for (ContentSettingsType type : to_notify) {
-    NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(), type);
+    NotifyObservers(ContentSettingsPattern::Wildcard(),
+                    ContentSettingsPattern::Wildcard(), type);
   }
 }
 

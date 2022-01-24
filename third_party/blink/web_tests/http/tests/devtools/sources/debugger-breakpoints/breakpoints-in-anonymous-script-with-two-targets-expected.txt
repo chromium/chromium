@@ -1,6 +1,0 @@
-Tests that breakpoints work in anonymous scripts with >1 targets.
-
-Script execution paused.
-breakpoint at 10
-Script execution resumed.
-

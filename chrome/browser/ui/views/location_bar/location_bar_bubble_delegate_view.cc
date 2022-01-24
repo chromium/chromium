@@ -24,6 +24,35 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "url/origin.h"
 
+namespace {
+
+ax::mojom::Role GetAccessibleRoleForReason(
+    LocationBarBubbleDelegateView::DisplayReason reason) {
+  if (reason == LocationBarBubbleDelegateView::USER_GESTURE) {
+    // crbug.com/1132318: The bubble appears as a direct result of a user
+    // action and will get focused. If we used an alert-like role, it would
+    // produce an event that would cause double-speaking the bubble.
+    return ax::mojom::Role::kDialog;
+  }
+
+  // crbug.com/1079320, crbug.com/1119367, crbug.com/1119734: The bubble
+  // appears spontaneously over the course of the user's interaction with
+  // Chrome and doesn't get focused. We need an alert-like role so the
+  // corresponding event is triggered and ATs announce the bubble.
+#if defined(OS_WIN)
+  // crbug.com/1125118: Windows ATs only announce these bubbles if the alert
+  // role is used, despite it not being the most appropriate choice.
+  // TODO(accessibility): review the role mappings for alerts and dialogs,
+  // making sure they are translated to the best candidate in each flatform
+  // without resorting to hacks like this.
+  return ax::mojom::Role::kAlert;
+#else
+  return ax::mojom::Role::kAlertDialog;
+#endif
+}
+
+}  // namespace
+
 LocationBarBubbleDelegateView::WebContentMouseHandler::WebContentMouseHandler(
     LocationBarBubbleDelegateView* bubble,
     content::WebContents* web_contents)
@@ -61,6 +90,11 @@ LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
       fullscreen_observation_.Observe(
           browser->exclusive_access_manager()->fullscreen_controller());
   }
+  // TODO(pbos): Removing this seems to crash on linux-ozone-rel which seems
+  // really wrong. If we need the accessible role before ShowForReason() we
+  // can't rely on DisplayReason in there. It also really seems like this dialog
+  // role should not depend on if it's showing in the foreground or not.
+  SetAccessibleRole(GetAccessibleRoleForReason(display_reason_));
 }
 
 LocationBarBubbleDelegateView::~LocationBarBubbleDelegateView() = default;
@@ -68,6 +102,7 @@ LocationBarBubbleDelegateView::~LocationBarBubbleDelegateView() = default;
 void LocationBarBubbleDelegateView::ShowForReason(DisplayReason reason,
                                                   bool allow_refocus_alert) {
   display_reason_ = reason;
+  SetAccessibleRole(GetAccessibleRoleForReason(reason));
 
   // These bubbles all anchor to the location bar or toolbar. We selectively
   // anchor location bar bubbles to one end or the other of the toolbar based on
@@ -87,41 +122,14 @@ void LocationBarBubbleDelegateView::ShowForReason(DisplayReason reason,
   if (reason == USER_GESTURE) {
     GetWidget()->Show();
   } else {
-    GetWidget()->ShowInactive();
-
     if (allow_refocus_alert) {
-      // Since this widget is inactive (but shown), accessibility tools won't
-      // alert the user to its presence. Accessibility tools such as screen
-      // readers work by tracking system focus. Give users of these tools a hint
-      // description and alert them to the presence of this widget.
+      // Since this will show as inactive, add a description for how to get to
+      // it.
       GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescription(
           l10n_util::GetStringUTF8(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
     }
+    GetWidget()->ShowInactive();
   }
-}
-
-ax::mojom::Role LocationBarBubbleDelegateView::GetAccessibleWindowRole() {
-  if (display_reason_ == USER_GESTURE) {
-    // crbug.com/1132318: The bubble appears as a direct result of a user
-    // action and will get focused. If we used an alert-like role, it would
-    // produce an event that would cause double-speaking the bubble.
-    return ax::mojom::Role::kDialog;
-  }
-
-  // crbug.com/1079320, crbug.com/1119367, crbug.com/1119734: The bubble
-  // appears spontaneously over the course of the user's interaction with
-  // Chrome and doesn't get focused. We need an alert-like role so the
-  // corresponding event is triggered and ATs announce the bubble.
-#if defined(OS_WIN)
-  // crbug.com/1125118: Windows ATs only announce these bubbles if the alert
-  // role is used, despite it not being the most appropriate choice.
-  // TODO(accessibility): review the role mappings for alerts and dialogs,
-  // making sure they are translated to the best candidate in each flatform
-  // without resorting to hacks like this.
-  return ax::mojom::Role::kAlert;
-#else
-  return ax::mojom::Role::kAlertDialog;
-#endif
 }
 
 void LocationBarBubbleDelegateView::OnFullscreenStateChanged() {

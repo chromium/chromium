@@ -21,6 +21,10 @@ class SimplePermissionRequest : public AwPermissionRequestDelegate {
   SimplePermissionRequest(const GURL& origin,
                           int64_t resources,
                           PermissionCallback callback);
+
+  SimplePermissionRequest(const SimplePermissionRequest&) = delete;
+  SimplePermissionRequest& operator=(const SimplePermissionRequest&) = delete;
+
   ~SimplePermissionRequest() override;
 
   // AwPermissionRequestDelegate implementation.
@@ -32,8 +36,6 @@ class SimplePermissionRequest : public AwPermissionRequestDelegate {
   const GURL origin_;
   int64_t resources_;
   PermissionCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimplePermissionRequest);
 };
 
 }  // namespace android_webview

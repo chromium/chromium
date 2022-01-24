@@ -1,0 +1,3 @@
+root1.AXMathRootIndex.AXChildren.count=1
+root1.AXMathRootIndex.AXChildren[0].AXValue='2'
+root2.AXMathRootIndex=NULL

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -45,6 +44,11 @@ const char16_t kText[] = u"Some random text to be copied.";
 class SharedClipboardContextMenuObserverTest : public testing::Test {
  public:
   SharedClipboardContextMenuObserverTest() = default;
+
+  SharedClipboardContextMenuObserverTest(
+      const SharedClipboardContextMenuObserverTest&) = delete;
+  SharedClipboardContextMenuObserverTest& operator=(
+      const SharedClipboardContextMenuObserverTest&) = delete;
 
   ~SharedClipboardContextMenuObserverTest() override = default;
 
@@ -92,8 +96,6 @@ class SharedClipboardContextMenuObserverTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<SharedClipboardContextMenuObserver> observer_;
   SharingMessage sharing_message;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardContextMenuObserverTest);
 };
 
 }  // namespace

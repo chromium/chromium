@@ -3,11 +3,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import cStringIO
 import logging
 import os
 import sys
 import unittest
+
+from six import StringIO
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
@@ -77,26 +78,26 @@ class ProcMapsTest(unittest.TestCase):
         }
 
   def test_load(self):
-    maps = ProcMaps.load_file(cStringIO.StringIO(self._TEST_PROCMAPS))
+    maps = ProcMaps.load_file(StringIO(self._TEST_PROCMAPS))
     for index, entry in enumerate(maps):
       self.assertEqual(entry.as_dict(), self._expected_as_dict(index))
 
   def test_constants(self):
-    maps = ProcMaps.load_file(cStringIO.StringIO(self._TEST_PROCMAPS))
+    maps = ProcMaps.load_file(StringIO(self._TEST_PROCMAPS))
     selected = [0, 2, 4, 7]
     for index, entry in enumerate(maps.iter(ProcMaps.constants)):
       self.assertEqual(entry.as_dict(),
                        self._expected_as_dict(selected[index]))
 
   def test_executable(self):
-    maps = ProcMaps.load_file(cStringIO.StringIO(self._TEST_PROCMAPS))
+    maps = ProcMaps.load_file(StringIO(self._TEST_PROCMAPS))
     selected = [1, 3, 6, 9]
     for index, entry in enumerate(maps.iter(ProcMaps.executable)):
       self.assertEqual(entry.as_dict(),
                        self._expected_as_dict(selected[index]))
 
   def test_executable_and_constants(self):
-    maps = ProcMaps.load_file(cStringIO.StringIO(self._TEST_PROCMAPS))
+    maps = ProcMaps.load_file(StringIO(self._TEST_PROCMAPS))
     selected = [0, 1, 2, 3, 4, 6, 7, 9]
     for index, entry in enumerate(maps.iter(ProcMaps.executable_and_constants)):
       self.assertEqual(entry.as_dict(),

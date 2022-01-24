@@ -28,10 +28,11 @@ class DownloadTaskObserver {
   virtual void OnDownloadDestroyed(DownloadTask* task) {}
 
   DownloadTaskObserver() = default;
-  virtual ~DownloadTaskObserver() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadTaskObserver);
+  DownloadTaskObserver(const DownloadTaskObserver&) = delete;
+  DownloadTaskObserver& operator=(const DownloadTaskObserver&) = delete;
+
+  virtual ~DownloadTaskObserver() = default;
 };
 
 }  // namespace web

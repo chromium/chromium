@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Log.h"
+#include "third_party/blink/renderer/core/inspector/protocol/log.h"
 
 namespace v8_inspector {
 class V8InspectorSession;

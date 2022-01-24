@@ -6,10 +6,10 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -72,6 +72,12 @@ namespace safe_browsing {
 class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
  public:
   V4EmbeddedTestServerBrowserTest() {}
+
+  V4EmbeddedTestServerBrowserTest(const V4EmbeddedTestServerBrowserTest&) =
+      delete;
+  V4EmbeddedTestServerBrowserTest& operator=(
+      const V4EmbeddedTestServerBrowserTest&) = delete;
+
   ~V4EmbeddedTestServerBrowserTest() override {}
 
   void SetUp() override {
@@ -111,8 +117,6 @@ class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
 
   // Owned by the V4Database.
   TestV4DatabaseFactory* v4_db_factory_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(V4EmbeddedTestServerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, SimpleTest) {
@@ -134,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, SimpleTest) {
   StartRedirectingV4RequestsForTesting(response_map, embedded_test_server());
   embedded_test_server()->StartAcceptingConnections();
 
-  ui_test_utils::NavigateToURL(browser(), bad_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(IsShowingInterstitial(contents));
@@ -163,25 +167,13 @@ IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest,
   StartRedirectingV4RequestsForTesting(response_map, embedded_test_server());
   embedded_test_server()->StartAcceptingConnections();
 
-  ui_test_utils::NavigateToURL(browser(), bad_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(IsShowingInterstitial(contents));
 }
 
-class V4EmbeddedTestServerWithoutCookies
-    : public V4EmbeddedTestServerBrowserTest {
- public:
-  V4EmbeddedTestServerWithoutCookies() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({kSafeBrowsingRemoveCookies}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerWithoutCookies, DoesNotSaveCookies) {
+IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, DoesNotSaveCookies) {
   ASSERT_TRUE(secure_embedded_test_server_->InitializeAndListen());
   const char kMalwarePage[] = "/safe_browsing/malware.html";
   const GURL bad_url = secure_embedded_test_server_->GetURL(kMalwarePage);
@@ -202,17 +194,19 @@ IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerWithoutCookies, DoesNotSaveCookies) {
       /*serve_cookies=*/true);
   secure_embedded_test_server_->StartAcceptingConnections();
 
-  EXPECT_EQ(GetCookies(
-                g_browser_process->safe_browsing_service()->GetNetworkContext())
-                .size(),
-            0u);
+  EXPECT_EQ(
+      GetCookies(
+          g_browser_process->system_network_context_manager()->GetContext())
+          .size(),
+      0u);
 
-  ui_test_utils::NavigateToURL(browser(), bad_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
 
-  EXPECT_EQ(GetCookies(
-                g_browser_process->safe_browsing_service()->GetNetworkContext())
-                .size(),
-            0u);
+  EXPECT_EQ(
+      GetCookies(
+          g_browser_process->system_network_context_manager()->GetContext())
+          .size(),
+      0u);
 }
 
 }  // namespace safe_browsing

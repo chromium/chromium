@@ -55,12 +55,22 @@
   #toggleReportButton {
     margin-right: 8px;
   }
+
+  :host([hide-routine-status]) .container-spacing {
+    padding-inline: 20px;
+  }
+
+  :host(:not([hide-routine-status])) .container-spacing {
+    margin-bottom: 16px;
+    margin-top: 12px;
+    padding-inline: 20px;
+  }
 </style>
-<div class="routine-section-container">
+<div class="routine-section-container container-spacing"
+    hidden$="[[hideRoutineSection(routines.*)]]">
   <div id="routineSection" class="routine-container">
     <div class="routine-status-container" hidden$="[[hideRoutineStatus]]">
-      <text-badge id="testStatusBadge"
-          badge-type="[[badgeType_]]"
+      <text-badge id="testStatusBadge" badge-type="[[badgeType_]]"
           hidden="[[isStatusHidden_(executionStatus_)]]"
           value="[[badgeText_]]">
       </text-badge>
@@ -86,16 +96,16 @@
         [[getReportToggleButtonText_(opened)]]
       </cr-button>
       <cr-button id="runTestsButton"
-          hidden$="[[isRunTestsButtonHidden_(isTestRunning,
+          hidden$="[[isRunTestsButtonHidden_(testSuiteStatus,
               executionStatus_)]]"
-          on-click="runTests_"
-          disabled="[[isRunTestsButtonDisabled_(isTestRunning,
+          on-click="runTests"
+          disabled="[[isRunTestsButtonDisabled_(testSuiteStatus,
                                                 additionalMessage)]]">
         [[runTestsButtonText]]
       </cr-button>
       <cr-button id="stopTestsButton"
           hidden$="[[isStopTestsButtonHidden_(executionStatus_)]]"
-          on-click="stopTests_">
+          on-click="stopTests">
         [[i18n('stopTestButtonText')]]
       </cr-button>
     </div>
@@ -103,7 +113,8 @@
   <iron-collapse id="collapse" opened="{{opened}}">
     <div class="result-list">
       <routine-result-list id="resultList"
-          hide-vertical-lines="[[hideVerticalLines]]">
+          hide-vertical-lines="[[hideVerticalLines]]"
+          using-routine-groups="[[usingRoutineGroups]]">
       </routine-result-list>
     </div>
     <cr-button id="learnMoreButton" class="learn-more-button"

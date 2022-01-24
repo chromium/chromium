@@ -36,12 +36,12 @@ namespace ash {
 class PresentationTimeRecorder;
 
 class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
+                                       public ShelfView::Delegate,
                                        public ShellObserver,
                                        public ShelfConfig::Observer,
                                        public ShelfButtonDelegate,
                                        public ShelfTooltipDelegate,
                                        public views::ContextMenuController,
-                                       public ApplicationDragAndDropHost,
                                        public ui::ImplicitAnimationObserver {
  public:
   class TestObserver {
@@ -66,6 +66,10 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   };
 
   ScrollableShelfView(ShelfModel* model, Shelf* shelf);
+
+  ScrollableShelfView(const ScrollableShelfView&) = delete;
+  ScrollableShelfView& operator=(const ScrollableShelfView&) = delete;
+
   ~ScrollableShelfView() override;
 
   void Init();
@@ -125,6 +129,9 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   // Returns the maximum scroll distance for the current layout.
   float GetScrollUpperBoundForTest() const;
 
+  // Returns whether `page_flip_timer_` is running.
+  bool IsPageFlipTimerBusyForTest() const;
+
   ShelfView* shelf_view() { return shelf_view_; }
   ShelfContainerView* shelf_container_view() { return shelf_container_view_; }
   const ShelfContainerView* shelf_container_view() const {
@@ -137,12 +144,6 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
 
   LayoutStrategy layout_strategy_for_test() const { return layout_strategy_; }
   gfx::Vector2dF scroll_offset_for_test() const { return scroll_offset_; }
-
-  const DragImageView* drag_icon_for_test() const {
-    return drag_icon_widget_ ? static_cast<DragImageView*>(
-                                   drag_icon_widget_->GetContentsView())
-                             : nullptr;
-  }
 
   int first_tappable_app_index() { return first_tappable_app_index_; }
   int last_tappable_app_index() { return last_tappable_app_index_; }
@@ -170,7 +171,6 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   friend class ShelfTestApi;
 
   class ScrollableShelfArrowView;
-  class DragIconDropAnimationDelegate;
   class ScopedActiveInkDropCountImpl;
 
   enum ScrollStatus {
@@ -229,6 +229,13 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   void ScrollRectToVisible(const gfx::Rect& rect) override;
   std::unique_ptr<ui::Layer> RecreateLayer() override;
 
+  // ShelfView::Delegate:
+  void ScheduleScrollForItemDragIfNeeded(
+      const gfx::Rect& location_in_screen) override;
+  void CancelScrollForItemDrag() override;
+  bool AreBoundsWithinVisibleSpace(
+      const gfx::Rect& bounds_in_screem) const override;
+
   // ShelfButtonDelegate:
   void OnShelfButtonAboutToRequestFocusFromTabTraversal(ShelfButton* button,
                                                         bool reverse) override;
@@ -258,23 +265,6 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
       views::View* view) override;
   std::u16string GetTitleForView(const views::View* view) const override;
   views::View* GetViewForEvent(const ui::Event& event) override;
-
-  // ApplicationDragAndDropHost:
-  bool ShouldStartDrag(
-      const std::string& app_id,
-      const gfx::Point& location_in_screen_coordinates) const override;
-  void CreateDragIconProxyByLocationWithNoAnimation(
-      const gfx::Point& origin_in_screen_coordinates,
-      const gfx::ImageSkia& icon,
-      views::View* replaced_view,
-      float scale_factor,
-      int blur_radius) override;
-  void UpdateDragIconProxy(
-      const gfx::Point& location_in_screen_coordinates) override;
-  void DestroyDragIconProxy() override;
-  bool StartDrag(const std::string& app_id,
-                 const gfx::Point& location_in_screen_coordinates) override;
-  bool Drag(const gfx::Point& location_in_screen_coordinates) override;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
@@ -428,8 +418,6 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   // for enough time. The function is called when |page_flip_timer_| is fired.
   void OnPageFlipTimer();
 
-  bool IsDragIconWithinVisibleSpace() const;
-
   // Returns whether a scroll event should be handled by this view or delegated
   // to the shelf.
   bool ShouldDelegateScrollToShelf(const ui::ScrollEvent& event) const;
@@ -544,14 +532,9 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
 
   TestObserver* test_observer_ = nullptr;
 
-  // Replaces the dragged app icon during drag procedure. It ensures that the
-  // app icon can be dragged out of the shelf view.
-  views::UniqueWidgetPtr drag_icon_widget_;
-
-  // The delegate to create the animation of moving the dropped icon to the
-  // ideal place after drag release.
-  std::unique_ptr<DragIconDropAnimationDelegate>
-      drag_icon_drop_animation_delegate_;
+  // If page flip timer is active for shelf item drag, the last known drag item
+  // bounds in screen coordinates.
+  absl::optional<gfx::Rect> drag_item_bounds_in_screen_;
 
   base::OneShotTimer page_flip_timer_;
 
@@ -563,8 +546,6 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
 
   base::ScopedClosureRunner force_show_hotseat_resetter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollableShelfView);
 };
 
 }  // namespace ash

@@ -41,7 +41,7 @@ math {
     letter-spacing: normal;
     line-height: normal;
     word-spacing: normal;
-    /* TODO(1228189): Implement font-family: math */
+    font-family: math;
     font-size: inherited;
     font-style: normal;
     font-weight: normal;

@@ -26,9 +26,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, IconsLoaded) {
 
   // Test that the icons are loaded and that the chrome://extension-icon
   // parameters work correctly.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("chrome-extension://gbmgkahjioeacddebbnengilkgbkhodg/index.html"));
+      GURL("chrome-extension://gbmgkahjioeacddebbnengilkgbkhodg/index.html")));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -37,9 +37,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, IconsLoaded) {
 
   // Verify that the an extension can't load chrome://extension-icon icons
   // without the management permission.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("chrome-extension://apocjbpjpkghdepdngjlknfpmabcmlao/index.html"));
+      GURL("chrome-extension://apocjbpjpkghdepdngjlknfpmabcmlao/index.html")));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(document.title)",
@@ -51,9 +51,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, InvalidURL) {
   std::string result;
 
   // Test that navigation to an invalid url works.
-  ui_test_utils::NavigateToURL(
-      browser(),
-      GURL("chrome://extension-icon/invalid"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://extension-icon/invalid")));
 
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),

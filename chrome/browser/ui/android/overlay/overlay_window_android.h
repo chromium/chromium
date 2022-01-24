@@ -59,7 +59,7 @@ class OverlayWindowAndroid : public content::OverlayWindow,
   gfx::Rect GetBounds() override;
   void UpdateVideoSize(const gfx::Size& natural_size) override;
   void SetPlaybackState(PlaybackState playback_state) override {}
-  void SetPlayPauseButtonVisibility(bool is_visible) override {}
+  void SetPlayPauseButtonVisibility(bool is_visible) override;
   void SetSkipAdButtonVisibility(bool is_visible) override {}
   void SetNextTrackButtonVisibility(bool is_visible) override {}
   void SetPreviousTrackButtonVisibility(bool is_visible) override {}
@@ -81,6 +81,8 @@ class OverlayWindowAndroid : public content::OverlayWindow,
   scoped_refptr<cc::SurfaceLayer> surface_layer_;
   gfx::Rect bounds_;
   gfx::Size video_size_;
+
+  bool is_play_pause_button_visible_ = false;
 
   content::PictureInPictureWindowController* controller_;
 };

@@ -137,6 +137,19 @@ public class OptimizationGuideBridge {
                 mNativeOptimizationGuideBridge, notification.toByteArray());
     }
 
+    /**
+     * Signal native OptimizationGuide that deferred startup has occurred. This enables
+     * OptimizationGuide to fetch hints in the background while minimizing the risk of
+     * regressing key performance metrics such as jank. This method should only be
+     * called by ProcessInitializationHandler.
+     */
+    public void onDeferredStartup() {
+        if (mNativeOptimizationGuideBridge == 0) {
+            return;
+        }
+        OptimizationGuideBridgeJni.get().onDeferredStartup(mNativeOptimizationGuideBridge);
+    }
+
     @CalledByNative
     private static void onOptimizationGuideDecision(OptimizationGuideCallback callback,
             @OptimizationGuideDecision int optimizationGuideDecision,
@@ -247,5 +260,6 @@ public class OptimizationGuideBridge {
         void canApplyOptimization(long nativeOptimizationGuideBridge, GURL url,
                 int optimizationType, OptimizationGuideCallback callback);
         void onNewPushNotification(long nativeOptimizationGuideBridge, byte[] encodedNotification);
+        void onDeferredStartup(long nativeOptimizationGuideBridge);
     }
 }

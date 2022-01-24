@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A wrapper for the HTML5 FileReader object.
@@ -36,6 +28,7 @@ goog.require('goog.fs.ProgressEvent');
  * @final
  */
 goog.fs.FileReader = function() {
+  'use strict';
   goog.fs.FileReader.base(this, 'constructor');
 
   /**
@@ -119,6 +112,7 @@ goog.fs.FileReader.EventType = {
  * Abort the reading of the file.
  */
 goog.fs.FileReader.prototype.abort = function() {
+  'use strict';
   try {
     this.reader_.abort();
   } catch (e) {
@@ -131,6 +125,7 @@ goog.fs.FileReader.prototype.abort = function() {
  * @return {goog.fs.FileReader.ReadyState} The current state of the FileReader.
  */
 goog.fs.FileReader.prototype.getReadyState = function() {
+  'use strict';
   return /** @type {goog.fs.FileReader.ReadyState} */ (this.reader_.readyState);
 };
 
@@ -139,6 +134,7 @@ goog.fs.FileReader.prototype.getReadyState = function() {
  * @return {*} The result of the file read.
  */
 goog.fs.FileReader.prototype.getResult = function() {
+  'use strict';
   return this.reader_.result;
 };
 
@@ -147,6 +143,7 @@ goog.fs.FileReader.prototype.getResult = function() {
  * @return {goog.fs.Error} The error encountered while reading, if any.
  */
 goog.fs.FileReader.prototype.getError = function() {
+  'use strict';
   return this.reader_.error &&
       new goog.fs.Error(this.reader_.error, 'reading file');
 };
@@ -159,12 +156,14 @@ goog.fs.FileReader.prototype.getError = function() {
  * @private
  */
 goog.fs.FileReader.prototype.dispatchProgressEvent_ = function(event) {
+  'use strict';
   this.dispatchEvent(new goog.fs.ProgressEvent(event, this));
 };
 
 
 /** @override */
 goog.fs.FileReader.prototype.disposeInternal = function() {
+  'use strict';
   goog.fs.FileReader.base(this, 'disposeInternal');
   delete this.reader_;
 };
@@ -175,6 +174,7 @@ goog.fs.FileReader.prototype.disposeInternal = function() {
  * @param {!Blob} blob The blob to read.
  */
 goog.fs.FileReader.prototype.readAsBinaryString = function(blob) {
+  'use strict';
   this.reader_.readAsBinaryString(blob);
 };
 
@@ -186,8 +186,9 @@ goog.fs.FileReader.prototype.readAsBinaryString = function(blob) {
  *     If an error occurs, the errback is called with a {@link goog.fs.Error}.
  */
 goog.fs.FileReader.readAsBinaryString = function(blob) {
-  var reader = new goog.fs.FileReader();
-  var d = goog.fs.FileReader.createDeferred_(reader);
+  'use strict';
+  const reader = new goog.fs.FileReader();
+  const d = goog.fs.FileReader.createDeferred_(reader);
   reader.readAsBinaryString(blob);
   return d;
 };
@@ -198,6 +199,7 @@ goog.fs.FileReader.readAsBinaryString = function(blob) {
  * @param {!Blob} blob The blob to read.
  */
 goog.fs.FileReader.prototype.readAsArrayBuffer = function(blob) {
+  'use strict';
   this.reader_.readAsArrayBuffer(blob);
 };
 
@@ -209,8 +211,9 @@ goog.fs.FileReader.prototype.readAsArrayBuffer = function(blob) {
  *     If an error occurs, the errback is called with a {@link goog.fs.Error}.
  */
 goog.fs.FileReader.readAsArrayBuffer = function(blob) {
-  var reader = new goog.fs.FileReader();
-  var d = goog.fs.FileReader.createDeferred_(reader);
+  'use strict';
+  const reader = new goog.fs.FileReader();
+  const d = goog.fs.FileReader.createDeferred_(reader);
   reader.readAsArrayBuffer(blob);
   return d;
 };
@@ -222,6 +225,7 @@ goog.fs.FileReader.readAsArrayBuffer = function(blob) {
  * @param {string=} opt_encoding The name of the encoding to use.
  */
 goog.fs.FileReader.prototype.readAsText = function(blob, opt_encoding) {
+  'use strict';
   this.reader_.readAsText(blob, opt_encoding);
 };
 
@@ -234,8 +238,9 @@ goog.fs.FileReader.prototype.readAsText = function(blob, opt_encoding) {
  *     If an error occurs, the errback is called with a {@link goog.fs.Error}.
  */
 goog.fs.FileReader.readAsText = function(blob, opt_encoding) {
-  var reader = new goog.fs.FileReader();
-  var d = goog.fs.FileReader.createDeferred_(reader);
+  'use strict';
+  const reader = new goog.fs.FileReader();
+  const d = goog.fs.FileReader.createDeferred_(reader);
   reader.readAsText(blob, opt_encoding);
   return d;
 };
@@ -246,6 +251,7 @@ goog.fs.FileReader.readAsText = function(blob, opt_encoding) {
  * @param {!Blob} blob The blob to read.
  */
 goog.fs.FileReader.prototype.readAsDataUrl = function(blob) {
+  'use strict';
   this.reader_.readAsDataURL(blob);
 };
 
@@ -257,8 +263,9 @@ goog.fs.FileReader.prototype.readAsDataUrl = function(blob) {
  *     If an error occurs, the errback is called with a {@link goog.fs.Error}.
  */
 goog.fs.FileReader.readAsDataUrl = function(blob) {
-  var reader = new goog.fs.FileReader();
-  var d = goog.fs.FileReader.createDeferred_(reader);
+  'use strict';
+  const reader = new goog.fs.FileReader();
+  const d = goog.fs.FileReader.createDeferred_(reader);
   reader.readAsDataUrl(blob);
   return d;
 };
@@ -271,11 +278,13 @@ goog.fs.FileReader.readAsDataUrl = function(blob) {
  * @private
  */
 goog.fs.FileReader.createDeferred_ = function(reader) {
-  var deferred = new goog.async.Deferred();
+  'use strict';
+  const deferred = new goog.async.Deferred();
   reader.listen(
       goog.fs.FileReader.EventType.LOAD_END, goog.partial(function(d, r, e) {
-        var result = r.getResult();
-        var error = r.getError();
+        'use strict';
+        const result = r.getResult();
+        const error = r.getError();
         if (result != null && !error) {
           d.callback(result);
         } else {

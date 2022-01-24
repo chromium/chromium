@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -24,8 +25,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/base/avatar_icon_util.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
@@ -65,21 +66,21 @@ void SyncConfirmationHandler::OnBrowserRemoved(Browser* browser) {
 }
 
 void SyncConfirmationHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "confirm", base::BindRepeating(&SyncConfirmationHandler::HandleConfirm,
                                      base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "undo", base::BindRepeating(&SyncConfirmationHandler::HandleUndo,
                                   base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "goToSettings",
       base::BindRepeating(&SyncConfirmationHandler::HandleGoToSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializedWithSize",
       base::BindRepeating(&SyncConfirmationHandler::HandleInitializedWithSize,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "accountInfoRequest",
       base::BindRepeating(&SyncConfirmationHandler::HandleAccountInfoRequest,
                           base::Unretained(this)));
@@ -99,6 +100,10 @@ void SyncConfirmationHandler::HandleGoToSettings(const base::ListValue* args) {
 }
 
 void SyncConfirmationHandler::HandleUndo(const base::ListValue* args) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1263553): Remove once unconsented profiles are supported.
+  NOTIMPLEMENTED() << "Unconsented profiles are not supported yet";
+#endif
   did_user_explicitly_interact_ = true;
   CloseModalSigninWindow(LoginUIService::ABORT_SYNC);
 }
@@ -118,7 +123,7 @@ void SyncConfirmationHandler::HandleAccountInfoRequest(
 }
 
 void SyncConfirmationHandler::RecordConsent(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   base::Value::ConstListView consent_description = args->GetList()[0].GetList();
   const std::string& consent_confirmation = args->GetList()[1].GetString();
 

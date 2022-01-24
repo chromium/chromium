@@ -21,6 +21,10 @@ class MediaKeyboardHookWinImpl : public KeyboardHookWinBase {
  public:
   MediaKeyboardHookWinImpl(KeyEventCallback callback,
                            bool enable_hook_registration);
+
+  MediaKeyboardHookWinImpl(const MediaKeyboardHookWinImpl&) = delete;
+  MediaKeyboardHookWinImpl& operator=(const MediaKeyboardHookWinImpl&) = delete;
+
   ~MediaKeyboardHookWinImpl() override;
 
   // KeyboardHookWinBase implementation.
@@ -41,8 +45,6 @@ class MediaKeyboardHookWinImpl : public KeyboardHookWinBase {
   // Tracks the last non-located key down seen in order to determine if the
   // current key event should be marked as a repeated key press.
   DWORD last_key_down_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaKeyboardHookWinImpl);
 };
 
 // static
@@ -91,8 +93,8 @@ bool MediaKeyboardHookWinImpl::ProcessKeyEventMessage(WPARAM w_param,
     return false;
 
   bool is_repeat = false;
-  MSG msg = {nullptr, static_cast<UINT>(w_param), vk,
-             GetLParamFromScanCode(scan_code), time_stamp};
+  CHROME_MSG msg = {nullptr, static_cast<UINT>(w_param), vk,
+                    GetLParamFromScanCode(scan_code), time_stamp};
   EventType event_type = EventTypeFromMSG(msg);
   if (event_type == ET_KEY_PRESSED) {
     is_repeat = (last_key_down_ == vk);

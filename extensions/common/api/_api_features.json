@@ -136,14 +136,21 @@
   "clipboard.setImageData": {
     "dependencies": ["permission:clipboardWrite"]
   },
-  "declarativeNetRequest": {
+  "declarativeNetRequest": [{
     "dependencies": ["permission:declarativeNetRequest"],
+    "contexts": ["blessed_extension"],
+    "default_parent": true
+  }, {
+    "dependencies": ["permission:declarativeNetRequestWithHostAccess"],
     "contexts": ["blessed_extension"]
-  },
-  "declarativeNetRequest.onRuleMatchedDebug": {
-    "dependencies": ["permission:declarativeNetRequest", "permission:declarativeNetRequestFeedback"],
+  }],
+  "declarativeNetRequest.onRuleMatchedDebug": [{
+    "dependencies": ["permission:declarativeNetRequestFeedback", "permission:declarativeNetRequest"],
     "location": "unpacked"
-  },
+  }, {
+    "dependencies": ["permission:declarativeNetRequestFeedback", "permission:declarativeNetRequestWithHostAccess"],
+    "location": "unpacked"
+  }],
   "declarativeWebRequest": {
     "dependencies": ["permission:declarativeWebRequest"],
     "contexts": ["blessed_extension"]
@@ -225,6 +232,7 @@
         "chrome://mobilesetup/*",
         "chrome://oobe/*",
         "chrome://os-settings/*",
+        "chrome://parent-access/*",
         "chrome://password-change/*",
         "chrome://lock-reauth/*"
       ]
@@ -310,19 +318,20 @@
     "matches": [
       "chrome://bookmarks/*",
       "chrome://download-shelf.top-chrome/*",
+      "chrome://eche-app/*",
       "chrome://extensions/*",
-      "chrome://new-tab-page/*",
-      "chrome://os-settings/*",
-      "chrome://settings/*",
-      "chrome://sync-confirmation/*",
-      "chrome://read-later.top-chrome/*",
-      "chrome://tab-search.top-chrome/*",
-      "chrome://tab-strip/*",
-      "chrome://welcome/*",
-      "chrome://profile-picker/*",
       "chrome://file-manager/*",
       "chrome://help-app/*",
-      "chrome://eche-app/*"
+      "chrome://history/*",
+      "chrome://new-tab-page/*",
+      "chrome://os-settings/*",
+      "chrome://profile-picker/*",
+      "chrome://read-later.top-chrome/*",
+      "chrome://settings/*",
+      "chrome://sync-confirmation/*",
+      "chrome://tab-search.top-chrome/*",
+      "chrome://tab-strip.top-chrome/*",
+      "chrome://welcome/*"
     ]
   }, {
     "channel": "stable",
@@ -433,7 +442,8 @@
       "extension",
       "legacy_packaged_app",
       "platform_app",
-      "login_screen_extension"
+      "login_screen_extension",
+      "chromeos_system_extension"
     ],
     "contexts": [
       "blessed_extension",
@@ -454,7 +464,7 @@
       "content_script"
     ]
   },
-  "runtime.connect": {
+  "runtime.connect": [{
     // Everything except WebUI.
     "contexts": [
       "blessed_web_page",
@@ -465,7 +475,14 @@
       "web_page"
     ],
     "matches": ["<all_urls>"]
-  },
+  },{
+    "channel": "dev",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      // Allow only nassh.html page in Terminal System Web App.
+      "chrome-untrusted://terminal/html/nassh.html"
+    ]
+  }],
   "runtime.connectNative": {
     "dependencies": ["permission:nativeMessaging"],
     "contexts": ["blessed_extension"]
@@ -528,6 +545,13 @@
       "chrome://password-change/*",
       "chrome://file-manager/*"
     ]
+  },{
+    "channel": "dev",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      // Allow only nassh.html page in Terminal System Web App.
+      "chrome-untrusted://terminal/html/nassh.html"
+    ]
   }],
   "runtime.sendNativeMessage": {
     "dependencies": ["permission:nativeMessaging"],
@@ -558,7 +582,6 @@
     "contexts": ["blessed_extension", "unblessed_extension", "content_script"]
   },
   "storage.session": {
-    "channel": "canary",
     "min_manifest_version": 3
   },
   "system.cpu": {
@@ -605,7 +628,12 @@
   }, {
     "channel": "stable",
     "contexts": ["webui"],
-    "matches": ["chrome://extensions/*"]
+    "matches": [
+      "chrome://extensions/*",
+      // System Web App version of File Manager.
+      "chrome://file-manager/*",
+      "chrome://test/*"
+    ]
   }, {
     "channel": "stable",
     "contexts": [ "webui_untrusted" ],
@@ -651,6 +679,7 @@
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
       "chrome://os-settings/*",
+      "chrome://parent-access/*",
       "chrome://password-change/*",
       "chrome://lock-reauth/*"
     ]
@@ -672,6 +701,7 @@
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
       "chrome://os-settings/*",
+      "chrome://parent-access/*",
       "chrome://password-change/*",
       "chrome://lock-reauth/*"
     ]
@@ -690,7 +720,8 @@
       "chrome://home/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
-      "chrome://os-settings/*"
+      "chrome://os-settings/*",
+      "chrome://parent-access/*"
     ]
   }]
 }

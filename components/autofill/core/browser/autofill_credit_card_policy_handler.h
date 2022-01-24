@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_CREDIT_CARD_POLICY_HANDLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_CREDIT_CARD_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/policy_export.h"
 
@@ -16,14 +15,17 @@ class AutofillCreditCardPolicyHandler
     : public policy::TypeCheckingPolicyHandler {
  public:
   AutofillCreditCardPolicyHandler();
+
+  AutofillCreditCardPolicyHandler(const AutofillCreditCardPolicyHandler&) =
+      delete;
+  AutofillCreditCardPolicyHandler& operator=(
+      const AutofillCreditCardPolicyHandler&) = delete;
+
   ~AutofillCreditCardPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillCreditCardPolicyHandler);
 };
 
 }  // namespace autofill

@@ -26,6 +26,10 @@ class MtpManagerClientChromeOS : public device::mojom::MtpManagerClient {
  public:
   MtpManagerClientChromeOS(StorageMonitor::Receiver* receiver,
                            device::mojom::MtpManager* mtp_manager);
+
+  MtpManagerClientChromeOS(const MtpManagerClientChromeOS&) = delete;
+  MtpManagerClientChromeOS& operator=(const MtpManagerClientChromeOS&) = delete;
+
   ~MtpManagerClientChromeOS() override;
 
   // Finds the storage that contains |path| and populates |storage_info|.
@@ -70,8 +74,6 @@ class MtpManagerClientChromeOS : public device::mojom::MtpManagerClient {
   StorageMonitor::Receiver* const notifications_;
 
   base::WeakPtrFactory<MtpManagerClientChromeOS> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MtpManagerClientChromeOS);
 };
 
 }  // namespace storage_monitor

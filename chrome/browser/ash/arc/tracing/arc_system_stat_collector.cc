@@ -21,8 +21,8 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -35,8 +35,7 @@ namespace arc {
 namespace {
 
 // Interval to update system stats.
-constexpr base::TimeDelta kSystemStatUpdateInterval =
-    base::TimeDelta::FromMilliseconds(10);
+constexpr base::TimeDelta kSystemStatUpdateInterval = base::Milliseconds(10);
 
 const base::FilePath::CharType kZramPath[] =
     FILE_PATH_LITERAL("/sys/block/zram0/stat");
@@ -117,12 +116,14 @@ class CpuTemperaturePathDetector {
     LOG(WARNING) << "Not detected path to read CPU temperature.";
   }
 
+  CpuTemperaturePathDetector(const CpuTemperaturePathDetector&) = delete;
+  CpuTemperaturePathDetector& operator=(const CpuTemperaturePathDetector&) =
+      delete;
+
   const base::FilePath& path() const { return path_; }
 
  private:
   base::FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(CpuTemperaturePathDetector);
 };
 
 const base::FilePath& GetCpuTemperaturePathOnFileThread() {
@@ -528,7 +529,7 @@ bool ArcSystemStatCollector::LoadFromValue(const base::Value& root) {
     return false;
   }
 
-  max_interval_ = base::TimeDelta::FromMicroseconds(max_interval_mcs);
+  max_interval_ = base::Microseconds(max_interval_mcs);
 
   const base::Value* sample_list =
       root.FindKeyOfType(kKeySamples, base::Value::Type::LIST);
@@ -547,8 +548,7 @@ bool ArcSystemStatCollector::LoadFromValue(const base::Value& root) {
         !base::StringToInt64(timestamp->GetString(), &timestamp_mcs))
       return false;
 
-    sample.timestamp =
-        base::TimeTicks() + base::TimeDelta::FromMicroseconds(timestamp_mcs);
+    sample.timestamp = base::TimeTicks() + base::Microseconds(timestamp_mcs);
 
     if (!ReadNonNegativeInt(sample_entry, kKeySwapSectorsRead,
                             &sample.swap_sectors_read) ||

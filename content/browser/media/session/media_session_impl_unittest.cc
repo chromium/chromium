@@ -42,6 +42,10 @@ namespace {
 class MockAudioFocusDelegate : public AudioFocusDelegate {
  public:
   MockAudioFocusDelegate() = default;
+
+  MockAudioFocusDelegate(const MockAudioFocusDelegate&) = delete;
+  MockAudioFocusDelegate& operator=(const MockAudioFocusDelegate&) = delete;
+
   ~MockAudioFocusDelegate() override = default;
 
   void AbandonAudioFocus() override {}
@@ -75,8 +79,6 @@ class MockAudioFocusDelegate : public AudioFocusDelegate {
   int request_audio_focus_count_ = 0;
 
   MediaSessionInfoPtr session_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAudioFocusDelegate);
 };
 
 // A mock WebContentsDelegate which listens to |ActivateContents()| calls.
@@ -90,13 +92,18 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
 
 class MediaSessionImplTest : public RenderViewHostTestHarness {
  public:
-  MediaSessionImplTest() {
+  MediaSessionImplTest()
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     default_actions_.insert(media_session::mojom::MediaSessionAction::kPlay);
     default_actions_.insert(media_session::mojom::MediaSessionAction::kPause);
     default_actions_.insert(media_session::mojom::MediaSessionAction::kStop);
     default_actions_.insert(media_session::mojom::MediaSessionAction::kSeekTo);
     default_actions_.insert(media_session::mojom::MediaSessionAction::kScrubTo);
   }
+
+  MediaSessionImplTest(const MediaSessionImplTest&) = delete;
+  MediaSessionImplTest& operator=(const MediaSessionImplTest&) = delete;
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
@@ -106,8 +113,8 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
 
     RenderViewHostTestHarness::SetUp();
 
-    player_observer_ =
-        std::make_unique<MockMediaSessionPlayerObserver>(main_rfh());
+    player_observer_ = std::make_unique<MockMediaSessionPlayerObserver>(
+        main_rfh(), media::MediaContentType::Persistent);
     mock_media_session_service_ =
         std::make_unique<testing::NiceMock<MockMediaSessionServiceImpl>>(
             main_rfh());
@@ -180,8 +187,7 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
 
   void StartNewPlayer() {
     GetMediaSession()->AddPlayer(player_observer_.get(),
-                                 player_observer_->StartNewPlayer(),
-                                 media::MediaContentType::Persistent);
+                                 player_observer_->StartNewPlayer());
   }
 
   const std::set<media_session::mojom::MediaSessionAction>& default_actions()
@@ -197,8 +203,6 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
   std::unique_ptr<MockMediaSessionServiceImpl> mock_media_session_service_;
 
   mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionImplTest);
 };
 
 TEST_F(MediaSessionImplTest, SessionInfoState) {
@@ -290,10 +294,11 @@ TEST_F(MediaSessionImplTest, PepperForcesDuckAndRequestsFocus) {
   int player_id = player_observer_->StartNewPlayer();
 
   {
+    player_observer_->SetMediaContentType(media::MediaContentType::Pepper);
     MockMediaSessionMojoObserver observer(*GetMediaSession());
-    GetMediaSession()->AddPlayer(player_observer_.get(), player_id,
-                                 media::MediaContentType::Pepper);
+    GetMediaSession()->AddPlayer(player_observer_.get(), player_id);
     observer.WaitForState(MediaSessionInfo::SessionState::kActive);
+    player_observer_->SetMediaContentType(media::MediaContentType::Persistent);
   }
 
   EXPECT_TRUE(GetForceDuck(GetMediaSession()));
@@ -329,8 +334,7 @@ TEST_F(MediaSessionImplTest, SessionInfo_PlaybackState) {
 
   {
     MockMediaSessionMojoObserver observer(*GetMediaSession());
-    GetMediaSession()->AddPlayer(player_observer_.get(), player_id,
-                                 media::MediaContentType::Persistent);
+    GetMediaSession()->AddPlayer(player_observer_.get(), player_id);
     observer.WaitForPlaybackState(MediaPlaybackState::kPlaying);
   }
 
@@ -714,10 +718,8 @@ TEST_F(MediaSessionImplTest, SessionInfoAudioSink) {
                    ->audio_sink_id.has_value());
   int player1 = player_observer_->StartNewPlayer();
   int player2 = player_observer_->StartNewPlayer();
-  GetMediaSession()->AddPlayer(player_observer_.get(), player1,
-                               media::MediaContentType::Persistent);
-  GetMediaSession()->AddPlayer(player_observer_.get(), player2,
-                               media::MediaContentType::Persistent);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player1);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player2);
   player_observer_->SetAudioSinkId(player1, "1");
   player_observer_->SetAudioSinkId(player2, "1");
 
@@ -745,6 +747,88 @@ TEST_F(MediaSessionImplTest, RaiseActivatesWebContents) {
   // When the WebContents does not have a delegate, |Raise()| should not crash.
   web_contents()->SetDelegate(nullptr);
   GetMediaSession()->Raise();
+}
+
+// Tests for throttling duration updates.
+// TODO (jazzhsu): Remove these tests once media session supports livestream.
+class MediaSessionImplDurationThrottleTest : public MediaSessionImplTest {
+ public:
+  void SetUp() override {
+    MediaSessionImplTest::SetUp();
+    GetMediaSession()->SetShouldThrottleDurationUpdateForTest(true);
+  }
+
+  void FastForwardBy(base::TimeDelta delay) {
+    task_environment()->FastForwardBy(delay);
+  }
+
+  int GetDurationUpdateMaxAllowance() {
+    return MediaSessionImpl::kDurationUpdateMaxAllowance;
+  }
+
+  base::TimeDelta GetDurationUpdateAllowanceIncreaseInterval() {
+    return MediaSessionImpl::kDurationUpdateAllowanceIncreaseInterval;
+  }
+};
+
+TEST_F(MediaSessionImplDurationThrottleTest, ThrottleDurationUpdate) {
+  MockMediaSessionMojoObserver observer(*GetMediaSession());
+  int player_id = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player_id);
+
+  media_session::MediaPosition pos;
+  for (int duration = 0; duration <= GetDurationUpdateMaxAllowance();
+       ++duration) {
+    pos = media_session::MediaPosition(
+        /*playback_rate=*/0.0,
+        /*duration=*/base::Seconds(duration),
+        /*position=*/base::TimeDelta(), /*end_of_media=*/false);
+
+    player_observer_->SetPosition(player_id, pos);
+    GetMediaSession()->RebuildAndNotifyMediaPositionChanged();
+    FlushForTesting(GetMediaSession());
+
+    if (duration == GetDurationUpdateMaxAllowance()) {
+      // Last update should be throttle and marked as +INF duration.
+      EXPECT_EQ(**observer.session_position(),
+                media_session::MediaPosition(
+                    /*playback_rate=*/0.0,
+                    /*duration=*/base::TimeDelta::Max(),
+                    /*position=*/base::TimeDelta(), /*end_of_media=*/false));
+    } else {
+      EXPECT_EQ(**observer.session_position(), pos);
+    }
+  }
+
+  // Media session should send last throttled duration update after certain
+  // delay.
+  FastForwardBy(GetDurationUpdateAllowanceIncreaseInterval());
+  FlushForTesting(GetMediaSession());
+  EXPECT_EQ(**observer.session_position(), pos);
+}
+
+TEST_F(MediaSessionImplDurationThrottleTest, ThrottleResetOnPlayerChange) {
+  MockMediaSessionMojoObserver observer(*GetMediaSession());
+
+  // Duration updates caused by player switch should not be throttled.
+  media_session::MediaPosition pos;
+  for (int duration = 0; duration <= GetDurationUpdateMaxAllowance();
+       ++duration) {
+    int player_id = player_observer_->StartNewPlayer();
+    GetMediaSession()->AddPlayer(player_observer_.get(), player_id);
+
+    pos = media_session::MediaPosition(
+        /*playback_rate=*/0.0,
+        /*duration=*/base::Seconds(duration),
+        /*position=*/base::TimeDelta(), /*end_of_media=*/false);
+
+    player_observer_->SetPosition(player_id, pos);
+    GetMediaSession()->RebuildAndNotifyMediaPositionChanged();
+    FlushForTesting(GetMediaSession());
+    EXPECT_EQ(**observer.session_position(), pos);
+
+    GetMediaSession()->RemovePlayer(player_observer_.get(), player_id);
+  }
 }
 
 }  // namespace content

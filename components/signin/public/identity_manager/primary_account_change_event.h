@@ -6,8 +6,8 @@
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_PRIMARY_ACCOUNT_CHANGE_EVENT_H_
 
 #include "build/build_config.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"

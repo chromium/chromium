@@ -39,8 +39,7 @@ namespace {
 // initiated, we expect the connection to occur within this amount of time. If
 // a timeout occurs, we assume that no auto-connection occurred and do not show
 // a notification.
-constexpr const base::TimeDelta kNetworkConnectionTimeout =
-    base::TimeDelta::FromSeconds(3);
+constexpr const base::TimeDelta kNetworkConnectionTimeout = base::Seconds(3);
 
 const char kNotifierAutoConnect[] = "ash.auto-connect";
 

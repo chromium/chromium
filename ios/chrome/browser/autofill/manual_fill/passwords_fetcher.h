@@ -15,7 +15,7 @@
 @class PasswordFetcher;
 
 namespace password_manager {
-class PasswordStore;
+class PasswordStoreInterface;
 struct PasswordForm;
 }  // namespace password_manager
 
@@ -39,7 +39,7 @@ class GURL;
 // filtering.
 - (instancetype)
     initWithPasswordStore:
-        (scoped_refptr<password_manager::PasswordStore>)passwordStore
+        (scoped_refptr<password_manager::PasswordStoreInterface>)passwordStore
                  delegate:(id<PasswordFetcherDelegate>)delegate
                       URL:(const GURL&)URL NS_DESIGNATED_INITIALIZER;
 

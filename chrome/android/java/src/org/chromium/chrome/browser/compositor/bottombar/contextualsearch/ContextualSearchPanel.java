@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.components.browser_ui.widget.chips.Chip;
+import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
@@ -452,7 +452,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     @Override
     public float getContentY() {
         return getOffsetY() + getBarContainerHeight() + getPanelHelpHeight()
-                + getRelatedSearchesMaximumHeightDps() + getPromoHeightPx() * mPxToDp;
+                + getRelatedSearchesHeightDps(false) + getPromoHeightPx() * mPxToDp;
     }
 
     @Override
@@ -493,6 +493,18 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             mShouldPromoteToTabAfterMaximizing = false;
             mManagementDelegate.promoteToTab();
         }
+    }
+
+    @Override
+    protected void animatePanelToState(
+            @Nullable @PanelState Integer state, @StateChangeReason int reason, long duration) {
+        // If the in bar chip showing animation is running, do not run the new panel animation
+        // unless it needs to animate to a different state.
+        if (state == getPanelState() && haveSearchBarControl()
+                && getSearchBarControl().inBarRelatedSearchesAnimationIsRunning()) {
+            return;
+        }
+        super.animatePanelToState(state, reason, duration);
     }
 
     // ============================================================================================
@@ -719,9 +731,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             @Nullable List<String> relatedSearchesInContent, boolean showDefaultSearchInContent) {
         onSearchTermResolved(searchTerm, thumbnailUrl, quickActionUri, quickActionCategory,
                 cardTagEnum, relatedSearchesInBar, showDefaultSearchInBar,
-                Chip.SHOW_WHOLE_TEXT /* defaultQueryInBarTextMaxWidthPx */,
+                ChipProperties.SHOW_WHOLE_TEXT /* defaultQueryInBarTextMaxWidthPx */,
                 relatedSearchesInContent, showDefaultSearchInContent,
-                Chip.SHOW_WHOLE_TEXT /* defaultQueryInContentTextMaxWidthPx */);
+                ChipProperties.SHOW_WHOLE_TEXT /* defaultQueryInContentTextMaxWidthPx */);
     }
 
     /**
@@ -755,6 +767,15 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         getRelatedSearchesInContentControl().setRelatedSearchesSuggestions(relatedSearchesInContent,
                 showDefaultSearchInContent, defaultQueryInContentTextMaxWidthPx);
         mPanelMetrics.onSearchTermResolved();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)) {
+            if (getRelatedSearchesInBarControl().hasReleatedSearchesToShow()
+                    != hadInBarSuggestions) {
+                getSearchBarControl().animateInBarRelatedSearches(!hadInBarSuggestions);
+            }
+        }
+
+        // TODO(donnd): Rework the way definitions are displayed so we don't return early here,
+        // which is error prone. See https://crbug.com/1244107.
         if (cardTagEnum == CardTag.CT_DEFINITION
                 || cardTagEnum == CardTag.CT_CONTEXTUAL_DEFINITION) {
             getSearchBarControl().updateForDictionaryDefinition(searchTerm, cardTagEnum);
@@ -763,18 +784,12 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
         getSearchBarControl().setSearchTerm(searchTerm);
         getSearchBarControl().animateSearchTermResolution();
+        // TODO(donnd): this can probably be removed or changed to an assert.
         if (mActivity == null || mToolbarManager == null) return;
 
         getSearchBarControl().setQuickAction(
                 quickActionUri, quickActionCategory, mToolbarManager.getPrimaryColor());
         getImageControl().setThumbnailUrl(thumbnailUrl);
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)) {
-            if (getRelatedSearchesInBarControl().hasReleatedSearchesToShow()
-                    != hadInBarSuggestions) {
-                getSearchBarControl().animateInBarRelatedSearches(!hadInBarSuggestions);
-            }
-        }
     }
 
     /**
@@ -1091,7 +1106,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                     // Needs to enumerate anything that can appear above it in the panel.
                     return Math.round(
                             (getOffsetY() + getBarContainerHeight()
-                                    + getRelatedSearchesMaximumHeightDps() + getPanelHelpHeight())
+                                    + getRelatedSearchesHeightDps(false) + getPanelHelpHeight())
                             / mPxToDp);
                 }
 
@@ -1112,7 +1127,10 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
                 @Override
                 public void onPromoOptOut() {
-                    closePanel(OverlayPanel.StateChangeReason.OPTOUT, true);
+                    if (!ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
+                        closePanel(OverlayPanel.StateChangeReason.OPTOUT, true);
+                    }
                 }
             };
         }
@@ -1163,7 +1181,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 public float getYPositionPx() {
                     // Needs to enumerate anything that can appear above it in the panel.
                     return Math.round((getOffsetY() + getBarContainerHeight()
-                                              + getRelatedSearchesMaximumHeightDps())
+                                              + getRelatedSearchesHeightDps(false))
                             / mPxToDp);
                 }
 
@@ -1284,15 +1302,26 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @return The amount of overlap of padding values that can be removed (in pixels).
      */
     public float getInBarRelatedSearchesRedundantPadding() {
-        return mContext.getResources().getDimension(
-                R.dimen.related_searches_in_bar_redundant_padding);
+        return getRelatedSearchesInBarControl().getRedundantPadding();
     }
 
     /**
-     * @return Total height of this section of the panel in DPs (once fully exposed by animation).
+     * @return Total height of this section of the Bar in DPs (once fully exposed by animation).
      */
-    float getRelatedSearchesMaximumHeightDps() {
-        return getRelatedSearchesInBarControl().getHeightPx() * mPxToDp;
+    float getInBarRelatedSearchesMaximumHeightDps() {
+        return getRelatedSearchesInBarControl().getMaximumHeightPx() * mPxToDp;
+    }
+
+    /**
+     * Returns the height of the Related Searches carousel for either the in-bar position or
+     * the in-panel position. Either one could have a variable height due to animation.
+     * @param isRelatedSearchesInBar Whether we want the in-bar carousel height or not.
+     * @return Current height of this section in DPs.
+     */
+    float getRelatedSearchesHeightDps(boolean isRelatedSearchesInBar) {
+        return isRelatedSearchesInBar
+                ? getRelatedSearchesInBarControl().getHeightPx() * mPxToDp
+                : getRelatedSearchesInContentControl().getHeightPx() * mPxToDp;
     }
 
     /**

@@ -33,6 +33,11 @@ LayoutSVGResourceLinearGradient::LayoutSVGResourceLinearGradient(
 
 LayoutSVGResourceLinearGradient::~LayoutSVGResourceLinearGradient() = default;
 
+void LayoutSVGResourceLinearGradient::Trace(Visitor* visitor) const {
+  visitor->Trace(attributes_wrapper_);
+  LayoutSVGResourceGradient::Trace(visitor);
+}
+
 void LayoutSVGResourceLinearGradient::CollectGradientAttributes() {
   NOT_DESTROYED();
   DCHECK(GetElement());

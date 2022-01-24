@@ -157,6 +157,10 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   void RegisterExperiments(const Experiments& experiments) override {
     service_delegate_->RegisterExperiments(experiments);
   }
+  void RegisterFollowingFeedFollowCountFieldTrial(
+      size_t follow_count) override {
+    service_delegate_->RegisterFollowingFeedFollowCountFieldTrial(follow_count);
+  }
 
  private:
   FeedService::Delegate* service_delegate_;

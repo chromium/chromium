@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_THUNK_AUDIO_CONFIG_API_H_
-#define PPAPI_THUNK_AUDIO_CONFIG_API_H_
+#ifndef PPAPI_THUNK_PPB_AUDIO_CONFIG_API_H_
+#define PPAPI_THUNK_PPB_AUDIO_CONFIG_API_H_
 
 #include <stdint.h>
 
@@ -24,4 +24,4 @@ class PPAPI_THUNK_EXPORT PPB_AudioConfig_API {
 }  // namespace thunk
 }  // namespace ppapi
 
-#endif  // PPAPI_THUNK_AUDIO_CONFIG_API_H_
+#endif  // PPAPI_THUNK_PPB_AUDIO_CONFIG_API_H_

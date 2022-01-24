@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/feature_engagement/internal/event_storage_validator.h"
 
 namespace feature_engagement {
@@ -17,6 +16,11 @@ namespace feature_engagement {
 class NeverEventStorageValidator : public EventStorageValidator {
  public:
   NeverEventStorageValidator();
+
+  NeverEventStorageValidator(const NeverEventStorageValidator&) = delete;
+  NeverEventStorageValidator& operator=(const NeverEventStorageValidator&) =
+      delete;
+
   ~NeverEventStorageValidator() override;
 
   // EventStorageValidator implementation.
@@ -24,9 +28,6 @@ class NeverEventStorageValidator : public EventStorageValidator {
   bool ShouldKeep(const std::string& event_name,
                   uint32_t event_day,
                   uint32_t current_day) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NeverEventStorageValidator);
 };
 
 }  // namespace feature_engagement

@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "ash/style/scoped_light_mode_as_default.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
 

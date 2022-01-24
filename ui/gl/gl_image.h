@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "ui/gfx/buffer_types.h"
@@ -41,10 +40,6 @@ class ScopedHardwareBufferFenceSync;
 }  // namespace android
 }  // namespace base
 
-namespace gfx {
-class GpuFence;
-}
-
 namespace gl {
 
 // Encapsulates an image that can be bound and/or copied to a texture, hiding
@@ -52,6 +47,9 @@ namespace gl {
 class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
  public:
   GLImage() = default;
+
+  GLImage(const GLImage&) = delete;
+  GLImage& operator=(const GLImage&) = delete;
 
   // Get the size of the image.
   virtual gfx::Size GetSize();
@@ -96,15 +94,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   virtual bool CopyTexSubImage(unsigned target,
                                const gfx::Point& offset,
                                const gfx::Rect& rect);
-
-  // Schedule image as an overlay plane to be shown at swap time for |widget|.
-  virtual bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                                    int z_order,
-                                    gfx::OverlayTransform transform,
-                                    const gfx::Rect& bounds_rect,
-                                    const gfx::RectF& crop_rect,
-                                    bool enable_blend,
-                                    std::unique_ptr<gfx::GpuFence> gpu_fence);
 
   // Set the color space when image is used as an overlay.
   virtual void SetColorSpace(const gfx::ColorSpace& color_space);
@@ -174,8 +163,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
 
  private:
   friend class base::RefCounted<GLImage>;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImage);
 };
 
 }  // namespace gl

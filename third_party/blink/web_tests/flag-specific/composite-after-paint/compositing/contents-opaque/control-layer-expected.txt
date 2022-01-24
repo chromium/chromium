@@ -9,6 +9,7 @@
     {
       "name": "LayoutNGButton INPUT id='control' class='composited'",
       "bounds": [127, 22],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#EFEFEF",
       "transform": 1
     }

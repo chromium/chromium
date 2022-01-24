@@ -214,8 +214,9 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, DISABLED_ZoomPreservedOnReload) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   double main_frame_window_border = GetMainframeWindowBorder(web_contents());
 
   HostZoomMap* host_zoom_map = HostZoomMap::GetForWebContents(web_contents());
@@ -273,8 +274,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, DISABLED_SubframesZoomProperly) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild =
       root->child_at(0)->child_at(0)->current_frame_host();
@@ -327,8 +329,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesDontZoomIndependently) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild =
       root->child_at(0)->child_at(0)->current_frame_host();
@@ -379,8 +382,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild =
       root->child_at(0)->child_at(0)->current_frame_host();
@@ -442,8 +446,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, MAYBE_SiblingFramesZoom) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child1 = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* child2 = root->child_at(1)->current_frame_host();
 
@@ -495,8 +500,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframeRetainsZoomOnNavigation) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
 
   // The following calls must be made when the page's scale factor = 1.0.

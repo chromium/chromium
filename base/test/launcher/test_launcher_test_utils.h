@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <string>
-#include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

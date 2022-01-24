@@ -88,6 +88,8 @@ class GEOMETRY_EXPORT RectF {
     size_.SetSize(width, height);
   }
 
+  // Shrink the rectangle by |inset| on all sides.
+  void Inset(float inset) { Inset(inset, inset); }
   // Shrink the rectangle by a horizontal and vertical distance on all sides.
   void Inset(float horizontal, float vertical) {
     Inset(horizontal, vertical, horizontal, vertical);
@@ -98,6 +100,15 @@ class GEOMETRY_EXPORT RectF {
 
   // Shrink the rectangle by the specified amount on each side.
   void Inset(float left, float top, float right, float bottom);
+
+  // Expand the rectangle by the specified amount on each side.
+  void Outset(float outset) { Inset(-outset); }
+  void Outset(float horizontal, float vertical) {
+    Inset(-horizontal, -vertical);
+  }
+  void Outset(float left, float top, float right, float bottom) {
+    Inset(-left, -top, -right, -bottom);
+  }
 
   // Move the rectangle by a horizontal and vertical distance.
   void Offset(float horizontal, float vertical);
@@ -119,13 +130,23 @@ class GEOMETRY_EXPORT RectF {
   bool operator<(const RectF& other) const;
 
   // Returns true if the point identified by point_x and point_y falls inside
-  // this rectangle.  The point (x, y) is inside the rectangle, but the
-  // point (x + width, y + height) is not.
+  // this rectangle (including the left and the top edges, excluding the right
+  // and the bottom edges). If this rectangle is empty, this method returns
+  // false regardless of the point.
   bool Contains(float point_x, float point_y) const;
 
   // Returns true if the specified point is contained by this rectangle.
   bool Contains(const PointF& point) const {
     return Contains(point.x(), point.y());
+  }
+
+  // Similar to Contains(), but uses edge-inclusive geometry, i.e. also returns
+  // true if the point is on the right or the bottom edge. If this rectangle
+  // is empty, this method returns true only if the point is at the origin of
+  // this rectangle.
+  bool InclusiveContains(float point_x, float point_y) const;
+  bool InclusiveContains(const PointF& point) const {
+    return InclusiveContains(point.x(), point.y());
   }
 
   // Returns true if this rectangle contains the specified rectangle.
@@ -135,15 +156,31 @@ class GEOMETRY_EXPORT RectF {
   // An empty rectangle doesn't intersect any rectangle.
   bool Intersects(const RectF& rect) const;
 
-  // Computes the intersection of this rectangle with the given rectangle.
+  // Sets this rect to be the intersection of this rectangle with the given
+  // rectangle.
   void Intersect(const RectF& rect);
 
-  // Computes the union of this rectangle with the given rectangle.  The union
-  // is the smallest rectangle containing both rectangles.
+  // Sets this rect to be the intersection of itself and |rect| using
+  // edge-inclusive geometry.  If the two rectangles overlap but the overlap
+  // region is zero-area (either because one of the two rectangles is zero-area,
+  // or because the rectangles overlap at an edge or a corner), the result is
+  // the zero-area intersection.  The return value indicates whether the two
+  // rectangle actually have an intersection, since checking the result for
+  // isEmpty() is not conclusive.
+  bool InclusiveIntersect(const RectF& rect);
+
+  // Sets this rect to be the union of this rectangle with the given rectangle.
+  // The union is the smallest rectangle containing both rectangles if not
+  // empty. If both rects are empty, this rect will become |rect|.
   void Union(const RectF& rect);
 
-  // Computes the rectangle resulting from subtracting |rect| from |*this|,
-  // i.e. the bounding rect of |Region(*this) - Region(rect)|.
+  // Similar to Union(), but the result will contain both rectangles even if
+  // either of them is empty. For example, union of (100, 100, 0x0) and
+  // (200, 200, 50x0) is (100, 100, 150x100).
+  void UnionEvenIfEmpty(const RectF& rect);
+
+  // Sets this rect to be the rectangle resulting from subtracting |rect| from
+  // |*this|, i.e. the bounding rect of |Region(*this) - Region(rect)|.
   void Subtract(const RectF& rect);
 
   // Fits as much of the receiving rectangle into the supplied rectangle as
@@ -179,6 +216,9 @@ class GEOMETRY_EXPORT RectF {
   // is non-empty then the function returns 0. If the rects share a side, it
   // returns the smallest non-zero value appropriate for float.
   float ManhattanInternalDistance(const RectF& rect) const;
+
+  // Returns the closest point in or on an edge of this rect to the given point.
+  PointF ClosestPoint(const PointF& point) const;
 
   // Scales the rectangle by |scale|.
   void Scale(float scale) {
@@ -227,6 +267,7 @@ inline RectF operator+(const Vector2dF& lhs, const RectF& rhs) {
 
 GEOMETRY_EXPORT RectF IntersectRects(const RectF& a, const RectF& b);
 GEOMETRY_EXPORT RectF UnionRects(const RectF& a, const RectF& b);
+GEOMETRY_EXPORT RectF UnionRectsEvenIfEmpty(const RectF& a, const RectF& b);
 GEOMETRY_EXPORT RectF SubtractRects(const RectF& a, const RectF& b);
 
 inline RectF ScaleRect(const RectF& r, float x_scale, float y_scale) {
@@ -238,6 +279,10 @@ inline RectF ScaleRect(const RectF& r, float scale) {
   return ScaleRect(r, scale, scale);
 }
 
+inline RectF TransposeRect(const RectF& r) {
+  return RectF(r.y(), r.x(), r.height(), r.width());
+}
+
 // Constructs a rectangle with |p1| and |p2| as opposite corners.
 //
 // This could also be thought of as "the smallest rect that contains both
@@ -245,6 +290,9 @@ inline RectF ScaleRect(const RectF& r, float scale) {
 // rect to be outside the rect.  So technically one or both points will not be
 // contained within the rect, because they will appear on one of these edges.
 GEOMETRY_EXPORT RectF BoundingRect(const PointF& p1, const PointF& p2);
+
+// Return a maximum rectangle in which any point is covered by either a or b.
+GEOMETRY_EXPORT RectF MaximumCoveredRect(const RectF& a, const RectF& b);
 
 // This is declared here for use in gtest-based unit tests but is defined in
 // the //ui/gfx:test_support target. Depend on that to use this in your unit

@@ -28,21 +28,27 @@ public class VariationsSeedSafeModeAction implements SafeModeAction {
     }
 
     @Override
-    public void execute() {
-        deleteIfExists(VariationsUtils.getSeedFile());
-        deleteIfExists(VariationsUtils.getNewSeedFile());
-        deleteIfExists(VariationsUtils.getStampFile());
+    public boolean execute() {
+        boolean success = true;
+        // Try deleting each file even if a previous step failed, but indicate the overall success
+        // of all steps.
+        success &= deleteIfExists(VariationsUtils.getSeedFile());
+        success &= deleteIfExists(VariationsUtils.getNewSeedFile());
+        success &= deleteIfExists(VariationsUtils.getStampFile());
+        return success;
     }
 
-    private static void deleteIfExists(File file) {
+    private static boolean deleteIfExists(File file) {
         if (!file.exists()) {
             Log.i(TAG, "File does not exist (skipping): %s", file);
-            return;
+            return true;
         }
         if (file.delete()) {
             Log.i(TAG, "Successfully deleted %s", file);
+            return true;
         } else {
             Log.e(TAG, "Failed to delete %s", file);
+            return false;
         }
     }
 }

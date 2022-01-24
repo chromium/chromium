@@ -3,54 +3,25 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/skottie_transfer_cache_entry.h"
 #include "cc/paint/skottie_wrapper.h"
+#include "cc/test/lottie_test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkSize.h"
 
 namespace cc {
-namespace {
-
-// A skottie animation with solid green color for the first 2.5 seconds and then
-// a solid blue color for the next 2.5 seconds.
-constexpr char kData[] =
-    "{"
-    "  \"v\" : \"4.12.0\","
-    "  \"fr\": 30,"
-    "  \"w\" : 400,"
-    "  \"h\" : 200,"
-    "  \"ip\": 0,"
-    "  \"op\": 150,"
-    "  \"assets\": [],"
-
-    "  \"layers\": ["
-    "    {"
-    "      \"ty\": 1,"
-    "      \"sw\": 400,"
-    "      \"sh\": 200,"
-    "      \"sc\": \"#00ff00\","
-    "      \"ip\": 0,"
-    "      \"op\": 75"
-    "    },"
-    "    {"
-    "      \"ty\": 1,"
-    "      \"sw\": 400,"
-    "      \"sh\": 200,"
-    "      \"sc\": \"#0000ff\","
-    "      \"ip\": 76,"
-    "      \"op\": 150"
-    "    }"
-    "  ]"
-    "}";
-
-}  // namespace
 
 TEST(SkottieTransferCacheEntryTest, SerializationDeserialization) {
-  std::vector<uint8_t> a_data(std::strlen(kData));
-  a_data.assign(reinterpret_cast<const uint8_t*>(kData),
-                reinterpret_cast<const uint8_t*>(kData) + std::strlen(kData));
+  std::vector<uint8_t> a_data(kLottieDataWithoutAssets1.length());
+  a_data.assign(
+      reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()),
+      reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()) +
+          kLottieDataWithoutAssets1.length());
 
   scoped_refptr<SkottieWrapper> skottie =
       SkottieWrapper::CreateSerializable(std::move(a_data));

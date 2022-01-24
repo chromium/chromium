@@ -1,0 +1,22 @@
+<!doctype html>
+<title>Container query of block-size container is affected by min-height property</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-queries">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #container {
+    container-type: block-size;
+    min-height: 200px;
+  }
+  @container (min-height: 200px) {
+    #child { color: green }
+  }
+</style>
+<div id="container">
+  <div id="child">Green</div>
+</div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).color, "rgb(0, 128, 0)");
+  }, "min-height of block-size container affects container size");
+</script>

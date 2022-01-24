@@ -10,8 +10,6 @@
 
     [CallWith=ScriptState, RaisesException] Promise<ReadableStreamBYOBReadResult> read(ArrayBufferView view);
     [CallWith=ScriptState, RaisesException] void releaseLock();
-
-    // includes ReadableStreamGenericReader
-    [CallWith=ScriptState] readonly attribute Promise<void> closed;
-    [CallWith=ScriptState, RaisesException] Promise<void> cancel(optional any reason);
 };
+
+ReadableStreamBYOBReader includes ReadableStreamGenericReader;

@@ -37,6 +37,8 @@ source_set("music_manager_private") {
     sources += [ "device_id_linux.cc" ]
   } else if (is_mac) {
     sources += [ "device_id_mac.cc" ]
+  } else if (is_fuchsia) {
+    sources += [ "device_id_fuchsia.cc" ]
   } else if (is_win) {
     sources += [ "device_id_win.cc" ]
   }

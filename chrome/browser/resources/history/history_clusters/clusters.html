@@ -1,0 +1,79 @@
+<style include="history-clusters-shared-style">
+  :host {
+    color: var(--cr-primary-text-color);
+    display: block;
+    font-size: 0.875rem;  /* 14px */
+    overflow-y: auto;
+  }
+
+  #clusters,
+  #header {
+    margin: 0 auto;
+    max-width: var(--cluster-max-width);
+    min-width: var(--cluster-min-width);
+    padding: var(--first-cluster-padding-top) var(--cluster-padding-horizontal) 0;
+  }
+
+  #header {
+    font-size: 1.75rem;  /* 28px */
+  }
+
+  #placeholder {
+    font-size: inherit;
+  }
+
+  #footer {
+    display: flex;
+    justify-content: center;
+    padding:
+        0 var(--cluster-padding-horizontal) var(--cluster-padding-vertical);
+  }
+</style>
+<div id="header" hidden="[[!headerText_]]">[[headerText_]]</div>
+<div id="placeholder" class="centered-message" hidden="[[!placeholderText_]]">
+  [[placeholderText_]]
+</div>
+<iron-list id="clusters" items="[[result_.clusters]]"
+    on-remove-visits="onRemoveVisits_" hidden="[[!result_.clusters.length]]">
+  <!-- We must have a tabindex on these history-cluster elements, because
+       iron-list gets very confused handling arrow keys without them. Moreover,
+       we can't allow Tab to traverse all list elements because:
+       https://github.com/PolymerElements/iron-list/issues/546 -->
+  <template>
+    <history-cluster cluster="[[item]]" index="[[index]]"
+        tabindex$="[[tabIndex]]" on-remove-cluster="onRemoveCluster_">
+    </history-cluster>
+  </template>
+</iron-list>
+<div id="footer" hidden="[[getLoadMoreButtonHidden_(
+    result_, result_.clusters.*, result_.continuationEndTime)]]">
+  <cr-button id="loadMoreButton" on-click="onLoadMoreButtonClick_">
+    $i18n{loadMoreButtonLabel}
+  </cr-button>
+</div>
+<iron-scroll-threshold id="scrollThreshold"
+    lower-threshold="500" on-lower-threshold="onScrolledToBottom_">
+</iron-scroll-threshold>
+<cr-lazy-render id="confirmationDialog">
+  <template>
+    <cr-dialog consume-keydown-event on-cancel="onConfirmationDialogCancel_">
+      <div slot="title">$i18n{removeSelected}</div>
+      <div slot="body">$i18n{deleteWarning}</div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button class="action-button" on-click="onRemoveButtonClick_">
+          $i18n{deleteConfirm}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+</cr-lazy-render>
+<cr-lazy-render id="confirmationToast">
+  <template>
+    <cr-toast duration="5000">
+      <div>$i18n{removeFromHistoryToast}</div>
+    </cr-toast>
+  </template>
+</cr-lazy-render>

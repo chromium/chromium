@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
@@ -92,12 +91,13 @@ class SSLManagerSet : public base::SupportsUserData::Data {
   SSLManagerSet() {
   }
 
+  SSLManagerSet(const SSLManagerSet&) = delete;
+  SSLManagerSet& operator=(const SSLManagerSet&) = delete;
+
   std::set<SSLManager*>& get() { return set_; }
 
  private:
   std::set<SSLManager*> set_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLManagerSet);
 };
 
 void LogMixedContentMetrics(MixedContentType type,

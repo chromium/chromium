@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "cc/layers/mirror_layer.h"
 
 #include "cc/layers/mirror_layer_impl.h"
@@ -13,8 +15,9 @@ std::unique_ptr<LayerImpl> MirrorLayer::CreateLayerImpl(
   return MirrorLayerImpl::Create(tree_impl, id());
 }
 
-void MirrorLayer::PushPropertiesTo(LayerImpl* layer) {
-  Layer::PushPropertiesTo(layer);
+void MirrorLayer::PushPropertiesTo(LayerImpl* layer,
+                                   const CommitState& commit_state) {
+  Layer::PushPropertiesTo(layer, commit_state);
 
   auto* mirror_layer = static_cast<MirrorLayerImpl*>(layer);
   mirror_layer->SetMirroredLayerId(mirrored_layer_->id());

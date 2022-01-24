@@ -11,7 +11,7 @@
 
 #include "base/files/file_proxy.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "headless/public/devtools/domains/emulation.h"
 #include "headless/public/devtools/domains/inspector.h"
 #include "headless/public/devtools/domains/page.h"
@@ -31,6 +31,10 @@ class HeadlessShell : public HeadlessWebContents::Observer,
                       public page::ExperimentalObserver {
  public:
   HeadlessShell();
+
+  HeadlessShell(const HeadlessShell&) = delete;
+  HeadlessShell& operator=(const HeadlessShell&) = delete;
+
   ~HeadlessShell() override;
 
   void OnStart(HeadlessBrowser* browser);
@@ -105,8 +109,6 @@ class HeadlessShell : public HeadlessWebContents::Observer,
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   std::unique_ptr<base::FileProxy> file_proxy_;
   base::WeakPtrFactory<HeadlessShell> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessShell);
 };
 
 }  // namespace headless

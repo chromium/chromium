@@ -11,10 +11,12 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
@@ -806,6 +808,15 @@ void VideoCaptureController::Resume() {
   DCHECK(launched_device_);
   EmitLogMessage(__func__, 3);
   launched_device_->ResumeDevice();
+}
+
+void VideoCaptureController::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(launched_device_);
+  EmitLogMessage(__func__, 3);
+  launched_device_->Crop(crop_id, std::move(callback));
 }
 
 void VideoCaptureController::RequestRefreshFrame() {

@@ -54,6 +54,8 @@ const char kAttemptsBeforeSuccessHistogram[] =
 const char kHttpRespCodeHistogram[] = "Availability.Prober.ResponseCode";
 const char kNetErrorHistogram[] = "Availability.Prober.NetError";
 const char kCacheEntryAgeHistogram[] = "Availability.Prober.CacheEntryAge";
+const char kGenerateCacheKeyHistogram[] =
+    "Availability.Prober.GenerateCacheKey";
 
 // Please keep this up to date with logged histogram suffix
 // |Availability.Prober.Clients| in tools/metrics/histograms/histograms.xml.
@@ -167,7 +169,7 @@ absl::optional<AvailabilityProberCacheEntry> DecodeCacheEntryValue(
 base::Time LastModifiedTimeFromCacheEntry(
     const AvailabilityProberCacheEntry& entry) {
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(entry.last_modified()));
+      base::Microseconds(entry.last_modified()));
 }
 
 void RemoveOldestDictionaryEntry(base::DictionaryValue* dict) {
@@ -552,9 +554,9 @@ void AvailabilityProber::ProcessProbeFailure() {
     base::TimeDelta active_time = clock_->Now() - time_when_set_active_.value();
     base::Histogram::FactoryTimeGet(
         AppendNameToHistogram(kTimeUntilFailure),
-        base::TimeDelta::FromMilliseconds(0) /* minimum */,
-        base::TimeDelta::FromMilliseconds(60000) /* maximum */,
-        50 /* bucket_count */, base::HistogramBase::kUmaTargetedHistogramFlag)
+        base::Milliseconds(0) /* minimum */,
+        base::Milliseconds(60000) /* maximum */, 50 /* bucket_count */,
+        base::HistogramBase::kUmaTargetedHistogramFlag)
         ->Add(active_time.InMilliseconds());
   }
 
@@ -597,9 +599,9 @@ void AvailabilityProber::ProcessProbeSuccess() {
     base::TimeDelta active_time = clock_->Now() - time_when_set_active_.value();
     base::Histogram::FactoryTimeGet(
         AppendNameToHistogram(kTimeUntilSuccess),
-        base::TimeDelta::FromMilliseconds(0) /* minimum */,
-        base::TimeDelta::FromMilliseconds(30000) /* maximum */,
-        50 /* bucket_count */, base::HistogramBase::kUmaTargetedHistogramFlag)
+        base::Milliseconds(0) /* minimum */,
+        base::Milliseconds(30000) /* maximum */, 50 /* bucket_count */,
+        base::HistogramBase::kUmaTargetedHistogramFlag)
         ->Add(active_time.InMilliseconds());
   }
 
@@ -625,15 +627,14 @@ absl::optional<bool> AvailabilityProber::LastProbeWasSuccessful() {
 
   base::LinearHistogram::FactoryTimeGet(
       AppendNameToHistogram(kCacheEntryAgeHistogram),
-      base::TimeDelta::FromHours(0) /* minimum */,
-      base::TimeDelta::FromHours(72) /* maximum */, 50 /* bucket_count */,
-      base::HistogramBase::kUmaTargetedHistogramFlag)
+      base::Hours(0) /* minimum */, base::Hours(72) /* maximum */,
+      50 /* bucket_count */, base::HistogramBase::kUmaTargetedHistogramFlag)
       ->Add(cache_entry_age.InHours());
 
   // Check if the cache entry should be revalidated because it has expired or
   // cache_entry_age is negative because the clock was moved back.
   if (cache_entry_age >= revalidate_cache_after_ ||
-      cache_entry_age < base::TimeDelta()) {
+      cache_entry_age.is_negative()) {
     SendNowIfInactive(false);
   }
 
@@ -708,9 +709,13 @@ void AvailabilityProber::RunCallback(bool success) {
 
 std::string AvailabilityProber::GetCacheKeyForCurrentNetwork() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::StringPrintf(
+  base::Time start(clock_->Now());
+  std::string key = base::StringPrintf(
       "%s;%s:%d", GenerateNetworkID(network_connection_tracker_).c_str(),
       url_.host().c_str(), url_.EffectiveIntPort());
+  UmaHistogramTimes(AppendNameToHistogram(kGenerateCacheKeyHistogram),
+                    clock_->Now() - start);
+  return key;
 }
 
 std::string AvailabilityProber::AppendNameToHistogram(

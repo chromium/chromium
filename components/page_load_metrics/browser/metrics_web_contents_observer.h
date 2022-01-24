@@ -10,18 +10,16 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
@@ -61,6 +59,10 @@ class MetricsWebContentsObserver
   class TestingObserver {
    public:
     explicit TestingObserver(content::WebContents* web_contents);
+
+    TestingObserver(const TestingObserver&) = delete;
+    TestingObserver& operator=(const TestingObserver&) = delete;
+
     virtual ~TestingObserver();
 
     void OnGoingAway();
@@ -85,8 +87,6 @@ class MetricsWebContentsObserver
 
    private:
     page_load_metrics::MetricsWebContentsObserver* observer_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestingObserver);
   };
 
   // Record a set of WebFeatures directly from the browser process. This
@@ -102,7 +102,17 @@ class MetricsWebContentsObserver
   static MetricsWebContentsObserver* CreateForWebContents(
       content::WebContents* web_contents,
       std::unique_ptr<PageLoadMetricsEmbedderInterface> embedder_interface);
+
+  MetricsWebContentsObserver(const MetricsWebContentsObserver&) = delete;
+  MetricsWebContentsObserver& operator=(const MetricsWebContentsObserver&) =
+      delete;
+
   ~MetricsWebContentsObserver() override;
+
+  // Binds a Mojo receiver to the instance associated with the RenderFrameHost.
+  static void BindPageLoadMetrics(
+      mojo::PendingAssociatedReceiver<mojom::PageLoadMetrics> receiver,
+      content::RenderFrameHost* rfh);
 
   // Any visibility changes that occur after this method should be ignored since
   // they are just clean up prior to destroying the WebContents instance.
@@ -118,7 +128,8 @@ class MetricsWebContentsObserver
   void NavigationStopped() override;
   void OnInputEvent(const blink::WebInputEvent& event) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void RenderViewHostChanged(content::RenderViewHost* old_host,
                              content::RenderViewHost* new_host) override;
   void FrameDeleted(int frame_tree_node_id) override;
@@ -178,12 +189,12 @@ class MetricsWebContentsObserver
       mojom::CpuTimingPtr cpu_timing,
       mojom::DeferredResourceCountsPtr new_deferred_resource_data,
       mojom::InputTimingPtr input_timing_delta,
-      const blink::MobileFriendliness& mobile_friendliness);
+      const absl::optional<blink::MobileFriendliness>& mobile_friendliness);
 
-  // Informs the observers of the currently committed load that |event| has
-  // occurred. This should not be called within
-  // WebContentsObserver::DidFinishNavigation methods.
-  void BroadcastEventToObservers(PageLoadMetricsEvent event);
+  // Informs the observers of the currently committed primary page load that
+  // it's likely that prefetch will occur in this WebContents. This should
+  // not be called within WebContentsObserver::DidFinishNavigation methods.
+  void OnPrefetchLikely();
 
   // Called when V8 per-frame memory usage updates are available. Virtual for
   // test classes to override.
@@ -212,16 +223,16 @@ class MetricsWebContentsObserver
       content::NavigationHandle* navigation_handle);
 
   // page_load_metrics::mojom::PageLoadMetrics implementation.
-  void UpdateTiming(
-      mojom::PageLoadTimingPtr timing,
-      mojom::FrameMetadataPtr metadata,
-      const std::vector<blink::UseCounterFeature>& new_features,
-      std::vector<mojom::ResourceDataUpdatePtr> resources,
-      mojom::FrameRenderDataUpdatePtr render_data,
-      mojom::CpuTimingPtr cpu_timing,
-      mojom::DeferredResourceCountsPtr new_deferred_resource_data,
-      mojom::InputTimingPtr input_timing,
-      const blink::MobileFriendliness& mobile_friendliness) override;
+  void UpdateTiming(mojom::PageLoadTimingPtr timing,
+                    mojom::FrameMetadataPtr metadata,
+                    const std::vector<blink::UseCounterFeature>& new_features,
+                    std::vector<mojom::ResourceDataUpdatePtr> resources,
+                    mojom::FrameRenderDataUpdatePtr render_data,
+                    mojom::CpuTimingPtr cpu_timing,
+                    mojom::DeferredResourceCountsPtr new_deferred_resource_data,
+                    mojom::InputTimingPtr input_timing,
+                    const absl::optional<blink::MobileFriendliness>&
+                        mobile_friendliness) override;
 
   void SetUpSharedMemoryForSmoothness(
       base::ReadOnlySharedMemoryRegion shared_memory) override;
@@ -349,14 +360,12 @@ class MetricsWebContentsObserver
   bool has_navigated_;
 
   base::ObserverList<TestingObserver>::Unchecked testing_observers_;
-  content::WebContentsFrameReceiverSet<mojom::PageLoadMetrics>
-      page_load_metrics_receiver_;
+  content::RenderFrameHostReceiverSet<mojom::PageLoadMetrics>
+      page_load_metrics_receivers_;
 
   bool web_contents_will_soon_be_destroyed_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsWebContentsObserver);
 };
 
 }  // namespace page_load_metrics

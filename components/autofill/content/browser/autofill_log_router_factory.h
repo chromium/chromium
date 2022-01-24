@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_AUTOFILL_LOG_ROUTER_FACTORY_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_AUTOFILL_LOG_ROUTER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -26,6 +25,9 @@ class AutofillLogRouterFactory : public BrowserContextKeyedServiceFactory {
 
   static AutofillLogRouterFactory* GetInstance();
 
+  AutofillLogRouterFactory(const AutofillLogRouterFactory&) = delete;
+  AutofillLogRouterFactory& operator=(const AutofillLogRouterFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<AutofillLogRouterFactory>;
 
@@ -35,8 +37,6 @@ class AutofillLogRouterFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillLogRouterFactory);
 };
 
 }  // namespace autofill

@@ -13,7 +13,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_actions_win.h"
 #include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"

@@ -38,7 +38,7 @@ struct AttributionGroupHash {
   STATIC_ONLY(AttributionGroupHash);
 
   static unsigned GetHash(const AttributionGroup& group) {
-    return group.attribution.GetHash();
+    return static_cast<unsigned>(group.attribution.GetHash());
   }
 
   static bool Equal(const AttributionGroup& a, const AttributionGroup& b) {

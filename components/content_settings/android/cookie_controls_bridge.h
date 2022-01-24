@@ -27,6 +27,9 @@ class CookieControlsBridge : public CookieControlsView {
       const base::android::JavaParamRef<jobject>&
           joriginal_browser_context_handle);
 
+  CookieControlsBridge(const CookieControlsBridge&) = delete;
+  CookieControlsBridge& operator=(const CookieControlsBridge&) = delete;
+
   ~CookieControlsBridge() override;
 
   // Called by the Java counterpart when it is getting garbage collected.
@@ -54,8 +57,6 @@ class CookieControlsBridge : public CookieControlsView {
   std::unique_ptr<CookieControlsController> controller_;
   base::ScopedObservation<CookieControlsController, CookieControlsView>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CookieControlsBridge);
 };
 
 }  // namespace content_settings

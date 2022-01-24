@@ -152,23 +152,9 @@ PointerHandler = class extends BaseAutomationHandler {
     // The target is in an ExoSurface, which hosts remote content.
     if (target.role === RoleType.WINDOW &&
         target.className.indexOf('ExoSurface') === 0) {
-      // We first search for a node containing an appId, which indicates Lacros.
-      // Do so by restricting the search to stop at roots.
-      const walker = new AutomationTreeWalker(target, constants.Dir.FORWARD, {
-        skipInitialSubtree: false,
-        root: (node) => target.root !== node.root,
-        visit: (node) => node.appId
-      });
-      const appNode = walker.next().node;
-      if (appNode) {
-        // This means we've gotten the app, which is technically in a different
-        // tree so hit tests will be delivered to it properly.
-        this.runHitTest(false, appNode);
-      } else {
-        // Otherwise, we're in ARC++, which still requires a synthesized mouse
-        // event.
-        this.synthesizeMouseMove();
-      }
+      // We're in ARC++, which still requires a synthesized mouse
+      // event.
+      this.synthesizeMouseMove();
       return;
     }
 

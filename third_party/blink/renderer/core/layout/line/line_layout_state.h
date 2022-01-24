@@ -46,6 +46,7 @@ class LineLayoutState {
         has_inline_child_(false),
         is_full_layout_(full_layout),
         needs_pagination_strut_recalculation_(false) {}
+  ~LineLayoutState() { floats_.clear(); }
 
   void MarkForFullLayout() { is_full_layout_ = true; }
   bool IsFullLayout() const { return is_full_layout_; }
@@ -81,7 +82,7 @@ class LineLayoutState {
   FloatingObject* LastFloat() const { return last_float_; }
   void SetLastFloat(FloatingObject* last_float) { last_float_ = last_float; }
 
-  Vector<LayoutBlockFlow::FloatWithRect>& Floats() { return floats_; }
+  HeapVector<LayoutBlockFlow::FloatWithRect>& Floats() { return floats_; }
 
   unsigned FloatIndex() const { return float_index_; }
   void SetFloatIndex(unsigned float_index) { float_index_ = float_index; }
@@ -94,7 +95,7 @@ class LineLayoutState {
   }
 
  private:
-  Vector<LayoutBlockFlow::FloatWithRect> floats_;
+  HeapVector<LayoutBlockFlow::FloatWithRect> floats_;
   FloatingObject* last_float_;
   RootInlineBox* end_line_;
   LineInfo line_info_;

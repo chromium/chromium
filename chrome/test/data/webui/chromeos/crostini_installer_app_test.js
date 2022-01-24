@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://crostini-installer/app.js';
+import 'chrome://crostini-installer/app.rollup.js';
 
 import {BrowserProxy} from 'chrome://crostini-installer/browser_proxy.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {flushTasks} from 'chrome://test/test_util.js';
 
 const InstallerState = crostini.mojom.InstallerState;
 const InstallerError = crostini.mojom.InstallerError;

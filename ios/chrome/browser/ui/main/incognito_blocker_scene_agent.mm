@@ -77,9 +77,7 @@
   NSArray<UIWindow*>* windows = nil;
 
   if (base::ios::IsSceneStartupSupported()) {
-    if (@available(iOS 13, *)) {
-      windows = self.sceneState.scene.windows;
-    }
+    windows = self.sceneState.scene.windows;
   } else {
     windows = UIApplication.sharedApplication.windows;
   }

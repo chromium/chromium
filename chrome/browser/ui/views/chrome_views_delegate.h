@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/views/views_delegate.h"
@@ -24,6 +23,10 @@ class ScopedProfileKeepAlive;
 class ChromeViewsDelegate : public views::ViewsDelegate {
  public:
   ChromeViewsDelegate();
+
+  ChromeViewsDelegate(const ChromeViewsDelegate&) = delete;
+  ChromeViewsDelegate& operator=(const ChromeViewsDelegate&) = delete;
+
   ~ChromeViewsDelegate() override;
 
   // views::ViewsDelegate:
@@ -109,8 +112,6 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
 
   base::WeakPtrFactory<ChromeViewsDelegate> weak_factory_{this};
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeViewsDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_VIEWS_DELEGATE_H_

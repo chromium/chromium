@@ -61,8 +61,7 @@ int main(int argc, char** argv) {
     spdy::Http2HeaderBlock headers =
         HpackFuzzUtil::NextGeneratedHeaderSet(&context);
 
-    std::string buffer;
-    CHECK(encoder.EncodeHeaderSet(headers, &buffer));
+    std::string buffer = encoder.EncodeHeaderBlock(headers);
 
     std::string prefix = HpackFuzzUtil::HeaderBlockPrefix(buffer.size());
 

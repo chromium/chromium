@@ -27,42 +27,42 @@ TEST_F(AutofillGstaticReaderTest, ParseListJSON_ValidResponseGetsParsed) {
   std::unique_ptr<std::string> response = std::make_unique<std::string>(
       "{\"list_data_key\": [\"list_item_one\", "
       "\"list_item_two\"]}");
-  std::vector<std::string> merchant_whitelist =
+  std::vector<std::string> merchant_allowlist =
       AutofillGstaticReader::GetInstance()->ParseListJSON(std::move(response),
                                                           "list_data_key");
-  EXPECT_EQ(merchant_whitelist.size(), 2U);
-  EXPECT_EQ(merchant_whitelist[0], "list_item_one");
-  EXPECT_EQ(merchant_whitelist[1], "list_item_two");
+  EXPECT_EQ(merchant_allowlist.size(), 2U);
+  EXPECT_EQ(merchant_allowlist[0], "list_item_one");
+  EXPECT_EQ(merchant_allowlist[1], "list_item_two");
 }
 
 TEST_F(AutofillGstaticReaderTest, ParseListJSON_InvalidKeyNotParsed) {
   std::unique_ptr<std::string> response = std::make_unique<std::string>(
       "{\"randomKey\": [\"list_item_one\", \"list_item_two\"]}");
-  std::vector<std::string> merchant_whitelist =
+  std::vector<std::string> merchant_allowlist =
       AutofillGstaticReader::GetInstance()->ParseListJSON(std::move(response),
                                                           "list_data_key");
   // "list_data_key" isn't a key in |response|, so we expect to return an empty
   // list.
-  EXPECT_EQ(merchant_whitelist.size(), 0U);
+  EXPECT_EQ(merchant_allowlist.size(), 0U);
 }
 
 TEST_F(AutofillGstaticReaderTest, ParseListJSON_NonStringListEntryNotParsed) {
   std::unique_ptr<std::string> response = std::make_unique<std::string>(
       "{\"list_data_key\": [1, \"list_item_two\"]}");
-  std::vector<std::string> merchant_whitelist =
+  std::vector<std::string> merchant_allowlist =
       AutofillGstaticReader::GetInstance()->ParseListJSON(std::move(response),
                                                           "list_data_key");
-  EXPECT_EQ(merchant_whitelist.size(), 1U);
-  EXPECT_EQ(merchant_whitelist[0], "list_item_two");
+  EXPECT_EQ(merchant_allowlist.size(), 1U);
+  EXPECT_EQ(merchant_allowlist[0], "list_item_two");
 }
 
 TEST_F(AutofillGstaticReaderTest, ParseListJSON_NonDictionaryNotParsed) {
   std::unique_ptr<std::string> response =
       std::make_unique<std::string>("list_item_one");
-  std::vector<std::string> merchant_whitelist =
+  std::vector<std::string> merchant_allowlist =
       AutofillGstaticReader::GetInstance()->ParseListJSON(std::move(response),
                                                           "list_data_key");
-  EXPECT_EQ(merchant_whitelist.size(), 0U);
+  EXPECT_EQ(merchant_allowlist.size(), 0U);
 }
 
 }  // namespace autofill

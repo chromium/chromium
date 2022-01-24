@@ -8,9 +8,9 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

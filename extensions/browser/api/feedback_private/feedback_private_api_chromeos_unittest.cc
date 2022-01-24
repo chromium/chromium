@@ -25,7 +25,6 @@ using api::feedback_private::FeedbackInfo;
 using api::feedback_private::ReadLogSourceParams;
 using api::feedback_private::ReadLogSourceResult;
 using api::feedback_private::SendFeedback::Params;
-using base::TimeDelta;
 using feedback::FeedbackData;
 using testing::_;
 using testing::DoAll;
@@ -49,6 +48,11 @@ std::string ParamsToJSON(const T& params) {
 class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
  public:
   FeedbackPrivateApiUnittest() = default;
+
+  FeedbackPrivateApiUnittest(const FeedbackPrivateApiUnittest&) = delete;
+  FeedbackPrivateApiUnittest& operator=(const FeedbackPrivateApiUnittest&) =
+      delete;
+
   ~FeedbackPrivateApiUnittest() override = default;
 
   // FeedbackPrivateApiUnittestBase:
@@ -127,8 +131,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     EXPECT_TRUE(values.is_list());
 
     std::unique_ptr<api::feedback_private::SendFeedback::Params> params =
-        api::feedback_private::SendFeedback::Params::Create(
-            base::Value::AsListValue(values));
+        api::feedback_private::SendFeedback::Params::Create(values.GetList());
     EXPECT_TRUE(params);
 
     scoped_refptr<FeedbackData> actual_feedback_data;
@@ -172,13 +175,10 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
         ->SetFeedbackServiceForTesting(
             static_cast<scoped_refptr<FeedbackService>>(std::move(mock)));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FeedbackPrivateApiUnittest);
 };
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceInvalidId) {
-  const TimeDelta timeout(TimeDelta::FromMilliseconds(0));
+  const base::TimeDelta timeout(base::Milliseconds(0));
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   ReadLogSourceParams params;
@@ -190,7 +190,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceInvalidId) {
 }
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceNonIncremental) {
-  const TimeDelta timeout(TimeDelta::FromMilliseconds(0));
+  const base::TimeDelta timeout(base::Milliseconds(0));
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   ReadLogSourceParams params;
@@ -221,7 +221,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceNonIncremental) {
 }
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceIncremental) {
-  const TimeDelta timeout(TimeDelta::FromMilliseconds(0));
+  const base::TimeDelta timeout(base::Milliseconds(0));
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   ReadLogSourceParams params;
@@ -259,7 +259,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceIncremental) {
 }
 
 TEST_F(FeedbackPrivateApiUnittest, Redact) {
-  const TimeDelta timeout(TimeDelta::FromMilliseconds(0));
+  const base::TimeDelta timeout(base::Milliseconds(0));
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   ReadLogSourceParams params;
@@ -284,7 +284,7 @@ TEST_F(FeedbackPrivateApiUnittest, Redact) {
 }
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceMultipleSources) {
-  const TimeDelta timeout(TimeDelta::FromMilliseconds(0));
+  const base::TimeDelta timeout(base::Milliseconds(0));
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   int result_reader_id = 0;
@@ -352,7 +352,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceMultipleSources) {
 }
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceWithAccessTimeouts) {
-  const TimeDelta timeout(TimeDelta::FromMilliseconds(100));
+  const base::TimeDelta timeout(base::Milliseconds(100));
   LogSourceAccessManager::SetMaxNumBurstAccessesForTesting(1);
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
@@ -370,7 +370,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceWithAccessTimeouts) {
 
   // |test_clock| must start out at something other than 0, which is interpreted
   // as an invalid value.
-  test_clock.Advance(TimeDelta::FromMilliseconds(100));
+  test_clock.Advance(base::Milliseconds(100));
 
   EXPECT_TRUE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
@@ -382,32 +382,32 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceWithAccessTimeouts) {
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 
   // Advance to t=120, but it will not be allowed. (empty result)
-  test_clock.Advance(TimeDelta::FromMilliseconds(20));
+  test_clock.Advance(base::Milliseconds(20));
   EXPECT_FALSE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 
   // Advance to t=150, but still not allowed.
-  test_clock.Advance(TimeDelta::FromMilliseconds(30));
+  test_clock.Advance(base::Milliseconds(30));
   EXPECT_FALSE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 
   // Advance to t=199, but still not allowed. (empty result)
-  test_clock.Advance(TimeDelta::FromMilliseconds(49));
+  test_clock.Advance(base::Milliseconds(49));
   EXPECT_FALSE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 
   // Advance to t=210, annd the access is finally allowed.
-  test_clock.Advance(TimeDelta::FromMilliseconds(11));
+  test_clock.Advance(base::Milliseconds(11));
   EXPECT_TRUE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 
   // Advance to t=309, but it will not be allowed. (empty result)
-  test_clock.Advance(TimeDelta::FromMilliseconds(99));
+  test_clock.Advance(base::Milliseconds(99));
   EXPECT_FALSE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 
   // Another read is finally allowed at t=310.
-  test_clock.Advance(TimeDelta::FromMilliseconds(1));
+  test_clock.Advance(base::Milliseconds(1));
   EXPECT_TRUE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 }

@@ -71,6 +71,8 @@ static const char kWarnNotOfflineCapable[] =
     "Page does not work offline. Starting in Chrome 93, the installability "
     "criteria is changing, and this site will not be installable. See "
     "https://goo.gle/improved-pwa-offline-detection for more information.";
+static const char kPipelineRestarted[] =
+    "Web app uninstalled so that it stops any running pipeline";
 
 static const char kNotFromSecureOriginId[] = "not-from-secure-origin";
 static const char kNoManifestId[] = "no-manifest";
@@ -105,6 +107,7 @@ static const char kManifestLocationChangedId[] = "manifest-location-changed";
 static const char kManifestDisplayOverrideNotSupportedId[] =
     "manifest-display-override-not-supported";
 static const char kWarnNotOfflineCapableId[] = "warn-not-offline-capable";
+static const char kPipelineRestartedId[] = "pipeline-restarted";
 
 const std::string& GetMessagePrefix() {
   static base::NoDestructor<std::string> message_prefix(
@@ -211,6 +214,9 @@ std::string GetErrorMessage(InstallableStatusCode code) {
       break;
     case WARN_NOT_OFFLINE_CAPABLE:
       message = kWarnNotOfflineCapable;
+      break;
+    case PIPELINE_RESTARTED:
+      message = kPipelineRestarted;
       break;
   }
 
@@ -319,6 +325,9 @@ content::InstallabilityError GetInstallabilityError(
       break;
     case WARN_NOT_OFFLINE_CAPABLE:
       error_id = kWarnNotOfflineCapableId;
+      break;
+    case PIPELINE_RESTARTED:
+      error_id = kPipelineRestartedId;
       break;
   }
   error.error_id = error_id;

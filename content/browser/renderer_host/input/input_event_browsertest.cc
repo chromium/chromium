@@ -64,6 +64,10 @@ namespace content {
 class InputEventBrowserTest : public ContentBrowserTest {
  public:
   InputEventBrowserTest() = default;
+
+  InputEventBrowserTest(const InputEventBrowserTest&) = delete;
+  InputEventBrowserTest& operator=(const InputEventBrowserTest&) = delete;
+
   ~InputEventBrowserTest() override = default;
 
   RenderWidgetHostImpl* GetWidgetHost() {
@@ -204,8 +208,6 @@ class InputEventBrowserTest : public ContentBrowserTest {
 
  private:
   std::unique_ptr<RenderFrameSubmissionObserver> frame_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputEventBrowserTest);
 };
 
 #if defined(OS_ANDROID)

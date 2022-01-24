@@ -33,6 +33,7 @@
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
@@ -49,10 +50,6 @@
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/android/jni_headers/OTRProfileID_jni.h"
-#endif
-
-#if !defined(OS_ANDROID)
-#include "content/public/browser/host_zoom_map.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -265,11 +262,9 @@ TestingProfile* Profile::AsTestingProfile() {
   return nullptr;
 }
 
-#if !defined(OS_ANDROID)
 ChromeZoomLevelPrefs* Profile::GetZoomLevelPrefs() {
   return nullptr;
 }
-#endif  // !defined(OS_ANDROID)
 
 Profile::Delegate::~Delegate() {
 }
@@ -288,6 +283,10 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kContextualSearchEnabled,
       std::string(),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kContextualSearchWasFullyPrivacyEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(prefs::kContextualSearchPromoCardShownCount, 0);
 #endif  // defined(OS_ANDROID)
   registry->RegisterStringPref(prefs::kSessionExitType, std::string());
   registry->RegisterBooleanPref(prefs::kDisableExtensions, false);
@@ -312,10 +311,8 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                std::string());
   registry->RegisterStringPref(prefs::kAccessibilityCaptionsTextShadow,
                                std::string());
-#if !defined(OS_ANDROID)
   registry->RegisterDictionaryPref(prefs::kPartitionDefaultZoomLevel);
   registry->RegisterDictionaryPref(prefs::kPartitionPerHostZoomLevels);
-#endif  // !defined(OS_ANDROID)
   registry->RegisterStringPref(prefs::kPreinstalledApps, "install");
   registry->RegisterBooleanPref(prefs::kSpeechRecognitionFilterProfanities,
                                 true);
@@ -345,6 +342,11 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 #if defined(OS_ANDROID)
   registry->RegisterBooleanPref(prefs::kClickedUpdateMenuItem, false);
   registry->RegisterStringPref(prefs::kLatestVersionWhenClickedUpdateMenuItem,
+                               std::string());
+#endif
+
+#if defined(OS_ANDROID)
+  registry->RegisterStringPref(prefs::kCommerceMerchantViewerMessagesShownTime,
                                std::string());
 #endif
 
@@ -433,7 +435,7 @@ bool Profile::CanUseDiskWhenOffTheRecord() {
 #endif
 }
 
-bool Profile::ShouldRestoreOldSessionCookies() const {
+bool Profile::ShouldRestoreOldSessionCookies() {
   return false;
 }
 
@@ -474,11 +476,9 @@ bool ProfileCompare::operator()(Profile* a, Profile* b) const {
   return a->GetOriginalProfile() < b->GetOriginalProfile();
 }
 
-#if !defined(OS_ANDROID)
 double Profile::GetDefaultZoomLevelForProfile() {
   return GetDefaultStoragePartition()->GetHostZoomMap()->GetDefaultZoomLevel();
 }
-#endif  // !defined(OS_ANDROID)
 
 void Profile::Wipe() {
   GetBrowsingDataRemover()->Remove(

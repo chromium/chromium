@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -24,7 +25,7 @@ namespace {
 
 size_t CountSQLItemsOfType(sql::Database* db, const char* type) {
   static const char kTypeSQL[] =
-      "SELECT COUNT(*) FROM sqlite_master WHERE type = ?";
+      "SELECT COUNT(*) FROM sqlite_schema WHERE type = ?";
   sql::Statement s(db->GetUniqueStatement(kTypeSQL));
   s.BindCString(0, type);
   EXPECT_TRUE(s.Step());
@@ -43,7 +44,7 @@ bool GetPageSize(sql::Database* db, int* page_size) {
 // Get |name|'s root page number in the database.
 bool GetRootPage(sql::Database* db, const char* name, int* page_number) {
   static const char kPageSql[] =
-      "SELECT rootpage FROM sqlite_master WHERE name = ?";
+      "SELECT rootpage FROM sqlite_schema WHERE name = ?";
   sql::Statement s(db->GetUniqueStatement(kPageSql));
   s.BindString(0, name);
   if (!s.Step())

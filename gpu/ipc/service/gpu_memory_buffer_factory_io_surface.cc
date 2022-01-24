@@ -103,9 +103,6 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
   if (handle.type != gfx::IO_SURFACE_BUFFER)
     return nullptr;
 
-  gfx::BufferFormat plane_format = GetPlaneBufferFormat(plane, format);
-  uint32_t io_surface_plane = (plane == gfx::BufferPlane::UV) ? 1 : 0;
-
   base::AutoLock lock(io_surfaces_lock_);
 
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface;
@@ -126,14 +123,13 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
     // |size| or |format|, which, if subsequently used to determine parameters
     // for bounds checking, could result in an out-of-bounds memory access.
     uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface);
-    gfx::Size io_surface_size(
-        IOSurfaceGetWidthOfPlane(io_surface, io_surface_plane),
-        IOSurfaceGetHeightOfPlane(io_surface, io_surface_plane));
     if (io_surface_format != BufferFormatToIOSurfacePixelFormat(format)) {
       DLOG(ERROR)
           << "IOSurface pixel format does not match specified buffer format.";
       return nullptr;
     }
+    gfx::Size io_surface_size(IOSurfaceGetWidth(io_surface),
+                              IOSurfaceGetHeight(io_surface));
     if (io_surface_size != size) {
       DLOG(ERROR) << "IOSurface size does not match specified size.";
       return nullptr;
@@ -144,9 +140,15 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
     return nullptr;
   }
 
+  gfx::Size plane_size = GetPlaneSize(plane, size);
+
+  gfx::BufferFormat plane_format = GetPlaneBufferFormat(plane, format);
   unsigned internalformat = gl::BufferFormatToGLInternalFormat(plane_format);
+
   scoped_refptr<gl::GLImageIOSurface> image(
-      gl::GLImageIOSurface::Create(size, internalformat));
+      gl::GLImageIOSurface::Create(plane_size, internalformat));
+
+  uint32_t io_surface_plane = (plane == gfx::BufferPlane::UV) ? 1 : 0;
   if (!image->Initialize(io_surface, io_surface_plane, handle.id,
                          plane_format)) {
     DLOG(ERROR) << "Failed to initialize GLImage for IOSurface.";

@@ -51,6 +51,9 @@ EventConverterEvdev::EventConverterEvdev(int fd,
 EventConverterEvdev::~EventConverterEvdev() {
 }
 
+void EventConverterEvdev::ApplyDeviceSettings(
+    const InputDeviceSettingsEvdev& settings) {}
+
 void EventConverterEvdev::Start() {
   base::CurrentUIThread::Get()->WatchFileDescriptor(
       fd_, true, base::MessagePumpForUI::WATCH_READ, &controller_, this);
@@ -210,7 +213,7 @@ base::TimeTicks EventConverterEvdev::TimeTicksFromInputEvent(
     const input_event& event) {
   base::TimeTicks timestamp =
       ui::EventTimeStampFromSeconds(event.input_event_sec) +
-      base::TimeDelta::FromMicroseconds(event.input_event_usec);
+      base::Microseconds(event.input_event_usec);
   ValidateEventTimeClock(&timestamp);
   return timestamp;
 }

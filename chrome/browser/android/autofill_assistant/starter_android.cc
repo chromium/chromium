@@ -9,7 +9,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantDependenciesImpl_jni.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantServiceInjector_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers_public/Starter_jni.h"
 #include "chrome/browser/android/autofill_assistant/client_android.h"
 #include "chrome/browser/android/autofill_assistant/trigger_script_bridge_android.h"
@@ -72,15 +71,8 @@ StarterAndroid::CreateTriggerScriptUiDelegate() {
 std::unique_ptr<ServiceRequestSender>
 StarterAndroid::GetTriggerScriptRequestSenderToInject() {
   DCHECK(GetFeatureModuleInstalled());
-  jlong jtest_service_request_sender_to_inject =
-      Java_AutofillAssistantServiceInjector_getServiceRequestSenderToInject(
-          base::android::AttachCurrentThread());
-  std::unique_ptr<ServiceRequestSender> test_service_request_sender;
-  if (jtest_service_request_sender_to_inject) {
-    test_service_request_sender.reset(static_cast<ServiceRequestSender*>(
-        reinterpret_cast<void*>(jtest_service_request_sender_to_inject)));
-  }
-  return test_service_request_sender;
+  return ui_controller_android_utils::GetServiceRequestSenderToInject(
+      base::android::AttachCurrentThread());
 }
 
 WebsiteLoginManager* StarterAndroid::GetWebsiteLoginManager() const {
@@ -136,7 +128,7 @@ void StarterAndroid::OnActivityAttachmentChanged(
 
   // Notify the starter. Some flows are only available in CCT or in regular tab,
   // so we need to cancel ongoing flows if they are no longer supported.
-  starter_->CheckSettings();
+  starter_->OnDependenciesInvalidated();
 }
 
 bool StarterAndroid::GetIsFirstTimeUser() const {
@@ -228,6 +220,16 @@ bool StarterAndroid::GetIsCustomTab() const {
   return ui_controller_android_utils::IsCustomTab(web_contents_);
 }
 
+bool StarterAndroid::GetIsTabCreatedByGSA() const {
+  if (!java_object_) {
+    // Failsafe, should never happen.
+    DCHECK(false);
+    return false;
+  }
+  return Java_Starter_getIsTabCreatedByGSA(base::android::AttachCurrentThread(),
+                                           java_object_);
+}
+
 void StarterAndroid::CreateJavaDependenciesIfNecessary() {
   if (java_dependencies_) {
     return;
@@ -244,10 +246,13 @@ void StarterAndroid::Start(
     const base::android::JavaRef<jstring>& jexperiment_ids,
     const base::android::JavaRef<jobjectArray>& jparameter_names,
     const base::android::JavaRef<jobjectArray>& jparameter_values,
+    const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_names,
+    const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_values,
     const base::android::JavaRef<jstring>& jinitial_url) {
   DCHECK(starter_);
   auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
       env, web_contents_, jexperiment_ids, jparameter_names, jparameter_values,
+      jdevice_only_parameter_names, jdevice_only_parameter_values,
       /* onboarding_shown = */ false, /* is_direct_action = */ false,
       jinitial_url);
 
@@ -263,18 +268,10 @@ void StarterAndroid::StartRegularScript(
   DCHECK(client_android);
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  jlong jtest_service_to_inject =
-      Java_AutofillAssistantServiceInjector_getServiceToInject(
-          env, reinterpret_cast<intptr_t>(client_android));
-  std::unique_ptr<Service> test_service = nullptr;
-  if (jtest_service_to_inject) {
-    test_service.reset(static_cast<Service*>(
-        reinterpret_cast<void*>(jtest_service_to_inject)));
-  }
-
   CreateJavaDependenciesIfNecessary();
   client_android->Start(
-      url, std::move(trigger_context), std::move(test_service),
+      url, std::move(trigger_context),
+      ui_controller_android_utils::GetServiceToInject(env, client_android),
       Java_AssistantDependenciesImpl_transferOnboardingOverlayCoordinator(
           env, java_dependencies_),
       trigger_script);
@@ -296,6 +293,6 @@ bool StarterAndroid::IsRegularScriptVisible() const {
   return client_android->IsVisible();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(StarterAndroid)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(StarterAndroid);
 
 }  // namespace autofill_assistant

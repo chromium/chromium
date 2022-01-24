@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -38,7 +37,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_prefs.h"
-#include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/fake_arc_session.h"
@@ -48,7 +47,7 @@
 #include "components/policy/core/common/policy_switches.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -83,6 +82,10 @@ class ArcPlayStoreDisabledWaiter : public ArcSessionManagerObserver {
  public:
   ArcPlayStoreDisabledWaiter() { ArcSessionManager::Get()->AddObserver(this); }
 
+  ArcPlayStoreDisabledWaiter(const ArcPlayStoreDisabledWaiter&) = delete;
+  ArcPlayStoreDisabledWaiter& operator=(const ArcPlayStoreDisabledWaiter&) =
+      delete;
+
   ~ArcPlayStoreDisabledWaiter() override {
     ArcSessionManager::Get()->RemoveObserver(this);
   }
@@ -103,13 +106,15 @@ class ArcPlayStoreDisabledWaiter : public ArcSessionManagerObserver {
   }
 
   base::RunLoop* run_loop_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreDisabledWaiter);
 };
 
 class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
  protected:
   ArcSessionManagerTest() = default;
+
+  ArcSessionManagerTest(const ArcSessionManagerTest&) = delete;
+  ArcSessionManagerTest& operator=(const ArcSessionManagerTest&) = delete;
+
   ~ArcSessionManagerTest() override = default;
 
   // MixinBasedInProcessBrowserTest:
@@ -149,6 +154,8 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
 
     identity_test_environment_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        GetFakeUserManager()->GetPrimaryUser(), profile_.get());
 
     // Seed account info properly.
     identity_test_env()->MakePrimaryAccountAvailable(
@@ -223,14 +230,12 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
   }
 
  private:
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ConsumerAccount) {
@@ -286,9 +291,10 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ArcDisabledInLockedFullscreen) {
           .Build());
   function->set_extension(extension.get());
 
-  extension_function_test_utils::RunFunctionAndReturnSingleResult(
-      function.get(), base::StringPrintf(kStateLockedFullscreen, window_id),
-      browser());
+  std::unique_ptr<base::Value> value(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), base::StringPrintf(kStateLockedFullscreen, window_id),
+          browser()));
 
   ASSERT_EQ(ArcSessionManager::State::STOPPED,
             ArcSessionManager::Get()->state());

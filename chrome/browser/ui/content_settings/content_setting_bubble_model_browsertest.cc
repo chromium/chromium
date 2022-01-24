@@ -78,7 +78,7 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
     // Open a tab for which we will invoke the media bubble.
     GURL url(
         https_server_->GetURL("/content_setting_bubble/mixed_script.html"));
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     return GetActiveTab();
   }
 
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelPopupTest,
   base::HistogramTester histograms;
   histograms.ExpectTotalCount("ContentSettings.Popups", 0);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   histograms.ExpectBucketCount(
         "ContentSettings.Popups",

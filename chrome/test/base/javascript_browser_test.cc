@@ -8,7 +8,6 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/js_test_api.h"
 #include "components/nacl/common/buildflags.h"
@@ -20,12 +19,35 @@ void JavaScriptBrowserTest::AddLibrary(const base::FilePath& library_path) {
 }
 
 JavaScriptBrowserTest::JavaScriptBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#endif
 }
 
 JavaScriptBrowserTest::~JavaScriptBrowserTest() {
 }
 
+void JavaScriptBrowserTest::SetUpInProcessBrowserTestFixture() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash_starter_ = std::make_unique<test::AshBrowserTestStarter>();
+  if (ash_starter_->HasLacrosArgument())
+    ASSERT_TRUE(ash_starter_->PrepareEnvironmentForLacros());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void JavaScriptBrowserTest::TearDownInProcessBrowserTestFixture() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash_starter_->HasLacrosArgument())
+    ash_starter_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 void JavaScriptBrowserTest::SetUpOnMainThread() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash_starter_->HasLacrosArgument())
+    ash_starter_->StartLacros(this);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   JsTestApiConfig config;
   library_search_paths_.push_back(config.search_path);
   DCHECK(user_libraries_.empty());

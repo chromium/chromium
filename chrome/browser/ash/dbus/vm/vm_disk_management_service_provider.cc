@@ -195,6 +195,7 @@ void VmDiskManagementServiceProvider::OnGetDiskInfo(
   } else {
     payload.set_available_space(response_or_error.Value().available_bytes);
     payload.set_expandable_space(response_or_error.Value().expandable_bytes);
+    payload.set_disk_size(response_or_error.Value().disk_size);
   }
   // Reply to the original D-Bus method call.
   dbus::MessageWriter writer(response.get());

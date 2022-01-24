@@ -49,7 +49,7 @@ public class StartupTabPreloaderTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testStartupTabPreloaderWithViewIntent() throws Exception {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -65,7 +65,7 @@ public class StartupTabPreloaderTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @EnableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     @DisabledTest(message = "https://crbug.com/1012479")
     public void testStartupTabPreloaderWithViewIntentFeatureDisabled() throws Exception {
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -82,7 +82,7 @@ public class StartupTabPreloaderTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testStartupTabPreloaderWithIncognitoViewIntent() throws Exception {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -99,7 +99,7 @@ public class StartupTabPreloaderTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testStartupTabPreloaderWithMainIntentWithUrl() throws Exception {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -115,7 +115,7 @@ public class StartupTabPreloaderTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testStartupTabPreloaderWithMainIntentWithoutUrl() throws Exception {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
@@ -130,7 +130,7 @@ public class StartupTabPreloaderTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testStartupTabPreloaderWithMultipleViewIntents() throws Exception {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);

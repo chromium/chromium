@@ -136,9 +136,9 @@ void PlatformAppNavigationRedirectorBrowserTest::TestNavigationInTab(
 
   ExtensionTestMessageListener handler_listener(handler_start_message, false);
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(base::StringPrintf(
-                     "/extensions/platform_apps/%s", launcher_page)));
+                     "/extensions/platform_apps/%s", launcher_page))));
 
   ASSERT_TRUE(handler_listener.WaitUntilSatisfied());
 
@@ -158,9 +158,9 @@ void PlatformAppNavigationRedirectorBrowserTest::TestMismatchingNavigationInTab(
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TitleWatcher title_watcher(tab, success_title);
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(base::StringPrintf(
-                     "/extensions/platform_apps/%s", launcher_page)));
+                     "/extensions/platform_apps/%s", launcher_page))));
 
   ASSERT_EQ(success_title, title_watcher.WaitAndGetTitle());
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
@@ -183,9 +183,9 @@ void PlatformAppNavigationRedirectorBrowserTest::TestNegativeXhrInTab(
   content::TitleWatcher title_watcher(tab, success_title);
   title_watcher.AlsoWaitForTitle(failure_title);
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(base::StringPrintf(
-                     "/extensions/platform_apps/%s", launcher_page)));
+                     "/extensions/platform_apps/%s", launcher_page))));
 
   ASSERT_EQ(success_title, title_watcher.WaitAndGetTitle());
   ASSERT_EQ(1, browser()->tab_strip_model()->count());

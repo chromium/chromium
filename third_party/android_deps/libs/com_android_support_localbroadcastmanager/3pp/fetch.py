@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/android/support/localbroadcastmanager/28.0.0/localbroadcastmanager-28.0.0.aar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/support/localbroadcastmanager/28.0.0/localbroadcastmanager-28.0.0.aar'
 _FILE_NAME = 'localbroadcastmanager-28.0.0.aar'
 _FILE_VERSION = '28.0.0'
 

@@ -34,14 +34,14 @@ class AutofillInternalsWebUIBrowserTest : public InProcessBrowserTest {
   void SpinRunLoop() {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(20));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(20));
     run_loop.Run();
   }
 };
 
 IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest, ResetCache) {
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://autofill-internals"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://autofill-internals")));
 
   // Wait for reset-fake-button to become visible
   constexpr char kGetResetButtonDisplayStyle[] =

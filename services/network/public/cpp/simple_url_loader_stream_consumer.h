@@ -19,6 +19,10 @@ namespace network {
 // will be called during SimpleURLLoader destruction.
 class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoaderStreamConsumer {
  public:
+  SimpleURLLoaderStreamConsumer(const SimpleURLLoaderStreamConsumer&) = delete;
+  SimpleURLLoaderStreamConsumer& operator=(
+      const SimpleURLLoaderStreamConsumer&) = delete;
+
   // Called as body data is received.
   //
   // More data will not be read until |resume| is called. It's safe to call
@@ -61,9 +65,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoaderStreamConsumer {
  protected:
   SimpleURLLoaderStreamConsumer() {}
   virtual ~SimpleURLLoaderStreamConsumer() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SimpleURLLoaderStreamConsumer);
 };
 
 }  // namespace network

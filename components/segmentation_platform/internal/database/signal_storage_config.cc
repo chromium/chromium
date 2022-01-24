@@ -91,7 +91,7 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirement(
       continue;
 
     if (metadata_utils::ValidateMetadataFeature(feature) !=
-        metadata_utils::ValidationResult::VALIDATION_SUCCESS) {
+        metadata_utils::ValidationResult::kValidationSuccess) {
       continue;
     }
 
@@ -101,7 +101,7 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirement(
       return false;
 
     base::Time collection_start_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromSeconds(config->collection_start_time_s()));
+        base::Seconds(config->collection_start_time_s()));
     if (clock_->Now() - collection_start_time < min_signal_collection_length)
       return false;
   }
@@ -120,7 +120,7 @@ void SignalStorageConfig::OnSignalCollectionStarted(
   for (int i = 0; i < model_metadata.features_size(); ++i) {
     const proto::Feature& feature = model_metadata.features(i);
     if (metadata_utils::ValidateMetadataFeature(feature) !=
-        metadata_utils::ValidationResult::VALIDATION_SUCCESS) {
+        metadata_utils::ValidationResult::kValidationSuccess) {
       continue;
     }
 
@@ -158,9 +158,9 @@ void SignalStorageConfig::GetSignalsForCleanup(
   for (int i = 0; i < config_.signals_size(); ++i) {
     const auto& signal_config = config_.signals(i);
     base::Time collection_start_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromSeconds(signal_config.collection_start_time_s()));
+        base::Seconds(signal_config.collection_start_time_s()));
     base::TimeDelta required_storage_length =
-        base::TimeDelta::FromSeconds(signal_config.storage_length_s());
+        base::Seconds(signal_config.storage_length_s());
     base::Time earliest_needed_timestamp =
         clock_->Now() - required_storage_length;
 
@@ -219,8 +219,7 @@ void SignalStorageConfig::WriteToDB() {
 
   entries_to_save->emplace_back(std::make_pair(kDatabaseKey, config_));
   database_->UpdateEntries(std::move(entries_to_save),
-                           std::move(keys_to_delete),
-                           std::move(base::DoNothing()));
+                           std::move(keys_to_delete), base::DoNothing());
 }
 
 }  // namespace segmentation_platform

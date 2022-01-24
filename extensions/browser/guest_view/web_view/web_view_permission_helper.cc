@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/user_metrics.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/guest_view/browser/guest_view_event.h"
@@ -149,8 +149,7 @@ void RecordUserInitiatedUMA(
 } // namespace
 
 WebViewPermissionHelper::WebViewPermissionHelper(WebViewGuest* web_view_guest)
-    : content::WebContentsObserver(web_view_guest->web_contents()),
-      next_permission_request_id_(guest_view::kInstanceIDNone),
+    : next_permission_request_id_(guest_view::kInstanceIDNone),
       web_view_guest_(web_view_guest),
       default_media_access_permission_(false) {
   web_view_permission_helper_delegate_.reset(
@@ -177,15 +176,6 @@ WebViewPermissionHelper* WebViewPermissionHelper::FromWebContents(
   return web_view_guest ? web_view_guest->web_view_permission_helper()
                         : nullptr;
 }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-bool WebViewPermissionHelper::OnMessageReceived(
-    const IPC::Message& message,
-    content::RenderFrameHost* render_frame_host) {
-  return web_view_permission_helper_delegate_->OnMessageReceived(
-      message, render_frame_host);
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 void WebViewPermissionHelper::RequestMediaAccessPermission(
     content::WebContents* source,

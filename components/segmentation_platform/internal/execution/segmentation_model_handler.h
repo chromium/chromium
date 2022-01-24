@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "components/optimization_guide/core/model_executor.h"
+#include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {

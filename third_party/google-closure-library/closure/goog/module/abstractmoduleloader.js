@@ -1,59 +1,98 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview An interface for module loading.
  */
 
-goog.provide('goog.module.AbstractModuleLoader');
+goog.module('goog.module.AbstractModuleLoader');
+goog.module.declareLegacyNamespace();
 
-/** @suppress {extraRequire} */
-goog.require('goog.module');
-goog.require('goog.module.ModuleInfo');
-
+const ModuleInfo = goog.requireType('goog.module.ModuleInfo');
 
 /**
  * An interface that loads JavaScript modules.
  * @interface
  */
-goog.module.AbstractModuleLoader = function() {};
+class AbstractModuleLoader {
+  constructor() {
+    /**
+     * Whether or not the implementation supports extra edges.
+     * @type {boolean|undefined}
+     */
+    this.supportsExtraEdges;
+  }
 
+  /**
+   * Loads a list of JavaScript modules.
+   *
+   * @param {!Array<string>} ids The module ids in dependency order.
+   * @param {!Object<string, !ModuleInfo>} moduleInfoMap A mapping
+   *     from module id to ModuleInfo object.
+   * @param {!AbstractModuleLoader.LoadOptions=} loadOptions
+   */
+  loadModules(ids, moduleInfoMap, loadOptions) {};
+
+
+  /**
+   * Pre-fetches a JavaScript module.
+   *
+   * @param {string} id The module id.
+   * @param {!ModuleInfo} moduleInfo The module info.
+   */
+  prefetchModule(id, moduleInfo) {};
+}
 
 /**
- * Loads a list of JavaScript modules.
- *
- * @param {Array<string>} ids The module ids in dependency order.
- * @param {!Object<string, !goog.module.ModuleInfo>} moduleInfoMap A mapping
- *     from module id to ModuleInfo object.
- * @param {function()?=} opt_successFn The callback if module loading is a
- *     success.
- * @param {function(?number)?=} opt_errorFn The callback if module loading is an
- *     error.
- * @param {function()?=} opt_timeoutFn The callback if module loading times out.
- * @param {boolean=} opt_forceReload Whether to bypass cache while loading the
- *     module.
+ * A map of extra runtime module dependencies.
+ * Since the polyfills for the ES6 Map/Set classes would cause a performance
+ * regression, we are using plain Javascript objects to mimic their
+ * functionality. The outer object will map a moduleId to another object, the
+ * keys of which are the moduleIds of the modules it depends on: that is, if
+ * `map['a']['b']` is true then module 'a' depends on module 'b'.
+ * @typedef {!Object<!Object<boolean>>}
  */
-goog.module.AbstractModuleLoader.prototype.loadModules = function(
-    ids, moduleInfoMap, opt_successFn, opt_errorFn, opt_timeoutFn,
-    opt_forceReload) {};
-
+AbstractModuleLoader.ExtraEdgesMap;
 
 /**
- * Pre-fetches a JavaScript module.
- *
- * @param {string} id The module id.
- * @param {!goog.module.ModuleInfo} moduleInfo The module info.
+ * Optional parameters for the loadModules method.
+ * @record
  */
-goog.module.AbstractModuleLoader.prototype.prefetchModule = function(
-    id, moduleInfo) {};
+AbstractModuleLoader.LoadOptions = class {
+  constructor() {
+    /**
+     * A map of extra runtime module dependencies.
+     * @type {!AbstractModuleLoader.ExtraEdgesMap|undefined}
+     */
+    this.extraEdges;
+
+    /**
+     * Whether to bypass cache while loading the module.
+     * @const {boolean|undefined}
+     */
+    this.forceReload;
+
+    /**
+     * The callback if module loading is an error.
+     * @const {(function(?number): void)|undefined}
+     */
+    this.onError;
+
+    /**
+     * The callback if module loading is a success.
+     * @const {(function(): void)|undefined}
+     */
+    this.onSuccess;
+
+    /**
+     * The callback if module loading times out.
+     * @const {(function(): void)|undefined}
+     */
+    this.onTimeout;
+  }
+};
+
+exports = AbstractModuleLoader;

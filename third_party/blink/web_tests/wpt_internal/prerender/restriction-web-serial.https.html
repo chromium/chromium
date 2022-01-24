@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <!--
 This file cannot be upstreamed to WPT until:
-* startPrerendering() usage is replaced with a WebDriver API
 * The defer expectation is replaced with rejecting the promise with
   “SecurityError” to match the specification at:
-  https://jeremyroman.github.io/alternate-loading-modes/#patch-serial
+  https://wicg.github.io/nav-speculation/prerendering.html#patch-serial
 -->
 <title>Access to the Web Serial API is deferred</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>

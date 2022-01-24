@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_VOLUME_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_VOLUME_MANAGER_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -29,6 +28,9 @@ class VolumeManagerFactory : public BrowserContextKeyedServiceFactory {
 
   static VolumeManagerFactory* GetInstance();
 
+  VolumeManagerFactory(const VolumeManagerFactory&) = delete;
+  VolumeManagerFactory& operator=(const VolumeManagerFactory&) = delete;
+
  protected:
   // BrowserContextKeyedServiceFactory overrides:
   content::BrowserContext* GetBrowserContextToUse(
@@ -44,8 +46,6 @@ class VolumeManagerFactory : public BrowserContextKeyedServiceFactory {
 
   VolumeManagerFactory();
   ~VolumeManagerFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(VolumeManagerFactory);
 };
 
 }  // namespace file_manager

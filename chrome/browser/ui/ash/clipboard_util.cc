@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <vector>
 
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/base64.h"
@@ -29,35 +30,44 @@
 namespace clipboard_util {
 namespace {
 
-void CopyAndMaintainClipboard(
-    std::unique_ptr<ui::ClipboardData> data_with_image,
-    const std::string& markup_content,
-    scoped_refptr<base::RefCountedString> png_data,
+/*
+ * `clipboard_sequence` is the versioning of the clipboard when we start our
+ * copy operation.
+ * `decoded_image` and `html` are different formats of the same image which we
+ * are attempting to copy to the clipboard. */
+void CopyDecodedImageToClipboard(
+    ui::ClipboardSequenceNumberToken clipboard_sequence,
+    std::string html,
     const SkBitmap& decoded_image) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  data_with_image->set_markup_data(markup_content);
-  data_with_image->SetBitmapData(decoded_image);
-  ui::ClipboardNonBacked::GetForCurrentThread()->WriteClipboardData(
-      std::move(data_with_image));
+  ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+  clipboard_writer.WriteHTML(base::UTF8ToUTF16(html), std::string());
+  clipboard_writer.WriteImage(decoded_image);
 }
 
-/*
- * `maintain_clipboard` indicates whether the clipboard state should attempt to
- * be maintained.
- * `clipboard_sequence` is the versioning of the clipboard when we start our
- * copy operation.
- * `callback` alerts whether or not the image was copied to the clipboard while
- * meeting the `maintain_clipboard` state. If the image is copied it will return
- * true, otherwise if the image is not copied because the `clipboard_sequence`
- * does not match, it will return false.
- * `decoded_image` is the image we are attempting to copy to the clipboard.
- */
-void CopyImageToClipboard(bool maintain_clipboard,
-                          ui::ClipboardSequenceNumberToken clipboard_sequence,
-                          base::OnceCallback<void(bool)> callback,
-                          scoped_refptr<base::RefCountedString> png_data,
-                          const SkBitmap& decoded_image) {
+}  // namespace
+
+void ReadFileAndCopyToClipboardLocal(const base::FilePath& local_file) {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+  std::string png_data;
+  if (!base::ReadFileToString(local_file, &png_data)) {
+    LOG(ERROR) << "Failed to read the screenshot file: " << local_file.value();
+    return;
+  }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DecodeImageFileAndCopyToClipboard,
+                     /*clipboard_sequence=*/ui::ClipboardSequenceNumberToken(),
+                     std::move(png_data)));
+}
+
+void DecodeImageFileAndCopyToClipboard(
+    ui::ClipboardSequenceNumberToken clipboard_sequence,
+    std::string png_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Send both HTML and and Image formats to clipboard. HTML format is needed
@@ -67,79 +77,18 @@ void CopyImageToClipboard(bool maintain_clipboard,
   static const char kImageClipboardFormatSuffix[] = "'>";
 
   std::string encoded =
-      base::Base64Encode(base::as_bytes(base::make_span(png_data->data())));
+      base::Base64Encode(base::as_bytes(base::make_span(png_data)));
   std::string html = base::StrCat(
       {kImageClipboardFormatPrefix, encoded, kImageClipboardFormatSuffix});
-
-  if (!maintain_clipboard ||
-      !ui::ClipboardNonBacked::GetForCurrentThread()->GetClipboardData(
-          nullptr)) {
-    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteHTML(base::UTF8ToUTF16(html), std::string());
-    clipboard_writer.WriteImage(decoded_image);
-    std::move(callback).Run(true);
-    return;
-  }
-
-  ui::ClipboardSequenceNumberToken current_sequence =
-      ui::ClipboardNonBacked::GetForCurrentThread()->GetSequenceNumber(
-          ui::ClipboardBuffer::kCopyPaste);
-  if (current_sequence != clipboard_sequence) {
-    // Clipboard data changed and this copy operation is no longer relevant.
-    std::move(callback).Run(false);
-    return;
-  }
-  std::unique_ptr<ui::ClipboardData> current_data =
-      std::make_unique<ui::ClipboardData>(
-          *ui::ClipboardNonBacked::GetForCurrentThread()->GetClipboardData(
-              nullptr));
-
-  // Before modifying the clipboard, remove the old entry in ClipboardHistory.
-  // CopyAndMaintainClipboard will write to the clipboard a second time,
-  // creating a new entry in clipboard history.
-  auto* clipboard_history = ash::ClipboardHistoryController::Get();
-  if (clipboard_history) {
-    clipboard_history->DeleteClipboardItemByClipboardData(current_data.get());
-  }
-  CopyAndMaintainClipboard(std::move(current_data), html, png_data,
-                           decoded_image);
-  std::move(callback).Run(true);
-}
-
-}  // namespace
-
-void ReadFileAndCopyToClipboardLocal(const base::FilePath& local_file) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-  auto png_data = base::MakeRefCounted<base::RefCountedString>();
-  if (!base::ReadFileToString(local_file, &(png_data->data()))) {
-    LOG(ERROR) << "Failed to read the screenshot file: " << local_file.value();
-    return;
-  }
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DecodeImageFileAndCopyToClipboard,
-                     /*clipboard_sequence=*/ui::ClipboardSequenceNumberToken(),
-                     /*maintain_clipboard=*/false, png_data,
-                     base::DoNothing::Once<bool>()));
-}
-
-void DecodeImageFileAndCopyToClipboard(
-    ui::ClipboardSequenceNumberToken clipboard_sequence,
-    bool maintain_clipboard,
-    scoped_refptr<base::RefCountedString> png_data,
-    base::OnceCallback<void(bool)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Decode the image in sandboxed process because |png_data| comes from
   // external storage.
   data_decoder::DecodeImageIsolated(
-      std::vector<uint8_t>(png_data->data().begin(), png_data->data().end()),
-      data_decoder::mojom::ImageCodec::kDefault, false,
-      data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
-      base::BindOnce(&CopyImageToClipboard, maintain_clipboard,
-                     clipboard_sequence, std::move(callback), png_data));
+      base::as_bytes(base::make_span(png_data)),
+      data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
+      gfx::Size(),
+      base::BindOnce(&CopyDecodedImageToClipboard, clipboard_sequence,
+                     std::move(html)));
 }
 }  // namespace clipboard_util

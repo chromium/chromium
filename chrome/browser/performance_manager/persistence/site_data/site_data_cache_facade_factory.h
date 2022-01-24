@@ -49,6 +49,10 @@ class SiteDataCacheFacadeTest;
 //     sequence.
 class SiteDataCacheFacadeFactory : public BrowserContextKeyedServiceFactory {
  public:
+  SiteDataCacheFacadeFactory(const SiteDataCacheFacadeFactory&) = delete;
+  SiteDataCacheFacadeFactory& operator=(const SiteDataCacheFacadeFactory&) =
+      delete;
+
   ~SiteDataCacheFacadeFactory() override;
 
   static SiteDataCacheFacadeFactory* GetInstance();
@@ -89,8 +93,6 @@ class SiteDataCacheFacadeFactory : public BrowserContextKeyedServiceFactory {
 
   // The number of SiteDataCacheFacade currently in existence.
   size_t service_instance_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataCacheFacadeFactory);
 };
 
 }  // namespace performance_manager

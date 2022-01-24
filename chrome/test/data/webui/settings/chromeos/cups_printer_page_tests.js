@@ -11,7 +11,7 @@
 // #import {createCupsPrinterInfo,createPrinterListEntry} from './cups_printer_test_utils.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-// #import {flushTasks} from '../../test_util.m.js';
+// #import {flushTasks} from '../../test_util.js';
 // #import {MojoInterfaceProviderImpl, MojoInterfaceProvider} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';

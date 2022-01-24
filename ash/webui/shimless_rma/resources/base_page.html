@@ -5,6 +5,7 @@
   }
 
   :host([orientation=row]) .page-wrapper {
+    align-items: flex-start;
     display: flex;
     flex-direction: column;
   }
@@ -20,12 +21,11 @@
   }
 
   :host([orientation=column]) .header {
-    width: 900px;
-    padding-right: 50px;
+    flex-grow: 1;
   }
 
   :host([orientation=column]) .body {
-    width: 100%;
+    flex-basis: 500px;
   }
 
 </style>

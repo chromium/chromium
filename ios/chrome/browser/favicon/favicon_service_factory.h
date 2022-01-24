@@ -31,6 +31,9 @@ class FaviconServiceFactory : public BrowserStateKeyedServiceFactory {
   // registered with SetTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
+  FaviconServiceFactory(const FaviconServiceFactory&) = delete;
+  FaviconServiceFactory& operator=(const FaviconServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<FaviconServiceFactory>;
 
@@ -41,8 +44,6 @@ class FaviconServiceFactory : public BrowserStateKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconServiceFactory);
 };
 
 }  // namespace ios

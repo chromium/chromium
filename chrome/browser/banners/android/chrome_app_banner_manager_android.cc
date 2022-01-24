@@ -15,15 +15,16 @@
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
 #include "chrome/browser/banners/android/jni_headers/AppBannerInProductHelpControllerProvider_jni.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/webapps/android/features.h"
 #include "chrome/browser/webapps/android/pwa_bottom_sheet_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
@@ -54,11 +55,7 @@ InstallableParams
 ChromeAppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
   InstallableParams params =
       AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck();
-  if (base::FeatureList::IsEnabled(
-          webapps::features::kPwaInstallUseBottomSheet)) {
-    params.fetch_screenshots = true;
-  }
-
+  params.fetch_screenshots = true;
   return params;
 }
 
@@ -118,12 +115,18 @@ void ChromeAppBannerManagerAndroid::ShowBannerUi(
 bool ChromeAppBannerManagerAndroid::MaybeShowPwaBottomSheetController(
     bool expand_sheet,
     WebappInstallSource install_source) {
+  // Do not show the peeked bottom sheet if it was recently dismissed.
+  if (!expand_sheet && AppBannerSettingsHelper::WasBannerRecentlyBlocked(
+                           web_contents(), validated_url_, GetAppIdentifier(),
+                           GetCurrentTime())) {
+    return false;
+  }
+
   auto a2hs_params = CreateAddToHomescreenParams(install_source);
   return PwaBottomSheetController::MaybeShow(
       web_contents(), GetAppName(), primary_icon_, has_maskable_primary_icon_,
-      manifest_.start_url, screenshots_,
-      manifest_.description.value_or(std::u16string()), expand_sheet,
-      std::move(a2hs_params),
+      manifest().start_url, screenshots_, manifest().description.value_or(u""),
+      expand_sheet, std::move(a2hs_params),
       base::BindRepeating(&ChromeAppBannerManagerAndroid::OnInstallEvent,
                           ChromeAppBannerManagerAndroid::GetAndroidWeakPtr()));
 }
@@ -174,6 +177,6 @@ bool ChromeAppBannerManagerAndroid::MaybeShowInProductHelp() const {
   return true;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAppBannerManagerAndroid)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAppBannerManagerAndroid);
 
 }  // namespace webapps

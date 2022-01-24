@@ -82,6 +82,9 @@ enum ShellWindowId {
   // The container for the app list.
   kShellWindowId_AppListContainer,
 
+  // The container for the floating window.
+  kShellWindowId_FloatContainer,
+
   // The container for the home screen, e.g. the app list in tablet mode.
   kShellWindowId_HomeScreenContainer,
 
@@ -198,6 +201,13 @@ enum NonContainerWindowId {
   // Only one window exists whenever the display settings page is open with
   // multiple displays connected.
   kShellWindowId_DisplayIdentificationHighlightWindow,
+
+  // The window specified as the owner of the folder selection menu for capture
+  // mode, which will be a transient window parent of the about to be created
+  // dialog window. This is needed in order to prevent
+  // |SelectFileDialogExtension| from favoring to parent the dialog to a browser
+  // window (if one exists).
+  kShellWindowId_CaptureModeFolderSelectionDialogOwner,
 };
 
 // A list of system modal container IDs. The order of the list is important that

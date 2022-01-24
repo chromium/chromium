@@ -55,6 +55,24 @@ public class ChromeLocalizationUtils {
         int NUM_ENTRIES = 4;
     }
 
+    // Constants used to log the locale update status. Must stay in sync with values in the
+    // LanguageUsage.UI.Android.LocaleUpdateStatus enum. These values are persisted to logs. Entries
+    // should not be renumbered and numeric values should never be reused.
+    @IntDef({LocaleUpdateStatus.NO_CHANGE, LocaleUpdateStatus.OVERRIDDEN_TOP_CHANGED,
+            LocaleUpdateStatus.OVERRIDDEN_OTHERS_CHANGED,
+            LocaleUpdateStatus.NO_OVERRIDE_TOP_CHANGED,
+            LocaleUpdateStatus.NO_OVERRIDE_OTHERS_CHANGED, LocaleUpdateStatus.FIRST_RUN})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface LocaleUpdateStatus {
+        int NO_CHANGE = 0;
+        int OVERRIDDEN_TOP_CHANGED = 1;
+        int OVERRIDDEN_OTHERS_CHANGED = 2;
+        int NO_OVERRIDE_TOP_CHANGED = 3;
+        int NO_OVERRIDE_OTHERS_CHANGED = 4;
+        int FIRST_RUN = 5;
+        int NUM_ENTRIES = 6;
+    }
+
     /**
      * @return the current Chromium locale used to display UI elements.
      *
@@ -228,6 +246,56 @@ public class ChromeLocalizationUtils {
             return UiCorrectTypes.ONLY_JAVA_CORRECT;
         }
         return UiCorrectTypes.INCORRECT;
+    }
+
+    /**
+     * Records the status of the previous system locale compared to the new system locale. The
+     * histogram buckets are split based on if the Chrome app language is overridden.
+     * @param previousLocale Comma separated string of the previous system locales.
+     * @param currentLocale Comma separated string of the current system locales.
+     */
+    public static void recordLocaleUpdateStatus(String previousLocale, String currentLocale) {
+        boolean isOverridden = GlobalAppLocaleController.getInstance().isOverridden();
+        @LocaleUpdateStatus
+        int status = getLocaleUpdateStatus(previousLocale, currentLocale, isOverridden);
+        RecordHistogram.recordEnumeratedHistogram(
+                "LanguageUsage.UI.Android.IsLocaleUpdated", status, LocaleUpdateStatus.NUM_ENTRIES);
+    }
+
+    /**
+     * Returns the status of the current system locale compared to a previous locale. If the
+     * previous locale is empty returns |LocaleUpdateStatus.DO_NOT_RECORD| since this is the first
+     * run.
+     * @param previousLocale Comma separated string of the previous system locales.
+     * @param currentLocale Comma separated string of the current system locales.
+     * @param isOverridden True if the Chrome app language is overridden.
+     * @return The @LocaleUpdateStatus.
+     */
+    @VisibleForTesting
+    static @LocaleUpdateStatus int getLocaleUpdateStatus(
+            String previousLocale, String currentLocale, boolean isOverridden) {
+        if (TextUtils.isEmpty(previousLocale) || TextUtils.isEmpty(currentLocale)) {
+            return LocaleUpdateStatus.FIRST_RUN;
+        }
+        if (TextUtils.equals(previousLocale, currentLocale)) {
+            return LocaleUpdateStatus.NO_CHANGE;
+        }
+
+        String[] previousLocaleList = previousLocale.split(",");
+        String[] currentLocaleList = currentLocale.split(",");
+
+        if (isOverridden) {
+            if (TextUtils.equals(previousLocaleList[0], currentLocaleList[0])) {
+                return LocaleUpdateStatus.OVERRIDDEN_OTHERS_CHANGED;
+            }
+            return LocaleUpdateStatus.OVERRIDDEN_TOP_CHANGED;
+        }
+
+        // Start no override
+        if (TextUtils.equals(previousLocaleList[0], currentLocaleList[0])) {
+            return LocaleUpdateStatus.NO_OVERRIDE_OTHERS_CHANGED;
+        }
+        return LocaleUpdateStatus.NO_OVERRIDE_TOP_CHANGED;
     }
 
     private ChromeLocalizationUtils() {

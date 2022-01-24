@@ -35,6 +35,9 @@ class HighlighterView : public fast_ink::FastInkView {
  public:
   static const gfx::SizeF kPenTipSize;
 
+  HighlighterView(const HighlighterView&) = delete;
+  HighlighterView& operator=(const HighlighterView&) = delete;
+
   ~HighlighterView() override;
 
   // Function to create a container Widget, initialize |highlighter_view| and
@@ -76,8 +79,6 @@ class HighlighterView : public fast_ink::FastInkView {
   SkColor pen_color_ = fast_ink::FastInkPoints::kDefaultColor;
 
   base::WeakPtrFactory<HighlighterView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HighlighterView);
 };
 
 }  // namespace ash

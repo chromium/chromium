@@ -16,13 +16,14 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -32,17 +33,19 @@ import org.chromium.ui.display.DisplayAndroidManager;
 /**
  * Tests that {@link CustomTabActivity} launches into the correct color scheme.
  */
+// clang-format off
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
+})
+// clang-format on
 public class LaunchesWithColorSchemeTest {
     private ActivityScenario<CustomTabActivity> mActivityScenario;
 
-    @Before
-    public void setUp() {
-        // Command line switches required to use ActivityScenario<ChromeTabbedActivity>.
-        CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE);
-        CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
-    }
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     @After
     public void tearDown() {

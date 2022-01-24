@@ -28,7 +28,7 @@ BluetoothHandler::BluetoothHandler() {
 BluetoothHandler::~BluetoothHandler() {}
 
 void BluetoothHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kIsDeviceBlockedByPolicy,
       base::BindRepeating(&BluetoothHandler::HandleIsDeviceBlockedByPolicy,
                           base::Unretained(this)));
@@ -47,11 +47,9 @@ void BluetoothHandler::BluetoothDeviceAdapterReady(
 void BluetoothHandler::HandleIsDeviceBlockedByPolicy(
     const base::ListValue* args) {
   AllowJavascript();
-  std::string callback_id;
-  std::string address;
-  CHECK_EQ(2U, args->GetSize());
-  CHECK(args->GetString(0, &callback_id));
-  CHECK(args->GetString(1, &address));
+  CHECK_EQ(2U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
+  const std::string& address = args->GetList()[1].GetString();
 
   if (!bluetooth_adapter_) {
     BLUETOOTH_LOG(EVENT) << "Bluetooth adapter not available.";

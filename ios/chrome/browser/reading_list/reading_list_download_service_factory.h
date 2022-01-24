@@ -23,6 +23,11 @@ class ReadingListDownloadServiceFactory
       ChromeBrowserState* browser_state);
   static ReadingListDownloadServiceFactory* GetInstance();
 
+  ReadingListDownloadServiceFactory(const ReadingListDownloadServiceFactory&) =
+      delete;
+  ReadingListDownloadServiceFactory& operator=(
+      const ReadingListDownloadServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<ReadingListDownloadServiceFactory>;
 
@@ -34,8 +39,6 @@ class ReadingListDownloadServiceFactory
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListDownloadServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_READING_LIST_DOWNLOAD_SERVICE_FACTORY_H_

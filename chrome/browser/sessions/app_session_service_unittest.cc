@@ -74,13 +74,13 @@ class AppSessionServiceTest : public BrowserWithTestWindowTest {
     app_helper_.SetService(nullptr);
   }
 
-  void AppUpdateNavigation(const SessionID& window_id,
+  void AppUpdateNavigation(const SessionID& window_session_id,
                            const SessionID& tab_id,
                            const SerializedNavigationEntry& navigation,
                            bool select) {
-    app_service()->UpdateTabNavigation(window_id, tab_id, navigation);
+    app_service()->UpdateTabNavigation(window_session_id, tab_id, navigation);
     if (select) {
-      app_service()->SetSelectedNavigationIndex(window_id, tab_id,
+      app_service()->SetSelectedNavigationIndex(window_session_id, tab_id,
                                                 navigation.index());
     }
   }
@@ -191,19 +191,13 @@ TEST_F(AppSessionServiceTest, TwoApps) {
   ASSERT_EQ(1U, windows[0]->tabs.size());
   ASSERT_EQ(1U, windows[1]->tabs.size());
 
-  sessions::SessionTab* rt1 = nullptr;
-  sessions::SessionTab* rt2 = nullptr;
   if (windows[0]->window_id == app_window_id) {
     ASSERT_EQ(window2_id, windows[1]->window_id);
-    rt1 = windows[0]->tabs[0].get();
-    rt2 = windows[1]->tabs[0].get();
   } else {
     ASSERT_EQ(window2_id, windows[0]->window_id);
     ASSERT_EQ(window_id, windows[1]->window_id);
     ASSERT_EQ(ui::SHOW_STATE_MAXIMIZED, windows[0]->show_state);
     ASSERT_EQ(ui::SHOW_STATE_NORMAL, windows[1]->show_state);
-    rt1 = windows[1]->tabs[0].get();
-    rt2 = windows[0]->tabs[0].get();
   }
 }
 

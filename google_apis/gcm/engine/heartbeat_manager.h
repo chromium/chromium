@@ -40,6 +40,10 @@ class GCM_EXPORT HeartbeatManager : public base::PowerSuspendObserver {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner>
           maybe_power_wrapped_io_task_runner);
+
+  HeartbeatManager(const HeartbeatManager&) = delete;
+  HeartbeatManager& operator=(const HeartbeatManager&) = delete;
+
   ~HeartbeatManager() override;
 
   // Start the heartbeat logic.
@@ -137,8 +141,6 @@ class GCM_EXPORT HeartbeatManager : public base::PowerSuspendObserver {
   ReconnectCallback trigger_reconnect_callback_;
 
   base::WeakPtrFactory<HeartbeatManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HeartbeatManager);
 };
 
 }  // namespace gcm

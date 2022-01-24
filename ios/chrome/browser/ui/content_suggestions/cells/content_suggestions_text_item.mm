@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_text_item.h"
 
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_text_cell.h"
-#import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestion_identifier.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

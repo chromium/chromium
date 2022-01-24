@@ -26,6 +26,10 @@ class InitializeStoreTask : public Task {
  public:
   InitializeStoreTask(RequestQueueStore* store,
                       RequestQueueStore::InitializeCallback callback);
+
+  InitializeStoreTask(const InitializeStoreTask&) = delete;
+  InitializeStoreTask& operator=(const InitializeStoreTask&) = delete;
+
   ~InitializeStoreTask() override;
 
  private:
@@ -49,7 +53,6 @@ class InitializeStoreTask : public Task {
   RequestQueueStore::InitializeCallback callback_;
 
   base::WeakPtrFactory<InitializeStoreTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(InitializeStoreTask);
 };
 
 }  // namespace offline_pages

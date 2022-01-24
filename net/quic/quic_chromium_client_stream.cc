@@ -461,10 +461,9 @@ QuicChromiumClientStream::QuicChromiumClientStream(
 QuicChromiumClientStream::QuicChromiumClientStream(
     quic::PendingStream* pending,
     quic::QuicSpdyClientSessionBase* session,
-    quic::StreamType type,
     const NetLogWithSource& net_log,
     const NetworkTrafficAnnotationTag& traffic_annotation)
-    : quic::QuicSpdyStream(pending, session, type),
+    : quic::QuicSpdyStream(pending, session),
       net_log_(net_log),
       handle_(nullptr),
       initial_headers_sent_(false),
@@ -736,7 +735,10 @@ void QuicChromiumClientStream::NotifyHandleOfTrailingHeadersAvailable() {
   if (!trailers_decompressed())
     return;
 
-  DCHECK(headers_delivered_);
+  // Notify only after the handle reads initial headers.
+  if (!headers_delivered_)
+    return;
+
   // Post an async task to notify handle of the FIN flag.
   NotifyHandleOfDataAvailableLater();
   handle_->OnTrailingHeadersAvailable();

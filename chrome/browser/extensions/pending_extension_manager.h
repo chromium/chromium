@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/pending_extension_info.h"
 #include "extensions/common/extension_id.h"
@@ -88,6 +87,10 @@ class PendingExtensionManager {
   };
 
   explicit PendingExtensionManager(content::BrowserContext* context);
+
+  PendingExtensionManager(const PendingExtensionManager&) = delete;
+  PendingExtensionManager& operator=(const PendingExtensionManager&) = delete;
+
   ~PendingExtensionManager();
 
   // TODO(skerner): Many of these methods can be private once code in
@@ -222,8 +225,6 @@ class PendingExtensionManager {
   friend void SetupPendingExtensionManagerForTest(
       int count, const GURL& update_url,
       PendingExtensionManager* pending_extension_manager);
-
-  DISALLOW_COPY_AND_ASSIGN(PendingExtensionManager);
 };
 
 }  // namespace extensions

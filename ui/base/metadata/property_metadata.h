@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/base/metadata/metadata_cache.h"

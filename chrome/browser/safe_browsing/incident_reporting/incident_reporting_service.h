@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -78,6 +77,9 @@ class IncidentReportingService : public ProfileManagerObserver,
                                  public ProfileObserver {
  public:
   explicit IncidentReportingService(SafeBrowsingService* safe_browsing_service);
+
+  IncidentReportingService(const IncidentReportingService&) = delete;
+  IncidentReportingService& operator=(const IncidentReportingService&) = delete;
 
   // All incident collection, data collection, and uploads in progress are
   // dropped at destruction.
@@ -328,8 +330,6 @@ class IncidentReportingService : public ProfileManagerObserver,
   // that are posted during normal processing (e.g., environment collection,
   // and report uploads).
   base::WeakPtrFactory<IncidentReportingService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IncidentReportingService);
 };
 
 }  // namespace safe_browsing

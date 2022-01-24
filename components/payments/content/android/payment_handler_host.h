@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/android/payment_request_update_event_listener.h"
 #include "components/payments/content/payment_handler_host.h"
@@ -56,6 +55,10 @@ class PaymentHandlerHost {
   // handler and are used for logging in developr tools.
   PaymentHandlerHost(const base::android::JavaParamRef<jobject>& web_contents,
                      const base::android::JavaParamRef<jobject>& listener);
+
+  PaymentHandlerHost(const PaymentHandlerHost&) = delete;
+  PaymentHandlerHost& operator=(const PaymentHandlerHost&) = delete;
+
   ~PaymentHandlerHost();
 
   // Checks whether any payment method, shipping address or shipping option
@@ -78,8 +81,6 @@ class PaymentHandlerHost {
  private:
   PaymentRequestUpdateEventListener listener_;
   payments::PaymentHandlerHost payment_handler_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentHandlerHost);
 };
 
 }  // namespace android

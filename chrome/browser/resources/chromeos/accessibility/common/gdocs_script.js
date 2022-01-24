@@ -4,9 +4,9 @@
 
 var tries = 10;
 
-function triggerDocsHtmlFallbackMode() {
+function triggerDocsCanvasAnnotationMode() {
   const scriptContents = `
-    window['_docs_force_html_by_ext'] = "${chrome.runtime.id}";
+    window['_docs_annotate_canvas_by_ext'] = "${chrome.runtime.id}";
   `;
   const script = document.createElement('script');
   script.innerHTML = scriptContents;
@@ -26,9 +26,9 @@ function RemoveAriaHiddenFromGoogleDocsContent() {
 }
 
 // Docs will soon only render its contents in canvas. As a stop gap measure,
-// trigger Docs' fallback html rendering mode. This needs to run within the
+// trigger Docs' canvas annotation rendering mode. This needs to run within the
 // page's context, so install a script to be executed.
-triggerDocsHtmlFallbackMode();
+triggerDocsCanvasAnnotationMode();
 
 // Google Docs isn't compatible with non-screen reader accessibility services by
 // default because in order to provide screen reader support, most of the

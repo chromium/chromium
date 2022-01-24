@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
@@ -33,6 +32,10 @@ const char* GetUseCounterHistogramName(
       return internal::kAnimatedCssPropertiesHistogramName;
     case FeatureType::kPermissionsPolicyViolationEnforce:
       return internal::kPermissionsPolicyViolationHistogramName;
+    case FeatureType::kPermissionsPolicyHeader:
+      return internal::kPermissionsPolicyHeaderHistogramName;
+    case FeatureType::kPermissionsPolicyIframeAttribute:
+      return internal::kPermissionsPolicyIframeAttributeHistogramName;
   }
 }
 
@@ -42,6 +45,11 @@ class UseCounterPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverContentTestHarness {
  public:
   UseCounterPageLoadMetricsObserverTest() {}
+
+  UseCounterPageLoadMetricsObserverTest(
+      const UseCounterPageLoadMetricsObserverTest&) = delete;
+  UseCounterPageLoadMetricsObserverTest& operator=(
+      const UseCounterPageLoadMetricsObserverTest&) = delete;
 
   void ExpectBucketCount(const blink::UseCounterFeature& feature,
                          size_t count) {
@@ -92,9 +100,6 @@ class UseCounterPageLoadMetricsObserverTest
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UseCounterPageLoadMetricsObserverTest);
 };
 
 TEST_F(UseCounterPageLoadMetricsObserverTest, CountOneFeature) {

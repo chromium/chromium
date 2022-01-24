@@ -18,6 +18,8 @@ UsageScenarioDataStore::~UsageScenarioDataStore() = default;
 UsageScenarioDataStore::IntervalData::IntervalData() = default;
 UsageScenarioDataStore::IntervalData::IntervalData(const IntervalData&) =
     default;
+UsageScenarioDataStore::IntervalData&
+UsageScenarioDataStore::IntervalData::operator=(const IntervalData&) = default;
 
 UsageScenarioDataStoreImpl::UsageScenarioDataStoreImpl()
     : UsageScenarioDataStoreImpl(base::DefaultTickClock::GetInstance()) {}

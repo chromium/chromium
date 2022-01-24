@@ -8,7 +8,6 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/cast_certificate/cast_cert_reader.h"
@@ -212,8 +211,7 @@ TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooEarly) {
           base::as_bytes(base::make_span(tls_cert_der[0])));
   std::string peer_cert_der;
   AuthResult result = VerifyTLSCertificate(
-      *tls_cert, &peer_cert_der,
-      tls_cert->valid_start() - base::TimeDelta::FromSeconds(1));
+      *tls_cert, &peer_cert_der, tls_cert->valid_start() - base::Seconds(1));
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_TLS_CERT_VALID_START_DATE_IN_FUTURE,
             result.error_type);
@@ -229,8 +227,7 @@ TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooLate) {
           base::as_bytes(base::make_span(tls_cert_der[0])));
   std::string peer_cert_der;
   AuthResult result = VerifyTLSCertificate(
-      *tls_cert, &peer_cert_der,
-      tls_cert->valid_expiry() + base::TimeDelta::FromSeconds(2));
+      *tls_cert, &peer_cert_der, tls_cert->valid_expiry() + base::Seconds(2));
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_TLS_CERT_EXPIRED, result.error_type);
 }

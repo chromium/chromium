@@ -6,7 +6,6 @@
 #define ASH_KEYBOARD_UI_KEYBOARD_UKM_RECORDER_H_
 
 #include "ash/keyboard/ui/keyboard_export.h"
-#include "base/macros.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/ime/text_input_type.h"
 

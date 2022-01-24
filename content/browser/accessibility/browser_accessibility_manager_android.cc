@@ -40,6 +40,11 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
       BrowserAccessibilityManagerAndroid::GetEmptyDocument(), delegate);
 }
 
+BrowserAccessibilityManagerAndroid*
+BrowserAccessibilityManager::ToBrowserAccessibilityManagerAndroid() {
+  return static_cast<BrowserAccessibilityManagerAndroid*>(this);
+}
+
 BrowserAccessibilityManagerAndroid::BrowserAccessibilityManagerAndroid(
     const ui::AXTreeUpdate& initial_tree,
     base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility,
@@ -141,6 +146,16 @@ void BrowserAccessibilityManagerAndroid::FireFocusEvent(
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   if (!wcax)
     return;
+
+  // When focusing a node on Android, we want to ensure that we clear the
+  // Java-side cache for the previously focused node as well.
+  if (BrowserAccessibility* last_focused_node =
+          BrowserAccessibilityManager::GetLastFocusedNode()) {
+    BrowserAccessibilityAndroid* android_last_focused_node =
+        static_cast<BrowserAccessibilityAndroid*>(last_focused_node);
+    wcax->ClearNodeInfoCacheForGivenId(android_last_focused_node->unique_id());
+  }
+
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(node);
   wcax->HandleFocusChanged(android_node->unique_id());
@@ -283,6 +298,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
     case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
     case ui::AXEventGenerator::Event::BUSY_CHANGED:
+    case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
     case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
     case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
     case ui::AXEventGenerator::Event::CLASS_NAME_CHANGED:
@@ -463,6 +479,11 @@ void BrowserAccessibilityManagerAndroid::ClearNodeInfoCacheForGivenId(
   if (!wcax)
     return;
 
+  // We do not need to clear a node more than once per atomic update.
+  if (nodes_already_cleared_.find(unique_id) != nodes_already_cleared_.end())
+    return;
+
+  nodes_already_cleared_.emplace(unique_id);
   wcax->ClearNodeInfoCacheForGivenId(unique_id);
 }
 
@@ -485,27 +506,6 @@ void BrowserAccessibilityManagerAndroid::HandleHoverEvent(
     wcax->HandleHover(android_node->unique_id());
 }
 
-gfx::Rect BrowserAccessibilityManagerAndroid::GetViewBoundsInScreenCoordinates()
-    const {
-  // We have to take the device scale factor into account on Android.
-  BrowserAccessibilityDelegate* delegate = GetDelegateFromRootManager();
-  if (delegate) {
-    gfx::Rect bounds = delegate->AccessibilityGetViewBounds();
-
-    // http://www.chromium.org/developers/design-documents/blink-coordinate-spaces
-    // The bounds returned by the delegate are always in device-independent
-    // pixels (DIPs), meaning physical pixels divided by device scale factor
-    // (DSF). However, if UseZoomForDSF is enabled, then Blink does not apply
-    // DSF when going from physical to screen pixels. In that case, we need to
-    // multiply DSF back in to get to Blink's notion of "screen pixels."
-    if (IsUseZoomForDSFEnabled() && device_scale_factor() > 0.0 &&
-        device_scale_factor() != 1.0)
-      bounds = ScaleToEnclosingRect(bounds, device_scale_factor());
-    return bounds;
-  }
-  return gfx::Rect();
-}
-
 void BrowserAccessibilityManagerAndroid::OnNodeWillBeDeleted(ui::AXTree* tree,
                                                              ui::AXNode* node) {
   BrowserAccessibility* wrapper = GetFromAXNode(node);
@@ -513,6 +513,15 @@ void BrowserAccessibilityManagerAndroid::OnNodeWillBeDeleted(ui::AXTree* tree,
       static_cast<BrowserAccessibilityAndroid*>(wrapper);
 
   ClearNodeInfoCacheForGivenId(android_node->unique_id());
+
+  // When a node will be deleted, clear its parent from the cache as well, or
+  // the parent could erroneously report the cleared node as a child later on.
+  BrowserAccessibilityAndroid* parent_node =
+      static_cast<BrowserAccessibilityAndroid*>(
+          android_node->PlatformGetParent());
+  if (parent_node != nullptr) {
+    ClearNodeInfoCacheForGivenId(parent_node->unique_id());
+  }
 
   BrowserAccessibilityManager::OnNodeWillBeDeleted(tree, node);
 }
@@ -530,6 +539,9 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
 
   // Reset content changed events counter every time we finish an atomic update.
   wcax->ResetContentChangedEventsCounter();
+
+  // Clear unordered_set of nodes cleared from the cache after atomic update.
+  nodes_already_cleared_.clear();
 
   if (root_changed) {
     wcax->HandleNavigate();

@@ -88,6 +88,12 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
 }  // namespace
 
 class NetworkConnectionHandlerTetherDelegateTest : public testing::Test {
+ public:
+  NetworkConnectionHandlerTetherDelegateTest(
+      const NetworkConnectionHandlerTetherDelegateTest&) = delete;
+  NetworkConnectionHandlerTetherDelegateTest& operator=(
+      const NetworkConnectionHandlerTetherDelegateTest&) = delete;
+
  protected:
   NetworkConnectionHandlerTetherDelegateTest() = default;
 
@@ -152,9 +158,6 @@ class NetworkConnectionHandlerTetherDelegateTest : public testing::Test {
   std::string result_;
 
   std::unique_ptr<NetworkConnectionHandlerTetherDelegate> delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionHandlerTetherDelegateTest);
 };
 
 TEST_F(NetworkConnectionHandlerTetherDelegateTest,

@@ -12,9 +12,8 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/common/search/instant_types.h"
 
 // In InstantExtended, iframes are used to display objects which can only be
@@ -45,6 +44,10 @@ class InstantRestrictedIDCache {
   typedef std::vector<ItemIDPair> ItemIDVector;
 
   explicit InstantRestrictedIDCache(size_t max_cache_size);
+
+  InstantRestrictedIDCache(const InstantRestrictedIDCache&) = delete;
+  InstantRestrictedIDCache& operator=(const InstantRestrictedIDCache&) = delete;
+
   ~InstantRestrictedIDCache();
 
   // Adds items to the cache, assigning restricted IDs in the process. May
@@ -75,13 +78,11 @@ class InstantRestrictedIDCache {
   FRIEND_TEST_ALL_PREFIXES(InstantRestrictedIDCacheTest,
                            AddItemsWithRestrictedID);
 
-  typedef base::MRUCache<InstantRestrictedID, T> CacheImpl;
+  typedef base::LRUCache<InstantRestrictedID, T> CacheImpl;
 
   mutable CacheImpl cache_;
   typename CacheImpl::reverse_iterator last_add_start_;
   InstantRestrictedID last_restricted_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstantRestrictedIDCache);
 };
 
 template <typename T>

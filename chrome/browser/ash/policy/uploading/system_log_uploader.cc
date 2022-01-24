@@ -16,11 +16,11 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/policy_pref_names.h"
@@ -151,6 +151,10 @@ class SystemLogDelegate : public SystemLogUploader::Delegate {
  public:
   explicit SystemLogDelegate(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  SystemLogDelegate(const SystemLogDelegate&) = delete;
+  SystemLogDelegate& operator=(const SystemLogDelegate&) = delete;
+
   ~SystemLogDelegate() override;
 
   // SystemLogUploader::Delegate:
@@ -167,8 +171,6 @@ class SystemLogDelegate : public SystemLogUploader::Delegate {
  private:
   // TaskRunner used for scheduling upload the upload task.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemLogDelegate);
 };
 
 SystemLogDelegate::SystemLogDelegate(
@@ -252,8 +254,8 @@ void SystemLogDelegate::ZipSystemLogs(
 
 // Returns the system log upload frequency.
 base::TimeDelta GetUploadFrequency() {
-  base::TimeDelta upload_frequency(base::TimeDelta::FromMilliseconds(
-      SystemLogUploader::kDefaultUploadDelayMs));
+  base::TimeDelta upload_frequency(
+      base::Milliseconds(SystemLogUploader::kDefaultUploadDelayMs));
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSystemLogUploadFrequency)) {
     std::string string_value =
@@ -261,7 +263,7 @@ base::TimeDelta GetUploadFrequency() {
             switches::kSystemLogUploadFrequency);
     int frequency;
     if (base::StringToInt(string_value, &frequency)) {
-      upload_frequency = base::TimeDelta::FromMilliseconds(frequency);
+      upload_frequency = base::Milliseconds(frequency);
     }
   }
   return upload_frequency;
@@ -289,7 +291,7 @@ const int64_t SystemLogUploader::kLogThrottleCount = 100;
 
 // Determines the time window for which the upload times should be stored.
 const base::TimeDelta SystemLogUploader::kLogThrottleWindowDuration =
-    base::TimeDelta::FromHours(24);
+    base::Hours(24);
 
 // String constant identifying the header field which stores the file type.
 const char* const SystemLogUploader::kFileTypeHeaderName = "File-Type";
@@ -334,7 +336,7 @@ SystemLogUploader::SystemLogUploader(
 
   // Watch for policy changes.
   upload_enabled_subscription_ = ash::CrosSettings::Get()->AddSettingsObserver(
-      chromeos::kSystemLogUploadEnabled,
+      ash::kSystemLogUploadEnabled,
       base::BindRepeating(&SystemLogUploader::RefreshUploadSettings,
                           base::Unretained(this)));
 
@@ -383,8 +385,7 @@ void SystemLogUploader::OnFailure(UploadJob::ErrorCode error_code) {
   if (retry_count_++ < kMaxNumRetries) {
     SYSLOG(ERROR) << "Upload failed with error code " << error_code
                   << ", retrying later.";
-    ScheduleNextSystemLogUpload(
-        base::TimeDelta::FromMilliseconds(kErrorUploadDelayMs));
+    ScheduleNextSystemLogUpload(base::Milliseconds(kErrorUploadDelayMs));
   } else {
     // No more retries.
     SYSLOG(ERROR) << "Upload failed with error code " << error_code
@@ -412,13 +413,12 @@ void SystemLogUploader::RefreshUploadSettings() {
   ash::CrosSettings* settings = ash::CrosSettings::Get();
   auto trust_status = settings->PrepareTrustedValues(base::BindOnce(
       &SystemLogUploader::RefreshUploadSettings, weak_factory_.GetWeakPtr()));
-  if (trust_status != chromeos::CrosSettingsProvider::TRUSTED)
+  if (trust_status != ash::CrosSettingsProvider::TRUSTED)
     return;
 
   // CrosSettings are trusted - we want to use the last trusted values, by
   // default do not upload system logs.
-  if (!settings->GetBoolean(chromeos::kSystemLogUploadEnabled,
-                            &upload_enabled_)) {
+  if (!settings->GetBoolean(ash::kSystemLogUploadEnabled, &upload_enabled_)) {
     upload_enabled_ = false;
   }
 }
@@ -585,7 +585,8 @@ void SystemLogUploader::ScheduleNextSystemLogUpload(base::TimeDelta frequency) {
   // kLogThrottleWindowDuration time.
   if (g_browser_process->local_state()
               ->GetList(policy::prefs::kStoreLogStatesAcrossReboots)
-              ->GetSize() >= kLogThrottleCount &&
+              ->GetList()
+              .size() >= kLogThrottleCount &&
       !frequency.is_zero()) {
     delay = std::max(delay, last_valid_log_upload + kLogThrottleWindowDuration -
                                 base::Time::NowFromSystemTime());

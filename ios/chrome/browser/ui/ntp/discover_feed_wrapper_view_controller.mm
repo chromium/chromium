@@ -4,6 +4,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/check.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -17,18 +19,19 @@
     (UIViewController*)discoverFeed {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    // TODO(crbug.com/1114792): Handle case where feed is disabled, replacing it
-    // with a regular scroll view.
-    _discoverFeed = discoverFeed;
+    if (discoverFeed) {
+      _discoverFeed = discoverFeed;
 
-    // Iterates through subviews to find collection view containing feed
-    // articles.
-    // TODO(crbug.com/1085419): Once the CollectionView is cleanly exposed,
-    // remove this loop.
-    for (UIView* view in _discoverFeed.view.subviews) {
-      if ([view isKindOfClass:[UICollectionView class]]) {
-        _feedCollectionView = static_cast<UICollectionView*>(view);
+      // Iterates through subviews to find collection view containing feed
+      // articles.
+      // TODO(crbug.com/1085419): Once the CollectionView is cleanly exposed,
+      // remove this loop.
+      for (UIView* view in _discoverFeed.view.subviews) {
+        if ([view isKindOfClass:[UICollectionView class]]) {
+          _contentCollectionView = static_cast<UICollectionView*>(view);
+        }
       }
+      DCHECK(_contentCollectionView);
     }
   }
   return self;
@@ -37,17 +40,41 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  // |discoverFeed| is not guaranteed to not be nil, so we check to prevent
-  // crashing when attempting to it as a child view controller.
-  if (self.discoverFeed) {
-    UIView* discoverView = self.discoverFeed.view;
-    [self.discoverFeed willMoveToParentViewController:self];
-    [self addChildViewController:self.discoverFeed];
-    [self.view addSubview:discoverView];
-    [self.discoverFeed didMoveToParentViewController:self];
-    discoverView.translatesAutoresizingMaskIntoConstraints = NO;
-    AddSameConstraints(discoverView, self.view);
+  // Configure appropriate collection view based on feed visibility. If
+  // |discoverFeed| exists, then the feed must be enabled and visible.
+  if (self.discoverFeed && self.contentCollectionView) {
+    [self configureDiscoverFeedAsWrapper];
+  } else {
+    [self configureEmptyCollectionAsWrapper];
   }
+}
+
+#pragma mark - Private
+
+// If the feed is visible, we configure the feed's collection view and view
+// controller to be used in the NTP.
+- (void)configureDiscoverFeedAsWrapper {
+  UIView* discoverView = self.discoverFeed.view;
+  [self.discoverFeed willMoveToParentViewController:self];
+  [self addChildViewController:self.discoverFeed];
+  [self.view addSubview:discoverView];
+  [self.discoverFeed didMoveToParentViewController:self];
+  discoverView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(discoverView, self.view);
+}
+
+// If the feed is not visible, we prepare the empty collection view to be used
+// in the NTP.
+- (void)configureEmptyCollectionAsWrapper {
+  UICollectionViewLayout* layout = [[UICollectionViewLayout alloc] init];
+  UICollectionView* emptyCollectionView =
+      [[UICollectionView alloc] initWithFrame:CGRectZero
+                         collectionViewLayout:layout];
+  [self.view addSubview:emptyCollectionView];
+  self.contentCollectionView = emptyCollectionView;
+  self.contentCollectionView.backgroundColor = ntp_home::kNTPBackgroundColor();
+  self.contentCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(self.contentCollectionView, self.view);
 }
 
 @end

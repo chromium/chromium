@@ -7,11 +7,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/buildflags.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
-
-#if BUILDFLAG(USE_V8_OILPAN)
 #include "v8/include/cppgc/name-provider.h"
-#endif  // BUILDFLAG(USE_V8_OILPAN)
 
 namespace blink {
 
@@ -40,8 +36,6 @@ namespace blink {
 //   Don't:
 //     class Bar : public GarbageCollected<Bar> {...};
 //     class Baz : public Bar, public NameClient {...};
-#if BUILDFLAG(USE_V8_OILPAN)
-
 class PLATFORM_EXPORT NameClient : public cppgc::NameProvider {
  public:
   NameClient() = default;
@@ -57,31 +51,6 @@ class PLATFORM_EXPORT NameClient : public cppgc::NameProvider {
     return NameInHeapSnapshot();
   }
 };
-
-#else  // !USE_V8_OILPAN
-
-class PLATFORM_EXPORT NameClient {
- public:
-  static constexpr bool HideInternalName() {
-#if BUILDFLAG(RAW_HEAP_SNAPSHOTS) && \
-    (defined(COMPILER_GCC) || defined(__clang__))
-    return false;
-#else
-    return true;
-#endif  // BUILDFLAG(RAW_HEAP_SNAPSHOTS)
-  }
-
-  NameClient() = default;
-  NameClient(const NameClient&) = delete;
-  NameClient& operator=(const NameClient&) = delete;
-  virtual ~NameClient() = default;
-
-  // Human-readable name of this object. The DevTools heap snapshot uses
-  // this method to show the object.
-  virtual const char* NameInHeapSnapshot() const = 0;
-};
-
-#endif  // !USE_V8_OILPAN
 
 }  // namespace blink
 

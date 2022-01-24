@@ -4,7 +4,6 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -88,8 +87,8 @@ js_library("edu_coexistence_template") {
 js_library("edu_coexistence_controller") {
   deps = [
     ":edu_coexistence_browser_proxy",
-    "//chrome/browser/resources/chromeos/add_supervision:post_message_api",
     "//chrome/browser/resources/gaia_auth_host:authenticator.m",
+    "//ui/webui/resources/js:post_message_api_server.m",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",

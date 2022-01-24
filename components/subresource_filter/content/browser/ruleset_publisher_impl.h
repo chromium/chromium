@@ -10,9 +10,8 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/subresource_filter/content/browser/ruleset_publisher.h"
 #include "components/subresource_filter/content/browser/ruleset_version.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
@@ -35,6 +34,10 @@ class RulesetPublisherImpl : public RulesetPublisher,
   RulesetPublisherImpl(
       RulesetService* ruleset_service,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
+
+  RulesetPublisherImpl(const RulesetPublisherImpl&) = delete;
+  RulesetPublisherImpl& operator=(const RulesetPublisherImpl&) = delete;
+
   ~RulesetPublisherImpl() override;
 
   // RulesetPublisher:
@@ -70,8 +73,6 @@ class RulesetPublisherImpl : public RulesetPublisher,
   RulesetService* ruleset_service_;
   std::unique_ptr<VerifiedRulesetDealer::Handle> ruleset_dealer_;
   scoped_refptr<base::SingleThreadTaskRunner> best_effort_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetPublisherImpl);
 };
 
 }  // namespace subresource_filter

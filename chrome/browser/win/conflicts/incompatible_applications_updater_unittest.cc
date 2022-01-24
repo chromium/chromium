@@ -31,6 +31,9 @@ class MockModuleListFilter : public ModuleListFilter {
  public:
   MockModuleListFilter() = default;
 
+  MockModuleListFilter(const MockModuleListFilter&) = delete;
+  MockModuleListFilter& operator=(const MockModuleListFilter&) = delete;
+
   bool IsAllowlisted(base::StringPiece module_basename_hash,
                      base::StringPiece module_code_id_hash) const override {
     return false;
@@ -44,13 +47,16 @@ class MockModuleListFilter : public ModuleListFilter {
 
  private:
   ~MockModuleListFilter() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(MockModuleListFilter);
 };
 
 class MockInstalledApplications : public InstalledApplications {
  public:
   MockInstalledApplications() = default;
+
+  MockInstalledApplications(const MockInstalledApplications&) = delete;
+  MockInstalledApplications& operator=(const MockInstalledApplications&) =
+      delete;
+
   ~MockInstalledApplications() override = default;
 
   void AddIncompatibleApplication(const base::FilePath& file_path,
@@ -73,8 +79,6 @@ class MockInstalledApplications : public InstalledApplications {
 
  private:
   std::multimap<base::FilePath, ApplicationInfo> applications_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInstalledApplications);
 };
 
 constexpr wchar_t kCertificatePath[] = L"CertificatePath";
@@ -111,6 +115,12 @@ ModuleInfoData CreateSignedLoadedModuleInfoData() {
 
 class IncompatibleApplicationsUpdaterTest : public testing::Test,
                                             public ModuleDatabaseEventSource {
+ public:
+  IncompatibleApplicationsUpdaterTest(
+      const IncompatibleApplicationsUpdaterTest&) = delete;
+  IncompatibleApplicationsUpdaterTest& operator=(
+      const IncompatibleApplicationsUpdaterTest&) = delete;
+
  protected:
   IncompatibleApplicationsUpdaterTest()
       : dll1_(kDllPath1),
@@ -178,8 +188,6 @@ class IncompatibleApplicationsUpdaterTest : public testing::Test,
   CertificateInfo exe_certificate_info_;
   scoped_refptr<MockModuleListFilter> module_list_filter_;
   MockInstalledApplications installed_applications_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncompatibleApplicationsUpdaterTest);
 };
 
 // Tests that when the Local State cache is empty, no incompatible applications

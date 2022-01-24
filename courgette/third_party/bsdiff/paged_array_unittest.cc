@@ -230,7 +230,6 @@ TEST_F(PagedArrayTest, TestIterator) {
 
 // Test generic read-write of itrators by sorting pseudo-random numbers.
 TEST_F(PagedArrayTest, TestSort) {
-  courgette::PagedArray<int> a;
   std::minstd_rand pseudo_rand_gen;  // Deterministic, using defaults.
   for (size_t size : kSizeList) {
     std::vector<int32_t> v(size);

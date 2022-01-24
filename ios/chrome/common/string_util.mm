@@ -248,3 +248,28 @@ NSString* SubstringOfWidth(NSString* string,
 
   return substring;
 }
+
+CGRect TextViewLinkBound(UITextView* text_view, NSRange character_range) {
+  // Calculate UITextRange with NSRange.
+  UITextPosition* beginning = text_view.beginningOfDocument;
+  UITextPosition* start =
+      [text_view positionFromPosition:beginning
+                               offset:character_range.location];
+  UITextPosition* end = [text_view positionFromPosition:start
+                                                 offset:character_range.length];
+
+  CGRect rect = CGRectNull;
+  // Returns CGRectNull if there is a nil text position.
+  if (start && end) {
+    UITextRange* text_range = [text_view textRangeFromPosition:start
+                                                    toPosition:end];
+
+    NSArray* selection_rects = [text_view selectionRectsForRange:text_range];
+
+    for (UITextSelectionRect* selection_rect in selection_rects) {
+      rect = CGRectUnion(rect, selection_rect.rect);
+    }
+  }
+
+  return rect;
+}

@@ -39,13 +39,33 @@ js_unittest("cache_unittest.m") {
   ]
 }
 
+# TODO(b/199451464): Remove this and dependencies.
+copy("copy_from_filesapp") {
+  sources = [
+    "../file_manager/common/js/lru_cache.js",
+    "../file_manager/foreground/js/metadata/image_orientation.js",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+js_library("image_orientation") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/image_loader/image_orientation.js" ]
+  extra_deps = [ ":copy_from_filesapp" ]
+}
+
+js_library("lru_cache") {
+  sources = [ "$root_gen_dir/ui/file_manager/image_loader/lru_cache.js" ]
+  extra_deps = [ ":copy_from_filesapp" ]
+}
+
 js_library("image_loader") {
   deps = [
     ":cache",
+    ":image_orientation",
     ":image_request_task",
     ":load_image_request",
     ":scheduler",
-    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -53,10 +73,11 @@ js_library("image_loader") {
 js_unittest("image_loader_unittest.m") {
   deps = [
     ":image_loader_util",
+    ":image_orientation",
     ":load_image_request",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation",
   ]
+  extra_deps = [ ":copy_from_filesapp" ]
 }
 
 js_library("image_loader_util") {
@@ -68,7 +89,7 @@ js_library("image_loader_util") {
 
 js_library("load_image_request") {
   deps = [
-    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation",
+    ":image_orientation",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -76,7 +97,7 @@ js_library("load_image_request") {
 js_library("image_loader_client") {
   deps = [
     ":load_image_request",
-    "//ui/file_manager/file_manager/common/js:lru_cache",
+    ":lru_cache",
   ]
   externs_list = [
     "$externs_path/chrome.js",
@@ -102,11 +123,17 @@ js_library("image_request_task") {
   deps = [
     ":cache",
     ":image_loader_util",
+    ":image_orientation",
     ":load_image_request",
     ":piex_loader",
     "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation",
     "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [
+    "$externs_path/file_manager_private.js",
+    "$externs_path/file_system_provider.js",
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/chrome.js",
   ]
 }
 
@@ -153,8 +180,10 @@ group("js_modules") {
     ":image_loader",
     ":image_loader_client",
     ":image_loader_util",
+    ":image_orientation",
     ":image_request_task",
     ":load_image_request",
+    ":lru_cache",
     ":piex_loader",
     ":scheduler",
   ]

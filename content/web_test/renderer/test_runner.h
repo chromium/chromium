@@ -16,7 +16,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "content/web_test/common/web_test_bluetooth_fake_adapter_setter.mojom.h"
@@ -72,6 +71,10 @@ struct TestPreferences;
 class TestRunner {
  public:
   TestRunner();
+
+  TestRunner(const TestRunner&) = delete;
+  TestRunner& operator=(const TestRunner&) = delete;
+
   virtual ~TestRunner();
 
   void Install(WebFrameTestProxy* frame, SpellCheckClient* spell_check);
@@ -586,8 +589,6 @@ class TestRunner {
   mojom::WebTestRunTestConfiguration test_config_;
 
   base::WeakPtrFactory<TestRunner> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestRunner);
 };
 
 }  // namespace content

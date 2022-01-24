@@ -3,138 +3,15 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("../settings.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [
-    ":languages",
-    ":languages_browser_proxy",
-    ":languages_types",
+assert(!is_chromeos_ash)
+
+html_to_js("web_components") {
+  js_files = [
+    "add_languages_dialog.ts",
+    "edit_dictionary_page.ts",
+    "languages_page.ts",
+    "languages_subpage.ts",
   ]
-
-  if (!is_chromeos_ash) {
-    deps += [
-      ":add_languages_dialog",
-      ":edit_dictionary_page",
-      ":languages_page",
-      ":languages_settings_metrics_proxy",
-      ":languages_subpage",
-    ]
-  }
-}
-
-js_library("languages_types") {
-  externs_list = [ "$externs_path/language_settings_private.js" ]
-}
-
-js_library("add_languages_dialog") {
-  deps = [
-    ":languages_types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
-    "//ui/webui/resources/cr_elements:find_shortcut_behavior",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
-  ]
-}
-
-js_library("edit_dictionary_page") {
-  deps = [
-    ":languages_browser_proxy",
-    "..:global_scroll_target_mixin",
-    "..:route",
-    "../prefs:prefs",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-  ]
-}
-
-js_library("languages") {
-  deps = [
-    ":languages_browser_proxy",
-    ":languages_types",
-    "../prefs:prefs",
-    "../prefs:prefs_behavior",
-    "../prefs:prefs_types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-  ]
-  externs_list = [
-    "$externs_path/input_method_private.js",
-    "$externs_path/language_settings_private.js",
-  ]
-  extra_sources = [
-    "$interfaces_path/input_method_private_interface.js",
-    "$interfaces_path/language_settings_private_interface.js",
-  ]
-}
-
-js_library("languages_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [
-    "$externs_path/chrome_send.js",
-    "$externs_path/input_method_private.js",
-    "$externs_path/language_settings_private.js",
-  ]
-  extra_sources = [
-    "$interfaces_path/input_method_private_interface.js",
-    "$interfaces_path/language_settings_private_interface.js",
-  ]
-}
-
-js_library("languages_settings_metrics_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("languages_page") {
-  deps = [
-    ":languages",
-    ":languages_settings_metrics_proxy",
-    "..:route",
-    "..:router",
-    "../settings_page:settings_animated_pages",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-}
-
-js_library("languages_subpage") {
-  deps = [
-    ":languages",
-    ":languages_settings_metrics_proxy",
-    "..:lifetime_browser_proxy",
-    "..:route",
-    "..:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-}
-
-if (!is_chromeos_ash) {
-  html_to_js("web_components") {
-    js_files = [
-      "add_languages_dialog.js",
-      "edit_dictionary_page.js",
-      "languages_page.js",
-      "languages_subpage.js",
-    ]
-  }
 }

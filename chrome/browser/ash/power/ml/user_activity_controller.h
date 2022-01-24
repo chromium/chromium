@@ -22,6 +22,10 @@ namespace ml {
 class UserActivityController {
  public:
   UserActivityController();
+
+  UserActivityController(const UserActivityController&) = delete;
+  UserActivityController& operator=(const UserActivityController&) = delete;
+
   ~UserActivityController();
 
   // Prepares features, makes smart dim decision and returns the result via
@@ -32,8 +36,6 @@ class UserActivityController {
   std::unique_ptr<IdleEventNotifier> idle_event_notifier_;
   UserActivityUkmLoggerImpl user_activity_ukm_logger_;
   std::unique_ptr<UserActivityManager> user_activity_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserActivityController);
 };
 
 }  // namespace ml

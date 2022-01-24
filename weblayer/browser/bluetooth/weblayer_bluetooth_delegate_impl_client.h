@@ -43,6 +43,10 @@ class WebLayerBluetoothDelegateImplClient
       content::RenderFrameHost* frame,
       const content::BluetoothScanningPrompt::EventHandler& event_handler)
       override;
+  void ShowBluetoothDeviceCredentialsDialog(
+      content::RenderFrameHost* frame,
+      const std::u16string& device_identifier,
+      content::BluetoothDelegate::CredentialsCallback callback) override;
 };
 
 }  // namespace weblayer

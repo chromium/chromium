@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/importer_data_types.h"
@@ -26,6 +25,9 @@ struct SearchEngineInfo;
 class ImporterBridge : public base::RefCountedThreadSafe<ImporterBridge> {
  public:
   ImporterBridge();
+
+  ImporterBridge(const ImporterBridge&) = delete;
+  ImporterBridge& operator=(const ImporterBridge&) = delete;
 
   virtual void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
                             const std::u16string& first_folder_name) = 0;
@@ -71,8 +73,6 @@ class ImporterBridge : public base::RefCountedThreadSafe<ImporterBridge> {
   friend class base::RefCountedThreadSafe<ImporterBridge>;
 
   virtual ~ImporterBridge();
-
-  DISALLOW_COPY_AND_ASSIGN(ImporterBridge);
 };
 
 #endif  // CHROME_COMMON_IMPORTER_IMPORTER_BRIDGE_H_

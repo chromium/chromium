@@ -11,4 +11,20 @@ export const xfm = {
   notifications,
   power,
   storage,
+  /**
+   * @return {!chrome.app.window.AppWindow}
+   */
+  getCurrentWindow: () => {
+    if (!window.isSWA) {
+      return chrome.app.window.current();
+    }
+    return /** @type {!chrome.app.window.AppWindow} */ ({
+      minimize: () => {
+        // TODO(1097066): Implement.
+      },
+      focus: () => {
+        window.focus();
+      },
+    });
+  }
 };

@@ -180,6 +180,7 @@ class StubCompositorFrameSink
   void SetDelegatedInkPointRenderer(
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
       override {}
+  void SetSwapCompletionCallbackEnabled(bool enable) override {}
 
   // mojom::CompositorFrameSink:
   void SetNeedsBeginFrame(bool needs_begin_frame) override {}

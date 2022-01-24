@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LINUX_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LINUX_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
+#include "ui/views/linux_ui/device_scale_factor_observer.h"
+#include "ui/views/linux_ui/linux_ui.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"  // nogncheck
 
 #if defined(USE_DBUS_MENU)
@@ -26,13 +28,21 @@ class DesktopNativeWidgetAura;
 
 class BrowserDesktopWindowTreeHostLinux
     : public BrowserDesktopWindowTreeHost,
-      public views::DesktopWindowTreeHostLinux {
+      public views::DesktopWindowTreeHostLinux,
+      ui::NativeThemeObserver,
+      views::DeviceScaleFactorObserver {
  public:
   BrowserDesktopWindowTreeHostLinux(
       views::internal::NativeWidgetDelegate* native_widget_delegate,
       views::DesktopNativeWidgetAura* desktop_native_widget_aura,
       BrowserView* browser_view,
       BrowserFrame* browser_frame);
+
+  BrowserDesktopWindowTreeHostLinux(const BrowserDesktopWindowTreeHostLinux&) =
+      delete;
+  BrowserDesktopWindowTreeHostLinux& operator=(
+      const BrowserDesktopWindowTreeHostLinux&) = delete;
+
   ~BrowserDesktopWindowTreeHostLinux() override;
 
   // Called when the tab drag status changes for this window.
@@ -53,6 +63,9 @@ class BrowserDesktopWindowTreeHostLinux
   int GetMinimizeButtonOffset() const override;
   bool UsesNativeSystemMenu() const override;
 
+  // BrowserWindowTreeHostPlatform:
+  void FrameTypeChanged() override;
+
   // views::DesktopWindowTreeHostLinuxImpl:
   void Init(const views::Widget::InitParams& params) override;
   void OnWidgetInitDone() override;
@@ -62,12 +75,18 @@ class BrowserDesktopWindowTreeHostLinux
   void UnlockMouse(aura::Window* window) override;
 
   // ui::X11ExtensionDelegate:
-  bool IsOverrideRedirect(bool is_tiling_wm) const override;
+  bool IsOverrideRedirect() const override;
 
   // ui::PlatformWindowDelegate
   void OnBoundsChanged(const BoundsChange& change) override;
   void OnWindowStateChanged(ui::PlatformWindowState old_state,
                             ui::PlatformWindowState new_state) override;
+
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+
+  // views::OnDeviceScaleFactorChanged:
+  void OnDeviceScaleFactorChanged() override;
 
   BrowserView* browser_view_ = nullptr;
   BrowserFrame* browser_frame_ = nullptr;
@@ -90,7 +109,13 @@ class BrowserDesktopWindowTreeHostLinux
   std::unique_ptr<DbusAppmenu> dbus_appmenu_;
 #endif
 
-  DISALLOW_COPY_AND_ASSIGN(BrowserDesktopWindowTreeHostLinux);
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      theme_observation_{this};
+  base::ScopedObservation<views::LinuxUI,
+                          views::DeviceScaleFactorObserver,
+                          &views::LinuxUI::AddDeviceScaleFactorObserver,
+                          &views::LinuxUI::RemoveDeviceScaleFactorObserver>
+      scale_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LINUX_H_

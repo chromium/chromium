@@ -16,7 +16,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/stack.h"
-#include "base/macros.h"
 #include "media/cdm/api/content_decryption_module.h"
 
 namespace media {
@@ -68,6 +67,10 @@ class FileIOTest : public cdm::FileIOClient {
 
   FileIOTest(const CreateFileIOCB& create_file_io_cb,
              const std::string& test_name);
+
+  FileIOTest(const FileIOTest&) = delete;
+  FileIOTest& operator=(const FileIOTest&) = delete;
+
   ~FileIOTest() override;
 
   // Adds a test step in this test. |this| object doesn't take the ownership of
@@ -154,14 +157,16 @@ class FileIOTest : public cdm::FileIOClient {
   // In the current implementation, all ACTION_* are performed on the latest
   // opened cdm::FileIO object, hence the stack.
   base::stack<cdm::FileIO*> file_io_stack_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileIOTest);
 };
 
 // Tests cdm::FileIO implementation.
 class FileIOTestRunner {
  public:
   explicit FileIOTestRunner(const CreateFileIOCB& create_file_io_cb);
+
+  FileIOTestRunner(const FileIOTestRunner&) = delete;
+  FileIOTestRunner& operator=(const FileIOTestRunner&) = delete;
+
   ~FileIOTestRunner();
 
   void AddTests();
@@ -180,8 +185,6 @@ class FileIOTestRunner {
   std::vector<uint8_t> large_data_;
   size_t total_num_tests_ = 0;   // Total number of tests.
   size_t num_passed_tests_ = 0;  // Number of passed tests.
-
-  DISALLOW_COPY_AND_ASSIGN(FileIOTestRunner);
 };
 
 }  // namespace media

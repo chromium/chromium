@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
@@ -64,6 +63,10 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
   using TView = UpdateView;
 
   explicit UpdateScreenHandler(JSCallsContainer* js_calls_container);
+
+  UpdateScreenHandler(const UpdateScreenHandler&) = delete;
+  UpdateScreenHandler& operator=(const UpdateScreenHandler&) = delete;
+
   ~UpdateScreenHandler() override;
 
  private:
@@ -93,8 +96,6 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
 
   // If true, Initialize() will call Show().
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateScreenHandler);
 };
 
 }  // namespace chromeos

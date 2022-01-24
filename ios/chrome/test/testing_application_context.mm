@@ -14,7 +14,6 @@
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"

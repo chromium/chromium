@@ -33,7 +33,7 @@ namespace blink {
 
 class ImageResourceContent;
 
-class CORE_EXPORT ImageResourceObserver {
+class CORE_EXPORT ImageResourceObserver : public GarbageCollectedMixin {
  public:
   // Used to notify the observers whether the invalidation resulting from an
   // image change notification can be deferred. In cases where the image is
@@ -88,6 +88,8 @@ class CORE_EXPORT ImageResourceObserver {
   virtual String DebugName() const = 0;
 
   static bool IsExpectedType(ImageResourceObserver*) { return true; }
+
+  void Trace(Visitor*) const override {}
 };
 
 }  // namespace blink

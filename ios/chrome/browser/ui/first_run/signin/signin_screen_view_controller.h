@@ -7,12 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 // Delegate of sign-in screen view controller.
-@protocol
-    SigninScreenViewControllerDelegate <FirstRunScreenViewControllerDelegate>
+@protocol SigninScreenViewControllerDelegate <PromoStyleViewControllerDelegate>
 
 // Called when the user taps to see the account picker.
 - (void)showAccountPickerFromPoint:(CGPoint)point;
@@ -21,9 +21,12 @@
 
 // View controller of sign-in screen.
 @interface SigninScreenViewController
-    : FirstRunScreenViewController <SigninScreenConsumer>
+    : PromoStyleViewController <SigninScreenConsumer>
 
 @property(nonatomic, weak) id<SigninScreenViewControllerDelegate> delegate;
+
+@property(nonatomic, assign)
+    EnterpriseSignInRestrictions enterpriseSignInRestrictions;
 
 @end
 

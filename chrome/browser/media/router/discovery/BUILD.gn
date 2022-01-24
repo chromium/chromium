@@ -90,6 +90,10 @@ static_library("discovery") {
     sources += [ "discovery_network_list_posix.cc" ]
   }
 
+  if (is_fuchsia) {
+    sources += [ "discovery_network_list_fuchsia.cc" ]
+  }
+
   if (is_mac) {
     sources += [ "discovery_network_list_wifi_mac.mm" ]
     frameworks = [ "CoreWLAN.framework" ]

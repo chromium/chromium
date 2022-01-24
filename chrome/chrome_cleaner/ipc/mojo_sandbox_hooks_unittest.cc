@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "chrome/chrome_cleaner/ipc/mojo_sandbox_hooks.h"

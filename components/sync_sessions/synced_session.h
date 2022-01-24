@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_id.h"
@@ -56,6 +55,10 @@ sync_pb::SessionTab SessionTabToSyncData(
 // A Sync wrapper for a SessionWindow.
 struct SyncedSessionWindow {
   SyncedSessionWindow();
+
+  SyncedSessionWindow(const SyncedSessionWindow&) = delete;
+  SyncedSessionWindow& operator=(const SyncedSessionWindow&) = delete;
+
   ~SyncedSessionWindow();
 
   // Convert this object into its sync protocol buffer equivalent.
@@ -66,9 +69,6 @@ struct SyncedSessionWindow {
 
   // The SessionWindow this object wraps.
   sessions::SessionWindow wrapped_window;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncedSessionWindow);
 };
 
 // Defines a synced session for use by session sync. A synced session is a
@@ -76,6 +76,10 @@ struct SyncedSessionWindow {
 // about the device being synced.
 struct SyncedSession {
   SyncedSession();
+
+  SyncedSession(const SyncedSession&) = delete;
+  SyncedSession& operator=(const SyncedSession&) = delete;
+
   ~SyncedSession();
 
   // Unique tag for each session.
@@ -96,9 +100,6 @@ struct SyncedSession {
   // Convert this object to its protocol buffer equivalent. Shallow conversion,
   // does not create SessionTab protobufs.
   sync_pb::SessionHeader ToSessionHeaderProto() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncedSession);
 };
 
 }  // namespace sync_sessions

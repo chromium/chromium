@@ -8,7 +8,7 @@
 #include <atomic>
 #include <memory>
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "third_party/grpc/src/include/grpcpp/completion_queue.h"
 #include "third_party/grpc/src/include/grpcpp/server.h"
@@ -25,20 +25,37 @@ class GrpcServer : public base::PlatformThread::Delegate {
 
  protected:
   void SetCompletionQueue(std::unique_ptr<grpc::ServerCompletionQueue> cq);
+  void SetServer(std::unique_ptr<grpc::Server> server);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // Unowned pointer to the completion queue so it can be shut down.
-  grpc::ServerCompletionQueue* grpc_cq_{nullptr};
+  // Indicates that Stop() has been called and no more requests or other server
+  // calls should be made.  This can be used by e.g. SimpleAsyncGrpc.
+  bool is_shutdown_{false};
 
-  std::unique_ptr<grpc::Server> grpc_server_;
+  // Unowned pointers to the completion queue and server so they can be shut
+  // down by the polling thread.
+  grpc::ServerCompletionQueue* grpc_cq_{nullptr};
+  grpc::Server* grpc_server_{nullptr};
 
  private:
+  // Owns the gRPC completion queue and server objects so that a single atomic
+  // pointer exchange is possible to transfer ownership of both to the gRPC
+  // thread.
+  struct ServerObjects {
+    ServerObjects();
+    ~ServerObjects();
+
+    std::unique_ptr<grpc::Server> server;
+    std::unique_ptr<grpc::ServerCompletionQueue> cq;
+  };
+
   // base::PlatformThread::Delegate implementation:
   void ThreadMain() override;
 
-  // Allows ownership of the completion queue to be passed to the gRPC thread.
-  std::atomic<grpc::ServerCompletionQueue*> grpc_cq_owned_{nullptr};
+  // Allows ownership of the completion queue and server to be passed to the
+  // gRPC thread.
+  std::atomic<ServerObjects*> server_objects_;
 
   base::PlatformThreadHandle grpc_thread_handle_;
 };

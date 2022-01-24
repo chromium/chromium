@@ -152,7 +152,7 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   timeradd(&user_timeval, &task_timeval, &task_timeval);
   timeradd(&system_timeval, &task_timeval, &task_timeval);
 
-  return TimeDelta::FromMicroseconds(TimeValToMicroseconds(task_timeval));
+  return Microseconds(TimeValToMicroseconds(task_timeval));
 }
 
 int ProcessMetrics::GetPackageIdleWakeupsPerSecond() {

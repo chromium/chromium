@@ -21,6 +21,9 @@ class ScopedProcessTerminator {
   ScopedProcessTerminator(const PROCESS_INFORMATION& process_info)
       : process_info_(process_info) {}
 
+  ScopedProcessTerminator(const ScopedProcessTerminator&) = delete;
+  ScopedProcessTerminator& operator=(const ScopedProcessTerminator&) = delete;
+
   ~ScopedProcessTerminator() {
     if (process_info_.IsValid())
       ::TerminateProcess(process_info_.process_handle(), 0);
@@ -28,7 +31,6 @@ class ScopedProcessTerminator {
 
  private:
   base::win::ScopedProcessInformation process_info_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedProcessTerminator);
 };
 
 base::win::ScopedHandle CreateInheritedHandle() {

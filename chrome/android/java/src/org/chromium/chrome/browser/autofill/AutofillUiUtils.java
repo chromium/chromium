@@ -88,7 +88,8 @@ public class AutofillUiUtils {
             OffsetProvider offsetProvider, View anchorView, final Runnable dismissAction) {
         TextView textView = new TextView(context);
         textView.setText(text);
-        TextViewCompat.setTextAppearance(textView, R.style.TextAppearance_TextMedium_Primary_Light);
+        TextViewCompat.setTextAppearance(
+                textView, R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
         Resources resources = context.getResources();
         int hPadding = resources.getDimensionPixelSize(R.dimen.autofill_tooltip_horizontal_padding);
         int vPadding = resources.getDimensionPixelSize(R.dimen.autofill_tooltip_vertical_padding);

@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/metrics/structured/histogram_util.h"
-#include "components/metrics/structured/structured_events.h"
 #include "crypto/hmac.h"
 #include "crypto/sha2.h"
 
@@ -183,6 +182,23 @@ uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
   CHECK(hmac.Sign(salted_value, reinterpret_cast<uint8_t*>(&digest),
                   sizeof(digest)));
   return digest;
+}
+
+//-----
+// Misc
+//-----
+
+absl::optional<int> KeyData::LastKeyRotation(const uint64_t project_name_hash) {
+  const auto& keys = proto_.get()->get()->keys();
+  const auto& it = keys.find(project_name_hash);
+  if (it != keys.end()) {
+    return it->second.last_rotation();
+  }
+  return absl::nullopt;
+}
+
+void KeyData::Purge() {
+  proto_->Purge();
 }
 
 }  // namespace structured

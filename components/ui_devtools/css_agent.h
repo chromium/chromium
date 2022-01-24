@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_CSS_AGENT_H_
 #define COMPONENTS_UI_DEVTOOLS_CSS_AGENT_H_
 
-#include "base/macros.h"
 #include "components/ui_devtools/CSS.h"
 #include "components/ui_devtools/dom_agent.h"
 
@@ -22,6 +21,10 @@ class UI_DEVTOOLS_EXPORT CSSAgent
       public DOMAgentObserver {
  public:
   explicit CSSAgent(DOMAgent* dom_agent);
+
+  CSSAgent(const CSSAgent&) = delete;
+  CSSAgent& operator=(const CSSAgent&) = delete;
+
   ~CSSAgent() override;
 
   // CSS::Backend:
@@ -59,8 +62,6 @@ class UI_DEVTOOLS_EXPORT CSSAgent
   void InitStylesheetHeaders(UIElement* ui_element);
 
   DOMAgent* const dom_agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSSAgent);
 };
 
 }  // namespace ui_devtools

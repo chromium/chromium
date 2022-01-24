@@ -11,11 +11,14 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/cellular_utils.h"
@@ -58,6 +61,9 @@ const char kErrorAccessToSharedConfig[] = "Error.CannotChangeSharedConfig";
 const char kErrorInvalidONCConfiguration[] = "Error.InvalidONCConfiguration";
 const char kErrorNetworkUnavailable[] = "Error.NetworkUnavailable";
 const char kErrorNotReady[] = "Error.NotReady";
+
+// WireGuard string from Shill SupportedVPNType property.
+const char kWireGuardVPNType[] = "wireguard";
 
 std::string ShillToOnc(const std::string& shill_string,
                        const onc::StringTranslationEntry table[]) {
@@ -480,6 +486,8 @@ mojom::InhibitReason GetInhibitReason(
       return mojom::InhibitReason::kConnectingToProfile;
     case CellularInhibitor::InhibitReason::kRefreshingProfileList:
       return mojom::InhibitReason::kRefreshingProfileList;
+    case CellularInhibitor::InhibitReason::kResettingEuiccMemory:
+      return mojom::InhibitReason::kResettingEuiccMemory;
   }
 }
 
@@ -510,15 +518,7 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
   result->mac_address =
       network_util::FormattedMacAddress(device->mac_address());
   result->scanning = device->scanning();
-
-  // Before multi-SIM support was in place, the Cellular device would always be
-  // disabled anytime that a SIM was absent. Special-case this logic to ensure
-  // that users with the flag off will still see a disabled UI in this case.
-  if (device->IsSimAbsent() && !features::IsCellularActivationUiEnabled())
-    result->device_state = mojom::DeviceStateType::kDisabled;
-  else
-    result->device_state = technology_state;
-
+  result->device_state = technology_state;
   result->managed_network_available =
       !device->available_managed_network_path().empty();
   result->sim_absent = device->IsSimAbsent();
@@ -658,6 +658,33 @@ void SetStringList(const char* key,
   for (const std::string& s : *property)
     list.Append(base::Value(s));
   dict->SetKey(key, std::move(list));
+}
+
+void SetSubjectAltNameMatch(
+    const char* key,
+    const std::vector<mojom::SubjectAltNamePtr>* property,
+    base::Value* dict) {
+  base::Value subject_alt_name_list(base::Value::Type::LIST);
+  for (const auto& ptr : *property) {
+    std::string type;
+    switch (ptr->type) {
+      case mojom::SubjectAltName::Type::kEmail:
+        type = ::onc::eap_subject_alternative_name_match::kEMAIL;
+        break;
+      case mojom::SubjectAltName::Type::kDns:
+        type = ::onc::eap_subject_alternative_name_match::kDNS;
+        break;
+      case mojom::SubjectAltName::Type::kUri:
+        type = ::onc::eap_subject_alternative_name_match::kURI;
+        break;
+    }
+    base::Value entry(base::Value::Type::DICTIONARY);
+    entry.SetStringKey(::onc::eap_subject_alternative_name_match::kType, type);
+    entry.SetStringKey(::onc::eap_subject_alternative_name_match::kValue,
+                       ptr->value);
+    subject_alt_name_list.Append(std::move(entry));
+  }
+  dict->SetKey(key, std::move(subject_alt_name_list));
 }
 
 // GetManagedDictionary() returns a ManagedDictionary representing the active
@@ -863,6 +890,60 @@ mojom::ManagedInt32Ptr GetManagedInt32(const base::Value* dict,
   }
   NET_LOG(ERROR) << "Expected int or dictionary, found: " << *v;
   return nullptr;
+}
+
+mojom::SubjectAltNamePtr GetSubjectAltName(const base::Value* dict) {
+  auto san = mojom::SubjectAltName::New();
+  san->value = GetRequiredString(
+      dict, ::onc::eap_subject_alternative_name_match::kValue);
+  std::string type =
+      GetRequiredString(dict, ::onc::eap_subject_alternative_name_match::kType);
+  if (type == ::onc::eap_subject_alternative_name_match::kEMAIL) {
+    san->type = mojom::SubjectAltName::Type::kEmail;
+  } else if (type == ::onc::eap_subject_alternative_name_match::kDNS) {
+    san->type = mojom::SubjectAltName::Type::kDns;
+  } else if (type == ::onc::eap_subject_alternative_name_match::kURI) {
+    san->type = mojom::SubjectAltName::Type::kUri;
+  } else {
+    NET_LOG(ERROR) << "Unknown subject alternative name type " << type;
+    return nullptr;
+  }
+  return san;
+}
+
+mojom::ManagedSubjectAltNameMatchListPtr GetManagedSubjectAltNameMatchList(
+    const base::Value* dict,
+    const char* key) {
+  auto result = mojom::ManagedSubjectAltNameMatchList::New();
+  const base::Value* value = dict->FindKey(key);
+  if (!value)
+    return result;
+
+  if (value->is_list()) {
+    std::vector<mojom::SubjectAltNamePtr> active;
+    for (const base::Value& value : value->GetList())
+      active.push_back(GetSubjectAltName(&value));
+    result->active_value = std::move(active);
+    return result;
+  }
+  if (value->is_dict()) {
+    ManagedDictionary managed_dict = GetManagedDictionary(value);
+    if (!managed_dict.active_value.is_list()) {
+      NET_LOG(ERROR) << "No active or effective value for WireGuardPeerList";
+      return result;
+    }
+    for (const base::Value& e : managed_dict.active_value.GetList())
+      result->active_value.push_back(GetSubjectAltName(&e));
+    result->policy_source = managed_dict.policy_source;
+    if (!managed_dict.policy_value.is_none()) {
+      result->policy_value = std::vector<mojom::SubjectAltNamePtr>();
+      for (const base::Value& e : managed_dict.policy_value.GetList())
+        result->policy_value.push_back(GetSubjectAltName(&e));
+    }
+    return result;
+  }
+  NET_LOG(ERROR) << "Expected list or dictionary, found: " << *value;
+  return result;
 }
 
 mojom::IPConfigPropertiesPtr GetIPConfig(const base::Value* dict) {
@@ -1131,6 +1212,8 @@ mojom::ManagedEAPPropertiesPtr GetManagedEAPProperties(const base::Value* dict,
       GetManagedString(eap_dict, ::onc::client_cert::kClientCertRef);
   eap->client_cert_type =
       GetManagedString(eap_dict, ::onc::client_cert::kClientCertType);
+  eap->domain_suffix_match =
+      GetManagedStringList(eap_dict, ::onc::eap::kDomainSuffixMatch);
   eap->identity = GetManagedString(eap_dict, ::onc::eap::kIdentity);
   eap->inner = GetManagedString(eap_dict, ::onc::eap::kInner);
   eap->outer = GetManagedString(eap_dict, ::onc::eap::kOuter);
@@ -1141,6 +1224,8 @@ mojom::ManagedEAPPropertiesPtr GetManagedEAPProperties(const base::Value* dict,
       GetManagedStringList(eap_dict, ::onc::eap::kServerCAPEMs);
   eap->server_ca_refs =
       GetManagedStringList(eap_dict, ::onc::eap::kServerCARefs);
+  eap->subject_alt_name_match = GetManagedSubjectAltNameMatchList(
+      eap_dict, ::onc::eap::kSubjectAlternativeNameMatch);
   eap->subject_match = GetManagedString(eap_dict, ::onc::eap::kSubjectMatch);
   eap->tls_version_max = GetManagedString(eap_dict, ::onc::eap::kTLSVersionMax);
   eap->use_proactive_key_caching =
@@ -1292,6 +1377,71 @@ mojom::ManagedOpenVPNPropertiesPtr GetManagedOpenVPNProperties(
   return openvpn;
 }
 
+mojom::WireGuardPeerPropertiesPtr GetWireGuardPeerProperties(
+    const base::Value* dict) {
+  auto peer = mojom::WireGuardPeerProperties::New();
+  peer->public_key = GetRequiredString(dict, ::onc::wireguard::kPublicKey);
+  peer->preshared_key = GetString(dict, ::onc::wireguard::kPresharedKey);
+  peer->allowed_ips = GetString(dict, ::onc::wireguard::kAllowedIPs);
+  peer->endpoint = GetString(dict, ::onc::wireguard::kEndpoint);
+  peer->persistent_keepalive_interval =
+      GetInt32(dict, ::onc::wireguard::kPersistentKeepalive);
+  return peer;
+}
+
+mojom::ManagedWireGuardPeerListPtr GetManagedWireGuardPeerList(
+    const base::Value* dict,
+    const char* key) {
+  auto result = mojom::ManagedWireGuardPeerList::New();
+  const base::Value* value = dict->FindKey(key);
+  if (!value)
+    return result;
+  if (value->is_list()) {
+    std::vector<mojom::WireGuardPeerPropertiesPtr> active;
+    for (const base::Value& value : value->GetList())
+      active.push_back(GetWireGuardPeerProperties(&value));
+    result->active_value = std::move(active);
+    return result;
+  }
+  if (value->is_dict()) {
+    ManagedDictionary managed_dict = GetManagedDictionary(value);
+    if (!managed_dict.active_value.is_list()) {
+      NET_LOG(ERROR) << "No active or effective value for WireGuardPeerList";
+      return result;
+    }
+    for (const base::Value& e : managed_dict.active_value.GetList())
+      result->active_value.push_back(GetWireGuardPeerProperties(&e));
+    result->policy_source = managed_dict.policy_source;
+    if (!managed_dict.policy_value.is_none()) {
+      result->policy_value = std::vector<mojom::WireGuardPeerPropertiesPtr>();
+      for (const base::Value& e : managed_dict.policy_value.GetList())
+        result->policy_value->push_back(GetWireGuardPeerProperties(&e));
+    }
+    return result;
+  }
+  NET_LOG(ERROR) << "Expected list or dictionary, found: " << *value;
+  return result;
+}
+
+mojom::ManagedWireGuardPropertiesPtr GetManagedWireGuardProperties(
+    const base::Value* dict,
+    const char* key) {
+  auto wg = mojom::ManagedWireGuardProperties::New();
+  const base::Value* wg_dict = dict->FindKey(key);
+  if (!wg_dict) {
+    NET_LOG(ERROR) << "Missing WireGuard properties element";
+    return wg;
+  }
+  if (!wg_dict->is_dict()) {
+    NET_LOG(ERROR) << "Expected dictionary, found: " << *wg_dict;
+    return wg;
+  }
+  wg->private_key = GetManagedString(wg_dict, ::onc::wireguard::kPrivateKey);
+  wg->public_key = GetManagedString(wg_dict, ::onc::wireguard::kPublicKey);
+  wg->peers = GetManagedWireGuardPeerList(wg_dict, ::onc::wireguard::kPeers);
+  return wg;
+}
+
 mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
     NetworkStateHandler* network_state_handler,
     CellularESimProfileHandler* cellular_esim_profile_handler,
@@ -1351,7 +1501,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
   double traffic_counter_reset_time =
       GetDouble(properties, ::onc::network_config::kTrafficCounterResetTime);
   result->traffic_counter_reset_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMilliseconds(traffic_counter_reset_time));
+      base::Milliseconds(traffic_counter_reset_time));
 
   // Managed properties
   result->ip_address_config_type = GetRequiredManagedString(
@@ -1518,7 +1668,8 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
               GetManagedOpenVPNProperties(vpn_dict, ::onc::vpn::kOpenVPN);
           break;
         case mojom::VpnType::kWireGuard:
-          // TODO: Detail Managed ONC implemention in following patches
+          vpn->wireguard =
+              GetManagedWireGuardProperties(vpn_dict, ::onc::vpn::kWireGuard);
           break;
         case mojom::VpnType::kExtension:
         case mojom::VpnType::kArc:
@@ -1625,12 +1776,16 @@ base::Value GetEAPProperties(const mojom::EAPConfigProperties& eap) {
             &eap_dict);
   SetString(::onc::client_cert::kClientCertType, eap.client_cert_type,
             &eap_dict);
+  SetStringList(::onc::eap::kDomainSuffixMatch, eap.domain_suffix_match,
+                &eap_dict);
   SetString(::onc::eap::kIdentity, eap.identity, &eap_dict);
   SetString(::onc::eap::kInner, eap.inner, &eap_dict);
   SetString(::onc::eap::kOuter, eap.outer, &eap_dict);
   SetString(::onc::eap::kPassword, eap.password, &eap_dict);
   eap_dict.SetBoolKey(::onc::eap::kSaveCredentials, eap.save_credentials);
   SetStringList(::onc::eap::kServerCAPEMs, eap.server_ca_pems, &eap_dict);
+  SetSubjectAltNameMatch(::onc::eap::kSubjectAlternativeNameMatch,
+                         &eap.subject_alt_name_match, &eap_dict);
   SetString(::onc::eap::kSubjectMatch, eap.subject_match, &eap_dict);
   eap_dict.SetBoolKey(::onc::eap::kUseSystemCAs, eap.use_system_cas);
 
@@ -1747,6 +1902,37 @@ std::unique_ptr<base::DictionaryValue> GetOncFromConfigProperties(
                 open_vpn.user_authentication_type, &open_vpn_dict);
       type_dict.SetKey(::onc::vpn::kOpenVPN, std::move(open_vpn_dict));
     }
+    if (vpn.wireguard &&
+        base::FeatureList::IsEnabled(ash::features::kEnableWireGuard)) {
+      const mojom::WireGuardConfigProperties& wireguard = *vpn.wireguard;
+      base::Value wireguard_dict(base::Value::Type::DICTIONARY);
+      SetString(::onc::wireguard::kPrivateKey, wireguard.private_key,
+                &wireguard_dict);
+
+      base::Value peer_list(base::Value::Type::LIST);
+      if (wireguard.peers) {
+        for (auto const& peer : *wireguard.peers) {
+          base::Value peer_dict(base::Value::Type::DICTIONARY);
+          peer_dict.SetStringKey(::onc::wireguard::kPublicKey,
+                                 peer->public_key);
+          SetString(::onc::wireguard::kPresharedKey, peer->preshared_key,
+                    &peer_dict);
+          SetString(::onc::wireguard::kEndpoint, peer->endpoint, &peer_dict);
+          SetString(::onc::wireguard::kAllowedIPs, peer->allowed_ips,
+                    &peer_dict);
+          if (peer->persistent_keepalive_interval) {
+            peer_dict.SetStringKey(
+                ::onc::wireguard::kPersistentKeepalive,
+                base::NumberToString(peer->persistent_keepalive_interval));
+          }
+          peer_list.Append(std::move(peer_dict));
+        }
+      }
+      wireguard_dict.SetKey(::onc::wireguard::kPeers, std::move(peer_list));
+      wireguard_dict.SetBoolKey(::onc::vpn::kSaveCredentials, true);
+      type_dict.SetKey(::onc::vpn::kWireGuard, std::move(wireguard_dict));
+    }
+
     if (vpn.type) {
       SetString(::onc::vpn::kType, MojoVpnTypeToOnc(vpn.type->value),
                 &type_dict);
@@ -2655,15 +2841,19 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
       network_configuration_handler_->GetGlobalConfigFromPolicy(
           /*userhash=*/std::string());
   if (global_policy_dict) {
+    result->allow_only_policy_cellular_networks = GetBoolean(
+        global_policy_dict,
+        ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks);
     result->allow_only_policy_networks_to_autoconnect = GetBoolean(
         global_policy_dict,
         ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect);
-    result->allow_only_policy_networks_to_connect = GetBoolean(
+    result->allow_only_policy_wifi_networks_to_connect =
+        GetBoolean(global_policy_dict,
+                   ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect);
+    result
+        ->allow_only_policy_wifi_networks_to_connect_if_available = GetBoolean(
         global_policy_dict,
-        ::onc::global_network_config::kAllowOnlyPolicyNetworksToConnect);
-    result->allow_only_policy_networks_to_connect_if_available = GetBoolean(
-        global_policy_dict, ::onc::global_network_config::
-                                kAllowOnlyPolicyNetworksToConnectIfAvailable);
+        ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable);
     absl::optional<std::vector<std::string>> blocked_hex_ssids = GetStringList(
         global_policy_dict, ::onc::global_network_config::kBlockedHexSSIDs);
     if (blocked_hex_ssids)
@@ -2805,6 +2995,10 @@ void CrosNetworkConfig::GetAlwaysOnVpn(GetAlwaysOnVpnCallback callback) {
       network_profile_handler_->GetDefaultUserProfile();
   if (!profile) {
     NET_LOG(ERROR) << "GetAlwaysOnVpn: no user profile found";
+    // No profile available, ensure the callback gets fired with always-on VPN
+    // disabled.
+    OnGetAlwaysOnVpn(std::move(callback), shill::kAlwaysOnVpnModeOff,
+                     std::string());
     return;
   }
 
@@ -2879,6 +3073,33 @@ void CrosNetworkConfig::SetAlwaysOnVpn(
   network_profile_handler_->SetAlwaysOnVpnService(profile->path, service_path);
 }
 
+void CrosNetworkConfig::GetSupportedVpnTypes(
+    GetSupportedVpnTypesCallback callback) {
+  ShillManagerClient::Get()->GetProperties(
+      base::BindOnce(&CrosNetworkConfig::OnGetSupportedVpnTypes,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CrosNetworkConfig::OnGetSupportedVpnTypes(
+    GetSupportedVpnTypesCallback callback,
+    absl::optional<base::Value> properties) {
+  std::vector<std::string> result;
+  const base::Value* value =
+      properties->FindKey(shill::kSupportedVPNTypesProperty);
+  if (value) {
+    result =
+        base::SplitString(*value->GetIfString(), ",", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+  }
+  if (!base::FeatureList::IsEnabled(ash::features::kEnableWireGuard)) {
+    auto iter = std::find(result.begin(), result.end(), kWireGuardVPNType);
+    if (iter != result.end()) {
+      result.erase(iter);
+    }
+  }
+  std::move(callback).Run(result);
+}
+
 void CrosNetworkConfig::RequestTrafficCounters(
     const std::string& guid,
     RequestTrafficCountersCallback callback) {
@@ -2895,21 +3116,16 @@ void CrosNetworkConfig::RequestTrafficCounters(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-// static
-mojom::TrafficCounterSource CrosNetworkConfig::GetTrafficCounterEnumForTesting(
-    const std::string& source) {
-  return ConvertToTrafficCounterSourceEnum(source);
-}
-
 void CrosNetworkConfig::PopulateTrafficCounters(
     RequestTrafficCountersCallback callback,
-    const base::ListValue& traffic_counters) {
-  if (!traffic_counters.GetList().size()) {
+    absl::optional<base::Value> traffic_counters) {
+  if (!traffic_counters || !traffic_counters->is_list() ||
+      !traffic_counters->GetList().size()) {
     std::move(callback).Run({});
     return;
   }
   std::vector<mojom::TrafficCounterPtr> counters;
-  for (const base::Value& tc : traffic_counters.GetList()) {
+  for (const base::Value& tc : traffic_counters->GetList()) {
     DCHECK(tc.is_dict());
     const base::Value* source =
         tc.FindKeyOfType("source", base::Value::Type::STRING);
@@ -2959,6 +3175,12 @@ void CrosNetworkConfig::ResetTrafficCounters(const std::string& guid) {
     return;
   }
   network_state_handler_->ResetTrafficCounters(service_path);
+}
+
+// static
+mojom::TrafficCounterSource CrosNetworkConfig::GetTrafficCounterEnumForTesting(
+    const std::string& source) {
+  return ConvertToTrafficCounterSourceEnum(source);
 }
 
 // NetworkStateHandlerObserver

@@ -23,8 +23,14 @@ namespace pdf_extension_test_util {
 // loading or prompted a password. The result indicates success if the PDF loads
 // successfully, otherwise it indicates failure. If it doesn't finish loading,
 // the test will hang.
+//
+// Tests that attempt to send mouse/pointer events should pass `true` for
+// `wait_for_hit_test_data`, otherwise the necessary hit test data may not be
+// available by the time this function returns. (This behavior is the default,
+// since the delay should be small.)
 testing::AssertionResult EnsurePDFHasLoaded(
-    const content::ToRenderFrameHost& frame) WARN_UNUSED_RESULT;
+    const content::ToRenderFrameHost& frame,
+    bool wait_for_hit_test_data = true) WARN_UNUSED_RESULT;
 
 gfx::Point ConvertPageCoordToScreenCoord(content::WebContents* contents,
                                          const gfx::Point& point);

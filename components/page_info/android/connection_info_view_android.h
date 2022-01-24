@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/page_info/page_info_ui.h"
 
 namespace content {
@@ -28,6 +27,11 @@ class ConnectionInfoViewAndroid : public PageInfoUI {
   ConnectionInfoViewAndroid(JNIEnv* env,
                             jobject java_page_info,
                             content::WebContents* web_contents);
+
+  ConnectionInfoViewAndroid(const ConnectionInfoViewAndroid&) = delete;
+  ConnectionInfoViewAndroid& operator=(const ConnectionInfoViewAndroid&) =
+      delete;
+
   ~ConnectionInfoViewAndroid() override;
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
@@ -50,8 +54,6 @@ class ConnectionInfoViewAndroid : public PageInfoUI {
 
   // The java prompt implementation.
   base::android::ScopedJavaGlobalRef<jobject> popup_jobject_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionInfoViewAndroid);
 };
 
 #endif  // COMPONENTS_PAGE_INFO_ANDROID_CONNECTION_INFO_VIEW_ANDROID_H_

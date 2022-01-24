@@ -22,10 +22,8 @@ using assistant::util::CreateOpacityElement;
 using assistant::util::StartLayerAnimationSequence;
 
 // Animation.
-constexpr base::TimeDelta kAnimateInDuration =
-    base::TimeDelta::FromMilliseconds(250);
-constexpr base::TimeDelta kAnimateOutDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kAnimateInDuration = base::Milliseconds(250);
+constexpr base::TimeDelta kAnimateOutDuration = base::Milliseconds(200);
 
 }  // namespace
 
@@ -39,8 +37,7 @@ AssistantUiElementViewAnimator::AssistantUiElementViewAnimator(
 AssistantUiElementViewAnimator::AnimationSmoothnessCallback
 AssistantUiElementViewAnimator::GetAnimationSmoothnessCallback() const {
   return base::BindRepeating<void(const std::string&, int value)>(
-      base::UmaHistogramPercentageObsoleteDoNotUse,
-      animation_smoothness_histogram_);
+      base::UmaHistogramPercentage, animation_smoothness_histogram_);
 }
 
 // ElementAnimator:

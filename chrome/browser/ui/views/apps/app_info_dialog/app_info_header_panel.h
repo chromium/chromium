@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"

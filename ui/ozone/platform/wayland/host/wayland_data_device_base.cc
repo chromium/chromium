@@ -7,9 +7,15 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 
 namespace ui {
 
@@ -28,22 +34,32 @@ const std::vector<std::string>& WaylandDataDeviceBase::GetAvailableMimeTypes()
   return data_offer_->mime_types();
 }
 
-bool WaylandDataDeviceBase::RequestSelectionData(const std::string& mime_type) {
-  if (!data_offer_)
-    return false;
-
-  base::ScopedFD fd = data_offer_->Receive(mime_type);
-  if (!fd.is_valid()) {
-    LOG(ERROR) << "Failed to open file descriptor.";
+bool WaylandDataDeviceBase::ReadSelectionData(
+    const std::string& mime_type,
+    PlatformClipboard::RequestDataClosure callback) {
+  DCHECK(callback);
+  if (!data_offer_) {
+    std::move(callback).Run(nullptr);
     return false;
   }
 
-  // Ensure there is not pending operation to be performed by the compositor,
-  // otherwise read(..) can block awaiting data to be sent to pipe.
-  RegisterDeferredReadClosure(
-      base::BindOnce(&WaylandDataDeviceBase::ReadClipboardDataFromFD,
-                     base::Unretained(this), std::move(fd), mime_type));
-  RegisterDeferredReadCallback();
+  base::ScopedFD fd = data_offer_->Receive(mime_type);
+  if (!fd.is_valid()) {
+    DPLOG(ERROR) << "Failed to open file descriptor.";
+    std::move(callback).Run(nullptr);
+    return false;
+  }
+
+  connection_->ScheduleFlush();
+
+  // Schedule data reading to be done asynchronously in the thread pool as it
+  // may take some time and blocking the UI thread for IO is undesirable.
+  // TODO(crbug.com/913422): Use USER_VISIBLE once Clipboard becomes async.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+      base::BindOnce(&WaylandDataDeviceBase::ReadFromFD, base::Unretained(this),
+                     std::move(fd)),
+      std::move(callback));
   return true;
 }
 
@@ -51,15 +67,11 @@ void WaylandDataDeviceBase::ResetDataOffer() {
   data_offer_.reset();
 }
 
-void WaylandDataDeviceBase::ReadClipboardDataFromFD(
-    base::ScopedFD fd,
-    const std::string& mime_type) {
+PlatformClipboard::Data WaylandDataDeviceBase::ReadFromFD(
+    base::ScopedFD fd) const {
   std::vector<uint8_t> contents;
   wl::ReadDataFromFD(std::move(fd), &contents);
-  if (!selection_delegate_)
-    return;
-  selection_delegate_->OnSelectionDataReceived(
-      mime_type, base::RefCountedBytes::TakeVector(&contents));
+  return base::RefCountedBytes::TakeVector(&contents);
 }
 
 void WaylandDataDeviceBase::RegisterDeferredReadCallback() {
@@ -68,8 +80,7 @@ void WaylandDataDeviceBase::RegisterDeferredReadCallback() {
   deferred_read_callback_.reset(
       wl_display_sync(connection_->display_wrapper()));
 
-  static const wl_callback_listener kListener = {
-      WaylandDataDeviceBase::DeferredReadCallback};
+  static constexpr wl_callback_listener kListener = {&DeferredReadCallback};
 
   wl_callback_add_listener(deferred_read_callback_.get(), &kListener, this);
 
@@ -101,6 +112,19 @@ void WaylandDataDeviceBase::DeferredReadCallbackInternal(struct wl_callback* cb,
   deferred_read_callback_.reset();
 
   std::move(deferred_read_closure_).Run();
+}
+
+void WaylandDataDeviceBase::NotifySelectionOffer(
+    WaylandDataOfferBase* offer) const {
+  if (selection_offer_callback_)
+    selection_offer_callback_.Run(offer);
+}
+
+absl::optional<wl::Serial> WaylandDataDeviceBase::GetSerialForSelection()
+    const {
+  return connection_->serial_tracker().GetSerial({wl::SerialType::kTouchPress,
+                                                  wl::SerialType::kMousePress,
+                                                  wl::SerialType::kKeyPress});
 }
 
 }  // namespace ui

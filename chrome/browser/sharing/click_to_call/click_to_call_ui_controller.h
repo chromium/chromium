@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/sharing_service.h"
@@ -34,6 +33,9 @@ class ClickToCallUiController
                          const absl::optional<url::Origin>& initiating_origin,
                          const GURL& url,
                          bool hide_default_handler);
+
+  ClickToCallUiController(const ClickToCallUiController&) = delete;
+  ClickToCallUiController& operator=(const ClickToCallUiController&) = delete;
 
   ~ClickToCallUiController() override;
 
@@ -79,8 +81,6 @@ class ClickToCallUiController
   base::WeakPtrFactory<ClickToCallUiController> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ClickToCallUiController);
 };
 
 #endif  // CHROME_BROWSER_SHARING_CLICK_TO_CALL_CLICK_TO_CALL_UI_CONTROLLER_H_

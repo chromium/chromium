@@ -18,6 +18,13 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "extensions/renderer/v8_helpers.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-json.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-value.h"
 
 using content::V8ValueConverter;
 

@@ -4,9 +4,12 @@
 
 #include "chromeos/services/libassistant/speaker_id_enrollment_controller.h"
 
+#include "base/scoped_observation.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_event.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
+#include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "libassistant/shared/internal_api/speaker_id_enrollment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -14,8 +17,7 @@
 namespace chromeos {
 namespace libassistant {
 
-using SpeakerIdEnrollmentState =
-    ::assistant_client::SpeakerIdEnrollmentUpdate::State;
+using ::assistant::api::OnSpeakerIdEnrollmentEventRequest;
 
 ////////////////////////////////////////////////////////////////////////////////
 // GetStatusWaiter
@@ -77,7 +79,8 @@ class SpeakerIdEnrollmentController::GetStatusWaiter : public AbortableTask {
 
 // A single enrollment session, created when speaker id enrollment is started,
 // and destroyed when it is done or cancelled.
-class SpeakerIdEnrollmentController::EnrollmentSession {
+class SpeakerIdEnrollmentController::EnrollmentSession
+    : public GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest> {
  public:
   using SpeakerIdEnrollmentEvent =
       ::assistant::api::events::SpeakerIdEnrollmentEvent;
@@ -87,36 +90,17 @@ class SpeakerIdEnrollmentController::EnrollmentSession {
       AssistantClient* assistant_client)
       : client_(std::move(client)), assistant_client_(assistant_client) {
     DCHECK(assistant_client_);
+    scoped_assistant_client_observation_.Observe(assistant_client_);
   }
   EnrollmentSession(const EnrollmentSession&) = delete;
   EnrollmentSession& operator=(const EnrollmentSession&) = delete;
-  ~EnrollmentSession() { Stop(); }
+  ~EnrollmentSession() override { Stop(); }
 
-  void Start(const std::string& user_gaia_id, bool skip_cloud_enrollment) {
-    VLOG(1) << "Assistant: Starting speaker id enrollment";
-
-    ::assistant::api::StartSpeakerIdEnrollmentRequest request;
-    request.set_user_id(user_gaia_id);
-    request.set_skip_cloud_enrollment(skip_cloud_enrollment);
-
-    assistant_client_->StartSpeakerIdEnrollment(
-        request,
-        base::BindRepeating(&EnrollmentSession::OnSpeakerIdEnrollmentUpdate,
-                            weak_factory_.GetWeakPtr()));
-  }
-
-  void Stop() {
-    if (done_)
-      return;
-
-    VLOG(1) << "Assistant: Stopping speaker id enrollment";
-    ::assistant::api::CancelSpeakerIdEnrollmentRequest request;
-    assistant_client_->CancelSpeakerIdEnrollment(request);
-  }
-
- private:
-  void OnSpeakerIdEnrollmentUpdate(const SpeakerIdEnrollmentEvent& event) {
-    switch (event.type_case()) {
+  // GrpcServicesObserver:
+  // Invoked when a Speaker Id Enrollment event has been received.
+  void OnGrpcMessage(const ::assistant::api::OnSpeakerIdEnrollmentEventRequest&
+                         request) override {
+    switch (request.event().type_case()) {
       case SpeakerIdEnrollmentEvent::kListenState:
         VLOG(1) << "Assistant: Speaker id enrollment is listening";
         client_->OnListeningHotword();
@@ -145,9 +129,34 @@ class SpeakerIdEnrollmentController::EnrollmentSession {
     }
   }
 
+  void Start(const std::string& user_gaia_id, bool skip_cloud_enrollment) {
+    VLOG(1) << "Assistant: Starting speaker id enrollment";
+
+    ::assistant::api::StartSpeakerIdEnrollmentRequest request;
+    request.set_user_id(user_gaia_id);
+    request.set_skip_cloud_enrollment(skip_cloud_enrollment);
+    assistant_client_->StartSpeakerIdEnrollment(request);
+  }
+
+  void Stop() {
+    if (done_)
+      return;
+
+    VLOG(1) << "Assistant: Stopping speaker id enrollment";
+    ::assistant::api::CancelSpeakerIdEnrollmentRequest request;
+    assistant_client_->CancelSpeakerIdEnrollment(request);
+  }
+
+ private:
   ::mojo::Remote<mojom::SpeakerIdEnrollmentClient> client_;
   AssistantClient* const assistant_client_;
   bool done_ = false;
+  base::ScopedObservation<
+      AssistantClient,
+      GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>,
+      &AssistantClient::AddSpeakerIdEnrollmentEventObserver,
+      &AssistantClient::RemoveSpeakerIdEnrollmentEventObserver>
+      scoped_assistant_client_observation_{this};
   base::WeakPtrFactory<EnrollmentSession> weak_factory_{this};
 };
 

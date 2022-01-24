@@ -52,14 +52,17 @@ class NotificationOverflowImageView
     SetID(kNotificationOverflowIconId);
     SetImage(image, gfx::Size(kIconSize, kIconSize));
   }
+
+  NotificationOverflowImageView(const NotificationOverflowImageView&) = delete;
+  NotificationOverflowImageView& operator=(
+      const NotificationOverflowImageView&) = delete;
+
   ~NotificationOverflowImageView() override = default;
 
   const std::string& notification_id() const { return notification_id_; }
 
  private:
   std::string const notification_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationOverflowImageView);
 };
 
 NotificationOverflowView::NotificationOverflowView()

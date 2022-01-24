@@ -104,8 +104,8 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
   dict_value.SetKey("f", std::move(nested_empty_list));
 
   base::ListValue list_value;
-  list_value.AppendBoolean(true);
-  list_value.AppendInteger(100);
+  list_value.Append(true);
+  list_value.Append(100);
   list_value.Append(1.0);
 
   ASSERT_EQ(base::Value::Type::NONE, null_value.type());

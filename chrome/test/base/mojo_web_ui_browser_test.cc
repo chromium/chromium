@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/web_ui_test_handler.h"
@@ -75,6 +75,19 @@ class MojoWebUIBrowserTest::WebUITestContentBrowserClient
                             base::Unretained(this)));
   }
 
+  void RegisterWebUIInterfaceBrokers(
+      content::WebUIBrowserInterfaceBrokerRegistry& registry) override {
+    ChromeContentBrowserClient::RegisterWebUIInterfaceBrokers(registry);
+
+    registry.AddBinderForTesting(base::BindLambdaForTesting(
+        [&](content::WebUIController* controller,
+            mojo::PendingReceiver<web_ui_test::mojom::TestRunner> receiver) {
+          content::RenderFrameHost* rfh =
+              controller->web_ui()->GetWebContents()->GetMainFrame();
+          this->BindWebUITestRunner(rfh, std::move(receiver));
+        }));
+  }
+
   void set_test_page_handler(WebUITestPageHandler* test_page_handler) {
     test_page_handler_ = test_page_handler;
   }
@@ -99,12 +112,6 @@ MojoWebUIBrowserTest::~MojoWebUIBrowserTest() = default;
 
 void MojoWebUIBrowserTest::SetUpOnMainThread() {
   BaseWebUIBrowserTest::SetUpOnMainThread();
-
-  base::FilePath pak_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
-  pak_path = pak_path.AppendASCII("browser_tests.pak");
-  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      pak_path, ui::SCALE_FACTOR_NONE);
 
   content::SetBrowserClientForTesting(test_content_browser_client_.get());
 }

@@ -18,6 +18,10 @@ namespace crypto {
 class CRYPTO_EXPORT ScopedTestNSSDB {
  public:
   ScopedTestNSSDB();
+
+  ScopedTestNSSDB(const ScopedTestNSSDB&) = delete;
+  ScopedTestNSSDB& operator=(const ScopedTestNSSDB&) = delete;
+
   ~ScopedTestNSSDB();
 
   bool is_open() const { return !!slot_; }
@@ -29,8 +33,6 @@ class CRYPTO_EXPORT ScopedTestNSSDB {
 
   base::ScopedTempDir temp_dir_;
   ScopedPK11Slot slot_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestNSSDB);
 };
 
 }  // namespace crypto

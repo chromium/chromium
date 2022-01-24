@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_SETTINGS_PRIVATE_GENERATED_PREFS_FACTORY_H__
 #define CHROME_BROWSER_EXTENSIONS_API_SETTINGS_PRIVATE_GENERATED_PREFS_FACTORY_H__
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -17,6 +16,9 @@ class GeneratedPrefs;
 // BrowserContextKeyedServiceFactory for GeneratedPrefs.
 class GeneratedPrefsFactory : public BrowserContextKeyedServiceFactory {
  public:
+  GeneratedPrefsFactory(const GeneratedPrefsFactory&) = delete;
+  GeneratedPrefsFactory& operator=(const GeneratedPrefsFactory&) = delete;
+
   static GeneratedPrefs* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
@@ -34,8 +36,6 @@ class GeneratedPrefsFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedPrefsFactory);
 };
 
 }  // namespace settings_private

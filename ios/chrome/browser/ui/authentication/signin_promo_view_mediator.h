@@ -27,9 +27,8 @@ namespace ios {
 // way to go backwards. All states can be skipped except |NeverVisible| and
 // |Invalid|.
 enum class SigninPromoViewState {
-  // Initial state. When -[SigninPromoViewMediator
-  // signinPromoViewIsRemoved] is called with that state, no metrics is
-  // recorded.
+  // Initial state. When -[SigninPromoViewMediator disconnect] is called with
+  // that state, no metrics is recorded.
   NeverVisible = 0,
   // None of the buttons has been used yet.
   Unused,
@@ -105,10 +104,10 @@ class PrefRegistrySyncable;
 // never been shown, or it is already hidden, this method does nothing.
 - (void)signinPromoViewIsHidden;
 
-// Called when the sign-in promo view is removed from the view hierarchy (it or
-// one of its superviews is removed). The mediator should not be used after this
-// called.
-- (void)signinPromoViewIsRemoved;
+// Disconnects the mediator, this method needs to be called when the sign-in
+// promo view is removed from the view hierarchy (it or one of its superviews is
+// removed). The mediator should not be used after this called.
+- (void)disconnect;
 
 @end
 

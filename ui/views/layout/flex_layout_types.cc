@@ -369,6 +369,9 @@ void Span::Align(const Span& container,
       SetSpan(container.start() + margins.leading(),
               std::max(0, container.length() - margins.size()));
       break;
+    case LayoutAlignment::kBaseline:
+      NOTIMPLEMENTED();
+      break;
   }
 }
 

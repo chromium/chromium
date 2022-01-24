@@ -400,7 +400,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             try {
                 stream = new DataInputStream(
                         new BufferedInputStream(new FileInputStream(metadataFile)));
-                TabPersistentStore.readSavedStateFile(stream, null, tabIds, false);
+                TabPersistentStore.readSavedStateFile(stream, null, tabIds);
             } catch (Exception e) {
                 Log.e(TAG, "Unable to read state for " + metadataFile.getName() + ": " + e);
             } finally {

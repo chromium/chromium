@@ -297,7 +297,7 @@ TEST_P(LinkHighlightImplTest, HighlightLayerEffectNode) {
   EXPECT_EQ(0.f, highlight->Effect().Opacity());
   EXPECT_TRUE(highlight->Effect().HasActiveOpacityAnimation());
 
-  highlight->NotifyAnimationFinished(0, 0);
+  highlight->NotifyAnimationFinished(base::TimeDelta(), 0);
   EXPECT_TRUE(web_view_impl->MainFrameImpl()
                   ->GetFrameView()
                   ->VisualViewportOrOverlayNeedsRepaintForTesting());
@@ -383,8 +383,9 @@ TEST_P(LinkHighlightImplTest, MultiColumn) {
     EXPECT_EQ(cc::ElementId(), layer->element_id());
     auto effect_tree_index = layer->effect_tree_index();
     auto* property_trees = layer->layer_tree_host()->property_trees();
-    EXPECT_EQ(effect_tree_index, property_trees->element_id_to_effect_node_index
-                                     [highlight->ElementIdForTesting()]);
+    EXPECT_EQ(effect_tree_index,
+              property_trees->element_id_to_effect_node_index.at(
+                  highlight->ElementIdForTesting()));
   };
 
   // The highlight should create 2 additional layer, each for each fragment.
@@ -399,7 +400,8 @@ TEST_P(LinkHighlightImplTest, MultiColumn) {
   multicol->setAttribute(html_names::kStyleAttr, "height: 25px");
   UpdateAllLifecyclePhases();
   ASSERT_EQ(&first_fragment, &touch_node->GetLayoutObject()->FirstFragment());
-  ASSERT_EQ(second_fragment, first_fragment.NextFragment());
+  second_fragment = first_fragment.NextFragment();
+  ASSERT_TRUE(second_fragment);
   const auto* third_fragment = second_fragment->NextFragment();
   ASSERT_TRUE(third_fragment);
   EXPECT_FALSE(third_fragment->NextFragment());

@@ -11,6 +11,12 @@
 class MockMediaRouterActionController : public MediaRouterActionController {
  public:
   explicit MockMediaRouterActionController(Profile* profile);
+
+  MockMediaRouterActionController(const MockMediaRouterActionController&) =
+      delete;
+  MockMediaRouterActionController& operator=(
+      const MockMediaRouterActionController&) = delete;
+
   ~MockMediaRouterActionController() override;
 
   MOCK_METHOD1(OnIssueUpdated, void(const media_router::Issue* issue));
@@ -23,9 +29,6 @@ class MockMediaRouterActionController : public MediaRouterActionController {
   MOCK_METHOD0(OnContextMenuShown, void());
   MOCK_METHOD0(OnContextMenuHidden, void());
   MOCK_METHOD0(MaybeAddOrRemoveAction, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockMediaRouterActionController);
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_MOCK_MEDIA_ROUTER_ACTION_CONTROLLER_H_

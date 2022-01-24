@@ -395,6 +395,23 @@ inline ABSL_RANDOM_INTERNAL_ATTRIBUTE_ALWAYS_INLINE void Permute(
   }
 }
 
+// Enables native loads in the round loop by pre-swapping.
+inline ABSL_RANDOM_INTERNAL_ATTRIBUTE_ALWAYS_INLINE void SwapEndian(
+    absl::uint128* state) {
+#ifdef ABSL_IS_BIG_ENDIAN
+  for (uint32_t block = 0; block < RandenTraits::kFeistelBlocks; ++block) {
+    uint64_t new_lo = absl::little_endian::ToHost64(
+        static_cast<uint64_t>(state[block] >> 64));
+    uint64_t new_hi = absl::little_endian::ToHost64(
+        static_cast<uint64_t>((state[block] << 64) >> 64));
+    state[block] = (static_cast<absl::uint128>(new_hi) << 64) | new_lo;
+  }
+#else
+  // Avoid warning about unused variable.
+  (void)state;
+#endif
+}
+
 }  // namespace
 
 namespace absl {
@@ -439,7 +456,11 @@ void RandenSlow::Generate(const void* keys_void, void* state_void) {
 
   const absl::uint128 prev_inner = state[0];
 
+  SwapEndian(state);
+
   Permute(state, keys);
+
+  SwapEndian(state);
 
   // Ensure backtracking resistance.
   *state ^= prev_inner;

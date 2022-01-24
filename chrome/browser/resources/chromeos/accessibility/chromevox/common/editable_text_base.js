@@ -268,7 +268,7 @@ ChromeVoxEditableTextBase = class {
     }
     let queueMode = QueueMode.QUEUE;
     if (opt_triggeredByUser === true) {
-      queueMode = QueueMode.FLUSH;
+      queueMode = QueueMode.CATEGORY_FLUSH;
     }
     this.tts.speak(str, queueMode, opt_personality || {});
   }

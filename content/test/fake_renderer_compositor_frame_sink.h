@@ -22,6 +22,12 @@ class FakeRendererCompositorFrameSink
   FakeRendererCompositorFrameSink(
       mojo::PendingRemote<viz::mojom::CompositorFrameSink> sink,
       mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient> receiver);
+
+  FakeRendererCompositorFrameSink(const FakeRendererCompositorFrameSink&) =
+      delete;
+  FakeRendererCompositorFrameSink& operator=(
+      const FakeRendererCompositorFrameSink&) = delete;
+
   ~FakeRendererCompositorFrameSink() override;
 
   bool did_receive_ack() { return did_receive_ack_; }
@@ -51,8 +57,6 @@ class FakeRendererCompositorFrameSink
   mojo::Remote<viz::mojom::CompositorFrameSink> sink_;
   bool did_receive_ack_ = false;
   std::vector<viz::ReturnedResource> last_reclaimed_resources_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRendererCompositorFrameSink);
 };
 
 }  // namespace content

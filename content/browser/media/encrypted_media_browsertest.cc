@@ -104,7 +104,7 @@ class EncryptedMediaTest
   void TestFrameSizeChange() {
     RunTest("encrypted_frame_size_change.html",
             "frame_size_change-av_enc-v.webm", CurrentKeySystem(),
-            CurrentSourceType(), media::kEnded);
+            CurrentSourceType(), media::kEndedTitle);
   }
 
   void TestConfigChange(ConfigChangeType config_change_type) {
@@ -119,7 +119,7 @@ class EncryptedMediaTest
     query_params.emplace_back(
         "configChangeType",
         base::NumberToString(static_cast<int>(config_change_type)));
-    RunMediaTestPage("mse_config_change.html", query_params, media::kEnded,
+    RunMediaTestPage("mse_config_change.html", query_params, media::kEndedTitle,
                      true);
   }
 
@@ -141,7 +141,8 @@ class EncryptedMediaTest
   void RunSimplePlaybackTest(const std::string& media_file,
                              const std::string& key_system,
                              SrcType src_type) {
-    RunTest(kDefaultEmePlayer, media_file, key_system, src_type, media::kEnded);
+    RunTest(kDefaultEmePlayer, media_file, key_system, src_type,
+            media::kEndedTitle);
   }
 
   void RunMultipleFileTest(const std::string& video_file,
@@ -220,7 +221,13 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioClearVideo_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-a.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM) {
+// TODO(https://crbug.com/1239633): Flaky on Android.
+#if defined(OS_ANDROID)
+#define MAYBE_Playback_VideoAudio_WebM DISABLED_Playback_VideoAudio_WebM
+#else
+#define MAYBE_Playback_VideoAudio_WebM Playback_VideoAudio_WebM
+#endif
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, MAYBE_Playback_VideoAudio_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-av.webm");
 }
 
@@ -242,7 +249,15 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-v.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_WebM_Opus) {
+// TODO(https://crbug.com/1239633): Flaky on Android.
+#if defined(OS_ANDROID)
+#define MAYBE_Playback_VideoAudio_WebM_Opus \
+  DISABLED_Playback_VideoAudio_WebM_Opus
+#else
+#define MAYBE_Playback_VideoAudio_WebM_Opus Playback_AudioOnly_WebM_Opus
+#endif
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+                       MAYBE_Playback_VideoAudio_WebM_Opus) {
 #if defined(OS_ANDROID)
   if (!media::MediaCodecUtil::IsOpusDecoderAvailable())
     GTEST_SKIP() << "Opus decoder not available";
@@ -267,7 +282,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM_Opus) {
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_MP4_FLAC) {
-  RunMultipleFileTest(std::string(), "bear-flac-cenc.mp4", media::kEnded);
+  RunMultipleFileTest(std::string(), "bear-flac-cenc.mp4", media::kEndedTitle);
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_MP4_OPUS) {
@@ -275,7 +290,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_MP4_OPUS) {
   if (!media::MediaCodecUtil::IsOpusDecoderAvailable())
     GTEST_SKIP() << "Opus decoder not available";
 #endif
-  RunMultipleFileTest(std::string(), "bear-opus-cenc.mp4", media::kEnded);
+  RunMultipleFileTest(std::string(), "bear-opus-cenc.mp4", media::kEndedTitle);
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_VP9) {
@@ -378,34 +393,34 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, MAYBE_FrameSizeChangeVideo) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Encryption_CENC) {
   RunMultipleFileTest("bear-640x360-v_frag-cenc.mp4",
-                      "bear-640x360-a_frag-cenc.mp4", media::kEnded);
+                      "bear-640x360-a_frag-cenc.mp4", media::kEndedTitle);
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Encryption_CBC1) {
   RunMultipleFileTest("bear-640x360-v_frag-cbc1.mp4", std::string(),
-                      media::kError);
+                      media::kErrorTitle);
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Encryption_CENS) {
   RunMultipleFileTest("bear-640x360-v_frag-cens.mp4", std::string(),
-                      media::kError);
+                      media::kErrorTitle);
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Encryption_CBCS) {
   RunMultipleFileTest("bear-640x360-v_frag-cbcs.mp4",
-                      "bear-640x360-a_frag-cbcs.mp4", media::kEnded);
+                      "bear-640x360-a_frag-cbcs.mp4", media::kEndedTitle);
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
                        Playback_Encryption_CBCS_Video_CENC_Audio) {
   RunMultipleFileTest("bear-640x360-v_frag-cbcs.mp4",
-                      "bear-640x360-a_frag-cenc.mp4", media::kEnded);
+                      "bear-640x360-a_frag-cenc.mp4", media::kEndedTitle);
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
                        Playback_Encryption_CENC_Video_CBCS_Audio) {
   RunMultipleFileTest("bear-640x360-v_frag-cenc.mp4",
-                      "bear-640x360-a_frag-cbcs.mp4", media::kEnded);
+                      "bear-640x360-a_frag-cbcs.mp4", media::kEndedTitle);
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 

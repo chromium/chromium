@@ -20,11 +20,11 @@ using base::sequence_manager::FakeTask;
 using base::sequence_manager::FakeTaskTiming;
 
 base::TimeTicks Seconds(int seconds) {
-  return base::TimeTicks() + base::TimeDelta::FromSeconds(seconds);
+  return base::TimeTicks() + base::Seconds(seconds);
 }
 
 base::ThreadTicks ThreadSeconds(int seconds) {
-  return base::ThreadTicks() + base::TimeDelta::FromSeconds(seconds);
+  return base::ThreadTicks() + base::Seconds(seconds);
 }
 
 }  // namespace

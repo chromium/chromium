@@ -5,7 +5,6 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
 #include "base/android/build_info.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/android/view_configuration.h"
@@ -24,6 +23,10 @@ const float kMaxGestureBoundsLengthDips = 32.f;
 
 class GestureConfigurationAndroid : public GestureConfiguration {
  public:
+  GestureConfigurationAndroid(const GestureConfigurationAndroid&) = delete;
+  GestureConfigurationAndroid& operator=(const GestureConfigurationAndroid&) =
+      delete;
+
   ~GestureConfigurationAndroid() override {
   }
 
@@ -68,7 +71,6 @@ class GestureConfigurationAndroid : public GestureConfiguration {
   }
 
   friend struct base::DefaultSingletonTraits<GestureConfigurationAndroid>;
-  DISALLOW_COPY_AND_ASSIGN(GestureConfigurationAndroid);
 };
 
 }  // namespace

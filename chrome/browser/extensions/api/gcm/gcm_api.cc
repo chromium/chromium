@@ -110,7 +110,7 @@ GcmRegisterFunction::~GcmRegisterFunction() {}
 
 ExtensionFunction::ResponseAction GcmRegisterFunction::Run() {
   std::unique_ptr<api::gcm::Register::Params> params(
-      api::gcm::Register::Params::Create(*args_));
+      api::gcm::Register::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GetGCMDriver()->Register(
@@ -125,7 +125,7 @@ void GcmRegisterFunction::CompleteFunctionWithResult(
     const std::string& registration_id,
     gcm::GCMClient::Result gcm_result) {
   auto result = std::make_unique<base::ListValue>();
-  result->AppendString(registration_id);
+  result->Append(registration_id);
 
   const bool succeeded = gcm::GCMClient::SUCCESS == gcm_result;
   Respond(succeeded
@@ -160,7 +160,7 @@ GcmSendFunction::~GcmSendFunction() {}
 
 ExtensionFunction::ResponseAction GcmSendFunction::Run() {
   std::unique_ptr<api::gcm::Send::Params> params(
-      api::gcm::Send::Params::Create(*args_));
+      api::gcm::Send::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   EXTENSION_FUNCTION_VALIDATE(
       ValidateMessageData(params->message.data.additional_properties));
@@ -183,7 +183,7 @@ void GcmSendFunction::CompleteFunctionWithResult(
     const std::string& message_id,
     gcm::GCMClient::Result gcm_result) {
   auto result = std::make_unique<base::ListValue>();
-  result->AppendString(message_id);
+  result->Append(message_id);
 
   const bool succeeded = gcm::GCMClient::SUCCESS == gcm_result;
   Respond(succeeded

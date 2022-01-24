@@ -9,8 +9,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/authenticator.h"
 #include "chromeos/login/auth/user_context.h"
@@ -36,6 +35,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) StubAuthenticator
 
   StubAuthenticator(AuthStatusConsumer* consumer,
                     const UserContext& expected_user_context);
+
+  StubAuthenticator(const StubAuthenticator&) = delete;
+  StubAuthenticator& operator=(const StubAuthenticator&) = delete;
 
   // Authenticator:
   void CompleteLogin(const UserContext& user_context) override;
@@ -90,8 +92,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) StubAuthenticator
 
   // For requests that report auth failure, the reason for the failure.
   AuthFailure::FailureReason failure_reason_ = AuthFailure::NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(StubAuthenticator);
 };
 
 }  // namespace chromeos

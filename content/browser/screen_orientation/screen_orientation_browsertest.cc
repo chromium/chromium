@@ -5,11 +5,10 @@
 #include <stdlib.h>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -38,7 +37,15 @@ namespace content {
 
 class ScreenOrientationBrowserTest : public ContentBrowserTest  {
  public:
-  ScreenOrientationBrowserTest() {
+  ScreenOrientationBrowserTest() = default;
+
+  ScreenOrientationBrowserTest(const ScreenOrientationBrowserTest&) = delete;
+  ScreenOrientationBrowserTest& operator=(const ScreenOrientationBrowserTest&) =
+      delete;
+
+  // ContentBrowserTest:
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
   WebContentsImpl* web_contents() {
@@ -62,18 +69,6 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
       type = display::mojom::ScreenOrientation::kLandscapeSecondary;
     }
     ASSERT_NE(display::mojom::ScreenOrientation::kUndefined, type);
-
-    std::set<RenderWidgetHost*> rwhs;
-    for (RenderFrameHost* rfh : web_contents()->GetAllFrames()) {
-      if (rfh == web_contents()->GetMainFrame())
-        continue;
-
-      rwhs.insert(static_cast<RenderFrameHostImpl*>(rfh)
-                      ->frame_tree_node()
-                      ->render_manager()
-                      ->GetRenderWidgetHostView()
-                      ->GetRenderWidgetHost());
-    }
 
     // This simulates what the browser process does when the screen orientation
     // is changed.
@@ -119,14 +114,16 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
             .GetInt();
     return angle;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationBrowserTest);
 };
 
 class ScreenOrientationOOPIFBrowserTest : public ScreenOrientationBrowserTest {
  public:
   ScreenOrientationOOPIFBrowserTest() {}
+
+  ScreenOrientationOOPIFBrowserTest(const ScreenOrientationOOPIFBrowserTest&) =
+      delete;
+  ScreenOrientationOOPIFBrowserTest& operator=(
+      const ScreenOrientationOOPIFBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
@@ -135,11 +132,8 @@ class ScreenOrientationOOPIFBrowserTest : public ScreenOrientationBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(embedded_test_server());
-    ASSERT_TRUE(embedded_test_server()->Start());
+    ScreenOrientationBrowserTest::SetUpOnMainThread();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationOOPIFBrowserTest);
 };
 
 // This test doesn't work on MacOS X but the reason is mostly because it is not
@@ -161,10 +155,12 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest,
   GURL test_url = GetTestUrl("screen_orientation",
                              "screen_orientation_screenorientationchange.html");
 
-  TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
-  shell()->LoadURL(test_url);
-  navigation_observer.Wait();
-  WaitForResizeComplete(shell()->web_contents());
+  {
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+    shell()->LoadURL(test_url);
+    navigation_observer.Wait();
+    WaitForResizeComplete(shell()->web_contents());
+  }
 
   int angle = GetOrientationAngle();
 
@@ -191,12 +187,14 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest,
   GURL test_url = GetTestUrl("screen_orientation",
                              "screen_orientation_windoworientationchange.html");
 
-  TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
-  shell()->LoadURL(test_url);
-  navigation_observer.Wait();
+  {
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
+    shell()->LoadURL(test_url);
+    navigation_observer.Wait();
 #if USE_AURA || defined(OS_ANDROID)
-  WaitForResizeComplete(shell()->web_contents());
+    WaitForResizeComplete(shell()->web_contents());
 #endif  // USE_AURA || defined(OS_ANDROID)
+  }
 
   if (!WindowOrientationSupported())
     return;
@@ -243,7 +241,6 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest, DISABLED_LockSmoke) {
 // This could be a web test if they were not using a mock screen orientation
 // controller.
 IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest, CrashTest_UseAfterDetach) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url(embedded_test_server()->GetURL(
       "/screen_orientation/screen_orientation_use_after_detach.html"));
 
@@ -302,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest, ScreenOrientation) {
 
   int angle = GetOrientationAngle();
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
   MainThreadFrameObserver root_observer(
       root->current_frame_host()->GetRenderWidgetHost());
@@ -351,8 +348,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
   // Set up a fake Resize message with a screen orientation change.
   RenderWidgetHost* main_frame_rwh =
       web_contents()->GetMainFrame()->GetRenderWidgetHost();
-  display::ScreenInfo screen_info;
-  main_frame_rwh->GetScreenInfo(&screen_info);
+  display::ScreenInfo screen_info = main_frame_rwh->GetScreenInfo();
   int expected_angle = (screen_info.orientation_angle + 90) % 360;
 
   // Start a cross-site navigation, but don't commit yet.
@@ -361,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
   shell()->LoadURL(second_url);
   EXPECT_TRUE(delayer.WaitForRequestStart());
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* pending_rfh =
       root->render_manager()->speculative_frame_host();
 
@@ -395,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
   const char* types[] = {"portrait-primary", "portrait-secondary",
                          "landscape-primary", "landscape-secondary"};
 
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
   RenderFrameHostImpl* frames[] = {root->current_frame_host(),
                                    child->current_frame_host()};
@@ -428,18 +424,18 @@ class ScreenOrientationLockForPrerenderBrowserTest
       : prerender_helper_(base::BindRepeating(
             &ScreenOrientationLockForPrerenderBrowserTest::web_contents,
             base::Unretained(this))) {
-    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
   }
-  void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
-    ScreenOrientationBrowserTest::SetUpOnMainThread();
+
+  // ScreenOrientationBrowserTest:
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    ScreenOrientationBrowserTest::SetUp();
   }
 
   content::WebContents* web_contents() { return shell()->web_contents(); }
 
  protected:
   test::PrerenderTestHelper prerender_helper_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class FakeScreenOrientationDelegate : public ScreenOrientationDelegate {
@@ -447,20 +443,27 @@ class FakeScreenOrientationDelegate : public ScreenOrientationDelegate {
   FakeScreenOrientationDelegate() {
     ScreenOrientationProvider::SetDelegate(this);
   }
+  ~FakeScreenOrientationDelegate() override {
+    ScreenOrientationProvider::SetDelegate(nullptr);
+  }
 
-  ~FakeScreenOrientationDelegate() override = default;
-
-  bool FullScreenRequired(WebContents* web_contents) override { return false; }
-
-  bool ScreenOrientationProviderSupported() override { return true; }
-
+  // ScreenOrientationDelegate:
+  bool FullScreenRequired(WebContents* web_contents) override {
+    return full_screen_required_;
+  }
+  bool ScreenOrientationProviderSupported(WebContents* web_contents) override {
+    return true;
+  }
   void Lock(
       WebContents* web_contents,
       device::mojom::ScreenOrientationLockType lock_orientation) override {
     lock_count_++;
   }
-
   void Unlock(WebContents* web_contents) override { unlock_count_++; }
+
+  void set_full_screen_required(bool is_required) {
+    full_screen_required_ = is_required;
+  }
 
   int lock_count() const { return lock_count_; }
   int unlock_count() const { return unlock_count_; }
@@ -468,6 +471,7 @@ class FakeScreenOrientationDelegate : public ScreenOrientationDelegate {
  private:
   int lock_count_ = 0;
   int unlock_count_ = 0;
+  bool full_screen_required_ = false;
 };
 
 // Unlock should not triggered the orientation upon the completion of a
@@ -475,8 +479,6 @@ class FakeScreenOrientationDelegate : public ScreenOrientationDelegate {
 IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
                        ShouldNotUnlockWhenPrerenderNavigation) {
   FakeScreenOrientationDelegate delegate;
-
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to a site.
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
@@ -502,6 +504,39 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
 
   // Delegate did apply unlock once.
   EXPECT_EQ(1, delegate.unlock_count());
+}
+
+// Test for ScreenOrientationProvider::DidToggleFullscreenModeForTab which
+// overrides from WebContentsObserver. The prerendered page shouldn't trigger
+// unlock the screen orientation in fullscreen mode.
+IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
+                       KeepFullscreenLockWhilePrerendering) {
+  FakeScreenOrientationDelegate delegate;
+  delegate.set_full_screen_required(true);
+
+  // Enter the full screen and request lock from the primary page.
+  const GURL initial_url = embedded_test_server()->GetURL("/simple_page.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  EXPECT_TRUE(ExecJs(shell(),
+                     "document.body.requestFullscreen();"
+                     "screen.orientation.lock('any');"));
+  EXPECT_EQ(1, delegate.lock_count());
+
+  // Start a prerender.
+  const GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  int host_id = prerender_helper_.AddPrerender(prerender_url);
+  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Shut down the prerendered page. It shouldn't trigger orientation unlock.
+  test::PrerenderHostObserver prerender_observer(*web_contents(), host_id);
+  PrerenderHostRegistry* registry =
+      static_cast<WebContentsImpl*>(web_contents())->GetPrerenderHostRegistry();
+  registry->CancelHost(host_id,
+                       PrerenderHost::FinalStatus::kRendererProcessKilled);
+  prerender_observer.WaitForDestroyed();
+
+  // Delegate should not apply unlock.
+  EXPECT_EQ(0, delegate.unlock_count());
 }
 
 } // namespace content

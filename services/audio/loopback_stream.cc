@@ -24,8 +24,7 @@ namespace {
 
 // Start with a conservative, but reasonable capture delay that should work for
 // most platforms (i.e., not needing an increase during a loopback session).
-constexpr base::TimeDelta kInitialCaptureDelay =
-    base::TimeDelta::FromMilliseconds(20);
+constexpr base::TimeDelta kInitialCaptureDelay = base::Milliseconds(20);
 
 }  // namespace
 
@@ -142,7 +141,7 @@ void LoopbackStream::SetVolume(double volume) {
                        TRACE_EVENT_SCOPE_THREAD, "volume", volume);
 
   if (!std::isfinite(volume) || volume < 0.0) {
-    mojo::ReportBadMessage("Invalid volume");
+    receiver_.ReportBadMessage("Invalid volume");
     OnError();
     return;
   }
@@ -375,9 +374,8 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
   frames_elapsed_ += frames_per_buffer;
   next_generate_time_ =
       first_generate_time_ +
-      base::TimeDelta::FromMicroseconds(frames_elapsed_ *
-                                        base::Time::kMicrosecondsPerSecond /
-                                        output_params_.sample_rate());
+      base::Microseconds(frames_elapsed_ * base::Time::kMicrosecondsPerSecond /
+                         output_params_.sample_rate());
   const base::TimeTicks now = clock_->NowTicks();
   if (next_generate_time_ < now) {
     TRACE_EVENT_INSTANT1("audio", "GenerateMoreAudio Is Behind",
@@ -393,9 +391,9 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
         (target_frame_count / frames_per_buffer + 1) * frames_per_buffer;
     next_generate_time_ =
         first_generate_time_ +
-        base::TimeDelta::FromMicroseconds(frames_elapsed_ *
-                                          base::Time::kMicrosecondsPerSecond /
-                                          output_params_.sample_rate());
+        base::Microseconds(frames_elapsed_ *
+                           base::Time::kMicrosecondsPerSecond /
+                           output_params_.sample_rate());
   }
 
   // Note: It's acceptable for |next_generate_time_| to be slightly before |now|

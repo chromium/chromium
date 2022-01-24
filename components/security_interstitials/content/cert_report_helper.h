@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CERT_REPORT_HELPER_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CERT_REPORT_HELPER_H_
 
-#include "base/macros.h"
 #include "components/security_interstitials/content/certificate_error_report.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "net/ssl/ssl_info.h"
@@ -50,6 +49,9 @@ class CertReportHelper {
       const base::Time& interstitial_time,
       bool can_show_enhanced_protection_message,
       security_interstitials::MetricsHelper* metrics_helper);
+
+  CertReportHelper(const CertReportHelper&) = delete;
+  CertReportHelper& operator=(const CertReportHelper&) = delete;
 
   virtual ~CertReportHelper();
 
@@ -132,8 +134,6 @@ class CertReportHelper {
   // taking an action on the interstitial is counted as not proceeding.
   CertificateErrorReport::ProceedDecision user_action_ =
       CertificateErrorReport::USER_DID_NOT_PROCEED;
-
-  DISALLOW_COPY_AND_ASSIGN(CertReportHelper);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CERT_REPORT_HELPER_H_

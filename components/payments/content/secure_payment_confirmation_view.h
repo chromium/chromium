@@ -35,7 +35,7 @@ class SecurePaymentConfirmationView {
   using CancelCallback = base::OnceCallback<void()>;
 
   static base::WeakPtr<SecurePaymentConfirmationView> Create(
-      const PaymentUIObserver* payment_ui_observer);
+      const base::WeakPtr<PaymentUIObserver> payment_ui_observer);
 
   virtual ~SecurePaymentConfirmationView() = 0;
 

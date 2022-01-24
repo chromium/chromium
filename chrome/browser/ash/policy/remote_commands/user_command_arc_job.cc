@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/syslog_logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
@@ -22,8 +22,7 @@ namespace policy {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultCommandTimeout =
-    base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kDefaultCommandTimeout = base::Minutes(2);
 
 }  // namespace
 

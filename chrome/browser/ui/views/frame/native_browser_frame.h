@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_NATIVE_BROWSER_FRAME_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_NATIVE_BROWSER_FRAME_H_
 
+#include "build/build_config.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -57,6 +58,14 @@ class NativeBrowserFrame {
 
   // Called when the tab drag kind for this frame changes.
   virtual void TabDraggingKindChanged(TabDragKind tab_drag_kind) {}
+
+#if defined(OS_MAC)
+  // Causes the screen reader to announce |text| against the remote window. If
+  // the current user is not using a screen reader or if there is no remote
+  // window, has no effect. This enables screen reader announcements for
+  // installed web apps (PWAs) on Mac. See crbug.com/1266922.
+  virtual void AnnounceTextInInProcessWindow(const std::u16string& text) {}
+#endif
 
  protected:
   friend class BrowserFrame;

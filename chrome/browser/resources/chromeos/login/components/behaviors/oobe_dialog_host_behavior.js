@@ -4,6 +4,7 @@
 
 // clang-format off
 // #import {dom, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {invokePolymerMethod} from '../../display_manager.m.js';
 // clang-format on
 
 /**
@@ -18,15 +19,14 @@
 
   /**
    * Triggers onBeforeShow for descendants.
+   * @suppress {missingProperties} cr.ui.login.invokePolymerMethod
    */
   propagateOnBeforeShow() {
-    const screens = this.shadowRoot.querySelectorAll(
+    const dialogs = this.shadowRoot.querySelectorAll(
         'oobe-dialog,oobe-adaptive-dialog,oobe-content-dialog,' +
         'gaia-dialog,oobe-loading-dialog');
-    for (const screen of screens) {
-      // |screen| should ideally be cast to OobeDialogElement et al, but this
-      // isn't possible right now with the modules of this directory.
-      (/** @type {{onBeforeShow: function()}} */ (screen)).onBeforeShow();
+    for (const dialog of dialogs) {
+      cr.ui.login.invokePolymerMethod(dialog, 'onBeforeShow');
     }
   },
 

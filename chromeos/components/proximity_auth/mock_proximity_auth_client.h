@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/components/proximity_auth/proximity_auth_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -18,11 +17,14 @@ namespace proximity_auth {
 class MockProximityAuthClient : public ProximityAuthClient {
  public:
   MockProximityAuthClient();
+
+  MockProximityAuthClient(const MockProximityAuthClient&) = delete;
+  MockProximityAuthClient& operator=(const MockProximityAuthClient&) = delete;
+
   ~MockProximityAuthClient() override;
 
   // ProximityAuthClient:
-  MOCK_METHOD1(UpdateScreenlockState,
-               void(proximity_auth::ScreenlockState state));
+  MOCK_METHOD1(UpdateSmartLockState, void(ash::SmartLockState state));
   MOCK_METHOD1(FinalizeUnlock, void(bool success));
   MOCK_METHOD1(FinalizeSignin, void(const std::string& secret));
   MOCK_METHOD4(
@@ -33,9 +35,6 @@ class MockProximityAuthClient : public ProximityAuthClient {
            base::OnceCallback<void(const std::string& challenge)> callback));
   MOCK_CONST_METHOD0(GetAuthenticatedUsername, std::string(void));
   MOCK_METHOD0(GetPrefManager, ProximityAuthPrefManager*(void));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockProximityAuthClient);
 };
 
 }  // namespace proximity_auth

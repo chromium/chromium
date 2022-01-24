@@ -59,7 +59,8 @@ class MediaRouterDialogController::InitiatorWebContentsObserver
     dialog_controller_->CloseMediaRouterDialog();
   }
 
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     // NOTE: |this| is deleted after CloseMediaRouterDialog() returns.
     dialog_controller_->CloseMediaRouterDialog();
   }

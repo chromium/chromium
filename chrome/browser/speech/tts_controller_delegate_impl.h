@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SPEECH_TTS_CONTROLLER_DELEGATE_IMPL_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "content/public/browser/tts_controller_delegate.h"
 
@@ -22,6 +21,10 @@ class TtsControllerDelegateImpl : public content::TtsControllerDelegate {
  public:
   // Get the single instance of this class.
   static TtsControllerDelegateImpl* GetInstance();
+
+  TtsControllerDelegateImpl(const TtsControllerDelegateImpl&) = delete;
+  TtsControllerDelegateImpl& operator=(const TtsControllerDelegateImpl&) =
+      delete;
 
   // TtsControllerDelegate overrides.
   std::unique_ptr<content::TtsControllerDelegate::PreferredVoiceIds>
@@ -45,8 +48,6 @@ class TtsControllerDelegateImpl : public content::TtsControllerDelegate {
       content::TtsUtterance* utterance);
 
   friend struct base::DefaultSingletonTraits<TtsControllerDelegateImpl>;
-
-  DISALLOW_COPY_AND_ASSIGN(TtsControllerDelegateImpl);
 };
 
 #endif  // CHROME_BROWSER_SPEECH_TTS_CONTROLLER_DELEGATE_IMPL_H_

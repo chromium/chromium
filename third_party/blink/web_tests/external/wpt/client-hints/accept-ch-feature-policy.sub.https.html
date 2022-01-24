@@ -21,9 +21,11 @@ promise_test(t => {
     // Verify that the browser includes client hints in the headers for a
     // same-origin fetch which not specifically excluded via Feature-Policy.
     assert_true(r.headers.has("device-memory-received"), "device-memory-received");
+    assert_true(r.headers.has("device-memory-deprecated-received"), "device-memory-deprecated-received");
     assert_false(r.headers.has("dpr-received"), "dpr-received");
-    assert_false(r.headers.has("lang-received"), "lang-received");
+    assert_false(r.headers.has("dpr-deprecated-received"), "dpr-deprecated-received");
     assert_true(r.headers.has("viewport-width-received"), "viewport-width-received");
+    assert_true(r.headers.has("viewport-width-deprecated-received"), "viewport-width-deprecated-received");
 
     assert_true(r.headers.has("rtt-received"), "rtt-received");
     var rtt = parseInt(r.headers.get("rtt-received"));
@@ -42,6 +44,7 @@ promise_test(t => {
     assert_true(r.headers.has("mobile-received"));
     assert_in_array(r.headers.get("mobile-received"), ["?0", "?1"], 'mobile is unexpected');
     assert_false(r.headers.has("prefers-color-scheme-received"), "prefers-color-scheme-received");
+    assert_false(r.headers.has("viewport-height-received"), "viewport-height-received");
   });
 }, "Accept-CH header test");
 
@@ -51,13 +54,16 @@ promise_test(t => {
     // Verify that the browser includes client hints in the headers for a
     // cross-origin fetch which are specifically requested via Feature-Policy.
     assert_true(r.headers.has("device-memory-received"), "device-memory-received");
+    assert_true(r.headers.has("device-memory-deprecated-received"), "device-memory-deprecated-received");
     assert_false(r.headers.has("dpr-received"), "dpr-received");
-    assert_false(r.headers.has("lang-received"), "lang-received");
+    assert_false(r.headers.has("dpr-deprecated-received"), "dpr-deprecated-received");
     assert_false(r.headers.has("viewport-width-received"), "viewport-width-received");
+    assert_false(r.headers.has("viewport-width-deprecated-received"), "viewport-width-deprecated-received");
     assert_false(r.headers.has("rtt-received"), "rtt-received");
     assert_false(r.headers.has("downlink-received"), "downlink-received");
     assert_false(r.headers.has("ect-received"), "ect-received");
     assert_false(r.headers.has("prefers-color-scheme-received"), "prefers-color-scheme-received");
+    assert_false(r.headers.has("viewport-height-received"), "viewport-height-received");
   });
 }, "Cross-Origin Accept-CH header test");
 

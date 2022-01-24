@@ -24,7 +24,7 @@ int DoUninstallTasks(bool chrome_still_running);
 
 class ChromeBrowserMainPartsWin : public ChromeBrowserMainParts {
  public:
-  ChromeBrowserMainPartsWin(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainPartsWin(content::MainFunctionParams parameters,
                             StartupData* startup_data);
   ChromeBrowserMainPartsWin(const ChromeBrowserMainPartsWin&) = delete;
   ChromeBrowserMainPartsWin& operator=(const ChromeBrowserMainPartsWin&) =

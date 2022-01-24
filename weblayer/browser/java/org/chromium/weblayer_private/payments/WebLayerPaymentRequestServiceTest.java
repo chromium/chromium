@@ -29,7 +29,6 @@ import org.chromium.components.payments.PaymentApp.InstrumentDetailsCallback;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.test_support.ShadowPaymentFeatureList;
 import org.chromium.payments.mojom.PaymentRequest;
@@ -78,12 +77,7 @@ public class WebLayerPaymentRequestServiceTest {
                 .when(mErrorMessageUtilMock)
                 .getNotSupportedErrorMessage(Mockito.any());
 
-        ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP, true);
-        ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
-        ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES, true);
+        ShadowPaymentFeatureList.setDefaultStatuses();
         PaymentRequestService.resetShowingPaymentRequestForTest();
         PaymentAppService.getInstance().resetForTest();
 

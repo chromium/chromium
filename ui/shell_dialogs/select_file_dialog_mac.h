@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/common/select_file_dialog.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,6 +29,9 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
  public:
   SelectFileDialogImpl(Listener* listener,
                        std::unique_ptr<ui::SelectFilePolicy> policy);
+
+  SelectFileDialogImpl(const SelectFileDialogImpl&) = delete;
+  SelectFileDialogImpl& operator=(const SelectFileDialogImpl&) = delete;
 
   // BaseShellDialog implementation.
   bool IsRunning(gfx::NativeWindow parent_window) const override;
@@ -53,6 +55,10 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
   // Struct to store data associated with a file dialog while it is showing.
   struct DialogData {
     DialogData(gfx::NativeWindow parent_window_, void* params_);
+
+    DialogData(const DialogData&) = delete;
+    DialogData& operator=(const DialogData&) = delete;
+
     ~DialogData();
 
     // The parent window for the panel. Weak, used only for comparisons.
@@ -63,9 +69,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
 
     // Bridge to the Cocoa NSSavePanel.
     mojo::Remote<remote_cocoa::mojom::SelectFileDialog> select_file_dialog;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DialogData);
   };
 
   ~SelectFileDialogImpl() override;
@@ -85,7 +88,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
   bool hasMultipleFileTypeChoices_;
 
   base::WeakPtrFactory<SelectFileDialogImpl> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogImpl);
 };
 
 }  // namespace ui

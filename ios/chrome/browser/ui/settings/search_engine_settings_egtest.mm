@@ -167,11 +167,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Deletes a custom search engine by swiping and tapping on the "Delete" button.
 - (void)testDeleteCustomSearchEngineSwipeAndTap {
-  if (@available(iOS 13, *)) {
-  } else {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled on iOS 12 as this feature isn't present.");
-  }
   [self enterSettingsWithCustomSearchEngine];
 
   id<GREYMatcher> customSearchEngineCell =
@@ -235,6 +230,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   id<GREYMatcher> editButton = grey_allOf(
       chrome_test_util::ButtonWithAccessibilityLabelId(
           IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
+      grey_not(chrome_test_util::TabGridEditButton()),
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
   [[EarlGrey selectElementWithMatcher:editButton] performAction:grey_tap()];
 

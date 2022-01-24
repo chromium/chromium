@@ -44,10 +44,6 @@
 // closed items, it will discard them. Otherwise, this is a no-op.
 - (void)discardSavedClosedItems;
 // Shows an action sheet, anchored to the UIBarButtonItem, that asks for
-// confirmation when 'Close All' button is tapped.
-- (void)showCloseAllConfirmationActionSheetWithAnchor:
-    (UIBarButtonItem*)buttonAnchor;
-// Shows an action sheet, anchored to the UIBarButtonItem, that asks for
 // confirmation when 'Close Items' button is tapped.
 - (void)
     showCloseItemsConfirmationActionSheetWithItems:(NSArray<NSString*>*)items
@@ -56,10 +52,9 @@
 // Shows a share sheet to share |items|, anchored to the |buttonAnchor|.
 - (void)shareItems:(NSArray<NSString*>*)items
             anchor:(UIBarButtonItem*)buttonAnchor;
-// Returns the items to display in the menu presented when the Add To button is
-// selected.
-- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForGridViewController:
-    (GridViewController*)gridViewController;
+// Returns the menu to display when the Add To button is selected for |items|.
+- (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
+    (NSArray<NSString*>*)items;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_COMMANDS_H_

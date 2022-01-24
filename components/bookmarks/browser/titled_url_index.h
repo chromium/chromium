@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
 #include "components/query_parser/query_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,6 +36,10 @@ class TitledUrlIndex {
   // returned unsorted.
   explicit TitledUrlIndex(
       std::unique_ptr<TitledUrlNodeSorter> sorter = nullptr);
+
+  TitledUrlIndex(const TitledUrlIndex&) = delete;
+  TitledUrlIndex& operator=(const TitledUrlIndex&) = delete;
+
   ~TitledUrlIndex();
 
   void SetNodeSorter(std::unique_ptr<TitledUrlNodeSorter> sorter);
@@ -119,8 +122,6 @@ class TitledUrlIndex {
   Index index_;
 
   std::unique_ptr<TitledUrlNodeSorter> sorter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TitledUrlIndex);
 };
 
 }  // namespace bookmarks

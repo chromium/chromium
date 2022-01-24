@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -26,6 +25,9 @@ class CONTENT_EXPORT PaymentManager : public payments::mojom::PaymentManager {
       PaymentAppContextImpl* payment_app_context,
       const url::Origin& origin,
       mojo::PendingReceiver<payments::mojom::PaymentManager> receiver);
+
+  PaymentManager(const PaymentManager&) = delete;
+  PaymentManager& operator=(const PaymentManager&) = delete;
 
   ~PaymentManager() override;
 
@@ -69,7 +71,6 @@ class CONTENT_EXPORT PaymentManager : public payments::mojom::PaymentManager {
   GURL context_url_;
   GURL scope_;
   base::WeakPtrFactory<PaymentManager> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PaymentManager);
 };
 
 }  // namespace content

@@ -32,6 +32,10 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
  public:
   LayerTreeFrameSinkHolder(SurfaceTreeHost* surface_tree_host,
                            std::unique_ptr<cc::LayerTreeFrameSink> frame_sink);
+
+  LayerTreeFrameSinkHolder(const LayerTreeFrameSinkHolder&) = delete;
+  LayerTreeFrameSinkHolder& operator=(const LayerTreeFrameSinkHolder&) = delete;
+
   ~LayerTreeFrameSinkHolder() override;
 
   // Delete frame sink after having reclaimed and called all resource
@@ -88,8 +92,6 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   bool delete_pending_ = false;
 
   WMHelper::LifetimeManager* lifetime_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerTreeFrameSinkHolder);
 };
 
 }  // namespace exo

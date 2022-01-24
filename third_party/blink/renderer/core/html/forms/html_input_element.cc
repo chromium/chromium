@@ -45,8 +45,10 @@
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
+#include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/events/before_text_inserted_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -73,6 +75,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_theme_font_provider.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -83,6 +86,7 @@
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/base/ui_base_features.h"
 
@@ -91,6 +95,8 @@ namespace blink {
 namespace {
 
 const unsigned kMaxEmailFieldLength = 254;
+
+static bool is_default_font_prewarmed_ = false;
 
 }  // namespace
 
@@ -405,6 +411,15 @@ void HTMLInputElement::InitializeTypeInParsing() {
     input_type_->WarnIfValueIsInvalid(default_value);
 
   input_type_view_->UpdateView();
+
+  // Prewarm the default font family. Do this while parsing because the style
+  // recalc calls |TextControlInnerEditorElement::CreateInnerEditorStyle| which
+  // needs the primary font.
+  if (!is_default_font_prewarmed_ && new_type_name == input_type_names::kText) {
+    FontCache::PrewarmFamily(LayoutThemeFontProvider::SystemFontFamily(
+        CSSValueID::kWebkitSmallControl));
+    is_default_font_prewarmed_ = true;
+  }
 }
 
 void HTMLInputElement::UpdateType() {
@@ -1210,7 +1225,8 @@ void HTMLInputElement::setValue(const String& value,
 
   if (value_changed) {
     NotifyFormStateChanged();
-    if (value.IsEmpty() && HasBeenPasswordField() && GetDocument().GetPage()) {
+    if (sanitized_value.IsEmpty() && HasBeenPasswordField() &&
+        GetDocument().GetPage()) {
       GetDocument().GetPage()->GetChromeClient().PasswordFieldReset(*this);
     }
   }
@@ -1734,30 +1750,61 @@ HTMLInputElement::FilteredDataListOptions() const {
   if (!data_list)
     return filtered;
 
-  String value = InnerEditorValue();
+  String editor_value = InnerEditorValue();
   if (Multiple() && type() == input_type_names::kEmail) {
     Vector<String> emails;
-    value.Split(',', true, emails);
+    editor_value.Split(',', true, emails);
     if (!emails.IsEmpty())
-      value = emails.back().StripWhiteSpace();
+      editor_value = emails.back().StripWhiteSpace();
   }
 
   HTMLDataListOptionsCollection* options = data_list->options();
   filtered.ReserveCapacity(options->length());
-  value = value.FoldCase();
+  editor_value = editor_value.FoldCase();
+
+  TextBreakIterator* iter =
+      WordBreakIterator(editor_value, 0, editor_value.length());
+
+  Vector<bool> filtering_flag(options->length(), true);
+  if (iter) {
+    for (int word_start = iter->current(), word_end = iter->next();
+         word_end != kTextBreakDone; word_end = iter->next()) {
+      String value = editor_value.Substring(word_start, word_end - word_start);
+      word_start = word_end;
+
+      if (!IsWordBreak(value[0]))
+        continue;
+
+      for (unsigned i = 0; i < options->length(); ++i) {
+        if (!filtering_flag[i])
+          continue;
+        HTMLOptionElement* option = options->Item(i);
+        DCHECK(option);
+        if (!value.IsEmpty()) {
+          // Firefox shows OPTIONs with matched labels, Edge shows OPTIONs
+          // with matches values. We show both.
+          if (!(option->value()
+                        .FoldCase()
+                        .RemoveCharacters(IsWhitespace)
+                        .Find(value) == kNotFound &&
+                option->label()
+                        .FoldCase()
+                        .RemoveCharacters(IsWhitespace)
+                        .Find(value) == kNotFound))
+            continue;
+        }
+        filtering_flag[i] = false;
+      }
+    }
+  }
+
   for (unsigned i = 0; i < options->length(); ++i) {
     HTMLOptionElement* option = options->Item(i);
     DCHECK(option);
-    if (!value.IsEmpty()) {
-      // Firefox shows OPTIONs with matched labels, Edge shows OPTIONs
-      // with matches values. We show both.
-      if (option->value().FoldCase().Find(value) == kNotFound &&
-          option->label().FoldCase().Find(value) == kNotFound)
-        continue;
-    }
     if (option->value().IsEmpty() || option->IsDisabledFormControl())
       continue;
-    filtered.push_back(option);
+    if (filtering_flag[i])
+      filtered.push_back(option);
   }
   return filtered;
 }
@@ -2008,7 +2055,9 @@ bool HTMLInputElement::SetupDateTimeChooserParameters(
   parameters.double_value = input_type_->ValueAsDouble();
   parameters.focused_field_index = input_type_view_->FocusedFieldIndex();
   parameters.is_anchor_element_rtl =
-      input_type_view_->ComputedTextDirection() == TextDirection::kRtl;
+      GetLayoutObject()
+          ? input_type_view_->ComputedTextDirection() == TextDirection::kRtl
+          : false;
   if (HTMLDataListElement* data_list = DataList()) {
     HTMLDataListOptionsCollection* options = data_list->options();
     for (unsigned i = 0; HTMLOptionElement* option = options->Item(i); ++i) {
@@ -2117,14 +2166,14 @@ void HTMLInputElement::MaybeReportPiiMetrics() {
   // Report the PII types derived from autofill field semantic type prediction.
   if (GetFormElementPiiType() != FormElementPiiType::kUnknown) {
     UseCounter::Count(GetDocument(),
-                      WebFeature::kAnyPiiFieldDetected_PredictedTypeMatch);
+                      WebFeature::kUserDataFieldFilled_PredictedTypeMatch);
 
     if (GetFormElementPiiType() == FormElementPiiType::kEmail) {
       UseCounter::Count(GetDocument(),
-                        WebFeature::kEmailFieldDetected_PredictedTypeMatch);
+                        WebFeature::kEmailFieldFilled_PredictedTypeMatch);
     } else if (GetFormElementPiiType() == FormElementPiiType::kPhone) {
       UseCounter::Count(GetDocument(),
-                        WebFeature::kPhoneFieldDetected_PredictedTypeMatch);
+                        WebFeature::kPhoneFieldFilled_PredictedTypeMatch);
     }
   }
 
@@ -2137,8 +2186,32 @@ void HTMLInputElement::MaybeReportPiiMetrics() {
       EmailInputType::IsValidEmailAddress(GetDocument().EnsureEmailRegexp(),
                                           value())) {
     UseCounter::Count(GetDocument(),
-                      WebFeature::kEmailFieldDetected_PatternMatch);
+                      WebFeature::kEmailFieldFilled_PatternMatch);
   }
+}
+
+// Show a browser picker for this input element (crbug.com/939561).
+// https://github.com/whatwg/html/issues/6909
+void HTMLInputElement::showPicker(ExceptionState& exception_state) {
+  LocalFrame* frame = GetDocument().GetFrame();
+  // In cross-origin iframes it should throw a "SecurityError" DOMException
+  // except on file and color. In same-origin iframes it should work fine.
+  // https://github.com/whatwg/html/issues/6909#issuecomment-917138991
+  if (type() != input_type_names::kFile && type() != input_type_names::kColor &&
+      frame && frame->IsCrossOriginToMainFrame()) {
+    exception_state.ThrowSecurityError(
+        "HTMLInputElement::showPicker() called from cross-origin iframe.");
+    return;
+  }
+
+  if (!LocalFrame::HasTransientUserActivation(frame)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "HTMLInputElement::showPicker() requires a user gesture.");
+    return;
+  }
+
+  input_type_view_->OpenPopupView();
 }
 
 }  // namespace blink

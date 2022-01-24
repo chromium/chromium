@@ -22,7 +22,6 @@
 #include "chrome/browser/content_settings/mock_settings_observer.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/content_settings/core/browser/content_settings_details.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -130,6 +129,9 @@ class TesterForType {
     }
   }
 
+  TesterForType(const TesterForType&) = delete;
+  TesterForType& operator=(const TesterForType&) = delete;
+
   void ClearPolicyDefault() {
     prefs_->RemoveManagedPref(policy_default_setting_);
   }
@@ -164,8 +166,6 @@ class TesterForType {
   HostContentSettingsMap* host_content_settings_map_;
   ContentSettingsType content_type_;
   const char* policy_default_setting_;
-
-  DISALLOW_COPY_AND_ASSIGN(TesterForType);
 };
 
 TEST_F(HostContentSettingsMapTest, DefaultValues) {
@@ -264,8 +264,7 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   EXPECT_EQ(0U, client_hints_settings.size());
 
   // Add setting for hosts[0].
-  base::Value expiration_time(
-      (base::Time::Now() + base::TimeDelta::FromDays(1)).ToDoubleT());
+  base::Value expiration_time((base::Time::Now() + base::Days(1)).ToDoubleT());
   base::Value client_hint_value(42);
 
   base::Value expiration_times_dictionary(base::Value::Type::DICTIONARY);
@@ -1516,9 +1515,9 @@ TEST_F(HostContentSettingsMapTest, ClearSettingsWithTimePredicate) {
   TestingProfile profile;
   auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
   base::Time now = base::Time::Now();
-  base::Time back_1_hour = now - base::TimeDelta::FromHours(1);
-  base::Time back_30_days = now - base::TimeDelta::FromDays(30);
-  base::Time back_31_days = now - base::TimeDelta::FromDays(31);
+  base::Time back_1_hour = now - base::Hours(1);
+  base::Time back_30_days = now - base::Days(30);
+  base::Time back_31_days = now - base::Days(31);
 
   base::SimpleTestClock test_clock;
   test_clock.SetNow(now);
@@ -1611,7 +1610,7 @@ TEST_F(HostContentSettingsMapTest, GetSettingLastModified) {
       pattern, ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS);
   EXPECT_EQ(t, test_clock.Now());
 
-  test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock.Advance(base::Seconds(1));
   // Modify setting.
   map->SetContentSettingDefaultScope(url, GURL(), ContentSettingsType::POPUPS,
                                      CONTENT_SETTING_ALLOW);
@@ -1633,7 +1632,7 @@ TEST_F(HostContentSettingsMapTest, LastModifiedMultipleModifiableProviders) {
   test_clock->SetNow(t1);
 
   base::SimpleTestClock* clock = test_clock.get();
-  clock->Advance(base::TimeDelta::FromSeconds(1));
+  clock->Advance(base::Seconds(1));
   base::Time t2 = clock->Now();
 
   // Register a provider which reports a modification time of t1.
@@ -1663,7 +1662,7 @@ TEST_F(HostContentSettingsMapTest, LastModifiedMultipleModifiableProviders) {
                     ContentSettingsType::NOTIFICATIONS));
 
   // Now have original provider report a more recent modification time.
-  clock->Advance(base::TimeDelta::FromSeconds(1));
+  clock->Advance(base::Seconds(1));
   base::Time t3 = clock->Now();
   EXPECT_CALL(*weak_provider, GetWebsiteSettingLastModified(
                                   _, _, ContentSettingsType::NOTIFICATIONS))
@@ -2112,13 +2111,11 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithExpiry) {
   // third with no expiration.
   map->SetContentSettingDefaultScope(
       example_url1, example_url1, persistent_type, CONTENT_SETTING_BLOCK,
-      {content_settings::GetConstraintExpiration(
-           base::TimeDelta::FromSeconds(100)),
+      {content_settings::GetConstraintExpiration(base::Seconds(100)),
        content_settings::SessionModel::UserSession});
   map->SetContentSettingDefaultScope(
       example_url2, example_url2, persistent_type, CONTENT_SETTING_ALLOW,
-      {content_settings::GetConstraintExpiration(
-           base::TimeDelta::FromSeconds(200)),
+      {content_settings::GetConstraintExpiration(base::Seconds(200)),
        content_settings::SessionModel::UserSession});
   map->SetContentSettingDefaultScope(
       example_url3, example_url3, persistent_type, CONTENT_SETTING_ALLOW,
@@ -2150,7 +2147,7 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithExpiry) {
 
   // If we Fastforward by 101 seconds we should see only our first setting is
   // expired, we now retrieve 1 less setting and the rest are okay.
-  FastForwardTime(base::TimeDelta::FromSeconds(101));
+  FastForwardTime(base::Seconds(101));
   ASSERT_TRUE(url1_setting.IsExpired());
   ASSERT_FALSE(url2_setting.IsExpired());
   ASSERT_FALSE(url3_setting.IsExpired());
@@ -2160,7 +2157,7 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithExpiry) {
 
   // If we fast forward again we should expire our second setting and drop if
   // from our retrieval list now.
-  FastForwardTime(base::TimeDelta::FromSeconds(101));
+  FastForwardTime(base::Seconds(101));
   ASSERT_TRUE(url1_setting.IsExpired());
   ASSERT_TRUE(url2_setting.IsExpired());
   ASSERT_FALSE(url3_setting.IsExpired());
@@ -2170,7 +2167,7 @@ TEST_F(HostContentSettingsMapTest, GetSettingsForOneTypeWithExpiry) {
 
   // If we fast forwarding much further it shouldn't make a difference as our
   // last setting and the default setting should never expire.
-  FastForwardTime(base::TimeDelta::FromMinutes(100));
+  FastForwardTime(base::Minutes(100));
   ASSERT_TRUE(url1_setting.IsExpired());
   ASSERT_TRUE(url2_setting.IsExpired());
   ASSERT_FALSE(url3_setting.IsExpired());

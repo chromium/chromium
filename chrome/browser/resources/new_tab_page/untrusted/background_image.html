@@ -27,10 +27,10 @@
       }
 
       #image {
-        background-image: $i18nRaw{backgroundUrl};
-        background-position: $i18nRaw{positionX} $i18nRaw{positionY};
-        background-repeat: $i18nRaw{repeatX} $i18nRaw{repeatY};
-        background-size: $i18nRaw{size};
+        background-image: $i18n{backgroundUrl};
+        background-position: $i18n{positionX} $i18n{positionY};
+        background-repeat: $i18n{repeatX} $i18n{repeatY};
+        background-size: $i18n{size};
       }
 
       #gradient {
@@ -43,7 +43,7 @@
   <body>
     <script src="background_image.js"></script>
     <!-- The img tag purely exists to capture the load event. -->
-    <img src="$i18nRaw{url}" onload="onImageLoad()" hidden></img>
+    <img src="$i18n{url}" onload="onImageLoad()" hidden></img>
     <div id="image"></div>
     <div id="gradient"></div>
   </body>

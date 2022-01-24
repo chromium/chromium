@@ -4,6 +4,9 @@
 
 #include "ui/base/models/dialog_model.h"
 
+#include <memory>
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -19,13 +22,12 @@ TEST_F(DialogModelButtonTest, UsesParamsUniqueId) {
   constexpr int kUniqueId = 42;
   // TODO(pbos): Replace AddOkButton() with AddButton() once buttons in dialogs
   // are supported.
-  std::unique_ptr<DialogModel> model =
+  auto host = std::make_unique<TestDialogModelHost>(
       DialogModel::Builder()
           .AddOkButton(base::OnceClosure(), std::u16string(),
                        DialogModelButton::Params().SetUniqueId(kUniqueId))
-          .Build();
-  EXPECT_EQ(kUniqueId,
-            model->ok_button(TestDialogModelHost::GetPassKey())->unique_id_);
+          .Build());
+  EXPECT_EQ(kUniqueId, host->GetUniqueId(TestDialogModelHost::ButtonId::kOk));
 }
 
 TEST_F(DialogModelButtonTest, UsesParamsAccelerators) {
@@ -34,15 +36,14 @@ TEST_F(DialogModelButtonTest, UsesParamsAccelerators) {
 
   // TODO(pbos): Replace AddOkButton() with AddButton() once buttons in dialogs
   // are supported.
-  std::unique_ptr<DialogModel> model =
+  auto host = std::make_unique<TestDialogModelHost>(
       DialogModel::Builder()
           .AddOkButton(base::OnceClosure(), std::u16string(),
                        DialogModelButton::Params()
                            .AddAccelerator(accelerator_1)
                            .AddAccelerator(accelerator_2))
-          .Build();
-  EXPECT_THAT(model->ok_button(TestDialogModelHost::GetPassKey())
-                  ->accelerators(TestDialogModelHost::GetPassKey()),
+          .Build());
+  EXPECT_THAT(host->GetAccelerators(TestDialogModelHost::ButtonId::kOk),
               testing::UnorderedElementsAre(accelerator_1, accelerator_2));
 }
 
@@ -51,7 +52,7 @@ TEST_F(DialogModelButtonTest, UsesCallback) {
   std::unique_ptr<KeyEvent> last_event;
   // TODO(pbos): Replace AddExtraButton() with AddButton() once buttons in
   // dialogs are supported.
-  std::unique_ptr<DialogModel> model =
+  auto host = std::make_unique<TestDialogModelHost>(
       DialogModel::Builder()
           .AddDialogExtraButton(
               base::BindLambdaForTesting([&](const Event& event) {
@@ -59,30 +60,22 @@ TEST_F(DialogModelButtonTest, UsesCallback) {
                 last_event = std::make_unique<KeyEvent>(*event.AsKeyEvent());
               }),
               std::u16string())
-          .Build();
-  DialogModelButton* const button =
-      model->extra_button(TestDialogModelHost::GetPassKey());
+          .Build());
 
   KeyEvent first_event(ET_KEY_PRESSED, VKEY_RETURN, EF_NONE);
-  button->OnPressed(TestDialogModelHost::GetPassKey(), first_event);
+  host->TriggerExtraButton(first_event);
   EXPECT_EQ(1, callback_count);
   EXPECT_EQ(first_event.key_code(), last_event->key_code());
 
   KeyEvent second_event(ET_KEY_PRESSED, VKEY_SPACE, EF_NONE);
-  button->OnPressed(TestDialogModelHost::GetPassKey(), second_event);
+  host->TriggerExtraButton(second_event);
   EXPECT_EQ(2, callback_count);
   EXPECT_EQ(second_event.key_code(), last_event->key_code());
 }
 
 class DialogModelDialogButtonTest : public testing::Test {
  public:
-  enum DialogButtonId {
-    kCancelButton,
-    kExtraButton,
-    kOkButton,
-  };
-
-  void DialogButtonUsesArguments(DialogButtonId button_id) {
+  void DialogButtonUsesArguments(TestDialogModelHost::ButtonId button_id) {
     DialogModel::Builder builder;
 
     // Callback to verify that the first parameter is used.
@@ -101,10 +94,10 @@ class DialogModelDialogButtonTest : public testing::Test {
     params.AddAccelerator(accelerator);
 
     switch (button_id) {
-      case kCancelButton:
+      case TestDialogModelHost::ButtonId::kCancel:
         builder.AddCancelButton(std::move(callback), label, params);
         break;
-      case kExtraButton:
+      case TestDialogModelHost::ButtonId::kExtra:
         // Wrap the callback into a repeating callback that'll only be called
         // once so the same verification can be used for the extra button.
         builder.AddDialogExtraButton(
@@ -115,50 +108,47 @@ class DialogModelDialogButtonTest : public testing::Test {
                 &callback),
             label, params);
         break;
-      case kOkButton:
+      case TestDialogModelHost::ButtonId::kOk:
         builder.AddOkButton(std::move(callback), label, params);
         break;
     }
-    std::unique_ptr<DialogModel> model = builder.Build();
+    auto host = std::make_unique<TestDialogModelHost>(builder.Build());
 
-    // Get the DialogModelButton and trigger the corresponding callback.
-    DialogModelButton* button = nullptr;
-    switch (button_id) {
-      case kCancelButton:
-        button = model->cancel_button(TestDialogModelHost::GetPassKey());
-        model->OnDialogCancelled(TestDialogModelHost::GetPassKey());
-        break;
-      case kExtraButton:
-        button = model->extra_button(TestDialogModelHost::GetPassKey());
-        button->OnPressed(TestDialogModelHost::GetPassKey(),
-                          KeyEvent(ET_KEY_PRESSED, VKEY_RETURN, EF_NONE));
-        break;
-      case kOkButton:
-        button = model->ok_button(TestDialogModelHost::GetPassKey());
-        model->OnDialogAccepted(TestDialogModelHost::GetPassKey());
-        break;
-    }
-    ASSERT_TRUE(button);
-
-    EXPECT_TRUE(callback_called) << "The callback parameter wasn't used.";
-    EXPECT_EQ(label, button->label(TestDialogModelHost::GetPassKey()))
+    EXPECT_EQ(label, host->GetLabel(button_id))
         << "The label parameter wasn't used.";
-    EXPECT_THAT(button->accelerators(TestDialogModelHost::GetPassKey()),
+
+    EXPECT_THAT(host->GetAccelerators(button_id),
                 testing::UnorderedElementsAre(accelerator))
         << "The params parameter wasn't used.";
+
+    // Trigger the corresponding action.
+    switch (button_id) {
+      case TestDialogModelHost::ButtonId::kCancel:
+        TestDialogModelHost::Cancel(std::move(host));
+        break;
+      case TestDialogModelHost::ButtonId::kExtra:
+        host->TriggerExtraButton(
+            KeyEvent(ET_KEY_PRESSED, VKEY_RETURN, EF_NONE));
+        break;
+      case TestDialogModelHost::ButtonId::kOk:
+        TestDialogModelHost::Accept(std::move(host));
+        break;
+    }
+
+    EXPECT_TRUE(callback_called) << "The callback parameter wasn't used.";
   }
 };
 
 TEST_F(DialogModelDialogButtonTest, OkButtonUsesArguments) {
-  DialogButtonUsesArguments(kOkButton);
+  DialogButtonUsesArguments(TestDialogModelHost::ButtonId::kOk);
 }
 
 TEST_F(DialogModelDialogButtonTest, ExtraButtonUsesArguments) {
-  DialogButtonUsesArguments(kExtraButton);
+  DialogButtonUsesArguments(TestDialogModelHost::ButtonId::kExtra);
 }
 
 TEST_F(DialogModelDialogButtonTest, CancelButtonUsesArguments) {
-  DialogButtonUsesArguments(kCancelButton);
+  DialogButtonUsesArguments(TestDialogModelHost::ButtonId::kCancel);
 }
 
 }  // namespace ui

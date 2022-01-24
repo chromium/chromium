@@ -6,7 +6,6 @@
 #define MEDIA_LEARNING_COMMON_FEATURE_LIBRARY_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/learning/common/learning_task.h"
 
 namespace media {

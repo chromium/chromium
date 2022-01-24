@@ -13,10 +13,9 @@
 #include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_clients.h"
@@ -94,6 +93,11 @@ class TestNetworkConfigurationObserver : public NetworkConfigurationObserver {
  public:
   TestNetworkConfigurationObserver() = default;
 
+  TestNetworkConfigurationObserver(const TestNetworkConfigurationObserver&) =
+      delete;
+  TestNetworkConfigurationObserver& operator=(
+      const TestNetworkConfigurationObserver&) = delete;
+
   // NetworkConfigurationObserver
   void OnConfigurationCreated(const std::string& service_path,
                               const std::string& guid) override {
@@ -116,7 +120,7 @@ class TestNetworkConfigurationObserver : public NetworkConfigurationObserver {
 
   void OnConfigurationModified(const std::string& service_path,
                                const std::string& guid,
-                               base::DictionaryValue* set_properties) override {
+                               const base::Value* set_properties) override {
     updated_configurations_[service_path] = guid;
   }
 
@@ -145,14 +149,17 @@ class TestNetworkConfigurationObserver : public NetworkConfigurationObserver {
   std::map<std::string, std::string> before_remove_configurations_;
   std::map<std::string, std::string> removed_configurations_;
   std::map<std::string, std::string> updated_configurations_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkConfigurationObserver);
 };
 
 class TestNetworkStateHandlerObserver
     : public chromeos::NetworkStateHandlerObserver {
  public:
   TestNetworkStateHandlerObserver() = default;
+
+  TestNetworkStateHandlerObserver(const TestNetworkStateHandlerObserver&) =
+      delete;
+  TestNetworkStateHandlerObserver& operator=(
+      const TestNetworkStateHandlerObserver&) = delete;
 
   // Returns the number of NetworkListChanged() call.
   size_t network_list_changed_count() const {
@@ -175,8 +182,6 @@ class TestNetworkStateHandlerObserver
  private:
   size_t network_list_changed_count_ = 0;
   std::map<std::string, int> property_updates_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkStateHandlerObserver);
 };
 
 }  // namespace

@@ -18,7 +18,7 @@ import java.util.List;
  */
 @JNINamespace("autofill_assistant")
 public class AutofillAssistantTestServiceRequestSender
-        implements AutofillAssistantServiceInjector.NativeServiceRequestSenderProvider {
+        implements AutofillAssistantDependencyInjector.NativeServiceRequestSenderProvider {
     static class Request {
         Request(String url, byte[] request) {
             mUrl = url;
@@ -42,7 +42,7 @@ public class AutofillAssistantTestServiceRequestSender
      * trigger script startup in order to take effect!
      */
     void scheduleForInjection() {
-        AutofillAssistantServiceInjector.setServiceRequestSenderToInject(this);
+        AutofillAssistantDependencyInjector.setServiceRequestSenderToInject(this);
     }
 
     /**

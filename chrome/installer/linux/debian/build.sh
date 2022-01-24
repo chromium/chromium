@@ -267,7 +267,7 @@ cd "${OUTPUTDIR}"
 BASEREPOCONFIG="dl.google.com/linux/chrome/deb/ stable main"
 # Only use the default REPOCONFIG if it's unset (e.g. verify_channel might have
 # set it to an empty string)
-REPOCONFIG="${REPOCONFIG-deb [arch=${ARCHITECTURE}] http://${BASEREPOCONFIG}}"
+REPOCONFIG="${REPOCONFIG-deb [arch=${ARCHITECTURE}] https://${BASEREPOCONFIG}}"
 # Allowed configs include optional HTTPS support and explicit multiarch
 # platforms.
 REPOCONFIGREGEX="deb (\\\\[arch=[^]]*\\\\b${ARCHITECTURE}\\\\b[^]]*\\\\]"

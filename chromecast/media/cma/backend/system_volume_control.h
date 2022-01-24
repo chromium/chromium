@@ -34,6 +34,10 @@ class SystemVolumeControl {
   static std::unique_ptr<SystemVolumeControl> Create(Delegate* delegate);
 
   SystemVolumeControl() = default;
+
+  SystemVolumeControl(const SystemVolumeControl&) = delete;
+  SystemVolumeControl& operator=(const SystemVolumeControl&) = delete;
+
   virtual ~SystemVolumeControl() = default;
 
   // Returns the value that you would get if you called GetVolume() after
@@ -57,9 +61,6 @@ class SystemVolumeControl {
 
   // Sets the volume limit to be applied to the system volume.
   virtual void SetLimit(float limit) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemVolumeControl);
 };
 
 }  // namespace media

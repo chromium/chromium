@@ -18,6 +18,10 @@ class FindInPageManagerDelegate {
  public:
   FindInPageManagerDelegate() = default;
 
+  FindInPageManagerDelegate(const FindInPageManagerDelegate&) = delete;
+  FindInPageManagerDelegate& operator=(const FindInPageManagerDelegate&) =
+      delete;
+
   // Called when a search for |query| finished with |match_count| found and all
   // matches were highlighted after calling FindInPageManager::Find() with
   // FindInPageSearch. Even if no matches are found, call will be made once a
@@ -45,9 +49,6 @@ class FindInPageManagerDelegate {
 
  protected:
   virtual ~FindInPageManagerDelegate() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FindInPageManagerDelegate);
 };
 
 }  // namespace web

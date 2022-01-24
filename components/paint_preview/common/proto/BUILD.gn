@@ -7,12 +7,3 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("proto") {
   sources = [ "paint_preview.proto" ]
 }
-
-if (is_android) {
-  import("//build/config/android/rules.gni")
-
-  proto_java_library("proto_java") {
-    proto_path = "."
-    sources = [ "paint_preview.proto" ]
-  }
-}

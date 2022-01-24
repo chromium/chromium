@@ -11,6 +11,10 @@ namespace password_manager {
 struct PasswordForm;
 }  // namespace password_manager
 
+// Connivence method to create a PasswordForm from a Credential.
+password_manager::PasswordForm PasswordFormFromCredential(
+    id<Credential> credential);
+
 // Category for adding convenience logic related to PasswordForms.
 @interface ArchivableCredential (PasswordForm)
 

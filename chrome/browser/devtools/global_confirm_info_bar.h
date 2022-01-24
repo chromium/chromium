@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -39,6 +38,9 @@ class GlobalConfirmInfoBar : public TabStripModelObserver,
   // management differ from how typical infobars work.
   static GlobalConfirmInfoBar* Show(
       std::unique_ptr<ConfirmInfoBarDelegate> delegate);
+
+  GlobalConfirmInfoBar(const GlobalConfirmInfoBar&) = delete;
+  GlobalConfirmInfoBar& operator=(const GlobalConfirmInfoBar&) = delete;
 
   // infobars::InfoBarManager::Observer:
   void OnInfoBarRemoved(infobars::InfoBar* info_bar, bool animate) override;
@@ -75,8 +77,6 @@ class GlobalConfirmInfoBar : public TabStripModelObserver,
   bool is_closing_ = false;
 
   base::WeakPtrFactory<GlobalConfirmInfoBar> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalConfirmInfoBar);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_GLOBAL_CONFIRM_INFO_BAR_H_

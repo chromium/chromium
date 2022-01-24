@@ -25,4 +25,11 @@ bool IsNearbyClientUuid(const device::BluetoothUUID& uuid);
 }  // namespace nearby
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace nearby {
+using ::chromeos::nearby::GetNearbyClientUuids;
+}
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_NEARBY_PUBLIC_CPP_NEARBY_CLIENT_UUIDS_H_

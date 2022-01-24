@@ -54,27 +54,37 @@ PaymentShippingOption& PaymentShippingOption::operator=(
   return *this;
 }
 
-bool PaymentShippingOption::FromDictionaryValue(
-    const base::DictionaryValue& value) {
-  if (!value.GetString(kPaymentShippingOptionId, &id)) {
+bool PaymentShippingOption::FromValue(const base::Value& value) {
+  if (!value.is_dict()) {
     return false;
   }
 
-  if (!value.GetString(kPaymentShippingOptionLabel, &label)) {
+  const std::string* id_in = value.FindStringKey(kPaymentShippingOptionId);
+  if (!id_in) {
     return false;
   }
+  id = *id_in;
 
-  const base::DictionaryValue* amount_dict = nullptr;
-  if (!value.GetDictionary(kPaymentShippingOptionAmount, &amount_dict)) {
+  const std::string* label_in =
+      value.FindStringKey(kPaymentShippingOptionLabel);
+  if (!label_in) {
+    return false;
+  }
+  label = *label_in;
+
+  const base::Value* amount_dict =
+      value.FindDictKey(kPaymentShippingOptionAmount);
+  if (!amount_dict) {
     return false;
   }
   amount = mojom::PaymentCurrencyAmount::New();
-  if (!PaymentCurrencyAmountFromDictionaryValue(*amount_dict, amount.get())) {
+  if (!PaymentCurrencyAmountFromValue(*amount_dict, amount.get())) {
     return false;
   }
 
   // Selected is optional.
-  value.GetBoolean(kPaymentShippingOptionSelected, &selected);
+  selected =
+      value.FindBoolKey(kPaymentShippingOptionSelected).value_or(selected);
 
   return true;
 }

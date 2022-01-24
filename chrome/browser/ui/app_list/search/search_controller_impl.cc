@@ -13,7 +13,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/sequence_token.h"
 #include "base/strings/strcat.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/common/string_util.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
 #include "chrome/browser/ui/app_list/search/search_metrics_observer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
@@ -31,45 +31,12 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/histogram_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/search_result_ranker.h"
-#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_mojo_events.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace app_list {
-
-namespace {
-
-constexpr char kLauncherSearchQueryLengthJumped[] =
-    "Apps.LauncherSearchQueryLengthJumped";
-
-// TODO(931149): Move the string manipulation utilities into a helper class.
-
-// Normalizes training targets by removing any scheme prefix and trailing slash:
-// "arc://[id]/" to "[id]". This is necessary because apps launched from
-// different parts of the launcher have differently formatted IDs.
-std::string NormalizeId(const std::string& id) {
-  std::string result(id);
-  // No existing scheme names include the delimiter string "://".
-  std::size_t delimiter_index = result.find("://");
-  if (delimiter_index != std::string::npos)
-    result.erase(0, delimiter_index + 3);
-  if (!result.empty() && result.back() == '/')
-    result.pop_back();
-  return result;
-}
-
-// Remove the Arc app shortcut label from an app ID, if it exists, so that
-// "[app]/[label]" becomes "[app]".
-std::string RemoveAppShortcutLabel(const std::string& id) {
-  std::string result(id);
-  std::size_t delimiter_index = result.find_last_of('/');
-  if (delimiter_index != std::string::npos)
-    result.erase(delimiter_index);
-  return result;
-}
-
-}  // namespace
 
 SearchControllerImpl::SearchControllerImpl(
     AppListModelUpdater* model_updater,
@@ -93,12 +60,6 @@ void SearchControllerImpl::Start(const std::u16string& query) {
   session_start_ = base::Time::Now();
   dispatching_query_ = true;
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
-  if (query.length() > 0) {
-    const int length_diff = query.length() >= last_query_.length()
-                                ? query.length() - last_query_.length()
-                                : last_query_.length() - query.length();
-    UMA_HISTOGRAM_BOOLEAN(kLauncherSearchQueryLengthJumped, length_diff > 1);
-  }
   for (Observer& observer : observer_list_) {
     observer.OnResultsCleared();
   }
@@ -141,10 +102,11 @@ void SearchControllerImpl::OpenResult(ChromeSearchResult* result,
   }
 }
 
-void SearchControllerImpl::InvokeResultAction(ChromeSearchResult* result,
-                                              int action_index) {
+void SearchControllerImpl::InvokeResultAction(
+    ChromeSearchResult* result,
+    ash::SearchResultActionType action) {
   // TODO(xiyuan): Hook up with user learning.
-  result->InvokeAction(action_index);
+  result->InvokeAction(action);
 }
 
 size_t SearchControllerImpl::AddGroup(size_t max_results) {
@@ -245,7 +207,7 @@ void SearchControllerImpl::Train(LaunchData&& launch_data) {
     base::Time::Exploded now_exploded;
     now.LocalExplode(&now_exploded);
 
-    metrics::structured::events::launcher_usage::LauncherUsage()
+    metrics::structured::events::v2::launcher_usage::LauncherUsage()
         .SetTarget(NormalizeId(launch_data.id))
         .SetApp(last_launched_app_id_)
         .SetSearchQuery(base::UTF16ToUTF8(last_query_))

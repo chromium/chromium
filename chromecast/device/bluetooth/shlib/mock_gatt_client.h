@@ -18,7 +18,7 @@ class MockGattClient : public GattClient {
   MockGattClient();
   ~MockGattClient() override;
   MOCK_METHOD0(IsSupported, bool());
-  MOCK_METHOD1(Connect, bool(const Addr&));
+  MOCK_METHOD2(Connect, bool(const Addr&, Gatt::Client::Transport transport));
   MOCK_METHOD1(SetDelegate, void(Gatt::Client::Delegate*));
   MOCK_METHOD0(Enable, bool());
   MOCK_METHOD0(Disable, bool());

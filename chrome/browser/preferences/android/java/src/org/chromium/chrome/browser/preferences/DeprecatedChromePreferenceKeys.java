@@ -19,7 +19,13 @@ public class DeprecatedChromePreferenceKeys {
     static List<String> getKeysForTesting() {
         // clang-format off
         return Arrays.asList(
+                "Chrome.AccountPickerBottomSheet.ShownCount",
                 "Chrome.Flags.PaintPreviewTestEnabled",
+                "Chrome.Flags.SafeBool.*",
+                "Chrome.Flags.SafeDouble.*",
+                "Chrome.Flags.SafeInt.*",
+                "Chrome.Flags.SafeString.*",
+                "Chrome.Flags.SafeValuesVersion",
                 "Chrome.OfflineMeasurements.HttpProbeResultsList",
                 "Chrome.OfflineMeasurements.IsAirplaneModeEnabledList",
                 "Chrome.OfflineMeasurements.IsRoaming",
@@ -61,6 +67,7 @@ public class DeprecatedChromePreferenceKeys {
                 "click_to_call_open_dialer_directly",
                 "crash_dump_upload",
                 "crash_dump_upload_no_cellular",
+                "darken_websites_enabled",
                 "home_page_button_force_enabled",
                 "homepage_tile_enabled",
                 "inflate_toolbar_on_background_thread",
@@ -82,6 +89,7 @@ public class DeprecatedChromePreferenceKeys {
                 "prefetch_notification_ignored_counter",
                 "prefetch_notification_offline_counter",
                 "prefetch_notification_shown_time",
+                "prioritize_bootstrap_tasks",
                 "sole_integration_enabled",
                 "start_surface_single_pane_enabled",
                 "tab_persistent_store_task_runner_enabled",

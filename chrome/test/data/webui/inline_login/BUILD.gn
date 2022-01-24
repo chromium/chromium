@@ -30,7 +30,7 @@ js_library("inline_login_test") {
   deps = [
     ":inline_login_test_util",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/inline_login:inline_login_app",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -42,7 +42,7 @@ js_library("inline_login_welcome_page_test") {
   deps = [
     ":inline_login_test_util",
     "..:chai_assert",
-    "..:test_util.m",
+    "..:test_util",
     "//chrome/browser/resources/inline_login:inline_login_app",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -52,7 +52,7 @@ js_library("inline_login_welcome_page_test") {
 
 js_library("inline_login_test_util") {
   deps = [
-    "..:test_browser_proxy.m",
+    "..:test_browser_proxy",
     "//chrome/browser/resources/gaia_auth_host:authenticator.m",
     "//chrome/browser/resources/inline_login:inline_login_browser_proxy",
     "//ui/webui/resources/js/cr:event_target.m",

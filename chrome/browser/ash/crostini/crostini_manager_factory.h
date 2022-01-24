@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_MANAGER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -20,6 +19,9 @@ class CrostiniManagerFactory : public BrowserContextKeyedServiceFactory {
   static CrostiniManager* GetForProfile(Profile* profile);
   static CrostiniManagerFactory* GetInstance();
 
+  CrostiniManagerFactory(const CrostiniManagerFactory&) = delete;
+  CrostiniManagerFactory& operator=(const CrostiniManagerFactory&) = delete;
+
  private:
   friend class base::NoDestructor<CrostiniManagerFactory>;
 
@@ -29,8 +31,6 @@ class CrostiniManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniManagerFactory);
 };
 
 }  // namespace crostini

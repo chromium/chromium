@@ -65,6 +65,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobStorageContext
   BlobStorageContext(const base::FilePath& profile_directory,
                      const base::FilePath& blob_storage_directory,
                      scoped_refptr<base::TaskRunner> file_runner);
+
+  BlobStorageContext(const BlobStorageContext&) = delete;
+  BlobStorageContext& operator=(const BlobStorageContext&) = delete;
+
   ~BlobStorageContext() override;
 
   // The following three methods all lookup a BlobDataHandle based on some
@@ -259,8 +263,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobStorageContext
   BlobMemoryController memory_controller_;
   mojo::ReceiverSet<mojom::BlobStorageContext> receivers_;
   base::WeakPtrFactory<BlobStorageContext> ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlobStorageContext);
 };
 
 }  // namespace storage

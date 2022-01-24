@@ -21,6 +21,10 @@ class SiteForCookies;
 class NET_EXPORT CookieAccessDelegate {
  public:
   CookieAccessDelegate();
+
+  CookieAccessDelegate(const CookieAccessDelegate&) = delete;
+  CookieAccessDelegate& operator=(const CookieAccessDelegate&) = delete;
+
   virtual ~CookieAccessDelegate();
 
   // Returns true if the passed in |url| should be permitted to access secure
@@ -60,9 +64,6 @@ class NET_EXPORT CookieAccessDelegate {
   // Returns the First-Party Sets.
   virtual base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
   RetrieveFirstPartySets() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CookieAccessDelegate);
 };
 
 }  // namespace net

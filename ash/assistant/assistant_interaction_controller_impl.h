@@ -20,7 +20,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -55,6 +54,12 @@ class AssistantInteractionControllerImpl
 
   explicit AssistantInteractionControllerImpl(
       AssistantControllerImpl* assistant_controller);
+
+  AssistantInteractionControllerImpl(
+      const AssistantInteractionControllerImpl&) = delete;
+  AssistantInteractionControllerImpl& operator=(
+      const AssistantInteractionControllerImpl&) = delete;
+
   ~AssistantInteractionControllerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -161,8 +166,6 @@ class AssistantInteractionControllerImpl
   base::WeakPtrFactory<AssistantInteractionControllerImpl>
       screen_context_request_factory_{this};
   base::WeakPtrFactory<AssistantInteractionControllerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantInteractionControllerImpl);
 };
 
 }  // namespace ash

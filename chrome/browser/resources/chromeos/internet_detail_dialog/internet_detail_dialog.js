@@ -95,14 +95,6 @@ Polymer({
       value: false,
       computed: 'computeDisabled_(deviceState_.*)'
     },
-
-    /** @private */
-    isUpdatedCellularUiEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('updatedCellularActivationUi');
-      }
-    },
   },
 
   /**
@@ -605,11 +597,9 @@ Polymer({
     /** @type {!Array<string>} */ const fields = [];
     const type = this.managedProperties_.type;
     if (type == chromeos.networkConfig.mojom.NetworkType.kCellular) {
-      if (this.isUpdatedCellularUiEnabled_) {
-        fields.push('cellular.activationState');
-      }
       fields.push(
-          'cellular.servingOperator.name', 'cellular.networkTechnology');
+          'cellular.activationState', 'cellular.servingOperator.name',
+          'cellular.networkTechnology');
     }
     if (OncMojo.isRestrictedConnectivity(this.managedProperties_.portalState)) {
       fields.push('portalState');
@@ -632,8 +622,7 @@ Polymer({
    * @private
    */
   computeShowConfigurableSections_() {
-    if (!this.isUpdatedCellularUiEnabled_ || !this.managedProperties_ ||
-        !this.deviceState_) {
+    if (!this.managedProperties_ || !this.deviceState_) {
       return true;
     }
 
@@ -653,9 +642,6 @@ Polymer({
    * @private
    */
   computeDisabled_() {
-    if (!this.isUpdatedCellularUiEnabled_) {
-      return false;
-    }
     if (!this.deviceState_ ||
         this.deviceState_.type !==
             chromeos.networkConfig.mojom.NetworkType.kCellular) {

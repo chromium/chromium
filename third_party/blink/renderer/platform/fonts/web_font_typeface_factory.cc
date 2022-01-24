@@ -127,8 +127,9 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForVariations() {
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForSbix() {
 #if defined(OS_MAC)
   return DefaultFontManager();
-#endif
+#else
   return FreeTypeFontManager();
+#endif
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::DefaultFontManager() {
@@ -152,11 +153,12 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForColrCpal() {
   if (!blink::DWriteRasterizerSupport::IsDWriteFactory2Available())
     return FreeTypeFontManager();
 #endif
+
 #if defined(OS_MAC)
-  if (!CoreTextVersionSupportsColrCpal())
-    return FreeTypeFontManager();
-#endif
+  return FreeTypeFontManager();
+#else
   return DefaultFontManager();
+#endif
 }
 
 void WebFontTypefaceFactory::ReportInstantiationResult(

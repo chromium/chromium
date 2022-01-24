@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_FRAME_QUEUE_TRANSFERRING_OPTIMIZER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/transferred_frame_queue_underlying_source.h"

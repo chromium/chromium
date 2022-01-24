@@ -41,6 +41,7 @@ class ChromeHidDelegate
   const device::mojom::HidDeviceInfo* GetDeviceInfo(
       content::RenderFrameHost* render_frame_host,
       const std::string& guid) override;
+  bool IsFidoAllowedForOrigin(const url::Origin& origin) override;
 
   // permissions::ObjectPermissionContextBase::PermissionObserver:
   void OnPermissionRevoked(const url::Origin& origin) override;

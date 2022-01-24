@@ -6,5 +6,5 @@
 [
   ImplementedAs=AppHistory
 ] partial interface Window {
-  [RuntimeEnabled=AppHistory, Affects=Nothing] readonly attribute AppHistory appHistory;
+  [RuntimeEnabled=AppHistory] readonly attribute AppHistory appHistory;
 };

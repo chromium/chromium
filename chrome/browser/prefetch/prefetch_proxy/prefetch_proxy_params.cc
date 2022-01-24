@@ -119,10 +119,9 @@ size_t PrefetchProxyMaximumNumberOfConcurrentPrefetches() {
 }
 
 base::TimeDelta PrefetchProxyProbeTimeout() {
-  return base::TimeDelta::FromMilliseconds(
-      base::GetFieldTrialParamByFeatureAsInt(
-          features::kIsolatePrerendersMustProbeOrigin, "probe_timeout_ms",
-          10 * 1000 /* 10 seconds */));
+  return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+      features::kIsolatePrerendersMustProbeOrigin, "probe_timeout_ms",
+      10 * 1000 /* 10 seconds */));
 }
 
 bool PrefetchProxyCloseIdleSockets() {
@@ -131,10 +130,9 @@ bool PrefetchProxyCloseIdleSockets() {
 }
 
 base::TimeDelta PrefetchProxyTimeoutDuration() {
-  return base::TimeDelta::FromMilliseconds(
-      base::GetFieldTrialParamByFeatureAsInt(features::kIsolatePrerenders,
-                                             "prefetch_timeout_ms",
-                                             10 * 1000 /* 10 seconds */));
+  return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+      features::kIsolatePrerenders, "prefetch_timeout_ms",
+      10 * 1000 /* 10 seconds */));
 }
 
 bool PrefetchProxyProbingEnabled() {
@@ -150,6 +148,15 @@ bool PrefetchProxyCanaryCheckEnabled() {
 
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kIsolatePrerendersMustProbeOrigin, "do_canary", true);
+}
+
+bool PrefetchProxyTLSCanaryCheckEnabled() {
+  if (!PrefetchProxyCanaryCheckEnabled()) {
+    return false;
+  }
+
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kIsolatePrerendersMustProbeOrigin, "do_tls_canary", false);
 }
 
 GURL PrefetchProxyTLSCanaryCheckURL() {
@@ -171,7 +178,7 @@ GURL PrefetchProxyDNSCanaryCheckURL() {
 }
 
 base::TimeDelta PrefetchProxyCanaryCheckCacheLifetime() {
-  return base::TimeDelta::FromHours(base::GetFieldTrialParamByFeatureAsInt(
+  return base::Hours(base::GetFieldTrialParamByFeatureAsInt(
       features::kIsolatePrerendersMustProbeOrigin, "canary_cache_hours", 24));
 }
 
@@ -228,7 +235,7 @@ base::TimeDelta PrefetchProxyMaxRetryAfterDelta() {
   int max_seconds = base::GetFieldTrialParamByFeatureAsInt(
       features::kIsolatePrerenders, "max_retry_after_duration_secs",
       1 * 60 * 60 * 24 * 7 /* 1 week */);
-  return base::TimeDelta::FromSeconds(max_seconds);
+  return base::Seconds(max_seconds);
 }
 
 bool PrefetchProxySendDecoyRequestForIneligiblePrefetch() {
@@ -257,4 +264,14 @@ bool PrefetchProxySendDecoyRequestForIneligiblePrefetch() {
 bool PrefetchProxyAllowAllDomains() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       "isolated-prerender-allow-all-domains");
+}
+
+base::TimeDelta PrefetchProxyCacheableDuration() {
+  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
+      features::kIsolatePrerenders, "cacheable_duration", 300));
+}
+
+std::string PrefetchProxyServerExperimentGroup() {
+  return base::GetFieldTrialParamValueByFeature(features::kIsolatePrerenders,
+                                                "server_experiment_group");
 }

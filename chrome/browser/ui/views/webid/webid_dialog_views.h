@@ -25,14 +25,15 @@ class WebIdDialogViews : public WebIdDialog,
  public:
   METADATA_HEADER(WebIdDialogViews);
   // Constructs a new dialog. The actual dialog widget will be modal to the
-  // |rp_web_contents| and is shownn using the
+  // |rp_web_contents| and is shown using the
   // |constrained_window::ShowWebModalDialogViews| machinery.
-  explicit WebIdDialogViews(content::WebContents* rp_web_contents);
+  WebIdDialogViews(content::WebContents* rp_web_contents, CloseCallback);
   // Constructs a new dialog. The actual dialog widget gets to be modal to the
   // |parent| window. This bypasses constrained_window machinery making
   // it easier to test.
   WebIdDialogViews(content::WebContents* rp_web_contents,
-                   gfx::NativeView parent);
+                   gfx::NativeView parent,
+                   CloseCallback);
   WebIdDialogViews(const WebIdDialogViews&) = delete;
   WebIdDialogViews operator=(const WebIdDialogViews&) = delete;
   ~WebIdDialogViews() override;
@@ -45,8 +46,7 @@ class WebIdDialogViews : public WebIdDialog,
                                    const std::u16string& rp_hostname,
                                    PermissionCallback) override;
   void ShowSigninPage(content::WebContents* idp_web_contents,
-                      const GURL& idp_signin_url,
-                      CloseCallback) override;
+                      const GURL& idp_signin_url) override;
   void CloseSigninPage() override;
 
  private:
@@ -69,6 +69,11 @@ class WebIdDialogViews : public WebIdDialog,
   State state_{State::kUninitialized};
 
   PermissionCallback permission_callback_;
+
+  // |close_callback_| is called when the dialog is closed by user action and
+  // |permission_callback_| is nullptr. This corresponds to a cancellation
+  // while no permission is being requested, in particular because the sign-in
+  // page has been or is being loaded.
   CloseCallback close_callback_;
 
   // Modifies behavior based on whether the caller expects state to carry

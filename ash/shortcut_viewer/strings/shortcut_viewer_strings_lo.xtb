@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">ເປີດໜ້າຈໍໃໝ່ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="152892567002884378">ເປີດສຽງຂຶ້ນ</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ຈາກນັ້ນ <ph name="ESC" /></translation>
-<translation id="1633761758045565086">ຍ້າຍໂຟກັສໄປຫາກ່ອງໂຕ້​ຕອບການຊ່ວຍເຫຼືອ</translation>
 <translation id="1652741121070700329">ຍ້າຍໄປຈຸດເລີ່ມຕົ້ນຂອງຄຳສັບຜ່ານມາ</translation>
 <translation id="1679841710523778799">ເພີ່ມຄວາມສະຫວ່າງຂຶ້ນ</translation>
 <translation id="168356808214100546">ກົດຄ້າງ <ph name="ALT" />, ແຕະ <ph name="TAB" /> ຈົນກວ່າວ່າທ່ານໄປຫາໜ້າຈໍທີ່ທ່ານຕ້ອງການເປີດ, ຈາກນັ້ນປ່ອຍ.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">ເລື່ອນໜ້າເວັບລົງ</translation>
 <translation id="2530896289327917474">ເປີດ ຫຼື ປິດການຮຽກເບິ່ງດ້ວຍແປ້ນພິມ</translation>
 <translation id="2574014812750545982">ຣີເຊັດລະດັບການຊູມໃນໜ້າ</translation>
-<translation id="2596078834055697711">ຖ່າຍພາບໜ້າຈໍ</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ຈາກນັ້ນ <ph name="TAB" /> ຫຼື <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">ໂຫຼດໜ້າປັດຈຸບັນຂອງທ່ານຄືນໃໝ່</translation>
 <translation id="2764005613199379871">ວາງໂຟກັສໃສ່ໃນແຖບທີ່ຢູ່ການຊອກຫາ</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">ທາງລັດ</translation>
 <translation id="3084301071537457911">ໄຮໄລ້ລາຍການຕໍ່ໄປໃນຖ້ານຂອງທ່ານ</translation>
 <translation id="309173601632226815">ໄຮໄລ້ປຸ່ມຕົວເປີດໃຊ້ໃນຖ້ານຂອງທ່ານ</translation>
-<translation id="3105917916468784889">ຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">ແຖບທີ່ຢູ່ຈຸດສຸມ</translation>
 <translation id="3256109297135787951">ລຶບໄຮໄລ້ອອກຈາກລາຍການໃນຖ້ານຂອງທ່ານ</translation>
 <translation id="3288816184963444640">ປິດໜ້າຈໍປັດຈຸບັນ</translation>
+<translation id="3350805006883559974">ໜ້າຈໍທີ່ນຳໃຊ້ທີ່ລອຍຢູ່ເທິງສຸດ</translation>
 <translation id="3407560819924487926">ເປີດຕົວຈັດການໜ້າຈໍຂຶ້ນມາ</translation>
 <translation id="3417835166382867856">ຊອກຫາແຖບ</translation>
 <translation id="3422679037938588196">ໄປຫາຜົນທີ່ກົງກັນກ່ອນນີ້ສຳລັບການຊອກຫາຂອງທ່ານ</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">ເບິ່ງຕົວຊ່ວຍທາງລັດແປ້ນພິມ</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> ຫຼື <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">ເປີດພື້ນທີ່ສະຖານະ (ບ່ອນທີ່ຮູບບັນຊີຂອງທ່ານປາກົດ)</translation>
-<translation id="4642092649622328492">ຖ່າຍຮູບໜ້າຈໍບາງສ່ວນ</translation>
 <translation id="4698850295812410683">ສະແດງເຄື່ອງມືປາຍປາກກາ</translation>
 <translation id="4801989101741319327">ຍ້າຍໄປຈຸດສິ້ນສຸດຂອງຄຳຕໍ່ໄປ</translation>
 <translation id="4866066940972151697">ເປີດນຳໃຊ້ພື້ນທີ່ເຮັດວຽກຢູ່ດ້ານຂວາ</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">ຍ້າຍໜ້າຈໍທີ່ເປີດຢູ່ໄປຫາພື້ນທີ່ເຮັດວຽກຢູ່ເບື້ອງຊ້າຍ</translation>
 <translation id="88986195241502842">ຫນ້າ​ລົງ</translation>
 <translation id="8924883688469390268">ປ່ຽນເປັນຜູ້ໃຊ້ຜ່ານມາ</translation>
+<translation id="8941626538514548667">ໂຟກັສເນື້ອຫາເວັບໃນໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="8977648847395357314">ເລືອກເນື້ອຫາໃນແຖບທີ່ຢູ່</translation>
 <translation id="8982190978301344584">ສະແດງເມນູທີ່ສະແດງລາຍການ IME ທີ່ມີໃຫ້ນຳໃຊ້</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 ຫາ 8</translation>

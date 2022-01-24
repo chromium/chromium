@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/core/wm_core_export.h"
@@ -30,6 +29,9 @@ class TransientWindowObserver;
 class WM_CORE_EXPORT TransientWindowManager : public aura::WindowObserver {
  public:
   using Windows = std::vector<aura::Window*>;
+
+  TransientWindowManager(const TransientWindowManager&) = delete;
+  TransientWindowManager& operator=(const TransientWindowManager&) = delete;
 
   ~TransientWindowManager() override;
 
@@ -105,8 +107,6 @@ class WM_CORE_EXPORT TransientWindowManager : public aura::WindowObserver {
   bool pause_transient_descendants_restacking_ = false;
 
   base::ObserverList<TransientWindowObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransientWindowManager);
 };
 
 }  // namespace wm

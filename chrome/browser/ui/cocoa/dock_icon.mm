@@ -191,7 +191,7 @@ constexpr int64_t kUpdateFrequencyMs = 200;
 - (void)updateIcon {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   static base::TimeDelta updateFrequency =
-      base::TimeDelta::FromMilliseconds(kUpdateFrequencyMs);
+      base::Milliseconds(kUpdateFrequencyMs);
 
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta timeSinceLastUpdate = now - _lastUpdate;

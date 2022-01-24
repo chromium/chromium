@@ -20,9 +20,8 @@ constexpr double kDistanceEstimatorScalar = 25;
 // The delta to be scrolled in next frame is 0.92 of the delta in last frame.
 constexpr double kRatio = 0.92;
 #endif
-constexpr auto kFrameTime = base::TimeDelta::FromMilliseconds(16);
-constexpr base::TimeDelta kMaximumSnapDuration =
-    base::TimeDelta::FromSecondsD(5);
+constexpr auto kFrameTime = base::Milliseconds(16);
+constexpr base::TimeDelta kMaximumSnapDuration = base::Seconds(5);
 
 double GetDistanceFromDisplacement(gfx::Vector2dF displacement) {
   return std::hypot(displacement.x(), displacement.y());

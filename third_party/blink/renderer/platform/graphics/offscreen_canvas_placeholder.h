@@ -7,7 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_flags.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -1,0 +1,62 @@
+{
+    include: [ "syslog/client.shard.cml" ],
+    program: {
+        runner: "elf",
+        binary: "chrome",
+        args: [
+          "--enable-features=Vulkan,CanvasOopRasterization"
+        ],
+    },
+    capabilities: [
+        {
+            protocol: [
+                "fuchsia.ui.app.ViewProvider",
+            ],
+        },
+    ],
+    use: [
+        {
+            directory: "cache",
+            from: "parent",
+            path: "/cache",
+            rights: ["rw*"],
+        },
+        {
+            directory: "data",
+            from: "parent",
+            path: "/data",
+            rights: ["rw*"],
+        },
+        {
+            storage: "tmp",
+            path: "/tmp",
+        },
+        {
+            protocol: [
+                "fuchsia.device.NameProvider",
+                "fuchsia.fonts.Provider",
+                "fuchsia.input.virtualkeyboard.ControllerCreator",
+                "fuchsia.intl.PropertyProvider",
+                "fuchsia.media.Audio",
+                "fuchsia.media.ProfileProvider",
+                "fuchsia.memorypressure.Provider",
+                "fuchsia.net.interfaces.State",
+                "fuchsia.net.name.Lookup",
+                "fuchsia.posix.socket.Provider",
+                "fuchsia.process.Launcher",
+                "fuchsia.sysmem.Allocator",
+                "fuchsia.ui.input3.Keyboard",
+                "fuchsia.ui.scenic.Scenic",
+                "fuchsia.vulkan.loader.Loader",
+            ],
+        },
+    ],
+    expose: [
+        {
+            protocol: [
+                "fuchsia.ui.app.ViewProvider",
+            ],
+            from: "self",
+        },
+    ],
+}

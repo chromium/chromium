@@ -24,6 +24,10 @@ class NativeMessagingPipe
       public extensions::NativeMessageHost::Client {
  public:
   NativeMessagingPipe();
+
+  NativeMessagingPipe(const NativeMessagingPipe&) = delete;
+  NativeMessagingPipe& operator=(const NativeMessagingPipe&) = delete;
+
   ~NativeMessagingPipe() override;
 
   // Starts processing messages from the pipe.
@@ -41,8 +45,6 @@ class NativeMessagingPipe
  private:
   std::unique_ptr<extensions::NativeMessagingChannel> channel_;
   std::unique_ptr<extensions::NativeMessageHost> host_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMessagingPipe);
 };
 
 }  // namespace remoting

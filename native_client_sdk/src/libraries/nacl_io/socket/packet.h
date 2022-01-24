@@ -18,6 +18,10 @@ class PepperInterface;
 class Packet {
  public:
   explicit Packet(PepperInterface* ppapi);
+
+  Packet(const Packet&) = delete;
+  Packet& operator=(const Packet&) = delete;
+
   ~Packet();
 
   // Copy the buffer, and address reference
@@ -32,8 +36,6 @@ class Packet {
   PP_Resource addr_;
   char* buffer_;
   size_t len_;
-
-  DISALLOW_COPY_AND_ASSIGN(Packet);
 };
 
 }  // namespace nacl_io

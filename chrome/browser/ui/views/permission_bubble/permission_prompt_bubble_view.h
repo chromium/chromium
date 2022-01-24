@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "components/permissions/permission_prompt.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -16,6 +15,14 @@
 namespace permissions {
 enum class RequestType;
 enum class PermissionAction;
+}  // namespace permissions
+
+namespace view {
+class Widget;
+}
+
+namespace view {
+class Widget;
 }
 
 class Browser;
@@ -25,6 +32,8 @@ class Browser;
 class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(PermissionPromptBubbleView);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleView,
+                                         kPermissionPromptBubbleViewIdentifier);
   PermissionPromptBubbleView(Browser* browser,
                              permissions::PermissionPrompt::Delegate* delegate,
                              base::TimeTicks permission_requested_time,
@@ -41,12 +50,16 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   void UpdateAnchorPosition();
 
   void SetPromptStyle(PermissionPromptStyle prompt_style);
+  void SetOnBubbleDismissedByUserCallback(base::OnceClosure callback) {
+    on_bubble_dismissed_by_user_callback_ = std::move(callback);
+  }
 
   // views::BubbleDialogDelegateView:
   void AddedToWidget() override;
   bool ShouldShowCloseButton() const override;
   std::u16string GetAccessibleWindowTitle() const override;
   std::u16string GetWindowTitle() const override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   void AcceptPermission();
   void AcceptPermissionThisTime();
@@ -84,6 +97,8 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   base::TimeTicks permission_requested_time_;
 
   PermissionPromptStyle prompt_style_;
+
+  base::OnceClosure on_bubble_dismissed_by_user_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_BUBBLE_VIEW_H_

@@ -10,6 +10,10 @@ generate_grd("build_grdp") {
   out_grd = "$target_gen_dir/resources.grdp"
   input_files = [
     "calculator.svg",
+    "calendar.svg",
+    "currency.svg",
+    "default.svg",
+    "definition.svg",
     "drive_docs.svg",
     "drive_folder.svg",
     "drive_form.svg",
@@ -19,8 +23,14 @@ generate_grd("build_grdp") {
     "drive_slides.svg",
     "drive_video.svg",
     "extension_app.svg",
+    "finance.svg",
+    "note.svg",
     "page.svg",
+    "sites.svg",
+    "sunrise.svg",
+    "translation.svg",
     "trending_up.svg",
+    "when_is.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")
 }

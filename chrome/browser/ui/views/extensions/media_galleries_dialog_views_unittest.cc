@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller_mock.h"
@@ -40,6 +39,10 @@ MediaGalleryPrefInfo MakePrefInfoForTesting(MediaGalleryPrefId id) {
 class MediaGalleriesDialogTest : public ChromeViewsTestBase {
  public:
   MediaGalleriesDialogTest() {}
+
+  MediaGalleriesDialogTest(const MediaGalleriesDialogTest&) = delete;
+  MediaGalleriesDialogTest& operator=(const MediaGalleriesDialogTest&) = delete;
+
   ~MediaGalleriesDialogTest() override {}
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -82,8 +85,6 @@ class MediaGalleriesDialogTest : public ChromeViewsTestBase {
   NiceMock<MediaGalleriesDialogControllerMock> controller_;
 
   views::Checkbox* checkbox_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesDialogTest);
 };
 
 // Tests that checkboxes are initialized according to the contents of

@@ -14,13 +14,18 @@ that the baseline images are regenerated on the next run.
   margin: 0px auto;
 }
 </style>
-
 <script src="pixel_webgl_util.js"></script>
 
 <script>
 var gl, generator, writer;
 
-function main() {
+function waitForNextVSync() {
+  return new Promise((resolve, _) => {
+    window.requestAnimationFrame(resolve);
+  });
+}
+
+function runTest() {
   var canvas = new OffscreenCanvas(300, 300);
   gl = initGL(canvas);
   if (!gl) {
@@ -40,7 +45,13 @@ function main() {
 
   let frame = new VideoFrame(canvas);
   let video = document.querySelector('video');
-  video.requestVideoFrameCallback(_ => {
+  video.requestVideoFrameCallback(async _ => {
+    // Wait for several vsyncs before taking a snapshot, this deflakes the test.
+    // pixel_video_test.js uses addSwapCompletionEventListener() for the same
+    // purpose, but addSwapCompletionEventListener() is not compatible with
+    // Android video overlays, so we can't use those.
+    for (let i = 0; i < 30; i++)
+      await waitForNextVSync();
     domAutomationController.send("SUCCESS");
   });
 
@@ -56,7 +67,7 @@ function main() {
 }
 </script>
 </head>
-<body onload="main()">
+<body onload="runTest()">
 <video width="300" height="300" class="nomargin" autoplay muted></video>
 </body>
 </html>

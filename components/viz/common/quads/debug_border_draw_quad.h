@@ -18,15 +18,15 @@ class VIZ_COMMON_EXPORT DebugBorderDrawQuad : public DrawQuad {
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
-              SkColor color,
-              int width);
+              SkColor c,
+              int w);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              SkColor color,
-              int width);
+              SkColor c,
+              int w);
 
   SkColor color = SK_ColorTRANSPARENT;
   int width = 0;

@@ -333,3 +333,10 @@ def using_xcode_11_or_higher():
   LOGGER.debug('Checking if Xcode version is 11 or higher')
   return distutils.version.LooseVersion(
       '11.0') <= distutils.version.LooseVersion(version()[0])
+
+
+def using_xcode_13_or_higher():
+  """Returns true if using Xcode version 13 or higher."""
+  LOGGER.debug('Checking if Xcode version is 13 or higher')
+  return distutils.version.LooseVersion(
+      '13.0') <= distutils.version.LooseVersion(version()[0])

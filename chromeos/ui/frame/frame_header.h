@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -36,6 +37,7 @@ class LayerTreeOwner;
 
 namespace views {
 enum class CaptionButtonLayoutSize;
+class NonClientFrameView;
 class View;
 class Widget;
 }  // namespace views
@@ -85,6 +87,15 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   static FrameHeader* Get(views::Widget* widget);
 
+  // Moves the client view in front of the frame animator view. This allows the
+  // frame animator view to still be at the bottom of the z-order while also
+  // keeping the rest of the frame view's children on top of the client view.
+  static views::View::Views GetAdjustedChildrenInZOrder(
+      views::NonClientFrameView* frame_view);
+
+  FrameHeader(const FrameHeader&) = delete;
+  FrameHeader& operator=(const FrameHeader&) = delete;
+
   virtual ~FrameHeader();
 
   const std::u16string& frame_text_override() const {
@@ -99,6 +110,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   // Performs layout for the header.
   void LayoutHeader();
+
+  // Invalidate layout for the header.
+  void InvalidateLayout();
 
   // Get the height of the header.
   int GetHeaderHeight() const;
@@ -182,6 +196,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   gfx::Rect GetTitleBounds() const;
 
+  void UpdateSnapIcons();
+
   // The widget that the caption buttons act on. This can be different from
   // |view_|'s widget.
   views::Widget* target_widget_;
@@ -205,8 +221,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   Mode mode_ = MODE_INACTIVE;
 
   std::u16string frame_text_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameHeader);
 };
 
 }  // namespace chromeos

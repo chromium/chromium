@@ -177,9 +177,10 @@ void NotificationPromo::InitFromPrefs() {
   if (!ntp_promo)
     return;
 
-  ntp_promo->GetDouble(kPrefPromoFirstViewTime, &first_view_time_);
+  first_view_time_ = ntp_promo->FindDoubleKey(kPrefPromoFirstViewTime)
+                         .value_or(first_view_time_);
   ntp_promo->GetInteger(kPrefPromoViews, &views_);
-  ntp_promo->GetBoolean(kPrefPromoClosed, &closed_);
+  closed_ = ntp_promo->FindBoolPath(kPrefPromoClosed).value_or(closed_);
 }
 
 bool NotificationPromo::CanShow() const {
@@ -212,8 +213,8 @@ bool NotificationPromo::ExceedsMaxSeconds() const {
   if (max_seconds_ == 0 || first_view_time_ == 0)
     return false;
 
-  const base::Time last_view_time = base::Time::FromDoubleT(first_view_time_) +
-                                    base::TimeDelta::FromSeconds(max_seconds_);
+  const base::Time last_view_time =
+      base::Time::FromDoubleT(first_view_time_) + base::Seconds(max_seconds_);
   return last_view_time < base::Time::Now();
 }
 

@@ -20,21 +20,17 @@ bool NativeInit(base::android::LibraryProcessType library_process_type) {
     case base::android::PROCESS_WEBVIEW:
     case base::android::PROCESS_WEBVIEW_CHILD:
       return android_webview::OnJNIOnLoadInit();
-      break;
     case base::android::PROCESS_BROWSER:
     case base::android::PROCESS_CHILD:
       return android::OnJNIOnLoadInit();
-      break;
 
     case base::android::PROCESS_WEBVIEW_NONEMBEDDED:
       return base::android::OnJNIOnLoadInit();
-      break;
 
 #if defined(WEBVIEW_INCLUDES_WEBLAYER)
     case base::android::PROCESS_WEBLAYER:
     case base::android::PROCESS_WEBLAYER_CHILD:
       return weblayer::OnJNIOnLoadInit();
-      break;
 #endif
 
     default:

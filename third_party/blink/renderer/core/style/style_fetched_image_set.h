@@ -44,7 +44,6 @@ class ImageResourceObserver;
 // alternatives via the referenced CSSImageSetValue.
 class StyleFetchedImageSet final : public StyleImage,
                                    public ImageResourceObserver {
-  USING_PRE_FINALIZER(StyleFetchedImageSet, Dispose);
 
  public:
   StyleFetchedImageSet(ImageResourceContent*,
@@ -88,7 +87,6 @@ class StyleFetchedImageSet final : public StyleImage,
 
  private:
   bool IsEqual(const StyleImage& other) const override;
-  void Dispose();
 
   // ImageResourceObserver overrides
   String DebugName() const override { return "StyleFetchedImageSet"; }

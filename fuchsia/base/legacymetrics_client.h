@@ -31,10 +31,8 @@ class LegacyMetricsClient {
   static constexpr size_t kMaxBatchSize = 50;
 
   // Constants for FIDL reconnection with exponential backoff.
-  static constexpr base::TimeDelta kInitialReconnectDelay =
-      base::TimeDelta::FromSeconds(1);
-  static constexpr base::TimeDelta kMaxReconnectDelay =
-      base::TimeDelta::FromHours(1);
+  static constexpr base::TimeDelta kInitialReconnectDelay = base::Seconds(1);
+  static constexpr base::TimeDelta kMaxReconnectDelay = base::Hours(1);
   static constexpr size_t kReconnectBackoffFactor = 2;
 
   using ReportAdditionalMetricsCallback = base::RepeatingCallback<void(

@@ -72,6 +72,10 @@ class ImageLoader : public KeyedService {
   static ImageLoader* Get(content::BrowserContext* context);
 
   ImageLoader();
+
+  ImageLoader(const ImageLoader&) = delete;
+  ImageLoader& operator=(const ImageLoader&) = delete;
+
   ~ImageLoader() override;
 
   // Specify image resource to load. If the loaded image is larger than
@@ -121,8 +125,6 @@ class ImageLoader : public KeyedService {
                                 const std::vector<LoadResult>& load_result);
 
   base::WeakPtrFactory<ImageLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageLoader);
 };
 
 }  // namespace extensions

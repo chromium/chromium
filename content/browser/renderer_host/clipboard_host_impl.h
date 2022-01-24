@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,7 +35,7 @@ namespace content {
 class ClipboardHostImplTest;
 
 class CONTENT_EXPORT ClipboardHostImpl
-    : public DocumentServiceBase<blink::mojom::ClipboardHost> {
+    : public DocumentService<blink::mojom::ClipboardHost> {
  public:
   ~ClipboardHostImpl() override;
 
@@ -169,13 +169,18 @@ class CONTENT_EXPORT ClipboardHostImpl
                ReadRtfCallback callback) override;
   void ReadPng(ui::ClipboardBuffer clipboard_buffer,
                ReadPngCallback callback) override;
-  void ReadImage(ui::ClipboardBuffer clipboard_buffer,
-                 ReadImageCallback callback) override;
   void ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                  ReadFilesCallback callback) override;
   void ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
                       const std::u16string& type,
                       ReadCustomDataCallback callback) override;
+  void ReadAvailableCustomAndStandardFormats(
+      ReadAvailableCustomAndStandardFormatsCallback callback) override;
+  void ReadUnsanitizedCustomFormat(
+      const std::u16string& format,
+      ReadUnsanitizedCustomFormatCallback callback) override;
+  void WriteUnsanitizedCustomFormat(const std::u16string& format,
+                                    mojo_base::BigBuffer data) override;
   void WriteText(const std::u16string& text) override;
   void WriteHtml(const std::u16string& markup, const GURL& url) override;
   void WriteSvg(const std::u16string& markup) override;
@@ -189,6 +194,10 @@ class CONTENT_EXPORT ClipboardHostImpl
 #if defined(OS_MAC)
   void WriteStringToFindPboard(const std::u16string& text) override;
 #endif
+
+  // Returns true if custom format is allowed to be read/written from/to the
+  // clipboard, else, fails.
+  bool IsUnsanitizedCustomFormatContentAllowed();
 
   // Called by PerformPasteIfContentAllowed() when an is allowed request is
   // needed. Virtual to be overridden in tests.
@@ -210,9 +219,6 @@ class CONTENT_EXPORT ClipboardHostImpl
   void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                  ReadPngCallback callback,
                  const std::vector<uint8_t>& data);
-  void OnReadImage(ui::ClipboardBuffer clipboard_buffer,
-                   ReadImageCallback callback,
-                   const SkBitmap& bitmap);
 
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
 

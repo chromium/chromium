@@ -19,6 +19,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -130,6 +131,27 @@ class TabListModel extends ModelList {
     }
 
     /**
+     * Gets the new position of the Tab with {@link tabId} from a sorted list with MRU order.
+     * @param tabId The id of the Tab to insert into the list.
+     */
+    public int getNewPositionInMruOrderList(int tabId) {
+        long timestamp = PseudoTab.fromTabId(tabId).getTimestampMillis();
+        int pos = 0;
+        while (pos < size()) {
+            PropertyModel model = get(pos).model;
+            if (model.get(CARD_TYPE) != TAB
+                    || (PseudoTab.fromTabId(model.get(TabProperties.TAB_ID)).getTimestampMillis()
+                                    - timestamp
+                            >= 0)) {
+                pos++;
+            } else {
+                break;
+            }
+        }
+        return pos;
+    }
+
+    /**
      * Get the index that matches a message item that has the given message type.
      * @param messageType The message type to match.
      * @return The index within the model.
@@ -199,7 +221,13 @@ class TabListModel extends ModelList {
 
     /**
      * This method gets indexes in the {@link TabListModel} of the two tabs that are merged into one
-     * group.
+     * group. When moving a Tab to a group, we always put it at the end of the group. For example:
+     * move tab1 to tab2 to form a group, tab1 is after tab2 in the TabModel (tab2, tab1); Then
+     * move another Tab tab3 to (tab2, tab1) group, tab3 is after tab1, (tab2, tab1, tab3). Thus,
+     * the last Tab in the related Tabs is the movedTab. We use this to find the srcIndex; and query
+     * all of its related Tabs to find the desIndex, i.e., the index of the current group / Tab to
+     * move to.
+     *
      * @param tabModel   The tabModel that owns the tabs.
      * @param tabs       The list that contains tabs of the newly merged group.
      * @return A Pair with its first member as the index of the tab that is selected to merge and

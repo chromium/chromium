@@ -38,6 +38,11 @@ class QuicClientMessageLooplNetworkHelper
   QuicClientMessageLooplNetworkHelper(quic::QuicChromiumClock* clock,
                                       quic::QuicClientBase* client);
 
+  QuicClientMessageLooplNetworkHelper(
+      const QuicClientMessageLooplNetworkHelper&) = delete;
+  QuicClientMessageLooplNetworkHelper& operator=(
+      const QuicClientMessageLooplNetworkHelper&) = delete;
+
   ~QuicClientMessageLooplNetworkHelper() override;
 
   // QuicChromiumPacketReader::Visitor
@@ -70,8 +75,6 @@ class QuicClientMessageLooplNetworkHelper
 
   quic::QuicChromiumClock* clock_;
   quic::QuicClientBase* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicClientMessageLooplNetworkHelper);
 };
 
 }  // namespace net

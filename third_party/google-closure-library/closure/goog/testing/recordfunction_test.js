@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.testing.recordFunctionTest');
 goog.setTestOnly();
@@ -42,7 +34,7 @@ testSuite({
     const lastCall = f.getLastCall();
     assertEquals(
         'original function', goog.nullFunction, lastCall.getFunction());
-    assertEquals('this context', window, lastCall.getThis());
+    assertEquals('this context', undefined, lastCall.getThis());
     assertArrayEquals('arguments', [1], lastCall.getArguments());
     assertEquals('arguments[0]', 1, lastCall.getArgument(0));
     assertUndefined('arguments[1]', lastCall.getArgument(1));
@@ -62,7 +54,7 @@ testSuite({
     assertEquals('last call', calls[1], lastCall);
     assertEquals(
         'original function', functions.identity, lastCall.getFunction());
-    assertEquals('this context of first call', window, firstCall.getThis());
+    assertEquals('this context of first call', undefined, firstCall.getThis());
     assertEquals('this context of last call', dummyThis, lastCall.getThis());
     assertArrayEquals(
         'arguments of the first call', [1], firstCall.getArguments());
@@ -75,6 +67,10 @@ testSuite({
     assertNull('error thrown by the last call', lastCall.getError());
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testWithErrorFunction() {
     const f = recordFunction(functions.error('error'));
 
@@ -84,13 +80,14 @@ testSuite({
     assertEquals('error message', 'error', error.message);
     assertEquals('call count', 1, f.getCallCount());
     const lastCall = f.getLastCall();
-    assertEquals('this context', window, lastCall.getThis());
+    assertEquals('this context', undefined, lastCall.getThis());
     assertArrayEquals('arguments', [1], lastCall.getArguments());
     assertUndefined('return value', lastCall.getReturnValue());
     assertEquals(
         'recorded error message', 'error', lastCall.getError().message);
   },
 
+  /** @suppress {missingProperties} suppression added to enable type checking */
   testWithClass() {
     const ns = {};
     /** @constructor @struct */
@@ -98,6 +95,10 @@ testSuite({
       this.setX(ns.TestClass.identity(1) + num);
     };
     ns.TestClass.prototype.setX = function(x) {
+      /**
+       * @suppress {checkTypes,missingProperties} suppression added to enable
+       * type checking
+       */
       this.x = x;
     };
     ns.TestClass.identity = (x) => x;
@@ -111,6 +112,9 @@ testSuite({
 
     const obj = new ns.TestClass(2);
     assertEquals('constructor is called once', 1, ns.TestClass.getCallCount());
+    /**
+     * @suppress {missingProperties} suppression added to enable type checking
+     */
     const lastConstructorCall = ns.TestClass.getLastCall();
     assertArrayEquals(
         '... with argument 2', [2], lastConstructorCall.getArguments());

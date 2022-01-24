@@ -28,8 +28,8 @@ SyntheticGesture::Result SyntheticPointerAction::ForwardInputEvents(
       gesture_source_type_ = target->GetDefaultSyntheticGestureSourceType();
 
     if (!synthetic_pointer_driver_) {
-      owned_synthetic_pointer_driver_ =
-          SyntheticPointerDriver::Create(gesture_source_type_);
+      owned_synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
+          gesture_source_type_, params_.from_devtools_debugger);
       synthetic_pointer_driver_ = owned_synthetic_pointer_driver_.get();
     }
 

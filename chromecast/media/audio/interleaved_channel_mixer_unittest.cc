@@ -27,10 +27,12 @@ using TestParams = std::tuple<::media::ChannelLayout /* input layout */,
 class InterleavedChannelMixerTest : public testing::TestWithParam<TestParams> {
  public:
   InterleavedChannelMixerTest() = default;
-  ~InterleavedChannelMixerTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(InterleavedChannelMixerTest);
+  InterleavedChannelMixerTest(const InterleavedChannelMixerTest&) = delete;
+  InterleavedChannelMixerTest& operator=(const InterleavedChannelMixerTest&) =
+      delete;
+
+  ~InterleavedChannelMixerTest() override = default;
 };
 
 TEST_P(InterleavedChannelMixerTest, Transform) {

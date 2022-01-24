@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "base/macros.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image_egl.h"
@@ -25,6 +24,9 @@ class GL_EXPORT GLImageAHardwareBuffer : public GLImageEGL {
  public:
   explicit GLImageAHardwareBuffer(const gfx::Size& size);
 
+  GLImageAHardwareBuffer(const GLImageAHardwareBuffer&) = delete;
+  GLImageAHardwareBuffer& operator=(const GLImageAHardwareBuffer&) = delete;
+
   // Create an EGLImage from a given Android hardware buffer.
   bool Initialize(AHardwareBuffer* buffer, bool preserved);
 
@@ -36,13 +38,6 @@ class GL_EXPORT GLImageAHardwareBuffer : public GLImageEGL {
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
                        const gfx::Rect& rect) override;
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int z_order,
-                            gfx::OverlayTransform transform,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   void Flush() override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
@@ -59,8 +54,6 @@ class GL_EXPORT GLImageAHardwareBuffer : public GLImageEGL {
   base::android::ScopedHardwareBufferHandle handle_;
   unsigned internal_format_ = GL_RGBA;
   unsigned data_type_ = GL_UNSIGNED_BYTE;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageAHardwareBuffer);
 };
 
 }  // namespace gl

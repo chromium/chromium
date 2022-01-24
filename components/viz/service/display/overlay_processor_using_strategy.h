@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
@@ -120,6 +119,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
     gfx::RectF GetPrimaryPlaneDisplayRect(const PrimaryPlane* primary_plane);
   };
   using StrategyList = std::vector<std::unique_ptr<Strategy>>;
+
+  OverlayProcessorUsingStrategy(const OverlayProcessorUsingStrategy&) = delete;
+  OverlayProcessorUsingStrategy& operator=(
+      const OverlayProcessorUsingStrategy&) = delete;
 
   ~OverlayProcessorUsingStrategy() override;
 
@@ -291,8 +294,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // can downscale without failing.
   float min_working_scale_ = 1.0f;
   float max_failed_scale_ = 0.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayProcessorUsingStrategy);
 };
 
 }  // namespace viz

@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_push_fifo.h"

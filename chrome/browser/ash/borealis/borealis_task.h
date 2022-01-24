@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_TASK_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_TASK_H_
 
+#include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_launch_watcher.h"
@@ -25,7 +26,7 @@ class BorealisTask {
   // different result should be used, and an error string provided.
   using CompletionResultCallback =
       base::OnceCallback<void(BorealisStartupResult, std::string)>;
-  BorealisTask();
+  explicit BorealisTask(std::string name);
   BorealisTask(const BorealisTask&) = delete;
   BorealisTask& operator=(const BorealisTask&) = delete;
   virtual ~BorealisTask();
@@ -38,6 +39,8 @@ class BorealisTask {
   void Complete(BorealisStartupResult result, std::string message);
 
  private:
+  std::string name_;
+  base::Time start_time_;
   CompletionResultCallback callback_;
 };
 
@@ -77,6 +80,8 @@ class StartBorealisVm : public BorealisTask {
   void RunInternal(BorealisContext* context) override;
 
  private:
+  void StartBorealisWithExternalDisk(BorealisContext* context,
+                                     absl::optional<base::File> external_disk);
   void OnStartBorealisVm(
       BorealisContext* context,
       absl::optional<vm_tools::concierge::StartVmResponse> response);

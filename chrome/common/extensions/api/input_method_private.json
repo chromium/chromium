@@ -160,7 +160,7 @@
       }, {
         "name": "getInputMethods",
         "type": "function",
-        "description": "Gets all whitelisted input methods.",
+        "description": "Gets all enabled input methods, sorted in ascending order of their localized full display names, according to the lexicographical order defined by the current system locale aka. display language.",
         "parameters": [
           {
             "name": "callback",
@@ -170,7 +170,7 @@
               {
                 "name": "inputMethods",
                 "type": "array",
-                "description": "Whitelisted input method objects.",
+                "description": "Enabled input method objects, sorted in ascending order of their localized full display names, according to the lexicographical order defined by the current system locale aka. display language.",
                 "items": {
                   "type": "object",
                   "properties": {
@@ -688,19 +688,19 @@
                 "type": "object",
                 "properties": {
                   "x": {
-                    "description": "The x-coordinate of the autocorrected word's bounds.",
+                    "description": "The x-coordinate of the autocorrected word's bounds in px.",
                     "type": "integer"
                   },
                   "y": {
-                    "description": "The y-coordinate of the autocorrected word's bounds.",
+                    "description": "The y-coordinate of the autocorrected word's bounds in px.",
                     "type": "integer"
                   },
                   "width": {
-                    "description": "The width of the autocorrected word's bounds.",
+                    "description": "The width of the autocorrected word's bounds in px.",
                     "type": "integer"
                   },
                   "height":{
-                    "description": "The height of the autocorrected word's bounds.",
+                    "description": "The height of the autocorrected word's bounds in px.",
                     "type": "integer"
                   }
                 }
@@ -776,6 +776,52 @@
                 }
             }
         }]
+    },
+    {
+      "name" : "getTextFieldBounds",
+      "type" : "function",
+      "description" : "Get the bounds of the current text field",
+      "parameters" :[
+        {
+            "name": "parameters",
+            "type": "object",
+            "properties": {
+              "contextID": {
+                "description": "ID of the context.",
+                "type": "integer"
+              }
+            }
+        },
+        {
+            "type": "function",
+            "name": "callback",
+            "description": "Called with screen coordinates of the text field when the operation completes. On failure, $(ref:runtime.lastError) is set.",
+            "parameters": [
+              {
+                "name": "textFieldBounds",
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "description": "The x-coordinate of the text field's bounds.",
+                    "type": "integer"
+                  },
+                  "y": {
+                    "description": "The y-coordinate of the text field's bounds.",
+                    "type": "integer"
+                  },
+                  "width": {
+                    "description": "The width of the text field's bounds.",
+                    "type": "integer"
+                  },
+                  "height":{
+                    "description": "The height of the  bounds.",
+                    "type": "integer"
+                  }
+                }
+              }
+            ]
+          }
+        ]
     }
     ],
     "events": [

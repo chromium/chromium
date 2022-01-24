@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/service_config.h"
@@ -19,6 +18,10 @@ namespace test {
 class MockDownloadService : public BackgroundDownloadService {
  public:
   MockDownloadService();
+
+  MockDownloadService(const MockDownloadService&) = delete;
+  MockDownloadService& operator=(const MockDownloadService&) = delete;
+
   ~MockDownloadService() override;
 
   // BackgroundDownloadService implementation.
@@ -40,9 +43,6 @@ class MockDownloadService : public BackgroundDownloadService {
   MOCK_METHOD2(ChangeDownloadCriteria,
                void(const std::string& guid, const SchedulingParams& params));
   MOCK_METHOD0(GetLogger, Logger*());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDownloadService);
 };
 
 }  // namespace test

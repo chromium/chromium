@@ -56,7 +56,7 @@ def _trim_config_group(config_group, include_path_based):
     )
 
 def _generate_cq_usage(ctx):
-    cfg = ctx.output["commit-queue.cfg"]
+    cfg = ctx.output["luci/commit-queue.cfg"]
     ctx.output["cq-usage/default.cfg"] = cq_pb.Config(config_groups = _remove_none(
         [_trim_config_group(g, include_path_based = False) for g in cfg.config_groups],
     ))

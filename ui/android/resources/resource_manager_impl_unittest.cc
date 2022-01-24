@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -76,11 +75,11 @@ class MockUIResourceManager : public cc::UIResourceManager {
  public:
   MockUIResourceManager() {}
 
+  MockUIResourceManager(const MockUIResourceManager&) = delete;
+  MockUIResourceManager& operator=(const MockUIResourceManager&) = delete;
+
   MOCK_METHOD1(CreateUIResource, cc::UIResourceId(cc::UIResourceClient*));
   MOCK_METHOD1(DeleteUIResource, void(cc::UIResourceId));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockUIResourceManager);
 };
 
 }  // namespace

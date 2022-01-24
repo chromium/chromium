@@ -28,7 +28,7 @@ namespace {
 
 // Duration of animation scheduled when frame color is changed.
 constexpr base::TimeDelta kFrameColorChangeAnimationDuration =
-    base::TimeDelta::FromMilliseconds(240);
+    base::Milliseconds(240);
 
 // Tiles an image into an area, rounding the top corners.
 void TileRoundRect(gfx::Canvas* canvas,

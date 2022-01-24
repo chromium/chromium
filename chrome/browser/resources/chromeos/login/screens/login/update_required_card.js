@@ -53,7 +53,7 @@ Polymer({
 
     estimatedTimeLeftVisible: {type: Boolean, value: false},
 
-    enterpriseDomain: {type: String, value: ''},
+    enterpriseManager: {type: String, value: ''},
 
     deviceName: {type: String, value: ''},
 
@@ -99,10 +99,13 @@ Polymer({
     this.updateEolDeleteUsersDataMessage_();
   },
 
-  /** @param {string} domain Enterprise domain name */
+  /**
+   * @param {string} enterpriseManager Manager of device -could be a domain
+   *    name or an email address.
+   */
   /** @param {string} device Device name */
-  setEnterpriseAndDeviceName(enterpriseDomain, device) {
-    this.enterpriseDomain = enterpriseDomain;
+  setEnterpriseAndDeviceName(enterpriseManager, device) {
+    this.enterpriseManager = enterpriseManager;
     this.deviceName = device;
   },
 
@@ -224,10 +227,10 @@ Polymer({
    * @private
    */
   updateEolDeleteUsersDataMessage_() {
-    this.$$('#deleteUsersDataMessage').innerHTML = this.i18nAdvanced(
+    this.shadowRoot.querySelector('#deleteUsersDataMessage').innerHTML = this.i18nAdvanced(
         'eolDeleteUsersDataMessage',
         {substitutions: [loadTimeData.getString('deviceType')], attrs: ['id']});
-    const linkElement = this.$$('#deleteDataLink');
+    const linkElement = this.shadowRoot.querySelector('#deleteDataLink');
     linkElement.setAttribute('is', 'action-link');
     linkElement.classList.add('oobe-local-link');
     linkElement.addEventListener('click', () => this.showConfirmationDialog_());

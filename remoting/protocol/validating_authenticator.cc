@@ -98,7 +98,7 @@ void ValidatingAuthenticator::OnValidateComplete(base::OnceClosure callback,
       break;
 
     case Result::ERROR_INVALID_ACCOUNT:
-      rejection_reason_ = Authenticator::INVALID_ACCOUNT;
+      rejection_reason_ = Authenticator::INVALID_ACCOUNT_ID;
       break;
 
     case Result::ERROR_TOO_MANY_CONNECTIONS:

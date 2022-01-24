@@ -264,7 +264,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'DISABLED_Audio', function() {
             ],
             o);
 
-        // TODO(dmazzoni/dtseng): Replace with a query.
+        // TODO(dtseng): Replace with a query.
         el = el.nextSibling.nextSibling.nextSibling;
         const prevRange = range;
         range = cursors.Range.fromNode(el);
@@ -627,8 +627,8 @@ SYNC_TEST_F('ChromeVoxOutputE2ETest', 'MessageIdAndEarconValidity', function() {
     'graphicsSymbol',
     'suggestion',
   ]);
-  for (const key in Output.ROLE_INFO_) {
-    const value = Output.ROLE_INFO_[key];
+  for (const key in OutputRoleInfo) {
+    const value = OutputRoleInfo[key];
     if (value.msgId) {
       Msgs.getMsg(value.msgId);
       if (!kNoBrailleMessageRequired.has(key)) {
@@ -884,12 +884,13 @@ TEST_F('ChromeVoxOutputE2ETest', 'BrailleAncestry', function() {
             [
               {value: new OutputNodeSpan(text), start: 0, end: 4},
               {value: new OutputNodeSpan(link), start: 5, end: 8},
-              {value: new OutputNodeSpan(listItem), start: 9, end: 15}
+              {value: new OutputNodeSpan(listItem), start: 9, end: 15},
+              {value: new OutputNodeSpan(list), start: 16, end: 23}
             ],
             o);
 
         // Now, test the "bullet" which comes before the above.
-        const bullet = root.find({role: RoleType.INLINE_TEXT_BOX});
+        const bullet = root.find({role: RoleType.LIST_MARKER});
         range = cursors.Range.fromNode(bullet);
         o = new Output().withBraille(range, null, 'navigate');
         checkBrailleOutput(

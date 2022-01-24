@@ -6,7 +6,6 @@
 #define COMPONENTS_JAVASCRIPT_DIALOGS_APP_MODAL_DIALOG_QUEUE_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 
 namespace base {
 template <typename T>
@@ -26,6 +25,9 @@ class AppModalDialogQueue {
 
   // Returns the singleton instance.
   static AppModalDialogQueue* GetInstance();
+
+  AppModalDialogQueue(const AppModalDialogQueue&) = delete;
+  AppModalDialogQueue& operator=(const AppModalDialogQueue&) = delete;
 
   // Adds a modal dialog to the queue. If there are no other dialogs in the
   // queue, the dialog will be shown immediately. Once it is shown, the
@@ -86,8 +88,6 @@ class AppModalDialogQueue {
   // Stores if |ShowModalDialog()| is currently being called on an app-modal
   // dialog.
   bool showing_modal_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppModalDialogQueue);
 };
 
 }  // namespace javascript_dialogs

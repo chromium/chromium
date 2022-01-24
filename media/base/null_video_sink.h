@@ -6,7 +6,6 @@
 #define MEDIA_BASE_NULL_VIDEO_SINK_H_
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "media/base/media_export.h"
@@ -30,6 +29,10 @@ class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
                 base::TimeDelta interval,
                 const NewFrameCB& new_frame_cb,
                 const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
+
+  NullVideoSink(const NullVideoSink&) = delete;
+  NullVideoSink& operator=(const NullVideoSink&) = delete;
+
   ~NullVideoSink() override;
 
   // VideoRendererSink implementation.
@@ -86,8 +89,6 @@ class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
 
   // Value passed to RenderCallback::Render().
   bool background_render_;
-
-  DISALLOW_COPY_AND_ASSIGN(NullVideoSink);
 };
 
 }  // namespace media

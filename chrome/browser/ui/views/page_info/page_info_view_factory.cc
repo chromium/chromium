@@ -5,20 +5,23 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/page_info/page_info_about_this_site_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
-#include "components/page_info/features.h"
 #include "components/page_info/page_info.h"
+#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
@@ -28,6 +31,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/vector_icons.h"
 
 constexpr int PageInfoViewFactory::kMinBubbleWidth;
 constexpr int PageInfoViewFactory::kMaxBubbleWidth;
@@ -104,9 +108,11 @@ PageInfoViewFactory::PageInfoViewFactory(
       ui_delegate_(ui_delegate),
       navigation_handler_(navigation_handler) {}
 
-std::unique_ptr<views::View> PageInfoViewFactory::CreateMainPageView() {
+std::unique_ptr<views::View> PageInfoViewFactory::CreateMainPageView(
+    base::OnceClosure initialized_callback) {
   return std::make_unique<PageInfoMainView>(presenter_, ui_delegate_,
-                                            navigation_handler_);
+                                            navigation_handler_,
+                                            std::move(initialized_callback));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {
@@ -123,6 +129,15 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreatePermissionPageView(
       CreateSubpageHeader(PageInfoUI::PermissionTypeToUIString(type)),
       std::make_unique<PageInfoPermissionContentView>(presenter_, ui_delegate_,
                                                       type));
+}
+
+std::unique_ptr<views::View> PageInfoViewFactory::CreateAboutThisSitePageView(
+    const page_info::proto::SiteInfo& info) {
+  return std::make_unique<PageInfoSubpageView>(
+      CreateSubpageHeader(
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER)),
+      std::make_unique<PageInfoAboutThisSiteContentView>(presenter_,
+                                                         ui_delegate_, info));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
@@ -152,7 +167,8 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
 
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMainPage,
-                          base::Unretained(navigation_handler_)),
+                          base::Unretained(navigation_handler_),
+                          base::DoNothing()),
       vector_icons::kArrowBackIcon);
   views::InstallCircleHighlightPathGenerator(back_button.get());
   back_button->SetID(VIEW_ID_BACK_BUTTON);
@@ -289,12 +305,11 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                                ? info.default_setting
                                : info.setting;
   const bool show_blocked_badge =
-      base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop) &&
-              !permissions::PermissionUtil::IsGuardContentSetting(info.type)
+      !permissions::PermissionUtil::IsGuardContentSetting(info.type)
           ? setting == CONTENT_SETTING_BLOCK || setting == CONTENT_SETTING_ASK
           : setting == CONTENT_SETTING_BLOCK;
   return ui::ImageModel::FromVectorIcon(
-      *icon, ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize(),
+      *icon, ui::kColorIcon, GetIconSize(),
       show_blocked_badge ? &vector_icons::kBlockedBadgeIcon : nullptr);
 }
 
@@ -328,63 +343,63 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
   }
 
   return ui::ImageModel::FromVectorIcon(
-      *icon, ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize(),
+      *icon, ui::kColorIcon, GetIconSize(),
       deleted ? &vector_icons::kBlockedBadgeIcon : nullptr);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetValidCertificateIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kCertificateIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize());
+  return ui::ImageModel::FromVectorIcon(vector_icons::kCertificateIcon,
+                                        ui::kColorIcon, GetIconSize());
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetInvalidCertificateIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kCertificateIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor, GetIconSize(),
-      &vector_icons::kBlockedBadgeIcon);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kCertificateIcon,
+                                        ui::kColorIcon, GetIconSize(),
+                                        &vector_icons::kBlockedBadgeIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetSiteSettingsIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kSettingsIcon, ui::NativeTheme::kColorId_DefaultIconColor);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+                                        ui::kColorIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetVrSettingsIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kVrHeadsetIcon, ui::NativeTheme::kColorId_DefaultIconColor);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kVrHeadsetIcon,
+                                        ui::kColorIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetLaunchIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kLaunchIcon, ui::NativeTheme::kColorId_SecondaryIconColor,
-      GetIconSize());
+  return ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
+                                        ui::kColorIconSecondary, GetIconSize());
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetConnectionNotSecureIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kNotSecureWarningIcon,
-      ui::NativeTheme::kColorId_AlertSeverityHigh);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kNotSecureWarningIcon,
+                                        ui::kColorAlertHighSeverity);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetConnectionSecureIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kHttpsValidIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kHttpsValidIcon,
+                                        ui::kColorIcon);
 }
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kSubmenuArrowIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
+                                        ui::kColorIcon);
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetAboutThisSiteIcon() {
+  return ui::ImageModel::FromVectorIcon(views::kInfoIcon, ui::kColorIcon,
+                                        GetIconSize());
 }
 
 // static
@@ -394,7 +409,6 @@ const ui::ImageModel PageInfoViewFactory::GetManagedPermissionIcon(
       info.source == content_settings::SETTING_SOURCE_EXTENSION
           ? vector_icons::kExtensionIcon
           : vector_icons::kBusinessIcon;
-  return ui::ImageModel::FromVectorIcon(
-      managed_vector_icon, ui::NativeTheme::kColorId_DefaultIconColor,
-      GetIconSize());
+  return ui::ImageModel::FromVectorIcon(managed_vector_icon, ui::kColorIcon,
+                                        GetIconSize());
 }

@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "weblayer/browser/cookie_settings_factory.h"
@@ -49,7 +50,7 @@ void ProcessMirrorHeader(content::WebContents::Getter web_contents_getter,
 void MaybeAddQueryParams(GURL* url) {
   // Add manage=true to query parameters for sign out URLs to make sure we
   // receive the Mirror response headers instead of the normal sign out page.
-  if (gaia::IsGaiaSignonRealm(url->GetOrigin()) &&
+  if (gaia::IsGaiaSignonRealm(url->DeprecatedGetOriginAsURL()) &&
       url->path_piece() == kSignOutPath) {
     *url = net::AppendOrReplaceQueryParameter(*url, "manage", "true");
   }
@@ -162,8 +163,8 @@ void SigninURLLoaderThrottle::ProcessRequest(
 
 void SigninURLLoaderThrottle::ProcessResponse(
     const net::HttpResponseHeaders* headers) {
-  if (!gaia::IsGaiaSignonRealm(request_url_.GetOrigin()) || !is_main_frame_ ||
-      !headers) {
+  if (!gaia::IsGaiaSignonRealm(request_url_.DeprecatedGetOriginAsURL()) ||
+      !is_main_frame_ || !headers) {
     return;
   }
 

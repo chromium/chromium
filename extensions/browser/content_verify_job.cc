@@ -235,7 +235,7 @@ void ContentVerifyJob::OnHashesReady(
     }
     case ContentHashReader::InitStatus::NO_HASHES_FOR_NON_EXISTING_RESOURCE: {
       // Ignore verification of non-existent resources.
-      scoped_refptr<TestObserver> test_observer = GetTestObserver();
+      test_observer = GetTestObserver();
       if (test_observer)
         test_observer->JobFinished(extension_id_, relative_path_, NONE);
       return;
@@ -265,7 +265,7 @@ void ContentVerifyJob::OnHashesReady(
     if (!has_ignorable_read_error_ && !FinishBlock()) {
       DispatchFailureCallback(HASH_MISMATCH);
     } else {
-      scoped_refptr<TestObserver> test_observer = GetTestObserver();
+      test_observer = GetTestObserver();
       if (test_observer)
         test_observer->JobFinished(extension_id_, relative_path_, NONE);
     }

@@ -39,6 +39,10 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
       ConstraintsRepeatingCallback started_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  LocalMediaStreamAudioSource(const LocalMediaStreamAudioSource&) = delete;
+  LocalMediaStreamAudioSource& operator=(const LocalMediaStreamAudioSource&) =
+      delete;
+
   ~LocalMediaStreamAudioSource() final;
 
   // MediaStreamAudioSource implementation.
@@ -79,8 +83,6 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
   // In debug builds, check that all methods that could cause object graph
   // or data flow changes are being called on the main thread.
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalMediaStreamAudioSource);
 };
 
 }  // namespace blink

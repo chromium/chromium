@@ -24,12 +24,13 @@ class NavigatorKeyboard final : public GarbageCollected<NavigatorKeyboard>,
 
   explicit NavigatorKeyboard(Navigator&);
 
+  NavigatorKeyboard(const NavigatorKeyboard&) = delete;
+  NavigatorKeyboard& operator=(const NavigatorKeyboard&) = delete;
+
   void Trace(Visitor*) const override;
 
  private:
   Member<Keyboard> keyboard_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigatorKeyboard);
 };
 
 }  // namespace blink

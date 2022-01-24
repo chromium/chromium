@@ -112,11 +112,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   // presentation.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* title = nil;
-  if (@available(iOS 13, *)) {
-    title = app.staticTexts[@"Toy Town Membership"];
-  } else {
-    title = app.otherElements[@"Toy Town Membership"];
-  }
+  title = app.staticTexts[@"Toy Town Membership"];
   GREYAssert([title waitForExistenceWithTimeout:kWaitForDownloadTimeout],
              @"PassKit dialog UI was not presented");
 }

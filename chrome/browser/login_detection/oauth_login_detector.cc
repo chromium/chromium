@@ -73,14 +73,14 @@ absl::optional<GURL> OAuthLoginDetector::GetSuccessfulLoginFlowSite(
             OAuthLoginFlowInfo(navigation_url, *popup_opener_navigation_site_);
       } else if (prev_navigation_url.is_valid() &&
                  prev_navigation_url.SchemeIsHTTPOrHTTPS()) {
-        login_flow_info_ =
-            OAuthLoginFlowInfo(navigation_url, prev_navigation_url.GetOrigin());
+        login_flow_info_ = OAuthLoginFlowInfo(
+            navigation_url, prev_navigation_url.DeprecatedGetOriginAsURL());
       } else if (i != 0) {
         // Treat the start of the redirect chain as the previous navigation URL.
         // This allows detecting cases when a new window is opened to perform
         // the OAuth login.
-        login_flow_info_ =
-            OAuthLoginFlowInfo(navigation_url, redirect_chain[0].GetOrigin());
+        login_flow_info_ = OAuthLoginFlowInfo(
+            navigation_url, redirect_chain[0].DeprecatedGetOriginAsURL());
       }
     }
   }
@@ -92,7 +92,8 @@ absl::optional<GURL> OAuthLoginDetector::GetSuccessfulLoginFlowSite(
 void OAuthLoginDetector::DidOpenAsPopUp(const GURL& opener_navigation_url) {
   if (opener_navigation_url.is_valid() &&
       opener_navigation_url.SchemeIs(url::kHttpsScheme)) {
-    popup_opener_navigation_site_ = opener_navigation_url.GetOrigin();
+    popup_opener_navigation_site_ =
+        opener_navigation_url.DeprecatedGetOriginAsURL();
   }
 }
 

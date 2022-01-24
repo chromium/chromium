@@ -13,14 +13,14 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_error_factory.h"
 #include "components/sync/model/syncable_service.h"
-#include "components/sync/protocol/persisted_entity_data.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/engine/mock_model_type_worker.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "components/sync/test/model/model_type_store_test_util.h"
@@ -83,6 +83,12 @@ class MockSyncableService : public SyncableService {
 };
 
 class SyncableServiceBasedBridgeTest : public ::testing::Test {
+ public:
+  SyncableServiceBasedBridgeTest(const SyncableServiceBasedBridgeTest&) =
+      delete;
+  SyncableServiceBasedBridgeTest& operator=(
+      const SyncableServiceBasedBridgeTest&) = delete;
+
  protected:
   SyncableServiceBasedBridgeTest()
       : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
@@ -99,7 +105,7 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
             });
   }
 
-  ~SyncableServiceBasedBridgeTest() override {}
+  ~SyncableServiceBasedBridgeTest() override = default;
 
   void InitializeBridge(ModelType model_type = kModelType) {
     real_processor_ =
@@ -173,9 +179,6 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
   // SyncChangeProcessor received via MergeDataAndStartSyncing(), or null if it
   // hasn't been called.
   std::unique_ptr<SyncChangeProcessor> start_syncing_sync_processor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncableServiceBasedBridgeTest);
 };
 
 TEST_F(SyncableServiceBasedBridgeTest,

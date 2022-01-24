@@ -9,7 +9,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
@@ -50,6 +49,11 @@ class CryptAuthGroupPrivateKeySharerImpl
    private:
     static Factory* test_factory_;
   };
+
+  CryptAuthGroupPrivateKeySharerImpl(
+      const CryptAuthGroupPrivateKeySharerImpl&) = delete;
+  CryptAuthGroupPrivateKeySharerImpl& operator=(
+      const CryptAuthGroupPrivateKeySharerImpl&) = delete;
 
   ~CryptAuthGroupPrivateKeySharerImpl() override;
 
@@ -103,8 +107,6 @@ class CryptAuthGroupPrivateKeySharerImpl
   State state_ = State::kNotStarted;
   CryptAuthClientFactory* client_factory_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthGroupPrivateKeySharerImpl);
 };
 
 }  // namespace device_sync

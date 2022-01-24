@@ -72,6 +72,9 @@ class PrefHashFilter : public InterceptablePrefFilter {
           delegate,
       size_t reporting_ids_count);
 
+  PrefHashFilter(const PrefHashFilter&) = delete;
+  PrefHashFilter& operator=(const PrefHashFilter&) = delete;
+
   ~PrefHashFilter() override;
 
   // Registers required user preferences.
@@ -155,8 +158,6 @@ class PrefHashFilter : public InterceptablePrefFilter {
   // The set of all paths whose value has changed since the last call to
   // FilterSerializeData.
   ChangedPathsMap changed_paths_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefHashFilter);
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_PREF_HASH_FILTER_H_

@@ -35,7 +35,8 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   using PaymentAppCreatedCallback =
       base::RepeatingCallback<void(std::unique_ptr<PaymentApp>)>;
   using PaymentAppCreationErrorCallback =
-      base::RepeatingCallback<void(const std::string&)>;
+      base::RepeatingCallback<void(const std::string&,
+                                   AppCreationFailureReason)>;
 
   // Creates a new PaymentAppServiceBridge. This object is self-deleting; its
   // memory is freed when OnDoneCreatingPaymentApps() is called
@@ -72,7 +73,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
       const override;
   const std::vector<mojom::PaymentMethodDataPtr>& GetMethodData()
       const override;
-  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
+  std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override;
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;
@@ -80,12 +81,15 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   bool IsOffTheRecord() const override;
   const std::vector<autofill::AutofillProfile*>& GetBillingProfiles() override;
   bool IsRequestedAutofillDataAvailable() override;
-  ContentPaymentRequestDelegate* GetPaymentRequestDelegate() const override;
+  base::WeakPtr<ContentPaymentRequestDelegate> GetPaymentRequestDelegate()
+      const override;
   void ShowProcessingSpinner() override;
   base::WeakPtr<PaymentRequestSpec> GetSpec() const override;
   std::string GetTwaPackageName() const override;
   void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) override;
-  void OnPaymentAppCreationError(const std::string& error_message) override;
+  void OnPaymentAppCreationError(
+      const std::string& error_message,
+      AppCreationFailureReason error_reason) override;
   bool SkipCreatingNativePaymentApps() const override;
   void OnDoneCreatingPaymentApps() override;
   void SetCanMakePaymentEvenWithoutApps() override;

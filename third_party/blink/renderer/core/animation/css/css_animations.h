@@ -80,7 +80,8 @@ class CORE_EXPORT CSSAnimations final {
       Element&,
       const ComputedStyle&,
       const ComputedStyle* parent_style,
-      bool was_viewport_changed);
+      bool was_viewport_changed,
+      bool force_update);
 
   static AnimationEffect::EventDelegate* CreateEventDelegate(
       Element* element,
@@ -101,12 +102,19 @@ class CORE_EXPORT CSSAnimations final {
                                           const ComputedStyle&,
                                           const ComputedStyle* parent_style);
 
+  static void UpdateAnimationFlags(Element& animating_element,
+                                   CSSAnimationUpdate&,
+                                   ComputedStyle& style);
+
   void SetPendingUpdate(const CSSAnimationUpdate& update) {
     ClearPendingUpdate();
     pending_update_.Copy(update);
   }
   void ClearPendingUpdate() { pending_update_.Clear(); }
   void MaybeApplyPendingUpdate(Element*);
+  bool HasPreviousActiveInterpolationsForAnimations() const {
+    return !previous_active_interpolations_for_animations_.IsEmpty();
+  }
   bool IsEmpty() const {
     return running_animations_.IsEmpty() && transitions_.IsEmpty() &&
            pending_update_.IsEmpty();
@@ -187,6 +195,10 @@ class CORE_EXPORT CSSAnimations final {
     HashSet<PropertyHandle>& listed_properties;
     const CSSTransitionData* transition_data;
   };
+
+  static HeapHashSet<Member<const Animation>> CreateCancelledTransitionsSet(
+      ElementAnimations*,
+      CSSAnimationUpdate&);
 
   static void CalculateTransitionUpdateForProperty(
       TransitionUpdateState&,

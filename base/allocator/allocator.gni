@@ -5,6 +5,10 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
+if (is_ios) {
+  import("//build/config/ios/ios_sdk.gni")
+}
+
 # Sanitizers replace the allocator, don't use our own.
 _is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
 
@@ -12,9 +16,7 @@ _is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
 #   issues on some (e.g. Windows with shims, Android with non-universal symbol
 #   wrapping), and has not been validated on others.
 # - Windows: debug CRT is not compatible, see below.
-# - Chromecast on Android: causes issues with crash reporting, see b/178423326.
-_disable_partition_alloc =
-    is_component_build || (is_win && is_debug) || (is_android && is_chromecast)
+_disable_partition_alloc = is_component_build || (is_win && is_debug)
 _is_partition_alloc_platform = is_android || is_win || is_linux || is_chromeos
 
 # The debug CRT on Windows has some debug features that are incompatible with
@@ -30,14 +32,8 @@ if ((is_linux || is_chromeos || is_android || is_apple ||
 if (_default_use_allocator_shim && _is_partition_alloc_platform &&
     !_disable_partition_alloc) {
   _default_allocator = "partition"
-} else if (is_android || is_apple || _is_using_sanitizers || is_win ||
-           is_fuchsia || ((is_linux || is_chromeos) && target_cpu == "arm64") ||
-           (is_cast_audio_only && target_cpu == "arm")) {
-  # Temporarily disable tcmalloc on arm64 linux to get rid of compilation
-  # errors.
-  _default_allocator = "none"
 } else {
-  _default_allocator = "tcmalloc"
+  _default_allocator = "none"
 }
 
 declare_args() {
@@ -59,17 +55,17 @@ declare_args() {
   # not, and redesign or remove the flag accordingly.  We may want to assert a
   # possible conflict between |use_allocator = "partition"| and
   # |use_partition_alloc = true| rather than prioritizing use_partition_alloc.
-  use_partition_alloc = !is_ios  # Never use PartitionAlloc on iOS.
+  # TODO(crbug.com/1250788): Enable use_partition_alloc on iOS device builds.
+  use_partition_alloc = !is_ios || target_environment == "simulator"
 
-  # Set use_backup_ref_ptr true to use BackupRefPtr as the implementation of
-  # CheckedPtr<T>.  The _fake option doesn't enable BackupRefPtr, but pretends
-  # it's enabled for syntethic field trial (for testing purposes only).
+  # Set use_backup_ref_ptr true to use BackupRefPtr (BRP) as the implementation
+  # of raw_ptr<T>, and enable PartitionAlloc support for it. The _fake option
+  # doesn't enable BRP, but pretends it's enabled for the syntethic field trial
+  #(for testing purposes only).
   use_backup_ref_ptr = false
   use_backup_ref_ptr_fake = false
 
-  # If enabled BackupRefPtr (BRP) is enabled, additional options are available:
-  # - enable_runtime_backup_ref_ptr_control: control BRP support at run-time
-  #   (disable in some processes)
+  # If BRP is enabled, additional options are available:
   # - put_ref_count_in_previous_slot: place the ref-count at the end of the
   #   previous slot (or in metadata if a slot starts on the page boundary), as
   #   opposed to the beginning of the slot.
@@ -77,8 +73,6 @@ declare_args() {
   #   BRP-pool block list
   # - enable_backup_ref_ptr_slow_checks: enable additional safety checks that
   #   are too expensive to have on by default.
-  enable_runtime_backup_ref_ptr_control = false
-  enable_backup_ref_ptr_in_renderer_process = false
   put_ref_count_in_previous_slot = false
   never_remove_from_brp_pool_blocklist = false
   enable_backup_ref_ptr_slow_checks = false
@@ -90,21 +84,20 @@ if (!use_partition_alloc && use_allocator == "partition") {
   use_allocator = "none"
 }
 
-assert(use_allocator == "none" || use_allocator == "tcmalloc" ||
-       use_allocator == "partition")
-
-assert(!is_win || use_allocator != "tcmalloc",
-       "Tcmalloc doesn't work on Windows.")
-assert(!is_mac || use_allocator != "tcmalloc",
-       "Tcmalloc doesn't work on macOS.")
-assert(!is_ios || use_allocator != "tcmalloc", "Tcmalloc doesn't work on iOS.")
+# No longer the default on any platform, but still supported through GN args on Linux.
+assert(use_allocator != "tcmalloc" || is_linux,
+       "tcmalloc is only supported on Linux")
+assert(use_allocator == "none" || use_allocator == "partition" ||
+       use_allocator == "tcmalloc")
 
 assert(
     !use_allocator_shim || is_linux || is_chromeos || is_android || is_win ||
-        is_apple,
-    "use_allocator_shim works only on Android, iOS, Linux, macOS, and Windows.")
+        is_fuchsia || is_apple,
+    "use_allocator_shim works only on Android, iOS, Linux, macOS, Fuchsia, " +
+        "and Windows.")
 
 if (is_win && use_allocator_shim) {
+  # TODO(crbug.com/1245317): Add a comment indicating why the shim doesn't work.
   assert(!is_component_build,
          "The allocator shim doesn't work for the component build on Windows.")
 }
@@ -117,18 +110,6 @@ if (!is_nacl) {
   assert(!use_backup_ref_ptr || use_allocator == "partition",
          "Can't use BackupRefPtr without PartitionAlloc-Everywhere")
 }
-
-# enable_runtime_backup_ref_ptr_control can only be used if use_backup_ref_ptr
-# is true.
-assert(use_backup_ref_ptr || !enable_runtime_backup_ref_ptr_control,
-       "Can't control BackupRefPtr at run-time if it isn't enabled at all")
-
-# enable_backup_ref_ptr_in_renderer_process can only be used if
-# enable_runtime_backup_ref_ptr_control is true.
-assert(
-    enable_runtime_backup_ref_ptr_control ||
-        !enable_backup_ref_ptr_in_renderer_process,
-    "Can't enable BackupRefPtr in renderer process if runtime control isn't enabled")
 
 # put_ref_count_in_previous_slot can only be used if use_backup_ref_ptr
 # is true.

@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/language_code.h"
@@ -77,10 +77,21 @@ class AutofillManager
       LogManager* log_manager,
       const std::vector<FormStructure*>& forms);
 
+  AutofillManager(const AutofillManager&) = delete;
+  AutofillManager& operator=(const AutofillManager&) = delete;
+
   ~AutofillManager() override;
 
-  AutofillClient* client() { return client_; }
-  const AutofillClient* client() const { return client_; }
+  // The following will fail a DCHECK if called for a prerendered main frame.
+  AutofillClient* client() {
+    DCHECK(!driver()->IsPrerendering());
+    return client_;
+  }
+
+  const AutofillClient* client() const {
+    DCHECK(!driver()->IsPrerendering());
+    return client_;
+  }
 
   // Invoked when the value of textfield is changed.
   // |bounding_box| are viewport coordinates.
@@ -123,8 +134,12 @@ class AutofillManager
                        bool known_success,
                        mojom::SubmissionSource source);
 
-  // Invoked when |forms| has been detected.
-  void OnFormsSeen(const std::vector<FormData>& forms);
+  // Invoked when changes of the forms have been detected: the forms in
+  // |updated_forms| are either new or have changed, and the forms in
+  // |removed_forms| have been removed from the DOM (but may be re-added to the
+  // DOM later).
+  virtual void OnFormsSeen(const std::vector<FormData>& updated_forms,
+                           const std::vector<FormGlobalId>& removed_forms);
 
   // Invoked when focus is no longer on form. |had_interacted_form| indicates
   // whether focus was previously on a form with which the user had interacted.
@@ -193,6 +208,7 @@ class AutofillManager
   }
 
   AutofillDriver* driver() { return driver_; }
+  const AutofillDriver* driver() const { return driver_; }
 
   AutofillDownloadManager* download_manager() {
     return download_manager_.get();
@@ -244,7 +260,16 @@ class AutofillManager
   LogManager* log_manager() { return log_manager_; }
 
   // Retrieves the page language from |client_|
-  LanguageCode GetCurrentPageLanguage() const;
+  LanguageCode GetCurrentPageLanguage();
+
+  // The following do not check for prerendering. These should only used while
+  // constructing or resetting the manager.
+  // TODO(crbug.com/1239281): if we never intend to support multiple navigations
+  // while prerendering, these will be unnecessary (they're used during Reset
+  // which can be called during prerendering, but we could skip Reset for
+  // prerendering if we never have state to clear).
+  AutofillClient* unsafe_client() { return client_; }
+  const AutofillClient* unsafe_client() const { return client_; }
 
   virtual void OnFormSubmittedImpl(const FormData& form,
                                    bool known_success,
@@ -329,9 +354,6 @@ class AutofillManager
   // |form_structures|.
   void OnFormsParsed(const std::vector<const FormData*>& forms);
 
-  void PropagateAutofillPredictionsToDriver(
-      const std::vector<FormStructure*>& forms);
-
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
   CreateFormInteractionsUkmLogger();
 
@@ -339,6 +361,9 @@ class AutofillManager
   // outlive this object.
   AutofillDriver* const driver_;
 
+  // Do not access this directly. Instead, please use client() or
+  // unsafe_client(). These functions check (or explicitly don't check) that the
+  // client isn't accessed incorrectly.
   AutofillClient* const client_;
 
   LogManager* const log_manager_;
@@ -362,14 +387,8 @@ class AutofillManager
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
       form_interactions_ukm_logger_;
 
-  // Task to delay propagate the query result to driver for testing.
-  base::CancelableOnceCallback<void(const std::vector<FormStructure*>&)>
-      query_result_delay_task_;
-
   // Will be not null only for |SaveCardBubbleViewsFullFormBrowserTest|.
   ObserverForTest* observer_for_testing_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillManager);
 };
 
 }  // namespace autofill

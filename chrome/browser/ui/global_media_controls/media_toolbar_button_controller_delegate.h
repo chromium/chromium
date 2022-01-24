@@ -13,6 +13,7 @@ class MediaToolbarButtonControllerDelegate {
   virtual void Hide() = 0;
   virtual void Enable() = 0;
   virtual void Disable() = 0;
+  virtual void MaybeShowStopCastingPromo() = 0;
 
  protected:
   virtual ~MediaToolbarButtonControllerDelegate();

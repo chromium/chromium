@@ -24,9 +24,9 @@
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
-#include "chrome/browser/web_applications/components/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut_mac.h"
+#include "chrome/browser/web_applications/web_app_shortcut_mac.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -170,7 +170,7 @@ bool ExtensionAppShimManagerDelegate::AppUsesRemoteCocoa(
   return extension->from_bookmark() ||
          extension->id() == extension_misc::kYoutubeAppId ||
          extension->id() == extension_misc::kGoogleDriveAppId ||
-         extension->id() == extension_misc::kGMailAppId;
+         extension->id() == extension_misc::kGmailAppId;
 }
 
 void ExtensionAppShimManagerDelegate::EnableExtension(
@@ -189,6 +189,7 @@ void ExtensionAppShimManagerDelegate::LaunchApp(
     const web_app::AppId& app_id,
     const std::vector<base::FilePath>& files,
     const std::vector<GURL>& urls,
+    const GURL& override_url,
     chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state) {
   const Extension* extension = MaybeGetAppExtension(profile, app_id);
   DCHECK(extension);
@@ -197,7 +198,7 @@ void ExtensionAppShimManagerDelegate::LaunchApp(
   if (extension->is_hosted_app()) {
     auto params = CreateAppLaunchParamsUserContainer(
         profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        apps::mojom::AppLaunchSource::kSourceCommandLine);
+        apps::mojom::LaunchSource::kFromCommandLine);
     params.launch_files = files;
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
@@ -245,6 +246,13 @@ void ExtensionAppShimManagerDelegate::LaunchShim(
 
 bool ExtensionAppShimManagerDelegate::HasNonBookmarkAppWindowsOpen() {
   return AppWindowRegistryUtil::IsAppWindowVisibleInAnyProfile(0);
+}
+
+std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
+ExtensionAppShimManagerDelegate::GetAppShortcutsMenuItemInfos(
+    Profile* profile,
+    const web_app::AppId& app_id) {
+  return std::vector<chrome::mojom::ApplicationDockMenuItemPtr>();
 }
 
 }  // namespace apps

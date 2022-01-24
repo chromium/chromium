@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,6 +27,9 @@ class ThirdPartyNTPBrowserTest : public InProcessBrowserTest,
  public:
   ThirdPartyNTPBrowserTest() = default;
 
+  ThirdPartyNTPBrowserTest(const ThirdPartyNTPBrowserTest&) = delete;
+  ThirdPartyNTPBrowserTest& operator=(const ThirdPartyNTPBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
@@ -37,9 +39,6 @@ class ThirdPartyNTPBrowserTest : public InProcessBrowserTest,
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(https_test_server().Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyNTPBrowserTest);
 };
 
 // Verifies that a third party NTP can successfully embed the most visited
@@ -53,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
 
   // Navigate to the NTP URL and verify that the resulting process is marked as
   // an Instant process.
-  ui_test_utils::NavigateToURL(browser(), ntp_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   InstantService* instant_service =
@@ -73,8 +72,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
   nav_observer.WaitForNavigationFinished();
 
   // Verify that the subframe exists and has the expected origin.
-  ASSERT_EQ(2u, contents->GetAllFrames().size());
-  content::RenderFrameHost* subframe = contents->GetAllFrames()[1];
+  content::RenderFrameHost* subframe = ChildFrameAt(contents, 0);
+  ASSERT_TRUE(subframe);
   std::string subframe_origin;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       subframe, "domAutomationController.send(window.origin)",
@@ -137,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, VerifySiteInstance) {
   GURL ntp_url =
       https_test_server().GetURL("ntp.com", "/instant_extended_ntp.html");
   SetupInstant(browser()->profile(), base_url, ntp_url);
-  ui_test_utils::NavigateToURL(browser(), ntp_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

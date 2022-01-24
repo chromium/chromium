@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "skia/ext/image_operations.h"
@@ -24,13 +23,13 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/gfx/skia_paint_util.h"
-#include "ui/gfx/skia_util.h"
 
 namespace gfx {
 namespace {
@@ -64,6 +63,10 @@ class BinaryImageSource : public gfx::ImageSkiaSource {
         second_(second),
         source_name_(source_name) {
   }
+
+  BinaryImageSource(const BinaryImageSource&) = delete;
+  BinaryImageSource& operator=(const BinaryImageSource&) = delete;
+
   ~BinaryImageSource() override {}
 
   // gfx::ImageSkiaSource overrides:
@@ -107,8 +110,6 @@ class BinaryImageSource : public gfx::ImageSkiaSource {
   // The name of a class that implements the BinaryImageSource.
   // The subclass is responsible for managing the memory.
   const char* source_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(BinaryImageSource);
 };
 
 class BlendingImageSource : public BinaryImageSource {
@@ -119,6 +120,9 @@ class BlendingImageSource : public BinaryImageSource {
       : BinaryImageSource(first, second, "BlendingImageSource"),
         alpha_(alpha) {
   }
+
+  BlendingImageSource(const BlendingImageSource&) = delete;
+  BlendingImageSource& operator=(const BlendingImageSource&) = delete;
 
   ~BlendingImageSource() override {}
 
@@ -133,14 +137,15 @@ class BlendingImageSource : public BinaryImageSource {
 
  private:
   double alpha_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlendingImageSource);
 };
 
 class SuperimposedImageSource : public gfx::CanvasImageSource {
  public:
   SuperimposedImageSource(const ImageSkia& first, const ImageSkia& second)
       : gfx::CanvasImageSource(first.size()), first_(first), second_(second) {}
+
+  SuperimposedImageSource(const SuperimposedImageSource&) = delete;
+  SuperimposedImageSource& operator=(const SuperimposedImageSource&) = delete;
 
   ~SuperimposedImageSource() override {}
 
@@ -155,8 +160,6 @@ class SuperimposedImageSource : public gfx::CanvasImageSource {
  private:
   const ImageSkia first_;
   const ImageSkia second_;
-
-  DISALLOW_COPY_AND_ASSIGN(SuperimposedImageSource);
 };
 
 class TransparentImageSource : public gfx::ImageSkiaSource {
@@ -165,6 +168,9 @@ class TransparentImageSource : public gfx::ImageSkiaSource {
       : image_(image),
         alpha_(alpha) {
   }
+
+  TransparentImageSource(const TransparentImageSource&) = delete;
+  TransparentImageSource& operator=(const TransparentImageSource&) = delete;
 
   ~TransparentImageSource() override {}
 
@@ -186,8 +192,6 @@ class TransparentImageSource : public gfx::ImageSkiaSource {
 
   ImageSkia image_;
   double alpha_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransparentImageSource);
 };
 
 class MaskedImageSource : public BinaryImageSource {
@@ -195,6 +199,9 @@ class MaskedImageSource : public BinaryImageSource {
   MaskedImageSource(const ImageSkia& rgb, const ImageSkia& alpha)
       : BinaryImageSource(rgb, alpha, "MaskedImageSource") {
   }
+
+  MaskedImageSource(const MaskedImageSource&) = delete;
+  MaskedImageSource& operator=(const MaskedImageSource&) = delete;
 
   ~MaskedImageSource() override {}
 
@@ -206,9 +213,6 @@ class MaskedImageSource : public BinaryImageSource {
                             first_rep.GetBitmap(), second_rep.GetBitmap()),
                         first_rep.scale());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MaskedImageSource);
 };
 
 class TiledImageSource : public gfx::ImageSkiaSource {
@@ -222,6 +226,9 @@ class TiledImageSource : public gfx::ImageSkiaSource {
         dst_w_(dst_w),
         dst_h_(dst_h) {
   }
+
+  TiledImageSource(const TiledImageSource&) = delete;
+  TiledImageSource& operator=(const TiledImageSource&) = delete;
 
   ~TiledImageSource() override {}
 
@@ -245,8 +252,6 @@ class TiledImageSource : public gfx::ImageSkiaSource {
   const int src_y_;
   const int dst_w_;
   const int dst_h_;
-
-  DISALLOW_COPY_AND_ASSIGN(TiledImageSource);
 };
 
 class HSLImageSource : public gfx::ImageSkiaSource {
@@ -256,6 +261,9 @@ class HSLImageSource : public gfx::ImageSkiaSource {
       : image_(image),
         hsl_shift_(hsl_shift) {
   }
+
+  HSLImageSource(const HSLImageSource&) = delete;
+  HSLImageSource& operator=(const HSLImageSource&) = delete;
 
   ~HSLImageSource() override {}
 
@@ -273,7 +281,6 @@ class HSLImageSource : public gfx::ImageSkiaSource {
  private:
   const gfx::ImageSkia image_;
   const color_utils::HSL hsl_shift_;
-  DISALLOW_COPY_AND_ASSIGN(HSLImageSource);
 };
 
 // ImageSkiaSource which uses SkBitmapOperations::CreateButtonBackground
@@ -288,6 +295,9 @@ class ButtonImageSource: public gfx::ImageSkiaSource {
         image_(image),
         mask_(mask) {
   }
+
+  ButtonImageSource(const ButtonImageSource&) = delete;
+  ButtonImageSource& operator=(const ButtonImageSource&) = delete;
 
   ~ButtonImageSource() override {}
 
@@ -314,8 +324,6 @@ class ButtonImageSource: public gfx::ImageSkiaSource {
   const SkColor color_;
   const ImageSkia image_;
   const ImageSkia mask_;
-
-  DISALLOW_COPY_AND_ASSIGN(ButtonImageSource);
 };
 
 // ImageSkiaSource which uses SkBitmap::extractSubset to generate image reps
@@ -327,6 +335,9 @@ class ExtractSubsetImageSource: public gfx::ImageSkiaSource {
       : image_(image),
         subset_bounds_(subset_bounds) {
   }
+
+  ExtractSubsetImageSource(const ExtractSubsetImageSource&) = delete;
+  ExtractSubsetImageSource& operator=(const ExtractSubsetImageSource&) = delete;
 
   ~ExtractSubsetImageSource() override {}
 
@@ -348,8 +359,6 @@ class ExtractSubsetImageSource: public gfx::ImageSkiaSource {
  private:
   const gfx::ImageSkia image_;
   const gfx::Rect subset_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtractSubsetImageSource);
 };
 
 // ResizeSource resizes relevant image reps in |source| to |target_dip_size|
@@ -363,6 +372,10 @@ class ResizeSource : public ImageSkiaSource {
         resize_method_(method),
         target_dip_size_(target_dip_size) {
   }
+
+  ResizeSource(const ResizeSource&) = delete;
+  ResizeSource& operator=(const ResizeSource&) = delete;
+
   ~ResizeSource() override {}
 
   // gfx::ImageSkiaSource overrides:
@@ -387,8 +400,6 @@ class ResizeSource : public ImageSkiaSource {
   const ImageSkia source_;
   skia::ImageOperations::ResizeMethod resize_method_;
   const Size target_dip_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeSource);
 };
 
 // DropShadowSource generates image reps with drop shadow for image reps in
@@ -397,6 +408,10 @@ class DropShadowSource : public ImageSkiaSource {
  public:
   DropShadowSource(const ImageSkia& source, const ShadowValues& shadows_in_dip)
       : source_(source), shadows_in_dip_(shadows_in_dip) {}
+
+  DropShadowSource(const DropShadowSource&) = delete;
+  DropShadowSource& operator=(const DropShadowSource&) = delete;
+
   ~DropShadowSource() override {}
 
   // gfx::ImageSkiaSource overrides:
@@ -417,8 +432,6 @@ class DropShadowSource : public ImageSkiaSource {
  private:
   const ImageSkia source_;
   const ShadowValues shadows_in_dip_;
-
-  DISALLOW_COPY_AND_ASSIGN(DropShadowSource);
 };
 
 // An image source that is 1px wide, suitable for tiling horizontally.
@@ -429,6 +442,10 @@ class HorizontalShadowSource : public CanvasImageSource {
       : CanvasImageSource(Size(1, GetHeightForShadows(shadows))),
         shadows_(shadows),
         fades_down_(fades_down) {}
+
+  HorizontalShadowSource(const HorizontalShadowSource&) = delete;
+  HorizontalShadowSource& operator=(const HorizontalShadowSource&) = delete;
+
   ~HorizontalShadowSource() override {}
 
   // CanvasImageSource overrides:
@@ -452,8 +469,6 @@ class HorizontalShadowSource : public CanvasImageSource {
 
   // The orientation of the shadow (true for shadows that emanate downwards).
   bool fades_down_;
-
-  DISALLOW_COPY_AND_ASSIGN(HorizontalShadowSource);
 };
 
 // RotatedSource generates image reps that are rotations of those in
@@ -465,6 +480,10 @@ class RotatedSource : public ImageSkiaSource {
     : source_(source),
       rotation_(rotation) {
   }
+
+  RotatedSource(const RotatedSource&) = delete;
+  RotatedSource& operator=(const RotatedSource&) = delete;
+
   ~RotatedSource() override {}
 
   // gfx::ImageSkiaSource overrides:
@@ -481,14 +500,15 @@ class RotatedSource : public ImageSkiaSource {
  private:
   const ImageSkia source_;
   const SkBitmapOperations::RotationAmount rotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(RotatedSource);
 };
 
 class IconWithBadgeSource : public gfx::CanvasImageSource {
  public:
   IconWithBadgeSource(const ImageSkia& icon, const ImageSkia& badge)
       : gfx::CanvasImageSource(icon.size()), icon_(icon), badge_(badge) {}
+
+  IconWithBadgeSource(const IconWithBadgeSource&) = delete;
+  IconWithBadgeSource& operator=(const IconWithBadgeSource&) = delete;
 
   ~IconWithBadgeSource() override {}
 
@@ -502,8 +522,6 @@ class IconWithBadgeSource : public gfx::CanvasImageSource {
  private:
   const ImageSkia icon_;
   const ImageSkia badge_;
-
-  DISALLOW_COPY_AND_ASSIGN(IconWithBadgeSource);
 };
 
 // ImageSkiaSource which uses SkBitmapOperations::CreateColorMask
@@ -512,6 +530,9 @@ class ColorMaskSource : public gfx::ImageSkiaSource {
  public:
   ColorMaskSource(const ImageSkia& image, SkColor color)
       : image_(image), color_(color) {}
+
+  ColorMaskSource(const ColorMaskSource&) = delete;
+  ColorMaskSource& operator=(const ColorMaskSource&) = delete;
 
   ~ColorMaskSource() override {}
 
@@ -529,8 +550,6 @@ class ColorMaskSource : public gfx::ImageSkiaSource {
  private:
   const ImageSkia image_;
   const SkColor color_;
-
-  DISALLOW_COPY_AND_ASSIGN(ColorMaskSource);
 };
 
 // Image source to create an image with a circle background.
@@ -543,6 +562,11 @@ class ImageWithCircleBackgroundSource : public gfx::CanvasImageSource {
         radius_(radius),
         color_(color),
         image_(image) {}
+
+  ImageWithCircleBackgroundSource(const ImageWithCircleBackgroundSource&) =
+      delete;
+  ImageWithCircleBackgroundSource& operator=(
+      const ImageWithCircleBackgroundSource&) = delete;
 
   ~ImageWithCircleBackgroundSource() override = default;
 
@@ -562,8 +586,6 @@ class ImageWithCircleBackgroundSource : public gfx::CanvasImageSource {
   const int radius_;
   const SkColor color_;
   const gfx::ImageSkia image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageWithCircleBackgroundSource);
 };
 }  // namespace
 

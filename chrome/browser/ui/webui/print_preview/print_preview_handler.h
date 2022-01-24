@@ -13,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
@@ -110,12 +109,6 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
 
   // Sets |pdf_file_saved_closure_| to |closure|.
   void SetPdfSavedClosureForTesting(base::OnceClosure closure);
-
-  // Fires the 'enable-manipulate-settings-for-test' WebUI event.
-  void SendEnableManipulateSettingsForTest();
-
-  // Fires the 'manipulate-settings-for-test' WebUI event with |settings|.
-  void SendManipulateSettingsForTest(const base::DictionaryValue& settings);
 
   virtual PrinterHandler* GetPrinterHandler(mojom::PrinterType printer_type);
 

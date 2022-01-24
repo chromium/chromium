@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/system_tray.h"
@@ -18,8 +20,9 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/notifications/update_required_notification.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -30,8 +33,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/cros_settings_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -71,7 +72,7 @@ void OpenEnterpriseInfoPage() {
 
 std::string GetEnterpriseManager() {
   return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->GetEnterpriseDomainManager();
 }
 
@@ -80,7 +81,7 @@ BuildState* GetBuildState() {
 }
 
 int GetDaysRounded(base::TimeDelta time) {
-  return base::ClampRound(time / base::TimeDelta::FromDays(1));
+  return base::ClampRound(time / base::Days(1));
 }
 
 chromeos::UpdateEngineClient* GetUpdateEngineClient() {
@@ -131,10 +132,10 @@ MinimumVersionRequirement::CreateInstanceIfValid(
     return nullptr;
   auto warning = dict->FindIntKey(kWarningPeriod);
   base::TimeDelta warning_time =
-      base::TimeDelta::FromDays(warning.has_value() ? warning.value() : 0);
+      base::Days(warning.has_value() ? warning.value() : 0);
   auto eol_warning = dict->FindIntKey(kEolWarningPeriod);
-  base::TimeDelta eol_warning_time = base::TimeDelta::FromDays(
-      eol_warning.has_value() ? eol_warning.value() : 0);
+  base::TimeDelta eol_warning_time =
+      base::Days(eol_warning.has_value() ? eol_warning.value() : 0);
   return std::make_unique<MinimumVersionRequirement>(
       minimum_version, warning_time, eol_warning_time);
 }
@@ -158,7 +159,7 @@ MinimumVersionPolicyHandler::MinimumVersionPolicyHandler(
       cros_settings_(cros_settings),
       clock_(base::DefaultClock::GetInstance()) {
   policy_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kDeviceMinimumVersion,
+      ash::kDeviceMinimumVersion,
       base::BindRepeating(&MinimumVersionPolicyHandler::OnPolicyChanged,
                           weak_factory_.GetWeakPtr()));
 
@@ -216,12 +217,11 @@ bool MinimumVersionPolicyHandler::IsPolicyApplicable() {
 }
 
 void MinimumVersionPolicyHandler::OnPolicyChanged() {
-  chromeos::CrosSettingsProvider::TrustedStatus status =
+  ash::CrosSettingsProvider::TrustedStatus status =
       cros_settings_->PrepareTrustedValues(
           base::BindOnce(&MinimumVersionPolicyHandler::OnPolicyChanged,
                          weak_factory_.GetWeakPtr()));
-  if (status != chromeos::CrosSettingsProvider::TRUSTED ||
-      !IsPolicyApplicable() ||
+  if (status != ash::CrosSettingsProvider::TRUSTED || !IsPolicyApplicable() ||
       !chromeos::features::IsMinimumChromeVersionEnabled()) {
     VLOG(1) << "Ignore policy change - policy is not applicable or settings "
                "are not trusted.";
@@ -229,7 +229,7 @@ void MinimumVersionPolicyHandler::OnPolicyChanged() {
   }
 
   const base::DictionaryValue* policy_value;
-  if (!cros_settings_->GetDictionary(chromeos::kDeviceMinimumVersion,
+  if (!cros_settings_->GetDictionary(ash::kDeviceMinimumVersion,
                                      &policy_value)) {
     VLOG(1) << "Revoke policy - policy is unset or value is incorrect.";
     HandleUpdateNotRequired();
@@ -382,6 +382,9 @@ void MinimumVersionPolicyHandler::HandleUpdateRequired(
     // a) Update was not required before and now critical update is required.
     // b) Update was required and warning time has expired when device is
     // rebooted.
+    // Update the local state with the current policy values.
+    if (update_required_deadline_ > previous_deadline)
+      UpdateLocalState(warning_time);
     OnDeadlineReached();
     return;
   }
@@ -471,7 +474,7 @@ void MinimumVersionPolicyHandler::MaybeShowNotificationOnLogin() {
   // at startup.
   absl::optional<int> days = GetTimeRemainingInDays();
   if (days && days.value() <= 1)
-    MaybeShowNotification(base::TimeDelta::FromDays(days.value()));
+    MaybeShowNotification(base::Days(days.value()));
 }
 
 void MinimumVersionPolicyHandler::MaybeShowNotification(
@@ -537,14 +540,13 @@ void MinimumVersionPolicyHandler::ShowAndScheduleNotification(
   // one week before EOL and on the last day. No need to schedule a notification
   // if it is already the last day.
   if (eol_reached_ && days_remaining > kOneWeekEolNotificationInDays) {
-    expiry =
-        deadline - base::TimeDelta::FromDays(kOneWeekEolNotificationInDays);
+    expiry = deadline - base::Days(kOneWeekEolNotificationInDays);
   } else if (days_remaining > 1) {
-    expiry = deadline - base::TimeDelta::FromDays(1);
+    expiry = deadline - base::Days(1);
   }
 
   VLOG(2) << "Next notification scheduled for " << expiry;
-  MaybeShowNotification(base::TimeDelta::FromDays(days_remaining));
+  MaybeShowNotification(base::Days(days_remaining));
   if (!expiry.is_null()) {
     notification_timer_.Start(
         FROM_HERE, expiry,

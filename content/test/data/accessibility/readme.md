@@ -34,11 +34,11 @@ this below.
 
 Each test is parameterized to run multiple times.  Most platforms dump in the
 "blink" format (the internal data), and again in a "native" (platform-specific)
-format.  The Windows platform has a second native format, "uia", so it runs a
-third time.  The test name indicates which test pass was run, e.g.,
+format.  The Windows platform has two native formats, "uia" and "ia2", so the
+test is run three times.  The test name indicates which test pass was run, e.g.,
 `DumpAccessibilityTreeTest.TestName/blink`.  (Note: for easier identification,
 the Windows, Mac, Linux, and Android platforms rename the "native" pass to
-"win", "mac", "linux" and "android", respectively.)
+"ia2", "mac", "linux" and "android", respectively.)
 
 The test output is a compact text representation of the accessible node(s)
 for that format, and it should be familiar if you're familiar with the
@@ -79,7 +79,11 @@ out/Default/browser_tests --gtest_filter="PDFExtensionAccessibilityTreeDumpTest*
 Supported platforms are:
 * `android` -- expected Android AccessibilityNodeInfo output
 * `auralinux` -- expected Linux ATK output
+* `auralinux-trusty` -- expected Linux ATK output (Version Specific Expected File)
+* `auralinux-xenial` -- expected Linux ATK output (Version Specific Expected File)
 * `blink` -- representation of internal accessibility tree
+* `blink-cros` -- representation of internal accessibility tree
+  (Version Specific Expected File for Chrome OS and Lacros)
 * `mac` -- expected Mac NSAccessibility output
 * `win` -- expected Win IAccessible/IAccessible2 output
 * `uia-win` -- expected Win UIA output
@@ -112,6 +116,30 @@ tree formatter will look for a version specific expected file first:
 does not exist, the normal expected file will be used instead:
 "`foo-expected-uia-win.txt`". There is no concept of version
 specific filters.
+
+In the case of Linux, the tests are run on several LTS
+[releases](https://releases.ubuntu.com/) of Ubuntu:
+
+* "Trusty Tahr": Ubuntu 14.04 LTS, ATK version 2.10 (bot: "linux-trusty-rel")
+* "Xenial Xerus": Ubuntu 16.04, ATK version 2.18 (bot: "linux-xenial-rel")
+* "Bionic Beaver": Ubuntu 18.04, ATK version 2.28 (runs on multiple bots)
+
+In many cases the expected results for `foo.html` will be the same for all
+versions of Ubuntu, in which case `foo-expected-auralinux.txt` is all that is
+needed. However, if the `foo.html` test passes on the Linux release build
+("linux-rel"), but fails on "linux-trusty-rel", you will need an additional
+`foo-expected-auralinux-trusty.txt` file. If it also fails on "linux-xenial-rel",
+create `foo-expected-auralinux-xenial.txt`.
+
+At the present time there is no version-specific support for Bionic Beaver,
+which is the current version run on "linux-rel".
+
+The need for a version-specific expectations file on Chrome OS / Lacros is
+extremely rare. However, there can be occasional differences in the internal
+accessibility tree. For instance, the SVG `g` element is always included
+in order to support select-to-speak functionality. If `foo.html` has a
+`foo-expected-blink.txt` file which works on all platforms except the Chrome OS
+and Lacros bots, create `foo-expected-blink-cros.txt`.
 
 ## Directives
 
@@ -335,6 +363,9 @@ If you are adding a new test file remember to add a corresponding test case in:
 * `content/browser/accessibility/dump_accessibility_events_browsertest.cc`; or
 * `content/browser/accessibility/dump_accessibility_tree_browsertest.cc`
 
+If you are adding a new events test, remember to add a corresponding test case
+for Android, see more info below.
+
 ## More details on DumpAccessibilityEvents tests
 
 These tests are similar to `DumpAccessibilityTree` tests in that they first
@@ -358,3 +389,50 @@ a direct result of calling `go()`.
 Windows will "translate" some IA2 events to UIA, and it is not
 possible to turn this feature off. Therefore as our UIA behavior is in addition
 to IA2, we will receive duplicated events for Focus, MenuOpened and MenuClosed.
+
+### Including Tests for Android
+
+The Android DumpAccessibilityEvents tests work differently than the other
+platforms and are driven by the Java-side code. The tests all reside in the
+[WebContentsAccessibilityEventsTest.java](https://source.chromium.org/chromium/chromium/src/+/main:content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityEventsTest.java)
+class. The tests are controlled from the Java code so that they can leverage the
+full accessibility suite and test the
+[AccessibilityEvents](https://developer.android.com/reference/android/view/accessibility/AccessibilityEvent)
+that are sent to downstream services. For this to work, when adding a new events
+test, you must include a test line in the Java class.
+
+Example: If you are adding a new events test, "example-test.html", you would
+first create the html file as normal (content/test/data/accessibility/event/example-test.html),
+and add the test to the existing `dump_accessibility_events_browsertests.cc`:
+
+```
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, AccessibilityEventsExampleTest) {
+  RunEventTest(FILE_PATH_LITERAL("example-test.html"));
+}
+```
+
+To include this test on Android, you would add a similar block to the
+`WebContentsAccessibilityEventsTest.java` class:
+
+```
+@Test
+@SmallTest
+public void test_exampleTest() {
+    performTest("example-test.html", "example-test-expected-android.txt");
+}
+```
+
+Some tests on Android won't produce any events. For these you do not need to
+create an empty file, but can instead make the test line:
+
+```
+    performTest("example-test.html", EMPTY_EXPECTATIONS_FILE);
+```
+
+The easiest approach is to use the above line, run the tests, and if it fails,
+the error message will give you the exact text to add to the
+`-expected-android.txt` file. The `-expected-android.txt` file should go in the
+same directory as the others (content/test/data/accessibility/event).
+
+A PRESUBMIT check will give a non-blocking warning if you are adding, renaming,
+or deleting an events test without a corresponding change for Android.

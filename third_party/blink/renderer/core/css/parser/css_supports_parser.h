@@ -46,14 +46,6 @@ class CORE_EXPORT CSSSupportsParser {
 
   CSSSupportsParser(CSSParserImpl& parser) : parser_(parser) {}
 
-  // True if the given token is a kIdentToken with the specified value
-  // (case-insensitive).
-  static bool AtIdent(const CSSParserToken&, const char*);
-
-  // If the current token is a kIdentToken with the specified value (case
-  // insensitive), consumes the token and returns true.
-  static bool ConsumeIfIdent(CSSParserTokenStream&, const char*);
-
   // Parsing functions follow, as defined by:
   // https://drafts.csswg.org/css-conditional-3/#typedef-supports-condition
 

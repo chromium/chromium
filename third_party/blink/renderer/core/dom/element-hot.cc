@@ -84,21 +84,23 @@ const AtomicString& Element::GetAttributeHinted(
 }
 
 std::pair<wtf_size_t, const QualifiedName> Element::LookupAttributeQNameHinted(
-    const AtomicString& name,
+    AtomicString name,
     WTF::AtomicStringTable::WeakResult hint) const {
   if (!GetElementData()) {
     return std::make_pair(
         kNotFound,
-        QualifiedName(g_null_atom, LowercaseIfNecessary(name), g_null_atom));
+        QualifiedName(g_null_atom, LowercaseIfNecessary(std::move(name)),
+                      g_null_atom));
   }
 
   AttributeCollection attributes = GetElementData()->Attributes();
   wtf_size_t index = attributes.FindIndexHinted(name, hint);
   return std::make_pair(
-      index, index != kNotFound
-                 ? attributes[index].GetName()
-                 : QualifiedName(g_null_atom, LowercaseIfNecessary(name),
-                                 g_null_atom));
+      index,
+      index != kNotFound
+          ? attributes[index].GetName()
+          : QualifiedName(g_null_atom, LowercaseIfNecessary(std::move(name)),
+                          g_null_atom));
 }
 
 void Element::setAttribute(const QualifiedName& name,
@@ -137,7 +139,7 @@ void Element::SetSynchronizedLazyAttribute(const QualifiedName& name,
   SetAttributeInternal(index, name, value, kInSynchronizationOfLazyAttribute);
 }
 
-void Element::SetAttributeHinted(const AtomicString& local_name,
+void Element::SetAttributeHinted(AtomicString local_name,
                                  WTF::AtomicStringTable::WeakResult hint,
                                  const AtomicString& value,
                                  ExceptionState& exception_state) {
@@ -151,7 +153,8 @@ void Element::SetAttributeHinted(const AtomicString& local_name,
   SynchronizeAttributeHinted(local_name, hint);
   wtf_size_t index;
   QualifiedName q_name = QualifiedName::Null();
-  std::tie(index, q_name) = LookupAttributeQNameHinted(local_name, hint);
+  std::tie(index, q_name) =
+      LookupAttributeQNameHinted(std::move(local_name), hint);
 
   AtomicString trusted_value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(q_name), std::move(value),
@@ -163,7 +166,7 @@ void Element::SetAttributeHinted(const AtomicString& local_name,
                        kNotInSynchronizationOfLazyAttribute);
 }
 
-void Element::SetAttributeHinted(const AtomicString& local_name,
+void Element::SetAttributeHinted(AtomicString local_name,
                                  WTF::AtomicStringTable::WeakResult hint,
                                  const V8TrustedString* trusted_string,
                                  ExceptionState& exception_state) {
@@ -177,7 +180,8 @@ void Element::SetAttributeHinted(const AtomicString& local_name,
   SynchronizeAttributeHinted(local_name, hint);
   wtf_size_t index;
   QualifiedName q_name = QualifiedName::Null();
-  std::tie(index, q_name) = LookupAttributeQNameHinted(local_name, hint);
+  std::tie(index, q_name) =
+      LookupAttributeQNameHinted(std::move(local_name), hint);
   AtomicString value(TrustedTypesCheckFor(
       ExpectedTrustedTypeForAttribute(q_name), trusted_string,
       GetExecutionContext(), exception_state));

@@ -41,6 +41,9 @@ class TextfieldModelTest : public ViewsTestBase,
  public:
   TextfieldModelTest() = default;
 
+  TextfieldModelTest(const TextfieldModelTest&) = delete;
+  TextfieldModelTest& operator=(const TextfieldModelTest&) = delete;
+
   // ::testing::Test:
   void TearDown() override {
     // Clear kill buffer used for "Yank" text editing command so that no state
@@ -77,9 +80,6 @@ class TextfieldModelTest : public ViewsTestBase,
   }
 
   bool composition_text_confirmed_or_cleared_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextfieldModelTest);
 };
 
 TEST_F(TextfieldModelTest, EditString) {

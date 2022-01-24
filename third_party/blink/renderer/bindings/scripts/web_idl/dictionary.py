@@ -22,7 +22,7 @@ from .user_defined_type import UserDefinedType
 class Dictionary(UserDefinedType, WithExtendedAttributes,
                  WithCodeGeneratorInfo, WithExposure, WithComponent,
                  WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-dictionaries"""
+    """https://webidl.spec.whatwg.org/#idl-dictionaries"""
 
     class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
              WithExposure, WithComponent, WithDebugInfo):

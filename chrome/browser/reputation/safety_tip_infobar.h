@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_REPUTATION_SAFETY_TIP_INFOBAR_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/infobars/android/confirm_infobar.h"
 
 class SafetyTipInfoBarDelegate;
@@ -17,6 +16,10 @@ class SafetyTipInfoBar : public infobars::ConfirmInfoBar {
  public:
   static std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<SafetyTipInfoBarDelegate> delegate);
+
+  SafetyTipInfoBar(const SafetyTipInfoBar&) = delete;
+  SafetyTipInfoBar& operator=(const SafetyTipInfoBar&) = delete;
+
   ~SafetyTipInfoBar() override;
 
  private:
@@ -28,8 +31,6 @@ class SafetyTipInfoBar : public infobars::ConfirmInfoBar {
       const ResourceIdMapper& resource_id_mapper) override;
 
   SafetyTipInfoBarDelegate* GetDelegate();
-
-  DISALLOW_COPY_AND_ASSIGN(SafetyTipInfoBar);
 };
 
 #endif  // CHROME_BROWSER_REPUTATION_SAFETY_TIP_INFOBAR_H_

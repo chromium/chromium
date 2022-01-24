@@ -23,6 +23,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 /**
  * Test suite for Sync.
@@ -62,22 +63,22 @@ public class SyncTest {
                 ()
                         -> IdentityServicesProvider.get()
                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                   .hasPrimaryAccount(),
-                "Timed out checking that hasPrimaryAccount() == true", SyncTestUtil.TIMEOUT_MS,
-                SyncTestUtil.INTERVAL_MS);
+                                   .hasPrimaryAccount(ConsentLevel.SYNC),
+                "Timed out checking that hasPrimaryAccount(ConsentLevel.SYNC) == true",
+                SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
 
         mSyncTestRule.clearServerData();
 
         // Clearing server data should turn off sync and sign out of chrome.
-        Assert.assertNull(mSyncTestRule.getCurrentSignedInAccount());
+        Assert.assertNull(mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
         CriteriaHelper.pollUiThread(
                 ()
                         -> !IdentityServicesProvider.get()
                                     .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                    .hasPrimaryAccount(),
-                "Timed out checking that hasPrimaryAccount() == false", SyncTestUtil.TIMEOUT_MS,
-                SyncTestUtil.INTERVAL_MS);
+                                    .hasPrimaryAccount(ConsentLevel.SYNC),
+                "Timed out checking that hasPrimaryAccount(ConsentLevel.SYNC) == false",
+                SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
     }
 
     @Test
@@ -87,7 +88,7 @@ public class SyncTest {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
 
         mSyncTestRule.stopSync();
-        Assert.assertEquals(accountInfo, mSyncTestRule.getCurrentSignedInAccount());
+        Assert.assertEquals(accountInfo, mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
 
         mSyncTestRule.startSyncAndWait();

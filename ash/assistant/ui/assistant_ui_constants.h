@@ -17,11 +17,9 @@ class FontList;
 namespace ash {
 
 // Appearance.
-constexpr int kPaddingDip = 14;
 constexpr int kPreferredWidthDip = 640;
 constexpr int kSpacingDip = 8;
 constexpr int kMarginDip = 8;
-constexpr int kHorizontalMarginDip = 32;
 
 // Typography.
 constexpr SkColor kTextColorPrimary = gfx::kGoogleGrey900;
@@ -44,15 +42,13 @@ const gfx::FontList& GetDefaultFontList();
 // The maximum number of user sessions in which to show Assistant onboarding.
 constexpr int kOnboardingMaxSessionsShown = 3;
 
-// Histogram names for measuring animation performance.
-constexpr char kAssistantCardElementHistogram[] =
-    "Ash.Assistant.AnimationSmoothness.CardElement";
-constexpr char kAssistantTextElementHistogram[] =
-    "Ash.Assistant.AnimationSmoothness.TextElement";
-constexpr char kAssistantResizePageViewHistogram[] =
-    "Ash.Assistant.AnimationSmoothness.ResizeAssistantPageView";
-constexpr char kAssistantSuggestionChipHistogram[] =
-    "Ash.Assistant.AnimationSmoothness.SuggestionChip";
+// Returns the horizontal margin in DIPs.
+COMPONENT_EXPORT(ASSISTANT_UI_CONSTANTS)
+int GetHorizontalMargin();
+
+// Returns the horizontal padding in DIPs.
+COMPONENT_EXPORT(ASSISTANT_UI_CONSTANTS)
+int GetHorizontalPadding();
 
 }  // namespace ui
 }  // namespace assistant

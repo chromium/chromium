@@ -69,6 +69,9 @@ class LoginDisplayHost {
     virtual void WebDialogViewBoundsChanged(const gfx::Rect& bounds) = 0;
   };
 
+  LoginDisplayHost(const LoginDisplayHost&) = delete;
+  LoginDisplayHost& operator=(const LoginDisplayHost&) = delete;
+
   // Returns the default LoginDisplayHost instance if it has been created.
   static LoginDisplayHost* default_host() { return default_host_; }
 
@@ -114,6 +117,8 @@ class LoginDisplayHost {
   // Result should not be stored.
   virtual WizardController* GetWizardController() = 0;
 
+  virtual WizardContext* GetWizardContext() = 0;
+
   // Returns current KioskLaunchController, if it exists.
   // Result should not be stored.
   virtual KioskLaunchController* GetKioskLaunchController() = 0;
@@ -144,9 +149,11 @@ class LoginDisplayHost {
   // dialog.
   virtual void ShowGaiaDialog(const AccountId& prefilled_account) = 0;
 
-  // Show the gaia dialog. If available, `account` is preloaded in the gaia
-  // dialog.
+  // Show the os install dialog.
   virtual void ShowOsInstallScreen() = 0;
+
+  // Show the guest terms of service screen.
+  virtual void ShowGuestTosScreen() = 0;
 
   // Hide any visible oobe dialog.
   virtual void HideOobeDialog() = 0;
@@ -221,20 +228,39 @@ class LoginDisplayHost {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Return sign-in UI instance, guaranteed to be non-null
-  // during OOBE/Login process. Returns nullptr on the secondary login screen.
+  // Return sign-in UI instance during OOBE/Login process.
   // Result should not be stored.
   virtual SigninUI* GetSigninUI() = 0;
+
+  // Gets the keyboard remapped pref value for `pref_name` key. Returns true if
+  // successful, otherwise returns false.
+  // TODO (crbug.com/1168114): Double check if this method belongs here.
+  virtual bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
+                                            int* value) const = 0;
+  // Allows tests to wait for WebUI to start.
+  // RepeatingClosure type matches base::RunLoop::QuitClosure result type.
+  virtual void AddWizardCreatedObserverForTests(
+      base::RepeatingClosure on_created) = 0;
+
+  // Returns true if WizardController was created.
+  virtual bool IsWizardControllerCreated() const = 0;
+
+  // Returns pointer to the WizardContext for tests.
+  virtual WizardContext* GetWizardContextForTesting() = 0;
 
  protected:
   LoginDisplayHost();
   virtual ~LoginDisplayHost();
 
+  // Triggers |on_wizard_controller_created_for_tests_| callback.
+  void NotifyWizardCreated();
+
  private:
   // Global LoginDisplayHost instance.
   static LoginDisplayHost* default_host_;
 
-  DISALLOW_COPY_AND_ASSIGN(LoginDisplayHost);
+  // Callback to be executed when WebUI is started.
+  base::RepeatingClosure on_wizard_controller_created_for_tests_;
 };
 
 }  // namespace ash

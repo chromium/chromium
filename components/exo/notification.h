@@ -26,13 +26,14 @@ class Notification {
                const base::RepeatingCallback<void(const absl::optional<int>&)>&
                    click_callback);
 
+  Notification(const Notification&) = delete;
+  Notification& operator=(const Notification&) = delete;
+
   // Closes this notification.
   void Close();
 
  private:
   const std::string notification_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(Notification);
 };
 
 }  // namespace exo

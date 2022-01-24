@@ -5,7 +5,6 @@
 #include <sstream>
 #include <string>
 
-#include "base/macros.h"
 #include "media/base/media_log.h"
 #include "media/base/mock_media_log.h"
 #include "testing/gtest/include/gtest/gtest.h"

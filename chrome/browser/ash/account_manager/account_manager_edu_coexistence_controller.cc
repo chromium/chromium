@@ -86,7 +86,7 @@ void EduCoexistenceConsentInvalidationController::
   //  |new_edu_account_consent_list|.
   for (const auto& account : accounts) {
     // Don't add the device account id.
-    if (account.key.id == device_account_id_.GetGaiaId()) {
+    if (account.key.id() == device_account_id_.GetGaiaId()) {
       continue;
     }
 
@@ -94,7 +94,7 @@ void EduCoexistenceConsentInvalidationController::
         std::find_if(current_edu_account_consent_list.begin(),
                      current_edu_account_consent_list.end(),
                      [&account](const edu_coexistence::UserConsentInfo& info) {
-                       return info.edu_account_gaia_id == account.key.id;
+                       return info.edu_account_gaia_id == account.key.id();
                      });
 
     // If account exists in |current_edu_account_consent_list| copy the entry
@@ -106,7 +106,7 @@ void EduCoexistenceConsentInvalidationController::
       // This will be used to add secondary edu accounts added in the first
       // version of EduCoexistence.
       new_edu_account_consent_list.push_back(edu_coexistence::UserConsentInfo{
-          account.key.id,
+          account.key.id(),
           edu_coexistence::
               kMinTOSVersionNumber /* default terms of service version */});
     }
@@ -142,18 +142,18 @@ void EduCoexistenceConsentInvalidationController::InvalidateEduAccounts(
     const std::vector<std::string>& account_gaia_ids_to_invalidate,
     const std::vector<::account_manager::Account>& accounts) {
   for (const ::account_manager::Account& account : accounts) {
-    if (account.key.account_type != account_manager::AccountType::kGaia) {
+    if (account.key.account_type() != account_manager::AccountType::kGaia) {
       continue;
     }
 
     // Do not invalidate the Device Account.
     if (device_account_id_.GetAccountType() == AccountType::GOOGLE &&
-        account.key.id == device_account_id_.GetGaiaId()) {
+        account.key.id() == device_account_id_.GetGaiaId()) {
       continue;
     }
 
     // This account should not be invalidated.
-    if (!base::Contains(account_gaia_ids_to_invalidate, account.key.id)) {
+    if (!base::Contains(account_gaia_ids_to_invalidate, account.key.id())) {
       continue;
     }
 

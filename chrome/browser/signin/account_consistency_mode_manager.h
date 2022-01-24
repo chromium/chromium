@@ -7,7 +7,6 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "build/buildflag.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
@@ -28,18 +27,21 @@ class AccountConsistencyModeManager : public KeyedService {
   static AccountConsistencyModeManager* GetForProfile(Profile* profile);
 
   explicit AccountConsistencyModeManager(Profile* profile);
+
+  AccountConsistencyModeManager(const AccountConsistencyModeManager&) = delete;
+  AccountConsistencyModeManager& operator=(
+      const AccountConsistencyModeManager&) = delete;
+
   ~AccountConsistencyModeManager() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Helper method, shorthand for calling GetAccountConsistencyMethod().
+  // TODO(crbug.com/1232361): Migrate usages to
+  // `IdentityManager::GetAccountConsistency`.
   static signin::AccountConsistencyMethod GetMethodForProfile(Profile* profile);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Sets migration to Dice as completed.
-  void SetDiceMigrationCompleted();
-  // Returns true if migration to Dice is completed.
-  static bool IsDiceMigrationCompleted(Profile* profile);
   // This is a pre-requisite of IsDiceEnabledForProfile(), independent of
   // particular profile type or profile prefs.
   static bool IsDiceSignInAllowed();
@@ -75,7 +77,7 @@ class AccountConsistencyModeManager : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(AccountConsistencyModeManagerTest,
                            AllowBrowserSigninSwitch);
   FRIEND_TEST_ALL_PREFIXES(AccountConsistencyModeManagerTest,
-                           ForceDiceMigration);
+                           DiceEnabledForNewProfiles);
 
   // Returns the account consistency method for the current profile.
   signin::AccountConsistencyMethod GetAccountConsistencyMethod();
@@ -89,8 +91,6 @@ class AccountConsistencyModeManager : public KeyedService {
   Profile* profile_;
   signin::AccountConsistencyMethod account_consistency_;
   bool account_consistency_initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountConsistencyModeManager);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_ACCOUNT_CONSISTENCY_MODE_MANAGER_H_

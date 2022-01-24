@@ -52,7 +52,7 @@ class MockTranslateMetricsLogger : public TranslateMetricsLogger {
                void(const std::string&,
                     TranslateBrowserMetrics::TargetLanguageOrigin));
   MOCK_METHOD1(LogUIInteraction, void(UIInteraction));
-  MOCK_METHOD0(GetNextManualTranslationType, TranslationType());
+  MOCK_METHOD1(GetNextManualTranslationType, TranslationType(bool));
   MOCK_METHOD1(SetHasHrefTranslateTarget, void(bool));
   MOCK_METHOD1(LogWasContentEmpty, void(bool));
 

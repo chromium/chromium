@@ -169,6 +169,8 @@ cast_source_set("for_mixer_audio") {
     "//chromecast/media/audio/mixer_service:control_connection",
     "//chromecast/media/audio/mixer_service:output_stream_connection",
     "//chromecast/media/audio/mixer_service:proto",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/media/base:monotonic_clock",
     "//chromecast/media/cma/base",
     "//chromecast/media/cma/decoder",

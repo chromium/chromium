@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -40,6 +39,9 @@ class BleScanner {
         ConnectionRole connection_role,
         const std::vector<uint8_t>& eid) = 0;
   };
+
+  BleScanner(const BleScanner&) = delete;
+  BleScanner& operator=(const BleScanner&) = delete;
 
   virtual ~BleScanner();
 
@@ -80,8 +82,6 @@ class BleScanner {
   base::ObserverList<Observer> observer_list_;
 
   base::flat_set<ConnectionAttemptDetails> scan_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleScanner);
 };
 
 }  // namespace secure_channel

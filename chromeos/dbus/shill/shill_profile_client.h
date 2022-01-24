@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/shill/fake_shill_simulated_result.h"
 #include "chromeos/dbus/shill/shill_client_helper.h"
 
@@ -108,6 +107,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
   // Returns the global instance if initialized. May return null.
   static ShillProfileClient* Get();
 
+  ShillProfileClient(const ShillProfileClient&) = delete;
+  ShillProfileClient& operator=(const ShillProfileClient&) = delete;
+
   // Returns the shared profile path.
   static std::string GetSharedProfilePath();
 
@@ -169,9 +171,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
   // Initialize/Shutdown should be used instead.
   ShillProfileClient();
   virtual ~ShillProfileClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillProfileClient);
 };
 
 }  // namespace chromeos

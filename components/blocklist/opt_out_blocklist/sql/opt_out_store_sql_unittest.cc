@@ -48,13 +48,10 @@ class OptOutStoreSQLTest : public testing::Test {
   void Load() {
     // Choose reasonable constants.
     std::unique_ptr<BlocklistData> data = std::make_unique<BlocklistData>(
-        std::make_unique<BlocklistData::Policy>(base::TimeDelta::FromMinutes(5),
-                                                1, 1),
-        std::make_unique<BlocklistData::Policy>(base::TimeDelta::FromDays(30),
-                                                10, 6u),
-        std::make_unique<BlocklistData::Policy>(base::TimeDelta::FromDays(30),
-                                                4, 2u),
-        nullptr, 10, allowed_types_);
+        std::make_unique<BlocklistData::Policy>(base::Minutes(5), 1, 1),
+        std::make_unique<BlocklistData::Policy>(base::Days(30), 10, 6u),
+        std::make_unique<BlocklistData::Policy>(base::Days(30), 4, 2u), nullptr,
+        10, allowed_types_);
 
     store_->LoadBlockList(
         std::move(data),
@@ -184,11 +181,11 @@ TEST_F(OptOutStoreSQLTest, TestMaxRows) {
 
   // Create three different entries with different hosts.
   store_->AddEntry(true, test_host_a, 1, clock.Now());
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
 
   store_->AddEntry(true, test_host_b, 1, clock.Now());
   base::Time host_b_time = clock.Now();
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
 
   store_->AddEntry(false, test_host_c, 1, clock.Now());
   base::RunLoop().RunUntilIdle();
@@ -244,10 +241,10 @@ TEST_F(OptOutStoreSQLTest, TestMaxRowsPerHost) {
   for (size_t i = 0; i < row_limit; i++) {
     store_->AddEntry(true, test_host, 1, clock.Now());
     last_opt_out_time = clock.Now();
-    clock.Advance(base::TimeDelta::FromSeconds(1));
+    clock.Advance(base::Seconds(1));
   }
 
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
   store_->AddEntry(false, test_host, 1, clock.Now());
 
   base::RunLoop().RunUntilIdle();
@@ -268,7 +265,7 @@ TEST_F(OptOutStoreSQLTest, TestMaxRowsPerHost) {
   EXPECT_NE(blocklist_data_->block_list_item_host_map().end(), iter);
   EXPECT_EQ(last_opt_out_time, iter->second.most_recent_opt_out_time().value());
   EXPECT_EQ(row_limit, iter->second.OptOutRecordsSizeForTesting());
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
   // If both entries' opt out states are stored correctly, then this should not
   // be block listed.
   EXPECT_FALSE(iter->second.IsBlockListed(clock.Now()));

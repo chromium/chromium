@@ -13,7 +13,6 @@
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
@@ -29,20 +28,20 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
   // This is from page_allocator_constants.h and doesn't really fit here, but
   // there isn't a centralized initialization function in page_allocator.cc, so
   // there's no good place in that file to do a STATIC_ASSERT_OR_PA_CHECK.
-  STATIC_ASSERT_OR_PA_CHECK((SystemPageSize() & (SystemPageSize() - 1)) == 0,
+  STATIC_ASSERT_OR_PA_CHECK((SystemPageSize() & SystemPageOffsetMask()) == 0,
                             "SystemPageSize() must be power of 2");
 
   // Two partition pages are used as guard / metadata page so make sure the
   // super page size is bigger.
   STATIC_ASSERT_OR_PA_CHECK(PartitionPageSize() * 4 <= kSuperPageSize,
                             "ok super page size");
-  STATIC_ASSERT_OR_PA_CHECK(!(kSuperPageSize % PartitionPageSize()),
+  STATIC_ASSERT_OR_PA_CHECK((kSuperPageSize & SystemPageOffsetMask()) == 0,
                             "ok super page multiple");
   // Four system pages gives us room to hack out a still-guard-paged piece
   // of metadata in the middle of a guard partition page.
   STATIC_ASSERT_OR_PA_CHECK(SystemPageSize() * 4 <= PartitionPageSize(),
                             "ok partition page size");
-  STATIC_ASSERT_OR_PA_CHECK(!(PartitionPageSize() % SystemPageSize()),
+  STATIC_ASSERT_OR_PA_CHECK((PartitionPageSize() & SystemPageOffsetMask()) == 0,
                             "ok partition page multiple");
   static_assert(sizeof(internal::PartitionPage<internal::ThreadSafe>) <=
                     kPageMetadataSize,
@@ -60,8 +59,8 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
   static_assert(kSmallestBucket == kAlignment, "generic smallest bucket");
   static_assert(kMaxBucketed == 917504, "generic max bucketed");
   STATIC_ASSERT_OR_PA_CHECK(
-      MaxSystemPagesPerSlotSpan() < (1 << 8),
-      "System pages per slot span must be less than 128.");
+      MaxSystemPagesPerRegularSlotSpan() <= 16,
+      "System pages per slot span must be no greater than 16.");
 
   PA_DCHECK(on_out_of_memory);
   internal::g_oom_handling_function = on_out_of_memory;
@@ -94,7 +93,8 @@ void PartitionAllocator<thread_safe>::init(PartitionOptions opts) {
       << "Cannot use a thread cache when PartitionAlloc is malloc().";
 #endif
   partition_root_.Init(opts);
-  partition_root_.ConfigureLazyCommit();
+  partition_root_.ConfigureLazyCommit(opts.lazy_commit ==
+                                      PartitionOptions::LazyCommit::kEnabled);
   PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
       &partition_root_);
 }
@@ -108,11 +108,11 @@ template void PartitionAllocator<internal::NotThreadSafe>::init(
 #if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)
 void CheckThatSlotOffsetIsZero(void* ptr) {
-  // Add kPartitionPastAllocationAdjustment, because PartitionAllocGetSlotStart
-  // will subtract it.
-  PA_CHECK(PartitionAllocGetSlotStart(reinterpret_cast<char*>(ptr) +
-                                      kPartitionPastAllocationAdjustment) ==
-           ptr);
+  // Add kPartitionPastAllocationAdjustment, because
+  // PartitionAllocGetSlotStartInBRPPool will subtract it.
+  PA_CHECK(PartitionAllocGetSlotStartInBRPPool(
+               reinterpret_cast<char*>(ptr) +
+               kPartitionPastAllocationAdjustment) == ptr);
 }
 #endif
 

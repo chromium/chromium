@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image.h"
@@ -16,6 +17,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/examples/examples_window.h"
+#include "ui/views/examples/grit/views_examples_resources.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
@@ -84,6 +86,8 @@ void ButtonExample::CreateExampleView(View* container) {
                                        start_throbber_cb, md_default_button_)),
                                Builder<ImageButton>()
                                    .CopyAddressTo(&image_button_)
+                                   .SetAccessibleName(l10n_util::GetStringUTF16(
+                                       IDS_BUTTON_IMAGE_BUTTON_AX_LABEL))
                                    .SetRequestFocusOnPress(true)
                                    .SetCallback(base::BindRepeating(
                                        &ButtonExample::ImageButtonPressed,

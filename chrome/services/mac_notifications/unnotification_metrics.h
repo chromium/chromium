@@ -11,25 +11,22 @@
 
 namespace mac_notifications {
 
-// This file is used to record metrics specific for UNNotifications.
-
 // This enum is used in UMA. Do not delete or re-order entries. New entries
 // should only be added at the end.
-enum class UNNotificationStyle {
-  kNone = 0,
-  kBanners = 1,
-  kAlerts = 2,
-  kMaxValue = kAlerts,
-};
-
-// This enum is used in UMA. Do not delete or re-order entries. New entries
-// should only be added at the end.
-enum class UNNotificationPermissionStatus {
-  kNotRequestedYet = 0,
+enum class UNNotificationRequestPermissionResult {
+  kRequestFailed = 0,
   kPermissionDenied = 1,
   kPermissionGranted = 2,
   kMaxValue = kPermissionGranted,
 };
+
+// This logs the result of asking for notification permissions on macOS. Called
+// when we request notification permissions. This happens at startup for both
+// banner and alert style notifications and at runtime when the mojo service
+// starts up (e.g. when displaying a notification).
+API_AVAILABLE(macosx(10.14))
+void LogUNNotificationRequestPermissionResult(
+    UNNotificationRequestPermissionResult result);
 
 // Requests and log the current notifications settings and permissions.
 API_AVAILABLE(macosx(10.14))

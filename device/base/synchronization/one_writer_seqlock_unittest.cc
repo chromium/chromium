@@ -26,6 +26,9 @@ class BasicSeqLockTestThread : public base::PlatformThread::Delegate {
  public:
   BasicSeqLockTestThread() = default;
 
+  BasicSeqLockTestThread(const BasicSeqLockTestThread&) = delete;
+  BasicSeqLockTestThread& operator=(const BasicSeqLockTestThread&) = delete;
+
   void Init(OneWriterSeqLock* seqlock,
             TestData* data,
             std::atomic<int>* ready) {
@@ -57,13 +60,15 @@ class BasicSeqLockTestThread : public base::PlatformThread::Delegate {
   OneWriterSeqLock* seqlock_;
   TestData* data_;
   std::atomic<int>* ready_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasicSeqLockTestThread);
 };
 
 class MaxRetriesSeqLockTestThread : public base::PlatformThread::Delegate {
  public:
   MaxRetriesSeqLockTestThread() = default;
+
+  MaxRetriesSeqLockTestThread(const MaxRetriesSeqLockTestThread&) = delete;
+  MaxRetriesSeqLockTestThread& operator=(const MaxRetriesSeqLockTestThread&) =
+      delete;
 
   void Init(OneWriterSeqLock* seqlock, std::atomic<int>* ready) {
     seqlock_ = seqlock;
@@ -87,8 +92,6 @@ class MaxRetriesSeqLockTestThread : public base::PlatformThread::Delegate {
  private:
   OneWriterSeqLock* seqlock_;
   std::atomic<int>* ready_;
-
-  DISALLOW_COPY_AND_ASSIGN(MaxRetriesSeqLockTestThread);
 };
 
 #if defined(OS_ANDROID)

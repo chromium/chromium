@@ -19,7 +19,8 @@
   const swdp = session.createChild(result.sessionId).protocol;
   await swdp.Network.enable();
   const url = `http://localhost:8000/inspector-protocol/network/resources/source.map`;
-  const response1 = await swdp.Network.loadNetworkResource({frameId: "", url, options: {disableCache:false, includeCredentials: false}});
+  const response1 = await swdp.Network.loadNetworkResource(
+      {url, options: {disableCache: false, includeCredentials: false}});
   testRunner.log(response1.result, `Response for fetch with existing resource: `, ["headers", "stream"]);
   testRunner.completeTest();
 });

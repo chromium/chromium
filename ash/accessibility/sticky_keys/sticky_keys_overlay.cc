@@ -49,6 +49,9 @@ class StickyKeyOverlayLabel : public views::Label {
  public:
   explicit StickyKeyOverlayLabel(const std::string& key_name);
 
+  StickyKeyOverlayLabel(const StickyKeyOverlayLabel&) = delete;
+  StickyKeyOverlayLabel& operator=(const StickyKeyOverlayLabel&) = delete;
+
   ~StickyKeyOverlayLabel() override;
 
   StickyKeyState state() const { return state_; }
@@ -57,8 +60,6 @@ class StickyKeyOverlayLabel : public views::Label {
 
  private:
   StickyKeyState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(StickyKeyOverlayLabel);
 };
 
 StickyKeyOverlayLabel::StickyKeyOverlayLabel(const std::string& key_name)
@@ -104,6 +105,10 @@ void StickyKeyOverlayLabel::SetKeyState(StickyKeyState state) {
 class StickyKeysOverlayView : public views::View {
  public:
   StickyKeysOverlayView();
+
+  StickyKeysOverlayView(const StickyKeysOverlayView&) = delete;
+  StickyKeysOverlayView& operator=(const StickyKeysOverlayView&) = delete;
+
   ~StickyKeysOverlayView() override;
 
   // views::View overrides:
@@ -121,8 +126,6 @@ class StickyKeysOverlayView : public views::View {
 
   typedef std::map<ui::EventFlags, StickyKeyOverlayLabel*> ModifierLabelMap;
   ModifierLabelMap modifier_label_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(StickyKeysOverlayView);
 };
 
 StickyKeysOverlayView::StickyKeysOverlayView() {
@@ -249,8 +252,7 @@ void StickyKeysOverlay::Show(bool visible) {
   settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   settings.SetTweenType(visible ? gfx::Tween::EASE_OUT : gfx::Tween::EASE_IN);
-  settings.SetTransitionDuration(
-      base::TimeDelta::FromMilliseconds(kSlideAnimationDurationMs));
+  settings.SetTransitionDuration(base::Milliseconds(kSlideAnimationDurationMs));
 
   overlay_widget_->GetLayer()->SetTransform(gfx::Transform());
 }

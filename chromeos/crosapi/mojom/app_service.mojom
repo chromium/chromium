@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 8
+// Next MinVersion: 16
 
 module crosapi.mojom;
 
@@ -77,10 +77,10 @@ interface AppController {
   // to fill to get the required icon.
   // There should always be a return value for this method. If there is an
   // error during the loading, the return value should be a default IconValue
-  // struct, with IconType = kUnknow to indicate it's an error case. If loading
+  // struct, with IconType = kUnknown to indicate it's an error case. If loading
   // succeeded, the size of the returning icon is expected to be as close as
   // possible with the |size_hint_in_dip| set in the interface, but may not be
-  // exactly same.
+  // exactly the same.
   [MinVersion=5]
   LoadIcon@5(
     string app_id,
@@ -100,4 +100,102 @@ interface AppController {
   SetWindowMode@7(
       string app_id,
       WindowMode window_mode);
+
+  // Launch the app with |params|. The params include |app_id|,
+  // |launch_source|, and optional |intent| at the moment. This method will
+  // return |launch_result| to allow us find out which instance the app is
+  // running in.
+  [MinVersion=10]
+  Launch@8(LaunchParams params) => (LaunchResult launch_result);
+
+  // Sends the execution command to Lacros when user selects an item in the
+  // context menu to execute for an app with |app_id|. Current only the
+  // shortcut items in context menu need to be executed in lacros-chrome.
+  // The |id| represent which item user selected.
+  // This method will launch the app with selected shortcut and return
+  // |launch_result| to allow us find out which instance the app is running in.
+  [MinVersion=12]
+  ExecuteContextMenuCommand@9(
+      string app_id,
+      string id) => (LaunchResult launch_result);
+
+  // Close all instances of the given |app_id|.
+  [MinVersion=13]
+  StopApp@10(string app_id);
+
+  // Change permission setting for the app with |app_id|.
+  [MinVersion=14]
+  SetPermission@11(
+      string app_id,
+      Permission permission);
+};
+
+// Interacts with the app service. Implemented in ash-chrome and called in
+// lacros-chrome. This interface will allow the browser to interact with
+// all types of apps installed in Chrome OS.
+[Stable, Uuid="a8979226-04ab-4c29-bca6-1b487ca769f7"]
+interface AppServiceProxy {
+  // Lacros exposes an AppServiceSubscriber interface to Ash. This allows Ash
+  // to update the info for apps that registered in app service.
+  [MinVersion=8]
+  RegisterAppServiceSubscriber@0(
+      pending_remote<AppServiceSubscriber> subscriber);
+
+  // Launch the app with |params|. The params include |app_id|,
+  // |launch_source|, and optional |intent| at the moment.
+  [MinVersion=11]
+  Launch@1(LaunchParams params);
+
+  // Load icon for an app with |app_id| from ash-chrome.
+  // |icon_key|  contains the arguments for an app icon, see
+  // apps::mojom::IconKey for more details. |icon_type| represent the icon
+  // format requested (e.g. compressed, uncompressed. etc). |size_hint_in_dip|
+  // is a hint of how big the icon should be.  All these fields are necessary
+  // to fill to get the required icon.
+  // There should always be a return value for this method. If there is an
+  // error during the loading, the return value should be a default IconValue
+  // struct, with IconType = kUnknown to indicate it's an error case. If loading
+  // succeeded, the size of the returning icon is expected to be as close as
+  // possible with the |size_hint_in_dip| set in the interface, but may not be
+  // exactly the same.
+  [MinVersion=12]
+  LoadIcon@2(
+    string app_id,
+    IconKey icon_key,
+    IconType icon_type,
+    int32 size_hint_in_dip) => (IconValue icon_value);
+
+  // Lacros informs Ash of the preferred app that should be used to handle a
+  // given |intent|. This allows Ash to build an in-memory representation of
+  // the user's preferred apps for a given intent.
+  [MinVersion=15]
+  AddPreferredApp@3(
+      string app_id,
+      Intent intent);
+};
+
+// Interacts with the app service. Implemented in lacros-chrome and called in
+// ash-chrome. This interface will allow the app service to push updates to
+// the lacros-chrome so that the browser can access the app service info
+// in the same process.
+[Stable, Uuid="d77d3b7e-ef90-4615-b81b-7e43482a4d5e"]
+interface AppServiceSubscriber {
+  // Receives a stream of apps from ash-chrome from a publisher, and save to
+  // AppRegistryCache.
+  // If |should_notify_initialized| is true, notifies observers that |app_type|
+  // has finished initiating apps.
+  [MinVersion=9]
+  OnApps@0(array<App> deltas, AppType app_type, bool should_notify_initialized);
+
+  // Indicates that a changes have been made by App Service to the preferred
+  // apps list. All of the changes should be applied to the subscriber's copy of
+  // the list using PreferredAppsList::ApplyBulkUpdate.
+  [MinVersion=15]
+  OnPreferredAppsChanged@1(PreferredAppChanges changes);
+
+  // On startup, Ash informs Lacros of the user's historically preferred apps
+  // for given intents. This allows Lacros to initialize its in-memory
+  // representation of the user's preferred apps.
+  [MinVersion=15]
+  InitializePreferredApps@2(array<PreferredApp> preferred_apps);
 };

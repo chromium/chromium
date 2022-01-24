@@ -159,13 +159,11 @@ int Setup(UpdaterScope scope) {
 
   for (const auto& key_path :
        {GetRegistryKeyClientsUpdater(), GetRegistryKeyClientStateUpdater()}) {
-    install_list->AddCreateRegKeyWorkItem(key, key_path,
-                                          WorkItem::kWow64Default);
-    install_list->AddSetRegValueWorkItem(key, key_path, WorkItem::kWow64Default,
-                                         kRegValuePV, kUpdaterVersionUtf16,
-                                         true);
+    install_list->AddCreateRegKeyWorkItem(key, key_path, Wow6432(0));
+    install_list->AddSetRegValueWorkItem(key, key_path, Wow6432(0), kRegValuePV,
+                                         kUpdaterVersionUtf16, true);
     install_list->AddSetRegValueWorkItem(
-        key, key_path, WorkItem::kWow64Default, kRegValueName,
+        key, key_path, Wow6432(0), kRegValueName,
         base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
   }
 
@@ -188,13 +186,16 @@ int Setup(UpdaterScope scope) {
   base::CommandLine run_updater_wake_command(
       versioned_dir->Append(kUpdaterExe));
   run_updater_wake_command.AppendSwitch(kWakeSwitch);
+  if (scope == UpdaterScope::kSystem)
+    run_updater_wake_command.AppendSwitch(kSystemSwitch);
   run_updater_wake_command.AppendSwitch(kEnableLoggingSwitch);
   run_updater_wake_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                             "*/chrome/updater/*=2");
-  if (!install_list->Do() || !RegisterWakeTask(run_updater_wake_command)) {
+                                             kLoggingModuleSwitchValue);
+  if (!install_list->Do() ||
+      !RegisterWakeTask(run_updater_wake_command, scope)) {
     LOG(ERROR) << "Install failed, rolling back...";
     install_list->Rollback();
-    UnregisterWakeTask();
+    UnregisterWakeTask(scope);
     LOG(ERROR) << "Rollback complete.";
     return -1;
   }

@@ -88,7 +88,7 @@ bool operator>(const ReportingEndpointGroupKey& lhs,
 
 std::string ReportingEndpointGroupKey::ToString() const {
   return "Source: " +
-         (reporting_source ? "null" : reporting_source->ToString()) +
+         (reporting_source ? reporting_source->ToString() : "null") +
          "; NIK: " + network_isolation_key.ToDebugString() +
          "; Origin: " + origin.Serialize() + "; Group name: " + group_name;
 }
@@ -141,6 +141,10 @@ CachedReportingEndpointGroup::CachedReportingEndpointGroup(
     : CachedReportingEndpointGroup(endpoint_group.group_key,
                                    endpoint_group.include_subdomains,
                                    now + endpoint_group.ttl /* expires */,
-                                   now /* last_used */) {}
+                                   now /* last_used */) {
+  // Don't cache V1 document endpoints; this should only be used for V0
+  // endpoint groups.
+  DCHECK(!endpoint_group.group_key.IsDocumentEndpoint());
+}
 
 }  // namespace net

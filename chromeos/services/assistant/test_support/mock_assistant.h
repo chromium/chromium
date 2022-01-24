@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
@@ -19,6 +18,10 @@ namespace assistant {
 class MockAssistant : public Assistant {
  public:
   MockAssistant();
+
+  MockAssistant(const MockAssistant&) = delete;
+  MockAssistant& operator=(const MockAssistant&) = delete;
+
   ~MockAssistant() override;
 
   MOCK_METHOD1(StartEditReminderInteraction, void(const std::string&));
@@ -51,9 +54,6 @@ class MockAssistant : public Assistant {
 
   MOCK_METHOD0(StopAlarmTimerRinging, void());
   MOCK_METHOD1(CreateTimer, void(base::TimeDelta));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAssistant);
 };
 
 }  // namespace assistant

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -29,6 +28,10 @@ const char kAllUrlsTarget[] = "/extensions/api_test/all_urls/index.html";
 }  // namespace
 
 class AllUrlsApiTest : public ExtensionApiTest {
+ public:
+  AllUrlsApiTest(const AllUrlsApiTest&) = delete;
+  AllUrlsApiTest& operator=(const AllUrlsApiTest&) = delete;
+
  protected:
   AllUrlsApiTest() {}
   ~AllUrlsApiTest() override {}
@@ -59,7 +62,7 @@ class AllUrlsApiTest : public ExtensionApiTest {
                                             false);
     ExtensionTestMessageListener listener_b("execute: " + expected_url, false);
 
-    ui_test_utils::NavigateToURL(browser(), GURL(url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
     ASSERT_TRUE(listener_a.WaitUntilSatisfied());
     ASSERT_TRUE(listener_b.WaitUntilSatisfied());
   }
@@ -76,8 +79,6 @@ class AllUrlsApiTest : public ExtensionApiTest {
 
   scoped_refptr<const Extension> content_script_;
   scoped_refptr<const Extension> execute_script_;
-
-  DISALLOW_COPY_AND_ASSIGN(AllUrlsApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, AllowlistedExtension) {

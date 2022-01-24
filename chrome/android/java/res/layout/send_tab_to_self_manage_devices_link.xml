@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/default_bg_color_secondary">
+
+  <View
+        style="@style/HorizontalDivider"
+        android:layout_width="match_parent" />
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:paddingTop="10dp"
+      android:paddingBottom="10dp"
+      android:paddingStart="29dp"
+      android:paddingEnd="34dp">
+
+    <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+        android:id="@+id/account_avatar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical" />
+
+    <!-- The default android:breakStrategy is "high_quality", which tries to be
+         smart and ends up splitting email addresses containing ".". So use
+         "simple" instead. -->
+    <TextView
+        android:id="@+id/manage_devices_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:gravity="center_vertical"
+        android:breakStrategy="simple"
+        android:paddingStart="20dp" />
+
+  </LinearLayout>
+</LinearLayout>

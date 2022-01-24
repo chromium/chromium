@@ -45,7 +45,7 @@ class PLATFORM_EXPORT TransformOperation
     kTranslateY,
     kTranslate,
     kRotate,
-    kRotateZ = kRotate,
+    kRotateZ,
     kSkewX,
     kSkewY,
     kSkew,

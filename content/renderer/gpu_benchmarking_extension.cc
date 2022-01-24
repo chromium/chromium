@@ -18,7 +18,6 @@
 #include "base/debug/profiler.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
@@ -38,6 +37,7 @@
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
+#include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/renderer/skia_benchmarking_extension.h"
@@ -65,7 +65,13 @@
 // an experimental, fragile, and diagnostic-only document type.
 #include "third_party/skia/src/utils/SkMultiPictureDocument.h"
 #include "ui/events/base_event_utils.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-persistent-handle.h"
+#include "v8/include/v8-primitive.h"
 
 #if defined(OS_WIN) && !defined(NDEBUG)
 // XpsObjectModel.h indirectly includes <wincrypt.h> which is
@@ -91,6 +97,9 @@ class GpuBenchmarkingContext {
         frame_widget_(frame->GetLocalRootWebFrameWidget()),
         layer_tree_host_(frame_widget_->LayerTreeHost()) {}
 
+  GpuBenchmarkingContext(const GpuBenchmarkingContext&) = delete;
+  GpuBenchmarkingContext& operator=(const GpuBenchmarkingContext&) = delete;
+
   WebLocalFrame* web_frame() const {
     DCHECK(web_frame_ != nullptr);
     return web_frame_;
@@ -110,8 +119,6 @@ class GpuBenchmarkingContext {
   WebView* web_view_;
   WebFrameWidget* frame_widget_;
   cc::LayerTreeHost* layer_tree_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuBenchmarkingContext);
 };
 
 }  // namespace blink
@@ -155,7 +162,7 @@ class SkPictureSerializer {
   // in the given directory.
   void Serialize(const cc::Layer* root_layer) {
     for (auto* layer : *root_layer->layer_tree_host()) {
-      sk_sp<SkPicture> picture = layer->GetPicture();
+      sk_sp<const SkPicture> picture = layer->GetPicture();
       if (!picture)
         continue;
 
@@ -220,6 +227,9 @@ class CallbackAndContext : public base::RefCounted<CallbackAndContext> {
     context_.Reset(isolate_, context);
   }
 
+  CallbackAndContext(const CallbackAndContext&) = delete;
+  CallbackAndContext& operator=(const CallbackAndContext&) = delete;
+
   v8::Isolate* isolate() { return isolate_; }
 
   v8::Local<v8::Function> GetCallback() {
@@ -241,11 +251,10 @@ class CallbackAndContext : public base::RefCounted<CallbackAndContext> {
   v8::Isolate* isolate_;
   v8::Persistent<v8::Function> callback_;
   v8::Persistent<v8::Context> context_;
-  DISALLOW_COPY_AND_ASSIGN(CallbackAndContext);
 };
 
 void OnMicroBenchmarkCompleted(CallbackAndContext* callback_and_context,
-                               std::unique_ptr<base::Value> result) {
+                               base::Value result) {
   v8::Isolate* isolate = callback_and_context->isolate();
   v8::HandleScope scope(isolate);
   v8::Local<v8::Context> context = callback_and_context->GetContext();
@@ -253,7 +262,7 @@ void OnMicroBenchmarkCompleted(CallbackAndContext* callback_and_context,
   WebLocalFrame* frame = WebLocalFrame::FrameForContext(context);
   if (frame) {
     v8::Local<v8::Value> value =
-        V8ValueConverter::Create()->ToV8Value(result.get(), context);
+        V8ValueConverter::Create()->ToV8Value(&result, context);
     v8::Local<v8::Value> argv[] = {value};
 
     frame->CallFunctionEvenIfScriptDisabled(callback_and_context->GetCallback(),
@@ -536,7 +545,6 @@ static void PrintDocumentTofile(v8::Isolate* isolate,
 }
 
 void OnSwapCompletedHelper(CallbackAndContext* callback_and_context,
-                           blink::WebSwapResult,
                            base::TimeTicks) {
   RunCallbackHelper(callback_and_context);
 }
@@ -1299,9 +1307,10 @@ int GpuBenchmarking::RunMicroBenchmark(gin::Arguments* args) {
   v8::Local<v8::Context> v8_context = callback_and_context->GetContext();
   std::unique_ptr<base::Value> value =
       V8ValueConverter::Create()->FromV8Value(arguments, v8_context);
+  DCHECK(value);
 
   return context.layer_tree_host()->ScheduleMicroBenchmark(
-      name, std::move(value),
+      name, base::Value::FromUniquePtrValue(std::move(value)),
       base::BindOnce(&OnMicroBenchmarkCompleted,
                      base::RetainedRef(callback_and_context)));
 }
@@ -1315,9 +1324,10 @@ bool GpuBenchmarking::SendMessageToMicroBenchmark(
       context.web_frame()->MainWorldScriptContext();
   std::unique_ptr<base::Value> value =
       V8ValueConverter::Create()->FromV8Value(message, v8_context);
+  DCHECK(value);
 
   return context.layer_tree_host()->SendMessageToMicroBenchmark(
-      id, std::move(value));
+      id, base::Value::FromUniquePtrValue(std::move(value)));
 }
 
 bool GpuBenchmarking::HasGpuChannel() {
@@ -1419,10 +1429,8 @@ bool GpuBenchmarking::AddSwapCompletionEventListener(gin::Arguments* args) {
 
   auto callback_and_context = base::MakeRefCounted<CallbackAndContext>(
       args->isolate(), callback, context.web_frame()->MainWorldScriptContext());
-  context.web_frame()->FrameWidget()->NotifySwapAndPresentationTime(
-      base::NullCallback(),
-      base::BindOnce(&OnSwapCompletedHelper,
-                     base::RetainedRef(callback_and_context)));
+  context.web_frame()->FrameWidget()->NotifyPresentationTime(base::BindOnce(
+      &OnSwapCompletedHelper, base::RetainedRef(callback_and_context)));
   // Request a begin frame explicitly, as the test-api expects a 'swap' to
   // happen for the above queued swap promise even if there is no actual update.
   context.layer_tree_host()->SetNeedsAnimateIfNotInsideMainFrame();

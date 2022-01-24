@@ -1,4 +1,5 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="../../shared/nearby_page_template.html">
@@ -18,8 +19,7 @@
       }
 
       #connectionToken {
-        border-top: 1px dashed var(--google-grey-600);
-        color: var(--google-grey-600);
+        color: var(--cros-text-color-disabled);
         flex-grow: 1;
         font-size: 9px;
         letter-spacing: 0.3px;
@@ -27,6 +27,15 @@
         margin-top: 46px;
         padding-top: 6px;
         text-align: center;
+      }
+
+      cr-lottie {
+        bottom: 0;
+        height: 100%;
+        left: 0;
+        pointer-events: none;
+        position: absolute;
+        right: 0;
       }
 
       #processRow {
@@ -56,18 +65,18 @@
       }
 
       #errorTitle {
-        color: var(--google-red-600);
+        color: var(--cros-text-color-alert);
         font-weight: bold;
         margin-bottom: 3px;
       }
 
       #errorDescription {
-        color: var(--google-grey-refresh-700);
+        color: var(--cros-text-color-secondary);
         line-height: 13px;
       }
 
       #errorIcon {
-        fill: var(--google-red-600);
+        fill: var(--cros-icon-color-alert);
         flex-shrink: 0;
         height: 20px;
         margin-inline-end: 12px;
@@ -97,6 +106,15 @@
             </nearby-preview>
           </div>
         </div>
+
+        <iron-media-query query="(prefers-color-scheme: dark)"
+            query-matches="{{isDarkModeActive_}}">
+        </iron-media-query>
+        <template is="dom-if" if="[[!errorTitle_]]">
+          <cr-lottie animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
+              autoplay="true">
+          </cr-lottie>
+        </template>
 
         <!-- TODO(crbug.com/1149546) factor error section out -->
         <template is="dom-if" if="[[errorTitle_]]" restamp>

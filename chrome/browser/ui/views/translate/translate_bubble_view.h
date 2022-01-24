@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/source_language_combobox_model.h"
@@ -60,6 +59,24 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
                                          kTargetLanguageTab);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kCloseButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kOptionsMenuButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kChangeTargetLanguage);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kTargetLanguageCombobox);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kTargetLanguageDoneButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kChangeSourceLanguage);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kSourceLanguageCombobox);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kSourceLanguageDoneButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kErrorMessage);
+
+  TranslateBubbleView(const TranslateBubbleView&) = delete;
+  TranslateBubbleView& operator=(const TranslateBubbleView&) = delete;
 
   ~TranslateBubbleView() override;
 
@@ -131,6 +148,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
                            AlwaysTranslateCheckboxAndCloseButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            AlwaysTranslateCheckboxAndDoneButton);
+  FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, SourceResetButton);
+  FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, TargetResetButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, SourceDoneButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, TargetDoneButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
@@ -206,7 +225,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   std::unique_ptr<views::View> CreateViewAdvanced(
       std::unique_ptr<views::Combobox> combobox,
       std::unique_ptr<views::Label> language_title_label,
-      std::unique_ptr<views::Button> advance_done_button,
+      std::unique_ptr<views::Button> advanced_reset_button,
+      std::unique_ptr<views::Button> advanced_done_button,
       std::unique_ptr<views::Checkbox> advanced_always_translate_checkbox);
 
   // Creates a translate icon for when the bottom branding isn't showing. This
@@ -247,6 +267,10 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   void ShowOriginal();
   void ConfirmAdvancedOptions();
 
+  // Returns whether or not the current language selection is different from the
+  // initial language selection in an advanced view.
+  bool DidLanguageSelectionChange(TranslateBubbleModel::ViewState view_state);
+
   // Handles the reset button in advanced view under Tab UI.
   void ResetLanguage();
 
@@ -278,6 +302,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   views::Checkbox* advanced_always_translate_checkbox_ = nullptr;
   views::TabbedPane* tabbed_pane_ = nullptr;
 
+  views::LabelButton* advanced_reset_button_source_ = nullptr;
+  views::LabelButton* advanced_reset_button_target_ = nullptr;
   views::LabelButton* advanced_done_button_source_ = nullptr;
   views::LabelButton* advanced_done_button_target_ = nullptr;
 
@@ -300,8 +326,6 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   bool should_never_translate_site_ = false;
 
   std::unique_ptr<WebContentMouseHandler> mouse_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_BUBBLE_VIEW_H_

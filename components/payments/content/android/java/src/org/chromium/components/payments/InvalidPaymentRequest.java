@@ -24,8 +24,7 @@ public final class InvalidPaymentRequest implements PaymentRequest {
 
     @Override
     public void init(PaymentRequestClient client, PaymentMethodData[] unusedMethodData,
-            PaymentDetails unusedDetails, PaymentOptions unusedOptions,
-            boolean unusedGooglePayBridgeEligible) {
+            PaymentDetails unusedDetails, PaymentOptions unusedOptions) {
         mClient = client;
     }
 

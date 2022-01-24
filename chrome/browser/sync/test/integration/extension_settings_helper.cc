@@ -14,10 +14,10 @@
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
+#include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/value_store/value_store.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 
@@ -37,7 +37,7 @@ std::string ToJson(const base::Value& value) {
 
 void GetAllSettingsOnBackendSequence(base::DictionaryValue* out,
                                      base::WaitableEvent* signal,
-                                     ValueStore* storage) {
+                                     value_store::ValueStore* storage) {
   EXPECT_TRUE(extensions::GetBackendTaskRunner()->RunsTasksInCurrentSequence());
   out->Swap(&storage->Get().settings());
   signal->Signal();
@@ -68,16 +68,15 @@ bool AreSettingsSame(Profile* expected_profile, Profile* actual_profile) {
 
   bool same = true;
   for (extensions::ExtensionSet::const_iterator it = extensions.begin();
-       it != extensions.end();
-       ++it) {
+       it != extensions.end(); ++it) {
     const std::string& id = (*it)->id();
     std::unique_ptr<base::DictionaryValue> expected(
         GetAllSettings(expected_profile, id));
     std::unique_ptr<base::DictionaryValue> actual(
         GetAllSettings(actual_profile, id));
     if (*expected != *actual) {
-      ADD_FAILURE() <<
-          "Expected " << ToJson(*expected) << " got " << ToJson(*actual);
+      ADD_FAILURE() << "Expected " << ToJson(*expected) << " got "
+                    << ToJson(*actual);
       same = false;
     }
   }
@@ -86,18 +85,17 @@ bool AreSettingsSame(Profile* expected_profile, Profile* actual_profile) {
 
 void SetSettingsOnBackendSequence(const base::DictionaryValue* settings,
                                   base::WaitableEvent* signal,
-                                  ValueStore* storage) {
+                                  value_store::ValueStore* storage) {
   EXPECT_TRUE(extensions::GetBackendTaskRunner()->RunsTasksInCurrentSequence());
-  storage->Set(ValueStore::DEFAULTS, *settings);
+  storage->Set(value_store::ValueStore::DEFAULTS, *settings);
   signal->Signal();
 }
 
 }  // namespace
 
-void SetExtensionSettings(
-    Profile* profile,
-    const std::string& id,
-    const base::DictionaryValue& settings) {
+void SetExtensionSettings(Profile* profile,
+                          const std::string& id,
+                          const base::DictionaryValue& settings) {
   base::WaitableEvent signal(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
   extensions::StorageFrontend::Get(profile)->RunWithStorage(
@@ -107,8 +105,8 @@ void SetExtensionSettings(
   signal.Wait();
 }
 
-void SetExtensionSettingsForAllProfiles(
-    const std::string& id, const base::DictionaryValue& settings) {
+void SetExtensionSettingsForAllProfiles(const std::string& id,
+                                        const base::DictionaryValue& settings) {
   for (int i = 0; i < test()->num_clients(); ++i)
     SetExtensionSettings(test()->GetProfile(i), id, settings);
   SetExtensionSettings(test()->verifier(), id, settings);

@@ -229,7 +229,8 @@ std::unique_ptr<HttpRequest> HttpRequestParser::GetRequest() {
   return result;
 }
 
-HttpMethod HttpRequestParser::GetMethodType(const std::string& token) const {
+// static
+HttpMethod HttpRequestParser::GetMethodType(const std::string& token) {
   if (token == "get") {
     return METHOD_GET;
   } else if (token == "head") {

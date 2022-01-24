@@ -21,11 +21,11 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/test/test_background_page_ready_observer.h"
+#include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kAllowlistedAppId[] = "bjaiihebfngildkcjkjckolinodhliff";
@@ -34,7 +34,7 @@ constexpr char kAllowlistedAppCrxPath[] =
 
 // Returns the profile into which login-screen extensions are force-installed.
 Profile* GetOriginalSigninProfile() {
-  return chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+  return ProfileHelper::GetSigninProfile()->GetOriginalProfile();
 }
 
 }  // namespace
@@ -99,11 +99,6 @@ class LoginScreenExtensionsLifetimeManagerTest
            nullptr;
   }
 
-  bool IsExtensionBackgroundPageReady(const std::string& extension_id) const {
-    return extension_force_install_mixin_.IsExtensionBackgroundPageReady(
-        extension_id);
-  }
-
  private:
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
@@ -118,9 +113,8 @@ IN_PROC_BROWSER_TEST_F(LoginScreenExtensionsLifetimeManagerTest, Basic) {
   EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromCrx(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII(kAllowlistedAppCrxPath),
-      ExtensionForceInstallMixin::WaitMode::kBackgroundPageReady));
+      ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad));
   ASSERT_TRUE(IsExtensionEnabled(kAllowlistedAppId));
-  EXPECT_TRUE(IsExtensionBackgroundPageReady(kAllowlistedAppId));
 
   // The user logs in. The app gets disabled, although still installed.
   LogIn();
@@ -129,11 +123,15 @@ IN_PROC_BROWSER_TEST_F(LoginScreenExtensionsLifetimeManagerTest, Basic) {
 
   // The user locks the session. The app gets enabled and the background page
   // is loaded again.
-  extensions::ExtensionBackgroundPageReadyObserver page_observer(
-      GetOriginalSigninProfile(), kAllowlistedAppId);
-  LockSession();
-  page_observer.Wait();
-  ASSERT_TRUE(IsExtensionEnabled(kAllowlistedAppId));
+  {
+    extensions::ExtensionHostTestHelper background_ready(
+        GetOriginalSigninProfile(), kAllowlistedAppId);
+    background_ready.RestrictToType(
+        extensions::mojom::ViewType::kExtensionBackgroundPage);
+    LockSession();
+    background_ready.WaitForHostCompletedFirstLoad();
+    ASSERT_TRUE(IsExtensionEnabled(kAllowlistedAppId));
+  }
 
   // The user unlocks the session. The app gets disabled again.
   UnlockSession();
@@ -146,23 +144,28 @@ IN_PROC_BROWSER_TEST_F(LoginScreenExtensionsLifetimeManagerTest, Basic) {
 IN_PROC_BROWSER_TEST_F(LoginScreenExtensionsLifetimeManagerTest,
                        InstalledDuringSession) {
   // Force-install the app during an active user session. The app gets
-  // installed, but is immediately disabled.
+  // installed, but almost immediately (in an async job) gets disabled.
   LogIn();
   EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromCrx(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII(kAllowlistedAppCrxPath),
       ExtensionForceInstallMixin::WaitMode::kLoad));
   EXPECT_TRUE(IsExtensionInstalled(kAllowlistedAppId));
+  // Wait until the extension gets disabled. Sadly, the extensions system
+  // doesn't provide a proper way to wait until that happens, so we're relying
+  // on the production code doing this in zero-delayed async job.
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsExtensionEnabled(kAllowlistedAppId));
 
   // The user locks the session. The app gets enabled and the background page is
   // loaded again.
-  extensions::ExtensionBackgroundPageReadyObserver page_observer(
+  extensions::ExtensionHostTestHelper background_ready(
       GetOriginalSigninProfile(), kAllowlistedAppId);
+  background_ready.RestrictToType(
+      extensions::mojom::ViewType::kExtensionBackgroundPage);
   LockSession();
-  page_observer.Wait();
+  background_ready.WaitForHostCompletedFirstLoad();
   ASSERT_TRUE(IsExtensionEnabled(kAllowlistedAppId));
-  EXPECT_TRUE(IsExtensionBackgroundPageReady(kAllowlistedAppId));
 }
 
-}  // namespace chromeos
+}  // namespace ash

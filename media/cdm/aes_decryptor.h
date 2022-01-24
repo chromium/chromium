@@ -13,7 +13,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -42,6 +41,9 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
                const SessionClosedCB& session_closed_cb,
                const SessionKeysChangeCB& session_keys_change_cb,
                const SessionExpirationUpdateCB& session_expiration_update_cb);
+
+  AesDecryptor(const AesDecryptor&) = delete;
+  AesDecryptor& operator=(const AesDecryptor&) = delete;
 
   // ContentDecryptionModule implementation.
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
@@ -125,6 +127,10 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
   class DecryptionKey {
    public:
     explicit DecryptionKey(const std::string& secret);
+
+    DecryptionKey(const DecryptionKey&) = delete;
+    DecryptionKey& operator=(const DecryptionKey&) = delete;
+
     ~DecryptionKey();
 
     // Creates the encryption key.
@@ -139,8 +145,6 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
 
     // The key used to decrypt the data.
     std::unique_ptr<crypto::SymmetricKey> decryption_key_;
-
-    DISALLOW_COPY_AND_ASSIGN(DecryptionKey);
   };
 
   // Keep track of the keys for a key ID. If multiple sessions specify keys
@@ -195,8 +199,6 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
   std::map<std::string, CdmSessionType> open_sessions_;
 
   CallbackRegistry<EventCB::RunType> event_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(AesDecryptor);
 };
 
 }  // namespace media

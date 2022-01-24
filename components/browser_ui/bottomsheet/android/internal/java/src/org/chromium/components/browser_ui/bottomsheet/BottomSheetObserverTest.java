@@ -83,7 +83,7 @@ public class BottomSheetObserverTest {
         }
 
         @Override
-        public void onSheetStateChanged(int newState) {
+        public void onSheetStateChanged(int newState, int reason) {
             if (newState == BottomSheetController.SheetState.HIDDEN) {
                 mHiddenCallbackHelper.notifyCalled();
             } else if (newState == BottomSheetController.SheetState.FULL) {

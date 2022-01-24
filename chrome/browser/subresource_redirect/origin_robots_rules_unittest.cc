@@ -4,7 +4,6 @@
 
 #include "chrome/browser/subresource_redirect/origin_robots_rules.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -231,9 +230,9 @@ TEST_F(SubresourceRedirectOriginRobotsRulesTest,
   histogram_tester_.ExpectUniqueSample(
       "SubresourceRedirect.RobotsRulesFetcher.ResponseCode",
       net::HTTP_INTERNAL_SERVER_ERROR, 1);
-  EXPECT_THAT(*GetResponseErrorReceived(),
-              testing::Pair(net::HTTP_INTERNAL_SERVER_ERROR,
-                            base::TimeDelta::FromSeconds(120)));
+  EXPECT_THAT(
+      *GetResponseErrorReceived(),
+      testing::Pair(net::HTTP_INTERNAL_SERVER_ERROR, base::Seconds(120)));
   EXPECT_THAT(GetRobotsRulesReceived(), testing::ElementsAre(absl::nullopt));
 
   // Subsequent calls will return the response immediately.

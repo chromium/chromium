@@ -6,18 +6,23 @@
 #define COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/gurl.h"
 
 namespace web_package {
 
 class WebBundleParser : public mojom::WebBundleParser {
  public:
   WebBundleParser(mojo::PendingReceiver<mojom::WebBundleParser> receiver,
-                  mojo::PendingRemote<mojom::BundleDataSource> data_source);
+                  mojo::PendingRemote<mojom::BundleDataSource> data_source,
+                  const GURL& base_url);
+
+  WebBundleParser(const WebBundleParser&) = delete;
+  WebBundleParser& operator=(const WebBundleParser&) = delete;
+
   ~WebBundleParser() override;
 
  private:
@@ -31,6 +36,9 @@ class WebBundleParser : public mojom::WebBundleParser {
 
     explicit SharedBundleDataSource(
         mojo::PendingRemote<mojom::BundleDataSource> pending_data_source);
+
+    SharedBundleDataSource(const SharedBundleDataSource&) = delete;
+    SharedBundleDataSource& operator=(const SharedBundleDataSource&) = delete;
 
     void AddObserver(Observer* observer);
     void RemoveObserver(Observer* observer);
@@ -48,8 +56,6 @@ class WebBundleParser : public mojom::WebBundleParser {
 
     mojo::Remote<mojom::BundleDataSource> data_source_;
     base::flat_set<Observer*> observers_;
-
-    DISALLOW_COPY_AND_ASSIGN(SharedBundleDataSource);
   };
 
   // mojom::WebBundleParser implementation.
@@ -60,8 +66,7 @@ class WebBundleParser : public mojom::WebBundleParser {
 
   mojo::Receiver<mojom::WebBundleParser> receiver_;
   scoped_refptr<SharedBundleDataSource> data_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleParser);
+  const GURL base_url_;
 };
 
 }  // namespace web_package

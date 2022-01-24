@@ -82,7 +82,6 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   std::map<int, PidMapValue> pid_map;
   while (bit_reader->bits_available() > 8 * pid_map_end_marker) {
     int stream_type;
-    int reserved;
     int pid_es;
     int es_info_length;
     RCHECK(bit_reader->ReadBits(8, &stream_type));

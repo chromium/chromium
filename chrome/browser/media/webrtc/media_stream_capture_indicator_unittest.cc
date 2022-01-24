@@ -18,6 +18,10 @@ namespace {
 class LenientMockObserver : public MediaStreamCaptureIndicator::Observer {
  public:
   LenientMockObserver() = default;
+
+  LenientMockObserver(const LenientMockObserver&) = delete;
+  LenientMockObserver& operator=(const LenientMockObserver&) = delete;
+
   ~LenientMockObserver() override {}
 
   // Helper functions used to set the expectations of the mock methods. This
@@ -62,8 +66,6 @@ class LenientMockObserver : public MediaStreamCaptureIndicator::Observer {
                void(content::WebContents* contents, bool is_capturing_window));
   MOCK_METHOD2(OnIsCapturingDisplayChanged,
                void(content::WebContents* contents, bool is_capturing_display));
-
-  DISALLOW_COPY_AND_ASSIGN(LenientMockObserver);
 };
 using MockObserver = testing::StrictMock<LenientMockObserver>;
 

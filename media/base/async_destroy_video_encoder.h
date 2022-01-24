@@ -17,9 +17,9 @@ namespace media {
 // to schedule its own cleanup tasks before its memory is released.
 // The underlying type must implement a static
 // `DestroyAsync(std::unique_ptr<T>)` function which fires any pending
-// callbacks, stops and destroys the decoder. After this call, external
-// resources (e.g. raw pointers) held by the decoder might be invalidated
-// immediately. So if the decoder is destroyed asynchronously (e.g. DeleteSoon),
+// callbacks, stops and destroys the encoder. After this call, external
+// resources (e.g. raw pointers) held by the encoder might be invalidated
+// immediately. So if the encoder is destroyed asynchronously (e.g. DeleteSoon),
 // external resources must be released in this call.
 template <typename T>
 class AsyncDestroyVideoEncoder final : public VideoEncoder {

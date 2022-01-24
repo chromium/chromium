@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_MODEL_TYPE_CONTROLLER_H_
 #define COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_MODEL_TYPE_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "components/sync/driver/model_type_controller.h"
 
 namespace send_tab_to_self {
@@ -20,14 +19,17 @@ class SendTabToSelfModelTypeController : public syncer::ModelTypeController {
           delegate_for_full_sync_mode,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
           delegate_for_transport_mode);
+
+  SendTabToSelfModelTypeController(const SendTabToSelfModelTypeController&) =
+      delete;
+  SendTabToSelfModelTypeController& operator=(
+      const SendTabToSelfModelTypeController&) = delete;
+
   ~SendTabToSelfModelTypeController() override;
 
   // DataTypeController overrides.
   void Stop(syncer::ShutdownReason shutdown_reason,
             StopCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfModelTypeController);
 };
 
 }  // namespace send_tab_to_self

@@ -34,6 +34,7 @@
 
 namespace blink {
 
+class CascadeLayer;
 class CSSRuleList;
 class CSSKeyframeRule;
 class StyleRuleKeyframe;
@@ -64,12 +65,16 @@ class StyleRuleKeyframes final : public StyleRuleBase {
     return MakeGarbageCollected<StyleRuleKeyframes>(*this);
   }
 
+  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_; }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
   void StyleChanged() { version_++; }
   unsigned Version() const { return version_; }
 
  private:
+  Member<const CascadeLayer> layer_;
   HeapVector<Member<StyleRuleKeyframe>> keyframes_;
   AtomicString name_;
   unsigned version_ : 31;

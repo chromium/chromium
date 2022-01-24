@@ -18,6 +18,8 @@ blink::UserAgentMetadata MakeToEncode() {
   blink::UserAgentMetadata to_encode;
   to_encode.brand_version_list.emplace_back("a", "3");
   to_encode.brand_version_list.emplace_back("b", "5");
+  to_encode.brand_full_version_list.emplace_back("a", "3.14");
+  to_encode.brand_full_version_list.emplace_back("b", "5.03");
   to_encode.full_version = "3.14";
   to_encode.platform = "TR-DOS";
   to_encode.platform_version = "5.03";

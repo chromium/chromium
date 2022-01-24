@@ -1,0 +1,78 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// Events sent back from the TTS engine indicating the progress.
+[Stable, Extensible]
+enum TtsEventType {
+  [Default] kStart = 0,
+  kEnd = 1,
+  kWord = 2,
+  kSentence = 3,
+  kMarker = 4,
+  kInterrupted = 5,
+  kCanceled = 6,
+  kError = 7,
+  kPause = 8,
+  kResume = 9,
+};
+
+// Represents a tts voice.
+[Stable]
+struct TtsVoice {
+  // Name of the voice.
+  string voice_name;
+
+  // ​​The language that this voice supports.
+  string lang;
+
+  // If true, the synthesis engine is a remote network resource.
+  bool remote;
+
+  // The ID of the extension providing this voice.
+  string engine_id;
+
+  // All of the callback events that this voice is capable of sending.
+  array<TtsEventType> events;
+
+  // If true, this is implemented by chromeOS platform's subclass of
+  // TtsPlatformImpl. Otherwise, this is implemented in a content embedder.
+  bool native;
+
+  // Id of the native voice.
+  string native_voice_identifier;
+};
+
+// Interface for Tts, implemented in ash-chrome. Used by lacros-chrome to
+// communicate with ash TtsController to send the voice data and
+// speech requests to ash.
+[Stable, Uuid="8550e8d0-a818-49a3-93c1-d8053a33b2e6"]
+interface Tts {
+  // A TtsClient can register itself with Tts, so that Tts can communicate with
+  // the remote TtsClient associated with a particular |browser_context_id| in
+  // Lacros. |from_primary_profile| is true if |browser_context_id| is
+  // associated with the primary user profile in Lacros.
+  RegisterTtsClient@0(pending_remote<TtsClient> client,
+      mojo_base.mojom.UnguessableToken browser_context_id,
+      bool from_primary_profile);
+
+  // Called when Lacros voices changed for BrowserContext associated with
+  // |browser_context_id|, |lacros_voices| contains new Lacros voices.
+  VoicesChanged@1(mojo_base.mojom.UnguessableToken browser_context_id,
+    array<TtsVoice> lacros_voices);
+};
+
+// Interface for tts client. Implemented in lacros-chrome.
+// Each Tts client is associated with a browser context object in Lacros.
+// Used by ash-chrome to send voices to Lacros.
+[Stable, Uuid="60ce0365-451e-402d-9a1c-e57350f9a202"]
+interface TtsClient {
+  // Called when voices changed in ash TtsController .
+  // |all_voices| contains the new voices (provided by both Ash and
+  // Lacros).
+  VoicesChanged@0(array<TtsVoice> all_voices);
+};

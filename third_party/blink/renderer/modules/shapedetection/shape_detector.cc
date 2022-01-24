@@ -63,6 +63,12 @@ ScriptPromise ShapeDetector::detect(ScriptState* script_state,
   }
   DCHECK(canvas_image_source);
 
+  if (canvas_image_source->IsNeutered()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "The image source is detached."));
+    return promise;
+  }
+
   if (canvas_image_source->WouldTaintOrigin()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSecurityError, "Source would taint origin."));

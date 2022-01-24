@@ -87,6 +87,11 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
     EXPECT_NE(auth_handler_.get(), nullptr);
   }
 
+  SecurityKeyAuthHandlerPosixTest(const SecurityKeyAuthHandlerPosixTest&) =
+      delete;
+  SecurityKeyAuthHandlerPosixTest& operator=(
+      const SecurityKeyAuthHandlerPosixTest&) = delete;
+
   void CreateSocketAndWait() {
     ASSERT_EQ(0u, auth_handler_->GetActiveConnectionCountForTest());
     auth_handler_->CreateSecurityKeyConnection();
@@ -188,9 +193,6 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   base::FilePath socket_path_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyAuthHandlerPosixTest);
 };
 
 TEST_F(SecurityKeyAuthHandlerPosixTest, HandleSingleRequest) {

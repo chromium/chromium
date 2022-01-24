@@ -160,6 +160,10 @@ DownloadKeysResponseHandler::ProcessResponse(
       return ProcessedResponse(
           /*status=*/TrustedVaultDownloadKeysStatus::
               kMemberNotFoundOrCorrupted);
+    case TrustedVaultRequest::HttpStatus::kAccessTokenFetchingFailure:
+      return ProcessedResponse(
+          /*status=*/TrustedVaultDownloadKeysStatus::
+              kAccessTokenFetchingFailure);
     case TrustedVaultRequest::HttpStatus::kBadRequest:
     case TrustedVaultRequest::HttpStatus::kConflict:
     case TrustedVaultRequest::HttpStatus::kOtherError:

@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.windowTest');
 goog.setTestOnly();
@@ -39,6 +31,10 @@ const stubs = new PropertyReplacer();
 // To test goog.window.open we open a new window with this file again. Once
 // the new window parses this file it sets this variable to true, indicating
 // that the parent test may check window properties like referrer and location.
+/**
+ * @suppress {strictMissingProperties} suppression added to enable type
+ * checking
+ */
 window.newWinLoaded = true;
 
 let /** ?Window */ newWin = null;
@@ -57,19 +53,27 @@ function waitForTestWindow(win) {
     }
 
     let attemptCount = 0;
-    const intervalToken = window.setInterval(() => {
-      if (++attemptCount > MAX_WIN_LOAD_TRIES) {
-        try {
-          fail('Window did not load after maximum number of checks.');
-        } catch (e) {
-          window.clearInterval(intervalToken);
-          reject(e);
-        }
-      } else if (win.newWinLoaded) {
-        window.clearInterval(intervalToken);
-        resolve(win);
-      }
-    }, WIN_LOAD_TRY_TIMEOUT);
+    const intervalToken =
+        window
+            .setInterval(/**
+                            @suppress {strictMissingProperties} suppression
+                            added to enable type checking
+                          */
+                         () => {
+                           if (++attemptCount > MAX_WIN_LOAD_TRIES) {
+                             try {
+                               fail(
+                                   'Window did not load after maximum number of checks.');
+                             } catch (e) {
+                               window.clearInterval(intervalToken);
+                               reject(e);
+                             }
+                           } else if (win.newWinLoaded) {
+                             window.clearInterval(intervalToken);
+                             resolve(win);
+                           }
+                         },
+                         WIN_LOAD_TRY_TIMEOUT);
   });
 }
 
@@ -123,7 +127,7 @@ function verifyWindow(win, noreferrer, urlParam) {
 
 testSuite({
   shouldRunTests() {
-    // TODO(b/25455129): Edge has a flaky test failures around window.open.
+    // TODO(user): Edge has a flaky test failures around window.open.
     return !browser.isEdge();
   },
 

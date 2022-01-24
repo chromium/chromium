@@ -51,10 +51,10 @@ class MediaCustomControlsFullscreenDetectorTest : public testing::Test {
   }
 
   static bool IsFullscreen(IntRect target, IntRect screen) {
-    IntRect intersection = Intersection(target, screen);
+    IntRect intersection = IntersectRects(target, screen);
     return MediaCustomControlsFullscreenDetector::
         IsFullscreenVideoOfDifferentRatioForTesting(
-            target.Size(), screen.Size(), intersection.Size());
+            target.size(), screen.size(), intersection.size());
   }
 
  private:

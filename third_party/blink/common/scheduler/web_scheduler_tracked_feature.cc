@@ -20,6 +20,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebSocket:
       return {"WebSocket", "WebSocket"};
+    case WebSchedulerTrackedFeature::kWebTransport:
+      return {"WebTransport", "WebTransport"};
     case WebSchedulerTrackedFeature::kWebRTC:
       return {"WebRTC", "WebRTC"};
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
@@ -89,8 +91,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
               "requested storage access permission"};
     case WebSchedulerTrackedFeature::kWebNfc:
       return {"WebNfc", "WebNfc"};
-    case WebSchedulerTrackedFeature::kWebFileSystem:
-      return {"WebFileSystem", "WebFileSystem"};
     case WebSchedulerTrackedFeature::kAppBanner:
       return {"AppBanner", "AppBanner"};
     case WebSchedulerTrackedFeature::kPrinting:
@@ -116,13 +116,12 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
       return {"OutstandingNetworkRequestDirectSocket",
               "outstanding network request (direct socket)"};
-    case WebSchedulerTrackedFeature::kIsolatedWorldScript:
-      return {"IsolatedWorldScript", "Isolated world ran script"};
+    case WebSchedulerTrackedFeature::kInjectedJavascript:
+      return {"InjectedJavascript", "External javascript injected"};
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
       return {"InjectedStyleSheet", "External systesheet injected"};
-    case WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated:
-      return {"MediaSessionImplOnServiceCreated",
-              "MediaSessionImplOnServiceCreated"};
+    case WebSchedulerTrackedFeature::kDummy:
+      return {"Dummy", "Dummy for testing"};
   }
   return {};
 }
@@ -184,16 +183,15 @@ WebSchedulerTrackedFeatures StickyFeatures() {
       WebSchedulerTrackedFeature::kWebLocks,
       WebSchedulerTrackedFeature::kRequestedStorageAccessGrant,
       WebSchedulerTrackedFeature::kWebNfc,
-      WebSchedulerTrackedFeature::kWebFileSystem,
       WebSchedulerTrackedFeature::kAppBanner,
       WebSchedulerTrackedFeature::kPrinting,
       WebSchedulerTrackedFeature::kPictureInPicture,
       WebSchedulerTrackedFeature::kIdleManager,
       WebSchedulerTrackedFeature::kPaymentManager,
-      WebSchedulerTrackedFeature::kKeyboardLock,
       WebSchedulerTrackedFeature::kWebOTPService,
-      WebSchedulerTrackedFeature::kIsolatedWorldScript,
-      WebSchedulerTrackedFeature::kInjectedStyleSheet);
+      WebSchedulerTrackedFeature::kInjectedJavascript,
+      WebSchedulerTrackedFeature::kInjectedStyleSheet,
+      WebSchedulerTrackedFeature::kDummy);
   return features;
 }
 

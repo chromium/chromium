@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/payments/payment_handler_host.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
@@ -19,6 +18,10 @@ class PaymentDetailsConverter {
   using MethodChecker =
       base::RepeatingCallback<void(const std::string& payment_method_identifier,
                                    bool* is_valid)>;
+
+  PaymentDetailsConverter() = delete;
+  PaymentDetailsConverter(const PaymentDetailsConverter&) = delete;
+  PaymentDetailsConverter& operator=(const PaymentDetailsConverter&) = delete;
 
   // Converts and redacts the |details| from the merchant's updateWith(details)
   // call into a data structure that can be sent to the payment handler.
@@ -31,9 +34,6 @@ class PaymentDetailsConverter {
   ConvertToPaymentRequestDetailsUpdate(const mojom::PaymentDetailsPtr& details,
                                        bool handles_shipping,
                                        const MethodChecker& method_checker);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PaymentDetailsConverter);
 };
 
 }  // namespace payments

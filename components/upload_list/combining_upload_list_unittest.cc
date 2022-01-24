@@ -277,14 +277,14 @@ TEST_F(CombiningUploadListTest, Clear) {
 )");
 }
 
-class MockUploadList : public UploadList {
+class MockUploadList final : public UploadList {
  public:
   MOCK_METHOD0(LoadUploadList, std::vector<UploadInfo>());
   MOCK_METHOD2(ClearUploadList, void(const base::Time&, const base::Time&));
   MOCK_METHOD1(RequestSingleUpload, void(const std::string&));
 
  protected:
-  ~MockUploadList() final = default;
+  ~MockUploadList() override = default;
 };
 
 TEST_F(CombiningUploadListTest, RequestSingleUpload) {

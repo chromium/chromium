@@ -7,6 +7,7 @@
 #include <atlsecurity.h>
 #include <sddl.h>
 
+#include <string>
 #include <type_traits>
 
 #include "base/command_line.h"
@@ -17,8 +18,9 @@
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
 #include "chrome/updater/app/server/win/server.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/win/win_constants.h"
-#include "chrome/updater/win/wrl_module.h"
+#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 
@@ -27,6 +29,11 @@ namespace {
 // Command line switch "--console" runs the service interactively for
 // debugging purposes.
 constexpr char kConsoleSwitchName[] = "console";
+
+bool IsInternalService() {
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+             kServerServiceSwitch) == kServerUpdateServiceInternalSwitchValue;
+}
 
 }  // namespace
 
@@ -81,8 +88,10 @@ ServiceMain::ServiceMain() {
 ServiceMain::~ServiceMain() = default;
 
 int ServiceMain::RunAsService() {
-  static constexpr SERVICE_TABLE_ENTRY dispatch_table[] = {
-      {const_cast<LPTSTR>(kWindowsServiceName), &ServiceMain::ServiceMainEntry},
+  const std::wstring service_name = GetServiceName(IsInternalService());
+  const SERVICE_TABLE_ENTRY dispatch_table[] = {
+      {const_cast<LPTSTR>(service_name.c_str()),
+       &ServiceMain::ServiceMainEntry},
       {nullptr, nullptr}};
 
   if (!::StartServiceCtrlDispatcher(dispatch_table)) {
@@ -94,8 +103,9 @@ int ServiceMain::RunAsService() {
 }
 
 void ServiceMain::ServiceMainImpl() {
-  service_status_handle_ = ::RegisterServiceCtrlHandler(
-      kWindowsServiceName, &ServiceMain::ServiceControlHandler);
+  service_status_handle_ =
+      ::RegisterServiceCtrlHandler(GetServiceName(IsInternalService()).c_str(),
+                                   &ServiceMain::ServiceControlHandler);
   if (service_status_handle_ == nullptr) {
     PLOG(ERROR) << "RegisterServiceCtrlHandler failed";
     return;

@@ -4,11 +4,8 @@
 
 package org.chromium.weblayer_private.payments;
 
-import android.text.TextUtils;
-
 import androidx.annotation.Nullable;
 
-import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
@@ -162,14 +159,6 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     @Override
     public boolean hasAnyCompleteApp() {
         return !mAvailableApps.isEmpty() && mAvailableApps.get(0).isComplete();
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public void onInstrumentDetailsError(String errorMessage) {
-        assert !TextUtils.isEmpty(errorMessage);
-        mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-        disconnectFromClientWithDebugMessage(errorMessage);
     }
 
     private void disconnectFromClientWithDebugMessage(String debugMessage) {

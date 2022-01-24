@@ -36,6 +36,7 @@
 #include "chrome/common/media/cdm_registration.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/common_resources.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
@@ -268,9 +269,6 @@ static const char* const kChromeStandardURLSchemes[] = {
 #if defined(OS_ANDROID)
     content::kAndroidAppScheme,
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chrome::kCrosScheme,
-#endif
 };
 
 void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
@@ -280,6 +278,8 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
 #if defined(OS_ANDROID)
   schemes->referrer_schemes.push_back(content::kAndroidAppScheme);
 #endif
+
+  schemes->extension_schemes.push_back(extensions::kExtensionScheme);
 
   schemes->savable_schemes.push_back(extensions::kExtensionScheme);
   schemes->savable_schemes.push_back(chrome::kChromeSearchScheme);
@@ -333,7 +333,7 @@ std::u16string ChromeContentClient::GetLocalizedString(
 
 base::StringPiece ChromeContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }
@@ -409,4 +409,13 @@ void ChromeContentClient::ExposeInterfacesToBrowser(
             profiling_client->BindToInterface(std::move(receiver));
           }),
       io_task_runner);
+}
+
+std::u16string ChromeContentClient::GetLocalizedProtocolName(
+    const std::string& protocol) {
+  if (protocol == "mailto")
+    return GetLocalizedString(IDS_REGISTER_PROTOCOL_HANDLER_MAILTO_NAME);
+  if (protocol == "webcal")
+    return GetLocalizedString(IDS_REGISTER_PROTOCOL_HANDLER_WEBCAL_NAME);
+  return ContentClient::GetLocalizedProtocolName(protocol);
 }

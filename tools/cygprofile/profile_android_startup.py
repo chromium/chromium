@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright (c) 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -10,7 +10,6 @@ support for web page replay, device forwarding, and fake certificate authority
 to make runs repeatable.
 """
 
-from __future__ import print_function
 
 import argparse
 import logging
@@ -529,7 +528,7 @@ def main():
 
   apk = apk_helper.ApkHelper(args.apk_path)
   package_info = None
-  for p in constants.PACKAGE_INFO.itervalues():
+  for p in constants.PACKAGE_INFO.items():
     if p.package == apk.GetPackageName():
       package_info = p
       break

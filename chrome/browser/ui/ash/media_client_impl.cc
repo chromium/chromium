@@ -18,13 +18,11 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/media_player_api.h"
@@ -44,6 +42,7 @@
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/media_session.h"
@@ -213,16 +212,14 @@ std::u16string GetNameOfAppAccessingCameraInternal() {
     return std::u16string();
 
   auto account_id = active_user->GetAccountId();
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(active_user);
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  apps::AppRegistryCache& reg_cache = proxy->AppRegistryCache();
+  apps::AppRegistryCache* reg_cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
+  DCHECK(reg_cache);
   apps::AppCapabilityAccessCache* cap_cache =
       apps::AppCapabilityAccessCacheWrapper::Get().GetAppCapabilityAccessCache(
           account_id);
   DCHECK(cap_cache);
-  return MediaClientImpl::GetNameOfAppAccessingCamera(cap_cache, &reg_cache);
+  return MediaClientImpl::GetNameOfAppAccessingCamera(cap_cache, reg_cache);
 }
 
 }  // namespace
@@ -603,7 +600,7 @@ void MediaClientImpl::ShowCameraOffNotification() {
               kCameraPrivacySwitchNotifierId),
           message_center::RichNotificationData(),
           new message_center::HandleNotificationClickDelegate(
-              base::DoNothing::Repeatedly()),
+              base::DoNothingAs<void()>()),
           vector_icons::kVideocamOffIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   SystemNotificationHelper::GetInstance()->Display(*notification);

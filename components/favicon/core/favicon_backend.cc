@@ -25,7 +25,7 @@ using RedirectList = std::vector<GURL>;
 namespace {
 
 // The amount of time before we re-fetch the favicon.
-constexpr base::TimeDelta kFaviconRefetchDelta = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kFaviconRefetchDelta = base::Days(7);
 
 bool IsFaviconBitmapExpired(base::Time last_updated) {
   return (base::Time::Now() - last_updated) > kFaviconRefetchDelta;

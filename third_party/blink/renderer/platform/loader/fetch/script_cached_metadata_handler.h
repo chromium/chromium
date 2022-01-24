@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -27,16 +27,21 @@ class CachedMetadataSender;
 // (not by Resource) by the browser process, and the cached metadata written to
 // the handler is rejected if e.g. the disk cache entry has been updated and the
 // handler refers to an older response.
-class PLATFORM_EXPORT ScriptCachedMetadataHandler final
+class PLATFORM_EXPORT ScriptCachedMetadataHandler
     : public SingleCachedMetadataHandler {
  public:
   ScriptCachedMetadataHandler(const WTF::TextEncoding&,
                               std::unique_ptr<CachedMetadataSender>);
-  ~ScriptCachedMetadataHandler() override = default;
+  ~ScriptCachedMetadataHandler() override;
   void Trace(Visitor*) const override;
-  void SetCachedMetadata(uint32_t, const uint8_t*, size_t) override;
-  void ClearCachedMetadata(ClearCacheType) override;
-  scoped_refptr<CachedMetadata> GetCachedMetadata(uint32_t) const override;
+  void SetCachedMetadata(CodeCacheHost*,
+                         uint32_t,
+                         const uint8_t*,
+                         size_t) override;
+  void ClearCachedMetadata(CodeCacheHost*, ClearCacheType) override;
+  scoped_refptr<CachedMetadata> GetCachedMetadata(
+      uint32_t,
+      GetCachedMetadataBehavior = kCrashIfUnchecked) const override;
 
   // This returns the encoding at the time of ResponseReceived(). Therefore this
   // does NOT reflect encoding detection from body contents, but the actual
@@ -52,19 +57,69 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler final
                     const String& dump_prefix) const override;
 
   // Sets the serialized metadata retrieved from the platform's cache.
-  void SetSerializedCachedMetadata(mojo_base::BigBuffer data);
+  virtual void SetSerializedCachedMetadata(mojo_base::BigBuffer data);
   size_t GetCodeCacheSize() const override;
+
+ protected:
+  virtual void CommitToPersistentStorage(CodeCacheHost*);
+
+  CachedMetadataSender* Sender() const { return sender_.get(); }
+
+  scoped_refptr<CachedMetadata> cached_metadata_;
 
  private:
   friend class ModuleScriptTest;
 
-  void CommitToPersistentStorage();
-
-  scoped_refptr<CachedMetadata> cached_metadata_;
   bool cached_metadata_discarded_ = false;
   std::unique_ptr<CachedMetadataSender> sender_;
 
   const WTF::TextEncoding encoding_;
+};
+
+class PLATFORM_EXPORT ScriptCachedMetadataHandlerWithHashing final
+    : public ScriptCachedMetadataHandler {
+ public:
+  ScriptCachedMetadataHandlerWithHashing(
+      const WTF::TextEncoding& encoding,
+      std::unique_ptr<CachedMetadataSender> sender)
+      : ScriptCachedMetadataHandler(encoding, std::move(sender)) {}
+  ~ScriptCachedMetadataHandlerWithHashing() override = default;
+
+  // Sets the serialized metadata retrieved from the platform's cache.
+  void SetSerializedCachedMetadata(mojo_base::BigBuffer data) override;
+
+  bool HashRequired() const override { return true; }
+
+  scoped_refptr<CachedMetadata> GetCachedMetadata(
+      uint32_t,
+      GetCachedMetadataBehavior = kCrashIfUnchecked) const override;
+
+  // Pretend that the current content and hash were loaded from disk, not
+  // created by the current process.
+  void ResetForTesting();
+
+  void Check(CodeCacheHost*, const ParkableString& source_text) override;
+
+  Vector<uint8_t> GetSerializedCachedMetadata() const;
+
+ protected:
+  void CommitToPersistentStorage(CodeCacheHost*) override;
+
+ private:
+  static const uint32_t kSha256Bytes = 256 / 8;
+  uint8_t hash_[kSha256Bytes];
+  enum HashState {
+    kUninitialized,  // hash_ has not been written.
+    kDeserialized,   // hash_ contains data from the code cache that has not yet
+                     // been checked for matching the script text.
+
+    // Terminal states: once hash_state_ reaches one of the following, neither
+    // hash_state_ nor hash_ will ever change again.
+
+    kChecked,        // hash_ contains the hash of the script text.
+    kFailedToCheck,  // hash_ contains garbage. Computing the hash failed.
+  };
+  HashState hash_state_ = kUninitialized;
 };
 
 // Describes a few interesting states of the ScriptCachedMetadataHandler when

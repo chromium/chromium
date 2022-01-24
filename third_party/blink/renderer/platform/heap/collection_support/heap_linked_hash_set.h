@@ -13,10 +13,12 @@
 
 namespace blink {
 
-template <typename ValueArg, typename TraitsArg = HashTraits<ValueArg>>
+template <typename ValueArg,
+          typename TraitsArg = HashTraits<ValueArg>,
+          typename HashArg = typename DefaultHash<ValueArg>::Hash>
 class HeapLinkedHashSet final
-    : public GarbageCollected<HeapLinkedHashSet<ValueArg, TraitsArg>>,
-      public LinkedHashSet<ValueArg, TraitsArg, HeapAllocator> {
+    : public GarbageCollected<HeapLinkedHashSet<ValueArg, TraitsArg, HashArg>>,
+      public LinkedHashSet<ValueArg, TraitsArg, HashArg, HeapAllocator> {
   static void CheckType() {
     static_assert(WTF::IsMemberOrWeakMemberType<ValueArg>::value,
                   "HeapLinkedHashSet supports only Member and WeakMember.");
@@ -33,7 +35,7 @@ class HeapLinkedHashSet final
   HeapLinkedHashSet() { CheckType(); }
 
   void Trace(Visitor* v) const {
-    LinkedHashSet<ValueArg, TraitsArg, HeapAllocator>::Trace(v);
+    LinkedHashSet<ValueArg, TraitsArg, HashArg, HeapAllocator>::Trace(v);
   }
 };
 

@@ -24,8 +24,7 @@ base::TimeDelta FreezePurgeMemoryAllPagesFrozenDelay() {
           &blink::features::kFreezePurgeMemoryAllPagesFrozen,
           "delay-in-minutes",
           MemoryPurgeManager::kDefaultTimeToPurgeAfterFreezing};
-  return base::TimeDelta::FromMinutes(
-      kFreezePurgeMemoryAllPagesFrozenDelayInMinutes.Get());
+  return base::Minutes(kFreezePurgeMemoryAllPagesFrozenDelayInMinutes.Get());
 }
 
 int MinTimeToPurgeAfterBackgroundedInSeconds() {
@@ -179,8 +178,7 @@ bool MemoryPurgeManager::AreAllPagesFrozen() const {
 base::TimeDelta MemoryPurgeManager::GetTimeToPurgeAfterBackgrounded() const {
   int min_time_in_seconds = MinTimeToPurgeAfterBackgroundedInSeconds();
   int max_time_in_seconds = MaxTimeToPurgeAfterBackgroundedInSeconds();
-  return base::TimeDelta::FromSeconds(
-      base::RandInt(min_time_in_seconds, max_time_in_seconds));
+  return base::Seconds(base::RandInt(min_time_in_seconds, max_time_in_seconds));
 }
 
 }  // namespace blink

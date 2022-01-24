@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/devices/x11/events_devices_x11_export.h"
 #include "ui/events/event_constants.h"
@@ -39,6 +38,9 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
  public:
   // Returns the TouchFactory singleton.
   static TouchFactory* GetInstance();
+
+  TouchFactory(const TouchFactory&) = delete;
+  TouchFactory& operator=(const TouchFactory&) = delete;
 
   // Sets the touch devices from the command line.
   static void SetTouchDeviceListFromCommandLine();
@@ -158,8 +160,6 @@ class EVENTS_DEVICES_X11_EXPORT TouchFactory {
 
   // The status of the touch screens devices themselves.
   bool touch_screens_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchFactory);
 };
 
 }  // namespace ui

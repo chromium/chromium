@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 
 namespace base {
@@ -38,6 +37,9 @@ class OfflinePageModelFactory : public SimpleKeyedServiceFactory {
   static OfflinePageModel* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
+  OfflinePageModelFactory(const OfflinePageModelFactory&) = delete;
+  OfflinePageModelFactory& operator=(const OfflinePageModelFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<OfflinePageModelFactory>;
 
@@ -46,8 +48,6 @@ class OfflinePageModelFactory : public SimpleKeyedServiceFactory {
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageModelFactory);
 };
 
 }  // namespace offline_pages

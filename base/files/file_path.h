@@ -156,6 +156,7 @@
 
 namespace base {
 
+class SafeBaseName;
 class Pickle;
 class PickleIterator;
 
@@ -294,6 +295,11 @@ class BASE_EXPORT FilePath {
   //   - calling this function with "foo.tar.blah" will return just ".blah"
   //     until ".*.blah" is added to the hard-coded allow-list.
   //
+  // That hard-coded allow-list is case-insensitive: ".GZ" and ".gz" are
+  // equivalent. However, the StringType returned is not canonicalized for
+  // case: "foo.TAR.bz2" input will produce ".TAR.bz2", not ".tar.bz2", and
+  // "bar.EXT", which is not a double-extension, will produce ".EXT".
+  //
   // The following code should always work regardless of the value of path.
   //   new_path = path.RemoveExtension().value().append(path.Extension());
   //   ASSERT(new_path == path.value());
@@ -356,6 +362,7 @@ class BASE_EXPORT FilePath {
   // it is an error to pass an absolute path.
   FilePath Append(StringPieceType component) const WARN_UNUSED_RESULT;
   FilePath Append(const FilePath& component) const WARN_UNUSED_RESULT;
+  FilePath Append(const SafeBaseName& component) const WARN_UNUSED_RESULT;
 
   // Although Windows StringType is std::wstring, since the encoding it uses for
   // paths is well defined, it can handle ASCII path components as well.
@@ -417,6 +424,9 @@ class BASE_EXPORT FilePath {
 
   // Similar to AsUTF8Unsafe, but returns UTF-16 instead.
   std::u16string AsUTF16Unsafe() const;
+
+  // Returns a FilePath object from a path name in ASCII.
+  static FilePath FromASCII(StringPiece ascii);
 
   // Returns a FilePath object from a path name in UTF-8. This function
   // should only be used for cases where you are sure that the input

@@ -57,6 +57,11 @@ class SystemMediaControlsLinuxTest : public testing::Test,
  public:
   SystemMediaControlsLinuxTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+
+  SystemMediaControlsLinuxTest(const SystemMediaControlsLinuxTest&) = delete;
+  SystemMediaControlsLinuxTest& operator=(const SystemMediaControlsLinuxTest&) =
+      delete;
+
   ~SystemMediaControlsLinuxTest() override = default;
 
   void SetUp() override { StartMprisServiceAndWaitForReady(); }
@@ -175,8 +180,6 @@ class SystemMediaControlsLinuxTest : public testing::Test,
 
   base::flat_map<std::string, dbus::ExportedObject::MethodCallCallback>
       player_interface_exported_methods_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMediaControlsLinuxTest);
 };
 
 TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfServiceReadyWhenAdded) {

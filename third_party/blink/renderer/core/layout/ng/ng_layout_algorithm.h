@@ -32,7 +32,7 @@ class NGLayoutAlgorithmOperations {
   // The result will not take any min-width, max-width or width properties into
   // account.
   virtual MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) const = 0;
+      const MinMaxSizesFloatInput&) = 0;
 };
 
 // Parameters to pass when creating a layout algorithm for a block node.
@@ -114,9 +114,9 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
             *container_builder_.BfcBlockOffset()};
   }
 
-  NGInputNodeType Node() const { return node_; }
+  const NGInputNodeType& Node() const { return node_; }
 
-  const NGBreakTokenType* BreakToken() const { return break_token_.get(); }
+  const NGBreakTokenType* BreakToken() const { return break_token_; }
 
   const NGBoxStrut& BorderPadding() const {
     return container_builder_.BorderPadding();
@@ -184,7 +184,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   const NGEarlyBreak* early_break_ = nullptr;
 
   // The break token from which we are currently resuming layout.
-  scoped_refptr<const NGBreakTokenType> break_token_;
+  const NGBreakTokenType* break_token_;
 
   NGBoxFragmentBuilderType container_builder_;
 };

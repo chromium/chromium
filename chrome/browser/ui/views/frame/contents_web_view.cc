@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/compositor/layer.h"
@@ -39,6 +41,12 @@ StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
   return status_bubble_;
 }
 
+void ContentsWebView::SetBackgroundColorOverride(
+    absl::optional<SkColor> background_color) {
+  background_color_override_ = background_color;
+  UpdateBackgroundColor();
+}
+
 bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
   return true;
 }
@@ -64,13 +72,24 @@ void ContentsWebView::OnLetterboxingChanged() {
   UpdateBackgroundColor();
 }
 
-void ContentsWebView::UpdateBackgroundColor() {
+absl::optional<SkColor> ContentsWebView::GetBackgroundColor() {
+  if (background_color_override_.has_value())
+    return background_color_override_;
+
   const ui::ThemeProvider* const theme = GetThemeProvider();
   if (!theme)
+    return absl::nullopt;
+
+  return color_utils::GetResultingPaintColor(
+      theme->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND), SK_ColorWHITE);
+}
+
+void ContentsWebView::UpdateBackgroundColor() {
+  const absl::optional<SkColor> background_color = GetBackgroundColor();
+  if (!background_color.has_value())
     return;
 
-  const SkColor ntp_background = color_utils::GetResultingPaintColor(
-      theme->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND), SK_ColorWHITE);
+  const SkColor ntp_background = background_color.value();
   if (is_letterboxing()) {
     // Set the background color to a dark tint of the new tab page's background
     // color.  This is the color filled within the WebView's bounds when its

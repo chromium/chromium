@@ -114,6 +114,7 @@
     <dimen name="compositor_tab_title_favicon_size">16dp</dimen>
     <!-- Slop value for allowing slight misses on the compositor button. -->
     <dimen name="compositor_button_slop">10dp</dimen>
+    <dimen name="compositor_background_tab_elevation">@dimen/default_elevation_4</dimen>
 
     <!-- First Run Experience dimensions -->
     <dimen name="fre_content_margin">24dp</dimen>
@@ -175,24 +176,17 @@
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>
     <dimen name="duet_ntp_logo_top_margin">-16dp</dimen>
+    <dimen name="ntp_promo_bottom_margin">16dp</dimen>
     <dimen name="ntp_search_box_height">48dp</dimen>
     <dimen name="ntp_search_box_transition_length">16dp</dimen>
     <dimen name="experimental_explore_sites_radius">8dp</dimen>
     <dimen name="experimental_explore_sites_padding">8dp</dimen>
     <dimen name="experimental_explore_sites_margin">16dp</dimen>
     <dimen name="experimental_explore_sites_spacing">12dp</dimen>
-    <dimen name="ntp_wide_card_lateral_margins">36dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
     <dimen name="snippets_article_header_menu_size">48dp</dimen>
-    <dimen name="feed_v2_header_menu_width">18dp</dimen>
-    <dimen name="feed_v2_header_menu_touch_padding">4dp</dimen>
-    <dimen name="feed_v2_header_menu_disabled_padding">11dp</dimen>
-    <!-- This should match |ntp_header_lateral_margins_v2|. -->
-    <dimen name="ntp_header_lateral_margins_v2">16dp</dimen>
-    <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
-    <dimen name="content_suggestions_card_modern_margin">0dp</dimen>
-    <dimen name="content_suggestions_card_modern_padding">16dp</dimen>
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
+    <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
     <dimen name="md_incognito_ntp_line_spacing">6sp</dimen>
     <dimen name="md_incognito_ntp_padding_left">16dp</dimen>
     <dimen name="cryptid_height_in_logo_wrapper">60dp</dimen>
@@ -200,6 +194,33 @@
 
     <!-- NTP Feed dimensions -->
     <dimen name="feed_header_menu_max_width">225dp</dimen>
+    <dimen name="feed_header_icon_margin">15dp</dimen>
+    <dimen name="feed_header_icon_size">20dp</dimen>
+    <dimen name="feed_header_height">44dp</dimen>
+    <dimen name="feed_v2_header_menu_width">18dp</dimen>
+    <dimen name="ntp_header_dropdown_size">15dp</dimen>
+    <dimen name="ntp_header_tab_text_height">24dp</dimen>
+
+    <!-- Incognito NTP -->
+    <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>
+
+    <!-- Revamped Incognito NTP -->
+    <dimen name="incognito_ntp_portrait_small_or_big_threshold">320dp</dimen>
+    <dimen name="incognito_ntp_portrait_horizontal_small_padding">16dp</dimen>
+    <dimen name="incognito_ntp_portrait_horizontal_big_padding">32dp</dimen>
+    <dimen name="incognito_ntp_portrait_vertical_padding">48dp</dimen>
+    <dimen name="incognito_ntp_landscape_small_or_big_threshold">320dp</dimen>
+    <dimen name="incognito_ntp_landscape_horizontal_padding">24dp</dimen>
+    <dimen name="incognito_ntp_landscape_vertical_small_padding">24dp</dimen>
+    <dimen name="incognito_ntp_landscape_vertical_big_padding">32dp</dimen>
+    <dimen name="incognito_ntp_icon_size">72dp</dimen>
+    <dimen name="incognito_ntp_space_between_icon_and_title">16dp</dimen>
+    <dimen name="incognito_ntp_wide_layout_threshold">720dp</dimen>
+    <dimen name="incognito_ntp_content_max_width">704dp</dimen>
+    <dimen name="incognito_ntp_does_and_doesnt_top_spacing">32dp</dimen>
+    <dimen name="incognito_ntp_descriptions_horizontal_spacing">32dp</dimen>
+    <dimen name="incognito_ntp_space_between_header_and_description">8dp</dimen>
+    <dimen name="incognito_ntp_learn_more_vertical_spacing">22dp</dimen>
 
     <!-- Explore sites page -->
     <dimen name="explore_sites_category_padding_vertical">20dp</dimen>
@@ -248,6 +269,9 @@
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
     <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
 
+    <!-- Bookmark visual refresh dimensions. -->
+     <dimen name="bookmark_refresh_preferred_start_icon_size">32dp</dimen>
+
     <!-- Bookmark widget dimensions -->
     <dimen name="bookmark_widget_min_width">64dp</dimen>
     <dimen name="bookmark_widget_min_height">48dp</dimen>
@@ -286,12 +310,9 @@
          https://www.google.com/design/spec/components/dialogs.html#dialogs-simple-dialogs -->
     <dimen name="dialog_width_unit">56dp</dimen>  <!-- MD dialog widths are multiples of this. -->
 
-    <!--  Miscellaneous dimensions -->
-    <dimen name="text_bubble_menu_anchor_y_inset">14dp</dimen>
     <!--  Used as a margin to force the shadow view to overlap other views. -->
     <dimen name="action_bar_shadow_margin_negative">-10dp</dimen>
     <dimen name="sync_promo_view_padding">16dp</dimen>
-    <dimen name="sync_passphrase_type_instructions_padding">25dp</dimen>
     <!-- 18dp padding is added to each side of the remove button to limit the image width to 20dp (56dp - 2 * 18dp). -->
     <dimen name="history_item_remove_button_lateral_padding">18dp</dimen>
 
@@ -387,4 +408,6 @@
     <!-- IPH shared highlighting builder padding top -->
     <dimen name="iph_shared_highlighting_padding_top">120dp</dimen>
 
+    <dimen name="sharing_hub_tile_width">69sp</dimen>
+    <dimen name="sharing_hub_tile_margin">8sp</dimen>
 </resources>

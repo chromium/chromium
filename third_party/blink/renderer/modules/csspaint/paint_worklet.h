@@ -33,6 +33,10 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
   static PaintWorklet* From(LocalDOMWindow&);
 
   explicit PaintWorklet(LocalDOMWindow&);
+
+  PaintWorklet(const PaintWorklet&) = delete;
+  PaintWorklet& operator=(const PaintWorklet&) = delete;
+
   ~PaintWorklet() override;
 
   void AddPendingGenerator(const String& name, CSSPaintImageGeneratorImpl*);
@@ -145,8 +149,6 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
   // tests may be testing the functionality of the APIs when the paint worklet
   // is off the main thread.
   bool is_paint_off_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintWorklet);
 };
 
 }  // namespace blink

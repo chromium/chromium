@@ -7,7 +7,14 @@
 #include <stdint.h>
 
 #include "base/strings/string_util.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-array-buffer.h"
+#include "v8/include/v8-external.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-maybe.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-promise.h"
+#include "v8/include/v8-value.h"
 
 using v8::ArrayBuffer;
 using v8::Boolean;

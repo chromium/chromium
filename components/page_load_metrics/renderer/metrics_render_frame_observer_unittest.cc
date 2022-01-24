@@ -92,7 +92,7 @@ TEST_F(MetricsRenderFrameObserverTest, SingleMetric) {
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();
 
-  timing.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(10);
+  timing.parse_timing->parse_start = base::Milliseconds(10);
   observer.ExpectPageLoadTiming(timing);
 
   observer.DidChangePerformanceTiming();
@@ -115,16 +115,16 @@ TEST_F(MetricsRenderFrameObserverTest, SingleCpuMetric) {
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
 
   // Send cpu timing updates and verify the expected result.
-  observer.DidChangeCpuTiming(base::TimeDelta::FromMilliseconds(110));
-  observer.DidChangeCpuTiming(base::TimeDelta::FromMilliseconds(50));
-  observer.ExpectCpuTiming(base::TimeDelta::FromMilliseconds(160));
+  observer.DidChangeCpuTiming(base::Milliseconds(110));
+  observer.DidChangeCpuTiming(base::Milliseconds(50));
+  observer.ExpectCpuTiming(base::Milliseconds(160));
   observer.GetMockTimer()->Fire();
 }
 
 TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
   base::Time nav_start = base::Time::FromDoubleT(10);
-  base::TimeDelta dom_event = base::TimeDelta::FromMillisecondsD(2);
-  base::TimeDelta load_event = base::TimeDelta::FromMillisecondsD(2);
+  base::TimeDelta dom_event = base::Milliseconds(2);
+  base::TimeDelta load_event = base::Milliseconds(2);
 
   TestMetricsRenderFrameObserver observer;
 
@@ -169,8 +169,8 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
 
 TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   base::Time nav_start = base::Time::FromDoubleT(10);
-  base::TimeDelta dom_event = base::TimeDelta::FromMillisecondsD(2);
-  base::TimeDelta load_event = base::TimeDelta::FromMillisecondsD(2);
+  base::TimeDelta dom_event = base::Milliseconds(2);
+  base::TimeDelta load_event = base::Milliseconds(2);
 
   TestMetricsRenderFrameObserver observer;
 
@@ -195,8 +195,8 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   observer.VerifyExpectedTimings();
 
   base::Time nav_start_2 = base::Time::FromDoubleT(100);
-  base::TimeDelta dom_event_2 = base::TimeDelta::FromMillisecondsD(20);
-  base::TimeDelta load_event_2 = base::TimeDelta::FromMillisecondsD(20);
+  base::TimeDelta dom_event_2 = base::Milliseconds(20);
+  base::TimeDelta load_event_2 = base::Milliseconds(20);
   mojom::PageLoadTiming timing_2;
   page_load_metrics::InitPageLoadTimingForTest(&timing_2);
   timing_2.navigation_start = nav_start_2;

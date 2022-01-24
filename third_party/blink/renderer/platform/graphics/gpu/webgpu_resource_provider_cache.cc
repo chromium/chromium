@@ -9,17 +9,12 @@
 
 namespace blink {
 
-ResourceCacheKey::ResourceCacheKey(const IntSize& size,
-                                   const CanvasResourceParams& params,
+ResourceCacheKey::ResourceCacheKey(const SkImageInfo& info,
                                    bool is_origin_top_left)
-    : size(size), params(params), is_origin_top_left(is_origin_top_left) {}
+    : info(info), is_origin_top_left(is_origin_top_left) {}
 
 bool ResourceCacheKey::operator==(const ResourceCacheKey& other) const {
-  return (size == other.size &&
-          params.ColorSpace() == other.params.ColorSpace() &&
-          params.GetSkColorType() == other.params.GetSkColorType() &&
-          params.GetSkAlphaType() == other.params.GetSkAlphaType() &&
-          is_origin_top_left == other.is_origin_top_left);
+  return (info == other.info && is_origin_top_left == other.is_origin_top_left);
 }
 
 bool ResourceCacheKey::operator!=(const ResourceCacheKey& other) const {
@@ -45,13 +40,7 @@ RecyclableCanvasResource::~RecyclableCanvasResource() {
   // with unsupported parameters and if it's fine to lose the cache. Or, we can
   // save the cache key in |unused_providers_| and only compare the saved cache
   // key instead of the one in CanvasResourceProvider.
-  DCHECK(cache_key_.size == resource_provider_->Size());
-  DCHECK(cache_key_.params.ColorSpace() ==
-         resource_provider_->ColorParams().ColorSpace());
-  DCHECK(cache_key_.params.GetSkColorType() ==
-         resource_provider_->ColorParams().GetSkColorType());
-  DCHECK(cache_key_.params.GetSkAlphaType() ==
-         resource_provider_->ColorParams().GetSkAlphaType());
+  DCHECK(cache_key_.info == resource_provider_->GetSkImageInfo());
   DCHECK(cache_key_.is_origin_top_left ==
          resource_provider_->IsOriginTopLeft());
 
@@ -61,9 +50,9 @@ RecyclableCanvasResource::~RecyclableCanvasResource() {
 }
 
 WebGPURecyclableResourceCache::WebGPURecyclableResourceCache(
-    gpu::webgpu::WebGPUInterface* webgpu_interface,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : webgpu_interface_(webgpu_interface),
+    : context_provider_(std::move(context_provider)),
       task_runner_(std::move(task_runner)) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
   timer_func_ = WTF::BindRepeating(
@@ -74,17 +63,16 @@ WebGPURecyclableResourceCache::WebGPURecyclableResourceCache(
 
 std::unique_ptr<RecyclableCanvasResource>
 WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
-    const IntSize& size,
-    const CanvasResourceParams& params,
+    const SkImageInfo& info,
     bool is_origin_top_left) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  const ResourceCacheKey cache_key(size, params, is_origin_top_left);
+  const ResourceCacheKey cache_key(info, is_origin_top_left);
   std::unique_ptr<CanvasResourceProvider> provider =
       AcquireCachedProvider(cache_key);
   if (!provider) {
     provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-        size, params, is_origin_top_left);
+        info, is_origin_top_left);
     if (!provider)
       return nullptr;
   }
@@ -95,19 +83,21 @@ WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
 
 void WebGPURecyclableResourceCache::OnDestroyRecyclableResource(
     std::unique_ptr<CanvasResourceProvider> resource_provider) {
-  int resource_size = resource_provider->Size().Width() *
-                      resource_provider->Size().Height() *
-                      resource_provider->ColorParams().BytesPerPixel();
-  total_unused_resources_in_bytes_ += resource_size;
+  int resource_size = resource_provider->Size().width() *
+                      resource_provider->Size().height() *
+                      resource_provider->GetSkImageInfo().bytesPerPixel();
+  if (context_provider_) {
+    total_unused_resources_in_bytes_ += resource_size;
 
-  // WaitSyncToken on the canvas resource.
-  gpu::SyncToken finished_access_token;
-  webgpu_interface_->GenUnverifiedSyncTokenCHROMIUM(
-      finished_access_token.GetData());
-  resource_provider->OnDestroyRecyclableCanvasResource(finished_access_token);
+    // WaitSyncToken on the canvas resource.
+    gpu::SyncToken finished_access_token;
+    auto* webgpu = context_provider_->ContextProvider()->WebGPUInterface();
+    webgpu->GenUnverifiedSyncTokenCHROMIUM(finished_access_token.GetData());
+    resource_provider->OnDestroyRecyclableCanvasResource(finished_access_token);
 
-  unused_providers_.push_front(
-      Resource(std::move(resource_provider), current_timer_id_, resource_size));
+    unused_providers_.push_front(Resource(std::move(resource_provider),
+                                          current_timer_id_, resource_size));
+  }
 
   if (last_seen_max_unused_resources_in_bytes_ <
       total_unused_resources_in_bytes_) {
@@ -134,9 +124,9 @@ WebGPURecyclableResourceCache::AcquireCachedProvider(
   DequeResourceProvider::iterator it;
   for (it = unused_providers_.begin(); it != unused_providers_.end(); ++it) {
     CanvasResourceProvider* resource_provider = it->resource_provider_.get();
-    const auto it_cache_key = ResourceCacheKey(
-        resource_provider->Size(), resource_provider->ColorParams(),
-        resource_provider->IsOriginTopLeft());
+    const auto it_cache_key =
+        ResourceCacheKey(resource_provider->GetSkImageInfo(),
+                         resource_provider->IsOriginTopLeft());
 
     if (cache_key == it_cache_key) {
       break;
@@ -166,9 +156,6 @@ void WebGPURecyclableResourceCache::ReleaseStaleResources() {
   int stale_resource_count = 0;
   for (auto it = unused_providers_.rbegin(); it != unused_providers_.rend();
        ++it) {
-    auto timer_id_ = it->timer_id_;
-    int delta;
-    delta = current_timer_id_ - timer_id_;
     if ((current_timer_id_ - it->timer_id_) < kTimerIdDeltaForDeletion) {
       // These are the resources which are recycled and stay in the cache for
       // less than kCleanUpDelayInSeconds. They are not to be deleted this time.
@@ -215,9 +202,8 @@ void WebGPURecyclableResourceCache::ReleaseStaleResources() {
 }
 void WebGPURecyclableResourceCache::StartResourceCleanUpTimer() {
   if (unused_providers_.size() > 0 && !timer_is_running_) {
-    task_runner_->PostDelayedTask(
-        FROM_HERE, timer_func_,
-        base::TimeDelta::FromSeconds(kTimerDurationInSeconds));
+    task_runner_->PostDelayedTask(FROM_HERE, timer_func_,
+                                  base::Seconds(kTimerDurationInSeconds));
     timer_is_running_ = true;
   }
 }

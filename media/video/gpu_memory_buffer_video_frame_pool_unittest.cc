@@ -11,6 +11,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/viz/test/test_context_provider.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/video/gpu_memory_buffer_video_frame_pool.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
@@ -28,7 +29,7 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   void SetUp() override {
     // Seed test clock with some dummy non-zero value to avoid confusion with
     // empty base::TimeTicks values.
-    test_clock_.Advance(base::TimeDelta::FromSeconds(1234));
+    test_clock_.Advance(base::Seconds(1234));
 
     sii_ = std::make_unique<viz::TestSharedImageInterface>();
     media_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -307,8 +308,13 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
-  EXPECT_EQ(1u, frame->NumTextures());
-  EXPECT_EQ(1u, sii_->shared_image_count());
+  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
+    EXPECT_EQ(2u, frame->NumTextures());
+    EXPECT_EQ(2u, sii_->shared_image_count());
+  } else {
+    EXPECT_EQ(1u, frame->NumTextures());
+    EXPECT_EQ(1u, sii_->shared_image_count());
+  }
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 }
 
@@ -485,7 +491,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, PreservesMetadata) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   software_frame->metadata().end_of_stream = true;
   base::TimeTicks kTestReferenceTime =
-      base::TimeDelta::FromMilliseconds(12345) + base::TimeTicks();
+      base::Milliseconds(12345) + base::TimeTicks();
   software_frame->metadata().reference_time = kTestReferenceTime;
   scoped_refptr<VideoFrame> frame;
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
@@ -590,7 +596,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, StaleFramesAreExpired) {
 
   // Advance clock far enough to hit stale timer; ensure only frame_1 has its
   // resources released.
-  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::Minutes(1));
   frame_2 = nullptr;
   RunUntilIdle();
   EXPECT_EQ(3u, sii_->shared_image_count());

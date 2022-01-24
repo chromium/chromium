@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
 
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,10 +72,10 @@ void ChildPolicyObserver::OnPolicyReady(
     std::move(on_policy_ready_).Run(profile_, refresh_result_);
 }
 
-policy::UserCloudPolicyManagerChromeOS*
+policy::UserCloudPolicyManagerAsh*
 ChildPolicyObserver::GetUserCloudPolicyManager() {
-  policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager =
-      profile_->GetUserCloudPolicyManagerChromeOS();
+  policy::UserCloudPolicyManagerAsh* user_cloud_policy_manager =
+      profile_->GetUserCloudPolicyManagerAsh();
   DCHECK(user_cloud_policy_manager);
   return user_cloud_policy_manager;
 }

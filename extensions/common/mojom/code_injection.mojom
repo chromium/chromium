@@ -5,6 +5,7 @@
 module extensions.mojom;
 
 import "extensions/common/mojom/css_origin.mojom";
+import "extensions/common/mojom/execution_world.mojom";
 import "url/mojom/url.mojom";
 
 // A single JS source to execute in the renderer.
@@ -30,6 +31,9 @@ struct CSSSource {
 struct JSInjection {
   // The JS sources to execute.
   array<JSSource> sources;
+
+  // The JS world into which to inject the scripts.
+  ExecutionWorld world;
 
   // Whether the caller is interested in the result value. Manifest-declared
   // content scripts and executeScript() calls without a response callback

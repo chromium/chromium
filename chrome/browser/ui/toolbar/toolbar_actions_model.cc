@@ -18,7 +18,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -39,6 +39,7 @@
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/notification_types.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_set.h"
@@ -66,6 +67,10 @@ ToolbarActionsModel::ToolbarActionsModel(
       extensions::pref_names::kPinnedExtensions,
       base::BindRepeating(&ToolbarActionsModel::UpdatePinnedActionIds,
                           base::Unretained(this)));
+
+  notification_registrar_.Add(
+      this, extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
+      content::Source<Profile>(profile_));
 }
 
 ToolbarActionsModel::~ToolbarActionsModel() {}
@@ -127,6 +132,21 @@ void ToolbarActionsModel::OnExtensionUninstalled(
 
 void ToolbarActionsModel::OnExtensionManagementSettingsChanged() {
   UpdatePinnedActionIds();
+}
+
+void ToolbarActionsModel::Observe(int type,
+                                  const content::NotificationSource& source,
+                                  const content::NotificationDetails& details) {
+  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED, type);
+
+  const extensions::ExtensionId& extension_id =
+      content::Details<extensions::UpdatedExtensionPermissionsInfo>(details)
+          ->extension->id();
+
+  if (HasAction(extension_id)) {
+    for (Observer& observer : observers_)
+      observer.OnToolbarActionUpdated(extension_id);
+  }
 }
 
 void ToolbarActionsModel::RemovePref(const ActionId& action_id) {

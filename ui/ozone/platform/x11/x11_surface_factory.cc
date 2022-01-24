@@ -30,6 +30,10 @@ namespace {
 class GLOzoneEGLX11 : public GLOzoneEGL {
  public:
   GLOzoneEGLX11() = default;
+
+  GLOzoneEGLX11(const GLOzoneEGLX11&) = delete;
+  GLOzoneEGLX11& operator=(const GLOzoneEGLX11&) = delete;
+
   ~GLOzoneEGLX11() override = default;
 
   // GLOzone:
@@ -85,8 +89,6 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
 
  private:
   bool is_swiftshader_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGLX11);
 };
 
 }  // namespace

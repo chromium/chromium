@@ -53,8 +53,12 @@ void AppListBubbleEventFilter::ProcessPressedEvent(
   if (widget_->GetWindowBoundsInScreen().Contains(event_location))
     return;
 
-  // Ignore clicks inside the button (which usually spawned the widget).
-  if (button_->GetBoundsInScreen().Contains(event_location))
+  // Ignore clicks that hit the button (which usually spawned the widget).
+  // Use HitTestPoint() because the shelf home button has a custom view targeter
+  // that handles clicks outside its bounds, like in the corner of the screen.
+  gfx::Point point_in_button = event_location;
+  views::View::ConvertPointFromScreen(button_, &point_in_button);
+  if (button_->HitTestPoint(point_in_button))
     return;
 
   on_click_outside_.Run();

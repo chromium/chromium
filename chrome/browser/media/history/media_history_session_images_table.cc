@@ -5,7 +5,7 @@
 #include "chrome/browser/media/history/media_history_session_images_table.h"
 
 #include "base/strings/stringprintf.h"
-#include "base/updateable_sequenced_task_runner.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "chrome/browser/media/history/media_history_images_table.h"
 #include "chrome/browser/media/history/media_history_session_table.h"
 #include "chrome/browser/media/history/media_history_store.h"

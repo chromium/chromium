@@ -6,7 +6,7 @@ import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
 
 assert(enable_vulkan)
-assert(use_x11 || use_ozone)
+assert(ozone_platform_x11)
 
 component("x") {
   output_name = "vulkan_x11"

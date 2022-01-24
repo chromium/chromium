@@ -18,8 +18,6 @@ import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
-import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
@@ -67,7 +65,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -129,9 +126,7 @@ public class ContextualSearchInstrumentationTest {
 
     // TODO(donnd): get these from TemplateURL once the low-priority or Contextual Search API
     // is fully supported.
-    private static final String NORMAL_PRIORITY_SEARCH_ENDPOINT = "/search?";
     private static final String LOW_PRIORITY_SEARCH_ENDPOINT = "/s?";
-    private static final String LOW_PRIORITY_INVALID_SEARCH_ENDPOINT = "/s/invalid";
     private static final String CONTEXTUAL_SEARCH_PREFETCH_PARAM = "&pf=c";
 
     /**
@@ -374,20 +369,6 @@ public class ContextualSearchInstrumentationTest {
         }
     }
 
-    /**
-     * Sets the online status and reloads the current Tab with our test URL.
-     *
-     * @param isOnline Whether to go online.
-     */
-    private void setOnlineStatusAndReload(boolean isOnline) {
-        mFakeServer.setIsOnline(isOnline);
-        final String testUrl = mTestServer.getURL(TEST_PAGE);
-        final Tab tab = sActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.reload());
-        // Make sure the page is fully loaded.
-        ChromeTabUtils.waitForTabPageLoaded(tab, testUrl);
-    }
-
     private interface ThrowingRunnable {
         void run() throws TimeoutException;
     }
@@ -450,22 +431,6 @@ public class ContextualSearchInstrumentationTest {
             longPressNodeWithoutWaiting(nodeId);
             waitForPanelToPeek();
         }, true);
-    }
-
-    /**
-     * Simulates a resolving trigger on the given node but does not wait for the panel to peek.
-     *
-     * @param nodeId A string containing the node ID.
-     */
-    private void triggerResolve(String nodeId) throws TimeoutException {
-        mTestHost.triggerResolve(nodeId);
-    }
-
-    /**
-     * Simulates a non-resolve trigger on the default node and waits for the panel to peek.
-     */
-    private void triggerNonResolve() throws TimeoutException {
-        mTestHost.triggerNonResolve(SEARCH_NODE);
     }
 
     /**
@@ -538,46 +503,6 @@ public class ContextualSearchInstrumentationTest {
     public void clickNode(String nodeId) throws TimeoutException {
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
         DOMUtils.clickNode(tab.getWebContents(), nodeId);
-    }
-
-    /**
-     * Waits for the selected text string to be the given string, and asserts.
-     *
-     * @param text The string to wait for the selection to become.
-     */
-    private void waitForSelectionToBe(final String text) {
-        mTestHost.waitForSelectionToBe(text);
-    }
-
-    /**
-     * Waits for the Search Term Resolution to become ready.
-     *
-     * @param search A given FakeResolveSearch.
-     */
-    private void waitForSearchTermResolutionToStart(final FakeResolveSearch search) {
-        mTestHost.waitForSearchTermResolutionToStart(search);
-    }
-
-    /**
-     * Waits for the Search Term Resolution to finish.
-     *
-     * @param search A given FakeResolveSearch.
-     */
-    private void waitForSearchTermResolutionToFinish(final FakeResolveSearch search) {
-        mTestHost.waitForSearchTermResolutionToFinish(search);
-    }
-
-    /**
-     * Waits for a Normal priority URL to be loaded, or asserts that the load never happened. This
-     * is needed when we test with a live internet connection and an invalid url fails to load (as
-     * expected.  See crbug.com/682953 for background.
-     */
-    private void waitForNormalPriorityUrlLoaded() {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(mFakeServer.getLoadedUrl(), Matchers.notNullValue());
-            Criteria.checkThat(mFakeServer.getLoadedUrl(),
-                    Matchers.containsString(NORMAL_PRIORITY_SEARCH_ENDPOINT));
-        }, TEST_TIMEOUT, DEFAULT_POLLING_INTERVAL);
     }
 
     /**
@@ -747,36 +672,10 @@ public class ContextualSearchInstrumentationTest {
     }
 
     /**
-     * Asserts that the Panel's WebContents is visible.
-     */
-    private void assertWebContentsVisible() {
-        Assert.assertTrue(isWebContentsVisible());
-    }
-
-    /**
      * Asserts that the Panel's WebContents.onShow() method was never called.
      */
     private void assertNeverCalledWebContentsOnShow() {
         Assert.assertFalse(mFakeServer.didEverCallWebContentsOnShow());
-    }
-
-    /**
-     * Asserts that the Panel's WebContents is created
-     */
-    private void assertWebContentsCreatedButNeverMadeVisible() {
-        assertWebContentsCreated();
-        Assert.assertFalse(isWebContentsVisible());
-        assertNeverCalledWebContentsOnShow();
-    }
-
-    /**
-     * Fakes navigation of the Content View to the URL that was previously requested.
-     *
-     * @param isFailure whether the request resulted in a failure.
-     */
-    private void fakeContentViewDidNavigate(boolean isFailure) {
-        String url = mFakeServer.getLoadedUrl();
-        mManager.getOverlayContentDelegate().onMainFrameNavigation(url, false, isFailure, false);
     }
 
     //============================================================================================
@@ -834,13 +733,6 @@ public class ContextualSearchInstrumentationTest {
     private void pressKey(int keycode) {
         KeyUtils.singleKeyEventActivity(InstrumentationRegistry.getInstrumentation(),
                 sActivityTestRule.getActivity(), keycode);
-    }
-
-    /**
-     * Simulates pressing back button.
-     */
-    private void pressBackButton() {
-        pressKey(KeyEvent.KEYCODE_BACK);
     }
 
     /**
@@ -928,52 +820,12 @@ public class ContextualSearchInstrumentationTest {
     }
 
     /**
-     * Asserts that a low-priority URL that is intentionally invalid has been loaded in the Overlay
-     * Panel (in order to produce an error).
-     */
-    private void assertLoadedLowPriorityInvalidUrl() {
-        String message = "Expected a low priority invalid search request URL, but got "
-                + (String.valueOf(mFakeServer.getLoadedUrl()));
-        Assert.assertTrue(message,
-                mFakeServer.getLoadedUrl() != null
-                        && mFakeServer.getLoadedUrl().contains(
-                                LOW_PRIORITY_INVALID_SEARCH_ENDPOINT));
-        Assert.assertTrue("Low priority request does not have the required prefetch parameter!",
-                mFakeServer.getLoadedUrl() != null
-                        && mFakeServer.getLoadedUrl().contains(CONTEXTUAL_SEARCH_PREFETCH_PARAM));
-    }
-
-    /**
-     * Asserts that a normal priority URL has been loaded in the Overlay Panel.
-     */
-    private void assertLoadedNormalPriorityUrl() {
-        String message = "Expected a normal priority search request URL, but got "
-                + (mFakeServer.getLoadedUrl() != null ? mFakeServer.getLoadedUrl() : "null");
-        Assert.assertTrue(message,
-                mFakeServer.getLoadedUrl() != null
-                        && mFakeServer.getLoadedUrl().contains(NORMAL_PRIORITY_SEARCH_ENDPOINT));
-        Assert.assertTrue(
-                "Normal priority request should not have the prefetch parameter, but did!",
-                mFakeServer.getLoadedUrl() != null
-                        && !mFakeServer.getLoadedUrl().contains(CONTEXTUAL_SEARCH_PREFETCH_PARAM));
-    }
-
-    /**
      * Asserts that no URLs have been loaded in the Overlay Panel since the last {@link
      * ContextualSearchFakeServer#reset}.
      */
     private void assertNoSearchesLoaded() {
         Assert.assertEquals(0, mFakeServer.getLoadedUrlCount());
         assertLoadedNoUrl();
-    }
-
-    /**
-     * Asserts that a Search Term has been requested.
-     *
-     * @param isExactResolve Whether the Resolve request must be exact (non-expanding).
-     */
-    private void assertExactResolve(boolean isExactResolve) {
-        Assert.assertEquals(isExactResolve, mFakeServer.getIsExactResolve());
     }
 
     /**
@@ -1016,40 +868,6 @@ public class ContextualSearchInstrumentationTest {
             Criteria.checkThat(mPanel.getPanelState(), Matchers.is(state));
             Criteria.checkThat(mPanel.isHeightAnimationRunning(), Matchers.is(false));
         });
-    }
-
-    /**
-     * Asserts that the panel is still in the given state and continues to stay that way for a
-     * while. Waits for a reasonable amount of time for the panel to change to a different state,
-     * and verifies that it did not change state while this method is executing. Note that it's
-     * quite possible for the panel to transition through some other state and back to the initial
-     * state before this method is called without that being detected, because this method only
-     * monitors state during its own execution.
-     *
-     * @param initialState The initial state of the panel at the beginning of an operation that
-     *         should
-     * not change the panel state.
-     */
-    private void assertPanelStillInState(final @PanelState int initialState)
-            throws InterruptedException {
-        boolean didChangeState = false;
-        long startTime = SystemClock.uptimeMillis();
-        while (!didChangeState
-                && SystemClock.uptimeMillis() - startTime < TEST_EXPECTED_FAILURE_TIMEOUT) {
-            Thread.sleep(DEFAULT_POLLING_INTERVAL);
-            didChangeState = mPanel.getPanelState() != initialState;
-        }
-        Assert.assertFalse(didChangeState);
-    }
-
-    /**
-     * Shorthand for a common sequence: 1) Waits for gesture processing, 2) Waits for the panel to
-     * close, 3) Asserts that there is no selection and that the panel closed.
-     */
-    private void waitForGestureToClosePanelAndAssertNoSelection() {
-        waitForPanelToClose();
-        assertPanelClosedOrUndefined();
-        Assert.assertTrue(TextUtils.isEmpty(getSelectedText()));
     }
 
     /**
@@ -1124,42 +942,10 @@ public class ContextualSearchInstrumentationTest {
     }
 
     /**
-     * Flings the panel up to its expanded state.
-     */
-    private void flingPanelUp() {
-        fling(0.5f, 0.95f, 0.5f, 0.55f, 1000);
-    }
-
-    /**
-     * Swipes the panel down to its peeked state.
-     */
-    private void swipePanelDown() {
-        swipe(0.5f, 0.55f, 0.5f, 0.95f, 100);
-    }
-
-    /**
      * Scrolls the base page.
      */
     private void scrollBasePage() {
         fling(0.f, 0.75f, 0.f, 0.7f, 100);
-    }
-
-    /**
-     * Taps the base page near the top.
-     */
-    private void tapBasePageToClosePanel() {
-        // TODO(donnd): This is not reliable. Find a better approach.
-        // This taps on the panel in an area that will be selected if the "intelligence" node has
-        // been tap-selected, and that will cause it to be long-press selected.
-        // We use the far right side to prevent simulating a tap on top of an
-        // existing long-press selection (the pins are a tap target). This might not work on RTL.
-        // We are using y == 0.35f because otherwise it will fail for long press cases.
-        // It might be better to get the position of the Panel and tap just about outside
-        // the Panel. I suspect some Flaky tests are caused by this problem (ones involving
-        // long press and trying to close with the bar peeking, with a long press selection
-        // established).
-        tapBasePage(0.95f, 0.35f);
-        waitForPanelToClose();
     }
 
     /**
@@ -1170,15 +956,6 @@ public class ContextualSearchInstrumentationTest {
         x *= root.getWidth();
         y *= root.getHeight();
         TouchCommon.singleClickView(root, (int) x, (int) y);
-    }
-
-    /**
-     * Click various places to cause the panel to show, expand, then close.
-     */
-    private void clickToExpandAndClosePanel() throws TimeoutException {
-        clickWordNode("states");
-        tapBarToExpandAndClosePanel();
-        waitForSelectionEmpty();
     }
 
     /**
@@ -1212,38 +989,6 @@ public class ContextualSearchInstrumentationTest {
     }
 
     /**
-     * Simple sequence useful for checking if a Search Request is prefetched. Resets the fake server
-     * and clicks near to cause a search, then closes the panel, which takes us back to the starting
-     * state except that the fake server knows if a prefetch occurred.
-     */
-    private void clickToTriggerPrefetch() throws Exception {
-        mFakeServer.reset();
-        simulateResolveSearch("search");
-        closePanel();
-        waitForPanelToCloseAndSelectionEmpty();
-    }
-
-    /**
-     * Simple sequence to trigger, resolve, and prefetch.  Verifies a prefetch occurred.
-     */
-    private void triggerToResolveAndAssertPrefetch() throws Exception {
-        simulateSlowResolveSearch("states");
-        assertLoadedNoUrl();
-        assertSearchTermRequested();
-        simulateSlowResolveFinished();
-    }
-
-    /**
-     * Fakes a response to the Resolve request.
-     */
-    private void fakeAResponse() {
-        fakeResponse(false, 200, "states", "United States Intelligence", "alternate-term", false);
-        waitForPanelToPeek();
-        assertLoadedLowPriorityUrl();
-        assertContainsParameters("states", "alternate-term");
-    }
-
-    /**
      * Resets all the counters used, by resetting all shared preferences.
      */
     private void resetCounters() {
@@ -1259,29 +1004,11 @@ public class ContextualSearchInstrumentationTest {
     }
 
     /**
-     * Force the Panel to handle a click on open-in-a-new-tab icon.
-     */
-    private void forceOpenTabIconClick() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            mPanel.handleBarClick(mPanel.getOpenTabIconX() + mPanel.getOpenTabIconDimension() / 2,
-                    mPanel.getBarHeight() / 2);
-        });
-    }
-
-    /**
      * Force the Panel to close.
      */
     private void closePanel() {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> { mPanel.closePanel(StateChangeReason.UNKNOWN, false); });
-    }
-
-    /**
-     * Force the Panel to maximize.
-     */
-    private void maximizePanel() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> { mPanel.maximizePanel(StateChangeReason.UNKNOWN); });
     }
 
     /**
@@ -1308,28 +1035,6 @@ public class ContextualSearchInstrumentationTest {
         return getRankerLogger().getFeaturesLogged().get(feature);
     }
 
-    /**
-     * Asserts that all the expected features have been logged to Ranker.
-     **/
-    private void assertLoggedAllExpectedFeaturesToRanker() {
-        for (int feature = 0; feature < ContextualSearchInteractionRecorder.Feature.NUM_ENTRIES;
-                feature++) {
-            if (expectedFeatureName(feature) != null) Assert.assertNotNull(loggedToRanker(feature));
-        }
-    }
-
-    /**
-     * Asserts that all the expected outcomes have been logged to Ranker.
-     **/
-    private void assertLoggedAllExpectedOutcomesToRanker() {
-        for (int feature = 0; feature < ContextualSearchInteractionRecorder.Feature.NUM_ENTRIES;
-                feature++) {
-            if (expectedOutcomeName(feature) != null) {
-                Assert.assertNotNull("Expected this outcome to be logged: " + feature,
-                        getRankerLogger().getOutcomesLogged().get(feature));
-            }
-        }
-    }
 
     //============================================================================================
     // Test Cases

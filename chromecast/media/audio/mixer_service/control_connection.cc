@@ -6,8 +6,9 @@
 
 #include <utility>
 
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
+#include "chromecast/media/audio/net/common.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "net/socket/stream_socket.h"
 
 namespace chromecast {
@@ -33,7 +34,7 @@ void ControlConnection::SetVolume(AudioContentType type,
   if (socket_) {
     Generic message;
     auto* volume = message.mutable_set_device_volume();
-    volume->set_content_type(ConvertContentType(type));
+    volume->set_content_type(audio_service::ConvertContentType(type));
     volume->set_volume_multiplier(volume_multiplier);
     if (!socket_->SendProto(0, message)) {
       OnSendFailed();
@@ -50,7 +51,7 @@ void ControlConnection::SetMuted(AudioContentType type, bool muted) {
   if (socket_) {
     Generic message;
     auto* mute_message = message.mutable_set_device_muted();
-    mute_message->set_content_type(ConvertContentType(type));
+    mute_message->set_content_type(audio_service::ConvertContentType(type));
     mute_message->set_muted(muted);
     if (!socket_->SendProto(0, message)) {
       OnSendFailed();
@@ -68,7 +69,7 @@ void ControlConnection::SetVolumeLimit(AudioContentType type,
   if (socket_) {
     Generic message;
     auto* limit = message.mutable_set_volume_limit();
-    limit->set_content_type(ConvertContentType(type));
+    limit->set_content_type(audio_service::ConvertContentType(type));
     limit->set_max_volume_multiplier(max_volume_multiplier);
     if (!socket_->SendProto(0, message)) {
       OnSendFailed();
@@ -163,7 +164,7 @@ void ControlConnection::OnConnected(std::unique_ptr<MixerSocket> socket) {
   for (const auto& item : volume_limit_) {
     Generic message;
     auto* limit = message.mutable_set_volume_limit();
-    limit->set_content_type(ConvertContentType(item.first));
+    limit->set_content_type(audio_service::ConvertContentType(item.first));
     limit->set_max_volume_multiplier(item.second);
     if (!socket_->SendProto(0, message)) {
       return OnSendFailed();
@@ -173,7 +174,7 @@ void ControlConnection::OnConnected(std::unique_ptr<MixerSocket> socket) {
   for (const auto& item : muted_) {
     Generic message;
     auto* muted = message.mutable_set_device_muted();
-    muted->set_content_type(ConvertContentType(item.first));
+    muted->set_content_type(audio_service::ConvertContentType(item.first));
     muted->set_muted(item.second);
     if (!socket_->SendProto(0, message)) {
       return OnSendFailed();
@@ -183,7 +184,7 @@ void ControlConnection::OnConnected(std::unique_ptr<MixerSocket> socket) {
   for (const auto& item : volume_) {
     Generic message;
     auto* volume = message.mutable_set_device_volume();
-    volume->set_content_type(ConvertContentType(item.first));
+    volume->set_content_type(audio_service::ConvertContentType(item.first));
     volume->set_volume_multiplier(item.second);
     if (!socket_->SendProto(0, message)) {
       return OnSendFailed();

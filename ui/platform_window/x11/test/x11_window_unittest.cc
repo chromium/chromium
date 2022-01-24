@@ -18,8 +18,8 @@
 #include "ui/events/event.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/test/events_test_utils_x11.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/transform.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -106,6 +106,10 @@ class ShapedX11ExtensionDelegate : public X11ExtensionDelegate {
   ShapedX11ExtensionDelegate() = default;
   ~ShapedX11ExtensionDelegate() override = default;
 
+  void set_guessed_bounds(const gfx::Rect& guessed_bounds_px) {
+    guessed_bounds_px_ = guessed_bounds_px;
+  }
+
   void OnLostMouseGrab() override {}
 #if BUILDFLAG(USE_ATK)
   bool OnAtkKeyEvent(AtkKeyEventStruct* atk_key_event,
@@ -113,7 +117,13 @@ class ShapedX11ExtensionDelegate : public X11ExtensionDelegate {
     return false;
   }
 #endif
-  bool IsOverrideRedirect(bool is_tiling_wm) const override { return false; }
+  bool IsOverrideRedirect() const override { return false; }
+  gfx::Rect GetGuessedFullScreenSizeInPx() const override {
+    return guessed_bounds_px_;
+  }
+
+ private:
+  gfx::Rect guessed_bounds_px_;
 };
 
 // Blocks till the window state hint, |hint|, is set or unset.
@@ -145,7 +155,9 @@ class WMStateWaiter : public X11PropertyChangeWaiter {
 
 class TestScreen : public display::ScreenBase {
  public:
-  TestScreen() { ProcessDisplayChanged({}, true); }
+  TestScreen() {
+    ProcessDisplayChanged(display::Display(display::kDefaultDisplayId), true);
+  }
   ~TestScreen() override = default;
   TestScreen(const TestScreen& screen) = delete;
   TestScreen& operator=(const TestScreen& screen) = delete;
@@ -377,6 +389,7 @@ TEST_F(X11WindowTest, WindowManagerTogglesFullscreen) {
   TestPlatformWindowDelegate delegate;
   ShapedX11ExtensionDelegate x11_extension_delegate;
   constexpr gfx::Rect bounds(100, 100, 100, 100);
+  x11_extension_delegate.set_guessed_bounds(bounds);
   auto window = CreateX11Window(&delegate, bounds, &x11_extension_delegate);
   x11::Window x11_window = window->window();
   window->Show(false);

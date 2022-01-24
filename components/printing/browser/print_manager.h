@@ -10,8 +10,8 @@
 
 #include "build/build_config.h"
 #include "components/printing/common/print.mojom.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -29,6 +29,10 @@ class PrintManager : public content::WebContentsObserver,
   PrintManager(const PrintManager&) = delete;
   PrintManager& operator=(const PrintManager&) = delete;
   ~PrintManager() override;
+
+  void BindReceiver(
+      mojo::PendingAssociatedReceiver<mojom::PrintManagerHost> receiver,
+      content::RenderFrameHost* rfh);
 
 #if defined(OS_ANDROID)
   // TODO(timvolodine): consider introducing PrintManagerAndroid (crbug/500960)
@@ -86,8 +90,8 @@ class PrintManager : public content::WebContentsObserver,
   uint32_t number_pages_ = 0;  // Number of pages to print in the print job.
   int cookie_ = 0;        // The current document cookie.
 
-  // Holds WebContents associated mojo receivers.
-  content::WebContentsFrameReceiverSet<printing::mojom::PrintManagerHost>
+  // Holds RenderFrameHost-associated mojo receivers.
+  content::RenderFrameHostReceiverSet<printing::mojom::PrintManagerHost>
       print_manager_host_receivers_;
 
 #if defined(OS_ANDROID)

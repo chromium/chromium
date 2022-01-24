@@ -33,6 +33,8 @@ source_set("messaging") {
   ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
+
+  allow_circular_includes_from = [ "//extensions/browser:browser_sources" ]
 }
 
 # Split up from messaging to avoid circular dependency.

@@ -35,7 +35,11 @@ KEY_FINGERS=(
   "790BC7277767219C42C86F933B4FE6ACC0B21F32"
   # Ubuntu Archive Automatic Signing Key (2018)
   "F6ECB3762474EDA9D21B7022871920D1991BC93C"
+  # Debian Archive Automatic Signing Key (11/bullseye)
+  "A7236886F3CCCAAD148A27F80E98404D386FA1D9"
+  # Debian Security Archive Automatic Signing Key (11/bullseye)
+  "ED541312A33F1128F10B1C6C54404762BBB6E853"
 )
 
-gpg --keyserver ha.pool.sks-keyservers.net --recv-keys ${KEY_FINGERS[@]}
+gpg --keyserver keyserver.ubuntu.com --recv-keys ${KEY_FINGERS[@]}
 gpg --output "${SCRIPT_DIR}/repo_signing_keys.gpg" --export ${KEY_FINGERS[@]}

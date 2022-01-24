@@ -18,9 +18,9 @@ namespace cc {
 // It is safe to destroy this object as soon as Wait() returns.
 class CompletionEvent {
  public:
-  CompletionEvent()
-      : event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-               base::WaitableEvent::InitialState::NOT_SIGNALED) {
+  explicit CompletionEvent(base::WaitableEvent::ResetPolicy policy =
+                               base::WaitableEvent::ResetPolicy::AUTOMATIC)
+      : event_(policy, base::WaitableEvent::InitialState::NOT_SIGNALED) {
 #if DCHECK_IS_ON()
     waited_ = false;
     signaled_ = false;

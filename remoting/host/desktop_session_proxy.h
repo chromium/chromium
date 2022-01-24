@@ -8,22 +8,30 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_listener.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/file_transfer/ipc_file_operations.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
+#include "remoting/host/mojom/remoting_mojom_traits.h"
+#include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/screen_resolution.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
+#include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -74,7 +82,8 @@ class DesktopSessionProxy
     : public base::RefCountedThreadSafe<DesktopSessionProxy,
                                         DesktopSessionProxyTraits>,
       public IPC::Listener,
-      public IpcFileOperations::RequestHandler {
+      public IpcFileOperations::RequestHandler,
+      public mojom::DesktopSessionEventHandler {
  public:
   DesktopSessionProxy(
       scoped_refptr<base::SingleThreadTaskRunner> audio_capture_task_runner,
@@ -83,6 +92,9 @@ class DesktopSessionProxy
       base::WeakPtr<ClientSessionControl> client_session_control,
       base::WeakPtr<DesktopSessionConnector> desktop_session_connector,
       const DesktopEnvironmentOptions& options);
+
+  DesktopSessionProxy(const DesktopSessionProxy&) = delete;
+  DesktopSessionProxy& operator=(const DesktopSessionProxy&) = delete;
 
   // Mirrors DesktopEnvironment.
   std::unique_ptr<ActionExecutor> CreateActionExecutor();
@@ -94,6 +106,7 @@ class DesktopSessionProxy
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);
   std::unique_ptr<FileOperations> CreateFileOperations();
+  std::unique_ptr<UrlForwarderConfigurator> CreateUrlForwarderConfigurator();
   std::string GetCapabilities() const;
   void SetCapabilities(const std::string& capabilities);
 
@@ -101,6 +114,9 @@ class DesktopSessionProxy
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // Connects to the desktop session agent.
   bool AttachToDesktop(const IPC::ChannelHandle& desktop_pipe, int session_id);
@@ -163,6 +179,16 @@ class DesktopSessionProxy
   void Close(std::uint64_t file_id) override;
   void Cancel(std::uint64_t file_id) override;
 
+  // mojom::DesktopSessionEventHandler implementation.
+  void OnClipboardEvent(const protocol::ClipboardEvent& event) override;
+  void OnUrlForwarderStateChange(mojom::UrlForwarderState state) override;
+
+  // API used to implement the UrlForwarderConfigurator interface.
+  void IsUrlForwarderSetUp(
+      UrlForwarderConfigurator::IsUrlForwarderSetUpCallback callback);
+  void SetUpUrlForwarder(
+      const UrlForwarderConfigurator::SetUpUrlForwarderCallback& callback);
+
   uint32_t desktop_session_id() const { return desktop_session_id_; }
 
  private:
@@ -201,9 +227,6 @@ class DesktopSessionProxy
 
   // Handles KeyboardChanged notification from the desktop session agent.
   void OnKeyboardChanged(const protocol::KeyboardLayout& layout);
-
-  // Handles InjectClipboardEvent request from the desktop integration process.
-  void OnInjectClipboardEvent(const std::string& serialized_event);
 
   // Sends a message to the desktop session agent. The message is silently
   // deleted if the channel is broken.
@@ -269,7 +292,21 @@ class DesktopSessionProxy
   // is called on IpcKeyboardLayoutMonitor.
   absl::optional<protocol::KeyboardLayout> keyboard_layout_;
 
-  DISALLOW_COPY_AND_ASSIGN(DesktopSessionProxy);
+  // |desktop_session_control_| is only valid when |desktop_channel_| is
+  // connected. The desktop process can be detached and reattached several times
+  // during a session (e.g. transitioning between the login screen and user
+  // desktop) so the validity of this remote must be checked before calling a
+  // method on it.
+  mojo::AssociatedRemote<mojom::DesktopSessionControl> desktop_session_control_;
+  mojo::AssociatedReceiver<mojom::DesktopSessionEventHandler>
+      desktop_session_event_handler_{this};
+
+  UrlForwarderConfigurator::IsUrlForwarderSetUpCallback
+      is_url_forwarder_set_up_callback_;
+  UrlForwarderConfigurator::SetUpUrlForwarderCallback
+      set_up_url_forwarder_callback_;
+  mojom::UrlForwarderState current_url_forwarder_state_ =
+      mojom::UrlForwarderState::kUnknown;
 };
 
 // Destroys |DesktopSessionProxy| instances on the caller's thread.

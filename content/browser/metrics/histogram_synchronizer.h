@@ -9,10 +9,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/metrics/histogram_subscriber.h"
 
@@ -58,6 +57,9 @@ class HistogramSynchronizer : public HistogramSubscriber {
   // Return pointer to the singleton instance for the current process, or NULL
   // if none.
   static HistogramSynchronizer* GetInstance();
+
+  HistogramSynchronizer(const HistogramSynchronizer&) = delete;
+  HistogramSynchronizer& operator=(const HistogramSynchronizer&) = delete;
 
   // Contact all processes, and get them to upload to the browser any/all
   // changes to histograms. This method is called from about:histograms.
@@ -143,8 +145,6 @@ class HistogramSynchronizer : public HistogramSubscriber {
   // The sequence number used by the most recent asynchronous update request to
   // contact all processes.
   int async_sequence_number_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramSynchronizer);
 };
 
 }  // namespace content

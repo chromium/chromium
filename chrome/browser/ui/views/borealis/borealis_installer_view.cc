@@ -255,7 +255,6 @@ void BorealisInstallerView::OnInstallationEnded(
   switch (result) {
     using ResultEnum = borealis::BorealisInstallResult;
     case ResultEnum::kSuccess:
-      DCHECK_EQ(installing_state_, InstallingState::kInstallingDlc);
       state_ = State::kCompleted;
       break;
     case ResultEnum::kCancelled:

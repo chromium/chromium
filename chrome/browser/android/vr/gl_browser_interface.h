@@ -9,7 +9,7 @@
 #include "chrome/browser/vr/assets_load_status.h"
 #include "chrome/browser/vr/ui_test_input.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gl {
 class SurfaceTexture;

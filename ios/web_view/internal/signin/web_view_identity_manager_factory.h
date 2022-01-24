@@ -27,6 +27,10 @@ class WebViewIdentityManagerFactory : public BrowserStateKeyedServiceFactory {
   // Returns an instance of the WebViewIdentityManagerFactory singleton.
   static WebViewIdentityManagerFactory* GetInstance();
 
+  WebViewIdentityManagerFactory(const WebViewIdentityManagerFactory&) = delete;
+  WebViewIdentityManagerFactory& operator=(
+      const WebViewIdentityManagerFactory&) = delete;
+
  private:
   friend class base::NoDestructor<WebViewIdentityManagerFactory>;
 
@@ -38,8 +42,6 @@ class WebViewIdentityManagerFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewIdentityManagerFactory);
 };
 
 }  // namespace ios_web_view

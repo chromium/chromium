@@ -10,6 +10,7 @@ namespace ash {
 
 UndirectedGraph::UndirectedGraph() = default;
 UndirectedGraph::~UndirectedGraph() = default;
+UndirectedGraph::UndirectedGraph(const UndirectedGraph&) = default;
 
 void UndirectedGraph::AddEdge(size_t from_node, size_t to_node) {
   EnsureSize(from_node);

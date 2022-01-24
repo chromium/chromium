@@ -14,10 +14,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/intent_helper/adaptive_icon_delegate.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -114,11 +114,13 @@ ActivityIconLoader::Icons ResizeIconsInternal(
   gfx::ImageSkia icon_large(gfx::ImageSkiaOperations::CreateResizedImage(
       image, skia::ImageOperations::RESIZE_BEST,
       gfx::Size(kLargeIconSizeInDip, kLargeIconSizeInDip)));
+  icon_large.MakeThreadSafe();
   gfx::Image icon20(icon_large);
 
   gfx::ImageSkia icon_small(gfx::ImageSkiaOperations::CreateResizedImage(
       image, skia::ImageOperations::RESIZE_BEST,
       gfx::Size(kSmallIconSizeInDip, kSmallIconSizeInDip)));
+  icon_small.MakeThreadSafe();
   gfx::Image icon16(icon_small);
 
   return ActivityIconLoader::Icons(

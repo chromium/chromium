@@ -23,8 +23,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-constexpr base::TimeDelta kSetDefaultIconDelayMs =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kSetDefaultIconDelayMs = base::Milliseconds(1000);
 
 constexpr int kArcAppWindowIconSize = extension_misc::EXTENSION_ICON_MEDIUM;
 }  // namespace

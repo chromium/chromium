@@ -16,8 +16,8 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/icc_profile.h"
-#include "ui/gfx/transform.h"
 
 namespace display {
 namespace {

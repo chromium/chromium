@@ -30,6 +30,12 @@ class BluetoothRemoteGattDescriptorCast : public BluetoothRemoteGattDescriptor {
   BluetoothRemoteGattDescriptorCast(
       BluetoothRemoteGattCharacteristicCast* characteristic,
       scoped_refptr<chromecast::bluetooth::RemoteDescriptor> remote_descriptor);
+
+  BluetoothRemoteGattDescriptorCast(const BluetoothRemoteGattDescriptorCast&) =
+      delete;
+  BluetoothRemoteGattDescriptorCast& operator=(
+      const BluetoothRemoteGattDescriptorCast&) = delete;
+
   ~BluetoothRemoteGattDescriptorCast() override;
 
   // BluetoothGattDescriptor implementation:
@@ -69,7 +75,6 @@ class BluetoothRemoteGattDescriptorCast : public BluetoothRemoteGattDescriptor {
   std::vector<uint8_t> value_;
 
   base::WeakPtrFactory<BluetoothRemoteGattDescriptorCast> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattDescriptorCast);
 };
 
 }  // namespace device

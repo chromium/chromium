@@ -40,11 +40,11 @@ function getColor(inputColor, tableValues) {
 tableValuesR = [0, 0, 1, 1];
 tableValuesG = [2, 0, 0.5, 3];
 tableValuesB = [1, -1, 5, 0];
-ctx.filter = new CanvasFilter({componentTransfer: {
+ctx.filter = new CanvasFilter({filter: "componentTransfer",
     funcR: {type: "table", tableValues: tableValuesR},
     funcG: {type: "table", tableValues: tableValuesG},
     funcB: {type: "table", tableValues: tableValuesB},
-}});
+});
 
 const inputColors = [
     [255, 255, 255],
@@ -60,6 +60,7 @@ for (const color of inputColors) {
     ctx.fillRect(0, 0, 10, 10);
     _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
 }
+t.done()
 
 
 });

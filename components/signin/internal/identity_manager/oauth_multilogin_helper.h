@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
@@ -47,6 +46,9 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
       const std::string& external_cc_result,
       const gaia::GaiaSource& gaia_source,
       base::OnceCallback<void(SetAccountsInCookieResult)> callback);
+
+  OAuthMultiloginHelper(const OAuthMultiloginHelper&) = delete;
+  OAuthMultiloginHelper& operator=(const OAuthMultiloginHelper&) = delete;
 
   ~OAuthMultiloginHelper() override;
 
@@ -100,8 +102,6 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   std::set<std::pair<std::string, std::string>> cookies_to_set_;
 
   base::WeakPtrFactory<OAuthMultiloginHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OAuthMultiloginHelper);
 };
 
 }  // namespace signin

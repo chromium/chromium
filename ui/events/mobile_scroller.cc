@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"
 
@@ -43,6 +42,9 @@ struct ViscosityConstants {
     viscous_fluid_normalize_ = 1.0f / ApplyViscosity(1.0f);
   }
 
+  ViscosityConstants(const ViscosityConstants&) = delete;
+  ViscosityConstants& operator=(const ViscosityConstants&) = delete;
+
   float ApplyViscosity(float x) {
     x *= viscous_fluid_scale_;
     if (x < 1.0f) {
@@ -60,8 +62,6 @@ struct ViscosityConstants {
   // This controls the intensity of the viscous fluid effect.
   float viscous_fluid_scale_;
   float viscous_fluid_normalize_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViscosityConstants);
 };
 
 struct SplineConstants {
@@ -109,6 +109,9 @@ struct SplineConstants {
     spline_position_[NUM_SAMPLES] = spline_time_[NUM_SAMPLES] = 1.0f;
   }
 
+  SplineConstants(const SplineConstants&) = delete;
+  SplineConstants& operator=(const SplineConstants&) = delete;
+
   void CalculateCoefficients(float t,
                              float* distance_coef,
                              float* velocity_coef) {
@@ -130,8 +133,6 @@ struct SplineConstants {
 
   float spline_position_[NUM_SAMPLES + 1];
   float spline_time_[NUM_SAMPLES + 1];
-
-  DISALLOW_COPY_AND_ASSIGN(SplineConstants);
 };
 
 float ComputeDeceleration(float friction) {
@@ -216,7 +217,7 @@ void MobileScroller::StartScroll(float start_x,
                                  float dy,
                                  base::TimeTicks start_time) {
   StartScroll(start_x, start_y, dx, dy, start_time,
-              base::TimeDelta::FromMilliseconds(kDefaultDurationMs));
+              base::Milliseconds(kDefaultDurationMs));
 }
 
 void MobileScroller::StartScroll(float start_x,
@@ -461,8 +462,7 @@ base::TimeDelta MobileScroller::GetSplineFlingDuration(float velocity) const {
   const double l = GetSplineDeceleration(velocity);
   const double decel_minus_one = kDecelerationRate - 1.0;
   const double time_seconds = std::exp(l / decel_minus_one);
-  return base::TimeDelta::FromMicroseconds(time_seconds *
-                                           base::Time::kMicrosecondsPerSecond);
+  return base::Microseconds(time_seconds * base::Time::kMicrosecondsPerSecond);
 }
 
 double MobileScroller::GetSplineFlingDistance(float velocity) const {

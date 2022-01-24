@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_CURSOR_POSITION_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_CURSOR_POSITION_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace ui {
@@ -15,6 +14,10 @@ namespace ui {
 class WaylandCursorPosition {
  public:
   WaylandCursorPosition();
+
+  WaylandCursorPosition(const WaylandCursorPosition&) = delete;
+  WaylandCursorPosition& operator=(const WaylandCursorPosition&) = delete;
+
   ~WaylandCursorPosition();
 
   void OnCursorPositionChanged(const gfx::Point& cursor_position);
@@ -25,8 +28,6 @@ class WaylandCursorPosition {
 
  private:
   gfx::Point cursor_surface_point_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandCursorPosition);
 };
 
 }  // namespace ui

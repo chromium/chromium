@@ -33,6 +33,9 @@ class RulesetMatcherBase {
  public:
   RulesetMatcherBase(const ExtensionId& extension_id, RulesetID ruleset_id);
 
+  RulesetMatcherBase(const RulesetMatcherBase&) = delete;
+  RulesetMatcherBase& operator=(const RulesetMatcherBase&) = delete;
+
   virtual ~RulesetMatcherBase();
 
   // Returns the ruleset's highest priority matching RequestAction for the
@@ -145,8 +148,6 @@ class RulesetMatcherBase {
   // RequestAction.
   std::map<content::GlobalRenderFrameHostId, const RequestAction>
       allowlisted_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetMatcherBase);
 };
 
 }  // namespace declarative_net_request

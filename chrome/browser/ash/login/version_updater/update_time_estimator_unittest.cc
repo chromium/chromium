@@ -11,10 +11,8 @@ namespace {
 
 constexpr int kFinalizingTimeInSeconds = 5 * 60;
 
-constexpr base::TimeDelta kTimeAdvanceSeconds10 =
-    base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kTimeAdvanceSeconds60 =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kTimeAdvanceSeconds10 = base::Seconds(10);
+constexpr base::TimeDelta kTimeAdvanceSeconds60 = base::Seconds(60);
 constexpr base::TimeDelta kZeroTime = base::TimeDelta();
 
 }  // anonymous namespace
@@ -24,6 +22,10 @@ namespace ash {
 class UpdateTimeEstimatorUnitTest : public testing::Test {
  public:
   UpdateTimeEstimatorUnitTest() = default;
+
+  UpdateTimeEstimatorUnitTest(const UpdateTimeEstimatorUnitTest&) = delete;
+  UpdateTimeEstimatorUnitTest& operator=(const UpdateTimeEstimatorUnitTest&) =
+      delete;
 
   void SetUp() override {
     time_estimator_.set_tick_clock_for_testing(&tick_clock_);
@@ -42,9 +44,6 @@ class UpdateTimeEstimatorUnitTest : public testing::Test {
   UpdateTimeEstimator time_estimator_;
 
   base::SimpleTestTickClock tick_clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdateTimeEstimatorUnitTest);
 };
 
 TEST_F(UpdateTimeEstimatorUnitTest, DownloadingTimeLeft) {
@@ -70,10 +69,9 @@ TEST_F(UpdateTimeEstimatorUnitTest, TotalTimeLeft) {
 
   tick_clock_.Advance(kTimeAdvanceSeconds10);
   EXPECT_EQ(time_estimator_.GetUpdateStatus().time_left,
-            base::TimeDelta::FromSeconds(kFinalizingTimeInSeconds) -
-                kTimeAdvanceSeconds10);
+            base::Seconds(kFinalizingTimeInSeconds) - kTimeAdvanceSeconds10);
 
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(kFinalizingTimeInSeconds));
+  tick_clock_.Advance(base::Seconds(kFinalizingTimeInSeconds));
   EXPECT_EQ(time_estimator_.GetUpdateStatus().time_left, kZeroTime);
 }
 

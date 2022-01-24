@@ -71,3 +71,20 @@ class TranslateTest(unittest.TestCase):
         translate._MapKind("asso<SomeInterface>?"), "?asso:x:SomeInterface")
     self.assertEquals(
         translate._MapKind("asso<SomeInterface&>?"), "?asso:r:x:SomeInterface")
+
+  def testSelfRecursiveUnions(self):
+    """Verifies _UnionField() raises when a union is self-recursive."""
+    tree = ast.Mojom(None, ast.ImportList(), [
+        ast.Union("SomeUnion", None,
+                  ast.UnionBody([ast.UnionField("a", None, None, "SomeUnion")]))
+    ])
+    with self.assertRaises(Exception):
+      translate.OrderedModule(tree, "mojom_tree", [])
+
+    tree = ast.Mojom(None, ast.ImportList(), [
+        ast.Union(
+            "SomeUnion", None,
+            ast.UnionBody([ast.UnionField("a", None, None, "SomeUnion?")]))
+    ])
+    with self.assertRaises(Exception):
+      translate.OrderedModule(tree, "mojom_tree", [])

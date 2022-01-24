@@ -19,11 +19,10 @@
 
 #include "base/containers/queue.h"
 #include "base/containers/small_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -64,6 +63,10 @@ class MEDIA_GPU_EXPORT VaapiVideoDecodeAccelerator
   VaapiVideoDecodeAccelerator(
       const MakeGLContextCurrentCallback& make_context_current_cb,
       const BindGLImageCallback& bind_image_cb);
+
+  VaapiVideoDecodeAccelerator(const VaapiVideoDecodeAccelerator&) = delete;
+  VaapiVideoDecodeAccelerator& operator=(const VaapiVideoDecodeAccelerator&) =
+      delete;
 
   ~VaapiVideoDecodeAccelerator() override;
 
@@ -111,7 +114,7 @@ class MEDIA_GPU_EXPORT VaapiVideoDecodeAccelerator
 
   // Notify the client that an error has occurred and decoding cannot continue.
   void NotifyError(Error error);
-  void NotifyStatus(Status status);
+  void NotifyStatus(VaapiStatus status);
 
   // Queue a input buffer for decode.
   void QueueInputBuffer(scoped_refptr<DecoderBuffer> buffer,
@@ -354,8 +357,6 @@ class MEDIA_GPU_EXPORT VaapiVideoDecodeAccelerator
 
   // The WeakPtrFactory for |weak_this_|.
   base::WeakPtrFactory<VaapiVideoDecodeAccelerator> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiVideoDecodeAccelerator);
 };
 
 }  // namespace media

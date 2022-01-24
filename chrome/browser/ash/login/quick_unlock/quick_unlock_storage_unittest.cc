@@ -38,6 +38,11 @@ base::TimeDelta GetExpirationTime(PrefService* pref_service) {
 }  // namespace
 
 class QuickUnlockStorageUnitTest : public testing::Test {
+ public:
+  QuickUnlockStorageUnitTest(const QuickUnlockStorageUnitTest&) = delete;
+  QuickUnlockStorageUnitTest& operator=(const QuickUnlockStorageUnitTest&) =
+      delete;
+
  protected:
   QuickUnlockStorageUnitTest() : profile_(std::make_unique<TestingProfile>()) {}
   ~QuickUnlockStorageUnitTest() override {}
@@ -52,8 +57,6 @@ class QuickUnlockStorageUnitTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockStorageUnitTest);
 };
 
 // Provides test-only QuickUnlockStorage APIs.
@@ -63,19 +66,27 @@ class QuickUnlockStorageTestApi {
   explicit QuickUnlockStorageTestApi(QuickUnlockStorage* quick_unlock_storage)
       : quick_unlock_storage_(quick_unlock_storage) {}
 
+  QuickUnlockStorageTestApi(const QuickUnlockStorageTestApi&) = delete;
+  QuickUnlockStorageTestApi& operator=(const QuickUnlockStorageTestApi&) =
+      delete;
+
   // Reduces the amount of strong auth time available by `time_delta`.
   void ReduceRemainingStrongAuthTimeBy(const base::TimeDelta& time_delta) {
     quick_unlock_storage_->last_strong_auth_ -= time_delta;
   }
 
-  bool HasStrongAuthInfo() {
+  base::TimeDelta TimeSinceLastStrongAuth() const {
+    EXPECT_TRUE(HasStrongAuthInfo());
+    return quick_unlock_storage_->clock_->Now() -
+           quick_unlock_storage_->last_strong_auth_;
+  }
+
+  bool HasStrongAuthInfo() const {
     return !quick_unlock_storage_->last_strong_auth_.is_null();
   }
 
  private:
   QuickUnlockStorage* quick_unlock_storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuickUnlockStorageTestApi);
 };
 
 // Verifies that marking the strong auth makes TimeSinceLastStrongAuth a > zero
@@ -95,8 +106,7 @@ TEST_F(QuickUnlockStorageUnitTest,
   base::TimeDelta expiration_time = GetExpirationTime(pref_service);
   test_api.ReduceRemainingStrongAuthTimeBy(expiration_time);
 
-  EXPECT_TRUE(quick_unlock_storage->TimeSinceLastStrongAuth() >=
-              (expiration_time / 2));
+  EXPECT_TRUE(test_api.TimeSinceLastStrongAuth() >= (expiration_time / 2));
 }
 
 // Verifies that by altering the password confirmation preference, the

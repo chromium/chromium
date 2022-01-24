@@ -69,9 +69,8 @@ BrowserIOThreadDelegate::BrowserIOThreadDelegate(
 }
 
 void BrowserIOThreadDelegate::Init() {
-  task_queues_ = std::make_unique<BrowserTaskQueues>(
-      BrowserThread::IO, sequence_manager_,
-      sequence_manager_->GetRealTimeDomain());
+  task_queues_ =
+      std::make_unique<BrowserTaskQueues>(BrowserThread::IO, sequence_manager_);
   default_task_runner_ = task_queues_->GetHandle()->GetDefaultTaskRunner();
 }
 

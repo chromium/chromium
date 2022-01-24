@@ -34,7 +34,8 @@ class MEDIA_GPU_EXPORT FrameInfoHelper {
 
   static std::unique_ptr<FrameInfoHelper> Create(
       scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
-      SharedImageVideoProvider::GetStubCB get_stub_cb);
+      SharedImageVideoProvider::GetStubCB get_stub_cb,
+      scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
   virtual ~FrameInfoHelper() = default;
 

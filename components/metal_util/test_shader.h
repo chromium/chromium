@@ -7,7 +7,7 @@
 
 #include <vector>
 #include "base/callback.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "components/metal_util/metal_util_export.h"
 
@@ -37,14 +37,13 @@ using TestShaderCallback =
                             const base::TimeDelta& compile_time)>;
 
 // A default timeout value for compiling the test shader.
-constexpr base::TimeDelta kTestShaderTimeout = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kTestShaderTimeout = base::Minutes(1);
 
 // Return the value kTestShaderTimeoutTime for |compile_time| if it times out.
-constexpr base::TimeDelta kTestShaderTimeForever =
-    base::TimeDelta::FromMinutes(3);
+constexpr base::TimeDelta kTestShaderTimeForever = base::Minutes(3);
 
 // A default delay before attempting to compile the test shader.
-constexpr base::TimeDelta kTestShaderDelay = base::TimeDelta::FromMinutes(3);
+constexpr base::TimeDelta kTestShaderDelay = base::Minutes(3);
 
 // Attempt to asynchronously compile a trivial Metal shader. If |delay| is zero,
 // then compile synchronously, otherwise, post a delayed task to do the compile.

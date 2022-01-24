@@ -20,7 +20,6 @@ component("user_prefs") {
     sources += [ "android/user_prefs_android.cc" ]
     deps += [
       "android:jni_headers",
-      "//components/embedder_support/android:browser_context",
       "//components/prefs",
       "//content/public/browser",
     ]

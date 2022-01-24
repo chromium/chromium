@@ -24,6 +24,12 @@ class FakeBluetoothLEAdvertisementPublisherWinrt
   explicit FakeBluetoothLEAdvertisementPublisherWinrt(
       Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::Advertisement::
                                  IBluetoothLEAdvertisement> advertisement);
+
+  FakeBluetoothLEAdvertisementPublisherWinrt(
+      const FakeBluetoothLEAdvertisementPublisherWinrt&) = delete;
+  FakeBluetoothLEAdvertisementPublisherWinrt& operator=(
+      const FakeBluetoothLEAdvertisementPublisherWinrt&) = delete;
+
   ~FakeBluetoothLEAdvertisementPublisherWinrt() override;
 
   // IBluetoothLEAdvertisementPublisher:
@@ -65,8 +71,6 @@ class FakeBluetoothLEAdvertisementPublisherWinrt
       ABI::Windows::Devices::Bluetooth::Advertisement::
           BluetoothLEAdvertisementPublisherStatusChangedEventArgs*>>
       handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothLEAdvertisementPublisherWinrt);
 };
 
 class FakeBluetoothLEAdvertisementPublisherFactoryWinrt
@@ -77,6 +81,12 @@ class FakeBluetoothLEAdvertisementPublisherFactoryWinrt
               IBluetoothLEAdvertisementPublisherFactory> {
  public:
   FakeBluetoothLEAdvertisementPublisherFactoryWinrt();
+
+  FakeBluetoothLEAdvertisementPublisherFactoryWinrt(
+      const FakeBluetoothLEAdvertisementPublisherFactoryWinrt&) = delete;
+  FakeBluetoothLEAdvertisementPublisherFactoryWinrt& operator=(
+      const FakeBluetoothLEAdvertisementPublisherFactoryWinrt&) = delete;
+
   ~FakeBluetoothLEAdvertisementPublisherFactoryWinrt() override;
 
   // IBluetoothLEAdvertisementPublisherFactory:
@@ -85,9 +95,6 @@ class FakeBluetoothLEAdvertisementPublisherFactoryWinrt
           IBluetoothLEAdvertisement* advertisement,
       ABI::Windows::Devices::Bluetooth::Advertisement::
           IBluetoothLEAdvertisementPublisher** value) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothLEAdvertisementPublisherFactoryWinrt);
 };
 
 }  // namespace device

@@ -422,6 +422,10 @@ DomKey DomKeyFromKeyCode(unsigned short keyCode) {
       return DomKey::ARROW_UP;
     case kVK_ContextMenu:
       return DomKey::CONTEXT_MENU;
+    case kVK_JIS_Eisu:
+      return DomKey::EISU;
+    case kVK_JIS_Kana:
+      return DomKey::KANJI_MODE;
     default:
       return DomKey::NONE;
   }
@@ -837,6 +841,12 @@ DomKey DomKeyFromNSEvent(NSEvent* event) {
         [event keyCode], [event modifierFlags], &is_dead_key);
     if (is_dead_key)
       return DomKey::DeadKeyFromCombiningCharacter(dead_dom_key_char);
+
+    // Mac Eisu Kana key events have a space symbol (U+0020) as [event
+    // characters]. However, the symbol is not generated for users and the event
+    // is just used for enabling/disabling an IME.
+    if ([event keyCode] == kVK_JIS_Eisu || [event keyCode] == kVK_JIS_Kana)
+      return DomKeyFromKeyCode([event keyCode]);
 
     // [event characters] will have dead key state applied.
     NSString* characters = [event characters];

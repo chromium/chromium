@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests provisional ignore-listing.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -18,7 +18,7 @@
   SourcesTestRunner.startDebuggerTest(step1, true);
 
   function step1() {
-    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, '_patternChangeFinishedForTests', step2);
+    TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, 'patternChangeFinishedForTests', step2);
     var frameworkRegexString = '^framework\\.js$';
     Common.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
   }

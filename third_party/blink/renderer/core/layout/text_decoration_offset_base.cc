@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/font_vertical_position_type.h"
+#include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -48,11 +49,12 @@ namespace blink {
 int TextDecorationOffsetBase::ComputeUnderlineOffset(
     ResolvedUnderlinePosition underline_position,
     float computed_font_size,
-    const FontMetrics& font_metrics,
+    const SimpleFontData* font_data,
     const Length& style_underline_offset,
     float text_decoration_thickness) const {
   float style_underline_offset_pixels =
       StyleUnderlineOffsetToPixels(style_underline_offset, computed_font_size);
+  const FontMetrics& font_metrics = font_data->GetFontMetrics();
   switch (underline_position) {
     default:
       NOTREACHED();
@@ -72,7 +74,8 @@ int TextDecorationOffsetBase::ComputeUnderlineOffset(
       // Position underline at the under edge of the lowest element's
       // content box.
       return ComputeUnderlineOffsetForUnder(
-          style_underline_offset, computed_font_size, text_decoration_thickness,
+          style_underline_offset, computed_font_size, font_data,
+          text_decoration_thickness,
           FontVerticalPositionType::BottomOfEmHeight);
   }
 }

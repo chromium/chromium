@@ -6,9 +6,11 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/window/frame_background.h"
 
@@ -28,15 +30,15 @@ BrowserFrameViewLinux::~BrowserFrameViewLinux() {
 }
 
 SkRRect BrowserFrameViewLinux::GetRestoredClipRegion() const {
-  gfx::RectF bounds(GetLocalBounds());
+  gfx::RectF bounds_dip(GetLocalBounds());
   if (ShouldDrawRestoredFrameShadow()) {
     auto border = layout_->MirroredFrameBorderInsets();
-    bounds.Inset(border);
+    bounds_dip.Inset(border);
   }
-  float radius = GetRestoredCornerRadius();
-  SkVector radii[4]{{radius, radius}, {radius, radius}, {}, {}};
+  float radius_dip = GetRestoredCornerRadiusDip();
+  SkVector radii[4]{{radius_dip, radius_dip}, {radius_dip, radius_dip}, {}, {}};
   SkRRect clip;
-  clip.setRectRadii(gfx::RectFToSkRect(bounds), radii);
+  clip.setRectRadii(gfx::RectFToSkRect(bounds_dip), radii);
   return clip;
 }
 
@@ -92,9 +94,9 @@ void BrowserFrameViewLinux::PaintRestoredFrameBorder(
     clip.inset(one_pixel, one_pixel);
 
   cc::PaintFlags flags;
-  flags.setColor(GetNativeTheme()->GetSystemColor(
-      showing_shadow ? ui::NativeTheme::kColorId_BubbleBorderWhenShadowPresent
-                     : ui::NativeTheme::kColorId_BubbleBorder));
+  flags.setColor(GetColorProvider()->GetColor(
+      showing_shadow ? ui::kColorBubbleBorderWhenShadowPresent
+                     : ui::kColorBubbleBorder));
   flags.setAntiAlias(true);
   if (showing_shadow)
     flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowValues()));
@@ -116,7 +118,7 @@ bool BrowserFrameViewLinux::ShouldDrawRestoredFrameShadow() const {
       ->ShouldDrawRestoredFrameShadow();
 }
 
-float BrowserFrameViewLinux::GetRestoredCornerRadius() const {
+float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
   if (!UseCustomFrame() || !IsTranslucentWindowOpacitySupported())
     return 0;
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(

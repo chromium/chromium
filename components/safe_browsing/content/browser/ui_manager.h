@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
@@ -46,6 +45,9 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // is found.
   class Observer {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     // Called when |resource| is classified as unsafe by SafeBrowsing, and is
     // not allowlisted.
     // The |resource| must not be accessed after OnSafeBrowsingHit returns.
@@ -55,9 +57,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
    protected:
     Observer() {}
     virtual ~Observer() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Interface via which the embedder supplies contextual information to
@@ -74,7 +73,7 @@ class SafeBrowsingUIManager : public BaseUIManager {
     // defined in BCP 47. The region subtag is not included when it adds no
     // distinguishing information to the language tag (e.g. both "en-US" and
     // "fr" are correct here).
-    virtual const std::string& GetApplicationLocale() = 0;
+    virtual std::string GetApplicationLocale() = 0;
 
     // Notifies the embedder that given events occurred so that the embedder can
     // trigger corresponding extension events if desired. This triggering is
@@ -118,12 +117,23 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
     // Returns true if metrics reporting is enabled.
     virtual bool IsMetricsAndCrashReportingEnabled() = 0;
+
+    // Returns true if sending of hit reports is enabled, in which case
+    // SafeBrowsingUIManager will send hit reports when it deems the context
+    // appropriate to do so (see ShouldSendHitReport()). If this method returns
+    // false, SafeBrowsingUIManager will never send hit reports.
+    // TODO(crbug.com/1232315): Eliminate this method if/once hit report sending
+    // is enabled in WebLayer.
+    virtual bool IsSendingOfHitReportsEnabled() = 0;
   };
 
   SafeBrowsingUIManager(
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory,
       const GURL& default_safe_page);
+
+  SafeBrowsingUIManager(const SafeBrowsingUIManager&) = delete;
+  SafeBrowsingUIManager& operator=(const SafeBrowsingUIManager&) = delete;
 
   // Displays a SafeBrowsing interstitial.
   // |resource| is the unsafe resource for which the warning is displayed.
@@ -193,8 +203,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
   // Helper method to ensure hit reports are only sent when the user has
   // opted in to extended reporting and is not currently in incognito mode.
-  static bool ShouldSendHitReport(const HitReport& hit_report,
-                                  content::WebContents* web_contents);
+  bool ShouldSendHitReport(const HitReport& hit_report,
+                           content::WebContents* web_contents);
 
  private:
   friend class SafeBrowsingUIManagerTest;
@@ -219,8 +229,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   bool shut_down_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingUIManager);
 };
 
 }  // namespace safe_browsing

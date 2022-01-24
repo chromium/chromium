@@ -4,6 +4,12 @@
 
 #include "chromeos/services/secure_channel/fake_channel.h"
 
+#include "base/callback.h"
+#include "base/containers/flat_map.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+
 namespace chromeos {
 
 namespace secure_channel {
@@ -28,6 +34,25 @@ void FakeChannel::DisconnectGeneratedRemote() {
 void FakeChannel::SendMessage(const std::string& message,
                               SendMessageCallback callback) {
   sent_messages_.push_back(std::make_pair(message, std::move(callback)));
+}
+
+void FakeChannel::RegisterPayloadFile(
+    int64_t payload_id,
+    mojom::PayloadFilesPtr payload_files,
+    mojo::PendingRemote<mojom::FilePayloadListener> listener,
+    RegisterPayloadFileCallback callback) {
+  file_payload_listeners_.emplace(payload_id, std::move(listener));
+  std::move(callback).Run(/*success=*/true);
+}
+
+void FakeChannel::SendFileTransferUpdate(int64_t payload_id,
+                                         mojom::FileTransferStatus status,
+                                         uint64_t total_bytes,
+                                         uint64_t bytes_transferred) {
+  file_payload_listeners_.at(payload_id)
+      ->OnFileTransferUpdate(mojom::FileTransferUpdate::New(
+          payload_id, status, total_bytes, bytes_transferred));
+  file_payload_listeners_.at(payload_id).FlushForTesting();
 }
 
 void FakeChannel::GetConnectionMetadata(

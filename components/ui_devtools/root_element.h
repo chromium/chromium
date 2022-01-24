@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_ROOT_ELEMENT_H_
 #define COMPONENTS_UI_DEVTOOLS_ROOT_ELEMENT_H_
 
-#include "base/macros.h"
 #include "components/ui_devtools/ui_element.h"
 
 namespace ui_devtools {
@@ -13,6 +12,10 @@ namespace ui_devtools {
 class UI_DEVTOOLS_EXPORT RootElement : public UIElement {
  public:
   explicit RootElement(UIElementDelegate* ui_element_delegate);
+
+  RootElement(const RootElement&) = delete;
+  RootElement& operator=(const RootElement&) = delete;
+
   ~RootElement() override;
 
   // UIElement:
@@ -23,9 +26,6 @@ class UI_DEVTOOLS_EXPORT RootElement : public UIElement {
   std::vector<std::string> GetAttributes() const override;
   std::pair<gfx::NativeWindow, gfx::Rect> GetNodeWindowAndScreenBounds()
       const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RootElement);
 };
 }  // namespace ui_devtools
 

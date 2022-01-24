@@ -18,6 +18,11 @@ namespace remoting {
 class FakeSecurityKeyMessageReader : public SecurityKeyMessageReader {
  public:
   FakeSecurityKeyMessageReader();
+
+  FakeSecurityKeyMessageReader(const FakeSecurityKeyMessageReader&) = delete;
+  FakeSecurityKeyMessageReader& operator=(const FakeSecurityKeyMessageReader&) =
+      delete;
+
   ~FakeSecurityKeyMessageReader() override;
 
   // SecurityKeyMessageReader interface.
@@ -36,8 +41,6 @@ class FakeSecurityKeyMessageReader : public SecurityKeyMessageReader {
   base::OnceClosure error_callback_;
 
   base::WeakPtrFactory<FakeSecurityKeyMessageReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyMessageReader);
 };
 
 }  // namespace remoting

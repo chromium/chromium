@@ -146,14 +146,15 @@ class LaserSegment {
     path_points_.push_back(ordered_points[3]);
   }
 
+  LaserSegment(const LaserSegment&) = delete;
+  LaserSegment& operator=(const LaserSegment&) = delete;
+
   SkPath path() const { return path_; }
   std::vector<gfx::PointF> path_points() const { return path_points_; }
 
  private:
   SkPath path_;
   std::vector<gfx::PointF> path_points_;
-
-  DISALLOW_COPY_AND_ASSIGN(LaserSegment);
 };
 
 // LaserPointerView

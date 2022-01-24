@@ -8,13 +8,20 @@
 #include <secmodt.h>
 
 #include "crypto/crypto_export.h"
+#include "crypto/scoped_nss_types.h"
 
 namespace crypto {
 
-// Loads chaps module for this NSS session.
+// Loads chaps module for this NSS session. Should be called on a worker thread.
 CRYPTO_EXPORT SECMODModule* LoadChaps();
 
-// Returns true if chaps is the module to which |slot| is attached.
+// Returns a slot with `slot_id` from the `chaps_module`. Should be called on a
+// worker thread.
+CRYPTO_EXPORT ScopedPK11Slot GetChapsSlot(SECMODModule* chaps_module,
+                                          CK_SLOT_ID slot_id);
+
+// Returns true if chaps is the module to which |slot| is attached. Should be
+// called on a worker thread.
 CRYPTO_EXPORT bool IsSlotProvidedByChaps(PK11SlotInfo* slot);
 
 }  // namespace crypto

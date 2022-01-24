@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_LOGS_COMMAND_LINE_LOG_SOURCE_H_
 #define CHROME_BROWSER_ASH_SYSTEM_LOGS_COMMAND_LINE_LOG_SOURCE_H_
 
-#include "base/macros.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
 namespace system_logs {
@@ -15,13 +14,14 @@ namespace system_logs {
 class CommandLineLogSource : public SystemLogsSource {
  public:
   CommandLineLogSource();
+
+  CommandLineLogSource(const CommandLineLogSource&) = delete;
+  CommandLineLogSource& operator=(const CommandLineLogSource&) = delete;
+
   ~CommandLineLogSource() override;
 
   // SystemLogsSource override.
   void Fetch(SysLogsSourceCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CommandLineLogSource);
 };
 
 }  // namespace system_logs

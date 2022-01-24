@@ -22,6 +22,7 @@ class DOMTask;
 class DOMTaskSignal;
 class ExceptionState;
 class SchedulerPostTaskOptions;
+class DOMSchedulerTest;
 class V8SchedulerPostTaskCallback;
 class WebSchedulingTaskQueue;
 
@@ -90,6 +91,8 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
+  friend class DOMSchedulerTest;
+
   static constexpr size_t kWebSchedulingPriorityCount =
       static_cast<size_t>(WebSchedulingPriority::kLastPriority) + 1;
 

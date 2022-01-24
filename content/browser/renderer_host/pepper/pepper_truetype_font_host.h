@@ -12,9 +12,8 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/renderer_host/pepper/pepper_truetype_font.h"
 #include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"
@@ -30,6 +29,9 @@ class CONTENT_EXPORT PepperTrueTypeFontHost : public ppapi::host::ResourceHost {
                          PP_Instance instance,
                          PP_Resource resource,
                          const ppapi::proxy::SerializedTrueTypeFontDesc& desc);
+
+  PepperTrueTypeFontHost(const PepperTrueTypeFontHost&) = delete;
+  PepperTrueTypeFontHost& operator=(const PepperTrueTypeFontHost&) = delete;
 
   ~PepperTrueTypeFontHost() override;
 
@@ -63,8 +65,6 @@ class CONTENT_EXPORT PepperTrueTypeFontHost : public ppapi::host::ResourceHost {
   bool initialize_completed_;
 
   base::WeakPtrFactory<PepperTrueTypeFontHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperTrueTypeFontHost);
 };
 
 }  // namespace content

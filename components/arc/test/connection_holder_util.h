@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "components/arc/session/connection_holder.h"
 
@@ -26,6 +25,10 @@ class ReadinessObserver
       : holder_(holder), closure_(std::move(closure)) {
     holder_->AddObserver(this);
   }
+
+  ReadinessObserver(const ReadinessObserver&) = delete;
+  ReadinessObserver& operator=(const ReadinessObserver&) = delete;
+
   ~ReadinessObserver() override { holder_->RemoveObserver(this); }
 
  private:
@@ -37,8 +40,6 @@ class ReadinessObserver
 
   ConnectionHolder<InstanceType, HostType>* const holder_;  // Owned by caller
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadinessObserver);
 };
 
 }  // namespace internal

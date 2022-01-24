@@ -6,6 +6,19 @@
  * @fileoverview Display manager for WebUI OOBE and login.
  */
 
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {$, ensureTransitionEndEvent} from 'chrome://resources/js/util.m.js';
+// #import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+// #import {toCssPx} from 'chrome://resources/js/cr/ui.m.js';
+// #import {loadTimeData} from './i18n_setup.js';
+// #import {OobeTypes} from './components/oobe_types.m.js';
+
+
+// #import {RESET_AVAILABLE_SCREEN_GROUP, SCREEN_APP_LAUNCH_SPLASH, SCREEN_GAIA_SIGNIN, DISPLAY_TYPE, ACCELERATOR_CANCEL, ACCELERATOR_VERSION, ACCELERATOR_RESET, ACCELERATOR_APP_LAUNCH_BAILOUT, SCREEN_OOBE_RESET, SCREEN_DEVICE_DISABLED, USER_ACTION_ROLLBACK_TOGGLED, ACCELERATOR_APP_LAUNCH_NETWORK_CONFIG, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
+// #import {MultiTapDetector} from './multi_tap_detector.m.js';
+// #import {keyboard} from './keyboard_utils.m.js'
+// #import {DisplayManagerScreenAttributes} from './components/display_manager_types.m.js'
+
 cr.define('cr.ui.login', function() {
   /**
    * Maximum time in milliseconds to wait for step transition to finish.
@@ -18,28 +31,6 @@ cr.define('cr.ui.login', function() {
   var MAX_SCREEN_TRANSITION_DURATION = 250;
 
   /**
-   * Group of screens (screen IDs) where factory-reset screen invocation is
-   * available. Newer screens using Polymer use the attribute
-   * `resetAllowed` in their `ready()` method.
-   * @type Array<string>
-   * @const
-   */
-  var RESET_AVAILABLE_SCREEN_GROUP = [
-    SCREEN_OOBE_NETWORK,
-    SCREEN_GAIA_SIGNIN,
-    SCREEN_KIOSK_ENABLE,
-    SCREEN_ERROR_MESSAGE,
-    SCREEN_PASSWORD_CHANGED,
-    SCREEN_ARC_TERMS_OF_SERVICE,
-    SCREEN_CONFIRM_PASSWORD,
-    SCREEN_UPDATE_REQUIRED,
-    SCREEN_SYNC_CONSENT,
-    SCREEN_APP_DOWNLOADING,
-    SCREEN_PIN_SETUP,
-    SCREEN_MARKETING_OPT_IN,
-  ];
-
-  /**
    * As Polymer behaviors do not provide true inheritance, when two behaviors
    * would declare same method one of them will be hidden. Also, if element
    * re-declares the method it needs explicitly iterate over behaviors and call
@@ -48,9 +39,13 @@ cr.define('cr.ui.login', function() {
    * callbacks are called.
    * @param {Element} element
    * @param {string} name function name
-   * @param {...*} arguments arguments for the function
+   * @param {...*} args arguments for the function
+   *
+   * @suppress {missingProperties}
+   * element.behaviors
+   * TODO(crbug.com/1229130) - Remove this suppression.
    */
-  function invokePolymerMethod(element, name, ...args) {
+  /* #export */ function invokePolymerMethod(element, name, ...args) {
     let method = element[name];
     if (!method || typeof method !== 'function')
       return;
@@ -75,7 +70,7 @@ cr.define('cr.ui.login', function() {
    * A display manager that manages initialization of screens,
    * transitions, error messages display.
    */
-  class DisplayManager {
+  /* #export */ class DisplayManager {
     constructor() {
       /**
        * Registered screens.
@@ -129,7 +124,7 @@ cr.define('cr.ui.login', function() {
 
       /**
        * Stored OOBE configuration for newly registered screens.
-       * @type {!OobeTypes.OobeConfiguration}
+       * @type {OobeTypes.OobeConfiguration|undefined}
        */
       this.oobe_configuration_ = undefined;
 
@@ -191,7 +186,7 @@ cr.define('cr.ui.login', function() {
     setClientAreaSize(width, height) {
       if (!cr.isChromeOS) {
         var clientArea = $('outer-container');
-        var bottom = parseInt(window.getComputedStyle(clientArea).bottom);
+        var bottom = parseInt(window.getComputedStyle(clientArea).bottom, 10);
         clientArea.style.minHeight = cr.ui.toCssPx(height - bottom);
       }
     }
@@ -222,7 +217,7 @@ cr.define('cr.ui.login', function() {
 
     /**
      * Sets the hint for calculating OOBE dialog inner padding.
-     * @param {OobeTypes.DialogPaddingMode} mode.
+     * @param {OobeTypes.DialogPaddingMode} mode
      */
     setDialogPaddingMode(mode) {
       document.documentElement.setAttribute('dialog-padding', mode);
@@ -260,7 +255,7 @@ cr.define('cr.ui.login', function() {
 
     /**
      * Returns current OOBE configuration.
-     * @return {!OobeTypes.OobeConfiguration}
+     * @return {OobeTypes.OobeConfiguration|undefined}
      */
     getOobeConfiguration() {
       return this.oobe_configuration_;
@@ -287,6 +282,10 @@ cr.define('cr.ui.login', function() {
     /**
      * Handle accelerators.
      * @param {string} name Accelerator name.
+     *
+     * @suppress {missingProperties}
+     * $('reset').userActed(...)
+     * TODO(crbug.com/1229130) - Remove this suppression.
      */
     handleAccelerator(name) {
       if (this.currentScreen && this.currentScreen.ignoreAccelerators) {
@@ -321,6 +320,10 @@ cr.define('cr.ui.login', function() {
     /**
      * Switches to the next OOBE step.
      * @param {number} nextStepIndex Index of the next step.
+     *
+     * @suppress {missingProperties}
+     * newStep.defaultControl
+     * TODO(crbug.com/1229130) - Remove this suppression.
      */
     toggleStep_(nextStepIndex, screenData) {
       let currentStepId = this.screens_[this.currentStep_];
@@ -456,6 +459,9 @@ cr.define('cr.ui.login', function() {
       let screenId = el.id;
       assert(screenId);
       assert(!this.screens_.includes(screenId), 'Duplicate screen ID.');
+      assert(
+          this.screens_.length > 0 || screenId !== SCREEN_DEVICE_DISABLED,
+          'Can not register Device disabled screen as the first');
 
       this.screens_.push(screenId);
       this.screensAttributes_.push(attributes);
@@ -512,12 +518,16 @@ cr.define('cr.ui.login', function() {
       }
     }
 
-    /** Initializes demo mode start listener. */
+    /** Initializes demo mode start listener.
+     * @suppress {missingProperties}
+     * currentScreen.onSetupDemoModeGesture()
+     * TODO(crbug.com/1229130) - Remove this suppression.
+     */
     initializeDemoModeMultiTapListener() {
       if (this.displayType_ == DISPLAY_TYPE.OOBE) {
         this.demoModeStartListener_ =
             new MultiTapDetector($('outer-container'), 10, () => {
-              let currentScreen = Oobe.getInstance().currentScreen;
+              let currentScreen = this.currentScreen;
               if (currentScreen.id === SCREEN_WELCOME) {
                 currentScreen.onSetupDemoModeGesture();
               }
@@ -531,19 +541,6 @@ cr.define('cr.ui.login', function() {
     prepareForLoginDisplay_() {
       if (this.showingViewsLogin) {
         $('top-header-bar').hidden = true;
-      }
-    }
-
-    /**
-     * Called when window size changed. Notifies current screen about
-     * change.
-     * @private
-     */
-    onWindowResize_() {
-      for (var i = 0, screenId; screenId = this.screens_[i]; ++i) {
-        var screen = $(screenId);
-        if (screen.onWindowResize)
-          screen.onWindowResize();
       }
     }
 
@@ -568,7 +565,7 @@ cr.define('cr.ui.login', function() {
     /**
      * Initializes display manager.
      */
-    static initialize() {
+    initialize() {
       let givenDisplayType = DISPLAY_TYPE.UNKNOWN;
       if (document.documentElement.hasAttribute('screen')) {
         // Display type set in HTML property.
@@ -577,36 +574,28 @@ cr.define('cr.ui.login', function() {
         // Extracting display type from URL.
         givenDisplayType = window.location.pathname.substr(1);
       }
-      let instance = Oobe.getInstance();
-      Object.getOwnPropertyNames(DISPLAY_TYPE).forEach(function(type) {
+      Object.getOwnPropertyNames(DISPLAY_TYPE).forEach( type => {
         if (DISPLAY_TYPE[type] == givenDisplayType) {
-          instance.displayType = givenDisplayType;
+          this.displayType = givenDisplayType;
         }
       });
-      if (instance.displayType == DISPLAY_TYPE.UNKNOWN) {
+      if (this.displayType == DISPLAY_TYPE.UNKNOWN) {
         console.error(
             'Unknown display type "' + givenDisplayType +
             '". Setting default.');
-        instance.displayType = DISPLAY_TYPE.LOGIN;
+        this.displayType = DISPLAY_TYPE.LOGIN;
       }
-
-      instance.initializeDemoModeMultiTapListener();
-
-      // TODO(crbug.com/1202135): Whole windowResize code is only used to switch
-      // horizontal/vertical animations on welcome screen. Remove it during
-      // OOBE redesign cleanup.
-      window.addEventListener(
-          'resize', instance.onWindowResize_.bind(instance));
+      this.initializeDemoModeMultiTapListener();
     }
 
     /**
      * Shows signin UI.
      * @param {string} opt_email An optional email for signin UI.
      */
-    static showSigninUI(opt_email) {
-      var currentScreenId = Oobe.getInstance().currentScreen.id;
-      if (currentScreenId == SCREEN_GAIA_SIGNIN)
-        Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
+    showSigninUI(opt_email) {
+      if (this.currentScreen.id == SCREEN_GAIA_SIGNIN) {
+        this.setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
+      }
       chrome.send('showAddUser', [opt_email]);
     }
 
@@ -615,12 +604,10 @@ cr.define('cr.ui.login', function() {
      * @param {boolean} forceOnline Whether online sign-in should be forced.
      *     If |forceOnline| is false previously used sign-in type will be used.
      */
-    static resetSigninUI(forceOnline) {
-      let currentScreenId = Oobe.getInstance().currentScreen.id;
-
+    resetSigninUI(forceOnline) {
       if ($(SCREEN_GAIA_SIGNIN)) {
         $(SCREEN_GAIA_SIGNIN)
-            .reset(currentScreenId == SCREEN_GAIA_SIGNIN, forceOnline);
+            .reset(this.currentScreen.id == SCREEN_GAIA_SIGNIN, forceOnline);
       }
     }
 
@@ -642,7 +629,7 @@ cr.define('cr.ui.login', function() {
       $('bluetooth-name').textContent = bluetoothName;
     }
   }
-
+  // #cr_define_end
   // Export
   return {
     DisplayManager: DisplayManager,

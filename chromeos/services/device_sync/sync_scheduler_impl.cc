@@ -73,7 +73,7 @@ void SyncSchedulerImpl::Start(
 
   // The elapsed time may be negative if the system clock is changed. In this
   // case, we immediately schedule a sync.
-  base::TimeDelta zero_delta = base::TimeDelta::FromSeconds(0);
+  base::TimeDelta zero_delta = base::Seconds(0);
   if (elapsed_time_since_last_sync < zero_delta || sync_delta < zero_delta)
     sync_delta = zero_delta;
 
@@ -86,7 +86,7 @@ void SyncSchedulerImpl::ForceSync() {
 
 base::TimeDelta SyncSchedulerImpl::GetTimeToNextSync() const {
   if (!timer_)
-    return base::TimeDelta::FromSeconds(0);
+    return base::Seconds(0);
   return timer_->GetCurrentDelay();
 }
 
@@ -170,7 +170,7 @@ base::TimeDelta SyncSchedulerImpl::GetJitteredPeriod() {
   base::TimeDelta period = GetPeriod();
   base::TimeDelta jittered_time_delta = period + (period * jitter);
   if (jittered_time_delta.InMilliseconds() < 0)
-    jittered_time_delta = base::TimeDelta::FromMilliseconds(0);
+    jittered_time_delta = base::Milliseconds(0);
   return jittered_time_delta;
 }
 

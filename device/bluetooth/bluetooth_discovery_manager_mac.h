@@ -33,6 +33,10 @@ class BluetoothDiscoveryManagerMac {
     virtual ~Observer() {}
   };
 
+  BluetoothDiscoveryManagerMac(const BluetoothDiscoveryManagerMac&) = delete;
+  BluetoothDiscoveryManagerMac& operator=(const BluetoothDiscoveryManagerMac&) =
+      delete;
+
   virtual ~BluetoothDiscoveryManagerMac();
 
   // Returns true, if discovery is currently being performed.
@@ -57,9 +61,6 @@ class BluetoothDiscoveryManagerMac {
 
   // Observer interested in notifications from us.
   Observer* observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDiscoveryManagerMac);
 };
 
 }  // namespace device

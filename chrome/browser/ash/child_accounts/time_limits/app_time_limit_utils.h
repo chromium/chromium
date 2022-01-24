@@ -7,6 +7,8 @@
 
 #include "components/policy/proto/device_management_backend.pb.h"
 
+class GURL;
+
 namespace apps {
 namespace mojom {
 enum class AppType;
@@ -28,6 +30,9 @@ bool IsWebAppOrExtension(const AppId& app_id);
 
 // Returns true if the application shares chrome's time limit.
 bool ContributesToWebTimeLimit(const AppId& app_id, AppState app_state);
+
+// Returns whether the given |app_url| is a valid extension url.
+bool IsValidExtensionUrl(const GURL& app_url);
 
 }  // namespace app_time
 }  // namespace ash

@@ -67,6 +67,10 @@ class CallbackAbortOnDestruct {
       : callback_(std::move(callback)),
         args_at_destroy_(CreateAbortCallback<R>(transaction)),
         called_(false) {}
+
+  CallbackAbortOnDestruct(const CallbackAbortOnDestruct&) = delete;
+  CallbackAbortOnDestruct& operator=(const CallbackAbortOnDestruct&) = delete;
+
   ~CallbackAbortOnDestruct() {
     if (called_)
       return;
@@ -83,7 +87,6 @@ class CallbackAbortOnDestruct {
   T callback_;
   base::OnceCallback<R()> args_at_destroy_;
   bool called_;
-  DISALLOW_COPY_AND_ASSIGN(CallbackAbortOnDestruct);
 };
 
 }  //  namespace indexed_db_callback_helpers_internal

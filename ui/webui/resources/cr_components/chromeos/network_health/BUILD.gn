@@ -11,6 +11,7 @@ assert(is_chromeos, "Only ChromeOS components belong here.")
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
+    ":mojo_interface_provider.m",
     ":network_diagnostics.m",
     ":network_diagnostics_mojo.m",
     ":network_diagnostics_types.m",
@@ -19,6 +20,12 @@ js_type_check("closure_compile_module") {
     ":network_health_summary.m",
     ":routine_group.m",
   ]
+}
+
+js_library("mojo_interface_provider.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/mojo_interface_provider.m.js" ]
+  deps = [ ":network_diagnostics_mojo.m" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("network_health_summary.m") {
@@ -34,7 +41,9 @@ js_library("network_health_summary.m") {
 
 js_library("network_health_mojo.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_health_mojo.m.js" ]
-  deps = [ "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile" ]
+  deps = [
+    "//ash/services/network_health/public/mojom:mojom_js_library_for_compile",
+  ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -48,10 +57,10 @@ js_library("network_health_container.m") {
 js_library("network_diagnostics.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics.m.js" ]
   deps = [
+    ":mojo_interface_provider.m",
     ":network_diagnostics_mojo.m",
     ":network_diagnostics_types.m",
     ":routine_group.m",
-    "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -60,7 +69,9 @@ js_library("network_diagnostics.m") {
 
 js_library("network_diagnostics_mojo.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_mojo.m.js" ]
-  deps = [ "//chromeos/services/network_health/public/mojom:mojom_js_library_for_compile" ]
+  deps = [
+    "//ash/services/network_health/public/mojom:mojom_js_library_for_compile",
+  ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -103,7 +114,10 @@ polymer_modulizer("network_diagnostics") {
   js_file = "network_diagnostics.js"
   html_file = "network_diagnostics.html"
   html_type = "dom-module"
-  auto_imports = [ "ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_types.html|Routine,RoutineResponse,RoutineGroup" ]
+  auto_imports = [
+    "ui/webui/resources/cr_components/chromeos/network_health/network_diagnostics_types.html|Routine,RoutineResponse,RoutineGroup",
+    "ui/webui/resources/cr_components/chromeos/network_health/mojo_interface_provider.html|getNetworkDiagnosticsService",
+  ]
 }
 
 polymer_modulizer("routine_group") {
@@ -115,6 +129,7 @@ polymer_modulizer("routine_group") {
 
 js_modulizer("modulize") {
   input_files = [
+    "mojo_interface_provider.js",
     "network_health_mojo.js",
     "network_diagnostics_mojo.js",
     "network_diagnostics_types.js",

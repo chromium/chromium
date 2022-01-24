@@ -49,6 +49,9 @@ class MockCancelableSyncSocket : public base::CancelableSyncSocket {
         buffer_size_(buffer_size),
         read_buffer_index_(0) {}
 
+  MockCancelableSyncSocket(const MockCancelableSyncSocket&) = delete;
+  MockCancelableSyncSocket& operator=(const MockCancelableSyncSocket&) = delete;
+
   size_t Send(const void* buffer, size_t length) override {
     EXPECT_EQ(length, sizeof(uint32_t));
 
@@ -98,8 +101,6 @@ class MockCancelableSyncSocket : public base::CancelableSyncSocket {
   int receives_;
   int buffer_size_;
   uint32_t read_buffer_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCancelableSyncSocket);
 };
 
 class InputSyncWriterTest : public testing::Test {
@@ -123,6 +124,9 @@ class InputSyncWriterTest : public testing::Test {
         kSegments, audio_params);
     audio_bus_ = media::AudioBus::Create(audio_params);
   }
+
+  InputSyncWriterTest(const InputSyncWriterTest&) = delete;
+  InputSyncWriterTest& operator=(const InputSyncWriterTest&) = delete;
 
   ~InputSyncWriterTest() override {}
 
@@ -160,9 +164,6 @@ class InputSyncWriterTest : public testing::Test {
   std::unique_ptr<InputSyncWriter> writer_;
   MockCancelableSyncSocket* socket_;
   std::unique_ptr<media::AudioBus> audio_bus_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputSyncWriterTest);
 };
 
 TEST_F(InputSyncWriterTest, SingleWriteAndRead) {

@@ -5,7 +5,6 @@
 #include <tuple>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -30,6 +29,9 @@ class PerFrameTranslateAgent : public translate::PerFrameTranslateAgent {
             render_frame,
             ISOLATED_WORLD_ID_TRANSLATE,
             render_frame->GetAssociatedInterfaceRegistry()) {}
+
+  PerFrameTranslateAgent(const PerFrameTranslateAgent&) = delete;
+  PerFrameTranslateAgent& operator=(const PerFrameTranslateAgent&) = delete;
 
   base::TimeDelta AdjustDelay(int delayInMs) override {
     // Just returns base::TimeDelta() which has initial value 0.
@@ -140,13 +142,16 @@ class PerFrameTranslateAgent : public translate::PerFrameTranslateAgent {
   absl::optional<std::string> trans_result_source_lang_;
   absl::optional<std::string> trans_result_translated_lang_;
   translate::TranslateErrors::Type trans_result_error_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerFrameTranslateAgent);
 };
 
 class PerFrameTranslateAgentBrowserTest : public ChromeRenderViewTest {
  public:
   PerFrameTranslateAgentBrowserTest() : translate_agent_(nullptr) {}
+
+  PerFrameTranslateAgentBrowserTest(const PerFrameTranslateAgentBrowserTest&) =
+      delete;
+  PerFrameTranslateAgentBrowserTest& operator=(
+      const PerFrameTranslateAgentBrowserTest&) = delete;
 
  protected:
   void SetUp() override {
@@ -160,9 +165,6 @@ class PerFrameTranslateAgentBrowserTest : public ChromeRenderViewTest {
   }
 
   PerFrameTranslateAgent* translate_agent_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PerFrameTranslateAgentBrowserTest);
 };
 
 // Tests that the browser gets notified of the translation failure if the

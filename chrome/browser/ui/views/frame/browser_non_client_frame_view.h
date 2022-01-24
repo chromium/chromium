@@ -5,17 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_H_
 
-#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
-class BrowserFrame;
 class BrowserView;
 class TabSearchBubbleHost;
 class WebAppFrameToolbarView;
@@ -31,8 +26,7 @@ enum class BrowserFrameActiveState {
 // A specialization of the NonClientFrameView object that provides additional
 // Browser-specific methods.
 class BrowserNonClientFrameView : public views::NonClientFrameView,
-                                  public ProfileAttributesStorage::Observer,
-                                  public TabStripObserver {
+                                  public ProfileAttributesStorage::Observer {
  public:
   METADATA_HEADER(BrowserNonClientFrameView);
   // The minimum total height users should have to use as a drag handle to move
@@ -212,9 +206,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
       frame_->RegisterPaintAsActiveChangedCallback(
           base::BindRepeating(&BrowserNonClientFrameView::PaintAsActiveChanged,
                               base::Unretained(this)));
-
-  base::ScopedObservation<TabStrip, TabStripObserver> tab_strip_observation_{
-      this};
 };
 
 namespace chrome {

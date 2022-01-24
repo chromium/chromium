@@ -15,8 +15,8 @@
 
 class WebStateList;
 
-// Implementation of sessions::LiveTabContext which uses an instance
-// of TabModel in order to fulfil its duties.
+// Implementation of sessions::LiveTabContext which uses a WebStateList
+// (provided by the attached-to Browser) in order to fulfil its duties.
 class LiveTabContextBrowserAgent
     : public sessions::LiveTabContext,
       public BrowserUserData<LiveTabContextBrowserAgent> {

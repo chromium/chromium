@@ -16,8 +16,11 @@
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_unittest_base.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
@@ -33,6 +36,13 @@ namespace {
 class BrowserInstantControllerTest : public InstantUnitTestBase {
  protected:
   friend class FakeWebContentsObserver;
+
+  // BrowserWithTestWindowTest:
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {{ChromeSigninClientFactory::GetInstance(),
+             base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                 test_url_loader_factory())}};
+  }
 };
 
 struct TabReloadTestCase {

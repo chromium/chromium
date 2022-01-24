@@ -10,14 +10,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "chromeos/services/libassistant/abortable_task_list.h"
-#include "chromeos/services/libassistant/assistant_client_observer.h"
+#include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-
-namespace assistant_client {
-class AssistantManager;
-class AssistantManagerInternal;
-}  // namespace assistant_client
 
 namespace chromeos {
 namespace libassistant {
@@ -38,6 +33,7 @@ class SettingsController : public AssistantClientObserver,
   void SetListeningEnabled(bool value) override;
   void SetLocale(const std::string& value) override;
   void SetSpokenFeedbackEnabled(bool value) override;
+  void SetDarkModeEnabled(bool value) override;
   void SetHotwordEnabled(bool value) override;
   void GetSettings(const std::string& selector,
                    bool include_header,
@@ -59,7 +55,8 @@ class SettingsController : public AssistantClientObserver,
   void UpdateAuthenticationTokens(
       const absl::optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens);
   void UpdateInternalOptions(const absl::optional<std::string>& locale,
-                             absl::optional<bool> spoken_feedback_enabled);
+                             absl::optional<bool> spoken_feedback_enabled,
+                             absl::optional<bool> dark_mode_enabled);
   void UpdateDeviceSettings(const absl::optional<std::string>& locale,
                             absl::optional<bool> hotword_enabled);
 
@@ -72,12 +69,11 @@ class SettingsController : public AssistantClientObserver,
 
   // Set in |OnAssistantClientCreated| and unset in
   // |OnDestroyingAssistantClient|.
-  assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
-      nullptr;
-  assistant_client::AssistantManager* assistant_manager_ = nullptr;
+  AssistantClient* assistant_client_ = nullptr;
 
   absl::optional<bool> hotword_enabled_;
   absl::optional<bool> spoken_feedback_enabled_;
+  absl::optional<bool> dark_mode_enabled_;
   absl::optional<bool> listening_enabled_;
   absl::optional<std::string> locale_;
   absl::optional<std::vector<mojom::AuthenticationTokenPtr>>

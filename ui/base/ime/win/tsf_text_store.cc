@@ -11,7 +11,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
@@ -331,19 +330,8 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
   // TODO(IME): add tests for scenario that left position is bigger than right
   // position.
   absl::optional<gfx::Rect> result_rect;
-  absl::optional<gfx::Rect> tmp_opt_rect;
   const uint32_t start_pos = acp_start - composition_start_;
   const uint32_t end_pos = acp_end - composition_start_;
-  // If there is an active EditContext, then fetch the layout bounds from it.
-  text_input_client_->GetActiveTextInputControlLayoutBounds(&tmp_opt_rect,
-                                                            &result_rect);
-  if (result_rect) {
-    *rect = display::win::ScreenWin::DIPToScreenRect(window_handle_,
-                                                     result_rect.value())
-                .ToRECT();
-    *clipped = FALSE;
-    return S_OK;
-  }
 
   gfx::Rect tmp_rect;
   if (start_pos == end_pos) {
@@ -528,8 +516,10 @@ HRESULT TSFTextStore::QueryInsert(LONG acp_test_start,
   const LONG composition_start = static_cast<LONG>(composition_start_);
   const LONG buffer_size = static_cast<LONG>(string_buffer_document_.size());
   *acp_result_start =
-      base::clamp(acp_test_start, composition_start, buffer_size);
-  *acp_result_end = base::clamp(acp_test_end, composition_start, buffer_size);
+      std::min(std::max(acp_test_start, composition_start), buffer_size);
+  *acp_result_end =
+      std::min(std::max(acp_test_end, composition_start), buffer_size) +
+      text_size;
   return S_OK;
 }
 
@@ -922,7 +912,8 @@ void TSFTextStore::DispatchKeyEvent(ui::EventType type,
 
   // prepare ui::KeyEvent.
   UINT message = type == ui::ET_KEY_PRESSED ? WM_KEYDOWN : WM_KEYUP;
-  const MSG key_event_MSG = {window_handle_, message, VK_PROCESSKEY, lparam};
+  const CHROME_MSG key_event_MSG = {window_handle_, message, VK_PROCESSKEY,
+                                    lparam};
   ui::KeyEvent key_event = KeyEventFromMSG(key_event_MSG);
 
   if (input_method_delegate_) {

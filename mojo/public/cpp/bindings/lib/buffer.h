@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -52,6 +53,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Buffer {
          size_t size);
 
   Buffer(Buffer&& other);
+
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
+
   ~Buffer();
 
   Buffer& operator=(Buffer&& other);
@@ -93,7 +98,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Buffer {
 
   // Serializes |handles| into the buffer object. Only valid to call when this
   // Buffer is backed by a message object.
-  void AttachHandles(std::vector<ScopedHandle>* handles);
+  bool AttachHandles(std::vector<ScopedHandle>* handles) WARN_UNUSED_RESULT;
 
   // Seals this Buffer so it can no longer be used for allocation, and ensures
   // the backing message object has a complete accounting of the size of the
@@ -121,8 +126,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Buffer {
   // The current write offset into |data_| if this Buffer is being used for
   // message creation.
   size_t cursor_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
 }  // namespace internal

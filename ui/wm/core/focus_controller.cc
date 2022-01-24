@@ -63,8 +63,14 @@ void FocusController::ActivateWindow(aura::Window* window) {
 }
 
 void FocusController::DeactivateWindow(aura::Window* window) {
-  if (window)
+  if (window) {
+    // FocusController implements deactivation by way of activating another
+    // window. Don't deactivate |window| if it's not active to avoid attempting
+    // to activate another window.
+    if (window != GetActiveWindow())
+      return;
     FocusWindow(rules_->GetNextActivatableWindow(window));
+  }
 }
 
 const aura::Window* FocusController::GetActiveWindow() const {
@@ -380,8 +386,8 @@ bool FocusController::SetActiveWindow(
 
   MAYBE_ACTIVATION_INTERRUPTED();
 
-  for (auto& observer : activation_observers_) {
-    observer.OnWindowActivated(
+  for (auto& activation_observer : activation_observers_) {
+    activation_observer.OnWindowActivated(
         reason, active_window_,
         window_tracker.Contains(lost_activation) ? lost_activation : nullptr);
 
@@ -460,6 +466,13 @@ void FocusController::WindowLostFocusFromDispositionChange(aura::Window* window,
 
 void FocusController::WindowFocusedFromInputEvent(aura::Window* window,
                                                   const ui::Event* event) {
+  // For focus follows cursor: avoid activating when `window` is a child of the
+  // currently active window.
+  if (event->type() == ui::ET_MOUSE_ENTERED && active_window_ &&
+      active_window_->Contains(window)) {
+    return;
+  }
+
   // Only focus |window| if it or any of its parents can be focused. Otherwise
   // FocusWindow() will focus the topmost window, which may not be the
   // currently focused one.

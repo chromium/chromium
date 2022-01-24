@@ -14,17 +14,17 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/task/current_thread.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_atomic.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_legacy.h"
 
@@ -105,10 +105,10 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
         DCHECK_EQ(base::TimeTicks::GetClock(),
                   base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
         const base::TimeTicks timestamp =
-            base::TimeTicks() + base::TimeDelta::FromMicroseconds(
-                                    static_cast<int64_t>(vblank.tv_sec) *
-                                        base::Time::kMicrosecondsPerSecond +
-                                    vblank.tv_usec);
+            base::TimeTicks() +
+            base::Microseconds(static_cast<int64_t>(vblank.tv_sec) *
+                                   base::Time::kMicrosecondsPerSecond +
+                               vblank.tv_usec);
         callback.Run(vblank.sequence, timestamp, vblank.user_data);
       } break;
       case DRM_EVENT_VBLANK:
@@ -146,6 +146,10 @@ DrmPropertyBlobMetadata::~DrmPropertyBlobMetadata() {
 class DrmDevice::PageFlipManager {
  public:
   PageFlipManager() : next_id_(0) {}
+
+  PageFlipManager(const PageFlipManager&) = delete;
+  PageFlipManager& operator=(const PageFlipManager&) = delete;
+
   ~PageFlipManager() = default;
 
   void OnPageFlip(uint32_t frame, base::TimeTicks timestamp, uint64_t id) {
@@ -192,8 +196,6 @@ class DrmDevice::PageFlipManager {
   uint64_t next_id_;
 
   std::vector<PageFlip> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageFlipManager);
 };
 
 class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
@@ -202,6 +204,9 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
       : page_flip_manager_(page_flip_manager), controller_(FROM_HERE), fd_(fd) {
     Register();
   }
+
+  IOWatcher(const IOWatcher&) = delete;
+  IOWatcher& operator=(const IOWatcher&) = delete;
 
   ~IOWatcher() override { Unregister(); }
 
@@ -235,8 +240,6 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
   base::MessagePumpLibevent::FdWatchController controller_;
 
   int fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOWatcher);
 };
 
 DrmDevice::DrmDevice(const base::FilePath& device_path,
@@ -613,6 +616,17 @@ bool DrmDevice::DropMaster() {
   TRACE_EVENT1("drm", "DrmDevice::DropMaster", "path", device_path_.value());
   DCHECK(file_.IsValid());
   return (drmDropMaster(file_.GetPlatformFile()) == 0);
+}
+
+void DrmDevice::AsValueInto(base::trace_event::TracedValue* value) const {
+  value->SetString("device_path", device_path_.value());
+  {
+    auto scoped_array = value->BeginArrayScoped("planes");
+    for (const auto& plane : plane_manager_->planes()) {
+      auto scoped_dict = value->AppendDictionaryScoped();
+      plane->AsValueInto(value);
+    }
+  }
 }
 
 bool DrmDevice::SetGammaRamp(

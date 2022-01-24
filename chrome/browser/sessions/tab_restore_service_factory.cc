@@ -11,6 +11,19 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildTemplateService(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  DCHECK(!profile->IsOffTheRecord());
+  auto client = std::make_unique<ChromeTabRestoreServiceClient>(profile);
+  return std::make_unique<sessions::TabRestoreServiceImpl>(
+      std::move(client), profile->GetPrefs(), nullptr);
+}
+
+}  // namespace
+
 // static
 sessions::TabRestoreService* TabRestoreServiceFactory::GetForProfile(
     Profile* profile) {
@@ -36,13 +49,18 @@ TabRestoreServiceFactory* TabRestoreServiceFactory::GetInstance() {
   return base::Singleton<TabRestoreServiceFactory>::get();
 }
 
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+TabRestoreServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildTemplateService);
+}
+
 TabRestoreServiceFactory::TabRestoreServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "sessions::TabRestoreService",
           BrowserContextDependencyManager::GetInstance()) {}
 
-TabRestoreServiceFactory::~TabRestoreServiceFactory() {
-}
+TabRestoreServiceFactory::~TabRestoreServiceFactory() = default;
 
 bool TabRestoreServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
@@ -50,11 +68,5 @@ bool TabRestoreServiceFactory::ServiceIsNULLWhileTesting() const {
 
 KeyedService* TabRestoreServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  DCHECK(!profile->IsOffTheRecord());
-  std::unique_ptr<sessions::TabRestoreServiceClient> client(
-      new ChromeTabRestoreServiceClient(profile));
-
-  return new sessions::TabRestoreServiceImpl(std::move(client),
-                                             profile->GetPrefs(), nullptr);
+  return BuildTemplateService(browser_context).release();
 }

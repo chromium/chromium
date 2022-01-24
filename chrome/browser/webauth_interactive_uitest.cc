@@ -32,6 +32,9 @@ class WebAuthFocusTest : public InProcessBrowserTest,
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         permission_requested_(false) {}
 
+  WebAuthFocusTest(const WebAuthFocusTest&) = delete;
+  WebAuthFocusTest& operator=(const WebAuthFocusTest&) = delete;
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.ServeFilesFromSourceDirectory("content/test/data");
@@ -69,8 +72,6 @@ class WebAuthFocusTest : public InProcessBrowserTest,
 
   // Set to true when the permission sheet is triggered.
   bool permission_requested_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAuthFocusTest);
 };
 
 // TODO(crbug.com/1222768): Disabled for being flaky.
@@ -83,8 +84,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, DISABLED_Focus) {
   // the frame be in the foreground in a focused window.
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsURL("www.example.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetHttpsURL("www.example.com", "/title1.html")));
 
   auto owned_virtual_device_factory =
       std::make_unique<device::test::VirtualFidoDeviceFactory>();

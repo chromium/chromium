@@ -98,22 +98,6 @@ namespace mojo {
 //      that case, an incoming null value is considered invalid and causes the
 //      message pipe to be disconnected.
 //
-//   4. [Optional] As mentioned above, getters for string/struct/array/map/union
-//      fields are called multiple times (twice to be exact). If you need to do
-//      some expensive calculation/conversion, you probably want to cache the
-//      result across multiple calls. You can introduce an arbitrary context
-//      object by adding two optional methods:
-//        static void* SetUpContext(const T& input);
-//        static void TearDownContext(const T& input, void* context);
-//
-//      And then you append a second parameter, void* context, to getters:
-//        static <return type> <field name>(const T& input, void* context);
-//
-//      If a T instance is not null, the serialization code will call
-//      SetUpContext() at the beginning, and pass the resulting context pointer
-//      to getters. After serialization is done, it calls TearDownContext() so
-//      that you can do any necessary cleanup.
-//
 // In the description above, methods having an |input| parameter define it as
 // const reference of T. Actually, it can be a non-const reference of T too.
 // E.g., if T contains Mojo handles or interfaces whose ownership needs to be

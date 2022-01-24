@@ -62,7 +62,8 @@ int AutofillOfferNotificationInfoBarDelegateMobile::GetIconId() const {
 
 std::u16string AutofillOfferNotificationInfoBarDelegateMobile::GetMessageText()
     const {
-  return l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_REMINDER_TITLE);
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_CARD_LINKED_OFFER_REMINDER_TITLE);
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier

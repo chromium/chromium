@@ -72,6 +72,8 @@ class CORE_EXPORT DeleteSelectionCommand final : public CompositeEditCommand {
                   EditingState*,
                   ShouldAssumeContentIsAlwaysEditable =
                       kDoNotAssumeContentIsAlwaysEditable) override;
+  void RemoveCompletelySelectedNodes(Node* start_node,
+                                     EditingState* editing_state);
   void DeleteTextFromNode(Text*, unsigned, unsigned) override;
   void RemoveRedundantBlocks(EditingState*);
 

@@ -18,9 +18,15 @@ import logging
 import multiprocessing
 import os
 import shutil
-import SimpleHTTPServer
-import SocketServer
 import sys
+
+# Python 3 moved these.
+try:
+  import SimpleHTTPServer as server
+  import SocketServer as socketserver
+except ModuleNotFoundError:
+  from http import server
+  import socketserver
 
 _SRC_PATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
@@ -230,7 +236,7 @@ def CreateArgumentParser():
                       required=True)
   parser.add_argument('--output-directory', type=str, help='Output directory',
                       required=True)
-  parser.add_argument('--arch', type=str, help='Architecture', default='arm')
+  parser.add_argument('--arch', help='Unused')
   parser.add_argument('--start-server', action='store_true', default=False,
                       help='Run an HTTP server in the output directory')
   parser.add_argument('--port', type=int, default=8000,
@@ -243,7 +249,6 @@ def main():
   args = parser.parse_args()
   logging.basicConfig(level=logging.INFO)
 
-  symbol_extractor.SetArchitecture(args.arch)
   logging.info('Parsing object files in %s', args.build_directory)
   object_files_symbols = _GetSymbolNameToFilename(args.build_directory)
   native_lib_filename = os.path.join(
@@ -291,8 +296,8 @@ def main():
 
   if args.start_server:
     os.chdir(args.output_directory)
-    httpd = SocketServer.TCPServer(
-        ('', args.port), SimpleHTTPServer.SimpleHTTPRequestHandler)
+    httpd = socketserver.TCPServer(('', args.port),
+                                   server.SimpleHTTPRequestHandler)
     logging.warning('Serving on port %d', args.port)
     httpd.serve_forever()
 

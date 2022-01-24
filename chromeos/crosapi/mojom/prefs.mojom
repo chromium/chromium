@@ -9,11 +9,17 @@ import "mojo/public/mojom/base/values.mojom";
 // Pref paths.
 [Stable, Extensible]
 enum PrefPath {
-  kUnknown = 0,
+  [Default] kUnknown = 0,
   // M89: metrics::prefs::kMetricsReportingEnabled (local state).
   kMetricsReportingEnabled = 1,
   // M89: ash::prefs::kAccessibilitySpokenFeedbackEnabled (profile).
   kAccessibilitySpokenFeedbackEnabled = 2,
+  // M90: ash::prefs::kDeviceSystemWideTracingEnabled (local state).
+  [MinVersion=1] kDeviceSystemWideTracingEnabled = 3,
+  // M96: prefs::kDnsOverHttpsMode (local state)
+  [MinVersion=2] kDnsOverHttpsMode = 4,
+  // M96: prefs::kDnsOverHttpsTemplates (local state)
+  [MinVersion=2] kDnsOverHttpsTemplates = 5,
 };
 
 // Interface for pref observers. Implemented by lacros-chrome. Used by

@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -29,7 +28,7 @@ class RenderFrameHost;
 // Implementation of the public InternalAuthenticator interface.
 // This class is meant only for trusted and internal components of Chrome to
 // use.
-class InternalAuthenticatorImpl : public autofill::InternalAuthenticator,
+class InternalAuthenticatorImpl : public webauthn::InternalAuthenticator,
                                   public WebContentsObserver {
  public:
   explicit InternalAuthenticatorImpl(RenderFrameHost* render_frame_host);
@@ -40,6 +39,7 @@ class InternalAuthenticatorImpl : public autofill::InternalAuthenticator,
 
   // InternalAuthenticator:
   void SetEffectiveOrigin(const url::Origin& origin) override;
+  void SetPaymentOptions(blink::mojom::PaymentOptionsPtr payment) override;
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       blink::mojom::Authenticator::MakeCredentialCallback callback) override;
@@ -64,6 +64,7 @@ class InternalAuthenticatorImpl : public autofill::InternalAuthenticator,
   }
 
   url::Origin effective_origin_;
+  blink::mojom::PaymentOptionsPtr payment_;
   std::unique_ptr<AuthenticatorCommon> authenticator_common_;
 
   base::WeakPtrFactory<InternalAuthenticatorImpl> weak_factory_{this};

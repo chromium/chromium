@@ -100,7 +100,7 @@ class TestServerProcess(unittest.TestCase):
         port = factory.get()
         now = time.time()
         proc = server_process.ServerProcess(port, 'python', cmd)
-        proc.write('')
+        proc.write(b'')
 
         self.assertIsNone(proc.poll())
         self.assertFalse(proc.has_crashed())

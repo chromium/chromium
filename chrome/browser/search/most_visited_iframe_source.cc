@@ -131,7 +131,7 @@ bool MostVisitedIframeSource::GetOrigin(
   if (!entry)
     return false;
 
-  *origin = entry->GetURL().GetOrigin().spec();
+  *origin = entry->GetURL().DeprecatedGetOriginAsURL().spec();
   // Origin should not include a trailing slash. That is part of the path.
   base::TrimString(*origin, "/", origin);
   return true;

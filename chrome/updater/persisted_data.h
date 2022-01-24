@@ -57,9 +57,9 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   std::string GetBrandCode(const std::string& id) const;
   void SetBrandCode(const std::string& id, const std::string& bc);
 
-  // These functions access the tag for the specified id.
-  std::string GetTag(const std::string& id) const;
-  void SetTag(const std::string& id, const std::string& tag);
+  // These functions access the AP for the specified id.
+  std::string GetAP(const std::string& id) const;
+  void SetAP(const std::string& id, const std::string& ap);
 
   // This function sets everything in the registration request object into the
   // persistent data store.

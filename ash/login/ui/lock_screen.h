@@ -13,7 +13,6 @@
 #include "ash/tray_action/tray_action.h"
 #include "ash/tray_action/tray_action_observer.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/views/widget/widget.h"
@@ -45,6 +44,9 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
 
   // The UI that this instance is displaying.
   enum class ScreenType { kLogin, kLock };
+
+  LockScreen(const LockScreen&) = delete;
+  LockScreen& operator=(const LockScreen&) = delete;
 
   // Fetch the global lock screen instance. |Show()| must have been called
   // before this.
@@ -114,8 +116,6 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
   ScopedSessionObserver session_observer_{this};
 
   std::vector<base::OnceClosure> on_shown_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreen);
 };
 
 }  // namespace ash

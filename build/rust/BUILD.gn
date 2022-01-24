@@ -1,0 +1,37 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("edition_2018") {
+  rustflags = [ "--edition=2018" ]
+}
+
+config("edition_2015") {
+  rustflags = [ "--edition=2015" ]
+}
+
+config("rust_enabled") {
+  defines = [ "RUST_ENABLED" ]
+}
+
+# The required config for cxx-generated bindings because Chromium C++ is built
+# with -fno-exceptions.
+config("cxx_cppconfig") {
+  defines = [ "RUST_CXX_NO_EXCEPTIONS" ]
+}
+
+# The required dependencies for cxx-generated bindings, that must be included
+# on the C++ side.
+source_set("cxx_cppdeps") {
+  sources = [
+    "//third_party/rust/cxx/v1/crate/include/cxx.h",
+    "//third_party/rust/cxx/v1/crate/src/cxx.cc",
+  ]
+  public_configs = [ ":cxx_cppconfig" ]
+}
+
+# The required dependencies for cxx-generated bindings, that must be included
+# on the Rust side.
+group("cxx_rustdeps") {
+  deps = [ "//third_party/rust/cxx/v1:lib" ]
+}

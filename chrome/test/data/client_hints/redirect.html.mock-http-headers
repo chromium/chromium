@@ -1,0 +1,2 @@
+HTTP/1.1 302 Redirect
+Location: https://my-site:44444/accept_ch_empty.html

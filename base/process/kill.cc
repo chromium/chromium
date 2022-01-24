@@ -55,7 +55,7 @@ void EnsureProcessTerminated(Process process) {
 #endif
           },
           std::move(process)),
-      TimeDelta::FromSeconds(2));
+      Seconds(2));
 }
 #endif  // defined(OS_WIN) || defined(OS_FUCHSIA)
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_APP_LIST_APP_SYNC_UI_STATE_FACTORY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -16,6 +15,9 @@ class Profile;
 // Singleton that owns all AppSyncUIStates and associates them with profiles.
 class AppSyncUIStateFactory : public BrowserContextKeyedServiceFactory {
  public:
+  AppSyncUIStateFactory(const AppSyncUIStateFactory&) = delete;
+  AppSyncUIStateFactory& operator=(const AppSyncUIStateFactory&) = delete;
+
   static AppSyncUIState* GetForProfile(Profile* profile);
 
   static AppSyncUIStateFactory* GetInstance();
@@ -29,8 +31,6 @@ class AppSyncUIStateFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AppSyncUIStateFactory);
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_SYNC_UI_STATE_FACTORY_H_

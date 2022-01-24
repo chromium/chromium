@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_SERVICE_FACTORY_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
@@ -29,6 +28,9 @@ class EasyUnlockServiceFactory : public BrowserContextKeyedServiceFactory {
   static EasyUnlockService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
+  EasyUnlockServiceFactory(const EasyUnlockServiceFactory&) = delete;
+  EasyUnlockServiceFactory& operator=(const EasyUnlockServiceFactory&) = delete;
+
   void set_app_path_for_testing(const base::FilePath& app_path) {
     app_path_for_testing_ = app_path;
   }
@@ -50,8 +52,6 @@ class EasyUnlockServiceFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
 
   base::FilePath app_path_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockServiceFactory);
 };
 
 }  // namespace ash

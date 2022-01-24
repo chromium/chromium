@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "fuchsia/base/mem_buffer_util.h"
 
 namespace cr_fuchsia {
 

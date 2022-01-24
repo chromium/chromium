@@ -89,17 +89,12 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // PdfViewPluginBase:
   void UpdateCursor(ui::mojom::CursorType new_cursor_type) override;
-  void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
-  void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
   void NotifySelectedFindResultChanged(int current_find_index) override;
   void CaretChanged(const gfx::Rect& caret_rect) override;
   void Alert(const std::string& message) override;
   bool Confirm(const std::string& message) override;
   std::string Prompt(const std::string& question,
                      const std::string& default_answer) override;
-  void SubmitForm(const std::string& url,
-                  const void* data,
-                  int length) override;
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;
@@ -121,12 +116,12 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // PdfViewPluginBase:
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
   std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() override;
-  void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result) override;
+  std::string RewriteRequestUrl(base::StringPiece url) const override;
   void SendMessage(base::Value message) override;
   void SaveAs() override;
   void InitImageData(const gfx::Size& size) override;
   Image GetPluginImageData() const override;
-  void SetFormFieldInFocus(bool in_focus) override;
+  void SetFormTextFieldInFocus(bool in_focus) override;
   void SetAccessibilityDocInfo(const AccessibilityDocInfo& doc_info) override;
   void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,
                                 std::vector<AccessibilityTextRunInfo> text_runs,
@@ -134,6 +129,8 @@ class OutOfProcessInstance : public PdfViewPluginBase,
                                 AccessibilityPageObjects page_objects) override;
   void SetAccessibilityViewportInfo(
       const AccessibilityViewportInfo& viewport_info) override;
+  void NotifyFindResultsChanged(int total, bool final_result) override;
+  void NotifyFindTickmarks(const std::vector<gfx::Rect>& tickmarks) override;
   void SetContentRestrictions(int content_restrictions) override;
   void SetPluginCanSave(bool can_save) override;
   void PluginDidStartLoading() override;
@@ -148,11 +145,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void UserMetricsRecordAction(const std::string& action) override;
 
  private:
-  void ResetRecentlySentFindUpdate(int32_t);
-
   bool CanSaveEdits() const;
-
-  void FormDidOpen(int32_t result);
 
   // The Pepper image data that is in sync with mutable_image_data().
   pp::ImageData pepper_image_data_;
@@ -164,13 +157,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // TODO(abodenha@chromium.org) Implement full IME support in the plugin.
   // http://crbug.com/132565
   std::unique_ptr<pp::TextInput_Dev> text_input_;
-
-  // Whether an update to the number of find results found was sent less than
-  // `kFindResultCooldownMs` milliseconds ago.
-  bool recently_sent_find_update_ = false;
-
-  // The tickmarks.
-  std::vector<pp::Rect> tickmarks_;
 
   base::WeakPtrFactory<OutOfProcessInstance> weak_factory_{this};
 };

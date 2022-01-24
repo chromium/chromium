@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/proximity_auth/proximity_monitor.h"
@@ -33,6 +32,10 @@ class ProximityMonitorImpl : public ProximityMonitor {
   // The |connection| is not owned, and must outlive |this| instance.
   ProximityMonitorImpl(chromeos::multidevice::RemoteDeviceRef remote_device,
                        chromeos::secure_channel::ClientChannel* channel);
+
+  ProximityMonitorImpl(const ProximityMonitorImpl&) = delete;
+  ProximityMonitorImpl& operator=(const ProximityMonitorImpl&) = delete;
+
   ~ProximityMonitorImpl() override;
 
   // ProximityMonitor:
@@ -110,8 +113,6 @@ class ProximityMonitorImpl : public ProximityMonitor {
 
   // Used to vend all other weak pointers.
   base::WeakPtrFactory<ProximityMonitorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProximityMonitorImpl);
 };
 
 }  // namespace proximity_auth

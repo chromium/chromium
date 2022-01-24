@@ -8,6 +8,7 @@ per-file do_not_track_toggle_test.js=sauski@google.com
 per-file metrics_reporting_tests.js=sauski@google.com
 per-file personalization_options_test.js=sauski@google.com
 per-file privacy_page_test.js=sauski@google.com
+per-file privacy_review_page_test.js=rainhard@chromium.org,sauski@google.com
 per-file recent_site_permissions_test.js=sauski@google.com
 per-file safety_check_page_test.js=sauski@google.com
 per-file secure_dns_interactive_test.js=sauski@google.com

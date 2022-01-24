@@ -18,7 +18,7 @@
 
 // Initializes the store. |userDefaults| is where the store will be persisted.
 - (instancetype)initWithUserDefaults:(NSUserDefaults*)userDefaults
-                                 key:(NSString*)keyNS_DESIGNATED_INITIALIZER;
+                                 key:(NSString*)key NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

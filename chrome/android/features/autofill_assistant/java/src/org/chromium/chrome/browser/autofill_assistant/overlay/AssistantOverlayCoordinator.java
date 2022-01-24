@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill_assistant.overlay;
 
 import android.content.Context;
+import android.graphics.RectF;
 
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -49,6 +50,10 @@ public class AssistantOverlayCoordinator {
                 WebContents webContents = model.get(AssistantOverlayModel.WEB_CONTENTS);
                 mEventFilter.setWebContents(webContents);
                 mDrawable.setWebContents(webContents);
+            } else if (AssistantOverlayModel.VISUAL_VIEWPORT == propertyKey) {
+                RectF rect = model.get(AssistantOverlayModel.VISUAL_VIEWPORT);
+                mEventFilter.setVisualViewport(rect);
+                mDrawable.setVisualViewport(rect);
             } else if (AssistantOverlayModel.TOUCHABLE_AREA == propertyKey) {
                 List<AssistantOverlayRect> area = model.get(AssistantOverlayModel.TOUCHABLE_AREA);
                 mEventFilter.setTouchableArea(area);

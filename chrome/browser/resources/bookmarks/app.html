@@ -1,4 +1,4 @@
-<style>
+<style include="cr-shared-style">
   :host {
     color: var(--cr-primary-text-color);
     display: flex;
@@ -65,9 +65,23 @@
     flex: 1;
     overflow-x: hidden;
   }
+
+  #drop-shadow {
+    display: none;
+  }
+
+  :host-context([enable-branding-update]) #drop-shadow {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  :host-context([enable-branding-update]):host([toolbar-shadow_]) #drop-shadow {
+    opacity: var(--cr-container-shadow-max-opacity);
+  }
 </style>
 <bookmarks-toolbar sidebar-width="[[sidebarWidth_]]" role="banner">
 </bookmarks-toolbar>
+<div id="drop-shadow" class="cr-container-shadow"></div>
 <div id="main-container">
   <div id="sidebar" role="tree" aria-label="$i18n{sidebarAxLabel}">
     <bookmarks-folder-node item-id="0" depth="-1"></bookmarks-folder-node>

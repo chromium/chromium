@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/permissions/last_tab_standing_tracker_observer.h"
 #include "components/keyed_service/core/keyed_service.h"

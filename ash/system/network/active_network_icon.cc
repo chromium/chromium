@@ -319,8 +319,7 @@ void ActiveNetworkIcon::ActiveNetworkStateChanged() {
 void ActiveNetworkIcon::NetworkListChanged() {
   if (purge_timer_.IsRunning())
     return;
-  purge_timer_.Start(FROM_HERE,
-                     base::TimeDelta::FromMilliseconds(kPurgeDelayMs),
+  purge_timer_.Start(FROM_HERE, base::Milliseconds(kPurgeDelayMs),
                      base::BindOnce(&ActiveNetworkIcon::PurgeNetworkIconCache,
                                     weak_ptr_factory_.GetWeakPtr()));
 }

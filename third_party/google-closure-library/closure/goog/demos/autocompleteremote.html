@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--
-Copyright 2007 The Closure Library Authors. All Rights Reserved.
+Copyright The Closure Library Authors. All Rights Reserved.
 
 Use of this source code is governed by the Apache License, Version 2.0.
 See the COPYING file for details.
@@ -27,7 +27,7 @@ See the COPYING file for details.
   <input type="text" id="txtInput" style="width:500px"><br>
   <p>
     This data is being pulled from the server at
-    <a href="autocompleteremotedata.js">autocompleteremotedata.js</a>.
+    <a href="autocompleteremotedata.json">autocompleteremotedata.json</a>.
   </p>
   <p>
     Ideally the server would perform a search on the query and would only
@@ -36,7 +36,7 @@ See the COPYING file for details.
 
   <script>
     var input = document.getElementById('txtInput');
-    var ac = new goog.ui.ac.Remote('autocompleteremotedata.js',
+    var ac = new goog.ui.ac.Remote('autocompleteremotedata.json',
         input);
   </script>
 
@@ -46,7 +46,7 @@ See the COPYING file for details.
   <input type="text" id="txtInput2" style="width:500px"><br>
   <p>
     This data is being pulled from the server at
-    <a href="autocompleteremotedata.js">autocompleteremotedata.js</a>.
+    <a href="autocompleteremotedata.json">autocompleteremotedata.json</a>.
   </p>
   <p>
     This sets up a client-side cache of suggestions from the server, and matches
@@ -59,7 +59,7 @@ See the COPYING file for details.
     var input = document.getElementById('txtInput2');
 
     var matcher = new goog.ui.ac.CachingMatcher(
-      new goog.ui.ac.RemoteArrayMatcher('autocompleteremotedata.js'));
+      new goog.ui.ac.RemoteArrayMatcher('autocompleteremotedata.json'));
     // Note - we specify a very low throttle time (10ms) because we are serving
     // these responses directly from the client cache. By default, the
     // CachingMatcher already throttles the requests to its underlying matcher

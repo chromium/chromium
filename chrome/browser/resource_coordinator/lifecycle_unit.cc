@@ -14,6 +14,9 @@ LifecycleUnit::SortKey::SortKey(base::TimeTicks last_focused_time)
 
 LifecycleUnit::SortKey::SortKey(const SortKey& other) = default;
 
+LifecycleUnit::SortKey& LifecycleUnit::SortKey::operator=(
+    const SortKey& other) = default;
+
 bool LifecycleUnit::SortKey::operator<(const SortKey& other) const {
   return last_focused_time < other.last_focused_time;
 }

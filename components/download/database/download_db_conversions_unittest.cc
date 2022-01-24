@@ -8,6 +8,7 @@
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -52,6 +53,14 @@ InProgressInfo CreateInProgressInfo() {
       std::make_pair<std::string, std::string>("ABC", "def"));
   info.download_schedule = absl::make_optional<DownloadSchedule>(
       false /*only_on_wifi*/, absl::nullopt);
+  info.credentials_mode = ::network::mojom::CredentialsMode::kOmit;
+  return info;
+}
+
+InProgressInfo CreateInProgressInfoWithRerouteInfo(
+    DownloadItemRerouteInfo reroute_info) {
+  InProgressInfo info = CreateInProgressInfo();
+  info.reroute_info = std::move(reroute_info);
   return info;
 }
 
@@ -158,6 +167,19 @@ TEST_F(DownloadDBConversionsTest, InProgressInfo) {
   // InProgressInfo with valid fields.
   info = CreateInProgressInfo();
   EXPECT_EQ(info, InProgressInfoFromProto(InProgressInfoToProto(info)));
+}
+
+TEST_F(DownloadDBConversionsTest, RerouteInfo) {
+  DownloadItemRerouteInfo reroute_info;
+  reroute_info.set_service_provider(
+      enterprise_connectors::FileSystemServiceProvider::BOX);
+  reroute_info.mutable_box()->set_file_id("12345");
+
+  // InProgressInfo with valid fields.
+  InProgressInfo info = CreateInProgressInfoWithRerouteInfo(reroute_info);
+  EXPECT_EQ(info, InProgressInfoFromProto(InProgressInfoToProto(info)));
+  EXPECT_EQ(reroute_info.SerializeAsString(),
+            info.reroute_info.SerializeAsString());
 }
 
 TEST_F(DownloadDBConversionsTest, UkmInfo) {

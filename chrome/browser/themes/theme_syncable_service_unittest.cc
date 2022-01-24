@@ -27,7 +27,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/sync_error.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/test/model/fake_sync_change_processor.h"
 #include "components/sync/test/model/sync_change_processor_wrapper_for_test.h"
@@ -58,8 +58,10 @@ static const char kCustomThemeUrl[] = "http://update.url/foo";
 #if defined(OS_WIN)
 const base::FilePath::CharType kExtensionFilePath[] =
     FILE_PATH_LITERAL("c:\\foo");
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 const base::FilePath::CharType kExtensionFilePath[] = FILE_PATH_LITERAL("/oo");
+#else
+#error "Unknown platform"
 #endif
 
 const ThemeHelper& GetThemeHelper() {

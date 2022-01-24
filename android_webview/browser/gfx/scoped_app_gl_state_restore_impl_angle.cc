@@ -7,6 +7,7 @@
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 
+#include "base/android/build_info.h"
 #include "base/native_library.h"
 #include "base/threading/thread_restrictions.h"
 #include "ui/gl/gl_context.h"
@@ -71,6 +72,20 @@ ScopedAppGLStateRestoreImplAngle::ScopedAppGLStateRestoreImplAngle(
   egl_context_ = os::eglGetCurrentContextFn();
   DCHECK_NE(egl_context_, EGL_NO_CONTEXT) << " no native context is current.";
 #endif
+
+  if (base::android::BuildInfo::GetInstance()->sdk_int() ==
+      base::android::SDK_VERSION_S) {
+    GLint red_bits = 0;
+    GLint green_bits = 0;
+    GLint blue_bits = 0;
+    GLint alpha_bits = 0;
+    os::glGetIntegervFn(GL_RED_BITS, &red_bits);
+    os::glGetIntegervFn(GL_GREEN_BITS, &green_bits);
+    os::glGetIntegervFn(GL_BLUE_BITS, &blue_bits);
+    os::glGetIntegervFn(GL_ALPHA_BITS, &alpha_bits);
+    skip_draw_ =
+        red_bits == 8 && green_bits == 0 && blue_bits == 0 && alpha_bits == 0;
+  }
 
   // Query |stencil_state_| with native GL API.
   // Android should have made a native EGL context current, so we can call GL

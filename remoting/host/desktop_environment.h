@@ -29,6 +29,7 @@ class FileOperations;
 class InputInjector;
 class KeyboardLayoutMonitor;
 class ScreenControls;
+class UrlForwarderConfigurator;
 
 namespace protocol {
 class KeyboardLayout;
@@ -53,6 +54,8 @@ class DesktopEnvironment {
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)>
           callback) = 0;
   virtual std::unique_ptr<FileOperations> CreateFileOperations() = 0;
+  virtual std::unique_ptr<UrlForwarderConfigurator>
+  CreateUrlForwarderConfigurator() = 0;
 
   // For platforms that require the mouse cursor to be composited into the video
   // stream when it is not rendered by the client, returns a composing capturer.

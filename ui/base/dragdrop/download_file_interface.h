@@ -10,10 +10,6 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 
-#if defined(OS_WIN)
-#include <objidl.h>
-#endif
-
 namespace base {
 class FilePath;
 }

@@ -111,22 +111,17 @@ class YUVReadbackTest : public testing::Test {
         << ") JSON data:" << std::endl
         << json_data;
 
-    base::ListValue* list;
-    CHECK(parsed_json.value->GetAsList(&list));
-    for (size_t i = 0; i < list->GetSize(); i++) {
-      base::Value* item = nullptr;
-      if (list->Get(i, &item)) {
-        base::DictionaryValue* dict;
-        CHECK(item->GetAsDictionary(&dict));
-        std::string name;
-        CHECK(dict->GetString("name", &name));
-        std::string trace_type;
-        CHECK(dict->GetString("ph", &trace_type));
-        // Count all except END traces, as they come in BEGIN/END pairs.
-        if (trace_type != "E" && trace_type != "e")
-          (*event_counts)[name]++;
-        VLOG(1) << "trace name: " << name;
-      }
+    CHECK(parsed_json.value->is_list());
+    for (const base::Value& dict : parsed_json.value->GetList()) {
+      CHECK(dict.is_dict());
+      const std::string* name = dict.FindStringPath("name");
+      CHECK(name);
+      const std::string* trace_type = dict.FindStringPath("ph");
+      CHECK(trace_type);
+      // Count all except END traces, as they come in BEGIN/END pairs.
+      if (*trace_type != "E" && *trace_type != "e")
+        (*event_counts)[*name]++;
+      VLOG(1) << "trace name: " << *name;
     }
   }
 
@@ -374,14 +369,12 @@ class YUVReadbackTest : public testing::Test {
             // on its coded size.
             gfx::Size((output_xsize + 15) & ~15, (output_ysize + 15) & ~15),
             gfx::Rect(0, 0, output_xsize, output_ysize),
-            gfx::Size(output_xsize, output_ysize),
-            base::TimeDelta::FromSeconds(0));
+            gfx::Size(output_xsize, output_ysize), base::Seconds(0));
     scoped_refptr<media::VideoFrame> truth_frame =
         media::VideoFrame::CreateFrame(
             media::PIXEL_FORMAT_I420, gfx::Size(output_xsize, output_ysize),
             gfx::Rect(0, 0, output_xsize, output_ysize),
-            gfx::Size(output_xsize, output_ysize),
-            base::TimeDelta::FromSeconds(0));
+            gfx::Size(output_xsize, output_ysize), base::Seconds(0));
 
     base::RunLoop run_loop;
     auto run_quit_closure = [](base::OnceClosure quit_closure, bool result) {

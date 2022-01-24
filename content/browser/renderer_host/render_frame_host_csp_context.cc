@@ -56,9 +56,10 @@ void RenderFrameHostCSPContext::SanitizeDataForUseInCspViolation(
   }
 
   if (sanitize_blocked_url)
-    *blocked_url = blocked_url->GetOrigin();
+    *blocked_url = blocked_url->DeprecatedGetOriginAsURL();
   if (sanitize_source_location) {
-    source_location->url = source_location_url.GetOrigin().spec();
+    source_location->url =
+        source_location_url.DeprecatedGetOriginAsURL().spec();
     source_location->line = 0u;
     source_location->column = 0u;
   }

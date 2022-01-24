@@ -49,8 +49,6 @@ const char kExtensionBlocklistUrlPrefix[] =
 const char kExtensionBlocklistHttpsUrlPrefix[] =
     "https://www.gstatic.com/chrome/extensions/blocklist";
 
-const char kThumbsWhiteListedExtension[] = "khopmbdjffemhegeeobelklnbglcdgfh";
-
 }  // namespace
 
 ChromeExtensionsClient::ChromeExtensionsClient() {
@@ -141,19 +139,6 @@ URLPatternSet ChromeExtensionsClient::GetPermittedChromeSchemeHosts(
   hosts.AddPattern(URLPattern(URLPattern::SCHEME_CHROMEUI,
                               chrome::kChromeUIFaviconURL));
 
-  // Experimental extensions are also allowed chrome://thumb.
-  //
-  // TODO: A public API should be created for retrieving thumbnails.
-  // See http://crbug.com/222856. A temporary hack is implemented here to
-  // make chrome://thumbs available to NTP Russia extension as
-  // non-experimental.
-  if ((api_permissions.find(mojom::APIPermissionID::kExperimental) !=
-       api_permissions.end()) ||
-      (extension->id() == kThumbsWhiteListedExtension &&
-       extension->from_webstore())) {
-    hosts.AddPattern(URLPattern(URLPattern::SCHEME_CHROMEUI,
-                                chrome::kChromeUIThumbnailURL));
-  }
   return hosts;
 }
 

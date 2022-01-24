@@ -53,6 +53,10 @@ class ExtensionHost : public DeferredStartRenderHost,
                 content::SiteInstance* site_instance,
                 const GURL& url,
                 mojom::ViewType host_type);
+
+  ExtensionHost(const ExtensionHost&) = delete;
+  ExtensionHost& operator=(const ExtensionHost&) = delete;
+
   ~ExtensionHost() override;
 
   // This may be null if the extension has been or is being unloaded.
@@ -107,7 +111,8 @@ class ExtensionHost : public DeferredStartRenderHost,
                          content::RenderFrameHost* host) override;
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void DocumentAvailableInMainFrame(
       content::RenderFrameHost* render_frame_host) override;
   void DidStopLoading() override;
@@ -136,6 +141,8 @@ class ExtensionHost : public DeferredStartRenderHost,
       const viz::SurfaceId& surface_id,
       const gfx::Size& natural_size) override;
   void ExitPictureInPicture() override;
+  std::string GetTitleForMediaControls(
+      content::WebContents* web_contents) override;
 
   // ExtensionRegistryObserver:
   void OnExtensionReady(content::BrowserContext* browser_context,
@@ -194,8 +201,8 @@ class ExtensionHost : public DeferredStartRenderHost,
   // Whether CreateRendererNow was called before the extension was ready.
   bool is_renderer_creation_pending_ = false;
 
-  // Whether NOTIFICATION_EXTENSION_HOST_CREATED has been already delivered,
-  // since RenderFrameCreated is triggered by every main frame that is created,
+  // Whether ExtensionHostCreated() event has been fired, since
+  // RenderFrameCreated is triggered by every main frame that is created,
   // including during a cross-site navigation which uses a new main frame.
   bool has_creation_notification_already_fired_ = false;
 
@@ -231,8 +238,6 @@ class ExtensionHost : public DeferredStartRenderHost,
   base::ObserverList<ExtensionHostObserver>::Unchecked observer_list_;
 
   base::WeakPtrFactory<ExtensionHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionHost);
 };
 
 }  // namespace extensions

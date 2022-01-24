@@ -5,7 +5,6 @@
 #ifndef MEDIA_CDM_CDM_CONTEXT_REF_IMPL_H_
 #define MEDIA_CDM_CDM_CONTEXT_REF_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/cdm_context.h"
@@ -18,6 +17,10 @@ class ContentDecryptionModule;
 class MEDIA_EXPORT CdmContextRefImpl final : public CdmContextRef {
  public:
   explicit CdmContextRefImpl(scoped_refptr<ContentDecryptionModule> cdm);
+
+  CdmContextRefImpl(const CdmContextRefImpl&) = delete;
+  CdmContextRefImpl& operator=(const CdmContextRefImpl&) = delete;
+
   ~CdmContextRefImpl() final;
 
   // CdmContextRef implementation.
@@ -26,8 +29,6 @@ class MEDIA_EXPORT CdmContextRefImpl final : public CdmContextRef {
  private:
   scoped_refptr<ContentDecryptionModule> cdm_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CdmContextRefImpl);
 };
 
 }  // namespace media

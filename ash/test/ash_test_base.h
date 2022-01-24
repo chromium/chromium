@@ -17,7 +17,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_types.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/traits_bag.h"
@@ -71,11 +70,16 @@ class AmbientAshTestHelper;
 class AppListTestHelper;
 class AshTestHelper;
 class Shelf;
+class TestAppListClient;
 class TestShellDelegate;
 class TestSystemTrayClient;
 class UnifiedSystemTray;
 class WorkAreaInsets;
 
+// Base class for most tests in //ash. Constructs ash::Shell and all its
+// dependencies. Provides a user login session (use NoSessionAshTestBase for
+// tests that start at the login screen or need unusual user types). Sets
+// animation durations to zero via AshTestHelper/AuraTestHelper.
 class AshTestBase : public testing::Test {
  public:
   // Constructs an AshTestBase with |traits| being forwarded to its
@@ -90,6 +94,9 @@ class AshTestBase : public testing::Test {
   // Alternatively a subclass may pass a TaskEnvironment directly.
   explicit AshTestBase(
       std::unique_ptr<base::test::TaskEnvironment> task_environment);
+
+  AshTestBase(const AshTestBase&) = delete;
+  AshTestBase& operator=(const AshTestBase&) = delete;
 
   ~AshTestBase() override;
 
@@ -236,6 +243,8 @@ class AshTestBase : public testing::Test {
 
   AppListTestHelper* GetAppListTestHelper();
 
+  TestAppListClient* GetTestAppListClient();
+
   AmbientAshTestHelper* GetAmbientAshTestHelper();
 
   // Emulates an ash session that have |session_count| user sessions running.
@@ -244,8 +253,19 @@ class AshTestBase : public testing::Test {
 
   // Simulates a user sign-in. It creates a new user session, adds it to
   // existing user sessions and makes it the active user session.
+  //
+  // For convenience |user_email| is used to create an |AccountId|. For testing
+  // behavior where |AccountId|s are compared, prefer the method of the same
+  // name that takes an |AccountId| created with a valid storage key instead.
+  // See the documentation for|AccountId::GetUserEmail| for discussion.
   void SimulateUserLogin(
       const std::string& user_email,
+      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
+
+  // Simulates a user sign-in. It creates a new user session, adds it to
+  // existing user sessions and makes it the active user session.
+  void SimulateUserLogin(
+      const AccountId& account_id,
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
 
   // Simular to SimulateUserLogin but for a newly created user first ever login.
@@ -310,8 +330,6 @@ class AshTestBase : public testing::Test {
   std::unique_ptr<AshTestHelper> ash_test_helper_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshTestBase);
 };
 
 class NoSessionAshTestBase : public AshTestBase {
@@ -319,10 +337,11 @@ class NoSessionAshTestBase : public AshTestBase {
   NoSessionAshTestBase();
   explicit NoSessionAshTestBase(
       base::test::TaskEnvironment::TimeSource time_source);
-  ~NoSessionAshTestBase() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoSessionAshTestBase);
+  NoSessionAshTestBase(const NoSessionAshTestBase&) = delete;
+  NoSessionAshTestBase& operator=(const NoSessionAshTestBase&) = delete;
+
+  ~NoSessionAshTestBase() override;
 };
 
 }  // namespace ash

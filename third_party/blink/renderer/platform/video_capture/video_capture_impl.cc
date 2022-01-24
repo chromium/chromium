@@ -16,13 +16,17 @@
 #include <memory>
 #include <utility>
 
+#include <GLES2/gl2extchromium.h>
+
 #include "base/bind.h"
-#include "base/bind_post_task.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/token.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -34,6 +38,7 @@
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-blink.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
+#include "media/capture/video_capture_types.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -467,11 +472,21 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
 #endif
 
+  unsigned texture_target =
+      buffer_context_->gpu_factories()->ImageTextureTarget(
+          gpu_memory_buffer_->GetFormat());
+
 #if defined(OS_WIN)
   if (output_format ==
       media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB) {
     planes.push_back(gfx::BufferPlane::Y);
     planes.push_back(gfx::BufferPlane::UV);
+
+    // Explicitly set GL_TEXTURE_EXTERNAL_OES since ImageTextureTarget() will
+    // return GL_TEXTURE_2D due to GMB factory not supporting NV12 DXGI GMBs.
+    // See https://crbug.com/1253791#c17
+    texture_target = GL_TEXTURE_EXTERNAL_OES;
+
     if (should_recreate_shared_image ||
         buffer_context_->gmb_resources()->mailboxes[0].IsZero()) {
       auto plane_mailboxes = sii->CreateSharedImageVideoPlanes(
@@ -486,7 +501,8 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   }
 #endif  // defined(OS_WIN)
   if (planes.empty()) {
-    if (base::FeatureList::IsEnabled(media::kMultiPlaneVideoSharedImages)) {
+    if (base::FeatureList::IsEnabled(
+            media::kMultiPlaneVideoCaptureSharedImages)) {
       planes.push_back(gfx::BufferPlane::Y);
       planes.push_back(gfx::BufferPlane::UV);
     } else {
@@ -510,10 +526,6 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   }
 
   const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
-
-  const unsigned texture_target =
-      buffer_context_->gpu_factories()->ImageTextureTarget(
-          gpu_memory_buffer_->GetFormat());
 
   gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
   for (size_t plane = 0; plane < planes.size(); ++plane) {
@@ -627,6 +639,16 @@ void VideoCaptureImpl::SuspendCapture(bool suspend) {
     GetVideoCaptureHost()->Pause(device_id_);
   else
     GetVideoCaptureHost()->Resume(device_id_, session_id_, params_);
+}
+
+void VideoCaptureImpl::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+  GetVideoCaptureHost()->Crop(
+      device_id_, crop_id,
+      base::BindOnce(&VideoCaptureImpl::OnCropResult,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void VideoCaptureImpl::StartCapture(
@@ -1100,6 +1122,13 @@ void VideoCaptureImpl::OnDeviceFormatsInUse(
     const Vector<media::VideoCaptureFormat>& formats_in_use) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   std::move(callback).Run(formats_in_use);
+}
+
+void VideoCaptureImpl::OnCropResult(
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback,
+    media::mojom::CropRequestResult result) {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+  std::move(callback).Run(result);
 }
 
 bool VideoCaptureImpl::RemoveClient(int client_id, ClientInfoMap* clients) {

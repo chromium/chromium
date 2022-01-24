@@ -25,14 +25,12 @@ constexpr char kKeyRemoteControlModeEnabled[] = "remoteControlModeEnabled";
 }  // namespace
 
 CastContentWindowEmbedded::CastContentWindowEmbedded(
-    base::WeakPtr<CastContentWindow::Delegate> delegate,
     mojom::CastWebViewParamsPtr params,
     CastWindowEmbedder* cast_window_embedder,
     bool force_720p_resolution)
-    : CastContentWindow(delegate, std::move(params)),
+    : CastContentWindow(std::move(params)),
       cast_window_embedder_(cast_window_embedder),
       force_720p_resolution_(force_720p_resolution) {
-  DCHECK(delegate_);
   DCHECK(cast_window_embedder_);
 
   cast_window_embedder_->AddEmbeddedWindow(this);
@@ -141,11 +139,8 @@ void CastContentWindowEmbedded::SetHostContext(base::Value host_context) {
 
 void CastContentWindowEmbedded::NotifyVisibilityChange(
     VisibilityType visibility_type) {
-  if (delegate_) {
-    delegate_->OnVisibilityChange(visibility_type);
-  }
-  for (auto& observer : observer_list_) {
-    observer.OnVisibilityChange(visibility_type);
+  for (auto& observer : observers_) {
+    observer->OnVisibilityChange(visibility_type);
   }
 }
 
@@ -163,8 +158,8 @@ void CastContentWindowEmbedded::OnEmbedderWindowEvent(
 
   if (request.navigation && request.navigation.value() ==
                                 CastWindowEmbedder::NavigationType::GO_BACK) {
-    if (delegate_ && delegate_->CanHandleGesture(GestureType::GO_BACK)) {
-      delegate_->ConsumeGesture(
+    if (gesture_router()->CanHandleGesture(GestureType::GO_BACK)) {
+      gesture_router()->ConsumeGesture(
           GestureType::GO_BACK,
           base::BindOnce(&CastContentWindowEmbedded::ConsumeGestureCompleted,
                          base::Unretained(this)));
@@ -201,17 +196,18 @@ void CastContentWindowEmbedded::OnEmbedderWindowEvent(
   }
 
   if (request.back_gesture_progress_event) {
-    if (delegate_ && delegate_->CanHandleGesture(GestureType::GO_BACK))
-      delegate_->GestureProgress(
+    if (gesture_router()->CanHandleGesture(GestureType::GO_BACK)) {
+      gesture_router()->GestureProgress(
           GestureType::GO_BACK,
           gfx::Point(request.back_gesture_progress_event.value().x,
                      request.back_gesture_progress_event.value().y));
+    }
     return;
   }
 
   if (request.back_gesture_cancel_event) {
-    if (delegate_ && delegate_->CanHandleGesture(GestureType::GO_BACK))
-      delegate_->CancelGesture(GestureType::GO_BACK);
+    if (gesture_router()->CanHandleGesture(GestureType::GO_BACK))
+      gesture_router()->CancelGesture(GestureType::GO_BACK);
     return;
   }
 }

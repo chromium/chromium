@@ -23,10 +23,11 @@ TestUrlRequestCallback::UrlResponseInfo::UrlResponseInfo(
       proxy_server(Cronet_UrlResponseInfo_proxy_server_get(response_info)),
       received_byte_count(
           Cronet_UrlResponseInfo_received_byte_count_get(response_info)) {
-  for (uint32_t url = 0;
-       url < Cronet_UrlResponseInfo_url_chain_size(response_info); ++url) {
+  for (uint32_t url_id = 0;
+       url_id < Cronet_UrlResponseInfo_url_chain_size(response_info);
+       ++url_id) {
     url_chain.push_back(
-        Cronet_UrlResponseInfo_url_chain_at(response_info, url));
+        Cronet_UrlResponseInfo_url_chain_at(response_info, url_id));
   }
   for (uint32_t i = 0;
        i < Cronet_UrlResponseInfo_all_headers_list_size(response_info); ++i) {

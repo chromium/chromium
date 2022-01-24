@@ -8,16 +8,14 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/callback.h"
-#include "base/feature_list.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -62,17 +60,11 @@ void AccountManagerPolicyController::Start() {
   OnChildAccountTypeChanged(user_data->value());
 
   if (profile_->IsChild()) {
-    if (base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2)) {
-      edu_coexistence_consent_invalidation_controller_ =
-          std::make_unique<EduCoexistenceConsentInvalidationController>(
-              profile_, account_manager_, account_manager_facade_,
-              device_account_id_);
-      edu_coexistence_consent_invalidation_controller_->Init();
-    } else {
-      // Invalidate secondary accounts if parental consent text version for EDU
-      // accounts addition has changed.
-      CheckEduCoexistenceSecondaryAccountsInvalidationVersion();
-    }
+    edu_coexistence_consent_invalidation_controller_ =
+        std::make_unique<EduCoexistenceConsentInvalidationController>(
+            profile_, account_manager_, account_manager_facade_,
+            device_account_id_);
+    edu_coexistence_consent_invalidation_controller_->Init();
   }
 }
 
@@ -88,14 +80,14 @@ void AccountManagerPolicyController::RemoveSecondaryAccounts(
   // current list of accounts from Account Manager and then issue calls to
   // remove all Secondary Accounts.
   for (const auto& account : accounts) {
-    if (account.key.account_type != account_manager::AccountType::kGaia) {
+    if (account.key.account_type() != account_manager::AccountType::kGaia) {
       // |kSecondaryGoogleAccountSigninAllowed| applies only to Gaia accounts.
       // Ignore other types of accounts.
       continue;
     }
 
     if (device_account_id_.GetAccountType() == AccountType::GOOGLE &&
-        account.key.id == device_account_id_.GetGaiaId()) {
+        account.key.id() == device_account_id_.GetGaiaId()) {
       // Do not remove the Device Account.
       continue;
     }
@@ -157,12 +149,12 @@ void AccountManagerPolicyController::
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (const auto& account : accounts) {
-    if (account.key.account_type != account_manager::AccountType::kGaia) {
+    if (account.key.account_type() != account_manager::AccountType::kGaia) {
       continue;
     }
 
     if (device_account_id_.GetAccountType() == AccountType::GOOGLE &&
-        account.key.id == device_account_id_.GetGaiaId()) {
+        account.key.id() == device_account_id_.GetGaiaId()) {
       // Do not invalidate the Device Account.
       continue;
     }

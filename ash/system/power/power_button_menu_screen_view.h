@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/system/power/power_button_controller.h"
-#include "base/macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/view.h"
 
@@ -93,7 +92,8 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   double power_button_offset_percentage_ = 0.f;
 
   // The origin of the menu bounds in different screen orientations.
-  std::unordered_map<OrientationLockType, gfx::Point> menu_bounds_origins_;
+  std::unordered_map<chromeos::OrientationType, gfx::Point>
+      menu_bounds_origins_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

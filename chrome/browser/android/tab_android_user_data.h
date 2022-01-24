@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_TAB_ANDROID_USER_DATA_H_
 #define CHROME_BROWSER_ANDROID_TAB_ANDROID_USER_DATA_H_
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/android/tab_android.h"
 

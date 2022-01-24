@@ -33,15 +33,15 @@ class UnixEventEmitter : public StreamEventEmitter {
 
   static ScopedUnixEventEmitter MakeUnixEventEmitter(size_t size, int type);
 
+  UnixEventEmitter(const UnixEventEmitter&) = delete;
+  UnixEventEmitter& operator=(const UnixEventEmitter&) = delete;
+
  protected:
   UnixEventEmitter() {}
 
   virtual FIFOInterface* in_fifo() = 0;
   virtual FIFOInterface* out_fifo() = 0;
   void UpdateStatus_Locked();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnixEventEmitter);
 };
 
 }  // namespace nacl_io

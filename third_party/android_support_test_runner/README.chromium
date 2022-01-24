@@ -15,3 +15,4 @@ espresso library (crbug.com/622057)
 
 Local Modifications:
 - Imports were automatically sorted (annoying to avoid this, and shouldn't have any impact)
+- https:/crbug.com/1252584 Shorter log when JavaScriptBridge not found.

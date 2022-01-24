@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/android/support/multidex/1.0.0/multidex-1.0.0.aar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/support/multidex/1.0.0/multidex-1.0.0.aar'
 _FILE_NAME = 'multidex-1.0.0.aar'
 _FILE_VERSION = '1.0.0'
 

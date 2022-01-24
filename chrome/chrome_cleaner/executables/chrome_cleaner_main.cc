@@ -17,12 +17,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -127,11 +126,9 @@ void AddComponents(chrome_cleaner::MainController* main_controller,
       std::make_unique<chrome_cleaner::SystemReportComponent>(json_parser,
                                                               shortcut_parser));
 
-  if (command_line->HasSwitch(chrome_cleaner::kResetShortcutsSwitch)) {
-    main_controller->AddComponent(
-        std::make_unique<chrome_cleaner::ResetShortcutsComponent>(
-            shortcut_parser));
-  }
+  main_controller->AddComponent(
+      std::make_unique<chrome_cleaner::ResetShortcutsComponent>(
+          shortcut_parser));
 }
 
 void SendLogsToSafeBrowsing(chrome_cleaner::ResultCode exit_code,

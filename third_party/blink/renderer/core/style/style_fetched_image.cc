@@ -61,11 +61,6 @@ StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
 
 StyleFetchedImage::~StyleFetchedImage() = default;
 
-void StyleFetchedImage::Dispose() {
-  image_->RemoveObserver(this);
-  image_ = nullptr;
-}
-
 bool StyleFetchedImage::IsEqual(const StyleImage& other) const {
   if (!other.IsImageResource())
     return false;
@@ -229,6 +224,7 @@ void StyleFetchedImage::Trace(Visitor* visitor) const {
   visitor->Trace(image_);
   visitor->Trace(document_);
   StyleImage::Trace(visitor);
+  ImageResourceObserver::Trace(visitor);
 }
 
 }  // namespace blink

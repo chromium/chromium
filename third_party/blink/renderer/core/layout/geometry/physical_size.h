@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -98,17 +100,29 @@ struct CORE_EXPORT PhysicalSize {
   constexpr LayoutSize ToLayoutSize() const { return {width, height}; }
 
   static PhysicalSize FromFloatSizeRound(const FloatSize& size) {
-    return {LayoutUnit::FromFloatRound(size.Width()),
-            LayoutUnit::FromFloatRound(size.Height())};
+    return {LayoutUnit::FromFloatRound(size.width()),
+            LayoutUnit::FromFloatRound(size.height())};
   }
   static PhysicalSize FromFloatSizeFloor(const FloatSize& size) {
-    return {LayoutUnit::FromFloatFloor(size.Width()),
-            LayoutUnit::FromFloatFloor(size.Height())};
+    return {LayoutUnit::FromFloatFloor(size.width()),
+            LayoutUnit::FromFloatFloor(size.height())};
   }
   constexpr explicit operator FloatSize() const { return {width, height}; }
 
+  static PhysicalSize FromSizeFRound(const gfx::SizeF& size) {
+    return {LayoutUnit::FromFloatRound(size.width()),
+            LayoutUnit::FromFloatRound(size.height())};
+  }
+  static PhysicalSize FromSizeFFloor(const gfx::Size& size) {
+    return {LayoutUnit::FromFloatFloor(size.width()),
+            LayoutUnit::FromFloatFloor(size.height())};
+  }
+  constexpr explicit operator gfx::SizeF() const { return {width, height}; }
+
   explicit PhysicalSize(const IntSize& size)
-      : width(size.Width()), height(size.Height()) {}
+      : width(size.width()), height(size.height()) {}
+  explicit PhysicalSize(const gfx::Size& size)
+      : width(size.width()), height(size.height()) {}
 
   String ToString() const;
 };

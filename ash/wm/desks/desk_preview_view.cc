@@ -34,6 +34,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 
@@ -231,7 +232,7 @@ void GetLayersData(aura::Window* window,
   // so mark them explicitly to clear overview transforms. Additionally, windows
   // in overview mode are transformed into their positions in the grid, but we
   // want to show a preview of the windows in their untransformed state.
-  if (window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey) ||
+  if (desks_util::IsWindowVisibleOnAllWorkspaces(window) ||
       desks_util::IsDeskContainer(window->parent())) {
     layer_data.should_clear_transform = true;
   }
@@ -251,6 +252,9 @@ class DeskPreviewView::ShadowRenderer : public ui::LayerDelegate {
   ShadowRenderer()
       : shadow_values_(gfx::ShadowValue::MakeMdShadowValues(kShadowElevation)) {
   }
+
+  ShadowRenderer(const ShadowRenderer&) = delete;
+  ShadowRenderer& operator=(const ShadowRenderer&) = delete;
 
   ~ShadowRenderer() override = default;
 
@@ -285,8 +289,6 @@ class DeskPreviewView::ShadowRenderer : public ui::LayerDelegate {
 
   gfx::Rect bounds_;
   const gfx::ShadowValues shadow_values_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShadowRenderer);
 };
 
 // -----------------------------------------------------------------------------
@@ -307,6 +309,11 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   SetFocusPainter(nullptr);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks, but this focusable View needs to
+  // add a name so that the screen reader knows what to announce.
+  SetProperty(views::kSkipAccessibilityPaintChecks, true);
 
   SetPaintToLayer(ui::LAYER_TEXTURED);
   layer()->SetFillsBoundsOpaquely(false);

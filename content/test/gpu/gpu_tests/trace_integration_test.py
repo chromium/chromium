@@ -290,6 +290,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     expected.pixel_format = other_args.get('pixel_format', None)
     expected.no_overlay = other_args.get('no_overlay', False)
     video_is_rotated = other_args.get('video_is_rotated', False)
+    video_is_not_scaled = other_args.get('full_size', False)
 
     if overlay_bot_config.get('supports_overlays', False):
       supports_hw_nv12_overlays = overlay_bot_config[
@@ -316,6 +317,10 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           gpu.vendor_id == 0x1002 and
           gpu.device_id in _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_ROTATED_OVERLAYS)
 
+      supports_downscaled_overlay_promotion = gpu.vendor_id != 0x8086
+      no_issue_with_downscaled_overlay_promotion = (
+          video_is_not_scaled or supports_downscaled_overlay_promotion)
+
       if (((supports_hw_nv12_overlays and expected.pixel_format == 'NV12')
            or supports_hw_yuy2_overlays)
           and (not video_is_rotated or supports_rotated_video_overlays)):
@@ -329,6 +334,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         expected.zero_copy = (expected.presentation_mode == 'OVERLAY'
                               and expected.pixel_format == 'NV12'
                               and supports_hw_nv12_overlays
+                              and no_issue_with_downscaled_overlay_promotion
                               and not video_is_rotated)
 
     return expected

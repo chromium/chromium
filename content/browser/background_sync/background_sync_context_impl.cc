@@ -68,22 +68,24 @@ void BackgroundSyncContextImpl::Shutdown() {
 }
 
 void BackgroundSyncContextImpl::CreateOneShotSyncService(
+    const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
         receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(background_sync_manager_);
   one_shot_sync_services_.insert(
-      std::make_unique<OneShotBackgroundSyncServiceImpl>(this,
+      std::make_unique<OneShotBackgroundSyncServiceImpl>(this, origin,
                                                          std::move(receiver)));
 }
 
 void BackgroundSyncContextImpl::CreatePeriodicSyncService(
+    const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
         receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(background_sync_manager_);
   periodic_sync_services_.insert(
-      std::make_unique<PeriodicBackgroundSyncServiceImpl>(this,
+      std::make_unique<PeriodicBackgroundSyncServiceImpl>(this, origin,
                                                           std::move(receiver)));
 }
 

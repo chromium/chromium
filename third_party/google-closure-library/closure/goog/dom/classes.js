@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Utilities for adding, removing and setting classes.  Prefer
@@ -36,6 +28,7 @@ goog.require('goog.array');
  * @deprecated Use goog.dom.classlist.set instead.
  */
 goog.dom.classes.set = function(element, className) {
+  'use strict';
   /** @type {!HTMLElement} */ (element).className = className;
 };
 
@@ -48,6 +41,7 @@ goog.dom.classes.set = function(element, className) {
  * @deprecated Use goog.dom.classlist.get instead.
  */
 goog.dom.classes.get = function(element) {
+  'use strict';
   var className = /** @type {!Element} */ (element).className;
   // Some types of elements don't have a className in IE (e.g. iframes).
   // Furthermore, in Firefox, className is not a string when the element is
@@ -64,8 +58,9 @@ goog.dom.classes.get = function(element) {
  * @deprecated Use goog.dom.classlist.add or goog.dom.classlist.addAll instead.
  */
 goog.dom.classes.add = function(element, var_args) {
+  'use strict';
   var classes = goog.dom.classes.get(element);
-  var args = goog.array.slice(arguments, 1);
+  var args = Array.prototype.slice.call(arguments, 1);
   var expectedCount = classes.length + args.length;
   goog.dom.classes.add_(classes, args);
   goog.dom.classes.set(element, classes.join(' '));
@@ -83,8 +78,9 @@ goog.dom.classes.add = function(element, var_args) {
  *     instead.
  */
 goog.dom.classes.remove = function(element, var_args) {
+  'use strict';
   var classes = goog.dom.classes.get(element);
-  var args = goog.array.slice(arguments, 1);
+  var args = Array.prototype.slice.call(arguments, 1);
   var newClasses = goog.dom.classes.getDifference_(classes, args);
   goog.dom.classes.set(element, newClasses.join(' '));
   return newClasses.length == classes.length - args.length;
@@ -101,6 +97,7 @@ goog.dom.classes.remove = function(element, var_args) {
  * @private
  */
 goog.dom.classes.add_ = function(classes, args) {
+  'use strict';
   for (var i = 0; i < args.length; i++) {
     if (!goog.array.contains(classes, args[i])) {
       classes.push(args[i]);
@@ -119,8 +116,11 @@ goog.dom.classes.add_ = function(classes, args) {
  * @private
  */
 goog.dom.classes.getDifference_ = function(arr1, arr2) {
-  return goog.array.filter(
-      arr1, function(item) { return !goog.array.contains(arr2, item); });
+  'use strict';
+  return arr1.filter(function(item) {
+    'use strict';
+    return !goog.array.contains(arr2, item);
+  });
 };
 
 
@@ -134,12 +134,13 @@ goog.dom.classes.getDifference_ = function(arr1, arr2) {
  * @deprecated Use goog.dom.classlist.swap instead.
  */
 goog.dom.classes.swap = function(element, fromClass, toClass) {
+  'use strict';
   var classes = goog.dom.classes.get(element);
 
   var removed = false;
   for (var i = 0; i < classes.length; i++) {
     if (classes[i] == fromClass) {
-      goog.array.splice(classes, i--, 1);
+      classes.splice(i--, 1);
       removed = true;
     }
   }
@@ -171,17 +172,18 @@ goog.dom.classes.swap = function(element, fromClass, toClass) {
  * @deprecated Use goog.dom.classlist.addRemove instead.
  */
 goog.dom.classes.addRemove = function(element, classesToRemove, classesToAdd) {
+  'use strict';
   var classes = goog.dom.classes.get(element);
   if (typeof classesToRemove === 'string') {
     goog.array.remove(classes, classesToRemove);
-  } else if (goog.isArray(classesToRemove)) {
+  } else if (Array.isArray(classesToRemove)) {
     classes = goog.dom.classes.getDifference_(classes, classesToRemove);
   }
 
   if (typeof classesToAdd === 'string' &&
       !goog.array.contains(classes, classesToAdd)) {
     classes.push(classesToAdd);
-  } else if (goog.isArray(classesToAdd)) {
+  } else if (Array.isArray(classesToAdd)) {
     goog.dom.classes.add_(classes, classesToAdd);
   }
 
@@ -197,6 +199,7 @@ goog.dom.classes.addRemove = function(element, classesToRemove, classesToAdd) {
  * @deprecated Use goog.dom.classlist.contains instead.
  */
 goog.dom.classes.has = function(element, className) {
+  'use strict';
   return goog.array.contains(goog.dom.classes.get(element), className);
 };
 
@@ -211,6 +214,7 @@ goog.dom.classes.has = function(element, className) {
  *     instead.
  */
 goog.dom.classes.enable = function(element, className, enabled) {
+  'use strict';
   if (enabled) {
     goog.dom.classes.add(element, className);
   } else {
@@ -230,6 +234,7 @@ goog.dom.classes.enable = function(element, className, enabled) {
  * @deprecated Use goog.dom.classlist.toggle instead.
  */
 goog.dom.classes.toggle = function(element, className) {
+  'use strict';
   var add = !goog.dom.classes.has(element, className);
   goog.dom.classes.enable(element, className, add);
   return add;

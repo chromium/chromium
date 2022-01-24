@@ -417,6 +417,7 @@ function handleU2fEnrollRequest(messageSender, request, sendResponse) {
             {
               'appId': appId,
               'tabId': messageSender.tab.id,
+              'frameId': 0,  // ignored
               'origin': sender.origin,
             },
             resolve);
@@ -869,13 +870,6 @@ const googleCorpAppId =
 Enroller.prototype.doRegisterWebAuthn_ = function(appId, challenge, request) {
   const encodedChallenge = challenge['challenge'];
 
-  if (appId == googleCorpAppId) {
-    this.doRegisterWebAuthnContinue_(
-        appId, encodedChallenge, request,
-        WebAuthnAttestationConveyancePreference.ENTERPRISE);
-    return;
-  }
-
   if (!chrome.cryptotokenPrivate) {
     this.doRegisterWebAuthnContinue_(
         appId, encodedChallenge, request,
@@ -883,14 +877,43 @@ Enroller.prototype.doRegisterWebAuthn_ = function(appId, challenge, request) {
     return;
   }
 
+  if (appId == googleCorpAppId) {
+    this.checkU2fApiPermission_(
+        appId, encodedChallenge, request,
+        WebAuthnAttestationConveyancePreference.ENTERPRISE);
+    return;
+  }
+
   chrome.cryptotokenPrivate.isAppIdHashInEnterpriseContext(
       decodeWebSafeBase64ToArray(B64_encode(sha256HashOfString(appId))),
       (enterprise_context) => {
-        this.doRegisterWebAuthnContinue_(
+        this.checkU2fApiPermission_(
             appId, encodedChallenge, request,
             enterprise_context ?
                 WebAuthnAttestationConveyancePreference.ENTERPRISE :
                 WebAuthnAttestationConveyancePreference.DIRECT);
+      });
+};
+
+Enroller.prototype.checkU2fApiPermission_ = function(
+    appId, challenge, request, attestationMode) {
+  chrome.cryptotokenPrivate.canMakeU2fApiRequest(
+      {
+        tabId: this.sender_.tabId,
+        frameId: this.sender_.frameId,
+        origin: this.sender_.origin,
+        appId: appId
+      },
+      (result) => {
+        if (!result) {
+          this.notifyError_({
+            errorCode: ErrorCodes.BAD_REQUEST,
+            errorMessage: 'The operation was not allowed',
+          });
+          return;
+        }
+        this.doRegisterWebAuthnContinue_(
+            appId, challenge, request, attestationMode);
       });
 };
 

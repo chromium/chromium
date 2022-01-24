@@ -7,6 +7,7 @@ import("//build/config/compiler/compiler.gni")
 if (is_android) {
   # Pull in enable_chrome_android_internal and public_android_sdk
   import("//build/config/android/config.gni")
+  import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
 }
 
 if (is_chromeos_device) {
@@ -36,25 +37,7 @@ group("telemetry_chrome_test") {
   ]
   data = []
 
-  if (is_android) {
-    # TODO(crbug.com/1213269): Remove these APK dependencies and fully switch to
-    # the separate Android targets below once all Android uses of the old target
-    # have been cleaned up.
-    data_deps += [
-      ":telemetry_weblayer_apks",
-      "//android_webview:system_webview_apk",
-      "//android_webview/test:webview_instrumentation_apk",
-      "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
-      "//chrome/android:chrome_public_apk",
-      "//chrome/android:monochrome_public_apk",
-      "//chrome/android:monochrome_public_bundle",
-      "//chrome/android/webapk/shell_apk:maps_go_webapk",
-    ]
-
-    if (enable_chrome_android_internal) {
-      data_deps += [ "//clank:telemetry_clank_test" ]
-    }
-  } else if (!is_fuchsia) {
+  if (!is_fuchsia && !is_android) {
     data_deps += [ "//chrome" ]
   }
 
@@ -143,6 +126,7 @@ if (is_android) {
     data_deps = [
       ":telemetry_chrome_test",
       ":telemetry_weblayer_apks",
+      "//chrome/android:monochrome_public_apk",
     ]
   }
 
@@ -175,6 +159,22 @@ if (is_android) {
       telemetry_chrome_test_clank_template(
           "telemetry_chrome_test${_target_suffix}") {
         telemetry_target_suffix = _target_suffix
+      }
+    }
+  }
+
+  # This group exists solely for performance testing. Ideally, perf testing
+  # would use the same split targets as other Telemetry-based tests, but
+  # switching has proven to be very difficult due to interactions with Pinpoint.
+  group("all_chrome_android_targets_for_perf_testing") {
+    testonly = true
+    data_deps = [ "//chrome/android/webapk/shell_apk:maps_go_webapk" ]
+    foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
+      data_deps += [ ":telemetry_chrome_test${_target_suffix}" ]
+    }
+    if (enable_chrome_android_internal) {
+      foreach(_target_suffix, telemetry_clank_browser_target_suffixes) {
+        data_deps += [ ":telemetry_chrome_test${_target_suffix}" ]
       }
     }
   }

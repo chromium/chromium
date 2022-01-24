@@ -11,7 +11,7 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/media_log.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/platform/media/buffered_data_source_host_impl.h"
@@ -58,7 +58,7 @@ const int kSlowPreloadPercentage = 10;
 const int kUpdateBufferSizeFrequency = 32;
 
 // How long to we delay a seek after a read?
-constexpr base::TimeDelta kSeekDelay = base::TimeDelta::FromMilliseconds(20);
+constexpr base::TimeDelta kSeekDelay = base::Milliseconds(20);
 
 }  // namespace
 
@@ -231,7 +231,8 @@ void MultiBufferDataSource::OnRedirected(
     StopLoader();
     return;
   }
-  if (url_data_->url().GetOrigin() != new_destination->url().GetOrigin()) {
+  if (url_data_->url().DeprecatedGetOriginAsURL() !=
+      new_destination->url().DeprecatedGetOriginAsURL()) {
     single_origin_ = false;
   }
   SetReader(nullptr);

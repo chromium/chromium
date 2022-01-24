@@ -1,5 +1,7 @@
 # How to Deal with Android Size Alerts
 
+Googlers, see also: go/chrome-binary-size-garderning
+
  >
  > Not all alerts should not have a bug created for them. Please read on...
  >
@@ -20,7 +22,8 @@
 
  * Bisects [will not help you](https://bugs.chromium.org/p/chromium/issues/detail?id=678338).
  * For rolls, you can sometimes guess the commit(s) that caused the regression
-   by looking at the `android-binary-size` trybot result for the roll commit.
+   by looking at the `android-binary-size` trybot result for the roll commit, or
+   by looking for "Binary-Size:" footers in the blamelist.
  * For V8 rolls, try checking the [V8 size graph](https://chromeperf.appspot.com/report?sid=59435a74c93b42599af4b02e2b3df765faef4685eb015f8aaaf2ecf7f4afb29c)
    to see if any jumps correspond with a CL in the roll.
  * Otherwise, use [diagnose_bloat.py](/tools/binary_size/README.md#diagnose_bloat_py)
@@ -49,12 +52,12 @@
 
 * If the commit message's `Binary-Size:` footer clearly justifies the size
   increase, silence the alert.
-* If the regression is < 100kb and caused by an AFDO roll, silence the alert.
+* If the commit is a revert / reland, silence the alert.
 
-Otherwise, file a bug (TODO: [Make this template automatic](https://github.com/catapult-project/catapult/issues/3150)):
+Otherwise, file a bug.
 
  * Change the bug's title from `X%` to `XXkb`
- * Assign to commit author
+ * Assign to commit author (often this is done automatically)
  * Set description to (replacing **bold** parts):
 
 > Caused by "**First line of commit message**"
@@ -91,6 +94,9 @@ Otherwise, file a bug (TODO: [Make this template automatic](https://github.com/c
 
 It typically takes about a week of engineering time to reduce binary size by
 50kb so it's important that an effort is made to address all new regressions.
+For more about binary size, see [binary_size_explainer.md].
+
+[binary_size_explainer.md]: /docs/speed/binary_size/binary_size_explainer.md
 
 ## Step 1: Identify what Grew
 
@@ -110,9 +116,11 @@ See [optimization advice](/docs/speed/binary_size/optimization_advice.md).
 
 ## Step 3: Give Up :/
 
-If you have spent O(days) trying to reduce the size overhead of your patch and
-are pretty sure that your implementation is optimal(ish), then add a comment to
-the bug with the following:
+If you aren't sure where to start and would like help with the investigation,
+comment on the bug or reach out to binary-size@chromium.org to ask for help.
+
+If you are pretty sure that your implementation is optimal(ish), add a comment
+to the bug with the following:
 
 1) A description of where the size is coming from (show that you spent the time
    to understand why your code translated to a large binary size).
@@ -123,26 +131,3 @@ the bug with the following:
    the feature).
 
 Close the bug as "Won't Fix".
-
-# For Binary Size Sheriffs
-
-Here is the [rotation](https://rota-ng.appspot.com/oncall?name=Binary%20Size%20Sheriff)
-and [calendar](https://calendar.google.com/calendar/embed?src=c_188b8oq5puj67tl346uj3q4qosaio4gactnmuprcckn66rrd%40group.calendar.google.com&ctz=America%2FToronto).
-
-## Step 1: Check Work Queue Daily
-
- * Bugs requiring sheriffs to take a look at are labeled `Performance-Sheriff`
-   and `Performance-Size` [here](https://bugs.chromium.org/p/chromium/issues/list?q=label:Performance-Sheriff%20label:Performance-Size&sort=-modified).
- * After resolving the bug by finding an owner or debugging or commenting,
-   remove the `Performance-Sheriff` label.
- * Process for Chrome OS bugs is at [go/cros-image-size-triage](https://goto.google.com/cros-image-size-triage).
-   * Generally just expected to ignore these.
-
-## Step 2: Check Alerts Regularly
-
- * Check [alert page](https://chromeperf.appspot.com/alerts?sheriff=Binary%20Size%20Sheriff) regularly for new alerts.
- * Join [g/chrome-binary-size-alerts](https://goto.google.com/chrome-binary-size-alerts).
- * Deal with alerts as outlined above.
-
-## Step 3: Ping / Clear out Old Regression Bugs
- * https://bugs.chromium.org/p/chromium/issues/list?can=2&q=label%3DPerformance-Size+type%3DBug-Regression+resource_sizes

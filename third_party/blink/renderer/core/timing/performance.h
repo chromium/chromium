@@ -32,7 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -366,6 +366,10 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   void DeliverObservationsTimerFired(TimerBase*);
 
+  // Returns the number of dropped entries for the given integer representing a
+  // mask of entry types.
+  int GetDroppedEntriesForTypes(PerformanceEntryTypeMask);
+
   virtual void BuildJSONValue(V8ObjectBuilder&) const;
 
   PerformanceEntryVector resource_timing_buffer_;
@@ -402,6 +406,10 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   HeapTaskRunnerTimer<Performance> deliver_observations_timer_;
   HeapTaskRunnerTimer<Performance> resource_timing_buffer_full_timer_;
+
+  // A map from entry types to the number of dropped entries of that given entry
+  // type. Entries are dropped when the buffer from that entry type is full.
+  WTF::HashMap<PerformanceEntry::EntryType, int> dropped_entries_count_map_;
 
   // See crbug.com/1181774.
   Member<BackgroundTracingHelper> background_tracing_helper_;

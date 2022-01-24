@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_PREFS_PREFS_TAB_HELPER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/font_pref_change_notifier.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -30,6 +30,9 @@ class PrefRegistrySyncable;
 class PrefsTabHelper : public ThemeServiceObserver,
                        public content::WebContentsUserData<PrefsTabHelper> {
  public:
+  PrefsTabHelper(const PrefsTabHelper&) = delete;
+  PrefsTabHelper& operator=(const PrefsTabHelper&) = delete;
+
   ~PrefsTabHelper() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
@@ -65,8 +68,6 @@ class PrefsTabHelper : public ThemeServiceObserver,
   base::WeakPtrFactory<PrefsTabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PrefsTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_PREFS_PREFS_TAB_HELPER_H_

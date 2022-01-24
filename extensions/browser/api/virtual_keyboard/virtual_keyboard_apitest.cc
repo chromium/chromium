@@ -24,6 +24,9 @@ class VirtualKeyboardApiTest : public ShellApiTest {
  public:
   VirtualKeyboardApiTest() {}
 
+  VirtualKeyboardApiTest(const VirtualKeyboardApiTest&) = delete;
+  VirtualKeyboardApiTest& operator=(const VirtualKeyboardApiTest&) = delete;
+
   ~VirtualKeyboardApiTest() override = default;
 
   void SetUp() override {
@@ -40,8 +43,6 @@ class VirtualKeyboardApiTest : public ShellApiTest {
  private:
   std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>>
       feature_session_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(VirtualKeyboardApiTest, Test) {

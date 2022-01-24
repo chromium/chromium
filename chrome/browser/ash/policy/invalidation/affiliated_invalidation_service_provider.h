@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_INVALIDATION_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_POLICY_INVALIDATION_AFFILIATED_INVALIDATION_SERVICE_PROVIDER_H_
 
-#include "base/macros.h"
-
 namespace invalidation {
 class InvalidationService;
 }
@@ -34,6 +32,8 @@ class AffiliatedInvalidationServiceProvider {
    public:
     Consumer();
 
+    Consumer& operator=(const Consumer&) = delete;
+
     // This method is called when the invalidation service that the consumer
     // should use changes:
     // * If |invalidation_service| is a nullptr, no invalidation service is
@@ -46,11 +46,13 @@ class AffiliatedInvalidationServiceProvider {
 
    protected:
     virtual ~Consumer();
-
-    DISALLOW_ASSIGN(Consumer);
   };
 
   AffiliatedInvalidationServiceProvider();
+
+  AffiliatedInvalidationServiceProvider& operator=(
+      const AffiliatedInvalidationServiceProvider&) = delete;
+
   virtual ~AffiliatedInvalidationServiceProvider();
 
   // Indicates that |consumer| is interested in using the shared
@@ -70,9 +72,6 @@ class AffiliatedInvalidationServiceProvider {
   // per-profile invalidation services and no longer maintains a device-global
   // invalidation service.
   virtual void Shutdown() = 0;
-
- private:
-  DISALLOW_ASSIGN(AffiliatedInvalidationServiceProvider);
 };
 
 }  // namespace policy

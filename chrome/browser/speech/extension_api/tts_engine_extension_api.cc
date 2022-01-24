@@ -245,9 +245,9 @@ void TtsExtensionEngine::GetVoices(
       result_voice.remote = voice.remote;
       result_voice.engine_id = extension->id();
 
-      for (auto iter = voice.event_types.begin();
-           iter != voice.event_types.end(); ++iter) {
-        result_voice.events.insert(TtsEventTypeFromString(*iter));
+      for (auto it = voice.event_types.begin(); it != voice.event_types.end();
+           ++it) {
+        result_voice.events.insert(TtsEventTypeFromString(*it));
       }
 
       // If the extension sends end events, the controller will handle
@@ -336,7 +336,7 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
       voice.events.find(content::TTS_EVENT_END) != voice.events.end();
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendString(utterance->GetText());
+  args->Append(utterance->GetText());
 
   // Pass through most options to the speech engine, but remove some
   // that are handled internally.
@@ -380,15 +380,15 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
     options->SetString(constants::kLangKey, voice.lang);
 
   args->Append(std::move(options));
-  args->AppendInteger(utterance->GetId());
+  args->Append(utterance->GetId());
   return args;
 }
 
 ExtensionFunction::ResponseAction
 ExtensionTtsEngineUpdateVoicesFunction::Run() {
-  base::Value::ConstListView args_list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(!args_list.empty() && args_list[0].is_list());
-  const base::Value& voices_data = args_list[0];
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_list());
+  const base::Value& voices_data = args()[0];
 
   // Validate the voices and return an error if there's a problem.
   const char* error = nullptr;
@@ -412,15 +412,14 @@ ExtensionTtsEngineUpdateVoicesFunction::Run() {
 
 ExtensionFunction::ResponseAction
 ExtensionTtsEngineSendTtsEventFunction::Run() {
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
 
-  const auto& utterance_id_value = list[0];
+  const auto& utterance_id_value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(utterance_id_value.is_int());
   int utterance_id = utterance_id_value.GetInt();
 
-  base::DictionaryValue* event;
-  EXTENSION_FUNCTION_VALIDATE(list[1].GetAsDictionary(&event));
+  const base::DictionaryValue* event;
+  EXTENSION_FUNCTION_VALIDATE(args()[1].GetAsDictionary(&event));
 
   std::string event_type;
   EXTENSION_FUNCTION_VALIDATE(
@@ -492,15 +491,14 @@ ExtensionTtsEngineSendTtsEventFunction::Run() {
 ExtensionFunction::ResponseAction
 ExtensionTtsEngineSendTtsAudioFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const auto& list = args_->GetList();
-  EXTENSION_FUNCTION_VALIDATE(list.size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
 
-  const auto& utterance_id_value = list[0];
+  const auto& utterance_id_value = args()[0];
   EXTENSION_FUNCTION_VALIDATE(utterance_id_value.is_int());
   int utterance_id = utterance_id_value.GetInt();
 
-  base::DictionaryValue* audio = nullptr;
-  EXTENSION_FUNCTION_VALIDATE(list[1].GetAsDictionary(&audio));
+  const base::DictionaryValue* audio = nullptr;
+  EXTENSION_FUNCTION_VALIDATE(args()[1].GetAsDictionary(&audio));
 
   const std::vector<uint8_t>* audio_buffer_blob =
       audio->FindBlobPath(tts_extension_api_constants::kAudioBufferKey);

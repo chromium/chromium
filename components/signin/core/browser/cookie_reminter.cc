@@ -50,7 +50,6 @@ void CookieReminter::OnRefreshTokenUpdatedForAccount(
     // Cookies are going to be reminted for all accounts.
     accounts_requiring_cookie_remint_.clear();
     identity_manager_->GetAccountsCookieMutator()->LogOutAllAccounts(
-        gaia::GaiaSource::kChromeOS,
-        base::DoNothing::Once<const GoogleServiceAuthError&>());
+        gaia::GaiaSource::kChromeOS, base::DoNothing());
   }
 }

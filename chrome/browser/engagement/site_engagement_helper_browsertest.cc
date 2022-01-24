@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/engagement/site_engagement_helper.h"
+#include "components/site_engagement/content/site_engagement_helper.h"
 
 #include <memory>
 
@@ -38,7 +38,7 @@ class TestOneShotTimer : public base::OneShotTimer {
   void Start(const base::Location& posted_from,
              base::TimeDelta delay,
              base::OnceClosure user_task) override {
-    base::OneShotTimer::Start(posted_from, base::TimeDelta::FromSeconds(0),
+    base::OneShotTimer::Start(posted_from, base::Seconds(0),
                               std::move(user_task));
 
     // Updates |restarted_| if the timer is restarted.
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
   SetInputTrackerPauseTimer(helper);
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // SiteEngagementMetrics::kEngagementTypeHistogram is 2 with
   // kFirstDailyEngagement and kNavigation.
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
   SetMediaTrackerPauseTimer(helper);
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(tester.last_updated_type(), EngagementType::kNavigation);
   EXPECT_EQ(tester.last_updated_url(), url);
 
@@ -216,7 +216,12 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   content::RenderFrameHost* prerendered_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
-  EXPECT_TRUE(content::ExecJs(prerendered_frame_host, "attemptPlay();"));
+  // Since the prerendered page couldn't have a user gesture, it runs JS with
+  // EXECUTE_SCRIPT_NO_USER_GESTURE. Requesting playing video without a user
+  // gesture results in the promise rejected.
+  EXPECT_FALSE(
+      content::ExecJs(prerendered_frame_host, "attemptPlay();",
+                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_EQ(tester.last_updated_type(), EngagementType::kNavigation);
   EXPECT_EQ(tester.last_updated_url(), url);
@@ -226,7 +231,8 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
   // The page should be activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
 
-  EXPECT_EQ(nullptr, content::EvalJs(prerendered_frame_host, "attemptPlay();"));
+  EXPECT_TRUE(
+      content::ExecJs(web_contents()->GetMainFrame(), "attemptPlay();"));
 
   tester.WaitForEngagementEvent(EngagementType::kMediaVisible);
   EXPECT_EQ(tester.last_updated_type(), EngagementType::kMediaVisible);

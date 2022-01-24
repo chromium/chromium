@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SHARING_SHARING_DEVICE_SOURCE_SYNC_H_
 #define CHROME_BROWSER_SHARING_SHARING_DEVICE_SOURCE_SYNC_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sharing/sharing_device_source.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -23,6 +22,10 @@ class SharingDeviceSourceSync : public SharingDeviceSource,
       syncer::SyncService* sync_service,
       syncer::LocalDeviceInfoProvider* local_device_info_provider,
       syncer::DeviceInfoTracker* device_info_tracker);
+
+  SharingDeviceSourceSync(const SharingDeviceSourceSync&) = delete;
+  SharingDeviceSourceSync& operator=(const SharingDeviceSourceSync&) = delete;
+
   ~SharingDeviceSourceSync() override;
 
   // SharingDeviceSource:
@@ -68,8 +71,6 @@ class SharingDeviceSourceSync : public SharingDeviceSource,
   absl::optional<std::string> personalizable_local_device_name_;
 
   base::WeakPtrFactory<SharingDeviceSourceSync> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SharingDeviceSourceSync);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_DEVICE_SOURCE_SYNC_H_

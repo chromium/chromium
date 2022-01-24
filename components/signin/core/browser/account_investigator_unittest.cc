@@ -23,7 +23,6 @@
 
 using base::HistogramTester;
 using base::Time;
-using base::TimeDelta;
 using gaia::ListedAccount;
 using signin_metrics::AccountRelation;
 using signin_metrics::ReportingType;
@@ -45,9 +44,9 @@ class AccountInvestigatorTest : public testing::Test {
   AccountInvestigator* investigator() { return &investigator_; }
 
   // Wrappers to invoke private methods through friend class.
-  TimeDelta Delay(const Time previous,
-                  const Time now,
-                  const TimeDelta interval) {
+  base::TimeDelta Delay(const Time previous,
+                        const Time now,
+                        const base::TimeDelta interval) {
     return AccountInvestigator::CalculatePeriodicDelay(previous, now, interval);
   }
   std::string Hash(const std::vector<ListedAccount>& signed_in_accounts,
@@ -100,7 +99,7 @@ class AccountInvestigatorTest : public testing::Test {
   // should have been, but it still should have been recorded.
   void ExpectSharedReportHistograms(const ReportingType type,
                                     const HistogramTester& histogram_tester,
-                                    const TimeDelta* stable_age,
+                                    const base::TimeDelta* stable_age,
                                     const int signed_in_count,
                                     const int signed_out_count,
                                     const int total_count,
@@ -179,14 +178,14 @@ const std::vector<ListedAccount> both_reversed{two, one};
 
 TEST_F(AccountInvestigatorTest, CalculatePeriodicDelay) {
   const Time epoch;
-  const TimeDelta day(TimeDelta::FromDays(1));
-  const TimeDelta big(TimeDelta::FromDays(1000));
+  const base::TimeDelta day(base::Days(1));
+  const base::TimeDelta big(base::Days(1000));
 
   EXPECT_EQ(day, Delay(epoch, epoch, day));
   EXPECT_EQ(day, Delay(epoch + big, epoch + big, day));
-  EXPECT_EQ(TimeDelta(), Delay(epoch, epoch + big, day));
+  EXPECT_EQ(base::TimeDelta(), Delay(epoch, epoch + big, day));
   EXPECT_EQ(day, Delay(epoch + big, epoch, day));
-  EXPECT_EQ(day, Delay(epoch, epoch + day, TimeDelta::FromDays(2)));
+  EXPECT_EQ(day, Delay(epoch, epoch + day, base::Days(2)));
 }
 
 TEST_F(AccountInvestigatorTest, HashAccounts) {
@@ -240,7 +239,7 @@ TEST_F(AccountInvestigatorTest, SignedInAccountRelationReport) {
 
 TEST_F(AccountInvestigatorTest, SharedCookieJarReportEmpty) {
   const HistogramTester histogram_tester;
-  const TimeDelta expected_stable_age;
+  const base::TimeDelta expected_stable_age;
   SharedReport(no_accounts, no_accounts, Time(), ReportingType::PERIODIC);
   ExpectSharedReportHistograms(ReportingType::PERIODIC, histogram_tester,
                                &expected_stable_age, 0, 0, 0, nullptr, false);
@@ -254,8 +253,8 @@ TEST_F(AccountInvestigatorTest, SharedCookieJarReportWithAccount) {
   const AccountRelation expected_relation(
       AccountRelation::ONE_OF_SIGNED_IN_MATCH_ANY_SIGNED_OUT);
   const HistogramTester histogram_tester;
-  const TimeDelta expected_stable_age(TimeDelta::FromDays(1));
-  SharedReport(both, no_accounts, now + TimeDelta::FromDays(1),
+  const base::TimeDelta expected_stable_age(base::Days(1));
+  SharedReport(both, no_accounts, now + base::Days(1),
                ReportingType::ON_CHANGE);
   ExpectSharedReportHistograms(ReportingType::ON_CHANGE, histogram_tester,
                                &expected_stable_age, 2, 0, 2,

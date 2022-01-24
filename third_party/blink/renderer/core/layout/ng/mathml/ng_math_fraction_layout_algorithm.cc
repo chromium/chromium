@@ -158,36 +158,39 @@ scoped_refptr<const NGLayoutResult> NGMathFractionLayoutAlgorithm::Layout() {
   NGBlockNode denominator = nullptr;
   GatherChildren(&numerator, &denominator);
 
-  auto numerator_space = CreateConstraintSpaceForMathChild(
+  const auto numerator_space = CreateConstraintSpaceForMathChild(
       Node(), ChildAvailableSize(), ConstraintSpace(), numerator);
   scoped_refptr<const NGLayoutResult> numerator_layout_result =
       numerator.Layout(numerator_space);
-  auto numerator_margins =
+  const auto numerator_margins =
       ComputeMarginsFor(numerator_space, numerator.Style(), ConstraintSpace());
-  auto denominator_space = CreateConstraintSpaceForMathChild(
+  const auto denominator_space = CreateConstraintSpaceForMathChild(
       Node(), ChildAvailableSize(), ConstraintSpace(), denominator);
   scoped_refptr<const NGLayoutResult> denominator_layout_result =
       denominator.Layout(denominator_space);
-  auto denominator_margins = ComputeMarginsFor(
+  const auto denominator_margins = ComputeMarginsFor(
       denominator_space, denominator.Style(), ConstraintSpace());
 
-  NGBoxFragment numerator_fragment(
+  const NGBoxFragment numerator_fragment(
       ConstraintSpace().GetWritingDirection(),
       To<NGPhysicalBoxFragment>(numerator_layout_result->PhysicalFragment()));
-  NGBoxFragment denominator_fragment(
+  const NGBoxFragment denominator_fragment(
       ConstraintSpace().GetWritingDirection(),
       To<NGPhysicalBoxFragment>(denominator_layout_result->PhysicalFragment()));
+  const auto baseline_type = Style().GetFontBaseline();
 
-  LayoutUnit numerator_ascent =
-      numerator_margins.block_start + numerator_fragment.BaselineOrSynthesize();
-  LayoutUnit numerator_descent = numerator_fragment.BlockSize() +
-                                 numerator_margins.BlockSum() -
-                                 numerator_ascent;
-  LayoutUnit denominator_ascent = denominator_margins.block_start +
-                                  denominator_fragment.BaselineOrSynthesize();
-  LayoutUnit denominator_descent = denominator_fragment.BlockSize() +
-                                   denominator_margins.BlockSum() -
-                                   denominator_ascent;
+  const LayoutUnit numerator_ascent =
+      numerator_margins.block_start +
+      numerator_fragment.BaselineOrSynthesize(baseline_type);
+  const LayoutUnit numerator_descent = numerator_fragment.BlockSize() +
+                                       numerator_margins.BlockSum() -
+                                       numerator_ascent;
+  const LayoutUnit denominator_ascent =
+      denominator_margins.block_start +
+      denominator_fragment.BaselineOrSynthesize(baseline_type);
+  const LayoutUnit denominator_descent = denominator_fragment.BlockSize() +
+                                         denominator_margins.BlockSum() -
+                                         denominator_ascent;
 
   LayoutUnit numerator_shift, denominator_shift;
   LayoutUnit thickness = FractionLineThickness(Style());
@@ -248,10 +251,8 @@ scoped_refptr<const NGLayoutResult> NGMathFractionLayoutAlgorithm::Layout() {
                                     fraction_ascent + denominator_shift -
                                     denominator_ascent;
 
-  container_builder_.AddChild(numerator_layout_result->PhysicalFragment(),
-                              numerator_offset);
-  container_builder_.AddChild(denominator_layout_result->PhysicalFragment(),
-                              denominator_offset);
+  container_builder_.AddResult(*numerator_layout_result, numerator_offset);
+  container_builder_.AddResult(*denominator_layout_result, denominator_offset);
 
   numerator.StoreMargins(ConstraintSpace(), numerator_margins);
   denominator.StoreMargins(ConstraintSpace(), denominator_margins);
@@ -269,7 +270,7 @@ scoped_refptr<const NGLayoutResult> NGMathFractionLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathFractionLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) const {
+    const MinMaxSizesFloatInput&) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;

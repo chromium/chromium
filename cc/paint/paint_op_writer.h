@@ -5,7 +5,6 @@
 #ifndef CC_PAINT_PAINT_OP_WRITER_H_
 #define CC_PAINT_PAINT_OP_WRITER_H_
 
-#include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
@@ -23,6 +22,7 @@ struct Mailbox;
 
 namespace cc {
 
+class DecodedDrawImage;
 class DrawImage;
 class PaintShader;
 
@@ -119,10 +119,8 @@ class CC_PAINT_EXPORT PaintOpWriter {
   // image.
   void Write(const DrawImage& draw_image, SkSize* scale_adjustment);
 
-#if !defined(OS_ANDROID)
   // Serializes the given |skottie| vector graphic.
   void Write(scoped_refptr<SkottieWrapper> skottie);
-#endif
 
  private:
   template <typename T>

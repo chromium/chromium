@@ -11,7 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

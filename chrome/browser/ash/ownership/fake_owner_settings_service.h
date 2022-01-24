@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_
 #define CHROME_BROWSER_ASH_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 
@@ -28,6 +27,9 @@ class FakeOwnerSettingsService : public OwnerSettingsServiceAsh {
       Profile* profile,
       const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util);
 
+  FakeOwnerSettingsService(const FakeOwnerSettingsService&) = delete;
+  FakeOwnerSettingsService& operator=(const FakeOwnerSettingsService&) = delete;
+
   ~FakeOwnerSettingsService() override;
 
   void set_set_management_settings_result(bool success) {
@@ -46,8 +48,6 @@ class FakeOwnerSettingsService : public OwnerSettingsServiceAsh {
   bool set_management_settings_result_ = true;
   ManagementSettings last_settings_;
   StubCrosSettingsProvider* settings_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeOwnerSettingsService);
 };
 
 }  // namespace ash

@@ -16,6 +16,12 @@ class GravityFusionAlgorithmUsingAccelerometer final
     : public PlatformSensorFusionAlgorithm {
  public:
   GravityFusionAlgorithmUsingAccelerometer();
+
+  GravityFusionAlgorithmUsingAccelerometer(
+      const GravityFusionAlgorithmUsingAccelerometer&) = delete;
+  GravityFusionAlgorithmUsingAccelerometer& operator=(
+      const GravityFusionAlgorithmUsingAccelerometer&) = delete;
+
   ~GravityFusionAlgorithmUsingAccelerometer() override;
 
   void SetFrequency(double frequency) override;
@@ -33,8 +39,6 @@ class GravityFusionAlgorithmUsingAccelerometer final
   double gravity_x_;
   double gravity_y_;
   double gravity_z_;
-
-  DISALLOW_COPY_AND_ASSIGN(GravityFusionAlgorithmUsingAccelerometer);
 };
 
 }  // namespace device

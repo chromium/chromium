@@ -144,7 +144,8 @@ void SincResampler::ConsumeSource(float* buffer,
   // FIXME: Find a way to make the following const-correct:
   bus->SetChannelMemory(0, buffer, number_of_source_frames);
 
-  source_provider_->ProvideInput(bus.get(), number_of_source_frames);
+  source_provider_->ProvideInput(
+      bus.get(), base::checked_cast<int>(number_of_source_frames));
 }
 
 namespace {
@@ -153,11 +154,11 @@ namespace {
 
 class BufferSourceProvider final : public AudioSourceProvider {
  public:
-  BufferSourceProvider(const float* source, uint32_t number_of_source_frames)
+  BufferSourceProvider(const float* source, int number_of_source_frames)
       : source_(source), source_frames_available_(number_of_source_frames) {}
 
   // Consumes samples from the in-memory buffer.
-  void ProvideInput(AudioBus* bus, uint32_t frames_to_process) override {
+  void ProvideInput(AudioBus* bus, int frames_to_process) override {
     DCHECK(source_);
     DCHECK(bus);
     if (!source_ || !bus)
@@ -166,8 +167,7 @@ class BufferSourceProvider final : public AudioSourceProvider {
     float* buffer = bus->Channel(0)->MutableData();
 
     // Clamp to number of frames available and zero-pad.
-    uint32_t frames_to_copy =
-        std::min(source_frames_available_, frames_to_process);
+    int frames_to_copy = std::min(source_frames_available_, frames_to_process);
     memcpy(buffer, source_, sizeof(float) * frames_to_copy);
 
     // Zero-pad if necessary.
@@ -181,14 +181,14 @@ class BufferSourceProvider final : public AudioSourceProvider {
 
  private:
   const float* source_;
-  uint32_t source_frames_available_;
+  int source_frames_available_;
 };
 
 }  // namespace
 
 void SincResampler::Process(const float* source,
                             float* destination,
-                            unsigned number_of_source_frames) {
+                            int number_of_source_frames) {
   // Resample an in-memory buffer using an AudioSourceProvider.
   BufferSourceProvider source_provider(source, number_of_source_frames);
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BITMAP_FETCHER_BITMAP_FETCHER_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_BITMAP_FETCHER_BITMAP_FETCHER_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -18,6 +17,10 @@ class BitmapFetcherServiceFactory : BrowserContextKeyedServiceFactory {
       content::BrowserContext* context);
   static BitmapFetcherServiceFactory* GetInstance();
 
+  BitmapFetcherServiceFactory(const BitmapFetcherServiceFactory&) = delete;
+  BitmapFetcherServiceFactory& operator=(const BitmapFetcherServiceFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<BitmapFetcherServiceFactory>;
 
@@ -27,8 +30,6 @@ class BitmapFetcherServiceFactory : BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapFetcherServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_BITMAP_FETCHER_BITMAP_FETCHER_SERVICE_FACTORY_H_

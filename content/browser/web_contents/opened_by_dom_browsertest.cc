@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
@@ -26,6 +25,9 @@ class CloseTrackingDelegate : public WebContentsDelegate {
  public:
   CloseTrackingDelegate() : close_contents_called_(false) {}
 
+  CloseTrackingDelegate(const CloseTrackingDelegate&) = delete;
+  CloseTrackingDelegate& operator=(const CloseTrackingDelegate&) = delete;
+
   bool close_contents_called() const { return close_contents_called_; }
 
   void CloseContents(WebContents* source) override {
@@ -34,8 +36,6 @@ class CloseTrackingDelegate : public WebContentsDelegate {
 
  private:
   bool close_contents_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseTrackingDelegate);
 };
 
 }  // namespace
@@ -112,6 +112,31 @@ IN_PROC_BROWSER_TEST_F(OpenedByDOMTest, Popup) {
 
   Shell* popup = OpenWindowFromJavaScript(shell(), url2);
   EXPECT_TRUE(NavigateToURL(popup, url3));
+  EXPECT_TRUE(AttemptCloseFromJavaScript(popup->web_contents()));
+}
+
+// Tests that window.close() works in a popup window that's opened with noopener
+// that has navigated a few times.
+IN_PROC_BROWSER_TEST_F(OpenedByDOMTest, NoOpenerPopup) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url1 = embedded_test_server()->GetURL("/site_isolation/blank.html?1");
+  GURL url2 = embedded_test_server()->GetURL("/site_isolation/blank.html?2");
+  GURL url3 = embedded_test_server()->GetURL("/site_isolation/blank.html?3");
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  // Create a popup through window.open() and 'noopener'.
+  ShellAddedObserver new_shell_observer;
+  TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  CHECK(
+      ExecJs(shell(), JsReplace("window.open($1, '_blank','noopener')", url2)));
+  nav_observer.Wait();
+  Shell* popup = new_shell_observer.GetShell();
+
+  // Navigate the popup.
+  EXPECT_TRUE(NavigateToURL(popup, url3));
+  // Closing the popup should still work.
   EXPECT_TRUE(AttemptCloseFromJavaScript(popup->web_contents()));
 }
 

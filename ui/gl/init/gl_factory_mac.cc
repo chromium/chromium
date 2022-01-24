@@ -5,7 +5,6 @@
 #include "ui/gl/init/gl_factory.h"
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/buildflags.h"
@@ -36,6 +35,9 @@ class NoOpGLSurface : public GLSurface {
  public:
   explicit NoOpGLSurface(const gfx::Size& size) : size_(size) {}
 
+  NoOpGLSurface(const NoOpGLSurface&) = delete;
+  NoOpGLSurface& operator=(const NoOpGLSurface&) = delete;
+
   // Implement GLSurface.
   bool Initialize(GLSurfaceFormat format) override { return true; }
   void Destroy() override {}
@@ -55,8 +57,6 @@ class NoOpGLSurface : public GLSurface {
 
  private:
   gfx::Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoOpGLSurface);
 };
 
 }  // namespace

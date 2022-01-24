@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "content/public/renderer/v8_value_converter.h"
 
@@ -23,6 +22,9 @@ namespace content {
 class CONTENT_EXPORT V8ValueConverterImpl : public V8ValueConverter {
  public:
   V8ValueConverterImpl();
+
+  V8ValueConverterImpl(const V8ValueConverterImpl&) = delete;
+  V8ValueConverterImpl& operator=(const V8ValueConverterImpl&) = delete;
 
   // V8ValueConverter implementation.
   void SetDateAllowed(bool val) override;
@@ -93,8 +95,6 @@ class CONTENT_EXPORT V8ValueConverterImpl : public V8ValueConverter {
 
   // Strategy object that changes the converter's behavior.
   Strategy* strategy_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8ValueConverterImpl);
 };
 
 }  // namespace content

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_ANIMATION_COMPOSITOR_KEYFRAME_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace gfx {
@@ -20,7 +21,7 @@ class PLATFORM_EXPORT CompositorKeyframe {
  public:
   virtual ~CompositorKeyframe() = default;
 
-  virtual double Time() const = 0;
+  virtual base::TimeDelta Time() const = 0;
 
   scoped_refptr<TimingFunction> GetTimingFunctionForTesting() const;
 

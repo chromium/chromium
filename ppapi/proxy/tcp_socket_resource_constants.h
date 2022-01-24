@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef PPAPI_PROXY_TCP_SOCKET_RESOURCE_CONSTANTS_H_
+#define PPAPI_PROXY_TCP_SOCKET_RESOURCE_CONSTANTS_H_
+
 #include <stdint.h>
 
 #include "base/macros.h"
@@ -11,6 +14,10 @@ namespace proxy {
 
 class TCPSocketResourceConstants {
  public:
+  TCPSocketResourceConstants(const TCPSocketResourceConstants&) = delete;
+  TCPSocketResourceConstants& operator=(const TCPSocketResourceConstants&) =
+      delete;
+
   // The maximum number of bytes that each PpapiHostMsg_PPBTCPSocket_Read
   // message is allowed to request.
   enum { kMaxReadSize = 1024 * 1024 };
@@ -28,10 +35,9 @@ class TCPSocketResourceConstants {
   // argument sanity check, it doesn't mean the browser guarantees to support
   // such a buffer size.
   enum { kMaxReceiveBufferSize = 1024 * kMaxReadSize };
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TCPSocketResourceConstants);
 };
 
 }  // namespace proxy
 }  // namespace ppapi
+
+#endif  // PPAPI_PROXY_TCP_SOCKET_RESOURCE_CONSTANTS_H_

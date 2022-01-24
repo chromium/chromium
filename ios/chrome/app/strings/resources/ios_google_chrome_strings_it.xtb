@@ -4,21 +4,20 @@
 <translation id="1096883626080133124">Aumenta la tua produttività grazie a Google Chrome, che ti offre semplicità, sicurezza e velocità senza precedenti</translation>
 <translation id="1282031177488366470">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome</translation>
 <translation id="1314663809820920746">Puoi trovare ancora tutti i tuoi preferiti, la cronologia, le password e altre impostazioni su questo dispositivo. Le eventuali modifiche apportate non verranno sincronizzate con il tuo Account Google.</translation>
-<translation id="139135165841384604">Aumenta la tua produttività con Chrome</translation>
 <translation id="1479202195792305274">Chrome può controllare le tue password quando accedi con il tuo Account Google.</translation>
 <translation id="1493827051843127077">Imposta Chrome come browser predefinito per la sincronizzazione di schede, password e dati di pagamento su tutti i tuoi dispositivi</translation>
 <translation id="1504372625950710826">Chrome non ha potuto verificare la disponibilità di aggiornamenti. Verifica la tua connessione a Internet.</translation>
 <translation id="1682483655351012182">Sincronizza i tuoi dati di Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
-<translation id="1812249337131447686">Contribuisci a migliorare Chrome inviando a Google statistiche sull'utilizzo e rapporti sugli arresti anomali</translation>
+<translation id="1812249337131447686">Contribuisci a migliorare Chrome inviando a Google statistiche sull'utilizzo e report sugli arresti anomali</translation>
 <translation id="1917964099031477364">Questo account e gli eventuali dati non salvati verranno rimossi da Chrome e da altre app Google su questo dispositivo.</translation>
+<translation id="1968388653333775699">Aumenta la tua produttività con Chrome</translation>
 <translation id="2009224836393115614">Chrome non ha potuto controllare le tue password. Verifica la tua connessione a Internet.</translation>
 <translation id="2147651015520127414">Chrome ha verificato che <ph name="ISSUER" /> ha emesso il certificato del sito web.</translation>
 <translation id="2199719347983604670">Dati dalla sincronizzazione Chrome</translation>
 <translation id="2313070403598893276">Google Chrome è semplice, sicuro e più veloce che mai</translation>
 <translation id="2342919707875585281">Chrome condivide la tua posizione con i siti autorizzati da te.</translation>
 <translation id="2347208864470321755">Quando questa funzione è attiva, Chrome si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
-<translation id="2415682770504543561">Imposta Chrome come browser predefinito</translation>
 <translation id="2427791862912929107">Chrome offre funzionalità che ti consentono di gestire i tuoi dati Internet e la velocità di caricamento delle pagine web.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="2561231791489583059">Usa Chrome come browser predefinito per proteggerti da siti pericolosi e tenere al sicuro le tue password</translation>
@@ -27,9 +26,9 @@
 <translation id="257708665678654955">Vuoi che Google Chrome ti proponga di tradurre le pagine di questo sito in <ph name="LANGUAGE_NAME" /> al prossimo accesso?</translation>
 <translation id="2695886661449553974">Chrome non ha potuto verificare la disponibilità di aggiornamenti. Riprova più tardi.</translation>
 <translation id="2732745070297234559">Chrome non ha potuto controllare tutte le password. Riprova domani.</translation>
-<translation id="2740105938841089077">Usa Chrome per aprire i link</translation>
 <translation id="2869959624320573933">Accedi a Chrome</translation>
 <translation id="2919738076569633423">Se utilizzi Chrome, accetti i <ph name="BEGIN_LINK_TOS" />Termini di servizio<ph name="END_LINK_TOS" />.</translation>
+<translation id="2957447865124070833">Seleziona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chrome verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="3167189358072330585">Il tuo account non funziona su Google Chrome. Contatta l'amministratore di dominio o utilizza un normale Account Google per accedere.</translation>
 <translation id="3173834708294760622">Pagina di Google Chrome</translation>
@@ -45,8 +44,9 @@
 <translation id="3980220367029651214">Stai per cambiare account di sincronizzazione, passando dall'account <ph name="USER_EMAIL1" /> all'account <ph name="USER_EMAIL2" />. I tuoi attuali dati di Chrome vengono gestiti da <ph name="DOMAIN" />. I dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nell'account <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">La tua organizzazione ti richiede di non effettuare l'accesso a Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome non ha accesso alle tue foto o ai tuoi video. Attiva l'accesso in Impostazioni iOS &gt; Privacy &gt; Foto.</translation>
-<translation id="4099578267706723511">Aiutaci a migliorare Chrome inviando a Google statistiche sull'utilizzo e rapporti sugli arresti anomali.</translation>
+<translation id="4099578267706723511">Aiutaci a migliorare Chrome inviando a Google statistiche sull'utilizzo e report sugli arresti anomali.</translation>
 <translation id="417201473131094001">Non supportata su Chrome Canary</translation>
+<translation id="4214277427269650960">Accedi a questo sito e a Chrome. Puoi attivare la sincronizzazione in un secondo momento.</translation>
 <translation id="424864128008805179">Uscire da Chrome?</translation>
 <translation id="4249068189593983585">Suggerimento per Chrome. Per vedere più opzioni sulla scheda, tocca e tieni premuto il pulsante Mostra schede della barra degli strumenti, che si trova nella parte inferiore o superiore della schermata.</translation>
 <translation id="4523886039239821078">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Disinstallali.</translation>
@@ -62,7 +62,8 @@
 <translation id="571296537125272375">Offline. Chrome non può controllare la disponibilità di aggiornamenti</translation>
 <translation id="5716154293141027663">Apri Chrome ogni volta che tocchi link in altre app</translation>
 <translation id="5854621639439811139">Suggerimento per Chrome. Alcuni pulsanti ora si trovano nella parte inferiore della schermata, ad esempio Indietro, Avanti e Cerca.</translation>
-<translation id="5876773482963502140">Se consenti a Chrome di conoscere la tua posizione, Chrome la invia ai siti autorizzati. I siti possono chiederti la posizione in presenza di informazioni locali da mostrarti, ad esempio notizie o negozi nelle vicinanze.</translation>
+<translation id="5998675059699164418">La tua organizzazione richiede l'accesso per usare Chrome.</translation>
+<translation id="6054613632208573261">Usa Chrome per impostazione predefinita</translation>
 <translation id="6063091872902370735">Consenti l'accesso a Chrome</translation>
 <translation id="6181930887571472871">Passa a Chrome</translation>
 <translation id="6238746320622508509">Consenti a Chrome di bloccare le schede di navigazione in incognito.</translation>
@@ -88,6 +89,7 @@
 <translation id="7626032353295482388">Benvenuto in Chrome</translation>
 <translation id="7662994914830945754">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chrome e attiva la sincronizzazione per visualizzare le tue schede</translation>
 <translation id="766361182512894255">La tua password è stata compromessa a causa di una violazione dei dati. Chrome consiglia di cambiare subito la password.</translation>
+<translation id="7693590760643069321">Ora puoi usare Chrome ogni volta che tocchi i link in messaggi, documenti e altre app.</translation>
 <translation id="7698568245838009292">Chrome vorrebbe accedere alla fotocamera</translation>
 <translation id="7855730255114109580">Google Chrome è aggiornato</translation>
 <translation id="8022947259858476807">Usa Chrome per impostazione predefinita per aprire link, eseguire ricerche dai widget e compilare automaticamente le password in altre app</translation>
@@ -96,6 +98,7 @@
 <translation id="8357607116237445042">Scegli se cancellare i tuoi dati di Chrome da questo dispositivo o se conservarli</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
 <translation id="840168496893712993">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Prova a disinstallarli.</translation>
+<translation id="8414886616817913619">La tua organizzazione richiede l'accesso per usare Chrome. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8459495907675268833">I dati selezionati sono stati rimossi da Chrome e dai dispositivi sincronizzati. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, ad esempio ricerche e attività, di altri servizi Google alla pagina history.google.com.</translation>
 <translation id="850555388806794946">Per impostare Chrome come browser predefinito:
   1. Apri le Impostazioni.

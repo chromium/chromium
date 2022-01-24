@@ -19,6 +19,10 @@ class VIEWS_EXPORT ToggleButton : public Button {
   METADATA_HEADER(ToggleButton);
 
   explicit ToggleButton(PressedCallback callback = PressedCallback());
+
+  ToggleButton(const ToggleButton&) = delete;
+  ToggleButton& operator=(const ToggleButton&) = delete;
+
   ~ToggleButton() override;
 
   // AnimateIsOn() animates the state change to |is_on|; SetIsOn() doesn't.
@@ -88,8 +92,6 @@ class VIEWS_EXPORT ToggleButton : public Button {
   // When false, this button won't accept input. Different from View::SetEnabled
   // in that the view retains focus when this is false but not when disabled.
   bool accepts_events_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ToggleButton);
 };
 
 }  // namespace views

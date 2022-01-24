@@ -3,16 +3,18 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -30,8 +32,10 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/resource_load_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -53,14 +57,14 @@ class FrameTreeBrowserTest : public ContentBrowserTest {
  public:
   FrameTreeBrowserTest() = default;
 
+  FrameTreeBrowserTest(const FrameTreeBrowserTest&) = delete;
+  FrameTreeBrowserTest& operator=(const FrameTreeBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameTreeBrowserTest);
 };
 
 // Ensures FrameTree correctly reflects page structure during navigations.
@@ -72,8 +76,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeShape) {
   //   Site-A Root
   EXPECT_TRUE(NavigateToURL(shell(), base_url.Resolve("blank.html")));
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   EXPECT_EQ(0U, root->child_count());
 
   // Add 2 same-site frames. Verify 3 nodes in tree with proper names.
@@ -98,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeShape2) {
       shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
 
   WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = wc->GetFrameTree()->root();
+  FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
 
   // Check that the root node is properly created.
   ASSERT_EQ(3UL, root->child_count());
@@ -120,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeShape2) {
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
-  root = wc->GetFrameTree()->root();
+  root = wc->GetPrimaryFrameTree().root();
   EXPECT_EQ(0UL, root->child_count());
   EXPECT_EQ(std::string(), root->frame_name());
 }
@@ -132,10 +136,9 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeAfterCrash) {
       shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
 
   // Ensure the view and frame are live.
-  RenderViewHost* rvh =
-      shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
-  RenderFrameHostImpl* rfh1 =
-      static_cast<RenderFrameHostImpl*>(rvh->GetMainFrame());
+  RenderFrameHostImpl* rfh1 = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  RenderViewHost* rvh = rfh1->GetRenderViewHost();
   EXPECT_TRUE(rvh->IsRenderViewLive());
   EXPECT_TRUE(rfh1->IsRenderFrameLive());
 
@@ -149,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeAfterCrash) {
 
   // The frame tree should be cleared.
   WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = wc->GetFrameTree()->root();
+  FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
   EXPECT_EQ(0UL, root->child_count());
 
   // Ensure the view and frame aren't live anymore.
@@ -182,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateWithLeftoverFrames) {
 
   // Check that the frame tree still has children.
   WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = wc->GetFrameTree()->root();
+  FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
   ASSERT_EQ(3UL, root->child_count());
 
   // Navigate to a new URL.  We use LoadURL because NavigateToURL will try to
@@ -202,8 +205,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, IsRenderFrameLive) {
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // The root and subframe should each have a live RenderFrame.
   EXPECT_TRUE(
@@ -230,15 +233,15 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(contents)->GetFrameTree()->root();
+      static_cast<WebContentsImpl*>(contents)->GetPrimaryFrameTree().root();
 
   // Extra '/' is added because the replicated origin is serialized in RFC 6454
   // format, which dictates no trailing '/', whereas GURL::GetOrigin does put a
   // '/' at the end.
-  EXPECT_EQ(main_url.GetOrigin().spec(),
+  EXPECT_EQ(main_url.DeprecatedGetOriginAsURL().spec(),
             root->current_origin().Serialize() + '/');
   EXPECT_EQ(
-      main_url.GetOrigin().spec(),
+      main_url.DeprecatedGetOriginAsURL().spec(),
       root->current_frame_host()->GetLastCommittedOrigin().Serialize() + '/');
 
   // The iframe is inititially same-origin.
@@ -253,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
   GURL frame_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
   EXPECT_EQ(frame_url, root->child_at(0)->current_url());
-  EXPECT_EQ(frame_url.GetOrigin().spec(),
+  EXPECT_EQ(frame_url.DeprecatedGetOriginAsURL().spec(),
             root->child_at(0)->current_origin().Serialize() + '/');
   EXPECT_FALSE(
       root->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
@@ -266,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
   // origin.
   NavigateIframeToURL(contents, "1-1-id", about_blank);
   EXPECT_EQ(about_blank, root->child_at(0)->current_url());
-  EXPECT_EQ(main_url.GetOrigin().spec(),
+  EXPECT_EQ(main_url.DeprecatedGetOriginAsURL().spec(),
             root->child_at(0)->current_origin().Serialize() + '/');
   EXPECT_EQ(root->current_frame_host()->GetLastCommittedOrigin().Serialize(),
             root->child_at(0)
@@ -291,10 +294,10 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
 
   // Re-navigating to a normal URL should update the origin.
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  EXPECT_EQ(main_url.GetOrigin().spec(),
+  EXPECT_EQ(main_url.DeprecatedGetOriginAsURL().spec(),
             root->current_origin().Serialize() + '/');
   EXPECT_EQ(
-      main_url.GetOrigin().spec(),
+      main_url.DeprecatedGetOriginAsURL().spec(),
       contents->GetMainFrame()->GetLastCommittedOrigin().Serialize() + '/');
   EXPECT_FALSE(contents->GetMainFrame()->GetLastCommittedOrigin().opaque());
   EXPECT_EQ(root->current_origin().Serialize(), GetOriginFromRenderer(root));
@@ -305,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, OriginSetOnNavigation) {
 IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateGrandchildToBlob) {
   WebContents* contents = shell()->web_contents();
   FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(contents)->GetFrameTree()->root();
+      static_cast<WebContentsImpl*>(contents)->GetPrimaryFrameTree().root();
 
   // First, snapshot the FrameTree for a normal A(B(A)) case where all frames
   // are served over http. The blob test should result in the same structure.
@@ -363,15 +366,15 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateChildToAboutBlank) {
   // The leaf node (c.com) will be navigated. Its parent node (b.com) will
   // initiate the navigation.
   FrameTreeNode* target =
-      contents->GetFrameTree()->root()->child_at(0)->child_at(0);
-  FrameTreeNode* initiator = target->parent()->frame_tree_node();
+      contents->GetPrimaryFrameTree().root()->child_at(0)->child_at(0);
+  RenderFrameHost* initiator_rfh = target->parent();
 
   // Give the target a name.
   EXPECT_TRUE(ExecJs(target, "window.name = 'target';"));
 
   // Use window.open(about:blank), then poll the document for access.
   EvalJsResult about_blank_origin = EvalJs(
-      initiator,
+      initiator_rfh,
       "new Promise(resolve => {"
       "  var didNavigate = false;"
       "  var intervalID = setInterval(function() {"
@@ -411,16 +414,15 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
   // The leaf node (c.com) will be navigated. Its grandparent node (a.com) will
   // initiate the navigation.
   FrameTreeNode* target =
-      contents->GetFrameTree()->root()->child_at(0)->child_at(0);
-  FrameTreeNode* initiator =
-      target->parent()->frame_tree_node()->parent()->frame_tree_node();
+      contents->GetPrimaryFrameTree().root()->child_at(0)->child_at(0);
+  RenderFrameHost* initiator_rfh = target->parent()->GetParent();
 
   // Give the target a name.
   EXPECT_TRUE(ExecJs(target, "window.name = 'target';"));
 
   // Use window.open(about:blank), then poll the document for access.
   EvalJsResult about_blank_origin =
-      EvalJs(initiator,
+      EvalJs(initiator_rfh,
              "new Promise((resolve) => {"
              "  var didNavigate = false;"
              "  var intervalID = setInterval(() => {"
@@ -459,9 +461,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateGrandchildToDataUrl) {
   // The leaf node (c.com) will be navigated. Its grandparent node (a.com) will
   // initiate the navigation.
   FrameTreeNode* target =
-      contents->GetFrameTree()->root()->child_at(0)->child_at(0);
-  FrameTreeNode* initiator =
-      target->parent()->frame_tree_node()->parent()->frame_tree_node();
+      contents->GetPrimaryFrameTree().root()->child_at(0)->child_at(0);
+  RenderFrameHostImpl* initiator_rfh = target->parent()->GetParent();
 
   // Give the target a name.
   EXPECT_TRUE(ExecJs(target, "window.name = 'target';"));
@@ -469,8 +470,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateGrandchildToDataUrl) {
   // Navigate the target frame through the initiator frame.
   {
     TestFrameNavigationObserver observer(target);
-    EXPECT_TRUE(
-        ExecJs(initiator, "window.open('data:text/html,content', 'target');"));
+    EXPECT_TRUE(ExecJs(initiator_rfh,
+                       "window.open('data:text/html,content', 'target');"));
     observer.Wait();
   }
 
@@ -513,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, ChildFrameWithSrcdoc) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   WebContentsImpl* contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = contents->GetFrameTree()->root();
+  FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
   EXPECT_EQ(1U, root->child_count());
 
   FrameTreeNode* child = root->child_at(0);
@@ -538,11 +539,15 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, ChildFrameWithSrcdoc) {
     observer.Wait();
 
     EXPECT_TRUE(root->child_at(1)->current_url().IsAboutSrcdoc());
-    EvalJsResult frame_origin = EvalJs(root->child_at(1), "self.origin");
-    EXPECT_EQ(root->current_frame_host()->GetLastCommittedURL().GetOrigin(),
-              GURL(frame_origin.ExtractString()));
-    EXPECT_NE(child->current_frame_host()->GetLastCommittedURL().GetOrigin(),
-              GURL(frame_origin.ExtractString()));
+    EvalJsResult js_result = EvalJs(root->child_at(1), "self.origin");
+    EXPECT_EQ(root->current_frame_host()
+                  ->GetLastCommittedURL()
+                  .DeprecatedGetOriginAsURL(),
+              GURL(js_result.ExtractString()));
+    EXPECT_NE(child->current_frame_host()
+                  ->GetLastCommittedURL()
+                  .DeprecatedGetOriginAsURL(),
+              GURL(js_result.ExtractString()));
   }
 
   // Set srcdoc on the existing cross-site frame. It should navigate the frame
@@ -556,10 +561,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, ChildFrameWithSrcdoc) {
     observer.Wait();
 
     EXPECT_TRUE(child->current_url().IsAboutSrcdoc());
-    EXPECT_EQ(
-        url::Origin::Create(root->current_frame_host()->GetLastCommittedURL())
-            .Serialize(),
-        EvalJs(child, "self.origin"));
+    EXPECT_EQ(root->current_frame_host()->GetLastCommittedOrigin().Serialize(),
+              EvalJs(child, "self.origin"));
   }
 }
 
@@ -571,8 +574,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, SandboxFlagsSetForMainFrame) {
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Verify that sandbox flags are set properly for the root FrameTreeNode and
   // RenderFrameHost. Root frame is sandboxed with "allow-scripts".
@@ -626,8 +629,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, SandboxFlagsSetForChildFrames) {
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Verify that sandbox flags are set properly for all FrameTreeNodes.
   // First frame is completely sandboxed; second frame uses "allow-scripts",
@@ -652,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, SandboxFlagsSetForChildFrames) {
   // "allow-same-origin" directive.
   EXPECT_EQ("null", root->child_at(0)->current_origin().Serialize());
   EXPECT_EQ("null", root->child_at(1)->current_origin().Serialize());
-  EXPECT_EQ(main_url.GetOrigin().spec(),
+  EXPECT_EQ(main_url.DeprecatedGetOriginAsURL().spec(),
             root->child_at(2)->current_origin().Serialize() + "/");
 
   // Navigating to a different URL should not clear sandbox flags.
@@ -672,8 +675,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Verify that sandbox flags are set properly for all FrameTreeNodes.
   // First frame has no iframe sandbox flags, but the framed document is served
@@ -750,8 +753,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, SubframeOpenerSetForNewWindow) {
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Open a new window from a subframe.
   ShellAddedObserver new_shell_observer;
@@ -765,7 +768,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, SubframeOpenerSetForNewWindow) {
   // Check that the new window's opener points to the correct subframe on
   // original window.
   FrameTreeNode* popup_root =
-      static_cast<WebContentsImpl*>(new_contents)->GetFrameTree()->root();
+      static_cast<WebContentsImpl*>(new_contents)->GetPrimaryFrameTree().root();
   EXPECT_EQ(root->child_at(0), popup_root->opener());
 
   // Close the original window.  This should clear the new window's opener.
@@ -782,8 +785,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_FALSE(root->HasStickyUserActivation());
   EXPECT_FALSE(root->HasTransientUserActivation());
@@ -804,34 +807,287 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
   EXPECT_FALSE(root->HasTransientUserActivation());
 }
 
-class FencedFrameTreeBrowserTest : public FrameTreeBrowserTest {
+class FencedFrameTreeBrowserTest
+    : public FrameTreeBrowserTest,
+      public ::testing::WithParamInterface<
+          blink::features::FencedFramesImplementationType> {
  public:
+  // Provides meaningful param names instead of /0 and /1.
+  static std::string DescribeParams(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    switch (info.param) {
+      case blink::features::FencedFramesImplementationType::kShadowDOM:
+        return "ShadowDOM";
+      case blink::features::FencedFramesImplementationType::kMPArch:
+        return "MPArch";
+    }
+  }
+
   FencedFrameTreeBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames,
-        {{"implementation_type", "shadow_dom"}});
-    // TODO(crbug.com/1123606): Parametrize this class to run for MPArch version
-    // as well, once the supporting code lands.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames,
+          {{"implementation_type",
+            GetParam() ==
+                    blink::features::FencedFramesImplementationType::kShadowDOM
+                ? "shadow_dom"
+                : "mparch"}}},
+         {blink::features::kThirdPartyStoragePartitioning, {}}},
+        {/* disabled_features */});
+  }
+
+  // `node` is expected to be the child FrameTreeNode created in response to a
+  // <fencedframe> element being created. This test class is parameterized over
+  // the MPArch and the ShadowDOM implementation of fenced frames, which is why
+  // this method:
+  //    - Returns `node` if we're in the ShadowDOM version
+  //    - Returns the FrameTreeNode of the fenced frame's inner FrameTree, if
+  //    we're in the MPArch version of fenced frames
+  FrameTreeNode* GetFencedFrameRootNode(FrameTreeNode* node) {
+    if (GetParam() ==
+        blink::features::FencedFramesImplementationType::kShadowDOM)
+      return node;
+
+    int inner_node_id =
+        node->current_frame_host()->inner_tree_main_frame_tree_node_id();
+    return FrameTreeNode::GloballyFindByID(inner_node_id);
+  }
+
+  // This is needed because `TestFrameNavigationObserver` doesn't work properly
+  // from within the context of a fenced frame's FrameTree. See the comments
+  // below.
+  void NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      const ToRenderFrameHost& adapter,
+      GURL url,
+      const std::string& navigate_script,
+      net::Error expected_net_error_code = net::OK) {
+    RenderFrameHostImpl* rfh =
+        static_cast<RenderFrameHostImpl*>(adapter.render_frame_host());
+    EXPECT_TRUE(rfh->frame_tree_node()->IsInFencedFrameTree());
+    RenderFrameHostImpl* target_rfh = rfh->GetParentOrOuterDocument();
+    ExecuteNavigationOrHistoryScriptInFencedFrameTree(
+        target_rfh, rfh, navigate_script, expected_net_error_code);
+  }
+
+  void UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(
+      const ToRenderFrameHost& adapter,
+      const std::string& history_script) {
+    RenderFrameHostImpl* rfh =
+        static_cast<RenderFrameHostImpl*>(adapter.render_frame_host());
+    EXPECT_TRUE(rfh->frame_tree_node()->IsInFencedFrameTree());
+
+    ExecuteNavigationOrHistoryScriptInFencedFrameTree(rfh, rfh, history_script);
+  }
+
+  void ExecuteNavigationOrHistoryScriptInFencedFrameTree(
+      RenderFrameHostImpl* target_rfh,
+      RenderFrameHostImpl* fenced_frame_rfh,
+      const std::string& script,
+      net::Error expected_net_error_code = net::OK) {
+    // For the ShadowDOM version of fenced frames, we can just use a
+    // `TestFrameNavigationObserver` as normal directly on the frame that is
+    // navigating.
+    if (GetParam() ==
+        blink::features::FencedFramesImplementationType::kShadowDOM) {
+      TestFrameNavigationObserver observer(fenced_frame_rfh);
+      EXPECT_TRUE(ExecJs(target_rfh, script));
+      observer.Wait();
+      EXPECT_EQ(observer.last_net_error_code(), expected_net_error_code);
+      return;
+    }
+
+    FrameTreeNode* frame_tree_node = fenced_frame_rfh->frame_tree_node();
+    EXPECT_TRUE(frame_tree_node->IsInFencedFrameTree());
+
+    // For the MPArch version of fenced frames, `TestFrameNavigationObserver`
+    // does not fully work inside of a fenced frame FrameTree. `WaitForCommit()`
+    // works, but `Wait()` always times out because it expects to hear the
+    // DidFinishedLoad event from the outer WebContents, which is not
+    // communicated by nested FrameTrees.
+    FencedFrame* fenced_frame =
+        GetMatchingFencedFrameInOuterFrameTree(fenced_frame_rfh);
+    EXPECT_TRUE(ExecJs(target_rfh, script));
+    fenced_frame->WaitForDidStopLoadingForTesting();
+    // `rfh` might be destroyed and invalid at this point.
+    EXPECT_EQ(frame_tree_node->current_frame_host()->IsErrorDocument(),
+              expected_net_error_code != net::OK);
+  }
+
+  void WaitForDidStopLoadingForTesting(RenderFrameHostImpl* fenced_frame_rfh) {
+    FencedFrame* fenced_frame =
+        GetMatchingFencedFrameInOuterFrameTree(fenced_frame_rfh);
+    fenced_frame->WaitForDidStopLoadingForTesting();
+  }
+
+  void AddIframeInFencedFrame(FrameTreeNode* fenced_frame,
+                              unsigned int child_index) {
+    EXPECT_TRUE(
+        ExecJs(fenced_frame,
+               "var iframe_within_ff = document.createElement('iframe');"
+               "document.body.appendChild(iframe_within_ff);"));
+    EXPECT_EQ(child_index + 1, fenced_frame->child_count());
+    auto* iframe = fenced_frame->child_at(child_index);
+    EXPECT_FALSE(iframe->IsFencedFrameRoot());
+    EXPECT_TRUE(iframe->IsInFencedFrameTree());
+  }
+
+  // Navigates the element created in AddIframeInFencedFrame.
+  void NavigateIframeInFencedFrame(FrameTreeNode* iframe, const GURL& url) {
+    EXPECT_FALSE(iframe->IsFencedFrameRoot());
+    EXPECT_TRUE(iframe->IsInFencedFrameTree());
+
+    // Navigate the iframe.
+    std::string navigate_script =
+        JsReplace("iframe_within_ff.src = $1;", url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(iframe, url,
+                                                             navigate_script);
+  }
+
+  FrameTreeNode* AddNestedFencedFrame(FrameTreeNode* fenced_frame,
+                                      unsigned int child_index) {
+    EXPECT_TRUE(ExecJs(
+        fenced_frame,
+        "var nested_fenced_frame = document.createElement('fencedframe');"
+        "document.body.appendChild(nested_fenced_frame);"));
+    EXPECT_EQ(child_index + 1, fenced_frame->child_count());
+    auto* nested_fenced_frame =
+        GetFencedFrameRootNode(fenced_frame->child_at(child_index));
+    EXPECT_TRUE(nested_fenced_frame->IsFencedFrameRoot());
+    EXPECT_TRUE(nested_fenced_frame->IsInFencedFrameTree());
+    return nested_fenced_frame;
+  }
+
+  // Navigates the element created in AddNestedFencedFrame.
+  void NavigateNestedFencedFrame(FrameTreeNode* nested_fenced_frame,
+                                 const GURL& url) {
+    EXPECT_TRUE(nested_fenced_frame->IsFencedFrameRoot());
+    EXPECT_TRUE(nested_fenced_frame->IsInFencedFrameTree());
+    std::string navigate_script =
+        JsReplace("nested_fenced_frame.src = $1;", url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        nested_fenced_frame, url, navigate_script);
+  }
+
+  void SetUpOnMainThread() override {
+    // Set up the host resolver to allow serving separate sites, so we can
+    // perform cross-process navigation.
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    // Fenced frames require potentially trustworthy URLs so creating an https
+    // server.
+    https_server_.RegisterRequestMonitor(
+        base::BindRepeating(&FencedFrameTreeBrowserTest::ObserveRequestHeaders,
+                            base::Unretained(this)));
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    ASSERT_TRUE(https_server_.Start());
+  }
+
+  // Invoked on "EmbeddedTestServer IO Thread".
+  void ObserveRequestHeaders(const net::test_server::HttpRequest& request) {
+    base::AutoLock auto_lock(requests_lock_);
+    std::string val = request.headers.find("Cookie") != request.headers.end()
+                          ? request.headers.at("Cookie").c_str()
+                          : "";
+    cookie_headers_map_.insert(std::make_pair(request.GetURL().path(), val));
+
+    val = request.headers.find("Sec-Fetch-Dest") != request.headers.end()
+              ? request.headers.at("Sec-Fetch-Dest").c_str()
+              : "";
+    sec_fetch_dest_headers_map_.insert(
+        std::make_pair(request.GetURL().path(), val));
+  }
+
+  // Returns true if the cookie header was present in the last request received
+  // by the server with the same `url.path()`. Also asserts that the cookie
+  // header value matches that given in `expected_value`, if it exists. Also
+  // clears the value that was just checked by the method invocation.
+  bool CheckAndClearCookieHeader(
+      const GURL& url,
+      const std::string& expected_value = "",
+      const base::Location& from_here = base::Location::Current()) {
+    base::AutoLock auto_lock(requests_lock_);
+    SCOPED_TRACE(from_here.ToString());
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    std::string file_name = url.path();
+    CHECK(cookie_headers_map_.find(file_name) != cookie_headers_map_.end());
+    std::string header = cookie_headers_map_[file_name];
+    EXPECT_EQ(expected_value, header);
+    cookie_headers_map_.erase(file_name);
+    return !header.empty();
+  }
+
+  bool CheckAndClearSecFetchDestHeader(
+      const GURL& url,
+      const std::string& expected_value = "",
+      const base::Location& from_here = base::Location::Current()) {
+    base::AutoLock auto_lock(requests_lock_);
+    SCOPED_TRACE(from_here.ToString());
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    std::string file_name = url.path();
+    CHECK(sec_fetch_dest_headers_map_.find(file_name) !=
+          sec_fetch_dest_headers_map_.end());
+    std::string header = sec_fetch_dest_headers_map_[file_name];
+    EXPECT_EQ(expected_value, header);
+    sec_fetch_dest_headers_map_.erase(file_name);
+    return !header.empty();
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
+  ~FencedFrameTreeBrowserTest() override {
+    // Shutdown the server explicitly so that there is no race with the
+    // destruction of cookie_headers_map_ and invocation of RequestMonitor.
+    EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
+  }
+
  private:
+  // This method takes in a RenderFrameHostImpl that must be inside a fenced
+  // frame FrameTree, and returns the FencedFrame* object that represents this
+  // inner FrameTree from the outer FrameTree.
+  FencedFrame* GetMatchingFencedFrameInOuterFrameTree(
+      RenderFrameHostImpl* rfh) {
+    EXPECT_EQ(GetParam(),
+              blink::features::FencedFramesImplementationType::kMPArch);
+    // `rfh` doesn't always have to be a root frame, since this needs to work
+    // for arbitrary frames within a fenced frame.
+    EXPECT_TRUE(rfh->frame_tree_node()->IsInFencedFrameTree());
+
+    RenderFrameHostImpl* outer_delegate_frame =
+        rfh->GetMainFrame()->GetParentOrOuterDocument();
+
+    std::vector<FencedFrame*> fenced_frames =
+        outer_delegate_frame->GetFencedFrames();
+    EXPECT_FALSE(fenced_frames.empty());
+
+    for (FencedFrame* fenced_frame : fenced_frames) {
+      if (fenced_frame->GetInnerRoot() == rfh->GetMainFrame()) {
+        return fenced_frame;
+      }
+    }
+
+    NOTREACHED();
+    return nullptr;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::Lock requests_lock_;
+  std::map<std::string, std::string> cookie_headers_map_
+      GUARDED_BY(requests_lock_);
+  std::map<std::string, std::string> sec_fetch_dest_headers_map_
+      GUARDED_BY(requests_lock_);
   net::EmbeddedTestServer https_server_;
 };
 
 // Tests that the fenced frame gets navigated to an actual url given a urn:uuid.
-IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest,
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
                        CheckFencedFrameNavigationWithUUID) {
-  GURL main_url(embedded_test_server()->GetURL("/hello.html"));
+  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   {
     EXPECT_TRUE(ExecJs(root,
@@ -839,15 +1095,14 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest,
                        "document.body.appendChild(f);"));
   }
   EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
 
-  EXPECT_TRUE(root->child_at(0)->IsFencedFrame());
-  EXPECT_TRUE(root->child_at(0)->IsInFencedFrameTree());
+  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
 
-  https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
-  https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  ASSERT_TRUE(https_server()->Start());
-
-  GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
   GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
@@ -856,15 +1111,17 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest,
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
 
   {
-    TestFrameNavigationObserver observer(root->child_at(0));
+    TestFrameNavigationObserver observer(fenced_frame_root_node);
     EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
-    observer.Wait();
+    observer.WaitForCommit();
   }
 
-  EXPECT_EQ(https_url,
-            root->child_at(0)->current_frame_host()->GetLastCommittedURL());
-  EXPECT_EQ(url::Origin::Create(https_url),
-            root->child_at(0)->current_frame_host()->GetLastCommittedOrigin());
+  EXPECT_EQ(
+      https_url,
+      fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(
+      url::Origin::Create(https_url),
+      fenced_frame_root_node->current_frame_host()->GetLastCommittedOrigin());
 
   // Parent will still see the src as the urn_uuid and not the mapped url.
   EXPECT_EQ(urn_uuid.spec(), EvalJs(root, "f.src"));
@@ -875,52 +1132,639 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest,
   EXPECT_EQ(0, EvalJs(root, "window.frames.length"));
 }
 
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckFencedFrameNoCookies) {
+  // Create an a.test main page and set cookies. Then create a same-origin
+  // fenced frame. Its request should not carry the cookies that were set.
+  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  RenderFrameHostImpl* root_rfh =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryFrameTree()
+          .root()
+          ->current_frame_host();
+
+  // Set SameSite=Lax and SameSite=None cookies and retrieve them.
+  EXPECT_TRUE(ExecJs(root_rfh,
+                     "document.cookie = 'B=2; SameSite=Lax';"
+                     "document.cookie = 'C=2; SameSite=None; Secure';"));
+  EXPECT_EQ("B=2; C=2", EvalJs(root_rfh, "document.cookie;"));
+
+  // Test the fenced frame.
+  EXPECT_TRUE(ExecJs(root_rfh,
+                     "var f = document.createElement('fencedframe');"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(1U, root_rfh->child_count());
+
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root_rfh->child_at(0));
+
+  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+
+  GURL https_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root_rfh->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame_root_node, urn_uuid, navigate_urn_script);
+  EXPECT_EQ(
+      https_url,
+      fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(
+      url::Origin::Create(https_url),
+      fenced_frame_root_node->current_frame_host()->GetLastCommittedOrigin());
+
+  EXPECT_FALSE(CheckAndClearCookieHeader(https_url));
+
+  // Run the same test for an iframe inside the fenced frame. It shouldn't be
+  // able to send cookies either.
+  // Add a nested iframe inside the fenced frame.
+  EXPECT_EQ(0U, fenced_frame_root_node->child_count());
+  AddIframeInFencedFrame(fenced_frame_root_node, 0);
+  NavigateIframeInFencedFrame(fenced_frame_root_node->child_at(0), main_url);
+
+  EXPECT_EQ(main_url, fenced_frame_root_node->child_at(0)
+                          ->current_frame_host()
+                          ->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(main_url), fenced_frame_root_node->child_at(0)
+                                               ->current_frame_host()
+                                               ->GetLastCommittedOrigin());
+  EXPECT_FALSE(CheckAndClearCookieHeader(main_url));
+
+  // Check that a subresource request from the main document should have the
+  // cookies since that is outside the fenced frame tree.
+  ResourceLoadObserver observer(shell());
+  GURL image_url = https_server()->GetURL("a.test", "/image.jpg");
+  EXPECT_TRUE(
+      ExecJs(root_rfh, JsReplace("var img = document.createElement('img');"
+                                 "document.body.appendChild(img);",
+                                 image_url)));
+  std::string load_script = JsReplace("img.src = $1;", image_url.spec());
+  EXPECT_EQ(image_url.spec(), EvalJs(root_rfh, load_script));
+  observer.WaitForResourceCompletion(image_url);
+  EXPECT_TRUE(CheckAndClearCookieHeader(image_url, "B=2; C=2"));
+}
+
 // Tests when a frame is considered a fenced frame or being inside a fenced
 // frame tree.
-IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest, CheckIsFencedFrame) {
-  GURL main_url(embedded_test_server()->GetURL("/hello.html"));
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckIsFencedFrame) {
+  GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var fenced_frame = document.createElement('fencedframe');"
+                     "document.body.appendChild(fenced_frame);"));
+
+  EXPECT_EQ(1U, root->child_count());
+
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
+
+  // Add an iframe.
+  EXPECT_TRUE(ExecJs(root,
+                     "var iframe = document.createElement('iframe');"
+                     "document.body.appendChild(iframe);"));
+  EXPECT_EQ(2U, root->child_count());
+  EXPECT_FALSE(root->child_at(1)->IsFencedFrameRoot());
+  EXPECT_FALSE(root->child_at(1)->IsInFencedFrameTree());
+
+  // Add a nested iframe inside the fenced frame.
+  // Before we execute script on the fenced frame, we must navigate it once.
+  // This is because the root of a FrameTree does not call
+  // RenderFrameHostImpl::RenderFrameCreated() on its owned RFHI, meaning there
+  // is nothing to execute script in.
+  {
+    // Navigate the fenced frame.
+    GURL fenced_frame_url(
+        https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+    std::string navigate_script =
+        JsReplace("fenced_frame.src = $1;", fenced_frame_url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        fenced_frame_root_node, fenced_frame_url, navigate_script);
+  }
+
+  AddIframeInFencedFrame(fenced_frame_root_node, 0);
+  AddNestedFencedFrame(fenced_frame_root_node, 1);
+  EXPECT_EQ(2U, fenced_frame_root_node->child_count());
+}
+
+// Tests a nonce is correctly set in the isolation info for a fenced frame tree.
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
+                       CheckIsolationInfoAndStorageKeyNonce) {
+  GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
                      "document.body.appendChild(f);"));
   EXPECT_EQ(1U, root->child_count());
-  EXPECT_TRUE(root->child_at(0)->IsFencedFrame());
-  EXPECT_TRUE(root->child_at(0)->IsInFencedFrameTree());
+
+  auto* fenced_frame = GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame->IsInFencedFrameTree());
+
+  // Before we check the IsolationInfo/StorageKey on the fenced frame, we must
+  // navigate it once. This is because the root of a FrameTree does not call
+  // RenderFrameHostImpl::RenderFrameCreated() on its owned RFHI.
+  {
+    // Navigate the fenced frame.
+    GURL fenced_frame_url(
+        https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+    std::string navigate_script =
+        JsReplace("f.src = $1;", fenced_frame_url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        fenced_frame, fenced_frame_url, navigate_script);
+  }
+
+  // There should be a nonce in the IsolationInfo.
+  const net::IsolationInfo& isolation_info =
+      fenced_frame->current_frame_host()->GetIsolationInfoForSubresources();
+  EXPECT_TRUE(isolation_info.nonce().has_value());
+  absl::optional<base::UnguessableToken> fenced_frame_nonce =
+      fenced_frame->fenced_frame_nonce();
+  EXPECT_TRUE(fenced_frame_nonce.has_value());
+  EXPECT_EQ(fenced_frame_nonce.value(), isolation_info.nonce().value());
+
+  // There should be a nonce in the StorageKey.
+  EXPECT_TRUE(
+      fenced_frame->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_EQ(fenced_frame_nonce.value(),
+            fenced_frame->current_frame_host()->storage_key().nonce().value());
+
+  // Add an iframe. It should not have a nonce.
+  EXPECT_TRUE(ExecJs(root,
+                     "var subframe = document.createElement('iframe');"
+                     "document.body.appendChild(subframe);"));
+  EXPECT_EQ(2U, root->child_count());
+  auto* iframe = root->child_at(1);
+  EXPECT_FALSE(iframe->IsFencedFrameRoot());
+  EXPECT_FALSE(iframe->IsInFencedFrameTree());
+  const net::IsolationInfo& iframe_isolation_info =
+      iframe->current_frame_host()->GetIsolationInfoForSubresources();
+  EXPECT_FALSE(iframe_isolation_info.nonce().has_value());
+  EXPECT_FALSE(iframe->current_frame_host()->storage_key().nonce().has_value());
+
+  // Navigate the iframe. It should still not have a nonce.
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      iframe, https_server()->GetURL("b.test", "/title1.html")));
+  const net::IsolationInfo& iframe_new_isolation_info =
+      iframe->current_frame_host()->GetIsolationInfoForSubresources();
+
+  EXPECT_FALSE(iframe_new_isolation_info.nonce().has_value());
+  EXPECT_FALSE(iframe->current_frame_host()->storage_key().nonce().has_value());
+
+  // Add a nested iframe inside the fenced frame.
+  AddIframeInFencedFrame(fenced_frame, 0);
+  const net::IsolationInfo& nested_iframe_isolation_info =
+      fenced_frame->child_at(0)
+          ->current_frame_host()
+          ->GetIsolationInfoForSubresources();
+  EXPECT_TRUE(nested_iframe_isolation_info.nonce().has_value());
+
+  // Check that a nested iframe in the fenced frame tree has the same nonce
+  // value as its parent.
+  EXPECT_EQ(fenced_frame_nonce.value(),
+            nested_iframe_isolation_info.nonce().value());
+  absl::optional<base::UnguessableToken> nested_iframe_nonce =
+      fenced_frame->child_at(0)->fenced_frame_nonce();
+  EXPECT_EQ(nested_iframe_isolation_info.nonce().value(),
+            nested_iframe_nonce.value());
+  EXPECT_EQ(fenced_frame_nonce.value(), fenced_frame->child_at(0)
+                                            ->current_frame_host()
+                                            ->storage_key()
+                                            .nonce()
+                                            .value());
+
+  // Navigate the iframe. It should still have the same nonce.
+  NavigateIframeInFencedFrame(fenced_frame->child_at(0),
+                              https_server()->GetURL("b.test", "/title1.html"));
+  const net::IsolationInfo& nested_iframe_new_isolation_info =
+      fenced_frame->child_at(0)
+          ->current_frame_host()
+          ->GetIsolationInfoForSubresources();
+  EXPECT_EQ(nested_iframe_new_isolation_info.nonce().value(),
+            nested_iframe_nonce.value());
+  EXPECT_EQ(fenced_frame_nonce.value(), fenced_frame->child_at(0)
+                                            ->current_frame_host()
+                                            ->storage_key()
+                                            .nonce()
+                                            .value());
+
+  // Add a nested fenced frame.
+  auto* nested_fenced_frame = AddNestedFencedFrame(fenced_frame, 1);
+  GetFencedFrameRootNode(fenced_frame->child_at(1));
+  absl::optional<base::UnguessableToken> nested_fframe_nonce =
+      nested_fenced_frame->fenced_frame_nonce();
+  EXPECT_TRUE(nested_fframe_nonce.has_value());
+
+  // Check that a nested fenced frame has a different value than its parent
+  // fenced frame.
+  EXPECT_NE(fenced_frame_nonce.value(), nested_fframe_nonce.value());
+
+  // Check that the nonce does not change when there is a cross-document
+  // navigation.
+  NavigateNestedFencedFrame(
+      nested_fenced_frame,
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html"));
+  absl::optional<base::UnguessableToken> new_fenced_frame_nonce =
+      fenced_frame->fenced_frame_nonce();
+  EXPECT_NE(absl::nullopt, new_fenced_frame_nonce);
+  EXPECT_EQ(new_fenced_frame_nonce.value(), fenced_frame_nonce.value());
+}
+
+// Tests that a fenced frame and a same-origin iframe at the same level do not
+// share the same storage partition.
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckUniqueStorage) {
+  GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var f = document.createElement('fencedframe');"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(1U, root->child_count());
+
+  auto* fenced_frame = GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame->IsInFencedFrameTree());
+
+  // Before we check the storage key on the fenced frame, we must navigate it
+  // once. This is because the root of a FrameTree does not call
+  // RenderFrameHostImpl::RenderFrameCreated() on its owned RFHI.
+  {
+    // Navigate the fenced frame.
+    GURL fenced_frame_url(
+        https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+    std::string navigate_script =
+        JsReplace("f.src = $1;", fenced_frame_url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        fenced_frame, fenced_frame_url, navigate_script);
+  }
+
+  // There should be a nonce in the StorageKey.
+  EXPECT_TRUE(
+      fenced_frame->current_frame_host()->storage_key().nonce().has_value());
+
+  absl::optional<base::UnguessableToken> fenced_frame_nonce =
+      fenced_frame->fenced_frame_nonce();
+  EXPECT_TRUE(fenced_frame_nonce.has_value());
+  EXPECT_EQ(fenced_frame_nonce.value(),
+            fenced_frame->current_frame_host()->storage_key().nonce().value());
 
   // Add an iframe.
   EXPECT_TRUE(ExecJs(root,
-                     "var f = document.createElement('iframe');"
-                     "document.body.appendChild(f);"));
+                     "var subframe = document.createElement('iframe');"
+                     "document.body.appendChild(subframe);"));
   EXPECT_EQ(2U, root->child_count());
-  EXPECT_FALSE(root->child_at(1)->IsFencedFrame());
-  EXPECT_FALSE(root->child_at(1)->IsInFencedFrameTree());
+  auto* iframe = root->child_at(1);
+  EXPECT_FALSE(iframe->IsFencedFrameRoot());
+  EXPECT_FALSE(iframe->IsInFencedFrameTree());
+  EXPECT_FALSE(iframe->current_frame_host()->storage_key().nonce().has_value());
 
-  // Add a nested iframe inside the fenced frame.
-  EXPECT_TRUE(ExecJs(root->child_at(0),
-                     "var f = document.createElement('iframe');"
-                     "document.body.appendChild(f);"));
-  EXPECT_EQ(1U, root->child_at(0)->child_count());
-  EXPECT_FALSE(root->child_at(0)->child_at(0)->IsFencedFrame());
-  EXPECT_TRUE(root->child_at(0)->child_at(0)->IsInFencedFrameTree());
+  // Navigate the iframe. It should still not have a nonce.
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      iframe, https_server()->GetURL("a.test", "/title1.html")));
 
-  // Add a nested fenced frame.
-  EXPECT_TRUE(ExecJs(root->child_at(0),
+  EXPECT_FALSE(iframe->current_frame_host()->storage_key().nonce().has_value());
+
+  // Set and read a value in the fenced frame's local storage.
+  EXPECT_TRUE(ExecJs(fenced_frame, "localStorage[\"foo\"] = \"a\""));
+  EXPECT_EQ("a", EvalJs(fenced_frame, "localStorage[\"foo\"]"));
+
+  // Set and read a value in the iframe's local storage.
+  EXPECT_TRUE(ExecJs(iframe, "localStorage[\"foo\"] = \"b\""));
+  EXPECT_EQ("b", EvalJs(iframe, "localStorage[\"foo\"]"));
+
+  // Set and read a value in the top-frame's local storage.
+  EXPECT_TRUE(ExecJs(root, "localStorage[\"foo\"] = \"c\""));
+  EXPECT_EQ("c", EvalJs(root, "localStorage[\"foo\"]"));
+
+  // TODO(crbug.com/1199077) This should return "a" once StorageKey starts
+  // using the nonce for partitioning. Also remove the shadowDOM specific check
+  // once nonce support is complete (for MPArch, possibly due to a separate
+  // process and incomplete nonce support, it is returning "a" on some
+  // platforms).
+  if (GetParam() ==
+      blink::features::FencedFramesImplementationType::kShadowDOM) {
+    EXPECT_EQ("c", EvalJs(fenced_frame, "localStorage[\"foo\"]"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
+                       CheckFencedFrameNotNavigatedWithoutOptIn) {
+  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  {
+    EXPECT_TRUE(ExecJs(root,
+                       "var f = document.createElement('fencedframe');"
+                       "document.body.appendChild(f);"));
+  }
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+
+  GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame_root_node, urn_uuid, navigate_urn_script,
+      net::ERR_BLOCKED_BY_RESPONSE);
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckSecFetchDestHeader) {
+  GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var fenced_frame = document.createElement('fencedframe');"
+                     "document.body.appendChild(fenced_frame);"));
+
+  EXPECT_EQ(1U, root->child_count());
+
+  FrameTreeNode* fenced_frame_root_node =
+      GetFencedFrameRootNode(root->child_at(0));
+
+  {
+    // Navigate the fenced frame.
+    GURL fenced_frame_url(
+        https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+    std::string navigate_script =
+        JsReplace("fenced_frame.src = $1;", fenced_frame_url.spec());
+    NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+        fenced_frame_root_node, fenced_frame_url, navigate_script);
+    EXPECT_TRUE(
+        CheckAndClearSecFetchDestHeader(fenced_frame_url, "fencedframe"));
+  }
+
+  // Add a nested iframe inside the fenced frame and navigate.
+  AddIframeInFencedFrame(fenced_frame_root_node, 0);
+  GURL iframe_url(https_server()->GetURL("a.test", "/title2.html"));
+  NavigateIframeInFencedFrame(fenced_frame_root_node->child_at(0), iframe_url);
+  EXPECT_TRUE(CheckAndClearSecFetchDestHeader(iframe_url, "iframe"));
+}
+
+// Tests that any navigation or history API calls always replace the current
+// entry and do not increase the back/forward entries.
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
+                       NavigationAndHistoryShouldBeReplaceOnly) {
+  GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // Add the fenced frame element.
+  EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
                      "document.body.appendChild(f);"));
-  EXPECT_EQ(2U, root->child_at(0)->child_count());
-  EXPECT_TRUE(root->child_at(0)->child_at(1)->IsFencedFrame());
-  EXPECT_TRUE(root->child_at(0)->child_at(1)->IsInFencedFrameTree());
+  EXPECT_EQ(1U, root->child_count());
+
+  auto* fenced_frame = GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame->IsInFencedFrameTree());
+
+  // ShadowDOM fenced frames have the same NavigationController as the top-level
+  // frame, therefore the count here is 1 because of the navigation of the
+  // top-level frame. MPArch fenced frame has its own NavigationController.
+  if (GetParam() ==
+      blink::features::FencedFramesImplementationType::kShadowDOM) {
+    EXPECT_EQ(root->navigator().controller().GetEntryCount(),
+              fenced_frame->navigator().controller().GetEntryCount());
+  } else {
+    EXPECT_EQ(0, fenced_frame->navigator().controller().GetEntryCount());
+  }
+
+  // 1. Navigate the fenced frame: both cross-document and fragment navigation.
+  GURL fenced_frame_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  std::string navigate_script =
+      JsReplace("f.src = $1;", fenced_frame_url.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame, fenced_frame_url, navigate_script);
+
+  GURL fragment_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html#123"));
+  navigate_script = JsReplace("f.src = $1;", fragment_url.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame, fragment_url, navigate_script);
+  EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
+  EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
+
+  // Do a cross-site navigation to exercise RemoteFrame::Navigate path in the
+  // navigation after this one.
+  GURL cross_site_url =
+      https_server()->GetURL("d.test", "/fenced_frames/title1.html");
+  std::string navigate_script_2 =
+      JsReplace("f.src = $1;", cross_site_url.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame, cross_site_url, navigate_script_2);
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame, fenced_frame_url, navigate_script);
+  EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
+  EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
+
+  // 2. Do a pushState in the fenced frame which would've normally added a new
+  // history entry. The entry count should stay at 1. Also test a replaceState,
+  // reload and location.replace.
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame, "window.history.pushState({}, null);");
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame, "window.history.replaceState({}, null);");
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame, "window.location.reload()");
+  GURL replace_url(
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html"));
+  std::string script = JsReplace("location.replace($1);", replace_url);
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(fenced_frame,
+                                                                 script);
+  EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
+  EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
+
+  // 3. Add an iframe to the fenced frame and navigate it. The entry count
+  // should stay at 1.
+  AddIframeInFencedFrame(fenced_frame, 0 /* child_index */);
+  NavigateIframeInFencedFrame(fenced_frame->child_at(0),
+                              https_server()->GetURL("b.test", "/title1.html"));
+  EXPECT_EQ(
+      1, fenced_frame->child_at(0)->navigator().controller().GetEntryCount());
+  EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
+
+  // 4. Do history changes from the iframe. The entry count should
+  // stay at 1.
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame->child_at(0), "window.history.pushState({}, null);");
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame->child_at(0), "window.history.replaceState({}, null);");
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame->child_at(0), "window.location.reload()");
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame->child_at(0), script);
+  EXPECT_EQ(
+      1, fenced_frame->child_at(0)->navigator().controller().GetEntryCount());
+  EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
+
+  // 5. Add a nested fenced frame and navigate it. The entry count should stay
+  // at 1.
+  FrameTreeNode* nested_fenced_frame =
+      AddNestedFencedFrame(fenced_frame, 1 /* child_index */);
+  NavigateNestedFencedFrame(
+      nested_fenced_frame,
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html"));
+  EXPECT_EQ(1, nested_fenced_frame->navigator().controller().GetEntryCount());
+  EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
+  EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
+
+  // 6. Do history changes from the nested fenced frame. The entry
+  // count should stay at 1.
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(
+      nested_fenced_frame, "window.history.pushState({}, null);");
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(
+      nested_fenced_frame, "window.history.replaceState({}, null);");
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(
+      nested_fenced_frame, "window.location.reload()");
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(
+      nested_fenced_frame, script);
+  EXPECT_EQ(1, nested_fenced_frame->navigator().controller().GetEntryCount());
+  EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
+  EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
 }
+
+// Tests successfully going back to a page with a fenced frame.
+IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
+                       GoBackToPageWithFencedFrame) {
+  GURL main_url(https_server()->GetURL(
+      "a.test", "/fenced_frames/basic_fenced_frame_src.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_EQ(1U, root->child_count());
+  auto* fenced_frame = GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame->IsInFencedFrameTree());
+
+  GURL fenced_frame_url_1 =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+
+  // ShadowDOM fenced frames have the same NavigationController as the top-level
+  // frame, therefore the count here is 1 because of the navigation of the
+  // top-level frame. MPArch fenced frame has its own NavigationController.
+  if (GetParam() ==
+      blink::features::FencedFramesImplementationType::kShadowDOM) {
+    EXPECT_EQ(root->navigator().controller().GetEntryCount(),
+              fenced_frame->navigator().controller().GetEntryCount());
+    EXPECT_EQ(fenced_frame_url_1,
+              fenced_frame->current_frame_host()->GetLastCommittedURL());
+  } else {
+    WaitForDidStopLoadingForTesting(fenced_frame->current_frame_host());
+    EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
+    EXPECT_EQ(fenced_frame_url_1,
+              fenced_frame->current_frame_host()->GetLastCommittedURL());
+  }
+
+  // Navigate the fenced frame.
+  GURL fenced_frame_url_2(
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html"));
+  std::string script = JsReplace("location.replace($1);", fenced_frame_url_2);
+  UpdateHistoryOrReloadFromFencedFrameTreeAndWaitForFinishedLoad(fenced_frame,
+                                                                 script);
+  EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
+  EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
+
+  // Navigate the top-level page to another document.
+  GURL new_main_url(https_server()->GetURL("b.test", "/hello.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), new_main_url));
+  EXPECT_EQ(2, root->navigator().controller().GetEntryCount());
+
+  // Go back.
+  TestNavigationObserver back_load_observer(shell()->web_contents());
+  root->navigator().controller().GoBack();
+  back_load_observer.Wait();
+
+  EXPECT_EQ(1U, root->child_count());
+  fenced_frame = GetFencedFrameRootNode(root->child_at(0));
+  EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame->IsInFencedFrameTree());
+
+  // ShadowDOM fenced frames have the same NavigationController as the top-level
+  // frame, therefore the count here is 2 because of the navigation of the
+  // top-level frame.
+  // Note the last committed url is the latest one in shadowDOM due to the joint
+  // history maintained in the single navigation controller and going back can
+  // therefore get the latest navigation in the frame.
+  // MPArch fenced frame has its own NavigationController which is not retained
+  // when the top-level page navigates. Therefore going back lands on the
+  // initial navigation in the Fenced Frame.
+  if (GetParam() ==
+      blink::features::FencedFramesImplementationType::kShadowDOM) {
+    EXPECT_EQ(root->navigator().controller().GetEntryCount(),
+              fenced_frame->navigator().controller().GetEntryCount());
+    EXPECT_EQ(fenced_frame_url_2,
+              fenced_frame->current_frame_host()->GetLastCommittedURL());
+  } else {
+    WaitForDidStopLoadingForTesting(fenced_frame->current_frame_host());
+    EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
+    EXPECT_EQ(fenced_frame_url_1,
+              fenced_frame->current_frame_host()->GetLastCommittedURL());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FencedFrameTreeBrowserTest,
+    ::testing::Values(
+        blink::features::FencedFramesImplementationType::kShadowDOM,
+        blink::features::FencedFramesImplementationType::kMPArch),
+    &FencedFrameTreeBrowserTest::DescribeParams);
 
 class CrossProcessFrameTreeBrowserTest : public ContentBrowserTest {
  public:
   CrossProcessFrameTreeBrowserTest() = default;
+
+  CrossProcessFrameTreeBrowserTest(const CrossProcessFrameTreeBrowserTest&) =
+      delete;
+  CrossProcessFrameTreeBrowserTest& operator=(
+      const CrossProcessFrameTreeBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
@@ -931,9 +1775,6 @@ class CrossProcessFrameTreeBrowserTest : public ContentBrowserTest {
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrossProcessFrameTreeBrowserTest);
 };
 
 // Ensure that we can complete a cross-process subframe navigation.
@@ -944,12 +1785,14 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // There should not be a proxy for the root's own SiteInstance.
-  SiteInstance* root_instance = root->current_frame_host()->GetSiteInstance();
-  EXPECT_FALSE(root->render_manager()->GetRenderFrameProxyHost(root_instance));
+  SiteInstanceImpl* root_instance =
+      root->current_frame_host()->GetSiteInstance();
+  EXPECT_FALSE(
+      root->render_manager()->GetRenderFrameProxyHost(root_instance->group()));
 
   // Load same-site page into iframe.
   GURL http_url(embedded_test_server()->GetURL("/title1.html"));
@@ -963,7 +1806,8 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   // Ensure that we have created a new process for the subframe.
   ASSERT_EQ(2U, root->child_count());
   FrameTreeNode* child = root->child_at(0);
-  SiteInstance* child_instance = child->current_frame_host()->GetSiteInstance();
+  SiteInstanceImpl* child_instance =
+      child->current_frame_host()->GetSiteInstance();
   RenderViewHost* rvh = child->current_frame_host()->render_view_host();
   RenderProcessHost* rph = child->current_frame_host()->GetProcess();
 
@@ -972,15 +1816,18 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetProcess(), rph);
 
   // Ensure that the root node has a proxy for the child node's SiteInstance.
-  EXPECT_TRUE(root->render_manager()->GetRenderFrameProxyHost(child_instance));
+  EXPECT_TRUE(
+      root->render_manager()->GetRenderFrameProxyHost(child_instance->group()));
 
   // Also ensure that the child has a proxy for the root node's SiteInstance.
-  EXPECT_TRUE(child->render_manager()->GetRenderFrameProxyHost(root_instance));
+  EXPECT_TRUE(
+      child->render_manager()->GetRenderFrameProxyHost(root_instance->group()));
 
   // The nodes should not have proxies for their own SiteInstance.
-  EXPECT_FALSE(root->render_manager()->GetRenderFrameProxyHost(root_instance));
   EXPECT_FALSE(
-      child->render_manager()->GetRenderFrameProxyHost(child_instance));
+      root->render_manager()->GetRenderFrameProxyHost(root_instance->group()));
+  EXPECT_FALSE(child->render_manager()->GetRenderFrameProxyHost(
+      child_instance->group()));
 
   // Ensure that the RenderViews and RenderFrames are all live.
   EXPECT_TRUE(
@@ -998,21 +1845,21 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_EQ(root->current_origin().Serialize() + '/',
-            main_url.GetOrigin().spec());
+            main_url.DeprecatedGetOriginAsURL().spec());
 
   // First frame is an about:blank frame.  Check that its origin is correctly
   // inherited from the parent.
   EXPECT_EQ(root->child_at(0)->current_origin().Serialize() + '/',
-            main_url.GetOrigin().spec());
+            main_url.DeprecatedGetOriginAsURL().spec());
 
   // Second frame loads a same-site page.  Its origin should also be the same
   // as the parent.
   EXPECT_EQ(root->child_at(1)->current_origin().Serialize() + '/',
-            main_url.GetOrigin().spec());
+            main_url.DeprecatedGetOriginAsURL().spec());
 
   // Load cross-site page into the first frame.
   GURL cross_site_url(
@@ -1020,11 +1867,11 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
   EXPECT_EQ(root->child_at(0)->current_origin().Serialize() + '/',
-            cross_site_url.GetOrigin().spec());
+            cross_site_url.DeprecatedGetOriginAsURL().spec());
 
   // The root's origin shouldn't have changed.
   EXPECT_EQ(root->current_origin().Serialize() + '/',
-            main_url.GetOrigin().spec());
+            main_url.DeprecatedGetOriginAsURL().spec());
 
   {
     GURL data_url("data:text/html,foo");
@@ -1162,8 +2009,8 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), data_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   EXPECT_TRUE(root->current_origin().opaque());
   EXPECT_FALSE(
       root->current_origin().GetTupleOrPrecursorTupleIfOpaque().IsValid());
@@ -1237,8 +2084,8 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   EXPECT_EQ(1UL, root->child_count());
   FrameTreeNode* child = root->child_at(0);
 
@@ -1291,8 +2138,8 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Open a new window from the main frame.
   GURL popup_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
@@ -1303,7 +2150,7 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   // Check that the new window's sandbox flags correctly reflect the opener's
   // flags. Main frame sets allow-popups, allow-pointer-lock and allow-scripts.
   FrameTreeNode* popup_root =
-      static_cast<WebContentsImpl*>(new_contents)->GetFrameTree()->root();
+      static_cast<WebContentsImpl*>(new_contents)->GetPrimaryFrameTree().root();
   network::mojom::WebSandboxFlags main_frame_sandbox_flags =
       root->current_frame_host()->active_sandbox_flags();
   EXPECT_EQ(network::mojom::WebSandboxFlags::kAll &
@@ -1329,8 +2176,8 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_FALSE(root->HasStickyUserActivation());
   EXPECT_FALSE(root->HasTransientUserActivation());
@@ -1361,6 +2208,11 @@ class IsolateIcelandFrameTreeBrowserTest : public ContentBrowserTest {
  public:
   IsolateIcelandFrameTreeBrowserTest() = default;
 
+  IsolateIcelandFrameTreeBrowserTest(
+      const IsolateIcelandFrameTreeBrowserTest&) = delete;
+  IsolateIcelandFrameTreeBrowserTest& operator=(
+      const IsolateIcelandFrameTreeBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Blink suppresses navigations to blob URLs of origins different from the
     // frame initiating the navigation. We disable those checks for this test,
@@ -1377,9 +2229,6 @@ class IsolateIcelandFrameTreeBrowserTest : public ContentBrowserTest {
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolateIcelandFrameTreeBrowserTest);
 };
 
 // Regression test for https://crbug.com/644966
@@ -1388,7 +2237,7 @@ IN_PROC_BROWSER_TEST_F(IsolateIcelandFrameTreeBrowserTest,
   // Set up an iframe.
   WebContents* contents = shell()->web_contents();
   FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(contents)->GetFrameTree()->root();
+      static_cast<WebContentsImpl*>(contents)->GetPrimaryFrameTree().root();
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -1441,8 +2290,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Not setting the attribute => the iframe is not anonymous.
   EXPECT_TRUE(ExecJs(root,

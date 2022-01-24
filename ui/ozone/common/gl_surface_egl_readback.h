@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -24,6 +23,9 @@ namespace ui {
 class GLSurfaceEglReadback : public gl::PbufferGLSurfaceEGL {
  public:
   GLSurfaceEglReadback();
+
+  GLSurfaceEglReadback(const GLSurfaceEglReadback&) = delete;
+  GLSurfaceEglReadback& operator=(const GLSurfaceEglReadback&) = delete;
 
   // GLSurface implementation.
   bool Resize(const gfx::Size& size,
@@ -50,8 +52,6 @@ class GLSurfaceEglReadback : public gl::PbufferGLSurfaceEGL {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<uint8_t[]> pixels_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLSurfaceEglReadback);
 };
 
 }  // namespace ui

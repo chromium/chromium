@@ -49,8 +49,6 @@
 - (ToolbarButton*)reloadButton;
 // Stop ToolbarButton.
 - (ToolbarButton*)stopButton;
-// Bookmark ToolbarButton.
-- (ToolbarButton*)bookmarkButton;
 // ToolbarButton to create a new tab.
 - (ToolbarButton*)openNewTabButton;
 // Button to cancel the edit of the location bar.

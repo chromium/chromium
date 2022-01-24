@@ -18,15 +18,15 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
  public:
   ChromeOmniboxClientIOS(WebOmniboxEditController* controller,
                          ChromeBrowserState* browser_state);
+
+  ChromeOmniboxClientIOS(const ChromeOmniboxClientIOS&) = delete;
+  ChromeOmniboxClientIOS& operator=(const ChromeOmniboxClientIOS&) = delete;
+
   ~ChromeOmniboxClientIOS() override;
 
   // OmniboxClient.
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
-  std::unique_ptr<OmniboxNavigationObserver> CreateOmniboxNavigationObserver(
-      const std::u16string& text,
-      const AutocompleteMatch& match,
-      const AutocompleteMatch& alternate_nav_match) override;
   bool CurrentPageExists() const override;
   const GURL& GetURL() const override;
   bool IsLoading() const override;
@@ -41,10 +41,10 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   int GetHttpsPortForTesting() const override;
   gfx::Image GetIconIfExtensionMatch(
       const AutocompleteMatch& match) const override;
-  bool ProcessExtensionKeyword(const TemplateURL* template_url,
+  bool ProcessExtensionKeyword(const std::u16string& text,
+                               const TemplateURL* template_url,
                                const AutocompleteMatch& match,
-                               WindowOpenDisposition disposition,
-                               OmniboxNavigationObserver* observer) override;
+                               WindowOpenDisposition disposition) override;
   void OnFocusChanged(OmniboxFocusState state,
                       OmniboxFocusChangeReason reason) override;
   void OnResultChanged(const AutocompleteResult& result,
@@ -59,8 +59,6 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   WebOmniboxEditController* controller_;
   ChromeBrowserState* browser_state_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOmniboxClientIOS);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_CLIENT_IOS_H_

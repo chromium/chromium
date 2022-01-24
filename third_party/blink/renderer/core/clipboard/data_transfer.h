@@ -31,11 +31,11 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink-forward.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -98,13 +98,13 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   Vector<String> types();
   FileList* files() const;
 
-  IntPoint DragLocation() const { return drag_loc_; }
+  gfx::Point DragLocation() const { return drag_loc_; }
   void setDragImage(Element*, int x, int y);
   void ClearDragImage();
-  void SetDragImageResource(ImageResourceContent*, const IntPoint&);
-  void SetDragImageElement(Node*, const IntPoint&);
+  void SetDragImageResource(ImageResourceContent*, const gfx::Point&);
+  void SetDragImageElement(Node*, const gfx::Point&);
 
-  std::unique_ptr<DragImage> CreateDragImage(IntPoint& drag_location,
+  std::unique_ptr<DragImage> CreateDragImage(gfx::Point& drag_location,
                                              LocalFrame*) const;
   void DeclareAndWriteDragImage(Element*,
                                 const KURL& link_url,
@@ -156,7 +156,7 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
-  void setDragImage(ImageResourceContent*, Node*, const IntPoint&);
+  void setDragImage(ImageResourceContent*, Node*, const gfx::Point&);
 
   bool HasFileOfType(const String&) const;
   bool HasStringOfType(const String&) const;
@@ -174,7 +174,7 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
 
   bool data_store_item_list_changed_;
 
-  IntPoint drag_loc_;
+  gfx::Point drag_loc_;
   Member<ImageResourceContent> drag_image_;
   Member<Node> drag_image_element_;
 };

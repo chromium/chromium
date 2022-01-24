@@ -14,6 +14,12 @@ namespace lacros_url_handling {
 // how to load. Returns |true| if the navigation was intercepted.
 bool MaybeInterceptNavigation(const GURL& url);
 
+// This is an explicit url redirect executed in Ash. It returns |true| when
+// a navigation has been forwarded to Ash. This call is used for chrome:// and
+// os:// URLs which are handled either by Ash or Ash and Lacros.
+// Note that only Ash allow listed url's can be called.
+bool NavigateInAsh(const GURL& url);
+
 }  // namespace lacros_url_handling
 
 #endif  // CHROME_BROWSER_LACROS_LACROS_URL_HANDLING_H_

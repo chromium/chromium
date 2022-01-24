@@ -108,7 +108,7 @@ static wtf_size_t MatchLengths(
     // See crbug.com/739197 for more context.
     return std::min(kRepeatableListMaxLength,
                     static_cast<wtf_size_t>(
-                        lowestCommonMultiple(start_length, end_length)));
+                        LowestCommonMultiple(start_length, end_length)));
   }
   DCHECK_EQ(length_matching_strategy,
             ListInterpolationFunctions::LengthMatchingStrategy::kPadToLargest);

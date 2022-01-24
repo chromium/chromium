@@ -35,6 +35,13 @@ void ClearCrashKeyString(CrashKeyString* crash_key) {
   g_crash_key_impl->Clear(crash_key);
 }
 
+BASE_EXPORT void OutputCrashKeysToStream(std::ostream& out) {
+  if (!g_crash_key_impl)
+    return;
+
+  g_crash_key_impl->OutputCrashKeysToStream(out);
+}
+
 ScopedCrashKeyString::ScopedCrashKeyString(CrashKeyString* crash_key,
                                            base::StringPiece value)
     : crash_key_(crash_key) {

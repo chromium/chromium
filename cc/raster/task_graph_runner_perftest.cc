@@ -44,7 +44,7 @@ class TaskGraphRunnerPerfTest : public testing::Test {
  public:
   TaskGraphRunnerPerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   // Overridden from testing::Test:

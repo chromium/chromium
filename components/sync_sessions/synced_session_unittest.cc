@@ -192,6 +192,26 @@ TEST(SyncedSessionTest, SessionNavigationToSyncDataWithTransitionTypes) {
   }
 }
 
+TEST(SyncedSessionTest, SessionNavigationToSyncDataWithLargeFavicon) {
+  SerializedNavigationEntry navigation =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+
+  ASSERT_TRUE(SessionNavigationToSyncData(navigation).has_favicon_url());
+
+  // The URL size is greater than |kMaxFaviconUrlSizeToSync| so it will be
+  // omitted.
+  navigation.set_favicon_url(
+      GURL(std::string("http://virtual-url.com/") + std::string(2048, 'z')));
+
+  const sync_pb::TabNavigation sync_data =
+      SessionNavigationToSyncData(navigation);
+
+  EXPECT_FALSE(sync_data.has_favicon_url());
+
+  // The rest of the fields should sync normally, let's verify one of them.
+  EXPECT_EQ(navigation.virtual_url().spec(), sync_data.virtual_url());
+}
+
 // Create a typical SessionTab protocol buffer and set an existing
 // SessionTab from it.  The data from the protocol buffer should
 // clobber the existing data.

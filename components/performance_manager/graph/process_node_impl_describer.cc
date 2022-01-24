@@ -9,6 +9,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -25,6 +26,31 @@ namespace performance_manager {
 namespace {
 
 const char kDescriberName[] = "ProcessNodeImpl";
+
+std::string ContentTypeToString(ProcessNode::ContentType content_type) {
+  switch (content_type) {
+    case ProcessNode::ContentType::kExtension:
+      return "Extension";
+    case ProcessNode::ContentType::kMainFrame:
+      return "Main frame";
+    case ProcessNode::ContentType::kAd:
+      return "Ad";
+  }
+}
+
+std::string HostedProcessTypesToString(
+    ProcessNode::ContentTypes hosted_content_types) {
+  std::vector<std::string> content_types_vector;
+  content_types_vector.reserve(hosted_content_types.Size());
+  for (ProcessNode::ContentType content_type : hosted_content_types)
+    content_types_vector.push_back(ContentTypeToString(content_type));
+
+  std::string str = base::JoinString(content_types_vector, ", ");
+  if (str.empty())
+    str = "none";
+
+  return str;
+}
 
 base::Value GetProcessValueDict(const base::Process& process) {
   base::Value ret(base::Value::Type::DICTIONARY);
@@ -134,6 +160,9 @@ base::Value ProcessNodeImplDescriber::DescribeProcessNodeData(
                  impl->main_thread_task_load_is_low());
 
   ret.SetStringKey("priority", base::TaskPriorityToString(impl->priority()));
+
+  ret.SetStringKey("hosted_content_types",
+                   HostedProcessTypesToString(impl->hosted_content_types()));
 
   return ret;
 }

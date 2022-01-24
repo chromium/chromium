@@ -28,7 +28,7 @@
 #include "remoting/protocol/message_serialization.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
-#include "remoting/protocol/webrtc_dummy_video_encoder.h"
+#include "remoting/protocol/webrtc_video_encoder_factory.h"
 #include "remoting/signaling/fake_signal_strategy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -41,8 +41,7 @@ namespace {
 const char kChannelName[] = "test_channel";
 const char kAuthKey[] = "test_auth_key";
 
-constexpr base::TimeDelta kWaitForThreadJoinTimeout =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kWaitForThreadJoinTimeout = base::Milliseconds(200);
 
 class TestTransportEventHandler : public WebrtcTransport::EventHandler {
  public:
@@ -52,6 +51,11 @@ class TestTransportEventHandler : public WebrtcTransport::EventHandler {
       IncomingChannelCallback;
 
   TestTransportEventHandler() = default;
+
+  TestTransportEventHandler(const TestTransportEventHandler&) = delete;
+  TestTransportEventHandler& operator=(const TestTransportEventHandler&) =
+      delete;
+
   ~TestTransportEventHandler() override = default;
 
   // All callbacks must be set before the test handler is passed to a Transport
@@ -102,13 +106,16 @@ class TestTransportEventHandler : public WebrtcTransport::EventHandler {
   base::RepeatingClosure connected_callback_;
   ErrorCallback error_callback_;
   IncomingChannelCallback incoming_channel_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTransportEventHandler);
 };
 
 class TestMessagePipeEventHandler : public MessagePipe::EventHandler {
  public:
   TestMessagePipeEventHandler() = default;
+
+  TestMessagePipeEventHandler(const TestMessagePipeEventHandler&) = delete;
+  TestMessagePipeEventHandler& operator=(const TestMessagePipeEventHandler&) =
+      delete;
+
   ~TestMessagePipeEventHandler() override = default;
 
   void set_open_callback(const base::RepeatingClosure& callback) {
@@ -152,8 +159,6 @@ class TestMessagePipeEventHandler : public MessagePipe::EventHandler {
   base::RepeatingClosure closed_callback_;
 
   std::list<std::unique_ptr<CompoundBuffer>> received_messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMessagePipeEventHandler);
 };
 
 class FakeThreadJoinWatchdog : public base::Watchdog {
@@ -211,8 +216,7 @@ class WebrtcTransportTest : public testing::Test {
     host_transport_ = std::make_unique<WebrtcTransport>(
         jingle_glue::JingleThreadWrapper::current(),
         TransportContext::ForTests(TransportRole::SERVER),
-        std::make_unique<WebrtcDummyVideoEncoderFactory>(),
-        &host_event_handler_);
+        std::make_unique<WebrtcVideoEncoderFactory>(), &host_event_handler_);
 
     host_transport_->SetThreadJoinWatchdogForTests(
         std::make_unique<FakeThreadJoinWatchdog>(

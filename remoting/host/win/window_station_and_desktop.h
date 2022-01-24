@@ -16,6 +16,10 @@ namespace remoting {
 class WindowStationAndDesktop {
  public:
   WindowStationAndDesktop();
+
+  WindowStationAndDesktop(const WindowStationAndDesktop&) = delete;
+  WindowStationAndDesktop& operator=(const WindowStationAndDesktop&) = delete;
+
   ~WindowStationAndDesktop();
 
   HDESK desktop() const { return desktop_; }
@@ -34,8 +38,6 @@ class WindowStationAndDesktop {
  private:
   HDESK desktop_;
   HWINSTA window_station_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowStationAndDesktop);
 };
 
 }  // namespace remoting

@@ -6,7 +6,9 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_CAPTURABLE_FRAME_SINK_H_
 
 #include "base/time/time.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -47,18 +49,25 @@ class CapturableFrameSink {
 
   virtual ~CapturableFrameSink() = default;
 
+  virtual const FrameSinkId& GetFrameSinkId() const = 0;
+
   // Attach/Detach a video capture client to the frame sink. The client will
   // receive frame begin and draw events, and issue copy requests, when
   // appropriate.
   virtual void AttachCaptureClient(Client* client) = 0;
   virtual void DetachCaptureClient(Client* client) = 0;
 
-  // Returns the size of a render pass, either matching the |subtree_id| if set,
-  // or the root render pass if not set. Returns an empty size if (1) there is
-  // no active frame, or (2) |subtree_id| is valid/set and no matching render
-  // pass could be found.
-  virtual gfx::Size GetCopyOutputRequestSize(
-      SubtreeCaptureId subtree_id) const = 0;
+  // Returns the capture region of a render pass, either matching the
+  // |subtree_id| if set, or the root render pass if not set. Returns an empty
+  // rect if (1) there is no active frame, (2) |subtree_id| is valid/set and
+  // no matching render pass could be found, or (3) a valid crop ID is set and
+  // its associated bounds are set to empty or could not be found.
+  // NOTE: only one of |subtree_id| or |crop_id| should be set and valid, not
+  // both.
+  using RegionSpecifier =
+      absl::variant<absl::monostate, SubtreeCaptureId, RegionCaptureCropId>;
+  virtual gfx::Rect GetCopyOutputRequestRegion(
+      const RegionSpecifier& specifier) const = 0;
 
   // Called when a video capture client starts or stops capturing.
   virtual void OnClientCaptureStarted() = 0;

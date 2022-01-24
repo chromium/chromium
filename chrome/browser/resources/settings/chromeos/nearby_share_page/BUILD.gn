@@ -14,11 +14,7 @@ js_type_check("closure_compile_module") {
   # TODO(crbug.com/1121865): browser_resolver_prefix_replacements allows path
   # from ../../shared/* to resolve to ../../../nearby_share/shared/* for closure
   # purposes.
-  closure_flags = os_settings_closure_flags + [
-                    "js_module_root=../../chrome/browser/resources/nearby_share",
-                    "js_module_root=./gen/chrome/browser/resources/nearby_share",
-                    "browser_resolver_prefix_replacements=\"../../shared/=../../../nearby_share/shared/\"",
-                  ]
+  closure_flags = os_settings_closure_flags
   deps = [
     ":nearby_share_confirm_page.m",
     ":nearby_share_contact_visibility_dialog.m",
@@ -58,9 +54,7 @@ js_library("nearby_share_data_usage_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_data_usage_dialog.m.js" ]
   deps = [
     ":types.m",
-    "../../prefs:prefs",
-    "../../prefs:prefs_behavior",
-    "../../prefs:prefs_types",
+    "..:prefs_behavior",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
@@ -85,9 +79,9 @@ js_library("nearby_share_device_name_dialog.m") {
 js_library("nearby_share_high_visibility_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_high_visibility_page.m.js" ]
   deps = [
-    "../localized_link:localized_link",
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
+    "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -139,10 +133,9 @@ js_library("nearby_share_subpage.m") {
     ":types.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
+    "..:prefs_behavior",
+    "..:route_observer_behavior",
     "../..:router",
-    "../../prefs:prefs",
-    "../../prefs:prefs_behavior",
-    "../../prefs:prefs_types",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page.m",

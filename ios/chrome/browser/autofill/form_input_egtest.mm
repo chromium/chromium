@@ -108,7 +108,7 @@ void AssertElementIsFocused(const std::string& element_id) {
     };
     GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
                description);
-    base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(1));
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
 
     // Verifies that the taped element is focused.
     AssertElementIsFocused(kFormElementId1);

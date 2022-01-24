@@ -19,14 +19,15 @@ class ONCUserPolicyValueValidator
  public:
   ONCUserPolicyValueValidator();
 
+  ONCUserPolicyValueValidator(const ONCUserPolicyValueValidator&) = delete;
+  ONCUserPolicyValueValidator& operator=(const ONCUserPolicyValueValidator&) =
+      delete;
+
  protected:
   // ONCPolicyValueValidatorBase:
   absl::optional<std::string> GetONCStringFromPayload(
       const enterprise_management::CloudPolicySettings& policy_payload)
       const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ONCUserPolicyValueValidator);
 };
 
 }  // namespace policy

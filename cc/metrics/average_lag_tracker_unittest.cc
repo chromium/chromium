@@ -35,7 +35,7 @@ class AverageLagTrackerTest : public testing::Test {
                                  float delta,
                                  float predicted_delta = 0) {
     AverageLagTracker::EventInfo event_info(
-        0, delta, predicted_delta != 0 ? predicted_delta : delta, event_time,
+        delta, predicted_delta != 0 ? predicted_delta : delta, event_time,
         AverageLagTracker::EventType::ScrollBegin);
     event_info.finish_timestamp = frame_time;
     average_lag_tracker_->AddScrollEventInFrame(event_info);
@@ -46,7 +46,7 @@ class AverageLagTrackerTest : public testing::Test {
                                   float delta,
                                   float predicted_delta = 0) {
     AverageLagTracker::EventInfo event_info(
-        0, delta, predicted_delta != 0 ? predicted_delta : delta, event_time,
+        delta, predicted_delta != 0 ? predicted_delta : delta, event_time,
         AverageLagTracker::EventType::ScrollUpdate);
     event_info.finish_timestamp = frame_time;
     average_lag_tracker_->AddScrollEventInFrame(event_info);
@@ -63,11 +63,13 @@ class AverageLagTrackerTest : public testing::Test {
         ElementsAre(Bucket(bucket_value, count)));
   }
 
-  void CheckScrollUpdateHistograms(int bucket_value, int count) {
+  void CheckScrollUpdateWithPredictionHistograms(int bucket_value, int count) {
     EXPECT_THAT(histogram_tester().GetAllSamples(
                     "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation"),
                 ElementsAre(Bucket(bucket_value, count)));
+  }
 
+  void CheckScrollUpdateNoPredictionHistograms(int bucket_value, int count) {
     EXPECT_THAT(
         histogram_tester().GetAllSamples("Event.Latency.ScrollUpdate.Touch."
                                          "AverageLagPresentation.NoPrediction"),
@@ -124,30 +126,28 @@ class AverageLagTrackerTest : public testing::Test {
 };
 
 base::TimeTicks MillisecondsToTimeTicks(float t_ms) {
-  return base::TimeTicks() + base::TimeDelta::FromMilliseconds(t_ms);
+  return base::TimeTicks() + base::Milliseconds(t_ms);
 }
 
 // Simulate a simple situation that events at every 10ms and start at t=15ms,
 // frame swaps at every 10ms too and start at t=20ms and test we record one
 // UMA for ScrollUpdate in one second.
 TEST_F(AverageLagTrackerTest, OneSecondInterval) {
-  base::TimeTicks event_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(5);
-  base::TimeTicks frame_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(10);
+  base::TimeTicks event_time = base::TimeTicks() + base::Milliseconds(5);
+  base::TimeTicks frame_time = base::TimeTicks() + base::Milliseconds(10);
   float scroll_delta = 10;
 
   // ScrollBegin
-  event_time += base::TimeDelta::FromMilliseconds(10);  // 15ms
-  frame_time += base::TimeDelta::FromMilliseconds(10);  // 20ms
+  event_time += base::Milliseconds(10);  // 15ms
+  frame_time += base::Milliseconds(10);  // 20ms
   SyntheticTouchScrollBegin(event_time, frame_time, scroll_delta);
 
   // Send 101 ScrollUpdate events to verify that there is 1 AverageLag record
   // per 1 second.
   const int kUpdates = 101;
   for (int i = 0; i < kUpdates; i++) {
-    event_time += base::TimeDelta::FromMilliseconds(10);
-    frame_time += base::TimeDelta::FromMilliseconds(10);
+    event_time += base::Milliseconds(10);
+    frame_time += base::Milliseconds(10);
     // First 50 has positive delta, others negetive delta.
     const int sign = (i < kUpdates / 2) ? 1 : -1;
     SyntheticTouchScrollUpdate(event_time, frame_time, sign * scroll_delta);
@@ -156,10 +156,8 @@ TEST_F(AverageLagTrackerTest, OneSecondInterval) {
   // ScrollBegin report_time is at 20ms, so the next ScrollUpdate report_time is
   // at 1020ms. The last event_time that finish this report should be later than
   // 1020ms.
-  EXPECT_EQ(event_time,
-            base::TimeTicks() + base::TimeDelta::FromMilliseconds(1025));
-  EXPECT_EQ(frame_time,
-            base::TimeTicks() + base::TimeDelta::FromMilliseconds(1030));
+  EXPECT_EQ(event_time, base::TimeTicks() + base::Milliseconds(1025));
+  EXPECT_EQ(frame_time, base::TimeTicks() + base::Milliseconds(1030));
 
   // ScrollBegin AverageLag are the area between the event original component
   // (time=15ms, delta=10px) to the frame swap time (time=20ms, expect finger
@@ -172,7 +170,8 @@ TEST_F(AverageLagTrackerTest, OneSecondInterval) {
   // is 5px, and Lag at this frame swap is 15px. For the one changing direction,
   // the Lag is from 5 to 10 and down to 5 again. So total LagArea is 99 * 100,
   // plus 75. the AverageLag in 1 second is 9.975px.
-  CheckScrollUpdateHistograms(9, 1);
+  CheckScrollUpdateWithPredictionHistograms(9, 1);
+  CheckScrollUpdateNoPredictionHistograms(9, 1);
   CheckPredictionPositiveHistograms(0, 1);
   CheckPredictionNegativeHistogramsTotalCount(0);
   CheckRemainingLagPercentageHistograms(100 - 0, 1);
@@ -180,12 +179,13 @@ TEST_F(AverageLagTrackerTest, OneSecondInterval) {
   ResetHistograms();
 
   // Send another ScrollBegin to end the unfinished ScrollUpdate report.
-  event_time += base::TimeDelta::FromMilliseconds(10);
-  frame_time += base::TimeDelta::FromMilliseconds(10);
+  event_time += base::Milliseconds(10);
+  frame_time += base::Milliseconds(10);
   SyntheticTouchScrollBegin(event_time, frame_time, scroll_delta);
 
   // The last ScrollUpdate's lag is 8.75px and truncated to 8.
-  CheckScrollUpdateHistograms(8, 1);
+  CheckScrollUpdateWithPredictionHistograms(8, 1);
+  CheckScrollUpdateNoPredictionHistograms(8, 1);
   CheckPredictionPositiveHistograms(0, 1);
   CheckPredictionNegativeHistogramsTotalCount(0);
   CheckRemainingLagPercentageHistograms(100 - 0, 1);
@@ -196,8 +196,7 @@ TEST_F(AverageLagTrackerTest, OneSecondInterval) {
 // event is at t=20ms).
 TEST_F(AverageLagTrackerTest, LargerLatency) {
   base::TimeTicks event_time = MillisecondsToTimeTicks(10);
-  base::TimeTicks frame_time =
-      event_time + base::TimeDelta::FromMilliseconds(20);
+  base::TimeTicks frame_time = event_time + base::Milliseconds(20);
   float scroll_delta = 10;
 
   SyntheticTouchScrollBegin(event_time, frame_time, scroll_delta);
@@ -205,8 +204,8 @@ TEST_F(AverageLagTrackerTest, LargerLatency) {
   // Send 2 ScrollUpdate. The second one will record AverageLag.ScrollBegin as
   // it's event_time is larger or equal to ScrollBegin's frame_time.
   for (int i = 0; i < 2; i++) {
-    event_time += base::TimeDelta::FromMilliseconds(10);
-    frame_time = event_time + base::TimeDelta::FromMilliseconds(20);
+    event_time += base::Milliseconds(10);
+    frame_time = event_time + base::Milliseconds(20);
     SyntheticTouchScrollUpdate(event_time, frame_time, scroll_delta);
   }
 
@@ -223,7 +222,8 @@ TEST_F(AverageLagTrackerTest, LargerLatency) {
   SyntheticTouchScrollBegin(event_time, frame_time, scroll_delta);
   // The to unfinished frames' lag are (finger_positon-rendered_position)*time,
   // AverageLag is ((30px-10px)*10ms+(30px-20px)*10ms)/20ms = 15px.
-  CheckScrollUpdateHistograms(14, 1);
+  CheckScrollUpdateWithPredictionHistograms(14, 1);
+  CheckScrollUpdateNoPredictionHistograms(14, 1);
 }
 
 // Test that multiple latency being flush in the same frame swap.
@@ -256,7 +256,8 @@ TEST_F(AverageLagTrackerTest, TwoLatencyInfoInSameFrame) {
   // at t=25ms, finger_pos=-15px, rendered_pos=-10px;
   // To t=30ms both events get flush.
   // AverageLag is (0.5*(10px+5px)*5ms + 5px*5ms)/10ms = 6.25px
-  CheckScrollUpdateHistograms(6, 1);
+  CheckScrollUpdateWithPredictionHistograms(6, 1);
+  CheckScrollUpdateNoPredictionHistograms(6, 1);
 }
 
 // Test the case that switching direction causes lag at current frame
@@ -285,7 +286,8 @@ TEST_F(AverageLagTrackerTest, ChangeDirectionInFrame) {
   // From t=20 to t=30, lag_area=2*(0.5*10px*5ms)=50px*ms.
   // From t=30 to t=40, lag_area=20px*10ms=200px*ms
   // AverageLag = (50+200)/20 = 12.5px.
-  CheckScrollUpdateHistograms(12, 1);
+  CheckScrollUpdateWithPredictionHistograms(12, 1);
+  CheckScrollUpdateNoPredictionHistograms(12, 1);
 }
 
 // A simple case without scroll prediction to compare with the two with
@@ -318,7 +320,8 @@ TEST_F(AverageLagTrackerTest, NoScrollPrediction) {
   // At t=30, finger_pos = 25px, rendered_pos = 25px.
   // AverageLag = ((5px+15px)*10ms/2 + (5px+10px)*5ms/2 + 10px*5ms)/20ms
   //            = 9.375
-  CheckScrollUpdateHistograms(9, 1);
+  CheckScrollUpdateWithPredictionHistograms(9, 1);
+  CheckScrollUpdateNoPredictionHistograms(9, 1);
 }
 
 // Test AverageLag with perfect scroll prediction.
@@ -356,11 +359,12 @@ TEST_F(AverageLagTrackerTest, ScrollPrediction) {
   // At t=30, finger_pos = 25px, rendered_pos = 30px.
   // AverageLag = ((0px+10px)*10ms/2 + (0px+5px)*10ms/2 + 5px*5ms)/20ms
   //            = 4.375px
+  CheckScrollUpdateWithPredictionHistograms(4, 1);
   // AverageLag (w/o prediction)
   //              ((5px+15px)*10ms/2 + (5px+10px)*5ms/2 + 10px*5ms)/20ms
   //            = 9.375px
+  CheckScrollUpdateNoPredictionHistograms(9, 1);
   // Positive effect of prediction = 5px
-  CheckScrollUpdateHistograms(4, 1);
   CheckPredictionPositiveHistograms(5, 1);
   CheckPredictionNegativeHistogramsTotalCount(0);
   CheckRemainingLagPercentageHistograms(100 * 4.375 / 9.375, 1);
@@ -397,10 +401,11 @@ TEST_F(AverageLagTrackerTest, ImperfectScrollPrediction) {
   CheckScrollBeginHistograms(7, 1);
   // AverageLag = ((2px*2ms/2+8px*8ms/2)+ ((3px+8px)*5ms/2+8px*5ms))/20ms
   //            = 5.075px
-  CheckScrollUpdateHistograms(5, 1);
+  CheckScrollUpdateWithPredictionHistograms(5, 1);
   // AverageLag (w/o prediction =
   //              ((5px+15px)*10ms/2 + (5px+10px)*5ms/2 + 10px*5ms)/20ms
   //            = 9.375px
+  CheckScrollUpdateNoPredictionHistograms(9, 1);
   // Positive effect of prediction = 4.3px
   CheckPredictionPositiveHistograms(4, 1);
   CheckPredictionNegativeHistogramsTotalCount(0);
@@ -437,10 +442,11 @@ TEST_F(AverageLagTrackerTest, NegativePredictionEffect) {
   CheckScrollBeginHistograms(7, 1);
   // AverageLag = ((10px+0px)*10ms/2)+ ((40px+35px)*5ms/2+35px*5ms))/20ms
   //            = 20.625px
-  CheckScrollUpdateHistograms(20, 1);
+  CheckScrollUpdateWithPredictionHistograms(20, 1);
   // AverageLag (w/o prediction =
   //              ((5px+15px)*10ms/2 + (5px+10px)*5ms/2 + 10px*5ms)/20ms
   //            = 9.375px
+  CheckScrollUpdateNoPredictionHistograms(9, 1);
   // Negative effect of prediction = 11.25
   CheckPredictionPositiveHistogramsTotalCount(0);
   CheckPredictionNegativeHistograms(11, 1);
@@ -479,10 +485,11 @@ TEST_F(AverageLagTrackerTest, NoPredictionEffect) {
   CheckScrollBeginHistograms(7, 1);
   // AverageLag = ((15px+5px)*10ms/2 + (12px+7px)*5ms/2 + 7px*5ms)/20ms
   //            = 9.125px
-  CheckScrollUpdateHistograms(9, 1);
+  CheckScrollUpdateWithPredictionHistograms(9, 1);
   // AverageLag (w/o prediction) =
   //              ((5px+15px)*10ms/2 + (5px+10px)*5ms/2 + 10px*5ms)/20ms
   //            = 9.375px
+  CheckScrollUpdateNoPredictionHistograms(9, 1);
   // Prediction slightly positive, we should see a 0 bucket in
   // PredictionPositive UMA
   CheckPredictionPositiveHistograms(0, 1);

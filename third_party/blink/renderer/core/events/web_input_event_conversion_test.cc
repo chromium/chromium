@@ -144,10 +144,10 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
 
     WebMouseEvent transformed_event =
         TransformWebMouseEvent(view, web_mouse_event);
-    IntPoint position =
+    gfx::Point position =
         FlooredIntPoint(transformed_event.PositionInRootFrame());
-    EXPECT_EQ(5, position.X());
-    EXPECT_EQ(5, position.Y());
+    EXPECT_EQ(5, position.x());
+    EXPECT_EQ(5, position.y());
     EXPECT_EQ(15, transformed_event.PositionInScreen().x());
     EXPECT_EQ(15, transformed_event.PositionInScreen().y());
 
@@ -171,10 +171,10 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntPoint position =
+    gfx::Point position =
         FlooredIntPoint(scaled_gesture_event.PositionInRootFrame());
-    EXPECT_EQ(5, position.X());
-    EXPECT_EQ(6, position.Y());
+    EXPECT_EQ(5, position.x());
+    EXPECT_EQ(6, position.y());
     EXPECT_EQ(20, scaled_gesture_event.PositionInScreen().x());
     EXPECT_EQ(22, scaled_gesture_event.PositionInScreen().y());
     EXPECT_EQ(15, scaled_gesture_event.DeltaXInRootFrame());
@@ -197,10 +197,10 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntPoint position =
+    gfx::Point position =
         FlooredIntPoint(scaled_gesture_event.PositionInRootFrame());
-    EXPECT_EQ(5, position.X());
-    EXPECT_EQ(6, position.Y());
+    EXPECT_EQ(5, position.x());
+    EXPECT_EQ(6, position.y());
     EXPECT_EQ(20, scaled_gesture_event.PositionInScreen().x());
     EXPECT_EQ(22, scaled_gesture_event.PositionInScreen().y());
     EXPECT_EQ(WebGestureEvent::InertialPhaseState::kUnknownMomentum,
@@ -219,8 +219,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
         TransformWebGestureEvent(view, web_gesture_event);
     IntSize area =
         FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
-    EXPECT_EQ(5, area.Width());
-    EXPECT_EQ(5, area.Height());
+    EXPECT_EQ(5, area.width());
+    EXPECT_EQ(5, area.height());
   }
 
   {
@@ -236,8 +236,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
         TransformWebGestureEvent(view, web_gesture_event);
     IntSize area =
         FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
-    EXPECT_EQ(10, area.Width());
-    EXPECT_EQ(10, area.Height());
+    EXPECT_EQ(10, area.width());
+    EXPECT_EQ(10, area.height());
   }
 
   {
@@ -252,8 +252,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
         TransformWebGestureEvent(view, web_gesture_event);
     IntSize area =
         FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
-    EXPECT_EQ(3, area.Width());
-    EXPECT_EQ(3, area.Height());
+    EXPECT_EQ(3, area.width());
+    EXPECT_EQ(3, area.height());
   }
 
   {
@@ -268,8 +268,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
         TransformWebGestureEvent(view, web_gesture_event);
     IntSize area =
         FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
-    EXPECT_EQ(6, area.Width());
-    EXPECT_EQ(6, area.Height());
+    EXPECT_EQ(6, area.width());
+    EXPECT_EQ(6, area.height());
   }
 
   {
@@ -284,8 +284,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
         TransformWebGestureEvent(view, web_gesture_event);
     IntSize area =
         FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
-    EXPECT_EQ(5, area.Width());
-    EXPECT_EQ(5, area.Height());
+    EXPECT_EQ(5, area.width());
+    EXPECT_EQ(5, area.height());
   }
 
   {
@@ -300,8 +300,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
         TransformWebGestureEvent(view, web_gesture_event);
     IntSize area =
         FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
-    EXPECT_EQ(5, area.Width());
-    EXPECT_EQ(5, area.Height());
+    EXPECT_EQ(5, area.width());
+    EXPECT_EQ(5, area.height());
   }
 
   {
@@ -453,8 +453,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
         TransformWebGestureEvent(view, web_gesture_event);
     IntSize area =
         FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
-    EXPECT_EQ(15, area.Width());
-    EXPECT_EQ(15, area.Height());
+    EXPECT_EQ(15, area.width());
+    EXPECT_EQ(15, area.height());
   }
 
   {
@@ -470,8 +470,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
         TransformWebGestureEvent(view, web_gesture_event);
     IntSize area =
         FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
-    EXPECT_EQ(15, area.Width());
-    EXPECT_EQ(15, area.Height());
+    EXPECT_EQ(15, area.width());
+    EXPECT_EQ(15, area.height());
   }
 
   {
@@ -486,8 +486,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
         TransformWebGestureEvent(view, web_gesture_event);
     IntSize area =
         FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
-    EXPECT_EQ(15, area.Width());
-    EXPECT_EQ(15, area.Height());
+    EXPECT_EQ(15, area.width());
+    EXPECT_EQ(15, area.height());
   }
 
   {
@@ -502,8 +502,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
         TransformWebGestureEvent(view, web_gesture_event);
     IntSize area =
         FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
-    EXPECT_EQ(15, area.Width());
-    EXPECT_EQ(15, area.Height());
+    EXPECT_EQ(15, area.width());
+    EXPECT_EQ(15, area.height());
   }
 
   {
@@ -518,8 +518,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
         TransformWebGestureEvent(view, web_gesture_event);
     IntSize area =
         FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
-    EXPECT_EQ(15, area.Width());
-    EXPECT_EQ(15, area.Height());
+    EXPECT_EQ(15, area.width());
+    EXPECT_EQ(15, area.height());
   }
 
   {
@@ -534,8 +534,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
         TransformWebGestureEvent(view, web_gesture_event);
     IntSize area =
         FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
-    EXPECT_EQ(15, area.Width());
-    EXPECT_EQ(15, area.Height());
+    EXPECT_EQ(15, area.width());
+    EXPECT_EQ(15, area.height());
   }
 
   {
@@ -629,10 +629,10 @@ TEST(WebInputEventConversionTest, InputEventsConversions) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntPoint position =
+    gfx::Point position =
         FlooredIntPoint(scaled_gesture_event.PositionInRootFrame());
-    EXPECT_EQ(10.f, position.X());
-    EXPECT_EQ(10.f, position.Y());
+    EXPECT_EQ(10.f, position.x());
+    EXPECT_EQ(10.f, position.y());
     EXPECT_EQ(10.f, scaled_gesture_event.PositionInScreen().x());
     EXPECT_EQ(10.f, scaled_gesture_event.PositionInScreen().y());
     EXPECT_EQ(1, scaled_gesture_event.TapCount());
@@ -670,10 +670,10 @@ TEST(WebInputEventConversionTest, VisualViewportOffset) {
 
     WebMouseEvent transformed_mouse_event =
         TransformWebMouseEvent(view, web_mouse_event);
-    IntPoint position =
+    gfx::Point position =
         FlooredIntPoint(transformed_mouse_event.PositionInRootFrame());
-    EXPECT_EQ(5 + visual_offset.X(), position.X());
-    EXPECT_EQ(5 + visual_offset.Y(), position.Y());
+    EXPECT_EQ(5 + visual_offset.x(), position.x());
+    EXPECT_EQ(5 + visual_offset.y(), position.y());
     EXPECT_EQ(10, transformed_mouse_event.PositionInScreen().x());
     EXPECT_EQ(10, transformed_mouse_event.PositionInScreen().y());
   }
@@ -687,10 +687,10 @@ TEST(WebInputEventConversionTest, VisualViewportOffset) {
 
     WebMouseWheelEvent scaled_mouse_wheel_event =
         TransformWebMouseWheelEvent(view, web_mouse_wheel_event);
-    IntPoint position =
+    gfx::Point position =
         FlooredIntPoint(scaled_mouse_wheel_event.PositionInRootFrame());
-    EXPECT_EQ(5 + visual_offset.X(), position.X());
-    EXPECT_EQ(5 + visual_offset.Y(), position.Y());
+    EXPECT_EQ(5 + visual_offset.x(), position.x());
+    EXPECT_EQ(5 + visual_offset.y(), position.y());
     EXPECT_EQ(10, scaled_mouse_wheel_event.PositionInScreen().x());
     EXPECT_EQ(10, scaled_mouse_wheel_event.PositionInScreen().y());
   }
@@ -705,10 +705,10 @@ TEST(WebInputEventConversionTest, VisualViewportOffset) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntPoint position =
+    gfx::Point position =
         FlooredIntPoint(scaled_gesture_event.PositionInRootFrame());
-    EXPECT_EQ(5 + visual_offset.X(), position.X());
-    EXPECT_EQ(5 + visual_offset.Y(), position.Y());
+    EXPECT_EQ(5 + visual_offset.x(), position.x());
+    EXPECT_EQ(5 + visual_offset.y(), position.y());
     EXPECT_EQ(10, scaled_gesture_event.PositionInScreen().x());
     EXPECT_EQ(10, scaled_gesture_event.PositionInScreen().y());
   }
@@ -732,9 +732,9 @@ TEST(WebInputEventConversionTest, VisualViewportOffset) {
             .WebPointerEventInRootFrame();
     EXPECT_FLOAT_EQ(10.6f, transformed_event.PositionInScreen().x());
     EXPECT_FLOAT_EQ(10.4f, transformed_event.PositionInScreen().y());
-    EXPECT_FLOAT_EQ(5.3f + visual_offset.X(),
+    EXPECT_FLOAT_EQ(5.3f + visual_offset.x(),
                     transformed_event.PositionInWidget().x());
-    EXPECT_FLOAT_EQ(5.2f + visual_offset.Y(),
+    EXPECT_FLOAT_EQ(5.2f + visual_offset.y(),
                     transformed_event.PositionInWidget().y());
   }
 }
@@ -758,7 +758,7 @@ TEST(WebInputEventConversionTest, ElasticOverscroll) {
 
   gfx::Vector2dF elastic_overscroll(10, -20);
   web_view->MainFrameViewWidget()->ApplyViewportChangesForTesting(
-      {gfx::ScrollOffset(), elastic_overscroll, 1.0f, false, 0.0f});
+      {gfx::Vector2dF(), elastic_overscroll, 1.0f, false, 0.0f});
 
   // Just elastic overscroll.
   {
@@ -770,13 +770,13 @@ TEST(WebInputEventConversionTest, ElasticOverscroll) {
 
     WebMouseEvent transformed_mouse_event =
         TransformWebMouseEvent(view, web_mouse_event);
-    IntPoint position =
+    gfx::Point position =
         FlooredIntPoint(transformed_mouse_event.PositionInRootFrame());
 
     EXPECT_EQ(web_mouse_event.PositionInWidget().x() + elastic_overscroll.x(),
-              position.X());
+              position.x());
     EXPECT_EQ(web_mouse_event.PositionInWidget().y() + elastic_overscroll.y(),
-              position.Y());
+              position.y());
     EXPECT_EQ(web_mouse_event.PositionInScreen().x(),
               transformed_mouse_event.PositionInScreen().x());
     EXPECT_EQ(web_mouse_event.PositionInScreen().y(),
@@ -799,15 +799,15 @@ TEST(WebInputEventConversionTest, ElasticOverscroll) {
 
     WebMouseEvent transformed_mouse_event =
         TransformWebMouseEvent(view, web_mouse_event);
-    IntPoint position =
+    gfx::Point position =
         FlooredIntPoint(transformed_mouse_event.PositionInRootFrame());
 
     EXPECT_EQ(web_mouse_event.PositionInWidget().x() / page_scale +
-                  visual_offset.X() + elastic_overscroll.x(),
-              position.X());
+                  visual_offset.x() + elastic_overscroll.x(),
+              position.x());
     EXPECT_EQ(web_mouse_event.PositionInWidget().y() / page_scale +
-                  visual_offset.Y() + elastic_overscroll.y(),
-              position.Y());
+                  visual_offset.y() + elastic_overscroll.y(),
+              position.y());
     EXPECT_EQ(web_mouse_event.PositionInScreen().x(),
               transformed_mouse_event.PositionInScreen().x());
     EXPECT_EQ(web_mouse_event.PositionInScreen().y(),
@@ -832,7 +832,7 @@ TEST(WebInputEventConversionTest, ElasticOverscrollWithPageReload) {
 
   gfx::Vector2dF elastic_overscroll(10, -20);
   web_view->MainFrameViewWidget()->ApplyViewportChangesForTesting(
-      {gfx::ScrollOffset(), elastic_overscroll, 1.0f, false, 0.0f});
+      {gfx::Vector2dF(), elastic_overscroll, 1.0f, false, 0.0f});
   frame_test_helpers::ReloadFrame(
       web_view_helper.GetWebView()->MainFrameImpl());
   LocalFrameView* view =
@@ -848,13 +848,13 @@ TEST(WebInputEventConversionTest, ElasticOverscrollWithPageReload) {
 
     WebMouseEvent transformed_mouse_event =
         TransformWebMouseEvent(view, web_mouse_event);
-    IntPoint position =
+    gfx::Point position =
         FlooredIntPoint(transformed_mouse_event.PositionInRootFrame());
 
     EXPECT_EQ(web_mouse_event.PositionInWidget().x() + elastic_overscroll.x(),
-              position.X());
+              position.x());
     EXPECT_EQ(web_mouse_event.PositionInWidget().y() + elastic_overscroll.y(),
-              position.Y());
+              position.y());
     EXPECT_EQ(web_mouse_event.PositionInScreen().x(),
               transformed_mouse_event.PositionInScreen().x());
     EXPECT_EQ(web_mouse_event.PositionInScreen().y(),

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
@@ -57,6 +56,10 @@ const base::Time kEvenLaterTime = base::Time::FromDoubleT(6000);
 class TwoClientWalletSyncTest : public SyncTest {
  public:
   TwoClientWalletSyncTest() : SyncTest(TWO_CLIENT) {}
+
+  TwoClientWalletSyncTest(const TwoClientWalletSyncTest&) = delete;
+  TwoClientWalletSyncTest& operator=(const TwoClientWalletSyncTest&) = delete;
+
   ~TwoClientWalletSyncTest() override {}
 
   // Needed for AwaitQuiescence().
@@ -76,8 +79,6 @@ class TwoClientWalletSyncTest : public SyncTest {
 
  private:
   autofill::TestAutofillClock test_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TwoClientWalletSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientWalletSyncTest, UpdateCreditCardMetadata) {

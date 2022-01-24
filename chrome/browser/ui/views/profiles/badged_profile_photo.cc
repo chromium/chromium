@@ -8,11 +8,12 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/image_view.h"
 
 namespace {
@@ -72,32 +73,27 @@ class BadgeView : public ::views::ImageView {
       case BadgedProfilePhoto::BADGE_TYPE_SUPERVISOR:
         SetImage(gfx::CreateVectorIcon(
             kSupervisorAccountCircleIcon, kBadgeIconSize,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_DefaultIconColor)));
+            GetColorProvider()->GetColor(ui::kColorIcon)));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_CHILD:
         SetImage(gfx::CreateVectorIcon(
             kAccountChildCircleIcon, kBadgeIconSize,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_DefaultIconColor)));
+            GetColorProvider()->GetColor(ui::kColorIcon)));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_SYNC_COMPLETE:
         SetImage(gfx::CreateVectorIcon(
             kSyncCircleIcon, kBadgeIconSize,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_AlertSeverityLow)));
+            GetColorProvider()->GetColor(ui::kColorAlertLowSeverity)));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_SYNC_ERROR:
         SetImage(gfx::CreateVectorIcon(
             kSyncErrorCircleIcon, kBadgeIconSize,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_AlertSeverityHigh)));
+            GetColorProvider()->GetColor(ui::kColorAlertHighSeverity)));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_SYNC_PAUSED:
         SetImage(gfx::CreateVectorIcon(
             kSyncPausedCircleIcon, kBadgeIconSize,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_ProminentButtonColor)));
+            GetColorProvider()->GetColor(ui::kColorButtonBackgroundProminent)));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_SYNC_DISABLED:
         SetImage(gfx::CreateVectorIcon(kSyncCircleIcon, kBadgeIconSize,

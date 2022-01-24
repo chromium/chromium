@@ -49,19 +49,14 @@ std::string DumpGesturePropertyValue(GesturesProp* property) {
   switch (property->type()) {
     case GesturePropertyProvider::PT_INT:
       return DumpArrayProperty(property->GetIntValue(), "%d");
-      break;
     case GesturePropertyProvider::PT_SHORT:
       return DumpArrayProperty(property->GetShortValue(), "%d");
-      break;
     case GesturePropertyProvider::PT_BOOL:
       return DumpArrayProperty(property->GetBoolValue(), "%d");
-      break;
     case GesturePropertyProvider::PT_STRING:
       return "\"" + property->GetStringValue() + "\"";
-      break;
     case GesturePropertyProvider::PT_REAL:
       return DumpArrayProperty(property->GetDoubleValue(), "%lf");
-      break;
     default:
       NOTREACHED();
       break;

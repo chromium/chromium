@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/google/android/datatransport/transport-api/2.2.1/transport-api-2.2.1.aar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/google/android/datatransport/transport-api/2.2.1/transport-api-2.2.1.aar'
 _FILE_NAME = 'transport-api-2.2.1.aar'
 _FILE_VERSION = '2.2.1'
 

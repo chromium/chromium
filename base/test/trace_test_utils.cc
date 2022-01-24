@@ -4,7 +4,7 @@
 #include "base/test/trace_test_utils.h"
 
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/tracing/perfetto_platform.h"
 #include "third_party/perfetto/include/perfetto/tracing.h"
@@ -68,17 +68,7 @@ RebindableTaskRunner* GetClientLibTaskRunner() {
 }  // namespace
 
 TracingEnvironment::TracingEnvironment() {
-  if (perfetto::Tracing::IsInitialized())
-    return;
-  static tracing::PerfettoPlatform perfetto_platform(
-      tracing::PerfettoPlatform::TaskRunnerType::kBuiltin);
-  perfetto::TracingInitArgs init_args;
-  init_args.backends = perfetto::BackendType::kInProcessBackend;
-  init_args.platform = &perfetto_platform;
-  perfetto::Tracing::Initialize(init_args);
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  perfetto::TrackEvent::Register();
-#endif
+  trace_event::TraceLog::GetInstance()->ResetForTesting();
 }
 
 TracingEnvironment::TracingEnvironment(
@@ -103,6 +93,7 @@ TracingEnvironment::~TracingEnvironment() {
     // Wait for any posted destruction tasks to execute.
     task_environment_->RunUntilIdle();
   }
+  perfetto::Tracing::ResetForTesting();
 }
 
 // static

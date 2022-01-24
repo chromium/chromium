@@ -37,8 +37,7 @@ class WellKnownChangePasswordState {
   // Time to wait for the callback from AffiliationService before finishing
   // processing. A callback signals the prefetch action was completed regardless
   // if the response arrived or not.
-  static constexpr base::TimeDelta kPrefetchTimeout =
-      base::TimeDelta::FromSeconds(2);
+  static constexpr base::TimeDelta kPrefetchTimeout = base::Seconds(2);
 
   explicit WellKnownChangePasswordState(
       password_manager::WellKnownChangePasswordStateDelegate* delegate);

@@ -19,8 +19,8 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -112,7 +112,7 @@ void IconLabelBubbleView::SeparatorView::UpdateOpacity() {
   }
 
   ui::ScopedLayerAnimationSettings animation(layer()->GetAnimator());
-  animation.SetTransitionDuration(base::TimeDelta::FromMilliseconds(duration));
+  animation.SetTransitionDuration(base::Milliseconds(duration));
   animation.SetTweenType(gfx::Tween::Type::EASE_IN);
   layer()->SetOpacity(opacity);
 }
@@ -127,13 +127,13 @@ class IconLabelBubbleView::HighlightPathGenerator
  public:
   HighlightPathGenerator() = default;
 
+  HighlightPathGenerator(const HighlightPathGenerator&) = delete;
+  HighlightPathGenerator& operator=(const HighlightPathGenerator&) = delete;
+
   // views::HighlightPathGenerator:
   SkPath GetHighlightPath(const views::View* view) override {
     return static_cast<const IconLabelBubbleView*>(view)->GetHighlightPath();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HighlightPathGenerator);
 };
 
 IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
@@ -461,7 +461,7 @@ void IconLabelBubbleView::SetUpForAnimation() {
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   label()->SetElideBehavior(gfx::NO_ELIDE);
   label()->SetVisible(false);
-  slide_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
+  slide_animation_.SetSlideDuration(base::Milliseconds(150));
   open_state_fraction_ = 1.0;
 }
 
@@ -471,7 +471,7 @@ void IconLabelBubbleView::SetUpForInOutAnimation() {
   // statically showing the label (1800ms), and hiding the label (600ms). The
   // proportion of time spent in each portion of the animation is controlled by
   // kIconLabelBubbleOpenTimeFraction.
-  slide_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(3000));
+  slide_animation_.SetSlideDuration(base::Milliseconds(3000));
   // The tween is calculated in GetWidthBetween().
   slide_animation_.SetTweenType(gfx::Tween::LINEAR);
   open_state_fraction_ = 0.2;
@@ -516,7 +516,7 @@ void IconLabelBubbleView::ResetSlideAnimation(bool show_label) {
 }
 
 void IconLabelBubbleView::ReduceAnimationTimeForTesting() {
-  slide_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(1));
+  slide_animation_.SetSlideDuration(base::Milliseconds(1));
 }
 
 void IconLabelBubbleView::PauseAnimation() {

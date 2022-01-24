@@ -134,7 +134,6 @@ class Config {
     return name == "Vector" ||
            name == "Deque" ||
            name == "HashSet" ||
-           name == "ListHashSet" ||
            name == "LinkedHashSet" ||
            name == "HashCountedSet" ||
            name == "HashMap";
@@ -142,25 +141,12 @@ class Config {
 
   static bool IsGCCollection(llvm::StringRef name) {
     return name == "HeapVector" || name == "HeapDeque" ||
-           name == "HeapHashSet" || name == "HeapListHashSet" ||
-           name == "HeapLinkedHashSet" || name == "HeapHashCountedSet" ||
-           name == "HeapHashMap";
-  }
-
-  static bool IsGCCollectionWithUnsafeIterator(llvm::StringRef name) {
-    if (!IsGCCollection(name))
-      return false;
-    // The list hash set iterators refer to the set, not the
-    // backing store and are consequently safe.
-    if (name == "HeapListHashSet" || name == "PersistentHeapListHashSet")
-      return false;
-    return true;
+           name == "HeapHashSet" || name == "HeapLinkedHashSet" ||
+           name == "HeapHashCountedSet" || name == "HeapHashMap";
   }
 
   static bool IsHashMap(llvm::StringRef name) {
-    return name == "HashMap" ||
-           name == "HeapHashMap" ||
-           name == "PersistentHeapHashMap";
+    return name == "HashMap" || name == "HeapHashMap";
   }
 
   // Assumes name is a valid collection name.
@@ -171,10 +157,6 @@ class Config {
   static bool IsRefCountedBase(llvm::StringRef name) {
     return name == "RefCounted" ||
            name == "ThreadSafeRefCounted";
-  }
-
-  static bool IsCppgcGCBase(llvm::StringRef name) {
-    return name == "GarbageCollectedBase";
   }
 
   static bool IsGCSimpleBase(llvm::StringRef name) {

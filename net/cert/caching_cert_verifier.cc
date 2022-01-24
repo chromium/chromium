@@ -170,8 +170,7 @@ void CachingCertVerifier::AddResultToCache(
   cached_result.result = verify_result;
   cache_.Put(
       params, cached_result, CacheValidityPeriod(start_time),
-      CacheValidityPeriod(start_time,
-                          start_time + base::TimeDelta::FromSeconds(kTTLSecs)));
+      CacheValidityPeriod(start_time, start_time + base::Seconds(kTTLSecs)));
 }
 
 void CachingCertVerifier::OnCertDBChanged() {

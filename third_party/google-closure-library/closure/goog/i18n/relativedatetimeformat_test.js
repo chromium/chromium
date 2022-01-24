@@ -1,56 +1,63 @@
-// Copyright 2018 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * @fileoverview
+ * @suppress {missingRequire} Swapping using fully qualified name
+ */
 
 goog.module('goog.i18n.RelativeDateTimeFormatTest');
 goog.setTestOnly('goog.i18n.RelativeDateTimeFormatTest');
 
-var LocaleFeature = goog.require('goog.i18n.LocaleFeature');
-
+const LocaleFeature = goog.require('goog.i18n.LocaleFeature');
 const NumberFormatSymbols_ar_EG = goog.require('goog.i18n.NumberFormatSymbols_ar_EG');
 const NumberFormatSymbols_en = goog.require('goog.i18n.NumberFormatSymbols_en');
 const NumberFormatSymbols_es = goog.require('goog.i18n.NumberFormatSymbols_es');
 const NumberFormatSymbols_fa = goog.require('goog.i18n.NumberFormatSymbols_fa');
-
+const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const RelativeDateTimeFormat = goog.require('goog.i18n.RelativeDateTimeFormat');
-
 const relativeDateTimeSymbols = goog.require('goog.i18n.relativeDateTimeSymbols');
 const relativeDateTimeSymbolsExt = goog.require('goog.i18n.relativeDateTimeSymbolsExt');
+const testSuite = goog.require('goog.testing.testSuite');
 
-var testSuite = goog.require('goog.testing.testSuite');
-
+/** @suppress {visibility} suppression added to enable type checking */
 var Plurals_en = goog.i18n.pluralRules.enSelect_;
+/** @suppress {visibility} suppression added to enable type checking */
 var Plurals_he = goog.i18n.pluralRules.heSelect_;
+/** @suppress {visibility} suppression added to enable type checking */
 var Plurals_ar = goog.i18n.pluralRules.arSelect_;
 
+// For changing values in test
+let propertyReplacer;
 
-/**
- * @param {string} locale
- * @param {number} style
- * @param {number} direction
- * @param {number} unit
- * @param {string} expected
- * @param {string|undefined} pluralrules
- * @constructor
- */
-const DirectionData = function(
-    locale, style, direction, unit, expected, pluralrules) {
-  this.locale = locale;
-  this.style = style;
-  this.direction = direction;
-  this.unit = unit;
-  this.expected = expected;
-  this.pluralrules = pluralrules;
+/** @unrestricted */
+const DirectionData = class {
+  /**
+   * @param {string} locale
+   * @param {number} style
+   * @param {number} direction
+   * @param {number} unit
+   * @param {string} expected
+   * @param {string|undefined} pluralrules
+   */
+  constructor(locale, style, direction, unit, expected, pluralrules) {
+    this.locale = locale;
+    this.style = style;
+    this.direction = direction;
+    this.unit = unit;
+    this.expected = expected;
+    this.pluralrules = pluralrules;
+  }
+
+  /** @return {string} Error description. */
+  getErrorDescription() {
+    return 'Error for locale:' + this.locale + ' style: ' + this.style +
+        ' quantity =' + this.direction + ' unit =' + this.unit +
+        ' pluralrules = ' + this.pluralrules + '\'';
+  }
 };
 
 
@@ -103,6 +110,7 @@ const localeSymbols = {
 };
 
 // clang-format off
+/** @suppress {checkTypes} suppression added to enable type checking */
 const formatDirectionTestData = [
   new DirectionData('en', RelativeDateTimeFormat.Style.LONG, -1, RelativeDateTimeFormat.Unit.DAY, 'yesterday'),
   new DirectionData('en', RelativeDateTimeFormat.Style.LONG, 0, RelativeDateTimeFormat.Unit.DAY, 'today'),
@@ -161,19 +169,21 @@ const formatDirectionTestData = [
   new DirectionData('fr', RelativeDateTimeFormat.Style.LONG, 0, RelativeDateTimeFormat.Unit.SECOND, 'maintenant')
 ];
 
-// TODO(icu/12171): re-examine when ICU4J and CLDR data are updated.
+// TODO(user): re-examine when ICU4J and CLDR data are updated.
+/** @suppress {checkTypes} suppression added to enable type checking */
 const forcedNumericTestData = [
   // Special cases for MINUTE and HOUR, and SECOND != 0, forced numeric mode.
-    new DirectionData('en', RelativeDateTimeFormat.Style.LONG, 0.0, RelativeDateTimeFormat.Unit.SECOND, 'now'),
-  new DirectionData(
-      'en', RelativeDateTimeFormat.Style.LONG, 0, RelativeDateTimeFormat.Unit.MINUTE, 'this minute'),
-  new DirectionData('en', RelativeDateTimeFormat.Style.LONG, 0, RelativeDateTimeFormat.Unit.SECOND, 'now'),
+  new DirectionData('en', RelativeDateTimeFormat.Style.LONG, 0.0, RelativeDateTimeFormat.Unit.YEAR, 'in 0 years'),
+  new DirectionData('en', RelativeDateTimeFormat.Style.LONG, 0, RelativeDateTimeFormat.Unit.SECOND, 'in 0 seconds'),
   new DirectionData(
       'en', RelativeDateTimeFormat.Style.LONG, 1, RelativeDateTimeFormat.Unit.MINUTE, 'in 1 minute'),
   new DirectionData(
-      'en', RelativeDateTimeFormat.Style.LONG, 0, RelativeDateTimeFormat.Unit.HOUR, 'this hour'),
+      'en', RelativeDateTimeFormat.Style.LONG, -1, RelativeDateTimeFormat.Unit.DAY, '1 day ago'),
+  new DirectionData(
+      'en', RelativeDateTimeFormat.Style.LONG, 0, RelativeDateTimeFormat.Unit.HOUR, 'in 0 hours'),
 ];
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 const formatNumericTestData = [
   new DirectionData('en', RelativeDateTimeFormat.Style.LONG, 7, RelativeDateTimeFormat.Unit.DAY, 'in 7 days'),
   new DirectionData('en', RelativeDateTimeFormat.Style.LONG, -2, RelativeDateTimeFormat.Unit.DAY, '2 days ago'),
@@ -225,6 +235,7 @@ const formatNumericTestData = [
   new DirectionData('en', RelativeDateTimeFormat.Style.LONG, -0, RelativeDateTimeFormat.Unit.YEAR, '0 years ago'),
 ];
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 const formatFarsiData = [
   // Other locales, too!
   new DirectionData('fa', RelativeDateTimeFormat.Style.SHORT, 3, RelativeDateTimeFormat.Unit.DAY, '۳ روز بعد'),
@@ -234,6 +245,7 @@ const formatFarsiData = [
   new DirectionData('fa', RelativeDateTimeFormat.Style.SHORT, -11, RelativeDateTimeFormat.Unit.WEEK, '۱۱ هفته پیش'),
 ];
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 const formatArEgData = [
   new DirectionData('ar_EG', RelativeDateTimeFormat.Style.LONG, 0, RelativeDateTimeFormat.Unit.DAY, 'خلال ٠ يوم', Plurals_ar),
   new DirectionData('ar_EG', RelativeDateTimeFormat.Style.SHORT, 0, RelativeDateTimeFormat.Unit.DAY, 'خلال ٠ يوم', Plurals_ar),
@@ -246,6 +258,7 @@ const formatArEgData = [
   new DirectionData('ar_EG', RelativeDateTimeFormat.Style.SHORT, 1.5, RelativeDateTimeFormat.Unit.YEAR, 'خلال ١٫٥ سنة', Plurals_ar),
 ];
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 const formatNumericSpanishData = [
   new DirectionData('es', RelativeDateTimeFormat.Style.LONG, -1, RelativeDateTimeFormat.Unit.DAY, 'hace 1 día'),
   new DirectionData('es', RelativeDateTimeFormat.Style.SHORT, -2, RelativeDateTimeFormat.Unit.DAY, 'hace 2 días'),
@@ -254,6 +267,7 @@ const formatNumericSpanishData = [
 ];
 
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 const formatNumericExtendedData = [
   new DirectionData('ar_AE', RelativeDateTimeFormat.Style.LONG, -2,
                     RelativeDateTimeFormat.Unit.DAY, 'قبل يومين', Plurals_ar),
@@ -265,6 +279,7 @@ const formatNumericExtendedData = [
   new DirectionData('as', RelativeDateTimeFormat.Style.SHORT, 3, RelativeDateTimeFormat.Unit.DAY, '3 দিনত'),
 ];
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 const formatNumericRtlData = [
   new DirectionData('he', RelativeDateTimeFormat.Style.LONG, -2,
                     RelativeDateTimeFormat.Unit.DAY, 'לפני יומיים', Plurals_he),
@@ -280,6 +295,7 @@ const formatNumericRtlData = [
                     RelativeDateTimeFormat.Unit.DAY, 'خلال يومين', Plurals_ar),
 ];
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 var formatAutoRtlData = [
   new DirectionData('he', RelativeDateTimeFormat.Style.LONG, -2,
                     RelativeDateTimeFormat.Unit.DAY, 'שלשום', Plurals_he),
@@ -291,12 +307,7 @@ var formatAutoRtlData = [
 
 // clang-format on
 
-/** @return {string} Error description. */
-DirectionData.prototype.getErrorDescription = function() {
-  return 'Error for locale:' + this.locale + ' style: ' + this.style +
-      ' quantity =' + this.direction + ' unit =' + this.unit +
-      ' pluralrules = ' + this.pluralrules + '\'';
-};
+
 
 // Tests both JavaScript and ECMAScript on supporting browsers.
 // Sets up goog.USE_ECMASCRIPT_I18N_RDTF flag in each function.
@@ -312,29 +323,46 @@ testSuite({
     return 'RelativeDateTimeFormat Tests';
   },
 
+  setUpPage() {
+    propertyReplacer = new PropertyReplacer();
+  },
+
   setUp: function() {
-    goog.LOCALE = 'en';
+    // Use computed properties to avoid compiler checks of defines.
+    goog['LOCALE'] = 'en';
+    /**
+     * @suppress {constantProperty} suppression added to enable type checking
+     */
     goog.i18n.NumberFormatSymbols = NumberFormatSymbols_en;
     goog.i18n.pluralRules.select = Plurals_en;
-    LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = false;
+    propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', false);
   },
 
   tearDown: function() {
+    /**
+     * @suppress {constantProperty} suppression added to enable type checking
+     */
     goog.i18n.NumberFormatSymbols = NumberFormatSymbols_en;
-    goog.LOCALE = 'en';
+    // Use computed properties to avoid compiler checks of defines.
+    goog['LOCALE'] = 'en';
   },
 
   // Test with style, but no number formatting.
   testFormatStyle: function() {
     // Try with both JavaScript and ECMAScript implementations, if present.
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
       for (let i = 0; i < formatDirectionTestData.length; i++) {
         const data = formatDirectionTestData[i];
         const symbols = localeSymbols[data.locale];
-        goog.LOCALE = data.locale;
+        // Use computed properties to avoid compiler checks of defines.
+        goog['LOCALE'] = data.locale;
 
+        /**
+         * @suppress {strictMissingProperties} suppression added to enable type
+         * checking
+         */
         const fmt = new RelativeDateTimeFormat(
             RelativeDateTimeFormat.NumericOption.AUTO, data.style,
             symbols.RelativeDateTimeFormatSymbols);
@@ -347,13 +375,21 @@ testSuite({
 
   testFormatNumericStyle: function() {
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
+      /**
+       * @suppress {constantProperty} suppression added to enable type checking
+       */
       goog.i18n.NumberFormatSymbols = NumberFormatSymbols_en;
       for (let i = 0; i < formatNumericTestData.length; i++) {
         const data = formatNumericTestData[i];
         const symbols = localeSymbols[data.locale];
-        goog.LOCALE = data.locale;
+        // Use computed properties to avoid compiler checks of defines.
+        goog['LOCALE'] = data.locale;
+        /**
+         * @suppress {strictMissingProperties} suppression added to enable type
+         * checking
+         */
         const fmtAlways = new RelativeDateTimeFormat(
             RelativeDateTimeFormat.NumericOption.ALWAYS, data.style,
             symbols.RelativeDateTimeFormatSymbols);
@@ -361,6 +397,10 @@ testSuite({
         const result = fmtAlways.format(data.direction, data.unit);
         assertEquals(data.getErrorDescription(), data.expected, result);
 
+        /**
+         * @suppress {strictMissingProperties} suppression added to enable type
+         * checking
+         */
         const fmtUndefined = new RelativeDateTimeFormat(
             undefined, data.style, symbols.RelativeDateTimeFormatSymbols);
         assertEquals(
@@ -372,15 +412,24 @@ testSuite({
 
   testNumericMode: function() {
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
+      /**
+       * @suppress {constantProperty} suppression added to enable type checking
+       */
       goog.i18n.NumberFormatSymbols = NumberFormatSymbols_es;
-      goog.LOCALE = 'es';
+      // Use computed properties to avoid compiler checks of defines.
+      goog['LOCALE'] = 'es';
+      /** @suppress {checkTypes} suppression added to enable type checking */
       const data = new DirectionData(
           'es', RelativeDateTimeFormat.Style.LONG, -1,
           RelativeDateTimeFormat.Unit.DAY, 'ayer');
 
       const symbols = localeSymbols[data.locale];
+      /**
+       * @suppress {checkTypes,strictMissingProperties} suppression added to
+       * enable type checking
+       */
       const fmt = new RelativeDateTimeFormat(
           RelativeDateTimeFormat.NumericOption.AUTO, data.style,
           symbols.RelativeDateTimeFormatSymbols);
@@ -389,10 +438,15 @@ testSuite({
       assertEquals(
           data.getErrorDescription(), numMode,
           RelativeDateTimeFormat.NumericOption.AUTO);
+      /** @suppress {checkTypes} suppression added to enable type checking */
       const result = fmt.format(data.direction, data.unit);
       assertEquals(data.getErrorDescription(), data.expected, result);
 
       // Try with forced numeric mode.
+      /**
+       * @suppress {checkTypes,strictMissingProperties} suppression added to
+       * enable type checking
+       */
       const fmtNumericOnly = new RelativeDateTimeFormat(
           RelativeDateTimeFormat.NumericOption.ALWAYS, data.style,
           symbols.RelativeDateTimeFormatSymbols);
@@ -400,6 +454,7 @@ testSuite({
       assertEquals(
           data.getErrorDescription(), numMode,
           RelativeDateTimeFormat.NumericOption.ALWAYS);
+      /** @suppress {checkTypes} suppression added to enable type checking */
       const numResult = fmtNumericOnly.format(data.direction, data.unit);
       assertEquals(data.getErrorDescription(), 'hace 1 día', numResult);
     }
@@ -407,13 +462,21 @@ testSuite({
 
   testFormatNumericSpanishStyle: function() {
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
+      /**
+       * @suppress {constantProperty} suppression added to enable type checking
+       */
       goog.i18n.NumberFormatSymbols = NumberFormatSymbols_es;
-      goog.LOCALE = 'es';
+      // Use computed properties to avoid compiler checks of defines.
+      goog['LOCALE'] = 'es';
       for (let i = 0; i < formatNumericSpanishData.length; i++) {
         const data = formatNumericSpanishData[i];
         const symbols = localeSymbols[data.locale];
+        /**
+         * @suppress {strictMissingProperties} suppression added to enable type
+         * checking
+         */
         const fmt = new RelativeDateTimeFormat(
             RelativeDateTimeFormat.NumericOption.ALWAYS, data.style,
             symbols.RelativeDateTimeFormatSymbols);
@@ -426,14 +489,24 @@ testSuite({
 
   testFormatNumericFarsiStyle: function() {
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
       for (let i = 0; i < formatFarsiData.length; i++) {
         const data = formatFarsiData[i];
         const symbols = localeSymbols[data.locale];
+        /**
+         * @suppress {constantProperty} suppression added to enable type
+         * checking
+         */
         goog.i18n.NumberFormatSymbols = NumberFormatSymbols_fa;
 
-        goog.LOCALE = data.locale;
+        // Use computed properties to avoid compiler checks of defines.
+        goog['LOCALE'] = data.locale;
+
+        /**
+         * @suppress {strictMissingProperties} suppression added to enable type
+         * checking
+         */
         const fmt = new RelativeDateTimeFormat(
             RelativeDateTimeFormat.NumericOption.ALWAYS, data.style,
             symbols.RelativeDateTimeFormatSymbols);
@@ -446,15 +519,24 @@ testSuite({
 
   testFormatNumericArEgStyle: function() {
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
       for (let i = 0; i < formatArEgData.length; i++) {
         const data = formatArEgData[i];
         const symbols = localeSymbols[data.locale];
+        /**
+         * @suppress {constantProperty} suppression added to enable type
+         * checking
+         */
         goog.i18n.NumberFormatSymbols = NumberFormatSymbols_ar_EG;
 
-        goog.LOCALE = data.locale;
+        // Use computed properties to avoid compiler checks of defines.
+        goog['LOCALE'] = data.locale;
         goog.i18n.pluralRules.select = data.pluralrules;
+        /**
+         * @suppress {strictMissingProperties} suppression added to enable type
+         * checking
+         */
         const fmt = new RelativeDateTimeFormat(
             RelativeDateTimeFormat.NumericOption.ALWAYS, data.style,
             symbols.RelativeDateTimeFormatSymbols);
@@ -467,12 +549,17 @@ testSuite({
 
   testFormatNumericExtendedStyle: function() {
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
       for (let i = 0; i < formatNumericExtendedData.length; i++) {
         const data = formatNumericExtendedData[i];
         const symbols = localeSymbols[data.locale];
-        goog.LOCALE = data.locale;
+        // Use computed properties to avoid compiler checks of defines.
+        goog['LOCALE'] = data.locale;
+        /**
+         * @suppress {strictMissingProperties} suppression added to enable type
+         * checking
+         */
         const fmt = new RelativeDateTimeFormat(
             RelativeDateTimeFormat.NumericOption.ALWAYS, data.style,
             symbols.RelativeDateTimeFormatSymbols);
@@ -494,15 +581,23 @@ testSuite({
 
   testForcedNumeric: function() {
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
+      /**
+       * @suppress {constantProperty} suppression added to enable type checking
+       */
       goog.i18n.NumberFormatSymbols = NumberFormatSymbols_en;
       for (let i = 0; i < forcedNumericTestData.length; i++) {
         const data = forcedNumericTestData[i];
         const symbols = localeSymbols[data.locale];
-        goog.LOCALE = data.locale;
+        // Use computed properties to avoid compiler checks of defines.
+        goog['LOCALE'] = data.locale;
+        /**
+         * @suppress {strictMissingProperties} suppression added to enable type
+         * checking
+         */
         const fmt = new RelativeDateTimeFormat(
-            RelativeDateTimeFormat.NumericOption.AUTO, data.style,
+            RelativeDateTimeFormat.NumericOption.ALWAYS, data.style,
             symbols.RelativeDateTimeFormatSymbols);
 
         const result = fmt.format(data.direction, data.unit);
@@ -513,17 +608,25 @@ testSuite({
 
   testFormatNumericRtl: function() {
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
+      /**
+       * @suppress {constantProperty} suppression added to enable type checking
+       */
       goog.i18n.NumberFormatSymbols = NumberFormatSymbols_en;
       for (var i = 0; i < formatNumericRtlData.length; i++) {
         var data = formatNumericRtlData[i];
         var symbols = localeSymbols[data.locale];
-        goog.LOCALE = data.locale;
+        // Use computed properties to avoid compiler checks of defines.
+        goog['LOCALE'] = data.locale;
 
         // Explicitly set plural rules to get correct option.
         goog.i18n.pluralRules.select = data.pluralrules;
 
+        /**
+         * @suppress {strictMissingProperties} suppression added to enable type
+         * checking
+         */
         let fmt = new RelativeDateTimeFormat(
             RelativeDateTimeFormat.NumericOption.ALWAYS, data.style,
             symbols.RelativeDateTimeFormatSymbols);
@@ -536,13 +639,18 @@ testSuite({
 
   testFormatAutoRtl: function() {
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
       for (let i = 0; i < formatAutoRtlData.length; i++) {
         const data = formatAutoRtlData[i];
         const symbols = localeSymbols[data.locale];
-        goog.LOCALE = data.locale;
+        // Use computed properties to avoid compiler checks of defines.
+        goog['LOCALE'] = data.locale;
         goog.i18n.pluralRules.select = data.pluralrules;
+        /**
+         * @suppress {strictMissingProperties} suppression added to enable type
+         * checking
+         */
         const fmt = new RelativeDateTimeFormat(
             RelativeDateTimeFormat.NumericOption.AUTO, data.style,
             symbols.RelativeDateTimeFormatSymbols);
@@ -556,7 +664,7 @@ testSuite({
   // Test that retrieving style works.
   testGetStyle: function() {
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
       let fmt = new RelativeDateTimeFormat();
       let style = fmt.getFormatStyle();
@@ -586,7 +694,7 @@ testSuite({
   // Test that retrieving relative unit is returned when defined only.
   testGetRelativeStringDefined: function() {
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
       let fmt = new RelativeDateTimeFormat();
 
@@ -604,6 +712,18 @@ testSuite({
             fmt.isOffsetDefinedForUnit(RelativeDateTimeFormat.Unit.YEAR, -1);
         assertEquals('last year', result);
 
+        result =
+            fmt.isOffsetDefinedForUnit(RelativeDateTimeFormat.Unit.YEAR, +1);
+        assertEquals('next year', result);
+
+        result =
+            fmt.isOffsetDefinedForUnit(RelativeDateTimeFormat.Unit.MONTH, -1);
+        assertEquals('last month', result);
+
+        result =
+            fmt.isOffsetDefinedForUnit(RelativeDateTimeFormat.Unit.MONTH, +1);
+        assertEquals('next month', result);
+
         result = fmt.isOffsetDefinedForUnit(RelativeDateTimeFormat.Unit.DAY, 0);
         assertEquals('today', result);
 
@@ -618,10 +738,11 @@ testSuite({
   },
 
   testEnShort: function() {
-    goog.LOCALE = 'en';
+    // Use computed properties to avoid compiler checks of defines.
+    goog['LOCALE'] = 'en';
 
     for (const val of testECMAScriptOptions) {
-      LocaleFeature.USE_ECMASCRIPT_I18N_RDTF = val;
+      propertyReplacer.replace(LocaleFeature, 'USE_ECMASCRIPT_I18N_RDTF', val);
 
       let fmt = new RelativeDateTimeFormat(
           RelativeDateTimeFormat.NumericOption.ALWAYS,
@@ -635,6 +756,7 @@ testSuite({
       var fmtAuto = new RelativeDateTimeFormat(
           RelativeDateTimeFormat.NumericOption.AUTO,
           RelativeDateTimeFormat.Style.SHORT);
+      /** @suppress {checkVars} suppression added to enable type checking */
       var result = fmtAuto.format(2, RelativeDateTimeFormat.Unit.HOUR);
       assertEquals('in 2 hr.', result);
 

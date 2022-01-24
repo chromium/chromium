@@ -9,7 +9,12 @@
 #include <vector>
 
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // A base class providing construction of javascript testing assets.
 class JavaScriptBrowserTest : public InProcessBrowserTest {
@@ -27,6 +32,8 @@ class JavaScriptBrowserTest : public InProcessBrowserTest {
   ~JavaScriptBrowserTest() override;
 
   // InProcessBrowserTest overrides.
+  void SetUpInProcessBrowserTestFixture() override;
+  void TearDownInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
   // Builds a vector of strings of all added javascript libraries suitable for
@@ -41,12 +48,20 @@ class JavaScriptBrowserTest : public InProcessBrowserTest {
                                     const std::string& test_name,
                                     std::vector<base::Value> args);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  test::AshBrowserTestStarter* ash_starter() { return ash_starter_.get(); }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
  private:
   // User added libraries.
   std::vector<base::FilePath> user_libraries_;
 
   // User library search paths.
   std::vector<base::FilePath> library_search_paths_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<test::AshBrowserTestStarter> ash_starter_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 #endif  // CHROME_TEST_BASE_JAVASCRIPT_BROWSER_TEST_H_

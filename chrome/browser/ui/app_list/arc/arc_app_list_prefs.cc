@@ -18,9 +18,9 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -40,11 +40,11 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/arc_prefs.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/compat_mode/arc_resize_lock_manager.h"
 #include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/connection_holder.h"
 #include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -100,7 +100,7 @@ int current_icons_version = 1;
 constexpr int default_app_icon_dip_sizes[] = {16, 32, 48, 64};
 
 constexpr base::TimeDelta kDetectDefaultAppAvailabilityTimeout =
-    base::TimeDelta::FromMinutes(1);
+    base::Minutes(1);
 
 // Accessor for deferred set notifications enabled requests in prefs.
 class NotificationsEnabledDeferred {
@@ -162,9 +162,6 @@ bool InstallIconFromFileThread(const base::FilePath& icon_path,
 
   if (!WriteIconFile(icon_path, icon_png_data))
     return false;
-
-  if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-    return true;
 
   if (!icon->is_adaptive_icon) {
     // For non-adaptive icon, save the |icon_png_data| to the
@@ -903,7 +900,7 @@ void ArcAppListPrefs::SetLastLaunchTimeInternal(const std::string& app_id) {
       UMA_HISTOGRAM_CUSTOM_TIMES(
           "Arc.FirstAppLaunchRequest.TimeDelta",
           time - ash::UserSessionManager::GetInstance()->ui_shown_time(),
-          base::TimeDelta::FromSeconds(1), base::TimeDelta::FromMinutes(2), 20);
+          base::Seconds(1), base::Minutes(2), 20);
     }
   }
 }
@@ -1028,9 +1025,6 @@ void ArcAppListPrefs::OnPolicySent(const std::string& policy) {
 
 arc::mojom::ArcResizeLockState ArcAppListPrefs::GetResizeLockState(
     const std::string& app_id) const {
-  if (!ash::features::IsArcResizeLockEnabled())
-    return arc::mojom::ArcResizeLockState::UNDEFINED;
-
   std::unique_ptr<AppInfo> app_info = GetApp(app_id);
   if (!app_info) {
     VLOG(2) << "Failed to get app info: " << app_id << ".";
@@ -1042,9 +1036,6 @@ arc::mojom::ArcResizeLockState ArcAppListPrefs::GetResizeLockState(
 
 void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
                                          arc::mojom::ArcResizeLockState state) {
-  if (!ash::features::IsArcResizeLockEnabled())
-    return;
-
   if (!IsRegistered(app_id)) {
     VLOG(2) << "Request to set ret resize lock for non-registered app:"
             << app_id << ".";
@@ -1211,6 +1202,9 @@ void ArcAppListPrefs::OnConnectionClosed() {
   is_initialized_ = false;
   package_list_initial_refreshed_ = false;
   app_list_refreshed_callback_.Reset();
+
+  for (auto& observer : observer_list_)
+    observer.OnAppConnectionClosed();
 }
 
 void ArcAppListPrefs::HandleTaskCreated(const absl::optional<std::string>& name,
@@ -1364,7 +1358,7 @@ void ArcAppListPrefs::AddAppAndShortcut(const std::string& name,
 
     app_dict->SetKey(kIconVersion, base::Value(current_icons_version));
 
-    if (arc::IsArcForceCacheAppIcon()) {
+    if (arc::IsArcForceCacheAppIcon() && app_id != arc::kPlayStoreAppId) {
       // Request full set of app icons.
       VLOG(1) << "Requested full set of app icons " << app_id;
       for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
@@ -2076,10 +2070,11 @@ void ArcAppListPrefs::OnInstallationFinished(
     if (result->success) {
       InstallationCounterReasonEnum reason =
           InstallationCounterReasonEnum::USER;
-      if (IsDefault(result->package_name)) {
-        reason = InstallationCounterReasonEnum::DEFAULT;
-      } else if (IsOem(result->package_name)) {
+      std::string app_id = GetAppIdByPackageName(result->package_name);
+      if (IsOem(app_id)) {
         reason = InstallationCounterReasonEnum::OEM;
+      } else if (IsDefault(app_id)) {
+        reason = InstallationCounterReasonEnum::DEFAULT;
       } else if (IsControlledByPolicy(result->package_name)) {
         reason = InstallationCounterReasonEnum::POLICY;
       }

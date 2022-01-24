@@ -17,21 +17,27 @@ class WebUIDataSourceImplWithPublicData : public WebUIDataSourceImpl {
     return new WebUIDataSourceImplWithPublicData(source_name);
   }
 
+  WebUIDataSourceImplWithPublicData(const WebUIDataSourceImplWithPublicData&) =
+      delete;
+  WebUIDataSourceImplWithPublicData& operator=(
+      const WebUIDataSourceImplWithPublicData&) = delete;
+
   using WebUIDataSourceImpl::GetLocalizedStrings;
+  using WebUIDataSourceImpl::PathToIdrOrDefault;
 
  protected:
   explicit WebUIDataSourceImplWithPublicData(const std::string& source_name)
       : WebUIDataSourceImpl(source_name) {}
   ~WebUIDataSourceImplWithPublicData() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebUIDataSourceImplWithPublicData);
 };
 
 class TestWebUIDataSourceImpl : public TestWebUIDataSource {
  public:
   explicit TestWebUIDataSourceImpl(const std::string& source_name)
       : source_(WebUIDataSourceImplWithPublicData::Create(source_name)) {}
+
+  TestWebUIDataSourceImpl(const TestWebUIDataSourceImpl&) = delete;
+  TestWebUIDataSourceImpl& operator=(const TestWebUIDataSourceImpl&) = delete;
 
   ~TestWebUIDataSourceImpl() override {}
 
@@ -43,12 +49,14 @@ class TestWebUIDataSourceImpl : public TestWebUIDataSource {
     return source_->source()->GetReplacements();
   }
 
+  int PathToIdrOrDefault(const std::string& path) override {
+    return source_->PathToIdrOrDefault(path);
+  }
+
   WebUIDataSource* GetWebUIDataSource() override { return source_.get(); }
 
  private:
   scoped_refptr<WebUIDataSourceImplWithPublicData> source_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebUIDataSourceImpl);
 };
 
 // static

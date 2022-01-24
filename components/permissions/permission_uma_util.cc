@@ -12,10 +12,13 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/prediction_service/prediction_request_features.h"
+#include "components/permissions/prediction_service/prediction_service.h"
 #include "components/permissions/request_type.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/permission_type.h"
@@ -98,6 +101,8 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::REGISTER_PROTOCOL_HANDLER;
     case RequestType::kSecurityAttestation:
       return RequestTypeForUma::PERMISSION_SECURITY_KEY_ATTESTATION;
+    case RequestType::kU2fApiRequest:
+      return RequestTypeForUma::PERMISSION_U2F_API_REQUEST;
 #endif
     case RequestType::kStorageAccess:
       return RequestTypeForUma::PERMISSION_STORAGE_ACCESS;
@@ -158,6 +163,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "IdleDetection";
     case RequestTypeForUma::PERMISSION_FILE_HANDLING:
       return "FileHandling";
+    case RequestTypeForUma::PERMISSION_U2F_API_REQUEST:
+      return "U2fApiRequest";
     default:
       NOTREACHED();
       return "";
@@ -210,6 +217,11 @@ void RecordPermissionActionUkm(
     absl::optional<bool> has_previously_revoked_permission,
     absl::optional<PermissionUmaUtil::PredictionGrantLikelihood>
         predicted_grant_likelihood,
+    PredictionRequestFeatures::ActionCounts
+        loud_ui_actions_counts_for_request_type,
+    PredictionRequestFeatures::ActionCounts loud_ui_actions_counts,
+    PredictionRequestFeatures::ActionCounts actions_counts_for_request_type,
+    PredictionRequestFeatures::ActionCounts actions_counts,
     absl::optional<ukm::SourceId> source_id) {
   // Only record the permission change if the origin is in the history.
   if (!source_id.has_value())
@@ -217,6 +229,12 @@ void RecordPermissionActionUkm(
 
   size_t num_values = 0;
 
+  const int loud_ui_prompts_count_for_request_type =
+      loud_ui_actions_counts_for_request_type.total();
+  const int loud_ui_prompts_count = loud_ui_actions_counts.total();
+  const int prompts_count_for_request_type =
+      actions_counts_for_request_type.total();
+  const int prompts_count = actions_counts.total();
   ukm::builders::Permission builder(source_id.value());
   builder.SetAction(static_cast<int64_t>(action))
       .SetGesture(static_cast<int64_t>(gesture_type))
@@ -226,6 +244,71 @@ void RecordPermissionActionUkm(
       .SetPriorIgnores(std::min(kPriorCountCap, ignore_count))
       .SetSource(static_cast<int64_t>(source_ui))
       .SetPromptDisposition(static_cast<int64_t>(ui_disposition));
+
+  builder
+      .SetStats_LoudPromptsOfType_DenyRate(
+          PredictionService::GetRoundedRatioForUkm(
+              loud_ui_actions_counts_for_request_type.denies,
+              loud_ui_prompts_count_for_request_type))
+      .SetStats_LoudPromptsOfType_DismissRate(
+          PredictionService::GetRoundedRatioForUkm(
+              loud_ui_actions_counts_for_request_type.dismissals,
+              loud_ui_prompts_count_for_request_type))
+      .SetStats_LoudPromptsOfType_GrantRate(
+          PredictionService::GetRoundedRatioForUkm(
+              loud_ui_actions_counts_for_request_type.grants,
+              loud_ui_prompts_count_for_request_type))
+      .SetStats_LoudPromptsOfType_IgnoreRate(
+          PredictionService::GetRoundedRatioForUkm(
+              loud_ui_actions_counts_for_request_type.ignores,
+              loud_ui_prompts_count_for_request_type))
+      .SetStats_LoudPromptsOfType_Count(PredictionService::BucketizeValue(
+          loud_ui_prompts_count_for_request_type));
+
+  builder
+      .SetStats_LoudPrompts_DenyRate(PredictionService::GetRoundedRatioForUkm(
+          loud_ui_actions_counts.denies, loud_ui_prompts_count))
+      .SetStats_LoudPrompts_DismissRate(
+          PredictionService::GetRoundedRatioForUkm(
+              loud_ui_actions_counts.dismissals, loud_ui_prompts_count))
+      .SetStats_LoudPrompts_GrantRate(PredictionService::GetRoundedRatioForUkm(
+          loud_ui_actions_counts.grants, loud_ui_prompts_count))
+      .SetStats_LoudPrompts_IgnoreRate(PredictionService::GetRoundedRatioForUkm(
+          loud_ui_actions_counts.ignores, loud_ui_prompts_count))
+      .SetStats_LoudPrompts_Count(
+          PredictionService::BucketizeValue(loud_ui_prompts_count));
+
+  builder
+      .SetStats_AllPromptsOfType_DenyRate(
+          PredictionService::GetRoundedRatioForUkm(
+              actions_counts_for_request_type.denies,
+              prompts_count_for_request_type))
+      .SetStats_AllPromptsOfType_DismissRate(
+          PredictionService::GetRoundedRatioForUkm(
+              actions_counts_for_request_type.dismissals,
+              prompts_count_for_request_type))
+      .SetStats_AllPromptsOfType_GrantRate(
+          PredictionService::GetRoundedRatioForUkm(
+              actions_counts_for_request_type.grants,
+              prompts_count_for_request_type))
+      .SetStats_AllPromptsOfType_IgnoreRate(
+          PredictionService::GetRoundedRatioForUkm(
+              actions_counts_for_request_type.ignores,
+              prompts_count_for_request_type))
+      .SetStats_AllPromptsOfType_Count(
+          PredictionService::BucketizeValue(prompts_count_for_request_type));
+
+  builder
+      .SetStats_AllPrompts_DenyRate(PredictionService::GetRoundedRatioForUkm(
+          actions_counts.denies, prompts_count))
+      .SetStats_AllPrompts_DismissRate(PredictionService::GetRoundedRatioForUkm(
+          actions_counts.dismissals, prompts_count))
+      .SetStats_AllPrompts_GrantRate(PredictionService::GetRoundedRatioForUkm(
+          actions_counts.grants, prompts_count))
+      .SetStats_AllPrompts_IgnoreRate(PredictionService::GetRoundedRatioForUkm(
+          actions_counts.ignores, prompts_count))
+      .SetStats_AllPrompts_Count(
+          PredictionService::BucketizeValue(prompts_count));
 
   if (ui_reason.has_value())
     builder.SetPromptDispositionReason(static_cast<int64_t>(ui_reason.value()));
@@ -271,12 +354,18 @@ std::string GetPromptDispositionString(
       return "LocationBarLeftChip";
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
       return "LocationBarLeftQuietChip";
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
+      return "LocationBarLeftQuietAbusiveChip";
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE:
+      return "LocationBarLeftChipAutoBubble";
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
       return "LocationBarRightAnimatedIcon";
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
       return "LocationBarRightStaticIcon";
     case PermissionPromptDisposition::MINI_INFOBAR:
       return "MiniInfobar";
+    case PermissionPromptDisposition::MESSAGE_UI:
+      return "MessageUI";
     case PermissionPromptDisposition::MODAL_DIALOG:
       return "ModalDialog";
     case PermissionPromptDisposition::NONE_VISIBLE:
@@ -318,6 +407,39 @@ int ConvertCrowdDenyVersionToInt(const absl::optional<base::Version>& version) {
   short_version += day;
 
   return short_version;
+}
+
+AutoDSEPermissionRevertTransition GetAutoDSEPermissionRevertedTransition(
+    ContentSetting backed_up_setting,
+    ContentSetting effective_setting,
+    ContentSetting end_state_setting) {
+  if (backed_up_setting == CONTENT_SETTING_ASK &&
+      effective_setting == CONTENT_SETTING_ALLOW &&
+      end_state_setting == CONTENT_SETTING_ASK) {
+    return AutoDSEPermissionRevertTransition::NO_DECISION_ASK;
+  } else if (backed_up_setting == CONTENT_SETTING_ALLOW &&
+             effective_setting == CONTENT_SETTING_ALLOW &&
+             end_state_setting == CONTENT_SETTING_ALLOW) {
+    return AutoDSEPermissionRevertTransition::PRESERVE_ALLOW;
+  } else if (backed_up_setting == CONTENT_SETTING_BLOCK &&
+             effective_setting == CONTENT_SETTING_ALLOW &&
+             end_state_setting == CONTENT_SETTING_ASK) {
+    return AutoDSEPermissionRevertTransition::CONFLICT_ASK;
+  } else if (backed_up_setting == CONTENT_SETTING_ASK &&
+             effective_setting == CONTENT_SETTING_BLOCK &&
+             end_state_setting == CONTENT_SETTING_BLOCK) {
+    return AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_ASK;
+  } else if (backed_up_setting == CONTENT_SETTING_ALLOW &&
+             effective_setting == CONTENT_SETTING_BLOCK &&
+             end_state_setting == CONTENT_SETTING_BLOCK) {
+    return AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_ALLOW;
+  } else if (backed_up_setting == CONTENT_SETTING_BLOCK &&
+             effective_setting == CONTENT_SETTING_BLOCK &&
+             end_state_setting == CONTENT_SETTING_BLOCK) {
+    return AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_BLOCK;
+  } else {
+    return AutoDSEPermissionRevertTransition::INVALID_END_STATE;
+  }
 }
 
 }  // anonymous namespace
@@ -441,7 +563,10 @@ void PermissionUmaUtil::PermissionPromptResolved(
     base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
     absl::optional<PermissionPromptDispositionReason> ui_reason,
-    absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood) {
+    absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+    bool did_show_prompt,
+    bool did_click_managed,
+    bool did_click_learn_more) {
   switch (permission_action) {
     case PermissionAction::GRANTED:
       RecordPromptDecided(requests, /*accepted=*/true, /*is_one_time=*/false);
@@ -505,7 +630,50 @@ void PermissionUmaUtil::PermissionPromptResolved(
   base::UmaHistogramEnumeration("Permissions.Action.WithDisposition." +
                                     GetPromptDispositionString(ui_disposition),
                                 permission_action, PermissionAction::NUM);
-}
+
+  RequestTypeForUma type =
+      GetUmaValueForRequestType(requests[0]->request_type());
+  if (requests.size() > 1)
+    type = RequestTypeForUma::MULTIPLE;
+
+  std::string permission_type = GetPermissionRequestString(type);
+  std::string permission_disposition =
+      GetPromptDispositionString(ui_disposition);
+
+  base::UmaHistogramEnumeration("Permissions.Prompt." + permission_type + "." +
+                                    permission_disposition + ".Action",
+                                permission_action, PermissionAction::NUM);
+
+  if (!time_to_decision.is_zero()) {
+    base::UmaHistogramLongTimes("Permissions.Prompt." + permission_type + "." +
+                                    permission_disposition + "." +
+                                    action_string + ".TimeToAction",
+                                time_to_decision);
+  }
+
+  if (permission_action == PermissionAction::IGNORED &&
+      ui_disposition !=
+          PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE) {
+    base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
+                                  permission_disposition +
+                                  ".Ignored.DidShowBubble",
+                              did_show_prompt);
+  }
+
+  if (ui_disposition ==
+      PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP) {
+    base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
+                                  permission_disposition + "." + action_string +
+                                  ".DidClickManage",
+                              did_click_managed);
+  } else if (ui_disposition == PermissionPromptDisposition::
+                                   LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP) {
+    base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
+                                  permission_disposition + "." + action_string +
+                                  ".DidClickLearnMore",
+                              did_click_learn_more);
+  }
+}  // namespace permissions
 
 void PermissionUmaUtil::RecordPermissionPromptPriorCount(
     ContentSettingsType permission,
@@ -618,7 +786,7 @@ PermissionUmaUtil::ScopedRevocationReporter::ScopedRevocationReporter(
 PermissionUmaUtil::ScopedRevocationReporter::~ScopedRevocationReporter() {
   if (!is_initially_allowed_)
     return;
-  if (!PermissionUtil::IsPermission(content_type_))
+  if (!IsRequestablePermissionType(content_type_))
     return;
   HostContentSettingsMap* settings_map =
       PermissionsClient::Get()->GetSettingsMap(browser_context_);
@@ -626,7 +794,7 @@ PermissionUmaUtil::ScopedRevocationReporter::~ScopedRevocationReporter() {
       primary_url_, secondary_url_, content_type_);
   if (final_content_setting != CONTENT_SETTING_ALLOW) {
     // PermissionUmaUtil takes origins, even though they're typed as GURL.
-    GURL requesting_origin = primary_url_.GetOrigin();
+    GURL requesting_origin = primary_url_.DeprecatedGetOriginAsURL();
     PermissionRevoked(content_type_, source_ui_, requesting_origin,
                       browser_context_);
     if ((content_type_ == ContentSettingsType::GEOLOCATION ||
@@ -669,6 +837,42 @@ void PermissionUmaUtil::RecordPermissionAction(
       autoblocker->GetDismissCount(requesting_origin, permission);
   int ignore_count = autoblocker->GetIgnoreCount(requesting_origin, permission);
 
+  const base::Time cutoff = base::Time::Now() - base::Days(28);
+  PermissionActionsHistory* permission_actions_history =
+      PermissionsClient::Get()->GetPermissionActionsHistory(browser_context);
+
+  PredictionRequestFeatures::ActionCounts
+      loud_ui_actions_counts_per_request_type;
+  PredictionRequestFeatures::ActionCounts loud_ui_actions_counts;
+  PredictionRequestFeatures::ActionCounts actions_counts_per_request_type;
+  PredictionRequestFeatures::ActionCounts actions_counts;
+
+  if (permission_actions_history != nullptr) {
+    DCHECK(IsRequestablePermissionType(permission));
+    auto loud_ui_actions_per_request_type =
+        permission_actions_history->GetHistory(
+            cutoff, ContentSettingsTypeToRequestType(permission),
+            PermissionActionsHistory::EntryFilter::WANT_LOUD_PROMPTS_ONLY);
+    PermissionActionsHistory::FillInActionCounts(
+        &loud_ui_actions_counts_per_request_type,
+        loud_ui_actions_per_request_type);
+
+    auto loud_ui_actions = permission_actions_history->GetHistory(
+        cutoff, PermissionActionsHistory::EntryFilter::WANT_LOUD_PROMPTS_ONLY);
+    PermissionActionsHistory::FillInActionCounts(&loud_ui_actions_counts,
+                                                 loud_ui_actions);
+
+    auto actions_per_request_type = permission_actions_history->GetHistory(
+        cutoff, ContentSettingsTypeToRequestType(permission),
+        PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
+    PermissionActionsHistory::FillInActionCounts(
+        &actions_counts_per_request_type, actions_per_request_type);
+
+    auto actions = permission_actions_history->GetHistory(
+        cutoff, PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
+    PermissionActionsHistory::FillInActionCounts(&actions_counts, actions);
+  }
+
   PermissionsClient::Get()->GetUkmSourceId(
       browser_context, web_contents, requesting_origin,
       base::BindOnce(
@@ -682,7 +886,9 @@ void PermissionUmaUtil::RecordPermissionAction(
               : absl::nullopt,
           PermissionsClient::Get()->HasPreviouslyAutoRevokedPermission(
               browser_context, requesting_origin, permission),
-          predicted_grant_likelihood));
+          predicted_grant_likelihood, loud_ui_actions_counts_per_request_type,
+          loud_ui_actions_counts, actions_counts_per_request_type,
+          actions_counts));
 
   switch (permission) {
     case ContentSettingsType::GEOLOCATION:
@@ -800,10 +1006,10 @@ void PermissionUmaUtil::RecordPromptDecided(
 void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
     ContentSettingsType type,
     base::TimeDelta delta) {
-  base::UmaHistogramCustomCounts(
-      "Permissions.Usage.ElapsedTimeSinceGrant." +
-          PermissionUtil::GetPermissionString(type),
-      delta.InSeconds(), 1, base::TimeDelta::FromDays(365).InSeconds(), 100);
+  base::UmaHistogramCustomCounts("Permissions.Usage.ElapsedTimeSinceGrant." +
+                                     PermissionUtil::GetPermissionString(type),
+                                 delta.InSeconds(), 1,
+                                 base::Days(365).InSeconds(), 100);
 }
 
 void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndRevoke(
@@ -812,7 +1018,53 @@ void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndRevoke(
   base::UmaHistogramCustomCounts(
       "Permissions.Revocation.ElapsedTimeSinceGrant." +
           PermissionUtil::GetPermissionString(type),
-      delta.InSeconds(), 1, base::TimeDelta::FromDays(365).InSeconds(), 100);
+      delta.InSeconds(), 1, base::Days(365).InSeconds(), 100);
+}
+
+// static
+void PermissionUmaUtil::RecordAutoDSEPermissionReverted(
+    ContentSettingsType permission_type,
+    ContentSetting backed_up_setting,
+    ContentSetting effective_setting,
+    ContentSetting end_state_setting) {
+  std::string permission_string =
+      GetPermissionRequestString(GetUmaValueForRequestType(
+          ContentSettingsTypeToRequestType(permission_type)));
+  auto transition = GetAutoDSEPermissionRevertedTransition(
+      backed_up_setting, effective_setting, end_state_setting);
+  base::UmaHistogramEnumeration(
+      "Permissions.DSE.AutoPermissionRevertTransition." + permission_string,
+      transition);
+
+  if (transition == AutoDSEPermissionRevertTransition::INVALID_END_STATE) {
+    base::UmaHistogramEnumeration(
+        "Permissions.DSE.InvalidAutoPermissionRevertTransition."
+        "BackedUpSetting." +
+            permission_string,
+        backed_up_setting, CONTENT_SETTING_NUM_SETTINGS);
+    base::UmaHistogramEnumeration(
+        "Permissions.DSE.InvalidAutoPermissionRevertTransition."
+        "EffectiveSetting." +
+            permission_string,
+        effective_setting, CONTENT_SETTING_NUM_SETTINGS);
+    base::UmaHistogramEnumeration(
+        "Permissions.DSE.InvalidAutoPermissionRevertTransition."
+        "EndStateSetting." +
+            permission_string,
+        end_state_setting, CONTENT_SETTING_NUM_SETTINGS);
+  }
+}
+
+// static
+void PermissionUmaUtil::RecordDSEEffectiveSetting(
+    ContentSettingsType permission_type,
+    ContentSetting setting) {
+  std::string permission_string =
+      GetPermissionRequestString(GetUmaValueForRequestType(
+          ContentSettingsTypeToRequestType(permission_type)));
+  base::UmaHistogramEnumeration(
+      "Permissions.DSE.EffectiveSetting." + permission_string, setting,
+      CONTENT_SETTING_NUM_SETTINGS);
 }
 
 std::string PermissionUmaUtil::GetPermissionActionString(
@@ -833,6 +1085,50 @@ std::string PermissionUmaUtil::GetPermissionActionString(
   }
   NOTREACHED();
   return std::string();
+}
+
+// static
+bool PermissionUmaUtil::IsPromptDispositionQuiet(
+    PermissionPromptDisposition prompt_disposition) {
+  switch (prompt_disposition) {
+    case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
+    case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
+    case PermissionPromptDisposition::MINI_INFOBAR:
+    case PermissionPromptDisposition::MESSAGE_UI:
+      return true;
+    case PermissionPromptDisposition::ANCHORED_BUBBLE:
+    case PermissionPromptDisposition::MODAL_DIALOG:
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE:
+    case PermissionPromptDisposition::NONE_VISIBLE:
+    case PermissionPromptDisposition::CUSTOM_MODAL_DIALOG:
+    case PermissionPromptDisposition::NOT_APPLICABLE:
+      return false;
+  }
+}
+
+// static
+bool PermissionUmaUtil::IsPromptDispositionLoud(
+    PermissionPromptDisposition prompt_disposition) {
+  switch (prompt_disposition) {
+    case PermissionPromptDisposition::ANCHORED_BUBBLE:
+    case PermissionPromptDisposition::MODAL_DIALOG:
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE:
+      return true;
+    case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
+    case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
+    case PermissionPromptDisposition::MINI_INFOBAR:
+    case PermissionPromptDisposition::MESSAGE_UI:
+    case PermissionPromptDisposition::NONE_VISIBLE:
+    case PermissionPromptDisposition::CUSTOM_MODAL_DIALOG:
+    case PermissionPromptDisposition::NOT_APPLICABLE:
+      return false;
+  }
 }
 
 }  // namespace permissions

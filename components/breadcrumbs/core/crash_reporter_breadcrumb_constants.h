@@ -8,9 +8,12 @@
 namespace breadcrumbs {
 
 // The maximum string length for breadcrumbs data. The breadcrumbs size cannot
-// be larger than the maximum length of a single Breakpad product data value
-// (currently 2550 bytes). This value should be large enough to include enough
-//  events so that they are useful for diagnosing crashes.
+// be larger than the maximum length of a single product data value in the crash
+// reporter: currently 2550 bytes in Breakpad (see doc comment in
+// breakpad/src/common/long_string_dictionary.h) and 20480 bytes in Crashpad
+// (see crashpad/client/annotation.h:kValueMaxSize). This value should be large
+// enough to include enough events so that they are useful for diagnosing
+// crashes.
 constexpr unsigned long kMaxDataLength = 1530;
 
 }  // namespace breadcrumbs

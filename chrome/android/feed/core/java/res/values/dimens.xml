@@ -4,10 +4,6 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-  <dimen name="button_compat_radius">4dp</dimen>
   <!-- Card dimensions. -->
   <dimen name="feed_suggestion_card_action_min_height">48dp</dimen>
-  <!-- No content dimensions. -->
-  <dimen name="no_content_padding">16dp</dimen>
-  <dimen name="no_content_text_padding">8dp</dimen>
 </resources>

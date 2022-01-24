@@ -43,6 +43,7 @@ source_set("v4l2") {
     "v4l2_slice_video_decode_accelerator.h",
     "v4l2_stateful_workaround.cc",
     "v4l2_stateful_workaround.h",
+    "v4l2_status.h",
     "v4l2_utils.cc",
     "v4l2_utils.h",
     "v4l2_vda_helpers.cc",
@@ -126,12 +127,35 @@ source_set("v4l2") {
 
 source_set("unit_test") {
   testonly = true
-  sources = [ "v4l2_device_unittest.cc" ]
+  sources = [
+    "v4l2_device_unittest.cc",
+    "v4l2_stateful_workaround_unittest.cc",
+  ]
   deps = [
     ":v4l2",
+    "//base",
+    "//media",
     "//media:test_support",
     "//testing/gtest",
     "//ui/gfx:test_support",
     "//ui/gl",
+  ]
+}
+
+executable("v4l2_stateless_decoder") {
+  testonly = true
+  sources = [
+    "test/v4l2_ioctl_shim.cc",
+    "test/v4l2_ioctl_shim.h",
+    "test/v4l2_stateless_decoder.cc",
+    "test/vp9_decoder.cc",
+    "test/vp9_decoder.h",
+  ]
+
+  deps = [
+    "//base",
+    "//media",
+    "//media:test_support",
+    "//media/gpu:common",
   ]
 }

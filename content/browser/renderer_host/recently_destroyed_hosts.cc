@@ -22,14 +22,13 @@ const void* const kRecentlyDestroyedHostTrackerKey =
 // Sentinel value indicating that no recently destroyed process matches the
 // host currently seeking a process. Changing this invalidates the histogram.
 constexpr base::TimeDelta kRecentlyDestroyedNotFoundSentinel =
-    base::TimeDelta::FromSeconds(20);
+    base::Seconds(20);
 
 void RecordMetric(base::TimeDelta value) {
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "SiteIsolation.ReusePendingOrCommittedSite."
       "TimeSinceReusableProcessDestroyed",
-      value, base::TimeDelta::FromMilliseconds(1),
-      kRecentlyDestroyedNotFoundSentinel, 50);
+      value, base::Milliseconds(1), kRecentlyDestroyedNotFoundSentinel, 50);
 }
 
 }  // namespace

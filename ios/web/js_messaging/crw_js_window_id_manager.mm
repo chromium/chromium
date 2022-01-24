@@ -7,9 +7,12 @@
 #include <ostream>
 
 #include "base/dcheck_is_on.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #include "crypto/random.h"
 #import "ios/web/js_messaging/page_script_util.h"
 
@@ -23,6 +26,11 @@ namespace {
 const size_t kUniqueKeyLength = 16;
 
 #if DCHECK_IS_ON()
+// The time in seconds which is determined to be a long wait for the injection
+// of the window ID. The wait time will be logged if the time exceeds this
+// value.
+const double kSignificantInjectionTime = 0.1;
+
 // Returns whether |error| represents a failure to execute JavaScript due to
 // JavaScript execution being disallowed.
 bool IsJavaScriptExecutionProhibitedError(NSError* error) {
@@ -61,6 +69,10 @@ bool IsJavaScriptExecutionProhibitedError(NSError* error) {
 }
 
 - (void)inject {
+  [self injectWithStartTime:base::TimeTicks::Now()];
+}
+
+- (void)injectWithStartTime:(base::TimeTicks)startTime {
   _windowID = [[self class] newUniqueKey];
   NSString* script = [web::GetPageScript(@"window_id")
       stringByReplacingOccurrencesOfString:@"$(WINDOW_ID)"
@@ -101,7 +113,16 @@ bool IsJavaScriptExecutionProhibitedError(NSError* error) {
                  // WKUserScript has not been injected yet. Retry window id
                  // injection, because it is critical for the system to
                  // function.
-                 [strongSelf inject];
+                 [strongSelf injectWithStartTime:startTime];
+               } else {
+                 base::TimeDelta elapsed = base::TimeTicks::Now() - startTime;
+#if DCHECK_IS_ON()
+                 DLOG_IF(WARNING,
+                         elapsed.InSecondsF() > kSignificantInjectionTime)
+                     << "Elapsed time for windowID injection: " << elapsed;
+#endif
+                 UMA_HISTOGRAM_TIMES("IOS.WindowIDInjection.ElapsedTime",
+                                     elapsed);
                }
              }];
 }

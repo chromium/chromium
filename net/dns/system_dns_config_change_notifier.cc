@@ -12,9 +12,9 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -31,6 +31,9 @@ class WrappedObserver {
   explicit WrappedObserver(SystemDnsConfigChangeNotifier::Observer* observer)
       : task_runner_(base::SequencedTaskRunnerHandle::Get()),
         observer_(observer) {}
+
+  WrappedObserver(const WrappedObserver&) = delete;
+  WrappedObserver& operator=(const WrappedObserver&) = delete;
 
   ~WrappedObserver() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
@@ -54,8 +57,6 @@ class WrappedObserver {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<WrappedObserver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WrappedObserver);
 };
 
 }  // namespace
@@ -77,6 +78,9 @@ class SystemDnsConfigChangeNotifier::Core {
                                           weak_ptr_factory_.GetWeakPtr(),
                                           std::move(dns_config_service)));
   }
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
 
   ~Core() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -181,8 +185,6 @@ class SystemDnsConfigChangeNotifier::Core {
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<DnsConfigService> dns_config_service_;
   base::WeakPtrFactory<Core> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 SystemDnsConfigChangeNotifier::SystemDnsConfigChangeNotifier()

@@ -7,8 +7,6 @@
 
 #include "ash/display/mouse_warp_controller.h"
 
-#include "base/macros.h"
-
 namespace ash {
 
 // A MouseWarpController when there is one desktop display
@@ -17,12 +15,12 @@ class NullMouseWarpController : public MouseWarpController {
  public:
   NullMouseWarpController() {}
 
+  NullMouseWarpController(const NullMouseWarpController&) = delete;
+  NullMouseWarpController& operator=(const NullMouseWarpController&) = delete;
+
   // MouseWarpController:
   bool WarpMouseCursor(ui::MouseEvent* event) override;
   void SetEnabled(bool enable) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NullMouseWarpController);
 };
 
 }  // namespace ash

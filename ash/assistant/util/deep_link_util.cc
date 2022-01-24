@@ -349,7 +349,7 @@ absl::optional<base::TimeDelta> GetDeepLinkParamAsTimeDelta(
   if (!duration_ms.has_value())
     return absl::nullopt;
 
-  return base::TimeDelta::FromMilliseconds(duration_ms.value());
+  return base::Milliseconds(duration_ms.value());
 }
 
 DeepLinkType GetDeepLinkType(const GURL& url) {

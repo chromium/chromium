@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_ANDROID_JAVA_JAVA_BRIDGE_THREAD_H_
 
 #include "base/android/java_handler_thread.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace content {
 

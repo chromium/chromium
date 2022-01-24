@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -17,6 +16,7 @@
 #include "content/public/renderer/render_view.h"
 #include "content/public/test/render_view_test.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/test/test_web_frame_content_dumper.h"
@@ -67,7 +67,7 @@ class MockContentSettingsManagerImpl : public mojom::ContentSettingsManager {
   void AllowStorageAccess(int32_t render_frame_id,
                           StorageType storage_type,
                           const url::Origin& origin,
-                          const GURL& site_for_cookies,
+                          const net::SiteForCookies& site_for_cookies,
                           const url::Origin& top_frame_origin,
                           base::OnceCallback<void(bool)> callback) override {
     ++log_->allow_storage_access_count;
@@ -94,6 +94,11 @@ class MockContentSettingsAgentDelegate
 class MockContentSettingsAgentImpl : public ContentSettingsAgentImpl {
  public:
   MockContentSettingsAgentImpl(content::RenderFrame* render_frame);
+
+  MockContentSettingsAgentImpl(const MockContentSettingsAgentImpl&) = delete;
+  MockContentSettingsAgentImpl& operator=(const MockContentSettingsAgentImpl&) =
+      delete;
+
   ~MockContentSettingsAgentImpl() override {}
 
   const GURL& image_url() const { return image_url_; }
@@ -115,8 +120,6 @@ class MockContentSettingsAgentImpl : public ContentSettingsAgentImpl {
   MockContentSettingsManagerImpl::Log log_;
   const GURL image_url_;
   const std::string image_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockContentSettingsAgentImpl);
 };
 
 MockContentSettingsAgentImpl::MockContentSettingsAgentImpl(
@@ -135,9 +138,9 @@ void MockContentSettingsAgentImpl::BindContentSettingsManager(
       manager->BindNewPipeAndPassReceiver());
 }
 
-// Evaluates a boolean |predicate| every time a provisional load is committed in
-// the given |frame| while the instance of this class is in scope, and verifies
-// that the result matches the |expectation|.
+// Evaluates a boolean `predicate` every time a provisional load is committed in
+// the given `frame` while the instance of this class is in scope, and verifies
+// that the result matches the `expectation`.
 class CommitTimeConditionChecker : public content::RenderFrameObserver {
  public:
   using Predicate = base::RepeatingCallback<bool()>;
@@ -149,6 +152,10 @@ class CommitTimeConditionChecker : public content::RenderFrameObserver {
         predicate_(predicate),
         expectation_(expectation) {}
 
+  CommitTimeConditionChecker(const CommitTimeConditionChecker&) = delete;
+  CommitTimeConditionChecker& operator=(const CommitTimeConditionChecker&) =
+      delete;
+
  protected:
   // RenderFrameObserver:
   void OnDestruct() override {}
@@ -159,8 +166,6 @@ class CommitTimeConditionChecker : public content::RenderFrameObserver {
  private:
   const Predicate predicate_;
   const bool expectation_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitTimeConditionChecker);
 };
 
 }  // namespace
@@ -594,6 +599,62 @@ TEST_F(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesDisabledByRules) {
           std::string(), false));
 
   EXPECT_FALSE(agent->ShouldAutoupgradeMixedContent());
+}
+
+TEST_F(ContentSettingsAgentImplBrowserTest, ContentSettingsAllowedAutoDark) {
+  MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
+
+  // Load some HTML.
+  LoadHTMLWithUrlOverride("<html></html>", "https://example.com/");
+
+  // Set the default auto dark mode setting.
+  RendererContentSettingRules content_setting_rules;
+  ContentSettingsForOneType& auto_dark_content_rules =
+      content_setting_rules.auto_dark_content_rules;
+  auto_dark_content_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      base::Value::FromUniquePtrValue(
+          content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+      std::string(), false));
+
+  ContentSettingsAgentImpl* agent =
+      ContentSettingsAgentImpl::Get(GetMainRenderFrame());
+  agent->SetContentSettingRules(&content_setting_rules);
+  EXPECT_TRUE(agent->AllowAutoDarkWebContent(true));
+
+  // Create an exception which blocked the auto dark.
+  auto_dark_content_rules.insert(
+      auto_dark_content_rules.begin(),
+      ContentSettingPatternSource(
+          ContentSettingsPattern::FromString("https://example.com/"),
+          ContentSettingsPattern::Wildcard(),
+          base::Value::FromUniquePtrValue(
+              content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK)),
+          std::string(), false));
+
+  EXPECT_FALSE(agent->AllowAutoDarkWebContent(true));
+}
+
+TEST_F(ContentSettingsAgentImplBrowserTest, ContentSettingsDisabledAutoDark) {
+  MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
+
+  // Load some HTML.
+  LoadHTMLWithUrlOverride("<html></html>", "https://example.com/");
+
+  // Set the default auto dark mode setting.
+  RendererContentSettingRules content_setting_rules;
+  ContentSettingsForOneType& auto_dark_content_rules =
+      content_setting_rules.auto_dark_content_rules;
+  auto_dark_content_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      base::Value::FromUniquePtrValue(
+          content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK)),
+      std::string(), false));
+
+  ContentSettingsAgentImpl* agent =
+      ContentSettingsAgentImpl::Get(GetMainRenderFrame());
+  agent->SetContentSettingRules(&content_setting_rules);
+  EXPECT_FALSE(agent->AllowAutoDarkWebContent(true));
 }
 
 }  // namespace content_settings

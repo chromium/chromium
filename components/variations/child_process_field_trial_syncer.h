@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/threading/thread_local.h"
 
@@ -37,6 +36,10 @@ class COMPONENT_EXPORT(VARIATIONS) ChildProcessFieldTrialSyncer
   // FieldTrialList (see FieldTrialList::RemoveObserver).
   static ChildProcessFieldTrialSyncer* CreateInstance(
       FieldTrialActivatedCallback activated_callback);
+
+  ChildProcessFieldTrialSyncer(const ChildProcessFieldTrialSyncer&) = delete;
+  ChildProcessFieldTrialSyncer& operator=(const ChildProcessFieldTrialSyncer&) =
+      delete;
 
   // Deletes the global ChildProcessFieldTrialSyncer instance.
   static void DeleteInstanceForTesting();
@@ -65,8 +68,6 @@ class COMPONENT_EXPORT(VARIATIONS) ChildProcessFieldTrialSyncer
 
   // Callback to invoke when a field trial is activated.
   const FieldTrialActivatedCallback activated_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessFieldTrialSyncer);
 };
 
 }  // namespace variations

@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "media/midi/usb_midi_export.h"
 #include "media/midi/usb_midi_jack.h"
 
@@ -45,6 +44,10 @@ class USB_MIDI_EXPORT UsbMidiDescriptorParser {
   };
 
   UsbMidiDescriptorParser();
+
+  UsbMidiDescriptorParser(const UsbMidiDescriptorParser&) = delete;
+  UsbMidiDescriptorParser& operator=(const UsbMidiDescriptorParser&) = delete;
+
   ~UsbMidiDescriptorParser();
 
   // Returns true if the operation succeeds.
@@ -78,8 +81,6 @@ class USB_MIDI_EXPORT UsbMidiDescriptorParser {
   uint8_t current_cable_number_;
 
   std::vector<UsbMidiJack> incomplete_jacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbMidiDescriptorParser);
 };
 
 }  // namespace midi

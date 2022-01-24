@@ -6,10 +6,10 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="69sp"
+    android:layout_width="@dimen/sharing_hub_tile_width"
     android:layout_height="fill_parent"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp">
+    android:layout_marginStart="@dimen/sharing_hub_tile_margin"
+    android:layout_marginEnd="@dimen/sharing_hub_tile_margin">
 
    <LinearLayout android:id="@+id/layout"
         android:clickable="true"

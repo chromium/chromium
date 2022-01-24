@@ -17,9 +17,9 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
-#include "base/task_runner_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -90,6 +90,9 @@ class ChannelNacl::ReaderThreadRunner
       base::RepeatingCallback<void()> failure_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
+  ReaderThreadRunner(const ReaderThreadRunner&) = delete;
+  ReaderThreadRunner& operator=(const ReaderThreadRunner&) = delete;
+
   // DelegateSimpleThread implementation. Reads data from the pipe in a loop
   // until either we are told to quit or a read fails.
   void Run() override;
@@ -100,8 +103,6 @@ class ChannelNacl::ReaderThreadRunner
       data_read_callback_;
   base::RepeatingCallback<void()> failure_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReaderThreadRunner);
 };
 
 ChannelNacl::ReaderThreadRunner::ReaderThreadRunner(

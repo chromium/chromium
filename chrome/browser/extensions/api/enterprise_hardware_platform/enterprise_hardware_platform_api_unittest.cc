@@ -21,6 +21,12 @@ class EnterpriseHardwarePlatformAPITest
     : public ExtensionServiceTestWithInstall {
  public:
   EnterpriseHardwarePlatformAPITest() = default;
+
+  EnterpriseHardwarePlatformAPITest(const EnterpriseHardwarePlatformAPITest&) =
+      delete;
+  EnterpriseHardwarePlatformAPITest& operator=(
+      const EnterpriseHardwarePlatformAPITest&) = delete;
+
   ~EnterpriseHardwarePlatformAPITest() override = default;
 
  protected:
@@ -48,8 +54,6 @@ class EnterpriseHardwarePlatformAPITest
   scoped_refptr<const Extension> extension_;
   scoped_refptr<EnterpriseHardwarePlatformGetHardwarePlatformInfoFunction>
       function_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseHardwarePlatformAPITest);
 };
 
 TEST_F(EnterpriseHardwarePlatformAPITest, GetHardwarePlatformInfoAllowed) {

@@ -33,6 +33,12 @@ extern const char kErrorUnconfiguredNetwork[];
 class NetworkingPrivateGetPropertiesFunction : public ExtensionFunction {
  public:
   NetworkingPrivateGetPropertiesFunction() {}
+
+  NetworkingPrivateGetPropertiesFunction(
+      const NetworkingPrivateGetPropertiesFunction&) = delete;
+  NetworkingPrivateGetPropertiesFunction& operator=(
+      const NetworkingPrivateGetPropertiesFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.getProperties",
                              NETWORKINGPRIVATE_GETPROPERTIES)
 
@@ -45,14 +51,18 @@ class NetworkingPrivateGetPropertiesFunction : public ExtensionFunction {
  private:
   void Result(absl::optional<base::Value> result,
               absl::optional<std::string> error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateGetPropertiesFunction);
 };
 
 // Implements the chrome.networkingPrivate.getManagedProperties method.
 class NetworkingPrivateGetManagedPropertiesFunction : public ExtensionFunction {
  public:
   NetworkingPrivateGetManagedPropertiesFunction() {}
+
+  NetworkingPrivateGetManagedPropertiesFunction(
+      const NetworkingPrivateGetManagedPropertiesFunction&) = delete;
+  NetworkingPrivateGetManagedPropertiesFunction& operator=(
+      const NetworkingPrivateGetManagedPropertiesFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.getManagedProperties",
                              NETWORKINGPRIVATE_GETMANAGEDPROPERTIES)
 
@@ -65,14 +75,18 @@ class NetworkingPrivateGetManagedPropertiesFunction : public ExtensionFunction {
  private:
   void Result(absl::optional<base::Value> result,
               absl::optional<std::string> error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateGetManagedPropertiesFunction);
 };
 
 // Implements the chrome.networkingPrivate.getState method.
 class NetworkingPrivateGetStateFunction : public ExtensionFunction {
  public:
   NetworkingPrivateGetStateFunction() {}
+
+  NetworkingPrivateGetStateFunction(const NetworkingPrivateGetStateFunction&) =
+      delete;
+  NetworkingPrivateGetStateFunction& operator=(
+      const NetworkingPrivateGetStateFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.getState",
                              NETWORKINGPRIVATE_GETSTATE)
 
@@ -85,14 +99,18 @@ class NetworkingPrivateGetStateFunction : public ExtensionFunction {
  private:
   void Success(std::unique_ptr<base::DictionaryValue> result);
   void Failure(const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateGetStateFunction);
 };
 
 // Implements the chrome.networkingPrivate.setProperties method.
 class NetworkingPrivateSetPropertiesFunction : public ExtensionFunction {
  public:
   NetworkingPrivateSetPropertiesFunction() {}
+
+  NetworkingPrivateSetPropertiesFunction(
+      const NetworkingPrivateSetPropertiesFunction&) = delete;
+  NetworkingPrivateSetPropertiesFunction& operator=(
+      const NetworkingPrivateSetPropertiesFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.setProperties",
                              NETWORKINGPRIVATE_SETPROPERTIES)
 
@@ -105,14 +123,18 @@ class NetworkingPrivateSetPropertiesFunction : public ExtensionFunction {
  private:
   void Success();
   void Failure(const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateSetPropertiesFunction);
 };
 
 // Implements the chrome.networkingPrivate.createNetwork method.
 class NetworkingPrivateCreateNetworkFunction : public ExtensionFunction {
  public:
   NetworkingPrivateCreateNetworkFunction() {}
+
+  NetworkingPrivateCreateNetworkFunction(
+      const NetworkingPrivateCreateNetworkFunction&) = delete;
+  NetworkingPrivateCreateNetworkFunction& operator=(
+      const NetworkingPrivateCreateNetworkFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.createNetwork",
                              NETWORKINGPRIVATE_CREATENETWORK)
 
@@ -125,14 +147,18 @@ class NetworkingPrivateCreateNetworkFunction : public ExtensionFunction {
  private:
   void Success(const std::string& guid);
   void Failure(const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateCreateNetworkFunction);
 };
 
 // Implements the chrome.networkingPrivate.createNetwork method.
 class NetworkingPrivateForgetNetworkFunction : public ExtensionFunction {
  public:
   NetworkingPrivateForgetNetworkFunction() {}
+
+  NetworkingPrivateForgetNetworkFunction(
+      const NetworkingPrivateForgetNetworkFunction&) = delete;
+  NetworkingPrivateForgetNetworkFunction& operator=(
+      const NetworkingPrivateForgetNetworkFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.forgetNetwork",
                              NETWORKINGPRIVATE_FORGETNETWORK)
 
@@ -145,14 +171,18 @@ class NetworkingPrivateForgetNetworkFunction : public ExtensionFunction {
  private:
   void Success();
   void Failure(const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateForgetNetworkFunction);
 };
 
 // Implements the chrome.networkingPrivate.getNetworks method.
 class NetworkingPrivateGetNetworksFunction : public ExtensionFunction {
  public:
   NetworkingPrivateGetNetworksFunction() {}
+
+  NetworkingPrivateGetNetworksFunction(
+      const NetworkingPrivateGetNetworksFunction&) = delete;
+  NetworkingPrivateGetNetworksFunction& operator=(
+      const NetworkingPrivateGetNetworksFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.getNetworks",
                              NETWORKINGPRIVATE_GETNETWORKS)
 
@@ -165,14 +195,18 @@ class NetworkingPrivateGetNetworksFunction : public ExtensionFunction {
  private:
   void Success(std::unique_ptr<base::ListValue> network_list);
   void Failure(const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateGetNetworksFunction);
 };
 
 // Implements the chrome.networkingPrivate.getVisibleNetworks method.
 class NetworkingPrivateGetVisibleNetworksFunction : public ExtensionFunction {
  public:
   NetworkingPrivateGetVisibleNetworksFunction() {}
+
+  NetworkingPrivateGetVisibleNetworksFunction(
+      const NetworkingPrivateGetVisibleNetworksFunction&) = delete;
+  NetworkingPrivateGetVisibleNetworksFunction& operator=(
+      const NetworkingPrivateGetVisibleNetworksFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.getVisibleNetworks",
                              NETWORKINGPRIVATE_GETVISIBLENETWORKS)
 
@@ -185,8 +219,6 @@ class NetworkingPrivateGetVisibleNetworksFunction : public ExtensionFunction {
  private:
   void Success(std::unique_ptr<base::ListValue> network_list);
   void Failure(const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateGetVisibleNetworksFunction);
 };
 
 // Implements the chrome.networkingPrivate.getEnabledNetworkTypes method.
@@ -194,6 +226,12 @@ class NetworkingPrivateGetEnabledNetworkTypesFunction
     : public ExtensionFunction {
  public:
   NetworkingPrivateGetEnabledNetworkTypesFunction() {}
+
+  NetworkingPrivateGetEnabledNetworkTypesFunction(
+      const NetworkingPrivateGetEnabledNetworkTypesFunction&) = delete;
+  NetworkingPrivateGetEnabledNetworkTypesFunction& operator=(
+      const NetworkingPrivateGetEnabledNetworkTypesFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.getEnabledNetworkTypes",
                              NETWORKINGPRIVATE_GETENABLEDNETWORKTYPES)
 
@@ -202,15 +240,18 @@ class NetworkingPrivateGetEnabledNetworkTypesFunction
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateGetEnabledNetworkTypesFunction);
 };
 
 // Implements the chrome.networkingPrivate.getDeviceStates method.
 class NetworkingPrivateGetDeviceStatesFunction : public ExtensionFunction {
  public:
   NetworkingPrivateGetDeviceStatesFunction() {}
+
+  NetworkingPrivateGetDeviceStatesFunction(
+      const NetworkingPrivateGetDeviceStatesFunction&) = delete;
+  NetworkingPrivateGetDeviceStatesFunction& operator=(
+      const NetworkingPrivateGetDeviceStatesFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.getDeviceStates",
                              NETWORKINGPRIVATE_GETDEVICESTATES)
 
@@ -219,15 +260,18 @@ class NetworkingPrivateGetDeviceStatesFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateGetDeviceStatesFunction);
 };
 
 // Implements the chrome.networkingPrivate.enableNetworkType method.
 class NetworkingPrivateEnableNetworkTypeFunction : public ExtensionFunction {
  public:
   NetworkingPrivateEnableNetworkTypeFunction() {}
+
+  NetworkingPrivateEnableNetworkTypeFunction(
+      const NetworkingPrivateEnableNetworkTypeFunction&) = delete;
+  NetworkingPrivateEnableNetworkTypeFunction& operator=(
+      const NetworkingPrivateEnableNetworkTypeFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.enableNetworkType",
                              NETWORKINGPRIVATE_ENABLENETWORKTYPE)
 
@@ -236,15 +280,18 @@ class NetworkingPrivateEnableNetworkTypeFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateEnableNetworkTypeFunction);
 };
 
 // Implements the chrome.networkingPrivate.disableNetworkType method.
 class NetworkingPrivateDisableNetworkTypeFunction : public ExtensionFunction {
  public:
   NetworkingPrivateDisableNetworkTypeFunction() {}
+
+  NetworkingPrivateDisableNetworkTypeFunction(
+      const NetworkingPrivateDisableNetworkTypeFunction&) = delete;
+  NetworkingPrivateDisableNetworkTypeFunction& operator=(
+      const NetworkingPrivateDisableNetworkTypeFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.disableNetworkType",
                              NETWORKINGPRIVATE_DISABLENETWORKTYPE)
 
@@ -253,15 +300,18 @@ class NetworkingPrivateDisableNetworkTypeFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateDisableNetworkTypeFunction);
 };
 
 // Implements the chrome.networkingPrivate.requestNetworkScan method.
 class NetworkingPrivateRequestNetworkScanFunction : public ExtensionFunction {
  public:
   NetworkingPrivateRequestNetworkScanFunction() {}
+
+  NetworkingPrivateRequestNetworkScanFunction(
+      const NetworkingPrivateRequestNetworkScanFunction&) = delete;
+  NetworkingPrivateRequestNetworkScanFunction& operator=(
+      const NetworkingPrivateRequestNetworkScanFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.requestNetworkScan",
                              NETWORKINGPRIVATE_REQUESTNETWORKSCAN)
 
@@ -270,15 +320,18 @@ class NetworkingPrivateRequestNetworkScanFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateRequestNetworkScanFunction);
 };
 
 // Implements the chrome.networkingPrivate.startConnect method.
 class NetworkingPrivateStartConnectFunction : public ExtensionFunction {
  public:
   NetworkingPrivateStartConnectFunction() {}
+
+  NetworkingPrivateStartConnectFunction(
+      const NetworkingPrivateStartConnectFunction&) = delete;
+  NetworkingPrivateStartConnectFunction& operator=(
+      const NetworkingPrivateStartConnectFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.startConnect",
                              NETWORKINGPRIVATE_STARTCONNECT)
 
@@ -291,14 +344,18 @@ class NetworkingPrivateStartConnectFunction : public ExtensionFunction {
  private:
   void Success();
   void Failure(const std::string& guid, const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateStartConnectFunction);
 };
 
 // Implements the chrome.networkingPrivate.startDisconnect method.
 class NetworkingPrivateStartDisconnectFunction : public ExtensionFunction {
  public:
   NetworkingPrivateStartDisconnectFunction() {}
+
+  NetworkingPrivateStartDisconnectFunction(
+      const NetworkingPrivateStartDisconnectFunction&) = delete;
+  NetworkingPrivateStartDisconnectFunction& operator=(
+      const NetworkingPrivateStartDisconnectFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.startDisconnect",
                              NETWORKINGPRIVATE_STARTDISCONNECT)
 
@@ -311,14 +368,18 @@ class NetworkingPrivateStartDisconnectFunction : public ExtensionFunction {
  private:
   void Success();
   void Failure(const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateStartDisconnectFunction);
 };
 
 // Implements the chrome.networkingPrivate.startActivate method.
 class NetworkingPrivateStartActivateFunction : public ExtensionFunction {
  public:
   NetworkingPrivateStartActivateFunction() {}
+
+  NetworkingPrivateStartActivateFunction(
+      const NetworkingPrivateStartActivateFunction&) = delete;
+  NetworkingPrivateStartActivateFunction& operator=(
+      const NetworkingPrivateStartActivateFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.startActivate",
                              NETWORKINGPRIVATE_STARTACTIVATE)
 
@@ -331,14 +392,18 @@ class NetworkingPrivateStartActivateFunction : public ExtensionFunction {
  private:
   void Success();
   void Failure(const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateStartActivateFunction);
 };
 
 class NetworkingPrivateGetCaptivePortalStatusFunction
     : public ExtensionFunction {
  public:
   NetworkingPrivateGetCaptivePortalStatusFunction() {}
+
+  NetworkingPrivateGetCaptivePortalStatusFunction(
+      const NetworkingPrivateGetCaptivePortalStatusFunction&) = delete;
+  NetworkingPrivateGetCaptivePortalStatusFunction& operator=(
+      const NetworkingPrivateGetCaptivePortalStatusFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.getCaptivePortalStatus",
                              NETWORKINGPRIVATE_GETCAPTIVEPORTALSTATUS)
 
@@ -351,13 +416,17 @@ class NetworkingPrivateGetCaptivePortalStatusFunction
  private:
   void Success(const std::string& result);
   void Failure(const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateGetCaptivePortalStatusFunction);
 };
 
 class NetworkingPrivateUnlockCellularSimFunction : public ExtensionFunction {
  public:
   NetworkingPrivateUnlockCellularSimFunction() {}
+
+  NetworkingPrivateUnlockCellularSimFunction(
+      const NetworkingPrivateUnlockCellularSimFunction&) = delete;
+  NetworkingPrivateUnlockCellularSimFunction& operator=(
+      const NetworkingPrivateUnlockCellularSimFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.unlockCellularSim",
                              NETWORKINGPRIVATE_UNLOCKCELLULARSIM)
 
@@ -370,13 +439,17 @@ class NetworkingPrivateUnlockCellularSimFunction : public ExtensionFunction {
  private:
   void Success();
   void Failure(const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateUnlockCellularSimFunction);
 };
 
 class NetworkingPrivateSetCellularSimStateFunction : public ExtensionFunction {
  public:
   NetworkingPrivateSetCellularSimStateFunction() {}
+
+  NetworkingPrivateSetCellularSimStateFunction(
+      const NetworkingPrivateSetCellularSimStateFunction&) = delete;
+  NetworkingPrivateSetCellularSimStateFunction& operator=(
+      const NetworkingPrivateSetCellularSimStateFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.setCellularSimState",
                              NETWORKINGPRIVATE_SETCELLULARSIMSTATE)
 
@@ -389,14 +462,18 @@ class NetworkingPrivateSetCellularSimStateFunction : public ExtensionFunction {
  private:
   void Success();
   void Failure(const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateSetCellularSimStateFunction);
 };
 
 class NetworkingPrivateSelectCellularMobileNetworkFunction
     : public ExtensionFunction {
  public:
   NetworkingPrivateSelectCellularMobileNetworkFunction() {}
+
+  NetworkingPrivateSelectCellularMobileNetworkFunction(
+      const NetworkingPrivateSelectCellularMobileNetworkFunction&) = delete;
+  NetworkingPrivateSelectCellularMobileNetworkFunction& operator=(
+      const NetworkingPrivateSelectCellularMobileNetworkFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.selectCellularMobileNetwork",
                              NETWORKINGPRIVATE_SELECTCELLULARMOBILENETWORK)
 
@@ -409,14 +486,17 @@ class NetworkingPrivateSelectCellularMobileNetworkFunction
  private:
   void Success();
   void Failure(const std::string& error);
-
-  DISALLOW_COPY_AND_ASSIGN(
-      NetworkingPrivateSelectCellularMobileNetworkFunction);
 };
 
 class NetworkingPrivateGetGlobalPolicyFunction : public ExtensionFunction {
  public:
   NetworkingPrivateGetGlobalPolicyFunction() {}
+
+  NetworkingPrivateGetGlobalPolicyFunction(
+      const NetworkingPrivateGetGlobalPolicyFunction&) = delete;
+  NetworkingPrivateGetGlobalPolicyFunction& operator=(
+      const NetworkingPrivateGetGlobalPolicyFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.getGlobalPolicy",
                              NETWORKINGPRIVATE_GETGLOBALPOLICY)
 
@@ -425,14 +505,17 @@ class NetworkingPrivateGetGlobalPolicyFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateGetGlobalPolicyFunction);
 };
 
 class NetworkingPrivateGetCertificateListsFunction : public ExtensionFunction {
  public:
   NetworkingPrivateGetCertificateListsFunction() {}
+
+  NetworkingPrivateGetCertificateListsFunction(
+      const NetworkingPrivateGetCertificateListsFunction&) = delete;
+  NetworkingPrivateGetCertificateListsFunction& operator=(
+      const NetworkingPrivateGetCertificateListsFunction&) = delete;
+
   DECLARE_EXTENSION_FUNCTION("networkingPrivate.getCertificateLists",
                              NETWORKINGPRIVATE_GETCERTIFICATELISTS)
 
@@ -441,9 +524,6 @@ class NetworkingPrivateGetCertificateListsFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateGetCertificateListsFunction);
 };
 
 }  // namespace extensions

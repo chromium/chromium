@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -45,6 +44,9 @@ struct PutContext {
              uint64_t side_data_blob_size,
              int64_t trace_id);
 
+  PutContext(const PutContext&) = delete;
+  PutContext& operator=(const PutContext&) = delete;
+
   ~PutContext();
 
   // Provided by the constructor.
@@ -59,9 +61,6 @@ struct PutContext {
   // Provided while writing to the cache.
   ErrorCallback callback;
   ScopedWritableEntry cache_entry;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PutContext);
 };
 
 class CONTENT_EXPORT CacheStorageCacheEntryHandler {
@@ -77,6 +76,9 @@ class CONTENT_EXPORT CacheStorageCacheEntryHandler {
         base::WeakPtr<CacheStorageCacheEntryHandler> entry_handler,
         CacheStorageCacheHandle cache_handle,
         disk_cache::ScopedEntryPtr disk_cache_entry);
+
+    DiskCacheBlobEntry(const DiskCacheBlobEntry&) = delete;
+    DiskCacheBlobEntry& operator=(const DiskCacheBlobEntry&) = delete;
 
     int Read(scoped_refptr<net::IOBuffer> dst_buffer,
              CacheStorageCache::EntryIndex disk_cache_index,
@@ -99,13 +101,15 @@ class CONTENT_EXPORT CacheStorageCacheEntryHandler {
     disk_cache::ScopedEntryPtr disk_cache_entry_;
 
     SEQUENCE_CHECKER(sequence_checker_);
-
-    DISALLOW_COPY_AND_ASSIGN(DiskCacheBlobEntry);
   };
 
   scoped_refptr<DiskCacheBlobEntry> CreateDiskCacheBlobEntry(
       CacheStorageCacheHandle cache_handle,
       disk_cache::ScopedEntryPtr disk_cache_entry);
+
+  CacheStorageCacheEntryHandler(const CacheStorageCacheEntryHandler&) = delete;
+  CacheStorageCacheEntryHandler& operator=(
+      const CacheStorageCacheEntryHandler&) = delete;
 
   virtual ~CacheStorageCacheEntryHandler();
 
@@ -156,7 +160,6 @@ class CONTENT_EXPORT CacheStorageCacheEntryHandler {
   std::set<DiskCacheBlobEntry*> blob_entries_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageCacheEntryHandler);
 };
 
 }  // namespace content

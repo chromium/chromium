@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.ControlTest');
 goog.setTestOnly();
@@ -105,6 +97,7 @@ function noEventsDispatched() {
  * Returns the number of event listeners created by the control.
  * @param {Control} control Control whose event listers are to be counted.
  * @return {number} Number of event listeners.
+ * @suppress {visibility} suppression added to enable type checking
  */
 function getListenerCount(control) {
   return control.googUiComponentHandler_ ?
@@ -120,18 +113,13 @@ function getListenerCount(control) {
  * @return {boolean} Whether the event was allowed to proceed.
  */
 function fireMouseDownAndFocus(element, button = undefined) {
+  /** @suppress {checkTypes} suppression added to enable type checking */
   const result = testingEvents.fireMouseDownEvent(element, button);
   if (result) {
     // Browsers move focus for all buttons, not just the left button.
     element.focus();
   }
   return result;
-}
-
-/** @return {boolean} Whether we're on Mac Safari 3.x. */
-function isMacSafari3() {
-  return userAgent.WEBKIT && userAgent.MAC &&
-      !userAgent.isVersionOrHigher('527');
 }
 
 function assertClickSequenceFires(msg) {
@@ -189,6 +177,7 @@ testSuite({
         TagName.DIV, null, 'Hello', dom.createDom(TagName.B, null, 'World'));
     const testRenderer = new TestRenderer();
     const fakeDomHelper = {};
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const foo = new Control(content, testRenderer, fakeDomHelper);
     assertNotNull('Constructed object must not be null', foo);
     assertEquals('Content must have expected value', content, foo.getContent());
@@ -200,12 +189,17 @@ testSuite({
     foo.dispose();
   },
 
-  /** Tests {@link Control#getHandler}. */
+  /**
+   * Tests {@link Control#getHandler}.
+   * @suppress {visibility} suppression added
+   *      to enable type checking
+   */
   testGetHandler() {
     assertUndefined(
         'Event handler must be undefined before getHandler() ' +
             'is called',
         control.googUiComponentHandler_);
+    /** @suppress {visibility} suppression added to enable type checking */
     const handler = control.getHandler();
     assertNotNull('Event handler must not be null', handler);
     assertEquals(
@@ -258,12 +252,17 @@ testSuite({
         control.getElement(), control.getKeyEventTarget());
   },
 
-  /** Tests {@link Control#getKeyHandler}. */
+  /**
+   * Tests {@link Control#getKeyHandler}.
+   * @suppress {visibility} suppression
+   *      added to enable type checking
+   */
   testGetKeyHandler() {
     assertUndefined(
         'Key handler must be undefined before getKeyHandler() ' +
             'is called',
         control.keyHandler_);
+    /** @suppress {visibility} suppression added to enable type checking */
     const keyHandler = control.getKeyHandler();
     assertNotNull('Key handler must not be null', keyHandler);
     assertEquals(
@@ -516,7 +515,11 @@ testSuite({
     assertFalse('Control must be hidden', control.isVisible());
   },
 
-  /** Tests {@link Control#enterDocument}. */
+  /**
+   * Tests {@link Control#enterDocument}.
+   * @suppress {visibility} suppression
+   *      added to enable type checking
+   */
   testEnterDocument() {
     control.render(sandbox);
     assertTrue('Control must be in the document', control.isInDocument());
@@ -538,6 +541,7 @@ testSuite({
   /**
    * Tests {@link Control#enterDocument} for a control that doesn't
    * handle mouse events.
+   * @suppress {visibility} suppression added to enable type checking
    */
   testEnterDocumentForControlWithoutMouseHandling() {
     control.setHandleMouseEvents(false);
@@ -555,6 +559,7 @@ testSuite({
   /**
    * Tests {@link Control#enterDocument} for a control that isn't
    * focusable.
+   * @suppress {visibility} suppression added to enable type checking
    */
   testEnterDocumentForNonFocusableControl() {
     control.setSupportedState(Component.State.FOCUSED, false);
@@ -576,6 +581,7 @@ testSuite({
   /**
    * Tests {@link Control#enterDocument} for a control that doesn't
    * need to do any event handling.
+   * @suppress {visibility} suppression added to enable type checking
    */
   testEnterDocumentForControlWithoutEventHandlers() {
     control.setHandleMouseEvents(false);
@@ -591,7 +597,11 @@ testSuite({
         'Control must not have a key event handler', control.keyHandler_);
   },
 
-  /** Tests {@link Control#exitDocument}. */
+  /**
+   * Tests {@link Control#exitDocument}.
+   * @suppress {visibility} suppression
+   *      added to enable type checking
+   */
   testExitDocument() {
     control.render(sandbox);
     assertTrue('Control must be in the document', control.isInDocument());
@@ -608,15 +618,9 @@ testSuite({
         'Control\'s key event handler must be attached to its ' +
             'key event target',
         control.getKeyEventTarget(), control.getKeyHandler().element_);
-    // Expected to fail on Mac Safari prior to version 527.
-    expectedFailures.expectFailureFor(isMacSafari3());
-    try {
-      assertTrue(
-          'Control\'s element must support keyboard focus',
-          dom.isFocusableTabIndex(control.getKeyEventTarget()));
-    } catch (e) {
-      expectedFailures.handleException(e);
-    }
+    assertTrue(
+        'Control\'s element must support keyboard focus',
+        dom.isFocusableTabIndex(control.getKeyEventTarget()));
 
     control.exitDocument();
     assertFalse(
@@ -631,10 +635,16 @@ testSuite({
         dom.isFocusableTabIndex(control.getKeyEventTarget()));
   },
 
-  /** Tests {@link Control#dispose}. */
+  /**
+   * Tests {@link Control#dispose}.
+   * @suppress {visibility} suppression added to
+   *      enable type checking
+   */
   testDispose() {
     control.render(sandbox);
+    /** @suppress {visibility} suppression added to enable type checking */
     const handler = control.getHandler();
+    /** @suppress {visibility} suppression added to enable type checking */
     const keyHandler = control.getKeyHandler();
     control.dispose();
     assertFalse(
@@ -668,7 +678,11 @@ testSuite({
         control.getContent());
   },
 
-  /** Tests {@link Control#getContent}. */
+  /**
+   * Tests {@link Control#getContent}.
+   * @suppress {checkTypes} suppression added
+   *      to enable type checking
+   */
   testGetContentForDecoratedControl() {
     sandbox.innerHTML = '<div id="empty"></div>\n' +
         '<div id="text">Hello, world!</div>\n' +
@@ -1066,17 +1080,11 @@ testSuite({
     assertTrue('Control must be visible', control.isVisible());
 
     if (testFocus) {
-      // Expected to fail on Mac Safari prior to version 527.
-      expectedFailures.expectFailureFor(isMacSafari3());
-      try {
-        // Mac Safari currently doesn't support tabIndex on arbitrary
-        // elements.
-        assertTrue(
-            'Control must have a tab index',
-            dom.isFocusableTabIndex(control.getKeyEventTarget()));
-      } catch (e) {
-        expectedFailures.handleException(e);
-      }
+      // Mac Safari currently doesn't support tabIndex on arbitrary
+      // elements.
+      assertTrue(
+          'Control must have a tab index',
+          dom.isFocusableTabIndex(control.getKeyEventTarget()));
 
       // Visible, enabled, focusable control becoming hidden.
       control.getKeyEventTarget().focus();
@@ -1148,12 +1156,7 @@ testSuite({
       // Expected to fail on IE and Mac Safari 3.  IE calls focus handlers
       // asynchronously, and Mac Safari 3 doesn't support keyboard focus.
       expectedFailures.expectFailureFor(userAgent.IE);
-      expectedFailures.expectFailureFor(isMacSafari3());
-      try {
-        assertTrue('Control must be focused', control.isFocused());
-      } catch (e) {
-        expectedFailures.handleException(e);
-      }
+      assertTrue('Control must be focused', control.isFocused());
     }
 
     resetEventCount();
@@ -1226,7 +1229,6 @@ testSuite({
       // Expected to fail on IE and Mac Safari 3.  IE calls focus handlers
       // asynchronously, and Mac Safari 3 doesn't support keyboard focus.
       expectedFailures.expectFailureFor(userAgent.IE);
-      expectedFailures.expectFailureFor(isMacSafari3());
       try {
         assertTrue('Control must be focused', control.isFocused());
       } catch (e) {
@@ -1409,7 +1411,10 @@ testSuite({
         getEventCount(control, Component.EventType.DEACTIVATE));
   },
 
-  /** Tests disposing the control from an action event handler. */
+  /**
+     Tests disposing the control from an action event handler.
+     @suppress {visibility} suppression added to enable type checking
+   */
   testDisposeOnAction() {
     googEvents.listen(control, Component.EventType.ACTION, (e) => {
       control.dispose();
@@ -1612,7 +1617,11 @@ testSuite({
         'Controls must be in the default state', 0x00, control.getState());
   },
 
-  /** Tests {@link Control#hasState}. */
+  /**
+   * Tests {@link Control#hasState}.
+   * @suppress {checkTypes} suppression added
+   *      to enable type checking
+   */
   testHasState() {
     assertFalse(
         'Control must not be disabled',
@@ -1835,7 +1844,10 @@ testSuite({
     assertTrue('No events must have been dispatched', noEventsDispatched());
   },
 
-  /** Tests {@link Control#isTransitionAllowed}. */
+  /**
+   * Tests {@link Control#isTransitionAllowed}.
+   * @suppress {visibility} suppression added to enable type checking
+   */
   testIsTransitionAllowed() {
     assertTrue(
         'Control must support the HOVER state',
@@ -1921,7 +1933,10 @@ testSuite({
         getEventCount(control, Component.EventType.ACTION));
   },
 
-  /** Tests {@link Control#performActionInternal}. */
+  /**
+   * Tests {@link Control#performActionInternal}.
+   * @suppress {visibility} suppression added to enable type checking
+   */
   testPerformActionInternal() {
     assertFalse('Control must not be checked', control.isChecked());
     assertFalse('Control must not be selected', control.isSelected());
@@ -2199,6 +2214,10 @@ testSuite({
     resetEventCount();
   },
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testIsMouseEventWithinElement() {
     const child = dom.createElement(TagName.DIV);
     const parent = dom.createDom(TagName.DIV, null, child);
@@ -2230,7 +2249,6 @@ testSuite({
       // Expected to fail on IE and Mac Safari 3.  IE calls focus handlers
       // asynchronously, and Mac Safari 3 doesn't support keyboard focus.
       expectedFailures.expectFailureFor(userAgent.IE);
-      expectedFailures.expectFailureFor(isMacSafari3());
       try {
         assertTrue('Control must be focused', control.isFocused());
       } catch (e) {
@@ -2267,7 +2285,6 @@ testSuite({
       // Expected to fail on IE and Mac Safari 3.  IE calls focus handlers
       // asynchronously, and Mac Safari 3 doesn't support keyboard focus.
       expectedFailures.expectFailureFor(userAgent.IE);
-      expectedFailures.expectFailureFor(isMacSafari3());
       try {
         assertTrue('Control must be focused', control.isFocused());
       } catch (e) {
@@ -2290,7 +2307,6 @@ testSuite({
       // Expected to fail on IE and Mac Safari 3.  IE calls focus handlers
       // asynchronously, and Mac Safari 3 doesn't support keyboard focus.
       expectedFailures.expectFailureFor(userAgent.IE);
-      expectedFailures.expectFailureFor(isMacSafari3());
       try {
         assertTrue('Control must be focused', control.isFocused());
       } catch (e) {
@@ -2313,7 +2329,6 @@ testSuite({
       // Expected to fail on IE and Mac Safari 3.  IE calls focus handlers
       // asynchronously, and Mac Safari 3 doesn't support keyboard focus.
       expectedFailures.expectFailureFor(userAgent.IE);
-      expectedFailures.expectFailureFor(isMacSafari3());
       try {
         assertTrue('Control must be focused', control.isFocused());
       } catch (e) {
@@ -2346,7 +2361,6 @@ testSuite({
   //  // Expected to fail on IE and Mac Safari 3.  IE calls focus handlers
   //  // asynchronously, and Mac Safari 3 doesn't support keyboard focus.
   //  expectedFailures.expectFailureFor(goog.userAgent.IE);
-  //  expectedFailures.expectFailureFor(isMacSafari3());
   //  try {
   //    assertTrue('Control must be focused', control.isFocused());
   //  } catch (e) {
@@ -2359,6 +2373,7 @@ testSuite({
 
     // Override performActionInternal() for testing purposes.
     let actionPerformed = false;
+    /** @suppress {visibility} suppression added to enable type checking */
     control.performActionInternal = () => {
       actionPerformed = true;
       return true;
@@ -2426,6 +2441,10 @@ testSuite({
     control.setActive(true);
 
     // Scenario 4:  performActionInternal() returns false.
+    /**
+     * @suppress {visibility,duplicate} suppression added to enable type
+     * checking
+     */
     control.performActionInternal = () => {
       actionPerformed = true;
       return false;
@@ -2442,6 +2461,10 @@ testSuite({
         control.isActive());
     control.setHighlighted(false);
     actionPerformed = false;
+    /**
+     * @suppress {visibility,duplicate} suppression added to enable type
+     * checking
+     */
     control.performActionInternal = () => {
       actionPerformed = true;
       return true;

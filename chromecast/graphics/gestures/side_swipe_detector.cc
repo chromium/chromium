@@ -34,7 +34,7 @@ constexpr int kDefaultSideGestureStartHeight = 35;
 // occurs inside the gesture margin will be valid as long as it occurs within
 // the time specified by this threshold.
 constexpr base::TimeDelta kGestureMarginEventsTimeLimit =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 // Get the correct bottom gesture start height by checking both margin flags in
 // order, and then the default value if neither is set.

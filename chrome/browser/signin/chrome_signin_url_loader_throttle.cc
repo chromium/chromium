@@ -25,6 +25,9 @@ class URLLoaderThrottle::ThrottleRequestAdapter : public ChromeRequestAdapter {
                              headers_to_remove),
         throttle_(throttle) {}
 
+  ThrottleRequestAdapter(const ThrottleRequestAdapter&) = delete;
+  ThrottleRequestAdapter& operator=(const ThrottleRequestAdapter&) = delete;
+
   ~ThrottleRequestAdapter() override = default;
 
   // ChromeRequestAdapter
@@ -41,7 +44,7 @@ class URLLoaderThrottle::ThrottleRequestAdapter : public ChromeRequestAdapter {
   }
 
   GURL GetReferrerOrigin() const override {
-    return throttle_->request_referrer_.GetOrigin();
+    return throttle_->request_referrer_.DeprecatedGetOriginAsURL();
   }
 
   void SetDestructionCallback(base::OnceClosure closure) override {
@@ -51,8 +54,6 @@ class URLLoaderThrottle::ThrottleRequestAdapter : public ChromeRequestAdapter {
 
  private:
   URLLoaderThrottle* const throttle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottleRequestAdapter);
 };
 
 class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
@@ -60,6 +61,9 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
   ThrottleResponseAdapter(URLLoaderThrottle* throttle,
                           net::HttpResponseHeaders* headers)
       : throttle_(throttle), headers_(headers) {}
+
+  ThrottleResponseAdapter(const ThrottleResponseAdapter&) = delete;
+  ThrottleResponseAdapter& operator=(const ThrottleResponseAdapter&) = delete;
 
   ~ThrottleResponseAdapter() override = default;
 
@@ -74,7 +78,7 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
   }
 
   GURL GetOrigin() const override {
-    return throttle_->request_url_.GetOrigin();
+    return throttle_->request_url_.DeprecatedGetOriginAsURL();
   }
 
   const net::HttpResponseHeaders* GetHeaders() const override {
@@ -98,8 +102,6 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
  private:
   URLLoaderThrottle* const throttle_;
   net::HttpResponseHeaders* headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottleResponseAdapter);
 };
 
 // static

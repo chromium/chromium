@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests DOM breakpoints.`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('resources/dom-breakpoints.html');

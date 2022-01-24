@@ -43,6 +43,10 @@ int FakeDumpState(const std::string& minidump_path) {
 }  // namespace
 
 class MinidumpWriterTest : public testing::Test {
+ public:
+  MinidumpWriterTest(const MinidumpWriterTest&) = delete;
+  MinidumpWriterTest& operator=(const MinidumpWriterTest&) = delete;
+
  protected:
   MinidumpWriterTest() {}
   ~MinidumpWriterTest() override {}
@@ -78,8 +82,6 @@ class MinidumpWriterTest : public testing::Test {
  private:
   base::ScopedTempDir fake_home_dir_;
   std::unique_ptr<base::ScopedPathOverride> home_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpWriterTest);
 };
 
 TEST_F(MinidumpWriterTest, Write_FailsWithIncorrectMinidumpPath) {

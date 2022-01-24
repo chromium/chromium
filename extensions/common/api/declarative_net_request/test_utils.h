@@ -62,6 +62,7 @@ struct TestRuleQueryKeyValue : public DictionarySource {
 
   absl::optional<std::string> key;
   absl::optional<std::string> value;
+  absl::optional<bool> replace_only;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };
@@ -180,6 +181,10 @@ enum ConfigFlag {
 
   // Whether the "declarativeNetRequest" permission should be omitted.
   kConfig_OmitDeclarativeNetRequestPermission = 1 << 4,
+
+  // Whether the "declarativeNetRequestWithHostAccess" permission should be
+  // included.
+  kConfig_HasDelarativeNetRequestWithHostAccessPermission = 1 << 5,
 };
 
 // Describes a single extension ruleset.

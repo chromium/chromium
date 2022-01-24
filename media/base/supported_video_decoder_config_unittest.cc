@@ -13,7 +13,7 @@ class SupportedVideoDecoderConfigTest : public ::testing::Test {
  public:
   SupportedVideoDecoderConfigTest()
       : decoder_config_(
-            TestVideoConfig::NormalCodecProfile(kCodecH264,
+            TestVideoConfig::NormalCodecProfile(VideoCodec::kH264,
                                                 H264PROFILE_EXTENDED)) {
     supported_config_.profile_min = H264PROFILE_MIN;
     supported_config_.profile_max = H264PROFILE_MAX;

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/media_engagement_score.h"
@@ -61,6 +60,11 @@ class MediaEngagementScoreDetailsProviderImpl
     DCHECK(profile_);
     service_ = MediaEngagementService::Get(profile_);
   }
+
+  MediaEngagementScoreDetailsProviderImpl(
+      const MediaEngagementScoreDetailsProviderImpl&) = delete;
+  MediaEngagementScoreDetailsProviderImpl& operator=(
+      const MediaEngagementScoreDetailsProviderImpl&) = delete;
 
   ~MediaEngagementScoreDetailsProviderImpl() override {}
 
@@ -133,8 +137,6 @@ class MediaEngagementScoreDetailsProviderImpl
   MediaEngagementService* service_;
 
   mojo::Receiver<media::mojom::MediaEngagementScoreDetailsProvider> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementScoreDetailsProviderImpl);
 };
 
 }  // namespace

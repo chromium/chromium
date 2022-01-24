@@ -146,8 +146,8 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&,
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showTree(const blink::VisiblePosition*);
-void showTree(const blink::VisiblePosition&);
+void ShowTree(const blink::VisiblePosition*);
+void ShowTree(const blink::VisiblePosition&);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_VISIBLE_POSITION_H_

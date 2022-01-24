@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/filters/ffmpeg_aac_bitstream_converter.h"
 #include "media/filters/ffmpeg_demuxer.h"
@@ -20,6 +19,12 @@ const int kAacLowComplexityProfile = 1;
 
 // Class for testing the FFmpegAACBitstreamConverter.
 class FFmpegAACBitstreamConverterTest : public testing::Test {
+ public:
+  FFmpegAACBitstreamConverterTest(const FFmpegAACBitstreamConverterTest&) =
+      delete;
+  FFmpegAACBitstreamConverterTest& operator=(
+      const FFmpegAACBitstreamConverterTest&) = delete;
+
  protected:
   FFmpegAACBitstreamConverterTest() {
     // Minimal extra data header
@@ -45,8 +50,6 @@ class FFmpegAACBitstreamConverterTest : public testing::Test {
 
  private:
   uint8_t extradata_header_[2];
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegAACBitstreamConverterTest);
 };
 
 TEST_F(FFmpegAACBitstreamConverterTest, Conversion_Success) {

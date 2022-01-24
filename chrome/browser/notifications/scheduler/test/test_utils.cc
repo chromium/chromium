@@ -52,10 +52,10 @@ void AddImpressionTestData(const ImpressionTestData& data,
 }
 
 void AddImpressionTestData(
-    const std::vector<ImpressionTestData>& test_data,
+    const std::vector<ImpressionTestData>& test_data_vec,
     ImpressionHistoryTracker::ClientStates* client_states) {
   DCHECK(client_states);
-  for (const auto& test_data : test_data) {
+  for (const auto& test_data : test_data_vec) {
     auto client_state = std::make_unique<ClientState>();
     AddImpressionTestData(test_data, client_state.get());
     client_states->emplace(test_data.type, std::move(client_state));
@@ -63,10 +63,10 @@ void AddImpressionTestData(
 }
 
 void AddImpressionTestData(
-    const std::vector<ImpressionTestData>& test_data,
+    const std::vector<ImpressionTestData>& test_data_vec,
     std::vector<std::unique_ptr<ClientState>>* client_states) {
   DCHECK(client_states);
-  for (const auto& test_data : test_data) {
+  for (const auto& test_data : test_data_vec) {
     auto client_state = std::make_unique<ClientState>();
     AddImpressionTestData(test_data, client_state.get());
     client_states->emplace_back(std::move(client_state));

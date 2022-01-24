@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.Locale;
@@ -123,16 +124,26 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<TextWatcher> TEXT_CHANGED_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /** Specifies whether dark text colors should be used in the view. */
-    public static final WritableBooleanPropertyKey USE_DARK_TEXT_COLORS =
+    /**
+     * Specifies the omnibox theme. It can be light or dark because of a publisher defined color,
+     * incognito, or the default theme that follows dynamic colors.
+     */
+    public static final WritableIntPropertyKey OMNIBOX_THEME = new WritableIntPropertyKey();
+
+    /**
+     * Specifies whether incognito colors should be used in the view, meaning baseline dark theme
+     *  without dynamic colors.
+     */
+    public static final WritableBooleanPropertyKey INCOGNITO_COLORS_ENABLED =
             new WritableBooleanPropertyKey();
 
     /** The delegate that provides Window capabilities to the view. */
     public static final WritableObjectPropertyKey<WindowDelegate> WINDOW_DELEGATE =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {ACTION_MODE_CALLBACK,
-            ALLOW_FOCUS, AUTOCOMPLETE_TEXT, DELEGATE, FOCUS_CHANGE_CALLBACK, SHOW_CURSOR,
-            TEXT_CONTEXT_MENU_DELEGATE, TEXT_STATE, URL_DIRECTION_LISTENER,
-            URL_TEXT_CHANGE_LISTENER, TEXT_CHANGED_LISTENER, USE_DARK_TEXT_COLORS, WINDOW_DELEGATE};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {ACTION_MODE_CALLBACK, ALLOW_FOCUS, AUTOCOMPLETE_TEXT, DELEGATE,
+                    FOCUS_CHANGE_CALLBACK, SHOW_CURSOR, TEXT_CONTEXT_MENU_DELEGATE, TEXT_STATE,
+                    URL_DIRECTION_LISTENER, URL_TEXT_CHANGE_LISTENER, TEXT_CHANGED_LISTENER,
+                    OMNIBOX_THEME, INCOGNITO_COLORS_ENABLED, WINDOW_DELEGATE};
 }

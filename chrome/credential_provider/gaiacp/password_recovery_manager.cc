@@ -42,11 +42,11 @@ namespace credential_provider {
 
 const base::TimeDelta
     PasswordRecoveryManager::kDefaultEscrowServiceEncryptionKeyRequestTimeout =
-        base::TimeDelta::FromMilliseconds(12000);
+        base::Milliseconds(12000);
 
 const base::TimeDelta
     PasswordRecoveryManager::kDefaultEscrowServiceDecryptionKeyRequestTimeout =
-        base::TimeDelta::FromMilliseconds(3000);
+        base::Milliseconds(3000);
 
 namespace {
 
@@ -473,7 +473,7 @@ HRESULT PasswordRecoveryManager::StoreWindowsPasswordIfNeeded(
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
 
   if (!policy) {
-    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
     return hr;
   }

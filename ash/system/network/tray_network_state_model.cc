@@ -61,6 +61,10 @@ class TrayNetworkStateModel::Impl
     remote_cros_network_config_->AddObserver(
         cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
   }
+
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
+
   ~Impl() override = default;
 
   void GetActiveNetworks() {
@@ -126,8 +130,6 @@ class TrayNetworkStateModel::Impl
       remote_cros_network_config_;
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_observer_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 TrayNetworkStateModel::TrayNetworkStateModel()
@@ -262,7 +264,7 @@ void TrayNetworkStateModel::OnGetVirtualNetworks(
 void TrayNetworkStateModel::NotifyNetworkListChanged() {
   if (timer_.IsRunning())
     return;
-  timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(update_frequency_),
+  timer_.Start(FROM_HERE, base::Milliseconds(update_frequency_),
                base::BindOnce(&TrayNetworkStateModel::SendNetworkListChanged,
                               base::Unretained(this)));
 }

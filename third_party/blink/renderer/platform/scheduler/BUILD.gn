@@ -8,6 +8,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 blink_platform_sources("scheduler") {
   sources = [
+    "common/back_forward_cache_disabling_feature_tracker.cc",
+    "common/back_forward_cache_disabling_feature_tracker.h",
     "common/cancelable_closure_holder.cc",
     "common/cancelable_closure_holder.h",
     "common/cooperative_scheduling_manager.cc",
@@ -37,6 +39,7 @@ blink_platform_sources("scheduler") {
     "common/thread_load_tracker.cc",
     "common/thread_load_tracker.h",
     "common/thread_scheduler.cc",
+    "common/thread_scheduler_impl.cc",
     "common/thread_scheduler_impl.h",
     "common/thread_type.cc",
     "common/throttling/budget_pool.cc",
@@ -62,8 +65,6 @@ blink_platform_sources("scheduler") {
     "main_thread/attribution_group.h",
     "main_thread/auto_advancing_virtual_time_domain.cc",
     "main_thread/auto_advancing_virtual_time_domain.h",
-    "main_thread/compositor_priority_experiments.cc",
-    "main_thread/compositor_priority_experiments.h",
     "main_thread/deadline_task_runner.cc",
     "main_thread/deadline_task_runner.h",
     "main_thread/find_in_page_budget_pool_controller.cc",
@@ -91,8 +92,6 @@ blink_platform_sources("scheduler") {
     "main_thread/main_thread_web_scheduling_task_queue_impl.h",
     "main_thread/memory_purge_manager.cc",
     "main_thread/memory_purge_manager.h",
-    "main_thread/non_waking_time_domain.cc",
-    "main_thread/non_waking_time_domain.h",
     "main_thread/page_scheduler_impl.cc",
     "main_thread/page_scheduler_impl.h",
     "main_thread/page_visibility_state.cc",
@@ -151,7 +150,8 @@ blink_platform_sources("scheduler") {
     "worker/non_main_thread_web_scheduling_task_queue_impl.h",
     "worker/worker_metrics_helper.cc",
     "worker/worker_metrics_helper.h",
-    "worker/worker_scheduler.cc",
+    "worker/worker_scheduler_impl.cc",
+    "worker/worker_scheduler_impl.h",
     "worker/worker_scheduler_proxy.cc",
     "worker/worker_scheduler_proxy.h",
     "worker/worker_thread.cc",
@@ -216,6 +216,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "common/back_forward_cache_disabling_feature_tracker_unittest.cc",
     "common/cooperative_scheduling_manager_unittest.cc",
     "common/idle_helper_unittest.cc",
     "common/metrics_helper_unittest.cc",
@@ -242,8 +243,8 @@ source_set("unit_tests") {
     "main_thread/pending_user_input_unittest.cc",
     "main_thread/render_widget_signals_unittest.cc",
     "main_thread/user_model_unittest.cc",
+    "worker/worker_scheduler_impl_unittest.cc",
     "worker/worker_scheduler_proxy_unittest.cc",
-    "worker/worker_scheduler_unittest.cc",
     "worker/worker_thread_scheduler_unittest.cc",
     "worker/worker_thread_unittest.cc",
   ]

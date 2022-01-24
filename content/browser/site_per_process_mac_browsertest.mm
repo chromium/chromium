@@ -29,6 +29,10 @@ namespace {
 class TextInputClientMacHelper {
  public:
   TextInputClientMacHelper() {}
+
+  TextInputClientMacHelper(const TextInputClientMacHelper&) = delete;
+  TextInputClientMacHelper& operator=(const TextInputClientMacHelper&) = delete;
+
   ~TextInputClientMacHelper() {}
 
   void WaitForStringFromRange(RenderWidgetHost* rwh, const gfx::Range& range) {
@@ -69,8 +73,6 @@ class TextInputClientMacHelper {
   std::string word_;
   gfx::Point point_;
   scoped_refptr<MessageLoopRunner> loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputClientMacHelper);
 };
 
 }  // namespace
@@ -89,11 +91,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
   EXPECT_TRUE(NavigateToURLFromRenderer(
       child, embedded_test_server()->GetURL("b.com", "/title1.html")));
-  web_contents()->GetFrameTree()->SetFocusedFrame(
+  web_contents()->GetPrimaryFrameTree().SetFocusedFrame(
       child, web_contents()->GetSiteInstance());
 
   RenderWidgetHost* child_widget_host =
@@ -119,10 +121,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
                        GetStringFromRangeAndPointMainFrame) {
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   RenderWidgetHost* widget_host =
       root->current_frame_host()->GetRenderWidgetHost();
-  web_contents()->GetFrameTree()->SetFocusedFrame(
+  web_contents()->GetPrimaryFrameTree().SetFocusedFrame(
       root, web_contents()->GetSiteInstance());
   TextInputClientMacHelper helper;
 
@@ -149,8 +151,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   ASSERT_EQ(1U, root->child_count());
 
   FrameTreeNode* child_iframe_node = root->child_at(0);
@@ -291,7 +293,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   WebContentsImpl* contents = web_contents();
-  FrameTreeNode* root = contents->GetFrameTree()->root();
+  FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
   ASSERT_EQ(1U, root->child_count());
 
   GURL frame_url(

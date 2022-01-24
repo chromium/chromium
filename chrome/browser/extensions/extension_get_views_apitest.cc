@@ -7,7 +7,13 @@
 
 namespace extensions {
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, GetViews) {
+// Failed run on ChromeOS CI builder. https://crbug.com/1245240
+#if defined(OS_CHROMEOS)
+#define MAYBE_GetViews DISABLED_GetViews
+#else
+#define MAYBE_GetViews GetViews
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_GetViews) {
   ASSERT_TRUE(RunExtensionTest("get_views")) << message_;
 }
 

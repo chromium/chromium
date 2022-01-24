@@ -97,6 +97,10 @@ Let's see how it works without animations.
    encapsulated in [CSSPaintWorkletInput](../../core/css/cssom/css_paint_worklet_input.h).
    The input arguments contain necessary information for the CC raster phase.
 
+   In our code, this step is executed in `CSSPaintValue::GetImage`, and we can
+   trace its call sites to find out when and where this is called during the
+   main thread paint. This function creates a `PaintWorkletDeferredImage`.
+
 1. During commit, the `PaintWorkletInput` is passed to CC. Specifically, the
    `PictureLayerImpl` owns `PaintWorkletRecordMap`, which is a map from
    `PaintWorkletInput` to `std::pair<PaintImage::Id, PaintRecord>`. The
@@ -104,6 +108,14 @@ Let's see how it works without animations.
    the actual content of the `PaintWorkletDeferredImage`, which will be
    generated at CC raster time. Initially the `PaintRecord` is `nullptr` which
    indicates that it needs to be produced.
+
+   But how does the `PaintWorkletInput` gets passed to CC? During main thread
+   paint, we will generate a set of `DisplayItemList` for each layer, and each
+   `DisplayItemList` contains a `DiscardableImageMap`. If a
+   `DiscardableImageMap` is for paint worklet, then it will contain a vector
+   of `PaintWorkletinputWithImageId`, where each one is a pair of
+   `PaintWorkletInput` and `PaintImage::Id`. Now if we look at the
+   `PaintWorkletDeferredImage` class, we can see it contains a `PaintImage`.
 
 1. After commit, we need to update the pending tree. This happens in
    `LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation`.
@@ -158,8 +170,29 @@ native properties in the future.
    `PaintWorkletInput::PropertyKey` which can be used to identify a
    `PaintWorkletInput`. Then we can use the `PaintWorkletInput` to find its
    associated `PaintRecord` in the `PictureLayerImpl`'s `PaintWorkletRecordMap`,
-   invalidate it and update its content when we update the pending tree via
-   `LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation`.
+   invalidate it and update its content when we update the pending tree. More
+   specifically, this happens in
+   `AnimatedPaintWorkletTracker::InvalidatePaintWorkletsOnPendingTree`, and
+   `AnimatedPaintWorkletTracker::InvalidatePaintWorkletsOnPendingTree` is
+   called by `LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation`
+   which does the impl-side invalidation.
+
+Some other differences compared with the main-thread workflow.
+
+When `addModule` is executed, we are creating two `PaintWorkletGlobalScope` on
+the main thread, and two on the worklet thread. Please refer to the two different
+Create function in the [PaintWorkletGlobalScope](paint_worklet_global_scope.h)
+class for details. The two global scopes on the worklet thread are created when
+the worklet thread is initialized.
+
+`registerPaint` is executed on each PaintWorkletGlobalScope. That means, twice
+on the main thread, and twice on the worklet thread. In this case, we need to
+make sure that the `CSSPaintDefinition` created on the main thread and the
+worklet thread are consistent with each other. Once that is verified, we then
+register the CSSPaintDefinition to the DocumentPaintDefinition. For the main
+thread version, this is happening at `PaintWorklet::RegisterCSSPaintDefinition`.
+For the worklet thread, this happens at
+`PaintWorkletProxyClient::RegisterCSSPaintDefinition`.
 
 ## Implementation
 

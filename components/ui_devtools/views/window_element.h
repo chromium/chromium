@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_VIEWS_WINDOW_ELEMENT_H_
 #define COMPONENTS_UI_DEVTOOLS_VIEWS_WINDOW_ELEMENT_H_
 
-#include "base/macros.h"
 #include "components/ui_devtools/views/ui_element_with_metadata.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"

@@ -5,11 +5,9 @@
 #include "chrome/browser/offline_pages/android/downloads/offline_page_infobar_delegate.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/download/android/download_dialog_utils.h"
 #include "chrome/browser/ui/android/infobars/duplicate_download_infobar.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/url_formatter/url_formatter.h"
-#include "ui/gfx/text_elider.h"
 
 namespace offline_pages {
 
@@ -18,28 +16,11 @@ void OfflinePageInfoBarDelegate::Create(base::OnceClosure confirm_continuation,
                                         const GURL& page_to_download,
                                         bool exists_duplicate_request,
                                         content::WebContents* web_contents) {
-  // The URL could be very long, especially since we are including query
-  // parameters, path, etc.  Elide the URL to a shorter length because the
-  // infobar cannot handle scrolling and completely obscures Chrome if the text
-  // is too long.
-  //
-  // 150 was chosen as it does not cause the infobar to overrun the screen on a
-  // test Android One device with 480 x 854 resolution.  At this resolution the
-  // infobar covers approximately 2/3 of the screen, and all controls are still
-  // visible.
-  //
-  // TODO(dewittj): Display something better than an elided URL string in the
-  // infobar.
-  const size_t kMaxLengthOfDisplayedPageUrl = 150;
-
-  std::u16string formatted_url = url_formatter::FormatUrl(page_to_download);
-  std::u16string elided_url;
-  gfx::ElideString(formatted_url, kMaxLengthOfDisplayedPageUrl, &elided_url);
-
   infobars::ContentInfoBarManager::FromWebContents(web_contents)
       ->AddInfoBar(DuplicateDownloadInfoBar::CreateInfoBar(
           base::WrapUnique(new OfflinePageInfoBarDelegate(
-              std::move(confirm_continuation), base::UTF16ToUTF8(elided_url),
+              std::move(confirm_continuation),
+              DownloadDialogUtils::GetDisplayURLForPageURL(page_to_download),
               page_to_download, exists_duplicate_request))));
 }
 
@@ -53,7 +34,10 @@ OfflinePageInfoBarDelegate::OfflinePageInfoBarDelegate(
     : confirm_continuation_(std::move(confirm_continuation)),
       page_name_(page_name),
       page_to_download_(page_to_download),
-      duplicate_request_exists_(duplicate_request_exists) {}
+      duplicate_request_exists_(duplicate_request_exists) {
+  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
+      true, DuplicateDownloadInfobarEvent::kShown);
+}
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 OfflinePageInfoBarDelegate::GetIdentifier() const {
@@ -68,10 +52,14 @@ bool OfflinePageInfoBarDelegate::EqualsDelegate(
 }
 
 bool OfflinePageInfoBarDelegate::Cancel() {
+  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
+      true, DuplicateDownloadInfobarEvent::kCanceled);
   return true;
 }
 
 bool OfflinePageInfoBarDelegate::Accept() {
+  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
+      true, DuplicateDownloadInfobarEvent::kAccepted);
   std::move(confirm_continuation_).Run();
   return true;
 }
@@ -100,6 +88,11 @@ bool OfflinePageInfoBarDelegate::DuplicateRequestExists() const {
 OfflinePageInfoBarDelegate*
 OfflinePageInfoBarDelegate::AsOfflinePageInfoBarDelegate() {
   return this;
+}
+
+void OfflinePageInfoBarDelegate::InfoBarDismissed() {
+  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
+      true, DuplicateDownloadInfobarEvent::kDismissed);
 }
 
 }  // namespace offline_pages

@@ -6,6 +6,7 @@
 
 #include "base/values.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -20,6 +21,7 @@ const char kUrlGoogleGlob[] = "www.google.com/c/*/d";
 const char kUrlGmailLiteral[] = "www.gmail.com/a";
 const char kUrlGmailPrefix[] = "www.gmail.com/b/*";
 const char kUrlGmailGlob[] = "www.gmail.com/c/*/d";
+const char kAppId[] = "aaa";
 }  // namespace
 
 class IntentFilterUtilTest : public testing::Test {
@@ -30,6 +32,10 @@ class IntentFilterUtilTest : public testing::Test {
       std::string path,
       apps::mojom::PatternMatchType pattern) {
     auto intent_filter = apps::mojom::IntentFilter::New();
+
+    apps_util::AddSingleValueCondition(
+        apps::mojom::ConditionType::kAction, apps_util::kIntentActionView,
+        apps::mojom::PatternMatchType::kNone, intent_filter);
 
     apps_util::AddSingleValueCondition(
         apps::mojom::ConditionType::kScheme, scheme,
@@ -217,4 +223,150 @@ TEST_F(IntentFilterUtilTest, HttpAndHttpsSchemes) {
 
   EXPECT_EQ(links.size(), 1u);
   EXPECT_EQ(links.count(kUrlGoogleLiteral), 1u);
+}
+
+TEST_F(IntentFilterUtilTest, PathsWithNoSlash) {
+  auto intent_filter = apps::mojom::IntentFilter::New();
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kScheme, url::kHttpScheme,
+      apps::mojom::PatternMatchType::kNone, intent_filter);
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kHost, "m.youtube.com",
+      apps::mojom::PatternMatchType::kNone, intent_filter);
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kPattern, ".*",
+      apps::mojom::PatternMatchType::kGlob, intent_filter);
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kPattern, ".*/foo",
+      apps::mojom::PatternMatchType::kGlob, intent_filter);
+
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kPattern, "",
+      apps::mojom::PatternMatchType::kPrefix, intent_filter);
+
+  std::set<std::string> links =
+      apps_util::AppManagementGetSupportedLinks(intent_filter);
+
+  EXPECT_EQ(links.size(), 3u);
+  EXPECT_EQ(links.count("m.youtube.com/*"), 1u);
+  EXPECT_EQ(links.count("m.youtube.com/.*"), 1u);
+  EXPECT_EQ(links.count("m.youtube.com/.*/foo"), 1u);
+}
+
+TEST_F(IntentFilterUtilTest, IsSupportedLink) {
+  auto filter = MakeFilter("https", "www.google.com", "/maps",
+                           apps::mojom::PatternMatchType::kLiteral);
+  ASSERT_TRUE(apps_util::IsSupportedLinkForApp(kAppId, filter));
+
+  filter = MakeFilter("https", "www.google.com", ".*",
+                      apps::mojom::PatternMatchType::kGlob);
+  ASSERT_TRUE(apps_util::IsSupportedLinkForApp(kAppId, filter));
+}
+
+TEST_F(IntentFilterUtilTest, NotSupportedLink) {
+  ASSERT_FALSE(apps_util::IsSupportedLinkForApp(
+      kAppId, apps_util::CreateIntentFilterForMimeType("image/png")));
+
+  auto browser_filter = apps::mojom::IntentFilter::New();
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kAction, apps_util::kIntentActionView,
+      apps::mojom::PatternMatchType::kNone, browser_filter);
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kScheme, "https",
+      apps::mojom::PatternMatchType::kNone, browser_filter);
+  ASSERT_FALSE(apps_util::IsSupportedLinkForApp(kAppId, browser_filter));
+
+  auto host_filter = apps::mojom::IntentFilter::New();
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kAction, apps_util::kIntentActionView,
+      apps::mojom::PatternMatchType::kNone, host_filter);
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kScheme, "https",
+      apps::mojom::PatternMatchType::kNone, host_filter);
+  apps_util::AddSingleValueCondition(
+      apps::mojom::ConditionType::kHost, "www.example.com",
+      apps::mojom::PatternMatchType::kNone, host_filter);
+  ASSERT_FALSE(apps_util::IsSupportedLinkForApp(kAppId, browser_filter));
+}
+
+TEST_F(IntentFilterUtilTest, HostMatchOverlap) {
+  auto google_domain_filter = MakeFilter(
+      "https", "www.google.com", "/", apps::mojom::PatternMatchType::kLiteral);
+
+  auto maps_domain_filter = MakeFilter("https", "maps.google.com", "/",
+                                       apps::mojom::PatternMatchType::kLiteral);
+
+  ASSERT_FALSE(
+      apps_util::FiltersHaveOverlap(maps_domain_filter, google_domain_filter));
+
+  apps_util::AddConditionValue(
+      apps::mojom::ConditionType::kHost, "www.google.com",
+      apps::mojom::PatternMatchType::kNone, maps_domain_filter);
+
+  ASSERT_TRUE(
+      apps_util::FiltersHaveOverlap(maps_domain_filter, google_domain_filter));
+}
+
+TEST_F(IntentFilterUtilTest, PatternMatchOverlap) {
+  auto literal_pattern_filter1 = MakeFilter(
+      "https", "www.example.com", "/", apps::mojom::PatternMatchType::kLiteral);
+  apps_util::AddConditionValue(apps::mojom::ConditionType::kPattern, "/foo",
+                               apps::mojom::PatternMatchType::kLiteral,
+                               literal_pattern_filter1);
+
+  auto literal_pattern_filter2 =
+      MakeFilter("https", "www.example.com", "/foo/bar",
+                 apps::mojom::PatternMatchType::kLiteral);
+  apps_util::AddConditionValue(apps::mojom::ConditionType::kPattern, "/bar",
+                               apps::mojom::PatternMatchType::kLiteral,
+                               literal_pattern_filter2);
+
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(literal_pattern_filter1,
+                                             literal_pattern_filter2));
+
+  auto root_prefix_filter = MakeFilter("https", "www.example.com", "/",
+                                       apps::mojom::PatternMatchType::kPrefix);
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(root_prefix_filter,
+                                            literal_pattern_filter1));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(root_prefix_filter,
+                                            literal_pattern_filter2));
+
+  auto bar_prefix_filter = MakeFilter("https", "www.example.com", "/bar",
+                                      apps::mojom::PatternMatchType::kPrefix);
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(bar_prefix_filter,
+                                             literal_pattern_filter1));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(bar_prefix_filter,
+                                            literal_pattern_filter2));
+  ASSERT_TRUE(
+      apps_util::FiltersHaveOverlap(bar_prefix_filter, root_prefix_filter));
+
+  auto foo_prefix_filter = MakeFilter("https", "www.example.com", "/foo",
+                                      apps::mojom::PatternMatchType::kPrefix);
+  ASSERT_FALSE(
+      apps_util::FiltersHaveOverlap(foo_prefix_filter, bar_prefix_filter));
+}
+
+TEST_F(IntentFilterUtilTest, PatternGlobAndLiteralOverlap) {
+  auto literal_pattern_filter1 =
+      MakeFilter("https", "maps.google.com", "/u/0/maps",
+                 apps::mojom::PatternMatchType::kLiteral);
+  auto literal_pattern_filter2 =
+      MakeFilter("https", "maps.google.com", "/maps",
+                 apps::mojom::PatternMatchType::kLiteral);
+
+  auto glob_pattern_filter =
+      MakeFilter("https", "maps.google.com", "/u/.*/maps",
+                 apps::mojom::PatternMatchType::kGlob);
+
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(literal_pattern_filter1,
+                                            glob_pattern_filter));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(glob_pattern_filter,
+                                            literal_pattern_filter1));
+
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(literal_pattern_filter2,
+                                             glob_pattern_filter));
 }

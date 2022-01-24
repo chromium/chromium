@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <sstream>
 
 #include "base/strings/string_piece.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,6 +40,10 @@ class TestCrashKeyImplementation : public CrashKeyImplementation {
 
   void Clear(CrashKeyString* crash_key) override {
     ASSERT_EQ(1u, data_.erase(crash_key->name));
+  }
+
+  void OutputCrashKeysToStream(std::ostream& out) override {
+    out << "Got " << data_.size() << " crash keys.";
   }
 
  private:
@@ -79,9 +84,15 @@ TEST_F(CrashLoggingTest, Basic) {
 
   SetCrashKeyString(crash_key, "value");
   EXPECT_THAT(data(), ElementsAre(Pair("test", "value")));
+  std::ostringstream stream;
+  OutputCrashKeysToStream(stream);
+  EXPECT_EQ("Got 1 crash keys.", stream.str());
 
   ClearCrashKeyString(crash_key);
   EXPECT_THAT(data(), IsEmpty());
+  std::ostringstream stream2;
+  OutputCrashKeysToStream(stream2);
+  EXPECT_EQ("Got 0 crash keys.", stream2.str());
 }
 
 // Verify that the macros are properly setting crash keys.
@@ -130,6 +141,10 @@ TEST_F(CrashLoggingTest, MultipleCrashKeysInSameScope) {
 
   EXPECT_THAT(data(), ElementsAre(Pair("category-bool-value", "false"),
                                   Pair("category-int-value", "1")));
+
+  std::ostringstream stream;
+  OutputCrashKeysToStream(stream);
+  EXPECT_EQ("Got 2 crash keys.", stream.str());
 }
 
 }  // namespace debug

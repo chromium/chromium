@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/test_message_loop.h"
 #include "media/base/decryptor.h"
@@ -37,6 +36,10 @@ namespace media {
 class MojoDecryptorTest : public ::testing::Test {
  public:
   MojoDecryptorTest() = default;
+
+  MojoDecryptorTest(const MojoDecryptorTest&) = delete;
+  MojoDecryptorTest& operator=(const MojoDecryptorTest&) = delete;
+
   ~MojoDecryptorTest() override = default;
 
   void SetWriterCapacity(uint32_t capacity) { writer_capacity_ = capacity; }
@@ -72,8 +75,7 @@ class MojoDecryptorTest : public ::testing::Test {
     // We don't care about the encrypted data, just create a simple VideoFrame.
     scoped_refptr<VideoFrame> frame(
         MojoSharedBufferVideoFrame::CreateDefaultForTesting(
-            PIXEL_FORMAT_I420, gfx::Size(100, 100),
-            base::TimeDelta::FromSeconds(100)));
+            PIXEL_FORMAT_I420, gfx::Size(100, 100), base::Seconds(100)));
     frame->AddDestructionObserver(base::BindOnce(
         &MojoDecryptorTest::OnFrameDestroyed, base::Unretained(this)));
 
@@ -87,7 +89,7 @@ class MojoDecryptorTest : public ::testing::Test {
                          Decryptor::AudioDecodeCB audio_decode_cb) {
     const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_4_0;
     const int kSampleRate = 48000;
-    const base::TimeDelta start_time = base::TimeDelta::FromSecondsD(1000.0);
+    const base::TimeDelta start_time = base::Seconds(1000.0);
     auto audio_buffer = MakeAudioBuffer<float>(
         kSampleFormatPlanarF32, kChannelLayout,
         ChannelLayoutToChannelCount(kChannelLayout), kSampleRate, 0.0f, 1.0f,
@@ -126,9 +128,6 @@ class MojoDecryptorTest : public ::testing::Test {
 
   // The actual Decryptor object used by |mojo_decryptor_service_|.
   std::unique_ptr<StrictMock<MockDecryptor>> decryptor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoDecryptorTest);
 };
 
 // DecryptAndDecodeAudio() and ResetDecoder(kAudio) immediately.

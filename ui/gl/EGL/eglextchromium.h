@@ -4,8 +4,8 @@
 
 // This file contains Chromium-specific EGL extensions declarations.
 
-#ifndef GPU_EGL_EGLEXTCHROMIUM_H_
-#define GPU_EGL_EGLEXTCHROMIUM_H_
+#ifndef UI_GL_EGL_EGLEXTCHROMIUM_H_
+#define UI_GL_EGL_EGLEXTCHROMIUM_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,4 +47,4 @@ typedef EGLBoolean(EGLAPIENTRYP PFNEGLGETMSCRATEANGLEPROC)(EGLDisplay dpy,
 }
 #endif
 
-#define  // GPU_EGL_EGLEXTCHROMIUM_H_
+#define  // UI_GL_EGL_EGLEXTCHROMIUM_H_

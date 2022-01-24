@@ -16,6 +16,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/google/google_brand.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -67,7 +68,8 @@ RLZTrackerDelegateImpl::GetURLLoaderFactory() {
 }
 
 bool RLZTrackerDelegateImpl::GetBrand(std::string* brand) {
-  return ios::google_brand::GetBrand(brand);
+  brand->assign(ios::provider::GetBrandCode());
+  return true;
 }
 
 bool RLZTrackerDelegateImpl::IsBrandOrganic(const std::string& brand) {

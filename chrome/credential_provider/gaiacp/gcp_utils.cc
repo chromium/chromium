@@ -34,9 +34,9 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -93,10 +93,8 @@ constexpr wchar_t kDefaultMdmUrl[] =
     L"https://deviceenrollmentforwindows.googleapis.com/v1/discovery";
 
 constexpr int kMaxNumConsecutiveUploadDeviceFailures = 3;
-const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh =
-    base::TimeDelta::FromDays(1);
-const base::TimeDelta kMaxTimeDeltaSinceLastExperimentsFetch =
-    base::TimeDelta::FromDays(1);
+const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh = base::Days(1);
+const base::TimeDelta kMaxTimeDeltaSinceLastExperimentsFetch = base::Days(1);
 
 // Path elements for the path where the experiments are stored on disk.
 const wchar_t kGcpwExperimentsDirectory[] = L"Experiments";
@@ -471,8 +469,8 @@ HRESULT WaitForProcess(base::win::ScopedHandle::Handle process_handle,
       }
       case WAIT_FAILED:
       default: {
-        HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
-        LOGFN(ERROR) << "WaitForMultipleObjectsEx hr=" << putHR(hr);
+        HRESULT last_error_hr = HRESULT_FROM_WIN32(::GetLastError());
+        LOGFN(ERROR) << "WaitForMultipleObjectsEx hr=" << putHR(last_error_hr);
         is_done = true;
         break;
       }
@@ -715,7 +713,7 @@ HRESULT GetEntryPointArgumentForRunDll(HINSTANCE dll_handle,
   short_length =
       ::GetShortPathName(path_to_dll.value().c_str(), short_path, short_length);
   if (short_length >= base::size(short_path)) {
-    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "GetShortPathNameW hr=" << putHR(hr);
     return hr;
   }
@@ -1018,8 +1016,7 @@ HRESULT SearchForListInStringDictUTF8(
   if (value && value->is_list()) {
     for (const base::Value& entry : value->GetList()) {
       if (entry.FindKey(list_key) && entry.FindKey(list_key)->is_string()) {
-        std::string value = entry.FindKey(list_key)->GetString();
-        output->push_back(value);
+        output->push_back(entry.FindKey(list_key)->GetString());
       } else {
         return E_FAIL;
       }
@@ -1371,7 +1368,7 @@ base::TimeDelta GetTimeDeltaSinceLastFetch(const std::wstring& sid,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds() -
       last_fetch_millis_int64;
 
-  return base::TimeDelta::FromMilliseconds(time_delta_from_last_fetch_ms);
+  return base::Milliseconds(time_delta_from_last_fetch_ms);
 }
 
 }  // namespace credential_provider

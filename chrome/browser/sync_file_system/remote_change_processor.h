@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_REMOTE_CHANGE_PROCESSOR_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
 
@@ -40,6 +39,10 @@ class RemoteChangeProcessor {
                               const FileChangeList& changes)>;
 
   RemoteChangeProcessor() {}
+
+  RemoteChangeProcessor(const RemoteChangeProcessor&) = delete;
+  RemoteChangeProcessor& operator=(const RemoteChangeProcessor&) = delete;
+
   virtual ~RemoteChangeProcessor() {}
 
   // This must be called before processing the change for the |url|.
@@ -80,9 +83,6 @@ class RemoteChangeProcessor {
   virtual void RecordFakeLocalChange(const storage::FileSystemURL& url,
                                      const FileChange& change,
                                      SyncStatusCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteChangeProcessor);
 };
 
 }  // namespace sync_file_system

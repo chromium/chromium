@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="56dp"
         android:layout_marginTop="16dp"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Light" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline.Light" />
 
     <VideoView
         android:id="@+id/video_player"
@@ -71,7 +71,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/fast_forward_hint"
-                    android:textAppearance="@style/TextAppearance.TextMedium.Primary.Light" />
+                    android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline.Light" />
                 <ImageView
                     android:id="@+id/fast_forward"
                     android:layout_width="24dp"
@@ -97,7 +97,7 @@
                 android:layout_marginBottom="24dp"
                 android:layout_marginStart="16dp"
                 android:clickable="true"
-                android:textAppearance="@style/TextAppearance.TextLarge.Primary.Light" />
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary.Baseline.Light" />
             <ImageView
                 android:id="@+id/mute"
                 android:layout_width="26dp"

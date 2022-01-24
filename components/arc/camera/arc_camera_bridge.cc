@@ -65,6 +65,11 @@ class ArcCameraBridge::PendingStartCameraServiceResult {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  PendingStartCameraServiceResult(const PendingStartCameraServiceResult&) =
+      delete;
+  PendingStartCameraServiceResult& operator=(
+      const PendingStartCameraServiceResult&) = delete;
+
   ~PendingStartCameraServiceResult() = default;
 
  private:
@@ -89,8 +94,6 @@ class ArcCameraBridge::PendingStartCameraServiceResult {
   mojo::Remote<mojom::CameraService> service_;
   ArcCameraBridge::StartCameraServiceCallback callback_;
   base::WeakPtrFactory<PendingStartCameraServiceResult> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PendingStartCameraServiceResult);
 };
 
 // static

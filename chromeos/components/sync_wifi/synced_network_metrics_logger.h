@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_SYNC_WIFI_SYNCED_NETWORK_METRICS_LOGGER_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"

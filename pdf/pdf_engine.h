@@ -82,6 +82,13 @@ enum class FontMappingMode {
   kPepper,
 };
 
+enum class DocumentPermission {
+  kCopy,
+  kCopyAccessible,
+  kPrintLowQuality,
+  kPrintHighQuality,
+};
+
 // Do one time initialization of the SDK.
 // If `enable_v8` is false, then the PDFEngine will not be able to run
 // JavaScript.
@@ -92,15 +99,17 @@ void ShutdownSDK();
 // This class encapsulates a PDF rendering engine.
 class PDFEngine {
  public:
-  enum DocumentPermission {
-    PERMISSION_COPY,
-    PERMISSION_COPY_ACCESSIBLE,
-    PERMISSION_PRINT_LOW_QUALITY,
-    PERMISSION_PRINT_HIGH_QUALITY,
-  };
-
   // Maximum number of parameters a nameddest view can contain.
   static constexpr size_t kMaxViewParams = 4;
+
+  enum class FocusFieldType {
+    // Focus is not on any form field.
+    kNoFocus,
+    // Focus is on a form text field or form combobox text field.
+    kText,
+    // Focus is on a non-text field.
+    kNonText,
+  };
 
   // Named destination in a document.
   struct NamedDestination {
@@ -254,11 +263,11 @@ class PDFEngine {
     // Notifies the client about document load progress.
     virtual void DocumentLoadProgress(uint32_t available, uint32_t doc_size) {}
 
-    // Notifies the client about focus changes for form text fields.
-    virtual void FormTextFieldFocusChange(bool in_focus) {}
+    // Notifies the client about focus changes for form fields.
+    virtual void FormFieldFocusChange(FocusFieldType type) {}
 
     // Returns true if the plugin has been opened within print preview.
-    virtual bool IsPrintPreview() = 0;
+    virtual bool IsPrintPreview() const = 0;
 
     // Get the background color of the PDF.
     virtual SkColor GetBackgroundColor() = 0;

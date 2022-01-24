@@ -55,8 +55,10 @@ constexpr base::PartitionOptions kAllocatorOptions = {
     base::PartitionOptions::AlignedAlloc::kDisallowed,
     base::PartitionOptions::ThreadCache::kDisabled,
     base::PartitionOptions::Quarantine::kDisallowed,
-    base::PartitionOptions::Cookies::kAllowed,
-    base::PartitionOptions::RefCount::kDisallowed};
+    base::PartitionOptions::Cookie::kAllowed,
+    base::PartitionOptions::BackupRefPtr::kDisabled,
+    base::PartitionOptions::UseConfigurablePool::kNo,
+    base::PartitionOptions::LazyCommit::kEnabled};
 
 static void HandleOOM(size_t unused_size) {
   LOG(FATAL) << "Out of memory.";

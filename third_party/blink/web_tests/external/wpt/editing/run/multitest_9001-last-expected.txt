@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 214 tests; 202 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 282 tests; 255 PASS, 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandIndeterm("inserttext") before
 PASS [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandState("inserttext") before
 PASS [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandValue("inserttext") before
@@ -214,5 +214,73 @@ PASS [["delete",""],["inserttext","a"]] "<blockquote><font color=blue>[foo]</fon
 PASS [["delete",""],["inserttext","a"]] "<blockquote><font color=blue>[foo]</font></blockquote>" queryCommandIndeterm("inserttext") after
 PASS [["delete",""],["inserttext","a"]] "<blockquote><font color=blue>[foo]</font></blockquote>" queryCommandState("inserttext") after
 PASS [["delete",""],["inserttext","a"]] "<blockquote><font color=blue>[foo]</font></blockquote>" queryCommandValue("inserttext") after
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("inserttext", false, "a") return value
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<b>a</b>" not in array ["<div><b>a</b></div>", "<div><b>a</b><br></div>"]
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandIndeterm("bold") before
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandState("bold") before
+FAIL [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandValue("bold") before assert_equals: Wrong result returned expected "" but got "true"
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandIndeterm("bold") after
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandState("bold") after
+FAIL [["styleWithCSS","false"],["delete",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandValue("bold") after assert_equals: Wrong result returned expected "" but got "true"
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>": execCommand("inserttext", false, "d") return value
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" compare innerHTML
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandIndeterm("bold") before
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandState("bold") before
+FAIL [["styleWithCSS","false"],["delete",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandValue("bold") before assert_equals: Wrong result returned expected "" but got "true"
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandIndeterm("bold") after
+PASS [["styleWithCSS","false"],["delete",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandState("bold") after
+FAIL [["styleWithCSS","false"],["delete",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandValue("bold") after assert_equals: Wrong result returned expected "" but got "true"
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("insertparagraph", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("inserttext", false, "a") return value
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<br><div><b>a</b></div>" not in array ["<div><br></div><div><b>a</b></div>", "<div><br></div><div><b>a</b><br></div>"]
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandIndeterm("bold") before
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandState("bold") before
+FAIL [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandValue("bold") before assert_equals: Wrong result returned expected "" but got "true"
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandIndeterm("bold") after
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandState("bold") after
+FAIL [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandValue("bold") after assert_equals: Wrong result returned expected "" but got "true"
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>": execCommand("insertparagraph", false, "") return value
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>": execCommand("inserttext", false, "d") return value
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" compare innerHTML
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandIndeterm("bold") before
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandState("bold") before
+FAIL [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandValue("bold") before assert_equals: Wrong result returned expected "" but got "true"
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandIndeterm("bold") after
+PASS [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandState("bold") after
+FAIL [["styleWithCSS","false"],["delete",""],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandValue("bold") after assert_equals: Wrong result returned expected "" but got "true"
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("insertparagraph", false, "") return value
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>": execCommand("inserttext", false, "a") return value
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<br><div><b>a</b></div>" not in array ["<div><br></div><div><b>a</b></div>", "<div><br></div><div><b>a</b><br></div>"]
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandIndeterm("bold") before
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandState("bold") before
+FAIL [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandValue("bold") before assert_equals: Wrong result returned expected "" but got "true"
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandIndeterm("bold") after
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandState("bold") after
+FAIL [["styleWithCSS","false"],["insertparagraph",""],["inserttext","a"]] "<div><b>[abc]</b></div>" queryCommandValue("bold") after assert_equals: Wrong result returned expected "" but got "true"
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>": execCommand("insertparagraph", false, "") return value
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>": execCommand("inserttext", false, "d") return value
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" checks for modifications to non-editable content
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" compare innerHTML
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandIndeterm("bold") before
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandState("bold") before
+FAIL [["styleWithCSS","false"],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandValue("bold") before assert_equals: Wrong result returned expected "" but got "true"
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandIndeterm("bold") after
+PASS [["styleWithCSS","false"],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandState("bold") after
+FAIL [["styleWithCSS","false"],["insertparagraph",""],["inserttext","d"]] "<div>abc<b>[def]</b></div>" queryCommandValue("bold") after assert_equals: Wrong result returned expected "" but got "true"
 Harness: the test ran to completion.
 

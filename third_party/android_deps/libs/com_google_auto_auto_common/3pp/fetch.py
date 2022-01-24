@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/com/google/auto/auto-common/0.10/auto-common-0.10.jar'
-_FILE_NAME = 'auto-common-0.10.jar'
-_FILE_VERSION = '0.10'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/com/google/auto/auto-common/1.1.2/auto-common-1.1.2.jar'
+_FILE_NAME = 'auto-common-1.1.2.jar'
+_FILE_VERSION = '1.1.2'
 
 
 def do_latest():

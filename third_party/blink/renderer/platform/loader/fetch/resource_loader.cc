@@ -65,7 +65,6 @@
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors_error_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
@@ -76,6 +75,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/shared_buffer_bytes_consumer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
 #include "third_party/blink/renderer/platform/loader/mixed_content_autoupgrade_status.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -90,6 +90,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "url/url_constants.h"
 
 namespace blink {
 
@@ -231,8 +232,10 @@ class ResourceLoader::CodeCacheRequest {
       : status_(kNoRequestSent),
         code_cache_loader_(std::move(code_cache_loader)),
         url_(url),
-        freeze_mode_(freeze_mode) {
-    DCHECK(RuntimeEnabledFeatures::IsolatedCodeCacheEnabled());
+        freeze_mode_(freeze_mode),
+        should_use_source_hash_(
+            SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
+                url.Protocol())) {
   }
 
   ~CodeCacheRequest() = default;
@@ -285,6 +288,14 @@ class ResourceLoader::CodeCacheRequest {
   base::Time cached_code_response_time_;
   base::Time resource_response_time_;
   bool use_isolated_code_cache_ = false;
+  bool resource_response_arrived_ = false;
+
+  // Whether this response should use a hash of the source text to check
+  // whether a code cache entry is valid, rather than relying on response time.
+  // This could be computed as-needed based on url_, but doing so would require
+  // converting url_ from WebURL to KURL each time.
+  const bool should_use_source_hash_;
+
   base::WeakPtrFactory<CodeCacheRequest> weak_ptr_factory_{this};
 };
 
@@ -316,6 +327,7 @@ void ResourceLoader::CodeCacheRequest::DidReceiveResponse(
     const base::Time& resource_response_time,
     bool use_isolated_code_cache,
     ResourceLoader* resource_loader) {
+  resource_response_arrived_ = true;
   resource_response_time_ = resource_response_time;
   use_isolated_code_cache_ = use_isolated_code_cache;
   MaybeSendCachedCode(std::move(cached_code_), resource_loader);
@@ -357,7 +369,7 @@ void ResourceLoader::CodeCacheRequest::ProcessCodeCacheResponse(
   status_ = kReceivedResponse;
   cached_code_response_time_ = response_time;
 
-  if (resource_response_time_.is_null()) {
+  if (!resource_response_arrived_) {
     // Wait for the response before we can send the cached code.
     // TODO(crbug.com/866889): Pass this as a handle to avoid the overhead of
     // copying this data.
@@ -371,24 +383,52 @@ void ResourceLoader::CodeCacheRequest::ProcessCodeCacheResponse(
 void ResourceLoader::CodeCacheRequest::MaybeSendCachedCode(
     mojo_base::BigBuffer data,
     ResourceLoader* resource_loader) {
-  if (status_ != kReceivedResponse || cached_code_response_time_.is_null() ||
-      resource_response_time_.is_null()) {
+  // Wait until both responses have arrived; they can happen in either order.
+  if (status_ != kReceivedResponse || !resource_response_arrived_) {
     return;
   }
+
+  auto ClearCachedCodeIfPresent = [&]() {
+    if (data.size() != 0) {
+      auto cache_type = resource_loader->GetCodeCacheType();
+      // TODO(crbug/1245526): Return early if we don't have a valid
+      // code_cache_loader_. This shouldn't happen but looks like we are hitting
+      // this case sometimes. This is a temporary fix to see if it fixes crashes
+      // and we should investigate why the code_cache_loader_ isn't valid here
+      // if this fixes the crashes. It is OK to return early here since the
+      // entry can be cleared on the next fetch.
+      if (!code_cache_loader_)
+        return;
+      code_cache_loader_->ClearCodeCacheEntry(cache_type, url_);
+    }
+  };
 
   // If the resource was fetched for service worker script or was served from
   // CacheStorage via service worker then they maintain their own code cache.
   // We should not use the isolated cache.
   if (!use_isolated_code_cache_) {
-    resource_loader->ClearCachedCode();
+    ClearCachedCodeIfPresent();
     return;
   }
 
-  // If the timestamps don't match, the code cache data may be for a different
-  // response. See https://crbug.com/1099587.
-  if (resource_response_time_ != cached_code_response_time_) {
-    resource_loader->ClearCachedCode();
-    return;
+  if (should_use_source_hash_) {
+    // This resource should use a source text hash rather than a response time
+    // comparison.
+    if (!resource_loader->resource_->CodeCacheHashRequired()) {
+      // This kind of Resource doesn't support requiring a hash, so we can't
+      // send cached code to it.
+      ClearCachedCodeIfPresent();
+      return;
+    }
+  } else {
+    // If the timestamps don't match or are null, the code cache data may be for
+    // a different response. See https://crbug.com/1099587.
+    if (cached_code_response_time_.is_null() ||
+        resource_response_time_.is_null() ||
+        resource_response_time_ != cached_code_response_time_) {
+      ClearCachedCodeIfPresent();
+      return;
+    }
   }
 
   if (data.size() > 0) {
@@ -451,9 +491,6 @@ void ResourceLoader::Trace(Visitor* visitor) const {
 }
 
 bool ResourceLoader::ShouldFetchCodeCache() {
-  if (!RuntimeEnabledFeatures::IsolatedCodeCacheEnabled())
-    return false;
-
   // Since code cache requests use a per-frame interface, don't fetch cached
   // code for keep-alive requests. These are only used for beaconing and we
   // don't expect code cache to help there.
@@ -461,8 +498,14 @@ bool ResourceLoader::ShouldFetchCodeCache() {
     return false;
 
   const ResourceRequestHead& request = resource_->GetResourceRequest();
-  if (!request.Url().ProtocolIsInHTTPFamily())
+  // Aside from http and https, the only other supported protocols are those
+  // listed in the SchemeRegistry as requiring a content equality check.
+  bool should_use_source_hash =
+      SchemeRegistry::SchemeSupportsCodeCacheWithHashing(
+          request.Url().Protocol());
+  if (!request.Url().ProtocolIsInHTTPFamily() && !should_use_source_hash) {
     return false;
+  }
   // When loading the service worker scripts, we don't need to check the
   // GeneratedCodeCache. The code cache corresponding to these scripts is in
   // the service worker's "installed script storage" and would be fetched along
@@ -485,8 +528,13 @@ bool ResourceLoader::ShouldFetchCodeCache() {
   // These fetches should be cheap, however, requiring one additional IPC and
   // no browser process disk IO since the cache index is in memory and the
   // resource key should not be present.
+  //
+  // The only case where it's easy to skip a kRaw resource is when a content
+  // equality check is required, because only ScriptResource supports that
+  // requirement.
   return resource_->GetType() == ResourceType::kScript ||
-         resource_->GetType() == ResourceType::kRaw;
+         (resource_->GetType() == ResourceType::kRaw &&
+          !should_use_source_hash);
 }
 
 void ResourceLoader::Start() {
@@ -559,7 +607,7 @@ void ResourceLoader::Run() {
 }
 
 void ResourceLoader::DidReceiveData(base::span<const char> data) {
-  DidReceiveData(data.data(), data.size());
+  DidReceiveData(data.data(), base::checked_cast<int>(data.size()));
 }
 
 void ResourceLoader::DidFinishLoadingBody() {
@@ -734,12 +782,13 @@ bool ResourceLoader::WillFollowRedirect(
     network::mojom::ReferrerPolicy new_referrer_policy,
     const WebString& new_method,
     const WebURLResponse& passed_redirect_response,
-    bool& report_raw_headers,
-    std::vector<std::string>* removed_headers) {
+    bool& has_devtools_request_id,
+    std::vector<std::string>* removed_headers,
+    bool insecure_scheme_was_upgraded) {
   DCHECK(!passed_redirect_response.IsNull());
 
   if (passed_redirect_response.HasAuthorizationCoveredByWildcardOnPreflight()) {
-    fetcher_->GetUseCounter().CountUse(
+    fetcher_->GetUseCounter().CountDeprecation(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
 
@@ -798,10 +847,17 @@ bool ResourceLoader::WillFollowRedirect(
         unused_preload ? ReportingDisposition::kSuppressReporting
                        : ReportingDisposition::kReport;
 
+    // The network stack might have upgraded to https an http URL. Report-only
+    // CSP must be checked with the url prior to that upgrade.
+    KURL new_url_prior_upgrade = new_url;
+    if (insecure_scheme_was_upgraded && new_url.ProtocolIs(url::kHttpsScheme)) {
+      new_url_prior_upgrade.SetProtocol(url::kHttpScheme);
+    }
+
     // CanRequest() checks only enforced CSP, so check report-only here to
     // ensure that violations are sent.
     Context().CheckCSPForRequest(
-        request_context, request_destination, new_url, options,
+        request_context, request_destination, new_url_prior_upgrade, options,
         reporting_disposition, url_before_redirects,
         ResourceRequest::RedirectStatus::kFollowedRedirect);
 
@@ -872,7 +928,7 @@ bool ResourceLoader::WillFollowRedirect(
     return false;
   }
 
-  report_raw_headers = new_request->ReportRawHeaders();
+  has_devtools_request_id = new_request->GetDevToolsId().has_value();
   return true;
 }
 
@@ -898,11 +954,6 @@ void ResourceLoader::SendCachedCodeToResource(mojo_base::BigBuffer data) {
   resource_->SetSerializedCachedMetadata(std::move(data));
 }
 
-void ResourceLoader::ClearCachedCode() {
-  auto cache_type = GetCodeCacheType();
-  Platform::Current()->ClearCodeCacheEntry(cache_type, resource_->Url());
-}
-
 void ResourceLoader::DidSendData(uint64_t bytes_sent,
                                  uint64_t total_bytes_to_be_sent) {
   resource_->DidSendData(bytes_sent, total_bytes_to_be_sent);
@@ -922,7 +973,7 @@ void ResourceLoader::DidReceiveResponseInternal(
   const ResourceRequestHead& request = resource_->GetResourceRequest();
 
   if (response.HasAuthorizationCoveredByWildcardOnPreflight()) {
-    fetcher_->GetUseCounter().CountUse(
+    fetcher_->GetUseCounter().CountDeprecation(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
 
@@ -1046,6 +1097,9 @@ void ResourceLoader::DidReceiveResponseInternal(
     if (should_block)
       return;
   }
+
+  scheduler_->SetConnectionInfo(scheduler_client_id_,
+                                response.ConnectionInfo());
 
   // A response should not serve partial content if it was not requested via a
   // Range header: https://fetch.spec.whatwg.org/#main-fetch
@@ -1247,14 +1301,17 @@ void ResourceLoader::HandleError(const ResourceError& error) {
     Restart(resource_->GetResourceRequest());
     return;
   }
-  if (error.CorsErrorStatus()) {
+  if (error.CorsErrorStatus() &&
+      !base::FeatureList::IsEnabled(blink::features::kCORSErrorsIssueOnly)) {
+    // CORS issues are reported via network service instrumentation.
     fetcher_->GetConsoleLogger().AddConsoleMessage(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kError,
         cors::GetErrorString(
             *error.CorsErrorStatus(), resource_->GetResourceRequest().Url(),
             resource_->LastResourceRequest().Url(), *resource_->GetOrigin(),
-            resource_->GetType(), resource_->Options().initiator_info.name));
+            resource_->GetType(), resource_->Options().initiator_info.name),
+        false /* discard_duplicates */, mojom::ConsoleMessageCategory::Cors);
   }
 
   Release(ResourceLoadScheduler::ReleaseOption::kReleaseAndSchedule,

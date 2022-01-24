@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base {
 class SingleThreadTaskRunner;

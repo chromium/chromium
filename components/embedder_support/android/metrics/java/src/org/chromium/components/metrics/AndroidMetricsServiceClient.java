@@ -32,6 +32,9 @@ public class AndroidMetricsServiceClient {
         // Only record if it's a system app or it was installed from Play Store.
         Context ctx = ContextUtils.getApplicationContext();
         String packageName = ctx.getPackageName();
+        if (packageName == null) {
+            return false;
+        }
         String installerPackageName = ctx.getPackageManager().getInstallerPackageName(packageName);
         return (ctx.getApplicationInfo().flags & ApplicationInfo.FLAG_SYSTEM) != 0
                 || (PLAY_STORE_PACKAGE_NAME.equals(installerPackageName));

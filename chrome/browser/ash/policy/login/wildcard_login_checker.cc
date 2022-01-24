@@ -60,8 +60,8 @@ void WildcardLoginChecker::StartWithAccessToken(const std::string& access_token,
 
 void WildcardLoginChecker::OnGetUserInfoSuccess(
     const base::DictionaryValue* response) {
-  OnCheckCompleted(response->HasKey(kHostedDomainKey) ? RESULT_ALLOWED
-                                                      : RESULT_BLOCKED);
+  OnCheckCompleted(response->FindKey(kHostedDomainKey) ? RESULT_ALLOWED
+                                                       : RESULT_BLOCKED);
 }
 
 void WildcardLoginChecker::OnGetUserInfoFailure(

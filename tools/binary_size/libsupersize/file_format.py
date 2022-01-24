@@ -774,6 +774,8 @@ def SaveDeltaSizeInfo(delta_size_info, path, file_obj=None):
   after_promise.get()
   w.WriteBytes(after_size_file.getvalue())
 
+  return None
+
 
 def LoadDeltaSizeInfo(path, file_obj=None):
   """Returns a tuple of size infos (before, after).

@@ -39,7 +39,7 @@ void MachineLevelUserCloudPolicyStatusProvider::GetStatus(
       "refreshInterval",
       ui::TimeFormat::Simple(
           ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_SHORT,
-          base::TimeDelta::FromMilliseconds(
+          base::Milliseconds(
               refresh_scheduler
                   ? refresh_scheduler->GetActualRefreshDelay()
                   : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs)));

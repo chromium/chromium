@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.share;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.url.GURL;
@@ -17,6 +19,18 @@ import org.chromium.url.GURL;
  * used in more than one part of the Chromium codebase.
  */
 public class ChromeShareExtras {
+    @IntDef({DetailedContentType.NOT_SPECIFIED, DetailedContentType.IMAGE, DetailedContentType.GIF,
+            DetailedContentType.HIGHLIGHTED_TEXT, DetailedContentType.SCREENSHOT,
+            DetailedContentType.WEB_NOTES})
+    public @interface DetailedContentType {
+        int NOT_SPECIFIED = 0;
+        int IMAGE = 1;
+        int GIF = 2;
+        int HIGHLIGHTED_TEXT = 3;
+        int SCREENSHOT = 4;
+        int WEB_NOTES = 5;
+    }
+
     /**
      * Whether to save the chosen activity for future direct sharing.
      */
@@ -41,9 +55,6 @@ public class ChromeShareExtras {
     /** Url of the content being shared. */
     private final GURL mContentUrl;
 
-    /** Indicates if text property is highlighted by user. */
-    private final boolean mIsUserHighlightedText;
-
     /** Whether it is sharing a tab group. */
     private final boolean mSharingTabGroup;
 
@@ -56,21 +67,24 @@ public class ChromeShareExtras {
 
     private final RenderFrameHost mRenderFrameHost;
 
+    /** The detailed content type that is being shared. */
+    @DetailedContentType
+    private final int mDetailedContentType;
+
     private ChromeShareExtras(boolean saveLastUsed, boolean shareDirectly,
-            boolean isUrlOfVisiblePage, GURL imageSrcUrl, GURL contentUrl,
-            boolean isUserHighlightedText, boolean sharingTabGroup,
+            boolean isUrlOfVisiblePage, GURL imageSrcUrl, GURL contentUrl, boolean sharingTabGroup,
             boolean isReshareHighlightedText, boolean skipPageSharingActions,
-            RenderFrameHost renderFrameHost) {
+            RenderFrameHost renderFrameHost, @DetailedContentType int detailedContentType) {
         mSaveLastUsed = saveLastUsed;
         mShareDirectly = shareDirectly;
         mIsUrlOfVisiblePage = isUrlOfVisiblePage;
         mImageSrcUrl = imageSrcUrl == null ? GURL.emptyGURL() : imageSrcUrl;
         mContentUrl = contentUrl == null ? GURL.emptyGURL() : contentUrl;
-        mIsUserHighlightedText = isUserHighlightedText;
         mSharingTabGroup = sharingTabGroup;
         mIsReshareHighlightedText = isReshareHighlightedText;
         mSkipPageSharingActions = skipPageSharingActions;
         mRenderFrameHost = renderFrameHost;
+        mDetailedContentType = detailedContentType;
     }
 
     /**
@@ -110,13 +124,6 @@ public class ChromeShareExtras {
     }
 
     /**
-     * @return Whether the URL is of the current visible page.
-     */
-    public boolean isUserHighlightedText() {
-        return mIsUserHighlightedText;
-    }
-
-    /**
      * @return Whether it is sharing a tab group.
      */
     public boolean sharingTabGroup() {
@@ -143,6 +150,13 @@ public class ChromeShareExtras {
     }
 
     /**
+     * @return The {@link DetailedContentType} of the content that is being shared.
+     */
+    public int getDetailedContentType() {
+        return mDetailedContentType;
+    }
+
+    /**
      * The builder for {@link ChromeShareExtras} objects.
      */
     public static class Builder {
@@ -151,11 +165,12 @@ public class ChromeShareExtras {
         private boolean mIsUrlOfVisiblePage;
         private GURL mImageSrcUrl;
         private GURL mContentUrl;
-        private boolean mIsUserHighlightedText;
         private boolean mSharingTabGroup;
         private boolean mIsReshareHighlightedText;
         private boolean mSkipPageSharingActions;
         private RenderFrameHost mRenderFrameHost;
+        @DetailedContentType
+        private int mDetailedContentType;
 
         /**
          * Sets whether to save the chosen activity for future direct sharing.
@@ -207,14 +222,6 @@ public class ChromeShareExtras {
         }
 
         /**
-         * Sets whether text property is highlighted by user.
-         */
-        public Builder setIsUserHighlightedText(boolean isUserHighlightedText) {
-            mIsUserHighlightedText = isUserHighlightedText;
-            return this;
-        }
-
-        /**
          * Sets whether it is sharing a tab group.
          */
         public Builder setSharingTabGroup(boolean sharingTabGroup) {
@@ -232,10 +239,18 @@ public class ChromeShareExtras {
             return this;
         }
 
+        /**
+         * Sets the {@link DetailedContentType} of the content that is being shared.
+         */
+        public Builder setDetailedContentType(@DetailedContentType int detailedContentType) {
+            mDetailedContentType = detailedContentType;
+            return this;
+        }
+
         public ChromeShareExtras build() {
             return new ChromeShareExtras(mSaveLastUsed, mShareDirectly, mIsUrlOfVisiblePage,
-                    mImageSrcUrl, mContentUrl, mIsUserHighlightedText, mSharingTabGroup,
-                    mIsReshareHighlightedText, mSkipPageSharingActions, mRenderFrameHost);
+                    mImageSrcUrl, mContentUrl, mSharingTabGroup, mIsReshareHighlightedText,
+                    mSkipPageSharingActions, mRenderFrameHost, mDetailedContentType);
         }
     }
 }

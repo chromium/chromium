@@ -15,7 +15,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -26,6 +25,9 @@
 class ShellLinkItem : public base::RefCountedThreadSafe<ShellLinkItem> {
  public:
   ShellLinkItem();
+
+  ShellLinkItem(const ShellLinkItem&) = delete;
+  ShellLinkItem& operator=(const ShellLinkItem&) = delete;
 
   const std::u16string& title() const { return title_; }
   const base::FilePath& icon_path() const { return icon_path_; }
@@ -72,8 +74,6 @@ class ShellLinkItem : public base::RefCountedThreadSafe<ShellLinkItem> {
   // Note that an icon path must be supplied to IShellLink, so users of this
   // class must save icon data to disk.
   gfx::ImageSkia icon_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellLinkItem);
 };
 
 typedef std::vector<scoped_refptr<ShellLinkItem> > ShellLinkItemList;
@@ -98,6 +98,10 @@ typedef std::vector<scoped_refptr<ShellLinkItem> > ShellLinkItemList;
 class JumpListUpdater {
  public:
   explicit JumpListUpdater(const std::wstring& app_user_model_id);
+
+  JumpListUpdater(const JumpListUpdater&) = delete;
+  JumpListUpdater& operator=(const JumpListUpdater&) = delete;
+
   ~JumpListUpdater();
 
   // Returns true if JumpLists are enabled on this OS.
@@ -140,8 +144,6 @@ class JumpListUpdater {
   // The current user setting for "Number of recent items to display in Jump
   // Lists" option in the "Taskbar and Start Menu Properties".
   size_t user_max_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(JumpListUpdater);
 };
 
 #endif  // CHROME_BROWSER_WIN_JUMPLIST_UPDATER_H_

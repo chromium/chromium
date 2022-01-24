@@ -31,7 +31,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -54,6 +53,10 @@ class TestWindowDelegate : public views::WidgetDelegate {
     SetOwnedByWidget(true);
     SetFocusTraversesOut(true);
   }
+
+  TestWindowDelegate(const TestWindowDelegate&) = delete;
+  TestWindowDelegate& operator=(const TestWindowDelegate&) = delete;
+
   ~TestWindowDelegate() override = default;
 
   // views::WidgetDelegate:
@@ -65,8 +68,6 @@ class TestWindowDelegate : public views::WidgetDelegate {
 
  private:
   views::Widget* widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowDelegate);
 };
 
 }  // namespace
@@ -74,6 +75,12 @@ class TestWindowDelegate : public views::WidgetDelegate {
 class LockActionHandlerLayoutManagerTest : public AshTestBase {
  public:
   LockActionHandlerLayoutManagerTest() = default;
+
+  LockActionHandlerLayoutManagerTest(
+      const LockActionHandlerLayoutManagerTest&) = delete;
+  LockActionHandlerLayoutManagerTest& operator=(
+      const LockActionHandlerLayoutManagerTest&) = delete;
+
   ~LockActionHandlerLayoutManagerTest() override = default;
 
   void SetUp() override {
@@ -156,14 +163,20 @@ class LockActionHandlerLayoutManagerTest : public AshTestBase {
       action_background_controller_factory_;
 
   TestTrayActionClient tray_action_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockActionHandlerLayoutManagerTest);
 };
 
 class LockActionHandlerLayoutManagerTestWithTestBackgroundController
     : public LockActionHandlerLayoutManagerTest {
  public:
   LockActionHandlerLayoutManagerTestWithTestBackgroundController() = default;
+
+  LockActionHandlerLayoutManagerTestWithTestBackgroundController(
+      const LockActionHandlerLayoutManagerTestWithTestBackgroundController&) =
+      delete;
+  LockActionHandlerLayoutManagerTestWithTestBackgroundController& operator=(
+      const LockActionHandlerLayoutManagerTestWithTestBackgroundController&) =
+      delete;
+
   ~LockActionHandlerLayoutManagerTestWithTestBackgroundController() override =
       default;
 
@@ -188,9 +201,6 @@ class LockActionHandlerLayoutManagerTestWithTestBackgroundController
   // The lock screen action background controller created by
   // |CreateActionBackgroundController|.
   TestLockScreenActionBackgroundController* background_controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      LockActionHandlerLayoutManagerTestWithTestBackgroundController);
 };
 
 TEST_F(LockActionHandlerLayoutManagerTest, PreserveNormalWindowBounds) {

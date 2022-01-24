@@ -89,6 +89,9 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
     scoped_observation_.Observe(service_);
   }
 
+  GlobalErrorWaiter(const GlobalErrorWaiter&) = delete;
+  GlobalErrorWaiter& operator=(const GlobalErrorWaiter&) = delete;
+
   ~GlobalErrorWaiter() override = default;
 
   // GlobalErrorObserver
@@ -104,8 +107,6 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
   GlobalErrorService* service_;
   base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalErrorWaiter);
 };
 
 }  // namespace
@@ -116,11 +117,11 @@ class GlobalErrorBubbleTest : public DialogBrowserTest {
     extensions::ExtensionPrefs::SetRunAlertsInFirstRunForTest();
   }
 
+  GlobalErrorBubbleTest(const GlobalErrorBubbleTest&) = delete;
+  GlobalErrorBubbleTest& operator=(const GlobalErrorBubbleTest&) = delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GlobalErrorBubbleTest);
 };
 
 void GlobalErrorBubbleTest::ShowUi(const std::string& name) {

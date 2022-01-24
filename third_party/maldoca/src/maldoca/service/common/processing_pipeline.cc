@@ -17,8 +17,8 @@
 
 #include <algorithm>
 #ifndef MALDOCA_CHROME
-#include "google/protobuf/text_format.h"
-#endif  // MALODCA_CHOMRe
+#include "google/protobuf/text_format.h"  // nogncheck
+#endif  // MALODCA_CHOMRE
 #include "maldoca/base/file.h"
 #include "maldoca/base/logging.h"
 #include "maldoca/base/status_macros.h"

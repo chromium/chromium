@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -218,23 +217,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Test that swiping left to right navigate back.
 // TODO(crbug.com/768339): This test is faling on devices because
 // grey_swipeFastInDirectionWithStartPoint does not work.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testNavigateBackWithGesture DISABLED_testNavigateBackWithGesture
-#else
-#define MAYBE_testNavigateBackWithGesture testNavigateBackWithGesture
-#endif
-- (void)MAYBE_testNavigateBackWithGesture {
+// TODO(crbug.com/978877): Fix the bug in EG and enable the test.
+// Navigate back side swipe gesture does not work on iOS13 simulator. This
+// is not specific to Bookmarks. The issue is that the gesture needs to
+// start offscreen, and EG cannot replicate that.
+- (void)DISABLED_testNavigateBackWithGesture {
   // Disabled on iPad as there is not "navigate back" gesture.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test not applicable for iPad");
-  }
-
-  if (@available(iOS 13, *)) {
-    // Navigate back side swipe gesture does not work on iOS13 simulator. This
-    // is not specific to Bookmarks. The issue is that the gesture needs to
-    // start offscreen, and EG cannot replicate that.
-    // TODO(crbug.com/978877): Fix the bug in EG and enable the test.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 13.");
   }
 
   [BookmarkEarlGrey setupStandardBookmarks];
@@ -785,10 +775,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 - (void)testSwipeDownToDismiss {
-  if (!IsCollectionsCardPresentationStyleEnabled()) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
-  }
-
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
 

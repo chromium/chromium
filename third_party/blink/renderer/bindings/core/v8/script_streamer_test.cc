@@ -7,7 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/single_thread_task_runner.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -49,21 +51,27 @@ namespace {
 
 class TestResourceClient final : public GarbageCollected<TestResourceClient>,
                                  public ResourceClient {
-
  public:
-  TestResourceClient() : finished_(false) {}
+  explicit TestResourceClient(base::OnceClosure finish_closure)
+      : finish_closure_(std::move(finish_closure)) {}
+
   bool Finished() const { return finished_; }
 
-  void DataReceived(Resource*,
-                    const char* /* data */,
-                    size_t /* length */) override {}
-  void NotifyFinished(Resource*) override { finished_ = true; }
+  bool ErrorOccurred() const { return error_occurred_; }
+
+  void NotifyFinished(Resource* resource) override {
+    finished_ = true;
+    error_occurred_ = resource->ErrorOccurred();
+    std::move(finish_closure_).Run();
+  }
 
   // Name for debugging, e.g. shown in memory-infra.
   String DebugName() const override { return "TestResourceClient"; }
 
  private:
-  bool finished_;
+  bool finished_ = false;
+  bool error_occurred_ = false;
+  base::OnceClosure finish_closure_;
 };
 
 // TODO(leszeks): This class has a similar class in resource_loader_test.cc,
@@ -72,10 +80,10 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const ResourceRequest& request,
       const ResourceLoaderOptions& options,
-      scoped_refptr<base::SingleThreadTaskRunner>,
-      scoped_refptr<base::SingleThreadTaskRunner>,
+      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       WebBackForwardCacheLoaderHelper) override {
-    return std::make_unique<NoopWebURLLoader>();
+    return std::make_unique<NoopWebURLLoader>(std::move(freezable_task_runner));
   }
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
     return std::make_unique<CodeCacheLoaderMock>();
@@ -83,6 +91,9 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
 
   class NoopWebURLLoader final : public WebURLLoader {
    public:
+    explicit NoopWebURLLoader(
+        scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+        : task_runner_(std::move(task_runner)) {}
     ~NoopWebURLLoader() override = default;
     void LoadSynchronously(
         std::unique_ptr<network::ResourceRequest> request,
@@ -114,22 +125,24 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
     }
     scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
         override {
-      return base::MakeRefCounted<scheduler::FakeTaskRunner>();
+      return task_runner_;
     }
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   };
 };
 
+}  // namespace
+
 class ScriptStreamingTest : public testing::Test {
  public:
-  ScriptStreamingTest()
-      : url_("http://www.streaming-test.com/"),
-        freezable_task_runner_(platform_->test_task_runner()),
-        unfreezable_task_runner_(platform_->test_task_runner()) {
+  ScriptStreamingTest() : url_("http://www.streaming-test.com/") {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        base::ThreadTaskRunnerHandle::Get();
     auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-        properties->MakeDetachable(), context, freezable_task_runner_,
-        unfreezable_task_runner_, MakeGarbageCollected<NoopLoaderFactory>(),
+        properties->MakeDetachable(), context, task_runner, task_runner,
+        MakeGarbageCollected<NoopLoaderFactory>(),
         MakeGarbageCollected<MockContextLifecycleNotifier>(),
         nullptr /* back_forward_cache_loader_helper */));
 
@@ -139,13 +152,12 @@ class ScriptStreamingTest : public testing::Test {
     ResourceRequest request(url_);
     request.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
 
-    resource_client_ = MakeGarbageCollected<TestResourceClient>();
+    resource_client_ =
+        MakeGarbageCollected<TestResourceClient>(run_loop_.QuitClosure());
     FetchParameters params = FetchParameters::CreateForTest(std::move(request));
     resource_ = ScriptResource::Fetch(params, fetcher, resource_client_,
                                       ScriptResource::kAllowStreaming);
-    resource_->AddClient(resource_client_, freezable_task_runner_.get());
-
-    ScriptStreamer::SetSmallScriptThresholdForTesting(0);
+    resource_->AddClient(resource_client_, task_runner.get());
 
     ResourceResponse response(url_);
     response.SetHttpStatusCode(200);
@@ -158,15 +170,17 @@ class ScriptStreamingTest : public testing::Test {
 
   ScriptSourceCode GetScriptSourceCode() const {
     ScriptStreamer* streamer = resource_->TakeStreamer();
+    ScriptCacheConsumer* cache_consumer = resource_->TakeCacheConsumer();
     if (streamer) {
       if (streamer->IsStreamingSuppressed()) {
-        return ScriptSourceCode(nullptr, resource_,
+        return ScriptSourceCode(nullptr, cache_consumer, resource_,
                                 streamer->StreamingSuppressedReason());
       }
-      return ScriptSourceCode(streamer, resource_,
+      return ScriptSourceCode(streamer, cache_consumer, resource_,
                               ScriptStreamer::NotStreamingReason::kInvalid);
     }
-    return ScriptSourceCode(nullptr, resource_, resource_->NoStreamerReason());
+    return ScriptSourceCode(nullptr, cache_consumer, resource_,
+                            resource_->NoStreamerReason());
   }
 
   Settings* GetSettings() const {
@@ -175,10 +189,18 @@ class ScriptStreamingTest : public testing::Test {
 
  protected:
   void AppendData(const char* data) {
-    uint32_t data_len = strlen(data);
+    uint32_t data_len = base::checked_cast<uint32_t>(strlen(data));
     MojoResult result = producer_handle_->WriteData(
         data, &data_len, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
     EXPECT_EQ(result, MOJO_RESULT_OK);
+
+    // In case the mojo datapipe is being read on the main thread, we need to
+    // spin the event loop to allow the watcher to post its "data received"
+    // callback back to the main thread.
+    //
+    // Note that this uses a nested RunLoop -- this is to prevent it from being
+    // affected by the QuitClosure of the outer RunLoop.
+    base::RunLoop().RunUntilIdle();
 
     // Yield control to the background thread, so that V8 gets a chance to
     // process the data before the main thread adds more. Note that we
@@ -203,15 +225,13 @@ class ScriptStreamingTest : public testing::Test {
     resource_->SetStatus(ResourceStatus::kCached);
   }
 
-  void ProcessTasksUntilStreamingComplete() { platform_->RunUntilIdle(); }
+  void Cancel() { resource_->Loader()->Cancel(); }
 
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+  void RunUntilResourceLoaded() { run_loop_.Run(); }
 
   KURL url_;
-  scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner_;
 
+  base::RunLoop run_loop_;
   Persistent<TestResourceClient> resource_client_;
   Persistent<ScriptResource> resource_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
@@ -220,9 +240,7 @@ class ScriptStreamingTest : public testing::Test {
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
 
-// TODO(crbug.com/939054): Tests are disabled due to flakiness caused by being
-// currently unable to block and wait for the script streaming thread.
-TEST_F(ScriptStreamingTest, DISABLED_CompilingStreamedScript) {
+TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
   // Test that we can successfully compile a streamed script.
   V8TestingScope scope;
 
@@ -234,14 +252,15 @@ TEST_F(ScriptStreamingTest, DISABLED_CompilingStreamedScript) {
   EXPECT_FALSE(resource_client_->Finished());
   Finish();
 
-  // Process tasks on the main thread until the streaming background thread
-  // has completed its tasks.
-  ProcessTasksUntilStreamingComplete();
+  // Process tasks on the main thread until the resource has notified that it
+  // has finished loading.
+  RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
   ScriptSourceCode source_code = GetScriptSourceCode();
   EXPECT_TRUE(source_code.Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
+  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
@@ -251,14 +270,12 @@ TEST_F(ScriptStreamingTest, DISABLED_CompilingStreamedScript) {
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
                   scope.GetScriptState(), source_code,
                   SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                  no_cache_reason, ReferrerScriptInfo())
+                  no_cache_reason, host_defined_options)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
 
-// TODO(crbug.com/939054): Tests are disabled due to flakiness caused by being
-// currently unable to block and wait for the script streaming thread.
-TEST_F(ScriptStreamingTest, DISABLED_CompilingStreamedScriptWithParseError) {
+TEST_F(ScriptStreamingTest, CompilingStreamedScriptWithParseError) {
   // Test that scripts with parse errors are handled properly. In those cases,
   // V8 stops reading the network stream: make sure we handle it gracefully.
   V8TestingScope scope;
@@ -271,14 +288,15 @@ TEST_F(ScriptStreamingTest, DISABLED_CompilingStreamedScriptWithParseError) {
   EXPECT_FALSE(resource_client_->Finished());
   Finish();
 
-  // Process tasks on the main thread until the streaming background thread
-  // has completed its tasks.
-  ProcessTasksUntilStreamingComplete();
+  // Process tasks on the main thread until the resource has notified that it
+  // has finished loading.
+  RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
   ScriptSourceCode source_code = GetScriptSourceCode();
   EXPECT_TRUE(source_code.Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
+  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
@@ -288,14 +306,12 @@ TEST_F(ScriptStreamingTest, DISABLED_CompilingStreamedScriptWithParseError) {
   EXPECT_FALSE(V8ScriptRunner::CompileScript(
                    scope.GetScriptState(), source_code,
                    SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                   no_cache_reason, ReferrerScriptInfo())
+                   no_cache_reason, host_defined_options)
                    .ToLocal(&script));
   EXPECT_TRUE(try_catch.HasCaught());
 }
 
-// TODO(crbug.com/939054): Tests are disabled due to flakiness caused by being
-// currently unable to block and wait for the script streaming thread.
-TEST_F(ScriptStreamingTest, DISABLED_CancellingStreaming) {
+TEST_F(ScriptStreamingTest, CancellingStreaming) {
   // Test that the upper layers (PendingScript and up) can be ramped down
   // while streaming is ongoing, and ScriptStreamer handles it gracefully.
   V8TestingScope scope;
@@ -308,17 +324,18 @@ TEST_F(ScriptStreamingTest, DISABLED_CancellingStreaming) {
   // Simulate cancelling the network load (e.g., because the user navigated
   // away).
   EXPECT_FALSE(resource_client_->Finished());
-  resource_ = nullptr;
+  Cancel();
 
   // The V8 side will complete too. This should not crash. We don't receive
-  // any results from the streaming and the client doesn't get notified.
-  ProcessTasksUntilStreamingComplete();
-  EXPECT_FALSE(resource_client_->Finished());
+  // any results from the streaming and the resource client should finish with
+  // an error.
+  RunUntilResourceLoaded();
+  EXPECT_TRUE(resource_client_->Finished());
+  EXPECT_TRUE(resource_client_->ErrorOccurred());
+  EXPECT_FALSE(resource_->HasStreamer());
 }
 
-// TODO(crbug.com/939054): Tests are disabled due to flakiness caused by being
-// currently unable to block and wait for the script streaming thread.
-TEST_F(ScriptStreamingTest, DISABLED_DataAfterDisposingPendingScript) {
+TEST_F(ScriptStreamingTest, DataAfterCancelling) {
   // Test that the upper layers (PendingScript and up) can be ramped down
   // before streaming is started, and ScriptStreamer handles it gracefully.
   V8TestingScope scope;
@@ -329,27 +346,24 @@ TEST_F(ScriptStreamingTest, DISABLED_DataAfterDisposingPendingScript) {
 
   EXPECT_FALSE(resource_client_->Finished());
 
-  // Keep the resource alive
-  Persistent<ScriptResource> resource = resource_;
-
   // Simulate cancelling the network load (e.g., because the user navigated
   // away).
-  resource_ = nullptr;
+  Cancel();
 
-  // Make sure the streaming starts.
+  // Append data to the streamer's data pipe.
   AppendData("function foo() {");
   AppendPadding();
-  resource.Clear();
 
   // The V8 side will complete too. This should not crash. We don't receive
-  // any results from the streaming and the client doesn't get notified.
-  ProcessTasksUntilStreamingComplete();
-  EXPECT_FALSE(resource_client_->Finished());
+  // any results from the streaming and the resource client should finish with
+  // an error.
+  RunUntilResourceLoaded();
+  EXPECT_TRUE(resource_client_->Finished());
+  EXPECT_TRUE(resource_client_->ErrorOccurred());
+  EXPECT_FALSE(resource_->HasStreamer());
 }
 
-// TODO(crbug.com/939054): Tests are disabled due to flakiness caused by being
-// currently unable to block and wait for the script streaming thread.
-TEST_F(ScriptStreamingTest, DISABLED_SuppressingStreaming) {
+TEST_F(ScriptStreamingTest, SuppressingStreaming) {
   // If we notice before streaming that there is a code cache, streaming
   // is suppressed (V8 doesn't parse while the script is loading), and the
   // upper layer (ScriptResourceClient) should get a notification when the
@@ -359,13 +373,16 @@ TEST_F(ScriptStreamingTest, DISABLED_SuppressingStreaming) {
   SingleCachedMetadataHandler* cache_handler = resource_->CacheHandler();
   EXPECT_TRUE(cache_handler);
   cache_handler->DisableSendToPlatformForTesting();
-  cache_handler->SetCachedMetadata(V8CodeCache::TagForCodeCache(cache_handler),
+  // CodeCacheHost can be nullptr since we disabled sending data to
+  // GeneratedCodeCacheHost for testing.
+  cache_handler->SetCachedMetadata(/*code_cache_host*/ nullptr,
+                                   V8CodeCache::TagForCodeCache(cache_handler),
                                    reinterpret_cast<const uint8_t*>("X"), 1);
 
   AppendData("function foo() {");
   AppendPadding();
   Finish();
-  ProcessTasksUntilStreamingComplete();
+  RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
 
   ScriptSourceCode source_code = GetScriptSourceCode();
@@ -375,9 +392,7 @@ TEST_F(ScriptStreamingTest, DISABLED_SuppressingStreaming) {
   EXPECT_FALSE(source_code.Streamer());
 }
 
-// TODO(crbug.com/939054): Tests are disabled due to flakiness caused by being
-// currently unable to block and wait for the script streaming thread.
-TEST_F(ScriptStreamingTest, DISABLED_EmptyScripts) {
+TEST_F(ScriptStreamingTest, EmptyScripts) {
   // Empty scripts should also be streamed properly, that is, the upper layer
   // (ScriptResourceClient) should be notified when an empty script has been
   // loaded.
@@ -385,52 +400,56 @@ TEST_F(ScriptStreamingTest, DISABLED_EmptyScripts) {
 
   // Finish the script without sending any data.
   Finish();
-  ProcessTasksUntilStreamingComplete();
+  RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
 
   ScriptSourceCode source_code = GetScriptSourceCode();
   EXPECT_FALSE(source_code.Streamer());
 }
 
-// TODO(crbug.com/939054): Tests are disabled due to flakiness caused by being
-// currently unable to block and wait for the script streaming thread.
-TEST_F(ScriptStreamingTest, DISABLED_SmallScripts) {
+TEST_F(ScriptStreamingTest, SmallScripts) {
   // Small scripts shouldn't be streamed.
   V8TestingScope scope;
-  ScriptStreamer::SetSmallScriptThresholdForTesting(100);
 
-  AppendData("function foo() { }");
+  // This is the data chunk is small enough to not start streaming (it is less
+  // than 4 bytes, so smaller than a UTF-8 BOM).
+  AppendData("{}");
+  EXPECT_TRUE(resource_->HasStreamer());
+  EXPECT_FALSE(resource_->HasRunningStreamer());
 
   Finish();
-  ProcessTasksUntilStreamingComplete();
+  RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
 
   ScriptSourceCode source_code = GetScriptSourceCode();
   EXPECT_FALSE(source_code.Streamer());
 }
 
-// TODO(crbug.com/939054): Tests are disabled due to flakiness caused by being
-// currently unable to block and wait for the script streaming thread.
-TEST_F(ScriptStreamingTest, DISABLED_ScriptsWithSmallFirstChunk) {
+TEST_F(ScriptStreamingTest, ScriptsWithSmallFirstChunk) {
   // If a script is long enough, if should be streamed, even if the first data
   // chunk is small.
   V8TestingScope scope;
-  ScriptStreamer::SetSmallScriptThresholdForTesting(100);
 
-  // This is the first data chunk which is small.
-  AppendData("function foo() { }");
+  // This is the first data chunk which is small enough to not start streaming
+  // (it is less than 4 bytes, so smaller than a UTF-8 BOM).
+  AppendData("{}");
+  EXPECT_TRUE(resource_->HasStreamer());
+  EXPECT_FALSE(resource_->HasRunningStreamer());
+
+  // Now add more padding so that streaming does start.
   AppendPadding();
   AppendPadding();
   AppendPadding();
+  EXPECT_TRUE(resource_->HasRunningStreamer());
 
   Finish();
-
-  ProcessTasksUntilStreamingComplete();
+  RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
   ScriptSourceCode source_code = GetScriptSourceCode();
   EXPECT_TRUE(source_code.Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
+  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
@@ -440,14 +459,12 @@ TEST_F(ScriptStreamingTest, DISABLED_ScriptsWithSmallFirstChunk) {
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
                   scope.GetScriptState(), source_code,
                   SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                  no_cache_reason, ReferrerScriptInfo())
+                  no_cache_reason, host_defined_options)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
 
-// TODO(crbug.com/939054): Tests are disabled due to flakiness caused by being
-// currently unable to block and wait for the script streaming thread.
-TEST_F(ScriptStreamingTest, DISABLED_EncodingChanges) {
+TEST_F(ScriptStreamingTest, EncodingChanges) {
   // It's possible that the encoding of the Resource changes after we start
   // loading it.
   V8TestingScope scope;
@@ -461,12 +478,13 @@ TEST_F(ScriptStreamingTest, DISABLED_EncodingChanges) {
 
   Finish();
 
-  ProcessTasksUntilStreamingComplete();
+  RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
   ScriptSourceCode source_code = GetScriptSourceCode();
   EXPECT_TRUE(source_code.Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
+  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
@@ -476,14 +494,12 @@ TEST_F(ScriptStreamingTest, DISABLED_EncodingChanges) {
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
                   scope.GetScriptState(), source_code,
                   SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                  no_cache_reason, ReferrerScriptInfo())
+                  no_cache_reason, host_defined_options)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
 
-// TODO(crbug.com/939054): Tests are disabled due to flakiness caused by being
-// currently unable to block and wait for the script streaming thread.
-TEST_F(ScriptStreamingTest, DISABLED_EncodingFromBOM) {
+TEST_F(ScriptStreamingTest, EncodingFromBOM) {
   // Byte order marks should be removed before giving the data to V8. They
   // will also affect encoding detection.
   V8TestingScope scope;
@@ -498,12 +514,13 @@ TEST_F(ScriptStreamingTest, DISABLED_EncodingFromBOM) {
       "foob\xec\x92\x81r; } foo();");
 
   Finish();
-  ProcessTasksUntilStreamingComplete();
+  RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
   ScriptSourceCode source_code = GetScriptSourceCode();
   EXPECT_TRUE(source_code.Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
+  v8::Local<v8::Data> host_defined_options;
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
@@ -513,27 +530,23 @@ TEST_F(ScriptStreamingTest, DISABLED_EncodingFromBOM) {
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
                   scope.GetScriptState(), source_code,
                   SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                  no_cache_reason, ReferrerScriptInfo())
+                  no_cache_reason, host_defined_options)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
 
-// TODO(crbug.com/939054): Tests are disabled due to flakiness caused by being
-// currently unable to block and wait for the script streaming thread.
 // A test for crbug.com/711703. Should not crash.
-TEST_F(ScriptStreamingTest, DISABLED_GarbageCollectDuringStreaming) {
+TEST_F(ScriptStreamingTest, GarbageCollectDuringStreaming) {
   V8TestingScope scope;
 
   EXPECT_FALSE(resource_client_->Finished());
 
   resource_ = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
 }
 
-// TODO(crbug.com/939054): Tests are disabled due to flakiness caused by being
-// currently unable to block and wait for the script streaming thread.
-TEST_F(ScriptStreamingTest, DISABLED_ResourceSetRevalidatingRequest) {
+TEST_F(ScriptStreamingTest, ResourceSetRevalidatingRequest) {
   V8TestingScope scope;
 
   // Kick the streaming off.
@@ -541,11 +554,10 @@ TEST_F(ScriptStreamingTest, DISABLED_ResourceSetRevalidatingRequest) {
   AppendPadding();
   AppendData("}");
   Finish();
-  ProcessTasksUntilStreamingComplete();
+  RunUntilResourceLoaded();
 
   // Should be done streaming by now.
-  EXPECT_TRUE(resource_->HasStreamer());
-  EXPECT_FALSE(resource_->HasRunningStreamer());
+  EXPECT_TRUE(resource_->HasFinishedStreamer());
 
   ResourceRequest request(resource_->Url());
   resource_->SetRevalidatingRequest(request);
@@ -556,7 +568,5 @@ TEST_F(ScriptStreamingTest, DISABLED_ResourceSetRevalidatingRequest) {
   EXPECT_EQ(resource_->NoStreamerReason(),
             ScriptStreamer::NotStreamingReason::kRevalidate);
 }
-
-}  // namespace
 
 }  // namespace blink

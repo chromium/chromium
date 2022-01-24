@@ -57,4 +57,10 @@ void FakePowerInstance::GetWakefulnessMode(
   std::move(callback).Run(mojom::WakefulnessMode::AWAKE);
 }
 
+void FakePowerInstance::OnCpuRestrictionChanged(
+    mojom::CpuRestrictionState cpu_restriction_state) {
+  last_cpu_restriction_state_ = cpu_restriction_state;
+  ++cpu_restriction_state_count_;
+}
+
 }  // namespace arc

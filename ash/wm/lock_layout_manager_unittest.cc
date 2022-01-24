@@ -34,6 +34,10 @@ class LoginTestWidgetDelegate : public views::WidgetDelegate {
     SetOwnedByWidget(true);
     SetFocusTraversesOut(true);
   }
+
+  LoginTestWidgetDelegate(const LoginTestWidgetDelegate&) = delete;
+  LoginTestWidgetDelegate& operator=(const LoginTestWidgetDelegate&) = delete;
+
   ~LoginTestWidgetDelegate() override = default;
 
   // views::WidgetDelegate:
@@ -43,8 +47,6 @@ class LoginTestWidgetDelegate : public views::WidgetDelegate {
 
  private:
   views::Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginTestWidgetDelegate);
 };
 
 }  // namespace

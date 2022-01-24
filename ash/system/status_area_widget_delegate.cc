@@ -39,10 +39,12 @@ class StatusAreaWidgetDelegateAnimationSettings
     SetTweenType(gfx::Tween::EASE_OUT);
   }
 
-  ~StatusAreaWidgetDelegateAnimationSettings() override = default;
+  StatusAreaWidgetDelegateAnimationSettings(
+      const StatusAreaWidgetDelegateAnimationSettings&) = delete;
+  StatusAreaWidgetDelegateAnimationSettings& operator=(
+      const StatusAreaWidgetDelegateAnimationSettings&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(StatusAreaWidgetDelegateAnimationSettings);
+  ~StatusAreaWidgetDelegateAnimationSettings() override = default;
 };
 
 // Gradient background for the status area shown when it overflows into the
@@ -117,7 +119,7 @@ void StatusAreaWidgetDelegate::Shutdown() {
   // TODO(pbos): Investigate if this is necessary. This is a bit defensive but
   // it's done to make sure that StatusAreaWidget isn't accessed by the View
   // hierarchy during its destruction.
-  RemoveAllChildViews(/*delete=*/true);
+  RemoveAllChildViews();
   // StatusAreaWidgetDelegate uses a GridLayout which unfortunately doesn't
   // handle child add/removal. Remove the LayoutManager early to prevent UAFs
   // during Widget destruction.
@@ -170,7 +172,15 @@ bool StatusAreaWidgetDelegate::CanActivate() const {
   return focus_cycler->widget_activating() == GetWidget();
 }
 
+std::unique_ptr<StatusAreaWidgetDelegate::PauseCalculatingTargetBounds>
+StatusAreaWidgetDelegate::CreateScopedPauseCalculatingTargetBounds() {
+  return std::make_unique<PauseCalculatingTargetBounds>(this);
+}
+
 void StatusAreaWidgetDelegate::CalculateTargetBounds() {
+  // Prevents creating new layout manager when adding the tray buttons.
+  if (is_adding_tray_buttons_)
+    return;
   // Use a grid layout so that the trays can be centered in each cell, and
   // so that the widget gets laid out correctly when tray sizes change.
   views::GridLayout* layout =
@@ -230,6 +240,10 @@ void StatusAreaWidgetDelegate::UpdateLayout(bool animate) {
 }
 
 void StatusAreaWidgetDelegate::ChildPreferredSizeChanged(View* child) {
+  // Prevents resizing and layout row and column change when adding the tray
+  // buttons.
+  if (is_adding_tray_buttons_)
+    return;
   const gfx::Size current_size = size();
   const gfx::Size new_size = GetPreferredSize();
   if (new_size == current_size)

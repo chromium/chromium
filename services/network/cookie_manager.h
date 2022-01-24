@@ -44,6 +44,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
       scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store,
       mojom::CookieManagerParamsPtr params);
 
+  CookieManager(const CookieManager&) = delete;
+  CookieManager& operator=(const CookieManager&) = delete;
+
   ~CookieManager() override;
 
   const CookieSettings& cookie_settings() const { return cookie_settings_; }
@@ -59,9 +62,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   void GetAllCookies(GetAllCookiesCallback callback) override;
   void GetAllCookiesWithAccessSemantics(
       GetAllCookiesWithAccessSemanticsCallback callback) override;
-  void GetCookieList(const GURL& url,
-                     const net::CookieOptions& cookie_options,
-                     GetCookieListCallback callback) override;
+  void GetCookieList(
+      const GURL& url,
+      const net::CookieOptions& cookie_options,
+      const net::CookiePartitionKeychain& cookie_partition_keychain,
+      GetCookieListCallback callback) override;
   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
                           const GURL& source_url,
                           const net::CookieOptions& cookie_options,
@@ -112,6 +117,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   // State associated with a CookieChangeListener.
   struct ListenerRegistration {
     ListenerRegistration();
+
+    ListenerRegistration(const ListenerRegistration&) = delete;
+    ListenerRegistration& operator=(const ListenerRegistration&) = delete;
+
     ~ListenerRegistration();
 
     // Translates a CookieStore change callback to a CookieChangeListener call.
@@ -122,8 +131,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
 
     // The observer receiving change notifications.
     mojo::Remote<mojom::CookieChangeListener> listener;
-
-    DISALLOW_COPY_AND_ASSIGN(ListenerRegistration);
   };
 
   // Handles connection errors on change listener pipes.
@@ -136,8 +143,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   // Note: RestrictedCookieManager and CookieAccessDelegate store pointers to
   // |cookie_settings_|.
   CookieSettings cookie_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieManager);
 };
 
 COMPONENT_EXPORT(NETWORK_SERVICE)

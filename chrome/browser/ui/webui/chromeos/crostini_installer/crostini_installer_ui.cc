@@ -61,8 +61,6 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"startContainerError", IDS_CROSTINI_INSTALLER_START_CONTAINER_ERROR},
       {"configureContainerError",
        IDS_CROSTINI_INSTALLER_CONFIGURE_CONTAINER_ERROR},
-      {"fetchSshKeysError", IDS_CROSTINI_INSTALLER_FETCH_SSH_KEYS_ERROR},
-      {"mountContainerError", IDS_CROSTINI_INSTALLER_MOUNT_CONTAINER_ERROR},
       {"setupContainerError", IDS_CROSTINI_INSTALLER_SETUP_CONTAINER_ERROR},
       {"unknownError", IDS_CROSTINI_INSTALLER_UNKNOWN_ERROR},
 
@@ -151,7 +149,8 @@ CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
   source->AddString("defaultContainerUsername",
                     crostini::DefaultContainerUserNameForProfile(profile));
 
-  source->AddResourcePath("app.js", IDR_CROSTINI_INSTALLER_APP_JS);
+  source->AddResourcePath("app.rollup.js",
+                          IDR_CROSTINI_INSTALLER_APP_ROLLUP_JS);
   source->AddResourcePath("browser_proxy.js",
                           IDR_CROSTINI_INSTALLER_BROWSER_PROXY_JS);
   source->AddResourcePath("crostini_installer.mojom-lite.js",

@@ -190,6 +190,10 @@ class ContentVerifier::HashHelper {
  public:
   explicit HashHelper(ContentVerifier* content_verifier)
       : content_verifier_(content_verifier) {}
+
+  HashHelper(const HashHelper&) = delete;
+  HashHelper& operator=(const HashHelper&) = delete;
+
   ~HashHelper() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     // TODO(lazyboy): Do we need to Cancel() the callacks?
@@ -251,6 +255,9 @@ class ContentVerifier::HashHelper {
    public:
     IsCancelledChecker() {}
 
+    IsCancelledChecker(const IsCancelledChecker&) = delete;
+    IsCancelledChecker& operator=(const IsCancelledChecker&) = delete;
+
     // Safe to call from any thread.
     void Cancel() {
       base::AutoLock autolock(cancelled_lock_);
@@ -273,8 +280,6 @@ class ContentVerifier::HashHelper {
 
     // A lock for synchronizing access to |cancelled_|.
     base::Lock cancelled_lock_;
-
-    DISALLOW_COPY_AND_ASSIGN(IsCancelledChecker);
   };
 
   // Holds information about each call to HashHelper::GetContentHash(), for a
@@ -412,8 +417,6 @@ class ContentVerifier::HashHelper {
   ContentVerifier* const content_verifier_ = nullptr;
 
   base::WeakPtrFactory<HashHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HashHelper);
 };
 
 // static
@@ -501,8 +504,8 @@ void ContentVerifier::GetContentHash(
     // pointer to fix this. Also add unit test to exercise this code path
     // explicitly.
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(base::DoNothing::Once<ContentHashCallback>(),
-                                  std::move(callback)));
+        FROM_HERE,
+        base::BindOnce([](ContentHashCallback) {}, std::move(callback)));
     return;
   }
 

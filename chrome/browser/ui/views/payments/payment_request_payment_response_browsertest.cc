@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -22,11 +21,14 @@ namespace payments {
 
 class PaymentRequestPaymentResponseAutofillPaymentAppTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestPaymentResponseAutofillPaymentAppTest(
+      const PaymentRequestPaymentResponseAutofillPaymentAppTest&) = delete;
+  PaymentRequestPaymentResponseAutofillPaymentAppTest& operator=(
+      const PaymentRequestPaymentResponseAutofillPaymentAppTest&) = delete;
+
  protected:
   PaymentRequestPaymentResponseAutofillPaymentAppTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestPaymentResponseAutofillPaymentAppTest);
 };
 
 // Tests that the PaymentResponse contains all the required fields for an
@@ -69,11 +71,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseAutofillPaymentAppTest,
 
 class PaymentRequestPaymentResponseShippingAddressTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestPaymentResponseShippingAddressTest(
+      const PaymentRequestPaymentResponseShippingAddressTest&) = delete;
+  PaymentRequestPaymentResponseShippingAddressTest& operator=(
+      const PaymentRequestPaymentResponseShippingAddressTest&) = delete;
+
  protected:
   PaymentRequestPaymentResponseShippingAddressTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestPaymentResponseShippingAddressTest);
 };
 
 // Tests that the PaymentResponse contains all the required fields for a
@@ -114,11 +119,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseShippingAddressTest,
 
 class PaymentRequestPaymentResponseAllContactDetailsTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestPaymentResponseAllContactDetailsTest(
+      const PaymentRequestPaymentResponseAllContactDetailsTest&) = delete;
+  PaymentRequestPaymentResponseAllContactDetailsTest& operator=(
+      const PaymentRequestPaymentResponseAllContactDetailsTest&) = delete;
+
  protected:
   PaymentRequestPaymentResponseAllContactDetailsTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestPaymentResponseAllContactDetailsTest);
 };
 
 // Tests that the PaymentResponse contains all the required fields for contact
@@ -184,11 +192,14 @@ IN_PROC_BROWSER_TEST_F(
 
 class PaymentRequestPaymentResponseOneContactDetailTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestPaymentResponseOneContactDetailTest(
+      const PaymentRequestPaymentResponseOneContactDetailTest&) = delete;
+  PaymentRequestPaymentResponseOneContactDetailTest& operator=(
+      const PaymentRequestPaymentResponseOneContactDetailTest&) = delete;
+
  protected:
   PaymentRequestPaymentResponseOneContactDetailTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestPaymentResponseOneContactDetailTest);
 };
 
 // Tests that the PaymentResponse contains all the required fields for contact

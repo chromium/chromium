@@ -31,7 +31,7 @@ MixedContentSettingsTabHelper::MixedContentSettingsTabHelper(WebContents* tab)
           WebContents::FromRenderFrameHost(tab->GetOpener()));
   if (opener_settings &&
       opener_settings->IsRunningInsecureContentAllowed(*tab->GetOpener())) {
-    AllowRunningOfInsecureContent(*tab->GetOpener());
+    AllowRunningOfInsecureContent(*tab->GetMainFrame());
   }
 }
 
@@ -79,4 +79,4 @@ void MixedContentSettingsTabHelper::PageSettings::
   is_running_insecure_content_allowed_ = true;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MixedContentSettingsTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(MixedContentSettingsTabHelper);

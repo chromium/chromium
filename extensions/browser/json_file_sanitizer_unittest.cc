@@ -25,6 +25,9 @@ class JsonFileSanitizerTest : public testing::Test {
  public:
   JsonFileSanitizerTest() {}
 
+  JsonFileSanitizerTest(const JsonFileSanitizerTest&) = delete;
+  JsonFileSanitizerTest& operator=(const JsonFileSanitizerTest&) = delete;
+
  protected:
   base::FilePath CreateFilePath(const base::FilePath::StringType& file_name) {
     return temp_dir_.GetPath().Append(file_name);
@@ -84,8 +87,6 @@ class JsonFileSanitizerTest : public testing::Test {
   base::OnceClosure done_callback_;
   std::unique_ptr<JsonFileSanitizer> sanitizer_;
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsonFileSanitizerTest);
 };
 
 }  // namespace

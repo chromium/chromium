@@ -9,15 +9,16 @@
 #import "base/callback_helpers.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/guid.h"
 #import "base/run_loop.h"
+#import "base/sequence_checker.h"
 #import "base/test/bind.h"
 #import "base/test/gmock_callback_support.h"
-#import "base/test/task_environment.h"
+#import "components/download/internal/background_service/test/background_download_test_base.h"
 #import "components/download/public/background_service/download_params.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
-#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,76 +28,104 @@ using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 using net::test_server::HttpMethod;
 
-const char kDefaultResponseContent[] = "1234";
 const char kHeaderValue[] = "abcd1234";
-const char kGuid[] = "kale consumer";
 
 namespace download {
 
-class BackgroundDownloadTaskHelperTest : public PlatformTest {
+class BackgroundDownloadTaskHelperTest
+    : public test::BackgroundDownloadTestBase {
  protected:
   BackgroundDownloadTaskHelperTest() {}
   ~BackgroundDownloadTaskHelperTest() override = default;
 
   void SetUp() override {
-    ASSERT_TRUE(dir_.CreateUniqueTempDir());
-    server_.RegisterRequestHandler(
-        base::BindRepeating(&BackgroundDownloadTaskHelperTest::DefaultResponse,
-                            base::Unretained(this)));
-    server_handle_ = server_.StartAndReturnHandle();
-    helper_ = BackgroundDownloadTaskHelper::Create(dir_.GetPath());
+    BackgroundDownloadTestBase::SetUp();
+    helper_ = BackgroundDownloadTaskHelper::Create();
   }
 
-  void Download(const std::string& relative_url) {
+  void Download(
+      const std::string& relative_url,
+      const std::string& guid,
+      BackgroundDownloadTaskHelper::CompletionCallback completion_callback) {
     DownloadParams params;
     params.request_params.url = server_.GetURL(relative_url);
     params.request_params.method = "POST";
     params.request_params.request_headers.SetHeader(
         net::HttpRequestHeaders::kIfMatch, kHeaderValue);
-    base::RunLoop loop;
-    helper_->StartDownload(
-        kGuid, params.request_params, params.scheduling_params,
-        base::BindLambdaForTesting(
-            [&](bool, const base::FilePath& file_path, int64_t file_size) {
-              std::string content;
-              ASSERT_TRUE(base::ReadFileToString(file_path, &content));
-              EXPECT_EQ(kDefaultResponseContent, content);
-              EXPECT_EQ(file_size, static_cast<int64_t>(content.size()));
-              loop.Quit();
-            }),
-        base::DoNothing());
-    loop.Run();
-    DCHECK(request_sent_);
-    auto it = request_sent_->headers.find(net::HttpRequestHeaders::kIfMatch);
-    EXPECT_EQ(kHeaderValue, it->second);
-    EXPECT_EQ(HttpMethod::METHOD_POST, request_sent_->method);
+    helper_->StartDownload(guid, dir_.GetPath().AppendASCII(guid),
+                           params.request_params, params.scheduling_params,
+                           std::move(completion_callback), base::DoNothing());
   }
 
-  const HttpRequest* request_sent() const { return request_sent_.get(); }
-  const base::ScopedTempDir& dir() const { return dir_; }
+  BackgroundDownloadTaskHelper* helper() { return helper_.get(); }
 
  private:
-  std::unique_ptr<HttpResponse> DefaultResponse(const HttpRequest& request) {
-    request_sent_.reset(new HttpRequest(request));
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_code(net::HTTP_OK);
-    response->set_content(kDefaultResponseContent);
-    response->set_content_type("text/plain");
-    return response;
-  }
-
-  base::test::TaskEnvironment task_environment_;
-  net::EmbeddedTestServer server_;
-  net::test_server::EmbeddedTestServerHandle server_handle_;
-  std::unique_ptr<HttpRequest> request_sent_;
-  base::ScopedTempDir dir_;
   std::unique_ptr<BackgroundDownloadTaskHelper> helper_;
 };
 
 // Verifies download can be finished.
 TEST_F(BackgroundDownloadTaskHelperTest, DownloadComplete) {
-  Download("/test");
-  EXPECT_TRUE(base::PathExists(dir().GetPath().AppendASCII(kGuid)));
+  base::RunLoop loop;
+  std::string guid = base::GenerateGUID();
+  Download("/test", guid,
+           base::BindLambdaForTesting([&](bool success,
+                                          const base::FilePath& file_path,
+                                          int64_t file_size) {
+             std::string content;
+             EXPECT_TRUE(success);
+             ASSERT_TRUE(base::ReadFileToString(file_path, &content));
+             EXPECT_EQ(BackgroundDownloadTestBase::kDefaultResponseContent,
+                       content);
+             EXPECT_EQ(file_size, static_cast<int64_t>(content.size()));
+             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+             loop.Quit();
+           }));
+  loop.Run();
+  EXPECT_TRUE(base::PathExists(dir().GetPath().AppendASCII(guid)));
+  DCHECK(request_sent());
+  auto it = request_sent()->headers.find(net::HttpRequestHeaders::kIfMatch);
+  EXPECT_EQ(kHeaderValue, it->second);
+  EXPECT_EQ(HttpMethod::METHOD_POST, request_sent()->method);
+}
+
+// Verifies non success http code is treated as error.
+// TODO(crbug.com/1261881):Disabled test because it fails multiple builders.
+// Re-enable it when fixed.
+TEST_F(BackgroundDownloadTaskHelperTest, DownloadErrorNonSuccessHttpCode) {
+  base::RunLoop loop;
+  std::string guid = base::GenerateGUID();
+  Download("/notfound", guid,
+           base::BindLambdaForTesting([&](bool success,
+                                          const base::FilePath& file_path,
+                                          int64_t file_size) {
+             EXPECT_FALSE(success);
+             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+             loop.Quit();
+           }));
+  loop.Run();
+  EXPECT_FALSE(base::PathExists(dir().GetPath().AppendASCII(guid)));
+}
+
+// Verifies data URL should result in failure.
+// TODO(crbug.com/1261931): Flaky test. Please remove it when fixed.
+TEST_F(BackgroundDownloadTaskHelperTest, DataURL) {
+  base::RunLoop loop;
+  std::string guid = base::GenerateGUID();
+  DownloadParams params;
+  params.request_params.url = GURL("data:text/plain;base64,Q2hyb21pdW0=");
+  helper()->StartDownload(
+      guid, dir_.GetPath().AppendASCII(guid), params.request_params,
+      params.scheduling_params,
+      base::BindLambdaForTesting([&](bool success,
+                                     const base::FilePath& file_path,
+                                     int64_t file_size) {
+        EXPECT_FALSE(success);
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+        loop.Quit();
+      }),
+      base::DoNothing());
+  loop.Run();
+  EXPECT_FALSE(base::PathExists(dir().GetPath().AppendASCII(guid)));
 }
 
 }  // namespace download

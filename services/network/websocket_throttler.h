@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketPerProcessThrottler final {
     explicit PendingConnection(
         base::WeakPtr<WebSocketPerProcessThrottler> throttler);
     PendingConnection(PendingConnection&& other);
+
+    PendingConnection(const PendingConnection&) = delete;
+    PendingConnection& operator=(const PendingConnection&) = delete;
+
     ~PendingConnection();
 
     // Called when the hansdhake finishes sucessfully.
@@ -40,11 +44,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketPerProcessThrottler final {
 
    private:
     base::WeakPtr<WebSocketPerProcessThrottler> throttler_;
-
-    DISALLOW_COPY_AND_ASSIGN(PendingConnection);
   };
 
   WebSocketPerProcessThrottler();
+
+  WebSocketPerProcessThrottler(const WebSocketPerProcessThrottler&) = delete;
+  WebSocketPerProcessThrottler& operator=(const WebSocketPerProcessThrottler&) =
+      delete;
+
   ~WebSocketPerProcessThrottler();
 
   // Returns if there are too many pending connections.
@@ -98,8 +105,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketPerProcessThrottler final {
   static constexpr int kMaxPendingWebSocketConnections = 255;
 
   base::WeakPtrFactory<WebSocketPerProcessThrottler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketPerProcessThrottler);
 };
 
 // This class is for throttling WebSocket connections. WebSocketThrottler is
@@ -109,6 +114,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketThrottler final {
   using PendingConnection = WebSocketPerProcessThrottler::PendingConnection;
 
   WebSocketThrottler();
+
+  WebSocketThrottler(const WebSocketThrottler&) = delete;
+  WebSocketThrottler& operator=(const WebSocketThrottler&) = delete;
+
   ~WebSocketThrottler();
 
   // Returns true if there are too many pending connections for |process_id|.
@@ -131,8 +140,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketThrottler final {
   std::map<int, std::unique_ptr<WebSocketPerProcessThrottler>>
       per_process_throttlers_;
   base::RepeatingTimer throttling_period_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketThrottler);
 };
 
 }  // namespace network

@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "ash/public/cpp/tablet_mode.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
@@ -19,7 +21,7 @@ class Separator;
 }  // namespace views
 
 namespace sharesheet {
-class SharesheetServiceDelegate;
+class SharesheetServiceDelegator;
 }
 
 namespace ash {
@@ -28,13 +30,14 @@ namespace sharesheet {
 class SharesheetHeaderView;
 class SharesheetExpandButton;
 
-class SharesheetBubbleView : public views::BubbleDialogDelegateView {
+class SharesheetBubbleView : public views::BubbleDialogDelegateView,
+                             public TabletModeObserver {
  public:
   METADATA_HEADER(SharesheetBubbleView);
   using TargetInfo = ::sharesheet::TargetInfo;
 
   SharesheetBubbleView(gfx::NativeWindow native_window,
-                       ::sharesheet::SharesheetServiceDelegate* delegate);
+                       ::sharesheet::SharesheetServiceDelegator* delegate);
   SharesheetBubbleView(const SharesheetBubbleView&) = delete;
   SharesheetBubbleView& operator=(const SharesheetBubbleView&) = delete;
   ~SharesheetBubbleView() override;
@@ -64,13 +67,17 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // views::WidgetDelegate:
-  ax::mojom::Role GetAccessibleWindowRole() override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
+  void OnTabletControllerDestroyed() override;
 
   void CreateBubble();
   std::unique_ptr<views::View> MakeScrollableTargetView(
@@ -90,7 +97,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void RecordFormFactorMetric();
 
   // Owns this class.
-  ::sharesheet::SharesheetServiceDelegate* delegate_;
+  ::sharesheet::SharesheetServiceDelegator* delegator_;
   std::u16string active_target_;
   apps::mojom::IntentPtr intent_;
   ::sharesheet::DeliveredCallback delivered_callback_;
@@ -107,6 +114,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
 
   views::View* main_view_ = nullptr;
   SharesheetHeaderView* header_view_ = nullptr;
+  views::View* body_view_ = nullptr;
   views::View* footer_view_ = nullptr;
   views::View* default_view_ = nullptr;
   views::View* expanded_view_ = nullptr;
@@ -121,6 +129,8 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   SharesheetExpandButton* expand_button_ = nullptr;
 
   std::unique_ptr<SharesheetParentWidgetObserver> parent_widget_observer_;
+  base::ScopedObservation<TabletMode, TabletModeObserver>
+      tablet_mode_observation_{this};
 };
 
 }  // namespace sharesheet

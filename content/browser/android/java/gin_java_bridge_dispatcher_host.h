@@ -12,7 +12,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -39,6 +38,10 @@ class GinJavaBridgeDispatcherHost
   GinJavaBridgeDispatcherHost(
       WebContents* web_contents,
       const base::android::JavaRef<jobject>& retained_object_set);
+
+  GinJavaBridgeDispatcherHost(const GinJavaBridgeDispatcherHost&) = delete;
+  GinJavaBridgeDispatcherHost& operator=(const GinJavaBridgeDispatcherHost&) =
+      delete;
 
   void AddNamedObject(
       const std::string& name,
@@ -122,8 +125,6 @@ class GinJavaBridgeDispatcherHost
 
   // The following objects are only used on the background thread.
   bool allow_object_contents_inspection_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinJavaBridgeDispatcherHost);
 };
 
 }  // namespace content

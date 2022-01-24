@@ -6,18 +6,17 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/favicon_base/favicon_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class FaviconUrlParserTest : public testing::Test {
  public:
   FaviconUrlParserTest() = default;
+
+  FaviconUrlParserTest(const FaviconUrlParserTest&) = delete;
+  FaviconUrlParserTest& operator=(const FaviconUrlParserTest&) = delete;
+
   ~FaviconUrlParserTest() override = default;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconUrlParserTest);
 };
 
 // Test parsing path with no extra parameters.

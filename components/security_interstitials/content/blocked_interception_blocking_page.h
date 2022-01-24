@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_BLOCKED_INTERCEPTION_BLOCKING_PAGE_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_BLOCKED_INTERCEPTION_BLOCKING_PAGE_H_
 
-#include "base/macros.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/core/blocked_interception_ui.h"
@@ -27,6 +26,12 @@ class BlockedInterceptionBlockingPage : public SSLBlockingPageBase {
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);
+
+  BlockedInterceptionBlockingPage(const BlockedInterceptionBlockingPage&) =
+      delete;
+  BlockedInterceptionBlockingPage& operator=(
+      const BlockedInterceptionBlockingPage&) = delete;
+
   ~BlockedInterceptionBlockingPage() override;
 
   // SecurityInterstitialPage method:
@@ -43,8 +48,6 @@ class BlockedInterceptionBlockingPage : public SSLBlockingPageBase {
 
   const std::unique_ptr<security_interstitials::BlockedInterceptionUI>
       blocked_interception_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockedInterceptionBlockingPage);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_BLOCKED_INTERCEPTION_BLOCKING_PAGE_H_

@@ -31,7 +31,7 @@ constexpr int kButtonSpacing = 2;
 
 }  // namespace
 
-CaptureModeTypeView::CaptureModeTypeView()
+CaptureModeTypeView::CaptureModeTypeView(bool projector_mode)
     : image_toggle_button_(
           AddChildView(std::make_unique<CaptureModeToggleButton>(
               base::BindRepeating(&CaptureModeTypeView::OnImageToggle,
@@ -54,8 +54,14 @@ CaptureModeTypeView::CaptureModeTypeView()
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   auto* controller = CaptureModeController::Get();
-  // We can't have more than one recording at the same time.
-  video_toggle_button_->SetEnabled(!controller->is_recording_in_progress());
+  if (controller->is_recording_in_progress()) {
+    // We can't have more than one recording at the same time.
+    video_toggle_button_->SetEnabled(false);
+  } else if (projector_mode) {
+    // Projector mode can only do video recording.
+    image_toggle_button_->SetEnabled(false);
+  }
+
   OnCaptureTypeChanged(controller->type());
 
   image_toggle_button_->SetTooltipText(

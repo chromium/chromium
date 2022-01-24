@@ -54,6 +54,11 @@ const char switches::kTestLauncherListTests[] = "test-launcher-list-tests";
 // Path to test results file in our custom test launcher format.
 const char switches::kTestLauncherOutput[] = "test-launcher-output";
 
+// Maximum output bytes allowed from a single test. Exceeding this limit
+// results in truncating the output and failing the test.
+const char switches::kTestLauncherOutputBytesLimit[] =
+    "test-launcher-output-bytes-limit";
+
 // Causes the test launcher to print information about leaked files and/or
 // directories in child process's temporary directories.
 const char switches::kTestLauncherPrintTempLeaks[] =

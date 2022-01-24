@@ -22,10 +22,14 @@ class SwitchableAudioRendererSink;
 namespace chromecast {
 namespace media {
 
-class CastAudioDeviceFactory : public blink::WebAudioDeviceFactory {
+class CastAudioDeviceFactory final : public blink::WebAudioDeviceFactory {
  public:
   CastAudioDeviceFactory();
-  ~CastAudioDeviceFactory() final;
+
+  CastAudioDeviceFactory(const CastAudioDeviceFactory&) = delete;
+  CastAudioDeviceFactory& operator=(const CastAudioDeviceFactory&) = delete;
+
+  ~CastAudioDeviceFactory() override;
 
   scoped_refptr<::media::AudioRendererSink> CreateFinalAudioRendererSink(
       const blink::LocalFrameToken& frame_token,
@@ -46,9 +50,6 @@ class CastAudioDeviceFactory : public blink::WebAudioDeviceFactory {
   scoped_refptr<::media::AudioCapturerSource> CreateAudioCapturerSource(
       const blink::LocalFrameToken& frame_token,
       const ::media::AudioSourceParameters& params) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastAudioDeviceFactory);
 };
 
 }  // namespace media

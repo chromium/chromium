@@ -22,13 +22,15 @@ class PlatformSensorProviderTest : public testing::Test {
     provider_ = std::make_unique<FakePlatformSensorProvider>();
   }
 
+  PlatformSensorProviderTest(const PlatformSensorProviderTest&) = delete;
+  PlatformSensorProviderTest& operator=(const PlatformSensorProviderTest&) =
+      delete;
+
  protected:
   std::unique_ptr<FakePlatformSensorProvider> provider_;
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorProviderTest);
 };
 
 TEST_F(PlatformSensorProviderTest, ResourcesAreFreed) {

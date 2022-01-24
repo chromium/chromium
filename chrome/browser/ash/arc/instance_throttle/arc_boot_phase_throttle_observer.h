@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_BOOT_PHASE_THROTTLE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_BOOT_PHASE_THROTTLE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "chrome/browser/chromeos/throttle_observer.h"
+#include "chrome/browser/ash/throttle_observer.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 
 namespace content {
@@ -19,15 +18,20 @@ namespace arc {
 
 // This class observes phases of ARC boot and unthrottles the container
 // when ARC is booting or restarting.
-class ArcBootPhaseThrottleObserver : public chromeos::ThrottleObserver,
+class ArcBootPhaseThrottleObserver : public ash::ThrottleObserver,
                                      public ArcSessionManagerObserver,
                                      public ArcBootPhaseMonitorBridge::Observer,
                                      public SessionRestoreObserver {
  public:
   ArcBootPhaseThrottleObserver();
+
+  ArcBootPhaseThrottleObserver(const ArcBootPhaseThrottleObserver&) = delete;
+  ArcBootPhaseThrottleObserver& operator=(const ArcBootPhaseThrottleObserver&) =
+      delete;
+
   ~ArcBootPhaseThrottleObserver() override = default;
 
-  // chromeos::ThrottleObserver:
+  // ash::ThrottleObserver:
   void StartObserving(content::BrowserContext* context,
                       const ObserverStateChangedCallback& callback) override;
   void StopObserving() override;
@@ -53,8 +57,6 @@ class ArcBootPhaseThrottleObserver : public chromeos::ThrottleObserver,
   ArcBootPhaseMonitorBridge* boot_phase_monitor_ = nullptr;
   bool session_restore_loading_ = false;
   bool arc_is_booting_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBootPhaseThrottleObserver);
 };
 
 }  // namespace arc

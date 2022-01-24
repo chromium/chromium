@@ -475,7 +475,7 @@ Polymer({
   /**
    * Builds the html for the zero state help text, applying the appropriate aria
    * labels, and setting the href of the link. This function is largely copied
-   * from getAriaLabelledContent_ in <settings-localized-link>, which can't be
+   * from getAriaLabelledContent_ in <localized-link>, which can't be
    * used directly because this is Polymer element is used outside settings.
    * TODO(crbug.com/1170849): Extract this logic into a general method.
    * @return {string}

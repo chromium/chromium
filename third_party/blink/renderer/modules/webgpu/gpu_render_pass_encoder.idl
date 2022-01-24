@@ -15,7 +15,6 @@
                         GPUIntegerCoordinate width, GPUIntegerCoordinate height);
 
     [RaisesException] void setBlendConstant(GPUColor color);
-    [RaisesException] void setBlendColor(GPUColor color); // Deprecated
     void setStencilReference(GPUStencilValue reference);
 
     void executeBundles(sequence<GPURenderBundle> bundles);

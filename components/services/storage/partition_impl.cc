@@ -8,9 +8,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"

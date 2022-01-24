@@ -9,7 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_io_thread.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/threading/sequenced_task_runner_handle.h"

@@ -927,7 +927,9 @@
 "hidden-matchable"
 "more"
 "less"
-"forced"
+"custom"
+"spelling-error"
+"grammar-error"
 
 # at-rules
 "@charset"

@@ -88,6 +88,9 @@ class ShaderProgram : public base::RefCounted<ShaderProgram> {
         rgb_to_plane1_location_(-1),
         rgb_to_plane2_location_(-1) {}
 
+  ShaderProgram(const ShaderProgram&) = delete;
+  ShaderProgram& operator=(const ShaderProgram&) = delete;
+
   // Compile shader program.
   void Setup(const GLchar* vertex_shader_text,
              const GLchar* fragment_shader_text);
@@ -136,8 +139,6 @@ class ShaderProgram : public base::RefCounted<ShaderProgram> {
   GLint rgb_to_plane0_location_;
   GLint rgb_to_plane1_location_;
   GLint rgb_to_plane2_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderProgram);
 };
 
 // Implementation of a single stage in a scaler pipeline. If the pipeline has

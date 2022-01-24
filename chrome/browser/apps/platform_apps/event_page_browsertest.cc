@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/test/extension_test_message_listener.h"
 
 using extensions::Extension;
@@ -21,10 +19,7 @@ class AppEventPageTest : public PlatformAppBrowserTest {
     const Extension* extension = LoadAndLaunchPlatformApp(app_path, "launched");
     ASSERT_TRUE(extension);
 
-    content::WindowedNotificationObserver event_page_suspended(
-        extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-        content::NotificationService::AllSources());
-
+    extensions::ExtensionHostTestHelper host_helper(profile(), extension->id());
     // Close the app window.
     EXPECT_EQ(1U, GetAppWindowCount());
     extensions::AppWindow* app_window = GetFirstAppWindow();
@@ -32,7 +27,7 @@ class AppEventPageTest : public PlatformAppBrowserTest {
     CloseAppWindow(app_window);
 
     // Verify that the event page is destroyed.
-    event_page_suspended.Wait();
+    host_helper.WaitForHostDestroyed();
   }
 };
 

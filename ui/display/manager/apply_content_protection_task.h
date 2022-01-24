@@ -9,7 +9,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/types/display_constants.h"
@@ -31,6 +30,11 @@ class DISPLAY_MANAGER_EXPORT ApplyContentProtectionTask
       NativeDisplayDelegate* native_display_delegate,
       ContentProtectionManager::ContentProtections requests,
       ResponseCallback callback);
+
+  ApplyContentProtectionTask(const ApplyContentProtectionTask&) = delete;
+  ApplyContentProtectionTask& operator=(const ApplyContentProtectionTask&) =
+      delete;
+
   ~ApplyContentProtectionTask() override;
 
   void Run() override;
@@ -69,8 +73,6 @@ class DISPLAY_MANAGER_EXPORT ApplyContentProtectionTask
   size_t pending_requests_ = 0;
 
   base::WeakPtrFactory<ApplyContentProtectionTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ApplyContentProtectionTask);
 };
 
 }  // namespace display

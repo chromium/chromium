@@ -27,6 +27,8 @@
 #include "ui/events/event.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/gesture_detection/gesture_configuration.h"
+#include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -44,12 +46,24 @@ const int kSoundDelayInMS = 150;
 
 // How long the user must stay in the same anchor point in touch exploration
 // before a right-click is triggered.
-const base::TimeDelta kLongPressTimerDelay = base::TimeDelta::FromSeconds(5);
+const base::TimeDelta kLongPressTimerDelay = base::Seconds(5);
 
 void SetTouchAccessibilityFlag(ui::Event* event) {
   // This flag is used to identify mouse move events that were generated from
   // touch exploration in Chrome code.
   event->set_flags(event->flags() | ui::EF_TOUCH_ACCESSIBILITY);
+}
+
+std::unique_ptr<ui::GestureProviderAura> BuildGestureProviderAura(
+    TouchExplorationController* owner) {
+  // Tune some aspects of gesture detection for ChromeVox.
+  ui::GestureProvider::Config config =
+      GetGestureProviderConfig(ui::GestureProviderConfigType::CURRENT_PLATFORM);
+  config.gesture_detector_config.maximum_swipe_deviation_angle = 45;
+  auto gesture_provider =
+      std::make_unique<ui::GestureProviderAura>(owner, owner);
+  gesture_provider->filtered_gesture_provider().UpdateConfig(config);
+  return gesture_provider;
 }
 
 }  // namespace
@@ -62,7 +76,7 @@ TouchExplorationController::TouchExplorationController(
       delegate_(delegate),
       state_(NO_FINGERS_DOWN),
       anchor_point_state_(ANCHOR_POINT_NONE),
-      gesture_provider_(new ui::GestureProviderAura(this, this)),
+      gesture_provider_(BuildGestureProviderAura(this)),
       prev_state_(NO_FINGERS_DOWN),
       VLOG_on_(true),
       touch_accessibility_enabler_(touch_accessibility_enabler) {
@@ -535,7 +549,6 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploreSecondPress(
     ui::TouchEvent new_event(ui::ET_TOUCH_CANCELLED, gfx::Point(),
                              event.time_stamp(),
                              initial_press_->pointer_details(), event.flags());
-    // TODO(dmazzoni): fix for multiple displays. http://crbug.com/616793
     // |event| locations are in DIP; see |RewriteEvent|. We need to dispatch
     // screen coordinates.
     gfx::PointF location_f(ConvertDIPToPixels(anchor_point_dip_));
@@ -698,8 +711,7 @@ ui::EventDispatchDetails TouchExplorationController::InSlideGesture(
   // This can occur if the user leaves the screen edge and then returns to it to
   // continue adjusting the sound.
   if (!sound_timer_.IsRunning()) {
-    sound_timer_.Start(FROM_HERE,
-                       base::TimeDelta::FromMilliseconds(kSoundDelayInMS), this,
+    sound_timer_.Start(FROM_HERE, base::Milliseconds(kSoundDelayInMS), this,
                        &TouchExplorationController::PlaySoundForTimer);
     delegate_->PlayVolumeAdjustEarcon();
   }
@@ -1100,7 +1112,7 @@ void TouchExplorationController::SetState(State new_state,
       max_gesture_touch_points_ = 0;
       break;
     case NO_FINGERS_DOWN:
-      gesture_provider_ = std::make_unique<ui::GestureProviderAura>(this, this);
+      gesture_provider_ = BuildGestureProviderAura(this);
       if (sound_timer_.IsRunning())
         sound_timer_.Stop();
       tap_timer_.Stop();

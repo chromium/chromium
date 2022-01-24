@@ -66,3 +66,7 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
       if 'telemetry_gpu_integration_test' in isolate and 'android' in isolate:
         return
     self.fail('Did not find any Android-specific isolate names')
+
+
+if __name__ == '__main__':
+  unittest.main(verbosity=2)

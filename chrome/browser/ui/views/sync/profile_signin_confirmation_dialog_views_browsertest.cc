@@ -24,12 +24,12 @@ class TestSigninDialogDelegate : public ui::ProfileSigninConfirmationDelegate {
  public:
   TestSigninDialogDelegate() {}
 
+  TestSigninDialogDelegate(const TestSigninDialogDelegate&) = delete;
+  TestSigninDialogDelegate& operator=(const TestSigninDialogDelegate&) = delete;
+
   void OnCancelSignin() override {}
   void OnContinueSignin() override {}
   void OnSigninWithNewProfile() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestSigninDialogDelegate);
 };
 
 }  // namespace
@@ -37,6 +37,11 @@ class TestSigninDialogDelegate : public ui::ProfileSigninConfirmationDelegate {
 class ProfileSigninConfirmationDialogTest : public DialogBrowserTest {
  public:
   ProfileSigninConfirmationDialogTest() {}
+
+  ProfileSigninConfirmationDialogTest(
+      const ProfileSigninConfirmationDialogTest&) = delete;
+  ProfileSigninConfirmationDialogTest& operator=(
+      const ProfileSigninConfirmationDialogTest&) = delete;
 
   void ShowUi(const std::string& name) override {
     content::WebContents* web_contents =
@@ -47,9 +52,6 @@ class ProfileSigninConfirmationDialogTest : public DialogBrowserTest {
             /*prompt_for_new_profile=*/true,
             std::make_unique<TestSigninDialogDelegate>());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileSigninConfirmationDialogTest);
 };
 
 // Test that calls ShowUi("true").

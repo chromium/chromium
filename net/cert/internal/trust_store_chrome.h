@@ -32,16 +32,16 @@ class NET_EXPORT TrustStoreChrome : public TrustStore {
   // TrustStore implementation:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
-  void GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                CertificateTrust* trust,
-                base::SupportsUserData* debug_data) const override;
+  CertificateTrust GetTrust(const ParsedCertificate* cert,
+                            base::SupportsUserData* debug_data) const override;
 
   // Returns true if the trust store contains the given ParsedCertificate
   // (matches by DER).
   bool Contains(const ParsedCertificate* cert) const;
 
  private:
-  explicit TrustStoreChrome(base::span<const ChromeRootCertInfo> certs);
+  TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
+                   bool certs_are_static);
   TrustStoreInMemory trust_store_;
 };
 

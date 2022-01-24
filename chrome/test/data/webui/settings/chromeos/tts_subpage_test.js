@@ -21,12 +21,12 @@ suite('TtsSubpage', function() {
 
   test('Preview Voice Select Options', function() {
     ttsSubpage.prefs = {
-      settings: {
-        'language': {
-          'preferred_languages': {
-            value: '',
-          },
+      intl: {
+        accept_languages: {
+          value: '',
         },
+      },
+      settings: {
         'tts': {
           'lang_to_voice_name': {
             value: '',

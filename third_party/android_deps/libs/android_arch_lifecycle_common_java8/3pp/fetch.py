@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/android/arch/lifecycle/common-java8/1.1.1/common-java8-1.1.1.jar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/android/arch/lifecycle/common-java8/1.1.1/common-java8-1.1.1.jar'
 _FILE_NAME = 'common-java8-1.1.1.jar'
 _FILE_VERSION = '1.1.1'
 

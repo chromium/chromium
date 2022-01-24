@@ -11,14 +11,20 @@ ThemeCopyingWidget::ThemeCopyingWidget(views::Widget* role_model)
 
 ThemeCopyingWidget::~ThemeCopyingWidget() = default;
 
-const ui::NativeTheme* ThemeCopyingWidget::GetNativeTheme() const {
-  return observed_widget_.IsObserving() ? role_model_->GetNativeTheme()
-                                        : Widget::GetNativeTheme();
-}
-
 const ui::ThemeProvider* ThemeCopyingWidget::GetThemeProvider() const {
   return observed_widget_.IsObserving() ? role_model_->GetThemeProvider()
                                         : Widget::GetThemeProvider();
+}
+
+ui::ColorProviderManager::InitializerSupplier*
+ThemeCopyingWidget::GetCustomTheme() const {
+  return observed_widget_.IsObserving() ? role_model_->GetCustomTheme()
+                                        : Widget::GetCustomTheme();
+}
+
+const ui::NativeTheme* ThemeCopyingWidget::GetNativeTheme() const {
+  return observed_widget_.IsObserving() ? role_model_->GetNativeTheme()
+                                        : Widget::GetNativeTheme();
 }
 
 void ThemeCopyingWidget::OnWidgetDestroying(Widget* widget) {

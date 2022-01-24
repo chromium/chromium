@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/views/examples/views_examples_export.h"
 
 namespace views {
@@ -19,6 +18,9 @@ namespace examples {
 
 class VIEWS_EXAMPLES_EXPORT ExampleBase {
  public:
+  ExampleBase(const ExampleBase&) = delete;
+  ExampleBase& operator=(const ExampleBase&) = delete;
+
   virtual ~ExampleBase();
 
   // Sub-classes should creates and add the views to the given parent.
@@ -36,8 +38,6 @@ class VIEWS_EXAMPLES_EXPORT ExampleBase {
 
   // The view that contains the views example.
   std::unique_ptr<View> container_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExampleBase);
 };
 
 using ExampleVector = std::vector<std::unique_ptr<ExampleBase>>;

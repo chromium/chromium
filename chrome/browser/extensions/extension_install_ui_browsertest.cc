@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -37,6 +36,11 @@ using extensions::Extension;
 class ExtensionInstallUIBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   ExtensionInstallUIBrowserTest() {}
+
+  ExtensionInstallUIBrowserTest(const ExtensionInstallUIBrowserTest&) = delete;
+  ExtensionInstallUIBrowserTest& operator=(
+      const ExtensionInstallUIBrowserTest&) = delete;
+
   ~ExtensionInstallUIBrowserTest() override {}
 
   // Checks that a theme info bar is currently visible and issues an undo to
@@ -89,9 +93,6 @@ class ExtensionInstallUIBrowserTest : public extensions::ExtensionBrowserTest {
         ThemeServiceFactory::GetForProfile(browser()->profile()));
     waiter.WaitForThemeChanged();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallUIBrowserTest);
 };
 
 // Fails on Linux and Windows (http://crbug.com/580907).

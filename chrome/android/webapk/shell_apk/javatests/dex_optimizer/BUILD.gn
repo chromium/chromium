@@ -4,12 +4,6 @@
 
 import("//build/config/android/rules.gni")
 
-android_aidl("dex_optimizer_service_aidl") {
-  interface_file =
-      "src/org/chromium/webapk/shell_apk/test/dex_optimizer/common.aidl"
-  sources = [ "src/org/chromium/webapk/shell_apk/test/dex_optimizer/IDexOptimizerService.aidl" ]
-}
-
 android_apk("dex_optimizer_apk") {
   # Used as an additional_apk in test scripts.
   never_incremental = true
@@ -21,12 +15,9 @@ android_apk("dex_optimizer_apk") {
   android_manifest = "AndroidManifest.xml"
   apk_name = "DexOptimizer"
   chromium_code = false
-  sources = [ "src/org/chromium/webapk/shell_apk/test/dex_optimizer/DexOptimizerServiceImpl.java" ]
+  sources = []
   deps = [
-    "//base:base_java",
-    "//chrome/android/webapk/libs/client:client_java",
     "//chrome/android/webapk/shell_apk/javatests/canary_lib:canary_dex2_assets",
     "//chrome/android/webapk/shell_apk/javatests/canary_lib:canary_dex_assets",
   ]
-  srcjar_deps = [ ":dex_optimizer_service_aidl" ]
 }

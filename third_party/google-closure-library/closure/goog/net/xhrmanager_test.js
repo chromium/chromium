@@ -1,24 +1,18 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.net.XhrManagerTest');
 goog.setTestOnly();
 
 const EventType = goog.require('goog.net.EventType');
+const TestingNetXhrIo = goog.requireType('goog.testing.net.XhrIo');
 const XhrIo = goog.require('goog.net.XhrIo');
 const XhrIoPool = goog.require('goog.testing.net.XhrIoPool');
 const XhrManager = goog.require('goog.net.XhrManager');
+const dispose = goog.require('goog.dispose');
 const events = goog.require('goog.events');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
@@ -26,18 +20,20 @@ const testSuite = goog.require('goog.testing.testSuite');
 /** @type {XhrManager} */
 let xhrManager;
 
-/** @type {goog.testing.net.XhrIo} */
+/** @type {TestingNetXhrIo} */
 let xhrIo;
 
 testSuite({
   setUp() {
     xhrManager = new XhrManager();
+    /** @suppress {visibility} suppression added to enable type checking */
     xhrManager.xhrPool_ = new XhrIoPool();
+    /** @suppress {visibility} suppression added to enable type checking */
     xhrIo = xhrManager.xhrPool_.getXhr();
   },
 
   tearDown() {
-    goog.dispose(xhrManager);
+    dispose(xhrManager);
   },
 
   testGetOutstandingRequestIds() {

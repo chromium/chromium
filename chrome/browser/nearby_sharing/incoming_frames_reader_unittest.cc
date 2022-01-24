@@ -19,7 +19,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kTimeout = base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kTimeout = base::Milliseconds(1000);
 
 std::vector<uint8_t> GetIntroductionFrame() {
   sharing::nearby::Frame frame = sharing::nearby::Frame();

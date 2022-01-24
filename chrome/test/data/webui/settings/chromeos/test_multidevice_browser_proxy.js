@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // #import {MultiDeviceSettingsMode, MultiDeviceFeature, MultiDevicePageContentData} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {PrintServerResult} from 'chrome://os-settings/chromeos/lazy_load.js';
 // clang-format on

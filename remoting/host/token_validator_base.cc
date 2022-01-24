@@ -12,8 +12,8 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/escape.h"
@@ -105,10 +105,10 @@ bool WorseThan(const std::string& issuer,
 }
 
 #if defined(OS_WIN)
-HCERTSTORE OpenLocalMachineCertStore() {
-  return ::CertOpenStore(
+crypto::ScopedHCERTSTORE OpenLocalMachineCertStore() {
+  return crypto::ScopedHCERTSTORE(::CertOpenStore(
       CERT_STORE_PROV_SYSTEM, 0, NULL,
-      CERT_SYSTEM_STORE_LOCAL_MACHINE | CERT_STORE_READONLY_FLAG, L"MY");
+      CERT_SYSTEM_STORE_LOCAL_MACHINE | CERT_STORE_READONLY_FLAG, L"MY"));
 }
 #endif
 
@@ -305,7 +305,7 @@ protocol::TokenValidator::ValidationResult TokenValidatorBase::ProcessResponse(
       size_t start_pos = data_.find(kForbiddenExceptionToken);
       if (start_pos != std::string::npos) {
         if (data_.find(kAuthzDeniedErrorCode, start_pos) != std::string::npos) {
-          return RejectionReason::AUTHZ_POLICY_CHECK_FAILED;
+          return RejectionReason::AUTHORIZATION_POLICY_CHECK_FAILED;
         }
       }
     }

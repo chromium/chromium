@@ -12,7 +12,6 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
@@ -53,6 +52,10 @@ class EasyUnlockCreateKeysOperation::ChallengeCreator {
                    const std::string& tpm_pub_key,
                    EasyUnlockDeviceKeyData* device,
                    ChallengeCreatedCallback callback);
+
+  ChallengeCreator(const ChallengeCreator&) = delete;
+  ChallengeCreator& operator=(const ChallengeCreator&) = delete;
+
   ~ChallengeCreator();
 
   void Start();
@@ -86,8 +89,6 @@ class EasyUnlockCreateKeysOperation::ChallengeCreator {
   EasyUnlockClient* easy_unlock_client_;
 
   base::WeakPtrFactory<ChallengeCreator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChallengeCreator);
 };
 
 EasyUnlockCreateKeysOperation::ChallengeCreator::ChallengeCreator(

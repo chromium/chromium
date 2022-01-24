@@ -9,9 +9,8 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
 namespace feedback {
@@ -41,6 +40,9 @@ class FeedbackReport : public base::RefCountedThreadSafe<FeedbackReport> {
                  std::unique_ptr<std::string> data,
                  scoped_refptr<base::SequencedTaskRunner> task_runner,
                  bool has_email);
+
+  FeedbackReport(const FeedbackReport&) = delete;
+  FeedbackReport& operator=(const FeedbackReport&) = delete;
 
   // The ID of the product specific data for the crash report IDs as stored by
   // the feedback server.
@@ -86,8 +88,6 @@ class FeedbackReport : public base::RefCountedThreadSafe<FeedbackReport> {
   std::unique_ptr<std::string> data_;
 
   scoped_refptr<base::SequencedTaskRunner> reports_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackReport);
 };
 
 }  // namespace feedback

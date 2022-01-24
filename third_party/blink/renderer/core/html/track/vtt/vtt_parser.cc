@@ -495,7 +495,7 @@ bool VTTParser::CollectTimeStamp(const String& line, double& time_stamp) {
 }
 
 static String SerializeTimeStamp(double time_stamp) {
-  uint64_t value = clampTo<uint64_t>(time_stamp * 1000);
+  uint64_t value = ClampTo<uint64_t>(time_stamp * 1000);
   unsigned milliseconds = value % 1000;
   value /= 1000;
   unsigned seconds = value % 60;

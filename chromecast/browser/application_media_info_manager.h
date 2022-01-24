@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/document_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "media/mojo/mojom/cast_application_media_info_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -24,7 +24,7 @@ namespace media {
 class ApplicationMediaInfoManagerTest;
 
 class ApplicationMediaInfoManager
-    : public ::content::DocumentServiceBase<
+    : public ::content::DocumentService<
           ::media::mojom::CastApplicationMediaInfoManager>,
       public base::SupportsWeakPtr<ApplicationMediaInfoManager> {
  public:
@@ -34,6 +34,11 @@ class ApplicationMediaInfoManager
           receiver,
       std::string application_session_id,
       bool mixer_audio_enabled);
+
+  ApplicationMediaInfoManager(const ApplicationMediaInfoManager&) = delete;
+  ApplicationMediaInfoManager& operator=(const ApplicationMediaInfoManager&) =
+      delete;
+
   ~ApplicationMediaInfoManager() override;
 
   void SetRendererBlock(bool renderer_blocked);
@@ -49,8 +54,6 @@ class ApplicationMediaInfoManager
   bool mixer_audio_enabled_;
   // Flag to determine if renderer can start.
   bool renderer_blocked_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApplicationMediaInfoManager);
 };
 
 void CreateApplicationMediaInfoManager(

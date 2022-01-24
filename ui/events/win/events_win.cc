@@ -8,73 +8,75 @@
 
 namespace ui {
 
-EventType EventTypeFromNative(const MSG& native_event) {
+EventType EventTypeFromNative(const CHROME_MSG& native_event) {
   return EventTypeFromMSG(native_event);
 }
 
-int EventFlagsFromNative(const MSG& native_event) {
+int EventFlagsFromNative(const CHROME_MSG& native_event) {
   return EventFlagsFromMSG(native_event);
 }
 
-base::TimeTicks EventTimeFromNative(const MSG& native_event) {
+base::TimeTicks EventTimeFromNative(const CHROME_MSG& native_event) {
   // Note EventTimeFromMSG actually returns a time based on the current clock
   // tick, ignoring MSG. See the comments in that function (which is in
   // events_win_utils.cc) for the reason.
   return EventTimeFromMSG(native_event);
 }
 
-base::TimeTicks EventLatencyTimeFromNative(const MSG& native_event,
+base::TimeTicks EventLatencyTimeFromNative(const CHROME_MSG& native_event,
                                            base::TimeTicks current_time) {
   // For latency calculations use the real timestamp, rather than the one
   // returned from EventTimeFromMSG.
   return EventLatencyTimeFromTickClock(native_event.time, current_time);
 }
 
-gfx::PointF EventLocationFromNative(const MSG& native_event) {
+gfx::PointF EventLocationFromNative(const CHROME_MSG& native_event) {
   return gfx::PointF(EventLocationFromMSG(native_event));
 }
 
-gfx::Point EventSystemLocationFromNative(const MSG& native_event) {
+gfx::Point EventSystemLocationFromNative(const CHROME_MSG& native_event) {
   return EventSystemLocationFromMSG(native_event);
 }
 
-KeyboardCode KeyboardCodeFromNative(const MSG& native_event) {
+KeyboardCode KeyboardCodeFromNative(const CHROME_MSG& native_event) {
   return KeyboardCodeFromMSG(native_event);
 }
 
-DomCode CodeFromNative(const MSG& native_event) {
+DomCode CodeFromNative(const CHROME_MSG& native_event) {
   return CodeFromMSG(native_event);
 }
 
-bool IsCharFromNative(const MSG& native_event) {
+bool IsCharFromNative(const CHROME_MSG& native_event) {
   return IsCharFromMSG(native_event);
 }
 
-int GetChangedMouseButtonFlagsFromNative(const MSG& native_event) {
+int GetChangedMouseButtonFlagsFromNative(const CHROME_MSG& native_event) {
   return GetChangedMouseButtonFlagsFromMSG(native_event);
 }
 
-PointerDetails GetMousePointerDetailsFromNative(const MSG& native_event) {
+PointerDetails GetMousePointerDetailsFromNative(
+    const CHROME_MSG& native_event) {
   return GetMousePointerDetailsFromMSG(native_event);
 }
 
-gfx::Vector2d GetMouseWheelOffset(const MSG& native_event) {
+gfx::Vector2d GetMouseWheelOffset(const CHROME_MSG& native_event) {
   return GetMouseWheelOffsetFromMSG(native_event);
 }
 
-gfx::Vector2d GetMouseWheelTick120ths(const MSG& native_event) {
+gfx::Vector2d GetMouseWheelTick120ths(const CHROME_MSG& native_event) {
   // On Windows, the wheel offset is already in 120ths of a tick
   // (https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mousewheel).
   return GetMouseWheelOffsetFromMSG(native_event);
 }
 
-MSG CopyNativeEvent(const MSG& event) {
+CHROME_MSG CopyNativeEvent(const CHROME_MSG& event) {
   return CopyMSGEvent(event);
 }
 
-void ReleaseCopiedNativeEvent(const MSG& event) {}
+void ReleaseCopiedNativeEvent(const CHROME_MSG& event) {}
 
-PointerDetails GetTouchPointerDetailsFromNative(const MSG& native_event) {
+PointerDetails GetTouchPointerDetailsFromNative(
+    const CHROME_MSG& native_event) {
   NOTIMPLEMENTED();
   return PointerDetails(EventPointerType::kTouch,
                         /* pointer_id*/ 0,
@@ -83,7 +85,7 @@ PointerDetails GetTouchPointerDetailsFromNative(const MSG& native_event) {
                         /* force */ 0.f);
 }
 
-bool GetScrollOffsets(const MSG& native_event,
+bool GetScrollOffsets(const CHROME_MSG& native_event,
                       float* x_offset,
                       float* y_offset,
                       float* x_offset_ordinal,
@@ -93,7 +95,7 @@ bool GetScrollOffsets(const MSG& native_event,
   return GetScrollOffsetsFromMSG(native_event);
 }
 
-bool GetFlingData(const MSG& native_event,
+bool GetFlingData(const CHROME_MSG& native_event,
                   float* vx,
                   float* vy,
                   float* vx_ordinal,

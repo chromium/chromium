@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `This test checks how text editor handles different movements: ctrl-left, ctrl-right, ctrl-shift-left, ctrl-backspace, alt-left, alt-right, alt-shift-left, alt-shift-right.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   // clang-format off

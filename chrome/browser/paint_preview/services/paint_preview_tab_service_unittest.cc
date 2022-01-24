@@ -367,7 +367,7 @@ TEST_F(PaintPreviewTabServiceTest, EarlyDeletion) {
   EXPECT_FALSE(service->CacheInitialized());
   EXPECT_FALSE(service->HasCaptureForTab(1));
   task_environment()->RunUntilIdle();
-  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(10));
+  task_environment()->AdvanceClock(base::Seconds(10));
   task_environment()->RunUntilIdle();
 
   EXPECT_TRUE(service->CacheInitialized());
@@ -384,7 +384,7 @@ TEST_F(PaintPreviewTabServiceTest, EarlyAudit) {
   EXPECT_FALSE(service->HasCaptureForTab(1));
   EXPECT_FALSE(service->HasCaptureForTab(3));
   task_environment()->RunUntilIdle();
-  task_environment()->AdvanceClock(base::TimeDelta::FromSeconds(10));
+  task_environment()->AdvanceClock(base::Seconds(10));
   task_environment()->RunUntilIdle();
 
   EXPECT_TRUE(service->CacheInitialized());

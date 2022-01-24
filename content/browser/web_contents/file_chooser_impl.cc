@@ -182,7 +182,8 @@ void FileChooserImpl::FileSelected(
               render_frame_host_->GetStoragePartition()->GetFileSystemContext();
         }
         policy->GrantReadFileSystem(
-            pid, file_system_context->CrackURL(file->get_file_system()->url)
+            pid, file_system_context
+                     ->CrackURLInFirstPartyContext(file->get_file_system()->url)
                      .mount_filesystem_id());
       } else {
         policy->GrantReadFile(pid, file->get_native_file()->file_path);

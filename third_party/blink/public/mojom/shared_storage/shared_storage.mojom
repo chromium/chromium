@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+
+// SharedStorage is an origin-keyed storage mechanism where the output is
+// carefully guarded to mitigate the risk of cross-site correlation.
+// See https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
+//
+// Implemented by the browser and exposed to the renderer process on a per-frame
+// basis, to allow accessing the shared storage and initiating worklet
+// operations, etc.
+interface SharedStorageDocumentService {
+  // Handle sharedStorage.worklet.addModule(): download and load the script in
+  // the worklet environment. The origin of the `script_source_url` should be
+  // checked at the Mojo boundary to ensure it's from the same origin of the
+  // current context.
+  AddModuleOnWorklet(url.mojom.Url script_source_url)
+      => (bool success,
+          string error_message);
+
+  // Handle sharedStorage.runOperation(): run the operation previously
+  // registered by registerOperation() with matching `name`. `serialized_data`
+  // is the serialization result of JavaScript value
+  // SharedStorageRunOperationMethodOptions.data using v8::ValueSerializer.
+  // Verification is not necessary at mojo boundary as the data will be consumed
+  // in an environment in control by the same origin.
+  RunOperationOnWorklet(string name, array<uint8> serialized_data);
+};

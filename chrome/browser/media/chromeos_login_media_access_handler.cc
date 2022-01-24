@@ -6,13 +6,13 @@
 
 #include <string>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/common/url_constants.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "content/public/browser/render_frame_host.h"
 #include "url/gurl.h"
@@ -49,23 +49,21 @@ bool ChromeOSLoginMediaAccessHandler::CheckMediaAccessPermission(
     return false;
 
   // The following checks are for SAML logins.
-  const base::Value* const raw_list_value =
-      settings->GetPref(chromeos::kLoginVideoCaptureAllowedUrls);
-  if (!raw_list_value)
+  const base::Value* const list_value =
+      settings->GetPref(ash::kLoginVideoCaptureAllowedUrls);
+  if (!list_value)
     return false;
 
-  const base::ListValue* list_value;
-  const bool is_list = raw_list_value->GetAsList(&list_value);
-  DCHECK(is_list);
+  DCHECK(list_value->is_list());
   for (const auto& base_value : list_value->GetList()) {
-    std::string value;
-    if (base_value.GetAsString(&value)) {
+    const std::string* value = base_value.GetIfString();
+    if (value) {
       const ContentSettingsPattern pattern =
-          ContentSettingsPattern::FromString(value);
+          ContentSettingsPattern::FromString(*value);
       // Force administrators to specify more-specific patterns by ignoring the
       // global wildcard pattern.
       if (pattern == ContentSettingsPattern::Wildcard()) {
-        VLOG(1) << "Ignoring wildcard URL pattern: " << value;
+        VLOG(1) << "Ignoring wildcard URL pattern: " << *value;
         continue;
       }
       if (pattern.IsValid() && pattern.Matches(security_origin))

@@ -110,7 +110,7 @@ DatabaseTables ReadTables(sql::Database* db) {
   DatabaseTables database_tables;
   std::stringstream ss;
   sql::Statement table_names(db->GetUniqueStatement(
-      "SELECT name FROM sqlite_master WHERE type='table'"));
+      "SELECT name FROM sqlite_schema WHERE type='table'"));
   while (table_names.Step()) {
     const std::string table_name = table_names.ColumnString(0);
     if (table_name == "meta")
@@ -125,7 +125,7 @@ std::string TableSql(sql::Database* db, const std::string& table_name) {
   DatabaseTables database_tables;
   std::stringstream ss;
   sql::Statement table_sql(db->GetUniqueStatement(
-      "SELECT sql FROM sqlite_master WHERE type='table' AND name=?"));
+      "SELECT sql FROM sqlite_schema WHERE type='table' AND name=?"));
   table_sql.BindString(0, table_name);
   if (!table_sql.Step())
     return std::string();

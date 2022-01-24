@@ -6,23 +6,10 @@
 
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_data.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 namespace ui {
-
-static int UniqueTreeCountForNodeCount(int node_count,
-                                       bool permutations) {
-  int unique_tree_count = 1;
-
-  // (n-1)! for the possible trees.
-  for (int i = 2; i < node_count; ++i)
-    unique_tree_count *= i;
-
-  // n! for the permutations of ids.
-  if (permutations)
-    unique_tree_count = unique_tree_count * unique_tree_count * node_count;
-
-  return unique_tree_count;
-}
 
 TreeGenerator::TreeGenerator(int max_node_count, bool permutations)
     : max_node_count_(max_node_count),
@@ -65,20 +52,42 @@ int TreeGenerator::IgnoredPermutationCountPerUniqueTree(int tree_index) const {
   return 0;
 }
 
-void TreeGenerator::BuildUniqueTreeWithIgnoredNodes(int tree_index,
-                                                    int ignored_index,
-                                                    AXTree* out_tree) const {
+void TreeGenerator::BuildUniqueTreeWithIgnoredNodes(
+    int tree_index,
+    int ignored_index,
+    absl::optional<int> focused_node,
+    AXTree* out_tree) const {
+  // Enable the behavior whereby all focused nodes will be exposed to the
+  // platform accessibility layer. This behavior is currently disabled in
+  // production code, but is enabled in tests so that it could be tested
+  // thoroughly before it is turned on for all code.
+  //
+  // TODO(nektar): Turn this on in a followup patch.
+  // AXTree::SetFocusedNodeShouldNeverBeIgnored();
+
   AXTreeUpdate update;
   BuildUniqueTreeUpdate(tree_index, &update);
 
   int node_count = static_cast<int>(update.nodes.size());
   CHECK_GE(ignored_index, 0);
   CHECK_LT(ignored_index, 1 << (node_count - 1));
+  CHECK(!focused_node || *focused_node >= 0);
+  CHECK(!focused_node || *focused_node < node_count);
 
   for (int i = 0; i < node_count - 1; i++) {
     if (ignored_index & (1 << i))
       update.nodes[i + 1].AddState(ax::mojom::State::kIgnored);
   }
+
+  if (focused_node) {
+    AXTreeData tree_data;
+    tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+    tree_data.focused_tree_id = tree_data.tree_id;
+    tree_data.focus_id = update.nodes[*focused_node].id;
+    update.has_tree_data = true;
+    update.tree_data = tree_data;
+  }
+
   CHECK(out_tree->Unserialize(update)) << out_tree->error();
 }
 

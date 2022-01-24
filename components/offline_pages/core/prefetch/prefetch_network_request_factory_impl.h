@@ -33,6 +33,11 @@ class PrefetchNetworkRequestFactoryImpl : public PrefetchNetworkRequestFactory {
       const std::string& user_agent,
       PrefService* prefs);
 
+  PrefetchNetworkRequestFactoryImpl(const PrefetchNetworkRequestFactoryImpl&) =
+      delete;
+  PrefetchNetworkRequestFactoryImpl& operator=(
+      const PrefetchNetworkRequestFactoryImpl&) = delete;
+
   ~PrefetchNetworkRequestFactoryImpl() override;
 
   bool HasOutstandingRequests() const override;
@@ -94,8 +99,6 @@ class PrefetchNetworkRequestFactoryImpl : public PrefetchNetworkRequestFactory {
   PrefService* prefs_;
 
   base::WeakPtrFactory<PrefetchNetworkRequestFactoryImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchNetworkRequestFactoryImpl);
 };
 
 }  // namespace offline_pages

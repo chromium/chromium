@@ -181,8 +181,7 @@ void AverageLagTracker::CalculateAndReportAverageLagUma(bool send_anyway) {
   // |ScrollBegin|. Otherwise record UMA when it's ScrollBegin, or when
   // reaching the 1 second gap.
   if (send_anyway || is_begin_ ||
-      (frame_lag.frame_time - last_reported_time_) >=
-          base::TimeDelta::FromSeconds(1)) {
+      (frame_lag.frame_time - last_reported_time_) >= base::Seconds(1)) {
     const EventType event_type =
         is_begin_ ? EventType::ScrollBegin : EventType::ScrollUpdate;
 
@@ -197,7 +196,7 @@ void AverageLagTracker::CalculateAndReportAverageLagUma(bool send_anyway) {
     base::UmaHistogramCounts1000(
         base::JoinString({GetAverageLagMetricName(event_type), "NoPrediction"},
                          "."),
-        scaled_lag_with_prediction);
+        scaled_lag_no_prediction);
 
     const float lag_improvement =
         scaled_lag_no_prediction - scaled_lag_with_prediction;

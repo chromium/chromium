@@ -206,11 +206,11 @@ void PluginVmManagerImpl::LaunchPluginVm(LaunchPluginVmCallback callback) {
 }
 
 void PluginVmManagerImpl::AddVmStartingObserver(
-    chromeos::VmStartingObserver* observer) {
+    ash::VmStartingObserver* observer) {
   vm_starting_observers_.AddObserver(observer);
 }
 void PluginVmManagerImpl::RemoveVmStartingObserver(
-    chromeos::VmStartingObserver* observer) {
+    ash::VmStartingObserver* observer) {
   vm_starting_observers_.RemoveObserver(observer);
 }
 
@@ -744,7 +744,7 @@ void PluginVmManagerImpl::DestroyDiskImage() {
 
   vm_tools::concierge::DestroyDiskImageRequest request;
   request.set_cryptohome_id(owner_id_);
-  request.set_disk_path(kPluginVmName);
+  request.set_vm_name(kPluginVmName);
 
   chromeos::ConciergeClient::Get()->DestroyDiskImage(
       std::move(request),

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 
 #include <utility>
-#include "third_party/blink/renderer/core/inspector/protocol/Protocol.h"
+#include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 
@@ -125,7 +125,7 @@ Binary Binary::fromVector(Vector<uint8_t> in) {
 // static
 Binary Binary::fromSpan(const uint8_t* data, size_t size) {
   Vector<uint8_t> in;
-  in.Append(data, size);
+  in.Append(data, base::checked_cast<wtf_size_t>(size));
   return Binary::fromVector(std::move(in));
 }
 

@@ -7,11 +7,12 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "chrome/browser/thumbnail/generator/android/local_media_data_source_factory.h"
 #include "content/public/browser/android/gpu_video_accelerator_factories_provider.h"
@@ -29,7 +30,7 @@
 namespace {
 
 // The maximum duration to parse media file.
-const base::TimeDelta kTimeOut = base::TimeDelta::FromSeconds(8);
+const base::TimeDelta kTimeOut = base::Seconds(8);
 
 // Returns if the mime type is video or audio.
 bool IsSupportedMediaMimeType(const std::string& mime_type) {
@@ -297,14 +298,18 @@ void ThumbnailMediaParserImpl::NotifyComplete(SkBitmap bitmap) {
   DCHECK(metadata_);
   DCHECK(parse_complete_cb_);
   RecordMediaParserEvent(MediaParserEvent::kSuccess);
-  std::move(parse_complete_cb_)
-      .Run(true, std::move(metadata_), std::move(bitmap));
+  if (parse_complete_cb_) {
+    std::move(parse_complete_cb_)
+        .Run(true, std::move(metadata_), std::move(bitmap));
+  }
 }
 
 void ThumbnailMediaParserImpl::OnError(MediaParserEvent event) {
   DCHECK(parse_complete_cb_);
   RecordMediaParserEvent(MediaParserEvent::kFailure);
   RecordMediaParserEvent(event);
-  std::move(parse_complete_cb_)
-      .Run(false, chrome::mojom::MediaMetadata::New(), SkBitmap());
+  if (parse_complete_cb_) {
+    std::move(parse_complete_cb_)
+        .Run(false, chrome::mojom::MediaMetadata::New(), SkBitmap());
+  }
 }

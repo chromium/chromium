@@ -20,6 +20,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1774152462503052664">Onartu Chromium atzeko planoan abiaraztea</translation>
 <translation id="1779356040007214683">Chromium seguruagoa izan dadin, zuk jakin gabe gehitu izan dituzten eta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan zerrendatu gabe dauden luzapen batzuk desgaitu ditugu.</translation>
 <translation id="1808667845054772817">Instalatu berriro Chromium</translation>
+<translation id="185970820835152459">Saioa hasita daukaten Google-ko kontuak kudea ditzakezu. Google-ko kontuak Chromium arakatzaile, Play Store, Gmail eta abarrerako erabiltzen dira. Kontu bat beste norbaitentzat gehitu nahi baduzu (adibidez, familiako kide batentzat), gehitu beste pertsona bat <ph name="DEVICE_TYPE" /> gailuan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="1881322772814446296">Kontu kudeatu batekin hasten ari zara saioa eta kontuaren administratzaileari zure Chromium profila kontrolatzeko ahalmena ematera zoaz. Chromium aplikazioan dituzun datuak, esaterako, aplikazioak, laster-markak, historia, pasahitzak eta beste ezarpen batzuk betiko lotuko zaizkio <ph name="USER_NAME" /> erabiltzaileari. Google-ko kontuetako Panelaren bidez ezabatu ahalko dituzu datu horiek, baina ezingo dituzu beste kontu batekin lotu. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Aukera hau desaktibatzen baduzu, Google-ren webguneetan saioa hasi ahalko duzu (adibidez, Gmail-en) Chromium-en saioa hasi beharrik gabe</translation>
 <translation id="1929939181775079593">Chromium-ek ez du eranzuten. Berrabiarazi nahi duzu?</translation>
@@ -31,18 +32,20 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2185166961232948079">Chromium - Hasi saioa sarean - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Ordenagailua partekatzen baduzu, lagunek eta familiako kideek euren kontuak erabilita ibil daitezke Interneten, nahi duten moduan.</translation>
 <translation id="2294245788148774212">Aukerakoa: lagundu Chromium OS sistemaren eginbideak eta funtzionamendua hobetzen Google-ri diagnostikoak eta erabilera-datuak automatikoki bidalita.</translation>
+<translation id="2313870531055795960">URLak Chromium-en gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du. Webguneren bat pasahitza lapurtzen saiatzen bada, edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chromium-ek URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="2343156876103232566">Zenbaki bat hemendik Android-eko telefonora bidaltzeko, hasi Chromium-eko saioa bi gailuetan.</translation>
 <translation id="2347108572062610441">Luzapenak aldatu egin du Chromium abiarazten duzunean agertzen den orria.</translation>
 <translation id="2396765026452590966"><ph name="EXTENSION_NAME" /> luzapenak aldatu egin du Chromium abiarazten duzunean agertzen den orria.</translation>
+<translation id="2401032172288869980">Chromium-ek kamera eta mikrofonoa atzitzeko baimenak behar ditu webgune honetan</translation>
 <translation id="2483889755041906834">Chromium-en</translation>
 <translation id="2485422356828889247">Desinstalatu</translation>
 <translation id="2535480412977113886">Chromium OS sistemak ezin izan ditu zure datuak sinkronizatu kontuan saioa hasteko datuak iraungi egin direlako.</translation>
 <translation id="2560420686485554789">Chromium-ek fitxategiak deskargatzearren memorian sartzeko baimena behar du</translation>
 <translation id="2572494885440352020">Chromium laguntzailea</translation>
 <translation id="2577788541081224677">Chromium-eko gauzak gailu guztietan atzitze aldera, hasi saioa sinkronizazioa aktibatzeko.</translation>
-<translation id="2580426763510374355">Instalatu Chromium OS</translation>
 <translation id="2583187216237139145">Laneko profilaren administratzaileak kendu egin ditzake profil hau erabiltzean sortutako Chromium-eko datuak (adibidez, sortutako laster-markak, historia, pasahitzak eta bestelako ezarpenak). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Eguneratzea aplikatzeko, berrabiarazi egin behar da Chromium sistema eragilea.</translation>
+<translation id="2614883797045469742">Ezarpen lehenetsiak egokiak dira jende gehienarentzat, baina pertsonalizatu egin ditzakezu Chromium erabiltzen duzun moduari egokitzeko</translation>
 <translation id="2648074677641340862">Sistema-eragilean errore bat gertatu da instalatu bitartean. Deskargatu Chromium berriro.</translation>
 <translation id="2661879430930417727">Gailu bat partekatzen baduzu, lagunak eta familiako kideak beren kontuak erabilita ibil daitezke Interneten, eta Chromium nahi duten moduan konfiguratu</translation>
 <translation id="2711502716910134313">Chromium fitxa</translation>
@@ -51,9 +54,11 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2799223571221894425">Abiarazi berriro</translation>
 <translation id="2837693172913560447">Chromium-eko beste profil bat sortuko da <ph name="USER_EMAIL_ADDRESS" /> helbiderako</translation>
 <translation id="2847479871509788944">Kendu Chromium-etik…</translation>
+<translation id="2850691299438350830">Babestuta mantentzen zaitu Chromium-en, eta segurtasuna hobetzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean</translation>
 <translation id="2885378588091291677">Zereginen kudeatzailea</translation>
 <translation id="2910007522516064972">&amp;Chromium arakatzaileari buruz</translation>
 <translation id="2977470724722393594">Eguneratuta dago Chromium</translation>
+<translation id="2977506796191543575">Webguneren bat pasahitza lapurtzen saiatzen bada edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chromium-ek URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="2983934633046890458">Pasahitzak editatzen saiatzen ari da Chromium.</translation>
 <translation id="3032706164202344641">Chromium-ek ezin ditu egiaztatu pasahitzak. Saiatu geroago.</translation>
 <translation id="3032787606318309379">Chromium-era gehitzen…</translation>
@@ -76,13 +81,11 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3350761136195634146">Badago kontu honen Chromium-eko profil bat</translation>
 <translation id="3406848076815591792">Lehendik dagoen Chromium-eko profil batera aldatu nahi duzu?</translation>
 <translation id="3430503420100763906">Chromium-eko profilekin, Chromium-en dituzun gauza guztiak bereiz ditzakezu. Sortu profilak lagunentzat eta familiako kideentzat, edo banandu gauza pertsonalak eta lanekoak.</translation>
-<translation id="3433271666494956603">Chromium OS instalatzen ari da</translation>
 <translation id="347328004046849135">Arriskuan dagoen pasahitz batekin hasten baduzu saioa, jakinarazi egingo dizu Chromium-ek</translation>
 <translation id="3474745554856756813">Gailuko <ph name="ITEMS_COUNT" /> elementu ezabatuko dira. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chromium-en <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> da Chromium-eko profil batetik bestera aldatzeko lasterbidea</translation>
 <translation id="3509308970982693815">Itxi Chromium leiho guztiak eta saiatu berriro.</translation>
 <translation id="3575459661164320785">Software kaltegarria duzu ordenagailuan. Chromium-ek hura kendu, ezarpenak leheneratu eta luzapenak desgai ditzake, arakatzaileak ohiko moduan funtziona dezan berriro.</translation>
-<translation id="3610776674893128619">Ezabatu disko gogorreko eduki guztia eta instalatu Chromium OS</translation>
 <translation id="3639635944603682591">Pertsona honen arakatze-datuak gailutik ezabatuko dira. Datuak berreskuratzeko, hasi saioa Chromium-en <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium-en eguneratze bat erabilgarri dago eta sistema eragilea berrabiarazten duzunean aplikatuko da.}=1{Chromium-en eguneratze bat erabilgarri dago eta sistema eragilea berrabiarazten duzunean aplikatuko da. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chromium-en eguneratze bat erabilgarri dago eta sistema eragilea berrabiarazten duzunean aplikatuko da. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="3651803019964686660">Zenbaki bat <ph name="ORIGIN" /> webgunetik Android-eko telefonora bidaltzeko, hasi Chromium-eko saioa bi gailuetan.</translation>
@@ -105,7 +108,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4264410486868823224">Gailua erabili aurretik, <ph name="MANAGER" /> kudeatzaileak jarraian azalduko diren Zerbitzu-baldintzak irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Chromium OS-en Baldintzak.</translation>
 <translation id="4271805377592243930">Lortu Chromium erabiltzeko laguntza</translation>
 <translation id="4285930937574705105">Instalazioak huts egin du zehaztu gabeko errore batengatik. Chromium abian bada, itxi eta ireki berriro.</translation>
-<translation id="429583012151745428">Instalazioa abian da. Ez itzali gailua. Instalazioak 20 minutu iraungo ditu gehienez. Instalazioa amaitzen denean, makina automatikoki itzaliko da.</translation>
 <translation id="4407044323746248786">Chromium-etik irten nahi duzu hala ere?</translation>
 <translation id="4415566066719264597">Onartu Chromium atzeko planoan abiaraztea</translation>
 <translation id="4423735387467980091">Pertsonalizatu eta kontrolatu Chromium</translation>
@@ -135,7 +137,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="5386450000063123300">Chromium eguneratzen (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Baimendu Chromium-en saioa hastea</translation>
 <translation id="5398878173008909840">Chromium arakatzailearen bertsio berria erabilgarri dago.</translation>
-<translation id="5416696090975899932">Chromium-ek ezin du erakutsi inprimatze-aurrebista PDF dokumentuen ikustaile integratua falta bada.</translation>
 <translation id="5427571867875391349">Ezarri Chromium arakatzaile lehenetsi gisa</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">Chromium sistema eragileak ezin du ireki orri hau.</translation>
@@ -150,6 +151,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chromium OS; adibidez, <ph name="BEGIN_LINK_LINUX_OSS" />Linux-eko garapen-ingurunea<ph name="END_LINK_LINUX_OSS" /> erabiltzen da.</translation>
 <translation id="5862307444128926510">Ongi etorri Chromium-era</translation>
+<translation id="5883558403894052917">Elementuok malwarea dutela hauteman du Chromium-ek:</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Hasi saioa sarean</translation>
 <translation id="5987687638152509985">Eguneratu Chromium sinkronizatzen hasteko</translation>
@@ -164,18 +166,11 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> arriskutsua da; horregatik, blokeatu egin du Chromium-ek.</translation>
 <translation id="6134968993075716475">Arakatze segurua desaktibatuta dago. Aktibatzea gomendatzen du Chromium-ek.</translation>
 <translation id="6145820983052037069">Aldatu Chromium-eko profila hemen</translation>
-<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Prest gaude Chromium OS instalatzeko. Aurrera egiten duzunean:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Fitxategi, datu eta une honetan darabilzun sistema eragileko eduki guztia ezabatuko da.
-          <ph name="LIST_ITEM" />Chromium OS instalatuko da.
-          <ph name="LIST_ITEM" />Gailua itzali egingo da instalazio-prozesua amaitzean.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Azken abisua: Chrome OS instalatuz gero, ezabatu egingo da disko gogor osoko eduki guztia. Ziurtatu gorde nahi dituzun datuen babeskopia egin duzula.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Instalazio-prozesua hasiz gero, ezin da bertan behera utzi.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">Ziurtatu Chromium-eko saioa hasita daukazula <ph name="TARGET_DEVICE_NAME" /> gailuan eta saiatu berriro bidaltzen.</translation>
 <translation id="6212496753309875659">Ordenagailuak Chromium arakatzailearen bertsio berriagoa du. Softwareak ez badu funtzionatzean, desinstalatu Chromium eta saiatu berriro.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Orain berrabiaraziko da Chromium}=1{1 segundo barru berrabiaraziko da Chromium}other{# segundo barru berrabiaraziko da Chromium}}</translation>
+<translation id="6241367896540709610">Chromium-ek biltegia atzitzeko baimena behar du fitxategiak deskargatu ahal izateko</translation>
+<translation id="6245734527075554892">URLak Chromium-en gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du.</translation>
 <translation id="6248213926982192922">Ezarri Chromium arakatzaile lehenetsi gisa</translation>
 <translation id="6266342355635466082">Chromium-ek ezin du egiaztatu eguneratzerik dagoen. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="6268381023930128611">Chromium-eko saioa amaitu?</translation>
@@ -190,25 +185,25 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="6434250628340475518">Chromium OS sistema</translation>
 <translation id="6455857529632101747">Ongi etorri Chromium-eko profiletara</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{1 segundo barru berrabiaraziko da Chromium}other{# segundo barru berrabiaraziko da Chromium}}</translation>
-<translation id="646620589868199210">Chromium OS instalatzeko prest dago</translation>
 <translation id="6475912303565314141">Chromium abiarazten duzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="6510925080656968729">Desinstalatu Chromium</translation>
 <translation id="6542839706527980775">Profil bakoitzak Chromium-eko informazio propioa dauka; adibidez, laster-markak, historia, pasahitzak eta beste</translation>
 <translation id="6570579332384693436">Ortografia-akatsak konpondu ahal izateko, testu-eremuetan idazten duzun testua Google-ri bidaltzen dio Chromium-ek</translation>
 <translation id="6598877126913850652">Joan Chromium-en jakinarazpen-ezarpenetara</translation>
 <translation id="6613594504749178791">Aldaketek Chromium abiarazten duzun hurrengo aldian izango dute eragina.</translation>
+<translation id="665732753414869868">Chromium-ek kamera atzitzeko baimena behar du zure inguruaren 3D-ko mapa bat sortzeko</translation>
 <translation id="6676384891291319759">Sartu Interneten</translation>
+<translation id="6709350901466051922">Chromium-ek mikrofonoa atzitzeko baimena behar du webgune honetan</translation>
 <translation id="6717134281241384636">Ezin duzu profila erabili Chromium bertsio berriago batekoa delako.
 
 Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio bat edo erabili Chromium bertsio berriago bat.</translation>
-<translation id="6734080038664603509">Eguneratu &amp;Chromium</translation>
 <translation id="6734291798041940871">Ordenagailuko erabiltzaile guztientzat dago instalatuta Chromium.</translation>
 <translation id="673636774878526923">Chromium-eko gauzak gailu guztietan atzitzeko, hasi saioa eta aktibatu sinkronizazioa.</translation>
 <translation id="6774082503108938489">Zure gurasoak "Webguneen, aplikazioen eta luzapenen baimenak" desaktibatu ditu Chromium-en. Ezin da gaitu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="6827182711503025204">Chromium OS instalatzean, gailuko datu guztiak gainidatziko dira.</translation>
 <translation id="6847869444787758381">Chromium-ek abisatu egingo dizu pasahitzak inoiz arriskuan badaude</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium-en kopiatu da)</translation>
+<translation id="6873893289264747459">"<ph name="EXTENSION_NAME" />" elementuak malwarea duela hauteman du Chromium-ek</translation>
 <translation id="6893813176749746474">Chromium eguneratu da baina ez duzu erabili 30 egunetan gutxienez.</translation>
 <translation id="691026815377248078">Chromium-ek Bluetooth-a erabiltzeko baimena behar du parekatzen jarraitzeko. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Ireki esteka Chromium-eko &amp;ezkutuko moduko leiho batean</translation>
@@ -216,10 +211,12 @@ Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio
 <translation id="6990124437352146030">Chromium-ek webgune honen izenean mikrofonoa atzitzeko baimena behar du</translation>
 <translation id="705851970750939768">Eguneratu Chromium</translation>
 <translation id="7067091210845072982">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chromium. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio.</translation>
+<translation id="7147279922647361552">Pertsonalizatu Chromium-en pribatutasun-aukera garrantzitsuenetako batzuk</translation>
+<translation id="718435575166326686">Chromium-ek kamera atzitzeko baimena behar du webgune honetan</translation>
 <translation id="7196312274710523067">Ezin izan da abiarazi Chromium. Saiatu berriro.</translation>
 <translation id="7197677400338048821">Chromium-ek ezin ditu egiaztatu pasahitzak. Saiatu berriro 24 ordu barru.</translation>
+<translation id="7218568399872925918">Bisitatzen dituzun webguneek zure informazioa gogoratzen dute Chromium itxi arte</translation>
 <translation id="7223968959479464213">Ataza-kudeatzailea - Chromium</translation>
-<translation id="731644333568559921">Eguneratu &amp;Chromium OS</translation>
 <translation id="731795002583552498">Chromium eguneratzen</translation>
 <translation id="7318036098707714271">Hobespenen fitxategia hondatuta dago edo ez da baliozkoa.
 
@@ -239,10 +236,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
       Chromium-en sistema eragilearen ezarpenetan.<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium kamera eta mikrofonoa erabiltzen ari da.</translation>
 <translation id="7617377681829253106">Chromium hobetu egin dugu</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Hasi aurretik, egiaztatu zure datuen babeskopia eguneratu bat duzula. Chrome OS instalatzean, disko gogorreko datu guztiak gainidatziko dira.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google ez da datuen galeraren arduraduna eta ez du bermatzen Chromium OS-ek ziurtatu gabeko modeloetan funtzionatuko duenik. Joan [TBD] webgunera ziurtatutako modeloei buruzko informazio gehiago lortzeko.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Lortu informazio gehiago Chromium OS instalatzeari eta datuak ezabatzeari buruz: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Aurrera egiteko prest bazaude, sakatu "Instalatu Chromium OS" eta instalazioarekin lagunduko dizugu; urrats gutxi batzuk besterik ez dira. Ekintza berresteko beste aukera bat izango duzu ordenagailuan beste aldaketarik egin aurretik.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium ez da zure arakatzaile lehenetsia</translation>
 <translation id="7689606757190482937">Sinkronizatu eta pertsonalizatu Chromium gailu guzietan</translation>
 <translation id="7729447699958282447">Chromium-ek ezin izan dizkizu sinkronizatu datuak sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
@@ -256,6 +249,8 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7937630085815544518">Chromium-en <ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu saioa. Saioa berriro hasteko, erabili hasiera batean erabilitako kontu bera.</translation>
 <translation id="7975919845073681630">Chromium-en bigarren mailako instalazio bat da hau; beraz, ezin duzu ezarri arakatzaile lehenetsi gisa.</translation>
 <translation id="8013436988911883588">Chromium-ek sarbidea duenean, webguneek sarbidea eskatuko dizute.</translation>
+<translation id="8045118833343856403">Kontu hauek ez dute hasi saioa Chromium-eko inongo profiletan. Beste profil bateko kontu bat erabili nahi baduzu, kendu lehenik profil hori.</translation>
+<translation id="8105840573057009683">Chromium-ek kokapena atzitzeko baimena behar du webgune honetan</translation>
 <translation id="81770708095080097">Fitxategia arriskutsua da; horregatik, blokeatu egin du Chromium-ek.</translation>
 <translation id="8248265253516264921">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chromium. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio. Aukera hori desaktibatu nahi baduzu, joan ezarpenetara.</translation>
 <translation id="8266560134891435528">Chromium-ek ezin ditu egiaztatu pasahitzak saioa hasi ez duzulako</translation>
@@ -274,6 +269,8 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8621669128220841554">Instalazioak huts egin du zehaztu gabeko errore batengatik. Deskargatu Chromium berriro.</translation>
 <translation id="8697124171261953979">Chromium hasten duzunean edo Omnibox-etik bilaketak egiten dituzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="8704119203788522458">Hau da zure Chromium arakatzailea</translation>
+<translation id="8713679423359107094">Chromium-eko leiho guztiak ixten dituzunean, automatikoki garbituko dira cookieak eta webguneetako datuak</translation>
+<translation id="8796443464227412154"><ph name="BEGIN_BOLD" />Webgune gehienen saioa amaitu egingo da<ph name="END_BOLD" /> Chromium ixtean. Sinkronizazioa desaktibatuta badago, <ph name="BEGIN_BOLD" />Google-ren zerbitzuen eta Chromium-en saioak ere amaituko<ph name="END_BOLD" /> dira.</translation>
 <translation id="8796602469536043152">Chromium-ek webgune honen izenean kamera eta mikrofonoa atzitzeko baimena behar du</translation>
 <translation id="8803635938069941624">Chromium OS sistema eragilearen baldintzak</translation>
 <translation id="8821041990367117597">Chromium-ek ezin izan ditu zure datuak sinkronizatu kontuan saioa hasteko datuak iraungi egin direlako.</translation>

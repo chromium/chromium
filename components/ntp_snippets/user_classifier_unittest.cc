@@ -35,6 +35,8 @@ class UserClassifierTest : public testing::Test {
   UserClassifierTest() {
     UserClassifier::RegisterProfilePrefs(test_prefs_.registry());
   }
+  UserClassifierTest(const UserClassifierTest&) = delete;
+  UserClassifierTest& operator=(const UserClassifierTest&) = delete;
 
   UserClassifier* CreateUserClassifier() {
     base::Time now;
@@ -52,8 +54,6 @@ class UserClassifierTest : public testing::Test {
   TestingPrefServiceSimple test_prefs_;
   std::unique_ptr<UserClassifier> user_classifier_;
   base::SimpleTestClock test_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserClassifierTest);
 };
 
 TEST_F(UserClassifierTest, ShouldBeActiveNtpUserInitially) {
@@ -73,7 +73,7 @@ TEST_F(UserClassifierTest,
 
   // After a few more clicks, become an active consumer.
   for (int i = 0; i < 5; i++) {
-    test_clock()->Advance(base::TimeDelta::FromHours(1));
+    test_clock()->Advance(base::Hours(1));
     user_classifier->OnEvent(UserClassifier::Metric::SUGGESTIONS_USED);
   }
   EXPECT_THAT(user_classifier->GetUserClass(),
@@ -92,13 +92,13 @@ TEST_F(UserClassifierTest,
 
   // After two clicks still only an active user.
   user_classifier->OnEvent(UserClassifier::Metric::SUGGESTIONS_USED);
-  test_clock()->Advance(base::TimeDelta::FromHours(1));
+  test_clock()->Advance(base::Hours(1));
   user_classifier->OnEvent(UserClassifier::Metric::SUGGESTIONS_USED);
   EXPECT_THAT(user_classifier->GetUserClass(),
               Eq(UserClassifier::UserClass::ACTIVE_NTP_USER));
 
   // One more click to become an active consumer.
-  test_clock()->Advance(base::TimeDelta::FromHours(1));
+  test_clock()->Advance(base::Hours(1));
   user_classifier->OnEvent(UserClassifier::Metric::SUGGESTIONS_USED);
   EXPECT_THAT(user_classifier->GetUserClass(),
               Eq(UserClassifier::UserClass::ACTIVE_SUGGESTIONS_CONSUMER));
@@ -108,12 +108,12 @@ TEST_F(UserClassifierTest, ShouldBecomeRareNtpUserByNoActivity) {
   UserClassifier* user_classifier = CreateUserClassifier();
 
   // After two days of waiting still an active user.
-  test_clock()->Advance(base::TimeDelta::FromDays(2));
+  test_clock()->Advance(base::Days(2));
   EXPECT_THAT(user_classifier->GetUserClass(),
               Eq(UserClassifier::UserClass::ACTIVE_NTP_USER));
 
   // Two more days to become a rare user.
-  test_clock()->Advance(base::TimeDelta::FromDays(2));
+  test_clock()->Advance(base::Days(2));
   EXPECT_THAT(user_classifier->GetUserClass(),
               Eq(UserClassifier::UserClass::RARE_NTP_USER));
 }
@@ -128,12 +128,12 @@ TEST_F(UserClassifierTest,
   UserClassifier* user_classifier = CreateUserClassifier();
 
   // After one days of waiting still an active user.
-  test_clock()->Advance(base::TimeDelta::FromDays(1));
+  test_clock()->Advance(base::Days(1));
   EXPECT_THAT(user_classifier->GetUserClass(),
               Eq(UserClassifier::UserClass::ACTIVE_NTP_USER));
 
   // One more day to become a rare user.
-  test_clock()->Advance(base::TimeDelta::FromDays(1));
+  test_clock()->Advance(base::Days(1));
   EXPECT_THAT(user_classifier->GetUserClass(),
               Eq(UserClassifier::UserClass::RARE_NTP_USER));
 }
@@ -143,10 +143,9 @@ class UserClassifierMetricTest
       public ::testing::WithParamInterface<
           std::pair<UserClassifier::Metric, std::string>> {
  public:
-  UserClassifierMetricTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserClassifierMetricTest);
+  UserClassifierMetricTest() = default;
+  UserClassifierMetricTest(const UserClassifierMetricTest&) = delete;
+  UserClassifierMetricTest& operator=(const UserClassifierMetricTest&) = delete;
 };
 
 TEST_P(UserClassifierMetricTest, ShouldDecreaseEstimateAfterEvent) {
@@ -157,7 +156,7 @@ TEST_P(UserClassifierMetricTest, ShouldDecreaseEstimateAfterEvent) {
   user_classifier->OnEvent(metric);
 
   for (int i = 0; i < 10; i++) {
-    test_clock()->Advance(base::TimeDelta::FromHours(1));
+    test_clock()->Advance(base::Hours(1));
     double old_metric = user_classifier->GetEstimatedAvgTime(metric);
     user_classifier->OnEvent(metric);
     EXPECT_THAT(user_classifier->GetEstimatedAvgTime(metric), Lt(old_metric));
@@ -181,18 +180,18 @@ TEST_P(UserClassifierMetricTest, ShouldConvergeTowardsPattern) {
   // Have the pattern of an event every five hours and start changing it towards
   // an event every 10 hours.
   for (int i = 0; i < 100; i++) {
-    test_clock()->Advance(base::TimeDelta::FromHours(5));
+    test_clock()->Advance(base::Hours(5));
     user_classifier->OnEvent(metric);
   }
   EXPECT_THAT(user_classifier->GetEstimatedAvgTime(metric),
               DoubleNear(5.0, 0.1));
   for (int i = 0; i < 3; i++) {
-    test_clock()->Advance(base::TimeDelta::FromHours(10));
+    test_clock()->Advance(base::Hours(10));
     user_classifier->OnEvent(metric);
   }
   EXPECT_THAT(user_classifier->GetEstimatedAvgTime(metric), Gt(5.5));
   for (int i = 0; i < 100; i++) {
-    test_clock()->Advance(base::TimeDelta::FromHours(10));
+    test_clock()->Advance(base::Hours(10));
     user_classifier->OnEvent(metric);
   }
   EXPECT_THAT(user_classifier->GetEstimatedAvgTime(metric),
@@ -207,13 +206,13 @@ TEST_P(UserClassifierMetricTest, ShouldIgnoreSubsequentEventsForHalfAnHour) {
   user_classifier->OnEvent(metric);
   // Subsequent events get ignored for the next 30 minutes.
   for (int i = 0; i < 5; i++) {
-    test_clock()->Advance(base::TimeDelta::FromMinutes(5));
+    test_clock()->Advance(base::Minutes(5));
     double old_metric = user_classifier->GetEstimatedAvgTime(metric);
     user_classifier->OnEvent(metric);
     EXPECT_THAT(user_classifier->GetEstimatedAvgTime(metric), Eq(old_metric));
   }
   // An event 30 minutes after the initial event is finally not ignored.
-  test_clock()->Advance(base::TimeDelta::FromMinutes(5));
+  test_clock()->Advance(base::Minutes(5));
   double old_metric = user_classifier->GetEstimatedAvgTime(metric);
   user_classifier->OnEvent(metric);
   EXPECT_THAT(user_classifier->GetEstimatedAvgTime(metric), Lt(old_metric));
@@ -232,13 +231,13 @@ TEST_P(UserClassifierMetricTest,
   user_classifier->OnEvent(metric);
   // Subsequent events get ignored for the next 60 minutes.
   for (int i = 0; i < 11; i++) {
-    test_clock()->Advance(base::TimeDelta::FromMinutes(5));
+    test_clock()->Advance(base::Minutes(5));
     double old_metric = user_classifier->GetEstimatedAvgTime(metric);
     user_classifier->OnEvent(metric);
     EXPECT_THAT(user_classifier->GetEstimatedAvgTime(metric), Eq(old_metric));
   }
   // An event 60 minutes after the initial event is finally not ignored.
-  test_clock()->Advance(base::TimeDelta::FromMinutes(5));
+  test_clock()->Advance(base::Minutes(5));
   double old_metric = user_classifier->GetEstimatedAvgTime(metric);
   user_classifier->OnEvent(metric);
   EXPECT_THAT(user_classifier->GetEstimatedAvgTime(metric), Lt(old_metric));
@@ -251,14 +250,14 @@ TEST_P(UserClassifierMetricTest, ShouldCapDelayBetweenEvents) {
   // The initial event
   user_classifier->OnEvent(metric);
   // Wait for an insane amount of time
-  test_clock()->Advance(base::TimeDelta::FromDays(365));
+  test_clock()->Advance(base::Days(365));
   user_classifier->OnEvent(metric);
   double metric_after_a_year = user_classifier->GetEstimatedAvgTime(metric);
 
   // Now repeat the same with s/one year/one week.
   user_classifier->ClearClassificationForDebugging();
   user_classifier->OnEvent(metric);
-  test_clock()->Advance(base::TimeDelta::FromDays(7));
+  test_clock()->Advance(base::Days(7));
   user_classifier->OnEvent(metric);
 
   // The results should be the same.
@@ -278,14 +277,14 @@ TEST_P(UserClassifierMetricTest,
   // The initial event
   user_classifier->OnEvent(metric);
   // Wait for an insane amount of time
-  test_clock()->Advance(base::TimeDelta::FromDays(365));
+  test_clock()->Advance(base::Days(365));
   user_classifier->OnEvent(metric);
   double metric_after_a_year = user_classifier->GetEstimatedAvgTime(metric);
 
   // Now repeat the same with s/one year/two days.
   user_classifier->ClearClassificationForDebugging();
   user_classifier->OnEvent(metric);
-  test_clock()->Advance(base::TimeDelta::FromDays(3));
+  test_clock()->Advance(base::Days(3));
   user_classifier->OnEvent(metric);
 
   // The results should be the same.

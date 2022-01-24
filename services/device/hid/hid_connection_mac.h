@@ -12,7 +12,6 @@
 
 #include "base/containers/queue.h"
 #include "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "services/device/hid/hid_connection.h"
 
 namespace base {
@@ -25,7 +24,10 @@ class HidConnectionMac : public HidConnection {
  public:
   HidConnectionMac(base::ScopedCFTypeRef<IOHIDDeviceRef> device,
                    scoped_refptr<HidDeviceInfo> device_info,
-                   bool allow_protected_reports);
+                   bool allow_protected_reports,
+                   bool allow_fido_reports);
+  HidConnectionMac(HidConnectionMac&) = delete;
+  HidConnectionMac& operator=(HidConnectionMac&) = delete;
 
  private:
   ~HidConnectionMac() override;
@@ -56,8 +58,6 @@ class HidConnectionMac : public HidConnection {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   std::vector<uint8_t> inbound_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidConnectionMac);
 };
 
 }  // namespace device

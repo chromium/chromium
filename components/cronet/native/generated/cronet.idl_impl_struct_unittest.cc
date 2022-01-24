@@ -8,10 +8,13 @@
 
 #include <math.h>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class CronetStructTest : public ::testing::Test {
+ public:
+  CronetStructTest(const CronetStructTest&) = delete;
+  CronetStructTest& operator=(const CronetStructTest&) = delete;
+
  protected:
   void SetUp() override {}
 
@@ -19,9 +22,6 @@ class CronetStructTest : public ::testing::Test {
 
   CronetStructTest() {}
   ~CronetStructTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CronetStructTest);
 };
 
 // Test Struct Cronet_Error setters and getters.

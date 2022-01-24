@@ -10,10 +10,9 @@
 
 #include "base/containers/queue.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/native_process_launcher.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
@@ -42,6 +41,9 @@ namespace extensions {
 // thread.
 class NativeMessageProcessHost : public NativeMessageHost {
  public:
+  NativeMessageProcessHost(const NativeMessageProcessHost&) = delete;
+  NativeMessageProcessHost& operator=(const NativeMessageProcessHost&) = delete;
+
   ~NativeMessageProcessHost() override;
 
   // Create using specified |launcher|. Used in tests.
@@ -135,8 +137,6 @@ class NativeMessageProcessHost : public NativeMessageHost {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<NativeMessageProcessHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMessageProcessHost);
 };
 
 }  // namespace extensions

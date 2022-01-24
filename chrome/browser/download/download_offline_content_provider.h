@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "components/download/public/common/all_download_event_notifier.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
@@ -48,6 +47,12 @@ class DownloadOfflineContentProvider
  public:
   explicit DownloadOfflineContentProvider(OfflineContentAggregator* aggregator,
                                           const std::string& name_space);
+
+  DownloadOfflineContentProvider(const DownloadOfflineContentProvider&) =
+      delete;
+  DownloadOfflineContentProvider& operator=(
+      const DownloadOfflineContentProvider&) = delete;
+
   ~DownloadOfflineContentProvider() override;
 
   // Should be called when a DownloadManager is available.
@@ -145,8 +150,6 @@ class DownloadOfflineContentProvider
   Profile* profile_;
 
   base::WeakPtrFactory<DownloadOfflineContentProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadOfflineContentProvider);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_OFFLINE_CONTENT_PROVIDER_H_

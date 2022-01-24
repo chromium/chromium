@@ -1,5 +1,5 @@
-CONSOLE ERROR: line 30: Not allowed to load local resource: foobar
-CONSOLE ERROR: line 35: Not allowed to load local resource: foobar
+CONSOLE ERROR: Not allowed to load local resource: foobar
+CONSOLE ERROR: Not allowed to load local resource: foobar
 Test for bug 13584: <script> code wrongly assumes requests can't fail.
 
 No crash == SUCCESS.

@@ -16,12 +16,6 @@ namespace chromeos {
 FakeU2FClient::FakeU2FClient() = default;
 FakeU2FClient::~FakeU2FClient() = default;
 
-void FakeU2FClient::WaitForServiceToBeAvailable(
-    WaitForServiceToBeAvailableCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-}
-
 void FakeU2FClient::IsUvpaa(const u2f::IsUvpaaRequest& request,
                             DBusMethodCallback<u2f::IsUvpaaResponse> callback) {
   u2f::IsUvpaaResponse response;

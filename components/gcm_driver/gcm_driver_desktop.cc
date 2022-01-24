@@ -12,10 +12,9 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -37,6 +36,10 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
   // Called on UI thread.
   IOWorker(const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
            const scoped_refptr<base::SequencedTaskRunner>& io_thread);
+
+  IOWorker(const IOWorker&) = delete;
+  IOWorker& operator=(const IOWorker&) = delete;
+
   virtual ~IOWorker();
 
   // Overridden from GCMClient::Delegate:
@@ -126,8 +129,6 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
   base::WeakPtr<GCMDriverDesktop> service_;
 
   std::unique_ptr<GCMClient> gcm_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOWorker);
 };
 
 GCMDriverDesktop::IOWorker::IOWorker(
@@ -497,7 +498,6 @@ void GCMDriverDesktop::IOWorker::RecordDecryptionFailure(
 GCMDriverDesktop::GCMDriverDesktop(
     std::unique_ptr<GCMClientFactory> gcm_client_factory,
     const GCMClient::ChromeBuildInfo& chrome_build_info,
-    const std::string& user_agent,
     PrefService* prefs,
     const base::FilePath& store_path,
     bool remove_account_mappings_with_email_key,

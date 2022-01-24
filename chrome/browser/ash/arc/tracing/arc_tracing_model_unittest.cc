@@ -12,7 +12,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -147,10 +146,11 @@ void EnsureGraphicsModelsEqual(const ArcTracingGraphicsModel& model1,
 class ArcTracingModelTest : public testing::Test {
  public:
   ArcTracingModelTest() = default;
-  ~ArcTracingModelTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingModelTest);
+  ArcTracingModelTest(const ArcTracingModelTest&) = delete;
+  ArcTracingModelTest& operator=(const ArcTracingModelTest&) = delete;
+
+  ~ArcTracingModelTest() override = default;
 };
 
 // TopLevel test is performed on the data collected from the real test device.

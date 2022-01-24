@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_UTILS_H_
 
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include <memory>
+
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
@@ -16,6 +18,8 @@ class WebContents;
 }
 
 namespace web_app {
+
+class AppBrowserController;
 
 absl::optional<AppId> GetWebAppForActiveTab(Browser* browser);
 
@@ -40,6 +44,9 @@ void SetAppPrefsForWebContents(content::WebContents* web_contents);
 
 // Clear preferences that are unique to app windows.
 void ClearAppPrefsForWebContents(content::WebContents* web_contents);
+
+std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
+    Browser* browser);
 
 }  // namespace web_app
 

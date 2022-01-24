@@ -109,4 +109,31 @@ TEST_F(ArchivableCredentialPasswordFormTest, BlockedCreation) {
   EXPECT_FALSE(credential);
 }
 
+// Tests the creation of a PasswordForm from a Credential.
+TEST_F(ArchivableCredentialPasswordFormTest, PasswordFormFromCredential) {
+  NSString* username = @"username_value";
+  NSString* keychainIdentifier = @"keychain_identifier_value";
+  NSString* url = @"http://www.alpha.example.com/path/and?args=8";
+  NSString* recordIdentifier = @"recordIdentifier";
+
+  id<Credential> credential =
+      [[ArchivableCredential alloc] initWithFavicon:nil
+                                 keychainIdentifier:keychainIdentifier
+                                               rank:1
+                                   recordIdentifier:recordIdentifier
+                                  serviceIdentifier:url
+                                        serviceName:nil
+                                               user:username
+                               validationIdentifier:nil];
+  EXPECT_TRUE(credential);
+
+  PasswordForm passwordForm = PasswordFormFromCredential(credential);
+  EXPECT_EQ(passwordForm.times_used, credential.rank);
+  EXPECT_EQ(passwordForm.username_value, base::SysNSStringToUTF16(username));
+  EXPECT_EQ(passwordForm.encrypted_password,
+            base::SysNSStringToUTF8(keychainIdentifier));
+  EXPECT_EQ(passwordForm.url, GURL("http://www.alpha.example.com/path/and"));
+  EXPECT_EQ(passwordForm.signon_realm, "http://www.alpha.example.com/");
+}
+
 }  // namespace

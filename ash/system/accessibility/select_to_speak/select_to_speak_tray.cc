@@ -23,18 +23,42 @@ class ImageView;
 
 namespace ash {
 
+namespace {
+
 // This constant must be kept the same as SELECT_TO_SPEAK_TRAY_CLASS_NAME in
 // chrome/browser/resources/chromeos/accessibility/select_to_speak/
 // select_to_speak.js.
-const char kSelectToSpeakTrayClassName[] =
+constexpr char kSelectToSpeakTrayClassName[] =
     "tray/TrayBackgroundView/SelectToSpeakTray";
+
+gfx::ImageSkia GetImageOnCurrentSelectToSpeakStatus() {
+  auto* shell = Shell::Get();
+  const SkColor color =
+      TrayIconColor(shell->session_controller()->GetSessionState());
+  const auto select_to_speak_state =
+      shell->accessibility_controller()->GetSelectToSpeakState();
+
+  switch (select_to_speak_state) {
+    case SelectToSpeakState::kSelectToSpeakStateInactive:
+      return gfx::CreateVectorIcon(kSystemTraySelectToSpeakNewuiIcon, color);
+    case SelectToSpeakState::kSelectToSpeakStateSelecting:
+      return gfx::CreateVectorIcon(kSystemTraySelectToSpeakActiveNewuiIcon,
+                                   color);
+    case SelectToSpeakState::kSelectToSpeakStateSpeaking:
+      return gfx::CreateVectorIcon(kSystemTrayStopNewuiIcon, color);
+  }
+}
+
+}  // namespace
 
 SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf)
     : TrayBackgroundView(shelf), icon_(new views::ImageView()) {
-  UpdateIconsForSession();
-  icon_->SetImage(inactive_image_);
-  const int vertical_padding = (kTrayItemSize - inactive_image_.height()) / 2;
-  const int horizontal_padding = (kTrayItemSize - inactive_image_.width()) / 2;
+  const gfx::ImageSkia inactive_image = gfx::CreateVectorIcon(
+      kSystemTraySelectToSpeakNewuiIcon,
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
+  icon_->SetImage(inactive_image);
+  const int vertical_padding = (kTrayItemSize - inactive_image.height()) / 2;
+  const int horizontal_padding = (kTrayItemSize - inactive_image.width()) / 2;
   icon_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(vertical_padding, horizontal_padding)));
   icon_->SetTooltipText(l10n_util::GetStringUTF16(
@@ -52,7 +76,7 @@ SelectToSpeakTray::~SelectToSpeakTray() {
 
 void SelectToSpeakTray::Initialize() {
   TrayBackgroundView::Initialize();
-  CheckStatusAndUpdateIcon();
+  UpdateIconOnCurrentStatus();
 }
 
 std::u16string SelectToSpeakTray::GetAccessibleNameForTray() {
@@ -74,53 +98,38 @@ bool SelectToSpeakTray::PerformAction(const ui::Event& event) {
   return true;
 }
 
+void SelectToSpeakTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  UpdateIconOnColorChanges();
+}
+
 void SelectToSpeakTray::OnAccessibilityStatusChanged() {
-  CheckStatusAndUpdateIcon();
+  UpdateIconOnCurrentStatus();
 }
 
 void SelectToSpeakTray::OnSessionStateChanged(
     session_manager::SessionState state) {
-  UpdateIconsForSession();
-  CheckStatusAndUpdateIcon();
+  UpdateIconOnColorChanges();
 }
 
-void SelectToSpeakTray::UpdateIconsForSession() {
-  session_manager::SessionState session_state =
-      Shell::Get()->session_controller()->GetSessionState();
-  SkColor color = TrayIconColor(session_state);
-
-  inactive_image_ =
-      gfx::CreateVectorIcon(kSystemTraySelectToSpeakNewuiIcon, color);
-  selecting_image_ =
-      gfx::CreateVectorIcon(kSystemTraySelectToSpeakActiveNewuiIcon, color);
-  speaking_image_ = gfx::CreateVectorIcon(kSystemTrayStopNewuiIcon, color);
-}
-
-void SelectToSpeakTray::CheckStatusAndUpdateIcon() {
-  if (!Shell::Get()->accessibility_controller()->select_to_speak().enabled()) {
+void SelectToSpeakTray::UpdateIconOnCurrentStatus() {
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
+  if (!accessibility_controller->select_to_speak().enabled()) {
     SetVisiblePreferred(false);
     return;
   }
-
-  SelectToSpeakState state =
-      Shell::Get()->accessibility_controller()->GetSelectToSpeakState();
-  switch (state) {
-    case SelectToSpeakState::kSelectToSpeakStateInactive:
-      icon_->SetImage(inactive_image_);
-      SetIsActive(false);
-      break;
-    case SelectToSpeakState::kSelectToSpeakStateSelecting:
-      // Activate the start selection button during selection.
-      icon_->SetImage(selecting_image_);
-      SetIsActive(true);
-      break;
-    case SelectToSpeakState::kSelectToSpeakStateSpeaking:
-      icon_->SetImage(speaking_image_);
-      SetIsActive(true);
-      break;
-  }
-
+  icon_->SetImage(GetImageOnCurrentSelectToSpeakStatus());
+  SetIsActive(accessibility_controller->GetSelectToSpeakState() !=
+              SelectToSpeakState::kSelectToSpeakStateInactive);
   SetVisiblePreferred(true);
+}
+
+void SelectToSpeakTray::UpdateIconOnColorChanges() {
+  if (!visible_preferred() ||
+      !Shell::Get()->accessibility_controller()->select_to_speak().enabled()) {
+    return;
+  }
+  icon_->SetImage(GetImageOnCurrentSelectToSpeakStatus());
 }
 
 }  // namespace ash

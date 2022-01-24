@@ -7,12 +7,11 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -139,8 +138,7 @@ class RenderWidgetHostViewBrowserTest : public ContentBrowserTest {
   static void GiveItSomeTime() {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(250));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(250));
     run_loop.Run();
   }
 
@@ -161,6 +159,10 @@ class CommitBeforeSwapAckSentHelper : public DidCommitNavigationInterceptor {
       : DidCommitNavigationInterceptor(web_contents),
         frame_observer_(frame_observer) {}
 
+  CommitBeforeSwapAckSentHelper(const CommitBeforeSwapAckSentHelper&) = delete;
+  CommitBeforeSwapAckSentHelper& operator=(
+      const CommitBeforeSwapAckSentHelper&) = delete;
+
  private:
   // DidCommitNavigationInterceptor:
   bool WillProcessDidCommitNavigation(
@@ -175,8 +177,6 @@ class CommitBeforeSwapAckSentHelper : public DidCommitNavigationInterceptor {
 
   // Not owned.
   RenderFrameSubmissionObserver* const frame_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitBeforeSwapAckSentHelper);
 };
 
 class RenderWidgetHostViewBrowserTestBase : public ContentBrowserTest {
@@ -195,15 +195,18 @@ class NoCompositingRenderWidgetHostViewBrowserTest
     : public RenderWidgetHostViewBrowserTest {
  public:
   NoCompositingRenderWidgetHostViewBrowserTest() {}
+
+  NoCompositingRenderWidgetHostViewBrowserTest(
+      const NoCompositingRenderWidgetHostViewBrowserTest&) = delete;
+  NoCompositingRenderWidgetHostViewBrowserTest& operator=(
+      const NoCompositingRenderWidgetHostViewBrowserTest&) = delete;
+
   ~NoCompositingRenderWidgetHostViewBrowserTest() override {}
 
   bool SetUpSourceSurface(const char* wait_message) override {
     NOTIMPLEMENTED();
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoCompositingRenderWidgetHostViewBrowserTest);
 };
 
 // When creating the first RenderWidgetHostViewBase, the CompositorFrameSink can
@@ -501,6 +504,11 @@ class CompositingRenderWidgetHostViewBrowserTest
   CompositingRenderWidgetHostViewBrowserTest()
       : compositing_mode_(GetParam()) {}
 
+  CompositingRenderWidgetHostViewBrowserTest(
+      const CompositingRenderWidgetHostViewBrowserTest&) = delete;
+  CompositingRenderWidgetHostViewBrowserTest& operator=(
+      const CompositingRenderWidgetHostViewBrowserTest&) = delete;
+
   void SetUp() override {
     if (compositing_mode_ == SOFTWARE_COMPOSITING)
       UseSoftwareCompositing();
@@ -533,8 +541,6 @@ class CompositingRenderWidgetHostViewBrowserTest
 
  private:
   const CompositingMode compositing_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositingRenderWidgetHostViewBrowserTest);
 };
 
 // Disable tests for Android as it has an incomplete implementation.
@@ -892,6 +898,13 @@ class CompositingRenderWidgetHostViewBrowserTestTabCaptureHighDPI
  public:
   CompositingRenderWidgetHostViewBrowserTestTabCaptureHighDPI() {}
 
+  CompositingRenderWidgetHostViewBrowserTestTabCaptureHighDPI(
+      const CompositingRenderWidgetHostViewBrowserTestTabCaptureHighDPI&) =
+      delete;
+  CompositingRenderWidgetHostViewBrowserTestTabCaptureHighDPI& operator=(
+      const CompositingRenderWidgetHostViewBrowserTestTabCaptureHighDPI&) =
+      delete;
+
  protected:
   bool ShouldContinueAfterTestURLLoad() override {
     // Short-circuit a pass for platforms where setting up high-DPI fails.
@@ -909,10 +922,6 @@ class CompositingRenderWidgetHostViewBrowserTestTabCaptureHighDPI
   }
 
   float scale() const override { return 2.0f; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      CompositingRenderWidgetHostViewBrowserTestTabCaptureHighDPI);
 };
 
 // NineImagePainter implementation crashes the process on Windows when this

@@ -152,6 +152,6 @@ void ManageMigrationUiController::ShowFeedbackDialog() {
   dialog_controller_->ShowFeedbackDialog();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ManageMigrationUiController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ManageMigrationUiController);
 
 }  // namespace autofill

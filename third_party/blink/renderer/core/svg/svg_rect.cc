@@ -30,12 +30,8 @@
 
 namespace blink {
 
-SVGRect::SVGRect() : is_valid_(true) {}
-
-SVGRect::SVGRect(const FloatRect& rect) : is_valid_(true), value_(rect) {}
-
 SVGRect* SVGRect::Clone() const {
-  return MakeGarbageCollected<SVGRect>(value_);
+  return MakeGarbageCollected<SVGRect>(x_, y_, width_, height_);
 }
 
 template <typename CharType>
@@ -55,7 +51,7 @@ SVGParsingError SVGRect::Parse(const CharType*& ptr, const CharType* end) {
     return SVGParsingError(SVGParseStatus::kTrailingGarbage, ptr - start);
   }
 
-  value_ = FloatRect(x, y, width, height);
+  Set(x, y, width, height);
   is_valid_ = true;
   return SVGParseStatus::kNoError;
 }
@@ -87,7 +83,22 @@ String SVGRect::ValueAsString() const {
 }
 
 void SVGRect::Add(const SVGPropertyBase* other, const SVGElement*) {
-  value_ += To<SVGRect>(other)->Value();
+  auto* other_rect = To<SVGRect>(other);
+  Add(other_rect->x_, other_rect->y_, other_rect->width_, other_rect->height_);
+}
+
+void SVGRect::Set(float x, float y, float width, float height) {
+  x_ = x;
+  y_ = y;
+  width_ = width;
+  height_ = height;
+}
+
+void SVGRect::Add(float x, float y, float width, float height) {
+  x_ += x;
+  y_ += y;
+  width_ += width;
+  height_ += height;
 }
 
 void SVGRect::CalculateAnimatedValue(
@@ -102,22 +113,22 @@ void SVGRect::CalculateAnimatedValue(
   auto* to_rect = To<SVGRect>(to_value);
   auto* to_at_end_of_duration_rect = To<SVGRect>(to_at_end_of_duration_value);
 
-  FloatRect result(ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                                         from_rect->X(), to_rect->X(),
-                                         to_at_end_of_duration_rect->X()),
-                   ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                                         from_rect->Y(), to_rect->Y(),
-                                         to_at_end_of_duration_rect->Y()),
-                   ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                                         from_rect->Width(), to_rect->Width(),
-                                         to_at_end_of_duration_rect->Width()),
-                   ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                                         from_rect->Height(), to_rect->Height(),
-                                         to_at_end_of_duration_rect->Height()));
+  float x = ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                  from_rect->X(), to_rect->X(),
+                                  to_at_end_of_duration_rect->X());
+  float y = ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                  from_rect->Y(), to_rect->Y(),
+                                  to_at_end_of_duration_rect->Y());
+  float width = ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                      from_rect->Width(), to_rect->Width(),
+                                      to_at_end_of_duration_rect->Width());
+  float height = ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                       from_rect->Height(), to_rect->Height(),
+                                       to_at_end_of_duration_rect->Height());
   if (parameters.is_additive)
-    result += value_;
-
-  value_ = result;
+    Add(x, y, width, height);
+  else
+    Set(x, y, width, height);
 }
 
 float SVGRect::CalculateDistance(const SVGPropertyBase* to,
@@ -128,7 +139,7 @@ float SVGRect::CalculateDistance(const SVGPropertyBase* to,
 }
 
 void SVGRect::SetInvalid() {
-  value_ = FloatRect(0.0f, 0.0f, 0.0f, 0.0f);
+  x_ = y_ = width_ = height_ = 0;
   is_valid_ = false;
 }
 

@@ -72,10 +72,12 @@ std::unique_ptr<EndpointFetcher> CartDiscountLinkFetcher::CreateEndpointFetcher(
             "feature."
         })");
 
+  const std::vector<std::string> empty_header = {};
+
   std::string post_data = GeneratePostData(std::move(cart_content_proto));
   return std::make_unique<EndpointFetcher>(
       GURL(kFetchDiscountLinkEndpoint), kPostMethod, kContentType, kTimeoutMs,
-      post_data, traffic_annotation,
+      post_data, empty_header, empty_header, traffic_annotation,
       network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
       false);
 }
@@ -96,38 +98,40 @@ std::string CartDiscountLinkFetcher::GeneratePostData(
                        std::move(merchant_identifier_dict));
 
   // RuleDiscount
-  if (!cart_discount_proto.discount_info_size()) {
+  if (!cart_discount_proto.rule_discount_info_size()) {
     NOTREACHED() << "discount_info should not be empty";
   }
   base::Value rule_discounts_list(base::Value::Type::LIST);
-  for (int i = 0; i < cart_discount_proto.discount_info_size(); i++) {
-    const cart_db::DiscountInfoProto& discount_info_proto =
-        cart_discount_proto.discount_info(i);
+  for (int i = 0; i < cart_discount_proto.rule_discount_info_size(); i++) {
+    const cart_db::RuleDiscountInfoProto& rule_discount_info_proto =
+        cart_discount_proto.rule_discount_info(i);
 
     base::Value rule_discount(base::Value::Type::DICTIONARY);
     // ruleId
-    rule_discount.SetStringKey("ruleId", discount_info_proto.rule_id());
+    rule_discount.SetStringKey("ruleId", rule_discount_info_proto.rule_id());
     // merchanRuletId
     rule_discount.SetStringKey("merchantRuleId",
-                               discount_info_proto.merchant_rule_id());
+                               rule_discount_info_proto.merchant_rule_id());
     // rawMerchantOfferId
-    if (!discount_info_proto.raw_merchant_offer_id().empty()) {
-      rule_discount.SetStringKey("rawMerchantOfferId",
-                                 discount_info_proto.raw_merchant_offer_id());
+    if (!rule_discount_info_proto.raw_merchant_offer_id().empty()) {
+      rule_discount.SetStringKey(
+          "rawMerchantOfferId",
+          rule_discount_info_proto.raw_merchant_offer_id());
     }
     // discount
     base::Value discount(base::Value::Type::DICTIONARY);
-    if (discount_info_proto.has_amount_off()) {
+    if (rule_discount_info_proto.has_amount_off()) {
       base::Value money(base::Value::Type::DICTIONARY);
 
-      const cart_db::MoneyProto& money_proto = discount_info_proto.amount_off();
+      const cart_db::MoneyProto& money_proto =
+          rule_discount_info_proto.amount_off();
       money.SetStringKey("currencyCode", money_proto.currency_code());
       money.SetStringKey("units", money_proto.units());
       money.SetIntKey("nanos", money_proto.nanos());
 
       discount.SetKey("amountOff", std::move(money));
     } else {
-      discount.SetIntKey("percentOff", discount_info_proto.percent_off());
+      discount.SetIntKey("percentOff", rule_discount_info_proto.percent_off());
     }
     rule_discount.SetKey("discount", std::move(discount));
 

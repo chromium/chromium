@@ -16,8 +16,10 @@
       // Access local storage.
       localStorage.setItem('foo', 'bar');
 
-      // Access web database.
-      window.openDatabase('foo', '1.0', 'foo DB', 1024);
+      try {
+        // Third-party context WebSQL is disabled as of M97.
+        window.openDatabase('foo', '1.0', 'foo DB', 1024);
+      } catch (e) {}
 
       // Access file system.
       const file_system_promise = new Promise(function(resolve, reject) {

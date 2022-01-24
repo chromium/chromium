@@ -8,7 +8,6 @@
 #include "cc/animation/animation_host.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "cc/test/fake_layer_tree_host.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/test/stub_layer_tree_host_single_thread_client.h"
 #include "cc/trees/single_thread_proxy.h"

@@ -17,6 +17,10 @@ namespace sandbox {
 class SidestepResolverThunk : public ResolverThunk {
  public:
   SidestepResolverThunk() {}
+
+  SidestepResolverThunk(const SidestepResolverThunk&) = delete;
+  SidestepResolverThunk& operator=(const SidestepResolverThunk&) = delete;
+
   ~SidestepResolverThunk() override {}
 
   // Implementation of Resolver::Setup.
@@ -31,9 +35,6 @@ class SidestepResolverThunk : public ResolverThunk {
 
   // Implementation of Resolver::GetThunkSize.
   size_t GetThunkSize() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SidestepResolverThunk);
 };
 
 // This is the concrete resolver used to perform smart sidestep interceptions.
@@ -43,6 +44,11 @@ class SidestepResolverThunk : public ResolverThunk {
 class SmartSidestepResolverThunk : public SidestepResolverThunk {
  public:
   SmartSidestepResolverThunk() {}
+
+  SmartSidestepResolverThunk(const SmartSidestepResolverThunk&) = delete;
+  SmartSidestepResolverThunk& operator=(const SmartSidestepResolverThunk&) =
+      delete;
+
   ~SmartSidestepResolverThunk() override {}
 
   // Implementation of Resolver::Setup.
@@ -65,8 +71,6 @@ class SmartSidestepResolverThunk : public SidestepResolverThunk {
 
   // Returns true if return_address is inside the module loaded at base.
   static bool IsInternalCall(const void* base, void* return_address);
-
-  DISALLOW_COPY_AND_ASSIGN(SmartSidestepResolverThunk);
 };
 
 }  // namespace sandbox

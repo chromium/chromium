@@ -7,12 +7,13 @@
 // device_info.h's size can impact build time. Try not to raise this limit
 // unless absolutely necessary. See
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#pragma clang max_tokens_here 506000
+#pragma clang max_tokens_here 509500
 
 #include <utility>
 
 #include "base/values.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
 
@@ -99,7 +100,7 @@ DeviceInfo::DeviceInfo(
       fcm_registration_token_(fcm_registration_token),
       interested_data_types_(interested_data_types) {}
 
-DeviceInfo::~DeviceInfo() {}
+DeviceInfo::~DeviceInfo() = default;
 
 const std::string& DeviceInfo::guid() const {
   return guid_;

@@ -24,7 +24,6 @@
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/fake_picture_layer_impl.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/test/property_tree_test_utils.h"
 #include "cc/trees/clip_node.h"
@@ -39,10 +38,11 @@
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_operations.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_operations.h"
-#include "ui/gfx/transform_util.h"
 
 namespace cc {
 namespace {
@@ -104,7 +104,8 @@ class DrawPropertiesTestBase : public LayerTreeImplTestBase {
     // TODO(https://crbug.com/939968) This call should be handled by
     // FakeLayerTreeHost instead of manually pushing the properties from the
     // layer tree host to the pending tree.
-    host()->PushLayerTreePropertiesTo(host_impl()->pending_tree());
+    LayerTreeHost::PushLayerTreePropertiesTo(host()->pending_commit_state(),
+                                             host_impl()->pending_tree());
 
     UpdateDrawProperties(host_impl()->pending_tree());
   }
@@ -210,13 +211,10 @@ TEST_F(DrawPropertiesTest, TransformsForNoOpLayer) {
 
   UpdateActiveTreeDrawProperties();
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(), child->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                  child->ScreenSpaceTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                  grand_child->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                  grand_child->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(gfx::Transform(), child->DrawTransform());
+  EXPECT_TRANSFORM_EQ(gfx::Transform(), child->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(gfx::Transform(), grand_child->DrawTransform());
+  EXPECT_TRANSFORM_EQ(gfx::Transform(), grand_child->ScreenSpaceTransform());
 }
 
 TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
@@ -235,10 +233,10 @@ TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
   // transform or the screenspace transform.
   layer->SetBounds(gfx::Size(10, 12));
   UpdateActiveTreeDrawProperties();
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       gfx::Transform(),
       draw_property_utils::DrawTransform(layer, transform_tree, effect_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       gfx::Transform(),
       draw_property_utils::ScreenSpaceTransform(layer, transform_tree));
 
@@ -247,10 +245,10 @@ TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
   CreateTransformNode(layer).origin = gfx::Point3F(2.5f, 3.0f, 0.f);
   layer->SetBounds(gfx::Size(10, 12));
   UpdateActiveTreeDrawProperties();
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       gfx::Transform(),
       draw_property_utils::DrawTransform(layer, transform_tree, effect_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       gfx::Transform(),
       draw_property_utils::ScreenSpaceTransform(layer, transform_tree));
 
@@ -260,10 +258,10 @@ TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
   position_transform.Translate(0.f, 1.2f);
   SetPostTranslation(layer, gfx::Vector2dF(0.f, 1.2f));
   UpdateActiveTreeDrawProperties();
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       position_transform,
       draw_property_utils::DrawTransform(layer, transform_tree, effect_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       position_transform,
       draw_property_utils::ScreenSpaceTransform(layer, transform_tree));
 
@@ -276,10 +274,9 @@ TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
   SetTransformOrigin(layer, gfx::Point3F());
   SetPostTranslation(layer, gfx::Vector2dF());
   UpdateActiveTreeDrawProperties();
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      layer_transform,
-      draw_property_utils::DrawTransform(layer, transform_tree, effect_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(layer_transform, draw_property_utils::DrawTransform(
+                                           layer, transform_tree, effect_tree));
+  EXPECT_TRANSFORM_EQ(
       layer_transform,
       draw_property_utils::ScreenSpaceTransform(layer, transform_tree));
 
@@ -290,10 +287,9 @@ TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
                                    gfx::InvertAndCheck(translation_to_anchor);
   SetTransformOrigin(layer, gfx::Point3F(5.f, 0.f, 0.f));
   UpdateActiveTreeDrawProperties();
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      expected_result,
-      draw_property_utils::DrawTransform(layer, transform_tree, effect_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(expected_result, draw_property_utils::DrawTransform(
+                                           layer, transform_tree, effect_tree));
+  EXPECT_TRANSFORM_EQ(
       expected_result,
       draw_property_utils::ScreenSpaceTransform(layer, transform_tree));
 
@@ -305,16 +301,15 @@ TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
                     gfx::InvertAndCheck(translation_to_anchor);
   SetPostTranslation(layer, gfx::Vector2dF(0.f, 1.2f));
   UpdateActiveTreeDrawProperties();
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      expected_result,
-      draw_property_utils::DrawTransform(layer, transform_tree, effect_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(expected_result, draw_property_utils::DrawTransform(
+                                           layer, transform_tree, effect_tree));
+  EXPECT_TRANSFORM_EQ(
       expected_result,
       draw_property_utils::ScreenSpaceTransform(layer, transform_tree));
 }
 
 TEST_F(DrawPropertiesTest, TransformsAboutScrollOffset) {
-  const gfx::ScrollOffset kScrollOffset(50, 100);
+  const gfx::Vector2dF kScrollOffset(50, 100);
   const gfx::Vector2dF kScrollDelta(2.34f, 5.67f);
   const gfx::Vector2d kMaxScrollOffset(200, 200);
   const gfx::PointF kScrollLayerPosition(-kScrollOffset.x(),
@@ -356,10 +351,8 @@ TEST_F(DrawPropertiesTest, TransformsAboutScrollOffset) {
       std::round(sub_layer_screen_position.y() * page_scale * kDeviceScale));
   expected_transform.Scale(page_scale * kDeviceScale,
                            page_scale * kDeviceScale);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_transform,
-                                  sublayer->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_transform,
-                                  sublayer->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(expected_transform, sublayer->DrawTransform());
+  EXPECT_TRANSFORM_EQ(expected_transform, sublayer->ScreenSpaceTransform());
 
   gfx::Transform arbitrary_translate;
   const float kTranslateX = 10.6f;
@@ -375,8 +368,7 @@ TEST_F(DrawPropertiesTest, TransformsAboutScrollOffset) {
                  sub_layer_screen_position.y() * page_scale * kDeviceScale));
   expected_transform.Scale(page_scale * kDeviceScale,
                            page_scale * kDeviceScale);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_transform,
-                                  sublayer->DrawTransform());
+  EXPECT_TRANSFORM_EQ(expected_transform, sublayer->DrawTransform());
 
   // Test that page scale is updated even when we don't rebuild property trees.
   page_scale = 1.888f;
@@ -393,8 +385,7 @@ TEST_F(DrawPropertiesTest, TransformsAboutScrollOffset) {
                  sub_layer_screen_position.y() * page_scale * kDeviceScale));
   expected_transform.Scale(page_scale * kDeviceScale,
                            page_scale * kDeviceScale);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_transform,
-                                  sublayer->DrawTransform());
+  EXPECT_TRANSFORM_EQ(expected_transform, sublayer->DrawTransform());
 }
 
 TEST_F(DrawPropertiesTest, TransformsForSimpleHierarchy) {
@@ -423,16 +414,16 @@ TEST_F(DrawPropertiesTest, TransformsForSimpleHierarchy) {
 
   UpdateActiveTreeDrawProperties();
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       gfx::Transform(),
       draw_property_utils::DrawTransform(child, transform_tree, effect_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       gfx::Transform(),
       draw_property_utils::ScreenSpaceTransform(child, transform_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      gfx::Transform(), draw_property_utils::DrawTransform(
-                            grand_child, transform_tree, effect_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(gfx::Transform(),
+                      draw_property_utils::DrawTransform(
+                          grand_child, transform_tree, effect_tree));
+  EXPECT_TRANSFORM_EQ(
       gfx::Transform(),
       draw_property_utils::ScreenSpaceTransform(grand_child, transform_tree));
 
@@ -441,16 +432,16 @@ TEST_F(DrawPropertiesTest, TransformsForSimpleHierarchy) {
   parent_position_transform.Translate(0.f, 1.2f);
   SetPostTranslation(parent, gfx::Vector2dF(0.f, 1.2f));
   UpdateActiveTreeDrawProperties();
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       parent_position_transform,
       draw_property_utils::DrawTransform(child, transform_tree, effect_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       parent_position_transform,
       draw_property_utils::ScreenSpaceTransform(child, transform_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      parent_position_transform, draw_property_utils::DrawTransform(
-                                     grand_child, transform_tree, effect_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(parent_position_transform,
+                      draw_property_utils::DrawTransform(
+                          grand_child, transform_tree, effect_tree));
+  EXPECT_TRANSFORM_EQ(
       parent_position_transform,
       draw_property_utils::ScreenSpaceTransform(grand_child, transform_tree));
 
@@ -465,17 +456,16 @@ TEST_F(DrawPropertiesTest, TransformsForSimpleHierarchy) {
   SetTransform(parent, parent_layer_transform);
   SetPostTranslation(parent, gfx::Vector2dF());
   UpdateActiveTreeDrawProperties();
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       parent_composite_transform,
       draw_property_utils::DrawTransform(child, transform_tree, effect_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       parent_composite_transform,
       draw_property_utils::ScreenSpaceTransform(child, transform_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      parent_composite_transform,
-      draw_property_utils::DrawTransform(grand_child, transform_tree,
-                                         effect_tree));
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(parent_composite_transform,
+                      draw_property_utils::DrawTransform(
+                          grand_child, transform_tree, effect_tree));
+  EXPECT_TRANSFORM_EQ(
       parent_composite_transform,
       draw_property_utils::ScreenSpaceTransform(grand_child, transform_tree));
 }
@@ -525,22 +515,20 @@ TEST_F(DrawPropertiesTest, TransformsForSingleRenderSurface) {
 
   // The child layer's draw transform should refer to its new render surface.
   // The screen-space transform, however, should still refer to the root.
-  EXPECT_TRANSFORMATION_MATRIX_EQ(surface_sublayer_transform,
-                                  child->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(parent_composite_transform,
-                                  child->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(surface_sublayer_transform, child->DrawTransform());
+  EXPECT_TRANSFORM_EQ(parent_composite_transform,
+                      child->ScreenSpaceTransform());
 
   // Because the grand_child is the only drawable content, the child's render
   // surface will tighten its bounds to the grand_child.  The scale at which the
   // surface's subtree is drawn must be removed from the composite transform.
-  EXPECT_TRANSFORMATION_MATRIX_EQ(surface_sublayer_composite_transform,
-                                  child->render_target()->draw_transform());
+  EXPECT_TRANSFORM_EQ(surface_sublayer_composite_transform,
+                      child->render_target()->draw_transform());
 
   // The screen space is the same as the target since the child surface draws
   // into the root.
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      surface_sublayer_composite_transform,
-      child->render_target()->screen_space_transform());
+  EXPECT_TRANSFORM_EQ(surface_sublayer_composite_transform,
+                      child->render_target()->screen_space_transform());
 }
 
 TEST_F(DrawPropertiesTest, TransformsForRenderSurfaceHierarchy) {
@@ -708,54 +696,46 @@ TEST_F(DrawPropertiesTest, TransformsForRenderSurfaceHierarchy) {
   // Verify layer draw transforms note that draw transforms are described with
   // respect to the nearest ancestor render surface but screen space transforms
   // are described with respect to the root.
-  EXPECT_TRANSFORMATION_MATRIX_EQ(A, parent->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(A * A, child_of_root->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(A * A * A,
-                                  grand_child_of_root->DrawTransform());
+  EXPECT_TRANSFORM_EQ(A, parent->DrawTransform());
+  EXPECT_TRANSFORM_EQ(A * A, child_of_root->DrawTransform());
+  EXPECT_TRANSFORM_EQ(A * A * A, grand_child_of_root->DrawTransform());
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(SS1, render_surface1->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(SS1 * A, child_of_rs1->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(SS1 * A * A,
-                                  grand_child_of_rs1->DrawTransform());
+  EXPECT_TRANSFORM_EQ(SS1, render_surface1->DrawTransform());
+  EXPECT_TRANSFORM_EQ(SS1 * A, child_of_rs1->DrawTransform());
+  EXPECT_TRANSFORM_EQ(SS1 * A * A, grand_child_of_rs1->DrawTransform());
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(SS2, render_surface2->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(SS2 * A, child_of_rs2->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(SS2 * A * A,
-                                  grand_child_of_rs2->DrawTransform());
+  EXPECT_TRANSFORM_EQ(SS2, render_surface2->DrawTransform());
+  EXPECT_TRANSFORM_EQ(SS2 * A, child_of_rs2->DrawTransform());
+  EXPECT_TRANSFORM_EQ(SS2 * A * A, grand_child_of_rs2->DrawTransform());
 
   // Verify layer screen-space transforms
   //
-  EXPECT_TRANSFORMATION_MATRIX_EQ(A, parent->ScreenSpaceTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(A * A, child_of_root->ScreenSpaceTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(A * A * A,
-                                  grand_child_of_root->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(A, parent->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(A * A, child_of_root->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(A * A * A, grand_child_of_root->ScreenSpaceTransform());
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(A * A,
-                                  render_surface1->ScreenSpaceTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(A * A * A,
-                                  child_of_rs1->ScreenSpaceTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(A * A * A * A,
-                                  grand_child_of_rs1->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(A * A, render_surface1->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(A * A * A, child_of_rs1->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(A * A * A * A,
+                      grand_child_of_rs1->ScreenSpaceTransform());
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(A * A * A,
-                                  render_surface2->ScreenSpaceTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(A * A * A * A,
-                                  child_of_rs2->ScreenSpaceTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(A * A * A * A * A,
-                                  grand_child_of_rs2->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(A * A * A, render_surface2->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(A * A * A * A, child_of_rs2->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(A * A * A * A * A,
+                      grand_child_of_rs2->ScreenSpaceTransform());
 
   // Verify render surface transforms.
   //
   // Draw transform of render surface 1 is described with respect to root.
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      A * A * S1, GetRenderSurface(render_surface1)->draw_transform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(A * A * S1,
+                      GetRenderSurface(render_surface1)->draw_transform());
+  EXPECT_TRANSFORM_EQ(
       A * A * S1, GetRenderSurface(render_surface1)->screen_space_transform());
   // Draw transform of render surface 2 is described with respect to render
   // surface 1.
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      SS1 * A * S2, GetRenderSurface(render_surface2)->draw_transform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(SS1 * A * S2,
+                      GetRenderSurface(render_surface2)->draw_transform());
+  EXPECT_TRANSFORM_EQ(
       A * A * A * S2,
       GetRenderSurface(render_surface2)->screen_space_transform());
 
@@ -846,11 +826,10 @@ TEST_F(DrawPropertiesTest, TransformsForDegenerateIntermediateLayer) {
 
   ASSERT_TRUE(GetRenderSurface(child));
   // This is the real test, the rest are sanity checks.
-  EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                  GetRenderSurface(child)->draw_transform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(), child->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                  grand_child->DrawTransform());
+  EXPECT_TRANSFORM_EQ(gfx::Transform(),
+                      GetRenderSurface(child)->draw_transform());
+  EXPECT_TRANSFORM_EQ(gfx::Transform(), child->DrawTransform());
+  EXPECT_TRANSFORM_EQ(gfx::Transform(), grand_child->DrawTransform());
 }
 
 TEST_F(DrawPropertiesTest, RenderSurfaceWithSublayerScale) {
@@ -908,13 +887,13 @@ TEST_F(DrawPropertiesTest, TransformAboveRootLayer) {
   {
     SetDeviceTransform(translate);
     UpdateActiveTreeDrawProperties(device_scale_factor);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
-        translate, root->draw_properties().target_space_transform);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
-        translate, child->draw_properties().target_space_transform);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                    GetRenderSurface(root)->draw_transform());
-    EXPECT_TRANSFORMATION_MATRIX_EQ(translate, child->ScreenSpaceTransform());
+    EXPECT_TRANSFORM_EQ(translate,
+                        root->draw_properties().target_space_transform);
+    EXPECT_TRANSFORM_EQ(translate,
+                        child->draw_properties().target_space_transform);
+    EXPECT_TRANSFORM_EQ(gfx::Transform(),
+                        GetRenderSurface(root)->draw_transform());
+    EXPECT_TRANSFORM_EQ(translate, child->ScreenSpaceTransform());
     EXPECT_EQ(gfx::Rect(50, 50, 100, 100), child->clip_rect());
   }
 
@@ -923,13 +902,11 @@ TEST_F(DrawPropertiesTest, TransformAboveRootLayer) {
   {
     SetDeviceTransform(scale);
     UpdateActiveTreeDrawProperties(device_scale_factor);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
-        scale, root->draw_properties().target_space_transform);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
-        scale, child->draw_properties().target_space_transform);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                    GetRenderSurface(root)->draw_transform());
-    EXPECT_TRANSFORMATION_MATRIX_EQ(scale, child->ScreenSpaceTransform());
+    EXPECT_TRANSFORM_EQ(scale, root->draw_properties().target_space_transform);
+    EXPECT_TRANSFORM_EQ(scale, child->draw_properties().target_space_transform);
+    EXPECT_TRANSFORM_EQ(gfx::Transform(),
+                        GetRenderSurface(root)->draw_transform());
+    EXPECT_TRANSFORM_EQ(scale, child->ScreenSpaceTransform());
     EXPECT_EQ(gfx::Rect(0, 0, 200, 200), child->clip_rect());
   }
 
@@ -938,13 +915,12 @@ TEST_F(DrawPropertiesTest, TransformAboveRootLayer) {
   {
     SetDeviceTransform(rotate);
     UpdateActiveTreeDrawProperties(device_scale_factor);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
-        rotate, root->draw_properties().target_space_transform);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
-        rotate, child->draw_properties().target_space_transform);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                    GetRenderSurface(root)->draw_transform());
-    EXPECT_TRANSFORMATION_MATRIX_EQ(rotate, child->ScreenSpaceTransform());
+    EXPECT_TRANSFORM_EQ(rotate, root->draw_properties().target_space_transform);
+    EXPECT_TRANSFORM_EQ(rotate,
+                        child->draw_properties().target_space_transform);
+    EXPECT_TRANSFORM_EQ(gfx::Transform(),
+                        GetRenderSurface(root)->draw_transform());
+    EXPECT_TRANSFORM_EQ(rotate, child->ScreenSpaceTransform());
     EXPECT_EQ(gfx::Rect(-4, 0, 104, 104), child->clip_rect());
   }
 
@@ -955,13 +931,13 @@ TEST_F(DrawPropertiesTest, TransformAboveRootLayer) {
   {
     SetDeviceTransform(composite);
     UpdateActiveTreeDrawProperties(device_scale_factor);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
-        composite, root->draw_properties().target_space_transform);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
-        composite, child->draw_properties().target_space_transform);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                    GetRenderSurface(root)->draw_transform());
-    EXPECT_TRANSFORMATION_MATRIX_EQ(composite, child->ScreenSpaceTransform());
+    EXPECT_TRANSFORM_EQ(composite,
+                        root->draw_properties().target_space_transform);
+    EXPECT_TRANSFORM_EQ(composite,
+                        child->draw_properties().target_space_transform);
+    EXPECT_TRANSFORM_EQ(gfx::Transform(),
+                        GetRenderSurface(root)->draw_transform());
+    EXPECT_TRANSFORM_EQ(composite, child->ScreenSpaceTransform());
     EXPECT_EQ(gfx::Rect(89, 103, 208, 208), child->clip_rect());
   }
 
@@ -973,16 +949,13 @@ TEST_F(DrawPropertiesTest, TransformAboveRootLayer) {
     UpdateActiveTreeDrawProperties(device_scale_factor);
     gfx::Transform device_scaled_translate = translate;
     device_scaled_translate.Scale(device_scale_factor, device_scale_factor);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
-        device_scaled_translate,
-        root->draw_properties().target_space_transform);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(
-        device_scaled_translate,
-        child->draw_properties().target_space_transform);
-    EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                    GetRenderSurface(root)->draw_transform());
-    EXPECT_TRANSFORMATION_MATRIX_EQ(device_scaled_translate,
-                                    child->ScreenSpaceTransform());
+    EXPECT_TRANSFORM_EQ(device_scaled_translate,
+                        root->draw_properties().target_space_transform);
+    EXPECT_TRANSFORM_EQ(device_scaled_translate,
+                        child->draw_properties().target_space_transform);
+    EXPECT_TRANSFORM_EQ(gfx::Transform(),
+                        GetRenderSurface(root)->draw_transform());
+    EXPECT_TRANSFORM_EQ(device_scaled_translate, child->ScreenSpaceTransform());
     EXPECT_EQ(gfx::Rect(50, 50, 150, 150), child->clip_rect());
   }
 }
@@ -1745,7 +1718,7 @@ TEST_F(DrawPropertiesTest,
       std::unique_ptr<gfx::AnimationCurve>(new FakeTransformTransition(1.0)), 0,
       1, KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
+  keyframe_model->set_time_offset(base::Milliseconds(-1000));
   AddKeyframeModelToElementWithAnimation(
       grand_child->element_id(), timeline_impl(), std::move(keyframe_model));
 
@@ -2475,8 +2448,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, OcclusionBySiblingOfTarget) {
 
   CommitAndActivate();
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      GetRenderSurfaceImpl(surface)->draw_transform(), translate);
+  EXPECT_TRANSFORM_EQ(GetRenderSurfaceImpl(surface)->draw_transform(),
+                      translate);
   // surface_sibling draws into the root render surface and occludes
   // surface_child's contents.
   Occlusion actual_occlusion =
@@ -3124,10 +3097,8 @@ TEST_F(DrawPropertiesScalingTest, LayerTransformsInHighDPI) {
   // Verify root transforms
   gfx::Transform expected_root_transform;
   expected_root_transform.Scale(device_scale_factor, device_scale_factor);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_root_transform,
-                                  root->ScreenSpaceTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_root_transform,
-                                  root->DrawTransform());
+  EXPECT_TRANSFORM_EQ(expected_root_transform, root->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(expected_root_transform, root->DrawTransform());
 
   // Verify results of transformed root rects
   gfx::RectF root_bounds(gfx::SizeF(root->bounds()));
@@ -3139,21 +3110,17 @@ TEST_F(DrawPropertiesScalingTest, LayerTransformsInHighDPI) {
 
   gfx::RectF expected_root_draw_rect(gfx::SizeF(root->bounds()));
   expected_root_draw_rect.Scale(device_scale_factor);
-  EXPECT_FLOAT_RECT_EQ(expected_root_draw_rect, root_draw_rect);
-  EXPECT_FLOAT_RECT_EQ(expected_root_draw_rect, root_screen_space_rect);
+  EXPECT_RECTF_EQ(expected_root_draw_rect, root_draw_rect);
+  EXPECT_RECTF_EQ(expected_root_draw_rect, root_screen_space_rect);
 
   // Verify child and child2 transforms. They should match.
   gfx::Transform expected_child_transform;
   expected_child_transform.Scale(device_scale_factor, device_scale_factor);
   expected_child_transform.Translate(child->offset_to_transform_parent());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_child_transform,
-                                  child->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_child_transform,
-                                  child->ScreenSpaceTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_child_transform,
-                                  child2->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_child_transform,
-                                  child2->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(expected_child_transform, child->DrawTransform());
+  EXPECT_TRANSFORM_EQ(expected_child_transform, child->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(expected_child_transform, child2->DrawTransform());
+  EXPECT_TRANSFORM_EQ(expected_child_transform, child2->ScreenSpaceTransform());
 
   // Verify results of transformed child and child2 rects. They should
   // match.
@@ -3173,16 +3140,17 @@ TEST_F(DrawPropertiesScalingTest, LayerTransformsInHighDPI) {
       gfx::PointAtOffsetFromOrigin(child->offset_to_transform_parent()),
       gfx::SizeF(child->bounds()));
   expected_child_draw_rect.Scale(device_scale_factor);
-  EXPECT_FLOAT_RECT_EQ(expected_child_draw_rect, child_draw_rect);
-  EXPECT_FLOAT_RECT_EQ(expected_child_draw_rect, child_screen_space_rect);
-  EXPECT_FLOAT_RECT_EQ(expected_child_draw_rect, child2_draw_rect);
-  EXPECT_FLOAT_RECT_EQ(expected_child_draw_rect, child2_screen_space_rect);
+  EXPECT_RECTF_EQ(expected_child_draw_rect, child_draw_rect);
+  EXPECT_RECTF_EQ(expected_child_draw_rect, child_screen_space_rect);
+  EXPECT_RECTF_EQ(expected_child_draw_rect, child2_draw_rect);
+  EXPECT_RECTF_EQ(expected_child_draw_rect, child2_screen_space_rect);
 }
 
 // Verify draw and screen space transforms of layers in a surface.
 TEST_F(DrawPropertiesScalingTest, SurfaceLayerTransformsInHighDPI) {
   gfx::Transform perspective_matrix;
   perspective_matrix.ApplyPerspectiveDepth(2.0);
+  perspective_matrix.RotateAboutYAxis(15.0);
   gfx::Vector2dF perspective_surface_offset(2.f, 2.f);
 
   gfx::Transform scale_small_matrix;
@@ -3251,28 +3219,28 @@ TEST_F(DrawPropertiesScalingTest, SurfaceLayerTransformsInHighDPI) {
   gfx::Transform expected_parent_draw_transform;
   expected_parent_draw_transform.Scale(contents_scale_factor,
                                        contents_scale_factor);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_parent_draw_transform,
-                                  parent->DrawTransform());
+  EXPECT_TRANSFORM_EQ(expected_parent_draw_transform, parent->DrawTransform());
 
   // The scale for the perspective surface is not known, so it is rendered 1:1
   // with the screen, and then scaled during drawing.
   gfx::Transform expected_perspective_surface_draw_transform;
+  expected_perspective_surface_draw_transform.Scale(contents_scale_factor,
+                                                    contents_scale_factor);
   expected_perspective_surface_draw_transform.Translate(
-      contents_scale_factor * perspective_surface_offset.x(),
-      contents_scale_factor * perspective_surface_offset.y());
+      perspective_surface_offset);
   expected_perspective_surface_draw_transform.PreconcatTransform(
       perspective_matrix);
   expected_perspective_surface_draw_transform.PreconcatTransform(
       scale_small_matrix);
+  expected_perspective_surface_draw_transform.Scale(
+      1.0f / contents_scale_factor, 1.0f / contents_scale_factor);
   gfx::Transform expected_perspective_surface_layer_draw_transform;
   expected_perspective_surface_layer_draw_transform.Scale(
       contents_scale_factor, contents_scale_factor);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      expected_perspective_surface_draw_transform,
-      GetRenderSurface(perspective_surface)->draw_transform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      expected_perspective_surface_layer_draw_transform,
-      perspective_surface->DrawTransform());
+  EXPECT_TRANSFORM_EQ(expected_perspective_surface_draw_transform,
+                      GetRenderSurface(perspective_surface)->draw_transform());
+  EXPECT_TRANSFORM_EQ(expected_perspective_surface_layer_draw_transform,
+                      perspective_surface->DrawTransform());
 }
 
 TEST_F(DrawPropertiesScalingTest, SmallIdealScale) {
@@ -3308,7 +3276,7 @@ TEST_F(DrawPropertiesScalingTest, SmallIdealScale) {
   CopyProperties(parent, child_scale);
   CreateTransformNode(child_scale).local = child_scale_matrix;
 
-  LayerTreeImpl::ViewportPropertyIds viewport_property_ids;
+  ViewportPropertyIds viewport_property_ids;
   viewport_property_ids.page_scale_transform =
       page_scale->transform_tree_index();
   host_impl()->active_tree()->SetViewportPropertyIds(viewport_property_ids);
@@ -3399,30 +3367,27 @@ TEST_F(DrawPropertiesTest, RenderSurfaceTransformsInHighDPI) {
 
   gfx::Transform expected_parent_transform;
   expected_parent_transform.Scale(device_scale_factor, device_scale_factor);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_parent_transform,
-                                  parent->ScreenSpaceTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_parent_transform,
-                                  parent->DrawTransform());
+  EXPECT_TRANSFORM_EQ(expected_parent_transform,
+                      parent->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(expected_parent_transform, parent->DrawTransform());
 
   gfx::Transform expected_draw_transform;
   expected_draw_transform.Scale(device_scale_factor, device_scale_factor);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_draw_transform,
-                                  child->DrawTransform());
+  EXPECT_TRANSFORM_EQ(expected_draw_transform, child->DrawTransform());
 
   gfx::Transform expected_screen_space_transform;
   expected_screen_space_transform.Scale(device_scale_factor,
                                         device_scale_factor);
   expected_screen_space_transform.Translate(child_offset);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_screen_space_transform,
-                                  child->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(expected_screen_space_transform,
+                      child->ScreenSpaceTransform());
 
   gfx::Transform expected_duplicate_child_draw_transform =
       child->DrawTransform();
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_duplicate_child_draw_transform,
-                                  duplicate_child_non_owner->DrawTransform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      child->ScreenSpaceTransform(),
-      duplicate_child_non_owner->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(expected_duplicate_child_draw_transform,
+                      duplicate_child_non_owner->DrawTransform());
+  EXPECT_TRANSFORM_EQ(child->ScreenSpaceTransform(),
+                      duplicate_child_non_owner->ScreenSpaceTransform());
   EXPECT_EQ(child->visible_drawable_content_rect(),
             duplicate_child_non_owner->visible_drawable_content_rect());
   EXPECT_EQ(child->bounds(), duplicate_child_non_owner->bounds());
@@ -3431,21 +3396,20 @@ TEST_F(DrawPropertiesTest, RenderSurfaceTransformsInHighDPI) {
   expected_render_surface_draw_transform.Translate(
       device_scale_factor * child_offset.x(),
       device_scale_factor * child_offset.y());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_render_surface_draw_transform,
-                                  GetRenderSurface(child)->draw_transform());
+  EXPECT_TRANSFORM_EQ(expected_render_surface_draw_transform,
+                      GetRenderSurface(child)->draw_transform());
 
   gfx::Transform expected_surface_draw_transform;
   expected_surface_draw_transform.Translate(device_scale_factor * 2.f,
                                             device_scale_factor * 2.f);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_surface_draw_transform,
-                                  GetRenderSurface(child)->draw_transform());
+  EXPECT_TRANSFORM_EQ(expected_surface_draw_transform,
+                      GetRenderSurface(child)->draw_transform());
 
   gfx::Transform expected_surface_screen_space_transform;
   expected_surface_screen_space_transform.Translate(device_scale_factor * 2.f,
                                                     device_scale_factor * 2.f);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      expected_surface_screen_space_transform,
-      GetRenderSurface(child)->screen_space_transform());
+  EXPECT_TRANSFORM_EQ(expected_surface_screen_space_transform,
+                      GetRenderSurface(child)->screen_space_transform());
 }
 
 TEST_F(DrawPropertiesTest,
@@ -3469,12 +3433,12 @@ TEST_F(DrawPropertiesTest,
   // render surface (it needs one because of force_render_surface).
   EXPECT_EQ(2u, GetRenderSurfaceList().size());
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                  GetRenderSurface(child)->draw_transform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(gfx::Transform(),
-                                  GetRenderSurface(child)->draw_transform());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      gfx::Transform(), GetRenderSurface(child)->screen_space_transform());
+  EXPECT_TRANSFORM_EQ(gfx::Transform(),
+                      GetRenderSurface(child)->draw_transform());
+  EXPECT_TRANSFORM_EQ(gfx::Transform(),
+                      GetRenderSurface(child)->draw_transform());
+  EXPECT_TRANSFORM_EQ(gfx::Transform(),
+                      GetRenderSurface(child)->screen_space_transform());
 }
 
 // Needs layer tree mode: mask layer. Not using impl-side PropertyTreeBuilder.
@@ -4213,7 +4177,7 @@ TEST_F(DrawPropertiesTest, ClipParentScrolledInterveningLayer) {
   CopyProperties(render_surface2, clip_child);
   clip_child->SetClipTreeIndex(clip_parent->clip_tree_index());
 
-  SetScrollOffset(intervening, gfx::ScrollOffset(3, 3));
+  SetScrollOffset(intervening, gfx::Vector2dF(3, 3));
   UpdateActiveTreeDrawProperties();
 
   EXPECT_TRUE(GetRenderSurface(root));
@@ -4501,7 +4465,7 @@ TEST_F(DrawPropertiesTest, ScrollChildAndScrollParentDifferentTargets) {
   EXPECT_EQ(scroll_child->clip_rect(), gfx::Rect(15, 15, 75, 75));
   gfx::Transform scale;
   scale.Scale(device_scale_factor, device_scale_factor);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(scroll_child->DrawTransform(), scale);
+  EXPECT_TRANSFORM_EQ(scroll_child->DrawTransform(), scale);
 }
 
 TEST_F(DrawPropertiesTest, SingularTransformSubtreesDoNotDraw) {
@@ -4579,7 +4543,7 @@ TEST_F(DrawPropertiesTest, ScrollSnapping) {
     SetScrollOffsetDelta(scroller, scroll_delta);
     UpdateActiveTreeDrawProperties();
 
-    EXPECT_VECTOR_EQ(
+    EXPECT_VECTOR2DF_EQ(
         scroller->draw_properties().screen_space_transform.To2dTranslation(),
         container_offset - scroll_delta);
   }
@@ -4591,7 +4555,7 @@ TEST_F(DrawPropertiesTest, ScrollSnapping) {
     UpdateActiveTreeDrawProperties();
 
     gfx::Vector2dF rounded_scroll_delta(4.f, 8.f);
-    EXPECT_VECTOR_EQ(
+    EXPECT_VECTOR2DF_EQ(
         scroller->draw_properties().screen_space_transform.To2dTranslation(),
         container_offset - rounded_scroll_delta);
   }
@@ -4703,8 +4667,8 @@ TEST_F(DrawPropertiesTest, ScrollSnappingWithScrollChild) {
   gfx::Transform expected_scroll_child_screen_space_transform;
   expected_scroll_child_screen_space_transform.Translate(-5.3f, -9.3f);
   expected_scroll_child_screen_space_transform.RotateAboutYAxis(30);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_scroll_child_screen_space_transform,
-                                  scroll_child->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(expected_scroll_child_screen_space_transform,
+                      scroll_child->ScreenSpaceTransform());
 }
 
 class DrawPropertiesStickyPositionTest : public DrawPropertiesTest {
@@ -5157,7 +5121,7 @@ TEST_F(DrawPropertiesStickyPositionTest, StickyPositionMainThreadUpdates) {
       sticky_pos_impl_->ScreenSpaceTransform().To2dTranslation());
 
   // Now the main thread commits the new position of the sticky element.
-  SetScrollOffset(scroller_.get(), gfx::ScrollOffset(15, 15));
+  SetScrollOffset(scroller_.get(), gfx::Vector2dF(15, 15));
   // Shift the layer by -offset_for_position_sticky.
   SetPostTranslation(sticky_pos_.get(),
                      gfx::PointF(10, 25) - gfx::PointF(0, 5));
@@ -5228,7 +5192,7 @@ TEST_F(DrawPropertiesStickyPositionTest, StickyPositionCompositedContainer) {
       sticky_pos_impl_->ScreenSpaceTransform().To2dTranslation());
 
   // Now the main thread commits the new position of the sticky element.
-  SetScrollOffset(scroller_.get(), gfx::ScrollOffset(0, 25));
+  SetScrollOffset(scroller_.get(), gfx::Vector2dF(0, 25));
   // Shift the layer by -offset_for_position_sticky.
   SetPostTranslation(sticky_pos_.get(),
                      gfx::PointF(0, 15) - gfx::PointF(0, 5) +
@@ -6014,7 +5978,7 @@ TEST_F(DrawPropertiesTest, DrawPropertyScales) {
   CopyProperties(page_scale.get(), child2.get());
   CreateTransformNode(child2.get()).local = scale_transform_child2;
 
-  LayerTreeHost::ViewportPropertyIds viewport_property_ids;
+  ViewportPropertyIds viewport_property_ids;
   viewport_property_ids.page_scale_transform =
       page_scale->transform_tree_index();
   host()->RegisterViewportPropertyIds(viewport_property_ids);
@@ -6401,7 +6365,7 @@ TEST_F(DrawPropertiesTest, UpdateScrollChildPosition) {
   UpdateActiveTreeDrawProperties();
   EXPECT_EQ(gfx::Rect(25, 25), scroll_child->visible_layer_rect());
 
-  SetScrollOffset(scroll_parent, gfx::ScrollOffset(0.f, 10.f));
+  SetScrollOffset(scroll_parent, gfx::Vector2dF(0.f, 10.f));
   UpdateActiveTreeDrawProperties();
   EXPECT_EQ(gfx::Rect(0, 5, 25, 25), scroll_child->visible_layer_rect());
 
@@ -6496,7 +6460,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingSubtreeMain) {
       keyframe_model_id, 1,
       KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
+  keyframe_model->set_time_offset(base::Milliseconds(-1000));
   AddKeyframeModelToElementWithAnimation(child->element_id(), timeline(),
                                          std::move(keyframe_model));
   UpdateMainDrawProperties();
@@ -6525,7 +6489,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingSubtreeMain) {
       keyframe_model_id, 1,
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
+  keyframe_model->set_time_offset(base::Milliseconds(-1000));
   AddKeyframeModelToElementWithExistingKeyframeEffect(
       child->element_id(), timeline(), std::move(keyframe_model));
   UpdateMainDrawProperties();
@@ -6639,8 +6603,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingLayerImpl) {
   operation.AppendMatrix(transform);
   curve->AddKeyframe(
       gfx::TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operation, nullptr));
+  curve->AddKeyframe(
+      gfx::TransformKeyframe::Create(base::Seconds(1.0), operation, nullptr));
   std::unique_ptr<KeyframeModel> transform_animation(KeyframeModel::Create(
       std::move(curve), 3, 3,
       KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
@@ -6672,8 +6636,8 @@ TEST_F(DrawPropertiesTest, LayerSkippingInSubtreeOfSingularTransform) {
   operation.AppendMatrix(transform);
   curve->AddKeyframe(
       gfx::TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operation, nullptr));
+  curve->AddKeyframe(
+      gfx::TransformKeyframe::Create(base::Seconds(1.0), operation, nullptr));
   std::unique_ptr<KeyframeModel> transform_animation(KeyframeModel::Create(
       std::move(curve), 3, 3,
       KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
@@ -6785,8 +6749,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, SkippingPendingLayerImpl) {
           gfx::CubicBezierTimingFunction::EaseType::EASE);
   curve->AddKeyframe(
       gfx::FloatKeyframe::Create(base::TimeDelta(), 0.9f, std::move(func)));
-  curve->AddKeyframe(gfx::FloatKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), 0.3f, nullptr));
+  curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(base::Seconds(1.0), 0.3f, nullptr));
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), 3, 3,
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
@@ -7165,8 +7129,7 @@ TEST_F(DrawPropertiesTest, LayerWithInputHandlerAndZeroOpacity) {
   CreateEffectNode(test_layer).opacity = 0.f;
 
   UpdateActiveTreeDrawProperties();
-  EXPECT_TRANSFORMATION_MATRIX_EQ(translation,
-                                  test_layer->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(translation, test_layer->ScreenSpaceTransform());
 }
 
 TEST_F(DrawPropertiesTest, ClipParentDrawsIntoScaledRootSurface) {
@@ -7360,22 +7323,19 @@ TEST_F(DrawPropertiesTestWithLayerTree, MaskLayerDrawProperties) {
   EXPECT_FALSE(ImplOf(child)->contributes_to_drawn_render_surface());
   EXPECT_FALSE(ImplOf(mask)->contributes_to_drawn_render_surface());
   EXPECT_EQ(gfx::Rect(), ImplOf(mask)->visible_layer_rect());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(transform,
-                                  ImplOf(mask)->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(transform, ImplOf(mask)->ScreenSpaceTransform());
 
   // Make the child's render surface have contributing content.
   child->SetOpacity(1.f);
   CommitAndActivate();
   EXPECT_TRUE(ImplOf(mask)->contributes_to_drawn_render_surface());
   EXPECT_EQ(gfx::Rect(30, 30), ImplOf(mask)->visible_layer_rect());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(transform,
-                                  ImplOf(mask)->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(transform, ImplOf(mask)->ScreenSpaceTransform());
 
   transform.Translate(10, 10);
   child->SetTransform(transform);
   CommitAndActivate();
-  EXPECT_TRANSFORMATION_MATRIX_EQ(transform,
-                                  ImplOf(mask)->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(transform, ImplOf(mask)->ScreenSpaceTransform());
   EXPECT_EQ(gfx::Rect(20, 20), ImplOf(mask)->visible_layer_rect());
 
   // For now SetIsDrawable of masked layer doesn't affect draw properties of
@@ -7467,7 +7427,7 @@ TEST_F(DrawPropertiesTest, NoisyTransform) {
   expected.matrix().setDouble(0, 2, 6.12323e-17);
   expected.matrix().setDouble(2, 0, -1);
   expected.matrix().setDouble(2, 2, 6.12323e-17);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, child->ScreenSpaceTransform());
+  EXPECT_TRANSFORM_EQ(expected, child->ScreenSpaceTransform());
 }
 
 TEST_F(DrawPropertiesTest, LargeTransformTest) {
@@ -7598,7 +7558,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, OpacityAnimationsTrackingTest) {
       keyframe_model_id, 1,
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
+  keyframe_model->set_time_offset(base::Milliseconds(-1000));
   KeyframeModel* keyframe_model_ptr = keyframe_model.get();
   AddKeyframeModelToElementWithExistingKeyframeEffect(
       animated->element_id(), timeline(), std::move(keyframe_model));
@@ -7609,7 +7569,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, OpacityAnimationsTrackingTest) {
   EXPECT_FALSE(node->is_currently_animating_opacity);
   EXPECT_TRUE(node->has_potential_opacity_animation);
 
-  keyframe_model_ptr->set_time_offset(base::TimeDelta::FromMilliseconds(0));
+  keyframe_model_ptr->set_time_offset(base::Milliseconds(0));
   host()->AnimateLayers(base::TimeTicks::Max());
   node = GetEffectNode(animated.get());
   EXPECT_TRUE(node->is_currently_animating_opacity);
@@ -7650,13 +7610,13 @@ TEST_F(DrawPropertiesTestWithLayerTree, TransformAnimationsTrackingTest) {
   operation.AppendMatrix(transform);
   curve->AddKeyframe(
       gfx::TransformKeyframe::Create(base::TimeDelta(), start, nullptr));
-  curve->AddKeyframe(gfx::TransformKeyframe::Create(
-      base::TimeDelta::FromSecondsD(1.0), operation, nullptr));
+  curve->AddKeyframe(
+      gfx::TransformKeyframe::Create(base::Seconds(1.0), operation, nullptr));
   std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
       std::move(curve), 3, 3,
       KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
   keyframe_model->set_fill_mode(KeyframeModel::FillMode::NONE);
-  keyframe_model->set_time_offset(base::TimeDelta::FromMilliseconds(-1000));
+  keyframe_model->set_time_offset(base::Milliseconds(-1000));
   KeyframeModel* keyframe_model_ptr = keyframe_model.get();
   AddKeyframeModelToElementWithExistingKeyframeEffect(
       animated->element_id(), timeline(), std::move(keyframe_model));
@@ -7667,7 +7627,7 @@ TEST_F(DrawPropertiesTestWithLayerTree, TransformAnimationsTrackingTest) {
   EXPECT_FALSE(node->is_currently_animating);
   EXPECT_TRUE(node->has_potential_animation);
 
-  keyframe_model_ptr->set_time_offset(base::TimeDelta::FromMilliseconds(0));
+  keyframe_model_ptr->set_time_offset(base::Milliseconds(0));
   host()->AnimateLayers(base::TimeTicks::Max());
   node = GetTransformNode(animated.get());
   EXPECT_TRUE(node->is_currently_animating);

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DATA_REDUCTION_PROXY_CORE_COMMON_DATA_REDUCTION_PROXY_HEADERS_H_
 #define COMPONENTS_DATA_REDUCTION_PROXY_CORE_COMMON_DATA_REDUCTION_PROXY_HEADERS_H_
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"

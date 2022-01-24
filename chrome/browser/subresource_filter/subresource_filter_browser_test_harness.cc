@@ -23,6 +23,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -42,11 +43,63 @@
 
 namespace subresource_filter {
 
+// static
+const char SubresourceFilterBrowserTest::kDocumentLoadActivationLevel[];
+const char SubresourceFilterBrowserTest::kSubresourceLoadsTotalForPage[];
+const char SubresourceFilterBrowserTest::kSubresourceLoadsEvaluatedForPage[];
+const char SubresourceFilterBrowserTest::kSubresourceLoadsMatchedRulesForPage[];
+const char SubresourceFilterBrowserTest::kSubresourceLoadsDisallowedForPage[];
+const char SubresourceFilterBrowserTest::kEvaluationTotalWallDurationForPage[];
+const char SubresourceFilterBrowserTest::kEvaluationTotalCPUDurationForPage[];
+const char SubresourceFilterBrowserTest::kEvaluationWallDuration[];
+const char SubresourceFilterBrowserTest::kEvaluationCPUDuration[];
+const char SubresourceFilterBrowserTest::kActivationDecision[];
+const char SubresourceFilterBrowserTest::kActivationListHistogram[];
+const char SubresourceFilterBrowserTest::kPageLoadActivationStateHistogram[];
+const char
+    SubresourceFilterBrowserTest::kPageLoadActivationStateDidInheritHistogram[];
+const char SubresourceFilterBrowserTest::kSubresourceFilterActionsHistogram[];
+
+MockSubresourceFilterObserver::MockSubresourceFilterObserver(
+    content::WebContents* web_contents) {
+  scoped_observation_.Observe(
+      SubresourceFilterObserverManager::FromWebContents(web_contents));
+}
+
+MockSubresourceFilterObserver::~MockSubresourceFilterObserver() = default;
+
 SubresourceFilterBrowserTest::SubresourceFilterBrowserTest() {
   scoped_feature_list_.InitAndEnableFeature(kAdTagging);
 }
 
 SubresourceFilterBrowserTest::~SubresourceFilterBrowserTest() = default;
+
+bool SubresourceFilterBrowserTest::AdsBlockedInContentSettings(
+    content::RenderFrameHost* frame_host) {
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(frame_host);
+
+  return content_settings->IsContentBlocked(ContentSettingsType::ADS);
+}
+
+#if defined(OS_ANDROID)
+bool SubresourceFilterBrowserTest::PresentingAdsBlockedInfobar(
+    content::WebContents* web_contents) {
+  auto* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (infobar_manager->infobar_count() == 0)
+    return false;
+
+  // No infobars other than the ads blocked infobar should be displayed in the
+  // context of these tests.
+  EXPECT_EQ(infobar_manager->infobar_count(), 1u);
+  auto* infobar = infobar_manager->infobar_at(0);
+  EXPECT_EQ(infobar->delegate()->GetIdentifier(),
+            infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
+
+  return true;
+}
+#endif
 
 void SubresourceFilterBrowserTest::SetUp() {
   database_helper_ = CreateTestDatabase();
@@ -122,7 +175,8 @@ content::WebContents* SubresourceFilterBrowserTest::web_contents() {
 content::RenderFrameHost* SubresourceFilterBrowserTest::FindFrameByName(
     const std::string& name) {
   return content::FrameMatchingPredicate(
-      web_contents(), base::BindRepeating(&content::FrameMatchesName, name));
+      web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameMatchesName, name));
 }
 
 bool SubresourceFilterBrowserTest::WasParsedScriptElementLoaded(
@@ -266,6 +320,20 @@ SubresourceFilterListInsertingBrowserTest::CreateTestDatabase() {
   return std::make_unique<TestSafeBrowsingDatabaseHelper>(
       std::make_unique<safe_browsing::TestV4GetHashProtocolManagerFactory>(),
       std::move(list_ids));
+}
+
+SubresourceFilterPrerenderingBrowserTest::
+    SubresourceFilterPrerenderingBrowserTest()
+    : prerender_helper_(base::BindRepeating(
+          &SubresourceFilterPrerenderingBrowserTest::web_contents,
+          base::Unretained(this))) {}
+
+SubresourceFilterPrerenderingBrowserTest::
+    ~SubresourceFilterPrerenderingBrowserTest() = default;
+
+void SubresourceFilterPrerenderingBrowserTest::SetUp() {
+  prerender_helper_.SetUp(embedded_test_server());
+  SubresourceFilterListInsertingBrowserTest::SetUp();
 }
 
 }  // namespace subresource_filter

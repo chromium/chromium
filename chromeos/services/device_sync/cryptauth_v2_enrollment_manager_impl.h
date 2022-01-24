@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_manager.h"
@@ -89,6 +88,11 @@ class CryptAuthV2EnrollmentManagerImpl
   // CryptAuthEnrollmentManagerImpl::RegisterPrefs().
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  CryptAuthV2EnrollmentManagerImpl(const CryptAuthV2EnrollmentManagerImpl&) =
+      delete;
+  CryptAuthV2EnrollmentManagerImpl& operator=(
+      const CryptAuthV2EnrollmentManagerImpl&) = delete;
+
   ~CryptAuthV2EnrollmentManagerImpl() override;
 
  protected:
@@ -161,8 +165,6 @@ class CryptAuthV2EnrollmentManagerImpl
   // CryptAuthV2EnrollmentManagerImpl.
   base::WeakPtrFactory<CryptAuthV2EnrollmentManagerImpl>
       scheduler_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthV2EnrollmentManagerImpl);
 };
 
 }  // namespace device_sync

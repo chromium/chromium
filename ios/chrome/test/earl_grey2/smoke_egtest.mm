@@ -320,7 +320,6 @@
 - (void)testGetPrefs {
   // The actual pref names and values below are irrelevant, but the calls
   // themselves should return data without crashing or asserting.
-  [ChromeEarlGrey localStateBooleanPref:prefs::kLastSessionExitedCleanly];
   [ChromeEarlGrey localStateIntegerPref:prefs::kBrowserStatesNumCreated];
   [ChromeEarlGrey localStateStringPref:prefs::kBrowserStateLastUsed];
 

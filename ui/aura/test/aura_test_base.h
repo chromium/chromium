@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,6 +34,10 @@ namespace test {
 class AuraTestBase : public testing::Test {
  public:
   AuraTestBase();
+
+  AuraTestBase(const AuraTestBase&) = delete;
+  AuraTestBase& operator=(const AuraTestBase&) = delete;
+
   ~AuraTestBase() override;
 
   // testing::Test:
@@ -70,8 +73,6 @@ class AuraTestBase : public testing::Test {
   bool setup_called_ = false;
   bool teardown_called_ = false;
   std::unique_ptr<AuraTestHelper> helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuraTestBase);
 };
 
 }  // namespace test

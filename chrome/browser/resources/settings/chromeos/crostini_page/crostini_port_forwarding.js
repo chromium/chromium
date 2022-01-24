@@ -7,7 +7,29 @@
  * 'crostini-port-forwarding' is the settings port forwarding subpage for
  * Crostini.
  */
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './crostini_port_forwarding_add_port_dialog.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_shared_css.js';
+
+import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-crostini-port-forwarding',
 
   behaviors: [PrefsBehavior, WebUIListenerBehavior],
@@ -62,16 +84,14 @@ Polymer({
   attached() {
     this.addWebUIListener(
         'crostini-port-forwarder-active-ports-changed',
-        this.onCrostiniPortsActiveStateChanged_.bind(this));
+        (ports) => this.onCrostiniPortsActiveStateChanged_(ports));
     this.addWebUIListener(
         'crostini-status-changed',
-        this.onCrostiniIsRunningStateChanged_.bind(this));
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .getCrostiniActivePorts()
-        .then(this.onCrostiniPortsActiveStateChanged_.bind(this));
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .checkCrostiniIsRunning()
-        .then(this.onCrostiniIsRunningStateChanged_.bind(this));
+        (isRunning) => this.onCrostiniIsRunningStateChanged_(isRunning));
+    CrostiniBrowserProxyImpl.getInstance().getCrostiniActivePorts().then(
+        (ports) => this.onCrostiniPortsActiveStateChanged_(ports));
+    CrostiniBrowserProxyImpl.getInstance().checkCrostiniIsRunning().then(
+        (isRunning) => this.onCrostiniIsRunningStateChanged_(isRunning));
   },
 
   observers:
@@ -179,14 +199,14 @@ Polymer({
     assert(
         menu.open && this.lastMenuOpenedPort_.port_number != null &&
         this.lastMenuOpenedPort_.protocol_type != null);
-    settings.CrostiniBrowserProxyImpl.getInstance()
+    CrostiniBrowserProxyImpl.getInstance()
         .removeCrostiniPortForward(
             DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER,
             this.lastMenuOpenedPort_.port_number,
             this.lastMenuOpenedPort_.protocol_type)
         .then(result => {
           // TODO(crbug.com/848127): Error handling for result
-          settings.recordSettingChange();
+          recordSettingChange();
           menu.close();
         });
     this.lastMenuOpenedPort_ = null;
@@ -200,10 +220,9 @@ Polymer({
     const menu = /** @type {!CrActionMenuElement} */
         (this.$.removeAllPortsMenu.get());
     assert(menu.open);
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .removeAllCrostiniPortForwards(
-            DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER);
-    settings.recordSettingChange();
+    CrostiniBrowserProxyImpl.getInstance().removeAllCrostiniPortForwards(
+        DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER);
+    recordSettingChange();
     menu.close();
   },
 
@@ -219,7 +238,7 @@ Polymer({
         (Number(dataSet.protocolType));
     if (event.target.checked) {
       event.target.checked = false;
-      settings.CrostiniBrowserProxyImpl.getInstance()
+      CrostiniBrowserProxyImpl.getInstance()
           .activateCrostiniPortForward(
               DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER, portNumber,
               protocolType)
@@ -230,7 +249,7 @@ Polymer({
             // TODO(crbug.com/848127): Elaborate on error handling for result
           });
     } else {
-      settings.CrostiniBrowserProxyImpl.getInstance()
+      CrostiniBrowserProxyImpl.getInstance()
           .deactivateCrostiniPortForward(
               DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER, portNumber,
               protocolType)

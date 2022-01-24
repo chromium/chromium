@@ -6,6 +6,7 @@ include_rules = [
   "+ui/compositor",
   "+ui/display",
   "+ui/gfx",
+  "+ui/ozone/public",
   "+ui/views",
   "+ui/wm",
 ]

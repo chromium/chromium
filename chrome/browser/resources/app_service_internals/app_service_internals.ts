@@ -6,7 +6,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AppInfo, AppServiceInternalsPageHandler} from './app_service_internals.mojom-webui.js';
+import {AppInfo, AppServiceInternalsPageHandler, PreferredAppInfo} from './app_service_internals.mojom-webui.js';
 
 export class AppServiceInternalsElement extends PolymerElement {
   static get is() {
@@ -20,11 +20,15 @@ export class AppServiceInternalsElement extends PolymerElement {
   static get properties() {
     return {
       appList_: Array,
+      preferredAppList_: Array,
     };
   }
 
   /** List containing debug information for all installed apps. */
   appList_: Array<AppInfo> = [];
+  hashChangeListener_ = () => this.onHashChanged_();
+  /** List containing preferred app debug information for installed apps. */
+  preferredAppList_: Array<PreferredAppInfo> = [];
 
   ready() {
     super.ready();
@@ -32,8 +36,34 @@ export class AppServiceInternalsElement extends PolymerElement {
       const remote = AppServiceInternalsPageHandler.getRemote();
 
       this.appList_ = (await remote.getApps()).appList;
-      this.appList_.sort((a, b) => a.name.localeCompare(b.name));
+      this.preferredAppList_ =
+          (await remote.getPreferredApps()).preferredAppList;
+
+      this.onHashChanged_();
+      window.addEventListener('hashchange', this.hashChangeListener_);
     })();
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener('hashchange', this.hashChangeListener_);
+  }
+
+  /**
+   * Manually responds to URL hash changes, since the regular browser handling
+   * doesn't work in the Shadow DOM.
+   */
+  onHashChanged_() {
+    if (!location.hash || !this.shadowRoot) {
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    const selected = this.shadowRoot.querySelector(location.hash);
+    if (!selected) {
+      return;
+    }
+
+    selected.scrollIntoView();
   }
 }
 

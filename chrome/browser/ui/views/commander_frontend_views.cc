@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -35,6 +36,7 @@
 namespace {
 constexpr gfx::Size kDefaultSize(512, 48);
 constexpr int kTopContainerOverlapMargin = 12;
+constexpr int kCornerRadius = 8;
 
 //
 void AnchorToBrowser(gfx::Rect* bounds, Browser* browser) {
@@ -50,6 +52,31 @@ void AnchorToBrowser(gfx::Rect* bounds, Browser* browser) {
 
 }  // namespace
 
+// Helper to dismiss the commander widget on focus loss. This exists since
+// `CommanderFrontendViews` is also a widget observer (but for the parent
+// widget); splitting the responsibilities avoids the potential for awkward
+// misunderstandings.
+class CommanderFocusLossWatcher : public views::WidgetObserver {
+ public:
+  CommanderFocusLossWatcher(commander::CommanderFrontend* frontend,
+                            views::Widget* widget)
+      : frontend_(frontend) {
+    widget_observation_.Observe(widget);
+  }
+  ~CommanderFocusLossWatcher() override = default;
+
+  // views::WidgetObserver
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (!active)
+      frontend_->Hide();
+  }
+
+ private:
+  commander::CommanderFrontend* frontend_;  // weak, owns us
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
+};
+
 // A small shim to handle passing keyboard events back up to the browser.
 // Required for hotkeys to work.
 class CommanderWebView : public views::WebView {
@@ -62,6 +89,11 @@ class CommanderWebView : public views::WebView {
       const content::NativeWebKeyboardEvent& event) override {
     CHECK(owner_);
     return event_handler_.HandleKeyboardEvent(event, owner_->GetFocusManager());
+  }
+
+  void AddedToWidget() override {
+    views::WebView::AddedToWidget();
+    holder()->SetCornerRadii(gfx::RoundedCornersF(kCornerRadius));
   }
 
   void SetOwner(views::View* owner) {
@@ -143,6 +175,8 @@ void CommanderFrontendViews::Show(Browser* browser) {
   params.native_widget = new views::NativeWidgetAura(widget_);
 #endif
   widget_->Init(std::move(params));
+  focus_loss_watcher_ =
+      std::make_unique<CommanderFocusLossWatcher>(this, widget_);
 
   web_view_->SetOwner(parent);
   web_view_->SetSize(kDefaultSize);
@@ -176,6 +210,7 @@ void CommanderFrontendViews::Hide() {
   web_view_ = widget_->GetRootView()->RemoveChildViewT(web_view_ptr_);
   web_view_->SetOwner(nullptr);
 
+  focus_loss_watcher_.reset();
   widget_delegate_->SetOwnedByWidget(true);
   ignore_result(widget_delegate_.release());
   widget_->Close();

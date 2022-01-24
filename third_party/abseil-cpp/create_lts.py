@@ -96,6 +96,13 @@ def main(argv):
 
   # Replacement directives go here.
   ReplaceStringsInFile(
+      'absl/base/config.h', {
+          '#undef ABSL_LTS_RELEASE_VERSION':
+              '#define ABSL_LTS_RELEASE_VERSION {}'.format(datestamp),
+          '#undef ABSL_LTS_RELEASE_PATCH_LEVEL':
+              '#define ABSL_LTS_RELEASE_PATCH_LEVEL 0'
+      })
+  ReplaceStringsInFile(
       'absl/base/options.h', {
           '#define ABSL_OPTION_USE_INLINE_NAMESPACE 0':
               '#define ABSL_OPTION_USE_INLINE_NAMESPACE 1',

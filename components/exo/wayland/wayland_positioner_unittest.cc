@@ -19,16 +19,12 @@ class WaylandPositionerTest : public testing::Test {
   struct TestCaseBuilder {
     WaylandPositioner positioner;
     gfx::Rect work_area = {0, 0, 5, 5};
-    bool flip_x = false;
-    bool flip_y = false;
 
     explicit TestCaseBuilder(WaylandPositioner::Version v) : positioner(v) {
       positioner.SetAnchorRect({2, 2, 1, 1});
     }
 
     TestCaseBuilder& SetFlipState(bool x, bool y) {
-      flip_x = x;
-      flip_y = y;
       return *this;
     }
 
@@ -58,7 +54,7 @@ class WaylandPositionerTest : public testing::Test {
     }
 
     WaylandPositioner::Result Solve() const {
-      return positioner.CalculateBounds(work_area, flip_x, flip_y);
+      return positioner.CalculateBounds(work_area);
     }
 
     gfx::Rect SolveToRect() const {
@@ -173,9 +169,6 @@ TEST_F(WaylandPositionerTest, TriesToMaximizeAreaUnstable) {
   EXPECT_EQ(result.origin, gfx::Point(1, 0));
   // The x size will be preserved but y shrinks to the work area.
   EXPECT_EQ(result.size, gfx::Size(4, 5));
-  // Neither axis will be flipped.
-  EXPECT_FALSE(result.x_flipped);
-  EXPECT_FALSE(result.y_flipped);
 }
 
 TEST_F(WaylandPositionerTest, PropagatesAnInitialFlipUnstable) {
@@ -191,12 +184,9 @@ TEST_F(WaylandPositionerTest, PropagatesAnInitialFlipUnstable) {
           .SetFlipState(true, true)
           .Solve();
   // With a propagated flip state:
-  //  - Normally the x would not need to flip, but it propagates the flip.
-  //  - Y also propagates, but that makes it constrained so it flips back.
-  EXPECT_EQ(result.origin, gfx::Point(1, 1));
+  //  - X and Y remain flipped to be positioned by the client.
+  EXPECT_EQ(result.origin, gfx::Point(3, 1));
   EXPECT_EQ(result.size, gfx::Size(2, 2));
-  EXPECT_TRUE(result.x_flipped);
-  EXPECT_FALSE(result.y_flipped);
 }
 
 // This is a common case for dropdown menus. In ChromeOS we do not let them
@@ -318,9 +308,6 @@ TEST_F(WaylandPositionerTest, TriesToMaximizeArea) {
   EXPECT_EQ(result.origin, gfx::Point(1, 0));
   // The x size will be preserved but y shrinks to the work area.
   EXPECT_EQ(result.size, gfx::Size(4, 5));
-  // Neither axis will be flipped.
-  EXPECT_FALSE(result.x_flipped);
-  EXPECT_FALSE(result.y_flipped);
 }
 
 TEST_F(WaylandPositionerTest, PropagatesAnInitialFlip) {
@@ -334,12 +321,9 @@ TEST_F(WaylandPositionerTest, PropagatesAnInitialFlip) {
           .SetFlipState(true, true)
           .Solve();
   // With a propagated flip state:
-  //  - Normally the x would not need to flip, but it propagates the flip.
-  //  - Y also propagates, but that makes it constrained so it flips back.
-  EXPECT_EQ(result.origin, gfx::Point(1, 1));
+  //  - X and Y remain flipped to be positioned by the client.
+  EXPECT_EQ(result.origin, gfx::Point(3, 1));
   EXPECT_EQ(result.size, gfx::Size(2, 2));
-  EXPECT_TRUE(result.x_flipped);
-  EXPECT_FALSE(result.y_flipped);
 }
 
 // This is a common case for dropdown menus. In ChromeOS we do not let them

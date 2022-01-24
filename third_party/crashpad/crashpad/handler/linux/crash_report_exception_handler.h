@@ -18,7 +18,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "client/crash_report_database.h"
 #include "handler/crash_report_upload_thread.h"
 #include "handler/linux/exception_handler_server.h"
@@ -72,6 +71,10 @@ class CrashReportExceptionHandler : public ExceptionHandlerServer::Delegate {
       bool write_minidump_to_log,
       const UserStreamDataSources* user_stream_data_sources);
 
+  CrashReportExceptionHandler(const CrashReportExceptionHandler&) = delete;
+  CrashReportExceptionHandler& operator=(const CrashReportExceptionHandler&) =
+      delete;
+
   ~CrashReportExceptionHandler() override;
 
   // ExceptionHandlerServer::Delegate:
@@ -113,8 +116,6 @@ class CrashReportExceptionHandler : public ExceptionHandlerServer::Delegate {
   bool write_minidump_to_database_;
   bool write_minidump_to_log_;
   const UserStreamDataSources* user_stream_data_sources_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(CrashReportExceptionHandler);
 };
 
 }  // namespace crashpad

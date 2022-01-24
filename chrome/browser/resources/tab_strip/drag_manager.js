@@ -9,8 +9,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {isTabElement, TabElement} from './tab.js';
 import {isDragHandle, isTabGroupElement, TabGroupElement} from './tab_group.js';
-import {TabStripEmbedderProxy, TabStripEmbedderProxyImpl} from './tab_strip_embedder_proxy.js';
-import {TabData, TabNetworkState, TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
+import {Tab, TabNetworkState} from './tab_strip.mojom-webui.js';
+import {TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
 
 /** @const {number} */
 export const PLACEHOLDER_TAB_ID = -1;
@@ -40,7 +40,7 @@ function getGroupIdDataType() {
   return loadTimeData.getString('tabGroupIdDataType');
 }
 
-/** @return {!TabData} */
+/** @return {!Tab} */
 function getDefaultTabData() {
   return {
     active: false,
@@ -50,12 +50,12 @@ function getDefaultTabData() {
     id: -1,
     index: -1,
     isDefaultFavicon: false,
-    networkState: TabNetworkState.NONE,
+    networkState: TabNetworkState.kNone,
     pinned: false,
     shouldHideThrobber: false,
     showIcon: true,
     title: '',
-    url: '',
+    url: {url: ''},
   };
 }
 
@@ -122,9 +122,6 @@ class DragSession {
 
     /** @private @const {!TabsApiProxy} */
     this.tabsProxy_ = TabsApiProxyImpl.getInstance();
-
-    /** @private {!TabStripEmbedderProxy} */
-    this.tabStripEmbedderProxy_ = TabStripEmbedderProxyImpl.getInstance();
   }
 
   /**
@@ -159,7 +156,7 @@ class DragSession {
       const isPinned = event.dataTransfer.types.includes('pinned');
       const placeholderTabElement =
           /** @type {!TabElement} */ (document.createElement('tabstrip-tab'));
-      placeholderTabElement.tab = /** @type {!TabData} */ (Object.assign(
+      placeholderTabElement.tab = /** @type {!Tab} */ (Object.assign(
           getDefaultTabData(), {id: PLACEHOLDER_TAB_ID, pinned: isPinned}));
       placeholderTabElement.setDragging(true);
       delegate.placeTabElement(placeholderTabElement, -1, isPinned);
@@ -494,9 +491,6 @@ export class DragManager {
 
     /** @private {!TabsApiProxy} */
     this.tabsProxy_ = TabsApiProxyImpl.getInstance();
-
-    /** @private {!TabStripEmbedderProxy} */
-    this.tabStripEmbedderProxy_ = TabStripEmbedderProxyImpl.getInstance();
   }
 
   /**

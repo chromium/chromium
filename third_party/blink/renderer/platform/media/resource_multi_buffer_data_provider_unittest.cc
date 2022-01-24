@@ -13,8 +13,8 @@
 #include "base/format_macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_log.h"
 #include "media/base/seekable_buffer.h"
@@ -48,7 +48,7 @@ const int kDataSize = 1024;
 const int kHttpOK = 200;
 const int kHttpPartialContent = 206;
 
-enum NetworkState { NONE, LOADED, LOADING };
+enum NetworkState { kNone, kLoaded, kLoading };
 
 static bool want_frfr = false;
 

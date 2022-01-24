@@ -42,15 +42,12 @@ IntSize StaticBitmapImage::SizeWithConfig(SizeConfig config) const {
   return size;
 }
 
-void StaticBitmapImage::DrawHelper(
-    cc::PaintCanvas* canvas,
-    const PaintFlags& flags,
-    const FloatRect& dst_rect,
-    const FloatRect& src_rect,
-    const SkSamplingOptions& sampling,
-    ImageClampingMode clamp_mode,
-    RespectImageOrientationEnum respect_orientation,
-    const PaintImage& image) {
+void StaticBitmapImage::DrawHelper(cc::PaintCanvas* canvas,
+                                   const PaintFlags& flags,
+                                   const FloatRect& dst_rect,
+                                   const FloatRect& src_rect,
+                                   const ImageDrawOptions& draw_options,
+                                   const PaintImage& image) {
   FloatRect adjusted_src_rect = src_rect;
   adjusted_src_rect.Intersect(SkRect::MakeWH(image.width(), image.height()));
 
@@ -59,26 +56,28 @@ void StaticBitmapImage::DrawHelper(
 
   cc::PaintCanvasAutoRestore auto_restore(canvas, false);
   FloatRect adjusted_dst_rect = dst_rect;
-  if (respect_orientation && orientation_ != ImageOrientationEnum::kDefault) {
+  if (draw_options.respect_orientation &&
+      orientation_ != ImageOrientationEnum::kDefault) {
     canvas->save();
 
     // ImageOrientation expects the origin to be at (0, 0)
-    canvas->translate(adjusted_dst_rect.X(), adjusted_dst_rect.Y());
-    adjusted_dst_rect.SetLocation(FloatPoint());
+    canvas->translate(adjusted_dst_rect.x(), adjusted_dst_rect.y());
+    adjusted_dst_rect.set_origin(FloatPoint());
 
     canvas->concat(AffineTransformToSkMatrix(
-        orientation_.TransformFromDefault(adjusted_dst_rect.Size())));
+        orientation_.TransformFromDefault(adjusted_dst_rect.size())));
 
     if (orientation_.UsesWidthAsHeight()) {
       adjusted_dst_rect =
-          FloatRect(adjusted_dst_rect.X(), adjusted_dst_rect.Y(),
-                    adjusted_dst_rect.Height(), adjusted_dst_rect.Width());
+          FloatRect(adjusted_dst_rect.x(), adjusted_dst_rect.y(),
+                    adjusted_dst_rect.height(), adjusted_dst_rect.width());
     }
   }
 
-  canvas->drawImageRect(image, adjusted_src_rect, adjusted_dst_rect, sampling,
-                        &flags,
-                        WebCoreClampingModeToSkiaRectConstraint(clamp_mode));
+  canvas->drawImageRect(
+      image, adjusted_src_rect, adjusted_dst_rect,
+      draw_options.sampling_options, &flags,
+      WebCoreClampingModeToSkiaRectConstraint(draw_options.clamping_mode));
 }
 
 }  // namespace blink

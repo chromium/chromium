@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_SCHEMA_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_SCHEMA_HANDLER_H_
 
-#include "base/macros.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/schema.h"
 
@@ -16,15 +15,16 @@ class SchemaHandler : public DevToolsDomainHandler,
                       public Schema::Backend {
  public:
   SchemaHandler();
+
+  SchemaHandler(const SchemaHandler&) = delete;
+  SchemaHandler& operator=(const SchemaHandler&) = delete;
+
   ~SchemaHandler() override;
 
   void Wire(UberDispatcher* dispatcher) override;
 
   Response GetDomains(
       std::unique_ptr<protocol::Array<Schema::Domain>>* domains) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SchemaHandler);
 };
 
 }  // namespace protocol

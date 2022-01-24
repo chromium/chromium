@@ -23,6 +23,10 @@ class HostContentSettingsMapFactory
       ChromeBrowserState* browser_state);
   static HostContentSettingsMapFactory* GetInstance();
 
+  HostContentSettingsMapFactory(const HostContentSettingsMapFactory&) = delete;
+  HostContentSettingsMapFactory& operator=(
+      const HostContentSettingsMapFactory&) = delete;
+
  private:
   friend class base::NoDestructor<HostContentSettingsMapFactory>;
 
@@ -34,8 +38,6 @@ class HostContentSettingsMapFactory
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(HostContentSettingsMapFactory);
 };
 
 }  // namespace ios

@@ -421,7 +421,10 @@ cr.googleTranslate = (function() {
           errorCode = ERROR['SCRIPT_LOAD_ERROR'];
           return;
         }
-        eval(this.responseText);
+        // Execute translate script using an anonymous function on the window,
+        // this prevents issues with the code being inside of the scope of the
+        // XHR request.
+        new Function(this.responseText).call(window);
       };
       xhr.send();
     }

@@ -248,7 +248,7 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui)
   html_source->UseStringsJs();
 
   // Add required resources.
-  webui::SetupWebUIDataSource(html_source, base::make_span(kHelloWorldResources, kHelloWorldResourcesSize), IDR_HELLO_WORLD_HELLO_WORLD_HTML);
+  webui::SetupWebUIDataSource(html_source, base::make_span(kHelloWorldResources, kHelloWorldResourcesSize), IDR_HELLO_WORLD_HELLO_WORLD_CONTAINER_HTML);
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();

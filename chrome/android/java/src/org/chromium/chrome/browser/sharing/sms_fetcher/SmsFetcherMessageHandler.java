@@ -16,6 +16,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -129,6 +130,8 @@ public class SmsFetcherMessageHandler {
         sEmbeddedOrigin = embeddedOrigin;
         sSmsFetcherMessageHandlerAndroid = smsFetcherMessageHandlerAndroid;
         Context context = ContextUtils.getApplicationContext();
+        RecordHistogram.recordBooleanHistogram("Sharing.SmsFetcherScreenOnAndUnlocked",
+                DeviceConditions.isCurrentlyScreenOnAndUnlocked(context));
         PendingIntentProvider confirmIntent = PendingIntentProvider.getBroadcast(context,
                 /*requestCode=*/0,
                 new Intent(context, NotificationReceiver.class)
@@ -148,7 +151,8 @@ public class SmsFetcherMessageHandler {
                 /*deleteIntent=*/cancelIntent, confirmIntent, cancelIntent,
                 getNotificationTitle(oneTimeCode, topOrigin, embeddedOrigin, clientName),
                 getNotificationText(oneTimeCode, topOrigin, embeddedOrigin, clientName),
-                R.drawable.ic_chrome, /*largeIconId=*/0, R.color.default_icon_color_blue,
+                R.drawable.ic_chrome, /*largeIconId=*/0,
+                R.color.default_icon_color_accent1_baseline,
                 /*startsActivity=*/false);
     }
 

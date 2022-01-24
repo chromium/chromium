@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/webui/telemetry_extension_ui/url_constants.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/components/telemetry_extension_ui/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -30,8 +30,8 @@ constexpr char kRegisteredUrlPath[] = "dpsl.js";
 class TelemetryExtensionIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   TelemetryExtensionIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kTelemetryExtension}, {});
+    scoped_feature_list_.InitWithFeatures({ash::features::kTelemetryExtension},
+                                          {});
   }
 
   web_app::SystemAppType GetTelemetryAppType() const {
@@ -54,7 +54,7 @@ class TelemetryExtensionIntegrationTest : public SystemWebAppIntegrationTest {
 // Tests that the TelemetryExtension app is successfully installed.
 IN_PROC_BROWSER_TEST_P(TelemetryExtensionIntegrationTest,
                        TelemetryExtensionInstalled) {
-  const GURL url(chromeos::kChromeUITelemetryExtensionURL);
+  const GURL url(ash::kChromeUITelemetryExtensionURL);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(GetTelemetryAppType(), url,
                                                   "Telemetry Extension"));
 }
@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_P(
   content::WebContents* web_contents = LaunchTelemetryApp();
 
   const GURL registered_resource_gurl =
-      GURL(std::string(chromeos::kChromeUIUntrustedTelemetryExtensionURL) +
+      GURL(std::string(ash::kChromeUIUntrustedTelemetryExtensionURL) +
            kRegisteredUrlPath);
 
   // Load the |registered_resource_gurl| into the same tab.
@@ -87,8 +87,8 @@ class TelemetryExtensionWithDirIntegrationTest
     base::PathService::Get(chrome::DIR_TEST_DATA, &src_dir);
 
     SystemWebAppManagerBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        chromeos::switches::kTelemetryExtensionDirectory, src_dir.value());
+    command_line->AppendSwitchASCII(ash::switches::kTelemetryExtensionDirectory,
+                                    src_dir.value());
   }
 };
 
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionWithDirIntegrationTest,
   content::WebContents* web_contents = LaunchTelemetryApp();
 
   const GURL load_from_disk_resource_gurl =
-      GURL(std::string(chromeos::kChromeUIUntrustedTelemetryExtensionURL) +
+      GURL(std::string(ash::kChromeUIUntrustedTelemetryExtensionURL) +
            kLoadFromDiskUrlPath);
 
   // Load the |load_from_disk_resource_gurl| into the same tab.
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_P(
   content::WebContents* web_contents = LaunchTelemetryApp();
 
   const GURL non_existent_resource_gurl =
-      GURL(std::string(chromeos::kChromeUIUntrustedTelemetryExtensionURL) +
+      GURL(std::string(ash::kChromeUIUntrustedTelemetryExtensionURL) +
            kNonExistentUrlPath);
 
   EXPECT_FALSE(

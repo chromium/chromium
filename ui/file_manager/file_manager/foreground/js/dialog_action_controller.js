@@ -6,12 +6,12 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
+import {DialogType} from '../../common/js/dialog_type.js';
 import {metrics} from '../../common/js/metrics.js';
 import {str, util} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {DialogType} from './dialog_type.js';
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileSelectionHandler} from './file_selection.js';

@@ -62,6 +62,10 @@ class ExtensionSet {
   };
 
   ExtensionSet();
+
+  ExtensionSet(const ExtensionSet&) = delete;
+  ExtensionSet& operator=(const ExtensionSet&) = delete;
+
   ~ExtensionSet();
 
   size_t size() const;
@@ -137,8 +141,6 @@ class ExtensionSet {
 
  private:
   ExtensionMap extensions_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionSet);
 };
 
 }  // namespace extensions

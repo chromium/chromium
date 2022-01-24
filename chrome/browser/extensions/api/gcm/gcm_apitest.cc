@@ -117,8 +117,8 @@ const Extension* GcmApiTest::LoadTestExtension(
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII(extension_path));
   if (extension) {
-    ui_test_utils::NavigateToURL(
-        browser(), extension->GetResourceURL(page_name));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), extension->GetResourceURL(page_name)));
   }
   return extension;
 }

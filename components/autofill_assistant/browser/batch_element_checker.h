@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_BATCH_ELEMENT_CHECKER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_BATCH_ELEMENT_CHECKER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -13,7 +12,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/selector.h"
@@ -27,6 +26,10 @@ class WebController;
 class BatchElementChecker {
  public:
   explicit BatchElementChecker();
+
+  BatchElementChecker(const BatchElementChecker&) = delete;
+  BatchElementChecker& operator=(const BatchElementChecker&) = delete;
+
   virtual ~BatchElementChecker();
 
   // Callback for AddElementCheck. Arguments are an ok client status if the
@@ -48,7 +51,9 @@ class BatchElementChecker {
   // Checks an element.
   //
   // New element checks cannot be added once Run has been called.
-  void AddElementCheck(const Selector& selector, ElementCheckCallback callback);
+  void AddElementCheck(const Selector& selector,
+                       bool strict,
+                       ElementCheckCallback callback);
 
   // Gets the value of |selector| and return the result through |callback|. The
   // returned value will be the empty string in case of error or empty value.
@@ -86,12 +91,12 @@ class BatchElementChecker {
 
   // A map of ElementCheck arguments (check_type, selector) to callbacks that
   // take the result of the check.
-  std::map<Selector, std::vector<ElementCheckCallback>>
+  base::flat_map<std::pair<Selector, bool>, std::vector<ElementCheckCallback>>
       element_check_callbacks_;
 
   // A map of GetFieldValue arguments (selector) to callbacks that take the
   // field value.
-  std::map<Selector, std::vector<GetFieldValueCallback>>
+  base::flat_map<Selector, std::vector<GetFieldValueCallback>>
       get_field_value_callbacks_;
   int pending_checks_count_ = 0;
 
@@ -101,8 +106,6 @@ class BatchElementChecker {
   std::vector<base::OnceCallback<void()>> all_done_;
 
   base::WeakPtrFactory<BatchElementChecker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BatchElementChecker);
 };
 
 }  // namespace autofill_assistant

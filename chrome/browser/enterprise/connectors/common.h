@@ -12,6 +12,7 @@
 
 #include "base/supports_user_data.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "content/public/browser/download_manager_delegate.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
@@ -132,6 +133,8 @@ struct FileSystemSettings {
   std::vector<std::string> scopes;
   size_t max_direct_size;
   std::set<std::string> mime_types;
+  // Indicates whether `mime_types` is to be used for enabling or disabling.
+  bool enable_with_mime_types;
 };
 
 // Returns the pref path corresponding to a connector.
@@ -150,14 +153,53 @@ TriggeredRule::Action GetHighestPrecedenceAction(
     const TriggeredRule::Action& action_1,
     const TriggeredRule::Action& action_2);
 
-// User data class to persist ContentAnalysisResponses in base::SupportsUserData
-// objects.
+// Struct used to persist metadata about a file in base::SupportsUserData
+// through ScanResult.
+struct FileMetadata {
+  FileMetadata(
+      const std::string& filename,
+      const std::string& sha256,
+      const std::string& mime_type,
+      int64_t size,
+      const ContentAnalysisResponse& scan_response = ContentAnalysisResponse());
+  FileMetadata(FileMetadata&&);
+  FileMetadata(const FileMetadata&);
+  FileMetadata& operator=(const FileMetadata&);
+  ~FileMetadata();
+
+  std::string filename;
+  std::string sha256;
+  std::string mime_type;
+  int64_t size;
+  ContentAnalysisResponse scan_response;
+};
+
+// User data class to persist scanning results for multiple files corresponding
+// to a single base::SupportsUserData object.
 struct ScanResult : public base::SupportsUserData::Data {
-  explicit ScanResult(const ContentAnalysisResponse& response);
+  explicit ScanResult(FileMetadata metadata);
   ~ScanResult() override;
   static const char kKey[];
-  ContentAnalysisResponse response;
+
+  std::vector<FileMetadata> file_metadata;
 };
+
+// User data to persist a save package's final callback allowing/denying
+// completion. This is used since the callback can be called either when
+// scanning completes on a block/allow verdict, when the user cancels the scan,
+// or when the user bypasses scanning.
+struct SavePackageScanningData : public base::SupportsUserData::Data {
+  explicit SavePackageScanningData(
+      content::SavePackageAllowedCallback callback);
+  ~SavePackageScanningData() override;
+  static const char kKey[];
+
+  content::SavePackageAllowedCallback callback;
+};
+
+// Checks `item` for a SavePackageScanningData, and run it's callback with
+// `allowed` if there is one.
+void RunSavePackageScanningCallback(download::DownloadItem* item, bool allowed);
 
 // Checks if |response| contains a negative malware verdict.
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response);

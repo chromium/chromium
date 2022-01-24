@@ -21,6 +21,12 @@ class JavaScriptDialogCommitDeferringCondition
  public:
   static std::unique_ptr<CommitDeferringCondition> MaybeCreate(
       NavigationRequest& navigation_request);
+
+  JavaScriptDialogCommitDeferringCondition(
+      const JavaScriptDialogCommitDeferringCondition&) = delete;
+  JavaScriptDialogCommitDeferringCondition& operator=(
+      const JavaScriptDialogCommitDeferringCondition&) = delete;
+
   ~JavaScriptDialogCommitDeferringCondition() override;
 
   Result WillCommitNavigation(base::OnceClosure resume) override;
@@ -32,8 +38,6 @@ class JavaScriptDialogCommitDeferringCondition
   // Bare reference is ok here because this class is indirectly owned by the
   // NavigationRequest which will be destroyed before the WebContentsImpl.
   WebContentsImpl& web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptDialogCommitDeferringCondition);
 };
 
 }  // namespace content

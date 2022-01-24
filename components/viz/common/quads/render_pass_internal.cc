@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/trace_event/traced_value.h"
+#include "cc/base/math_util.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/traced_value.h"

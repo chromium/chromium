@@ -12,7 +12,6 @@
 
 #include "ash/public/cpp/session/session_controller_client.h"
 #include "ash/public/cpp/session/session_types.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
 #include "components/user_manager/user_type.h"
@@ -41,6 +40,11 @@ class TestSessionControllerClient : public SessionControllerClient {
  public:
   TestSessionControllerClient(SessionControllerImpl* controller,
                               TestPrefServiceProvider* prefs_provider);
+
+  TestSessionControllerClient(const TestSessionControllerClient&) = delete;
+  TestSessionControllerClient& operator=(const TestSessionControllerClient&) =
+      delete;
+
   ~TestSessionControllerClient() override;
 
   static void DisableAutomaticallyProvideSigninPref();
@@ -74,12 +78,25 @@ class TestSessionControllerClient : public SessionControllerClient {
   // sessions prior this call will be removed without sending out notifications.
   void CreatePredefinedUserSessions(int count);
 
-  // Adds a user session from a given display email. The display email will be
-  // canonicalized and used to construct an AccountId. |enable_settings| sets
-  // whether web UI settings are allowed. If |provide_pref_service| is true,
-  // eagerly inject a PrefService for this user. |is_new_profile| indicates
-  // whether the user has a newly created profile on the device.
+  // Adds a user session from a given display email. If |provide_pref_service|
+  // is true, eagerly inject a PrefService for this user. |is_new_profile|
+  // indicates whether the user has a newly created profile on the device.
+  //
+  // For convenience |display_email| is used to create an |AccountId|. For
+  // testing behavior where |AccountId|s are compared, prefer the method of the
+  // same name that takes an |AccountId| created with a valid storage key
+  // instead. See the documentation for|AccountId::GetUserEmail| for
+  // discussion.
   void AddUserSession(
+      const std::string& display_email,
+      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
+      bool provide_pref_service = true,
+      bool is_new_profile = false,
+      const std::string& given_name = std::string());
+
+  // Adds a user session from a given AccountId.
+  void AddUserSession(
+      const AccountId& account_id,
       const std::string& display_email,
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
       bool provide_pref_service = true,
@@ -144,8 +161,6 @@ class TestSessionControllerClient : public SessionControllerClient {
   std::unique_ptr<views::Widget> multi_profile_login_widget_;
 
   base::WeakPtrFactory<TestSessionControllerClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionControllerClient);
 };
 
 }  // namespace ash

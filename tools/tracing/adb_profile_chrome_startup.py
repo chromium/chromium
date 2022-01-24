@@ -7,11 +7,8 @@ third_party/catapult folder. It is consumed as a library by the
 executable profile_chrome_startup script.
 """
 
-import logging
 import os
-import subprocess
 import sys
-import webbrowser
 
 _CATAPULT_DIR = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
                              'third_party', 'catapult')
@@ -80,32 +77,4 @@ def ProfileChrome(options):
                                        compress=options.compress,
                                        trace_format=options.trace_format)
 
-  if options.view:
-    _DisplayInBrowser(options, trace_file)
-
   return trace_file
-
-
-def _DisplayInBrowser(options, trace_file):
-  """Displays trace in browser.
-
-  Args:
-    options: Command line flags with their specified values as
-        returned by optparse.
-    trace_file: Saved trace filename.
-  """
-  if options.trace_format == 'proto':
-    open_trace_ui_path = os.path.join(
-        os.path.dirname(__file__), os.pardir, os.pardir,
-        'third_party/perfetto/tools/open_trace_in_ui')
-    trace_file_path = os.path.join(os.path.dirname(__file__), os.pardir,
-                                   os.pardir, trace_file)
-    cmd = [open_trace_ui_path, '-i', trace_file_path]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = p.communicate()
-    if p.returncode != 0:
-      raise RuntimeError('failed: ' + stderr)
-  elif sys.platform == 'darwin':
-    os.system('/usr/bin/open %s' % os.path.abspath(trace_file))
-  else:
-    webbrowser.open(trace_file)

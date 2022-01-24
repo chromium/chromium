@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "content/browser/renderer_host/input/touch_emulator_client.h"
 #include "content/common/cursors/webcursor.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -41,6 +40,10 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   };
 
   TouchEmulator(TouchEmulatorClient* client, float device_scale_factor);
+
+  TouchEmulator(const TouchEmulator&) = delete;
+  TouchEmulator& operator=(const TouchEmulator&) = delete;
+
   ~TouchEmulator() override;
 
   void Enable(Mode mode, ui::GestureProviderConfigType config_type);
@@ -177,8 +180,6 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   bool pinch_gesture_active_;
 
   base::queue<base::OnceClosure> injected_touch_completion_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchEmulator);
 };
 
 }  // namespace content

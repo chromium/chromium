@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef UI_BASE_COCOA_FOCUS_TRACKER_H_
+#define UI_BASE_COCOA_FOCUS_TRACKER_H_
+
 #import <Cocoa/Cocoa.h>
 
 #include "base/component_export.h"
@@ -27,3 +30,5 @@ COMPONENT_EXPORT(UI_BASE)
 // longer in the view hierarchy under |window|.
 - (BOOL)restoreFocusInWindow:(NSWindow*)window;
 @end
+
+#endif  // UI_BASE_COCOA_FOCUS_TRACKER_H_

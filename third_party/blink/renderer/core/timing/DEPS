@@ -10,4 +10,7 @@ specific_include_rules = {
     "background_tracing_helper_test.cc": [
         "+base/hash/md5_constexpr.h",
     ],
+    ".*test\.cc": [
+      "+base/test/trace_event_analyzer.h",
+    ],
 }

@@ -22,12 +22,11 @@ namespace {
 const char kTestPrefName[] = "test_pref_name";
 
 // Copied from nearby_share_scheduler_impl.cc.
-constexpr base::TimeDelta kZeroTimeDelta = base::TimeDelta::FromSeconds(0);
-constexpr base::TimeDelta kBaseRetryDelay = base::TimeDelta::FromSeconds(5);
-constexpr base::TimeDelta kMaxRetryDelay = base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kZeroTimeDelta = base::Seconds(0);
+constexpr base::TimeDelta kBaseRetryDelay = base::Seconds(5);
+constexpr base::TimeDelta kMaxRetryDelay = base::Hours(1);
 
-constexpr base::TimeDelta kTestTimeUntilRecurringRequest =
-    base::TimeDelta::FromMinutes(123);
+constexpr base::TimeDelta kTestTimeUntilRecurringRequest = base::Minutes(123);
 
 class NearbyShareSchedulerBaseForTest : public NearbyShareSchedulerBase {
  public:
@@ -403,7 +402,7 @@ TEST_F(NearbyShareSchedulerBaseTest, RestoreRequest_Pending_FailureRetry) {
 
   // 1s elapses while there is no scheduler. When the scheduler is recreated,
   // the retry request is rescheduled, accounting for the elapsed time.
-  base::TimeDelta elapsed_time = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta elapsed_time = base::Seconds(1);
   FastForward(elapsed_time);
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   StartScheduling();
@@ -418,8 +417,7 @@ TEST_F(NearbyShareSchedulerBaseTest, RestoreRequest_Pending_FailureRetry) {
 
 TEST_F(NearbyShareSchedulerBaseTest, RestoreSchedulingData) {
   // Succeed immediately, then fail once before destroying scheduler.
-  base::Time expected_last_success_time =
-      Now() + base::TimeDelta::FromSeconds(100);
+  base::Time expected_last_success_time = Now() + base::Seconds(100);
   FastForward(expected_last_success_time - Now());
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true);
   scheduler()->MakeImmediateRequest();

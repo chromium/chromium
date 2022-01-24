@@ -51,8 +51,7 @@ void StartProcessing() {
   if (net::NetworkChangeNotifier::GetConnectionType() ==
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&StartProcessing),
-        base::TimeDelta::FromSeconds(2));
+        FROM_HERE, base::BindOnce(&StartProcessing), base::Seconds(2));
     return;
   }
   Profile* profile = ProfileManager::GetLastUsedProfile();

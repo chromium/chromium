@@ -8,7 +8,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -148,6 +147,10 @@ DomKey GetKeyFromCombiningLayoutTable(DomCode dom_code) {
 class TestDomKeyboardLayoutMap : public DomKeyboardLayoutMapBase {
  public:
   TestDomKeyboardLayoutMap();
+
+  TestDomKeyboardLayoutMap(const TestDomKeyboardLayoutMap&) = delete;
+  TestDomKeyboardLayoutMap& operator=(const TestDomKeyboardLayoutMap&) = delete;
+
   ~TestDomKeyboardLayoutMap() override;
 
   // DomKeyboardLayoutMapBase overrides.
@@ -166,8 +169,6 @@ class TestDomKeyboardLayoutMap : public DomKeyboardLayoutMapBase {
   DomKey GetDomKeyForLayoutWithNoValidKeys();
 
   std::vector<uint32_t> test_keyboard_layouts_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDomKeyboardLayoutMap);
 };
 
 TestDomKeyboardLayoutMap::TestDomKeyboardLayoutMap() = default;

@@ -1522,4 +1522,27 @@ TEST(IDNSpoofCheckerNoFixtureTest, MultipleSkeletons) {
   EXPECT_EQ(Skeletons({"apple.corn", "appie.corn"}), skeletons);
 }
 
+TEST(IDNSpoofCheckerNoFixtureTest, MaybeRemoveDiacritics) {
+  // Latin-Greek-Cyrillic example. Diacritic should be removed.
+  IDNSpoofChecker checker;
+  const GURL url("http://éxample.com");
+  const url_formatter::IDNConversionResult result =
+      UnsafeIDNToUnicodeWithDetails(url.host());
+  std::u16string diacritics_removed =
+      checker.MaybeRemoveDiacritics(result.result);
+  EXPECT_EQ(u"example.com", diacritics_removed);
+
+  // Non-LGC example, diacritic shouldn't be removed. The hostname
+  // will be marked as unsafe by the spoof checks anyways, so diacritic
+  // removal isn't necessary.
+  const GURL non_lgc_url("http://xn--lsa922apb7a6do.com");
+  const url_formatter::IDNConversionResult non_lgc_result =
+      UnsafeIDNToUnicodeWithDetails(non_lgc_url.host());
+  std::u16string diacritics_not_removed =
+      checker.MaybeRemoveDiacritics(non_lgc_result.result);
+  EXPECT_EQ(u"नागरी́.com", diacritics_not_removed);
+  EXPECT_EQ(IDNSpoofChecker::Result::kDangerousPattern,
+            non_lgc_result.spoof_check_result);
+}
+
 }  // namespace url_formatter

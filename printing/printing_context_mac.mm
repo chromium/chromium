@@ -17,6 +17,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_settings_initializer_mac.h"
 #include "printing/printing_features.h"
 #include "printing/units.h"
@@ -69,7 +70,8 @@ PMPaper MatchPaper(CFArrayRef paper_list,
 }  // namespace
 
 // static
-std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
+std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
+    Delegate* delegate) {
   return std::make_unique<PrintingContextMac>(delegate);
 }
 
@@ -133,9 +135,9 @@ void PrintingContextMac::AskUserForSettings(int max_pages,
         print_info_.reset([[panel printInfo] retain]);
         settings_->set_ranges(GetPageRangesFromPrintInfo());
         InitPrintSettingsFromPrintInfo();
-        std::move(block_callback).Run(OK);
+        std::move(block_callback).Run(mojom::ResultCode::kSuccess);
       } else {
-        std::move(block_callback).Run(CANCEL);
+        std::move(block_callback).Run(mojom::ResultCode::kCanceled);
       }
     }];
   }
@@ -159,17 +161,17 @@ gfx::Size PrintingContextMac::GetPdfPaperSizeDeviceUnits() {
   return physical_size_device_units;
 }
 
-PrintingContext::Result PrintingContextMac::UseDefaultSettings() {
+mojom::ResultCode PrintingContextMac::UseDefaultSettings() {
   DCHECK(!in_print_job_);
 
   print_info_.reset([[NSPrintInfo sharedPrintInfo] copy]);
   settings_->set_ranges(GetPageRangesFromPrintInfo());
   InitPrintSettingsFromPrintInfo();
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextMac::UpdatePrinterSettings(
+mojom::ResultCode PrintingContextMac::UpdatePrinterSettings(
     bool external_preview,
     bool show_system_dialog,
     int page_count) {
@@ -203,7 +205,7 @@ PrintingContext::Result PrintingContextMac::UpdatePrinterSettings(
   [print_info_.get() updateFromPMPrintSettings];
 
   InitPrintSettingsFromPrintInfo();
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
 bool PrintingContextMac::SetPrintPreviewJob() {
@@ -493,7 +495,7 @@ PageRanges PrintingContextMac::GetPageRangesFromPrintInfo() {
   return page_ranges;
 }
 
-PrintingContext::Result PrintingContextMac::NewDocument(
+mojom::ResultCode PrintingContextMac::NewDocument(
     const std::u16string& document_name) {
   DCHECK(!in_print_job_);
 
@@ -515,12 +517,12 @@ PrintingContext::Result PrintingContextMac::NewDocument(
   if (status != noErr)
     return OnError();
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextMac::NewPage() {
+mojom::ResultCode PrintingContextMac::NewPage() {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
   DCHECK(!context_);
 
@@ -536,12 +538,12 @@ PrintingContext::Result PrintingContextMac::NewPage() {
   if (status != noErr)
     return OnError();
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextMac::PageDone() {
+mojom::ResultCode PrintingContextMac::PageDone() {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
   DCHECK(context_);
 
@@ -552,12 +554,12 @@ PrintingContext::Result PrintingContextMac::PageDone() {
     OnError();
   context_ = nullptr;
 
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
-PrintingContext::Result PrintingContextMac::DocumentDone() {
+mojom::ResultCode PrintingContextMac::DocumentDone() {
   if (abort_printing_)
-    return CANCEL;
+    return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
 
   PMPrintSession print_session =
@@ -567,7 +569,7 @@ PrintingContext::Result PrintingContextMac::DocumentDone() {
     OnError();
 
   ResetSettings();
-  return OK;
+  return mojom::ResultCode::kSuccess;
 }
 
 void PrintingContextMac::Cancel() {

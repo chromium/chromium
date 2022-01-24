@@ -56,11 +56,12 @@ class CORE_EXPORT CSSParserImpl {
 
   enum AllowedRulesType {
     // As per css-syntax, css-cascade and css-namespaces, @charset rules
-    // must come first, followed by @import then @namespace.
-    // AllowImportRules actually means we allow @import and any rules thay
+    // must come first, followed by @layer, @import then @namespace.
+    // AllowImportRules actually means we allow @import and any rules that
     // may follow it, i.e. @namespace rules and regular rules.
     // AllowCharsetRules and AllowNamespaceRules behave similarly.
     kAllowCharsetRules,
+    kAllowLayerStatementRules,
     kAllowImportRules,
     kAllowNamespaceRules,
     kRegularRules,
@@ -134,6 +135,10 @@ class CORE_EXPORT CSSParserImpl {
       wtf_size_t offset,
       const CSSParserContext*);
 
+  // Consumes a value from the remaining tokens in the (possibly bounded)
+  // stream.
+  //
+  // See also CSSParserTokenStream::Boundary.
   static CSSTokenizedValue ConsumeValue(CSSParserTokenStream&);
 
   static bool RemoveImportantAnnotationIfPresent(CSSTokenizedValue&);
@@ -155,7 +160,7 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleBase* ConsumeQualifiedRule(CSSParserTokenStream&, AllowedRulesType);
 
   static StyleRuleCharset* ConsumeCharsetRule(CSSParserTokenStream&);
-  StyleRuleImport* ConsumeImportRule(AtomicString prelude_uri,
+  StyleRuleImport* ConsumeImportRule(const AtomicString& prelude_uri,
                                      CSSParserTokenStream&);
   StyleRuleNamespace* ConsumeNamespaceRule(CSSParserTokenStream&);
   StyleRuleMedia* ConsumeMediaRule(CSSParserTokenStream&);
@@ -169,6 +174,7 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleCounterStyle* ConsumeCounterStyleRule(CSSParserTokenStream&);
   StyleRuleScrollTimeline* ConsumeScrollTimelineRule(CSSParserTokenStream&);
   StyleRuleContainer* ConsumeContainerRule(CSSParserTokenStream&);
+  StyleRuleBase* ConsumeLayerRule(CSSParserTokenStream&);
 
   StyleRuleKeyframe* ConsumeKeyframeStyleRule(CSSParserTokenRange prelude,
                                               const RangeOffset& prelude_offset,

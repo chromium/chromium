@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -37,6 +36,11 @@ class CustomizationWallpaperDownloader {
       const base::FilePath& wallpaper_downloaded_file,
       base::OnceCallback<void(bool success, const GURL&)>
           on_wallpaper_fetch_completed);
+
+  CustomizationWallpaperDownloader(const CustomizationWallpaperDownloader&) =
+      delete;
+  CustomizationWallpaperDownloader& operator=(
+      const CustomizationWallpaperDownloader&) = delete;
 
   ~CustomizationWallpaperDownloader();
 
@@ -101,8 +105,6 @@ class CustomizationWallpaperDownloader {
       on_wallpaper_fetch_completed_;
 
   base::WeakPtrFactory<CustomizationWallpaperDownloader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CustomizationWallpaperDownloader);
 };
 
 }  // namespace ash

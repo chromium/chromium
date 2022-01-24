@@ -28,6 +28,16 @@ run_jsbundler("accessibility_common_copied_files") {
     "autoclick/autoclick.js",
     "background.html",
     "dictation/dictation.js",
+    "dictation/earcons/audio_end.wav",
+    "dictation/earcons/audio_initiate.wav",
+    "dictation/earcons/null_selection.wav",
+    "dictation/input_controller.js",
+    "dictation/macros/input_text_view_macro.js",
+    "dictation/macros/list_commands_macro.js",
+    "dictation/macros/macro.js",
+    "dictation/macros/macro_names.js",
+    "dictation/macros/repeatable_key_press_macro.js",
+    "dictation/speech_parser.js",
     "magnifier/magnifier.js",
   ]
   rewrite_rules = [
@@ -74,6 +84,7 @@ js2gtest("accessibility_common_extjs_tests") {
     "../common/testing/mock_input_ime.js",
     "../common/testing/mock_input_method_private.js",
     "../common/testing/mock_language_settings_private.js",
+    "../common/testing/mock_speech_recognition_private.js",
   ]
 
   # The test base classes generate C++ code with these deps.
@@ -97,8 +108,11 @@ js_library("accessibility_common") {
     ":autoclick",
     ":dictation",
     ":magnifier",
+    "../common:chrome_event_handler",
+    "../common:event_generator",
     "../common:event_handler",
     "../common:instance_checker",
+    "../common:rect_util",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
@@ -108,6 +122,7 @@ js_library("accessibility_common") {
     "$externs_path/command_line_private.js",
     "$externs_path/input_method_private.js",
     "$externs_path/language_settings_private.js",
+    "$externs_path/speech_recognition_private.js",
   ]
 }
 
@@ -127,9 +142,43 @@ js_library("magnifier") {
 
 js_library("dictation") {
   sources = [ "dictation/dictation.js" ]
+  deps = [
+    ":dictation_commands",
+    ":dictation_input_controller",
+  ]
   externs_list = [
     "$externs_path/accessibility_private.js",
+    "$externs_path/speech_recognition_private.js",
+  ]
+}
+
+js_library("dictation_input_controller") {
+  sources = [ "dictation/input_controller.js" ]
+  externs_list = [
     "$externs_path/input_method_private.js",
     "$externs_path/language_settings_private.js",
+  ]
+}
+
+js_library("dictation_macros") {
+  sources = [
+    "dictation/macros/input_text_view_macro.js",
+    "dictation/macros/list_commands_macro.js",
+    "dictation/macros/macro.js",
+    "dictation/macros/macro_names.js",
+    "dictation/macros/repeatable_key_press_macro.js",
+  ]
+  deps = [
+    ":dictation_input_controller",
+    "../common:event_generator",
+    "../common:key_code",
+  ]
+}
+
+js_library("dictation_commands") {
+  sources = [ "dictation/speech_parser.js" ]
+  deps = [
+    ":dictation_input_controller",
+    ":dictation_macros",
   ]
 }

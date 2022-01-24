@@ -8,7 +8,7 @@
 #include <initializer_list>
 #include <string>
 
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 
 class GURL;
 
@@ -25,7 +25,7 @@ struct IconResourceInfo {
 // key.
 void CreateIconInfoForSystemWebApp(
     const GURL& app_url,
-    const std::initializer_list<IconResourceInfo>& icon_infos,
+    const std::initializer_list<IconResourceInfo>& manifest_icons,
     WebApplicationInfo& web_app);
 
 }  // namespace web_app

@@ -35,6 +35,9 @@ class ExecutionContext;
 template <typename T>
 class ActiveScriptWrappable : public ActiveScriptWrappableBase {
  public:
+  ActiveScriptWrappable(const ActiveScriptWrappable&) = delete;
+  ActiveScriptWrappable& operator=(const ActiveScriptWrappable&) = delete;
+
   ~ActiveScriptWrappable() override = default;
 
  protected:
@@ -48,9 +51,6 @@ class ActiveScriptWrappable : public ActiveScriptWrappableBase {
   bool DispatchHasPendingActivity() const final {
     return static_cast<const T*>(this)->HasPendingActivity();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveScriptWrappable);
 };
 
 // Helper for ActiveScriptWrappable<T>::IsContextDestroyed();

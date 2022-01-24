@@ -7,15 +7,21 @@
 #include <list>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -27,6 +33,55 @@ using network::mojom::ContentSecurityPolicyType;
 
 class CSPDirectiveListTest : public testing::Test {
  public:
+  // Simple CSP delegate that stores the console messages logged by the
+  // ContentSecurityPolicy context and allows retrieving them.
+  class TestCSPDelegate final : public GarbageCollected<TestCSPDelegate>,
+                                public ContentSecurityPolicyDelegate {
+   public:
+    Vector<String>& console_messages() { return console_messages_; }
+
+    // ContentSecurityPolicyDelegate override
+    const SecurityOrigin* GetSecurityOrigin() override {
+      return security_origin_.get();
+    }
+    const KURL& Url() const override { return url_; }
+    void SetSandboxFlags(network::mojom::blink::WebSandboxFlags) override {}
+    void SetRequireTrustedTypes() override {}
+    void AddInsecureRequestPolicy(
+        mojom::blink::InsecureRequestPolicy) override {}
+    std::unique_ptr<SourceLocation> GetSourceLocation() override {
+      return nullptr;
+    }
+    absl::optional<uint16_t> GetStatusCode() override { return absl::nullopt; }
+    String GetDocumentReferrer() override { return ""; }
+    void DispatchViolationEvent(const SecurityPolicyViolationEventInit&,
+                                Element*) override {}
+    void PostViolationReport(const SecurityPolicyViolationEventInit&,
+                             const String& stringified_report,
+                             bool is_frame_ancestors_violation,
+                             const Vector<String>& report_endpoints,
+                             bool use_reporting_api) override {}
+    void Count(WebFeature) override {}
+    void AddConsoleMessage(ConsoleMessage* message) override {
+      console_messages_.push_back(message->Message());
+    }
+    void AddInspectorIssue(AuditsIssue) override {}
+    void DisableEval(const String& error_message) override {}
+    void ReportBlockedScriptExecutionToInspector(
+        const String& directive_text) override {}
+    void DidAddContentSecurityPolicies(
+        WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>) override {
+    }
+
+    void Trace(Visitor*) const override {}
+
+   private:
+    const KURL url_ = KURL("https://example.test/index.html");
+    const scoped_refptr<SecurityOrigin> security_origin_ =
+        SecurityOrigin::Create(url_);
+    Vector<String> console_messages_;
+  };
+
   CSPDirectiveListTest() : csp(MakeGarbageCollected<ContentSecurityPolicy>()) {}
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({network::features::kReporting}, {});
@@ -828,6 +883,90 @@ TEST_F(CSPDirectiveListTest, ReportURIInMeta) {
   directive_list = CreateList(policy, ContentSecurityPolicyType::kEnforce,
                               ContentSecurityPolicySource::kHTTP);
   EXPECT_FALSE(directive_list->report_endpoints.IsEmpty());
+}
+
+MATCHER_P(HasSubstr, s, "") {
+  return arg.Contains(s);
+}
+
+TEST_F(CSPDirectiveListTest, StrictDynamicIgnoresAllowlistWarning) {
+  KURL blocked_url = KURL("https://blocked.com");
+  KURL other_blocked_url = KURL("https://other-blocked.com");
+  network::mojom::blink::ContentSecurityPolicyPtr directive_list_with_blocked =
+      CreateList("script-src 'nonce-abc' https://blocked.com 'strict-dynamic'",
+                 ContentSecurityPolicyType::kEnforce);
+  network::mojom::blink::ContentSecurityPolicyPtr
+      directive_list_without_blocked =
+          CreateList("script-src 'nonce-abc' 'strict-dynamic'",
+                     ContentSecurityPolicyType::kEnforce);
+
+  struct {
+    const char* name;
+    const network::mojom::blink::ContentSecurityPolicyPtr& directive_list;
+    const KURL& script_url;
+    const char* script_nonce;
+    bool allowed;
+    bool console_message;
+  } testCases[]{
+      {
+          "Url in the allowlist ignored because of 'strict-dynamic'",
+          directive_list_with_blocked,
+          blocked_url,
+          "",
+          false,
+          true,
+      },
+      {
+          "Url in the allowlist ignored because of 'strict-dynamic', but "
+          "script allowed by nonce",
+          directive_list_with_blocked,
+          blocked_url,
+          "abc",
+          true,
+          false,
+      },
+      {
+          "No allowlistUrl",
+          directive_list_without_blocked,
+          blocked_url,
+          "",
+          false,
+          false,
+      },
+      {
+          "Url in the allowlist ignored because of 'strict-dynamic', but "
+          "script has another url",
+          directive_list_with_blocked,
+          other_blocked_url,
+          "",
+          false,
+          false,
+      },
+  };
+  for (const auto& testCase : testCases) {
+    SCOPED_TRACE(testCase.name);
+    ContentSecurityPolicy* context =
+        MakeGarbageCollected<ContentSecurityPolicy>();
+    TestCSPDelegate* test_delegate = MakeGarbageCollected<TestCSPDelegate>();
+    context->BindToDelegate(*test_delegate);
+    EXPECT_EQ(
+        testCase.allowed,
+        CSPDirectiveListAllowFromSource(
+            *testCase.directive_list, context, CSPDirectiveName::ScriptSrcElem,
+            testCase.script_url, testCase.script_url,
+            ResourceRequest::RedirectStatus::kNoRedirect,
+            ReportingDisposition::kReport, testCase.script_nonce));
+    static const char* message =
+        "Note that 'strict-dynamic' is present, so "
+        "host-based allowlisting is disabled.";
+    if (testCase.console_message) {
+      EXPECT_THAT(test_delegate->console_messages(),
+                  testing::Contains(HasSubstr(message)));
+    } else {
+      EXPECT_THAT(test_delegate->console_messages(),
+                  testing::Not(testing::Contains(HasSubstr(message))));
+    }
+  }
 }
 
 }  // namespace blink

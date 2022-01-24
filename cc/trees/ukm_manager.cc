@@ -174,7 +174,7 @@ void UkmManager::RecordAggregateThroughput(AggregationType aggregation_type,
 }
 
 void UkmManager::RecordCompositorLatencyUKM(
-    CompositorFrameReporter::FrameReportType report_type,
+    const CompositorFrameReporter::FrameReportTypes& report_types,
     const std::vector<CompositorFrameReporter::StageData>& stage_history,
     const ActiveTrackers& active_trackers,
     const CompositorFrameReporter::ProcessedBlinkBreakdown&
@@ -185,7 +185,8 @@ void UkmManager::RecordCompositorLatencyUKM(
 
   ukm::builders::Graphics_Smoothness_Latency builder(source_id_);
 
-  if (report_type == CompositorFrameReporter::FrameReportType::kDroppedFrame) {
+  if (report_types.test(static_cast<size_t>(
+          CompositorFrameReporter::FrameReportType::kDroppedFrame))) {
     builder.SetMissedFrame(true);
   }
 
@@ -316,12 +317,14 @@ void UkmManager::RecordEventLatencyUKM(
       builder.SetScrollInputType(
           static_cast<int64_t>(*event_metrics->scroll_type()));
 
-      if (event_metrics->ShouldReportScrollingTotalLatency() &&
-          !processed_viz_breakdown.swap_start().is_null()) {
+      if (!processed_viz_breakdown.swap_start().is_null()) {
         builder.SetTotalLatencyToSwapBegin(
             (processed_viz_breakdown.swap_start() - generated_timestamp)
                 .InMicroseconds());
       }
+    } else if (event_metrics->pinch_type()) {
+      builder.SetPinchInputType(
+          static_cast<int64_t>(*event_metrics->pinch_type()));
     }
 
     // Record event dispatch metrics.

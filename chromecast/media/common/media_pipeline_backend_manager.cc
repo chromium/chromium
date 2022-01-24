@@ -37,7 +37,7 @@ namespace {
 
 constexpr int kAudioDecoderLimit = std::numeric_limits<int>::max();
 constexpr int kVideoDecoderLimit = 1;
-constexpr base::TimeDelta kPowerSaveWaitTime = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kPowerSaveWaitTime = base::Seconds(5);
 
 }  // namespace
 

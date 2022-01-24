@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_PASSWORD_MANAGER_LOG_ROUTER_FACTORY_H_
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_PASSWORD_MANAGER_LOG_ROUTER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -31,6 +30,11 @@ class PasswordManagerLogRouterFactory
 
   static PasswordManagerLogRouterFactory* GetInstance();
 
+  PasswordManagerLogRouterFactory(const PasswordManagerLogRouterFactory&) =
+      delete;
+  PasswordManagerLogRouterFactory& operator=(
+      const PasswordManagerLogRouterFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<PasswordManagerLogRouterFactory>;
 
@@ -40,8 +44,6 @@ class PasswordManagerLogRouterFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerLogRouterFactory);
 };
 
 }  // namespace password_manager

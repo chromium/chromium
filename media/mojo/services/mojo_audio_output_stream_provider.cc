@@ -83,7 +83,7 @@ void MojoAudioOutputStreamProvider::CleanUp(bool had_error) {
 }
 
 void MojoAudioOutputStreamProvider::BadMessage(const std::string& error) {
-  mojo::ReportBadMessage(error);
+  receiver_.ReportBadMessage(error);
   std::move(deleter_callback_).Run(this);  // deletes |this|.
 }
 

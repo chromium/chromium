@@ -6,7 +6,6 @@
 #define ASH_METRICS_DESKTOP_TASK_SWITCH_METRIC_RECORDER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {
@@ -17,6 +16,12 @@ class ASH_EXPORT DesktopTaskSwitchMetricRecorder
     : public ::wm::ActivationChangeObserver {
  public:
   DesktopTaskSwitchMetricRecorder();
+
+  DesktopTaskSwitchMetricRecorder(const DesktopTaskSwitchMetricRecorder&) =
+      delete;
+  DesktopTaskSwitchMetricRecorder& operator=(
+      const DesktopTaskSwitchMetricRecorder&) = delete;
+
   ~DesktopTaskSwitchMetricRecorder() override;
 
   // wm::ActivationChangeObserver:
@@ -28,8 +33,6 @@ class ASH_EXPORT DesktopTaskSwitchMetricRecorder
  private:
   // Tracks the last active task window.
   aura::Window* last_active_task_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopTaskSwitchMetricRecorder);
 };
 
 }  // namespace ash

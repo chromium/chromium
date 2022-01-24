@@ -6,7 +6,6 @@
 #define COMPONENTS_NACL_LOADER_NONSFI_NONSFI_SANDBOX_H_
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_forward.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
 
@@ -19,6 +18,11 @@ namespace nonsfi {
 class NaClNonSfiBPFSandboxPolicy : public sandbox::bpf_dsl::Policy {
  public:
   explicit NaClNonSfiBPFSandboxPolicy();
+
+  NaClNonSfiBPFSandboxPolicy(const NaClNonSfiBPFSandboxPolicy&) = delete;
+  NaClNonSfiBPFSandboxPolicy& operator=(const NaClNonSfiBPFSandboxPolicy&) =
+      delete;
+
   ~NaClNonSfiBPFSandboxPolicy() override;
 
   sandbox::bpf_dsl::ResultExpr EvaluateSyscall(int sysno) const override;
@@ -27,8 +31,6 @@ class NaClNonSfiBPFSandboxPolicy : public sandbox::bpf_dsl::Policy {
  private:
   // The PID that the policy applies to (should be equal to the current pid).
   const pid_t policy_pid_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClNonSfiBPFSandboxPolicy);
 };
 
 // Initializes seccomp-bpf sandbox for non-SFI NaCl. Returns false on

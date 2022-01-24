@@ -22,6 +22,12 @@ class GCM_EXPORT InstanceIDGetTokenRequestHandler
                                    const std::string& scope,
                                    int gcm_version,
                                    base::TimeDelta time_to_live);
+
+  InstanceIDGetTokenRequestHandler(const InstanceIDGetTokenRequestHandler&) =
+      delete;
+  InstanceIDGetTokenRequestHandler& operator=(
+      const InstanceIDGetTokenRequestHandler&) = delete;
+
   ~InstanceIDGetTokenRequestHandler() override;
 
   // RegistrationRequest overrides:
@@ -35,8 +41,6 @@ class GCM_EXPORT InstanceIDGetTokenRequestHandler
   std::string scope_;
   int gcm_version_;
   base::TimeDelta time_to_live_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDGetTokenRequestHandler);
 };
 
 }  // namespace gcm

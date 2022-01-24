@@ -333,10 +333,13 @@ class PerUserTopicSubscriptionRequestParamTest
       public testing::WithParamInterface<net::HttpStatusCode> {
  public:
   PerUserTopicSubscriptionRequestParamTest() = default;
-  ~PerUserTopicSubscriptionRequestParamTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PerUserTopicSubscriptionRequestParamTest);
+  PerUserTopicSubscriptionRequestParamTest(
+      const PerUserTopicSubscriptionRequestParamTest&) = delete;
+  PerUserTopicSubscriptionRequestParamTest& operator=(
+      const PerUserTopicSubscriptionRequestParamTest&) = delete;
+
+  ~PerUserTopicSubscriptionRequestParamTest() override = default;
 };
 
 TEST_P(PerUserTopicSubscriptionRequestParamTest,

@@ -21,8 +21,8 @@ class GPUBindGroup : public DawnObject<WGPUBindGroup> {
                               ExceptionState& exception_state);
   explicit GPUBindGroup(GPUDevice* device, WGPUBindGroup bind_group);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUBindGroup);
+  GPUBindGroup(const GPUBindGroup&) = delete;
+  GPUBindGroup& operator=(const GPUBindGroup&) = delete;
 };
 
 }  // namespace blink

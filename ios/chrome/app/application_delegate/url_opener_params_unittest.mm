@@ -25,23 +25,21 @@ typedef PlatformTest URLOpenerParamsTest;
 #define MAYBE_initWithUIOpenURLContext DISABLED_initWithUIOpenURLContext
 #endif
 TEST_F(URLOpenerParamsTest, MAYBE_initWithUIOpenURLContext) {
-  if (@available(iOS 13, *)) {
-    NSURL* url = [NSURL URLWithString:@"https://url.test"];
-    NSString* source = @"source";
-    id open_url_context = [OCMockObject mockForClass:[UIOpenURLContext class]];
-    id open_url_context_options =
-        [OCMockObject mockForClass:[UISceneOpenURLOptions class]];
-    OCMStub([open_url_context_options sourceApplication]).andReturn(source);
-    OCMStub([open_url_context URL]).andReturn(url);
-    [(UIOpenURLContext*)[[open_url_context stub]
-        andReturn:open_url_context_options] options];
+  NSURL* url = [NSURL URLWithString:@"https://url.test"];
+  NSString* source = @"source";
+  id open_url_context = [OCMockObject mockForClass:[UIOpenURLContext class]];
+  id open_url_context_options =
+      [OCMockObject mockForClass:[UISceneOpenURLOptions class]];
+  OCMStub([open_url_context_options sourceApplication]).andReturn(source);
+  OCMStub([open_url_context URL]).andReturn(url);
+  [(UIOpenURLContext*)[[open_url_context stub]
+      andReturn:open_url_context_options] options];
 
-    URLOpenerParams* params =
-        [[URLOpenerParams alloc] initWithUIOpenURLContext:open_url_context];
+  URLOpenerParams* params =
+      [[URLOpenerParams alloc] initWithUIOpenURLContext:open_url_context];
 
-    EXPECT_NSEQ(url, params.URL);
-    EXPECT_NSEQ(source, params.sourceApplication);
-  }
+  EXPECT_NSEQ(url, params.URL);
+  EXPECT_NSEQ(source, params.sourceApplication);
 }
 
 // Simple test for initWithLaunchOptions:.

@@ -84,6 +84,9 @@ class Observer : public ExperimentalObserver {
 {% endif %}
 class Domain {
  public:
+  Domain(const Domain&) = delete;
+  Domain& operator=(const Domain&) = delete;
+
   {% if "events" in domain %}
   // Add or remove an observer. |observer| must be removed before being
   // destroyed.
@@ -135,12 +138,15 @@ class Domain {
   bool event_handlers_registered_ = false;
 
   {% endif %}
-  DISALLOW_COPY_AND_ASSIGN(Domain);
 };
 
 class ExperimentalDomain : public Domain {
  public:
   ExperimentalDomain(MessageDispatcher* dispatcher);
+
+  ExperimentalDomain(const ExperimentalDomain&) = delete;
+  ExperimentalDomain& operator=(const ExperimentalDomain&) = delete;
+
   ~ExperimentalDomain();
 
   {% if "events" in domain %}
@@ -156,9 +162,6 @@ class ExperimentalDomain : public Domain {
     {% if not command.experimental %}{% continue %}{% endif %}
 {{ command_decl(command) }}
   {% endfor %}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExperimentalDomain);
 };
 
 }  // namespace {{domain.domain | camelcase_to_hacker_style}}

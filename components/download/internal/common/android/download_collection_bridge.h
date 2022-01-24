@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_file.h"
 #include "components/download/public/common/in_progress_download_manager.h"
@@ -21,6 +20,9 @@ namespace download {
 // download collection.
 class COMPONENTS_DOWNLOAD_EXPORT DownloadCollectionBridge {
  public:
+  DownloadCollectionBridge(const DownloadCollectionBridge&) = delete;
+  DownloadCollectionBridge& operator=(const DownloadCollectionBridge&) = delete;
+
   // Creates the intermediate URI for download to write to.
   // Called on non UI thread.
   static base::FilePath CreateIntermediateUriForPublish(
@@ -71,8 +73,13 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadCollectionBridge {
   // Gets the display name for a download.
   static base::FilePath GetDisplayName(const base::FilePath& download_uri);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadCollectionBridge);
+  // Add a file name for testing so that FileNameExists() will return true
+  // later.
+  static void AddExistingFileNameForTesting(const base::FilePath& file_name);
+
+  // Clear all file names in the global file name set. If the set is not
+  // created, create it.
+  static void ResetExistingFileNamesForTesting();
 };
 
 }  // namespace download

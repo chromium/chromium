@@ -41,9 +41,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/libwebm",
   ]
-
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
 }

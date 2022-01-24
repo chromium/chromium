@@ -252,7 +252,7 @@ TEST_P(MainOrOffThreadPaintWorkletTest, ConsistentGlobalScopeOnMainThread) {
   EXPECT_CALL(*observer, PaintImageGeneratorReady).Times(0);
 
   Vector<Persistent<PaintWorkletGlobalScope>> global_scopes;
-  for (size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
+  for (wtf_size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
     paint_worklet_to_test->AddGlobalScopeForTesting();
     global_scopes.push_back(
         PaintWorkletGlobalScopeProxy::From(
@@ -360,7 +360,7 @@ TEST_F(PaintWorkletTest, ConsistentGlobalScopeCrossThread) {
   EXPECT_CALL(*observer, PaintImageGeneratorReady).Times(0);
 
   Vector<Persistent<PaintWorkletGlobalScope>> global_scopes;
-  for (size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
+  for (wtf_size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
     paint_worklet_to_test->AddGlobalScopeForTesting();
     global_scopes.push_back(
         PaintWorkletGlobalScopeProxy::From(
@@ -517,7 +517,7 @@ TEST_F(PaintWorkletTest, GeneratorNotifiedAfterAllRegistrations) {
   EXPECT_CALL(*observer, PaintImageGeneratorReady).Times(0);
 
   Vector<Persistent<PaintWorkletGlobalScope>> global_scopes;
-  for (size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
+  for (wtf_size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
     paint_worklet_to_test->AddGlobalScopeForTesting();
     global_scopes.push_back(
         PaintWorkletGlobalScopeProxy::From(

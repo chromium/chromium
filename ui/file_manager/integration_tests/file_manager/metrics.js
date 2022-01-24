@@ -18,6 +18,9 @@ testcase.metricsRecordEnum = async () => {
   const validValues = ['a', 'b', 'c'];
   const reports = [];
 
+  // Open Files SWA.
+  await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
   // Record each enumerator once.
   for (const value of validValues) {
     reports.push(remoteCall.callRemoteTestUtil(
@@ -35,7 +38,7 @@ testcase.metricsOpenSwa = async () => {
   // Open Files SWA:
   await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
-  // Value basd on DialogType in file_manager/foreground/js/dialog_type.js:
+  // Value basd on DialogType in file_manager/common/js/dialog_type.js:
   const FileDialogTypeValues = {
     FULL_PAGE: 5,
   };

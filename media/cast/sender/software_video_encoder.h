@@ -31,7 +31,7 @@ class SoftwareVideoEncoder {
 
   // Encode a raw image (as a part of a video stream).
   virtual void Encode(scoped_refptr<media::VideoFrame> video_frame,
-                      const base::TimeTicks& reference_time,
+                      base::TimeTicks reference_time,
                       SenderEncodedFrame* encoded_frame) = 0;
 
   // Update the encoder with a new target bit rate.

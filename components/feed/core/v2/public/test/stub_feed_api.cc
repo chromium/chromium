@@ -4,7 +4,15 @@
 
 #include "components/feed/core/v2/public/test/stub_feed_api.h"
 
+#include "base/compiler_specific.h"
+
 namespace feed {
+
+namespace {
+ALLOW_UNUSED_TYPE void EnsureStubFeedApiHasNoPureVirtualFunctions() {
+  (void)StubFeedApi();
+}
+}  // namespace
 
 WebFeedSubscriptions& StubFeedApi::subscriptions() {
   return web_feed_subscriptions_;
@@ -60,6 +68,15 @@ std::string StubFeedApi::DumpStateForDebugging() {
 
 base::Time StubFeedApi::GetLastFetchTime(const StreamType& stream_type) {
   return base::Time();
+}
+
+ContentOrder StubFeedApi::GetContentOrder(const StreamType& stream_type) {
+  return ContentOrder::kUnspecified;
+}
+
+ContentOrder StubFeedApi::GetContentOrderFromPrefs(
+    const StreamType& stream_type) {
+  return ContentOrder::kUnspecified;
 }
 
 }  // namespace feed

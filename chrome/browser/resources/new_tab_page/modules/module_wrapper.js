@@ -56,6 +56,7 @@ export class ModuleWrapperElement extends PolymerElement {
         recordLoadDuration(
             `NewTabPage.Modules.Impression.${this.module.descriptor.id}`, time);
         this.dispatchEvent(new Event('detect-impression'));
+        this.module.element.dispatchEvent(new Event('detect-impression'));
       }
     }, {threshold: 1.0});
 

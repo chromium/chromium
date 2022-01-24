@@ -23,6 +23,9 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_action_handler.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_mediator.h"
@@ -31,7 +34,10 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,13 +52,23 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 }
 }  // namespace
 
+#if !TARGET_OS_MACCATALYST
 @interface PopupMenuCoordinator () <PopupMenuCommands,
-                                    PopupMenuPresenterDelegate>
+                                    PopupMenuPresenterDelegate,
+                                    UIPopoverPresentationControllerDelegate,
+                                    UISheetPresentationControllerDelegate>
+#else
+@interface PopupMenuCoordinator () <PopupMenuCommands,
+                                    PopupMenuPresenterDelegate,
+                                    UIPopoverPresentationControllerDelegate>
+#endif
 
 // Presenter for the popup menu, managing the animations.
 @property(nonatomic, strong) PopupMenuPresenter* presenter;
 // Mediator for the popup menu.
 @property(nonatomic, strong) PopupMenuMediator* mediator;
+// Mediator for the overflow menu
+@property(nonatomic, strong) OverflowMenuMediator* overflowMenuMediator;
 // Mediator to that alerts the main |mediator| when the web content area
 // is blocked by an overlay.
 @property(nonatomic, strong) BrowserContainerMediator* contentBlockerMediator;
@@ -136,6 +152,11 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 
 - (void)dismissPopupMenuAnimated:(BOOL)animated {
   [self.UIUpdater updateUIForMenuDismissed];
+  if (self.overflowMenuMediator) {
+    [self.baseViewController dismissViewControllerAnimated:animated
+                                                completion:nil];
+    self.overflowMenuMediator = nil;
+  }
   [self.presenter dismissAnimated:animated];
   self.presenter = nil;
   [self.mediator disconnect];
@@ -160,7 +181,7 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
     return;
 
   if (self.requestStartTime != 0) {
-    base::TimeDelta elapsed = base::TimeDelta::FromSecondsD(
+    base::TimeDelta elapsed = base::Seconds(
         [NSDate timeIntervalSinceReferenceDate] - self.requestStartTime);
     UMA_HISTOGRAM_TIMES("Toolbar.ShowToolsMenuResponsiveness", elapsed);
     // Reset the start time to ensure that whatever happens, we only record
@@ -172,6 +193,13 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 #pragma mark - PopupMenuPresenterDelegate
 
 - (void)popupMenuPresenterWillDismiss:(PopupMenuPresenter*)presenter {
+  [self dismissPopupMenuAnimated:NO];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerWillDismiss:
+    (UIPresentationController*)presentationController {
   [self dismissPopupMenuAnimated:NO];
 }
 
@@ -187,7 +215,7 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 // |guideName|.
 - (void)presentPopupOfType:(PopupMenuType)type
             fromNamedGuide:(GuideName*)guideName {
-  if (self.presenter)
+  if (self.presenter || self.overflowMenuMediator)
     [self dismissPopupMenuAnimated:YES];
 
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
@@ -250,6 +278,8 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
   OverlayPresenter* overlayPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
   self.mediator.webContentAreaOverlayPresenter = overlayPresenter;
+  self.mediator.URLLoadingBrowserAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
 
   self.contentBlockerMediator = [[BrowserContainerMediator alloc]
                 initWithWebStateList:self.browser->GetWebStateList()
@@ -266,6 +296,74 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
   self.actionHandler.navigationAgent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);
   tableViewController.delegate = self.actionHandler;
+
+#if !TARGET_OS_MACCATALYST
+  if (type == PopupMenuTypeToolsMenu && IsNewOverflowMenuEnabled()) {
+    if (@available(iOS 15, *)) {
+      self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
+      self.overflowMenuMediator.dispatcher =
+          static_cast<id<ApplicationCommands, BrowserCommands,
+                         FindInPageCommands, TextZoomCommands>>(
+              self.browser->GetCommandDispatcher());
+      self.overflowMenuMediator.webStateList = self.browser->GetWebStateList();
+      self.overflowMenuMediator.navigationAgent =
+          WebNavigationBrowserAgent::FromBrowser(self.browser);
+      self.overflowMenuMediator.baseViewController = self.baseViewController;
+      self.overflowMenuMediator.isIncognito =
+          self.browser->GetBrowserState()->IsOffTheRecord();
+      self.overflowMenuMediator.bookmarkModel =
+          ios::BookmarkModelFactory::GetForBrowserState(
+              self.browser->GetBrowserState());
+      self.overflowMenuMediator.prefService =
+          self.browser->GetBrowserState()->GetPrefs();
+      self.overflowMenuMediator.webContentAreaOverlayPresenter =
+          overlayPresenter;
+      self.overflowMenuMediator.browserPolicyConnector =
+          GetApplicationContext()->GetBrowserPolicyConnector();
+
+      // Replace the content blocker's consumer with the overflow menu mediator.
+      self.contentBlockerMediator.consumer = self.overflowMenuMediator;
+
+      UIViewController* menu = [OverflowMenuViewProvider
+          makeViewControllerWithModel:self.overflowMenuMediator
+                                          .overflowMenuModel];
+
+      NamedGuide* guide =
+          [NamedGuide guideWithName:guideName
+                               view:self.baseViewController.view];
+      menu.modalPresentationStyle = UIModalPresentationPopover;
+
+      UIPopoverPresentationController* popoverPresentationController =
+          menu.popoverPresentationController;
+      popoverPresentationController.sourceView = guide.constrainedView;
+      popoverPresentationController.sourceRect = guide.constrainedView.bounds;
+      popoverPresentationController.permittedArrowDirections =
+          UIPopoverArrowDirectionUp;
+      popoverPresentationController.delegate = self;
+      popoverPresentationController.backgroundColor =
+          [UIColor colorNamed:kBackgroundColor];
+
+      // The adaptive controller adjusts styles based on window size: sheet for
+      // slim windows on iPhone and iPad, popover for larger windows on ipad.
+      UISheetPresentationController* sheetPresentationController =
+          popoverPresentationController.adaptiveSheetPresentationController;
+      if (sheetPresentationController) {
+        sheetPresentationController.delegate = self;
+        sheetPresentationController.prefersGrabberVisible = YES;
+        sheetPresentationController.detents = @[
+          [UISheetPresentationControllerDetent mediumDetent],
+          [UISheetPresentationControllerDetent largeDetent]
+        ];
+      }
+
+      [self.UIUpdater updateUIForMenuDisplayed:type];
+      [self.baseViewController presentViewController:menu
+                                            animated:YES
+                                          completion:nil];
+      return;
+    }
+  }
+#endif
 
   self.presenter = [[PopupMenuPresenter alloc] init];
   self.presenter.baseViewController = self.baseViewController;

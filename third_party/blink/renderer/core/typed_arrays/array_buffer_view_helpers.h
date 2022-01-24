@@ -96,7 +96,7 @@ class MaybeShared {
   explicit MaybeShared(std::nullptr_t) {}
   // [AllowShared] array buffer view may be a view of non-shared array buffer,
   // so we don't check if the buffer is SharedArrayBuffer or not.
-  // https://heycam.github.io/webidl/#AllowShared
+  // https://webidl.spec.whatwg.org/#AllowShared
   explicit MaybeShared(T* typed_array) : typed_array_(typed_array) {}
   template <typename U>
   explicit MaybeShared(const Member<U>& other) : typed_array_(other.Get()) {}

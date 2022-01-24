@@ -59,6 +59,10 @@ class FrozenDataImpl : public FrozenFrameAggregator::Data,
 
   explicit FrozenDataImpl(const PageNodeImpl* page_node) {}
   explicit FrozenDataImpl(const ProcessNodeImpl* process_node) {}
+
+  FrozenDataImpl(const FrozenDataImpl&) = delete;
+  FrozenDataImpl& operator=(const FrozenDataImpl&) = delete;
+
   ~FrozenDataImpl() override = default;
 
   static StorageType* GetInternalStorage(PageNodeImpl* page_node) {
@@ -102,9 +106,6 @@ class FrozenDataImpl : public FrozenFrameAggregator::Data,
 
     return IsFrozen() != was_frozen;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrozenDataImpl);
 };
 
 bool IsFrozen(const FrameNodeImpl* frame_node) {

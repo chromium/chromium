@@ -16,6 +16,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/native_cursor.h"
@@ -56,6 +57,11 @@ DeskNameView::DeskNameView(DeskMiniView* mini_view) : mini_view_(mini_view) {
 
   SetCursorEnabled(true);
   SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks, but this focusable View needs to
+  // add a name so that the screen reader knows what to announce.
+  SetProperty(views::kSkipAccessibilityPaintChecks, true);
 }
 
 DeskNameView::~DeskNameView() = default;

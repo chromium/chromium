@@ -11,6 +11,7 @@
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
 #include "headless/public/headless_browser.h"
+#include "headless/public/headless_export.h"
 
 #if defined(HEADLESS_USE_PREFS)
 #include "components/prefs/pref_registry_simple.h"
@@ -29,11 +30,15 @@ namespace headless {
 
 class HeadlessBrowserImpl;
 
-class HeadlessBrowserMainParts : public content::BrowserMainParts {
+class HEADLESS_EXPORT HeadlessBrowserMainParts
+    : public content::BrowserMainParts {
  public:
-  explicit HeadlessBrowserMainParts(
-      const content::MainFunctionParams& parameters,
-      HeadlessBrowserImpl* browser);
+  explicit HeadlessBrowserMainParts(content::MainFunctionParams parameters,
+                                    HeadlessBrowserImpl* browser);
+
+  HeadlessBrowserMainParts(const HeadlessBrowserMainParts&) = delete;
+  HeadlessBrowserMainParts& operator=(const HeadlessBrowserMainParts&) = delete;
+
   ~HeadlessBrowserMainParts() override;
 
   // content::BrowserMainParts implementation:
@@ -51,6 +56,8 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
 
 #if defined(OS_MAC)
   device::GeolocationManager* GetGeolocationManager();
+  void SetGeolocationManagerForTesting(
+      std::unique_ptr<device::GeolocationManager> fake_geolocation_manager);
 #endif
 
 #if defined(HEADLESS_USE_PREFS)
@@ -67,7 +74,7 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
   void CreatePrefService();
 #endif
 
-  const content::MainFunctionParams parameters_;  // For running browser tests.
+  content::MainFunctionParams parameters_;  // For running browser tests.
   HeadlessBrowserImpl* browser_;  // Not owned.
 
 #if defined(HEADLESS_USE_POLICY)
@@ -78,14 +85,11 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<PrefService> local_state_;
 #endif
 
-  bool run_message_loop_ = true;
   bool devtools_http_handler_started_ = false;
   base::OnceClosure quit_main_message_loop_;
 #if defined(OS_MAC)
   std::unique_ptr<device::GeolocationManager> geolocation_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserMainParts);
 };
 
 }  // namespace headless

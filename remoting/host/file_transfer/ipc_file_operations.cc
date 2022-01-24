@@ -18,6 +18,10 @@ namespace remoting {
 class IpcFileOperations::IpcReader : public FileOperations::Reader {
  public:
   IpcReader(std::uint64_t file_id, base::WeakPtr<SharedState> shared_state);
+
+  IpcReader(const IpcReader&) = delete;
+  IpcReader& operator=(const IpcReader&) = delete;
+
   ~IpcReader() override;
 
   // FileOperations::Reader implementation.
@@ -36,13 +40,15 @@ class IpcFileOperations::IpcReader : public FileOperations::Reader {
   base::FilePath filename_;
   std::uint64_t size_ = 0;
   base::WeakPtr<SharedState> shared_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcReader);
 };
 
 class IpcFileOperations::IpcWriter : public FileOperations::Writer {
  public:
   IpcWriter(std::uint64_t file_id, base::WeakPtr<SharedState> shared_state);
+
+  IpcWriter(const IpcWriter&) = delete;
+  IpcWriter& operator=(const IpcWriter&) = delete;
+
   ~IpcWriter() override;
 
   // FileOperations::Writer implementation.
@@ -58,8 +64,6 @@ class IpcFileOperations::IpcWriter : public FileOperations::Writer {
   State state_ = kCreated;
   std::uint64_t file_id_;
   base::WeakPtr<SharedState> shared_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcWriter);
 };
 
 IpcFileOperations::IpcFileOperations(base::WeakPtr<SharedState> shared_state)

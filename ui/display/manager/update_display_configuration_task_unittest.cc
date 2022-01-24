@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/fake/fake_display_snapshot.h"
@@ -31,6 +30,12 @@ class TestSoftwareMirroringController
     : public DisplayConfigurator::SoftwareMirroringController {
  public:
   TestSoftwareMirroringController() : is_enabled_(false) {}
+
+  TestSoftwareMirroringController(const TestSoftwareMirroringController&) =
+      delete;
+  TestSoftwareMirroringController& operator=(
+      const TestSoftwareMirroringController&) = delete;
+
   ~TestSoftwareMirroringController() override = default;
 
   // DisplayConfigurator::SoftwareMirroringController:
@@ -40,8 +45,6 @@ class TestSoftwareMirroringController
 
  private:
   bool is_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSoftwareMirroringController);
 };
 
 class TestDisplayLayoutManager : public DisplayLayoutManager {
@@ -50,6 +53,10 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
       : should_mirror_(true),
         display_state_(MULTIPLE_DISPLAY_STATE_INVALID),
         power_state_(chromeos::DISPLAY_POWER_ALL_ON) {}
+
+  TestDisplayLayoutManager(const TestDisplayLayoutManager&) = delete;
+  TestDisplayLayoutManager& operator=(const TestDisplayLayoutManager&) = delete;
+
   ~TestDisplayLayoutManager() override {}
 
   void set_should_mirror(bool should_mirror) { should_mirror_ = should_mirror; }
@@ -140,8 +147,6 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
 
   std::unique_ptr<DisplayConfigurator::SoftwareMirroringController>
       software_mirroring_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDisplayLayoutManager);
 };
 
 class UpdateDisplayConfigurationTaskTest : public testing::Test {
@@ -171,6 +176,12 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
                        .SetBaseConnectorId(kSecondConnectorId)
                        .Build();
   }
+
+  UpdateDisplayConfigurationTaskTest(
+      const UpdateDisplayConfigurationTaskTest&) = delete;
+  UpdateDisplayConfigurationTaskTest& operator=(
+      const UpdateDisplayConfigurationTaskTest&) = delete;
+
   ~UpdateDisplayConfigurationTaskTest() override = default;
 
   void UpdateDisplays(size_t count) {
@@ -214,9 +225,6 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
   std::vector<DisplaySnapshot*> display_states_;
   MultipleDisplayState display_state_;
   chromeos::DisplayPowerState power_state_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UpdateDisplayConfigurationTaskTest);
 };
 
 }  // namespace

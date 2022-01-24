@@ -32,10 +32,8 @@ void MockBrowsingDataMediaLicenseHelper::DeleteMediaLicenseOrigin(
 void MockBrowsingDataMediaLicenseHelper::AddMediaLicenseSamples() {
   const GURL kOrigin1("https://media1/");
   const GURL kOrigin2("https://media2/");
-  const base::Time ten_days_ago =
-      base::Time::Now() - base::TimeDelta::FromDays(10);
-  const base::Time twenty_days_ago =
-      base::Time::Now() - base::TimeDelta::FromDays(20);
+  const base::Time ten_days_ago = base::Time::Now() - base::Days(10);
+  const base::Time twenty_days_ago = base::Time::Now() - base::Days(20);
 
   media_licenses_.push_back(MediaLicenseInfo(kOrigin1, 1000, ten_days_ago));
   media_licenses_.push_back(MediaLicenseInfo(kOrigin2, 50, twenty_days_ago));

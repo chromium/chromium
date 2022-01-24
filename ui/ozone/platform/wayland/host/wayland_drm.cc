@@ -16,13 +16,39 @@
 
 namespace ui {
 
+namespace {
+constexpr uint32_t kMinWlDrmVersion = 2;
+}
+
+// static
+constexpr char WaylandDrm::kInterfaceName[];
+
+// static
+void WaylandDrm::Instantiate(WaylandConnection* connection,
+                             wl_registry* registry,
+                             uint32_t name,
+                             const std::string& interface,
+                             uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
+  if (connection->drm_ || version < kMinWlDrmVersion)
+    return;
+
+  auto wl_drm = wl::Bind<struct wl_drm>(registry, name, version);
+  if (!wl_drm) {
+    LOG(ERROR) << "Failed to bind wl_drm";
+    return;
+  }
+  connection->drm_ = std::make_unique<WaylandDrm>(wl_drm.release(), connection);
+}
+
 WaylandDrm::WaylandDrm(wl_drm* drm, WaylandConnection* connection)
     : wl_drm_(drm), connection_(connection) {
-  static const wl_drm_listener kDrmListener = {
-      &WaylandDrm::Device,
-      &WaylandDrm::Format,
-      &WaylandDrm::Authenticated,
-      &WaylandDrm::Capabilities,
+  static constexpr wl_drm_listener kDrmListener = {
+      &Device,
+      &Format,
+      &Authenticated,
+      &Capabilities,
   };
   wl_drm_add_listener(wl_drm_.get(), &kDrmListener, this);
   connection_->ScheduleFlush();
@@ -38,7 +64,7 @@ bool WaylandDrm::SupportsDrmPrime() const {
   return authenticated_ && !!wl_drm_;
 }
 
-void WaylandDrm::CreateBuffer(base::ScopedFD fd,
+void WaylandDrm::CreateBuffer(const base::ScopedFD& fd,
                               const gfx::Size& size,
                               const std::vector<uint32_t>& strides,
                               const std::vector<uint32_t>& offsets,

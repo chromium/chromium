@@ -89,6 +89,10 @@ class TerminationObserver : public content::NotificationObserver {
     registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
                    content::NotificationService::AllSources());
   }
+
+  TerminationObserver(const TerminationObserver&) = delete;
+  TerminationObserver& operator=(const TerminationObserver&) = delete;
+
   ~TerminationObserver() override = default;
 
   // Whether app has been terminated - i.e. whether app termination notification
@@ -105,8 +109,6 @@ class TerminationObserver : public content::NotificationObserver {
 
   bool notification_seen_ = false;
   content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TerminationObserver);
 };
 
 }  // namespace
@@ -117,6 +119,9 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
       : verifier_format_override_(crx_file::VerifierFormat::CRX3) {
     device_state_.set_domain("domain.com");
   }
+
+  AutoLaunchedKioskTest(const AutoLaunchedKioskTest&) = delete;
+  AutoLaunchedKioskTest& operator=(const AutoLaunchedKioskTest&) = delete;
 
   ~AutoLaunchedKioskTest() override = default;
 
@@ -264,8 +269,6 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
 
   LoginManagerMixin login_manager_{&mixin_host_, {}};
-
-  DISALLOW_COPY_AND_ASSIGN(AutoLaunchedKioskTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskTest, PRE_CrashRestore) {
@@ -326,7 +329,7 @@ class AutoLaunchedKioskEphemeralUsersTest : public AutoLaunchedKioskTest {
   // AutoLaunchedKioskTest:
   void SetUpInProcessBrowserTestFixture() override {
     AutoLaunchedKioskTest::SetUpInProcessBrowserTestFixture();
-    std::unique_ptr<chromeos::ScopedDevicePolicyUpdate> device_policy_update =
+    std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
         device_state_.RequestDevicePolicyUpdate();
     device_policy_update->policy_payload()
         ->mutable_ephemeral_users_enabled()
@@ -348,12 +351,15 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskEphemeralUsersTest, Launches) {
 class AutoLaunchedNonKioskEnabledAppTest : public AutoLaunchedKioskTest {
  public:
   AutoLaunchedNonKioskEnabledAppTest() {}
+
+  AutoLaunchedNonKioskEnabledAppTest(
+      const AutoLaunchedNonKioskEnabledAppTest&) = delete;
+  AutoLaunchedNonKioskEnabledAppTest& operator=(
+      const AutoLaunchedNonKioskEnabledAppTest&) = delete;
+
   ~AutoLaunchedNonKioskEnabledAppTest() override = default;
 
   std::string GetTestAppId() const override { return kTestNonKioskEnabledApp; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutoLaunchedNonKioskEnabledAppTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AutoLaunchedNonKioskEnabledAppTest, NotLaunched) {
@@ -381,6 +387,10 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedNonKioskEnabledAppTest, NotLaunched) {
 class ManagementApiKioskTest : public AutoLaunchedKioskTest {
  public:
   ManagementApiKioskTest() {}
+
+  ManagementApiKioskTest(const ManagementApiKioskTest&) = delete;
+  ManagementApiKioskTest& operator=(const ManagementApiKioskTest&) = delete;
+
   ~ManagementApiKioskTest() override = default;
 
   // AutoLaunchedKioskTest:
@@ -390,9 +400,6 @@ class ManagementApiKioskTest : public AutoLaunchedKioskTest {
   std::vector<std::string> GetTestSecondaryAppIds() const override {
     return {kTestManagementApiSecondaryApp};
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManagementApiKioskTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ManagementApiKioskTest, ManagementApi) {

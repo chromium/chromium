@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 11: Uncaught TypeError: oElement.insertAdjacentText is not a function
+CONSOLE ERROR: Uncaught TypeError: oElement.insertAdjacentText is not a function
 crbug.com/658584: Clear floats when a ruby run's children are made inline. This test passes if it does not crash.
 
 AAA

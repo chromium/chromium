@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "components/web_cache/public/mojom/web_cache.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -22,6 +21,10 @@ namespace web_cache {
 class WebCacheImpl : public mojom::WebCache {
  public:
   WebCacheImpl();
+
+  WebCacheImpl(const WebCacheImpl&) = delete;
+  WebCacheImpl& operator=(const WebCacheImpl&) = delete;
+
   ~WebCacheImpl() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::WebCache> web_cache_receiver);
@@ -51,8 +54,6 @@ class WebCacheImpl : public mojom::WebCache {
   mojo::ReceiverSet<mojom::WebCache> receivers_;
 
   absl::optional<base::MemoryPressureListener> memory_pressure_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebCacheImpl);
 };
 
 }  // namespace web_cache

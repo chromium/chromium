@@ -17,7 +17,7 @@ class ViewsContentClientMainPartsDesktopAura
     : public ViewsContentClientMainPartsAura {
  public:
   ViewsContentClientMainPartsDesktopAura(
-      const content::MainFunctionParams& content_params,
+      content::MainFunctionParams content_params,
       ViewsContentClient* views_content_client);
   ViewsContentClientMainPartsDesktopAura(
       const ViewsContentClientMainPartsDesktopAura&) = delete;
@@ -34,10 +34,10 @@ class ViewsContentClientMainPartsDesktopAura
 };
 
 ViewsContentClientMainPartsDesktopAura::ViewsContentClientMainPartsDesktopAura(
-    const content::MainFunctionParams& content_params,
+    content::MainFunctionParams content_params,
     ViewsContentClient* views_content_client)
-    : ViewsContentClientMainPartsAura(content_params, views_content_client) {
-}
+    : ViewsContentClientMainPartsAura(std::move(content_params),
+                                      views_content_client) {}
 
 int ViewsContentClientMainPartsDesktopAura::PreMainMessageLoopRun() {
   ViewsContentClientMainPartsAura::PreMainMessageLoopRun();
@@ -59,11 +59,10 @@ void ViewsContentClientMainPartsDesktopAura::PostMainMessageLoopRun() {
 
 // static
 std::unique_ptr<ViewsContentClientMainParts>
-ViewsContentClientMainParts::Create(
-    const content::MainFunctionParams& content_params,
-    ViewsContentClient* views_content_client) {
+ViewsContentClientMainParts::Create(content::MainFunctionParams content_params,
+                                    ViewsContentClient* views_content_client) {
   return std::make_unique<ViewsContentClientMainPartsDesktopAura>(
-      content_params, views_content_client);
+      std::move(content_params), views_content_client);
 }
 
 }  // namespace ui

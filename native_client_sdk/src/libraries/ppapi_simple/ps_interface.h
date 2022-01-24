@@ -2,8 +2,8 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#ifndef PPAPI_SIMPLE_PS_INTERFACE_H_
-#define PPAPI_SIMPLE_PS_INTERFACE_H_
+#ifndef LIBRARIES_PPAPI_SIMPLE_PS_INTERFACE_H_
+#define LIBRARIES_PPAPI_SIMPLE_PS_INTERFACE_H_
 
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_resource.h"
@@ -75,4 +75,4 @@ void PSInterfaceInit();
 
 EXTERN_C_END
 
-#endif  /* PPAPI_SIMPLE_PS_INTERFACE_H */
+#endif  // LIBRARIES_PPAPI_SIMPLE_PS_INTERFACE_H_

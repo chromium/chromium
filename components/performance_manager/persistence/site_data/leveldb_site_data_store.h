@@ -8,10 +8,9 @@
 #include "base/auto_reset.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/persistence/site_data/site_data_store.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
@@ -29,6 +28,9 @@ namespace performance_manager {
 class LevelDBSiteDataStore : public SiteDataStore {
  public:
   explicit LevelDBSiteDataStore(const base::FilePath& db_path);
+
+  LevelDBSiteDataStore(const LevelDBSiteDataStore&) = delete;
+  LevelDBSiteDataStore& operator=(const LevelDBSiteDataStore&) = delete;
 
   ~LevelDBSiteDataStore() override;
 
@@ -72,8 +74,6 @@ class LevelDBSiteDataStore : public SiteDataStore {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LevelDBSiteDataStore);
 };
 
 }  // namespace performance_manager

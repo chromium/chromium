@@ -1,6 +1,0 @@
-include_rules = [
-  "+chromeos/ime",
-  "+chromeos/services/ime/public/mojom",
-  "+ui/chromeos/strings",
-  "+ui/ozone/public",
-]

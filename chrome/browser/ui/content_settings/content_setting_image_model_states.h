@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_IMAGE_MODEL_STATES_H_
 #define CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_IMAGE_MODEL_STATES_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -17,6 +16,11 @@ using ImageType = ContentSettingImageModel::ImageType;
 class ContentSettingImageModelStates
     : public content::WebContentsUserData<ContentSettingImageModelStates> {
  public:
+  ContentSettingImageModelStates(const ContentSettingImageModelStates&) =
+      delete;
+  ContentSettingImageModelStates& operator=(
+      const ContentSettingImageModelStates&) = delete;
+
   ~ContentSettingImageModelStates() override;
 
   static ContentSettingImageModelStates* Get(content::WebContents* contents);
@@ -60,8 +64,6 @@ class ContentSettingImageModelStates
   bool promo_was_shown_[static_cast<int>(ImageType::NUM_IMAGE_TYPES)] = {};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingImageModelStates);
 };
 
 #endif  // CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_IMAGE_MODEL_STATES_H_

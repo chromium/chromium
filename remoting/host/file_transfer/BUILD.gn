@@ -41,6 +41,7 @@ source_set("file_transfer") {
       "//ipc:ipc",
       "//remoting/host:base",
       "//remoting/host:common",
+      "//remoting/host/win",
     ]
   } else {
     sources += [ "get_desktop_directory.cc" ]

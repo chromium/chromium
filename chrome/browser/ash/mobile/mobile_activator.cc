@@ -249,9 +249,8 @@ void MobileActivator::HandlePortalLoaded(bool success) {
 }
 
 void MobileActivator::StartOTASPTimer() {
-  state_duration_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kOTASPRetryDelay), this,
-      &MobileActivator::HandleOTASPTimeout);
+  state_duration_timer_.Start(FROM_HERE, base::Milliseconds(kOTASPRetryDelay),
+                              this, &MobileActivator::HandleOTASPTimeout);
 }
 
 void MobileActivator::StartActivation() {
@@ -420,14 +419,14 @@ void MobileActivator::ForceReconnect(const NetworkState* network,
       network->path(), base::DoNothing(), network_handler::ErrorCallback());
   // Keep trying to connect until told otherwise.
   continue_reconnect_timer_.Stop();
-  continue_reconnect_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kReconnectDelayMS), this,
-      &MobileActivator::ContinueConnecting);
+  continue_reconnect_timer_.Start(FROM_HERE,
+                                  base::Milliseconds(kReconnectDelayMS), this,
+                                  &MobileActivator::ContinueConnecting);
   // If we don't ever connect again, we're going to call this a failure.
   reconnect_timeout_timer_.Stop();
-  reconnect_timeout_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kMaxReconnectTime), this,
-      &MobileActivator::ReconnectTimedOut);
+  reconnect_timeout_timer_.Start(FROM_HERE,
+                                 base::Milliseconds(kMaxReconnectTime), this,
+                                 &MobileActivator::ReconnectTimedOut);
 }
 
 void MobileActivator::ReconnectTimedOut() {
@@ -803,7 +802,7 @@ void MobileActivator::ChangeState(const NetworkState* network,
           FROM_HERE,
           base::BindOnce(&MobileActivator::RetryOTASP,
                          weak_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kOTASPRetryDelay));
+          base::Milliseconds(kOTASPRetryDelay));
       break;
     }
     case PlanActivationState::kStartOTASP:

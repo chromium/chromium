@@ -11,6 +11,7 @@
 #import "base/ios/crb_protocol_observers.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/testing/earl_grey/app_launch_manager_app_interface.h"
+#import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/coverage_utils.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOServiceException.h"
@@ -18,8 +19,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(AppLaunchManagerAppInterface)
 
 namespace {
 // Returns the list of extra app launch args from test command line args.
@@ -137,7 +136,8 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
       forceRestart || !appIsRunning || appPIDChanged ||
       !LaunchArgumentsAreEqual(arguments, self.currentLaunchArgs);
   if (!appNeedsLaunching) {
-    [self.runningApplication activate];
+    XCTAssertTrue(self.runningApplication.state ==
+                  XCUIApplicationStateRunningForeground);
     return;
   }
 
@@ -150,6 +150,13 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
     }
 
     [self.runningApplication terminate];
+
+    // Can't use EG conditionals here since the app is terminated.
+    XCTAssertTrue([self.runningApplication
+        waitForState:XCUIApplicationStateNotRunning
+             timeout:15]);
+    XCTAssertTrue(self.runningApplication.state ==
+                  XCUIApplicationStateNotRunning);
   }
 
   XCUIApplication* application = [[XCUIApplication alloc] init];
@@ -219,6 +226,9 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
 
   [self ensureAppLaunchedWithArgs:arguments
                    relaunchPolicy:configuration.relaunch_policy];
+
+  if (@available(iOS 14, *))
+    [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
 }
 
 - (void)ensureAppLaunchedWithFeaturesEnabled:

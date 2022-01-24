@@ -21,6 +21,10 @@ namespace audio {
 class LogAdapter : public media::AudioLog {
  public:
   explicit LogAdapter(mojo::PendingRemote<media::mojom::AudioLog> audio_log);
+
+  LogAdapter(const LogAdapter&) = delete;
+  LogAdapter& operator=(const LogAdapter&) = delete;
+
   ~LogAdapter() override;
 
   // media::AudioLog implementation.
@@ -36,8 +40,6 @@ class LogAdapter : public media::AudioLog {
 
  private:
   mojo::Remote<media::mojom::AudioLog> audio_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogAdapter);
 };
 
 }  // namespace audio

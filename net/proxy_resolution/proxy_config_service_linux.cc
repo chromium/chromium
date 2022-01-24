@@ -22,17 +22,18 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/nix/xdg_util.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/timer/timer.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 
 #if defined(USE_GIO)
 #include <gio/gio.h>
@@ -127,7 +128,7 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromEnvVarForScheme(
 
   env_value = FixupProxyHostScheme(scheme, env_value);
   ProxyServer proxy_server =
-      ProxyServer::FromURI(env_value, ProxyServer::SCHEME_HTTP);
+      ProxyUriToProxyServer(env_value, ProxyServer::SCHEME_HTTP);
   if (proxy_server.is_valid() && !proxy_server.is_direct()) {
     *result_server = proxy_server;
     return true;
@@ -244,6 +245,10 @@ class SettingGetterImplGSettings
         socks_client_(nullptr),
         notify_delegate_(nullptr),
         debounce_timer_(new base::OneShotTimer()) {}
+
+  SettingGetterImplGSettings(const SettingGetterImplGSettings&) = delete;
+  SettingGetterImplGSettings& operator=(const SettingGetterImplGSettings&) =
+      delete;
 
   ~SettingGetterImplGSettings() override {
     // client_ should have been released before now, from
@@ -452,9 +457,9 @@ class SettingGetterImplGSettings
     // We don't use Reset() because the timer may not yet be running.
     // (In that case Stop() is a no-op.)
     debounce_timer_->Stop();
-    debounce_timer_->Start(FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kDebounceTimeoutMilliseconds),
-        this, &SettingGetterImplGSettings::OnDebouncedNotification);
+    debounce_timer_->Start(
+        FROM_HERE, base::Milliseconds(kDebounceTimeoutMilliseconds), this,
+        &SettingGetterImplGSettings::OnDebouncedNotification);
   }
 
   // gsettings notification callback, dispatched on the default glib main loop.
@@ -479,8 +484,6 @@ class SettingGetterImplGSettings
   // be the UI thread and all our methods should be called on this
   // thread. Only for assertions.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingGetterImplGSettings);
 };
 
 bool SettingGetterImplGSettings::CheckVersion(
@@ -585,6 +588,9 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       }
     }
   }
+
+  SettingGetterImplKDE(const SettingGetterImplKDE&) = delete;
+  SettingGetterImplKDE& operator=(const SettingGetterImplKDE&) = delete;
 
   ~SettingGetterImplKDE() override {
     // inotify_fd_ should have been closed before now, from
@@ -971,8 +977,8 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
       // We don't use Reset() because the timer may not yet be running.
       // (In that case Stop() is a no-op.)
       debounce_timer_->Stop();
-      debounce_timer_->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(
-          kDebounceTimeoutMilliseconds), this,
+      debounce_timer_->Start(
+          FROM_HERE, base::Milliseconds(kDebounceTimeoutMilliseconds), this,
           &SettingGetterImplKDE::OnDebouncedNotification);
     }
   }
@@ -1001,8 +1007,6 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
   // Task runner for doing blocking file IO on, as well as handling inotify
   // events on.
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingGetterImplKDE);
 };
 
 }  // namespace
@@ -1031,8 +1035,8 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromSettings(
   ProxyServer::Scheme scheme = (host_key == SettingGetter::PROXY_SOCKS_HOST) ?
       ProxyServer::SCHEME_SOCKS5 : ProxyServer::SCHEME_HTTP;
   host = FixupProxyHostScheme(scheme, host);
-  ProxyServer proxy_server = ProxyServer::FromURI(host,
-                                                  ProxyServer::SCHEME_HTTP);
+  ProxyServer proxy_server =
+      ProxyUriToProxyServer(host, ProxyServer::SCHEME_HTTP);
   if (proxy_server.is_valid()) {
     *result_server = proxy_server;
     return true;
@@ -1043,6 +1047,7 @@ bool ProxyConfigServiceLinux::Delegate::GetProxyFromSettings(
 absl::optional<ProxyConfigWithAnnotation>
 ProxyConfigServiceLinux::Delegate::GetConfigFromSettings() {
   ProxyConfig config;
+  config.set_from_system(true);
 
   std::string mode;
   if (!setting_getter_->GetString(SettingGetter::PROXY_MODE, &mode)) {

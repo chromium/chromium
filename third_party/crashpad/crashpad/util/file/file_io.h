@@ -164,6 +164,9 @@ constexpr char kNativeWriteFunctionName[] = "WriteFile";
 //! FileReaderInterface::ReadExactly() instead.
 class ReadExactlyInternal {
  public:
+  ReadExactlyInternal(const ReadExactlyInternal&) = delete;
+  ReadExactlyInternal& operator=(const ReadExactlyInternal&) = delete;
+
   //! \brief Calls Read(), retrying following a short read, ensuring that
   //!     exactly \a size bytes are read.
   //!
@@ -182,8 +185,6 @@ class ReadExactlyInternal {
   //! \return The number of bytes read and placed into \a buffer, or `-1` on
   //!     error. When returning `-1`, if \a can_log is `true`, logs a message.
   virtual FileOperationResult Read(void* buffer, size_t size, bool can_log) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadExactlyInternal);
 };
 
 //! \brief The internal implementation of WriteFile() and its wrappers.
@@ -194,6 +195,9 @@ class ReadExactlyInternal {
 //! FileWriterInterface::Write() instead.
 class WriteAllInternal {
  public:
+  WriteAllInternal(const WriteAllInternal&) = delete;
+  WriteAllInternal& operator=(const WriteAllInternal&) = delete;
+
   //! \brief Calls Write(), retrying following a short write, ensuring that
   //!     exactly \a size bytes are written.
   //!
@@ -210,8 +214,6 @@ class WriteAllInternal {
   //!
   //! \return The number of bytes written from \a buffer, or `-1` on error.
   virtual FileOperationResult Write(const void* buffer, size_t size) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WriteAllInternal);
 };
 
 //! \brief Writes to a file, retrying when interrupted on POSIX.

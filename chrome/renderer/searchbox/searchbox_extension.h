@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/color_palette.h"
 
 namespace blink {
@@ -23,6 +22,10 @@ constexpr SkColor kNTPDarkIconColor = gfx::kGoogleGrey900;
 // https://www.chromium.org/embeddedsearch.
 class SearchBoxExtension {
  public:
+  SearchBoxExtension() = delete;
+  SearchBoxExtension(const SearchBoxExtension&) = delete;
+  SearchBoxExtension& operator=(const SearchBoxExtension&) = delete;
+
   static void Install(blink::WebLocalFrame* frame);
 
   // Helpers to dispatch Javascript events.
@@ -35,10 +38,6 @@ class SearchBoxExtension {
   static void DispatchKeyCaptureChange(blink::WebLocalFrame* frame);
   static void DispatchMostVisitedChanged(blink::WebLocalFrame* frame);
   static void DispatchThemeChange(blink::WebLocalFrame* frame);
-  static void DispatchLocalBackgroundSelected(blink::WebLocalFrame* frame);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SearchBoxExtension);
 };
 
 #endif  // CHROME_RENDERER_SEARCHBOX_SEARCHBOX_EXTENSION_H_

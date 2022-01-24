@@ -6,7 +6,6 @@
 #define COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
 
 #include "ash/components/audio/cras_audio_handler.h"
-#include "base/macros.h"
 #include "components/arc/mojom/audio.mojom.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -32,6 +31,10 @@ class ArcAudioBridge : public KeyedService,
 
   ArcAudioBridge(content::BrowserContext* context,
                  ArcBridgeService* bridge_service);
+
+  ArcAudioBridge(const ArcAudioBridge&) = delete;
+  ArcAudioBridge& operator=(const ArcAudioBridge&) = delete;
+
   ~ArcAudioBridge() override;
 
   // ConnectionObserver<mojom::AudioInstance> overrides.
@@ -61,8 +64,6 @@ class ArcAudioBridge : public KeyedService,
   // Avoids sending requests when the instance is unavailable.
   // TODO(crbug.com/549195): Remove once the root cause is fixed.
   bool available_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAudioBridge);
 };
 
 }  // namespace arc

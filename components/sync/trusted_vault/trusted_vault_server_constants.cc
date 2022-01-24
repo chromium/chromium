@@ -22,6 +22,9 @@ const char kSyncSecurityDomainName[] = "users/me/securitydomains/chromesync";
 const char kSecurityDomainMemberNamePrefix[] = "users/me/members/";
 const char kJoinSecurityDomainsURLPath[] =
     "users/me/securitydomains/chromesync:join";
+const char kJoinSecurityDomainsErrorDetailTypeURL[] =
+    "type.googleapis.com/"
+    "google.internal.identity.securitydomain.v1.JoinSecurityDomainErrorDetail";
 extern const char kGetSecurityDomainURLPathAndQuery[] =
     "users/me/securitydomains/chromesync?view=2";
 

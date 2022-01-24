@@ -39,6 +39,9 @@ namespace {
 // System tray shows a limited number of bluetooth devices.
 const int kMaximumDevicesShown = 50;
 
+// Client name for logging in BLE scanning.
+constexpr char kScanClientName[] = "Ash System Tray";
+
 device::ConnectionFailureReason GetConnectionFailureReason(
     device::BluetoothDevice::ConnectErrorCode error_code) {
   switch (error_code) {
@@ -115,9 +118,12 @@ BluetoothDeviceInfoPtr GetBluetoothDeviceInfo(device::BluetoothDevice* device) {
   info->name = device->GetName();
   info->is_paired = device->IsPaired();
   info->is_blocked_by_policy = device->IsBlockedByPolicy();
-  if (device->battery_percentage()) {
+
+  absl::optional<device::BluetoothDevice::BatteryInfo> battery_info =
+      device->GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
+  if (battery_info && battery_info->percentage.has_value()) {
     info->battery_info =
-        BluetoothDeviceBatteryInfo::New(device->battery_percentage().value());
+        BluetoothDeviceBatteryInfo::New(battery_info->percentage.value());
   }
 
   switch (device->GetDeviceType()) {
@@ -212,6 +218,7 @@ void TrayBluetoothHelperLegacy::StartBluetoothDiscovering() {
   VLOG(1) << "Requesting new Bluetooth device discovery session.";
   should_run_discovery_ = true;
   adapter_->StartDiscoverySession(
+      kScanClientName,
       base::BindOnce(&TrayBluetoothHelperLegacy::OnStartDiscoverySession,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&BluetoothSetDiscoveringError));
@@ -282,8 +289,7 @@ void TrayBluetoothHelperLegacy::ConnectToBluetoothDevice(
 
   // Show pairing dialog for the unpaired device; this kicks off pairing.
   Shell::Get()->system_tray_model()->client()->ShowBluetoothPairingDialog(
-      device->GetAddress(), device->GetNameForDisplay(), device->IsPaired(),
-      device->IsConnected());
+      device->GetAddress());
 }
 
 BluetoothSystem::State TrayBluetoothHelperLegacy::GetBluetoothState() {

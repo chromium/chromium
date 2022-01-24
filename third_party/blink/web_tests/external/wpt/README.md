@@ -95,12 +95,6 @@ Publication
 The master branch is automatically synced to [wpt.live](https://wpt.live/) and
 [w3c-test.org](https://w3c-test.org/).
 
-Pull requests are
-[automatically mirrored](https://w3c-test.org/submissions/) except those
-that modify sensitive resources (such as `.py`). The latter require
-someone with merge access to comment with "LGTM" or "w3c-test:mirror" to
-indicate the pull request has been checked.
-
 Contributing
 ============
 

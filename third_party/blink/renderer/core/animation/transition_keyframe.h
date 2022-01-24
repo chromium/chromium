@@ -66,6 +66,7 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
 
     bool IsNeutral() const final { return false; }
     bool IsRevert() const final { return false; }
+    bool IsRevertLayer() const final { return false; }
     Keyframe::PropertySpecificKeyframe* NeutralKeyframe(
         double offset,
         scoped_refptr<TimingFunction> easing) const final {

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 75 tests; 74 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 58 tests; 57 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS PaymentRequest interface: existence and properties of interface object
@@ -58,22 +58,5 @@ PASS PaymentRequestUpdateEvent must be primary interface of new PaymentRequestUp
 PASS Stringification of new PaymentRequestUpdateEvent("paymentrequestupdate")
 PASS PaymentRequestUpdateEvent interface: new PaymentRequestUpdateEvent("paymentrequestupdate") must inherit property "updateWith(Promise<PaymentDetailsUpdate>)" with the proper type
 PASS PaymentRequestUpdateEvent interface: calling updateWith(Promise<PaymentDetailsUpdate>) on new PaymentRequestUpdateEvent("paymentrequestupdate") with too few arguments must throw TypeError
-PASS PaymentAddress interface: existence and properties of interface object
-PASS PaymentAddress interface object length
-PASS PaymentAddress interface object name
-PASS PaymentAddress interface: existence and properties of interface prototype object
-PASS PaymentAddress interface: existence and properties of interface prototype object's "constructor" property
-PASS PaymentAddress interface: existence and properties of interface prototype object's @@unscopables property
-PASS PaymentAddress interface: operation toJSON()
-PASS PaymentAddress interface: attribute city
-PASS PaymentAddress interface: attribute country
-PASS PaymentAddress interface: attribute dependentLocality
-PASS PaymentAddress interface: attribute organization
-PASS PaymentAddress interface: attribute phone
-PASS PaymentAddress interface: attribute postalCode
-PASS PaymentAddress interface: attribute recipient
-PASS PaymentAddress interface: attribute region
-PASS PaymentAddress interface: attribute sortingCode
-PASS PaymentAddress interface: attribute addressLine
 Harness: the test ran to completion.
 

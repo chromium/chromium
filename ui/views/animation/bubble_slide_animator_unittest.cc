@@ -20,8 +20,7 @@ namespace views {
 
 namespace {
 
-constexpr base::TimeDelta kSlideDuration =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kSlideDuration = base::Milliseconds(1000);
 constexpr base::TimeDelta kHalfSlideDuration = kSlideDuration / 2;
 
 // This will be the size of the three horizontally-oriented anchor views as well

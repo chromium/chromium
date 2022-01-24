@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/system/bluetooth/bluetooth_detailed_view.h"
+#include "ash/system/bluetooth/bluetooth_detailed_view_legacy.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -21,8 +21,7 @@ namespace ash {
 
 namespace {
 
-const base::TimeDelta kUpdateFrequencyMs =
-    base::TimeDelta::FromMilliseconds(1000);
+const base::TimeDelta kUpdateFrequencyMs = base::Milliseconds(1000);
 
 }  // namespace
 
@@ -116,16 +115,16 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
 };
 
 TEST_F(UnifiedBluetoothDetailedViewControllerTest, UpdateScrollListTest) {
-  tray::BluetoothDetailedView* bluetooth_detailed_view =
-      static_cast<tray::BluetoothDetailedView*>(
-          bt_detailed_view_controller()->CreateView());
+  std::unique_ptr<tray::BluetoothDetailedViewLegacy> bluetooth_detailed_view =
+      base::WrapUnique(static_cast<tray::BluetoothDetailedViewLegacy*>(
+          bt_detailed_view_controller()->CreateView()));
   AddTestDevice();
   task_environment()->FastForwardBy(kUpdateFrequencyMs);
 
   // Verify that default devices simulated by FakeBluetoothDeviceClient are
   // displayed.
   const views::View* scroll_content = bluetooth_detailed_view->GetViewByID(
-      tray::BluetoothDetailedView::kScrollContentID);
+      tray::BluetoothDetailedViewLegacy::kScrollContentID);
   const size_t scroll_content_size = scroll_content->children().size();
   // Expect at least 1 paired device, 1 unpaired device and 2 headers.
   EXPECT_GE(scroll_content_size, 4u);
@@ -149,13 +148,13 @@ TEST_F(UnifiedBluetoothDetailedViewControllerTest,
   adapter_client()->SetDiscoverySimulation(false);
   RemoveAllDevices();
 
-  tray::BluetoothDetailedView* bluetooth_detailed_view =
-      static_cast<tray::BluetoothDetailedView*>(
-          bt_detailed_view_controller()->CreateView());
+  std::unique_ptr<tray::BluetoothDetailedViewLegacy> bluetooth_detailed_view =
+      base::WrapUnique(static_cast<tray::BluetoothDetailedViewLegacy*>(
+          bt_detailed_view_controller()->CreateView()));
   task_environment()->FastForwardBy(kUpdateFrequencyMs);
 
   const views::View* scroll_content = bluetooth_detailed_view->GetViewByID(
-      tray::BluetoothDetailedView::kScrollContentID);
+      tray::BluetoothDetailedViewLegacy::kScrollContentID);
   // Only the scanning message should be displayed.
   EXPECT_EQ(1u, scroll_content->children().size());
 

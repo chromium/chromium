@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/consent_auditor/consent_sync_bridge.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -27,6 +26,10 @@ class ConsentSyncBridgeImpl : public ConsentSyncBridge,
   ConsentSyncBridgeImpl(
       syncer::OnceModelTypeStoreFactory store_factory,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  ConsentSyncBridgeImpl(const ConsentSyncBridgeImpl&) = delete;
+  ConsentSyncBridgeImpl& operator=(const ConsentSyncBridgeImpl&) = delete;
+
   ~ConsentSyncBridgeImpl() override;
 
   // ModelTypeSyncBridge implementation.
@@ -95,8 +98,6 @@ class ConsentSyncBridgeImpl : public ConsentSyncBridge,
       deferred_consents_while_initializing_;
 
   base::WeakPtrFactory<ConsentSyncBridgeImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConsentSyncBridgeImpl);
 };
 
 }  // namespace consent_auditor

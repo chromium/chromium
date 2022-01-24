@@ -10,15 +10,16 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/enterprise/arc_data_remove_requested_pref_handler.h"
@@ -45,9 +46,10 @@ constexpr char kPrevious[] = "previous";
 constexpr char kLast[] = "last";
 constexpr char kBlockedUiReboot[] = "blocked_ui_reboot";
 constexpr char kStarted[] = "started";
+constexpr char kTpmVersion[] = "tpm_version";
 
 // Snapshot muss automatically expire in 30 days if not updated.
-constexpr base::TimeDelta kSnapshotMaxLifetime = base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kSnapshotMaxLifetime = base::Days(30);
 
 // Returns true if the Chrome session is restored after crash.
 bool IsRestoredSession() {
@@ -109,10 +111,11 @@ std::string GetMgsCryptohomeAccountId() {
 
 const char kHeadless[] = "headless";
 const char kRestartFreconEnv[] = "RESTART_FRECON=1";
+const int kTpm2Version = 0x322e3000;
 
 bool ArcDataSnapshotdManager::is_snapshot_enabled_for_testing_ = false;
 
-// This class is owned by ChromeBrowserMainPartsChromeos.
+// This class is owned by `ChromeBrowserMainPartsAsh`.
 static ArcDataSnapshotdManager* g_arc_data_snapshotd_manager = nullptr;
 
 ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(bool is_last)
@@ -134,8 +137,8 @@ ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(const base::Value* value,
   }
   {
     auto* found = dict->FindPath(kCreationDate);
-    if (found && util::ValueToTime(found).has_value()) {
-      auto parsed_time = util::ValueToTime(found).value();
+    if (found && base::ValueToTime(found).has_value()) {
+      auto parsed_time = base::ValueToTime(found).value();
       UpdateCreationDate(parsed_time);
     }
   }
@@ -172,7 +175,7 @@ void ArcDataSnapshotdManager::SnapshotInfo::Sync(base::Value* dict) {
 
   base::DictionaryValue value;
   value.SetStringKey(kOsVersion, os_version_);
-  value.SetKey(kCreationDate, util::TimeToValue(creation_date_));
+  value.SetKey(kCreationDate, base::TimeToValue(creation_date_));
   value.SetBoolKey(kVerified, verified_);
   value.SetBoolKey(kUpdated, updated_);
 
@@ -247,11 +250,12 @@ ArcDataSnapshotdManager::Snapshot::CreateForTesting(
     PrefService* local_state,
     bool blocked_ui_mode,
     bool started,
+    absl::optional<int> tpm_version,
     std::unique_ptr<SnapshotInfo> last_snapshot,
     std::unique_ptr<SnapshotInfo> previous_snapshot) {
   return base::WrapUnique(new ArcDataSnapshotdManager::Snapshot(
-      local_state, blocked_ui_mode, started, std::move(last_snapshot),
-      std::move(previous_snapshot)));
+      local_state, blocked_ui_mode, started, tpm_version,
+      std::move(last_snapshot), std::move(previous_snapshot)));
 }
 
 void ArcDataSnapshotdManager::Snapshot::Parse() {
@@ -279,6 +283,11 @@ void ArcDataSnapshotdManager::Snapshot::Parse() {
     if (found.has_value())
       started_ = found.value();
   }
+  {
+    auto found = dict->FindIntPath(kTpmVersion);
+    if (found.has_value())
+      tpm_version_ = found.value();
+  }
 }
 
 void ArcDataSnapshotdManager::Snapshot::Sync() {
@@ -289,6 +298,9 @@ void ArcDataSnapshotdManager::Snapshot::Sync() {
     last_snapshot_->Sync(&dict);
   dict.SetBoolKey(kBlockedUiReboot, blocked_ui_mode_);
   dict.SetBoolKey(kStarted, started_);
+  if (tpm_version_.has_value())
+    dict.SetIntKey(kTpmVersion, tpm_version_.value());
+
   local_state_->Set(arc::prefs::kArcSnapshotInfo, std::move(dict));
 }
 
@@ -343,11 +355,13 @@ ArcDataSnapshotdManager::Snapshot::Snapshot(
     PrefService* local_state,
     bool blocked_ui_mode,
     bool started,
+    absl::optional<int> tpm_version,
     std::unique_ptr<SnapshotInfo> last_snapshot,
     std::unique_ptr<SnapshotInfo> previous_snapshot)
     : local_state_(local_state),
       blocked_ui_mode_(blocked_ui_mode),
       started_(started),
+      tpm_version_(tpm_version),
       last_snapshot_(std::move(last_snapshot)),
       previous_snapshot_(std::move(previous_snapshot)) {
   DCHECK(local_state_);
@@ -640,6 +654,8 @@ void ArcDataSnapshotdManager::OnSnapshotUpdateEndTimeChanged() {
 }
 
 bool ArcDataSnapshotdManager::IsSnapshotEnabled() {
+  if (!snapshot_.is_tpm2())
+    return false;
   if (ArcDataSnapshotdManager::is_snapshot_enabled_for_testing())
     return true;
   return policy_service_.is_snapshot_enabled();
@@ -649,6 +665,18 @@ void ArcDataSnapshotdManager::OnLocalStateInitialized(bool initialized) {
   if (!initialized)
     LOG(ERROR) << "Local State intiialization failed.";
 
+  if (!snapshot_.is_tpm_initialized()) {
+    DCHECK(chromeos::TpmManagerClient::Get());
+    chromeos::TpmManagerClient::Get()->GetVersionInfo(
+        ::tpm_manager::GetVersionInfoRequest(),
+        base::BindOnce(&ArcDataSnapshotdManager::OnGetTpmVersion,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+  CompleteInitialization();
+}
+
+void ArcDataSnapshotdManager::CompleteInitialization() {
   if (snapshot_.is_blocked_ui_mode() && IsFirstExecAfterBoot() &&
       IsSnapshotEnabled()) {
     if (!IsInHeadlessMode()) {
@@ -660,6 +688,19 @@ void ArcDataSnapshotdManager::OnLocalStateInitialized(bool initialized) {
     state_ = State::kBlockedUi;
   }
   DoClearSnapshots();
+}
+
+void ArcDataSnapshotdManager::OnGetTpmVersion(
+    const ::tpm_manager::GetVersionInfoReply& reply) {
+  if (reply.status() == ::tpm_manager::STATUS_SUCCESS && reply.has_family()) {
+    snapshot_.set_tpm_version(reply.family());
+  } else {
+    LOG(WARNING) << "Failed to get tpm version; status: " << reply.status();
+  }
+  if (!snapshot_.is_tpm2())
+    snapshot_.set_blocked_ui_mode(false);
+  snapshot_.Sync();
+  CompleteInitialization();
 }
 
 void ArcDataSnapshotdManager::StopDaemon(base::OnceClosure callback) {

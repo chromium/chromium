@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/process/launch.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -20,6 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/perfetto/producer_host.h"
 #include "services/tracing/perfetto/system_test_utils.h"
@@ -76,14 +78,12 @@ class ClearAndRestoreSystemProducerScope {
   ~ClearAndRestoreSystemProducerScope() {
     base::RunLoop destroy_loop;
     PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindLambdaForTesting(
-            [this, &destroy_loop]() {
-              PerfettoTracedProcess::Get()
-                  ->SetSystemProducerForTesting(std::move(saved_producer_))
-                  .reset();
-              destroy_loop.Quit();
-            }));
+        FROM_HERE, base::BindLambdaForTesting([this, &destroy_loop]() {
+          PerfettoTracedProcess::Get()
+              ->SetSystemProducerForTesting(std::move(saved_producer_))
+              .reset();
+          destroy_loop.Quit();
+        }));
     destroy_loop.Run();
   }
 
@@ -709,9 +709,16 @@ TEST_F(SystemPerfettoTest, MultipleSystemAndLocalSourcesLocalFirst) {
   PerfettoProducer::DeleteSoonForTesting(std::move(system_producer));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SystemTraceWhileLocalStartupTracing \
+  DISABLED_SystemTraceWhileLocalStartupTracing
+#else
+#define MAYBE_SystemTraceWhileLocalStartupTracing \
+  SystemTraceWhileLocalStartupTracing
+#endif
 // Attempts to start a system trace while a local startup trace is active. The
 // system trace should only be started after the local trace is completed.
-TEST_F(SystemPerfettoTest, SystemTraceWhileLocalStartupTracing) {
+TEST_F(SystemPerfettoTest, MAYBE_SystemTraceWhileLocalStartupTracing) {
   // We're using mojom::kTraceEventDataSourceName for the local producer to
   // emulate starting the real TraceEventDataSource which owns startup tracing.
   auto mock_trace_event_ds = TestDataSource::CreateAndRegisterDataSource(
@@ -765,8 +772,8 @@ TEST_F(SystemPerfettoTest, SystemTraceWhileLocalStartupTracing) {
         }
       }));
   auto local_producer_host = std::make_unique<MockProducerHost>(
-      GetPerfettoProducerName(), mojom::kTraceEventDataSourceName, local_service(),
-      **local_producer);
+      GetPerfettoProducerName(), mojom::kTraceEventDataSourceName,
+      local_service(), **local_producer);
   local_data_source_enabled_runloop.Run();
   local_consumer->WaitForAllDataSourcesStarted();
 
@@ -813,7 +820,8 @@ TEST_F(SystemPerfettoTest, SystemTraceWhileLocalStartupTracing) {
 }
 
 #if defined(OS_ANDROID)
-TEST_F(SystemPerfettoTest, SystemToLowAPILevel) {
+// Failing on android-pie-arm64-dbg, see crbug.com/1262132.
+TEST_F(SystemPerfettoTest, DISABLED_SystemToLowAPILevel) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P) {
     LOG(INFO) << "Skipping SystemToLowAPILevel test, this phone supports the "
@@ -1007,7 +1015,13 @@ TEST_F(SystemPerfettoTest, EnablePerfettoSystemTracingDefaultState) {
 #endif
 }
 
-TEST_F(SystemPerfettoTest, SetupSystemTracing) {
+// Failing on Android, see https://crbug.com/1254159.
+#if defined(ANDROID)
+#define MAYBE_SetupSystemTracing DISABLED_SetupSystemTracing
+#else
+#define MAYBE_SetupSystemTracing SetupSystemTracing
+#endif
+TEST_F(SystemPerfettoTest, MAYBE_SetupSystemTracing) {
   ClearAndRestoreSystemProducerScope saved_system_producer;
   EXPECT_FALSE(PerfettoTracedProcess::Get()->system_producer());
   PerfettoTracedProcess::Get()->SetupSystemTracing();

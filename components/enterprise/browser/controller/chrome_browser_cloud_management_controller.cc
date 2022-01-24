@@ -21,16 +21,13 @@
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_helper.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/cloud/chrome_browser_cloud_management_metrics.h"
+#include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
-#include "components/policy/core/common/features.h"
-#include "components/policy/core/common/policy_types.h"
-#include "components/policy/policy_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(OS_ANDROID)
@@ -39,34 +36,6 @@
 #endif  // !defined(OS_ANDROID)
 
 namespace policy {
-
-namespace {
-
-void RecordEnrollmentResult(
-    ChromeBrowserCloudManagementEnrollmentResult result) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Enterprise.MachineLevelUserCloudPolicyEnrollment.Result", result);
-}
-
-// Read the kCloudPolicyOverridesPlatformPolicy from platform provider directly
-// because the local_state is not ready when the
-// MachineLevelUserCloudPolicyManager is created.
-bool DoesCloudPolicyHasPriority(
-    ConfigurationPolicyProvider* platform_provider) {
-  if (!platform_provider)
-    return false;
-  const auto* entry =
-      platform_provider->policies()
-          .Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-          .Get(key::kCloudPolicyOverridesPlatformPolicy);
-  if (!entry || entry->scope == POLICY_SCOPE_USER ||
-      entry->level == POLICY_LEVEL_RECOMMENDED)
-    return false;
-
-  return entry->value()->is_bool() && entry->value()->GetBool();
-}
-
-}  // namespace
 
 const base::FilePath::CharType
     ChromeBrowserCloudManagementController::kPolicyDir[] =
@@ -79,7 +48,8 @@ void ChromeBrowserCloudManagementController::Delegate::DeferInitialization(
 
 ChromeBrowserCloudManagementController::ChromeBrowserCloudManagementController(
     std::unique_ptr<ChromeBrowserCloudManagementController::Delegate> delegate)
-    : delegate_(std::move(delegate)) {
+    : delegate_(std::move(delegate)),
+      client_data_delegate_(delegate_->CreateClientDataDelegate()) {
   delegate_->SetDMTokenStorageDelegate();
 }
 
@@ -135,13 +105,6 @@ ChromeBrowserCloudManagementController::CreatePolicyManager(
 
   DVLOG(1) << "Creating machine level user cloud policy manager";
 
-  bool cloud_policy_has_priority =
-      DoesCloudPolicyHasPriority(platform_provider);
-  if (cloud_policy_has_priority) {
-    DVLOG(1) << "Cloud policies are now overriding platform policies with "
-                "machine scope.";
-  }
-
   base::FilePath policy_dir =
       user_data_dir.Append(ChromeBrowserCloudManagementController::kPolicyDir);
 
@@ -150,7 +113,6 @@ ChromeBrowserCloudManagementController::CreatePolicyManager(
   std::unique_ptr<MachineLevelUserCloudPolicyStore> policy_store =
       MachineLevelUserCloudPolicyStore::Create(
           dm_token, client_id, external_policy_path, policy_dir,
-          cloud_policy_has_priority,
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                // Block shutdown to make sure the policy cache update is always
@@ -186,10 +148,7 @@ void ChromeBrowserCloudManagementController::Init(
   if (!IsEnabled())
     return;
 
-  if (base::FeatureList::IsEnabled(
-          policy::features::kCBCMPolicyInvalidations)) {
-    delegate_->InitializeOAuthTokenFactory(url_loader_factory, local_state);
-  }
+  delegate_->InitializeOAuthTokenFactory(url_loader_factory, local_state);
 
   if (create_cloud_policy_manager_callback_) {
     // The conditions that allow controller initialization should also unblock
@@ -200,7 +159,6 @@ void ChromeBrowserCloudManagementController::Init(
     std::move(create_cloud_policy_manager_callback_).Run();
   }
 
-#if !defined(OS_ANDROID)
   // Post the task of CreateReportScheduler to run on best effort after launch
   // is completed.
   delegate_->GetBestEffortTaskRunner()->PostTask(
@@ -208,7 +166,6 @@ void ChromeBrowserCloudManagementController::Init(
       base::BindOnce(
           &ChromeBrowserCloudManagementController::CreateReportScheduler,
           weak_factory_.GetWeakPtr()));
-#endif  // !defined(OS_ANDROID)
 
   MachineLevelUserCloudPolicyManager* policy_manager =
       delegate_->GetMachineLevelUserCloudPolicyManager();
@@ -261,7 +218,7 @@ void ChromeBrowserCloudManagementController::Init(
 
     // Not registered already, so do it now.
     cloud_management_registrar_->RegisterForCloudManagementWithEnrollmentToken(
-        enrollment_token, client_id,
+        enrollment_token, client_id, *client_data_delegate_,
         base::BindOnce(
             &ChromeBrowserCloudManagementController::
                 RegisterForCloudManagementWithEnrollmentTokenCallback,
@@ -323,12 +280,10 @@ void ChromeBrowserCloudManagementController::InvalidatePolicies() {
     policy_fetcher_->Disconnect();
   }
 
-#if !defined(OS_ANDROID)
   // This causes the scheduler to stop refreshing itself since the DM token is
   // no longer valid.
   if (report_scheduler_)
     report_scheduler_->OnDMTokenUpdated();
-#endif
 }
 
 void ChromeBrowserCloudManagementController::InvalidateDMTokenCallback(
@@ -371,10 +326,8 @@ void ChromeBrowserCloudManagementController::OnServiceAccountSet(
 
 void ChromeBrowserCloudManagementController::ShutDown() {
   delegate_->ShutDown();
-#if !defined(OS_ANDROID)
   if (report_scheduler_)
     report_scheduler_.reset();
-#endif
 }
 
 void ChromeBrowserCloudManagementController::SetGaiaURLLoaderFactory(
@@ -442,27 +395,29 @@ void ChromeBrowserCloudManagementController::
 
   // TODO(alito): Log failures to store the DM token. Should we try again later?
   BrowserDMTokenStorage::Get()->StoreDMToken(
-      dm_token, base::BindOnce([](bool success) {
-        if (!success) {
-          DVLOG(1) << "Failed to store the DM token";
-          RecordEnrollmentResult(
-              ChromeBrowserCloudManagementEnrollmentResult::kFailedToStore);
-        } else {
-          DVLOG(1) << "Successfully stored the DM token";
-          RecordEnrollmentResult(
-              ChromeBrowserCloudManagementEnrollmentResult::kSuccess);
-        }
-      }));
+      dm_token,
+      base::BindOnce(
+          [](base::WeakPtr<ChromeBrowserCloudManagementController> controller,
+             bool success) {
+            if (!success) {
+              DVLOG(1) << "Failed to store the DM token";
+              controller->RecordEnrollmentResult(
+                  ChromeBrowserCloudManagementEnrollmentResult::kFailedToStore);
+            } else {
+              DVLOG(1) << "Successfully stored the DM token";
+              controller->RecordEnrollmentResult(
+                  ChromeBrowserCloudManagementEnrollmentResult::kSuccess);
+            }
+          },
+          weak_factory_.GetWeakPtr()));
 
   // Start fetching policies.
   VLOG(1) << "Fetch policy after enrollment.";
   policy_fetcher_->SetupRegistrationAndFetchPolicy(
       BrowserDMTokenStorage::Get()->RetrieveDMToken(), client_id);
-#if !defined(OS_ANDROID)
   if (report_scheduler_) {
     report_scheduler_->OnDMTokenUpdated();
   }
-#endif  // !defined(OS_ANDROID)
 
   NotifyPolicyRegisterFinished(true);
 }
@@ -494,6 +449,15 @@ void ChromeBrowserCloudManagementController::DeferrableCreatePolicyManagerImpl(
   std::unique_ptr<MachineLevelUserCloudPolicyManager> policy_manager =
       CreatePolicyManager(platform_provider);
   std::move(callback).Run(std::move(policy_manager));
+}
+
+void ChromeBrowserCloudManagementController::RecordEnrollmentResult(
+    ChromeBrowserCloudManagementEnrollmentResult result) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "Enterprise.MachineLevelUserCloudPolicyEnrollment.Result", result);
+  for (auto& observer : observers_) {
+    observer.OnEnrollmentResultRecorded();
+  }
 }
 
 }  // namespace policy

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/animation/test/test_ink_drop.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace views {
 namespace test {

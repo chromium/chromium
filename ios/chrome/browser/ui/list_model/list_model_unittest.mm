@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/compiler_specific.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/string_piece.h"
 #import "ios/chrome/browser/ui/list_model/list_item.h"
@@ -77,6 +78,7 @@ TEST_F(ListModelTest, GenericModelBoxing) {
   // specificModel = generalModel would not compile.
   ListModel<ListItem*, ListItem*>* generalModel = specificModel;
   generalModel = nil;
+  ALLOW_UNUSED_LOCAL(generalModel);
 }
 
 TEST_F(ListModelTest, EmptyModel) {

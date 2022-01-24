@@ -9,14 +9,12 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/api/declarative_net_request/web_contents_helper.h"
 #include "extensions/browser/extension_function_dispatcher.h"
@@ -45,6 +43,9 @@ class TabHelper : public content::WebContentsObserver,
                   public ExtensionRegistryObserver,
                   public content::WebContentsUserData<TabHelper> {
  public:
+  TabHelper(const TabHelper&) = delete;
+  TabHelper& operator=(const TabHelper&) = delete;
+
   ~TabHelper() override;
 
   // Sets the extension denoting this as an app. If |extension| is non-null this
@@ -167,8 +168,6 @@ class TabHelper : public content::WebContentsObserver,
   base::WeakPtrFactory<TabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(TabHelper);
 };
 
 }  // namespace extensions

@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_contrast.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
+#include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 
 namespace blink {
 

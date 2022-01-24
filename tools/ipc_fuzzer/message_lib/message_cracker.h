@@ -13,6 +13,9 @@
 // Means for updating protected message fields.
 class MessageCracker : public IPC::Message {
  public:
+  MessageCracker(const MessageCracker&) = delete;
+  MessageCracker& operator=(const MessageCracker&) = delete;
+
   static void CopyMessageID(IPC::Message* dst, IPC::Message* src) {
     memcpy(ToCracker(dst)->mutable_payload(),
            ToCracker(src)->payload(),
@@ -27,8 +30,6 @@ class MessageCracker : public IPC::Message {
   static MessageCracker* ToCracker(IPC::Message* message) {
     return reinterpret_cast<MessageCracker*>(message);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCracker);
 };
 
 #endif  // TOOLS_IPC_FUZZER_MESSAGE_LIB_MESSAGE_CRACKER_H_

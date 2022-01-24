@@ -327,4 +327,4 @@ def SplitIntoMultipleHistogramXMLs(output_base_dir):
 
 if __name__ == '__main__':
   SplitIntoMultipleHistogramXMLs(
-      path_util.GetInputFile('tools/metrics/histograms/histograms_xml'))
+      path_util.GetInputFile('tools/metrics/histograms/metadata'))

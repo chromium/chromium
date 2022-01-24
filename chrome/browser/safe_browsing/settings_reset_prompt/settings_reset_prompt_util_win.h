@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_SETTINGS_RESET_PROMPT_SETTINGS_RESET_PROMPT_UTIL_WIN_H_
 #define CHROME_BROWSER_SAFE_BROWSING_SETTINGS_RESET_PROMPT_SETTINGS_RESET_PROMPT_UTIL_WIN_H_
 
-#include "base/macros.h"
-
 namespace safe_browsing {
 
 // Function to be called after startup in order to display the settings reset
@@ -21,12 +19,14 @@ void MaybeShowSettingsResetPromptWithDelay();
 class SettingsResetPromptDelegate {
  public:
   SettingsResetPromptDelegate();
+
+  SettingsResetPromptDelegate(const SettingsResetPromptDelegate&) = delete;
+  SettingsResetPromptDelegate& operator=(const SettingsResetPromptDelegate&) =
+      delete;
+
   virtual ~SettingsResetPromptDelegate();
 
   virtual void ShowSettingsResetPromptWithDelay() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetPromptDelegate);
 };
 
 // Sets the global SettingsResetPromptDelegate, usually for testing.

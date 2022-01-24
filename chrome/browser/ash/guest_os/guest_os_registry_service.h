@@ -12,16 +12,18 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
-#include "ui/base/resource/scale_factor.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 class Profile;
 class PrefService;
@@ -76,6 +78,10 @@ class GuestOsRegistryService : public KeyedService {
     Registration(const std::string app_id, const base::Value pref);
     Registration(Registration&& registration) = default;
     Registration& operator=(Registration&& registration) = default;
+
+    Registration(const Registration&) = delete;
+    Registration& operator=(const Registration&) = delete;
+
     ~Registration();
 
     std::string app_id() const { return app_id_; }
@@ -108,8 +114,6 @@ class GuestOsRegistryService : public KeyedService {
 
     std::string app_id_;
     base::Value pref_;
-
-    DISALLOW_COPY_AND_ASSIGN(Registration);
   };
 
   class Observer {
@@ -129,6 +133,10 @@ class GuestOsRegistryService : public KeyedService {
   };
 
   explicit GuestOsRegistryService(Profile* profile);
+
+  GuestOsRegistryService(const GuestOsRegistryService&) = delete;
+  GuestOsRegistryService& operator=(const GuestOsRegistryService&) = delete;
+
   ~GuestOsRegistryService() override;
 
   base::WeakPtr<GuestOsRegistryService> GetWeakPtr();
@@ -161,27 +169,27 @@ class GuestOsRegistryService : public KeyedService {
   // 4/ Uses |fallback_icon_resource_id| if it is valid (non-zero).
   // 5/ Returns empty.
   void LoadIcon(const std::string& app_id,
-                apps::mojom::IconKeyPtr icon_key,
-                apps::mojom::IconType icon_type,
+                const apps::IconKey& icon_key,
+                apps::IconType icon_type,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 int fallback_icon_resource_id,
-                apps::mojom::Publisher::LoadIconCallback callback);
+                apps::LoadIconCallback callback);
 
   void LoadIconFromVM(const std::string& app_id,
-                      apps::mojom::IconType icon_type,
+                      apps::IconType icon_type,
                       int32_t size_hint_in_dip,
                       ui::ResourceScaleFactor scale_factor,
                       apps::IconEffects icon_effects,
                       int fallback_icon_resource_id,
-                      apps::mojom::Publisher::LoadIconCallback callback);
+                      apps::LoadIconCallback callback);
 
   void OnLoadIconFromVM(const std::string& app_id,
-                        apps::mojom::IconType icon_type,
+                        apps::IconType icon_type,
                         int32_t size_hint_in_dip,
                         apps::IconEffects icon_effects,
                         int fallback_icon_resource_id,
-                        apps::mojom::Publisher::LoadIconCallback callback,
+                        apps::LoadIconCallback callback,
                         std::string compressed_icon_data);
 
   // Fetches icons from container.
@@ -204,6 +212,11 @@ class GuestOsRegistryService : public KeyedService {
 
   // The existing list of apps is replaced by |application_list|.
   void UpdateApplicationList(const vm_tools::apps::ApplicationList& app_list);
+
+  // Inform the registry that the badge color for `container_id` has changed. In
+  // practice, this sends an update notification for all apps associated with
+  // this container, which will prompt the icons to be regenerated.
+  void ContainerBadgeColorChanged(const crostini::ContainerId& container_id);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -250,6 +263,12 @@ class GuestOsRegistryService : public KeyedService {
   // feature in M83, this function can then be remoevd after M84.
   void MigrateTerminal() const;
 
+  // Apply container-specific badging to `icon`. This is run after the generic
+  // icon loading code.
+  void ApplyContainerBadge(SkColor badge_color,
+                           apps::LoadIconCallback callback,
+                           apps::IconValuePtr icon);
+
   // Owned by the Profile.
   Profile* const profile_;
   PrefService* const prefs_;
@@ -275,8 +294,6 @@ class GuestOsRegistryService : public KeyedService {
   std::map<std::string, uint32_t> retry_icon_requests_;
 
   base::WeakPtrFactory<GuestOsRegistryService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsRegistryService);
 };
 
 }  // namespace guest_os

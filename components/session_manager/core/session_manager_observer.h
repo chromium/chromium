@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SESSION_MANAGER_CORE_SESSION_MANAGER_OBSERVER_H_
 #define COMPONENTS_SESSION_MANAGER_CORE_SESSION_MANAGER_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "components/session_manager/session_manager_types.h"
 
@@ -28,6 +27,24 @@ class SessionManagerObserver : public base::CheckedObserver {
   // UserSessionStateObserver::OnActiveUserChanged() is invoked immediately
   // after the user has logged in.
   virtual void OnUserSessionStarted(bool is_primary_user) {}
+
+  // Invoked when a network error message is displayed on the WebUI login
+  // screen.
+  virtual void OnNetworkErrorScreenShown() {}
+
+  // Invoked when the specific part of login/lock WebUI is considered to be
+  // visible. That moment is tracked as the first paint event after
+  // `OnNetworkErrorScreenShown()`.
+  //
+  // Possible series of notifications:
+  // 1. Boot into fresh OOBE. `OnLoginOrLockScreenVisible()`.
+  // 2. Boot into user pods list (normal boot). Same for lock screen.
+  //    `OnLoginOrLockScreenVisible()`.
+  // 3. Boot into GAIA sign in UI (user pods display disabled or no users):
+  //    if no network is connected or flaky network
+  //    (`OnLoginOrLockScreenVisible()` + `OnNetworkErrorScreenShown()`).
+  // 4. Boot into retail mode. `OnLoginOrLockScreenVisible()`.
+  virtual void OnLoginOrLockScreenVisible() {}
 };
 
 }  // namespace session_manager

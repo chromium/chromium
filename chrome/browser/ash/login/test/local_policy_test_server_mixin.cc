@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 
+#include <string>
 #include <utility>
 
 #include "base/guid.h"
+#include "base/json/values_util.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -17,9 +20,9 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 base::Value GetDefaultConfig() {
@@ -67,16 +70,6 @@ void LocalPolicyTestServerMixin::SetUpCommandLine(
   // Specify device management server URL.
   command_line->AppendSwitchASCII(policy::switches::kDeviceManagementUrl,
                                   policy_test_server_->GetServiceURL().spec());
-}
-
-void LocalPolicyTestServerMixin::ExpectTokenEnrollment(
-    const std::string& enrollment_token,
-    const std::string& token_creator) {
-  base::Value token_enrollment(base::Value::Type::DICTIONARY);
-  token_enrollment.SetKey("token", base::Value(enrollment_token));
-  token_enrollment.SetKey("username", base::Value(token_creator));
-  server_config_.SetKey("token_enrollment", std::move(token_enrollment));
-  policy_test_server_->SetConfig(server_config_);
 }
 
 void LocalPolicyTestServerMixin::SetUpdateDeviceAttributesPermission(
@@ -154,12 +147,38 @@ bool LocalPolicyTestServerMixin::UpdateUserPolicy(
   return policy_test_server_->SetConfig(server_config_);
 }
 
+bool LocalPolicyTestServerMixin::UpdateUserPolicyTimestamp(
+    const base::Time& timestamp) {
+  server_config_.SetKey(
+      "timestamp", base::Value(static_cast<double>(timestamp.ToJavaTime())));
+  return policy_test_server_->SetConfig(server_config_);
+}
+
 void LocalPolicyTestServerMixin::SetFakeAttestationFlow() {
   g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
-      ->GetDeviceCloudPolicyInitializer()
+      ->browser_policy_connector_ash()
       ->SetAttestationFlowForTesting(
           std::make_unique<chromeos::attestation::FakeAttestationFlow>());
+}
+
+void LocalPolicyTestServerMixin::SetExpectedPsmParamsInDeviceRegisterRequest(
+    const std::string& device_brand_code,
+    const std::string& device_serial_number,
+    int psm_execution_result,
+    const absl::optional<int64_t> psm_determination_timestamp) {
+  base::Value psm_entry(base::Value::Type::DICTIONARY);
+
+  psm_entry.SetIntKey("psm_execution_result", psm_execution_result);
+
+  if (psm_determination_timestamp.has_value()) {
+    psm_entry.SetKey("psm_determination_timestamp_ms",
+                     base::Int64ToValue(psm_determination_timestamp.value()));
+  }
+
+  const std::string brand_serial_id =
+      device_brand_code + "_" + device_serial_number;
+  server_config_.SetPath("psm_result." + brand_serial_id, std::move(psm_entry));
+  policy_test_server_->SetConfig(server_config_);
 }
 
 bool LocalPolicyTestServerMixin::SetDeviceStateRetrievalResponse(
@@ -251,4 +270,4 @@ void LocalPolicyTestServerMixin::EnableAutomaticRotationOfSigningKeys() {
 
 LocalPolicyTestServerMixin::~LocalPolicyTestServerMixin() = default;
 
-}  // namespace chromeos
+}  // namespace ash

@@ -67,10 +67,11 @@ class AutoLockOnValidThread {
     DCHECK(!thread_checker || thread_checker->CalledOnValidThread());
   }
 
+  AutoLockOnValidThread(const AutoLockOnValidThread&) = delete;
+  AutoLockOnValidThread& operator=(const AutoLockOnValidThread&) = delete;
+
  private:
   base::AutoLock auto_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoLockOnValidThread);
 };
 
 }  // namespace

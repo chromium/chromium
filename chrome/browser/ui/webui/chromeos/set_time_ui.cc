@@ -8,25 +8,24 @@
 
 #include <memory>
 
+#include "ash/components/settings/timezone_settings.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"
 #include "base/build_time.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
+#include "chrome/browser/ash/set_time_dialog.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/chromeos/set_time_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -47,23 +46,27 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
                               public system::TimezoneSettings::Observer {
  public:
   SetTimeMessageHandler() : weak_factory_(this) {}
+
+  SetTimeMessageHandler(const SetTimeMessageHandler&) = delete;
+  SetTimeMessageHandler& operator=(const SetTimeMessageHandler&) = delete;
+
   ~SetTimeMessageHandler() override = default;
 
   // WebUIMessageHandler:
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "setTimePageReady",
         base::BindRepeating(&SetTimeMessageHandler::OnPageReady,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "setTimeInSeconds",
         base::BindRepeating(&SetTimeMessageHandler::OnSetTime,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "setTimezone",
         base::BindRepeating(&SetTimeMessageHandler::OnSetTimezone,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback(
         "doneClicked", base::BindRepeating(&SetTimeMessageHandler::DoneClicked,
                                            base::Unretained(this)));
   }
@@ -100,12 +103,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   // new time. Expects the time as the number of seconds since the Unix
   // epoch, treated as a double.
   void OnSetTime(const base::ListValue* args) {
-    double seconds;
-    if (!args->GetDouble(0, &seconds)) {
-      NOTREACHED();
-      return;
-    }
-
+    double seconds = args->GetList()[0].GetDouble();
     SystemClockClient::Get()->SetTime(static_cast<int64_t>(seconds));
   }
 
@@ -113,11 +111,11 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   // selects a new time zone. Expects the time zone ID as a string, as it
   // appears in the time zone option values.
   void OnSetTimezone(const base::ListValue* args) {
-    std::string timezone_id;
-    if (!args->GetString(0, &timezone_id)) {
+    if (args->GetList().empty() || !args->GetList()[0].is_string()) {
       NOTREACHED();
       return;
     }
+    std::string timezone_id = args->GetList()[0].GetString();
 
     Profile* profile = Profile::FromWebUI(web_ui());
     DCHECK(profile);
@@ -131,12 +129,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
       return;
     }
 
-    double seconds;
-    if (!args->GetDouble(0, &seconds)) {
-      NOTREACHED();
-      return;
-    }
-
+    double seconds = args->GetList()[0].GetDouble();
     AccountId account_id;
     bool is_user_logged_in = user_manager::UserManager::Get()->IsUserLoggedIn();
     if (is_user_logged_in) {
@@ -163,8 +156,6 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
                           system::TimezoneSettings::Observer>
       timezone_observation_{this};
   base::WeakPtrFactory<SetTimeMessageHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SetTimeMessageHandler);
 };
 
 }  // namespace

@@ -36,10 +36,16 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
     : public DhcpPacFileFetcher,
       public base::SupportsWeakPtr<DhcpPacFileFetcherWin> {
  public:
+  DhcpPacFileFetcherWin() = delete;
+
   // Creates a DhcpPacFileFetcherWin that issues requests through
   // |url_request_context|. |url_request_context| must remain valid for
   // the lifetime of DhcpPacFileFetcherWin.
   explicit DhcpPacFileFetcherWin(URLRequestContext* url_request_context);
+
+  DhcpPacFileFetcherWin(const DhcpPacFileFetcherWin&) = delete;
+  DhcpPacFileFetcherWin& operator=(const DhcpPacFileFetcherWin&) = delete;
+
   ~DhcpPacFileFetcherWin() override;
 
   // DhcpPacFileFetcher implementation.
@@ -74,6 +80,9 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
    public:
     AdapterQuery();
 
+    AdapterQuery(const AdapterQuery&) = delete;
+    AdapterQuery& operator=(const AdapterQuery&) = delete;
+
     // This is the method that runs on the worker pool thread.
     void GetCandidateAdapterNames();
 
@@ -98,8 +107,6 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
     // the task has completed on the worker thread. No locking required.
     std::set<std::string> adapter_names_;
     std::unique_ptr<DhcpAdapterNamesLoggingInfo> logging_info_;
-
-    DISALLOW_COPY_AND_ASSIGN(AdapterQuery);
   };
 
   // Virtual methods introduced to allow unit testing.
@@ -192,8 +199,6 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
   const scoped_refptr<base::TaskRunner> task_runner_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DhcpPacFileFetcherWin);
 };
 
 }  // namespace net

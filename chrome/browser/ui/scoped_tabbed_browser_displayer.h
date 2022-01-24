@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SCOPED_TABBED_BROWSER_DISPLAYER_H_
 #define CHROME_BROWSER_UI_SCOPED_TABBED_BROWSER_DISPLAYER_H_
 
-#include "base/macros.h"
-
 class Browser;
 class Profile;
 
@@ -20,14 +18,17 @@ namespace chrome {
 class ScopedTabbedBrowserDisplayer {
  public:
   explicit ScopedTabbedBrowserDisplayer(Profile* profile);
+
+  ScopedTabbedBrowserDisplayer(const ScopedTabbedBrowserDisplayer&) = delete;
+  ScopedTabbedBrowserDisplayer& operator=(const ScopedTabbedBrowserDisplayer&) =
+      delete;
+
   ~ScopedTabbedBrowserDisplayer();
 
   Browser* browser() { return browser_; }
 
  private:
   Browser* browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTabbedBrowserDisplayer);
 };
 
 }  // namespace chrome

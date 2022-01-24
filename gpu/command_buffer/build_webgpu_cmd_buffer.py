@@ -27,7 +27,14 @@ _NAMED_TYPE_INFO = {
     'invalid': [
       'PowerPreference::kNumPowerPreferences',
     ],
-  }
+  },
+  'MailboxFlags': {
+    'type': 'MailboxFlags',
+    'valid': [
+      'WEBGPU_MAILBOX_NONE',
+      'WEBGPU_MAILBOX_DISCARD',
+    ],
+  },
 }
 
 # A function info object specifies the type and other special data for the
@@ -60,6 +67,10 @@ _FUNCTION_INFO = {
     'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM
   },
   'DissociateMailbox': {
+    'impl_func': False,
+    'client_test': False,
+  },
+  'DissociateMailboxForPresent': {
     'impl_func': False,
     'client_test': False,
   },

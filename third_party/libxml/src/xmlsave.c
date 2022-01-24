@@ -890,6 +890,13 @@ xmlNodeDumpOutputInternal(xmlSaveCtxtPtr ctxt, xmlNodePtr cur) {
             break;
 
         case XML_ELEMENT_NODE:
+	    if ((cur != root) && (ctxt->format == 1) &&
+                (xmlIndentTreeOutput))
+		xmlOutputBufferWrite(buf, ctxt->indent_size *
+				     (ctxt->level > ctxt->indent_nr ?
+				      ctxt->indent_nr : ctxt->level),
+				     ctxt->indent);
+
             /*
              * Some users like lxml are known to pass nodes with a corrupted
              * tree structure. Fall back to a recursive call to handle this
@@ -899,13 +906,6 @@ xmlNodeDumpOutputInternal(xmlSaveCtxtPtr ctxt, xmlNodePtr cur) {
                 xmlNodeDumpOutputInternal(ctxt, cur);
                 break;
             }
-
-	    if ((ctxt->level > 0) && (ctxt->format == 1) &&
-                (xmlIndentTreeOutput))
-		xmlOutputBufferWrite(buf, ctxt->indent_size *
-				     (ctxt->level > ctxt->indent_nr ?
-				      ctxt->indent_nr : ctxt->level),
-				     ctxt->indent);
 
             xmlOutputBufferWrite(buf, 1, "<");
             if ((cur->ns != NULL) && (cur->ns->prefix != NULL)) {

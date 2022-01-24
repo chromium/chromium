@@ -24,8 +24,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -274,16 +274,6 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
   if (reqbufs.capabilities & V4L2_BUF_CAP_SUPPORTS_REQUESTS) {
     supports_requests_ = true;
     VLOGF(1) << "Using request API";
-    DCHECK(!media_fd_.is_valid());
-    // Let's try to open the media device
-    // TODO(crbug.com/985230): remove this hardcoding, replace with V4L2Device
-    // integration.
-    int media_fd = open("/dev/media-dec0", O_RDWR, 0);
-    if (media_fd < 0) {
-      PLOG(ERROR) << "Failed to open media device";
-      NOTIFY_ERROR(PLATFORM_FAILURE);
-    }
-    media_fd_ = base::ScopedFD(media_fd);
   } else {
     VLOGF(1) << "Using config store";
   }
@@ -455,8 +445,6 @@ void V4L2SliceVideoDecodeAccelerator::DestroyTask() {
 
   DestroyInputBuffers();
   DestroyOutputs(false);
-
-  media_fd_.reset();
 
   input_queue_ = nullptr;
   output_queue_ = nullptr;
@@ -1160,11 +1148,19 @@ bool V4L2SliceVideoDecodeAccelerator::FinishSurfaceSetChange() {
 
   DCHECK_EQ(state_, kIdle);
   DCHECK(decoder_display_queue_.empty());
+
+#if DCHECK_IS_ON()
   // All output buffers should've been returned from decoder and device by now.
   // The only remaining owner of surfaces may be display (client), and we will
   // dismiss them when destroying output buffers below.
+  const size_t num_imported_buffers =
+      std::count_if(output_buffer_map_.begin(), output_buffer_map_.end(),
+                    [](const OutputRecord& output_record) {
+                      return output_record.output_frame != nullptr;
+                    });
   DCHECK_EQ(output_queue_->FreeBuffersCount() + surfaces_at_display_.size(),
-            output_buffer_map_.size());
+            num_imported_buffers);
+#endif  // DCHECK_IS_ON()
 
   if (!StopDevicePoll()) {
     LOG(ERROR) << "Failed StopDevicePoll()";
@@ -1538,6 +1534,9 @@ void V4L2SliceVideoDecodeAccelerator::ImportBufferForPictureTask(
   DCHECK(decoder_thread_task_runner_->BelongsToCurrentThread());
 
   if (IsDestroyPending())
+    return;
+
+  if (surface_set_change_pending_)
     return;
 
   const auto iter =
@@ -2067,7 +2066,7 @@ void V4L2SliceVideoDecodeAccelerator::CheckGLFences() {
         FROM_HERE,
         base::BindOnce(&V4L2SliceVideoDecodeAccelerator::DecodeBufferTask,
                        base::Unretained(this)),
-        base::TimeDelta::FromMilliseconds(kRescheduleDelayMs));
+        base::Milliseconds(kRescheduleDelayMs));
   }
 }
 
@@ -2209,8 +2208,8 @@ bool V4L2SliceVideoDecodeAccelerator::IsSupportedProfile(
   DCHECK(device_);
   if (supported_profiles_.empty()) {
     SupportedProfiles profiles = GetSupportedProfiles();
-    for (const SupportedProfile& profile : profiles)
-      supported_profiles_.push_back(profile.profile);
+    for (const SupportedProfile& entry : profiles)
+      supported_profiles_.push_back(entry.profile);
   }
   return std::find(supported_profiles_.begin(), supported_profiles_.end(),
                    profile) != supported_profiles_.end();
@@ -2240,7 +2239,36 @@ bool V4L2SliceVideoDecodeAccelerator::ProcessFrame(
   DCHECK(decoder_thread_.task_runner()->BelongsToCurrentThread());
 
   scoped_refptr<VideoFrame> input_frame = buffer->GetVideoFrame();
-  DCHECK(input_frame);
+  if (!input_frame) {
+    VLOGF(1) << "Could not get the input frame for the image processor!";
+    return false;
+  }
+
+  // The |input_frame| has a potentially incorrect visible rectangle and natural
+  // size: that frame gets created by V4L2Buffer::CreateVideoFrame() which uses
+  // v4l2_format::fmt.pix_mp.width and v4l2_format::fmt.pix_mp.height as the
+  // visible rectangle and natural size. However, those dimensions actually
+  // correspond to the coded size. Therefore, we should wrap |input_frame| into
+  // another frame with the right visible rectangle and natural size.
+  DCHECK(input_frame->visible_rect().origin().IsOrigin());
+  const gfx::Rect visible_rect = image_processor_->input_config().visible_rect;
+  const gfx::Size natural_size = visible_rect.size();
+  if (!gfx::Rect(input_frame->coded_size()).Contains(visible_rect) ||
+      !input_frame->visible_rect().Contains(visible_rect)) {
+    VLOGF(1) << "The visible rectangle is invalid!";
+    return false;
+  }
+  if (!gfx::Rect(input_frame->natural_size())
+           .Contains(gfx::Rect(natural_size))) {
+    VLOGF(1) << "The natural size is too large!";
+    return false;
+  }
+  scoped_refptr<VideoFrame> cropped_input_frame = VideoFrame::WrapVideoFrame(
+      input_frame, input_frame->format(), visible_rect, natural_size);
+  if (!cropped_input_frame) {
+    VLOGF(1) << "Could not wrap the input frame for the image processor!";
+    return false;
+  }
 
   if (image_processor_->output_mode() == ImageProcessor::OutputMode::IMPORT) {
     // In IMPORT mode we can decide ourselves which IP buffer to use, so choose
@@ -2256,14 +2284,14 @@ bool V4L2SliceVideoDecodeAccelerator::ProcessFrame(
     DCHECK(wrapped_frame);
 
     image_processor_->Process(
-        std::move(input_frame), std::move(wrapped_frame),
+        std::move(cropped_input_frame), std::move(wrapped_frame),
         base::BindOnce(&V4L2SliceVideoDecodeAccelerator::FrameProcessed,
                        base::Unretained(this), surface, buffer->BufferId()));
   } else {
     // In ALLOCATE mode we cannot choose which IP buffer to use. We will get
     // the surprise when FrameProcessed() is invoked...
     if (!image_processor_->Process(
-            std::move(input_frame),
+            std::move(cropped_input_frame),
             base::BindOnce(&V4L2SliceVideoDecodeAccelerator::FrameProcessed,
                            base::Unretained(this), surface)))
       return false;

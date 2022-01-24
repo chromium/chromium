@@ -88,6 +88,7 @@ class CastMetricsServiceClient : public ::metrics::MetricsServiceClient,
   void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
+  const network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   bool GetBrand(std::string* brand_code) override;
   ::metrics::SystemProfileProto::Channel GetChannel() override;
   bool IsExtendedStableChannel() override;

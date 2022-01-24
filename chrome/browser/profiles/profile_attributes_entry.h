@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
@@ -126,6 +127,8 @@ class ProfileAttributesEntry {
   SigninState GetSigninState() const;
   // Returns true if the profile is signed in.
   bool IsAuthenticated() const;
+  // Returns true if the account can be be managed.
+  bool CanBeManaged() const;
   // Returns true if the Profile is using the default avatar, which is one of
   // the profile icons selectable at profile creation.
   bool IsUsingDefaultAvatar() const;
@@ -153,6 +156,11 @@ class ProfileAttributesEntry {
   // doesn't have any associated `user_manager::User`.
   std::string GetAccountIdKey() const;
 
+  // Gets/Sets the gaia IDs of the accounts signed into the profile (accounts
+  // known by the `IdentityManager`).
+  base::flat_set<std::string> GetGaiaIds() const;
+  void SetGaiaIds(const base::flat_set<std::string>& gaia_ids);
+
   // |is_using_default| should be set to false for non default profile names.
   void SetLocalProfileName(const std::u16string& name, bool is_default_name);
   void SetShortcutName(const std::u16string& name);
@@ -172,6 +180,8 @@ class ProfileAttributesEntry {
   // responsibility of the caller to make sure that the entry is set as
   // non-ephemeral only if prefs::kForceEphemeralProfiles is false.
   void SetIsEphemeral(bool value);
+  void SetUserAcceptedAccountManagement(bool value);
+  bool UserAcceptedAccountManagement() const;
   // TODO(msalama): Remove this function.
   void SetIsUsingDefaultName(bool value);
   void SetIsUsingDefaultAvatar(bool value);
@@ -276,7 +286,6 @@ class ProfileAttributesEntry {
 
   // Loads and saves the data to the local state.
   const base::Value* GetEntryData() const;
-  void SetEntryData(base::Value data);
 
   // Internal getter that returns a base::Value*, or nullptr if the key is not
   // present.
@@ -302,11 +311,16 @@ class ProfileAttributesEntry {
 
   // Internal setters that accept basic data types. Return if the original data
   // is different from the new data, i.e. whether actual update is done.
-  bool SetString(const char* key, std::string value);
-  bool SetString16(const char* key, std::u16string value);
+  bool SetString(const char* key, const std::string& value);
+  bool SetString16(const char* key, const std::u16string& value);
   bool SetDouble(const char* key, double value);
   bool SetBool(const char* key, bool value);
   bool SetInteger(const char* key, int value);
+
+  // Generic setter, used to implement the more specific ones. If the value was
+  // missing and `value` is the default value (e.g. false, 0, empty string...),
+  // the value is written and this returns true.
+  bool SetValue(const char* key, base::Value value);
 
   // Clears value stored for |key|. Returns if the original data is different
   // from the new data, i.e. whether actual update is done.

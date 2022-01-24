@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"

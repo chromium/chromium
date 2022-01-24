@@ -16,6 +16,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1066060668811609597">Gestionar sincronización</translation>
 <translation id="1076421457278169141">Código escaneado</translation>
 <translation id="1084365883616172403">Publicado en Facebook</translation>
+<translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">Aceptar y continuar</translation>
 <translation id="110724200315609752">Cambiar a ventana abierta</translation>
@@ -24,11 +25,9 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1145536944570833626">Elimina los datos actuales.</translation>
 <translation id="1147031633655575115">Has iniciado sesión como <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ver otras pestañas</translation>
-<translation id="1157749421655780457">Permitir acceso a tu ubicación...</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Siguiente campo</translation>
 <translation id="1176932207622159128">Error al guardar imagen</translation>
-<translation id="1180526666083833456">Sincroniza y personaliza entre dispositivos.</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1207113853726624428">Nueva búsqueda</translation>
 <translation id="1209206284964581585">Ocultar por ahora</translation>
@@ -40,6 +39,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1254117744268754948">Seleccionar carpeta</translation>
 <translation id="1265739287306757398">Más información</translation>
 <translation id="1272079795634619415">Detener</translation>
+<translation id="1275718070701477396">Seleccionado</translation>
 <translation id="1282311502488501110">No iniciar sesión</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">No traducir nunca este sitio</translation>
@@ -55,8 +55,10 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1377321085342047638">Número de tarjeta</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1400642268715879018">Últimas 4 semanas</translation>
+<translation id="1404330357948037222">Se ha cerrado tu sesión</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1434356225517321998">Tu navegador está administrado. <ph name="BEGIN_LINK" />Detalles<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ocultar contraseña</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementos</translation>
 <translation id="149095475893949513">Este sitio web está intentando descargar un perfil de configuración.</translation>
@@ -66,6 +68,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1509960214886564027">Es posible que las funciones de muchos sitios no funcionen correctamente.</translation>
 <translation id="152234381334907219">Contraseñas que nunca se guardan</translation>
 <translation id="1523341279170789507">Permitir todas las cookies</translation>
+<translation id="1524563461097350801">No, gracias</translation>
 <translation id="1535268707340844072">Tu configuración actual puede provocar que algunos sitios fallen. Para gestionar las cookies de todos los sitios, ve a <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Dirección 1</translation>
 <translation id="1545749641540134597">Escanea el código QR</translation>
@@ -104,21 +107,25 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1894205589103145703">No se ha podido iniciar la sesión.</translation>
 <translation id="1911619930368729126">Subir a Google Drive</translation>
 <translation id="1923342640370224680">Última hora</translation>
+<translation id="1930989359703290198">Tu organización solo te permite iniciar sesión con determinadas cuentas. Las cuentas no permitidas están ocultas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Toca dos veces para copiar.</translation>
 <translation id="1952172573699511566">Si es posible, los sitios web muestran texto en tu idioma preferido.</translation>
 <translation id="1965935827552890526">Termina lo que estabas haciendo en otra ventana abierta de Chrome.</translation>
+<translation id="196896377990863006">Mostrar vista previa del enlace</translation>
 <translation id="1973912524893600642">Conservar datos</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1989112275319619282">Examinar</translation>
+<translation id="199425419756152024">Ver contraseña</translation>
 <translation id="2015722694326466240">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder ver las contraseñas.</translation>
 <translation id="2021670401941426298">Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
-<translation id="2022352537516230970">Diseñado para tu iPhone</translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
+<translation id="2080769225927880590">Inicia sesión con una cuenta válida</translation>
 <translation id="209018056901015185">Ver como ordenador</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos eliminados</translation>
+<translation id="2122754583996902531">Tu navegador está administrado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">Solicitar añadir a lista de lectura</translation>
 <translation id="2139867232736819575">Buscar el texto que has copiado</translation>
 <translation id="214201757571129614">Iniciar sesión…</translation>
@@ -127,6 +134,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2218443599109088993">Reducir</translation>
 <translation id="2230173723195178503">Página web cargada</translation>
 <translation id="2239626343334228536">Borrando datos de navegación...</translation>
+<translation id="2256933947031277845">Tu organización solo te permite iniciar sesión con determinadas cuentas.</translation>
 <translation id="225943865679747347">Código de error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Añadir cuenta</translation>
 <translation id="2268044343513325586">Restringir</translation>
@@ -134,7 +142,6 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2302742851632557585">Cambiar contraseña en el sitio web</translation>
 <translation id="2316709634732130529">Usar contraseña sugerida</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
-<translation id="2339560363438331454">Sincronización y servicios de Google</translation>
 <translation id="2351097562818989364">Se han restablecido tus ajustes de traducción.</translation>
 <translation id="235789365079050412">Política de Privacidad de Google</translation>
 <translation id="2359043044084662842">Traducir</translation>
@@ -147,7 +154,10 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2386793615875593361">1 foto seleccionada</translation>
 <translation id="2421004566762153674">Bloquear cookies de terceros</translation>
 <translation id="2421044535038393232">Seguir editando</translation>
+<translation id="2434405374328098816">Ya has guardado una contraseña para <ph name="USERNAME" /> en <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
+<translation id="2473876017985765807">Ya has guardado una contraseña para <ph name="WEBSITE" /></translation>
+<translation id="2476359652512522418">No seleccionada</translation>
 <translation id="2497852260688568942">El administrador ha inhabilitado la sincronización</translation>
 <translation id="2500374554657206846">Opciones para guardar las contraseñas</translation>
 <translation id="2523363575747517183">Este sitio web está intentando abrir otra aplicación reiteradamente.</translation>
@@ -183,8 +193,8 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2820289420301699633">Tu administrador controla Chrome y puede acceder a sus datos</translation>
 <translation id="2830972654601096923">Gestionar tus direcciones...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" /> (<ph name="URL" />)</translation>
-<translation id="2840687315230832938">La configuración de sincronización inicial no ha terminado</translation>
 <translation id="2843803966603263712">Restablecer ajustes trad.</translation>
+<translation id="2848086008667475748">Establecer como predeterminado en Ajustes…</translation>
 <translation id="2858204748079866344">Para proteger tu privacidad, Chrome no autocompletará tu contraseña en este campo.</translation>
 <translation id="285960592395650245">Reintentar descarga</translation>
 <translation id="2870560284913253234">Sitio</translation>
@@ -216,12 +226,12 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3080525922482950719">Puedes guardar páginas para leerlas más tarde o sin conexión</translation>
 <translation id="3081338492074632642">La contraseña que guardes debe coincidir con tu contraseña de <ph name="WEBSITE" />.</translation>
 <translation id="3112556859945124369">Marcar…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bloquear todas</translation>
 <translation id="313283613037595347">Crea una nueva pestaña de incógnito</translation>
 <translation id="3153862085237805241">Guardar tarjeta</translation>
 <translation id="3157387275655328056">Añadir a lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todas…</translation>
-<translation id="3161291298470460782">Esta acción hará que se cierre tu sesión, se desactive la sincronización y se borren todos los datos de Chrome de este dispositivo. Los datos que hayas sincronizado permanecerán en tu cuenta de Google.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3175081911749765310">Servicios web</translation>
 <translation id="3178650076442119961">Activo hoy</translation>
@@ -230,10 +240,10 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3184767182050912705">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3224641773458703735">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder exportar las contraseñas.</translation>
+<translation id="3230318355092723906">Cuando la sincronización está desactivada, puedes seguir viendo todos tus marcadores, el historial, las contraseñas y otros ajustes en este dispositivo. Si realizas cambios, no se sincronizarán con tu cuenta.</translation>
 <translation id="3240426699337459095">Enlace copiado</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
-<translation id="3261971309013797455">Tu lista de lectura está disponible sin conexión. Para añadir una página a la lista, toca <ph name="SHARE_OPENING_ICON" /> y, a continuación, <ph name="ADD_TO_READING_LIST_TEXT" />.</translation>
 <translation id="3268451620468152448">Pestañas abiertas</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3277021493514034324">Se ha copiado la dirección del sitio web</translation>
@@ -264,7 +274,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3494788280727468875">Confirma que quieres borrar los datos de navegación</translation>
 <translation id="35083190962747987">Abrir ${url}</translation>
 <translation id="3519193562722059437">Abre una pestaña para navegar por la Web.</translation>
-<translation id="3523473570015918798">Si cierras sesión, tus marcadores, tu historial, tus contraseñas y otros datos de Chrome dejarán de sincronizarse con tu cuenta de Google.</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3529024052484145543">No es seguro</translation>
 <translation id="3533202363250687977">Cerrar todas las pestañas de incógnito</translation>
@@ -278,19 +287,24 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="3603009562372709545">Copiar URL de enlace</translation>
 <translation id="3607167657931203000">Datos de la función Autocompletar</translation>
 <translation id="3609785682760573515">Sincronizando...</translation>
+<translation id="3631443864840848029">Asegúrate de guardar la contraseña que usas en este sitio.</translation>
 <translation id="3638472932233958418">Precargar páginas web</translation>
 <translation id="3661160521073045932">Perfil de configuración disponible</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3691593122358196899">Marcador añadido a <ph name="FOLDER_TITLE" /></translation>
+<translation id="369349502275246497">Preguntar si quiero guardar contraseñas</translation>
 <translation id="3709582977625132201">Marcar como no leído</translation>
 <translation id="3740397331642243698">Abre las URL introducidas en Google Chrome en incógnito.</translation>
+<translation id="3762232513783804601">Diseñado para tu iPad</translation>
 <translation id="3771033907050503522">Pestañas incógnito</translation>
 <translation id="3775743491439407556">La sincronización no funciona</translation>
 <translation id="3779810277399252432">No hay conexión a Internet.</translation>
 <translation id="3783017676699494206">Guardar imagen</translation>
 <translation id="3789841737615482174">Instalar</translation>
+<translation id="380329542618494757">Nombre</translation>
 <translation id="3803696231112616155">Ofrecer traducir este sitio web</translation>
 <translation id="385051799172605136">Volver</translation>
+<translation id="3858860766373142691">Nombre</translation>
 <translation id="3892144330757387737">Aquí verás tu historial</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3913386780052199712">Has iniciado sesión en Chrome</translation>
@@ -310,7 +324,6 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="4038354071007134711">Ninguna aplicación puede abrir el archivo.</translation>
 <translation id="4042870976416480368">Buscar en página</translation>
 <translation id="4049507953662678203">Comprueba que tienes una conexión de red y vuelve a intentarlo.</translation>
-<translation id="4079195788735381731">Tu organización ha cerrado tu sesión</translation>
 <translation id="408404951701638773">Ahora es más fácil ir a la barra de búsqueda</translation>
 <translation id="411254640334432676">Error de descarga.</translation>
 <translation id="4112644173421521737">Buscar</translation>
@@ -321,7 +334,7 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="4172051516777682613">Mostrar siempre</translation>
 <translation id="418156467088430727">Ver versión sin conexión en una nueva pestaña</translation>
 <translation id="4181841719683918333">Idiomas</translation>
-<translation id="4184011057600693970">Diseñado para tu iPad</translation>
+<translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />App del navegador por omisión<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Introduce tu frase de contraseña</translation>
 <translation id="4263576668337963058">Mostrar las acciones de página disponibles</translation>
 <translation id="4267380167363222949">Siguiente pestaña</translation>
@@ -337,8 +350,10 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="4375040482473363939">Búsqueda mediante códigos QR</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4389019817280890563">Toca para cambiar el idioma.</translation>
+<translation id="4442550905108052454">Abre <ph name="BEGIN_BOLD" />Ajustes<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Añadir idioma</translation>
 <translation id="4469418912670346607">Continuar configuración</translation>
+<translation id="4474494258097106883">Diseñado para tu iPhone</translation>
 <translation id="4476574785019001431">Configuración</translation>
 <translation id="4496373720959965247">Añade pestañas y cambia de una página a otra</translation>
 <translation id="4502566650163919158">Comprobar ahora</translation>
@@ -352,6 +367,7 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="4619564267100705184">Verificar mi identidad</translation>
 <translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
 <translation id="4620246317052452550">Páginas que has leído</translation>
+<translation id="4620888520263267479">Mostrar vistas previas de enlaces</translation>
 <translation id="4630540211544979320">Traducir páginas</translation>
 <translation id="4634124774493850572">Utilizar contraseña</translation>
 <translation id="4636930964841734540">Información</translation>
@@ -372,6 +388,8 @@ Tus datos se han cifrado con tu frase de contraseña de sincronización. Introd�
 <translation id="4802417911091824046">El cifrado mediante frase de contraseña no incluye los métodos de pago ni las direcciones de Google Pay.
 
 Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" />.</translation>
+<translation id="4803185665210547709">Gestionado por tu organización.
+<ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">El número de tarjeta no es válido</translation>
 <translation id="4808744395915275922">Actualizaciones</translation>
 <translation id="4818522717893377262">Añadir idioma...</translation>
@@ -427,7 +445,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5295239312320826323">¿Quitar la cuenta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Guardar</translation>
-<translation id="5327248766486351172">Nombre</translation>
 <translation id="5339316356165661760">Activar sincronización</translation>
 <translation id="5360976571138293719">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, consulta <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="5388358297987318779">Abrir imagen</translation>
@@ -440,7 +457,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5457226814769348910">Abrir versión sin conexión</translation>
 <translation id="5489208564673669003">Para gestionar las cookies de todos los sitios, ve a <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas las cookies (no recomendado)</translation>
-<translation id="5508435575041083207">Cerrar sesión y borrar los datos de este dispositivo</translation>
 <translation id="5513681519188741830">Hace <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Crear frase de contraseña</translation>
 <translation id="5532698011560297095">No se puede acceder.</translation>
@@ -451,10 +467,10 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5580834567471114021">¿Añadir a lista de lectura para más tarde?</translation>
 <translation id="5592679540098330836">Activar sincronización de <ph name="NAME" /></translation>
+<translation id="560322036295180549">Desactivado por tu organización</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
 <translation id="5626245204502895507">No se puede descargar el archivo en este momento.</translation>
 <translation id="5631164295104953411">Añadir método de pago</translation>
-<translation id="5653058065071344726">Gestionado por tu organización. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5659593005791499971">Correo</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
@@ -463,9 +479,12 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5711039611392265845">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, accede a <ph name="BEGIN_LINK" />Sincronización y servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Para navegar por la Web de forma privada, añade una nueva pestaña.</translation>
 <translation id="5728700505257787410">Error al iniciar sesión en tu cuenta</translation>
+<translation id="5731784586962650619">Contraseñas en otras aplicaciones</translation>
 <translation id="5737974891429562743">Información de inicio de sesión de la cuenta obsoleta. Actualízala para iniciar la sincronización.</translation>
 <translation id="5738887413654608789">Esto te permite descubrir páginas web relevantes según lo que te rodea.</translation>
 <translation id="5758631781033351321">Aquí verás tu lista de lectura</translation>
+<translation id="575902488528307720">Busca una imagen</translation>
+<translation id="5781453543752460388">Añadir a Fotos</translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
 <translation id="5803566855766646066">¿Seguro que quieres descartar esta nueva tarjeta?</translation>
 <translation id="5812974770859303494">Añadir a...</translation>
@@ -475,6 +494,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5846482154967366008">Buscador</translation>
 <translation id="5854790677617711513">Más de 30 días</translation>
 <translation id="5857090052475505287">Nueva carpeta</translation>
+<translation id="5857675236236529683">Cuando quieras, consulta tu lista de lectura aquí</translation>
 <translation id="5857770089550859117">Se requiere una frase de contraseña para iniciar la sincronización.</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5869029295770560994">Entendido</translation>
@@ -496,12 +516,14 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5988851877894965432">Abrir URLs en Chrome</translation>
 <translation id="6012140227487808125">Cifrando...</translation>
 <translation id="6021332621416007159">Abrir en...</translation>
+<translation id="6027945736510816438">¿Quieres decir <ph name="WEBSITE" />?</translation>
 <translation id="6036514205982097558">Todas tus pestañas en un solo navegador</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla tus noticias y tu actividad aquí</translation>
+<translation id="6064824697233747382">Tu organización requiere que desactives la sincronización.</translation>
 <translation id="6066301408025741299">Toca para cancelar.</translation>
 <translation id="60829778314739003">Aceptar y continuar</translation>
 <translation id="6084848228346514841">Seleccionar pestañas</translation>
@@ -511,6 +533,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6127379762771434464">Elemento quitado</translation>
 <translation id="6136914049981179737">Hace segundos</translation>
 <translation id="6144589619057374135">Abrir ${url} en incógnito</translation>
+<translation id="6159839020698489198">opcional</translation>
 <translation id="6177442314419606057">Buscar en Chrome</translation>
 <translation id="6184086493125982861">Mostrar pestañas</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
@@ -567,6 +590,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="651505212789431520">¿Cancelar sincronización? Puedes activar la sincronización en cualquier momento desde los Ajustes.</translation>
 <translation id="6524918542306337007">El modo de incógnito no está disponible</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Ampliar</translation>
 <translation id="6585618849026997638">Si añades un marcador a una página que consideres importante, podrás volver a ella más tarde.</translation>
 <translation id="6603393121510733479">Tu organización ha desactivado la navegación privada.
@@ -577,7 +601,6 @@ Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="6628106477656132239">La fecha de vencimiento no es válida</translation>
 <translation id="6634432609054530164">Tu organización ha desactivado el modo de incógnito</translation>
 <translation id="6638511529934826365">Ampliar texto…</translation>
-<translation id="6639730758971422557">Para activar Navegación segura, abre <ph name="BEGIN_LINK" />Servicios de Google y sincronización<ph name="END_LINK" /> y toca Navegación segura.</translation>
 <translation id="6642362222295953972">Cambiar a la pestaña existente</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>
@@ -602,12 +625,14 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="6801927553864092214">Para navegar en privado, abre una pestaña de incógnito</translation>
 <translation id="6807889908376551050">Mostrar todo...</translation>
 <translation id="681368974849482173">Elemento creado</translation>
+<translation id="681450999322335505">Tu organización ha desactivado la sincronización</translation>
 <translation id="6830804042318138535">Ver más</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Verifica tu identidad para asegurarte de que siempre tengas acceso a tus contraseñas guardadas</translation>
 <translation id="6851516051005285358">Solicitar sitio para ordenadores</translation>
 <translation id="6858855187367714033">Escaneado</translation>
 <translation id="6859944681507688231">Para escanear un código QR o una tarjeta de crédito, habilita la cámara en la configuración.</translation>
+<translation id="6867369562105931222">contraseña</translation>
 <translation id="6869389390665537774">Puedes ver las páginas que has visitado o borrarlas de tu historial</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
 <translation id="6888009575607455378">¿Seguro que quieres descartar los cambios?</translation>
@@ -627,7 +652,6 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Pestañas recientes</translation>
 <translation id="7006788746334555276">Configuración de contenido</translation>
-<translation id="7015203776128479407">La configuración de sincronización inicial no ha terminado. La sincronización está desactivada.</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062545763355031412">Aceptar y cambiar de cuenta</translation>
@@ -650,7 +674,6 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="7265758999917665941">Jamás para este sitio web</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. No se ha copiado la contraseña.</translation>
 <translation id="7291368939935408496">Preparando contraseñas...</translation>
-<translation id="7293171162284876153">Para iniciar la sincronización, activa "Sincronizar tus datos de Chrome".</translation>
 <translation id="7313347584264171202">Aquí verás tus pestañas de incógnito</translation>
 <translation id="7319242366286515846">Si continúas, confirmas que aceptas los <ph name="BEGIN_LINK" />Términos del Servicio<ph name="END_LINK" />.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% descargado</translation>
@@ -675,10 +698,10 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="7472734401283673885">Nombre de empresa</translation>
 <translation id="7473891865547856676">No, gracias</translation>
 <translation id="7481312909269577407">Adelante</translation>
-<translation id="7483467499335917849">Usar la ubicación actual</translation>
 <translation id="750493650310597496">0 seleccionados</translation>
 <translation id="7508728395076009983">Para bloquear tus pestañas de incógnito, configura Touch ID, Face ID o una contraseña.</translation>
 <translation id="7514365320538308">Descargar</translation>
+<translation id="753094929961314545">Ocultar vista previa del enlace</translation>
 <translation id="7537586195939242955">No se puede instalar tu tarjeta en Passbook en este momento.</translation>
 <translation id="7554791636758816595">Nueva pestaña</translation>
 <translation id="7561196759112975576">Siempre</translation>
@@ -694,9 +717,6 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="7701040980221191251">No hay</translation>
 <translation id="7741325291586284254">Nueva página de pestaña de incógnito</translation>
 <translation id="7765158879357617694">Mover</translation>
-<translation id="7771470029643830783">Si cierras sesión, tus marcadores, tu historial, tus contraseñas y otros datos de Chrome dejarán de sincronizarse con tu cuenta de Google.
-
-Tu cuenta está gestionada por <ph name="HOSTED_DOMAIN" />, por lo que tus datos de Chrome se eliminarán de este dispositivo cuando cierres sesión. Los datos que hayas sincronizado permanecerán en tu cuenta de Google.</translation>
 <translation id="7772032839648071052">Repite la frase de contraseña</translation>
 <translation id="7778472311864276518">Quitar cuenta de este dispositivo</translation>
 <translation id="7781011649027948662">¿Quieres traducir esta página?</translation>
@@ -709,6 +729,7 @@ Tu cuenta está gestionada por <ph name="HOSTED_DOMAIN" />, por lo que tus datos
 <translation id="7856733331829174190">No se ha podido descargar</translation>
 <translation id="7859704718976024901">Historial de navegación</translation>
 <translation id="7887198238286927132">Para proteger tu privacidad, Chrome no autocompletará este campo.</translation>
+<translation id="7911190106180361398">Tu organización no te permite sincronizar todo.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contraseñas...</translation>
 <translation id="794799177247607889">Detener registro</translation>
@@ -718,6 +739,7 @@ Tu cuenta está gestionada por <ph name="HOSTED_DOMAIN" />, por lo que tus datos
 
 Los sitios pueden usar cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar anuncios.</translation>
 <translation id="7971521879845308059">Bloquear pop-ups</translation>
+<translation id="797413074872316787">Activa la sincronización para sincronizar y personalizar todos tus dispositivos.</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="7993619969781047893">Es posible que las funciones de algunos sitios no funcionen correctamente</translation>
 <translation id="800361585186029508">Abre las URL introducidas en Google Chrome.</translation>
@@ -736,8 +758,9 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8080028325999236607">Cerrar todas las pestañas</translation>
 <translation id="8105368624971345109">Desactivar</translation>
 <translation id="8114753159095730575">La descarga de archivos está disponible. Hay opciones disponibles en la parte inferior de la pantalla.</translation>
-<translation id="8131740175452115882">Confirmar</translation>
+<translation id="8132598642024322408">Ahora por <ph name="PRICE" />. Antes por <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8156478151976189188">Sincronización de contraseñas no funciona</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Traducir página</translation>
 <translation id="8205564605687841303">Cancelar</translation>
 <translation id="8206354486702514201">El administrador aplica esta opción.</translation>
@@ -749,10 +772,10 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8283172974887967105">Establecer…</translation>
 <translation id="8299417921174340354">Para usar las contraseñas, primero debes establecer una contraseña en tu dispositivo.</translation>
 <translation id="8299613349954694191">Abre una pestaña de incógnito para navegar por la Web en privado.</translation>
-<translation id="83100941411593607">Inicio de sesión inhabilitado</translation>
 <translation id="8319076807703933069">Nueva búsqueda</translation>
 <translation id="8323906514956095947">Mantén pulsado el botón para ver más opciones de pestañas</translation>
 <translation id="8328777765163860529">Cerrar todo</translation>
+<translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8386068868580335421">Restablecer</translation>
 <translation id="8407669440184693619">No se han encontrado contraseñas para este sitio web</translation>
 <translation id="842017693807136194">Has iniciado sesión como</translation>
@@ -764,10 +787,8 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8487667956631253959">Activada</translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>
 <translation id="8490978609246021741">Guardar cambios</translation>
-<translation id="8495097701594799854">Desactivado por tu organización.</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="850600235656508448">Abrir en modo de incógnito</translation>
-<translation id="8510057420705599706">Esta acción hará que se cierre tu sesión y se desactive la sincronización, pero tus marcadores, tu historial, tus contraseñas y otros datos de Chrome permanecerán en este dispositivo.</translation>
 <translation id="8517375800490286174">Licencias de software libre</translation>
 <translation id="8524799873541103884">Pestañas de <ph name="INCOGNITO" />: de <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8529767659511976195">Nuevo</translation>
@@ -803,12 +824,14 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8840513115188359703">No se cerrará la sesión en tu cuenta de Google.</translation>
+<translation id="8843129975935593190">Tu organización limita lo que puedes sincronizar.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} pestaña}other{{count} pestañas}}</translation>
 <translation id="8870413625673593573">Cerrado recientemente</translation>
 <translation id="8876882697946675716">Mantén tus dispositivos sincronizados</translation>
 <translation id="8881801611828450202">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Compartir…</translation>
 <translation id="8917490105272468696">Sí, acepto</translation>
+<translation id="8952559610785099500">Añadir contraseña</translation>
 <translation id="895541991026785598">Notificar un problema</translation>
 <translation id="8976382372951310360">Ayuda</translation>
 <translation id="8976414606286374109">Las tarjetas se guardan en tu cuenta de Google.</translation>
@@ -838,6 +861,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Informe sobre fallos enviado.</translation>
 <translation id="952704832371081537">Cancelar</translation>
+<translation id="981498610235328462">Tu organización solo te permite iniciar sesión con determinadas cuentas. Las cuentas no permitidas están ocultas.</translation>
 <translation id="984509647832111802">La sincronización no funciona.</translation>
 <translation id="988141524645182168">Otros dispositivos</translation>
 <translation id="989988560359834682">Editar dirección</translation>

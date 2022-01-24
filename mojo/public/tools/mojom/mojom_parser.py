@@ -274,7 +274,7 @@ def _ParseMojoms(mojom_files,
     module_root_paths: A list of absolute filesystem paths which contain
         already-generated modules for any non-transitive dependencies.
     enabled_features: A list of enabled feature names, controlling which AST
-        nodes are filtered by [EnableIf] attributes.
+        nodes are filtered by [EnableIf] or [EnableIfNot] attributes.
     module_metadata: A list of 2-tuples representing metadata key-value pairs to
         attach to each compiled module output.
 
@@ -433,9 +433,9 @@ already present in the provided output root.""")
       help='Enables a named feature when parsing the given mojoms. Features '
       'are identified by arbitrary string values. Specifying this flag with a '
       'given FEATURE name will cause the parser to process any syntax elements '
-      'tagged with an [EnableIf=FEATURE] attribute. If this flag is not '
-      'provided for a given FEATURE, such tagged elements are discarded by the '
-      'parser and will not be present in the compiled output.')
+      'tagged with an [EnableIf=FEATURE] or [EnableIfNot] attribute. If this '
+      'flag is not provided for a given FEATURE, such tagged elements are '
+      'discarded by the parser and will not be present in the compiled output.')
   arg_parser.add_argument(
       '--check-imports',
       dest='build_metadata_filename',

@@ -14,7 +14,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
-#import "components/signin/public/base/account_consistency_method.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -29,11 +28,15 @@
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_observer_bridge.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
+#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #include "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -70,7 +73,6 @@
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
-#import "ios/public/provider/chrome/browser/signin/signin_presenter.h"
 #import "ios/web/public/web_state.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
@@ -126,11 +128,13 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 
 @interface RecentTabsTableViewController () <SigninPromoViewConsumer,
                                              SigninPresenter,
+                                             SyncObserverModelBridge,
                                              SyncPresenter,
                                              TableViewURLDragDataSource,
                                              UIContextMenuInteractionDelegate,
                                              UIGestureRecognizerDelegate> {
   std::unique_ptr<synced_sessions::SyncedSessions> _syncedSessions;
+  std::unique_ptr<SyncObserverBridge> _syncObserver;
 }
 // The service that manages the recently closed tabs
 @property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
@@ -155,9 +159,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 #pragma mark - Public Interface
 
 - (instancetype)init {
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? ChromeTableViewStyle()
-                               : UITableViewStylePlain;
+  UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
     _sessionState = SessionsSyncUserState::USER_SIGNED_OUT;
@@ -169,7 +171,8 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 }
 
 - (void)dealloc {
-  [_signinPromoViewMediator signinPromoViewIsRemoved];
+  [self.signinPromoViewMediator disconnect];
+  self.signinPromoViewMediator = nil;
 }
 
 - (void)viewDidLoad {
@@ -184,11 +187,11 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   self.tableView.sectionFooterHeight = 0.0;
   self.title = l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_RECENT_TABS);
 
-    self.dragDropHandler = [[TableViewURLDragDropHandler alloc] init];
-    self.dragDropHandler.origin = WindowActivityRecentTabsOrigin;
-    self.dragDropHandler.dragDataSource = self;
-    self.tableView.dragDelegate = self.dragDropHandler;
-    self.tableView.dragInteractionEnabled = true;
+  self.dragDropHandler = [[TableViewURLDragDropHandler alloc] init];
+  self.dragDropHandler.origin = WindowActivityRecentTabsOrigin;
+  self.dragDropHandler.dragDataSource = self;
+  self.tableView.dragDelegate = self.dragDropHandler;
+  self.tableView.dragInteractionEnabled = true;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -208,15 +211,20 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 #pragma mark - Setters & Getters
 
 - (void)setBrowser:(Browser*)browser {
-  DCHECK(browser);
   _browser = browser;
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  // Some RecentTabs services depend on objects not present in the OffTheRecord
-  // BrowserState, in order to prevent crashes set |_browserState| to
-  // |browserState|->OriginalChromeBrowserState. While doing this check if
-  // incognito or not so that pages are loaded accordingly.
-  _browserState = browserState->GetOriginalChromeBrowserState();
-  _incognito = browserState->IsOffTheRecord();
+  if (browser) {
+    ChromeBrowserState* browserState = browser->GetBrowserState();
+    // Some RecentTabs services depend on objects not present in the
+    // OffTheRecord BrowserState, in order to prevent crashes set
+    // |_browserState| to |browserState|->OriginalChromeBrowserState. While
+    // doing this check if incognito or not so that pages are loaded
+    // accordingly.
+    _browserState = browserState->GetOriginalChromeBrowserState();
+    _incognito = browserState->IsOffTheRecord();
+    _syncObserver.reset(new SyncObserverBridge(self, self.syncService));
+  } else {
+    _syncObserver.reset();
+  }
 }
 
 - (WebStateList*)webStateList {
@@ -235,18 +243,47 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   [self.tableView reloadData];
 }
 
+- (syncer::SyncService*)syncService {
+  DCHECK(_browserState);
+  return SyncServiceFactory::GetForBrowserState(_browserState);
+}
+
+// Returns YES if the user cannot turn on sync for enterprise policy reasons.
+- (BOOL)isSyncDisabledByAdministrator {
+  DCHECK(self.syncService);
+  bool syncDisabledPolicy = self.syncService->GetDisableReasons().Has(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+  bool syncTypesDisabledPolicy =
+      IsManagedSyncDataType(self.browserState, SyncSetupService::kSyncOpenTabs);
+  return syncDisabledPolicy || syncTypesDisabledPolicy;
+}
+
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
+  if (self.preventUpdates ||
+      ![self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierOtherDevices]) {
+    return;
+  }
+
+  [self.tableView
+      performBatchUpdates:^{
+        [self updateOtherDevicesSectionForState:self.sessionState];
+      }
+               completion:nil];
+}
+
 #pragma mark - TableViewModel
 
 - (void)loadModel {
   [super loadModel];
 
-  if (@available(iOS 13, *)) {
-    if (self.session) {
-      // Replace mediator to store collapsed keys in scene session.
-      self.tableViewModel.collapsableMediator =
-          [[ListModelCollapsedSceneSessionMediator alloc]
-              initWithSession:self.session];
-    }
+  if (self.session) {
+    // Replace mediator to store collapsed keys in scene session.
+    self.tableViewModel.collapsableMediator =
+        [[ListModelCollapsedSceneSessionMediator alloc]
+            initWithSession:self.session];
   }
 
   [self addRecentlyClosedSection];
@@ -466,8 +503,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   // section. However, if sign-in is disabled by policy Chrome will
   // continue to show the Other Devices section with a specialized message.
   const PrefService* prefs = self.browserState->GetPrefs();
-  if (!signin::IsSigninAllowed(prefs) &&
-      signin::IsSigninAllowedByPolicy(prefs)) {
+  if (!signin::IsSigninAllowed(prefs) && signin::IsSigninAllowedByPolicy()) {
     return;
   }
 
@@ -492,24 +528,19 @@ const int kRecentlyClosedTabsSectionIndex = 0;
         [[TableViewDisclosureHeaderFooterItem alloc]
             initWithType:ItemTypeRecentlyClosedHeader];
     header.text = l10n_util::GetNSString(IDS_IOS_RECENT_TABS_OTHER_DEVICES);
+    if (self.isSyncDisabledByAdministrator) {
+      header.disabled = YES;
+      header.subtitleText =
+          l10n_util::GetNSString(IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION);
+    }
     [model setHeader:header
         forSectionWithIdentifier:SectionIdentifierOtherDevices];
     header.collapsed =
         [self.tableViewModel sectionIsCollapsed:SectionIdentifierOtherDevices];
   }
 
-  if (!signin::IsSigninAllowed(self.browserState->GetPrefs())) {
-    // If sign-in is disabled by policy, don't show an illustration or a sign-in
-    // promo.
-    TableViewTextItem* disabledByOrganizationText =
-        [[TableViewTextItem alloc] initWithType:ItemTypeSigninDisabled];
-    disabledByOrganizationText.text =
-        l10n_util::GetNSString(IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION);
-    disabledByOrganizationText.textColor =
-        [UIColor colorNamed:kTextSecondaryColor];
-    [self.tableViewModel addItem:disabledByOrganizationText
-         toSectionWithIdentifier:SectionIdentifierOtherDevices];
-  } else {
+  if (!self.isSyncDisabledByAdministrator &&
+      signin::IsSigninAllowed(self.browserState->GetPrefs())) {
     ItemType itemType;
     NSString* itemSubtitle;
     NSString* itemButtonText;
@@ -744,8 +775,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   self.sessionState = newSessionState;
 
   if (self.sessionState != SessionsSyncUserState::USER_SIGNED_OUT) {
-    [self.signinPromoViewMediator signinPromoViewIsRemoved];
-    self.signinPromoViewMediator.consumer = nil;
+    [self.signinPromoViewMediator disconnect];
     self.signinPromoViewMediator = nil;
   }
 }
@@ -766,6 +796,8 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 
 - (void)dismissModals {
   [self.contextMenuCoordinator stop];
+  [self.signinPromoViewMediator disconnect];
+  self.signinPromoViewMediator = nil;
   ios::provider::DismissModalsForTableView(self.tableView);
 }
 
@@ -838,13 +870,11 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   // If SigninPromo will be shown, |self.signinPromoViewMediator| must know.
   if (itemTypeSelected == ItemTypeOtherDevicesSigninPromo) {
     [self.signinPromoViewMediator signinPromoViewIsVisible];
-      TableViewSigninPromoCell* signinPromoCell =
-          base::mac::ObjCCastStrict<TableViewSigninPromoCell>(cell);
-      signinPromoCell.signinPromoView.imageView.hidden = YES;
-      signinPromoCell.signinPromoView.textLabel.hidden = YES;
-      if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-        signinPromoCell.backgroundColor = nil;
-      }
+    TableViewSigninPromoCell* signinPromoCell =
+        base::mac::ObjCCastStrict<TableViewSigninPromoCell>(cell);
+    signinPromoCell.signinPromoView.imageView.hidden = YES;
+    signinPromoCell.signinPromoView.textLabel.hidden = YES;
+    signinPromoCell.backgroundColor = nil;
   }
   // Retrieve favicons for closed tabs and remote sessions.
   if (itemTypeSelected == ItemTypeRecentlyClosed ||
@@ -1324,8 +1354,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
     // exist anymore. The mediator should not be removed each time the section
     // is removed since the section is replaced at each reload.
     // Metrics would be recorded too often.
-    [self.signinPromoViewMediator signinPromoViewIsRemoved];
-    self.signinPromoViewMediator.consumer = nil;
+    [self.signinPromoViewMediator disconnect];
     self.signinPromoViewMediator = nil;
     return;
   }
@@ -1422,11 +1451,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   if (syncState == SyncSetupService::kSyncServiceSignInNeedsUpdate) {
     [self showReauthenticateSignin];
   } else if (ShouldShowSyncSettings(syncState)) {
-    if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-      [self showSyncManagerSettings];
-    } else {
-      [self showGoogleServicesSettings];
-    }
+    [self showSyncManagerSettings];
   } else if (syncState == SyncSetupService::kSyncServiceNeedsPassphrase) {
     [self showSyncPassphraseSettings];
   }

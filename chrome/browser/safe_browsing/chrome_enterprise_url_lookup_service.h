@@ -41,6 +41,12 @@ class ChromeEnterpriseRealTimeUrlLookupService
           get_user_population_callback,
       enterprise_connectors::ConnectorsService* connectors_service,
       ReferrerChainProvider* referrer_chain_provider);
+
+  ChromeEnterpriseRealTimeUrlLookupService(
+      const ChromeEnterpriseRealTimeUrlLookupService&) = delete;
+  ChromeEnterpriseRealTimeUrlLookupService& operator=(
+      const ChromeEnterpriseRealTimeUrlLookupService&) = delete;
+
   ~ChromeEnterpriseRealTimeUrlLookupService() override;
 
   // RealTimeUrlLookupServiceBase:
@@ -55,8 +61,11 @@ class ChromeEnterpriseRealTimeUrlLookupService
   bool CanPerformFullURLLookupWithToken() const override;
   bool CanAttachReferrerChain() const override;
   int GetReferrerUserGestureLimit() const override;
+  bool CanSendPageLoadToken() const override;
   void GetAccessToken(
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
@@ -75,8 +84,6 @@ class ChromeEnterpriseRealTimeUrlLookupService
 
   base::WeakPtrFactory<ChromeEnterpriseRealTimeUrlLookupService> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeEnterpriseRealTimeUrlLookupService);
 
 };  // class ChromeEnterpriseRealTimeUrlLookupService
 

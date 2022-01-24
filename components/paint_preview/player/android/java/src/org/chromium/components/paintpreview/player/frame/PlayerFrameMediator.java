@@ -117,6 +117,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         final int top = Math.max(0,
                 Math.min(Math.round(mViewport.getTransY()),
                         Math.round(mContentSize.getHeight() * scaleFactor) - height));
+
         mViewport.setTrans(left, top);
         mViewport.setSize(width, height);
         final float oldScaleFactor = mViewport.getScale();
@@ -246,6 +247,10 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     @Override
     public void updateVisuals(boolean scaleUpdated) {
         final float scaleFactor = mViewport.getScale();
+
+        // Prevent updates before the viewport is ready.
+        if (scaleFactor == 0f || mViewport.getWidth() == 0 || mViewport.getHeight() == 0) return;
+
         PlayerFrameBitmapState activeLoadingState =
                 mBitmapStateController.getBitmapState(scaleUpdated);
 

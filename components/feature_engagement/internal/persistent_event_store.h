@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/internal/event_store.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
@@ -25,6 +24,10 @@ class PersistentEventStore : public EventStore {
  public:
   // Builds a PersistentEventStore backed by the ProtoDatabase |db|.
   PersistentEventStore(std::unique_ptr<leveldb_proto::ProtoDatabase<Event>> db);
+
+  PersistentEventStore(const PersistentEventStore&) = delete;
+  PersistentEventStore& operator=(const PersistentEventStore&) = delete;
+
   ~PersistentEventStore() override;
 
   // EventStore implementation.
@@ -49,8 +52,6 @@ class PersistentEventStore : public EventStore {
   bool ready_;
 
   base::WeakPtrFactory<PersistentEventStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentEventStore);
 };
 
 }  // namespace feature_engagement

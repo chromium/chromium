@@ -12,8 +12,8 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/media/audio/mixer_service/constants.h"
@@ -42,6 +42,9 @@ class LocalReceiverInstance {
  public:
   LocalReceiverInstance() = default;
 
+  LocalReceiverInstance(const LocalReceiverInstance&) = delete;
+  LocalReceiverInstance& operator=(const LocalReceiverInstance&) = delete;
+
   void SetInstance(Receiver* receiver) {
     base::AutoLock lock(lock_);
     receiver_ = receiver;
@@ -63,8 +66,6 @@ class LocalReceiverInstance {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(LocalReceiverInstance);
-
   base::Lock lock_;
   Receiver* receiver_ = nullptr;
 };
@@ -87,6 +88,9 @@ class Receiver::InitialSocket : public MixerSocket::Delegate {
     DCHECK(receiver_);
     socket_->SetDelegate(this);
   }
+
+  InitialSocket(const InitialSocket&) = delete;
+  InitialSocket& operator=(const InitialSocket&) = delete;
 
   ~InitialSocket() override = default;
 
@@ -120,8 +124,6 @@ class Receiver::InitialSocket : public MixerSocket::Delegate {
 
   Receiver* const receiver_;
   std::unique_ptr<MixerSocket> socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitialSocket);
 };
 
 Receiver::Receiver()

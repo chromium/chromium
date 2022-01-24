@@ -11,6 +11,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {isNavEnabled} from './diagnostics_utils.js';
 
 /**
  * @fileoverview
@@ -146,7 +147,7 @@ Polymer({
     // Note that with side nav DOM manipulation, created() isn't guaranteed to
     // be called only once.
     this.data_ = [];
-    for (var i = 0; i < this.numDataPoints_; ++i) {
+    for (let i = 0; i < this.numDataPoints_; ++i) {
       this.data_.push({user: -1, system: -1});
     }
   },
@@ -165,7 +166,8 @@ Polymer({
   updateChartWidth_() {
     // parseFloat() is used to convert the string returned by
     // getComputedStyleValue() into a number ("642px" --> 642).
-    this.width_ = parseFloat(this.getComputedStyleValue('--chart-width'));
+    const chartVar = isNavEnabled() ? '--chart-width-nav' : '--chart-width';
+    this.width_ = parseFloat(this.getComputedStyleValue(chartVar));
   },
 
   /**

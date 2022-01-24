@@ -103,11 +103,14 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _lastSessionFreezeInfo = [[NSUserDefaults standardUserDefaults]
-        dictionaryForKey:@(kNsUserDefaultKeyLastSessionInfo)];
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    _lastSessionFreezeInfo =
+        [defaults dictionaryForKey:@(kNsUserDefaultKeyLastSessionInfo)];
 
     if (_lastSessionFreezeInfo != nil) {
-      NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+      // This cannot use WasLastShutdownClean() from the metrics service because
+      // MainThreadFreezeDetector starts before metrics. Instead, grab the value
+      // directly.
       bool clean = [defaults objectForKey:kLastSessionExitedCleanly] != nil &&
                    [defaults boolForKey:kLastSessionExitedCleanly];
       // Last session exited cleanly, ignore _lastSessionFreezeInfo.
@@ -118,8 +121,7 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
     }
 
     _lastSessionEndedFrozen = _lastSessionFreezeInfo != nil;
-    [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:@(kNsUserDefaultKeyLastSessionInfo)];
+    [defaults removeObjectForKey:@(kNsUserDefaultKeyLastSessionInfo)];
     _delay = kFreezeDetectionDelay;
     _freezeDetectionQueue = dispatch_queue_create(
         "org.chromium.freeze_detection", DISPATCH_QUEUE_SERIAL);
@@ -151,7 +153,7 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     if (_lastSessionEndedFrozen) {
-      LogRecoveryTime(base::TimeDelta::FromSeconds(0));
+      LogRecoveryTime(base::Seconds(0));
     }
   });
   _enabled = enabled;
@@ -189,7 +191,7 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
     // Remove information about the last session info.
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:@(kNsUserDefaultKeyLastSessionInfo)];
-    LogRecoveryTime(base::TimeDelta::FromSecondsD(
+    LogRecoveryTime(base::Seconds(
         [[NSDate date] timeIntervalSinceDate:oldLastSeenMainThread]));
     // Restart the freeze detection.
     dispatch_async(_freezeDetectionQueue, ^{
@@ -229,7 +231,9 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
     if (crash_reporter::IsCrashpadRunning()) {
       static crash_reporter::CrashKeyString<4> key("hang-report");
       crash_reporter::ScopedCrashKeyString auto_clear(&key, "yes");
-      base::FilePath path(base::SysNSStringToUTF8(_UTEDirectory));
+      NSString* intermediate_dump = [_UTEDirectory
+          stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]];
+      base::FilePath path(base::SysNSStringToUTF8(intermediate_dump));
       crash_reporter::DumpWithoutCrashAndDeferProcessingAtPath(path);
       if (!self.running) {
         UMA_HISTOGRAM_ENUMERATION(

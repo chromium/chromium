@@ -18,7 +18,8 @@
         android:layout_height="24dp"
         android:gravity="center_vertical"
         android:tint="@color/default_icon_color_secondary_tint_list"
-        android:tintMode="src_in" />
+        android:tintMode="src_in"
+        android:duplicateParentState="true" />
 
     <TextView
         android:id="@+id/menu_item_text"
@@ -27,6 +28,7 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:singleLine="true"
-        android:paddingStart="12dp" />
+        android:paddingStart="12dp"
+        android:duplicateParentState="true" />
 
 </LinearLayout>

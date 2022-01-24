@@ -109,7 +109,7 @@ public class CookieControlsBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Profile profile = Profile.getLastUsedRegularProfile();
             UserPrefs.get(profile).clearPref(PrefNames.COOKIE_CONTROLS_MODE);
-            WebsitePreferenceBridge.setContentSetting(
+            WebsitePreferenceBridge.setDefaultContentSetting(
                     profile, ContentSettingsType.COOKIES, ContentSettingValues.DEFAULT);
             BrowsingDataBridge.getInstance().clearBrowsingData(helper::notifyCalled,
                     new int[] {BrowsingDataType.COOKIES}, TimePeriod.ALL_TIME);

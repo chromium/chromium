@@ -27,4 +27,5 @@ js_library("cr_search_field") {
 }
 
 js_library("cr_search_field_behavior") {
+  deps = [ "//ui/webui/resources/cr_elements/cr_input:cr_input.m" ]
 }

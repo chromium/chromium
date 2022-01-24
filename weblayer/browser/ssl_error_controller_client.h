@@ -35,6 +35,9 @@ class SSLErrorControllerClient
       std::unique_ptr<security_interstitials::SettingsPageHelper>
           settings_page_helper);
 
+  SSLErrorControllerClient(const SSLErrorControllerClient&) = delete;
+  SSLErrorControllerClient& operator=(const SSLErrorControllerClient&) = delete;
+
   ~SSLErrorControllerClient() override = default;
 
   // security_interstitials::SecurityInterstitialControllerClient:
@@ -48,8 +51,6 @@ class SSLErrorControllerClient
   const int cert_error_;
   const net::SSLInfo ssl_info_;
   const GURL request_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorControllerClient);
 };
 
 }  // namespace weblayer

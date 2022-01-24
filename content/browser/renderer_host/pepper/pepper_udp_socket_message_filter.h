@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -67,6 +66,10 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   PepperUDPSocketMessageFilter(BrowserPpapiHostImpl* host,
                                PP_Instance instance,
                                bool private_api);
+
+  PepperUDPSocketMessageFilter(const PepperUDPSocketMessageFilter&) = delete;
+  PepperUDPSocketMessageFilter& operator=(const PepperUDPSocketMessageFilter&) =
+      delete;
 
   using CreateUDPSocketCallback = base::RepeatingCallback<void(
       network::mojom::NetworkContext* network_context,
@@ -233,8 +236,6 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   base::WeakPtrFactory<PepperUDPSocketMessageFilter>
       firewall_hole_weak_ptr_factory_{this};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DISALLOW_COPY_AND_ASSIGN(PepperUDPSocketMessageFilter);
 };
 
 }  // namespace content

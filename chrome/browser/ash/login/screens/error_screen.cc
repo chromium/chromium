@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/connectivity_diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
@@ -39,12 +38,23 @@
 #include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "content/public/browser/notification_service.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ash {
 namespace {
+
+// TODO(https://crbug.com/1241511): Remove this global.
+bool g_offline_login_allowed_ = false;
+
+// Additional flag applied on top of g_offline_login_allowed_ that can block
+// visibility of offline login link when a focused pod user has offline login
+// timer (set by policy) expired. If that happens flag is flipped to false.
+// In all other cases it should be set to a default value of true.
+// Even if a user gets to the (hidden) flow, the offline login may be blocked
+// by checking the policy value there.
+// TODO(https://crbug.com/1241511): Remove this global.
+bool g_offline_login_per_user_allowed_ = true;
 
 // Returns the current running kiosk app profile in a kiosk session. Otherwise,
 // returns nullptr.
@@ -101,11 +111,11 @@ void ErrorScreen::ShowOfflineLoginOption(bool show) {
 }
 
 void ErrorScreen::AllowOfflineLogin(bool allowed) {
-  offline_login_allowed_ = allowed;
+  g_offline_login_allowed_ = allowed;
 }
 
 void ErrorScreen::AllowOfflineLoginPerUser(bool allowed) {
-  offline_login_per_user_allowed_ = allowed;
+  g_offline_login_per_user_allowed_ = allowed;
 }
 
 void ErrorScreen::FixCaptivePortal() {
@@ -192,10 +202,7 @@ void ErrorScreen::MaybeInitCaptivePortalWindowProxy(
 
 void ErrorScreen::DoShow() {
   LOG(WARNING) << "Network error screen message is shown";
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
+  session_manager::SessionManager::Get()->NotifyNetworkErrorScreenShown();
   network_portal_detector::GetInstance()->SetStrategy(
       PortalDetectorStrategy::STRATEGY_ID_ERROR_SCREEN);
 }
@@ -242,7 +249,7 @@ void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
       user_manager::UserManager::Get()->IsGuestSessionAllowed();
   AllowGuestSignin(guest_signin_allowed);
   ShowOfflineLoginOption(
-      offline_login_allowed_ && offline_login_per_user_allowed_ &&
+      g_offline_login_allowed_ && g_offline_login_per_user_allowed_ &&
       GetErrorState() != NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT);
 
   // No need to show the screen again if it is already shown.

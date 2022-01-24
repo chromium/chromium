@@ -4,16 +4,17 @@
 
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/extension_uninstaller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/common/extension.h"
 
 namespace apps {
 
-ExtensionApps::ExtensionApps(
-    const mojo::Remote<apps::mojom::AppService>& app_service,
-    Profile* profile)
-    : ExtensionAppsBase(app_service, profile) {}
+ExtensionApps::ExtensionApps(AppServiceProxy* proxy)
+    : ExtensionAppsBase(proxy) {
+  Initialize(proxy->AppService());
+}
 
 ExtensionApps::~ExtensionApps() = default;
 
@@ -39,6 +40,15 @@ bool ExtensionApps::Accepts(const extensions::Extension* extension) {
 bool ExtensionApps::ShouldShownInLauncher(
     const extensions::Extension* extension) {
   return true;
+}
+
+std::unique_ptr<App> ExtensionApps::CreateApp(
+    const extensions::Extension* extension,
+    Readiness readiness) {
+  std::unique_ptr<App> app = CreateAppImpl(extension, readiness);
+  app->icon_key =
+      std::move(*icon_key_factory().CreateIconKey(GetIconEffects(extension)));
+  return app;
 }
 
 apps::mojom::AppPtr ExtensionApps::Convert(

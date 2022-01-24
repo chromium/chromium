@@ -14,8 +14,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -40,7 +40,13 @@ class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
  public:
   using BufferQueue = base::circular_deque<scoped_refptr<StreamParserBuffer>>;
 
+  ChunkDemuxerStream() = delete;
+
   ChunkDemuxerStream(Type type, MediaTrack::Id media_track_id);
+
+  ChunkDemuxerStream(const ChunkDemuxerStream&) = delete;
+  ChunkDemuxerStream& operator=(const ChunkDemuxerStream&) = delete;
+
   ~ChunkDemuxerStream() override;
 
   // ChunkDemuxerStream control methods.
@@ -187,8 +193,6 @@ class MEDIA_EXPORT ChunkDemuxerStream : public DemuxerStream {
   State state_ GUARDED_BY(lock_);
   ReadCB read_cb_ GUARDED_BY(lock_);
   bool is_enabled_ GUARDED_BY(lock_);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ChunkDemuxerStream);
 };
 
 // Demuxer implementation that allows chunks of media data to be passed
@@ -211,6 +215,10 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
                base::RepeatingClosure progress_cb,
                EncryptedMediaInitDataCB encrypted_media_init_data_cb,
                MediaLog* media_log);
+
+  ChunkDemuxer(const ChunkDemuxer&) = delete;
+  ChunkDemuxer& operator=(const ChunkDemuxer&) = delete;
+
   ~ChunkDemuxer() override;
 
   // Demuxer implementation.
@@ -250,18 +258,22 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // chunks for this ID.
   Status AddId(const std::string& id,
                const std::string& content_type,
-               const std::string& codecs);
+               const std::string& codecs) WARN_UNUSED_RESULT;
   Status AddId(const std::string& id,
-               std::unique_ptr<AudioDecoderConfig> audio_config);
+               std::unique_ptr<AudioDecoderConfig> audio_config)
+      WARN_UNUSED_RESULT;
   Status AddId(const std::string& id,
-               std::unique_ptr<VideoDecoderConfig> video_config);
+               std::unique_ptr<VideoDecoderConfig> video_config)
+      WARN_UNUSED_RESULT;
 
   // Notifies a caller via |tracks_updated_cb| that the set of media tracks
-  // for a given |id| has changed.
+  // for a given |id| has changed. This callback must be set before any calls to
+  // AppendData() for this |id|.
   void SetTracksWatcher(const std::string& id,
-                        const MediaTracksUpdatedCB& tracks_updated_cb);
+                        MediaTracksUpdatedCB tracks_updated_cb);
 
-  // Notifies a caller via |parse_warning_cb| of a parse warning.
+  // Notifies a caller via |parse_warning_cb| of a parse warning. This callback
+  // must be set before any calls to AppendData() for this |id|.
   void SetParseWarningCallback(const std::string& id,
                                SourceBufferParseWarningCB parse_warning_cb);
 
@@ -295,7 +307,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
                   size_t length,
                   base::TimeDelta append_window_start,
                   base::TimeDelta append_window_end,
-                  base::TimeDelta* timestamp_offset);
+                  base::TimeDelta* timestamp_offset) WARN_UNUSED_RESULT;
 
   // Appends webcodecs encoded chunks (already converted by caller into a
   // BufferQueue of StreamParserBuffers) to the source buffer associated with
@@ -305,7 +317,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
                     std::unique_ptr<StreamParser::BufferQueue> buffer_queue,
                     base::TimeDelta append_window_start,
                     base::TimeDelta append_window_end,
-                    base::TimeDelta* timestamp_offset);
+                    base::TimeDelta* timestamp_offset) WARN_UNUSED_RESULT;
 
   // Aborts parsing the current segment and reset the parser to a state where
   // it can accept a new segment.
@@ -347,7 +359,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   // https://w3c.github.io/media-source/#sourcebuffer-coded-frame-eviction
   bool EvictCodedFrames(const std::string& id,
                         base::TimeDelta currentMediaTime,
-                        size_t newDataSize);
+                        size_t newDataSize) WARN_UNUSED_RESULT;
 
   void OnMemoryPressure(
       base::TimeDelta currentMediaTime,
@@ -547,8 +559,6 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   std::vector<std::unique_ptr<ChunkDemuxerStream>> removed_streams_;
 
   std::map<MediaTrack::Id, ChunkDemuxerStream*> track_id_to_demux_stream_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChunkDemuxer);
 };
 
 }  // namespace media

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_MANAGER_H_
 #define CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_MANAGER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
@@ -29,6 +28,10 @@ class ExclusiveAccessManager {
  public:
   explicit ExclusiveAccessManager(
       ExclusiveAccessContext* exclusive_access_context);
+
+  ExclusiveAccessManager(const ExclusiveAccessManager&) = delete;
+  ExclusiveAccessManager& operator=(const ExclusiveAccessManager&) = delete;
+
   ~ExclusiveAccessManager();
 
   FullscreenController* fullscreen_controller() {
@@ -77,8 +80,6 @@ class ExclusiveAccessManager {
   FullscreenController fullscreen_controller_;
   KeyboardLockController keyboard_lock_controller_;
   MouseLockController mouse_lock_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExclusiveAccessManager);
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_MANAGER_H_

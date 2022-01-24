@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,13 +32,13 @@ class ArcKioskBridgeTest : public testing::Test {
         kiosk_bridge_(ArcKioskBridge::CreateForTesting(bridge_service_.get(),
                                                        delegate_.get())) {}
 
+  ArcKioskBridgeTest(const ArcKioskBridgeTest&) = delete;
+  ArcKioskBridgeTest& operator=(const ArcKioskBridgeTest&) = delete;
+
  protected:
   std::unique_ptr<ArcBridgeService> bridge_service_;
   std::unique_ptr<MockArcKioskBridgeDelegate> delegate_;
   std::unique_ptr<ArcKioskBridge> kiosk_bridge_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskBridgeTest);
 };
 
 TEST_F(ArcKioskBridgeTest, MaintenanceSessionFinished) {

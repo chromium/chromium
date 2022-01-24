@@ -113,6 +113,9 @@ class MultiProcessTest : public PlatformTest {
  public:
   MultiProcessTest();
 
+  MultiProcessTest(const MultiProcessTest&) = delete;
+  MultiProcessTest& operator=(const MultiProcessTest&) = delete;
+
  protected:
   // Run a child process.
   // 'procname' is the name of a function which the child will
@@ -141,9 +144,6 @@ class MultiProcessTest : public PlatformTest {
   // TODO(viettrungluu): Remove this and add a virtual
   // |ModifyChildCommandLine()|; make the two divergent uses more sane.
   virtual CommandLine MakeCmdLine(const std::string& procname);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MultiProcessTest);
 };
 
 }  // namespace base

@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.vr;
-
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.CompositorView;
@@ -26,7 +26,10 @@ public class ArCompositorDelegateImpl implements ArCompositorDelegate {
 
     ArCompositorDelegateImpl(WebContents webContents) {
         mActivity = ChromeActivity.fromWebContents(webContents);
-        mCompositorViewHolder = mActivity.getCompositorViewHolder();
+
+        Supplier<CompositorViewHolder> compositorViewHolderSupplier =
+                mActivity.getCompositorViewHolderSupplier();
+        mCompositorViewHolder = compositorViewHolderSupplier.get();
         mCompositorView = mCompositorViewHolder.getCompositorView();
     }
 

@@ -155,7 +155,7 @@ PluginVmPolicySubscription::PluginVmPolicySubscription(
       base::BindRepeating(&PluginVmPolicySubscription::OnPolicyChanged,
                           base::Unretained(this)));
   device_allowed_subscription_ = cros_settings->AddSettingsObserver(
-      chromeos::kPluginVmAllowed,
+      ash::kPluginVmAllowed,
       base::BindRepeating(&PluginVmPolicySubscription::OnPolicyChanged,
                           base::Unretained(this)));
   fake_license_subscription_ = GetFakeLicenseKeyListeners().Add(

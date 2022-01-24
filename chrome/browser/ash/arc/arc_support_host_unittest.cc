@@ -70,6 +70,10 @@ using MockErrorDelegate = StrictMock<MockErrorDelegateNonStrict>;
 class ArcSupportHostTest : public BrowserWithTestWindowTest {
  public:
   ArcSupportHostTest() = default;
+
+  ArcSupportHostTest(const ArcSupportHostTest&) = delete;
+  ArcSupportHostTest& operator=(const ArcSupportHostTest&) = delete;
+
   ~ArcSupportHostTest() override = default;
 
   void SetUp() override {
@@ -153,8 +157,6 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
   std::unique_ptr<MockAuthDelegate> auth_delegate_;
   std::unique_ptr<MockTermsOfServiceDelegate> tos_delegate_;
   std::unique_ptr<MockErrorDelegate> error_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSupportHostTest);
 };
 
 namespace {

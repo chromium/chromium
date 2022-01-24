@@ -16,7 +16,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -265,11 +264,6 @@ static const int32_t kAllDesktops = -1;
 COMPONENT_EXPORT(UI_BASE_X)
 bool GetWindowDesktop(x11::Window window, int32_t* desktop);
 
-// Returns all children windows of a given window in top-to-bottom stacking
-// order.
-COMPONENT_EXPORT(UI_BASE_X)
-bool GetXWindowStack(x11::Window window, std::vector<x11::Window>* windows);
-
 enum WindowManagerName {
   WM_OTHER,    // We were able to obtain the WM's name, but there is
                // no corresponding entry in this enum.
@@ -412,6 +406,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XVisualManager {
   // Are all of the system requirements met for using transparent visuals?
   bool ArgbVisualAvailable() const;
 
+  XVisualManager(const XVisualManager&) = delete;
+  XVisualManager& operator=(const XVisualManager&) = delete;
+
   ~XVisualManager();
 
  private:
@@ -439,18 +436,19 @@ class COMPONENT_EXPORT(UI_BASE_X) XVisualManager {
 
   x11::VisualId opaque_visual_id_{};
   x11::VisualId transparent_visual_id_{};
-
-  DISALLOW_COPY_AND_ASSIGN(XVisualManager);
 };
 
 class COMPONENT_EXPORT(UI_BASE_X) ScopedUnsetDisplay {
  public:
   ScopedUnsetDisplay();
+
+  ScopedUnsetDisplay(const ScopedUnsetDisplay&) = delete;
+  ScopedUnsetDisplay& operator=(const ScopedUnsetDisplay&) = delete;
+
   ~ScopedUnsetDisplay();
 
  private:
   absl::optional<std::string> display_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedUnsetDisplay);
 };
 
 }  // namespace ui

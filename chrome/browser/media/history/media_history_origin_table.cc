@@ -176,7 +176,7 @@ std::vector<url::Origin> MediaHistoryOriginTable::GetHighWatchTimeOrigins(
   while (statement.Step()) {
     url::Origin origin = url::Origin::Create(GURL(statement.ColumnString(0)));
     base::TimeDelta cached_audio_video_watchtime =
-        base::TimeDelta::FromSeconds(statement.ColumnInt64(1));
+        base::Seconds(statement.ColumnInt64(1));
 
     if (audio_video_watchtime_min <= cached_audio_video_watchtime)
       origins.push_back(std::move(origin));

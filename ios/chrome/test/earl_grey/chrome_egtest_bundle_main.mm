@@ -5,6 +5,7 @@
 #import "ios/chrome/test/earl_grey/chrome_egtest_bundle_main.h"
 
 #import <XCTest/XCTest.h>
+#import <objc/runtime.h>
 #include <memory>
 
 #include "base/at_exit.h"
@@ -61,12 +62,13 @@ class TestMain {
     CHECK(!loaded_locale.empty());
   }
 
+  TestMain(const TestMain&) = delete;
+  TestMain& operator=(const TestMain&) = delete;
+
   ~TestMain() {}
 
  private:
   base::AtExitManager exit_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMain);
 };
 
 }
@@ -97,6 +99,25 @@ class TestMain {
   return self;
 }
 
+// -waitForQuiescenceIncludingAnimationsIdle tends to introduce a long
+// unnecessary delay, as EarlGrey already checks for animations to complete.
+// Swizzling and skipping the following call speeds up test runs.
+- (void)disableWaitForIdle {
+  SEL originalSelector =
+      NSSelectorFromString(@"waitForQuiescenceIncludingAnimationsIdle:");
+  SEL swizzledSelector = @selector(skipQuiescenceDelay);
+  Method originalMethod = class_getInstanceMethod(
+      objc_getClass("XCUIApplicationProcess"), originalSelector);
+  Method swizzledMethod =
+      class_getInstanceMethod([self class], swizzledSelector);
+  method_exchangeImplementations(originalMethod, swizzledMethod);
+}
+
+// Empty swizzled method to be invoked by XCTest at the start of each test case.
+// Since earl grey synchronizes automatically, do nothing here.
+- (void)skipQuiescenceDelay {
+}
+
 #pragma mark - XCTestObservation
 
 - (void)testBundleWillStart:(NSBundle*)testBundle {
@@ -121,6 +142,9 @@ class TestMain {
   [[NSUserDefaults standardUserDefaults]
       setBool:YES
        forKey:@"XCTDisableAggressiveSymbolication"];
+
+  // Disable long wait for idle messages.
+  [self disableWaitForIdle];
 }
 
 - (void)testBundleDidFinish:(NSBundle*)testBundle {

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -32,6 +31,10 @@ class CloseFile : public Operation {
             const ProvidedFileSystemInfo& file_system_info,
             int open_request_id,
             storage::AsyncFileUtil::StatusCallback callback);
+
+  CloseFile(const CloseFile&) = delete;
+  CloseFile& operator=(const CloseFile&) = delete;
+
   ~CloseFile() override;
 
   // Operation overrides.
@@ -46,8 +49,6 @@ class CloseFile : public Operation {
  private:
   int open_request_id_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseFile);
 };
 
 }  // namespace operations

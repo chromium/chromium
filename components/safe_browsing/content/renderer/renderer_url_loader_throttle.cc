@@ -172,7 +172,6 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
     pending_slow_checks_--;
   }
 
-  user_action_involved_ = user_action_involved_ || showed_interstitial;
   // If the resource load is currently deferred and is going to exit that state
   // (either being cancelled or resumed), record the total delay.
   if (deferred_ && (!proceed || pending_checks_ == 0))

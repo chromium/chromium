@@ -123,10 +123,9 @@ void MediaStreamDevicesController::RequestPermissions(
     // pan-tilt-zoom permission and there are suitable PTZ capable devices
     // available.
     if (request.request_pan_tilt_zoom_permission && has_pan_tilt_zoom_camera) {
-      permissions::PermissionResult permission_status =
-          permission_manager->GetPermissionStatusForFrame(
-              ContentSettingsType::CAMERA_PAN_TILT_ZOOM, rfh,
-              request.security_origin);
+      permission_status = permission_manager->GetPermissionStatusForFrame(
+          ContentSettingsType::CAMERA_PAN_TILT_ZOOM, rfh,
+          request.security_origin);
       if (permission_status.content_setting == CONTENT_SETTING_BLOCK) {
         controller->denial_reason_ =
             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
@@ -464,8 +463,9 @@ bool MediaStreamDevicesController::IsUserAcceptAllowed(
   // TODO(qinmin): Add a test for this. http://crbug.com/396869.
   // TODO(raymes): Shouldn't this apply to all permissions not just audio/video?
   return web_contents_->GetRenderWidgetHostView()->IsShowing();
-#endif
+#else
   return true;
+#endif
 }
 
 bool MediaStreamDevicesController::PermissionIsBlockedForReason(

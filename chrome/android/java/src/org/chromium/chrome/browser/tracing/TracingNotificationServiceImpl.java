@@ -25,9 +25,6 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
     private static final String ACTION_DISCARD_TRACE =
             "org.chromium.chrome.browser.tracing.DISCARD_TRACE";
 
-    private static final String ACTION_SHARE_TRACE =
-            "org.chromium.chrome.browser.tracing.SHARE_TRACE";
-
     /**
      * Get the intent to send to stop a trace recording.
      *
@@ -82,8 +79,6 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
 
             if (ACTION_STOP_RECORDING.equals(intent.getAction())) {
                 TracingController.getInstance().stopRecording();
-            } else if (ACTION_SHARE_TRACE.equals(intent.getAction())) {
-                TracingController.getInstance().shareTrace();
             } else if (ACTION_DISCARD_TRACE.equals(intent.getAction())) {
                 TracingController.getInstance().discardTrace();
             }

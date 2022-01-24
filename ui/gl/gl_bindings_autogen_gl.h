@@ -5036,4 +5036,4 @@ class GL_EXPORT GLApi {
 #define glWindowRectanglesEXT \
   ::gl::g_current_gl_context->glWindowRectanglesEXTFn
 
-#endif  //  UI_GL_GL_BINDINGS_AUTOGEN_GL_H_
+#endif  // UI_GL_GL_BINDINGS_AUTOGEN_GL_H_

@@ -30,6 +30,11 @@ using remoting::protocol::PairingRegistry;
 class MockPairingRegistryCallbacks {
  public:
   MockPairingRegistryCallbacks() = default;
+
+  MockPairingRegistryCallbacks(const MockPairingRegistryCallbacks&) = delete;
+  MockPairingRegistryCallbacks& operator=(const MockPairingRegistryCallbacks&) =
+      delete;
+
   virtual ~MockPairingRegistryCallbacks() = default;
 
   MOCK_METHOD1(DoneCallback, void(bool));
@@ -39,9 +44,6 @@ class MockPairingRegistryCallbacks {
   void GetAllPairingsCallback(std::unique_ptr<base::ListValue> pairings) {
     GetAllPairingsCallbackPtr(pairings.get());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPairingRegistryCallbacks);
 };
 
 // Verify that a pairing Dictionary has correct entries, but doesn't include
@@ -120,11 +122,15 @@ TEST_F(PairingRegistryTest, GetAllPairings) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  ASSERT_EQ(2u, pairings_->GetSize());
-  const base::DictionaryValue* actual_pairing_1;
-  const base::DictionaryValue* actual_pairing_2;
-  ASSERT_TRUE(pairings_->GetDictionary(0, &actual_pairing_1));
-  ASSERT_TRUE(pairings_->GetDictionary(1, &actual_pairing_2));
+  ASSERT_EQ(2u, pairings_->GetList().size());
+  const base::Value& actual_pairing_1_value = pairings_->GetList()[0];
+  ASSERT_TRUE(actual_pairing_1_value.is_dict());
+  const base::Value& actual_pairing_2_value = pairings_->GetList()[1];
+  ASSERT_TRUE(actual_pairing_2_value.is_dict());
+  const base::DictionaryValue* actual_pairing_1 =
+      &base::Value::AsDictionaryValue(actual_pairing_1_value);
+  const base::DictionaryValue* actual_pairing_2 =
+      &base::Value::AsDictionaryValue(actual_pairing_2_value);
 
   // Ordering is not guaranteed, so swap if necessary.
   std::string actual_client_id;
@@ -153,12 +159,14 @@ TEST_F(PairingRegistryTest, DeletePairing) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  ASSERT_EQ(1u, pairings_->GetSize());
-  const base::DictionaryValue* actual_pairing_2;
-  ASSERT_TRUE(pairings_->GetDictionary(0, &actual_pairing_2));
+  ASSERT_EQ(1u, pairings_->GetList().size());
+  const base::Value& actual_pairing_2_value = pairings_->GetList()[0];
+  ASSERT_TRUE(actual_pairing_2_value.is_dict());
+  const base::DictionaryValue& actual_pairing_2 =
+      base::Value::AsDictionaryValue(actual_pairing_2_value);
   std::string actual_client_id;
-  ASSERT_TRUE(actual_pairing_2->GetString(PairingRegistry::kClientIdKey,
-                                          &actual_client_id));
+  ASSERT_TRUE(actual_pairing_2.GetString(PairingRegistry::kClientIdKey,
+                                         &actual_client_id));
   EXPECT_EQ(pairing_2.client_id(), actual_client_id);
 }
 

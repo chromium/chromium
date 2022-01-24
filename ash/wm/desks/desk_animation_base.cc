@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/desk_animation_base.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -30,6 +31,9 @@ DeskAnimationBase::DeskAnimationBase(DesksController* controller,
 DeskAnimationBase::~DeskAnimationBase() {
   for (auto& observer : controller_->observers_)
     observer.OnDeskSwitchAnimationFinished();
+
+  if (finished_callback_)
+    std::move(finished_callback_).Run();
 }
 
 void DeskAnimationBase::Launch() {
@@ -105,10 +109,17 @@ void DeskAnimationBase::OnEndingDeskScreenshotTaken() {
       return;
   }
 
-  // Continuous gesture animations do not want to start an animation on
-  // creation/replacement (because they want to update). They will request an
-  // animation explicitly if they need (gesture end).
-  if (is_continuous_gesture_animation_)
+  // In the normal case for a continuous gesture animation, the ending desk
+  // screenshot will be taken while the user is still swiping. In this case, we
+  // want to skip the animation which will eventually delete `this`. There is a
+  // bug (https://crbug.com/1191545) where users who try to quickly swipe do not
+  // see an animation but expect to. If the gesture has ended, and has been
+  // determined to be fast, we will start the animation to delete `this`.
+  const bool skip_start_animation =
+      is_continuous_gesture_animation_ &&
+      (!features::AreDesksTrackpadSwipeImprovementsEnabled() ||
+       !did_continuous_gesture_end_fast_);
+  if (skip_start_animation)
     return;
 
   for (auto& animator : desk_switch_animators_)

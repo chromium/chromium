@@ -20,9 +20,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -55,6 +55,9 @@ class NotificationTrampoline {
  public:
   static NotificationTrampoline* GetInstance();
 
+  NotificationTrampoline(const NotificationTrampoline&) = delete;
+  NotificationTrampoline& operator=(const NotificationTrampoline&) = delete;
+
   void AddObserver(CookieNotificationObserver* obs);
   void RemoveObserver(CookieNotificationObserver* obs);
 
@@ -66,8 +69,6 @@ class NotificationTrampoline {
   ~NotificationTrampoline();
 
   base::ObserverList<CookieNotificationObserver>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationTrampoline);
 
   static NotificationTrampoline* g_notification_trampoline;
 };
@@ -170,14 +171,20 @@ std::unique_ptr<CookieChangeSubscription>
 CookieStoreIOS::CookieChangeDispatcherIOS::AddCallbackForCookie(
     const GURL& gurl,
     const std::string& name,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
+  // iOS does not support Partitioned cookies.
+  DCHECK(!cookie_partition_key);
   return cookie_store_->AddCallbackForCookie(gurl, name, std::move(callback));
 }
 
 std::unique_ptr<CookieChangeSubscription>
 CookieStoreIOS::CookieChangeDispatcherIOS::AddCallbackForUrl(
     const GURL& gurl,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
+  // iOS does not support Partitioned cookies.
+  DCHECK(!cookie_partition_key);
   // Implement when needed by iOS consumers.
   NOTIMPLEMENTED();
   return nullptr;
@@ -276,12 +283,16 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
 void CookieStoreIOS::GetCookieListWithOptionsAsync(
     const GURL& url,
     const net::CookieOptions& options,
+    const net::CookiePartitionKeychain& cookie_partition_keychain,
     GetCookieListCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If cookies are not allowed, a CookieStoreIOS subclass should be used
   // instead.
   DCHECK(SystemCookiesAllowed());
+
+  // TODO(crbug.com/1225444): Include cookie partition key when/if iOS supports
+  // it.
 
   // TODO(mkwst): If/when iOS supports Same-Site cookies, we'll need to pass
   // options in here as well. https://crbug.com/459154
@@ -541,7 +552,7 @@ void CookieStoreIOS::OnSystemCookiesChanged() {
                                       weak_factory_.GetWeakPtr(),
                                       base::OnceClosure()));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, flush_closure_.callback(), base::TimeDelta::FromSeconds(10));
+      FROM_HERE, flush_closure_.callback(), base::Seconds(10));
 }
 
 CookieChangeDispatcher& CookieStoreIOS::GetChangeDispatcher() {
@@ -660,7 +671,8 @@ void CookieStoreIOS::UpdateCachesFromCookieMonster() {
     GetCookieListCallback callback = base::BindOnce(
         &CookieStoreIOS::GotCookieListFor, weak_factory_.GetWeakPtr(), key);
     cookie_monster_->GetCookieListWithOptionsAsync(
-        key.first, net::CookieOptions::MakeAllInclusive(), std::move(callback));
+        key.first, net::CookieOptions::MakeAllInclusive(),
+        net::CookiePartitionKeychain::Todo(), std::move(callback));
   }
 }
 

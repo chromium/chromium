@@ -22,9 +22,11 @@ class AX_EXPORT AXScriptInstruction final {
 
   bool IsEvent() const;
   bool IsScript() const;
+  bool IsComment() const;
 
   AXPropertyNode AsScript() const;
   std::string AsEvent() const;
+  std::string AsComment() const;
 
  private:
   size_t EventNameStartIndex() const;

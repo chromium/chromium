@@ -42,7 +42,7 @@ FakeServerHttpPostProvider::FakeServerHttpPostProvider(
           base::WaitableEvent::InitialState::NOT_SIGNALED),
       aborted_(false) {}
 
-FakeServerHttpPostProvider::~FakeServerHttpPostProvider() {}
+FakeServerHttpPostProvider::~FakeServerHttpPostProvider() = default;
 
 void FakeServerHttpPostProvider::SetExtraRequestHeaders(const char* headers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

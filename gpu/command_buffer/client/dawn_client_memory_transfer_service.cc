@@ -125,7 +125,7 @@ DawnClientMemoryTransferService::CreateWriteHandle(size_t size) {
 void* DawnClientMemoryTransferService::AllocateHandle(
     size_t size,
     MemoryTransferHandle* handle) {
-  if (size > std::numeric_limits<uint32_t>::max()) {
+  if (size > std::numeric_limits<uint32_t>::max() || disconnected_) {
     return nullptr;
   }
 
@@ -153,6 +153,10 @@ void DawnClientMemoryTransferService::FreeHandles(CommandBufferHelper* helper) {
       mapped_memory_->FreePendingToken(ptr, token);
     }
   }
+}
+
+void DawnClientMemoryTransferService::Disconnect() {
+  disconnected_ = true;
 }
 
 }  // namespace webgpu

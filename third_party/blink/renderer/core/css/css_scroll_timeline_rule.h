@@ -28,7 +28,6 @@ class CSSScrollTimelineRule final : public CSSRule {
   String orientation() const;
   String start() const;
   String end() const;
-  String timeRange() const;
 
   void Trace(Visitor*) const override;
 

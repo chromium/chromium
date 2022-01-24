@@ -49,6 +49,10 @@ void ClearClientInstanceId(PrefService& pref_service);
 void SetExperiments(const Experiments& experiments, PrefService& pref_service);
 Experiments GetExperiments(PrefService& pref_service);
 
+void SetWebFeedContentOrder(PrefService& pref_service,
+                            ContentOrder content_order);
+ContentOrder GetWebFeedContentOrder(const PrefService& pref_service);
+
 }  // namespace prefs
 }  // namespace feed
 

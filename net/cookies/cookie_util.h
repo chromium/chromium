@@ -236,11 +236,8 @@ ComputeSameSiteContextForSubresource(const GURL& url,
                                      const SiteForCookies& site_for_cookies,
                                      bool force_ignore_site_for_cookies);
 
-// Returns whether the respective SameSite feature is enabled.
-NET_EXPORT bool IsSameSiteByDefaultCookiesEnabled();
-NET_EXPORT bool IsCookiesWithoutSameSiteMustBeSecureEnabled();
+// Returns whether the respective feature is enabled.
 NET_EXPORT bool IsSchemefulSameSiteEnabled();
-
 NET_EXPORT bool IsFirstPartySetsEnabled();
 
 // Computes the SameParty context bundle, determining which of the cookies for

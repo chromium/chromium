@@ -146,7 +146,7 @@ class LanguageSettingsMediatorTest : public PlatformTest {
 
 // Tests that the mediator notifies its consumer when the value of
 // translate::prefs::kOfferTranslateEnabled, language::prefs::kAcceptLanguages
-// or language::prefs::kFluentLanguages change.
+// or translate::prefs::kBlockedLanguages change.
 TEST_F(LanguageSettingsMediatorTest, TestPrefsChanged) {
   consumer().translateEnabledWasCalled = NO;
   EXPECT_FALSE([consumer() translateEnabled]);

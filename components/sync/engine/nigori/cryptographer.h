@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/sync/protocol/encryption.pb.h"
 
 namespace syncer {
@@ -17,6 +16,9 @@ namespace syncer {
 class Cryptographer {
  public:
   Cryptographer();
+
+  Cryptographer& operator=(const Cryptographer&) = delete;
+
   virtual ~Cryptographer();
 
   // Returns whether this cryptographer is ready to encrypt data, using
@@ -54,9 +56,6 @@ class Cryptographer {
   // parses the decrypted content into a protocol buffer.
   bool Decrypt(const sync_pb::EncryptedData& encrypted,
                ::google::protobuf::MessageLite* message) const;
-
- private:
-  DISALLOW_ASSIGN(Cryptographer);
 };
 
 }  // namespace syncer

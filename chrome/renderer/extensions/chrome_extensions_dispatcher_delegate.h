@@ -5,13 +5,18 @@
 #ifndef CHROME_RENDERER_EXTENSIONS_CHROME_EXTENSIONS_DISPATCHER_DELEGATE_H_
 #define CHROME_RENDERER_EXTENSIONS_CHROME_EXTENSIONS_DISPATCHER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "extensions/renderer/dispatcher_delegate.h"
 
 class ChromeExtensionsDispatcherDelegate
     : public extensions::DispatcherDelegate {
  public:
   ChromeExtensionsDispatcherDelegate();
+
+  ChromeExtensionsDispatcherDelegate(
+      const ChromeExtensionsDispatcherDelegate&) = delete;
+  ChromeExtensionsDispatcherDelegate& operator=(
+      const ChromeExtensionsDispatcherDelegate&) = delete;
+
   ~ChromeExtensionsDispatcherDelegate() override;
 
  private:
@@ -29,8 +34,6 @@ class ChromeExtensionsDispatcherDelegate
   void InitializeBindingsSystem(
       extensions::Dispatcher* dispatcher,
       extensions::NativeExtensionBindingsSystem* bindings_system) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsDispatcherDelegate);
 };
 
 #endif  // CHROME_RENDERER_EXTENSIONS_CHROME_EXTENSIONS_DISPATCHER_DELEGATE_H_

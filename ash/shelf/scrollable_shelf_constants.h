@@ -37,8 +37,7 @@ constexpr int kArrowButtonTapAreaHorizontal = 32;
 constexpr int kGradientZoneLength = 26;
 
 // The time delay to show a new page of shelf icons.
-constexpr base::TimeDelta kShelfPageFlipDelay =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kShelfPageFlipDelay = base::Milliseconds(500);
 
 // The padding at the two ends of the shelf.
 constexpr int kEndPadding = 4;

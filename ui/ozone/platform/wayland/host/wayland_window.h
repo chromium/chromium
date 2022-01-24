@@ -11,11 +11,15 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -42,6 +46,9 @@ class WaylandWindow : public PlatformWindow,
                       public PlatformEventDispatcher,
                       public WmDragHandler {
  public:
+  WaylandWindow(const WaylandWindow&) = delete;
+  WaylandWindow& operator=(const WaylandWindow&) = delete;
+
   ~WaylandWindow() override;
 
   // A factory method that can create any of the derived types of WaylandWindow
@@ -49,7 +56,9 @@ class WaylandWindow : public PlatformWindow,
   static std::unique_ptr<WaylandWindow> Create(
       PlatformWindowDelegate* delegate,
       WaylandConnection* connection,
-      PlatformWindowInitProperties properties);
+      PlatformWindowInitProperties properties,
+      bool update_visual_size_immediately = false,
+      bool apply_pending_state_on_update_visual_size = false);
 
   void OnWindowLostCapture();
 
@@ -106,8 +115,8 @@ class WaylandWindow : public PlatformWindow,
   // Sets the window_scale for this window with respect to a display this window
   // is located at. This determines how events can be translated and how size of
   // the surface is treated (px to DIP conversion and vice versa.)
-  void SetWindowScale(int32_t new_scale);
-  int32_t window_scale() const { return window_scale_; }
+  void SetWindowScale(float new_scale);
+  float window_scale() const { return window_scale_; }
   float ui_scale() const { return ui_scale_; }
 
   // A preferred output is the one with the largest scale. This is needed to
@@ -122,14 +131,26 @@ class WaylandWindow : public PlatformWindow,
 
   gfx::Size visual_size_px() const { return visual_size_px_; }
 
-  // This is never intended to be used except in unit tests.
+  absl::optional<gfx::Insets> frame_insets_px() const {
+    return frame_insets_px_;
+  }
+  void set_frame_insets_px(gfx::Insets insets) { frame_insets_px_ = insets; }
+
+  // These are never intended to be used except in unit tests.
   void set_update_visual_size_immediately(bool update_immediately) {
     update_visual_size_immediately_ = update_immediately;
   }
+  void set_apply_pending_state_on_update_visual_size(bool apply_immediately) {
+    apply_pending_state_on_update_visual_size_ = apply_immediately;
+  }
+
+  // Remove WaylandOutput associated with WaylandSurface of this window.
+  void RemoveEnteredOutput(uint32_t output_id);
 
   // WmDragHandler
   bool StartDrag(const ui::OSExchangeData& data,
-                 int operation,
+                 int operations,
+                 mojom::DragEventSource source,
                  gfx::NativeCursor cursor,
                  bool can_grab_pointer,
                  WmDragHandler::Delegate* delegate) override;
@@ -163,10 +184,11 @@ class WaylandWindow : public PlatformWindow,
   gfx::Rect GetRestoredBoundsInPixels() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
+  bool IsTranslucentWindowOpacitySupported() const override;
+  void SetDecorationInsets(const gfx::Insets* insets_px) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
-  bool IsTranslucentWindowOpacitySupported() const override;
   bool ShouldUpdateWindowShape() const override;
 
   // PlatformEventDispatcher
@@ -183,7 +205,24 @@ class WaylandWindow : public PlatformWindow,
                                        bool is_fullscreen,
                                        bool is_activated);
   virtual void HandlePopupConfigure(const gfx::Rect& bounds);
-  virtual void UpdateVisualSize(const gfx::Size& size_px);
+  // The final size of the Wayland surface is determined by the buffer size in
+  // px * scale that the Chromium compositor renders at. If the window changes a
+  // display (and scale changes from 1 to 2), the buffers are recreated with
+  // some delays. Thus, applying a visual size using window_scale (which is the
+  // current scale of a wl_output where the window is located at) is wrong, as
+  // it may result in a smaller visual size than needed. For example, buffers'
+  // size in px is 100x100, the buffer scale and window scale is 1. The window
+  // is moved to another display and window scale changes to 2. The window's
+  // bounds also change are multiplied by the scale factor. It takes time until
+  // buffers are recreated for a larger size in px and submitted. However, there
+  // might be an in flight frame that submits buffers with old size. Thus,
+  // applying scale factor immediately will result in a visual size in dip to be
+  // smaller than needed. This results in a bouncing window size in some
+  // scenarios like starting Chrome on a secondary display with larger scale
+  // factor than the primary display's one. Thus, this method gets a scale
+  // factor that helps to determine size of the surface in dip respecting
+  // size that GPU renders at.
+  virtual void UpdateVisualSize(const gfx::Size& size_px, float scale_factor);
 
   // Handles close requests.
   virtual void OnCloseRequest();
@@ -201,6 +240,15 @@ class WaylandWindow : public PlatformWindow,
 
   // Tells if the surface has already been configured.
   virtual bool IsSurfaceConfigured() = 0;
+
+  // Sets the window geometry.
+  virtual void SetWindowGeometry(gfx::Rect bounds);
+
+  // Sends configure acknowledgement to the wayland server.
+  virtual void AckConfigure(uint32_t serial) = 0;
+
+  // Updates the window decorations, if possible at the moment.
+  virtual void UpdateDecorations();
 
   // Returns a root parent window within the same hierarchy.
   WaylandWindow* GetRootParentWindow();
@@ -236,6 +284,10 @@ class WaylandWindow : public PlatformWindow,
   // Returns bounds in DIP.
   gfx::Rect GetBoundsInDIP() const;
 
+  base::WeakPtr<WaylandWindow> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  protected:
   WaylandWindow(PlatformWindowDelegate* delegate,
                 WaylandConnection* connection);
@@ -251,8 +303,40 @@ class WaylandWindow : public PlatformWindow,
   // Calls set_opaque_region for this window.
   virtual void UpdateWindowMask();
 
+  // Processes the pending bounds in dip.
+  void ProcessPendingBoundsDip(uint32_t serial);
+
+  // Processes the size information form visual size update and returns true if
+  // any pending configure is fulfilled.
+  bool ProcessVisualSizeUpdate(const gfx::Size& size_px, float scale_factor);
+
+  // Applies pending bounds.
+  virtual void ApplyPendingBounds() = 0;
+
+  // These bounds attributes below have suffixes that indicate units used.
+  // Wayland operates in DIP but the platform operates in physical pixels so
+  // our WaylandWindow is the link that has to translate the units. See also
+  // comments in the implementation.
+  //
+  // Bounds that will be applied when the window state is finalized. The window
+  // may get several configuration events that update the pending bounds, and
+  // only upon finalizing the state is the latest value stored as the current
+  // bounds via |ApplyPendingBounds|. Measured in DIP because updated in the
+  // handler that receives DIP from Wayland.
+  gfx::Rect pending_bounds_dip_;
+
+  // Pending xdg-shell configures, once this window is drawn to |bounds_dip|,
+  // ack_configure with |serial| will be sent to the Wayland compositor.
+  struct PendingConfigure {
+    gfx::Rect bounds_dip;
+    uint32_t serial;
+  };
+  base::circular_deque<PendingConfigure> pending_configures_;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandScreenTest, SetWindowScale);
+  FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest, CanSubmitOverlayPriority);
+  FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest, CanSetRoundedCorners);
 
   // Initializes the WaylandWindow with supplied properties.
   bool Initialize(PlatformWindowInitProperties properties);
@@ -322,6 +406,10 @@ class WaylandWindow : public PlatformWindow,
   //   -> OutputSurface::SwapBuffers() -> WaylandWindow::UpdateVisualSize()
   //   -> xdg_surface.ack_configure() -> Wayland compositor.
   gfx::Size visual_size_px_;
+  // Margins between edges of the surface and the window geometry (i.e., the
+  // area of the window that is visible to the user as the actual window).  The
+  // areas outside the geometry are used to draw client-side window decorations.
+  absl::optional<gfx::Insets> frame_insets_px_;
 
   bool has_pointer_focus_ = false;
   bool has_keyboard_focus_ = false;
@@ -331,7 +419,7 @@ class WaylandWindow : public PlatformWindow,
   // We need it to place and size the menus properly.
   float ui_scale_ = 1.0f;
   // Current scale factor of the output where the window is located at.
-  int32_t window_scale_ = 1;
+  float window_scale_ = 1.f;
 
   // Stores current opacity of the window. Set on ::Initialize call.
   ui::PlatformWindowOpacity opacity_;
@@ -348,6 +436,12 @@ class WaylandWindow : public PlatformWindow,
   // SetBounds() in unit tests.
   bool update_visual_size_immediately_ = false;
 
+  // In a non-test environment, root_surface_->ApplyPendingBounds() is called to
+  // send Wayland protocol requests, but in some unit tests there will never be
+  // any frame updates. This flag causes root_surface_->ApplyPendingBounds() to
+  // be invoked during UpdateVisualSize() in unit tests.
+  bool apply_pending_state_on_update_visual_size_ = false;
+
   // AcceleratedWidget for this window. This will be unique even over time.
   gfx::AcceleratedWidget accelerated_widget_;
 
@@ -357,12 +451,7 @@ class WaylandWindow : public PlatformWindow,
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
-  // Stores pending buffer_scale pair, where the key is the visual size.
-  std::vector<std::pair<gfx::Size, int32_t>> pending_buffer_scale_;
-
   base::WeakPtrFactory<WaylandWindow> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandWindow);
 };
 
 }  // namespace ui

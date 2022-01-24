@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/app/chrome_main_delegate.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
@@ -24,13 +23,18 @@ class ChromeMainDelegateAndroid : public ChromeMainDelegate {
   static void SecureDataDirectory();  // visible for testing
 
   ChromeMainDelegateAndroid();
+
+  ChromeMainDelegateAndroid(const ChromeMainDelegateAndroid&) = delete;
+  ChromeMainDelegateAndroid& operator=(const ChromeMainDelegateAndroid&) =
+      delete;
+
   ~ChromeMainDelegateAndroid() override;
 
   bool BasicStartupComplete(int* exit_code) override;
   void PreSandboxStartup() override;
-  int RunProcess(
+  absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
-      const content::MainFunctionParams& main_function_params) override;
+      content::MainFunctionParams main_function_params) override;
   void ProcessExiting(const std::string& process_type) override;
 
  private:
@@ -41,8 +45,6 @@ class ChromeMainDelegateAndroid : public ChromeMainDelegate {
   std::unique_ptr<safe_browsing::SafeBrowsingApiHandler>
       safe_browsing_api_handler_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeMainDelegateAndroid);
 };
 
 #endif  // CHROME_APP_ANDROID_CHROME_MAIN_DELEGATE_ANDROID_H_

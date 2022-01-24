@@ -8,9 +8,8 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "media/base/android/stream_texture_wrapper.h"
 #include "media/base/media_resource.h"
@@ -52,6 +51,10 @@ class CONTENT_EXPORT MediaPlayerRendererClient
       std::unique_ptr<media::MojoRenderer> mojo_renderer,
       media::ScopedStreamTextureWrapper stream_texture_wrapper,
       media::VideoRendererSink* sink);
+
+  MediaPlayerRendererClient(const MediaPlayerRendererClient&) = delete;
+  MediaPlayerRendererClient& operator=(const MediaPlayerRendererClient&) =
+      delete;
 
   ~MediaPlayerRendererClient() override;
 
@@ -116,8 +119,6 @@ class CONTENT_EXPORT MediaPlayerRendererClient
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaPlayerRendererClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerRendererClient);
 };
 
 }  // namespace content

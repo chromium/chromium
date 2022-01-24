@@ -96,13 +96,15 @@ class BASE_EXPORT TracePacketHandle {
 
 using PrepareTrackEventFunction = TrackEventHandle (*)(TraceEvent*);
 using PrepareTracePacketFunction = TracePacketHandle (*)();
+using EmitEmptyTracePacketFunction = void (*)();
 
 // Embedder should call this (only once) to set the callback invoked when a
 // typed event should be emitted. The callback functions may be executed on any
 // thread.
 BASE_EXPORT void EnableTypedTraceEvents(
     PrepareTrackEventFunction typed_event_callback,
-    PrepareTracePacketFunction trace_packet_callback);
+    PrepareTracePacketFunction trace_packet_callback,
+    EmitEmptyTracePacketFunction empty_packet_callback);
 
 BASE_EXPORT void ResetTypedTraceEventsForTesting();
 

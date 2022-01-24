@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/query_parser/query_parser.h"
@@ -46,6 +45,9 @@ class URLDatabase {
   // Must call CreateURLTable() and CreateURLIndexes() before using to make
   // sure the database is initialized.
   URLDatabase();
+
+  URLDatabase(const URLDatabase&) = delete;
+  URLDatabase& operator=(const URLDatabase&) = delete;
 
   // This object must be destroyed on the thread where all accesses are
   // happening to avoid thread-safety problems.
@@ -117,6 +119,10 @@ class URLDatabase {
   class URLEnumeratorBase {
    public:
     URLEnumeratorBase();
+
+    URLEnumeratorBase(const URLEnumeratorBase&) = delete;
+    URLEnumeratorBase& operator=(const URLEnumeratorBase&) = delete;
+
     virtual ~URLEnumeratorBase();
 
    private:
@@ -124,8 +130,6 @@ class URLDatabase {
 
     bool initialized_;
     sql::Statement statement_;
-
-    DISALLOW_COPY_AND_ASSIGN(URLEnumeratorBase);
   };
 
   // A basic enumerator to enumerate urls
@@ -133,11 +137,11 @@ class URLDatabase {
    public:
     URLEnumerator();
 
+    URLEnumerator(const URLEnumerator&) = delete;
+    URLEnumerator& operator=(const URLEnumerator&) = delete;
+
     // Retrieves the next url. Returns false if no more urls are available.
     bool GetNextURL(URLRow* r);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(URLEnumerator);
   };
 
   // Initializes the given enumerator to enumerator all URLs in the database.
@@ -308,8 +312,6 @@ class URLDatabase {
   // True if InitKeywordSearchTermsTable() has been invoked. Not all subclasses
   // have keyword search terms.
   bool has_keyword_search_terms_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLDatabase);
 };
 
 // The fields and order expected by FillURLRow(). ID is guaranteed to be first

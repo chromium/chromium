@@ -11,10 +11,8 @@ namespace scheduler {
 
 UkmTaskSampler::UkmTaskSampler(double thread_time_sampling_rate,
                                double ukm_task_sampling_rate)
-    : thread_time_sampling_rate_(clampTo(thread_time_sampling_rate, 0.0, 1.0)),
-      ukm_task_sampling_rate_(clampTo(ukm_task_sampling_rate, 0.0, 1.0)) {
-  random_generator_.Seed();
-}
+    : thread_time_sampling_rate_(ClampTo(thread_time_sampling_rate, 0.0, 1.0)),
+      ukm_task_sampling_rate_(ClampTo(ukm_task_sampling_rate, 0.0, 1.0)) {}
 
 double UkmTaskSampler::GetConditionalSamplingProbability(bool has_thread_time) {
   if (thread_time_sampling_rate_ == 0.0 || ukm_task_sampling_rate_ == 0.0 ||
@@ -48,7 +46,7 @@ bool UkmTaskSampler::ShouldRecordTaskUkm(bool has_thread_time) {
 }
 
 void UkmTaskSampler::SetUkmTaskSamplingRate(double rate) {
-  ukm_task_sampling_rate_ = clampTo(rate, 0.0, 1.0);
+  ukm_task_sampling_rate_ = ClampTo(rate, 0.0, 1.0);
 }
 
 }  // namespace scheduler

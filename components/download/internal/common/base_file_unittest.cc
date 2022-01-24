@@ -23,6 +23,10 @@
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#endif
+
 namespace download {
 namespace {
 
@@ -61,6 +65,9 @@ class BaseFileTest : public testing::Test {
         expected_error_(DOWNLOAD_INTERRUPT_REASON_NONE) {}
 
   void SetUp() override {
+#if defined(OS_WIN)
+    ASSERT_TRUE(com_initializer_.Succeeded());
+#endif
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     base_file_ = std::make_unique<BaseFile>(DownloadItem::kInvalidId);
   }
@@ -184,6 +191,13 @@ class BaseFileTest : public testing::Test {
     ASSERT_EQ(SZ, hash_value.size());
     EXPECT_EQ(0, memcmp(expected_hash, &hash_value.front(), hash_value.size()));
   }
+
+ private:
+#if defined(OS_WIN)
+  // This must occur early in the member list to ensure COM is initialized first
+  // and uninitialized last.
+  base::win::ScopedCOMInitializer com_initializer_;
+#endif
 
  protected:
   // BaseClass instance we are testing.

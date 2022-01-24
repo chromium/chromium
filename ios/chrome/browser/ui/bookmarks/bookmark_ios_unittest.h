@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #include <memory>
 
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
@@ -44,6 +45,7 @@ class BookmarkIOSUnitTest : public PlatformTest {
   std::unique_ptr<base::ScopedTempDir> state_dir_;
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   bookmarks::BookmarkModel* bookmark_model_;

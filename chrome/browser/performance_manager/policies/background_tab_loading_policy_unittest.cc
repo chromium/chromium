@@ -219,8 +219,8 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_OldTab) {
 
   page_node = CreateNode<performance_manager::PageNodeImpl>(
       WebContentsProxy(), std::string(), GURL(), false, false,
-      base::TimeTicks::Now() - (base::TimeDelta::FromSeconds(1) +
-                                policy()->kMaxTimeSinceLastUseToLoad));
+      base::TimeTicks::Now() -
+          (base::Seconds(1) + policy()->kMaxTimeSinceLastUseToLoad));
   raw_page_node = page_node.get();
 
   // Simulate that kMinTabsToLoad have loaded.
@@ -243,19 +243,19 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
   // Add a old tab to restore.
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
       WebContentsProxy(), std::string(), GURL(), false, false,
-      base::TimeTicks::Now() - base::TimeDelta::FromDays(30)));
+      base::TimeTicks::Now() - base::Days(30)));
   raw_page_nodes.push_back(page_nodes.back().get());
 
   // Add a recent tab to restore.
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
       WebContentsProxy(), std::string(), GURL(), false, false,
-      base::TimeTicks::Now() - base::TimeDelta::FromSeconds(1)));
+      base::TimeTicks::Now() - base::Seconds(1)));
   raw_page_nodes.push_back(page_nodes.back().get());
 
   // Add an internal page to restore.
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
       WebContentsProxy(), std::string(), GURL("chrome://newtab"), false, false,
-      base::TimeTicks::Now() - base::TimeDelta::FromSeconds(1)));
+      base::TimeTicks::Now() - base::Seconds(1)));
   raw_page_nodes.push_back(page_nodes.back().get());
 
   // Set |is_tab| property as this is a requirement to pass the PageNode to

@@ -152,7 +152,8 @@ bool MediaControlsSharedHelpers::ShouldShowFullscreenButton(
   if (!Fullscreen::FullscreenEnabled(media_element.GetDocument()))
     return false;
 
-  if (media_element.ControlsListInternal()->ShouldHideFullscreen()) {
+  if (media_element.ControlsListInternal()->ShouldHideFullscreen() &&
+      !media_element.UserWantsControlsVisible()) {
     UseCounter::Count(media_element.GetDocument(),
                       WebFeature::kHTMLMediaElementControlsListNoFullscreen);
     return false;

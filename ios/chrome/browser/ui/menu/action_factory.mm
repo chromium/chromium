@@ -54,7 +54,7 @@
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COPY_LINK_ACTION_TITLE)
                 image:[UIImage imageNamed:@"copy_link_url"]
-                 type:MenuActionType::Copy
+                 type:MenuActionType::CopyURL
                 block:^{
                   StoreURLInPasteboard(URL);
                 }];
@@ -155,14 +155,6 @@
                          block:block];
 }
 
-- (UIAction*)actionToOpenJavascriptWithBlock:(ProceduralBlock)block {
-  return
-      [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPEN)
-                      image:[UIImage imageNamed:@"open"]
-                       type:MenuActionType::OpenJavascript
-                      block:block];
-}
-
 - (UIAction*)actionToAddToReadingListWithBlock:(ProceduralBlock)block {
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST)
@@ -198,11 +190,14 @@
 }
 
 - (UIAction*)actionSaveImageWithBlock:(ProceduralBlock)block {
-  UIAction* action = [self
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE)
-                image:[UIImage imageNamed:@"download"]
-                 type:MenuActionType::Save
-                block:block];
+  int title = IsContextMenuActionsRefreshEnabled()
+                  ? IDS_IOS_CONTENT_CONTEXT_ADDTOPHOTOS
+                  : IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE;
+
+  UIAction* action = [self actionWithTitle:l10n_util::GetNSString(title)
+                                     image:[UIImage imageNamed:@"download"]
+                                      type:MenuActionType::SaveImage
+                                     block:block];
   return action;
 }
 
@@ -210,7 +205,7 @@
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_COPYIMAGE)
                 image:[UIImage imageNamed:@"copy"]
-                 type:MenuActionType::Copy
+                 type:MenuActionType::CopyImage
                 block:block];
   return action;
 }
@@ -241,6 +236,16 @@
                 image:[UIImage imageNamed:@"select"]
                  type:MenuActionType::SelectTabs
                 block:block];
+  return action;
+}
+
+- (UIAction*)actionToSearchImageUsingLensWithBlock:(ProceduralBlock)block {
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHLENS)
+                      image:[UIImage imageNamed:@"lens_icon"]
+                       type:MenuActionType::SearchImageWithLens
+                      block:block];
   return action;
 }
 

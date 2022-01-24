@@ -70,7 +70,7 @@ TEST(PlatformThreadWinTest, SetBackgroundThreadModeFailsInIdlePriorityProcess) {
   }
   internal::AssertMemoryPriority(thread_handle, MEMORY_PRIORITY_VERY_LOW);
 
-  PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+  PlatformThread::Sleep(base::Seconds(1));
 
   // After 1 second, GetThreadPriority() and memory priority don't change (this
   // refutes the hypothesis that it simply takes time before GetThreadPriority()

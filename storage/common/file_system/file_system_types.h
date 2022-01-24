@@ -103,9 +103,6 @@ enum FileSystemType {
   // given identifier in each origin.
   kFileSystemTypePluginPrivate,
 
-  // A filesystem that is mounted via the Privet storage protocol.
-  kFileSystemTypeCloudDevice,
-
   // A filesystem that is mounted via the FileSystemProvider API.
   kFileSystemTypeProvided,
 

@@ -24,6 +24,7 @@ import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
+import "third_party/blink/public/mojom/close_watcher/close_listener.mojom";
 import "third_party/blink/public/mojom/choosers/popup_menu.mojom";
 import "third_party/blink/public/mojom/context_menu/context_menu.mojom";
 import "third_party/blink/public/mojom/conversions/conversions.mojom";
@@ -52,9 +53,9 @@ import "third_party/blink/public/mojom/frame/user_activation_update_types.mojom"
 import "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom";
 import "third_party/blink/public/mojom/input/focus_type.mojom";
 import "third_party/blink/public/mojom/input/scroll_direction.mojom";
-import "third_party/blink/public/mojom/modal_close_watcher/modal_close_listener.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
 import "third_party/blink/public/mojom/portal/portal.mojom";
 import "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom";
@@ -128,6 +129,9 @@ struct DownloadURLParams {
 
   // Whether the download is from context menu.
   bool is_context_menu_save = false;
+
+  // True when the download was preceded by a recent gesture from the user.
+  bool has_user_gesture = false;
 };
 
 // Actions browser can ask renderer to perform on a Plugin.
@@ -296,13 +300,6 @@ interface LocalFrameHost {
   // Elements of |set| are hashes of hosts to upgrade.
   EnforceInsecureNavigationsSet(array<uint32> set);
 
-  // Sent by the blink's FrameScheduler when a list of active features
-  // the scheduler tracks changes.
-  // See blink::scheduler::SchedulingPolicy::Feature for the meaning
-  // of the individual bits.
-  // TODO(altimin): Move into a separate scheduling interface.
-  DidChangeActiveSchedulerTrackedFeatures(uint64 features_mask);
-
   // Sent when a new sudden termination disabler condition is either introduced
   // or removed.
   SuddenTerminationDisablerChanged(bool present,
@@ -321,11 +318,6 @@ interface LocalFrameHost {
   // process.
   BubbleLogicalScrollInParentFrame(ScrollDirection direction,
                                    ui.mojom.ScrollGranularity granularity);
-
-  // Indicates that another page has accessed the DOM of the initial empty
-  // document of a main frame. After this, it is no longer safe to show a
-  // pending navigation's URL, because a URL spoof is possible.
-  DidAccessInitialDocument();
 
   // Indicates an attempt by the associated frame to navigate from the
   // |initiator_url| to the |blocked_url|, but the navigation was
@@ -393,8 +385,9 @@ interface LocalFrameHost {
   // should be added to the performance entries of the parent frame.
   ForwardResourceTimingToParent(ResourceTimingInfo timing);
 
-  // Notifies the browser that a document has been loaded.
-  DidFinishDocumentLoad();
+  // Notifies the browser that the DOMContentLoaded event was dispatched
+  // for the document in this frame.
+  DidDispatchDOMContentLoadedEvent();
 
   // A request to run a JavaScript dialog displaying |alert_message|.
   [Sync]
@@ -489,7 +482,8 @@ interface LocalFrameHost {
   // Note: May only be sent once per URL per frame per committed load.
   DidLoadResourceFromMemoryCache(
       url.mojom.Url url, string http_method,
-      string mime_type, network.mojom.RequestDestination request_destination);
+      string mime_type, network.mojom.RequestDestination request_destination,
+      bool include_credentials);
 
   // Notifies the browser that frame owner properties have changed.
   //
@@ -525,10 +519,10 @@ interface LocalFrameHost {
   CapturePaintPreviewOfSubframe(
       gfx.mojom.Rect clip_rect, mojo_base.mojom.UnguessableToken guid);
 
-  // Sent when a ModalCloseListener becomes active so the browser can notify if
-  // a modal close signal occurs.
-  SetModalCloseListener(
-      pending_remote<blink.mojom.ModalCloseListener> listener);
+  // Sent when a CloseListener becomes active so the browser can notify if
+  // a close signal occurs.
+  SetCloseListener(
+      pending_remote<blink.mojom.CloseListener> listener);
 
   // Notifies the browser that a child frame is detached from the DOM.
   Detach();
@@ -547,7 +541,7 @@ interface LocalFrameHost {
   DidAddMessageToConsole(
       ConsoleMessageLevel log_level,
       mojo_base.mojom.BigString16 msg,
-      int32 line_number,
+      uint32 line_number,
       mojo_base.mojom.String16? source_id,
       mojo_base.mojom.BigString16? untrusted_stack_trace);
 
@@ -685,6 +679,10 @@ interface LocalFrame {
   // at the given point in the view coordinate space.
   MediaPlayerActionAt(gfx.mojom.Point location, blink.mojom.MediaPlayerAction action);
 
+  // Tells the renderer to perform the given action on the plugin location at
+  // the given point in the view coordinate space.
+  PluginActionAt(gfx.mojom.Point location, blink.mojom.PluginActionType action);
+
   // Request to continue running the sequential focus navigation algorithm in
   // this frame. |source_frame_token| identifies the frame that issued this
   // request. This message is sent when finding the next focusable element would
@@ -704,10 +702,6 @@ interface LocalFrame {
   // Notifies the frame that its parent has changed the frame's sandbox flags or
   // container policy.
   DidUpdateFramePolicy(blink.mojom.FramePolicy frame_policy);
-
-  // Called when the device's screen information changes.
-  // TODO(crbug.com/1205676): Remove deprecated window.screenschange plumbing.
-  OnScreensChange();
 
   // Posts a message from a frame in another process to the current renderer.
   // |source_frame_token| is the frame token of the RemoteFrame in the current
@@ -1144,11 +1138,6 @@ interface LocalMainFrame {
   // onunload event handler.
   ClosePage() => ();
 
-  // Instructs the renderer to perform the given action on the plugin located at
-  // the given point.
-  PluginActionAt(gfx.mojom.Point location,
-                 blink.mojom.PluginActionType action);
-
   // Tells the renderer to focus the first (last if reverse is true) focusable
   // node.
   SetInitialFocus(bool reverse);
@@ -1166,16 +1155,9 @@ interface LocalMainFrame {
   // 2) A ReportingObserver event will be dispatched.
   // 3) Devtool will be notified.
   //
-  // |endpoint_defined|: The COOP header defines at least one endpoint.
-  // |reported_window_url|: The reported window's sanitized URL. This
-  // corresponds to openerURL, openeeURL or otherDocumentURL depending on the
-  // |report_type|.
   InstallCoopAccessMonitor(
-      network.mojom.CoopAccessReportType report_type,
       blink.mojom.FrameToken accessed_window,
-      pending_remote<network.mojom.CrossOriginOpenerPolicyReporter> reporter,
-      bool endpoint_defined,
-      string reported_window_url);
+      network.mojom.CrossOriginOpenerPolicyReporterParams coop_reporter_info);
 
   // Called on the main frame of a page embedded in a Portal when it is
   // activated. The frame has the option to adopt the previous page as a portal
@@ -1252,7 +1234,7 @@ interface LocalMainFrameHost {
   // Frame unload handlers should have already been called before this method is called.
   RequestClose();
 
-  // Causes a window previously opened via RenderMessageFilter::CreateNewWindow
+  // Causes a window previously opened via content.mojom.FrameHost::CreateNewWindow
   // to be shown on the screen. This message contains the opener_frame_token
   // which is always set. This is called on the main frame of the window to be shown.
   ShowCreatedWindow(blink.mojom.LocalFrameToken opener_frame_token,
@@ -1267,6 +1249,11 @@ interface LocalMainFrameHost {
   // Sent once a paint happens after the first non empty layout. In other words,
   // after the frame has painted something.
   DidFirstVisuallyNonEmptyPaint();
+
+  // Indicates that another page has accessed the DOM of the initial empty
+  // document of a main frame. After this, it is no longer safe to show a
+  // pending navigation's URL, because a URL spoof is possible.
+  DidAccessInitialMainDocument();
 };
 
 // Implemented in Browser, this interface defines remote-main-frame-specific

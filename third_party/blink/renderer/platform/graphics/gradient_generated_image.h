@@ -43,22 +43,21 @@ class PLATFORM_EXPORT GradientGeneratedImage final : public GeneratedImage {
 
   ~GradientGeneratedImage() override = default;
 
-  bool ApplyShader(PaintFlags&, const SkMatrix&) override;
-
-  bool IsGradientGeneratedImage() const override { return true; }
+  bool ApplyShader(PaintFlags&,
+                   const SkMatrix&,
+                   const FloatRect& dst_rect,
+                   const FloatRect& src_rect,
+                   const ImageDrawOptions&) override;
 
  protected:
   void Draw(cc::PaintCanvas*,
             const PaintFlags&,
-            const FloatRect&,
-            const FloatRect&,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const FloatRect& dest_rect,
+            const FloatRect& src_rect,
+            const ImageDrawOptions&) override;
   void DrawTile(GraphicsContext&,
                 const FloatRect&,
-                RespectImageOrientationEnum) override;
+                const ImageDrawOptions& draw_options) override;
 
   GradientGeneratedImage(scoped_refptr<Gradient> generator,
                          const FloatSize& size)

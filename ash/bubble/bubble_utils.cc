@@ -96,31 +96,43 @@ bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
 
 void ApplyStyle(views::Label* label, LabelStyle style) {
   label->SetAutoColorReadabilityEnabled(false);
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  AshColorProvider::ContentLayerType text_color;
 
   switch (style) {
     case LabelStyle::kBadge:
+      text_color = AshColorProvider::ContentLayerType::kTextColorPrimary;
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
                                        gfx::Font::Weight::MEDIUM));
       break;
     case LabelStyle::kBody:
+      text_color = AshColorProvider::ContentLayerType::kTextColorPrimary;
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
                                        gfx::Font::Weight::NORMAL));
       break;
     case LabelStyle::kChipBody:
+      text_color = AshColorProvider::ContentLayerType::kTextColorPrimary;
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 10,
                                        gfx::Font::Weight::MEDIUM));
       break;
     case LabelStyle::kChipTitle:
+      text_color = AshColorProvider::ContentLayerType::kTextColorPrimary;
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 13,
                                        gfx::Font::Weight::NORMAL));
       break;
     case LabelStyle::kHeader:
+      text_color = AshColorProvider::ContentLayerType::kTextColorPrimary;
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 16,
                                        gfx::Font::Weight::MEDIUM));
       break;
+    case LabelStyle::kSubtitle:
+      text_color = AshColorProvider::ContentLayerType::kTextColorSecondary;
+      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 12,
+                                       gfx::Font::Weight::NORMAL));
+      break;
   }
+
+  label->SetEnabledColor(
+      AshColorProvider::Get()->GetContentLayerColor(text_color));
 }
 
 std::unique_ptr<views::Label> CreateLabel(LabelStyle style,

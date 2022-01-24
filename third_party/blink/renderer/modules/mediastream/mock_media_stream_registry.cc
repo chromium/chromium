@@ -41,8 +41,8 @@ class MockCDQualityAudioSource : public MediaStreamAudioSource {
         media::AudioParameters::kAudioCDSampleRate / 100));
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCDQualityAudioSource);
+  MockCDQualityAudioSource(const MockCDQualityAudioSource&) = delete;
+  MockCDQualityAudioSource& operator=(const MockCDQualityAudioSource&) = delete;
 };
 
 }  // namespace
@@ -57,7 +57,7 @@ void MockMediaStreamRegistry::Init() {
 }
 
 MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
-    const std::string& track_id,
+    const String& track_id,
     const VideoTrackAdapterSettings& adapter_settings,
     const absl::optional<bool>& noise_reduction,
     bool is_screencast,
@@ -69,8 +69,8 @@ MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
   auto* native_source_ptr = native_source.get();
   source->SetPlatformSource(std::move(native_source));
 
-  auto* component = MakeGarbageCollected<MediaStreamComponent>(
-      String::FromUTF8(track_id), source);
+  auto* component =
+      MakeGarbageCollected<MediaStreamComponent>(track_id, source);
   component->SetPlatformTrack(std::make_unique<MediaStreamVideoTrack>(
       native_source_ptr, adapter_settings, noise_reduction, is_screencast,
       min_frame_rate, absl::nullopt /* pan */, absl::nullopt /* tilt */,
@@ -81,13 +81,13 @@ MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
 }
 
 MockMediaStreamVideoSource* MockMediaStreamRegistry::AddVideoTrack(
-    const std::string& track_id) {
+    const String& track_id) {
   return AddVideoTrack(track_id, VideoTrackAdapterSettings(),
                        absl::optional<bool>(), false /* is_screncast */,
                        0.0 /* min_frame_rate */);
 }
 
-void MockMediaStreamRegistry::AddAudioTrack(const std::string& track_id) {
+void MockMediaStreamRegistry::AddAudioTrack(const String& track_id) {
   auto* source = MakeGarbageCollected<MediaStreamSource>(
       "mock audio source id", MediaStreamSource::kTypeAudio,
       "mock audio source name", false /* remote */);

@@ -38,7 +38,7 @@ class TabStatsObserver : public base::CheckedObserver {
 
   // Called whenever a main frame navigation to a different document is
   // committed in any of the observed tabs.
-  virtual void OnMainFrameNavigationCommitted(
+  virtual void OnPrimaryMainFrameNavigationCommitted(
       content::WebContents* web_contents) {}
 
   // Records that there's been a direct user interaction with a tab, see the

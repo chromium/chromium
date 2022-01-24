@@ -14,37 +14,16 @@
 namespace gpu {
 namespace webgpu {
 
-// static
-std::unique_ptr<DawnClientSerializer> DawnClientSerializer::Create(
-    WebGPUImplementation* client,
-    WebGPUCmdHelper* helper,
-    DawnClientMemoryTransferService* memory_transfer_service,
-    const SharedMemoryLimits& limits) {
-  std::unique_ptr<TransferBuffer> transfer_buffer =
-      std::make_unique<TransferBuffer>(helper);
-  if (!transfer_buffer->Initialize(limits.start_transfer_buffer_size,
-                                   /* start offset */ 0,
-                                   limits.min_transfer_buffer_size,
-                                   limits.max_transfer_buffer_size,
-                                   /* alignment */ 8)) {
-    return nullptr;
-  }
-  return std::make_unique<DawnClientSerializer>(
-      client, helper, memory_transfer_service, std::move(transfer_buffer),
-      limits.start_transfer_buffer_size);
-}
-
 DawnClientSerializer::DawnClientSerializer(
     WebGPUImplementation* client,
     WebGPUCmdHelper* helper,
     DawnClientMemoryTransferService* memory_transfer_service_,
-    std::unique_ptr<TransferBuffer> transfer_buffer,
-    uint32_t buffer_initial_size)
+    std::unique_ptr<TransferBuffer> transfer_buffer)
     : client_(client),
       helper_(helper),
       memory_transfer_service_(memory_transfer_service_),
       transfer_buffer_(std::move(transfer_buffer)),
-      buffer_initial_size_(buffer_initial_size),
+      buffer_initial_size_(transfer_buffer_->GetSize()),
       buffer_(helper_, transfer_buffer_.get()) {
   DCHECK_GT(buffer_initial_size_, 0u);
 }
@@ -131,7 +110,16 @@ void DawnClientSerializer::SetAwaitingFlush(bool awaiting_flush) {
 
 void DawnClientSerializer::Disconnect() {
   buffer_.Discard();
-  transfer_buffer_ = nullptr;
+  if (transfer_buffer_) {
+    auto transfer_buffer = std::move(transfer_buffer_);
+    // Wait for commands to finish before we free shared memory that
+    // the GPU process is using.
+    // TODO(crbug.com/1231599): This Finish may not be necessary if the
+    // shared memory is not immediately freed. Investigate this and
+    // consider optimization.
+    helper_->Finish();
+    transfer_buffer = nullptr;
+  }
 }
 
 bool DawnClientSerializer::Flush() {

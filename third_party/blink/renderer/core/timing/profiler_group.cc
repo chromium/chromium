@@ -103,7 +103,7 @@ ProfilerGroup* ProfilerGroup::From(v8::Isolate* isolate) {
 }
 
 base::TimeDelta ProfilerGroup::GetBaseSampleInterval() {
-  return base::TimeDelta::FromMilliseconds(kBaseSampleIntervalMs);
+  return base::Milliseconds(kBaseSampleIntervalMs);
 }
 
 ProfilerGroup::ProfilerGroup(v8::Isolate* isolate)
@@ -152,7 +152,7 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
   DCHECK(init_options.hasSampleInterval());
 
   const base::TimeDelta sample_interval =
-      base::TimeDelta::FromMillisecondsD(init_options.sampleInterval());
+      base::Milliseconds(init_options.sampleInterval());
   const int64_t sample_interval_us = sample_interval.InMicroseconds();
 
   if (sample_interval_us < 0 ||

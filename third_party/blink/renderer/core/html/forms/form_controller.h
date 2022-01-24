@@ -121,6 +121,11 @@ class CORE_EXPORT FormController final
   // to restore before 'pageshow' event.
   void RestoreImmediately();
 
+  // This always retutrns false in production.
+  bool DropReferencedFilePaths() const { return drop_referenced_file_paths_; }
+  void SetDropReferencedFilePathsForTesting() {
+    drop_referenced_file_paths_ = true;
+  }
   static Vector<String> GetReferencedFilePaths(
       const Vector<String>& state_vector);
 
@@ -137,6 +142,7 @@ class CORE_EXPORT FormController final
   SavedFormStateMap saved_form_state_map_;
   Member<FormKeyGenerator> form_key_generator_;
   bool did_restore_all_ = false;
+  bool drop_referenced_file_paths_ = false;
 };
 
 // Exposed for testing.

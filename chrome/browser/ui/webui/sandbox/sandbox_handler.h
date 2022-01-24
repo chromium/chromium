@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SANDBOX_SANDBOX_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SANDBOX_SANDBOX_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -20,6 +19,10 @@ namespace sandbox_handler {
 class SandboxHandler : public content::WebUIMessageHandler {
  public:
   SandboxHandler();
+
+  SandboxHandler(const SandboxHandler&) = delete;
+  SandboxHandler& operator=(const SandboxHandler&) = delete;
+
   ~SandboxHandler() override;
 
  private:
@@ -31,7 +34,6 @@ class SandboxHandler : public content::WebUIMessageHandler {
 
   void OnSandboxDataFetched(base::Value results);
 
-  void FetchBrowserChildProcessesCompleted(base::Value browser_processes);
   void FetchSandboxDiagnosticsCompleted(base::Value sandbox_policies);
   void GetRendererProcessesAndFinish();
 
@@ -43,8 +45,6 @@ class SandboxHandler : public content::WebUIMessageHandler {
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.
   base::WeakPtrFactory<SandboxHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxHandler);
 };
 
 }  // namespace sandbox_handler

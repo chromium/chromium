@@ -104,6 +104,10 @@ class ProfileData {
   static const int kMaxStackDepth = 64;  // Max stack depth stored in profile
 
   ProfileData();
+
+  ProfileData(const ProfileData&) = delete;
+  ProfileData& operator=(const ProfileData&) = delete;
+
   ~ProfileData();
 
   // If data collection is not already enabled start to collect data
@@ -177,8 +181,6 @@ class ProfileData {
 
   // Write contents of eviction buffer to disk.
   void FlushEvicted();
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileData);
 };
 
 #endif  // BASE_PROFILEDATA_H_

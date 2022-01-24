@@ -28,8 +28,7 @@ bool NetworkInfo::operator==(const NetworkInfo& other) const {
          sim_locked == other.sim_locked &&
          connection_state == other.connection_state && source == other.source &&
          activation_state == other.activation_state &&
-         battery_percentage == other.battery_percentage &&
-         inhibited == other.inhibited;
+         battery_percentage == other.battery_percentage;
 }
 
 }  // namespace ash

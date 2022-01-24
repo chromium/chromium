@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_THEMES_CUSTOM_THEME_SUPPLIER_H_
 #define CHROME_BROWSER_THEMES_CUSTOM_THEME_SUPPLIER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/layout.h"
+#include "ui/color/color_provider_manager.h"
 
 namespace base {
 class RefCountedMemory;
@@ -22,11 +22,15 @@ namespace gfx {
 class Image;
 }
 
+namespace ui {
+class ColorProvider;
+}
+
 // A representation of a theme. All theme properties can be accessed through the
 // public methods. Subclasses are expected to override all methods which should
 // provide non-default values.
 class CustomThemeSupplier
-    : public base::RefCountedThreadSafe<CustomThemeSupplier> {
+    : public ui::ColorProviderManager::InitializerSupplier {
  public:
   enum ThemeType {
     EXTENSION,
@@ -36,6 +40,9 @@ class CustomThemeSupplier
   };
 
   explicit CustomThemeSupplier(ThemeType type);
+
+  CustomThemeSupplier(const CustomThemeSupplier&) = delete;
+  CustomThemeSupplier& operator=(const CustomThemeSupplier&) = delete;
 
   ThemeType get_theme_type() const {
     return theme_type_;
@@ -67,7 +74,8 @@ class CustomThemeSupplier
   // Returns the raw PNG encoded data for IDR_THEME_NTP_*. This method only
   // works for the NTP attribution and background resources.
   virtual base::RefCountedMemory* GetRawData(
-      int id, ui::ScaleFactor scale_factor) const;
+      int id,
+      ui::ResourceScaleFactor scale_factor) const;
 
   // Whether this theme provides an image for |id|.
   virtual bool HasCustomImage(int id) const;
@@ -77,8 +85,15 @@ class CustomThemeSupplier
   // doesn't supply all the colors it should (http://crbug.com/1045630).
   virtual bool CanUseIncognitoColors() const;
 
+  // ui::ColorProviderManager::InitializerSupplier:
+  void AddColorMixers(ui::ColorProvider* provider,
+                      const ui::ColorProviderManager::Key& key) const override {
+    // TODO(pkasting): All classes that override GetColor() should override
+    // this.
+  }
+
  protected:
-  virtual ~CustomThemeSupplier();
+  ~CustomThemeSupplier() override;
 
   void set_extension_id(base::StringPiece id) {
     DCHECK_EQ(theme_type_, EXTENSION);
@@ -90,8 +105,6 @@ class CustomThemeSupplier
 
   ThemeType theme_type_;
   std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomThemeSupplier);
 };
 
 #endif  // CHROME_BROWSER_THEMES_CUSTOM_THEME_SUPPLIER_H_

@@ -7,7 +7,29 @@
  * Switch Access settings.
  */
 
-import {getLabelForAssignment} from './switch_access_action_assignment_pane.m.js';
+import '//resources/cr_elements/md_select_css.m.js';
+import '../../controls/settings_slider.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_shared_css.js';
+import './switch_access_action_assignment_dialog.js';
+import './switch_access_setup_guide_dialog.js';
+import './switch_access_setup_guide_warning_dialog.js';
+
+import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {getLabelForAssignment} from './switch_access_action_assignment_pane.js';
+import {actionToPref, AssignmentContext, AUTO_SCAN_SPEED_RANGE_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
+import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
 
 /**
  * The portion of the setting name common to all Switch Access preferences.
@@ -20,7 +42,7 @@ const POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND = [25, 50, 75, 100, 150, 200, 300];
 
 /**
  * @param {!Array<number>} ticksInMs
- * @return {!Array<!cr_slider.SliderTick>}
+ * @return {!Array<!SliderTick>}
  */
 function ticksWithLabelsInSec(ticksInMs) {
   // Dividing by 1000 to convert milliseconds to seconds for the label.
@@ -29,20 +51,21 @@ function ticksWithLabelsInSec(ticksInMs) {
 
 /**
  * @param {!Array<number>} ticks
- * @return {!Array<!cr_slider.SliderTick>}
+ * @return {!Array<!SliderTick>}
  */
 function ticksWithCountingLabels(ticks) {
   return ticks.map((x, i) => ({label: i + 1, value: x}));
 }
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-switch-access-subpage',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -192,17 +215,17 @@ Polymer({
   ready() {
     this.addWebUIListener(
         'switch-access-assignments-changed',
-        this.onAssignmentsChanged_.bind(this));
+        value => this.onAssignmentsChanged_(value));
     this.switchAccessBrowserProxy_.refreshAssignmentsFromPrefs();
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.MANAGE_SWITCH_ACCESS_SETTINGS) {
+    if (route !== routes.MANAGE_SWITCH_ACCESS_SETTINGS) {
       return;
     }
 
@@ -286,7 +309,7 @@ Polymer({
     // If this method is called with no SELECT switches, then the page has just
     // loaded, and we should open the setup guide.
     if (Object.keys(this.selectAssignments_).length === 0 &&
-        this.showSetupGuide_) {
+        this.showSetupGuide_()) {
       this.openSetupGuide_();
     }
   },
@@ -346,15 +369,8 @@ Polymer({
    * @private
    */
   showSetupGuide_() {
-    return loadTimeData.getBoolean('showSwitchAccessSetupGuide');
-  },
-
-  /**
-   * @return {boolean} Whether Switch Access point scanning is enabled.
-   * @private
-   */
-  isSwitchAccessPointScanningEnabled_() {
-    return loadTimeData.getBoolean('isSwitchAccessPointScanningEnabled');
+    return loadTimeData.getBoolean('showSwitchAccessSetupGuide') &&
+        !this.showSwitchAccessActionAssignmentDialog_;
   },
 
   /**

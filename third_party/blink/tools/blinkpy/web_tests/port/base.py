@@ -140,18 +140,20 @@ class Port(object):
         ('mac10.13', 'x86'),
         ('mac10.14', 'x86'),
         ('mac10.15', 'x86'),
-        ('mac11.0', 'x86'),
-        ('mac-arm11.0', 'arm64'),
+        ('mac11', 'x86'),
+        ('mac11-arm64', 'arm64'),
         ('win7', 'x86'),
-        ('win10', 'x86'),
+        ('win10.20h2', 'x86'),
         ('trusty', 'x86_64'),
         ('fuchsia', 'x86_64'),
     )
 
     CONFIGURATION_SPECIFIER_MACROS = {
-        'mac': ['mac10.12', 'mac10.13', 'mac10.14', 'mac10.15', 'mac11.0',
-                'mac-arm11.0'],
-        'win': ['win7', 'win10'],
+        'mac': [
+            'mac10.12', 'mac10.13', 'mac10.14', 'mac10.15', 'mac11',
+            'mac11-arm64'
+        ],
+        'win': ['win7', 'win10.20h2'],
         'linux': ['trusty'],
         'fuchsia': ['fuchsia'],
     }
@@ -250,6 +252,7 @@ class Port(object):
         self._test_configuration = None
         self._results_directory = None
         self._virtual_test_suites = None
+        self._used_expectation_files = None
 
     def __str__(self):
         return 'Port{name=%s, version=%s, architecture=%s, test_configuration=%s}' % (
@@ -265,7 +268,7 @@ class Port(object):
         ])
 
     @memoized
-    def _flag_specific_config_name(self):
+    def flag_specific_config_name(self):
         """Returns the name of the flag-specific configuration which best matches
            self._specified_additional_driver_flags(), or the first specified flag
            with leading '-'s stripped if no match in the configuration is found.
@@ -316,7 +319,7 @@ class Port(object):
             if name in configs:
                 raise ValueError('{} contains duplicated name {}.'.format(
                     config_file, name))
-            if args in configs.itervalues():
+            if args in configs.values():
                 raise ValueError(
                     '{}: name "{}" has the same args as another entry.'.format(
                         config_file, name))
@@ -353,6 +356,8 @@ class Port(object):
                 '--run-web-tests',
                 '--ignore-certificate-errors-spki-list=' + WPT_FINGERPRINT +
                 ',' + SXG_FINGERPRINT + ',' + SXG_WPT_FINGERPRINT,
+                # Required for WebTransport tests.
+                '--origin-to-force-quic-on=web-platform.test:11000',
                 '--user-data-dir'
             ]
             if self.get_option('nocheck_sys_deps', False):
@@ -363,8 +368,10 @@ class Port(object):
         # increases test run time by 2-5X, but provides more consistent results
         # [less state leaks between tests].
         if (self.get_option('reset_shell_between_tests')
-                or self.get_option('repeat_each') > 1
-                or self.get_option('iterations') > 1):
+                or (self.get_option('repeat_each')
+                    and self.get_option('repeat_each') > 1)
+                or (self.get_option('iterations')
+                    and self.get_option('iterations') > 1)):
             flags += ['--reset-shell-between-tests']
         return flags
 
@@ -1290,11 +1297,16 @@ class Port(object):
 
         This exists because Windows has inconsistent behavior between the bots
         and local developer machines, such that determining which python3 name
-        to use is non-trivial. See https://crbug.com/155616.
+        to use is non-trivial. See https://crbug.com/1155616.
 
         Once blinkpy runs under python3, this can be removed in favour of
         callers using sys.executable.
         """
+        if six.PY3:
+            # Prefer sys.executable when the current script runs under python3.
+            # The current script might be running with vpython3 and in that case
+            # using the same executable will share the same virtualenv.
+            return sys.executable
         return 'python3'
 
     def get_option(self, name, default_value=None):
@@ -1637,14 +1649,12 @@ class Port(object):
         return test_configurations
 
     def _flag_specific_expectations_path(self):
-        config_name = self._flag_specific_config_name()
+        config_name = self.flag_specific_config_name()
         if config_name:
-            return self._filesystem.join(self.web_tests_dir(),
-                                         self.FLAG_EXPECTATIONS_PREFIX,
-                                         config_name)
+            return self.path_to_flag_specific_expectations_file(config_name)
 
     def _flag_specific_baseline_search_path(self):
-        config_name = self._flag_specific_config_name()
+        config_name = self.flag_specific_config_name()
         if not config_name:
             return []
         flag_dir = self._filesystem.join(self.web_tests_dir(), 'flag-specific',
@@ -1672,24 +1682,29 @@ class Port(object):
         # updated to know about the ordered dict.
         expectations = collections.OrderedDict()
 
-        if not self.get_option('ignore_default_expectations', False):
-            for path in self.expectations_files():
-                if self._filesystem.exists(path):
+        default_expectations_files = set(self.default_expectations_files())
+        ignore_default = self.get_option('ignore_default_expectations', False)
+        for path in self.used_expectations_files():
+            is_default = path in default_expectations_files
+            if ignore_default and is_default:
+                continue
+            path_exists = self._filesystem.exists(path)
+            if is_default:
+                if path_exists:
                     expectations[path] = self._filesystem.read_text_file(path)
-
-        for path in self.get_option('additional_expectations', []):
-            expanded_path = self._filesystem.expanduser(path)
-            if self._filesystem.exists(expanded_path):
-                _log.debug("reading additional_expectations from path '%s'",
-                           path)
-                expectations[path] = self._filesystem.read_text_file(
-                    expanded_path)
             else:
-                # TODO(rmhasan): Fix additional expectation paths for
-                # not_site_per_process_blink_web_tests, then change this back
-                # to raising exceptions for incorrect expectation paths.
-                _log.warning(
-                    "additional_expectations path '%s' does not exist", path)
+                if path_exists:
+                    _log.debug(
+                        "reading additional_expectations from path '%s'", path)
+                    expectations[path] = self._filesystem.read_text_file(path)
+                else:
+                    # TODO(rmhasan): Fix additional expectation paths for
+                    # not_site_per_process_blink_web_tests, then change this
+                    # back to raising exceptions for incorrect expectation
+                    # paths.
+                    _log.warning(
+                        "additional_expectations path '%s' does not exist",
+                        path)
         return expectations
 
     def all_expectations_dict(self):
@@ -1741,7 +1756,7 @@ class Port(object):
         _log.warning("Unexpected ignore mode: '%s'.", ignore_mode)
         return {}
 
-    def expectations_files(self):
+    def default_expectations_files(self):
         """Returns a list of paths to expectations files that apply by default.
 
         There are other "test expectations" files that may be applied if
@@ -1754,9 +1769,21 @@ class Port(object):
             self._filesystem.join(self.web_tests_dir(), 'NeverFixTests'),
             self._filesystem.join(self.web_tests_dir(),
                                   'StaleTestExpectations'),
-            self._filesystem.join(self.web_tests_dir(), 'SlowTests'),
-            self._flag_specific_expectations_path()
+            self._filesystem.join(self.web_tests_dir(), 'SlowTests')
         ])
+
+    def used_expectations_files(self):
+        """Returns a list of paths to expectation files that are used."""
+        if self._used_expectation_files is None:
+            self._used_expectation_files = list(
+                self.default_expectations_files())
+            flag_specific = self._flag_specific_expectations_path()
+            if flag_specific:
+                self._used_expectation_files.append(flag_specific)
+            for path in self.get_option('additional_expectations', []):
+                expanded_path = self._filesystem.expanduser(path)
+                self._used_expectation_files.append(expanded_path)
+        return self._used_expectation_files
 
     def extra_expectations_files(self):
         """Returns a list of paths to test expectations not loaded by default.
@@ -1777,6 +1804,11 @@ class Port(object):
     def path_to_webdriver_expectations_file(self):
         return self._filesystem.join(self.web_tests_dir(),
                                      'WebDriverExpectations')
+
+    def path_to_flag_specific_expectations_file(self, flag_specific):
+        return self._filesystem.join(self.web_tests_dir(),
+                                     self.FLAG_EXPECTATIONS_PREFIX,
+                                     flag_specific)
 
     def repository_path(self):
         """Returns the repository path for the chromium code base."""

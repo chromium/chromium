@@ -54,9 +54,9 @@ LineSegment ExcludedSegment(const NGExclusion& exclusion,
   segment.logical_right += margin_delta;
 
   // Clamp the segment offsets to the size of the exclusion.
-  segment.logical_left = clampTo<LayoutUnit>(segment.logical_left, LayoutUnit(),
+  segment.logical_left = ClampTo<LayoutUnit>(segment.logical_left, LayoutUnit(),
                                              exclusion.rect.InlineSize());
-  segment.logical_right = clampTo<LayoutUnit>(
+  segment.logical_right = ClampTo<LayoutUnit>(
       segment.logical_right, LayoutUnit(), exclusion.rect.InlineSize());
 
   // Make the segment offsets relative to the BFC coordinate space.

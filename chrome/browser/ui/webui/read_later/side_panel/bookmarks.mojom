@@ -4,6 +4,7 @@
 
 module side_panel.mojom;
 
+import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
@@ -18,7 +19,8 @@ interface BookmarksPageHandlerFactory {
 interface BookmarksPageHandler {
   // Opens a bookmark by URL and passes the parent folder depth for metrics
   // collection.
-  OpenBookmark(url.mojom.Url url, int32 parent_folder_depth);
+  OpenBookmark(url.mojom.Url url, int32 parent_folder_depth,
+               ui.mojom.ClickModifiers click_modifiers);
 
   // Opens a context menu for a bookmark node. The id parameter is internally
   // an int64 but gets passed as a string from the chrome.bookmarks Extension

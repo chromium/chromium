@@ -170,7 +170,8 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPagePersistentPlatformApp) {
 TEST_F(ExtensionManifestBackgroundTest, BackgroundPagePersistentInvalidKey) {
   std::vector<std::string> expected_warnings = {
       "'background' is only allowed for extensions, legacy packaged apps, "
-      "hosted apps, and login screen extensions, but this is a packaged app.",
+      "hosted apps, login screen extensions, and chromeos system extensions, "
+      "but this is a packaged app.",
       "'background.persistent' is only allowed for extensions, legacy packaged "
       "apps, and login screen extensions, but this is a packaged app."};
   scoped_refptr<Extension> extension = LoadAndExpectWarnings(

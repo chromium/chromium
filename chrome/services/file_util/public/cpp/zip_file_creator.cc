@@ -34,20 +34,44 @@ base::File OpenFileHandleAsync(const base::FilePath& zip_path) {
 
 }  // namespace
 
-ZipFileCreator::ZipFileCreator(ResultCallback result_callback,
-                               base::FilePath src_dir,
-                               std::vector<base::FilePath> src_relative_paths,
-                               base::FilePath dest_file)
-    : result_callback_(std::move(result_callback)),
-      src_dir_(std::move(src_dir)),
-      src_relative_paths_(std::move(src_relative_paths)),
-      dest_file_(std::move(dest_file)) {
-  DCHECK(result_callback_);
+std::ostream& operator<<(std::ostream& out, ZipFileCreator::Result result) {
+  switch (result) {
+    case ZipFileCreator::kInProgress:
+      return out << "InProgress";
+    case ZipFileCreator::kSuccess:
+      return out << "Success";
+    case ZipFileCreator::kCancelled:
+      return out << "Cancelled";
+    case ZipFileCreator::kError:
+      return out << "Error";
+  }
 }
 
+ZipFileCreator::ZipFileCreator(base::FilePath src_dir,
+                               std::vector<base::FilePath> src_relative_paths,
+                               base::FilePath dest_file)
+    : src_dir_(std::move(src_dir)),
+      src_relative_paths_(std::move(src_relative_paths)),
+      dest_file_(std::move(dest_file)) {}
+
 ZipFileCreator::~ZipFileCreator() {
-  DCHECK(!result_callback_);
+  DCHECK(!progress_callback_);
+  DCHECK(!completion_callback_);
   DCHECK(!remote_zip_file_creator_);
+}
+
+void ZipFileCreator::SetProgressCallback(base::OnceClosure callback) {
+  DCHECK(!progress_callback_);
+  DCHECK_EQ(kInProgress, progress_.result);
+  progress_callback_ = std::move(callback);
+  DCHECK(progress_callback_);
+}
+
+void ZipFileCreator::SetCompletionCallback(base::OnceClosure callback) {
+  DCHECK(!completion_callback_);
+  DCHECK_EQ(progress_.result, kInProgress);
+  completion_callback_ = std::move(callback);
+  DCHECK(completion_callback_);
 }
 
 void ZipFileCreator::Start(
@@ -87,10 +111,12 @@ void ZipFileCreator::CreateZipFile(
   remote_zip_file_creator_.set_disconnect_handler(
       base::BindOnce(&ZipFileCreator::ReportResult, this, kError));
 
-  remote_zip_file_creator_->CreateZipFile(
-      std::move(directory), src_relative_paths_, std::move(file),
-      listener_.BindNewPipeAndPassRemote(),
-      base::BindOnce(&ZipFileCreator::OnFinished, this));
+  remote_zip_file_creator_->CreateZipFile(std::move(directory),
+                                          src_relative_paths_, std::move(file),
+                                          listener_.BindNewPipeAndPassRemote());
+
+  listener_.set_disconnect_handler(
+      base::BindOnce(&ZipFileCreator::ReportResult, this, kError));
 }
 
 void ZipFileCreator::BindDirectory(
@@ -123,27 +149,44 @@ void ZipFileCreator::OnFinished(const bool success) {
 void ZipFileCreator::ReportResult(const Result result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // Temporarily add a reference to this ZipFileCreator object. This is a
+  // protection in case the call to the progress feedback removes the last
+  // external reference to this object before the call to the completion
+  // callback. This way, we keep this object alive while it is still being used.
+  const scoped_refptr<ZipFileCreator> guard(this);
+
+  DCHECK_EQ(progress_.result, kInProgress);
+  progress_.result = result;
+  DCHECK_NE(progress_.result, kInProgress);
+  progress_.update_count++;
+
   base::UmaHistogramEnumeration("ZipFileCreator.Result", result);
 
   listener_.reset();
   remote_zip_file_creator_.reset();
 
-  const bool success = result == kSuccess;
   // In case of error, remove the partially created ZIP file.
-  if (!success)
+  if (result != kSuccess)
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(base::GetDeleteFileCallback(), dest_file_));
 
-  if (result_callback_)
-    std::move(result_callback_).Run(success);
+  if (progress_callback_)
+    std::move(progress_callback_).Run();
+
+  if (completion_callback_)
+    std::move(completion_callback_).Run();
 }
 
 void ZipFileCreator::OnProgress(const uint64_t bytes,
                                 const uint32_t files,
                                 const uint32_t directories) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(fdegros) Do something with progress information
-  VLOG(0) << "ZIP progress: " << bytes << " bytes, " << files << " files, "
-          << directories << " directories";
+  DCHECK_EQ(progress_.result, kInProgress);
+  progress_.bytes = bytes;
+  progress_.files = files;
+  progress_.directories = directories;
+  progress_.update_count++;
+  if (progress_callback_)
+    std::move(progress_callback_).Run();
 }

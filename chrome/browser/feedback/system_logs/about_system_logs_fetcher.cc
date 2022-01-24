@@ -13,11 +13,13 @@
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/system_logs/command_line_log_source.h"
 #include "chrome/browser/ash/system_logs/dbus_log_source.h"
 #include "chrome/browser/ash/system_logs/debug_daemon_log_source.h"
 #include "chrome/browser/ash/system_logs/device_event_log_source.h"
 #include "chrome/browser/ash/system_logs/network_health_source.h"
+#include "chrome/browser/ash/system_logs/reven_log_source.h"
 #include "chrome/browser/ash/system_logs/shill_log_source.h"
 #include "chrome/browser/ash/system_logs/touch_log_source.h"
 #include "chrome/browser/ash/system_logs/ui_hierarchy_log_source.h"
@@ -38,6 +40,11 @@ SystemLogsFetcher* BuildAboutSystemLogsFetcher() {
   fetcher->AddSource(std::make_unique<CommandLineLogSource>());
   fetcher->AddSource(std::make_unique<DBusLogSource>());
   fetcher->AddSource(std::make_unique<DeviceEventLogSource>());
+#if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
+  if (base::FeatureList::IsEnabled(ash::features::kRevenLogSource))
+    fetcher->AddSource(std::make_unique<RevenLogSource>());
+#endif
+
   fetcher->AddSource(std::make_unique<TouchLogSource>());
 
   // Data sources that directly scrub itentifiable information.

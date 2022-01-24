@@ -30,6 +30,11 @@ class PasswordManagerDriver;
 class PasswordGenerationController {
  public:
   PasswordGenerationController() = default;
+
+  PasswordGenerationController(const PasswordGenerationController&) = delete;
+  PasswordGenerationController& operator=(const PasswordGenerationController&) =
+      delete;
+
   virtual ~PasswordGenerationController() = default;
 
   // Returns true if the generation controller may exist for |web_contents|.
@@ -110,8 +115,7 @@ class PasswordGenerationController {
 
   virtual gfx::NativeWindow top_level_native_window() const = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationController);
+  virtual content::WebContents* web_contents() const = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_GENERATION_CONTROLLER_H_

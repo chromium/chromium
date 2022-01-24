@@ -47,6 +47,11 @@ class RenderWidgetHostNSViewBridgeOwner
                        base::Unretained(this)));
   }
 
+  RenderWidgetHostNSViewBridgeOwner(const RenderWidgetHostNSViewBridgeOwner&) =
+      delete;
+  RenderWidgetHostNSViewBridgeOwner& operator=(
+      const RenderWidgetHostNSViewBridgeOwner&) = delete;
+
  private:
   void OnMojoDisconnect() { delete this; }
 
@@ -135,8 +140,6 @@ class RenderWidgetHostNSViewBridgeOwner
   std::unique_ptr<RenderWidgetHostNSViewBridge> bridge_;
   base::scoped_nsobject<NSAccessibilityRemoteUIElement>
       remote_accessibility_element_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostNSViewBridgeOwner);
 };
 }
 

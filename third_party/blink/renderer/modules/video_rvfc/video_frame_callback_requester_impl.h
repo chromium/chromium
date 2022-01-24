@@ -31,6 +31,12 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
   static void cancelVideoFrameCallback(HTMLVideoElement&, int);
 
   explicit VideoFrameCallbackRequesterImpl(HTMLVideoElement&);
+
+  VideoFrameCallbackRequesterImpl(const VideoFrameCallbackRequesterImpl&) =
+      delete;
+  VideoFrameCallbackRequesterImpl& operator=(
+      const VideoFrameCallbackRequesterImpl&) = delete;
+
   ~VideoFrameCallbackRequesterImpl() override;
 
   void Trace(Visitor*) const override;
@@ -117,8 +123,6 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
 
   // Only used to invalidate pending OnExecution() calls.
   base::WeakPtrFactory<VideoFrameCallbackRequesterImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameCallbackRequesterImpl);
 };
 
 }  // namespace blink

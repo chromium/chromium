@@ -96,13 +96,21 @@ void APIBindingJSUtil::SendRequest(
   // TODO(devlin): We should ideally always be able to validate these, meaning
   // that we either need to make the APIs give us the expected signature, or
   // need to have a way of indicating an internal signature.
+  // TODO(tjudkins): This call into ConvertArgumentsIgnoringSchema can hit a
+  // CHECK or DCHECK if the caller leaves off an optional callback. Since all
+  // the callers are only internally defined JS hooks we know none of them do at
+  // the moment, but this should be fixed and will need to be resolved for
+  // supporting promises through this codepath.
   APISignature::JSONParseResult parse_result =
       signature->ConvertArgumentsIgnoringSchema(context, request_args);
   CHECK(parse_result.succeeded());
+  // We don't currently support promise based requests through SendRequest here.
+  // See the above comment for more details.
+  DCHECK_NE(binding::AsyncResponseType::kPromise, parse_result.async_type);
 
-  request_handler_->StartRequest(context, name,
-                                 std::move(parse_result.arguments_list),
-                                 parse_result.callback, custom_callback);
+  request_handler_->StartRequest(
+      context, name, std::move(parse_result.arguments_list),
+      parse_result.async_type, parse_result.callback, custom_callback);
 }
 
 void APIBindingJSUtil::RegisterEventArgumentMassager(
@@ -295,7 +303,7 @@ void APIBindingJSUtil::AddCustomSignature(
 
   type_refs_->AddCustomSignature(
       custom_signature_name,
-      std::make_unique<APISignature>(*base_signature, nullptr /*returns_async*/,
+      APISignature::CreateFromValues(*base_signature, nullptr /*returns_async*/,
                                      nullptr /*access_checker*/));
 }
 

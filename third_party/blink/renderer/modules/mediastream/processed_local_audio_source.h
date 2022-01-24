@@ -52,6 +52,10 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
       ConstraintsOnceCallback started_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  ProcessedLocalAudioSource(const ProcessedLocalAudioSource&) = delete;
+  ProcessedLocalAudioSource& operator=(const ProcessedLocalAudioSource&) =
+      delete;
+
   ~ProcessedLocalAudioSource() final;
 
   // If |source| is an instance of ProcessedLocalAudioSource, return a
@@ -88,11 +92,6 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
     return level_calculator_.level();
   }
 
-  // Thread-safe volume accessors used by WebRtcAudioDeviceImpl.
-  void SetVolume(int volume);
-  int Volume() const;
-  int MaxVolume() const;
-
   void SetOutputDeviceForAec(const std::string& output_device_id);
 
  protected:
@@ -120,6 +119,9 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
                              base::TimeTicks audio_capture_time,
                              double volume,
                              bool key_pressed);
+
+  // Update the device (source) mic volume.
+  void SetVolume(double volume);
 
   // Helper function to get the source buffer size based on whether audio
   // processing will take place.
@@ -151,10 +153,6 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   // The device created by the AudioDeviceFactory in EnsureSourceIsStarted().
   scoped_refptr<media::AudioCapturerSource> source_;
 
-  // Stores latest microphone volume received in a CaptureData() callback.
-  // Range is [0, 255].
-  base::subtle::Atomic32 volume_;
-
   // Used to calculate the signal level that shows in the UI.
   blink::MediaStreamAudioLevelCalculator level_calculator_;
 
@@ -162,8 +160,6 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
 
   // Provides weak pointers for tasks posted by this instance.
   base::WeakPtrFactory<ProcessedLocalAudioSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessedLocalAudioSource);
 };
 
 }  // namespace blink

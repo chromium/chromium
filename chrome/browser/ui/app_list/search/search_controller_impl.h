@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
@@ -58,7 +57,7 @@ class SearchControllerImpl : public SearchController {
   void ViewClosing() override;
   void OpenResult(ChromeSearchResult* result, int event_flags) override;
   void InvokeResultAction(ChromeSearchResult* result,
-                          int action_index) override;
+                          ash::SearchResultActionType action) override;
   size_t AddGroup(size_t max_results) override;
   void AddProvider(size_t group_id,
                    std::unique_ptr<SearchProvider> provider) override;

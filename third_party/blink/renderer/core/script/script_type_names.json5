@@ -1,0 +1,14 @@
+{
+  metadata: {
+    namespace: "script_type_names",
+    export: "CORE_EXPORT",
+  },
+
+  data: [
+    "classic",
+    "importmap",
+    "module",
+    "speculationrules",
+    "webbundle",
+  ],
+}

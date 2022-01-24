@@ -25,7 +25,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -77,6 +77,9 @@ class ThemeChangeWaiter {
   explicit ThemeChangeWaiter(ThemeService* theme_service)
       : waiter_(theme_service) {}
 
+  ThemeChangeWaiter(const ThemeChangeWaiter&) = delete;
+  ThemeChangeWaiter& operator=(const ThemeChangeWaiter&) = delete;
+
   ~ThemeChangeWaiter() {
     waiter_.WaitForThemeChanged();
     // Theme changes propagate asynchronously in DesktopWindowTreeHostX11::
@@ -86,13 +89,14 @@ class ThemeChangeWaiter {
 
  private:
   test::ThemeServiceChangedWaiter waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeChangeWaiter);
 };
 
 class TestAXEventObserver : public views::AXEventObserver {
  public:
   TestAXEventObserver() { views::AXEventManager::Get()->AddObserver(this); }
+
+  TestAXEventObserver(const TestAXEventObserver&) = delete;
+  TestAXEventObserver& operator=(const TestAXEventObserver&) = delete;
 
   ~TestAXEventObserver() override {
     views::AXEventManager::Get()->RemoveObserver(this);
@@ -150,8 +154,6 @@ class TestAXEventObserver : public views::AXEventObserver {
   int active_descendant_changed_count_ = 0;
   std::string omnibox_value_;
   std::string selected_option_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAXEventObserver);
 };
 
 }  // namespace
@@ -159,6 +161,10 @@ class TestAXEventObserver : public views::AXEventObserver {
 class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
  public:
   OmniboxPopupContentsViewTest() {}
+
+  OmniboxPopupContentsViewTest(const OmniboxPopupContentsViewTest&) = delete;
+  OmniboxPopupContentsViewTest& operator=(const OmniboxPopupContentsViewTest&) =
+      delete;
 
   views::Widget* CreatePopupForTestQuery();
   views::Widget* GetPopupWidget() { return popup_view()->GetWidget(); }
@@ -172,9 +178,9 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
   }
   OmniboxViewViews* omnibox_view() { return location_bar()->omnibox_view(); }
   OmniboxEditModel* edit_model() { return omnibox_view()->model(); }
-  OmniboxPopupModel* popup_model() { return edit_model()->popup_model(); }
   OmniboxPopupContentsView* popup_view() {
-    return static_cast<OmniboxPopupContentsView*>(popup_model()->view());
+    return static_cast<OmniboxPopupContentsView*>(
+        edit_model()->get_popup_view());
   }
 
   SkColor GetSelectedColor(Browser* browser) {
@@ -208,12 +214,10 @@ class OmniboxPopupContentsViewTest : public InProcessBrowserTest {
     }
     ASSERT_TRUE(theme_service->UsingDefaultTheme());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxPopupContentsViewTest);
 };
 
 views::Widget* OmniboxPopupContentsViewTest::CreatePopupForTestQuery() {
-  EXPECT_TRUE(popup_model()->result().empty());
+  EXPECT_TRUE(edit_model()->result().empty());
   EXPECT_FALSE(popup_view()->IsOpen());
   EXPECT_FALSE(GetPopupWidget());
 
@@ -222,9 +226,9 @@ views::Widget* OmniboxPopupContentsViewTest::CreatePopupForTestQuery() {
       u"foo", metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   input.set_want_asynchronous_matches(false);
-  popup_model()->autocomplete_controller()->Start(input);
+  edit_model()->autocomplete_controller()->Start(input);
 
-  EXPECT_FALSE(popup_model()->result().empty());
+  EXPECT_FALSE(edit_model()->result().empty());
   EXPECT_TRUE(popup_view()->IsOpen());
   views::Widget* popup = GetPopupWidget();
   EXPECT_TRUE(popup);
@@ -469,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   ACMatches matches;
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
-  AutocompleteController* controller = popup_model()->autocomplete_controller();
+  AutocompleteController* controller = edit_model()->autocomplete_controller();
   match.contents = u"https://foobar.com";
   match.description = u"FooBarCom";
   matches.push_back(match);
@@ -494,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   // Each time the selection changes, we should have a text/name change event.
   // This makes it possible for screen readers to have the updated match content
   // when they are notified the selection changed.
-  popup_view()->model()->SetSelection(OmniboxPopupModel::Selection(1));
+  edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
   EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 1);
   EXPECT_EQ(observer.selected_children_changed_count(), 2);
   EXPECT_EQ(observer.selection_changed_count(), 2);
@@ -509,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   EXPECT_TRUE(
       contains(observer.selected_option_name(), "location from history"));
 
-  popup_view()->model()->SetSelection(OmniboxPopupModel::Selection(2));
+  edit_model()->SetPopupSelection(OmniboxPopupSelection(2));
   EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 2);
   EXPECT_EQ(observer.selected_children_changed_count(), 3);
   EXPECT_EQ(observer.selection_changed_count(), 3);
@@ -543,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   ACMatches matches;
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
-  AutocompleteController* controller = popup_model()->autocomplete_controller();
+  AutocompleteController* controller = edit_model()->autocomplete_controller();
   match.contents = u"https://foobar.com";
   match.description = u"The Foo Of All Bars";
   match.has_tab_match = true;
@@ -551,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   controller->result_.AppendMatches(controller->input_, matches);
   popup_view()->UpdatePopupAppearance();
 
-  popup_view()->model()->SetSelection(OmniboxPopupModel::Selection(1));
+  edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
   EXPECT_EQ(observer.selected_children_changed_count(), 2);
   EXPECT_EQ(observer.selection_changed_count(), 2);
   EXPECT_EQ(observer.active_descendant_changed_count(), 2);
@@ -564,8 +568,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
       contains(observer.selected_option_name(), "press Tab then Enter"));
   EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 2"));
 
-  popup_view()->model()->SetSelection(OmniboxPopupModel::Selection(
-      1, OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH));
+  edit_model()->SetPopupSelection(OmniboxPopupSelection(
+      1, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH));
   EXPECT_TRUE(contains(observer.omnibox_value(), "The Foo Of All Bars"));
   EXPECT_EQ(observer.selected_children_changed_count(), 3);
   EXPECT_EQ(observer.selection_changed_count(), 3);
@@ -577,8 +581,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
       contains(observer.selected_option_name(), "press Enter to switch"));
   EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 2"));
 
-  popup_view()->model()->SetSelection(
-      OmniboxPopupModel::Selection(1, OmniboxPopupModel::NORMAL));
+  edit_model()->SetPopupSelection(
+      OmniboxPopupSelection(1, OmniboxPopupSelection::NORMAL));
   EXPECT_TRUE(contains(observer.omnibox_value(), "The Foo Of All Bars"));
   EXPECT_TRUE(contains(observer.selected_option_name(), "foobar.com"));
   EXPECT_EQ(observer.selected_children_changed_count(), 4);
@@ -601,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
       u"foo", metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   input.set_want_asynchronous_matches(false);
-  popup_model()->autocomplete_controller()->Start(input);
+  edit_model()->autocomplete_controller()->Start(input);
 
   // Create a match to populate the autocomplete.
   std::u16string match_url = u"https://foobar.com";
@@ -615,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   match.allowed_to_be_default_match = true;
 
   AutocompleteController* autocomplete_controller =
-      popup_model()->autocomplete_controller();
+      edit_model()->autocomplete_controller();
   AutocompleteResult& results = autocomplete_controller->result_;
   ACMatches matches;
   matches.push_back(match);
@@ -631,14 +635,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   EXPECT_EQ(observer.active_descendant_changed_count(), 0);
 
   // This is equiverlent of the user arrowing down in the omnibox.
-  popup_view()->model()->SetSelection(OmniboxPopupModel::Selection(1));
+  edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
   EXPECT_EQ(observer.selected_children_changed_count(), 1);
   EXPECT_EQ(observer.selection_changed_count(), 1);
   EXPECT_EQ(observer.value_changed_count(), 1);
   EXPECT_EQ(observer.active_descendant_changed_count(), 1);
 
   // This is equivalent of the user arrowing up in the omnibox.
-  popup_view()->model()->SetSelection(OmniboxPopupModel::Selection(0));
+  edit_model()->SetPopupSelection(OmniboxPopupSelection(0));
   EXPECT_EQ(observer.selected_children_changed_count(), 2);
   EXPECT_EQ(observer.selection_changed_count(), 2);
   EXPECT_EQ(observer.value_changed_count(), 2);

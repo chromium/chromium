@@ -49,10 +49,6 @@ class MAYBE_WebRtcDataBrowserTest : public WebRtcContentBrowserTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest, CanSetupLegacyCall) {
-  MakeTypicalPeerConnectionCall("callWithLegacySdp();");
-}
-
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest, CallWithSctpDataOnly) {
   MakeTypicalPeerConnectionCall("callWithSctpDataOnly();");
 }

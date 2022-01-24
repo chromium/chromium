@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
@@ -45,9 +46,11 @@
 #include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace file_manager {
 namespace util {
@@ -61,10 +64,14 @@ constexpr char kCrostiniMapMyDrive[] = "MyDrive";
 constexpr char kCrostiniMapPlayFiles[] = "PlayFiles";
 constexpr char kCrostiniMapSmbFs[] = "SMB";
 constexpr char kCrostiniMapTeamDrives[] = "SharedDrives";
+constexpr char kCrostiniMapSharedWithMe[] = "SharedWithMe";
+constexpr char kCrostiniMapShortcutsSharedWithMe[] = "ShortcutsSharedWithMe";
 constexpr char kFolderNameDownloads[] = "Downloads";
 constexpr char kFolderNameMyFiles[] = "MyFiles";
 constexpr char kDisplayNameGoogleDrive[] = "Google Drive";
 constexpr char kDriveFsDirComputers[] = "Computers";
+constexpr char kDriveFsDirSharedWithMe[] = ".files-by-id";
+constexpr char kDriveFsDirShortcutsSharedWithMe[] = ".shortcut-targets-by-id";
 constexpr char kDriveFsDirRoot[] = "root";
 constexpr char kDriveFsDirTeamDrives[] = "team_drives";
 
@@ -290,22 +297,6 @@ bool MigratePathFromOldFormat(Profile* profile,
   return false;
 }
 
-bool MigrateFromDownloadsToMyFiles(Profile* profile,
-                                   const base::FilePath& old_path,
-                                   base::FilePath* new_path) {
-  const base::FilePath old_base =
-      profile->GetPath().Append(kFolderNameDownloads);
-  const base::FilePath new_base = GetDownloadsFolderForProfile(profile);
-  if (new_base == old_base)
-    return false;
-  base::FilePath relative;
-  if (AppendRelativePath(old_base, old_path, &relative)) {
-    *new_path = new_base.Append(relative);
-    return old_path != *new_path;
-  }
-  return false;
-}
-
 bool MigrateToDriveFs(Profile* profile,
                       const base::FilePath& old_path,
                       base::FilePath* new_path) {
@@ -414,6 +405,17 @@ bool ConvertFileSystemURLToPathInsideVM(
       // team_drives -> SharedDrives.
       base_to_exclude = base_to_exclude.Append(kDriveFsDirTeamDrives);
       *inside = inside->Append(kCrostiniMapTeamDrives);
+    } else if (components.size() >= 2 &&
+               components[1] == kDriveFsDirSharedWithMe) {
+      // .files-by-id -> SharedWithMe.
+      base_to_exclude = base_to_exclude.Append(kDriveFsDirSharedWithMe);
+      *inside = inside->Append(kCrostiniMapSharedWithMe);
+    } else if (components.size() >= 2 &&
+               components[1] == kDriveFsDirShortcutsSharedWithMe) {
+      // .shortcut-targets-by-id -> ShortcutsSharedWithMe.
+      base_to_exclude =
+          base_to_exclude.Append(kDriveFsDirShortcutsSharedWithMe);
+      *inside = inside->Append(kCrostiniMapShortcutsSharedWithMe);
     }
     // Computers -> Computers
   } else if (id == chromeos::kSystemMountNameRemovable) {
@@ -489,8 +491,8 @@ bool ConvertPathInsideVMToFileSystemURL(
     if (container_info &&
         AppendRelativePath(container_info->homedir, inside, &relative_path)) {
       *file_system_url = mount_points->CreateExternalFileSystemURL(
-          GetFilesAppOrigin(), GetCrostiniMountPointName(profile),
-          relative_path);
+          blink::StorageKey(GetFilesAppOrigin()),
+          GetCrostiniMountPointName(profile), relative_path);
       return file_system_url->is_valid();
     }
   }
@@ -517,12 +519,22 @@ bool ConvertPathInsideVMToFileSystemURL(
     // GoogleDrive
     if (AppendRelativePath(base::FilePath(kCrostiniMapMyDrive), path,
                            &relative_path)) {
-      // Special mapping for /GoogleDrive/MyDrive -> root
+      // /GoogleDrive/MyDrive -> root
       path = base::FilePath(kDriveFsDirRoot).Append(relative_path);
     } else if (AppendRelativePath(base::FilePath(kCrostiniMapTeamDrives), path,
                                   &relative_path)) {
-      // Special mapping for /GoogleDrive/SharedDrive -> team_drives
+      // /GoogleDrive/SharedDrive -> team_drives
       path = base::FilePath(kDriveFsDirTeamDrives).Append(relative_path);
+    } else if (AppendRelativePath(base::FilePath(kCrostiniMapSharedWithMe),
+                                  path, &relative_path)) {
+      // /GoogleDrive/SharedWithMe -> .files-by-id
+      path = base::FilePath(kDriveFsDirSharedWithMe).Append(relative_path);
+    } else if (AppendRelativePath(
+                   base::FilePath(kCrostiniMapShortcutsSharedWithMe), path,
+                   &relative_path)) {
+      // /GoogleDrive/ShortcutsSharedWithMe -> .shortcut-targets-by-id
+      path = base::FilePath(kDriveFsDirShortcutsSharedWithMe)
+                 .Append(relative_path);
     }
     // Computers -> Computers
   } else if (base::FilePath(chromeos::kSystemMountNameRemovable)
@@ -556,8 +568,9 @@ bool ConvertPathInsideVMToFileSystemURL(
   }
 
   *file_system_url = mount_points->CreateExternalFileSystemURL(
-      url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
-          file_manager::kFileManagerAppId)),
+      blink::StorageKey(
+          url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
+              file_manager::kFileManagerAppId))),
       mount_name, path);
   return file_system_url->is_valid();
 }
@@ -810,6 +823,28 @@ std::string GetPathDisplayTextForSettings(Profile* profile,
                                .Append(l10n_util::GetStringUTF8(
                                    IDS_FILE_BROWSER_DRIVE_COMPUTERS_LABEL))
                                .value())) {
+  } else if (
+      drive_integration_service &&
+      ReplacePrefix(
+          &result,
+          drive_integration_service->GetMountPointPath()
+              .Append(kDriveFsDirSharedWithMe)
+              .value(),
+          base::FilePath(kDisplayNameGoogleDrive)
+              .Append(l10n_util::GetStringUTF8(
+                  IDS_FILE_BROWSER_DRIVE_SHARED_WITH_ME_COLLECTION_LABEL))
+              .value())) {
+  } else if (
+      drive_integration_service &&
+      ReplacePrefix(
+          &result,
+          drive_integration_service->GetMountPointPath()
+              .Append(kDriveFsDirShortcutsSharedWithMe)
+              .value(),
+          base::FilePath(kDisplayNameGoogleDrive)
+              .Append(l10n_util::GetStringUTF8(
+                  IDS_FILE_BROWSER_DRIVE_SHARED_WITH_ME_COLLECTION_LABEL))
+              .value())) {
   } else if (ReplacePrefix(&result, kAndroidFilesPath,
                            l10n_util::GetStringUTF8(
                                IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL))) {
@@ -872,6 +907,31 @@ bool ExtractMountNameFileSystemNameFullPath(const base::FilePath& absolute_path,
     *full_path = value.substr(slash_pos);
   }
   return true;
+}
+
+std::string GetDisplayableFileName(GURL file_url) {
+  // Try to convert %20 to spaces, if this produces any invalid char, use the
+  // file name URL encoded.
+  std::string file_name;
+  if (!net::UnescapeBinaryURLComponentSafe(file_url.ExtractFileName(),
+                                           /*fail_on_path_separators=*/true,
+                                           &file_name)) {
+    file_name = file_url.ExtractFileName();
+  }
+
+  return file_name;
+}
+
+std::string GetDisplayableFileName(storage::FileSystemURL file_url) {
+  return GetDisplayableFileName(file_url.ToGURL());
+}
+
+std::u16string GetDisplayableFileName16(GURL file_url) {
+  return base::UTF8ToUTF16(GetDisplayableFileName(file_url));
+}
+
+std::u16string GetDisplayableFileName16(storage::FileSystemURL file_url) {
+  return base::UTF8ToUTF16(GetDisplayableFileName(file_url.ToGURL()));
 }
 
 }  // namespace util

@@ -50,7 +50,7 @@ The last one may actually be the easiest if you've already properly built
 
 ### Step 2 - Ask compiler to report them
 
-If the source of the new initiazers is not obvious from Step 1, you can ask the
+If the source of the new initializers is not obvious from Step 1, you can ask the
 compiler to pinpoint the exact source line.
 
 1. Edit [//build/config/BUILDCONFIG.gn](https://cs.chromium.org/chromium/src/build/config/BUILDCONFIG.gn)
@@ -67,3 +67,25 @@ More details in [crbug/1136086](https://bugs.chromium.org/p/chromium/issues/deta
 
 * For more information about `diagnose_bloat.py`, refer to its [README.md](/tools/binary_size/README.md#diagnose_bloat.py)
 * List of existing static initializers documented in [static_initializers.gni](/chrome/android/static_initializers.gni)
+
+### Step 3 - Manual verification
+
+If the source of the new initializers is not revealed with
+`dump-static-initializers.py` (e.g. for static initializers introduced in
+compiler-rt), there's a manual option.
+
+1. Locate the address range of the .init_array section with
+`llvm-readelf --hex-dump=.init_array ./lib.unstripped/libmonochrome_64.so`.
+It will yield an address range like 0x0917fd40 to 0x0918fd78.
+2. Each .init_array slot may be zero if the contents are relocatable. To translate,
+ use a command like  `llvm-readelf --relocations ./lib/unstripped | grep 0x0917fd40`
+to obtain a result mapping each .init_array slot to a function address.
+```
+    000000000918fd40  0000000000000403 R_AARCH64_RELATIVE                51732f0
+```
+3. Finally, convert the address into a function name with
+`llvm-addr2line --functions -e ./lib.unstripped/libmonochrome_64.so 51732f0`
+```
+    __cxx_global_var_init
+    ./../../buildtools/third_party/libc++/trunk/src/iostream.cpp:80
+```

@@ -95,10 +95,9 @@ void PopupTimersController::TimerFinished(const std::string& id) {
 
 base::TimeDelta PopupTimersController::GetTimeoutForNotification(
     Notification* notification) {
-  return base::TimeDelta::FromSeconds(
-      UseHighPriorityDelay(notification)
-          ? notification_timeout_high_priority_seconds_
-          : notification_timeout_default_seconds_);
+  return base::Seconds(UseHighPriorityDelay(notification)
+                           ? notification_timeout_high_priority_seconds_
+                           : notification_timeout_default_seconds_);
 }
 
 int PopupTimersController::GetNotificationTimeoutDefault() {
@@ -142,8 +141,7 @@ void PopupTimersController::OnNotificationUpdated(const std::string& id) {
   // If a timer was paused before, pause it afterwards as well.
   // See crbug.com/710298
   if (was_paused) {
-    auto timer = popup_timers_.find(id);
-    timer->second->Pause();
+    popup_timers_.find(id)->second->Pause();
   }
 }
 

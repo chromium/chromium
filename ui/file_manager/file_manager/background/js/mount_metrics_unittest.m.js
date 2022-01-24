@@ -6,19 +6,41 @@ import {assertEquals} from 'chrome://test/chai_assert.js';
 
 import {metrics} from '../../common/js/metrics.js';
 import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 
 import {MountMetrics} from './mount_metrics.js';
-
-
-/** @type {!MountMetrics} */
-let mountMetrics;
 
 /**
  * Mock chrome APIs.
  * @type {!Object}
  */
 let mockChrome;
+
+/**
+ * Version of util.isSwaEnabled to restore at the end of the test.
+ * @type {!function(): boolean}
+ */
+let restoreIsSwaEnabled;
+
+/**
+ * The output of util.isSwaEnabled for testing.
+ * @type {boolean}
+ */
+let swaEnabledState = false;
+
+/**
+ * A sample event used in all tests.
+ * @type {!ChromeEvent}
+ */
+const mountCompletedTestEvent = /** @type {!ChromeEvent} */ ({
+  eventType: 'mount',
+  status: 'success',
+  volumeMetadata: {
+    volumeType: VolumeManagerCommon.VolumeType.PROVIDED,
+    providerId: 'fubar',
+  }
+});
 
 // Set up the test components.
 export function setUp() {
@@ -56,8 +78,13 @@ export function setUp() {
     metrics.calledValue = value;
   };
 
+  window.isSWA = false;
+  restoreIsSwaEnabled = util.isSwaEnabled;
+  util.isSwaEnabled = () => swaEnabledState;
+}
 
-  mountMetrics = new MountMetrics();
+export function tearDown() {
+  util.isSwaEnabled = restoreIsSwaEnabled;
 }
 
 /**
@@ -65,32 +92,44 @@ export function setUp() {
  * mount metrics.
  */
 export function testMountUnknownProvider() {
-  mockChrome.fileManagerPrivate.onMountCompleted.dispatchEvent({
-    eventType: 'mount',
-    status: 'success',
-    volumeMetadata: {
-      volumeType: VolumeManagerCommon.VolumeType.PROVIDED,
-      providerId: 'fubar',
-    }
-  });
+  new MountMetrics();
+
+  mockChrome.fileManagerPrivate.onMountCompleted.dispatchEvent(
+      mountCompletedTestEvent);
 
   assertEquals(metrics.calledName, 'FileSystemProviderMounted');
   assertEquals(metrics.calledValue, 0);
 }
 
 /**
- * Tests mounting Zip Archiver file system provider.
+ * Tests when the SWA is enabled, the mount metrics are not recorded. Due to the
+ * background code existing in every foreground window in the SWA context, this
+ * will lead to duplicate mount metrics so don't record them.
  */
-export function testMountZipArchiver() {
-  mockChrome.fileManagerPrivate.onMountCompleted.dispatchEvent({
-    eventType: 'mount',
-    status: 'success',
-    volumeMetadata: {
-      volumeType: VolumeManagerCommon.VolumeType.PROVIDED,
-      providerId: 'dmboannefpncccogfdikhmhpmdnddgoe',
-    }
-  });
+export function testMetricsNotRecordedWhenSwaEnabled() {
+  window.isSWA = true;
+  swaEnabledState = true;
+  new MountMetrics();
 
-  assertEquals(metrics.calledName, 'FileSystemProviderMounted');
-  assertEquals(metrics.calledValue, 15);
+  mockChrome.fileManagerPrivate.onMountCompleted.dispatchEvent(
+      mountCompletedTestEvent);
+
+  assertEquals(metrics.calledName, '');
+  assertEquals(metrics.calledValue, '');
+}
+
+/**
+ * Test when the SWA flag is enabled but the Chrome app is running, the Chrome
+ * app version still doesn't record any UMAs.
+ */
+export function testMetricsNotRecordedForChromeAppWhenSwaEnabled() {
+  window.isSWA = false;
+  swaEnabledState = true;
+  new MountMetrics();
+
+  mockChrome.fileManagerPrivate.onMountCompleted.dispatchEvent(
+      mountCompletedTestEvent);
+
+  assertEquals(metrics.calledName, '');
+  assertEquals(metrics.calledValue, '');
 }

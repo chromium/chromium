@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
@@ -22,6 +21,10 @@ class TabletModePageBehavior : public ash::TabletModeObserver,
                                public TabStripModelObserver {
  public:
   TabletModePageBehavior();
+
+  TabletModePageBehavior(const TabletModePageBehavior&) = delete;
+  TabletModePageBehavior& operator=(const TabletModePageBehavior&) = delete;
+
   ~TabletModePageBehavior() override;
 
   // Notify the tablet mode change.
@@ -49,13 +52,11 @@ class TabletModePageBehavior : public ash::TabletModeObserver,
   // We only override the WebKit preferences of webcontents that belong to
   // tabstrips in browsers. When a webcontents is newly created, its WebKit
   // preferences are refreshed *before* it's added to any tabstrip, hence
-  // ChromeContentBrowserClientChromeOsPart::OverrideWebkitPrefs() wouldn't be
+  // `ChromeContentBrowserClientAshPart::OverrideWebkitPrefs()` wouldn't be
   // able to override the mobile-like behavior prefs we want. Therefore, we need
   // to observe webcontents being added to the tabstrips in order to trigger
   // a refresh of its WebKit prefs.
   std::unique_ptr<BrowserTabStripTracker> tab_strip_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModePageBehavior);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TABLET_MODE_PAGE_BEHAVIOR_H_

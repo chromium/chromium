@@ -33,7 +33,7 @@ constexpr char kSessionId2[] = "SESSION_ID_2";
 constexpr char kSessionId3[] = "SESSION_ID_3";
 constexpr int kValue = 123;
 
-constexpr base::TimeDelta kAppLoadTimeout = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kAppLoadTimeout = base::Minutes(5);
 
 MATCHER_P2(HasDouble, key, value, "") {
   auto v = base::JSONReader::ReadDeprecated(arg);
@@ -134,7 +134,7 @@ TEST_F(CastMetricsHelperTest, LogTimeToFirstPaint) {
   metrics_helper_.DidStartLoad(kAppId1);
   metrics_helper_.DidCompleteLoad(kAppId1, kSessionId1);
 
-  constexpr base::TimeDelta kTimeToFirstPaint = base::TimeDelta::FromSeconds(5);
+  constexpr base::TimeDelta kTimeToFirstPaint = base::Seconds(5);
   task_environment_.FastForwardBy(kTimeToFirstPaint);
 
   EXPECT_CALL(metrics_sink_, OnTimeEvent(AllOf(HasSubstr(kAppId1),
@@ -147,7 +147,7 @@ TEST_F(CastMetricsHelperTest, LogTimeToFirstAudio) {
   metrics_helper_.DidStartLoad(kAppId1);
   metrics_helper_.DidCompleteLoad(kAppId1, kSessionId1);
 
-  constexpr base::TimeDelta kTimeToFirstAudio = base::TimeDelta::FromSeconds(5);
+  constexpr base::TimeDelta kTimeToFirstAudio = base::Seconds(5);
   task_environment_.FastForwardBy(kTimeToFirstAudio);
 
   EXPECT_CALL(metrics_sink_, OnTimeEvent(AllOf(HasSubstr(kAppId1),

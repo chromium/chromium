@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <vector>
+
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"

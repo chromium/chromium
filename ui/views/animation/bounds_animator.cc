@@ -11,10 +11,15 @@
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+
+// This should be after all other #includes.
+#if defined(_WINDOWS_)  // Detect whether windows.h was included.
+#include "base/win/windows_h_disallowed.h"
+#endif  // defined(_WINDOWS_)
 
 namespace views {
 

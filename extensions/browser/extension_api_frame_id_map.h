@@ -72,6 +72,9 @@ class ExtensionApiFrameIdMap {
   // Extension API frame ID of the top-level frame.
   static const int kTopFrameId;
 
+  ExtensionApiFrameIdMap(const ExtensionApiFrameIdMap&) = delete;
+  ExtensionApiFrameIdMap& operator=(const ExtensionApiFrameIdMap&) = delete;
+
   static ExtensionApiFrameIdMap* Get();
 
   // Get the extension API frame ID for |rfh|.
@@ -122,8 +125,6 @@ class ExtensionApiFrameIdMap {
   // continue after a frame is unloaded can access the FrameData.
   using FrameDataMap = std::map<content::GlobalRenderFrameHostId, FrameData>;
   FrameDataMap deleted_frame_data_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionApiFrameIdMap);
 };
 
 }  // namespace extensions

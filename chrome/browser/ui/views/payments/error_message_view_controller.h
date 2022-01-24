@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 
 namespace views {
@@ -28,6 +27,11 @@ class ErrorMessageViewController : public PaymentRequestSheetController {
   ErrorMessageViewController(base::WeakPtr<PaymentRequestSpec> spec,
                              base::WeakPtr<PaymentRequestState> state,
                              base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  ErrorMessageViewController(const ErrorMessageViewController&) = delete;
+  ErrorMessageViewController& operator=(const ErrorMessageViewController&) =
+      delete;
+
   ~ErrorMessageViewController() override;
 
  private:
@@ -40,8 +44,6 @@ class ErrorMessageViewController : public PaymentRequestSheetController {
   bool ShouldShowSecondaryButton() override;
   std::u16string GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorMessageViewController);
 };
 
 }  // namespace payments

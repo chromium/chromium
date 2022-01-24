@@ -11,7 +11,7 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
@@ -32,6 +32,9 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
                          public EventRouter::Observer,
                          public device::mojom::UsbDeviceManagerClient {
  public:
+  UsbDeviceManager(const UsbDeviceManager&) = delete;
+  UsbDeviceManager& operator=(const UsbDeviceManager&) = delete;
+
   static UsbDeviceManager* Get(content::BrowserContext* browser_context);
 
   // BrowserContextKeyedAPI implementation.
@@ -70,11 +73,11 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
   const device::mojom::UsbDeviceInfo* GetDeviceInfo(const std::string& guid);
   bool UpdateActiveConfig(const std::string& guid, uint8_t config_value);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   void CheckAccess(
       const std::string& guid,
       device::mojom::UsbDeviceManager::CheckAccessCallback callback);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS)
 
   void EnsureConnectionWithDeviceManager();
 
@@ -130,7 +133,6 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
   base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<UsbDeviceManager> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UsbDeviceManager);
 };
 
 template <>

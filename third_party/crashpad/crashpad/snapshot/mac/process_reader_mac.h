@@ -26,7 +26,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/posix/process_info.h"
@@ -111,6 +110,10 @@ class ProcessReaderMac {
   };
 
   ProcessReaderMac();
+
+  ProcessReaderMac(const ProcessReaderMac&) = delete;
+  ProcessReaderMac& operator=(const ProcessReaderMac&) = delete;
+
   ~ProcessReaderMac();
 
   //! \brief Initializes this object. This method must be called before any
@@ -262,8 +265,6 @@ class ProcessReaderMac {
 
   bool initialized_threads_;
   bool initialized_modules_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderMac);
 };
 
 }  // namespace crashpad

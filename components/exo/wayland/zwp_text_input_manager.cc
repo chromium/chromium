@@ -4,12 +4,15 @@
 
 #include "components/exo/wayland/zwp_text_input_manager.h"
 
+#include <text-input-extension-unstable-v1-server-protocol.h>
 #include <text-input-unstable-v1-server-protocol.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 #include <xkbcommon/xkbcommon.h>
 
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/exo/display.h"
 #include "components/exo/text_input.h"
@@ -19,7 +22,6 @@
 #include "ui/base/ime/utf_offset.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-
 
 namespace exo {
 namespace wayland {
@@ -41,6 +43,16 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
 
   void set_surface(wl_resource* surface) { surface_ = surface; }
 
+  void set_extended_text_input(wl_resource* extended_text_input) {
+    extended_text_input_ = extended_text_input;
+  }
+
+  bool has_extended_text_input() const { return extended_text_input_; }
+
+  base::WeakPtr<WaylandTextInputDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   wl_client* client() { return wl_resource_get_client(text_input_); }
 
@@ -61,43 +73,15 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
   }
 
   void SetCompositionText(const ui::CompositionText& composition) override {
-    for (const auto& span : composition.ime_text_spans) {
-      uint32_t style = ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_DEFAULT;
-      switch (span.type) {
-        case ui::ImeTextSpan::Type::kComposition:
-          if (span.thickness == ui::ImeTextSpan::Thickness::kThick) {
-            style = ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_HIGHLIGHT;
-          } else {
-            style = ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_UNDERLINE;
-          }
-          break;
-        case ui::ImeTextSpan::Type::kSuggestion:
-          style = ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_SELECTION;
-          break;
-        case ui::ImeTextSpan::Type::kMisspellingSuggestion:
-        case ui::ImeTextSpan::Type::kAutocorrect:
-        case ui::ImeTextSpan::Type::kGrammarSuggestion:
-          style = ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INCORRECT;
-          break;
-      }
-      const auto start =
-          ui::Utf8OffsetFromUtf16Offset(composition.text, span.start_offset);
-      if (!start)
-        continue;
-      const auto end =
-          ui::Utf8OffsetFromUtf16Offset(composition.text, span.end_offset);
-      if (!end)
-        continue;
-      zwp_text_input_v1_send_preedit_styling(text_input_, *start, *end - *start,
-                                             style);
-    }
+    SendPreeditStyle(composition.text, composition.ime_text_spans);
 
-    const auto pos = ui::Utf8OffsetFromUtf16Offset(
-        composition.text, composition.selection.start());
-    if (pos)
-      zwp_text_input_v1_send_preedit_cursor(text_input_, *pos);
+    std::vector<size_t> offsets = {composition.selection.start()};
+    const std::string utf8 =
+        base::UTF16ToUTF8AndAdjustOffsets(composition.text, &offsets);
 
-    const std::string utf8 = base::UTF16ToUTF8(composition.text);
+    if (offsets[0] != std::string::npos)
+      zwp_text_input_v1_send_preedit_cursor(text_input_, offsets[0]);
+
     zwp_text_input_v1_send_preedit_string(
         text_input_,
         serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT),
@@ -114,14 +98,26 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     wl_client_flush(client());
   }
 
-  void SetCursor(const gfx::Range& selection) override {
-    zwp_text_input_v1_send_cursor_position(text_input_, selection.end(),
-                                           selection.start());
+  void SetCursor(base::StringPiece16 surrounding_text,
+                 const gfx::Range& selection) override {
+    std::vector<size_t> offsets{selection.start(), selection.end()};
+    base::UTF16ToUTF8AndAdjustOffsets(surrounding_text, &offsets);
+    zwp_text_input_v1_send_cursor_position(text_input_,
+                                           static_cast<uint32_t>(offsets[1]),
+                                           static_cast<uint32_t>(offsets[0]));
   }
 
-  void DeleteSurroundingText(const gfx::Range& range) override {
-    zwp_text_input_v1_send_delete_surrounding_text(text_input_, range.start(),
-                                                   range.length());
+  void DeleteSurroundingText(base::StringPiece16 surrounding_text,
+                             const gfx::Range& range) override {
+    std::vector<size_t> offsets{range.GetMin(), range.GetMax()};
+    base::UTF16ToUTF8AndAdjustOffsets(surrounding_text, &offsets);
+    // Currently, the arguments are conflicting with spec.
+    // However, the only client, Lacros, also interprets wrongly in the same
+    // way so just fixing here could cause visible regression.
+    // TODO(crbug.com/1227590): Fix the behavior with versioning.
+    zwp_text_input_v1_send_delete_surrounding_text(
+        text_input_, static_cast<uint32_t>(offsets[0]),
+        static_cast<uint32_t>(offsets[1] - offsets[0]));
   }
 
   void SendKey(const ui::KeyEvent& event) override {
@@ -166,7 +162,79 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
         wayland_direction);
   }
 
+  void SetCompositionFromExistingText(
+      base::StringPiece16 surrounding_text,
+      const gfx::Range& cursor,
+      const gfx::Range& range,
+      const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override {
+    if (!extended_text_input_)
+      return;
+
+    uint32_t begin = range.GetMin();
+    uint32_t end = range.GetMax();
+    SendPreeditStyle(surrounding_text.substr(begin, range.length()),
+                     ui_ime_text_spans);
+
+    std::vector<size_t> offsets = {begin, end, cursor.end()};
+    base::UTF16ToUTF8AndAdjustOffsets(surrounding_text, &offsets);
+    int32_t index =
+        static_cast<int32_t>(offsets[0]) - static_cast<int32_t>(offsets[2]);
+    uint32_t length = static_cast<uint32_t>(offsets[1] - offsets[0]);
+    zcr_extended_text_input_v1_send_set_preedit_region(extended_text_input_,
+                                                       index, length);
+    wl_client_flush(client());
+  }
+
+  void SendPreeditStyle(base::StringPiece16 text,
+                        const std::vector<ui::ImeTextSpan>& spans) {
+    if (spans.empty())
+      return;
+
+    // Convert all offsets from UTF16 to UTF8.
+    std::vector<size_t> offsets;
+    offsets.reserve(spans.size() * 2);
+    for (const auto& span : spans) {
+      auto minmax = std::minmax(span.start_offset, span.end_offset);
+      offsets.push_back(minmax.first);
+      offsets.push_back(minmax.second);
+    }
+    base::UTF16ToUTF8AndAdjustOffsets(text, &offsets);
+
+    for (size_t i = 0; i < spans.size(); ++i) {
+      if (offsets[i * 2] == std::string::npos ||
+          offsets[i * 2 + 1] == std::string::npos) {
+        // Invalid span is specified.
+        continue;
+      }
+      const auto& span = spans[i];
+      const uint32_t begin = offsets[i * 2];
+      const uint32_t end = offsets[i * 2 + 1];
+
+      uint32_t style = ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_DEFAULT;
+      switch (span.type) {
+        case ui::ImeTextSpan::Type::kComposition:
+          if (span.thickness == ui::ImeTextSpan::Thickness::kThick) {
+            style = ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_HIGHLIGHT;
+          } else {
+            style = ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_UNDERLINE;
+          }
+          break;
+        case ui::ImeTextSpan::Type::kSuggestion:
+          style = ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_SELECTION;
+          break;
+        case ui::ImeTextSpan::Type::kMisspellingSuggestion:
+        case ui::ImeTextSpan::Type::kAutocorrect:
+        case ui::ImeTextSpan::Type::kGrammarSuggestion:
+          style = ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INCORRECT;
+          break;
+      }
+      zwp_text_input_v1_send_preedit_styling(text_input_, begin, end - begin,
+                                             style);
+    }
+  }
+
   wl_resource* text_input_;
+  wl_resource* extended_text_input_ = nullptr;
   wl_resource* surface_ = nullptr;
 
   // Owned by Seat, which is updated before calling the callbacks of this
@@ -175,6 +243,28 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
 
   // Owned by Server, which always outlives this delegate.
   SerialTracker* const serial_tracker_;
+
+  base::WeakPtrFactory<WaylandTextInputDelegate> weak_factory_{this};
+};
+
+// Holds WeakPtr to WaylandTextInputDelegate, and the lifetime of this class's
+// instance is tied to zcr_extended_text_input connection.
+// If text_input connection is destroyed earlier than extended_text_input,
+// then delegate_ will return nullptr automatically.
+class WaylandExtendedTextInput {
+ public:
+  explicit WaylandExtendedTextInput(
+      base::WeakPtr<WaylandTextInputDelegate> delegate)
+      : delegate_(delegate) {}
+  WaylandExtendedTextInput(const WaylandExtendedTextInput&) = delete;
+  WaylandExtendedTextInput& operator=(const WaylandExtendedTextInput&) = delete;
+  ~WaylandExtendedTextInput() {
+    if (delegate_)
+      delegate_->set_extended_text_input(nullptr);
+  }
+
+ private:
+  base::WeakPtr<WaylandTextInputDelegate> delegate_;
 };
 
 void text_input_activate(wl_client* client,
@@ -232,14 +322,14 @@ void text_input_set_surrounding_text(wl_client* client,
                                      uint32_t cursor,
                                      uint32_t anchor) {
   TextInput* text_input = GetUserDataAs<TextInput>(resource);
-  auto utf16_cursor = ui::Utf16OffsetFromUtf8Offset(text, cursor);
-  if (!utf16_cursor)
+  // TODO(crbug.com/1227590): Selection range should keep cursor/anchor
+  // relationship.
+  auto minmax = std::minmax(cursor, anchor);
+  std::vector<size_t> offsets{minmax.first, minmax.second};
+  std::u16string u16_text = base::UTF8ToUTF16AndAdjustOffsets(text, &offsets);
+  if (offsets[0] == std::u16string::npos || offsets[1] == std::u16string::npos)
     return;
-  auto utf16_anchor = ui::Utf16OffsetFromUtf8Offset(text, anchor);
-  if (!utf16_anchor)
-    return;
-  text_input->SetSurroundingText(base::UTF8ToUTF16(text), *utf16_cursor,
-                                 *utf16_anchor);
+  text_input->SetSurroundingText(u16_text, gfx::Range(offsets[0], offsets[1]));
 }
 
 void text_input_set_content_type(wl_client* client,
@@ -345,7 +435,7 @@ void text_input_invoke_action(wl_client* client,
   GetUserDataAs<TextInput>(resource)->Resync();
 }
 
-const struct zwp_text_input_v1_interface text_input_v1_implementation = {
+constexpr struct zwp_text_input_v1_interface text_input_v1_implementation = {
     text_input_activate,
     text_input_deactivate,
     text_input_show_input_panel,
@@ -376,10 +466,54 @@ void text_input_manager_create_text_input(wl_client* client,
           text_input_resource, data->xkb_tracker, data->serial_tracker)));
 }
 
-const struct zwp_text_input_manager_v1_interface
+constexpr struct zwp_text_input_manager_v1_interface
     text_input_manager_implementation = {
         text_input_manager_create_text_input,
 };
+
+////////////////////////////////////////////////////////////////////////////////
+// extended_text_input_v1 interface:
+
+void extended_text_input_destroy(wl_client* client, wl_resource* resource) {
+  wl_resource_destroy(resource);
+}
+
+constexpr struct zcr_extended_text_input_v1_interface
+    extended_text_input_implementation = {extended_text_input_destroy};
+
+////////////////////////////////////////////////////////////////////////////////
+// text_input_extension_v1 interface:
+
+void text_input_extension_get_extended_text_input(
+    wl_client* client,
+    wl_resource* resource,
+    uint32_t id,
+    wl_resource* text_input_resource) {
+  TextInput* text_input = GetUserDataAs<TextInput>(text_input_resource);
+  auto* delegate =
+      static_cast<WaylandTextInputDelegate*>(text_input->delegate());
+  if (delegate->has_extended_text_input()) {
+    wl_resource_post_error(
+        resource, ZCR_TEXT_INPUT_EXTENSION_V1_ERROR_EXTENDED_TEXT_INPUT_EXISTS,
+        "text_input has already been associated with a extended_text_input "
+        "object");
+    return;
+  }
+
+  uint32_t version = wl_resource_get_version(resource);
+  wl_resource* extended_text_input_resource = wl_resource_create(
+      client, &zcr_extended_text_input_v1_interface, version, id);
+
+  delegate->set_extended_text_input(extended_text_input_resource);
+
+  SetImplementation(
+      extended_text_input_resource, &extended_text_input_implementation,
+      std::make_unique<WaylandExtendedTextInput>(delegate->GetWeakPtr()));
+}
+
+constexpr struct zcr_text_input_extension_v1_interface
+    text_input_extension_implementation = {
+        text_input_extension_get_extended_text_input};
 
 }  // namespace
 
@@ -390,6 +524,16 @@ void bind_text_input_manager(wl_client* client,
   wl_resource* resource =
       wl_resource_create(client, &zwp_text_input_manager_v1_interface, 1, id);
   wl_resource_set_implementation(resource, &text_input_manager_implementation,
+                                 data, nullptr);
+}
+
+void bind_text_input_extension(wl_client* client,
+                               void* data,
+                               uint32_t version,
+                               uint32_t id) {
+  wl_resource* resource = wl_resource_create(
+      client, &zcr_text_input_extension_v1_interface, version, id);
+  wl_resource_set_implementation(resource, &text_input_extension_implementation,
                                  data, nullptr);
 }
 

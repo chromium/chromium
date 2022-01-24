@@ -33,6 +33,10 @@ def get_ts_sources():
         if line.startswith(src_prefix + 'src/')
     ]
 
+def get_resource_files():
+    files = os.listdir(os.path.join(webgpu_cts_src_dir, 'src', 'resources'))
+    files.sort()
+    return files
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -43,17 +47,28 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     ts_sources = [x + '\n' for x in get_ts_sources()]
-    ts_sources_path = os.path.join(third_party_dir, 'webgpu-cts',
+    ts_sources_txt = os.path.join(third_party_dir, 'webgpu-cts',
                                    'ts_sources.txt')
+
+    resource_files = [x + '\n' for x in get_resource_files()]
+    resource_files_txt = os.path.join(third_party_dir, 'webgpu-cts', 'resource_files.txt')
+
     if args.check:
-        with open(ts_sources_path, 'r') as f:
+        with open(ts_sources_txt, 'r') as f:
             if (f.readlines() != ts_sources):
                 raise RuntimeError(
                     '%s is out of date. Please re-run //third_party/webgpu-cts/scripts/gen_ts_dep_lists.py\n'
-                    % ts_sources_path)
+                    % ts_sources_txt)
+        with open(resource_files_txt, 'r') as f:
+            if (f.readlines() != resource_files):
+                raise RuntimeError(
+                    '%s is out of date. Please re-run //third_party/webgpu-cts/scripts/gen_ts_dep_lists.py\n'
+                    % resource_files_txt)
     else:
-        with open(ts_sources_path, 'w') as f:
+        with open(ts_sources_txt, 'w') as f:
             f.writelines(ts_sources)
+        with open(resource_files_txt, 'w') as f:
+            f.writelines(resource_files)
 
     if args.stamp:
         with open(args.stamp, 'w') as f:

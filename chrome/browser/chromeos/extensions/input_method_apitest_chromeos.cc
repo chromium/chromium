@@ -14,31 +14,26 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/test/test_api.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/chromeos/input_method_descriptor.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
-
-using chromeos::extension_ime_util::GetInputMethodIDByEngineID;
-using chromeos::input_method::InputMethodDescriptor;
-using chromeos::input_method::InputMethodManager;
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/input_method_descriptor.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_util.h"
 
 namespace {
 
+using ::ash::extension_ime_util::GetInputMethodIDByEngineID;
+using ::ash::input_method::InputMethodDescriptor;
+using ::ash::input_method::InputMethodManager;
+
 const char kLoginScreenUILanguage[] = "fr";
 const char kInitialInputMethodOnLoginScreen[] = "xkb:us::eng";
-const char kBackgroundReady[] = "ready";
 const char kTestIMEID[] = "_ext_ime_ilanclmaeigfpnmdlgelmhkpkegdioiptest";
 const char kTestIMEID2[] = "_ext_ime_ilanclmaeigfpnmdlgelmhkpkegdioiptest2";
 
@@ -52,61 +47,14 @@ const InputMethodDescriptor CreateInputMethodDescriptor(
                                GURL(), GURL());
 }
 
-// Class that listens for the JS message.
-class TestListener : public content::NotificationObserver {
- public:
-  TestListener() {
-    registrar_.Add(this,
-                   extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
-                   content::NotificationService::AllSources());
-
-    xkb_input_method_descriptors_ = {
-        CreateInputMethodDescriptor("xkb:us::eng", "US", "us",
-                                    {"en", "en-US", "en-AU", "en-NZ"}),
-        CreateInputMethodDescriptor("xkb:fr::fra", "FR", "fr(oss)",
-                                    {"fr", "fr-FR"}),
-        CreateInputMethodDescriptor("xkb:fr:bepo:fra", "FR", "fr(bepo)",
-                                    {"fr", "fr-FR"}),
-        CreateInputMethodDescriptor("xkb:be::fra", "BE", "fr(be)", {"fr"}),
-        CreateInputMethodDescriptor("xkb:ca::fra", "CA", "ca", {"fr", "fr-CA"}),
-        CreateInputMethodDescriptor("xkb:ch:fr::fra", "CH", "ch(fr)",
-                                    {"fr", "fr-CH"}),
-        CreateInputMethodDescriptor("xkb:ca:multix:fra", "CA", "ca(multix)",
-                                    {"fr", "fr-CA"}),
-    };
-  }
-
-  ~TestListener() override {}
-
-  // Implements the content::NotificationObserver interface.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    const std::string& message =
-        content::Details<std::pair<std::string, bool*>>(details).ptr()->first;
-    if (message == kBackgroundReady) {
-      // Initializes IMF for testing when receives ready message from
-      // background.
-      InputMethodManager* manager = InputMethodManager::Get();
-      manager->GetInputMethodUtil()->InitXkbInputMethodsForTesting(
-          xkb_input_method_descriptors_);
-
-      std::vector<std::string> keyboard_layouts;
-      keyboard_layouts.push_back(
-          GetInputMethodIDByEngineID(kInitialInputMethodOnLoginScreen));
-      manager->GetActiveIMEState()->EnableLoginLayouts(kLoginScreenUILanguage,
-                                                       keyboard_layouts);
-    }
-  }
-
- private:
-  content::NotificationRegistrar registrar_;
-  std::vector<InputMethodDescriptor> xkb_input_method_descriptors_;
-};
-
 class ExtensionInputMethodApiTest : public extensions::ExtensionApiTest {
  public:
   ExtensionInputMethodApiTest() {}
+
+  ExtensionInputMethodApiTest(const ExtensionInputMethodApiTest&) = delete;
+  ExtensionInputMethodApiTest& operator=(const ExtensionInputMethodApiTest&) =
+      delete;
+
   ~ExtensionInputMethodApiTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -118,15 +66,36 @@ class ExtensionInputMethodApiTest : public extensions::ExtensionApiTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInputMethodApiTest);
 };
 
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, Basic) {
-  // Listener for extension's background ready.
-  TestListener listener;
+  const std::vector<InputMethodDescriptor> xkb_input_method_descriptors = {
+      CreateInputMethodDescriptor("xkb:us::eng", "US", "us",
+                                  {"en", "en-US", "en-AU", "en-NZ"}),
+      CreateInputMethodDescriptor("xkb:fr::fra", "FR", "fr(oss)",
+                                  {"fr", "fr-FR"}),
+      CreateInputMethodDescriptor("xkb:fr:bepo:fra", "FR", "fr(bepo)",
+                                  {"fr", "fr-FR"}),
+      CreateInputMethodDescriptor("xkb:be::fra", "BE", "fr(be)", {"fr"}),
+      CreateInputMethodDescriptor("xkb:ca::fra", "CA", "ca", {"fr", "fr-CA"}),
+      CreateInputMethodDescriptor("xkb:ch:fr::fra", "CH", "ch(fr)",
+                                  {"fr", "fr-CH"}),
+      CreateInputMethodDescriptor("xkb:ca:multix:fra", "CA", "ca(multix)",
+                                  {"fr", "fr-CA"}),
+  };
+
+  // Initializes IMF for testing.
+  InputMethodManager* manager = InputMethodManager::Get();
+  manager->GetInputMethodUtil()->InitXkbInputMethodsForTesting(
+      xkb_input_method_descriptors);
+
+  std::vector<std::string> keyboard_layouts;
+  keyboard_layouts.push_back(
+      GetInputMethodIDByEngineID(kInitialInputMethodOnLoginScreen));
+  manager->GetActiveIMEState()->EnableLoginLayouts(kLoginScreenUILanguage,
+                                                   keyboard_layouts);
 
   ASSERT_TRUE(RunExtensionTest("input_method/basic")) << message_;
 }
@@ -142,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, DISABLED_Typing) {
   GURL test_url = ui_test_utils::GetTestUrl(
       base::FilePath("extensions/api_test/input_method/typing/"),
       base::FilePath("test_page.html"));
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   ASSERT_TRUE(RunExtensionTest("input_method/typing")) << message_;
 }
@@ -184,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
   extension_ime_ids.push_back(kTestIMEID2);
   InputMethodManager::Get()->GetActiveIMEState()->SetEnabledExtensionImes(
       &extension_ime_ids);
-  chromeos::input_method::InputMethodDescriptors extension_imes;
+  ash::input_method::InputMethodDescriptors extension_imes;
   InputMethodManager::Get()->GetActiveIMEState()->GetInputMethodExtensions(
       &extension_imes);
   InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(

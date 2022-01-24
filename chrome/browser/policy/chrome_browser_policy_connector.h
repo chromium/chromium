@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -22,6 +21,10 @@
 #if defined(OS_ANDROID)
 #include "components/policy/core/browser/android/policy_cache_updater_android.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/device_settings_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class PrefService;
 
@@ -106,6 +109,15 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   virtual base::flat_set<std::string> device_affiliation_ids() const;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Checks if the main / primary user is managed or not.
+  // TODO(crbug/1245077): Remove once Lacros handles all profiles the same way.
+  bool IsMainUserManaged() const;
+
+  // The device settings used in Lacros.
+  crosapi::mojom::DeviceSettings* GetDeviceSettings() const;
+#endif
+
  protected:
   // BrowserPolicyConnectorBase::
   std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>
@@ -160,6 +172,10 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   // Owned by base class.
   ConfigurationPolicyProvider* command_line_provider_ = nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<DeviceSettingsLacros> device_settings_ = nullptr;
+#endif
 
   // Holds a callback to |ChromeBrowserCloudManagementController::Init| so that
   // its execution can be deferred until an enrollment token is available.

@@ -9,7 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/thread_test_helper.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -76,9 +76,7 @@ class QuotaChangeBrowserTest : public ContentBrowserTest,
         base::BindOnce(
             &QuotaManager::GetUsageAndQuotaForWebApps, quota_manager(),
             blink::StorageKey::CreateFromStringForTesting(test_url.spec()),
-            blink::mojom::StorageType::kTemporary,
-            base::DoNothing::Once<blink::mojom::QuotaStatusCode, int64_t,
-                                  int64_t>()));
+            blink::mojom::StorageType::kTemporary, base::DoNothing()));
   }
 
   Shell* browser() {

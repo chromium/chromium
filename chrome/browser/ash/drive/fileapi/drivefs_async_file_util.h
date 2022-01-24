@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
 
@@ -21,6 +20,10 @@ namespace internal {
 class DriveFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
  public:
   explicit DriveFsAsyncFileUtil(Profile* profile);
+
+  DriveFsAsyncFileUtil(const DriveFsAsyncFileUtil&) = delete;
+  DriveFsAsyncFileUtil& operator=(const DriveFsAsyncFileUtil&) = delete;
+
   ~DriveFsAsyncFileUtil() override;
 
   // AsyncFileUtil overrides:
@@ -28,7 +31,7 @@ class DriveFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& src_url,
       const storage::FileSystemURL& dest_url,
-      CopyOrMoveOption option,
+      CopyOrMoveOptionSet options,
       CopyFileProgressCallback progress_callback,
       StatusCallback callback) override;
   void DeleteRecursively(
@@ -40,8 +43,6 @@ class DriveFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
   Profile* const profile_;
 
   base::WeakPtrFactory<DriveFsAsyncFileUtil> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsAsyncFileUtil);
 };
 
 }  // namespace internal

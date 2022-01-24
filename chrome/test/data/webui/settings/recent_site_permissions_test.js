@@ -7,8 +7,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {ContentSetting, ContentSettingsTypes, SettingsRecentSitePermissionsElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {Router, routes} from 'chrome://settings/settings.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {flushTasks, isChildVisible, isVisible} from '../test_util.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
@@ -26,7 +26,7 @@ suite('CrSettingsRecentSitePermissionsTest', function() {
 
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
 
     document.body.innerHTML = '';
     testElement =

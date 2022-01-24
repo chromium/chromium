@@ -20,8 +20,7 @@ CustomExtensionProvider::CustomExtensionProvider(
   extensions_settings_->AddObserver(this);
 }
 
-CustomExtensionProvider::~CustomExtensionProvider() {
-}
+CustomExtensionProvider::~CustomExtensionProvider() = default;
 
 std::unique_ptr<RuleIterator> CustomExtensionProvider::GetRuleIterator(
     ContentSettingsType content_type,
@@ -49,8 +48,10 @@ void CustomExtensionProvider::OnContentSettingChanged(
     bool incognito) {
   if (incognito_ != incognito)
     return;
-  // TODO(markusheintz): Be more concise.
-  NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
+  // TODO(1245927): Be more concise and use the type/pattern that actually
+  // changed.
+  NotifyObservers(ContentSettingsPattern::Wildcard(),
+                  ContentSettingsPattern::Wildcard(),
                   ContentSettingsType::DEFAULT);
 }
 

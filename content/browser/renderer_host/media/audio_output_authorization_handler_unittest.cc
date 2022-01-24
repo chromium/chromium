@@ -74,6 +74,11 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
         switches::kUseFakeDeviceForMediaStream);
   }
 
+  AudioOutputAuthorizationHandlerTest(
+      const AudioOutputAuthorizationHandlerTest&) = delete;
+  AudioOutputAuthorizationHandlerTest& operator=(
+      const AudioOutputAuthorizationHandlerTest&) = delete;
+
   ~AudioOutputAuthorizationHandlerTest() override {
     audio_manager_->Shutdown();
   }
@@ -173,8 +178,6 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
   std::unique_ptr<media::AudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
   std::unique_ptr<MediaStreamManager> media_stream_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputAuthorizationHandlerTest);
 };
 
 TEST_F(AudioOutputAuthorizationHandlerTest, DoNothing) {}

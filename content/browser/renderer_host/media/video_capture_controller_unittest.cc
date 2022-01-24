@@ -15,10 +15,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -172,6 +171,11 @@ class VideoCaptureControllerTest
         arbitrary_color_space_(gfx::ColorSpace::CreateREC709()),
         arbitrary_route_id_(base::UnguessableToken::Create()),
         arbitrary_session_id_(base::UnguessableToken::Create()) {}
+
+  VideoCaptureControllerTest(const VideoCaptureControllerTest&) = delete;
+  VideoCaptureControllerTest& operator=(const VideoCaptureControllerTest&) =
+      delete;
+
   ~VideoCaptureControllerTest() override {}
 
  protected:
@@ -250,9 +254,6 @@ class VideoCaptureControllerTest
   const gfx::ColorSpace arbitrary_color_space_;
   const VideoCaptureControllerID arbitrary_route_id_;
   const media::VideoCaptureSessionId arbitrary_session_id_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureControllerTest);
 };
 
 // A simple test of VideoCaptureController's ability to add, remove, and keep
@@ -510,16 +511,17 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
 
   // Third, fourth, and fifth buffers. Pretend they all arrive at the same time.
   for (int i = 0; i < kPoolSize; i++) {
-    const int arbitrary_frame_feedback_id = 200 + i;
-    media::VideoCaptureDevice::Client::Buffer buffer;
-    const auto result_code = device_client_->ReserveOutputBuffer(
+    const int arbitrary_frame_feedback_id_3 = 200 + i;
+    media::VideoCaptureDevice::Client::Buffer buffer3;
+    const auto result_code_3 = device_client_->ReserveOutputBuffer(
         device_format.frame_size, device_format.pixel_format,
-        arbitrary_frame_feedback_id, &buffer);
+        arbitrary_frame_feedback_id_3, &buffer3);
     ASSERT_EQ(media::VideoCaptureDevice::Client::ReserveResult::kSucceeded,
-              result_code);
-    auto buffer_access = buffer.handle_provider->GetHandleForInProcessAccess();
-    memset(buffer_access->data(), buffer_no++, buffer_access->mapped_size());
-    device_client_->OnIncomingCapturedBuffer(std::move(buffer), device_format,
+              result_code_3);
+    auto buffer3_access =
+        buffer3.handle_provider->GetHandleForInProcessAccess();
+    memset(buffer3_access->data(), buffer_no++, buffer3_access->mapped_size());
+    device_client_->OnIncomingCapturedBuffer(std::move(buffer3), device_format,
                                              arbitrary_reference_time_,
                                              arbitrary_timestamp_);
   }

@@ -11,13 +11,12 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
-#include "chrome/common/chrome_features.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 
 namespace arc {
 
@@ -90,33 +89,10 @@ void ArcAppShortcutsRequest::OnGetAppShortcutItems(
                                 arc::ArcAppShortcutStatus::kNotEmpty);
     }
 
-    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-      apps::ArcRawIconPngDataToImageSkia(
-          std::move(shortcut_item_ptr->icon), apps::kAppShortcutIconSizeDip,
-          base::BindOnce(&ArcAppShortcutsRequest::OnSingleIconDecodeRequestDone,
-                         weak_ptr_factory_.GetWeakPtr(), items_->size() - 1));
-      continue;
-    }
-
-    if (!shortcut_item_ptr->icon || !shortcut_item_ptr->icon->icon_png_data ||
-        shortcut_item_ptr->icon->icon_png_data->empty()) {
-      // TODO(crbug.com/1083331): Remove the icon_png related change, when the
-      // ARC change is rolled in Chrome OS.
-      icon_decode_requests_.emplace_back(std::make_unique<IconDecodeRequest>(
-          base::BindOnce(&ArcAppShortcutsRequest::OnSingleIconDecodeRequestDone,
-                         weak_ptr_factory_.GetWeakPtr(), items_->size() - 1),
-          apps::kAppShortcutIconSizeDip));
-      icon_decode_requests_.back()->StartWithOptions(
-          shortcut_item_ptr->icon_png);
-      continue;
-    }
-
-    icon_decode_requests_.emplace_back(std::make_unique<IconDecodeRequest>(
+    apps::ArcRawIconPngDataToImageSkia(
+        std::move(shortcut_item_ptr->icon), apps::kAppShortcutIconSizeDip,
         base::BindOnce(&ArcAppShortcutsRequest::OnSingleIconDecodeRequestDone,
-                       weak_ptr_factory_.GetWeakPtr(), items_->size() - 1),
-        apps::kAppShortcutIconSizeDip));
-    icon_decode_requests_.back()->StartWithOptions(
-        shortcut_item_ptr->icon->icon_png_data.value());
+                       weak_ptr_factory_.GetWeakPtr(), items_->size() - 1));
   }
 }
 

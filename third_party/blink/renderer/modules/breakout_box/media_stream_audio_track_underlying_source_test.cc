@@ -80,8 +80,7 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
       const absl::optional<base::TimeDelta>& timestamp = absl::nullopt) {
     auto data = media::AudioBuffer::CreateEmptyBuffer(
         media::ChannelLayout::CHANNEL_LAYOUT_STEREO, /*channel_count=*/2,
-        kSampleRate, kNumFrames,
-        timestamp.value_or(base::TimeDelta::FromSeconds(1)));
+        kSampleRate, kNumFrames, timestamp.value_or(base::Seconds(1)));
     PushableMediaStreamAudioSource* pushable_audio_source =
         static_cast<PushableMediaStreamAudioSource*>(
             MediaStreamAudioSource::From(track->Component()->Source()));
@@ -163,12 +162,12 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   };
 
   for (wtf_size_t i = 0; i < buffer_size; ++i) {
-    base::TimeDelta timestamp = base::TimeDelta::FromSeconds(i);
+    base::TimeDelta timestamp = base::Seconds(i);
     push_frame_sync(timestamp);
   }
 
   // Push another frame while the queue is full.
-  push_frame_sync(base::TimeDelta::FromSeconds(buffer_size));
+  push_frame_sync(base::Seconds(buffer_size));
 
   // Since the queue was full, the oldest frame from the queue (timestamp 0)
   // should have been dropped.
@@ -177,8 +176,7 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
       stream->GetDefaultReaderForTesting(script_state, exception_state);
   for (wtf_size_t i = 1; i <= buffer_size; ++i) {
     AudioData* audio_data = ReadObjectFromStream<AudioData>(v8_scope, reader);
-    EXPECT_EQ(base::TimeDelta::FromMicroseconds(audio_data->timestamp()),
-              base::TimeDelta::FromSeconds(i));
+    EXPECT_EQ(base::Microseconds(audio_data->timestamp()), base::Seconds(i));
   }
 
   // Pulling causes a pending pull since there are no frames available for

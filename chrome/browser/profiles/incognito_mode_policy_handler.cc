@@ -78,7 +78,7 @@ void IncognitoModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
         IncognitoModePrefs::IntToAvailability(availability->GetInt(),
                                               &availability_enum_value)) {
       prefs->SetInteger(prefs::kIncognitoModeAvailability,
-                        availability_enum_value);
+                        static_cast<int>(availability_enum_value));
     } else {
       NOTREACHED();
     }
@@ -86,10 +86,11 @@ void IncognitoModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     // If kIncognitoModeAvailability is not specified, check the obsolete
     // kIncognitoEnabled.
     if (deprecated_enabled->is_bool()) {
-      prefs->SetInteger(prefs::kIncognitoModeAvailability,
-                        deprecated_enabled->GetBool()
-                            ? IncognitoModePrefs::ENABLED
-                            : IncognitoModePrefs::DISABLED);
+      prefs->SetInteger(
+          prefs::kIncognitoModeAvailability,
+          static_cast<int>(deprecated_enabled->GetBool()
+                               ? IncognitoModePrefs::Availability::kEnabled
+                               : IncognitoModePrefs::Availability::kDisabled));
     } else {
       NOTREACHED();
     }

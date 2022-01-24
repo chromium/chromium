@@ -37,16 +37,20 @@ class TestOmniboxPopupContentsView : public OmniboxPopupContentsView {
             /*omnibox_view=*/nullptr,
             edit_model,
             /*location_bar_view=*/nullptr),
-        selected_index_(0) {}
+        selection_(OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL)) {}
 
-  void SetSelectedIndex(size_t index) override { selected_index_ = index; }
+  TestOmniboxPopupContentsView(const TestOmniboxPopupContentsView&) = delete;
+  TestOmniboxPopupContentsView& operator=(const TestOmniboxPopupContentsView&) =
+      delete;
 
-  size_t GetSelectedIndex() const override { return selected_index_; }
+  void SetSelectedIndex(size_t index) override { selection_.line = index; }
+
+  size_t GetSelectedIndex() const override { return selection_.line; }
+
+  OmniboxPopupSelection GetSelection() const override { return selection_; }
 
  private:
-  size_t selected_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOmniboxPopupContentsView);
+  OmniboxPopupSelection selection_;
 };
 
 }  // namespace
@@ -71,8 +75,8 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
         nullptr, nullptr, std::make_unique<TestOmniboxClient>());
     popup_view_ =
         std::make_unique<TestOmniboxPopupContentsView>(edit_model_.get());
-    result_view_ =
-        new OmniboxResultView(popup_view_.get(), kTestResultViewIndex);
+    result_view_ = new OmniboxResultView(popup_view_.get(), edit_model_.get(),
+                                         kTestResultViewIndex);
 
     views::View* root_view = widget_->GetRootView();
     root_view->SetBoundsRect(gfx::Rect(0, 0, 500, 500));

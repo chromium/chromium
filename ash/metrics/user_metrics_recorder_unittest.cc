@@ -9,6 +9,7 @@
 #include "ash/login_status.h"
 #include "ash/metrics/user_metrics_recorder_test_api.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -42,6 +43,10 @@ const char kAsh_NotificationBadgeShownPref[] = "Ash.AppNotificationBadgingPref";
 class UserMetricsRecorderTest : public NoSessionAshTestBase {
  public:
   UserMetricsRecorderTest() = default;
+
+  UserMetricsRecorderTest(const UserMetricsRecorderTest&) = delete;
+  UserMetricsRecorderTest& operator=(const UserMetricsRecorderTest&) = delete;
+
   ~UserMetricsRecorderTest() override = default;
 
   UserMetricsRecorderTestAPI& test_api() { return test_api_; }
@@ -54,8 +59,6 @@ class UserMetricsRecorderTest : public NoSessionAshTestBase {
 
   // Histogram value verifier.
   base::HistogramTester histograms_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserMetricsRecorderTest);
 };
 
 // Verifies the return value of IsUserInActiveDesktopEnvironment() for the
@@ -143,17 +146,22 @@ TEST_F(UserMetricsRecorderTest, ValuesRecordedByRecordShelfItemCounts) {
   ShelfItem shelf_item;
   shelf_item.type = TYPE_PINNED_APP;
   shelf_item.id = ShelfID("app_id_1");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
   shelf_item.id = ShelfID("app_id_2");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
 
   shelf_item.type = TYPE_APP;
   shelf_item.id = ShelfID("app_id_3");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
   shelf_item.id = ShelfID("app_id_4");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
   shelf_item.id = ShelfID("app_id_5");
-  shelf_model->Add(shelf_item);
+  shelf_model->Add(shelf_item,
+                   std::make_unique<TestShelfItemDelegate>(shelf_item.id));
 
   test_api().RecordPeriodicMetrics();
   histograms().ExpectBucketCount(kAsh_Shelf_NumberOfItems, 5, 1);

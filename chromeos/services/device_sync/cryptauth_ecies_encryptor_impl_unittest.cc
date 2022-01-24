@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
@@ -63,6 +62,12 @@ void VerifyEncryptedPayload(
 }  // namespace
 
 class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
+ public:
+  DeviceSyncCryptAuthEciesEncryptorImplTest(
+      const DeviceSyncCryptAuthEciesEncryptorImplTest&) = delete;
+  DeviceSyncCryptAuthEciesEncryptorImplTest& operator=(
+      const DeviceSyncCryptAuthEciesEncryptorImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthEciesEncryptorImplTest()
       : fake_secure_message_delegate_factory_(
@@ -237,8 +242,6 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
 
   std::unique_ptr<multidevice::FakeSecureMessageDelegateFactory>
       fake_secure_message_delegate_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthEciesEncryptorImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest, EncryptAndDecrypt) {

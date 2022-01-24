@@ -95,7 +95,7 @@ bool KeyframeEffectModelBase::Sample(
 
 namespace {
 
-static const size_t num_compositable_properties = 8;
+static const size_t num_compositable_properties = 9;
 
 const CSSProperty** CompositableProperties() {
   static const CSSProperty*
@@ -103,7 +103,8 @@ const CSSProperty** CompositableProperties() {
           &GetCSSPropertyOpacity(),        &GetCSSPropertyRotate(),
           &GetCSSPropertyScale(),          &GetCSSPropertyTransform(),
           &GetCSSPropertyTranslate(),      &GetCSSPropertyFilter(),
-          &GetCSSPropertyBackdropFilter(), &GetCSSPropertyBackgroundColor()};
+          &GetCSSPropertyBackdropFilter(), &GetCSSPropertyBackgroundColor(),
+          &GetCSSPropertyClipPath()};
   return kCompositableProperties;
 }
 
@@ -210,10 +211,11 @@ bool KeyframeEffectModelBase::SnapshotCompositorKeyFrames(
   if (!should_snapshot_property_callback(property))
     return false;
 
-  PropertySpecificKeyframeGroup* keyframe_group =
-      keyframe_groups_->at(property);
-  if (!keyframe_group)
+  auto it = keyframe_groups_->find(property);
+  if (it == keyframe_groups_->end())
     return false;
+
+  PropertySpecificKeyframeGroup* keyframe_group = it->value;
 
   bool updated = false;
   for (auto& keyframe : keyframe_group->keyframes_) {
@@ -336,6 +338,7 @@ void KeyframeEffectModelBase::EnsureKeyframeGroups() const {
           keyframe->CreatePropertySpecificKeyframe(property, composite_,
                                                    computed_offset);
       has_revert_ |= property_specific_keyframe->IsRevert();
+      has_revert_ |= property_specific_keyframe->IsRevertLayer();
       group->AppendKeyframe(property_specific_keyframe);
     }
   }
@@ -356,7 +359,8 @@ bool KeyframeEffectModelBase::RequiresPropertyNode() const {
       if (!property.IsCSSProperty() ||
           (property.GetCSSProperty().PropertyID() != CSSPropertyID::kVariable &&
            property.GetCSSProperty().PropertyID() !=
-               CSSPropertyID::kBackgroundColor))
+               CSSPropertyID::kBackgroundColor &&
+           property.GetCSSProperty().PropertyID() != CSSPropertyID::kClipPath))
         return true;
     }
   }

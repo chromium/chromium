@@ -6,7 +6,6 @@
 #define MEDIA_AUDIO_AUDIO_OUTPUT_RESAMPLER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_debug_recording_helper.h"
@@ -44,6 +43,10 @@ class MEDIA_EXPORT AudioOutputResampler : public AudioOutputDispatcher {
                        base::TimeDelta close_delay,
                        const RegisterDebugRecordingSourceCallback&
                            register_debug_recording_source_callback);
+
+  AudioOutputResampler(const AudioOutputResampler&) = delete;
+  AudioOutputResampler& operator=(const AudioOutputResampler&) = delete;
+
   ~AudioOutputResampler() override;
 
   // AudioOutputDispatcher interface.
@@ -106,7 +109,6 @@ class MEDIA_EXPORT AudioOutputResampler : public AudioOutputDispatcher {
       register_debug_recording_source_callback_;
 
   base::WeakPtrFactory<AudioOutputResampler> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputResampler);
 };
 
 }  // namespace media

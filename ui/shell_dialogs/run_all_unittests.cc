@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
@@ -22,13 +21,13 @@ class ShellDialogsTestSuite : public base::TestSuite {
  public:
   ShellDialogsTestSuite(int argc, char** argv);
 
+  ShellDialogsTestSuite(const ShellDialogsTestSuite&) = delete;
+  ShellDialogsTestSuite& operator=(const ShellDialogsTestSuite&) = delete;
+
  protected:
   // base::TestSuite:
   void Initialize() override;
   void Shutdown() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellDialogsTestSuite);
 };
 
 ShellDialogsTestSuite::ShellDialogsTestSuite(int argc, char** argv)

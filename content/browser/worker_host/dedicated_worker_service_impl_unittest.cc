@@ -42,6 +42,7 @@ class MockDedicatedWorker
     // The COEP reporter is replaced by a placeholder connection. Reports are
     // ignored.
     auto coep_reporter = std::make_unique<CrossOriginEmbedderPolicyReporter>(
+        CrossOriginEmbedderPolicyReporter::Creator::kDedicatedWorker,
         RenderFrameHostImpl::FromID(render_frame_host_id)
             ->GetStoragePartition(),
         GURL(), absl::nullopt, absl::nullopt, base::UnguessableToken::Create(),
@@ -92,7 +93,9 @@ class MockDedicatedWorker
           pending_subresource_loader_factory_bundle,
       mojo::PendingReceiver<blink::mojom::SubresourceLoaderUpdater>
           subresource_loader_updater,
-      blink::mojom::ControllerServiceWorkerInfoPtr controller_info) override {}
+      blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
+      mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
+          back_forward_cache_controller_host) override {}
   void OnScriptLoadStartFailed() override {}
 
  private:
@@ -245,12 +248,14 @@ TEST_P(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
   observer.RunUntilWorkerEvent();
 
   // The service sent a OnWorkerStarted() notification.
-  ASSERT_EQ(observer.dedicated_worker_infos().size(), 1u);
-  const auto& dedicated_worker_info =
-      observer.dedicated_worker_infos().begin()->second;
-  EXPECT_EQ(dedicated_worker_info.worker_process_id, render_process_host_id);
-  EXPECT_EQ(dedicated_worker_info.ancestor_render_frame_host_id,
-            ancestor_render_frame_host_id);
+  {
+    ASSERT_EQ(observer.dedicated_worker_infos().size(), 1u);
+    const auto& dedicated_worker_info =
+        observer.dedicated_worker_infos().begin()->second;
+    EXPECT_EQ(dedicated_worker_info.worker_process_id, render_process_host_id);
+    EXPECT_EQ(dedicated_worker_info.ancestor_render_frame_host_id,
+              ancestor_render_frame_host_id);
+  }
 
   // Test EnumerateDedicatedWorkers().
   {

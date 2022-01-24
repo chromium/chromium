@@ -14,6 +14,7 @@
 
 namespace blink {
 
+class WebIdLogoutRequest;
 class WebIdRequestOptions;
 class ExceptionState;
 class ExecutionContext;
@@ -29,7 +30,9 @@ class WebId final : public ScriptWrappable, public ExecutionContextClient {
   // WebID IDL interface.
   ScriptPromise get(ScriptState*, const WebIdRequestOptions*, ExceptionState&);
   ScriptPromise provide(ScriptState*, String id_token);
-  ScriptPromise logout(ScriptState*, const Vector<String>&);
+  ScriptPromise logout(ScriptState*,
+                       const HeapVector<Member<WebIdLogoutRequest>>&,
+                       ExceptionState&);
 
   void Trace(blink::Visitor*) const override;
 

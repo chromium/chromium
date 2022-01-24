@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/webapps/browser/installable/installable_data.h"
@@ -24,7 +23,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -38,6 +37,10 @@ class InstallableManager
       public content::WebContentsUserData<InstallableManager> {
  public:
   explicit InstallableManager(content::WebContents* web_contents);
+
+  InstallableManager(const InstallableManager&) = delete;
+  InstallableManager& operator=(const InstallableManager&) = delete;
+
   ~InstallableManager() override;
 
   // Returns the minimum icon size in pixels for a site to be installable.
@@ -119,9 +122,12 @@ class InstallableManager
   };
 
   struct ManifestProperty {
+    ManifestProperty();
+    ~ManifestProperty();
+
     InstallableStatusCode error = NO_ERROR_DETECTED;
     GURL url;
-    blink::Manifest manifest;
+    blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
     bool fetched = false;
   };
 
@@ -143,19 +149,21 @@ class InstallableManager
 
   struct IconProperty {
     IconProperty();
+
+    // This class contains a std::unique_ptr and therefore must be move-only.
+    IconProperty(const IconProperty&) = delete;
+    IconProperty& operator=(const IconProperty&) = delete;
+
     IconProperty(IconProperty&& other);
-    ~IconProperty();
     IconProperty& operator=(IconProperty&& other);
+
+    ~IconProperty();
 
     InstallableStatusCode error;
     IconPurpose purpose;
     GURL url;
     std::unique_ptr<SkBitmap> icon;
     bool fetched;
-
-   private:
-    // This class contains a std::unique_ptr and therefore must be move-only.
-    DISALLOW_COPY_AND_ASSIGN(IconProperty);
   };
 
   // Returns true if an icon for the given usage is fetched successfully, or
@@ -211,10 +219,10 @@ class InstallableManager
   void CheckEligiblity();
   void FetchManifest();
   void OnDidGetManifest(const GURL& manifest_url,
-                        const blink::Manifest& manifest);
+                        blink::mojom::ManifestPtr manifest);
 
   void CheckManifestValid(bool check_webapp_manifest_display);
-  bool IsManifestValidForWebApp(const blink::Manifest& manifest,
+  bool IsManifestValidForWebApp(const blink::mojom::Manifest& manifest,
                                 bool check_webapp_manifest_display);
   void CheckServiceWorker();
   void OnDidCheckHasServiceWorker(
@@ -248,7 +256,7 @@ class InstallableManager
   void WebContentsDestroyed() override;
 
   const GURL& manifest_url() const;
-  const blink::Manifest& manifest() const;
+  const blink::mojom::Manifest& manifest() const;
   bool valid_manifest();
   bool has_worker();
 
@@ -280,8 +288,6 @@ class InstallableManager
   base::WeakPtrFactory<InstallableManager> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(InstallableManager);
 };
 
 }  // namespace webapps

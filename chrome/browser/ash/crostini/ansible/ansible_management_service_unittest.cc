@@ -37,6 +37,10 @@ class AnsibleManagementServiceTest : public testing::Test {
     SetUpViewsEnvironmentForTesting();
   }
 
+  AnsibleManagementServiceTest(const AnsibleManagementServiceTest&) = delete;
+  AnsibleManagementServiceTest& operator=(const AnsibleManagementServiceTest&) =
+      delete;
+
   ~AnsibleManagementServiceTest() override {
     crostini::CloseCrostiniAnsibleSoftwareConfigViewForTesting();
     // Wait for view triggered to be closed.
@@ -79,8 +83,6 @@ class AnsibleManagementServiceTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   CrostiniManager* crostini_manager_;
   AnsibleManagementService* ansible_management_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnsibleManagementServiceTest);
 };
 
 TEST_F(AnsibleManagementServiceTest, ConfigureDefaultContainerSuccess) {

@@ -166,6 +166,12 @@ class MockPeerConnectionDependencyFactory
     : public blink::PeerConnectionDependencyFactory {
  public:
   MockPeerConnectionDependencyFactory();
+
+  MockPeerConnectionDependencyFactory(
+      const MockPeerConnectionDependencyFactory&) = delete;
+  MockPeerConnectionDependencyFactory& operator=(
+      const MockPeerConnectionDependencyFactory&) = delete;
+
   ~MockPeerConnectionDependencyFactory() override;
 
   scoped_refptr<webrtc::PeerConnectionInterface> CreatePeerConnection(
@@ -196,8 +202,6 @@ class MockPeerConnectionDependencyFactory
   // TODO(crbug.com/787254): Replace with the appropriate Blink class.
   base::Thread signaling_thread_;
   bool fail_to_create_session_description_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPeerConnectionDependencyFactory);
 };
 
 }  // namespace blink

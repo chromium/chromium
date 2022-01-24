@@ -13,7 +13,6 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -42,6 +41,11 @@ const char kDiscourseContextHeaderName[] = "X-Additional-Discourse-Context";
 class ContextualSearchDelegateTest : public testing::Test {
  public:
   ContextualSearchDelegateTest() {}
+
+  ContextualSearchDelegateTest(const ContextualSearchDelegateTest&) = delete;
+  ContextualSearchDelegateTest& operator=(const ContextualSearchDelegateTest&) =
+      delete;
+
   ~ContextualSearchDelegateTest() override {}
 
  protected:
@@ -308,8 +312,6 @@ class ContextualSearchDelegateTest : public testing::Test {
 
   // Features to enable
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchDelegateTest);
 };
 
 TEST_F(ContextualSearchDelegateTest, NormalFetchWithXssiEscape) {

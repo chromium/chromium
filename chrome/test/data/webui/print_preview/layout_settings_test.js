@@ -6,8 +6,8 @@ import 'chrome://print/print_preview.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise, fakeDataBind} from '../test_util.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
 
@@ -32,7 +32,7 @@ suite('LayoutSettingsTest', function() {
 
   // Tests that setting the setting updates the UI.
   test('set setting', async () => {
-    const select = layoutSection.$$('select');
+    const select = layoutSection.shadowRoot.querySelector('select');
     assertEquals('portrait', select.value);
 
     layoutSection.setSetting('layout', true);
@@ -43,7 +43,7 @@ suite('LayoutSettingsTest', function() {
   // Tests that selecting a new option in the dropdown updates the setting.
   test('select option', async () => {
     // Verify that the selected option and names are as expected.
-    const select = layoutSection.$$('select');
+    const select = layoutSection.shadowRoot.querySelector('select');
     assertEquals('portrait', select.value);
     assertFalse(
         /** @type {boolean} */ (layoutSection.getSettingValue('layout')));

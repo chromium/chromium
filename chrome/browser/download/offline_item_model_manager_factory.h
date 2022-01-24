@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_MODEL_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_MODEL_MANAGER_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class OfflineItemModelManager;
@@ -33,6 +32,11 @@ class OfflineItemModelManagerFactory
   static OfflineItemModelManager* GetForBrowserContext(
       content::BrowserContext* context);
 
+  OfflineItemModelManagerFactory(const OfflineItemModelManagerFactory&) =
+      delete;
+  OfflineItemModelManagerFactory& operator=(
+      const OfflineItemModelManagerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<OfflineItemModelManagerFactory>;
 
@@ -44,8 +48,6 @@ class OfflineItemModelManagerFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineItemModelManagerFactory);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_MODEL_MANAGER_FACTORY_H_

@@ -57,7 +57,7 @@ source_set("unittests") {
     "//testing/gtest",
     "//ui/base",
     "//ui/base/cursor:cursor_base",
-    "//ui/gfx:geometry_skia",
+    "//ui/gfx:gfx_skia",
     "//ui/gfx/geometry/mojom:mojom_traits",
   ]
 }

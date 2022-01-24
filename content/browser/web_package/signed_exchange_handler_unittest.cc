@@ -217,8 +217,7 @@ class SignedExchangeHandlerTest
   void SetUp() override {
     original_client_ = SetBrowserClientForTesting(&browser_client_);
     signed_exchange_utils::SetVerificationTimeForTesting(
-        base::Time::UnixEpoch() +
-        base::TimeDelta::FromSeconds(kSignatureHeaderDate));
+        base::Time::UnixEpoch() + base::Seconds(kSignatureHeaderDate));
     feature_list_.InitAndEnableFeature(features::kSignedHTTPExchange);
 
     source_stream_ = std::make_unique<net::MockSourceStream>();
@@ -634,7 +633,7 @@ TEST_P(SignedExchangeHandlerTest,
 
   signed_exchange_utils::SetVerificationTimeForTesting(
       base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(kCertValidityPeriodEnforcementDate));
+      base::Seconds(kCertValidityPeriodEnforcementDate));
   mock_cert_fetcher_factory_->ExpectFetch(
       GURL("https://cert.example.org/cert.msg"),
       GetTestFileContents("test.example.org.public.pem.cbor"));
@@ -935,8 +934,7 @@ TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
   std::unique_ptr<net::TestURLRequestContext> url_request_context =
       CreateTestURLRequestContext();
   url_request_context->transport_security_state()->AddExpectCT(
-      "test.example.org",
-      base::Time::Now() + base::TimeDelta::FromDays(1) /* expiry */,
+      "test.example.org", base::Time::Now() + base::Days(1) /* expiry */,
       false /* include_subdomains */, kReportUri, kNetworkIsolationKey);
   MockExpectCTReporter expect_ct_reporter;
   url_request_context->transport_security_state()->SetExpectCTReporter(

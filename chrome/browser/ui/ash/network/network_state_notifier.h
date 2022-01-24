@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -40,6 +39,10 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
                              public NetworkStateHandlerObserver {
  public:
   NetworkStateNotifier();
+
+  NetworkStateNotifier(const NetworkStateNotifier&) = delete;
+  NetworkStateNotifier& operator=(const NetworkStateNotifier&) = delete;
+
   ~NetworkStateNotifier() override;
 
   // Show a connection error notification. If |error_name| matches an error
@@ -138,8 +141,6 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   std::set<std::string> cellular_activating_guids_;
 
   base::WeakPtrFactory<NetworkStateNotifier> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateNotifier);
 };
 
 }  // namespace chromeos

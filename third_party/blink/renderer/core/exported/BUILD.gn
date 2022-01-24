@@ -75,7 +75,6 @@ blink_core_sources("exported") {
     "web_scoped_page_pauser.cc",
     "web_scoped_window_focus_allowed_indicator.cc",
     "web_script_controller.cc",
-    "web_script_source.cc",
     "web_searchable_form_data.cc",
     "web_security_policy.cc",
     "web_select_element.cc",

@@ -98,6 +98,10 @@ bool DestroyRenderWidgetHost(int32_t process_id, int32_t local_root_routing_id);
 class TextInputManagerTester {
  public:
   TextInputManagerTester(WebContents* web_contents);
+
+  TextInputManagerTester(const TextInputManagerTester&) = delete;
+  TextInputManagerTester& operator=(const TextInputManagerTester&) = delete;
+
   virtual ~TextInputManagerTester();
 
   // Sets a callback which is invoked when a RWHV calls UpdateTextInputState
@@ -168,8 +172,6 @@ class TextInputManagerTester {
   class InternalObserver;
 
   std::unique_ptr<InternalObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputManagerTester);
 };
 
 // TextInputManager Observers
@@ -240,6 +242,12 @@ class TextInputManagerTypeObserver : public TextInputManagerObserverBase {
 class TestRenderWidgetHostViewDestructionObserver {
  public:
   TestRenderWidgetHostViewDestructionObserver(RenderWidgetHostView* view);
+
+  TestRenderWidgetHostViewDestructionObserver(
+      const TestRenderWidgetHostViewDestructionObserver&) = delete;
+  TestRenderWidgetHostViewDestructionObserver& operator=(
+      const TestRenderWidgetHostViewDestructionObserver&) = delete;
+
   virtual ~TestRenderWidgetHostViewDestructionObserver();
 
   // Waits for the RWHV which is being observed to get destroyed.
@@ -250,8 +258,6 @@ class TestRenderWidgetHostViewDestructionObserver {
   class InternalObserver;
 
   std::unique_ptr<InternalObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRenderWidgetHostViewDestructionObserver);
 };
 
 // Helper class to create TextInputState structs on the browser side and send it
@@ -260,6 +266,10 @@ class TestRenderWidgetHostViewDestructionObserver {
 class TextInputStateSender {
  public:
   explicit TextInputStateSender(RenderWidgetHostView* view);
+
+  TextInputStateSender(const TextInputStateSender&) = delete;
+  TextInputStateSender& operator=(const TextInputStateSender&) = delete;
+
   virtual ~TextInputStateSender();
 
   void Send();
@@ -281,8 +291,6 @@ class TextInputStateSender {
  private:
   ui::mojom::TextInputStatePtr text_input_state_;
   RenderWidgetHostViewBase* const view_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputStateSender);
 };
 
 // This class is intended to observe the InputMethod.
@@ -310,6 +318,10 @@ class TestInputMethodObserver {
 class TextInputTestLocalFrame : public FakeLocalFrame {
  public:
   TextInputTestLocalFrame();
+
+  TextInputTestLocalFrame(const TextInputTestLocalFrame&) = delete;
+  TextInputTestLocalFrame& operator=(const TextInputTestLocalFrame&) = delete;
+
   ~TextInputTestLocalFrame() override;
 
   void SetUp(content::RenderFrameHost* render_frame_host);
@@ -332,8 +344,6 @@ class TextInputTestLocalFrame : public FakeLocalFrame {
   base::RepeatingClosure string_for_range_callback_;
   std::string string_from_range_;
   mojo::AssociatedRemote<blink::mojom::LocalFrame> local_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputTestLocalFrame);
 };
 
 // Requests the |tab_view| for the definition of the word identified by the

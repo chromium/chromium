@@ -15,8 +15,9 @@
 #include "components/history/core/browser/history_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/common/extensions/extension_constants.h"
@@ -46,10 +47,11 @@ bool HasBookmarks(Profile* profile) {
 
 namespace ui {
 
-SkColor GetSigninConfirmationPromptBarColor(ui::NativeTheme* theme,
-                                            SkAlpha alpha) {
+SkColor GetSigninConfirmationPromptBarColor(
+    const ui::ColorProvider* color_provider,
+    SkAlpha alpha) {
   static const SkColor kBackgroundColor =
-      theme->GetSystemColor(ui::NativeTheme::kColorId_DialogBackground);
+      color_provider->GetColor(ui::kColorDialogBackground);
   return color_utils::BlendTowardMaxContrast(kBackgroundColor, alpha);
 }
 
@@ -88,8 +90,7 @@ void CheckShouldPromptForNewProfile(
     base::OnceCallback<void(bool)> return_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (HasBeenShutdown(profile) ||
-      HasBookmarks(profile) ||
+  if (HasBeenShutdown(profile) || HasBookmarks(profile) ||
       HasSyncedExtensions(profile)) {
     std::move(return_result).Run(true);
     return;

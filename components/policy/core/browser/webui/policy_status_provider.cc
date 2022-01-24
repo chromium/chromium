@@ -85,7 +85,7 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
   if (policy && policy->has_gaia_id())
     dict->SetString("gaiaId", policy->gaia_id());
 
-  base::TimeDelta refresh_interval = base::TimeDelta::FromMilliseconds(
+  base::TimeDelta refresh_interval = base::Milliseconds(
       refresh_scheduler ? refresh_scheduler->GetActualRefreshDelay()
                         : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
 

@@ -37,8 +37,7 @@
 
 namespace blink {
 
-static constexpr base::TimeDelta kAnimationFrameDelay =
-    base::TimeDelta::FromHz(60);
+static constexpr base::TimeDelta kAnimationFrameDelay = base::Hertz(60);
 
 SVGImageChromeClient::SVGImageChromeClient(SVGImage* image)
     : image_(image),

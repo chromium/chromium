@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
@@ -75,12 +74,10 @@ using save_card_infobar_overlays::SaveCardMainAction;
 class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
   SaveCardInfobarModalOverlayMediatorTest()
-      : prefs_(autofill::test::PrefServiceForTesting()),
-        callback_installer_(&callback_receiver_,
+      : callback_installer_(&callback_receiver_,
                             {SaveCardMainAction::ResponseSupport()}),
         mediator_delegate_(
             OCMStrictProtocolMock(@protocol(OverlayRequestMediatorDelegate))) {
-
     autofill::LegalMessageLines legal_message_lines =
         autofill::LegalMessageLines(
             {autofill::TestLegalMessageLine("Test message")});
@@ -97,7 +94,7 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
                       user_provided_card_details){
                 }),
             autofill::AutofillClient::LocalSaveCardPromptCallback(),
-            prefs_.get(), AccountInfo());
+            AccountInfo());
     delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
                                             std::move(delegate));
@@ -117,7 +114,6 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  std::unique_ptr<PrefService> prefs_;
   autofill::AutofillSaveCardInfoBarDelegateMobile* delegate_;
   std::unique_ptr<InfoBarIOS> infobar_;
   MockOverlayRequestCallbackReceiver callback_receiver_;

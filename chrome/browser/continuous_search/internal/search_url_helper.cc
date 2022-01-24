@@ -12,6 +12,8 @@
 #include "chrome/browser/continuous_search/internal/jni_headers/SearchUrlHelper_jni.h"
 #include "chrome/browser/continuous_search/page_category.h"
 #include "components/google/core/common/google_util.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -85,6 +87,25 @@ PageCategory GetSrpPageCategoryForUrl(const GURL& url) {
   if (value == "nws")
     return PageCategory::kNewsSrp;
   return PageCategory::kNone;
+}
+
+GURL GetOriginalUrlFromWebContents(content::WebContents* web_contents) {
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetLastCommittedEntry();
+
+  if (!entry || entry->GetRedirectChain().size() <= 1) {
+    return GURL();
+  }
+  return entry->GetRedirectChain().front();
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+JNI_SearchUrlHelper_GetOriginalUrlFromWebContents(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents) {
+  return url::GURLAndroid::FromNativeGURL(
+      env, GetOriginalUrlFromWebContents(
+               content::WebContents::FromJavaWebContents(j_web_contents)));
 }
 
 }  // namespace continuous_search

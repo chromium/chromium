@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_model.h"
 
 namespace ui {
@@ -22,11 +21,15 @@ class COMPONENT_EXPORT(EVDEV) OneDeviceTrainNeuralStylusPalmDetectionFilterModel
   OneDeviceTrainNeuralStylusPalmDetectionFilterModel();
   explicit OneDeviceTrainNeuralStylusPalmDetectionFilterModel(
       const std::vector<float>& radius_poly);
+
+  OneDeviceTrainNeuralStylusPalmDetectionFilterModel(
+      const OneDeviceTrainNeuralStylusPalmDetectionFilterModel&) = delete;
+  OneDeviceTrainNeuralStylusPalmDetectionFilterModel& operator=(
+      const OneDeviceTrainNeuralStylusPalmDetectionFilterModel&) = delete;
+
   float Inference(const std::vector<float>& features) const override;
 
   const NeuralStylusPalmDetectionFilterModelConfig& config() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(OneDeviceTrainNeuralStylusPalmDetectionFilterModel);
 
  private:
   NeuralStylusPalmDetectionFilterModelConfig config_;

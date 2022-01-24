@@ -73,8 +73,7 @@ using ExitCode = WorkerThread::ExitCode;
 
 namespace {
 
-constexpr base::TimeDelta kForcibleTerminationDelay =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kForcibleTerminationDelay = base::Seconds(2);
 
 }  // namespace
 
@@ -518,9 +517,13 @@ void WorkerThread::InitializeSchedulerOnWorkerThread(
     base::WaitableEvent* waitable_event) {
   DCHECK(IsCurrentThread());
   DCHECK(!worker_scheduler_);
+
+  // TODO(hajimehoshi, nhiroki): scheduler::WorkerThread and scheduler::
+  // WorkerThreadScheduler are not in scheduler/public, then using them is a
+  // layer violation. Fix this.
   auto& worker_thread = static_cast<scheduler::WorkerThread&>(
       GetWorkerBackingThread().BackingThread());
-  worker_scheduler_ = std::make_unique<scheduler::WorkerScheduler>(
+  worker_scheduler_ = scheduler::WorkerScheduler::CreateWorkerScheduler(
       static_cast<scheduler::WorkerThreadScheduler*>(
           worker_thread.GetNonMainThreadScheduler()),
       worker_thread.worker_scheduler_proxy());
@@ -599,6 +602,7 @@ void WorkerThread::InitializeOnWorkerThread(
     console_message_storage_ = MakeGarbageCollected<ConsoleMessageStorage>();
     global_scope_ =
         CreateWorkerGlobalScope(std::move(global_scope_creation_params));
+    worker_scheduler_->InitializeOnWorkerThread(global_scope_);
     worker_reporting_proxy_.DidCreateWorkerGlobalScope(GlobalScope());
 
     worker_inspector_controller_ = WorkerInspectorController::Create(

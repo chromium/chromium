@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/shell_observer.h"
-#include "base/macros.h"
 #include "ui/display/manager/display_configurator.h"
 
 namespace ash {
@@ -19,6 +18,10 @@ class ASH_EXPORT ProjectingObserver
   // |display_configurator| must outlive this instance. May be null in tests.
   explicit ProjectingObserver(
       display::DisplayConfigurator* display_configurator);
+
+  ProjectingObserver(const ProjectingObserver&) = delete;
+  ProjectingObserver& operator=(const ProjectingObserver&) = delete;
+
   ~ProjectingObserver() override;
 
   // DisplayConfigurator::Observer implementation:
@@ -45,8 +48,6 @@ class ASH_EXPORT ProjectingObserver
 
   // Number of outstanding casting sessions.
   int casting_session_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ProjectingObserver);
 };
 
 }  // namespace ash

@@ -9,8 +9,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/signin/resized_avatar_cache.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -22,8 +26,10 @@ namespace {
 template <typename T>
 class Functor {
  public:
-  explicit Functor(const PatternAccountRestriction& restriction)
-      : restriction_(restriction) {}
+  explicit Functor(const PatternAccountRestriction& restriction,
+                   const bool applies_to_restriction = false)
+      : restriction_(restriction),
+        applies_to_restriction_(applies_to_restriction) {}
 
   Functor(const Functor&) = delete;
   Functor& operator=(const Functor&) = delete;
@@ -39,13 +45,14 @@ class Functor {
   ios::IdentityIteratorCallbackResult Run(ChromeIdentity* identity) {
     // Filtering the ChromeIdentity.
     const std::string email = base::SysNSStringToUTF8(identity.userEmail);
-    if (restriction_.IsAccountRestricted(email))
+    if (restriction_.IsAccountRestricted(email) != applies_to_restriction_)
       return ios::kIdentityIteratorContinueIteration;
 
     return static_cast<T*>(this)->Run(identity);
   }
 
   const PatternAccountRestriction& restriction_;
+  const bool applies_to_restriction_;
 };
 
 // Helper class used to implement HasIdentities().
@@ -124,14 +131,31 @@ class FunctorGetFirstIdentity : public Functor<FunctorGetFirstIdentity> {
   ChromeIdentity* default_identity_ = nil;
 };
 
+// Helper class used to implement HasRestrictedIdentities().
+class FunctorHasRestrictedIdentities
+    : public Functor<FunctorHasRestrictedIdentities> {
+ public:
+  explicit FunctorHasRestrictedIdentities(
+      const PatternAccountRestriction& restriction)
+      : Functor(restriction, /*applies_to_restriction*/ true) {}
+
+  ios::IdentityIteratorCallbackResult Run(ChromeIdentity* identity) {
+    has_restricted_identities_ = true;
+    return ios::kIdentityIteratorInterruptIteration;
+  }
+
+  bool has_restricted_identities() const { return has_restricted_identities_; }
+
+ private:
+  bool has_restricted_identities_ = false;
+};
+
 // Returns the PatternAccountRestriction according to the given PrefService.
 PatternAccountRestriction PatternAccountRestrictionFromPreference(
     PrefService* pref_service) {
-  const base::ListValue* patterns_pref =
-      pref_service ? pref_service->GetList(prefs::kRestrictAccountsToPatterns)
-                   : new base::ListValue();
-  auto maybe_restriction = PatternAccountRestrictionFromValue(patterns_pref);
-  CHECK(maybe_restriction);
+  auto maybe_restriction = PatternAccountRestrictionFromValue(
+      pref_service->GetList(prefs::kRestrictAccountsToPatterns));
+  CHECK(maybe_restriction.has_value());
   return *std::move(maybe_restriction);
 }
 
@@ -139,11 +163,10 @@ PatternAccountRestriction PatternAccountRestrictionFromPreference(
 
 ChromeAccountManagerService::ChromeAccountManagerService(
     PrefService* pref_service)
-    : pref_service_(pref_service),
-      restriction_(PatternAccountRestrictionFromPreference(pref_service)) {
+    : pref_service_(pref_service) {
   // pref_service is null in test environment. In prod environment pref_service
   // comes from GetApplicationContext()->GetLocalState() and couldn't be null.
-  if (pref_service) {
+  if (pref_service_) {
     registrar_.Init(pref_service_);
     registrar_.Add(
         prefs::kRestrictAccountsToPatterns,
@@ -153,9 +176,15 @@ ChromeAccountManagerService::ChromeAccountManagerService(
     // Force initialisation of `restriction_`.
     UpdateRestriction();
   }
+
+  browser_provider_observation_.Observe(&ios::GetChromeBrowserProvider());
+  identity_service_observation_.Observe(
+      ios::GetChromeBrowserProvider().GetChromeIdentityService());
 }
 
-bool ChromeAccountManagerService::HasIdentities() {
+ChromeAccountManagerService::~ChromeAccountManagerService() {}
+
+bool ChromeAccountManagerService::HasIdentities() const {
   FunctorHasIdentities helper(restriction_);
   ios::GetChromeBrowserProvider()
       .GetChromeIdentityService()
@@ -163,12 +192,26 @@ bool ChromeAccountManagerService::HasIdentities() {
   return helper.has_identities();
 }
 
-bool ChromeAccountManagerService::IsValidIdentity(ChromeIdentity* identity) {
+bool ChromeAccountManagerService::HasRestrictedIdentities() const {
+  FunctorHasRestrictedIdentities helper(restriction_);
+  ios::GetChromeBrowserProvider()
+      .GetChromeIdentityService()
+      ->IterateOverIdentities(helper.Callback());
+  return helper.has_restricted_identities();
+}
+
+bool ChromeAccountManagerService::IsValidIdentity(
+    ChromeIdentity* identity) const {
   return GetIdentityWithGaiaID(identity.gaiaID) != nil;
 }
 
+bool ChromeAccountManagerService::IsEmailRestricted(
+    base::StringPiece email) const {
+  return restriction_.IsAccountRestricted(email);
+}
+
 ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
-    NSString* gaia_id) {
+    NSString* gaia_id) const {
   // Do not iterate if the gaia ID is invalid.
   if (!gaia_id.length)
     return nil;
@@ -181,7 +224,7 @@ ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
 }
 
 ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
-    base::StringPiece gaia_id) {
+    base::StringPiece gaia_id) const {
   // Do not iterate if the gaia ID is invalid. This is duplicated here
   // to avoid allocating a NSString unnecessarily.
   if (gaia_id.empty())
@@ -191,7 +234,8 @@ ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
   return GetIdentityWithGaiaID(base::SysUTF8ToNSString(gaia_id));
 }
 
-NSArray<ChromeIdentity*>* ChromeAccountManagerService::GetAllIdentities() {
+NSArray<ChromeIdentity*>* ChromeAccountManagerService::GetAllIdentities()
+    const {
   FunctorCollectIdentities helper(restriction_);
   ios::GetChromeBrowserProvider()
       .GetChromeIdentityService()
@@ -199,7 +243,7 @@ NSArray<ChromeIdentity*>* ChromeAccountManagerService::GetAllIdentities() {
   return [helper.identities() copy];
 }
 
-ChromeIdentity* ChromeAccountManagerService::GetDefaultIdentity() {
+ChromeIdentity* ChromeAccountManagerService::GetDefaultIdentity() const {
   FunctorGetFirstIdentity helper(restriction_);
   ios::GetChromeBrowserProvider()
       .GetChromeIdentityService()
@@ -207,8 +251,13 @@ ChromeIdentity* ChromeAccountManagerService::GetDefaultIdentity() {
   return helper.default_identity();
 }
 
-void ChromeAccountManagerService::UpdateRestriction() {
-  restriction_ = PatternAccountRestrictionFromPreference(pref_service_);
+UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(
+    ChromeIdentity* identity,
+    IdentityAvatarSize avatar_size) {
+  ResizedAvatarCache* avatar_cache =
+      GetAvatarCacheForIdentityAvatarSize(avatar_size);
+  DCHECK(avatar_cache);
+  return [avatar_cache resizedAvatarForIdentity:identity];
 }
 
 void ChromeAccountManagerService::Shutdown() {
@@ -216,4 +265,74 @@ void ChromeAccountManagerService::Shutdown() {
     registrar_.RemoveAll();
     pref_service_ = nullptr;
   }
+}
+
+void ChromeAccountManagerService::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void ChromeAccountManagerService::OnIdentityListChanged(
+    bool need_user_approval) {
+  for (auto& observer : observer_list_)
+    observer.OnIdentityListChanged(need_user_approval);
+}
+
+void ChromeAccountManagerService::OnProfileUpdate(ChromeIdentity* identity) {
+  for (auto& observer : observer_list_)
+    observer.OnIdentityChanged(identity);
+}
+
+void ChromeAccountManagerService::OnChromeIdentityServiceWillBeDestroyed() {
+  identity_service_observation_.Reset();
+}
+
+void ChromeAccountManagerService::OnChromeIdentityServiceDidChange(
+    ios::ChromeIdentityService* new_service) {
+  identity_service_observation_.Observe(
+      ios::GetChromeBrowserProvider().GetChromeIdentityService());
+  // All avatar caches needs to be removed to avoid mixing fake identities and
+  // sso identities.
+  default_table_view_avatar_cache_ = nil;
+  small_size_avatar_cache_ = nil;
+  default_large_avatar_cache_ = nil;
+}
+
+void ChromeAccountManagerService::OnChromeBrowserProviderWillBeDestroyed() {
+  DCHECK(!identity_service_observation_.IsObserving());
+  browser_provider_observation_.Reset();
+}
+
+void ChromeAccountManagerService::UpdateRestriction() {
+  restriction_ = PatternAccountRestrictionFromPreference(pref_service_);
+  // We want to notify the user that the account list has been updated. This
+  // might provide notifications with no changes (if the new restriction doesn't
+  // change the account list).
+  OnIdentityListChanged(/* need_user_approval */ true);
+}
+
+ResizedAvatarCache*
+ChromeAccountManagerService::GetAvatarCacheForIdentityAvatarSize(
+    IdentityAvatarSize avatar_size) {
+  ResizedAvatarCache* __strong* avatar_cache = nil;
+  switch (avatar_size) {
+    case IdentityAvatarSize::TableViewIcon:
+      avatar_cache = &default_table_view_avatar_cache_;
+      break;
+    case IdentityAvatarSize::SmallSize:
+      avatar_cache = &small_size_avatar_cache_;
+      break;
+    case IdentityAvatarSize::DefaultLarge:
+      avatar_cache = &default_large_avatar_cache_;
+      break;
+  }
+  DCHECK(avatar_cache);
+  if (!*avatar_cache) {
+    *avatar_cache =
+        [[ResizedAvatarCache alloc] initWithIdentityAvatarSize:avatar_size];
+  }
+  return *avatar_cache;
 }

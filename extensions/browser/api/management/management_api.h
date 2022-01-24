@@ -278,6 +278,10 @@ class ManagementInstallReplacementWebAppFunction : public ExtensionFunction {
 class ManagementEventRouter : public ExtensionRegistryObserver {
  public:
   explicit ManagementEventRouter(content::BrowserContext* context);
+
+  ManagementEventRouter(const ManagementEventRouter&) = delete;
+  ManagementEventRouter& operator=(const ManagementEventRouter&) = delete;
+
   ~ManagementEventRouter() override;
 
  private:
@@ -303,14 +307,16 @@ class ManagementEventRouter : public ExtensionRegistryObserver {
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementEventRouter);
 };
 
 class ManagementAPI : public BrowserContextKeyedAPI,
                       public EventRouter::Observer {
  public:
   explicit ManagementAPI(content::BrowserContext* context);
+
+  ManagementAPI(const ManagementAPI&) = delete;
+  ManagementAPI& operator=(const ManagementAPI&) = delete;
+
   ~ManagementAPI() override;
 
   // KeyedService implementation.
@@ -356,8 +362,6 @@ class ManagementAPI : public BrowserContextKeyedAPI,
   std::unique_ptr<ManagementAPIDelegate> delegate_;
   std::unique_ptr<SupervisedUserExtensionsDelegate>
       supervised_user_extensions_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementAPI);
 };
 
 }  // namespace extensions

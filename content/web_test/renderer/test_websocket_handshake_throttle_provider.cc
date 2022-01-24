@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/public/renderer/render_frame.h"
@@ -40,7 +40,7 @@ base::TimeDelta ExtractDelayFromUrl(const GURL& url) {
     if (!base::StringToInt(value_piece, &value_int) || value_int < 0)
       return base::TimeDelta();
 
-    return base::TimeDelta::FromMilliseconds(value_int);
+    return base::Milliseconds(value_int);
   }
 
   // Parameter was not found.

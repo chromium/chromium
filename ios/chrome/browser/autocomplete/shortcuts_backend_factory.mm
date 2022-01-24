@@ -17,7 +17,6 @@
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/search_engines/ui_thread_search_terms_data.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

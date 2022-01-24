@@ -36,6 +36,10 @@ namespace api_test_utils {
 class SendResponseHelper {
  public:
   explicit SendResponseHelper(ExtensionFunction* function);
+
+  SendResponseHelper(const SendResponseHelper&) = delete;
+  SendResponseHelper& operator=(const SendResponseHelper&) = delete;
+
   ~SendResponseHelper();
 
   bool has_response() { return response_.get() != nullptr; }
@@ -49,13 +53,11 @@ class SendResponseHelper {
  private:
   // Response handler.
   void OnResponse(ExtensionFunction::ResponseType response,
-                  const base::Value& results,
+                  base::Value results,
                   const std::string& error);
 
   base::RunLoop run_loop_;
   std::unique_ptr<bool> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendResponseHelper);
 };
 
 enum RunFunctionFlags { NONE = 0, INCLUDE_INCOGNITO = 1 << 0 };
@@ -83,7 +85,6 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     std::unique_ptr<base::ListValue> args,
-    content::BrowserContext* context,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
     RunFunctionFlags flags);
 
@@ -125,12 +126,10 @@ bool RunFunction(ExtensionFunction* function,
                  content::BrowserContext* context);
 bool RunFunction(ExtensionFunction* function,
                  const std::string& args,
-                 content::BrowserContext* context,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  RunFunctionFlags flags);
 bool RunFunction(ExtensionFunction* function,
                  std::unique_ptr<base::ListValue> args,
-                 content::BrowserContext* context,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  RunFunctionFlags flags);
 

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FAVICON_CORE_LARGE_ICON_SERVICE_H_
 #define COMPONENTS_FAVICON_CORE_LARGE_ICON_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -22,6 +21,9 @@ namespace favicon {
 // implementation of this uses Google's favicon service.
 class LargeIconService : public KeyedService {
  public:
+  LargeIconService(const LargeIconService&) = delete;
+  LargeIconService& operator=(const LargeIconService&) = delete;
+
   // Requests the best large icon for the page at |page_url|.
   // Case 1. An icon exists whose size is >= MAX(|min_source_size_in_pixel|,
   // |desired_size_in_pixel|):
@@ -122,9 +124,6 @@ class LargeIconService : public KeyedService {
 
  protected:
   LargeIconService() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LargeIconService);
 };
 
 }  // namespace favicon

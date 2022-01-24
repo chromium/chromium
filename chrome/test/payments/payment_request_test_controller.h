@@ -46,7 +46,6 @@ class PaymentRequestTestObserver {
   virtual void OnConnectionTerminated() {}
   virtual void OnAbortCalled() {}
   virtual void OnCompleteCalled() {}
-  virtual void OnMinimalUIReady() {}
   virtual void OnUIDisplayed() {}
 
  protected:
@@ -98,14 +97,6 @@ class PaymentRequestTestController {
   // available.
   bool ConfirmPayment();
 
-  // Confirms payment in minimal UI. Returns true on success or if the minimal
-  // UI is not implemented on the current platform.
-  bool ConfirmMinimalUI();
-
-  // Dismisses payment in minimal UI. Returns true on success or if the minimal
-  // UI is not implemented on the current platform.
-  bool DismissMinimalUI();
-
   // Returns true when running on Android M or L.
   bool IsAndroidMarshmallowOrLollipop();
 
@@ -132,7 +123,6 @@ class PaymentRequestTestController {
   void OnConnectionTerminated();
   void OnAbortCalled();
   void OnCompleteCalled();
-  void OnMinimalUIReady();
   void OnUIDisplayed();
 
   PaymentRequestTestObserver* observer_ = nullptr;

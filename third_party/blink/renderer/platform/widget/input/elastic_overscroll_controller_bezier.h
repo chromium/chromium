@@ -5,14 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_ELASTIC_OVERSCROLL_CONTROLLER_BEZIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_ELASTIC_OVERSCROLL_CONTROLLER_BEZIER_H_
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "cc/input/scroll_elasticity_helper.h"
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller.h"
 #include "ui/gfx/geometry/cubic_bezier.h"
-
-#include "base/memory/ptr_util.h"
-#include "base/time/time.h"
-#include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
 // Manages scroller stretch and rebounds when overscrolling. This controller

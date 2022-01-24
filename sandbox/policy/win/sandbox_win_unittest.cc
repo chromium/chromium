@@ -17,35 +17,34 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
-#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "sandbox/policy/features.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
-#include "sandbox/win/src/app_container_base.h"
+#include "sandbox/policy/win/sandbox_test_utils.h"
+#include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_policy_diagnostic.h"
-#include "sandbox/win/src/sid.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::_;
+using ::testing::Return;
 
 namespace sandbox {
 namespace policy {
 
 namespace {
-
-constexpr wchar_t kBaseSecurityDescriptor[] = L"D:(A;;GA;;;WD)";
 constexpr char kAppContainerId[] = "SandboxWinTest";
 constexpr wchar_t kPackageSid[] =
     L"S-1-15-2-1505217662-1870513255-555216753-1864132992-3842232122-"
     L"1807018979-869957911";
-constexpr wchar_t kChromeInstallFiles[] = L"chromeInstallFiles";
-constexpr wchar_t kLpacChromeInstallFiles[] = L"lpacChromeInstallFiles";
-constexpr wchar_t kRegistryRead[] = L"registryRead";
-constexpr wchar_t klpacPnpNotifications[] = L"lpacPnpNotifications";
 
 class TestTargetPolicy : public TargetPolicy {
  public:
@@ -140,31 +139,13 @@ class TestTargetPolicy : public TargetPolicy {
   }
 
   std::unique_ptr<PolicyInfo> GetPolicyInfo() override { return nullptr; }
+  void SetAllowNoSandboxJob() override { NOTREACHED(); }
+  bool GetAllowNoSandboxJob() override { return false; }
 
  private:
   std::vector<std::wstring> blocklisted_dlls_;
   scoped_refptr<AppContainerBase> app_container_;
 };
-
-std::vector<Sid> GetCapabilitySids(
-    const std::initializer_list<std::wstring>& capabilities) {
-  std::vector<Sid> sids;
-  for (const auto& capability : capabilities) {
-    sids.emplace_back(Sid::FromNamedCapability(capability.c_str()));
-  }
-  return sids;
-}
-
-std::wstring GetAccessAllowedForCapabilities(
-    const std::initializer_list<std::wstring>& capabilities) {
-  std::wstring sddl = kBaseSecurityDescriptor;
-  for (const auto& capability : GetCapabilitySids(capabilities)) {
-    std::wstring sid_string;
-    CHECK(capability.ToSddlString(&sid_string));
-    base::StrAppend(&sddl, {L"(A;;GRGX;;;", sid_string, L")"});
-  }
-  return sddl;
-}
 
 // Drops a temporary file granting RX access to a list of capabilities.
 bool DropTempFileWithSecurity(
@@ -183,35 +164,6 @@ bool DropTempFileWithSecurity(
       path->value().c_str(), DACL_SECURITY_INFORMATION, security_descriptor);
   ::LocalFree(security_descriptor);
   return !!result;
-}
-
-void EqualSidList(const std::vector<Sid>& left, const std::vector<Sid>& right) {
-  EXPECT_EQ(left.size(), right.size());
-  auto result = std::mismatch(left.cbegin(), left.cend(), right.cbegin(),
-                              [](const auto& left_sid, const auto& right_sid) {
-                                return !!::EqualSid(left_sid.GetPSID(),
-                                                    right_sid.GetPSID());
-                              });
-  EXPECT_EQ(result.first, left.cend());
-}
-
-void CheckCapabilities(
-    AppContainerBase* profile,
-    const std::initializer_list<std::wstring>& additional_capabilities) {
-  auto additional_caps = GetCapabilitySids(additional_capabilities);
-  auto impersonation_caps =
-      GetCapabilitySids({kChromeInstallFiles, klpacPnpNotifications,
-                         kLpacChromeInstallFiles, kRegistryRead});
-  auto base_caps = GetCapabilitySids(
-      {klpacPnpNotifications, kLpacChromeInstallFiles, kRegistryRead});
-
-  impersonation_caps.insert(impersonation_caps.end(), additional_caps.begin(),
-                            additional_caps.end());
-  base_caps.insert(base_caps.end(), additional_caps.begin(),
-                   additional_caps.end());
-
-  EqualSidList(impersonation_caps, profile->GetImpersonationCapabilities());
-  EqualSidList(base_caps, profile->GetCapabilities());
 }
 
 class SandboxWinTest : public ::testing::Test {
@@ -233,7 +185,7 @@ class SandboxWinTest : public ::testing::Test {
   ResultCode CreateAppContainerProfile(
       const base::CommandLine& base_command_line,
       bool access_check_fail,
-      SandboxType sandbox_type,
+      sandbox::mojom::Sandbox sandbox_type,
       scoped_refptr<AppContainerBase>* profile) {
     base::FilePath path;
     base::CommandLine command_line(base_command_line);
@@ -262,14 +214,14 @@ TEST_F(SandboxWinTest, IsGpuAppContainerEnabled) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  EXPECT_FALSE(SandboxWin::IsAppContainerEnabledForSandbox(command_line,
-                                                           SandboxType::kGpu));
+  EXPECT_FALSE(SandboxWin::IsAppContainerEnabledForSandbox(
+      command_line, sandbox::mojom::Sandbox::kGpu));
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kGpuAppContainer);
-  EXPECT_TRUE(SandboxWin::IsAppContainerEnabledForSandbox(command_line,
-                                                          SandboxType::kGpu));
+  EXPECT_TRUE(SandboxWin::IsAppContainerEnabledForSandbox(
+      command_line, sandbox::mojom::Sandbox::kGpu));
   EXPECT_FALSE(SandboxWin::IsAppContainerEnabledForSandbox(
-      command_line, SandboxType::kNoSandbox));
+      command_line, sandbox::mojom::Sandbox::kNoSandbox));
 }
 
 TEST_F(SandboxWinTest, AppContainerAccessCheckFail) {
@@ -277,8 +229,8 @@ TEST_F(SandboxWinTest, AppContainerAccessCheckFail) {
     return;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   scoped_refptr<AppContainerBase> profile;
-  ResultCode result = CreateAppContainerProfile(command_line, true,
-                                                SandboxType::kGpu, &profile);
+  ResultCode result = CreateAppContainerProfile(
+      command_line, true, sandbox::mojom::Sandbox::kGpu, &profile);
   EXPECT_EQ(SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK, result);
   EXPECT_EQ(nullptr, profile);
 }
@@ -288,8 +240,8 @@ TEST_F(SandboxWinTest, AppContainerCheckProfile) {
     return;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   scoped_refptr<AppContainerBase> profile;
-  ResultCode result = CreateAppContainerProfile(command_line, false,
-                                                SandboxType::kGpu, &profile);
+  ResultCode result = CreateAppContainerProfile(
+      command_line, false, sandbox::mojom::Sandbox::kGpu, &profile);
   ASSERT_EQ(SBOX_ALL_OK, result);
   ASSERT_NE(nullptr, profile);
   auto package_sid = Sid::FromSddlString(kPackageSid);
@@ -307,8 +259,8 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileDisableLpac) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kGpuLPAC);
   scoped_refptr<AppContainerBase> profile;
-  ResultCode result = CreateAppContainerProfile(command_line, false,
-                                                SandboxType::kGpu, &profile);
+  ResultCode result = CreateAppContainerProfile(
+      command_line, false, sandbox::mojom::Sandbox::kGpu, &profile);
   ASSERT_EQ(SBOX_ALL_OK, result);
   ASSERT_NE(nullptr, profile);
   EXPECT_FALSE(profile->GetEnableLowPrivilegeAppContainer());
@@ -321,8 +273,8 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileAddCapabilities) {
   command_line.AppendSwitchASCII(switches::kAddGpuAppContainerCaps,
                                  "  cap1   ,   cap2   ,");
   scoped_refptr<AppContainerBase> profile;
-  ResultCode result = CreateAppContainerProfile(command_line, false,
-                                                SandboxType::kGpu, &profile);
+  ResultCode result = CreateAppContainerProfile(
+      command_line, false, sandbox::mojom::Sandbox::kGpu, &profile);
   ASSERT_EQ(SBOX_ALL_OK, result);
   ASSERT_NE(nullptr, profile);
   CheckCapabilities(profile.get(), {L"cap1", L"cap2"});
@@ -385,6 +337,70 @@ TEST_F(SandboxWinTest, BlocklistAddOneDllDontCheckInBrowser) {
               std::vector<std::wstring>({L"thelongname.dll", L"thelon~1.dll",
                                          L"thelon~2.dll", L"thelon~3.dll"}));
   }
+}
+
+// Sandbox can't reach into content to pull the real policies, so these tests
+// merely verifies that various parts of the delegate are called correctly and a
+// policy can be generated.
+class TestSandboxDelegate : public SandboxDelegate {
+ public:
+  TestSandboxDelegate(sandbox::mojom::Sandbox sandbox_type)
+      : sandbox_type_(sandbox_type) {}
+  sandbox::mojom::Sandbox GetSandboxType() override { return sandbox_type_; }
+  bool DisableDefaultPolicy() override { return false; }
+  bool GetAppContainerId(std::string* appcontainer_id) override {
+    NOTREACHED();
+    return false;
+  }
+
+  MOCK_METHOD1(PreSpawnTarget, bool(TargetPolicy* policy));
+
+  void PostSpawnTarget(base::ProcessHandle process) override {}
+
+  bool ShouldUnsandboxedRunInJob() override { return false; }
+
+  bool CetCompatible() override { return true; }
+
+ private:
+  sandbox::mojom::Sandbox sandbox_type_;
+};
+
+TEST_F(SandboxWinTest, GeneratedPolicyTest) {
+  TestSandboxDelegate test_renderer_delegate(
+      sandbox::mojom::Sandbox::kRenderer);
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  base::HandlesToInheritVector handles_to_inherit;
+  BrokerServices* broker = SandboxFactory::GetBrokerServices();
+  scoped_refptr<TargetPolicy> policy = broker->CreatePolicy();
+  // PreSpawn should get called, but not modifying the policy for this test.
+  EXPECT_CALL(test_renderer_delegate, PreSpawnTarget(_)).WillOnce(Return(true));
+  ResultCode result = SandboxWin::GeneratePolicyForSandboxedProcess(
+      cmd_line, switches::kRendererProcess, handles_to_inherit,
+      &test_renderer_delegate, policy);
+  ASSERT_EQ(ResultCode::SBOX_ALL_OK, result);
+  // Check some default values come back. No need to check the exact policy in
+  // detail, but just that GeneratePolicyForSandboxedProcess generated some kind
+  // of valid policy.
+  EXPECT_EQ(IntegrityLevel::INTEGRITY_LEVEL_LOW, policy->GetIntegrityLevel());
+  EXPECT_EQ(JobLevel::JOB_LOCKDOWN, policy->GetJobLevel());
+  EXPECT_EQ(TokenLevel::USER_LOCKDOWN, policy->GetLockdownTokenLevel());
+}
+
+TEST_F(SandboxWinTest, GeneratedPolicyTestNoSandbox) {
+  TestSandboxDelegate test_unsandboxed_delegate(
+      sandbox::mojom::Sandbox::kNoSandbox);
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  base::HandlesToInheritVector handles_to_inherit;
+  BrokerServices* broker = SandboxFactory::GetBrokerServices();
+  scoped_refptr<TargetPolicy> policy = broker->CreatePolicy();
+  // Unsandboxed processes never call the delegate prespawn as there is no
+  // policy.
+  EXPECT_CALL(test_unsandboxed_delegate, PreSpawnTarget(_)).Times(0);
+
+  ResultCode result = SandboxWin::GeneratePolicyForSandboxedProcess(
+      cmd_line, switches::kRendererProcess, handles_to_inherit,
+      &test_unsandboxed_delegate, policy);
+  ASSERT_EQ(ResultCode::SBOX_ERROR_UNSANDBOXED_PROCESS, result);
 }
 
 }  // namespace policy

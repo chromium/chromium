@@ -60,7 +60,7 @@ export class PanelItem extends HTMLElement {
      * User specific data, used as a reference to persist any custom
      * data that the panel user may want to use in the signal callback.
      * e.g. holding the file name(s) used in a copy operation.
-     * @type {string|Object}
+     * @type {?Object}
      */
     this.userData = null;
   }

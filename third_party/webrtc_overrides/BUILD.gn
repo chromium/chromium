@@ -58,12 +58,10 @@ webrtc_public_deps = [
   "//third_party/webrtc/common_video",
   "//third_party/webrtc/common_video:common_video",
   "//third_party/webrtc/media:rtc_audio_video",
-  "//third_party/webrtc/media:rtc_h264_profile_id",
   "//third_party/webrtc/media:rtc_internal_video_codecs",
   "//third_party/webrtc/media:rtc_media",
   "//third_party/webrtc/media:rtc_media_base",
   "//third_party/webrtc/media:rtc_simulcast_encoder_adapter",
-  "//third_party/webrtc/media:rtc_vp9_profile",
   "//third_party/webrtc/modules/audio_device",
   "//third_party/webrtc/modules/audio_device:audio_device_api",
   "//third_party/webrtc/modules/audio_processing",
@@ -114,7 +112,6 @@ if (is_chromecast) {
     "//third_party/webrtc/api/units:time_delta",
     "//third_party/webrtc/api/video:encoded_image",
     "//third_party/webrtc/call:call_interfaces",
-    "//third_party/webrtc/media:rtc_h264_profile_id",
     "//third_party/webrtc/media:rtc_media_engine_defaults",
     "//third_party/webrtc/modules/audio_device:audio_device_default",
     "//third_party/webrtc/modules/audio_mixer:audio_mixer_impl",
@@ -231,8 +228,28 @@ source_set("field_trial") {
 source_set("task_queue_factory") {
   visibility = [ ":*" ]
   sources = [
+    "metronome_provider.cc",
+    "metronome_provider.h",
+
+    # Tested in
+    # third_party/blink/renderer/platform/peerconnection/metronome_source_test.cc
+    "metronome_source.cc",
+    "metronome_source.h",
+
+    # Tested in
+    # third_party/blink/renderer/platform/peerconnection/metronome_task_queue_factory_test.cc
+    "metronome_task_queue_factory.cc",
+    "metronome_task_queue_factory.h",
+
+    # Tested in
+    # third_party/blink/renderer/platform/peerconnection/task_queue_factory_test.cc
     "task_queue_factory.cc",
     "task_queue_factory.h",
+
+    # Tested in
+    # third_party/blink/renderer/platform/peerconnection/webrtc_timer_test.cc
+    "webrtc_timer.cc",
+    "webrtc_timer.h",
   ]
   configs += [ "//third_party/webrtc:library_impl_config" ]
   deps = [
@@ -240,6 +257,11 @@ source_set("task_queue_factory") {
     "//third_party/webrtc/api/task_queue",
     "//third_party/webrtc/rtc_base/system:rtc_export",
   ]
+
+  # If you want to use a WebRTC task queue you may want to have access to
+  # webrtc::ToQueuedTask, but it has limited visibility within WebRTC so we
+  # depend on it publically here.
+  public_deps = [ "//third_party/webrtc/rtc_base/task_utils:to_queued_task" ]
 }
 
 source_set("system_time") {

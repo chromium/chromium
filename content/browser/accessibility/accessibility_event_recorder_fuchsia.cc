@@ -1,0 +1,27 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/accessibility/accessibility_event_recorder_fuchsia.h"
+
+namespace content {
+
+// static
+AccessibilityEventRecorderFuchsia*
+    AccessibilityEventRecorderFuchsia::instance_ = nullptr;
+
+AccessibilityEventRecorderFuchsia::AccessibilityEventRecorderFuchsia(
+    BrowserAccessibilityManager* manager,
+    base::ProcessId pid,
+    const ui::AXTreeSelector& selector)
+    : AccessibilityEventRecorder(manager) {
+  CHECK(!instance_) << "There can be only one instance of"
+                    << " AccessibilityEventRecorder at a time.";
+  instance_ = this;
+}
+
+AccessibilityEventRecorderFuchsia::~AccessibilityEventRecorderFuchsia() {
+  instance_ = nullptr;
+}
+
+}  // namespace content

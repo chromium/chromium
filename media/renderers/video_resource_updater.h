@@ -12,7 +12,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -100,6 +99,9 @@ class MEDIA_EXPORT VideoResourceUpdater
                        bool use_gpu_memory_buffer_resources,
                        bool use_r16_texture,
                        int max_resource_size);
+
+  VideoResourceUpdater(const VideoResourceUpdater&) = delete;
+  VideoResourceUpdater& operator=(const VideoResourceUpdater&) = delete;
 
   ~VideoResourceUpdater() override;
 
@@ -244,8 +246,6 @@ class MEDIA_EXPORT VideoResourceUpdater
   std::vector<std::unique_ptr<PlaneResource>> all_resources_;
 
   base::WeakPtrFactory<VideoResourceUpdater> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoResourceUpdater);
 };
 
 }  // namespace media

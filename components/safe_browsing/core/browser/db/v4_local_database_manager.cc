@@ -53,7 +53,6 @@ const ThreatSeverity kLeastSeverity =
 // This map contain pairs of the old and the new name for certain .store files.
 constexpr auto kStoreFilesToRename =
     base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>({
-        {"CertCsdDownloadWhitelist.store", "CertCsdDownloadAllowlist.store"},
         {"UrlCsdDownloadWhitelist.store", "UrlCsdDownloadAllowlist.store"},
         {"UrlCsdWhitelist.store", "UrlCsdAllowlist.store"},
     });
@@ -102,8 +101,6 @@ ListInfos GetListInfos() {
                SB_THREAT_TYPE_URL_BINARY_MALWARE),
       ListInfo(kSyncOnDesktopBuilds, "ChromeExtMalware.store",
                GetChromeExtMalwareId(), SB_THREAT_TYPE_EXTENSION),
-      ListInfo(kSyncOnChromeDesktopBuilds, "CertCsdDownloadAllowlist.store",
-               GetCertCsdDownloadAllowlistId(), SB_THREAT_TYPE_UNUSED),
       ListInfo(kSyncOnChromeDesktopBuilds, "ChromeUrlClientIncident.store",
                GetChromeUrlClientIncidentId(),
                SB_THREAT_TYPE_BLOCKLISTED_RESOURCE),
@@ -164,7 +161,12 @@ ThreatSeverity GetThreatSeverity(const ListIdentifier& list_id) {
       return 4;
     case BILLING:
       return 15;
-    default:
+    case ACCURACY_TIPS:
+      return 1000;
+    case CSD_DOWNLOAD_WHITELIST:
+    case POTENTIALLY_HARMFUL_APPLICATION:
+    case SOCIAL_ENGINEERING_PUBLIC:
+    case THREAT_TYPE_UNSPECIFIED:
       NOTREACHED() << "Unexpected ThreatType encountered: "
                    << list_id.threat_type();
       return kLeastSeverity;
@@ -596,21 +598,6 @@ AsyncMatch V4LocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
   return HandleAllowlistCheck(std::move(check));
 }
 
-bool V4LocalDatabaseManager::MatchDownloadAllowlistString(
-    const std::string& str) {
-  DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
-
-  StoresToCheck stores_to_check({GetCertCsdDownloadAllowlistId()});
-  if (!AreAllStoresAvailableNow(stores_to_check)) {
-    // Fail close: Allowlist nothing. This may generate download-protection
-    // pings for allowlisted binaries, but that's fine.
-    return false;
-  }
-
-  return HandleHashSynchronously(crypto::SHA256HashString(str),
-                                 stores_to_check);
-}
-
 bool V4LocalDatabaseManager::MatchDownloadAllowlistUrl(const GURL& url) {
   DCHECK(io_task_runner()->RunsTasksInCurrentSequence());
 
@@ -928,8 +915,8 @@ void V4LocalDatabaseManager::ScheduleFullHashCheck(
          check->artificial_full_hash_to_store_and_hash_prefixes) {
       for (const auto& store_and_prefix : entry.second) {
         ListIdentifier list_id = store_and_prefix.list_id;
-        base::Time next = base::Time::Now() + base::TimeDelta::FromMinutes(
-                                                  kFullHashExpiryTimeInMinutes);
+        base::Time next =
+            base::Time::Now() + base::Minutes(kFullHashExpiryTimeInMinutes);
         full_hash_infos.emplace_back(entry.first, list_id, next);
       }
     }
@@ -1153,10 +1140,6 @@ bool V4LocalDatabaseManager::AreAllStoresAvailableNow(
   } else if (!v4_database_->AreAllStoresAvailable(stores_to_check)) {
     result = StoreAvailabilityResult::STORE_UNAVAILABLE;
   }
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "SafeBrowsing.V4LocalDatabaseManager.AreAllStoresAvailableNow", result,
-      StoreAvailabilityResult::COUNT);
   return (result == StoreAvailabilityResult::AVAILABLE);
 }
 

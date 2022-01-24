@@ -28,6 +28,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace value_store {
+class ValueStoreFactory;
+}
+
 namespace extensions {
 
 class AppSorting;
@@ -38,11 +42,9 @@ class ExtensionSet;
 class InfoMap;
 class ManagementPolicy;
 class QuotaService;
-class RuntimeData;
 class ServiceWorkerManager;
 class StateStore;
 class UserScriptManager;
-class ValueStoreFactory;
 enum class UnloadedExtensionReason;
 
 // ExtensionSystem manages the lifetime of many of the services used by the
@@ -73,10 +75,6 @@ class ExtensionSystem : public KeyedService {
   // defined in Chrome.
   virtual ExtensionService* extension_service() = 0;
 
-  // Per-extension data that can change during the life of the process but
-  // does not persist across restarts. Lives on UI thread. Created at startup.
-  virtual RuntimeData* runtime_data() = 0;
-
   // The class controlling whether users are permitted to perform certain
   // actions on extensions (install, uninstall, disable, etc.).
   // The ManagementPolicy is created at startup.
@@ -94,8 +92,11 @@ class ExtensionSystem : public KeyedService {
   // The rules store is created at startup.
   virtual StateStore* rules_store() = 0;
 
+  // The dynamic user scripts store is created at startup.
+  virtual StateStore* dynamic_user_scripts_store() = 0;
+
   // Returns the |ValueStore| factory created at startup.
-  virtual scoped_refptr<ValueStoreFactory> store_factory() = 0;
+  virtual scoped_refptr<value_store::ValueStoreFactory> store_factory() = 0;
 
   // Returns the IO-thread-accessible extension data.
   virtual InfoMap* info_map() = 0;

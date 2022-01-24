@@ -38,7 +38,7 @@
 
 + (void)initialize {
   if (self == [SearchWidgetViewController self]) {
-    if (crash_helper::common::CanCrashpadStart()) {
+    if (crash_helper::common::CanUseCrashpad()) {
       crash_helper::common::StartCrashpad();
     }
   }
@@ -124,8 +124,7 @@
 // handler with whether any updates occured..
 - (void)updateWidgetWithCompletionHandler:(void (^)(BOOL))completionHandler {
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
-  NSString* fieldTrialKey =
-      base::SysUTF8ToNSString(app_group::kChromeExtensionFieldTrialPreference);
+  NSString* fieldTrialKey = app_group::kChromeExtensionFieldTrialPreference;
   self.fieldTrialValues = [sharedDefaults dictionaryForKey:fieldTrialKey];
 
   NSString* supportsSearchByImageKey =

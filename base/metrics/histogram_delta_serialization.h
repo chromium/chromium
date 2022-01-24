@@ -24,6 +24,11 @@ class BASE_EXPORT HistogramDeltaSerialization : public HistogramFlattener {
  public:
   // |caller_name| is string used in histograms for counting inconsistencies.
   explicit HistogramDeltaSerialization(const std::string& caller_name);
+
+  HistogramDeltaSerialization(const HistogramDeltaSerialization&) = delete;
+  HistogramDeltaSerialization& operator=(const HistogramDeltaSerialization&) =
+      delete;
+
   ~HistogramDeltaSerialization() override;
 
   // Computes deltas in histogram bucket counts relative to the previous call to
@@ -52,8 +57,6 @@ class BASE_EXPORT HistogramDeltaSerialization : public HistogramFlattener {
 
   // Output buffer for serialized deltas.
   std::vector<std::string>* serialized_deltas_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramDeltaSerialization);
 };
 
 }  // namespace base

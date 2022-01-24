@@ -152,6 +152,9 @@ TEST_F(NavigatorShareTest, ShareText) {
   EXPECT_EQ(mock_share_service().text(), message);
   EXPECT_EQ(mock_share_service().url(), KURL(url));
   EXPECT_EQ(mock_share_service().files().size(), 0U);
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingTitle));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingText));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingUrl));
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kWebShareSuccessfulWithoutFiles));
 }
@@ -186,6 +189,7 @@ TEST_F(NavigatorShareTest, ShareFile) {
   EXPECT_EQ(mock_share_service().files()[0]->blob->GetType(), content_type);
   EXPECT_EQ(mock_share_service().files()[0]->blob->size(),
             file_contents.length());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingFiles));
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kWebShareSuccessfulContainingFiles));
 }
@@ -197,6 +201,7 @@ TEST_F(NavigatorShareTest, CancelShare) {
 
   mock_share_service().set_error(mojom::blink::ShareError::CANCELED);
   Share(share_data);
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingTitle));
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kWebShareUnsuccessfulWithoutFiles));
 }
@@ -206,15 +211,20 @@ TEST_F(NavigatorShareTest, CancelShareWithFile) {
   const String content_type = "text/csv";
   const String file_contents = "1,2,3";
 
+  const String url = "https://example.site";
+
   HeapVector<Member<File>> files;
   files.push_back(CreateSampleFile(ExecutionContext::From(GetScriptState()),
                                    file_name, content_type, file_contents));
 
   ShareData share_data;
   share_data.setFiles(files);
+  share_data.setUrl(url);
 
   mock_share_service().set_error(mojom::blink::ShareError::CANCELED);
   Share(share_data);
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingFiles));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingUrl));
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kWebShareUnsuccessfulContainingFiles));
 }

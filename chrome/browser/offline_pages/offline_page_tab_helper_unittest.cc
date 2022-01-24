@@ -78,6 +78,10 @@ std::unique_ptr<KeyedService> BuildTestPrefetchService(SimpleFactoryKey*) {
 class OfflinePageTabHelperTest : public content::RenderViewHostTestHarness {
  public:
   OfflinePageTabHelperTest();
+
+  OfflinePageTabHelperTest(const OfflinePageTabHelperTest&) = delete;
+  OfflinePageTabHelperTest& operator=(const OfflinePageTabHelperTest&) = delete;
+
   ~OfflinePageTabHelperTest() override {}
 
   void SetUp() override;
@@ -106,7 +110,6 @@ class OfflinePageTabHelperTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
 
   base::WeakPtrFactory<OfflinePageTabHelperTest> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageTabHelperTest);
 };
 
 OfflinePageTabHelperTest::OfflinePageTabHelperTest() : tab_helper_(nullptr) {}

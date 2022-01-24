@@ -26,6 +26,11 @@ class AccessibilityControllerBindings
  public:
   static gin::WrapperInfo kWrapperInfo;
 
+  AccessibilityControllerBindings(const AccessibilityControllerBindings&) =
+      delete;
+  AccessibilityControllerBindings& operator=(
+      const AccessibilityControllerBindings&) = delete;
+
   static void Install(base::WeakPtr<AccessibilityController> controller,
                       blink::WebLocalFrame* frame);
 
@@ -48,8 +53,6 @@ class AccessibilityControllerBindings
   void Reset();
 
   base::WeakPtr<AccessibilityController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerBindings);
 };
 
 gin::WrapperInfo AccessibilityControllerBindings::kWrapperInfo = {

@@ -30,7 +30,7 @@ using base::SysUTF8ToNSString;
 // Interface to communicate with the XPC Updater Service.
 @interface CRUUpdateServiceProxyImpl : NSObject <CRUUpdateServicing>
 
-- (instancetype)initPrivileged;
+- (instancetype)initWithScope:(updater::UpdaterScope)scope;
 
 @end
 
@@ -38,18 +38,22 @@ using base::SysUTF8ToNSString;
   base::scoped_nsobject<NSXPCConnection> _updateCheckXPCConnection;
 }
 
-- (instancetype)init {
-  return [self initWithConnectionOptions:0];
+- (instancetype)initWithScope:(updater::UpdaterScope)scope {
+  switch (scope) {
+    case updater::UpdaterScope::kUser:
+      return [self initWithConnectionOptions:0 withScope:scope];
+    case updater::UpdaterScope::kSystem:
+      return [self initWithConnectionOptions:NSXPCConnectionPrivileged
+                                   withScope:scope];
+  }
+  return nil;
 }
 
-- (instancetype)initPrivileged {
-  return [self initWithConnectionOptions:NSXPCConnectionPrivileged];
-}
-
-- (instancetype)initWithConnectionOptions:(NSXPCConnectionOptions)options {
+- (instancetype)initWithConnectionOptions:(NSXPCConnectionOptions)options
+                                withScope:(updater::UpdaterScope)scope {
   if ((self = [super init])) {
     _updateCheckXPCConnection.reset([[NSXPCConnection alloc]
-        initWithMachServiceName:updater::GetUpdateServiceMachName().get()
+        initWithMachServiceName:updater::GetUpdateServiceMachName(scope).get()
                         options:options]);
 
     _updateCheckXPCConnection.get().remoteObjectInterface =
@@ -87,7 +91,7 @@ using base::SysUTF8ToNSString;
 
 - (void)registerForUpdatesWithAppId:(NSString* _Nullable)appId
                           brandCode:(NSString* _Nullable)brandCode
-                                tag:(NSString* _Nullable)tag
+                                tag:(NSString* _Nullable)ap
                             version:(NSString* _Nullable)version
                existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
                               reply:(void (^_Nonnull)(int rc))reply {
@@ -101,7 +105,7 @@ using base::SysUTF8ToNSString;
       remoteObjectProxyWithErrorHandler:errorHandler]
       registerForUpdatesWithAppId:appId
                         brandCode:brandCode
-                              tag:tag
+                              tag:ap
                           version:version
              existenceCheckerPath:existenceCheckerPath
                             reply:reply];
@@ -154,15 +158,13 @@ using base::SysUTF8ToNSString;
 
 namespace updater {
 
+scoped_refptr<UpdateService> CreateUpdateServiceProxy(
+    UpdaterScope updater_scope) {
+  return base::MakeRefCounted<UpdateServiceProxy>(updater_scope);
+}
+
 UpdateServiceProxy::UpdateServiceProxy(UpdaterScope scope) {
-  switch (scope) {
-    case UpdaterScope::kSystem:
-      client_.reset([[CRUUpdateServiceProxyImpl alloc] initPrivileged]);
-      break;
-    case UpdaterScope::kUser:
-      client_.reset([[CRUUpdateServiceProxyImpl alloc] init]);
-      break;
-  }
+  client_.reset([[CRUUpdateServiceProxyImpl alloc] initWithScope:scope]);
   callback_runner_ = base::SequencedTaskRunnerHandle::Get();
 }
 
@@ -197,7 +199,7 @@ void UpdateServiceProxy::RegisterApp(
   [client_
       registerForUpdatesWithAppId:SysUTF8ToNSString(request.app_id)
                         brandCode:SysUTF8ToNSString(request.brand_code)
-                              tag:SysUTF8ToNSString(request.tag)
+                              tag:SysUTF8ToNSString(request.ap)
                           version:SysUTF8ToNSString(request.version.GetString())
              existenceCheckerPath:SysUTF8ToNSString(
                                       request.existence_checker_path

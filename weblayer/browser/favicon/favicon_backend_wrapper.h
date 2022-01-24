@@ -114,12 +114,11 @@ class FaviconBackendWrapper
 
 // Amount of time before favicons are removed. That is, any favicons downloaded
 // before this amount of time are removed.
-constexpr base::TimeDelta kTimeDeltaWhenEntriesAreRemoved =
-    base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kTimeDeltaWhenEntriesAreRemoved = base::Days(30);
 
 // See comment near kMaxNumberOfEntriesToRemoveAtATime for details on this.
 constexpr base::TimeDelta kTimeDeltaForRunningExpireWithRemainingWork =
-    base::TimeDelta::FromMinutes(2);
+    base::Minutes(2);
 
 }  // namespace weblayer
 

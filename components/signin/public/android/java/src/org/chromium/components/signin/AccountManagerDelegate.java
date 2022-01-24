@@ -117,16 +117,6 @@ public interface AccountManagerDelegate {
             Account account, Activity activity, @Nullable Callback<Boolean> callback);
 
     /**
-     * Gets profile data source.
-     * @return {@link ProfileDataSource} if this delegate provides it, null otherwise.
-     */
-    @MainThread
-    @Nullable
-    default ProfileDataSource getProfileDataSource() {
-        return null;
-    }
-
-    /**
      * Returns the Gaia id for the account associated with the given email address.
      * If an account with the given email address is not installed on the device
      * then null is returned.

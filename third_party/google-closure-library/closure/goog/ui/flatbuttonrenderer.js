@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Similar functionality of {@link goog.ui.ButtonRenderer},
@@ -27,6 +19,7 @@ goog.require('goog.ui.Button');
 goog.require('goog.ui.ButtonRenderer');
 goog.require('goog.ui.INLINE_BLOCK_CLASSNAME');
 goog.require('goog.ui.registry');
+goog.requireType('goog.ui.Control');
 
 
 
@@ -38,6 +31,7 @@ goog.require('goog.ui.registry');
  * @extends {goog.ui.ButtonRenderer}
  */
 goog.ui.FlatButtonRenderer = function() {
+  'use strict';
   goog.ui.ButtonRenderer.call(this);
 };
 goog.inherits(goog.ui.FlatButtonRenderer, goog.ui.ButtonRenderer);
@@ -62,6 +56,7 @@ goog.ui.FlatButtonRenderer.CSS_CLASS = goog.getCssName('goog-flat-button');
  * @override
  */
 goog.ui.FlatButtonRenderer.prototype.createDom = function(button) {
+  'use strict';
   var classNames = this.getClassNames(button);
   var element = button.getDomHelper().createDom(
       goog.dom.TagName.DIV,
@@ -78,6 +73,7 @@ goog.ui.FlatButtonRenderer.prototype.createDom = function(button) {
  * @override
  */
 goog.ui.FlatButtonRenderer.prototype.getAriaRole = function() {
+  'use strict';
   return goog.a11y.aria.Role.BUTTON;
 };
 
@@ -91,6 +87,7 @@ goog.ui.FlatButtonRenderer.prototype.getAriaRole = function() {
  * @override
  */
 goog.ui.FlatButtonRenderer.prototype.canDecorate = function(element) {
+  'use strict';
   return element.tagName == goog.dom.TagName.DIV;
 };
 
@@ -106,6 +103,7 @@ goog.ui.FlatButtonRenderer.prototype.canDecorate = function(element) {
  * @override
  */
 goog.ui.FlatButtonRenderer.prototype.decorate = function(button, element) {
+  'use strict';
   goog.asserts.assert(element);
   goog.dom.classlist.add(element, goog.ui.INLINE_BLOCK_CLASSNAME);
   return goog.ui.FlatButtonRenderer.superClass_.decorate.call(
@@ -122,6 +120,7 @@ goog.ui.FlatButtonRenderer.prototype.decorate = function(button, element) {
  * @override
  */
 goog.ui.FlatButtonRenderer.prototype.getValue = function(element) {
+  'use strict';
   // Flat buttons don't store their value in the DOM.
   return '';
 };
@@ -134,6 +133,7 @@ goog.ui.FlatButtonRenderer.prototype.getValue = function(element) {
  * @override
  */
 goog.ui.FlatButtonRenderer.prototype.getCssClass = function() {
+  'use strict';
   return goog.ui.FlatButtonRenderer.CSS_CLASS;
 };
 
@@ -141,6 +141,7 @@ goog.ui.FlatButtonRenderer.prototype.getCssClass = function() {
 // Register a decorator factory function for Flat Buttons.
 goog.ui.registry.setDecoratorByClassName(
     goog.ui.FlatButtonRenderer.CSS_CLASS, function() {
+      'use strict';
       // Uses goog.ui.Button, but with FlatButtonRenderer.
       return new goog.ui.Button(null, goog.ui.FlatButtonRenderer.getInstance());
     });

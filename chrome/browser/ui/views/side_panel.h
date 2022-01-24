@@ -10,10 +10,12 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+class BrowserView;
+
 class SidePanel : public views::View, public views::ViewObserver {
  public:
   METADATA_HEADER(SidePanel);
-  SidePanel();
+  explicit SidePanel(BrowserView* browser_view);
   SidePanel(const SidePanel&) = delete;
   SidePanel& operator=(const SidePanel&) = delete;
   ~SidePanel() override;
@@ -29,6 +31,8 @@ class SidePanel : public views::View, public views::ViewObserver {
   // views::ViewObserver:
   void OnChildViewAdded(View* observed_view, View* child) override;
   void OnChildViewRemoved(View* observed_view, View* child) override;
+
+  View* const border_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_H_

@@ -31,6 +31,10 @@ class ContentCaptureSender : public content::RenderFrameObserver,
  public:
   explicit ContentCaptureSender(content::RenderFrame* render_frame,
                                 blink::AssociatedInterfaceRegistry* registry);
+
+  ContentCaptureSender(const ContentCaptureSender&) = delete;
+  ContentCaptureSender& operator=(const ContentCaptureSender&) = delete;
+
   ~ContentCaptureSender() override;
 
   void BindPendingReceiver(
@@ -63,8 +67,6 @@ class ContentCaptureSender : public content::RenderFrameObserver,
   mojo::AssociatedRemote<mojom::ContentCaptureReceiver>
       content_capture_receiver_;
   mojo::AssociatedReceiver<mojom::ContentCaptureSender> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentCaptureSender);
 };
 
 }  // namespace content_capture

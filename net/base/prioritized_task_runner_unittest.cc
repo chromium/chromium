@@ -14,12 +14,12 @@
 #include "base/location.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
@@ -122,8 +122,7 @@ TEST_F(PrioritizedTaskRunnerTest, PostTaskAndReplyThreadCheck) {
       };
 
   prioritized_task_runner->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(thread_check, task_runner, base::DoNothing::Once()),
+      FROM_HERE, base::BindOnce(thread_check, task_runner, base::DoNothing()),
       base::BindOnce(thread_check, task_environment_.GetMainThreadTaskRunner(),
                      run_loop.QuitClosure()),
       0);
@@ -353,7 +352,7 @@ TEST_F(PrioritizedTaskRunnerTest, OrderSamePriorityByPostOrder) {
         FROM_HERE,
         base::BindOnce(&PrioritizedTaskRunnerTest::PushName,
                        base::Unretained(this), base::NumberToString(id)),
-        base::BindOnce(base::DoNothing::Once()), priority);
+        base::DoNothing(), priority);
   }
   ReleaseTaskRunner();
 

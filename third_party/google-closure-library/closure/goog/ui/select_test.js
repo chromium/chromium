@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.SelectTest');
 goog.setTestOnly();
@@ -79,6 +71,7 @@ testSuite({
     assertEquals('', new Select('').getDefaultCaption());
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testAriaRoles() {
     select.render(sandboxEl);
     const item1 = new MenuItem('item 1');
@@ -192,6 +185,7 @@ testSuite({
     select.addItem(item1);
     select.addItem(item2);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const recordingHandler = new recordFunction();
     events.listen(select, Component.EventType.CHANGE, recordingHandler);
 
@@ -223,6 +217,7 @@ testSuite({
     select.addItem(item1);
     select.addItem(item2);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const recordingHandler = new recordFunction();
     events.listen(select, Component.EventType.CHANGE, recordingHandler);
 
@@ -282,6 +277,7 @@ testSuite({
         select.getRenderer().getContentElement(select.getElement())));
 
     // Add and select an item with aria-label.
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const item1 = new MenuItem();
     select.addItem(item1);
     item1.getElement().setAttribute('aria-label', 'item1');
@@ -292,6 +288,7 @@ testSuite({
             select.getRenderer().getContentElement(select.getElement())));
 
     // Add and select an item without a label.
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const item2 = new MenuItem();
     select.addItem(item2);
     select.setSelectedIndex(1);

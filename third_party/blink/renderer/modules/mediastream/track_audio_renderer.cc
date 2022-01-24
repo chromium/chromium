@@ -52,9 +52,8 @@ base::TimeDelta ComputeTotalElapsedRenderTime(
     int64_t num_samples_rendered,
     int sample_rate) {
   return prior_elapsed_render_time +
-         base::TimeDelta::FromMicroseconds(num_samples_rendered *
-                                           base::Time::kMicrosecondsPerSecond /
-                                           sample_rate);
+         base::Microseconds(num_samples_rendered *
+                            base::Time::kMicrosecondsPerSecond / sample_rate);
 }
 
 WebLocalFrame* ToWebLocalFrame(LocalFrame* frame) {
@@ -406,9 +405,8 @@ void TrackAudioRenderer::CreateAudioShifter() {
   // ~15ms on Windows machines without a working high-resolution clock.  See
   // comments in base/time/time.h for details.
   media::AudioShifter* const new_shifter = new media::AudioShifter(
-      base::TimeDelta::FromSeconds(5), base::TimeDelta::FromMilliseconds(20),
-      base::TimeDelta::FromSeconds(20), source_params_.sample_rate(),
-      source_params_.channels());
+      base::Seconds(5), base::Milliseconds(20), base::Seconds(20),
+      source_params_.sample_rate(), source_params_.channels());
 
   base::AutoLock auto_lock(thread_lock_);
   audio_shifter_.reset(new_shifter);

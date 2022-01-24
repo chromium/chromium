@@ -139,6 +139,9 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   MockMediaSession();
   explicit MockMediaSession(bool force_duck);
 
+  MockMediaSession(const MockMediaSession&) = delete;
+  MockMediaSession& operator=(const MockMediaSession&) = delete;
+
   ~MockMediaSession() override;
 
   // mojom::MediaSession overrides.
@@ -168,6 +171,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   void ToggleCamera() override {}
   void HangUp() override {}
   void Raise() override {}
+  void SetMute(bool mute) override {}
 
   void SetIsControllable(bool value);
   void SetPreferStop(bool value) { prefer_stop_ = value; }
@@ -247,8 +251,6 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   mojo::ReceiverSet<mojom::MediaSession> receivers_;
 
   mojo::RemoteSet<mojom::MediaSessionObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaSession);
 };
 
 }  // namespace test

@@ -214,6 +214,7 @@ float DateTimeFieldElement::MaximumWidth(const ComputedStyle&) {
 void DateTimeFieldElement::SetDisabled() {
   // Set HTML attribute disabled to change apperance.
   SetBooleanAttribute(html_names::kDisabledAttr, true);
+  setAttribute(html_names::kAriaDisabledAttr, AtomicString("true"));
   SetNeedsStyleRecalc(kSubtreeStyleChange,
                       StyleChangeReasonForTracing::CreateWithExtraData(
                           style_change_reason::kPseudoClass,

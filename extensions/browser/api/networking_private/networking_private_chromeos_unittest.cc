@@ -61,6 +61,10 @@ const char kCellularName[] = "cellular";
 class NetworkingPrivateApiTest : public ApiUnitTest {
  public:
   NetworkingPrivateApiTest() {}
+
+  NetworkingPrivateApiTest(const NetworkingPrivateApiTest&) = delete;
+  NetworkingPrivateApiTest& operator=(const NetworkingPrivateApiTest&) = delete;
+
   ~NetworkingPrivateApiTest() override {}
 
   void SetUp() override {
@@ -136,7 +140,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
             ->managed_network_configuration_handler();
 
     const std::string user_policy_ssid = kManagedUserWifiSsid;
-    std::unique_ptr<base::ListValue> user_policy_onc =
+    std::unique_ptr<base::Value> user_policy_onc =
         ListBuilder()
             .Append(DictionaryBuilder()
                         .Set("GUID", kManagedUserWifiGuid)
@@ -154,10 +158,11 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
             .Build();
 
     config_handler->SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUserHash,
-                              *user_policy_onc, base::DictionaryValue());
+                              *user_policy_onc,
+                              base::Value(base::Value::Type::DICTIONARY));
 
     const std::string device_policy_ssid = kManagedDeviceWifiSsid;
-    std::unique_ptr<base::ListValue> device_policy_onc =
+    std::unique_ptr<base::Value> device_policy_onc =
         ListBuilder()
             .Append(DictionaryBuilder()
                         .Set("GUID", kManagedDeviceWifiGuid)
@@ -173,7 +178,8 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                         .Build())
             .Build();
     config_handler->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, "",
-                              *device_policy_onc, base::DictionaryValue());
+                              *device_policy_onc,
+                              base::Value(base::Value::Type::DICTIONARY));
   }
 
   void SetDeviceProperty(const std::string& device_path,
@@ -188,10 +194,10 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     device_test()->AddDevice(kCellularDevicePath, shill::kTypeCellular,
                              "stub_cellular_device1");
 
-    base::DictionaryValue home_provider;
-    home_provider.SetString("name", "Cellular1_Provider");
-    home_provider.SetString("code", "000000");
-    home_provider.SetString("country", "us");
+    base::Value home_provider(base::Value::Type::DICTIONARY);
+    home_provider.SetStringKey("name", "Cellular1_Provider");
+    home_provider.SetStringKey("code", "000000");
+    home_provider.SetStringKey("country", "us");
     SetDeviceProperty(kCellularDevicePath, shill::kHomeProviderProperty,
                       home_provider);
     SetDeviceProperty(kCellularDevicePath, shill::kTechnologyFamilyProperty,
@@ -212,17 +218,17 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                       base::Value("test_min"));
     SetDeviceProperty(kCellularDevicePath, shill::kModelIdProperty,
                       base::Value("test_model_id"));
-    std::unique_ptr<base::DictionaryValue> apn =
+    std::unique_ptr<base::Value> apn =
         DictionaryBuilder()
             .Set(shill::kApnProperty, "test-apn")
             .Set(shill::kApnUsernameProperty, "test-user")
             .Set(shill::kApnPasswordProperty, "test-password")
             .Set(shill::kApnAuthenticationProperty, "chap")
             .Build();
-    std::unique_ptr<base::ListValue> apn_list =
-        ListBuilder().Append(apn->CreateDeepCopy()).Build();
+    base::Value apn_list(base::Value::Type::LIST);
+    apn_list.Append(apn->Clone());
     SetDeviceProperty(kCellularDevicePath, shill::kCellularApnListProperty,
-                      *apn_list);
+                      apn_list);
 
     service_test()->AddService(kCellularServicePath, kCellularGuid,
                                kCellularName, shill::kTypeCellular,
@@ -258,12 +264,13 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
   int GetNetworkPriority(const chromeos::NetworkState* network) {
-    base::DictionaryValue properties;
+    base::Value properties(base::Value::Type::DICTIONARY);
     network->GetStateProperties(&properties);
-    int priority;
-    if (!properties.GetInteger(shill::kPriorityProperty, &priority))
+    absl::optional<int> priority =
+        properties.FindIntKey(shill::kPriorityProperty);
+    if (!priority)
       return -1;
-    return priority;
+    return priority.value();
   }
 
   bool GetServiceProfile(const std::string& service_path,
@@ -271,8 +278,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     return profile_test()->GetService(service_path, profile_path).is_dict();
   }
 
-  std::unique_ptr<base::DictionaryValue> GetNetworkProperties(
-      const std::string& service_path) {
+  base::Value GetNetworkProperties(const std::string& service_path) {
     base::RunLoop run_loop;
     absl::optional<base::Value> properties;
     chromeos::NetworkHandler::Get()
@@ -285,9 +291,8 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                            run_loop.QuitClosure()));
     run_loop.Run();
     if (!properties)
-      return nullptr;
-    return base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(std::move(*properties)));
+      return base::Value();
+    return std::move(*properties);
   }
 
   void OnNetworkProperties(const std::string& expected_path,
@@ -305,37 +310,39 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     std::move(callback).Run();
   }
 
-  std::unique_ptr<base::DictionaryValue> GetNetworkUiData(
-      const base::DictionaryValue& properties) {
-    std::string ui_data_json;
-    if (!properties.GetString("UIData", &ui_data_json))
+  std::unique_ptr<base::Value> GetNetworkUiData(const base::Value& properties) {
+    CHECK(properties.is_dict());
+    const std::string* ui_data_json = properties.FindStringKey("UIData");
+    if (!ui_data_json)
       return nullptr;
 
-    JSONStringValueDeserializer deserializer(ui_data_json);
-    std::unique_ptr<base::Value> value =
-        deserializer.Deserialize(nullptr, nullptr);
-    if (!value)
-      return nullptr;
-    return base::DictionaryValue::From(std::move(value));
+    JSONStringValueDeserializer deserializer(*ui_data_json);
+    return deserializer.Deserialize(nullptr, nullptr);
   }
 
   bool GetUserSettingStringData(const std::string& guid,
                                 const std::string& key,
-                                std::string* value) {
+                                std::string* value = nullptr) {
     const chromeos::NetworkState* network = chromeos::NetworkHandler::Get()
                                                 ->network_state_handler()
                                                 ->GetNetworkStateFromGuid(guid);
 
-    std::unique_ptr<base::DictionaryValue> properties =
-        GetNetworkProperties(network->path());
-    if (!properties)
+    base::Value properties = GetNetworkProperties(network->path());
+    if (properties.is_none())
       return false;
 
-    std::unique_ptr<base::DictionaryValue> ui_data =
-        GetNetworkUiData(*properties);
+    std::unique_ptr<base::Value> ui_data = GetNetworkUiData(properties);
     if (!ui_data)
       return false;
-    return ui_data->GetString("user_settings." + key, value);
+
+    const std::string* user_setting =
+        ui_data->FindStringPath("user_settings." + key);
+    if (!user_setting)
+      return false;
+
+    if (value)
+      *value = *user_setting;
+    return true;
   }
 
   chromeos::ShillServiceClient::TestInterface* service_test() {
@@ -350,8 +357,6 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
 
  private:
   chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateApiTest);
 };
 
 TEST_F(NetworkingPrivateApiTest, SetSharedNetworkProperties) {
@@ -464,10 +469,10 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedProperties) {
                 base::StringPrintf(
                     R"(["%s", %s])", kPrivateWifiGuid, kCombinedSettings)));
 
-  EXPECT_FALSE(GetUserSettingStringData(kPrivateWifiGuid, "ProxySettings.Type",
-                                        nullptr));
-  EXPECT_FALSE(GetUserSettingStringData(kPrivateWifiGuid, "StaticIPConfig.Type",
-                                        nullptr));
+  EXPECT_FALSE(
+      GetUserSettingStringData(kPrivateWifiGuid, "ProxySettings.Type"));
+  EXPECT_FALSE(
+      GetUserSettingStringData(kPrivateWifiGuid, "StaticIPConfig.Type"));
 }
 
 TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedPropertiesFromWebUI) {
@@ -499,10 +504,9 @@ TEST_F(NetworkingPrivateApiTest, SetNetworkRestrictedPropertiesFromWebUI) {
                   R"(["%s", %s])", kPrivateWifiGuid, kCombinedSettings));
   EXPECT_EQ(ExtensionFunction::SUCCEEDED, *set_properties->response_type());
 
-  EXPECT_TRUE(GetUserSettingStringData(kPrivateWifiGuid, "ProxySettings.Type",
-                                       nullptr));
-  EXPECT_TRUE(GetUserSettingStringData(kPrivateWifiGuid, "StaticIPConfig.Type",
-                                       nullptr));
+  EXPECT_TRUE(GetUserSettingStringData(kPrivateWifiGuid, "ProxySettings.Type"));
+  EXPECT_TRUE(
+      GetUserSettingStringData(kPrivateWifiGuid, "StaticIPConfig.Type"));
 }
 
 TEST_F(NetworkingPrivateApiTest, CreateSharedNetwork) {
@@ -697,7 +701,7 @@ TEST_F(NetworkingPrivateApiTest, CreateL2TPVpnFromWebUi) {
           new NetworkingPrivateSetPropertiesFunction(),
           base::StringPrintf(R"(["%s", %s])", guid.c_str(), kL2tpCredentials)));
 
-  EXPECT_FALSE(GetUserSettingStringData(guid, "VPN.L2TP.Username", nullptr));
+  EXPECT_FALSE(GetUserSettingStringData(guid, "VPN.L2TP.Username"));
 
   // VPN properties should be settable from Web UI.
   scoped_refptr<NetworkingPrivateSetPropertiesFunction> set_properties =
@@ -757,7 +761,7 @@ TEST_F(NetworkingPrivateApiTest, CreateOpenVpnFromWebUiAndSetProperties) {
                 base::StringPrintf(
                     R"(["%s", %s])", guid.c_str(), kOpenVpnCredentials)));
 
-  EXPECT_FALSE(GetUserSettingStringData(guid, "VPN.OpenVPN.Username", nullptr));
+  EXPECT_FALSE(GetUserSettingStringData(guid, "VPN.OpenVPN.Username"));
 
   // VPN properties should be settable from Web UI.
   scoped_refptr<NetworkingPrivateSetPropertiesFunction> set_properties =
@@ -893,16 +897,14 @@ TEST_F(NetworkingPrivateApiTest,
                                               ->network_state_handler()
                                               ->GetNetworkStateFromGuid(guid);
 
-  std::unique_ptr<base::DictionaryValue> properties =
-      GetNetworkProperties(network->path());
-  ASSERT_TRUE(properties);
+  base::Value properties = GetNetworkProperties(network->path());
+  ASSERT_TRUE(properties.is_dict());
 
-  std::unique_ptr<base::DictionaryValue> ui_data =
-      GetNetworkUiData(*properties);
-  ASSERT_TRUE(ui_data);
+  std::unique_ptr<base::Value> ui_data = GetNetworkUiData(properties);
+  ASSERT_TRUE(ui_data && ui_data->is_dict());
 
-  EXPECT_TRUE(ui_data->Get("user_settings.ProxySettings", nullptr));
-  EXPECT_TRUE(ui_data->Get("user_settings.StaticIPConfig", nullptr));
+  EXPECT_TRUE(ui_data->FindPath("user_settings.ProxySettings"));
+  EXPECT_TRUE(ui_data->FindPath("user_settings.StaticIPConfig"));
 }
 
 TEST_F(NetworkingPrivateApiTest, CreatePrivateNetwork_NonMatchingSsids) {
@@ -1074,7 +1076,7 @@ TEST_F(NetworkingPrivateApiTest, GetCellularProperties) {
 
   ASSERT_TRUE(result);
 
-  std::unique_ptr<base::DictionaryValue> expected_result =
+  std::unique_ptr<base::Value> expected_result =
       DictionaryBuilder()
           .Set("Cellular",
                DictionaryBuilder()
@@ -1117,14 +1119,14 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
 
   ASSERT_TRUE(result);
 
-  std::unique_ptr<base::DictionaryValue> expected_apn =
+  std::unique_ptr<base::Value> expected_apn =
       DictionaryBuilder()
           .Set("AccessPointName", "test-apn")
           .Set("Username", "test-user")
           .Set("Password", "test-password")
           .Set("Authentication", "chap")
           .Build();
-  std::unique_ptr<base::DictionaryValue> expected_result =
+  std::unique_ptr<base::Value> expected_result =
       DictionaryBuilder()
           .Set("Cellular",
                DictionaryBuilder()
@@ -1148,10 +1150,13 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
                    .Set("RoamingState", "Home")
                    .Set("Scanning", false)
                    .Set("APNList", ListBuilder()
-                                       .Append(expected_apn->CreateDeepCopy())
+                                       .Append(base::Value::ToUniquePtrValue(
+                                           expected_apn->Clone()))
                                        .Build())
-                   .Set("APN", expected_apn->CreateDeepCopy())
-                   .Set("LastGoodAPN", expected_apn->CreateDeepCopy())
+                   .Set("APN",
+                        base::Value::ToUniquePtrValue(expected_apn->Clone()))
+                   .Set("LastGoodAPN",
+                        base::Value::ToUniquePtrValue(expected_apn->Clone()))
                    .Build())
           .Set("ConnectionState", "Connected")
           .Set("GUID", "cellular_guid")

@@ -44,8 +44,8 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_shortcut_win.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_shortcut_win.h"
 #include "chrome/browser/win/settings_app_monitor.h"
 #include "chrome/browser/win/util_win_service.h"
 #include "chrome/common/chrome_constants.h"
@@ -240,6 +240,10 @@ class DefaultBrowserActionRecorder : public SettingsAppMonitor::Delegate {
   explicit DefaultBrowserActionRecorder(base::OnceClosure continuation)
       : continuation_(std::move(continuation)), settings_app_monitor_(this) {}
 
+  DefaultBrowserActionRecorder(const DefaultBrowserActionRecorder&) = delete;
+  DefaultBrowserActionRecorder& operator=(const DefaultBrowserActionRecorder&) =
+      delete;
+
  private:
   // win::SettingsAppMonitor::Delegate:
   void OnInitialized(HRESULT result) override {
@@ -292,8 +296,6 @@ class DefaultBrowserActionRecorder : public SettingsAppMonitor::Delegate {
   // Monitors user interaction with the Windows Settings app for the sake of
   // reporting user actions.
   SettingsAppMonitor settings_app_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultBrowserActionRecorder);
 };
 
 // A function bound up in a callback with a DefaultBrowserActionRecorder and
@@ -317,6 +319,9 @@ void OnSettingsAppFinished(
 // This class also manages its own lifetime.
 class OpenSystemSettingsHelper {
  public:
+  OpenSystemSettingsHelper(const OpenSystemSettingsHelper&) = delete;
+  OpenSystemSettingsHelper& operator=(const OpenSystemSettingsHelper&) = delete;
+
   // Begin the monitoring and will call |on_finished_callback| when done.
   // Takes in a null-terminated array of |protocols| whose registry keys must be
   // watched. The array must contain at least one element.
@@ -350,7 +355,7 @@ class OpenSystemSettingsHelper {
     // Only the watchers that were succesfully initialized are counted.
     registry_watcher_count_ = registry_key_watchers_.size();
 
-    timer_.Start(FROM_HERE, base::TimeDelta::FromMinutes(2),
+    timer_.Start(FROM_HERE, base::Minutes(2),
                  base::BindOnce(&OpenSystemSettingsHelper::ConcludeInteraction,
                                 weak_ptr_factory_.GetWeakPtr(),
                                 ConcludeReason::TIMEOUT));
@@ -435,8 +440,6 @@ class OpenSystemSettingsHelper {
   // registry watcher. This makes it possible to self-delete after one of the
   // callbacks is executed to cancel the remaining ones.
   base::WeakPtrFactory<OpenSystemSettingsHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OpenSystemSettingsHelper);
 };
 
 OpenSystemSettingsHelper* OpenSystemSettingsHelper::instance_ = nullptr;
@@ -448,6 +451,10 @@ class IsPinnedToTaskbarHelper {
  public:
   using ResultCallback = win::IsPinnedToTaskbarCallback;
   using ErrorCallback = win::ConnectionErrorCallback;
+
+  IsPinnedToTaskbarHelper(const IsPinnedToTaskbarHelper&) = delete;
+  IsPinnedToTaskbarHelper& operator=(const IsPinnedToTaskbarHelper&) = delete;
+
   static void GetState(ErrorCallback error_callback,
                        ResultCallback result_callback);
 
@@ -466,8 +473,6 @@ class IsPinnedToTaskbarHelper {
   ResultCallback result_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IsPinnedToTaskbarHelper);
 };
 
 // static
@@ -509,6 +514,75 @@ void IsPinnedToTaskbarHelper::OnIsPinnedToTaskbarResult(
 
   std::move(result_callback_)
       .Run(succeeded, is_pinned_to_taskbar, is_pinned_to_taskbar_verb_check);
+  delete this;
+}
+
+// Helper class to unpin shortcuts from the taskbar. Hides the complexity of
+//  managing the lifetime of the connection to the Windows utility service.
+class UnpinShortcutsHelper {
+ public:
+  UnpinShortcutsHelper(const UnpinShortcutsHelper&) = delete;
+  UnpinShortcutsHelper& operator=(const UnpinShortcutsHelper&) = delete;
+
+  static void DoUnpin(const std::vector<base::FilePath>& shortcuts,
+                      base::OnceClosure completion_callback);
+
+ private:
+  static void RecordUnpinShortcutProcessError(bool error);
+
+  UnpinShortcutsHelper(const std::vector<base::FilePath>& shortcuts,
+                       base::OnceClosure completion_callback);
+
+  void OnConnectionError();
+  void OnUnpinShortcutResult();
+
+  mojo::Remote<chrome::mojom::UtilWin> remote_util_win_;
+
+  base::OnceClosure completion_callback_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+// static
+void UnpinShortcutsHelper::RecordUnpinShortcutProcessError(bool error) {
+  base::UmaHistogramBoolean("Windows.UnpinShortcut.ProcessError", error);
+}
+
+// static
+void UnpinShortcutsHelper::DoUnpin(const std::vector<base::FilePath>& shortcuts,
+                                   base::OnceClosure completion_callback) {
+  // Self-deleting when the ShellHandler completes.
+  new UnpinShortcutsHelper(shortcuts, std::move(completion_callback));
+}
+
+UnpinShortcutsHelper::UnpinShortcutsHelper(
+    const std::vector<base::FilePath>& shortcuts,
+    base::OnceClosure completion_callback)
+    : remote_util_win_(LaunchUtilWinServiceInstance()),
+      completion_callback_(std::move(completion_callback)) {
+  DCHECK(completion_callback_);
+
+  // |remote_util_win_| owns the callbacks and is guaranteed to be destroyed
+  // before |this|, therefore making base::Unretained() safe to use.
+  remote_util_win_.set_disconnect_handler(base::BindOnce(
+      &UnpinShortcutsHelper::OnConnectionError, base::Unretained(this)));
+  remote_util_win_->UnpinShortcuts(
+      shortcuts, base::BindOnce(&UnpinShortcutsHelper::OnUnpinShortcutResult,
+                                base::Unretained(this)));
+}
+
+void UnpinShortcutsHelper::OnConnectionError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordUnpinShortcutProcessError(true);
+  std::move(completion_callback_).Run();
+  delete this;
+}
+
+void UnpinShortcutsHelper::OnUnpinShortcutResult() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RecordUnpinShortcutProcessError(false);
+  std::move(completion_callback_).Run();
   delete this;
 }
 
@@ -734,6 +808,11 @@ std::wstring GetAppUserModelIdForBrowser(const base::FilePath& profile_path) {
       std::wstring(),
       ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
       profile_path);
+}
+
+void UnpinShortcuts(const std::vector<base::FilePath>& shortcuts,
+                    base::OnceClosure completion_callback) {
+  UnpinShortcutsHelper::DoUnpin(shortcuts, std::move(completion_callback));
 }
 
 void MigrateTaskbarPins(base::OnceClosure completion_callback) {

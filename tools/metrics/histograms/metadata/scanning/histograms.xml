@@ -1,0 +1,259 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Scan app histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Scanning.CombinedImageSizeInKbBeforePdf" units="KB"
+    expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the total size of the scanned images stored in memory right before
+    they are converted into the final PDF.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.MultiPageScan.CombinedImageSizeInKbBeforePdf"
+    units="KB" expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    During a multi-page scan session, records the total size of the scanned
+    images stored in memory at the moment the user clicks save to convert them
+    into the final PDF.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.MultiPageScan.NumPagesScanned" units="pages"
+    expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of pages scanned in a saved multi-page scan session.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.MultiPageScan.PageScanResult"
+    enum="ScanJobFailureReason" expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the success status of each page scan in a multi-page scan session.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.MultiPageScan.PDFGenerationTime" units="ms"
+    expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the amount of time it takes from the user clicking save on their
+    multi-page scan session to the PDF file being generated and saved.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.MultiPageScan.SessionDuration" units="ms"
+    expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the time between a user starting the first scan in a multi-page scan
+    session to the time the user clicks save to end the session. This does not
+    record when a multi-page scan session ends prematurely without the PDF being
+    saved.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.MultiPageScan.ToolbarAction"
+    enum="ScanMultiPageToolbarAction" expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records when a user clicks an action on the action toolbar in a multi-page
+    scan session.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.NumCompletedScansInSession" units="scans"
+    expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of completed scans in a single session of the Scan app
+    being open. This value gets recorded whenever the Scan app is closed or
+    refreshed.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.NumDetectedScanners" units="scanners"
+    expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of detected scanners. Recorded each time detected
+    scanners are received.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.NumDetectedScannersAtLogin" units="scanners"
+    expires_after="2022-04-17">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>masonwilde@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of detected scanners. Recorded after a 5 minute delay
+    after login when the CupsPrintersManager is created.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.NumFilesCreated" units="files"
+    expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>Records the number of files created in a successful scan.</summary>
+</histogram>
+
+<histogram name="Scanning.NumPagesScanned" units="pages"
+    expires_after="2022-04-10">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>Records the number of pages scanned in a successful scan.</summary>
+</histogram>
+
+<histogram name="Scanning.NumScanSettingChanges" units="changes"
+    expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of scan setting changes before a scan is initiated.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.PDFGenerationTime" units="ms"
+    expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the amount of time it takes from the final document in a scan job
+    being scanned to the PDF file being generated and saved.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ReadyTime" units="ms" expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the time between sending a request for scanners and receiving
+    capabilities for the selected scanner, which is essentially the time between
+    the user launching the Scan app and being able to interact with it to select
+    a scanner, change scan settings, or start a scan.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanAppEntryPoint" enum="ScanAppEntryPoint"
+    expires_after="2022-06-15">
+  <obsolete>
+    Data no longer needed 2021-02.
+  </obsolete>
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the entry point of where the Scan App was launched from in Chrome
+    OS. Used to track the relative entry points of the app.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanCompleteAction" enum="ScanCompleteAction"
+    expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the action taken by a user after a successful scan job on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobFailureReason" enum="ScanJobFailureReason"
+    expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>Records the reason a scan job failed.</summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.ColorMode"
+    enum="ScanJobSettingsColorMode" expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected Color Mode setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.FileType"
+    enum="ScanJobSettingsFileType" expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected File Type setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.PageSize"
+    enum="ScanJobSettingsPageSize" expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected Page Size setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.Resolution"
+    enum="ScanJobSettingsResolution" expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected Resolution setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSettings.Source" enum="ScanJobSettingsSource"
+    expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the selected Source setting for a submitted scan job.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.ScanJobSuccessful" enum="Boolean"
+    expires_after="2022-06-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records true if the attempted scan job completed successfully and false if
+    the scan job failed for any reason. This metric will not include canceled
+    scan jobs.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

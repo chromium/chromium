@@ -69,6 +69,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   static AXObjectCache* Create(Document&, const ui::AXMode&);
 
   AXObjectCacheImpl(Document&, const ui::AXMode&);
+
+  AXObjectCacheImpl(const AXObjectCacheImpl&) = delete;
+  AXObjectCacheImpl& operator=(const AXObjectCacheImpl&) = delete;
+
   ~AXObjectCacheImpl() override;
   void Trace(Visitor*) const override;
 
@@ -188,9 +192,12 @@ class MODULES_EXPORT AXObjectCacheImpl
   const AtomicString& ComputedRoleForNode(Node*) override;
   String ComputedNameForNode(Node*) override;
 
-  void OnTouchAccessibilityHover(const IntPoint&) override;
+  void OnTouchAccessibilityHover(const gfx::Point&) override;
 
-  AXObject* ObjectFromAXID(AXID id) const { return objects_.at(id); }
+  AXObject* ObjectFromAXID(AXID id) const {
+    auto it = objects_.find(id);
+    return it != objects_.end() ? it->value : nullptr;
+  }
   AXObject* Root();
 
   // Used for objects without backing DOM nodes, layout objects, etc.
@@ -230,7 +237,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ChildrenChangedWithCleanLayout(Node* optional_node_for_relation_update,
                                       AXObject*);
 
-  void MarkAXObjectDirty(AXObject*);
   void MarkAXObjectDirtyWithCleanLayout(AXObject*);
   void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
 
@@ -287,13 +293,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   // aria-owns.
   bool IsAriaOwned(const AXObject*) const;
 
-  // Returns the parent of the given object due to aria-owns.
-  AXObject* GetAriaOwnedParent(const AXObject*) const;
+  // Returns the parent of the given object due to aria-owns, if valid.
+  AXObject* ValidatedAriaOwner(const AXObject*) const;
 
   // Given an object that has an aria-owns attribute, return the validated
   // set of aria-owned children.
-  void GetAriaOwnedChildren(const AXObject* owner,
-                            HeapVector<Member<AXObject>>& owned_children);
+  void ValidatedAriaOwnedChildren(const AXObject* owner,
+                                  HeapVector<Member<AXObject>>& owned_children);
 
   // Given a <map> element, get the image currently associated with it, if any.
   AXObject* GetAXImageForMap(HTMLMapElement& map);
@@ -341,6 +347,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   static bool IsRelevantPseudoElement(const Node& node);
   static bool IsRelevantPseudoElementDescendant(
       const LayoutObject& layout_object);
+  static bool IsRelevantSlotElement(const HTMLSlotElement& slot);
 
 #if DCHECK_IS_ON()
   bool HasBeenDisposed() { return has_been_disposed_; }
@@ -439,6 +446,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   ax::mojom::blink::EventFrom ComputeEventFrom();
 
   void MarkAXObjectDirtyWithCleanLayoutHelper(AXObject* obj, bool subtree);
+  void MarkAXObjectDirty(AXObject*);
   void MarkAXSubtreeDirty(AXObject*);
   void MarkElementDirty(const Node*);
   void MarkElementDirtyWithCleanLayout(const Node*);
@@ -460,7 +468,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // LayoutObject and AbstractInlineTextBox are not on the Oilpan heap so we
   // do not use HeapHashMap for those mappings.
   HeapHashMap<Member<AccessibleNode>, AXID> accessible_node_mapping_;
-  HashMap<const LayoutObject*, AXID> layout_object_mapping_;
+  HeapHashMap<Member<const LayoutObject>, AXID> layout_object_mapping_;
   HeapHashMap<Member<const Node>, AXID> node_object_mapping_;
   HashMap<AbstractInlineTextBox*, AXID> inline_text_box_object_mapping_;
   int modification_count_;
@@ -563,6 +571,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   void SelectionChangedWithCleanLayout(Node* node);
   void TextChangedWithCleanLayout(Node* node);
   void ChildrenChangedWithCleanLayout(Node* node);
+  // If the presence of document markers changed for the given text node, then
+  // call children changed.
+  void HandleTextMarkerDataAddedWithCleanLayout(Node*);
   void HandleAttributeChangedWithCleanLayout(const QualifiedName& attr_name,
                                              Element* element);
   void HandleUseMapAttributeChangedWithCleanLayout(Element*);
@@ -640,6 +651,9 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   HeapHashSet<WeakMember<Node>> nodes_with_pending_children_changed_;
 
+  // Nodes with document markers that have received accessibility updates.
+  HeapHashSet<WeakMember<Node>> nodes_with_spelling_or_grammar_markers_;
+
   // If tree_update_callback_queue_ gets improbably large, stop
   // enqueueing updates and fire a single ChildrenChanged event on the
   // document once layout occurs.
@@ -677,8 +691,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // If false, exposes the internal accessibility tree of a select pop-up
   // instead.
   static bool use_ax_menu_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXObjectCacheImpl);
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
 };

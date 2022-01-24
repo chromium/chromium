@@ -61,7 +61,6 @@ sync_access_handle_test(async (testCase, handle) => {
   assert_equals(await closePromise, undefined);
 }, 'SyncAccessHandle.flush fails immediately after calling SyncAccessHandle.close');
 
-
 sync_access_handle_test(async (testCase, handle) => {
   assert_equals(await handle.close(), undefined);
 
@@ -74,4 +73,18 @@ sync_access_handle_test(async (testCase, handle) => {
   await promise_rejects_dom(testCase, 'InvalidStateError', handle.getSize());
   assert_equals(await closePromise, undefined);
 }, 'SyncAccessHandle.getSize fails immediately after calling SyncAccessHandle.close');
+
+sync_access_handle_test(async (testCase, handle) => {
+  assert_equals(await handle.close(), undefined);
+
+  await promise_rejects_dom(testCase, 'InvalidStateError', handle.truncate(4));
+}, 'SyncAccessHandle.truncate fails after SyncAccessHandle.close settles');
+
+sync_access_handle_test(async (testCase, handle) => {
+  const closePromise = handle.close();
+
+  await promise_rejects_dom(testCase, 'InvalidStateError', handle.truncate(4));
+  assert_equals(await closePromise, undefined);
+}, 'SyncAccessHandle.truncate fails immediately after calling SyncAccessHandle.close');
+
 done();

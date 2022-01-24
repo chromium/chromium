@@ -17,7 +17,6 @@
 
 #include <inttypes.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "util/file/file_io.h"
 
@@ -35,6 +34,10 @@ namespace crashpad {
 //! Chromium's base, they allow integration with its metrics system.
 class Metrics {
  public:
+  Metrics() = delete;
+  Metrics(const Metrics&) = delete;
+  Metrics& operator=(const Metrics&) = delete;
+
   //! \brief Values for CrashReportPending().
   //!
   //! \note These are used as metrics enumeration values, so new values should
@@ -209,9 +212,6 @@ class Metrics {
   static void InvalidIntermediateDumpKeySize(
       const internal::IntermediateDumpKey& key);
 #endif
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Metrics);
 };
 
 }  // namespace crashpad

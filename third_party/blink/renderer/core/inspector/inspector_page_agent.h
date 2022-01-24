@@ -34,7 +34,7 @@
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Page.h"
+#include "third_party/blink/renderer/core/inspector/protocol/page.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -148,6 +148,9 @@ class CORE_EXPORT InspectorPageAgent final
       std::unique_ptr<
           protocol::Array<protocol::Page::PermissionsPolicyFeatureState>>*)
       override;
+  protocol::Response getOriginTrials(
+      const String& frame_id,
+      std::unique_ptr<protocol::Array<protocol::Page::OriginTrial>>*) override;
 
   protocol::Response startScreencast(Maybe<String> format,
                                      Maybe<int> quality,
@@ -173,7 +176,6 @@ class CORE_EXPORT InspectorPageAgent final
   protocol::Response generateTestReport(const String& message,
                                         Maybe<String> group) override;
 
-  protocol::Response setProduceCompilationCache(bool enabled) override;
   protocol::Response produceCompilationCache(
       std::unique_ptr<protocol::Array<protocol::Page::CompilationCacheParams>>
           scripts) override;
@@ -294,7 +296,6 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::String pictograph_font_family_;
   InspectorAgentState::Integer standard_font_size_;
   InspectorAgentState::Integer fixed_font_size_;
-  InspectorAgentState::Boolean produce_compilation_cache_;
 };
 
 }  // namespace blink

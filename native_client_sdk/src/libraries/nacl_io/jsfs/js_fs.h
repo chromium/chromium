@@ -28,6 +28,9 @@ class JsFs : public Filesystem {
  public:
   typedef uint32_t RequestId;
 
+  JsFs(const JsFs&) = delete;
+  JsFs& operator=(const JsFs&) = delete;
+
  protected:
   JsFs();
 
@@ -77,7 +80,6 @@ class JsFs : public Filesystem {
   ResponseMap_t responses_;       // protected by lock_.
 
   friend class JsFsNode;
-  DISALLOW_COPY_AND_ASSIGN(JsFs);
 };
 
 }  // namespace nacl_io

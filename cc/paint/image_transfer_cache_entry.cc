@@ -170,7 +170,7 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
   // 4-byte boundary.
   safe_size += 4;
   safe_size += pixmap_->computeByteSize();
-  size_ = safe_size.ValueOrDie();
+  size_ = safe_size.ValueOrDefault(0);
 }
 
 ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
@@ -224,7 +224,7 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
   for (size_t i = 0; i < num_yuva_pixmaps; ++i) {
     safe_size += yuv_pixmaps_->at(i)->computeByteSize();
   }
-  size_ = safe_size.ValueOrDie();
+  size_ = safe_size.ValueOrDefault(0);
 }
 
 ClientImageTransferCacheEntry::~ClientImageTransferCacheEntry() = default;

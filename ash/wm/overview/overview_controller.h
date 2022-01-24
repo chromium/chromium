@@ -15,7 +15,6 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -32,6 +31,10 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
                                       public ::wm::ActivationChangeObserver {
  public:
   OverviewController();
+
+  OverviewController(const OverviewController&) = delete;
+  OverviewController& operator=(const OverviewController&) = delete;
+
   ~OverviewController() override;
 
   // Starts/Ends overview with `type`. Returns true if enter or exit overview
@@ -108,8 +111,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   std::vector<aura::Window*> GetWindowsListInOverviewGridsForTest();
 
  private:
-  friend class OverviewSessionTest;
-
   // Toggle overview mode. Depending on |type| the enter/exit animation will
   // look different.
   void ToggleOverview(
@@ -164,8 +165,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   std::unique_ptr<views::Widget::PaintAsActiveLock> paint_as_active_lock_;
 
   base::WeakPtrFactory<OverviewController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewController);
 };
 
 }  // namespace ash

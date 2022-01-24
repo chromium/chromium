@@ -33,7 +33,7 @@
 #endif
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/android/feed/v2/feed_service_factory.h"
+#include "chrome/browser/feed/android/feed_service_factory.h"
 #include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
 #endif  // defined(OS_ANDROID)

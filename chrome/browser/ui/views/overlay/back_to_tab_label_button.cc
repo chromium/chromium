@@ -57,23 +57,19 @@ BackToTabLabelButton::BackToTabLabelButton(PressedCallback callback)
   SetBackground(views::CreateRoundedRectBackground(kBackToTabBackgroundColor,
                                                    kBackToTabBorderRadius));
 
+  const std::u16string back_to_tab_button_label(l10n_util::GetStringUTF16(
+      IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT));
+  SetText(back_to_tab_button_label);
+
   SetEnabledTextColors(kPipWindowTextColor);
   SetTextColor(views::Button::STATE_DISABLED, kPipWindowTextColor);
 
   // Accessibility.
-  const std::u16string back_to_tab_button_label(l10n_util::GetStringUTF16(
-      IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT));
   SetAccessibleName(back_to_tab_button_label);
-  SetTooltipText(back_to_tab_button_label);
   SetInstallFocusRingOnFocus(true);
 }
 
 BackToTabLabelButton::~BackToTabLabelButton() = default;
-
-void BackToTabLabelButton::SetText(const std::u16string& text) {
-  views::LabelButton::SetText(text);
-  UpdateSizingAndPosition();
-}
 
 void BackToTabLabelButton::SetWindowSize(const gfx::Size& window_size) {
   if (window_size_.has_value() && window_size_.value() == window_size)
@@ -81,10 +77,6 @@ void BackToTabLabelButton::SetWindowSize(const gfx::Size& window_size) {
 
   window_size_ = window_size;
   UpdateSizingAndPosition();
-}
-
-bool BackToTabLabelButton::IsTextElidedForTesting() {
-  return label()->IsDisplayTextTruncated();
 }
 
 void BackToTabLabelButton::UpdateSizingAndPosition() {

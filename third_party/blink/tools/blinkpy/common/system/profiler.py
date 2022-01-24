@@ -26,8 +26,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
 import re
 import itertools
+from six.moves import range
+from six.moves import filter
 
 
 class ProfilerFactory(object):
@@ -44,8 +47,8 @@ class ProfilerFactory(object):
         profiler_name = profiler_name or cls.default_profiler_name(
             host.platform)
         profiler_class = next(
-            itertools.ifilter(lambda profiler: profiler.name == profiler_name,
-                              profilers), None)
+            filter(lambda profiler: profiler.name == profiler_name, profilers),
+            None)
         if not profiler_class:
             return None
         return profilers[0](host, executable_path, output_dir, identifier)
@@ -143,8 +146,8 @@ class GooglePProf(SingleFileOutputProfiler):
     def profile_after_exit(self):
         # google-pprof doesn't check its arguments, so we have to.
         if not self._host.filesystem.exists(self._output_path):
-            print('Failed to gather profile, %s does not exist.' %
-                  self._output_path)
+            print(('Failed to gather profile, %s does not exist.' %
+                   self._output_path))
             return
 
         pprof_args = [
@@ -153,15 +156,15 @@ class GooglePProf(SingleFileOutputProfiler):
         ]
         profile_text = self._host.executive.run_command(pprof_args)
         print('First 10 lines of pprof --text:')
-        print(self._first_ten_lines_of_profile(profile_text))
+        print((self._first_ten_lines_of_profile(profile_text)))
         print(
             'http://google-perftools.googlecode.com/svn/trunk/doc/cpuprofile.html documents output.'
         )
         print()
         print(
             'To interact with the the full profile, including produce graphs:')
-        print(' '.join(
-            [self._pprof_path(), self._executable_path, self._output_path]))
+        print((' '.join(
+            [self._pprof_path(), self._executable_path, self._output_path])))
 
 
 class Perf(SingleFileOutputProfiler):
@@ -204,8 +207,8 @@ class Perf(SingleFileOutputProfiler):
         # The exit code should always be -2, as we're always interrupting perf.
         if perf_exitcode not in (0, -2):
             print(
-                "'perf record' failed (exit code: %i), can't process results:"
-                % perf_exitcode)
+                ("'perf record' failed (exit code: %i), can't process results:"
+                 % perf_exitcode))
             return
 
         perf_args = [
@@ -214,12 +217,13 @@ class Perf(SingleFileOutputProfiler):
         ]
         print("First 10 lines of 'perf report --call-graph=none':")
 
-        print(' '.join(perf_args))
+        print((' '.join(perf_args)))
         perf_output = self._host.executive.run_command(perf_args)
-        print(self._first_ten_lines_of_profile(perf_output))
+        print((self._first_ten_lines_of_profile(perf_output)))
 
         print('To view the full profile, run:')
-        print(' '.join([self._perf_path(), 'report', '-i', self._output_path]))
+        print((' '.join([self._perf_path(), 'report', '-i',
+                         self._output_path])))
         print()  # An extra line between tests looks nicer.
 
 

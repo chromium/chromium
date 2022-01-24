@@ -161,7 +161,7 @@ TEST_F(BorealisContextTest, MainAppHasSelfActivationPermission) {
 }
 
 TEST_F(BorealisContextTest, NormalAppDoesNotHaveSelfActivationPermission) {
-  CreateFakeApp(profile_.get(), "some_app");
+  CreateFakeApp(profile_.get(), "some_app", "borealis/123");
   std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
       "org.chromium.borealis.wmclass.some_app", borealis_window_manager_.get());
   EXPECT_FALSE(exo::HasPermissionToActivate(window->window()));

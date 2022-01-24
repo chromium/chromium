@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/sync_file_system/conflict_resolution_policy.h"
@@ -54,6 +53,9 @@ class SyncFileSystemService
   using DumpFilesCallback = base::OnceCallback<void(const base::ListValue&)>;
   using ExtensionStatusMapCallback =
       base::OnceCallback<void(const RemoteFileSyncService::OriginStatusMap&)>;
+
+  SyncFileSystemService(const SyncFileSystemService&) = delete;
+  SyncFileSystemService& operator=(const SyncFileSystemService&) = delete;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -182,8 +184,6 @@ class SyncFileSystemService
 
   bool promoting_demoted_changes_;
   base::OnceClosure idle_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncFileSystemService);
 };
 
 }  // namespace sync_file_system

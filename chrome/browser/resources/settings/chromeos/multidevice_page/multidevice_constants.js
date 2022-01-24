@@ -45,6 +45,7 @@ cr.define('settings', function() {
     PHONE_HUB_TASK_CONTINUATION: 6,
     WIFI_SYNC: 7,
     ECHE: 8,
+    PHONE_HUB_CAMERA_ROLL: 9,
   };
 
   /**
@@ -64,6 +65,7 @@ cr.define('settings', function() {
     UNAVAILABLE_SUITE_DISABLED: 7,
     FURTHER_SETUP_REQUIRED: 8,
     UNAVAILABLE_TOP_LEVEL_FEATURE_DISABLED: 9,
+    UNAVAILABLE_NO_VERIFIED_HOST_CLIENT_NOT_READY: 10,
   };
 
   /**
@@ -98,12 +100,16 @@ cr.define('settings', function() {
    *   messagesState: !settings.MultiDeviceFeatureState,
    *   smartLockState: !settings.MultiDeviceFeatureState,
    *   phoneHubState: !settings.MultiDeviceFeatureState,
+   *   phoneHubCameraRollState: !settings.MultiDeviceFeatureState,
    *   phoneHubNotificationsState: !settings.MultiDeviceFeatureState,
    *   phoneHubTaskContinuationState: !settings.MultiDeviceFeatureState,
+   *   phoneHubAppsState: !settings.MultiDeviceFeatureState,
    *   wifiSyncState: !settings.MultiDeviceFeatureState,
    *   isAndroidSmsPairingComplete: boolean,
    *   notificationAccessStatus: !settings.PhoneHubNotificationAccessStatus,
-   *   isNearbyShareDisallowedByPolicy: boolean
+   *   isNearbyShareDisallowedByPolicy: boolean,
+   *   isPhoneHubAppsAccessGranted: boolean,
+   *   isPhoneHubPermissionsDialogSupported: boolean
    * }}
    */
   /* #export */ let MultiDevicePageContentData;

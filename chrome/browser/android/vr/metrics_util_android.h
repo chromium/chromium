@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_VR_METRICS_UTIL_ANDROID_H_
 #define CHROME_BROWSER_ANDROID_VR_METRICS_UTIL_ANDROID_H_
 
-#include "base/macros.h"
-
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr_types.h"
 
 namespace vr {

@@ -39,7 +39,8 @@ def get_sandbox_env(env):
 def trim_cmd(cmd):
   """Removes internal flags from cmd since they're just used to communicate from
   the host machine to this script running on the swarm slaves."""
-  sanitizers = ['asan', 'lsan', 'msan', 'tsan']
+  sanitizers = ['asan', 'lsan', 'msan', 'tsan', 'coverage-continuous-mode',
+                'skip-set-lpac-acls']
   internal_flags = frozenset('--%s=%d' % (name, value)
                              for name in sanitizers
                              for value in [0, 1])
@@ -131,6 +132,18 @@ def get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag):
 
   return extra_env
 
+def get_coverage_continuous_mode_env(env):
+  """Append %c (clang code coverage continuous mode) flag to LLVM_PROFILE_FILE
+  pattern string."""
+  llvm_profile_file = env.get('LLVM_PROFILE_FILE')
+  if not llvm_profile_file:
+    return {}
+
+  dirname, basename = os.path.split(llvm_profile_file)
+  root, ext = os.path.splitext(basename)
+  return {
+    'LLVM_PROFILE_FILE': os.path.join(dirname, root + "%c" + ext)
+  }
 
 def get_sanitizer_symbolize_command(json_path=None, executable_path=None):
   """Construct the command to invoke offline symbolization script."""
@@ -214,7 +227,9 @@ def run_command(argv, env=None, cwd=None, log=True):
     print('Running %r in %r (env: %r)' % (argv, cwd, env))
   process = _popen(argv, env=env, cwd=cwd, stderr=subprocess.STDOUT)
   forward_signals([process])
-  return wait_with_signals(process)
+  exit_code = wait_with_signals(process)
+  print('Command returned exit code %d' % exit_code)
+  return exit_code
 
 
 def run_command_output_to_handle(argv, file_handle, env=None, cwd=None):
@@ -327,6 +342,16 @@ def run_executable(cmd, env, stdoutfile=None):
     # LSan and TSan are not sandbox-friendly.
     cmd.append('--no-sandbox')
 
+  # Enable clang code coverage continuous mode.
+  if '--coverage-continuous-mode=1' in cmd:
+    extra_env.update(get_coverage_continuous_mode_env(env))
+
+  if '--skip-set-lpac-acls=1' not in cmd and sys.platform == 'win32':
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+        'scripts'))
+    import common
+    common.set_lpac_acls(ROOT_DIR, is_test_script=True)
+
   cmd = trim_cmd(cmd)
 
   # Ensure paths are correctly separated on windows.
@@ -386,9 +411,4 @@ def main():
 
 
 if __name__ == '__main__':
-  if sys.platform == 'win32':
-    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
-        'scripts'))
-    import common
-    common.set_lpac_acls(ROOT_DIR)
   sys.exit(main())

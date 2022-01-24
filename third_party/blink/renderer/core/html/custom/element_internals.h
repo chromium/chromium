@@ -65,11 +65,10 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
 
   void SetElementAttribute(const QualifiedName& name, Element* element);
   Element* GetElementAttribute(const QualifiedName& name);
-  absl::optional<HeapVector<Member<Element>>> GetElementArrayAttribute(
+  HeapVector<Member<Element>>* GetElementArrayAttribute(
       const QualifiedName& name) const;
-  void SetElementArrayAttribute(
-      const QualifiedName& name,
-      const absl::optional<HeapVector<Member<Element>>>& elements);
+  void SetElementArrayAttribute(const QualifiedName& name,
+                                const HeapVector<Member<Element>>* elements);
   bool HasAttribute(const QualifiedName& attribute) const;
   const HashMap<QualifiedName, AtomicString>& GetAttributes() const;
 

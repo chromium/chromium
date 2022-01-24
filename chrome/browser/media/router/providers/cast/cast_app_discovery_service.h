@@ -12,9 +12,8 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/router/providers/cast/cast_app_availability_tracker.h"
 #include "components/cast_channel/cast_message_util.h"
@@ -80,6 +79,11 @@ class CastAppDiscoveryServiceImpl : public CastAppDiscoveryService,
                               cast_channel::CastSocketService* socket_service,
                               MediaSinkServiceBase* media_sink_service,
                               const base::TickClock* clock);
+
+  CastAppDiscoveryServiceImpl(const CastAppDiscoveryServiceImpl&) = delete;
+  CastAppDiscoveryServiceImpl& operator=(const CastAppDiscoveryServiceImpl&) =
+      delete;
+
   ~CastAppDiscoveryServiceImpl() override;
 
   // CastAppDiscoveryService implementation.
@@ -156,7 +160,6 @@ class CastAppDiscoveryServiceImpl : public CastAppDiscoveryService,
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastAppDiscoveryServiceImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CastAppDiscoveryServiceImpl);
 };
 
 }  // namespace media_router

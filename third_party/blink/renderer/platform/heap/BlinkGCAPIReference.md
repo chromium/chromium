@@ -386,7 +386,6 @@ Collections compared to other libraries used in Blink:
 | std::unordered_map | WTF::HashMap        | blink::HeapHashMap        |
 | std::unordered_set | WTF::HashSet        | blink::HeapHashSet        |
 | -                  | WTF::LinkedHashSet  | blink::HeapLinkedHashSet  |
-| -                  | WTF::ListHashSet    | blink::HeapListHashSet    |
 | -                  | WTF::HashCountedSet | blink::HeapHashCountedSet |
 
 These heap collections work mostly the same way as their stdlib or WTF collection counterparts but there are some things to keep in mind.

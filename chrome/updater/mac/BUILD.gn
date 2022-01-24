@@ -11,6 +11,7 @@ import("//chrome/updater/branding.gni")
 group("mac") {
   deps = [
     ":browser_install_script",
+    ":privileged_helper",
     ":updater_bundle",
     ":updater_install_script",
     "//chrome/updater/mac/signing",
@@ -29,6 +30,9 @@ mac_app_bundle("updater_bundle") {
 
   sources = [ "main.cc" ]
   deps = [
+    ":updater_bundle_keystone_executable",
+    ":updater_bundle_keystone_helpers",
+    ":updater_bundle_keystone_plist",
     "//chrome/updater:base",
     "//chrome/updater:constants_prod",
   ]
@@ -42,8 +46,48 @@ mac_app_bundle("updater_bundle_test") {
 
   sources = [ "main.cc" ]
   deps = [
+    ":updater_bundle_keystone_executable",
+    ":updater_bundle_keystone_helpers",
+    ":updater_bundle_keystone_plist",
     "//chrome/updater:base",
     "//chrome/updater:constants_test",
+  ]
+}
+
+source_set("privileged_helper_sources") {
+  sources = [
+    "privileged_helper/server.h",
+    "privileged_helper/server.mm",
+    "privileged_helper/service.h",
+    "privileged_helper/service.mm",
+    "privileged_helper/service_protocol.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/updater:base",
+    "//chrome/updater:branding_header",
+    "//chrome/updater:constants_prod",
+  ]
+}
+
+executable("privileged_helper") {
+  output_name = privileged_helper_name
+
+  sources = [ "privileged_helper/main.mm" ]
+  deps = [
+    ":privileged_helper_sources",
+    "//base",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+
+  inputs = [ "privileged_helper/Info.plist" ]
+  ldflags = [
+    "-sectcreate",
+    "__TEXT",
+    "__info_plist",
+    rebase_path(inputs[0], root_build_dir),
   ]
 }
 
@@ -86,4 +130,98 @@ action("browser_install_script") {
     "-v",
     chrome_version_full,
   ]
+}
+
+executable("ksadmin") {
+  output_name = "ksadmin"
+  sources = [
+    "keystone/ksadmin.h",
+    "keystone/ksadmin.mm",
+    "keystone/ksadmin_main.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_prod",
+    "//chrome/updater:version_header",
+  ]
+
+  frameworks = [ "CoreFoundation.framework" ]
+
+  if (is_asan) {
+    # asan injects a dylib that we package in ../MacOS.
+    ldflags = [ "-Wl,-rpath,@executable_path/../MacOS" ]
+  }
+}
+
+executable("ksinstall") {
+  output_name = "ksinstall"
+  sources = [
+    "keystone/ksinstall.h",
+    "keystone/ksinstall.mm",
+    "keystone/ksinstall_main.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_prod",
+    "//chrome/updater:version_header",
+  ]
+
+  frameworks = [ "CoreFoundation.framework" ]
+
+  if (is_asan) {
+    # asan injects a dylib that we package in ../MacOS.
+    ldflags = [ "-Wl,-rpath,@executable_path/../MacOS" ]
+  }
+}
+
+bundle_data("keystone_helpers") {
+  sources = [
+    "$root_out_dir/ksadmin",
+    "$root_out_dir/ksinstall",
+  ]
+
+  outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
+  public_deps = [
+    ":ksadmin",
+    ":ksinstall",
+  ]
+}
+
+mac_app_bundle("keystone_bundle") {
+  info_plist = "keystone/Info.plist"
+  sources = [ "keystone/keystone_main.cc" ]
+  output_name = keystone_app_name
+  package_type = "bundle"
+  extra_substitutions = [ "MAC_BUNDLE_IDENTIFIER=$keystone_app_name" ]
+  public_deps = [ ":keystone_helpers" ]
+}
+
+bundle_data("updater_bundle_keystone_executable") {
+  sources = [
+    "$root_out_dir/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
+  ]
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/MacOS/{{source_file_part}}" ]
+
+  public_deps = [ ":keystone_bundle" ]
+}
+
+bundle_data("updater_bundle_keystone_plist") {
+  sources = [ "$root_out_dir/$keystone_app_name.bundle/Contents/Info.plist" ]
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/{{source_file_part}}" ]
+
+  public_deps = [ ":keystone_bundle" ]
+}
+
+bundle_data("updater_bundle_keystone_helpers") {
+  sources = [
+    "$root_out_dir/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
+    "$root_out_dir/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
+  ]
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Helpers/{{source_file_part}}" ]
+
+  public_deps = [ ":keystone_bundle" ]
 }

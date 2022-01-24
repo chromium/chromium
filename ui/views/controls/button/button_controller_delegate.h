@@ -15,6 +15,9 @@ class VIEWS_EXPORT ButtonControllerDelegate {
  public:
   explicit ButtonControllerDelegate(Button* button) : button_(button) {}
 
+  ButtonControllerDelegate(const ButtonControllerDelegate&) = delete;
+  ButtonControllerDelegate& operator=(const ButtonControllerDelegate&) = delete;
+
   virtual ~ButtonControllerDelegate() = default;
 
   // Parallels methods in views::Button:
@@ -37,8 +40,6 @@ class VIEWS_EXPORT ButtonControllerDelegate {
 
  private:
   Button* button_;
-
-  DISALLOW_COPY_AND_ASSIGN(ButtonControllerDelegate);
 };
 
 }  // namespace views

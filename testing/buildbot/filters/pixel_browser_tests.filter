@@ -17,11 +17,13 @@ GlobalErrorBubbleTest.*
 HatsBubbleTest.*
 HungRendererDialogViewBrowserTest.*
 ImportLockDialogViewBrowserTest.*
+NewTabPageTest.*
 OneTimePermissionPromptBubbleViewBrowserTest.*
 OutdatedUpgradeBubbleTest.*
-All/PageInfoBubbleViewDialogBrowserTest.*
+PageInfoBubbleViewAboutThisSiteDialogBrowserTest.*
+PageInfoBubbleViewDialogBrowserTest.*
 PasswordReuseModalWarningTest.*
-PermissionRequestChipBrowserTest.*
+PermissionRequestChipDialogBrowserTest.*
 All/PermissionPromptBubbleViewBrowserTest.*
 ProfileSigninConfirmationDialogTest.*
 RelaunchRecommendedBubbleViewDialogTest.*
@@ -43,3 +45,6 @@ ZoomBubbleDialogTest.*
 # TODO(crbug.com/2666206): Flaky
 -ContentSettingBubbleDialogTest.InvokeUi_mediastream_camera
 -ContentSettingBubbleDialogTest.InvokeUi_mediastream_mic_and_camera
+
+# TODO(crbug.com/1164574): Flaky
+-ContentSettingBubbleDialogTest.InvokeUi_mediastream_mic

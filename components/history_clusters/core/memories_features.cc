@@ -19,7 +19,7 @@ constexpr auto enabled_by_default_desktop_only =
 #endif
 
 const base::FeatureParam<std::string> kRemoteModelEndpoint{
-    &kRemoteModelForDebugging, "MemoriesRemoteModelEndpoint", ""};
+    &kRemoteModelForDebugging, "JourneysRemoteModelEndpoint", ""};
 
 }  // namespace
 
@@ -28,29 +28,41 @@ GURL RemoteModelEndpoint() {
 }
 
 const base::FeatureParam<std::string> kRemoteModelEndpointExperimentName{
-    &kMemories, "MemoriesExperimentName", ""};
+    &kJourneys, "JourneysExperimentName", ""};
 
 const base::FeatureParam<int> kMaxVisitsToCluster{
-    &kMemories, "MemoriesMaxVisitsToCluster", 1000};
+    &kJourneys, "JourneysMaxVisitsToCluster", 1000};
 
-const base::FeatureParam<int> kMaxDaysToCluster{&kMemories,
-                                                "MemoriesMaxDaysToCluster", 9};
+const base::FeatureParam<int> kMaxDaysToCluster{&kJourneys,
+                                                "JourneysMaxDaysToCluster", 9};
 
 const base::FeatureParam<bool> kPersistClustersInHistoryDb{
-    &kMemories, "MemoriesPersistClustersInHistoryDb", false};
+    &kJourneys, "JourneysPersistClustersInHistoryDb", false};
 
 const base::FeatureParam<bool> kUseOnDeviceClusteringBackend{
-    &kMemories, "MemoriesOnDeviceClusteringBackend", true};
+    &kJourneys, "JourneysOnDeviceClusteringBackend", true};
 
-const base::Feature kMemories{"Memories", base::FEATURE_DISABLED_BY_DEFAULT};
+// Default to true, as this this new alternate action text was recommended by
+// our UX writers.
+const base::FeatureParam<bool> kAlternateOmniboxActionText{
+    &kOmniboxAction, "JourneysAlternateOmniboxActionText", true};
 
-const base::Feature kDebug{"MemoriesDebug", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kJourneys{"Journeys", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kRemoteModelForDebugging{"MemoriesRemoteModelForDebugging",
+const base::Feature kOmniboxAction{"JourneysOmniboxAction",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kNonUserVisibleDebug{"JourneysNonUserVisibleDebug",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kUserVisibleDebug{"JourneysUserVisibleDebug",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kRemoteModelForDebugging{"JourneysRemoteModelForDebugging",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPersistContextAnnotationsInHistoryDb{
-    "MemoriesPersistContextAnnotationsInHistoryDb",
+    "JourneysPersistContextAnnotationsInHistoryDb",
     enabled_by_default_desktop_only};
 
 }  // namespace history_clusters

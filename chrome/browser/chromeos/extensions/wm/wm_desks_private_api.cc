@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/desks_helper.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ui/ash/desks_client.h"
@@ -44,10 +43,10 @@ WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::Run() {
 
 void WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::
     OnCaptureActiveDeskAndSaveTemplateCompleted(
-        bool success,
-        std::unique_ptr<ash::DeskTemplate> desk_template) {
-  if (!success) {
-    Respond(Error("Can't capture the active desk and save it as a template!"));
+        std::unique_ptr<ash::DeskTemplate> desk_template,
+        std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
     return;
   }
 
@@ -66,7 +65,7 @@ WmDesksPrivateUpdateDeskTemplateFunction::
 ExtensionFunction::ResponseAction
 WmDesksPrivateUpdateDeskTemplateFunction::Run() {
   std::unique_ptr<api::wm_desks_private::UpdateDeskTemplate::Params> params(
-      api::wm_desks_private::UpdateDeskTemplate::Params::Create(*args_));
+      api::wm_desks_private::UpdateDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   DesksClient::Get()->UpdateDeskTemplate(
@@ -79,11 +78,12 @@ WmDesksPrivateUpdateDeskTemplateFunction::Run() {
 }
 
 void WmDesksPrivateUpdateDeskTemplateFunction::OnUpdateDeskTemplateCompleted(
-    bool success) {
-  if (!success) {
-    Respond(Error("Can't update the template!"));
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
     return;
   }
+
   Respond(NoArguments());
 }
 
@@ -101,10 +101,10 @@ WmDesksPrivateGetSavedDeskTemplatesFunction::Run() {
 }
 
 void WmDesksPrivateGetSavedDeskTemplatesFunction::OnGetSavedDeskTemplate(
-    bool success,
-    const std::vector<ash::DeskTemplate*>& desk_templates) {
-  if (!success) {
-    Respond(Error("Can't get the template list!"));
+    const std::vector<ash::DeskTemplate*>& desk_templates,
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
     return;
   }
 
@@ -129,7 +129,7 @@ WmDesksPrivateDeleteDeskTemplateFunction::
 ExtensionFunction::ResponseAction
 WmDesksPrivateDeleteDeskTemplateFunction::Run() {
   std::unique_ptr<api::wm_desks_private::DeleteDeskTemplate::Params> params(
-      api::wm_desks_private::DeleteDeskTemplate::Params::Create(*args_));
+      api::wm_desks_private::DeleteDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   DesksClient::Get()->DeleteDeskTemplate(
@@ -141,9 +141,9 @@ WmDesksPrivateDeleteDeskTemplateFunction::Run() {
 }
 
 void WmDesksPrivateDeleteDeskTemplateFunction::OnDeleteDeskTemplateCompleted(
-    bool success) {
-  if (!success) {
-    Respond(Error("Can't delete the template!"));
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
     return;
   }
 
@@ -158,7 +158,7 @@ WmDesksPrivateLaunchDeskTemplateFunction::
 ExtensionFunction::ResponseAction
 WmDesksPrivateLaunchDeskTemplateFunction::Run() {
   std::unique_ptr<api::wm_desks_private::LaunchDeskTemplate::Params> params(
-      api::wm_desks_private::LaunchDeskTemplate::Params::Create(*args_));
+      api::wm_desks_private::LaunchDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   DesksClient::Get()->LaunchDeskTemplate(
@@ -170,9 +170,9 @@ WmDesksPrivateLaunchDeskTemplateFunction::Run() {
 }
 
 void WmDesksPrivateLaunchDeskTemplateFunction::OnLaunchDeskTemplate(
-    bool success) {
-  if (!success) {
-    Respond(Error("Can't launch the template!"));
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
     return;
   }
 

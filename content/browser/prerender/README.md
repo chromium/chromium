@@ -35,7 +35,7 @@ The Prerender2 is the new implementation of prerendering.
   Web platform APIs that are dependent on user activation. Prerendered pages
   never have user activation, so the activation-gated APIs automatically fail or
   no-op in the prerendered pages. The known activation-gated APIs are listed
-  [here](https://jeremyroman.github.io/alternate-loading-modes/#activation-gated).
+  [here](https://wicg.github.io/nav-speculation/prerendering.html#activation-gated).
 
 # References
 

@@ -18,7 +18,6 @@
 #include "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #include "ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

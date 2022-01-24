@@ -4,8 +4,8 @@
 
 #include "media/base/offloading_video_encoder.h"
 
-#include "base/bind_post_task.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -30,7 +30,8 @@ OffloadingVideoEncoder::OffloadingVideoEncoder(
     std::unique_ptr<VideoEncoder> wrapped_encoder)
     : OffloadingVideoEncoder(std::move(wrapped_encoder),
                              base::ThreadPool::CreateSequencedTaskRunner(
-                                 {base::TaskPriority::USER_BLOCKING}),
+                                 {base::TaskPriority::USER_BLOCKING,
+                                  base::WithBaseSyncPrimitives()}),
                              base::SequencedTaskRunnerHandle::Get()) {}
 
 void OffloadingVideoEncoder::Initialize(VideoCodecProfile profile,

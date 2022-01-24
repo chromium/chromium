@@ -8,11 +8,10 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "media/audio/power_observer_helper.h"
 #include "media/base/media_export.h"
@@ -68,6 +67,9 @@ class MEDIA_EXPORT AliveChecker {
                bool stop_at_first_alive_notification,
                PowerObserverHelperFactoryCallback
                    power_observer_helper_factory_callback);
+
+  AliveChecker(const AliveChecker&) = delete;
+  AliveChecker& operator=(const AliveChecker&) = delete;
 
   ~AliveChecker();
 
@@ -136,8 +138,6 @@ class MEDIA_EXPORT AliveChecker {
   std::unique_ptr<PowerObserverHelper> power_observer_;
 
   base::WeakPtrFactory<AliveChecker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AliveChecker);
 };
 
 }  // namespace media

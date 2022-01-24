@@ -27,6 +27,10 @@ class SecureChannelFactory : public StreamChannelFactory {
   // Both parameters must outlive the object.
   SecureChannelFactory(StreamChannelFactory* channel_factory,
                        Authenticator* authenticator);
+
+  SecureChannelFactory(const SecureChannelFactory&) = delete;
+  SecureChannelFactory& operator=(const SecureChannelFactory&) = delete;
+
   ~SecureChannelFactory() override;
 
   // StreamChannelFactory interface.
@@ -50,8 +54,6 @@ class SecureChannelFactory : public StreamChannelFactory {
   Authenticator* authenticator_;
 
   AuthenticatorMap channel_authenticators_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelFactory);
 };
 
 }  // namespace protocol

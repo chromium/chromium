@@ -23,6 +23,9 @@ class CastContentUtilityClient : public content::ContentUtilityClient {
 
   CastContentUtilityClient();
 
+  CastContentUtilityClient(const CastContentUtilityClient&) = delete;
+  CastContentUtilityClient& operator=(const CastContentUtilityClient&) = delete;
+
   // cast::ContentUtilityClient:
   bool HandleServiceRequestDeprecated(
       const std::string& service_name,
@@ -31,9 +34,6 @@ class CastContentUtilityClient : public content::ContentUtilityClient {
   virtual bool HandleServiceRequest(
       const std::string& service_name,
       mojo::PendingReceiver<service_manager::mojom::Service> receiver);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastContentUtilityClient);
 };
 
 }  // namespace shell

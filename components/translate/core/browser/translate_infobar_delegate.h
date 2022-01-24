@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -68,6 +67,9 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   static int GetAutoNeverThreshold();
   static int GetMaximumNumberOfAutoAlways();
   static int GetMaximumNumberOfAutoNever();
+
+  TranslateInfoBarDelegate(const TranslateInfoBarDelegate&) = delete;
+  TranslateInfoBarDelegate& operator=(const TranslateInfoBarDelegate&) = delete;
 
   ~TranslateInfoBarDelegate() override;
 
@@ -153,7 +155,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   virtual void ToggleTranslatableLanguageByPrefs();
   virtual bool IsSiteOnNeverPromptList() const;
   virtual bool ShouldNeverTranslateLanguage() const;
-  virtual void ToggleNeverPrompt();
+  virtual void ToggleNeverPromptSite();
   virtual bool ShouldAlwaysTranslate() const;
   virtual void ToggleAlwaysTranslate();
 
@@ -276,8 +278,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   // Observers to handle front-end changes on different steps.
   // It's only used when we try to reuse the existing UI.
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateInfoBarDelegate);
 };
 
 }  // namespace translate

@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -357,9 +356,6 @@ int KeywordScoreForSufficientlyCompleteMatch();
 // Returns true if the tab switch suggestions flag is enabled.
 bool IsTabSwitchSuggestionsEnabled();
 
-// Returns true if the second batch of Pedals is enabled.
-bool IsPedalsBatch2Enabled();
-
 // Returns true if the second batch of Pedals is enabled for non-English
 // locales. This is only meaningful if batch 2 is enabled.
 bool IsPedalsBatch2NonEnglishEnabled();
@@ -367,8 +363,9 @@ bool IsPedalsBatch2NonEnglishEnabled();
 // Returns true if the third batch of Pedals is enabled.
 bool IsPedalsBatch3Enabled();
 
-// Returns true if the default icon used for Pedal buttons should be colored.
-bool IsPedalsDefaultIconColored();
+// Returns true if the third batch of Pedals is enabled for non-English
+// locales. This is only meaningful if batch 3 is enabled.
+bool IsPedalsBatch3NonEnglishEnabled();
 
 // Returns true if the Pedals synonyms should be loaded from the translation
 // console.

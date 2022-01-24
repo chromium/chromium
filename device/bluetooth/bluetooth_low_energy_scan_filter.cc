@@ -13,8 +13,8 @@ namespace {
 // Description": //third_party/bluez/current/doc/advertisement-monitor-api.txt
 constexpr int16_t kRSSIThresholdMin = -127;
 constexpr int16_t kRSSIThresholdMax = 20;
-constexpr base::TimeDelta kTimeoutMin = base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kTimeoutMax = base::TimeDelta::FromSeconds(300);
+constexpr base::TimeDelta kTimeoutMin = base::Seconds(1);
+constexpr base::TimeDelta kTimeoutMax = base::Seconds(300);
 constexpr uint8_t kPatternValueMaxLength = 31;
 
 // These values are based on real-world testing with the goal that they will be

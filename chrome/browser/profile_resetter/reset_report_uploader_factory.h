@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PROFILE_RESETTER_RESET_REPORT_UPLOADER_FACTORY_H_
 #define CHROME_BROWSER_PROFILE_RESETTER_RESET_REPORT_UPLOADER_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -28,6 +27,10 @@ class ResetReportUploaderFactory : public BrowserContextKeyedServiceFactory {
   static ResetReportUploader* GetForBrowserContext(
       content::BrowserContext* context);
 
+  ResetReportUploaderFactory(const ResetReportUploaderFactory&) = delete;
+  ResetReportUploaderFactory& operator=(const ResetReportUploaderFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<ResetReportUploaderFactory>;
 
@@ -37,8 +40,6 @@ class ResetReportUploaderFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ResetReportUploaderFactory);
 };
 
 #endif  // CHROME_BROWSER_PROFILE_RESETTER_RESET_REPORT_UPLOADER_FACTORY_H_

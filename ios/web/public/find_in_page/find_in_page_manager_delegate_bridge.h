@@ -51,6 +51,12 @@ class FindInPageManagerDelegateBridge : public web::FindInPageManagerDelegate {
  public:
   explicit FindInPageManagerDelegateBridge(
       id<CRWFindInPageManagerDelegate> delegate);
+
+  FindInPageManagerDelegateBridge(const FindInPageManagerDelegateBridge&) =
+      delete;
+  FindInPageManagerDelegateBridge& operator=(
+      const FindInPageManagerDelegateBridge&) = delete;
+
   ~FindInPageManagerDelegateBridge() override;
 
   // FindInPageManagerDelegate overrides.
@@ -63,7 +69,6 @@ class FindInPageManagerDelegateBridge : public web::FindInPageManagerDelegate {
 
  private:
   __weak id<CRWFindInPageManagerDelegate> delegate_ = nil;
-  DISALLOW_COPY_AND_ASSIGN(FindInPageManagerDelegateBridge);
 };
 
 }  // namespace web

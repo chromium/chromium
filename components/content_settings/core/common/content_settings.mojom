@@ -77,4 +77,5 @@ struct RendererContentSettingRules {
   array<ContentSettingPatternSource> script_rules;
   array<ContentSettingPatternSource> popup_redirect_rules;
   array<ContentSettingPatternSource> mixed_content_rules;
+  array<ContentSettingPatternSource> auto_dark_content_rules;
 };

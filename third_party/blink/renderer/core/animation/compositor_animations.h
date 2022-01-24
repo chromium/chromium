@@ -112,6 +112,7 @@ class CORE_EXPORT CompositorAnimations {
 
   static FailureReasons CheckCanStartAnimationOnCompositor(
       const Timing&,
+      const Timing::NormalizedTiming&,
       const Element&,
       const Animation*,
       const EffectModel&,
@@ -131,6 +132,7 @@ class CORE_EXPORT CompositorAnimations {
       absl::optional<double> start_time,
       base::TimeDelta time_offset,
       const Timing&,
+      const Timing::NormalizedTiming&,
       const Animation*,
       CompositorAnimation&,
       const EffectModel&,
@@ -159,6 +161,7 @@ class CORE_EXPORT CompositorAnimations {
   };
 
   static bool ConvertTimingForCompositor(const Timing&,
+                                         const Timing::NormalizedTiming&,
                                          base::TimeDelta time_offset,
                                          CompositorTiming& out,
                                          double animation_playback_rate);
@@ -166,6 +169,7 @@ class CORE_EXPORT CompositorAnimations {
   static void GetAnimationOnCompositor(
       const Element&,
       const Timing&,
+      const Timing::NormalizedTiming&,
       int group,
       absl::optional<double> start_time,
       base::TimeDelta time_offset,
@@ -183,6 +187,7 @@ class CORE_EXPORT CompositorAnimations {
  private:
   static FailureReasons CheckCanStartEffectOnCompositor(
       const Timing&,
+      const Timing::NormalizedTiming&,
       const Element&,
       const Animation*,
       const EffectModel&,

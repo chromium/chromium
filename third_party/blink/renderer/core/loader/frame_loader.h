@@ -40,7 +40,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -61,8 +60,9 @@
 namespace blink {
 
 class DocumentLoader;
-class LocalFrame;
+class FetchClientSettingsObject;
 class Frame;
+class LocalFrame;
 class LocalFrameClient;
 class ProgressTracker;
 class ResourceRequest;
@@ -91,11 +91,12 @@ class CORE_EXPORT FrameLoader final {
 
   ProgressTracker& Progress() const { return *progress_tracker_; }
 
-  // Starts a navigation. It will eventually send the navigation to the
-  // browser process, or call LoadInSameDocument for same-document navigation.
-  // For reloads, an appropriate WebFrameLoadType should be given. Otherwise,
-  // kStandard should be used (and the final WebFrameLoadType
-  // will be computed).
+  // This is the entry-point for all renderer-initiated navigations except
+  // history traversals. It will eventually send the navigation to the browser
+  // process, or call DocumentLoader::CommitSameDocumentNavigation for
+  // same-document navigation. For reloads, an appropriate WebFrameLoadType
+  // should be given. Otherwise, kStandard should be used (and the final
+  // WebFrameLoadType will be computed).
   void StartNavigation(FrameLoadRequest&,
                        WebFrameLoadType = WebFrameLoadType::kStandard);
 
@@ -140,6 +141,7 @@ class CORE_EXPORT FrameLoader final {
   void DidExplicitOpen();
 
   String UserAgent() const;
+  String ReducedUserAgent() const;
   absl::optional<blink::UserAgentMetadata> UserAgentMetadata() const;
 
   void DispatchDidClearWindowObjectInMainWorld();
@@ -218,20 +220,48 @@ class CORE_EXPORT FrameLoader final {
 
   bool HasAccessedInitialDocument() { return has_accessed_initial_document_; }
 
-  void SetDidLoadNonEmptyDocument() {
-    empty_document_status_ = EmptyDocumentStatus::kNonEmpty;
+  void SetIsNotOnInitialEmptyDocument() {
+    // The "initial empty document" state can be false if the frame has loaded
+    // a non-initial/synchronous about:blank document, or if the document has
+    // done a document.open() before. However, this function can only be called
+    // when a frame is first re-created in a new renderer, which can only be
+    // caused by a new document load. So, we know that the state must be set to
+    // kNotInitialOrSynchronousAboutBlank instead of
+    // kInitialOrSynchronousAboutBlankButExplicitlyOpened here.
+    initial_empty_document_status_ =
+        InitialEmptyDocumentStatus::kNotInitialOrSynchronousAboutBlank;
   }
-  bool HasLoadedNonEmptyDocument() {
-    return empty_document_status_ == EmptyDocumentStatus::kNonEmpty;
+
+  // Whether the frame's current document is still considered as the "initial
+  // empty document" or not. Might be false even when
+  // HasLoadedNonInitialEmptyDocument() is false, if the frame is still on the
+  // first about:blank document that loaded in the frame, but it has done
+  // a document.open(), causing it to lose its "initial empty document"-ness
+  // even though it's still on the same document.
+  bool IsOnInitialEmptyDocument() {
+    return initial_empty_document_status_ ==
+           InitialEmptyDocumentStatus::kInitialOrSynchronousAboutBlank;
+  }
+
+  // Whether the frame has loaded a document that is not the initial empty
+  // document. Might be false even when IsOnInitialEmptyDocument() is false (see
+  // comment for IsOnInitialEmptyDocument() for details).
+  bool HasLoadedNonInitialEmptyDocument() {
+    return initial_empty_document_status_ ==
+           InitialEmptyDocumentStatus::kNotInitialOrSynchronousAboutBlank;
   }
 
   static bool NeedsHistoryItemRestore(WebFrameLoadType type);
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+  mojo::PendingRemote<blink::mojom::CodeCacheHost> CreateWorkerCodeCacheHost();
+
  private:
   bool AllowRequestForThisFrame(const FrameLoadRequest&);
-  WebFrameLoadType DetermineFrameLoadType(const KURL& url, WebFrameLoadType);
+  WebFrameLoadType HandleInitialEmptyDocumentReplacementIfNeeded(
+      const KURL& url,
+      WebFrameLoadType);
 
   bool ShouldPerformFragmentNavigation(bool is_form_submission,
                                        const String& http_method,
@@ -286,12 +316,30 @@ class CORE_EXPORT FrameLoader final {
   bool committing_navigation_ = false;
   bool has_accessed_initial_document_ = false;
 
-  enum class EmptyDocumentStatus {
-    kOnlyEmpty,
-    kOnlyEmptyButExplicitlyOpened,
-    kNonEmpty
+  // Enum to determine the frame's "initial empty document"-ness.
+  // NOTE: we treat both the "initial about:blank document" and the
+  // "synchronously committed about:blank document" as the initial empty
+  // document. In the future, we plan to remove the synchronous about:blank
+  // commit so that this enum only considers the true "initial about:blank"
+  // document. See also:
+  // - https://github.com/whatwg/html/issues/6863
+  // - https://crbug.com/1215096
+  enum class InitialEmptyDocumentStatus {
+    // The document is the initial about:blank document or the synchronously
+    // committed about:blank document.
+    kInitialOrSynchronousAboutBlank,
+    // The document is the initial about:blank document or the synchronously
+    // committed about:blank document, but the document's input stream has been
+    // opened with document.open(), so the document lost its "initial empty
+    // document" status, per the spec:
+    // https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#opening-the-input-stream:is-initial-about:blank
+    kInitialOrSynchronousAboutBlankButExplicitlyOpened,
+    // The document is neither the initial about:blank document nor the
+    // synchronously committed about:blank document.
+    kNotInitialOrSynchronousAboutBlank
   };
-  EmptyDocumentStatus empty_document_status_ = EmptyDocumentStatus::kOnlyEmpty;
+  InitialEmptyDocumentStatus initial_empty_document_status_ =
+      InitialEmptyDocumentStatus::kInitialOrSynchronousAboutBlank;
 
   WebScopedVirtualTimePauser virtual_time_pauser_;
 

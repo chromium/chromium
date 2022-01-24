@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/login/mock_network_state_helper.h"
 
-namespace chromeos {
+namespace ash {
 namespace login {
 
 MockNetworkStateHelper::MockNetworkStateHelper() {}
 MockNetworkStateHelper::~MockNetworkStateHelper() {}
 
 }  // namespace login
-}  // namespace chromeos
+}  // namespace ash

@@ -219,35 +219,18 @@ export function waitForAppWindow(windowUrl) {
 }
 
 /**
- * Wait for the count of windows for app |appId| to equal |expectedCount|.
- * @param{string} appId ID of the app to count windows for.
- * @param{number} expectedCount Number of app windows to wait for.
- * @return {Promise} Promise to be fulfilled when the number of app windows
- *     equals |expectedCount|.
- */
-export function waitForAppWindowCount(appId, expectedCount) {
-  const caller = getCaller();
-  const command = {'name': 'countAppWindows', 'appId': appId};
-  return repeatUntil(async () => {
-    if (await sendTestMessage(command) != expectedCount) {
-      return pending(
-          caller, 'waitForAppWindowCount ' + appId + ' ' + expectedCount);
-    }
-    return true;
-  });
-}
-
-/**
  * Get all the browser windows.
+ * @param {number} expectedInitialCount The number of windows expected before
+ *     opening a new one.
  * @return {Object} Object returned from chrome.windows.getAll().
  */
-export async function getBrowserWindows() {
+export async function getBrowserWindows(expectedInitialCount = 0) {
   const caller = getCaller();
   return repeatUntil(async () => {
     const result = await new Promise(function(fulfill) {
       chrome.windows.getAll({'populate': true}, fulfill);
     });
-    if (result.length == 0) {
+    if (result.length === expectedInitialCount) {
       return pending(caller, 'getBrowserWindows ' + result.length);
     }
     return result;
@@ -940,50 +923,6 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
     nameText: 'archive.zip',
     sizeText: '743 bytes',
-    typeText: 'Zip archive'
-  }),
-
-  zipArchiveSJIS: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'archive_sjis.zip',
-    targetPath: 'archive_sjis.zip',
-    mimeType: 'application/x-zip',
-    lastModifiedTime: 'Dec 21, 2018, 12:21 PM',
-    nameText: 'archive_sjis.zip',
-    sizeText: '160 bytes',
-    typeText: 'Zip archive'
-  }),
-
-  zipArchiveMacOs: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'archive_macos.zip',
-    targetPath: 'archive_macos.zip',
-    mimeType: 'application/x-zip',
-    lastModifiedTime: 'Dec 21, 2018, 12:21 PM',
-    nameText: 'archive_macos.zip',
-    sizeText: '190 bytes',
-    typeText: 'Zip archive'
-  }),
-
-  zipArchiveWithAbsolutePaths: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'absolute_paths.zip',
-    targetPath: 'absolute_paths.zip',
-    mimeType: 'application/x-zip',
-    lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
-    nameText: 'absolute_paths.zip',
-    sizeText: '400 bytes',
-    typeText: 'Zip archive'
-  }),
-
-  zipArchiveEncrypted: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'encrypted.zip',
-    targetPath: 'encrypted.zip',
-    mimeType: 'application/x-zip',
-    lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
-    nameText: 'encrypted.zip',
-    sizeText: '589 bytes',
     typeText: 'Zip archive'
   }),
 

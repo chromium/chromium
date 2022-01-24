@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.pb.h"
+#include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.pb.h"
 #include "third_party/protobuf/src/google/protobuf/duration.pb.h"
 
 namespace chromecast {

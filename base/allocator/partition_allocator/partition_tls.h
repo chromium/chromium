@@ -23,7 +23,7 @@
 namespace base {
 namespace internal {
 
-#if defined(OS_POSIX)
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
 typedef pthread_key_t PartitionTlsKey;
 
 ALWAYS_INLINE bool PartitionTlsCreate(PartitionTlsKey* key,

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_REGISTRY_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_REGISTRY_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -20,6 +19,10 @@ class GuestOsRegistryServiceFactory : public BrowserContextKeyedServiceFactory {
   static guest_os::GuestOsRegistryService* GetForProfile(Profile* profile);
   static GuestOsRegistryServiceFactory* GetInstance();
 
+  GuestOsRegistryServiceFactory(const GuestOsRegistryServiceFactory&) = delete;
+  GuestOsRegistryServiceFactory& operator=(
+      const GuestOsRegistryServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<GuestOsRegistryServiceFactory>;
 
@@ -29,8 +32,6 @@ class GuestOsRegistryServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsRegistryServiceFactory);
 };
 
 }  // namespace guest_os

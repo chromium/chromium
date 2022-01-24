@@ -15,6 +15,14 @@ namespace scripting {
     USER
   };
 
+  // The JavaScript world for a script to execute within.
+  enum ExecutionWorld {
+    // The isolated world, unique to this extension.
+    ISOLATED,
+    // The main world of the DOM, shared with the page's JavaScript.
+    MAIN
+  };
+
   dictionary InjectionTarget {
     // The ID of the tab into which to inject.
     long tabId;
@@ -51,13 +59,16 @@ namespace scripting {
 
     // The path of the JS or CSS files to inject, relative to the extension's
     // root directory.
-    // NOTE: Currently a maximum of one file is supported.
     // Exactly one of <code>files</code> and <code>func</code> must be
     // specified.
     DOMString[]? files;
 
     // Details specifying the target into which to inject the script.
     InjectionTarget target;
+
+    // The JavaScript "world" to run the script in. Defaults to
+    // <code>ISOLATED</code>.
+    ExecutionWorld? world;
   };
 
   dictionary CSSInjection {
@@ -71,7 +82,6 @@ namespace scripting {
 
     // The path of the CSS files to inject, relative to the extension's root
     // directory.
-    // NOTE: Currently a maximum of one file is supported.
     // Exactly one of <code>files</code> and <code>css</code> must be
     // specified.
     DOMString[]? files;
@@ -90,15 +100,15 @@ namespace scripting {
 
   // Describes a content script to be injected into a web page registered
   // through this API.
-  [nodoc]
   dictionary RegisteredContentScript {
     // The id of the content script, specified in the API call. Must not start
     // with a '_' as it's reserved as a prefix for generated script IDs.
     DOMString id;
     // Specifies which pages this content script will be injected into. See
     // <a href="match_patterns">Match Patterns</a> for more details on the
-    // syntax of these strings.
-    DOMString[] matches;
+    // syntax of these strings. Must be specified for
+    // $(ref:registerContentScripts).
+    DOMString[]? matches;
     // Excludes pages that this content script would otherwise be injected into.
     // See <a href="match_patterns">Match Patterns</a> for more details on the
     // syntax of these strings.
@@ -123,11 +133,13 @@ namespace scripting {
     // Specifies when JavaScript files are injected into the web page. The
     // preferred and default value is <code>document_idle</code>.
     extensionTypes.RunAt? runAt;
+    // Specifies if this content script will persist into future sessions. The
+    // default is true.
+    boolean? persistAcrossSessions;
   };
 
   // An object used to filter content scripts for
   // ${ref:getRegisteredContentScripts}.
-  [nodoc]
   dictionary ContentScriptFilter {
     // If specified, $(ref:getRegisteredContentScripts) will only return scripts
     // with an id specified in this list.
@@ -142,6 +154,10 @@ namespace scripting {
 
   callback GetRegisteredContentScriptsCallback = void(
       RegisteredContentScript[] scripts);
+
+  callback UnregisterContentScriptsCallback = void();
+
+  callback UpdateContentScriptsCallback = void();
 
   interface Functions {
     // Injects a script into a target context. The script will be run at
@@ -177,9 +193,9 @@ namespace scripting {
     // |scripts|: Contains a list of scripts to be registered. If there are
     // errors during script parsing/file validation, or if the IDs specified
     // already exist, then no scripts are registered.
-    // |callback|: A callback to be invoked once scripts have been registered or
-    // if an error has occurred.
-    [nodoc, supportsPromises] static void registerContentScripts(
+    // |callback|: A callback to be invoked once scripts have been fully
+    // registered or if an error has occurred.
+    [supportsPromises] static void registerContentScripts(
         RegisteredContentScript[] scripts,
         optional RegisterContentScriptsCallback callback);
 
@@ -187,8 +203,30 @@ namespace scripting {
     // that match the given filter.
     // |filter|: An object to filter the extension's dynamically registered
     // scripts.
-    [nodoc, supportsPromises] static void getRegisteredContentScripts(
+    [supportsPromises] static void getRegisteredContentScripts(
         optional ContentScriptFilter filter,
         GetRegisteredContentScriptsCallback callback);
+
+    // Unregisters content scripts for this extension.
+    // |filter|: If specified, only unregisters dynamic content scripts which
+    // match the filter. Otherwise, all of the extension's dynamic content
+    // scripts are unregistered.
+    // |callback|: A callback to be invoked once scripts have been unregistered
+    // or if an error has occurred.
+    [supportsPromises] static void unregisterContentScripts(
+        optional ContentScriptFilter filter,
+        optional UnregisterContentScriptsCallback callback);
+
+    // Updates one or more content scripts for this extension.
+    // |scripts|: Contains a list of scripts to be updated. A property is only
+    // updated for the existing script if it is specified in this object. If
+    // there are errors during script parsing/file validation, or if the IDs
+    // specified do not correspond to a fully registered script, then no scripts
+    // are updated.
+    // |callback|: A callback to be invoked once scripts have been updated or
+    // if an error has occurred.
+    [supportsPromises] static void updateContentScripts(
+        RegisteredContentScript[] scripts,
+        optional RegisterContentScriptsCallback callback);
   };
 };

@@ -133,7 +133,7 @@ ClientSocketPool::~ClientSocketPool() = default;
 
 // static
 base::TimeDelta ClientSocketPool::used_idle_socket_timeout() {
-  return base::TimeDelta::FromSeconds(g_used_idle_socket_timeout_s);
+  return base::Seconds(g_used_idle_socket_timeout_s);
 }
 
 // static
@@ -200,10 +200,8 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
         is_for_websockets_);
   }
 
-  // TODO(crbug.com/1206799): Pass along as SchemeHostPort.
   return connect_job_factory_->CreateConnectJob(
-      using_ssl, HostPortPair::FromSchemeHostPort(group_id.destination()),
-      proxy_server, proxy_annotation_tag,
+      group_id.destination(), proxy_server, proxy_annotation_tag,
       socket_params->ssl_config_for_origin(),
       socket_params->ssl_config_for_proxy(), is_for_websockets_,
       group_id.privacy_mode(), resolution_callback, request_priority,

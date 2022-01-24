@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/render_process_host.h"

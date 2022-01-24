@@ -44,7 +44,6 @@ class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
   // Get the number of errors and warnings received.
   size_t GetErrorsAndWarningsCount() const;
 
-
  private:
   std::vector<std::u16string> errors_;
   ErrorConsole* error_console_;

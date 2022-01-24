@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -29,6 +28,10 @@ enum class MediaRouterDialogOpenOrigin;
 // This class is not thread safe and must be called on the UI thread.
 class MediaRouterDialogController {
  public:
+  MediaRouterDialogController(const MediaRouterDialogController&) = delete;
+  MediaRouterDialogController& operator=(const MediaRouterDialogController&) =
+      delete;
+
   virtual ~MediaRouterDialogController();
 
   using GetOrCreate = base::RepeatingCallback<MediaRouterDialogController*(
@@ -100,8 +103,6 @@ class MediaRouterDialogController {
   // is destroyed or navigated.
   std::unique_ptr<InitiatorWebContentsObserver> initiator_observer_;
   content::WebContents* const initiator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterDialogController);
 };
 
 }  // namespace media_router

@@ -14,7 +14,7 @@
 
 bool ShouldIncludeAppUpdate(const apps::AppUpdate& app_update) {
   return app_update.AppType() == apps::mojom::AppType::kArc &&
-         app_update.InstallSource() != apps::mojom::InstallSource::kSystem;
+         app_update.InstallReason() != apps::mojom::InstallReason::kSystem;
 }
 
 void LogOutHelper() {

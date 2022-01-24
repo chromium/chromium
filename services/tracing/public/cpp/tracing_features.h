@@ -19,9 +19,6 @@ extern const COMPONENT_EXPORT(TRACING_CPP) base::Feature
     kTracingServiceInProcess;
 
 extern const COMPONENT_EXPORT(TRACING_CPP) base::Feature
-    kBackgroundTracingProtoOutput;
-
-extern const COMPONENT_EXPORT(TRACING_CPP) base::Feature
     kEnablePerfettoSystemTracing;
 
 extern const COMPONENT_EXPORT(TRACING_CPP) base::Feature

@@ -16,7 +16,7 @@
 - (void)translateEnabled:(BOOL)enabled;
 
 // Called when the value of language::prefs::kAcceptLanguages or
-// language::prefs::kFluentLanguages change.
+// translate::prefs::kBlockedLanguages change.
 - (void)languagePrefsChanged;
 
 @end

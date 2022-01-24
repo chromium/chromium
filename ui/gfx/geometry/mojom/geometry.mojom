@@ -80,11 +80,6 @@ struct Vector3dF {
   float z;
 };
 
-struct ScrollOffset {
-  float x;
-  float y;
-};
-
 struct Quaternion {
   double x;
   double y;

@@ -33,6 +33,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -202,11 +204,10 @@ class CollapsibleListView : public views::View {
   // views::View
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    auto* theme = GetNativeTheme();
-    const SkColor icon_color =
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DefaultIconColor);
+    const auto* color_provider = GetColorProvider();
+    const SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
     const SkColor disabled_icon_color =
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DisabledIconColor);
+        color_provider->GetColor(ui::kColorIconDisabled);
     views::SetImageFromVectorIconWithColor(
         expand_collapse_button_, vector_icons::kCaretDownIcon,
         ui::TableModel::kIconSize, icon_color);
@@ -255,8 +256,9 @@ std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
     int row,
     int column_id) {
   if (static_cast<size_t>(row) < files_.size())
-    return files_[row].BaseName().LossyDisplayName();
-  return directories_[row - files_.size()].BaseName().LossyDisplayName();
+    return file_system_access_ui_helper::GetPathForDisplay(files_[row]);
+  return file_system_access_ui_helper::GetPathForDisplay(
+      directories_[row - files_.size()]);
 }
 
 ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
@@ -265,7 +267,7 @@ ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
       static_cast<size_t>(row) < files_.size()
           ? vector_icons::kInsertDriveFileOutlineIcon
           : vector_icons::kFolderOpenIcon,
-      ui::NativeTheme::kColorId_DefaultIconColor, kIconSize);
+      ui::kColorIcon, kIconSize);
 }
 
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetTooltip(

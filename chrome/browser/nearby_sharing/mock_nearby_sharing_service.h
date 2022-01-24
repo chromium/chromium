@@ -70,10 +70,15 @@ class MockNearbySharingService : public NearbySharingService {
               (const ShareTarget&, StatusCodesCallback),
               (override));
   MOCK_METHOD(void, OpenURL, (GURL), (override));
+  MOCK_METHOD(void,
+              SetArcTransferCleanupCallback,
+              (base::OnceCallback<void()>),
+              (override));
   MOCK_METHOD(NearbyNotificationDelegate*,
               GetNotificationDelegate,
               (const std::string&),
               (override));
+  MOCK_METHOD(void, RecordFastInitiationNotificationUsage, (bool), (override));
   MOCK_METHOD(NearbyShareSettings*, GetSettings, (), (override));
   MOCK_METHOD(NearbyShareHttpNotifier*, GetHttpNotifier, (), (override));
   MOCK_METHOD(NearbyShareLocalDeviceDataManager*,

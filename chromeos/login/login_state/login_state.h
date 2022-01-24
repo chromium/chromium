@@ -6,7 +6,6 @@
 #define CHROMEOS_LOGIN_LOGIN_STATE_LOGIN_STATE_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace chromeos {
@@ -46,6 +45,9 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState {
   static void Shutdown();
   static LoginState* Get();
   static bool IsInitialized();
+
+  LoginState(const LoginState&) = delete;
+  LoginState& operator=(const LoginState&) = delete;
 
   // Add/remove observers.
   void AddObserver(Observer* observer);
@@ -115,8 +117,6 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState {
   // default running on a Linux desktop without flags and test cases. To test
   // behaviors with a specific login state, call set_always_logged_in(false).
   bool always_logged_in_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginState);
 };
 
 }  // namespace chromeos

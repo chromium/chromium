@@ -26,6 +26,10 @@ const int kTestSignalStrength = 100;
 }  // namespace
 
 class NotificationRemoverTest : public testing::Test {
+ public:
+  NotificationRemoverTest(const NotificationRemoverTest&) = delete;
+  NotificationRemoverTest& operator=(const NotificationRemoverTest&) = delete;
+
  protected:
   NotificationRemoverTest()
       : test_entries_(host_scan_test_util::CreateTestEntries()) {}
@@ -78,9 +82,6 @@ class NotificationRemoverTest : public testing::Test {
   std::unique_ptr<FakeHostScanCache> host_scan_cache_;
   std::unique_ptr<FakeActiveHost> active_host_;
   std::unique_ptr<NotificationRemover> notification_remover_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationRemoverTest);
 };
 
 TEST_F(NotificationRemoverTest, TestCacheBecameEmpty) {

@@ -6,7 +6,6 @@
 #define COMPONENTS_BACKGROUND_TASK_SCHEDULER_BACKGROUND_TASK_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/background_task_scheduler/task_parameters.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 
@@ -60,14 +59,14 @@ class BackgroundTask {
   // task will not be rescheduled.
   virtual bool OnStopTask(const TaskParameters& task_params) = 0;
 
+  BackgroundTask(const BackgroundTask&) = delete;
+  BackgroundTask& operator=(const BackgroundTask&) = delete;
+
   // Destructor.
   virtual ~BackgroundTask() {}
 
  protected:
   BackgroundTask() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTask);
 };
 
 }  // namespace background_task

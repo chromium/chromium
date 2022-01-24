@@ -57,6 +57,11 @@ struct BLINK_COMMON_EXPORT FramePolicy {
   bool is_fenced = false;
 };
 
+bool BLINK_COMMON_EXPORT operator==(const FramePolicy& lhs,
+                                    const FramePolicy& rhs);
+bool BLINK_COMMON_EXPORT operator!=(const FramePolicy& lhs,
+                                    const FramePolicy& rhs);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_POLICY_H_

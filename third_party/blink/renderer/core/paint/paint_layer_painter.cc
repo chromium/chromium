@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_effectively_invisible.h"
-#include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_hint.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/graphics/paint/subsequence_recorder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -78,7 +78,15 @@ PaintResult PaintLayerPainter::Paint(
     GraphicsContext& context,
     const PaintLayerPaintingInfo& painting_info,
     PaintLayerFlags paint_flags) {
-  if (paint_layer_.GetLayoutObject().GetFrameView()->ShouldThrottleRendering())
+  const LayoutObject& layout_object = paint_layer_.GetLayoutObject();
+  if (UNLIKELY(layout_object.NeedsLayout() &&
+               !layout_object.ChildLayoutBlockedByDisplayLock())) {
+    // Skip if we need layout. This should never happen. See crbug.com/1244130
+    NOTREACHED();
+    return kFullyPainted;
+  }
+
+  if (layout_object.GetFrameView()->ShouldThrottleRendering())
     return kFullyPainted;
 
   // Non self-painting layers without self-painting descendants don't need to be
@@ -94,12 +102,23 @@ PaintResult PaintLayerPainter::Paint(
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
       paint_layer_.PaintsWithTransparency(
           painting_info.GetGlobalPaintFlags()) &&
-      PaintedOutputInvisible(paint_layer_.GetLayoutObject().StyleRef())) {
+      PaintedOutputInvisible(layout_object.StyleRef())) {
     return kFullyPainted;
   }
 
-  // If the transform can't be inverted, then don't paint anything.
-  if (paint_layer_.PaintsWithTransform(painting_info.GetGlobalPaintFlags()) &&
+  // If the transform can't be inverted, don't paint anything. We still need
+  // to paint with CompositeAfterPaint if there are animations to ensure the
+  // animation can be setup to run on the compositor.
+  bool paint_non_invertible_transforms = false;
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    const auto* properties = layout_object.FirstFragment().PaintProperties();
+    if (properties && properties->Transform() &&
+        properties->Transform()->HasActiveTransformAnimation()) {
+      paint_non_invertible_transforms = true;
+    }
+  }
+  if (!paint_non_invertible_transforms &&
+      paint_layer_.PaintsWithTransform(painting_info.GetGlobalPaintFlags()) &&
       !paint_layer_.RenderableTransform(painting_info.GetGlobalPaintFlags())
            .IsInvertible()) {
     return kFullyPainted;
@@ -213,15 +232,37 @@ bool PaintLayerPainter::ShouldUseInfiniteCullRectInternal(
 
   if (const auto* properties =
           paint_layer_.GetLayoutObject().FirstFragment().PaintProperties()) {
+    // Cull rect mapping doesn't work under perspective in some cases.
+    // See http://crbug.com/887558 for details.
     if (properties->Perspective())
       return true;
     if (for_cull_rect_update) {
-      // A CSS transform can also have perspective like
-      // "transform: perspective(100px) rotateY(45deg)".
       if (const auto* transform = properties->Transform()) {
+        // A CSS transform can also have perspective like
+        // "transform: perspective(100px) rotateY(45deg)". In these cases, we
+        // also want to skip cull rect mapping. See http://crbug.com/887558 for
+        // details.
         if (!transform->IsIdentityOr2DTranslation() &&
-            transform->Matrix().HasPerspective())
+            transform->Matrix().HasPerspective()) {
           return true;
+        }
+
+        // Ensure content under animating transforms is not culled out, even if
+        // the initial matrix is non-invertible.
+        if (transform->HasActiveTransformAnimation() &&
+            !transform->IsIdentityOr2DTranslation() &&
+            !transform->Matrix().IsInvertible()) {
+          return true;
+        }
+
+        // As an optimization, skip cull rect updating for non-composited
+        // transforms which have already been painted. This is because the cull
+        // rect update, which needs to do complex mapping of the cull rect, can
+        // be more expensive than over-painting.
+        if (!transform->HasDirectCompositingReasons() &&
+            paint_layer_.PreviousPaintResult() == kFullyPainted) {
+          return true;
+        }
       }
     }
   }
@@ -413,12 +454,13 @@ PaintResult PaintLayerPainter::PaintLayerContents(
     offset_from_root -= root->GetLayoutObject().FirstFragment().PaintOffset();
   offset_from_root += subpixel_accumulation;
 
-  IntRect visual_rect = FirstFragmentVisualRect(object);
   if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    if (object.FirstFragment().NextFragment()) {
+    if (object.FirstFragment().NextFragment() ||
+        IsUnclippedLayoutView(paint_layer_)) {
       result = kMayBeClippedByCullRect;
     } else {
-      IntRect cull_rect = object.FirstFragment().GetCullRect().Rect();
+      IntRect visual_rect = FirstFragmentVisualRect(object);
+      IntRect cull_rect(object.FirstFragment().GetCullRect().Rect());
       bool cull_rect_intersects_self = cull_rect.Intersects(visual_rect);
       if (!cull_rect.Contains(visual_rect))
         result = kMayBeClippedByCullRect;
@@ -438,8 +480,14 @@ PaintResult PaintLayerPainter::PaintLayerContents(
         cull_rect_intersects_contents = cull_rect_intersects_self;
       }
 
-      if (!cull_rect_intersects_self && !cull_rect_intersects_contents)
+      if (!cull_rect_intersects_self && !cull_rect_intersects_contents) {
+        if (!is_painting_overflow_contents &&
+            paint_layer_.KnownToClipSubtree()) {
+          paint_layer_.SetPreviousPaintResult(kMayBeClippedByCullRect);
+          return kMayBeClippedByCullRect;
+        }
         should_paint_content = false;
+      }
 
       // The above doesn't consider clips on non-self-painting contents.
       // Will update in ScopedBoxContentsPaintState.
@@ -454,6 +502,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(
   local_painting_info.sub_pixel_accumulation = subpixel_accumulation;
 
   PaintLayerFragments layer_fragments;
+  ClearCollectionScope<PaintLayerFragments> scope(&layer_fragments);
 
   if (should_paint_content || should_paint_self_outline ||
       is_painting_overlay_overflow_controls) {
@@ -520,12 +569,14 @@ PaintResult PaintLayerPainter::PaintLayerContents(
       PaintedOutputInvisible(object.StyleRef()))
     effectively_invisible.emplace(context.GetPaintController());
 
-  absl::optional<ScopedPaintChunkHint> paint_chunk_hint;
+  absl::optional<ScopedPaintChunkProperties> layer_chunk_properties;
   if (should_paint_content) {
-    paint_chunk_hint.emplace(context.GetPaintController(),
-                             object.FirstFragment().LocalBorderBoxProperties(),
-                             paint_layer_, DisplayItem::kLayerChunk,
-                             visual_rect);
+    // If we will create a new paint chunk for this layer, this gives the chunk
+    // a stable id.
+    layer_chunk_properties.emplace(
+        context.GetPaintController(),
+        object.FirstFragment().LocalBorderBoxProperties(), paint_layer_,
+        DisplayItem::kLayerChunk);
   }
 
   if (should_paint_background) {
@@ -541,14 +592,13 @@ PaintResult PaintLayerPainter::PaintLayerContents(
   }
 
   if (should_paint_own_contents) {
-    absl::optional<ScopedPaintChunkHint> paint_chunk_hint_foreground;
-    if (paint_chunk_hint && paint_chunk_hint->HasCreatedPaintChunk()) {
-      // Hint a foreground chunk if we have created any chunks, to give the
-      // paint chunk after the previous forced paint chunks a stable id.
-      paint_chunk_hint_foreground.emplace(
-          context.GetPaintController(), paint_layer_,
-          DisplayItem::kLayerChunkForeground, visual_rect);
-    }
+    // If the negative-z-order children created paint chunks, this gives the
+    // foreground paint chunk a stable id.
+    ScopedPaintChunkProperties foreground_properties(
+        context.GetPaintController(),
+        object.FirstFragment().LocalBorderBoxProperties(), paint_layer_,
+        DisplayItem::kLayerChunkForeground);
+
     if (selection_drag_image_only) {
       PaintForegroundForFragmentsWithPhase(PaintPhase::kSelectionDragImage,
                                            layer_fragments, context,
@@ -660,7 +710,7 @@ PaintResult PaintLayerPainter::PaintChildren(
   if (paint_layer_.GetLayoutObject().ChildPaintBlockedByDisplayLock())
     return result;
 
-  PaintLayerPaintOrderIterator iterator(paint_layer_, children_to_visit);
+  PaintLayerPaintOrderIterator iterator(&paint_layer_, children_to_visit);
   while (PaintLayer* child = iterator.Next()) {
     // If this Layer should paint into its own backing or a grouped backing,
     // that will be done via CompositedLayerMapping::PaintContents() and
@@ -678,7 +728,7 @@ PaintResult PaintLayerPainter::PaintChildren(
 
     if (const auto* layers_painting_overlay_overflow_controls_after =
             iterator.LayersPaintingOverlayOverflowControlsAfter(child)) {
-      for (auto* reparent_overflow_controls_layer :
+      for (auto& reparent_overflow_controls_layer :
            *layers_painting_overlay_overflow_controls_after) {
         DCHECK(reparent_overflow_controls_layer
                    ->NeedsReorderOverlayOverflowControls());
@@ -757,8 +807,8 @@ static CullRect LegacyCullRect(const PaintLayerFragment& fragment,
   // |fragment.root_fragment_data|. Adjust it to the containing transform node's
   // space in which we will paint.
   new_cull_rect.Move(PhysicalOffset(
-      RoundedIntPoint(fragment.root_fragment_data->PaintOffset())));
-  return CullRect(PixelSnappedIntRect(new_cull_rect));
+      ToRoundedPoint(fragment.root_fragment_data->PaintOffset())));
+  return CullRect(ToGfxRect(PixelSnappedIntRect(new_cull_rect)));
 }
 
 void PaintLayerPainter::PaintBackgroundForFragmentsWithPhase(

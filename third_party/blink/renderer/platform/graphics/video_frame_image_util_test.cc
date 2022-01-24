@@ -211,7 +211,7 @@ TEST(VideoFrameImageUtilTest, CreateAcceleratedImageFromTextureFrame) {
 
   auto texture_frame = media::CreateSharedImageRGBAFrame(
       fake_context.context_provider(), kTestSize, gfx::Rect(kTestSize),
-      base::DoNothing::Once());
+      base::DoNothing());
   auto image = CreateImageFromVideoFrame(texture_frame,
                                          /*allow_zero_copy_images=*/false);
   ASSERT_TRUE(image->IsTextureBacked());
@@ -223,7 +223,7 @@ TEST(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
 
   auto texture_frame = media::CreateSharedImageRGBAFrame(
       fake_context.context_provider(), kTestSize, gfx::Rect(kTestSize),
-      base::DoNothing::Once());
+      base::DoNothing());
 
   auto* raster_context_provider = fake_context.raster_context_provider();
   ASSERT_TRUE(raster_context_provider);
@@ -243,7 +243,6 @@ TEST(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
                                     provider.get());
   EXPECT_TRUE(image->IsTextureBacked());
 
-  ASSERT_FALSE(provider->needs_flush());
   ASSERT_FALSE(provider->HasRecordedDrawOps());
 }
 

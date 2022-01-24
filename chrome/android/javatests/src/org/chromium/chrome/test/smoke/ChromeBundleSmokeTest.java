@@ -9,7 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,19 +20,23 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
+import org.chromium.chrome.test.pagecontroller.utils.NonInstrumentedCrashDetector;
 import org.chromium.chrome.test.pagecontroller.utils.Ui2Locators;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
 import org.chromium.chrome.test.pagecontroller.utils.UiLocatorHelper;
 
 /** Smoke Test for Chrome bundles. */
-@SmallTest
+@LargeTest
 @RunWith(BaseJUnit4ClassRunner.class)
+@FlakyTest(message = "https://crbug.com/1269047")
 public class ChromeBundleSmokeTest {
     private static final String TARGET_ACTIVITY =
             "org.chromium.chrome.browser.test_dummy.TestDummyActivity";
+    private static final long STARTUP_TIMEOUT = 10000;
 
     public ChromeUiAutomatorTestRule mRule = new ChromeUiAutomatorTestRule();
     public ChromeUiApplicationTestRule mChromeUiRule = new ChromeUiApplicationTestRule();
@@ -46,7 +50,15 @@ public class ChromeBundleSmokeTest {
         mPackageName = InstrumentationRegistry.getArguments().getString(
                 ChromeUiApplicationTestRule.PACKAGE_NAME_ARG);
         Assert.assertNotNull("Must specify bundle under test", mPackageName);
-        mChromeUiRule.launchIntoNewTabPageOnFirstRun();
+        try {
+            mChromeUiRule.launchIntoNewTabPageOnFirstRun();
+        } catch (Exception e) {
+            if (NonInstrumentedCrashDetector.checkDidChromeCrash()) {
+                throw new RuntimeException(mPackageName + " should not have crashed.");
+            } else {
+                throw e;
+            }
+        }
     }
 
     private void runTestActivity(int testCase) {
@@ -62,10 +74,12 @@ public class ChromeBundleSmokeTest {
         IUi2Locator locator = Ui2Locators.withTextContaining(prefixText);
 
         // Wait for result dialog to show up.
-        UiLocatorHelper locatorHelper = UiAutomatorUtils.getInstance().getLocatorHelper();
+        UiLocatorHelper locatorHelper =
+                UiAutomatorUtils.getInstance().getLocatorHelper(STARTUP_TIMEOUT);
         Assert.assertTrue(locatorHelper.isOnScreen(locator));
 
         // Ensure the dialog text indicates a pass.
+        locatorHelper = UiAutomatorUtils.getInstance().getLocatorHelper(); // Default timeout.
         final String passText = prefixText + "pass";
         Assert.assertEquals(locatorHelper.getOneTextImmediate(locator, null), passText);
     }

@@ -5,8 +5,10 @@
 module echo.mojom;
 
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // Echos its input.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface EchoService {
   // Echos the passed-in string.
   EchoString(string input) => (string echoed_input);

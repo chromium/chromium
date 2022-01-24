@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ui/views/permission_bubble/file_handling_permission_request_dialog.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/permissions/permission_uma_util.h"
@@ -71,6 +71,6 @@ void FileHandlingPermissionPrompt::OnDialogResponse(bool allow,
     // dismissal. After enough dismissals, the permission will be embargoed.
     // It would probably better not to embargo, since the user must have
     // explicitly opted out of making the decision permanent.
-    delegate_->Closing();
+    delegate_->Dismiss();
   }
 }

@@ -27,6 +27,10 @@ struct SpellCheckResult;
 class SpellCheckHostChromeImpl : public SpellCheckHostImpl {
  public:
   explicit SpellCheckHostChromeImpl(int render_process_id);
+
+  SpellCheckHostChromeImpl(const SpellCheckHostChromeImpl&) = delete;
+  SpellCheckHostChromeImpl& operator=(const SpellCheckHostChromeImpl&) = delete;
+
   ~SpellCheckHostChromeImpl() override;
 
   static void Create(
@@ -127,8 +131,6 @@ class SpellCheckHostChromeImpl : public SpellCheckHostImpl {
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
   base::WeakPtrFactory<SpellCheckHostChromeImpl> weak_factory_{this};
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckHostChromeImpl);
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELL_CHECK_HOST_CHROME_IMPL_H_

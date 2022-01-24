@@ -17,8 +17,9 @@ enum DevicePostureType {
 interface DevicePostureProvider {
   // Associates an interface to the posture provider. The initial posture
   // will then be returned.
-  SetListener(pending_remote<DevicePostureProviderClient> client)
-    => (DevicePostureType posture);
+  AddListenerAndGetCurrentPosture(
+    pending_remote<DevicePostureProviderClient> client)
+      => (DevicePostureType posture);
 };
 
 // Interface that client of the DevicePostureProvider interface must implement

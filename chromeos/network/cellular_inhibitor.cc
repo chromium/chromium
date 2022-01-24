@@ -25,13 +25,11 @@ namespace {
 
 // Delay for first uninhibit retry attempt. Delay doubles for every
 // subsequent attempt.
-constexpr base::TimeDelta kUninhibitRetryDelay =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kUninhibitRetryDelay = base::Seconds(2);
 
 // Timeout waiting for Cellular device scanning state to change
 // to true and back to false.
-constexpr base::TimeDelta kScanningChangeTimeout =
-    base::TimeDelta::FromSeconds(120);
+constexpr base::TimeDelta kScanningChangeTimeout = base::Seconds(120);
 
 }  // namespace
 
@@ -52,7 +50,7 @@ CellularInhibitor::InhibitLock::~InhibitLock() {
 
 // static
 const base::TimeDelta CellularInhibitor::kInhibitPropertyChangeTimeout =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 // static
 void CellularInhibitor::RecordInhibitOperationResult(
@@ -382,6 +380,9 @@ std::ostream& operator<<(
       break;
     case chromeos::CellularInhibitor::InhibitReason::kRefreshingProfileList:
       stream << "[Refreshing profile list]";
+      break;
+    case chromeos::CellularInhibitor::InhibitReason::kResettingEuiccMemory:
+      stream << "[Resetting EUICC memory]";
       break;
   }
   return stream;

@@ -8,9 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/sync/model/model_type_store_service.h"
@@ -23,7 +22,7 @@ class AutofillWebDataService;
 }  // namespace autofill
 
 namespace password_manager {
-class PasswordStore;
+class PasswordStoreInterface;
 }  // namespace password_manager
 
 namespace syncer {
@@ -39,6 +38,10 @@ class ProfileSyncComponentsFactoryImpl;
 class ChromeSyncClient : public browser_sync::BrowserSyncClient {
  public:
   explicit ChromeSyncClient(Profile* profile);
+
+  ChromeSyncClient(const ChromeSyncClient&) = delete;
+  ChromeSyncClient& operator=(const ChromeSyncClient&) = delete;
+
   ~ChromeSyncClient() override;
 
   // BrowserSyncClient implementation.
@@ -54,7 +57,6 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
       override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
-  base::RepeatingClosure GetPasswordStateChangedCallback() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;
   syncer::TrustedVaultClient* GetTrustedVaultClient() override;
@@ -99,16 +101,16 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   // respective backend threads.
   scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service_;
   scoped_refptr<autofill::AutofillWebDataService> account_web_data_service_;
-  scoped_refptr<password_manager::PasswordStore> profile_password_store_;
-  scoped_refptr<password_manager::PasswordStore> account_password_store_;
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      profile_password_store_;
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      account_password_store_;
 
   // The task runner for the |web_data_service_|, if any.
   scoped_refptr<base::SequencedTaskRunner> web_data_service_thread_;
 
   // Generates and monitors the ExtensionsActivity object used by sync.
   ExtensionsActivityMonitor extensions_activity_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSyncClient);
 };
 
 }  // namespace browser_sync

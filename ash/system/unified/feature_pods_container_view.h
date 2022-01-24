@@ -26,6 +26,10 @@ class ASH_EXPORT FeaturePodsContainerView : public views::View,
  public:
   FeaturePodsContainerView(UnifiedSystemTrayController* controller,
                            bool initially_expanded);
+
+  FeaturePodsContainerView(const FeaturePodsContainerView&) = delete;
+  FeaturePodsContainerView& operator=(const FeaturePodsContainerView&) = delete;
+
   ~FeaturePodsContainerView() override;
 
   // Add a FeaturePodButton as a child view and if it's visible add it to the
@@ -122,8 +126,6 @@ class ASH_EXPORT FeaturePodsContainerView : public views::View,
   // A view model that contains all visible feature pod buttons.
   // Used to calculate required number of pages.
   views::ViewModelT<FeaturePodButton> visible_buttons_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeaturePodsContainerView);
 };
 
 }  // namespace ash

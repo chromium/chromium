@@ -15,6 +15,7 @@
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_error_factory.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
+#include "extensions/browser/api/storage/value_store_util.h"
 
 namespace extensions {
 
@@ -24,9 +25,9 @@ void AddAllSyncData(const std::string& extension_id,
                     const base::DictionaryValue& src,
                     syncer::ModelType type,
                     syncer::SyncDataList* dst) {
-  for (base::DictionaryValue::Iterator it(src); !it.IsAtEnd(); it.Advance()) {
-    dst->push_back(settings_sync_util::CreateData(extension_id, it.key(),
-                                                  it.value(), type));
+  for (auto it : src.DictItems()) {
+    dst->push_back(settings_sync_util::CreateData(extension_id, it.first,
+                                                  it.second, type));
   }
 }
 
@@ -34,22 +35,22 @@ std::unique_ptr<base::DictionaryValue> EmptyDictionaryValue() {
   return std::make_unique<base::DictionaryValue>();
 }
 
-ValueStoreFactory::ModelType ToFactoryModelType(syncer::ModelType sync_type) {
+value_store_util::ModelType ToFactoryModelType(syncer::ModelType sync_type) {
   switch (sync_type) {
     case syncer::APP_SETTINGS:
-      return ValueStoreFactory::ModelType::APP;
+      return value_store_util::ModelType::APP;
     case syncer::EXTENSION_SETTINGS:
-      return ValueStoreFactory::ModelType::EXTENSION;
+      return value_store_util::ModelType::EXTENSION;
     default:
       NOTREACHED();
   }
-  return ValueStoreFactory::ModelType::EXTENSION;
+  return value_store_util::ModelType::EXTENSION;
 }
 
 }  // namespace
 
 SyncStorageBackend::SyncStorageBackend(
-    scoped_refptr<ValueStoreFactory> storage_factory,
+    scoped_refptr<value_store::ValueStoreFactory> storage_factory,
     const SettingsStorageQuotaEnforcer::Limits& quota,
     scoped_refptr<SettingsObserverList> observers,
     syncer::ModelType sync_type,
@@ -66,7 +67,8 @@ SyncStorageBackend::SyncStorageBackend(
 
 SyncStorageBackend::~SyncStorageBackend() {}
 
-ValueStore* SyncStorageBackend::GetStorage(const std::string& extension_id) {
+value_store::ValueStore* SyncStorageBackend::GetStorage(
+    const std::string& extension_id) {
   DCHECK(IsOnBackendSequence());
   return GetOrCreateStorageWithSyncData(extension_id, EmptyDictionaryValue());
 }
@@ -83,9 +85,9 @@ SyncableSettingsStorage* SyncStorageBackend::GetOrCreateStorageWithSyncData(
 
   std::unique_ptr<SettingsStorageQuotaEnforcer> settings_storage(
       new SettingsStorageQuotaEnforcer(
-          quota_, storage_factory_->CreateSettingsStore(
+          quota_, value_store_util::CreateSettingsStore(
                       settings_namespace::SYNC, ToFactoryModelType(sync_type_),
-                      extension_id)));
+                      extension_id, storage_factory_)));
 
   // It's fine to create the quota enforcer underneath the sync layer, since
   // sync will only go ahead if each underlying storage operation succeeds.
@@ -118,24 +120,6 @@ void SyncStorageBackend::DeleteStorage(const std::string& extension_id) {
   storage_objs_.erase(extension_id);
 }
 
-std::set<std::string> SyncStorageBackend::GetKnownExtensionIDs(
-    ValueStoreFactory::ModelType model_type) const {
-  DCHECK(IsOnBackendSequence());
-  std::set<std::string> result;
-
-  // Storage areas can be in-memory as well as on disk. |storage_objs_| will
-  // contain all that are in-memory.
-  for (const auto& storage_obj : storage_objs_) {
-    result.insert(storage_obj.first);
-  }
-
-  std::set<std::string> disk_ids = storage_factory_->GetKnownExtensionIDs(
-      settings_namespace::SYNC, model_type);
-  result.insert(disk_ids.begin(), disk_ids.end());
-
-  return result;
-}
-
 void SyncStorageBackend::WaitUntilReadyToSync(base::OnceClosure done) {
   DCHECK(IsOnBackendSequence());
   // This class is ready to sync immediately upon construction.
@@ -148,19 +132,21 @@ syncer::SyncDataList SyncStorageBackend::GetAllSyncDataForTesting(
   // For all extensions, get all their settings.  This has the effect
   // of bringing in the entire state of extension settings in memory; sad.
   syncer::SyncDataList all_sync_data;
-  std::set<std::string> known_extension_ids(
-      GetKnownExtensionIDs(ToFactoryModelType(type)));
 
-  for (auto it = known_extension_ids.cbegin(); it != known_extension_ids.cend();
-       ++it) {
-    ValueStore::ReadResult maybe_settings =
-        GetOrCreateStorageWithSyncData(*it, EmptyDictionaryValue())->Get();
+  // For tests, all storage areas are kept in memory in `storage_objs_`.
+  for (const auto& storage_obj : storage_objs_) {
+    std::string extension_id = storage_obj.first;
+
+    value_store::ValueStore::ReadResult maybe_settings =
+        GetOrCreateStorageWithSyncData(extension_id, EmptyDictionaryValue())
+            ->Get();
     if (!maybe_settings.status().ok()) {
-      LOG(WARNING) << "Failed to get settings for " << *it << ": "
+      LOG(WARNING) << "Failed to get settings for " << extension_id << ": "
                    << maybe_settings.status().message;
       continue;
     }
-    AddAllSyncData(*it, maybe_settings.settings(), type, &all_sync_data);
+    AddAllSyncData(extension_id, maybe_settings.settings(), type,
+                   &all_sync_data);
   }
 
   return all_sync_data;

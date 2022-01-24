@@ -6,7 +6,6 @@
 
 #include <alpha-compositing-unstable-v1-server-protocol.h>
 #include <aura-shell-server-protocol.h>
-#include <color-space-unstable-v1-server-protocol.h>
 #include <cursor-shapes-unstable-v1-server-protocol.h>
 #include <extended-drag-unstable-v1-server-protocol.h>
 #include <gaming-input-unstable-v2-server-protocol.h>
@@ -16,20 +15,25 @@
 #include <keyboard-extension-unstable-v1-server-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-server-protocol.h>
 #include <notification-shell-unstable-v1-server-protocol.h>
+#include <overlay-prioritizer-server-protocol.h>
 #include <pointer-constraints-unstable-v1-server-protocol.h>
 #include <pointer-gestures-unstable-v1-server-protocol.h>
 #include <presentation-time-server-protocol.h>
 #include <relative-pointer-unstable-v1-server-protocol.h>
 #include <remote-shell-unstable-v1-server-protocol.h>
+#include <remote-shell-unstable-v2-server-protocol.h>
 #include <secure-output-unstable-v1-server-protocol.h>
 #include <stylus-tools-unstable-v1-server-protocol.h>
 #include <stylus-unstable-v2-server-protocol.h>
+#include <surface-augmenter-server-protocol.h>
+#include <text-input-extension-unstable-v1-server-protocol.h>
 #include <text-input-unstable-v1-server-protocol.h>
 #include <viewporter-server-protocol.h>
 #include <vsync-feedback-unstable-v1-server-protocol.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 #include <xdg-decoration-unstable-v1-server-protocol.h>
+#include <xdg-output-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
@@ -42,11 +46,17 @@
 #include "base/files/file_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/buildflags.h"
+#include "components/exo/capabilities.h"
 #include "components/exo/display.h"
+#include "components/exo/wayland/overlay_prioritizer.h"
 #include "components/exo/wayland/serial_tracker.h"
+#include "components/exo/wayland/server_util.h"
+#include "components/exo/wayland/surface_augmenter.h"
 #include "components/exo/wayland/wayland_display_output.h"
+#include "components/exo/wayland/wayland_watcher.h"
 #include "components/exo/wayland/wl_compositor.h"
 #include "components/exo/wayland/wl_data_device_manager.h"
 #include "components/exo/wayland/wl_output.h"
@@ -65,10 +75,11 @@
 #include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <idle-inhibit-unstable-v1-server-protocol.h>
+#include "ash/constants/ash_features.h"
 #include "base/system/sys_info.h"
 #include "components/exo/wayland/wl_shell.h"
 #include "components/exo/wayland/xdg_shell.h"
-#include "components/exo/wayland/zcr_color_space.h"
 #include "components/exo/wayland/zcr_cursor_shapes.h"
 #include "components/exo/wayland/zcr_extended_drag.h"
 #include "components/exo/wayland/zcr_gaming_input.h"
@@ -76,19 +87,28 @@
 #include "components/exo/wayland/zcr_keyboard_extension.h"
 #include "components/exo/wayland/zcr_notification_shell.h"
 #include "components/exo/wayland/zcr_remote_shell.h"
+#include "components/exo/wayland/zcr_remote_shell_v2.h"
 #include "components/exo/wayland/zcr_stylus_tools.h"
+#include "components/exo/wayland/zwp_idle_inhibit_manager.h"
 #include "components/exo/wayland/zwp_input_timestamps_manager.h"
 #include "components/exo/wayland/zwp_pointer_constraints.h"
 #include "components/exo/wayland/zwp_pointer_gestures.h"
 #include "components/exo/wayland/zwp_relative_pointer_manager.h"
 #include "components/exo/wayland/zwp_text_input_manager.h"
 #include "components/exo/wayland/zxdg_decoration_manager.h"
+#include "components/exo/wayland/zxdg_output_manager.h"
 #include "components/exo/wayland/zxdg_shell.h"
 
 #if BUILDFLAG(ENABLE_WESTON_TEST)
 #include <weston-test-server-protocol.h>
 #include "components/exo/wayland/weston_test.h"
 #endif
+
+#if BUILDFLAG(ENABLE_COLOR_MANAGER)
+#include <chrome-color-management-server-protocol.h>
+#include "components/exo/wayland/zcr_color_manager.h"
+#endif
+
 #endif
 
 #if defined(USE_OZONE)
@@ -110,7 +130,8 @@ namespace switches {
 // useful when another wayland server is already running and using the
 // default name.
 constexpr char kWaylandServerSocket[] = "wayland-server-socket";
-}
+
+}  // namespace switches
 
 namespace {
 
@@ -123,7 +144,7 @@ const char kWaylandSocketGroup[] = "wayland";
 bool IsDrmAtomicAvailable() {
 #if defined(USE_OZONE)
   auto& host_properties =
-      ui::OzonePlatform::GetInstance()->GetInitializedHostProperties();
+      ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
   return host_properties.supports_overlays;
 #else
   LOG(WARNING) << "Ozone disabled, cannot determine whether DrmAtomic is "
@@ -136,16 +157,79 @@ void wayland_log(const char* fmt, va_list argp) {
   LOG(WARNING) << "libwayland: " << base::StringPrintV(fmt, argp);
 }
 
+std::unique_ptr<Server> CreateInitialServer(
+    Display* display,
+    std::unique_ptr<Capabilities> capabilities) {
+  std::unique_ptr<Server> server(new Server(display, std::move(capabilities)));
+  server->Initialize();
+  return server;
+}
+
+std::unique_ptr<Server> SetUpServer(std::unique_ptr<Server> server,
+                                    const base::FilePath& socket_path) {
+  if (!socket_path.IsAbsolute()) {
+    LOG(ERROR) << "Unable to create a wayland server. The provided path must "
+                  "be absolute, got: "
+               << socket_path;
+    return nullptr;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On debugging chromeos-chrome on linux platform,
+  // try to ensure the directory if missing.
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    base::FilePath runtime_dir = socket_path.DirName();
+    CHECK(base::DirectoryExists(runtime_dir) ||
+          base::CreateDirectory(runtime_dir))
+        << "Failed to create XDG_RUNTIME_DIR";
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (!server->AddSocket(socket_path.MaybeAsASCII().c_str())) {
+    LOG(ERROR) << "Failed to add socket: " << socket_path;
+    return nullptr;
+  }
+
+  // Change permissions on the socket.
+  struct group wayland_group;
+  struct group* wayland_group_res = nullptr;
+  char buf[10000];
+  if (HANDLE_EINTR(getgrnam_r(kWaylandSocketGroup, &wayland_group, buf,
+                              sizeof(buf), &wayland_group_res)) < 0) {
+    PLOG(ERROR) << "getgrnam_r";
+    return nullptr;
+  }
+  if (wayland_group_res) {
+    if (HANDLE_EINTR(chown(socket_path.MaybeAsASCII().c_str(), -1,
+                           wayland_group.gr_gid)) < 0) {
+      PLOG(ERROR) << "chown";
+      return nullptr;
+    }
+  } else {
+    LOG(WARNING) << "Group '" << kWaylandSocketGroup << "' not found";
+  }
+
+  if (!base::SetPosixFilePermissions(socket_path, 0660)) {
+    PLOG(ERROR) << "Could not set permissions: " << socket_path.value();
+    return nullptr;
+  }
+  return server;
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // Server, public:
 
-Server::Server(Display* display) : display_(display) {
+Server::Server(Display* display, std::unique_ptr<Capabilities> capabilities)
+    : display_(display), capabilities_(std::move(capabilities)) {
   wl_log_set_handler_server(wayland_log);
 
   wl_display_.reset(wl_display_create());
+  SetCapabilities(wl_display_.get(), capabilities_.get());
+}
 
+void Server::Initialize() {
   serial_tracker_ = std::make_unique<SerialTracker>(wl_display_.get());
   wl_global_create(wl_display_.get(), &wl_compositor_interface,
                    kWlCompositorVersion, this, bind_compositor);
@@ -167,6 +251,10 @@ Server::Server(Display* display) : display_(display) {
                    kWlDataDeviceManagerVersion, data_device_manager_data_.get(),
                    bind_data_device_manager);
 
+  wl_global_create(wl_display_.get(), &surface_augmenter_interface, 1, display_,
+                   bind_surface_augmenter);
+  wl_global_create(wl_display_.get(), &overlay_prioritizer_interface, 1,
+                   display_, bind_overlay_prioritizer);
   wl_global_create(wl_display_.get(), &wp_viewporter_interface, 1, display_,
                    bind_viewporter);
   wl_global_create(wl_display_.get(), &wp_presentation_interface, 1, display_,
@@ -213,6 +301,9 @@ Server::Server(Display* display) : display_(display) {
   wl_global_create(wl_display_.get(), &zcr_remote_shell_v1_interface,
                    zcr_remote_shell_v1_interface.version,
                    remote_shell_data_.get(), bind_remote_shell);
+  wl_global_create(wl_display_.get(), &zcr_remote_shell_v2_interface,
+                   zcr_remote_shell_v2_interface.version,
+                   remote_shell_data_.get(), bind_remote_shell_v2);
 
   wl_global_create(wl_display_.get(), &zcr_stylus_tools_v1_interface, 1,
                    display_, bind_stylus_tools);
@@ -226,16 +317,26 @@ Server::Server(Display* display) : display_(display) {
   wl_global_create(wl_display_.get(),
                    &zwp_relative_pointer_manager_v1_interface, 1, display_,
                    bind_relative_pointer_manager);
-  wl_global_create(wl_display_.get(), &zcr_color_space_v1_interface, 1,
-                   display_, bind_color_space);
+#if BUILDFLAG(ENABLE_COLOR_MANAGER)
+  wl_global_create(wl_display_.get(), &zcr_color_manager_v1_interface, 1,
+                   display_, bind_zcr_color_manager);
+#endif
   wl_global_create(wl_display_.get(), &zxdg_decoration_manager_v1_interface, 1,
                    display_, bind_zxdg_decoration_manager);
   wl_global_create(wl_display_.get(), &zcr_extended_drag_v1_interface, 1,
                    display_, bind_extended_drag);
+  wl_global_create(wl_display_.get(), &zxdg_output_manager_v1_interface, 3,
+                   display_, bind_zxdg_output_manager);
+  if (ash::features::IsIdleInhibitEnabled()) {
+    wl_global_create(wl_display_.get(), &zwp_idle_inhibit_manager_v1_interface,
+                     1, display_, bind_zwp_idle_inhibit_manager);
+  }
 
 #if BUILDFLAG(ENABLE_WESTON_TEST)
+  weston_test_data_ = std::make_unique<WestonTestState>();
   wl_global_create(wl_display_.get(), &weston_test_interface,
-                   kWestonTestVersion, display_, bind_weston_test);
+                   kWestonTestVersion, weston_test_data_.get(),
+                   bind_weston_test);
 #endif
 
   zcr_keyboard_extension_data_ =
@@ -248,6 +349,12 @@ Server::Server(Display* display) : display_(display) {
   wl_global_create(wl_display_.get(), &zwp_text_input_manager_v1_interface, 1,
                    zwp_text_manager_data_.get(), bind_text_input_manager);
 
+  zcr_text_input_extension_data_ =
+      std::make_unique<WaylandTextInputExtension>();
+  wl_global_create(wl_display_.get(), &zcr_text_input_extension_v1_interface, 1,
+                   zcr_text_input_extension_data_.get(),
+                   bind_text_input_extension);
+
   zxdg_shell_data_ =
       std::make_unique<WaylandZxdgShell>(display_, serial_tracker_.get());
   wl_global_create(wl_display_.get(), &zxdg_shell_v6_interface, 1,
@@ -257,7 +364,7 @@ Server::Server(Display* display) : display_(display) {
       std::make_unique<WaylandXdgShell>(display_, serial_tracker_.get());
   wl_global_create(wl_display_.get(), &xdg_wm_base_interface, 1,
                    xdg_shell_data_.get(), bind_xdg_shell);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(USE_FULLSCREEN_SHELL)
   wl_global_create(wl_display_.get(), &zwp_fullscreen_shell_v1_interface, 1,
@@ -265,7 +372,14 @@ Server::Server(Display* display) : display_(display) {
 #endif
 }
 
+void Server::Finalize() {
+  // At this point, server creation was successful, so we should instantiate the
+  // watcher.
+  wayland_watcher_ = std::make_unique<wayland::WaylandWatcher>(this);
+}
+
 Server::~Server() {
+  RemoveCapabilities(wl_display_.get());
   // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
   // methods.
   serial_tracker_->Shutdown();
@@ -274,24 +388,11 @@ Server::~Server() {
 
 // static
 std::unique_ptr<Server> Server::Create(Display* display) {
-  std::unique_ptr<Server> server(new Server(display));
-
   char* runtime_dir_str = getenv("XDG_RUNTIME_DIR");
   if (!runtime_dir_str) {
     LOG(ERROR) << "XDG_RUNTIME_DIR not set in the environment";
     return nullptr;
   }
-
-  const base::FilePath runtime_dir(runtime_dir_str);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On debugging chromeos-chrome on linux platform,
-  // try to ensure the directory if missing.
-  if (!base::SysInfo::IsRunningOnChromeOS()) {
-    CHECK(base::DirectoryExists(runtime_dir) ||
-          base::CreateDirectory(runtime_dir))
-        << "Failed to create XDG_RUNTIME_DIR";
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::string socket_name(kSocketName);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -299,39 +400,42 @@ std::unique_ptr<Server> Server::Create(Display* display) {
     socket_name =
         command_line->GetSwitchValueASCII(switches::kWaylandServerSocket);
   }
+  return Create(display, Capabilities::GetDefaultCapabilities(),
+                base::FilePath(runtime_dir_str).Append(socket_name));
+}
 
-  if (!server->AddSocket(socket_name.c_str())) {
-    LOG(ERROR) << "Failed to add socket: " << socket_name;
-    return nullptr;
-  }
-
-  base::FilePath socket_path = base::FilePath(runtime_dir).Append(socket_name);
-
-  // Change permissions on the socket.
-  struct group wayland_group;
-  struct group* wayland_group_res = nullptr;
-  char buf[10000];
-  if (HANDLE_EINTR(getgrnam_r(kWaylandSocketGroup, &wayland_group, buf,
-                              sizeof(buf), &wayland_group_res)) < 0) {
-    PLOG(ERROR) << "getgrnam_r";
-    return nullptr;
-  }
-  if (wayland_group_res) {
-    if (HANDLE_EINTR(chown(socket_path.MaybeAsASCII().c_str(), -1,
-                           wayland_group.gr_gid)) < 0) {
-      PLOG(ERROR) << "chown";
-      return nullptr;
-    }
-  } else {
-    LOG(WARNING) << "Group '" << kWaylandSocketGroup << "' not found";
-  }
-
-  if (!base::SetPosixFilePermissions(socket_path, 0660)) {
-    PLOG(ERROR) << "Could not set permissions: " << socket_path.value();
-    return nullptr;
-  }
-
+// static
+std::unique_ptr<Server> Server::Create(
+    Display* display,
+    std::unique_ptr<Capabilities> capabilities,
+    const base::FilePath& socket_path) {
+  std::unique_ptr<Server> server =
+      CreateInitialServer(display, std::move(capabilities));
+  server = SetUpServer(std::move(server), socket_path);
+  if (server)
+    server->Finalize();
   return server;
+}
+
+// static
+void Server::CreateAsync(
+    Display* display,
+    std::unique_ptr<Capabilities> capabilities,
+    const base::FilePath& socket_path,
+    base::OnceCallback<void(std::unique_ptr<Server>)> callback) {
+  std::unique_ptr<Server> server =
+      CreateInitialServer(display, std::move(capabilities));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::MayBlock(),
+      base::BindOnce(&SetUpServer, std::move(server), socket_path),
+      base::BindOnce(
+          [](base::OnceCallback<void(std::unique_ptr<Server>)> callback,
+             std::unique_ptr<Server> server) {
+            if (server)
+              server->Finalize();
+            std::move(callback).Run(std::move(server));
+          },
+          std::move(callback)));
 }
 
 bool Server::AddSocket(const std::string name) {
@@ -378,6 +482,11 @@ wl_resource* Server::GetOutputResource(wl_client* client, int64_t display_id) {
   if (iter == outputs_.end())
     return nullptr;
   return iter->second.get()->GetOutputResourceForClient(client);
+}
+
+void Server::AddWaylandOutput(int64_t id,
+                              std::unique_ptr<WaylandDisplayOutput> output) {
+  outputs_.insert(std::make_pair(id, std::move(output)));
 }
 
 }  // namespace wayland

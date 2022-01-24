@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_SYSTEM_WEB_APP_UI_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_SYSTEM_WEB_APP_UI_UTILS_H_
 
+#include <vector>
+
+#include "base/files/file_path.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -17,6 +20,8 @@
 class Profile;
 
 namespace web_app {
+
+class WebAppProvider;
 
 // Returns the system app type for the given App ID.
 absl::optional<SystemAppType> GetSystemWebAppTypeForAppId(Profile* profile,
@@ -78,12 +83,18 @@ void LaunchSystemWebAppAsync(
 // executing). Useful for testing SWA launch behaviors.
 void FlushSystemWebAppLaunchesForTesting(Profile* profile);
 
+// Utility function to set up launch files and launch directory as appropriate.
+void SetLaunchFiles(bool should_include_launch_directory,
+                    const apps::AppLaunchParams& params,
+                    content::WebContents* web_contents,
+                    WebAppProvider* provider);
+
 // Implementation of LaunchSystemWebApp. Do not use this before discussing your
 // use case with the System Web Apps team.
 Browser* LaunchSystemWebAppImpl(Profile* profile,
                                 SystemAppType type,
                                 const GURL& url,
-                                apps::AppLaunchParams& params);
+                                const apps::AppLaunchParams& params);
 
 // Returns a browser that is hosting the given system app type and browser type,
 // or nullptr if not found.

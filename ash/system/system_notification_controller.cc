@@ -20,21 +20,12 @@
 #include "ui/message_center/message_center.h"
 
 namespace ash {
-namespace {
-
-std::unique_ptr<ash::CellularSetupNotifier> CreateCellularSetupNotifier() {
-  return chromeos::features::IsCellularActivationUiEnabled()
-             ? std::make_unique<ash::CellularSetupNotifier>()
-             : nullptr;
-}
-
-}  // namespace
 
 SystemNotificationController::SystemNotificationController()
     : auto_connect_(std::make_unique<AutoConnectNotifier>()),
       caps_lock_(std::make_unique<CapsLockNotificationController>()),
       cast_(std::make_unique<CastNotificationController>()),
-      cellular_setup_notifier_(CreateCellularSetupNotifier()),
+      cellular_setup_notifier_(std::make_unique<ash::CellularSetupNotifier>()),
       gesture_education_(
           std::make_unique<GestureEducationNotificationController>()),
       power_(std::make_unique<PowerNotificationController>(

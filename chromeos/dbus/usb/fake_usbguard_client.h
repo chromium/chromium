@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/usb/usbguard_client.h"
 #include "chromeos/dbus/usb/usbguard_observer.h"
@@ -19,6 +18,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeUsbguardClient
     : public UsbguardClient {
  public:
   FakeUsbguardClient();
+
+  FakeUsbguardClient(const FakeUsbguardClient&) = delete;
+  FakeUsbguardClient& operator=(const FakeUsbguardClient&) = delete;
+
   ~FakeUsbguardClient() override;
 
   // Returns the global instance if initialized. May return null.
@@ -40,8 +43,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeUsbguardClient
 
  private:
   base::ObserverList<UsbguardObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUsbguardClient);
 };
 
 }  // namespace chromeos

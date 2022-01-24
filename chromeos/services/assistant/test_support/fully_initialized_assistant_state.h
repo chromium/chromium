@@ -15,14 +15,18 @@ namespace assistant {
 class FullyInitializedAssistantState : public ash::AssistantState {
  public:
   FullyInitializedAssistantState();
+
+  FullyInitializedAssistantState(const FullyInitializedAssistantState&) =
+      delete;
+  FullyInitializedAssistantState& operator=(
+      const FullyInitializedAssistantState&) = delete;
+
   ~FullyInitializedAssistantState() override = default;
 
   void SetAssistantEnabled(bool enabled);
 
  private:
   void InitializeAllValues();
-
-  DISALLOW_COPY_AND_ASSIGN(FullyInitializedAssistantState);
 };
 
 }  // namespace assistant

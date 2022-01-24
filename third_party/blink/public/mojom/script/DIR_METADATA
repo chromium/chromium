@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>HTML>Script"
-}
+mixins: "//third_party/blink/renderer/core/script/COMMON_METADATA"
 
-team_email: "module-dev@chromium.org"

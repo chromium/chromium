@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "chrome/chrome_elf/sha1/sha1.h"
@@ -107,7 +106,7 @@ DWORD WINAPI NotificationHandler(LPVOID parameter) {
 
   do {
     if (!args->notification_event->TimedWait(
-            base::TimeDelta::FromMilliseconds(kWaitTimeoutMs)))
+            base::Milliseconds(kWaitTimeoutMs)))
       break;
 
     bytes_written = DrainLog(&buffer[0], buffer_size, nullptr);

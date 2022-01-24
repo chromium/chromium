@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_MENU_MENU_SCROLL_VIEW_CONTAINER_H_
 #define UI_VIEWS_CONTROLS_MENU_MENU_SCROLL_VIEW_CONTAINER_H_
 
-#include "base/macros.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view.h"
@@ -23,6 +22,9 @@ class MenuScrollViewContainer : public View {
   METADATA_HEADER(MenuScrollViewContainer);
 
   explicit MenuScrollViewContainer(SubmenuView* content_view);
+
+  MenuScrollViewContainer(const MenuScrollViewContainer&) = delete;
+  MenuScrollViewContainer& operator=(const MenuScrollViewContainer&) = delete;
 
   // Returns the buttons for scrolling up/down.
   View* scroll_down_button() const { return scroll_down_button_; }
@@ -80,8 +82,6 @@ class MenuScrollViewContainer : public View {
 
   // Corner radius of the background.
   int corner_radius_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuScrollViewContainer);
 };
 
 }  // namespace views

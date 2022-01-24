@@ -73,7 +73,9 @@ public class IncognitoTabModelTest {
     public void testCloseAllDuringAddTabDoesNotCrash() {
         createTabOnUiThread();
         Assert.assertEquals(1, mTabModel.getCount());
-        mTabModel.addObserver(new CloseAllDuringAddTabTabModelObserver());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mTabModel.addObserver(new CloseAllDuringAddTabTabModelObserver()));
+
         createTabOnUiThread();
         Assert.assertEquals(1, mTabModel.getCount());
     }
@@ -103,16 +105,18 @@ public class IncognitoTabModelTest {
         CallbackHelper didAddTabCallbackHelper = new CallbackHelper();
         CallbackHelper tabRemovedCallbackHelper = new CallbackHelper();
 
-        mTabModel.addObserver(new TabModelObserver() {
-            @Override
-            public void tabRemoved(Tab tab) {
-                tabRemovedCallbackHelper.notifyCalled();
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTabModel.addObserver(new TabModelObserver() {
+                @Override
+                public void tabRemoved(Tab tab) {
+                    tabRemovedCallbackHelper.notifyCalled();
+                }
 
-            @Override
-            public void didAddTab(Tab tab, int type, int creationState) {
-                didAddTabCallbackHelper.notifyCalled();
-            }
+                @Override
+                public void didAddTab(Tab tab, int type, int creationState) {
+                    didAddTabCallbackHelper.notifyCalled();
+                }
+            });
         });
 
         createTabOnUiThread();

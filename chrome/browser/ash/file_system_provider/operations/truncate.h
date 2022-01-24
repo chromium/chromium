@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -38,6 +37,10 @@ class Truncate : public Operation {
            const base::FilePath& file_path,
            int64_t length,
            storage::AsyncFileUtil::StatusCallback callback);
+
+  Truncate(const Truncate&) = delete;
+  Truncate& operator=(const Truncate&) = delete;
+
   ~Truncate() override;
 
   // Operation overrides.
@@ -53,8 +56,6 @@ class Truncate : public Operation {
   base::FilePath file_path_;
   int64_t length_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Truncate);
 };
 
 }  // namespace operations

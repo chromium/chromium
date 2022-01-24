@@ -12,9 +12,10 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
@@ -28,7 +29,7 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/net_errors.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/event_handler.h"
 
 class AccountId;
@@ -41,14 +42,9 @@ enum class TrayActionState;
 }  // namespace mojom
 }  // namespace ash
 
-namespace base {
-class ListValue;
-}
-
 namespace chromeos {
 
 class CoreOobeView;
-class ErrorScreensHistogramHelper;
 class GaiaScreenHandler;
 class UserContext;
 
@@ -117,6 +113,10 @@ class SigninScreenHandler
       ErrorScreen* error_screen,
       CoreOobeView* core_oobe_view,
       GaiaScreenHandler* gaia_screen_handler);
+
+  SigninScreenHandler(const SigninScreenHandler&) = delete;
+  SigninScreenHandler& operator=(const SigninScreenHandler&) = delete;
+
   ~SigninScreenHandler() override;
 
   static std::string GetUserLastInputMethod(const std::string& username);
@@ -141,10 +141,6 @@ class SigninScreenHandler
   // also be set to a high value to disable the offline message on slow
   // configurations like MSAN, where it otherwise triggers on every run.
   void SetOfflineTimeoutForTesting(base::TimeDelta offline_timeout);
-
-  // Gets the keyboard remapped pref value for `pref_name` key. Returns true if
-  // successful, otherwise returns false.
-  bool GetKeyboardRemappedPrefValue(const std::string& pref_name, int* value);
 
  private:
   friend class GaiaScreenHandler;
@@ -195,7 +191,7 @@ class SigninScreenHandler
                               bool authenticated_by_pin);
   void HandleLaunchIncognito();
   void HandleLaunchSAMLPublicSession(const std::string& email);
-  void HandleOfflineLogin(const base::ListValue* args);
+  void HandleOfflineLogin();
   void HandleToggleEnrollmentScreen();
   void HandleToggleResetScreen();
   void HandleToggleKioskAutolaunchScreen();
@@ -215,11 +211,6 @@ class SigninScreenHandler
   void AuthenticateExistingUser(const AccountId& account_id,
                                 const std::string& password,
                                 bool authenticated_by_pin);
-
-  // Returns true iff
-  // (i)   log in is restricted to some user list,
-  // (ii)  all users in the restricted list are present.
-  bool AllAllowlistedUsersPresent();
 
   // Returns true if current visible screen is the Gaia sign-in page.
   bool IsGaiaVisible();
@@ -305,8 +296,6 @@ class SigninScreenHandler
   std::unique_ptr<AccountId> focused_pod_account_id_;
 
   base::WeakPtrFactory<SigninScreenHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SigninScreenHandler);
 };
 
 }  // namespace chromeos

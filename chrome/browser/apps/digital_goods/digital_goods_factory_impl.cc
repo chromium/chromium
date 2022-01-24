@@ -37,9 +37,9 @@ void DigitalGoodsFactoryImpl::BindDigitalGoodsFactory(
 void DigitalGoodsFactoryImpl::CreateDigitalGoods(
     const std::string& payment_method,
     CreateDigitalGoodsCallback callback) {
-  if (!render_frame_host_->IsFeatureEnabled(
+  if (!render_frame_host().IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kPayment)) {
-    mojo::ReportBadMessage("Feature policy blocks Payment");
+    receiver_.ReportBadMessage("Feature policy blocks Payment");
     return;
   }
 
@@ -59,7 +59,7 @@ void DigitalGoodsFactoryImpl::CreateDigitalGoods(
     return;
   }
 
-  if (apps::GetTwaPackageName(render_frame_host_).empty()) {
+  if (apps::GetTwaPackageName(&render_frame_host()).empty()) {
     std::move(callback).Run(
         payments::mojom::CreateDigitalGoodsResponseCode::kUnsupportedContext,
         /*digital_goods=*/mojo::NullRemote());
@@ -67,21 +67,22 @@ void DigitalGoodsFactoryImpl::CreateDigitalGoods(
   }
 
   // TODO(jshikaram): check with Android if there is a payment_method available.
-  std::move(callback).Run(payments::mojom::CreateDigitalGoodsResponseCode::kOk,
-                          DigitalGoodsImpl::CreateAndBind(render_frame_host_));
+  std::move(callback).Run(
+      payments::mojom::CreateDigitalGoodsResponseCode::kOk,
+      DigitalGoodsImpl::CreateAndBind(&render_frame_host()));
 }
 
 // Private methods:
 
-DigitalGoodsFactoryImpl::DigitalGoodsFactoryImpl(
-    content::RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host), receiver_(this) {}
+DigitalGoodsFactoryImpl::DigitalGoodsFactoryImpl(content::RenderFrameHost* rfh)
+    : content::DocumentUserData<DigitalGoodsFactoryImpl>(rfh),
+      receiver_(this) {}
 
 void DigitalGoodsFactoryImpl::BindRequest(
     mojo::PendingReceiver<payments::mojom::DigitalGoodsFactory> receiver) {
   receiver_.Bind(std::move(receiver));
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DigitalGoodsFactoryImpl)
+DOCUMENT_USER_DATA_KEY_IMPL(DigitalGoodsFactoryImpl);
 
 }  // namespace apps

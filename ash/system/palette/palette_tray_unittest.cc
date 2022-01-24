@@ -49,6 +49,10 @@ namespace ash {
 class PaletteTrayTest : public AshTestBase {
  public:
   PaletteTrayTest() = default;
+
+  PaletteTrayTest(const PaletteTrayTest&) = delete;
+  PaletteTrayTest& operator=(const PaletteTrayTest&) = delete;
+
   ~PaletteTrayTest() override = default;
 
   // Performs a tap on the palette tray button.
@@ -97,9 +101,6 @@ class PaletteTrayTest : public AshTestBase {
   PaletteTray* palette_tray_ = nullptr;  // not owned
 
   std::unique_ptr<PaletteTrayTestApi> test_api_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaletteTrayTest);
 };
 
 // Verify the palette tray button exists and but is not visible initially.
@@ -283,6 +284,11 @@ TEST_F(PaletteTrayTest, WelcomeBubbleVisibility) {
 class PaletteTrayTestWithAssistant : public PaletteTrayTest {
  public:
   PaletteTrayTestWithAssistant() = default;
+
+  PaletteTrayTestWithAssistant(const PaletteTrayTestWithAssistant&) = delete;
+  PaletteTrayTestWithAssistant& operator=(const PaletteTrayTestWithAssistant&) =
+      delete;
+
   ~PaletteTrayTestWithAssistant() override = default;
 
   // PaletteTrayTest:
@@ -296,7 +302,7 @@ class PaletteTrayTestWithAssistant : public PaletteTrayTest {
     GetEventGenerator();
 
     // Tests fail if event time is ever 0.
-    simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+    simulated_clock_.Advance(base::Milliseconds(10));
     ui::SetEventTickClockForTesting(&simulated_clock_);
 
     highlighter_test_api_ = std::make_unique<HighlighterControllerTestApi>(
@@ -365,7 +371,7 @@ class PaletteTrayTestWithAssistant : public PaletteTrayTest {
                                   bool expected,
                                   bool expected_on_press) {
     const int kStrokeGap = 1000;
-    simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(kStrokeGap));
+    simulated_clock_.Advance(base::Milliseconds(kStrokeGap));
     DragAndAssertMetalayer(context, origin, event_flags, expected,
                            expected_on_press);
   }
@@ -375,8 +381,6 @@ class PaletteTrayTestWithAssistant : public PaletteTrayTest {
  private:
   base::SimpleTestTickClock simulated_clock_;
   chromeos::assistant::ScopedAssistantBrowserDelegate delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaletteTrayTestWithAssistant);
 };
 
 TEST_F(PaletteTrayTestWithAssistant, MetalayerToolViewCreated) {
@@ -590,6 +594,12 @@ class PaletteTrayTestWithInternalStylus : public PaletteTrayTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kHasInternalStylus);
   }
+
+  PaletteTrayTestWithInternalStylus(const PaletteTrayTestWithInternalStylus&) =
+      delete;
+  PaletteTrayTestWithInternalStylus& operator=(
+      const PaletteTrayTestWithInternalStylus&) = delete;
+
   ~PaletteTrayTestWithInternalStylus() override = default;
 
   // PaletteTrayTest:
@@ -597,9 +607,6 @@ class PaletteTrayTestWithInternalStylus : public PaletteTrayTest {
     PaletteTrayTest::SetUp();
     test_api_->SetDisplayHasStylus();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaletteTrayTestWithInternalStylus);
 };
 
 // Verify the palette tray button exists and is visible if the device has an
@@ -773,15 +780,18 @@ class PaletteTrayNoSessionTestWithInternalStylus : public PaletteTrayTest {
         switches::kHasInternalStylus);
     stylus_utils::SetHasStylusInputForTesting();
   }
+
+  PaletteTrayNoSessionTestWithInternalStylus(
+      const PaletteTrayNoSessionTestWithInternalStylus&) = delete;
+  PaletteTrayNoSessionTestWithInternalStylus& operator=(
+      const PaletteTrayNoSessionTestWithInternalStylus&) = delete;
+
   ~PaletteTrayNoSessionTestWithInternalStylus() override = default;
 
  protected:
   PrefService* active_user_pref_service() {
     return Shell::Get()->session_controller()->GetActivePrefService();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaletteTrayNoSessionTestWithInternalStylus);
 };
 
 // Verify that the palette tray is created on an external display, but it is not
@@ -801,7 +811,7 @@ TEST_F(PaletteTrayNoSessionTestWithInternalStylus,
   };
 
   // Add a external display, then sign in.
-  UpdateDisplay("200x200,200x200");
+  UpdateDisplay("300x200,300x200");
   display::test::DisplayManagerTestApi(display_manager())
       .SetFirstDisplayAsInternalDisplay();
   Shell::RootWindowControllerList controllers =
@@ -895,7 +905,7 @@ class PaletteTrayTestMultiDisplay : public PaletteTrayTest {
         switches::kAshEnablePaletteOnAllDisplays);
 
     // Add a external display, then sign in.
-    UpdateDisplay("200x200,200x200");
+    UpdateDisplay("300x200,300x200");
     display::test::DisplayManagerTestApi(display_manager())
         .SetFirstDisplayAsInternalDisplay();
     Shell::RootWindowControllerList controllers =

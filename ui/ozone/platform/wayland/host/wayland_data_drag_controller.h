@@ -11,10 +11,18 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/base/dragdrop/os_exchange_data_provider.h"
+#include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
+#include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
+#include "ui/ozone/platform/wayland/host/wayland_touch.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 
 class SkBitmap;
@@ -26,6 +34,7 @@ class TimeTicks;
 namespace ui {
 
 class OSExchangeData;
+class ScopedEventDispatcher;
 class WaylandConnection;
 class WaylandDataDeviceManager;
 class WaylandDataOffer;
@@ -62,7 +71,8 @@ class WaylandSurface;
 // receive anything at all.
 class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                                   public WaylandDataSource::Delegate,
-                                  public WaylandWindowObserver {
+                                  public WaylandWindowObserver,
+                                  public PlatformEventDispatcher {
  public:
   enum class State {
     kIdle,          // Doing nothing special
@@ -71,7 +81,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   };
 
   WaylandDataDragController(WaylandConnection* connection,
-                            WaylandDataDeviceManager* data_device_manager);
+                            WaylandDataDeviceManager* data_device_manager,
+                            WaylandPointer::Delegate* pointer_delegate,
+                            WaylandTouch::Delegate* touch_delegate);
   WaylandDataDragController(const WaylandDataDragController&) = delete;
   WaylandDataDragController& operator=(const WaylandDataDragController&) =
       delete;
@@ -80,7 +92,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // Starts a data drag and drop session for |data|. Returns true if it is
   // successfully started, false otherwise. Only one DND session can run at a
   // given time.
-  bool StartSession(const ui::OSExchangeData& data, int operation);
+  bool StartSession(const ui::OSExchangeData& data,
+                    int operations,
+                    mojom::DragEventSource source);
 
   State state() const { return state_; }
 
@@ -91,6 +105,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDragWithText);
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, AsyncNoopStartDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            StartDragWithWrongMimeType);
 
@@ -113,7 +128,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // WaylandWindowObserver:
   void OnWindowRemoved(WaylandWindow* window) override;
 
-  void Offer(const OSExchangeData& data, int operation);
   void HandleUnprocessedMimeTypes(base::TimeTicks start_time);
   void OnMimeTypeDataTransferred(base::TimeTicks start_time,
                                  PlatformClipboard::Data contents);
@@ -126,19 +140,31 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void PropagateOnDragEnter(const gfx::PointF& location,
                             std::unique_ptr<OSExchangeData> data);
 
+  absl::optional<wl::Serial> GetAndValidateSerialForDrag(
+      mojom::DragEventSource source);
+
+  void SetOfferedExchangeDataProvider(const OSExchangeData& data);
+  const WaylandExchangeDataProvider* GetOfferedExchangeDataProvider() const;
+
+  // PlatformEventDispatcher:
+  bool CanDispatchEvent(const PlatformEvent& event) override;
+  uint32_t DispatchEvent(const PlatformEvent& event) override;
+
   WaylandConnection* const connection_;
   WaylandDataDeviceManager* const data_device_manager_;
   WaylandDataDevice* const data_device_;
   WaylandWindowManager* const window_manager_;
+  WaylandPointer::Delegate* const pointer_delegate_;
+  WaylandTouch::Delegate* const touch_delegate_;
 
   State state_ = State::kIdle;
 
   // Data offered by us to the other side.
   std::unique_ptr<WaylandDataSource> data_source_;
 
-  // When dragging is started from Chromium, |data_| holds the data to be sent
-  // through wl_data_device instance.
-  std::unique_ptr<ui::OSExchangeData> data_;
+  // When dragging is started from Chromium, |offered_exchange_data_provider_|
+  // holds the provider for the data to be sent through Wayland protocol.
+  std::unique_ptr<OSExchangeDataProvider> offered_exchange_data_provider_;
 
   // Offer to receive data from another process via drag-and-drop, or null if
   // no drag-and-drop from another process is in progress.
@@ -161,8 +187,8 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // The most recent location received while dragging the data.
   gfx::PointF last_drag_location_;
 
-  // The data delivered from Wayland
-  std::unique_ptr<ui::OSExchangeData> received_data_;
+  // The provider for the dnd data received from another Wayland client.
+  std::unique_ptr<WaylandExchangeDataProvider> received_exchange_data_provider_;
 
   // Set when 'leave' event is fired while data is being transferred.
   bool is_leave_pending_ = false;
@@ -171,6 +197,8 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   std::unique_ptr<WaylandSurface> icon_surface_;
   std::unique_ptr<WaylandShmBuffer> shm_buffer_;
   const SkBitmap* icon_bitmap_ = nullptr;
+
+  std::unique_ptr<ScopedEventDispatcher> nested_dispatcher_;
 
   base::WeakPtrFactory<WaylandDataDragController> weak_factory_{this};
 };

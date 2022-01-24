@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.webapps;
 
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -17,11 +18,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder.UpdateRequestQueued;
@@ -203,11 +204,13 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         // Show the dialog to confirm name and/or icon update.
         ModalDialogManager dialogManager =
                 mTabProvider.get().getWindowAndroid().getModalDialogManager();
+        Context context = mTabProvider.get().getContext();
         WebApkIconNameUpdateDialog dialog = new WebApkIconNameUpdateDialog();
-        dialog.show(dialogManager, mInfo.webApkPackageName(), iconChanging, shortNameChanging,
-                nameChanging, mInfo.shortName(), mFetchedInfo.shortName(), mInfo.name(),
-                mFetchedInfo.name(), mInfo.icon().bitmap(), mFetchedInfo.icon().bitmap(),
-                mInfo.isIconAdaptive(), mFetchedInfo.isIconAdaptive(), this::onUserApprovedUpdate);
+        dialog.show(context, dialogManager, mInfo.webApkPackageName(), iconChanging,
+                shortNameChanging, nameChanging, mInfo.shortName(), mFetchedInfo.shortName(),
+                mInfo.name(), mFetchedInfo.name(), mInfo.icon().bitmap(),
+                mFetchedInfo.icon().bitmap(), mInfo.isIconAdaptive(), mFetchedInfo.isIconAdaptive(),
+                this::onUserApprovedUpdate);
     }
 
     protected void onUserApprovedUpdate(int dismissalCause) {
@@ -506,10 +509,12 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         }
 
         String[][] shortcuts = new String[info.shortcutItems().size()][];
+        byte[][] shortcutIconData = new byte[info.shortcutItems().size()][];
         for (int j = 0; j < info.shortcutItems().size(); j++) {
             WebApkExtras.ShortcutItem shortcut = info.shortcutItems().get(j);
             shortcuts[j] = new String[] {shortcut.name, shortcut.shortName, shortcut.launchUrl,
-                    shortcut.iconUrl, shortcut.iconHash, shortcut.icon.encoded()};
+                    shortcut.iconUrl, shortcut.iconHash};
+            shortcutIconData[j] = shortcut.icon.data();
         }
 
         String shareTargetAction = "";
@@ -542,9 +547,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 info.displayMode(), info.orientation(), info.toolbarColor(), info.backgroundColor(),
                 shareTargetAction, shareTargetParamTitle, shareTargetParamText,
                 shareTargetIsMethodPost, shareTargetIsEncTypeMultipart, shareTargetParamFileNames,
-                shareTargetParamAccepts, shortcuts, info.manifestUrl(), info.webApkPackageName(),
-                versionCode, isManifestStale, isAppIdentityUpdateSupported, updateReasonsArray,
-                callback);
+                shareTargetParamAccepts, shortcuts, shortcutIconData, info.manifestUrl(),
+                info.webApkPackageName(), versionCode, isManifestStale,
+                isAppIdentityUpdateSupported, updateReasonsArray, callback);
     }
 
     @NativeMethods
@@ -553,13 +558,14 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 String scope, String name, String shortName, String primaryIconUrl,
                 Bitmap primaryIcon, boolean isPrimaryIconMaskable, String splashIconUrl,
                 Bitmap splashIcon, boolean isSplashIconMaskable, String[] iconUrls,
-                String[] iconHashes, @WebDisplayMode int displayMode, int orientation,
+                String[] iconHashes, @DisplayMode.EnumType int displayMode, int orientation,
                 long themeColor, long backgroundColor, String shareTargetAction,
                 String shareTargetParamTitle, String shareTargetParamText,
                 boolean shareTargetParamIsMethodPost, boolean shareTargetParamIsEncTypeMultipart,
                 String[] shareTargetParamFileNames, Object[] shareTargetParamAccepts,
-                String[][] shortcuts, String manifestUrl, String webApkPackage, int webApkVersion,
-                boolean isManifestStale, boolean isAppIdentityUpdateSupported, int[] updateReasons,
+                String[][] shortcuts, byte[][] shortcutIconData, String manifestUrl,
+                String webApkPackage, int webApkVersion, boolean isManifestStale,
+                boolean isAppIdentityUpdateSupported, int[] updateReasons,
                 Callback<Boolean> callback);
         public void updateWebApkFromFile(String updateRequestPath, WebApkUpdateCallback callback);
     }

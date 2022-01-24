@@ -4,7 +4,7 @@
 
 #include "ui/accessibility/ax_action_handler_registry.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/ax_action_handler_base.h"
 
@@ -12,7 +12,8 @@ namespace ui {
 
 // static
 AXActionHandlerRegistry* AXActionHandlerRegistry::GetInstance() {
-  return base::Singleton<AXActionHandlerRegistry>::get();
+  static base::NoDestructor<AXActionHandlerRegistry> registry;
+  return registry.get();
 }
 
 void AXActionHandlerRegistry::SetFrameIDForAXTreeID(

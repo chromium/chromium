@@ -934,7 +934,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                         drawableTint = R.color.default_text_color_error;
                     } else {
                         drawableId = R.drawable.plus;
-                        drawableTint = R.color.default_icon_color_blue;
+                        drawableTint = R.color.default_icon_color_accent1_tint_list;
                     }
 
                     TintedDrawable tintedDrawable = TintedDrawable.constructTintedDrawable(

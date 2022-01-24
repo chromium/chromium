@@ -9,9 +9,14 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.metrics.RecordHistogram;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Implementation of the abstract class {@link SingleThreadTaskRunner}. Before native initialization
@@ -22,7 +27,20 @@ import org.chromium.base.annotations.JNINamespace;
 public class SingleThreadTaskRunnerImpl extends TaskRunnerImpl implements SingleThreadTaskRunner {
     @Nullable
     private final Handler mHandler;
-    private final boolean mPostTaskAtFrontOfQueue;
+    private final boolean mPostPreNativeTasksAtFrontOfQueue;
+
+    // These values are persisted in histograms. Please do not renumber. Append only.
+    @IntDef({PreNativeTaskPostType.POSTED_AT_BACK_OF_QUEUE,
+            PreNativeTaskPostType.POSTED_AT_FRONT_OF_QUEUE,
+            PreNativeTaskPostType.DEFERRED_TO_NATIVE_INIT, PreNativeTaskPostType.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface PreNativeTaskPostType {
+        int POSTED_AT_BACK_OF_QUEUE = 0;
+        int POSTED_AT_FRONT_OF_QUEUE = 1;
+        int DEFERRED_TO_NATIVE_INIT = 2;
+
+        int NUM_ENTRIES = 3;
+    }
 
     /**
      * @param handler                The backing Handler if any. Note this must run tasks on the
@@ -30,14 +48,15 @@ public class SingleThreadTaskRunnerImpl extends TaskRunnerImpl implements Single
      *                               If handler is null then tasks won't run until native has
      *                               initialized.
      * @param traits                 The TaskTraits associated with this SingleThreadTaskRunnerImpl.
-     * @param postTaskAtFrontOfQueue If true, tasks posted to the backing Handler will be posted at
-     *                               the front of the queue.
+     * @param postPreNativeTasksAtFrontOfQueue If true, tasks posted to the backing Handler (i.e.,
+     *                               before native initialization) will be posted at the front of
+     *                               the queue.
      */
     public SingleThreadTaskRunnerImpl(
-            Handler handler, TaskTraits traits, boolean postTaskAtFrontOfQueue) {
+            Handler handler, TaskTraits traits, boolean postPreNativeTasksAtFrontOfQueue) {
         super(traits, "SingleThreadTaskRunnerImpl", TaskRunnerType.SINGLE_THREAD);
         mHandler = handler;
-        mPostTaskAtFrontOfQueue = postTaskAtFrontOfQueue;
+        mPostPreNativeTasksAtFrontOfQueue = postPreNativeTasksAtFrontOfQueue;
     }
 
     public SingleThreadTaskRunnerImpl(Handler handler, TaskTraits traits) {
@@ -56,10 +75,22 @@ public class SingleThreadTaskRunnerImpl extends TaskRunnerImpl implements Single
     protected void schedulePreNativeTask() {
         // if |mHandler| is null then pre-native task execution is not supported.
         if (mHandler == null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.TaskScheduling.PreNativeTaskPostType",
+                    PreNativeTaskPostType.DEFERRED_TO_NATIVE_INIT,
+                    PreNativeTaskPostType.NUM_ENTRIES);
             return;
-        } else if (mPostTaskAtFrontOfQueue) {
+        } else if (mPostPreNativeTasksAtFrontOfQueue) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.TaskScheduling.PreNativeTaskPostType",
+                    PreNativeTaskPostType.POSTED_AT_FRONT_OF_QUEUE,
+                    PreNativeTaskPostType.NUM_ENTRIES);
             postAtFrontOfQueue();
         } else {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.TaskScheduling.PreNativeTaskPostType",
+                    PreNativeTaskPostType.POSTED_AT_BACK_OF_QUEUE,
+                    PreNativeTaskPostType.NUM_ENTRIES);
             mHandler.post(mRunPreNativeTaskClosure);
         }
     }

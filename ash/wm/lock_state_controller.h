@@ -13,7 +13,6 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wm/lock_state_observer.h"
 #include "ash/wm/session_state_animator.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
@@ -53,6 +52,10 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   static const int kPreLockContainersMask;
 
   explicit LockStateController(ShutdownController* shutdown_controller);
+
+  LockStateController(const LockStateController&) = delete;
+  LockStateController& operator=(const LockStateController&) = delete;
+
   ~LockStateController() override;
 
   void AddObserver(LockStateObserver* observer);
@@ -215,8 +218,6 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   base::ObserverList<LockStateObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<LockStateController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockStateController);
 };
 
 }  // namespace ash

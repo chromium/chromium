@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
@@ -33,9 +33,13 @@ class ContentMainRunner;
 
 using CreatedMainPartsClosure = base::OnceCallback<void(BrowserMainParts*)>;
 
-struct ContentMainParams {
-  explicit ContentMainParams(ContentMainDelegate* delegate)
-      : delegate(delegate) {}
+struct CONTENT_EXPORT ContentMainParams {
+  explicit ContentMainParams(ContentMainDelegate* delegate);
+  ~ContentMainParams();
+
+  // Do not reuse the moved-from ContentMainParams after this call.
+  ContentMainParams(ContentMainParams&&);
+  ContentMainParams& operator=(ContentMainParams&&);
 
   ContentMainDelegate* delegate;
 
@@ -50,13 +54,13 @@ struct ContentMainParams {
   const char** argv = nullptr;
 #endif
 
-  // Used by browser_tests. If non-null BrowserMain schedules this task to run
-  // on the MessageLoop. It's owned by the test code.
-  base::OnceClosure* ui_task = nullptr;
+  // Used by BrowserTestBase. If set, BrowserMainLoop runs this task instead of
+  // the main message loop.
+  base::OnceClosure ui_task;
 
-  // Used by InProcessBrowserTest. If non-null this is Run() after
-  // BrowserMainParts has been created and before PreEarlyInitialization().
-  CreatedMainPartsClosure* created_main_parts_closure = nullptr;
+  // Used by BrowserTestBase. If set, this is invoked after BrowserMainParts has
+  // been created and before PreEarlyInitialization().
+  CreatedMainPartsClosure created_main_parts_closure;
 
   // Indicates whether to run in a minimal browser mode where most subsystems
   // are left uninitialized.
@@ -66,9 +70,30 @@ struct ContentMainParams {
   // The outermost autorelease pool to pass to main entry points.
   base::mac::ScopedNSAutoreleasePool* autorelease_pool = nullptr;
 #endif
+
+  // Returns a copy of this ContentMainParams without the move-only data
+  // (which is expected to be null when calling this). Used by the TestLauncher
+  // to launch main multiple times under the same conditions.
+  ContentMainParams ShallowCopyForTesting() const {
+    ContentMainParams copy(delegate);
+#if defined(OS_WIN)
+    copy.instance = instance;
+    copy.sandbox_info = sandbox_info;
+#elif !defined(OS_ANDROID)
+    copy.argc = argc;
+    copy.argv = argv;
+#endif
+    DCHECK(!ui_task);
+    DCHECK(!created_main_parts_closure);
+    copy.minimal_browser_mode = minimal_browser_mode;
+#if defined(OS_MAC)
+    copy.autorelease_pool = autorelease_pool;
+#endif
+    return copy;
+  }
 };
 
-CONTENT_EXPORT int RunContentProcess(const ContentMainParams& params,
+CONTENT_EXPORT int RunContentProcess(ContentMainParams params,
                                      ContentMainRunner* content_main_runner);
 
 #if defined(OS_ANDROID)
@@ -91,7 +116,7 @@ ContentMainDelegate* GetContentMainDelegate();
 // initial setup for every process. The embedder has a chance to customize
 // startup using the ContentMainDelegate interface. The embedder can also pass
 // in null for |delegate| if they don't want to override default startup.
-CONTENT_EXPORT int ContentMain(const ContentMainParams& params);
+CONTENT_EXPORT int ContentMain(ContentMainParams params);
 #endif
 
 }  // namespace content

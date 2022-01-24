@@ -13,6 +13,10 @@
 class MockManualFillingView : public ManualFillingViewInterface {
  public:
   MockManualFillingView();
+
+  MockManualFillingView(const MockManualFillingView&) = delete;
+  MockManualFillingView& operator=(const MockManualFillingView&) = delete;
+
   ~MockManualFillingView() override;
 
   MOCK_METHOD1(OnItemsAvailable, void(const autofill::AccessorySheetData&));
@@ -22,9 +26,6 @@ class MockManualFillingView : public ManualFillingViewInterface {
   MOCK_METHOD0(ShowWhenKeyboardIsVisible, void());
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD1(ShowAccessorySheetTab, void(const autofill::AccessoryTabType&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockManualFillingView);
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MOCK_MANUAL_FILLING_VIEW_H_

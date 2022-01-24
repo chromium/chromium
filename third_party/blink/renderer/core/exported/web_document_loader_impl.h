@@ -62,7 +62,6 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   }
 
   // WebDocumentLoader methods:
-  WebURL OriginalUrl() const override;
   WebString OriginalReferrer() const override;
   WebURL GetUrl() const override;
   WebString HttpMethod() const override;
@@ -87,7 +86,6 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   PreviewsState GetPreviewsState() const override;
   WebArchiveInfo GetArchiveInfo() const override;
   bool LastNavigationHadTransientUserActivation() const override;
-  bool IsListingFtpDirectory() const override;
   void SetCodeCacheHost(
       mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host) override;
 

@@ -56,6 +56,10 @@ class TLSClientSocketTestBase {
       : mode_(mode),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         url_request_context_(true) {}
+
+  TLSClientSocketTestBase(const TLSClientSocketTestBase&) = delete;
+  TLSClientSocketTestBase& operator=(const TLSClientSocketTestBase&) = delete;
+
   virtual ~TLSClientSocketTestBase() {}
 
   Mode mode() { return mode_; }
@@ -309,8 +313,6 @@ class TLSClientSocketTestBase {
   std::unique_ptr<ProxyResolvingSocketFactoryMojo> proxy_resolving_factory_;
   TestSocketObserver pre_tls_observer_;
   TestSocketObserver post_tls_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TLSClientSocketTestBase);
 };
 
 class TLSClientSocketTest
@@ -321,10 +323,10 @@ class TLSClientSocketTest
     Init(true /* use_mock_sockets */, false /* configure_proxy */);
   }
 
-  ~TLSClientSocketTest() override {}
+  TLSClientSocketTest(const TLSClientSocketTest&) = delete;
+  TLSClientSocketTest& operator=(const TLSClientSocketTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TLSClientSocketTest);
+  ~TLSClientSocketTest() override {}
 };
 
 // Basic test to call UpgradeToTLS, and then read/write after UpgradeToTLS is
@@ -893,10 +895,10 @@ class TLSCLientSocketProxyTest : public ::testing::Test,
     Init(true /* use_mock_sockets*/, true /* configure_proxy */);
   }
 
-  ~TLSCLientSocketProxyTest() override {}
+  TLSCLientSocketProxyTest(const TLSCLientSocketProxyTest&) = delete;
+  TLSCLientSocketProxyTest& operator=(const TLSCLientSocketProxyTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TLSCLientSocketProxyTest);
+  ~TLSCLientSocketProxyTest() override {}
 };
 
 TEST_F(TLSCLientSocketProxyTest, UpgradeToTLS) {
@@ -952,10 +954,11 @@ class TLSClientSocketIoModeTest : public TLSClientSocketTestBase,
     Init(true /* use_mock_sockets*/, false /* configure_proxy */);
   }
 
-  ~TLSClientSocketIoModeTest() override {}
+  TLSClientSocketIoModeTest(const TLSClientSocketIoModeTest&) = delete;
+  TLSClientSocketIoModeTest& operator=(const TLSClientSocketIoModeTest&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TLSClientSocketIoModeTest);
+  ~TLSClientSocketIoModeTest() override {}
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1070,6 +1073,11 @@ class TLSClientSocketTestWithEmbeddedTestServerBase
     Init(false /* use_mock_sockets */, false /* configure_proxy */);
   }
 
+  TLSClientSocketTestWithEmbeddedTestServerBase(
+      const TLSClientSocketTestWithEmbeddedTestServerBase&) = delete;
+  TLSClientSocketTestWithEmbeddedTestServerBase& operator=(
+      const TLSClientSocketTestWithEmbeddedTestServerBase&) = delete;
+
   ~TLSClientSocketTestWithEmbeddedTestServerBase() override {}
 
   // Starts the test server using the specified certificate.
@@ -1149,8 +1157,6 @@ class TLSClientSocketTestWithEmbeddedTestServerBase
   net::EmbeddedTestServer server_;
 
   mojo::Remote<mojom::TLSClientSocket> tls_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(TLSClientSocketTestWithEmbeddedTestServerBase);
 };
 
 class TLSClientSocketTestWithEmbeddedTestServer
@@ -1159,10 +1165,13 @@ class TLSClientSocketTestWithEmbeddedTestServer
  public:
   TLSClientSocketTestWithEmbeddedTestServer()
       : TLSClientSocketTestWithEmbeddedTestServerBase(GetParam()) {}
-  ~TLSClientSocketTestWithEmbeddedTestServer() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TLSClientSocketTestWithEmbeddedTestServer);
+  TLSClientSocketTestWithEmbeddedTestServer(
+      const TLSClientSocketTestWithEmbeddedTestServer&) = delete;
+  TLSClientSocketTestWithEmbeddedTestServer& operator=(
+      const TLSClientSocketTestWithEmbeddedTestServer&) = delete;
+
+  ~TLSClientSocketTestWithEmbeddedTestServer() override {}
 };
 
 TEST_P(TLSClientSocketTestWithEmbeddedTestServer, Basic) {
@@ -1200,10 +1209,13 @@ class TLSClientSocketDirectTestWithEmbeddedTestServer
  public:
   TLSClientSocketDirectTestWithEmbeddedTestServer()
       : TLSClientSocketTestWithEmbeddedTestServerBase(kDirect) {}
-  ~TLSClientSocketDirectTestWithEmbeddedTestServer() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TLSClientSocketDirectTestWithEmbeddedTestServer);
+  TLSClientSocketDirectTestWithEmbeddedTestServer(
+      const TLSClientSocketDirectTestWithEmbeddedTestServer&) = delete;
+  TLSClientSocketDirectTestWithEmbeddedTestServer& operator=(
+      const TLSClientSocketDirectTestWithEmbeddedTestServer&) = delete;
+
+  ~TLSClientSocketDirectTestWithEmbeddedTestServer() override {}
 };
 
 TEST_F(TLSClientSocketDirectTestWithEmbeddedTestServer, SSLInfo) {

@@ -29,14 +29,15 @@ namespace {
 class PaddedDesktopFrame : public webrtc::DesktopFrame {
  public:
   explicit PaddedDesktopFrame(webrtc::DesktopSize size);
+
+  PaddedDesktopFrame(const PaddedDesktopFrame&) = delete;
+  PaddedDesktopFrame& operator=(const PaddedDesktopFrame&) = delete;
+
   ~PaddedDesktopFrame() override;
 
   // Creates a PaddedDesktopFrame that contains copy of |frame|.
   static std::unique_ptr<webrtc::DesktopFrame> CopyOf(
       const webrtc::DesktopFrame& frame);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaddedDesktopFrame);
 };
 
 PaddedDesktopFrame::PaddedDesktopFrame(webrtc::DesktopSize size)

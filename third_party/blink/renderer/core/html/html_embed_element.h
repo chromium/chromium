@@ -23,7 +23,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_EMBED_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_EMBED_ELEMENT_H_
 
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 
@@ -40,8 +39,8 @@ class CORE_EXPORT HTMLEmbedElement final : public HTMLPlugInElement {
 
   bool IsExposed() const;
 
-  mojom::blink::FrameOwnerElementType OwnerType() const final {
-    return mojom::blink::FrameOwnerElementType::kEmbed;
+  FrameOwnerElementType OwnerType() const final {
+    return FrameOwnerElementType::kEmbed;
   }
 
  private:

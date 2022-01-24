@@ -22,7 +22,6 @@ static_library("calendar") {
     "//crypto",
     "//google_apis:google_apis",
     "//google_apis/common:common",
-    "//google_apis/drive:drive",
     "//net",
     "//services/network/public/cpp",
   ]
@@ -39,8 +38,7 @@ source_set("test_support") {
     "//base/test:test_support",
     "//google_apis:test_support",
     "//google_apis/common:common",
-    "//google_apis/drive:drive",
-    "//google_apis/drive:test_support",
+    "//google_apis/common:test_support",
     "//net:test_support",
   ]
 }

@@ -187,6 +187,11 @@ class MetaBuildWrapper(object):
                         help='whether or not to use regression test selection'
                         ' For more info about RTS, please see'
                         ' //docs/testing/regression-test-selection.md')
+      subp.add_argument('--use-st',
+                        action='store_true',
+                        default=False,
+                        help='whether or not to add filter stable tests during'
+                        ' RTS selection')
 
       # TODO(crbug.com/1060857): Remove this once swarming task templates
       # support command prefixes.
@@ -1310,21 +1315,66 @@ class MetaBuildWrapper(object):
 
       # For more info about RTS, please see
       # //docs/testing/regression-test-selection.md
-      if self.args.use_rts:
-        if target in self.banned_from_rts:
-          self.Print('%s is banned for RTS on this builder' % target)
-        else:
-          filter_file = target + '.filter'
-          filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
-          if self.Exists(self.ToAbsPath(build_dir, filter_file_path)):
-            command.append('--test-launcher-filter-file=%s' % filter_file_path)
-            self.Print('added RTS filter file to isolate: %s' % filter_file)
+      if self.args.use_rts or self.args.use_st:
+        self.AddFilterFileArg(target, build_dir, command)
 
       canonical_target = target.replace(':','_').replace('/','_')
       ret = self.WriteIsolateFiles(build_dir, command, canonical_target,
                                    runtime_deps, vals, extra_files)
       if ret != 0:
         return ret
+    return 0
+
+  def AddFilterFileArg(self, target, build_dir, command):
+    if target in self.banned_from_rts:
+      self.Print('%s is banned for RTS on this builder' % target)
+    else:
+      filter_file = target + '.filter'
+      filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
+      abs_filter_file_path = self.ToAbsPath(build_dir, filter_file_path)
+
+      self.CreateOrAppendStableTestFilter(abs_filter_file_path, build_dir,
+                                          target)
+
+      if self.Exists(abs_filter_file_path):
+        command.append('--test-launcher-filter-file=%s' % filter_file_path)
+        self.Print('added RTS filter file to command: %s' % filter_file)
+
+  def CreateOrAppendStableTestFilter(self, abs_filter_file_path, build_dir,
+                                     target):
+    if self.args.use_st:
+      stable_filter_file = self.PathJoin(
+          self.chromium_src_dir, 'testing',
+          'buildbot', 'filters', 'stable_test_filters',
+          getattr(self.args, 'builder', None), target) + '.filter'
+      # The path to the filter file to append
+      abs_stable_filter_file = self.ToAbsPath(build_dir, stable_filter_file)
+
+      if self.Exists(abs_stable_filter_file):
+        # A stable filter exists
+        if not self.args.use_rts:
+          self.Print('RTS disabled, using stable filter')
+          dest_dir = os.path.dirname(abs_filter_file_path)
+          if not self.Exists(dest_dir):
+            os.makedirs(dest_dir)
+          shutil.copy(abs_stable_filter_file, abs_filter_file_path)
+        else:
+          # Rts is enabled and will delete ALL .filter files
+          # only rts filters generated this run should remain
+          if not self.Exists(abs_filter_file_path):
+            self.Print('No RTS filter found, using stable filter')
+            shutil.copy(abs_stable_filter_file, abs_filter_file_path)
+          else:
+            self.Print('Adding stable tests filter to RTS filter')
+            with open(abs_filter_file_path, 'a+') as select_filter_file, open(
+                abs_stable_filter_file, 'r') as stable_filter_file:
+              select_filter_file.write('\n')
+              select_filter_file.write(stable_filter_file.read())
+      else:
+        self.Print('No stable filter found at %s' % abs_stable_filter_file)
+    else:
+      self.Print('No stable filter')
+
     return 0
 
   def PossibleRuntimeDepsPaths(self, vals, ninja_targets, isolate_map):
@@ -1602,7 +1652,7 @@ class MetaBuildWrapper(object):
     if android_version_name:
       gn_args += ' android_default_version_name="%s"' % android_version_name
 
-    if self.args.use_rts:
+    if self.args.use_rts or self.args.use_st:
       gn_args += ' use_rts=true'
 
     args_gn_lines = []
@@ -1685,7 +1735,14 @@ class MetaBuildWrapper(object):
     executable = isolate_map[target].get('executable', target)
     executable_suffix = isolate_map[target].get(
         'executable_suffix', '.exe' if is_win else '')
-    extra_files = ['../../.vpython']
+
+    if isolate_map[target].get('python3'):
+      extra_files = ['../../.vpython3']
+      vpython_exe = 'vpython3'
+    else:
+      extra_files = ['../../.vpython']
+      vpython_exe = 'vpython'
+
     extra_files += [
       '../../testing/test_env.py',
     ]
@@ -1694,18 +1751,17 @@ class MetaBuildWrapper(object):
       if asan:
         cmdline += [os.path.join('bin', 'run_with_asan'), '--']
       cmdline += [
-          'vpython',
-          '../../build/android/test_wrapper/logdog_wrapper.py',
-          '--target', target,
-          '--logdog-bin-cmd', '../../.task_template_packages/logdog_butler',
-          '--store-tombstones']
+          vpython_exe, '../../build/android/test_wrapper/logdog_wrapper.py',
+          '--target', target, '--logdog-bin-cmd',
+          '../../.task_template_packages/logdog_butler', '--store-tombstones'
+      ]
       if clang_coverage or java_coverage:
         cmdline += ['--coverage-dir', '${ISOLATED_OUTDIR}']
     elif is_fuchsia and test_type != 'script':
       cmdline += [
           os.path.join('bin', 'run_%s' % target),
           '--test-launcher-bot-mode',
-          '--system-log-file', '${ISOLATED_OUTDIR}/system_log'
+          '--logs-dir=${ISOLATED_OUTDIR}',
       ]
     elif is_cros_device and test_type != 'script':
       cmdline += [
@@ -1715,7 +1771,7 @@ class MetaBuildWrapper(object):
     elif use_xvfb and test_type == 'windowed_test_launcher':
       extra_files.append('../../testing/xvfb.py')
       cmdline += [
-          'vpython',
+          vpython_exe,
           '../../testing/xvfb.py',
           './' + str(executable) + executable_suffix,
           '--test-launcher-bot-mode',
@@ -1734,7 +1790,7 @@ class MetaBuildWrapper(object):
         cmdline += ['--devtools-code-coverage=${ISOLATED_OUTDIR}']
     elif test_type in ('windowed_test_launcher', 'console_test_launcher'):
       cmdline += [
-          'vpython',
+          vpython_exe,
           '../../testing/test_env.py',
           './' + str(executable) + executable_suffix,
           '--test-launcher-bot-mode',
@@ -1760,7 +1816,7 @@ class MetaBuildWrapper(object):
       if is_android:
         extra_files.append('../../build/android/test_wrapper/logdog_wrapper.py')
         cmdline += [
-            'vpython',
+            vpython_exe,
             '../../testing/test_env.py',
             '../../build/android/test_wrapper/logdog_wrapper.py',
             '--script',
@@ -1770,8 +1826,7 @@ class MetaBuildWrapper(object):
         ]
       else:
         cmdline += [
-            'vpython',
-            '../../testing/test_env.py',
+            vpython_exe, '../../testing/test_env.py',
             '../../' + self.ToSrcRelPath(isolate_map[target]['script'])
         ]
     elif test_type == 'additional_compile_target':

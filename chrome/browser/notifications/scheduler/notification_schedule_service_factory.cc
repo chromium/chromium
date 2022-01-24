@@ -26,8 +26,6 @@
 #include "chrome/browser/notifications/scheduler/notification_background_task_scheduler_android.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_client.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_service.h"
-#include "chrome/browser/updates/update_notification_client.h"
-#include "chrome/browser/updates/update_notification_service_factory.h"
 #endif  // defined(OS_ANDROID)
 
 namespace {
@@ -37,16 +35,6 @@ RegisterClients(ProfileKey* key) {
   auto client_registrar =
       std::make_unique<notifications::NotificationSchedulerClientRegistrar>();
 #if defined(OS_ANDROID)
-  // Register UpdateNotificationClient.
-  auto update_notification_service_getter =
-      base::BindRepeating(&UpdateNotificationServiceFactory::GetForKey, key);
-  auto chrome_update_client =
-      std::make_unique<updates::UpdateNotificationClient>(
-          std::move(update_notification_service_getter));
-  client_registrar->RegisterClient(
-      notifications::SchedulerClientType::kChromeUpdate,
-      std::move(chrome_update_client));
-
   // Register reading list client.
   if (ReadingListNotificationService::IsEnabled()) {
     Profile* profile = ProfileManager::GetProfileFromProfileKey(key);

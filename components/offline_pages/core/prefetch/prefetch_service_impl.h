@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/offline_pages/core/offline_event_logger.h"
@@ -32,6 +31,9 @@ class PrefetchServiceImpl : public PrefetchService {
       std::unique_ptr<PrefetchBackgroundTaskHandler> background_task_handler,
       image_fetcher::ImageFetcher* image_fetcher_,
       PrefService* prefs);
+
+  PrefetchServiceImpl(const PrefetchServiceImpl&) = delete;
+  PrefetchServiceImpl& operator=(const PrefetchServiceImpl&) = delete;
 
   ~PrefetchServiceImpl() override;
 
@@ -94,8 +96,6 @@ class PrefetchServiceImpl : public PrefetchService {
   SuggestionsProvider* suggestions_provider_ = nullptr;
 
   base::WeakPtrFactory<PrefetchServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchServiceImpl);
 };
 
 }  // namespace offline_pages

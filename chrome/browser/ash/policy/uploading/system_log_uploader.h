@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
@@ -114,6 +113,9 @@ class SystemLogUploader : public UploadJob::Delegate {
       std::unique_ptr<Delegate> syslog_delegate,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
+  SystemLogUploader(const SystemLogUploader&) = delete;
+  SystemLogUploader& operator=(const SystemLogUploader&) = delete;
+
   ~SystemLogUploader() override;
 
   // Returns the time of the last upload attempt, or Time(0) if no upload has
@@ -192,8 +194,6 @@ class SystemLogUploader : public UploadJob::Delegate {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<SystemLogUploader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemLogUploader);
 };
 
 }  // namespace policy

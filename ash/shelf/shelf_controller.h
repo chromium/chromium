@@ -22,6 +22,8 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class LauncherNudgeController;
+
 // ShelfController owns the ShelfModel and manages shelf preferences.
 // ChromeShelfController and related classes largely manage the ShelfModel.
 class ASH_EXPORT ShelfController : public SessionObserver,
@@ -31,7 +33,15 @@ class ASH_EXPORT ShelfController : public SessionObserver,
                                    public ShelfModelObserver {
  public:
   ShelfController();
+
+  ShelfController(const ShelfController&) = delete;
+  ShelfController& operator=(const ShelfController&) = delete;
+
   ~ShelfController() override;
+
+  // Creates `launcher_nudge_controller_` instance which needs AppListController
+  // instance to construct.
+  void Init();
 
   // Removes observers from this object's dependencies.
   void Shutdown();
@@ -39,6 +49,10 @@ class ASH_EXPORT ShelfController : public SessionObserver,
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   ShelfModel* model() { return &model_; }
+
+  LauncherNudgeController* launcher_nudge_controller() const {
+    return launcher_nudge_controller_.get();
+  }
 
  private:
   // SessionObserver:
@@ -66,8 +80,8 @@ class ASH_EXPORT ShelfController : public SessionObserver,
   // The shelf model shared by all shelf instances.
   ShelfModel model_;
 
-  // Whether notification indicators are enabled for app icons in the shelf.
-  const bool is_notification_indicator_enabled_;
+  // The controller of the launcher nudge that animates the home button.
+  std::unique_ptr<LauncherNudgeController> launcher_nudge_controller_;
 
   // Whether the pref for notification badging is enabled.
   absl::optional<bool> notification_badging_pref_enabled_;
@@ -78,8 +92,6 @@ class ASH_EXPORT ShelfController : public SessionObserver,
   // Observed to update notification badging on shelf items. Also used to get
   // initial notification badge information when shelf items are added.
   apps::AppRegistryCache* cache_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfController);
 };
 
 }  // namespace ash

@@ -9,10 +9,13 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/task/bind_post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_cert_loader.h"
@@ -26,6 +29,22 @@
 #include "content/public/browser/notification_source.h"
 
 namespace policy {
+
+namespace {
+
+void GetNssCertDatabaseOnIOThread(
+    NssCertDatabaseGetter database_getter,
+    base::OnceCallback<void(net::NSSCertDatabase*)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  net::NSSCertDatabase* cert_db =
+      std::move(database_getter).Run(std::move(split_callback.first));
+  if (cert_db)
+    std::move(split_callback.second).Run(cert_db);
+}
+
+}  // namespace
 
 UserNetworkConfigurationUpdater::~UserNetworkConfigurationUpdater() {
   // NetworkCertLoader may be not initialized in tests.
@@ -128,10 +147,21 @@ void UserNetworkConfigurationUpdater::Observe(
   DCHECK_EQ(type, chrome::NOTIFICATION_PROFILE_ADDED);
   Profile* profile = content::Source<Profile>(source).ptr();
 
-  GetNSSCertDatabaseForProfile(
-      profile, base::BindOnce(&UserNetworkConfigurationUpdater::
-                                  CreateAndSetClientCertificateImporter,
-                              weak_factory_.GetWeakPtr()));
+  // Note: This unsafely grabs a persistent reference to the `NssService`'s
+  // `NSSCertDatabase`, which may be invalidated once `profile` is shut down.
+  // TODO(https://crbug.com/1186373): Provide better lifetime guarantees and
+  // pass the `NssCertDatabaseGetter` to the `CertificateImporterImpl`.
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &GetNssCertDatabaseOnIOThread,
+          NssServiceFactory::GetForContext(profile)
+              ->CreateNSSCertDatabaseGetterForIOThread(),
+          base::BindPostTask(
+              base::SequencedTaskRunnerHandle::Get(),
+              base::BindOnce(&UserNetworkConfigurationUpdater::
+                                 CreateAndSetClientCertificateImporter,
+                             weak_factory_.GetWeakPtr()))));
 }
 
 void UserNetworkConfigurationUpdater::CreateAndSetClientCertificateImporter(

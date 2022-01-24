@@ -68,7 +68,7 @@
     testGridDefinitionsValues(document.getElementById("gridWithMinMax"), "[first] minmax(10%, 15px)", "minmax(20px, 50%) [last]");
     testGridDefinitionsValues(document.getElementById("gridWithFixedMultiple"), "[first nav] 10px [last]", "[first nav] 15px [last]");
     testGridDefinitionsValues(document.getElementById("gridWithPercentageSameStringMultipleTimes"), "[first nav] 10% [nav] 15% [last]", "[first nav2] 25% [nav2] 75% [last]");
-    testGridDefinitionsValues(document.getElementById("gridWithRepeatElement"), "[first] 10px [nav nav2] 50% [nav nav2] 50%", "100px [nav nav2] 25% [nav nav2] 25% [last]");
+    testGridDefinitionsValues(document.getElementById("gridWithRepeatElement"), "[first] 10px repeat(2, [nav nav2] 50%)", "100px repeat(2, [nav nav2] 25%) [last]");
     testGridDefinitionsValues(document.getElementById("gridWithEmptyBrackets"), "10px", "20px 50px");
 
     debug("");

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
@@ -31,15 +32,15 @@ class AutofillGstaticReader {
 
   static AutofillGstaticReader* GetInstance();
 
-  // Returns list of merchants whitelisted for cloud tokenization. An empty list
+  // Returns list of merchants allowlisted for cloud tokenization. An empty list
   // will be returned if Setup() failed, hasn't been called yet, or hasn't
-  // finished downloading the whitelist.
-  std::vector<std::string> GetTokenizationMerchantWhitelist() const;
+  // finished downloading the allowlist.
+  std::vector<std::string> GetTokenizationMerchantAllowlist() const;
 
-  // Returns list of BIN ranges of cards whitelisted for cloud tokenization. An
+  // Returns list of BIN ranges of cards allowlisted for cloud tokenization. An
   // empty list will be returned if Setup() failed, hasn't been called yet, or
-  // hasn't finished downloading the whitelist.
-  std::vector<std::string> GetTokenizationBinRangesWhitelist() const;
+  // hasn't finished downloading the allowlist.
+  std::vector<std::string> GetTokenizationBinRangesAllowlist() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AutofillGstaticReaderTest,
@@ -74,10 +75,10 @@ class AutofillGstaticReader {
   bool setup_called_ = false;
 
   // BIN ranges which are eligible for cloud tokenization.
-  std::vector<std::string> tokenization_bin_range_whitelist_;
+  std::vector<std::string> tokenization_bin_range_allowlist_;
 
   // Merchant domains which are eligible for cloud tokenization.
-  std::vector<std::string> tokenization_merchant_whitelist_;
+  std::vector<std::string> tokenization_merchant_allowlist_;
 
   // Loaders used for the processing the requests. Each loader is removed upon
   // completion.

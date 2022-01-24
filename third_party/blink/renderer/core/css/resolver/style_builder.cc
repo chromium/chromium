@@ -69,7 +69,6 @@ void StyleBuilder::ApplyProperty(const CSSProperty& property,
       << "Please use a CustomProperty instance to apply custom properties";
 
   CSSPropertyID id = property.PropertyID();
-  bool is_inherited = property.IsInherited();
   const CSSValue& value = scoped_value.GetCSSValue();
 
   // These values must be resolved by StyleCascade before application:
@@ -89,12 +88,13 @@ void StyleBuilder::ApplyProperty(const CSSProperty& property,
   // isInherit => (state.parentNode() && state.parentStyle())
   DCHECK(!is_inherit || (state.ParentNode() && state.ParentStyle()));
 
-  if (is_inherit && !is_inherited) {
+  bool is_inherited_for_unset = state.IsInheritedForUnset(property);
+  if (is_inherit && !is_inherited_for_unset) {
     state.Style()->SetHasExplicitInheritance();
     state.ParentStyle()->SetChildHasExplicitInheritance();
   } else if (value.IsUnsetValue()) {
     DCHECK(!is_inherit && !is_initial);
-    if (is_inherited)
+    if (is_inherited_for_unset)
       is_inherit = true;
     else
       is_initial = true;

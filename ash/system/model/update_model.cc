@@ -29,14 +29,10 @@ void UpdateModel::SetUpdateAvailable(UpdateSeverity severity,
   NotifyUpdateAvailable();
 }
 
-void UpdateModel::SetUpdateNotificationState(
-    NotificationStyle style,
-    const std::u16string& notification_title,
-    const std::u16string& notification_body) {
+void UpdateModel::SetRelaunchNotificationState(
+    const RelaunchNotificationState& relaunch_notification_state) {
   DCHECK_EQ(update_type_, UpdateType::kSystem);
-  notification_style_ = style;
-  notification_title_ = notification_title;
-  notification_body_ = notification_body;
+  relaunch_notification_state_ = relaunch_notification_state;
   NotifyUpdateAvailable();
 }
 

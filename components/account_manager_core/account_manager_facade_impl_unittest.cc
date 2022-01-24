@@ -20,6 +20,7 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/account_manager_test_util.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "components/account_manager_core/mock_account_manager_facade.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -159,7 +160,7 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
   void ShowAddAccountDialog(ShowAddAccountDialogCallback callback) override {
     show_add_account_dialog_calls_++;
     std::move(callback).Run(
-        account_manager::ToMojoAccountAdditionResult(add_account_result_));
+        account_manager::ToMojoAccountAdditionResult(*add_account_result_));
   }
 
   void ShowReauthAccountDialog(const std::string& email,
@@ -218,7 +219,7 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
 
   void SetAccountAdditionResult(
       const account_manager::AccountAdditionResult& result) {
-    add_account_result_ = result;
+    add_account_result_ = std::make_unique<AccountAdditionResult>(result);
   }
 
   void ClearReceivers() { receivers_.Clear(); }
@@ -242,22 +243,10 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
   bool is_initialized_ = false;
   std::vector<Account> accounts_;
   std::map<AccountKey, GoogleServiceAuthError> persistent_errors_;
-  AccountAdditionResult add_account_result_{
-      AccountAdditionResult::Status::kUnexpectedResponse};
+  std::unique_ptr<AccountAdditionResult> add_account_result_;
   std::unique_ptr<MockAccessTokenFetcher> access_token_fetcher_;
   mojo::ReceiverSet<crosapi::mojom::AccountManager> receivers_;
   mojo::RemoteSet<crosapi::mojom::AccountManagerObserver> observers_;
-};
-
-class MockObserver : public AccountManagerFacade::Observer {
- public:
-  MockObserver() = default;
-  MockObserver(const MockObserver&) = delete;
-  MockObserver& operator=(const MockObserver&) = delete;
-  ~MockObserver() override = default;
-
-  MOCK_METHOD(void, OnAccountUpserted, (const Account& account), (override));
-  MOCK_METHOD(void, OnAccountRemoved, (const Account& account), (override));
 };
 
 MATCHER_P(AccountEq, expected_account, "") {
@@ -287,8 +276,8 @@ class AccountManagerFacadeImplTest : public testing::Test {
     base::RunLoop run_loop;
     auto result = std::make_unique<AccountManagerFacadeImpl>(
         account_manager().CreateRemote(),
-        /* remote_version= */ std::numeric_limits<uint32_t>::max(),
-        run_loop.QuitClosure());
+        /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+        /*account_manager_for_tests=*/nullptr, run_loop.QuitClosure());
     run_loop.Run();
     return result;
   }
@@ -308,7 +297,7 @@ TEST_F(AccountManagerFacadeImplTest, InitializationStatusIsCorrectlySet) {
 TEST_F(AccountManagerFacadeImplTest, OnTokenUpsertedIsPropagatedToObservers) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
-  testing::StrictMock<MockObserver> observer;
+  testing::StrictMock<MockAccountManagerFacadeObserver> observer;
   account_manager_facade->AddObserver(&observer);
 
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
@@ -322,7 +311,7 @@ TEST_F(AccountManagerFacadeImplTest, OnTokenUpsertedIsPropagatedToObservers) {
 TEST_F(AccountManagerFacadeImplTest, OnAccountRemovedIsPropagatedToObservers) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
-  testing::StrictMock<MockObserver> observer;
+  testing::StrictMock<MockAccountManagerFacadeObserver> observer;
   account_manager_facade->AddObserver(&observer);
 
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
@@ -373,7 +362,8 @@ TEST_F(AccountManagerFacadeImplTest,
   // sequence to be finished. To avoid this, create it directly here.
   auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
       account_manager().CreateRemote(),
-      /* remote_version= */ std::numeric_limits<uint32_t>::max());
+      /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+      /*account_manager_for_tests=*/nullptr);
 
   MockOnceCallback<void(const std::vector<Account>&)> callback;
   base::RunLoop run_loop;
@@ -387,7 +377,8 @@ TEST_F(AccountManagerFacadeImplTest,
        GetAccountsReturnsEmptyListOfAccountsWhenRemoteIsNull) {
   auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
       mojo::Remote<crosapi::mojom::AccountManager>(),
-      /* remote_version= */ std::numeric_limits<uint32_t>::max());
+      /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+      /*account_manager_for_tests=*/nullptr);
 
   MockOnceCallback<void(const std::vector<Account>&)> callback;
   base::RunLoop run_loop;
@@ -434,6 +425,9 @@ TEST_F(AccountManagerFacadeImplTest,
 TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogCallsMojo) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
+  account_manager().SetAccountAdditionResult(
+      account_manager::AccountAdditionResult::FromStatus(
+          account_manager::AccountAdditionResult::Status::kUnexpectedResponse));
   EXPECT_EQ(0, account_manager().show_add_account_dialog_calls());
   account_manager_facade->ShowAddAccountDialog(
       account_manager::AccountManagerFacade::AccountAdditionSource::
@@ -446,7 +440,7 @@ TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogUMA) {
   base::HistogramTester tester;
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
-  auto result = account_manager::AccountAdditionResult(
+  auto result = account_manager::AccountAdditionResult::FromStatus(
       account_manager::AccountAdditionResult::Status::kAlreadyInProgress);
   account_manager().SetAccountAdditionResult(result);
   auto source = account_manager::AccountManagerFacade::AccountAdditionSource::
@@ -462,7 +456,7 @@ TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogUMA) {
   tester.ExpectUniqueSample(
       AccountManagerFacadeImpl::
           GetAccountAdditionResultStatusHistogramNameForTesting(),
-      /*sample=*/result.status, /*expected_count=*/1);
+      /*sample=*/result.status(), /*expected_count=*/1);
 }
 
 TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogCallsMojo) {
@@ -481,7 +475,7 @@ TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogUMA) {
   base::HistogramTester tester;
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
-  auto source = AccountManagerFacade::AccountAdditionSource::kContentArea;
+  auto source = AccountManagerFacade::AccountAdditionSource::kContentAreaReauth;
 
   account_manager_facade->ShowReauthAccountDialog(source, kTestAccountEmail);
   account_manager_facade->FlushMojoForTesting();
@@ -504,7 +498,8 @@ TEST_F(AccountManagerFacadeImplTest,
        AccessTokenFetcherReturnsAnErrorForUninitializedRemote) {
   auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
       mojo::Remote<crosapi::mojom::AccountManager>(),
-      /*remote_version=*/std::numeric_limits<uint32_t>::max());
+      /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+      /*account_manager_for_tests=*/nullptr);
   const Account account = CreateTestGaiaAccount(kTestAccountEmail);
 
   MockOAuthConsumer consumer;
@@ -523,7 +518,8 @@ TEST_F(AccountManagerFacadeImplTest,
        AccessTokenFetcherCanBeCreatedBeforeAccountManagerFacadeInitialization) {
   auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
       account_manager().CreateRemote(),
-      /*remote_version=*/std::numeric_limits<uint32_t>::max());
+      /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+      /*account_manager_for_tests=*/nullptr);
   const Account account = CreateTestGaiaAccount(kTestAccountEmail);
 
   auto mock_access_token_fetcher = std::make_unique<MockAccessTokenFetcher>();

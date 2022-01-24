@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -69,6 +68,10 @@ class PageAnnotator {
 
   explicit PageAnnotator(
       mojo::PendingRemote<image_annotation::mojom::Annotator> annotator);
+
+  PageAnnotator(const PageAnnotator&) = delete;
+  PageAnnotator& operator=(const PageAnnotator&) = delete;
+
   ~PageAnnotator();
 
   // Request annotation of the given image via the image annotation service.
@@ -109,8 +112,6 @@ class PageAnnotator {
 
   std::map<uint64_t, std::pair<ImageMetadata, image_annotation::ImageProcessor>>
       images_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageAnnotator);
 };
 
 }  // namespace page_image_annotation

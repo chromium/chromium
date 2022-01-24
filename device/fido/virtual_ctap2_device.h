@@ -198,6 +198,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
 
   VirtualCtap2Device();
   VirtualCtap2Device(scoped_refptr<State> state, const Config& config);
+
+  VirtualCtap2Device(const VirtualCtap2Device&) = delete;
+  VirtualCtap2Device& operator=(const VirtualCtap2Device&) = delete;
+
   ~VirtualCtap2Device() override;
 
   // Configures and sets a PIN on the authenticator.
@@ -317,8 +321,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
   const Config config_;
   RequestState request_state_;
   base::WeakPtrFactory<FidoDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualCtap2Device);
 };
 
 }  // namespace device

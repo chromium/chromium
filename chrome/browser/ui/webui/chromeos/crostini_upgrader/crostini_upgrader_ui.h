@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_UPGRADER_CROSTINI_UPGRADER_UI_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,6 +22,10 @@ class CrostiniUpgraderUI
       public chromeos::crostini_upgrader::mojom::PageHandlerFactory {
  public:
   explicit CrostiniUpgraderUI(content::WebUI* web_ui);
+
+  CrostiniUpgraderUI(const CrostiniUpgraderUI&) = delete;
+  CrostiniUpgraderUI& operator=(const CrostiniUpgraderUI&) = delete;
+
   ~CrostiniUpgraderUI() override;
 
   // Send a close request to the web page. Return true if the page is already
@@ -60,8 +63,6 @@ class CrostiniUpgraderUI
   bool page_closed_ = false;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniUpgraderUI);
 };
 
 }  // namespace chromeos

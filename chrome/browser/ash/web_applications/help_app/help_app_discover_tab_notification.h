@@ -17,7 +17,7 @@ namespace message_center {
 class Notification;
 }  // namespace message_center
 
-namespace chromeos {
+namespace ash {
 
 constexpr char kShowHelpAppDiscoverTabNotificationId[] =
     "show_help_app_discover_tab_notification";
@@ -47,6 +47,6 @@ class HelpAppDiscoverTabNotification {
   base::WeakPtrFactory<HelpAppDiscoverTabNotification> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_DISCOVER_TAB_NOTIFICATION_H_

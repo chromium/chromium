@@ -163,13 +163,15 @@ BASE_EXPORT std::string GetJavaExceptionInfo(JNIEnv* env,
 class BASE_EXPORT JNIStackFrameSaver {
  public:
   JNIStackFrameSaver(void* current_fp);
+
+  JNIStackFrameSaver(const JNIStackFrameSaver&) = delete;
+  JNIStackFrameSaver& operator=(const JNIStackFrameSaver&) = delete;
+
   ~JNIStackFrameSaver();
   static void* SavedFrame();
 
  private:
   void* previous_fp_;
-
-  DISALLOW_COPY_AND_ASSIGN(JNIStackFrameSaver);
 };
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)

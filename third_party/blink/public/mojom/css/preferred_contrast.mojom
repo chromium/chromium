@@ -9,4 +9,5 @@ enum PreferredContrast {
   kMore,
   kLess,
   kNoPreference,
+  kCustom,
 };

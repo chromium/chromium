@@ -55,32 +55,9 @@ void ProcessIdFeedbackSource::PrepareProcessIds() {
         host->GetProcess().Pid());
   }
 
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    PrepareProcessIdsOnProcessThread();
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ProcessIdFeedbackSource::PrepareProcessIdsOnProcessThread, this));
-  }
-}
-
-void ProcessIdFeedbackSource::PrepareProcessIdsOnProcessThread() {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
-
   for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter)
     process_ids_[iter.GetData().process_type].push_back(
         iter.GetData().GetProcess().Handle());
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProcessIdFeedbackSource::PrepareCompleted, this));
-}
-
-void ProcessIdFeedbackSource::PrepareCompleted() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);

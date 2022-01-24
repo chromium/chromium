@@ -98,20 +98,16 @@ class SigninExperienceForSettingsPageTest : public testing::Test {
       ADD_FAILURE() << "GetFileSystemSettings() failed";
       return false;
     }
-    auto info = GetFileSystemConnectorLinkedAccountInfoForSettingsPage(
-        settings.value(), prefs());
+    auto info =
+        GetFileSystemConnectorLinkedAccountInfo(settings.value(), prefs());
     if (!info.has_value()) {
-      ADD_FAILURE() << "Gete linked account info failed";
+      ADD_FAILURE() << "Get linked account info failed";
       return false;
     }
-    base::Value account;
-    std::string folder_name, folder_link;
-    ExtractAccountInfoFromDictionary(*info, &account, &folder_name,
-                                     &folder_link);
-    EXPECT_EQ(*account.FindStringPath(kAccountNameKey), ref_account_name);
-    EXPECT_EQ(*account.FindStringPath(kAccountLoginKey), ref_account_login);
-    EXPECT_EQ(folder_name, ref_folder_name);
-    EXPECT_EQ(folder_link, ref_folder_link);
+    EXPECT_EQ(info->account_name, ref_account_name);
+    EXPECT_EQ(info->account_login, ref_account_login);
+    EXPECT_EQ(info->folder_name, ref_folder_name);
+    EXPECT_EQ(info->folder_link, ref_folder_link);
     return true;
   }
 
@@ -136,10 +132,10 @@ class SigninExperienceForSettingsPageTest : public testing::Test {
       ADD_FAILURE() << "VerifyBothTokensCleared() failed";
       return false;
     }
-    auto info = GetFileSystemConnectorLinkedAccountInfoForSettingsPage(
-        settings.value(), prefs());
+    auto info =
+        GetFileSystemConnectorLinkedAccountInfo(settings.value(), prefs());
     if (info.has_value()) {
-      ADD_FAILURE() << "Still has linked account: " << *info;
+      ADD_FAILURE() << "Still has linked account";
       return false;
     }
     return true;

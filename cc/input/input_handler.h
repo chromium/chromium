@@ -17,14 +17,12 @@
 #include "cc/input/touch_action.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/paint/element_id.h"
-#include "cc/trees/swap_promise_monitor.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/events/types/scroll_types.h"
 
 namespace gfx {
 class Point;
-class ScrollOffset;
 class SizeF;
 class Vector2dF;
 }  // namespace gfx
@@ -36,6 +34,7 @@ class LatencyInfo;
 namespace cc {
 
 class CompositorDelegateForInput;
+class LatencyInfoSwapPromiseMonitor;
 class ScrollElasticityHelper;
 
 enum class PointerResultType { kUnhandled = 0, kScrollbarScroll };
@@ -60,12 +59,12 @@ struct CC_EXPORT InputHandlerPointerResult {
       ui::ScrollGranularity::kScrollByPrecisePixel;
 
   // If the input handler processed the event as a scrollbar scroll, it will
-  // return a gfx::ScrollOffset that produces the necessary scroll. However,
+  // return a gfx::Vector2dF that produces the necessary scroll. However,
   // it is still the client's responsibility to generate the gesture scrolls
   // instead of the input handler performing it as a part of handling the
   // pointer event (due to the latency attribution that happens at the
   // InputHandlerProxy level).
-  gfx::ScrollOffset scroll_offset;
+  gfx::Vector2dF scroll_offset;
 
   // Used to determine which scroll_node needs to be scrolled. The primary
   // purpose of this is to avoid hit testing for gestures that already know
@@ -106,9 +105,10 @@ class CC_EXPORT InputHandlerClient {
   virtual void WillShutdown() = 0;
   virtual void Animate(base::TimeTicks time) = 0;
   virtual void ReconcileElasticOverscrollAndRootScroll() = 0;
+  virtual void SetPrefersReducedMotion(bool prefers_reduced_motion) = 0;
   virtual void UpdateRootLayerStateForSynchronousInputHandler(
-      const gfx::ScrollOffset& total_scroll_offset,
-      const gfx::ScrollOffset& max_scroll_offset,
+      const gfx::Vector2dF& total_scroll_offset,
+      const gfx::Vector2dF& max_scroll_offset,
       const gfx::SizeF& scrollable_size,
       float page_scale_factor,
       float min_page_scale_factor,
@@ -296,7 +296,7 @@ class CC_EXPORT InputHandler {
   // input handler by the application (outside of input event handling). Offset
   // is expected in "content/page coordinates".
   virtual void SetSynchronousInputHandlerRootScrollOffset(
-      const gfx::ScrollOffset& root_content_offset) = 0;
+      const gfx::Vector2dF& root_content_offset) = 0;
 
   virtual void PinchGestureBegin() = 0;
   virtual void PinchGestureUpdate(float magnify_delta,
@@ -330,12 +330,12 @@ class CC_EXPORT InputHandler {
   EventListenerTypeForTouchStartOrMoveAt(const gfx::Point& viewport_point,
                                          TouchAction* out_touch_action) = 0;
 
-  // Calling CreateLatencyInfoSwapPromiseMonitor() to get a scoped
-  // LatencyInfoSwapPromiseMonitor. During the life time of the
-  // LatencyInfoSwapPromiseMonitor, if SetNeedsRedraw() or SetNeedsRedrawRect()
-  // is called on LayerTreeHostImpl, the original latency info will be turned
-  // into a LatencyInfoSwapPromise.
-  virtual std::unique_ptr<SwapPromiseMonitor>
+  // Calling `CreateLatencyInfoSwapPromiseMonitor()` to get a scoped
+  // `LatencyInfoSwapPromiseMonitor`. During the life time of the
+  // `LatencyInfoSwapPromiseMonitor`, if `SetNeedsRedraw()` or
+  // `SetNeedsRedrawRect()` is called on `LayerTreeHostImpl`, the original
+  // latency info will be turned into a `LatencyInfoSwapPromise`.
+  virtual std::unique_ptr<LatencyInfoSwapPromiseMonitor>
   CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency) = 0;
 
   // Returns a new instance of `EventsMetricsManager::ScopedMonitor` to monitor
@@ -352,13 +352,14 @@ class CC_EXPORT InputHandler {
       EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) = 0;
 
   virtual ScrollElasticityHelper* CreateScrollElasticityHelper() = 0;
+  virtual void DestroyScrollElasticityHelper() = 0;
 
   // Called by the single-threaded UI Compositor to get or set the scroll offset
   // on the impl side. Returns false if |element_id| isn't in the active tree.
   virtual bool GetScrollOffsetForLayer(ElementId element_id,
-                                       gfx::ScrollOffset* offset) = 0;
+                                       gfx::Vector2dF* offset) = 0;
   virtual bool ScrollLayerTo(ElementId element_id,
-                             const gfx::ScrollOffset& offset) = 0;
+                             const gfx::Vector2dF& offset) = 0;
 
   virtual bool ScrollingShouldSwitchtoMainThread() = 0;
 

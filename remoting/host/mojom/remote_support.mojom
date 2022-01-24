@@ -105,7 +105,10 @@ interface SupportHostObserver {
   OnHostStateConnected@4(string remote_username);
 
   // Indicates the remote support host is now disconnected.
-  OnHostStateDisconnected@6();
+  // |disconnect_reason| is a stringified protocol::ErrorCode which indicates
+  // the reason the session was disconnected. It is not meant to be displayed
+  // directly in the UI.
+  OnHostStateDisconnected@6([MinVersion=1] string? disconnect_reason);
 
   // Indicates there was a change to the NAT device policy.
   OnNatPolicyChanged@7(NatPolicyState nat_policy_state);

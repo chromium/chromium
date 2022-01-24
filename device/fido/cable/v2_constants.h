@@ -5,8 +5,24 @@
 #ifndef DEVICE_FIDO_CABLE_V2_CONSTANTS_H_
 #define DEVICE_FIDO_CABLE_V2_CONSTANTS_H_
 
+#include "base/types/strong_alias.h"
+
 namespace device {
 namespace cablev2 {
+
+namespace tunnelserver {
+
+// KnownDomainID represents a tunnel server domain ID that maps to a known
+// domain. IDs 0..256 are assigned and IDs 256..64K are hashed. Thus this type
+// only contains values 256..64K or values that are assigned and the assignment
+// is known in the code.
+//
+// Outside of tests, these values should only be created by |eid::ToComponents|
+// or |tunnelserver::ToKnownTunnelID|.
+using KnownDomainID =
+    base::StrongAlias<class TunnelServerDomainIDTag, uint16_t>;
+
+}  // namespace tunnelserver
 
 // kAdvertSize is the number of bytes in an advert. This consists of a 16-byte
 // UUID and a 4-byte UUID.
@@ -44,7 +60,7 @@ constexpr size_t kPairingIDSize = 8;
 // kTunnelServer is the hardcoded tunnel server that phones will use for network
 // communication. This specifies a Google service and the short domain seed is
 // necessary to fit within a BLE advert.
-constexpr uint16_t kTunnelServer = 0;
+constexpr auto kTunnelServer = tunnelserver::KnownDomainID(0);
 // kPostHandshakeMsgPaddingGranularity is the granularity of the padding added
 // to the post-handshake message. This should be sufficiently large to pad away
 // all information about the contents of this message.

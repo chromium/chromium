@@ -72,6 +72,11 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
                                 WebServiceWorkerContextClient&,
                                 scoped_refptr<base::SingleThreadTaskRunner>
                                     parent_thread_default_task_runner);
+
+  ServiceWorkerGlobalScopeProxy(const ServiceWorkerGlobalScopeProxy&) = delete;
+  ServiceWorkerGlobalScopeProxy& operator=(
+      const ServiceWorkerGlobalScopeProxy&) = delete;
+
   ~ServiceWorkerGlobalScopeProxy() override;
 
   // WebServiceWorkerContextProxy overrides:
@@ -129,7 +134,8 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
   void SetupNavigationPreload(
       int fetch_event_id,
       const KURL& url,
-      mojom::blink::FetchEventPreloadHandlePtr preload_handle);
+      mojo::PendingReceiver<network::mojom::blink::URLLoaderClient>
+          preload_url_loader_client_receiver);
   void RequestTermination(WTF::CrossThreadOnceFunction<void(bool)> callback);
 
   // Detaches this proxy object entirely from the outside world, clearing out
@@ -157,8 +163,6 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
   CrossThreadPersistent<ServiceWorkerGlobalScope> worker_global_scope_;
 
   THREAD_CHECKER(worker_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerGlobalScopeProxy);
 };
 
 // TODO(leonhsl): This is only used by ServiceWorkerGlobalScope for calling

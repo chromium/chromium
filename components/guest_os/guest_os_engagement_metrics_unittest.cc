@@ -36,6 +36,10 @@ class GuestOsEngagementMetricsTest : public testing::Test {
  protected:
   GuestOsEngagementMetricsTest() = default;
 
+  GuestOsEngagementMetricsTest(const GuestOsEngagementMetricsTest&) = delete;
+  GuestOsEngagementMetricsTest& operator=(const GuestOsEngagementMetricsTest&) =
+      delete;
+
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::SessionManagerClient::InitializeFakeInMemory();
@@ -49,7 +53,7 @@ class GuestOsEngagementMetricsTest : public testing::Test {
 
     // The code doesn't work for correctly for a clock just at the epoch so
     // advance by a day first.
-    test_clock_.Advance(base::TimeDelta::FromDays(1));
+    test_clock_.Advance(base::Days(1));
     CreateEngagementMetrics();
     SetSessionState(session_manager::SessionState::ACTIVE);
   }
@@ -80,7 +84,7 @@ class GuestOsEngagementMetricsTest : public testing::Test {
   }
 
   void AdvanceSeconds(int seconds) {
-    test_tick_clock_.Advance(base::TimeDelta::FromSeconds(seconds));
+    test_tick_clock_.Advance(base::Seconds(seconds));
   }
 
   void FocusMatchedWindow() {
@@ -97,13 +101,13 @@ class GuestOsEngagementMetricsTest : public testing::Test {
 
   void TriggerRecordEngagementTimeToUma() {
     // Trigger UMA record by changing to next day.
-    test_clock_.Advance(base::TimeDelta::FromDays(1));
+    test_clock_.Advance(base::Days(1));
     engagement_metrics_->OnSessionStateChanged();
   }
 
   void ExpectTime(const std::string& histogram, int seconds) {
     tester_.ExpectTimeBucketCount("Foo.EngagementTime." + histogram,
-                                  base::TimeDelta::FromSeconds(seconds), 1);
+                                  base::Seconds(seconds), 1);
   }
 
   void DestroyEngagementMetrics() { engagement_metrics_.reset(); }
@@ -136,8 +140,6 @@ class GuestOsEngagementMetricsTest : public testing::Test {
   std::unique_ptr<aura::Window> non_matched_window_;
 
   std::unique_ptr<GuestOsEngagementMetrics> engagement_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsEngagementMetricsTest);
 };
 
 TEST_F(GuestOsEngagementMetricsTest, RecordEngagementTimeSessionLocked) {

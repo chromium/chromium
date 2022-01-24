@@ -4,8 +4,8 @@
 
 #include "ash/public/cpp/scale_utility.h"
 
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace ash {
 

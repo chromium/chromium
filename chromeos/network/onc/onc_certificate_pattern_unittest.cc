@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
@@ -23,6 +22,11 @@ constexpr char kFakePemEncodedIssuer[] = "PEM-ENCODED-ISSUER";
 class OncCertificatePatternTest : public testing::Test {
  public:
   OncCertificatePatternTest() = default;
+
+  OncCertificatePatternTest(const OncCertificatePatternTest&) = delete;
+  OncCertificatePatternTest& operator=(const OncCertificatePatternTest&) =
+      delete;
+
   ~OncCertificatePatternTest() override = default;
 
   void SetUp() override {
@@ -35,8 +39,6 @@ class OncCertificatePatternTest : public testing::Test {
 
  protected:
   scoped_refptr<net::X509Certificate> cert_;
-
-  DISALLOW_COPY_AND_ASSIGN(OncCertificatePatternTest);
 };
 
 }  // namespace

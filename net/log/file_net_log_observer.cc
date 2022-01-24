@@ -17,10 +17,10 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/clamped_math.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "net/log/net_log_capture_mode.h"
@@ -142,6 +142,9 @@ class FileNetLogObserver::WriteQueue
   // is overwritten.
   explicit WriteQueue(uint64_t memory_max);
 
+  WriteQueue(const WriteQueue&) = delete;
+  WriteQueue& operator=(const WriteQueue&) = delete;
+
   // Adds |event| to |queue_|. Also manages the size of |memory_|; if it
   // exceeds |memory_max_|, then old events are dropped from |queue_| without
   // being written to file.
@@ -189,8 +192,6 @@ class FileNetLogObserver::WriteQueue
   // for the queue in the event that the file task runner lags significantly
   // behind the main thread in writing events to file.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WriteQueue);
 };
 
 // FileWriter is responsible for draining events from a WriteQueue and writing
@@ -205,6 +206,9 @@ class FileNetLogObserver::FileWriter {
              uint64_t max_event_file_size,
              size_t total_num_event_files,
              scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  FileWriter(const FileWriter&) = delete;
+  FileWriter& operator=(const FileWriter&) = delete;
 
   ~FileWriter();
 
@@ -326,8 +330,6 @@ class FileNetLogObserver::FileWriter {
 
   // Task runner for doing file operations.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileWriter);
 };
 
 std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateBounded(

@@ -48,7 +48,7 @@ NotificationStorage::~NotificationStorage() = default;
 void NotificationStorage::WriteNotificationData(
     const NotificationDatabaseData& data,
     PlatformNotificationContext::WriteResultCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::string serialized_data;
   if (!SerializeNotificationDatabaseData(data, &serialized_data)) {
     DLOG(ERROR) << "Unable to serialize data for a notification belonging "
@@ -85,7 +85,7 @@ void NotificationStorage::ReadNotificationDataAndRecordInteraction(
     const std::string& notification_id,
     PlatformNotificationContext::Interaction interaction,
     PlatformNotificationContext::ReadResultCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   service_worker_context_->GetRegistrationUserData(
       service_worker_registration_id, {CreateDataKey(notification_id)},
       base::BindOnce(&NotificationStorage::OnReadCompleteUpdateInteraction,

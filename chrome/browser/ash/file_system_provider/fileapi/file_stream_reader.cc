@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event.h"
@@ -40,6 +39,9 @@ class FileStreamReader::OperationRunner
           content::BrowserThread::DeleteOnUIThread> {
  public:
   OperationRunner() : file_handle_(0) {}
+
+  OperationRunner(const OperationRunner&) = delete;
+  OperationRunner& operator=(const OperationRunner&) = delete;
 
   // Opens a file for reading and calls the completion callback. Must be called
   // on UI thread.
@@ -183,8 +185,6 @@ class FileStreamReader::OperationRunner
   base::FilePath file_path_;
   std::unique_ptr<ScopedFileOpener> file_opener_;
   int file_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(OperationRunner);
 };
 
 FileStreamReader::FileStreamReader(storage::FileSystemContext* context,

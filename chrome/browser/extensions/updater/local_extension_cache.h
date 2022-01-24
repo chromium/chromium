@@ -14,7 +14,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
@@ -45,6 +44,10 @@ class LocalExtensionCache {
       uint64_t max_cache_size,
       const base::TimeDelta& max_cache_age,
       const scoped_refptr<base::SequencedTaskRunner>& backend_task_runner);
+
+  LocalExtensionCache(const LocalExtensionCache&) = delete;
+  LocalExtensionCache& operator=(const LocalExtensionCache&) = delete;
+
   ~LocalExtensionCache();
 
   // Name of flag file that indicates that cache is ready (import finished).
@@ -277,8 +280,6 @@ class LocalExtensionCache {
 
   // Weak factory for callbacks from the backend and delayed tasks.
   base::WeakPtrFactory<LocalExtensionCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocalExtensionCache);
 };
 
 }  // namespace extensions

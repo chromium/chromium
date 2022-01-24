@@ -146,8 +146,7 @@ void StoreUpdateData::MoveHintIntoUpdateData(proto::Hint&& hint) {
   } else if (update_time()) {
     base::TimeDelta expiry_duration;
     if (hint.has_max_cache_duration()) {
-      expiry_duration =
-          base::TimeDelta().FromSeconds(hint.max_cache_duration().seconds());
+      expiry_duration = base::Seconds(hint.max_cache_duration().seconds());
     } else {
       expiry_duration = features::StoredFetchedHintsFreshnessDuration();
     }

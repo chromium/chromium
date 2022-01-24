@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 
 // Simple implementation of the ApiBindings service, for use by tests.
 class FakeApiBindingsImpl : public chromium::cast::ApiBindings {

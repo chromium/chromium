@@ -20,13 +20,15 @@ class Args(object):
 
 
 class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
-    def __init__(self, args, swarming_args, files, list_bots_result):
+    def __init__(self, args, swarming_args, files, list_bots_result,
+                 list_tasks_results):
         self._bot_statuses = []
         self._swarming_runs = []
         self._files = files
         self._temp_file_id = 0
         self._triggered_with_swarming_go = 0
         self._list_bots_result = list_bots_result
+        self._list_tasks_results = list_tasks_results
         super(FakeTriggerer, self).__init__(args, swarming_args)
 
     def set_files(self, files):
@@ -53,6 +55,12 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
                   dimensions,
                   server='chromium-swarm.appspot.com'):
         return self._list_bots_result
+
+    def list_tasks(self, tags, limit=None,
+                   server='chromium-swarm.appspot.com'):
+        res, self._list_tasks_results = self._list_tasks_results[
+            0], self._list_tasks_results[1:]
+        return res
 
     def run_swarming(self, args):
         self._swarming_runs.append(args)
@@ -94,14 +102,17 @@ class UnitTest(unittest.TestCase):
         ]
 
         triggerer = FakeTriggerer(
-            args, swarming_args,
-            self.get_files(args.shards, previous_task_assignment_map),
+            args, swarming_args, self.get_files(args.shards),
             self.generate_list_of_eligible_bots_query_response(
-                alive_bots, dead_bots))
+                alive_bots, dead_bots), [
+                    self.generate_last_task_to_shard_query_response(
+                        i, previous_task_assignment_map.get(i))
+                    for i in range(args.shards)
+                ])
         triggerer.trigger_tasks(args, swarming_args)
         return triggerer
 
-    def get_files(self, num_shards, previous_task_assignment_map):
+    def get_files(self, num_shards):
         files = {}
         file_index = 0
         file_index = file_index + 1
@@ -112,12 +123,7 @@ class UnitTest(unittest.TestCase):
         # the last build that ran the shard that corresponds to that
         # index.  If that shard hasn't been run before the entry
         # should be an empty string.
-        for i in xrange(num_shards):
-            bot_id = previous_task_assignment_map.get(i)
-            files['base_trigger_dimensions%d.json' % file_index] = (
-                self.generate_last_task_to_shard_query_response(i, bot_id))
-            file_index = file_index + 1
-        for i in xrange(num_shards):
+        for i in range(num_shards):
             task = {
                 'tasks': [{
                     'request': {
@@ -134,10 +140,10 @@ class UnitTest(unittest.TestCase):
             # Test both cases where bot_id is present and you have to parse
             # out of the tags.
             if shard % 2:
-                return {'items': [{'bot_id': bot_id}]}
+                return [{'bot_id': bot_id}]
             else:
-                return {'items': [{'tags': [('id:%s' % bot_id)]}]}
-        return {}
+                return [{'tags': ['id:%s' % bot_id]}]
+        return []
 
     def generate_list_of_eligible_bots_query_response(self, alive_bots,
                                                       dead_bots):
@@ -163,7 +169,7 @@ class UnitTest(unittest.TestCase):
 
     def list_contains_sublist(self, main_list, sub_list):
         return any(sub_list == main_list[offset:offset + len(sub_list)]
-                   for offset in xrange(len(main_list) - (len(sub_list) - 1)))
+                   for offset in range(len(main_list) - (len(sub_list) - 1)))
 
     def get_triggered_shard_to_bot(self, triggerer):
         triggered_map = {}
@@ -202,7 +208,7 @@ class UnitTest(unittest.TestCase):
                                    alive_bots=[],
                                    dead_bots=[])
         err_msg = 'Not enough available machines exist in swarming pool'
-        self.assertTrue(err_msg in context.exception.message)
+        self.assertTrue(err_msg in str(context.exception))
 
     def test_previously_healthy_now_dead(self):
         # Test that it swaps out build1 and build2 that are dead

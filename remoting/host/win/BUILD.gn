@@ -98,12 +98,20 @@ source_set("win") {
     "com_imported_mstscax.h",
     "com_security.cc",
     "com_security.h",
+    "core_resource.h",
+    "default_apps_util.cc",
+    "default_apps_util.h",
     "default_audio_device_change_detector.cc",
     "default_audio_device_change_detector.h",
+    "etw_trace_consumer.h",
     "evaluate_3d_display_mode.cc",
     "evaluate_3d_display_mode.h",
     "evaluate_d3d.cc",
     "evaluate_d3d.h",
+    "host_event_file_logger.h",
+    "host_event_logger.h",
+    "host_event_windows_event_logger.h",
+    "host_service.h",
     "launch_process_with_token.cc",
     "launch_process_with_token.h",
     "omaha.cc",
@@ -118,12 +126,18 @@ source_set("win") {
     "session_desktop_environment.h",
     "session_input_injector.cc",
     "session_input_injector.h",
+    "simple_task_dialog.cc",
+    "simple_task_dialog.h",
+    "unprivileged_process_delegate.h",
     "window_station_and_desktop.cc",
     "window_station_and_desktop.h",
     "windows_event_logger.cc",
     "windows_event_logger.h",
     "worker_process_launcher.cc",
     "worker_process_launcher.h",
+    "wts_session_change_observer.cc",
+    "wts_session_change_observer.h",
+    "wts_session_process_delegate.h",
     "wts_terminal_monitor.cc",
     "wts_terminal_monitor.h",
     "wts_terminal_observer.h",
@@ -149,6 +163,8 @@ source_set("win") {
     "//crypto",
     "//ipc",
     "//remoting/base",
+    "//remoting/host:base",
+    "//remoting/host:ipc_constants",
     "//remoting/host/security_key",
     "//remoting/host/win:messages",
     "//remoting/host/win:remoting_lib_idl",
@@ -174,15 +190,16 @@ source_set("unit_tests") {
     "event_trace_data.cc",
     "event_trace_data.h",
     "event_trace_data_unittest.cc",
-    "launch_native_messaging_host_process.cc",
-    "launch_native_messaging_host_process.h",
     "rdp_client_unittest.cc",
     "worker_process_launcher_unittest.cc",
   ]
 
   deps = [
     ":elevated_native_messaging_host",
+    ":win",
+    "//base/test:test_support",
     "//ipc",
+    "//remoting/host:base",
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/host/it2me:common",
@@ -283,6 +300,7 @@ executable("remoting_console") {
     ":remoting_core",
     ":remoting_windows_resources",
     "//base:clang_profiling_buildflags",
+    "//remoting/host:host_main_headers",
   ]
 
   sources = [
@@ -312,6 +330,8 @@ executable("remoting_me2me_host") {
     ":dpi_aware_exe_manifest",
     ":remoting_core",
     ":remoting_windows_resources",
+    "//base:clang_profiling_buildflags",
+    "//remoting/host:host_main_headers",
   ]
 
   sources = [
@@ -334,9 +354,15 @@ source_set("elevated_native_messaging_host") {
   sources = [
     "elevated_native_messaging_host.cc",
     "elevated_native_messaging_host.h",
+    "launch_native_messaging_host_process.cc",
+    "launch_native_messaging_host_process.h",
   ]
   deps = [
+    ":security_descriptor",
     "//base",
+    "//extensions/browser/api/messaging:native_messaging",
+    "//ipc",
+    "//remoting/host:base",
     "//remoting/host/native_messaging",
   ]
 }
@@ -377,8 +403,6 @@ shared_library("remoting_core") {
     "//remoting/host/host_main.cc",
     "//remoting/host/it2me/it2me_native_messaging_host_main.cc",
     "//remoting/host/it2me/it2me_native_messaging_host_main.h",
-    "//remoting/host/remote_open_url_main.cc",
-    "//remoting/host/remote_open_url_main.h",
     "//remoting/host/setup/host_starter.cc",
     "//remoting/host/setup/host_starter.h",
     "//remoting/host/setup/host_stopper.cc",
@@ -391,7 +415,6 @@ shared_library("remoting_core") {
     "chromoting_module.cc",
     "chromoting_module.h",
     "core.cc",
-    "core.h",
     "etw_trace_consumer.cc",
     "etw_trace_controller.cc",
     "etw_trace_controller.h",
@@ -400,24 +423,10 @@ shared_library("remoting_core") {
     "host_event_file_logger.cc",
     "host_event_windows_event_logger.cc",
     "host_service.cc",
-    "launch_native_messaging_host_process.cc",
-    "launch_native_messaging_host_process.h",
     "rdp_desktop_session.cc",
     "rdp_desktop_session.h",
     "unprivileged_process_delegate.cc",
     "wts_session_process_delegate.cc",
-
-    # TODO(crbug.com/1184893): These files are also listed in //remoting/host:common, so they should probably be moved to a shared target they can both depend on.
-    "//remoting/host/host_main.h",
-    "//remoting/host/worker_process_ipc_delegate.h",
-    "core_resource.h",
-    "etw_trace_consumer.h",
-    "host_event_file_logger.h",
-    "host_event_logger.h",
-    "host_event_windows_event_logger.h",
-    "host_service.h",
-    "unprivileged_process_delegate.h",
-    "wts_session_process_delegate.h",
   ]
   public_deps = [ ":elevated_native_messaging_host" ]
   deps = [
@@ -431,6 +440,7 @@ shared_library("remoting_core") {
     "//base:i18n",
     "//base/allocator",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//build/win:default_exe_manifest",
     "//ipc",
     "//mojo/core/embedder:embedder",
@@ -438,17 +448,26 @@ shared_library("remoting_core") {
     "//mojo/public/cpp/system",
     "//net",
     "//remoting/base",
+    "//remoting/base:authorization",
     "//remoting/base:breakpad",
+    "//remoting/host:base",
     "//remoting/host:host",
-    "//remoting/host:host_settings",
+    "//remoting/host:host_main_headers",
+    "//remoting/host:ipc_constants",
     "//remoting/host:logging",
     "//remoting/host:remoting_me2me_host_static",
+    "//remoting/host:resources",
+    "//remoting/host:settings",
     "//remoting/host/it2me:common",
     "//remoting/host/native_messaging",
+    "//remoting/host/remote_open_url:main",
     "//remoting/host/security_key:main",
     "//remoting/host/setup",
+    "//remoting/host/webauthn:main",
     "//remoting/protocol",
     "//sandbox/win:sandbox",  # Should always use Windows version
+    "//services/network:network_service",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/base",
@@ -466,7 +485,6 @@ shared_library("remoting_core") {
     "comctl32.lib",
     "rpcns4.lib",
     "rpcrt4.lib",
-    "sas.lib",
     "uuid.lib",
     "wtsapi32.lib",
   ]
@@ -487,6 +505,8 @@ executable("remoting_desktop") {
   deps = [
     ":remoting_core",
     ":remoting_windows_resources",
+    "//base:clang_profiling_buildflags",
+    "//remoting/host:host_main_headers",
   ]
 
   if (is_official_build) {

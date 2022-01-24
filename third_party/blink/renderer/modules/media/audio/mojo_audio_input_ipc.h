@@ -49,6 +49,10 @@ class MODULES_EXPORT MojoAudioInputIPC
   MojoAudioInputIPC(const media::AudioSourceParameters& source_params,
                     StreamCreatorCB stream_creator,
                     StreamAssociatorCB stream_associator);
+
+  MojoAudioInputIPC(const MojoAudioInputIPC&) = delete;
+  MojoAudioInputIPC& operator=(const MojoAudioInputIPC&) = delete;
+
   ~MojoAudioInputIPC() override;
 
   // AudioInputIPC implementation
@@ -91,8 +95,6 @@ class MODULES_EXPORT MojoAudioInputIPC
   media::AudioInputIPCDelegate* delegate_ = nullptr;
 
   base::WeakPtrFactory<MojoAudioInputIPC> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioInputIPC);
 };
 
 }  // namespace blink

@@ -60,7 +60,7 @@ class ThrottledOfflineContentProviderTest : public testing::Test {
   ThrottledOfflineContentProviderTest()
       : task_runner_(new base::TestMockTimeTaskRunner),
         handle_(task_runner_),
-        delay_(base::TimeDelta::FromSeconds(1)),
+        delay_(base::Seconds(1)),
         provider_(delay_, &wrapped_provider_) {}
   ~ThrottledOfflineContentProviderTest() override {}
 
@@ -70,8 +70,7 @@ class ThrottledOfflineContentProviderTest : public testing::Test {
 
  protected:
   base::TimeTicks GetTimeThatWillAllowAnUpdate() {
-    return base::TimeTicks::Now() - delay_ -
-           base::TimeDelta::FromMilliseconds(1);
+    return base::TimeTicks::Now() - delay_ - base::Milliseconds(1);
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;

@@ -16,7 +16,6 @@
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/security_style_explanations.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/url_constants.h"
@@ -87,7 +86,7 @@ void WebContentsDelegate::CanDownload(const GURL& url,
   std::move(callback).Run(true);
 }
 
-bool WebContentsDelegate::HandleContextMenu(RenderFrameHost* render_frame_host,
+bool WebContentsDelegate::HandleContextMenu(RenderFrameHost& render_frame_host,
                                             const ContextMenuParams& params) {
   return false;
 }
@@ -236,6 +235,11 @@ std::string WebContentsDelegate::GetDefaultMediaDeviceID(
   return std::string();
 }
 
+std::string WebContentsDelegate::GetTitleForMediaControls(
+    WebContents* web_contents) {
+  return {};
+}
+
 #if defined(OS_ANDROID)
 bool WebContentsDelegate::ShouldBlockMediaRequest(const GURL& url) {
   return false;
@@ -277,12 +281,6 @@ bool WebContentsDelegate::SaveFrame(const GURL& url,
                                     const Referrer& referrer,
                                     content::RenderFrameHost* rfh) {
   return false;
-}
-
-blink::SecurityStyle WebContentsDelegate::GetSecurityStyle(
-    WebContents* web_contents,
-    SecurityStyleExplanations* security_style_explanations) {
-  return blink::SecurityStyle::kUnknown;
 }
 
 bool WebContentsDelegate::ShouldAllowRunningInsecureContent(

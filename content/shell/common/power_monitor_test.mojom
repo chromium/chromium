@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 module content.mojom;
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // This interface is only for the sake of browser test to query current power
 // state observed in remote child processes.
+[ServiceSandbox=sandbox.mojom.Sandbox.kGpu]
 interface PowerMonitorTest {
   // The power state is reported immediatelly if there is already a change
   // available to notify, otherwise wait until a change happen. Overlapping

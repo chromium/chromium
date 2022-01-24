@@ -21,10 +21,8 @@ struct ScriptHandle {
   ScriptHandle(const ScriptHandle& orig);
   ~ScriptHandle();
 
-  Chip chip;
   DirectAction direct_action;
   std::string path;
-  std::string initial_prompt;
   std::string start_message;
   bool needs_ui = false;
 

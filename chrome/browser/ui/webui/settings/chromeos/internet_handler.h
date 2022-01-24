@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/components/tether/gms_core_notifications_state_tracker.h"
 #include "ui/gfx/native_widget_types.h"
@@ -28,6 +27,10 @@ class InternetHandler
       public ::settings::SettingsPageUIHandler {
  public:
   explicit InternetHandler(Profile* profile);
+
+  InternetHandler(const InternetHandler&) = delete;
+  InternetHandler& operator=(const InternetHandler&) = delete;
+
   ~InternetHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -68,8 +71,6 @@ class InternetHandler
 
   chromeos::tether::GmsCoreNotificationsStateTracker*
       gms_core_notifications_state_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternetHandler);
 };
 
 }  // namespace settings

@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './diagnostics_shared_css.js';
+import './input_card.js';
+import './keyboard_tester.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ConnectedDevicesObserverReceiver, ConnectedDevicesObserverInterface, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js'
-import {getInputDataProvider} from './mojo_interface_provider.js'
+import {ConnectedDevicesObserverInterface, ConnectedDevicesObserverReceiver, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js';
+import {getInputDataProvider} from './mojo_interface_provider.js';
 
 /**
  * @fileoverview
@@ -17,11 +23,16 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
+  behaviors: [I18nBehavior],
+
   /** @private {?InputDataProviderInterface} */
   inputDataProvider_: null,
 
   /** @private {?ConnectedDevicesObserverReceiver} */
   connectedDevicesObserverReceiver_: null,
+
+  /** @private {?KeyboardTesterElement} */
+  keyboardTester_: null,
 
   properties: {
     /** @private {!Array<!KeyboardInfo>} */
@@ -119,5 +130,20 @@ Polymer({
   onTouchDeviceDisconnected(id) {
     this.removeDeviceById_('touchpads_', id);
     this.removeDeviceById_('touchscreens_', id);
+  },
+
+  /**
+   * @param {!CustomEvent} e
+   * @private
+   */
+  handleKeyboardTestButtonClick_(e) {
+    if (!this.keyboardTester_) {
+      this.keyboardTester_ = /** @type {!KeyboardTesterElement} */ (
+          document.createElement('keyboard-tester'));
+      this.root.appendChild(this.keyboardTester_);
+    }
+    this.keyboardTester_.keyboard = assert(
+        this.keyboards_.find((keyboard) => keyboard.id === e.detail.evdevId));
+    this.keyboardTester_.show();
   },
 });

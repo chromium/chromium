@@ -82,6 +82,10 @@ const wchar_t kTempDirPrefix[] = L"mini_installer_test_temp";
 class ScopedTempDirectory {
  public:
   ScopedTempDirectory() {}
+
+  ScopedTempDirectory(const ScopedTempDirectory&) = delete;
+  ScopedTempDirectory& operator=(const ScopedTempDirectory&) = delete;
+
   ~ScopedTempDirectory() {
     if (!directory_.empty() && !base::DeletePathRecursively(directory_)) {
       LOG(DFATAL) << "Failed deleting temporary directory \""
@@ -104,7 +108,6 @@ class ScopedTempDirectory {
 
  private:
   base::FilePath directory_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedTempDirectory);
 };  // class ScopedTempDirectory
 
 // A helper class for manipulating a Chrome product version.

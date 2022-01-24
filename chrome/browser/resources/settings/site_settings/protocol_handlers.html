@@ -16,6 +16,17 @@
         padding-bottom: 10px;
       }
 
+      #appHandlerSubHeading {
+        padding-bottom: 10px;
+      }
+
+      #appIcon {
+        width: 16px;
+        height: 16px;
+        background-repeat: no-repeat;
+        background-size: contain;
+      }
+
       settings-collapse-radio-button {
         --settings-collapse-toggle-min-height: var(--settings-row-min-height);
       }
@@ -24,46 +35,37 @@
         --settings-collapse-separator-line: var(--cr-separator-line);
       }
     </style>
-    <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-      <div id="radioGroup">
-        <div class="secondary">
-          $i18n{siteSettingsProtocolHandlersDescription}
-        </div>
-        <h2>$i18n{siteSettingsDefaultBehavior}</h2>
-        <div id="radioSubHeading" class="secondary">
-          $i18n{siteSettingsDefaultBehaviorDescription}
-        </div>
-        <settings-radio-group
-          id="protcolHandlersRadio"
-          pref="[[handlersEnabledPref_]]"
-          on-change="onToggleChange_"
-          selectable-elements="settings-collapse-radio-button">
-          <settings-collapse-radio-button no-collapse
-              id="protcolHandlersRadioAllow"
-              pref="[[handlersEnabledPref_]]"
-              label="$i18n{siteSettingsProtocolHandlersAllowed}"
-              name="true"
-              disabled$="[[isGuest_]]"
-              icon="settings:protocol-handler">
-          </settings-collapse-radio-button>
-          <settings-collapse-radio-button no-collapse
-              id="protcolHandlersRadioBlock"
-              pref="[[handlersEnabledPref_]]"
-              label="$i18n{siteSettingsProtocolHandlersBlocked}"
-              name="false"
-              disabled$="[[isGuest_]]"
-              icon="settings:protocol-handler-off">
-          </settings-collapse-radio-button>
-        </settings-radio-group>
+    <div id="radioGroup">
+      <div class="secondary">
+        $i18n{siteSettingsProtocolHandlersDescription}
       </div>
-    </template>
-    <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
-      <settings-toggle-button id="protocolHandlersToggle"
-        pref="{{handlersEnabledPref_}}"
-        label="[[computeHandlersDescription_(handlersEnabledPref_.*)]]"
-        on-change="onToggleChange_">
-      </settings-toggle-button>
-    </template>
+      <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+      <div id="radioSubHeading" class="secondary">
+        $i18n{siteSettingsDefaultBehaviorDescription}
+      </div>
+      <settings-radio-group
+        id="protcolHandlersRadio"
+        pref="[[handlersEnabledPref_]]"
+        on-change="onToggleChange_"
+        selectable-elements="settings-collapse-radio-button">
+        <settings-collapse-radio-button no-collapse
+            id="protcolHandlersRadioAllow"
+            pref="[[handlersEnabledPref_]]"
+            label="$i18n{siteSettingsProtocolHandlersAllowed}"
+            name="true"
+            disabled$="[[isGuest_]]"
+            icon="settings:protocol-handler">
+        </settings-collapse-radio-button>
+        <settings-collapse-radio-button no-collapse
+            id="protcolHandlersRadioBlock"
+            pref="[[handlersEnabledPref_]]"
+            label="$i18n{siteSettingsProtocolHandlersBlocked}"
+            name="false"
+            disabled$="[[isGuest_]]"
+            icon="settings:protocol-handler-off">
+        </settings-collapse-radio-button>
+      </settings-radio-group>
+    </div>
 
     <template is="dom-repeat" items="[[protocols]]" as="protocol">
       <div class="column-header">[[protocol.protocol_display_name]]</div>
@@ -92,7 +94,7 @@
 
     <cr-action-menu role-description="$i18n{menu}">
       <button class="dropdown-item" on-click="onDefaultClick_"
-          id="defaultButton" hidden$="[[actionMenuModel_.is_default]]">
+          id="defaultButton" disabled$="[[actionMenuModel_.is_default]]">
         $i18n{handlerSetDefault}
       </button>
       <button class="dropdown-item" on-click="onRemoveClick_"
@@ -102,14 +104,9 @@
     </cr-action-menu>
 
     <template is="dom-if" if="[[ignoredProtocols.length]]">
-      <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-        <div class="column-header">
-          $i18n{siteSettingsProtocolHandlersBlockedExceptions}
-        </div>
-      </template>
-      <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
-        <div class="column-header">$i18n{siteSettingsBlocked}</div>
-      </template>
+      <div class="column-header">
+        $i18n{siteSettingsProtocolHandlersBlockedExceptions}
+      </div>
       <div class="list-frame menu-content vertical-list">
         <template is="dom-repeat" items="[[ignoredProtocols]]">
           <div class="list-item">
@@ -123,6 +120,63 @@
             </div>
             <cr-icon-button class="icon-clear" id="removeIgnoredButton"
                 on-click="onRemoveIgnored_" title="$i18n{handlerRemove}">
+            </cr-icon-button>
+          </div>
+        </template>
+      </div>
+    </template>
+
+    <div class="column-header" hidden$="[[!showAppsProtocolHandlersTitle_]]">
+      <h2>$i18n{siteSettingsAppProtocolHandlers}</h2>
+    </div>
+
+    <div class="column-header" hidden$="[[!appAllowedProtocols.length]]">
+      <div id="appHandlerSubHeading" class="secondary">
+        $i18n{siteSettingsAppAllowedProtocolHandlersDescription}
+      </div>
+    </div>
+
+    <template is="dom-repeat" items="[[appAllowedProtocols]]" as="appProtocol">
+      <div class="column-header">[[appProtocol.protocol_display_name]]</div>
+      <div class="list-frame menu-content vertical-list">
+        <template is="dom-repeat" items="[[appProtocol.handlers]]">
+          <div class="list-item">
+            <div id="appIcon"
+                style="background-image: url('chrome://app-icon/[[item.app_id]]/16')">
+            </div>
+            <div class="middle protocol-host">
+              <span class="url-directionality">[[item.host]]</span>
+            </div>
+            <cr-icon-button class="icon-clear" id="removeAppHandlerButton"
+                on-click="onRemoveAppAllowedHandlerButtonClick_"
+                title="$i18n{handlerRemove}">
+            </cr-icon-button>
+          </div>
+        </template>
+      </div>
+    </template>
+
+    <div class="column-header" hidden$="[[!appDisallowedProtocols.length]]">
+      <div id="appHandlerSubHeading" class="secondary">
+        $i18n{siteSettingsAppDisallowedProtocolHandlersDescription}
+      </div>
+    </div>
+
+    <template is="dom-repeat" items="[[appDisallowedProtocols]]"
+        as="appProtocol">
+      <div class="column-header">[[appProtocol.protocol_display_name]]</div>
+      <div class="list-frame menu-content vertical-list">
+        <template is="dom-repeat" items="[[appProtocol.handlers]]">
+          <div class="list-item">
+            <div id="appIcon"
+                style="background-image: url('chrome://app-icon/[[item.app_id]]/16')">
+            </div>
+            <div class="middle protocol-host">
+              <span class="url-directionality">[[item.host]]</span>
+            </div>
+            <cr-icon-button class="icon-clear" id="removeAppHandlerButton"
+                on-click="onRemoveAppDisallowedHandlerButtonClick_"
+                title="$i18n{handlerRemove}">
             </cr-icon-button>
           </div>
         </template>

@@ -16,9 +16,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -35,13 +35,11 @@ namespace {
 using OpenOutcome = media::AudioInputStream::OpenOutcome;
 
 const int kMaxInputChannels = 3;
-constexpr base::TimeDelta kCheckMutedStateInterval =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kCheckMutedStateInterval = base::Seconds(1);
 
 #if defined(AUDIO_POWER_MONITORING)
 // Time in seconds between two successive measurements of audio power levels.
-constexpr base::TimeDelta kPowerMonitorLogInterval =
-    base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kPowerMonitorLogInterval = base::Seconds(15);
 
 // A warning will be logged when the microphone audio volume is below this
 // threshold.

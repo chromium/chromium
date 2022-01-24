@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -74,6 +74,10 @@ namespace content {
 class WebContents;
 }
 
+namespace device_reauth {
+class BiometricAuthenticator;
+}
+
 // ChromePasswordManagerClient implements the PasswordManagerClient interface.
 class ChromePasswordManagerClient
     : public password_manager::PasswordManagerClient,
@@ -90,6 +94,10 @@ class ChromePasswordManagerClient
       mojo::PendingAssociatedReceiver<autofill::mojom::PasswordGenerationDriver>
           receiver,
       content::RenderFrameHost* rfh);
+
+  ChromePasswordManagerClient(const ChromePasswordManagerClient&) = delete;
+  ChromePasswordManagerClient& operator=(const ChromePasswordManagerClient&) =
+      delete;
 
   ~ChromePasswordManagerClient() override;
 
@@ -129,7 +137,7 @@ class ChromePasswordManagerClient
   // Returns a pointer to the BiometricAuthenticator which is created on demand.
   // This is currently only implemented for Android, on all other platforms this
   // will always be null.
-  scoped_refptr<password_manager::BiometricAuthenticator>
+  scoped_refptr<device_reauth::BiometricAuthenticator>
   GetBiometricAuthenticator() override;
   void GeneratePassword(
       autofill::password_generation::PasswordGenerationType type) override;
@@ -166,10 +174,14 @@ class ChromePasswordManagerClient
       base::OnceCallback<void(ReauthSucceeded)> reauth_callback) override;
   void TriggerSignIn(signin_metrics::AccessPoint access_point) override;
   PrefService* GetPrefs() const override;
-  password_manager::PasswordStore* GetProfilePasswordStore() const override;
-  password_manager::PasswordStore* GetAccountPasswordStore() const override;
+  password_manager::PasswordStoreInterface* GetProfilePasswordStore()
+      const override;
+  password_manager::PasswordStoreInterface* GetAccountPasswordStore()
+      const override;
   password_manager::PasswordReuseManager* GetPasswordReuseManager()
       const override;
+  password_manager::PasswordScriptsFetcher* GetPasswordScriptsFetcher()
+      override;
   password_manager::SyncState GetPasswordSyncState() const override;
   bool WasLastNavigationHTTPError() const override;
 
@@ -213,6 +225,18 @@ class ChromePasswordManagerClient
 
   void LogPasswordReuseDetectedEvent() override;
 
+  // Reporting these events is only supported on desktop platforms.
+#if !defined(OS_ANDROID)
+  void MaybeReportEnterpriseLoginEvent(
+      const GURL& url,
+      bool is_federated,
+      const url::Origin& federated_origin,
+      const std::u16string& login_user_name) const override;
+  void MaybeReportEnterprisePasswordBreachEvent(
+      const std::vector<std::pair<GURL, std::u16string>>& identities)
+      const override;
+#endif
+
   ukm::SourceId GetUkmSourceId() override;
   password_manager::PasswordManagerMetricsRecorder* GetMetricsRecorder()
       override;
@@ -222,13 +246,14 @@ class ChromePasswordManagerClient
   signin::IdentityManager* GetIdentityManager() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::NetworkContext* GetNetworkContext() const override;
-  bool IsUnderAdvancedProtection() const override;
   void UpdateFormManagers() override;
   void NavigateToManagePasswordsPage(
       password_manager::ManagePasswordsReferrer referrer) override;
   bool IsIsolationForPasswordSitesEnabled() const override;
   bool IsNewTabPage() const override;
   password_manager::FieldInfoManager* GetFieldInfoManager() const override;
+  password_manager::WebAuthnCredentialsDelegate*
+  GetWebAuthnCredentialsDelegate() override;
 
   // autofill::mojom::PasswordGenerationDriver overrides.
   void AutomaticGenerationAvailable(
@@ -373,10 +398,9 @@ class ChromePasswordManagerClient
       generated_password_saved_message_delegate_;
 #endif  // defined(OS_ANDROID)
 
-  scoped_refptr<password_manager::BiometricAuthenticator>
-      biometric_authenticator_;
-
   password_manager::ContentPasswordManagerDriverFactory* driver_factory_;
+
+  ChromeWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
 
   // As a mojo service, will be registered into service registry
   // of the main frame host by ChromeContentBrowserClient
@@ -425,8 +449,6 @@ class ChromePasswordManagerClient
   password_manager::PasswordManagerClientHelper helper_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePasswordManagerClient);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_CHROME_PASSWORD_MANAGER_CLIENT_H_

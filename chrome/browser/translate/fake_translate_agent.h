@@ -44,6 +44,10 @@
 class FakeTranslateAgent : public translate::mojom::TranslateAgent {
  public:
   FakeTranslateAgent();
+
+  FakeTranslateAgent(const FakeTranslateAgent&) = delete;
+  FakeTranslateAgent& operator=(const FakeTranslateAgent&) = delete;
+
   ~FakeTranslateAgent() override;
 
   // TODO(crbug.com/1064974) Remove with subframe translation launch.
@@ -80,7 +84,6 @@ class FakeTranslateAgent : public translate::mojom::TranslateAgent {
   mojo::Receiver<translate::mojom::TranslateAgent> receiver_{this};
   mojo::AssociatedReceiverSet<translate::mojom::TranslateAgent>
       per_frame_translate_agent_receivers_;
-  DISALLOW_COPY_AND_ASSIGN(FakeTranslateAgent);
 };
 
 #endif  // CHROME_BROWSER_TRANSLATE_FAKE_TRANSLATE_AGENT_H_

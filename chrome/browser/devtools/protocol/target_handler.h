@@ -19,6 +19,10 @@ using RemoteLocations = std::set<net::HostPortPair>;
 class TargetHandler : public protocol::Target::Backend {
  public:
   explicit TargetHandler(protocol::UberDispatcher* dispatcher);
+
+  TargetHandler(const TargetHandler&) = delete;
+  TargetHandler& operator=(const TargetHandler&) = delete;
+
   ~TargetHandler() override;
 
   RemoteLocations& remote_locations() { return remote_locations_; }
@@ -39,8 +43,6 @@ class TargetHandler : public protocol::Target::Backend {
 
  private:
   RemoteLocations remote_locations_;
-
-  DISALLOW_COPY_AND_ASSIGN(TargetHandler);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_TARGET_HANDLER_H_

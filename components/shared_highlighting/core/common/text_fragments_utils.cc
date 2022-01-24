@@ -4,6 +4,8 @@
 
 #include "components/shared_highlighting/core/common/text_fragments_utils.h"
 
+#include <string.h>
+
 #include <sstream>
 
 #include "base/json/json_writer.h"
@@ -33,6 +35,29 @@ base::Value ParseTextFragments(const GURL& url) {
   }
 
   return parsed;
+}
+
+bool SplitUrlTextFragmentDirective(const std::string& full_url,
+                                   GURL* webpage_url,
+                                   std::string* highlight_directive) {
+  if (webpage_url == nullptr || highlight_directive == nullptr) {
+    return false;
+  }
+
+  std::size_t pos = full_url.find(kFragmentsUrlDelimiter);
+  if (pos == std::string::npos) {
+    return false;
+  }
+
+  // The fragment directive will be preceded by either '#' if it's the first
+  // anchor element or '&' otherwise. In both cases we want to remove it from
+  // the url.
+  *webpage_url = GURL(full_url.substr(0, pos - 1));
+
+  // We only want to keep what's after the delimiter.
+  *highlight_directive = full_url.substr(pos + strlen(kFragmentsUrlDelimiter) +
+                                         strlen(kFragmentParameterName));
+  return true;
 }
 
 std::vector<std::string> ExtractTextFragments(std::string ref_string) {

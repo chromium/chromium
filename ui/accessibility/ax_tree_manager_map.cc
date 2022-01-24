@@ -42,14 +42,13 @@ AXTreeManager* AXTreeManagerMap::GetManager(AXTreeID tree_id) {
 
 AXTreeManager* AXTreeManagerMap::GetManagerForChildTree(
     const AXNode& parent_node) {
-  if (!parent_node.data().HasStringAttribute(
+  if (!parent_node.HasStringAttribute(
           ax::mojom::StringAttribute::kChildTreeId)) {
     return nullptr;
   }
 
-  AXTreeID child_tree_id =
-      AXTreeID::FromString(parent_node.data().GetStringAttribute(
-          ax::mojom::StringAttribute::kChildTreeId));
+  AXTreeID child_tree_id = AXTreeID::FromString(
+      parent_node.GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
   AXTreeManager* child_tree_manager =
       AXTreeManagerMap::GetInstance().GetManager(child_tree_id);
 

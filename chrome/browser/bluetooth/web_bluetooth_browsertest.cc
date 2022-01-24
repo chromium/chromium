@@ -441,7 +441,8 @@ class WebBluetoothTest : public InProcessBrowserTest {
               }
               return false;
             }));
-    ui_test_utils::NavigateToURL(browser(), GURL("https://example.com"));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_THAT(
         web_contents_->GetMainFrame()->GetLastCommittedOrigin().Serialize(),
@@ -691,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NotificationStartValueChangeRead) {
     })())");
 
   const base::ListValue promise_values = js_values.ExtractList();
-  EXPECT_EQ(2U, promise_values.GetSize());
+  EXPECT_EQ(2U, promise_values.GetList().size());
   EXPECT_EQ(content::ListValueOf(1, 1), js_values);
 }
 
@@ -990,8 +991,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
 
   permissions::BluetoothChooserContext* context =
       BluetoothChooserContextFactory::GetForProfile(browser()->profile());
-  url::Origin origin =
-      url::Origin::Create(web_contents_->GetLastCommittedURL());
+  url::Origin origin = web_contents_->GetMainFrame()->GetLastCommittedOrigin();
 
   // Revoke the permission.
   const auto objects = context->GetGrantedObjects(origin);
@@ -1044,8 +1044,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
     })()
   )"));
 
-  url::Origin origin =
-      url::Origin::Create(web_contents_->GetLastCommittedURL());
+  url::Origin origin = web_contents_->GetMainFrame()->GetLastCommittedOrigin();
   permissions::BluetoothChooserContext* context =
       BluetoothChooserContextFactory::GetForProfile(browser()->profile());
   auto objects = context->GetGrantedObjects(origin);
@@ -1117,14 +1116,18 @@ class WebBluetoothTestWithNewPermissionsBackendEnabledInPrerendering
   ~WebBluetoothTestWithNewPermissionsBackendEnabledInPrerendering() override =
       default;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    WebBluetoothTestWithNewPermissionsBackendEnabled::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     WebBluetoothTestWithNewPermissionsBackendEnabled::SetUpOnMainThread();
     ASSERT_TRUE(test_server_handle_ =
                     embedded_test_server()->StartAndReturnHandle());
 
     auto url = embedded_test_server()->GetURL("/empty.html");
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
   }
 
@@ -1222,18 +1225,14 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderFrameHost* prerendered_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
 
-  // Runs JS asynchronously since Mojo calls is deferred on the prerendering.
-  content::ExecuteScriptAsync(prerendered_frame_host, R"((async() => {
-          try {
-            let device = await navigator.bluetooth.requestDevice({
-              filters: [{name: 'Test Device'}]});
-            let gatt = await device.gatt.connect();
-            let service = await gatt.getPrimaryService('heart_rate');
-            return service.uuid;
-          } catch(e) {
-            return `${e.name}: ${e.message}`;
-          }
-        })())");
+  constexpr char kUserGestureError[] =
+      "Must be handling a user gesture to show a permission request.";
+  auto result =
+      content::EvalJs(prerendered_frame_host, R"(
+      navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]}))",
+                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  EXPECT_THAT(result.error, ::testing::HasSubstr(kUserGestureError));
 
   // In the prerendering, the connection of Web Bluetooth is deferred and
   // `observer` doesn't have any update.
@@ -1245,14 +1244,12 @@ IN_PROC_BROWSER_TEST_F(
   // The page should be activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
 
-  // Waits for the deferred Mojo call.
-  observer.WaitUntilConnectionIsUpdated(3);
-
-  // After the prerendering activation, the connection of Web Bluetooth is
-  // updated.
-  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 3);
+  // During prerendering activation, the connection from the previous
+  // RenderFrameHost to Web Bluetooth is closed, while the connection attempt
+  // from the prerendering RenderFrameHost was refused.
+  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 2);
   EXPECT_TRUE(observer.last_is_connected_to_bluetooth_device().has_value());
-  EXPECT_TRUE(observer.last_is_connected_to_bluetooth_device().value());
+  EXPECT_FALSE(observer.last_is_connected_to_bluetooth_device().value());
 }
 
 }  // namespace

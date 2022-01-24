@@ -36,6 +36,9 @@ class GuestOsFileTasksTest : public testing::Test {
  protected:
   GuestOsFileTasksTest() = default;
 
+  GuestOsFileTasksTest(const GuestOsFileTasksTest&) = delete;
+  GuestOsFileTasksTest& operator=(const GuestOsFileTasksTest&) = delete;
+
   void SetUp() override {
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         util::GetDownloadsMountPointName(&profile_),
@@ -105,8 +108,6 @@ class GuestOsFileTasksTest : public testing::Test {
   std::vector<guest_os::GuestOsRegistryService::VmType> app_vm_types_;
   crostini::FakeCrostiniFeatures fake_crostini_features_;
   plugin_vm::FakePluginVmFeatures fake_plugin_vm_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsFileTasksTest);
 };
 
 TEST_F(GuestOsFileTasksTest, CheckPathsCanBeShared) {
@@ -153,6 +154,16 @@ TEST_F(GuestOsFileTasksTest, Termina_AppRegistered) {
   EXPECT_THAT(app_vm_types_, testing::ElementsAre(VM_TERMINA));
 }
 
+TEST_F(GuestOsFileTasksTest, Termina_IgnoreCase) {
+  AddApp("app1", "name1", {"Test/Mime1"}, {}, VM_TERMINA);
+  AddEntry("entry.txt", "tesT/mimE1");
+  FindGuestOsApps(&profile_, entries_, urls_, &app_ids_, &app_names_,
+                  &app_vm_types_);
+  EXPECT_THAT(app_ids_, testing::ElementsAre("app1"));
+  EXPECT_THAT(app_names_, testing::ElementsAre("name1"));
+  EXPECT_THAT(app_vm_types_, testing::ElementsAre(VM_TERMINA));
+}
+
 TEST_F(GuestOsFileTasksTest, Termina_NotEnabled) {
   fake_crostini_features_.set_enabled(false);
   AddApp("app1", "name1", {"test/mime1"}, {}, VM_TERMINA);
@@ -167,6 +178,16 @@ TEST_F(GuestOsFileTasksTest, Termina_NotEnabled) {
 TEST_F(GuestOsFileTasksTest, PluginVm_AppRegistered) {
   AddApp("app1", "name1", {}, {"txt"}, PLUGIN_VM);
   AddEntry("entry.txt", "test/mime1");
+  FindGuestOsApps(&profile_, entries_, urls_, &app_ids_, &app_names_,
+                  &app_vm_types_);
+  EXPECT_THAT(app_ids_, testing::ElementsAre("app1"));
+  EXPECT_THAT(app_names_, testing::ElementsAre("name1 (Windows)"));
+  EXPECT_THAT(app_vm_types_, testing::ElementsAre(PLUGIN_VM));
+}
+
+TEST_F(GuestOsFileTasksTest, PluginVm_IgnoreCase) {
+  AddApp("app1", "name1", {}, {"Txt"}, PLUGIN_VM);
+  AddEntry("entry.txT", "test/mime1");
   FindGuestOsApps(&profile_, entries_, urls_, &app_ids_, &app_names_,
                   &app_vm_types_);
   EXPECT_THAT(app_ids_, testing::ElementsAre("app1"));

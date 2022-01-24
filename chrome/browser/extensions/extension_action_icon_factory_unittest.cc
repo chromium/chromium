@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -90,6 +89,11 @@ class ExtensionActionIconFactoryTest
       public ExtensionActionIconFactory::Observer {
  public:
   ExtensionActionIconFactoryTest() : quit_in_icon_updated_(false) {}
+
+  ExtensionActionIconFactoryTest(const ExtensionActionIconFactoryTest&) =
+      delete;
+  ExtensionActionIconFactoryTest& operator=(
+      const ExtensionActionIconFactoryTest&) = delete;
 
   ~ExtensionActionIconFactoryTest() override {}
 
@@ -173,8 +177,6 @@ class ExtensionActionIconFactoryTest
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   ash::ScopedTestUserManager test_user_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionIconFactoryTest);
 };
 
 // If there is no default icon, and the icon has not been set using |SetIcon|,

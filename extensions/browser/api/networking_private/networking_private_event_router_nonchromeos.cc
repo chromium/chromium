@@ -21,6 +21,12 @@ class NetworkingPrivateEventRouterImpl
  public:
   explicit NetworkingPrivateEventRouterImpl(
       content::BrowserContext* browser_context);
+
+  NetworkingPrivateEventRouterImpl(const NetworkingPrivateEventRouterImpl&) =
+      delete;
+  NetworkingPrivateEventRouterImpl& operator=(
+      const NetworkingPrivateEventRouterImpl&) = delete;
+
   ~NetworkingPrivateEventRouterImpl() override;
 
  protected:
@@ -46,8 +52,6 @@ class NetworkingPrivateEventRouterImpl
 
   content::BrowserContext* browser_context_;
   bool listening_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateEventRouterImpl);
 };
 
 NetworkingPrivateEventRouterImpl::NetworkingPrivateEventRouterImpl(

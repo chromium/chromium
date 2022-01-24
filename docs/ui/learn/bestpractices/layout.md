@@ -464,19 +464,19 @@ ColorPickerView::ColorPickerView(
 
 |||---|||
 
-## Use GridLayout with caution
+## Use TableLayout with caution
 
-[`GridLayout`][] is a `LayoutManager` used for tabular layouts. Much like
+[`TableLayout`][] is a `LayoutManager` used for tabular layouts. Much like
 table-based layout in HTML, it can achieve almost any desired effect, and in
 some scenarios (e.g.  creating an actual table) is the best tool. Used
 indiscriminately, it can be cryptic, verbose, and error-prone. Accordingly,
-**use `GridLayout` only when creating a true grid, not simply for selective
-horizontal and vertical alignment.** For simple layouts, [`BoxLayout`][] and
-[`FlexLayout`][] are better choices; for more complex layouts, representing
-sections or groups hierarchically may result in simpler inner layouts that
-can be nested within an overall layout.
+**use `TableLayout` only when creating a true grid or table, not simply for
+selective horizontal and vertical alignment.** For simple layouts,
+[`BoxLayout`][] and [`FlexLayout`][] are better choices; for more complex
+layouts, representing sections or groups hierarchically may result in simpler
+inner layouts that can be nested within an overall layout.
 
-[`GridLayout`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/grid_layout.h;l=79;drc=8cab3382ac9b70b7ecfe29ae03b1b7ee8f4e01fa
+[`TableLayout`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/table_layout.h;l=73;drc=f513afe81fca508d22153b192f1fab33e2c444fa
 [`BoxLayout`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/box_layout.h;l=28;drc=5b9e43d976aca377588875fc59c5348ede02a8b5
 [`FlexLayout`]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/flex_layout.h;l=73;drc=62bf27aca5418212ceadd8daf9188d2aa437bfcc
 
@@ -486,7 +486,7 @@ can be nested within an overall layout.
 
 **Avoid**
 
-The following old code uses a [`GridLayout`][] to create a HoverButton with
+The following old code uses a [`TableLayout`][] to create a HoverButton with
 a stacked title and subtitle flanked on by views on both sides.
 
 #####
@@ -519,65 +519,65 @@ HoverButton::HoverButton(
     std::unique_ptr<views::View> secondary_view,
     ...) {
   ...
-  views::GridLayout* grid_layout =
+  views::TableLayout* table_layout =
       SetLayoutManager(
-          std::make_unique<views::GridLayout>());
+          std::make_unique<views::TableLayout>());
   ...
-  constexpr int kColumnSetId = 0;
-  views::ColumnSet* columns =
-      grid_layout->AddColumnSet(kColumnSetId);
-  columns->AddColumn(
-      views::GridLayout::CENTER,
-      views::GridLayout::CENTER,
-      views::GridLayout::kFixedSize,
-      views::GridLayout::USE_PREF, 0, 0);
-  columns->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
+  table_layout->AddColumn(
+      views::LayoutAlignment::kCenter,
+      views::LayoutAlignment::kCenter,
+      views::TableLayout::kFixedSize,
+      views::TableLayout::kUsePreferred, 0, 0);
+  table_layout->AddPaddingColumn(
+      views::TableLayout::kFixedSize,
       icon_label_spacing);
-  columns->AddColumn(
-      views::GridLayout::FILL,
-      views::GridLayout::FILL,
-      1.0, views::GridLayout::USE_PREF, 0, 0);
+  table_layout->AddColumn(
+      views::LayoutAlignment::kStretch,
+      views::LayoutAlignment::kStretch, 1.0f,
+      views::TableLayout::kUsePreferred, 0, 0);
   ...
-  grid_layout->StartRow(
-      views::GridLayout::kFixedSize, kColumnSetId,
+  table_layout->AddRows(
+      1, views::TableLayout::kFixedSize,
       row_height);
-  icon_view_ = grid_layout->AddView(
+  icon_view_ = AddChildView(
       std::move(icon_view), 1, num_labels);
   ...
   auto title_wrapper =
       std::make_unique<SingleLineStyledLabelWrapper>(
           title);
   title_ = title_wrapper->label();
-  grid_layout->AddView(std::move(title_wrapper));
+  AddChildView(std::move(title_wrapper));
 
   if (secondary_view) {
-    columns->AddColumn(
-        views::GridLayout::CENTER,
-        views::GridLayout::CENTER,
-        views::GridLayout::kFixedSize,
-        views::GridLayout::USE_PREF, 0, 0);
+    table_layout->AddColumn(
+        views::LayoutAlignment::kCenter,
+        views::LayoutAlignment::kCenter,
+        views::TableLayout::kFixedSize,
+        views::TableLayout::kUsePreferred, 0, 0);
     ...
-    secondary_view_ =
-        grid_layout->AddView(
-            std::move(secondary_view), 1, num_labels);
+    secondary_view_ = AddChildView(
+        std::move(secondary_view), 1, num_labels);
     ...
   }
   if (!subtitle.empty()) {
-    grid_layout->StartRow(
-        views::GridLayout::kFixedSize, kColumnSetId,
+    table_layout->AddRows(
+        1, views::TableLayout::kFixedSize,
         row_height);
     auto subtitle_label =
         std::make_unique<views::Label>(
             subtitle, views::style::CONTEXT_BUTTON,
             views::style::STYLE_SECONDARY);
     ...
-    grid_layout->SkipColumns(1);
+    AddChildView(std::make_unique<views::View>());
     subtitle_ =
-        grid_layout->AddView(std::move(subtitle_label));
+        AddChildView(std::move(subtitle_label));
   }
   ...
 }
+
+
+
+
 ```
 
 #####
@@ -715,6 +715,13 @@ CastDialogView::CalculatePreferredSize() const {
 
 ``` cpp
 ...
+
+
+
+
+
+
+
 ```
 
 |||---|||
@@ -1157,10 +1164,6 @@ class ASH_EXPORT TimeView : public ActionableView,
 
 
 
-
-
-
-
 void TimeView::SetupLabels() {
   horizontal_label_.reset(new views::Label());
   SetupLabel(horizontal_label_.get());
@@ -1250,33 +1253,29 @@ TimeView::HorizontalLabelView::HorizontalLabelView() {
 }
 
 TimeView::VerticalLabelView::VerticalLabelView() {
-  views::GridLayout* layout =
-        SetLayoutManager(
-            std::make_unique<views::GridLayout>());
   views::Label* label_hours =
       AddChildView(std::make_unique<views::Label>());
   views::Label* label_minutes =
       AddChildView(std::make_unique<views::Label>());
   SetupLabel(label_hours);
   SetupLabel(label_minutes);
-  const int kColumnId = 0;
-  views::ColumnSet* columns =
-      layout->AddColumnSet(kColumnId);
-  columns->AddPaddingColumn(
-      0, kVerticalClockLeftPadding);
-  columns->AddColumn(
-      views::GridLayout::TRAILING,
-      views::GridLayout::CENTER,
-      0, views::GridLayout::USE_PREF, 0, 0);
-  layout->AddPaddingRow(0, kClockLeadingPadding);
-  layout->StartRow(0, kColumnId);
-  // Add the views as existing since ownership isn't
-  // being transferred.
-  layout->AddExistingView(label_hours);
-  layout->StartRow(0, kColumnId);
-  layout->AddExistingView(label_minutes);
-  layout->AddPaddingRow(
-      0, kVerticalClockMinutesTopOffset);
+  SetLayoutManager(
+      std::make_unique<views::TableLayout>())
+      ->AddPaddingColumn(
+          views::TableLayout::kFixedSize,
+          kVerticalClockLeftPadding)
+      .AddColumn(
+          views::LayoutAlignment::kEnd,
+          views::LayoutAlignment::kCenter,
+          views::TableLayout::kFixedSize,
+          views::TableLayout::kUsePreferred, 0, 0)
+      .AddPaddingRow(
+          views::TableLayout::kFixedSize,
+          kClockLeadingPadding)
+      .AddRows(2, views::TableLayout::kFixedSize)
+      .AddPaddingRow(
+          views::TableLayout::kFixedSize,
+          kVerticalClockMinutesTopOffset);
   ...
 }
 

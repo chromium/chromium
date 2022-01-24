@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_SYNC_CLIENT_H_
 
 #include <string>
-#include "base/macros.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync_device_info/device_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -17,6 +16,10 @@ namespace syncer {
 class DeviceInfoSyncClient {
  public:
   DeviceInfoSyncClient();
+
+  DeviceInfoSyncClient(const DeviceInfoSyncClient&) = delete;
+  DeviceInfoSyncClient& operator=(const DeviceInfoSyncClient&) = delete;
+
   virtual ~DeviceInfoSyncClient();
 
   virtual std::string GetSigninScopedDeviceId() const = 0;
@@ -40,9 +43,6 @@ class DeviceInfoSyncClient {
   // Returns whether a CrOS device has User Metric Analysis (UMA) enabled.
   // Returns false if method is called on non-CrOS device.
   virtual bool IsUmaEnabledOnCrOSDevice() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncClient);
 };
 
 }  // namespace syncer

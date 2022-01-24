@@ -31,6 +31,10 @@ class VIEWS_EXPORT MenuPreTargetHandlerAura
       public MenuPreTargetHandler {
  public:
   MenuPreTargetHandlerAura(MenuController* controller, Widget* owner);
+
+  MenuPreTargetHandlerAura(const MenuPreTargetHandlerAura&) = delete;
+  MenuPreTargetHandlerAura& operator=(const MenuPreTargetHandlerAura&) = delete;
+
   ~MenuPreTargetHandlerAura() override;
 
   // aura::client:ActivationChangeObserver:
@@ -50,8 +54,6 @@ class VIEWS_EXPORT MenuPreTargetHandlerAura
 
   MenuController* controller_;
   aura::Window* root_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuPreTargetHandlerAura);
 };
 
 }  // namespace views

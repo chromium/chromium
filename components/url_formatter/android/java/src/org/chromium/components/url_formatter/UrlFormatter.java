@@ -12,6 +12,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /**
  * Wrapper for utilities in url_formatter.
@@ -146,25 +147,81 @@ public final class UrlFormatter {
     }
 
     /**
-     * Builds a String that strips down |uri| to its scheme, host, and port.
-     * @param uri The URI to break down.
-     * @return Stripped-down String containing the essential bits of the URL, or the original URL if
-     *         it fails to parse it.
+     * This is a convenience function for formatting a URL in a concise and
+     * human-friendly way, to help users make security-related decisions (or in
+     * other circumstances when people need to distinguish sites, origins, or
+     * otherwise-simplified URLs from each other).
+     *
+     * Internationalized domain names (IDN) will be presented in Unicode if
+     * they're regarded safe except that domain names with RTL characters
+     * will still be in ACE/punycode for now (http://crbug.com/650760).
+     * See http://dev.chromium.org/developers/design-documents/idn-in-google-chrome
+     * for details on the algorithm.
+     *
+     * - Omits the path for standard schemes, excepting file and filesystem.
+     * - Omits the port if it is the default for the scheme.
+     *
+     * Do not use this for URLs which will be parsed or sent to other applications.
+     *
+     * @param url The URL to format.
+     * @return The formatted URL.
      */
-    public static String formatUrlForSecurityDisplay(String uri) {
-        return UrlFormatterJni.get().formatStringUrlForSecurityDisplay(uri, SchemeDisplay.SHOW);
+    public static String formatUrlForSecurityDisplay(String url) {
+        return UrlFormatterJni.get().formatStringUrlForSecurityDisplay(url, SchemeDisplay.SHOW);
     }
 
     /**
-     * Builds a String that strips down |url| to its host, and port.
-     * @param url The URI to break down.
+     * This is a convenience function for formatting a URL in a concise and
+     * human-friendly way, to help users make security-related decisions (or in
+     * other circumstances when people need to distinguish sites, origins, or
+     * otherwise-simplified URLs from each other).
+     *
+     * Internationalized domain names (IDN) will be presented in Unicode if
+     * they're regarded safe except that domain names with RTL characters
+     * will still be in ACE/punycode for now (http://crbug.com/650760).
+     * See http://dev.chromium.org/developers/design-documents/idn-in-google-chrome
+     * for details on the algorithm.
+     *
+     * - Omits the path for standard schemes, excepting file and filesystem.
+     * - Omits the port if it is the default for the scheme.
+     *
+     * Do not use this for URLs which will be parsed or sent to other applications.
+     *
+     * Generally, prefer SchemeDisplay.SHOW to omitting the scheme unless there is
+     * plenty of indication as to whether the origin is secure elsewhere in the UX.
+     * For example, in Chrome's Page Info Bubble, there are icons and strings
+     * indicating origin (non-)security. But in the HTTP Basic Auth prompt (for
+     * example), the scheme may be the only indicator.
+     *
+     * @param url The URL to format.
      * @param schemeDisplay Specifies how to display the scheme.
-     * @return Stripped-down String containing the essential bits of the URL, or the original URL if
-     *         it fails to parse it.
+     * @return The formatted URL.
      */
     public static String formatUrlForSecurityDisplay(GURL url, @SchemeDisplay int schemeDisplay) {
         if (url == null) return "";
         return UrlFormatterJni.get().formatUrlForSecurityDisplay(url, schemeDisplay);
+    }
+
+    /**
+     * This is a convenience function for formatting an Origin in a concise and
+     * human-friendly way, to help users make security-related decisions.
+     *
+     * - Omits the port if it is 0 or the default for the scheme.
+     *
+     * Do not use this for origins which will be parsed or sent to other
+     * applications.
+     *
+     * Generally, prefer SchemeDisplay.SHOW to omitting the scheme unless there is
+     * plenty of indication as to whether the origin is secure elsewhere in the UX.
+     *
+     * @param origin The Origin to format.
+     * @param schemeDisplay Specifies how to display the scheme.
+     * @return The formatted Origin.
+     */
+    public static String formatOriginForSecurityDisplay(
+            Origin origin, @SchemeDisplay int schemeDisplay) {
+        if (origin == null) return "";
+        return UrlFormatterJni.get().formatOriginForSecurityDisplay(origin, schemeDisplay);
     }
 
     /**
@@ -188,6 +245,7 @@ public final class UrlFormatter {
         String formatUrlForDisplayOmitUsernamePassword(String url);
         String formatUrlForCopy(String url);
         String formatUrlForSecurityDisplay(GURL url, @SchemeDisplay int schemeDisplay);
+        String formatOriginForSecurityDisplay(Origin origin, @SchemeDisplay int schemeDisplay);
         String formatStringUrlForSecurityDisplay(String url, @SchemeDisplay int schemeDisplay);
     }
 }

@@ -96,6 +96,9 @@
     <message name="IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_TITLE" desc="This message appears as the title of a confirmation dialog in which the user can view/edit the information that will be saved to Google Payments, and only appears after the user has expressed interest in uploading the card.">
       Save to Google Account
     </message>
+    <message name="IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_PROMPT_SAVE_FOLLOW_UP" desc="Button label for a prompt to ask if user agrees to save the card to the server. This prompt will be followed by confirmation dialogs to confirm the card details, such as card label.">
+      Save…
+    </message>
   </if>
   <if expr="is_ios">
     <then>
@@ -384,6 +387,15 @@
   <message name="IDS_AUTOFILL_DIALOG_PLACEHOLDER_CVC" desc="The placeholder/label text for credit card verification code in the requestAutocomplete dialog. The text field where this is presented can be very narrow, so please prefer to translate this to the most common abbreviated form. [CHAR_LIMIT=4]" meaning="Placeholder label for a very narrow CVC field that should preferably be translated to an abbreviated form.">
     CVC
   </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_PROGRESS_BAR_MESSAGE" desc="Message displayed after tapping a Virtual Card, and before any other verification steps.">
+    Contacting your bank...
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_CANCEL_BUTTON_LABEL" desc="Button that allows the user to cancel the Virtual Card unmasking process.">
+    Cancel
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE" desc="Message displayed after tapping a Virtual Card, and the response from the bank indicates that no further verification is required.">
+    Your card is confirmed
+  </message>
 
   <!-- WebAuthn fingerprint opt-in dialog -->
   <!-- Desktop only -->
@@ -481,7 +493,10 @@
       Cancel
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_TITLE" desc="The title shown in the Autofill virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
-      Virtual card number
+      Virtual card for <ph name="CARD_IDENTIFIER">$1<ex>Visa - 1234</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_EDUCATIONAL_BODY_LABEL" desc="The label shown in body of the Autofill virtual card manual fallback bubble on Desktop. The label serves as a educational message to explain to users how to use the bubble to fill card information to the form. This bubble shows the complete information for the virtual card selected to fill the form.">
+      Virtual card number not filled in? Click card details to copy
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CARD_NUMBER_LABEL" desc="Text shown next to the virtual card number in the virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
       Virtual number:
@@ -498,7 +513,46 @@
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP" desc="The tooltip message for the omnibox icon for the virtual card manual fallback bubble on Desktop. This bubble shows the complete information for the virtual card selected to fill the form.">
       View your virtual card number
     </message>
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_NORMAL" desc="The tooltip message for the button that contains the card information in the virtual card manual fallback bubble on Desktop. This message is shown when the button is hovered over and if the button has not been clicked.">
+      Click to copy
+    </message>
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_BUTTON_TOOLTIP_CLICKED" desc="The tooltip message for the button that contains the card information in the virtual card manual fallback bubble on Desktop. This message is shown when the button is hovered over and if the button has been recently clicked.">
+      Copied
+    </message>
   </if>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_ISSUER_CONFIRMATION_TEXT" desc="The issuer confirmation text shown in the Autofill card unmask authentication selection dialog on Desktop. This is the header text of the dialog, and it is the text stating that the issuer wants additional authentication. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
+      Your bank wants to confirm it's you.
+  </message>
+  <message name="IDS_AUTOFILL_AUTHENTICATION_MODE_TEXT_MESSAGE_LABEL" desc="The label for the text message authentication mode text shown in the Autofill card unmask authentication selection dialog on Desktop. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
+    Text message
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CURRENT_INFO_NOT_SEEN_TEXT" desc="The current info not seen text shown in the Autofill card unmask authentication selection dialog on Desktop. It is the footer text on the dialog, and it instructs the user on what to do if they can not see their most up to date authentication information. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
+    Not seeing your current info? Please contact your bank to update it.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL" desc="The ok button label shown in the Autofill card unmask authentication selection dialog on Desktop. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
+    Send
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_TITLE" desc="The title for the dialog that lets the user type in the OTP they received on Desktop. This message is shown right next to the logo for the dialog, and it lets the users know the action that is required in this dialog, which is to enter their verification code (OTP).">
+    Enter verification code
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_FOOTER_MESSAGE" desc="The footer message for the dialog that lets the user type in the OTP they received on Desktop. This message instructs the user on what to do if they can't find their OTP code, for example if the OTP code was sent by email but it never came. It contains a link that comes from IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE which allows them to get a new code sent if clicked.">
+    Can't find your code? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE">$1<ex>Get new code</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" desc="The second sentence of the footer message for the dialog that lets the user type in the OTP they received on Desktop. The entire footer message is for when the user can't find his OTP, for example if it was sent by email but the email never came. This is shown as a link that the user can click on to get a new OTP code, and will be substituted into IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_FOOTER_MESSAGE.">
+    Get new code
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_TEXTFIELD_PLACEHOLDER_MESSAGE" desc="The textfield placeholder text for the dialog that lets the user type in the OTP they received on Desktop. This message is shown when the textfield is empty, and it lets the user know the number of digits required for their OTP.">
+    Enter <ph name="NUMBER_OF_DIGITS">$1<ex>6</ex></ph>-digit code
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_PENDING_MESSAGE" desc="The textfield placeholder text for the dialog that lets the user type in the OTP they received on Desktop. This message is shown after the user submits an OTP, and the dialog goes into pending state. It informs the user that we are currently verifying that the OTP they typed in is correct.">
+    Verifying code...
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_VERIFICATION_CODE_EXPIRED_LABEL" desc="This text is shown when the user waits too long to submit an OTP, and the OTP expires. The text directs the user to request a new code so that they can verify it.">
+    Verification code expired, request a new code
+  </message>
+  <message name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_ENTER_CORRECT_CODE_LABEL" desc="This text is shown after an OTP is already sent, when the user enters an incorrect OTP code. It directs the user to enter the correct code that was sent to them.">
+    Enter correct code
+  </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE" desc="The text shown in the virtual card option in the credit card suggestion list. It is shown as the value of the suggestion.">
     Virtual card
   </message>
@@ -542,11 +596,11 @@
     No thanks
   </message>
 
-  <!-- Credit card offers and rewards related strings -->
+  <!-- Credit card and promo code offers and rewards-related strings -->
   <message name="IDS_AUTOFILL_OFFERS_CASHBACK" desc="Displays that a cashback offer will be rewarded if credit card is used on current page. Part of Autofill suggestions popup.">
     Cashback linked
   </message>
-  <message name="IDS_AUTOFILL_OFFERS_REMINDER_TITLE" desc="Title of the bubble/infobar shown on the merchant website when an offer is available to use.">
+  <message name="IDS_AUTOFILL_CARD_LINKED_OFFER_REMINDER_TITLE" desc="Title of the bubble/infobar shown on the merchant website when a GPay-activated card linked offer is available to use.">
     Reminder: saved offer available
   </message>
   <message name="IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL" desc="Label for the positive button for the bubble/infobar shown on the merchant website when an offer is available to use.">
@@ -557,7 +611,7 @@
       Pay with <ph name="CARD_DETAIL">$1<ex>Visa - 1234</ex></ph> at checkout
     </message>
     <message name="IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT" desc="The tooltip text for the offer icon in the location bar.">
-      Google Pay offer available
+      Offer available
     </message>
   </if>
   <if expr="is_android">
@@ -568,4 +622,33 @@
       See details
     </message>
   </if>
+  <if expr="toolkit_views">
+    <message name="IDS_AUTOFILL_PROMO_CODE_OFFERS_REMINDER_TITLE" desc="Title of the bubble shown on the merchant website when a merchant promo code offer is available to use.">
+      Use this code at checkout
+    </message>
+    <message name="IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_NORMAL" desc="The tooltip message for a button containing a copyable promo code in the merchant promo code offer notification bubble on Desktop. This message is shown when the button is hovered over and if the button has not been clicked.">
+      Click to copy
+    </message>
+    <message name="IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_CLICKED" desc="The tooltip message for a button containing a copyable promo code in the merchant promo code offer notification bubble on Desktop. This message is shown when the button is hovered over and if the button has been clicked.">
+      Copied to clipboard
+    </message>
+  </if>
+
+  <!-- Autofill Payments OTP verification dialog -->
+  <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_TITLE" desc="Title of the OTP verification dialog which is shown to the user while unmasking a credit card." formatter_data="android_java">
+    Enter Verification Code
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_CANT_FIND_CODE_MESSAGE" desc="Hint shown to the user in the event they are unable to find the OTP code."  formatter_data="android_java">
+    Can't find your code? <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get new code<ph name="END_LINK">&lt;/link&gt;</ph>
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_OTP_INPUT_HINT" desc="Hint shown in the OTP input field indicating the number of digits expected for the OTP." formatter_data="android_java">
+    Enter <ph name="OTP_LENGTH">%1$s<ex>6</ex></ph>-digit code
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_POSITIVE_BUTTON_LABEL" desc="Positive button label for the OTP verification dialog." formatter_data="android_java">
+    Confirm
+  </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_OTP_VERIFICATION_DIALOG_NEGATIVE_BUTTON_LABEL" desc="Negative button label for the OTP verification dialog." formatter_data="android_java">
+    Cancel
+  </message>
+
 </grit-part>

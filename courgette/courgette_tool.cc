@@ -83,6 +83,10 @@ class BufferedFileReader : public courgette::BasicBuffer {
     if (!buffer_.Initialize(file_name))
       Problem("Can't read %s file.", kind);
   }
+
+  BufferedFileReader(const BufferedFileReader&) = delete;
+  BufferedFileReader& operator=(const BufferedFileReader&) = delete;
+
   ~BufferedFileReader() override = default;
 
   // courgette::BasicBuffer:
@@ -91,8 +95,6 @@ class BufferedFileReader : public courgette::BasicBuffer {
 
  private:
   base::MemoryMappedFile buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferedFileReader);
 };
 
 /******** Various helpers ********/

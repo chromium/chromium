@@ -314,8 +314,8 @@ CSSPrimitiveValue* CSSParser::ParseLengthPercentage(
   CSSTokenizer tokenizer(string);
   const auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
-  return css_parsing_utils::ConsumeLengthOrPercent(range, *context,
-                                                   kValueRangeAll);
+  return css_parsing_utils::ConsumeLengthOrPercent(
+      range, *context, CSSPrimitiveValue::ValueRange::kAll);
 }
 
 MutableCSSPropertyValueSet* CSSParser::ParseFont(

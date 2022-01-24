@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/shell_observer.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;
@@ -19,6 +18,10 @@ namespace ash {
 class ASH_EXPORT HighContrastController : public ShellObserver {
  public:
   HighContrastController();
+
+  HighContrastController(const HighContrastController&) = delete;
+  HighContrastController& operator=(const HighContrastController&) = delete;
+
   ~HighContrastController() override;
 
   // Set high contrast mode and update all available displays.
@@ -33,8 +36,6 @@ class ASH_EXPORT HighContrastController : public ShellObserver {
 
   // Indicates if the high contrast mode is enabled or disabled.
   bool enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(HighContrastController);
 };
 
 }  // namespace ash

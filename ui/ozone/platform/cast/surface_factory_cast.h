@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/platform/cast/gl_ozone_egl_cast.h"
 #include "ui/ozone/public/gl_ozone.h"
@@ -26,6 +25,10 @@ class SurfaceFactoryCast : public SurfaceFactoryOzone {
   SurfaceFactoryCast();
   explicit SurfaceFactoryCast(
       std::unique_ptr<chromecast::CastEglPlatform> egl_platform);
+
+  SurfaceFactoryCast(const SurfaceFactoryCast&) = delete;
+  SurfaceFactoryCast& operator=(const SurfaceFactoryCast&) = delete;
+
   ~SurfaceFactoryCast() override;
 
   // SurfaceFactoryOzone implementation:
@@ -43,8 +46,6 @@ class SurfaceFactoryCast : public SurfaceFactoryOzone {
 
  private:
   std::unique_ptr<GLOzoneEglCast> egl_implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceFactoryCast);
 };
 
 }  // namespace ui

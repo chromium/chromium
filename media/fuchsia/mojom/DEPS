@@ -1,3 +1,5 @@
-include_rules = [
-  "+fuchsia/mojom",
-]
+specific_include_rules = {
+  "fuchsia_.*_provider_mojom_traits\.h": [
+    "+fuchsia/mojom/fidl_interface_request_mojom_traits.h",
+  ],
+}

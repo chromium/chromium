@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -83,6 +82,10 @@ class MockKeyboard {
   };
 
   MockKeyboard();
+
+  MockKeyboard(const MockKeyboard&) = delete;
+  MockKeyboard& operator=(const MockKeyboard&) = delete;
+
   ~MockKeyboard();
 
   // Retrieves Unicode characters composed from the the specified keyboard
@@ -101,8 +104,6 @@ class MockKeyboard {
   Modifiers keyboard_modifiers_ = INVALID;
   MockKeyboardDriverWin driver_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(MockKeyboard);
 };
 
 }  // namespace content

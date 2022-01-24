@@ -78,6 +78,9 @@ class MediaRouter;
 class CastRemotingConnector final : public base::SupportsUserData::Data,
                                     public media::mojom::RemotingSource {
  public:
+  CastRemotingConnector(const CastRemotingConnector&) = delete;
+  CastRemotingConnector& operator=(const CastRemotingConnector&) = delete;
+
   ~CastRemotingConnector() final;
 
   // Returns the instance of the CastRemotingConnector associated with
@@ -243,8 +246,6 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
   // Key used with the base::SupportsUserData interface to search for an
   // instance of CastRemotingConnector owned by a WebContents.
   static const void* const kUserDataKey;
-
-  DISALLOW_COPY_AND_ASSIGN(CastRemotingConnector);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_CAST_REMOTING_CONNECTOR_H_

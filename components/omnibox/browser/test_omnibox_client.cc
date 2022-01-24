@@ -54,15 +54,6 @@ TestOmniboxClient::CreateAutocompleteProviderClient() {
   return std::move(provider_client);
 }
 
-std::unique_ptr<OmniboxNavigationObserver>
-TestOmniboxClient::CreateOmniboxNavigationObserver(
-    const std::u16string& text,
-    const AutocompleteMatch& match,
-    const AutocompleteMatch& alternate_nav_match) {
-  alternate_nav_match_ = alternate_nav_match;
-  return nullptr;
-}
-
 bool TestOmniboxClient::IsPasteAndGoEnabled() const {
   return true;
 }

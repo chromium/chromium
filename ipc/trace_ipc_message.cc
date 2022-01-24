@@ -49,9 +49,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case GinJavaBridgeMsgStart:
       message_class = ChromeLegacyIpc::CLASS_GIN_JAVA_BRIDGE;
       break;
-    case ExtensionsGuestViewMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_EXTENSIONS_GUEST_VIEW;
-      break;
     case GuestViewMsgStart:
       message_class = ChromeLegacyIpc::CLASS_GUEST_VIEW;
       break;

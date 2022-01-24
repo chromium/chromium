@@ -207,11 +207,11 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
 
   if (GetAnimationMode() != kPathAnimation) {
     float animated_x = ComputeAnimatedNumber(
-        parameters, percentage, repeat_count, from_point_.X(), to_point_.X(),
-        to_point_at_end_of_duration_.X());
+        parameters, percentage, repeat_count, from_point_.x(), to_point_.x(),
+        to_point_at_end_of_duration_.x());
     float animated_y = ComputeAnimatedNumber(
-        parameters, percentage, repeat_count, from_point_.Y(), to_point_.Y(),
-        to_point_at_end_of_duration_.Y());
+        parameters, percentage, repeat_count, from_point_.y(), to_point_.y(),
+        to_point_at_end_of_duration_.y());
     transform->Translate(animated_x, animated_y);
     return;
   }
@@ -225,12 +225,13 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
 
   // Handle accumulate="sum".
   if (repeat_count && parameters.is_cumulative) {
-    FloatPoint position_at_end_of_duration =
+    gfx::PointF position_at_end_of_duration =
         animation_path_.PointAtLength(path_length);
-    position.point.MoveBy(position_at_end_of_duration.ScaledBy(repeat_count));
+    position.point += gfx::ScalePoint(position_at_end_of_duration, repeat_count)
+                          .OffsetFromOrigin();
   }
 
-  transform->Translate(position.point.X(), position.point.Y());
+  transform->Translate(position.point.x(), position.point.y());
   RotateMode rotate_mode = GetRotateMode();
   if (rotate_mode != kRotateAuto && rotate_mode != kRotateAutoReverse)
     return;
@@ -254,8 +255,7 @@ float SVGAnimateMotionElement::CalculateDistance(const String& from_string,
     return -1;
   if (!ParsePoint(to_string, to))
     return -1;
-  FloatSize diff = to - from;
-  return sqrtf(diff.Width() * diff.Width() + diff.Height() * diff.Height());
+  return (to - from).DiagonalLength();
 }
 
 void SVGAnimateMotionElement::UpdateAnimationMode() {

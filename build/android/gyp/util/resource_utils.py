@@ -45,9 +45,9 @@ _ANDROID_TO_CHROMIUM_LANGUAGE_MAP = {
 
 _ALL_RESOURCE_TYPES = {
     'anim', 'animator', 'array', 'attr', 'bool', 'color', 'dimen', 'drawable',
-    'font', 'fraction', 'id', 'integer', 'interpolator', 'layout', 'menu',
-    'mipmap', 'plurals', 'raw', 'string', 'style', 'styleable', 'transition',
-    'xml'
+    'font', 'fraction', 'id', 'integer', 'interpolator', 'layout', 'macro',
+    'menu', 'mipmap', 'plurals', 'raw', 'string', 'style', 'styleable',
+    'transition', 'xml'
 }
 
 AAPT_IGNORE_PATTERN = ':'.join([
@@ -662,14 +662,6 @@ def _RenderRootRJavaSource(package, all_resources_by_type, rjava_build_options,
       else:
         non_final_resources_by_type[res_type].append(entry)
 
-  # Keep these assignments all on one line to make diffing against regular
-  # aapt-generated files easier.
-  create_id = ('{{ e.resource_type }}.{{ e.name }} ^= packageIdTransform;')
-  create_id_arr = ('{{ e.resource_type }}.{{ e.name }}[i] ^='
-                   ' packageIdTransform;')
-  for_loop_condition = ('int i = {{ startIndex(e) }}; i < '
-                        '{{ e.resource_type }}.{{ e.name }}.length; ++i')
-
   # Here we diverge from what aapt does. Because we have so many
   # resources, the onResourcesLoaded method was exceeding the 64KB limit that
   # Java imposes. For this reason we split onResourcesLoaded into different
@@ -705,21 +697,36 @@ public final class R {
     }
       {% else %}
     private static boolean sResourcesDidLoad;
+
+    private static void patchArray(
+            int[] arr, int startIndex, int packageIdTransform) {
+        for (int i = startIndex; i < arr.length; ++i) {
+            arr[i] ^= packageIdTransform;
+        }
+    }
+
     public static void onResourcesLoaded(int packageId) {
         if (sResourcesDidLoad) {
             return;
         }
         sResourcesDidLoad = true;
         int packageIdTransform = (packageId ^ 0x7f) << 24;
+        {#  aapt2 makes int[] resources refer to other resources by reference
+            rather than by value. Thus, need to transform the int[] resources
+            first, before the referenced resources are transformed in order to
+            ensure the transform applies exactly once.
+            See https://crbug.com/1237059 for context.
+        #}
         {% for resource_type in resource_types %}
-        onResourcesLoaded{{ resource_type|title }}(packageIdTransform);
         {% for e in non_final_resources[resource_type] %}
         {% if e.java_type == 'int[]' %}
-        for(""" + for_loop_condition + """) {
-            """ + create_id_arr + """
-        }
+        patchArray({{ e.resource_type }}.{{ e.name }}, {{ startIndex(e) }}, \
+packageIdTransform);
         {% endif %}
         {% endfor %}
+        {% endfor %}
+        {% for resource_type in resource_types %}
+        onResourcesLoaded{{ resource_type|title }}(packageIdTransform);
         {% endfor %}
     }
     {% for res_type in resource_types %}
@@ -727,7 +734,7 @@ public final class R {
             int packageIdTransform) {
         {% for e in non_final_resources[res_type] %}
         {% if res_type != 'styleable' and e.java_type != 'int[]' %}
-        """ + create_id + """
+        {{ e.resource_type }}.{{ e.name }} ^= packageIdTransform;
         {% endif %}
         {% endfor %}
     }
@@ -761,7 +768,14 @@ def ExtractBinaryManifestValues(aapt2_path, apk_path):
 
 
 def ExtractArscPackage(aapt2_path, apk_path):
-  """Returns (package_name, package_id) of resources.arsc from apk_path."""
+  """Returns (package_name, package_id) of resources.arsc from apk_path.
+
+  When the apk does not have any entries in its resources file, in recent aapt2
+  versions it will not contain a "Package" line. The package is not even in the
+  actual resources.arsc/resources.pb file (which itself is mostly empty). Thus
+  return (None, None) when dump succeeds and there are no errors to indicate
+  that the package name does not exist in the resources file.
+  """
   proc = subprocess.Popen([aapt2_path, 'dump', 'resources', apk_path],
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
@@ -777,8 +791,11 @@ def ExtractArscPackage(aapt2_path, apk_path):
 
   # aapt2 currently crashes when dumping webview resources, but not until after
   # it prints the "Package" line (b/130553900).
-  sys.stderr.write(proc.stderr.read())
-  raise Exception('Failed to find arsc package name')
+  stderr_output = proc.stderr.read().decode('utf-8')
+  if stderr_output:
+    sys.stderr.write(stderr_output)
+    raise Exception('Failed to find arsc package name')
+  return None, None
 
 
 def _RenameSubdirsWithPrefix(dir_path, prefix):
@@ -920,11 +937,6 @@ def ResourceArgsParser():
                     help='Resources zip archives from dependents. Required to '
                          'resolve @type/foo references into dependent '
                          'libraries.')
-
-  input_opts.add_argument(
-      '--r-text-in',
-       help='Path to pre-existing R.txt. Its resource IDs override those found '
-            'in the aapt-generated R.txt when generating R.java.')
 
   input_opts.add_argument(
       '--extra-res-packages',

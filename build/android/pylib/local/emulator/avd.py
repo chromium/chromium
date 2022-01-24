@@ -287,8 +287,20 @@ class AvdConfig(object):
       # https://bit.ly/3agmjcM).
       # Wait for this step to complete since it can take a while for old OSs
       # like M, otherwise the avd may have "Encryption Unsuccessful" error.
-      device_utils.DeviceUtils(instance.serial).WaitUntilFullyBooted(
-          decrypt=True, timeout=180, retries=0)
+      device = device_utils.DeviceUtils(instance.serial)
+      device.WaitUntilFullyBooted(decrypt=True, timeout=180, retries=0)
+
+      # Skip network disabling on pre-N for now since the svc commands fail
+      # on Marshmallow.
+      if device.build_version_sdk > 23:
+        # Always disable the network to prevent built-in system apps from
+        # updating themselves, which could take over package manager and
+        # cause shell command timeout.
+        # Use svc as this also works on the images with build type "user".
+        logging.info('Disabling the network in emulator.')
+        device.RunShellCommand(['svc', 'wifi', 'disable'], check_return=True)
+        device.RunShellCommand(['svc', 'data', 'disable'], check_return=True)
+
       instance.Stop()
 
       # The multiinstance lock file seems to interfere with the emulator's

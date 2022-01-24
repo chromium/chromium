@@ -5,16 +5,15 @@
 #ifndef CHROME_BROWSER_UI_ASH_ASH_SHELL_INIT_H_
 #define CHROME_BROWSER_UI_ASH_ASH_SHELL_INIT_H_
 
-#include "base/macros.h"
-
 // Initializes and destroys the ash::Shell when Ash is running in process.
 class AshShellInit {
  public:
   AshShellInit();
-  ~AshShellInit();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AshShellInit);
+  AshShellInit(const AshShellInit&) = delete;
+  AshShellInit& operator=(const AshShellInit&) = delete;
+
+  ~AshShellInit();
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ASH_SHELL_INIT_H_

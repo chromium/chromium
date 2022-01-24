@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/sync/base/unique_position.h"
@@ -87,19 +88,20 @@ class UpdateResponseDataBuilder {
                             const syncer::UniquePosition& unique_position) {
     data_.id = server_id;
     data_.parent_id = parent_id;
-    data_.unique_position = unique_position;
-    data_.is_folder = true;
 
     sync_pb::BookmarkSpecifics* bookmark_specifics =
         data_.specifics.mutable_bookmark();
     bookmark_specifics->set_legacy_canonicalized_title(title);
     bookmark_specifics->set_full_title(title);
+    bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
+    *bookmark_specifics->mutable_unique_position() = unique_position.ToProto();
 
     SetGuid(base::GUID::GenerateRandomV4());
   }
 
   UpdateResponseDataBuilder& SetUrl(const GURL& url) {
-    data_.is_folder = false;
+    data_.specifics.mutable_bookmark()->set_type(
+        sync_pb::BookmarkSpecifics::URL);
     data_.specifics.mutable_bookmark()->set_url(url.spec());
     return *this;
   }
@@ -1863,8 +1865,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveMatchingDuplicatesByGUID) {
       /*server_id=*/"Id1", /*parent_id=*/kBookmarkBarId, kTitle1,
       /*url=*/kUrl,
       /*is_folder=*/false, /*unique_position=*/MakeRandomPosition(), kUrlGUID));
-  updates.back().entity.creation_time =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  updates.back().entity.creation_time = base::Time::Now() - base::Days(1);
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/"Id2", /*parent_id=*/kBookmarkBarId, kTitle2,
       /*url=*/kUrl,
@@ -1927,8 +1928,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveDifferentDuplicatesByGUID) {
       /*server_id=*/"Id2", /*parent_id=*/kBookmarkBarId, kTitle2,
       /*url=*/kDifferentUrl,
       /*is_folder=*/false, /*unique_position=*/MakeRandomPosition(), kUrlGUID));
-  updates.back().entity.creation_time =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  updates.back().entity.creation_time = base::Time::Now() - base::Days(1);
 
   base::HistogramTester histogram_tester;
   std::unique_ptr<SyncedBookmarkTracker> tracker =
@@ -1964,8 +1964,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveMatchingFolderDuplicatesByGUID) {
       /*server_id=*/"Id1", /*parent_id=*/kBookmarkBarId, kTitle,
       /*url=*/"",
       /*is_folder=*/true, /*unique_position=*/MakeRandomPosition(), kGUID));
-  updates.back().entity.creation_time =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  updates.back().entity.creation_time = base::Time::Now() - base::Days(1);
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/"Id2", /*parent_id=*/kBookmarkBarId, kTitle,
       /*url=*/"",
@@ -2019,8 +2018,7 @@ TEST(BookmarkModelMergerTest, ShouldRemoveDifferentFolderDuplicatesByGUID) {
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/"Id2", /*parent_id=*/kBookmarkBarId, kTitle2,
       /*url=*/"", /*is_folder=*/true, MakeRandomPosition(), kGUID));
-  updates.back().entity.creation_time =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  updates.back().entity.creation_time = base::Time::Now() - base::Days(1);
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/"Id21", /*parent_id=*/"Id2", "Some title 2",
       /*url=*/"", /*is_folder=*/true, MakeRandomPosition()));
@@ -2095,10 +2093,9 @@ TEST(BookmarkModelMergerTest, ShouldEnsureLimitDepthOfTree) {
               Eq(kMaxBookmarkTreeDepth + 2));
 }
 
-TEST(BookmarkModelMergerTest, ShouldReuploadBookmarkOnEmptyGuid) {
+TEST(BookmarkModelMergerTest, ShouldReuploadBookmarkOnEmptyUniquePosition) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncReuploadBookmarkFullTitles);
+  override_features.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
 
   const std::string kFolder1Title = "folder1";
   const std::string kFolder2Title = "folder2";
@@ -2124,9 +2121,10 @@ TEST(BookmarkModelMergerTest, ShouldReuploadBookmarkOnEmptyGuid) {
       /*is_folder=*/true, /*unique_position=*/posFolder1,
       base::GUID::GenerateRandomV4()));
 
-  // Mimic that the entity didn't have GUID in specifics. This entity should be
-  // reuploaded later.
-  updates.back().entity.is_bookmark_guid_in_specifics_preprocessed = true;
+  // Mimic that the entity didn't have |unique_position| in specifics. This
+  // entity should be reuploaded later.
+  updates.back().entity.is_bookmark_unique_position_in_specifics_preprocessed =
+      true;
 
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/kFolder2Id, /*parent_id=*/kBookmarkBarId, kFolder2Title,

@@ -12,9 +12,8 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -44,7 +43,7 @@ class DisplayRotationDefaultTest
     proto.mutable_display_rotation_default()->set_display_rotation_default(
         static_cast<em::DisplayRotationDefaultProto::Rotation>(rotation));
     policy_helper()->RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-        {chromeos::kDisplayRotationDefault, chromeos::kSystemUse24HourClock});
+        {ash::kDisplayRotationDefault, ash::kSystemUse24HourClock});
   }
 
   void RetriggerRotationPolicy() {
@@ -52,7 +51,7 @@ class DisplayRotationDefaultTest
     const bool clock24 = proto.use_24hour_clock().use_24hour_clock();
     proto.mutable_use_24hour_clock()->set_use_24hour_clock(!clock24);
     policy_helper()->RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-        {chromeos::kDisplayRotationDefault, chromeos::kSystemUse24HourClock});
+        {ash::kDisplayRotationDefault, ash::kSystemUse24HourClock});
   }
 };
 
@@ -85,8 +84,8 @@ IN_PROC_BROWSER_TEST_P(DisplayRotationDefaultTest, FirstDisplay) {
 
   SetRotationPolicy(policy_rotation);
   int settings_rotation;
-  EXPECT_TRUE(ash::CrosSettings::Get()->GetInteger(
-      chromeos::kDisplayRotationDefault, &settings_rotation));
+  EXPECT_TRUE(ash::CrosSettings::Get()->GetInteger(ash::kDisplayRotationDefault,
+                                                   &settings_rotation));
   EXPECT_EQ(policy_rotation, settings_rotation)
       << "Value of CrosSettings after policy value changed";
   EXPECT_EQ(policy_rotation, display_helper()->GetRotationOfFirstDisplay())
@@ -142,7 +141,7 @@ IN_PROC_BROWSER_TEST_P(DisplayRotationDefaultTest, SetAndUnsetPolicy) {
   const display::Display::Rotation policy_rotation = GetParam();
   SetRotationPolicy(policy_rotation);
   policy_helper()->UnsetPolicy(
-      {chromeos::kDisplayRotationDefault, chromeos::kSystemUse24HourClock});
+      {ash::kDisplayRotationDefault, ash::kSystemUse24HourClock});
   EXPECT_EQ(policy_rotation, display_helper()->GetRotationOfFirstDisplay())
       << "Rotation of primary display after policy was set and removed.";
 }
@@ -156,7 +155,7 @@ IN_PROC_BROWSER_TEST_P(DisplayRotationDefaultTest,
       display_helper()->GetDisplayManager()->first_display_id(), user_rotation,
       display::Display::RotationSource::USER);
   policy_helper()->UnsetPolicy(
-      {chromeos::kDisplayRotationDefault, chromeos::kSystemUse24HourClock});
+      {ash::kDisplayRotationDefault, ash::kSystemUse24HourClock});
   EXPECT_EQ(user_rotation, display_helper()->GetRotationOfFirstDisplay())
       << "Rotation of primary display after policy was set to "
       << policy_rotation << ", user changed the rotation to " << user_rotation
@@ -180,6 +179,10 @@ INSTANTIATE_TEST_SUITE_P(PolicyDisplayRotationDefault,
 class DisplayRotationBootTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<display::Display::Rotation> {
+ public:
+  DisplayRotationBootTest(const DisplayRotationBootTest&) = delete;
+  DisplayRotationBootTest& operator=(const DisplayRotationBootTest&) = delete;
+
  protected:
   DisplayRotationBootTest() {
     device_state_.set_skip_initial_policy_setup(true);
@@ -192,9 +195,9 @@ class DisplayRotationBootTest
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
-  chromeos::DeviceStateMixin device_state_{
+  ash::DeviceStateMixin device_state_{
       &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   DevicePolicyCrosTestHelper* policy_helper() { return &policy_helper_; }
   DeviceDisplayCrosTestHelper* display_helper() { return &display_helper_; }
@@ -202,7 +205,6 @@ class DisplayRotationBootTest
  private:
   DevicePolicyCrosTestHelper policy_helper_;
   DeviceDisplayCrosTestHelper display_helper_;
-  DISALLOW_COPY_AND_ASSIGN(DisplayRotationBootTest);
 };
 
 IN_PROC_BROWSER_TEST_P(DisplayRotationBootTest, PRE_Reboot) {
@@ -218,7 +220,7 @@ IN_PROC_BROWSER_TEST_P(DisplayRotationBootTest, PRE_Reboot) {
   base::RunLoop run_loop;
   base::CallbackListSubscription subscription =
       ash::CrosSettings::Get()->AddSettingsObserver(
-          chromeos::kDisplayRotationDefault, run_loop.QuitClosure());
+          ash::kDisplayRotationDefault, run_loop.QuitClosure());
   device_policy->SetDefaultSigningKey();
   device_policy->Build();
   chromeos::FakeSessionManagerClient::Get()->set_device_policy(

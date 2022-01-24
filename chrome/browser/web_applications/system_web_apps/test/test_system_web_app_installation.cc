@@ -13,13 +13,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_url_data_source.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/url_constants.h"
 #include "ui/webui/webui_allowlist.h"
@@ -109,7 +109,7 @@ UnittestingSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
 gfx::Size UnittestingSystemAppDelegate::GetMinimumWindowSize() const {
   return minimum_window_size_;
 }
-bool UnittestingSystemAppDelegate::ShouldBeSingleWindow() const {
+bool UnittestingSystemAppDelegate::ShouldReuseExistingWindow() const {
   return single_window_;
 }
 bool UnittestingSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
@@ -169,7 +169,7 @@ void UnittestingSystemAppDelegate::SetAppIdsToUninstallAndReplace(
 void UnittestingSystemAppDelegate::SetMinimumWindowSize(const gfx::Size& size) {
   minimum_window_size_ = size;
 }
-void UnittestingSystemAppDelegate::SetShouldBeSingleWindow(bool value) {
+void UnittestingSystemAppDelegate::SetShouldReuseExistingWindow(bool value) {
   single_window_ = value;
 }
 void UnittestingSystemAppDelegate::SetShouldShowNewWindowMenuOption(
@@ -234,7 +234,7 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation(
   UnittestingSystemAppDelegate* delegate_ptr = delegate.get();
   system_app_delegates_.emplace(type_.value(), std::move(delegate));
 
-  test_web_app_provider_creator_ = std::make_unique<TestWebAppProviderCreator>(
+  fake_web_app_provider_creator_ = std::make_unique<FakeWebAppProviderCreator>(
       base::BindRepeating(&TestSystemWebAppInstallation::CreateWebAppProvider,
                           // base::Unretained is safe here. This callback is
                           // called at TestingProfile::Init, which is at test
@@ -245,8 +245,8 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation(
 }
 
 TestSystemWebAppInstallation::TestSystemWebAppInstallation() {
-  test_web_app_provider_creator_ = std::make_unique<
-      TestWebAppProviderCreator>(base::BindRepeating(
+  fake_web_app_provider_creator_ = std::make_unique<
+      FakeWebAppProviderCreator>(base::BindRepeating(
       &TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps,
       // base::Unretained is safe here. This callback is called
       // at TestingProfile::Init, which is at test startup.
@@ -269,7 +269,7 @@ std::unique_ptr<WebApplicationInfo> GenerateWebApplicationInfoForTestApp() {
   info->title = u"Test System App";
   info->theme_color = 0xFF00FF00;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->open_as_window = true;
+  info->user_display_mode = DisplayMode::kStandalone;
   return info;
 }
 
@@ -295,7 +295,7 @@ TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp() {
           SystemAppType::TERMINAL, "Terminal",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
-  delegate->SetShouldBeSingleWindow(false);
+  delegate->SetShouldReuseExistingWindow(false);
   delegate->SetShouldHaveTabStrip(true);
 
   return base::WrapUnique(
@@ -305,11 +305,14 @@ TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp() {
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp() {
-  return base::WrapUnique(new TestSystemWebAppInstallation(
+  std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
           SystemAppType::SETTINGS, "OSSettings",
           GURL("chrome://test-system-app/pwa.html"),
-          base::BindRepeating(&GenerateWebApplicationInfoForTestApp))));
+          base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
+
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 // static
@@ -423,7 +426,7 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
             info->title = u"Test System App";
             info->theme_color = 0xFF00FF00;
             info->display_mode = blink::mojom::DisplayMode::kStandalone;
-            info->open_as_window = true;
+            info->user_display_mode = DisplayMode::kStandalone;
             return info;
           })));
   auto factory = std::make_unique<TestSystemWebAppWebUIControllerFactory>(
@@ -469,8 +472,7 @@ TestSystemWebAppInstallation::SetUpAppWithBackgroundTask() {
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
 
   SystemAppBackgroundTaskInfo background_task(
-      base::TimeDelta::FromDays(1), GURL("chrome://test-system-app/page2.html"),
-      true);
+      base::Days(1), GURL("chrome://test-system-app/page2.html"), true);
   delegate->SetTimerInfo(background_task);
 
   return base::WrapUnique(
@@ -533,7 +535,37 @@ TestSystemWebAppInstallation::SetUpAppWithNewWindowMenuItem() {
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   delegate->SetShouldShowNewWindowMenuOption(true);
-  delegate->SetShouldBeSingleWindow(false);
+  delegate->SetShouldReuseExistingWindow(false);
+
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
+}
+
+// static
+std::unique_ptr<TestSystemWebAppInstallation>
+TestSystemWebAppInstallation::SetUpAppWithShortcuts() {
+  std::unique_ptr<UnittestingSystemAppDelegate> delegate =
+      std::make_unique<UnittestingSystemAppDelegate>(
+          SystemAppType::SHORTCUT_CUSTOMIZATION, "Shortcuts",
+          GURL("chrome://test-system-app/pwa.html"),
+          base::BindLambdaForTesting([]() {
+            std::unique_ptr<WebApplicationInfo> info =
+                GenerateWebApplicationInfoForTestApp();
+            info->title = u"Shortcuts";
+            {
+              WebApplicationShortcutsMenuItemInfo menu_item;
+              menu_item.name = u"One";
+              menu_item.url = GURL("chrome://test-system-app/pwa.html#one");
+              info->shortcuts_menu_item_infos.push_back(std::move(menu_item));
+            }
+            {
+              WebApplicationShortcutsMenuItemInfo menu_item;
+              menu_item.name = u"Two";
+              menu_item.url = GURL("chrome://test-system-app/pwa.html#two");
+              info->shortcuts_menu_item_infos.push_back(std::move(menu_item));
+            }
+            return info;
+          }));
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));
@@ -556,29 +588,29 @@ CreateSystemAppDelegateWithWindowConfig(
       type, "Test App", app_url, base::BindLambdaForTesting([=]() {
         auto info = std::make_unique<WebApplicationInfo>();
         info->start_url = app_url;
-        info->scope = app_url.GetOrigin();
+        info->scope = app_url.DeprecatedGetOriginAsURL();
         info->title = u"Test System App";
         info->theme_color = 0xFF00FF00;
         info->display_mode = blink::mojom::DisplayMode::kStandalone;
-        info->open_as_window = true;
+        info->user_display_mode = DisplayMode::kStandalone;
         return info;
       }));
 
   switch (window_config) {
     case SystemWebAppWindowConfig::SINGLE_WINDOW:
-      delegate->SetShouldBeSingleWindow(true);
+      delegate->SetShouldReuseExistingWindow(true);
       delegate->SetShouldHaveTabStrip(false);
       break;
     case SystemWebAppWindowConfig::SINGLE_WINDOW_TAB_STRIP:
-      delegate->SetShouldBeSingleWindow(true);
+      delegate->SetShouldReuseExistingWindow(true);
       delegate->SetShouldHaveTabStrip(true);
       break;
     case SystemWebAppWindowConfig::MULTI_WINDOW:
-      delegate->SetShouldBeSingleWindow(false);
+      delegate->SetShouldReuseExistingWindow(false);
       delegate->SetShouldHaveTabStrip(false);
       break;
     case SystemWebAppWindowConfig::MULTI_WINDOW_TAB_STRIP:
-      delegate->SetShouldBeSingleWindow(false);
+      delegate->SetShouldReuseExistingWindow(false);
       delegate->SetShouldHaveTabStrip(true);
       break;
   }
@@ -635,7 +667,7 @@ TestSystemWebAppInstallation::CreateWebAppProvider(
                          profile);
   }
 
-  auto provider = std::make_unique<TestWebAppProvider>(profile);
+  auto provider = std::make_unique<FakeWebAppProvider>(profile);
   auto system_web_app_manager = std::make_unique<SystemWebAppManager>(profile);
 
   system_web_app_manager->SetSystemAppsForTesting(
@@ -656,7 +688,7 @@ std::unique_ptr<KeyedService>
 TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps(
     Profile* profile) {
   profile_ = profile;
-  auto provider = std::make_unique<TestWebAppProvider>(profile);
+  auto provider = std::make_unique<FakeWebAppProvider>(profile);
   auto system_web_app_manager = std::make_unique<SystemWebAppManager>(profile);
   system_web_app_manager->SetSystemAppsForTesting({});
   system_web_app_manager->SetUpdatePolicyForTesting(update_policy_);
@@ -667,7 +699,7 @@ TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps(
 
 void TestSystemWebAppInstallation::WaitForAppInstall() {
   base::RunLoop run_loop;
-  WebAppProvider::Get(profile_)
+  WebAppProvider::GetForTest(profile_)
       ->system_web_app_manager()
       .on_apps_synchronized()
       .Post(FROM_HERE, base::BindLambdaForTesting([&]() {
@@ -680,14 +712,15 @@ void TestSystemWebAppInstallation::WaitForAppInstall() {
 }
 
 AppId TestSystemWebAppInstallation::GetAppId() {
-  return WebAppProvider::Get(profile_)
+  return WebAppProvider::GetForTest(profile_)
       ->system_web_app_manager()
       .GetAppIdForSystemApp(type_.value())
       .value();
 }
 
 const GURL& TestSystemWebAppInstallation::GetAppUrl() {
-  return WebAppProvider::Get(profile_)->registrar().GetAppStartUrl(GetAppId());
+  return WebAppProvider::GetForTest(profile_)->registrar().GetAppStartUrl(
+      GetAppId());
 }
 
 SystemAppType TestSystemWebAppInstallation::GetType() {

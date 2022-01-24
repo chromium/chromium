@@ -1,0 +1,13 @@
+Tests basic functionality of Tatget.autoAttachRelated.
+Attached to page target: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html (waiting: false)
+Attached to iframe target:  (waiting: false)
+Attached to iframe target:  (waiting: true)
+Attached to iframe target:  (waiting: true)
+Detached from 3 targets
+Disalbing auto-attach
+Re-enabling auto-attach for page1
+Attached to page target: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html (waiting: false)
+Attached to iframe target: http://devtools.oopif.test:8080/inspector-protocol/resources/iframe.html (waiting: false)
+Detached from 1 targets
+DONE
+

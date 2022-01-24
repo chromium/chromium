@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/passwords_private/password_check_delegate.h"
@@ -29,6 +28,7 @@
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "extensions/browser/extension_function.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -43,11 +43,24 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
                                      public PasswordUIView {
  public:
   explicit PasswordsPrivateDelegateImpl(Profile* profile);
+
+  PasswordsPrivateDelegateImpl(const PasswordsPrivateDelegateImpl&) = delete;
+  PasswordsPrivateDelegateImpl& operator=(const PasswordsPrivateDelegateImpl&) =
+      delete;
+
   ~PasswordsPrivateDelegateImpl() override;
 
   // PasswordsPrivateDelegate implementation.
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
+  absl::optional<api::passwords_private::UrlCollection> GetUrlCollection(
+      const std::string& url) override;
+  bool IsAccountStoreDefault(content::WebContents* web_contents) override;
+  bool AddPassword(const std::string& url,
+                   const std::u16string& username,
+                   const std::u16string& password,
+                   bool use_account_store,
+                   content::WebContents* web_contents) override;
   bool ChangeSavedPassword(const std::vector<int>& ids,
                            const std::u16string& new_username,
                            const std::u16string& new_password) override;
@@ -61,8 +74,9 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   void MovePasswordsToAccount(const std::vector<int>& ids,
                               content::WebContents* web_contents) override;
   void ImportPasswords(content::WebContents* web_contents) override;
-  void ExportPasswords(base::OnceCallback<void(const std::string&)> accepted,
-                       content::WebContents* web_contents) override;
+  void ExportPasswords(
+      base::OnceCallback<void(const std::string&)> accepted_callback,
+      content::WebContents* web_contents) override;
   void CancelExportPasswords() override;
   api::passwords_private::ExportProgressStatus GetExportProgressStatus()
       override;
@@ -135,11 +149,36 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   void OnPasswordsExportProgress(password_manager::ExportProgressStatus status,
                                  const std::string& folder_name);
 
+  // Callback for RequestPlaintextPassword() after authentication check.
+  void OnRequestPlaintextPasswordAuthResult(
+      int id,
+      api::passwords_private::PlaintextReason reason,
+      PlaintextPasswordCallback callback,
+      bool authenticated);
+
+  // Callback for ExportPasswords() after authentication check.
+  void OnExportPasswordsAuthResult(
+      base::OnceCallback<void(const std::string&)> accepted_callback,
+      content::WebContents* web_contents,
+      bool authenticated);
+
+  // Callback for GetPlaintextInsecurePassword() after authentication check.
+  void OnGetPlaintextInsecurePasswordAuthResult(
+      api::passwords_private::InsecureCredential credential,
+      api::passwords_private::PlaintextReason reason,
+      PlaintextInsecurePasswordCallback callback,
+      bool authenticated);
+
   void OnAccountStorageOptInStateChanged();
 
-  // Triggers an OS-dependent UI to present OS account login challenge and
-  // returns true if the user passed that challenge.
-  bool OsReauthCall(password_manager::ReauthPurpose purpose);
+  // Decides whether an authentication check is successful. Passes the result
+  // to |callback|. True indicates that no extra work is needed. False
+  // indicates that OS-dependent UI to present OS account login challenge
+  // should be shown.
+  void OsReauthCall(
+      password_manager::ReauthPurpose purpose,
+      password_manager::PasswordAccessAuthenticator::AuthResultCallback
+          callback);
 
   // Not owned by this class.
   Profile* profile_;
@@ -147,7 +186,7 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   // Used to communicate with the password store.
   std::unique_ptr<PasswordManagerPresenter> password_manager_presenter_;
 
-  // Used to edit passwords and to create |password_check_delegate_|.
+  // Used to add/edit passwords and to create |password_check_delegate_|.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_;
 
   // Used to control the export and import flows.
@@ -192,8 +231,6 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   content::WebContents* web_contents_;
 
   base::WeakPtrFactory<PasswordsPrivateDelegateImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordsPrivateDelegateImpl);
 };
 
 }  // namespace extensions

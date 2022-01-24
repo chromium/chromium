@@ -24,6 +24,10 @@ class AudioPostProcessor2;
 class PostProcessorFactory {
  public:
   PostProcessorFactory();
+
+  PostProcessorFactory(const PostProcessorFactory&) = delete;
+  PostProcessorFactory& operator=(const PostProcessorFactory&) = delete;
+
   ~PostProcessorFactory();
 
   // Checks if a library is a V1 or V2 post processor.
@@ -43,8 +47,6 @@ class PostProcessorFactory {
   // Contains all libraries in use;
   // Functions in shared objects cannot be used once library is closed.
   std::vector<std::unique_ptr<base::ScopedNativeLibrary>> libraries_;
-
-  DISALLOW_COPY_AND_ASSIGN(PostProcessorFactory);
 };
 
 }  // namespace media

@@ -22,6 +22,9 @@ class FakeGlRendererDelegate : public GlRendererDelegate {
  public:
   FakeGlRendererDelegate() {}
 
+  FakeGlRendererDelegate(const FakeGlRendererDelegate&) = delete;
+  FakeGlRendererDelegate& operator=(const FakeGlRendererDelegate&) = delete;
+
   bool CanRenderFrame() override {
     can_render_frame_call_count_++;
     return can_render_frame_;
@@ -70,13 +73,14 @@ class FakeGlRendererDelegate : public GlRendererDelegate {
 
   base::RepeatingClosure on_frame_rendered_callback_;
   base::WeakPtrFactory<FakeGlRendererDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGlRendererDelegate);
 };
 
 class FakeDrawable : public Drawable {
  public:
   FakeDrawable() {}
+
+  FakeDrawable(const FakeDrawable&) = delete;
+  FakeDrawable& operator=(const FakeDrawable&) = delete;
 
   void SetId(int id) { id_ = id; }
   int GetId() { return id_; }
@@ -104,8 +108,6 @@ class FakeDrawable : public Drawable {
   int z_index_ = -1;
 
   base::WeakPtrFactory<FakeDrawable> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDrawable);
 };
 
 class GlRendererTest : public testing::Test {

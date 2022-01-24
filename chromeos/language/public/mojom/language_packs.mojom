@@ -1,0 +1,50 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Private API exposed by Language Packs.
+// It allows clients to check, request and observe the files managed by
+// Language Packs.
+
+module chromeos.language.mojom;
+
+// ID of the Feature using LanguagePacks.
+enum FeatureId {
+  // Unknown feature, not supported.
+  UNSUPPORTED_UNKNOWN = 0,
+  // Handwriting Recognition used by the Virtual Keyboard.
+  HANDWRITING_RECOGNITION = 1,
+};
+
+// Current state of Pack on disk.
+// INSTALLED means that it's mounted and can be used.
+enum PackState {
+  ERROR = 0,
+  NOT_INSTALLED = 1,
+  INSTALLING = 2,
+  INSTALLED = 3
+};
+
+// This struct holds information that allows clients to use a Pack.
+struct LanguagePackInfo {
+  PackState pack_state;
+  string path;
+};
+
+// Interface for managing Language Packs.
+// Lives in the browser process and it allows clients to get information
+// about a Language Pack or to install one.
+// Language Packs are mounted to the user partition once they are installed and
+// this interface allows to get the path to the files.
+// Next ordinal: 2
+interface LanguagePacks {
+  // Gets information about the current state of a Language Pack.
+  // Takes the id of the feature (for example handwriting) and the language.
+  GetPackInfo@0(FeatureId feature_id, string language) =>
+      (LanguagePackInfo info);
+
+  // Requests to install a Language Pack.
+  // Takes the id of the feature (for example handwriting) and the language.
+  InstallPack@1(FeatureId feature_id, string language) =>
+      (LanguagePackInfo info);
+};

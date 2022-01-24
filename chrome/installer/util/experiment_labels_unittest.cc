@@ -42,19 +42,17 @@ TEST(ExperimentLabels, GetValueForLabel) {
 TEST(ExperimentLabels, SetValueForLabel) {
   ExperimentLabels label(L"");
 
-  label.SetValueForLabel(L"name", L"value", base::TimeDelta::FromSeconds(1));
+  label.SetValueForLabel(L"name", L"value", base::Seconds(1));
   base::WStringPiece value = label.GetValueForLabel(L"name");
   EXPECT_EQ(value, L"value");
   EXPECT_THAT(label.value(), StartsWith(L"name=value|"));
 
-  label.SetValueForLabel(L"name", L"othervalue",
-                         base::TimeDelta::FromSeconds(1));
+  label.SetValueForLabel(L"name", L"othervalue", base::Seconds(1));
   value = label.GetValueForLabel(L"name");
   EXPECT_EQ(value, L"othervalue");
   EXPECT_THAT(label.value(), StartsWith(L"name=othervalue|"));
 
-  label.SetValueForLabel(L"othername", L"somevalue",
-                         base::TimeDelta::FromSeconds(1));
+  label.SetValueForLabel(L"othername", L"somevalue", base::Seconds(1));
   value = label.GetValueForLabel(L"othername");
   EXPECT_EQ(value, L"somevalue");
   EXPECT_THAT(label.value(), HasSubstr(L"name=othervalue|"));

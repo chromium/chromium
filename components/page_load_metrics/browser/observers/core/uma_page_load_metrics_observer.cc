@@ -16,12 +16,14 @@
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
+#include "components/metrics/metrics_data_validation.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/common/process_type.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/request_destination.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/page_transition_types.h"
@@ -36,7 +38,7 @@ int g_num_trace_events_in_process = 0;
 // The threshold to emit a trace event is the 99th percentile
 // of the histogram on Windows Stable as of Feb 26th, 2020.
 constexpr base::TimeDelta kFirstContentfulPaintTraceThreshold =
-    base::TimeDelta::FromMilliseconds(12388);
+    base::Milliseconds(12388);
 
 // TODO(bmcquade): If other observers want to log histograms based on load type,
 // promote this enum to page_load_metrics_observer.h.
@@ -143,20 +145,51 @@ const char kHistogramLargestContentfulPaintMainFrame[] =
 const char kHistogramLargestContentfulPaintMainFrameContentType[] =
     "PageLoad.Internal.PaintTiming.LargestContentfulPaint.MainFrame."
     "ContentType";
-// TODO(crbug.com/1045640): Stop reporting these obsolete versions after some
-// time.
-const char kDeprecatedHistogramLargestContentfulPaint[] =
-    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint";
-const char kHistogramExperimentalLargestContentfulPaintContentType[] =
-    "PageLoad.Internal.PaintTiming.ExperimentalLargestContentfulPaint."
-    "ContentType";
-const char kDeprecatedHistogramLargestContentfulPaintMainFrame[] =
-    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint."
-    "MainFrame";
-const char kHistogramExperimentalLargestContentfulPaintMainFrameContentType[] =
-    "PageLoad.Internal.PaintTiming.ExperimentalLargestContentfulPaint."
-    "MainFrame."
-    "ContentType";
+const char kHistogramLargestContentfulPaintCrossSiteSubFrame[] =
+    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2."
+    "CrossSiteSubFrame";
+
+const char kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration[] =
+    "PageLoad.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
+    "MaxEventDuration";
+const char
+    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileMaxEventDuration
+        [] = "PageLoad.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+             "HighPercentile.MaxEventDuration";
+const char
+    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration
+        [] = "PageLoad.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+             "HighPercentile2.MaxEventDuration";
+const char kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration[] =
+    "PageLoad.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
+    "MaxEventDuration";
+const char kHistogramWorstUserInteractionLatencyMaxEventDuration[] =
+    "PageLoad.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration";
+const char kHistogramWorstUserInteractionLatencyOverBudgetMaxEventDuration[] =
+    "PageLoad.InteractiveTiming.WorstUserInteractionLatencyOverBudget."
+    "MaxEventDuration";
+
+const char
+    kHistogramAverageUserInteractionLatencyOverBudgetTotalEventDuration[] =
+        "PageLoad.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
+        "TotalEventDuration";
+const char
+    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileTotalEventDuration
+        [] = "PageLoad.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+             "HighPercentile.TotalEventDuration";
+const char
+    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2TotalEventDuration
+        [] = "PageLoad.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+             "HighPercentile2.TotalEventDuration";
+const char kHistogramSumOfUserInteractionLatencyOverBudgetTotalEventDuration[] =
+    "PageLoad.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
+    "TotalEventDuration";
+const char kHistogramWorstUserInteractionLatencyTotalEventDuration[] =
+    "PageLoad.InteractiveTiming.WorstUserInteractionLatency.TotalEventDuration";
+const char kHistogramWorstUserInteractionLatencyOverBudgetTotalEventDuration[] =
+    "PageLoad.InteractiveTiming.WorstUserInteractionLatencyOverBudget."
+    "TotalEventDuration";
+
 const char kHistogramFirstInputDelay[] =
     "PageLoad.InteractiveTiming.FirstInputDelay4";
 const char kHistogramFirstInputTimestamp[] =
@@ -380,14 +413,6 @@ const char
         "PageLoad.Experimental.NavigationTiming."
         "FinalLoaderCallbackToNavigationCommitSent";
 
-// 103 Early Hints metrics for experiment (https://crbug.com/1093693).
-const char kHistogramEarlyHintsFirstRequestStartToEarlyHints[] =
-    "PageLoad.Experimental.EarlyHints.FirstRequestStartToEarlyHints";
-const char kHistogramEarlyHintsFinalRequestStartToEarlyHints[] =
-    "PageLoad.Experimental.EarlyHints.FinalRequestStartToEarlyHints";
-const char kHistogramEarlyHintsEarlyHintsToFinalResponseStart[] =
-    "PageLoad.Experimental.EarlyHints.EarlyHintsToFinalResponseStart";
-
 // V8 memory usage metrics.
 const char kHistogramMemoryMainframe[] =
     "PageLoad.Experimental.Memory.Core.MainFrame.Max";
@@ -505,7 +530,7 @@ void UmaPageLoadMetricsObserver::OnFirstPaintInPage(
           timing.paint_timing->first_paint, GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramForegroundToFirstPaint,
                         timing.paint_timing->first_paint.value() -
-                            GetDelegate().GetFirstForegroundTime().value());
+                            GetDelegate().GetTimeToFirstForeground().value());
   }
 }
 
@@ -592,7 +617,7 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
       }
     }
 
-    if (GetDelegate().GetFirstBackgroundTime()) {
+    if (GetDelegate().GetTimeToFirstBackground()) {
       // We were started in the foreground, and got FCP while in foreground, but
       // became hidden while propagating the FCP value from Blink into the PLM
       // observer. In this case, we will have missed the FCP UKM value, since it
@@ -657,7 +682,7 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
           timing.paint_timing->first_contentful_paint, GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramForegroundToFirstContentfulPaint,
                         timing.paint_timing->first_contentful_paint.value() -
-                            GetDelegate().GetFirstForegroundTime().value());
+                            GetDelegate().GetTimeToFirstForeground().value());
   }
 }
 
@@ -686,8 +711,14 @@ void UmaPageLoadMetricsObserver::OnFirstInputInPage(
   UMA_HISTOGRAM_CUSTOM_TIMES(
       internal::kHistogramFirstInputDelay,
       timing.interactive_timing->first_input_delay.value(),
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-      50);
+      base::Milliseconds(1), base::Seconds(60), 50);
+  // The pseudo metric of |kHistogramFirstInputDelay|. Only used to assess field
+  // trial data quality.
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "UMA.Pseudo.PageLoad.InteractiveTiming.FirstInputDelay4",
+      metrics::GetPseudoMetricsSample(
+          timing.interactive_timing->first_input_delay.value()),
+      base::Milliseconds(1), base::Seconds(60), 50);
   PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstInputTimestamp,
                       timing.interactive_timing->first_input_timestamp.value());
   TRACE_EVENT_MARK_WITH_TIMESTAMP1(
@@ -1003,39 +1034,6 @@ void UmaPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
       internal::
           kHistogramNavigationTimingFinalLoaderCallbackToNavigationCommitSent,
       timing.navigation_commit_sent_time - timing.final_loader_callback_time);
-
-  // Record intervals for the 103 Early Hints experiment
-  // (https://crbug.com/1093693). Note that multiple 103 responses can be served
-  // per request. These metrics use the first 103 response as the timing.
-  if (!timing.early_hints_for_first_request_time.is_null()) {
-    // Record the interval from "first request start" to "103 Early Hints
-    // response start for first request".
-    DCHECK_LT(timing.first_request_start_time,
-              timing.early_hints_for_first_request_time);
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramEarlyHintsFirstRequestStartToEarlyHints,
-        timing.early_hints_for_first_request_time -
-            timing.first_request_start_time);
-  }
-  if (!timing.early_hints_for_final_request_time.is_null()) {
-    // Record the interval from "final request start" to "103 Early Hints
-    // response start for final request".
-    DCHECK_LT(timing.final_request_start_time,
-              timing.early_hints_for_final_request_time);
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramEarlyHintsFinalRequestStartToEarlyHints,
-        timing.early_hints_for_final_request_time -
-            timing.final_request_start_time);
-
-    // Record the interval from "103 Early Hints response start for final
-    // request" to "non-informational final response start"
-    DCHECK_LT(timing.early_hints_for_final_request_time,
-              timing.final_non_informational_response_start_time);
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramEarlyHintsEarlyHintsToFinalResponseStart,
-        timing.final_non_informational_response_start_time -
-            timing.early_hints_for_final_request_time);
-  }
 }
 
 // This method records values for metrics that were not recorded during any
@@ -1047,9 +1045,9 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
   // Log time to first foreground / time to first background. Log counts that we
   // started a relevant page load in the foreground / background.
   if (!GetDelegate().StartedInForeground() &&
-      GetDelegate().GetFirstForegroundTime()) {
+      GetDelegate().GetTimeToFirstForeground()) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstForeground,
-                        GetDelegate().GetFirstForegroundTime().value());
+                        GetDelegate().GetTimeToFirstForeground().value());
   }
 
   const page_load_metrics::ContentfulPaintTimingInfo&
@@ -1064,7 +1062,20 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
                         main_frame_largest_contentful_paint.Time().value());
     UMA_HISTOGRAM_ENUMERATION(
         internal::kHistogramLargestContentfulPaintMainFrameContentType,
-        main_frame_largest_contentful_paint.Type());
+        main_frame_largest_contentful_paint.TextOrImage());
+  }
+
+  const page_load_metrics::ContentfulPaintTimingInfo&
+      cross_site_sub_frame_contentful_paint =
+          GetDelegate()
+              .GetLargestContentfulPaintHandler()
+              .CrossSiteSubframesLargestContentfulPaint();
+  if (cross_site_sub_frame_contentful_paint.ContainsValidTime() &&
+      WasStartedInForegroundOptionalEventInForeground(
+          cross_site_sub_frame_contentful_paint.Time(), GetDelegate())) {
+    PAGE_LOAD_HISTOGRAM(
+        internal::kHistogramLargestContentfulPaintCrossSiteSubFrame,
+        cross_site_sub_frame_contentful_paint.Time().value());
   }
 
   const page_load_metrics::ContentfulPaintTimingInfo&
@@ -1077,56 +1088,20 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
           all_frames_largest_contentful_paint.Time(), GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestContentfulPaint,
                         all_frames_largest_contentful_paint.Time().value());
+    // The pseudo metric of |kHistogramLargestContentfulPaint|. Only used to
+    // assess field trial data quality.
+    PAGE_LOAD_HISTOGRAM(
+        "UMA.Pseudo.PageLoad.PaintTiming.NavigationToLargestContentfulPaint2",
+        metrics::GetPseudoMetricsSample(
+            all_frames_largest_contentful_paint.Time().value()));
     UMA_HISTOGRAM_ENUMERATION(
         internal::kHistogramLargestContentfulPaintContentType,
-        all_frames_largest_contentful_paint.Type());
+        all_frames_largest_contentful_paint.TextOrImage());
     TRACE_EVENT_MARK_WITH_TIMESTAMP1(
         "loading", "NavStartToLargestContentfulPaint::AllFrames::UMA",
         GetDelegate().GetNavigationStart() +
             all_frames_largest_contentful_paint.Time().value(),
         "data", all_frames_largest_contentful_paint.DataAsTraceValue());
-  }
-
-  const page_load_metrics::ContentfulPaintTimingInfo&
-      main_frame_experimental_largest_contentful_paint =
-          GetDelegate()
-              .GetExperimentalLargestContentfulPaintHandler()
-              .MainFrameLargestContentfulPaint();
-  if (main_frame_experimental_largest_contentful_paint.ContainsValidTime() &&
-      WasStartedInForegroundOptionalEventInForeground(
-          main_frame_experimental_largest_contentful_paint.Time(),
-          GetDelegate())) {
-    PAGE_LOAD_HISTOGRAM(
-        internal::kDeprecatedHistogramLargestContentfulPaintMainFrame,
-        main_frame_experimental_largest_contentful_paint.Time().value());
-    UMA_HISTOGRAM_ENUMERATION(
-        internal::
-            kHistogramExperimentalLargestContentfulPaintMainFrameContentType,
-        main_frame_experimental_largest_contentful_paint.Type());
-  }
-
-  const page_load_metrics::ContentfulPaintTimingInfo&
-      all_frames_experimental_largest_contentful_paint =
-          GetDelegate()
-              .GetExperimentalLargestContentfulPaintHandler()
-              .MergeMainFrameAndSubframes();
-  if (all_frames_experimental_largest_contentful_paint.ContainsValidTime() &&
-      WasStartedInForegroundOptionalEventInForeground(
-          all_frames_experimental_largest_contentful_paint.Time(),
-          GetDelegate())) {
-    PAGE_LOAD_HISTOGRAM(
-        internal::kDeprecatedHistogramLargestContentfulPaint,
-        all_frames_experimental_largest_contentful_paint.Time().value());
-    UMA_HISTOGRAM_ENUMERATION(
-        internal::kHistogramExperimentalLargestContentfulPaintContentType,
-        all_frames_experimental_largest_contentful_paint.Type());
-    TRACE_EVENT_MARK_WITH_TIMESTAMP1(
-        "loading",
-        "NavStartToExperimentalLargestContentfulPaint::AllFrames::UMA",
-        GetDelegate().GetNavigationStart() +
-            all_frames_experimental_largest_contentful_paint.Time().value(),
-        "data",
-        all_frames_experimental_largest_contentful_paint.DataAsTraceValue());
   }
 
   if (main_frame_timing.paint_timing->first_paint &&
@@ -1143,12 +1118,97 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramLongestInputDelay,
         main_frame_timing.interactive_timing->longest_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramLongestInputTimestamp,
         main_frame_timing.interactive_timing->longest_input_timestamp.value());
   }
+
+  RecordNormalizedResponsivenessMetrics();
+}
+
+void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
+  const page_load_metrics::NormalizedResponsivenessMetrics&
+      normalized_responsiveness_metrics =
+          GetDelegate().GetNormalizedResponsivenessMetrics();
+  if (!normalized_responsiveness_metrics.num_user_interactions)
+    return;
+  auto& max_event_durations =
+      normalized_responsiveness_metrics.normalized_max_event_durations;
+  auto& total_event_durations =
+      normalized_responsiveness_metrics.normalized_total_event_durations;
+
+  UmaHistogramCustomTimes(
+      internal::kHistogramWorstUserInteractionLatencyMaxEventDuration,
+      max_event_durations.worst_latency, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::kHistogramWorstUserInteractionLatencyTotalEventDuration,
+      total_event_durations.worst_latency, base::Milliseconds(1),
+      base::Seconds(60), 50);
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSendAllUserInteractionLatencies))
+    return;
+
+  // When the flag is disabled, we don't know the type of user interactions
+  // and can't calculate the worst over budget.
+  UmaHistogramCustomTimes(
+      internal::kHistogramWorstUserInteractionLatencyOverBudgetMaxEventDuration,
+      max_event_durations.worst_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramWorstUserInteractionLatencyOverBudgetTotalEventDuration,
+      total_event_durations.worst_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration,
+      max_event_durations.sum_of_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramSumOfUserInteractionLatencyOverBudgetTotalEventDuration,
+      total_event_durations.sum_of_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration,
+      max_event_durations.sum_of_latency_over_budget /
+          normalized_responsiveness_metrics.num_user_interactions,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramAverageUserInteractionLatencyOverBudgetTotalEventDuration,
+      total_event_durations.sum_of_latency_over_budget /
+          normalized_responsiveness_metrics.num_user_interactions,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileMaxEventDuration,
+      max_event_durations.high_percentile_latency_over_budget,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileTotalEventDuration,
+      total_event_durations.high_percentile_latency_over_budget,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration,
+      page_load_metrics::ResponsivenessMetricsNormalization::
+          ApproximateHighPercentile(
+              normalized_responsiveness_metrics.num_user_interactions,
+              max_event_durations.worst_ten_latencies_over_budget),
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2TotalEventDuration,
+      page_load_metrics::ResponsivenessMetricsNormalization::
+          ApproximateHighPercentile(
+              normalized_responsiveness_metrics.num_user_interactions,
+              total_event_durations.worst_ten_latencies_over_budget),
+      base::Milliseconds(1), base::Seconds(60), 50);
 }
 
 void UmaPageLoadMetricsObserver::RecordForegroundDurationHistograms(
@@ -1186,9 +1246,9 @@ void UmaPageLoadMetricsObserver::RecordForegroundDurationHistograms(
   if (GetDelegate().GetPageEndReason() == page_load_metrics::END_FORWARD_BACK &&
       GetDelegate().GetUserInitiatedInfo().user_gesture &&
       !GetDelegate().GetUserInitiatedInfo().browser_initiated &&
-      GetDelegate().GetPageEndTime() <= foreground_duration) {
+      GetDelegate().GetTimeToPageEnd() <= foreground_duration) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramUserGestureNavigationToForwardBack,
-                        GetDelegate().GetPageEndTime().value());
+                        GetDelegate().GetTimeToPageEnd().value());
   }
 }
 

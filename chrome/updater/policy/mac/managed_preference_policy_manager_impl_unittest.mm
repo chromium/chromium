@@ -40,9 +40,9 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestPolicyValues) {
   EXPECT_EQ([policyManager lastCheckPeriodMinutes], kPolicyNotSet);
   EXPECT_EQ([policyManager defaultUpdatePolicy], kPolicyDisabled);
   EXPECT_NSEQ([policyManager downloadPreference], @"cacheable");
-  EXPECT_EQ([policyManager updatesSuppressed].start_hour, 12);
-  EXPECT_EQ([policyManager updatesSuppressed].start_minute, 15);
-  EXPECT_EQ([policyManager updatesSuppressed].duration_minute, 30);
+  EXPECT_EQ([policyManager updatesSuppressed].start_hour_, 12);
+  EXPECT_EQ([policyManager updatesSuppressed].start_minute_, 15);
+  EXPECT_EQ([policyManager updatesSuppressed].duration_minute_, 30);
   EXPECT_EQ([policyManager proxyMode], nil);
   EXPECT_EQ([policyManager proxyServer], nil);
   EXPECT_EQ([policyManager proxyPacURL], nil);
@@ -84,9 +84,9 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestNoGlobalPolicy) {
   EXPECT_EQ([policyManager lastCheckPeriodMinutes], kPolicyNotSet);
   EXPECT_EQ([policyManager defaultUpdatePolicy], kPolicyNotSet);
   EXPECT_NSEQ([policyManager downloadPreference], nil);
-  EXPECT_EQ([policyManager updatesSuppressed].start_hour, kPolicyNotSet);
-  EXPECT_EQ([policyManager updatesSuppressed].start_minute, kPolicyNotSet);
-  EXPECT_EQ([policyManager updatesSuppressed].duration_minute, kPolicyNotSet);
+  EXPECT_EQ([policyManager updatesSuppressed].start_hour_, kPolicyNotSet);
+  EXPECT_EQ([policyManager updatesSuppressed].start_minute_, kPolicyNotSet);
+  EXPECT_EQ([policyManager updatesSuppressed].duration_minute_, kPolicyNotSet);
   EXPECT_EQ([policyManager proxyMode], nil);
   EXPECT_EQ([policyManager proxyServer], nil);
   EXPECT_EQ([policyManager proxyPacURL], nil);
@@ -123,9 +123,9 @@ TEST(CRUManagedPreferencePolicyManagerTest, TestInvalidPolicyValues) {
   EXPECT_EQ([policyManager lastCheckPeriodMinutes], kPolicyNotSet);
   EXPECT_EQ([policyManager defaultUpdatePolicy], kPolicyNotSet);
   EXPECT_EQ([policyManager downloadPreference], nil);
-  EXPECT_EQ([policyManager updatesSuppressed].start_hour, kPolicyNotSet);
-  EXPECT_EQ([policyManager updatesSuppressed].start_minute, kPolicyNotSet);
-  EXPECT_EQ([policyManager updatesSuppressed].duration_minute, kPolicyNotSet);
+  EXPECT_EQ([policyManager updatesSuppressed].start_hour_, kPolicyNotSet);
+  EXPECT_EQ([policyManager updatesSuppressed].start_minute_, kPolicyNotSet);
+  EXPECT_EQ([policyManager updatesSuppressed].duration_minute_, kPolicyNotSet);
   EXPECT_EQ([policyManager proxyMode], nil);
   EXPECT_EQ([policyManager proxyServer], nil);
   EXPECT_EQ([policyManager proxyPacURL], nil);

@@ -407,7 +407,6 @@ if (internal_gles2_conform_tests) {
     ]
     configs += [
       "//build/config/compiler:no_incompatible_pointer_warnings",
-      "//build/config/compiler:no_shorten_64_warnings",
 
       # Must be done this way for warning flags to be ordered correctly.
       ":gles2_conform_test_warnings",
@@ -422,22 +421,6 @@ if (internal_gles2_conform_tests) {
         "EGLAPIENTRY=",
       ]
       configs -= [ "//build/config/win:nominmax" ]
-      cflags = [
-        "/wd4013",  # undefined function, assuming extern returning int
-        "/wd4018",  # signed/unsigned mismatch
-        "/wd4054",  # type cast from function pointer to data pointer
-        "/wd4057",  # non-constant aggregate initializer
-        "/wd4101",  # unreferenced local variable
-        "/wd4189",  # local variable is initialized but not referenced
-        "/wd4204",  # non-constant aggregate initializer
-        "/wd4245",  # conversion between int/uint
-        "/wd4389",  # signed/unsigned comparison
-        "/wd4701",  # potentially uninitialized variable used
-        "/wd4703",  # potentially uninitialized pointer variable used
-        "/wd4706",  # assignment within conditional expression
-        "/wd4715",  # not all control paths return a value
-        "/wd4716",  # function must return a value
-      ]
     }
     if (is_mac) {
       defines += [

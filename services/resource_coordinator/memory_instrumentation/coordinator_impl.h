@@ -37,6 +37,10 @@ class CoordinatorImpl : public Registry,
                         public mojom::HeapProfilerHelper {
  public:
   CoordinatorImpl();
+
+  CoordinatorImpl(const CoordinatorImpl&) = delete;
+  CoordinatorImpl& operator=(const CoordinatorImpl&) = delete;
+
   ~CoordinatorImpl() override;
 
   // The getter of the unique instance.
@@ -83,7 +87,7 @@ class CoordinatorImpl : public Registry,
   using OSMemDumpMap = base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr>;
   using RequestGlobalMemoryDumpInternalCallback =
       base::OnceCallback<void(bool, uint64_t, mojom::GlobalMemoryDumpPtr)>;
-  friend class CoordinatorImplTest;             // For testing
+  friend class CoordinatorImplTest;  // For testing
   FRIEND_TEST_ALL_PREFIXES(CoordinatorImplTest,
                            DumpsAreAddedToTraceWhenRequested);
   FRIEND_TEST_ALL_PREFIXES(CoordinatorImplTest,
@@ -194,8 +198,6 @@ class CoordinatorImpl : public Registry,
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<CoordinatorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CoordinatorImpl);
 };
 
 }  // namespace memory_instrumentation

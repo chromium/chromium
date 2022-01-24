@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ash/file_system_provider/registry_interface.h"
 
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/watcher.h"
 
 namespace ash {
@@ -20,6 +19,10 @@ class ProvidedFileSystemInfo;
 class FakeRegistry : public RegistryInterface {
  public:
   FakeRegistry();
+
+  FakeRegistry(const FakeRegistry&) = delete;
+  FakeRegistry& operator=(const FakeRegistry&) = delete;
+
   ~FakeRegistry() override;
   void RememberFileSystem(const ProvidedFileSystemInfo& file_system_info,
                           const Watchers& watchers) override;
@@ -35,8 +38,6 @@ class FakeRegistry : public RegistryInterface {
  private:
   std::unique_ptr<ProvidedFileSystemInfo> file_system_info_;
   std::unique_ptr<Watchers> watchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeRegistry);
 };
 
 }  // namespace file_system_provider

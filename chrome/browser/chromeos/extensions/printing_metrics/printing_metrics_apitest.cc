@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/ash/printing/history/test_print_job_history_service_observer.h"
 #include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_api.h"
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service_factory.h"
-#include "chrome/browser/chromeos/printing/history/test_print_job_history_service_observer.h"
 #include "chrome/browser/chromeos/printing/test_cups_print_job_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/policy_test_utils.h"
@@ -43,6 +43,10 @@ std::unique_ptr<KeyedService> BuildTestCupsPrintJobManager(
 class PrintingMetricsApiTest : public ExtensionApiTest {
  public:
   PrintingMetricsApiTest() {}
+
+  PrintingMetricsApiTest(const PrintingMetricsApiTest&) = delete;
+  PrintingMetricsApiTest& operator=(const PrintingMetricsApiTest&) = delete;
+
   ~PrintingMetricsApiTest() override = default;
 
  protected:
@@ -71,8 +75,6 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
   }
 
   base::CallbackListSubscription create_services_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintingMetricsApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {
@@ -91,8 +93,8 @@ IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {
   ASSERT_TRUE(extension);
 
   base::RunLoop run_loop;
-  chromeos::TestPrintJobHistoryServiceObserver observer(
-      chromeos::PrintJobHistoryServiceFactory::GetForBrowserContext(
+  ash::TestPrintJobHistoryServiceObserver observer(
+      ash::PrintJobHistoryServiceFactory::GetForBrowserContext(
           browser()->profile()),
       run_loop.QuitClosure());
 
@@ -112,8 +114,8 @@ IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {
   Browser* const new_browser = CreateBrowser(profile());
   SetCustomArg(kTitle);
   extensions::ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(
-      new_browser, extension->GetResourceURL("get_print_jobs.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      new_browser, extension->GetResourceURL("get_print_jobs.html")));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 

@@ -270,25 +270,20 @@ TEST_F(AppWindowGeometryCacheTest, SaveGeometryAndStateToStore) {
   ASSERT_TRUE(dict);
 
   ASSERT_TRUE(dict->HasKey(window_id));
-  int v;
-  ASSERT_TRUE(dict->GetInteger(window_id + ".x", &v));
-  ASSERT_EQ(bounds.x(), v);
-  ASSERT_TRUE(dict->GetInteger(window_id + ".y", &v));
-  ASSERT_EQ(bounds.y(), v);
-  ASSERT_TRUE(dict->GetInteger(window_id + ".w", &v));
-  ASSERT_EQ(bounds.width(), v);
-  ASSERT_TRUE(dict->GetInteger(window_id + ".h", &v));
-  ASSERT_EQ(bounds.height(), v);
-  ASSERT_TRUE(dict->GetInteger(window_id + ".screen_bounds_x", &v));
-  ASSERT_EQ(screen_bounds.x(), v);
-  ASSERT_TRUE(dict->GetInteger(window_id + ".screen_bounds_y", &v));
-  ASSERT_EQ(screen_bounds.y(), v);
-  ASSERT_TRUE(dict->GetInteger(window_id + ".screen_bounds_w", &v));
-  ASSERT_EQ(screen_bounds.width(), v);
-  ASSERT_TRUE(dict->GetInteger(window_id + ".screen_bounds_h", &v));
-  ASSERT_EQ(screen_bounds.height(), v);
-  ASSERT_TRUE(dict->GetInteger(window_id + ".state", &v));
-  ASSERT_EQ(state, v);
+
+  ASSERT_EQ(bounds.x(), dict->FindIntPath(window_id + ".x"));
+  ASSERT_EQ(bounds.y(), dict->FindIntPath(window_id + ".y"));
+  ASSERT_EQ(bounds.width(), dict->FindIntPath(window_id + ".w"));
+  ASSERT_EQ(bounds.height(), dict->FindIntPath(window_id + ".h"));
+  ASSERT_EQ(screen_bounds.x(),
+            dict->FindIntPath(window_id + ".screen_bounds_x"));
+  ASSERT_EQ(screen_bounds.y(),
+            dict->FindIntPath(window_id + ".screen_bounds_y"));
+  ASSERT_EQ(screen_bounds.width(),
+            dict->FindIntPath(window_id + ".screen_bounds_w"));
+  ASSERT_EQ(screen_bounds.height(),
+            dict->FindIntPath(window_id + ".screen_bounds_h"));
+  ASSERT_EQ(state, dict->FindIntPath(window_id + ".state"));
 
   // reload extension
   LoadExtension(extension_id);

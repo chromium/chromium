@@ -8,9 +8,11 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/win_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -21,6 +23,8 @@ class GroupPolicyManagerTests : public ::testing::Test {
  protected:
   void SetUp() override;
   void TearDown() override;
+
+  registry_util::RegistryOverrideManager registry_override_;
 
  private:
   void DeletePolicyKey();
@@ -35,7 +39,9 @@ void GroupPolicyManagerTests::TearDown() {
 }
 
 void GroupPolicyManagerTests::DeletePolicyKey() {
-  base::win::RegKey key(HKEY_LOCAL_MACHINE);
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
+  base::win::RegKey key(HKEY_LOCAL_MACHINE, L"", Wow6432(DELETE));
   LONG result = key.DeleteKey(UPDATER_POLICIES_KEY);
   ASSERT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
 }
@@ -103,8 +109,10 @@ TEST_F(GroupPolicyManagerTests, NoPolicySet) {
 }
 
 TEST_F(GroupPolicyManagerTests, PolicyRead) {
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
   base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                        KEY_ALL_ACCESS);
+                        Wow6432(KEY_ALL_ACCESS));
 
   // Set global policies.
   EXPECT_EQ(ERROR_SUCCESS,
@@ -143,9 +151,9 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
 
   UpdatesSuppressedTimes suppressed_times = {};
   EXPECT_TRUE(policy_manager->GetUpdatesSuppressedTimes(&suppressed_times));
-  EXPECT_EQ(suppressed_times.start_hour, 2);
-  EXPECT_EQ(suppressed_times.start_minute, 30);
-  EXPECT_EQ(suppressed_times.duration_minute, 500);
+  EXPECT_EQ(suppressed_times.start_hour_, 2);
+  EXPECT_EQ(suppressed_times.start_minute_, 30);
+  EXPECT_EQ(suppressed_times.duration_minute_, 500);
 
   std::string download_preference;
   EXPECT_TRUE(
@@ -210,8 +218,10 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
 }
 
 TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
   base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                        KEY_ALL_ACCESS);
+                        Wow6432(KEY_ALL_ACCESS));
 
   // Set global policies.
   EXPECT_EQ(ERROR_SUCCESS,

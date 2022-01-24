@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
@@ -29,6 +30,10 @@ class MockBluetoothAdapter : public BluetoothAdapter {
   class Observer : public BluetoothAdapter::Observer {
    public:
     Observer(scoped_refptr<BluetoothAdapter> adapter);
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     ~Observer() override;
 
     MOCK_METHOD2(AdapterPresentChanged, void(BluetoothAdapter*, bool));
@@ -44,8 +49,6 @@ class MockBluetoothAdapter : public BluetoothAdapter {
 
    private:
     const scoped_refptr<BluetoothAdapter> adapter_;
-
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   MockBluetoothAdapter();
@@ -122,6 +125,8 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                void(const UUIDList& uuids,
                     base::OnceClosure callback,
                     ErrorCallback error_callback));
+  MOCK_METHOD0(GetLowEnergyScanSessionHardwareOffloadingStatus,
+               LowEnergyScanSessionHardwareOffloadingStatus());
   MOCK_METHOD2(
       StartLowEnergyScanSession,
       std::unique_ptr<BluetoothLowEnergyScanSession>(

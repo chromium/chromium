@@ -16,6 +16,9 @@ class DevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   static void Create(const std::u16string& message, Callback callback);
 
+  DevToolsInfoBarDelegate(const DevToolsInfoBarDelegate&) = delete;
+  DevToolsInfoBarDelegate& operator=(const DevToolsInfoBarDelegate&) = delete;
+
  private:
   DevToolsInfoBarDelegate(const std::u16string& message, Callback callback);
   ~DevToolsInfoBarDelegate() override;
@@ -28,8 +31,6 @@ class DevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   const std::u16string message_;
   Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_INFOBAR_DELEGATE_H_

@@ -294,6 +294,7 @@ ATTRIBUTE_STABLE = 'Stable'
 ATTRIBUTE_SYNC = 'Sync'
 ATTRIBUTE_UNLIMITED_SIZE = 'UnlimitedSize'
 ATTRIBUTE_UUID = 'Uuid'
+ATTRIBUTE_SERVICE_SANDBOX = 'ServiceSandbox'
 
 
 class NamedValue(object):
@@ -1205,6 +1206,12 @@ class Interface(ReferenceKind):
         return False
 
     return True
+
+  @property
+  def service_sandbox(self):
+    if not self.attributes:
+      return None
+    return self.attributes.get(ATTRIBUTE_SERVICE_SANDBOX, None)
 
   @property
   def stable(self):

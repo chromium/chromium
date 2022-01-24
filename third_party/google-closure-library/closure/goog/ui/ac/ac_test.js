@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.acTest');
 goog.setTestOnly();
@@ -44,6 +36,7 @@ let mockClock;
  * Fire listeners of a given type that are listening to the event's
  * currentTarget.
  * @param {BrowserEvent} event
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function simulateEvent(event) {
   events.fireListeners(event.currentTarget, event.type, true, event);
@@ -61,10 +54,12 @@ function simulateAllKeyEventsOnInput(keyCode) {
 /**
  * @param {string} text
  * @return {Node} Node whose inner text maches the given text.
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function findNodeByInnerText(text) {
   return dom.findNode(document.body, (node) => {
     try {
+      /** @suppress {checkTypes} suppression added to enable type checking */
       const display = userAgent.IE ? style.getCascadedStyle(node, 'display') :
                                      style.getComputedStyle(node, 'display');
 
@@ -87,6 +82,10 @@ testSuite({
   setUp() {
     mockClock = new MockClock(true);
     input = dom.getElement('input');
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     input.value = '';
     autocomplete = ac.createSimpleAutoComplete(data, input, true, false);
   },
@@ -100,6 +99,10 @@ testSuite({
   testBasicDisplay() {
     simulateAllKeyEventsOnInput(KeyCodes.DOWN);
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     input.value = 'a';
     simulateAllKeyEventsOnInput(KeyCodes.A);
     mockClock.tick(500);
@@ -116,6 +119,10 @@ testSuite({
     assert(style.isUnselectable(nodes[1]));
     assert(style.isUnselectable(nodes[2]));
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     input.value = 'aa';
     simulateAllKeyEventsOnInput(KeyCodes.A);
     mockClock.tick(500);
@@ -125,10 +132,18 @@ testSuite({
     assert(!!findNodeByInnerText(data[2]));
   },
 
-  /** Ensure that key navigation with multiple inputs work */
+  /**
+     Ensure that key navigation with multiple inputs work
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testKeyNavigation() {
     simulateAllKeyEventsOnInput(KeyCodes.DOWN);
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     input.value = 'c, a';
     selection.setCursorPosition(input, 'c, a'.length);
     simulateAllKeyEventsOnInput(KeyCodes.A);
@@ -155,10 +170,18 @@ testSuite({
     assertEquals('c, aab, ', input.value);
   },
 
-  /** Ensure that mouse navigation with multiple inputs works. */
+  /**
+     Ensure that mouse navigation with multiple inputs works.
+     @suppress {checkTypes,strictMissingProperties} suppression added to enable
+     type checking
+   */
   testMouseNavigation() {
     simulateAllKeyEventsOnInput(KeyCodes.DOWN);
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     input.value = 'c, a';
     selection.setCursorPosition(input, 'c, a'.length);
     simulateAllKeyEventsOnInput(KeyCodes.A);

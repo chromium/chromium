@@ -121,6 +121,7 @@ class CORE_EXPORT SelectorChecker {
     Element* vtt_originating_element = nullptr;
     bool in_nested_complex_selector = false;
     bool is_inside_visited_link = false;
+    const ContainerNode* relative_leftmost_element = nullptr;
   };
 
   struct MatchResult {

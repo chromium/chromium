@@ -42,6 +42,10 @@ class MultiDeviceSetupService {
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
       const device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
       bool is_secondary_user);
+
+  MultiDeviceSetupService(const MultiDeviceSetupService&) = delete;
+  MultiDeviceSetupService& operator=(const MultiDeviceSetupService&) = delete;
+
   ~MultiDeviceSetupService();
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -55,12 +59,17 @@ class MultiDeviceSetupService {
   std::unique_ptr<MultiDeviceSetupBase> multidevice_setup_;
   std::unique_ptr<PrivilegedHostDeviceSetterBase>
       privileged_host_device_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupService);
 };
 
 }  // namespace multidevice_setup
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace multidevice_setup {
+using ::chromeos::multidevice_setup::MultiDeviceSetupService;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_SERVICE_H_

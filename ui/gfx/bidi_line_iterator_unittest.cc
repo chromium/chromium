@@ -16,12 +16,13 @@ class BiDiLineIteratorTest
  public:
   BiDiLineIteratorTest() = default;
 
+  BiDiLineIteratorTest(const BiDiLineIteratorTest&) = delete;
+  BiDiLineIteratorTest& operator=(const BiDiLineIteratorTest&) = delete;
+
   BiDiLineIterator* iterator() { return &iterator_; }
 
  private:
   BiDiLineIterator iterator_;
-
-  DISALLOW_COPY_AND_ASSIGN(BiDiLineIteratorTest);
 };
 
 TEST_P(BiDiLineIteratorTest, OnlyLTR) {

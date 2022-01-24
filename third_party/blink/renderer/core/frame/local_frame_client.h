@@ -43,10 +43,12 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
@@ -130,11 +132,13 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       const ResourceResponse&) = 0;
 
   virtual void DispatchDidHandleOnloadEvents() = 0;
-  virtual void DidFinishSameDocumentNavigation(HistoryItem*,
-                                               WebHistoryCommitType,
-                                               bool is_synchronously_committed,
-                                               bool is_history_api_navigation,
-                                               bool is_client_redirect) {}
+  virtual void DidFinishSameDocumentNavigation(
+      HistoryItem*,
+      WebHistoryCommitType,
+      bool is_synchronously_committed,
+      mojom::blink::SameDocumentNavigationType,
+      bool is_client_redirect,
+      bool is_browser_initiated) {}
   virtual void DispatchDidOpenDocumentInputStream(const KURL&) {}
   virtual void DispatchDidReceiveTitle(const String&) = 0;
   virtual void DispatchDidCommitLoad(
@@ -145,7 +149,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       const blink::DocumentPolicyFeatureState& document_policy_header) = 0;
   virtual void DispatchDidFailLoad(const ResourceError&,
                                    WebHistoryCommitType) = 0;
-  virtual void DispatchDidFinishDocumentLoad() = 0;
+  virtual void DispatchDidDispatchDOMContentLoadedEvent() = 0;
   virtual void DispatchDidFinishLoad() = 0;
 
   virtual void BeginNavigation(
@@ -184,6 +188,12 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual void DidChangePerformanceTiming() {}
   // Will be called when an |InputEvent| is observed.
   virtual void DidObserveInputDelay(base::TimeDelta input_delay) {}
+
+  // Will be called when a user interaction is observed.
+  virtual void DidObserveUserInteraction(base::TimeDelta max_event_duration,
+                                         base::TimeDelta total_event_duration,
+                                         UserInteractionType interaction_type) {
+  }
 
   // Will be called when |CpuTiming| events are updated
   virtual void DidChangeCpuTiming(base::TimeDelta time) {}
@@ -240,6 +250,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
 
   virtual String UserAgent() = 0;
+  virtual String ReducedUserAgent() = 0;
   virtual absl::optional<blink::UserAgentMetadata> UserAgentMetadata() = 0;
 
   virtual String DoNotTrackValue() = 0;
@@ -267,7 +278,9 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   // Creates a remote fenced frame hosted by an MPArch frame tree for the
   // |HTMLFencedFrameElement|.
-  virtual RemoteFrame* CreateFencedFrame(HTMLFencedFrameElement*) = 0;
+  virtual RemoteFrame* CreateFencedFrame(
+      HTMLFencedFrameElement*,
+      mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>) = 0;
 
   // Whether or not plugin creation should fail if the HTMLPlugInElement isn't
   // in the DOM after plugin initialization.
@@ -404,12 +417,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual std::unique_ptr<WebContentSettingsClient>
   CreateWorkerContentSettingsClient() {
-    return nullptr;
-  }
-
-  virtual std::unique_ptr<media::SpeechRecognitionClient>
-  CreateSpeechRecognitionClient(
-      media::SpeechRecognitionClient::OnReadyCallback callback) {
     return nullptr;
   }
 

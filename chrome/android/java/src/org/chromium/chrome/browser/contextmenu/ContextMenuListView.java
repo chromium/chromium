@@ -38,7 +38,7 @@ public class ContextMenuListView extends ListView {
         final int lateralMargin =
                 getResources().getDimensionPixelSize(R.dimen.context_menu_lateral_margin);
 
-        // This ListView should be inside a FrameLayout with the popup_bg_tinted background. Since
+        // This ListView should be inside a FrameLayout with the menu_bg_tinted background. Since
         // the background is a 9-patch, it gets some extra padding automatically, and we should
         // take it into account when calculating the width here.
         final View frame = ((View) getParent());

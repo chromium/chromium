@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "ui/base/x/selection_owner.h"
 #include "ui/base/x/selection_utils.h"
+#include "ui/base/x/x11_clipboard_helper.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
@@ -40,8 +41,11 @@ std::vector<uint8_t> CombineData(
 
 }  // namespace
 
-SelectionRequestor::SelectionRequestor(x11::Window x_window)
-    : x_window_(x_window), x_property_(x11::GetAtom(kChromeSelection)) {}
+SelectionRequestor::SelectionRequestor(x11::Window x_window,
+                                       XClipboardHelper* helper)
+    : x_window_(x_window),
+      helper_(helper),
+      x_property_(x11::GetAtom(kChromeSelection)) {}
 
 SelectionRequestor::~SelectionRequestor() = default;
 
@@ -51,8 +55,7 @@ bool SelectionRequestor::PerformBlockingConvertSelection(
     std::vector<uint8_t>* out_data,
     x11::Atom* out_type) {
   base::TimeTicks timeout =
-      base::TimeTicks::Now() +
-      base::TimeDelta::FromMilliseconds(kRequestTimeoutMs);
+      base::TimeTicks::Now() + base::Milliseconds(kRequestTimeoutMs);
   Request request(selection, target, timeout);
   requests_.push_back(&request);
   if (current_request_index_ == (requests_.size() - 1))
@@ -130,8 +133,8 @@ void SelectionRequestor::OnSelectionNotify(
     request->data_sent_incrementally = true;
     request->out_data.clear();
     request->out_type = x11::Atom::None;
-    request->timeout = base::TimeTicks::Now() +
-                       base::TimeDelta::FromMilliseconds(kRequestTimeoutMs);
+    request->timeout =
+        base::TimeTicks::Now() + base::Milliseconds(kRequestTimeoutMs);
   } else {
     CompleteRequest(current_request_index_, success);
   }
@@ -169,8 +172,8 @@ void SelectionRequestor::OnPropertyEvent(
   // Delete the property to tell the selection owner to send the next chunk.
   x11::DeleteProperty(x_window_, x_property_);
 
-  request->timeout = base::TimeTicks::Now() +
-                     base::TimeDelta::FromMilliseconds(kRequestTimeoutMs);
+  request->timeout =
+      base::TimeTicks::Now() + base::Milliseconds(kRequestTimeoutMs);
 
   if (!out_data->size())
     CompleteRequest(current_request_index_, true);
@@ -205,7 +208,7 @@ void SelectionRequestor::ConvertSelectionForCurrentRequest() {
   Request* request = GetCurrentRequest();
   if (request) {
     x11::Connection::Get()->ConvertSelection({
-        .requestor = static_cast<x11::Window>(x_window_),
+        .requestor = x_window_,
         .selection = request->selection,
         .target = request->target,
         .property = x_property_,
@@ -224,17 +227,8 @@ void SelectionRequestor::BlockTillSelectionNotifyForRequest(Request* request) {
     size_t events_size = events.size();
     for (; i < events_size; ++i) {
       auto& event = events[i];
-      if (auto* notify = event.As<x11::SelectionNotifyEvent>()) {
-        if (notify->requestor == x_window_) {
-          OnSelectionNotify(*notify);
-          event = x11::Event();
-        }
-      } else if (auto* prop = event.As<x11::PropertyNotifyEvent>()) {
-        if (CanDispatchPropertyEvent(*prop)) {
-          OnPropertyEvent(*prop);
-          event = x11::Event();
-        }
-      }
+      if (helper_->DispatchEvent(event))
+        event = x11::Event();
     }
     DCHECK_EQ(events_size, events.size());
   }

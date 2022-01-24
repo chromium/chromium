@@ -3,42 +3,44 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assertEquals} from '../../../chai_assert.js';
-// #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+
+import {assertEquals} from '../../../chai_assert.js';
+
 // clang-format on
 
 function testShowAndHideEvents() {
   // Keep original Date.now not to affect other code.
-  var originalDateNow = Date.now;
+  const originalDateNow = Date.now;
 
   // Initial value is 1 since 0 becomes false.
-  var currentTime = 1;
+  let currentTime = 1;
 
   // Overrides Date.now to simulate time.
   Date.now = function() {
     return currentTime;
   };
 
-  var cmh = cr.ui.contextMenuHandler;
+  const cmh = contextMenuHandler;
 
   // Create context menu.
-  var menu = document.createElement('div');
-  cr.ui.decorate(menu, cr.ui.Menu);
+  const menu = document.createElement('div');
+  decorate(menu, Menu);
   document.body.appendChild(menu);
 
-  var menuItem = document.createElement('div');
+  const menuItem = document.createElement('div');
   menu.addMenuItem(menuItem);
 
   // Create target elements.
-  var elem1 = document.createElement('div');
-  var elem2 = document.createElement('div');
+  const elem1 = document.createElement('div');
+  const elem2 = document.createElement('div');
 
   cmh.setContextMenu(elem1, menu);
   cmh.setContextMenu(elem2, menu);
 
-  var events = [];
+  const events = [];
   cmh.addEventListener('show', function(e) {
     events.push(e);
   });

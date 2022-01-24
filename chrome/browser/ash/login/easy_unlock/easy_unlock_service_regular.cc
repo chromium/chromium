@@ -240,7 +240,7 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
       base::Base64UrlEncode(
           multidevice::ToCryptAuthSeed(beacon_seed).SerializeAsString(),
           base::Base64UrlEncodePolicy::INCLUDE_PADDING, &b64_beacon_seed);
-      beacon_seed_list->AppendString(b64_beacon_seed);
+      beacon_seed_list->Append(b64_beacon_seed);
     }
 
     std::string serialized_beacon_seeds;
@@ -263,10 +263,10 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
     device_list->Append(std::move(dict));
   }
 
-  if (device_list->GetSize() != 2u) {
+  if (device_list->GetList().size() != 2u) {
     PA_LOG(ERROR) << "There should only be 2 devices persisted, the host and "
                      "the client, but there are: "
-                  << device_list->GetSize();
+                  << device_list->GetList().size();
     NOTREACHED();
   }
 
@@ -357,6 +357,7 @@ void EasyUnlockServiceRegular::InitializeInternal() {
 
   OnFeatureStatesChanged(multidevice_setup_client_->GetFeatureStates());
   multidevice_setup_client_->AddObserver(this);
+  StartFeatureUsageMetrics();
 
   proximity_auth::ScreenlockBridge::Get()->AddObserver(this);
 
@@ -374,6 +375,8 @@ void EasyUnlockServiceRegular::ShutdownInternal() {
   device_sync_client_->RemoveObserver(this);
 
   multidevice_setup_client_->RemoveObserver(this);
+
+  StopFeatureUsageMetrics();
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -399,6 +402,10 @@ bool EasyUnlockServiceRegular::IsAllowedInternal() const {
   }
 
   return true;
+}
+
+bool EasyUnlockServiceRegular::IsEligible() const {
+  return pref_manager_ && pref_manager_->IsSmartLockEligible();
 }
 
 bool EasyUnlockServiceRegular::IsEnabled() const {

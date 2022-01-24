@@ -1,5 +1,7 @@
 # How to access and navigate test logs
 
+**Important**: When making changes to this document, also update duplicate files under the [internal docs](http://goto.google.com/perf-bot-health-sheriffs).
+
 When trying to understand a failure, it can be useful to inspect the test logs where the failure occurred.
 
 [TOC]

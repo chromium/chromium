@@ -121,7 +121,7 @@ class MajorityAgeUserMetricsProviderGuestModeTest
   }
 
  private:
-  chromeos::GuestSessionMixin guest_session_mixin_{&mixin_host_};
+  ash::GuestSessionMixin guest_session_mixin_{&mixin_host_};
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

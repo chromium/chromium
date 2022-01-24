@@ -11,10 +11,10 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
+namespace ash {
 
-namespace chromeos {
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
 
 // Mixin that serves fake eula for OOBE.
 class FakeEulaMixin : public InProcessBrowserTestMixin {
@@ -45,6 +45,6 @@ class FakeEulaMixin : public InProcessBrowserTestMixin {
   bool force_http_unavailable_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_FAKE_EULA_MIXIN_H_

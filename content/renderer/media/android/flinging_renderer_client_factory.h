@@ -29,6 +29,11 @@ class CONTENT_EXPORT FlingingRendererClientFactory
       std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory,
       std::unique_ptr<media::RemotePlaybackClientWrapper>
           remote_playback_client);
+
+  FlingingRendererClientFactory(const FlingingRendererClientFactory&) = delete;
+  FlingingRendererClientFactory& operator=(
+      const FlingingRendererClientFactory&) = delete;
+
   ~FlingingRendererClientFactory() override;
 
   // Sets a callback that renderers created by |this| will use to propagate
@@ -56,8 +61,6 @@ class CONTENT_EXPORT FlingingRendererClientFactory
   std::unique_ptr<media::RemotePlaybackClientWrapper> remote_playback_client_;
 
   media::RemotePlayStateChangeCB remote_play_state_change_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlingingRendererClientFactory);
 };
 
 }  // namespace content

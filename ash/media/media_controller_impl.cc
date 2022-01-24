@@ -25,7 +25,7 @@ namespace ash {
 namespace {
 
 constexpr base::TimeDelta kDefaultSeekTime =
-    base::TimeDelta::FromSeconds(media_session::mojom::kDefaultSeekTimeSeconds);
+    base::Seconds(media_session::mojom::kDefaultSeekTimeSeconds);
 
 bool IsMediaSessionActionEligibleForKeyControl(
     media_session::mojom::MediaSessionAction action) {

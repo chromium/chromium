@@ -29,6 +29,10 @@ namespace tray {
 class NetworkSectionHeaderView : public views::View {
  public:
   explicit NetworkSectionHeaderView(int title_id);
+
+  NetworkSectionHeaderView(const NetworkSectionHeaderView&) = delete;
+  NetworkSectionHeaderView& operator=(const NetworkSectionHeaderView&) = delete;
+
   ~NetworkSectionHeaderView() override = default;
 
   // Modify visibility of section toggle
@@ -80,8 +84,6 @@ class NetworkSectionHeaderView : public views::View {
 
   // ToggleButton to toggle section on or off.
   views::ToggleButton* toggle_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkSectionHeaderView);
 };
 
 // "Mobile Data" header row. Mobile Data reflects both Cellular state and
@@ -91,6 +93,10 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
                                 public TrayNetworkStateObserver {
  public:
   MobileSectionHeaderView();
+
+  MobileSectionHeaderView(const MobileSectionHeaderView&) = delete;
+  MobileSectionHeaderView& operator=(const MobileSectionHeaderView&) = delete;
+
   ~MobileSectionHeaderView() override;
 
   // Updates mobile toggle state and returns the id of the status message
@@ -125,8 +131,7 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
   base::OneShotTimer enable_bluetooth_timer_;
 
   // Button that navigates to the Settings mobile data subpage with the eSIM
-  // setup dialog open. This is null when the updatedCellularActivationUi flag
-  // is off or the device is not eSIM-capable.
+  // setup dialog open. This is null when the device is not eSIM-capable.
   TopShortcutButton* add_esim_button_ = nullptr;
 
   // Indicates whether add_esim_button_ should be enabled when the device is
@@ -134,13 +139,15 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
   bool can_add_esim_button_be_enabled_ = false;
 
   base::WeakPtrFactory<MobileSectionHeaderView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MobileSectionHeaderView);
 };
 
 class WifiSectionHeaderView : public NetworkSectionHeaderView {
  public:
   WifiSectionHeaderView();
+
+  WifiSectionHeaderView(const WifiSectionHeaderView&) = delete;
+  WifiSectionHeaderView& operator=(const WifiSectionHeaderView&) = delete;
+
   ~WifiSectionHeaderView() override = default;
 
   // NetworkSectionHeaderView:
@@ -158,8 +165,6 @@ class WifiSectionHeaderView : public NetworkSectionHeaderView {
 
   // A button to invoke "Join Wi-Fi network" dialog.
   views::Button* join_button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WifiSectionHeaderView);
 };
 
 }  // namespace tray

@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "services/device/generic_sensor/platform_sensor_fusion_algorithm.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/platform_sensor_util.h"
@@ -116,11 +117,10 @@ PlatformSensorFusion::PlatformSensorFusion(
 
   fusion_algorithm_->set_fusion_sensor(this);
 
-  if (std::any_of(source_sensors_.begin(), source_sensors_.end(),
-                  [](const SourcesMapEntry& pair) {
-                    return pair.second->GetReportingMode() ==
-                           mojom::ReportingMode::ON_CHANGE;
-                  })) {
+  if (base::ranges::any_of(source_sensors_, [](const auto& pair) {
+        return pair.second->GetReportingMode() ==
+               mojom::ReportingMode::ON_CHANGE;
+      })) {
     reporting_mode_ = mojom::ReportingMode::ON_CHANGE;
   }
 }

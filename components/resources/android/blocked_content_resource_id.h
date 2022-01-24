@@ -25,3 +25,5 @@
 // InfoBar resources.
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_BLOCKED_POPUPS,
                     R.drawable.infobar_blocked_popups)
+
+DECLARE_RESOURCE_ID(IDR_ANDROID_SETTINGS, R.drawable.ic_settings_black)

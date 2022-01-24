@@ -10,7 +10,6 @@
 #include <map>
 #include <set>
 
-#include "base/macros.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 
@@ -19,6 +18,11 @@ namespace content {
 class WebTestPushMessagingService : public PushMessagingService {
  public:
   WebTestPushMessagingService();
+
+  WebTestPushMessagingService(const WebTestPushMessagingService&) = delete;
+  WebTestPushMessagingService& operator=(const WebTestPushMessagingService&) =
+      delete;
+
   ~WebTestPushMessagingService() override;
 
   // PushMessagingService implementation:
@@ -53,8 +57,6 @@ class WebTestPushMessagingService : public PushMessagingService {
   GURL CreateEndpoint(const std::string& subscription_id) const;
 
   int64_t subscribed_service_worker_registration_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestPushMessagingService);
 };
 
 }  // namespace content

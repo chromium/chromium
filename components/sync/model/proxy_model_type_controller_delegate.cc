@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "components/sync/base/bind_to_task_runner.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
 
@@ -73,7 +74,7 @@ ProxyModelTypeControllerDelegate::ProxyModelTypeControllerDelegate(
   DCHECK(task_runner_);
 }
 
-ProxyModelTypeControllerDelegate::~ProxyModelTypeControllerDelegate() {}
+ProxyModelTypeControllerDelegate::~ProxyModelTypeControllerDelegate() = default;
 
 void ProxyModelTypeControllerDelegate::OnSyncStarting(
     const DataTypeActivationRequest& request,

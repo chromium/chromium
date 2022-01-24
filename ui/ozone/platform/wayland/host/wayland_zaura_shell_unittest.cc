@@ -5,29 +5,24 @@
 #include <aura-shell-server-protocol.h>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
-#include "ui/ozone/platform/wayland/test/global_object.h"
+#include "ui/ozone/platform/wayland/test/mock_zaura_shell.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 
 namespace ui {
 
-namespace {
-
-constexpr uint32_t kZAuraShellVersion = 14;
-
-}  // namespace
-
-TEST(WaylandZauraShellTest, Foo) {
+TEST(WaylandZAuraShellTest, BugFix) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
   wl::TestWaylandServerThread server;
   ASSERT_TRUE(server.Start({.shell_version = wl::ShellVersion::kStable}));
-  wl::GlobalObject zaura_shell_obj(
-      &zaura_shell_interface, nullptr /* implementation */, kZAuraShellVersion);
+  wl::MockZAuraShell zaura_shell_obj;
   zaura_shell_obj.Initialize(server.display());
 
   WaylandConnection connection;

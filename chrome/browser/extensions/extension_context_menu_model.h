@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -104,6 +103,11 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
                             ButtonVisibility visibility,
                             PopupDelegate* delegate,
                             bool can_show_icon_in_toolbar);
+
+  ExtensionContextMenuModel(const ExtensionContextMenuModel&) = delete;
+  ExtensionContextMenuModel& operator=(const ExtensionContextMenuModel&) =
+      delete;
+
   ~ExtensionContextMenuModel() override;
 
   // SimpleMenuModel::Delegate:
@@ -178,8 +182,6 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // The action taken by the menu. Has a valid value when the menu is being
   // shown.
   absl::optional<ContextMenuAction> action_taken_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuModel);
 };
 
 }  // namespace extensions

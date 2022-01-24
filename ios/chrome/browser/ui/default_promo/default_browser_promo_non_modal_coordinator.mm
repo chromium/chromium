@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_coordinator.h"
 
+#include "base/notreached.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
@@ -15,8 +16,7 @@
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #include "ios/chrome/grit/ios_google_chrome_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/images/branded_image_provider.h"
+#import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -65,9 +65,8 @@
     [self.bannerViewController
         setButtonText:l10n_util::GetNSString(
                           IDS_IOS_DEFAULT_NON_MODAL_PRIMARY_BUTTON_TEXT)];
-    UIImage* image = ios::GetChromeBrowserProvider()
-                         .GetBrandedImageProvider()
-                         ->GetNonModalPromoImage();
+    UIImage* image = ios::provider::GetBrandedImage(
+        ios::provider::BrandedImage::kNonModalDefaultBrowserPromo);
     [self.bannerViewController setIconImage:image];
     [self.bannerViewController setUseIconBackgroundTint:NO];
     [self.bannerViewController setPresentsModal:NO];

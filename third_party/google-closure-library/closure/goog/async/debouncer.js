@@ -1,16 +1,8 @@
-// Copyright 2015 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Definition of the goog.async.Debouncer class.
@@ -43,6 +35,7 @@ goog.require('goog.Timer');
  * @template T
  */
 goog.async.Debouncer = function(listener, interval, opt_handler) {
+  'use strict';
   goog.async.Debouncer.base(this, 'constructor');
 
   /**
@@ -109,6 +102,7 @@ goog.inherits(goog.async.Debouncer, goog.Disposable);
  * @param {...?} var_args Arguments to pass on to the debounced function.
  */
 goog.async.Debouncer.prototype.fire = function(var_args) {
+  'use strict';
   this.args_ = arguments;
   // When this method is called, we need to prevent fire() calls from within the
   // previous interval from calling the callback. The simplest way of doing this
@@ -129,10 +123,8 @@ goog.async.Debouncer.prototype.fire = function(var_args) {
  * calling {@link #fire}.
  */
 goog.async.Debouncer.prototype.stop = function() {
-  if (this.timer_) {
-    goog.Timer.clear(this.timer_);
-    this.timer_ = null;
-  }
+  'use strict';
+  this.clearTimer_();
   this.refireAt_ = null;
   this.shouldFire_ = false;
   this.args_ = [];
@@ -144,6 +136,7 @@ goog.async.Debouncer.prototype.stop = function() {
  * until the debouncer is resumed. Pauses can be nested.
  */
 goog.async.Debouncer.prototype.pause = function() {
+  'use strict';
   ++this.pauseCount_;
 };
 
@@ -155,6 +148,7 @@ goog.async.Debouncer.prototype.pause = function() {
  * will be executed as normal.
  */
 goog.async.Debouncer.prototype.resume = function() {
+  'use strict';
   if (!this.pauseCount_) {
     return;
   }
@@ -168,6 +162,7 @@ goog.async.Debouncer.prototype.resume = function() {
 
 /** @override */
 goog.async.Debouncer.prototype.disposeInternal = function() {
+  'use strict';
   this.stop();
   goog.async.Debouncer.base(this, 'disposeInternal');
 };
@@ -178,6 +173,8 @@ goog.async.Debouncer.prototype.disposeInternal = function() {
  * @private
  */
 goog.async.Debouncer.prototype.onTimer_ = function() {
+  'use strict';
+  this.clearTimer_();
   // There is a newer call to fire() within the debounce interval.
   // Reschedule the callback and return.
   if (this.refireAt_) {
@@ -186,7 +183,6 @@ goog.async.Debouncer.prototype.onTimer_ = function() {
     this.refireAt_ = null;
     return;
   }
-  this.timer_ = null;
 
   if (!this.pauseCount_) {
     this.doAction_();
@@ -197,10 +193,24 @@ goog.async.Debouncer.prototype.onTimer_ = function() {
 
 
 /**
+ * Cleans the initialized timer.
+ * @private
+ */
+goog.async.Debouncer.prototype.clearTimer_ = function() {
+  'use strict';
+  if (this.timer_) {
+    goog.Timer.clear(this.timer_);
+    this.timer_ = null;
+  }
+};
+
+
+/**
  * Calls the callback.
  * @private
  */
 goog.async.Debouncer.prototype.doAction_ = function() {
+  'use strict';
   this.shouldFire_ = false;
   this.listener_.apply(null, this.args_);
 };

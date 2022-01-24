@@ -85,6 +85,14 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
       const GURL& url,
       RTLookupResponse::ThreatInfo* out_threat_info);
 
+  // Creates a page load token that is tied with the hostname of the |url|.
+  // The token is stored in memory.
+  ChromeUserPopulation::PageLoadToken CreatePageLoadToken(const GURL& url);
+
+  // Gets the page load token for the hostname of the |url|. Returns an empty
+  // token if the token is not found.
+  ChromeUserPopulation::PageLoadToken GetPageLoadToken(const GURL& url);
+
   // Overridden from history::HistoryServiceObserver.
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
@@ -97,6 +105,8 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   static bool has_artificial_unsafe_url();
 
   void StopCleanUpTimerForTesting();
+  void SetPageLoadTokenForTesting(const GURL& url,
+                                  ChromeUserPopulation::PageLoadToken token);
 
  private:
   friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
@@ -119,6 +129,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void CleanUpExpiredVerdicts();
   void CleanUpExpiredPhishGuardVerdicts();
   void CleanUpExpiredRealTimeUrlCheckVerdicts();
+  void CleanUpExpiredPageLoadTokens();
 
   // Helper method to remove content settings when URLs are deleted. If
   // |all_history| is true, removes all cached verdicts. Otherwise it removes
@@ -156,6 +167,10 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
   // Number of verdict stored for this profile for real time url check pings.
   absl::optional<size_t> stored_verdict_count_real_time_url_check_;
+
+  // A map of page load tokens, keyed by the hostname.
+  base::flat_map<std::string, ChromeUserPopulation::PageLoadToken>
+      page_load_token_map_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

@@ -27,6 +27,10 @@ class BrowserSideSender
     : mojom::blink::ServiceWorkerInstalledScriptsManagerHost {
  public:
   BrowserSideSender() = default;
+
+  BrowserSideSender(const BrowserSideSender&) = delete;
+  BrowserSideSender& operator=(const BrowserSideSender&) = delete;
+
   ~BrowserSideSender() override = default;
 
   mojom::blink::ServiceWorkerInstalledScriptsInfoPtr CreateAndBind(
@@ -94,7 +98,7 @@ class BrowserSideSender
                     const mojo::DataPipeProducerHandle& handle) {
     // Send |data| with null terminator.
     ASSERT_TRUE(handle.is_valid());
-    uint32_t written_bytes = data.size() + 1;
+    uint32_t written_bytes = static_cast<uint32_t>(data.size() + 1);
     MojoResult rv = handle.WriteData(data.c_str(), &written_bytes,
                                      MOJO_WRITE_DATA_FLAG_NONE);
     ASSERT_EQ(MOJO_RESULT_OK, rv);
@@ -110,8 +114,6 @@ class BrowserSideSender
 
   mojo::ScopedDataPipeProducerHandle body_handle_;
   mojo::ScopedDataPipeProducerHandle meta_data_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSideSender);
 };
 
 CrossThreadHTTPHeaderMapData ToCrossThreadHTTPHeaderMapData(
@@ -136,6 +138,11 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
         worker_waiter_(std::make_unique<base::WaitableEvent>(
             base::WaitableEvent::ResetPolicy::AUTOMATIC,
             base::WaitableEvent::InitialState::NOT_SIGNALED)) {}
+
+  ServiceWorkerInstalledScriptsManagerTest(
+      const ServiceWorkerInstalledScriptsManagerTest&) = delete;
+  ServiceWorkerInstalledScriptsManagerTest& operator=(
+      const ServiceWorkerInstalledScriptsManagerTest&) = delete;
 
  protected:
   using RawScriptData = ThreadSafeScriptContainer::RawScriptData;
@@ -200,8 +207,6 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
 
   std::unique_ptr<ServiceWorkerInstalledScriptsManager>
       installed_scripts_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerInstalledScriptsManagerTest);
 };
 
 TEST_F(ServiceWorkerInstalledScriptsManagerTest, GetRawScriptData) {

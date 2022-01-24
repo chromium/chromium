@@ -52,6 +52,10 @@ class TestEventHandler : public ui::EventHandler {
         scroll_y_offset_(0.0),
         scroll_x_offset_ordinal_(0.0),
         scroll_y_offset_ordinal_(0.0) {}
+
+  TestEventHandler(const TestEventHandler&) = delete;
+  TestEventHandler& operator=(const TestEventHandler&) = delete;
+
   ~TestEventHandler() override = default;
 
   void OnMouseEvent(ui::MouseEvent* event) override {
@@ -114,13 +118,16 @@ class TestEventHandler : public ui::EventHandler {
   float scroll_y_offset_;
   float scroll_x_offset_ordinal_;
   float scroll_y_offset_ordinal_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventHandler);
 };
 
 class RootWindowTransformersTest : public AshTestBase {
  public:
   RootWindowTransformersTest() = default;
+
+  RootWindowTransformersTest(const RootWindowTransformersTest&) = delete;
+  RootWindowTransformersTest& operator=(const RootWindowTransformersTest&) =
+      delete;
+
   ~RootWindowTransformersTest() override = default;
 
   float GetStoredZoomScale(int64_t id) {
@@ -140,13 +147,17 @@ class RootWindowTransformersTest : public AshTestBase {
         CreateRootWindowTransformerForMirroredDisplay(source_display_info,
                                                       mirror_display_info));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowTransformersTest);
 };
 
 class UnfiedRootWindowTransformersTest : public RootWindowTransformersTest {
  public:
   UnfiedRootWindowTransformersTest() = default;
+
+  UnfiedRootWindowTransformersTest(const UnfiedRootWindowTransformersTest&) =
+      delete;
+  UnfiedRootWindowTransformersTest& operator=(
+      const UnfiedRootWindowTransformersTest&) = delete;
+
   ~UnfiedRootWindowTransformersTest() override = default;
 
   // RootWindowTransformersTest:
@@ -158,8 +169,6 @@ class UnfiedRootWindowTransformersTest : public RootWindowTransformersTest {
 
     RootWindowTransformersTest::SetUp();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(UnfiedRootWindowTransformersTest);
 };
 
 }  // namespace
@@ -314,7 +323,7 @@ TEST_F(RootWindowTransformersTest, TouchScaleAndMagnify) {
   TestEventHandler event_handler;
   Shell::Get()->AddPreTargetHandler(&event_handler);
 
-  UpdateDisplay("200x200*2");
+  UpdateDisplay("300x200*2");
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   aura::Window* root_window = root_windows[0];
@@ -332,9 +341,8 @@ TEST_F(RootWindowTransformersTest, TouchScaleAndMagnify) {
   EXPECT_FLOAT_EQ(0.2f, event_handler.touch_radius_x());
   EXPECT_FLOAT_EQ(0.2f, event_handler.touch_radius_y());
 
-  generator.ScrollSequence(gfx::Point(0, 0),
-                           base::TimeDelta::FromMilliseconds(100), 10.0, 1.0, 5,
-                           1);
+  generator.ScrollSequence(gfx::Point(0, 0), base::Milliseconds(100), 10.0, 1.0,
+                           5, 1);
 
   // ordinal_offset is invariant to the device scale factor.
   EXPECT_FLOAT_EQ(event_handler.scroll_x_offset(),
@@ -434,22 +442,24 @@ TEST_F(RootWindowTransformersTest, ConvertHostToRootCoords) {
 
 TEST_F(RootWindowTransformersTest, LetterBoxPillarBox) {
   MirrorWindowTestApi test_api;
-  UpdateDisplay("400x200,500x500");
+  // Letter boxed
+  UpdateDisplay("400x200,500x400");
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
   std::unique_ptr<RootWindowTransformer> transformer(
       CreateCurrentRootWindowTransformerForMirroring());
-  // Y margin must be margin is (500 - 500/400 * 200) / 2 = 125.
-  EXPECT_EQ("0,125,0,125", transformer->GetHostInsets().ToString());
+  // Y margin must be margin is (400 - 500/400 * 200) / 2 = 75
+  EXPECT_EQ("0,75,0,75", transformer->GetHostInsets().ToString());
 
-  UpdateDisplay("200x400,500x500");
-  // The aspect ratio is flipped, so X margin is now 125.
+  // Pillar boxed
+  UpdateDisplay("200x400,500x400");
+  // X margin must be margin is (500 - 200) / 2 = 150
   transformer = CreateCurrentRootWindowTransformerForMirroring();
-  EXPECT_EQ("125,0,125,0", transformer->GetHostInsets().ToString());
+  EXPECT_EQ("150,0,150,0", transformer->GetHostInsets().ToString());
 }
 
 TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
   MirrorWindowTestApi test_api;
-  UpdateDisplay("400x200,500x500");
+  UpdateDisplay("400x200,500x400");
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
 
   for (auto rotation :
@@ -464,17 +474,15 @@ TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
 
     const bool need_transpose = rotation == display::Display::ROTATE_90 ||
                                 rotation == display::Display::ROTATE_270;
-
-    // Y margin is (500 - 500/400 * 200) / 2 = 125 for no rotation. Transposed
+    // Y margin is (400 - 500/400 * 200) / 2 = 75 for no rotation. Transposed
     // on 90/270 degree.
-    gfx::Insets expected_insets(0, 125);
-    if (need_transpose)
-      expected_insets = gfx::Insets(125, 0);
+    gfx::Insets expected_insets =
+        need_transpose ? gfx::Insets(75, 0) : gfx::Insets(0, 75);
     EXPECT_EQ(expected_insets, transformer->GetHostInsets());
 
     // Expected rect in mirror of the source root, with y margin applied for no
     // rotation. Transposed on 90/270 degree.
-    gfx::RectF expected_rect(0, 125, 500, 250);
+    gfx::RectF expected_rect(0, 75, 500, 250);
     if (need_transpose)
       expected_rect.Transpose();
 
@@ -508,7 +516,7 @@ TEST_F(RootWindowTransformersTest,
   ui::Layer* layer = root_window->layer();
   {
     ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(100));
+    settings.SetTransitionDuration(base::Milliseconds(100));
     gfx::Transform transform;
     transform.Translate(100, 200);
     layer->SetTransform(transform);
@@ -535,7 +543,7 @@ TEST_F(RootWindowTransformersTest,
   ui::Layer* layer = root_window->layer();
   {
     ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(100));
+    settings.SetTransitionDuration(base::Milliseconds(100));
     gfx::Transform transform;
     transform.Translate(100, 200);
     layer->SetTransform(transform);
@@ -561,7 +569,7 @@ TEST_F(RootWindowTransformersTest, ShouldSetWindowSizeDuringOpacityAnimation) {
   {
     ui::Layer* layer = root_window->layer();
     ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(100));
+    settings.SetTransitionDuration(base::Milliseconds(100));
     layer->SetOpacity(0.1f);
   }
 

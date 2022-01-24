@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TRANSLATE_CONTENT_RENDERER_PER_FRAME_TRANSLATE_AGENT_H_
 #define COMPONENTS_TRANSLATE_CONTENT_RENDERER_PER_FRAME_TRANSLATE_AGENT_H_
 
+#include "base/gtest_prod_util.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -28,6 +29,10 @@ class PerFrameTranslateAgent : public content::RenderFrameObserver,
   PerFrameTranslateAgent(content::RenderFrame* render_frame,
                          int world_id,
                          blink::AssociatedInterfaceRegistry* registry);
+
+  PerFrameTranslateAgent(const PerFrameTranslateAgent&) = delete;
+  PerFrameTranslateAgent& operator=(const PerFrameTranslateAgent&) = delete;
+
   ~PerFrameTranslateAgent() override;
 
   // mojom::TranslateAgent implementation.
@@ -149,8 +154,6 @@ class PerFrameTranslateAgent : public content::RenderFrameObserver,
 
   // Method factory used to make calls to TranslateFrameImpl.
   base::WeakPtrFactory<PerFrameTranslateAgent> weak_method_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PerFrameTranslateAgent);
 };
 
 }  // namespace translate

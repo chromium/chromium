@@ -3,35 +3,14 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
   deps = [ ":cr_searchable_drop_down" ]
 }
 
 js_library("cr_searchable_drop_down") {
-  deps = [
-    "//third_party/polymer/v1_0/components-chromium/iron-dropdown:iron-dropdown-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
-    "//third_party/polymer/v1_0/components-chromium/paper-spinner:paper-spinner-lite-extracted",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-  ]
-}
-
-polymer_modulizer("cr_searchable_drop_down") {
-  js_file = "cr_searchable_drop_down.js"
-  html_file = "cr_searchable_drop_down.html"
-  html_type = "dom-module"
-}
-
-js_type_check("closure_compile_module") {
-  is_polymer3 = true
-  deps = [ ":cr_searchable_drop_down.m" ]
-}
-
-js_library("cr_searchable_drop_down.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/iron-dropdown",
     "//third_party/polymer/v3_0/components-chromium/iron-icon",
@@ -39,5 +18,8 @@ js_library("cr_searchable_drop_down.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
   ]
-  extra_deps = [ ":cr_searchable_drop_down_module" ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "cr_searchable_drop_down.js" ]
 }

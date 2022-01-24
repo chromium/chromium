@@ -58,8 +58,7 @@ struct MockExtensionRegistryObserver : public ExtensionRegistryObserver {
       // TODO(jcivelli): make LoadErrorReporter::Observer report installation
       // failures for packaged extensions so we don't have to poll.
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(100));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       quit_closure = run_loop.QuitClosure();
       run_loop.Run();
       const std::vector<std::u16string>* errors = error_reporter->GetErrors();

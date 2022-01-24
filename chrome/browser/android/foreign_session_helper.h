@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 
 using base::android::ScopedJavaLocalRef;
@@ -17,6 +16,10 @@ using base::android::ScopedJavaLocalRef;
 class ForeignSessionHelper {
  public:
   explicit ForeignSessionHelper(Profile* profile);
+
+  ForeignSessionHelper(const ForeignSessionHelper&) = delete;
+  ForeignSessionHelper& operator=(const ForeignSessionHelper&) = delete;
+
   ~ForeignSessionHelper();
 
   void Destroy(JNIEnv* env);
@@ -48,8 +51,6 @@ class ForeignSessionHelper {
   Profile* profile_;  // weak
   base::android::ScopedJavaGlobalRef<jobject> callback_;
   base::CallbackListSubscription foreign_session_updated_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForeignSessionHelper);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_FOREIGN_SESSION_HELPER_H_

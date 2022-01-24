@@ -13,11 +13,11 @@
 #include "base/memory/ref_counted.h"
 #include "components/payments/content/web_app_manifest.h"
 #include "components/webdata/common/web_data_service_base.h"
+#include "components/webdata/common/web_data_service_consumer.h"
 #include "components/webdata/common/web_database.h"
 
 class WDTypedResult;
 class WebDatabaseService;
-class WebDataServiceConsumer;
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -29,11 +29,16 @@ struct SecurePaymentConfirmationInstrument;
 
 // Web data service to read/write data in WebAppManifestSectionTable and
 // PaymentMethodManifestTable.
-class PaymentManifestWebDataService : public WebDataServiceBase {
+class PaymentManifestWebDataService : public WebDataServiceBase,
+                                      public WebDataServiceConsumer {
  public:
   PaymentManifestWebDataService(
       scoped_refptr<WebDatabaseService> wdbs,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+  PaymentManifestWebDataService(const PaymentManifestWebDataService&) = delete;
+  PaymentManifestWebDataService& operator=(
+      const PaymentManifestWebDataService&) = delete;
 
   // Adds the web app `manifest`.
   void AddPaymentWebAppManifest(std::vector<WebAppManifestSection> manifest);
@@ -69,8 +74,27 @@ class PaymentManifestWebDataService : public WebDataServiceBase {
       std::vector<std::vector<uint8_t>> credential_ids,
       WebDataServiceConsumer* consumer);
 
- private:
+  // Clears all of the the secure payment confirmation instrument information
+  // created in the given time range `begin` and `end`, and invokes `callback`
+  // when the clearing is completed.
+  virtual void ClearSecurePaymentConfirmationInstruments(
+      base::Time begin,
+      base::Time end,
+      base::OnceClosure callback);
+
+  // Override WebDataServiceConsumer interface.
+  void OnWebDataServiceRequestDone(
+      WebDataServiceBase::Handle h,
+      std::unique_ptr<WDTypedResult> result) override;
+
+ protected:
   ~PaymentManifestWebDataService() override;
+
+ private:
+  std::unique_ptr<WDTypedResult> ClearSecurePaymentConfirmationInstrumentsImpl(
+      base::Time begin,
+      base::Time end,
+      WebDatabase* db);
 
   void RemoveExpiredData(WebDatabase* db);
 
@@ -95,7 +119,8 @@ class PaymentManifestWebDataService : public WebDataServiceBase {
       std::vector<std::vector<uint8_t>> credential_ids,
       WebDatabase* db);
 
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestWebDataService);
+  std::map<WebDataServiceBase::Handle, base::OnceClosure>
+      clearing_instruments_requests_;
 };
 
 }  // namespace payments

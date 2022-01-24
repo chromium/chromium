@@ -162,12 +162,10 @@ UIColor* SelectionCircleColor() {
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 13, *)) {
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      _selectionCircleLayer.fillColor = SelectionCircleColor().CGColor;
-    }
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    _selectionCircleLayer.fillColor = SelectionCircleColor().CGColor;
   }
 }
 
@@ -455,13 +453,9 @@ UIColor* SelectionCircleColor() {
   CAShapeLayer* selectionCircleLayer = [[CAShapeLayer alloc] init];
   selectionCircleLayer.bounds = bounds;
   selectionCircleLayer.backgroundColor = UIColor.clearColor.CGColor;
-  if (@available(iOS 13, *)) {
-    UIColor* resolvedColor = [SelectionCircleColor()
-        resolvedColorWithTraitCollection:self.traitCollection];
-    selectionCircleLayer.fillColor = resolvedColor.CGColor;
-  } else {
-    selectionCircleLayer.fillColor = SelectionCircleColor().CGColor;
-  }
+  UIColor* resolvedColor = [SelectionCircleColor()
+      resolvedColorWithTraitCollection:self.traitCollection];
+  selectionCircleLayer.fillColor = resolvedColor.CGColor;
   selectionCircleLayer.opacity = 0;
   selectionCircleLayer.transform =
       CATransform3DMakeScale(kSelectionDownScale, kSelectionDownScale, 1);

@@ -138,7 +138,7 @@ TestV4GetHashProtocolManagerFactory::CreateProtocolManager(
 
 FullHashInfo GetFullHashInfo(const GURL& url, const ListIdentifier& list_id) {
   return FullHashInfo(V4ProtocolManagerUtil::GetFullHash(url), list_id,
-                      base::Time::Now() + base::TimeDelta::FromMinutes(5));
+                      base::Time::Now() + base::Minutes(5));
 }
 
 FullHashInfo GetFullHashInfoWithMetadata(

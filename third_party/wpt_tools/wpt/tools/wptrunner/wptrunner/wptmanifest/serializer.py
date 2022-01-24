@@ -33,6 +33,7 @@ class ManifestSerializer(NodeVisitor):
         rv = "\n".join(self.visit(root))
         if not rv:
             return rv
+        rv = rv.strip()
         if rv[-1] != "\n":
             rv = rv + "\n"
         return rv

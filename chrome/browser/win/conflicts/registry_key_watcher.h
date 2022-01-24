@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/win/registry.h"
 
 // This class monitors a registry key to detect if it gets deleted. Delete the
@@ -23,6 +22,9 @@ class RegistryKeyWatcher {
       const std::wstring& subkey,
       REGSAM wow64access,
       base::OnceClosure on_registry_key_deleted);
+
+  RegistryKeyWatcher(const RegistryKeyWatcher&) = delete;
+  RegistryKeyWatcher& operator=(const RegistryKeyWatcher&) = delete;
 
   ~RegistryKeyWatcher();
 
@@ -46,8 +48,6 @@ class RegistryKeyWatcher {
 
   // Invoked when the registry key is deleted.
   base::OnceClosure on_registry_key_deleted_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryKeyWatcher);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_REGISTRY_KEY_WATCHER_H_

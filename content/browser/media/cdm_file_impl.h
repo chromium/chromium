@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
@@ -40,6 +39,10 @@ class CdmFileImpl final : public media::mojom::CdmFile {
               const std::string& file_system_id,
               const std::string& file_system_root_uri,
               scoped_refptr<storage::FileSystemContext> file_system_context);
+
+  CdmFileImpl(const CdmFileImpl&) = delete;
+  CdmFileImpl& operator=(const CdmFileImpl&) = delete;
+
   ~CdmFileImpl() final;
 
   // Called to grab a lock on the file. Returns false if the file is in use by
@@ -119,8 +122,6 @@ class CdmFileImpl final : public media::mojom::CdmFile {
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<CdmFileImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CdmFileImpl);
 };
 
 }  // namespace content

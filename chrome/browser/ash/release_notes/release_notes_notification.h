@@ -26,6 +26,10 @@ class ReleaseNotesNotificationTest;
 class ReleaseNotesNotification {
  public:
   explicit ReleaseNotesNotification(Profile* profile);
+
+  ReleaseNotesNotification(const ReleaseNotesNotification&) = delete;
+  ReleaseNotesNotification& operator=(const ReleaseNotesNotification&) = delete;
+
   ~ReleaseNotesNotification();
 
   // Checks profile preferences and release notes storage to determine whether
@@ -48,8 +52,6 @@ class ReleaseNotesNotification {
       release_notes_available_notification_;
 
   base::WeakPtrFactory<ReleaseNotesNotification> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReleaseNotesNotification);
 };
 
 }  // namespace ash

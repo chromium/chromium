@@ -18,7 +18,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
-using base::TimeDelta;
 using ui::TimeFormat;
 
 namespace ui {
@@ -56,26 +55,26 @@ std::u16string TimeFormat::DetailedWithMonthAndYear(
     int cutoff,
     const base::TimeDelta& delta,
     bool with_month_and_year) {
-  DCHECK_GE(delta, TimeDelta());
+  DCHECK_GE(delta, base::TimeDelta());
 
   // Negative cutoff: always use two-value format.
   if (cutoff < 0)
     cutoff = std::numeric_limits<int>::max();
 
-  constexpr TimeDelta kMinute = TimeDelta::FromMinutes(1);
-  constexpr TimeDelta kHour = TimeDelta::FromHours(1);
-  constexpr TimeDelta kDay = TimeDelta::FromDays(1);
+  constexpr base::TimeDelta kMinute = base::Minutes(1);
+  constexpr base::TimeDelta kHour = base::Hours(1);
+  constexpr base::TimeDelta kDay = base::Days(1);
 
   // Simplify one year to be 365 days.
-  constexpr TimeDelta kYear = 365 * kDay;
+  constexpr base::TimeDelta kYear = 365 * kDay;
 
   // An average month is a twelfth of a year.
-  constexpr TimeDelta kMonth = kYear / 12;
+  constexpr base::TimeDelta kMonth = kYear / 12;
 
-  constexpr TimeDelta kHalfSecond = TimeDelta::FromSeconds(1) / 2;
-  constexpr TimeDelta kHalfMinute = kMinute / 2;
-  constexpr TimeDelta kHalfHour = kHour / 2;
-  constexpr TimeDelta kHalfDay = kDay / 2;
+  constexpr base::TimeDelta kHalfSecond = base::Seconds(1) / 2;
+  constexpr base::TimeDelta kHalfMinute = kMinute / 2;
+  constexpr base::TimeDelta kHalfHour = kHour / 2;
+  constexpr base::TimeDelta kHalfDay = kDay / 2;
 
   // Rationale: Start by determining major (first) unit, then add minor (second)
   // unit if mandated by |cutoff|.
@@ -156,7 +155,7 @@ std::u16string TimeFormat::RelativeDate(
   const base::Time midnight_today = optional_midnight_today
                                         ? *optional_midnight_today
                                         : base::Time::Now().LocalMidnight();
-  constexpr TimeDelta kDay = TimeDelta::FromDays(1);
+  constexpr base::TimeDelta kDay = base::Days(1);
   const base::Time tomorrow = midnight_today + kDay;
   const base::Time yesterday = midnight_today - kDay;
   if (time >= tomorrow)

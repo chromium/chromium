@@ -301,9 +301,7 @@ void WaylandPositioner::SetGravity(uint32_t gravity) {
 }
 
 WaylandPositioner::Result WaylandPositioner::CalculateBounds(
-    const gfx::Rect& work_area,
-    bool flip_x,
-    bool flip_y) const {
+    const gfx::Rect& work_area) const {
   auto anchor_x = anchor_x_;
   auto anchor_y = anchor_y_;
   auto gravity_x = gravity_x_;
@@ -320,20 +318,6 @@ WaylandPositioner::Result WaylandPositioner::CalculateBounds(
 
   int32_t offset_x = offset_.x();
   int32_t offset_y = offset_.y();
-
-  // Chrome windows have the behaviour that if a menu needs to be flipped,
-  // its children will be flipped by default. That is not part of the normal
-  // wayland spec but we are doing it here for consistency.
-  if (flip_x) {
-    offset_x = -offset_x;
-    anchor_x = Flip(anchor_x);
-    gravity_x = Flip(gravity_x);
-  }
-  if (flip_y) {
-    offset_y = -offset_y;
-    anchor_y = Flip(anchor_y);
-    gravity_y = Flip(gravity_y);
-  }
 
   // Exo overrides the ability to slide in cases when the orthogonal
   // anchor+gravity would mean the slide can occlude |anchor_rect_|, unless it
@@ -363,8 +347,7 @@ WaylandPositioner::Result WaylandPositioner::CalculateBounds(
   gfx::Point origin(x.first.start, y.first.start);
   gfx::Size size(std::max(1, x.first.end - x.first.start),
                  std::max(1, y.first.end - y.first.start));
-  return {origin, size, x.second.flip ? !flip_x : flip_x,
-          y.second.flip ? !flip_y : flip_y};
+  return {origin, size};
 }
 
 }  // namespace wayland

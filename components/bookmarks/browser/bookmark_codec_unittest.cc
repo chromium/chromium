@@ -610,6 +610,7 @@ TEST_F(BookmarkCodecTest, ReassignInvalidGUID) {
   ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
+  EXPECT_TRUE(decoder.guids_reassigned());
   EXPECT_TRUE(
       decoded_model->bookmark_bar_node()->children()[0]->guid().is_valid());
 }
@@ -644,8 +645,38 @@ TEST_F(BookmarkCodecTest, ReassignDuplicateGUID) {
   ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
+  EXPECT_TRUE(decoder.guids_reassigned());
   EXPECT_NE(decoded_model->bookmark_bar_node()->children()[0]->guid(),
             decoded_model->bookmark_bar_node()->children()[1]->guid());
+}
+
+TEST_F(BookmarkCodecTest, ReassignBannedGUID) {
+  const base::GUID kBannedGuid =
+      base::GUID::ParseLowercase(BookmarkNode::kBannedGuidDueToPastSyncBug);
+  ASSERT_TRUE(kBannedGuid.is_valid());
+
+  std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
+
+  BookmarkCodec encoder;
+  base::Value value(encoder.Encode(model_to_encode.get(), std::string()));
+
+  // Change GUID of child to be invalid.
+  base::Value* child_value = nullptr;
+  GetBookmarksBarChildValue(&value, 0, &child_value);
+  child_value->SetStringKey(BookmarkCodec::kGuidKey,
+                            kBannedGuid.AsLowercaseString());
+
+  std::unique_ptr<BookmarkModel> decoded_model(
+      TestBookmarkClient::CreateModel());
+  BookmarkCodec decoder;
+  ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
+                     /*sync_metadata_str=*/nullptr));
+
+  EXPECT_TRUE(decoder.guids_reassigned());
+  EXPECT_TRUE(
+      decoded_model->bookmark_bar_node()->children()[0]->guid().is_valid());
+  EXPECT_NE(decoded_model->bookmark_bar_node()->children()[0]->guid(),
+            kBannedGuid);
 }
 
 TEST_F(BookmarkCodecTest, ReassignPermanentNodeDuplicateGUID) {
@@ -671,6 +702,7 @@ TEST_F(BookmarkCodecTest, ReassignPermanentNodeDuplicateGUID) {
   ASSERT_TRUE(Decode(&decoder, value, decoded_model.get(),
                      /*sync_metadata_str=*/nullptr));
 
+  EXPECT_TRUE(decoder.guids_reassigned());
   EXPECT_NE(base::GUID::ParseLowercase(BookmarkNode::kRootNodeGuid),
             decoded_model->bookmark_bar_node()->children()[0]->guid());
 }

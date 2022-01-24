@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -36,6 +35,9 @@ class MetricCollector {
   // It may be invoked on a difference sequence than the member functions.
   MetricCollector(const std::string& name,
                   const CollectionParams& collection_params);
+
+  MetricCollector(const MetricCollector&) = delete;
+  MetricCollector& operator=(const MetricCollector&) = delete;
 
   virtual ~MetricCollector();
 
@@ -186,8 +188,6 @@ class MetricCollector {
 
   // A callback to be Run on each successfully collected profile.
   ProfileDoneCallback profile_done_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricCollector);
 };
 
 }  // namespace internal

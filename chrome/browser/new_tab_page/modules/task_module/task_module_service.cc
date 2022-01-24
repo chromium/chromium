@@ -143,8 +143,7 @@ const char* GetModuleName(task_module::mojom::TaskModuleType task_module_type) {
 
 std::string GetViewedItemText(int viewed_timestamp) {
   // GWS timestamps are relative to the Unix Epoch.
-  auto viewed_time =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(viewed_timestamp);
+  auto viewed_time = base::Time::UnixEpoch() + base::Seconds(viewed_timestamp);
   auto viewed_delta = base::Time::Now() - viewed_time;
   // Viewing items in the future is not supported. Assume the item was viewed
   // today to account for small shifts between the local and server clock.

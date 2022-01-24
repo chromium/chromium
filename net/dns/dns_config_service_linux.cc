@@ -24,7 +24,6 @@
 #include "base/files/file_path_watcher.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -32,6 +31,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/nsswitch_reader.h"
+#include "net/dns/public/resolv_reader.h"
 #include "net/dns/serial_worker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -58,44 +58,25 @@ constexpr base::FilePath::CharType kFilePathNsswitch[] = _PATH_NSSWITCH_CONF;
 
 absl::optional<DnsConfig> ConvertResStateToDnsConfig(
     const struct __res_state& res) {
+  absl::optional<std::vector<net::IPEndPoint>> nameservers =
+      GetNameservers(res);
   DnsConfig dns_config;
   dns_config.unhandled_options = false;
 
-  if (!(res.options & RES_INIT))
+  if (!nameservers.has_value())
     return absl::nullopt;
 
-  static_assert(std::extent<decltype(res.nsaddr_list)>() >= MAXNS &&
-                    std::extent<decltype(res._u._ext.nsaddrs)>() >= MAXNS,
-                "incompatible libresolv res_state");
-  DCHECK_LE(res.nscount, MAXNS);
-  // Initially, glibc stores IPv6 in |_ext.nsaddrs| and IPv4 in |nsaddr_list|.
-  // In res_send.c:res_nsend, it merges |nsaddr_list| into |nsaddrs|,
-  // but we have to combine the two arrays ourselves.
-  for (int i = 0; i < res.nscount; ++i) {
-    IPEndPoint ipe;
-    const struct sockaddr* addr = nullptr;
-    size_t addr_len = 0;
-    if (res.nsaddr_list[i].sin_family) {  // The indicator used by res_nsend.
-      addr = reinterpret_cast<const struct sockaddr*>(&res.nsaddr_list[i]);
-      addr_len = sizeof res.nsaddr_list[i];
-    } else if (res._u._ext.nsaddrs[i]) {
-      addr = reinterpret_cast<const struct sockaddr*>(res._u._ext.nsaddrs[i]);
-      addr_len = sizeof *res._u._ext.nsaddrs[i];
-    } else {
-      return absl::nullopt;
-    }
-    if (!ipe.FromSockAddr(addr, addr_len))
-      return absl::nullopt;
-    dns_config.nameservers.push_back(ipe);
-  }
+  // Expected to be validated by GetNameservers()
+  DCHECK(res.options & RES_INIT);
 
+  dns_config.nameservers = std::move(nameservers.value());
   dns_config.search.clear();
   for (int i = 0; (i < MAXDNSRCH) && res.dnsrch[i]; ++i) {
     dns_config.search.emplace_back(res.dnsrch[i]);
   }
 
   dns_config.ndots = res.ndots;
-  dns_config.fallback_period = base::TimeDelta::FromSeconds(res.retrans);
+  dns_config.fallback_period = base::Seconds(res.retrans);
   dns_config.attempts = res.retry;
 #if defined(RES_ROTATE)
   dns_config.rotate = res.options & RES_ROTATE;
@@ -415,94 +396,97 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
                         std::unique_ptr<ResolvReader> resolv_reader,
                         std::unique_ptr<NsswitchReader> nsswitch_reader)
       : service_(&service),
-        resolv_reader_(std::move(resolv_reader)),
-        nsswitch_reader_(std::move(nsswitch_reader)) {
+        work_item_(std::make_unique<WorkItem>(std::move(resolv_reader),
+                                              std::move(nsswitch_reader))) {
     // Allow execution on another thread; nothing thread-specific about
     // constructor.
     DETACH_FROM_SEQUENCE(sequence_checker_);
-
-    DCHECK(resolv_reader_);
-    DCHECK(nsswitch_reader_);
   }
+
+  ~ConfigReader() override = default;
 
   ConfigReader(const ConfigReader&) = delete;
   ConfigReader& operator=(const ConfigReader&) = delete;
 
-  void DoWork() override {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-
-    std::unique_ptr<struct __res_state> res = resolv_reader_->GetResState();
-    if (res) {
-      dns_config_ = ConvertResStateToDnsConfig(*res.get());
-      resolv_reader_->CloseResState(res.get());
-    }
-
-    UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Read",
-                          dns_config_.has_value());
-    if (!dns_config_.has_value())
-      return;
-    UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Valid",
-                          dns_config_->IsValid());
-    UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Compatible",
-                          !dns_config_->unhandled_options);
-
-    // Override `fallback_period` value to match default setting on Windows.
-    dns_config_->fallback_period = kDnsDefaultFallbackPeriod;
-
-    if (dns_config_ && !dns_config_->unhandled_options) {
-      std::vector<NsswitchReader::ServiceSpecification> nsswitch_hosts =
-          nsswitch_reader_->ReadAndParseHosts();
-      UMA_HISTOGRAM_COUNTS_100("Net.DNS.DnsConfig.Nsswitch.NumServices",
-                               nsswitch_hosts.size());
-      dns_config_->unhandled_options =
-          !IsNsswitchConfigCompatible(nsswitch_hosts);
-      UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Nsswitch.Compatible",
-                            !dns_config_->unhandled_options);
-    }
+  std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override {
+    // Reuse same `WorkItem` to allow reuse of contained reader objects.
+    DCHECK(work_item_);
+    return std::move(work_item_);
   }
 
-  bool OnWorkFinished() override {
+  void OnWorkFinished(std::unique_ptr<SerialWorker::WorkItem>
+                          serial_worker_work_item) override {
+    DCHECK(serial_worker_work_item);
+    DCHECK(!work_item_);
     DCHECK(!IsCancelled());
-    if (dns_config_.has_value()) {
-      service_->OnConfigRead(std::move(dns_config_).value());
-      return true;
+
+    work_item_.reset(static_cast<WorkItem*>(serial_worker_work_item.release()));
+    if (work_item_->dns_config_.has_value()) {
+      service_->OnConfigRead(std::move(work_item_->dns_config_).value());
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
-      return false;
     }
   }
 
  private:
-  ~ConfigReader() override = default;
+  class WorkItem : public SerialWorker::WorkItem {
+   public:
+    WorkItem(std::unique_ptr<ResolvReader> resolv_reader,
+             std::unique_ptr<NsswitchReader> nsswitch_reader)
+        : resolv_reader_(std::move(resolv_reader)),
+          nsswitch_reader_(std::move(nsswitch_reader)) {
+      DCHECK(resolv_reader_);
+      DCHECK(nsswitch_reader_);
+    }
 
-  // Raw pointer to owning DnsConfigService. This must never be accessed inside
-  // DoWork(), since service may be destroyed while SerialWorker is running
-  // on worker thread.
+    void DoWork() override {
+      base::ScopedBlockingCall scoped_blocking_call(
+          FROM_HERE, base::BlockingType::MAY_BLOCK);
+
+      std::unique_ptr<struct __res_state> res = resolv_reader_->GetResState();
+      if (res) {
+        dns_config_ = ConvertResStateToDnsConfig(*res.get());
+        resolv_reader_->CloseResState(res.get());
+      }
+
+      UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Read",
+                            dns_config_.has_value());
+      if (!dns_config_.has_value())
+        return;
+      UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Valid",
+                            dns_config_->IsValid());
+      UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Compatible",
+                            !dns_config_->unhandled_options);
+
+      // Override `fallback_period` value to match default setting on
+      // Windows.
+      dns_config_->fallback_period = kDnsDefaultFallbackPeriod;
+
+      if (dns_config_ && !dns_config_->unhandled_options) {
+        std::vector<NsswitchReader::ServiceSpecification> nsswitch_hosts =
+            nsswitch_reader_->ReadAndParseHosts();
+        UMA_HISTOGRAM_COUNTS_100("Net.DNS.DnsConfig.Nsswitch.NumServices",
+                                 nsswitch_hosts.size());
+        dns_config_->unhandled_options =
+            !IsNsswitchConfigCompatible(nsswitch_hosts);
+        UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Nsswitch.Compatible",
+                              !dns_config_->unhandled_options);
+      }
+    }
+
+   private:
+    friend class ConfigReader;
+    absl::optional<DnsConfig> dns_config_;
+    std::unique_ptr<ResolvReader> resolv_reader_;
+    std::unique_ptr<NsswitchReader> nsswitch_reader_;
+  };
+
+  // Raw pointer to owning DnsConfigService.
   DnsConfigServiceLinux* const service_;
-  // Written/accessed in DoWork, read in OnWorkFinished, no locking necessary.
-  absl::optional<DnsConfig> dns_config_;
-  std::unique_ptr<ResolvReader> resolv_reader_;
-  std::unique_ptr<NsswitchReader> nsswitch_reader_;
+
+  // Null while the `WorkItem` is running on the `ThreadPool`.
+  std::unique_ptr<WorkItem> work_item_;
 };
-
-std::unique_ptr<struct __res_state>
-DnsConfigServiceLinux::ResolvReader::GetResState() {
-  auto res = std::make_unique<struct __res_state>();
-  memset(res.get(), 0, sizeof(struct __res_state));
-
-  if (res_ninit(res.get()) != 0) {
-    CloseResState(res.get());
-    return nullptr;
-  }
-
-  return res;
-}
-
-void DnsConfigServiceLinux::ResolvReader::CloseResState(
-    struct __res_state* res) {
-  res_nclose(res);
-}
 
 DnsConfigServiceLinux::DnsConfigServiceLinux()
     : DnsConfigService(kFilePathHosts) {
@@ -532,7 +516,7 @@ void DnsConfigServiceLinux::CreateReader() {
   DCHECK(!config_reader_);
   DCHECK(resolv_reader_);
   DCHECK(nsswitch_reader_);
-  config_reader_ = base::MakeRefCounted<ConfigReader>(
+  config_reader_ = std::make_unique<ConfigReader>(
       *this, std::move(resolv_reader_), std::move(nsswitch_reader_));
 }
 

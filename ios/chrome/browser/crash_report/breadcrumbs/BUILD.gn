@@ -48,7 +48,6 @@ source_set("application_breadcrumbs_logger") {
     ":breadcrumbs",
     "//base",
     "//components/breadcrumbs/core",
-    "//components/breadcrumbs/core:generate_not_user_triggered_actions",
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/crash_report/breadcrumbs",
   ]

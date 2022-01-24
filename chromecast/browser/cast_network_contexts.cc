@@ -17,7 +17,7 @@
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_http_user_agent_settings.h"
-#include "chromecast/common/cast_content_client.h"
+#include "chromecast/common/user_agent.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/browser_context.h"
@@ -29,6 +29,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
@@ -61,6 +62,10 @@ class CastNetworkContexts::URLLoaderFactoryForSystem
       : network_context_(network_context) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
+
+  URLLoaderFactoryForSystem(const URLLoaderFactoryForSystem&) = delete;
+  URLLoaderFactoryForSystem& operator=(const URLLoaderFactoryForSystem&) =
+      delete;
 
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
@@ -101,8 +106,6 @@ class CastNetworkContexts::URLLoaderFactoryForSystem
 
   SEQUENCE_CHECKER(sequence_checker_);
   CastNetworkContexts* network_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryForSystem);
 };
 
 CastNetworkContexts::CastNetworkContexts(
@@ -224,8 +227,11 @@ void CastNetworkContexts::ConfigureDefaultNetworkContextParams(
 
   auto* browser_context = CastBrowserProcess::GetInstance()->browser_context();
   DCHECK(browser_context);
-  network_context_params->cookie_path =
-      browser_context->GetPath().Append(kCookieStoreFile);
+  network_context_params->file_paths =
+      network::mojom::NetworkContextFilePaths::New();
+  network_context_params->file_paths->data_path = browser_context->GetPath();
+  network_context_params->file_paths->cookie_database_name =
+      base::FilePath(kCookieStoreFile);
   network_context_params->restore_old_session_cookies = false;
   network_context_params->persist_session_cookies = true;
   network_context_params->cookie_manager_params = CreateCookieManagerParams();
@@ -251,8 +257,6 @@ CastNetworkContexts::CreateSystemNetworkContextParams() {
   network::mojom::NetworkContextParamsPtr network_context_params =
       network::mojom::NetworkContextParams::New();
   ConfigureDefaultNetworkContextParams(network_context_params.get());
-
-  network_context_params->context_name = std::string("system");
 
   network_context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());

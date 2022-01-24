@@ -20,6 +20,11 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
  public:
   TracingObserverTracedValue(base::trace_event::TraceLog*,
                              base::trace_event::MemoryDumpManager*);
+
+  TracingObserverTracedValue(const TracingObserverTracedValue&) = delete;
+  TracingObserverTracedValue& operator=(const TracingObserverTracedValue&) =
+      delete;
+
   ~TracingObserverTracedValue() override;
 
   bool AddChromeDumpToTraceIfEnabled(
@@ -42,8 +47,6 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   static void AddToTrace(const base::trace_event::MemoryDumpRequestArgs&,
                          const base::ProcessId,
                          std::unique_ptr<base::trace_event::TracedValue>);
-
-  DISALLOW_COPY_AND_ASSIGN(TracingObserverTracedValue);
 };
 
 }  // namespace memory_instrumentation

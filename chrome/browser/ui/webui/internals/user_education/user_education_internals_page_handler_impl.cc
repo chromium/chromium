@@ -4,36 +4,37 @@
 
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals_page_handler_impl.h"
 
-#include "chrome/browser/ui/user_education/feature_tutorial_service.h"
-#include "chrome/browser/ui/user_education/feature_tutorial_service_factory.h"
-#include "chrome/browser/ui/user_education/feature_tutorials.h"
-#include "chrome/grit/dev_ui_browser_resources.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/user_education/tutorial/browser_tutorial_service_factory.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial_service_manager.h"
 #include "ui/base/webui/resource_path.h"
 
 UserEducationInternalsPageHandlerImpl::UserEducationInternalsPageHandlerImpl(
     Profile* profile)
-    : tutorial_service_(FeatureTutorialServiceFactory::GetForProfile(profile)) {
-}
+    : tutorial_service_(
+          TutorialServiceManager::GetInstance()->GetTutorialServiceForProfile(
+              profile)),
+      profile_(profile) {}
 
 UserEducationInternalsPageHandlerImpl::
     ~UserEducationInternalsPageHandlerImpl() = default;
 
 void UserEducationInternalsPageHandlerImpl::GetTutorials(
     GetTutorialsCallback callback) {
-  std::vector<base::StringPiece> id_pieces = GetAllFeatureTutorialStringIds();
+  std::vector<std::string> ids = tutorial_service_->GetTutorialIdentifiers();
 
-  std::vector<std::string> ids;
-  for (base::StringPiece piece : id_pieces)
-    ids.emplace_back(piece.data(), piece.size());
-
-  std::move(callback).Run(std::move(ids));
+  std::vector<std::string> tutorial_string_ids;
+  for (const auto& id : ids) {
+    tutorial_string_ids.emplace_back(std::string(id));
+  }
+  std::move(callback).Run(std::move(tutorial_string_ids));
 }
 
 void UserEducationInternalsPageHandlerImpl::StartTutorial(
     const std::string& tutorial_id) {
-  absl::optional<FeatureTutorial> tutorial =
-      GetFeatureTutorialFromStringId(tutorial_id);
-  if (!tutorial)
-    return;
-  tutorial_service_->StartTutorial(*tutorial);
+  ui::ElementContext context =
+      BrowserTutorialServiceFactory::GetDefaultElementContextForProfile(
+          profile_);
+
+  tutorial_service_->StartTutorial(tutorial_id, context);
 }

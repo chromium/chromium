@@ -44,9 +44,9 @@ class TestModule : public base::ModuleCache::Module {
 };
 
 constexpr CallStackProfileParams kProfileParams = {
-    CallStackProfileParams::BROWSER_PROCESS,
-    CallStackProfileParams::MAIN_THREAD,
-    CallStackProfileParams::PROCESS_STARTUP};
+    CallStackProfileParams::Process::kBrowser,
+    CallStackProfileParams::Thread::kMain,
+    CallStackProfileParams::Trigger::kProcessStartup};
 
 class TestingCallStackProfileBuilder : public CallStackProfileBuilder {
  public:
@@ -133,8 +133,8 @@ TEST(CallStackProfileBuilderTest, ProfilingCompleted) {
   profile_builder->RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   profile_builder->OnSampleCompleted(frames2, base::TimeTicks());
-  profile_builder->OnProfileCompleted(base::TimeDelta::FromMilliseconds(500),
-                                      base::TimeDelta::FromMilliseconds(100));
+  profile_builder->OnProfileCompleted(base::Milliseconds(500),
+                                      base::Milliseconds(100));
 
   const SampledProfile& proto = profile_builder->test_sampled_profile();
 
@@ -444,8 +444,8 @@ TEST(CallStackProfileBuilderTest, WorkIds) {
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   profile_builder->OnSampleCompleted({frame}, base::TimeTicks());
 
-  profile_builder->OnProfileCompleted(base::TimeDelta::FromMilliseconds(500),
-                                      base::TimeDelta::FromMilliseconds(100));
+  profile_builder->OnProfileCompleted(base::Milliseconds(500),
+                                      base::Milliseconds(100));
 
   const SampledProfile& proto = profile_builder->test_sampled_profile();
 
@@ -469,10 +469,9 @@ TEST(CallStackProfileBuilderTest, ProfileStartTime) {
   const base::TimeTicks first_sample_time = base::TimeTicks::UnixEpoch();
 
   profile_builder->OnSampleCompleted({frame}, first_sample_time);
-  profile_builder->OnSampleCompleted(
-      {frame}, first_sample_time + base::TimeDelta::FromSeconds(1));
-  profile_builder->OnProfileCompleted(base::TimeDelta::FromSeconds(1),
-                                      base::TimeDelta::FromSeconds(1));
+  profile_builder->OnSampleCompleted({frame},
+                                     first_sample_time + base::Seconds(1));
+  profile_builder->OnProfileCompleted(base::Seconds(1), base::Seconds(1));
 
   EXPECT_EQ(first_sample_time, profile_builder->test_profile_start_time());
 }
@@ -493,8 +492,8 @@ TEST(CallStackProfileBuilderTest, RecordMetadata) {
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   profile_builder->OnSampleCompleted({frame}, base::TimeTicks());
 
-  profile_builder->OnProfileCompleted(base::TimeDelta::FromMilliseconds(500),
-                                      base::TimeDelta::FromMilliseconds(100));
+  profile_builder->OnProfileCompleted(base::Milliseconds(500),
+                                      base::Milliseconds(100));
 
   const SampledProfile& proto = profile_builder->test_sampled_profile();
 
@@ -524,7 +523,7 @@ TEST(CallStackProfileBuilderTest, ApplyMetadataRetrospectively_Basic) {
   TestModule module;
   base::Frame frame = {0x10, &module};
   base::TimeTicks profile_start_time = base::TimeTicks::UnixEpoch();
-  base::TimeDelta sample_time_delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta sample_time_delta = base::Seconds(1);
 
   profile_builder->RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
@@ -589,7 +588,7 @@ TEST(CallStackProfileBuilderTest,
   TestModule module;
   base::Frame frame = {0x10, &module};
   base::TimeTicks profile_start_time = base::TimeTicks::UnixEpoch();
-  base::TimeDelta sample_time_delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta sample_time_delta = base::Seconds(1);
 
   profile_builder->RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
@@ -611,7 +610,7 @@ TEST(CallStackProfileBuilderTest,
       {frame}, profile_start_time + 3 * sample_time_delta);
 
   profile_builder->ApplyMetadataRetrospectively(
-      profile_start_time - base::TimeDelta::FromMicroseconds(1),
+      profile_start_time - base::Microseconds(1),
       profile_start_time + sample_time_delta,
       base::MetadataRecorder::Item(3, 30, 300));
 

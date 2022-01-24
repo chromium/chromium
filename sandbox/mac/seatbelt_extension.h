@@ -27,9 +27,16 @@ class SEATBELT_EXPORT SeatbeltExtension {
   enum Type {
     // Requires (allow file-read* (extension "com.apple.app-sandbox.read")).
     FILE_READ,
-    // TODO(rsesek): Potentially support FILE_READ_WRITE, MACH and GENERIC
-    // extension types.
+
+    // Requires: (allow file-read* file-write*
+    //               (extension "com.apple.app-sandbox.read-write"))
+    FILE_READ_WRITE,
+
+    // TODO(rsesek): Potentially support MACH and GENERIC extension types.
   };
+
+  SeatbeltExtension(const SeatbeltExtension&) = delete;
+  SeatbeltExtension& operator=(const SeatbeltExtension&) = delete;
 
   // Before an extension is destroyed, it must be consumed or explicitly
   // revoked.
@@ -78,8 +85,6 @@ class SEATBELT_EXPORT SeatbeltExtension {
 
   // An opaque reference to a consumed extension, 0 if revoked or not consumed.
   int64_t handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(SeatbeltExtension);
 };
 
 }  // namespace sandbox

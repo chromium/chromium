@@ -287,6 +287,8 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
     case download::DownloadItem::IN_PROGRESS: {
       if (download_item->IsDangerous()) {
         state = "DANGEROUS";
+      } else if (download_item->ShouldShowIncognitoWarning()) {
+        state = "INCOGNITO_WARNING";
       } else if (download_item->IsMixedContent()) {
         state = "MIXED_CONTENT";
       } else if (download_item->GetDangerType() ==
@@ -340,6 +342,8 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->danger_type = danger_type;
   file_value->is_dangerous = download_item->IsDangerous();
   file_value->is_mixed_content = download_item->IsMixedContent();
+  file_value->should_show_incognito_warning =
+      download_item->ShouldShowIncognitoWarning();
   file_value->last_reason_text = base::UTF16ToUTF8(last_reason_text);
   file_value->percent = percent;
   file_value->progress_status_text = base::UTF16ToUTF8(progress_status_text);

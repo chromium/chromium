@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "chrome/chrome_cleaner/settings/settings_types.h"
 
@@ -29,6 +28,10 @@ class CrashClient {
   static bool IsUploadEnabled();
 
   CrashClient() = default;
+
+  CrashClient(const CrashClient&) = delete;
+  CrashClient& operator=(const CrashClient&) = delete;
+
   virtual ~CrashClient() = default;
 
   // Initializes collection and upload of crash reports. This will only be done
@@ -46,9 +49,6 @@ class CrashClient {
   // |process_type| identifies the type of process that reported the crash.
   virtual bool InitializeCrashReporting(Mode mode,
                                         SandboxType process_type) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrashClient);
 };
 
 }  // namespace chrome_cleaner

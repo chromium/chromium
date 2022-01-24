@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -24,6 +25,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
@@ -76,7 +78,6 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
-#include "chrome/browser/prefs/pref_metrics_service.h"
 #include "chrome/browser/process_singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -90,6 +91,7 @@
 #include "chrome/browser/tracing/trace_event_system_stats_monitor.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
+#include "chrome/browser/ui/color/chrome_color_mixers.h"
 #include "chrome/browser/ui/javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h"
 #include "chrome/browser/ui/profile_error_dialog.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
@@ -160,6 +162,7 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -209,10 +212,10 @@
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/arc/metrics/stability_metrics_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -372,10 +375,11 @@ StartupProfileInfo CreatePrimaryProfile(
 // notification, the profile id encoded in the notification launch id should
 // be chosen over all others.
 #if defined(OS_WIN)
-  std::string last_used_profile_id =
-      NotificationLaunchId::GetNotificationLaunchProfileId(parsed_command_line);
-  if (!last_used_profile_id.empty()) {
-    profiles::SetLastUsedProfile(last_used_profile_id);
+  base::FilePath profile_basename =
+      NotificationLaunchId::GetNotificationLaunchProfileBaseName(
+          parsed_command_line);
+  if (!profile_basename.empty()) {
+    profiles::SetLastUsedProfile(profile_basename);
     last_used_profile_set = true;
   }
 #endif  // defined(OS_WIN)
@@ -385,7 +389,7 @@ StartupProfileInfo CreatePrimaryProfile(
       parsed_command_line.HasSwitch(switches::kProfileDirectory);
   if (!last_used_profile_set && profile_dir_specified) {
     profiles::SetLastUsedProfile(
-        parsed_command_line.GetSwitchValueASCII(switches::kProfileDirectory));
+        parsed_command_line.GetSwitchValuePath(switches::kProfileDirectory));
     last_used_profile_set = true;
   }
 
@@ -496,10 +500,10 @@ bool ProcessSingletonNotificationCallback(
 // BrowserMainParts ------------------------------------------------------------
 
 ChromeBrowserMainParts::ChromeBrowserMainParts(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     StartupData* startup_data)
-    : parameters_(parameters),
-      parsed_command_line_(parameters.command_line),
+    : parameters_(std::move(parameters)),
+      parsed_command_line_(*parameters.command_line),
       should_call_pre_main_loop_start_startup_on_variations_service_(
           !parameters.ui_task),
       startup_data_(startup_data) {
@@ -718,8 +722,15 @@ void ChromeBrowserMainParts::PostEarlyInitialization() {
 
 void ChromeBrowserMainParts::ToolkitInitialized() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::ToolkitInitialized");
+
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->ToolkitInitialized();
+
+  // Comes after the extra parts' calls since on GTK that builds the native
+  // theme that, in turn, adds the GTK core color mixer; core mixers should all
+  // be added before we add chrome mixers.
+  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+      base::BindRepeating(AddChromeColorMixers));
 }
 
 void ChromeBrowserMainParts::PreCreateMainMessageLoop() {
@@ -733,7 +744,7 @@ void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostCreateMainMessageLoop");
 
 #if !defined(OS_ANDROID)
-  // Initialize the upgrade detector here after ChromeBrowserMainPartsChromeos
+  // Initialize the upgrade detector here after `ChromeBrowserMainPartsAsh`
   // has had a chance to connect the DBus services.
   UpgradeDetector::GetInstance()->Init();
 #endif
@@ -864,7 +875,6 @@ int ChromeBrowserMainParts::ApplyFirstRunPrefs() {
 
 int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreCreateThreadsImpl");
-  run_message_loop_ = false;
 
   if (browser_process_->GetApplicationLocale().empty()) {
     ShowMissingLocaleMessageBox();
@@ -907,11 +917,6 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   }
 
 #if !defined(OS_ANDROID)
-  // Create the RunLoop for MainMessageLoopRun() to use, and pass a copy of
-  // its QuitClosure to the BrowserProcessImpl to call when it is time to exit.
-  DCHECK(!GetMainRunLoopInstance());
-  GetMainRunLoopInstance() = std::make_unique<base::RunLoop>();
-
   // These members must be initialized before returning from this function.
   // Android doesn't use StartupBrowserCreator.
   browser_creator_ = std::make_unique<StartupBrowserCreator>();
@@ -1007,6 +1012,28 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   }
 #endif
 
+  if (command_line->HasSwitch(switches::kProfileEmail) &&
+      !command_line->HasSwitch(switches::kProfileDirectory)) {
+    // Use GetSwitchValueNative() rather than GetSwitchValueASCII() to support
+    // non-ASCII email addresses.
+    base::CommandLine::StringType email_native =
+        command_line->GetSwitchValueNative(switches::kProfileEmail);
+    if (!email_native.empty()) {
+      std::string email;
+#if defined(OS_WIN)
+      email = base::WideToUTF8(email_native);
+#else
+      email = std::move(email_native);
+#endif
+      base::FilePath profile_dir =
+          browser_process_->profile_manager()->GetProfileDirForEmail(email);
+      if (!profile_dir.empty()) {
+        command_line->AppendSwitchPath(switches::kProfileDirectory,
+                                       profile_dir.BaseName());
+      }
+    }
+  }
+
   // ChromeOS needs ui::ResourceBundle::InitSharedInstance to be called before
   // this.
   browser_process_->PreCreateThreads(parsed_command_line());
@@ -1030,7 +1057,7 @@ void ChromeBrowserMainParts::PostCreateThreads() {
   // stages.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                metrics::CallStackProfileParams::IO_THREAD));
+                                metrics::CallStackProfileParams::Thread::kIo));
 // Sampling multiple threads might cause overhead on Android and we don't want
 // to enable it unless the data is needed.
 #if !defined(OS_ANDROID)
@@ -1064,7 +1091,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRun() {
 //   PostProfileInit()
 //   ... additional setup
 //   PreBrowserStart()
-//   ... browser_creator_->Start (OR parameters().ui_task->Run())
+//   ... browser_creator_->Start (OR parameters_.ui_task->Run())
 //   PostBrowserStart()
 
 void ChromeBrowserMainParts::PreProfileInit() {
@@ -1142,7 +1169,7 @@ void ChromeBrowserMainParts::PostBrowserStart() {
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WebRtcLogUtil::DeleteOldWebRtcLogFilesForAllProfiles),
-      base::TimeDelta::FromMinutes(1));
+      base::Minutes(1));
 
 #if !defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kWebUsb)) {
@@ -1400,11 +1427,17 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // This step is costly and is already measured in Startup.CreateFirstProfile
   // and more directly Profile.CreateAndInitializeProfile.
   StartupProfileInfo profile_info = CreatePrimaryProfile(
-      parameters(), /*cur_dir=*/base::FilePath(), parsed_command_line());
+      parameters_, /*cur_dir=*/base::FilePath(), parsed_command_line());
 
   profile_ = profile_info.profile;
   if (profile_info.mode == StartupProfileMode::kError)
     return content::RESULT_CODE_NORMAL_EXIT;
+
+  if (base::FeatureList::IsEnabled(
+          features::kSpareRendererOnPrimaryProfileCreation)) {
+    content::RenderProcessHost::WarmupSpareRenderProcessHost(
+        profile_info.profile);
+  }
 
 #if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   // Create the spellcheck service. This will asynchronously retrieve the
@@ -1512,7 +1545,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
       base::WrapUnique(new ChromeRLZTrackerDelegate));
   rlz::RLZTracker::InitRlzDelayed(
       first_run::IsChromeFirstRun(), ping_delay < 0,
-      base::TimeDelta::FromSeconds(abs(ping_delay)),
+      base::Seconds(abs(ping_delay)),
       ChromeRLZTrackerDelegate::IsGoogleDefaultSearch(profile_),
       ChromeRLZTrackerDelegate::IsGoogleHomepage(profile_),
       ChromeRLZTrackerDelegate::IsGoogleInStartpages(profile_));
@@ -1592,13 +1625,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   CloudPrintProxyServiceFactory::GetForProfile(profile_);
 #endif
 
-  // Two different types of hang detection cannot attempt to upload crashes at
-  // the same time or they would interfere with each other.
-  if (!base::HangWatcher::IsCrashReportingEnabled()) {
-    // Start watching all browser threads for responsiveness.
-    ThreadWatcherList::StartWatchingAll(parsed_command_line());
-  }
-
   // This has to come before the first GetInstance() call. PreBrowserStart()
   // seems like a reasonable place to put this, except on Android,
   // OfflinePageInfoHandler::Register() below calls GetInstance().
@@ -1606,30 +1632,18 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   sessions::ContentSerializedNavigationDriver::SetInstance(
       ChromeSerializedNavigationDriver::GetInstance());
 
-#if defined(OS_ANDROID)
-  ThreadWatcherAndroid::RegisterApplicationStatusListener();
-#endif  // defined(OS_ANDROID)
-
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   offline_pages::OfflinePageInfoHandler::Register();
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? content::GetUIThreadTaskRunner({})
-                         : content::GetIOThreadTaskRunner({});
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(nacl::NaClProcessHost::EarlyStartup));
+  nacl::NaClProcessHost::EarlyStartup();
 #endif  // BUILDFLAG(ENABLE_NACL)
-
-  // Make sure initial prefs are recorded
-  PrefMetricsService::Factory::GetForProfile(profile_);
 
   PreBrowserStart();
 
   if (!parsed_command_line().HasSwitch(switches::kDisableComponentUpdate)) {
-    component_updater::RegisterComponentsForUpdate(
-        profile_->IsOffTheRecord(), profile_->GetPrefs(), profile_->GetPath());
+    component_updater::RegisterComponentsForUpdate();
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
     // Exclude Android: SODA is not supported.
     // Exclude ChromeOS: SODA is independent of Component Updater.
@@ -1639,8 +1653,10 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  speech::SodaInstaller::GetInstance()->Init(profile_->GetPrefs(),
-                                             browser_process_->local_state());
+  if (base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition)) {
+    speech::SodaInstaller::GetInstance()->Init(profile_->GetPrefs(),
+                                               browser_process_->local_state());
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   variations::VariationsService* variations_service =
@@ -1704,46 +1720,45 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if defined(OS_MAC)
     // Call Recycle() here as late as possible, before going into the loop
     // because Start() will add things to it while creating the main window.
-    if (parameters().autorelease_pool)
-      parameters().autorelease_pool->Recycle();
+    if (parameters_.autorelease_pool)
+      parameters_.autorelease_pool->Recycle();
 #endif  // defined(OS_MAC)
 
-    // Transfer ownership of the browser's lifetime to the BrowserProcess.
+    // Create the RunLoop for MainMessageLoopRun() to use and transfer
+    // ownership of the browser's lifetime to the BrowserProcess.
+    DCHECK(!GetMainRunLoopInstance());
+    GetMainRunLoopInstance() = std::make_unique<base::RunLoop>();
     browser_process_->SetQuitClosure(
         GetMainRunLoopInstance()->QuitWhenIdleClosure());
-    DCHECK(!run_message_loop_);
-    run_message_loop_ = true;
   }
   browser_creator_.reset();
 #endif  // !defined(OS_ANDROID)
 
   PostBrowserStart();
 
-  // The ui_task can be injected by tests to replace the main message loop.
-  // In that case we Run() it here, and set a flag to avoid running the main
-  // message loop later, as the test will do so as needed from the |ui_task|.
-  if (parameters().ui_task) {
-    std::move(*parameters().ui_task).Run();
-    delete parameters().ui_task;
-    run_message_loop_ = false;
-  }
-
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   // Clean up old user data directory, snapshots and disk cache directory.
   downgrade_manager_.DeleteMovedUserDataSoon(user_data_dir_);
 #endif
 
-#if defined(OS_ANDROID)
-  // We never run the C++ main loop on Android, since the UI thread message
-  // loop is controlled by the OS, so this is as close as we can get to
-  // the start of the main loop.
-  if (result_code_ <= 0) {
+  // This should be invoked as close as possible to the start of the browser's
+  // main loop, but before the end of PreMainMessageLoopRun in order for
+  // browser tests (which InterceptMainMessageLoopRun rather than
+  // MainMessageLoopRun) to be able to see its side-effect.
+  if (result_code_ <= 0)
     RecordBrowserStartupTime();
-  }
-#endif  // defined(OS_ANDROID)
 
   return result_code_;
 }
+
+#if !defined(OS_ANDROID)
+bool ChromeBrowserMainParts::ShouldInterceptMainMessageLoopRun() {
+  // Some early return paths in PreMainMessageLoopRunImpl intentionally prevent
+  // the main run loop from being created. Use this as a signal to indicate that
+  // the main message loop shouldn't be run.
+  return !!GetMainRunLoopInstance();
+}
+#endif
 
 void ChromeBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
@@ -1752,19 +1767,8 @@ void ChromeBrowserMainParts::WillRunMainMessageLoop(
   // Android specific MessageLoop
   NOTREACHED();
 #else
-  if (!run_message_loop_) {
-    run_loop.reset();
-    return;
-  }
-
-  // These should be invoked as close to the start of the browser's
-  // UI thread message loop as possible to get a stable measurement
-  // across versions.
-  RecordBrowserStartupTime();
-
   DCHECK(base::CurrentUIThread::IsSet());
 
-  DCHECK(GetMainRunLoopInstance());
   run_loop = std::move(GetMainRunLoopInstance());
 
   // Trace the entry and exit of this main message loop. We don't use the
@@ -1791,14 +1795,13 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
   // Android specific MessageLoop
   NOTREACHED();
 #else
-  // Shutdown the UpgradeDetector here before ChromeBrowserMainPartsChromeos
+  // Shutdown the UpgradeDetector here before `ChromeBrowserMainPartsAsh`
   // disconnects DBus services in its PostDestroyThreads.
   UpgradeDetector::GetInstance()->Shutdown();
 
   // Two different types of hang detection cannot attempt to upload crashes at
   // the same time or they would interfere with each other.
-  constexpr base::TimeDelta kShutdownHangDelay{
-      base::TimeDelta::FromSeconds(300)};
+  constexpr base::TimeDelta kShutdownHangDelay{base::Seconds(300)};
   if (base::HangWatcher::IsCrashReportingEnabled()) {
     // Use ShutdownWatcherHelper logic to choose delay to get identical
     // behavior.
@@ -1819,13 +1822,10 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
   // Some tests don't set parameters.ui_task, so they started translate
   // language fetch that was never completed so we need to cleanup here
   // otherwise it will be done by the destructor in a wrong thread.
-  TranslateService::Shutdown(!parameters().ui_task);
+  TranslateService::Shutdown(!parameters_.ui_task);
 
   if (notify_result_ == ProcessSingleton::PROCESS_NONE)
     process_singleton_->Cleanup();
-
-  // Stop all tasks that might run on WatchDogThread.
-  ThreadWatcherList::StopWatchingAll();
 
   browser_process_->metrics_service()->Stop();
 

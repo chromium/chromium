@@ -4,17 +4,18 @@
 
 #include "components/autofill_assistant/browser/starter.h"
 
-#include <map>
-
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/intent_strings.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
@@ -54,9 +55,8 @@ constexpr size_t kMaxUserDenylistedCacheSize = 100;
 // The duration for which cache entries are considered fresh. Stale entries in
 // the cache are ignored.
 constexpr base::TimeDelta kMaxFailedTriggerScriptsCacheDuration =
-    base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kMaxUserDenylistedCacheDuration =
-    base::TimeDelta::FromHours(1);
+    base::Hours(1);
+constexpr base::TimeDelta kMaxUserDenylistedCacheDuration = base::Hours(1);
 
 // Creates a service request sender that serves the pre-specified response.
 // Creation may fail (return null) if the parameter fails to decode.
@@ -103,9 +103,9 @@ const scoped_refptr<StarterHeuristic> GetOrCreateStarterHeuristic() {
 
 // The cache of failed trigger script fetches is shared across all instances and
 // initialized on first use.
-base::HashingMRUCache<std::string, base::TimeTicks>*
+base::HashingLRUCache<std::string, base::TimeTicks>*
 GetOrCreateFailedTriggerScriptFetchesCache() {
-  static base::NoDestructor<base::HashingMRUCache<std::string, base::TimeTicks>>
+  static base::NoDestructor<base::HashingLRUCache<std::string, base::TimeTicks>>
       cached_failed_trigger_script_fetches(kMaxFailedTriggerScriptsCacheSize);
   return cached_failed_trigger_script_fetches.get();
 }
@@ -113,7 +113,7 @@ GetOrCreateFailedTriggerScriptFetchesCache() {
 // Goes through the |cache| and removes entries that have gone stale, i.e.,
 // entries that were added before |cutoff_ticks|.
 void ClearStaleCacheEntries(
-    base::HashingMRUCache<std::string, base::TimeTicks>* cache,
+    base::HashingLRUCache<std::string, base::TimeTicks>* cache,
     base::TimeTicks cutoff_ticks) {
   // Go in reverse order until the oldest entry is younger than |cutoff_ticks|.
   for (auto it = cache->rbegin(); it != cache->rend();) {
@@ -127,7 +127,7 @@ void ClearStaleCacheEntries(
 // Returns true if |cache| has an entry for |url| that is younger than
 // |cutoff_ticks|, false otherwise. Does not change the order of the cache.
 bool HasFreshCacheEntry(
-    const base::HashingMRUCache<std::string, base::TimeTicks>& cache,
+    const base::HashingLRUCache<std::string, base::TimeTicks>& cache,
     const GURL& url,
     base::TimeTicks cutoff_ticks) {
   std::string domain = url_utils::GetOrganizationIdentifyingDomain(url);
@@ -188,29 +188,22 @@ Starter::Starter(content::WebContents* web_contents,
 
 Starter::~Starter() = default;
 
-void Starter::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame()) {
-    return;
-  }
-
+void Starter::PrimaryPageChanged(content::Page& page) {
   // Navigating away from the deeplink domain during startup OR ending up on an
   // error page will break the flow, unless a trigger script is currently
   // running (in which case, the trigger script will handle this event).
-  if (IsStartupPending() && navigation_handle->HasCommitted() &&
-      !trigger_script_coordinator_) {
-    bool navigated_to_target_domain = url_utils::IsSamePublicSuffixDomain(
-        navigation_handle->GetURL(),
+  content::RenderFrameHost& rfh = page.GetMainDocument();
+  const GURL& gurl = rfh.GetLastCommittedURL();
+  if (IsStartupPending() && !trigger_script_coordinator_) {
+    const GURL& url_for_intent =
         StartupUtil()
             .ChooseStartupUrlForIntent(*GetPendingTriggerContext())
-            .value_or(GURL()));
-
+            .value_or(GURL());
+    bool navigated_to_target_domain =
+        url_utils::IsSamePublicSuffixDomain(url_for_intent, gurl) &&
+        url_utils::IsAllowedSchemaTransition(url_for_intent, gurl);
     if (navigated_to_target_domain) {
-      current_ukm_source_id_ =
-          ukm::GetSourceIdForWebContentsDocument(web_contents());
+      current_ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
       if (waiting_for_deeplink_navigation_) {
         Start(std::move(pending_trigger_context_));
       }
@@ -226,8 +219,8 @@ void Starter::DidFinishNavigation(
       // Note: this will record for the current domain, not the target domain.
       // There seems to be no way to avoid this.
       Metrics::RecordTriggerScriptStarted(
-          ukm_recorder_, ukm::GetSourceIdForWebContentsDocument(web_contents()),
-          navigation_handle->IsErrorPage()
+          ukm_recorder_, page.GetMainDocument().GetPageUkmSourceId(),
+          rfh.IsErrorDocument()
               ? Metrics::TriggerScriptStarted::NAVIGATION_ERROR
               : Metrics::TriggerScriptStarted::NAVIGATED_AWAY);
       CancelPendingStartup(absl::nullopt);
@@ -247,13 +240,9 @@ void Starter::DidFinishNavigation(
     // implicitly.
   }
 
-  if (navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage()) {
-    current_ukm_source_id_ =
-        ukm::GetSourceIdForWebContentsDocument(web_contents());
-    MaybeStartImplicitlyForUrl(
-        navigation_handle->GetURL(),
-        ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
-                               ukm::SourceIdType::NAVIGATION_ID));
+  if (!rfh.IsErrorDocument()) {
+    current_ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
+    MaybeStartImplicitlyForUrl(gurl, current_ukm_source_id_);
   }
 }
 
@@ -290,8 +279,8 @@ void Starter::MaybeStartImplicitlyForUrl(const GURL& url,
 
 void Starter::OnHeuristicMatch(const GURL& url,
                                const ukm::SourceId source_id,
-                               absl::optional<std::string> intent) {
-  if (!intent) {
+                               const base::flat_set<std::string>& intents) {
+  if (intents.empty()) {
     Metrics::RecordInChromeTriggerAction(
         ukm_recorder_, source_id,
         Metrics::InChromeTriggerAction::NO_HEURISTIC_MATCH);
@@ -306,12 +295,14 @@ void Starter::OnHeuristicMatch(const GURL& url,
   Metrics::RecordInChromeTriggerAction(
       ukm_recorder_, source_id,
       Metrics::InChromeTriggerAction::TRIGGER_SCRIPT_REQUESTED);
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
+      {"INTENT",
+       base::JoinString(
+           std::vector<std::string>(intents.begin(), intents.end()), ",")},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
-      {"ORIGINAL_DEEPLINK", url.spec()},
-      {"INTENT", *intent}};
+      {"ORIGINAL_DEEPLINK", url.spec()}};
   // Add/overwrite with debug parameters if specified.
   for (const auto& debug_param :
        implicit_triggering_debug_parameters_.additional_script_parameters()) {
@@ -358,14 +349,16 @@ void Starter::CheckSettings() {
       platform_delegate_->GetFeatureModuleInstalled();
   bool prev_fetch_trigger_scripts_on_navigation =
       fetch_trigger_scripts_on_navigation_;
+  // Note: the feature flag must be the last thing tested in this if-statement,
+  // to avoid tagging tabs that otherwise don't qualify for in-cct triggering,
+  // which leads to pollution of our metrics.
   fetch_trigger_scripts_on_navigation_ =
-      ((base::FeatureList::IsEnabled(
-            features::kAutofillAssistantInCCTTriggering) &&
-        is_custom_tab_) ||
-       (base::FeatureList::IsEnabled(
-            features::kAutofillAssistantInTabTriggering) &&
-        !is_custom_tab_)) &&
-      proactive_help_setting_enabled && msbb_setting_enabled;
+      proactive_help_setting_enabled && msbb_setting_enabled &&
+      ((is_custom_tab_ && platform_delegate_->GetIsTabCreatedByGSA() &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillAssistantInCCTTriggering)) ||
+       (!is_custom_tab_ && base::FeatureList::IsEnabled(
+                               features::kAutofillAssistantInTabTriggering)));
 
   // If there is a pending startup, re-check that the settings are still
   // allowing the startup to proceed. If not, cancel the startup.
@@ -398,6 +391,23 @@ void Starter::CheckSettings() {
         web_contents()->GetLastCommittedURL(),
         ukm::GetSourceIdForWebContentsDocument(web_contents()));
   }
+}
+
+void Starter::RecordDependenciesInvalidated() const {
+  Metrics::DependenciesInvalidated dependencies_invalidated =
+      Metrics::DependenciesInvalidated::OUTSIDE_FLOW;
+  if (platform_delegate_->IsRegularScriptRunning()) {
+    dependencies_invalidated = Metrics::DependenciesInvalidated::DURING_FLOW;
+  } else if (IsStartupPending()) {
+    dependencies_invalidated = Metrics::DependenciesInvalidated::DURING_STARTUP;
+  }
+
+  Metrics::RecordDependenciesInvalidated(dependencies_invalidated);
+}
+
+void Starter::OnDependenciesInvalidated() {
+  RecordDependenciesInvalidated();
+  CheckSettings();
 }
 
 void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
@@ -435,9 +445,10 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
     OnStartDone(/* start_regular_script = */ false);
     return;
   }
+
   if (IsTriggerScriptContext(*pending_trigger_context_) &&
       !url_utils::IsSamePublicSuffixDomain(
-          web_contents()->GetLastCommittedURL(),
+          web_contents()->GetMainFrame()->GetLastCommittedURL(),
           startup_url.value_or(GURL()))) {
     waiting_for_deeplink_navigation_ = true;
     return;
@@ -574,7 +585,8 @@ void Starter::StartTriggerScript() {
   trigger_script_coordinator_ = std::make_unique<TriggerScriptCoordinator>(
       platform_delegate_, web_contents(),
       WebController::CreateForWebContents(web_contents(),
-                                          /* user_data= */ nullptr),
+                                          /* user_data= */ nullptr,
+                                          /* log_info= */ nullptr),
       std::move(service_request_sender),
       url_fetcher.GetTriggerScriptsEndpoint(),
       std::make_unique<StaticTriggerConditions>(

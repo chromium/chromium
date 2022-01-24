@@ -22,7 +22,7 @@ class MicroBenchmarkImpl;
 
 class CC_EXPORT MicroBenchmark {
  public:
-  using DoneCallback = base::OnceCallback<void(std::unique_ptr<base::Value>)>;
+  using DoneCallback = base::OnceCallback<void(base::Value)>;
 
   explicit MicroBenchmark(DoneCallback callback);
   virtual ~MicroBenchmark();
@@ -34,14 +34,14 @@ class CC_EXPORT MicroBenchmark {
 
   virtual void RunOnLayer(PictureLayer* layer);
 
-  virtual bool ProcessMessage(std::unique_ptr<base::Value> value);
+  virtual bool ProcessMessage(base::Value message);
 
   bool ProcessedForBenchmarkImpl() const;
   std::unique_ptr<MicroBenchmarkImpl> GetBenchmarkImpl(
       scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner);
 
  protected:
-  void NotifyDone(std::unique_ptr<base::Value> result);
+  void NotifyDone(base::Value result);
 
   virtual std::unique_ptr<MicroBenchmarkImpl> CreateBenchmarkImpl(
       scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner);

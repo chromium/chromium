@@ -25,8 +25,8 @@ moment there is only one: ScriptCustomElementDefinition.
 
 ScriptCustomElementDefinition is linked to its constructor by an ID
 number. The ID number is stored in a map, keyed by constructor, in a
-hidden value of the CustomElementRegistry wrapper. The ID is an index
-into a list of definitions stored in V8PerContextData.
+private property of the CustomElementRegistry wrapper. The ID is an
+index into a list of definitions stored in V8PerContextData.
 
 ###### CustomElementDescriptor
 
@@ -56,7 +56,7 @@ kept around indefinitely because they could be created in future by
 the parser. On the other hand, we must not leak when a window can no
 longer run script.
 
-We use a V8HiddenValue on the CustomElementRegistry wrapper which
+We use a V8PrivateProperty on the CustomElementRegistry wrapper which
 points to a map that keeps constructors and prototypes alive. See
 ScriptCustomElementDefinition.
 

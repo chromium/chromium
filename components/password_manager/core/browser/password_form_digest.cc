@@ -15,7 +15,7 @@ PasswordFormDigest::PasswordFormDigest(const PasswordForm& form)
 
 PasswordFormDigest::PasswordFormDigest(const autofill::FormData& form)
     : scheme(PasswordForm::Scheme::kHtml),
-      signon_realm(form.url.GetOrigin().spec()),
+      signon_realm(form.url.DeprecatedGetOriginAsURL().spec()),
       url(form.url) {}
 
 PasswordFormDigest::PasswordFormDigest(const PasswordFormDigest& other) =

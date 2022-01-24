@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
 #else
     if (GetResult() == 0u)
       break;
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+    base::PlatformThread::Sleep(base::Milliseconds(100));
 #endif
   }
   EXPECT_EQ(0u, GetResult());

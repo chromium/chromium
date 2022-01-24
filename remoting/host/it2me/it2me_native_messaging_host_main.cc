@@ -18,9 +18,9 @@
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/breakpad.h"
+#include "remoting/base/host_settings.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/host_exit_codes.h"
-#include "remoting/host/host_settings.h"
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
 #include "remoting/host/logging.h"
 #include "remoting/host/native_messaging/native_messaging_pipe.h"
@@ -188,12 +188,12 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   } else {
     // GetStdHandle() returns pseudo-handles for stdin and stdout even if
     // the hosting executable specifies "Windows" subsystem. However the
-    // returned  handles are invalid in that case unless standard input and
+    // returned handles are invalid in that case unless standard input and
     // output are redirected to a pipe or file.
     read_file = base::File(GetStdHandle(STD_INPUT_HANDLE));
     write_file = base::File(GetStdHandle(STD_OUTPUT_HANDLE));
 
-    // After the native messaging channel starts the native messaging reader
+    // After the native messaging channel starts, the native messaging reader
     // will keep doing blocking read operations on the input named pipe.
     // If any other thread tries to perform any operation on STDIN, it will also
     // block because the input named pipe is synchronous (non-overlapped).
@@ -253,7 +253,8 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
       ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(
           main_task_executor.task_runner(), run_loop.QuitClosure()));
   std::unique_ptr<PolicyWatcher> policy_watcher =
-      PolicyWatcher::CreateWithTaskRunner(context->file_task_runner());
+      PolicyWatcher::CreateWithTaskRunner(context->file_task_runner(),
+                                          context->management_service());
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Create an X11EventSource on all UI threads, so the global X11 connection

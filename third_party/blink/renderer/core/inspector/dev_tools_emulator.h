@@ -60,6 +60,8 @@ class CORE_EXPORT DevToolsEmulator final
   void SetScriptExecutionDisabled(bool);
   void SetScrollbarsHidden(bool);
   void SetDocumentCookieDisabled(bool);
+  void SetAutoDarkModeOverride(bool);
+  void ResetAutoDarkModeOverride();
 
   bool HasViewportOverride() const { return !!viewport_override_; }
 
@@ -147,6 +149,9 @@ class CORE_EXPORT DevToolsEmulator final
 
   bool embedder_cookie_enabled_;
   bool document_cookie_disabled_;
+
+  bool embedder_force_dark_mode_enabled_;
+  bool auto_dark_overriden_;
 };
 
 }  // namespace blink

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_APPS_NATIVE_APP_WINDOW_FRAME_VIEW_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_APPS_NATIVE_APP_WINDOW_FRAME_VIEW_MAC_H_
 
-#include "base/macros.h"
 #include "ui/views/window/native_frame_view.h"
 
 namespace extensions {
@@ -20,6 +19,11 @@ class NativeAppWindowFrameViewMac : public views::NativeFrameView {
  public:
   NativeAppWindowFrameViewMac(views::Widget* frame,
                               extensions::NativeAppWindow* window);
+
+  NativeAppWindowFrameViewMac(const NativeAppWindowFrameViewMac&) = delete;
+  NativeAppWindowFrameViewMac& operator=(const NativeAppWindowFrameViewMac&) =
+      delete;
+
   ~NativeAppWindowFrameViewMac() override;
 
   // NonClientFrameView:
@@ -31,8 +35,6 @@ class NativeAppWindowFrameViewMac : public views::NativeFrameView {
   // Weak. Owned by extensions::AppWindow (which manages our Widget via its
   // WebContents).
   extensions::NativeAppWindow* native_app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeAppWindowFrameViewMac);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_NATIVE_APP_WINDOW_FRAME_VIEW_MAC_H_

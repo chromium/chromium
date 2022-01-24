@@ -5,7 +5,7 @@
 #ifndef GPU_VULKAN_VULKAN_COMMAND_BUFFER_H_
 #define GPU_VULKAN_VULKAN_COMMAND_BUFFER_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include "base/check.h"
 #include "base/component_export.h"
@@ -22,6 +22,10 @@ class COMPONENT_EXPORT(VULKAN) VulkanCommandBuffer {
   VulkanCommandBuffer(VulkanDeviceQueue* device_queue,
                       VulkanCommandPool* command_pool,
                       bool primary);
+
+  VulkanCommandBuffer(const VulkanCommandBuffer&) = delete;
+  VulkanCommandBuffer& operator=(const VulkanCommandBuffer&) = delete;
+
   ~VulkanCommandBuffer();
 
   bool Initialize();
@@ -96,8 +100,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanCommandBuffer {
   VulkanCommandPool* command_pool_;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
   VulkanFenceHelper::FenceHandle submission_fence_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanCommandBuffer);
 };
 
 class COMPONENT_EXPORT(VULKAN) CommandBufferRecorderBase {
@@ -135,20 +137,26 @@ class COMPONENT_EXPORT(VULKAN) ScopedMultiUseCommandBufferRecorder
     : public CommandBufferRecorderBase {
  public:
   ScopedMultiUseCommandBufferRecorder(VulkanCommandBuffer& command_buffer);
-  ~ScopedMultiUseCommandBufferRecorder() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedMultiUseCommandBufferRecorder);
+  ScopedMultiUseCommandBufferRecorder(
+      const ScopedMultiUseCommandBufferRecorder&) = delete;
+  ScopedMultiUseCommandBufferRecorder& operator=(
+      const ScopedMultiUseCommandBufferRecorder&) = delete;
+
+  ~ScopedMultiUseCommandBufferRecorder() override {}
 };
 
 class COMPONENT_EXPORT(VULKAN) ScopedSingleUseCommandBufferRecorder
     : public CommandBufferRecorderBase {
  public:
   ScopedSingleUseCommandBufferRecorder(VulkanCommandBuffer& command_buffer);
-  ~ScopedSingleUseCommandBufferRecorder() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedSingleUseCommandBufferRecorder);
+  ScopedSingleUseCommandBufferRecorder(
+      const ScopedSingleUseCommandBufferRecorder&) = delete;
+  ScopedSingleUseCommandBufferRecorder& operator=(
+      const ScopedSingleUseCommandBufferRecorder&) = delete;
+
+  ~ScopedSingleUseCommandBufferRecorder() override {}
 };
 
 }  // namespace gpu

@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"

@@ -71,4 +71,9 @@ class FakeSystemTokenCertDbStorageObserver
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::GetSystemTokenCertDbCallbackWrapper;
+}
+
 #endif  // CHROMEOS_NETWORK_SYSTEM_TOKEN_CERT_DB_STORAGE_TEST_UTIL_H_

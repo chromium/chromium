@@ -13,6 +13,10 @@ namespace sessions {
 class NavigationTaskIDTest : public testing::Test {
  public:
   NavigationTaskIDTest() {}
+
+  NavigationTaskIDTest(const NavigationTaskIDTest&) = delete;
+  NavigationTaskIDTest& operator=(const NavigationTaskIDTest&) = delete;
+
   ~NavigationTaskIDTest() override {}
 
   void SetUp() override {
@@ -21,9 +25,6 @@ class NavigationTaskIDTest : public testing::Test {
 
  protected:
   std::unique_ptr<content::NavigationEntry> navigation_entry_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NavigationTaskIDTest);
 };
 
 TEST_F(NavigationTaskIDTest, TaskIDTest) {

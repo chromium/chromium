@@ -18,7 +18,6 @@
 #include "ash/test/test_window_builder.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/dummy_text_input_client.h"
@@ -37,6 +36,10 @@ namespace {
 class MockTextInputClient : public ui::DummyTextInputClient {
  public:
   MockTextInputClient() : ui::DummyTextInputClient(ui::TEXT_INPUT_TYPE_TEXT) {}
+
+  MockTextInputClient(const MockTextInputClient&) = delete;
+  MockTextInputClient& operator=(const MockTextInputClient&) = delete;
+
   ~MockTextInputClient() override = default;
 
   void SetCaretBounds(const gfx::Rect& bounds) { caret_bounds_ = bounds; }
@@ -45,13 +48,17 @@ class MockTextInputClient : public ui::DummyTextInputClient {
   gfx::Rect GetCaretBounds() const override { return caret_bounds_; }
 
   gfx::Rect caret_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTextInputClient);
 };
 
 }  // namespace
 
 class AccessibilityHighlightControllerTest : public AshTestBase {
+ public:
+  AccessibilityHighlightControllerTest(
+      const AccessibilityHighlightControllerTest&) = delete;
+  AccessibilityHighlightControllerTest& operator=(
+      const AccessibilityHighlightControllerTest&) = delete;
+
  protected:
   AccessibilityHighlightControllerTest() = default;
   ~AccessibilityHighlightControllerTest() override = default;
@@ -128,8 +135,6 @@ class AccessibilityHighlightControllerTest : public AshTestBase {
   gfx::Image after_;
   int diff_count_ = 0;
   SkColor average_diff_color_ = SK_ColorTRANSPARENT;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityHighlightControllerTest);
 };
 
 TEST_F(AccessibilityHighlightControllerTest, TestCaretRingDrawsBluePixels) {
@@ -195,7 +200,7 @@ TEST_F(AccessibilityHighlightControllerTest, TestFocusRingDrawsPixels) {
 // Integration test of cursor handling between AccessibilityHighlightController
 // and AccessibilityFocusRingController.
 TEST_F(AccessibilityHighlightControllerTest, CursorWorksOnMultipleDisplays) {
-  UpdateDisplay("400x400,500x500");
+  UpdateDisplay("500x400,500x400");
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
 

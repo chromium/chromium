@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
@@ -32,6 +31,10 @@ class TokenHandleUtil;
 class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
  public:
   TokenHandleFetcher(TokenHandleUtil* util, const AccountId& account_id);
+
+  TokenHandleFetcher(const TokenHandleFetcher&) = delete;
+  TokenHandleFetcher& operator=(const TokenHandleFetcher&) = delete;
+
   ~TokenHandleFetcher() override;
 
   using TokenFetchingCallback =
@@ -72,8 +75,6 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
   base::CallbackListSubscription profile_shutdown_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(TokenHandleFetcher);
 };
 
 }  // namespace ash

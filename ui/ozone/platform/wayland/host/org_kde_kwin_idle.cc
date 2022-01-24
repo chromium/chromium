@@ -6,11 +6,14 @@
 
 #include <idle-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace ui {
 
 namespace {
+
+constexpr uint32_t kMaxOrgKdeKwinIdleVersion = 1;
 
 // After the system has gone idle, it will wait for this time before notifying
 // us.  This reduces "jitter" of the idle/active state, but also adds some lag
@@ -44,6 +47,30 @@ class OrgKdeKwinIdle::Timeout {
   base::Time idle_timestamp_;
 };
 
+// static
+constexpr char OrgKdeKwinIdle::kInterfaceName[];
+
+// static
+void OrgKdeKwinIdle::Instantiate(WaylandConnection* connection,
+                                 wl_registry* registry,
+                                 uint32_t name,
+                                 const std::string& interface,
+                                 uint32_t version) {
+  DCHECK_EQ(interface, kInterfaceName);
+
+  if (connection->org_kde_kwin_idle_)
+    return;
+
+  auto idle = wl::Bind<struct org_kde_kwin_idle>(
+      registry, name, std::min(version, kMaxOrgKdeKwinIdleVersion));
+  if (!idle) {
+    LOG(ERROR) << "Failed to bind to org_kde_kwin_idle global";
+    return;
+  }
+  connection->org_kde_kwin_idle_ =
+      std::make_unique<OrgKdeKwinIdle>(idle.release(), connection);
+}
+
 OrgKdeKwinIdle::OrgKdeKwinIdle(org_kde_kwin_idle* idle,
                                WaylandConnection* connection)
     : idle_(idle), connection_(connection) {}
@@ -64,8 +91,8 @@ absl::optional<base::TimeDelta> OrgKdeKwinIdle::GetIdleTime() const {
 
 OrgKdeKwinIdle::Timeout::Timeout(org_kde_kwin_idle_timeout* timeout)
     : timeout_(timeout) {
-  static const struct org_kde_kwin_idle_timeout_listener kTimeoutListener = {
-      OrgKdeKwinIdle::Timeout::Idle, OrgKdeKwinIdle::Timeout::Resumed};
+  static constexpr org_kde_kwin_idle_timeout_listener kTimeoutListener = {
+      &Idle, &Resumed};
   org_kde_kwin_idle_timeout_add_listener(timeout, &kTimeoutListener, this);
 }
 
@@ -73,7 +100,7 @@ OrgKdeKwinIdle::Timeout::~Timeout() = default;
 
 base::TimeDelta OrgKdeKwinIdle::Timeout::GetIdleTime() const {
   if (idle_timestamp_.is_null())
-    return base::TimeDelta::FromSeconds(0);
+    return base::Seconds(0);
   return base::Time::Now() - idle_timestamp_;
 }
 
@@ -83,7 +110,7 @@ void OrgKdeKwinIdle::Timeout::Idle(
     struct org_kde_kwin_idle_timeout* org_kde_kwin_idle_timeout) {
   auto* self = static_cast<OrgKdeKwinIdle::Timeout*>(data);
   self->idle_timestamp_ =
-      base::Time::Now() - base::TimeDelta::FromMicroseconds(kIdleThresholdMs);
+      base::Time::Now() - base::Microseconds(kIdleThresholdMs);
 }
 
 // static

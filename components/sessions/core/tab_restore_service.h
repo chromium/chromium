@@ -63,6 +63,9 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
   };
 
   struct SESSIONS_EXPORT Entry {
+    Entry(const Entry&) = delete;
+    Entry& operator=(const Entry&) = delete;
+
     virtual ~Entry();
 
     // Unique id for this entry. The id is guaranteed to be unique for a
@@ -82,9 +85,6 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
 
    protected:
     explicit Entry(Type type);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Entry);
   };
 
   // Represents a previously open tab.

@@ -5,7 +5,6 @@
 #include "components/media_router/browser/media_router_dialog_controller.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/bind.h"
 #include "build/build_config.h"

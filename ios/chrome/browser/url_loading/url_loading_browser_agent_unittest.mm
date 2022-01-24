@@ -14,6 +14,8 @@
 #include "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/url_loading/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/test_scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
@@ -60,9 +62,12 @@ class URLLoadingBrowserAgentTest : public BlockCleanupTest {
             chrome_browser_state_->GetOffTheRecordChromeBrowserState()),
         url_loading_delegate_([[URLLoadingTestDelegate alloc] init]),
         scene_loader_(std::make_unique<TestSceneUrlLoadingService>()),
-        otr_browser_(std::make_unique<TestBrowser>(otr_browser_state_)) {
+        otr_browser_(std::make_unique<TestBrowser>(otr_browser_state_)),
+        scene_state_([[SceneState alloc] initWithAppState:nil]) {
     // Configure app service.
     scene_loader_->current_browser_ = browser_.get();
+    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
+    SceneStateBrowserAgent::CreateForBrowser(otr_browser_.get(), scene_state_);
 
     // Disable web usage on both browsers
     WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
@@ -123,6 +128,7 @@ class URLLoadingBrowserAgentTest : public BlockCleanupTest {
   UrlLoadingBrowserAgent* loader_;
   std::unique_ptr<Browser> otr_browser_;
   UrlLoadingBrowserAgent* otr_loader_;
+  SceneState* scene_state_;
 };
 
 TEST_F(URLLoadingBrowserAgentTest, TestSwitchToTab) {

@@ -11,9 +11,6 @@ static_library("android_system_error_page") {
   ]
 
   configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-
     "//build/config/compiler:noshadowing",
   ]
 

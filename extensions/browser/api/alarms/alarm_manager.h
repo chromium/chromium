@@ -39,6 +39,10 @@ struct Alarm {
         const api::alarms::AlarmCreateInfo& create_info,
         base::TimeDelta min_granularity,
         base::Time now);
+
+  Alarm(const Alarm&) = delete;
+  Alarm& operator=(const Alarm&) = delete;
+
   ~Alarm();
 
   std::unique_ptr<api::alarms::Alarm> js_alarm;
@@ -51,9 +55,6 @@ struct Alarm {
   // The minimum granularity is the minimum allowed polling rate. This stops
   // alarms from polling too often.
   base::TimeDelta minimum_granularity;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Alarm);
 };
 
 // Manages the currently pending alarms for every extension in a profile.
@@ -73,6 +74,10 @@ class AlarmManager : public BrowserContextKeyedAPI,
   };
 
   explicit AlarmManager(content::BrowserContext* context);
+
+  AlarmManager(const AlarmManager&) = delete;
+  AlarmManager& operator=(const AlarmManager&) = delete;
+
   ~AlarmManager() override;
 
   // Override the default delegate. Callee assumes onwership. Used for testing.
@@ -243,8 +248,6 @@ class AlarmManager : public BrowserContextKeyedAPI,
 
   // Next poll's time.
   base::Time next_poll_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlarmManager);
 };
 
 }  //  namespace extensions

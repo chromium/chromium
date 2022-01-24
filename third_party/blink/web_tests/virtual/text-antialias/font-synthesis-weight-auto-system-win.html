@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8"/>
+<title>CSS Test: font-synthesis-weight: auto enables fake bold</title>
+<link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-synthesis-weight">
+<meta name="assert" content=" If ‘weight’ is specified, user agents must synthesize bold faces">
+<!--Sylfaen is only available in Regular style in the Windows set of test fonts that are used as system fonts in Windows testing-->
+<style>
+    @supports not (font-synthesis-weight: auto) {
+        .test {color: red;}
+    }
+    .test {
+        font-family: Sylfaen;
+        font-size: 3em;
+        font-weight: bold;
+    }
+    .nosynth {
+        font-synthesis-weight: auto;
+    }
+</style>
+
+<p>Test passes if the two lines below are identical and there is no red.</p>
+<section class="test">
+    <p>текст-заполнитель</p>
+    <p class="nosynth">текст-заполнитель</p>
+</section>

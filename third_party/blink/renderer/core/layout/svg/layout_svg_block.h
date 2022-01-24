@@ -84,14 +84,13 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   bool CheckForImplicitTransformChange(bool bbox_changed) const;
   bool UpdateTransformAfterLayout(bool bounds_changed);
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void UpdateFromStyle() override;
 
  private:
   // LayoutSVGBlock subclasses should use GetElement() instead.
   void GetNode() const = delete;
 
   PhysicalRect VisualRectInDocument(VisualRectFlags) const final;
-
-  void UpdateFromStyle() final;
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,

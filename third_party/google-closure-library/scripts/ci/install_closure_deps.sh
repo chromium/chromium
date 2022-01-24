@@ -50,15 +50,3 @@ rm -f "$CLANG_TAR"
 # Install closure compiler and linter.
 fetch closure-compiler
 fetch closure-compiler-linter
-
-cd closure-library
-
-# Installs node "devDependencies" found in package.json.
-npm install
-
-# Install Selenium.
-./node_modules/protractor/bin/webdriver-manager update
-
-# Install dependencies in closure-deps
-cd closure-deps
-npm install

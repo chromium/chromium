@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/values.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -32,7 +32,7 @@ struct TtsVoice {
 struct TtsVoices : public Extension::ManifestData {
   TtsVoices();
   ~TtsVoices() override;
-  static bool Parse(const base::ListValue* tts_voices,
+  static bool Parse(base::Value::ConstListView tts_voices,
                     TtsVoices* out_voices,
                     std::u16string* error,
                     Extension* extension);
@@ -53,14 +53,16 @@ struct TtsVoices : public Extension::ManifestData {
 class TtsEngineManifestHandler : public ManifestHandler {
  public:
   TtsEngineManifestHandler();
+
+  TtsEngineManifestHandler(const TtsEngineManifestHandler&) = delete;
+  TtsEngineManifestHandler& operator=(const TtsEngineManifestHandler&) = delete;
+
   ~TtsEngineManifestHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TtsEngineManifestHandler);
 };
 
 }  // namespace extensions

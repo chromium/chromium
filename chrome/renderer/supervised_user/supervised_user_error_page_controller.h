@@ -23,6 +23,11 @@ class SupervisedUserErrorPageController
  public:
   static gin::WrapperInfo kWrapperInfo;
 
+  SupervisedUserErrorPageController(const SupervisedUserErrorPageController&) =
+      delete;
+  SupervisedUserErrorPageController& operator=(
+      const SupervisedUserErrorPageController&) = delete;
+
   // Will invoke methods on |delegate| in response to user actions taken on the
   // interstitial. May call delegate methods even after the page has been
   // navigated away from, so it is recommended consumers make sure the weak
@@ -38,10 +43,11 @@ class SupervisedUserErrorPageController
   ~SupervisedUserErrorPageController() override;
 
   void GoBack();
-  void RequestPermission();
+  void RequestUrlAccessRemote();
+  void RequestUrlAccessLocal();
   void Feedback();
 
-  void RequestPermissionCallback(bool success);
+  void OnRequestUrlAccessRemote(bool success);
 
   // gin::WrappableBase
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
@@ -55,8 +61,6 @@ class SupervisedUserErrorPageController
   // are used for the request permission callback, so messages to no longer
   // existing interstitials are ignored.
   base::WeakPtrFactory<SupervisedUserErrorPageController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserErrorPageController);
 };
 
 #endif  // CHROME_RENDERER_SUPERVISED_USER_SUPERVISED_USER_ERROR_PAGE_CONTROLLER_H_

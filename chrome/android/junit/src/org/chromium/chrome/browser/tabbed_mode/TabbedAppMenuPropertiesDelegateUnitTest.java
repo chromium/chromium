@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -64,11 +65,10 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.webapps.AppBannerManager;
-import org.chromium.content.browser.ContentFeatureListImpl;
-import org.chromium.content.browser.ContentFeatureListImplJni;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -81,7 +81,8 @@ import java.util.List;
  * Unit tests for {@link TabbedAppMenuPropertiesDelegate}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.WEB_FEED})
+@Features.EnableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.READ_LATER,
+        ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.CHROME_MANAGEMENT_PAGE})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Costants defining flags that determines multi-window menu items visibility.
     private static final boolean TAB_M = true; // multiple tabs
@@ -139,8 +140,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     private DataReductionProxySettings.Natives mDataReductionJniMock;
     @Mock
-    private ContentFeatureListImpl.Natives mContentFeatureListJniMock;
-    @Mock
     private WebFeedSnackbarController.FeedLauncher mFeedLauncher;
     @Mock
     private ModalDialogManager mDialogManager;
@@ -158,6 +157,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private TabModelFilterProvider mTabModelFilterProvider;
     @Mock
     private TabModelFilter mTabModelFilter;
+    @Mock
+    public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
 
     private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
             new OneshotSupplierImpl<>();
@@ -198,10 +199,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         jniMocker.mock(DataReductionProxySettingsJni.TEST_HOOKS, mDataReductionJniMock);
         when(mDataReductionJniMock.isDataReductionProxyEnabled(anyLong(), any())).thenReturn(false);
-        jniMocker.mock(ContentFeatureListImplJni.TEST_HOOKS, mContentFeatureListJniMock);
-        when(mContentFeatureListJniMock.isEnabled(
-                     ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS))
-                .thenReturn(false);
+        jniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
         OfflinePageUtils.setInstanceForTesting(mOfflinePageUtils);
         when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
@@ -211,10 +209,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(
                 new TabbedAppMenuPropertiesDelegate(ContextUtils.getApplicationContext(),
                         mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
-                        mToolbarManager, mDecorView, mAppMenuDelegate, mOverviewModeSupplier,
+                        mToolbarManager, mDecorView, mAppMenuDelegate, mOverviewModeSupplier, null,
                         mBookmarkBridgeSupplier, mFeedLauncher, mDialogManager, mSnackbarManager));
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_URL);
+        SharedPreferencesManager.getInstance().removeKeysWithPrefix(
+                ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT);
     }
 
     @Test
@@ -230,8 +230,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 R.id.downloads_menu_id, R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id,
                 R.id.divider_line_id, R.id.translate_id, R.id.share_row_menu_id,
                 R.id.find_in_page_id, R.id.add_to_homescreen_id,
-                R.id.request_desktop_site_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
-                R.id.help_id, R.id.managed_by_menu_id};
+                R.id.request_desktop_site_row_menu_id, R.id.auto_dark_web_contents_row_menu_id,
+                R.id.divider_line_id, R.id.preferences_id, R.id.help_id, R.id.managed_by_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
@@ -298,12 +298,30 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mIsNewWindowMenuFeatureEnabled = true;
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
 
-        writeUrl(0, "https://url0");
+        createInstance(0, "https://url0");
 
+        // On phone, we do not show 'New Window'.
+        mIsTabletScreen = false;
         Menu menu = createMenuForMultiWindow();
+        assertFalse(isMenuVisible(menu, R.id.new_window_menu_id));
+
+        // Multi-window mode, with a single instance (no adjacent instance running) makes
+        // the menu visible.
+        doReturn(false).when(mMultiWindowModeStateDispatcher).isChromeRunningInAdjacentWindow();
+        mIsMultiWindow = true;
+
+        menu = createMenuForMultiWindow();
         assertTrue(isMenuVisible(menu, R.id.new_window_menu_id));
 
-        for (int i = 0; i < MultiWindowUtils.getMaxInstances(); ++i) writeUrl(i, "https://url" + i);
+        // On tablet, we show 'New Window' by default.
+        mIsTabletScreen = true;
+        mIsMultiWindow = false;
+        menu = createMenuForMultiWindow();
+        assertTrue(isMenuVisible(menu, R.id.new_window_menu_id));
+
+        for (int i = 0; i < MultiWindowUtils.getMaxInstances(); ++i) {
+            createInstance(i, "https://url" + i);
+        }
 
         Menu menu2 = createMenuForMultiWindow();
         assertFalse(isMenuVisible(menu2, R.id.new_window_menu_id));
@@ -315,14 +333,16 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mIsNewWindowMenuFeatureEnabled = true;
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
 
-        writeUrl(0, "https://url0");
+        createInstance(0, "https://url0");
 
         Menu menu = createMenuForMultiWindow();
+        assertEquals(1, mMultiWindowModeStateDispatcher.getInstanceCount());
         assertFalse(isMenuVisible(menu, R.id.move_to_other_window_menu_id));
 
-        writeUrl(1, "https://url1");
+        createInstance(1, "https://url1");
 
         Menu menu2 = createMenuForMultiWindow();
+        assertEquals(2, mMultiWindowModeStateDispatcher.getInstanceCount());
         assertTrue(isMenuVisible(menu2, R.id.move_to_other_window_menu_id));
     }
 
@@ -332,12 +352,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mIsNewWindowMenuFeatureEnabled = true;
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
 
-        writeUrl(0, "https://url0");
+        createInstance(0, "https://url0");
 
         Menu menu = createMenuForMultiWindow();
         assertFalse(isMenuVisible(menu, R.id.manage_all_windows_menu_id));
 
-        writeUrl(1, "https://url1");
+        createInstance(1, "https://url1");
 
         Menu menu2 = createMenuForMultiWindow();
         assertTrue(isMenuVisible(menu2, R.id.manage_all_windows_menu_id));
@@ -376,7 +396,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void getFooterResourceId_signedOutUser_doesNotReturnWebFeedMenuItem() {
         setUpMocksForWebFeedFooter();
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
 
         assertNotEquals("Footer Resource ID should not be web_feed_main_menu_item.",
                 R.layout.web_feed_main_menu_item,
@@ -397,7 +417,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
         when(mOfflinePageUtils.isOfflinePage(mTab)).thenReturn(false);
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
     }
 
     private void setUpMocksForPageMenu() {
@@ -415,6 +435,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(false).when(mTabbedAppMenuPropertiesDelegate).isPartnerHomepageEnabled();
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).isTabletSizeScreen();
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).isNewWindowMenuFeatureEnabled();
+        doReturn(true).when(mTabbedAppMenuPropertiesDelegate).isAutoDarkWebContentsEnabled();
 
         setUpIncognitoMocks();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL));
@@ -429,7 +450,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                          R.string.menu_add_to_homescreen, R.string.add))
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .getAddToHomeScreenTitle(mTab);
-        when(mManagedBrowserUtilsJniMock.hasBrowserPoliciesApplied(any())).thenReturn(true);
+        when(mManagedBrowserUtilsJniMock.isBrowserManaged(any())).thenReturn(true);
     }
 
     private void setUpIncognitoMocks() {
@@ -446,7 +467,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .isOpenInOtherWindowSupported();
 
         PopupMenu tempMenu = new PopupMenu(ContextUtils.getApplicationContext(), mDecorView);
-        tempMenu.inflate(mTabbedAppMenuPropertiesDelegate.getAppMenuLayoutId());
+        tempMenu.inflate(R.menu.main_menu);
         return tempMenu.getMenu();
     }
 
@@ -473,6 +494,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(mIsNewWindowMenuFeatureEnabled)
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .isNewWindowMenuFeatureEnabled();
+        doReturn(MultiWindowUtils.getInstanceCount())
+                .when(mMultiWindowModeStateDispatcher)
+                .getInstanceCount();
         Menu menu = createTestMenu();
         mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
         return menu;
@@ -602,11 +626,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         return items.toString();
     }
 
-    private static void writeUrl(int index, String url) {
-        SharedPreferencesManager.getInstance().writeString(urlKey(index), url);
-    }
-
-    private static String urlKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(index));
+    private static void createInstance(int index, String url) {
+        String urlKey = ChromePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(index));
+        SharedPreferencesManager.getInstance().writeString(urlKey, url);
+        String tabCountKey =
+                ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT.createKey(String.valueOf(index));
+        SharedPreferencesManager.getInstance().writeInt(tabCountKey, 1);
+        String accessTimeKey = ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME.createKey(
+                String.valueOf(index));
+        SharedPreferencesManager.getInstance().writeLong(accessTimeKey, System.currentTimeMillis());
     }
 }

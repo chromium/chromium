@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_client_implementation_type.h"
@@ -140,15 +139,15 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
   // Returns the global instance which may be nullptr if not initialized.
   static DlcserviceClient* Get();
 
+  DlcserviceClient(const DlcserviceClient&) = delete;
+  DlcserviceClient& operator=(const DlcserviceClient&) = delete;
+
  protected:
   friend class DlcserviceClientTest;
 
   // Initialize/Shutdown should be used instead.
   DlcserviceClient();
   virtual ~DlcserviceClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DlcserviceClient);
 };
 
 }  // namespace chromeos

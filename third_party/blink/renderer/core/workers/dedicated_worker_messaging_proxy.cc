@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/worker_resource_timing_notifier_impl.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
+#include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_object_proxy.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_thread.h"
@@ -60,7 +61,9 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     RejectCoepUnsafeNone reject_coep_unsafe_none,
     const blink::DedicatedWorkerToken& token,
     mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
-        dedicated_worker_host) {
+        dedicated_worker_host,
+    mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+        back_forward_cache_controller_host) {
   DCHECK(IsParentContextThread());
   if (AskedToTerminate()) {
     // Worker.terminate() could be called from JS before the thread was
@@ -68,8 +71,10 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     return;
   }
 
-  // |dedicated_worker_host| must be stored before InitializeWorkerThread.
+  // These must be stored before InitializeWorkerThread.
   pending_dedicated_worker_host_ = std::move(dedicated_worker_host);
+  pending_back_forward_cache_controller_host_ =
+      std::move(back_forward_cache_controller_host);
   InitializeWorkerThread(
       std::move(creation_params),
       CreateBackingThreadStartupData(GetExecutionContext()->GetIsolate()),
@@ -77,7 +82,7 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
 
   // Step 13: "Obtain script by switching on the value of options's type
   // member:"
-  if (options->type() == "classic") {
+  if (options->type() == script_type_names::kClassic) {
     // "classic: Fetch a classic worker script given url, outside settings,
     // destination, and inside settings."
     UseCounter::Count(GetExecutionContext(),
@@ -95,7 +100,7 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
       GetWorkerThread()->EvaluateClassicScript(
           script_url, source_code, nullptr /* cached_meta_data */, stack_id);
     }
-  } else if (options->type() == "module") {
+  } else if (options->type() == script_type_names::kModule) {
     // "module: Fetch a module worker script graph given url, outside settings,
     // destination, the value of the credentials member of options, and inside
     // settings."
@@ -269,7 +274,8 @@ DedicatedWorkerMessagingProxy::CreateWorkerThread() {
   DCHECK(pending_dedicated_worker_host_);
   return std::make_unique<DedicatedWorkerThread>(
       GetExecutionContext(), WorkerObjectProxy(),
-      std::move(pending_dedicated_worker_host_));
+      std::move(pending_dedicated_worker_host_),
+      std::move(pending_back_forward_cache_controller_host_));
 }
 
 }  // namespace blink

@@ -32,7 +32,8 @@ class FileMonitor {
   // in either database.
   virtual void DeleteUnknownFiles(
       const Model::EntryList& known_entries,
-      const std::vector<DriverEntry>& known_driver_entries) = 0;
+      const std::vector<DriverEntry>& known_driver_entries,
+      base::OnceClosure completion_callback) = 0;
 
   // Deletes the files associated with the |entries|.
   virtual void CleanupFilesForCompletedEntries(

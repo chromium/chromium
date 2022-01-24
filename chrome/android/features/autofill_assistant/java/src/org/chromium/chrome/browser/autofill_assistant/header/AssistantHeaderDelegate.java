@@ -28,6 +28,13 @@ class AssistantHeaderDelegate {
         }
     }
 
+    void onTtsButtonClicked() {
+        if (mNativeAssistantHeaderDelegate != 0) {
+            AssistantHeaderDelegateJni.get().onTtsButtonClicked(
+                    mNativeAssistantHeaderDelegate, AssistantHeaderDelegate.this);
+        }
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativeAssistantHeaderDelegate = 0;
@@ -37,5 +44,6 @@ class AssistantHeaderDelegate {
     interface Natives {
         void onFeedbackButtonClicked(
                 long nativeAssistantHeaderDelegate, AssistantHeaderDelegate caller);
+        void onTtsButtonClicked(long nativeAssistantHeaderDelegate, AssistantHeaderDelegate caller);
     }
 }

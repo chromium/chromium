@@ -9,6 +9,8 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
+namespace ash {
+
 // Delegate to expose //chrome services to //components FileManagerUI.
 class FileManagerUIDelegate {
  public:
@@ -17,5 +19,7 @@ class FileManagerUIDelegate {
   // Populates (writes) load time data to the source.
   virtual void PopulateLoadTimeData(content::WebUIDataSource*) const = 0;
 };
+
+}  // namespace ash
 
 #endif  // ASH_WEBUI_FILE_MANAGER_FILE_MANAGER_UI_DELEGATE_H_

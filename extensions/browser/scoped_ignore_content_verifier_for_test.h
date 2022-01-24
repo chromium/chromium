@@ -15,10 +15,13 @@ namespace extensions {
 class ScopedIgnoreContentVerifierForTest {
  public:
   ScopedIgnoreContentVerifierForTest();
-  ~ScopedIgnoreContentVerifierForTest();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedIgnoreContentVerifierForTest);
+  ScopedIgnoreContentVerifierForTest(
+      const ScopedIgnoreContentVerifierForTest&) = delete;
+  ScopedIgnoreContentVerifierForTest& operator=(
+      const ScopedIgnoreContentVerifierForTest&) = delete;
+
+  ~ScopedIgnoreContentVerifierForTest();
 };
 
 }  // namespace extensions

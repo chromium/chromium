@@ -12,7 +12,15 @@
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace syncer {
+class ProxyModelTypeControllerDelegate;
+}  // namespace syncer
+
+class PrefService;
+
 namespace password_manager {
+
+class LoginDatabase;
 
 struct PasswordForm;
 
@@ -43,11 +51,17 @@ class PasswordStoreBackend {
   PasswordStoreBackend& operator=(PasswordStoreBackend&&) = delete;
   virtual ~PasswordStoreBackend() = default;
 
+  virtual base::WeakPtr<PasswordStoreBackend> GetWeakPtr() = 0;
+
   // TODO(crbug.bom/1226042): Rename this to Init after PasswordStoreImpl no
   // longer inherits PasswordStore.
   virtual void InitBackend(RemoteChangesReceived remote_form_changes_received,
                            base::RepeatingClosure sync_enabled_or_disabled_cb,
                            base::OnceCallback<void(bool)> completion) = 0;
+
+  // Shuts down the store asynchronously. The callback is run on the main thread
+  // after the shutdown has concluded and it is safe to delete the backend.
+  virtual void Shutdown(base::OnceClosure shutdown_completed) = 0;
 
   // Returns the complete list of PasswordForms (regardless of their blocklist
   // status) and notify `consumer` on completion. Callback is called on the main
@@ -58,12 +72,14 @@ class PasswordStoreBackend {
   // called on the main sequence.
   virtual void GetAutofillableLoginsAsync(LoginsReply callback) = 0;
 
-  // Returns all PasswordForms with the same or PSL-matched signon_realm as
-  // a form in |forms|. If multiple forms are given, those will be concatenated.
+  // Returns all PasswordForms with the same signon_realm as a form in |forms|.
+  // If |include_psl|==true, the PSL-matched forms are also included.
+  // If multiple forms are given, those will be concatenated.
   // Callback is called on the main sequence.
   // TODO(crbug.com/1217071): Check whether this needs OptionalLoginsReply, too.
   virtual void FillMatchingLoginsAsync(
       LoginsReply callback,
+      bool include_psl,
       const std::vector<PasswordFormDigest>& forms) = 0;
 
   // For all methods below:
@@ -90,11 +106,27 @@ class PasswordStoreBackend {
       base::Time delete_end,
       PasswordStoreChangeListReply callback) = 0;
   virtual void DisableAutoSignInForOriginsAsync(
-      PasswordStoreChangeListReply callback,
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {}
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+      base::OnceClosure completion) = 0;
 
   virtual SmartBubbleStatsStore* GetSmartBubbleStatsStore() = 0;
   virtual FieldInfoStore* GetFieldInfoStore() = 0;
+
+  // For sync codebase only: instantiates a proxy controller delegate to
+  // react to sync events.
+  virtual std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+  CreateSyncControllerDelegate() = 0;
+
+  // Tells whether backend is actively syncing data. Callback is called on a
+  // main sequence.
+  virtual void GetSyncStatus(base::OnceCallback<void(bool)> callback) = 0;
+
+  // Factory function for creating the backend. The Local backend requires the
+  // provided `login_db` for storage and Android backend for migration purposes.
+  static std::unique_ptr<PasswordStoreBackend> Create(
+      std::unique_ptr<LoginDatabase> login_db,
+      PrefService* prefs,
+      base::RepeatingCallback<bool()> is_syncing_passwords_callback);
 };
 
 }  // namespace password_manager

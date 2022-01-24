@@ -8,7 +8,6 @@
 #include <list>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/network_change_notifier.h"
 
 // Class used for delaying callbacks when the network connection is offline and
@@ -17,6 +16,11 @@ class WaitForNetworkCallbackHelper
     : public net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
   WaitForNetworkCallbackHelper();
+
+  WaitForNetworkCallbackHelper(const WaitForNetworkCallbackHelper&) = delete;
+  WaitForNetworkCallbackHelper& operator=(const WaitForNetworkCallbackHelper&) =
+      delete;
+
   ~WaitForNetworkCallbackHelper() override;
 
   // net::NetworkChangeController::NetworkChangeObserver implementation.
@@ -29,8 +33,6 @@ class WaitForNetworkCallbackHelper
 
  private:
   std::list<base::OnceClosure> delayed_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForNetworkCallbackHelper);
 };
 
 #endif  // COMPONENTS_SIGNIN_IOS_BROWSER_WAIT_FOR_NETWORK_CALLBACK_HELPER_H_

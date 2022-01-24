@@ -943,8 +943,14 @@ TEST(Delimiter, ByLength) {
 }
 
 TEST(Split, WorksWithLargeStrings) {
+#if defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
+    defined(ABSL_HAVE_MEMORY_SANITIZER) || defined(ABSL_HAVE_THREAD_SANITIZER)
+  constexpr size_t kSize = (uint32_t{1} << 26) + 1;  // 64M + 1 byte
+#else
+  constexpr size_t kSize = (uint32_t{1} << 31) + 1;  // 2G + 1 byte
+#endif
   if (sizeof(size_t) > 4) {
-    std::string s((uint32_t{1} << 31) + 1, 'x');  // 2G + 1 byte
+    std::string s(kSize, 'x');
     s.back() = '-';
     std::vector<absl::string_view> v = absl::StrSplit(s, '-');
     EXPECT_EQ(2, v.size());

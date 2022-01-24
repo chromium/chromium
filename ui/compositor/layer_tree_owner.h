@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace ui {
@@ -19,6 +18,10 @@ class Layer;
 class COMPOSITOR_EXPORT LayerTreeOwner {
  public:
   explicit LayerTreeOwner(std::unique_ptr<Layer> root);
+
+  LayerTreeOwner(const LayerTreeOwner&) = delete;
+  LayerTreeOwner& operator=(const LayerTreeOwner&) = delete;
+
   ~LayerTreeOwner();
 
   Layer* release() WARN_UNUSED_RESULT {
@@ -32,8 +35,6 @@ class COMPOSITOR_EXPORT LayerTreeOwner {
 
  private:
   Layer* root_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayerTreeOwner);
 };
 
 }  // namespace

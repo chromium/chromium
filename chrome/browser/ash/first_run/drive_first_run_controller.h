@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_FIRST_RUN_DRIVE_FIRST_RUN_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_FIRST_RUN_DRIVE_FIRST_RUN_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,6 +46,10 @@ class DriveFirstRunController {
   };
 
   explicit DriveFirstRunController(Profile* profile);
+
+  DriveFirstRunController(const DriveFirstRunController&) = delete;
+  DriveFirstRunController& operator=(const DriveFirstRunController&) = delete;
+
   ~DriveFirstRunController();
 
   // Starts the process to enable offline mode for the user's Drive account.
@@ -88,8 +91,6 @@ class DriveFirstRunController {
   int web_contents_timeout_secs_;
   std::string drive_offline_endpoint_url_;
   std::string drive_hosted_app_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFirstRunController);
 };
 
 }  // namespace ash

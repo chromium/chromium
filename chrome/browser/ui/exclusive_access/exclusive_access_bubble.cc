@@ -38,22 +38,22 @@ ExclusiveAccessBubble::ExclusiveAccessBubble(
       bubble_type_(bubble_type),
       hide_timeout_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kInitialDelayMs),
+          base::Milliseconds(kInitialDelayMs),
           base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
                               base::Unretained(this))),
       idle_timeout_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kIdleTimeMs),
+          base::Milliseconds(kIdleTimeMs),
           base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
                               base::Unretained(this))),
       suppress_notify_timeout_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kSnoozeNotificationsTimeMs),
+          base::Milliseconds(kSnoozeNotificationsTimeMs),
           base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
                               base::Unretained(this))),
       mouse_position_checker_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(1000 / kPositionCheckHz),
+          base::Milliseconds(1000 / kPositionCheckHz),
           base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
                               base::Unretained(this))) {
   DCHECK_NE(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE, bubble_type_);

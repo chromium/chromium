@@ -12,6 +12,8 @@ import org.chromium.mojo.bindings.Interface;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.List;
+
 /**
  * The RenderFrameHost Java wrapper to allow communicating with the native RenderFrameHost object.
  */
@@ -61,6 +63,13 @@ public interface RenderFrameHost {
     void getCanonicalUrlForSharing(Callback<GURL> callback);
 
     /**
+     * Fetch all RenderFramesHosts from the current frame.
+     *
+     * @return A list of RenderFramesHosts including the current frame and all descendents.
+     */
+    public List<RenderFrameHost> getAllRenderFrameHosts();
+
+    /**
      * Returns whether the feature policy allows the feature in this frame.
      *
      * @param feature A feature controlled by feature policy.
@@ -99,10 +108,10 @@ public interface RenderFrameHost {
     void notifyUserActivation();
 
     /**
-     * If a ModalCloseWatcher is active in this RenderFrameHost, signal it to close.
+     * If a CloseWatcher is active in this RenderFrameHost, signal it to close.
      * @return Whether a close signal was sent.
      */
-    boolean signalModalCloseWatcherIfActive();
+    boolean signalCloseWatcherIfActive();
 
     /**
      * Returns whether we're in incognito mode.
@@ -129,15 +138,17 @@ public interface RenderFrameHost {
      * process, then the effective origin is the same as the last committed origin. However, if the
      * request originated from an internal request from the browser process (e.g. Payments
      * Autofill), then the relying party ID would not match the renderer's origin, and will
-     * therefore have to provide its own effective origin. The return value is a code corresponding
-     * to the AuthenticatorStatus mojo enum.
+     * therefore have to provide its own effective origin. `isPaymentCredentialGetAssertion`
+     * indicates whether the security check is done for getting an assertion for Secure Payment
+     * Confirmation (SPC). The return value is a code corresponding to the AuthenticatorStatus
+     * mojo enum.
      *
      * @return An object containing (1) the status code indicating the result of the GetAssertion
      *         request security checks. (2) whether the effectiveOrigin is a cross-origin with any
      *         frame in this frame's ancestor chain.
      */
     WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
-            String relyingPartyId, Origin effectiveOrigin);
+            String relyingPartyId, Origin effectiveOrigin, boolean isPaymentCredentialGetAssertion);
 
     /**
      * Runs security checks associated with a Web Authentication MakeCredential request for the

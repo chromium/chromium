@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom-forward.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom/app_notification_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/user_action_recorder.mojom-forward.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
+#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom-forward.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -40,6 +40,10 @@ class OSSettingsUI : public ui::MojoWebUIController {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   explicit OSSettingsUI(content::WebUI* web_ui);
+
+  OSSettingsUI(const OSSettingsUI&) = delete;
+  OSSettingsUI& operator=(const OSSettingsUI&) = delete;
+
   ~OSSettingsUI() override;
 
   // Instantiates implementor of the mojom::CellularSetup mojo interface
@@ -91,6 +95,12 @@ class OSSettingsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<nearby_share::mojom::ContactManager> receiver);
 
+  // Instantiates implementor of the mojom::CrosBluetoothConfig mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
+          receiver);
+
  private:
   base::TimeTicks time_when_opened_;
 
@@ -101,8 +111,6 @@ class OSSettingsUI : public ui::MojoWebUIController {
       app_management_page_handler_factory_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(OSSettingsUI);
 };
 
 }  // namespace settings

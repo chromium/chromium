@@ -31,6 +31,7 @@
 import json
 import os
 import re
+import six
 import sys
 import unittest
 
@@ -170,6 +171,7 @@ class StreamTestingMixin(object):
         self.assertTrue(stream.getvalue())
 
 
+@unittest.removeHandler
 class RunTest(unittest.TestCase, StreamTestingMixin):
     def setUp(self):
         # A real PlatformInfo object is used here instead of a
@@ -213,7 +215,11 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         one_line_summary = "%d tests ran as expected%s, %d didn't:\n" % (
             expected_tests, expected_summary_str,
             len(details.initial_results.unexpected_results_by_name))
-        self.assertIn(one_line_summary, logging_stream.buflist)
+        if six.PY2:
+            self.assertIn(one_line_summary, logging_stream.buflist)
+        else:
+            self.assertIn(one_line_summary, logging_stream.getvalue())
+
 
         # Ensure the results were summarized properly.
         self.assertEqual(details.summarized_failing_results['num_regressions'],
@@ -240,15 +246,28 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
     def test_max_locked_shards(self):
         # Tests for the default of using one locked shard even in the case of more than one child process.
         _, regular_output, _ = logging_run(
-            ['--debug-rwt-logging', '--jobs', '2'], shared_port=False)
-        self.assertTrue(
-            any('1 locked' in line for line in regular_output.buflist))
+            ['--debug-rwt-logging', '--jobs', '2', 'passes', 'http/tests', 'perf/foo'],
+            tests_included=True, shared_port=False)
+        if six.PY2:
+            self.assertTrue(
+                any('1 locked' in line for line in regular_output.buflist))
+        else:
+            self.assertTrue(
+                any('1 locked' in line
+                    for line in regular_output.getvalue().splitlines()))
 
     def test_child_processes_2(self):
         _, regular_output, _ = logging_run(
             ['--debug-rwt-logging', '--jobs', '2'], shared_port=False)
-        self.assertTrue(
-            any(['Running 2 ' in line for line in regular_output.buflist]))
+        if six.PY2:
+            self.assertTrue(
+                any(['Running 2 ' in line for line in regular_output.buflist]))
+        else:
+            self.assertTrue(
+                any([
+                    'Running 2 ' in line
+                    for line in regular_output.getvalue().splitlines()
+                ]))
 
     def test_child_processes_min(self):
         _, regular_output, _ = logging_run([
@@ -257,8 +276,15 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         ],
                                            tests_included=True,
                                            shared_port=False)
-        self.assertTrue(
-            any(['Running 1 ' in line for line in regular_output.buflist]))
+        if six.PY2:
+            self.assertTrue(
+                any(['Running 1 ' in line for line in regular_output.buflist]))
+        else:
+            self.assertTrue(
+                any([
+                    'Running 1 ' in line
+                    for line in regular_output.getvalue().splitlines()
+                ]))
 
     def test_dryrun(self):
         tests_run = get_tests_run(['--dry-run'])
@@ -332,11 +358,18 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         ],
                                            tests_included=True,
                                            shared_port=False)
-        self.assertTrue(
-            any([
-                'Interrupted, exiting' in line
-                for line in regular_output.buflist
-            ]))
+        if six.PY2:
+            self.assertTrue(
+                any([
+                    'Interrupted, exiting' in line
+                    for line in regular_output.buflist
+                ]))
+        else:
+            self.assertTrue(
+                any([
+                    'Interrupted, exiting' in line
+                    for line in regular_output.getvalue().splitlines()
+                ]))
 
     def test_no_tests_found(self):
         details, err, _ = logging_run(['resources'], tests_included=True)
@@ -471,7 +504,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         tests_to_run = ['http/tests/ssl', 'perf/foo', 'http/tests/passes']
         tests_run = get_tests_run(['--order=none'] + tests_to_run)
         self.assertEqual(tests_run, [
-            'http/tests/ssl/text.html', 'perf/foo/test.html',
+            'perf/foo/test.html', 'http/tests/ssl/text.html',
             'http/tests/passes/image.html', 'http/tests/passes/text.html'
         ])
 
@@ -679,7 +712,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         test_results = results['tests']['failures']['expected']['text.html']
         self.assertEqual(test_results['expected'], 'PASS')
         self.assertEqual(test_results['flag_expectations'], ['PASS'])
-        self.assertEqual(test_results['base_expectations'],
+        self.assertEqual(sorted(test_results['base_expectations']),
                          ['FAIL', 'TIMEOUT'])
 
     def test_slow_flag_expectations_in_json_results(self):
@@ -717,12 +750,14 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         # an explicit [ Pass ] expectation.
         self.assertNotIn('flag_expectations', text_results)
         self.assertNotIn('base_expectations', text_results)
-        self.assertEqual(text_results['expected'], 'FAIL TIMEOUT')
+        self.assertEqual(sorted(text_results['expected'].split(' ')),
+                         ['FAIL', 'TIMEOUT'])
 
         image_results = results['tests']['failures']['expected']['image.html']
         self.assertEqual(image_results['expected'], 'PASS')
         self.assertEqual(image_results['flag_expectations'], ['PASS'])
-        self.assertEqual(image_results['base_expectations'], ['FAIL', 'CRASH'])
+        self.assertEqual(sorted(image_results['base_expectations']),
+                         ['CRASH', 'FAIL'])
 
     def test_flag_and_base_expectations_in_json_results(self):
         host = MockHost()
@@ -751,9 +786,11 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
                 '/tmp/layout-test-results/full_results.json'))
         test_results = results['tests']['failures']['expected']['text.html']
         self.assertEqual(results['flag_name'], '/composite-after-paint')
-        self.assertEqual(test_results['expected'], 'FAIL CRASH')
-        self.assertEqual(test_results['flag_expectations'], ['FAIL', 'CRASH'])
-        self.assertEqual(test_results['base_expectations'],
+        self.assertEqual(sorted(test_results['expected'].split(' ')),
+                         ['CRASH', 'FAIL'])
+        self.assertEqual(sorted(test_results['flag_expectations']),
+                         ['CRASH', 'FAIL'])
+        self.assertEqual(sorted(test_results['base_expectations']),
                          ['FAIL', 'TIMEOUT'])
 
     def test_flag_and_default_base_expectations_in_json_results(self):
@@ -898,7 +935,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
             host.filesystem.read_text_file(
                 '/tmp/layout-test-results/full_results.json'))
         self.assertEqual(
-            host.filesystem.read_text_file(
+            host.filesystem.read_binary_file(
                 '/tmp/layout-test-results/failures/unexpected/crash-with-sample-sample.txt'
             ), 'crash sample file')
         results = json.loads(

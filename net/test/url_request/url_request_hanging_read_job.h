@@ -17,6 +17,10 @@ class URLRequest;
 class URLRequestHangingReadJob : public URLRequestJob {
  public:
   explicit URLRequestHangingReadJob(URLRequest* request);
+
+  URLRequestHangingReadJob(const URLRequestHangingReadJob&) = delete;
+  URLRequestHangingReadJob& operator=(const URLRequestHangingReadJob&) = delete;
+
   ~URLRequestHangingReadJob() override;
 
   void Start() override;
@@ -36,8 +40,6 @@ class URLRequestHangingReadJob : public URLRequestJob {
 
   const int content_length_;
   base::WeakPtrFactory<URLRequestHangingReadJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestHangingReadJob);
 };
 
 }  // namespace net

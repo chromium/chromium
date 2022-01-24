@@ -78,8 +78,7 @@ BA 48 53 4A E2 1C 42 24 EB E5 CD 46 E0 4E 9B 2B
 
 // Test values for creating CertProfile for MockCertProvisioningWorker.
 constexpr char kCertProfileVersion[] = "cert_profile_version_1";
-constexpr base::TimeDelta kCertProfileRenewalPeriod =
-    base::TimeDelta::FromSeconds(0);
+constexpr base::TimeDelta kCertProfileRenewalPeriod = base::Seconds(0);
 constexpr char kDeviceCertProfileId[] = "device_cert_profile_1";
 constexpr char kDeviceCertProfileName[] = "Device Certificate Profile 1";
 constexpr char kUserCertProfileId[] = "user_cert_profile_1";
@@ -451,11 +450,11 @@ TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
       &web_ui_, "certificate-provisioning-processes-changed");
   scheduler_observer_for_user_->OnVisibleStateChanged();
   // Another update does not trigger a UI update for the holdoff time.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(299));
+  task_environment_.FastForwardBy(base::Milliseconds(299));
   EXPECT_EQ(0U, handler_->ReadAndResetUiRefreshCountForTesting());
 
   // When the holdoff time has elapsed, an UI update is triggered.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(2));
+  task_environment_.FastForwardBy(base::Milliseconds(2));
   EXPECT_EQ(1U, handler_->ReadAndResetUiRefreshCountForTesting());
   result_waiter_2.Wait();
 

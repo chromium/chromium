@@ -30,7 +30,7 @@ class PaintOpPerfTest : public testing::Test {
  public:
   PaintOpPerfTest()
       : timer_(kNumWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval),
         serialized_data_(static_cast<char*>(
             base::AlignedAlloc(kMaxSerializedBufferBytes,

@@ -72,11 +72,14 @@ void HTTPAuthOverlayRequestConfig::CreateAuxiliaryData(
                    initWithText:base::SysUTF8ToNSString(default_username())
                     placeholder:username_placeholder
         accessibilityIdentifier:nil
+         autocapitalizationType:UITextAutocapitalizationTypeNone
                 secureTextEntry:NO],
-    [[TextFieldConfiguration alloc] initWithText:nil
-                                     placeholder:password_placeholder
-                         accessibilityIdentifier:nil
-                                 secureTextEntry:YES],
+    [[TextFieldConfiguration alloc]
+                   initWithText:nil
+                    placeholder:password_placeholder
+        accessibilityIdentifier:nil
+         autocapitalizationType:UITextAutocapitalizationTypeNone
+                secureTextEntry:YES],
   ];
   NSString* ok_label =
       l10n_util::GetNSStringWithFixup(IDS_LOGIN_DIALOG_OK_BUTTON_LABEL);

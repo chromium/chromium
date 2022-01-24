@@ -128,8 +128,7 @@ TEST_F(PrefetchDownloaderImplTest, DownloadParams) {
                           "\r\n\r\n"}),
             params->request_params.request_headers.ToString());
 
-  EXPECT_EQ(base::TimeDelta::FromDays(2),
-            params->scheduling_params.cancel_time - epoch);
+  EXPECT_EQ(base::Days(2), params->scheduling_params.cancel_time - epoch);
   RunUntilIdle();
 }
 

@@ -10,9 +10,9 @@
 
 #include "base/callback.h"
 
-namespace url {
-class Origin;
-}
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 
@@ -30,32 +30,33 @@ class DOMStorageContext {
   using GetSessionStorageUsageCallback =
       base::OnceCallback<void(const std::vector<SessionStorageUsageInfo>&)>;
 
-  // Returns a collection of origins using local storage to the given callback.
+  // Returns a collection of StorageKeys using local storage to the given
+  // callback.
   virtual void GetLocalStorageUsage(GetLocalStorageUsageCallback callback) = 0;
 
-  // Returns a collection of origins using session storage to the given
+  // Returns a collection of StorageKeys using session storage to the given
   // callback.
   virtual void GetSessionStorageUsage(
       GetSessionStorageUsageCallback callback) = 0;
 
-  // Deletes the local storage for the origin of |origin_url|. |callback| is
-  // called when the deletion is sent to the database and GetLocalStorageUsage()
-  // will not return entries for |origin_url| anymore.
-  virtual void DeleteLocalStorage(const url::Origin& origin,
+  // Deletes the local storage for `storage_key`. `callback` is called when the
+  // deletion is sent to the database and GetLocalStorageUsage() will not return
+  // entries for `storage_key` anymore.
+  virtual void DeleteLocalStorage(const blink::StorageKey& storage_key,
                                   base::OnceClosure callback) = 0;
 
   // Removes traces of deleted data from the local storage backend.
   virtual void PerformLocalStorageCleanup(base::OnceClosure callback) = 0;
 
-  // Deletes the session storage data identified by |usage_info|.
+  // Deletes the session storage data identified by `usage_info`.
   virtual void DeleteSessionStorage(const SessionStorageUsageInfo& usage_info,
                                     base::OnceClosure callback) = 0;
 
   virtual void PerformSessionStorageCleanup(base::OnceClosure callback) = 0;
 
-  // Creates a SessionStorageNamespace with the given |namespace_id|. Used
+  // Creates a SessionStorageNamespace with the given `namespace_id`. Used
   // after tabs are restored by session restore. When created, the
-  // SessionStorageNamespace with the correct |namespace_id| will be
+  // SessionStorageNamespace with the correct `namespace_id` will be
   // associated with the persisted sessionStorage data.
   virtual scoped_refptr<SessionStorageNamespace> RecreateSessionStorage(
       const std::string& namespace_id) = 0;

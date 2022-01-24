@@ -12,8 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
-#include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
-#include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -22,31 +21,11 @@
 
 namespace blink {
 
-class HTMLPopupElement::PopupResizeDelegate final
-    : public ResizeObserver::Delegate {
- public:
-  PopupResizeDelegate() : ResizeObserver::Delegate() {}
-  void OnResize(
-      const HeapVector<Member<ResizeObserverEntry>>& entries) override {
-    DCHECK_EQ(entries.size(), 1u);
-    auto* popup = DynamicTo<HTMLPopupElement>(entries[0]->target());
-    DCHECK(popup);
-    if (popup->being_shown_)
-      popup->being_shown_ = false;
-    else
-      popup->hide();
-  }
-};
-
 HTMLPopupElement::HTMLPopupElement(Document& document)
     : HTMLElement(html_names::kPopupTag, document),
       open_(false),
-      being_shown_(false),
       had_initiallyopen_when_parsed_(false),
       invoker_(nullptr),
-      resize_observer_(
-          ResizeObserver::Create(GetDocument().domWindow(),
-                                 MakeGarbageCollected<PopupResizeDelegate>())),
       needs_repositioning_for_select_menu_(false),
       owner_select_menu_element_(nullptr) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
@@ -67,11 +46,10 @@ bool HTMLPopupElement::open() const {
 void HTMLPopupElement::hide() {
   if (!open_)
     return;
-  resize_observer_->disconnect();
   open_ = false;
   invoker_ = nullptr;
-  if (!isConnected())
-    return;
+  needs_repositioning_for_select_menu_ = false;
+  DCHECK(isConnected());
   GetDocument().HideAllPopupsUntil(this);
   PopPopupElement(this);
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
@@ -94,7 +72,6 @@ void HTMLPopupElement::Invoke(Element* invoker) {
 void HTMLPopupElement::show() {
   if (open_ || !isConnected())
     return;
-
   // Only hide popups up to this popup's ancestral popup.
   GetDocument().HideAllPopupsUntil(NearestOpenAncestralPopup(this));
   open_ = true;
@@ -102,8 +79,6 @@ void HTMLPopupElement::show() {
   PushNewPopupElement(this);
   MarkStyleDirty();
   SetFocus();
-  being_shown_ = true;
-  resize_observer_->observe(this);
 }
 
 bool HTMLPopupElement::IsKeyboardFocusable() const {
@@ -188,19 +163,38 @@ void HTMLPopupElement::SetFocus() {
   doc.TopDocument().FinalizeAutofocus();
 }
 
+namespace {
+void ShowInitiallyOpenPopup(HTMLPopupElement* popup) {
+  // If a <popup> has the initiallyopen attribute upon page
+  // load, and it is the first such popup, show it.
+  if (popup && popup->isConnected() && !popup->GetDocument().PopupShowing()) {
+    popup->show();
+  }
+}
+}  // namespace
+
 Node::InsertionNotificationRequest HTMLPopupElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
 
   if (had_initiallyopen_when_parsed_) {
-    DCHECK(isConnected()) << "This should be being inserted by the parser";
-    // If a <popup> has the initiallyopen attribute upon page
-    // load, and it is the first such popup, show it.
-    if (!GetDocument().PopupShowing())
-      show();
+    DCHECK(isConnected());
     had_initiallyopen_when_parsed_ = false;
+    GetDocument()
+        .GetTaskRunner(TaskType::kDOMManipulation)
+        ->PostTask(FROM_HERE, WTF::Bind(&ShowInitiallyOpenPopup,
+                                        WrapWeakPersistent(this)));
   }
   return kInsertionDone;
+}
+
+void HTMLPopupElement::RemovedFrom(ContainerNode& insertion_point) {
+  // If a popup is removed from the document, make sure it gets
+  // removed from the popup element stack and the top layer.
+  if (insertion_point.isConnected()) {
+    insertion_point.GetDocument().HidePopupIfShowing(this);
+  }
+  HTMLElement::RemovedFrom(insertion_point);
 }
 
 void HTMLPopupElement::ParserDidSetAttributes() {
@@ -361,47 +355,54 @@ void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
   if (!window)
     return;
 
-  IntRect anchor_rect_in_screen = RoundedIntRect(
-      owner_select_menu_element_->GetBoundingClientRectNoLifecycleUpdate());
-  IntRect avail_rect =
-      IntRect(0, 0, window->innerWidth(), window->innerHeight());
+  FloatRect anchor_rect_in_screen =
+      owner_select_menu_element_->GetBoundingClientRectNoLifecycleUpdate();
+  const float anchor_zoom = owner_select_menu_element_->GetLayoutObject()
+                                ? owner_select_menu_element_->GetLayoutObject()
+                                      ->StyleRef()
+                                      .EffectiveZoom()
+                                : 1;
+  anchor_rect_in_screen.Scale(anchor_zoom);
+  // Don't use the LocalDOMWindow innerHeight/innerWidth getters, as those can
+  // trigger a re-entrant style and layout update.
+  int avail_width = GetDocument().View()->Size().width();
+  int avail_height = GetDocument().View()->Size().height();
+  IntRect avail_rect = IntRect(0, 0, avail_width, avail_height);
 
   // Position the listbox part where is more space available.
-  const int available_space_above = anchor_rect_in_screen.Y() - avail_rect.Y();
-  const int available_space_below =
-      avail_rect.MaxY() - anchor_rect_in_screen.MaxY();
+  const float available_space_above =
+      anchor_rect_in_screen.y() - avail_rect.y();
+  const float available_space_below =
+      avail_rect.bottom() - anchor_rect_in_screen.bottom();
   if (available_space_below < available_space_above) {
     style.SetMaxHeight(Length::Fixed(available_space_above));
     style.SetBottom(
-        Length::Fixed(avail_rect.MaxY() - anchor_rect_in_screen.Y()));
+        Length::Fixed(avail_rect.bottom() - anchor_rect_in_screen.y()));
     style.SetTop(Length::Auto());
   } else {
     style.SetMaxHeight(Length::Fixed(available_space_below));
-    style.SetTop(Length::Fixed(anchor_rect_in_screen.MaxY()));
+    style.SetTop(Length::Fixed(anchor_rect_in_screen.bottom()));
   }
 
-  const int available_space_if_left_anchored =
-      avail_rect.MaxX() - anchor_rect_in_screen.X();
-  const int available_space_if_right_anchored =
-      anchor_rect_in_screen.MaxX() - avail_rect.X();
-  style.SetMinWidth(Length::Fixed(anchor_rect_in_screen.Width()));
-  if (available_space_if_left_anchored > anchor_rect_in_screen.Width() ||
+  const float available_space_if_left_anchored =
+      avail_rect.right() - anchor_rect_in_screen.x();
+  const float available_space_if_right_anchored =
+      anchor_rect_in_screen.right() - avail_rect.x();
+  style.SetMinWidth(Length::Fixed(anchor_rect_in_screen.width()));
+  if (available_space_if_left_anchored > anchor_rect_in_screen.width() ||
       available_space_if_left_anchored > available_space_if_right_anchored) {
-    style.SetLeft(Length::Fixed(anchor_rect_in_screen.X()));
+    style.SetLeft(Length::Fixed(anchor_rect_in_screen.x()));
     style.SetMaxWidth(Length::Fixed(available_space_if_left_anchored));
   } else {
     style.SetRight(
-        Length::Fixed(avail_rect.MaxX() - anchor_rect_in_screen.MaxX()));
+        Length::Fixed(avail_rect.right() - anchor_rect_in_screen.right()));
     style.SetLeft(Length::Auto());
     style.SetMaxWidth(Length::Fixed(available_space_if_right_anchored));
   }
-
-  needs_repositioning_for_select_menu_ = false;
 }
 
 void HTMLPopupElement::Trace(Visitor* visitor) const {
   visitor->Trace(invoker_);
-  visitor->Trace(resize_observer_);
   visitor->Trace(owner_select_menu_element_);
   HTMLElement::Trace(visitor);
 }

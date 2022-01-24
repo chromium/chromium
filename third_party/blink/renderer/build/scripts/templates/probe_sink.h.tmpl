@@ -14,6 +14,7 @@
 
 #include <atomic>
 
+#include "third_party/blink/renderer/core/inspector/agent_registry.h"
 #include "{{export_header}}"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -43,7 +44,7 @@ class {{export_symbol}} {{sink_class}} final : public GarbageCollected<{{sink_cl
 {% set class_name = agent | agent_name_to_class %}
 {% set getter_name = agent | to_snake_case %}
   bool Has{{agent}}s() const { return !{{getter_name}}s_.IsEmpty(); }
-  const HeapListHashSet<Member<{{class_name}}>>& {{class_name}}s() const { return {{getter_name}}s_; }
+  const AgentRegistry<{{class_name}}>& {{class_name}}s() const { return {{getter_name}}s_; }
   void Add{{agent}}({{class_name}}* agent);
   void Remove{{agent}}({{class_name}}* agent);
 
@@ -57,7 +58,7 @@ class {{export_symbol}} {{sink_class}} final : public GarbageCollected<{{sink_cl
 {% for agent in agents|sort %}
 {% set class_name = agent | agent_name_to_class %}
 {% set getter_name = agent | to_snake_case %}
-  HeapListHashSet<Member<{{class_name}}>> {{getter_name}}s_;
+  AgentRegistry<{{class_name}}> {{getter_name}}s_;
 {% endfor %}
 
   // Number of sinks with an enabled agent of each type, used to keep

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "chrome/common/cloud_print/cloud_print_constants.h"
@@ -60,6 +59,10 @@ class PrinterJobQueueHandler {
   };
 
   PrinterJobQueueHandler();
+
+  PrinterJobQueueHandler(const PrinterJobQueueHandler&) = delete;
+  PrinterJobQueueHandler& operator=(const PrinterJobQueueHandler&) = delete;
+
   ~PrinterJobQueueHandler();
 
   // Returns a vector with details of all jobs in the queue, sorted by time
@@ -92,8 +95,6 @@ class PrinterJobQueueHandler {
   using FailedJobPair = std::pair<std::string, FailedJobMetadata>;
 
   FailedJobMap failed_job_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterJobQueueHandler);
 };
 
 }  // namespace cloud_print

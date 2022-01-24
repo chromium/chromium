@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/json/json_value_converter.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/domain_reliability/domain_reliability_export.h"
 #include "url/gurl.h"
@@ -22,6 +21,10 @@ namespace domain_reliability {
 struct DOMAIN_RELIABILITY_EXPORT DomainReliabilityConfig {
  public:
   DomainReliabilityConfig();
+
+  DomainReliabilityConfig(const DomainReliabilityConfig&) = delete;
+  DomainReliabilityConfig& operator=(const DomainReliabilityConfig&) = delete;
+
   ~DomainReliabilityConfig();
 
   // Uses the JSONValueConverter to parse the JSON for a config into a struct.
@@ -47,9 +50,6 @@ struct DOMAIN_RELIABILITY_EXPORT DomainReliabilityConfig {
   double success_sample_rate;
   double failure_sample_rate;
   std::vector<std::unique_ptr<std::string>> path_prefixes;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityConfig);
 };
 
 }  // namespace domain_reliability

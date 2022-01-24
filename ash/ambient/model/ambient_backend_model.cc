@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <vector>
-
 #include "ash/ambient/model/ambient_backend_model.h"
+
+#include <algorithm>
+#include <random>
+#include <vector>
 
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
@@ -73,6 +75,9 @@ std::vector<AmbientModeTopic> CreatePairedTopics(
       idx += 2;
     }
   }
+
+  std::shuffle(paired_topics.begin(), paired_topics.end(),
+               std::default_random_engine());
   return paired_topics;
 }
 }  // namespace

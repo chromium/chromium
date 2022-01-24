@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
 
 #include "base/json/json_reader.h"
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
@@ -131,11 +132,8 @@ TEST(PrintingApiUtilsTest, GetDefaultPrinterRules_EmptyPref) {
 }
 
 TEST(PrintingApiUtilsTest, PrinterToIdl) {
-  chromeos::Printer printer(kId);
-  printer.set_display_name(kName);
-  printer.set_description(kDescription);
-  EXPECT_TRUE(printer.SetUri(kUri));
-  printer.set_source(chromeos::Printer::SRC_POLICY);
+  crosapi::mojom::LocalDestinationInfo printer(kId, kName, kDescription, true,
+                                               kUri);
 
   absl::optional<DefaultPrinterRules> default_printer_rules =
       DefaultPrinterRules();

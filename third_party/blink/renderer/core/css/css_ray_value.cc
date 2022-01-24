@@ -27,7 +27,7 @@ String CSSRayValue::CustomCSSText() const {
     result.Append(contain_->CssText());
   }
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSRayValue::Equals(const CSSRayValue& other) const {

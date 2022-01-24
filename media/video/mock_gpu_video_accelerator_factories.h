@@ -11,9 +11,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encode_accelerator.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
@@ -24,11 +24,18 @@ namespace media {
 class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
  public:
   explicit MockGpuVideoAcceleratorFactories(gpu::SharedImageInterface* sii);
+
+  MockGpuVideoAcceleratorFactories(const MockGpuVideoAcceleratorFactories&) =
+      delete;
+  MockGpuVideoAcceleratorFactories& operator=(
+      const MockGpuVideoAcceleratorFactories&) = delete;
+
   ~MockGpuVideoAcceleratorFactories() override;
 
   bool IsGpuVideoAcceleratorEnabled() override;
 
-  MOCK_METHOD0(GetChannelToken, base::UnguessableToken());
+  MOCK_METHOD1(GetChannelToken,
+               void(gpu::mojom::GpuChannel::GetChannelTokenCallback));
   MOCK_METHOD0(GetCommandBufferRouteId, int32_t());
 
   MOCK_METHOD1(IsDecoderConfigSupported, Supported(const VideoDecoderConfig&));
@@ -96,8 +103,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MockGpuVideoAcceleratorFactories);
-
   base::Lock lock_;
   OutputFormat video_frame_output_format_ = OutputFormat::I420;
 

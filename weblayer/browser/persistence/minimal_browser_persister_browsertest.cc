@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -143,7 +144,13 @@ IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, TwoNavs) {
   EXPECT_EQ(url2(), nav_controller.GetEntryAtIndex(1)->GetURL());
 }
 
-IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, Overflow) {
+// crbug.com/1240904: test is flaky on linux and win.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_Overflow DISABLED_Overflow
+#else
+#define MAYBE_Overflow Overflow
+#endif
+IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, MAYBE_Overflow) {
   std::string url_string(2048, 'a');
   const std::string data = "data:,";
   url_string.replace(0, data.size(), data);

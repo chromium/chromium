@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/accelerated_video_decoder.h"
@@ -52,6 +51,10 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
       kTryAgain,
     };
     VP9Accelerator();
+
+    VP9Accelerator(const VP9Accelerator&) = delete;
+    VP9Accelerator& operator=(const VP9Accelerator&) = delete;
+
     virtual ~VP9Accelerator();
 
     // Create a new VP9Picture that the decoder client can use for initial
@@ -106,15 +109,16 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
     // success, false otherwise.
     virtual bool GetFrameContext(scoped_refptr<VP9Picture> pic,
                                  Vp9FrameContext* frame_ctx) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(VP9Accelerator);
   };
 
   explicit VP9Decoder(
       std::unique_ptr<VP9Accelerator> accelerator,
       VideoCodecProfile profile,
       const VideoColorSpace& container_color_space = VideoColorSpace());
+
+  VP9Decoder(const VP9Decoder&) = delete;
+  VP9Decoder& operator=(const VP9Decoder&) = delete;
+
   ~VP9Decoder() override;
 
   // AcceleratedVideoDecoder implementation.
@@ -187,8 +191,6 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
   const std::unique_ptr<VP9Accelerator> accelerator_;
 
   Vp9Parser parser_;
-
-  DISALLOW_COPY_AND_ASSIGN(VP9Decoder);
 };
 
 }  // namespace media

@@ -50,7 +50,7 @@ class SegmentedFontData;
 // Iterating over the combined set, behaves as if all non-CSS-connected
 // FontFaces were stored after the CSS-connected ones.
 class FontFaceList : public GarbageCollected<FontFaceList> {
-  using FontFaceListPart = HeapListHashSet<Member<FontFace>>;
+  using FontFaceListPart = HeapLinkedHashSet<Member<FontFace>>;
 
  public:
   bool IsEmpty() const;

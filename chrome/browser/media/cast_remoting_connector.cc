@@ -53,6 +53,9 @@ class CastRemotingConnector::RemotingBridge final
     connector_->RegisterBridge(this);
   }
 
+  RemotingBridge(const RemotingBridge&) = delete;
+  RemotingBridge& operator=(const RemotingBridge&) = delete;
+
   ~RemotingBridge() final {
     if (connector_)
       connector_->DeregisterBridge(this, RemotingStopReason::SOURCE_GONE);
@@ -122,8 +125,6 @@ class CastRemotingConnector::RemotingBridge final
   // Weak pointer. Will be set to nullptr if the CastRemotingConnector is
   // destroyed before this RemotingBridge.
   CastRemotingConnector* connector_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemotingBridge);
 };
 
 // static

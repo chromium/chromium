@@ -13,6 +13,7 @@
 #include <set>
 
 #include <libdrm/drm_fourcc.h>
+#include <linux/media.h>
 #include <linux/videodev2.h>
 #include <string.h>
 #include <sys/mman.h>
@@ -21,6 +22,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
@@ -37,8 +39,6 @@
 #if defined(AML_V4L2)
 #include "media/gpu/v4l2/aml_v4l2_device.h"
 #endif
-
-#define REQUEST_DEVICE "/dev/media-dec0"
 
 namespace media {
 
@@ -100,7 +100,7 @@ int64_t V4L2BufferTimestampInMilliseconds(
 void V4L2ProcessingTrace(const struct v4l2_buffer* v4l2_buffer, bool start) {
   constexpr char kTracingCategory[] = "media,gpu";
   constexpr char kQueueBuffer[] = "V4L2 Queue Buffer";
-  constexpr char kDeueueBuffer[] = "V4L2 Dequeue Buffer";
+  constexpr char kDequeueBuffer[] = "V4L2 Dequeue Buffer";
   constexpr char kVideoProcessing[] = "V4L2 Video Processing";
 
   bool tracing_enabled = false;
@@ -108,7 +108,7 @@ void V4L2ProcessingTrace(const struct v4l2_buffer* v4l2_buffer, bool start) {
   if (!tracing_enabled)
     return;
 
-  const char* name = start ? kQueueBuffer : kDeueueBuffer;
+  const char* name = start ? kQueueBuffer : kDequeueBuffer;
   TRACE_EVENT_INSTANT1(kTracingCategory, name, TRACE_EVENT_SCOPE_THREAD, "type",
                        v4l2_buffer->type);
 
@@ -152,6 +152,10 @@ class V4L2Buffer {
                                             enum v4l2_memory memory,
                                             const struct v4l2_format& format,
                                             size_t buffer_id);
+
+  V4L2Buffer(const V4L2Buffer&) = delete;
+  V4L2Buffer& operator=(const V4L2Buffer&) = delete;
+
   ~V4L2Buffer();
 
   void* GetPlaneMapping(const size_t plane);
@@ -180,8 +184,6 @@ class V4L2Buffer {
 
   struct v4l2_format format_;
   scoped_refptr<VideoFrame> video_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2Buffer);
 };
 
 std::unique_ptr<V4L2Buffer> V4L2Buffer::Create(scoped_refptr<V4L2Device> device,
@@ -342,6 +344,10 @@ scoped_refptr<VideoFrame> V4L2Buffer::GetVideoFrame() {
 class V4L2BuffersList : public base::RefCountedThreadSafe<V4L2BuffersList> {
  public:
   V4L2BuffersList() = default;
+
+  V4L2BuffersList(const V4L2BuffersList&) = delete;
+  V4L2BuffersList& operator=(const V4L2BuffersList&) = delete;
+
   // Return a buffer to this list. Also can be called to set the initial pool
   // of buffers.
   // Note that it is illegal to return the same buffer twice.
@@ -359,7 +365,6 @@ class V4L2BuffersList : public base::RefCountedThreadSafe<V4L2BuffersList> {
 
   mutable base::Lock lock_;
   std::set<size_t> free_buffers_ GUARDED_BY(lock_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2BuffersList);
 };
 
 void V4L2BuffersList::ReturnBuffer(size_t buffer_id) {
@@ -405,6 +410,10 @@ class V4L2BufferRefBase {
  public:
   V4L2BufferRefBase(const struct v4l2_buffer& v4l2_buffer,
                     base::WeakPtr<V4L2Queue> queue);
+
+  V4L2BufferRefBase(const V4L2BufferRefBase&) = delete;
+  V4L2BufferRefBase& operator=(const V4L2BufferRefBase&) = delete;
+
   ~V4L2BufferRefBase();
 
   bool QueueBuffer(scoped_refptr<VideoFrame> video_frame);
@@ -436,7 +445,6 @@ class V4L2BufferRefBase {
   bool queued = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2BufferRefBase);
 };
 
 V4L2BufferRefBase::V4L2BufferRefBase(const struct v4l2_buffer& v4l2_buffer,
@@ -1097,7 +1105,7 @@ absl::optional<gfx::Rect> V4L2Queue::GetVisibleRect() {
 size_t V4L2Queue::AllocateBuffers(size_t count, enum v4l2_memory memory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!free_buffers_);
-  DCHECK_EQ(queued_buffers_.size(), 0u);
+  DCHECK(queued_buffers_.empty());
 
   if (IsStreaming()) {
     VQLOGF(1) << "Cannot allocate buffers while streaming.";
@@ -1160,7 +1168,7 @@ size_t V4L2Queue::AllocateBuffers(size_t count, enum v4l2_memory memory) {
 
   DCHECK(free_buffers_);
   DCHECK_EQ(free_buffers_->size(), buffers_.size());
-  DCHECK_EQ(queued_buffers_.size(), 0u);
+  DCHECK(queued_buffers_.empty());
 
   return buffers_.size();
 }
@@ -1195,7 +1203,7 @@ bool V4L2Queue::DeallocateBuffers() {
   }
 
   DCHECK(!free_buffers_);
-  DCHECK_EQ(queued_buffers_.size(), 0u);
+  DCHECK(queued_buffers_.empty());
 
   return true;
 }
@@ -1289,9 +1297,9 @@ bool V4L2Queue::QueueBuffer(struct v4l2_buffer* v4l2_buffer,
     return false;
   }
 
-  auto inserted =
+  const auto inserted =
       queued_buffers_.emplace(v4l2_buffer->index, std::move(video_frame));
-  DCHECK_EQ(inserted.second, true);
+  DCHECK(inserted.second);
 
   device_->SchedulePoll();
 
@@ -1545,7 +1553,7 @@ namespace {
 VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
                                                  uint32_t v4l2_profile) {
   switch (codec) {
-    case kCodecH264:
+    case VideoCodec::kH264:
       switch (v4l2_profile) {
         // H264 Stereo amd Multiview High are not tested and the use is
         // minuscule, skip.
@@ -1560,7 +1568,7 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
           return H264PROFILE_HIGH;
       }
       break;
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       switch (v4l2_profile) {
         case V4L2_MPEG_VIDEO_VP8_PROFILE_0:
         case V4L2_MPEG_VIDEO_VP8_PROFILE_1:
@@ -1569,7 +1577,7 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
           return VP8PROFILE_ANY;
       }
       break;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       switch (v4l2_profile) {
         // VP9 Profile 1 and 3 are not tested and the use is minuscule, skip.
         case V4L2_MPEG_VIDEO_VP9_PROFILE_0:
@@ -1594,13 +1602,13 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
                                     std::vector<VideoCodecProfile>* profiles) {
     uint32_t query_id = 0;
     switch (codec) {
-      case kCodecH264:
+      case VideoCodec::kH264:
         query_id = V4L2_CID_MPEG_VIDEO_H264_PROFILE;
         break;
-      case kCodecVP8:
+      case VideoCodec::kVP8:
         query_id = V4L2_CID_MPEG_VIDEO_VP8_PROFILE;
         break;
-      case kCodecVP9:
+      case VideoCodec::kVP9:
         query_id = V4L2_CID_MPEG_VIDEO_VP9_PROFILE;
         break;
       default:
@@ -1633,7 +1641,7 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
   switch (pix_fmt) {
     case V4L2_PIX_FMT_H264:
     case V4L2_PIX_FMT_H264_SLICE:
-      if (!get_supported_profiles(kCodecH264, &profiles)) {
+      if (!get_supported_profiles(VideoCodec::kH264, &profiles)) {
         DLOG(WARNING) << "Driver doesn't support QUERY H264 profiles, "
                       << "use default values, Base, Main, High";
         profiles = {
@@ -1649,7 +1657,7 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
       break;
     case V4L2_PIX_FMT_VP9:
     case V4L2_PIX_FMT_VP9_FRAME:
-      if (!get_supported_profiles(kCodecVP9, &profiles)) {
+      if (!get_supported_profiles(VideoCodec::kVP9, &profiles)) {
         DLOG(WARNING) << "Driver doesn't support QUERY VP9 profiles, "
                       << "use default values, Profile0";
         profiles = {VP9PROFILE_PROFILE0};
@@ -2114,15 +2122,63 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
     return requests_queue_.get();
 
   requests_queue_creation_called_ = true;
-  int media_fd = open(REQUEST_DEVICE, O_RDWR, 0);
-  if (media_fd < 0) {
-    VPLOGF(1) << "Failed to open media device.";
+
+  struct v4l2_capability caps;
+  if (Ioctl(VIDIOC_QUERYCAP, &caps)) {
+    VPLOGF(1) << "Failed to query device capabilities.";
+    return nullptr;
+  }
+
+  // Some devices, namely the RK3399, have multiple hardware decoder blocks.
+  // We have to find and use the matching media device, or the kernel gets
+  // confused.
+  // Note that the match persists for the lifetime of V4L2Device. In practice
+  // this should be fine, since |GetRequestsQueue()| is only called after
+  // the codec format is configured, and the VD/VDA instance is always tied
+  // to a specific format, so it will never need to switch media devices.
+  static const std::string kRequestDevicePrefix = "/dev/media-dec";
+
+  // We are sandboxed, so we can't query directory contents to check which
+  // devices are actually available. Try to open the first 10; if not present,
+  // we will just fail to open immediately.
+  base::ScopedFD media_fd;
+  for (int i = 0; i < 10; ++i) {
+    const auto path = kRequestDevicePrefix + base::NumberToString(i);
+    base::ScopedFD candidate_media_fd(
+        HANDLE_EINTR(open(path.c_str(), O_RDWR, 0)));
+    if (!candidate_media_fd.is_valid()) {
+      VPLOGF(2) << "Failed to open media device: " << path;
+      continue;
+    }
+
+    struct media_device_info media_info;
+    if (HANDLE_EINTR(ioctl(candidate_media_fd.get(), MEDIA_IOC_DEVICE_INFO,
+                           &media_info)) < 0) {
+      VPLOGF(2) << "Failed to Query media device info.";
+      continue;
+    }
+
+    // We match the video device and the media controller by the driver
+    // field. The mtk-vcodec driver does not fill the card and bus fields
+    // properly, so those won't work.
+    if (strncmp(reinterpret_cast<const char*>(caps.driver),
+                reinterpret_cast<const char*>(media_info.driver),
+                sizeof(caps.driver))) {
+      continue;
+    }
+
+    media_fd = std::move(candidate_media_fd);
+    break;
+  }
+
+  if (!media_fd.is_valid()) {
+    VLOGF(1) << "Failed to open matching media device.";
     return nullptr;
   }
 
   // Not using std::make_unique because constructor is private.
-  std::unique_ptr<V4L2RequestsQueue> requests_queue(new V4L2RequestsQueue(
-      base::ScopedFD(media_fd)));
+  std::unique_ptr<V4L2RequestsQueue> requests_queue(
+      new V4L2RequestsQueue(std::move(media_fd)));
   requests_queue_ = std::move(requests_queue);
 
   return requests_queue_.get();
@@ -2216,6 +2272,9 @@ bool V4L2Device::SetGOPLength(uint32_t gop_length) {
 
 class V4L2Request {
  public:
+  V4L2Request(const V4L2Request&) = delete;
+  V4L2Request& operator=(const V4L2Request&) = delete;
+
   // Apply the passed controls to the request.
   bool ApplyCtrls(struct v4l2_ext_controls* ctrls);
   // Apply the passed buffer to the request..
@@ -2247,7 +2306,6 @@ class V4L2Request {
   int DecRefCounter();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(V4L2Request);
 };
 
 void V4L2Request::IncRefCounter() {

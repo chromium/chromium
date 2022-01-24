@@ -13,9 +13,9 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/io_buffer.h"
@@ -25,7 +25,9 @@
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
 #include "net/base/upload_file_element_reader.h"
+#include "net/cert/x509_certificate.h"
 #include "net/http/http_response_headers.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_fetcher_delegate.h"
 #include "net/url_request/url_fetcher_response_writer.h"
@@ -619,9 +621,7 @@ void URLFetcherCore::StartURLRequest() {
       //  layer and avoid using timer here.
       upload_progress_checker_timer_ = std::make_unique<base::RepeatingTimer>();
       upload_progress_checker_timer_->Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kUploadProgressTimerInterval),
-          this,
+          FROM_HERE, base::Milliseconds(kUploadProgressTimerInterval), this,
           &URLFetcherCore::InformDelegateUploadProgress);
       break;
     }
@@ -680,7 +680,7 @@ void URLFetcherCore::StartURLRequestWhenAppropriate() {
       if (delay != 0) {
         network_task_runner_->PostDelayedTask(
             FROM_HERE, base::BindOnce(&URLFetcherCore::StartURLRequest, this),
-            base::TimeDelta::FromMilliseconds(delay));
+            base::Milliseconds(delay));
         return;
       }
     }
@@ -768,7 +768,7 @@ void URLFetcherCore::RetryOrCompleteUrlFetch() {
     // have a throttler manager.
     base::TimeTicks backoff_release_time = GetBackoffReleaseTime();
     backoff_delay = backoff_release_time - base::TimeTicks::Now();
-    if (backoff_delay < base::TimeDelta())
+    if (backoff_delay.is_negative())
       backoff_delay = base::TimeDelta();
 
     if (automatically_retry_on_5xx_ &&

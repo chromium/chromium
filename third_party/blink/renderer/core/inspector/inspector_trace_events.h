@@ -47,8 +47,9 @@ class Element;
 class EncodedFormData;
 class Event;
 class ExecutionContext;
+class FloatQuad;
 class FloatRect;
-class GraphicsLayer;
+class Frame;
 class HitTestLocation;
 class HitTestRequest;
 class HitTestResult;
@@ -61,7 +62,6 @@ struct LayoutObjectWithDepth;
 class LocalFrame;
 class LocalFrameView;
 class Node;
-struct PhysicalRect;
 class QualifiedName;
 enum class RenderBlockingBehavior : uint8_t;
 class Resource;
@@ -169,7 +169,7 @@ class CORE_EXPORT InspectorTraceEvents
 namespace inspector_layout_event {
 void BeginData(perfetto::TracedValue context, LocalFrameView*);
 void EndData(perfetto::TracedValue context,
-             const Vector<LayoutObjectWithDepth>&);
+             const HeapVector<LayoutObjectWithDepth>&);
 }  // namespace inspector_layout_event
 
 namespace inspector_schedule_style_invalidation_tracking_event {
@@ -422,11 +422,18 @@ namespace inspector_xhr_load_event {
 void Data(perfetto::TracedValue context, ExecutionContext*, XMLHttpRequest*);
 }
 
+// We use this for two distincts types of paint-related events:
+//  1. A timed event showing how long we spent painting a LocalFrameView,
+//     including any iframes. The quad associated with this event is the cull
+//     rect used when painting the LocalFrameView.
+//  2. An instant event for each cc::Layer which had damage. The quad
+//     associated with this event is the bounding damage rect.
 namespace inspector_paint_event {
 void Data(perfetto::TracedValue context,
-          LayoutObject*,
-          const PhysicalRect& clip_rect,
-          const GraphicsLayer*);
+          Frame*,
+          const LayoutObject*,
+          const FloatQuad& quad,
+          int layer_id);
 }
 
 namespace inspector_paint_image_event {
@@ -476,35 +483,35 @@ void Data(perfetto::TracedValue context,
           const String& url);
 }
 
+namespace inspector_deserialize_script_event {
+void Data(perfetto::TracedValue context,
+          uint64_t identifier,
+          const String& url);
+}
+
 namespace inspector_compile_script_event {
 
-struct V8CacheResult {
-  struct ProduceResult {
-    explicit ProduceResult(int cache_size);
-    int cache_size;
-  };
-  struct ConsumeResult {
-    ConsumeResult(v8::ScriptCompiler::CompileOptions consume_options,
-                  int cache_size,
-                  bool rejected);
-    v8::ScriptCompiler::CompileOptions consume_options;
-    int cache_size;
-    bool rejected;
-  };
-  V8CacheResult() = default;
-  V8CacheResult(absl::optional<ProduceResult>, absl::optional<ConsumeResult>);
-
-  absl::optional<ProduceResult> produce_result;
-  absl::optional<ConsumeResult> consume_result;
+struct V8ConsumeCacheResult {
+  V8ConsumeCacheResult(int cache_size, bool rejected);
+  int cache_size;
+  bool rejected;
 };
 
 void Data(perfetto::TracedValue context,
           const String& url,
           const WTF::TextPosition&,
-          const V8CacheResult&,
+          absl::optional<V8ConsumeCacheResult>,
+          bool eager,
           bool streamed,
           ScriptStreamer::NotStreamingReason);
 }  // namespace inspector_compile_script_event
+
+namespace inspector_produce_script_cache_event {
+void Data(perfetto::TracedValue context,
+          const String& url,
+          const WTF::TextPosition&,
+          int cache_size);
+}
 
 namespace inspector_function_call_event {
 void Data(perfetto::TracedValue context,

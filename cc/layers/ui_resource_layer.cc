@@ -34,6 +34,7 @@ std::unique_ptr<LayerImpl> UIResourceLayer::CreateLayerImpl(
 
 void UIResourceLayer::SetUV(const gfx::PointF& top_left,
                             const gfx::PointF& bottom_right) {
+  DCHECK(IsMutationAllowed());
   if (uv_top_left_ == top_left && uv_bottom_right_ == bottom_right)
     return;
   uv_top_left_ = top_left;
@@ -45,6 +46,7 @@ void UIResourceLayer::SetVertexOpacity(float bottom_left,
                                        float top_left,
                                        float top_right,
                                        float bottom_right) {
+  DCHECK(IsMutationAllowed());
   // Indexing according to the quad vertex generation:
   // 1--2
   // |  |
@@ -74,6 +76,7 @@ void UIResourceLayer::SetLayerTreeHost(LayerTreeHost* host) {
 }
 
 void UIResourceLayer::SetBitmap(const SkBitmap& bitmap) {
+  DCHECK(IsMutationAllowed());
   bitmap_ = bitmap;
   if (!layer_tree_host())
     return;
@@ -82,6 +85,7 @@ void UIResourceLayer::SetBitmap(const SkBitmap& bitmap) {
 }
 
 void UIResourceLayer::SetUIResourceId(UIResourceId resource_id) {
+  DCHECK(IsMutationAllowed());
   // Even if the ID is not changing we should drop the bitmap. The ID is 0 when
   // there's no layer tree. When setting an id (even if to 0), we should no
   // longer keep the bitmap.
@@ -95,19 +99,19 @@ bool UIResourceLayer::HasDrawableContent() const {
   return resource_id_ && Layer::HasDrawableContent();
 }
 
-void UIResourceLayer::PushPropertiesTo(LayerImpl* layer) {
-  Layer::PushPropertiesTo(layer);
+void UIResourceLayer::PushPropertiesTo(LayerImpl* layer,
+                                       const CommitState& commit_state) {
+  Layer::PushPropertiesTo(layer, commit_state);
   TRACE_EVENT0("cc", "UIResourceLayer::PushPropertiesTo");
   UIResourceLayerImpl* layer_impl = static_cast<UIResourceLayerImpl*>(layer);
 
   layer_impl->SetUIResourceId(resource_id_);
   if (resource_id_) {
-    DCHECK(layer_tree_host());
-
-    gfx::Size image_size =
-        layer_tree_host()->GetUIResourceManager()->GetUIResourceSize(
-            resource_id_);
-    layer_impl->SetImageBounds(image_size);
+    auto iter = commit_state.ui_resource_sizes.find(resource_id_);
+    gfx::Size image_bounds = (iter == commit_state.ui_resource_sizes.end())
+                                 ? gfx::Size()
+                                 : iter->second;
+    layer_impl->SetImageBounds(image_bounds);
     layer_impl->SetUV(uv_top_left_, uv_bottom_right_);
     layer_impl->SetVertexOpacity(vertex_opacity_);
   }

@@ -133,6 +133,7 @@ digraph URLRequestRoot {
     ConnectJob_Delegate [label="ConnectJob::Delegate",style=dashed];
 
     StreamSocket [style=dashed];
+    TransportClientSocket [style=dashed];
     TCPClientSocket;
     StreamSocket_Others [label="...other socket types..."];
 
@@ -145,7 +146,11 @@ digraph URLRequestRoot {
     ClientSocketPoolBaseHelper -> ConnectJob_Delegate
 	[arrowhead=empty, style=dashed];
     StreamSocket -> Socket [arrowhead=empty, style=dashed];
-    { TCPClientSocket, StreamSocket_Others } -> StreamSocket
+    TCPClientSocket -> TransportClientSocket
+        [arrowhead=empty, style=dashed];
+    TransportClientSocket -> StreamSocket
+        [arrowhead=empty, style=dashed];
+    StreamSocket_Others -> StreamSocket
 	[arrowhead=empty, style=dashed];
     {SSLConnectJob, TransportConnectJob, ConnectJob_Others} -> ConnectJob
 	[style=dashed, arrowhead=empty];

@@ -139,8 +139,6 @@ class RemoteAppsManager
   // AppListModelUpdaterObserver:
   void OnAppListItemAdded(ChromeAppListItem* item) override;
 
-  void SetRemoteAppsForTesting(std::unique_ptr<apps::RemoteApps> remote_apps);
-
   void SetImageDownloaderForTesting(
       std::unique_ptr<ImageDownloader> image_downloader);
 

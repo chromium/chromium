@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "jingle/glue/utils.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"

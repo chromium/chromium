@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/account_manager_facade_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
@@ -59,23 +59,23 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif  // defined(OS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/profiles/profile_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#endif  // defined(OS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace signin {
 
@@ -122,14 +122,17 @@ class AccountReconcilorLockWrapper
         std::make_unique<AccountReconcilor::Lock>(account_reconcilor);
   }
 
+  AccountReconcilorLockWrapper(const AccountReconcilorLockWrapper&) = delete;
+  AccountReconcilorLockWrapper& operator=(const AccountReconcilorLockWrapper&) =
+      delete;
+
   void DestroyAfterDelay() {
+    // TODO(dcheng): Should ReleaseSoon() support this use case?
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(base::DoNothing::Once<
-                           scoped_refptr<AccountReconcilorLockWrapper>>(),
+        base::BindOnce([](scoped_refptr<AccountReconcilorLockWrapper>) {},
                        base::RetainedRef(this)),
-        base::TimeDelta::FromMilliseconds(
-            g_dice_account_reconcilor_blocked_delay_ms));
+        base::Milliseconds(g_dice_account_reconcilor_blocked_delay_ms));
   }
 
  private:
@@ -139,8 +142,6 @@ class AccountReconcilorLockWrapper
   }
 
   std::unique_ptr<AccountReconcilor::Lock> account_reconcilor_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountReconcilorLockWrapper);
 };
 
 // Returns true if the account reconcilor needs be be blocked while a Gaia
@@ -167,12 +168,15 @@ class RequestDestructionObserverUserData : public base::SupportsUserData::Data {
   explicit RequestDestructionObserverUserData(base::OnceClosure closure)
       : closure_(std::move(closure)) {}
 
+  RequestDestructionObserverUserData(
+      const RequestDestructionObserverUserData&) = delete;
+  RequestDestructionObserverUserData& operator=(
+      const RequestDestructionObserverUserData&) = delete;
+
   ~RequestDestructionObserverUserData() override { std::move(closure_).Run(); }
 
  private:
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestDestructionObserverUserData);
 };
 
 // This user data is used as a marker that a Mirror header was found on the
@@ -221,8 +225,9 @@ void ProcessMirrorHeader(
           web_contents);
 #endif
 
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   // Do not do anything if the navigation happened in the "background".
-  if (!chrome::FindBrowserWithWebContents(web_contents) &&
+  if ((!browser || !browser->window()->IsActive()) &&
       should_ignore_guest_webview) {
     return;
   }
@@ -231,10 +236,12 @@ void ProcessMirrorHeader(
   base::UmaHistogramEnumeration("AccountManager.ManageAccountsServiceType",
                                 service_type);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ignore response to background request from another profile, so dialogs are
-  // not displayed in the wrong profile when using multiprofile mode.
+  // not displayed in the wrong profile when using ChromeOS multiprofile mode.
   if (profile != ProfileManager::GetActiveUserProfile())
     return;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // The only allowed operations are:
   // 1. Going Incognito.
@@ -267,9 +274,6 @@ void ProcessMirrorHeader(
       return;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    base::UmaHistogramBoolean("AccountManager.MirrorReauthenticationRequest",
-                              true);
-
     // Child users shouldn't get the re-authentication dialog for primary
     // account. Log out all accounts to re-mint the cookies.
     // (See the reason below.)
@@ -281,8 +285,7 @@ void ProcessMirrorHeader(
         gaia::AreEmailsSame(primary_account.email,
                             manage_accounts_params.email)) {
       identity_manager->GetAccountsCookieMutator()->LogOutAllAccounts(
-          gaia::GaiaSource::kChromeOS,
-          base::DoNothing::Once<const GoogleServiceAuthError&>());
+          gaia::GaiaSource::kChromeOS, base::DoNothing());
       return;
     }
 
@@ -307,22 +310,28 @@ void ProcessMirrorHeader(
     // Display a re-authentication dialog.
     ::GetAccountManagerFacade(profile->GetPath().value())
         ->ShowReauthAccountDialog(account_manager::AccountManagerFacade::
-                                      AccountAdditionSource::kContentArea,
+                                      AccountAdditionSource::kContentAreaReauth,
                                   manage_accounts_params.email);
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
-  DCHECK(init_params->use_new_account_manager);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   // 3. Displaying an account addition window.
   if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
+      g_browser_process->profile_manager()
+          ->GetAccountProfileMapper()
+          ->ShowAddAccountDialog(profile->GetPath(),
+                                 account_manager::AccountManagerFacade::
+                                     AccountAdditionSource::kOgbAddAccount,
+                                 AccountProfileMapper::AddAccountCallback());
+      return;
+    }
+#endif
+
     ::GetAccountManagerFacade(profile->GetPath().value())
         ->ShowAddAccountDialog(account_manager::AccountManagerFacade::
-                                   AccountAdditionSource::kContentArea);
+                                   AccountAdditionSource::kOgbAddAccount);
     return;
   }
 
@@ -606,7 +615,8 @@ void FixAccountConsistencyRequestHeader(
     return;  // Account consistency is disabled in incognito.
 
   int profile_mode_mask = PROFILE_MODE_DEFAULT;
-  if (incognito_availibility == IncognitoModePrefs::DISABLED ||
+  if (incognito_availibility ==
+          static_cast<int>(IncognitoModePrefs::Availability::kDisabled) ||
       IncognitoModePrefs::ArePlatformParentalControlsEnabled()) {
     profile_mode_mask |= PROFILE_MODE_INCOGNITO_DISABLED;
   }

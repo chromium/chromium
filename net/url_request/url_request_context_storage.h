@@ -18,7 +18,6 @@ namespace net {
 class CertVerifier;
 class CookieStore;
 class CTPolicyEnforcer;
-class FtpAuthCache;
 class HostResolver;
 class HttpAuthHandlerFactory;
 class HttpNetworkSession;
@@ -50,6 +49,10 @@ class NET_EXPORT URLRequestContextStorage {
   // URLRequestContext, since it is often designed to be embedded in a
   // URLRequestContext subclass.
   explicit URLRequestContextStorage(URLRequestContext* context);
+
+  URLRequestContextStorage(const URLRequestContextStorage&) = delete;
+  URLRequestContextStorage& operator=(const URLRequestContextStorage&) = delete;
+
   ~URLRequestContextStorage();
 
   // These setters will set both the member variables and call the setter on the
@@ -84,9 +87,6 @@ class NET_EXPORT URLRequestContextStorage {
   void set_quic_context(std::unique_ptr<QuicContext> quic_context);
   void set_http_user_agent_settings(
       std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings);
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  void set_ftp_auth_cache(std::unique_ptr<FtpAuthCache> ftp_auth_cache);
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
 #if BUILDFLAG(ENABLE_REPORTING)
   void set_persistent_reporting_and_nel_store(
@@ -124,9 +124,6 @@ class NET_EXPORT URLRequestContextStorage {
   std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   std::unique_ptr<QuicContext> quic_context_;
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  std::unique_ptr<FtpAuthCache> ftp_auth_cache_;
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
   // Not actually pointed at by the URLRequestContext, but may be used (but not
   // owned) by the HttpTransactionFactory.
@@ -144,8 +141,6 @@ class NET_EXPORT URLRequestContextStorage {
   std::unique_ptr<ReportingService> reporting_service_;
   std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service_;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContextStorage);
 };
 
 }  // namespace net

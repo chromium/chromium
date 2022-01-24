@@ -53,7 +53,7 @@ public class BarcodeDetectionImplTest {
 
         final ArrayBlockingQueue<int[]> queue = new ArrayBlockingQueue<>(13);
         provider.enumerateSupportedFormats(
-                new BarcodeDetectionProvider.EnumerateSupportedFormatsResponse() {
+                new BarcodeDetectionProvider.EnumerateSupportedFormats_Response() {
                     @Override
                     public void call(int[] results) {
                         queue.add(results);
@@ -87,7 +87,7 @@ public class BarcodeDetectionImplTest {
         BarcodeDetection detector = new BarcodeDetectionImpl(options);
 
         final ArrayBlockingQueue<BarcodeDetectionResult[]> queue = new ArrayBlockingQueue<>(1);
-        detector.detect(mojoBitmap, new BarcodeDetection.DetectResponse() {
+        detector.detect(mojoBitmap, new BarcodeDetection.Detect_Response() {
             @Override
             public void call(BarcodeDetectionResult[] results) {
                 queue.add(results);

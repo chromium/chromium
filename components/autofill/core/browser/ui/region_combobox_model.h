@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -31,6 +30,10 @@ class RegionDataLoader;
 class RegionComboboxModel : public ui::ComboboxModel {
  public:
   RegionComboboxModel();
+
+  RegionComboboxModel(const RegionComboboxModel&) = delete;
+  RegionComboboxModel& operator=(const RegionComboboxModel&) = delete;
+
   ~RegionComboboxModel() override;
 
   void LoadRegionData(const std::string& country_code,
@@ -73,8 +76,6 @@ class RegionComboboxModel : public ui::ComboboxModel {
 
   // Weak pointer factory.
   base::WeakPtrFactory<RegionComboboxModel> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RegionComboboxModel);
 };
 
 }  // namespace autofill

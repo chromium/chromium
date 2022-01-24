@@ -110,13 +110,10 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 class TestAlertBubbleDialogDelegateView : public TestBubbleDialogDelegateView {
  public:
   explicit TestAlertBubbleDialogDelegateView(View* anchor_view)
-      : TestBubbleDialogDelegateView(anchor_view) {}
-  ~TestAlertBubbleDialogDelegateView() override = default;
-
-  // BubbleDialogDelegateView overrides:
-  ax::mojom::Role GetAccessibleWindowRole() override {
-    return ax::mojom::Role::kAlertDialog;
+      : TestBubbleDialogDelegateView(anchor_view) {
+    SetAccessibleRole(ax::mojom::Role::kAlertDialog);
   }
+  ~TestAlertBubbleDialogDelegateView() override = default;
 };
 
 // A Widget that returns something other than null as its ThemeProvider.  This
@@ -135,6 +132,11 @@ class WidgetWithNonNullThemeProvider : public Widget {
 class BubbleDialogDelegateViewTest : public ViewsTestBase {
  public:
   BubbleDialogDelegateViewTest() = default;
+
+  BubbleDialogDelegateViewTest(const BubbleDialogDelegateViewTest&) = delete;
+  BubbleDialogDelegateViewTest& operator=(const BubbleDialogDelegateViewTest&) =
+      delete;
+
   ~BubbleDialogDelegateViewTest() override = default;
 
   std::unique_ptr<views::Widget> CreateTestWidget(
@@ -146,9 +148,6 @@ class BubbleDialogDelegateViewTest : public ViewsTestBase {
     widget->Show();
     return widget;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BubbleDialogDelegateViewTest);
 };
 
 }  // namespace
@@ -748,6 +747,12 @@ class BubbleDialogDelegateViewArrowTest
       public testing::WithParamInterface<ArrowTestParameters> {
  public:
   BubbleDialogDelegateViewArrowTest() : screen_override_(SetUpTestScreen()) {}
+
+  BubbleDialogDelegateViewArrowTest(const BubbleDialogDelegateViewArrowTest&) =
+      delete;
+  BubbleDialogDelegateViewArrowTest& operator=(
+      const BubbleDialogDelegateViewArrowTest&) = delete;
+
   ~BubbleDialogDelegateViewArrowTest() override = default;
 
  private:
@@ -765,8 +770,6 @@ class BubbleDialogDelegateViewArrowTest
 
   display::test::TestScreen test_screen_;
   display::test::ScopedScreenOverride screen_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleDialogDelegateViewArrowTest);
 };
 
 TEST_P(BubbleDialogDelegateViewArrowTest, AvailableScreenSpaceTest) {
@@ -918,6 +921,12 @@ class AnchorTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
  public:
   explicit AnchorTestBubbleDialogDelegateView(View* anchor_view)
       : BubbleDialogDelegateView(anchor_view, BubbleBorder::TOP_LEFT) {}
+
+  AnchorTestBubbleDialogDelegateView(
+      const AnchorTestBubbleDialogDelegateView&) = delete;
+  AnchorTestBubbleDialogDelegateView& operator=(
+      const AnchorTestBubbleDialogDelegateView&) = delete;
+
   ~AnchorTestBubbleDialogDelegateView() override = default;
 
   // DialogDelegate:
@@ -926,9 +935,6 @@ class AnchorTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   View* GetInitiallyFocusedView() override { return nullptr; }
 
   using BubbleDialogDelegateView::SetAnchorView;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AnchorTestBubbleDialogDelegateView);
 };
 
 // Provides functionality for testing bubble anchoring logic.
@@ -937,6 +943,12 @@ class AnchorTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 class BubbleDialogDelegateViewAnchorTest : public test::WidgetTest {
  public:
   BubbleDialogDelegateViewAnchorTest() = default;
+
+  BubbleDialogDelegateViewAnchorTest(
+      const BubbleDialogDelegateViewAnchorTest&) = delete;
+  BubbleDialogDelegateViewAnchorTest& operator=(
+      const BubbleDialogDelegateViewAnchorTest&) = delete;
+
   ~BubbleDialogDelegateViewAnchorTest() override = default;
 
   // Anchors a bubble widget to another widget.
@@ -988,8 +1000,6 @@ class BubbleDialogDelegateViewAnchorTest : public test::WidgetTest {
   }
 
   WidgetAutoclosePtr dummy_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleDialogDelegateViewAnchorTest);
 };
 
 }  // namespace

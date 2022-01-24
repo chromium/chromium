@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -43,7 +43,7 @@ void DeviceAttributesAsh::GetDirectoryDeviceId(
     return;
   }
   std::string result = g_browser_process->platform_part()
-                           ->browser_policy_connector_chromeos()
+                           ->browser_policy_connector_ash()
                            ->GetDirectoryApiID();
   if (result.empty()) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
@@ -77,7 +77,7 @@ void DeviceAttributesAsh::GetDeviceAssetId(GetDeviceAssetIdCallback callback) {
     return;
   }
   std::string result = g_browser_process->platform_part()
-                           ->browser_policy_connector_chromeos()
+                           ->browser_policy_connector_ash()
                            ->GetDeviceAssetID();
   if (result.empty()) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
@@ -95,7 +95,7 @@ void DeviceAttributesAsh::GetDeviceAnnotatedLocation(
     return;
   }
   std::string result = g_browser_process->platform_part()
-                           ->browser_policy_connector_chromeos()
+                           ->browser_policy_connector_ash()
                            ->GetDeviceAnnotatedLocation();
   if (result.empty()) {
     std::move(callback).Run(StringResult::NewErrorMessage(kAccessDenied));
@@ -113,7 +113,7 @@ void DeviceAttributesAsh::GetDeviceHostname(
     return;
   }
   absl::optional<std::string> result = g_browser_process->platform_part()
-                                           ->browser_policy_connector_chromeos()
+                                           ->browser_policy_connector_ash()
                                            ->GetDeviceNamePolicyHandler()
                                            ->GetHostnameChosenByAdministrator();
   if (!result) {

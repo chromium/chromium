@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
@@ -26,7 +25,7 @@ class FilePath;
 
 namespace ash {
 
-class AppSession;
+class AppSessionAsh;
 class KioskAppDataBase;
 class KioskAppManagerObserver;
 
@@ -51,6 +50,8 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   using AppList = std::vector<App>;
 
   KioskAppManagerBase();
+  KioskAppManagerBase(const KioskAppManagerBase&) = delete;
+  KioskAppManagerBase& operator=(const KioskAppManagerBase&) = delete;
   ~KioskAppManagerBase() override;
 
   // Depends on the app internal representation for the particular type of
@@ -79,7 +80,7 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   }
 
   // Session of the app that is currently running.
-  AppSession* app_session() { return app_session_.get(); }
+  AppSessionAsh* app_session() { return app_session_.get(); }
 
  protected:
   // Notifies the observers about the updates.
@@ -98,12 +99,11 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   base::CallbackListSubscription local_account_auto_login_id_subscription_;
 
   // Current app session.
-  std::unique_ptr<AppSession> app_session_;
+  std::unique_ptr<AppSessionAsh> app_session_;
 
   base::ObserverList<KioskAppManagerObserver, true>::Unchecked observers_;
 
   base::WeakPtrFactory<KioskAppManagerBase> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(KioskAppManagerBase);
 };
 
 }  // namespace ash

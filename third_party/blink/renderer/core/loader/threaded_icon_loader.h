@@ -18,7 +18,6 @@
 namespace blink {
 
 class ResourceRequestHead;
-class SegmentReader;
 
 // Utility class for loading, decoding, and potentially rescaling an icon on a
 // background thread. Note that icons are only downscaled and never upscaled.
@@ -52,11 +51,7 @@ class CORE_EXPORT ThreadedIconLoader final
   void Trace(Visitor* visitor) const override;
 
  private:
-  void DecodeAndResizeImageOnBackgroundThread(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      scoped_refptr<SegmentReader> data);
-
-  void OnBackgroundTaskComplete(double resize_scale);
+  void OnBackgroundTaskComplete(SkBitmap icon, double resize_scale);
 
   Member<ThreadableLoader> threadable_loader_;
 
@@ -64,9 +59,7 @@ class CORE_EXPORT ThreadedIconLoader final
   // of the image data starts.
   scoped_refptr<SharedBuffer> data_;
 
-  // Accessed from main thread and background thread.
   absl::optional<gfx::Size> resize_dimensions_;
-  SkBitmap decoded_icon_;
 
   IconCallback icon_callback_;
 

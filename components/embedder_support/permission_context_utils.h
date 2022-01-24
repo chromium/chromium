@@ -6,6 +6,7 @@
 #define COMPONENTS_EMBEDDER_SUPPORT_PERMISSION_CONTEXT_UTILS_H_
 
 #include "build/build_config.h"
+#include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 #include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/contexts/nfc_permission_context.h"
 #include "components/permissions/permission_manager.h"
@@ -34,6 +35,8 @@ struct PermissionContextDelegates {
   PermissionContextDelegates& operator=(PermissionContextDelegates&&);
   ~PermissionContextDelegates();
 
+  std::unique_ptr<permissions::CameraPanTiltZoomPermissionContext::Delegate>
+      camera_pan_tilt_zoom_permission_context_delegate;
   std::unique_ptr<permissions::GeolocationPermissionContext::Delegate>
       geolocation_permission_context_delegate;
 #if defined(OS_MAC)

@@ -15,12 +15,17 @@
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/tooltip_view.h"
+#import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
+
+// Desired space between the bottom of the nav bar and the top of the table
+// view.
+const CGFloat kTableViewTopSpace = 14;
 
 NSString* kCellIdentifier = @"cdvcCell";
 
@@ -65,11 +70,32 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
           ? [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
           : [UIColor colorNamed:kBackgroundColor];
   self.view.backgroundColor = backgroundColor;
-  self.navigationController.navigationBar.translucent = NO;
-  self.navigationController.navigationBar.backgroundColor = backgroundColor;
+  if (IsPasswordCreationEnabled()) {
+    UINavigationBarAppearance* appearance =
+        [[UINavigationBarAppearance alloc] init];
+    [appearance configureWithDefaultBackground];
+    appearance.backgroundColor = backgroundColor;
+    if (@available(iOS 15, *)) {
+      self.navigationItem.scrollEdgeAppearance = appearance;
+    } else {
+      // On iOS 14, scrollEdgeAppearance only affects navigation bars with large
+      // titles, so it can't be used. Instead, the navigation bar will always be
+      // the same style.
+      self.navigationItem.standardAppearance = appearance;
+    }
+  } else {
+    self.navigationController.navigationBar.translucent = NO;
+    self.navigationController.navigationBar.backgroundColor = backgroundColor;
+  }
   self.navigationItem.rightBarButtonItem = IsPasswordCreationEnabled()
                                                ? [self navigationEnterButton]
                                                : [self navigationCancelButton];
+  if (IsPasswordCreationEnabled()) {
+    // UITableViewStyleInsetGrouped adds space to the top of the table view by
+    // default. Remove that space and add in the desired amount.
+    self.tableView.contentInset = UIEdgeInsetsMake(
+        -kUITableViewInsetGroupedTopSpace + kTableViewTopSpace, 0, 0, 0);
+  }
   self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
   NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
@@ -231,12 +257,15 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
 // Creates an enter button for the navigation item
 - (UIBarButtonItem*)navigationEnterButton {
-  UIBarButtonItem* enterButton = [[UIBarButtonItem alloc]
-      initWithTitle:NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ENTER",
-                                      @"Enter")
-              style:UIBarButtonItemStyleDone
-             target:self
-             action:@selector(enterPassword)];
+  NSString* title =
+      IsPasswordCreationEnabled()
+          ? NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_USE", @"Use")
+          : NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ENTER", @"Enter");
+  UIBarButtonItem* enterButton =
+      [[UIBarButtonItem alloc] initWithTitle:title
+                                       style:UIBarButtonItemStyleDone
+                                      target:self
+                                      action:@selector(enterPassword)];
   enterButton.tintColor = [UIColor colorNamed:kBlueColor];
   return enterButton;
 }
@@ -261,21 +290,19 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
                 action:@selector(passwordIconButtonTapped:event:)
       forControlEvents:UIControlEventTouchUpInside];
 
-  if (@available(iOS 13.4, *)) {
-    button.pointerInteractionEnabled = YES;
-    button.pointerStyleProvider = ^UIPointerStyle*(
-        UIButton* button, __unused UIPointerEffect* proposedEffect,
-        __unused UIPointerShape* proposedShape) {
-      UITargetedPreview* preview =
-          [[UITargetedPreview alloc] initWithView:button];
-      UIPointerHighlightEffect* effect =
-          [UIPointerHighlightEffect effectWithPreview:preview];
-      UIPointerShape* shape =
-          [UIPointerShape shapeWithRoundedRect:button.frame
-                                  cornerRadius:button.frame.size.width / 2];
-      return [UIPointerStyle styleWithEffect:effect shape:shape];
-    };
-  }
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = ^UIPointerStyle*(
+      UIButton* theButton, __unused UIPointerEffect* proposedEffect,
+      __unused UIPointerShape* proposedShape) {
+    UITargetedPreview* preview =
+        [[UITargetedPreview alloc] initWithView:theButton];
+    UIPointerHighlightEffect* effect =
+        [UIPointerHighlightEffect effectWithPreview:preview];
+    UIPointerShape* shape =
+        [UIPointerShape shapeWithRoundedRect:theButton.frame
+                                cornerRadius:theButton.frame.size.width / 2];
+    return [UIPointerStyle styleWithEffect:effect shape:shape];
+  };
 
   return button;
 }

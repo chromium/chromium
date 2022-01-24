@@ -7,21 +7,19 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_demo_mode_delegate_impl.h"
@@ -63,6 +61,7 @@
 #include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_data_remover.h"
+#include "components/arc/session/arc_dlc_installer.h"
 #include "components/arc/session/arc_instance_mode.h"
 #include "components/arc/session/arc_management_transition.h"
 #include "components/arc/session/arc_session.h"
@@ -100,8 +99,7 @@ constexpr const size_t kArcSaltFileSize = 16;
 constexpr const char kArcPrepareHostGeneratedDirJobName[] =
     "arc_2dprepare_2dhost_2dgenerated_2ddir";
 
-constexpr base::TimeDelta kWaitForPoliciesTimeout =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kWaitForPoliciesTimeout = base::Seconds(20);
 
 // Generates a unique, 20-character hex string from |chromeos_user| and
 // |salt| which can be used as Android's ro.boot.serialno and ro.serialno
@@ -134,9 +132,8 @@ bool IsValidHexSalt(const std::string& hex_salt) {
 // timeout expires, keep ARC running in case the user wants to file feedback,
 // but present the UI to try again.
 base::TimeDelta GetArcSignInTimeout() {
-  constexpr base::TimeDelta kArcSignInTimeout = base::TimeDelta::FromMinutes(5);
-  constexpr base::TimeDelta kArcVmSignInTimeoutForVM =
-      base::TimeDelta::FromMinutes(20);
+  constexpr base::TimeDelta kArcSignInTimeout = base::Minutes(5);
+  constexpr base::TimeDelta kArcVmSignInTimeoutForVM = base::Minutes(20);
 
   if (chromeos::system::StatisticsProvider::GetInstance()->IsRunningOnVm() &&
       arc::IsArcVmEnabled()) {
@@ -422,26 +419,22 @@ ArcSupportHost::Error GetSupportHostError(const ArcProvisioningResult& result) {
 }
 
 bool ShouldShowNetworkTests(const ArcProvisioningResult& result) {
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kButtonARCNetworkDiagnostics)) {
-    return false;
-  }
-
-  // For GMS signin errors
   if (result.gms_sign_in_error() ==
           mojom::GMSSignInError::GMS_SIGN_IN_TIMEOUT ||
       result.gms_sign_in_error() ==
-          mojom::GMSSignInError::GMS_SIGN_IN_SERVICE_UNAVAILABLE) {
+          mojom::GMSSignInError::GMS_SIGN_IN_SERVICE_UNAVAILABLE ||
+      result.gms_sign_in_error() ==
+          mojom::GMSSignInError::GMS_SIGN_IN_NETWORK_ERROR) {
     return true;
   }
 
-  // For GMS checkin errors
   if (result.gms_check_in_error() ==
-      mojom::GMSCheckInError::GMS_CHECK_IN_TIMEOUT) {
+          mojom::GMSCheckInError::GMS_CHECK_IN_FAILED ||
+      result.gms_check_in_error() ==
+          mojom::GMSCheckInError::GMS_CHECK_IN_TIMEOUT) {
     return true;
   }
 
-  // For Cloud Provision Flow errors
   if (result.cloud_provision_flow_error() ==
           mojom::CloudProvisionFlowError::ERROR_SERVER_TRANSIENT_ERROR ||
       result.cloud_provision_flow_error() ==
@@ -453,7 +446,6 @@ bool ShouldShowNetworkTests(const ArcProvisioningResult& result) {
     return true;
   }
 
-  // For General signin errors
   if (result.general_error() ==
           mojom::GeneralSignInError::GENERIC_PROVISIONING_TIMEOUT ||
       result.general_error() ==
@@ -475,6 +467,14 @@ ArcSessionManager::ExpansionResult ReadSaltInternal() {
   return ArcSessionManager::ExpansionResult{salt, true};
 }
 
+// Checks whether ARC DLCs needs to be installed/uninstalled. Currently,
+// "houdini-rvc-dlc" is the only enabled DLC, so we only need to check
+// for the presence of kEnableHoudiniDlc flag in the command line.
+bool IsDlcRequired() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      chromeos::switches::kEnableHoudiniDlc);
+}
+
 }  // namespace
 
 // This class is used to track statuses on OptIn flow. It is created in case ARC
@@ -493,6 +493,9 @@ class ArcSessionManager::ScopedOptInFlowTracker {
   ScopedOptInFlowTracker() {
     UpdateOptInFlowResultUMA(OptInFlowResult::STARTED);
   }
+
+  ScopedOptInFlowTracker(const ScopedOptInFlowTracker&) = delete;
+  ScopedOptInFlowTracker& operator=(const ScopedOptInFlowTracker&) = delete;
 
   ~ScopedOptInFlowTracker() {
     if (shutdown_)
@@ -529,8 +532,6 @@ class ArcSessionManager::ScopedOptInFlowTracker {
   bool error_ = false;
   bool success_ = false;
   bool shutdown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedOptInFlowTracker);
 };
 
 ArcSessionManager::ArcSessionManager(
@@ -552,10 +553,12 @@ ArcSessionManager::ArcSessionManager(
     chromeos::SessionManagerClient::Get()->AddObserver(this);
   ResetStabilityMetrics();
   chromeos::ConciergeClient::Get()->AddVmObserver(this);
+  arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
 }
 
 ArcSessionManager::~ArcSessionManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  arc_dlc_installer_.reset();
 
   chromeos::ConciergeClient::Get()->RemoveVmObserver(this);
 
@@ -632,6 +635,9 @@ void ArcSessionManager::OnSessionStopped(ArcStopReason reason,
     observer.OnArcSessionStopped(reason);
 
   MaybeStartArcDataRemoval();
+
+  if (!enable_requested_ && IsDlcRequired())
+    arc_dlc_installer_->RequestDisable();
 }
 
 void ArcSessionManager::OnSessionRestarting() {
@@ -751,16 +757,10 @@ void ArcSessionManager::OnProvisioningFinished(
 
   VLOG(1) << "ARC provisioning failed: " << result << ".";
 
-  // When ARC provisioning fails due to Chrome failing to talk to server, we
-  // don't need to keep the ARC session running as the logs necessary to
-  // investigate are already present. ARC session will not provide any useful
-  // context.
-  if (result.stop_reason() ||
-      result.general_error() ==
-          mojom::GeneralSignInError::CHROME_SERVER_COMMUNICATION_ERROR) {
+  if (result.stop_reason()) {
     if (profile_->GetPrefs()->HasPrefPath(prefs::kArcSignedIn))
       profile_->GetPrefs()->SetBoolean(prefs::kArcSignedIn, false);
-    VLOG(1) << "Stopping ARC due to provisioning failure";
+    VLOG(1) << "ARC stopped unexpectedly";
     ShutdownSession();
   }
 
@@ -923,8 +923,6 @@ void ArcSessionManager::ShutdownSession() {
       // immediately.
       state_ = State::STOPPED;
       break;
-
-      break;
     case State::ACTIVE:
       // Request to stop the ARC. |state_| will be set to STOPPED eventually.
       // Set state before requesting the runner to stop in order to prevent the
@@ -1017,6 +1015,8 @@ void ArcSessionManager::RequestEnable() {
 
   VLOG(1) << "ARC opt-in. Starting ARC session.";
 
+  if (IsDlcRequired())
+    arc_dlc_installer_->RequestEnable();
   // |directly_started_| flag must be preserved during the internal ARC restart.
   // So set it only when ARC is externally requested to start.
   directly_started_ = RequestEnableImpl();
@@ -1134,10 +1134,6 @@ bool ArcSessionManager::RequestEnableImpl() {
 
   if (start_arc_directly) {
     StartArc();
-    // When in ARC kiosk mode, there's no Chrome tabs to restore. Remove the
-    // cgroups now.
-    if (IsArcKioskMode())
-      SetArcCpuRestriction(CpuRestrictionState::CPU_RESTRICTION_FOREGROUND);
     // Check Android management in parallel.
     // Note: StartBackgroundAndroidManagementCheck() may call
     // OnBackgroundAndroidManagementChecked() synchronously (or
@@ -1154,7 +1150,7 @@ bool ArcSessionManager::RequestEnableImpl() {
   return false;
 }
 
-void ArcSessionManager::RequestDisable() {
+void ArcSessionManager::RequestDisable(bool remove_arc_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
 
@@ -1178,6 +1174,17 @@ void ArcSessionManager::RequestDisable() {
   // Reset any pending request to re-enable ARC.
   reenable_arc_ = false;
   StopArc();
+
+  if (remove_arc_data)
+    RequestArcDataRemoval();
+}
+
+void ArcSessionManager::RequestDisable() {
+  RequestDisable(false);
+}
+
+void ArcSessionManager::RequestDisableWithArcDataRemoval() {
+  RequestDisable(true);
 }
 
 void ArcSessionManager::RequestArcDataRemoval() {
@@ -1259,8 +1266,14 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
             profile_->GetPrefs(), support_host_.get());
   }
 
-  // Start the mini-container here to save time starting the container if the
-  // user decides to opt-in.
+  // Start the mini-container (or mini-VM) here to save time starting the OS if
+  // the user decides to opt-in. Unlike calling StartMiniArc() for ARCVM on
+  // login screen, doing so on ToS screen is safe and desirable. The user has
+  // already shown the intent to opt-in (or, if this is during OOBE, accepting
+  // the ToS is mandatory), and the user's cryptohome has already been mounted.
+  // vm_concierge is already running too. For those reasons, calling
+  // StartMiniArc() for ARCVM here will actually make its perceived boot time
+  // faster.
   StartMiniArc();
 
   if (!terms_of_service_negotiator_) {
@@ -1353,9 +1366,6 @@ void ArcSessionManager::OnAndroidManagementChecked(
     case policy::AndroidManagementClient::Result::UNMANAGED:
       VLOG(1) << "Starting ARC for first sign in.";
       StartArc();
-      // Since opt-in is an explicit user (or admin) action, relax the
-      // cgroups restriction now.
-      SetArcCpuRestriction(CpuRestrictionState::CPU_RESTRICTION_FOREGROUND);
       break;
     case policy::AndroidManagementClient::Result::MANAGED:
       ShowArcSupportHostError(
@@ -1512,6 +1522,9 @@ void ArcSessionManager::StartArc() {
     GetLocaleAndPreferredLanguages(profile_, &locale, &preferred_languages);
   }
 
+  arc_session_runner_->set_default_device_scale_factor(
+      exo::GetDefaultDeviceScaleFactor());
+
   UpgradeParams params;
 
   const auto* demo_session = ash::DemoSession::Get();
@@ -1551,7 +1564,7 @@ void ArcSessionManager::StopArc() {
     profile_->GetPrefs()->SetBoolean(prefs::kArcFastAppReinstallStarted, false);
     profile_->GetPrefs()->SetBoolean(prefs::kArcProvisioningInitiatedFromOobe,
                                      false);
-    profile_->GetPrefs()->SetBoolean(prefs::kArcIsManaged, false);
+    profile_->GetPrefs()->ClearPref(prefs::kArcIsManaged);
   }
 
   ShutdownSession();
@@ -1689,7 +1702,7 @@ void ArcSessionManager::OnSendFeedbackClicked() {
   DCHECK(support_host_);
   chrome::OpenFeedbackDialog(nullptr, chrome::kFeedbackSourceArcApp);
 
-  // If network-related error occured, collect UMA stats on user action.
+  // If network-related error occurred, collect UMA stats on user action.
   if (support_host_->GetShouldShowRunNetworkTests())
     UpdateOptInNetworkErrorActionUMA(
         arc::OptInNetworkErrorActionType::SEND_FEEDBACK);
@@ -1697,7 +1710,9 @@ void ArcSessionManager::OnSendFeedbackClicked() {
 
 void ArcSessionManager::OnRunNetworkTestsClicked() {
   DCHECK(support_host_);
-  chromeos::DiagnosticsDialog::ShowDialog();
+  chromeos::DiagnosticsDialog::ShowDialog(
+      chromeos::DiagnosticsDialog::DiagnosticsPage::kConnectivity,
+      support_host_->GetNativeWindow());
 
   // Network-related error occured so collect UMA stats on user action.
   UpdateOptInNetworkErrorActionUMA(
@@ -1741,6 +1756,23 @@ void ArcSessionManager::EmitLoginPromptVisibleCalled() {
   if (!IsArcAvailable())
     return;
 
+  if (IsArcVmEnabled()) {
+    // For ARCVM, don't try to start ARCVM on login screen.
+    // Calling StartMiniArc() on login screen for ARCVM does more harm than
+    // good. First, the ARCVM boot sequence started by StartMiniArc() stops
+    // relatively early in ArcVmClientAdapter which waits for vm_concierge to
+    // start (note that vm_concierge does not run on login screen these days.)
+    // Because of this, crosvm for ARCVM won't start until the user signs into
+    // their user session. Second, after the sign-in, the rest of the mini-ARCVM
+    // startup sequence is executed regardless of whether the user has opted
+    // into ARC. For opt-out users(*), ARCVM will eventually be stopped, but the
+    // stop request may be issued after mini-VM is started. This is a complete
+    // waste of resources and may also cause page caches evictions making Chrome
+    // UI less reponsive.
+    // (*) This includes non-ARC Kiosk mode. See b/197510998 for more info.
+    VLOG(1) << "Starting ARCVM on login screen is not supported.";
+    return;
+  }
   StartMiniArc();
 }
 

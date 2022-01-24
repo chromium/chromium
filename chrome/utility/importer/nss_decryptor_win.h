@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/native_library.h"
 
 // The following declarations of functions and types are from Firefox
@@ -113,6 +112,10 @@ struct ImportedPasswordForm;
 class NSSDecryptor {
  public:
   NSSDecryptor();
+
+  NSSDecryptor(const NSSDecryptor&) = delete;
+  NSSDecryptor& operator=(const NSSDecryptor&) = delete;
+
   ~NSSDecryptor();
 
   // Loads NSS3 library and returns true if successful.
@@ -172,8 +175,6 @@ class NSSDecryptor {
 
   // True if NSS_Init() has been called
   bool is_nss_initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(NSSDecryptor);
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_NSS_DECRYPTOR_WIN_H_

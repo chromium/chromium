@@ -117,11 +117,10 @@ class CustomizeModulesElement extends mixinBehaviors
     if (!this.discountToggleEligible_) {
       return;
     }
-    ChromeCartProxy.getInstance().handler.getDiscountEnabled().then(
-        ({enabled}) => {
-          this.set('discountToggle_.enabled', enabled);
-          this.discountToggle_.initiallyEnabled = enabled;
-        });
+    ChromeCartProxy.getHandler().getDiscountEnabled().then(({enabled}) => {
+      this.set('discountToggle_.enabled', enabled);
+      this.discountToggle_.initiallyEnabled = enabled;
+    });
   }
 
   /** @override */
@@ -165,7 +164,7 @@ class CustomizeModulesElement extends mixinBehaviors
     if (this.discountToggleEligible_ &&
         this.discountToggle_.enabled !==
             this.discountToggle_.initiallyEnabled) {
-      ChromeCartProxy.getInstance().handler.setDiscountEnabled(
+      ChromeCartProxy.getHandler().setDiscountEnabled(
           this.discountToggle_.enabled);
       chrome.metricsPrivate.recordUserAction(`NewTabPage.Carts.${
           this.discountToggle_.enabled ? 'EnableDiscount' :

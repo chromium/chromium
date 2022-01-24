@@ -8,15 +8,13 @@
 #include <utility>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkRegion.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/gfx/vsync_provider.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 
 namespace ui {
@@ -43,6 +41,10 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
         buffer_manager_(buffer_manager) {
     DCHECK(buffer_manager_);
   }
+
+  SharedMemoryBuffer(const SharedMemoryBuffer&) = delete;
+  SharedMemoryBuffer& operator=(const SharedMemoryBuffer&) = delete;
+
   ~SharedMemoryBuffer() { buffer_manager_->DestroyBuffer(widget_, buffer_id_); }
 
   // Returns SkSurface, which the client can use to write to this buffer.
@@ -92,9 +94,9 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     return true;
   }
 
-  void CommitBuffer(const gfx::Rect& damage) {
+  void CommitBuffer(const gfx::Rect& damage, float buffer_scale) {
     buffer_manager_->CommitBuffer(widget_, buffer_id_, gfx::Rect(size_),
-                                  damage);
+                                  buffer_scale, damage);
   }
 
   void OnUse() {
@@ -162,8 +164,41 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
 
   // Pending damage region if the buffer is pending to be submitted.
   gfx::Rect pending_damage_region_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryBuffer);
+class WaylandCanvasSurface::VSyncProvider : public gfx::VSyncProvider {
+ public:
+  explicit VSyncProvider(base::WeakPtr<WaylandCanvasSurface> surface)
+      : surface_(surface) {}
+
+  ~VSyncProvider() override = default;
+
+  void GetVSyncParameters(UpdateVSyncCallback callback) override {
+    base::TimeTicks timebase;
+    base::TimeDelta interval;
+    if (GetVSyncParametersIfAvailable(&timebase, &interval))
+      std::move(callback).Run(timebase, interval);
+  }
+
+  bool GetVSyncParametersIfAvailable(base::TimeTicks* timebase,
+                                     base::TimeDelta* interval) override {
+    if (!surface_ || surface_->last_timestamp_.is_null())
+      return false;
+    *timebase = surface_->last_timestamp_;
+    *interval = surface_->last_interval_;
+    return true;
+  }
+
+  bool SupportGetVSyncParametersIfAvailable() const override { return true; }
+
+  bool IsHWClock() const override {
+    if (!surface_)
+      return false;
+    return surface_->is_hw_clock_;
+  }
+
+ private:
+  base::WeakPtr<WaylandCanvasSurface> surface_;
 };
 
 WaylandCanvasSurface::WaylandCanvasSurface(
@@ -221,6 +256,7 @@ void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
   pending_buffer_ = nullptr;
   unsubmitted_buffers_.clear();
   size_ = viewport_size;
+  viewport_scale_ = scale;
 }
 
 void WaylandCanvasSurface::PresentCanvas(const gfx::Rect& damage) {
@@ -236,10 +272,8 @@ void WaylandCanvasSurface::PresentCanvas(const gfx::Rect& damage) {
 
 std::unique_ptr<gfx::VSyncProvider>
 WaylandCanvasSurface::CreateVSyncProvider() {
-  // TODO(https://crbug.com/930662): This can be implemented with information
-  // from presentation feedback.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return std::make_unique<WaylandCanvasSurface::VSyncProvider>(
+      weak_factory_.GetWeakPtr());
 }
 
 void WaylandCanvasSurface::ProcessUnsubmittedBuffers() {
@@ -272,7 +306,7 @@ void WaylandCanvasSurface::ProcessUnsubmittedBuffers() {
       buffer->UpdateDirtyRegion(damage, SkRegion::kUnion_Op);
   }
 
-  current_buffer_->CommitBuffer(damage);
+  current_buffer_->CommitBuffer(damage, viewport_scale_);
 }
 
 void WaylandCanvasSurface::OnSubmission(uint32_t buffer_id,
@@ -308,8 +342,9 @@ void WaylandCanvasSurface::OnSubmission(uint32_t buffer_id,
 void WaylandCanvasSurface::OnPresentation(
     uint32_t buffer_id,
     const gfx::PresentationFeedback& feedback) {
-  // TODO(https://crbug.com/930662): this can be used for the vsync provider.
-  NOTIMPLEMENTED_LOG_ONCE();
+  last_timestamp_ = feedback.timestamp;
+  last_interval_ = feedback.interval;
+  is_hw_clock_ = feedback.flags & gfx::PresentationFeedback::Flags::kHWClock;
 }
 
 std::unique_ptr<WaylandCanvasSurface::SharedMemoryBuffer>

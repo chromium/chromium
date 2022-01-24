@@ -839,5 +839,5 @@ inline bool operator!=(const pp::FloatRect& lhs, const pp::FloatRect& rhs) {
   return !(lhs == rhs);
 }
 
-#endif
+#endif  // PPAPI_CPP_RECT_H_
 

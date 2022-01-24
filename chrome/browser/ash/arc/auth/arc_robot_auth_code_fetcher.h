@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_code_fetcher.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -25,6 +24,10 @@ namespace arc {
 class ArcRobotAuthCodeFetcher : public ArcAuthCodeFetcher {
  public:
   ArcRobotAuthCodeFetcher();
+
+  ArcRobotAuthCodeFetcher(const ArcRobotAuthCodeFetcher&) = delete;
+  ArcRobotAuthCodeFetcher& operator=(const ArcRobotAuthCodeFetcher&) = delete;
+
   ~ArcRobotAuthCodeFetcher() override;
 
   // ArcAuthCodeFetcher:
@@ -40,8 +43,6 @@ class ArcRobotAuthCodeFetcher : public ArcAuthCodeFetcher {
 
   std::unique_ptr<policy::DeviceManagementService::Job> fetch_request_job_;
   base::WeakPtrFactory<ArcRobotAuthCodeFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcRobotAuthCodeFetcher);
 };
 
 }  // namespace arc

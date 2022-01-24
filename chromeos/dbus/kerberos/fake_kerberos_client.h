@@ -22,6 +22,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
       public KerberosClient::TestInterface {
  public:
   FakeKerberosClient();
+
+  FakeKerberosClient(const FakeKerberosClient&) = delete;
+  FakeKerberosClient& operator=(const FakeKerberosClient&) = delete;
+
   ~FakeKerberosClient() override;
 
   // KerberosClient:
@@ -80,6 +84,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
 
     explicit AccountData(const std::string& principal_name);
     AccountData(const AccountData& other);
+    AccountData& operator=(const AccountData& other);
 
     // Only compares principal_name. For finding and erasing in vectors.
     bool operator==(const AccountData& other) const;
@@ -109,7 +114,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
   absl::optional<std::string> recorded_function_calls_;
 
   // Fake delay for any asynchronous operation.
-  base::TimeDelta task_delay_ = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta task_delay_ = base::Milliseconds(100);
 
   // The simulated number of network failures on |AcquireKerberosTgt()| (for
   // testing).
@@ -117,8 +122,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
 
   KerberosFilesChangedCallback kerberos_files_changed_callback_;
   KerberosTicketExpiringCallback kerberos_ticket_expiring_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeKerberosClient);
 };
 
 }  // namespace chromeos

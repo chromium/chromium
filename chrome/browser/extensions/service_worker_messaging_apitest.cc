@@ -69,6 +69,11 @@ base::FilePath WriteServiceWorkerExtensionToDir(TestExtensionDir* test_dir) {
 class ServiceWorkerMessagingTest : public ExtensionApiTest {
  public:
   ServiceWorkerMessagingTest() = default;
+
+  ServiceWorkerMessagingTest(const ServiceWorkerMessagingTest&) = delete;
+  ServiceWorkerMessagingTest& operator=(const ServiceWorkerMessagingTest&) =
+      delete;
+
   ~ServiceWorkerMessagingTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -92,9 +97,6 @@ class ServiceWorkerMessagingTest : public ExtensionApiTest {
   }
 
   extensions::ScopedTestNativeMessagingHost test_host_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerMessagingTest);
 };
 
 class ServiceWorkerMessagingTestWithActivityLog
@@ -202,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
 
   GURL url =
       embedded_test_server()->GetURL("example.com", "/extensions/body1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Wait for the content script to connect to the worker's port.
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -362,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   // content script to connect to its background's port.
   GURL url =
       embedded_test_server()->GetURL("example.com", "/extensions/body1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(content_script_connected_catcher.GetNextResult())
       << content_script_connected_catcher.message();
 

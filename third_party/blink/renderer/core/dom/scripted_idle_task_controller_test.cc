@@ -179,7 +179,7 @@ TEST_F(ScriptedIdleTaskControllerTest, RunCallbacksAsyncWhenUnpaused) {
   // run.
   controller->ContextLifecycleStateChanged(mojom::FrameLifecycleState::kPaused);
   EXPECT_CALL(*idle_task, invoke(testing::_)).Times(0);
-  scheduler.AdvanceTimeAndRun(base::TimeDelta::FromMilliseconds(1));
+  scheduler.AdvanceTimeAndRun(base::Milliseconds(1));
   testing::Mock::VerifyAndClearExpectations(idle_task);
 
   // Even if we unpause, no tasks should run immediately.
@@ -190,7 +190,7 @@ TEST_F(ScriptedIdleTaskControllerTest, RunCallbacksAsyncWhenUnpaused) {
 
   // Idle callback should have been scheduled as an asynchronous task.
   EXPECT_CALL(*idle_task, invoke(testing::_)).Times(1);
-  scheduler.AdvanceTimeAndRun(base::TimeDelta::FromMilliseconds(0));
+  scheduler.AdvanceTimeAndRun(base::Milliseconds(0));
   testing::Mock::VerifyAndClearExpectations(idle_task);
 }
 

@@ -9,10 +9,11 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {kMenuCloseDelay, LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
-import {getFakeLanguagePrefs} from 'chrome://test/settings/fake_language_settings_private.js';
-import {FakeSettingsPrivate} from 'chrome://test/settings/fake_settings_private.js';
-import {TestLanguagesBrowserProxy} from 'chrome://test/settings/test_languages_browser_proxy.js';
-import {eventToPromise, fakeDataBind} from 'chrome://test/test_util.m.js';
+import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
+
+import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
+import {FakeSettingsPrivate} from './fake_settings_private.js';
+import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 
 // clang-format on
 
@@ -33,10 +34,6 @@ suite('languages subpage', function() {
   let actionMenu = null;
   /** @type {?LanguagesBrowserProxy} */
   let browserProxy = null;
-
-  // Enabled language pref name for the platform.
-  const languagesPref = isChromeOS ? 'settings.language.preferred_languages' :
-                                     'intl.accept_languages';
 
   // Initial value of enabled languages pref used in tests.
   const initialLanguages = 'en-US,sw';
@@ -59,7 +56,7 @@ suite('languages subpage', function() {
     return CrSettingsPrefs.initialized.then(function() {
       // Set up test browser proxy.
       browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.instance_ = browserProxy;
+      LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
       // Set up fake languageSettingsPrivate API.
       const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
@@ -181,7 +178,8 @@ suite('languages subpage', function() {
       cancelButton.click();
       return dialogClosedResolver.promise.then(function() {
         assertEquals(
-            initialLanguages, languageHelper.getPref(languagesPref).value);
+            initialLanguages,
+            languageHelper.getPref('intl.accept_languages').value);
       });
     });
 
@@ -211,7 +209,7 @@ suite('languages subpage', function() {
 
       assertEquals(
           initialLanguages + ',en,tk',
-          languageHelper.getPref(languagesPref).value);
+          languageHelper.getPref('intl.accept_languages').value);
 
       return dialogClosedResolver.promise;
     });
@@ -457,12 +455,14 @@ suite('languages subpage', function() {
       assertFalse(actionMenu.open);
 
       assertEquals(
-          initialLanguages, languageHelper.getPref(languagesPref).value);
+          initialLanguages,
+          languageHelper.getPref('intl.accept_languages').value);
     });
 
     test('remove last blocked language', function() {
       assertEquals(
-          initialLanguages, languageHelper.getPref(languagesPref).value);
+          initialLanguages,
+          languageHelper.getPref('intl.accept_languages').value);
       assertDeepEquals(
           ['en-US'], languageHelper.prefs.translate_blocked_languages.value);
 
@@ -504,7 +504,8 @@ suite('languages subpage', function() {
       removeMenuItem.click();
       assertFalse(actionMenu.open);
 
-      assertEquals('en-US', languageHelper.getPref(languagesPref).value);
+      assertEquals(
+          'en-US', languageHelper.getPref('intl.accept_languages').value);
     });
 
     test('move up/down buttons', function() {

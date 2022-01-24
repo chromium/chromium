@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
@@ -65,7 +64,7 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
   size_t buffer_size = sizeof(buffer) / sizeof(uint8_t);
   const uint8_t side_buffer[] = "XX";
   size_t side_buffer_size = sizeof(side_buffer) / sizeof(uint8_t);
-  base::TimeDelta pts = base::TimeDelta::FromMilliseconds(5);
+  base::TimeDelta pts = base::Milliseconds(5);
 
   // 1. To DecoderBuffer
   scoped_refptr<DecoderBuffer> input_buffer = DecoderBuffer::CopyFrom(
@@ -99,7 +98,7 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
 TEST_F(ProtoUtilsTest, AudioDecoderConfigConversionTest) {
   const char extra_data[4] = {'A', 'C', 'E', 'G'};
   AudioDecoderConfig audio_config(
-      kCodecAAC, kSampleFormatF32, CHANNEL_LAYOUT_MONO, 48000,
+      AudioCodec::kAAC, kSampleFormatF32, CHANNEL_LAYOUT_MONO, 48000,
       std::vector<uint8_t>(std::begin(extra_data), std::end(extra_data)),
       EncryptionScheme::kUnencrypted);
   ASSERT_TRUE(audio_config.IsValidConfig());

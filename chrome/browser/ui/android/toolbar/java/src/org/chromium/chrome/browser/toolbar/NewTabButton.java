@@ -110,8 +110,8 @@ public class NewTabButton
     /** Update the tint for the icon drawable for Chrome Modern. */
     private void updateDrawableTint() {
         final boolean shouldUseLightMode = mIsTablet
-                || ((DeviceClassManager.enableAccessibilityLayout() || mIsGridTabSwitcherEnabled
-                            || mIsStartSurfaceEnabled)
+                || ((DeviceClassManager.enableAccessibilityLayout(getContext())
+                            || mIsGridTabSwitcherEnabled || mIsStartSurfaceEnabled)
                         && mIsIncognito);
         ApiCompatibilityUtils.setImageTintList(
                 this, shouldUseLightMode ? mLightModeTint : mDarkModeTint);

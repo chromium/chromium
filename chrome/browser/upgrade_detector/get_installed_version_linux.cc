@@ -7,15 +7,22 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/common/chrome_switches.h"
+
+namespace {
 
 // On Linux, the Chrome binary may have been replaced by an update. Ask it to
 // report its version.
-InstalledAndCriticalVersion GetInstalledVersion() {
+InstalledAndCriticalVersion GetInstalledVersionSynchronous() {
   base::CommandLine command_line(*base::CommandLine::ForCurrentProcess());
   command_line.AppendSwitch(switches::kProductVersion);
   base::Version installed_version;
@@ -31,4 +38,14 @@ InstalledAndCriticalVersion GetInstalledVersion() {
       << reply;
 
   return InstalledAndCriticalVersion(std::move(installed_version));
+}
+
+}  // namespace
+
+void GetInstalledVersion(InstalledVersionCallback callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
+      base::BindOnce(&GetInstalledVersionSynchronous), std::move(callback));
 }

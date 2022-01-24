@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/x_frame_options.mojom-forward.h"
@@ -28,6 +27,9 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
  public:
   static std::unique_ptr<NavigationThrottle> MaybeCreateThrottleFor(
       NavigationHandle* handle);
+
+  AncestorThrottle(const AncestorThrottle&) = delete;
+  AncestorThrottle& operator=(const AncestorThrottle&) = delete;
 
   ~AncestorThrottle() override;
 
@@ -60,8 +62,6 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
       const std::vector<network::mojom::ContentSecurityPolicyPtr>&
           content_security_policy);
   CheckResult EvaluateEmbeddingOptIn(LoggingDisposition logging);
-
-  DISALLOW_COPY_AND_ASSIGN(AncestorThrottle);
 };
 
 }  // namespace content

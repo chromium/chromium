@@ -5,7 +5,6 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 
 #include "base/run_loop.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -22,7 +21,6 @@ AppServiceTest::AppServiceTest() = default;
 AppServiceTest::~AppServiceTest() = default;
 
 void AppServiceTest::SetUp(Profile* profile) {
-  profile_ = profile;
   app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile);
   app_service_proxy_->ReInitializeForTesting(profile);
 

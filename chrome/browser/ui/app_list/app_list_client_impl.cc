@@ -11,12 +11,14 @@
 
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_controller_factory.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
+#include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -53,12 +56,18 @@ namespace {
 AppListClientImpl* g_app_list_client_instance = nullptr;
 
 // Parameters used by the time duration metrics.
-constexpr base::TimeDelta kTimeMetricsMin = base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kTimeMetricsMax = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kTimeMetricsMin = base::Seconds(1);
+constexpr base::TimeDelta kTimeMetricsMax = base::Days(7);
 constexpr int kTimeMetricsBucketCount = 100;
 
 bool IsTabletMode() {
-  return ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode();
+  return ash::TabletMode::IsInTabletMode();
+}
+
+// Returns whether the session is active.
+bool IsSessionActive() {
+  return session_manager::SessionManager::Get()->session_state() ==
+         session_manager::SessionState::ACTIVE;
 }
 
 }  // namespace
@@ -182,13 +191,14 @@ void AppListClientImpl::OpenSearchResult(
   search_controller_->OpenResult(result, event_flags);
 }
 
-void AppListClientImpl::InvokeSearchResultAction(const std::string& result_id,
-                                                 int action_index) {
+void AppListClientImpl::InvokeSearchResultAction(
+    const std::string& result_id,
+    ash::SearchResultActionType action) {
   if (!search_controller_)
     return;
   ChromeSearchResult* result = search_controller_->FindSearchResult(result_id);
   if (result)
-    search_controller_->InvokeResultAction(result, action_index);
+    search_controller_->InvokeResultAction(result, action);
 }
 
 void AppListClientImpl::GetSearchResultContextMenuModel(
@@ -287,44 +297,12 @@ void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
 
 void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
   app_list_visible_ = visible;
-  if (visible && search_controller_)
-    search_controller_->AppListShown();
-}
-
-void AppListClientImpl::OnItemAdded(
-    int profile_id,
-    std::unique_ptr<ash::AppListItemMetadata> item) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (!requested_model_updater)
-    return;
-  requested_model_updater->OnItemAdded(std::move(item));
-}
-
-void AppListClientImpl::OnItemUpdated(
-    int profile_id,
-    std::unique_ptr<ash::AppListItemMetadata> item) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (!requested_model_updater)
-    return;
-  requested_model_updater->OnItemUpdated(std::move(item));
-}
-
-void AppListClientImpl::OnFolderDeleted(
-    int profile_id,
-    std::unique_ptr<ash::AppListItemMetadata> item) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (!requested_model_updater)
-    return;
-  DCHECK(item->is_folder);
-  requested_model_updater->OnFolderDeleted(std::move(item));
-}
-
-void AppListClientImpl::OnPageBreakItemDeleted(int profile_id,
-                                               const std::string& id) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (!requested_model_updater)
-    return;
-  requested_model_updater->OnPageBreakItemDeleted(id);
+  if (visible) {
+    if (search_controller_)
+      search_controller_->AppListShown();
+  } else if (current_model_updater_) {
+    current_model_updater_->OnAppListHidden();
+  }
 }
 
 void AppListClientImpl::OnSearchResultVisibilityChanged(const std::string& id,
@@ -394,8 +372,10 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
   template_url_service_observation_.Reset();
 
   profile_ = new_profile;
-  if (!profile_)
+  if (!profile_) {
+    GetAppListController()->ClearActiveModel();
     return;
+  }
 
   // If we are in guest mode, the new profile should be an OffTheRecord profile.
   // Otherwise, this may later hit a check (same condition as this one) in
@@ -456,8 +436,7 @@ void AppListClientImpl::InitializeAsIfNewUserLoginForTest() {
 void AppListClientImpl::OnSessionStateChanged() {
   // Return early if the current user is not new or the session is not active.
   if (!user_manager::UserManager::Get()->IsCurrentUserNew() ||
-      session_manager::SessionManager::Get()->session_state() !=
-          session_manager::SessionState::ACTIVE) {
+      !IsSessionActive()) {
     return;
   }
 
@@ -518,11 +497,11 @@ bool AppListClientImpl::IsAppOpen(const std::string& app_id) const {
 }
 
 void AppListClientImpl::PinApp(const std::string& app_id) {
-  ChromeShelfController::instance()->PinAppWithID(app_id);
+  PinAppWithIDToShelf(app_id);
 }
 
 void AppListClientImpl::UnpinApp(const std::string& app_id) {
-  ChromeShelfController::instance()->UnpinAppWithID(app_id);
+  UnpinAppWithIDFromShelf(app_id);
 }
 
 AppListControllerDelegate::Pinnable AppListClientImpl::GetPinnable(
@@ -531,17 +510,23 @@ AppListControllerDelegate::Pinnable AppListClientImpl::GetPinnable(
                              ChromeShelfController::instance()->profile());
 }
 
-void AppListClientImpl::CreateNewWindow(bool incognito) {
-  ash::NewWindowDelegate::GetInstance()->NewWindow(incognito);
+void AppListClientImpl::CreateNewWindow(bool incognito,
+                                        bool should_trigger_session_restore) {
+  ash::NewWindowDelegate::GetInstance()->NewWindow(
+      incognito, should_trigger_session_restore);
 }
 
 void AppListClientImpl::OpenURL(Profile* profile,
                                 const GURL& url,
                                 ui::PageTransition transition,
                                 WindowOpenDisposition disposition) {
-  NavigateParams params(profile, url, transition);
-  params.disposition = disposition;
-  Navigate(&params);
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    ash::NewWindowDelegate::GetPrimary()->OpenUrl(url, true);
+  } else {
+    NavigateParams params(profile, url, transition);
+    params.disposition = disposition;
+    Navigate(&params);
+  }
 }
 
 void AppListClientImpl::NotifySearchResultsForLogging(
@@ -567,6 +552,25 @@ void AppListClientImpl::LoadIcon(int profile_id, const std::string& app_id) {
   requested_model_updater->LoadAppIcon(app_id);
 }
 
+void AppListClientImpl::OnAppListSortRequested(int profile_id,
+                                               ash::AppListSortOrder order) {
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (requested_model_updater != current_model_updater_ ||
+      !requested_model_updater) {
+    return;
+  }
+  requested_model_updater->OnSortRequested(order);
+}
+
+void AppListClientImpl::OnAppListSortRevertRequested(int profile_id) {
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (requested_model_updater != current_model_updater_ ||
+      !requested_model_updater) {
+    return;
+  }
+  requested_model_updater->OnSortRevertRequested();
+}
+
 void AppListClientImpl::MaybeRecordViewShown() {
   // Record the time duration between session activation and the first launcher
   // showing if the current user is new.
@@ -583,6 +587,13 @@ void AppListClientImpl::MaybeRecordViewShown() {
     return;
   }
 
+  // Record launcher usage only when the session is active.
+  // TODO(https://crbug.com/1248250): handle ui events during OOBE in a more
+  // elegant way. For example, do not bother showing the app list when handling
+  // the app list toggling event because the app list is not visible in OOBE.
+  if (!IsSessionActive())
+    return;
+
   if (state_for_new_user_->showing_recorded) {
     // Showing launcher was recorded before so return early.
     return;
@@ -590,7 +601,7 @@ void AppListClientImpl::MaybeRecordViewShown() {
 
   state_for_new_user_->showing_recorded = true;
 
-  DCHECK(new_user_session_activation_time_.has_value());
+  CHECK(new_user_session_activation_time_.has_value());
   const base::TimeDelta opening_duration =
       base::Time::Now() - *new_user_session_activation_time_;
   if (opening_duration >= base::TimeDelta()) {

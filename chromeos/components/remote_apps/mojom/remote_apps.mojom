@@ -40,6 +40,15 @@ interface RemoteApps {
          string folder_id,
          url.mojom.Url icon_url,
          bool add_to_front) => (string? app_id, string? error);
+
+  // Deletes a Remote App added by |AddApp()|.
+  //
+  // Input parameters:
+  // - |app_id|: ID of the app.
+  //
+  // Output parameters:
+  // - |error|: A string describing the error if any.
+  DeleteApp(string app_id) => (string? error);
 };
 
 // Factory for creating an instance of RemoteApps.

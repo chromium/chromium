@@ -227,7 +227,7 @@ bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
   if (is_pts_valid) {
     int64_t pts = timestamp_unroller_->GetUnrolledTimestamp(
         ConvertTimestampSectionToTimestamp(pts_section));
-    media_pts = base::TimeDelta::FromMicroseconds((1000 * pts) / 90);
+    media_pts = base::Microseconds((1000 * pts) / 90);
   }
   if (is_dts_valid) {
     int64_t dts = timestamp_unroller_->GetUnrolledTimestamp(

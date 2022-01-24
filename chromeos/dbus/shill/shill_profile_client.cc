@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/fake_shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
@@ -30,6 +29,10 @@ ShillProfileClient* g_instance = nullptr;
 class ShillProfileClientImpl : public ShillProfileClient {
  public:
   explicit ShillProfileClientImpl(dbus::Bus* bus) : bus_(bus) {}
+
+  ShillProfileClientImpl(const ShillProfileClientImpl&) = delete;
+  ShillProfileClientImpl& operator=(const ShillProfileClientImpl&) = delete;
+
   ~ShillProfileClientImpl() override = default;
 
   void AddPropertyChangedObserver(
@@ -76,8 +79,6 @@ class ShillProfileClientImpl : public ShillProfileClient {
 
   dbus::Bus* bus_;
   HelperMap helpers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShillProfileClientImpl);
 };
 
 ShillClientHelper* ShillProfileClientImpl::GetHelper(

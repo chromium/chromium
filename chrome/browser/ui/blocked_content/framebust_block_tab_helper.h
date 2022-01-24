@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/blocked_content/url_list_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -26,6 +25,9 @@ class FramebustBlockTabHelper
  public:
   using ClickCallback = base::OnceCallback<
       void(const GURL&, size_t /* index */, size_t /* total_size */)>;
+
+  FramebustBlockTabHelper(const FramebustBlockTabHelper&) = delete;
+  FramebustBlockTabHelper& operator=(const FramebustBlockTabHelper&) = delete;
 
   ~FramebustBlockTabHelper() override;
 
@@ -67,8 +69,6 @@ class FramebustBlockTabHelper
   std::vector<ClickCallback> callbacks_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(FramebustBlockTabHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_BLOCKED_CONTENT_FRAMEBUST_BLOCK_TAB_HELPER_H_

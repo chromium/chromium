@@ -29,9 +29,9 @@ void BlocklistCheck::OnBlocklistedStateRetrieved(
     BlocklistState blocklist_state) {
   Errors errors;
   if (blocklist_state == BlocklistState::BLOCKLISTED_MALWARE)
-    errors.insert(PreloadCheck::BLOCKLISTED_ID);
+    errors.insert(PreloadCheck::Error::kBlocklistedId);
   else if (blocklist_state == BlocklistState::BLOCKLISTED_UNKNOWN)
-    errors.insert(PreloadCheck::BLOCKLISTED_UNKNOWN);
+    errors.insert(PreloadCheck::Error::kBlocklistedUnknown);
   std::move(callback_).Run(errors);
 }
 

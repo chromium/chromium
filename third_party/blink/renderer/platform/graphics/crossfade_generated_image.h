@@ -55,13 +55,10 @@ class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
             const cc::PaintFlags&,
             const FloatRect&,
             const FloatRect&,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const ImageDrawOptions& draw_options) override;
   void DrawTile(GraphicsContext&,
                 const FloatRect&,
-                RespectImageOrientationEnum) final;
+                const ImageDrawOptions&) final;
 
   CrossfadeGeneratedImage(scoped_refptr<Image> from_image,
                           scoped_refptr<Image> to_image,
@@ -70,11 +67,8 @@ class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
 
  private:
   void DrawCrossfade(cc::PaintCanvas*,
-                     const SkSamplingOptions&,
                      const cc::PaintFlags&,
-                     RespectImageOrientationEnum,
-                     ImageClampingMode,
-                     ImageDecodingMode);
+                     const ImageDrawOptions&);
 
   scoped_refptr<Image> from_image_;
   scoped_refptr<Image> to_image_;

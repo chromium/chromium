@@ -67,8 +67,8 @@ class PLATFORM_EXPORT FFTFrame {
   ~FFTFrame();
 
   // Returns the smallest and largest supported FFT lengths.
-  static int MinFFTSize();
-  static int MaxFFTSize();
+  static unsigned MinFFTSize();
+  static unsigned MaxFFTSize();
 
   // Perform any initialization needed.  Must be called from the main thread.
   static void Initialize(float sample_rate);
@@ -100,7 +100,7 @@ class PLATFORM_EXPORT FFTFrame {
       const FFTFrame& frame2,
       double x);
   // zero-padding with dataSize <= fftSize
-  void DoPaddedFFT(const float* data, size_t data_size);
+  void DoPaddedFFT(const float* data, unsigned data_size);
   double ExtractAverageGroupDelay();
   void AddConstantGroupDelay(double sample_frame_delay);
   // multiplies ourself with frame : effectively operator*=()

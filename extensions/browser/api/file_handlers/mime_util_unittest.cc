@@ -20,6 +20,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -47,9 +48,9 @@ void OnMimeTypesCollected(
 storage::FileSystemURL CreateNativeLocalFileSystemURL(
     storage::FileSystemContext* context,
     const base::FilePath local_path) {
-  return context->CreateCrackedFileSystemURL(url::Origin::Create(GURL(kOrigin)),
-                                             storage::kFileSystemTypeLocal,
-                                             local_path);
+  return context->CreateCrackedFileSystemURL(
+      blink::StorageKey::CreateFromStringForTesting(kOrigin),
+      storage::kFileSystemTypeLocal, local_path);
 }
 
 }  // namespace

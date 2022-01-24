@@ -5,23 +5,29 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
-#include "chrome/browser/ui/views/page_info/page_info_new_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/page_info/about_this_site_service.h"
 #include "components/page_info/features.h"
 #include "components/page_info/page_info.h"
+#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_certificate_data.h"
 #include "net/test/test_data_directory.h"
@@ -29,6 +35,7 @@
 namespace {
 
 constexpr char kExpiredCertificateFile[] = "expired_cert.pem";
+constexpr char kAboutThisSiteUrl[] = "a.test";
 
 class ClickEvent : public ui::Event {
  public:
@@ -63,21 +70,13 @@ views::View* GetView(Browser* browser, int view_id) {
 
 }  // namespace
 
-class PageInfoBubbleViewDialogBrowserTest
-    : public DialogBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
  public:
-  PageInfoBubbleViewDialogBrowserTest() {
-    feature_list_.InitWithFeatureState(page_info::kPageInfoV2Desktop,
-                                       is_page_info_v2_enabled());
-  }
-
+  PageInfoBubbleViewDialogBrowserTest() = default;
   PageInfoBubbleViewDialogBrowserTest(
       const PageInfoBubbleViewDialogBrowserTest& test) = delete;
   PageInfoBubbleViewDialogBrowserTest& operator=(
       const PageInfoBubbleViewDialogBrowserTest& test) = delete;
-
-  bool is_page_info_v2_enabled() const { return GetParam(); }
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name_with_param_suffix) override {
@@ -140,7 +139,7 @@ class PageInfoBubbleViewDialogBrowserTest
       url = file_url;
     }
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     OpenPageInfoBubble(browser());
 
     safe_browsing::ReusedPasswordAccountType reused_password_account_type;
@@ -242,17 +241,9 @@ class PageInfoBubbleViewDialogBrowserTest
       // force an update by clearing the existing permission views here.
       bubble_view->GetFocusManager()->SetFocusedView(nullptr);
 
-      if (is_page_info_v2_enabled()) {
         auto* main_page = static_cast<PageInfoMainView*>(current_ui);
-        main_page->selector_rows_.clear();
-        main_page->permissions_view_->RemoveAllChildViews(true);
-
-      } else {
-        auto* page_info_bubble_view =
-            static_cast<PageInfoBubbleView*>(bubble_view);
-        page_info_bubble_view->selector_rows_.clear();
-        page_info_bubble_view->permissions_view_->RemoveAllChildViews(true);
-      }
+        main_page->toggle_rows_.clear();
+        main_page->permissions_view_->RemoveAllChildViews();
 
       current_ui->SetPermissionInfo(permissions_list,
                                     std::move(chosen_object_list));
@@ -266,14 +257,12 @@ class PageInfoBubbleViewDialogBrowserTest
               GetPasswordProtectionService(browser()->profile());
       service->set_reused_password_account_type_for_last_shown_warning(
           reused_password_account_type);
-      std::vector<size_t> placeholder_offsets;
       identity.safe_browsing_details = service->GetWarningDetailText(
-          service->reused_password_account_type_for_last_shown_warning(),
-          &placeholder_offsets);
+          service->reused_password_account_type_for_last_shown_warning());
     }
 
     if (name == kSecureSubpage || name == kEvSecureSubpage) {
-      PageInfoNewBubbleView* bubble_view = static_cast<PageInfoNewBubbleView*>(
+      PageInfoBubbleView* bubble_view = static_cast<PageInfoBubbleView*>(
           PageInfoBubbleView::GetPageInfoBubbleForTesting());
       bubble_view->OpenSecurityPage();
     }
@@ -305,130 +294,119 @@ class PageInfoBubbleViewDialogBrowserTest
   }
 
   PageInfo* GetPresenter() {
-    if (is_page_info_v2_enabled()) {
-      return static_cast<PageInfoNewBubbleView*>(
-                 PageInfoBubbleView::GetPageInfoBubbleForTesting())
-          ->presenter_.get();
-    }
-
     return static_cast<PageInfoBubbleView*>(
                PageInfoBubbleView::GetPageInfoBubbleForTesting())
-        ->presenter_.get();
+        ->presenter_for_testing();
   }
 
  private:
   std::vector<PageInfoViewFactory::PageInfoViewID> expected_identifiers_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Shows the Page Info bubble for a HTTP page (specifically, about:blank).
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest, InvokeUi_Insecure) {
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest, InvokeUi_Insecure) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble for a HTTPS page.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest, InvokeUi_Secure) {
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest, InvokeUi_Secure) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble for a HTTPS page.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_SecureSubpage) {
-  if (!is_page_info_v2_enabled())
-    return;
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest, InvokeUi_EvSecure) {
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest, InvokeUi_EvSecure) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_EvSecureSubpage) {
-  if (!is_page_info_v2_enabled())
-    return;
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble for an internal page, e.g. chrome://settings.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest, InvokeUi_Internal) {
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest, InvokeUi_Internal) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble for an extensions page.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_InternalExtension) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble for a chrome page that displays the source HTML.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_InternalViewSource) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble for a file:// URL.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest, InvokeUi_File) {
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest, InvokeUi_File) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble for a site flagged for malware by Safe Browsing.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest, InvokeUi_Malware) {
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest, InvokeUi_Malware) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble for a site flagged for social engineering by Safe
 // Browsing.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_Deceptive) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble for a site flagged for distributing unwanted
 // software by Safe Browsing.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_UnwantedSoftware) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble for a site flagged for malware that also has a bad
 // certificate.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_MalwareAndBadCert) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble for an admin-provided cert when the page is
 // secure, but has a form that submits to an insecure url.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_MixedContentForm) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble for an admin-provided cert when the page is
 // secure, but it uses insecure resources (e.g. images).
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_MixedContent) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble with all the permissions displayed with 'Allow'
 // set. All permissions will show regardless of its factory default value.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_AllowAllPermissions) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble with all the permissions displayed with 'Block'
 // set. All permissions will show regardless of its factory default value.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_BlockAllPermissions) {
   ShowAndVerifyUi();
 }
 
 // Shows the Page Info bubble Safe Browsing warning after detecting the user has
 // re-used an existing password on a site, e.g. due to phishing.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_SavedPasswordReuse) {
   ShowAndVerifyUi();
 }
@@ -436,14 +414,14 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
 // Shows the Page Info bubble Safe Browsing warning after detecting the
 // signed-in syncing user has re-used an existing password on a site, e.g. due
 // to phishing.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_SignInSyncPasswordReuse) {
   ShowAndVerifyUi();
 }
 // Shows the Page Info bubble Safe Browsing warning after detecting the
 // signed-in not syncing user has re-used an existing password on a site, e.g.
 // due to phishing.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_SignInNonSyncPasswordReuse) {
   ShowAndVerifyUi();
 }
@@ -451,12 +429,92 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
 // Shows the Page Info bubble Safe Browsing warning after detecting the
 // enterprise user has re-used an existing password on a site, e.g. due to
 // phishing.
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_EnterprisePasswordReuse) {
   ShowAndVerifyUi();
 }
 
-// Run tests with kPageInfoV2Desktop flag enabled and disabled.
-INSTANTIATE_TEST_SUITE_P(All,
-                         PageInfoBubbleViewDialogBrowserTest,
-                         ::testing::Values(false, true));
+class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
+    : public DialogBrowserTest {
+ public:
+  PageInfoBubbleViewAboutThisSiteDialogBrowserTest() {
+    feature_list_.InitWithFeatures({page_info::kPageInfoAboutThisSite}, {});
+  }
+
+  void SetUpOnMainThread() override {
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    optimization_guide::OptimizationMetadata optimization_metadata;
+    page_info::proto::AboutThisSiteMetadata metadata;
+    auto* site_info = metadata.mutable_site_info();
+
+    auto* description = site_info->mutable_description();
+    description->set_description(
+        "A domain used in illustrative examples in documents");
+    description->set_lang("en_US");
+    description->set_name("Example");
+    description->mutable_source()->set_url("https://example.com");
+    description->mutable_source()->set_label("Example source");
+
+    optimization_metadata.SetAnyMetadataForTesting(metadata);
+
+    auto* optimization_guide_decider =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    optimization_guide_decider->AddHintForTesting(
+        GetUrl(kAboutThisSiteUrl), optimization_guide::proto::ABOUT_THIS_SITE,
+        optimization_metadata);
+  }
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    // Bubble dialogs' bounds may exceed the display's work area.
+    // https://crbug.com/893292.
+    set_should_verify_dialog_bounds(false);
+
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GetUrl(kAboutThisSiteUrl)));
+    OpenPageInfoBubble(browser());
+
+    auto* bubble_view = static_cast<PageInfoBubbleView*>(
+        PageInfoBubbleView::GetPageInfoBubbleForTesting());
+    bubble_view->presenter_for_testing()->SetSiteNameForTesting(
+        u"Example site");
+
+    if (name == "AboutThisSite") {
+      // No further action needed, default case.
+    }
+
+    if (name == "AboutThisSiteSubpage") {
+      auto* service =
+          AboutThisSiteServiceFactory::GetForProfile(browser()->profile());
+      auto source_id = ukm::GetSourceIdForWebContentsDocument(
+          browser()->tab_strip_model()->GetActiveWebContents());
+      bubble_view->OpenAboutThisSitePage(
+          service->GetAboutThisSiteInfo(GetUrl(kAboutThisSiteUrl), source_id)
+              .value());
+    }
+  }
+
+  GURL GetUrl(const std::string& host) {
+    return https_server_.GetURL(host, "/title1.html");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
+                       InvokeUi_AboutThisSite) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
+                       InvokeUi_AboutThisSiteSubpage) {
+  ShowAndVerifyUi();
+}

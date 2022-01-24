@@ -36,6 +36,10 @@ class MOJO_SYSTEM_IMPL_EXPORT DataPipeConsumerDispatcher final
       const MojoCreateDataPipeOptions& options,
       uint64_t pipe_id);
 
+  DataPipeConsumerDispatcher(const DataPipeConsumerDispatcher&) = delete;
+  DataPipeConsumerDispatcher& operator=(const DataPipeConsumerDispatcher&) =
+      delete;
+
   // Dispatcher:
   Type GetType() const override;
   MojoResult Close() override;
@@ -116,8 +120,6 @@ class MOJO_SYSTEM_IMPL_EXPORT DataPipeConsumerDispatcher final
 
   // Indicates whether any new data is available since the last read attempt.
   bool new_data_available_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeConsumerDispatcher);
 };
 
 }  // namespace core

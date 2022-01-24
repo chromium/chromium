@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.history;
 
 import android.text.TextUtils;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -94,6 +97,29 @@ public class StubbedHistoryProvider implements HistoryProvider {
 
         List<HistoryItem> items = targetItems.subList(queryStartPosition, queryEndPosition);
         mObserver.onQueryHistoryComplete(items, hasMoreItems);
+    }
+
+    @Override
+    public void getLastVisitToHostBeforeRecentNavigations(
+            String hostName, Callback<Long> callback) {
+        long timestamp = 0;
+        if (mItems.size() > 0) {
+            Collections.sort(mItems, new Comparator<HistoryItem>() {
+                @Override
+                public int compare(HistoryItem lhs, HistoryItem rhs) {
+                    long timeDelta = lhs.getTimestamp() - rhs.getTimestamp();
+                    if (timeDelta > 0) {
+                        return -1;
+                    } else if (timeDelta == 0) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                }
+            });
+            timestamp = mItems.get(0).getTimestamp();
+        }
+        callback.onResult(Long.valueOf(timestamp));
     }
 
     @Override

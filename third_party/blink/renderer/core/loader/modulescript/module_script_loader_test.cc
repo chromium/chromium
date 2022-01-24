@@ -206,6 +206,7 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
       url_, mojom::blink::ScriptType::kModule, "GlobalScopeName", "UserAgent",
       UserAgentMetadata(), nullptr /* web_worker_fetch_context */,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
       true /* is_secure_context */, HttpsState::kModern,
       nullptr /* worker_clients */, nullptr /* content_settings_client */,
@@ -214,6 +215,7 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
       mojom::blink::V8CacheOptions::kDefault,
       MakeGarbageCollected<WorkletModuleResponsesMap>(),
       mojo::NullRemote() /* browser_interface_broker */,
+      mojo::NullRemote() /* code_cache_host_interface */,
       BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
       base::UnguessableToken::Create() /* agent_cluster_id */);
   creation_params->parent_context_token = GetFrame().GetLocalFrameToken();

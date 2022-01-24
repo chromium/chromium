@@ -21,6 +21,7 @@ class Value;
 
 namespace net {
 
+class IsolationInfo;
 class NetworkIsolationKey;
 class ReportingContext;
 
@@ -35,28 +36,40 @@ class NET_EXPORT ReportingHeaderParser {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // They should also be kept in sync with the NetReportingHeaderType enum
+  // in tools/metrics/histograms/enums.xml
   enum class ReportingHeaderType {
     kReportTo = 0,
     kReportToInvalid = 1,
-    kMaxValue = kReportToInvalid,
+    kReportingEndpoints = 2,
+    kReportingEndpointsInvalid = 3,
+    kMaxValue = kReportingEndpointsInvalid,
   };
+
+  ReportingHeaderParser() = delete;
+  ReportingHeaderParser(const ReportingHeaderParser&) = delete;
+  ReportingHeaderParser& operator=(const ReportingHeaderParser&) = delete;
 
   static void ParseReportToHeader(
       ReportingContext* context,
       const NetworkIsolationKey& network_isolation_key,
-      const GURL& url,
+      const url::Origin& origin,
       std::unique_ptr<base::Value> value);
 
+  // `isolation_info` here will be stored in the cache, associated with the
+  // `reporting_source`. `network_isolation_key` is the NIK which will be
+  // passed in with reports to be queued. This must match the NIK from
+  // `isolation_source`, unless it is empty (which will be the case if the
+  // kPartitionNelAndReportingByNetworkIsolationKey feature is disabled.)
   static void ProcessParsedReportingEndpointsHeader(
       ReportingContext* context,
+      const base::UnguessableToken& reporting_source,
+      const IsolationInfo& isolation_info,
       const NetworkIsolationKey& network_isolation_key,
       const url::Origin& origin,
       base::flat_map<std::string, std::string> parsed_header);
 
   static void RecordReportingHeaderType(ReportingHeaderType header_type);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ReportingHeaderParser);
 };
 
 }  // namespace net

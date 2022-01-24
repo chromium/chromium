@@ -27,15 +27,19 @@
  */
 
 #include "third_party/blink/renderer/core/inspector/inspector_overlay_host.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
 InspectorOverlayHost::InspectorOverlayHost(Delegate* delegate)
     : delegate_(delegate) {}
 
-void InspectorOverlayHost::send(const String& message) {
-  if (delegate_)
-    delegate_->Dispatch(message);
+void InspectorOverlayHost::send(const ScriptValue& message,
+                                ExceptionState& exception_state) {
+  if (!delegate_)
+    return;
+  delegate_->Dispatch(message, exception_state);
+  DCHECK(!exception_state.HadException()) << exception_state.Message();
 }
 
 void InspectorOverlayHost::ClearDelegate() {

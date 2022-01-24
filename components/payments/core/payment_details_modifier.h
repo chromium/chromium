@@ -16,7 +16,7 @@
 // https://w3c.github.io/payment-request/#dom-paymentdetailsmodifier
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace payments {
@@ -33,9 +33,9 @@ class PaymentDetailsModifier {
   bool operator==(const PaymentDetailsModifier& other) const;
   bool operator!=(const PaymentDetailsModifier& other) const;
 
-  // Creates a base::DictionaryValue with the properties of this
+  // Creates a dictionary base::Value with the properties of this
   // PaymentDetailsModifier.
-  std::unique_ptr<base::DictionaryValue> ToDictionaryValue() const;
+  base::Value ToValue() const;
 
   // A payment method identifier and any associated payment method specific
   // data. The remaining fields in the PaymentDetailsModifier apply only if the

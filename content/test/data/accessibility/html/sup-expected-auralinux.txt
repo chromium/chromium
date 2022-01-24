@@ -1,5 +1,6 @@
 [document web]
-++[paragraph]
+++[paragraph] text-position=super
 ++++[static] name='This text contains'
-++++[superscript] name='superscript'
+++++[superscript] text-position=super
+++++++[static] name='superscript' text-position=super
 ++++[static] name='text.'

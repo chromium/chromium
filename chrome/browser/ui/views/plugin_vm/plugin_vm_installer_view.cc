@@ -123,7 +123,6 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
   constexpr int kProgressBarHeight = 5;
   constexpr int kProgressBarTopMargin = 32;
 
-  SetDefaultButton(ui::DIALOG_BUTTON_OK);
   SetCanMinimize(true);
   // Removed margins so dialog insets specify it instead.
   set_margins(gfx::Insets());
@@ -424,6 +423,7 @@ std::u16string PluginVmInstallerView::GetMessage() const {
         case Reason::DOWNLOAD_FAILED_UNKNOWN:
         case Reason::DOWNLOAD_FAILED_NETWORK:
         case Reason::DOWNLOAD_FAILED_ABORTED:
+        case Reason::DOWNLOAD_SIZE_MISMATCH:
           return l10n_util::GetStringFUTF16(
               IDS_PLUGIN_VM_INSTALLER_ERROR_MESSAGE_DOWNLOAD_FAILED,
               base::NumberToString16(
@@ -620,6 +620,7 @@ void PluginVmInstallerView::StartInstallation() {
   state_ = State::kInstalling;
   installing_state_ = InstallingState::kCheckingLicense;
   progress_bar_->SetValue(0);
+  download_progress_message_label_->SetText(std::u16string());
   OnStateUpdated();
 
   plugin_vm_installer_->SetObserver(this);

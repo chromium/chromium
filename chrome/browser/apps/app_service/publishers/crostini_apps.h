@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
@@ -26,25 +28,37 @@ class Profile;
 
 namespace apps {
 
+class PublisherHost;
+
 // An app publisher (in the App Service sense) of Crostini apps,
 //
 // See components/services/app_service/README.md.
+//
+// TODO(crbug.com/1253250):
+// 1. Remove the parent class apps::PublisherBase.
+// 2. Remove all apps::mojom related code.
 class CrostiniApps : public KeyedService,
                      public apps::PublisherBase,
+                     public AppPublisher,
                      public guest_os::GuestOsRegistryService::Observer {
  public:
-  CrostiniApps(const mojo::Remote<apps::mojom::AppService>& app_service,
-               Profile* profile);
+  explicit CrostiniApps(AppServiceProxy* proxy);
   CrostiniApps(const CrostiniApps&) = delete;
   CrostiniApps& operator=(const CrostiniApps&) = delete;
   ~CrostiniApps() override;
 
-  void ReInitializeForTesting(
-      const mojo::Remote<apps::mojom::AppService>& app_service,
-      Profile* profile);
-
  private:
+  friend class PublisherHost;
+
   void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
+
+  // apps::AppPublisher overrides.
+  void LoadIcon(const std::string& app_id,
+                const IconKey& icon_key,
+                IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                apps::LoadIconCallback callback) override;
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
@@ -59,6 +73,12 @@ class CrostiniApps : public KeyedService,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
               apps::mojom::WindowInfoPtr window_info) override;
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           apps::mojom::IntentPtr intent,
+                           apps::mojom::LaunchSource launch_source,
+                           apps::mojom::WindowInfoPtr window_info,
+                           LaunchAppWithIntentCallback callback) override;
   void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,
@@ -67,6 +87,10 @@ class CrostiniApps : public KeyedService,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
+  void ExecuteContextMenuCommand(const std::string& app_id,
+                                 int command_id,
+                                 const std::string& shortcut_id,
+                                 int64_t display_id) override;
 
   // GuestOsRegistryService::Observer overrides.
   void OnRegistryUpdated(
@@ -80,6 +104,12 @@ class CrostiniApps : public KeyedService,
   // TODO(crbug.com/1028898): Move this code into System Apps
   // once it can support hiding apps.
   void OnCrostiniEnabledChanged();
+
+  void AddTerminalShortcuts(apps::mojom::MenuItemsPtr* menu_items);
+
+  std::unique_ptr<App> CreateApp(
+      const guest_os::GuestOsRegistryService::Registration& registration,
+      bool generate_new_icon_key);
 
   apps::mojom::AppPtr Convert(
       const guest_os::GuestOsRegistryService::Registration& registration,

@@ -8,7 +8,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/test/background_page_watcher.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 
 namespace extensions {
@@ -39,10 +39,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
   ExtensionTestMessageListener listener2("CONTROLLED", false);
   listener2.set_failure_message("FAIL");
   background_page->Close();
-  BackgroundPageWatcher(process_manager, extension).WaitForClose();
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundClosed();
   background_page = nullptr;
   process_manager->WakeEventPage(extension->id(), base::DoNothing());
-  BackgroundPageWatcher(process_manager, extension).WaitForOpen();
+  ExtensionBackgroundPageWaiter(profile(), *extension).WaitForBackgroundOpen();
   EXPECT_TRUE(listener2.WaitUntilSatisfied());
 
   // The background page should conduct the tests.

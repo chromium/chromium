@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_HANDLER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -24,6 +23,10 @@ class SigninErrorHandler : public content::WebUIMessageHandler,
   // sign-in error dialog was presented on a browser window and |browser| must
   // not be null.
   SigninErrorHandler(Browser* browser, bool is_system_profile);
+
+  SigninErrorHandler(const SigninErrorHandler&) = delete;
+  SigninErrorHandler& operator=(const SigninErrorHandler&) = delete;
+
   ~SigninErrorHandler() override;
 
   // BrowserListObserver:
@@ -84,8 +87,6 @@ class SigninErrorHandler : public content::WebUIMessageHandler,
   bool is_system_profile_;
 
   base::FilePath duplicate_profile_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninErrorHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_HANDLER_H_

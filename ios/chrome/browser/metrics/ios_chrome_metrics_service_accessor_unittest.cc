@@ -18,12 +18,15 @@ class IOSChromeMetricsServiceAccessorTest : public PlatformTest {
  public:
   IOSChromeMetricsServiceAccessorTest() {}
 
+  IOSChromeMetricsServiceAccessorTest(
+      const IOSChromeMetricsServiceAccessorTest&) = delete;
+  IOSChromeMetricsServiceAccessorTest& operator=(
+      const IOSChromeMetricsServiceAccessorTest&) = delete;
+
   PrefService* GetLocalState() { return local_state_.Get(); }
 
  private:
   IOSChromeScopedTestingLocalState local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeMetricsServiceAccessorTest);
 };
 
 TEST_F(IOSChromeMetricsServiceAccessorTest, MetricsReportingEnabled) {

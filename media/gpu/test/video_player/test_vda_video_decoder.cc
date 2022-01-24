@@ -26,9 +26,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#include "media/gpu/chromeos/chromeos_video_decoder_factory.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/vd_video_decode_accelerator.h"
+#include "media/gpu/chromeos/video_decoder_pipeline.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 namespace media {
@@ -127,7 +127,7 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
     DVLOGF(2) << "Use VdVideoDecodeAccelerator";
     vda_config.is_deferred_initialization_allowed = true;
     decoder_ = media::VdVideoDecodeAccelerator::Create(
-        base::BindRepeating(&media::ChromeosVideoDecoderFactory::Create), this,
+        base::BindRepeating(&media::VideoDecoderPipeline::Create), this,
         vda_config, base::SequencedTaskRunnerHandle::Get());
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   } else {

@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">गुप्त मोड में नई विंडो खोलें</translation>
 <translation id="152892567002884378">वॉल्यूम बढ़ाएं</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, फिर <ph name="ESC" /></translation>
-<translation id="1633761758045565086">फ़ोकस को सहायता डायलॉग पर ले जाएं</translation>
 <translation id="1652741121070700329">पिछले शब्द की शुरुआत में ले जाएं</translation>
 <translation id="1679841710523778799">स्क्रीन की रोशनी बढ़ाएं</translation>
 <translation id="168356808214100546">जब तक कि आप उस विंडो पर नहीं पहुंच जाते जिसे आप खोलना चाहते हैं, तब तक <ph name="ALT" /> दबाकर रखें और <ph name="TAB" /> पर टैप करें, फिर छोड़ दें.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">वेबपेज में नीचे स्क्रोल करें</translation>
 <translation id="2530896289327917474">कैरेट ब्राउज़िंग को चालू या बंद करने के लिए</translation>
 <translation id="2574014812750545982">पेज पर ज़ूम लेवल को रीसेट करें</translation>
-<translation id="2596078834055697711">विंडो का स्क्रीनशॉट लें</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, फिर <ph name="TAB" /> या <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">अपना मौजूदा पेज फिर से लोड करें</translation>
 <translation id="2764005613199379871">खोज पता बार में फ़ोकस रखें</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">शॉर्टकट</translation>
 <translation id="3084301071537457911">अपनी शेल्फ़ पर अगला आइटम हाइलाइट करें</translation>
 <translation id="309173601632226815">अपनी शेल्फ़ पर लॉन्चर बटन हाइलाइट करें</translation>
-<translation id="3105917916468784889">स्क्रीनशॉट लें</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">पता बार को फ़ोकस करें</translation>
 <translation id="3256109297135787951">अपने शेल्फ़ पर मौजूद किसी आइटम से हाइलाइट हटाएं</translation>
 <translation id="3288816184963444640">अभी वाली विंडो बंद करें</translation>
+<translation id="3350805006883559974">सबसे ऊपर फ़्लोट एक्टिव विंडो</translation>
 <translation id="3407560819924487926">काम का मैनेजर सामने लाएं</translation>
 <translation id="3417835166382867856">टैब खोजें</translation>
 <translation id="3422679037938588196">अपनी खोज के पिछले मिलान पर जाएं</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">कीबोर्ड शॉर्टकट सहायक देखें</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> या <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">हाल बताने वाली जगह खोलें (जहां आपके खाते की तस्वीर दिखाई देती है)</translation>
-<translation id="4642092649622328492">आंशिक स्क्रीनशॉट लें</translation>
 <translation id="4698850295812410683">स्टाइलस टूल दिखाएं</translation>
 <translation id="4801989101741319327">अगले शब्द के आखिर में ले जाएं</translation>
 <translation id="4866066940972151697">दाईं ओर मौजूद डेस्क को चालू करें</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">चालू विंडो को बाईं तरफ़ के डेस्क पर ले जाएं</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8924883688469390268">पिछले उपयोगकर्ता पर स्विच करें</translation>
+<translation id="8941626538514548667">वेब कॉन्टेंट को ब्राउज़र में फ़ोकस करें</translation>
 <translation id="8977648847395357314">पता बार में सामग्री चुनें</translation>
 <translation id="8982190978301344584">उपलब्ध IME की सूची दिखाने वाला मेन्यू दिखाएं</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 से 8 तक</translation>

@@ -12,11 +12,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/credentialmanager/authenticator_assertion_response.h"
+#include "third_party/blink/renderer/modules/credentialmanager/credential_manager_type_converters.h"
 #include "third_party/blink/renderer/modules/credentialmanager/public_key_credential.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_state_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 namespace {
@@ -27,8 +29,7 @@ v8::Local<v8::Value> BuildDetails(
     ScriptState* script_state,
     const String& json,
     SecurePaymentConfirmationResponsePtr secure_payment_confirmation) {
-  if (secure_payment_confirmation &&
-      RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV2Enabled()) {
+  if (secure_payment_confirmation) {
     const auto& info = secure_payment_confirmation->credential_info;
     auto* authenticator_response =
         MakeGarbageCollected<AuthenticatorAssertionResponse>(
@@ -41,8 +42,9 @@ v8::Local<v8::Value> BuildDetails(
         secure_payment_confirmation->credential_info->id,
         DOMArrayBuffer::Create(static_cast<const void*>(info->raw_id.data()),
                                info->raw_id.size()),
-        authenticator_response, AuthenticationExtensionsClientOutputs::Create(),
-        /*type=*/"payment");
+        authenticator_response, secure_payment_confirmation->has_transport,
+        secure_payment_confirmation->transport,
+        AuthenticationExtensionsClientOutputs::Create());
     return result->Wrap(script_state).ToLocalChecked();
   }
 

@@ -22,8 +22,7 @@ namespace {
 // The max amount of time display state change handling can be delayed due to a
 // lock screen note action launch. The time starts running when the app launch
 // is requested.
-constexpr base::TimeDelta kNoteLaunchTimeout =
-    base::TimeDelta::FromMilliseconds(1500);
+constexpr base::TimeDelta kNoteLaunchTimeout = base::Milliseconds(1500);
 
 }  // namespace
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SESSIONS_SESSION_RESTORE_TEST_UTILS_H_
 #define CHROME_BROWSER_SESSIONS_SESSION_RESTORE_TEST_UTILS_H_
 
-#include "base/macros.h"
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
 
 namespace testing {
@@ -25,12 +24,16 @@ class AlwayLoadSessionRestorePolicy
 class ScopedAlwaysLoadSessionRestoreTestPolicy {
  public:
   ScopedAlwaysLoadSessionRestoreTestPolicy();
+
+  ScopedAlwaysLoadSessionRestoreTestPolicy(
+      const ScopedAlwaysLoadSessionRestoreTestPolicy&) = delete;
+  ScopedAlwaysLoadSessionRestoreTestPolicy& operator=(
+      const ScopedAlwaysLoadSessionRestoreTestPolicy&) = delete;
+
   ~ScopedAlwaysLoadSessionRestoreTestPolicy();
 
  private:
   AlwayLoadSessionRestorePolicy policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAlwaysLoadSessionRestoreTestPolicy);
 };
 
 }  // namespace testing

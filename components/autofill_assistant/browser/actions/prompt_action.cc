@@ -157,7 +157,7 @@ void PromptAction::UpdateUserActions() {
   auto user_actions = std::make_unique<std::vector<UserAction>>();
   for (int i = 0; i < proto_.prompt().choices_size(); i++) {
     auto& choice_proto = proto_.prompt().choices(i);
-    UserAction user_action(choice_proto.chip(), choice_proto.direct_action(),
+    UserAction user_action(choice_proto.chip(),
                            /* enabled = */ true,
                            /* identifier = */ std::string());
     if (!user_action.has_triggers())

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -24,6 +23,11 @@ class BackgroundFetchPermissionContextTest
     : public ChromeRenderViewHostTestHarness {
  protected:
   BackgroundFetchPermissionContextTest() = default;
+
+  BackgroundFetchPermissionContextTest(
+      const BackgroundFetchPermissionContextTest&) = delete;
+  BackgroundFetchPermissionContextTest& operator=(
+      const BackgroundFetchPermissionContextTest&) = delete;
 
   ~BackgroundFetchPermissionContextTest() override = default;
 
@@ -53,9 +57,6 @@ class BackgroundFetchPermissionContextTest
     host_content_settings_map->SetContentSettingDefaultScope(
         url /* primary_url*/, url /* secondary_url*/, content_type, setting);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchPermissionContextTest);
 };
 
 // Test that Background Fetch permission is "allow" by default, when queried

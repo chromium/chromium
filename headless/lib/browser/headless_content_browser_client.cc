@@ -4,8 +4,9 @@
 
 #include "headless/lib/browser/headless_content_browser_client.h"
 
-#include <memory>
+#include <string>
 #include <unordered_set>
+#include <vector>
 
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -37,8 +38,11 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/base/port_util.h"
 #include "net/base/url_util.h"
+#include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity.h"
+#include "net/ssl/ssl_private_key.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "ui/base/ui_base_switches.h"
@@ -57,6 +61,10 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #endif  // defined(HEADLESS_USE_POLICY)
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "components/printing/browser/print_to_pdf/pdf_print_manager.h"
+#endif  // defined(ENABLE_PRINTING)
 
 namespace headless {
 
@@ -158,9 +166,9 @@ HeadlessContentBrowserClient::~HeadlessContentBrowserClient() = default;
 
 std::unique_ptr<content::BrowserMainParts>
 HeadlessContentBrowserClient::CreateBrowserMainParts(
-    const content::MainFunctionParams& parameters) {
-  auto browser_main_parts =
-      std::make_unique<HeadlessBrowserMainParts>(parameters, browser_);
+    content::MainFunctionParams parameters) {
+  auto browser_main_parts = std::make_unique<HeadlessBrowserMainParts>(
+      std::move(parameters), browser_);
 
   browser_->set_browser_main_parts(browser_main_parts.get());
 
@@ -183,6 +191,23 @@ void HeadlessContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
   map->Add<blink::mojom::BadgeService>(base::BindRepeating(
       &HeadlessContentBrowserClient::BindBadgeService, base::Unretained(this)));
+}
+
+bool HeadlessContentBrowserClient::BindAssociatedReceiverFromFrame(
+    content::RenderFrameHost* render_frame_host,
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle* handle) {
+#if BUILDFLAG(ENABLE_PRINTING)
+  if (interface_name == printing::mojom::PrintManagerHost::Name_) {
+    print_to_pdf::PdfPrintManager::BindPrintManagerHost(
+        mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
+
+  return false;
 }
 
 std::unique_ptr<content::DevToolsManagerDelegate>
@@ -237,9 +262,6 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
   if (breakpad::IsCrashReporterEnabled())
     command_line->AppendSwitch(::switches::kEnableCrashReporter);
 #endif  // defined(HEADLESS_USE_BREAKPAD)
-
-  if (old_command_line.HasSwitch(switches::kExportTaggedPDF))
-    command_line->AppendSwitch(switches::kExportTaggedPDF);
 
   // If we're spawning a renderer, then override the language switch.
   std::string process_type =
@@ -409,5 +431,28 @@ HeadlessContentBrowserClient::CreateThrottlesForNavigation(
   return throttles;
 }
 #endif  // defined(HEADLESS_USE_POLICY)
+
+void HeadlessContentBrowserClient::OnNetworkServiceCreated(
+    ::network::mojom::NetworkService* network_service) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kExplicitlyAllowedPorts))
+    return;
+
+  std::string comma_separated_ports =
+      command_line->GetSwitchValueASCII(switches::kExplicitlyAllowedPorts);
+  const auto port_list = base::SplitStringPiece(
+      comma_separated_ports, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<uint16_t> explicitly_allowed_ports;
+  for (const auto port_str : port_list) {
+    int port;
+    if (!base::StringToInt(port_str, &port))
+      continue;
+    if (!net::IsPortValid(port))
+      continue;
+    explicitly_allowed_ports.push_back(port);
+  }
+
+  network_service->SetExplicitlyAllowedPorts(explicitly_allowed_ports);
+}
 
 }  // namespace headless

@@ -66,15 +66,20 @@ base::Version GetVersion() {
 namespace password_manager {
 class PasswordScriptsFetcherImplTest : public ::testing::Test {
  public:
-  void SetUp() override {
-    // Recreate all classes as they are stateful.
+  void Reinitialize(const base::Version& version) {
+    recorded_responses_.clear();
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             test_url_loader_factory_.get());
     fetcher_ = std::make_unique<PasswordScriptsFetcherImpl>(
-        test_shared_loader_factory_);
+        version, test_shared_loader_factory_);
+  }
+
+  void SetUp() override {
+    // Recreate all classes as they are stateful.
+    Reinitialize(GetVersion());
   }
 
   void TearDown() override {
@@ -118,8 +123,7 @@ class PasswordScriptsFetcherImplTest : public ::testing::Test {
 
  private:
   void RequestSingleScriptAvailability(const url::Origin& origin) {
-    fetcher_->FetchScriptAvailability(origin, GetVersion(),
-                                      GenerateResponseCallback(origin));
+    fetcher_->FetchScriptAvailability(origin, GenerateResponseCallback(origin));
   }
 
   void RecordResponse(url::Origin origin, bool has_script) {
@@ -301,14 +305,10 @@ TEST_F(PasswordScriptsFetcherImplTest, ServerError) {
 TEST_F(PasswordScriptsFetcherImplTest, IsScriptAvailable) {
   // |IsScriptAvailable| does not trigger any network requests and returns the
   // default value (false).
-  EXPECT_FALSE(
-      fetcher()->IsScriptAvailable(GetOriginWithScript1(), GetVersion()));
-  EXPECT_FALSE(
-      fetcher()->IsScriptAvailable(GetOriginWithScript2(), GetVersion()));
-  EXPECT_FALSE(
-      fetcher()->IsScriptAvailable(GetOriginWithScript3(), GetVersion()));
-  EXPECT_FALSE(
-      fetcher()->IsScriptAvailable(GetOriginWithoutScript(), GetVersion()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
   EXPECT_EQ(0, GetNumberOfPendingRequests());
 
   StartBulkCheck();
@@ -320,25 +320,17 @@ TEST_F(PasswordScriptsFetcherImplTest, IsScriptAvailable) {
   SimulateResponse();
   base::RunLoop().RunUntilIdle();
   // Cache is ready.
-  EXPECT_TRUE(
-      fetcher()->IsScriptAvailable(GetOriginWithScript1(), GetVersion()));
-  EXPECT_TRUE(
-      fetcher()->IsScriptAvailable(GetOriginWithScript2(), GetVersion()));
-  EXPECT_TRUE(
-      fetcher()->IsScriptAvailable(GetOriginWithScript3(), GetVersion()));
-  EXPECT_FALSE(
-      fetcher()->IsScriptAvailable(GetOriginWithoutScript(), GetVersion()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
 
   // |IsScriptAvailable| does not trigger refetching and returns stale values.
   fetcher()->make_cache_stale_for_testing();
-  EXPECT_TRUE(
-      fetcher()->IsScriptAvailable(GetOriginWithScript1(), GetVersion()));
-  EXPECT_TRUE(
-      fetcher()->IsScriptAvailable(GetOriginWithScript2(), GetVersion()));
-  EXPECT_TRUE(
-      fetcher()->IsScriptAvailable(GetOriginWithScript3(), GetVersion()));
-  EXPECT_FALSE(
-      fetcher()->IsScriptAvailable(GetOriginWithoutScript(), GetVersion()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
   EXPECT_EQ(0, GetNumberOfPendingRequests());
 }
 
@@ -350,7 +342,7 @@ TEST_F(PasswordScriptsFetcherImplTest, AnotherScriptsListUrl) {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory);
-  PasswordScriptsFetcherImpl fetcher(test_shared_loader_factory,
+  PasswordScriptsFetcherImpl fetcher(GetVersion(), test_shared_loader_factory,
                                      kNonDefaultScriptsListUrl);
 
   fetcher.PrewarmCache();
@@ -370,8 +362,8 @@ TEST_F(PasswordScriptsFetcherImplTest, AnotherScriptsListUrl) {
   // Use |IsScriptAvailable(origin)| instead of |FetchScriptAvailability(origin,
   // callback)| to simplify the test.
   EXPECT_TRUE(fetcher.IsScriptAvailable(
-      url::Origin::Create(GURL(kExperimentalDomain)), GetVersion()));
-  EXPECT_FALSE(fetcher.IsScriptAvailable(GetOriginWithScript3(), GetVersion()));
+      url::Origin::Create(GURL(kExperimentalDomain))));
+  EXPECT_FALSE(fetcher.IsScriptAvailable(GetOriginWithScript3()));
 }
 
 TEST_F(PasswordScriptsFetcherImplTest, DifferentVersions) {
@@ -380,11 +372,16 @@ TEST_F(PasswordScriptsFetcherImplTest, DifferentVersions) {
   SimulateResponse();
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+
   const char kOlderVersion[] = "86";
-  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript3(),
-                                            base::Version(kOlderVersion)));
-  EXPECT_TRUE(
-      fetcher()->IsScriptAvailable(GetOriginWithScript3(), GetVersion()));
+  Reinitialize(base::Version(kOlderVersion));
+  StartBulkCheck();
+  EXPECT_EQ(1, GetNumberOfPendingRequests());
+  SimulateResponse();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
 }
 
 }  // namespace password_manager

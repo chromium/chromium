@@ -171,6 +171,9 @@ message OmniboxEventProto {
     // enabled.
     START_SURFACE_NEW_TAB = 18;
 
+    // Android's improved Search Widget with new suggestions.
+    ANDROID_SHORTCUTS_WIDGET = 19;
+
     // When adding new classifications, please consider adding them in
     // chromium's chrome/browser/resources/omnibox/omnibox.html
     // so that these new options are displayed on about:omnibox.

@@ -34,6 +34,10 @@ WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
   // subset of the adapter's feature set.
   requested_device_properties.textureCompressionBC =
       feature_set.Contains("texture-compression-bc");
+  requested_device_properties.textureCompressionETC2 =
+      feature_set.Contains("texture-compression-etc2");
+  requested_device_properties.textureCompressionASTC =
+      feature_set.Contains("texture-compression-astc");
   requested_device_properties.shaderFloat16 =
       feature_set.Contains("shader-float16");
   requested_device_properties.pipelineStatisticsQuery =
@@ -59,7 +63,7 @@ GPUAdapter::GPUAdapter(
       adapter_service_id_(adapter_service_id),
       adapter_properties_(properties),
       gpu_(gpu),
-      limits_(MakeGarbageCollected<GPUSupportedLimits>()) {
+      limits_(MakeGarbageCollected<GPUSupportedLimits>(properties.limits)) {
   InitializeFeatureNameList();
 }
 
@@ -91,22 +95,24 @@ GPUSupportedFeatures* GPUAdapter::features() const {
   return features_;
 }
 
-void GPUAdapter::OnRequestDeviceCallback(ScriptPromiseResolver* resolver,
+void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
+                                         ScriptPromiseResolver* resolver,
                                          const GPUDeviceDescriptor* descriptor,
-                                         WGPUDevice dawn_device) {
+                                         WGPUDevice dawn_device,
+                                         const WGPUSupportedLimits* limits,
+                                         const char* error_message) {
   if (dawn_device) {
-    ExecutionContext* execution_context = resolver->GetExecutionContext();
-    auto* device = MakeGarbageCollected<GPUDevice>(execution_context,
-                                                   GetDawnControlClient(), this,
-                                                   dawn_device, descriptor);
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    auto* device = MakeGarbageCollected<GPUDevice>(
+        execution_context, GetDawnControlClient(), this, dawn_device, limits,
+        descriptor);
     resolver->Resolve(device);
     ukm::builders::ClientRenderingAPI(execution_context->UkmSourceID())
         .SetGPUDevice(static_cast<int>(true))
         .Record(execution_context->UkmRecorder());
   } else {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError,
-        "Fail to request GPUDevice with the given GPUDeviceDescriptor"));
+        DOMExceptionCode::kOperationError, error_message));
   }
 }
 
@@ -115,6 +121,12 @@ void GPUAdapter::InitializeFeatureNameList() {
   DCHECK(features_->FeatureNameSet().IsEmpty());
   if (adapter_properties_.textureCompressionBC) {
     features_->AddFeatureName("texture-compression-bc");
+  }
+  if (adapter_properties_.textureCompressionETC2) {
+    features_->AddFeatureName("texture-compression-etc2");
+  }
+  if (adapter_properties_.textureCompressionASTC) {
+    features_->AddFeatureName("texture-compression-astc");
   }
   if (adapter_properties_.shaderFloat16) {
     features_->AddFeatureName("shader-float16");
@@ -135,52 +147,27 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // Normalize the device descriptor to avoid using the deprecated fields.
-  if (descriptor->nonGuaranteedFeatures().size() > 0) {
-    AddConsoleWarning(
-        resolver->GetExecutionContext(),
-        "nonGuaranteedFeatures is deprecated. Use requiredFeatures instead.");
-    descriptor->setRequiredFeatures(descriptor->nonGuaranteedFeatures());
-  }
-  if (descriptor->hasNonGuaranteedLimits()) {
-    AddConsoleWarning(
-        resolver->GetExecutionContext(),
-        "nonGuaranteedLimits is deprecated. Use requiredLimits instead.");
-    descriptor->setRequiredLimits(descriptor->nonGuaranteedLimits());
-  }
-
-  // Validation of the limits could happen in Dawn, but until that's
-  // implemented we can do it here to preserve the spec behavior.
+  WGPUDeviceProperties requested_device_properties = AsDawnType(descriptor);
+  GPUSupportedLimits::MakeUndefined(&requested_device_properties.limits);
   if (descriptor->hasRequiredLimits()) {
-    for (const auto& key_value_pair : descriptor->requiredLimits()) {
-      switch (
-          limits_->ValidateLimit(key_value_pair.first, key_value_pair.second)) {
-        case GPUSupportedLimits::ValidationResult::Valid:
-          break;
-        case GPUSupportedLimits::ValidationResult::BadName: {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kOperationError, "The limit name \"" +
-                                                     key_value_pair.first +
-                                                     "\" is not recognized."));
-          return promise;
-        }
-        case GPUSupportedLimits::ValidationResult::BadValue: {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kOperationError,
-              "The limit requested for \"" + key_value_pair.first +
-                  "\" exceeds the adapter's supported limit."));
-          return promise;
-        }
-      }
+    DOMException* exception = GPUSupportedLimits::Populate(
+        &requested_device_properties.limits, descriptor->requiredLimits());
+    if (exception) {
+      resolver->Reject(exception);
+      return promise;
     }
   }
 
-  WGPUDeviceProperties requested_device_properties = AsDawnType(descriptor);
-
-  GetInterface()->RequestDeviceAsync(
-      adapter_service_id_, requested_device_properties,
-      WTF::Bind(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
-                WrapPersistent(resolver), WrapPersistent(descriptor)));
+  if (auto context_provider = GetContextProviderWeakPtr()) {
+    context_provider->ContextProvider()->WebGPUInterface()->RequestDeviceAsync(
+        adapter_service_id_, requested_device_properties,
+        WTF::Bind(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
+                  WrapPersistent(script_state), WrapPersistent(resolver),
+                  WrapPersistent(descriptor)));
+  } else {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError, "WebGPU context lost"));
+  }
 
   return promise;
 }

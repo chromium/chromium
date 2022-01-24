@@ -75,7 +75,7 @@
 - name: 2d.color.space.p3.toDataURL.p3.canvas
   testing:
   - 2d.color.space.p3.and.uint8
-  desc: test if toblob returns p3 data from canvas with p3 color space
+  desc: test if toDataURL returns p3 data from canvas with p3 color space
   attributes: |
     {colorSpace: "display-p3"}
   code: |
@@ -100,6 +100,35 @@
         assert_array_approx_equals(actualPixels, expectedPixels, 2);
     });
     image.src = canvas.toDataURL();
+
+- name: 2d.color.space.p3.toDataURL.jpeg.p3.canvas
+  testing:
+  - 2d.color.space.p3.and.uint8
+  desc: test if toDataURL('image/jpeg') returns p3 data from canvas with p3 color space
+  attributes: |
+    {colorSpace: "display-p3"}
+  code: |
+    ctx.fillStyle = "rgba(155, 27, 27, 1)";
+    ctx.fillRect(0, 0, 1, 1);
+    ctx.fillStyle = "rgba(27, 155, 27, 0)";
+    ctx.fillRect(1, 0, 1, 1);
+    ctx.fillStyle = "rgba(27, 27, 155, 0.5)";
+    ctx.fillRect(0, 1, 1, 1);
+    ctx.fillStyle = "rgba(27, 27, 27, 0.5)";
+    ctx.fillRect(1, 1, 1, 1);
+    expectedPixels = ctx.getImageData(0, 0, 2, 2, {colorSpace: "display-p3"}).data;
+
+    var image = new Image();
+    image.onload = t.step_func_done(function() {
+        var dstCanvas = document.createElement("canvas");
+        dstCanvas.width = 2;
+        dstCanvas.height = 2;
+        var ctx = dstCanvas.getContext('2d', {colorSpace: "display-p3"});
+        ctx.drawImage(image, 0, 0);
+        var actualPixels = ctx.getImageData(0, 0, 2, 2, {colorSpace: "display-p3"}).data;
+        assert_array_approx_equals(actualPixels, expectedPixels, 2);
+    });
+    image.src = canvas.toDataURL("image/jpeg");
 
 - name: 2d.color.space.p3.toBlob.with.putImageData
   testing:
@@ -175,3 +204,131 @@
         assert_array_approx_equals(actualPixels, expectedPixels, 2);
     });
     image.src = canvas.toDataURL();
+
+- name: 2d.color.space.p3.fillText
+  testing:
+  - 2d.color.space.p3.and.uint8
+  desc: Test if fillText can be used with a solid display-p3 color
+  attributes: |
+    {colorSpace: "display-p3"}
+  code: |
+    deferTest();
+
+    const fullRedInP3 = [255, 0, 0, 255];
+    const sRGBRedInP3 = [234, 51, 35, 255];
+
+    canvas.width = 100;
+    canvas.height = 100;
+
+    let f = new FontFace("Ahem", "url(/fonts/Ahem.ttf)");
+    document.fonts.add(f);
+    f.load().then(function() {
+        t.step(function() {
+            ctx.font = "40px Ahem";
+
+            ctx.fillStyle = "#f00";
+            ctx.fillText("A", 0, 50);
+
+            ctx.fillStyle = "black";
+            ctx.fillStyle = "color(display-p3 100% 0 0)";
+            ctx.fillText("A", 50, 50);
+
+            let pixels = ctx.getImageData(0, 0, canvas.width, canvas.height, { colorSpace: "display-p3" }).data;
+            let pixelAt = function(x, y) {
+                let offset = (y * canvas.width + x) * 4;
+                return [pixels[offset], pixels[offset + 1], pixels[offset + 2], pixels[offset + 3]];
+            };
+
+            assert_array_equals(pixelAt(25, 25), sRGBRedInP3);
+            assert_array_equals(pixelAt(75, 25), fullRedInP3);
+
+            t.done();
+        });
+    });
+
+- name: 2d.color.space.p3.strokeText
+  testing:
+  - 2d.color.space.p3.and.uint8
+  desc: Test if strokeText can be used with a solid display-p3 color
+  attributes: |
+    {colorSpace: "display-p3"}
+  code: |
+    deferTest();
+
+    const fullRedInP3 = [255, 0, 0, 255];
+    const sRGBRedInP3 = [234, 51, 35, 255];
+
+    canvas.width = 100;
+    canvas.height = 100;
+
+    let f = new FontFace("Ahem", "url(/fonts/Ahem.ttf)");
+    document.fonts.add(f);
+    f.load().then(function() {
+        t.step(function() {
+            ctx.font = "40px Ahem";
+
+            ctx.strokeStyle = "#f00";
+            ctx.lineWidth = 20;
+            ctx.strokeText("A", 0, 50);
+
+            ctx.strokeStyle = "black";
+            ctx.strokeStyle = "color(display-p3 100% 0 0)";
+            ctx.strokeText("A", 50, 50);
+
+            let pixels = ctx.getImageData(0, 0, canvas.width, canvas.height, { colorSpace: "display-p3" }).data;
+            let pixelAt = function(x, y) {
+                let offset = (y * canvas.width + x) * 4;
+                return [pixels[offset], pixels[offset + 1], pixels[offset + 2], pixels[offset + 3]];
+            };
+
+            assert_array_equals(pixelAt(25, 25), sRGBRedInP3);
+            assert_array_equals(pixelAt(75, 25), fullRedInP3);
+
+            t.done();
+        });
+    });
+
+- name: 2d.color.space.p3.fillText.shadow
+  testing:
+  - 2d.color.space.p3.and.uint8
+  desc: Test if fillText can be used with a display-p3 shadow color
+  attributes: |
+    {colorSpace: "display-p3"}
+  code: |
+    deferTest();
+
+    const fullRedInP3 = [255, 0, 0, 255];
+    const sRGBRedInP3 = [234, 51, 35, 255];
+
+    canvas.width = 100;
+    canvas.height = 100;
+
+    let f = new FontFace("Ahem", "url(/fonts/Ahem.ttf)");
+    document.fonts.add(f);
+    f.load().then(function() {
+        t.step(function() {
+            ctx.font = "40px Ahem";
+
+            ctx.fillStyle = "black";
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 50;
+            ctx.shadowColor = "#f00";
+            ctx.fillText("A", 0, 0);
+
+            ctx.shadowColor = "black";
+            ctx.shadowColor = "color(display-p3 100% 0 0)";
+            ctx.fillText("A", 50, 0);
+
+            let pixels = ctx.getImageData(0, 0, canvas.width, canvas.height, { colorSpace: "display-p3" }).data;
+            let pixelAt = function(x, y) {
+                let offset = (y * canvas.width + x) * 4;
+                return [pixels[offset], pixels[offset + 1], pixels[offset + 2], pixels[offset + 3]];
+            };
+
+            assert_array_equals(pixelAt(25, 25), sRGBRedInP3);
+            assert_array_equals(pixelAt(75, 25), fullRedInP3);
+
+            t.done();
+        });
+    });

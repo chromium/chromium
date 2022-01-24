@@ -4,6 +4,8 @@
 
 #include "components/viz/service/display/overlay_processor_ozone.h"
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,11 +54,7 @@ class FakeNativePixmap : public gfx::NativePixmap {
   uint32_t GetUniqueId() const override { return 0; }
   bool ScheduleOverlayPlane(
       gfx::AcceleratedWidget widget,
-      int plane_z_order,
-      gfx::OverlayTransform plane_transform,
-      const gfx::Rect& display_bounds,
-      const gfx::RectF& crop_rect,
-      bool enable_blend,
+      const gfx::OverlayPlaneData& overlay_plane_data,
       std::vector<gfx::GpuFence> acquire_fences,
       std::vector<gfx::GpuFence> release_fences) override {
     return false;

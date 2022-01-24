@@ -27,7 +27,10 @@ void FakeAccessibilityHelperInstance::SetFilter(
 
 void FakeAccessibilityHelperInstance::PerformAction(
     mojom::AccessibilityActionDataPtr action_data_ptr,
-    PerformActionCallback callback) {}
+    PerformActionCallback callback) {
+  last_requested_action_ = std::move(action_data_ptr);
+  std::move(callback).Run(true);
+}
 
 void FakeAccessibilityHelperInstance::
     SetNativeChromeVoxArcSupportForFocusedWindow(
@@ -42,7 +45,10 @@ void FakeAccessibilityHelperInstance::SetExploreByTouchEnabled(bool enabled) {
 
 void FakeAccessibilityHelperInstance::RefreshWithExtraData(
     mojom::AccessibilityActionDataPtr action_data_ptr,
-    RefreshWithExtraDataCallback callback) {}
+    RefreshWithExtraDataCallback callback) {
+  last_requested_action_ = std::move(action_data_ptr);
+  refresh_with_extra_data_callback_ = std::move(callback);
+}
 
 void FakeAccessibilityHelperInstance::SetCaptionStyle(
     mojom::CaptionStylePtr style_ptr) {}

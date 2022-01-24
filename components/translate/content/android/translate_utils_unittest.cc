@@ -5,7 +5,6 @@
 #include "components/translate/content/android/translate_utils.h"
 
 #include "base/android/jni_array.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/metrics/metrics_log.h"
 #include "components/translate/core/browser/mock_translate_infobar_delegate.h"

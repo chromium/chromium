@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/browser/tracing/startup_tracing_controller.h"
-#include "base/bind_post_task.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -11,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"

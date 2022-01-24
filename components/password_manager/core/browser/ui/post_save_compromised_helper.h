@@ -17,7 +17,7 @@ class PrefService;
 
 namespace password_manager {
 
-class PasswordStore;
+class PasswordStoreInterface;
 
 // Helps to choose a compromised credential bubble after a password was saved.
 class PostSaveCompromisedHelper
@@ -49,8 +49,8 @@ class PostSaveCompromisedHelper
 
   // Asynchronously queries the password stores for the compromised credentials
   // and notifies |callback| with the result of analysis.
-  void AnalyzeLeakedCredentials(PasswordStore* profile_store,
-                                PasswordStore* account_store,
+  void AnalyzeLeakedCredentials(PasswordStoreInterface* profile_store,
+                                PasswordStoreInterface* account_store,
                                 PrefService* prefs,
                                 BubbleCallback callback);
 

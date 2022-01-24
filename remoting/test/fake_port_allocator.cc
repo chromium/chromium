@@ -24,10 +24,11 @@ class FakePortAllocatorSession : public cricket::BasicPortAllocatorSession {
                            int component,
                            const std::string& ice_username_fragment,
                            const std::string& ice_password);
-  ~FakePortAllocatorSession() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakePortAllocatorSession);
+  FakePortAllocatorSession(const FakePortAllocatorSession&) = delete;
+  FakePortAllocatorSession& operator=(const FakePortAllocatorSession&) = delete;
+
+  ~FakePortAllocatorSession() override;
 };
 
 FakePortAllocatorSession::FakePortAllocatorSession(

@@ -11,7 +11,6 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_modifiers.h"
 
-using base::TimeDelta;
 using blink::WebGestureDevice;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -20,13 +19,12 @@ using gfx::Vector2dF;
 namespace ui {
 namespace test {
 
-static constexpr TimeDelta kEventDelta = TimeDelta::FromMilliseconds(10);
+static constexpr base::TimeDelta kEventDelta = base::Milliseconds(10);
 
 // Constants from fling_booster.cc
 static constexpr double kMinBoostScrollSpeed = 150.;
 static constexpr double kMinBoostFlingSpeed = 350.;
-static constexpr base::TimeDelta kFlingBoostTimeoutDelay =
-    base::TimeDelta::FromSecondsD(0.05);
+static constexpr base::TimeDelta kFlingBoostTimeoutDelay = base::Seconds(0.05);
 
 class FlingBoosterTest : public testing::Test {
  public:
@@ -80,7 +78,7 @@ class FlingBoosterTest : public testing::Test {
                            event_time_, source_device);
   }
 
-  Vector2dF DeltaFromVelocity(Vector2dF velocity, TimeDelta delta) {
+  Vector2dF DeltaFromVelocity(Vector2dF velocity, base::TimeDelta delta) {
     float delta_seconds = static_cast<float>(delta.InSecondsF());
     Vector2dF out = velocity;
     out.Scale(1.f / delta_seconds);
@@ -121,8 +119,7 @@ class FlingBoosterTest : public testing::Test {
   }
 
  protected:
-  base::TimeTicks event_time_ =
-      base::TimeTicks() + TimeDelta::FromSeconds(100000);
+  base::TimeTicks event_time_ = base::TimeTicks() + base::Seconds(100000);
   FlingBooster fling_booster_;
 };
 
@@ -162,7 +159,7 @@ TEST_F(FlingBoosterTest, NoFlingBoostIfScrollDelayed) {
   SimulateBoostingScroll();
 
   // Delay longer than the timeout and ensure we don't boost.
-  event_time_ += kFlingBoostTimeoutDelay + TimeDelta::FromMilliseconds(1);
+  event_time_ += kFlingBoostTimeoutDelay + base::Milliseconds(1);
   fling_booster_.ObserveGestureEvent(CreateScrollUpdate(Vector2dF(0, 10000)));
 
   fling_velocity = SendFlingStart(CreateFlingStart(Vector2dF(0, 2000)));
@@ -299,7 +296,7 @@ TEST_F(FlingBoosterTest, NoFlingBoostIfScrollBeginPastCutoffTime) {
     event_time_ += kEventDelta;
     fling_booster_.ObserveGestureEvent(CreateFlingCancel());
     fling_booster_.ObserveGestureEvent(CreateScrollEnd());
-    event_time_ += kFlingBoostTimeoutDelay + TimeDelta::FromMilliseconds(1);
+    event_time_ += kFlingBoostTimeoutDelay + base::Milliseconds(1);
     fling_booster_.ObserveGestureEvent(CreateScrollBegin(Vector2dF(0, 1)));
 
     // GestureScrollUpdates in the same direction and at sufficient speed should

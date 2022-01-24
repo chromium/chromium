@@ -13,8 +13,7 @@ AwaitMatchStatusChangeChecker::AwaitMatchStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncServices()),
       condition_(condition) {}
 
-AwaitMatchStatusChangeChecker::~AwaitMatchStatusChangeChecker() {
-}
+AwaitMatchStatusChangeChecker::~AwaitMatchStatusChangeChecker() {}
 
 bool AwaitMatchStatusChangeChecker::IsExitConditionSatisfied(std::ostream* os) {
   return condition_.Run(os);

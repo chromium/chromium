@@ -13,9 +13,9 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/google/core/common/google_util.h"
 #include "components/language/core/browser/url_language_histogram.h"
@@ -99,7 +99,7 @@ void ContentTranslateDriver::InitiateTranslation(const std::string& page_lang,
         base::BindOnce(&ContentTranslateDriver::InitiateTranslation,
                        weak_pointer_factory_.GetWeakPtr(), page_lang,
                        attempt + 1),
-        base::TimeDelta::FromMilliseconds(backoff));
+        base::Milliseconds(backoff));
     return;
   }
 
@@ -240,16 +240,35 @@ void ContentTranslateDriver::InitiateTranslationIfReload(
 // content::WebContentsObserver methods
 void ContentTranslateDriver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted())
+  if (!navigation_handle->HasCommitted()) {
     return;
+  }
+
+  // Continue to process the navigation only if it is for the primary main
+  // frame. It is safe to do so because:
+  // - A non-primary page should not reset `this`'s language state since the
+  // state is set for the primary page. It will be allowed to update the state
+  // after it becomes the primary page (at that time, this function will be
+  // invoked again, and the page will update the state).
+  // - This class does not need to handle subframe navigations. Employing this
+  // class means the flag of kTranslateSubFrames is disabled, i.e., subframe
+  // translation is not supported. Besides it, subframes cannot change language
+  // state.
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
 
   InitiateTranslationIfReload(navigation_handle);
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (navigation_handle->IsInPrimaryMainFrame())
+  if (navigation_handle->IsPrerenderedPageActivation()) {
+    // Set it to NULL time, and do not report the LanguageDeterminedDuration
+    // metric in this case.
+    // The browser defers the RegisterPage() message on a prerendering page, so
+    // this kind of data is noisy and should be filtered out.
+    finish_navigation_time_ = base::TimeTicks();
+  } else if (navigation_handle->IsInPrimaryMainFrame()) {
     finish_navigation_time_ = base::TimeTicks::Now();
+  }
 
   // Let the LanguageState clear its state.
   const bool reload =
@@ -266,9 +285,6 @@ void ContentTranslateDriver::DidFinishNavigation(
                                       google_util::ALLOW_NON_STANDARD_PORTS) ||
        IsAutoHrefTranslateAllOriginsEnabled());
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   translate_manager_->GetLanguageState()->DidNavigate(
       navigation_handle->IsSameDocument(),
       navigation_handle->IsInPrimaryMainFrame(), reload,
@@ -314,6 +330,13 @@ void ContentTranslateDriver::RegisterPage(
     translate_manager_->InitiateTranslation(details.adopted_language);
 
     // Save the page language on the navigation entry so it can be synced.
+    // TODO(crbug.com/1231889): The mojo IPC coming from the renderer might race
+    // with a navigation, so the page that sent this message might already be in
+    // the pending delete state after being navigated away from. Rearchitect the
+    // renderer-browser Mojo connection to be able to explicitly determine the
+    // document/content::Page with which this language determination event is
+    // associated, thus avoiding the potential for corner cases where the
+    // detected language is attributed to the wrong page.
     auto* const entry = web_contents()->GetController().GetLastCommittedEntry();
     if (entry != nullptr)
       SetPageLanguageInNavigation(details.adopted_language, entry);
@@ -357,16 +380,30 @@ void ContentTranslateDriver::GetLanguageDetectionModel(
     std::move(callback).Run(base::File());
     return;
   }
-  translate_model_service_->GetLanguageDetectionModelFile(
-      base::BindOnce(&ContentTranslateDriver::OnLanguageDetectionModelFile,
-                     weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
+  // If the model file is not available, request the translate model service
+  // notify |this| when it is. The two-step process is to ensure that
+  // the model file and callback lifetimes are carefully managed so they
+  // are not freed without be handled on the appropriate thread, particularly
+  // for the model file.
+  if (!translate_model_service_->IsModelAvailable()) {
+    translate_model_service_->NotifyOnModelFileAvailable(base::BindOnce(
+        &ContentTranslateDriver::OnLanguageModelFileAvailabilityChanged,
+        weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  OnLanguageModelFileAvailabilityChanged(std::move(callback), true);
 }
 
-void ContentTranslateDriver::OnLanguageDetectionModelFile(
+void ContentTranslateDriver::OnLanguageModelFileAvailabilityChanged(
     GetLanguageDetectionModelCallback callback,
-    base::File model_file) {
-  DCHECK(model_file.IsValid());
-  std::move(callback).Run(std::move(model_file));
+    bool is_available) {
+  if (!is_available) {
+    std::move(callback).Run(base::File());
+    return;
+  }
+  std::move(callback).Run(
+      translate_model_service_->GetLanguageDetectionModelFile());
 }
 
 }  // namespace translate

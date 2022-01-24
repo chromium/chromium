@@ -97,8 +97,9 @@ message ConsentFlowUi {
       message LearnMoreDialog {
         // Title heading of the dialog.
         optional string title = 1;
+        message HtmlProto { optional string value = 2; }
         // May contain HTML tags for like bold and hyperlinks.
-        repeated string paragraph = 2;
+        repeated HtmlProto paragraph = 2;
         // Bottom button that closes dialog.
         optional string dismiss_button = 3;
       }

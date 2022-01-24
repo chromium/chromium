@@ -257,8 +257,7 @@ void FakeSkiaOutputSurface::CopyOutput(
 
   DCHECK(sk_surfaces_.find(id) != sk_surfaces_.end());
   auto* surface = sk_surfaces_[id].get();
-  if ((request->result_format() != CopyOutputResult::Format::RGBA_BITMAP &&
-       request->result_format() != CopyOutputResult::Format::RGBA_TEXTURE) ||
+  if (request->result_format() != CopyOutputResult::Format::RGBA ||
       request->is_scaled() ||
       geometry.result_bounds != geometry.result_selection) {
     // TODO(crbug.com/644851): Complete the implementation for all request
@@ -267,12 +266,13 @@ void FakeSkiaOutputSurface::CopyOutput(
     return;
   }
 
-  if (request->result_format() == CopyOutputResult::Format::RGBA_TEXTURE) {
+  if (request->result_destination() ==
+      CopyOutputResult::Destination::kNativeTextures) {
     // TODO(rivr): This implementation is incomplete and doesn't copy
     // anything into the mailbox, but currently the only tests that use this
     // don't actually check the returned texture data.
     auto* sii = context_provider_->SharedImageInterface();
-    gpu::Mailbox mailbox = sii->CreateSharedImage(
+    gpu::Mailbox local_mailbox = sii->CreateSharedImage(
         ResourceFormat::RGBA_8888, geometry.result_selection.size(),
         color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
@@ -281,12 +281,14 @@ void FakeSkiaOutputSurface::CopyOutput(
     gpu::SyncToken sync_token;
     gl->GenSyncTokenCHROMIUM(sync_token.GetData());
 
-    auto release_callback =
-        texture_deleter_->GetReleaseCallback(context_provider_, mailbox);
+    CopyOutputResult::ReleaseCallbacks release_callbacks;
+    release_callbacks.push_back(
+        texture_deleter_->GetReleaseCallback(context_provider_, local_mailbox));
 
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
-        geometry.result_bounds, mailbox, sync_token, color_space,
-        std::move(release_callback)));
+        CopyOutputResult::Format::RGBA, geometry.result_bounds,
+        CopyOutputResult::TextureResult(local_mailbox, sync_token, color_space),
+        std::move(release_callbacks)));
     return;
   }
 

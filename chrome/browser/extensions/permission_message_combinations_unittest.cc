@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
@@ -31,6 +30,12 @@ class PermissionMessageCombinationsUnittest : public testing::Test {
   PermissionMessageCombinationsUnittest()
       : message_provider_(new ChromePermissionMessageProvider()),
         allowlisted_extension_id_(kAllowlistedExtensionID) {}
+
+  PermissionMessageCombinationsUnittest(
+      const PermissionMessageCombinationsUnittest&) = delete;
+  PermissionMessageCombinationsUnittest& operator=(
+      const PermissionMessageCombinationsUnittest&) = delete;
+
   ~PermissionMessageCombinationsUnittest() override {}
 
   // Overridden from testing::Test:
@@ -205,8 +210,6 @@ class PermissionMessageCombinationsUnittest : public testing::Test {
   // Add a known extension id to the explicit allowlist so we can test all
   // permissions. This ID will be used for each test app.
   SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlisted_extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionMessageCombinationsUnittest);
 };
 
 // Test that the USB, Bluetooth and Serial permissions do not coalesce on their

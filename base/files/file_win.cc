@@ -307,6 +307,9 @@ bool File::DeleteOnClose(bool delete_on_close) {
 File::Error File::OSErrorToFileError(DWORD last_error) {
   switch (last_error) {
     case ERROR_SHARING_VIOLATION:
+    case ERROR_UNABLE_TO_REMOVE_REPLACED:  // ReplaceFile failure cases.
+    case ERROR_UNABLE_TO_MOVE_REPLACEMENT:
+    case ERROR_UNABLE_TO_MOVE_REPLACEMENT_2:
       return FILE_ERROR_IN_USE;
     case ERROR_ALREADY_EXISTS:
     case ERROR_FILE_EXISTS:
@@ -315,6 +318,7 @@ File::Error File::OSErrorToFileError(DWORD last_error) {
     case ERROR_PATH_NOT_FOUND:
       return FILE_ERROR_NOT_FOUND;
     case ERROR_ACCESS_DENIED:
+    case ERROR_LOCK_VIOLATION:
       return FILE_ERROR_ACCESS_DENIED;
     case ERROR_TOO_MANY_OPEN_FILES:
       return FILE_ERROR_TOO_MANY_OPENED;
@@ -327,12 +331,14 @@ File::Error File::OSErrorToFileError(DWORD last_error) {
       return FILE_ERROR_NO_SPACE;
     case ERROR_USER_MAPPED_FILE:
       return FILE_ERROR_INVALID_OPERATION;
-    case ERROR_NOT_READY:
-    case ERROR_SECTOR_NOT_FOUND:
-    case ERROR_DEV_NOT_EXIST:
+    case ERROR_NOT_READY:         // The device is not ready.
+    case ERROR_SECTOR_NOT_FOUND:  // The drive cannot find the sector requested.
+    case ERROR_GEN_FAILURE:       // A device ... is not functioning.
+    case ERROR_DEV_NOT_EXIST:  // Net resource or device is no longer available.
     case ERROR_IO_DEVICE:
-    case ERROR_FILE_CORRUPT:
-    case ERROR_DISK_CORRUPT:
+    case ERROR_DISK_OPERATION_FAILED:
+    case ERROR_FILE_CORRUPT:  // File or directory is corrupted and unreadable.
+    case ERROR_DISK_CORRUPT:  // The disk structure is corrupted and unreadable.
       return FILE_ERROR_IO;
     default:
       UmaHistogramSparse("PlatformFile.UnknownErrors.Windows", last_error);
@@ -391,29 +397,29 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     access |= GENERIC_READ;
   if (flags & FLAG_WRITE_ATTRIBUTES)
     access |= FILE_WRITE_ATTRIBUTES;
-  if (flags & FLAG_EXECUTE)
+  if (flags & FLAG_WIN_EXECUTE)
     access |= GENERIC_EXECUTE;
   if (flags & FLAG_CAN_DELETE_ON_CLOSE)
     access |= DELETE;
 
-  DWORD sharing = (flags & FLAG_EXCLUSIVE_READ) ? 0 : FILE_SHARE_READ;
-  if (!(flags & FLAG_EXCLUSIVE_WRITE))
+  DWORD sharing = (flags & FLAG_WIN_EXCLUSIVE_READ) ? 0 : FILE_SHARE_READ;
+  if (!(flags & FLAG_WIN_EXCLUSIVE_WRITE))
     sharing |= FILE_SHARE_WRITE;
-  if (flags & FLAG_SHARE_DELETE)
+  if (flags & FLAG_WIN_SHARE_DELETE)
     sharing |= FILE_SHARE_DELETE;
 
   DWORD create_flags = 0;
   if (flags & FLAG_ASYNC)
     create_flags |= FILE_FLAG_OVERLAPPED;
-  if (flags & FLAG_TEMPORARY)
+  if (flags & FLAG_WIN_TEMPORARY)
     create_flags |= FILE_ATTRIBUTE_TEMPORARY;
-  if (flags & FLAG_HIDDEN)
+  if (flags & FLAG_WIN_HIDDEN)
     create_flags |= FILE_ATTRIBUTE_HIDDEN;
   if (flags & FLAG_DELETE_ON_CLOSE)
     create_flags |= FILE_FLAG_DELETE_ON_CLOSE;
-  if (flags & FLAG_BACKUP_SEMANTICS)
+  if (flags & FLAG_WIN_BACKUP_SEMANTICS)
     create_flags |= FILE_FLAG_BACKUP_SEMANTICS;
-  if (flags & FLAG_SEQUENTIAL_SCAN)
+  if (flags & FLAG_WIN_SEQUENTIAL_SCAN)
     create_flags |= FILE_FLAG_SEQUENTIAL_SCAN;
 
   file_.Set(CreateFile(path.value().c_str(), access, sharing, NULL, disposition,

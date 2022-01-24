@@ -40,7 +40,7 @@ void ExtensionImeMenuEventRouter::ImeMenuActivationChanged(bool activation) {
     return;
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendBoolean(activation);
+  args->Append(activation);
 
   // The router will only send the event to extensions that are listening.
   auto event = std::make_unique<extensions::Event>(

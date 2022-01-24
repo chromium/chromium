@@ -104,7 +104,7 @@ static SimpleEnclosedRegion TransformSurfaceOpaqueRegion(
   // to each rect within |region| in order to transform the entire Region.
 
   // TODO(danakj): Find a rect interior to each transformed quad.
-  if (!transform.Preserves2dAxisAlignment())
+  if (!transform.NonDegeneratePreserves2dAxisAlignment())
     return SimpleEnclosedRegion();
 
   SimpleEnclosedRegion transformed_region;
@@ -371,7 +371,7 @@ void OcclusionTracker::MarkOccludedBehindLayer(const LayerImpl* layer) {
 
   gfx::Transform draw_transform = layer->DrawTransform();
   // TODO(danakj): Find a rect interior to each transformed quad.
-  if (!draw_transform.Preserves2dAxisAlignment())
+  if (!draw_transform.NonDegeneratePreserves2dAxisAlignment())
     return;
 
   gfx::Rect clip_rect_in_target = ScreenSpaceClipRectInTargetSurface(

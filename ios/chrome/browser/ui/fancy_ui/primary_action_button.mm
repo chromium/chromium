@@ -35,10 +35,8 @@
 
 - (void)updateStyling {
   self.hasOpaqueBackground = YES;
-  if (@available(iOS 13.4, *)) {
-      self.pointerInteractionEnabled = YES;
-      self.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
-  }
+  self.pointerInteractionEnabled = YES;
+  self.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
 
   UIColor* hintColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   UIColor* inkColor = [UIColor colorWithWhite:1 alpha:0.2f];
@@ -46,20 +44,17 @@
   UIColor* disabledColor = [UIColor colorNamed:kDisabledTintColor];
   UIColor* titleColor = [UIColor colorNamed:kSolidButtonTextColor];
 
-  if (@available(iOS 13, *)) {
-    // As of iOS 13 Beta 3, MDCFlatButton has a bug updating it's colors
-    // automatically. Here the colors are resolved and passed instead.
-    // TODO(crbug.com/983224): Clean up this once the bug is fixed.
-    hintColor =
-        [hintColor resolvedColorWithTraitCollection:self.traitCollection];
-    inkColor = [inkColor resolvedColorWithTraitCollection:self.traitCollection];
-    backgroundColor =
-        [backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
-    disabledColor =
-        [disabledColor resolvedColorWithTraitCollection:self.traitCollection];
-    titleColor =
-        [titleColor resolvedColorWithTraitCollection:self.traitCollection];
-  }
+  // As of iOS 13 Beta 3, MDCFlatButton has a bug updating it's colors
+  // automatically. Here the colors are resolved and passed instead.
+  // TODO(crbug.com/983224): Clean up this once the bug is fixed.
+  hintColor = [hintColor resolvedColorWithTraitCollection:self.traitCollection];
+  inkColor = [inkColor resolvedColorWithTraitCollection:self.traitCollection];
+  backgroundColor =
+      [backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
+  disabledColor =
+      [disabledColor resolvedColorWithTraitCollection:self.traitCollection];
+  titleColor =
+      [titleColor resolvedColorWithTraitCollection:self.traitCollection];
 
   self.underlyingColorHint = hintColor;
   self.inkColor = inkColor;
@@ -70,14 +65,12 @@
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 13, *)) {
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      // As of iOS 13 Beta 3, MDCFlatButton doesn't update it's colors
-      // automatically. This line forces it.
-      [self updateStyling];
-    }
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    // As of iOS 13 Beta 3, MDCFlatButton doesn't update it's colors
+    // automatically. This line forces it.
+    [self updateStyling];
   }
 }
 @end

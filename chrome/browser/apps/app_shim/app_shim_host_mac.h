@@ -70,6 +70,11 @@ class AppShimHost : public chrome::mojom::AppShimHost {
     // in mail.
     virtual void OnShimOpenedUrls(AppShimHost* host,
                                   const std::vector<GURL>& urls) = 0;
+
+    // Invoked by the shim host when the app should be opened with an override
+    // url (e.g. user clicks on an item in the application dock menu).
+    virtual void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
+                                              const GURL& override_url) = 0;
   };
 
   AppShimHost(Client* client,
@@ -126,6 +131,7 @@ class AppShimHost : public chrome::mojom::AppShimHost {
   void FilesOpened(const std::vector<base::FilePath>& files) override;
   void ProfileSelectedFromMenu(const base::FilePath& profile_path) override;
   void UrlsOpened(const std::vector<GURL>& urls) override;
+  void OpenAppWithOverrideUrl(const GURL& override_url) override;
 
   // Weak, owns |this|.
   Client* const client_;

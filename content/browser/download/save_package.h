@@ -18,7 +18,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -90,6 +89,9 @@ class CONTENT_EXPORT SavePackage
   // SavePackage that will generate and sanitize a suggested name for the user
   // in the "Save As" dialog box.
   explicit SavePackage(Page& page);
+
+  SavePackage(const SavePackage&) = delete;
+  SavePackage& operator=(const SavePackage&) = delete;
 
   // Initialize the SavePackage. Returns true if it initializes properly.  Need
   // to make sure that this method must be called in the UI thread because using
@@ -185,6 +187,15 @@ class CONTENT_EXPORT SavePackage
 
   void Stop(bool cancel_download_item);
   void CheckFinish();
+
+  // Callback used to check if renaming is allowed once paths to saved filed
+  // have been obtained from `file_manager`.
+  void CheckRenameAllowedForPaths(
+      base::flat_map<base::FilePath, base::FilePath> tmp_paths_to_final_paths);
+
+  // Called by CheckRenameAllowedForPaths after checking if the final renaming
+  // step should happen or not.
+  void RenameIfAllowed(bool allowed);
 
   // Clears the associated page.
   void ClearPage();
@@ -439,8 +450,6 @@ class CONTENT_EXPORT SavePackage
   // UKM IDs for reporting.
   ukm::SourceId ukm_source_id_;
   uint64_t ukm_download_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavePackage);
 };
 
 }  // namespace content

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/common/importer/importer_data_types.h"
@@ -21,6 +20,10 @@
 class ImporterList {
  public:
   ImporterList();
+
+  ImporterList(const ImporterList&) = delete;
+  ImporterList& operator=(const ImporterList&) = delete;
+
   ~ImporterList();
 
   // Detects the installed browsers and their associated profiles, then stores
@@ -57,8 +60,6 @@ class ImporterList {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ImporterList> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImporterList);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_IMPORTER_LIST_H_

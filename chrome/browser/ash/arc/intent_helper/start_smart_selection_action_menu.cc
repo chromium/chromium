@@ -13,7 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -21,13 +21,12 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/base/models/image_model.h"
@@ -165,30 +164,11 @@ void StartSmartSelectionActionMenu::UpdateMenuIcon(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    DCHECK(icon->icon_png_data);
-    apps::ArcRawIconPngDataToImageSkia(
-        std::move(icon->icon_png_data), kSmallIconSizeInDip,
-        base::BindOnce(&StartSmartSelectionActionMenu::SetMenuIcon,
-                       weak_ptr_factory_.GetWeakPtr(), command_id));
-    return;
-  }
-
-  SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::MakeN32Premul(icon->width, icon->height));
-  if (!bitmap.getPixels())
-    return;
-
-  DCHECK_GE(bitmap.computeByteSize(), icon->icon.size());
-  memcpy(bitmap.getPixels(), &icon->icon.front(), icon->icon.size());
-
-  gfx::ImageSkia original(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
-
-  gfx::ImageSkia icon_small(gfx::ImageSkiaOperations::CreateResizedImage(
-      original, skia::ImageOperations::RESIZE_BEST,
-      gfx::Size(kSmallIconSizeInDip, kSmallIconSizeInDip)));
-
-  SetMenuIcon(command_id, icon_small);
+  DCHECK(icon->icon_png_data);
+  apps::ArcRawIconPngDataToImageSkia(
+      std::move(icon->icon_png_data), kSmallIconSizeInDip,
+      base::BindOnce(&StartSmartSelectionActionMenu::SetMenuIcon,
+                     weak_ptr_factory_.GetWeakPtr(), command_id));
 }
 
 void StartSmartSelectionActionMenu::SetMenuIcon(int command_id,

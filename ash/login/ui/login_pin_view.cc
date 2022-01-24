@@ -140,6 +140,9 @@ class BasePinButton : public views::View {
         this, views::FocusRing::Get(this), kInkDropCornerRadiusDp);
   }
 
+  BasePinButton(const BasePinButton&) = delete;
+  BasePinButton& operator=(const BasePinButton&) = delete;
+
   ~BasePinButton() override = default;
 
   virtual void UpdatePalette(const LoginPalette& palette) {
@@ -197,8 +200,6 @@ class BasePinButton : public views::View {
 
  private:
   const std::u16string accessible_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasePinButton);
 };
 
 }  // namespace
@@ -240,6 +241,9 @@ class LoginPinView::DigitPinButton : public BasePinButton {
     UpdatePalette(palette);
   }
 
+  DigitPinButton(const DigitPinButton&) = delete;
+  DigitPinButton& operator=(const DigitPinButton&) = delete;
+
   ~DigitPinButton() override = default;
 
   void UpdatePalette(const LoginPalette& palette) override {
@@ -252,8 +256,6 @@ class LoginPinView::DigitPinButton : public BasePinButton {
  private:
   views::Label* label_ = nullptr;
   views::Label* sub_label_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DigitPinButton);
 };
 
 // A PIN button that displays backspace icon.
@@ -271,6 +273,9 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
     image_ = AddChildView(new views::ImageView());
     SetEnabled(false);
   }
+
+  BackspacePinButton(const BackspacePinButton&) = delete;
+  BackspacePinButton& operator=(const BackspacePinButton&) = delete;
 
   ~BackspacePinButton() override = default;
 
@@ -321,11 +326,10 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
       is_held_ = true;
       DCHECK(!delay_timer_->IsRunning());
       DCHECK(!repeat_timer_->IsRunning());
-      delay_timer_->Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kInitialBackspaceDelayMs),
-          base::BindOnce(&BackspacePinButton::DispatchPress,
-                         base::Unretained(this), nullptr));
+      delay_timer_->Start(FROM_HERE,
+                          base::Milliseconds(kInitialBackspaceDelayMs),
+                          base::BindOnce(&BackspacePinButton::DispatchPress,
+                                         base::Unretained(this), nullptr));
 
       if (event)
         event->SetHandled();
@@ -341,8 +345,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
     // make sure the repeat_timer_ is running so the function will fire again.
     if (!repeat_timer_->IsRunning()) {
       repeat_timer_->Start(
-          FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kRepeatingBackspaceDelayMs),
+          FROM_HERE, base::Milliseconds(kRepeatingBackspaceDelayMs),
           base::BindRepeating(&BackspacePinButton::DispatchPress,
                               base::Unretained(this), nullptr));
     }
@@ -392,8 +395,6 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
           base::Unretained(this)));
 
   LoginPalette palette_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackspacePinButton);
 };
 
 // A PIN button to press to submit the PIN / password.

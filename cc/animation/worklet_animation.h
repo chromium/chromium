@@ -5,6 +5,9 @@
 #ifndef CC_ANIMATION_WORKLET_ANIMATION_H_
 #define CC_ANIMATION_WORKLET_ANIMATION_H_
 
+#include <memory>
+#include <string>
+
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "cc/animation/animation.h"
@@ -14,10 +17,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
-
-namespace {
-FORWARD_DECLARE_TEST(WorkletAnimationTest, NonImplInstanceDoesNotTickKeyframe);
-}  // namespace
 
 class AnimationOptions;
 class AnimationEffectTimings;
@@ -79,17 +78,6 @@ class CC_ANIMATION_EXPORT WorkletAnimation final : public Animation {
   void ReleasePendingTreeLock() { has_pending_tree_lock_ = false; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(WorkletAnimationTest,
-                           NonImplInstanceDoesNotTickKeyframe);
-  WorkletAnimation(int cc_animation_id,
-                   WorkletAnimationId worklet_animation_id,
-                   const std::string& name,
-                   double playback_rate,
-                   std::unique_ptr<AnimationOptions> options,
-                   std::unique_ptr<AnimationEffectTimings> effect_timings,
-                   bool is_controlling_instance,
-                   std::unique_ptr<KeyframeEffect> effect);
-
   ~WorkletAnimation() override;
 
   // Returns the current time to be passed into the underlying AnimationWorklet.

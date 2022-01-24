@@ -9,10 +9,10 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_runner.h"
 
-int WebEngineBrowserMain(const content::MainFunctionParams& parameters) {
+int WebEngineBrowserMain(content::MainFunctionParams parameters) {
   std::unique_ptr<content::BrowserMainRunner> main_runner =
       content::BrowserMainRunner::Create();
-  int exit_code = main_runner->Initialize(parameters);
+  int exit_code = main_runner->Initialize(std::move(parameters));
   if (exit_code >= 0)
     return exit_code;
 

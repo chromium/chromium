@@ -12,6 +12,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -48,13 +49,13 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
   manifest->SetString(extensions::manifest_keys::kVersion, "0.1");
   manifest->SetInteger(extensions::manifest_keys::kManifestVersion, 2);
   auto background_script_list = std::make_unique<base::ListValue>();
-  background_script_list->AppendString("background.js");
+  background_script_list->Append("background.js");
   manifest->Set(extensions::manifest_keys::kPlatformAppBackgroundScripts,
                 std::move(background_script_list));
 
   auto permission_detail_list = std::make_unique<base::ListValue>();
   for (size_t i = 0; i < media_galleries_permissions.size(); i++)
-    permission_detail_list->AppendString(media_galleries_permissions[i]);
+    permission_detail_list->Append(media_galleries_permissions[i]);
   auto media_galleries_permission = std::make_unique<base::DictionaryValue>();
   media_galleries_permission->Set("mediaGalleries",
                                   std::move(permission_detail_list));
@@ -162,9 +163,9 @@ void EnsureMediaDirectoriesExists::Init() {
 base::FilePath MakeMediaGalleriesTestingPath(const std::string& dir) {
 #if defined(OS_WIN)
   return base::FilePath(FILE_PATH_LITERAL("C:\\")).AppendASCII(dir);
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   return base::FilePath(FILE_PATH_LITERAL("/")).Append(dir);
 #else
-  NOTREACHED();
+#error Unknown platform.
 #endif
 }

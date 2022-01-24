@@ -40,9 +40,11 @@ class SendTabToSelfToolbarIconController
 
   void ShowToolbarButton(const SendTabToSelfEntry& entry);
 
-  void SetDelegate(SendTabToSelfToolbarIconControllerDelegate* delegate);
+  void AddDelegate(SendTabToSelfToolbarIconControllerDelegate* delegate);
 
-  Profile* profile() const { return profile_; }
+  void RemoveDelegate(SendTabToSelfToolbarIconControllerDelegate* delegate);
+
+  const Profile* profile() const override;
 
   void LogNotificationOpened();
 
@@ -53,7 +55,9 @@ class SendTabToSelfToolbarIconController
 
   std::unique_ptr<SendTabToSelfEntry> entry_;
 
-  SendTabToSelfToolbarIconControllerDelegate* delegate_;
+  std::vector<SendTabToSelfToolbarIconControllerDelegate*> delegate_list_;
+
+  SendTabToSelfToolbarIconControllerDelegate* GetActiveDelegate();
 };
 
 }  // namespace send_tab_to_self

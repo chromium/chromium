@@ -12,8 +12,8 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/openscreen_platform/task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"

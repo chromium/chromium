@@ -5,6 +5,7 @@
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 
 #include "ash/accessibility/ui/accessibility_cursor_ring_layer.h"
+#include "ash/accessibility/ui/accessibility_highlight_layer.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -63,7 +64,7 @@ TEST_F(AccessibilityFocusRingControllerTest, SetFocusRingCorrectRingGroup) {
 }
 
 TEST_F(AccessibilityFocusRingControllerTest, CursorWorksOnMultipleDisplays) {
-  UpdateDisplay("400x400,500x500");
+  UpdateDisplay("500x400,500x400");
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
 
@@ -82,7 +83,7 @@ TEST_F(AccessibilityFocusRingControllerTest, CursorWorksOnMultipleDisplays) {
 
   // Simulate a mouse event at the same local location on the secondary display.
   gfx::Point location_on_secondary = location;
-  location_on_secondary.Offset(400, 0);
+  location_on_secondary.Offset(500, 0);
   controller->SetCursorRing(location_on_secondary);
 
   cursor_layer = controller->cursor_layer_for_testing();
@@ -94,7 +95,7 @@ TEST_F(AccessibilityFocusRingControllerTest, CursorWorksOnMultipleDisplays) {
 }
 
 TEST_F(AccessibilityFocusRingControllerTest, FocusRingWorksOnMultipleDisplays) {
-  UpdateDisplay("400x400,500x500");
+  UpdateDisplay("500x400,600x500");
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
 
@@ -123,7 +124,7 @@ TEST_F(AccessibilityFocusRingControllerTest, FocusRingWorksOnMultipleDisplays) {
   // Move it to the secondary display.
   auto moved = std::make_unique<AccessibilityFocusRingInfo>();
   moved->color = SkColorSetRGB(0x33, 0x66, 0x99);
-  moved->rects_in_screen.push_back(gfx::Rect(500, 50, 10, 10));
+  moved->rects_in_screen.push_back(gfx::Rect(600, 50, 10, 10));
   controller->SetFocusRing("catsRCute", std::move(moved));
 
   // Check it is correctly positioned on the secondary display.
@@ -136,6 +137,48 @@ TEST_F(AccessibilityFocusRingControllerTest, FocusRingWorksOnMultipleDisplays) {
   EXPECT_EQ(window1_container, moved_layers[0]->root_window());
   EXPECT_EQ(moved_layers[0]->layer()->GetTargetBounds().CenterPoint(),
             gfx::Rect(100, 50, 10, 10).CenterPoint());
+}
+
+TEST_F(AccessibilityFocusRingControllerTest, HighlightWorksOnMultipleDisplays) {
+  UpdateDisplay("500x400,600x500");
+  aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
+  ASSERT_EQ(2u, root_windows.size());
+
+  aura::Window* window0_container = Shell::GetContainer(
+      root_windows[0], kShellWindowId_AccessibilityPanelContainer);
+  aura::Window* window1_container = Shell::GetContainer(
+      root_windows[1], kShellWindowId_AccessibilityPanelContainer);
+
+  // Simulate highlighting on the primary display.
+  AccessibilityFocusRingControllerImpl* controller =
+      Shell::Get()->accessibility_focus_ring_controller();
+  controller->SetHighlights(
+      {gfx::Rect(50, 50, 10, 10), gfx::Rect(50, 60, 10, 10)},
+      SkColorSetRGB(0x33, 0x66, 0x99));
+
+  AccessibilityHighlightLayer* highlight_layer =
+      controller->highlight_layer_for_testing();
+  EXPECT_EQ(window0_container, highlight_layer->root_window());
+  // The highlight bounds has some padding, so just check the center point is
+  // where we would expect it.
+  EXPECT_EQ(highlight_layer->layer()->GetTargetBounds().CenterPoint(),
+            gfx::Rect(50, 50, 10, 20).CenterPoint());
+  EXPECT_EQ(std::vector<gfx::Rect>(
+                {gfx::Rect(50, 50, 10, 10), gfx::Rect(50, 60, 10, 10)}),
+            highlight_layer->rects_for_test());
+
+  // Simulate highlighting on the secondary display.
+  controller->SetHighlights(
+      {gfx::Rect(550, 50, 10, 10), gfx::Rect(550, 60, 10, 10)},
+      SkColorSetRGB(0x33, 0x66, 0x99));
+
+  highlight_layer = controller->highlight_layer_for_testing();
+  EXPECT_EQ(window1_container, highlight_layer->root_window());
+  EXPECT_EQ(highlight_layer->layer()->GetTargetBounds().CenterPoint(),
+            gfx::Rect(50, 50, 10, 20).CenterPoint());
+  EXPECT_EQ(std::vector<gfx::Rect>(
+                {gfx::Rect(50, 50, 10, 10), gfx::Rect(50, 60, 10, 10)}),
+            highlight_layer->rects_for_test());
 }
 
 TEST_F(AccessibilityFocusRingControllerTest, HighlightColorCalculation) {

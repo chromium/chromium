@@ -6,9 +6,8 @@
 #define CONTENT_RENDERER_MEDIA_MEDIA_INTERFACE_FACTORY_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -41,6 +40,10 @@ class CONTENT_EXPORT MediaInterfaceFactory final
   MediaInterfaceFactory(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       mojo::PendingRemote<media::mojom::InterfaceFactory> interface_factory);
+
+  MediaInterfaceFactory(const MediaInterfaceFactory&) = delete;
+  MediaInterfaceFactory& operator=(const MediaInterfaceFactory&) = delete;
+
   ~MediaInterfaceFactory() final;
 
   // media::mojom::InterfaceFactory implementation.
@@ -71,6 +74,7 @@ class CONTENT_EXPORT MediaInterfaceFactory final
 #endif  // defined(OS_ANDROID)
 #if defined(OS_WIN)
   void CreateMediaFoundationRenderer(
+      mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<media::mojom::Renderer> receiver,
       mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
           renderer_extension_receiver) final;
@@ -89,8 +93,6 @@ class CONTENT_EXPORT MediaInterfaceFactory final
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<MediaInterfaceFactory> weak_this_;
   base::WeakPtrFactory<MediaInterfaceFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInterfaceFactory);
 };
 
 }  // namespace content

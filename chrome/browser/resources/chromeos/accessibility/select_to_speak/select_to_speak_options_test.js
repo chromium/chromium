@@ -9,7 +9,8 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
  */
 SelectToSpeakOptionsTest = class extends SelectToSpeakE2ETest {};
 
-TEST_F('SelectToSpeakOptionsTest', 'RendersContent', function() {
+// Flaky. See crbug.com/1235944.
+TEST_F('SelectToSpeakOptionsTest', 'DISABLED_RendersContent', function() {
   this.runWithLoadedOptionsPage(root => {
     // Sanity check the page renders correctly by looking for an item close or
     // at the very end of the page.

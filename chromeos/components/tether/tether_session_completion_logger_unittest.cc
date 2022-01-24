@@ -14,6 +14,12 @@ namespace chromeos {
 namespace tether {
 
 class TetherSessionCompletionLoggerTest : public testing::Test {
+ public:
+  TetherSessionCompletionLoggerTest(const TetherSessionCompletionLoggerTest&) =
+      delete;
+  TetherSessionCompletionLoggerTest& operator=(
+      const TetherSessionCompletionLoggerTest&) = delete;
+
  protected:
   TetherSessionCompletionLoggerTest() = default;
   ~TetherSessionCompletionLoggerTest() override = default;
@@ -34,9 +40,6 @@ class TetherSessionCompletionLoggerTest : public testing::Test {
   std::unique_ptr<TetherSessionCompletionLogger> logger_;
 
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherSessionCompletionLoggerTest);
 };
 
 TEST_F(TetherSessionCompletionLoggerTest, TestOther) {

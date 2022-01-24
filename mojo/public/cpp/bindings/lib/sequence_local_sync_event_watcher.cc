@@ -36,14 +36,15 @@ using WatcherStateMap =
 struct WatcherState : public base::RefCounted<WatcherState> {
   WatcherState() = default;
 
+  WatcherState(const WatcherState&) = delete;
+  WatcherState& operator=(const WatcherState&) = delete;
+
   bool watcher_was_destroyed = false;
 
  private:
   friend class base::RefCounted<WatcherState>;
 
   ~WatcherState() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(WatcherState);
 };
 
 }  // namespace
@@ -66,6 +67,9 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
     // wake-ups propagated to them.
     event_watcher_.AllowWokenUpBySyncWatchOnSameThread();
   }
+
+  SequenceLocalState(const SequenceLocalState&) = delete;
+  SequenceLocalState& operator=(const SequenceLocalState&) = delete;
 
   ~SequenceLocalState() {}
 
@@ -196,8 +200,6 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
   base::flat_set<const SequenceLocalSyncEventWatcher*> ready_watchers_;
 
   base::WeakPtrFactory<SequenceLocalState> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SequenceLocalState);
 };
 
 void SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled() {
@@ -235,6 +237,9 @@ class SequenceLocalSyncEventWatcher::Registration {
         watcher_state_iterator_(shared_state_->RegisterWatcher(watcher)),
         watcher_state_(watcher_state_iterator_->second) {}
 
+  Registration(const Registration&) = delete;
+  Registration& operator=(const Registration&) = delete;
+
   ~Registration() {
     if (weak_shared_state_) {
       // Because |this| may itself be owned by sequence- or thread-local storage
@@ -257,8 +262,6 @@ class SequenceLocalSyncEventWatcher::Registration {
   SequenceLocalState* const shared_state_;
   WatcherStateMap::iterator watcher_state_iterator_;
   const scoped_refptr<WatcherState> watcher_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(Registration);
 };
 
 SequenceLocalSyncEventWatcher::SequenceLocalSyncEventWatcher(

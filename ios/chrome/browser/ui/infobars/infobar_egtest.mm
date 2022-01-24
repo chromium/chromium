@@ -22,13 +22,6 @@
 #error "This file requires ARC support."
 #endif
 
-// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(InfobarManagerAppInterface);
-
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
@@ -39,8 +32,14 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
   NSString* condition_name =
       visible ? @"Waiting for infobar to show" : @"Waiting for infobar to hide";
   id<GREYMatcher> expected_visibility = visible ? grey_notNil() : grey_nil();
-  BOOL bannerShown = WaitUntilConditionOrTimeout(
-      kInfobarBannerDefaultPresentationDurationInSeconds, ^{
+
+  // After |kInfobarBannerDefaultPresentationDurationInSeconds| seconds the
+  // banner should disappear. Includes |kWaitForUIElementTimeout| for EG
+  // synchronization.
+  NSTimeInterval delay = kInfobarBannerDefaultPresentationDurationInSeconds +
+                         base::test::ios::kWaitForUIElementTimeout;
+  BOOL bannerShown =
+      WaitUntilConditionOrTimeout(delay, ^{
         NSError* error = nil;
         [[EarlGrey
             selectElementWithMatcher:grey_allOf(

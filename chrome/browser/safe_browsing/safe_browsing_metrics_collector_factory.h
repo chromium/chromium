@@ -32,6 +32,11 @@ class SafeBrowsingMetricsCollectorFactory
   // Get the singleton instance.
   static SafeBrowsingMetricsCollectorFactory* GetInstance();
 
+  SafeBrowsingMetricsCollectorFactory(
+      const SafeBrowsingMetricsCollectorFactory&) = delete;
+  SafeBrowsingMetricsCollectorFactory& operator=(
+      const SafeBrowsingMetricsCollectorFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       SafeBrowsingMetricsCollectorFactory>;
@@ -42,8 +47,6 @@ class SafeBrowsingMetricsCollectorFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingMetricsCollectorFactory);
 };
 
 }  // namespace safe_browsing

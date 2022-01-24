@@ -30,11 +30,10 @@ Status FindPresetNetwork(std::string network_name,
     return Status(kUnknownError, "could not parse network list because " +
                                      parsed_json.error_message);
 
-  base::ListValue* networks;
-  if (!parsed_json.value->GetAsList(&networks))
+  if (!parsed_json.value->is_list())
     return Status(kUnknownError, "malformed networks list");
 
-  for (const auto& entry : networks->GetList()) {
+  for (const auto& entry : parsed_json.value->GetList()) {
     const base::DictionaryValue* network = nullptr;
     if (!entry.GetAsDictionary(&network)) {
       return Status(kUnknownError,

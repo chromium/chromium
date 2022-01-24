@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -22,6 +21,10 @@ namespace extensions {
 class AppLaunchInfo : public Extension::ManifestData {
  public:
   AppLaunchInfo();
+
+  AppLaunchInfo(const AppLaunchInfo&) = delete;
+  AppLaunchInfo& operator=(const AppLaunchInfo&) = delete;
+
   ~AppLaunchInfo() override;
 
   // Get the local path inside the extension to use with the launcher.
@@ -61,14 +64,16 @@ class AppLaunchInfo : public Extension::ManifestData {
 
   int launch_width_;
   int launch_height_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLaunchInfo);
 };
 
 // Parses all app launch related keys in the manifest.
 class AppLaunchManifestHandler : public ManifestHandler {
  public:
   AppLaunchManifestHandler();
+
+  AppLaunchManifestHandler(const AppLaunchManifestHandler&) = delete;
+  AppLaunchManifestHandler& operator=(const AppLaunchManifestHandler&) = delete;
+
   ~AppLaunchManifestHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
@@ -76,8 +81,6 @@ class AppLaunchManifestHandler : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLaunchManifestHandler);
 };
 
 }  // namespace extensions

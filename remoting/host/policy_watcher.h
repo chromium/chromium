@@ -11,7 +11,12 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_service.h"
+
+#if defined(OS_WIN)
+#include "base/win/registry.h"
+#endif
 
 namespace base {
 class DictionaryValue;
@@ -21,6 +26,7 @@ class SingleThreadTaskRunner;
 namespace policy {
 class AsyncPolicyLoader;
 class ConfigurationPolicyProvider;
+class ManagementService;
 class Schema;
 class SchemaRegistry;
 }  // namespace policy
@@ -36,6 +42,9 @@ class PolicyWatcher : public policy::PolicyService::Observer {
 
   // Called after detecting malformed policies.
   typedef base::RepeatingCallback<void()> PolicyErrorCallback;
+
+  PolicyWatcher(const PolicyWatcher&) = delete;
+  PolicyWatcher& operator=(const PolicyWatcher&) = delete;
 
   ~PolicyWatcher() override;
 
@@ -87,7 +96,8 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   // preferences (which are blocking operations). |file_task_runner| should be
   // of TYPE_IO type.
   static std::unique_ptr<PolicyWatcher> CreateWithTaskRunner(
-      const scoped_refptr<base::SingleThreadTaskRunner>& file_task_runner);
+      const scoped_refptr<base::SingleThreadTaskRunner>& file_task_runner,
+      policy::ManagementService* management_service);
 
   // Creates a PolicyWatcher from the given loader instead of loading the policy
   // from the default location.
@@ -146,6 +156,10 @@ class PolicyWatcher : public policy::PolicyService::Observer {
                        const policy::PolicyMap& current) override;
   void OnPolicyServiceInitialized(policy::PolicyDomain domain) override;
 
+#if defined(OS_WIN)
+  void WatchForRegistryChanges();
+#endif
+
   PolicyUpdatedCallback policy_updated_callback_;
   PolicyErrorCallback policy_error_callback_;
 
@@ -169,9 +183,14 @@ class PolicyWatcher : public policy::PolicyService::Observer {
   std::unique_ptr<policy::ConfigurationPolicyProvider> owned_policy_provider_;
   std::unique_ptr<policy::PolicyService> owned_policy_service_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
+#if defined(OS_WIN)
+  // |policy_key_| relies on |policy_service_| to notify the host of policy
+  // changes. Make sure |policy_key_| is destroyed to prevent any notifications
+  // from firing while the above objects are being torn down.
+  base::win::RegKey policy_key_;
+#endif
 
-  DISALLOW_COPY_AND_ASSIGN(PolicyWatcher);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace remoting

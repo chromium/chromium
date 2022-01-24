@@ -7,6 +7,8 @@
 #include "base/callback_helpers.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
+#include "media/mojo/services/mojo_media_log.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace media {
@@ -27,16 +29,16 @@ bool HasAudio(MediaResource* media_resource) {
 
 }  // namespace
 
-// TODO(xhwang): Remove `force_dcomp_mode_for_testing=true` after composition is
-// working by default.
 MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojom::FrameInterfaceFactory* frame_interfaces,
+    mojo::PendingRemote<mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<RendererExtension> renderer_extension_receiver)
     : frame_interfaces_(frame_interfaces),
       renderer_(std::make_unique<MediaFoundationRenderer>(
-          std::move(task_runner),
-          /*force_dcomp_mode_for_testing=*/true)),
+          task_runner,
+          std::make_unique<MojoMediaLog>(std::move(media_log_remote),
+                                         task_runner))),
       renderer_extension_receiver_(this,
                                    std::move(renderer_extension_receiver)),
       site_mute_observer_(this) {
@@ -46,6 +48,8 @@ MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
 
 MediaFoundationRendererWrapper::~MediaFoundationRendererWrapper() {
   DVLOG_FUNC(1);
+  if (!dcomp_surface_token_.is_empty())
+    dcomp_surface_registry_->UnregisterDCOMPSurfaceHandle(dcomp_surface_token_);
 }
 
 void MediaFoundationRendererWrapper::Initialize(
@@ -91,27 +95,28 @@ base::TimeDelta MediaFoundationRendererWrapper::GetMediaTime() {
   return renderer_->GetMediaTime();
 }
 
-void MediaFoundationRendererWrapper::SetDCOMPMode(
-    bool enabled,
-    SetDCOMPModeCallback callback) {
-  renderer_->SetDCompMode(enabled, std::move(callback));
-}
-
 void MediaFoundationRendererWrapper::GetDCOMPSurface(
     GetDCOMPSurfaceCallback callback) {
-  get_decomp_surface_cb_ = std::move(callback);
+  if (has_get_dcomp_surface_called_) {
+    renderer_extension_receiver_.ReportBadMessage(
+        "GetDCOMPSurface should only be called once!");
+    return;
+  }
+
+  has_get_dcomp_surface_called_ = true;
   renderer_->GetDCompSurface(
       base::BindOnce(&MediaFoundationRendererWrapper::OnReceiveDCOMPSurface,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void MediaFoundationRendererWrapper::SetVideoStreamEnabled(bool enabled) {
   renderer_->SetVideoStreamEnabled(enabled);
 }
 
-void MediaFoundationRendererWrapper::SetOutputParams(
-    const gfx::Rect& output_rect) {
-  renderer_->SetOutputParams(output_rect);
+void MediaFoundationRendererWrapper::SetOutputRect(
+    const gfx::Rect& output_rect,
+    SetOutputRectCallback callback) {
+  renderer_->SetOutputRect(output_rect, std::move(callback));
 }
 
 void MediaFoundationRendererWrapper::OnMuteStateChange(bool muted) {
@@ -124,15 +129,38 @@ void MediaFoundationRendererWrapper::OnMuteStateChange(bool muted) {
   renderer_->SetVolume(muted_ ? 0 : volume_);
 }
 
-void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(HANDLE handle) {
-  base::win::ScopedHandle local_surface_handle;
-  local_surface_handle.Set(handle);
-  if (get_decomp_surface_cb_) {
-    mojo::ScopedHandle surface_handle;
-    surface_handle = mojo::WrapPlatformHandle(
-        mojo::PlatformHandle(std::move(local_surface_handle)));
-    std::move(get_decomp_surface_cb_).Run(std::move(surface_handle));
+void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(
+    GetDCOMPSurfaceCallback callback,
+    base::win::ScopedHandle handle) {
+  if (!handle.IsValid()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
   }
+
+  if (!dcomp_surface_registry_) {
+    frame_interfaces_->CreateDCOMPSurfaceRegistry(
+        dcomp_surface_registry_.BindNewPipeAndPassReceiver());
+  }
+
+  auto register_cb = base::BindOnce(
+      &MediaFoundationRendererWrapper::OnDCOMPSurfaceHandleRegistered,
+      weak_factory_.GetWeakPtr(), std::move(callback));
+
+  dcomp_surface_registry_->RegisterDCOMPSurfaceHandle(
+      mojo::PlatformHandle(std::move(handle)),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(register_cb),
+                                                  absl::nullopt));
+}
+
+void MediaFoundationRendererWrapper::OnDCOMPSurfaceHandleRegistered(
+    GetDCOMPSurfaceCallback callback,
+    const absl::optional<base::UnguessableToken>& token) {
+  if (token) {
+    DCHECK(dcomp_surface_token_.is_empty());
+    dcomp_surface_token_ = token.value();
+  }
+
+  std::move(callback).Run(token);
 }
 
 }  // namespace media

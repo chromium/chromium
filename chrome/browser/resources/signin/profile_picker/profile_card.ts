@@ -12,13 +12,13 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 
-interface ProfileCardElement {
+export interface ProfileCardElement {
   $: {
     gaiaName: HTMLElement,
     gaiaNameTooltip: PaperTooltipElement,
@@ -27,10 +27,9 @@ interface ProfileCardElement {
   };
 }
 
-const ProfileCardElementBase = mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+const ProfileCardElementBase = I18nMixin(PolymerElement);
 
-class ProfileCardElement extends ProfileCardElementBase {
+export class ProfileCardElement extends ProfileCardElementBase {
   static get is() {
     return 'profile-card';
   }
@@ -142,6 +141,12 @@ class ProfileCardElement extends ProfileCardElementBase {
     if (this.$.nameInput.invalid) {
       this.$.nameInput.value = this.profileState.localProfileName;
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'profile-card': ProfileCardElement;
   }
 }
 

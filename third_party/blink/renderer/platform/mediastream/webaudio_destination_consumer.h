@@ -33,13 +33,13 @@ class WebAudioDestinationConsumer {
  public:
   virtual ~WebAudioDestinationConsumer() = default;
 
-  virtual void SetFormat(size_t number_of_channels, float sample_rate) = 0;
+  virtual void SetFormat(int number_of_channels, float sample_rate) = 0;
 
   // The size of the vector is the number of audio channels, and
   // |number_of_frames| is the number of audio frames in the (possibly
   // multi-channel) buffer in a planar format.
   virtual void ConsumeAudio(const Vector<const float*>&,
-                            size_t number_of_frames) = 0;
+                            int number_of_frames) = 0;
 };
 
 }  // namespace blink

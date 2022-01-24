@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_file_system {
@@ -21,6 +20,10 @@ namespace {
 class FakeClient : public SyncProcessRunner::Client {
  public:
   FakeClient() : service_state_(SYNC_SERVICE_RUNNING) {}
+
+  FakeClient(const FakeClient&) = delete;
+  FakeClient& operator=(const FakeClient&) = delete;
+
   ~FakeClient() override {}
 
   SyncServiceState GetSyncServiceState() override { return service_state_; }
@@ -33,13 +36,15 @@ class FakeClient : public SyncProcessRunner::Client {
 
  private:
   SyncServiceState service_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClient);
 };
 
 class FakeTimerHelper : public SyncProcessRunner::TimerHelper {
  public:
   FakeTimerHelper() {}
+
+  FakeTimerHelper(const FakeTimerHelper&) = delete;
+  FakeTimerHelper& operator=(const FakeTimerHelper&) = delete;
+
   ~FakeTimerHelper() override {}
 
   bool IsRunning() override { return !timer_task_.is_null(); }
@@ -74,8 +79,6 @@ class FakeTimerHelper : public SyncProcessRunner::TimerHelper {
   base::TimeTicks current_time_;
   base::TimeTicks scheduled_time_;
   base::OnceClosure timer_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTimerHelper);
 };
 
 class FakeSyncProcessRunner : public SyncProcessRunner {
@@ -93,6 +96,9 @@ class FakeSyncProcessRunner : public SyncProcessRunner {
     EXPECT_LT(running_tasks_.size(), max_parallel_task_);
     running_tasks_.push(std::move(callback));
   }
+
+  FakeSyncProcessRunner(const FakeSyncProcessRunner&) = delete;
+  FakeSyncProcessRunner& operator=(const FakeSyncProcessRunner&) = delete;
 
   ~FakeSyncProcessRunner() override {}
 
@@ -114,8 +120,6 @@ class FakeSyncProcessRunner : public SyncProcessRunner {
  private:
   size_t max_parallel_task_;
   base::queue<SyncStatusCallback> running_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSyncProcessRunner);
 };
 
 }  // namespace

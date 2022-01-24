@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/device_sync/network_request_error.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -35,6 +34,10 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
   typedef base::OnceCallback<void(NetworkRequestError error)> ErrorCallback;
 
   CryptAuthApiCallFlow();
+
+  CryptAuthApiCallFlow(const CryptAuthApiCallFlow&) = delete;
+  CryptAuthApiCallFlow& operator=(const CryptAuthApiCallFlow&) = delete;
+
   ~CryptAuthApiCallFlow() override;
 
   // Starts the API POST request call.
@@ -119,8 +122,6 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
 
   std::unique_ptr<net::PartialNetworkTrafficAnnotationTag>
       partial_network_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthApiCallFlow);
 };
 
 }  // namespace device_sync

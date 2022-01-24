@@ -156,6 +156,7 @@ void InlineFlowBoxPainter::PaintBackgroundBorderShadow(
     return;
 
   RecordHitTestData(paint_info, paint_offset);
+  RecordRegionCaptureData(paint_info, paint_offset);
 
   // You can use p::first-line to specify a background. If so, the root line
   // boxes for a line may actually have to paint a background.
@@ -262,13 +263,13 @@ PhysicalRect InlineFlowBoxPainter::AdjustedFrameRect(
   return PhysicalRect(adjusted_paint_offset, frame_rect.Size());
 }
 
-IntRect InlineFlowBoxPainter::VisualRect(
+gfx::Rect InlineFlowBoxPainter::VisualRect(
     const PhysicalRect& adjusted_frame_rect) const {
   PhysicalRect visual_rect = adjusted_frame_rect;
   const auto& style = inline_flow_box_.GetLineLayoutItem().StyleRef();
   if (style.HasVisualOverflowingEffect())
     visual_rect.Expand(style.BoxDecorationOutsets());
-  return EnclosingIntRect(visual_rect);
+  return ToGfxRect(EnclosingIntRect(visual_rect));
 }
 
 void InlineFlowBoxPainter::RecordHitTestData(
@@ -280,9 +281,27 @@ void InlineFlowBoxPainter::RecordHitTestData(
   DCHECK_EQ(layout_object->StyleRef().Visibility(), EVisibility::kVisible);
 
   paint_info.context.GetPaintController().RecordHitTestData(
-      inline_flow_box_, PixelSnappedIntRect(AdjustedFrameRect(paint_offset)),
+      inline_flow_box_,
+      ToGfxRect(PixelSnappedIntRect(AdjustedFrameRect(paint_offset))),
       layout_object->EffectiveAllowedTouchAction(),
       layout_object->InsideBlockingWheelEventHandler());
+}
+
+void InlineFlowBoxPainter::RecordRegionCaptureData(
+    const PaintInfo& paint_info,
+    const PhysicalOffset& paint_offset) {
+  LayoutObject* layout_object =
+      LineLayoutAPIShim::LayoutObjectFrom(inline_flow_box_.GetLineLayoutItem());
+
+  const Element* element = DynamicTo<Element>(layout_object->GetNode());
+  if (element) {
+    const RegionCaptureCropId* crop_id = element->GetRegionCaptureCropId();
+    if (crop_id) {
+      paint_info.context.GetPaintController().RecordRegionCaptureData(
+          inline_flow_box_, *crop_id,
+          ToGfxRect(PixelSnappedIntRect(AdjustedFrameRect(paint_offset))));
+    }
+  }
 }
 
 void InlineFlowBoxPainter::PaintNormalBoxShadow(

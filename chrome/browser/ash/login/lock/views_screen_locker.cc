@@ -37,7 +37,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "ui/base/ime/chromeos/ime_keyboard.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
 
 namespace ash {
 

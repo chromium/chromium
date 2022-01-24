@@ -15,7 +15,7 @@
 #include "gin/converter.h"
 #include "gin/function_template.h"
 #include "gin/gin_export.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace gin {
 
@@ -70,6 +70,14 @@ class GIN_EXPORT ObjectTemplateBuilder {
     return SetImpl(
         name, internal::CreateFunctionTemplate(isolate_, callback, type_name_));
   }
+
+  template <typename T>
+  ObjectTemplateBuilder& SetMethod(v8::Local<v8::Name> name,
+                                   const T& callback) {
+    return SetImpl(
+        name, internal::CreateFunctionTemplate(isolate_, callback, type_name_));
+  }
+
   template<typename T>
   ObjectTemplateBuilder& SetProperty(const base::StringPiece& name,
                                      const T& getter) {
@@ -110,6 +118,8 @@ class GIN_EXPORT ObjectTemplateBuilder {
 
  private:
   ObjectTemplateBuilder& SetImpl(const base::StringPiece& name,
+                                 v8::Local<v8::Data> val);
+  ObjectTemplateBuilder& SetImpl(v8::Local<v8::Name> name,
                                  v8::Local<v8::Data> val);
   ObjectTemplateBuilder& SetPropertyImpl(
       const base::StringPiece& name, v8::Local<v8::FunctionTemplate> getter,

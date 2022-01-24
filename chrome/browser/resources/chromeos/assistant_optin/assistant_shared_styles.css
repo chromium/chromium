@@ -54,10 +54,6 @@ webview {
   margin-inline-end: 0;
 }
 
-:host-context(html:not([new-layout])) #animation-container {
-  display: none;
-}
-
 :host-context([orientation=horizontal]) #animation-container {
   height: 240px;
   transform: translate(-40px, -12px);

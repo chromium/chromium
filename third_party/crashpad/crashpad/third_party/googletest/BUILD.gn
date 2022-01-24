@@ -248,17 +248,6 @@ if (crashpad_is_in_chromium) {
 
   config("googlemock_public_config") {
     include_dirs = [ "$googletest_dir/googlemock/include" ]
-
-    if (crashpad_is_clang) {
-      cflags_cc = [
-        # The MOCK_METHODn() macros do not specify “override”, which triggers
-        # this warning in users: “error: 'Method' overrides a member function
-        # but is not marked 'override'
-        # [-Werror,-Winconsistent-missing-override]”. Suppress these warnings
-        # until https://github.com/google/googletest/issues/533 is fixed.
-        "-Wno-inconsistent-missing-override",
-      ]
-    }
   }
 
   static_library("googlemock") {
@@ -331,6 +320,10 @@ if (crashpad_is_in_chromium) {
 
     if (crashpad_is_clang) {
       cflags_cc = [
+        # googletest/googlemock/test/gmock-function-mocker_test.cc does not
+        # always use the override modifier with MOCK_METHOD.
+        "-Wno-inconsistent-missing-override",
+
         # For googletest/googlemock/test/gmock-matchers_test.cc’s
         # testing::googlemock_matchers_test::Unprintable::c_.
         "-Wno-unused-private-field",
@@ -341,7 +334,6 @@ if (crashpad_is_in_chromium) {
       # TODO: Correct SDK in vc\tools\msvc\14.14.26428\include\functional
       cflags = [ "/wd4789" ]  # VAR of size N bytes will be overrun
     }
-
   }
 
   test("gmock_link_test") {

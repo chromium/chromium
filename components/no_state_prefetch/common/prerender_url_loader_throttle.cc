@@ -113,10 +113,9 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
   }
 #endif  // OS_ANDROID
 
-  detached_timer_.Start(FROM_HERE,
-                        base::TimeDelta::FromMilliseconds(
-                            content::kDefaultDetachableCancelDelayMs),
-                        this, &PrerenderURLLoaderThrottle::OnTimedOut);
+  detached_timer_.Start(
+      FROM_HERE, base::Milliseconds(content::kDefaultDetachableCancelDelayMs),
+      this, &PrerenderURLLoaderThrottle::OnTimedOut);
 }
 
 const char* PrerenderURLLoaderThrottle::NameForLoggingWillStartRequest() {

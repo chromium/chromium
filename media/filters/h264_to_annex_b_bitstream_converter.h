@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -24,6 +23,12 @@ struct AVCDecoderConfigurationRecord;
 class MEDIA_EXPORT H264ToAnnexBBitstreamConverter {
  public:
   H264ToAnnexBBitstreamConverter();
+
+  H264ToAnnexBBitstreamConverter(const H264ToAnnexBBitstreamConverter&) =
+      delete;
+  H264ToAnnexBBitstreamConverter& operator=(
+      const H264ToAnnexBBitstreamConverter&) = delete;
+
   ~H264ToAnnexBBitstreamConverter();
 
   // Parses the global AVCDecoderConfigurationRecord from the file format's
@@ -146,8 +151,6 @@ class MEDIA_EXPORT H264ToAnnexBBitstreamConverter {
   bool first_nal_unit_in_access_unit_;
   // Variable to hold interleaving field's length in bytes.
   uint8_t nal_unit_length_field_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264ToAnnexBBitstreamConverter);
 };
 
 }  // namespace media

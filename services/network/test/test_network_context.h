@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -73,6 +74,11 @@ class TestNetworkContext : public mojom::NetworkContext {
   void DeleteStoredTrustTokens(
       const url::Origin& issuer,
       DeleteStoredTrustTokensCallback callback) override {}
+#if BUILDFLAG(ENABLE_REPORTING)
+  void AddReportingApiObserver(
+      mojo::PendingRemote<network::mojom::ReportingApiObserver> observer)
+      override {}
+#endif  // BUILDFLAG(ENABLE_REPORTING)
   void ClearNetworkingHistoryBetween(
       base::Time start_time,
       base::Time end_time,
@@ -107,15 +113,20 @@ class TestNetworkContext : public mojom::NetworkContext {
   void GetDomainReliabilityJSON(
       GetDomainReliabilityJSONCallback callback) override {}
   void SetDocumentReportingEndpoints(
+      const base::UnguessableToken& reporting_source,
       const url::Origin& origin,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) override {}
-  void QueueReport(const std::string& type,
-                   const std::string& group,
-                   const GURL& url,
-                   const net::NetworkIsolationKey& network_isolation_key,
-                   const absl::optional<std::string>& user_agent,
-                   base::Value body) override {}
+  void SendReportsAndRemoveSource(
+      const base::UnguessableToken& reporting_source) override {}
+  void QueueReport(
+      const std::string& type,
+      const std::string& group,
+      const GURL& url,
+      const absl::optional<base::UnguessableToken>& reporting_source,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const absl::optional<std::string>& user_agent,
+      base::Value body) override {}
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,
       const net::NetworkIsolationKey& network_isolation_key) override {}
@@ -211,7 +222,8 @@ class TestNetworkContext : public mojom::NetworkContext {
   void NotifyExternalCacheHit(const GURL& url,
                               const std::string& http_method,
                               const net::NetworkIsolationKey& key,
-                              bool is_subframe_document_resource) override {}
+                              bool is_subframe_document_resource,
+                              bool include_credentials) override {}
   void VerifyCertForSignedExchange(
       const scoped_refptr<net::X509Certificate>& certificate,
       const GURL& url,
@@ -245,6 +257,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       const GURL& url,
       bool allow_credentials,
       const net::NetworkIsolationKey& network_isolation_key) override {}
+#if BUILDFLAG(IS_P2P_ENABLED)
   void CreateP2PSocketManager(
       const net::NetworkIsolationKey& network_isolation_key,
       mojo::PendingRemote<mojom::P2PTrustedSocketManagerClient> client,
@@ -252,6 +265,7 @@ class TestNetworkContext : public mojom::NetworkContext {
           trusted_socket_manager,
       mojo::PendingReceiver<mojom::P2PSocketManager> socket_manager_receiver)
       override {}
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
   void CreateMdnsResponder(
       mojo::PendingReceiver<mojom::MdnsResponder> responder_receiver) override {
   }
@@ -279,6 +293,7 @@ class TestNetworkContext : public mojom::NetworkContext {
                          const net::NetworkIsolationKey& network_isolation_key,
                          const net::AuthCredentials& credentials,
                          AddAuthCacheEntryCallback callback) override {}
+  void SetCorsNonWildcardRequestHeadersSupport(bool value) override {}
   void LookupServerBasicAuthCredentials(
       const GURL& url,
       const net::NetworkIsolationKey& network_isolation_key,

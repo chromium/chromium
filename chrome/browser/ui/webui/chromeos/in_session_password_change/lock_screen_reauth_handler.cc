@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/chrome_features.h"
@@ -79,14 +79,15 @@ LockScreenReauthHandler::LockScreenReauthHandler(const std::string& email)
 
 LockScreenReauthHandler::~LockScreenReauthHandler() = default;
 
-void LockScreenReauthHandler::HandleInitialize(const base::ListValue* value) {
+void LockScreenReauthHandler::HandleInitialize(
+    base::Value::ConstListView value) {
   AllowJavascript();
-  OnJsReadyForTesting();
+  OnReauthDialogReadyForTesting();
   LoadAuthenticatorParam();
 }
 
 void LockScreenReauthHandler::HandleAuthenticatorLoaded(
-    const base::ListValue* value) {
+    base::Value::ConstListView value) {
   VLOG(1) << "Authenticator finished loading";
   authenticator_state_ = AuthenticatorState::LOADED;
 
@@ -178,7 +179,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
 
   std::string enterprise_enrollment_domain(
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->GetEnterpriseEnrollmentDomain());
 
   if (enterprise_enrollment_domain.empty()) {
@@ -222,18 +223,18 @@ void LockScreenReauthHandler::CallJavascript(
 }
 
 void LockScreenReauthHandler::HandleCompleteAuthentication(
-    const base::ListValue* params) {
-  CHECK_EQ(params->GetList().size(), 6);
+    base::Value::ConstListView params) {
+  CHECK_EQ(params.size(), 6);
   std::string gaia_id, email, password;
   bool using_saml;
   ::login::StringList services = ::login::StringList();
   const base::DictionaryValue* password_attributes;
-  gaia_id = params->GetList()[0].GetString();
-  email = params->GetList()[1].GetString();
-  password = params->GetList()[2].GetString();
-  using_saml = params->GetList()[3].GetBool();
-  services = ConvertToVector(params->GetList()[4]);
-  params->GetList()[5].GetAsDictionary(&password_attributes);
+  gaia_id = params[0].GetString();
+  email = params[1].GetString();
+  password = params[2].GetString();
+  using_saml = params[3].GetBool();
+  services = ConvertToVector(params[4]);
+  params[5].GetAsDictionary(&password_attributes);
 
   if (gaia::CanonicalizeEmail(email) != gaia::CanonicalizeEmail(email_)) {
     // The authenticated user email doesn't match the current user's email.
@@ -280,10 +281,9 @@ void LockScreenReauthHandler::OnCookieWaitTimeout() {
   password_sync_manager->DismissDialog();
 }
 
-void LockScreenReauthHandler::OnJsReadyForTesting() {
-    js_ready_ = true;
-    if (initialization_callback_for_testing_)
-      std::move(initialization_callback_for_testing_).Run();
+void LockScreenReauthHandler::OnReauthDialogReadyForTesting() {
+  auto* password_sync_manager = GetInSessionPasswordSyncManager();
+  password_sync_manager->OnReauthDialogReadyForTesting();
 }
 
 void LockScreenReauthHandler::CheckCredentials(
@@ -304,9 +304,9 @@ void LockScreenReauthHandler::CheckCredentials(
 }
 
 void LockScreenReauthHandler::HandleUpdateUserPassword(
-    const base::ListValue* value) {
-  std::string old_password;
-  value->GetString(0, &old_password);
+    base::Value::ConstListView value) {
+  DCHECK(!value.empty());
+  std::string old_password = value[0].GetString();
   password_sync_manager_->UpdateUserPassword(old_password);
 }
 
@@ -343,16 +343,5 @@ bool LockScreenReauthHandler::IsAuthenticatorLoaded(
   waiting_caller_ = std::move(callback);
   return false;
 }
-
-bool LockScreenReauthHandler::IsJsReadyForTesting(
-  base::OnceClosure js_ready_callback) {
-    if (js_ready_)
-      return true;
-
-    DCHECK(initialization_callback_for_testing_.is_null());
-    initialization_callback_for_testing_ = std::move(js_ready_callback);
-    return false;
-}
-
 
 }  // namespace chromeos

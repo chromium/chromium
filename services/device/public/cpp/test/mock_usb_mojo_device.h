@@ -21,6 +21,10 @@ namespace device {
 class MockUsbMojoDevice : public mojom::UsbDevice {
  public:
   MockUsbMojoDevice();
+
+  MockUsbMojoDevice(const MockUsbMojoDevice&) = delete;
+  MockUsbMojoDevice& operator=(const MockUsbMojoDevice&) = delete;
+
   ~MockUsbMojoDevice() override;
 
   // As current version of gmock in Chromium doesn't support move-only types,
@@ -138,9 +142,6 @@ class MockUsbMojoDevice : public mojom::UsbDevice {
                                                base::span<const uint8_t>,
                                                const std::vector<uint32_t>&,
                                                uint32_t));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockUsbMojoDevice);
 };
 
 }  // namespace device

@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_BLOB_TO_DISK_CACHE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/cache_storage/scoped_writable_entry.h"
@@ -36,6 +35,11 @@ class CONTENT_EXPORT CacheStorageBlobToDiskCache
   CacheStorageBlobToDiskCache(
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       const blink::StorageKey& storage_key);
+
+  CacheStorageBlobToDiskCache(const CacheStorageBlobToDiskCache&) = delete;
+  CacheStorageBlobToDiskCache& operator=(const CacheStorageBlobToDiskCache&) =
+      delete;
+
   ~CacheStorageBlobToDiskCache() override;
 
   // Writes the body of |blob_remote| to |entry| with index
@@ -82,8 +86,6 @@ class CONTENT_EXPORT CacheStorageBlobToDiskCache
   const blink::StorageKey storage_key_;
 
   base::WeakPtrFactory<CacheStorageBlobToDiskCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageBlobToDiskCache);
 };
 
 }  // namespace content

@@ -44,7 +44,7 @@ namespace {
 
 // Measured in seconds.
 constexpr auto kSmoothnessTakesPriorityExpirationDelay =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 }  // namespace
 
@@ -65,7 +65,6 @@ ProxyImpl::ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
                      LayerTreeHost* layer_tree_host,
                      TaskRunnerProvider* task_runner_provider)
     : layer_tree_host_id_(layer_tree_host->GetId()),
-      commit_completion_waits_for_activation_(false),
       next_frame_is_newly_committed_frame_(false),
       inside_draw_(false),
       task_runner_provider_(task_runner_provider),
@@ -196,7 +195,8 @@ void ProxyImpl::SetTargetLocalSurfaceIdOnImpl(
 void ProxyImpl::BeginMainFrameAbortedOnImpl(
     CommitEarlyOutReason reason,
     base::TimeTicks main_thread_start_time,
-    std::vector<std::unique_ptr<SwapPromise>> swap_promises) {
+    std::vector<std::unique_ptr<SwapPromise>> swap_promises,
+    bool scroll_and_viewport_changes_synced) {
   TRACE_EVENT1("cc", "ProxyImpl::BeginMainFrameAbortedOnImplThread", "reason",
                CommitEarlyOutReasonToString(reason));
   DCHECK(IsImplThread());
@@ -204,7 +204,8 @@ void ProxyImpl::BeginMainFrameAbortedOnImpl(
 
   host_impl_->BeginMainFrameAborted(
       reason, std::move(swap_promises),
-      scheduler_->last_dispatched_begin_main_frame_args());
+      scheduler_->last_dispatched_begin_main_frame_args(),
+      scroll_and_viewport_changes_synced);
   scheduler_->NotifyBeginMainFrameStarted(main_thread_start_time);
   scheduler_->BeginMainFrameAborted(reason);
 }
@@ -268,21 +269,26 @@ void ProxyImpl::FrameSinksToThrottleUpdated(
 }
 
 void ProxyImpl::NotifyReadyToCommitOnImpl(
-    CompletionEvent* completion,
+    CompletionEvent* completion_event,
     LayerTreeHost* layer_tree_host,
     base::TimeTicks main_thread_start_time,
-    const viz::BeginFrameArgs& commit_args,
-    bool hold_commit_for_activation) {
+    const viz::BeginFrameArgs& commit_args) {
   TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToCommitOnImpl");
   DCHECK(!commit_completion_event_);
   DCHECK(IsImplThread() && IsMainThreadBlocked());
   DCHECK(scheduler_);
   DCHECK(scheduler_->CommitPending());
+  DCHECK(layer_tree_host->active_commit_state());
+
+  // Inform the layer tree host that the commit has started, so that metrics
+  // can determine how long we waited for thread synchronization.
+  layer_tree_host->active_commit_state()->impl_commit_start_time =
+      base::TimeTicks::Now();
 
   if (!host_impl_) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoLayerTree",
                          TRACE_EVENT_SCOPE_THREAD);
-    completion->Signal();
+    completion_event->Signal();
     return;
   }
 
@@ -290,19 +296,15 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   // But, we can avoid a PostTask in here.
   scheduler_->NotifyBeginMainFrameStarted(main_thread_start_time);
 
-  auto begin_main_frame_metrics = layer_tree_host->begin_main_frame_metrics();
+  auto& begin_main_frame_metrics =
+      layer_tree_host->active_commit_state()->begin_main_frame_metrics;
   host_impl_->ReadyToCommit(commit_args, begin_main_frame_metrics.get());
 
   commit_completion_event_ =
-      std::make_unique<ScopedCompletionEvent>(completion);
-  commit_completion_waits_for_activation_ = hold_commit_for_activation;
+      std::make_unique<ScopedCompletionEvent>(completion_event);
 
   DCHECK(!blocked_main_commit().layer_tree_host);
   blocked_main_commit().layer_tree_host = layer_tree_host;
-
-  // Inform the layer tree host that the commit has started, so that metrics
-  // can determine how long we waited for thread synchronization.
-  layer_tree_host->SetImplCommitStartTime(base::TimeTicks::Now());
 
   // Extract metrics data from the layer tree host and send them to the
   // scheduler to pass them to the compositor_timing_history object.
@@ -390,8 +392,8 @@ void ProxyImpl::SetVideoNeedsBeginFrames(bool needs_begin_frames) {
     scheduler_->SetVideoNeedsBeginFrames(needs_begin_frames);
 }
 
-bool ProxyImpl::HasCustomPropertyAnimations() const {
-  return host_impl_->mutator_host()->HasCustomPropertyAnimations();
+bool ProxyImpl::HasInvalidationAnimation() const {
+  return host_impl_->mutator_host()->HasInvalidationAnimation();
 }
 
 bool ProxyImpl::IsInsideDraw() {
@@ -410,6 +412,7 @@ void ProxyImpl::RenewTreePriority() {
   DCHECK(IsImplThread());
 
   bool scroll_type_considered_interaction = false;
+  bool prefer_new_content = false;
   bool non_scroll_interaction_in_progress =
       host_impl_->IsPinchGestureActive() ||
       host_impl_->page_scale_animation_active();
@@ -436,8 +439,14 @@ void ProxyImpl::RenewTreePriority() {
         user_interaction_in_progress);
   }
 
+  if (host_impl_->CurrentScrollCheckerboardsDueToNoRecording() &&
+      base::FeatureList::IsEnabled(
+          features::kPreferNewContentForCheckerboardedScrolls)) {
+    prefer_new_content = true;
+  }
+
   // Schedule expiration if smoothness currently takes priority.
-  if (user_interaction_in_progress)
+  if (user_interaction_in_progress && !prefer_new_content)
     smoothness_priority_expiration_notifier_.Schedule();
 
   // We use the same priority for both trees by default.
@@ -671,9 +680,12 @@ void ProxyImpl::ScheduledActionCommit() {
   base::ScopedAllowCrossThreadRefCountAccess
       allow_cross_thread_ref_count_access;
 
-  host_impl_->BeginCommit();
-  blocked_main_commit().layer_tree_host->FinishCommitOnImplThread(
-      host_impl_.get());
+  LayerTreeHost* layer_tree_host = blocked_main_commit().layer_tree_host;
+  bool commit_waits_for_activation =
+      layer_tree_host->active_commit_state()->commit_waits_for_activation;
+  host_impl_->BeginCommit(
+      layer_tree_host->active_commit_state()->source_frame_number);
+  layer_tree_host->FinishCommitOnImplThread(host_impl_.get());
 
   // Remove the LayerTreeHost reference before the completion event is signaled
   // and cleared. This is necessary since blocked_main_commit() allows access
@@ -681,12 +693,11 @@ void ProxyImpl::ScheduledActionCommit() {
   // blocked for a commit.
   blocked_main_commit().layer_tree_host = nullptr;
 
-  if (commit_completion_waits_for_activation_) {
+  if (commit_waits_for_activation) {
     // For some layer types in impl-side painting, the commit is held until the
     // sync tree is activated.  It's also possible that the sync tree has
     // already activated if there was no work to be done.
     TRACE_EVENT_INSTANT0("cc", "HoldCommit", TRACE_EVENT_SCOPE_THREAD);
-    commit_completion_waits_for_activation_ = false;
     activation_completion_event_ = std::move(commit_completion_event_);
   }
   commit_completion_event_ = nullptr;

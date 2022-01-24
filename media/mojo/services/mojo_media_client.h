@@ -11,6 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "media/base/overlay_info.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/media_buildflags.h"
@@ -91,6 +92,7 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
   virtual std::unique_ptr<Renderer> CreateMediaFoundationRenderer(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       mojom::FrameInterfaceFactory* frame_interfaces,
+      mojo::PendingRemote<mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
           renderer_extension_receiver);
 #endif  // defined(OS_WIN)

@@ -102,6 +102,18 @@ class WebStatePolicyDecider {
     bool has_user_gesture = false;
   };
 
+  // Data Transfer Object for the additional information about response
+  // request passed to WebStatePolicyDecider::ShouldAllowResponse().
+  struct ResponseInfo {
+    explicit ResponseInfo(bool for_main_frame)
+        : for_main_frame(for_main_frame) {}
+    // Indicates whether the response target frame is the main frame.
+    bool for_main_frame = false;
+  };
+
+  WebStatePolicyDecider(const WebStatePolicyDecider&) = delete;
+  WebStatePolicyDecider& operator=(const WebStatePolicyDecider&) = delete;
+
   // Removes self as a policy decider of |web_state_|.
   virtual ~WebStatePolicyDecider();
 
@@ -111,7 +123,7 @@ class WebStatePolicyDecider {
   // |callback| with the decision. Never called in the following cases:
   //  - same-document back-forward and state change navigations
   virtual void ShouldAllowRequest(NSURLRequest* request,
-                                  const RequestInfo& request_info,
+                                  RequestInfo request_info,
                                   PolicyDecisionCallback callback);
 
   // Asks the decider whether the navigation corresponding to |response| should
@@ -125,15 +137,14 @@ class WebStatePolicyDecider {
 
   // Asks the decider whether the navigation corresponding to |response| should
   // be allowed to continue. Defaults to PolicyDecision::Allow() if not
-  // overridden. |for_main_frame| indicates whether the frame being navigated is
-  // the main frame. Called before WebStateObserver::DidFinishNavigation. Calls
+  // overridden. Called before WebStateObserver::DidFinishNavigation. Calls
   // |callback| with the decision.
   // Never called in the following cases:
-  //  - same-document navigations (unless ititiated via LoadURLWithParams)
+  //  - same-document navigations (unless initiated via LoadURLWithParams)
   //  - going back after form submission navigation
   //  - user-initiated POST navigation on iOS 10
   virtual void ShouldAllowResponse(NSURLResponse* response,
-                                   bool for_main_frame,
+                                   ResponseInfo response_info,
                                    PolicyDecisionCallback callback);
 
   // Notifies the policy decider that the web state is being destroyed.
@@ -157,8 +168,6 @@ class WebStatePolicyDecider {
 
   // The web state to decide navigation policy for.
   WebState* web_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStatePolicyDecider);
 };
 }  // namespace web
 

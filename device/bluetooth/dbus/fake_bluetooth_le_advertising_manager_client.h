@@ -28,6 +28,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothLEAdvertisingManagerClient
     : public BluetoothLEAdvertisingManagerClient {
  public:
   FakeBluetoothLEAdvertisingManagerClient();
+
+  FakeBluetoothLEAdvertisingManagerClient(
+      const FakeBluetoothLEAdvertisingManagerClient&) = delete;
+  FakeBluetoothLEAdvertisingManagerClient& operator=(
+      const FakeBluetoothLEAdvertisingManagerClient&) = delete;
+
   ~FakeBluetoothLEAdvertisingManagerClient() override;
 
   // DBusClient overrides:
@@ -80,8 +86,6 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothLEAdvertisingManagerClient
 
   // Holds currently registered advertisements.
   std::vector<dbus::ObjectPath> currently_registered_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothLEAdvertisingManagerClient);
 };
 
 }  // namespace bluez

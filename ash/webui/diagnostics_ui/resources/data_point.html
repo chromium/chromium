@@ -15,6 +15,7 @@
     height: 40px;
     justify-content: space-between;
     margin: 12px 0;
+    width: max-content;
   }
 
   .header {
@@ -23,7 +24,8 @@
 
   :host([orientation=horizontal]) .header {
     margin-right: 16px;
-    width: 96px;
+    min-width: 90px;
+    max-width: 96px;
   }
 
   :host([orientation=horizontal]) #headerText::after {
@@ -40,10 +42,12 @@
 
   .value {
     @apply --diagnostics-data-point-subtitle-font;
+    word-wrap: break-word;
   }
 
   :host([orientation=horizontal]) .value {
-    width: 168px;
+    min-width: 108px;
+    max-width: 150px;
   }
 
   .text-red {
@@ -53,7 +57,7 @@
 <div class="data-point" tabindex="0" aria-labelledby="headerText value"
     aria-describedby="tooltipText">
   <div class="header">
-    <span id="headerText" aria-hidden="true"> [[header]]</span>
+    <span id="headerText" aria-hidden="true">[[header]]</span>
     <iron-icon slot="icon" icon="diagnostics:info" id="infoIcon"
         hidden$="[[!tooltipText]]">
     </iron-icon>

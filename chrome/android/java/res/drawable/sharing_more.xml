@@ -12,14 +12,14 @@
     android:viewportHeight="24">
     <path
         android:pathData="m6,10c-1.1,0 -2,0.9 -2,2s0.9,2 2,2 2,-0.9 2,-2 -0.9,-2 -2,-2zM18,10c-1.1,0 -2,0.9 -2,2s0.9,2 2,2 2,-0.9 2,-2 -0.9,-2 -2,-2zM12,10c-1.1,0 -2,0.9 -2,2s0.9,2 2,2 2,-0.9 2,-2 -0.9,-2 -2,-2z"
-        android:fillColor="@color/default_icon_color"
+        android:fillColor="?attr/default_icon_color"
         android:fillType="nonZero"/>
     <group>
         <clip-path
             android:pathData="m6,10c-1.1,0 -2,0.9 -2,2s0.9,2 2,2 2,-0.9 2,-2 -0.9,-2 -2,-2zM18,10c-1.1,0 -2,0.9 -2,2s0.9,2 2,2 2,-0.9 2,-2 -0.9,-2 -2,-2zM12,10c-1.1,0 -2,0.9 -2,2s0.9,2 2,2 2,-0.9 2,-2 -0.9,-2 -2,-2z"/>
         <path
             android:pathData="m0,0h24v24h-24z"
-            android:fillColor="@color/default_icon_color"
+            android:fillColor="?attr/default_icon_color"
             android:fillType="evenOdd"/>
     </group>
 </vector>

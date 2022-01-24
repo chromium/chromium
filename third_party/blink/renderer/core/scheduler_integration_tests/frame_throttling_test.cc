@@ -1170,6 +1170,11 @@ TEST_P(FrameThrottlingTest, ThrottleInnerCompositedLayer) {
   EXPECT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
   // The inner div should still be composited.
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "div").size());
+  // The owner document may included stale painted output for the iframe in its
+  // cache; make sure it gets invalidated.
+  EXPECT_FALSE(To<LayoutBoxModelObject>(frame_element->GetLayoutObject())
+                   ->Layer()
+                   ->IsValid());
 
   // If painting of the iframe is throttled, we should only receive drawing
   // commands for the main frame.
@@ -1188,14 +1193,8 @@ TEST_P(FrameThrottlingTest, ThrottleInnerCompositedLayer) {
   // And a throttled full lifecycle update.
   UpdateAllLifecyclePhases();
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // Leave the composited layer of the inner div as-is because we don't
-    // repaint it.
-    EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "div").size());
-  } else {
-    // The inner div is no longer composited.
-    EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "div").size());
-  }
+  // The inner div is no longer composited.
+  EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "div").size());
 
   auto commands_throttled1 = CompositeFrame();
   EXPECT_LT(commands_throttled1.DrawCount(), full_draw_count);
@@ -1205,6 +1204,9 @@ TEST_P(FrameThrottlingTest, ThrottleInnerCompositedLayer) {
   CompositeFrame();
   EXPECT_FALSE(
       frame_element->contentDocument()->View()->CanThrottleRendering());
+  EXPECT_FALSE(To<LayoutBoxModelObject>(frame_element->GetLayoutObject())
+                   ->Layer()
+                   ->IsValid());
   auto commands_not_throttled1 = CompositeFrame();
   // The inner div is still not composited.
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "div").size());
@@ -1403,11 +1405,11 @@ TEST_P(FrameThrottlingTest, UpdatePaintPropertiesOnUnthrottling) {
   EXPECT_TRUE(frame_document->GetLayoutView()->Layer()->SelfNeedsRepaint());
   CompositeFrame();
   EXPECT_FALSE(frame_document->View()->CanThrottleRendering());
-  EXPECT_EQ(FloatSize(0, 20), inner_div->GetLayoutObject()
-                                  ->FirstFragment()
-                                  .PaintProperties()
-                                  ->Transform()
-                                  ->Translation2D());
+  EXPECT_EQ(gfx::Vector2dF(0, 20), inner_div->GetLayoutObject()
+                                       ->FirstFragment()
+                                       .PaintProperties()
+                                       ->Transform()
+                                       ->Translation2D());
 }
 
 TEST_P(FrameThrottlingTest, DisplayNoneNotThrottled) {
@@ -1787,10 +1789,63 @@ TEST_P(FrameThrottlingTest, LifecycleThrottledFrameNeedsRepaint) {
       GetDocument().GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint());
 }
 
-TEST_P(FrameThrottlingTest, AncestorTouchActionAndWheelEventHandlers) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
+namespace {
 
+class TestEventListener : public NativeEventListener {
+ public:
+  TestEventListener() = default;
+  void Invoke(ExecutionContext*, Event*) final { count_++; }
+  int GetCallCount() const { return count_; }
+
+ private:
+  int count_ = 0;
+};
+
+}  // namespace
+
+TEST_P(FrameThrottlingTest, ThrottledIframeGetsResizeEvents) {
+  ScopedThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesForTest
+      scoped_flag_override(true);
+  WebView().GetSettings()->SetJavaScriptEnabled(true);
+
+  // Set up child-iframe that can be throttled and make sure it still gets a
+  // resize event when it loads.
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://sub.example.com/iframe.html", "text/html");
+  LoadURL("https://example.com/");
+
+  // The frame is initially throttled.
+  main_resource.Complete(R"HTML(
+      <iframe id="frame" src="https://sub.example.com/iframe.html"
+              style="margin-top: 2000px"></iframe>
+  )HTML");
+  frame_resource.Complete(R"HTML(
+    Hello, world!
+  )HTML");
+
+  // Load and verify throttling.
+  auto* frame_element =
+      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* listener = MakeGarbageCollected<TestEventListener>();
+  frame_element->contentWindow()->addEventListener("resize", listener,
+                                                   /*use_capture=*/false);
+  EXPECT_EQ(listener->GetCallCount(), 0);
+  CompositeFrame();
+  EXPECT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
+  EXPECT_EQ(listener->GetCallCount(), 1);
+
+  // Composite a second frame to pick up the resize.
+  frame_element->SetInlineStyleProperty(CSSPropertyID::kWidth, "200px");
+  // This should trigger resize event without clearing NeedsBeginMainFrame().
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  CompositeFrame();
+  EXPECT_EQ(listener->GetCallCount(), 2);
+
+  frame_element->contentWindow()->removeEventListener("resize", listener,
+                                                      /*use_capture=*/false);
+}
+
+TEST_P(FrameThrottlingTest, AncestorTouchActionAndWheelEventHandlers) {
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest frame_resource("https://example.com/iframe.html", "text/html");
 
@@ -1862,9 +1917,6 @@ TEST_P(FrameThrottlingTest, AncestorTouchActionAndWheelEventHandlers) {
 }
 
 TEST_P(FrameThrottlingTest, DescendantTouchActionAndWheelEventHandlers) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
-
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest frame_resource("https://example.com/iframe.html", "text/html");
 
@@ -2048,7 +2100,7 @@ TEST_P(FrameThrottlingTest, CullRectUpdate) {
   auto* child_layout_view = frame_document->GetLayoutView();
 
   EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
-  EXPECT_EQ(IntRect(0, 0, 100, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
             frame_object->FirstFragment().GetCullRect().Rect());
   EXPECT_FALSE(child_layout_view->Layer()->NeedsCullRectUpdate());
 
@@ -2057,7 +2109,7 @@ TEST_P(FrameThrottlingTest, CullRectUpdate) {
   GetDocument().getElementById("clip")->setAttribute(kStyleAttr,
                                                      "width: 630px");
   CompositeFrame();
-  EXPECT_EQ(IntRect(0, 0, 630, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 630, 100),
             frame_object->FirstFragment().GetCullRect().Rect());
   EXPECT_TRUE(child_layout_view->Layer()->NeedsCullRectUpdate());
 
@@ -2069,18 +2121,61 @@ TEST_P(FrameThrottlingTest, CullRectUpdate) {
   // frame.
   CompositeFrame();
   EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
-  EXPECT_EQ(IntRect(0, 0, 630, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 630, 100),
             frame_object->FirstFragment().GetCullRect().Rect());
   EXPECT_TRUE(child_layout_view->Layer()->NeedsCullRectUpdate());
 
   // The frame is unthrottled.
   CompositeFrame();
   EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
-  EXPECT_EQ(IntRect(0, 0, 630, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 630, 100),
             frame_object->FirstFragment().GetCullRect().Rect());
-  EXPECT_EQ(IntRect(0, 0, 630, 100),
+  EXPECT_EQ(gfx::Rect(0, 0, 630, 100),
             child_layout_view->FirstFragment().GetCullRect().Rect());
   EXPECT_FALSE(child_layout_view->Layer()->NeedsCullRectUpdate());
+}
+
+TEST_P(FrameThrottlingTest, ClearPaintArtifactOnThrottlingLocalRoot) {
+  InitializeRemote();
+  LocalFrameRoot().FrameWidget()->Resize({640, 480});
+  SimRequest local_root_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  local_root_resource.Complete(
+      "<div style='will-change:transform'>Hello, world!</div>");
+  CompositeFrame();
+  LocalFrameView* view = LocalFrameRoot().GetFrame()->View();
+  Element* div = view->GetFrame().GetDocument()->QuerySelector("div");
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_FALSE(
+        view->GetPaintControllerForTesting().GetPaintArtifact().IsEmpty());
+  } else {
+    EXPECT_FALSE(div->GetLayoutObject()
+                     ->PaintingLayer()
+                     ->EnclosingLayerWithCompositedLayerMapping(kIncludeSelf)
+                     ->GraphicsLayerBacking()
+                     ->GetPaintController()
+                     .GetPaintArtifact()
+                     .IsEmpty());
+  }
+  // This emulates javascript.
+  div->setAttribute("style", "", ASSERT_NO_EXCEPTION);
+  div->getBoundingClientRect();
+  // This emulates WebFrameWidgetImpl::UpdateRenderThrottlingStatusForSubFrame.
+  view->UpdateRenderThrottlingStatus(true, false, false, true);
+  // UpdateRenderThrottlingStatus should have cleared out previous paint
+  // results.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_TRUE(
+        view->GetPaintControllerForTesting().GetPaintArtifact().IsEmpty());
+  } else {
+    EXPECT_TRUE(div->GetLayoutObject()
+                    ->PaintingLayer()
+                    ->EnclosingLayerWithCompositedLayerMapping(kIncludeSelf)
+                    ->GraphicsLayerBacking()
+                    ->GetPaintController()
+                    .GetPaintArtifact()
+                    .IsEmpty());
+  }
 }
 
 TEST_P(FrameThrottlingTest, ForceCompositingUpdateOnVisibilityChange) {

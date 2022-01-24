@@ -23,6 +23,7 @@ class MultiDeviceSetupImpl;
 }  // namespace multidevice_setup
 
 namespace secure_channel {
+class PresenceMonitorClientImpl;
 class SecureChannelClientImpl;
 }  // namespace secure_channel
 
@@ -92,6 +93,7 @@ class RemoteDeviceRef {
  private:
   friend class multidevice_setup::MultiDeviceSetupImpl;
   friend class secure_channel::SecureChannelClientImpl;
+  friend class secure_channel::PresenceMonitorClientImpl;
   friend class RemoteDeviceCache;
   friend class RemoteDeviceRefBuilder;
   friend class RemoteDeviceRefTest;

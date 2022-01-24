@@ -5,13 +5,8 @@
   }
 
   ::slotted([slot=icon]) {
-    --iron-icon-fill-color: var(--google-blue-600);
-    --iron-icon-height: 20px;
-    --iron-icon-width: 20px;
-    background-color: var(--google-blue-50);
-    border-radius: 50%;
+    @apply --diagnostics-card-icon;
     margin: 0 20px;
-    padding: 8px;
     position: relative;
   }
 
@@ -52,18 +47,11 @@
 
   .data-points-column {
     border-bottom: 1px solid var(--google-grey-200);
-    border-top: 1px solid var(--google-grey-200);
     padding-inline: 24px;
   }
 
   .routine-container {
     @apply --diagnostics-default-font;
-  }
-
-  .spacing {
-    margin-bottom: 16px;
-    margin-top: 12px;
-    padding-inline: 20px;
   }
 
   .top-section {
@@ -72,16 +60,14 @@
     margin-top: 16px;
   }
 
-  .top-section-padding {
-    padding-inline: 20px;
+  .top-section-networking {
+    margin-top: 0;
   }
 </style>
-<div class="card-container">
-  <div id="title" class="card-header">
-    <slot name="title"></slot>
-    <slot name="chip"></slot>
-  </div>
-  <div class="card-wrapper">
+<diagnostics-card-frame>
+  <slot name="title" slot="title"></slot>
+  <slot name="chip" slot="chip"></slot>
+  <div slot="contents">
     <div class$="[[getTopSectionClassName_(isNetworkingCard)]]">
       <slot name="icon"></slot>
       <slot name="left-panel"></slot>
@@ -90,8 +76,8 @@
         hidden$="[[hideDataPoints]]">
       <slot name="body"></slot>
     </div>
-    <div id="routines" class="routine-container spacing">
+    <div id="routines" class="routine-container">
       <slot name="routines"></slot>
     </div>
   </div>
-</div>
+</diagnostics-card-frame>

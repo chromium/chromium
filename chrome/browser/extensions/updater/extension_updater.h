@@ -95,10 +95,13 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate,
   class ScopedSkipScheduledCheckForTest {
    public:
     ScopedSkipScheduledCheckForTest();
-    ~ScopedSkipScheduledCheckForTest();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedSkipScheduledCheckForTest);
+    ScopedSkipScheduledCheckForTest(const ScopedSkipScheduledCheckForTest&) =
+        delete;
+    ScopedSkipScheduledCheckForTest& operator=(
+        const ScopedSkipScheduledCheckForTest&) = delete;
+
+    ~ScopedSkipScheduledCheckForTest();
   };
 
   // Holds a pointer to the passed |service|, using it for querying installed

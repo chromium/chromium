@@ -149,6 +149,10 @@ std::vector<UIElement::Source> UIElement::GetSources() {
   return sources_;
 }
 
+bool UIElement::FindMatchByElementID(const ui::ElementIdentifier& identifier) {
+  return false;
+}
+
 bool UIElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
   return false;
 }

@@ -5,20 +5,25 @@
 #include "content/browser/renderer_host/page_impl.h"
 
 #include "base/barrier_closure.h"
+#include "base/trace_event/optional_trace_event.h"
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/public/browser/render_view_host.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace content {
 
 PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
-    : main_document_(rfh), delegate_(delegate) {}
+    : main_document_(rfh),
+      delegate_(delegate),
+      text_autosizer_page_info_({0, 0, 1.f}) {}
 
 PageImpl::~PageImpl() {
   // As SupportsUserData is a base class of PageImpl, Page members will be
@@ -40,8 +45,10 @@ void PageImpl::GetManifest(GetManifestCallback callback) {
 }
 
 bool PageImpl::IsPrimary() {
-  // TODO(https://crbug.com/1222722): Query RenderFrameHost::IsInFencedFrame()
-  // when it is available.
+  // TODO(1244137): Check for portals as well, once they are migrated to MPArch.
+  if (main_document_.IsFencedFrameRoot())
+    return false;
+
   return main_document_.lifecycle_state() ==
          RenderFrameHostImpl::LifecycleStateImpl::kActive;
 }
@@ -60,6 +67,14 @@ void PageImpl::UpdateManifestUrl(const GURL& manifest_url) {
 void PageImpl::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("main_document", main_document_);
+}
+
+base::WeakPtr<Page> PageImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+bool PageImpl::IsPageScaleFactorOne() {
+  return page_scale_factor_ == 1.f;
 }
 
 void PageImpl::OnFirstVisuallyNonEmptyPaint() {
@@ -91,6 +106,36 @@ void PageImpl::DidChangeBackgroundColor(SkColor background_color,
 
 void PageImpl::SetContentsMimeType(std::string mime_type) {
   contents_mime_type_ = std::move(mime_type);
+}
+
+void PageImpl::OnTextAutosizerPageInfoChanged(
+    blink::mojom::TextAutosizerPageInfoPtr page_info) {
+  OPTIONAL_TRACE_EVENT0("content", "PageImpl::OnTextAutosizerPageInfoChanged");
+
+  // Keep a copy of |page_info| in case we create a new RenderView before
+  // the next update, so that the PageImpl can tell the newly created RenderView
+  // about the autosizer info.
+  text_autosizer_page_info_.main_frame_width = page_info->main_frame_width;
+  text_autosizer_page_info_.main_frame_layout_width =
+      page_info->main_frame_layout_width;
+  text_autosizer_page_info_.device_scale_adjustment =
+      page_info->device_scale_adjustment;
+
+  auto remote_frames_broadcast_callback = base::BindRepeating(
+      [](const blink::mojom::TextAutosizerPageInfo& page_info,
+         RenderFrameProxyHost* proxy_host) {
+        DCHECK(proxy_host);
+        proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
+            page_info.Clone());
+      },
+      text_autosizer_page_info_);
+
+  main_document_.frame_tree()
+      ->root()
+      ->render_manager()
+      ->ExecuteRemoteFramesBroadcastMethod(
+          std::move(remote_frames_broadcast_callback),
+          main_document_.GetSiteInstance());
 }
 
 void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {
@@ -137,6 +182,30 @@ void PageImpl::ActivateForPrerendering(
       this));
 }
 
+void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
+  DCHECK(IsPrimary());
+
+  // Dispatch LoadProgressChanged notification on activation with the
+  // prerender last load progress value if the value is not equal to
+  // blink::kFinalLoadProgress, whose notification is dispatched during call
+  // to DidStopLoading.
+  if (load_progress() != blink::kFinalLoadProgress)
+    main_document_.DidChangeLoadProgress(load_progress());
+
+  main_document_.ForEachRenderFrameHost(
+      base::BindRepeating([](RenderFrameHostImpl* rfh) {
+        rfh->MaybeDispatchDOMContentLoadedOnPrerenderActivation();
+      }));
+
+  if (is_on_load_completed_in_main_document())
+    main_document_.DocumentOnLoadCompleted();
+
+  main_document_.ForEachRenderFrameHost(
+      base::BindRepeating([](RenderFrameHostImpl* rfh) {
+        rfh->MaybeDispatchDidFinishLoadOnPrerenderActivation();
+      }));
+}
+
 void PageImpl::DidActivateAllRenderViewsForPrerendering() {
   // Tell each RenderFrameHostImpl in this Page that activation finished.
   main_document_.ForEachRenderFrameHost(base::BindRepeating(
@@ -154,6 +223,18 @@ RenderFrameHost& PageImpl::GetMainDocumentHelper() {
 
 RenderFrameHostImpl& PageImpl::GetMainDocument() const {
   return main_document_;
+}
+
+void PageImpl::UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                          cc::BrowserControlsState current,
+                                          bool animate) {
+  // TODO(https://crbug.com/1154852): Asking for the LocalMainFrame interface
+  // before the RenderFrame is created is racy.
+  if (!GetMainDocument().IsRenderFrameCreated())
+    return;
+
+  GetMainDocument().GetAssociatedLocalMainFrame()->UpdateBrowserControlsState(
+      constraints, current, animate);
 }
 
 }  // namespace content

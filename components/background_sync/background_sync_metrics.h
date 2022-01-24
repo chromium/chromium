@@ -6,7 +6,6 @@
 #define COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_METRICS_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,6 +31,10 @@ class BackgroundSyncMetrics {
 
   explicit BackgroundSyncMetrics(
       background_sync::BackgroundSyncDelegate* delegate);
+
+  BackgroundSyncMetrics(const BackgroundSyncMetrics&) = delete;
+  BackgroundSyncMetrics& operator=(const BackgroundSyncMetrics&) = delete;
+
   ~BackgroundSyncMetrics();
 
   void MaybeRecordOneShotSyncRegistrationEvent(const url::Origin& origin,
@@ -84,8 +87,6 @@ class BackgroundSyncMetrics {
   base::OnceClosure ukm_event_recorded_for_testing_;
 
   base::WeakPtrFactory<BackgroundSyncMetrics> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncMetrics);
 };
 
 #endif  // COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_METRICS_H_

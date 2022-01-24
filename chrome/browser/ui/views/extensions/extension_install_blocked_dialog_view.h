@@ -25,7 +25,8 @@ class ExtensionInstallBlockedDialogView
     : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(ExtensionInstallBlockedDialogView);
-  ExtensionInstallBlockedDialogView(const std::string& extension_name,
+  ExtensionInstallBlockedDialogView(const std::string& extension_id,
+                                    const std::string& extension_name,
                                     const std::u16string& custom_error_message,
                                     const gfx::ImageSkia& icon,
                                     base::OnceClosure done_callback);

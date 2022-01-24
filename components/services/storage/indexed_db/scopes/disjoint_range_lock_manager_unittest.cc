@@ -37,14 +37,15 @@ class BarrierBuilder {
       : continuation_(
             base::MakeRefCounted<ContinuationRef>(std::move(continuation))) {}
 
+  BarrierBuilder(const BarrierBuilder&) = delete;
+  BarrierBuilder& operator=(const BarrierBuilder&) = delete;
+
   base::OnceClosure AddClosure() {
     return base::BindOnce([](scoped_refptr<ContinuationRef>) {}, continuation_);
   }
 
  private:
   const scoped_refptr<ContinuationRef> continuation_;
-
-  DISALLOW_COPY_AND_ASSIGN(BarrierBuilder);
 };
 
 template <typename T>
@@ -183,10 +184,10 @@ TEST_F(DisjointRangeLockManagerTest, SharedAndExclusiveQueuing) {
   // line, then the shared lock will come after it.
   EXPECT_TRUE(lock_manager.AcquireLocks(
       {{0, range, ScopesLockManager::LockType::kExclusive}},
-      exclusive_lock3_holder.AsWeakPtr(), base::DoNothing::Once()));
+      exclusive_lock3_holder.AsWeakPtr(), base::DoNothing()));
   EXPECT_TRUE(lock_manager.AcquireLocks(
       {{0, range, ScopesLockManager::LockType::kShared}},
-      shared_lock3_holder.AsWeakPtr(), base::DoNothing::Once()));
+      shared_lock3_holder.AsWeakPtr(), base::DoNothing()));
   // Flush the task queue.
   {
     base::RunLoop loop;
@@ -266,7 +267,7 @@ TEST_F(DisjointRangeLockManagerTest, InvalidRequests) {
   EXPECT_FALSE(lock_manager.AcquireLocks(
       {{0, range1, ScopesLockManager::LockType::kShared},
        {0, range2, ScopesLockManager::LockType::kShared}},
-      locks_holder.AsWeakPtr(), base::DoNothing::Once()));
+      locks_holder.AsWeakPtr(), base::DoNothing()));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
@@ -274,7 +275,7 @@ TEST_F(DisjointRangeLockManagerTest, InvalidRequests) {
   // Invalid level.
   EXPECT_FALSE(lock_manager.AcquireLocks(
       {{-1, range1, ScopesLockManager::LockType::kShared}},
-      locks_holder.AsWeakPtr(), base::DoNothing::Once()));
+      locks_holder.AsWeakPtr(), base::DoNothing()));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
@@ -282,7 +283,7 @@ TEST_F(DisjointRangeLockManagerTest, InvalidRequests) {
   // Invalid level.
   EXPECT_FALSE(lock_manager.AcquireLocks(
       {{4, range1, ScopesLockManager::LockType::kShared}},
-      locks_holder.AsWeakPtr(), base::DoNothing::Once()));
+      locks_holder.AsWeakPtr(), base::DoNothing()));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
@@ -291,7 +292,7 @@ TEST_F(DisjointRangeLockManagerTest, InvalidRequests) {
   ScopeLockRange range3 = {IntegerKey(2), IntegerKey(1)};
   EXPECT_FALSE(lock_manager.AcquireLocks(
       {{0, range3, ScopesLockManager::LockType::kShared}},
-      locks_holder.AsWeakPtr(), base::DoNothing::Once()));
+      locks_holder.AsWeakPtr(), base::DoNothing()));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());

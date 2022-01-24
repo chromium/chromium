@@ -17,13 +17,18 @@
 class IOSChromeURLRequestContextFactory {
  public:
   IOSChromeURLRequestContextFactory() {}
+
+  IOSChromeURLRequestContextFactory(const IOSChromeURLRequestContextFactory&) =
+      delete;
+  IOSChromeURLRequestContextFactory& operator=(
+      const IOSChromeURLRequestContextFactory&) = delete;
+
   virtual ~IOSChromeURLRequestContextFactory() {}
 
   // Called to create a new instance (will only be called once).
   virtual net::URLRequestContext* Create() = 0;
 
  protected:
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeURLRequestContextFactory);
 };
 
 namespace {

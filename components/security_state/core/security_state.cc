@@ -130,11 +130,8 @@ SecurityLevel GetSecurityLevel(
   const GURL& url = visible_security_state.url;
 
   // data: URLs don't define a secure context, and are a vector for spoofing.
-  // Likewise, ftp: URLs are always non-secure, and are uncommon enough that
-  // we can treat them as such without significant user impact.
-  //
   // Display a "Not secure" badge for all these URLs.
-  if (url.SchemeIs(url::kDataScheme) || url.SchemeIs(url::kFtpScheme)) {
+  if (url.SchemeIs(url::kDataScheme)) {
     return WARNING;
   }
 

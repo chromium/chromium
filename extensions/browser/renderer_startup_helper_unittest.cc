@@ -163,6 +163,11 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
 class RendererStartupHelperTest : public ExtensionsTest {
  public:
   RendererStartupHelperTest() {}
+
+  RendererStartupHelperTest(const RendererStartupHelperTest&) = delete;
+  RendererStartupHelperTest& operator=(const RendererStartupHelperTest&) =
+      delete;
+
   ~RendererStartupHelperTest() override {}
 
   void SetUp() override {
@@ -281,8 +286,6 @@ class RendererStartupHelperTest : public ExtensionsTest {
         .SetID(crx_file::id_util::GenerateId(id_input))
         .Build();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(RendererStartupHelperTest);
 };
 
 // Tests extension loading, unloading and activation and render process creation

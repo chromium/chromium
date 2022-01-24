@@ -14,10 +14,9 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
@@ -48,6 +47,10 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   InputDeviceFactoryEvdev(
       std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher,
       CursorDelegateEvdev* cursor);
+
+  InputDeviceFactoryEvdev(const InputDeviceFactoryEvdev&) = delete;
+  InputDeviceFactoryEvdev& operator=(const InputDeviceFactoryEvdev&) = delete;
+
   ~InputDeviceFactoryEvdev();
 
   // Open & start reading a newly plugged-in input device.
@@ -161,8 +164,6 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
 
   // Support weak pointers for attach & detach callbacks.
   base::WeakPtrFactory<InputDeviceFactoryEvdev> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputDeviceFactoryEvdev);
 };
 
 }  // namespace ui

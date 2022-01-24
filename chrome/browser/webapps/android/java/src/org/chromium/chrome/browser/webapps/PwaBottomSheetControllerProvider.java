@@ -52,7 +52,7 @@ public class PwaBottomSheetControllerProvider {
     @CalledByNative
     private static boolean canShowPwaBottomSheetInstaller(WebContents webContents) {
         PwaBottomSheetController controller = fromWebContents(webContents);
-        return controller != null;
+        return controller != null && controller.canShowFor(webContents);
     }
 
     /**

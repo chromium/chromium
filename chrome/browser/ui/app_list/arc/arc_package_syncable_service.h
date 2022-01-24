@@ -11,7 +11,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -44,6 +43,10 @@ class ArcPackageSyncableService : public syncer::SyncableService,
     int64_t last_backup_android_id;
     int64_t last_backup_time;
   };
+
+  ArcPackageSyncableService(const ArcPackageSyncableService&) = delete;
+  ArcPackageSyncableService& operator=(const ArcPackageSyncableService&) =
+      delete;
 
   ~ArcPackageSyncableService() override;
 
@@ -132,8 +135,6 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   syncer::SyncableService::StartSyncFlare flare_;
 
   ArcAppListPrefs* const prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPackageSyncableService);
 };
 
 }  // namespace arc

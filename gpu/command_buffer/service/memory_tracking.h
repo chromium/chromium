@@ -29,6 +29,10 @@ class GPU_EXPORT MemoryTracker {
   class Observer {
    public:
     Observer() = default;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() = default;
 
     virtual void OnMemoryAllocatedChange(
@@ -36,9 +40,6 @@ class GPU_EXPORT MemoryTracker {
         uint64_t old_size,
         uint64_t new_size,
         GpuPeakMemoryAllocationSource source) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   virtual ~MemoryTracker() = default;
@@ -68,6 +69,10 @@ class GPU_EXPORT MemoryTypeTracker {
   // For testing.
   MemoryTypeTracker(MemoryTracker* memory_tracker,
                     scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  MemoryTypeTracker(const MemoryTypeTracker&) = delete;
+  MemoryTypeTracker& operator=(const MemoryTypeTracker&) = delete;
+
   ~MemoryTypeTracker();
 
   void TrackMemAlloc(size_t bytes);
@@ -84,8 +89,6 @@ class GPU_EXPORT MemoryTypeTracker {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<MemoryTypeTracker> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryTypeTracker);
 };
 
 }  // namespace gpu

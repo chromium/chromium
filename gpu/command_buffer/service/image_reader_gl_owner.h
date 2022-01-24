@@ -9,7 +9,6 @@
 
 #include "base/android/android_image_reader_compat.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_fence_egl.h"
@@ -31,6 +30,9 @@ namespace gpu {
 // data present in the surface.
 class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
  public:
+  ImageReaderGLOwner(const ImageReaderGLOwner&) = delete;
+  ImageReaderGLOwner& operator=(const ImageReaderGLOwner&) = delete;
+
   gl::GLContext* GetContext() const override;
   gl::GLSurface* GetSurface() const override;
   void SetFrameAvailableCallback(
@@ -45,8 +47,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
                                   gfx::Size* coded_size,
                                   gfx::Rect* visible_rect) override;
 
-  // This method is never called in MediaPlayer path. Hence removing thread
-  // safety analysis until thread safety is implemented in MCVD path.
   void RunWhenBufferIsAvailable(base::OnceClosure callback) override;
 
   const AImageReader* image_reader_for_testing() const
@@ -69,6 +69,10 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
     ScopedCurrentImageRef(ImageReaderGLOwner* texture_owner,
                           AImage* image,
                           base::ScopedFD ready_fence);
+
+    ScopedCurrentImageRef(const ScopedCurrentImageRef&) = delete;
+    ScopedCurrentImageRef& operator=(const ScopedCurrentImageRef&) = delete;
+
     ~ScopedCurrentImageRef();
     AImage* image() const { return image_; }
     base::ScopedFD GetReadyFence() const;
@@ -81,8 +85,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
 
     // Set to true if the current image is bound to |texture_id_|.
     bool image_bound_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedCurrentImageRef);
   };
 
   ImageReaderGLOwner(std::unique_ptr<gles2::AbstractTexture> texture,
@@ -119,6 +121,10 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
   // is automatically released once the ref-count is 0.
   struct ImageRef {
     ImageRef();
+
+    ImageRef(const ImageRef&) = delete;
+    ImageRef& operator=(const ImageRef&) = delete;
+
     ~ImageRef();
 
     ImageRef(ImageRef&& other);
@@ -126,8 +132,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
 
     size_t count = 0u;
     base::ScopedFD release_fence_fd;
-
-    DISALLOW_COPY_AND_ASSIGN(ImageRef);
   };
   using AImageRefMap = base::flat_map<AImage*, ImageRef>;
   AImageRefMap image_refs_ GUARDED_BY(lock_);
@@ -151,10 +155,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
 
   // This class is created on gpu main thread.
   THREAD_CHECKER(gpu_main_thread_checker_);
-
-  base::WeakPtrFactory<ImageReaderGLOwner> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageReaderGLOwner);
 };
 
 }  // namespace gpu

@@ -21,6 +21,10 @@ class ImageFetcher;
 class ReducedModeImageFetcher : public ImageFetcher {
  public:
   ReducedModeImageFetcher(ImageFetcher* image_fetcher);
+
+  ReducedModeImageFetcher(const ReducedModeImageFetcher&) = delete;
+  ReducedModeImageFetcher& operator=(const ReducedModeImageFetcher&) = delete;
+
   ~ReducedModeImageFetcher() override;
 
   // ImageFetcher:
@@ -37,8 +41,6 @@ class ReducedModeImageFetcher : public ImageFetcher {
   // Used to ensure that operations are performed on the sequence that this
   // object was created on.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ReducedModeImageFetcher);
 };
 
 }  // namespace image_fetcher

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_MODEL_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -16,6 +15,10 @@
 class SystemMenuModelDelegate : public ui::SimpleMenuModel::Delegate {
  public:
   SystemMenuModelDelegate(ui::AcceleratorProvider* provider, Browser* browser);
+
+  SystemMenuModelDelegate(const SystemMenuModelDelegate&) = delete;
+  SystemMenuModelDelegate& operator=(const SystemMenuModelDelegate&) = delete;
+
   ~SystemMenuModelDelegate() override;
 
   Browser* browser() { return browser_; }
@@ -33,8 +36,6 @@ class SystemMenuModelDelegate : public ui::SimpleMenuModel::Delegate {
  private:
   ui::AcceleratorProvider* const provider_;  // weak
   Browser* const browser_;                   // weak
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMenuModelDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_SYSTEM_MENU_MODEL_DELEGATE_H_

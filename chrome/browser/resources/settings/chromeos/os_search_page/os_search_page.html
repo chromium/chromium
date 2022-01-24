@@ -1,99 +1,64 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-shared-style settings-shared md-select">
+  #search-wrapper {
+    align-items: center;
+    display: flex;
+    min-height: var(--settings-row-min-height);
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="os_search_selection_dialog.html">
-<link rel="import" href="../../controls/extension_controlled_indicator.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../../search_engines_page/search_engines_browser_proxy.html">
-<link rel="import" href="../../settings_page/settings_animated_pages.html">
-<link rel="import" href="../../settings_page/settings_subpage.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../../settings_vars_css.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../google_assistant_page/google_assistant_page.html">
-<link rel="import" href="search_subpage.html">
-<link rel="import" href="search_engine.html">
-<link rel="import" href="../os_route.html">
-
-<dom-module id="os-settings-search-page">
-  <template>
-    <style include="cr-shared-style settings-shared md-select">
-      #search-wrapper {
-        align-items: center;
-        display: flex;
-        min-height: var(--settings-row-min-height);
-      }
-
-      cr-policy-pref-indicator {
-        padding-inline-end: 8px;
-      }
-    </style>
-    <settings-animated-pages id="pages" section="osSearch"
-        focus-config="[[focusConfig_]]">
-      <div route-path="default">
-        <template is="dom-if" if="[[!shouldShowQuickAnswersSettings_]]">
-          <settings-search-engine
-              deep-link-focus-id$="[[Setting.kPreferredSearchEngine]]">
-          </settings-search-engine>
-        </template>
-        <template is="dom-if" if="[[shouldShowQuickAnswersSettings_]]">
-          <cr-link-row id="search"
-              id="searchSubpageTrigger"
-              label="$i18n{searchSubpageTitle}"
-              on-click="onSearchTap_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-        <!-- Google Assistant -->
-        <template is="dom-if" if="[[isAssistantAllowed_]]">
-          <cr-link-row
-              class="hr"
-              id="assistantSubpageTrigger"
-              label="$i18n{searchGoogleAssistant}"
-              sub-label="[[getAssistantEnabledDisabledLabel_(
-                  prefs.settings.voice_interaction.enabled.value)]]"
-              on-click="onGoogleAssistantTap_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-      </div>
-      <template is="dom-if" if="[[shouldShowQuickAnswersSettings_]]">
-        <template is="dom-if" route-path="/osSearch/search">
-          <settings-subpage
-              associated-control="[[$$('#searchSubpageTrigger')]]"
-              page-title="$i18n{searchSubpageTitle}">
-            <settings-search-subpage prefs="{{prefs}}">
-            </settings-search-subpage>
-          </settings-subpage>
-        </template>
-      </template>
-      <template is="dom-if" if="[[isAssistantAllowed_]]">
-        <template is="dom-if" route-path="/googleAssistant">
-          <settings-subpage
-              associated-control="[[$$('#assistantSubpageTrigger')]]"
-              page-title="$i18n{googleAssistantPageTitle}">
-            <settings-google-assistant-page prefs="{{prefs}}">
-            </settings-google-assistant-page>
-          </settings-subpage>
-        </template>
-      </template>
-    </settings-animated-pages>
-
-    <!-- Default Search Engine Selection Dialog -->
-    <template is="dom-if" if="[[showSearchSelectionDialog_]]" restamp>
-      <os-settings-search-selection-dialog
-          on-close="onSearchSelectionDialogClose_">
-      </os-settings-search-selection-dialog>
+  cr-policy-pref-indicator {
+    padding-inline-end: 8px;
+  }
+</style>
+<settings-animated-pages id="pages" section="osSearch"
+    focus-config="[[focusConfig_]]">
+  <div route-path="default">
+    <template is="dom-if" if="[[!shouldShowQuickAnswersSettings_]]">
+      <settings-search-engine
+          deep-link-focus-id$="[[Setting.kPreferredSearchEngine]]">
+      </settings-search-engine>
+    </template>
+    <template is="dom-if" if="[[shouldShowQuickAnswersSettings_]]">
+      <cr-link-row id="search"
+          id="searchSubpageTrigger"
+          label="$i18n{searchSubpageTitle}"
+          on-click="onSearchTap_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+    <!-- Google Assistant -->
+    <template is="dom-if" if="[[isAssistantAllowed_]]">
+      <cr-link-row
+          class="hr"
+          id="assistantSubpageTrigger"
+          label="$i18n{searchGoogleAssistant}"
+          sub-label="[[getAssistantEnabledDisabledLabel_(
+              prefs.settings.voice_interaction.enabled.value)]]"
+          on-click="onGoogleAssistantTap_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+  </div>
+  <template is="dom-if" if="[[shouldShowQuickAnswersSettings_]]">
+    <template is="dom-if" route-path="/osSearch/search">
+      <settings-subpage page-title="$i18n{searchSubpageTitle}">
+        <settings-search-subpage prefs="{{prefs}}">
+        </settings-search-subpage>
+      </settings-subpage>
     </template>
   </template>
-  <script src="os_search_page.js"></script>
-</dom-module>
+  <template is="dom-if" if="[[isAssistantAllowed_]]">
+    <template is="dom-if" route-path="/googleAssistant">
+      <settings-subpage page-title="$i18n{googleAssistantPageTitle}">
+        <settings-google-assistant-page prefs="{{prefs}}">
+        </settings-google-assistant-page>
+      </settings-subpage>
+    </template>
+  </template>
+</settings-animated-pages>
+
+<!-- Default Search Engine Selection Dialog -->
+<template is="dom-if" if="[[showSearchSelectionDialog_]]" restamp>
+  <os-settings-search-selection-dialog
+      on-close="onSearchSelectionDialogClose_">
+  </os-settings-search-selection-dialog>
+</template>

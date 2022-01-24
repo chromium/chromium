@@ -15,6 +15,10 @@ class MoveOnlyInt {
  public:
   explicit MoveOnlyInt(int data = 1) : data_(data) {}
   MoveOnlyInt(MoveOnlyInt&& other) : data_(other.data_) { other.data_ = 0; }
+
+  MoveOnlyInt(const MoveOnlyInt&) = delete;
+  MoveOnlyInt& operator=(const MoveOnlyInt&) = delete;
+
   ~MoveOnlyInt() { data_ = 0; }
 
   MoveOnlyInt& operator=(MoveOnlyInt&& other) {
@@ -59,8 +63,6 @@ class MoveOnlyInt {
 
  private:
   volatile int data_;
-
-  DISALLOW_COPY_AND_ASSIGN(MoveOnlyInt);
 };
 
 }  // namespace base

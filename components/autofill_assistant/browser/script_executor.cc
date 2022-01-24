@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -70,7 +70,6 @@ ScriptExecutor::ScriptExecutor(
     const std::string& global_payload,
     const std::string& script_payload,
     ScriptExecutor::Listener* listener,
-    std::map<std::string, ScriptStatus>* scripts_state,
     const std::vector<std::unique_ptr<Script>>* ordered_interrupts,
     ScriptExecutorDelegate* delegate)
     : script_path_(script_path),
@@ -81,7 +80,6 @@ ScriptExecutor::ScriptExecutor(
       listener_(listener),
       delegate_(delegate),
       ordered_interrupts_(ordered_interrupts),
-      scripts_state_(scripts_state),
       element_store_(
           std::make_unique<ElementStore>(delegate->GetWebContents())) {
   DCHECK(delegate_);
@@ -103,7 +101,6 @@ void ScriptExecutor::Run(const UserData* user_data,
 #else
   DVLOG(2) << "Starting script " << script_path_;
 #endif
-  (*scripts_state_)[script_path_] = ScriptStatus::RUNNING;
 
   DCHECK(user_data);
   user_data_ = user_data;
@@ -315,6 +312,18 @@ std::string ScriptExecutor::GetBubbleMessage() const {
   return delegate_->GetBubbleMessage();
 }
 
+void ScriptExecutor::SetTtsMessage(const std::string& message) {
+  delegate_->SetTtsMessage(message);
+}
+
+TtsButtonState ScriptExecutor::GetTtsButtonState() const {
+  return delegate_->GetTtsButtonState();
+}
+
+void ScriptExecutor::MaybePlayTtsMessage() {
+  delegate_->MaybePlayTtsMessage();
+}
+
 void ScriptExecutor::FindElement(const Selector& selector,
                                  ElementFinder::Callback callback) const {
   VLOG(3) << __func__ << " " << selector;
@@ -447,13 +456,6 @@ void ScriptExecutor::Prompt(
   }
 
   if (user_actions != nullptr) {
-    for (auto& user_action : *user_actions) {
-      if (!user_action.HasCallback())
-        continue;
-
-      user_action.AddInterceptor(base::BindOnce(
-          &ScriptExecutor::OnChosen, weak_ptr_factory_.GetWeakPtr()));
-    }
     delegate_->SetUserActions(std::move(user_actions));
   }
 }
@@ -475,14 +477,6 @@ void ScriptExecutor::SetBrowseDomainsAllowlist(
   delegate_->SetBrowseDomainsAllowlist(std::move(domains));
 }
 
-void ScriptExecutor::OnChosen(UserAction::Callback callback,
-                              std::unique_ptr<TriggerContext> context) {
-  if (context->GetDirectAction()) {
-    current_action_data_.direct_action = true;
-  }
-  std::move(callback).Run(std::move(context));
-}
-
 void ScriptExecutor::RetrieveElementFormAndFieldData(
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&,
@@ -501,10 +495,6 @@ void ScriptExecutor::SetTouchableElementArea(
     const ElementAreaProto& touchable_element_area) {
   touchable_element_area_ =
       std::make_unique<ElementAreaProto>(touchable_element_area);
-}
-
-void ScriptExecutor::SetProgress(int progress) {
-  delegate_->SetProgress(progress);
 }
 
 bool ScriptExecutor::SetProgressActiveStepIdentifier(
@@ -638,8 +628,8 @@ std::string ScriptExecutor::GetEmailAddressForAccessTokenAccount() const {
   return delegate_->GetEmailAddressForAccessTokenAccount();
 }
 
-std::string ScriptExecutor::GetLocale() const {
-  return delegate_->GetLocale();
+ukm::UkmRecorder* ScriptExecutor::GetUkmRecorder() const {
+  return delegate_->GetUkmRecorder();
 }
 
 void ScriptExecutor::SetDetails(std::unique_ptr<Details> details,
@@ -692,6 +682,11 @@ void ScriptExecutor::WaitForWindowHeightChange(
 
 const ClientSettings& ScriptExecutor::GetSettings() const {
   return delegate_->GetSettings();
+}
+
+void ScriptExecutor::SetClientSettings(
+    const ClientSettingsProto& client_settings) {
+  return delegate_->SetClientSettings(client_settings);
 }
 
 bool ScriptExecutor::SetForm(
@@ -757,7 +752,7 @@ void ScriptExecutor::MaybeShowSlowConnectionWarning() {
   bool should_show_warning =
       !delegate_->GetSettings().only_show_connection_warning_once ||
       !connection_warning_already_shown_;
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(0);
+  base::TimeDelta delay = base::Milliseconds(0);
   // MaybeShowSlowWarning is only called if should_sown_warning is true.
   bool warning_was_shown =
       should_show_warning &&
@@ -904,8 +899,6 @@ void ScriptExecutor::RunCallback(bool success) {
 
 void ScriptExecutor::RunCallbackWithResult(const Result& result) {
   DCHECK(callback_);
-  (*scripts_state_)[script_path_] =
-      result.success ? ScriptStatus::SUCCESS : ScriptStatus::FAILURE;
   std::move(callback_).Run(result);
 }
 
@@ -934,7 +927,7 @@ void ScriptExecutor::ProcessNextAction() {
         FROM_HERE,
         base::BindOnce(&ScriptExecutor::ProcessAction,
                        weak_ptr_factory_.GetWeakPtr(), action),
-        base::TimeDelta::FromMilliseconds(delay_ms));
+        base::Milliseconds(delay_ms));
   } else {
     ProcessAction(action);
   }
@@ -990,7 +983,6 @@ void ScriptExecutor::OnProcessedAction(
 
   auto& processed_action = processed_actions_.back();
   processed_action.set_run_time_ms(run_time.InMilliseconds());
-  processed_action.set_direct_action(current_action_data_.direct_action);
   *processed_action.mutable_navigation_info() =
       current_action_data_.navigation_info;
 
@@ -1008,7 +1000,7 @@ void ScriptExecutor::CheckElementMatches(
     BatchElementChecker* checker,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   checker->AddElementCheck(
-      selector,
+      selector, /* strict= */ false,
       base::BindOnce(&ScriptExecutor::CheckElementMatchesCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -1162,7 +1154,7 @@ void ScriptExecutor::WaitForDomOperation::RunChecks(
   wait_time_total_ =
       (wait_time_stopwatch_.TotalElapsed() < retry_timer_.period())
           // It's the first run of the checks, set the total time waited to 0.
-          ? base::TimeDelta::FromSeconds(0)
+          ? base::Seconds(0)
           // If this is not the first run of the checks, in order to estimate
           // the real cost of periodic checks, half the duration of the retry
           // timer period is removed from the total wait time. This is to
@@ -1253,8 +1245,7 @@ void ScriptExecutor::WaitForDomOperation::RunInterrupt(
       std::make_unique<TriggerContext>(std::vector<const TriggerContext*>{
           main_script_->additional_context_.get()}),
       main_script_->last_global_payload_, main_script_->initial_script_payload_,
-      /* listener= */ this, main_script_->scripts_state_, &no_interrupts_,
-      delegate_);
+      /* listener= */ this, &no_interrupts_, delegate_);
   delegate_->EnterState(AutofillAssistantState::RUNNING);
   delegate_->SetUserActions(nullptr);
   interrupt_executor_->Run(
@@ -1360,6 +1351,10 @@ std::ostream& operator<<(std::ostream& out,
   result.success ? out << "succeeded. " : out << "failed. ";
   out << "at_end = " << result.at_end;
   return out;
+}
+
+ProcessedActionStatusDetailsProto& ScriptExecutor::GetLogInfo() {
+  return delegate_->GetLogInfo();
 }
 
 }  // namespace autofill_assistant

@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -303,6 +304,11 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
             profile_, plugin_vm::kPluginVmShelfAppId,
             AppManagementEntryPoint::kNotificationPluginVm);
         break;
+      case VmType::kBorealis:
+        chrome::ShowAppManagementPage(
+            profile_, borealis::kBorealisMainAppId,
+            AppManagementEntryPoint::kAppManagementMainViewBorealis);
+        break;
     }
   }
 
@@ -351,6 +357,7 @@ void VmCameraMicManager::OnPrimaryUserSessionStarted(Profile* primary_profile) {
 
   emplace_vm_info(VmType::kCrostiniVm, IDS_CROSTINI_LINUX);
   emplace_vm_info(VmType::kPluginVm, IDS_PLUGIN_VM_APP_NAME);
+  emplace_vm_info(VmType::kBorealis, IDS_BOREALIS_APP_NAME);
 
   // Only do the subscription in real ChromeOS environment.
   if (base::SysInfo::IsRunningOnChromeOS()) {
@@ -490,6 +497,9 @@ std::string VmCameraMicManager::GetNotificationId(VmType vm,
     case VmType::kPluginVm:
       id.append("-pluginvm");
       break;
+    case VmType::kBorealis:
+      id.append("-borealis");
+      break;
   }
 
   id.append(type.to_string());
@@ -512,6 +522,7 @@ void VmCameraMicManager::OnNumberOfInputStreamsWithPermissionChanged() {
 
   update(CrasAudioHandler::ClientType::VM_TERMINA, VmType::kCrostiniVm);
   update(CrasAudioHandler::ClientType::VM_PLUGIN, VmType::kPluginVm);
+  update(CrasAudioHandler::ClientType::VM_BOREALIS, VmType::kBorealis);
 }
 
 void VmCameraMicManager::SetMicActive(VmType vm, bool active) {

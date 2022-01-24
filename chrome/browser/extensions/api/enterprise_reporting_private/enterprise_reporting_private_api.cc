@@ -71,6 +71,7 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
           ? std::make_unique<bool>(signals.third_party_blocking_enabled.value())
           : nullptr;
   info.os_firewall = ToInfoSettingValue(signals.os_firewall);
+  info.system_dns_servers = std::move(signals.system_dns_servers);
   switch (signals.realtime_url_check_mode) {
     case safe_browsing::REAL_TIME_CHECK_DISABLED:
       info.realtime_url_check_mode = extensions::api::
@@ -86,15 +87,15 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
   info.built_in_dns_client_enabled = signals.built_in_dns_client_enabled;
 
   switch (signals.safe_browsing_protection_level) {
-    case safe_browsing::NO_SAFE_BROWSING:
+    case safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING:
       info.safe_browsing_protection_level = extensions::api::
           enterprise_reporting_private::SAFE_BROWSING_LEVEL_DISABLED;
       break;
-    case safe_browsing::STANDARD_PROTECTION:
+    case safe_browsing::SafeBrowsingState::STANDARD_PROTECTION:
       info.safe_browsing_protection_level = extensions::api::
           enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD;
       break;
-    case safe_browsing::ENHANCED_PROTECTION:
+    case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
       info.safe_browsing_protection_level = extensions::api::
           enterprise_reporting_private::SAFE_BROWSING_LEVEL_ENHANCED;
       break;
@@ -166,7 +167,7 @@ EnterpriseReportingPrivateGetPersistentSecretFunction::Run() {
   std::unique_ptr<
       api::enterprise_reporting_private::GetPersistentSecret::Params>
       params(api::enterprise_reporting_private::GetPersistentSecret::Params::
-                 Create(*args_));
+                 Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   bool force_create = params->reset_secret ? *params->reset_secret : false;
   base::ThreadPool::PostTask(
@@ -219,7 +220,7 @@ ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceDataFunction::Run() {
   std::unique_ptr<api::enterprise_reporting_private::GetDeviceData::Params>
       params(api::enterprise_reporting_private::GetDeviceData::Params::Create(
-          *args_));
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -275,7 +276,7 @@ ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateSetDeviceDataFunction::Run() {
   std::unique_ptr<api::enterprise_reporting_private::SetDeviceData::Params>
       params(api::enterprise_reporting_private::SetDeviceData::Params::Create(
-          *args_));
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -324,6 +325,8 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::ToDeviceInfo(
 
   device_info.os_name = std::move(device_signals.os_name);
   device_info.os_version = std::move(device_signals.os_version);
+  device_info.security_patch_level =
+      std::move(device_signals.security_patch_level);
   device_info.device_host_name = std::move(device_signals.device_host_name);
   device_info.device_model = std::move(device_signals.device_model);
   device_info.serial_number = std::move(device_signals.serial_number);
@@ -332,6 +335,18 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::ToDeviceInfo(
   device_info.disk_encrypted =
       ToInfoSettingValue(device_signals.disk_encrypted);
   device_info.mac_addresses = std::move(device_signals.mac_addresses);
+  if (device_signals.windows_machine_domain.has_value()) {
+    device_info.windows_machine_domain = std::make_unique<std::string>(
+        device_signals.windows_machine_domain.value());
+  } else {
+    device_info.windows_machine_domain = nullptr;
+  }
+  if (device_signals.windows_user_domain.has_value()) {
+    device_info.windows_user_domain = std::make_unique<std::string>(
+        device_signals.windows_user_domain.value());
+  } else {
+    device_info.windows_user_domain = nullptr;
+  }
 
   return device_info;
 }
@@ -408,7 +423,7 @@ ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetCertificateFunction::Run() {
   std::unique_ptr<api::enterprise_reporting_private::GetCertificate::Params>
       params(api::enterprise_reporting_private::GetCertificate::Params::Create(
-          *args_));
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // If AutoSelectCertificateForUrl is not set at the machine level, this

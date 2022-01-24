@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.Browser;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.util.HashSet;
@@ -47,22 +48,22 @@ public class WebappIntentUtils {
     /**
      * Converts color from signed Integer where an unspecified color is represented as null to
      * to unsigned long where an unspecified color is represented as
-     * {@link WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING}.
+     * {@link ColorUtils.INVALID_COLOR}.
      */
     public static long colorFromIntegerColor(Integer color) {
         if (color != null) {
             return color.intValue();
         }
-        return WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING;
+        return ColorUtils.INVALID_COLOR;
     }
 
     public static boolean isLongColorValid(long longColor) {
-        return (longColor != WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING);
+        return (longColor != ColorUtils.INVALID_COLOR);
     }
 
     /**
      * Converts color from unsigned long where an unspecified color is represented as
-     * {@link WebappConstants.MANIFEST_COLOR_INVALID_OR_MISSING} to a signed Integer where an
+     * {@link ColorUtils.INVALID_COLOR} to a signed Integer where an
      * unspecified color is represented as null.
      */
     public static Integer colorFromLongColor(long longColor) {

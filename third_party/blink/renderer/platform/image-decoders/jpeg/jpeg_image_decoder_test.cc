@@ -69,8 +69,8 @@ void Downsample(size_t max_decoded_bytes,
 
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(frame);
-  EXPECT_EQ(expected_size.Width(), frame->Bitmap().width());
-  EXPECT_EQ(expected_size.Height(), frame->Bitmap().height());
+  EXPECT_EQ(expected_size.width(), frame->Bitmap().width());
+  EXPECT_EQ(expected_size.height(), frame->Bitmap().height());
   EXPECT_EQ(expected_size, decoder->DecodedSize());
 }
 
@@ -101,20 +101,20 @@ void ReadYUV(size_t max_decoded_bytes,
   EXPECT_EQ(expected_y_size, y_size);
   EXPECT_EQ(expected_uv_size, u_size);
 
-  size_t row_bytes[3];
+  wtf_size_t row_bytes[3];
   row_bytes[0] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kY);
   row_bytes[1] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kU);
   row_bytes[2] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kV);
 
-  size_t planes_data_size = row_bytes[0] * y_size.Height() +
-                            row_bytes[1] * u_size.Height() +
-                            row_bytes[2] * v_size.Height();
+  size_t planes_data_size = row_bytes[0] * y_size.height() +
+                            row_bytes[1] * u_size.height() +
+                            row_bytes[2] * v_size.height();
   auto planes_data = std::make_unique<char[]>(planes_data_size);
 
   void* planes[3];
   planes[0] = planes_data.get();
-  planes[1] = static_cast<char*>(planes[0]) + row_bytes[0] * y_size.Height();
-  planes[2] = static_cast<char*>(planes[1]) + row_bytes[1] * u_size.Height();
+  planes[1] = static_cast<char*>(planes[0]) + row_bytes[0] * y_size.height();
+  planes[2] = static_cast<char*>(planes[1]) + row_bytes[1] * u_size.height();
 
   decoder->SetImagePlanes(
       std::make_unique<ImagePlanes>(planes, row_bytes, kGray_8_SkColorType));
@@ -411,6 +411,19 @@ TEST(JPEGImageDecoderTest, SupportedSizesTruncatedIfMemoryBound) {
         << expected_sizes[i].height() << ". Got " << sizes[i].width() << "x"
         << sizes[i].height();
   }
+}
+
+TEST(JPEGImageDecoderTest, SupportedScaleNumeratorBound) {
+  auto numerator_default = JPEGImageDecoder::DesiredScaleNumerator(10, 9, 8);
+  ASSERT_EQ(numerator_default, static_cast<unsigned>(8));
+
+  auto numerator_normal =
+      JPEGImageDecoder::DesiredScaleNumerator(1024, 2048, 8);
+  ASSERT_EQ(numerator_normal, static_cast<unsigned>(5));
+
+  auto numerator_overflow =
+      JPEGImageDecoder::DesiredScaleNumerator(0x4000000, 0x4100000, 8);
+  ASSERT_EQ(numerator_overflow, static_cast<unsigned>(7));
 }
 
 struct ColorSpaceTestParam {

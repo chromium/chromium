@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
@@ -129,6 +128,9 @@ class RequestCoordinator : public KeyedService,
                      std::unique_ptr<Scheduler> scheduler,
                      network::NetworkQualityTracker* network_quality_tracker,
                      std::unique_ptr<ActiveTabInfo> active_tab_info);
+
+  RequestCoordinator(const RequestCoordinator&) = delete;
+  RequestCoordinator& operator=(const RequestCoordinator&) = delete;
 
   ~RequestCoordinator() override;
 
@@ -505,8 +507,6 @@ class RequestCoordinator : public KeyedService,
   std::unique_ptr<ActiveTabInfo> active_tab_info_;
   // Allows us to pass a weak pointer to callbacks.
   base::WeakPtrFactory<RequestCoordinator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RequestCoordinator);
 };
 
 }  // namespace offline_pages

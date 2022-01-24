@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <memory>
 
-#include "base/macros.h"
-
 #include "net/third_party/quiche/src/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quic/core/quic_packet_writer.h"
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
@@ -48,6 +46,11 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
       std::unique_ptr<AsyncPacketSender> async_packet_sender,
       Delegate* delegate,
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
+
+  NetworkServiceQuicPacketWriter(const NetworkServiceQuicPacketWriter&) =
+      delete;
+  NetworkServiceQuicPacketWriter& operator=(
+      const NetworkServiceQuicPacketWriter&) = delete;
 
   ~NetworkServiceQuicPacketWriter() override;
 
@@ -112,7 +115,6 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
   bool writable_ = true;
 
   base::WeakPtrFactory<NetworkServiceQuicPacketWriter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceQuicPacketWriter);
 };
 
 }  // namespace media_router

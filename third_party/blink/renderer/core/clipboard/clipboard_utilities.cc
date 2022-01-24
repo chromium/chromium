@@ -105,29 +105,4 @@ String PNGToImageMarkup(const mojo_base::BigBuffer& png_data) {
   return markup.ToString();
 }
 
-// TODO(crbug.com/1223849): Remove this method once `ReadImage()` is removed.
-String BitmapToImageMarkup(const SkBitmap& bitmap) {
-  if (bitmap.isNull())
-    return String();
-
-  // Encode bitmap to Vector<uint8_t> on the main thread.
-  SkPixmap pixmap;
-  bitmap.peekPixels(&pixmap);
-
-  // Set encoding options to favor speed over size.
-  SkPngEncoder::Options options;
-  options.fZLibLevel = 1;
-  options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
-
-  Vector<uint8_t> png_data;
-  if (!ImageEncoder::Encode(&png_data, pixmap, options))
-    return String();
-
-  StringBuilder markup;
-  markup.Append("<img src=\"data:image/png;base64,");
-  markup.Append(Base64Encode(png_data));
-  markup.Append("\" alt=\"\"/>");
-  return markup.ToString();
-}
-
 }  // namespace blink

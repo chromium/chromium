@@ -18,18 +18,17 @@ class StyleRuleTest : public PageTestBase {};
 // Note that this test can be removed when the CSSScrollTimeline flag is
 // removed.
 TEST_F(StyleRuleTest, StyleRuleScrollTimelineGettersWithoutFeature) {
-  ScopedCSSScrollTimelineForTest scoped_feature(false);
+  ScopedCSSScrollTimelineForTest scoped_disable_feature(false);
 
   StyleRuleBase* base_rule = nullptr;
 
   {
-    ScopedCSSScrollTimelineForTest scoped_feature(true);
+    ScopedCSSScrollTimelineForTest scoped_enable_feature(true);
     base_rule = css_test_helpers::ParseRule(GetDocument(), R"CSS(
         @scroll-timeline timeline {
           source: selector(#foo);
           start: 1px;
           end: 2px;
-          time-range: 10s;
         }
       )CSS");
   }
@@ -42,7 +41,6 @@ TEST_F(StyleRuleTest, StyleRuleScrollTimelineGettersWithoutFeature) {
   EXPECT_TRUE(rule->GetSource());
   EXPECT_TRUE(rule->GetStart());
   EXPECT_TRUE(rule->GetEnd());
-  EXPECT_TRUE(rule->GetTimeRange());
 }
 
 TEST_F(StyleRuleTest, StyleRuleScrollTimelineCopy) {
@@ -53,7 +51,6 @@ TEST_F(StyleRuleTest, StyleRuleScrollTimelineCopy) {
         source: selector(#foo);
         start: 1px;
         end: 2px;
-        time-range: 10s;
       }
     )CSS");
 
@@ -74,7 +71,6 @@ TEST_F(StyleRuleTest, StyleRuleScrollTimelineCopy) {
   EXPECT_EQ(rule->GetOrientation(), copy->GetOrientation());
   EXPECT_EQ(rule->GetStart(), copy->GetStart());
   EXPECT_EQ(rule->GetEnd(), copy->GetEnd());
-  EXPECT_EQ(rule->GetTimeRange(), copy->GetTimeRange());
 }
 
 TEST_F(StyleRuleTest, StyleRulePropertyCopy) {

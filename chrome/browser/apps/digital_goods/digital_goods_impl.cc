@@ -45,8 +45,9 @@ void DigitalGoodsImpl::GetDetails(const std::vector<std::string>& item_ids,
     return;
   }
 
-  const std::string package_name = apps::GetTwaPackageName(render_frame_host_);
-  const std::string scope = apps::GetScope(render_frame_host_);
+  const std::string package_name =
+      apps::GetTwaPackageName(&render_frame_host());
+  const std::string scope = apps::GetScope(&render_frame_host());
   if (package_name.empty() || scope.empty()) {
     LogErrorState(package_name, scope);
     std::move(callback).Run(
@@ -70,8 +71,9 @@ void DigitalGoodsImpl::Acknowledge(const std::string& purchase_token,
     return;
   }
 
-  const std::string package_name = apps::GetTwaPackageName(render_frame_host_);
-  const std::string scope = apps::GetScope(render_frame_host_);
+  const std::string package_name =
+      apps::GetTwaPackageName(&render_frame_host());
+  const std::string scope = apps::GetScope(&render_frame_host());
   if (package_name.empty() || scope.empty()) {
     LogErrorState(package_name, scope);
     std::move(callback).Run(
@@ -93,8 +95,9 @@ void DigitalGoodsImpl::ListPurchases(ListPurchasesCallback callback) {
     return;
   }
 
-  const std::string package_name = apps::GetTwaPackageName(render_frame_host_);
-  const std::string scope = apps::GetScope(render_frame_host_);
+  const std::string package_name =
+      apps::GetTwaPackageName(&render_frame_host());
+  const std::string scope = apps::GetScope(&render_frame_host());
   if (package_name.empty() || scope.empty()) {
     LogErrorState(package_name, scope);
     std::move(callback).Run(
@@ -108,14 +111,14 @@ void DigitalGoodsImpl::ListPurchases(ListPurchasesCallback callback) {
 }
 
 // Private methods:
-DigitalGoodsImpl::DigitalGoodsImpl(content::RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host), receiver_(this) {}
+DigitalGoodsImpl::DigitalGoodsImpl(content::RenderFrameHost* rfh)
+    : content::DocumentUserData<DigitalGoodsImpl>(rfh), receiver_(this) {}
 
 arc::ArcDigitalGoodsBridge* DigitalGoodsImpl::GetArcDigitalGoodsBridge() {
   return arc::ArcDigitalGoodsBridge::GetForBrowserContext(
-      render_frame_host_->GetBrowserContext());
+      render_frame_host().GetBrowserContext());
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DigitalGoodsImpl)
+DOCUMENT_USER_DATA_KEY_IMPL(DigitalGoodsImpl);
 
 }  // namespace apps

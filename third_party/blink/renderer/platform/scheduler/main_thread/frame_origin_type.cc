@@ -30,8 +30,6 @@ const char* FrameOriginTypeToString(FrameOriginType origin) {
       return "same-origin-to-main-frame";
     case FrameOriginType::kCrossOriginToMainFrame:
       return "cross-origin-to-main-frame";
-    case FrameOriginType::kCount:
-      NOTREACHED();
   }
   NOTREACHED();
   return nullptr;

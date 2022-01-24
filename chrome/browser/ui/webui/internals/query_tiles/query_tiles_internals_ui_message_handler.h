@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_INTERNALS_QUERY_TILES_QUERY_TILES_INTERNALS_UI_MESSAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_INTERNALS_QUERY_TILES_QUERY_TILES_INTERNALS_UI_MESSAGE_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/query_tiles/logger.h"

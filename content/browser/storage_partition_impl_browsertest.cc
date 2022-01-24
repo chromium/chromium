@@ -60,6 +60,9 @@ class ClientCertBrowserClient : public ContentBrowserClient {
       : select_certificate_callback_(std::move(select_certificate_callback)),
         delete_delegate_callback_(std::move(delete_delegate_callback)) {}
 
+  ClientCertBrowserClient(const ClientCertBrowserClient&) = delete;
+  ClientCertBrowserClient& operator=(const ClientCertBrowserClient&) = delete;
+
   ~ClientCertBrowserClient() override = default;
 
   // Returns a cancellation callback for the imaginary client certificate
@@ -84,7 +87,6 @@ class ClientCertBrowserClient : public ContentBrowserClient {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::OnceClosure select_certificate_callback_;
   base::OnceClosure delete_delegate_callback_;
-  DISALLOW_COPY_AND_ASSIGN(ClientCertBrowserClient);
 };
 
 class ClientCertBrowserTest : public ContentBrowserTest {

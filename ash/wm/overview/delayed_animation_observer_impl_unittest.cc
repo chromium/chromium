@@ -16,7 +16,7 @@
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ash {
 
@@ -25,6 +25,9 @@ namespace {
 class TestOverviewDelegate : public OverviewDelegate {
  public:
   TestOverviewDelegate() = default;
+
+  TestOverviewDelegate(const TestOverviewDelegate&) = delete;
+  TestOverviewDelegate& operator=(const TestOverviewDelegate&) = delete;
 
   ~TestOverviewDelegate() override = default;
 
@@ -54,8 +57,6 @@ class TestOverviewDelegate : public OverviewDelegate {
  private:
   std::vector<std::unique_ptr<DelayedAnimationObserver>> exit_observers_;
   std::vector<std::unique_ptr<DelayedAnimationObserver>> enter_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverviewDelegate);
 };
 
 }  // namespace
@@ -64,24 +65,24 @@ class ForceDelayObserverTest : public AshTestBase {
  public:
   ForceDelayObserverTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~ForceDelayObserverTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ForceDelayObserverTest);
+  ForceDelayObserverTest(const ForceDelayObserverTest&) = delete;
+  ForceDelayObserverTest& operator=(const ForceDelayObserverTest&) = delete;
+
+  ~ForceDelayObserverTest() override = default;
 };
 
 TEST_F(ForceDelayObserverTest, Basic) {
   TestOverviewDelegate delegate;
 
-  auto observer = std::make_unique<ForceDelayObserver>(
-      base::TimeDelta::FromMilliseconds(100));
+  auto observer = std::make_unique<ForceDelayObserver>(base::Milliseconds(100));
   delegate.AddEnterAnimationObserver(std::move(observer));
   EXPECT_EQ(1u, delegate.num_enter_observers());
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
+  task_environment()->FastForwardBy(base::Milliseconds(50));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, delegate.num_enter_observers());
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(55));
+  task_environment()->FastForwardBy(base::Milliseconds(55));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, delegate.num_enter_observers());
 }
@@ -96,8 +97,7 @@ TEST_F(EnterAnimationObserverTest, Basic) {
   {
     ui::ScopedLayerAnimationSettings animation_settings(
         window->layer()->GetAnimator());
-    animation_settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(1000));
+    animation_settings.SetTransitionDuration(base::Milliseconds(1000));
     animation_settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
@@ -124,8 +124,7 @@ TEST_F(ExitAnimationObserverTest, Basic) {
   {
     ui::ScopedLayerAnimationSettings animation_settings(
         window->layer()->GetAnimator());
-    animation_settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(1000));
+    animation_settings.SetTransitionDuration(base::Milliseconds(1000));
     animation_settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 

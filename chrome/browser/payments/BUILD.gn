@@ -30,7 +30,6 @@ source_set("browser_tests") {
     "payment_request_app_store_billing_browsertest.cc",
     "payment_request_can_make_payment_browsertest.cc",
     "payment_request_can_make_payment_event_browsertest.cc",
-    "payment_request_minimal_ui_browsertest.cc",
     "payment_request_security_policy_browsertest.cc",
     "sec_fetch_site_browsertest.cc",
     "secure_payment_confirmation_browsertest.cc",
@@ -54,10 +53,7 @@ source_set("browser_tests") {
   ]
 
   if (is_android) {
-    sources += [
-      "expandable_payment_handler_browsertest.cc",
-      "hybrid_request_skip_ui_browsertest.cc",
-    ]
+    sources += [ "expandable_payment_handler_browsertest.cc" ]
     deps += [ "//components/payments/content/android" ]
   }
 

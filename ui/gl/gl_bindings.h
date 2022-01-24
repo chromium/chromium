@@ -222,6 +222,9 @@ struct XVisualInfo;
 // GL_OES_compressed_ETC1_RGB8_texture
 #define GL_ETC1_RGB8_OES                                 0x8D64
 
+// GL_OES_compressed_ETC2_RGB8_texture
+#define GL_COMPRESSED_RGB8_ETC2 0x9274
+
 // GL_AMD_compressed_ATC_texture
 #define GL_ATC_RGB_AMD                                   0x8C92
 #define GL_ATC_RGBA_EXPLICIT_ALPHA_AMD                   0x8C93

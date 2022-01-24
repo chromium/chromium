@@ -9,7 +9,6 @@
 #include <queue>
 #include <string>
 
-#include "base/macros.h"
 #include "components/arc/mojom/screen_capture.mojom.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "gpu/command_buffer/client/gl_helper.h"
@@ -52,6 +51,9 @@ class ArcScreenCaptureSession : public mojom::ScreenCaptureSession,
       content::DesktopMediaID desktop_id,
       const gfx::Size& size,
       bool enable_notification);
+
+  ArcScreenCaptureSession(const ArcScreenCaptureSession&) = delete;
+  ArcScreenCaptureSession& operator=(const ArcScreenCaptureSession&) = delete;
 
   // Implements mojo::ScreenCaptureSession interface.
   void SetOutputBuffer(mojo::ScopedHandle graphics_buffer,
@@ -116,8 +118,6 @@ class ArcScreenCaptureSession : public mojom::ScreenCaptureSession,
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 
   base::WeakPtrFactory<ArcScreenCaptureSession> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcScreenCaptureSession);
 };
 
 }  // namespace arc

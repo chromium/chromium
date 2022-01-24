@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace permissions {
 
 // Subclass ChooserController to implement a chooser, which has some
@@ -22,6 +20,10 @@ namespace permissions {
 class ChooserController {
  public:
   explicit ChooserController(std::u16string title);
+
+  ChooserController(const ChooserController&) = delete;
+  ChooserController& operator=(const ChooserController&) = delete;
+
   virtual ~ChooserController();
 
   // Since the set of options can change while the UI is visible an
@@ -174,8 +176,6 @@ class ChooserController {
  private:
   std::u16string title_;
   View* view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ChooserController);
 };
 
 }  // namespace permissions

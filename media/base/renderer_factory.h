@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 #include "media/base/media_resource.h"
@@ -29,6 +28,10 @@ class VideoRendererSink;
 class MEDIA_EXPORT RendererFactory {
  public:
   RendererFactory();
+
+  RendererFactory(const RendererFactory&) = delete;
+  RendererFactory& operator=(const RendererFactory&) = delete;
+
   virtual ~RendererFactory();
 
   // Creates and returns a Renderer. All methods of the created Renderer except
@@ -48,9 +51,6 @@ class MEDIA_EXPORT RendererFactory {
   // created by this factory.
   // NOTE: Returns Type::STREAM by default.
   virtual MediaResource::Type GetRequiredMediaResourceType();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RendererFactory);
 };
 
 }  // namespace media

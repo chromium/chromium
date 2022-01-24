@@ -67,7 +67,6 @@ static_library("model") {
     "syncable_service.h",
     "syncable_service_based_bridge.cc",
     "syncable_service_based_bridge.h",
-    "time.h",
     "type_entities_count.h",
   ]
 

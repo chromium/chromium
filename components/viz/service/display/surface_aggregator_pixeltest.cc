@@ -38,7 +38,7 @@ constexpr bool kIsChildRoot = false;
 class SurfaceAggregatorPixelTest : public VizPixelTestWithParam {
  public:
   SurfaceAggregatorPixelTest()
-      : manager_(&shared_bitmap_manager_),
+      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         support_(std::make_unique<CompositorFrameSinkSupport>(
             nullptr,
             &manager_,
@@ -57,8 +57,7 @@ class SurfaceAggregatorPixelTest : public VizPixelTestWithParam {
   FrameSinkManagerImpl manager_;
   ParentLocalSurfaceIdAllocator root_allocator_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
-  base::TimeTicks next_display_time_ =
-      base::TimeTicks() + base::TimeDelta::FromSeconds(1);
+  base::TimeTicks next_display_time_ = base::TimeTicks() + base::Seconds(1);
 };
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -18,6 +18,7 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/security_event_specifics.pb.h"
 
 namespace {
 

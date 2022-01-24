@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -47,6 +46,9 @@ class ErrorReporterTest : public ::testing::Test {
     X25519_public_from_private(server_public_key_, server_private_key_);
   }
 
+  ErrorReporterTest(const ErrorReporterTest&) = delete;
+  ErrorReporterTest& operator=(const ErrorReporterTest&) = delete;
+
   ~ErrorReporterTest() override {}
 
  protected:
@@ -57,8 +59,6 @@ class ErrorReporterTest : public ::testing::Test {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorReporterTest);
 };
 
 // Test that ErrorReporter::SendExtendedReportingReport sends

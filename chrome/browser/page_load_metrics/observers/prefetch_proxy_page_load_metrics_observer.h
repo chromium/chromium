@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -16,7 +15,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "net/cookies/canonical_cookie.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,6 +30,12 @@ class PrefetchProxyPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   PrefetchProxyPageLoadMetricsObserver();
+
+  PrefetchProxyPageLoadMetricsObserver(
+      const PrefetchProxyPageLoadMetricsObserver&) = delete;
+  PrefetchProxyPageLoadMetricsObserver& operator=(
+      const PrefetchProxyPageLoadMetricsObserver&) = delete;
+
   ~PrefetchProxyPageLoadMetricsObserver() override;
 
  protected:
@@ -71,7 +75,7 @@ class PrefetchProxyPageLoadMetricsObserver
       content::RenderFrameHost* rfh,
       const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
           resources) override;
-  void OnEventOccurred(page_load_metrics::PageLoadMetricsEvent event) override;
+  void OnPrefetchLikely() override;
 
   // The time that the navigation started. Used to timebox the history service
   // query on commit.
@@ -100,8 +104,6 @@ class PrefetchProxyPageLoadMetricsObserver
 
   base::WeakPtrFactory<PrefetchProxyPageLoadMetricsObserver> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchProxyPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREFETCH_PROXY_PAGE_LOAD_METRICS_OBSERVER_H_

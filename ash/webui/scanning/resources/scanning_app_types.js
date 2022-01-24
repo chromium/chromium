@@ -17,6 +17,8 @@ export const AppState = {
   CANCELING: 7,
   NO_SCANNERS: 8,
   MULTI_PAGE_NEXT_ACTION: 9,
+  MULTI_PAGE_SCANNING: 10,
+  MULTI_PAGE_CANCELING: 11,
 };
 
 /**
@@ -65,6 +67,7 @@ export let ScannerInfo;
  *   colorMode: ash.scanning.mojom.ColorMode,
  *   pageSize: ash.scanning.mojom.PageSize,
  *   resolutionDpi: number,
+ *   multiPageScanChecked: boolean,
  * }}
  */
 export let ScannerSetting;
@@ -77,3 +80,14 @@ export let ScannerSetting;
  * }}
  */
 export let ScanSettings;
+
+/**
+ * @typedef {{controller:
+                     ?ash.scanning.mojom.MultiPageScanControllerRemote}}
+ */
+export let StartMultiPageScanResponse;
+
+/**
+ * @typedef {!ash.common.mojom.ForceHiddenElementsVisibleObserverInterface}
+ */
+export let ForceHiddenElementsVisibleObserverInterface;

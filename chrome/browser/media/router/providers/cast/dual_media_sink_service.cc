@@ -47,6 +47,9 @@ MediaSinkServiceBase* DualMediaSinkService::GetCastMediaSinkServiceImpl() {
 base::CallbackListSubscription DualMediaSinkService::AddSinksDiscoveredCallback(
     const OnSinksDiscoveredProviderCallback& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& provider_and_sinks : current_sinks_) {
+    callback.Run(provider_and_sinks.first, provider_and_sinks.second);
+  }
   return sinks_discovered_callbacks_.Add(callback);
 }
 
@@ -72,25 +75,24 @@ bool DualMediaSinkService::MdnsDiscoveryStarted() {
 }
 
 DualMediaSinkService::DualMediaSinkService() {
-  dial_media_sink_service_ = std::make_unique<DialMediaSinkService>();
-  dial_media_sink_service_->Start(
-      base::BindRepeating(&DualMediaSinkService::OnSinksDiscovered,
-                          base::Unretained(this), "dial"));
+  if (DialMediaRouteProviderEnabled()) {
+    dial_media_sink_service_ = std::make_unique<DialMediaSinkService>();
+    dial_media_sink_service_->Start(
+        base::BindRepeating(&DualMediaSinkService::OnSinksDiscovered,
+                            base::Unretained(this), "dial"));
+  }
 
   cast_media_sink_service_ = std::make_unique<CastMediaSinkService>();
   cast_media_sink_service_->Start(
       base::BindRepeating(&DualMediaSinkService::OnSinksDiscovered,
                           base::Unretained(this), "cast"),
-      dial_media_sink_service_->impl());
+      dial_media_sink_service_ ? dial_media_sink_service_->impl() : nullptr);
 
-  if (CastMediaRouteProviderEnabled()) {
-    cast_channel::CastSocketService* cast_socket_service =
-        cast_channel::CastSocketService::GetInstance();
-    cast_app_discovery_service_ = std::make_unique<CastAppDiscoveryServiceImpl>(
-        GetCastMessageHandler(), cast_socket_service,
-        cast_media_sink_service_->impl(),
-        base::DefaultTickClock::GetInstance());
-  }
+  cast_channel::CastSocketService* cast_socket_service =
+      cast_channel::CastSocketService::GetInstance();
+  cast_app_discovery_service_ = std::make_unique<CastAppDiscoveryServiceImpl>(
+      GetCastMessageHandler(), cast_socket_service,
+      cast_media_sink_service_->impl(), base::DefaultTickClock::GetInstance());
 }
 
 DualMediaSinkService::DualMediaSinkService(
@@ -119,11 +121,12 @@ void DualMediaSinkService::BindLogger(LoggerImpl* logger_impl) {
   logger_is_bound_ = true;
   cast_media_sink_service_->BindLogger(logger_impl);
 
-  mojo::PendingRemote<mojom::Logger> dial_pending_remote;
-  logger_impl->Bind(dial_pending_remote.InitWithNewPipeAndPassReceiver());
-  dial_media_sink_service_->BindLogger(std::move(dial_pending_remote));
-  if (!CastMediaRouteProviderEnabled())
-    return;
+  if (dial_media_sink_service_) {
+    mojo::PendingRemote<mojom::Logger> dial_pending_remote;
+    logger_impl->Bind(dial_pending_remote.InitWithNewPipeAndPassReceiver());
+    dial_media_sink_service_->BindLogger(std::move(dial_pending_remote));
+  }
+
   mojo::PendingRemote<mojom::Logger> cast_discovery_pending_remote;
   logger_impl->Bind(
       cast_discovery_pending_remote.InitWithNewPipeAndPassReceiver());

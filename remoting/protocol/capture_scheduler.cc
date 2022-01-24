@@ -49,8 +49,7 @@ CaptureScheduler::CaptureScheduler(
     : capture_closure_(capture_closure),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       capture_timer_(new base::OneShotTimer()),
-      minimum_interval_(
-          base::TimeDelta::FromMilliseconds(kDefaultMinimumIntervalMs)),
+      minimum_interval_(base::Milliseconds(kDefaultMinimumIntervalMs)),
       num_of_processors_(base::SysInfo::NumberOfProcessors()),
       capture_time_(kStatisticsWindow),
       encode_time_(kStatisticsWindow),
@@ -158,11 +157,10 @@ void CaptureScheduler::ScheduleNextCapture() {
   // Delay by an amount chosen such that if capture and encode times
   // continue to follow the averages, then we'll consume the target
   // fraction of CPU across all cores.
-  base::TimeDelta delay =
-      std::max(minimum_interval_,
-               base::TimeDelta::FromMilliseconds(
-                   (capture_time_.Average() + encode_time_.Average()) /
-                   (kRecordingCpuConsumption * num_of_processors_)));
+  base::TimeDelta delay = std::max(
+      minimum_interval_,
+      base::Milliseconds((capture_time_.Average() + encode_time_.Average()) /
+                         (kRecordingCpuConsumption * num_of_processors_)));
 
   // Account for the time that has passed since the last capture.
   delay = std::max(base::TimeDelta(), delay - (tick_clock_->NowTicks() -

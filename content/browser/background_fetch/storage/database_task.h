@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
@@ -71,6 +70,9 @@ class DatabaseTask : public DatabaseTaskHost {
   using IsQuotaAvailableCallback = base::OnceCallback<void(bool is_available)>;
   using StorageVersionCallback =
       base::OnceCallback<void(proto::BackgroundFetchStorageVersion)>;
+
+  DatabaseTask(const DatabaseTask&) = delete;
+  DatabaseTask& operator=(const DatabaseTask&) = delete;
 
   ~DatabaseTask() override;
 
@@ -175,8 +177,6 @@ class DatabaseTask : public DatabaseTaskHost {
       cache_storage_cache_remote_;
 
   base::WeakPtrFactory<DatabaseTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseTask);
 };
 
 }  // namespace background_fetch

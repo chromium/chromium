@@ -15,11 +15,10 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "media/gpu/chromeos/image_processor.h"
@@ -43,6 +42,11 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
     : public VideoEncodeAccelerator {
  public:
   explicit V4L2VideoEncodeAccelerator(scoped_refptr<V4L2Device> device);
+
+  V4L2VideoEncodeAccelerator(const V4L2VideoEncodeAccelerator&) = delete;
+  V4L2VideoEncodeAccelerator& operator=(const V4L2VideoEncodeAccelerator&) =
+      delete;
+
   ~V4L2VideoEncodeAccelerator() override;
 
   // VideoEncodeAccelerator implementation.
@@ -360,8 +364,6 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // |encoder_task_runner_|.
   base::WeakPtr<V4L2VideoEncodeAccelerator> weak_this_;
   base::WeakPtrFactory<V4L2VideoEncodeAccelerator> weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2VideoEncodeAccelerator);
 };
 
 }  // namespace media

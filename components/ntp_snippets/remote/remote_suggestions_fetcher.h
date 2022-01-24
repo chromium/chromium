@@ -6,7 +6,6 @@
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_FETCHER_H_
 
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "components/ntp_snippets/category.h"

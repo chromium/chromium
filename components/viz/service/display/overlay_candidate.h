@@ -22,8 +22,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
-#include "ui/gfx/transform.h"
 
 namespace gfx {
 class Rect;
@@ -94,6 +96,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
   // ColorSpace of the buffer for scanout.
   gfx::ColorSpace color_space;
+  // Optional HDR Metadata for the buffer.
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
   // Size of the resource, in pixels.
   gfx::Size resource_size_in_pixels;
   // Rect on the display to position the overlay to. Implementer must convert
@@ -141,16 +145,15 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // is an estimate when 'EstimateOccludedDamage' function is used.
   int damage_area_estimate = 0;
 
+  // Rect indicating damage for this candidate's quad.
+  gfx::RectF damage_rect;
+
   static constexpr uint32_t kInvalidDamageIndex = UINT_MAX;
   // Damage index for |SurfaceDamageRectList|.
   uint32_t overlay_damage_index = kInvalidDamageIndex;
 
   // Is true if an HW overlay is required for the quad content.
   bool requires_overlay = false;
-
-  // Identifier passed through by the video decoder that allows us to validate
-  // if a protected surface can still be displayed. Non-zero when valid.
-  uint32_t hw_protected_validation_id = 0;
 
   // for solid color quads only
   absl::optional<SkColor> solid_color;
@@ -171,6 +174,12 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // AggregateRenderPassDrawQuad, TileDrawQuad, SolidColorDrawQuad. A delegate
   // context must support non opaque opacity for these types.
   float opacity = 1.0f;
+
+  // Hints for overlay prioritization when delegated composition is used.
+  gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
+
+  // Specifies the rounded corners of overlay candidate.
+  gfx::RRectF rounded_corners;
 
  private:
   static bool FromDrawQuadResource(
@@ -217,6 +226,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                                 OverlayCandidate* candidate);
   static void HandleClipAndSubsampling(OverlayCandidate* candidate,
                                        const gfx::RectF& primary_rect);
+  static void AssignDamage(const DrawQuad* quad,
+                           SurfaceDamageRectList* surface_damage_rect_list,
+                           OverlayCandidate* candidate);
 };
 
 using OverlayCandidateList = std::vector<OverlayCandidate>;

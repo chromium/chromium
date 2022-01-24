@@ -213,8 +213,5 @@ public class ShareRegistrationCoordinator {
                         entry.getTitle(), entry.getTimestamp(), bottomSheetController,
                         new SettingsLauncherImpl(), isSyncEnabled),
                 true);
-        // TODO(crbug.com/968246): Remove the need to call this explicitly and instead have it
-        // automatically show since PeekStateEnabled is set to false.
-        bottomSheetController.expandSheet();
     }
 }

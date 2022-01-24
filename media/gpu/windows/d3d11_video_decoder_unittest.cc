@@ -12,7 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -83,6 +83,10 @@ class D3D11VideoDecoderTest : public ::testing::Test {
     ON_CALL(*mock_d3d11_device_.Get(), QueryInterface(IID_ID3D11VideoDevice, _))
         .WillByDefault(
             SetComPointeeAndReturnOk<1>(mock_d3d11_video_device_.Get()));
+
+    mock_multithreaded_ = MakeComPtr<NiceMock<D3D11MultithreadMock>>();
+    ON_CALL(*mock_d3d11_device_.Get(), QueryInterface(IID_ID3D11Multithread, _))
+        .WillByDefault(SetComPointeeAndReturnOk<1>(mock_multithreaded_.Get()));
 
     EnableDecoder(D3D11_DECODER_PROFILE_H264_VLD_NOFGT);
 
@@ -238,6 +242,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
 
   Microsoft::WRL::ComPtr<D3D11DeviceMock> mock_d3d11_device_;
   Microsoft::WRL::ComPtr<D3D11DeviceContextMock> mock_d3d11_device_context_;
+  Microsoft::WRL::ComPtr<D3D11MultithreadMock> mock_multithreaded_;
   Microsoft::WRL::ComPtr<D3D11VideoDeviceMock> mock_d3d11_video_device_;
   Microsoft::WRL::ComPtr<D3D11VideoDecoderMock> mock_d3d11_video_decoder_;
   Microsoft::WRL::ComPtr<D3D11VideoContextMock> mock_d3d11_video_context_;
@@ -254,8 +259,8 @@ class D3D11VideoDecoderTest : public ::testing::Test {
 };
 
 TEST_F(D3D11VideoDecoderTest, SupportsVP9Profile0WithDecoderEnabled) {
-  VideoDecoderConfig configuration =
-      TestVideoConfig::NormalCodecProfile(kCodecVP9, VP9PROFILE_PROFILE0);
+  VideoDecoderConfig configuration = TestVideoConfig::NormalCodecProfile(
+      VideoCodec::kVP9, VP9PROFILE_PROFILE0);
 
   EnableDecoder(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0);
   CreateDecoder();
@@ -269,8 +274,8 @@ TEST_F(D3D11VideoDecoderTest, SupportsVP9Profile0WithDecoderEnabled) {
 
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithLegacyGPU) {
   SetGPUProfile(LegacyIntelGPU);
-  VideoDecoderConfig configuration =
-      TestVideoConfig::NormalCodecProfile(kCodecVP9, VP9PROFILE_PROFILE0);
+  VideoDecoderConfig configuration = TestVideoConfig::NormalCodecProfile(
+      VideoCodec::kVP9, VP9PROFILE_PROFILE0);
 
   EnableDecoder(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0);
   CreateDecoder();
@@ -279,8 +284,8 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithLegacyGPU) {
 
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithGPUWorkaroundDisableVPX) {
   gpu_workarounds_.disable_accelerated_vp9_decode = true;
-  VideoDecoderConfig configuration =
-      TestVideoConfig::NormalCodecProfile(kCodecVP9, VP9PROFILE_PROFILE0);
+  VideoDecoderConfig configuration = TestVideoConfig::NormalCodecProfile(
+      VideoCodec::kVP9, VP9PROFILE_PROFILE0);
 
   EnableDecoder(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0);
   CreateDecoder();
@@ -288,8 +293,8 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithGPUWorkaroundDisableVPX) {
 }
 
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithoutDecoderEnabled) {
-  VideoDecoderConfig configuration =
-      TestVideoConfig::NormalCodecProfile(kCodecVP9, VP9PROFILE_PROFILE0);
+  VideoDecoderConfig configuration = TestVideoConfig::NormalCodecProfile(
+      VideoCodec::kVP9, VP9PROFILE_PROFILE0);
 
   // Enable a non-VP9 decoder.
   EnableDecoder(D3D11_DECODER_PROFILE_H264_VLD_NOFGT);  // Paranoia, not VP9.
@@ -301,7 +306,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportsH264HIGH10Profile) {
   CreateDecoder();
 
   VideoDecoderConfig high10 = TestVideoConfig::NormalCodecProfile(
-      kCodecH264, H264PROFILE_HIGH10PROFILE);
+      VideoCodec::kH264, H264PROFILE_HIGH10PROFILE);
 
   InitializeDecoder(high10, false);
 }
@@ -310,7 +315,7 @@ TEST_F(D3D11VideoDecoderTest, SupportsH264WithAutodetectedConfig) {
   CreateDecoder();
 
   VideoDecoderConfig normal =
-      TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN);
+      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN);
 
   InitializeDecoder(normal, true);
   // TODO(liberato): Check |last_video_decoder_desc_| for sanity.
@@ -328,7 +333,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportH264IfNoSupportedConfig) {
   CreateDecoder(empty_configs);
 
   VideoDecoderConfig normal =
-      TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN);
+      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN);
 
   InitializeDecoder(normal, false);
 }
@@ -336,7 +341,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportH264IfNoSupportedConfig) {
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptedConfig) {
   CreateDecoder();
   VideoDecoderConfig encrypted_config =
-      TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN);
+      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN);
   encrypted_config.SetIsEncrypted(true);
   InitializeDecoder(encrypted_config, false);
 }
@@ -348,7 +353,8 @@ TEST_F(D3D11VideoDecoderTest, IgnoreWorkaroundsIgnoresWorkaround) {
   gpu_workarounds_.disable_d3d11_video_decoder = true;
   CreateDecoder();
   InitializeDecoder(
-      TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN), true);
+      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN),
+      true);
 }
 
 TEST_F(D3D11VideoDecoderTest, WorkaroundTurnsOffDecoder) {
@@ -356,7 +362,8 @@ TEST_F(D3D11VideoDecoderTest, WorkaroundTurnsOffDecoder) {
   gpu_workarounds_.disable_d3d11_video_decoder = true;
   CreateDecoder();
   InitializeDecoder(
-      TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN), false);
+      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN),
+      false);
 }
 
 }  // namespace media

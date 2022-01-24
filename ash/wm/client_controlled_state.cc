@@ -305,10 +305,8 @@ bool ClientControlledState::EnterNextState(WindowState* window_state,
 
   window_state->NotifyPostStateTypeChange(previous_state_type);
 
-  if (next_state_type == WindowStateType::kPinned ||
-      previous_state_type == WindowStateType::kPinned ||
-      next_state_type == WindowStateType::kTrustedPinned ||
-      previous_state_type == WindowStateType::kTrustedPinned) {
+  if (IsPinnedWindowStateType(next_state_type) ||
+      IsPinnedWindowStateType(previous_state_type)) {
     Shell::Get()->screen_pinning_controller()->SetPinnedWindow(
         window_state->window());
   }

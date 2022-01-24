@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/tether/notification_presenter.h"
@@ -36,6 +35,11 @@ class TetherNotificationPresenter : public NotificationPresenter {
   // instance.
   TetherNotificationPresenter(Profile* profile,
                               NetworkConnect* network_connect);
+
+  TetherNotificationPresenter(const TetherNotificationPresenter&) = delete;
+  TetherNotificationPresenter& operator=(const TetherNotificationPresenter&) =
+      delete;
+
   ~TetherNotificationPresenter() override;
 
   // NotificationPresenter:
@@ -117,8 +121,6 @@ class TetherNotificationPresenter : public NotificationPresenter {
   // in the "multiple hotspots available" mode, this pointer is null.
   std::unique_ptr<std::string> hotspot_nearby_device_id_;
   base::WeakPtrFactory<TetherNotificationPresenter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TetherNotificationPresenter);
 };
 
 }  // namespace tether

@@ -95,7 +95,7 @@ class LineReader {
 
  private:
   String text_;
-  size_t index_;
+  wtf_size_t index_;
 };
 
 }  // namespace test

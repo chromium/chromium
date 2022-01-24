@@ -111,7 +111,7 @@ SyncStatusLabels SetUpDistinctCase(
           test_environment->identity_manager()->GetPrimaryAccountId(
               signin::ConsentLevel::kSync);
       test_environment->SetRefreshTokenForPrimaryAccount();
-      service->SetAuthenticatedAccountInfo(
+      service->SetAccountInfo(
           test_environment->identity_manager()->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSync));
       test_environment->UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -331,7 +331,7 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
   const AccountInfo primary_account_info =
       environment.MakePrimaryAccountAvailable(kTestUser,
                                               signin::ConsentLevel::kSync);
-  service.SetAuthenticatedAccountInfo(primary_account_info);
+  service.SetAccountInfo(primary_account_info);
   service.SetFirstSetupComplete(true);
 
   // Setup a secondary account.
@@ -386,7 +386,11 @@ TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_NotUsingPassphrase) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_OsSyncEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  // SyncConsentOptional requires SyncSettingsCategorization.
+  feature_list.InitWithFeatures(
+      {chromeos::features::kSyncSettingsCategorization,
+       chromeos::features::kSyncConsentOptional},
+      {});
   syncer::TestSyncService service;
   service.SetPassphraseRequiredForPreferredDataTypes(true);
   service.SetFirstSetupComplete(false);

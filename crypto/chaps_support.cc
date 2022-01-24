@@ -5,10 +5,12 @@
 #include "crypto/chaps_support.h"
 
 #include <dlfcn.h>
+#include <secmod.h>
 #include <secmodt.h>
 
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "crypto/scoped_nss_types.h"
 #include "nss_util_internal.h"
 
 namespace crypto {
@@ -74,6 +76,30 @@ SECMODModule* LoadChaps() {
       //   read from this slot without requiring a call to C_Login.
       // askpw=only -- Only authenticate to the token when necessary.
       "NSS=\"slotParams=(0={slotFlags=[PublicCerts] askpw=only})\"");
+}
+
+ScopedPK11Slot GetChapsSlot(SECMODModule* chaps_module, CK_SLOT_ID slot_id) {
+  DCHECK(chaps_module);
+
+  // NSS functions may reenter //net via extension hooks. If the reentered
+  // code needs to synchronously wait for a task to run but the thread pool in
+  // which that task must run doesn't have enough threads to schedule it, a
+  // deadlock occurs. To prevent that, the base::ScopedBlockingCall below
+  // increments the thread pool capacity for the duration of the TPM
+  // initialization.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  DVLOG(3) << "Poking chaps module.";
+  SECStatus rv = SECMOD_UpdateSlotList(chaps_module);
+  if (rv != SECSuccess)
+    LOG(ERROR) << "SECMOD_UpdateSlotList failed: " << PORT_GetError();
+
+  ScopedPK11Slot slot =
+      ScopedPK11Slot(SECMOD_LookupSlot(chaps_module->moduleID, slot_id));
+  if (!slot)
+    LOG(ERROR) << "TPM slot " << slot_id << " not found.";
+  return slot;
 }
 
 bool IsSlotProvidedByChaps(PK11SlotInfo* slot) {

@@ -192,9 +192,8 @@ Mp2tStreamParser::BufferQueueWithConfig::BufferQueueWithConfig(
 Mp2tStreamParser::BufferQueueWithConfig::~BufferQueueWithConfig() {
 }
 
-Mp2tStreamParser::Mp2tStreamParser(
-    const std::vector<std::string>& allowed_codecs,
-    bool sbr_in_mimetype)
+Mp2tStreamParser::Mp2tStreamParser(base::span<const std::string> allowed_codecs,
+                                   bool sbr_in_mimetype)
     : sbr_in_mimetype_(sbr_in_mimetype),
       selected_audio_pid_(-1),
       selected_video_pid_(-1),
@@ -202,13 +201,13 @@ Mp2tStreamParser::Mp2tStreamParser(
       segment_started_(false) {
   for (const std::string& codec_name : allowed_codecs) {
     switch (StringToVideoCodec(codec_name)) {
-      case VideoCodec::kCodecH264:
+      case VideoCodec::kH264:
         allowed_stream_types_.insert(kStreamTypeAVC);
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
         allowed_stream_types_.insert(kStreamTypeAVCWithSampleAES);
 #endif
         continue;
-      case VideoCodec::kUnknownVideoCodec:
+      case VideoCodec::kUnknown:
         // Probably audio.
         break;
       default:
@@ -217,17 +216,17 @@ Mp2tStreamParser::Mp2tStreamParser(
     }
 
     switch (StringToAudioCodec(codec_name)) {
-      case AudioCodec::kCodecAAC:
+      case AudioCodec::kAAC:
         allowed_stream_types_.insert(kStreamTypeAAC);
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
         allowed_stream_types_.insert(kStreamTypeAACWithSampleAES);
 #endif
         continue;
-      case AudioCodec::kCodecMP3:
+      case AudioCodec::kMP3:
         allowed_stream_types_.insert(kStreamTypeMpeg1Audio);
         allowed_stream_types_.insert(kStreamTypeMpeg2Audio);
         continue;
-      case AudioCodec::kUnknownAudioCodec:
+      case AudioCodec::kUnknown:
         // Neither audio, nor video.
         break;
       default:
@@ -240,7 +239,7 @@ Mp2tStreamParser::Mp2tStreamParser(
   }
 }
 
-Mp2tStreamParser::~Mp2tStreamParser() {}
+Mp2tStreamParser::~Mp2tStreamParser() = default;
 
 void Mp2tStreamParser::Init(
     InitCB init_cb,

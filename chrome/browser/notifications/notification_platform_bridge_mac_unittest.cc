@@ -10,7 +10,6 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/stub_notification_dispatcher_mac.h"
@@ -140,7 +139,6 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
 };
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
-  base::HistogramTester histogram_tester;
   std::unique_ptr<Notification> notification =
       CreateBanner("Title", "Context", "https://gmail.com", nullptr, nullptr);
 
@@ -158,9 +156,6 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
   EXPECT_EQ(u"gmail.com", delivered_notification->subtitle);
   EXPECT_TRUE(delivered_notification->buttons.empty());
   EXPECT_TRUE(delivered_notification->show_settings_button);
-
-  histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Banner",
-                                      /*sample=*/true, /*expected_count=*/1);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestIncognitoProfile) {
@@ -342,7 +337,6 @@ TEST_F(NotificationPlatformBridgeMacTest, TestNullProfileShutdown) {
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayAlert) {
-  base::HistogramTester histogram_tester;
   std::unique_ptr<Notification> alert =
       CreateAlert("Title", "Context", "https://gmail.com", "Button 1", nullptr);
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
@@ -351,8 +345,6 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayAlert) {
                   nullptr);
   EXPECT_EQ(0u, banner_dispatcher()->notifications().size());
   EXPECT_EQ(1u, alert_dispatcher()->notifications().size());
-  histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Alert",
-                                      /*sample=*/true, /*expected_count=*/1);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayBannerAndAlert) {

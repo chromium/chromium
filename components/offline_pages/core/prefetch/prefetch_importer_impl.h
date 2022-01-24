@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_importer.h"
 
@@ -26,6 +25,10 @@ class PrefetchImporterImpl : public PrefetchImporter {
   PrefetchImporterImpl(PrefetchDispatcher* dispatcher,
                        OfflinePageModel* context,
                        scoped_refptr<base::TaskRunner> background_task_runner);
+
+  PrefetchImporterImpl(const PrefetchImporterImpl&) = delete;
+  PrefetchImporterImpl& operator=(const PrefetchImporterImpl&) = delete;
+
   ~PrefetchImporterImpl() override;
 
   // PrefetchImporter implementation.
@@ -41,8 +44,6 @@ class PrefetchImporterImpl : public PrefetchImporter {
   scoped_refptr<base::TaskRunner> background_task_runner_;
   std::set<int64_t> outstanding_import_offline_ids_;
   base::WeakPtrFactory<PrefetchImporterImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchImporterImpl);
 };
 
 }  // namespace offline_pages

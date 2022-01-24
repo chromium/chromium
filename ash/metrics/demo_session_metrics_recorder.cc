@@ -32,7 +32,7 @@ namespace {
 using DemoModeApp = DemoSessionMetricsRecorder::DemoModeApp;
 
 // How often to sample.
-constexpr auto kSamplePeriod = base::TimeDelta::FromSeconds(1);
+constexpr auto kSamplePeriod = base::Seconds(1);
 
 // Redefining chromeos::preinstalled_web_apps::kHelpAppId as ash can't depend on
 // chrome.
@@ -42,8 +42,7 @@ constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
 // This timeout is low because demo sessions tend to be very short. If we
 // recorded samples for a full minute while the device is in between uses, we
 // would bias our measurements toward whatever app was used last.
-constexpr int kMaxPeriodsWithoutActivity =
-    base::TimeDelta::FromSeconds(15) / kSamplePeriod;
+constexpr int kMaxPeriodsWithoutActivity = base::Seconds(15) / kSamplePeriod;
 
 // Maps a Chrome app ID to a DemoModeApp value for metrics.
 DemoModeApp GetAppFromAppId(const std::string& app_id) {
@@ -60,8 +59,6 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
     return DemoModeApp::kScreensaver;
   }
 
-  if (app_id == extension_misc::kCameraAppId)
-    return DemoModeApp::kCamera;
   if (app_id == extension_misc::kChromeAppId)
     return DemoModeApp::kBrowser;
   if (app_id == extension_misc::kFilesManagerAppId)
@@ -230,6 +227,11 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
       DemoSessionMetricsRecorder* metrics_recorder)
       : metrics_recorder_(metrics_recorder) {}
 
+  ActiveAppArcPackageNameObserver(const ActiveAppArcPackageNameObserver&) =
+      delete;
+  ActiveAppArcPackageNameObserver& operator=(
+      const ActiveAppArcPackageNameObserver&) = delete;
+
   // aura::WindowObserver
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
@@ -262,8 +264,6 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
   DemoSessionMetricsRecorder* metrics_recorder_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       scoped_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveAppArcPackageNameObserver);
 };
 
 // Observes changes in a window's ArcPackageName property for the purpose of
@@ -274,6 +274,11 @@ class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
   explicit UniqueAppsLaunchedArcPackageNameObserver(
       DemoSessionMetricsRecorder* metrics_recorder)
       : metrics_recorder_(metrics_recorder) {}
+
+  UniqueAppsLaunchedArcPackageNameObserver(
+      const UniqueAppsLaunchedArcPackageNameObserver&) = delete;
+  UniqueAppsLaunchedArcPackageNameObserver& operator=(
+      const UniqueAppsLaunchedArcPackageNameObserver&) = delete;
 
   // aura::WindowObserver
   void OnWindowPropertyChanged(aura::Window* window,
@@ -307,8 +312,6 @@ class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
   DemoSessionMetricsRecorder* metrics_recorder_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UniqueAppsLaunchedArcPackageNameObserver);
 };
 
 DemoSessionMetricsRecorder::DemoSessionMetricsRecorder(

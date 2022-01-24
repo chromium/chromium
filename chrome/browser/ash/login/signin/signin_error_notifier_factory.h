@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_SIGNIN_ERROR_NOTIFIER_FACTORY_H_
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_SIGNIN_ERROR_NOTIFIER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -26,6 +25,10 @@ class SigninErrorNotifierFactory : public BrowserContextKeyedServiceFactory {
   // Returns an instance of the SigninErrorNotifierFactory singleton.
   static SigninErrorNotifierFactory* GetInstance();
 
+  SigninErrorNotifierFactory(const SigninErrorNotifierFactory&) = delete;
+  SigninErrorNotifierFactory& operator=(const SigninErrorNotifierFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<SigninErrorNotifierFactory>;
 
@@ -35,8 +38,6 @@ class SigninErrorNotifierFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninErrorNotifierFactory);
 };
 
 }  // namespace ash

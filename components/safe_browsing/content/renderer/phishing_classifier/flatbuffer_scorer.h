@@ -24,7 +24,6 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/strings/string_piece.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
@@ -54,9 +53,11 @@ class FlatBufferModelScorer : public Scorer {
       base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
       const override;
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
       base::OnceCallback<void(std::vector<double>)> callback) const override;
+#endif
 
   int model_version() const override;
   size_t max_words_per_term() const override;

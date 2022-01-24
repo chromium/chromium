@@ -65,8 +65,7 @@ void BackgroundSnapshotController::DocumentOnLoadCompletedInMainFrame() {
         base::BindOnce(
             &BackgroundSnapshotController::MaybeStartSnapshotThenStop,
             weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(
-            delay_after_document_on_load_completed_ms_));
+        base::Milliseconds(delay_after_document_on_load_completed_ms_));
 }
 
 void BackgroundSnapshotController::MaybeStartSnapshot() {

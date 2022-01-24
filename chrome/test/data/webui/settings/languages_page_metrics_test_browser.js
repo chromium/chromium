@@ -4,12 +4,12 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType, SettingsLanguagesSubpageElement} from 'chrome://settings/lazy_load.js';
+import {LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType, SettingsLanguagesSubpageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.m.js';
-import {fakeDataBind} from '../test_util.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {FakeSettingsPrivate} from './fake_settings_private.js';
@@ -63,11 +63,12 @@ suite('LanguagesPageMetricsBrowser', function() {
     return CrSettingsPrefs.initialized.then(function() {
       // Sets up test browser proxy.
       browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.instance_ = browserProxy;
+      LanguagesBrowserProxyImpl.setInstance(browserProxy);
 
       // Sets up test browser proxy.
       languageSettingsMetricsProxy = new TestLanguageSettingsMetricsProxy();
-      LanguageSettingsMetricsProxyImpl.instance_ = languageSettingsMetricsProxy;
+      LanguageSettingsMetricsProxyImpl.setInstance(
+          languageSettingsMetricsProxy);
 
       // Sets up fake languageSettingsPrivate API.
       const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();

@@ -20,13 +20,8 @@ class HasArgumentMatchContext {
   CSSSelector::RelationType GetLeftMostRelation() const;
   bool GetDepthFixed() const;
   bool GetAdjacentDistanceFixed() const;
-  bool WillNeverMatch() const;
-  bool ContainsCompoundedScopeSelector() const;
-  bool ContainsNoLeftmostScopeSelector() const;
 
  private:
-  void SetNeverMatch();
-
   // Indicate the :has argument relative type and subtree traversal scope.
   // If 'adjacent_traversal_distance_' is greater than 0, then it means that
   // it is enough to traverse the adjacent subtree at that distance.
@@ -144,18 +139,9 @@ class HasArgumentMatchContext {
   //   - Traverse the depth m elements of the distance n sibling subtree of
   //     the :has scope element. (elements at depth m of the descendant subtree
   //     of the sibling element at distance n)
-  CSSSelector::RelationType leftmost_relation_{CSSSelector::kSubSelector};
-  int adjacent_traversal_distance_{0};
-  int descendant_traversal_depth_{0};
-
-  // Indicate that the argument selector has a ':scope' in a compound which
-  // contains other simple selectors.
-  // (e.g. ':has(.a:scope .b)', ':has(.a .b:scope .c')
-  bool contains_compounded_scope_selector_{false};
-
-  // Indicate that the argument selector has a ':scope' which is not leftmost
-  // (e.g. ':has(.a :scope .b)', ':has(.a .b:scope .c)')
-  bool contains_no_leftmost_scope_selector_{false};
+  CSSSelector::RelationType leftmost_relation_;
+  int adjacent_traversal_distance_;
+  int descendant_traversal_depth_;
 
   friend class HasArgumentSubtreeIterator;
 };

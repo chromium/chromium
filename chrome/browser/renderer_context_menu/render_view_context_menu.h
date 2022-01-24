@@ -10,14 +10,16 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
+#include "chrome/browser/share/share_submenu_model.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -30,6 +32,10 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/vector2d.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/context_menu_matcher.h"
@@ -70,6 +76,10 @@ namespace ui {
 class DataTransferEndpoint;
 }
 
+namespace web_app {
+class SystemWebAppDelegate;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace policy {
 class DlpRulesManager;
@@ -79,8 +89,15 @@ class DlpRulesManager;
 class RenderViewContextMenu : public RenderViewContextMenuBase,
                               public ProtocolHandlerRegistry::Observer {
  public:
-  RenderViewContextMenu(content::RenderFrameHost* render_frame_host,
+  using ExecutePluginActionCallback =
+      base::OnceCallback<void(content::RenderFrameHost*,
+                              blink::mojom::PluginActionType)>;
+
+  RenderViewContextMenu(content::RenderFrameHost& render_frame_host,
                         const content::ContextMenuParams& params);
+
+  RenderViewContextMenu(const RenderViewContextMenu&) = delete;
+  RenderViewContextMenu& operator=(const RenderViewContextMenu&) = delete;
 
   ~RenderViewContextMenu() override;
 
@@ -100,6 +117,12 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   // menu is shown.
   static void RegisterMenuShownCallbackForTesting(
       base::OnceCallback<void(RenderViewContextMenu*)> cb);
+
+  // Register a one-time callback that will be called the next time a plugin
+  // action is executed from a given render frame.
+  void RegisterExecutePluginActionCallbackForTesting(
+      base::OnceCallback<void(content::RenderFrameHost*,
+                              blink::mojom::PluginActionType)> cb);
 
  protected:
   Profile* GetProfile() const;
@@ -208,13 +231,18 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   void AppendPasswordItems();
   void AppendPictureInPictureItem();
   void AppendSharingItems();
+#if !defined(OS_FUCHSIA)
   void AppendClickToCallItem();
+#endif
   void AppendSharedClipboardItem();
-  void AppendLensRegionSearchItem();
+  void AppendRegionSearchItem();
   void AppendQRCodeGeneratorItem(bool for_image, bool draw_icon);
 
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint(
       bool notify_if_restricted) const;
+
+  // Helper function for checking policies.
+  bool IsSaveAsItemAllowedByPolicy() const;
 
   // Command enabled query functions.
   bool IsReloadEnabled() const;
@@ -232,6 +260,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   bool IsRouteMediaEnabled() const;
   bool IsOpenLinkOTREnabled() const;
   bool IsSearchWebForEnabled() const;
+  bool IsRegionSearchEnabled() const;
 
   // Command execution functions.
   void ExecOpenWebApp();
@@ -245,7 +274,8 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   void ExecCopyLinkText();
   void ExecCopyImageAt();
   void ExecSearchLensForImage();
-  void ExecLensRegionSearch();
+  void ExecRegionSearch(int event_flags,
+                        bool is_google_default_search_provider);
   void ExecSearchWebForImage();
   void ExecLoadImage();
   void ExecPlayPause();
@@ -337,6 +367,9 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
       send_tab_to_self_sub_menu_model_;
 
+  // Sharing submenu, if present.
+  std::unique_ptr<share::ShareSubmenuModel> share_submenu_model_;
+
   // Click to call menu observer.
   std::unique_ptr<ClickToCallContextMenuObserver>
       click_to_call_context_menu_observer_;
@@ -345,10 +378,23 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   std::unique_ptr<SharedClipboardContextMenuObserver>
       shared_clipboard_context_menu_observer_;
 
-  // The type of system app (if any) associated with the WebContents we're in.
-  absl::optional<web_app::SystemAppType> system_app_type_;
+  // The system app (if any) associated with the WebContents we're in.
+  const web_app::SystemWebAppDelegate* system_app_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenu);
+  // A one-time callback that will be called the next time a plugin action is
+  // executed from a given render frame.
+  ExecutePluginActionCallback execute_plugin_action_callback_;
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Controller for Lens Region Search feature. This controller will be
+  // destroyed as soon as the RenderViewContextMenu object is destroyed. The
+  // RenderViewContextMenu is reset every time it is shown, but persists between
+  // uses so that it doesn't go out of scope before finishing work. This means
+  // that when another context menu opens, the Lens Region Search feature will
+  // close if active.
+  std::unique_ptr<lens::LensRegionSearchController>
+      lens_region_search_controller_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_H_

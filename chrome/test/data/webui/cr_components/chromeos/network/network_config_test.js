@@ -11,7 +11,7 @@
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {eventToPromise} from '../../../test_util.m.js';
+// #import {eventToPromise} from '../../../test_util.js';
 // clang-format on
 
 suite('network-config', function() {
@@ -148,6 +148,97 @@ suite('network-config', function() {
         passwordInput.fire('keypress');
         Polymer.dom.flush();
         assertFalse(!!networkConfig.error);
+      });
+    });
+  });
+
+  suite('WireGuard', function() {
+    setup(function() {
+      mojoApi_.resetForTest();
+      setNetworkType(chromeos.networkConfig.mojom.NetworkType.kVPN);
+      initNetworkConfig();
+    });
+
+    teardown(function() {
+      PolymerTest.clearBody();
+    });
+
+    test('Switch VPN Type', function() {
+      const configProperties = networkConfig.get('configProperties_');
+      networkConfig.set('vpnType_', 'OpenVPN');
+      Polymer.dom.flush();
+      assertFalse(!!configProperties.typeConfig.vpn.wireguard);
+      assertFalse(!!networkConfig.$$('#wireguard-ip-input'));
+      networkConfig.set('vpnType_', 'WireGuard');
+      Polymer.dom.flush();
+      assertFalse(!!configProperties.typeConfig.vpn.openvpn);
+      assertTrue(!!configProperties.typeConfig.vpn.wireguard);
+      assertTrue(!!networkConfig.$$('#wireguard-ip-input'));
+    });
+
+    test('Switch key config type', function() {
+      networkConfig.set('vpnType_', 'WireGuard');
+      Polymer.dom.flush();
+      assertFalse(!!networkConfig.$$('#wireguardPrivateKeyInput'));
+      networkConfig.set('wireguardKeyType_', 'UserInput');
+      return flushAsync().then(() => {
+        assertTrue(!!networkConfig.$$('#wireguardPrivateKeyInput'));
+      });
+    });
+
+    test('Enable Connect', function() {
+      networkConfig.set('vpnType_', 'WireGuard');
+      Polymer.dom.flush();
+      assertFalse(networkConfig.enableConnect);
+      networkConfig.set('ipAddressInput_', '10.10.0.1');
+      const configProperties = networkConfig.get('configProperties_');
+      configProperties.name = 'test-wireguard';
+      const peer = configProperties.typeConfig.vpn.wireguard.peers[0];
+      peer.publicKey = 'KFhwdv4+jKpSXMW6xEUVtOe4Mo8l/xOvGmshmjiHx1Y=';
+      assertFalse(networkConfig.enableConnect);
+      peer.endpoint = '192.168.66.66:32000';
+      peer.allowedIps = '0.0.0.0/0';
+      return flushAsync().then(() => {
+        assertTrue(networkConfig.enableConnect);
+      });
+    });
+  });
+
+  suite('Existing WireGuard', function() {
+    setup(function() {
+      mojoApi_.resetForTest();
+      const wg1 = OncMojo.getDefaultManagedProperties(
+          chromeos.networkConfig.mojom.NetworkType.kVPN, 'someguid', '');
+      wg1.typeProperties.vpn.type =
+          chromeos.networkConfig.mojom.VpnType.kWireGuard;
+      wg1.typeProperties.vpn.wireguard = {
+        peers: {
+          activeValue: [{
+            publicKey: 'KFhwdv4+jKpSXMW6xEUVtOe4Mo8l/xOvGmshmjiHx1Y=',
+            endpoint: '192.168.66.66:32000',
+            allowedIps: '0.0.0.0/0',
+          }]
+        }
+      };
+      wg1.staticIpConfig = {ipAddress: {activeValue: '10.10.0.1'}};
+      setNetworkConfig(wg1);
+      initNetworkConfig();
+    });
+
+    teardown(function() {
+      PolymerTest.clearBody();
+    });
+
+    test('Value Reflected', function() {
+      return flushAsync().then(() => {
+        const configProperties = networkConfig.get('configProperties_');
+        const peer = configProperties.typeConfig.vpn.wireguard.peers[0];
+        assertEquals('UseCurrent', networkConfig.wireguardKeyType_);
+        assertEquals('10.10.0.1', networkConfig.get('ipAddressInput_'));
+        assertEquals(
+            'KFhwdv4+jKpSXMW6xEUVtOe4Mo8l/xOvGmshmjiHx1Y=', peer.publicKey);
+        assertEquals('192.168.66.66:32000', peer.endpoint);
+        assertEquals('0.0.0.0/0', peer.allowedIps);
       });
     });
   });

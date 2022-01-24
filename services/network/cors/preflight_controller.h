@@ -23,6 +23,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace net {
+class NetLogWithSource;
+}  // namespace net
+
 namespace network {
 
 class NetworkService;
@@ -37,8 +41,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       void(int net_error, absl::optional<CorsErrorStatus>, bool)>;
   using WithTrustedHeaderClient =
       base::StrongAlias<class WithTrustedHeaderClientTag, bool>;
-  using WithNonWildcardRequestHeadersSupport =
-      PreflightResult::WithNonWildcardRequestHeadersSupport;
   // Creates a CORS-preflight ResourceRequest for a specified |request| for a
   // URL that is originally requested.
   static std::unique_ptr<ResourceRequest> CreatePreflightRequestForTesting(
@@ -51,8 +53,24 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const ResourceRequest& original_request,
       bool tainted,
       absl::optional<CorsErrorStatus>* detected_error_status);
+  // Checks CORS aceess on the CORS-preflight response parameters for testing.
+  static absl::optional<CorsErrorStatus> CheckPreflightAccessForTesting(
+      const GURL& response_url,
+      const int response_status_code,
+      const absl::optional<std::string>& allow_origin_header,
+      const absl::optional<std::string>& allow_credentials_header,
+      mojom::CredentialsMode actual_credentials_mode,
+      const url::Origin& origin);
+  // Checks errors for the currently experimental
+  // "Access-Control-Allow-External" header for testing.
+  static absl::optional<CorsErrorStatus> CheckExternalPreflightForTesting(
+      const absl::optional<std::string>& allow_external);
 
   explicit PreflightController(NetworkService* network_service);
+
+  PreflightController(const PreflightController&) = delete;
+  PreflightController& operator=(const PreflightController&) = delete;
+
   ~PreflightController();
 
   // Determines if a CORS-preflight request is needed, and checks the cache, or
@@ -62,13 +80,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       CompletionCallback callback,
       const ResourceRequest& resource_request,
       WithTrustedHeaderClient with_trusted_header_client,
-      WithNonWildcardRequestHeadersSupport
-          with_non_wildcard_request_headers_support,
+      NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
       bool tainted,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       mojom::URLLoaderFactory* loader_factory,
       const net::IsolationInfo& isolation_info,
-      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer);
+      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+      const net::NetLogWithSource& net_log);
 
  private:
   class PreflightLoader;
@@ -86,8 +104,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       loaders_;
 
   NetworkService* const network_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreflightController);
 };
 
 }  // namespace cors

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -16,9 +15,8 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"
@@ -33,18 +31,11 @@
 
 namespace {
 
-#if defined(USE_DBUS_MENU)
 bool CreateGlobalMenuBar() {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    return ui::OzonePlatform::GetInstance()
-        ->GetPlatformProperties()
-        .supports_global_application_menus;
-  }
-#endif
-  return true;
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .supports_global_application_menus;
 }
-#endif
 
 }  // namespace
 
@@ -69,6 +60,10 @@ BrowserDesktopWindowTreeHostLinux::BrowserDesktopWindowTreeHostLinux(
   browser_frame->set_frame_type(browser_frame->UseCustomFrame()
                                     ? views::Widget::FrameType::kForceCustom
                                     : views::Widget::FrameType::kForceNative);
+
+  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+  if (auto* linux_ui = views::LinuxUI::instance())
+    scale_observation_.Observe(linux_ui);
 }
 
 BrowserDesktopWindowTreeHostLinux::~BrowserDesktopWindowTreeHostLinux() =
@@ -89,6 +84,11 @@ int BrowserDesktopWindowTreeHostLinux::GetMinimizeButtonOffset() const {
 
 bool BrowserDesktopWindowTreeHostLinux::UsesNativeSystemMenu() const {
   return false;
+}
+
+void BrowserDesktopWindowTreeHostLinux::FrameTypeChanged() {
+  DesktopWindowTreeHostPlatform::FrameTypeChanged();
+  UpdateFrameHints();
 }
 
 bool BrowserDesktopWindowTreeHostLinux::SupportsMouseLock() {
@@ -125,7 +125,8 @@ void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
     return;
 
   auto* x11_extension = GetX11Extension();
-  if (x11_extension && x11_extension->IsWmTiling()) {
+  if (x11_extension && x11_extension->IsWmTiling() &&
+      x11_extension->CanResetOverrideRedirect()) {
     bool was_dragging_window =
         browser_frame_->tab_drag_kind() == TabDragKind::kAllTabs;
     bool is_dragging_window = tab_drag_kind == TabDragKind::kAllTabs;
@@ -154,19 +155,20 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
   bool showing_frame =
       browser_frame_->native_browser_frame()->UseCustomFrame() &&
       !view->IsFrameCondensed();
+  const gfx::Size widget_size =
+      view->GetWidget()->GetWindowBoundsInScreen().size();
 
   if (SupportsClientFrameShadow()) {
     // Set the frame decoration insets.
     auto insets = layout->MirroredFrameBorderInsets();
-    window->SetDecorationInsets(showing_frame
-                                    ? gfx::ScaleToCeiledInsets(insets, scale)
-                                    : gfx::Insets());
+    auto insets_px = gfx::ScaleToCeiledInsets(insets, scale);
+    window->SetDecorationInsets(showing_frame ? &insets_px : nullptr);
 
     // Set the input region.
-    auto bounds = view->GetLocalBounds();
-    if (showing_frame)
-      bounds.Inset(insets + layout->GetInputInsets());
-    window->SetInputRegion(gfx::ScaleToEnclosingRect(bounds, scale));
+    gfx::Rect input_bounds(widget_size);
+    input_bounds.Inset(insets + layout->GetInputInsets());
+    input_bounds = gfx::ScaleToEnclosingRect(input_bounds, scale);
+    window->SetInputRegion(showing_frame ? &input_bounds : nullptr);
   }
 
   if (window->IsTranslucentWindowOpacitySupported()) {
@@ -212,13 +214,13 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
       std::vector<gfx::Rect> opaque_region;
       for (SkRegion::Iterator i(region); !i.done(); i.next())
         opaque_region.push_back(gfx::SkIRectToRect(i.rect()));
-      window->SetOpaqueRegion(opaque_region);
+      window->SetOpaqueRegion(&opaque_region);
     } else {
-      gfx::RectF bounds(view->GetLocalBounds());
-      bounds.Scale(scale);
-      window->SetOpaqueRegion({gfx::ToEnclosedRect(bounds)});
+      window->SetOpaqueRegion(nullptr);
     }
   }
+
+  SizeConstraintsChanged();
 #endif
 }
 
@@ -253,10 +255,11 @@ void BrowserDesktopWindowTreeHostLinux::CloseNow() {
   DesktopWindowTreeHostLinux::CloseNow();
 }
 
-bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect(
-    bool is_tiling_wm) const {
+bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect() const {
+  auto* x11_extension = GetX11Extension();
   return (browser_frame_->tab_drag_kind() == TabDragKind::kAllTabs) &&
-         is_tiling_wm;
+         x11_extension && x11_extension->IsWmTiling() &&
+         x11_extension->CanResetOverrideRedirect();
 }
 
 void BrowserDesktopWindowTreeHostLinux::OnBoundsChanged(
@@ -281,6 +284,15 @@ void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
     browser_view_->FullscreenStateChanging();
   }
 
+  UpdateFrameHints();
+}
+
+void BrowserDesktopWindowTreeHostLinux::OnNativeThemeUpdated(
+    ui::NativeTheme* observed_theme) {
+  UpdateFrameHints();
+}
+
+void BrowserDesktopWindowTreeHostLinux::OnDeviceScaleFactorChanged() {
   UpdateFrameHints();
 }
 

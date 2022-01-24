@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "extensions/browser/component_extension_resource_manager.h"
 
 namespace extensions {
@@ -16,6 +15,12 @@ class ChromeComponentExtensionResourceManager
     : public ComponentExtensionResourceManager {
  public:
   ChromeComponentExtensionResourceManager();
+
+  ChromeComponentExtensionResourceManager(
+      const ChromeComponentExtensionResourceManager&) = delete;
+  ChromeComponentExtensionResourceManager& operator=(
+      const ChromeComponentExtensionResourceManager&) = delete;
+
   ~ChromeComponentExtensionResourceManager() override;
 
   // Overridden from ComponentExtensionResourceManager:
@@ -32,8 +37,6 @@ class ChromeComponentExtensionResourceManager
 
   // Logically const. Initialized on demand to keep browser start-up fast.
   mutable std::unique_ptr<const Data> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeComponentExtensionResourceManager);
 };
 
 }  // namespace extensions

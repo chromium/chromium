@@ -9,7 +9,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/fake_audio_render_callback.h"
@@ -57,6 +56,9 @@ class AudioConverterTest
     expected_callback_ =
         std::make_unique<FakeAudioRenderCallback>(step, kSampleRate);
   }
+
+  AudioConverterTest(const AudioConverterTest&) = delete;
+  AudioConverterTest& operator=(const AudioConverterTest&) = delete;
 
   // Creates |count| input callbacks to be used for conversion testing.
   void InitializeInputs(int count) {
@@ -191,8 +193,6 @@ class AudioConverterTest
   // Epsilon value with which to perform comparisons between |audio_bus_| and
   // |expected_audio_bus_|.
   double epsilon_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioConverterTest);
 };
 
 // Ensure the buffer delay provided by AudioConverter is accurate.

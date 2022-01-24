@@ -7,7 +7,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_fetcher_delegate.h"
 #include "components/variations/scoped_variations_ids_provider.h"

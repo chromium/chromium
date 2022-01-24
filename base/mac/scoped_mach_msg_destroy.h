@@ -17,6 +17,9 @@ class ScopedMachMsgDestroy {
  public:
   explicit ScopedMachMsgDestroy(mach_msg_header_t* header) : header_(header) {}
 
+  ScopedMachMsgDestroy(const ScopedMachMsgDestroy&) = delete;
+  ScopedMachMsgDestroy& operator=(const ScopedMachMsgDestroy&) = delete;
+
   ~ScopedMachMsgDestroy() {
     if (header_) {
       mach_msg_destroy(header_);
@@ -28,8 +31,6 @@ class ScopedMachMsgDestroy {
 
  private:
   mach_msg_header_t* header_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMachMsgDestroy);
 };
 
 }  // namespace base

@@ -29,11 +29,12 @@ namespace safe_browsing {
 class MockThreatDetails : public ThreatDetails {
  public:
   MockThreatDetails() {}
+
+  MockThreatDetails(const MockThreatDetails&) = delete;
+  MockThreatDetails& operator=(const MockThreatDetails&) = delete;
+
   ~MockThreatDetails() override {}
   MOCK_METHOD2(FinishCollection, void(bool did_proceed, int num_visits));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockThreatDetails);
 };
 
 class MockThreatDetailsFactory : public ThreatDetailsFactory {
@@ -62,6 +63,10 @@ class MockTriggerThrottler : public TriggerThrottler {
 class TriggerManagerTest : public ::testing::Test {
  public:
   TriggerManagerTest() : trigger_manager_(nullptr, nullptr) {}
+
+  TriggerManagerTest(const TriggerManagerTest&) = delete;
+  TriggerManagerTest& operator=(const TriggerManagerTest&) = delete;
+
   ~TriggerManagerTest() override {}
 
   void SetUp() override {
@@ -155,8 +160,6 @@ class TriggerManagerTest : public ::testing::Test {
   content::TestWebContentsFactory web_contents_factory_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TriggerManagerTest);
 };
 
 TEST_F(TriggerManagerTest, StartAndFinishCollectingThreatDetails) {

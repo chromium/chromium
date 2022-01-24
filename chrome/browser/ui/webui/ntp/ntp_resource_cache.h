@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/scoped_observation.h"
@@ -60,6 +59,10 @@ class NTPResourceCache : public ThemeServiceObserver,
   };
 
   explicit NTPResourceCache(Profile* profile);
+
+  NTPResourceCache(const NTPResourceCache&) = delete;
+  NTPResourceCache& operator=(const NTPResourceCache&) = delete;
+
   ~NTPResourceCache() override;
 
   base::RefCountedMemory* GetNewTabGuestHTML();
@@ -120,8 +123,6 @@ class NTPResourceCache : public ThemeServiceObserver,
       theme_observation_{this};
 
   std::unique_ptr<policy::PolicyChangeRegistrar> policy_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(NTPResourceCache);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NTP_NTP_RESOURCE_CACHE_H_

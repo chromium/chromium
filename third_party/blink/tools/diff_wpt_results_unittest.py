@@ -86,7 +86,8 @@ class CreateCsvTest(unittest.TestCase):
             MockWPTResultsDiffer(actual_mp, actual_mp, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
-            self.assertEquals(content, CSV_HEADING +
+            heading = CSV_HEADING % (TEST_PRODUCT, TEST_BASELINE_PRODUCT)
+            self.assertEquals(content, heading +
                               ('"test, name.html",PASS,PASS,'
                                'SAME RESULTS,"{FAIL, TIMEOUT, PASS}",'
                                '"{CRASH, PASS}",Yes\n'))
@@ -97,7 +98,8 @@ class CreateCsvTest(unittest.TestCase):
             MockWPTResultsDiffer(actual_mp, actual_mp, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
-            self.assertEquals(content, CSV_HEADING +
+            heading = CSV_HEADING % (TEST_PRODUCT, TEST_BASELINE_PRODUCT)
+            self.assertEquals(content, heading +
                               ('test.html,PASS,PASS,SAME RESULTS,'
                                '"{FAIL, TIMEOUT, PASS}","{CRASH, PASS}",Yes\n'))
 
@@ -109,7 +111,8 @@ class CreateCsvTest(unittest.TestCase):
             MockWPTResultsDiffer(actual_mp, baseline_mp, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
-            self.assertEquals(content, CSV_HEADING +
+            heading = CSV_HEADING % (TEST_PRODUCT, TEST_BASELINE_PRODUCT)
+            self.assertEquals(content, heading +
                               ('test.html,PASS,FAIL,DIFFERENT RESULTS,'
                                '"{FAIL, TIMEOUT, PASS}","{FAIL, CRASH}",No\n'))
 
@@ -121,7 +124,8 @@ class CreateCsvTest(unittest.TestCase):
             MockWPTResultsDiffer(actual_mp, baseline_mp, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
-            self.assertEquals(content, CSV_HEADING +
+            heading = CSV_HEADING % (TEST_PRODUCT, TEST_BASELINE_PRODUCT)
+            self.assertEquals(content, heading +
                               ('test.html,CRASH,FAIL,DIFFERENT RESULTS,'
                                '"{FAIL, CRASH, TIMEOUT}","{FAIL, CRASH}",Yes\n'))
 
@@ -131,7 +135,8 @@ class CreateCsvTest(unittest.TestCase):
             MockWPTResultsDiffer(actual_mp, {}, csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
-            self.assertEquals(content, CSV_HEADING +
+            heading = CSV_HEADING % (TEST_PRODUCT, TEST_BASELINE_PRODUCT)
+            self.assertEquals(content, heading +
                               'test.html,PASS,MISSING,MISSING RESULTS,{},{},No\n')
 
     def test_use_bb_to_get_results(self):
@@ -175,7 +180,8 @@ class CreateCsvTest(unittest.TestCase):
                                  csv_out).create_csv()
             csv_out.seek(0)
             content = csv_out.read()
-            self.assertEquals(content, CSV_HEADING +
+            heading = CSV_HEADING % (TEST_PRODUCT, TEST_BASELINE_PRODUCT)
+            self.assertEquals(content, heading +
                               ('test.html,PASS,FAIL,DIFFERENT RESULTS,'
                                '"{FAIL, TIMEOUT, PASS}","{FAIL, CRASH}",No\n'))
 

@@ -23,7 +23,7 @@ namespace blink {
 // Size of the buffer that WebAudio processes each time, it is the same value
 // as AudioNode::ProcessingSizeInFrames in WebKit.
 // static
-const size_t WebAudioMediaStreamAudioSink::kWebAudioRenderBufferSize = 128;
+const int WebAudioMediaStreamAudioSink::kWebAudioRenderBufferSize = 128;
 
 WebAudioMediaStreamAudioSink::WebAudioMediaStreamAudioSink(
     MediaStreamComponent* component,
@@ -120,7 +120,7 @@ void WebAudioMediaStreamAudioSink::SetClient(
 
 void WebAudioMediaStreamAudioSink::ProvideInput(
     const WebVector<float*>& audio_data,
-    size_t number_of_frames) {
+    int number_of_frames) {
   NON_REENTRANT_SCOPE(provide_input_reentrancy_checker_);
   DCHECK_EQ(number_of_frames, kWebAudioRenderBufferSize);
 
@@ -134,7 +134,7 @@ void WebAudioMediaStreamAudioSink::ProvideInput(
         media::AudioBus::CreateWrapper(static_cast<int>(audio_data.size()));
   }
 
-  output_wrapper_->set_frames(static_cast<int>(number_of_frames));
+  output_wrapper_->set_frames(number_of_frames);
   for (size_t i = 0; i < audio_data.size(); ++i)
     output_wrapper_->SetChannelData(static_cast<int>(i), audio_data[i]);
 

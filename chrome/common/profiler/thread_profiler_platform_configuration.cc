@@ -75,14 +75,14 @@ DefaultPlatformConfiguration::GetEnableRates(
 
 double DefaultPlatformConfiguration::GetChildProcessEnableFraction(
     metrics::CallStackProfileParams::Process process) const {
-  DCHECK_NE(metrics::CallStackProfileParams::BROWSER_PROCESS, process);
+  DCHECK_NE(metrics::CallStackProfileParams::Process::kBrowser, process);
 
   switch (process) {
-    case metrics::CallStackProfileParams::GPU_PROCESS:
-    case metrics::CallStackProfileParams::NETWORK_SERVICE_PROCESS:
+    case metrics::CallStackProfileParams::Process::kGpu:
+    case metrics::CallStackProfileParams::Process::kNetworkService:
       return 1.0;
 
-    case metrics::CallStackProfileParams::RENDERER_PROCESS:
+    case metrics::CallStackProfileParams::Process::kRenderer:
       // Run the profiler in all renderer processes if the browser test mode is
       // enabled, otherwise run in 20% of the processes to collect roughly as
       // many profiles for renderer processes as browser processes.
@@ -191,7 +191,7 @@ AndroidPlatformConfiguration::GetEnableRates(
 
 void AndroidPlatformConfiguration::RequestRuntimeModuleInstall() const {
   // The install can only be done in the browser process.
-  CHECK_EQ(metrics::CallStackProfileParams::BROWSER_PROCESS,
+  CHECK_EQ(metrics::CallStackProfileParams::Process::kBrowser,
            GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
 
   // The install occurs asynchronously, with the module available at the first
@@ -206,7 +206,7 @@ double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
   if (browser_test_mode_enabled())
     return DefaultPlatformConfiguration::GetChildProcessEnableFraction(process);
 
-  if (process == metrics::CallStackProfileParams::RENDERER_PROCESS)
+  if (process == metrics::CallStackProfileParams::Process::kRenderer)
     return 0.4;
 
   // TODO(https://crbug.com/1004855): Enable for all the default processes.
@@ -217,8 +217,8 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
     metrics::CallStackProfileParams::Process process,
     metrics::CallStackProfileParams::Thread thread) const {
   // Enable on renderer process main thread in production, for now.
-  if (process == metrics::CallStackProfileParams::RENDERER_PROCESS &&
-      thread == metrics::CallStackProfileParams::MAIN_THREAD) {
+  if (process == metrics::CallStackProfileParams::Process::kRenderer &&
+      thread == metrics::CallStackProfileParams::Thread::kMain) {
     return true;
   }
 

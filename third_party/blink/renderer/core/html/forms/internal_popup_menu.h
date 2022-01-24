@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_INTERNAL_POPUP_MENU_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_INTERNAL_POPUP_MENU_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
@@ -49,7 +50,7 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
                                       const ComputedStyle&);
 
   // PopupMenu functions:
-  void Show() override;
+  void Show(ShowEventType type) override;
   void Hide() override;
   void DisconnectClient() override;
   void UpdateFromElement(UpdateReason) override;
@@ -71,6 +72,7 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
   Member<HTMLSelectElement> owner_element_;
   PagePopup* popup_;
   bool needs_update_;
+  bool taller_options_ = false;
 };
 
 }  // namespace blink

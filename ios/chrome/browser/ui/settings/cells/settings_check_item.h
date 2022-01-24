@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
-// SettingsSwitchItem is a model class that uses SettingsSwitchCell.
+// SettingsCheckItem is a model class that uses SettingsCheckCell.
 @interface SettingsCheckItem : TableViewItem
 
 // The text to display.

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
 #include "media/audio/audio_output_ipc.h"
@@ -36,6 +35,10 @@ class PepperPlatformAudioOutputDev
                                               int sample_rate,
                                               int frames_per_buffer,
                                               PepperAudioOutputHost* client);
+
+  PepperPlatformAudioOutputDev(const PepperPlatformAudioOutputDev&) = delete;
+  PepperPlatformAudioOutputDev& operator=(const PepperPlatformAudioOutputDev&) =
+      delete;
 
   // The following three methods are all called on main thread.
 
@@ -144,8 +147,6 @@ class PepperPlatformAudioOutputDev
 
   const base::TimeDelta auth_timeout_;
   std::unique_ptr<base::OneShotTimer> auth_timeout_action_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPlatformAudioOutputDev);
 };
 
 }  // namespace content

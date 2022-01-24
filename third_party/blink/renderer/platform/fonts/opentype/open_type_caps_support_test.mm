@@ -34,6 +34,7 @@ void ensureHasNativeSmallCaps(const String& font_family_name) {
 
   OpenTypeCapsSupport caps_support(font_platform_data.GetHarfBuzzFace(),
                                    FontDescription::FontVariantCaps::kSmallCaps,
+                                   FontDescription::kAutoFontSynthesisSmallCaps,
                                    HB_SCRIPT_LATIN);
   // If caps_support.NeedsRunCaseSplitting() is true, this means that synthetic
   // upper-casing / lower-casing is required and the run needs to be segmented

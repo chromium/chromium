@@ -9,9 +9,9 @@
 #include <unordered_map>
 
 #include "content/common/content_export.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
-#include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -36,16 +36,20 @@ class RenderProcessHost;
 // owner.
 //
 // PermissionServiceContext instances associated with a RenderFrameHost must be
-// created via the RenderDocumentHostUserData static factories, as these
+// created via the DocumentUserData static factories, as these
 // instances are deleted when a new document is commited.
 class CONTENT_EXPORT PermissionServiceContext
-    : public RenderDocumentHostUserData<PermissionServiceContext>,
-      public RenderProcessHostObserver {
+    : public RenderProcessHostObserver {
  public:
   explicit PermissionServiceContext(RenderProcessHost* render_process_host);
   PermissionServiceContext(const PermissionServiceContext&) = delete;
   PermissionServiceContext& operator=(const PermissionServiceContext&) = delete;
   ~PermissionServiceContext() override;
+
+  // Return PermissionServiceContext associated with the current document in the
+  // given RenderFrameHost, lazily creatin gone, if needed.
+  static PermissionServiceContext* GetForCurrentDocument(
+      RenderFrameHost* render_frame_host);
 
   void CreateService(
       mojo::PendingReceiver<blink::mojom::PermissionService> receiver);
@@ -79,9 +83,9 @@ class CONTENT_EXPORT PermissionServiceContext
 
  private:
   class PermissionSubscription;
-  friend class RenderDocumentHostUserData<PermissionServiceContext>;
-  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
-  // Use RenderDocumentHostUserData static methods to create instances attached
+  struct DocumentPermissionServiceContextHolder;
+
+  // Use DocumentUserData static methods to create instances attached
   // to a RenderFrameHost.
   explicit PermissionServiceContext(RenderFrameHost* render_frame_host);
 

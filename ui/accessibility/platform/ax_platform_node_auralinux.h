@@ -7,20 +7,14 @@
 
 #include <atk/atk.h>
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/strings/utf_offset_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/ax_position.h"
-#include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 
 // This deleter is used in order to ensure that we properly always free memory
@@ -118,8 +112,9 @@ class ImplementedAtkInterfaces {
 // Implements accessibility on Aura Linux using ATK.
 class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
  public:
-  AXPlatformNodeAuraLinux();
   ~AXPlatformNodeAuraLinux() override;
+  AXPlatformNodeAuraLinux(const AXPlatformNodeAuraLinux&) = delete;
+  AXPlatformNodeAuraLinux& operator=(const AXPlatformNodeAuraLinux&) = delete;
 
   static AXPlatformNodeAuraLinux* FromAtkObject(const AtkObject*);
 
@@ -242,7 +237,6 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 
   // AXPlatformNodeBase overrides.
-  void Init(AXPlatformNodeDelegate* delegate) override;
   bool IsPlatformCheckable() const override;
   absl::optional<int> GetIndexInParent() override;
 
@@ -297,9 +291,17 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   // nullopt.
   absl::optional<std::pair<int, int>> GetEmbeddedObjectIndices();
 
+  std::vector<ax::mojom::Action> GetSupportedActions() const;
+  bool HasDefaultActionVerb() const;
+
   std::string accessible_name_;
 
  protected:
+  AXPlatformNodeAuraLinux();
+
+  // AXPlatformNode overrides.
+  void Init(AXPlatformNodeDelegate* delegate) override;
+
   // Offsets for the AtkText API are calculated in UTF-16 code point offsets,
   // but the ATK APIs want all offsets to be in "characters," which we
   // understand to be Unicode character offsets. We keep a lazily generated set
@@ -429,7 +431,8 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
 
   bool window_activate_event_postponed_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(AXPlatformNodeAuraLinux);
+  friend AXPlatformNode* AXPlatformNode::Create(
+      AXPlatformNodeDelegate* delegate);
 };
 
 }  // namespace ui

@@ -11,7 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/filter_policy.h"
@@ -24,6 +24,9 @@ namespace content {
 
 // Encapsulates a leveldb database and comparator, allowing them to be used
 // safely across thread boundaries.
+// Because the `RequestDestruction` method is called on shutdown, and blocks
+// shutdown, all references to this object MUST be on task runner that
+// BLOCK_SHUTDOWN. Otherwise it introduces a potential hang on shutdown.
 class LevelDBState : public base::RefCountedThreadSafe<LevelDBState> {
  public:
   static scoped_refptr<LevelDBState> CreateForDiskDB(

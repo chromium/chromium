@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 
@@ -67,6 +66,10 @@ class PermissionsUpdater {
   explicit PermissionsUpdater(content::BrowserContext* browser_context);
   PermissionsUpdater(content::BrowserContext* browser_context,
                      InitFlag init_flag);
+
+  PermissionsUpdater(const PermissionsUpdater&) = delete;
+  PermissionsUpdater& operator=(const PermissionsUpdater&) = delete;
+
   ~PermissionsUpdater();
 
   // Sets a delegate to provide platform-specific logic. This should be set
@@ -122,6 +125,10 @@ class PermissionsUpdater {
   // except for removing permissions totally blocklisted by management.
   void RemovePermissionsUnsafe(const Extension* extension,
                                const PermissionSet& permissions);
+
+  // Fetches the policy settings from the ExtensionManagement service and
+  // applies them to the extension.
+  void ApplyPolicyHostRestrictions(const Extension& extension);
 
   // Sets list of hosts |extension| may not interact with (overrides default).
   void SetPolicyHostRestrictions(const Extension* extension,
@@ -231,8 +238,6 @@ class PermissionsUpdater {
   // Initialization flag that determines whether prefs is consulted about the
   // extension. Transient extensions should not have entries in prefs.
   InitFlag init_flag_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsUpdater);
 };
 
 }  // namespace extensions

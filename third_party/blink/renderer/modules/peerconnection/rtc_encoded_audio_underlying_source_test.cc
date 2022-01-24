@@ -30,6 +30,8 @@ class FakeTransformableFrame : public webrtc::TransformableFrameInterface {
   void SetData(rtc::ArrayView<const uint8_t> data) override {}
   uint32_t GetTimestamp() const override { return 0; }
   uint32_t GetSsrc() const override { return 0; }
+  // 255 is not a valid payload type (which can be in the range [0..127]).
+  uint8_t GetPayloadType() const override { return 255; }
 };
 }  // namespace
 

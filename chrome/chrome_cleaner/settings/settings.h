@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
+#include "base/time/time.h"
 #include "chrome/chrome_cleaner/logging/proto/shared_data.pb.h"
 #include "chrome/chrome_cleaner/settings/settings_definitions.h"
 #include "components/chrome_cleaner/public/constants/constants.h"

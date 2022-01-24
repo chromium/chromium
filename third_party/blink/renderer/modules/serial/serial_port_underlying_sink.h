@@ -51,7 +51,7 @@ class SerialPortUnderlyingSink final : public UnderlyingSinkBase {
   Member<DOMException> pending_exception_;
 
   Member<V8BufferSource> buffer_source_;
-  uint32_t offset_ = 0;
+  size_t offset_ = 0;
 
   // Only one outstanding call to write(), close() or abort() is allowed at a
   // time. This holds the ScriptPromiseResolver for the Promise returned by any

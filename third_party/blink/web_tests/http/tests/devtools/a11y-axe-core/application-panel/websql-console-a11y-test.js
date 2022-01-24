@@ -5,22 +5,22 @@
 (async function() {
   TestRunner.addResult(`Tests accessibility of WebSQL console in application panel.`);
   await TestRunner.loadTestModule('axe_core_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
   await TestRunner.showPanel('resources');
 
   async function setPromptText(text) {
-    queryView._prompt.setText(text);
-    await queryView._enterKeyPressed(new KeyboardEvent('keydown'));
+    queryView.prompt.setText(text);
+    await queryView.enterKeyPressed(new KeyboardEvent('keydown'));
   }
 
   UI.viewManager.showView('resources');
   await TestRunner.evaluateInPagePromise(
     'openDatabase("inspector-test-db", "1.0", "Database for inspector test", 1024*1024)');
 
-  const parent = UI.panels.resources._sidebar._sidebarTree.rootElement();
+  const parent = UI.panels.resources.sidebar.sidebarTree.rootElement();
   const databaseElement = ApplicationTestRunner.findTreeElement(parent, ['Storage', 'Web SQL', 'inspector-test-db']);
   databaseElement.select();
 

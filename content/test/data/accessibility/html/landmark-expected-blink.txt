@@ -13,7 +13,7 @@ rootWebArea
 ++++++footer
 ++++++++staticText name='This is a footer element.'
 ++++++++++inlineTextBox name='This is a footer element.'
-++++++form
+++++++section
 ++++++++staticText name='This is a form element.'
 ++++++++++inlineTextBox name='This is a form element.'
 ++++++main
@@ -73,7 +73,7 @@ rootWebArea
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='Details'
 ++++++++++++++inlineTextBox name='Details'
-++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
 ++++++++++headerAsNonLandmark ignored invisible
 ++++++group
 ++++++++headerAsNonLandmark
@@ -126,7 +126,7 @@ rootWebArea
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='Details'
 ++++++++++++++inlineTextBox name='Details'
-++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
 ++++++++++genericContainer ignored invisible
 ++++++group
 ++++++++genericContainer ignored
@@ -178,7 +178,7 @@ rootWebArea
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='Details'
 ++++++++++++++inlineTextBox name='Details'
-++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
 ++++++++++footerAsNonLandmark ignored invisible
 ++++++group
 ++++++++footerAsNonLandmark
@@ -231,7 +231,7 @@ rootWebArea
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='Details'
 ++++++++++++++inlineTextBox name='Details'
-++++++++genericContainer ignored invisible
+++++++++genericContainer ignored
 ++++++++++genericContainer ignored invisible
 ++++++group
 ++++++++genericContainer ignored

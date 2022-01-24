@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -40,6 +39,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
     // kTimestampKey.
     virtual void MessageReceived(const base::Value& message) = 0;
   };
+
+  NetworkSmsHandler(const NetworkSmsHandler&) = delete;
+  NetworkSmsHandler& operator=(const NetworkSmsHandler&) = delete;
 
   ~NetworkSmsHandler() override;
 
@@ -95,12 +97,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   void OnObjectPathChanged(const base::Value& object_path);
 
   base::ObserverList<Observer, true>::Unchecked observers_;
-  std::vector<std::unique_ptr<NetworkSmsDeviceHandler>> device_handlers_;
+  std::unique_ptr<NetworkSmsDeviceHandler> device_handler_;
   std::vector<base::Value> received_messages_;
   std::string cellular_device_path_;
   base::WeakPtrFactory<NetworkSmsHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkSmsHandler);
 };
 
 }  // namespace chromeos

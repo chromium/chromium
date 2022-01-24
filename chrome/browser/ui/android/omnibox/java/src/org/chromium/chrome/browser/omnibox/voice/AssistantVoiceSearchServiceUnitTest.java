@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.voice;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -32,7 +33,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
-import org.chromium.base.CommandLine;
 import org.chromium.base.Promise;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
@@ -79,6 +79,9 @@ public class AssistantVoiceSearchServiceUnitTest {
     public final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(mFakeAccountManagerFacade);
 
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
+
     @Mock
     GSAState mGsaState;
     @Mock
@@ -121,7 +124,7 @@ public class AssistantVoiceSearchServiceUnitTest {
         doReturn(false).when(mGsaState).isAgsaVersionBelowMinimum(any(), any());
         doReturn(AGSA_VERSION_NUMBER).when(mGsaState).parseAgsaMajorMinorVersionAsInteger(any());
         doReturn(true).when(mGsaState).canAgsaHandleIntent(any());
-        doReturn(true).when(mIdentityManager).hasPrimaryAccount();
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount(anyInt());
 
         mAccountManagerTestRule.addAccount(TEST_ACCOUNT_EMAIL1);
         mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
@@ -226,7 +229,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
     public void testAssistantEligibility_NoChromeAccount() {
-        doReturn(false).when(mIdentityManager).hasPrimaryAccount();
+        doReturn(false).when(mIdentityManager).hasPrimaryAccount(anyInt());
 
         List<Integer> reasons = new ArrayList<>();
         boolean eligible = mAssistantVoiceSearchService.isDeviceEligibleForAssistant(
@@ -238,8 +241,8 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
+    @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     public void testAssistantEligibility_LowEndDevice() {
-        CommandLine.getInstance().appendSwitch(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE);
         SysUtils.resetForTesting();
 
         List<Integer> reasons = new ArrayList<>();
@@ -335,7 +338,7 @@ public class AssistantVoiceSearchServiceUnitTest {
                         AssistantVoiceSearchService.AGSA_VERSION_HISTOGRAM, AGSA_VERSION_NUMBER));
 
         doReturn(true).when(mGsaState).isAgsaVersionBelowMinimum(any(), any());
-        doReturn(false).when(mIdentityManager).hasPrimaryAccount();
+        doReturn(false).when(mIdentityManager).hasPrimaryAccount(anyInt());
         mAssistantVoiceSearchService.reportMicPressUserEligibility();
         Assert.assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(

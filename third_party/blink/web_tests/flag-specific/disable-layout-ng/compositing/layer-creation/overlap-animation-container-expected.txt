@@ -2,7 +2,7 @@ Before:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 802],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -16,8 +16,9 @@ Before:
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='container'",
-      "position": [47, 230],
-      "bounds": [144, 452],
+      "position": [46, 230],
+      "bounds": [146, 452],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FFFFFF"
     },
     {
@@ -28,17 +29,16 @@ Before:
       "transform": 4
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV class='box yellow')",
-      "position": [-51, 451],
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box yellow'",
+      "position": [18, 692],
       "bounds": [100, 100],
-      "backgroundColor": "#FFFF00",
-      "transform": 3
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00"
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -87,7 +87,7 @@ After:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 802],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -114,16 +114,22 @@ After:
       "transform": 4
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV id='first-green-box' class='box green rotate-45deg')",
-      "position": [-51, 87],
-      "bounds": [174, 464],
-      "transform": 3
+      "name": "LayoutBlockFlow (relative positioned) DIV id='first-green-box' class='box green rotate-45deg'",
+      "position": [46, 328],
+      "bounds": [146, 344],
+      "contentsOpaqueForText": true
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box yellow'",
+      "position": [18, 692],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00"
+    },
+    {
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

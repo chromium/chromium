@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 14: Refused to send form data to 'http://127.0.0.1:8000/resources/redirection-response.php?host=localhost:8000&status=302&target=/navigation/resources/form-target.pl' because it violates the following Content Security Policy directive: "form-action 127.0.0.1:8000".
+CONSOLE ERROR: Refused to send form data to 'http://127.0.0.1:8000/resources/redirection-response.php?host=localhost:8000&status=302&target=/navigation/resources/form-target.pl' because it violates the following Content Security Policy directive: "form-action 127.0.0.1:8000".
 
  
 

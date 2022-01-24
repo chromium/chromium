@@ -40,7 +40,7 @@
 namespace blink {
 
 static constexpr base::TimeDelta kMinimumProgressEventDispatchingInterval =
-    base::TimeDelta::FromMilliseconds(50);  // 50 ms per specification.
+    base::Milliseconds(50);  // 50 ms per specification.
 
 XMLHttpRequestProgressEventThrottle::DeferredEvent::DeferredEvent() {
   Clear();

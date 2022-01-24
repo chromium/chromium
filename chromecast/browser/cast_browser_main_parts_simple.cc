@@ -9,9 +9,9 @@ namespace shell {
 
 // static
 std::unique_ptr<CastBrowserMainParts> CastBrowserMainParts::Create(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     CastContentBrowserClient* cast_content_browser_client) {
-  return std::make_unique<CastBrowserMainParts>(parameters,
+  return std::make_unique<CastBrowserMainParts>(std::move(parameters),
                                                 cast_content_browser_client);
 }
 

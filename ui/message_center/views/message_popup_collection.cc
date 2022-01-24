@@ -8,35 +8,38 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_types.h"
+#include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/message_center/views/notification_view.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
 namespace message_center {
 
 namespace {
 
 // Animation duration for FADE_IN and FADE_OUT.
-constexpr base::TimeDelta kFadeInFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kFadeInFadeOutDuration = base::Milliseconds(200);
 
 // Animation duration for MOVE_DOWN.
-constexpr base::TimeDelta kMoveDownDuration =
-    base::TimeDelta::FromMilliseconds(120);
+constexpr base::TimeDelta kMoveDownDuration = base::Milliseconds(120);
 
 // Time to wait until we reset |recently_closed_by_user_|.
-constexpr base::TimeDelta kWaitForReset = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kWaitForReset = base::Seconds(10);
 
 }  // namespace
 
 MessagePopupCollection::MessagePopupCollection()
     : animation_(std::make_unique<gfx::LinearAnimation>(this)),
       weak_ptr_factory_(this) {
-  MessageCenter::Get()->AddObserver(this);
+  message_center_observation_.Observe(MessageCenter::Get());
 }
 
 MessagePopupCollection::~MessagePopupCollection() {
@@ -44,7 +47,6 @@ MessagePopupCollection::~MessagePopupCollection() {
   is_updating_ = true;
   for (const auto& item : popup_items_)
     item.popup->Close();
-  MessageCenter::Get()->RemoveObserver(this);
 }
 
 void MessagePopupCollection::Update() {
@@ -123,6 +125,46 @@ void MessagePopupCollection::NotifyPopupClosed(MessagePopupView* popup) {
     if (item.popup == popup)
       item.popup = nullptr;
   }
+}
+
+MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
+    const std::string& notification_id) {
+  auto it = std::find_if(
+      popup_items_.begin(), popup_items_.end(), [&](const auto& child) {
+        return child.popup->message_view()->notification_id() ==
+               notification_id;
+      });
+
+  if (it == popup_items_.end())
+    return nullptr;
+
+  return it->popup->message_view();
+}
+
+void MessagePopupCollection::ConvertNotificationViewToGroupedNotificationView(
+    const std::string& ungrouped_notification_id,
+    const std::string& new_grouped_notification_id) {
+  auto it = std::find_if(
+      popup_items_.begin(), popup_items_.end(),
+      [&](const auto& popup) { return popup.id == ungrouped_notification_id; });
+  if (it == popup_items_.end())
+    return;
+
+  it->id = new_grouped_notification_id;
+  it->popup->message_view()->set_notification_id(new_grouped_notification_id);
+}
+
+void MessagePopupCollection::ConvertGroupedNotificationViewToNotificationView(
+    const std::string& grouped_notification_id,
+    const std::string& new_single_notification_id) {
+  auto it = std::find_if(
+      popup_items_.begin(), popup_items_.end(),
+      [&](const auto& popup) { return popup.id == grouped_notification_id; });
+  if (it == popup_items_.end())
+    return;
+
+  it->id = new_single_notification_id;
+  it->popup->message_view()->set_notification_id(new_single_notification_id);
 }
 
 void MessagePopupCollection::OnNotificationAdded(
@@ -228,7 +270,11 @@ MessagePopupView* MessagePopupCollection::GetPopupViewForNotificationID(
 
 MessagePopupView* MessagePopupCollection::CreatePopup(
     const Notification& notification) {
-  return new MessagePopupView(notification, this);
+  bool a11_feedback_on_init =
+      notification.rich_notification_data()
+          .should_make_spoken_feedback_for_popup_updates;
+  return new MessagePopupView(new NotificationView(notification), this,
+                              a11_feedback_on_init);
 }
 
 void MessagePopupCollection::RestartPopupTimers() {
@@ -355,8 +401,8 @@ void MessagePopupCollection::TransitionToAnimation() {
 
 void MessagePopupCollection::UpdatePopupTimers() {
   if (state_ == State::IDLE) {
-    if (IsAnyPopupHovered() || IsAnyPopupActive()) {
-      // If any popup is hovered or activated, pause popup timer.
+    if (IsAnyPopupHovered() || IsAnyPopupFocused()) {
+      // If any popup is hovered or focused, pause popup timer.
       PausePopupTimers();
     } else {
       // If in IDLE state, restart popup timer.
@@ -438,6 +484,9 @@ std::vector<Notification*> MessagePopupCollection::GetPopupNotifications()
       continue;
     }
 
+    if (notification->group_child())
+      continue;
+
     if (BlockForMixedFullscreen(*notification))
       continue;
 
@@ -470,21 +519,8 @@ bool MessagePopupCollection::AddPopup() {
     item.will_fade_in = false;
   }
 
-  if (AddInExistingGroup(new_notification))
+  if (new_notification->group_child())
     return false;
-
-  // The notification needs to be grouped but the popup for the group does not
-  // currently exist. Show the parent pop up again and let it assemble all
-  // grouped notifications.
-  if (new_notification->group_child()) {
-    new_notification = MessageCenter::Get()->FindOldestNotificationByNotiferId(
-        new_notification->notifier_id());
-    // TODO(crbug/1223697): Implement grouped notification construction when the
-    // MessageView for a parent notification is created.
-    new_notification->set_group_parent(true);
-
-    MessageCenter::Get()->ResetSinglePopup(new_notification->id());
-  }
 
   {
     PopupItem item;
@@ -497,8 +533,9 @@ bool MessagePopupCollection::AddPopup() {
       return false;
     }
 
-    item.popup->Show();
     popup_items_.push_back(item);
+
+    item.popup->Show();
     NotifyPopupAdded(item.popup);
   }
 
@@ -520,34 +557,6 @@ bool MessagePopupCollection::AddPopup() {
   item.start_bounds = item.bounds;
   item.start_bounds +=
       gfx::Vector2d((IsFromLeft() ? -1 : 1) * item.bounds.width(), 0);
-  return true;
-}
-
-bool MessagePopupCollection::AddInExistingGroup(Notification* notification) {
-  if (!notification->allow_group())
-    return false;
-
-  Notification* parent_notification =
-      MessageCenter::Get()->FindOldestNotificationByNotiferId(
-          notification->notifier_id());
-  DCHECK(parent_notification);
-  if (parent_notification->id() == notification->id())
-    return false;
-
-  notification->set_group_child(true);
-
-  MessagePopupView* parent_popup =
-      GetPopupViewForNotificationID(parent_notification->id());
-  // If the parent popup has already expired, we will add it back and
-  // create the group from scratch in MessagePopupCollection::AddPopup.
-  if (!parent_popup)
-    return false;
-
-  parent_notification->set_group_parent(true);
-  parent_popup->message_view()->AddGroupedNotification(*notification);
-  MessageCenter::Get()->DisplayedNotification(notification->id(),
-                                              DISPLAY_SOURCE_POPUP);
-  MessageCenter::Get()->MarkSinglePopupAsShown(notification->id(), false);
   return true;
 }
 
@@ -691,8 +700,18 @@ bool MessagePopupCollection::HasAddedPopup() const {
     existing_ids.insert(item.id);
 
   for (Notification* notification : GetPopupNotifications()) {
-    if (!existing_ids.count(notification->id()))
+    if (!existing_ids.count(notification->id())) {
+      // A new popup is not added for a group child if it's parent
+      // notification has an existing popup.
+      if (notification->group_child()) {
+        auto* parent_notification =
+            MessageCenter::Get()->FindParentNotificationForOriginUrl(
+                notification->origin_url());
+
+        return !existing_ids.count(parent_notification->id());
+      }
       return true;
+    }
   }
   return false;
 }
@@ -718,9 +737,9 @@ bool MessagePopupCollection::IsAnyPopupHovered() const {
   return false;
 }
 
-bool MessagePopupCollection::IsAnyPopupActive() const {
+bool MessagePopupCollection::IsAnyPopupFocused() const {
   for (const auto& item : popup_items_) {
-    if (item.popup->is_active())
+    if (item.popup->is_focused())
       return true;
   }
   return false;

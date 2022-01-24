@@ -48,6 +48,9 @@ class TestConnectionAttempt
                                      ConnectionMedium::kBluetoothLowEnergy,
                                      ConnectionRole::kListenerRole)) {}
 
+  TestConnectionAttempt(const TestConnectionAttempt&) = delete;
+  TestConnectionAttempt& operator=(const TestConnectionAttempt&) = delete;
+
   ~TestConnectionAttempt() override = default;
 
   FakeConnectToDeviceOperation<BleInitiatorFailureType>* fake_operation() {
@@ -76,13 +79,17 @@ class TestConnectionAttempt
 
   FakeConnectToDeviceOperation<BleInitiatorFailureType>* fake_operation_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectionAttempt);
 };
 
 }  // namespace
 
 class SecureChannelConnectionAttemptBaseTest : public testing::Test {
+ public:
+  SecureChannelConnectionAttemptBaseTest(
+      const SecureChannelConnectionAttemptBaseTest&) = delete;
+  SecureChannelConnectionAttemptBaseTest& operator=(
+      const SecureChannelConnectionAttemptBaseTest&) = delete;
+
  protected:
   SecureChannelConnectionAttemptBaseTest() = default;
   ~SecureChannelConnectionAttemptBaseTest() override = default;
@@ -227,8 +234,6 @@ class SecureChannelConnectionAttemptBaseTest : public testing::Test {
   bool is_extract_client_data_test_ = false;
 
   std::unique_ptr<TestConnectionAttempt> connection_attempt_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelConnectionAttemptBaseTest);
 };
 
 TEST_F(SecureChannelConnectionAttemptBaseTest, SingleRequest_Success) {

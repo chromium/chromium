@@ -179,12 +179,18 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     if (!buffer_format)
       return false;
 
+    // Shared memory GMBs do not support VEA/CAMERA usage.
+    const gfx::BufferUsage buffer_usage =
+        (gpu_memory_buffer_handle.type ==
+         gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)
+            ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
+            : gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
+
     gpu::GpuMemoryBufferSupport support;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
         support.CreateGpuMemoryBufferImplFromHandle(
             std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,
-            gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-            base::NullCallback());
+            buffer_usage, base::NullCallback());
     if (!gpu_memory_buffer)
       return false;
 

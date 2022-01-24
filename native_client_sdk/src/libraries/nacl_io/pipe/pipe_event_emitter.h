@@ -24,6 +24,9 @@ class PipeEventEmitter : public StreamEventEmitter {
  public:
   explicit PipeEventEmitter(size_t size);
 
+  PipeEventEmitter(const PipeEventEmitter&) = delete;
+  PipeEventEmitter& operator=(const PipeEventEmitter&) = delete;
+
   Error Read_Locked(char* data, size_t len, int* out_bytes);
   Error Write_Locked(const char* data, size_t len, int* out_bytes);
 
@@ -33,7 +36,6 @@ class PipeEventEmitter : public StreamEventEmitter {
 
  private:
   FIFOChar fifo_;
-  DISALLOW_COPY_AND_ASSIGN(PipeEventEmitter);
 };
 
 }  // namespace nacl_io

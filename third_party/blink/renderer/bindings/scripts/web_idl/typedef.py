@@ -13,7 +13,7 @@ from .make_copy import make_copy
 
 class Typedef(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
               WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-typedefs"""
+    """https://webidl.spec.whatwg.org/#idl-typedefs"""
 
     class IR(IRMap.IR, WithCodeGeneratorInfo, WithComponent, WithDebugInfo):
         def __init__(self,

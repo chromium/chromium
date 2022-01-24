@@ -36,6 +36,10 @@ class ChromiumServiceWrapper : public external_mojo::mojom::ExternalService {
       mojo::Remote<service_manager::mojom::Service> service_remote,
       std::unique_ptr<service_manager::Service> chromium_service,
       const std::string& service_name);
+
+  ChromiumServiceWrapper(const ChromiumServiceWrapper&) = delete;
+  ChromiumServiceWrapper& operator=(const ChromiumServiceWrapper&) = delete;
+
   ~ChromiumServiceWrapper() override;
 
  private:
@@ -47,8 +51,6 @@ class ChromiumServiceWrapper : public external_mojo::mojom::ExternalService {
   const std::unique_ptr<service_manager::Service> chromium_service_;
 
   mojo::Receiver<external_mojo::mojom::ExternalService> service_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromiumServiceWrapper);
 };
 
 // Creates a ServiceRequest (analogous to one created by Chromium

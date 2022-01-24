@@ -7,7 +7,9 @@
 
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/shared_element_resource_id.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace viz {
@@ -22,10 +24,22 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
  public:
   // What is the directive?
   // - Save means that the currently submitted frame will be used in the future
-  //   as the source frame of the animation.
+  //   as the source frame of the animation. The animation could be driven by
+  //   the renderer or Viz process. This directive must be followed by the
+  //   Animate or AnimateRenderer directive.
+  //
   // - Animate means that this frame should be used as a (new) destination frame
   //   of the animation, using the previously saved frame as the source.
-  enum class Type { kSave, kAnimate };
+  //
+  // - AnimateRenderer means that content in the current and subsequent frames
+  //   will use cached resources from the frame with the Save directive. This is
+  //   used when the content animation is driven by the renderer process.
+  //   Ownership of the cached resources is passed to the renderer process. This
+  //   directive must be followed by Release to delete the cached resources.
+  //
+  // - Release means that cached textures in the Viz process can be deleted.
+  //   This is used in the mode where the renderer is driving this animation.
+  enum class Type { kSave, kAnimate, kAnimateRenderer, kRelease };
 
   // The type of an effect that should be used in the animation.
   enum class Effect {
@@ -43,6 +57,46 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
     kRevealUp
   };
 
+  // This provides configuration options for the root transition and for each
+  // shared element transition.
+  struct VIZ_COMMON_EXPORT TransitionConfig {
+    TransitionConfig();
+
+    // The duration for the transform and/or size animation. Opacity will be a
+    // subset of this duration.
+    base::TimeDelta duration;
+
+    // The delay in starting all animations for this element's transition. The
+    // offset is from the time when the frame with the kStart directive is
+    // drawn.
+    base::TimeDelta delay;
+
+    // Returns true if the config is valid. If |error| is not null, it's
+    // populated with an error message when the config is invalid.
+    bool IsValid(std::string* error = nullptr) const;
+  };
+
+  struct VIZ_COMMON_EXPORT SharedElement {
+    SharedElement();
+    ~SharedElement();
+
+    SharedElement(const SharedElement&);
+    SharedElement& operator=(const SharedElement&);
+
+    SharedElement(SharedElement&&);
+    SharedElement& operator=(SharedElement&&);
+
+    // The render pass corresponding to a DOM element. The id is scoped to the
+    // same frame that the directive corresponds to.
+    CompositorRenderPassId render_pass_id;
+
+    // An identifier to tag the cached texture for this shared element in the
+    // Viz process.
+    SharedElementResourceId shared_element_resource_id;
+
+    TransitionConfig config;
+  };
+
   CompositorFrameTransitionDirective();
 
   // Constructs a new directive. Note that if type is `kSave`, the effect should
@@ -52,7 +106,8 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
       uint32_t sequence_id,
       Type type,
       Effect effect = Effect::kNone,
-      std::vector<CompositorRenderPassId> shared_render_pass_ids = {});
+      const TransitionConfig& root_config = TransitionConfig(),
+      std::vector<SharedElement> shared_elements = {});
 
   CompositorFrameTransitionDirective(const CompositorFrameTransitionDirective&);
   ~CompositorFrameTransitionDirective();
@@ -71,9 +126,11 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   // The effect for the transition.
   Effect effect() const { return effect_; }
 
-  // Shared element render passes.
-  const std::vector<CompositorRenderPassId>& shared_render_pass_ids() const {
-    return shared_render_pass_ids_;
+  const TransitionConfig& root_config() const { return root_config_; }
+
+  // Shared elements.
+  const std::vector<SharedElement>& shared_elements() const {
+    return shared_elements_;
   }
 
  private:
@@ -83,7 +140,9 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
 
   Effect effect_ = Effect::kNone;
 
-  std::vector<CompositorRenderPassId> shared_render_pass_ids_;
+  TransitionConfig root_config_;
+
+  std::vector<SharedElement> shared_elements_;
 };
 
 }  // namespace viz

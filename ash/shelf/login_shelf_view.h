@@ -72,6 +72,10 @@ class ASH_EXPORT LoginShelfView : public views::View,
  public:
   explicit LoginShelfView(
       LockScreenActionBackgroundController* lock_screen_action_background);
+
+  LoginShelfView(const LoginShelfView&) = delete;
+  LoginShelfView& operator=(const LoginShelfView&) = delete;
+
   ~LoginShelfView() override;
 
   // ShelfWidget observes SessionController for higher-level UI changes and
@@ -238,8 +242,6 @@ class ASH_EXPORT LoginShelfView : public views::View,
   std::set<TrayBackgroundView*> disabled_tray_buttons_;
 
   base::WeakPtrFactory<LoginShelfView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginShelfView);
 };
 
 }  // namespace ash

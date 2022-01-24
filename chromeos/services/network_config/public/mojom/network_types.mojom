@@ -7,6 +7,7 @@
 module chromeos.network_config.mojom;
 
 // Connection state of visible networks.
+[Stable, Extensible]
 enum ConnectionStateType {
   // The network is connected and internet connectivity is available.
   kOnline,
@@ -23,6 +24,7 @@ enum ConnectionStateType {
 };
 
 // Device / Technology state for devices.
+[Stable, Extensible]
 enum DeviceStateType {
   // The device is available but not yet initialized and can not be enabled.
   kUninitialized,
@@ -44,6 +46,7 @@ enum DeviceStateType {
 
 // The network technology type. NOTE: 'All' and 'Wireless' are only used by
 // FilterType for requesting groups of networks.
+[Stable, Extensible]
 enum NetworkType {
   kAll,
   kCellular,
@@ -59,6 +62,7 @@ enum NetworkType {
 
 // The ONC source for the network configuration, i.e. whether it is stored in
 // the User or Device profile and whether it was configured by policy.
+[Stable, Extensible]
 enum OncSource {
   // The network is not remembered, or the property is not configurable.
   kNone,
@@ -74,6 +78,7 @@ enum OncSource {
 };
 
 // The policy source for property values managed by policy.
+[Stable, Extensible]
 enum PolicySource {
   // The property is not controlled by policy.
   kNone,
@@ -91,6 +96,7 @@ enum PolicySource {
 
 // The captive portal state. Provides additional details when the connection
 // state is kPortal.
+[Stable, Extensible]
 enum PortalState {
   // The network is not connected or the portal state is not available.
   kUnknown,

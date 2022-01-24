@@ -81,13 +81,14 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             optparse.make_option(
                 '--flag-specific',
                 dest='flag_specific',
+                # TODO: try to get the list from builders.json
+                choices=["composite-after-paint", "disable-layout-ng", "highdpi"],
                 default=None,
                 action='store',
                 help=('Name of a flag-specific configuration defined in '
                       'FlagSpecificConfig. This option will rebaseline '
                       'results for the given FlagSpecificConfig while ignoring results '
-                      'from other builders. Highdpi is the only suported config '
-                      'at this time.')),
+                      'from other builders.')),
             optparse.make_option(
                 '--patchset',
                 default=None,
@@ -118,15 +119,12 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         if options.use_blink_try_bots_only:
             self._selected_try_bots = self.selected_try_bots - self.cq_try_bots
 
-        if options.flag_specific and options.flag_specific != "highdpi":
-            _log.error(
-                'Aborted: rebaseline-cl supports only highdpi as flag_specific '
-                'option at this time.')
-            return 1
-
         if options.flag_specific:
-            _log.info("Running the tool with highdpi builder only.")
-            self._selected_try_bots = self.highdpi_builder
+            self._selected_try_bots = self.flag_specific_builder(options.flag_specific)
+            if not self._selected_try_bots:
+                _log.error(
+                    'Aborted: builder %s not found in builder list.' % options.flag_specific)
+                return 1
 
         jobs = self.git_cl.latest_try_jobs(
             builder_names=self.selected_try_bots, patchset=options.patchset)
@@ -218,11 +216,10 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
     def cq_try_bots(self):
         return frozenset(self._tool.builders.all_cq_try_builder_names())
 
-    @property
-    def highdpi_builder(self):
+    def flag_specific_builder(self, flag_specific):
         return frozenset(
             self._tool.builders.all_flag_specific_try_builder_names(
-                flag_specific="highdpi"))
+                flag_specific=flag_specific))
 
     def _get_issue_number(self):
         """Returns the current CL issue number, or None."""
@@ -289,7 +286,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         results_fetcher = self._tool.results_fetcher
         results = {}
 
-        for build, status in jobs.iteritems():
+        for build, status in jobs.items():
             if status == TryJobStatus('COMPLETED', 'SUCCESS'):
                 # Builds with passing try jobs are mapped to None, to indicate
                 # that there are no baselines to download.
@@ -359,7 +356,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             A TestBaselineSet object.
         """
         builds_to_tests = {}
-        for build, results in builds_to_results.iteritems():
+        for build, results in builds_to_results.items():
             builds_to_tests[build] = self._tests_to_rebaseline(build, results)
         if only_changed_tests:
             files_in_cl = self._tool.git().changed_files(diff_filter='AM')
@@ -373,7 +370,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
         # Here we have a concrete list of tests so we don't need prefix lookup.
         test_baseline_set = TestBaselineSet(self._tool, prefix_mode=False)
-        for build, tests in builds_to_tests.iteritems():
+        for build, tests in builds_to_tests.items():
             for test in tests:
                 if only_changed_tests and test not in tests_in_cl:
                     continue

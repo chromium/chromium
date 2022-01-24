@@ -27,9 +27,17 @@ FontDescription FontStyleResolver::ComputeFont(
 
   // CSSPropertyID::kFontSize
   if (property_set.HasProperty(CSSPropertyID::kFontSize)) {
-    builder.SetSize(StyleBuilderConverterBase::ConvertFontSize(
-        *property_set.GetPropertyCSSValue(CSSPropertyID::kFontSize),
-        conversionData, FontDescription::Size(0, 0.0f, false), nullptr));
+    const CSSValue* value =
+        property_set.GetPropertyCSSValue(CSSPropertyID::kFontSize);
+    auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+    if (identifier_value &&
+        identifier_value->GetValueID() == CSSValueID::kMath) {
+      builder.SetSize(FontDescription::Size(0, 0.0f, false));
+    } else {
+      builder.SetSize(StyleBuilderConverterBase::ConvertFontSize(
+          *property_set.GetPropertyCSSValue(CSSPropertyID::kFontSize),
+          conversionData, FontDescription::Size(0, 0.0f, false), nullptr));
+    }
   }
 
   // CSSPropertyID::kFontFamily

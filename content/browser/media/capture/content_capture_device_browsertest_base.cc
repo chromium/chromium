@@ -103,7 +103,7 @@ ContentCaptureDeviceBrowserTestBase::SnapshotCaptureParams() {
 }
 
 base::TimeDelta ContentCaptureDeviceBrowserTestBase::GetMinCapturePeriod() {
-  return base::TimeDelta::FromMicroseconds(
+  return base::Microseconds(
       base::Time::kMicrosecondsPerSecond /
       device_->capture_params().requested_format.frame_rate);
 }

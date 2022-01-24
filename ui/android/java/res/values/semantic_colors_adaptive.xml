@@ -7,25 +7,30 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- TODO(huayinz): remove tools:ignore once these colors are used in ui/android -->
     <!-- Common text colors -->
-    <color name="default_text_color">@color/default_text_color_dark</color>
+    <color name="default_text_color_baseline">@color/default_text_color_dark</color>
     <!-- Text color used on dark background on light theme, and light background on dark theme. -->
     <color name="default_text_color_inverse">@color/default_text_color_light</color>
     <color name="default_text_color_secondary">@color/default_text_color_secondary_dark</color>
-    <color name="default_text_color_disabled">@color/default_text_color_disabled_dark</color>
     <!-- Text color for non-clickable blue text. -->
     <color name="default_text_color_blue" tools:ignore="UnusedResources">@color/default_text_color_link</color>
     <!-- Text color for clickable text. -->
     <color name="default_text_color_link">@color/default_text_color_link_dark</color>
     <color name="default_text_color_link_disabled">@color/default_text_color_link_disabled_dark</color>
     <color name="default_text_color_error">@color/default_text_color_error_dark</color>
+    <color name="default_text_color_on_accent1">@color/default_text_color_on_accent1_light</color>
+    <color name="default_text_color_on_accent1_disabled">@color/default_text_color_disabled_dark</color>
+    <!-- TODO(https://crbug.com/1248157): This is the same as light mode's
+         ?attr/colorOnSecondaryContainer, but it would break in dark mode.
+         Figure out a solution for dynamic colors. -->
+    <color name="default_text_color_on_accent2_container">@color/baseline_secondary_900</color>
 
     <!-- Common icon colors for drawables. -->
     <color name="default_icon_color">@color/default_icon_color_dark</color>
     <color name="default_icon_color_inverse" tools:ignore="UnusedResources">@color/default_icon_color_inverse_light</color>
-    <color name="default_icon_color_blue" tools:ignore="UnusedResources">@color/default_icon_color_blue_dark</color>
+    <color name="default_icon_color_accent1_baseline" tools:ignore="UnusedResources">@color/default_icon_color_blue_dark</color>
     <color name="default_icon_color_secondary" tools:ignore="UnusedResources">@color/default_icon_color_secondary_dark</color>
 
-    <color name="hairline_stroke_color">@color/hairline_stroke_color_light</color>
+    <color name="hairline_stroke_color_baseline">@color/hairline_stroke_color_dark</color>
     <color name="default_icon_color_disabled">@color/default_icon_color_disabled_dark</color>
     <color name="default_icon_color_disabled_inverse" tools:ignore="UnusedResources">@color/default_icon_color_disabled_light</color>
 
@@ -47,8 +52,10 @@
     <color name="legacy_bg_color_elev_1">@color/legacy_bg_color_light_elev_1</color>
     <color name="legacy_bg_color_elev_4">@color/legacy_bg_color_light_elev_4</color>
 
-    <!-- Popup colors -->
-    <color name="popup_bg_color">@color/legacy_bg_color_elev_4</color>
+    <!-- Dialog colors -->
+    <color name="dialog_bg_color">@color/dialog_bg_color_light</color>
+    <color name="dialog_bg_color_light">@color/default_bg_color_light</color>
+    <color name="dialog_bg_color_dark">@color/default_bg_color_dark_elev_3</color>
 
     <!-- Snackbar colors -->
     <color name="snackbar_background_color">@color/default_bg_color</color>
@@ -67,11 +74,11 @@
     <color name="default_control_color_active" tools:ignore="UnusedResources">@color/default_control_color_active_light</color>
 
     <!-- Chip colors -->
-    <color name="default_chip_assistive_text_color">@color/default_text_color</color>
-    <color name="chip_text_color_selected">@color/default_text_color</color>
+    <color name="default_chip_assistive_text_color">@color/default_text_color_baseline</color>
+    <color name="chip_text_color_selected">@color/default_text_color_on_accent2_container</color>
     <color name="default_chip_assistive_text_color_secondary">@color/default_text_color_secondary</color>
     <color name="chip_bg_color">@color/default_bg_color</color>
-    <color name="chip_background_color_disabled">@color/alpha_100</color>
+    <color name="chip_background_color_disabled">@android:color/transparent</color>
     <color name="default_chip_ripple_color">@color/default_bg_color_elev_2</color>
     <color name="default_chip_outline_color" tools:ignore="UnusedResources">@color/default_chip_outline_color_light</color>
     <color name="chip_selected_hover">@color/chip_selected_hover_dark</color>
@@ -117,6 +124,7 @@
     <color name="filled_button_bg_color">@color/filled_button_bg_color_dark</color>
     <color name="filled_button_bg_color_disabled">@color/filled_button_bg_color_disabled_dark</color>
     <color name="divider_line_bg_color" tools:ignore="UnusedResources">@color/divider_line_bg_color_dark</color>
+    <color name="drag_handlebar_color">@color/divider_line_bg_color</color>
     <color name="omnibox_bg_color" tools:ignore="UnusedResources">@color/omnibox_bg_color_light</color>
     <color name="image_loading_color" tools:ignore="UnusedResources">@color/image_loading_color_dark</color>
     <color name="promo_illustration_bg_color" tools:ignore="UnusedResources">@color/promo_illustration_bg_color_light</color>

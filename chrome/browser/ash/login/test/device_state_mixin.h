@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
@@ -18,7 +17,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 // A mixin for setting up device state:
 // *   OOBE completion state
@@ -45,6 +44,10 @@ class DeviceStateMixin : public InProcessBrowserTestMixin,
   };
 
   DeviceStateMixin(InProcessBrowserTestMixinHost* host, State initial_state);
+
+  DeviceStateMixin(const DeviceStateMixin&) = delete;
+  DeviceStateMixin& operator=(const DeviceStateMixin&) = delete;
+
   ~DeviceStateMixin() override;
 
   // InProcessBrowserTestMixin:
@@ -120,16 +123,14 @@ class DeviceStateMixin : public InProcessBrowserTestMixin,
   LocalStateMixin local_state_mixin_;
 
   base::WeakPtrFactory<DeviceStateMixin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceStateMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::DeviceStateMixin;
+namespace chromeos {
+using ::ash::DeviceStateMixin;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_DEVICE_STATE_MIXIN_H_

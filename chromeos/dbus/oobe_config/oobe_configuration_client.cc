@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "chromeos/dbus/oobe_config/oobe_config.pb.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -24,6 +23,10 @@ namespace chromeos {
 class OobeConfigurationClientImpl : public OobeConfigurationClient {
  public:
   OobeConfigurationClientImpl() {}
+
+  OobeConfigurationClientImpl(const OobeConfigurationClientImpl&) = delete;
+  OobeConfigurationClientImpl& operator=(const OobeConfigurationClientImpl&) =
+      delete;
 
   ~OobeConfigurationClientImpl() override = default;
 
@@ -83,8 +86,6 @@ class OobeConfigurationClientImpl : public OobeConfigurationClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<OobeConfigurationClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OobeConfigurationClientImpl);
 };
 
 // static

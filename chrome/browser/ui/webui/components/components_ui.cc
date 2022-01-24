@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -35,6 +34,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user_manager.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -65,6 +68,9 @@ content::WebUIDataSource* CreateComponentsUIHTMLSource(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      chromeos::LacrosService::Get()->init_params()->session_type ==
+          crosapi::mojom::SessionType::kPublicSession
 #else
       profile->IsOffTheRecord()
 #endif

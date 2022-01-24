@@ -48,6 +48,10 @@ class ProfileImpl : public Profile {
       base::OnceClosure done_callback);
 
   ProfileImpl(const std::string& name, bool is_incognito);
+
+  ProfileImpl(const ProfileImpl&) = delete;
+  ProfileImpl& operator=(const ProfileImpl&) = delete;
+
   ~ProfileImpl() override;
 
   // Returns the ProfileImpl from the specified BrowserContext.
@@ -215,8 +219,6 @@ class ProfileImpl : public Profile {
   std::vector<std::unique_ptr<content::WebContents>> web_contents_to_delete_;
 
   base::WeakPtrFactory<ProfileImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileImpl);
 };
 
 }  // namespace weblayer

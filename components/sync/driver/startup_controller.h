@@ -16,7 +16,7 @@ namespace syncer {
 
 // This class is used by SyncServiceImpl to manage all logic and state
 // pertaining to initialization of the SyncEngine.
-class StartupController : public policy::PolicyService::Observer {
+class StartupController final : public policy::PolicyService::Observer {
  public:
   enum class State {
     // Startup has not been triggered yet.
@@ -37,7 +37,7 @@ class StartupController : public policy::PolicyService::Observer {
       base::RepeatingCallback<bool()> should_start,
       base::RepeatingClosure start_engine,
       policy::PolicyService* policy_service);
-  ~StartupController() final;
+  ~StartupController() override;
 
   // Starts up sync if it is requested by the user and preconditions are met.
   // If |force_immediate| is true, this will start sync immediately, bypassing

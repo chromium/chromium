@@ -5,6 +5,7 @@
 #include "extensions/browser/service_worker_task_queue.h"
 
 #include <memory>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -30,7 +31,10 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 using content::BrowserContext;
 
@@ -204,7 +208,10 @@ void ServiceWorkerTaskQueue::DidStartWorkerFail(
   // TODO(https://crbug/1062936): Needs more thought: extension would be in
   // perma-broken state after this as the registration wouldn't be stored if
   // this happens.
-  LOG(ERROR) << "DidStartWorkerFail " << context_id.first.extension_id();
+  LOG(ERROR)
+      << "DidStartWorkerFail " << context_id.first.extension_id() << ": "
+      << static_cast<std::underlying_type_t<blink::ServiceWorkerStatusCode>>(
+             status_code);
 }
 
 void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
@@ -371,7 +378,7 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
     option.type = blink::mojom::ScriptType::kModule;
   option.scope = extension->url();
   service_worker_context->RegisterServiceWorker(
-      script_url, option,
+      script_url, blink::StorageKey(url::Origin::Create(option.scope)), option,
       base::BindOnce(&ServiceWorkerTaskQueue::DidRegisterServiceWorker,
                      weak_factory_.GetWeakPtr(), context_id,
                      base::Time::Now()));
@@ -402,6 +409,7 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
 
   service_worker_context->UnregisterServiceWorker(
       extension->url(),
+      blink::StorageKey(url::Origin::Create(extension->url())),
       base::BindOnce(&ServiceWorkerTaskQueue::DidUnregisterServiceWorker,
                      weak_factory_.GetWeakPtr(), extension_id, *sequence));
 
@@ -426,8 +434,9 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
   content::ServiceWorkerContext* service_worker_context =
       partition->GetServiceWorkerContext();
 
+  const GURL& scope = context_id.first.service_worker_scope();
   service_worker_context->StartWorkerForScope(
-      context_id.first.service_worker_scope(),
+      scope, blink::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerForScope,
                      weak_factory_.GetWeakPtr(), context_id, base::Time::Now()),
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerFail,
@@ -474,8 +483,8 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 
   if (worker_state->has_pending_tasks()) {
     // TODO(lazyboy): If worker for |context_id| is already running, consider
-    // not calling StartWorker. This isn't straightforward as service worker's
-    // internal state is mostly on the core thread.
+    // not calling StartWorker. This should be straightforward now that service
+    // worker's internal state is on the UI thread rather than the IO thread.
     RunTasksAfterStartWorker(context_id);
   }
 }
@@ -654,6 +663,20 @@ void ServiceWorkerTaskQueue::StopObserving(
   observing_worker_contexts_.erase(service_worker_context);
   if (!observing_worker_contexts_.count(service_worker_context))
     service_worker_context->RemoveObserver(this);
+}
+
+void ServiceWorkerTaskQueue::ActivateIncognitoSplitModeExtensions(
+    ServiceWorkerTaskQueue* other) {
+  DCHECK(browser_context_->IsOffTheRecord())
+      << "Only need to activate split mode extensions for an OTR context";
+  for (const auto& activated : activation_sequences_) {
+    ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
+    DCHECK(registry);
+    const Extension* extension =
+        registry->enabled_extensions().GetByID(activated.first);
+    if (extension && IncognitoInfo::IsSplitMode(extension))
+      ActivateExtension(extension);
+  }
 }
 
 }  // namespace extensions

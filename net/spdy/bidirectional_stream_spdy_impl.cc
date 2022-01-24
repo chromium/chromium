@@ -363,7 +363,7 @@ void BidirectionalStreamSpdyImpl::ScheduleBufferedRead() {
   }
 
   more_read_data_pending_ = false;
-  timer_->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(kBufferTimeMs),
+  timer_->Start(FROM_HERE, base::Milliseconds(kBufferTimeMs),
                 base::BindOnce(&BidirectionalStreamSpdyImpl::DoBufferedRead,
                                weak_factory_.GetWeakPtr()));
 }

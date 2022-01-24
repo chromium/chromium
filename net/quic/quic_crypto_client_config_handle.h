@@ -26,14 +26,15 @@ namespace net {
 // other network objects that may be deleted after the QuicStreamFactory.
 class NET_EXPORT_PRIVATE QuicCryptoClientConfigHandle {
  public:
+  QuicCryptoClientConfigHandle& operator=(const QuicCryptoClientConfigHandle&) =
+      delete;
+
   virtual ~QuicCryptoClientConfigHandle();
+
   virtual quic::QuicCryptoClientConfig* GetConfig() const = 0;
 
  protected:
   QuicCryptoClientConfigHandle();
-
- private:
-  DISALLOW_ASSIGN(QuicCryptoClientConfigHandle);
 };
 
 }  // namespace net

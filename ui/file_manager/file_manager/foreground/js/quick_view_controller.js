@@ -6,6 +6,7 @@ import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeop
 import {LoadImageRequest, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
+import {DialogType} from '../../common/js/dialog_type.js';
 import {FileType} from '../../common/js/file_type.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -14,10 +15,9 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 
 import {constants} from './constants.js';
-import {DialogType} from './dialog_type.js';
 import {CommandHandler} from './file_manager_commands.js';
 import {FileSelectionHandler} from './file_selection.js';
-import {FileTasks} from './file_tasks.js';
+import {FileTasks, parseActionId} from './file_tasks.js';
 import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataBoxController} from './metadata_box_controller.js';
@@ -497,15 +497,21 @@ export class QuickViewController {
             return;  // Bail: there's no point drawing a stale selection.
           }
 
+          const emptySourceContent = {
+            data: null,
+            dataType: '',
+          };
+
           this.quickView_.setProperties({
+            isLegacy: !window.isSWA,
             type: params.type || '',
             subtype: params.subtype || '',
             filePath: params.filePath || '',
             hasTask: params.hasTask || false,
             canDelete: params.canDelete || false,
-            contentUrl: params.contentUrl || '',
-            videoPoster: params.videoPoster || '',
-            audioArtwork: params.audioArtwork || '',
+            sourceContent: params.sourceContent || emptySourceContent,
+            videoPoster: params.videoPoster || emptySourceContent,
+            audioArtwork: params.audioArtwork || emptySourceContent,
             autoplay: params.autoplay || false,
             browsable: params.browsable || false,
           });
@@ -558,14 +564,23 @@ export class QuickViewController {
         return this.loadThumbnailFromDrive_(item.thumbnailUrl).then(result => {
           if (result.status === LoadImageResponseStatus.SUCCESS) {
             if (params.type == 'video') {
-              params.videoPoster = result.data;
+              params.videoPoster = {
+                data: result.data,
+                dataType: 'url',
+              };
             } else if (params.type == 'image') {
-              params.contentUrl = result.data;
+              params.sourceContent = {
+                data: result.data,
+                dataType: 'url',
+              };
             } else {
               // TODO(sashab): Rather than re-use 'image', create a new type
               // here, e.g. 'thumbnail'.
               params.type = 'image';
-              params.contentUrl = result.data;
+              params.sourceContent = {
+                data: result.data,
+                dataType: 'url',
+              };
             }
           }
           return params;
@@ -581,8 +596,11 @@ export class QuickViewController {
       return this.loadRawFileThumbnailFromImageLoader_(entry)
           .then(result => {
             if (result.status === LoadImageResponseStatus.SUCCESS) {
-              params.contentUrl = result.data;
               params.type = 'image';
+              params.sourceContent = {
+                data: result.data,
+                dataType: 'url',
+              };
             }
             return params;
           })
@@ -603,33 +621,49 @@ export class QuickViewController {
           switch (type) {
             case 'image':
               if (QuickViewController.UNSUPPORTED_IMAGE_SUBTYPES_.indexOf(
-                      typeInfo.subtype) !== -1) {
-                params.contentUrl = '';
-              } else {
-                params.contentUrl = URL.createObjectURL(file);
+                      typeInfo.subtype) === -1) {
+                params.sourceContent = {
+                  data: file,
+                  dataType: 'blob',
+                };
               }
               return params;
             case 'video':
-              params.contentUrl = URL.createObjectURL(file);
+              params.sourceContent = {
+                data: file,
+                dataType: 'blob',
+              };
               params.autoplay = true;
               if (item.thumbnailUrl) {
-                params.videoPoster = item.thumbnailUrl;
+                params.videoPoster = {
+                  data: item.thumbnailUrl,
+                  dataType: 'url',
+                };
               }
               return params;
             case 'audio':
-              params.contentUrl = URL.createObjectURL(file);
+              params.sourceContent = {
+                data: file,
+                dataType: 'blob',
+              };
               params.autoplay = true;
               return this.metadataModel_.get([entry], ['contentThumbnailUrl'])
                   .then(items => {
                     const item = items[0];
                     if (item.contentThumbnailUrl) {
-                      params.audioArtwork = item.contentThumbnailUrl;
+                      params.audioArtwork = {
+                        data: item.contentThumbnailUrl,
+                        dataType: 'url',
+                      };
                     }
                     return params;
                   });
             case 'document':
               if (typeInfo.subtype === 'HTML') {
-                params.contentUrl = URL.createObjectURL(file);
+                params.sourceContent = {
+                  data: file,
+                  dataType: 'blob',
+                };
                 return params;
               } else {
                 break;
@@ -643,7 +677,10 @@ export class QuickViewController {
                           [text], {type: 'text/plain;charset=utf-8'});
                     })
                     .then(blob => {
-                      params.contentUrl = URL.createObjectURL(blob);
+                      params.sourceContent = {
+                        data: blob,
+                        dataType: 'blob',
+                      };
                       params.browsable = true;
                       return params;
                     })
@@ -658,14 +695,14 @@ export class QuickViewController {
 
           params.browsable = tasks.some(task => {
             return ['view-in-browser', 'view-pdf'].includes(
-                task.descriptor.actionId);
+                parseActionId(task.descriptor.actionId));
           });
 
           if (params.browsable) {
-            params.contentUrl = URL.createObjectURL(file);
-            if (params.subtype === 'PDF') {
-              params.contentUrl += '#view=FitH';
-            }
+            params.sourceContent = {
+              data: file,
+              dataType: 'blob',
+            };
           }
 
           return params;
@@ -748,19 +785,3 @@ QuickViewController.LOCAL_VOLUME_TYPES_ = [
 QuickViewController.UNSUPPORTED_IMAGE_SUBTYPES_ = [
   'TIFF',  // crbug.com/624109
 ];
-
-/**
- * @typedef {{
- *   type: string,
- *   subtype: string,
- *   filePath: string,
- *   hasTask: boolean,
- *   canDelete: boolean,
- *   contentUrl: (string|undefined),
- *   videoPoster: (string|undefined),
- *   audioArtwork: (string|undefined),
- *   autoplay: (boolean|undefined),
- *   browsable: (boolean|undefined),
- * }}
- */
-let QuickViewParams;

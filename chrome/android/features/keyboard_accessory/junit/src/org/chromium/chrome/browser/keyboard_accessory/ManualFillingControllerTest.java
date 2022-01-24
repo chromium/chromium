@@ -55,6 +55,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeWindow;
@@ -302,7 +303,11 @@ public class ManualFillingControllerTest {
         };
         when(mMockActivity.getBrowserControlsManager()).thenReturn(browserControlsManager);
         when(mMockActivity.getFullscreenManager()).thenReturn(mMockFullscreenManager);
-        when(mMockActivity.getCompositorViewHolder()).thenReturn(mMockCompositorViewHolder);
+        ObservableSupplierImpl<CompositorViewHolder> compositorViewHolderSupplier =
+                new ObservableSupplierImpl<>();
+        compositorViewHolderSupplier.set(mMockCompositorViewHolder);
+        when(mMockActivity.getCompositorViewHolderSupplier())
+                .thenReturn(compositorViewHolderSupplier);
         when(mMockActivity.getResources()).thenReturn(mMockResources);
         when(mMockActivity.getPackageManager())
                 .thenReturn(RuntimeEnvironment.application.getPackageManager());

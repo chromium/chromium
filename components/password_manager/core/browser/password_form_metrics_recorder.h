@@ -12,7 +12,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/clock.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -55,6 +54,10 @@ class PasswordFormMetricsRecorder
   PasswordFormMetricsRecorder(bool is_main_frame_secure,
                               ukm::SourceId source_id,
                               PrefService* pref_service);
+
+  PasswordFormMetricsRecorder(const PasswordFormMetricsRecorder&) = delete;
+  PasswordFormMetricsRecorder& operator=(const PasswordFormMetricsRecorder&) =
+      delete;
 
   // ManagerAction - What does the PasswordFormManager do with this form? Either
   // it fills it, or it doesn't. If it doesn't fill it, that's either
@@ -230,7 +233,9 @@ class PasswordFormMetricsRecorder
     kPasswordPrefilled = 8,
     // A credential exists for affiliated website.
     kAffiliatedWebsite = 9,
-    kMaxValue = kAffiliatedWebsite,
+    // The form may accept WebAuthn credentials.
+    kAcceptsWebAuthnCredentials = 10,
+    kMaxValue = kAcceptsWebAuthnCredentials,
   };
 
   // Used in UMA histogram, please do NOT reorder.
@@ -414,14 +419,6 @@ class PasswordFormMetricsRecorder
   // JavaScript. The result is stored in |js_only_input_|.
   void CalculateJsOnlyInput(const autofill::FormData& submitted_form);
 
-  void set_user_typed_password_on_chrome_sign_in_page() {
-    user_typed_password_on_chrome_sign_in_page_ = true;
-  }
-
-  void set_password_hash_saved_on_chrome_sing_in_page() {
-    password_hash_saved_on_chrome_sing_in_page_ = true;
-  }
-
   void set_possible_username_used(bool value) {
     possible_username_used_ = value;
   }
@@ -516,22 +513,19 @@ class PasswordFormMetricsRecorder
 
   bool recorded_preferred_matched_password_type = false;
 
-  bool user_typed_password_on_chrome_sign_in_page_ = false;
-  bool password_hash_saved_on_chrome_sing_in_page_ = false;
-
   absl::optional<FillingAssistance> filling_assistance_;
   absl::optional<FillingSource> filling_source_;
   absl::optional<metrics_util::PasswordAccountStorageUsageLevel>
       account_storage_usage_level_;
 
+  // Whether a single username candidate was populated in prompt.
   bool possible_username_used_ = false;
+
   bool username_updated_in_bubble_ = false;
 
   absl::optional<JsOnlyInput> js_only_input_;
 
   bool is_mixed_content_form_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordFormMetricsRecorder);
 };
 
 }  // namespace password_manager

@@ -7,7 +7,15 @@
  * 'cr-camera' is a Polymer element used to take a picture from the
  * user webcam to use as a Chrome OS profile picture.
  */
-(function() {
+import '../../shared_style_css.m.js';
+import '../../cr_icon_button/cr_icon_button.m.js';
+import '//resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import './icons.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {convertImageSequenceToPng, isEncodedPngDataUrlAnimated} from './png.js';
 
 /**
  * Dimensions for camera capture.
@@ -32,6 +40,8 @@ const CAPTURE_DURATION_MS = 1000;
 
 Polymer({
   is: 'cr-camera',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     /** Strings provided by host */
@@ -286,7 +296,7 @@ Polymer({
         encodedImages.concat(encodedImages.slice(1, -1).reverse());
 
     /** Convert image sequence to animated PNG. */
-    return cr.png.convertImageSequenceToPng(forwardBackwardImageSequence);
+    return convertImageSequenceToPng(forwardBackwardImageSequence);
   },
 
   /**
@@ -325,5 +335,3 @@ Polymer({
     return videomode ? cameraLabel : videoLabel;
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
-})();

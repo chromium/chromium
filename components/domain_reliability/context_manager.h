@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/domain_reliability/beacon.h"
@@ -32,6 +31,12 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContextManager {
       const std::string& upload_reporter_string,
       DomainReliabilityContext::UploadAllowedCallback upload_allowed_callback,
       DomainReliabilityDispatcher* dispatcher);
+
+  DomainReliabilityContextManager(const DomainReliabilityContextManager&) =
+      delete;
+  DomainReliabilityContextManager& operator=(
+      const DomainReliabilityContextManager&) = delete;
+
   ~DomainReliabilityContextManager();
 
   // If |url| maps to a context added to this manager, calls |OnBeacon| on
@@ -103,8 +108,6 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContextManager {
   DomainReliabilityUploader* uploader_ = nullptr;
 
   ContextMap contexts_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityContextManager);
 };
 
 }  // namespace domain_reliability

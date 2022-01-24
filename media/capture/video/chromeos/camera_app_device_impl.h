@@ -5,24 +5,34 @@
 #ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_APP_DEVICE_IMPL_H_
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_APP_DEVICE_IMPL_H_
 
+#include <map>
 #include <queue>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_set.h"
+#include "ash/webui/camera_app_ui/document_scanner_service_client.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/timer/elapsed_timer.h"
+#include "media/base/video_transformation.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/image_capture.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range.h"
+
+namespace gpu {
+
+class GpuMemoryBufferImpl;
+
+}  // namespace gpu
 
 namespace media {
 
@@ -34,7 +44,7 @@ struct ReprocessTask {
   ReprocessTask(ReprocessTask&& other);
   ~ReprocessTask();
   cros::mojom::Effect effect;
-  cros::mojom::CameraAppDevice::SetReprocessOptionCallback callback;
+  base::OnceCallback<void(int32_t, media::mojom::BlobPtr)> callback;
   std::vector<cros::mojom::CameraMetadataEntryPtr> extra_metadata;
 };
 
@@ -63,6 +73,10 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
 
   CameraAppDeviceImpl(const std::string& device_id,
                       cros::mojom::CameraInfoPtr camera_info);
+
+  CameraAppDeviceImpl(const CameraAppDeviceImpl&) = delete;
+  CameraAppDeviceImpl& operator=(const CameraAppDeviceImpl&) = delete;
+
   ~CameraAppDeviceImpl() override;
 
   // Binds the mojo receiver to this implementation.
@@ -73,10 +87,12 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   // the camera device ipc thread.
   base::WeakPtr<CameraAppDeviceImpl> GetWeakPtr();
 
-  // Invalidates all the existing weak pointers and then triggers |callback|.
+  // Resets things which need to be handled on device IPC thread, including
+  // invalidating all the existing weak pointers, and then triggers |callback|.
   // When |should_disable_new_ptrs| is set to true, no more weak pointers can be
   // created. It is used when tearing down the CameraAppDeviceImpl instance.
-  void InvalidatePtrs(base::OnceClosure callback, bool should_disable_new_ptrs);
+  void ResetOnDeviceIpcThread(base::OnceClosure callback,
+                              bool should_disable_new_ptrs);
 
   // Consumes all the pending reprocess tasks if there is any and eventually
   // generates a ReprocessTaskQueue which contains:
@@ -109,10 +125,17 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   // opened camera.  Used to configure and query camera frame rotation.
   void SetCameraDeviceContext(CameraDeviceContext* device_context);
 
+  // Detect document corners on the frame given by its gpu memory buffer if it
+  // is supported.
+  void MaybeDetectDocumentCorners(std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb,
+                                  VideoRotation rotation);
+
   // cros::mojom::CameraAppDevice implementations.
   void GetCameraInfo(GetCameraInfoCallback callback) override;
-  void SetReprocessOption(cros::mojom::Effect effect,
-                          SetReprocessOptionCallback callback) override;
+  void SetReprocessOptions(
+      const std::vector<cros::mojom::Effect>& effects,
+      mojo::PendingRemote<cros::mojom::ReprocessResultListener> listener,
+      SetReprocessOptionsCallback callback) override;
   void SetFpsRange(const gfx::Range& fps_range,
                    SetFpsRangeCallback callback) override;
   void SetStillCaptureResolution(
@@ -124,26 +147,34 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
       mojo::PendingRemote<cros::mojom::ResultMetadataObserver> observer,
       cros::mojom::StreamType streamType,
       AddResultMetadataObserverCallback callback) override;
-  void RemoveResultMetadataObserver(
-      uint32_t id,
-      RemoveResultMetadataObserverCallback callback) override;
   void AddCameraEventObserver(
       mojo::PendingRemote<cros::mojom::CameraEventObserver> observer,
       AddCameraEventObserverCallback callback) override;
-  void RemoveCameraEventObserver(
-      uint32_t id,
-      RemoveCameraEventObserverCallback callback) override;
   void SetCameraFrameRotationEnabledAtSource(
       bool is_enabled,
       SetCameraFrameRotationEnabledAtSourceCallback callback) override;
   void GetCameraFrameRotation(GetCameraFrameRotationCallback callback) override;
+  void RegisterDocumentCornersObserver(
+      mojo::PendingRemote<cros::mojom::DocumentCornersObserver> observer,
+      RegisterDocumentCornersObserverCallback callback) override;
 
  private:
   static void DisableEeNr(ReprocessTask* task);
 
   void OnMojoConnectionError();
 
-  void SetReprocessResultOnMojoThread(SetReprocessOptionCallback callback,
+  bool IsCloseToPreviousDetectionRequest();
+
+  void DetectDocumentCornersOnMojoThread(
+      std::unique_ptr<gpu::GpuMemoryBufferImpl> image,
+      VideoRotation rotation);
+
+  void OnDetectedDocumentCornersOnMojoThread(
+      VideoRotation rotation,
+      bool success,
+      const std::vector<gfx::PointF>& corners);
+
+  void SetReprocessResultOnMojoThread(cros::mojom::Effect effect,
                                       const int32_t status,
                                       media::mojom::BlobPtr blob);
 
@@ -168,6 +199,8 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   base::Lock reprocess_tasks_lock_;
   base::queue<ReprocessTask> reprocess_task_queue_
       GUARDED_BY(reprocess_tasks_lock_);
+  mojo::Remote<cros::mojom::ReprocessResultListener> reprocess_listener_
+      GUARDED_BY(reprocess_tasks_lock_);
 
   // It will be inserted and read from different threads.
   base::Lock fps_ranges_lock_;
@@ -183,19 +216,24 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   cros::mojom::CaptureIntent capture_intent_ GUARDED_BY(capture_intent_lock_);
 
   // Those maps will be changed and used only on the mojo thread.
-  uint32_t next_metadata_observer_id_ = 0;
-  base::flat_map<uint32_t, mojo::Remote<cros::mojom::ResultMetadataObserver>>
-      metadata_observers_;
-  base::flat_map<cros::mojom::StreamType, base::flat_set<uint32_t>>
-      stream_metadata_observer_ids_;
+  std::map<cros::mojom::StreamType,
+           mojo::RemoteSet<cros::mojom::ResultMetadataObserver>>
+      stream_to_metadata_observers_map_;
 
-  uint32_t next_camera_event_observer_id_ = 0;
-  base::flat_map<uint32_t, mojo::Remote<cros::mojom::CameraEventObserver>>
-      camera_event_observers_;
+  mojo::RemoteSet<cros::mojom::CameraEventObserver> camera_event_observers_;
 
   base::Lock camera_device_context_lock_;
   CameraDeviceContext* camera_device_context_
       GUARDED_BY(camera_device_context_lock_);
+
+  mojo::RemoteSet<cros::mojom::DocumentCornersObserver>
+      document_corners_observers_;
+  bool has_ongoing_document_detection_task_ = false;
+  std::unique_ptr<base::ElapsedTimer> document_detection_timer_ = nullptr;
+
+  // Client to connect to document detection service. It should only be
+  // used/destructed on the Mojo thread.
+  std::unique_ptr<ash::DocumentScannerServiceClient> document_scanner_service_;
 
   // The weak pointers should be dereferenced and invalidated on camera device
   // ipc thread.
@@ -204,8 +242,6 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   // The weak pointers should be dereferenced and invalidated on the Mojo
   // thread.
   base::WeakPtrFactory<CameraAppDeviceImpl> weak_ptr_factory_for_mojo_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CameraAppDeviceImpl);
 };
 
 }  // namespace media

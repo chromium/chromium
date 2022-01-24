@@ -27,6 +27,9 @@ class NET_EXPORT_PRIVATE Bitmap {
   // bits in the bitmap, and |num_words| is the size of |map| in 32-bit words.
   Bitmap(uint32_t* map, int num_bits, int num_words);
 
+  Bitmap(const Bitmap&) = delete;
+  Bitmap& operator=(const Bitmap&) = delete;
+
   ~Bitmap();
 
   // Resizes the bitmap.
@@ -130,8 +133,6 @@ class NET_EXPORT_PRIVATE Bitmap {
   int num_bits_;          // The upper bound of the bitmap.
   int array_size_;        // The physical size (in uint32s) of the bitmap.
   bool alloc_;            // Whether or not we allocated the memory.
-
-  DISALLOW_COPY_AND_ASSIGN(Bitmap);
 };
 
 }  // namespace disk_cache

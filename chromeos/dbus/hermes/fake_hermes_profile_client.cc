@@ -131,6 +131,25 @@ void FakeHermesProfileClient::DisableCarrierProfile(
       base::BindOnce(std::move(callback), HermesResponseStatus::kSuccess));
 }
 
+void FakeHermesProfileClient::RenameProfile(const dbus::ObjectPath& object_path,
+                                            const std::string& new_name,
+                                            HermesResponseCallback callback) {
+  DVLOG(1) << "Renaming carrier profile name to " << new_name
+           << " on path: " << object_path.value();
+  HermesProfileClient::Properties* properties = GetProperties(object_path);
+  if (!properties) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  HermesResponseStatus::kErrorUnknown));
+    return;
+  }
+  properties->nick_name().ReplaceValue(new_name);
+  NotifyPropertyChanged(object_path, hermes::profile::kNicknameProperty);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), HermesResponseStatus::kSuccess));
+}
+
 HermesProfileClient::Properties* FakeHermesProfileClient::GetProperties(
     const dbus::ObjectPath& object_path) {
   auto it = properties_map_.find(object_path);

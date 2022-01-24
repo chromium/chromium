@@ -46,7 +46,7 @@ class IdlenessDetectorTest : public PageTestBase {
   }
 
   static base::TimeTicks SecondsToTimeTicks(double seconds) {
-    return base::TimeTicks() + base::TimeDelta::FromSecondsD(seconds);
+    return base::TimeTicks() + base::Seconds(seconds);
   }
 
  private:

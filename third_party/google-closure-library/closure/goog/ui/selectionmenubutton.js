@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A customized MenuButton for selection of items among lists.
@@ -34,6 +26,11 @@ goog.require('goog.ui.Component');
 goog.require('goog.ui.MenuButton');
 goog.require('goog.ui.MenuItem');
 goog.require('goog.ui.registry');
+goog.requireType('goog.dom.DomHelper');
+goog.requireType('goog.events.BrowserEvent');
+goog.requireType('goog.events.Event');
+goog.requireType('goog.ui.ButtonRenderer');
+goog.requireType('goog.ui.MenuItemRenderer');
 
 
 
@@ -56,11 +53,11 @@ goog.require('goog.ui.registry');
  */
 goog.ui.SelectionMenuButton = function(
     opt_renderer, opt_itemRenderer, opt_domHelper) {
+  'use strict';
   goog.ui.MenuButton.call(this, null, null, opt_renderer, opt_domHelper);
   this.initialItemRenderer_ = opt_itemRenderer || null;
 };
 goog.inherits(goog.ui.SelectionMenuButton, goog.ui.MenuButton);
-goog.tagUnsealableClass(goog.ui.SelectionMenuButton);
 
 
 /**
@@ -97,6 +94,7 @@ goog.ui.SelectionMenuButton.prototype.initialItemRenderer_;
  * @override
  */
 goog.ui.SelectionMenuButton.prototype.setEnabled = function(enable) {
+  'use strict';
   goog.ui.SelectionMenuButton.base(this, 'setEnabled', enable);
   this.setCheckboxEnabled(enable);
 };
@@ -109,12 +107,14 @@ goog.ui.SelectionMenuButton.prototype.setEnabled = function(enable) {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.ui.SelectionMenuButton.prototype.setCheckboxEnabled = function(enable) {
+  'use strict';
   this.getCheckboxElement().disabled = !enable;
 };
 
 
 /** @override */
 goog.ui.SelectionMenuButton.prototype.handleMouseDown = function(e) {
+  'use strict';
   if (!this.getDomHelper().contains(
           this.getCheckboxElement(),
           /** @type {Element} */ (e.target))) {
@@ -130,6 +130,7 @@ goog.ui.SelectionMenuButton.prototype.handleMouseDown = function(e) {
  * @protected
  */
 goog.ui.SelectionMenuButton.prototype.getCheckboxElement = function() {
+  'use strict';
   var elements = this.getDomHelper().getElementsByTagNameAndClass(
       goog.dom.TagName.INPUT,
       goog.getCssName('goog-selectionmenubutton-checkbox'),
@@ -144,6 +145,7 @@ goog.ui.SelectionMenuButton.prototype.getCheckboxElement = function() {
  * @protected
  */
 goog.ui.SelectionMenuButton.prototype.handleCheckboxClick = function(e) {
+  'use strict';
   if (this.selectionState == goog.ui.SelectionMenuButton.SelectionState.NONE) {
     this.setSelectionState(goog.ui.SelectionMenuButton.SelectionState.ALL);
     if (this.getItemAt(0)) {
@@ -167,6 +169,7 @@ goog.ui.SelectionMenuButton.prototype.handleCheckboxClick = function(e) {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.ui.SelectionMenuButton.prototype.handleMenuAction_ = function(e) {
+  'use strict';
   if (e.target.getModel() == goog.ui.SelectionMenuButton.SelectionState.ALL) {
     this.setSelectionState(goog.ui.SelectionMenuButton.SelectionState.ALL);
   } else {
@@ -180,6 +183,7 @@ goog.ui.SelectionMenuButton.prototype.handleMenuAction_ = function(e) {
  * @private
  */
 goog.ui.SelectionMenuButton.prototype.addMenuEvent_ = function() {
+  'use strict';
   if (this.getItemAt(0) && this.getItemAt(1)) {
     this.getHandler().listen(
         this.getMenu(), goog.ui.Component.EventType.ACTION,
@@ -195,6 +199,7 @@ goog.ui.SelectionMenuButton.prototype.addMenuEvent_ = function() {
  * @protected
  */
 goog.ui.SelectionMenuButton.prototype.addCheckboxEvent = function() {
+  'use strict';
   this.getHandler().listen(
       this.getCheckboxElement(), goog.events.EventType.CLICK,
       this.handleCheckboxClick);
@@ -208,6 +213,7 @@ goog.ui.SelectionMenuButton.prototype.addCheckboxEvent = function() {
  * @protected
  */
 goog.ui.SelectionMenuButton.prototype.createDom = function() {
+  'use strict';
   goog.ui.SelectionMenuButton.superClass_.createDom.call(this);
 
   this.createCheckbox();
@@ -236,6 +242,7 @@ goog.ui.SelectionMenuButton.prototype.createDom = function() {
  * @protected
  */
 goog.ui.SelectionMenuButton.prototype.createCheckbox = function() {
+  'use strict';
   var checkbox = this.getDomHelper().createElement(goog.dom.TagName.INPUT);
   checkbox.type = goog.dom.InputType.CHECKBOX;
   checkbox.className = goog.getCssName('goog-selectionmenubutton-checkbox');
@@ -245,6 +252,7 @@ goog.ui.SelectionMenuButton.prototype.createCheckbox = function() {
 
 /** @override */
 goog.ui.SelectionMenuButton.prototype.decorateInternal = function(element) {
+  'use strict';
   goog.ui.SelectionMenuButton.superClass_.decorateInternal.call(this, element);
   this.addCheckboxEvent();
   this.addMenuEvent_();
@@ -253,6 +261,7 @@ goog.ui.SelectionMenuButton.prototype.decorateInternal = function(element) {
 
 /** @override */
 goog.ui.SelectionMenuButton.prototype.setMenu = function(menu) {
+  'use strict';
   goog.ui.SelectionMenuButton.superClass_.setMenu.call(this, menu);
   this.addMenuEvent_();
 };
@@ -264,6 +273,7 @@ goog.ui.SelectionMenuButton.prototype.setMenu = function(menu) {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.ui.SelectionMenuButton.prototype.setSelectionState = function(state) {
+  'use strict';
   if (this.selectionState != state) {
     var checkbox = this.getCheckboxElement();
     if (state == goog.ui.SelectionMenuButton.SelectionState.ALL) {
@@ -287,11 +297,14 @@ goog.ui.SelectionMenuButton.prototype.setSelectionState = function(state) {
 * @return {goog.ui.SelectionMenuButton.SelectionState} Selection state.
 */
 goog.ui.SelectionMenuButton.prototype.getSelectionState = function() {
+  'use strict';
   return this.selectionState;
 };
 
 
 // Register a decorator factory function for goog.ui.SelectionMenuButton.
 goog.ui.registry.setDecoratorByClassName(
-    goog.getCssName('goog-selectionmenubutton-button'),
-    function() { return new goog.ui.SelectionMenuButton(); });
+    goog.getCssName('goog-selectionmenubutton-button'), function() {
+      'use strict';
+      return new goog.ui.SelectionMenuButton();
+    });

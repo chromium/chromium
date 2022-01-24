@@ -30,6 +30,10 @@ namespace {
 class TestGpuImpl : public mojom::Gpu {
  public:
   TestGpuImpl() = default;
+
+  TestGpuImpl(const TestGpuImpl&) = delete;
+  TestGpuImpl& operator=(const TestGpuImpl&) = delete;
+
   ~TestGpuImpl() override = default;
 
   void SetRequestWillSucceed(bool request_will_succeed) {
@@ -82,8 +86,6 @@ class TestGpuImpl : public mojom::Gpu {
 
   // Closing this handle will result in GpuChannelHost being lost.
   mojo::ScopedMessagePipeHandle gpu_channel_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGpuImpl);
 };
 
 }  // namespace
@@ -95,6 +97,10 @@ class GpuTest : public testing::Test {
     thread_options.priority = base::ThreadPriority::NORMAL;
     CHECK(io_thread_.StartWithOptions(std::move(thread_options)));
   }
+
+  GpuTest(const GpuTest&) = delete;
+  GpuTest& operator=(const GpuTest&) = delete;
+
   ~GpuTest() override = default;
 
   Gpu* gpu() { return gpu_.get(); }
@@ -170,8 +176,6 @@ class GpuTest : public testing::Test {
   base::Thread io_thread_;
   std::unique_ptr<Gpu> gpu_;
   std::unique_ptr<TestGpuImpl> gpu_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuTest);
 };
 
 // Tests that multiple calls for establishing a gpu channel are all notified

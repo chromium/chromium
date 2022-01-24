@@ -33,6 +33,11 @@ class SharedClipboardMessageHandlerTest : public SharedClipboardTestBase {
  public:
   SharedClipboardMessageHandlerTest() = default;
 
+  SharedClipboardMessageHandlerTest(const SharedClipboardMessageHandlerTest&) =
+      delete;
+  SharedClipboardMessageHandlerTest& operator=(
+      const SharedClipboardMessageHandlerTest&) = delete;
+
   ~SharedClipboardMessageHandlerTest() override = default;
 
   void SetUp() override {
@@ -54,8 +59,6 @@ class SharedClipboardMessageHandlerTest : public SharedClipboardTestBase {
  protected:
   std::unique_ptr<SharedClipboardMessageHandlerDesktop> message_handler_;
   MockSharingDeviceSource device_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardMessageHandlerTest);
 };
 
 }  // namespace

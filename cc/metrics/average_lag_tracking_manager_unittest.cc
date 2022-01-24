@@ -18,20 +18,28 @@ namespace {
 
 using base::Bucket;
 using testing::ElementsAre;
+using testing::IsEmpty;
 
 // Helper for TimeTicks usage
-base::TimeTicks MillisecondsToTimeTicks(float t_ms) {
-  return base::TimeTicks() + base::TimeDelta::FromMilliseconds(t_ms);
+base::TimeTicks MillisecondsToTimeTicks(int t_ms) {
+  return base::TimeTicks() + base::Milliseconds(t_ms);
 }
 
-// Helper for FrameTimingDetails usage in DidPresentCompositorFrame
+// Helper function returning a successful `FrameTimingDetails` for use in
+// `DidPresentCompositorFrame()`.
 viz::FrameTimingDetails PrepareFrameDetails(base::TimeTicks swap_time,
                                             base::TimeTicks presentation_time) {
-  gfx::SwapTimings timings;
-  timings.swap_start = swap_time;
   viz::FrameTimingDetails details;
+  details.swap_timings.swap_start = swap_time;
   details.presentation_feedback.timestamp = presentation_time;
-  details.swap_timings = timings;
+  return details;
+}
+
+// Helper function returning a failed `FrameTimingDetails` for use in
+// `DidPresentCompositorFrame()`.
+viz::FrameTimingDetails PrepareFailedFrameDetails() {
+  viz::FrameTimingDetails details;
+  details.presentation_feedback = gfx::PresentationFeedback::Failure();
   return details;
 }
 
@@ -39,39 +47,32 @@ class AverageLagTrackingManagerTest : public testing::Test {
  protected:
   AverageLagTrackingManagerTest() = default;
 
-  void SetUp() override { ResetHistograms(); }
-
-  void ResetHistograms() {
-    histogram_tester_ = std::make_unique<base::HistogramTester>();
-  }
-
   // Creates a scroll event each |scroll_rate| (in ms) of |scroll_delta| px.
   // Collect events at the expected |gpu_swap_times|.
-  void SimulateConstantScroll(const std::vector<unsigned int>& gpu_swap_times,
+  void SimulateConstantScroll(const std::vector<int>& gpu_swap_times,
                               float scroll_delta,
-                              unsigned int scroll_rate) {
-    if (gpu_swap_times.size() == 0 || gpu_swap_times[0] < scroll_rate)
+                              int scroll_rate) {
+    if (gpu_swap_times.empty() || gpu_swap_times[0] < scroll_rate)
       return;
 
-    // Creates 1st frame with scroll begin
+    // Creates 1st frame with scroll begin.
     std::vector<ui::LatencyInfo> events(gpu_swap_times[0] / scroll_rate);
     base::TimeTicks event_time = MillisecondsToTimeTicks(scroll_rate);
     events[0] = PrepareScrollEvent(AverageLagTracker::EventType::ScrollBegin,
                                    event_time, 0, scroll_delta);
     for (size_t i = 1; i < events.size(); i++) {
-      event_time += base::TimeDelta::FromMilliseconds(scroll_rate);
+      event_time += base::Milliseconds(scroll_rate);
       events[i] = PrepareScrollEvent(AverageLagTracker::EventType::ScrollUpdate,
                                      event_time, i, scroll_delta);
     }
     average_lag_tracking_manager_.CollectScrollEventsFromFrame(0, events);
 
-    // Creates remaining frames
+    // Creates remaining frames.
     for (size_t frame = 1; frame < gpu_swap_times.size(); frame++) {
-      unsigned int time_delta =
-          gpu_swap_times[frame] - gpu_swap_times[frame - 1];
+      int time_delta = gpu_swap_times[frame] - gpu_swap_times[frame - 1];
       events = std::vector<ui::LatencyInfo>(time_delta / scroll_rate);
       for (size_t i = 0; i < events.size(); i++) {
-        event_time += base::TimeDelta::FromMilliseconds(scroll_rate);
+        event_time += base::Milliseconds(scroll_rate);
         events[i] =
             PrepareScrollEvent(AverageLagTracker::EventType::ScrollUpdate,
                                event_time, i, scroll_delta);
@@ -80,12 +81,12 @@ class AverageLagTrackingManagerTest : public testing::Test {
     }
   }
 
-  // Prepares a ui::LatencyInfo object for a ScrollEvent
+  // Prepares a ui::LatencyInfo object for a ScrollEvent.
   ui::LatencyInfo PrepareScrollEvent(AverageLagTracker::EventType event_type,
                                      base::TimeTicks event_time,
                                      int trace_id,
                                      float delta,
-                                     float predicted_delta = 0) {
+                                     float predicted_delta = 0.0f) {
     ui::LatencyInfo info;
     info.set_trace_id(trace_id);
     info.set_source_event_type(ui::SourceEventType::TOUCH);
@@ -107,50 +108,52 @@ class AverageLagTrackingManagerTest : public testing::Test {
   }
 
   AverageLagTrackingManager average_lag_tracking_manager_;
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-// Simulate a simple situation that events at every 10ms and start at t=15ms,
-// frame swaps at every 10ms too and start at t=20ms and test we record one
-// UMA for ScrollUpdate in one second. Tests using CollectScrollEventAtFrame
-// (1 event per collection)
+// Simulate a simple situation that generates events at every 10ms starting at
+// t=15ms and swaps frames at every 10ms, too, starting at t=20ms. Then tests
+// that we record one UMA for ScrollUpdate in one second. Tests usage of
+// `CollectScrollEventAtFrame()` (1 event per collection).
 TEST_F(AverageLagTrackingManagerTest, OneSecondInterval) {
+  base::HistogramTester histogram_tester;
+
+  const float scroll_delta = 10.0f;
+  const int trace_id = 1;
+
   base::TimeTicks event_time = MillisecondsToTimeTicks(5);
   base::TimeTicks gpu_swap_time = MillisecondsToTimeTicks(10);
   base::TimeTicks presentation_time = MillisecondsToTimeTicks(13);
-  float scroll_delta = 10;
   int frame_id = 1;
 
   // ScrollBegin
-  event_time += base::TimeDelta::FromMilliseconds(10);  // 15ms
-  gpu_swap_time += base::TimeDelta::FromMilliseconds(10);      // 20ms
-  presentation_time += base::TimeDelta::FromMilliseconds(10);  // 23ms
-  ui::LatencyInfo evt = PrepareScrollEvent(
-      AverageLagTracker::EventType::ScrollBegin, event_time, 1, scroll_delta);
-  average_lag_tracking_manager_.CollectScrollEventsFromFrame(
-      frame_id, std::vector<ui::LatencyInfo>{evt});
+  event_time += base::Milliseconds(10);         // 15ms
+  gpu_swap_time += base::Milliseconds(10);      // 20ms
+  presentation_time += base::Milliseconds(10);  // 23ms
+  ui::LatencyInfo evt =
+      PrepareScrollEvent(AverageLagTracker::EventType::ScrollBegin, event_time,
+                         trace_id, scroll_delta);
+  average_lag_tracking_manager_.CollectScrollEventsFromFrame(frame_id, {evt});
   average_lag_tracking_manager_.DidPresentCompositorFrame(
       frame_id, PrepareFrameDetails(gpu_swap_time, presentation_time));
 
-  // Send 101 ScrollUpdate events to verify that there is 1 AverageLag record
+  // Send 101 ScrollUpdate events to verify that there is 1 AverageLag recorded
   // per 1 second.
   const int kUpdates = 101;
   for (int i = 0; i < kUpdates; i++) {
-    event_time += base::TimeDelta::FromMilliseconds(10);
-    gpu_swap_time += base::TimeDelta::FromMilliseconds(10);
-    presentation_time += base::TimeDelta::FromMilliseconds(10);
+    event_time += base::Milliseconds(10);
+    gpu_swap_time += base::Milliseconds(10);
+    presentation_time += base::Milliseconds(10);
     // First 50 has positive delta, others negative delta.
     const int sign = (i < kUpdates / 2) ? 1 : -1;
 
     evt = PrepareScrollEvent(AverageLagTracker::EventType::ScrollUpdate,
-                             event_time, 1, sign * scroll_delta);
-    average_lag_tracking_manager_.CollectScrollEventsFromFrame(
-        frame_id, std::vector<ui::LatencyInfo>{evt});
+                             event_time, trace_id, sign * scroll_delta);
+    average_lag_tracking_manager_.CollectScrollEventsFromFrame(frame_id, {evt});
     average_lag_tracking_manager_.DidPresentCompositorFrame(
         frame_id, PrepareFrameDetails(gpu_swap_time, presentation_time));
   }
 
-  // ScrollBegin report_time is at 20ms, so the next ScrollUpdate report_time is
+  // ScrollBegin report time is at 20ms, so the next ScrollUpdate report time is
   // at 1020ms. The last event_time that finish this report should be later than
   // 1020ms.
   EXPECT_EQ(event_time, MillisecondsToTimeTicks(1025));
@@ -159,41 +162,37 @@ TEST_F(AverageLagTrackingManagerTest, OneSecondInterval) {
 
   // Using the presentation time (25ms) instead of gpu swap (20ms) the expected
   // finger position is delta = 16px. Then (0.5*(10px+18px)*10ms)/10ms = 14px.
-  // UmaHistogramCounts1000's binning will round it to 12.
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Event.Latency.ScrollBegin.Touch.AverageLagPresentation"),
-              ElementsAre(Bucket(14, 1)));
+  histogram_tester.ExpectBucketCount(
+      "Event.Latency.ScrollBegin.Touch.AverageLagPresentation", 14, 1);
 
   // As the presentation times are at 80% of the gap between 2 scroll events,
-  // the Lag Area between 2 frames is define by the trapezoids: (time=event-2,
+  // the Lag Area between 2 frames is defined by the trapezoids: (time=event-2,
   // delta=8px), (time=event, delta=10px), (time=event+8, delta=18). This makes
-  // 99 trapezois with an area of 0.5*2*(8+10) + 0.5*8*(10+18) = 130px.
+  // 99 trapezoids with an area of 0.5*2*(8+10) + 0.5*8*(10+18) = 130px.
   // For scroll up/down frame, the Lag at the last frame swap is 2px, and Lag
   // at this frame swap is 12px. For the one changing direction, the Lag is
   // from 8 to 10 and down to 8 again. So total LagArea is 99 * 130, plus
-  // 0.5*8*(10+2) + 0.5*2*(8+10) = 66. This makes 12,936. Scaled by 1 sec
-  // and binned: 12.
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation"),
-              ElementsAre(Bucket(12, 1)));
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation."
-                  "PredictionPositive"),
-              ElementsAre(Bucket(0, 1)));
-  histogram_tester_->ExpectTotalCount(
+  // 0.5*8*(10+2) + 0.5*2*(8+10) = 66. This makes 12,936, Caled by 1 sec.
+  histogram_tester.ExpectBucketCount(
+      "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation", 12.936, 1);
+  histogram_tester.ExpectBucketCount(
+      "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation."
+      "PredictionPositive",
+      0, 1);
+  histogram_tester.ExpectTotalCount(
       "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation."
       "PredictionNegative",
       0);
-
-  ResetHistograms();
 }
 
 // This test creates 3 frames in order to check the submission of ScrollBegin
-// and ScrollUpdate events sent using CollectScrollEventsAtFrame (multiple
+// and ScrollUpdate events sent using `CollectScrollEventsAtFrame()` (multiple
 // events per collection)
 TEST_F(AverageLagTrackingManagerTest, MultipleEventsInSameFrame) {
-  std::vector<unsigned int> gpu_swap_times = {400, 1400, 1600};
-  std::vector<unsigned int> presentation_times = {500, 1500, 1700};
+  base::HistogramTester histogram_tester;
+
+  std::vector<int> gpu_swap_times = {400, 1400, 1600};
+  std::vector<int> presentation_times = {500, 1500, 1700};
   SimulateConstantScroll(gpu_swap_times, 10, 100);
   for (size_t frame = 0; frame < gpu_swap_times.size(); frame++) {
     average_lag_tracking_manager_.DidPresentCompositorFrame(
@@ -203,20 +202,102 @@ TEST_F(AverageLagTrackingManagerTest, MultipleEventsInSameFrame) {
   }
 
   // As the first frame is the ScrollBegin frame, the average lag is, using the
-  // presentation time, 0.5*(10 + 50) * 40 / 40 = 30. But
-  // UmaHistogramCounts1000's binning will round it to 29.
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Event.Latency.ScrollBegin.Touch.AverageLagPresentation"),
-              ElementsAre(Bucket(29, 1)));
+  // presentation time, 0.5*(10 + 50) * 40 / 40 = 30.
+  histogram_tester.ExpectBucketCount(
+      "Event.Latency.ScrollBegin.Touch.AverageLagPresentation", 30, 1);
 
   // Only the ScrollUpdate events from frame 2 are sent (as the frame 3 is
   // waiting for the next frame for sumission).
   // As there is a scroll update right at the same time as the frame submission,
   // using presentation time, frame 2 starts with 10 lag at 0.5s and finishes
-  // with 110 at 1.5, thus: 0.5 * (10 + 110) / 2 = 60.
-  EXPECT_THAT(histogram_tester_->GetAllSamples(
-                  "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation"),
-              ElementsAre(Bucket(60, 1)));
+  // with 110 at 1.5, thus: 0.5 * (10 + 110) = 60.
+  histogram_tester.ExpectBucketCount(
+      "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation", 60, 1);
+}
+
+// Tests that if failed presentations arrive out-of-order, they don't mark
+// previous pending frames as failed since they can still end up in a
+// successful presentation.
+TEST_F(AverageLagTrackingManagerTest, OutOfOrderPresentationFeedback) {
+  base::HistogramTester histogram_tester;
+
+  const int trace_id = 1;
+  const float scroll_delta = 100.0f;
+
+  std::vector<int> event_times = {500, 1500, 2500, 3500};
+  std::vector<int> gpu_swap_times = {900, 1900, 2900, 3900};
+  std::vector<int> presentation_times = {1000, 2000, 3000, 4000};
+
+  // Create a scroll-begin event. Submit frame 0 with updates from scroll-begin
+  // event and present it successfully. No AverageLag metrics should be reported
+  // yet.
+  ui::LatencyInfo scroll_begin = PrepareScrollEvent(
+      AverageLagTracker::EventType::ScrollBegin,
+      MillisecondsToTimeTicks(event_times[0]), trace_id, scroll_delta);
+  average_lag_tracking_manager_.CollectScrollEventsFromFrame(0, {scroll_begin});
+  average_lag_tracking_manager_.DidPresentCompositorFrame(
+      0, PrepareFrameDetails(MillisecondsToTimeTicks(gpu_swap_times[0]),
+                             MillisecondsToTimeTicks(presentation_times[0])));
+  histogram_tester.ExpectTotalCount(
+      "Event.Latency.ScrollBegin.Touch.AverageLagPresentation", 0);
+  histogram_tester.ExpectTotalCount(
+      "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation", 0);
+
+  // Create the first scroll-update event. Submit frame 1 with updates from the
+  // first scroll-update event, but don't present it yet. No AverageLag metrics
+  // should be recorded.
+  ui::LatencyInfo scroll_update_1 = PrepareScrollEvent(
+      AverageLagTracker::EventType::ScrollUpdate,
+      MillisecondsToTimeTicks(event_times[1]), trace_id, scroll_delta);
+  average_lag_tracking_manager_.CollectScrollEventsFromFrame(1,
+                                                             {scroll_update_1});
+  histogram_tester.ExpectTotalCount(
+      "Event.Latency.ScrollBegin.Touch.AverageLagPresentation", 0);
+  histogram_tester.ExpectTotalCount(
+      "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation", 0);
+
+  // Create the second scroll-update event. Submit frame 2 with updates from the
+  // second scroll-update event, but fail to present it. No AverageLag metrics
+  // should be reported.
+  ui::LatencyInfo scroll_update_2 = PrepareScrollEvent(
+      AverageLagTracker::EventType::ScrollUpdate,
+      MillisecondsToTimeTicks(event_times[2]), trace_id, scroll_delta);
+  average_lag_tracking_manager_.CollectScrollEventsFromFrame(2,
+                                                             {scroll_update_2});
+  average_lag_tracking_manager_.DidPresentCompositorFrame(
+      2, PrepareFailedFrameDetails());
+  histogram_tester.ExpectTotalCount(
+      "Event.Latency.ScrollBegin.Touch.AverageLagPresentation", 0);
+  histogram_tester.ExpectTotalCount(
+      "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation", 0);
+
+  // Now present frame 1 successfully. This should report AverageLag metrics for
+  // scroll-begin event of frame 0.
+  average_lag_tracking_manager_.DidPresentCompositorFrame(
+      1, PrepareFrameDetails(MillisecondsToTimeTicks(gpu_swap_times[1]),
+                             MillisecondsToTimeTicks(presentation_times[1])));
+  histogram_tester.ExpectBucketCount(
+      "Event.Latency.ScrollBegin.Touch.AverageLagPresentation", 125, 1);
+  histogram_tester.ExpectTotalCount(
+      "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation", 0);
+
+  // Create the third scroll-update event. Submit frame 3 with updates from the
+  // second scroll-update (which failed to be presented in frame 2) and the
+  // third scroll-update events. Since the failure of frame 2 should not have
+  // affected events from frame 1, AverageLag metrics for scroll-update event of
+  // frame 1 should be reported.
+  ui::LatencyInfo scroll_update_3 = PrepareScrollEvent(
+      AverageLagTracker::EventType::ScrollUpdate,
+      MillisecondsToTimeTicks(event_times[3]), trace_id, scroll_delta);
+  average_lag_tracking_manager_.CollectScrollEventsFromFrame(
+      3, {scroll_update_2, scroll_update_3});
+  average_lag_tracking_manager_.DidPresentCompositorFrame(
+      3, PrepareFrameDetails(MillisecondsToTimeTicks(gpu_swap_times[3]),
+                             MillisecondsToTimeTicks(presentation_times[3])));
+  histogram_tester.ExpectBucketCount(
+      "Event.Latency.ScrollBegin.Touch.AverageLagPresentation", 125, 1);
+  histogram_tester.ExpectBucketCount(
+      "Event.Latency.ScrollUpdate.Touch.AverageLagPresentation", 100, 1);
 }
 
 }  // namespace

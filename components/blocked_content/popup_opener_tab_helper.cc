@@ -111,6 +111,6 @@ void PopupOpenerTabHelper::MaybeLogPagePopupContentSettings() {
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PopupOpenerTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PopupOpenerTabHelper);
 
 }  // namespace blocked_content

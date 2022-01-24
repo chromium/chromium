@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.style.bidiTest');
 goog.setTestOnly();
@@ -24,19 +16,35 @@ const userAgent = goog.require('goog.userAgent');
 // Updates the calculated metrics.
 function updateInfo() {
   let element = document.getElementById('scrolledElementRtl');
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   document.getElementById('elementScrollLeftRtl').innerHTML =
       element.offsetParent.scrollLeft;
-  document.getElementById('bidiOffsetStartRtl').innerHTML =
+  document.getElementById('bidiOffsetStartRtl').textContent =
       bidi.getOffsetStart(element);
-  document.getElementById('bidiScrollLeftRtl').innerHTML =
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
+  document.getElementById('bidiScrollLeftRtl').textContent =
       bidi.getScrollLeft(element.offsetParent);
 
   element = document.getElementById('scrolledElementLtr');
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
   document.getElementById('elementScrollLeftLtr').innerHTML =
       element.offsetParent.scrollLeft;
-  document.getElementById('bidiOffsetStartLtr').innerHTML =
+  document.getElementById('bidiOffsetStartLtr').textContent =
       bidi.getOffsetStart(element);
-  document.getElementById('bidiScrollLeftLtr').innerHTML =
+  /**
+   * @suppress {strictMissingProperties} suppression added to enable type
+   * checking
+   */
+  document.getElementById('bidiScrollLeftLtr').textContent =
       bidi.getScrollLeft(element.offsetParent);
 }
 
@@ -101,6 +109,10 @@ testSuite({
     scrollAndAssert(0);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testFixedBodyChildLtr() {
     const bodyChild = document.getElementById('bodyChild');
     assertEquals(
@@ -108,6 +120,10 @@ testSuite({
     assertEquals(60, bidi.getOffsetStart(bodyChild));
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testFixedBodyChildRtl() {
     document.documentElement.dir = 'rtl';
     document.body.dir = 'rtl';
@@ -116,6 +132,10 @@ testSuite({
     assertEquals(
         userAgent.GECKO ? document.body : null, bodyChild.offsetParent);
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     let expectedOffsetStart =
         dom.getViewportSize().width - 60 - bodyChild.offsetWidth;
 

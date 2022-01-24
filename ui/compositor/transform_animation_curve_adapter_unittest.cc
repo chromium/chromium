@@ -12,7 +12,7 @@ namespace ui {
 namespace {
 
 TEST(TransformAnimationCurveAdapterTest, MaximumAnimationScale) {
-  auto duration = base::TimeDelta::FromSeconds(1);
+  auto duration = base::Seconds(1);
   float kArbitraryScale = 123.f;
   float scale = kArbitraryScale;
   EXPECT_TRUE(TransformAnimationCurveAdapter(gfx::Tween::LINEAR,
@@ -38,6 +38,7 @@ TEST(TransformAnimationCurveAdapterTest, MaximumAnimationScale) {
   EXPECT_EQ(4.0f, scale);
 
   target.ApplyPerspectiveDepth(2.0f);
+  target.RotateAboutYAxis(10.0f);
   scale = kArbitraryScale;
   EXPECT_TRUE(TransformAnimationCurveAdapter(gfx::Tween::LINEAR, initial,
                                              target, duration)
@@ -50,6 +51,7 @@ TEST(TransformAnimationCurveAdapterTest, MaximumAnimationScale) {
   EXPECT_EQ(2.0f, scale);
 
   initial.ApplyPerspectiveDepth(3.0f);
+  initial.RotateAboutYAxis(10.0f);
   EXPECT_FALSE(TransformAnimationCurveAdapter(gfx::Tween::LINEAR, initial,
                                               target, duration)
                    .MaximumScale(&scale));

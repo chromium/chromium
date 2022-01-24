@@ -75,6 +75,10 @@ namespace content {
 class ScrollLatencyBrowserTest : public ContentBrowserTest {
  public:
   ScrollLatencyBrowserTest() {}
+
+  ScrollLatencyBrowserTest(const ScrollLatencyBrowserTest&) = delete;
+  ScrollLatencyBrowserTest& operator=(const ScrollLatencyBrowserTest&) = delete;
+
   ~ScrollLatencyBrowserTest() override {}
 
   RenderWidgetHostImpl* GetWidgetHost() {
@@ -90,8 +94,7 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
   void GiveItSomeTime() {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMillisecondsD(10));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(10));
     run_loop.Run();
   }
 
@@ -204,8 +207,6 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
  protected:
   base::HistogramTester histogram_tester_;
   uint32_t visual_state_callback_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollLatencyBrowserTest);
 };
 
 // Disabled due to flakiness https://crbug.com/1163246.

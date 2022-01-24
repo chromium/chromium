@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -31,6 +30,7 @@
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -170,6 +170,10 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
             GURL(chrome::kChromeUINewTabURL)),
         report_sent_(false) {}
 
+  MockSafeBrowsingUIManager(const MockSafeBrowsingUIManager&) = delete;
+  MockSafeBrowsingUIManager& operator=(const MockSafeBrowsingUIManager&) =
+      delete;
+
   // When the serialized report is sent, this is called.
   void SendSerializedThreatDetails(content::BrowserContext* browser_context,
                                    const std::string& serialized) override {
@@ -185,7 +189,6 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
 
   std::string serialized_;
   bool report_sent_;
-  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingUIManager);
 };
 
 class MockReferrerChainProvider : public ReferrerChainProvider {
@@ -218,7 +221,6 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    ASSERT_TRUE(profile()->CreateHistoryService());
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
@@ -245,19 +247,24 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
   bool ReportWasSent() { return ui_manager_->ReportWasSent(); }
 
  protected:
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{HistoryServiceFactory::GetInstance(),
+             HistoryServiceFactory::GetDefaultFactory()}};
+  }
+
   void InitResource(SBThreatType threat_type,
                     ThreatSource threat_source,
                     bool is_subresource,
                     const GURL& url,
                     UnsafeResource* resource) {
+    const content::GlobalRenderFrameHostId primary_main_frame_id =
+        web_contents()->GetMainFrame()->GetGlobalId();
     resource->url = url;
     resource->is_subresource = is_subresource;
     resource->threat_type = threat_type;
     resource->threat_source = threat_source;
-    resource->web_contents_getter =
-        security_interstitials::GetWebContentsGetter(
-            web_contents()->GetMainFrame()->GetProcess()->GetID(),
-            web_contents()->GetMainFrame()->GetRoutingID());
+    resource->render_process_id = primary_main_frame_id.child_id;
+    resource->render_frame_id = primary_main_frame_id.frame_routing_id;
   }
 
   void VerifyResults(const ClientSafeBrowsingReportRequest& report_pb,
@@ -440,7 +447,8 @@ TEST_F(ThreatDetailsTest, ThreatSubResource) {
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   // The referrer is stripped to its origin because it's a cross-origin URL.
-  expected.set_referrer_url(GURL(kReferrerURL).GetOrigin().spec());
+  expected.set_referrer_url(
+      GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -453,7 +461,7 @@ TEST_F(ThreatDetailsTest, ThreatSubResource) {
   pb_resource->set_url(kThreatURL);
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
-  pb_resource->set_url(GURL(kReferrerURL).GetOrigin().spec());
+  pb_resource->set_url(GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
 
   VerifyResults(actual, expected);
 }
@@ -497,7 +505,8 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   // The referrer is stripped to its origin because it's a cross-origin URL.
-  expected.set_referrer_url(GURL(kReferrerURL).GetOrigin().spec());
+  expected.set_referrer_url(
+      GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -510,7 +519,7 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
   pb_resource->set_url(kThreatURL);
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
-  pb_resource->set_url(GURL(kReferrerURL).GetOrigin().spec());
+  pb_resource->set_url(GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
 
   // Make sure the referrer chain returned by the provider is copied into the
   // resulting proto.
@@ -1517,7 +1526,8 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   // The referrer is stripped to its origin because it's a cross-origin URL.
-  expected.set_referrer_url(GURL(kReferrerURL).GetOrigin().spec());
+  expected.set_referrer_url(
+      GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
 
@@ -1530,7 +1540,7 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
   pb_resource->set_url(kThreatURL);
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
-  pb_resource->set_url(GURL(kReferrerURL).GetOrigin().spec());
+  pb_resource->set_url(GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
 
   VerifyResults(actual, expected);
 }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
-import {isVisible} from '../../test_util.m.js';
+import {isVisible} from '../../test_util.js';
 
 /**
  * Helper function for getting a data-point element.

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/bluetooth_handler.h"
 
-#include "base/macros.h"
 #include "content/public/test/test_web_ui.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"

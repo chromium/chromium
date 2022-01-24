@@ -21,8 +21,8 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
@@ -194,6 +194,9 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
     case DownloadCommands::BYPASS_DEEP_SCANNING:
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_BypassDeepScanning"));
+      break;
+    case DownloadCommands::MAX:
+      NOTREACHED();
       break;
   }
 }
@@ -447,16 +450,28 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
                                                       bool force_pop_up) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // When holding space in-progress downloads integration is enabled,
-  // download in-progress notifications should be suppressed so long as they
-  // do not `force_pop_up`, such as is done in the case of dangerous or mixed
-  // content downloads.
-  suppressed_ =
-      display && !force_pop_up &&
-      ash::features::IsHoldingSpaceInProgressDownloadsIntegrationEnabled() &&
-      item_->GetState() == download::DownloadItem::IN_PROGRESS;
+  const bool was_suppressed = suppressed_;
+
+  // When holding space in-progress downloads notification suppression is
+  // enabled, download in-progress notifications should be suppressed so long as
+  // they do not `force_pop_up`, such as is done in the case of dangerous or
+  // mixed content downloads. Note that download notifications associated with
+  // an incognito profile are only suppressed if holding space incognito profile
+  // integration is also enabled.
+  if (!item_->profile()->IsIncognitoProfile() ||
+      ash::features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
+    suppressed_ =
+        display && !force_pop_up &&
+        ash::features::
+            IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() &&
+        item_->GetState() == download::DownloadItem::IN_PROGRESS;
+  } else {
+    suppressed_ = false;
+  }
 
   if (suppressed_) {
+    if (!was_suppressed)
+      RecordDownloadNotificationSuppressed();
     CloseNotification();
     return;
   }
@@ -627,12 +642,12 @@ SkColor DownloadItemNotification::GetNotificationIconColor() {
   return gfx::kPlaceholderColor;
 }
 
-void DownloadItemNotification::OnImageLoaded(const std::string& image_data) {
+void DownloadItemNotification::OnImageLoaded(std::string image_data) {
   if (image_data.empty())
     return;
 
   // TODO(yoshiki): Set option to reduce the image size to supress memory usage.
-  ImageDecoder::Start(this, image_data);
+  ImageDecoder::Start(this, std::move(image_data));
 }
 
 void DownloadItemNotification::OnImageDecoded(const SkBitmap& decoded_bitmap) {
@@ -730,7 +745,7 @@ DownloadItemNotification::GetExtraActions() const {
       actions->push_back(DownloadCommands::SHOW_IN_FOLDER);
       if (!notification_->image().IsEmpty()) {
         actions->push_back(DownloadCommands::COPY_TO_CLIPBOARD);
-        if (chromeos::NoteTakingHelper::Get()->IsAppAvailable(profile()))
+        if (ash::NoteTakingHelper::Get()->IsAppAvailable(profile()))
           actions->push_back(DownloadCommands::ANNOTATE);
       }
       break;
@@ -850,6 +865,7 @@ std::u16string DownloadItemNotification::GetCommandLabel(
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::MAX:
       // Only for menu.
       NOTREACHED();
       return std::u16string();

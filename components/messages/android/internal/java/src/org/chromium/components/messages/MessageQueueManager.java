@@ -25,11 +25,12 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
      * including situations in which the message is already dismissed and hide animation is running.
      */
     @Nullable
-    private MessageQueueManager.MessageState mCurrentDisplayedMessage;
+    private MessageState mCurrentDisplayedMessage;
+    private MessageState mLastShownMessage;
     private MessageQueueDelegate mMessageQueueDelegate;
     // TokenHolder tracking whether the queue should be suspended.
     private final TokenHolder mSuppressionTokenHolder =
-            new TokenHolder(this::updateCurrentDisplayedMessage);
+            new TokenHolder(this::onSuspendedStateChange);
 
     /**
      * A {@link Map} collection which contains {@code MessageKey} as the key and the corresponding
@@ -79,8 +80,18 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         messageQueue.add(messageState);
         mMessages.put(messageKey, messageState);
 
-        updateCurrentDisplayedMessage();
-        MessagesMetrics.recordMessageEnqueued(message.getMessageIdentifier());
+        MessageState candidate = getNextMessage();
+        updateCurrentDisplayedMessage(true, candidate);
+
+        if (candidate == messageState) {
+            MessagesMetrics.recordMessageEnqueuedVisible(message.getMessageIdentifier());
+        } else {
+            @MessageIdentifier
+            int visibleMessageId = MessageIdentifier.INVALID_MESSAGE;
+            if (candidate != null) visibleMessageId = candidate.handler.getMessageIdentifier();
+            MessagesMetrics.recordMessageEnqueuedHidden(
+                    message.getMessageIdentifier(), visibleMessageId);
+        }
     }
 
     /**
@@ -114,11 +125,9 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
             mScopeChangeController.lastMessageDismissed(scopeKey);
         }
 
+        message.dismiss(dismissReason);
         if (mCurrentDisplayedMessage == messageState) {
-            hideMessage(updateCurrentMessage,
-                    () -> message.dismiss(dismissReason), updateCurrentMessage);
-        } else {
-            message.dismiss(dismissReason);
+            hideMessage(updateCurrentMessage, updateCurrentMessage);
         }
         MessagesMetrics.recordDismissReason(message.getMessageIdentifier(), dismissReason);
     }
@@ -151,15 +160,15 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
             }
         } else if (change.changeType == ChangeType.INACTIVE) {
             mScopeStates.put(scopeKey, false);
-            updateCurrentDisplayedMessage(change.animateTransition);
+            updateCurrentDisplayedMessage(change.animateTransition, getNextMessage());
         } else if (change.changeType == ChangeType.ACTIVE) {
             mScopeStates.put(scopeKey, true);
-            updateCurrentDisplayedMessage();
+            updateCurrentDisplayedMessage(true, getNextMessage());
         }
     }
 
-    private void updateCurrentDisplayedMessage() {
-        updateCurrentDisplayedMessage(true);
+    private void onSuspendedStateChange() {
+        updateCurrentDisplayedMessage(true, getNextMessage());
     }
 
     private boolean isQueueSuspended() {
@@ -170,17 +179,19 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
     //      running when we get another scope change signal that should potentially either reverse
     //      the animation (i.e. going from inactive -> active quickly) or jump to the end (i.e.
     //      going from animate transition -> don't animate transition.
-    private void updateCurrentDisplayedMessage(boolean animateTransition) {
-        if (mCurrentDisplayedMessage == null && !isQueueSuspended()) {
-            mCurrentDisplayedMessage = getNextMessage();
-            if (mCurrentDisplayedMessage != null) {
-                mMessageQueueDelegate.onStartShowing(mCurrentDisplayedMessage.handler::show);
-            }
-        } else if (mCurrentDisplayedMessage != null) {
-            MessageState candidate = getNextMessage();
-            // Another higher priority message has been enqueued.
-            if (candidate != mCurrentDisplayedMessage || isQueueSuspended()) {
-                hideMessage(!isQueueSuspended() && animateTransition, null, !isQueueSuspended());
+    private void updateCurrentDisplayedMessage(boolean animateTransition, MessageState candidate) {
+        if (mCurrentDisplayedMessage != candidate) {
+            if (mCurrentDisplayedMessage == null) {
+                mCurrentDisplayedMessage = candidate;
+                mMessageQueueDelegate.onStartShowing(() -> {
+                    if (mCurrentDisplayedMessage == null) {
+                        return;
+                    }
+                    mCurrentDisplayedMessage.handler.show();
+                    mLastShownMessage = mCurrentDisplayedMessage;
+                });
+            } else {
+                hideMessage(!isQueueSuspended() && animateTransition, !isQueueSuspended());
             }
         }
     }
@@ -200,14 +211,20 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         return mMessages;
     }
 
-    private void hideMessage(
-            boolean animate, Runnable dismissAfterHiding, boolean updateCurrentMessage) {
-        mCurrentDisplayedMessage.handler.hide(animate, () -> {
+    private void hideMessage(boolean animate, boolean updateCurrentMessage) {
+        assert mCurrentDisplayedMessage
+                != null
+            : "This should not be called when there is no valid currently displayed message.";
+        Runnable runnable = () -> {
             mMessageQueueDelegate.onFinishHiding();
             mCurrentDisplayedMessage = null;
-            if (dismissAfterHiding != null) dismissAfterHiding.run();
-            if (updateCurrentMessage) updateCurrentDisplayedMessage(true);
-        });
+            if (updateCurrentMessage) updateCurrentDisplayedMessage(true, getNextMessage());
+        };
+        if (mLastShownMessage != mCurrentDisplayedMessage) {
+            runnable.run();
+            return;
+        }
+        mCurrentDisplayedMessage.handler.hide(animate, runnable);
     }
 
     /**
@@ -216,6 +233,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
      * returned.
      */
     private MessageState getNextMessage() {
+        if (isQueueSuspended()) return null;
         MessageState nextMessage = null;
         for (List<MessageState> queue : mMessageQueues.values()) {
             if (queue.isEmpty()) continue;

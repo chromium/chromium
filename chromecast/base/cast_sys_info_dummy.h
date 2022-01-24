@@ -19,6 +19,10 @@ class CastSysInfoDummy : public CastSysInfo {
  public:
   CastSysInfoDummy();
   CastSysInfoDummy(const std::string& sys_info_file);
+
+  CastSysInfoDummy(const CastSysInfoDummy&) = delete;
+  CastSysInfoDummy& operator=(const CastSysInfoDummy&) = delete;
+
   ~CastSysInfoDummy() override;
 
   // CastSysInfo implementation:
@@ -69,8 +73,6 @@ class CastSysInfoDummy : public CastSysInfo {
   std::string wifi_interface_;
   std::string ap_interface_;
   std::string ssid_suffix_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastSysInfoDummy);
 };
 
 }  // namespace chromecast

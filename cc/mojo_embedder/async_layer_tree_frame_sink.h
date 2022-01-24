@@ -11,7 +11,7 @@
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "cc/mojo_embedder/mojo_embedder_export.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/power_scheduler/power_mode_voter.h"

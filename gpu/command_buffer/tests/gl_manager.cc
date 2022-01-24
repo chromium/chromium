@@ -435,7 +435,7 @@ size_t GLManager::GetSharedMemoryBytesAllocated() const {
 }
 
 void GLManager::SetupBaseContext() {
-  if (use_count_) {
+  if (!use_count_) {
     #if defined(OS_ANDROID)
     base_share_group_ =
         new scoped_refptr<gl::GLShareGroup>(new gl::GLShareGroup);

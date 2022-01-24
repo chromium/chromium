@@ -4,7 +4,7 @@
 
 #include "chrome/browser/background/background_mode_manager.h"
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 void BackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
   NOTREACHED();

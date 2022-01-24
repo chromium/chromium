@@ -33,6 +33,10 @@ class AssociatedInterfaceRequest {
   explicit AssociatedInterfaceRequest(ScopedInterfaceEndpointHandle handle)
       : handle_(std::move(handle)) {}
 
+  AssociatedInterfaceRequest(const AssociatedInterfaceRequest&) = delete;
+  AssociatedInterfaceRequest& operator=(const AssociatedInterfaceRequest&) =
+      delete;
+
   // Takes the interface endpoint handle from another
   // AssociatedInterfaceRequest.
   AssociatedInterfaceRequest(AssociatedInterfaceRequest&& other) {
@@ -78,8 +82,6 @@ class AssociatedInterfaceRequest {
 
  private:
   ScopedInterfaceEndpointHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssociatedInterfaceRequest);
 };
 
 }  // namespace mojo

@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "extensions/renderer/object_backed_native_handler.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class ScriptContext;
@@ -17,6 +18,10 @@ class ScriptContext;
 class MessagingBindings : public ObjectBackedNativeHandler {
  public:
   explicit MessagingBindings(ScriptContext* script_context);
+
+  MessagingBindings(const MessagingBindings&) = delete;
+  MessagingBindings& operator=(const MessagingBindings&) = delete;
+
   ~MessagingBindings() override;
 
   // ObjectBackedNativeHandler:
@@ -24,8 +29,6 @@ class MessagingBindings : public ObjectBackedNativeHandler {
 
  private:
   void BindToGC(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  DISALLOW_COPY_AND_ASSIGN(MessagingBindings);
 };
 
 }  // namespace extensions

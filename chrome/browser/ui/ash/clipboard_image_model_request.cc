@@ -135,7 +135,7 @@ void ClipboardImageModelRequest::Start(Params&& params) {
   html_markup_ = params.html_markup;
   deliver_image_model_callback_ = std::move(params.callback);
 
-  timeout_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(10), this,
+  timeout_timer_.Start(FROM_HERE, base::Seconds(10), this,
                        &ClipboardImageModelRequest::OnTimeout);
   request_start_time_ = base::TimeTicks::Now();
 
@@ -292,7 +292,7 @@ void ClipboardImageModelRequest::PostCopySurfaceTask() {
       FROM_HERE,
       base::BindOnce(&ClipboardImageModelRequest::CopySurface,
                      copy_surface_weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(250));
+      base::Milliseconds(250));
 }
 
 void ClipboardImageModelRequest::CopySurface() {

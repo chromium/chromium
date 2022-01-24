@@ -73,6 +73,6 @@
   TestRunner.completeTest();
 
   function log(url) {
-    TestRunner.addResult(url + ' -> ' + Persistence.networkPersistenceManager._encodedPathFromUrl(url));
+    TestRunner.addResult(url + ' -> ' + Persistence.networkPersistenceManager.encodedPathFromUrl(url));
   }
 })();

@@ -12,4 +12,4 @@ Currently this component exposes an interface for a facade for Account Manager -
 
 Also, see:
 - `//ash/components/account_manager/`
-- `//chrome/browser/lacros/account_manager*.*`
+- `//chrome/browser/lacros/account_manager/`

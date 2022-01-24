@@ -9,6 +9,6 @@ namespace content {
 struct MainFunctionParams;
 }  // namespace content
 
-int WebEngineBrowserMain(const content::MainFunctionParams& parameters);
+int WebEngineBrowserMain(content::MainFunctionParams parameters);
 
 #endif  // FUCHSIA_ENGINE_BROWSER_WEB_ENGINE_BROWSER_MAIN_H_

@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>USB"
-}
-team_email: "webusb@chromium.org"
+mixins: "//chrome/browser/usb/COMMON_METADATA"
 

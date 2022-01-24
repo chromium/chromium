@@ -36,20 +36,6 @@ class ReadImageHelper {
     loop.Run();
     return png;
   }
-
-  SkBitmap ReadImage(Clipboard* clipboard) {
-    base::RunLoop loop;
-    SkBitmap bitmap;
-    clipboard->ReadImage(
-        ClipboardBuffer::kCopyPaste,
-        /* data_dst = */ nullptr,
-        base::BindLambdaForTesting([&](const SkBitmap& result) {
-          bitmap = result;
-          loop.Quit();
-        }));
-    loop.Run();
-    return bitmap;
-  }
 };
 
 }  // namespace
@@ -57,11 +43,6 @@ class ReadImageHelper {
 std::vector<uint8_t> ReadPng(Clipboard* clipboard) {
   ReadImageHelper read_image_helper;
   return read_image_helper.ReadPng(clipboard);
-}
-
-SkBitmap ReadImage(Clipboard* clipboard) {
-  ReadImageHelper read_image_helper;
-  return read_image_helper.ReadImage(clipboard);
 }
 
 }  // namespace clipboard_test_util

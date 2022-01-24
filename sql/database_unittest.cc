@@ -35,11 +35,11 @@ namespace {
 
 using sql::test::ExecuteWithResult;
 
-// Helper to return the count of items in sqlite_master.  Return -1 in
+// Helper to return the count of items in sqlite_schema.  Return -1 in
 // case of error.
-int SqliteMasterCount(Database* db) {
-  const char* kMasterCount = "SELECT COUNT(*) FROM sqlite_master";
-  Statement s(db->GetUniqueStatement(kMasterCount));
+int SqliteSchemaCount(Database* db) {
+  const char* kSchemaCount = "SELECT COUNT(*) FROM sqlite_schema";
+  Statement s(db->GetUniqueStatement(kSchemaCount));
   return s.Step() ? s.ColumnInt(0) : -1;
 }
 
@@ -687,7 +687,7 @@ TEST_P(SQLDatabaseTest, Raze) {
   }
 
   {
-    Statement s(db_->GetUniqueStatement("SELECT * FROM sqlite_master"));
+    Statement s(db_->GetUniqueStatement("SELECT * FROM sqlite_schema"));
     ASSERT_TRUE(s.Step());
     EXPECT_EQ("table", s.ColumnString(0));
     EXPECT_EQ("foo", s.ColumnString(1));
@@ -705,7 +705,7 @@ TEST_P(SQLDatabaseTest, Raze) {
     EXPECT_EQ(1, s.ColumnInt(0));
   }
 
-  ASSERT_EQ(0, SqliteMasterCount(db_.get()));
+  ASSERT_EQ(0, SqliteSchemaCount(db_.get()));
 
   {
     Statement s(db_->GetUniqueStatement("PRAGMA auto_vacuum"));
@@ -752,7 +752,7 @@ void TestPageSize(const base::FilePath& db_prefix,
   // page_size, even if the overwriting database changed the page_size.  Access
   // the actual database to cause the cached value to be updated.
   EXPECT_EQ("0",
-            ExecuteWithResult(&razed_db, "SELECT COUNT(*) FROM sqlite_master"));
+            ExecuteWithResult(&razed_db, "SELECT COUNT(*) FROM sqlite_schema"));
 
   EXPECT_EQ(expected_final_page_size,
             ExecuteWithResult(&razed_db, "PRAGMA page_size"));
@@ -795,12 +795,12 @@ TEST_P(SQLDatabaseTest, RazeMultiple) {
   ASSERT_TRUE(other_db.Open(db_path_));
 
   // Check that the second connection sees the table.
-  ASSERT_EQ(1, SqliteMasterCount(&other_db));
+  ASSERT_EQ(1, SqliteSchemaCount(&other_db));
 
   ASSERT_TRUE(db_->Raze());
 
   // The second connection sees the updated database.
-  ASSERT_EQ(0, SqliteMasterCount(&other_db));
+  ASSERT_EQ(0, SqliteSchemaCount(&other_db));
 }
 
 TEST_P(SQLDatabaseTest, RazeLocked) {
@@ -853,7 +853,7 @@ TEST_P(SQLDatabaseTest, RazeEmptyDB) {
 
   ASSERT_TRUE(db_->Open(db_path_));
   ASSERT_TRUE(db_->Raze());
-  EXPECT_EQ(0, SqliteMasterCount(db_.get()));
+  EXPECT_EQ(0, SqliteSchemaCount(db_.get()));
 }
 
 // Verify that Raze() can handle a file of junk.
@@ -881,14 +881,14 @@ TEST_P(SQLDatabaseTest, RazeNOTADB) {
 
   // Now empty, the open should open an empty database.
   EXPECT_TRUE(db_->Open(db_path_));
-  EXPECT_EQ(0, SqliteMasterCount(db_.get()));
+  EXPECT_EQ(0, SqliteSchemaCount(db_.get()));
 }
 
 // Verify that Raze() can handle a database overwritten with garbage.
 TEST_P(SQLDatabaseTest, RazeNOTADB2) {
   const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
-  ASSERT_EQ(1, SqliteMasterCount(db_.get()));
+  ASSERT_EQ(1, SqliteSchemaCount(db_.get()));
   db_->Close();
 
   ASSERT_TRUE(OverwriteDatabaseHeader(OverwriteType::kOverwrite));
@@ -907,7 +907,7 @@ TEST_P(SQLDatabaseTest, RazeNOTADB2) {
 
   // Now empty, the open should succeed with an empty database.
   EXPECT_TRUE(db_->Open(db_path_));
-  EXPECT_EQ(0, SqliteMasterCount(db_.get()));
+  EXPECT_EQ(0, SqliteSchemaCount(db_.get()));
 }
 
 // Test that a callback from Open() can raze the database.  This is
@@ -917,7 +917,7 @@ TEST_P(SQLDatabaseTest, RazeNOTADB2) {
 TEST_P(SQLDatabaseTest, RazeCallbackReopen) {
   const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
-  ASSERT_EQ(1, SqliteMasterCount(db_.get()));
+  ASSERT_EQ(1, SqliteSchemaCount(db_.get()));
   db_->Close();
 
   // Corrupt the database so that nothing works, including PRAGMAs.
@@ -943,7 +943,7 @@ TEST_P(SQLDatabaseTest, RazeCallbackReopen) {
   // cleanly.
   ASSERT_TRUE(db_->Open(db_path_));
   ASSERT_TRUE(db_->Execute("PRAGMA auto_vacuum"));
-  EXPECT_EQ(0, SqliteMasterCount(db_.get()));
+  EXPECT_EQ(0, SqliteSchemaCount(db_.get()));
 }
 
 // Basic test of RazeAndClose() operation.
@@ -959,7 +959,7 @@ TEST_P(SQLDatabaseTest, RazeAndClose) {
   ASSERT_FALSE(db_->is_open());
   db_->Close();
   ASSERT_TRUE(db_->Open(db_path_));
-  ASSERT_EQ(0, SqliteMasterCount(db_.get()));
+  ASSERT_EQ(0, SqliteSchemaCount(db_.get()));
 
   // Test that RazeAndClose() can break transactions.
   ASSERT_TRUE(db_->Execute(kCreateSql));
@@ -970,7 +970,7 @@ TEST_P(SQLDatabaseTest, RazeAndClose) {
   ASSERT_FALSE(db_->CommitTransaction());
   db_->Close();
   ASSERT_TRUE(db_->Open(db_path_));
-  ASSERT_EQ(0, SqliteMasterCount(db_.get()));
+  ASSERT_EQ(0, SqliteSchemaCount(db_.get()));
 }
 
 // Test that various operations fail without crashing after
@@ -1179,7 +1179,7 @@ TEST_P(SQLDatabaseTest, Poison) {
 
   // Get a statement which is valid before and will exist across Poison().
   Statement valid_statement(
-      db_->GetUniqueStatement("SELECT COUNT(*) FROM sqlite_master"));
+      db_->GetUniqueStatement("SELECT COUNT(*) FROM sqlite_schema"));
   ASSERT_TRUE(valid_statement.is_valid());
   ASSERT_TRUE(valid_statement.Step());
   valid_statement.Reset(true);

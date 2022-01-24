@@ -30,6 +30,11 @@ class ScopedSurfaceRequestManagerUnitTest : public testing::Test {
         0, nullptr, nullptr);
   }
 
+  ScopedSurfaceRequestManagerUnitTest(
+      const ScopedSurfaceRequestManagerUnitTest&) = delete;
+  ScopedSurfaceRequestManagerUnitTest& operator=(
+      const ScopedSurfaceRequestManagerUnitTest&) = delete;
+
   ScopedSurfaceRequestManager::ScopedSurfaceRequestCB CreateNoopCallback() {
     return base::BindOnce(&ScopedSurfaceRequestManagerUnitTest::DummyCallback,
                           base::Unretained(this));
@@ -58,8 +63,6 @@ class ScopedSurfaceRequestManagerUnitTest : public testing::Test {
   ScopedSurfaceRequestManager* manager_;
 
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSurfaceRequestManagerUnitTest);
 };
 
 // Makes sure we can successfully register a callback.

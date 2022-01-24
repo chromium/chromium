@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "net/base/port_util.h"
 
 namespace net {
 
@@ -188,7 +189,7 @@ AlternativeServiceInfoVector ProcessAlternativeServices(
                                            alternative_service_entry.port);
     base::Time expiration =
         base::Time::Now() +
-        base::TimeDelta::FromSeconds(alternative_service_entry.max_age);
+        base::Seconds(alternative_service_entry.max_age_seconds);
     AlternativeServiceInfo alternative_service_info;
     if (protocol == kProtoQUIC) {
       alternative_service_info =

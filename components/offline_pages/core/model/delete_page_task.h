@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "components/offline_pages/core/offline_page_model.h"
@@ -58,6 +57,9 @@ class DeletePageTask : public Task {
       DeletePageTask::DeletePageTaskCallback callback,
       const OfflinePageItem& page);
 
+  DeletePageTask(const DeletePageTask&) = delete;
+  DeletePageTask& operator=(const DeletePageTask&) = delete;
+
   ~DeletePageTask() override;
 
   // Deletes a single page from the database. This function reads
@@ -97,7 +99,6 @@ class DeletePageTask : public Task {
   DeletePageTaskCallback callback_;
 
   base::WeakPtrFactory<DeletePageTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DeletePageTask);
 };
 
 }  // namespace offline_pages

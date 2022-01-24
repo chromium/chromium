@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_member.h"
 #import "ios/web/public/web_state.h"
@@ -36,6 +35,11 @@ class LanguageDetectionController : public web::WebStateObserver {
  public:
   LanguageDetectionController(web::WebState* web_state,
                               PrefService* prefs);
+
+  LanguageDetectionController(const LanguageDetectionController&) = delete;
+  LanguageDetectionController& operator=(const LanguageDetectionController&) =
+      delete;
+
   ~LanguageDetectionController() override;
 
  private:
@@ -77,8 +81,6 @@ class LanguageDetectionController : public web::WebStateObserver {
   BooleanPrefMember translate_enabled_;
   std::string content_language_header_;
   base::WeakPtrFactory<LanguageDetectionController> weak_method_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageDetectionController);
 };
 
 }  // namespace translate

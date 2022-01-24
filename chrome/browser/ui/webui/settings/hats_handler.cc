@@ -21,31 +21,18 @@
 
 namespace {
 
-// Requests that the HaTS service for |profile|, if available, attempt to
-// launch the survey associated with |trigger| on |web_contents|. Where the
-// survey for |trigger| is configured to accept product specific data related to
-// the user's 3P cookie & privacy sandbox setting.
-void LaunchHatsSurveyWithProductSpecificData(Profile* profile,
-                                             content::WebContents* web_contents,
-                                             const std::string& trigger) {
-  HatsService* hats_service = HatsServiceFactory::GetForProfile(
-      profile, /* create_if_necessary = */ true);
-
-  // The HaTS service may not be available for the profile, for example if it
-  // is a guest profile.
-  if (!hats_service)
-    return;
-
+// Generate the Product Specific bits data which accompanies privacy settings
+// survey responses from |profile|.
+SurveyBitsData GetPrivacySettingsProductSpecificBitsData(Profile* profile) {
   const bool third_party_cookies_blocked =
       static_cast<content_settings::CookieControlsMode>(
           profile->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
       content_settings::CookieControlsMode::kBlockThirdParty;
   const bool privacy_sandbox_enabled =
       profile->GetPrefs()->GetBoolean(prefs::kPrivacySandboxApisEnabled);
-  hats_service->LaunchDelayedSurveyForWebContents(
-      trigger, web_contents, 20000,
-      {{"3P cookies blocked", third_party_cookies_blocked},
-       {"Privacy Sandbox enabled", privacy_sandbox_enabled}});
+
+  return {{"3P cookies blocked", third_party_cookies_blocked},
+          {"Privacy Sandbox enabled", privacy_sandbox_enabled}};
 }
 
 }  // namespace
@@ -57,7 +44,7 @@ HatsHandler::HatsHandler() = default;
 HatsHandler::~HatsHandler() = default;
 
 void HatsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "trustSafetyInteractionOccurred",
       base::BindRepeating(&HatsHandler::HandleTrustSafetyInteractionOccurred,
                           base::Unretained(this)));
@@ -67,7 +54,7 @@ void HatsHandler::HandleTrustSafetyInteractionOccurred(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   auto interaction =
       static_cast<TrustSafetyInteraction>(args->GetList()[0].GetInt());
 
@@ -81,10 +68,23 @@ void HatsHandler::HandleTrustSafetyInteractionOccurred(
 }
 
 void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(
+      profile, /* create_if_necessary = */ true);
+
+  // The HaTS service may not be available for the profile, for example if it
+  // is a guest profile.
+  if (!hats_service)
+    return;
+
   if (interaction == TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX) {
-    LaunchHatsSurveyWithProductSpecificData(Profile::FromWebUI(web_ui()),
-                                            web_ui()->GetWebContents(),
-                                            kHatsSurveyTriggerPrivacySandbox);
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerPrivacySandbox, web_ui()->GetWebContents(),
+        features::kHappinessTrackingSurveysForDesktopPrivacySandboxTime.Get()
+            .InMilliseconds(),
+        GetPrivacySettingsProductSpecificBitsData(profile),
+        /*product_specific_string_data=*/{},
+        /*require_same_origin=*/true);
   } else if (interaction == TrustSafetyInteraction::RAN_SAFETY_CHECK ||
              interaction == TrustSafetyInteraction::USED_PRIVACY_CARD) {
     // If the privacy settings survey is explicitly targeting users who have not
@@ -96,9 +96,21 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
             prefs::kPrivacySandboxPageViewed)) {
       return;
     }
-    LaunchHatsSurveyWithProductSpecificData(Profile::FromWebUI(web_ui()),
-                                            web_ui()->GetWebContents(),
-                                            kHatsSurveyTriggerSettingsPrivacy);
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerSettingsPrivacy, web_ui()->GetWebContents(),
+        features::kHappinessTrackingSurveysForDesktopSettingsPrivacyTime.Get()
+            .InMilliseconds(),
+        GetPrivacySettingsProductSpecificBitsData(profile),
+        /*product_specific_string_data=*/{},
+        /*require_same_origin=*/true);
+  } else if (interaction == TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE) {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerPrivacyReview, web_ui()->GetWebContents(),
+        features::kHappinessTrackingSurveysForDesktopPrivacyReviewTime.Get()
+            .InMilliseconds(),
+        /*product_specific_bits_data=*/{},
+        /*product_specific_string_data=*/{},
+        /*require_same_origin=*/true);
   }
 }
 

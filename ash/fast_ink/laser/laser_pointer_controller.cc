@@ -91,9 +91,8 @@ void LaserPointerController::CreatePointerView(
     base::TimeDelta presentation_delay,
     aura::Window* root_window) {
   laser_pointer_view_widget_ = LaserPointerView::Create(
-      base::TimeDelta::FromMilliseconds(kPointLifeDurationMs),
-      presentation_delay,
-      base::TimeDelta::FromMilliseconds(kAddStationaryPointsDelayMs),
+      base::Milliseconds(kPointLifeDurationMs), presentation_delay,
+      base::Milliseconds(kAddStationaryPointsDelayMs),
       Shell::GetContainer(root_window, kShellWindowId_OverlayContainer));
 }
 

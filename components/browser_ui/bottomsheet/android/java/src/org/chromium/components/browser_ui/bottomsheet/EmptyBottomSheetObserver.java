@@ -20,10 +20,7 @@ public class EmptyBottomSheetObserver implements BottomSheetObserver {
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
 
     @Override
-    public void onSheetStateChanged(int newState) {}
-
-    @Override
-    public void onSheetFullyPeeked() {}
+    public void onSheetStateChanged(int newState, int reason) {}
 
     @Override
     public void onSheetContentChanged(BottomSheetContent newContent) {}

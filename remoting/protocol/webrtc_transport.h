@@ -90,6 +90,10 @@ class WebrtcTransport : public Transport,
       scoped_refptr<TransportContext> transport_context,
       std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
       EventHandler* event_handler);
+
+  WebrtcTransport(const WebrtcTransport&) = delete;
+  WebrtcTransport& operator=(const WebrtcTransport&) = delete;
+
   ~WebrtcTransport() override;
 
   webrtc::PeerConnectionInterface* peer_connection();
@@ -271,8 +275,6 @@ class WebrtcTransport : public Transport,
   WebrtcEventLogData rtc_event_log_;
 
   base::WeakPtrFactory<WebrtcTransport> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebrtcTransport);
 };
 
 }  // namespace protocol

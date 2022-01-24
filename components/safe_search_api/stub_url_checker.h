@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_errors.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -29,6 +28,10 @@ class URLChecker;
 class StubURLChecker {
  public:
   StubURLChecker();
+
+  StubURLChecker(const StubURLChecker&) = delete;
+  StubURLChecker& operator=(const StubURLChecker&) = delete;
+
   ~StubURLChecker();
 
   // Returns a URLChecker that will use the stubbed-out responses. Can be called
@@ -51,8 +54,6 @@ class StubURLChecker {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubURLChecker);
 };
 
 }  // namespace safe_search_api

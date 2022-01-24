@@ -24,6 +24,12 @@ class SignedExchangePageLoadMetricsBrowserTest
     feature_list_.InitWithFeatures(
         {ukm::kUkmFeature, features::kSignedHTTPExchange}, {});
   }
+
+  SignedExchangePageLoadMetricsBrowserTest(
+      const SignedExchangePageLoadMetricsBrowserTest&) = delete;
+  SignedExchangePageLoadMetricsBrowserTest& operator=(
+      const SignedExchangePageLoadMetricsBrowserTest&) = delete;
+
   ~SignedExchangePageLoadMetricsBrowserTest() override {}
 
  protected:
@@ -40,7 +46,8 @@ class SignedExchangePageLoadMetricsBrowserTest
   // and only use NavigateToUntrackedUrl for cases where the waiter isn't
   // sufficient.
   void NavigateToUntrackedUrl() {
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   }
 
   void InstallUrlInterceptor(const GURL& url, const std::string& data_path) {
@@ -68,7 +75,7 @@ class SignedExchangePageLoadMetricsBrowserTest
     const GURL url =
         https_server_.GetURL(hostname, "/sxg/test.example.org_test.sxg");
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     // Force navigation to another page, which should force logging of
     // histograms persisted at the end of the page load lifetime.
@@ -122,8 +129,6 @@ class SignedExchangePageLoadMetricsBrowserTest
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   content::SignedExchangeBrowserTestHelper sxg_test_helper_;
   net::EmbeddedTestServer https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangePageLoadMetricsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SignedExchangePageLoadMetricsBrowserTest,

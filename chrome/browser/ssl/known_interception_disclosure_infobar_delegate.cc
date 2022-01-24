@@ -42,7 +42,7 @@ bool KnownInterceptionDisclosureCooldown::IsActive(Profile* profile) {
 #endif
 
   // Suppress the disclosure UI for 7 days after showing it to the user.
-  return (clock_->Now() - last_dismissal) <= base::TimeDelta::FromDays(7);
+  return (clock_->Now() - last_dismissal) <= base::Days(7);
 }
 
 void KnownInterceptionDisclosureCooldown::Activate(Profile* profile) {

@@ -4,16 +4,11 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
 import android.annotation.SuppressLint;
 import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 
-import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -200,7 +195,7 @@ public class OmniboxTest {
                     (LocationBarLayout) mActivityTestRule.getActivity().findViewById(
                             R.id.location_bar);
             StatusCoordinator statusCoordinator = locationBar.getStatusCoordinatorForTesting();
-            boolean securityIcon = statusCoordinator.isSecurityButtonShown();
+            boolean securityIcon = statusCoordinator.isSecurityViewShown();
             Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
             Assert.assertEquals(R.drawable.omnibox_info,
                     statusCoordinator.getSecurityIconResourceIdForTesting());
@@ -226,13 +221,14 @@ public class OmniboxTest {
                 onSSLStateUpdatedCallbackHelper.notifyCalled();
             }
         };
-        mActivityTestRule.getActivity().getActivityTab().addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getActivityTab().addObserver(observer));
 
         try {
             final String testHttpsUrl =
                     httpsTestServer.getURL("/chrome/test/data/android/omnibox/one.html");
 
-            ImageButton securityButton = (ImageButton) mActivityTestRule.getActivity().findViewById(
+            ImageView securityView = (ImageView) mActivityTestRule.getActivity().findViewById(
                     R.id.location_bar_status_icon);
 
             mActivityTestRule.loadUrl(testHttpsUrl);
@@ -242,11 +238,11 @@ public class OmniboxTest {
                     (LocationBarLayout) mActivityTestRule.getActivity().findViewById(
                             R.id.location_bar);
             StatusCoordinator statusCoordinator = locationBar.getStatusCoordinatorForTesting();
-            boolean securityIcon = statusCoordinator.isSecurityButtonShown();
+            boolean securityIcon = statusCoordinator.isSecurityViewShown();
             Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
             Assert.assertEquals("location_bar_status_icon with wrong resource-id",
-                    R.id.location_bar_status_icon, securityButton.getId());
-            Assert.assertTrue(securityButton.isShown());
+                    R.id.location_bar_status_icon, securityView.getId());
+            Assert.assertTrue(securityView.isShown());
             Assert.assertEquals(R.drawable.omnibox_https_valid,
                     statusCoordinator.getSecurityIconResourceIdForTesting());
         } finally {
@@ -278,13 +274,14 @@ public class OmniboxTest {
                 onSSLStateUpdatedCallbackHelper.notifyCalled();
             }
         };
-        mActivityTestRule.getActivity().getActivityTab().addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getActivityTab().addObserver(observer));
 
         try {
             final String testHttpsUrl =
                     httpsTestServer.getURL("/chrome/test/data/android/omnibox/one.html");
 
-            ImageButton securityButton = (ImageButton) mActivityTestRule.getActivity().findViewById(
+            ImageView securityView = (ImageView) mActivityTestRule.getActivity().findViewById(
                     R.id.location_bar_status_icon);
 
             mActivityTestRule.loadUrl(testHttpsUrl);
@@ -296,19 +293,20 @@ public class OmniboxTest {
                     locationBar.getStatusCoordinatorForTesting();
             final int firstIcon = statusCoordinator.getSecurityIconResourceIdForTesting();
 
-            onView(withId(R.id.url_bar)).perform(click());
+            UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
+            TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.requestFocus());
             CriteriaHelper.pollUiThread(
                     () -> statusCoordinator.getSecurityIconResourceIdForTesting() != firstIcon);
             final int secondIcon = statusCoordinator.getSecurityIconResourceIdForTesting();
-            Espresso.pressBack();
+            TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.clearFocus());
             CriteriaHelper.pollUiThread(
                     () -> statusCoordinator.getSecurityIconResourceIdForTesting() != secondIcon);
 
-            boolean securityIcon = statusCoordinator.isSecurityButtonShown();
+            boolean securityIcon = statusCoordinator.isSecurityViewShown();
             Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
             Assert.assertEquals("location_bar_status_icon with wrong resource-id",
-                    R.id.location_bar_status_icon, securityButton.getId());
-            Assert.assertTrue(securityButton.isShown());
+                    R.id.location_bar_status_icon, securityView.getId());
+            Assert.assertTrue(securityView.isShown());
             Assert.assertEquals(R.drawable.omnibox_https_valid,
                     statusCoordinator.getSecurityIconResourceIdForTesting());
         } finally {
@@ -396,14 +394,14 @@ public class OmniboxTest {
             LocationBarLayout locationBarLayout =
                     (LocationBarLayout) mActivityTestRule.getActivity().findViewById(
                             R.id.location_bar);
-            ImageButton securityButton = (ImageButton) mActivityTestRule.getActivity().findViewById(
+            ImageView securityView = (ImageView) mActivityTestRule.getActivity().findViewById(
                     R.id.location_bar_status_icon);
 
             boolean securityIcon =
-                    locationBarLayout.getStatusCoordinatorForTesting().isSecurityButtonShown();
+                    locationBarLayout.getStatusCoordinatorForTesting().isSecurityViewShown();
             Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
             Assert.assertEquals("location_bar_status_icon with wrong resource-id",
-                    R.id.location_bar_status_icon, securityButton.getId());
+                    R.id.location_bar_status_icon, securityView.getId());
 
             if (mActivityTestRule.getActivity().isTablet()) {
                 Assert.assertTrue(mActivityTestRule.getActivity()

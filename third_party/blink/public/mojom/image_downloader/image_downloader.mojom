@@ -17,7 +17,7 @@ interface ImageDownloader {
   // documentation for WebContents::DownloadImage.
   DownloadImage(url.mojom.Url url,
                 bool is_favicon,
-                uint32 preferred_size,
+                gfx.mojom.Size preferred_size,
                 uint32 max_bitmap_size,
                 bool bypass_cache)
       => (int32 http_status_code,

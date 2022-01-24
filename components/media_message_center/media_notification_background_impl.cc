@@ -10,12 +10,13 @@
 #include "base/i18n/rtl.h"
 #include "cc/paint/paint_shader.h"
 #include "skia/ext/image_operations.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
@@ -481,8 +482,7 @@ SkPoint MediaNotificationBackgroundImpl::GetGradientEndPoint(
 
 SkColor MediaNotificationBackgroundImpl::GetDefaultBackgroundColor(
     const views::View& owner) const {
-  return owner.GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_BubbleBackground);
+  return owner.GetColorProvider()->GetColor(ui::kColorBubbleBackground);
 }
 
 void MediaNotificationBackgroundImpl::UpdateColorsInternal() {

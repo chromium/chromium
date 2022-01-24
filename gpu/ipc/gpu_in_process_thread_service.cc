@@ -62,7 +62,7 @@ void GpuInProcessThreadService::ScheduleOutOfOrderTask(base::OnceClosure task) {
 
 void GpuInProcessThreadService::ScheduleDelayedWork(base::OnceClosure task) {
   task_runner_->PostDelayedTask(FROM_HERE, std::move(task),
-                                base::TimeDelta::FromMilliseconds(2));
+                                base::Milliseconds(2));
 }
 
 void GpuInProcessThreadService::PostNonNestableToClient(

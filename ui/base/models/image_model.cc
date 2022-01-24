@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_utils.h"
 
 namespace ui {
@@ -14,7 +15,7 @@ namespace ui {
 VectorIconModel::VectorIconModel() = default;
 
 VectorIconModel::VectorIconModel(const gfx::VectorIcon& vector_icon,
-                                 int color_id,
+                                 ColorId color_id,
                                  int icon_size,
                                  const gfx::VectorIcon* badge_icon)
     : vector_icon_(&vector_icon),
@@ -65,7 +66,7 @@ ImageModel& ImageModel::operator=(ImageModel&&) = default;
 
 // static
 ImageModel ImageModel::FromVectorIcon(const gfx::VectorIcon& vector_icon,
-                                      int color_id,
+                                      ColorId color_id,
                                       int icon_size,
                                       const gfx::VectorIcon* badge_icon) {
   if (!icon_size)

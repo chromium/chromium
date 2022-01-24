@@ -6,21 +6,31 @@
 
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/shell.h"
 
 namespace ash {
 
 // static
-ShelfItem ShelfTestUtil::AddAppShortcut(const std::string id,
-                                        const ShelfItemType type) {
+ShelfItem ShelfTestUtil::AddAppShortcut(const std::string& id,
+                                        ShelfItemType type) {
+  return AddAppShortcutWithIcon(id, type, gfx::ImageSkia());
+}
+
+// static
+ShelfItem ShelfTestUtil::AddAppShortcutWithIcon(const std::string& id,
+                                                ShelfItemType type,
+                                                gfx::ImageSkia icon) {
   ShelfController* controller = Shell::Get()->shelf_controller();
   ShelfItem item;
   item.type = type;
   if (type == TYPE_APP)
     item.status = STATUS_RUNNING;
   item.id = ShelfID(id);
-  controller->model()->Add(item);
+  item.image = icon;
+  controller->model()->Add(item,
+                           std::make_unique<TestShelfItemDelegate>(item.id));
   return item;
 }
 

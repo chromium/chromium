@@ -29,6 +29,10 @@ class FlashFontFileResource : public PluginResource,
                         PP_Instance instance,
                         const PP_BrowserFont_Trusted_Description* description,
                         PP_PrivateFontCharset charset);
+
+  FlashFontFileResource(const FlashFontFileResource&) = delete;
+  FlashFontFileResource& operator=(const FlashFontFileResource&) = delete;
+
   ~FlashFontFileResource() override;
 
   // Resource overrides.
@@ -52,8 +56,6 @@ class FlashFontFileResource : public PluginResource,
 
   SerializedFontDescription description_;
   const PP_PrivateFontCharset charset_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlashFontFileResource);
 };
 
 }  // namespace proxy

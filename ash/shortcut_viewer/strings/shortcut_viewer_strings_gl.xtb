@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">Abre unha nova ventá no modo de incógnito</translation>
 <translation id="152892567002884378">Sube o volume</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> e despois <ph name="ESC" /></translation>
-<translation id="1633761758045565086">Move o enfoque a un cadro de diálogo de axuda</translation>
 <translation id="1652741121070700329">Retrocede ao comezo da palabra anterior</translation>
 <translation id="1679841710523778799">Aumenta o brillo</translation>
 <translation id="168356808214100546">Mantén premida a tecla <ph name="ALT" />, toca <ph name="TAB" /> ata chegar á ventá que queres abrir e despois solta as teclas.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">Avanza cara abaixo pola páxina web</translation>
 <translation id="2530896289327917474">Activar ou desactivar a navegación por cursor de texto</translation>
 <translation id="2574014812750545982">Restablece o nivel do zoom na páxina</translation>
-<translation id="2596078834055697711">Fai unha captura de pantalla da ventá</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> e despois <ph name="TAB" /> ou <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Volve cargar a páxina actual</translation>
 <translation id="2764005613199379871">Céntrase na barra de enderezos de busca</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">Atallos</translation>
 <translation id="3084301071537457911">Destaca o seguinte elemento do estante</translation>
 <translation id="309173601632226815">Destaca o botón do menú de aplicacións do estante</translation>
-<translation id="3105917916468784889">Fai unha captura de pantalla</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Activar barra de enderezos</translation>
 <translation id="3256109297135787951">Deixa de destacar un elemento do estante</translation>
 <translation id="3288816184963444640">Pecha a ventá actual</translation>
+<translation id="3350805006883559974">Mostrar ventá activa sobre as outras</translation>
 <translation id="3407560819924487926">Abre o xestor de tarefas</translation>
 <translation id="3417835166382867856">Realizar buscas nas pestanas</translation>
 <translation id="3422679037938588196">Vai á coincidencia anterior da busca</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">Consulta a axuda de atallos de teclado</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> ou <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Abre a área de estado (onde aparece a imaxe da túa conta)</translation>
-<translation id="4642092649622328492">Fai unha captura de pantalla parcial</translation>
 <translation id="4698850295812410683">Mostra as ferramentas de lapis óptico</translation>
 <translation id="4801989101741319327">Avanza ao final da palabra seguinte</translation>
 <translation id="4866066940972151697">Activa o escritorio na parte dereita</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">Move a ventá activa á parte esquerda do escritorio</translation>
 <translation id="88986195241502842">Avanzar páxina</translation>
 <translation id="8924883688469390268">Cambia ao usuario anterior</translation>
+<translation id="8941626538514548667">Enfoca o contido web do navegador</translation>
 <translation id="8977648847395357314">Selecciona o contido na barra de enderezos</translation>
 <translation id="8982190978301344584">Mostra o menú de IME dispoñibles</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> unha tecla do 1 ao 8</translation>

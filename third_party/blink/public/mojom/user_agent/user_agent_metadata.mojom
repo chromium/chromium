@@ -6,13 +6,14 @@ module blink.mojom;
 
 struct UserAgentBrandVersion {
   string brand;
-  string major_version;
+  string version;
 };
 
 // See UserAgentMetadata in
 // third_party/blink/public/common/user_agent/user_agent_metadata.h
 struct UserAgentMetadata {
   array<UserAgentBrandVersion> brand_version_list;
+  array<UserAgentBrandVersion> brand_full_version_list;
 
   string full_version;
   string platform;

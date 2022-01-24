@@ -36,24 +36,6 @@ extern NSString* const kLastHTTPURLOpenTime;
 // The feature parameter to activate the remind me later button.
 extern const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[];
 
-// Indicates if the tailored variant "Built for iOS" is enabled. It is not
-// mutually exclusive with other tailored promos.
-extern const char kDefaultPromoTailoredVariantIOSParam[];
-
-// Indicates if the tailored variant "Stay Safe With Google Chrome" is enabled.
-// It is not mutually exclusive with other tailored promos.
-extern const char kDefaultPromoTailoredVariantSafeParam[];
-
-// Indicates if the tailored variant "All Your Tabs In One Browser" is enabled.
-// It is not mutually exclusive with other tailored promos.
-extern const char kDefaultPromoTailoredVariantTabsParam[];
-
-// Indicates the timeout duration for the non-modal promo.
-extern const char kDefaultPromoNonModalTimeoutParam[];
-
-// Indicates if the instructions for the non-modal promo are enabled.
-extern const char kDefaultPromoNonModalInstructionsParam[];
-
 // Logs the timestamp of user activity that is deemed to be an indication of
 // a user that would likely benefit from having Chrome set as their default
 // browser. Before logging the current activity, this method will also clear all
@@ -85,24 +67,6 @@ bool IsInCTASwitchGroup();
 // Returns true if non modals default browser promos are enabled.
 bool NonModalPromosEnabled();
 
-// Returns the timeout for non modals.
-double NonModalPromosTimeout();
-
-// Returns true if instructions for non modals should be shown.
-bool NonModalPromosInstructionsEnabled();
-
-// Returns true if tailored default browser promo variant "Built for iOS" is
-// enabled.
-bool IOSTailoredPromoEnabled();
-
-// Returns true if tailored default browser promo variant "Stay Safe With Google
-// Chrome" is enabled.
-bool SafeTailoredPromoEnabled();
-
-// Returns true if tailored default browser promo variant "All Your Tabs In One
-// Browser" is enabled.
-bool TabsTailoredPromoEnabled();
-
 // Returns true if the user has interacted with the Fullscreen Promo previously.
 // Returns false otherwise.
 bool HasUserInteractedWithFullscreenPromoBefore();
@@ -110,6 +74,9 @@ bool HasUserInteractedWithFullscreenPromoBefore();
 // Returns true if the user has interacted with a tailored Fullscreen Promo
 // previously. Returns false otherwise.
 bool HasUserInteractedWithTailoredFullscreenPromoBefore();
+
+// Returns YES if the user taps on open settings button from first run promo.
+BOOL HasUserOpenedSettingsFromFirstRunPromo();
 
 // Returns the number of times the user has seen and interacted with the
 // non-modal promo before.
@@ -123,6 +90,9 @@ void LogUserInteractionWithTailoredFullscreenPromo();
 
 // Logs that the user has interacted with a Non-Modals Promo.
 void LogUserInteractionWithNonModalPromo();
+
+// Logs that the user has interacted with the first run promo.
+void LogUserInteractionWithFirstRunPromo(BOOL openedSettings);
 
 // Returns true if the last URL open is within the time threshold that would
 // indicate Chrome is likely still the default browser. Returns false otherwise.

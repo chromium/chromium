@@ -26,13 +26,13 @@ imageset("checkbox_checked") {
   ]
 }
 
-imageset("first_run_location_permissions") {
+imageset("default_browser_screen_banner") {
   sources = [
-    "first_run_location_permissions.imageset/Contents.json",
-    "first_run_location_permissions.imageset/first_run_location_permissions_dark@2x.png",
-    "first_run_location_permissions.imageset/first_run_location_permissions_dark@3x.png",
-    "first_run_location_permissions.imageset/first_run_location_permissions_light@2x.png",
-    "first_run_location_permissions.imageset/first_run_location_permissions_light@3x.png",
+    "default_browser_screen_banner.imageset/Contents.json",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_dark@2x.png",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_dark@3x.png",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_light@2x.png",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_light@3x.png",
   ]
 }
 
@@ -43,6 +43,16 @@ imageset("signin_screen_banner") {
     "signin_screen_banner.imageset/signin_screen_banner_dark@3x.png",
     "signin_screen_banner.imageset/signin_screen_banner_light@2x.png",
     "signin_screen_banner.imageset/signin_screen_banner_light@3x.png",
+  ]
+}
+
+imageset("forced_signin_screen_banner") {
+  sources = [
+    "forced_signin_screen_banner.imageset/Contents.json",
+    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_dark@2x.png",
+    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_dark@3x.png",
+    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_light@2x.png",
+    "forced_signin_screen_banner.imageset/forced_signin_screen_banner_light@3x.png",
   ]
 }
 

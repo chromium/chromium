@@ -14,6 +14,7 @@
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -34,7 +35,9 @@ FuzzerBrowserProcess::FuzzerBrowserProcess(
     absl::optional<base::FilePath> png_dir_path)
     : root_local_surface_id_(1, 1, base::UnguessableToken::Create()),
       output_surface_provider_(std::move(png_dir_path)),
-      frame_sink_manager_(&shared_bitmap_manager_, &output_surface_provider_) {
+      frame_sink_manager_(
+          FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_,
+                                           &output_surface_provider_)) {
   frame_sink_manager_.RegisterFrameSinkId(kEmbeddedFrameSinkId,
                                           /*report_activation=*/false);
   frame_sink_manager_.RegisterFrameSinkId(kRootFrameSinkId,
@@ -56,7 +59,8 @@ void FuzzerBrowserProcess::EmbedFuzzedCompositorFrame(
   mojo::Remote<mojom::CompositorFrameSink> sink_remote;
   FakeCompositorFrameSinkClient sink_client;
   frame_sink_manager_.CreateCompositorFrameSink(
-      kEmbeddedFrameSinkId, sink_remote.BindNewPipeAndPassReceiver(),
+      kEmbeddedFrameSinkId, /*bundle_id=*/absl::nullopt,
+      sink_remote.BindNewPipeAndPassReceiver(),
       sink_client.BindInterfaceRemote());
 
   for (auto& fuzzed_bitmap : allocated_bitmaps) {

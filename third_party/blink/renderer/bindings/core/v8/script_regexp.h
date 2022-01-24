@@ -52,6 +52,9 @@ class CORE_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp> {
                MultilineMode = kMultilineDisabled,
                CharacterMode = BMP);
 
+  ScriptRegexp(const ScriptRegexp&) = delete;
+  ScriptRegexp& operator=(const ScriptRegexp&) = delete;
+
   // Attempt to match the given input string against the regexp.  Returns the
   // index of the match within the input string on success and -1 otherwise.
   // If |match_length| is provided, then its populated with the length of the
@@ -73,8 +76,6 @@ class CORE_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp> {
  private:
   TraceWrapperV8Reference<v8::RegExp> regex_;
   String exception_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptRegexp);
 };
 
 }  // namespace blink

@@ -48,13 +48,21 @@ void NoStatePrefetchProcessorImpl::Start(
   if (!initiator_origin_.opaque() &&
       !content::ChildProcessSecurityPolicy::GetInstance()
            ->CanAccessDataForOrigin(render_process_id_, initiator_origin_)) {
-    mojo::ReportBadMessage("NSPPI_INVALID_INITIATOR_ORIGIN");
+    receiver_.ReportBadMessage("NSPPI_INVALID_INITIATOR_ORIGIN");
+    // The above ReportBadMessage() closes |receiver_| but does not trigger its
+    // disconnect handler, so we need to call the handler explicitly
+    // here to do some necessary work.
+    Abandon();
     return;
   }
 
   // Start() must be called only one time.
   if (link_trigger_id_) {
-    mojo::ReportBadMessage("NSPPI_START_TWICE");
+    receiver_.ReportBadMessage("NSPPI_START_TWICE");
+    // The above ReportBadMessage() closes |receiver_| but does not trigger its
+    // disconnect handler, so we need to call the handler explicitly
+    // here to do some necessary work.
+    Abandon();
     return;
   }
 

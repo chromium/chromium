@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -29,6 +28,9 @@ using EntryVector =
 // OptimizationGuideStore.
 class StoreUpdateData {
  public:
+  StoreUpdateData(const StoreUpdateData&) = delete;
+  StoreUpdateData& operator=(const StoreUpdateData&) = delete;
+
   ~StoreUpdateData();
 
   // Creates an update data object for a component hint update.
@@ -100,8 +102,6 @@ class StoreUpdateData {
   std::unique_ptr<EntryVector> entries_to_save_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(StoreUpdateData);
 };
 
 }  // namespace optimization_guide

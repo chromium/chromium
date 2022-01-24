@@ -105,6 +105,11 @@ class TestTimerFactory : public TimerFactory {
 // is the test for TopLevelHostScanCache. Clean this up to avoid using
 // FakeHostScanCache if possible.
 class TopLevelHostScanCacheTest : public testing::Test {
+ public:
+  TopLevelHostScanCacheTest(const TopLevelHostScanCacheTest&) = delete;
+  TopLevelHostScanCacheTest& operator=(const TopLevelHostScanCacheTest&) =
+      delete;
+
  protected:
   TopLevelHostScanCacheTest()
       : test_entries_(host_scan_test_util::CreateTestEntries()) {}
@@ -227,9 +232,6 @@ class TopLevelHostScanCacheTest : public testing::Test {
       device_id_tether_network_guid_map_;
 
   std::unique_ptr<TopLevelHostScanCache> host_scan_cache_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TopLevelHostScanCacheTest);
 };
 
 TEST_F(TopLevelHostScanCacheTest, TestSetScanResultsAndLetThemExpire) {

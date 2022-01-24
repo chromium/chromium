@@ -5,7 +5,7 @@
 <script>
   const tests = [
     {description: 'high importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'high', expected_priority: kVeryHigh},
-    {description: 'low importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'low', expected_priority: kVeryHigh},
+    {description: 'low importance on <link rel=stylesheet>s not fetched by the preload scanner must load with kHigh priority', importance: 'low', expected_priority: kHigh},
     {description: 'auto importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'auto', expected_priority: kVeryHigh},
     {description: 'invalid importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'xyz', expected_priority: kVeryHigh},
     {description: 'missing importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', expected_priority: kVeryHigh}
@@ -19,7 +19,7 @@
       if (test.importance) link.importance = test.importance;
 
       const url = new URL(`../resources/square.png?${iteration++}`, location);
-      const priorityPromise = internals.getResourcePriority(url, document);
+      const priorityPromise = internals.getInitialResourcePriority(url, document);
       link.href = url;
       document.head.appendChild(link);
       const priority = await priorityPromise;

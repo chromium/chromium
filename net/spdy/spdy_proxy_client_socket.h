@@ -54,6 +54,9 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
                         HttpAuthController* auth_controller,
                         ProxyDelegate* proxy_delegate);
 
+  SpdyProxyClientSocket(const SpdyProxyClientSocket&) = delete;
+  SpdyProxyClientSocket& operator=(const SpdyProxyClientSocket&) = delete;
+
   // On destruction Disconnect() is called.
   ~SpdyProxyClientSocket() override;
 
@@ -190,8 +193,6 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
   // factory are invalidated in Disconnect().
   base::WeakPtrFactory<SpdyProxyClientSocket> write_callback_weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpdyProxyClientSocket);
 };
 
 }  // namespace net

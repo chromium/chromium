@@ -7,30 +7,11 @@
 
 namespace blink {
 
-namespace {
-
-PhysicalAxes ComputeQueriedAxes(const MediaQuerySet& media_queries) {
-  PhysicalAxes axes(kPhysicalAxisNone);
-
-  for (const auto& media_query : media_queries.QueryVector()) {
-    for (const auto& expression : media_query->Expressions()) {
-      if (expression.IsWidthDependent())
-        axes |= PhysicalAxes(kPhysicalAxisHorizontal);
-      if (expression.IsHeightDependent())
-        axes |= PhysicalAxes(kPhysicalAxisVertical);
-    }
-  }
-
-  return axes;
-}
-
-}  // namespace
-
 ContainerQuery::ContainerQuery(const AtomicString& name,
                                scoped_refptr<MediaQuerySet> media_queries)
     : name_(name),
       media_queries_(media_queries),
-      queried_axes_(ComputeQueriedAxes(*media_queries)) {}
+      queried_axes_(media_queries->QueriedAxes()) {}
 
 ContainerQuery::ContainerQuery(const ContainerQuery& other)
     : media_queries_(other.media_queries_->Copy()),

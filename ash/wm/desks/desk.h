@@ -12,7 +12,6 @@
 #include "ash/ash_export.h"
 #include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -46,11 +45,15 @@ class ASH_EXPORT Desk {
     // removes its Observers before calling this.
     virtual void OnDeskDestroyed(const Desk* desk) = 0;
 
-    // Called  when the desk's name changes.
+    // Called when the desk's name changes.
     virtual void OnDeskNameChanged(const std::u16string& new_name) = 0;
   };
 
   explicit Desk(int associated_container_id, bool desk_being_restored = false);
+
+  Desk(const Desk&) = delete;
+  Desk& operator=(const Desk&) = delete;
+
   ~Desk();
 
   static void SetWeeklyActiveDesks(int weekly_active_desks);
@@ -136,11 +139,13 @@ class ASH_EXPORT Desk {
   void MoveWindowsToDesk(Desk* target_desk);
 
   // Moves a single |window| from this desk to |target_desk|, possibly moving it
-  // to a different display, depending on |target_root|. |window| must
-  // belong to this desk.
+  // to a different display, depending on |target_root|. |window| must belong to
+  // this desk. If |unminimize| is true, the window is unminimized after it has
+  // been moved.
   void MoveWindowToDesk(aura::Window* window,
                         Desk* target_desk,
-                        aura::Window* target_root);
+                        aura::Window* target_root,
+                        bool unminimize);
 
   aura::Window* GetDeskContainerForRoot(aura::Window* root) const;
 
@@ -170,11 +175,6 @@ class ASH_EXPORT Desk {
   // |is_active_| is true, then set |last_day_visited_| to the current day. This
   // accounts for cases where the user removes the active desk.
   void RecordAndResetConsecutiveDailyVisits(bool being_removed);
-
-  // Returns the time from base::Time::Now() to Jan 1, 2010 in the local
-  // timezeone in days as an int. We use Jan 1, 2010 as an arbitrary epoch
-  // since it is a well-known date in the past.
-  int GetDaysFromLocalEpoch() const;
 
  private:
   friend class DesksTestApi;
@@ -244,8 +244,6 @@ class ASH_EXPORT Desk {
   int first_day_visited_ = -1;
   int last_day_visited_ = -1;
 
-  base::Clock* override_clock_ = nullptr;
-
   // Tracks whether |this| has been interacted with this week. This value is
   // reset by the DesksController.
   bool interacted_with_this_week_ = false;
@@ -253,8 +251,6 @@ class ASH_EXPORT Desk {
   // A timer for marking |this| as interacted with only if the user remains on
   // |this| for a brief period of time.
   base::OneShotTimer active_desk_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Desk);
 };
 
 }  // namespace ash

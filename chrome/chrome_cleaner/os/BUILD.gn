@@ -19,6 +19,8 @@ source_set("common_os") {
     "file_path_sanitization.h",
     "file_path_set.cc",
     "file_path_set.h",
+    "file_remover_allowlist.cc",
+    "file_remover_allowlist.h",
     "inheritable_event.cc",
     "inheritable_event.h",
     "initializer.cc",
@@ -51,8 +53,6 @@ source_set("common_os") {
     "system_util.h",
     "task_scheduler.cc",
     "task_scheduler.h",
-    "whitelisted_directory.cc",
-    "whitelisted_directory.h",
   ]
 
   deps = [
@@ -128,6 +128,7 @@ source_set("unittest_sources") {
     "file_path_sanitization_unittest.cc",
     "file_path_set_unittest.cc",
     "file_removal_status_updater_unittest.cc",
+    "file_remover_allowlist_unittest.cc",
     "file_remover_unittest.cc",
     "post_reboot_registration_unittest.cc",
     "pre_fetched_paths_unittest.cc",
@@ -139,7 +140,6 @@ source_set("unittest_sources") {
     "shutdown_watchdog_unittest.cc",
     "system_util_cleaner_unittest.cc",
     "task_scheduler_unittest.cc",
-    "whitelisted_directory_unittest.cc",
   ]
 
   deps = [

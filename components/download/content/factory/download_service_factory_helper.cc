@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/content/internal/download_driver_impl.h"
-#include "components/download/internal/background_service/background_download_service_impl.h"
 #include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/config.h"
 #include "components/download/internal/background_service/controller_impl.h"
@@ -18,6 +17,7 @@
 #include "components/download/internal/background_service/empty_file_monitor.h"
 #include "components/download/internal/background_service/file_monitor_impl.h"
 #include "components/download/internal/background_service/in_memory_download_driver.h"
+#include "components/download/internal/background_service/init_aware_background_download_service.h"
 #include "components/download/internal/background_service/logger_impl.h"
 #include "components/download/internal/background_service/model_impl.h"
 #include "components/download/internal/background_service/noop_store.h"
@@ -85,15 +85,16 @@ std::unique_ptr<BackgroundDownloadService> CreateDownloadServiceInternal(
   auto scheduler = std::make_unique<SchedulerImpl>(
       task_scheduler.get(), config.get(), client_set.get());
   auto logger = std::make_unique<LoggerImpl>();
+  auto* logger_ptr = logger.get();
   auto controller = std::make_unique<ControllerImpl>(
-      config.get(), logger.get(), std::move(client_set), std::move(driver),
-      std::move(model), std::move(device_status_listener), navigation_monitor,
-      std::move(scheduler), std::move(task_scheduler), std::move(file_monitor),
-      files_storage_dir);
-  logger->SetLogSource(controller.get());
+      std::move(config), std::move(logger), logger_ptr, std::move(client_set),
+      std::move(driver), std::move(model), std::move(device_status_listener),
+      navigation_monitor, std::move(scheduler), std::move(task_scheduler),
+      std::move(file_monitor), files_storage_dir);
+  logger_ptr->SetLogSource(controller.get());
 
-  return std::make_unique<BackgroundDownloadServiceImpl>(
-      std::move(config), std::move(logger), std::move(controller));
+  return std::make_unique<InitAwareBackgroundDownloadService>(
+      std::move(controller));
 }
 
 // Create download service for normal profile.
@@ -119,8 +120,8 @@ std::unique_ptr<BackgroundDownloadService> BuildDownloadService(
   auto store = std::make_unique<DownloadStore>(std::move(entry_db));
 
   auto files_storage_dir = storage_dir.Append(kFilesStorageDir);
-  auto file_monitor = std::make_unique<FileMonitorImpl>(
-      files_storage_dir, background_task_runner, config->file_keep_alive_time);
+  auto file_monitor = std::make_unique<FileMonitorImpl>(files_storage_dir,
+                                                        background_task_runner);
 
   return CreateDownloadServiceInternal(
       simple_factory_key, std::move(clients), std::move(config),

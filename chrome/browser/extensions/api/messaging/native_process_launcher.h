@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -58,6 +57,10 @@ class NativeProcessLauncher {
       const std::string& error_arg);
 
   NativeProcessLauncher() = default;
+
+  NativeProcessLauncher(const NativeProcessLauncher&) = delete;
+  NativeProcessLauncher& operator=(const NativeProcessLauncher&) = delete;
+
   virtual ~NativeProcessLauncher() = default;
 
   // Finds native messaging host with the specified name and launches it
@@ -86,9 +89,6 @@ class NativeProcessLauncher {
                                   base::Process* process,
                                   base::File* read_file,
                                   base::File* write_file);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeProcessLauncher);
 };
 
 }  // namespace extensions

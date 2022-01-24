@@ -130,10 +130,10 @@ TEST_F(ArcAccessibilityTreeTrackerTest, TaskAndAXTreeLifecycle) {
   ASSERT_NE(nullptr, tree);
   ASSERT_EQ(2U, key_to_tree.size());
 
-  tree_tracker.OnTaskDestroyed(1);
+  tree_tracker.OnWindowDestroying(test_window.get());
   ASSERT_EQ(1U, key_to_tree.size());
 
-  tree_tracker.OnTaskDestroyed(2);
+  tree_tracker.OnWindowDestroying(test_window2.get());
   ASSERT_EQ(0U, key_to_tree.size());
 }
 

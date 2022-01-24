@@ -55,10 +55,8 @@ TEST_F(LoginSettingsTest, Redirect) {
   login_settings.SetRedirectServer(redirect_server);
 
   {
-    const ServerList& servers =
-        login_settings.GetServersForTimeForTest(
-            login_settings.GetRedirectExpirationForTest() -
-            base::TimeDelta::FromMilliseconds(1));
+    const ServerList& servers = login_settings.GetServersForTimeForTest(
+        login_settings.GetRedirectExpirationForTest() - base::Milliseconds(1));
     ASSERT_EQ(servers_.size(), 1u);
     EXPECT_TRUE(servers[0].Equals(redirect_server));
   }

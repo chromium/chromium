@@ -10,12 +10,10 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
@@ -144,6 +142,10 @@ class DataReductionProxyTestContext {
         data_use_measurement_;
   };
 
+  DataReductionProxyTestContext(const DataReductionProxyTestContext&) = delete;
+  DataReductionProxyTestContext& operator=(
+      const DataReductionProxyTestContext&) = delete;
+
   virtual ~DataReductionProxyTestContext();
 
   // Registers, sets, and gets the preference used to enable the Data Reduction
@@ -218,8 +220,6 @@ class DataReductionProxyTestContext {
   std::unique_ptr<DataReductionProxySettings> settings_;
   DataReductionProxyService* data_reduction_proxy_service_;
   std::unique_ptr<DataReductionProxyService> service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataReductionProxyTestContext);
 };
 
 }  // namespace data_reduction_proxy

@@ -66,6 +66,7 @@ base::StringPiece OAuthMultiloginResult::StripXSSICharacters(
 
 void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
     base::Value* json_value) {
+  DCHECK(json_value);
   base::Value* failed_accounts = json_value->FindListKey("failed_accounts");
   if (failed_accounts == nullptr) {
     VLOG(1) << "No invalid accounts found in the response but error is set to "
@@ -84,6 +85,7 @@ void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
 }
 
 void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
+  DCHECK(json_value);
   base::Value* cookie_list = json_value->FindListKey("cookies");
   if (cookie_list == nullptr) {
     VLOG(1) << "No cookies found in the response.";
@@ -101,9 +103,10 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
     const std::string* priority = cookie.FindStringKey("priority");
     absl::optional<double> expiration_delta = cookie.FindDoubleKey("maxAge");
     const std::string* same_site = cookie.FindStringKey("sameSite");
+    const std::string* same_party = cookie.FindStringKey("sameParty");
 
     base::TimeDelta before_expiration =
-        base::TimeDelta::FromSecondsD(expiration_delta.value_or(0.0));
+        base::Seconds(expiration_delta.value_or(0.0));
     std::string cookie_domain = domain ? *domain : "";
     std::string cookie_host = host ? *host : "";
     if (cookie_domain.empty() && !cookie_host.empty() &&
@@ -119,6 +122,7 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
       samesite_mode = net::StringToCookieSameSite(*same_site, &samesite_string);
     }
     net::RecordCookieSameSiteAttributeValueHistogram(samesite_string);
+    bool same_party_bool = same_party && (*same_party == "1");
     // TODO(crbug.com/1155648) Consider using CreateSanitizedCookie instead.
     std::unique_ptr<net::CanonicalCookie> new_cookie =
         net::CanonicalCookie::FromStorage(
@@ -128,10 +132,12 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
             /*last_access=*/base::Time::Now(), is_secure.value_or(true),
             is_http_only.value_or(true), samesite_mode,
             net::StringToCookiePriority(priority ? *priority : "medium"),
-            /*same_party=*/false, /*partition_key=*/absl::nullopt,
+            same_party_bool, /*partition_key=*/absl::nullopt,
             net::CookieSourceScheme::kUnset, url::PORT_UNSPECIFIED);
     // If the unique_ptr is null, it means the cookie was not canonical.
-    if (new_cookie) {
+    // FromStorage() also uses a less strict version of IsCanonical(), we need
+    // to check the stricter version as well here.
+    if (new_cookie && new_cookie->IsCanonical()) {
       cookies_.push_back(std::move(*new_cookie));
     } else {
       LOG(ERROR) << "Non-canonical cookie found.";

@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 
 namespace web_app {
 

@@ -9,7 +9,6 @@
 #include <limits>
 #include <string>
 #include <tuple>
-#include <vector>
 
 #include "base/containers/span.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"

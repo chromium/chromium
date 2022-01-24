@@ -25,6 +25,7 @@
 #include "cc/layers/draw_properties.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/performance_properties.h"
+#include "cc/layers/region_capture_bounds.h"
 #include "cc/layers/render_surface_impl.h"
 #include "cc/layers/touch_action_region.h"
 #include "cc/paint/element_id.h"
@@ -36,8 +37,8 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/scroll_offset.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {
 class ClientResourceProvider;
@@ -243,7 +244,7 @@ class CC_EXPORT LayerImpl {
     is_inner_viewport_scroll_layer_ = true;
   }
 
-  void SetCurrentScrollOffset(const gfx::ScrollOffset& scroll_offset);
+  void SetCurrentScrollOffset(const gfx::Vector2dF& scroll_offset);
 
   // Returns the delta of the scroll that was outside of the bounds of the
   // initial scroll
@@ -269,6 +270,9 @@ class CC_EXPORT LayerImpl {
   bool has_touch_action_regions() const {
     return !touch_action_region_.IsEmpty();
   }
+
+  void SetCaptureBounds(RegionCaptureBounds bounds);
+  const RegionCaptureBounds& capture_bounds() const { return capture_bounds_; }
 
   // Set or get the region that contains wheel event handler.
   // The |wheel_event_handler_region| specify the area where wheel event handler
@@ -500,6 +504,10 @@ class CC_EXPORT LayerImpl {
 
   Region non_fast_scrollable_region_;
   TouchActionRegion touch_action_region_;
+
+  // The bounds of elements marked for potential region capture, stored in
+  // the coordinate space of this layer.
+  RegionCaptureBounds capture_bounds_;
   Region wheel_event_handler_region_;
   SkColor background_color_;
   SkColor safe_opaque_background_color_;

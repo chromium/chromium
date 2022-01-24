@@ -52,7 +52,8 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
     VideoCodecProfile output_profile,
     const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers,
-    const VideoBitrateAllocation& bitrate)
+    const VideoBitrateAllocation& bitrate,
+    bool reverse)
     : output_profile(output_profile),
       output_resolution(video->Resolution()),
       num_temporal_layers(spatial_layers.empty()
@@ -63,7 +64,8 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
       spatial_layers(spatial_layers),
       bitrate(bitrate),
       framerate(video->FrameRate()),
-      num_frames_to_encode(video->NumFrames()) {}
+      num_frames_to_encode(video->NumFrames()),
+      reverse(reverse) {}
 
 VideoEncoderClientConfig::VideoEncoderClientConfig(
     const VideoEncoderClientConfig&) = default;
@@ -86,12 +88,12 @@ VideoEncoderStats::VideoEncoderStats(uint32_t framerate,
       num_temporal_layers(num_temporal_layers) {}
 
 uint32_t VideoEncoderStats::Bitrate() const {
-  auto compute_bitrate = [](double framerate, size_t num_frames,
+  auto compute_bitrate = [](double framerate_dbl, size_t num_frames,
                             size_t total_size,
                             absl::optional<size_t> temporal_index,
                             absl::optional<size_t> spatial_index) {
     const size_t average_frame_size_in_bits = total_size * 8 / num_frames;
-    const uint32_t average_bitrate = average_frame_size_in_bits * framerate;
+    const uint32_t average_bitrate = average_frame_size_in_bits * framerate_dbl;
     std::string prefix = "[Total] ";
     if (spatial_index) {
       prefix = "[SL#" + base::NumberToString(*spatial_index) + " TL#" +
@@ -100,7 +102,7 @@ uint32_t VideoEncoderStats::Bitrate() const {
       prefix = "[TL#" + base::NumberToString(*temporal_index) + "] ";
     }
     VLOGF(2) << prefix << "encoded_frames=" << num_frames
-             << ", framerate=" << framerate
+             << ", framerate=" << framerate_dbl
              << ", total_encoded_frames_size=" << total_size
              << ", average_frame_size_in_bits=" << average_frame_size_in_bits
              << ", average bitrate=" << average_bitrate;
@@ -304,7 +306,9 @@ void VideoEncoderClient::RequireBitstreamBuffers(
   // Follow the behavior of the chrome capture stack; |natural_size| is the
   // dimension to be encoded.
   aligned_data_helper_ = std::make_unique<AlignedDataHelper>(
-      video_->Data(), video_->NumFrames(), video_->PixelFormat(),
+      video_->Data(), video_->NumFrames(),
+      encoder_client_config_.num_frames_to_encode,
+      encoder_client_config_.reverse, video_->PixelFormat(),
       /*src_coded_size=*/video_->Resolution(),
       /*dst_coded_size=*/coded_size,
       /*visible_rect=*/video_->VisibleRect(),
@@ -348,8 +352,7 @@ VideoEncoderClient::CreateBitstreamRef(
       0u /* offset */, metadata.payload_size_bytes);
   if (!decoder_buffer)
     return nullptr;
-  decoder_buffer->set_timestamp(
-      base::TimeDelta::FromMicroseconds(frame_index_));
+  decoder_buffer->set_timestamp(base::Microseconds(frame_index_));
 
   return BitstreamProcessor::BitstreamRef::Create(
       std::move(decoder_buffer), metadata, bitstream_buffer_id,
@@ -376,6 +379,12 @@ void VideoEncoderClient::BitstreamBufferReady(
       current_stats_.num_encoded_frames_per_layer[spatial_id][temporal_id]++;
       current_stats_.encoded_frames_size_per_layer[spatial_id][temporal_id] +=
           metadata.payload_size_bytes;
+    } else if (metadata.h264.has_value()) {
+      uint8_t temporal_id = metadata.h264->temporal_idx;
+      ASSERT_EQ(current_stats_.num_spatial_layers, 1u);
+      current_stats_.num_encoded_frames_per_layer[0][temporal_id]++;
+      current_stats_.encoded_frames_size_per_layer[0][temporal_id] +=
+          metadata.payload_size_bytes;
     }
   }
 
@@ -400,10 +409,12 @@ void VideoEncoderClient::BitstreamBufferReady(
     }
   }
   if (metadata.vp9.has_value()) {
-    if (metadata.vp9->spatial_idx + 1 ==
-        encoder_client_config_.num_spatial_layers) {
-      frame_index_++;
+    if (!metadata.vp9->spatial_layer_resolutions.empty()) {
+      current_top_spatial_index_ =
+          metadata.vp9->spatial_layer_resolutions.size() - 1;
     }
+    if (metadata.vp9->spatial_idx == current_top_spatial_index_)
+      frame_index_++;
   } else {
     frame_index_++;
   }
@@ -508,17 +519,13 @@ void VideoEncoderClient::EncodeNextFrameTask() {
   if (encoder_client_state_ != VideoEncoderClientState::kEncoding)
     return;
 
-  const bool end_of_stream =
-      encoder_client_config_.num_frames_to_encode == num_encodes_requested_;
-  if (end_of_stream) {
+  if (aligned_data_helper_->AtEndOfStream()) {
     // Flush immediately when we reached the end of the stream (either the real
     // end, or the artificial end when using num_encode_frames). This changes
     // the state to kFlushing so further encode tasks will be aborted.
     FlushTask();
     return;
   }
-  if (aligned_data_helper_->AtEndOfStream())
-    aligned_data_helper_->Rewind();
 
   scoped_refptr<VideoFrame> video_frame = aligned_data_helper_->GetNextFrame();
   ASSERT_TRUE(video_frame);
@@ -585,7 +592,6 @@ void VideoEncoderClient::ForceKeyFrameTask() {
 
 void VideoEncoderClient::EncodeDoneTask(base::TimeDelta timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_client_sequence_checker_);
-  DCHECK_NE(VideoEncoderClientState::kIdle, encoder_client_state_);
   DVLOGF(4);
 
   FireEvent(VideoEncoder::EncoderEvent::kFrameReleased);

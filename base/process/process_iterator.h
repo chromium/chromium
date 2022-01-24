@@ -81,6 +81,10 @@ class BASE_EXPORT ProcessIterator {
   typedef std::list<ProcessEntry> ProcessEntries;
 
   explicit ProcessIterator(const ProcessFilter* filter);
+
+  ProcessIterator(const ProcessIterator&) = delete;
+  ProcessIterator& operator=(const ProcessIterator&) = delete;
+
   virtual ~ProcessIterator();
 
   // If there's another process that matches the given executable name,
@@ -118,8 +122,6 @@ class BASE_EXPORT ProcessIterator {
 #endif
   ProcessEntry entry_;
   const ProcessFilter* filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessIterator);
 };
 
 // This class provides a way to iterate through the list of processes
@@ -130,6 +132,10 @@ class BASE_EXPORT NamedProcessIterator : public ProcessIterator {
  public:
   NamedProcessIterator(const FilePath::StringType& executable_name,
                        const ProcessFilter* filter);
+
+  NamedProcessIterator(const NamedProcessIterator&) = delete;
+  NamedProcessIterator& operator=(const NamedProcessIterator&) = delete;
+
   ~NamedProcessIterator() override;
 
  protected:
@@ -137,8 +143,6 @@ class BASE_EXPORT NamedProcessIterator : public ProcessIterator {
 
  private:
   FilePath::StringType executable_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(NamedProcessIterator);
 };
 
 // Returns the number of processes on the machine that are running from the

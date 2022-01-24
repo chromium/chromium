@@ -32,8 +32,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.payments.AndroidPaymentAppFinder;
+import org.chromium.components.payments.AppCreationFailureReason;
 import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
@@ -50,6 +50,7 @@ import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -61,7 +62,7 @@ import java.util.Map;
 /** Tests for the native Android payment app finder. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(AndroidPaymentAppFinderUnitTest.PAYMENTS_BROWSER_UNIT_TESTS)
-public class AndroidPaymentAppFinderUnitTest extends DummyUiChromeActivityTestCase {
+public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
     // Collection of payments unit tests that require the browser process to be initialized.
     static final String PAYMENTS_BROWSER_UNIT_TESTS = "PaymentsBrowserUnitTests";
     private static final IntentArgumentMatcher sPayIntentArgumentMatcher =
@@ -158,7 +159,8 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiChromeActivityTestCa
         Mockito.verify(delegate, Mockito.never())
                 .onPaymentAppCreated(Mockito.any(PaymentApp.class));
         Mockito.verify(delegate, Mockito.never())
-                .onPaymentAppCreationError(Mockito.any(String.class));
+                .onPaymentAppCreationError(
+                        Mockito.any(String.class), Mockito.eq(AppCreationFailureReason.UNKNOWN));
         Mockito.verify(delegate).onCanMakePaymentCalculated(false);
         Mockito.verify(delegate).onDoneCreatingPaymentApps(/*factory=*/null);
     }

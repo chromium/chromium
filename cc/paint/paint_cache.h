@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/stack_container.h"
 #include "cc/paint/paint_export.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -87,7 +87,7 @@ class CC_PAINT_EXPORT ClientPaintCache {
 
  private:
   using CacheKey = std::pair<PaintCacheDataType, PaintCacheId>;
-  using CacheMap = base::MRUCache<CacheKey, size_t>;
+  using CacheMap = base::LRUCache<CacheKey, size_t>;
 
   template <typename Iterator>
   void EraseFromMap(Iterator it);

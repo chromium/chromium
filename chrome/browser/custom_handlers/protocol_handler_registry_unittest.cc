@@ -17,19 +17,20 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/common/custom_handlers/protocol_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
 using content::BrowserThread;
+using content::ProtocolHandler;
 
 namespace {
 
@@ -111,6 +112,11 @@ class ProtocolHandlerChangeListener : public ProtocolHandlerRegistry::Observer {
   explicit ProtocolHandlerChangeListener(ProtocolHandlerRegistry* registry) {
     registry_observation_.Observe(registry);
   }
+
+  ProtocolHandlerChangeListener(const ProtocolHandlerChangeListener&) = delete;
+  ProtocolHandlerChangeListener& operator=(
+      const ProtocolHandlerChangeListener&) = delete;
+
   ~ProtocolHandlerChangeListener() override = default;
 
   int events() { return events_; }
@@ -126,8 +132,6 @@ class ProtocolHandlerChangeListener : public ProtocolHandlerRegistry::Observer {
   base::ScopedObservation<ProtocolHandlerRegistry,
                           ProtocolHandlerRegistry::Observer>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolHandlerChangeListener);
 };
 
 class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {
@@ -136,6 +140,10 @@ class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {
       : local_registry_(registry) {
     registry_observation_.Observe(registry);
   }
+
+  QueryProtocolHandlerOnChange(const QueryProtocolHandlerOnChange&) = delete;
+  QueryProtocolHandlerOnChange& operator=(const QueryProtocolHandlerOnChange&) =
+      delete;
 
   // ProtocolHandlerRegistry::Observer:
   void OnProtocolHandlerRegistryChanged() override {
@@ -153,8 +161,6 @@ class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {
   base::ScopedObservation<ProtocolHandlerRegistry,
                           ProtocolHandlerRegistry::Observer>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QueryProtocolHandlerOnChange);
 };
 
 }  // namespace
@@ -208,7 +214,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   int InPrefHandlerCount() {
     const base::ListValue* in_pref_handlers =
         profile()->GetPrefs()->GetList(prefs::kRegisteredProtocolHandlers);
-    return static_cast<int>(in_pref_handlers->GetSize());
+    return static_cast<int>(in_pref_handlers->GetList().size());
   }
 
   int InMemoryHandlerCount() {
@@ -222,7 +228,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   int InPrefIgnoredHandlerCount() {
     const base::ListValue* in_pref_ignored_handlers =
         profile()->GetPrefs()->GetList(prefs::kIgnoredProtocolHandlers);
-    return static_cast<int>(in_pref_ignored_handlers->GetSize());
+    return static_cast<int>(in_pref_ignored_handlers->GetList().size());
   }
 
   int InMemoryIgnoredHandlerCount() {
@@ -348,8 +354,8 @@ TEST_F(ProtocolHandlerRegistryTest, Encode) {
 
 TEST_F(ProtocolHandlerRegistryTest, GetHandlersBetween) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago = now - base::TimeDelta::FromHours(1);
-  base::Time two_hours_ago = now - base::TimeDelta::FromHours(2);
+  base::Time one_hour_ago = now - base::Hours(1);
+  base::Time two_hours_ago = now - base::Hours(2);
   ProtocolHandler handler1("bitcoin", GURL("https://example.com"),
                            two_hours_ago,
                            blink::ProtocolHandlerSecurityLevel::kStrict);
@@ -373,8 +379,8 @@ TEST_F(ProtocolHandlerRegistryTest, GetHandlersBetween) {
 
 TEST_F(ProtocolHandlerRegistryTest, ClearHandlersBetween) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago = now - base::TimeDelta::FromHours(1);
-  base::Time two_hours_ago = now - base::TimeDelta::FromHours(2);
+  base::Time one_hour_ago = now - base::Hours(1);
+  base::Time two_hours_ago = now - base::Hours(2);
   GURL url("https://example.com");
   ProtocolHandler handler1("bitcoin", url, two_hours_ago,
                            blink::ProtocolHandlerSecurityLevel::kStrict);
@@ -810,14 +816,18 @@ TEST_F(ProtocolHandlerRegistryTest, TestIsSameOrigin) {
       CreateProtocolHandler("mailto", GURL("https://test.com/updated-url/%s"));
   ProtocolHandler ph3 =
       CreateProtocolHandler("mailto", GURL("https://other.com/%s"));
-  ASSERT_EQ(ph1.url().GetOrigin() == ph2.url().GetOrigin(),
-      ph1.IsSameOrigin(ph2));
-  ASSERT_EQ(ph1.url().GetOrigin() == ph2.url().GetOrigin(),
-      ph2.IsSameOrigin(ph1));
-  ASSERT_EQ(ph2.url().GetOrigin() == ph3.url().GetOrigin(),
-      ph2.IsSameOrigin(ph3));
-  ASSERT_EQ(ph3.url().GetOrigin() == ph2.url().GetOrigin(),
-      ph3.IsSameOrigin(ph2));
+  ASSERT_EQ(ph1.url().DeprecatedGetOriginAsURL() ==
+                ph2.url().DeprecatedGetOriginAsURL(),
+            ph1.IsSameOrigin(ph2));
+  ASSERT_EQ(ph1.url().DeprecatedGetOriginAsURL() ==
+                ph2.url().DeprecatedGetOriginAsURL(),
+            ph2.IsSameOrigin(ph1));
+  ASSERT_EQ(ph2.url().DeprecatedGetOriginAsURL() ==
+                ph3.url().DeprecatedGetOriginAsURL(),
+            ph2.IsSameOrigin(ph3));
+  ASSERT_EQ(ph3.url().DeprecatedGetOriginAsURL() ==
+                ph2.url().DeprecatedGetOriginAsURL(),
+            ph3.IsSameOrigin(ph2));
 }
 
 TEST_F(ProtocolHandlerRegistryTest, TestInstallDefaultHandler) {

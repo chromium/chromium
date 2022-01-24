@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_WIFI_ALLOWED_HANDLER_H_
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_WIFI_ALLOWED_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 
@@ -17,6 +16,10 @@ namespace policy {
 class DeviceWiFiAllowedHandler {
  public:
   explicit DeviceWiFiAllowedHandler(ash::CrosSettings* cros_settings);
+
+  DeviceWiFiAllowedHandler(const DeviceWiFiAllowedHandler&) = delete;
+  DeviceWiFiAllowedHandler& operator=(const DeviceWiFiAllowedHandler&) = delete;
+
   ~DeviceWiFiAllowedHandler();
 
  private:
@@ -25,8 +28,6 @@ class DeviceWiFiAllowedHandler {
   ash::CrosSettings* cros_settings_;
   base::CallbackListSubscription wifi_policy_subscription_;
   base::WeakPtrFactory<DeviceWiFiAllowedHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceWiFiAllowedHandler);
 };
 
 }  // namespace policy

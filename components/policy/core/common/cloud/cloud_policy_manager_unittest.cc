@@ -8,7 +8,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -53,9 +53,8 @@ class TestHarness : public PolicyProviderTestHarness {
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
-  void InstallDictionaryPolicy(
-      const std::string& policy_name,
-      const base::DictionaryValue* policy_value) override;
+  void InstallDictionaryPolicy(const std::string& policy_name,
+                               const base::Value* policy_value) override;
 
   // Creates harnesses for mandatory and recommended levels, respectively.
   static PolicyProviderTestHarness* CreateMandatory();
@@ -114,9 +113,8 @@ void TestHarness::InstallStringListPolicy(const std::string& policy_name,
                          POLICY_SOURCE_CLOUD, policy_value->Clone(), nullptr);
 }
 
-void TestHarness::InstallDictionaryPolicy(
-    const std::string& policy_name,
-    const base::DictionaryValue* policy_value) {
+void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
+                                          const base::Value* policy_value) {
   store_.policy_map_.Set(policy_name, policy_level(), policy_scope(),
                          POLICY_SOURCE_CLOUD, policy_value->Clone(), nullptr);
 }
@@ -221,7 +219,8 @@ TEST_F(CloudPolicyManagerTest, InitAndShutdown) {
   Mock::VerifyAndClearExpectations(&observer_);
 
   store_.policy_map_ = policy_map_.Clone();
-  store_.policy_ = std::make_unique<em::PolicyData>(policy_.policy_data());
+  store_.set_policy_data_for_testing(
+      std::make_unique<em::PolicyData>(policy_.policy_data()));
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_.NotifyStoreLoaded();
   Mock::VerifyAndClearExpectations(&observer_);
@@ -303,7 +302,8 @@ TEST_F(CloudPolicyManagerTest, RefreshSuccessful) {
   manager_->core()->Connect(std::unique_ptr<CloudPolicyClient>(client));
 
   // Simulate a store load.
-  store_.policy_ = std::make_unique<em::PolicyData>(policy_.policy_data());
+  store_.set_policy_data_for_testing(
+      std::make_unique<em::PolicyData>(policy_.policy_data()));
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   EXPECT_CALL(*client, SetupRegistration(_, _, _));
   store_.NotifyStoreLoaded();
@@ -343,7 +343,8 @@ TEST_F(CloudPolicyManagerTest, RefreshSuccessful) {
 
 TEST_F(CloudPolicyManagerTest, SignalOnError) {
   // Simulate a failed load and verify that it triggers OnUpdatePolicy().
-  store_.policy_ = std::make_unique<em::PolicyData>(policy_.policy_data());
+  store_.set_policy_data_for_testing(
+      std::make_unique<em::PolicyData>(policy_.policy_data()));
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_.NotifyStoreError();
   Mock::VerifyAndClearExpectations(&observer_);

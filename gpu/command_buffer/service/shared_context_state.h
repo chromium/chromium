@@ -8,12 +8,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -83,6 +83,9 @@ class GPU_GLES2_EXPORT SharedContextState
       viz::DawnContextProvider* dawn_context_provider = nullptr,
       base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor =
           nullptr);
+
+  SharedContextState(const SharedContextState&) = delete;
+  SharedContextState& operator=(const SharedContextState&) = delete;
 
   bool InitializeGrContext(const GpuPreferences& gpu_preferences,
                            const GpuDriverBugWorkarounds& workarounds,
@@ -344,7 +347,7 @@ class GPU_GLES2_EXPORT SharedContextState
   absl::optional<error::ContextLostReason> context_lost_reason_;
   base::ObserverList<ContextLostObserver>::Unchecked context_lost_observers_;
 
-  base::MRUCache<void*, sk_sp<SkSurface>> sk_surface_cache_;
+  base::LRUCache<void*, sk_sp<SkSurface>> sk_surface_cache_;
 
   bool device_needs_reset_ = false;
   base::Time last_gl_check_graphics_reset_status_;
@@ -357,8 +360,6 @@ class GPU_GLES2_EXPORT SharedContextState
   absl::optional<raster::GrCacheController> gr_cache_controller_;
 
   base::WeakPtrFactory<SharedContextState> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SharedContextState);
 };
 
 }  // namespace gpu

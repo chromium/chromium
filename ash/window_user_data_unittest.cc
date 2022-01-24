@@ -20,12 +20,14 @@ namespace {
 class Data {
  public:
   explicit Data(bool* delete_setter) : delete_setter_(delete_setter) {}
+
+  Data(const Data&) = delete;
+  Data& operator=(const Data&) = delete;
+
   ~Data() { *delete_setter_ = true; }
 
  private:
   bool* delete_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(Data);
 };
 
 }  // namespace

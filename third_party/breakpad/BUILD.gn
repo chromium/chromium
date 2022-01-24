@@ -855,7 +855,6 @@ if (is_win) {
         "$visual_studio_path/DIA SDK/include",
         "breakpad/src",
       ]
-
       sources = [
         "breakpad/src/common/windows/dia_util.cc",
         "breakpad/src/common/windows/dia_util.h",

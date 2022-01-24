@@ -20,6 +20,9 @@ namespace content {
 // SwapMetricsDriver implementation.
 class CONTENT_EXPORT SwapMetricsDriverImpl : public SwapMetricsDriver {
  public:
+  SwapMetricsDriverImpl(const SwapMetricsDriverImpl&) = delete;
+  SwapMetricsDriverImpl& operator=(const SwapMetricsDriverImpl&) = delete;
+
   ~SwapMetricsDriverImpl() override;
 
   // SwapMetricsDriver
@@ -69,8 +72,6 @@ class CONTENT_EXPORT SwapMetricsDriverImpl : public SwapMetricsDriver {
   // Updating metrics is not thread safe, and this checks that
   // UpdateMetricsImpl() is always called on the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SwapMetricsDriverImpl);
 };
 
 }  // namespace content

@@ -385,7 +385,7 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
            FormatUrlForSecurityDisplay(*inner_url);
   }
 
-  const GURL origin = url.GetOrigin();
+  const GURL origin = url.DeprecatedGetOriginAsURL();
   base::StringPiece scheme = origin.scheme_piece();
   base::StringPiece host = origin.host_piece();
 

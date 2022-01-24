@@ -16,6 +16,11 @@ interface GuestView {
   // |success| is true the MimeHandlerViewEmbedder should proceed with attaching
   // the GuestView.
   ReadyToCreateMimeHandlerView(int32 routing_id, bool success);
+
+  // Queries whether the frame identified by `routing_id` is allowed to inject
+  // the script with the provided `script_id`.
+  [Sync]
+  CanExecuteContentScript(int32 routing_id, string script_id) => (bool allowed);
 };
 
 // An interface implemented by the renderer which is used for creating a

@@ -98,15 +98,15 @@ class StatusCollector {
   // the server.
   virtual void OnSubmittedSuccessfully() = 0;
 
-  // Methods used to decide whether a specific categories of data should be
-  // included in the reports or not. See:
+  // Methods used to determine if privacy notes should be displayed in
+  // management UI.
   // https://cs.chromium.org/search/?q=AddDeviceReportingInfo
-  virtual bool ShouldReportActivityTimes() const = 0;
-  virtual bool ShouldReportNetworkInterfaces() const = 0;
-  virtual bool ShouldReportUsers() const = 0;
-  virtual bool ShouldReportHardwareStatus() const = 0;
-  virtual bool ShouldReportCrashReportInfo() const = 0;
-  virtual bool ShouldReportAppInfoAndActivity() const = 0;
+  virtual bool IsReportingActivityTimes() const = 0;
+  virtual bool IsReportingNetworkData() const = 0;
+  virtual bool IsReportingHardwareData() const = 0;
+  virtual bool IsReportingUsers() const = 0;
+  virtual bool IsReportingCrashReportInfo() const = 0;
+  virtual bool IsReportingAppInfoAndActivity() const = 0;
 
   // Returns the DeviceLocalAccount associated with the currently active kiosk
   // session, if the session was auto-launched with zero delay (this enables

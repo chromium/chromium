@@ -108,8 +108,8 @@ void CompositorDependenciesAndroid::CreateVizFrameSinkManager() {
 
   // Set up a pending request which will be run once we've successfully
   // connected to the GPU process.
-  pending_connect_viz_on_process_thread_ = base::BindOnce(
-      &CompositorDependenciesAndroid::ConnectVizFrameSinkManagerOnProcessThread,
+  pending_connect_viz_on_main_thread_ = base::BindOnce(
+      &CompositorDependenciesAndroid::ConnectVizFrameSinkManagerOnMainThread,
       std::move(frame_sink_manager_receiver),
       std::move(frame_sink_manager_client),
       host_frame_sink_manager_.debug_renderer_settings());
@@ -126,14 +126,9 @@ viz::FrameSinkId CompositorDependenciesAndroid::AllocateFrameSinkId() {
 }
 
 void CompositorDependenciesAndroid::TryEstablishVizConnectionIfNeeded() {
-  if (!pending_connect_viz_on_process_thread_)
+  if (!pending_connect_viz_on_main_thread_)
     return;
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    std::move(pending_connect_viz_on_process_thread_).Run();
-  } else {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, std::move(pending_connect_viz_on_process_thread_));
-  }
+  std::move(pending_connect_viz_on_main_thread_).Run();
 }
 
 // Called on the GpuProcessHost thread, after a GPU connection has already been
@@ -141,7 +136,7 @@ void CompositorDependenciesAndroid::TryEstablishVizConnectionIfNeeded() {
 // established and lost. In this case the ConnectionLost callback will be
 // re-run when the request is deleted (goes out of scope).
 // static
-void CompositorDependenciesAndroid::ConnectVizFrameSinkManagerOnProcessThread(
+void CompositorDependenciesAndroid::ConnectVizFrameSinkManagerOnMainThread(
     mojo::PendingReceiver<viz::mojom::FrameSinkManager> receiver,
     mojo::PendingRemote<viz::mojom::FrameSinkManagerClient> client,
     const viz::DebugRendererSettings& debug_renderer_settings) {
@@ -160,7 +155,7 @@ void CompositorDependenciesAndroid::EnqueueLowEndBackgroundCleanup() {
         base::Unretained(this)));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, low_end_background_cleanup_task_.callback(),
-        base::TimeDelta::FromSeconds(5));
+        base::Seconds(5));
   }
 }
 

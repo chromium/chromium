@@ -36,12 +36,15 @@
 namespace blink {
 
 class ExceptionState;
+class ScriptState;
 
 class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
                                             public ScriptElementBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static bool supports(ScriptState*, const AtomicString&);
+
   HTMLScriptElement(Document&, const CreateElementFlags);
 
   // Returns attributes that should be checked against Trusted Types
@@ -76,6 +79,8 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
+  void RemovedFrom(ContainerNode& insertion_point) override;
+
   void DidNotifySubtreeInsertionsToDocument() override;
   void ChildrenChanged(const ChildrenChange&) override;
   void DidMoveToNewDocument(Document& old_document) override;

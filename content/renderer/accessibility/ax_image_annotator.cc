@@ -10,11 +10,13 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "content/public/common/content_client.h"
 #include "content/renderer/accessibility/ax_image_stopwords.h"
 #include "content/renderer/render_frame_impl.h"
@@ -33,6 +35,103 @@
 #include "url/gurl.h"
 
 namespace content {
+
+namespace {
+
+int GetMessageIdForIconEnum(const std::string& icon_type) {
+#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+  return 0;
+#else
+  static constexpr auto kIconTypeToMessageIdMap =
+      base::MakeFixedFlatMap<base::StringPiece, int>({
+          {"ICON_PLUS", IDS_AX_IMAGE_ANNOTATION_ICON_PLUS},
+          {"ICON_ARROW_BACKWARD", IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_BACKWARD},
+          {"ICON_ARROW_FORWARD", IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_FORWARD},
+          {"ICON_CALL", IDS_AX_IMAGE_ANNOTATION_ICON_CALL},
+          {"ICON_CHAT", IDS_AX_IMAGE_ANNOTATION_ICON_CHAT},
+          {"ICON_CHECK", IDS_AX_IMAGE_ANNOTATION_ICON_CHECK},
+          {"ICON_X", IDS_AX_IMAGE_ANNOTATION_ICON_X},
+          {"ICON_DELETE", IDS_AX_IMAGE_ANNOTATION_ICON_DELETE},
+          {"ICON_EDIT", IDS_AX_IMAGE_ANNOTATION_ICON_EDIT},
+          {"ICON_EMOJI", IDS_AX_IMAGE_ANNOTATION_ICON_EMOJI},
+          {"ICON_END_CALL", IDS_AX_IMAGE_ANNOTATION_ICON_END_CALL},
+          {"ICON_V_DOWNWARD", IDS_AX_IMAGE_ANNOTATION_ICON_V_DOWNWARD},
+          {"ICON_HEART", IDS_AX_IMAGE_ANNOTATION_ICON_HEART},
+          {"ICON_HOME", IDS_AX_IMAGE_ANNOTATION_ICON_HOME},
+          {"ICON_INFO", IDS_AX_IMAGE_ANNOTATION_ICON_INFO},
+          {"ICON_LAUNCH_APPS", IDS_AX_IMAGE_ANNOTATION_ICON_LAUNCH_APPS},
+          {"ICON_THUMBS_UP", IDS_AX_IMAGE_ANNOTATION_ICON_THUMBS_UP},
+          {"ICON_THREE_BARS", IDS_AX_IMAGE_ANNOTATION_ICON_THREE_BARS},
+          {"ICON_THREE_DOTS", IDS_AX_IMAGE_ANNOTATION_ICON_THREE_DOTS},
+          {"ICON_NOTIFICATIONS", IDS_AX_IMAGE_ANNOTATION_ICON_NOTIFICATIONS},
+          {"ICON_PAUSE", IDS_AX_IMAGE_ANNOTATION_ICON_PAUSE},
+          {"ICON_PLAY", IDS_AX_IMAGE_ANNOTATION_ICON_PLAY},
+          {"ICON_REFRESH", IDS_AX_IMAGE_ANNOTATION_ICON_REFRESH},
+          {"ICON_MAGNIFYING_GLASS",
+           IDS_AX_IMAGE_ANNOTATION_ICON_MAGNIFYING_GLASS},
+          {"ICON_SEND", IDS_AX_IMAGE_ANNOTATION_ICON_SEND},
+          {"ICON_SETTINGS", IDS_AX_IMAGE_ANNOTATION_ICON_SETTINGS},
+          {"ICON_SHARE", IDS_AX_IMAGE_ANNOTATION_ICON_SHARE},
+          {"ICON_STAR", IDS_AX_IMAGE_ANNOTATION_ICON_STAR},
+          {"ICON_TAKE_PHOTO", IDS_AX_IMAGE_ANNOTATION_ICON_TAKE_PHOTO},
+          {"ICON_TIME", IDS_AX_IMAGE_ANNOTATION_ICON_TIME},
+          {"ICON_VIDEOCAM", IDS_AX_IMAGE_ANNOTATION_ICON_VIDEOCAM},
+          {"ICON_EXPAND", IDS_AX_IMAGE_ANNOTATION_ICON_EXPAND},
+          {"ICON_CONTRACT", IDS_AX_IMAGE_ANNOTATION_ICON_CONTRACT},
+          {"ICON_GOOGLE", IDS_AX_IMAGE_ANNOTATION_ICON_GOOGLE},
+          {"ICON_TWITTER", IDS_AX_IMAGE_ANNOTATION_ICON_TWITTER},
+          {"ICON_FACEBOOK", IDS_AX_IMAGE_ANNOTATION_ICON_FACEBOOK},
+          {"ICON_ASSISTANT", IDS_AX_IMAGE_ANNOTATION_ICON_ASSISTANT},
+          {"ICON_WEATHER", IDS_AX_IMAGE_ANNOTATION_ICON_WEATHER},
+          {"ICON_SHOPPING_CART", IDS_AX_IMAGE_ANNOTATION_ICON_SHOPPING_CART},
+          {"ICON_UPLOAD", IDS_AX_IMAGE_ANNOTATION_ICON_UPLOAD},
+          {"ICON_QUESTION", IDS_AX_IMAGE_ANNOTATION_ICON_QUESTION},
+          {"ICON_MIC", IDS_AX_IMAGE_ANNOTATION_ICON_MIC},
+          {"ICON_MIC_MUTE", IDS_AX_IMAGE_ANNOTATION_ICON_MIC_MUTE},
+          {"ICON_GALLERY", IDS_AX_IMAGE_ANNOTATION_ICON_GALLERY},
+          {"ICON_COMPASS", IDS_AX_IMAGE_ANNOTATION_ICON_COMPASS},
+          {"ICON_PEOPLE", IDS_AX_IMAGE_ANNOTATION_ICON_PEOPLE},
+          {"ICON_ARROW_UPWARD", IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_UPWARD},
+          {"ICON_ENVELOPE", IDS_AX_IMAGE_ANNOTATION_ICON_ENVELOPE},
+          {"ICON_EMOJI_FACE", IDS_AX_IMAGE_ANNOTATION_ICON_EMOJI_FACE},
+          {"ICON_PAPERCLIP", IDS_AX_IMAGE_ANNOTATION_ICON_PAPERCLIP},
+          {"ICON_CAST", IDS_AX_IMAGE_ANNOTATION_ICON_CAST},
+          {"ICON_VOLUME_UP", IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_UP},
+          {"ICON_VOLUME_DOWN", IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_DOWN},
+          {"ICON_VOLUME_STATE", IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_STATE},
+          {"ICON_VOLUME_MUTE", IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_MUTE},
+          {"ICON_STOP", IDS_AX_IMAGE_ANNOTATION_ICON_STOP},
+          {"ICON_SHOPPING_BAG", IDS_AX_IMAGE_ANNOTATION_ICON_SHOPPING_BAG},
+          {"ICON_LIST", IDS_AX_IMAGE_ANNOTATION_ICON_LIST},
+          {"ICON_LOCATION", IDS_AX_IMAGE_ANNOTATION_ICON_LOCATION},
+          {"ICON_CALENDAR", IDS_AX_IMAGE_ANNOTATION_ICON_CALENDAR},
+          {"ICON_THUMBS_DOWN", IDS_AX_IMAGE_ANNOTATION_ICON_THUMBS_DOWN},
+          {"ICON_HEADSET", IDS_AX_IMAGE_ANNOTATION_ICON_HEADSET},
+          {"ICON_REDO", IDS_AX_IMAGE_ANNOTATION_ICON_REDO},
+          {"ICON_UNDO", IDS_AX_IMAGE_ANNOTATION_ICON_UNDO},
+          {"ICON_DOWNLOAD", IDS_AX_IMAGE_ANNOTATION_ICON_DOWNLOAD},
+          {"ICON_ARROW_DOWNWARD", IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_DOWNWARD},
+          {"ICON_V_UPWARD", IDS_AX_IMAGE_ANNOTATION_ICON_V_UPWARD},
+          {"ICON_V_FORWARD", IDS_AX_IMAGE_ANNOTATION_ICON_V_FORWARD},
+          {"ICON_V_BACKWARD", IDS_AX_IMAGE_ANNOTATION_ICON_V_BACKWARD},
+          {"ICON_HISTORY", IDS_AX_IMAGE_ANNOTATION_ICON_HISTORY},
+          {"ICON_PERSON", IDS_AX_IMAGE_ANNOTATION_ICON_PERSON},
+          {"ICON_HAPPY_FACE", IDS_AX_IMAGE_ANNOTATION_ICON_HAPPY_FACE},
+          {"ICON_SAD_FACE", IDS_AX_IMAGE_ANNOTATION_ICON_SAD_FACE},
+          {"ICON_MOON", IDS_AX_IMAGE_ANNOTATION_ICON_MOON},
+          {"ICON_CLOUD", IDS_AX_IMAGE_ANNOTATION_ICON_CLOUD},
+          {"ICON_SUN", IDS_AX_IMAGE_ANNOTATION_ICON_SUN},
+      });
+
+  auto* iter = kIconTypeToMessageIdMap.find(icon_type);
+  if (iter == kIconTypeToMessageIdMap.end())
+    return 0;
+
+  return iter->second;
+#endif  // defined(OS_ANDROID)
+}
+
+}  // namespace
 
 AXImageAnnotator::AXImageAnnotator(
     RenderAccessibilityImpl* const render_accessibility,
@@ -404,6 +503,14 @@ void AXImageAnnotator::OnImageAnnotated(
         has_description = true;
         message_id = IDS_AX_IMAGE_ANNOTATION_DESCRIPTION_CONTEXT;
         break;
+      case image_annotation::mojom::AnnotationType::kIcon: {
+        int icon_message_id = GetMessageIdForIconEnum(annotation->text);
+
+        DCHECK(GetContentClient());
+        contextualized_strings.push_back(base::UTF16ToUTF8(
+            GetContentClient()->GetLocalizedString(icon_message_id)));
+        break;
+      }
     }
 
     // Skip unrecognized annotation types.

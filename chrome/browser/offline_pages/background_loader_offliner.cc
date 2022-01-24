@@ -261,7 +261,7 @@ void BackgroundLoaderOffliner::DocumentOnLoadCompletedInMainFrame(
   snapshot_controller_->DocumentOnLoadCompletedInMainFrame();
 }
 
-void BackgroundLoaderOffliner::RenderProcessGone(
+void BackgroundLoaderOffliner::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   if (pending_request_) {
     SavePageRequest request(*pending_request_.get());

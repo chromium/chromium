@@ -9,9 +9,8 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
@@ -23,7 +22,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"
+#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -182,6 +181,12 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, MultipleCalls) {
 class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {
  public:
   CaptivePortalWindowCtorDtorTest() = default;
+
+  CaptivePortalWindowCtorDtorTest(const CaptivePortalWindowCtorDtorTest&) =
+      delete;
+  CaptivePortalWindowCtorDtorTest& operator=(
+      const CaptivePortalWindowCtorDtorTest&) = delete;
+
   ~CaptivePortalWindowCtorDtorTest() override {}
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -212,12 +217,12 @@ class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
   // Use fake GAIA to avoid potential flakiness when real GAIA would not
   // load and Error screen would be shown instead of Login screen.
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalWindowCtorDtorTest);
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
-IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest, OpenPortalDialog) {
+// Flaky on multiple builders, see crbug.com/1244162
+IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest,
+                       DISABLED_OpenPortalDialog) {
   LoginDisplayHost* host = LoginDisplayHost::default_host();
   ASSERT_TRUE(host);
   OobeUI* oobe = host->GetOobeUI();

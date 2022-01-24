@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread_checker.h"
@@ -98,6 +97,9 @@ class CastTransportImpl : public CastTransport {
                     int channel_id,
                     const net::IPEndPoint& ip_endpoint_,
                     scoped_refptr<Logger> logger);
+
+  CastTransportImpl(const CastTransportImpl&) = delete;
+  CastTransportImpl& operator=(const CastTransportImpl&) = delete;
 
   ~CastTransportImpl() override;
 
@@ -201,8 +203,6 @@ class CastTransportImpl : public CastTransport {
   scoped_refptr<Logger> logger_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CastTransportImpl);
 };
 }  // namespace cast_channel
 

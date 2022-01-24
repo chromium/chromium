@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -226,8 +225,8 @@ URLLoaderPostInterceptor::RequestHandler(
 
   std::string request_body = request.content;
   net::HttpRequestHeaders headers;
-  for (auto it : request.headers)
-    headers.SetHeader(it.first, it.second);
+  for (auto pair : request.headers)
+    headers.SetHeader(pair.first, pair.second);
   requests_.push_back({request_body, headers, url});
   if (expectations_.empty())
     return nullptr;

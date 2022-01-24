@@ -46,6 +46,9 @@ class MessagePipeDispatcher::PortObserverThunk
   explicit PortObserverThunk(scoped_refptr<MessagePipeDispatcher> dispatcher)
       : dispatcher_(dispatcher) {}
 
+  PortObserverThunk(const PortObserverThunk&) = delete;
+  PortObserverThunk& operator=(const PortObserverThunk&) = delete;
+
  private:
   ~PortObserverThunk() override = default;
 
@@ -53,8 +56,6 @@ class MessagePipeDispatcher::PortObserverThunk
   void OnPortStatusChanged() override { dispatcher_->OnPortStatusChanged(); }
 
   scoped_refptr<MessagePipeDispatcher> dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PortObserverThunk);
 };
 
 #if DCHECK_IS_ON()
@@ -64,6 +65,10 @@ class MessagePipeDispatcher::PortObserverThunk
 class PeekSizeMessageFilter : public ports::MessageFilter {
  public:
   PeekSizeMessageFilter() = default;
+
+  PeekSizeMessageFilter(const PeekSizeMessageFilter&) = delete;
+  PeekSizeMessageFilter& operator=(const PeekSizeMessageFilter&) = delete;
+
   ~PeekSizeMessageFilter() override = default;
 
   // ports::MessageFilter:
@@ -78,8 +83,6 @@ class PeekSizeMessageFilter : public ports::MessageFilter {
 
  private:
   size_t message_size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PeekSizeMessageFilter);
 };
 
 #endif  // DCHECK_IS_ON()
@@ -357,19 +360,25 @@ scoped_refptr<Dispatcher> MessagePipeDispatcher::Deserialize(
     size_t num_ports,
     PlatformHandle* handles,
     size_t num_handles) {
-  if (num_ports != 1 || num_handles || num_bytes != sizeof(SerializedState))
+  if (num_ports != 1 || num_handles || num_bytes != sizeof(SerializedState)) {
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
+  }
 
   const SerializedState* state = static_cast<const SerializedState*>(data);
 
   ports::Node* node = Core::Get()->GetNodeController()->node();
   ports::PortRef port;
-  if (node->GetPort(ports[0], &port) != ports::OK)
+  if (node->GetPort(ports[0], &port) != ports::OK) {
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
+  }
 
   ports::PortStatus status;
-  if (node->GetStatus(port, &status) != ports::OK)
+  if (node->GetStatus(port, &status) != ports::OK) {
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
+  }
 
   return new MessagePipeDispatcher(Core::Get()->GetNodeController(), port,
                                    state->pipe_id, state->endpoint);

@@ -60,8 +60,8 @@ bool GLImageEGL::BindTexImage(unsigned target) {
   const GLenum error = glGetError();
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Gpu.GL.GetErrorDuration.GLImageEGL.BindTexImage",
-      thread_blocked_timer.Elapsed(), base::TimeDelta::FromMicroseconds(10),
-      base::TimeDelta::FromMilliseconds(16), 100);
+      thread_blocked_timer.Elapsed(), base::Microseconds(10),
+      base::Milliseconds(16), 100);
 
   DLOG_IF(ERROR, error != GL_NO_ERROR)
       << "Error binding EGLImage: " << GLEnums::GetStringError(error);

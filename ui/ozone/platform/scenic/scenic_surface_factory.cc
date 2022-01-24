@@ -12,11 +12,10 @@
 #include "base/containers/contains.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/angle/src/common/fuchsia_egl/fuchsia_egl.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/native_pixmap.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/ozone/common/egl_util.h"
@@ -47,9 +46,8 @@ fuchsia::ui::scenic::ScenicPtr ConnectToScenic() {
       base::ComponentContextForProcess()
           ->svc()
           ->Connect<fuchsia::ui::scenic::Scenic>();
-  scenic.set_error_handler([](zx_status_t status) {
-    ZX_LOG(FATAL, status) << "Scenic connection failed";
-  });
+  scenic.set_error_handler(
+      base::LogFidlErrorAndExitProcess(FROM_HERE, "fuchsia.ui.scenic.Scenic"));
   return scenic;
 }
 
@@ -99,6 +97,10 @@ class GLOzoneEGLScenic : public GLOzoneEGL {
  public:
   explicit GLOzoneEGLScenic(ScenicSurfaceFactory* scenic_surface_factory)
       : scenic_surface_factory_(scenic_surface_factory) {}
+
+  GLOzoneEGLScenic(const GLOzoneEGLScenic&) = delete;
+  GLOzoneEGLScenic& operator=(const GLOzoneEGLScenic&) = delete;
+
   ~GLOzoneEGLScenic() override = default;
 
   // GLOzone:
@@ -127,7 +129,6 @@ class GLOzoneEGLScenic : public GLOzoneEGL {
 
  private:
   ScenicSurfaceFactory* const scenic_surface_factory_;
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGLScenic);
 };
 
 fuchsia::sysmem::AllocatorHandle ConnectSysmemAllocator() {
@@ -201,8 +202,8 @@ std::unique_ptr<PlatformWindowSurface>
 ScenicSurfaceFactory::CreatePlatformWindowSurface(
     gfx::AcceleratedWidget window) {
   DCHECK_NE(window, gfx::kNullAcceleratedWidget);
-  auto surface =
-      std::make_unique<ScenicSurface>(this, window, CreateScenicSession());
+  auto surface = std::make_unique<ScenicSurface>(this, &sysmem_buffer_manager_,
+                                                 window, CreateScenicSession());
   main_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ScenicSurfaceFactory::AttachSurfaceToWindow,
                                 weak_ptr_factory_.GetWeakPtr(), window,
@@ -224,6 +225,15 @@ scoped_refptr<gfx::NativePixmap> ScenicSurfaceFactory::CreateNativePixmap(
     gfx::BufferUsage usage,
     absl::optional<gfx::Size> framebuffer_size) {
   DCHECK(!framebuffer_size || framebuffer_size == size);
+
+  if (widget != gfx::kNullAcceleratedWidget &&
+      usage == gfx::BufferUsage::SCANOUT) {
+    // The usage SCANOUT is for a primary plane buffer.
+    auto* surface = GetSurface(widget);
+    CHECK(surface);
+    return surface->AllocatePrimaryPlanePixmap(vk_device, size, format);
+  }
+
   auto collection = sysmem_buffer_manager_.CreateCollection(vk_device, size,
                                                             format, usage, 1);
   if (!collection)

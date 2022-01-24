@@ -22,6 +22,11 @@
 namespace extensions {
 
 class ShellKeepAliveRequesterTest : public ExtensionsTest {
+ public:
+  ShellKeepAliveRequesterTest(const ShellKeepAliveRequesterTest&) = delete;
+  ShellKeepAliveRequesterTest& operator=(const ShellKeepAliveRequesterTest&) =
+      delete;
+
  protected:
   ShellKeepAliveRequesterTest() = default;
   ~ShellKeepAliveRequesterTest() override = default;
@@ -44,9 +49,6 @@ class ShellKeepAliveRequesterTest : public ExtensionsTest {
 
  protected:
   std::unique_ptr<ShellKeepAliveRequester> keep_alive_requester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellKeepAliveRequesterTest);
 };
 
 // Tests with an extension.

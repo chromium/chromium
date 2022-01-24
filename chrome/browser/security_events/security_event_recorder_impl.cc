@@ -7,7 +7,8 @@
 #include <memory>
 #include <utility>
 
-using sync_pb::SecurityEventSpecifics;
+#include "components/sync/protocol/gaia_password_reuse.pb.h"
+#include "components/sync/protocol/security_event_specifics.pb.h"
 
 SecurityEventRecorderImpl::SecurityEventRecorderImpl(
     std::unique_ptr<SecurityEventSyncBridge> security_event_sync_bridge,

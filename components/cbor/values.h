@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "components/cbor/cbor_export.h"
@@ -147,6 +146,9 @@ class CBOR_EXPORT Value {
 
   Value& operator=(Value&& that) noexcept;
 
+  Value(const Value&) = delete;
+  Value& operator=(const Value&) = delete;
+
   ~Value();
 
   // Value's copy constructor and copy assignment operator are deleted.
@@ -206,8 +208,6 @@ class CBOR_EXPORT Value {
 
   void InternalMoveConstructFrom(Value&& that);
   void InternalCleanup();
-
-  DISALLOW_COPY_AND_ASSIGN(Value);
 };
 
 }  // namespace cbor

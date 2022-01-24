@@ -6,19 +6,19 @@ import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {getFavicon} from 'chrome://resources/js/icon.m.js';
+import {getFavicon} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 
 import {AlertIndicatorsElement} from './alert_indicators.js';
-import {TabStripEmbedderProxy, TabStripEmbedderProxyImpl} from './tab_strip_embedder_proxy.js';
+import {Tab, TabNetworkState} from './tab_strip.mojom-webui.js';
 import {TabSwiper} from './tab_swiper.js';
-import {CloseTabAction, TabData, TabNetworkState, TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
+import {CloseTabAction, TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
 
 const DEFAULT_ANIMATION_DURATION = 125;
 
 /**
- * @param {!TabData} tab
+ * @param {!Tab} tab
  * @return {string}
  */
 function getAccessibleTitle(tab) {
@@ -28,7 +28,7 @@ function getAccessibleTitle(tab) {
     return loadTimeData.getStringF('tabCrashed', tabTitle);
   }
 
-  if (tab.networkState === TabNetworkState.ERROR) {
+  if (tab.networkState === TabNetworkState.kError) {
     return loadTimeData.getStringF('tabNetworkError', tabTitle);
   }
 
@@ -79,14 +79,11 @@ export class TabElement extends CustomElement {
     /** @private {!Image} */
     this.thumbnail_ = /** @type {!Image} */ (this.$('#thumbnailImg'));
 
-    /** @private {!TabData} */
+    /** @private {!Tab} */
     this.tab_;
 
     /** @private {!TabsApiProxy} */
     this.tabsApi_ = TabsApiProxyImpl.getInstance();
-
-    /** @private {!TabStripEmbedderProxy} */
-    this.embedderApi_ = TabStripEmbedderProxyImpl.getInstance();
 
     /** @private {!HTMLElement} */
     this.titleTextEl_ = /** @type {!HTMLElement} */ (this.$('#titleText'));
@@ -116,25 +113,24 @@ export class TabElement extends CustomElement {
     this.onTabActivating_ = (tabId) => {};
   }
 
-  /** @return {!TabData} */
+  /** @return {!Tab} */
   get tab() {
     return this.tab_;
   }
 
-  /** @param {!TabData} tab */
+  /** @param {!Tab} tab */
   set tab(tab) {
-    assert(this.tab_ !== tab);
     this.toggleAttribute('active', tab.active);
     this.tabEl_.setAttribute('aria-selected', tab.active.toString());
     this.toggleAttribute('hide-icon_', !tab.showIcon);
     this.toggleAttribute(
         'waiting_',
         !tab.shouldHideThrobber &&
-            tab.networkState === TabNetworkState.WAITING);
+            tab.networkState === TabNetworkState.kWaiting);
     this.toggleAttribute(
         'loading_',
         !tab.shouldHideThrobber &&
-            tab.networkState === TabNetworkState.LOADING);
+            tab.networkState === TabNetworkState.kLoading);
     this.toggleAttribute('pinned', tab.pinned);
     this.toggleAttribute('blocked_', tab.blocked);
     this.setAttribute('draggable', true);
@@ -144,20 +140,20 @@ export class TabElement extends CustomElement {
       this.titleTextEl_.textContent = tab.title;
     } else if (
         !tab.shouldHideThrobber &&
-        (tab.networkState === TabNetworkState.WAITING ||
-         tab.networkState === TabNetworkState.LOADING)) {
+        (tab.networkState === TabNetworkState.kWaiting ||
+         tab.networkState === TabNetworkState.kLoading)) {
       this.titleTextEl_.textContent = loadTimeData.getString('loadingTab');
     } else {
       this.titleTextEl_.textContent = loadTimeData.getString('defaultTabTitle');
     }
     this.titleTextEl_.setAttribute('aria-label', getAccessibleTitle(tab));
 
-    if (tab.networkState === TabNetworkState.WAITING ||
-        (tab.networkState === TabNetworkState.LOADING &&
+    if (tab.networkState === TabNetworkState.kWaiting ||
+        (tab.networkState === TabNetworkState.kLoading &&
          tab.isDefaultFavicon)) {
       this.faviconEl_.style.backgroundImage = 'none';
-    } else if (tab.favIconUrl) {
-      this.faviconEl_.style.backgroundImage = `url(${tab.favIconUrl})`;
+    } else if (tab.faviconUrl) {
+      this.faviconEl_.style.backgroundImage = `url(${tab.faviconUrl.url})`;
     } else {
       this.faviconEl_.style.backgroundImage = getFavicon('');
     }
@@ -227,7 +223,7 @@ export class TabElement extends CustomElement {
     this.onTabActivating_(tabId);
     this.tabsApi_.activateTab(tabId);
 
-    this.embedderApi_.closeContainer();
+    this.tabsApi_.closeContainer();
   }
 
   /**
@@ -272,7 +268,7 @@ export class TabElement extends CustomElement {
   onPointerUp_(event) {
     event.stopPropagation();
     if (event.pointerType !== 'touch' && event.button === 2) {
-      this.embedderApi_.showTabContextMenu(
+      this.tabsApi_.showTabContextMenu(
           this.tab.id, event.clientX, event.clientY);
     }
   }
@@ -354,7 +350,7 @@ export class TabElement extends CustomElement {
    * @return {!Promise}
    */
   slideOut() {
-    if (!this.embedderApi_.isVisible() || this.tab_.pinned ||
+    if (!this.tabsApi_.isVisible() || this.tab_.pinned ||
         this.tabSwiper_.wasSwiping()) {
       this.remove();
       return Promise.resolve();
@@ -398,7 +394,7 @@ export class TabElement extends CustomElement {
       });
 
       const visibilityChangeListener = () => {
-        if (!this.embedderApi_.isVisible()) {
+        if (!this.tabsApi_.isVisible()) {
           // If a tab strip becomes hidden during the animation, the onfinish
           // event will not get fired until the tab strip becomes visible again.
           // Therefore, when the tab strip becomes hidden, immediately call the

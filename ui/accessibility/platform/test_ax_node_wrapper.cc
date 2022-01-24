@@ -170,7 +170,7 @@ gfx::NativeViewAccessible TestAXNodeWrapper::GetNativeViewAccessible() {
   return ax_platform_node()->GetNativeViewAccessible();
 }
 
-gfx::NativeViewAccessible TestAXNodeWrapper::GetParent() {
+gfx::NativeViewAccessible TestAXNodeWrapper::GetParent() const {
   TestAXNodeWrapper* parent_wrapper =
       GetOrCreate(tree_, node_->GetUnignoredParent());
   return parent_wrapper ?
@@ -565,12 +565,8 @@ absl::optional<int32_t> TestAXNodeWrapper::CellIndexToId(int cell_index) const {
   return cell->id();
 }
 
-bool TestAXNodeWrapper::IsCellOrHeaderOfARIATable() const {
-  return node_->IsCellOrHeaderOfARIATable();
-}
-
-bool TestAXNodeWrapper::IsCellOrHeaderOfARIAGrid() const {
-  return node_->IsCellOrHeaderOfARIAGrid();
+bool TestAXNodeWrapper::IsCellOrHeaderOfAriaGrid() const {
+  return node_->IsCellOrHeaderOfAriaGrid();
 }
 
 bool TestAXNodeWrapper::AccessibilityPerformAction(
@@ -947,29 +943,11 @@ TestAXNodeWrapper* TestAXNodeWrapper::InternalGetChild(int index) const {
       tree_, node_->GetUnignoredChildAtIndex(static_cast<size_t>(index)));
 }
 
-// Recursive helper function for GetUIADescendants. Aggregates all of the
-// descendants for a given node within the descendants vector.
-void TestAXNodeWrapper::UIADescendants(
-    const AXNode* node,
-    std::vector<gfx::NativeViewAccessible>* descendants) const {
-  if (ShouldHideChildrenForUIA(node))
-    return;
-
-  for (auto it = node->UnignoredChildrenBegin();
-       it != node->UnignoredChildrenEnd(); ++it) {
-    descendants->emplace_back(ax_platform_node()
-                                  ->GetDelegate()
-                                  ->GetFromNodeID(it->id())
-                                  ->GetNativeViewAccessible());
-    UIADescendants(it.get(), descendants);
-  }
-}
-
 const std::vector<gfx::NativeViewAccessible>
-TestAXNodeWrapper::GetUIADescendants() const {
-  std::vector<gfx::NativeViewAccessible> descendants;
-  UIADescendants(node_, &descendants);
-  return descendants;
+TestAXNodeWrapper::GetUIADirectChildrenInRange(
+    ui::AXPlatformNodeDelegate* start,
+    ui::AXPlatformNodeDelegate* end) {
+  return {};
 }
 
 // static

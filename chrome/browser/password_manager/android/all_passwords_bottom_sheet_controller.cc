@@ -8,13 +8,15 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view_impl.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
 
 using autofill::mojom::FocusedFieldType;
@@ -61,7 +63,7 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
 AllPasswordsBottomSheetController::~AllPasswordsBottomSheetController() {
   if (authenticator_) {
     authenticator_->Cancel(
-        password_manager::BiometricAuthRequester::kAllPasswordsList);
+        device_reauth::BiometricAuthRequester::kAllPasswordsList);
   }
 }
 
@@ -96,14 +98,14 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
     // WebContents. And AllPasswordBottomSheetController is owned by
     // PasswordAccessoryController.
     DCHECK(client_);
-    scoped_refptr<password_manager::BiometricAuthenticator> authenticator =
+    scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
         client_->GetBiometricAuthenticator();
-    if (authenticator &&
-        authenticator->CanAuthenticate() ==
-            password_manager::BiometricsAvailability::kAvailable) {
+    if (password_manager_util::CanUseBiometricAuth(
+            authenticator.get(),
+            device_reauth::BiometricAuthRequester::kAllPasswordsList)) {
       authenticator_ = std::move(authenticator);
       authenticator_->Authenticate(
-          password_manager::BiometricAuthRequester::kAllPasswordsList,
+          device_reauth::BiometricAuthRequester::kAllPasswordsList,
           base::BindOnce(&AllPasswordsBottomSheetController::OnReauthCompleted,
                          base::Unretained(this), password));
       return;

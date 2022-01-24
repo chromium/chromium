@@ -7,6 +7,8 @@
 #include <string>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/metrics/login_unlock_throughput_recorder.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -15,7 +17,7 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/login/auth/key.h"
@@ -29,7 +31,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 LoginManagerTest::LoginManagerTest() {
   set_exit_when_last_browser_closes(false);
@@ -38,10 +40,10 @@ LoginManagerTest::LoginManagerTest() {
 LoginManagerTest::~LoginManagerTest() {}
 
 void LoginManagerTest::SetUpCommandLine(base::CommandLine* command_line) {
-  command_line->AppendSwitch(chromeos::switches::kLoginManager);
-  command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(switches::kLoginManager);
+  command_line->AppendSwitch(switches::kForceLoginManagerInTests);
   command_line->AppendSwitch(
-      chromeos::switches::kDisableOOBEChromeVoxHintTimerForTesting);
+      switches::kDisableOOBEChromeVoxHintTimerForTesting);
 
   MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
 }
@@ -110,9 +112,9 @@ bool LoginManagerTest::AddUserToSession(const UserContext& user_context) {
     ADD_FAILURE();
     return false;
   }
-  SessionStateWaiter waiter;
+  test::ProfilePreparedWaiter profile_prepared(user_context.GetAccountId());
   controller->Login(user_context, SigninSpecifics());
-  waiter.Wait();
+  profile_prepared.Wait();
   const user_manager::UserList& logged_users =
       user_manager::UserManager::Get()->GetLoggedInUsers();
   for (user_manager::UserList::const_iterator it = logged_users.begin();
@@ -135,4 +137,4 @@ void LoginManagerTest::AddUser(const AccountId& account_id) {
   EXPECT_TRUE(AddUserToSession(user_context));
 }
 
-}  // namespace chromeos
+}  // namespace ash

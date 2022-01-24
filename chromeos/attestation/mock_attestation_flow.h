@@ -10,7 +10,6 @@
 #include "chromeos/attestation/attestation_flow.h"
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class AccountId;
@@ -23,6 +22,10 @@ namespace attestation {
 class FakeServerProxy : public ServerProxy {
  public:
   FakeServerProxy();
+
+  FakeServerProxy(const FakeServerProxy&) = delete;
+  FakeServerProxy& operator=(const FakeServerProxy&) = delete;
+
   ~FakeServerProxy() override;
 
   void set_result(bool result) {
@@ -50,8 +53,6 @@ class FakeServerProxy : public ServerProxy {
 
   std::string enroll_response_;
   std::string cert_response_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeServerProxy);
 };
 
 class MockServerProxy : public FakeServerProxy {

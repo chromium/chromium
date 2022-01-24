@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_GNUBBY_FAKE_GNUBBY_CLIENT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/gnubby/gnubby_client.h"
 
@@ -17,6 +16,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_GNUBBY) FakeGnubbyClient
     : public GnubbyClient {
  public:
   FakeGnubbyClient();
+
+  FakeGnubbyClient(const FakeGnubbyClient&) = delete;
+  FakeGnubbyClient& operator=(const FakeGnubbyClient&) = delete;
+
   ~FakeGnubbyClient() override;
 
   // GnubbyClient overrides
@@ -32,8 +35,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_GNUBBY) FakeGnubbyClient
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<FakeGnubbyClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGnubbyClient);
 };
 
 }  // namespace chromeos

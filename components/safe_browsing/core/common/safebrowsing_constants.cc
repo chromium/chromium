@@ -23,8 +23,6 @@ const char kSafeBrowsingEnabledHistogramName[] = "SafeBrowsing.Pref.General";
 const char kArtificialCachedPhishGuardVerdictFlag[] =
     "mark_as_phish_guard_phishing";
 
-const char kAuthHeaderBearer[] = "Bearer ";
-
 const std::vector<std::string> GetExcludedCountries() {
   // Safe Browsing endpoint doesn't exist.
   return {"cn"};

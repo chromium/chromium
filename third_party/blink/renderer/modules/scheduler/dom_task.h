@@ -43,8 +43,12 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   Member<V8SchedulerPostTaskCallback> callback_;
   Member<ScriptPromiseResolver> resolver_;
   probe::AsyncTaskId async_task_id_;
+  // Do not remove. For dynamic priority task queues, |signal_| ensures that the
+  // associated WebSchedulingTaskQueue stays alive until after this task runs,
+  // which is necessary to ensure throttling works correctly.
   Member<DOMTaskSignal> signal_;
   const base::TimeTicks queue_time_;
+  const base::TimeDelta delay_;
 };
 
 }  // namespace blink

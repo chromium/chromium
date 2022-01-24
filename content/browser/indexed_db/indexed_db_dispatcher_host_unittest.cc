@@ -8,12 +8,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -110,6 +111,9 @@ struct TestDatabaseConnection {
             std::make_unique<
                 StrictMock<MockMojoIndexedDBDatabaseCallbacks>>()) {}
 
+  TestDatabaseConnection(const TestDatabaseConnection&) = delete;
+  TestDatabaseConnection& operator=(const TestDatabaseConnection&) = delete;
+
   TestDatabaseConnection(TestDatabaseConnection&&) noexcept = default;
   TestDatabaseConnection& operator=(TestDatabaseConnection&&) noexcept =
       default;
@@ -122,6 +126,10 @@ struct TestDatabaseConnection {
         connection_callbacks->CreateInterfacePtrAndBind(), db_name, version,
         version_change_transaction.BindNewEndpointAndPassReceiver(task_runner),
         upgrade_txn_id);
+    // ForcedClose is called on shutdown and depending on ordering and timing
+    // may or may not happen, which is fine.
+    EXPECT_CALL(*connection_callbacks, ForcedClose())
+        .Times(testing::AnyNumber());
   }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner;
@@ -136,9 +144,6 @@ struct TestDatabaseConnection {
 
   std::unique_ptr<MockMojoIndexedDBCallbacks> open_callbacks;
   std::unique_ptr<MockMojoIndexedDBDatabaseCallbacks> connection_callbacks;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestDatabaseConnection);
 };
 
 void TestStatusCallback(base::OnceClosure callback,
@@ -193,6 +198,10 @@ class IndexedDBDispatcherHostTest : public testing::Test {
             task_environment_.GetMainThreadTaskRunner(),
             nullptr)) {}
 
+  IndexedDBDispatcherHostTest(const IndexedDBDispatcherHostTest&) = delete;
+  IndexedDBDispatcherHostTest& operator=(const IndexedDBDispatcherHostTest&) =
+      delete;
+
   void SetUp() override {
     base::RunLoop loop;
     context_impl_->IDBTaskRunner()->PostTask(
@@ -240,8 +249,6 @@ class IndexedDBDispatcherHostTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<IndexedDBContextImpl> context_impl_;
   mojo::Remote<blink::mojom::IDBFactory> idb_mojo_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBDispatcherHostTest);
 };
 
 TEST_F(IndexedDBDispatcherHostTest, CloseConnectionBeforeUpgrade) {
@@ -283,8 +290,7 @@ TEST_F(IndexedDBDispatcherHostTest, CloseConnectionBeforeUpgrade) {
   loop2.Run();
 }
 
-// Flaky on multiple platforms.  http://crbug.com/1001265
-TEST_F(IndexedDBDispatcherHostTest, DISABLED_CloseAfterUpgrade) {
+TEST_F(IndexedDBDispatcherHostTest, CloseAfterUpgrade) {
   const int64_t kDBVersion = 1;
   const int64_t kTransactionId = 1;
   const int64_t kObjectStoreId = 10;
@@ -352,8 +358,7 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_CloseAfterUpgrade) {
   loop3.Run();
 }
 
-// TODO(https://crbug.com/995716) Test is flaky on multiple platforms.
-TEST_F(IndexedDBDispatcherHostTest, DISABLED_OpenNewConnectionWhileUpgrading) {
+TEST_F(IndexedDBDispatcherHostTest, OpenNewConnectionWhileUpgrading) {
   const int64_t kDBVersion = 1;
   const int64_t kTransactionId = 1;
   const int64_t kObjectStoreId = 10;
@@ -665,7 +670,7 @@ TEST_F(IndexedDBDispatcherHostTest, CompactDatabaseWhileDoingTransaction) {
 
   base::RunLoop loop2;
   base::RepeatingClosure quit_closure2 =
-      base::BarrierClosure(4, loop2.QuitClosure());
+      base::BarrierClosure(3, loop2.QuitClosure());
   context_impl_->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ::testing::InSequence dummy;
@@ -677,9 +682,6 @@ TEST_F(IndexedDBDispatcherHostTest, CompactDatabaseWhileDoingTransaction) {
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(*connection->open_callbacks,
                     Error(blink::mojom::IDBException::kAbortError, _))
-            .Times(1)
-            .WillOnce(RunClosure(quit_closure2));
-        EXPECT_CALL(*connection->connection_callbacks, ForcedClose())
             .Times(1)
             .WillOnce(RunClosure(quit_closure2));
 
@@ -740,7 +742,7 @@ TEST_F(IndexedDBDispatcherHostTest, CompactDatabaseWhileUpgrading) {
 
   base::RunLoop loop2;
   base::RepeatingClosure quit_closure2 =
-      base::BarrierClosure(4, loop2.QuitClosure());
+      base::BarrierClosure(3, loop2.QuitClosure());
   context_impl_->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ::testing::InSequence dummy;
@@ -752,9 +754,6 @@ TEST_F(IndexedDBDispatcherHostTest, CompactDatabaseWhileUpgrading) {
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(*connection->open_callbacks,
                     Error(blink::mojom::IDBException::kAbortError, _))
-            .Times(1)
-            .WillOnce(RunClosure(quit_closure2));
-        EXPECT_CALL(*connection->connection_callbacks, ForcedClose())
             .Times(1)
             .WillOnce(RunClosure(quit_closure2));
 
@@ -816,7 +815,7 @@ TEST_F(IndexedDBDispatcherHostTest,
 
   base::RunLoop loop2;
   base::RepeatingClosure quit_closure2 =
-      base::BarrierClosure(4, loop2.QuitClosure());
+      base::BarrierClosure(3, loop2.QuitClosure());
   context_impl_->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ::testing::InSequence dummy;
@@ -826,9 +825,6 @@ TEST_F(IndexedDBDispatcherHostTest,
         EXPECT_CALL(
             *connection->open_callbacks,
             MockedSuccessDatabase(IsAssociatedInterfacePtrInfoValid(false), _))
-            .Times(1)
-            .WillOnce(RunClosure(quit_closure2));
-        EXPECT_CALL(*connection->connection_callbacks, ForcedClose())
             .Times(1)
             .WillOnce(RunClosure(quit_closure2));
 
@@ -891,7 +887,7 @@ TEST_F(IndexedDBDispatcherHostTest, AbortTransactionsWhileDoingTransaction) {
 
   base::RunLoop loop2;
   base::RepeatingClosure quit_closure2 =
-      base::BarrierClosure(4, loop2.QuitClosure());
+      base::BarrierClosure(3, loop2.QuitClosure());
   context_impl_->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ::testing::InSequence dummy;
@@ -903,9 +899,6 @@ TEST_F(IndexedDBDispatcherHostTest, AbortTransactionsWhileDoingTransaction) {
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(*connection->open_callbacks,
                     Error(blink::mojom::IDBException::kAbortError, _))
-            .Times(1)
-            .WillOnce(RunClosure(quit_closure2));
-        EXPECT_CALL(*connection->connection_callbacks, ForcedClose())
             .Times(1)
             .WillOnce(RunClosure(quit_closure2));
 
@@ -967,7 +960,7 @@ TEST_F(IndexedDBDispatcherHostTest, AbortTransactionsWhileUpgrading) {
 
   base::RunLoop loop2;
   base::RepeatingClosure quit_closure2 =
-      base::BarrierClosure(4, loop2.QuitClosure());
+      base::BarrierClosure(3, loop2.QuitClosure());
   context_impl_->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ::testing::InSequence dummy;
@@ -979,9 +972,6 @@ TEST_F(IndexedDBDispatcherHostTest, AbortTransactionsWhileUpgrading) {
             .WillOnce(RunClosure(quit_closure2));
         EXPECT_CALL(*connection->open_callbacks,
                     Error(blink::mojom::IDBException::kAbortError, _))
-            .Times(1)
-            .WillOnce(RunClosure(quit_closure2));
-        EXPECT_CALL(*connection->connection_callbacks, ForcedClose())
             .Times(1)
             .WillOnce(RunClosure(quit_closure2));
 
@@ -1421,13 +1411,7 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
   loop6.Run();
 }
 
-// Flaky on Mac and Linux ASAN builds. See: crbug.com/1189512.
-#if defined(OS_MAC) || (defined(OS_LINUX) && defined(ADDRESS_SANITIZER))
-#define MAYBE_DatabaseOperationSequencing DISABLED_DatabaseOperationSequencing
-#else
-#define MAYBE_DatabaseOperationSequencing DatabaseOperationSequencing
-#endif
-TEST_F(IndexedDBDispatcherHostTest, MAYBE_DatabaseOperationSequencing) {
+TEST_F(IndexedDBDispatcherHostTest, DISABLED_DatabaseOperationSequencing) {
   const int64_t kDBVersion = 1;
   const int64_t kTransactionId = 1;
   const std::u16string kObjectStoreName1 = u"os1";

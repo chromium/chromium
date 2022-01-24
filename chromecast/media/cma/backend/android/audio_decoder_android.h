@@ -42,6 +42,10 @@ class AudioDecoderAndroid : public MediaPipelineBackend::AudioDecoder,
   using BufferStatus = MediaPipelineBackend::BufferStatus;
 
   explicit AudioDecoderAndroid(MediaPipelineBackendAndroid* backend);
+
+  AudioDecoderAndroid(const AudioDecoderAndroid&) = delete;
+  AudioDecoderAndroid& operator=(const AudioDecoderAndroid&) = delete;
+
   ~AudioDecoderAndroid() override;
 
   void Initialize();
@@ -120,8 +124,6 @@ class AudioDecoderAndroid : public MediaPipelineBackend::AudioDecoder,
   scoped_refptr<::media::AudioBufferMemoryPool> pool_;
 
   base::WeakPtrFactory<AudioDecoderAndroid> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderAndroid);
 };
 
 }  // namespace media

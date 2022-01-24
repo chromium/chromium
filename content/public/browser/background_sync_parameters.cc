@@ -9,13 +9,10 @@ namespace content {
 namespace {
 const int kMaxSyncAttempts = 3;
 const int kRetryDelayFactor = 3;
-constexpr base::TimeDelta kInitialRetryDelay = base::TimeDelta::FromMinutes(5);
-constexpr base::TimeDelta kMaxSyncEventDuration =
-    base::TimeDelta::FromMinutes(3);
-constexpr base::TimeDelta kMinSyncRecoveryTime =
-    base::TimeDelta::FromMinutes(6);
-constexpr base::TimeDelta kMinPeriodicSyncEventsInterval =
-    base::TimeDelta::FromHours(12);
+constexpr base::TimeDelta kInitialRetryDelay = base::Minutes(5);
+constexpr base::TimeDelta kMaxSyncEventDuration = base::Minutes(3);
+constexpr base::TimeDelta kMinSyncRecoveryTime = base::Minutes(6);
+constexpr base::TimeDelta kMinPeriodicSyncEventsInterval = base::Hours(12);
 }
 
 BackgroundSyncParameters::BackgroundSyncParameters()

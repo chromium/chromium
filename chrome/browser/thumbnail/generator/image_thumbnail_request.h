@@ -21,6 +21,9 @@ class ImageThumbnailRequest : public ImageDecoder::ImageRequest {
   ImageThumbnailRequest(int icon_size,
                         base::OnceCallback<void(const SkBitmap&)> callback);
 
+  ImageThumbnailRequest(const ImageThumbnailRequest&) = delete;
+  ImageThumbnailRequest& operator=(const ImageThumbnailRequest&) = delete;
+
   ~ImageThumbnailRequest() override;
 
   // Kicks off an asynchronous process to retrieve the thumbnail for the file
@@ -34,15 +37,13 @@ class ImageThumbnailRequest : public ImageDecoder::ImageRequest {
 
   void OnDecodeImageFailed() override;
 
-  void OnLoadComplete(const std::vector<uint8_t>& data);
+  void OnLoadComplete(std::vector<uint8_t> data);
 
   void FinishRequest(SkBitmap thumbnail);
 
   const int icon_size_;
   base::OnceCallback<void(const SkBitmap&)> callback_;
   base::WeakPtrFactory<ImageThumbnailRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageThumbnailRequest);
 };
 
 #endif  // CHROME_BROWSER_THUMBNAIL_GENERATOR_IMAGE_THUMBNAIL_REQUEST_H_

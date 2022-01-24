@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -28,6 +27,9 @@ class PaymentAppServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   static PaymentAppService* GetForContext(content::BrowserContext* context);
 
+  PaymentAppServiceFactory(const PaymentAppServiceFactory&) = delete;
+  PaymentAppServiceFactory& operator=(const PaymentAppServiceFactory&) = delete;
+
   // Used only in tests to set the |service| that is going to be returned from
   // |GetForContext()|, even if |context| is null.
   static void SetForTesting(std::unique_ptr<PaymentAppService> service);
@@ -47,8 +49,6 @@ class PaymentAppServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
 
   std::unique_ptr<PaymentAppService> service_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppServiceFactory);
 };
 
 }  // namespace payments

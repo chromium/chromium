@@ -1,7 +1,7 @@
 # Compute Pressure API
 
 This directory contains the browser-side implementation of the
-[Compute Pressure API](https://github.com/oyiptong/compute-pressure/).
+[Compute Pressure API](https://github.com/wicg/compute-pressure/).
 
 ## Code map
 

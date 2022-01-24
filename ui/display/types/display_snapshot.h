@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
@@ -33,6 +32,9 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   DisplaySnapshot(
       int64_t display_id,
+      int64_t port_display_id,
+      int64_t edid_display_id,
+      uint16_t connector_index,
       const gfx::Point& origin,
       const gfx::Size& physical_size,
       DisplayConnectionType type,
@@ -56,9 +58,21 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
       int64_t product_code,
       int32_t year_of_manufacture,
       const gfx::Size& maximum_cursor_size);
+
+  DisplaySnapshot(const DisplaySnapshot&) = delete;
+  DisplaySnapshot& operator=(const DisplaySnapshot&) = delete;
+
   virtual ~DisplaySnapshot();
 
   int64_t display_id() const { return display_id_; }
+
+  // port_display_id() and edid_display_id() are required for
+  // backward-compatibility and will eventually be removed once the migration to
+  // EDID-based display IDs is completed. See http://b/193060019.
+  int64_t port_display_id() const { return port_display_id_; }
+  int64_t edid_display_id() const { return edid_display_id_; }
+
+  uint16_t connector_index() const { return connector_index_; }
   const gfx::Point& origin() const { return origin_; }
   void set_origin(const gfx::Point& origin) { origin_ = origin; }
   const gfx::Size& physical_size() const { return physical_size_; }
@@ -109,9 +123,21 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   // Returns the buffer format to be used for the primary plane buffer.
   static gfx::BufferFormat PrimaryFormat();
 
+  // Adds |connector_index_| to bits 33-48 of |edid_display_id_|. This function
+  // is not plumbed via mojom to limit and control usage across processes.
+  void AddIndexToDisplayId();
+
  private:
   // Display id for this output.
   const int64_t display_id_;
+  // Port-based display ID.
+  const int64_t port_display_id_;
+  // EDID-based display ID.
+  int64_t edid_display_id_;
+
+  // Used by AddIndexToDisplayId() to resolve display ID collisions when two
+  // (or more) displays produce identical IDs due to incomplete EDIDs.
+  const uint16_t connector_index_;
 
   // Display's origin on the framebuffer.
   gfx::Point origin_;
@@ -209,9 +235,6 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   // Maximum supported cursor size on this display.
   const gfx::Size maximum_cursor_size_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplaySnapshot);
 };
 
 }  // namespace display

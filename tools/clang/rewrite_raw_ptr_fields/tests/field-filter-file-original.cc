@@ -11,7 +11,7 @@ struct MyStruct {
   SomeClass* my_field;
   SomeClass* my_field2;
 
-  // Non-blocklisted - expected rewrite: CheckedPtr<SomeClass> my_field3;
+  // Non-blocklisted - expected rewrite: raw_ptr<SomeClass> my_field3;
   SomeClass* my_field3;
 };
 
@@ -21,7 +21,7 @@ class MyTemplate {
   // Blocklisted - no rewrite expected.
   SomeClass* my_field;
 
-  // Non-blocklisted - expected rewrite: CheckedPtr<SomeClass> my_field2;
+  // Non-blocklisted - expected rewrite: raw_ptr<SomeClass> my_field2;
   SomeClass* my_field2;
 };
 
@@ -31,7 +31,7 @@ namespace other_namespace {
 
 struct MyStruct {
   // Blocklisted in another namespace, but not here.
-  // Expected rewrite: CheckedPtr<SomeClass> my_field;
+  // Expected rewrite: raw_ptr<SomeClass> my_field;
   SomeClass* my_field;
 };
 

@@ -180,9 +180,12 @@ void WindowPreviewView::RemoveWindow(aura::Window* window) {
   if (it == mirror_views_.end())
     return;
 
-  RemoveChildView(it->second);
+  auto* view = it->second;
+  RemoveChildView(view);
   it->first->RemoveObserver(this);
+
   mirror_views_.erase(it);
+  delete view;
 }
 
 gfx::RectF WindowPreviewView::GetUnionRect() const {

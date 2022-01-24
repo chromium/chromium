@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/system/system_monitor.h"
 #include "media/midi/midi_export.h"
@@ -32,6 +31,10 @@ class MidiManagerWin final
   MIDI_EXPORT static void OverflowInstanceIdForTesting();
 
   explicit MidiManagerWin(MidiService* service);
+
+  MidiManagerWin(const MidiManagerWin&) = delete;
+  MidiManagerWin& operator=(const MidiManagerWin&) = delete;
+
   ~MidiManagerWin() override;
 
   // Returns PortManager that implements interfaces to help implementation.
@@ -94,8 +97,6 @@ class MidiManagerWin final
   // Manages platform dependent implementation for port managegent. Should be
   // accessed with the task lock.
   std::unique_ptr<PortManager> port_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiManagerWin);
 };
 
 }  // namespace midi

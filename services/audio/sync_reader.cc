@@ -41,6 +41,15 @@ void LogAudioGlitchResult(AudioGlitchResult result) {
 
 namespace audio {
 
+#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS)
+const base::Feature kDynamicAudioTimeout{"DynamicAudioTimeout",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<double> kBufferDurationPercent{
+    &kDynamicAudioTimeout, "buffer_duration_percent", 0.5};
+#endif
+
 SyncReader::SyncReader(
     base::RepeatingCallback<void(const std::string&)> log_callback,
     const media::AudioParameters& params,
@@ -55,13 +64,19 @@ SyncReader::SyncReader(
       renderer_callback_count_(0),
       renderer_missed_callback_count_(0),
       trailing_renderer_missed_callback_count_(0),
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-      maximum_wait_time_(params.GetBufferDuration() / 2),
-#else
-      // TODO(dalecurtis): Investigate if we can reduce this on all platforms.
-      maximum_wait_time_(base::TimeDelta::FromMilliseconds(20)),
-#endif
       buffer_index_(0) {
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+  maximum_wait_time_ = params.GetBufferDuration() / 2;
+#else
+  if (base::FeatureList::IsEnabled(kDynamicAudioTimeout)) {
+    maximum_wait_time_ =
+        params.GetBufferDuration() * kBufferDurationPercent.Get();
+  } else {
+    maximum_wait_time_ = base::Milliseconds(20);
+  }
+#endif
+
   base::CheckedNumeric<size_t> memory_size =
       media::ComputeAudioOutputBufferSizeChecked(params);
   if (!memory_size.IsValid())
@@ -277,9 +292,8 @@ bool SyncReader::WaitUntilDataIsReady() {
 
     base::TimeDelta time_since_start = base::TimeTicks::Now() - start_time;
     UMA_HISTOGRAM_CUSTOM_TIMES("Media.AudioOutputControllerDataNotReady",
-                               time_since_start,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMilliseconds(1000), 50);
+                               time_since_start, base::Milliseconds(1),
+                               base::Milliseconds(1000), 50);
     return false;
   }
 

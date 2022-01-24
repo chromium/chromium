@@ -56,14 +56,9 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   // kChromeExtensionPolicyType, kChromeMachineLevelExtensionCloudPolicyType.
   // Please update component_cloud_policy_store.cc in case there is new policy
   // type added.
-  // |policy_source| specifies where the policy originates from, and can be used
-  // to configure precedence when the same components are configured by policies
-  // from different sources. It only accepts POLICY_SOURCE_CLOUD and
-  // POLICY_SOURCE_PRIORITY_CLOUD now.
   ComponentCloudPolicyStore(Delegate* delegate,
                             ResourceCache* cache,
-                            const std::string& policy_type,
-                            PolicySource policy_source);
+                            const std::string& policy_type);
   ComponentCloudPolicyStore(const ComponentCloudPolicyStore&) = delete;
   ComponentCloudPolicyStore& operator=(const ComponentCloudPolicyStore&) =
       delete;
@@ -174,8 +169,6 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   std::map<PolicyNamespace, base::Time> stored_policy_times_;
 
   const DomainConstants* domain_constants_;
-
-  const PolicySource policy_source_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

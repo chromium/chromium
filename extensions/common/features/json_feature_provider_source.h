@@ -17,6 +17,11 @@ namespace extensions {
 class JSONFeatureProviderSource {
  public:
   explicit JSONFeatureProviderSource(const std::string& name);
+
+  JSONFeatureProviderSource(const JSONFeatureProviderSource&) = delete;
+  JSONFeatureProviderSource& operator=(const JSONFeatureProviderSource&) =
+      delete;
+
   ~JSONFeatureProviderSource();
 
   // Adds the JSON dictionary file to this provider, merging its values with
@@ -31,8 +36,6 @@ class JSONFeatureProviderSource {
   const std::string name_;
 
   base::DictionaryValue dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(JSONFeatureProviderSource);
 };
 
 }  // namespace extensions

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/animation.h"
@@ -43,6 +42,10 @@ class VIEWS_EXPORT MenuClosureAnimationMac
   MenuClosureAnimationMac(MenuItemView* item,
                           SubmenuView* menu,
                           base::OnceClosure callback);
+
+  MenuClosureAnimationMac(const MenuClosureAnimationMac&) = delete;
+  MenuClosureAnimationMac& operator=(const MenuClosureAnimationMac&) = delete;
+
   ~MenuClosureAnimationMac() override;
 
   // Start the animation.
@@ -83,8 +86,6 @@ class VIEWS_EXPORT MenuClosureAnimationMac
   MenuItemView* item_;
   SubmenuView* menu_;
   AnimationStep step_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuClosureAnimationMac);
 };
 
 }  // namespace views

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
@@ -18,8 +19,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -323,7 +324,7 @@ ProfileAttributesStorage::ProfileAttributesStorage(
   }
 
   repeating_timer_ = std::make_unique<signin::PersistentRepeatingTimer>(
-      prefs_, kProfileCountLastUpdatePref, base::TimeDelta::FromHours(24),
+      prefs_, kProfileCountLastUpdatePref, base::Hours(24),
       base::BindRepeating(&ProfileMetrics::LogNumberOfProfiles, this));
   repeating_timer_->Start();
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -428,7 +429,7 @@ void ProfileAttributesStorage::RemoveProfile(
   DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
   base::DictionaryValue* attributes = update.Get();
   std::string key = StorageKeyFromProfilePath(profile_path);
-  attributes->Remove(key, nullptr);
+  attributes->RemoveKey(key);
   profile_attributes_entries_.erase(profile_path.value());
 
   // `OnProfileWasRemoved()` must be the first observer method being called
@@ -751,10 +752,16 @@ void ProfileAttributesStorage::NotifyOnProfileHighResAvatarLoaded(
     observer.OnProfileHighResAvatarLoaded(profile_path);
 }
 
+void ProfileAttributesStorage::NotifyProfileUserManagementAcceptanceChanged(
+    const base::FilePath& profile_path) const {
+  for (auto& observer : observer_list_)
+    observer.OnProfileUserManagementAcceptanceChanged(profile_path);
+}
+
 std::string ProfileAttributesStorage::StorageKeyFromProfilePath(
     const base::FilePath& profile_path) const {
-  DCHECK(user_data_dir_ == profile_path.DirName());
-  return profile_path.BaseName().MaybeAsASCII();
+  DCHECK_EQ(user_data_dir_, profile_path.DirName());
+  return profile_path.BaseName().AsUTF8Unsafe();
 }
 
 void ProfileAttributesStorage::DisableProfileMetricsForTesting() {
@@ -849,7 +856,9 @@ void ProfileAttributesStorage::SaveAvatarImageAtPath(
 ProfileAttributesEntry* ProfileAttributesStorage::InitEntryWithKey(
     const std::string& key,
     bool is_omitted) {
-  base::FilePath path = user_data_dir_.AppendASCII(key);
+  base::FilePath path =
+      user_data_dir_.Append(base::FilePath::FromUTF8Unsafe(key));
+
   DCHECK(!base::Contains(profile_attributes_entries_, path.value()));
   ProfileAttributesEntry* new_entry =
       &profile_attributes_entries_[path.value()];

@@ -35,6 +35,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
       const ::tpm_manager::GetTpmNonsensitiveStatusReply&)>;
   using GetVersionInfoCallback =
       base::OnceCallback<void(const ::tpm_manager::GetVersionInfoReply&)>;
+  using GetSupportedFeaturesCallback =
+      base::OnceCallback<void(const ::tpm_manager::GetSupportedFeaturesReply&)>;
   using GetDictionaryAttackInfoCallback = base::OnceCallback<void(
       const ::tpm_manager::GetDictionaryAttackInfoReply&)>;
   using TakeOwnershipCallback =
@@ -56,6 +58,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
     // Gets a mutable reply that is returned when `GetVersionInfo()` is called.
     virtual ::tpm_manager::GetVersionInfoReply*
     mutable_version_info_reply() = 0;
+    // Gets a mutable reply that is returned when `GetSupportedFeatures()` is
+    // called.
+    virtual ::tpm_manager::GetSupportedFeaturesReply*
+    mutable_supported_features_reply() = 0;
     // Gets a mutable reply that is returned when `GetDictionaryAttackInfo()` is
     // called.
     virtual ::tpm_manager::GetDictionaryAttackInfoReply*
@@ -98,6 +104,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
   virtual void GetVersionInfo(
       const ::tpm_manager::GetVersionInfoRequest& request,
       GetVersionInfoCallback callback) = 0;
+  // Queries the features that TPM supports; for the complete list of the
+  // entries, see `GetSupportedFeaturesReply`.
+  virtual void GetSupportedFeatures(
+      const ::tpm_manager::GetSupportedFeaturesRequest& request,
+      GetSupportedFeaturesCallback callback) = 0;
   // Queries the dictionary lockout information of TPM's dictionary attack
   // protection, The reply contains the related information, including the
   // current dictionary attack counter, and the flag if the TPM is in the

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/focus_ring.h"
@@ -29,6 +30,10 @@ class TabGroupHeader : public TabSlotView,
                        public views::ViewTargeterDelegate {
  public:
   METADATA_HEADER(TabGroupHeader);
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupHeader,
+                                         kTabGroupHeaderIdentifier);
+
   TabGroupHeader(TabStrip* tab_strip, const tab_groups::TabGroupId& group);
   TabGroupHeader(const TabGroupHeader&) = delete;
   TabGroupHeader& operator=(const TabGroupHeader&) = delete;
@@ -46,6 +51,8 @@ class TabGroupHeader : public TabSlotView,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
+  gfx::Rect GetAnchorBoundsInScreen() const override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(views::View* source,
@@ -62,12 +69,6 @@ class TabGroupHeader : public TabSlotView,
 
   // Removes {editor_bubble_tracker_} from observing the widget.
   void RemoveObserverFromWidget(views::Widget* widget);
-
-  // Assigns this view as the tooltip handler to avoid delegation to child views.
-  views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-
-  // Updates tooltip text as either name of group or static text if unnamed
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
  private:
   friend class TabGroupEditorBubbleViewDialogBrowserTest;

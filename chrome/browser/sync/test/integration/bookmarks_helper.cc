@@ -16,16 +16,15 @@
 #include "base/containers/stack.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -44,6 +43,10 @@
 #include "components/favicon_base/favicon_util.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
+#include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -125,6 +128,10 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
       : model_(model), node_(node) {
     model->AddObserver(this);
   }
+
+  FaviconChangeObserver(const FaviconChangeObserver&) = delete;
+  FaviconChangeObserver& operator=(const FaviconChangeObserver&) = delete;
+
   ~FaviconChangeObserver() override { model_->RemoveObserver(this); }
   void WaitForSetFavicon() {
     DCHECK(!run_loop_.running());
@@ -168,7 +175,6 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
   BookmarkModel* model_;
   const BookmarkNode* node_;
   base::RunLoop run_loop_;
-  DISALLOW_COPY_AND_ASSIGN(FaviconChangeObserver);
 };
 
 // Returns the number of nodes of node type |node_type| in |model| whose
@@ -232,14 +238,10 @@ bool FaviconRawBitmapsMatch(const SkBitmap& bitmap_a,
 
 // Represents a favicon image and the icon URL associated with it.
 struct FaviconData {
-  FaviconData() {
-  }
+  FaviconData() {}
 
-  FaviconData(const gfx::Image& favicon_image,
-              const GURL& favicon_url)
-      : image(favicon_image),
-        icon_url(favicon_url) {
-  }
+  FaviconData(const gfx::Image& favicon_image, const GURL& favicon_url)
+      : image(favicon_image), icon_url(favicon_url) {}
 
   gfx::Image image;
   GURL icon_url;
@@ -387,15 +389,13 @@ bool NodesMatch(const BookmarkNode* node_a, const BookmarkNode* node_b) {
     return false;
   }
   if (node_a->url() != node_b->url()) {
-    LOG(ERROR) << "URL mismatch: " << node_a->url() << " vs. "
-               << node_b->url();
+    LOG(ERROR) << "URL mismatch: " << node_a->url() << " vs. " << node_b->url();
     return false;
   }
   if (node_a->parent()->GetIndexOf(node_a) !=
       node_b->parent()->GetIndexOf(node_b)) {
-    LOG(ERROR) << "Index mismatch: "
-               << node_a->parent()->GetIndexOf(node_a) << " vs. "
-               << node_b->parent()->GetIndexOf(node_b);
+    LOG(ERROR) << "Index mismatch: " << node_a->parent()->GetIndexOf(node_a)
+               << " vs. " << node_b->parent()->GetIndexOf(node_b);
     return false;
   }
   if (node_a->guid() != node_b->guid()) {
@@ -526,7 +526,7 @@ const BookmarkNode* GetManagedNode(int index) {
 const BookmarkNode* AddURL(int profile,
                            const std::string& title,
                            const GURL& url) {
-  return AddURL(profile, GetBookmarkBarNode(profile), 0, title,  url);
+  return AddURL(profile, GetBookmarkBarNode(profile), 0, title, url);
 }
 
 const BookmarkNode* AddURL(int profile,
@@ -557,8 +557,7 @@ const BookmarkNode* AddURL(int profile,
   return result;
 }
 
-const BookmarkNode* AddFolder(int profile,
-                              const std::string& title) {
+const BookmarkNode* AddFolder(int profile, const std::string& title) {
   return AddFolder(profile, GetBookmarkBarNode(profile), 0, title);
 }
 
@@ -582,8 +581,7 @@ const BookmarkNode* AddFolder(int profile,
       model->AddFolder(parent, index, base::UTF8ToUTF16(title));
   EXPECT_TRUE(result);
   if (!result) {
-    LOG(ERROR) << "Could not add folder " << title << " to Profile "
-               << profile;
+    LOG(ERROR) << "Could not add folder " << title << " to Profile " << profile;
     return nullptr;
   }
   return result;
@@ -608,13 +606,10 @@ void SetFavicon(int profile,
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, node->id()), node)
       << "Node " << node->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  ASSERT_EQ(BookmarkNode::URL, node->type()) << "Node " << node->GetTitle()
-                                             << " must be a url.";
-  SetFaviconImpl(sync_datatype_helper::test()->GetProfile(profile),
-                 node,
-                 icon_url,
-                 image,
-                 favicon_source);
+  ASSERT_EQ(BookmarkNode::URL, node->type())
+      << "Node " << node->GetTitle() << " must be a url.";
+  SetFaviconImpl(sync_datatype_helper::test()->GetProfile(profile), node,
+                 icon_url, image, favicon_source);
 }
 
 void ExpireFavicon(int profile, const BookmarkNode* node) {
@@ -622,8 +617,8 @@ void ExpireFavicon(int profile, const BookmarkNode* node) {
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, node->id()), node)
       << "Node " << node->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  ASSERT_EQ(BookmarkNode::URL, node->type()) << "Node " << node->GetTitle()
-                                             << " must be a url.";
+  ASSERT_EQ(BookmarkNode::URL, node->type())
+      << "Node " << node->GetTitle() << " must be a url.";
 
   ExpireFaviconImpl(sync_datatype_helper::test()->GetProfile(profile), node);
 }
@@ -766,8 +761,7 @@ bool ContainsDuplicateBookmarks(int profile) {
     EXPECT_GE(nodes.size(), 1U);
     for (std::vector<const BookmarkNode*>::const_iterator it = nodes.begin();
          it != nodes.end(); ++it) {
-      if (node->id() != (*it)->id() &&
-          node->parent() == (*it)->parent() &&
+      if (node->id() != (*it)->id() && node->parent() == (*it)->parent() &&
           node->GetTitle() == (*it)->GetTitle()) {
         return true;
       }
@@ -796,9 +790,8 @@ size_t CountAllBookmarks(int profile) {
 }
 
 size_t CountBookmarksWithTitlesMatching(int profile, const std::string& title) {
-  return CountNodesWithTitlesMatching(GetBookmarkModel(profile),
-                                      BookmarkNode::URL,
-                                      base::UTF8ToUTF16(title));
+  return CountNodesWithTitlesMatching(
+      GetBookmarkModel(profile), BookmarkNode::URL, base::UTF8ToUTF16(title));
 }
 
 size_t CountBookmarksWithUrlsMatching(int profile, const GURL& url) {
@@ -1305,7 +1298,9 @@ bool BookmarkModelMatchesFakeServerChecker::IsExitConditionSatisfied(
       return false;
     }
 
-    if (node->is_folder() != server_entity.folder()) {
+    if (node->is_folder() != server_entity.folder() ||
+        node->is_folder() != (server_entity.specifics().bookmark().type() ==
+                              sync_pb::BookmarkSpecifics::FOLDER)) {
       *os << " Node type mismatch for node: " << node->GetTitle();
       return false;
     }
@@ -1372,6 +1367,12 @@ bool BookmarkModelMatchesFakeServerChecker::CheckParentNode(
   const sync_pb::SyncEntity& server_entity = iter->second;
 
   const BookmarkNode* parent_node = node->parent();
+  if (server_entity.specifics().bookmark().parent_guid() !=
+      parent_node->guid().AsLowercaseString()) {
+    *os << " Parent node's GUID in specifics does not match";
+    return false;
+  }
+
   if (parent_node->is_permanent_node()) {
     return CheckPermanentParentNode(node, server_entity, os);
   }

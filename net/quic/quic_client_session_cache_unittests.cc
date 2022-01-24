@@ -17,7 +17,7 @@ namespace net {
 
 namespace {
 
-const base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(1000);
+const base::TimeDelta kTimeout = base::Seconds(1000);
 const quic::QuicVersionLabel kFakeVersionLabel = 0x01234567;
 const quic::QuicVersionLabel kFakeVersionLabel2 = 0x89ABCDEF;
 const uint64_t kFakeIdleTimeoutMilliseconds = 12012;
@@ -40,6 +40,23 @@ std::vector<uint8_t> CreateFakeStatelessResetToken() {
       kFakeStatelessResetTokenData + base::size(kFakeStatelessResetTokenData));
 }
 
+quic::TransportParameters::LegacyVersionInformation
+CreateFakeLegacyVersionInformation() {
+  quic::TransportParameters::LegacyVersionInformation
+      legacy_version_information;
+  legacy_version_information.version = kFakeVersionLabel;
+  legacy_version_information.supported_versions.push_back(kFakeVersionLabel);
+  legacy_version_information.supported_versions.push_back(kFakeVersionLabel2);
+  return legacy_version_information;
+}
+
+quic::TransportParameters::VersionInformation CreateFakeVersionInformation() {
+  quic::TransportParameters::VersionInformation version_information;
+  version_information.chosen_version = kFakeVersionLabel;
+  version_information.other_versions.push_back(kFakeVersionLabel);
+  return version_information;
+}
+
 std::unique_ptr<base::SimpleTestClock> MakeTestClock() {
   std::unique_ptr<base::SimpleTestClock> clock =
       std::make_unique<base::SimpleTestClock>();
@@ -53,9 +70,8 @@ std::unique_ptr<base::SimpleTestClock> MakeTestClock() {
 std::unique_ptr<quic::TransportParameters> MakeFakeTransportParams() {
   auto params = std::make_unique<quic::TransportParameters>();
   params->perspective = quic::Perspective::IS_CLIENT;
-  params->version = kFakeVersionLabel;
-  params->supported_versions.push_back(kFakeVersionLabel);
-  params->supported_versions.push_back(kFakeVersionLabel2);
+  params->legacy_version_information = CreateFakeLegacyVersionInformation();
+  params->version_information = CreateFakeVersionInformation();
   params->max_idle_timeout_ms.set_value(kFakeIdleTimeoutMilliseconds);
   params->stateless_reset_token = CreateFakeStatelessResetToken();
   params->max_udp_payload_size.set_value(kFakeMaxPacketSize);

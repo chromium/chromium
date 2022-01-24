@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
@@ -38,6 +37,9 @@ class RLZTrackerDelegate;
 
 class RLZTracker {
  public:
+  RLZTracker(const RLZTracker&) = delete;
+  RLZTracker& operator=(const RLZTracker&) = delete;
+
   // Sets the RLZTrackerDelegate that should be used by the global RLZTracker
   // instance. Must be called before calling any other method of RLZTracker.
   static void SetRlzDelegate(std::unique_ptr<RLZTrackerDelegate> delegate);
@@ -239,8 +241,6 @@ class RLZTracker {
   // occur in the correct sequence, especially in tests.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RLZTracker);
 };
 
 }  // namespace rlz

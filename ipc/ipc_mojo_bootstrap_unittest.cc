@@ -68,6 +68,9 @@ class PeerPidReceiver : public IPC::mojom::Channel {
     receiver_.set_disconnect_handler(disconnect_run_loop_.QuitClosure());
   }
 
+  PeerPidReceiver(const PeerPidReceiver&) = delete;
+  PeerPidReceiver& operator=(const PeerPidReceiver&) = delete;
+
   ~PeerPidReceiver() override {
     bool expected_message =
         message_expectation_ != MessageExpectation::kNotExpected;
@@ -106,8 +109,6 @@ class PeerPidReceiver : public IPC::mojom::Channel {
   int32_t peer_pid_ = -1;
   bool received_message_ = false;
   base::RunLoop disconnect_run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PeerPidReceiver);
 };
 
 class IPCMojoBootstrapTest : public testing::Test {

@@ -24,6 +24,10 @@ namespace {
 class TestObserver : public BrightnessMonitor::Observer {
  public:
   TestObserver() {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   // BrightnessMonitor::Observer overrides:
@@ -62,8 +66,6 @@ class TestObserver : public BrightnessMonitor::Observer {
   int num_brightness_changes_ = 0;
   int num_user_brightness_change_requested_ = 0;
   absl::optional<BrightnessMonitor::Status> status_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 }  // namespace
 
@@ -71,6 +73,10 @@ class BrightnessMonitorImplTest : public testing::Test {
  public:
   BrightnessMonitorImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  BrightnessMonitorImplTest(const BrightnessMonitorImplTest&) = delete;
+  BrightnessMonitorImplTest& operator=(const BrightnessMonitorImplTest&) =
+      delete;
 
   ~BrightnessMonitorImplTest() override {}
 
@@ -124,9 +130,6 @@ class BrightnessMonitorImplTest : public testing::Test {
   std::unique_ptr<BrightnessMonitorImpl> monitor_;
   std::unique_ptr<TestObserver> test_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrightnessMonitorImplTest);
 };
 
 TEST_F(BrightnessMonitorImplTest, ReportSuccess) {

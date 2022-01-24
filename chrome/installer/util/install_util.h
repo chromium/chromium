@@ -11,13 +11,13 @@
 
 #include <windows.h>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "base/version.h"
@@ -33,6 +33,9 @@ class WorkItemList;
 // independently.
 class InstallUtil {
  public:
+  InstallUtil(const InstallUtil&) = delete;
+  InstallUtil& operator=(const InstallUtil&) = delete;
+
   // Attempts to trigger the command that would be run by Active Setup for a
   // system-level Chrome. For use only when system-level Chrome is installed.
   static void TriggerActiveSetupCommand();
@@ -145,13 +148,14 @@ class InstallUtil {
    public:
     explicit ValueEquals(const std::wstring& value_to_match)
         : value_to_match_(value_to_match) {}
+
+    ValueEquals(const ValueEquals&) = delete;
+    ValueEquals& operator=(const ValueEquals&) = delete;
+
     bool Evaluate(const std::wstring& value) const override;
 
    protected:
     std::wstring value_to_match_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ValueEquals);
   };
 
   // Returns zero on install success, or an InstallStatus value otherwise.
@@ -191,6 +195,13 @@ class InstallUtil {
   static std::pair<base::win::RegKey, std::wstring>
   GetCloudManagementDmTokenLocation(ReadOnly read_only,
                                     BrowserLocation browser_location);
+
+  // Returns the registry key and value names from/to which the device trust
+  // signing key and trust level may be read/written. |read_only| indicates
+  // whether they key is opened for reading the value or writing it. The
+  // returned key will be invalid if it could not be opened/created.
+  static std::tuple<base::win::RegKey, std::wstring, std::wstring>
+  GetDeviceTrustSigningKeyLocation(ReadOnly read_only);
 
   // Returns the token used to enroll this chrome instance for machine level
   // user cloud policies.  Returns an empty string if this machine should not
@@ -233,6 +244,10 @@ class InstallUtil {
   class ProgramCompare : public RegistryValuePredicate {
    public:
     explicit ProgramCompare(const base::FilePath& path_to_match);
+
+    ProgramCompare(const ProgramCompare&) = delete;
+    ProgramCompare& operator=(const ProgramCompare&) = delete;
+
     ~ProgramCompare() override;
     bool Evaluate(const std::wstring& value) const override;
     bool EvaluatePath(const base::FilePath& path) const;
@@ -245,17 +260,11 @@ class InstallUtil {
     base::FilePath path_to_match_;
     base::File file_;
     BY_HANDLE_FILE_INFORMATION file_info_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ProgramCompare);
   };  // class ProgramCompare
 
   // Converts a product GUID into a SQuished gUID that is used for MSI installer
   // registry entries.
   static std::wstring GuidToSquid(base::WStringPiece guid);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstallUtil);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_INSTALL_UTIL_H_

@@ -74,11 +74,11 @@ bool BatteryManager::charging() {
 }
 
 double BatteryManager::chargingTime() {
-  return battery_status_.charging_time();
+  return battery_status_.charging_time().InSecondsF();
 }
 
 double BatteryManager::dischargingTime() {
-  return battery_status_.discharging_time();
+  return battery_status_.discharging_time().InSecondsF();
 }
 
 double BatteryManager::level() {

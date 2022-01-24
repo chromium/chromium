@@ -4,7 +4,6 @@
 
 #include "content/public/browser/media_session_service.h"
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "build/chromeos_buildflags.h"

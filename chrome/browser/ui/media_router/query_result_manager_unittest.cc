@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_route_provider_helper.h"
@@ -23,6 +22,7 @@ using testing::_;
 using testing::Eq;
 using testing::IsEmpty;
 using testing::Mock;
+using testing::NiceMock;
 using testing::Return;
 
 namespace media_router {
@@ -43,6 +43,9 @@ class QueryResultManagerTest : public ::testing::Test {
  public:
   QueryResultManagerTest()
       : mock_router_(), query_result_manager_(&mock_router_) {}
+
+  QueryResultManagerTest(const QueryResultManagerTest&) = delete;
+  QueryResultManagerTest& operator=(const QueryResultManagerTest&) = delete;
 
   void DiscoverSinks(MediaCastMode cast_mode, const MediaSource& source) {
     EXPECT_CALL(mock_router_, RegisterMediaSinksObserver(_))
@@ -71,12 +74,9 @@ class QueryResultManagerTest : public ::testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  MockMediaRouter mock_router_;
+  NiceMock<MockMediaRouter> mock_router_;
   QueryResultManager query_result_manager_;
   MockObserver mock_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueryResultManagerTest);
 };
 
 // Requires that the elements of |expected| are unique.

@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 // The original file lives here: http://go/cross_domain_channel.js
 
@@ -21,10 +13,10 @@
  * from which it came. The Jsonp class provides a workaround by
  * using dynamically generated script tags. Typical usage:.
  *
- * var trustedUri = goog.html.TrustedResourceUrl.fromConstant(
+ * const trustedUri = goog.html.TrustedResourceUrl.fromConstant(
  *     goog.string.Const.from('https://example.com/servlet'));
- * var jsonp = new goog.net.Jsonp(trustedUri);
- * var payload = {'foo': 1, 'bar': true};
+ * const jsonp = new goog.net.Jsonp(trustedUri);
+ * const payload = {'foo': 1, 'bar': true};
  * jsonp.send(payload, function(reply) { alert(reply) });
  *
  * This script works in all browsers that are currently supported by
@@ -68,6 +60,7 @@ goog.require('goog.object');
  * @final
  */
 goog.net.Jsonp = function(uri, opt_callbackParamName) {
+  'use strict';
   /**
    * The uri_ object will be used to encode the payload that is sent to the
    * server.
@@ -126,6 +119,7 @@ goog.net.Jsonp.scriptCounter_ = 0;
  * @private
  */
 goog.net.Jsonp.getCallbackId_ = function(id) {
+  'use strict';
   return goog.net.Jsonp.CALLBACKS + '__' + id;
 };
 
@@ -141,6 +135,7 @@ goog.net.Jsonp.getCallbackId_ = function(id) {
  * interrupted.
  */
 goog.net.Jsonp.prototype.setRequestTimeout = function(timeout) {
+  'use strict';
   this.timeout_ = timeout;
 };
 
@@ -151,6 +146,7 @@ goog.net.Jsonp.prototype.setRequestTimeout = function(timeout) {
  * @return {number} The timeout value.
  */
 goog.net.Jsonp.prototype.getRequestTimeout = function() {
+  'use strict';
   return this.timeout_;
 };
 
@@ -164,6 +160,7 @@ goog.net.Jsonp.prototype.getRequestTimeout = function() {
  * @param {string} nonce The CSP nonce value.
  */
 goog.net.Jsonp.prototype.setNonce = function(nonce) {
+  'use strict';
   this.nonce_ = nonce;
 };
 
@@ -204,31 +201,31 @@ goog.net.Jsonp.prototype.setNonce = function(nonce) {
  */
 goog.net.Jsonp.prototype.send = function(
     opt_payload, opt_replyCallback, opt_errorCallback, opt_callbackParamValue) {
+  'use strict';
+  const payload = opt_payload ? goog.object.clone(opt_payload) : {};
 
-  var payload = opt_payload ? goog.object.clone(opt_payload) : {};
-
-  var id = opt_callbackParamValue ||
+  const id = opt_callbackParamValue ||
       '_' + (goog.net.Jsonp.scriptCounter_++).toString(36) +
-          goog.now().toString(36);
-  var callbackId = goog.net.Jsonp.getCallbackId_(id);
+          Date.now().toString(36);
+  const callbackId = goog.net.Jsonp.getCallbackId_(id);
 
   if (opt_replyCallback) {
-    var reply = goog.net.Jsonp.newReplyHandler_(id, opt_replyCallback);
+    const reply = goog.net.Jsonp.newReplyHandler_(id, opt_replyCallback);
     // Register the callback on goog.global to make it discoverable
     // by jsonp response.
     goog.global[callbackId] = reply;
     payload[this.callbackParamName_] = callbackId;
   }
 
-  var options = {timeout: this.timeout_, cleanupWhenDone: true};
+  const options = {timeout: this.timeout_, cleanupWhenDone: true};
   if (this.nonce_) {
     options.attributes = {'nonce': this.nonce_};
   }
 
-  var uri = this.uri_.cloneWithParams(payload);
+  const uri = this.uri_.cloneWithParams(payload);
 
-  var deferred = goog.net.jsloader.safeLoad(uri, options);
-  var error = goog.net.Jsonp.newErrorHandler_(id, payload, opt_errorCallback);
+  const deferred = goog.net.jsloader.safeLoad(uri, options);
+  const error = goog.net.Jsonp.newErrorHandler_(id, payload, opt_errorCallback);
   deferred.addErrback(error);
 
   return {id_: id, deferred_: deferred};
@@ -242,6 +239,7 @@ goog.net.Jsonp.prototype.send = function(
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.net.Jsonp.prototype.cancel = function(request) {
+  'use strict';
   if (request) {
     if (request.deferred_) {
       request.deferred_.cancel();
@@ -264,12 +262,14 @@ goog.net.Jsonp.prototype.cancel = function(request) {
  * @private
  */
 goog.net.Jsonp.newErrorHandler_ = function(id, payload, opt_errorCallback) {
+  'use strict';
   /**
    * When we call across domains with a request, this function is the
    * timeout handler. Once it's done executing the user-specified
    * error-handler, it removes the script node and original function.
    */
   return function() {
+    'use strict';
     goog.net.Jsonp.cleanup_(id, false);
     if (opt_errorCallback) {
       opt_errorCallback(payload);
@@ -288,6 +288,7 @@ goog.net.Jsonp.newErrorHandler_ = function(id, payload, opt_errorCallback) {
  * @private
  */
 goog.net.Jsonp.newReplyHandler_ = function(id, replyCallback) {
+  'use strict';
   /**
    * This function is the handler for the all-is-well response. It
    * clears the error timeout handler, calls the user's handler, then
@@ -295,7 +296,8 @@ goog.net.Jsonp.newReplyHandler_ = function(id, replyCallback) {
    *
    * @param {...Object} var_args The response data sent from the server.
    */
-  var handler = function(var_args) {
+  const handler = function(var_args) {
+    'use strict';
     goog.net.Jsonp.cleanup_(id, true);
     replyCallback.apply(undefined, arguments);
   };
@@ -313,7 +315,8 @@ goog.net.Jsonp.newReplyHandler_ = function(id, replyCallback) {
  * @private
  */
 goog.net.Jsonp.cleanup_ = function(id, deleteReplyHandler) {
-  var callbackId = goog.net.Jsonp.getCallbackId_(id);
+  'use strict';
+  const callbackId = goog.net.Jsonp.getCallbackId_(id);
   if (goog.global[callbackId]) {
     if (deleteReplyHandler) {
       try {

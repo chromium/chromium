@@ -68,7 +68,8 @@ function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes) {
   return joinPaths(urlSrcPath, pathFromUrl);
 }
 
-export default function plugin(rootPath, hostUrl, excludes, externalPaths) {
+export default function plugin(
+    rootPath, hostUrl, excludes, externalPaths, allowEmptyExtension) {
   const urlsToPaths = new Map();
   for (const externalPath of externalPaths) {
     const [url, path] = externalPath.split('|', 2);
@@ -79,6 +80,11 @@ export default function plugin(rootPath, hostUrl, excludes, externalPaths) {
     name: 'webui-path-resolver-plugin',
 
     resolveId(source, origin) {
+      if (path.extname(source) === '' && !allowEmptyExtension) {
+        this.error(
+            `Invalid path (missing file extension) was found: ${source}`);
+      }
+
       // Normalize origin paths to use forward slashes.
       if (origin) {
         origin = normalizeSlashes(origin);
@@ -94,8 +100,12 @@ export default function plugin(rootPath, hostUrl, excludes, externalPaths) {
       }
 
       // Not in the URL path map -> should be in the root directory.
-      // Check if it should be excluded from the bundle.
-      const fullSourcePath = combinePaths(origin, source);
+      // Check if it should be excluded from the bundle. Check for an absolute
+      // path before combining with the origin path.
+      const fullSourcePath =
+          (source.startsWith('/') && !source.startsWith(rootPath)) ?
+          path.join(rootPath, source) :
+          combinePaths(origin, source);
       if (fullSourcePath.startsWith(rootPath)) {
         const pathFromRoot = relativePath(rootPath, fullSourcePath);
         if (excludes.includes(pathFromRoot)) {

@@ -62,6 +62,10 @@ class AutoResumptionHandlerTest : public testing::Test {
   AutoResumptionHandlerTest()
       : task_runner_(new base::TestMockTimeTaskRunner), handle_(task_runner_) {}
 
+  AutoResumptionHandlerTest(const AutoResumptionHandlerTest&) = delete;
+  AutoResumptionHandlerTest& operator=(const AutoResumptionHandlerTest&) =
+      delete;
+
   ~AutoResumptionHandlerTest() override = default;
 
  protected:
@@ -112,7 +116,7 @@ class AutoResumptionHandlerTest : public testing::Test {
 
     // Make sure the item won't be expired and ignored.
     ON_CALL(*download, GetStartTime())
-        .WillByDefault(Return(GetNow() - base::TimeDelta::FromDays(1)));
+        .WillByDefault(Return(GetNow() - base::Days(1)));
   }
 
   void SetNetworkConnectionType(ConnectionType connection_type) {
@@ -132,8 +136,6 @@ class AutoResumptionHandlerTest : public testing::Test {
   download::test::MockTaskManager* task_manager_;
   std::unique_ptr<AutoResumptionHandler> auto_resumption_handler_;
   base::SimpleTestClock clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoResumptionHandlerTest);
 };
 
 TEST_F(AutoResumptionHandlerTest, ScheduleTaskCalledOnDownloadStart) {
@@ -289,7 +291,7 @@ TEST_F(AutoResumptionHandlerTest, ExpiredDownloadNotAutoResumed) {
   SetNetworkConnectionType(ConnectionType::CONNECTION_WIFI);
 
   // Create a normal expired download.
-  base::Time expired_start_time = GetNow() - base::TimeDelta::FromDays(100);
+  base::Time expired_start_time = GetNow() - base::Days(100);
   auto item0 = std::make_unique<NiceMock<MockDownloadItem>>();
   SetDownloadState(item0.get(), DownloadItem::INTERRUPTED, false, false);
   ON_CALL(*item0.get(), GetStartTime())
@@ -335,7 +337,7 @@ TEST_F(AutoResumptionHandlerTest, DownloadWithoutTargetPathNotAutoResumed) {
 TEST_F(AutoResumptionHandlerTest, DownloadLaterStartFutureNotAutoResumed) {
   SetNetworkConnectionType(ConnectionType::CONNECTION_WIFI);
   auto item = std::make_unique<NiceMock<MockDownloadItem>>();
-  auto delta = base::TimeDelta::FromDays(10);
+  auto delta = base::Days(10);
   base::Time future_time = GetNow() + delta;
   SetDownloadState(item.get(), DownloadItem::INTERRUPTED, false, false);
   SetDownloadSchedule(item.get(),

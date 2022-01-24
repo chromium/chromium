@@ -1,2 +1,2 @@
-CONSOLE MESSAGE: line 12: PASS (No crash.)
+CONSOLE MESSAGE: PASS (No crash.)
 

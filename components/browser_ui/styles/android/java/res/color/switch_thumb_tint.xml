@@ -7,7 +7,7 @@
     <!-- This would ideally be colorSwitchThumbNormal at 38% alpha. However, making the thumb
          translucent causes the track to be visible behind the thumb. This color is not compatible
          with dynamic colors. -->
-    <item android:color="?attr/colorSwitchThumbDisabled" android:state_enabled="false"/>
-    <item android:color="?attr/colorPrimary" android:state_checked="true"/>
-    <item android:color="?attr/colorSwitchThumbNormal"/>
+    <item android:color="?attr/colorSwitchThumbDisabledNonDynamic" android:state_enabled="false"/>
+    <item android:color="?attr/colorPrimaryNonDynamic" android:state_checked="true"/>
+    <item android:color="?attr/colorSwitchThumbNormalNonDynamic"/>
 </selector>

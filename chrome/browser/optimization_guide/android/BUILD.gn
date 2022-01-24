@@ -27,7 +27,9 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ "//components/optimization_guide/content/browser:optimization_guide_generated_enums" ]
+  srcjar_deps = [
+    "//components/optimization_guide/core:optimization_guide_generated_enums",
+  ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }

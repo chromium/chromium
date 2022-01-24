@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace device {
 
@@ -88,7 +88,7 @@ void WifiDataProviderCommon::ScheduleNextScan(int interval) {
       FROM_HERE,
       base::BindOnce(&WifiDataProviderCommon::DoWifiScanTask,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(interval));
+      base::Milliseconds(interval));
 }
 
 }  // namespace device

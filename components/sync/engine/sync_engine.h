@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -48,7 +47,12 @@ class SyncEngine : public ModelTypeConfigurer {
   // Utility struct for holding initialization options.
   struct InitParams {
     InitParams();
+
+    InitParams(const InitParams&) = delete;
+    InitParams& operator=(const InitParams&) = delete;
+
     InitParams(InitParams&& other);
+
     ~InitParams();
 
     SyncEngineHost* host = nullptr;
@@ -63,12 +67,13 @@ class SyncEngine : public ModelTypeConfigurer {
     base::FilePath local_sync_backend_folder;
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
     std::string encryption_bootstrap_token;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(InitParams);
   };
 
   SyncEngine();
+
+  SyncEngine(const SyncEngine&) = delete;
+  SyncEngine& operator=(const SyncEngine&) = delete;
+
   ~SyncEngine() override;
 
   // Kicks off asynchronous initialization. Optionally deletes sync data during
@@ -118,11 +123,6 @@ class SyncEngine : public ModelTypeConfigurer {
   // may be triggered at a later time. It is an error to call this when there
   // are no pending keys.
   virtual void SetDecryptionPassphrase(const std::string& passphrase) = 0;
-
-  // Legacy bootstrap token stored in preferences.
-  // TODO(crbug.com/1010397): Delete this API together with the preferences.
-  virtual void SetKeystoreEncryptionBootstrapToken(
-      const std::string& token) = 0;
 
   // Analogous to SetDecryptionPassphrase but specifically for
   // TRUSTED_VAULT_PASSPHRASE: it provides new decryption keys that could
@@ -174,9 +174,6 @@ class SyncEngine : public ModelTypeConfigurer {
 
   // Returns a ListValue representing Nigori node.
   virtual void GetNigoriNodeForDebugging(AllNodesCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncEngine);
 };
 
 }  // namespace syncer

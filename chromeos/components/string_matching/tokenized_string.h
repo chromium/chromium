@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/range/range.h"
 
 namespace chromeos {
@@ -29,6 +28,10 @@ class TokenizedString {
 
   explicit TokenizedString(const std::u16string& text,
                            Mode mode = Mode::kCamelCase);
+
+  TokenizedString(const TokenizedString&) = delete;
+  TokenizedString& operator=(const TokenizedString&) = delete;
+
   ~TokenizedString();
 
   const std::u16string& text() const { return text_; }
@@ -45,8 +48,6 @@ class TokenizedString {
   // Broken down tokens and the index mapping of tokens in original string.
   Tokens tokens_;
   Mappings mappings_;
-
-  DISALLOW_COPY_AND_ASSIGN(TokenizedString);
 };
 
 }  // namespace string_matching

@@ -31,7 +31,7 @@ const GURL& DummyUrl() {
 }  // namespace
 
 // According to the interface for EXPECT_FATAL_FAILURE
-// (https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md#catching-failures)
+// (https://github.com/google/googletest/blob/master/docs/advanced.md#catching-failures)
 // the statement must be statically available. Therefore, we make a static
 // global s_test_ which should point to |this| for the duration of the test run
 // and be cleared afterward.
@@ -73,7 +73,8 @@ WebUIBrowserTest* WebUIBrowserExpectFailTest::s_test_ = NULL;
 #endif
 IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, MAYBE_TestFailsFast) {
   AddLibrary(base::FilePath(FILE_PATH_LITERAL("sample_downloads.js")));
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIDownloadsURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIDownloadsURL)));
   EXPECT_FATAL_FAILURE(RunJavascriptTestNoReturn("DISABLED_BogusFunctionName"),
                        "result.is_bool()");
 }
@@ -81,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, MAYBE_TestFailsFast) {
 // Test that bogus javascript fails fast - no timeout waiting for result.
 IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, TestRuntimeErrorFailsFast) {
   AddLibrary(base::FilePath(FILE_PATH_LITERAL("runtime_error.js")));
-  ui_test_utils::NavigateToURL(browser(), DummyUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), DummyUrl()));
   EXPECT_FATAL_FAILURE(RunJavascriptTestNoReturn("TestRuntimeErrorFailsFast"),
                        "result.is_bool()");
 }
@@ -98,7 +99,8 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, TestRuntimeErrorFailsFast) {
 // for result.
 IN_PROC_BROWSER_TEST_F(WebUIBrowserExpectFailTest, MAYBE_TestFailsAsyncFast) {
   AddLibrary(base::FilePath(FILE_PATH_LITERAL("sample_downloads.js")));
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIDownloadsURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIDownloadsURL)));
   EXPECT_FATAL_FAILURE(
       RunJavascriptAsyncTestNoReturn("DISABLED_BogusFunctionName"),
       "result.is_bool()");
@@ -141,19 +143,19 @@ class WebUIBrowserAsyncTest : public WebUIBrowserTest {
 
    private:
     void RegisterMessages() override {
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "startAsyncTest",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleStartAsyncTest,
                               base::Unretained(this)));
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "testContinues",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleTestContinues,
                               base::Unretained(this)));
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "testFails",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleTestFails,
                               base::Unretained(this)));
-      web_ui()->RegisterMessageCallback(
+      web_ui()->RegisterDeprecatedMessageCallback(
           "testPasses",
           base::BindRepeating(&AsyncWebUIMessageHandler::HandleTestPasses,
                               base::Unretained(this)));
@@ -180,7 +182,7 @@ class WebUIBrowserAsyncTest : public WebUIBrowserTest {
   void SetUpOnMainThread() override {
     WebUIBrowserTest::SetUpOnMainThread();
     AddLibrary(base::FilePath(FILE_PATH_LITERAL("async.js")));
-    ui_test_utils::NavigateToURL(browser(), DummyUrl());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), DummyUrl()));
   }
 };
 
@@ -284,7 +286,7 @@ class WebUICoverageTest : public WebUIBrowserTest {
   void SetUpOnMainThread() override {
     WebUIBrowserTest::SetUpOnMainThread();
     AddLibrary(base::FilePath(FILE_PATH_LITERAL("async.js")));
-    ui_test_utils::NavigateToURL(browser(), DummyUrl());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), DummyUrl()));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

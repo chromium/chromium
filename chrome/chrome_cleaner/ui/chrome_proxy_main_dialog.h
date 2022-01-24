@@ -6,7 +6,7 @@
 #define CHROME_CHROME_CLEANER_UI_CHROME_PROXY_MAIN_DIALOG_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/chrome_cleaner/ipc/chrome_prompt_ipc.h"
 #include "chrome/chrome_cleaner/ui/main_dialog_api.h"
 #include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"

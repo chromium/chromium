@@ -45,7 +45,7 @@ class MultipleTapDetectorTest : public aura::test::AuraTestBase {
     generator_.reset(new ui::test::EventGenerator(root_window()));
 
     // Tests fail if time is ever 0.
-    simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+    simulated_clock_.Advance(base::Milliseconds(10));
     // ui takes ownership of the tick clock.
     ui::SetEventTickClockForTesting(&simulated_clock_);
   }
@@ -64,7 +64,7 @@ class MultipleTapDetectorTest : public aura::test::AuraTestBase {
   // Pause just past the maximum amount of time to trigger a double tap.
   void TooLongPause() {
     simulated_clock_.Advance(gesture_detector_config_.double_tap_timeout);
-    simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+    simulated_clock_.Advance(base::Milliseconds(1));
     triple_tap_detector_->triple_tap_timer_.Stop();
     triple_tap_detector_->OnTapIntervalTimerFired();
   }
@@ -76,7 +76,7 @@ class MultipleTapDetectorTest : public aura::test::AuraTestBase {
                          ui::PointerDetails(ui::EventPointerType::kTouch,
                                             ui::kPointerIdUnknown));
     generator_->Dispatch(&press);
-    simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(kTapLengthMs));
+    simulated_clock_.Advance(base::Milliseconds(kTapLengthMs));
     ui::TouchEvent release(ui::ET_TOUCH_RELEASED, tap_point,
                            simulated_clock_.NowTicks(),
                            ui::PointerDetails(ui::EventPointerType::kTouch,

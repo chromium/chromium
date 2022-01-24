@@ -25,6 +25,10 @@ class MenuButtonController;
 class AppMenuButton : public ToolbarButton {
  public:
   explicit AppMenuButton(PressedCallback callback);
+
+  AppMenuButton(const AppMenuButton&) = delete;
+  AppMenuButton& operator=(const AppMenuButton&) = delete;
+
   ~AppMenuButton() override;
 
   views::MenuButtonController* menu_button_controller() const {
@@ -69,8 +73,6 @@ class AppMenuButton : public ToolbarButton {
   base::ObserverList<AppMenuButtonObserver>::Unchecked observer_list_;
 
   views::MenuButtonController* menu_button_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppMenuButton);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_APP_MENU_BUTTON_H_

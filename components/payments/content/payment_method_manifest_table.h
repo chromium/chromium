@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;
@@ -39,6 +40,8 @@ struct SecurePaymentConfirmationInstrument;
 //   relying_party_id      The relying party identifier string.
 //   label                 The instrument human-readable label string.
 //   icon                  The serialized SkBitmap blob.
+//   data_created          The creation date in micro seconds from 1601-01-01
+//                         00:00:00 UTC.
 class PaymentMethodManifestTable : public WebDatabaseTable {
  public:
   PaymentMethodManifestTable();
@@ -59,6 +62,12 @@ class PaymentMethodManifestTable : public WebDatabaseTable {
 
   // Remove expired data.
   void RemoveExpiredData();
+
+  // Clears all of the secure payment confirmation instrument information
+  // created in the given time range `begin` and `end`. Return false for
+  // failure.
+  bool ClearSecurePaymentConfirmationInstruments(base::Time begin,
+                                                 base::Time end);
 
   // Adds `payment_method`'s manifest. `web_app_ids` contains supported web apps
   // ids.
@@ -81,6 +90,21 @@ class PaymentMethodManifestTable : public WebDatabaseTable {
   // parties, or on failure.
   bool AddSecurePaymentConfirmationInstrument(
       const SecurePaymentConfirmationInstrument& instrument);
+
+  // Executes a SQL statement for testing.
+  //
+  // Returns true if all statements execute successfully. If a statement fails,
+  // stops and returns false. Calls should be wrapped in ASSERT_TRUE().
+  bool ExecuteForTest(const char* sql);
+
+  // Raze the database to the ground for testing.
+  //
+  // false is returned if the database is locked by some other
+  // process.
+  bool RazeForTest();
+
+  // Returns true if a column with the given name exists in the given table.
+  bool DoesColumnExistForTest(const char* table_name, const char* column_name);
 
   // Gets the list of secure payment confirmation instruments for the given list
   // of `credential_ids`.

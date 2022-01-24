@@ -8,8 +8,8 @@
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
@@ -38,6 +38,10 @@ static_assert(base::size(kFailurePhase) ==
 class MockJobInterceptor : public URLRequestInterceptor {
  public:
   MockJobInterceptor() = default;
+
+  MockJobInterceptor(const MockJobInterceptor&) = delete;
+  MockJobInterceptor& operator=(const MockJobInterceptor&) = delete;
+
   ~MockJobInterceptor() override = default;
 
   // URLRequestJobFactory::ProtocolHandler implementation:
@@ -58,9 +62,6 @@ class MockJobInterceptor : public URLRequestInterceptor {
     }
     return std::make_unique<URLRequestFailedJob>(request, phase, net_error);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockJobInterceptor);
 };
 
 GURL GetMockUrl(const std::string& scheme,

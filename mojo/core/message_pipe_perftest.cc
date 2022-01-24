@@ -31,6 +31,9 @@ class MessagePipePerfTest : public test::MojoTestBase {
  public:
   MessagePipePerfTest() : message_count_(0), message_size_(0) {}
 
+  MessagePipePerfTest(const MessagePipePerfTest&) = delete;
+  MessagePipePerfTest& operator=(const MessagePipePerfTest&) = delete;
+
   void SetUpMeasurement(int message_count, size_t message_size) {
     message_count_ = message_count;
     message_size_ = message_size;
@@ -123,8 +126,6 @@ class MessagePipePerfTest : public test::MojoTestBase {
   std::string payload_;
   std::vector<uint8_t> read_buffer_;
   std::unique_ptr<base::PerfTimeLogger> perf_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePipePerfTest);
 };
 
 TEST_F(MessagePipePerfTest, PingPong) {

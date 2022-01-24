@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/cdm_context.h"
@@ -30,6 +29,9 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
  public:
   MojoAudioDecoderService(MojoCdmServiceContext* mojo_cdm_service_context,
                           std::unique_ptr<media::AudioDecoder> decoder);
+
+  MojoAudioDecoderService(const MojoAudioDecoderService&) = delete;
+  MojoAudioDecoderService& operator=(const MojoAudioDecoderService&) = delete;
 
   ~MojoAudioDecoderService() final;
 
@@ -90,8 +92,6 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
 
   base::WeakPtr<MojoAudioDecoderService> weak_this_;
   base::WeakPtrFactory<MojoAudioDecoderService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioDecoderService);
 };
 
 }  // namespace media

@@ -6,12 +6,13 @@
 #define NET_CERT_KNOWN_ROOTS_WIN_H_
 
 #include "base/win/wincrypt_shim.h"
+#include "net/base/net_export.h"
 
 namespace net {
 
 // IsKnownRoot returns true if the given certificate is one that we believe
 // is a standard (as opposed to user-installed) root.
-bool IsKnownRoot(PCCERT_CONTEXT cert);
+NET_EXPORT_PRIVATE bool IsKnownRoot(PCCERT_CONTEXT cert);
 
 }  // namespace net
 

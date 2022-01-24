@@ -63,7 +63,7 @@ loadScript.then(async function() {
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
-                     transitionQualifiers: ["client_redirect"],
+                     transitionQualifiers: [],
                      transitionType: "link",
                      url: getURL('b.html') }},
         { label: "b-onDOMContentLoaded",

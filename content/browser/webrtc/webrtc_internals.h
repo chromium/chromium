@@ -252,6 +252,10 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
    public:
     PendingUpdate(const std::string& event_name, base::Value event_data);
     PendingUpdate(PendingUpdate&& other);
+
+    PendingUpdate(const PendingUpdate&) = delete;
+    PendingUpdate& operator=(const PendingUpdate&) = delete;
+
     ~PendingUpdate();
 
     const std::string& event_name() const;
@@ -261,7 +265,6 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
     base::ThreadChecker thread_checker_;
     const std::string event_name_;
     base::Value event_data_;
-    DISALLOW_COPY_AND_ASSIGN(PendingUpdate);
   };
 
   base::queue<PendingUpdate> pending_updates_;

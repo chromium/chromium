@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/arc/mojom/wallpaper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -18,6 +17,10 @@ namespace arc {
 class FakeWallpaperInstance : public mojom::WallpaperInstance {
  public:
   FakeWallpaperInstance();
+
+  FakeWallpaperInstance(const FakeWallpaperInstance&) = delete;
+  FakeWallpaperInstance& operator=(const FakeWallpaperInstance&) = delete;
+
   ~FakeWallpaperInstance() override;
 
   const std::vector<int32_t>& changed_ids() const { return changed_ids_; }
@@ -35,8 +38,6 @@ class FakeWallpaperInstance : public mojom::WallpaperInstance {
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.
   mojo::Remote<mojom::WallpaperHost> host_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWallpaperInstance);
 };
 
 }  // namespace arc

@@ -21,33 +21,33 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for MinAndroidSdkLevelSkipCheck. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = 21)
+@Config(manifest = Config.NONE, sdk = 29)
 public class MinAndroidSdkLevelSkipCheckTest {
     public static class UnannotatedBaseClass {
         @Test
-        @MinAndroidSdkLevel(20)
-        public void min20Method() {}
+        @MinAndroidSdkLevel(28)
+        public void min28Method() {}
         @Test
-        @MinAndroidSdkLevel(22)
-        public void min22Method() {}
+        @MinAndroidSdkLevel(30)
+        public void min30Method() {}
     }
 
-    @MinAndroidSdkLevel(20)
-    public static class Min20Class extends UnannotatedBaseClass {
+    @MinAndroidSdkLevel(28)
+    public static class Min28Class extends UnannotatedBaseClass {
         @Test public void unannotatedMethod() {}
     }
 
-    @MinAndroidSdkLevel(22)
-    public static class Min22Class extends UnannotatedBaseClass {
+    @MinAndroidSdkLevel(30)
+    public static class Min30Class extends UnannotatedBaseClass {
         @Test public void unannotatedMethod() {}
     }
 
-    public static class ExtendsMin20Class extends Min20Class {
+    public static class ExtendsMin28Class extends Min28Class {
         @Override
         @Test public void unannotatedMethod() {}
     }
 
-    public static class ExtendsMin22Class extends Min22Class {
+    public static class ExtendsMin30Class extends Min30Class {
         @Override
         @Test public void unannotatedMethod() {}
     }
@@ -80,31 +80,31 @@ public class MinAndroidSdkLevelSkipCheckTest {
 
     @Test
     public void testAnnotatedMethodAboveMin() throws Exception {
-        expectShouldSkip(UnannotatedBaseClass.class, "min20Method", false);
+        expectShouldSkip(UnannotatedBaseClass.class, "min28Method", false);
     }
 
     @Test
     public void testAnnotatedMethodBelowMin() throws Exception {
-        expectShouldSkip(UnannotatedBaseClass.class, "min22Method", true);
+        expectShouldSkip(UnannotatedBaseClass.class, "min30Method", true);
     }
 
     @Test
     public void testAnnotatedClassAboveMin() throws Exception {
-        expectShouldSkip(Min20Class.class, "unannotatedMethod", false);
+        expectShouldSkip(Min28Class.class, "unannotatedMethod", false);
     }
 
     @Test
     public void testAnnotatedClassBelowMin() throws Exception {
-        expectShouldSkip(Min22Class.class, "unannotatedMethod", true);
+        expectShouldSkip(Min30Class.class, "unannotatedMethod", true);
     }
 
     @Test
     public void testAnnotatedSuperclassAboveMin() throws Exception {
-        expectShouldSkip(ExtendsMin20Class.class, "unannotatedMethod", false);
+        expectShouldSkip(ExtendsMin28Class.class, "unannotatedMethod", false);
     }
 
     @Test
     public void testAnnotatedSuperclassBelowMin() throws Exception {
-        expectShouldSkip(ExtendsMin22Class.class, "unannotatedMethod", true);
+        expectShouldSkip(ExtendsMin30Class.class, "unannotatedMethod", true);
     }
 }

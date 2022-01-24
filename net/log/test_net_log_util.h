@@ -12,10 +12,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace net {
 
 struct NetLogEntry;
@@ -92,11 +88,6 @@ int GetIntegerValueFromParams(const NetLogEntry& entry, base::StringPiece path);
 bool GetBooleanValueFromParams(const NetLogEntry& entry,
                                base::StringPiece path);
 int GetNetErrorCodeFromParams(const NetLogEntry& entry);
-
-// TODO(eroman): Remove use of base::ListValue.
-bool GetListValueFromParams(const NetLogEntry& entry,
-                            base::StringPiece path,
-                            const base::ListValue** value);
 
 }  // namespace net
 

@@ -42,6 +42,7 @@
             label="$i18n{caretBrowsingTitle}"
             sub-label="$i18n{caretBrowsingSubtitle}">
         </settings-toggle-button>
+</if>
         <settings-toggle-button
             class="hr"
             hidden$="[[!showAccessibilityLabelsSetting_]]"
@@ -50,7 +51,6 @@
             label="$i18n{accessibleImageLabelsTitle}"
             sub-label="$i18n{accessibleImageLabelsSubtitle}">
         </settings-toggle-button>
-</if>
         <cr-link-row class="hr" label="$i18n{moreFeaturesLink}"
             on-click="onMoreFeaturesLinkClick_" sub-label="$i18n{a11yWebStore}"
             external>

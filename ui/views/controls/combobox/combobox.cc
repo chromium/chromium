@@ -19,13 +19,13 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_utils.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -76,8 +76,7 @@ class TransparentButton : public Button {
           return std::make_unique<views::FloodFillInkDropRipple>(
               host->size(),
               InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-              host->GetNativeTheme()->GetSystemColor(
-                  ui::NativeTheme::kColorId_LabelEnabledColor),
+              host->GetColorProvider()->GetColor(ui::kColorLabelForeground),
               InkDrop::Get(host)->GetVisibleOpacity());
         },
         this));
@@ -301,7 +300,10 @@ void Combobox::SetOwnedModel(std::unique_ptr<ui::ComboboxModel> model) {
 }
 
 void Combobox::SetModel(ui::ComboboxModel* model) {
-  DCHECK(model) << "After construction, the model must not be null.";
+  if (!model) {
+    SetOwnedModel(std::make_unique<internal::EmptyComboboxModel>());
+    return;
+  }
 
   if (model_) {
     DCHECK(observation_.IsObservingSource(model_));
@@ -311,6 +313,7 @@ void Combobox::SetModel(ui::ComboboxModel* model) {
   model_ = model;
 
   if (model_) {
+    model_ = model;
     menu_model_ = std::make_unique<ComboboxMenuModel>(this, model_);
     observation_.Observe(model_);
     SetSelectedIndex(model_->GetDefaultIndex());
@@ -363,8 +366,7 @@ void Combobox::OnThemeChanged() {
   View::OnThemeChanged();
   SetBackground(
       CreateBackgroundFromPainter(Painter::CreateSolidRoundRectPainter(
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_TextfieldDefaultBackground),
+          GetColorProvider()->GetColor(ui::kColorTextfieldBackground),
           FocusableBorder::kCornerRadiusDp)));
   OnContentSizeMaybeChanged();
 }
@@ -583,7 +585,7 @@ const std::unique_ptr<ui::ComboboxModel>& Combobox::GetOwnedModel() const {
 void Combobox::UpdateBorder() {
   std::unique_ptr<FocusableBorder> border(new FocusableBorder());
   if (invalid_)
-    border->SetColorId(ui::NativeTheme::kColorId_AlertSeverityHigh);
+    border->SetColorId(ui::kColorAlertHighSeverity);
   SetBorder(std::move(border));
 }
 
@@ -607,7 +609,7 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   ui::ImageModel icon = GetModel()->GetIconAt(selected_index_);
   if (!icon.IsEmpty()) {
     gfx::ImageSkia icon_skia =
-        GetImageSkiaFromImageModel(icon, GetNativeTheme());
+        GetImageSkiaFromImageModel(icon, GetColorProvider());
     int icon_y = y + (contents_height - icon_skia.height()) / 2;
     gfx::Rect icon_bounds(x, icon_y, icon_skia.width(), icon_skia.height());
     AdjustBoundsForRTLUI(&icon_bounds);
@@ -717,7 +719,7 @@ gfx::Size Combobox::GetContentSize() const {
       if (!icon.IsEmpty()) {
         gfx::ImageSkia icon_skia;
         if (GetWidget())
-          icon_skia = GetImageSkiaFromImageModel(icon, GetNativeTheme());
+          icon_skia = GetImageSkiaFromImageModel(icon, GetColorProvider());
         item_width +=
             icon_skia.width() + LayoutProvider::Get()->GetDistanceMetric(
                                     DISTANCE_RELATED_LABEL_HORIZONTAL);

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 android_library("java") {
@@ -9,13 +10,25 @@ android_library("java") {
     ":*",
     "//chrome/android:chrome_all_java",
   ]
-  sources = [ "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorOptionsAdapter.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialog.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AutofillProgressDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialog.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/data/AuthenticatorOption.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/data/CardUnmaskChallengeOptionType.java",
+  ]
   deps = [
     ":java_resources",
     ":jni_headers",
     "//base:base_java",
     "//base:jni_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -27,22 +40,35 @@ generate_jni("jni_headers") {
     ":*",
     "//chrome/browser/ui:ui",
   ]
-  sources = [ "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AutofillProgressDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogBridge.java",
+  ]
 }
 
 android_library("junit") {
   # Skip platform checks since Robolectric depends on requires_android targets.
   bypass_platform_checks = true
   testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridgeTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridgeTest.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogTest.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridgeTest.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AutofillProgressDialogBridgeTest.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
@@ -50,7 +76,15 @@ android_library("junit") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/layout/autofill_error_dialog.xml" ]
+  sources = [
+    "java/res/layout/authenticator_option.xml",
+    "java/res/layout/authenticator_selection_dialog.xml",
+    "java/res/layout/autofill_error_dialog.xml",
+    "java/res/layout/autofill_progress_dialog.xml",
+    "java/res/layout/otp_verification_dialog.xml",
+    "java/res/layout/progress_bar.xml",
+    "java/res/values/dimens.xml",
+  ]
   deps = [
     "//chrome/android:chrome_app_java_resources",
     "//components/browser_ui/styles/android:java_resources",

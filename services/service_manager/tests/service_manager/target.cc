@@ -20,6 +20,10 @@ class Target : public service_manager::Service {
   explicit Target(
       mojo::PendingReceiver<service_manager::mojom::Service> receiver)
       : service_receiver_(this, std::move(receiver)) {}
+
+  Target(const Target&) = delete;
+  Target& operator=(const Target&) = delete;
+
   ~Target() override = default;
 
  private:
@@ -33,8 +37,6 @@ class Target : public service_manager::Service {
   }
 
   service_manager::ServiceReceiver service_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(Target);
 };
 
 }  // namespace

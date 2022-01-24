@@ -40,10 +40,10 @@ namespace cast_streaming {
 //
 // receiver.Stop();
 // receiver.RunUntilStopped();
-class CastStreamingTestReceiver : public CastStreamingSession::Client {
+class CastStreamingTestReceiver final : public CastStreamingSession::Client {
  public:
   CastStreamingTestReceiver();
-  ~CastStreamingTestReceiver() final;
+  ~CastStreamingTestReceiver() override;
 
   CastStreamingTestReceiver(const CastStreamingTestReceiver&) = delete;
   CastStreamingTestReceiver& operator=(const CastStreamingTestReceiver&) =
@@ -90,14 +90,14 @@ class CastStreamingTestReceiver : public CastStreamingSession::Client {
   void OnSessionInitialization(
       absl::optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
       absl::optional<CastStreamingSession::VideoStreamInfo> video_stream_info)
-      final;
-  void OnAudioBufferReceived(media::mojom::DecoderBufferPtr buffer) final;
-  void OnVideoBufferReceived(media::mojom::DecoderBufferPtr buffer) final;
+      override;
+  void OnAudioBufferReceived(media::mojom::DecoderBufferPtr buffer) override;
+  void OnVideoBufferReceived(media::mojom::DecoderBufferPtr buffer) override;
   void OnSessionReinitialization(
       absl::optional<CastStreamingSession::AudioStreamInfo> audio_stream_info,
       absl::optional<CastStreamingSession::VideoStreamInfo> video_stream_info)
-      final;
-  void OnSessionEnded() final;
+      override;
+  void OnSessionEnded() override;
 
   CastStreamingSession receiver_session_;
   bool is_active_ = false;

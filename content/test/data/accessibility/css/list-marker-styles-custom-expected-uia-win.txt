@@ -1,0 +1,125 @@
+Document
+++List
+++++ListItem Name='disc'
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Text Name='disc' IsControlElement=false
+++List
+++++ListItem Name='circle'
+++++++Text Name='%E2%97%A6 ' IsControlElement=false
+++++++Text Name='circle' IsControlElement=false
+++List
+++++ListItem Name='square'
+++++++Text Name='%E2%96%A0 ' IsControlElement=false
+++++++Text Name='square' IsControlElement=false
+++List
+++++ListItem Name='disclosure-open'
+++++++Text Name='%E2%96%BE ' IsControlElement=false
+++++++Text Name='disclosure-open' IsControlElement=false
+++List
+++++ListItem Name='disclosure-closed'
+++++++Text Name='%E2%96%B8 ' IsControlElement=false
+++++++Text Name='disclosure-closed' IsControlElement=false
+++List
+++++ListItem Name='explicit-bullets'
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Text Name='explicit-bullets' IsControlElement=false
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++List
+++++ListItem Name='explicit-numbers'
+++++++Text Name='1. ' IsControlElement=false
+++++++Text Name='explicit-numbers' IsControlElement=false
+++++ListItem
+++++++Text Name='2. ' IsControlElement=false
+++++ListItem
+++++++Text Name='3. ' IsControlElement=false
+++List
+++++ListItem Name='explicit-words'
+++++++Text Name='One. ' IsControlElement=false
+++++++Text Name='explicit-words' IsControlElement=false
+++++ListItem
+++++++Text Name='Two. ' IsControlElement=false
+++++ListItem
+++++++Text Name='Three. ' IsControlElement=false
+++List
+++++ListItem Name='auto-alphabetic'
+++++++Text Name='One. ' IsControlElement=false
+++++++Text Name='auto-alphabetic' IsControlElement=false
+++++ListItem
+++++++Text Name='Two. ' IsControlElement=false
+++++ListItem
+++++++Text Name='Three. ' IsControlElement=false
+++List
+++++ListItem Name='auto-cyclic'
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Text Name='auto-cyclic' IsControlElement=false
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++List
+++++ListItem Name='auto-extends'
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Text Name='auto-extends' IsControlElement=false
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++List
+++++ListItem Name='auto-fixed'
+++++++Text Name='1. ' IsControlElement=false
+++++++Text Name='auto-fixed' IsControlElement=false
+++++ListItem
+++++++Text Name='2. ' IsControlElement=false
+++++ListItem
+++++++Text Name='3. ' IsControlElement=false
+++List
+++++ListItem Name='auto-symbolic'
+++++++Text Name='1. ' IsControlElement=false
+++++++Text Name='auto-symbolic' IsControlElement=false
+++++ListItem
+++++++Text Name='2. ' IsControlElement=false
+++++ListItem
+++++++Text Name='3. ' IsControlElement=false
+++List
+++++ListItem Name='auto-numeric'
+++++++Text Name='1. ' IsControlElement=false
+++++++Text Name='auto-numeric' IsControlElement=false
+++++ListItem
+++++++Text Name='2. ' IsControlElement=false
+++++ListItem
+++++++Text Name='3. ' IsControlElement=false
+++List
+++++ListItem Name='auto-additive'
+++++++Text Name='1. ' IsControlElement=false
+++++++Text Name='auto-additive' IsControlElement=false
+++++ListItem
+++++++Text Name='2. ' IsControlElement=false
+++++ListItem
+++++++Text Name='3. ' IsControlElement=false
+++List
+++++ListItem Name='reference-bullets'
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Text Name='reference-bullets' IsControlElement=false
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++List
+++++ListItem Name='reference-numbers'
+++++++Text Name='1> ' IsControlElement=false
+++++++Text Name='reference-numbers' IsControlElement=false
+++++ListItem
+++++++Text Name='2> ' IsControlElement=false
+++++ListItem
+++++++Text Name='3> ' IsControlElement=false
+++List
+++++ListItem Name='reference-words'
+++++++Text Name='One> ' IsControlElement=false
+++++++Text Name='reference-words' IsControlElement=false
+++++ListItem
+++++++Text Name='Two> ' IsControlElement=false
+++++ListItem
+++++++Text Name='Three> ' IsControlElement=false

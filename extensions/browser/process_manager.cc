@@ -17,8 +17,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_context.h"
@@ -90,10 +90,9 @@ unsigned g_event_page_suspending_time_msec = 5000;
 // ShouldSuspend message, taking into account experiments and testing overrides.
 base::TimeDelta GetEventPageSuspendDelay() {
   if (g_event_page_suspend_delay_ms_for_testing != kInvalidSuspendDelay) {
-    return base::TimeDelta::FromMilliseconds(
-        g_event_page_suspend_delay_ms_for_testing);
+    return base::Milliseconds(g_event_page_suspend_delay_ms_for_testing);
   }
-  return base::TimeDelta::FromMilliseconds(kEventPageSuspendDelayMs.Get());
+  return base::Milliseconds(kEventPageSuspendDelayMs.Get());
 }
 
 std::string GetExtensionIdForSiteInstance(
@@ -134,14 +133,15 @@ class IncognitoProcessManager : public ProcessManager {
   IncognitoProcessManager(BrowserContext* incognito_context,
                           BrowserContext* original_context,
                           ExtensionRegistry* extension_registry);
+
+  IncognitoProcessManager(const IncognitoProcessManager&) = delete;
+  IncognitoProcessManager& operator=(const IncognitoProcessManager&) = delete;
+
   ~IncognitoProcessManager() override {}
   bool CreateBackgroundHost(const Extension* extension,
                             const GURL& url) override;
   scoped_refptr<content::SiteInstance> GetSiteInstanceForURL(const GURL& url)
       override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IncognitoProcessManager);
 };
 
 static void CreateBackgroundHostForExtensionLoad(
@@ -569,7 +569,7 @@ void ProcessManager::OnSuspendAck(const std::string& extension_id) {
       FROM_HERE,
       base::BindOnce(&ProcessManager::CloseLazyBackgroundPageNow,
                      weak_ptr_factory_.GetWeakPtr(), extension_id, sequence_id),
-      base::TimeDelta::FromMilliseconds(g_event_page_suspending_time_msec));
+      base::Milliseconds(g_event_page_suspending_time_msec));
 }
 
 void ProcessManager::NetworkRequestStarted(
@@ -900,7 +900,7 @@ void ProcessManager::CloseLazyBackgroundPageNow(const std::string& extension_id,
       UnregisterRenderFrameHost(frame);
     }
 
-    ExtensionHost* host = GetBackgroundHostForExtension(extension_id);
+    host = GetBackgroundHostForExtension(extension_id);
     if (host)
       CloseBackgroundHost(host);
   }

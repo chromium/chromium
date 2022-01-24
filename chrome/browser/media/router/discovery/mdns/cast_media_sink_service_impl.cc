@@ -251,7 +251,9 @@ CastMediaSinkServiceImpl::CastMediaSinkServiceImpl(
 
 CastMediaSinkServiceImpl::~CastMediaSinkServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  dial_media_sink_service_->RemoveObserver(this);
+  if (dial_media_sink_service_) {
+    dial_media_sink_service_->RemoveObserver(this);
+  }
   network_monitor_->RemoveObserver(this);
   cast_socket_service_->RemoveObserver(this);
 }
@@ -272,7 +274,9 @@ void CastMediaSinkServiceImpl::Start() {
       &CastMediaSinkServiceImpl::OnNetworksChanged, GetWeakPtr()));
   network_monitor_->AddObserver(this);
 
-  dial_media_sink_service_->AddObserver(this);
+  if (dial_media_sink_service_) {
+    dial_media_sink_service_->AddObserver(this);
+  }
 
   std::vector<MediaSinkInternal> test_sinks = GetFixedIPSinksFromCommandLine();
   if (!test_sinks.empty())
@@ -287,6 +291,9 @@ void CastMediaSinkServiceImpl::RecordDeviceCounts() {
 
 void CastMediaSinkServiceImpl::OnUserGesture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!dial_media_sink_service_)
+    return;
+
   // Re-sync sinks from DialMediaSinkService. It's possible that a
   // DIAL-discovered sink was added here earlier, but was removed due to flaky
   // network. This gives CastMediaSinkServiceImpl an opportunity to recover even
@@ -302,8 +309,7 @@ void CastMediaSinkServiceImpl::OpenChannelsWithRandomizedDelay(
   // Add a random backoff between 0s to 5s before opening channels to prevent
   // different browser instances connecting to the same receiver at the same
   // time.
-  base::TimeDelta delay =
-      base::TimeDelta::FromMilliseconds(base::RandInt(0, 50) * 100);
+  base::TimeDelta delay = base::Milliseconds(base::RandInt(0, 50) * 100);
   task_runner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CastMediaSinkServiceImpl::OpenChannels, GetWeakPtr(),
@@ -444,10 +450,9 @@ CastMediaSinkServiceImpl::CreateCastSocketOpenParams(
   // TODO(crbug.com/814419): Switching cast socket implementation to use network
   // service will allow us to get back NetLog.
   return cast_channel::CastSocketOpenParams(
-      sink.cast_data().ip_endpoint,
-      base::TimeDelta::FromSeconds(connect_timeout_in_seconds),
-      base::TimeDelta::FromSeconds(liveness_timeout_in_seconds),
-      base::TimeDelta::FromSeconds(open_params_.ping_interval_in_seconds),
+      sink.cast_data().ip_endpoint, base::Seconds(connect_timeout_in_seconds),
+      base::Seconds(liveness_timeout_in_seconds),
+      base::Seconds(open_params_.ping_interval_in_seconds),
       cast_channel::CastDeviceCapability::NONE);
 }
 
@@ -624,7 +629,8 @@ void CastMediaSinkServiceImpl::OnChannelOpenSucceeded(
   // a Cast channel to a device that came from DIAL, remove it from
   // |dial_media_sink_service_|. This ensures the device shows up as a Cast sink
   // only.
-  dial_media_sink_service_->RemoveSinkById(GetDialSinkIdFromCast(sink_id));
+  if (dial_media_sink_service_)
+    dial_media_sink_service_->RemoveSinkById(GetDialSinkIdFromCast(sink_id));
 }
 
 void CastMediaSinkServiceImpl::OnChannelOpenFailed(
@@ -674,7 +680,9 @@ void CastMediaSinkServiceImpl::TryConnectDialDiscoveredSink(
     metrics_.RecordCastSinkDiscoverySource(SinkSource::kMdnsDial);
     // Sink is a Cast device; remove from |dial_media_sink_service_| to prevent
     // duplicates.
-    dial_media_sink_service_->RemoveSink(dial_sink);
+    if (dial_media_sink_service_) {
+      dial_media_sink_service_->RemoveSink(dial_sink);
+    }
     return;
   }
 

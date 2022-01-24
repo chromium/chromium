@@ -10,6 +10,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -88,6 +89,10 @@ class CrostiniExportImport : public KeyedService,
   static CrostiniExportImport* GetForProfile(Profile* profile);
 
   explicit CrostiniExportImport(Profile* profile);
+
+  CrostiniExportImport(const CrostiniExportImport&) = delete;
+  CrostiniExportImport& operator=(const CrostiniExportImport&) = delete;
+
   ~CrostiniExportImport() override;
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
@@ -249,8 +254,6 @@ class CrostiniExportImport : public KeyedService,
   base::ObserverList<Observer> observers_;
   // weak_ptr_factory_ should always be last member.
   base::WeakPtrFactory<CrostiniExportImport> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniExportImport);
 };
 
 }  // namespace crostini

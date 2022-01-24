@@ -36,12 +36,11 @@ var testSet = [
     'foo://user:password@host:80tête à tête',
     'foo://user:password@host:tête à tête/',
     'foo://user:password@host:80tête à tête',
-    // The schemes "ws:", "ftp:", "http:", "https:", "gother:" take a shortcut during parsing so we test them separately.
-    'ws:/tête',
-    'ftp:/tête',
-    'http:/tête',
-    'https:/tête',
-    'gopher:/tête',
+    // The schemes "ws:", "ftp:", "http:", "https:" take a shortcut during parsing so we test them separately.
+    'ws://host:tête',
+    'ftp://host:tête',
+    'http://host:tête',
+    'https://host:tête',
 ];
 
 for (var i = 0; i < testSet.length; ++i) {

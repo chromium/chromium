@@ -430,6 +430,7 @@ def main(argv):
     out.write('//   FROM {}\n\n'.format(' '.join(args.inputs)))
     guard = args.guard if args.guard else args.output
     guard = ''.join([c.upper() if c.isalpha() else '_' for c in guard])
+    guard = 'UI_BASE_IME_' + guard
     out.write('#ifndef {0}_\n#define {0}_\n'.format(guard))
     Assembler(args, parse_tree).Write(out)
     out.write('#endif  // {}_\n'.format(guard))

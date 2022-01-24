@@ -69,8 +69,7 @@ class AdvancedProtectionStatusManagerTest : public TestWithPrefService {
   void MakeOAuthTokenFetchSucceed(const CoreAccountId& account_id,
                                   bool is_under_advanced_protection) {
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-        account_id, "access_token",
-        base::Time::Now() + base::TimeDelta::FromHours(1),
+        account_id, "access_token", base::Time::Now() + base::Hours(1),
         is_under_advanced_protection ? kIdTokenAdvancedProtectionEnabled
                                      : kIdTokenAdvancedProtectionDisabled);
   }
@@ -279,7 +278,7 @@ TEST_F(AdvancedProtectionStatusManagerTest, StayInAdvancedProtection) {
   // Simulate gets refresh token.
   aps_manager.OnGetIDToken(account_id, kIdTokenAdvancedProtectionEnabled);
   EXPECT_GT(
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromMicroseconds(
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
           pref_service_.GetInt64(prefs::kAdvancedProtectionLastRefreshInUs))),
       last_update);
   EXPECT_TRUE(aps_manager.IsRefreshScheduled());
@@ -375,8 +374,7 @@ TEST_F(AdvancedProtectionStatusManagerTest,
                                     /* is_under_advanced_protection = */ true);
   base::RunLoop().RunUntilIdle();
 
-  base::Time last_refresh_time =
-      base::Time::Now() - base::TimeDelta::FromDays(1);
+  base::Time last_refresh_time = base::Time::Now() - base::Days(1);
   pref_service_.SetInt64(
       prefs::kAdvancedProtectionLastRefreshInUs,
       last_refresh_time.ToDeltaSinceWindowsEpoch().InMicroseconds());

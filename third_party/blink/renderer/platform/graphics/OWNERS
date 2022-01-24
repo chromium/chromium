@@ -18,6 +18,9 @@ jonross@chromium.org
 # lowLatency canvas
 mcasas@chromium.org
 
+# canvas and images
+khushalsagar@chromium.org
+
 # Video SurfaceLayer functionality.
 per-file video_frame*=file://media/OWNERS
 per-file surface_layer_bridge*=file://media/OWNERS

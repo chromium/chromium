@@ -183,7 +183,8 @@ class ServiceWorkerContextTest : public ServiceWorkerContextCoreObserver,
 
   // ServiceWorkerContextCoreObserver overrides.
   void OnRegistrationCompleted(int64_t registration_id,
-                               const GURL& scope) override {
+                               const GURL& scope,
+                               const blink::StorageKey& key) override {
     NotificationLog log;
     log.type = REGISTRATION_COMPLETED;
     log.scope = scope;
@@ -191,7 +192,8 @@ class ServiceWorkerContextTest : public ServiceWorkerContextCoreObserver,
     notifications_.push_back(log);
   }
   void OnRegistrationStored(int64_t registration_id,
-                            const GURL& scope) override {
+                            const GURL& scope,
+                            const blink::StorageKey& key) override {
     NotificationLog log;
     log.type = REGISTRATION_STORED;
     log.scope = scope;
@@ -199,7 +201,8 @@ class ServiceWorkerContextTest : public ServiceWorkerContextCoreObserver,
     notifications_.push_back(log);
   }
   void OnRegistrationDeleted(int64_t registration_id,
-                             const GURL& scope) override {
+                             const GURL& scope,
+                             const blink::StorageKey& key) override {
     NotificationLog log;
     log.type = REGISTRATION_DELETED;
     log.scope = scope;
@@ -238,6 +241,11 @@ class RecordableEmbeddedWorkerInstanceClient
       EmbeddedWorkerTestHelper* helper)
       : FakeEmbeddedWorkerInstanceClient(helper) {}
 
+  RecordableEmbeddedWorkerInstanceClient(
+      const RecordableEmbeddedWorkerInstanceClient&) = delete;
+  RecordableEmbeddedWorkerInstanceClient& operator=(
+      const RecordableEmbeddedWorkerInstanceClient&) = delete;
+
   void OnConnectionError() override {
     // Do nothing. This allows the object to stay until the test is over, so
     // |events_| can be accessed even after the worker is stopped in the case of
@@ -262,7 +270,6 @@ class RecordableEmbeddedWorkerInstanceClient
 
  private:
   std::vector<Message> events_;
-  DISALLOW_COPY_AND_ASSIGN(RecordableEmbeddedWorkerInstanceClient);
 };
 
 class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
@@ -291,6 +298,11 @@ class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
   explicit TestServiceWorkerContextObserver(ServiceWorkerContext* context) {
     scoped_observation_.Observe(context);
   }
+
+  TestServiceWorkerContextObserver(const TestServiceWorkerContextObserver&) =
+      delete;
+  TestServiceWorkerContextObserver& operator=(
+      const TestServiceWorkerContextObserver&) = delete;
 
   ~TestServiceWorkerContextObserver() override = default;
 
@@ -392,7 +404,6 @@ class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
   base::ScopedObservation<ServiceWorkerContext, ServiceWorkerContextObserver>
       scoped_observation_{this};
   std::vector<EventLog> events_;
-  DISALLOW_COPY_AND_ASSIGN(TestServiceWorkerContextObserver);
 };
 
 // Make sure OnRegistrationCompleted is called on observer.
@@ -464,8 +475,10 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
 
   ServiceWorkerRemoteContainerEndpoint endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      CreateContainerHostForWindow(helper_->mock_render_process_id(), true,
-                                   context()->AsWeakPtr(), &endpoint);
+      CreateContainerHostForWindow(
+          GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(), &endpoint);
 
   TestServiceWorkerContextObserver observer(context_wrapper());
 
@@ -572,7 +585,8 @@ TEST_F(ServiceWorkerContextTest, OnVersionRunningStatusChangedObserver) {
       /*requesting_frame_id=*/GlobalRenderFrameHostId());
   run_loop.Run();
 
-  context_wrapper()->StopAllServiceWorkersForOrigin(url::Origin::Create(scope));
+  context_wrapper()->StopAllServiceWorkersForStorageKey(
+      blink::StorageKey(url::Origin::Create(scope)));
   base::RunLoop().RunUntilIdle();
 
   std::vector<TestServiceWorkerContextObserver::EventLog> events;
@@ -1071,28 +1085,34 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   remote_endpoints.emplace_back();
   base::WeakPtr<ServiceWorkerContainerHost> container_host1 =
       CreateContainerHostForWindow(
-          kRenderProcessId1, true /* is_parent_frame_secure */,
-          context()->AsWeakPtr(), &remote_endpoints.back());
+          GlobalRenderFrameHostId(kRenderProcessId1,
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+          &remote_endpoints.back());
   container_host1->UpdateUrls(kOrigin1, net::SiteForCookies::FromUrl(kOrigin1),
-                              url::Origin::Create(kOrigin1));
+                              url::Origin::Create(kOrigin1), kKey1);
 
   // Host2 : process_id=2, origin2.
   remote_endpoints.emplace_back();
   base::WeakPtr<ServiceWorkerContainerHost> container_host2 =
       CreateContainerHostForWindow(
-          kRenderProcessId2, true /* is_parent_frame_secure */,
-          context()->AsWeakPtr(), &remote_endpoints.back());
+          GlobalRenderFrameHostId(kRenderProcessId2,
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+          &remote_endpoints.back());
   container_host2->UpdateUrls(kOrigin2, net::SiteForCookies::FromUrl(kOrigin2),
-                              url::Origin::Create(kOrigin2));
+                              url::Origin::Create(kOrigin2), kKey2);
 
   // Host3 : process_id=2, origin1.
   remote_endpoints.emplace_back();
   base::WeakPtr<ServiceWorkerContainerHost> container_host3 =
       CreateContainerHostForWindow(
-          kRenderProcessId2, true /* is_parent_frame_secure */,
-          context()->AsWeakPtr(), &remote_endpoints.back());
+          GlobalRenderFrameHostId(kRenderProcessId2,
+                                  /*mock frame_routing_id=*/1),
+          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
+          &remote_endpoints.back());
   container_host3->UpdateUrls(kOrigin1, net::SiteForCookies::FromUrl(kOrigin1),
-                              url::Origin::Create(kOrigin1));
+                              url::Origin::Create(kOrigin1), kKey1);
 
   // Host4 : process_id=2, origin2, for ServiceWorker.
   blink::mojom::ServiceWorkerRegistrationOptions registration_opt;

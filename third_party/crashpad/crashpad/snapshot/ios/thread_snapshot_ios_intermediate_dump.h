@@ -15,7 +15,6 @@
 #ifndef CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_THREAD_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 #define CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_THREAD_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/ios/memory_snapshot_ios_intermediate_dump.h"
@@ -30,6 +29,12 @@ namespace internal {
 class ThreadSnapshotIOSIntermediateDump final : public ThreadSnapshot {
  public:
   ThreadSnapshotIOSIntermediateDump();
+
+  ThreadSnapshotIOSIntermediateDump(const ThreadSnapshotIOSIntermediateDump&) =
+      delete;
+  ThreadSnapshotIOSIntermediateDump& operator=(
+      const ThreadSnapshotIOSIntermediateDump&) = delete;
+
   ~ThreadSnapshotIOSIntermediateDump() override;
 
   //! \brief Initializes the object.
@@ -67,8 +72,6 @@ class ThreadSnapshotIOSIntermediateDump final : public ThreadSnapshot {
   std::vector<std::unique_ptr<internal::MemorySnapshotIOSIntermediateDump>>
       extra_memory_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSnapshotIOSIntermediateDump);
 };
 
 }  // namespace internal

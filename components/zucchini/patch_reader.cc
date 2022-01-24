@@ -10,6 +10,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "components/zucchini/algorithm.h"
 #include "components/zucchini/crc32.h"
+#include "components/zucchini/element_detection.h"
 
 namespace zucchini {
 
@@ -25,6 +26,12 @@ bool ParseElementMatch(BufferSource* source, ElementMatch* element_match) {
       CastToExecutableType(unsafe_element_header.exe_type);
   if (exe_type == kExeTypeUnknown) {
     LOG(ERROR) << "Invalid ExecutableType found.";
+    return false;
+  }
+  uint16_t element_version = DisassemblerVersionOfType(exe_type);
+  if (element_version != unsafe_element_header.version) {
+    LOG(ERROR) << "Element version doesn't match. Expected: " << element_version
+               << ", Actual:" << unsafe_element_header.version;
     return false;
   }
   if (!unsafe_element_header.old_length || !unsafe_element_header.new_length) {
@@ -332,6 +339,11 @@ bool EnsemblePatchReader::Initialize(BufferSource* source) {
   }
   if (header_.magic != PatchHeader::kMagic) {
     LOG(ERROR) << "Patch contains invalid magic.";
+    return false;
+  }
+  if (header_.major_version != kMajorVersion) {
+    LOG(ERROR) << "Patch major version doesn't match. Expected: "
+               << kMajorVersion << ", Actual:" << header_.major_version;
     return false;
   }
   // |header_| is assumed to be safe from this point forward.

@@ -1,0 +1,4 @@
+# For any other files, defer to ui/gfx/OWNERS.
+
+# Direct Write, fonts and related classes.
+per-file direct_write*=etienneb@chromium.org

@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_NOTIFICATION_PRESENTER_H_
 #define CHROMEOS_COMPONENTS_TETHER_NOTIFICATION_PRESENTER_H_
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/network/network_state.h"
 
@@ -22,6 +21,10 @@ class NotificationPresenter {
   };
 
   NotificationPresenter() {}
+
+  NotificationPresenter(const NotificationPresenter&) = delete;
+  NotificationPresenter& operator=(const NotificationPresenter&) = delete;
+
   virtual ~NotificationPresenter() {}
 
   // Notifies the user that a nearby device can potentially provide a tether
@@ -58,9 +61,6 @@ class NotificationPresenter {
   // Removes the notification created by NotifyConnectionToHostFailed(), or does
   // nothing if that notification is not currently displayed.
   virtual void RemoveConnectionToHostFailedNotification() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationPresenter);
 };
 
 }  // namespace tether

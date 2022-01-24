@@ -7,17 +7,11 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/ios/block_types.h"
-#import "components/bookmarks/browser/bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/activity_services/activity_service_coordinator.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_presentation.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_edit_coordinator.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
-#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
-#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
@@ -28,17 +22,11 @@
 #error "This file requires ARC support."
 #endif
 
-using bookmarks::BookmarkNode;
-
 @interface SharingCoordinator () <ActivityServicePositioner,
                                   ActivityServicePresentation,
-                                  BookmarkEditCoordinatorDelegate,
-                                  BookmarksCommands,
                                   QRGenerationCommands>
 @property(nonatomic, strong)
     ActivityServiceCoordinator* activityServiceCoordinator;
-
-@property(nonatomic, strong) BookmarkEditCoordinator* bookmarkEditCoordinator;
 
 @property(nonatomic, strong) QRGeneratorCoordinator* qrGeneratorCoordinator;
 
@@ -116,7 +104,6 @@ using bookmarks::BookmarkNode;
 
 - (void)stop {
   [self activityServiceDidEndPresenting];
-  [self bookmarkEditDismissed:self.bookmarkEditCoordinator];
   [self hideQRCode];
   self.originView = nil;
 }
@@ -142,61 +129,6 @@ using bookmarks::BookmarkNode;
   self.activityServiceCoordinator = nil;
 }
 
-#pragma mark - BookmarksCommands
-
-- (void)bookmarkPage:(BookmarkAddCommand*)command {
-  DCHECK(command);
-  GURL URL = command.URLs.firstObject.URL;
-  NSString* title = command.URLs.firstObject.title;
-  DCHECK(URL.is_valid());
-
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(browserState);
-  if (!bookmarkModel && bookmarkModel->loaded()) {
-    return;
-  }
-
-  const BookmarkNode* node =
-      bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
-  if (node) {
-    // Trigger the Edit bookmark scenario.
-    [self editBookmark:node];
-  } else {
-    // Add the bookmark and show a snackbar message.
-    id<SnackbarCommands> handler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), SnackbarCommands);
-    BookmarkMediator* mediator = [[BookmarkMediator alloc]
-        initWithBrowserState:self.browser->GetBrowserState()];
-
-    __weak __typeof(self) weakSelf = self;
-    ProceduralBlock editAction = ^{
-      if (!weakSelf || !bookmarkModel) {
-        return;
-      }
-
-      const BookmarkNode* newNode =
-          bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
-      DCHECK(newNode);
-      if (newNode) {
-        [weakSelf editBookmark:newNode];
-      }
-    };
-
-    MDCSnackbarMessage* snackbarMessage =
-        [mediator addBookmarkWithTitle:title URL:URL editAction:editAction];
-    [handler showSnackbarMessage:snackbarMessage];
-  }
-}
-
-#pragma mark - BookmarkEditCoordinatorDelegate
-
-- (void)bookmarkEditDismissed:(BookmarkEditCoordinator*)coordinator {
-  DCHECK(self.bookmarkEditCoordinator == coordinator);
-  [self.bookmarkEditCoordinator stop];
-  self.bookmarkEditCoordinator = nil;
-}
-
 #pragma mark - QRGenerationCommands
 
 - (void)generateQRCode:(GenerateQRCodeCommand*)command {
@@ -212,18 +144,6 @@ using bookmarks::BookmarkNode;
 - (void)hideQRCode {
   [self.qrGeneratorCoordinator stop];
   self.qrGeneratorCoordinator = nil;
-}
-
-#pragma mark - Private Methods
-
-- (void)editBookmark:(const BookmarkNode*)bookmark {
-  self.bookmarkEditCoordinator = [[BookmarkEditCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                        bookmark:bookmark];
-  self.bookmarkEditCoordinator.delegate = self;
-
-  [self.bookmarkEditCoordinator start];
 }
 
 @end

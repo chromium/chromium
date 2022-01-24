@@ -98,6 +98,11 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::FEDERATED_IDENTITY_SHARING, 77},
     {ContentSettingsType::FEDERATED_IDENTITY_REQUEST, 78},
     {ContentSettingsType::JAVASCRIPT_JIT, 79},
+    {ContentSettingsType::HTTP_ALLOWED, 80},
+    {ContentSettingsType::FORMFILL_METADATA, 81},
+    {ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION, 82},
+    {ContentSettingsType::AUTO_DARK_WEB_CONTENT, 83},
+    {ContentSettingsType::REQUEST_DESKTOP_SITE, 84},
 };
 
 }  // namespace
@@ -184,7 +189,8 @@ bool RendererContentSettingRules::IsRendererContentSetting(
          content_type == ContentSettingsType::JAVASCRIPT ||
          content_type == ContentSettingsType::CLIENT_HINTS ||
          content_type == ContentSettingsType::POPUPS ||
-         content_type == ContentSettingsType::MIXEDSCRIPT;
+         content_type == ContentSettingsType::MIXEDSCRIPT ||
+         content_type == ContentSettingsType::AUTO_DARK_WEB_CONTENT;
 }
 
 RendererContentSettingRules::RendererContentSettingRules() {}

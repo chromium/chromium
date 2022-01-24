@@ -13,13 +13,13 @@
 namespace remoting {
 
 // A helper class that stops and unregisters a host.
-class HostStopper : public ServiceClient::Delegate {
+class HostStopper final : public ServiceClient::Delegate {
  public:
   HostStopper(std::unique_ptr<ServiceClient> service_client,
               scoped_refptr<DaemonController> daemon_controller);
   HostStopper(const HostStopper&) = delete;
   HostStopper& operator=(const HostStopper&) = delete;
-  ~HostStopper() final;
+  ~HostStopper() override;
 
   // Stops the host running on the local computer, if any, and unregisters it.
   void StopLocalHost(std::string access_token, base::OnceClosure on_done);

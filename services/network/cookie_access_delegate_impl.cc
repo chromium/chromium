@@ -49,8 +49,8 @@ bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies) const {
   if (cookie_settings_) {
-    return cookie_settings_->ShouldIgnoreSameSiteRestrictions(
-        url, site_for_cookies.RepresentativeUrl());
+    return cookie_settings_->ShouldIgnoreSameSiteRestrictions(url,
+                                                              site_for_cookies);
   }
   return false;
 }

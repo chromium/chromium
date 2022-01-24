@@ -4,7 +4,6 @@
 
 #include "components/sync_user_events/fake_user_event_service.h"
 
-
 using sync_pb::UserEventSpecifics;
 
 namespace syncer {
@@ -12,7 +11,7 @@ namespace syncer {
 FakeUserEventService::FakeUserEventService()
     : fake_controller_delegate_(syncer::USER_EVENTS) {}
 
-FakeUserEventService::~FakeUserEventService() {}
+FakeUserEventService::~FakeUserEventService() = default;
 
 void FakeUserEventService::RecordUserEvent(
     std::unique_ptr<UserEventSpecifics> specifics) {

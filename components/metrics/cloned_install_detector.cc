@@ -12,10 +12,10 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "components/metrics/machine_id_provider.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -115,6 +115,41 @@ bool ClonedInstallDetector::ClonedInstallDetectedInCurrentSession() const {
 void ClonedInstallDetector::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kMetricsResetIds, false);
   registry->RegisterIntegerPref(prefs::kMetricsMachineId, 0);
+  registry->RegisterIntegerPref(prefs::kClonedResetCount, 0);
+  registry->RegisterInt64Pref(prefs::kFirstClonedResetTimestamp, 0);
+  registry->RegisterInt64Pref(prefs::kLastClonedResetTimestamp, 0);
+}
+
+ClonedInstallInfo ClonedInstallDetector::ReadClonedInstallInfo(
+    PrefService* local_state) {
+  return ClonedInstallInfo{
+      .last_reset_timestamp =
+          local_state->GetInt64(prefs::kLastClonedResetTimestamp),
+      .first_reset_timestamp =
+          local_state->GetInt64(prefs::kFirstClonedResetTimestamp),
+      .reset_count = local_state->GetInteger(prefs::kClonedResetCount)};
+}
+
+void ClonedInstallDetector::ClearClonedInstallInfo(PrefService* local_state) {
+  local_state->ClearPref(prefs::kClonedResetCount);
+  local_state->ClearPref(prefs::kFirstClonedResetTimestamp);
+  local_state->ClearPref(prefs::kLastClonedResetTimestamp);
+}
+
+void ClonedInstallDetector::RecordClonedInstallInfo(PrefService* local_state) {
+  ClonedInstallInfo cloned = ReadClonedInstallInfo(local_state);
+
+  // Make sure that at the first time of reset, the first_timestamp matches with
+  // the last_timestamp.
+  int64_t time = base::Time::Now().ToTimeT();
+
+  // Only set |prefs::kFirstClonedResetTimestamp| when the client needs to be
+  // reset due to cloned install for the first time.
+  if (cloned.reset_count == 0) {
+    local_state->SetInt64(prefs::kFirstClonedResetTimestamp, time);
+  }
+  local_state->SetInt64(prefs::kLastClonedResetTimestamp, time);
+  local_state->SetInteger(prefs::kClonedResetCount, cloned.reset_count + 1);
 }
 
 }  // namespace metrics

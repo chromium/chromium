@@ -92,8 +92,7 @@ TEST(FrameBufferPool, DeferredDestruction) {
   EXPECT_EQ(3u, pool->get_pool_size_for_testing());
 
   // Advance some time, but not enough to trigger expiration.
-  test_clock.Advance(
-      base::TimeDelta::FromSeconds(FrameBufferPool::kStaleFrameLimitSecs / 2));
+  test_clock.Advance(base::Seconds(FrameBufferPool::kStaleFrameLimitSecs / 2));
 
   // We should still have 3 frame buffers in the pool at this point.
   frame_release_cb = pool->CreateFrameCallback(priv2);
@@ -102,8 +101,7 @@ TEST(FrameBufferPool, DeferredDestruction) {
   std::move(frame_release_cb).Run();
   EXPECT_EQ(3u, pool->get_pool_size_for_testing());
 
-  test_clock.Advance(
-      base::TimeDelta::FromSeconds(FrameBufferPool::kStaleFrameLimitSecs + 1));
+  test_clock.Advance(base::Seconds(FrameBufferPool::kStaleFrameLimitSecs + 1));
 
   // All but this most recently released frame should remain now.
   frame_release_cb = pool->CreateFrameCallback(priv3);

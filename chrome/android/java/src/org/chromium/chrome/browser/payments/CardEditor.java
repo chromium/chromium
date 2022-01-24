@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.Dropd
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.MethodStrings;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -300,6 +301,9 @@ public class CardEditor
      * @param data Supported method and method specific data. Should not be null.
      */
     public void addAcceptedPaymentMethodIfRecognized(PaymentMethodData data) {
+        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)) {
+            return;
+        }
         assert data != null;
         String method = data.supportedMethod;
         if (MethodStrings.BASIC_CARD.equals(method)) {

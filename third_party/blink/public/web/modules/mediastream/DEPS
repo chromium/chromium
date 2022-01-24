@@ -1,10 +1,11 @@
 include_rules = [
     "+base/compiler_specific.h",
-    "+base/logging.h",
     "+base/gtest_prod_util.h",
+    "+base/logging.h",
     "+base/memory/weak_ptr.h",
-    "+base/single_thread_task_runner.h",
+    "+base/task/single_thread_task_runner.h",
     "+base/synchronization/lock.h",
+    "+base/token.h",
     "+base/threading/thread_checker.h",
     "+build/build_config.h",
     "+media/base",

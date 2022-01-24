@@ -16,7 +16,6 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
@@ -30,6 +29,9 @@ namespace {
 class TestMultiprocessExec final : public MultiprocessExec {
  public:
   TestMultiprocessExec() : MultiprocessExec() {}
+
+  TestMultiprocessExec(const TestMultiprocessExec&) = delete;
+  TestMultiprocessExec& operator=(const TestMultiprocessExec&) = delete;
 
   ~TestMultiprocessExec() {}
 
@@ -45,8 +47,6 @@ class TestMultiprocessExec final : public MultiprocessExec {
     ASSERT_TRUE(LoggingReadFileExactly(ReadPipeHandle(), &c, 1));
     EXPECT_EQ(c, 'Z');
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestMultiprocessExec);
 };
 
 // TODO(tasak): enable this test after making address randomization not to
@@ -95,12 +95,15 @@ CRASHPAD_CHILD_TEST_MAIN(SimpleMultiprocessReturnsNonZero) {
 class TestMultiprocessExecEmpty final : public MultiprocessExec {
  public:
   TestMultiprocessExecEmpty() = default;
+
+  TestMultiprocessExecEmpty(const TestMultiprocessExecEmpty&) = delete;
+  TestMultiprocessExecEmpty& operator=(const TestMultiprocessExecEmpty&) =
+      delete;
+
   ~TestMultiprocessExecEmpty() = default;
 
  private:
   void MultiprocessParent() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TestMultiprocessExecEmpty);
 };
 
 TEST(MultiprocessExec, MultiprocessExecSimpleChildReturnsNonZero) {
@@ -125,12 +128,14 @@ class TestBuiltinTrapTermination final : public MultiprocessExec {
     SetExpectedChildTerminationBuiltinTrap();
   }
 
+  TestBuiltinTrapTermination(const TestBuiltinTrapTermination&) = delete;
+  TestBuiltinTrapTermination& operator=(const TestBuiltinTrapTermination&) =
+      delete;
+
   ~TestBuiltinTrapTermination() = default;
 
  private:
   void MultiprocessParent() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(TestBuiltinTrapTermination);
 };
 
 TEST(MultiprocessExec, BuiltinTrapTermination) {

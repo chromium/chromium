@@ -17,18 +17,18 @@ PluralStringHandler::PluralStringHandler() {}
 PluralStringHandler::~PluralStringHandler() {}
 
 void PluralStringHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getPluralString",
       base::BindRepeating(&PluralStringHandler::HandleGetPluralString,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getPluralStringTupleWithComma",
       base::BindRepeating(
           &PluralStringHandler::HandleGetPluralStringTupleWithComma,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getPluralStringTupleWithPeriods",
       base::BindRepeating(
           &PluralStringHandler::HandleGetPluralStringTupleWithPeriods,

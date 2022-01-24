@@ -59,9 +59,11 @@ public class TabObserverTest {
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTabObserver = new TestTabObserver();
-        mTab = mActivityTestRule.getActivity().getActivityTab();
-        mTab.addObserver(mTabObserver);
-        mActivity = mActivityTestRule.getActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTab = mActivityTestRule.getActivity().getActivityTab();
+            mTab.addObserver(mTabObserver);
+            mActivity = mActivityTestRule.getActivity();
+        });
     }
 
     @Test
@@ -109,7 +111,9 @@ public class TabObserverTest {
     @Test
     @SmallTest
     public void testTabDetach_observerUnregistered() {
-        ThreadUtils.runOnUiThreadBlocking(() -> mTab.updateAttachment(null, null));
-        assertFalse(mTab.hasObserver(mTabObserver));
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mTab.updateAttachment(null, null);
+            assertFalse(mTab.hasObserver(mTabObserver));
+        });
     }
 }

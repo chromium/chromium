@@ -2,27 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, Module, ModuleRegistry, ModulesElement, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, Module, ModuleDescriptor, ModuleRegistry, ModulesElement, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 import {fakeMetricsPrivate, MetricsTracker} from '../metrics_test_support.js';
-import {assertNotStyle, assertStyle, createMock} from '../test_support.js';
-
-/** @return {!TestBrowserProxy} */
-function installMockHandler() {
-  const {mock, callTracker} = createMock(newTabPage.mojom.PageHandlerRemote);
-  NewTabPageProxy.setInstance(mock, new newTabPage.mojom.PageCallbackRouter());
-  return callTracker;
-}
-
-/** @return {!TestBrowserProxy} */
-function installMockModuleRegistry() {
-  const {mock, callTracker} = createMock(ModuleRegistry);
-  ModuleRegistry.setInstance(mock);
-  return callTracker;
-}
+import {assertNotStyle, assertStyle, createElement, initNullModule, installMock} from '../test_support.js';
 
 suite('NewTabPageModulesModulesTest', () => {
   /** @type {!TestBrowserProxy} */
@@ -40,8 +26,11 @@ suite('NewTabPageModulesModulesTest', () => {
   setup(async () => {
     document.body.innerHTML = '';
     metrics = fakeMetricsPrivate();
-    handler = installMockHandler();
-    moduleRegistry = installMockModuleRegistry();
+    handler = installMock(
+        newTabPage.mojom.PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(
+            mock, new newTabPage.mojom.PageCallbackRouter()));
+    moduleRegistry = installMock(ModuleRegistry);
     callbackRouterRemote = NewTabPageProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
   });
@@ -61,33 +50,47 @@ suite('NewTabPageModulesModulesTest', () => {
 
   [true, false].forEach(visible => {
     test(`modules rendered if visibility ${visible}`, async () => {
+      const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
+      const barDescriptor = new ModuleDescriptor('bar', 'Bar', initNullModule);
+      const bazDescriptor = new ModuleDescriptor('baz', 'Baz', initNullModule);
+      moduleRegistry.setResultFor(
+          'getDescriptors', [fooDescriptor, barDescriptor, bazDescriptor]);
       // Act.
       const modulesElement = await createModulesElement([
         {
-          descriptor: {id: 'foo'},
-          element: document.createElement('div'),
+          descriptor: fooDescriptor,
+          element: createElement(),
         },
         {
-          descriptor: {id: 'bar'},
-          element: document.createElement('div'),
+          descriptor: barDescriptor,
+          element: createElement(),
         }
       ]);
-      callbackRouterRemote.setDisabledModules(!visible, ['bar']);
+      callbackRouterRemote.setDisabledModules(
+          !visible, [barDescriptor.id, bazDescriptor.id]);
       await callbackRouterRemote.$.flushForTesting();
 
       // Assert.
       const moduleWrappers =
           modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
+      const moduleWrapperContainers =
+          modulesElement.shadowRoot.querySelectorAll('.module-container');
       assertEquals(2, moduleWrappers.length);
+      assertEquals(2, moduleWrapperContainers.length);
+      assertNotStyle(moduleWrappers[0], 'display', 'none');
       if (visible) {
-        assertNotStyle(moduleWrappers[0], 'display', 'none');
+        assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
       } else {
-        assertStyle(moduleWrappers[0], 'display', 'none');
+        assertStyle(moduleWrapperContainers[0], 'display', 'none');
       }
-      assertStyle(moduleWrappers[1], 'display', 'none');
+      assertNotStyle(moduleWrappers[1], 'display', 'none');
+      assertStyle(moduleWrapperContainers[1], 'display', 'none');
+      assertNotStyle(moduleWrappers[0], 'cursor', 'grab');
+      assertNotStyle(moduleWrappers[1], 'cursor', 'grab');
       const histogram = 'NewTabPage.Modules.EnabledOnNTPLoad';
       assertEquals(1, metrics.count(`${histogram}.foo`, visible));
       assertEquals(1, metrics.count(`${histogram}.bar`, false));
+      assertEquals(1, metrics.count(`${histogram}.baz`, false));
       assertEquals(
           1, metrics.count('NewTabPage.Modules.VisibleOnNTPLoad', visible));
       assertEquals(1, handler.getCallCount('updateDisabledModules'));
@@ -98,12 +101,14 @@ suite('NewTabPageModulesModulesTest', () => {
   test('modules can be dismissed and restored', async () => {
     // Arrange.
     let restoreCalled = false;
+    const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
+    moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
 
     // Act.
     const modulesElement = await createModulesElement([
       {
-        descriptor: {id: 'foo'},
-        element: document.createElement('div'),
+        descriptor: fooDescriptor,
+        element: createElement(),
       },
     ]);
     callbackRouterRemote.setDisabledModules(false, []);
@@ -112,8 +117,12 @@ suite('NewTabPageModulesModulesTest', () => {
     // Assert.
     const moduleWrappers =
         modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
+    const moduleWrapperContainers =
+        modulesElement.shadowRoot.querySelectorAll('.module-container');
     assertEquals(1, moduleWrappers.length);
+    assertEquals(1, moduleWrapperContainers.length);
     assertNotStyle(moduleWrappers[0], 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
     assertFalse($$(modulesElement, '#removeModuleToast').open);
 
     // Act.
@@ -129,7 +138,8 @@ suite('NewTabPageModulesModulesTest', () => {
     }));
 
     // Assert.
-    assertStyle(moduleWrappers[0], 'display', 'none');
+    assertNotStyle(moduleWrappers[0], 'display', 'none');
+    assertStyle(moduleWrapperContainers[0], 'display', 'none');
     assertTrue($$(modulesElement, '#removeModuleToast').open);
     assertEquals(
         'Foo',
@@ -143,6 +153,7 @@ suite('NewTabPageModulesModulesTest', () => {
 
     // Assert.
     assertNotStyle(moduleWrappers[0], 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
     assertFalse($$(modulesElement, '#removeModuleToast').open);
     assertTrue(restoreCalled);
     assertEquals('foo', handler.getArgs('onRestoreModule')[0]);
@@ -151,14 +162,13 @@ suite('NewTabPageModulesModulesTest', () => {
   test('modules can be disabled and restored', async () => {
     // Arrange.
     let restoreCalled = false;
+    const fooDescriptor = new ModuleDescriptor('foo', 'bar', initNullModule);
+    moduleRegistry.setResultFor('getDescriptors', [fooDescriptor]);
 
     // Act.
     const modulesElement = await createModulesElement([{
-      descriptor: {
-        id: 'foo',
-        name: 'bar',
-      },
-      element: document.createElement('div'),
+      descriptor: fooDescriptor,
+      element: createElement(),
     }]);
     callbackRouterRemote.setDisabledModules(false, []);
     await callbackRouterRemote.$.flushForTesting();
@@ -166,8 +176,12 @@ suite('NewTabPageModulesModulesTest', () => {
     // Assert.
     const moduleWrappers =
         modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
+    const moduleWrapperContainers =
+        modulesElement.shadowRoot.querySelectorAll('.module-container');
     assertEquals(1, moduleWrappers.length);
+    assertEquals(1, moduleWrapperContainers.length);
     assertNotStyle(moduleWrappers[0], 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
     assertFalse($$(modulesElement, '#removeModuleToast').open);
 
     // Act.
@@ -190,7 +204,8 @@ suite('NewTabPageModulesModulesTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     // Assert.
-    assertStyle(moduleWrappers[0], 'display', 'none');
+    assertNotStyle(moduleWrappers[0], 'display', 'none');
+    assertStyle(moduleWrapperContainers[0], 'display', 'none');
     assertTrue($$(modulesElement, '#removeModuleToast').open);
     assertEquals(
         'Foo',
@@ -212,6 +227,7 @@ suite('NewTabPageModulesModulesTest', () => {
 
     // Assert.
     assertNotStyle(moduleWrappers[0], 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
     assertFalse($$(modulesElement, '#removeModuleToast').open);
     assertTrue(restoreCalled);
     assertEquals(1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));
@@ -233,26 +249,32 @@ suite('NewTabPageModulesModulesTest', () => {
       });
     });
 
-    test('drag first module to third position', async () => {
+    test('drag first module to third then second position', async () => {
       // Arrange.
       const moduleArray = [];
       for (let i = 0; i < 3; ++i) {
-        let module = document.createElement('div');
+        let module = createElement();
         module.style.height = `300px`;
         module.style.width = `300px`;
         moduleArray.push(module);
       }
+      const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
+      const barDescriptor = new ModuleDescriptor('bar', 'Bar', initNullModule);
+      const fooBarDescriptor =
+          new ModuleDescriptor('foo bar', 'Foo Baz', initNullModule);
+      moduleRegistry.setResultFor(
+          'getDescriptors', [fooDescriptor, barDescriptor, fooBarDescriptor]);
       const modulesElement = await createModulesElement([
         {
-          descriptor: {id: 'foo'},
+          descriptor: fooDescriptor,
           element: moduleArray[0],
         },
         {
-          descriptor: {id: 'bar'},
+          descriptor: barDescriptor,
           element: moduleArray[1],
         },
         {
-          descriptor: {id: 'foo bar'},
+          descriptor: fooBarDescriptor,
           element: moduleArray[2],
         },
       ]);
@@ -267,6 +289,9 @@ suite('NewTabPageModulesModulesTest', () => {
       assertTrue(!!firstModule);
       assertTrue(!!secondModule);
       assertTrue(!!thirdModule);
+      assertStyle(firstModule, 'cursor', 'grab');
+      assertStyle(secondModule, 'cursor', 'grab');
+      assertStyle(thirdModule, 'cursor', 'grab');
 
       const firstPositionRect = moduleWrappers[0].getBoundingClientRect();
       const secondPositionRect = moduleWrappers[1].getBoundingClientRect();
@@ -275,15 +300,15 @@ suite('NewTabPageModulesModulesTest', () => {
       const startX = firstPositionRect.x + firstPositionRect.width / 2;
       const startY = firstPositionRect.y + firstPositionRect.height / 2;
       let changeX = 10;
-      let changeY = firstPositionRect.height;
+      let changeY = 2 * firstPositionRect.height;
 
       // Act.
-      firstModule.dispatchEvent(new DragEvent('dragstart', {
+      firstModule.dispatchEvent(new MouseEvent('mousedown', {
         clientX: startX,
         clientY: startY,
       }));
 
-      document.dispatchEvent(new DragEvent('dragover', {
+      document.dispatchEvent(new MouseEvent('mousemove', {
         clientX: startX + changeX,
         clientY: startY + changeY,
       }));
@@ -295,37 +320,26 @@ suite('NewTabPageModulesModulesTest', () => {
           firstPositionRect.y + changeY, firstModule.getBoundingClientRect().y);
 
       // Act.
-      secondModule.dispatchEvent(new DragEvent('dragenter'));
+      thirdModule.dispatchEvent(new MouseEvent('mouseover'));
 
       // Assert.
       moduleWrappers = Array.from(
           modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
       assertEquals(0, moduleWrappers.indexOf(secondModule));
-      assertEquals(1, moduleWrappers.indexOf(firstModule));
-      assertEquals(2, moduleWrappers.indexOf(thirdModule));
-      assertEquals(firstPositionRect.x, secondModule.getBoundingClientRect().x);
-      assertEquals(firstPositionRect.y, secondModule.getBoundingClientRect().y);
+      assertEquals(1, moduleWrappers.indexOf(thirdModule));
+      assertEquals(2, moduleWrappers.indexOf(firstModule));
+      assertEquals(secondPositionRect.x, secondModule.getBoundingClientRect().x);
+      assertEquals(secondPositionRect.y, secondModule.getBoundingClientRect().y);
       assertEquals(thirdPositionRect.x, thirdModule.getBoundingClientRect().x);
       assertEquals(thirdPositionRect.y, thirdModule.getBoundingClientRect().y);
 
-      // Act.
-      changeX += 5;
-      changeY += firstPositionRect.height;
-      document.dispatchEvent(new DragEvent('dragover', {
-        clientX: startX + changeX,
-        clientY: startY + changeY,
-      }));
+      assertEquals(1, secondModule.getAnimations().length);
+      assertEquals(1, thirdModule.getAnimations().length);
+      secondModule.getAnimations()[0].finish();
+      thirdModule.getAnimations()[0].finish();
+      assertEquals(0, secondModule.getAnimations().length);
+      assertEquals(0, thirdModule.getAnimations().length);
 
-      // Assert.
-      assertEquals(
-          firstPositionRect.x + changeX, firstModule.getBoundingClientRect().x);
-      assertEquals(
-          firstPositionRect.y + changeY, firstModule.getBoundingClientRect().y);
-
-      // Act.
-      thirdModule.dispatchEvent(new DragEvent('dragenter'));
-
-      // Assert.
       moduleWrappers = Array.from(
           modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
       assertEquals(0, moduleWrappers.indexOf(secondModule));
@@ -337,14 +351,67 @@ suite('NewTabPageModulesModulesTest', () => {
       assertEquals(secondPositionRect.y, thirdModule.getBoundingClientRect().y);
 
       // Act.
-      document.dispatchEvent(new DragEvent('dragend'));
+      changeX += 5;
+      changeY -= firstPositionRect.height;
+      document.dispatchEvent(new MouseEvent('mousemove', {
+        clientX: startX + changeX,
+        clientY: startY + changeY,
+      }));
+
+      // Assert.
+      assertEquals(
+          firstPositionRect.x + changeX, firstModule.getBoundingClientRect().x);
+      assertEquals(
+          firstPositionRect.y + changeY, firstModule.getBoundingClientRect().y);
+
+      // Act.
+      thirdModule.dispatchEvent(new MouseEvent('mouseover'));
 
       // Assert.
       moduleWrappers = Array.from(
           modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
-      assertEquals(2, moduleWrappers.indexOf(firstModule));
-      assertEquals(thirdPositionRect.x, firstModule.getBoundingClientRect().x);
-      assertEquals(thirdPositionRect.y, firstModule.getBoundingClientRect().y);
+      assertEquals(0, moduleWrappers.indexOf(secondModule));
+      assertEquals(1, moduleWrappers.indexOf(firstModule));
+      assertEquals(2, moduleWrappers.indexOf(thirdModule));
+      assertEquals(firstPositionRect.x, secondModule.getBoundingClientRect().x);
+      assertEquals(firstPositionRect.y, secondModule.getBoundingClientRect().y);
+      assertEquals(secondPositionRect.x, thirdModule.getBoundingClientRect().x);
+      assertEquals(secondPositionRect.y, thirdModule.getBoundingClientRect().y);
+
+      assertEquals(1, secondModule.getAnimations().length);
+      assertEquals(1, thirdModule.getAnimations().length);
+      secondModule.getAnimations()[0].finish();
+      thirdModule.getAnimations()[0].finish();
+      assertEquals(0, secondModule.getAnimations().length);
+      assertEquals(0, thirdModule.getAnimations().length);
+
+      moduleWrappers = Array.from(
+          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
+      assertEquals(0, moduleWrappers.indexOf(secondModule));
+      assertEquals(1, moduleWrappers.indexOf(firstModule));
+      assertEquals(2, moduleWrappers.indexOf(thirdModule));
+      assertEquals(firstPositionRect.x, secondModule.getBoundingClientRect().x);
+      assertEquals(firstPositionRect.y, secondModule.getBoundingClientRect().y);
+      assertEquals(thirdPositionRect.x, thirdModule.getBoundingClientRect().x);
+      assertEquals(thirdPositionRect.y, thirdModule.getBoundingClientRect().y);
+
+      // Act.
+      document.dispatchEvent(new MouseEvent('mouseup'));
+
+      // Assert.
+      moduleWrappers = Array.from(
+          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
+      assertEquals(1, moduleWrappers.indexOf(firstModule));
+
+      assertEquals(1, firstModule.getAnimations().length);
+      firstModule.getAnimations()[0].finish();
+      assertEquals(0, firstModule.getAnimations().length);
+
+      moduleWrappers = Array.from(
+          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
+      assertEquals(1, moduleWrappers.indexOf(firstModule));
+      assertEquals(secondPositionRect.x, firstModule.getBoundingClientRect().x);
+      assertEquals(secondPositionRect.y, firstModule.getBoundingClientRect().y);
     });
   });
 });

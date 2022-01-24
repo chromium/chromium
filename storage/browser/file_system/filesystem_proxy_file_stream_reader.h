@@ -60,7 +60,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FilesystemProxyFileStreamReader
   // Callbacks that are chained from Open for Read.
   void DidVerifyForOpen(net::CompletionOnceCallback callback,
                         int64_t get_length_result);
-  void DidOpenFile(FileErrorOr<base::File> result);
+  void DidOpenFile(base::FileErrorOr<base::File> result);
 
   void DidSeekFileStream(int64_t seek_result);
   void DidOpenForRead(net::IOBuffer* buf,
@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FilesystemProxyFileStreamReader
   void OnRead(int read_result);
 
   void DidGetFileInfoForGetLength(net::Int64CompletionOnceCallback callback,
-                                  FileErrorOr<base::File::Info> result);
+                                  base::FileErrorOr<base::File::Info> result);
 
   net::CompletionOnceCallback callback_;
   scoped_refptr<base::TaskRunner> task_runner_;

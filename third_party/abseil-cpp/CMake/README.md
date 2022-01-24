@@ -34,21 +34,60 @@ to include Abseil directly in your CMake project.
 4. Add the **absl::** target you wish to use to the
 [`target_link_libraries()`](https://cmake.org/cmake/help/latest/command/target_link_libraries.html)
 section of your executable or of your library.<br>
-Here is a short CMakeLists.txt example of a project file using Abseil.
+Here is a short CMakeLists.txt example of an application project using Abseil.
 
 ```cmake
-cmake_minimum_required(VERSION 3.5)
-project(my_project)
+cmake_minimum_required(VERSION 3.8.2)
+project(my_app_project)
 
 # Pick the C++ standard to compile with.
 # Abseil currently supports C++11, C++14, and C++17.
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(abseil-cpp)
 
 add_executable(my_exe source.cpp)
 target_link_libraries(my_exe absl::base absl::synchronization absl::strings)
 ```
+
+Note that if you are developing a library designed for use by other clients, you
+should instead leave `CMAKE_CXX_STANDARD` unset (or only set if being built as
+the current top-level CMake project) and configure the minimum required C++
+standard at the target level. If you require a later minimum C++ standard than
+Abseil does, it's a good idea to also enforce that `CMAKE_CXX_STANDARD` (which
+will control Abseil library targets) is set to at least that minimum. For
+example:
+
+```cmake
+cmake_minimum_required(VERSION 3.8.2)
+project(my_lib_project)
+
+# Leave C++ standard up to the root application, so set it only if this is the
+# current top-level CMake project.
+if(CMAKE_SOURCE_DIR STREQUAL my_lib_project_SOURCE_DIR)
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
+
+add_subdirectory(abseil-cpp)
+
+add_library(my_lib source.cpp)
+target_link_libraries(my_lib absl::base absl::synchronization absl::strings)
+
+# Enforce that my_lib requires C++17. Important to document for clients that they
+# must set CMAKE_CXX_STANDARD to 17 or higher for proper Abseil ABI compatibility
+# (since otherwise, Abseil library targets could be compiled with a lower C++
+# standard than my_lib).
+target_compile_features(my_lib PUBLIC cxx_std_17)
+if(CMAKE_CXX_STANDARD LESS 17)
+  message(FATAL_ERROR
+      "my_lib_project requires CMAKE_CXX_STANDARD >= 17 (got: ${CMAKE_CXX_STANDARD})")
+endif()
+```
+
+Then the top-level application project that uses your library is responsible for
+setting a consistent `CMAKE_CXX_STANDARD` that is sufficiently high.
 
 ### Running Abseil Tests with CMake
 

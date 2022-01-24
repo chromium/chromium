@@ -55,7 +55,7 @@ base::flat_set<GURL> GetDeletedOrigins(
 
 bool Contains(const base::flat_set<GURL>& deleted_origins,
               const GURL& template_gurl) {
-  return deleted_origins.contains(template_gurl.GetOrigin());
+  return deleted_origins.contains(template_gurl.DeprecatedGetOriginAsURL());
 }
 
 void DeleteTemplateUrlsForTimeRange(TemplateURLService* keywords_model,

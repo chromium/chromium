@@ -132,24 +132,28 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, Javascript) {
                nullptr);
   UpdateProviderPolicy(policies);
   // Reload the page.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   EXPECT_FALSE(IsJavascriptEnabled(contents));
   // Developer tools still work when javascript is disabled.
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_DEV_TOOLS));
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_DEV_TOOLS_CONSOLE));
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_DEV_TOOLS_DEVICES));
   // Javascript is always enabled for the internal pages.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL)));
   EXPECT_TRUE(IsJavascriptEnabled(contents));
 
   // The javascript content setting policy overrides the javascript policy.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   EXPECT_FALSE(IsJavascriptEnabled(contents));
   policies.Set(key::kDefaultJavaScriptSetting, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(CONTENT_SETTING_ALLOW), nullptr);
   UpdateProviderPolicy(policies);
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   EXPECT_TRUE(IsJavascriptEnabled(contents));
 }
 
@@ -178,9 +182,9 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothPolicyTest, Block) {
   // Navigate to a secure context.
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("localhost", "/simple_page.html"));
+      embedded_test_server()->GetURL("localhost", "/simple_page.html")));
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_THAT(
@@ -344,7 +348,7 @@ IN_PROC_BROWSER_TEST_P(ScrollToTextFragmentPolicyTest, RunPolicyTest) {
   GURL target_text_url(embedded_test_server()->GetURL(
       "/scroll/scrollable_page_with_content.html#:~:text=text"));
 
-  ui_test_utils::NavigateToURL(browser(), target_text_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), target_text_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(contents));
@@ -424,9 +428,9 @@ IN_PROC_BROWSER_TEST_F(SensorsPolicyTest, BlockSensorApi) {
   // Navigate to a secure context.
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("localhost", "/simple_page.html"));
+      embedded_test_server()->GetURL("localhost", "/simple_page.html")));
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_THAT(

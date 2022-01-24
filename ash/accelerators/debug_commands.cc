@@ -10,6 +10,7 @@
 #include "ash/accelerators/accelerator_commands.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/hud_display/hud_display.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/debug_utils.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/shell.h"
@@ -25,9 +26,9 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -73,7 +74,7 @@ gfx::ImageSkia CreateWallpaperImage(SkColor fill, SkColor rect) {
 void HandleToggleWallpaperMode() {
   static int index = 0;
   auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
-  WallpaperInfo info("", WALLPAPER_LAYOUT_STRETCH, DEFAULT,
+  WallpaperInfo info("", WALLPAPER_LAYOUT_STRETCH, WallpaperType::kDefault,
                      base::Time::Now().LocalMidnight());
   switch (++index % 4) {
     case 0:
@@ -151,6 +152,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
     return;
 
   switch (action) {
+    case DEBUG_MICROPHONE_MUTE_TOGGLE:
+      accelerators::MicrophoneMuteToggle();
+      break;
     case DEBUG_PRINT_LAYER_HIERARCHY:
       HandlePrintLayerHierarchy();
       break;

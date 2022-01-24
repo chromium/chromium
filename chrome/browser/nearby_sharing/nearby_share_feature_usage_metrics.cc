@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/nearby_share_feature_usage_metrics.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "components/prefs/pref_service.h"
 
@@ -18,28 +19,6 @@ NearbyShareFeatureUsageMetrics::NearbyShareFeatureUsageMetrics(
 
 NearbyShareFeatureUsageMetrics::~NearbyShareFeatureUsageMetrics() = default;
 
-NearbyShareFeatureUsageMetrics::NearbyShareEnabledState
-NearbyShareFeatureUsageMetrics::GetNearbyShareEnabledState() const {
-  bool is_enabled =
-      pref_service_->GetBoolean(prefs::kNearbySharingEnabledPrefName);
-  bool is_managed =
-      pref_service_->IsManagedPreference(prefs::kNearbySharingEnabledPrefName);
-  bool is_onboarded = pref_service_->GetBoolean(
-      prefs::kNearbySharingOnboardingCompletePrefName);
-
-  if (is_enabled) {
-    return is_onboarded ? NearbyShareEnabledState::kEnabledAndOnboarded
-                        : NearbyShareEnabledState::kEnabledAndNotOnboarded;
-  }
-
-  if (is_managed) {
-    return NearbyShareEnabledState::kDisallowedByPolicy;
-  }
-
-  return is_onboarded ? NearbyShareEnabledState::kDisabledAndOnboarded
-                      : NearbyShareEnabledState::kDisabledAndNotOnboarded;
-}
-
 void NearbyShareFeatureUsageMetrics::RecordUsage(bool success) {
   feature_usage_metrics_.RecordUsage(success);
 }
@@ -51,7 +30,7 @@ bool NearbyShareFeatureUsageMetrics::IsEligible() const {
 }
 
 bool NearbyShareFeatureUsageMetrics::IsEnabled() const {
-  switch (GetNearbyShareEnabledState()) {
+  switch (GetNearbyShareEnabledState(pref_service_)) {
     case NearbyShareEnabledState::kEnabledAndOnboarded:
     case NearbyShareEnabledState::kEnabledAndNotOnboarded:
       return true;

@@ -4,6 +4,8 @@
 
 module chromeos.secure_channel.mojom;
 
+import "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom";
+
 // Service ID to use. Nearby Connections requires a service ID to be associated
 // with each connection request.
 const string kServiceId = "secure_channel";
@@ -20,6 +22,19 @@ interface NearbyMessageReceiver {
   OnMessageReceived(string message);
 };
 
+// Registers incoming file transfers over a Nearby Connection, and allows
+// callers to listen to progress information about those transfers.
+interface NearbyFilePayloadHandler {
+  // Registers |payload_files| to receive an incoming file transfer with
+  // the given |payload_id|. Callers can listen to progress information about
+  // the transfer through the |listener|. Returns whether the file was
+  // successfully registered.
+  RegisterPayloadFile(int64 payload_id,
+                      PayloadFiles payload_files,
+                      pending_remote<FilePayloadListener> listener)
+      => (bool success);
+};
+
 // Provides an interface to make a SecureChannel connection over the Nearby
 // Connections library. This is called from the SecureChannel service (which
 // runs in the browser process) into non-service browser process code, where
@@ -30,9 +45,9 @@ interface NearbyConnector {
   // |kServiceId| as the service ID for the connection and |eid| as the data
   // sent in the connection initiation attempt. The EID is the same EID that
   // was detected in the remote device's BLE advertisement. If the attempt
-  // succeeds, a NearbyMessageSender is returned to the caller, enabling the
-  // caller to send messages over the connection. If the attempt fails, null
-  // is returned.
+  // succeeds, a NearbyMessageSender and a NearbyFilePayloadHandler are returned
+  // to the caller, enabling the caller to send messages and register incoming
+  // file transfers over the connection. If the attempt fails, null is returned.
   //
   // To disconnect an active connection, disconnect either |message_receiver| or
   // |message_sender|. If the remote device disconnects an active connection,
@@ -41,6 +56,7 @@ interface NearbyConnector {
   Connect(array<uint8, 6> bluetooth_public_address,
           array<uint8, 2> eid,
           pending_remote<NearbyMessageReceiver> message_receiver) =>
-      (pending_remote<NearbyMessageSender>? message_sender);
+      (pending_remote<NearbyMessageSender>? message_sender,
+       pending_remote<NearbyFilePayloadHandler>? file_payload_handler);
 };
 

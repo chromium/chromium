@@ -15,6 +15,10 @@ class URLLoaderInterceptor;
 class ProxyBrowserTest : public InProcessBrowserTest {
  public:
   ProxyBrowserTest();
+
+  ProxyBrowserTest(const ProxyBrowserTest&) = delete;
+  ProxyBrowserTest& operator=(const ProxyBrowserTest&) = delete;
+
   ~ProxyBrowserTest() override;
 
   // InProcessBrowserTest::
@@ -27,7 +31,6 @@ class ProxyBrowserTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
-  DISALLOW_COPY_AND_ASSIGN(ProxyBrowserTest);
 };
 
 #endif  // CHROME_BROWSER_NET_PROXY_TEST_UTILS_H_

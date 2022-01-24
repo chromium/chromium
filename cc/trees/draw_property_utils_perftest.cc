@@ -37,7 +37,7 @@ class DrawPropertyUtilsPerfTest : public LayerTreeTest {
  public:
   DrawPropertyUtilsPerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   void ReadTestFile(const std::string& name) {

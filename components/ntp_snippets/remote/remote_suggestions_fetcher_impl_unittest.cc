@@ -168,7 +168,7 @@ void ParseJsonDelayed(const std::string& json,
       FROM_HERE,
       base::BindOnce(&ParseJson, json, std::move(success_callback),
                      std::move(error_callback)),
-      base::TimeDelta::FromMilliseconds(kTestJsonParsingLatencyMs));
+      base::Milliseconds(kTestJsonParsingLatencyMs));
 }
 
 }  // namespace
@@ -187,6 +187,10 @@ class RemoteSuggestionsFetcherImplTest : public testing::Test {
         utils_.pref_service(), base::DefaultClock::GetInstance());
     ResetFetcher();
   }
+  RemoteSuggestionsFetcherImplTest(const RemoteSuggestionsFetcherImplTest&) =
+      delete;
+  RemoteSuggestionsFetcherImplTest& operator=(
+      const RemoteSuggestionsFetcherImplTest&) = delete;
 
   ~RemoteSuggestionsFetcherImplTest() override {}
 
@@ -274,8 +278,6 @@ class RemoteSuggestionsFetcherImplTest : public testing::Test {
   MockSnippetsAvailableCallback mock_callback_;
   GURL test_url_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsFetcherImplTest);
 };
 
 TEST_F(RemoteSuggestionsFetcherImplTest, ShouldNotFetchOnCreation) {

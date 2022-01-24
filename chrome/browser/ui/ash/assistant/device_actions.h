@@ -24,6 +24,10 @@ class DeviceActions : public ash::AndroidIntentHelper,
                       public ArcAppListPrefs::Observer {
  public:
   explicit DeviceActions(std::unique_ptr<DeviceActionsDelegate> delegate);
+
+  DeviceActions(const DeviceActions&) = delete;
+  DeviceActions& operator=(const DeviceActions&) = delete;
+
   ~DeviceActions() override;
 
   // chromeos::assistant::DeviceActions overrides:
@@ -61,7 +65,6 @@ class DeviceActions : public ash::AndroidIntentHelper,
       scoped_prefs_observations_{this};
   base::ObserverList<chromeos::assistant::AppListEventSubscriber>
       app_list_subscribers_;
-  DISALLOW_COPY_AND_ASSIGN(DeviceActions);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_DEVICE_ACTIONS_H_

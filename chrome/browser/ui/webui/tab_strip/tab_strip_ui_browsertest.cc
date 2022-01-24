@@ -9,6 +9,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -48,9 +49,10 @@ class MockTabStripUIEmbedder : public TabStripUIEmbedder {
   MOCK_METHOD0(CloseContextMenu, void());
   MOCK_METHOD3(ShowEditDialogForGroupAtPoint,
                void(gfx::Point, gfx::Rect, tab_groups::TabGroupId));
+  MOCK_METHOD0(HideEditDialogForGroup, void());
   MOCK_METHOD0(GetLayout, TabStripUILayout());
   MOCK_CONST_METHOD1(GetColor, SkColor(int));
-  MOCK_CONST_METHOD1(GetSystemColor, SkColor(ui::NativeTheme::ColorId));
+  MOCK_CONST_METHOD1(GetColorProviderColor, SkColor(ui::ColorId));
 };
 
 }  // namespace
@@ -105,7 +107,17 @@ const std::string TabStripUIBrowserTest::tab_query_js(
     "    .shadowRoot.querySelector('tabstrip-tab')"
     "    .shadowRoot.querySelector('#tab')");
 
-IN_PROC_BROWSER_TEST_F(TabStripUIBrowserTest, ActivatingTabClosesEmbedder) {
+// https://crbug.com/1246369: Test is flaky on Linux/Windows, disabled for
+// investigation.
+// https://crbug.com/1263485: Also flaky on chromeos.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
+#define MAYBE_ActivatingTabClosesEmbedder DISABLED_ActivatingTabClosesEmbedder
+#else
+#define MAYBE_ActivatingTabClosesEmbedder ActivatingTabClosesEmbedder
+#endif
+
+IN_PROC_BROWSER_TEST_F(TabStripUIBrowserTest,
+                       MAYBE_ActivatingTabClosesEmbedder) {
   const std::string activate_tab_js = tab_query_js + ".click()";
 
   EXPECT_CALL(mock_embedder_, CloseContainer()).Times(1);

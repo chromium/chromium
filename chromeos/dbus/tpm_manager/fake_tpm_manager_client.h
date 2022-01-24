@@ -32,6 +32,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) FakeTpmManagerClient
       GetTpmNonsensitiveStatusCallback callback) override;
   void GetVersionInfo(const ::tpm_manager::GetVersionInfoRequest& request,
                       GetVersionInfoCallback callback) override;
+  void GetSupportedFeatures(
+      const ::tpm_manager::GetSupportedFeaturesRequest& request,
+      GetSupportedFeaturesCallback callback) override;
   void GetDictionaryAttackInfo(
       const ::tpm_manager::GetDictionaryAttackInfoRequest& request,
       GetDictionaryAttackInfoCallback callback) override;
@@ -50,6 +53,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) FakeTpmManagerClient
   mutable_nonsensitive_status_reply() override;
   void set_non_nonsensitive_status_dbus_error_count(int count) override;
   ::tpm_manager::GetVersionInfoReply* mutable_version_info_reply() override;
+  ::tpm_manager::GetSupportedFeaturesReply* mutable_supported_features_reply()
+      override;
   ::tpm_manager::GetDictionaryAttackInfoReply*
   mutable_dictionary_attack_info_reply() override;
   int take_ownership_count() const override;
@@ -60,6 +65,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) FakeTpmManagerClient
   ::tpm_manager::GetTpmNonsensitiveStatusReply nonsensitive_status_reply_;
   int nonsensitive_status_dbus_error_count_ = 0;
   ::tpm_manager::GetVersionInfoReply version_info_reply_;
+  ::tpm_manager::GetSupportedFeaturesReply supported_features_reply_;
   ::tpm_manager::GetDictionaryAttackInfoReply dictionary_attack_info_reply_;
   int take_ownership_count_ = 0;
   int clear_stored_owner_password_count_ = 0;

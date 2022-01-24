@@ -9,13 +9,12 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 
 namespace policy {
-class BrowserPolicyConnectorChromeOS;
+class BrowserPolicyConnectorAsh;
 }
 
 namespace user_manager {
@@ -55,17 +54,18 @@ class DeviceDisablingManager {
 
   class Observer {
    public:
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer();
 
     virtual void OnDisabledMessageChanged(
         const std::string& disabled_message) = 0;
-
-   private:
-    DISALLOW_ASSIGN(Observer);
   };
 
   class Delegate {
    public:
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate();
 
     // Terminate the current session (if any) and restart Chrome to show the
@@ -74,15 +74,16 @@ class DeviceDisablingManager {
 
     // Show the device disabled screen.
     virtual void ShowDeviceDisabledScreen() = 0;
-
-   private:
-    DISALLOW_ASSIGN(Delegate);
   };
 
   // |delegate| must outlive |this|.
   DeviceDisablingManager(Delegate* delegate,
                          CrosSettings* cros_settings,
                          user_manager::UserManager* user_manager);
+
+  DeviceDisablingManager(const DeviceDisablingManager&) = delete;
+  DeviceDisablingManager& operator=(const DeviceDisablingManager&) = delete;
+
   ~DeviceDisablingManager();
 
   // Must be called after construction.
@@ -124,7 +125,7 @@ class DeviceDisablingManager {
   void UpdateFromCrosSettings();
 
   Delegate* delegate_;
-  policy::BrowserPolicyConnectorChromeOS* browser_policy_connector_;
+  policy::BrowserPolicyConnectorAsh* browser_policy_connector_;
   CrosSettings* cros_settings_;
   user_manager::UserManager* user_manager_;
 
@@ -147,8 +148,6 @@ class DeviceDisablingManager {
   std::string serial_number_;
 
   base::WeakPtrFactory<DeviceDisablingManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisablingManager);
 };
 
 }  // namespace system

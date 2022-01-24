@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/display/manager/display_configurator.h"
@@ -32,6 +31,10 @@ class ASH_EXPORT DisplayAnimator
     : public display::DisplayConfigurator::Observer {
  public:
   DisplayAnimator();
+
+  DisplayAnimator(const DisplayAnimator&) = delete;
+  DisplayAnimator& operator=(const DisplayAnimator&) = delete;
+
   ~DisplayAnimator() override;
 
   void StartFadeOutAnimation(base::OnceClosure callback);
@@ -54,8 +57,6 @@ class ASH_EXPORT DisplayAnimator
   std::map<aura::Window*, std::unique_ptr<ui::Layer>> hiding_layers_;
   std::unique_ptr<base::OneShotTimer> timer_;
   base::WeakPtrFactory<DisplayAnimator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayAnimator);
 };
 
 }  // namespace ash

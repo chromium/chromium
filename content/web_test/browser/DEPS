@@ -14,6 +14,7 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/service_manager/public/cpp",
+  "+third_party/test_fonts",
   "+ui/aura",
   "+ui/base/resource",
 ]

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that iframe content is available after iframe's load event fired. See http://webkit.org/b/76552\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.addIframe('resources/iframe-load-event-iframe-1.html', {id: 'myframe'});
 

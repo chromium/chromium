@@ -9,10 +9,11 @@
 #include <ostream>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -34,6 +35,10 @@ class Connection {
 
   // Constructs a connection to the given |remote_device|.
   explicit Connection(multidevice::RemoteDeviceRef remote_device);
+
+  Connection(const Connection&) = delete;
+  Connection& operator=(const Connection&) = delete;
+
   virtual ~Connection();
 
   // Returns true iff the connection's status is CONNECTED.
@@ -46,6 +51,18 @@ class Connection {
   // |OnSendCompleted()| will be called for all observers upon completion with
   // either success or failure.
   void SendMessage(std::unique_ptr<WireMessage> message);
+
+  // Registers |payload_files| to receive an incoming file transfer with
+  // the given |payload_id|. |registration_result_callback| will return true
+  // if the file was successfully registered, or false if the registration
+  // failed or if this operation is not supported by the connection type.
+  // Callers can listen to progress information about the transfer through the
+  // |file_transfer_update_callback| if the registration was successful.
+  void RegisterPayloadFile(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback);
 
   virtual void AddObserver(ConnectionObserver* observer);
   virtual void RemoveObserver(ConnectionObserver* observer);
@@ -92,6 +109,15 @@ class Connection {
   // in progress.
   virtual void SendMessageImpl(std::unique_ptr<WireMessage> message) = 0;
 
+  // Registers the payload file over the connection. The implementing class
+  // should invoke |registration_result_callback| with the registration result,
+  // or false if the operation is not supported.
+  virtual void RegisterPayloadFileImpl(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) = 0;
+
   // Deserializes the |recieved_bytes_| and returns the resulting WireMessage,
   // or NULL if the message is malformed. Sets |is_incomplete_message| to true
   // if the |serialized_message| does not have enough data to parse the header,
@@ -119,8 +145,6 @@ class Connection {
 
   // Whether a message is currently in the process of being sent.
   bool is_sending_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(Connection);
 };
 
 std::ostream& operator<<(std::ostream& stream,

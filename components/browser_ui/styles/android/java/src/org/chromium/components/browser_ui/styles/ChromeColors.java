@@ -6,13 +6,14 @@ package org.chromium.components.browser_ui.styles;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
+import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.ElevationOverlayProvider;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -21,32 +22,37 @@ import org.chromium.base.ApiCompatibilityUtils;
  * Provides common default colors for Chrome UI.
  */
 public class ChromeColors {
+    private static final String TAG = "ChromeColors";
+
     /**
      * Determines the default theme color used for toolbar based on the provided parameters.
      *
-     * @param res {@link Resources} used to retrieve colors.
-     * @param forceDarkBgColor When true, returns the default dark-mode color; otherwise returns
-     *        adaptive default color.
+     * @param context {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used in incognito mode. If true, this method will
+     *                    return a non-dynamic dark theme color.
      * @return The default theme color.
      */
-    public static @ColorInt int getDefaultThemeColor(Resources res, boolean forceDarkBgColor) {
-        return forceDarkBgColor
-                ? ApiCompatibilityUtils.getColor(res, R.color.toolbar_background_primary_dark)
-                : ApiCompatibilityUtils.getColor(res, R.color.toolbar_background_primary);
+    public static @ColorInt int getDefaultThemeColor(Context context, boolean isIncognito) {
+        return isIncognito ? ApiCompatibilityUtils.getColor(
+                       context.getResources(), R.color.toolbar_background_primary_dark)
+                           : MaterialColors.getColor(context, R.attr.colorSurface, TAG);
     }
 
     /**
      * Returns the primary background color used as native page background based on the given
      * parameters.
      *
-     * @param res The {@link Resources} used to retrieve colors.
-     * @param forceDarkBgColor When true, returns the dark-mode primary background color; otherwise
-     *        returns adaptive primary background color.
+     * @param context The {@link Context} used to retrieve colors.
+     * @param isIncognito Whether the color is used in incognito mode. If true, this method will
+     *                    return a non-dynamic dark background color.
      * @return The primary background color.
      */
-    public static @ColorInt int getPrimaryBackgroundColor(Resources res, boolean forceDarkBgColor) {
-        return forceDarkBgColor ? ApiCompatibilityUtils.getColor(res, R.color.default_bg_color_dark)
-                                : ApiCompatibilityUtils.getColor(res, R.color.default_bg_color);
+    public static @ColorInt int getPrimaryBackgroundColor(Context context, boolean isIncognito) {
+        return isIncognito ? ApiCompatibilityUtils.getColor(
+                       context.getResources(), R.color.default_bg_color_dark)
+                           : MaterialColors.getColor(context, R.attr.default_bg_color_dynamic,
+                                   // Temporarily pass a default, see https://crbug.com/1247186.
+                                   R.color.default_bg_color);
     }
 
     /**
@@ -57,7 +63,7 @@ public class ChromeColors {
      * @return The large text primary style.
      */
     public static int getLargeTextPrimaryStyle(boolean forceLightTextColor) {
-        return forceLightTextColor ? R.style.TextAppearance_TextLarge_Primary_Light
+        return forceLightTextColor ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
                                    : R.style.TextAppearance_TextLarge_Primary;
     }
 
@@ -69,7 +75,7 @@ public class ChromeColors {
      * @return The medium text secondary style.
      */
     public static int getTextMediumThickSecondaryStyle(boolean forceLightTextColor) {
-        return forceLightTextColor ? R.style.TextAppearance_TextMediumThick_Secondary_Light
+        return forceLightTextColor ? R.style.TextAppearance_TextMediumThick_Secondary_Baseline_Light
                                    : R.style.TextAppearance_TextMediumThick_Secondary;
     }
 
@@ -128,14 +134,24 @@ public class ChromeColors {
     }
 
     /**
-     * Calculates the surface color using theme colors. Only the elevation is needed.
+     * Calculates the surface color using theme colors.
      * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
      * @param elevationDimen The dimen to look up the elevation level with.
      * @return the {@link ColorInt} for the background of a surface view.
      */
     public static @ColorInt int getSurfaceColor(Context context, @DimenRes int elevationDimen) {
-        ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(context);
         float elevation = context.getResources().getDimension(elevationDimen);
+        return getSurfaceColor(context, elevation);
+    }
+
+    /**
+     * Calculates the surface color using theme colors.
+     * @param context The {@link Context} used to retrieve attrs and colors.
+     * @param elevation The elevation in px.
+     * @return the {@link ColorInt} for the background of a surface view.
+     */
+    public static @ColorInt int getSurfaceColor(Context context, @Px float elevation) {
+        ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(context);
         return elevationOverlayProvider.compositeOverlayWithThemeSurfaceColorIfNeeded(elevation);
     }
 }

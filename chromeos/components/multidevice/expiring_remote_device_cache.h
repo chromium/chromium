@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -36,6 +35,11 @@ class RemoteDeviceCache;
 class ExpiringRemoteDeviceCache {
  public:
   ExpiringRemoteDeviceCache();
+
+  ExpiringRemoteDeviceCache(const ExpiringRemoteDeviceCache&) = delete;
+  ExpiringRemoteDeviceCache& operator=(const ExpiringRemoteDeviceCache&) =
+      delete;
+
   virtual ~ExpiringRemoteDeviceCache();
 
   void SetRemoteDevicesAndInvalidateOldEntries(
@@ -64,8 +68,6 @@ class ExpiringRemoteDeviceCache {
 
   base::flat_set<std::string> legacy_device_ids_from_last_set_call_;
   base::flat_set<std::string> instance_ids_from_last_set_call_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpiringRemoteDeviceCache);
 };
 
 }  // namespace multidevice

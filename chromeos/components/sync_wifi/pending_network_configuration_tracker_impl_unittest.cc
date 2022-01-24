@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chromeos/components/sync_wifi/pending_network_configuration_tracker_impl.h"
 #include "chromeos/components/sync_wifi/test_data_generator.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -31,6 +30,11 @@ const char kChangeGuidKey[] = "ChangeGuid";
 class PendingNetworkConfigurationTrackerImplTest : public testing::Test {
  public:
   PendingNetworkConfigurationTrackerImplTest() = default;
+
+  PendingNetworkConfigurationTrackerImplTest(
+      const PendingNetworkConfigurationTrackerImplTest&) = delete;
+  PendingNetworkConfigurationTrackerImplTest& operator=(
+      const PendingNetworkConfigurationTrackerImplTest&) = delete;
 
   void SetUp() override {
     test_pref_service_ =
@@ -92,8 +96,6 @@ class PendingNetworkConfigurationTrackerImplTest : public testing::Test {
 
   const NetworkIdentifier fred_network_id_ = GeneratePskNetworkId(kFredSsid);
   const NetworkIdentifier mango_network_id_ = GeneratePskNetworkId(kMangoSsid);
-
-  DISALLOW_COPY_AND_ASSIGN(PendingNetworkConfigurationTrackerImplTest);
 };
 
 TEST_F(PendingNetworkConfigurationTrackerImplTest, TestMarkComplete) {

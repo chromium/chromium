@@ -1,0 +1,246 @@
+<!-- Copyright 2017 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<if expr="_google_chrome">
+  <link rel="import" href="chrome://oobe/sync-consent-icons.html">
+</if>
+
+<link rel="import" href="../../components/display_manager_types.html">
+<link rel="import" href="../../components/hd_iron_icon.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
+
+<dom-module id="sync-consent-element">
+  <template>
+    <style include="oobe-dialog-host-styles">
+      :root {
+        color: #333;
+      }
+
+      .overview-list-item {
+        border-top: 1px solid var(--google-grey-200);
+        padding: 16px;
+      }
+
+      .overview-list-item:last-of-type {
+        border-bottom: 1px solid var(--google-grey-200);
+        margin-bottom: 0;
+      }
+
+      .overview-list-item-title {
+        font-size: 14px;
+        font-weight: 500; /* roboto-medium */
+        line-height: 24px;
+        margin-bottom: 4px;
+      }
+
+      .overview-list-item-icon {
+        padding-inline-end: 16px;
+      }
+
+      .overview-list-item-description {
+        padding-inline-end: 16px;
+      }
+
+      cr-checkbox {
+        align-self: start; /* Prevent label from spanning the whole width. */
+        margin-top: 16px;
+        padding-inline-start: 8px;
+        --cr-checkbox-label-padding-start: 12px;
+      }
+
+      img[slot='subtitle'] {
+        padding-top: 20px;
+      }
+
+      @media screen and (max-height: 610px) {
+        :host-context([screen=gaia-signin]) img[slot='subtitle'] {
+          display: none;
+        }
+      }
+
+      @media screen and (max-height: 740px) {
+        :host-context([screen=oobe]) img[slot='subtitle'] {
+          display: none;
+        }
+      }
+
+      #splitSettingsSyncConsentDialog .overview-list-item-title {
+        font-size: 18px;
+        margin-top: 4px;
+      }
+
+      :host-context([orientation=vertical]) #syncConsentOverviewDialog {
+        --oobe-adaptive-dialog-content-top-padding: 20px;
+      }
+    </style>
+
+    <!-- Traditional dialog. This can be deleted when SplitSettingsSync is the
+         default. -->
+    <oobe-adaptive-dialog id="syncConsentOverviewDialog" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
+        for-step="no-split">
+      <iron-icon slot="icon" icon="sync-consent-32:googleg"></iron-icon>
+      <h1 slot="title" consent-description>
+        [[i18nDynamic(locale, 'syncConsentScreenTitle')]]
+      </h1>
+      <div slot="subtitle" consent-description>
+        [[i18nDynamic(locale, 'syncConsentScreenSubtitle')]]
+      </div>
+      <img slot="subtitle" src="images/sync-consent.svg"
+          class="oobe-illustration">
+      </div>
+      <div slot="content" class="landscape-header-aligned">
+        <div class="overview-list-item layout horizontal">
+          <img class="overview-list-item-icon" src="images/settings_gear.svg"
+              width="24" height="24" aria-hidden="true">
+          <div class="flex layout vertical center-justified">
+            <div role="heading" aria-level="2" class="overview-list-item-title"
+                consent-description>
+              [[i18nDynamic(locale, 'syncConsentScreenOsSyncTitle')]]
+            </div>
+          </div>
+        </div>
+        <div class="overview-list-item layout horizontal">
+          <img class="overview-list-item-icon" src="images/browser_sync.svg"
+              width="24" height="24" aria-hidden="true">
+          <div class="flex layout vertical center-justified">
+            <div role="heading" aria-level="2" class="overview-list-item-title"
+                consent-description>
+              [[i18nDynamic(locale, 'syncConsentScreenChromeBrowserSyncTitle')]]
+            </div>
+            <div class="overview-list-item-description" consent-description>
+              [[i18nDynamic(locale,
+                  'syncConsentScreenChromeBrowserSyncDescription')]]
+            </div>
+          </div>
+        </div>
+        <cr-checkbox id="reviewSettingsBox" hidden="[[isMinorMode_]]"
+            consent-description>
+          [[i18nDynamic(locale, 'syncConsentReviewSyncOptionsText')]]
+        </cr-checkbox>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="nonSplitSettingsDeclineButton"
+            on-click="onNonSplitSettingsDeclined_" hidden="[[!isMinorMode_]]"
+            label-for-aria="[[i18nDynamic(locale,
+                                          'syncConsentScreenDecline')]]">
+          <div slot="text" consent-description consent-confirmation>
+            [[i18nDynamic(locale, 'syncConsentScreenDecline')]]
+          </div>
+        </oobe-text-button>
+        <oobe-text-button class="focus-on-show" inverse="[[!isMinorMode_]]"
+            id="nonSplitSettingsAcceptButton"
+            on-click="onNonSplitSettingsAccepted_"
+            label-for-aria="[[i18nDynamic(locale, optInButtonTextKey_)]]">
+          <div slot="text" consent-description consent-confirmation>
+            [[i18nDynamic(locale, optInButtonTextKey_)]]
+          </div>
+        </oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+
+    <!-- Dialog used with the SplitSettingsSync feature. -->
+    <oobe-adaptive-dialog id="splitSettingsSyncConsentDialog" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
+        for-step="split">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title" consent-description>
+        [[i18nDynamic(locale, 'syncConsentScreenSplitSettingsTitle')]]
+      </h1>
+      <div slot="subtitle" consent-description>
+        [[i18nDynamic(locale, 'syncConsentScreenSplitSettingsSubtitle')]]
+      </div>
+      <div slot="content" class="landscape-vertical-centered">
+
+        <!-- "Chrome OS settings sync" -->
+        <div class="overview-list-item layout horizontal center">
+          <img class="overview-list-item-icon" src="images/settings_gear.svg"
+              width="24" height="24" aria-hidden="true">
+          <div class="flex layout vertical center-justified">
+            <div id="osSyncName" role="heading" aria-level="2"
+                class="overview-list-item-title" consent-description>
+              [[i18nDynamic(locale, 'syncConsentScreenOsSyncName')]]
+            </div>
+            <div class="overview-list-item-description" consent-description>
+              [[i18nDynamic(locale, 'syncConsentScreenOsSyncDescription')]]
+            </div>
+          </div>
+        </div>
+
+        <!-- "Chrome browser sync" -->
+        <div class="overview-list-item layout horizontal center">
+          <img class="overview-list-item-icon" src="images/browser_sync.svg"
+              width="24" height="24" aria-hidden="true">
+          <div class="flex layout vertical center-justified">
+            <div id="browserSyncName" role="heading" aria-level="2"
+                class="overview-list-item-title" consent-description>
+              [[i18nDynamic(locale, 'syncConsentScreenChromeBrowserSyncName')]]
+            </div>
+            <div class="overview-list-item-description" consent-description>
+              [[i18nDynamic(locale, 'syncConsentScreenChromeSyncDescription')]]
+            </div>
+          </div>
+        </div>
+
+        <!-- Personalize Google services -->
+        <div class="overview-list-item layout horizontal center">
+          <iron-icon icon="sync-consent-32:googleg"
+              class="overview-list-item-icon">
+          </iron-icon>
+          <div class="flex layout vertical center-justified">
+            <div role="heading" aria-level="2" class="overview-list-item-title"
+                consent-description>
+              [[i18nDynamic(locale,
+                  'syncConsentScreenPersonalizeGoogleServicesName')]]
+            </div>
+            <div hidden="[[isChildAccount_]]"
+                class="overview-list-item-description" consent-description>
+              [[i18nDynamic(locale,
+                  'syncConsentScreenPersonalizeGoogleServicesDescription')]]
+            </div>
+            <div hidden="[[!isChildAccount_]]"
+                class="overview-list-item-description" consent-description>
+              [[i18nDynamic(locale,
+                  'syncConsentScreenPersonalizeGoogleServicesDescriptionSupervisedUser')]]
+            </div>
+          </div>
+        </div>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="declineButton" on-click="onDeclineTap_"
+            label-for-aria="[[i18nDynamic(locale,
+                                          'syncConsentScreenDecline')]]">
+          <div slot="text" consent-description consent-confirmation>
+            [[i18nDynamic(locale, 'syncConsentScreenDecline')]]
+          </div>
+        </oobe-text-button>
+        <oobe-text-button id="acceptButton" on-click="onAcceptTap_"
+            class="focus-on-show" inverse
+            label-for-aria="[[i18nDynamic(locale,
+                                          'syncConsentScreenAccept')]]">
+          <div slot="text" consent-description consent-confirmation>
+            [[i18nDynamic(locale, 'syncConsentScreenAccept')]]
+          </div>
+        </oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+    <oobe-loading-dialog id="sync-loading" role="dialog" for-step="loading"
+        title-key="gaiaLoading">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+    </oobe-loading-dialog>
+  </template>
+  <script src="sync_consent.js"></script>
+</dom-module>

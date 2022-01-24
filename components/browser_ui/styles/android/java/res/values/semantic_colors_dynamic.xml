@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<resources>
+    <!-- Full dynamic colors ?attr version. Use for development. -->
+    <!--<macro name="default_icon_color_accent1">?attr/colorPrimary</macro>
+    <macro name="default_text_color">?attr/colorOnSurface</macro>
+    <macro name="default_text_color_accent1">?attr/colorPrimary</macro>
+    <macro name="hairline_stroke_color">?attr/colorOutline</macro>-->
+
+    <!-- Temporarily holdback @color version. Use for checkin. -->
+    <macro name="default_icon_color_accent1">@color/default_icon_color_accent1_baseline</macro>
+    <macro name="default_text_color">@color/default_text_color_baseline</macro>
+    <macro name="default_text_color_accent1">@color/default_text_color_blue</macro>
+    <macro name="hairline_stroke_color">@color/hairline_stroke_color_baseline</macro>
+</resources>

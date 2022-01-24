@@ -10,6 +10,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -138,26 +140,6 @@ const gfx::VectorIcon& TypeToVectorIcon(AutocompleteMatchType::Type type) {
   }
 }
 
-// Converts AutocompleteMatchType::Type to an answer vector icon.
-const gfx::VectorIcon& TypeToAnswerIcon(int type) {
-  switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
-    case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
-      return omnibox::kAnswerCurrencyIcon;
-    case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
-      return omnibox::kAnswerDictionaryIcon;
-    case SuggestionAnswer::ANSWER_TYPE_FINANCE:
-      return omnibox::kAnswerFinanceIcon;
-    case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
-      return omnibox::kAnswerSunriseIcon;
-    case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
-      return omnibox::kAnswerTranslationIcon;
-    case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
-      return omnibox::kAnswerWhenIsIcon;
-    default:
-      return omnibox::kAnswerDefaultIcon;
-  }
-}
-
 gfx::ImageSkia CreateAnswerIcon(const gfx::VectorIcon& vector_icon) {
   const auto& icon = gfx::CreateVectorIcon(vector_icon, SK_ColorWHITE);
   const int dimension =
@@ -207,31 +189,50 @@ OmniboxResult::OmniboxResult(Profile* profile,
       is_zero_suggestion_(is_zero_suggestion) {
   if (match_.search_terms_args && autocomplete_controller_) {
     match_.search_terms_args->request_source = TemplateURLRef::CROS_APP_LIST;
-    autocomplete_controller_->UpdateMatchDestinationURL(
-        *match_.search_terms_args, &match_);
+    autocomplete_controller_->SetMatchDestinationURL(&match_);
   }
-  set_id(match_.stripped_destination_url.spec());
   SetDisplayType(DisplayType::kList);
   SetResultType(ResultType::kOmnibox);
-  SetMetricsType(GetSearchResultType());
 
-  if (app_list_features::IsOmniboxRichEntitiesEnabled()) {
-    if (match_.answer.has_value()) {
-      SetOmniboxType(OmniboxType::kAnswer);
-    } else if (match_.type == AutocompleteMatchType::CALCULATOR) {
-      SetOmniboxType(OmniboxType::kCalculatorAnswer);
-    } else if (!match_.image_url.is_empty()) {
-      SetOmniboxType(OmniboxType::kRichImage);
-    }
-
-    // The stripped destination URL is no longer a unique identifier, so append
-    // it to the omnibox type.
-    const std::string id = base::JoinString(
-        {base::NumberToString(static_cast<int>(omnibox_type())),
-         match_.stripped_destination_url.spec()},
-        "-");
-    set_id(id);
+  // If the result is a rich entity, set its rich entity subtype.
+  if (match_.answer.has_value()) {
+    SetOmniboxType(OmniboxType::kAnswer);
+  } else if (match_.type == AutocompleteMatchType::CALCULATOR) {
+    SetOmniboxType(OmniboxType::kCalculatorAnswer);
+  } else if (!match_.image_url.is_empty()) {
+    SetOmniboxType(OmniboxType::kRichImage);
   }
+
+  // The stripped destination URL is appended to the omnibox type to ensure
+  // uniqueness.
+  const std::string id =
+      base::JoinString({base::NumberToString(static_cast<int>(omnibox_type())),
+                        match_.stripped_destination_url.spec()},
+                       "-");
+  set_id(id);
+
+  // Omnibox results are categorized as Search and Assistant if they are search
+  // suggestions, and Web otherwise.
+  switch (match_.type) {
+    case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
+    case AutocompleteMatchType::SEARCH_SUGGEST:
+    case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY:
+    case AutocompleteMatchType::SEARCH_SUGGEST_TAIL:
+    case AutocompleteMatchType::SEARCH_SUGGEST_PROFILE:
+    case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
+    case AutocompleteMatchType::CONTACT_DEPRECATED:
+    case AutocompleteMatchType::VOICE_SUGGEST:
+    case AutocompleteMatchType::CLIPBOARD_TEXT:
+    case AutocompleteMatchType::CLIPBOARD_IMAGE:
+      SetCategory(Category::kSearchAndAssistant);
+      break;
+    default:
+      SetCategory(Category::kWeb);
+      break;
+  }
+
+  // MetricsType needs to be set after OmniboxType.
+  SetMetricsType(GetSearchResultType());
 
   // Derive relevance from omnibox relevance and normalize it to [0, 1].
   // The magic number 1500 is the highest score of an omnibox result.
@@ -261,30 +262,46 @@ void OmniboxResult::Remove() {
   autocomplete_controller_->DeleteMatch(match_);
 }
 
-void OmniboxResult::InvokeAction(int action_index) {
+void OmniboxResult::InvokeAction(ash::SearchResultActionType action) {
   DCHECK(is_zero_suggestion_);
-  switch (ash::GetOmniBoxZeroStateAction(action_index)) {
-    case ash::OmniBoxZeroStateAction::kRemoveSuggestion:
+  switch (action) {
+    case ash::SearchResultActionType::kRemove:
       Remove();
       break;
-    default:
+    case ash::SearchResultActionType::kAppend:
+    case ash::SearchResultActionType::kSearchResultActionTypeMax:
       NOTREACHED();
   }
 }
 
 void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
-  if (bitmap)
-    SetIcon(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
+  if (bitmap) {
+    IconInfo icon_info(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
+
+    // Both rich entity and weather answer results have their icon fetched by
+    // this method. These display differently, so set the size and shape as
+    // needed.
+    if (omnibox_type() == OmniboxType::kAnswer) {
+      CHECK(match_.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER);
+      icon_info.dimension = ash::SharedAppListConfig::instance()
+                                .search_list_answer_icon_dimension();
+    } else {
+      icon_info.dimension = ash::SharedAppListConfig::instance()
+                                .search_list_image_icon_dimension();
+      icon_info.shape = IconShape::kRoundedRectangle;
+    }
+
+    SetIcon(icon_info);
+  }
 }
 
 ash::SearchResultType OmniboxResult::GetSearchResultType() const {
-  // Rich entity types take precedence.
-  if (omnibox_type() == OmniboxType::kAnswer ||
-      omnibox_type() == OmniboxType::kCalculatorAnswer) {
-    return ash::OMNIBOX_RICH_ENTITY_ANSWER;
+  // Answer results can have match types of SEARCH_WHAT_YOU_TYPED or
+  // SEARCH_SUGGEST, which can also be used for non-answer results. The answer
+  // type will take precedence for metrics.
+  if (omnibox_type() == OmniboxType::kAnswer) {
+    return ash::OMNIBOX_ANSWER;
   }
-  if (omnibox_type() == OmniboxType::kRichImage)
-    return ash::OMNIBOX_RICH_ENTITY_IMAGE_ENTITY;
 
   switch (match_.type) {
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
@@ -310,10 +327,14 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
       return ash::OMNIBOX_SUGGEST_PERSONALIZED;
     case AutocompleteMatchType::BOOKMARK_TITLE:
       return ash::OMNIBOX_BOOKMARK;
+    // SEARCH_SUGGEST_ENTITY corresponds with OmniboxType::kRichImage.
     case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY:
       return ash::OMNIBOX_SEARCH_SUGGEST_ENTITY;
     case AutocompleteMatchType::NAVSUGGEST:
       return ash::OMNIBOX_NAVSUGGEST;
+    // CALCULATOR corresponds with OmniboxType::kCalculator.
+    case AutocompleteMatchType::CALCULATOR:
+      return ash::OMNIBOX_CALCULATOR;
 
     case AutocompleteMatchType::HISTORY_KEYWORD:
     case AutocompleteMatchType::SEARCH_SUGGEST_TAIL:
@@ -321,7 +342,6 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
     case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::NAVSUGGEST_PERSONALIZED:
-    case AutocompleteMatchType::CALCULATOR:
     case AutocompleteMatchType::CLIPBOARD_URL:
     case AutocompleteMatchType::VOICE_SUGGEST:
     case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
@@ -347,7 +367,9 @@ GURL OmniboxResult::DestinationURL() const {
 void OmniboxResult::UpdateIcon() {
   switch (omnibox_type()) {
     case OmniboxType::kCalculatorAnswer:
-      SetIcon(CreateAnswerIcon(omnibox::kCalculatorIcon));
+      SetIcon(IconInfo(CreateAnswerIcon(omnibox::kCalculatorIcon),
+                       ash::SharedAppListConfig::instance()
+                           .search_list_answer_icon_dimension()));
       return;
     case OmniboxType::kAnswer:
       if (match_.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER &&
@@ -356,7 +378,11 @@ void OmniboxResult::UpdateIcon() {
         // default answer icon can be used as a fallback if the URL is missing.
         FetchRichEntityImage(match_.answer->image_url());
       } else {
-        SetIcon(CreateAnswerIcon(TypeToAnswerIcon(match_.answer->type())));
+        SetIcon(
+            IconInfo(CreateAnswerIcon(AutocompleteMatch::AnswerTypeToAnswerIcon(
+                         match_.answer->type())),
+                     ash::SharedAppListConfig::instance()
+                         .search_list_answer_icon_dimension()));
       }
       return;
     case OmniboxType::kRichImage:
@@ -374,7 +400,9 @@ void OmniboxResult::UpdateIcon() {
                            weak_factory_.GetWeakPtr()));
         if (!icon.IsEmpty()) {
           SetOmniboxType(OmniboxType::kFavicon);
-          SetIcon(icon.AsImageSkia());
+          SetIcon(IconInfo(icon.AsImageSkia(),
+                           ash::SharedAppListConfig::instance()
+                               .search_list_favicon_dimension()));
           return;
         }
       }
@@ -385,22 +413,25 @@ void OmniboxResult::UpdateIcon() {
           BookmarkModelFactory::GetForBrowserContext(profile_);
       if (bookmark_model &&
           bookmark_model->IsBookmarked(match_.destination_url)) {
-        SetIcon(gfx::CreateVectorIcon(
-            omnibox::kBookmarkIcon,
-            ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-            kListIconColor));
+        SetIcon(IconInfo(
+            gfx::CreateVectorIcon(omnibox::kBookmarkIcon,
+                                  ash::SharedAppListConfig::instance()
+                                      .search_list_icon_dimension(),
+                                  kListIconColor),
+            ash::SharedAppListConfig::instance().search_list_icon_dimension()));
       } else {
-        SetIcon(gfx::CreateVectorIcon(
-            TypeToVectorIcon(match_.type),
-            ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-            kListIconColor));
+        SetIcon(IconInfo(
+            gfx::CreateVectorIcon(TypeToVectorIcon(match_.type),
+                                  ash::SharedAppListConfig::instance()
+                                      .search_list_icon_dimension(),
+                                  kListIconColor),
+            ash::SharedAppListConfig::instance().search_list_icon_dimension()));
       }
   }
 }
 
 void OmniboxResult::UpdateTitleAndDetails() {
-  if (app_list_features::IsOmniboxRichEntitiesEnabled() &&
-      match_.answer.has_value()) {
+  if (omnibox_type() == OmniboxType::kAnswer) {
     const auto& additional_text =
         GetAdditionalText(match_.answer->first_line());
     // TODO(crbug.com/1130372): Use placeholders or a l10n-friendly way to
@@ -418,9 +449,8 @@ void OmniboxResult::UpdateTitleAndDetails() {
                                  &title_tags);
     SetTitleTags(title_tags);
 
-    if (!app_list_features::IsOmniboxRichEntitiesEnabled() ||
-        match_.type == AutocompleteMatchType::CALCULATOR ||
-        match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
+    if (omnibox_type() == OmniboxType::kRichImage ||
+        omnibox_type() == OmniboxType::kCalculatorAnswer) {
       // Only set the details text for rich entity or calculator results. This
       // prevents default descriptions such as "Google Search" from being added.
       SetDetails(match_.description);
@@ -431,8 +461,11 @@ void OmniboxResult::UpdateTitleAndDetails() {
     }
 
     if (AutocompleteMatch::IsSearchType(match_.type)) {
+      std::u16string accessible_name =
+          details().empty() ? title()
+                            : base::StrCat({title(), u", ", details()});
       SetAccessibleName(l10n_util::GetStringFUTF16(
-          IDS_APP_LIST_QUERY_SEARCH_ACCESSIBILITY_NAME, title(),
+          IDS_APP_LIST_QUERY_SEARCH_ACCESSIBILITY_NAME, accessible_name,
           GetDefaultSearchEngineName(
               TemplateURLServiceFactory::GetForProfile(profile_))));
     }
@@ -474,16 +507,19 @@ void OmniboxResult::OnFaviconFetched(const gfx::Image& icon) {
   // By contract, this is never called with an empty |icon|.
   DCHECK(!icon.IsEmpty());
   SetOmniboxType(OmniboxType::kFavicon);
-  SetIcon(icon.AsImageSkia());
+  SetIcon(IconInfo(
+      icon.AsImageSkia(),
+      ash::SharedAppListConfig::instance().search_list_favicon_dimension()));
 }
 
 void OmniboxResult::SetZeroSuggestionActions() {
   Actions zero_suggestion_actions;
 
-  constexpr int kMaxButtons = ash::OmniBoxZeroStateAction::kZeroStateActionMax;
+  constexpr int kMaxButtons =
+      ash::SearchResultActionType::kSearchResultActionTypeMax;
   for (int i = 0; i < kMaxButtons; ++i) {
-    ash::OmniBoxZeroStateAction button_action =
-        ash::GetOmniBoxZeroStateAction(i);
+    ash::SearchResultActionType button_action =
+        ash::GetSearchResultActionType(i);
     gfx::ImageSkia button_image;
     std::u16string button_tooltip;
     bool visible_on_hover = false;
@@ -491,14 +527,14 @@ void OmniboxResult::SetZeroSuggestionActions() {
         ash::SharedAppListConfig::instance().search_list_badge_icon_dimension();
 
     switch (button_action) {
-      case ash::OmniBoxZeroStateAction::kRemoveSuggestion:
+      case ash::SearchResultActionType::kRemove:
         button_image = gfx::CreateVectorIcon(
             ash::kSearchResultRemoveIcon, kImageButtonIconSize, kListIconColor);
         button_tooltip = l10n_util::GetStringFUTF16(
             IDS_APP_LIST_REMOVE_SUGGESTION_ACCESSIBILITY_NAME, title());
         visible_on_hover = true;  // visible upon hovering
         break;
-      case ash::OmniBoxZeroStateAction::kAppendSuggestion:
+      case ash::SearchResultActionType::kAppend:
         button_image = gfx::CreateVectorIcon(
             ash::kSearchResultAppendIcon, kImageButtonIconSize, kListIconColor);
         button_tooltip = l10n_util::GetStringFUTF16(

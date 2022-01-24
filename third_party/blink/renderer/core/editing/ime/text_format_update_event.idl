@@ -6,18 +6,14 @@
 // region to be styled in a certain fashion, limited to the style properties
 // that correspond with the properties that are exposed on TextFormatUpdateEvent
 // (e.g. backgroundColor, textDecoration, etc.).
-// Explainer: https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/EditContext/explainer.md
+
+// Spec draft:
+// https://w3c.github.io/editing/docs/EditContext/index.html#textformatupdateevent
 [
     Exposed=Window,
     RuntimeEnabled=EditContext
 ] interface TextFormatUpdateEvent : Event {
     constructor(optional TextFormatUpdateEventInit options = {});
-    readonly attribute unsigned long formatRangeStart;
-    readonly attribute unsigned long formatRangeEnd;
-    readonly attribute DOMString underlineColor;
-    readonly attribute DOMString backgroundColor;
-    readonly attribute DOMString suggestionHighlightColor;
-    readonly attribute DOMString textColor;
-    readonly attribute DOMString underlineThickness;
-    readonly attribute DOMString underlineStyle;
+
+    sequence<TextFormat> getTextFormats();
 };

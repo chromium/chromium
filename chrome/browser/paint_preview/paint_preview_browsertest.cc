@@ -110,14 +110,14 @@ class PaintPreviewBrowserTest
   }
 
   void LoadPage(const GURL& url) const {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
   void LoadHtml(const base::StringPiece& html) const {
     std::string base64_html;
     base::Base64Encode(html, &base64_html);
     GURL url(std::string("data:text/html;base64,") + base64_html);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
   PaintPreviewClient::PaintPreviewParams MakeParams() const {

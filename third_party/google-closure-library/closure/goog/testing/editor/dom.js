@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Testing utilities for editor specific DOM related tests.
@@ -45,6 +37,7 @@ goog.require('goog.testing.asserts');
  */
 goog.testing.editor.dom.getPreviousNonEmptyTextNode = function(
     node, opt_stopAt, opt_skipDescendants) {
+  'use strict';
   return goog.testing.editor.dom.getPreviousNextNonEmptyTextNodeHelper_(
       node, opt_stopAt, opt_skipDescendants, true);
 };
@@ -68,6 +61,7 @@ goog.testing.editor.dom.getPreviousNonEmptyTextNode = function(
  */
 goog.testing.editor.dom.getNextNonEmptyTextNode = function(
     node, opt_stopAt, opt_skipDescendants) {
+  'use strict';
   return goog.testing.editor.dom.getPreviousNextNonEmptyTextNodeHelper_(
       node, opt_stopAt, opt_skipDescendants, false);
 };
@@ -96,18 +90,19 @@ goog.testing.editor.dom.getNextNonEmptyTextNode = function(
  */
 goog.testing.editor.dom.getPreviousNextNonEmptyTextNodeHelper_ = function(
     node, opt_stopAt, opt_skipDescendants, opt_isPrevious) {
+  'use strict';
   opt_stopAt = opt_stopAt || node.ownerDocument.body;
   // Initializing the iterator to iterate over the children of opt_stopAt
   // makes it stop only when it finishes iterating through all of that
   // node's children, even though we will start at a different node and exit
   // that starting node's subtree in the process.
-  var iter = new goog.dom.TagIterator(opt_stopAt, opt_isPrevious);
+  const iter = new goog.dom.TagIterator(opt_stopAt, opt_isPrevious);
 
   // TODO(user): Move this logic to a new method in TagIterator such as
   // skipToNode().
   // Then we set the iterator to start at the given start node, not opt_stopAt.
-  var walkType;  // Let TagIterator set the initial walk type by default.
-  var depth = goog.testing.editor.dom.getRelativeDepth_(node, opt_stopAt);
+  let walkType;  // Let TagIterator set the initial walk type by default.
+  let depth = goog.testing.editor.dom.getRelativeDepth_(node, opt_stopAt);
   if (depth == -1) {
     return null;  // Fail because opt_stopAt is not an ancestor of node.
   }
@@ -128,15 +123,15 @@ goog.testing.editor.dom.getPreviousNextNonEmptyTextNodeHelper_ = function(
 
   // Advance the iterator so it skips the start node.
   try {
-    iter.next();
+    iter.nextValueOrThrow();
   } catch (e) {
     return null;  // It could have been a leaf node.
   }
   // Now just get the first non-empty text node the iterator finds.
-  var filter =
+  const filter =
       goog.iter.filter(iter, goog.testing.editor.dom.isNonEmptyTextNode_);
   try {
-    return /** @type {Text} */ (filter.next());
+    return /** @type {Text} */ (filter.nextValueOrThrow());
   } catch (e) {  // No next item is available so return null.
     return null;
   }
@@ -150,6 +145,7 @@ goog.testing.editor.dom.getPreviousNextNonEmptyTextNodeHelper_ = function(
  * @private
  */
 goog.testing.editor.dom.isNonEmptyTextNode_ = function(node) {
+  'use strict';
   if (node && node.nodeType == goog.dom.NodeType.TEXT) {
     node = /** @type {!Text} */ (node);
     return node.length > 0;
@@ -173,7 +169,8 @@ goog.testing.editor.dom.isNonEmptyTextNode_ = function(node) {
  * @private
  */
 goog.testing.editor.dom.getRelativeDepth_ = function(node, parentNode) {
-  var depth = 0;
+  'use strict';
+  let depth = 0;
   while (node) {
     if (node == parentNode) {
       return depth;
@@ -203,7 +200,8 @@ goog.testing.editor.dom.getRelativeDepth_ = function(node, parentNode) {
  */
 goog.testing.editor.dom.assertRangeBetweenText = function(
     before, after, range, opt_stopAt) {
-  var previousText =
+  'use strict';
+  const previousText =
       goog.testing.editor.dom.getTextFollowingRange_(range, true, opt_stopAt);
   if (before == '') {
     assertNull(
@@ -219,7 +217,7 @@ goog.testing.editor.dom.assertRangeBetweenText = function(
         goog.string.endsWith(
             /** @type {string} */ (previousText), before));
   }
-  var nextText =
+  const nextText =
       goog.testing.editor.dom.getTextFollowingRange_(range, false, opt_stopAt);
   if (after == '') {
     assertNull(
@@ -251,16 +249,18 @@ goog.testing.editor.dom.assertRangeBetweenText = function(
  */
 goog.testing.editor.dom.getTextFollowingRange_ = function(
     range, isBefore, opt_stopAt) {
-  var followingTextNode;
-  var endpointNode = isBefore ? range.getStartNode() : range.getEndNode();
-  var endpointOffset = isBefore ? range.getStartOffset() : range.getEndOffset();
-  var getFollowingTextNode = isBefore ?
+  'use strict';
+  let followingTextNode;
+  const endpointNode = isBefore ? range.getStartNode() : range.getEndNode();
+  const endpointOffset =
+      isBefore ? range.getStartOffset() : range.getEndOffset();
+  const getFollowingTextNode = isBefore ?
       goog.testing.editor.dom.getPreviousNonEmptyTextNode :
       goog.testing.editor.dom.getNextNonEmptyTextNode;
 
   if (endpointNode.nodeType == goog.dom.NodeType.TEXT) {
     // Range endpoint is in a text node.
-    var endText = endpointNode.nodeValue;
+    const endText = endpointNode.nodeValue;
     if (isBefore ? endpointOffset > 0 : endpointOffset < endText.length) {
       // There is text in this node following the endpoint so return the portion
       // that follows the endpoint.
@@ -274,10 +274,10 @@ goog.testing.editor.dom.getTextFollowingRange_ = function(
     }
   } else {
     // Range endpoint is in an element node.
-    var numChildren = endpointNode.childNodes.length;
+    const numChildren = endpointNode.childNodes.length;
     if (isBefore ? endpointOffset > 0 : endpointOffset < numChildren) {
       // There is at least one child following the endpoint.
-      var followingChild =
+      const followingChild =
           endpointNode
               .childNodes[isBefore ? endpointOffset - 1 : endpointOffset];
       if (goog.testing.editor.dom.isNonEmptyTextNode_(followingChild)) {

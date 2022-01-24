@@ -22,7 +22,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.ui.base.WindowAndroid;
 
 @JNINamespace("content")
 @JNIAdditionalImport(Wrappers.class)
@@ -108,16 +107,16 @@ class SmsProviderFakes {
         }
 
         @CalledByNative("FakeSmsRetrieverClient")
-        private void triggerUserDeniesPermission(WindowAndroid window, boolean isLocalRequest) {
+        private void triggerUserDeniesPermission(boolean isLocalRequest) {
             Wrappers.WebOTPServiceContext context = super.getContext();
             assert context != null;
 
             SmsVerificationReceiver receiver = context.createVerificationReceiverForTesting();
-            receiver.onPermissionDone(window, Activity.RESULT_CANCELED, isLocalRequest);
+            receiver.onPermissionDone(Activity.RESULT_CANCELED, isLocalRequest);
         }
 
         @CalledByNative("FakeSmsRetrieverClient")
-        private void triggerUserGrantsPermission(WindowAndroid window, boolean isLocalRequest) {
+        private void triggerUserGrantsPermission(boolean isLocalRequest) {
             Wrappers.WebOTPServiceContext context = super.getContext();
             if (context == null) {
                 Log.v(TAG,
@@ -128,7 +127,7 @@ class SmsProviderFakes {
 
             SmsVerificationReceiver receiver =
                     (SmsVerificationReceiver) context.createVerificationReceiverForTesting();
-            receiver.onPermissionDone(window, Activity.RESULT_OK, isLocalRequest);
+            receiver.onPermissionDone(Activity.RESULT_OK, isLocalRequest);
         }
 
         @CalledByNative("FakeSmsRetrieverClient")
@@ -157,7 +156,7 @@ class SmsProviderFakes {
 
             ApiException e = new ApiException(new Status(code));
 
-            receiver.onRetrieverTaskFailure(null, isLocalRequest, e);
+            receiver.onRetrieverTaskFailure(isLocalRequest, e);
         }
 
         // ---------------------------------------------------------------------

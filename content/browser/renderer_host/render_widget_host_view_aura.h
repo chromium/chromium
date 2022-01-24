@@ -17,7 +17,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -37,6 +36,7 @@
 #include "content/common/cursors/webcursor.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/visibility.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -106,7 +106,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   ui::TextInputClient* GetTextInputClient() override;
   bool HasFocus() override;
-  void Show() override;
   void Hide() override;
   bool IsShowing() override;
   void WasUnOccluded() override;
@@ -118,22 +117,27 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;
   bool ShouldVirtualKeyboardOverlayContent() override;
+  void NotifyVirtualKeyboardOverlayRect(
+      const gfx::Rect& keyboard_rect) override;
+  bool IsHTMLFormPopup() const override;
 
   // Overridden from RenderWidgetHostViewBase:
   void InitAsPopup(RenderWidgetHostView* parent_host_view,
-                   const gfx::Rect& pos) override;
+                   const gfx::Rect& pos,
+                   const gfx::Rect& anchor_rect) override;
   void Focus() override;
   void UpdateCursor(const WebCursor& cursor) override;
   void DisplayCursor(const WebCursor& cursor) override;
   CursorManager* GetCursorManager() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
-  void ShowWithVisibility(Visibility web_contents_visibility) override;
+  void ShowWithVisibility(PageVisibilityState page_visibility) final;
   void Destroy() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
   void UpdateTooltip(const std::u16string& tooltip_text) override;
   void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
                                  const gfx::Rect& bounds) override;
+  void ClearKeyboardTriggeredTooltip() override;
   uint32_t GetCaptureSequenceNumber() const override;
   bool IsSurfaceAvailableForCopy() override;
   void CopyFromSurface(
@@ -231,7 +235,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   ukm::SourceId GetClientSourceForMetrics() const override;
   bool ShouldDoLearning() override;
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool SetCompositionFromExistingText(
       const gfx::Range& range,
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override;
@@ -248,13 +252,16 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       const std::vector<ui::GrammarFragment>& fragments) override;
 #endif
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
   // Returns the control and selection bounds of the EditContext or control
   // bounds of the active editable element. This is used to report the layout
   // bounds of the text input control to TSF on Windows.
   void GetActiveTextInputControlLayoutBounds(
       absl::optional<gfx::Rect>* control_bounds,
       absl::optional<gfx::Rect>* selection_bounds) override;
+#endif
+
+#if defined(OS_WIN)
   // API to notify accessibility whether there is an active composition
   // from TSF or not.
   // It notifies the composition range, composition text and whether the
@@ -360,7 +367,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void SetTooltipsEnabled(bool enable) override;
   void Shutdown() override;
 
-  void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
   bool FocusedFrameHasStickyActivation() const;
 
   RenderWidgetHostViewEventHandler* event_handler() {
@@ -391,6 +397,13 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   absl::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
+  void NotifyHostAndDelegateOnWasShown(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
+      final;
+  void RequestPresentationTimeFromHostOrDelegate(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
+      final;
+  void CancelPresentationTimeRequestForHostAndDelegate() final;
 
  private:
   friend class DelegatedFrameHostClientAura;
@@ -491,6 +504,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
                            ScrollOOPIFEditableElement);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
+                           UpdateInsetsWithVirtualKeyboardEnabled);
 
   class WindowObserver;
   friend class WindowObserver;
@@ -523,6 +538,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // has already adjusted the origin of |rect| to conform to whatever coordinate
   // space is required by the aura::Window.
   void InternalSetBounds(const gfx::Rect& rect);
+
+  // Update the insets for bounds change when the virtual keyboard is shown.
+  void UpdateInsetsWithVirtualKeyboardEnabled();
 
 #if defined(OS_WIN)
   // Creates and/or updates the legacy dummy window which corresponds to
@@ -597,6 +615,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void ProcessDisplayMetricsChanged();
 
   void CancelActiveTouches();
+
+  // Common part of UnOccluded() and Show().
+  void ShowImpl(PageVisibilityState page_visibility);
 
   // Common part of Occluded() and Hide().
   void HideImpl();
@@ -690,7 +711,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   gfx::SelectionBound selection_start_;
   gfx::SelectionBound selection_end_;
 
+  // The insets for the window bounds (not for screen) when the window is
+  // partially occluded.
   gfx::Insets insets_;
+
+  // Cache the occluded bounds in screen coordinate of the virtual keyboard.
+  gfx::Rect keyboard_occluded_bounds_;
 
   std::unique_ptr<wm::ScopedTooltipDisabler> tooltip_disabler_;
 
@@ -727,7 +753,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Saved value of WebPreferences' |double_tap_to_zoom_enabled|.
   bool double_tap_to_zoom_enabled_ = false;
 
-  Visibility visibility_ = Visibility::HIDDEN;
+  // Current visibility state. Initialized based on
+  // RenderWidgetHostImpl::is_hidden().
+  Visibility visibility_;
 
   // Represents a feature of the physical display whose offset and mask_length
   // are expressed in DIPs relative to the view. See display_feature.h for more

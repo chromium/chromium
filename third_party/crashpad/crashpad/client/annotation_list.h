@@ -15,10 +15,15 @@
 #ifndef CRASHPAD_CLIENT_ANNOTATION_LIST_H_
 #define CRASHPAD_CLIENT_ANNOTATION_LIST_H_
 
-#include "base/macros.h"
+#include "build/build_config.h"
 #include "client/annotation.h"
 
 namespace crashpad {
+#if defined(OS_IOS)
+namespace internal {
+class InProcessIntermediateDumpHandler;
+}  // namespace internal
+#endif
 
 //! \brief A list that contains all the currently set annotations.
 //!
@@ -29,6 +34,10 @@ namespace crashpad {
 class AnnotationList {
  public:
   AnnotationList();
+
+  AnnotationList(const AnnotationList&) = delete;
+  AnnotationList& operator=(const AnnotationList&) = delete;
+
   ~AnnotationList();
 
   //! \brief Returns the instance of the list that has been registered on the
@@ -77,6 +86,17 @@ class AnnotationList {
   //! \brief Returns an iterator past the last element of the annotation list.
   Iterator end();
 
+ protected:
+#if defined(OS_IOS)
+  friend class internal::InProcessIntermediateDumpHandler;
+#endif
+
+  //! \brief Returns a pointer to the tail node.
+  const Annotation* tail_pointer() const { return tail_pointer_; }
+
+  //! \brief Returns a pointer to the head element.
+  const Annotation* head() const { return &head_; }
+
  private:
   // To make it easier for the handler to locate the dummy tail node, store the
   // pointer. Placed first for packing.
@@ -85,8 +105,6 @@ class AnnotationList {
   // Dummy linked-list head and tail elements of \a Annotation::Type::kInvalid.
   Annotation head_;
   Annotation tail_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnnotationList);
 };
 
 }  // namespace crashpad

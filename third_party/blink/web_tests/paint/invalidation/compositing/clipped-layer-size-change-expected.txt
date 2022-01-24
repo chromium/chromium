@@ -1,1 +1,1 @@
-CONSOLE MESSAGE: line 41: scrolling
+CONSOLE MESSAGE: scrolling

@@ -27,6 +27,9 @@ class FakeSerialPort : public mojom::SerialPort {
         [](FakeSerialPort* self) { delete self; }, base::Unretained(this)));
   }
 
+  FakeSerialPort(const FakeSerialPort&) = delete;
+  FakeSerialPort& operator=(const FakeSerialPort&) = delete;
+
   ~FakeSerialPort() override = default;
 
   mojo::PendingRemote<mojom::SerialPort> BindNewPipeAndPassRemote() {
@@ -78,8 +81,6 @@ class FakeSerialPort : public mojom::SerialPort {
   mojo::ScopedDataPipeConsumerHandle in_stream_;
   mojo::ScopedDataPipeProducerHandle out_stream_;
   mojo::Remote<mojom::SerialPortClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSerialPort);
 };
 
 }  // namespace

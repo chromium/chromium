@@ -8,10 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/clipboard/custom_data_helper.h"
 
 namespace ui {
 namespace {
@@ -99,7 +101,7 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
   clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
                                   /*data_dst=*/nullptr, &types);
 
-  // With bookmark data, available types should be only 'text/plain'.
+  // Bookmark data uses mime type 'text/plain'.
   EXPECT_EQ(std::vector<std::string>({"text/plain"}), UTF8Types(types));
   EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::UrlType(),
                                              ClipboardBuffer::kCopyPaste,
@@ -108,7 +110,7 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
       ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 
-  // With filenames data, available types should be 'text/uri-list'.
+  // Filenames data uses mime type 'text/uri-list'.
   data = std::make_unique<ClipboardData>();
   data->set_filenames({FileInfo(base::FilePath("/path"), base::FilePath())});
   clipboard()->WriteClipboardData(std::move(data));
@@ -119,6 +121,26 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
                                               ClipboardBuffer::kCopyPaste,
                                               /*data_dst=*/nullptr));
   EXPECT_TRUE(clipboard()->IsFormatAvailable(
+      ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
+
+  // Filenames data uses mime type 'text/uri-list', but clients can also set
+  // 'text/uri-list' as one of the custom data types. When it is set as a custom
+  // type, it will be returned from ReadAvailableTypes(), but
+  // IsFormatAvailable(FilenamesType()) is false.
+  data = std::make_unique<ClipboardData>();
+  base::flat_map<std::u16string, std::u16string> custom_data;
+  custom_data[u"text/uri-list"] = u"data";
+  base::Pickle pickle;
+  ui::WriteCustomDataToPickle(custom_data, &pickle);
+  data->SetCustomData(
+      ui::ClipboardFormatType::WebCustomDataType().Serialize(),
+      std::string(static_cast<const char*>(pickle.data()), pickle.size()));
+  clipboard()->WriteClipboardData(std::move(data));
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+  EXPECT_EQ(std::vector<std::string>({"text/uri-list"}), UTF8Types(types));
+  EXPECT_FALSE(clipboard()->IsFormatAvailable(
       ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 }

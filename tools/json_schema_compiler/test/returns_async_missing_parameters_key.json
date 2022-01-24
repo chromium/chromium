@@ -1,0 +1,23 @@
+[
+  {
+    "namespace": "returnsAsyncMissingParametersKey",
+    "description": "Invalid schema, due to the returns_async not specifying the parameters key.",
+    "functions": [
+      {
+        "name": "asyncNoParametersKey",
+        "type": "function",
+        "description": "Forgets the parameters key on the returns_async.",
+        "parameters": [
+          {
+            "type": "any",
+            "name": "anyName",
+            "optional": true
+          }
+        ],
+        "returns_async": {
+          "name": "callback"
+        }
+      }
+    ]
+  }
+]

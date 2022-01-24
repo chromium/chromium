@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_HOST_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/fullscreen_control/fullscreen_control_popup.h"
 #include "ui/events/event_observer.h"
@@ -33,6 +32,10 @@ class EventMonitor;
 class FullscreenControlHost : public ui::EventObserver {
  public:
   explicit FullscreenControlHost(BrowserView* browser_view);
+
+  FullscreenControlHost(const FullscreenControlHost&) = delete;
+  FullscreenControlHost& operator=(const FullscreenControlHost&) = delete;
+
   ~FullscreenControlHost() override;
 
   static bool IsFullscreenExitUIEnabled();
@@ -87,8 +90,6 @@ class FullscreenControlHost : public ui::EventObserver {
 
   // Used to allow tests to wait for popup visibility changes.
   base::OnceClosure on_popup_visibility_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControlHost);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_HOST_H_

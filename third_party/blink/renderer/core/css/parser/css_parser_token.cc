@@ -31,7 +31,7 @@ CSSParserToken::CSSParserToken(CSSParserTokenType type,
       unit_(static_cast<unsigned>(CSSPrimitiveValue::UnitType::kNumber)) {
   DCHECK_EQ(type, kNumberToken);
   numeric_value_ =
-      clampTo<double>(numeric_value, -std::numeric_limits<float>::max(),
+      ClampTo<double>(numeric_value, -std::numeric_limits<float>::max(),
                       std::numeric_limits<float>::max());
 }
 

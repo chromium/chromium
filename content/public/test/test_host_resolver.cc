@@ -9,6 +9,7 @@
 #include "content/browser/notification_service_impl.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace content {
@@ -27,31 +28,16 @@ class LocalHostResolverProc : public net::HostResolverProc {
               net::HostResolverFlags host_resolver_flags,
               net::AddressList* addrlist,
               int* os_error) override {
-    const char* kLocalHostNames[] = {"localhost", "127.0.0.1", "::1"};
-    bool local = false;
-
-    if (host == net::GetHostName()) {
-      local = true;
-    } else {
-      for (size_t i = 0; i < base::size(kLocalHostNames); i++)
-        if (host == kLocalHostNames[i]) {
-          local = true;
-          break;
-        }
-    }
-
     // To avoid depending on external resources and to reduce (if not preclude)
     // network interactions from tests, we simulate failure for non-local DNS
     // queries, rather than perform them.
     // If you really need to make an external DNS query, use
     // net::RuleBasedHostResolverProc and its AllowDirectLookup method.
-    // TODO(crbug.com/1040686): Simulate failure using ERR_NAME_NOT_RESOLVED
-    // rather than ERR_NOT_IMPLEMENTED.
-    if (!local) {
+    if (host != net::GetHostName() && !net::IsLocalHostname(host)) {
       DVLOG(1) << "To avoid external dependencies, simulating failure for "
                   "external DNS lookup of "
                << host;
-      return net::ERR_NOT_IMPLEMENTED;
+      return net::ERR_NAME_NOT_RESOLVED;
     }
 
     return ResolveUsingPrevious(host, address_family, host_resolver_flags,
@@ -61,7 +47,7 @@ class LocalHostResolverProc : public net::HostResolverProc {
  private:
   ~LocalHostResolverProc() override {}
 };
-}
+}  // namespace
 
 TestHostResolver::TestHostResolver()
     : local_resolver_(new LocalHostResolverProc()),

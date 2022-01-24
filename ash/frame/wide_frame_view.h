@@ -43,6 +43,10 @@ class ASH_EXPORT WideFrameView
       public FrameContextMenuController::Delegate {
  public:
   explicit WideFrameView(views::Widget* target);
+
+  WideFrameView(const WideFrameView&) = delete;
+  WideFrameView& operator=(const WideFrameView&) = delete;
+
   ~WideFrameView() override;
 
   // Initialize |immersive_fullscreen_controller| so that the controller reveals
@@ -98,8 +102,6 @@ class ASH_EXPORT WideFrameView
   void PaintAsActiveChanged();
 
   base::CallbackListSubscription paint_as_active_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(WideFrameView);
 };
 
 }  // namespace ash

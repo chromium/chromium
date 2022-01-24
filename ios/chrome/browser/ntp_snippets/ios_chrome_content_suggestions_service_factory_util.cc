@@ -150,9 +150,7 @@ void RegisterRemoteSuggestionsProvider(ContentSuggestionsService* service,
   // This pref is also used for logging. If it is changed, change it in the
   // other places.
   std::vector<std::string> prefs_vector = {prefs::kArticlesForYouEnabled};
-  if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI)) {
-    prefs_vector.push_back(prefs::kNTPContentSuggestionsEnabled);
-  }
+  prefs_vector.push_back(prefs::kNTPContentSuggestionsEnabled);
 
   auto provider = std::make_unique<RemoteSuggestionsProviderImpl>(
       service, prefs, GetApplicationContext()->GetApplicationLocale(),

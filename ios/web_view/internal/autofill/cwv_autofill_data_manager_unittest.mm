@@ -21,6 +21,7 @@
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/public/cwv_autofill_data_manager_observer.h"
+#import "ios/web_view/public/cwv_credential_provider_extension_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -57,8 +58,10 @@ class CWVAutofillDataManagerTest : public PlatformTest {
     personal_data_manager_->SetAutofillCreditCardEnabled(true);
     personal_data_manager_->SetAutofillWalletImportEnabled(true);
 
-    password_store_ = new password_manager::TestPasswordStore();
-    password_store_->Init(nullptr);
+    password_store_ = new password_manager::TestPasswordStore(
+        password_manager::IsAccountStore(true));
+    password_store_->Init(/*prefs=*/nullptr,
+                          /*affiliated_match_helper=*/nullptr);
 
     autofill_data_manager_ = [[CWVAutofillDataManager alloc]
         initWithPersonalDataManager:personal_data_manager_.get()
@@ -230,6 +233,61 @@ TEST_F(CWVAutofillDataManagerTest, DeletePassword) {
   [autofill_data_manager_ deletePassword:passwords[0]];
   passwords = FetchPasswords();
   EXPECT_EQ(0ul, passwords.count);
+}
+
+// Tests CWVAutofillDataManager invokes password did change callback.
+TEST_F(CWVAutofillDataManagerTest, PasswordsDidChangeCallback) {
+  // OCMock objects are often autoreleased, but it must be destroyed before this
+  // test exits to avoid holding on to |autofill_data_manager_|.
+  @autoreleasepool {
+    id observer = OCMProtocolMock(@protocol(CWVAutofillDataManagerObserver));
+    [autofill_data_manager_ addObserver:observer];
+
+    password_manager::PasswordForm test_password = GetTestPassword();
+    [[observer expect]
+               autofillDataManager:autofill_data_manager_
+        didChangePasswordsByAdding:[OCMArg checkWithBlock:^BOOL(
+                                               NSArray<CWVPassword*>* added) {
+          EXPECT_EQ(1U, added.count);
+          CWVPassword* added_password = added.firstObject;
+          return *[added_password internalPasswordForm] == test_password;
+        }]
+                          updating:@[]
+                          removing:@[]];
+
+    // AddLogin is async, so the run loop needs to run until idle so the
+    // callback will be invoked.
+    password_store_->AddLogin(test_password);
+    base::RunLoop().RunUntilIdle();
+
+    [observer verify];
+  }
+}
+
+// Tests CWVAutofillDataManager can add a new password created from the
+// credential provider extension.
+TEST_F(CWVAutofillDataManagerTest,
+       AddNewPasswordFromCredentialProviderExtension) {
+  NSString* keychain_identifier = @"keychain-identifier";
+  [CWVCredentialProviderExtensionUtils
+      storePasswordForKeychainIdentifier:keychain_identifier
+                                password:@"testpassword"];
+  [autofill_data_manager_ addNewPasswordForUsername:@"testusername"
+                                  serviceIdentifier:@"https://www.chromium.org/"
+                                 keychainIdentifier:keychain_identifier];
+
+  NSArray<CWVPassword*>* passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+  CWVPassword* password = passwords.firstObject;
+  EXPECT_NSEQ(@"testusername", password.username);
+
+  // The following expectation fails because the TestPasswordStore does not
+  // use the LoginDatabase underneath. A LoginDatabase will properly decrypt
+  // the password from the keychain identifier and fill it out.
+  // EXPECT_NSEQ(@"testpassword", password.password);
+
+  EXPECT_NSEQ(@"https://www.chromium.org/", password.site);
+  EXPECT_NSEQ(keychain_identifier, password.keychainIdentifier);
 }
 
 }  // namespace ios_web_view

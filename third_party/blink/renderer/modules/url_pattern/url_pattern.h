@@ -1,4 +1,3 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +6,7 @@
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_component.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/liburlpattern/parse.h"
@@ -14,7 +14,6 @@
 namespace blink {
 
 class ExceptionState;
-class URLPatternComponentResult;
 class URLPatternInit;
 class URLPatternResult;
 
@@ -69,23 +68,20 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
   String search() const;
   String hash() const;
 
+  static int compareComponent(const V8URLPatternComponent& component,
+                              const URLPattern* left,
+                              const URLPattern* right);
+
   void Trace(Visitor* visitor) const override;
 
  private:
-  // A utility function to determine if a given |input| matches the pattern
-  // or not.  Returns |true| if there is a match and |false| otherwise.  If
-  // |result| is not nullptr then the URLPatternResult contents will be filled.
+  // A utility function to determine if a given `input` matches the pattern or
+  // not.  Returns `true` if there is a match and `false` otherwise.  If
+  // `result` is not nullptr then the URLPatternResult contents will be filled.
   bool Match(const V8URLPatternInput* input,
              const String& base_url,
              URLPatternResult* result,
              ExceptionState& exception_state) const;
-
-  // A utility function that constructs a URLPatternComponentResult for
-  // a given |component|, |input|, and |group_list|.
-  static URLPatternComponentResult* MakeURLPatternComponentResult(
-      Component* component,
-      const String& input,
-      const Vector<String>& group_values);
 
   // The compiled patterns for each URL component.
   Member<Component> protocol_;

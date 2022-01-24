@@ -26,6 +26,21 @@
       #spinner-container {
         height: 200px;
       }
+
+      .inline-text {
+        margin-bottom: 12px;
+      }
+
+      .peer-card {
+        background-color: var(--cr-card-background-color);
+        border-radius: var(--cr-card-border-radius);
+        box-shadow: var(--cr-card-shadow);
+        flex: 1;
+        margin-bottom: 8px;
+        padding-inline-end: 10px;
+        padding-inline-start: 10px;
+        padding-top: 6px;
+      }
     </style>
 
     <template is="dom-if" if="[[!managedProperties_]]" restamp>
@@ -67,10 +82,6 @@
 
       <!-- VPN -->
       <template is="dom-if" if="[[showVpn_]]" restamp>
-        <network-config-input label="[[i18n('OncVPN-Host')]]"
-            value="{{configProperties_.typeConfig.vpn.host}}"
-            property="[[managedProperties_.typeProperties.vpn.host]]">
-        </network-config-input>
         <network-config-input label="[[i18n('OncName')]]"
             value="{{configProperties_.name}}"
             readonly="[[hasGuid_(guid)]]">
@@ -79,7 +90,13 @@
             value="{{vpnType_}}" items="[[vpnTypeItems_]]"
             onc-prefix="VPN.Type" disabled="[[hasGuid_(guid)]]">
         </network-config-select>
-        <template is="dom-if" if="[[!showVpn_.OpenVPN]]">
+        <template is="dom-if" if="[[!showVpn_.WireGuard]]">
+          <network-config-input label="[[i18n('OncVPN-Host')]]"
+              value="{{configProperties_.typeConfig.vpn.host}}"
+              property="[[managedProperties_.typeProperties.vpn.host]]">
+          </network-config-input>
+        </template>
+        <template is="dom-if" if="[[showVpn_.L2TPIPsec]]">
           <network-config-input label="[[i18n('OncVPN-L2TP-Username')]]"
               value="{{configProperties_.typeConfig.vpn.l2tp.username}}"
               property="[[managedProperties_.typeProperties.vpn.l2tp.username]]">
@@ -127,10 +144,52 @@
               property="[[getManagedVpnClientCertType_(managedProperties_)]]">
           </network-config-select>
         </template>
-        <network-config-toggle label="[[i18n('networkConfigSaveCredentials')]]"
-            checked="{{vpnSaveCredentials_}}"
-            property="[[getManagedVpnSaveCredentials_(managedProperties_)]]">
-        </network-config-toggle>
+        <template is="dom-if" if="[[showVpn_.WireGuard]]">
+          <network-config-input label="[[i18n('OncVPN-WireGuard-IPAddress')]]"
+              id="wireguard-ip-input"
+              value="{{ipAddressInput_}}"
+              property="[[managedProperties_.staticIpConfig.ipAddress]]">
+          </network-config-input>
+          <network-config-input label="[[i18n('OncVPN-WireGuard-DNS')]]"
+              value="{{nameServersInput_}}"
+              property="[[managedProperties_.staticIpConfig.nameServers]]">
+          </network-config-input>
+          <network-config-select label="[[i18n('OncVPN-WireGuard-Key')]]"
+              value="{{wireguardKeyType_}}" items="[[wireguardKeyTypeItems_]]"
+              onc-prefix="VPN.WireGuard.Key">
+          </network-config-select>
+          <template is="dom-if" if="[[isWireGuardUserPrivateKeyInputActive_]]">
+            <network-password-input label="[[i18n('OncVPN-WireGuard-PrivateKey')]]"
+                id="wireguardPrivateKeyInput"
+                value="{{configProperties_.typeConfig.vpn.wireguard.privateKey}}"
+                property="[[managedProperties_.typeProperties.vpn.wireguard.privateKey]]">
+            </network-password-input>
+          </template>
+          <div class="peer-card">
+            <div class="inline-text">[[i18n('OncVPN-WireGuard-Peer')]]</div>
+            <network-config-input label="[[i18n('OncVPN-WireGuard-Peer-PublicKey')]]"
+                value="{{configProperties_.typeConfig.vpn.wireguard.peers.0.publicKey}}">
+            </network-config-input>
+            <network-password-input label="[[i18n('OncVPN-WireGuard-Peer-PresharedKey')]]"
+                value="{{configProperties_.typeConfig.vpn.wireguard.peers.0.presharedKey}}">
+            </network-password-input>
+            <network-config-input label="[[i18n('OncVPN-WireGuard-Peer-Endpoint')]]"
+                value="{{configProperties_.typeConfig.vpn.wireguard.peers.0.endpoint}}">
+            </network-config-input>
+            <network-config-input label="[[i18n('OncVPN-WireGuard-Peer-AllowedIP')]]"
+                value="{{configProperties_.typeConfig.vpn.wireguard.peers.0.allowedIps}}">
+            </network-config-input>
+            <network-config-input label="[[i18n('OncVPN-WireGuard-Peer-PersistentKeepalive')]]"
+                value="{{configProperties_.typeConfig.vpn.wireguard.peers.0.persistentKeepalive}}">
+            </network-config-input>
+          </div>
+        </template>
+        <template is="dom-if" if="[[!showVpn_.WireGuard]]">
+          <network-config-toggle label="[[i18n('networkConfigSaveCredentials')]]"
+              checked="{{vpnSaveCredentials_}}"
+              property="[[getManagedVpnSaveCredentials_(managedProperties_)]]">
+          </network-config-toggle>
+        </template>
       </template>
 
       <!-- EAP (WiFi, Ethernet) -->
@@ -154,8 +213,18 @@
         </network-config-select>
         <network-config-input label="[[i18n('OncEAP-SubjectMatch')]]"
             value="{{eapProperties_.subjectMatch}}"
-            hidden="[[!showEap_.SubjectMatch]]"
+            hidden="[[!showEap_.EapServerCertMatch]]"
             property="[[managedEapProperties_.subjectMatch]]">
+        </network-config-input>
+        <network-config-input label="[[i18n('OncEAP-SubjectAltNameMatch')]]"
+            value="{{serializedSubjectAltNameMatch_}}"
+            hidden="[[!showEap_.EapServerCertMatch]]"
+            property="[[managedEapProperties_.subjectAltNameMatch]]">
+        </network-config-input>
+        <network-config-input label="[[i18n('OncEAP-DomainSuffixMatch')]]"
+            value="{{serializedDomainSuffixMatch_}}"
+            hidden="[[!showEap_.EapServerCertMatch]]"
+            property="[[managedEapProperties_.domainSuffixMatch]]">
         </network-config-input>
         <network-config-select id="userCert" label="[[i18n('OncEAP-UserCert')]]"
             value="{{selectedUserCertHash_}}" items="[[userCerts_]]"

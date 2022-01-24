@@ -35,7 +35,6 @@ class BASE_EXPORT ScopedCOMInitializer : public ScopedWindowsThreadEnvironment {
 
   // Enum values which enumerates uninitialization modes for the COM library.
   enum class Uninitialization {
-
     // Default value. Used in threads where no third-party code is executed.
     kAllow,
 
@@ -53,6 +52,9 @@ class BASE_EXPORT ScopedCOMInitializer : public ScopedWindowsThreadEnvironment {
       SelectMTA mta,
       Uninitialization uninitialization = Uninitialization::kAllow);
 
+  ScopedCOMInitializer(const ScopedCOMInitializer&) = delete;
+  ScopedCOMInitializer& operator=(const ScopedCOMInitializer&) = delete;
+
   ~ScopedCOMInitializer() override;
 
   // ScopedWindowsThreadEnvironment:
@@ -67,8 +69,6 @@ class BASE_EXPORT ScopedCOMInitializer : public ScopedWindowsThreadEnvironment {
   HRESULT hr_ = S_OK;
   Microsoft::WRL::ComPtr<internal::ComInitBalancer> com_balancer_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCOMInitializer);
 };
 
 }  // namespace win

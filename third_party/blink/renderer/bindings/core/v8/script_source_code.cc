@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
 namespace blink {
 
@@ -48,15 +48,7 @@ String SourceMapUrlFromResponse(const ResourceResponse& response) {
   return response.HttpHeaderField(http_names::kXSourceMap);
 }
 
-const base::Feature kUnsafeScriptReportPostRedirectURL{
-    "UnsafeScriptReportPostRedirectURL", base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace
-
-// static
-bool ScriptSourceCode::UsePostRedirectURL() {
-  return base::FeatureList::IsEnabled(kUnsafeScriptReportPostRedirectURL);
-}
 
 ScriptSourceCode::ScriptSourceCode(
     const ParkableString& source,
@@ -87,15 +79,15 @@ ScriptSourceCode::ScriptSourceCode(
                        start_position) {}
 
 ScriptSourceCode::ScriptSourceCode(ScriptStreamer* streamer,
+                                   ScriptCacheConsumer* cache_consumer,
                                    ScriptResource* resource,
                                    ScriptStreamer::NotStreamingReason reason)
     : source_(TreatNullSourceAsEmpty(resource->SourceText())),
       cache_handler_(resource->CacheHandler()),
       streamer_(streamer),
+      cache_consumer_(cache_consumer),
       not_streaming_reason_(reason),
-      url_(StripFragmentIdentifier(
-          UsePostRedirectURL() ? resource->GetResponse().CurrentRequestUrl()
-                               : resource->Url())),
+      url_(StripFragmentIdentifier(resource->Url())),
       source_map_url_(SourceMapUrlFromResponse(resource->GetResponse())),
       start_position_(TextPosition::MinimumPosition()),
       source_location_type_(ScriptSourceLocationType::kExternalFile) {
@@ -118,6 +110,7 @@ ScriptSourceCode::~ScriptSourceCode() = default;
 void ScriptSourceCode::Trace(Visitor* visitor) const {
   visitor->Trace(cache_handler_);
   visitor->Trace(streamer_);
+  visitor->Trace(cache_consumer_);
 }
 
 }  // namespace blink

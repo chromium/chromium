@@ -25,10 +25,9 @@ class EmitMetricsDBTask : public history::HistoryDBTask {
 
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
-    EmitDomainMixingMetrics(
-        db->GetGoogleDomainVisitsFromSearchesInRange(
-            begin_time_ - base::TimeDelta::FromDays(29), end_time_),
-        begin_time_);
+    EmitDomainMixingMetrics(db->GetGoogleDomainVisitsFromSearchesInRange(
+                                begin_time_ - base::Days(29), end_time_),
+                            begin_time_);
     return true;
   }
 
@@ -79,7 +78,7 @@ void GoogleSearchDomainMixingMetricsEmitter::Start() {
     // from today 4am. This is designed so that the time windows used to compute
     // domain mixing are cut at times when the user is likely to be inactive.
     last_domain_mixing_metrics_time =
-        clock_->Now().LocalMidnight() + base::TimeDelta::FromHours(4);
+        clock_->Now().LocalMidnight() + base::Hours(4);
     prefs_->SetTime(kLastMetricsTime, last_domain_mixing_metrics_time);
   }
   ui_thread_task_runner_->PostDelayedTask(
@@ -87,9 +86,8 @@ void GoogleSearchDomainMixingMetricsEmitter::Start() {
       base::BindOnce(&GoogleSearchDomainMixingMetricsEmitter::EmitMetrics,
                      base::Unretained(this)),
       // Delay at least ten seconds to avoid delaying browser startup.
-      std::max(base::TimeDelta::FromSeconds(10),
-               last_domain_mixing_metrics_time + base::TimeDelta::FromDays(1) -
-                   clock_->Now()));
+      std::max(base::Seconds(10), last_domain_mixing_metrics_time +
+                                      base::Days(1) - clock_->Now()));
 }
 
 void GoogleSearchDomainMixingMetricsEmitter::SetClockForTesting(
@@ -116,12 +114,11 @@ void GoogleSearchDomainMixingMetricsEmitter::EmitMetrics() {
   history_service_->ScheduleDBTask(
       FROM_HERE,
       std::make_unique<EmitMetricsDBTask>(
-          begin_time, begin_time + base::TimeDelta::FromDays(days_to_compute),
-          prefs_),
+          begin_time, begin_time + base::Days(days_to_compute), prefs_),
       &task_tracker_);
   if (!timer_->IsRunning()) {
     // Run the task daily from now on.
-    timer_->Start(FROM_HERE, base::TimeDelta::FromDays(1),
+    timer_->Start(FROM_HERE, base::Days(1),
                   base::BindRepeating(
                       &GoogleSearchDomainMixingMetricsEmitter::EmitMetrics,
                       base::Unretained(this)));

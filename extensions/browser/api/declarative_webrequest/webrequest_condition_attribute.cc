@@ -145,7 +145,7 @@ WebRequestConditionAttributeResourceType::Create(
     return nullptr;
   }
 
-  size_t number_types = value_as_list->GetSize();
+  size_t number_types = value_as_list->GetList().size();
 
   std::vector<WebRequestResourceType> passed_types;
   passed_types.reserve(number_types);
@@ -287,6 +287,9 @@ bool WebRequestConditionAttributeContentType::Equals(
 // set of test groups iff it passes at least one test group.
 class HeaderMatcher {
  public:
+  HeaderMatcher(const HeaderMatcher&) = delete;
+  HeaderMatcher& operator=(const HeaderMatcher&) = delete;
+
   ~HeaderMatcher();
 
   // Creates an instance based on a list |tests| of test groups, encoded as
@@ -309,6 +312,10 @@ class HeaderMatcher {
     static std::unique_ptr<StringMatchTest> Create(const base::Value& data,
                                                    MatchType type,
                                                    bool case_sensitive);
+
+    StringMatchTest(const StringMatchTest&) = delete;
+    StringMatchTest& operator=(const StringMatchTest&) = delete;
+
     ~StringMatchTest();
 
     // Does |str| pass |this| StringMatchTest?
@@ -322,13 +329,15 @@ class HeaderMatcher {
     const std::string data_;
     const MatchType type_;
     const base::CompareCase case_sensitive_;
-    DISALLOW_COPY_AND_ASSIGN(StringMatchTest);
   };
 
   // Represents a test group -- a set of string matching tests to be applied to
   // both the header name and value.
   class HeaderMatchTest {
    public:
+    HeaderMatchTest(const HeaderMatchTest&) = delete;
+    HeaderMatchTest& operator=(const HeaderMatchTest&) = delete;
+
     ~HeaderMatchTest();
 
     // Gets the test group description in |tests| and creates the corresponding
@@ -349,16 +358,12 @@ class HeaderMatcher {
     const std::vector<std::unique_ptr<const StringMatchTest>> name_match_;
     // Tests to be passed by a header's value.
     const std::vector<std::unique_ptr<const StringMatchTest>> value_match_;
-
-    DISALLOW_COPY_AND_ASSIGN(HeaderMatchTest);
   };
 
   explicit HeaderMatcher(
       std::vector<std::unique_ptr<const HeaderMatchTest>> tests);
 
   const std::vector<std::unique_ptr<const HeaderMatchTest>> tests_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeaderMatcher);
 };
 
 // HeaderMatcher implementation.
@@ -370,12 +375,12 @@ std::unique_ptr<const HeaderMatcher> HeaderMatcher::Create(
     const base::ListValue* tests) {
   std::vector<std::unique_ptr<const HeaderMatchTest>> header_tests;
   for (const auto& entry : tests->GetList()) {
-    const base::DictionaryValue* tests = nullptr;
-    if (!entry.GetAsDictionary(&tests))
+    const base::DictionaryValue* tests_dict = nullptr;
+    if (!entry.GetAsDictionary(&tests_dict))
       return nullptr;
 
     std::unique_ptr<const HeaderMatchTest> header_test(
-        HeaderMatchTest::Create(tests));
+        HeaderMatchTest::Create(tests_dict));
     if (header_test.get() == nullptr)
       return nullptr;
     header_tests.push_back(std::move(header_test));
@@ -488,19 +493,20 @@ HeaderMatcher::HeaderMatchTest::Create(const base::DictionaryValue* tests) {
     }
     const base::Value* content = &it.value();
 
-    std::vector<std::unique_ptr<const StringMatchTest>>* tests =
+    std::vector<std::unique_ptr<const StringMatchTest>>* matching_tests =
         is_name ? &name_match : &value_match;
     switch (content->type()) {
       case base::Value::Type::LIST: {
         const base::ListValue* list = nullptr;
         CHECK(content->GetAsList(&list));
-        for (const auto& it : list->GetList()) {
-          tests->push_back(StringMatchTest::Create(it, match_type, !is_name));
+        for (const auto& elem : list->GetList()) {
+          matching_tests->push_back(
+              StringMatchTest::Create(elem, match_type, !is_name));
         }
         break;
       }
       case base::Value::Type::STRING: {
-        tests->push_back(
+        matching_tests->push_back(
             StringMatchTest::Create(*content, match_type, !is_name));
         break;
       }

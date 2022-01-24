@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -47,6 +46,11 @@ class VIZ_SERVICE_EXPORT OutputSurfaceProviderImpl
       bool headless);
   // Software compositing only.
   explicit OutputSurfaceProviderImpl(bool headless);
+
+  OutputSurfaceProviderImpl(const OutputSurfaceProviderImpl&) = delete;
+  OutputSurfaceProviderImpl& operator=(const OutputSurfaceProviderImpl&) =
+      delete;
+
   ~OutputSurfaceProviderImpl() override;
 
   std::unique_ptr<DisplayCompositorMemoryAndTaskController> CreateGpuDependency(
@@ -87,8 +91,6 @@ class VIZ_SERVICE_EXPORT OutputSurfaceProviderImpl
   std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
 
   const bool headless_;
-
-  DISALLOW_COPY_AND_ASSIGN(OutputSurfaceProviderImpl);
 };
 
 }  // namespace viz

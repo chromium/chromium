@@ -10,7 +10,7 @@
       ]
     },
     {
-      "name": "LayoutNGTableCellNew TD id='target'",
+      "name": "LayoutNGTableCell TD id='target'",
       "bounds": [88, 96],
       "transform": 1
     }

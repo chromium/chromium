@@ -57,8 +57,9 @@ gfx::Size DialogTestBrowserWindow::GetMaximumDialogSize() {
 #if defined(OS_MAC)
   // Zero-size windows aren't allowed on Mac.
   return gfx::Size(1, 1);
-#endif
+#else
   return gfx::Size();
+#endif
 }
 
 void DialogTestBrowserWindow::AddObserver(ModalDialogHostObserver* observer) {

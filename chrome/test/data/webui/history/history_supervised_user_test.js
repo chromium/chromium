@@ -5,7 +5,7 @@
 import {BrowserService, ensureLazyLoaded} from 'chrome://history/history.js';
 import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
 import {createHistoryEntry, createHistoryInfo} from 'chrome://test/history/test_util.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {flushTasks} from 'chrome://test/test_util.js';
 
 suite('history-list supervised-user', function() {
   let app;
@@ -55,6 +55,7 @@ suite('history-list supervised-user', function() {
   test('remove history menu button disabled', function() {
     const listContainer = app.$['history'];
     listContainer.$.sharedMenu.get();
-    assertTrue(listContainer.$$('#menuRemoveButton').hidden);
+    assertTrue(
+        listContainer.shadowRoot.querySelector('#menuRemoveButton').hidden);
   });
 });

@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest,
   profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), error_url_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url_));
   endpoint.WaitForReport();
   endpoint.clear_last_report();
 

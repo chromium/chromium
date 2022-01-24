@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_RW_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_RW_BUFFER_H_
 
+#include "base/callback.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
@@ -42,6 +43,12 @@ class PLATFORM_EXPORT RWBuffer {
   };
 
   explicit RWBuffer(size_t initialCapacity = 0);
+  // |writer| is a function used to initialize the RWBuffer.
+  // |writer| is responsible for not writing off the edge of the buffer.
+  // |writer| should return the amount of memory written to the buffer.
+  RWBuffer(base::OnceCallback<size_t(void*, size_t)> writer,
+           size_t initial_capacity);
+
   ~RWBuffer();
 
   RWBuffer& operator=(const RWBuffer&) = delete;

@@ -13,8 +13,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kMinGapBetweenPeriodicSyncEvents =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kMinGapBetweenPeriodicSyncEvents = base::Seconds(5);
 
 }  // namespace
 
@@ -23,6 +22,12 @@ namespace content {
 class PeriodicBackgroundSyncBrowserTest : public BackgroundSyncBaseBrowserTest {
  public:
   PeriodicBackgroundSyncBrowserTest() {}
+
+  PeriodicBackgroundSyncBrowserTest(const PeriodicBackgroundSyncBrowserTest&) =
+      delete;
+  PeriodicBackgroundSyncBrowserTest& operator=(
+      const PeriodicBackgroundSyncBrowserTest&) = delete;
+
   ~PeriodicBackgroundSyncBrowserTest() override {}
 
   bool Register(const std::string& tag, int min_interval_ms);
@@ -39,9 +44,6 @@ class PeriodicBackgroundSyncBrowserTest : public BackgroundSyncBaseBrowserTest {
 
  protected:
   base::SimpleTestClock clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PeriodicBackgroundSyncBrowserTest);
 };
 
 bool PeriodicBackgroundSyncBrowserTest::Register(const std::string& tag,

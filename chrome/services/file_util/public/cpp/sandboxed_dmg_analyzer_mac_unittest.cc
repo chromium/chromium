@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -63,6 +62,9 @@ class SandboxedDMGAnalyzerTest : public testing::Test {
                   safe_browsing::ArchiveAnalyzerResults* results)
         : next_closure_(std::move(next_closure)), results_(results) {}
 
+    ResultsGetter(const ResultsGetter&) = delete;
+    ResultsGetter& operator=(const ResultsGetter&) = delete;
+
     SandboxedDMGAnalyzer::ResultCallback GetCallback() {
       return base::BindOnce(&ResultsGetter::ResultsCallback,
                             base::Unretained(this));
@@ -76,8 +78,6 @@ class SandboxedDMGAnalyzerTest : public testing::Test {
 
     base::OnceClosure next_closure_;
     safe_browsing::ArchiveAnalyzerResults* results_;
-
-    DISALLOW_COPY_AND_ASSIGN(ResultsGetter);
   };
 
   content::BrowserTaskEnvironment task_environment_;

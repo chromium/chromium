@@ -19,10 +19,10 @@
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -31,9 +31,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "sql/database_memory_dump_provider.h"
 #include "sql/initialization.h"
@@ -72,7 +74,7 @@ class ScopedBusyTimeout {
 // If turning it on fails, then most likely nothing will work, whereas
 // if turning it off fails, it only matters if some code attempts to
 // continue working with the database and tries to modify the
-// sqlite_master table (none of our code does this).
+// sqlite_schema table (none of our code does this).
 class ScopedWritableSchema {
  public:
   explicit ScopedWritableSchema(sqlite3* db) : db_(db) {
@@ -162,7 +164,7 @@ std::string AsUTF8ForSQL(const base::FilePath& path) {
 namespace sql {
 
 // static
-Database::ErrorExpecterCallback* Database::current_expecter_cb_ = nullptr;
+Database::ScopedErrorExpecterCallback* Database::current_expecter_cb_ = nullptr;
 
 // static
 bool Database::IsExpectedSqliteError(int error) {
@@ -172,13 +174,16 @@ bool Database::IsExpectedSqliteError(int error) {
 }
 
 // static
-void Database::SetErrorExpecter(Database::ErrorExpecterCallback* cb) {
+void Database::SetScopedErrorExpecter(
+    Database::ScopedErrorExpecterCallback* cb,
+    base::PassKey<test::ScopedErrorExpecter>) {
   CHECK(!current_expecter_cb_);
   current_expecter_cb_ = cb;
 }
 
 // static
-void Database::ResetErrorExpecter() {
+void Database::ResetScopedErrorExpecter(
+    base::PassKey<test::ScopedErrorExpecter>) {
   CHECK(current_expecter_cb_);
   current_expecter_cb_ = nullptr;
 }
@@ -427,7 +432,8 @@ void Database::ReleaseCacheMemoryIfNeeded(bool implicit_change_performed) {
     --total_changes_at_last_release_;
 
   // Cached pages may be re-used within the same transaction.
-  if (transaction_nesting())
+  DCHECK_GE(transaction_nesting_, 0);
+  if (transaction_nesting_)
     return;
 
   // If no changes have been made, skip flushing.  This allows the first page of
@@ -518,7 +524,7 @@ std::string Database::CollectErrorInfo(int error, Statement* stmt) const {
 
     debug_info += "schema:\n";
 
-    // sqlite_master has columns:
+    // sqlite_schema has columns:
     //   type - "index" or "table".
     //   name - name of created element.
     //   tbl_name - name of element, or target table in case of index.
@@ -529,7 +535,7 @@ std::string Database::CollectErrorInfo(int error, Statement* stmt) const {
     // database.  The COALESCE is because certain automatic elements will have a
     // |name| but no |sql|,
     static constexpr char kSchemaSql[] =
-        "SELECT COALESCE(sql,name) FROM sqlite_master";
+        "SELECT COALESCE(sql,name) FROM sqlite_schema";
     rc = sqlite3_prepare_v3(db_, kSchemaSql, sizeof(kSchemaSql),
                             SQLITE_PREPARE_NO_VTAB, &sqlite_statement,
                             /* pzTail= */ nullptr);
@@ -781,6 +787,7 @@ bool Database::Raze() {
     return false;
   }
 
+  DCHECK_GE(transaction_nesting_, 0);
   if (transaction_nesting_ > 0) {
     DLOG(DCHECK) << "Cannot raze within a transaction";
     return false;
@@ -1016,6 +1023,7 @@ bool Database::BeginTransaction() {
   }
 
   bool success = true;
+  DCHECK_GE(transaction_nesting_, 0);
   if (!transaction_nesting_) {
     needs_rollback_ = false;
 
@@ -1023,19 +1031,21 @@ bool Database::BeginTransaction() {
     if (!begin.Run())
       return false;
   }
-  transaction_nesting_++;
+  ++transaction_nesting_;
   return success;
 }
 
 void Database::RollbackTransaction() {
   TRACE_EVENT0("sql", "Database::RollbackTransaction");
 
+  DCHECK_GE(transaction_nesting_, 0);
   if (!transaction_nesting_) {
     DCHECK(poisoned_) << "Rolling back a nonexistent transaction";
     return;
   }
 
-  transaction_nesting_--;
+  DCHECK_GT(transaction_nesting_, 0);
+  --transaction_nesting_;
 
   if (transaction_nesting_ > 0) {
     // Mark the outermost transaction as needing rollback.
@@ -1049,11 +1059,14 @@ void Database::RollbackTransaction() {
 bool Database::CommitTransaction() {
   TRACE_EVENT0("sql", "Database::CommitTransaction");
 
+  DCHECK_GE(transaction_nesting_, 0);
   if (!transaction_nesting_) {
     DCHECK(poisoned_) << "Committing a nonexistent transaction";
     return false;
   }
-  transaction_nesting_--;
+
+  DCHECK_GT(transaction_nesting_, 0);
+  --transaction_nesting_;
 
   if (transaction_nesting_ > 0) {
     // Mark any nested transactions as failing after we've already got one.
@@ -1078,6 +1091,7 @@ bool Database::CommitTransaction() {
 void Database::RollbackAllTransactions() {
   TRACE_EVENT0("sql", "Database::RollbackAllTransactions");
 
+  DCHECK_GE(transaction_nesting_, 0);
   if (transaction_nesting_ > 0) {
     transaction_nesting_ = 0;
     DoRollback();
@@ -1329,7 +1343,7 @@ scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
   }
 
 #if DCHECK_IS_ON()
-  DCHECK_EQ(unused_sql, sql + std::strlen(sql))
+  DCHECK_EQ(unused_sql, sql + strlen(sql))
       << "Unused text: " << std::string(unused_sql) << "\n"
       << "in prepared SQL statement: " << std::string(sql);
 #endif  // DCHECK_IS_ON()
@@ -1344,7 +1358,7 @@ std::string Database::GetSchema() {
   // order for something like this is questionable.
   static const char kSql[] =
       "SELECT type, name, tbl_name, sql "
-      "FROM sqlite_master ORDER BY 1, 2, 3, 4";
+      "FROM sqlite_schema ORDER BY 1, 2, 3, 4";
   Statement statement(GetUniqueStatement(kSql));
 
   std::string schema;
@@ -1384,7 +1398,7 @@ bool Database::IsSQLValid(const char* sql) {
   }
 
 #if DCHECK_IS_ON()
-  DCHECK_EQ(unused_sql, sql + std::strlen(sql))
+  DCHECK_EQ(unused_sql, sql + strlen(sql))
       << "Unused text: " << std::string(unused_sql) << "\n"
       << "in SQL statement: " << std::string(sql);
 #endif  // DCHECK_IS_ON()
@@ -1410,7 +1424,7 @@ bool Database::DoesViewExist(base::StringPiece view_name) {
 bool Database::DoesSchemaItemExist(base::StringPiece name,
                                    base::StringPiece type) {
   static const char kSql[] =
-      "SELECT 1 FROM sqlite_master WHERE type=? AND name=?";
+      "SELECT 1 FROM sqlite_schema WHERE type=? AND name=?";
   Statement statement(GetUniqueStatement(kSql));
 
   if (!statement.is_valid()) {
@@ -1617,8 +1631,7 @@ bool Database::OpenInternal(const std::string& file_name,
     }
   }
 
-  const base::TimeDelta kBusyTimeout =
-      base::TimeDelta::FromSeconds(kBusyTimeoutSeconds);
+  const base::TimeDelta kBusyTimeout = base::Seconds(kBusyTimeoutSeconds);
 
   // Needs to happen before entering WAL mode. Will only work if this the first
   // time the database is being opened in WAL mode.
@@ -1764,10 +1777,12 @@ int Database::OnSqliteError(int sqlite_error_code,
   }
 
   if (!error_callback_.is_null()) {
-    // Fire from a copy of the callback in case of reentry into
-    // re/set_error_callback().
-    // TODO(shess): <http://crbug.com/254584>
-    ErrorCallback(error_callback_).Run(sqlite_error_code, statement);
+    // Create an additional reference to the state in `error_callback_`, so the
+    // state doesn't go away if the callback changes `error_callback_` by
+    // calling set_error_callback() or reset_error_callback(). This avoids a
+    // subtle source of use-after-frees. See https://crbug.com/254584.
+    ErrorCallback error_callback_copy = error_callback_;
+    error_callback_copy.Run(sqlite_error_code, statement);
     return sqlite_error_code;
   }
 
@@ -1806,8 +1821,8 @@ std::string Database::GetDiagnosticInfo(int extended_error,
   // if they result in their own errors, they don't interfere with
   // CollectErrorInfo().
   const bool has_valid_header = Execute("PRAGMA auto_vacuum");
-  const bool select_sqlite_master_result =
-      Execute("SELECT COUNT(*) FROM sqlite_master");
+  const bool select_sqlite_schema_result =
+      Execute("SELECT COUNT(*) FROM sqlite_schema");
 
   // Restore the original error callback.
   error_callback_ = std::move(original_callback);
@@ -1815,7 +1830,7 @@ std::string Database::GetDiagnosticInfo(int extended_error,
   base::StringAppendF(&result, "Has valid header: %s\n",
                       (has_valid_header ? "Yes" : "No"));
   base::StringAppendF(&result, "Has valid schema: %s\n",
-                      (select_sqlite_master_result ? "Yes" : "No"));
+                      (select_sqlite_schema_result ? "Yes" : "No"));
 
   return result;
 }

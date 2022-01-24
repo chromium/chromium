@@ -46,8 +46,8 @@ public class LanguageItemPickerPreference extends ChromeBasePreference {
      */
     public void setLanguageItem(String languageCode) {
         LanguageItem languageItem;
-        if (TextUtils.equals(languageCode, AppLocaleUtils.SYSTEM_LANGUAGE_VALUE)) {
-            languageItem = LanguageItem.makeSystemDefaultLanguageItem();
+        if (AppLocaleUtils.isFollowSystemLanguage(languageCode)) {
+            languageItem = LanguageItem.makeFollowSystemLanguageItem();
         } else {
             languageItem = LanguagesManager.getInstance().getLanguageItem(languageCode);
         }
@@ -70,11 +70,19 @@ public class LanguageItemPickerPreference extends ChromeBasePreference {
     private void updateDisplay() {
         if (mLanguageItem == null) {
             return;
-        } else if (mUseLanguageItemForTitle) {
-            setTitle(mLanguageItem.getDisplayName());
-            setSummary(mLanguageItem.getNativeDisplayName());
+        }
+        String displayName = mLanguageItem.getDisplayName();
+        if (mUseLanguageItemForTitle) {
+            setTitle(displayName);
+            String nativeName = mLanguageItem.getNativeDisplayName();
+            if (TextUtils.equals(displayName, nativeName)) {
+                // Clear summary if native name is the same as display name.
+                setSummary("");
+            } else {
+                setSummary(nativeName);
+            }
         } else {
-            setSummary(mLanguageItem.getDisplayName());
+            setSummary(displayName);
         }
     }
 }

@@ -12,13 +12,11 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/message_filter.h"
 
@@ -34,6 +32,10 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   static void Initialize(bool establish_gpu_channel);
   static void Terminate();
   static BrowserGpuChannelHostFactory* instance() { return instance_; }
+
+  BrowserGpuChannelHostFactory(const BrowserGpuChannelHostFactory&) = delete;
+  BrowserGpuChannelHostFactory& operator=(const BrowserGpuChannelHostFactory&) =
+      delete;
 
   gpu::GpuChannelHost* GetGpuChannel();
   int GetGpuChannelId() { return gpu_client_id_; }
@@ -78,16 +80,13 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   const int gpu_client_id_;
   const uint64_t gpu_client_tracing_id_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
-  std::unique_ptr<gpu::GpuMemoryBufferManager, BrowserThread::DeleteOnIOThread>
-      gpu_memory_buffer_manager_;
+  std::unique_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   scoped_refptr<EstablishRequest> pending_request_;
   bool is_visible_ = true;
 
   base::OneShotTimer timeout_;
 
   static BrowserGpuChannelHostFactory* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserGpuChannelHostFactory);
 };
 
 }  // namespace content

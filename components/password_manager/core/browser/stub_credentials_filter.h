@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_CREDENTIALS_FILTER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_CREDENTIALS_FILTER_H_
 
-#include "base/macros.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 
 namespace password_manager {
@@ -15,6 +14,9 @@ namespace password_manager {
 class StubCredentialsFilter : public CredentialsFilter {
  public:
   StubCredentialsFilter();
+
+  StubCredentialsFilter(const StubCredentialsFilter&) = delete;
+  StubCredentialsFilter& operator=(const StubCredentialsFilter&) = delete;
 
   ~StubCredentialsFilter() override;
 
@@ -26,9 +28,6 @@ class StubCredentialsFilter : public CredentialsFilter {
   void ReportFormLoginSuccess(
       const PasswordFormManager& form_manager) const override;
   bool IsSyncAccountEmail(const std::string& username) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubCredentialsFilter);
 };
 
 }  // namespace password_manager

@@ -34,6 +34,12 @@ class BrowserAutofillManagerTestDelegateImpl
     : public autofill::BrowserAutofillManagerTestDelegate {
  public:
   BrowserAutofillManagerTestDelegateImpl();
+
+  BrowserAutofillManagerTestDelegateImpl(
+      const BrowserAutofillManagerTestDelegateImpl&) = delete;
+  BrowserAutofillManagerTestDelegateImpl& operator=(
+      const BrowserAutofillManagerTestDelegateImpl&) = delete;
+
   ~BrowserAutofillManagerTestDelegateImpl() override;
 
   // Controls whether back-to-back events of |type|, except for the first one,
@@ -48,9 +54,8 @@ class BrowserAutofillManagerTestDelegateImpl
   void DidShowSuggestions() override;
   void OnTextFieldChanged() override;
 
-  void SetExpectations(
-      std::list<ObservedUiEvents> expected_events,
-      base::TimeDelta timeout = base::TimeDelta::FromSeconds(0));
+  void SetExpectations(std::list<ObservedUiEvents> expected_events,
+                       base::TimeDelta timeout = base::Seconds(0));
   bool Wait();
 
   void SetIsExpectingDynamicRefill(bool expect_refill) {
@@ -64,12 +69,14 @@ class BrowserAutofillManagerTestDelegateImpl
   std::unique_ptr<EventWaiter<ObservedUiEvents>> event_waiter_;
   DenseSet<ObservedUiEvents> ignore_back_to_back_event_types_;
   ObservedUiEvents last_event_ = ObservedUiEvents::kNoEvent;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAutofillManagerTestDelegateImpl);
 };
 
 class AutofillUiTest : public InProcessBrowserTest,
                        public content::WebContentsObserver {
+ public:
+  AutofillUiTest(const AutofillUiTest&) = delete;
+  AutofillUiTest& operator=(const AutofillUiTest&) = delete;
+
  protected:
   AutofillUiTest();
   ~AutofillUiTest() override;
@@ -128,8 +135,6 @@ class AutofillUiTest : public InProcessBrowserTest,
   content::RenderWidgetHost::KeyPressEventCallback key_press_event_sink_;
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillUiTest);
 };
 
 }  // namespace autofill

@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/content_decryption_module.h"
@@ -43,6 +42,10 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
                               const std::string& error_message)>;
 
   explicit MojoCdmService(MojoCdmServiceContext* context);
+
+  MojoCdmService(const MojoCdmService&) = delete;
+  MojoCdmService& operator=(const MojoCdmService&) = delete;
+
   ~MojoCdmService() final;
 
   // Initialize the MojoCdmService, including creating the real CDM using the
@@ -119,8 +122,6 @@ class MEDIA_MOJO_EXPORT MojoCdmService final
   mojo::AssociatedRemote<mojom::ContentDecryptionModuleClient> client_;
 
   base::WeakPtrFactory<MojoCdmService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoCdmService);
 };
 
 }  // namespace media

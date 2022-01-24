@@ -23,10 +23,13 @@ namespace content {
 class BrowserContext;
 }
 
+namespace value_store {
+class ValueStoreFactory;
+}
+
 namespace extensions {
 
 class ShellExtensionLoader;
-class ValueStoreFactory;
 
 // A simplified version of ExtensionSystem for app_shell. Allows
 // app_shell to skip initialization of services it doesn't need.
@@ -34,6 +37,10 @@ class ShellExtensionSystem : public ExtensionSystem {
  public:
   using InstallUpdateCallback = ExtensionSystem::InstallUpdateCallback;
   explicit ShellExtensionSystem(content::BrowserContext* browser_context);
+
+  ShellExtensionSystem(const ShellExtensionSystem&) = delete;
+  ShellExtensionSystem& operator=(const ShellExtensionSystem&) = delete;
+
   ~ShellExtensionSystem() override;
 
   // Loads an unpacked extension from a directory. Returns the extension on
@@ -61,13 +68,13 @@ class ShellExtensionSystem : public ExtensionSystem {
   // ExtensionSystem implementation:
   void InitForRegularProfile(bool extensions_enabled) override;
   ExtensionService* extension_service() override;
-  RuntimeData* runtime_data() override;
   ManagementPolicy* management_policy() override;
   ServiceWorkerManager* service_worker_manager() override;
   UserScriptManager* user_script_manager() override;
   StateStore* state_store() override;
   StateStore* rules_store() override;
-  scoped_refptr<ValueStoreFactory> store_factory() override;
+  StateStore* dynamic_user_scripts_store() override;
+  scoped_refptr<value_store::ValueStoreFactory> store_factory() override;
   InfoMap* info_map() override;
   QuotaService* quota_service() override;
   AppSorting* app_sorting() override;
@@ -102,21 +109,18 @@ class ShellExtensionSystem : public ExtensionSystem {
   scoped_refptr<InfoMap> info_map_;
 
   std::unique_ptr<ServiceWorkerManager> service_worker_manager_;
-  std::unique_ptr<RuntimeData> runtime_data_;
   std::unique_ptr<QuotaService> quota_service_;
   std::unique_ptr<AppSorting> app_sorting_;
   std::unique_ptr<UserScriptManager> user_script_manager_;
 
   std::unique_ptr<ShellExtensionLoader> extension_loader_;
 
-  scoped_refptr<ValueStoreFactory> store_factory_;
+  scoped_refptr<value_store::ValueStoreFactory> store_factory_;
 
   // Signaled when the extension system has completed its startup tasks.
   base::OneShotEvent ready_;
 
   base::WeakPtrFactory<ShellExtensionSystem> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionSystem);
 };
 
 }  // namespace extensions

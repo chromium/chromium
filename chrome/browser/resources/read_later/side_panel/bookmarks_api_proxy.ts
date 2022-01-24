@@ -6,6 +6,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 
 import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+import {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
 import {BookmarksPageHandlerFactory, BookmarksPageHandlerRemote} from './bookmarks.mojom-webui.js';
 
@@ -31,6 +32,17 @@ export class BookmarksApiProxy {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
+  cutBookmark(id: string): Promise<void> {
+    chrome.bookmarkManagerPrivate.cut([id]);
+    return Promise.resolve();
+  }
+
+  copyBookmark(id: string): Promise<void> {
+    return new Promise(resolve => {
+      chrome.bookmarkManagerPrivate.copy([id], resolve);
+    });
+  }
+
   getFolders(): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
     return new Promise(resolve => chrome.bookmarks.getTree(results => {
       if (results[0] && results[0].children) {
@@ -41,8 +53,15 @@ export class BookmarksApiProxy {
     }));
   }
 
-  openBookmark(url: string, depth: number) {
-    this.handler.openBookmark({url}, depth);
+  openBookmark(url: string, depth: number, clickModifiers: ClickModifiers) {
+    this.handler.openBookmark({url}, depth, clickModifiers);
+  }
+
+  pasteToBookmark(parentId: string, destinationId?: string): Promise<void> {
+    const destination = destinationId ? [destinationId] : [];
+    return new Promise(resolve => {
+      chrome.bookmarkManagerPrivate.paste(parentId, destination, resolve);
+    });
   }
 
   showContextMenu(id: string, x: number, y: number) {

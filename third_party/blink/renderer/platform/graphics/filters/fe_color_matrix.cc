@@ -78,8 +78,9 @@ static void SaturateMatrix(float s, float matrix[kColorMatrixSize]) {
 }
 
 static void HueRotateMatrix(float hue, float matrix[kColorMatrixSize]) {
-  float cos_hue = cosf(hue * kPiFloat / 180);
-  float sin_hue = sinf(hue * kPiFloat / 180);
+  const float hue_radians = Deg2rad(hue);
+  const float cos_hue = cosf(hue_radians);
+  const float sin_hue = sinf(hue_radians);
   matrix[0] = 0.213f + cos_hue * 0.787f - sin_hue * 0.213f;
   matrix[1] = 0.715f - cos_hue * 0.715f - sin_hue * 0.715f;
   matrix[2] = 0.072f - cos_hue * 0.072f + sin_hue * 0.928f;

@@ -22,17 +22,20 @@ namespace android_webview {
 class AwVariationsServiceClient : public variations::VariationsServiceClient {
  public:
   AwVariationsServiceClient();
+
+  AwVariationsServiceClient(const AwVariationsServiceClient&) = delete;
+  AwVariationsServiceClient& operator=(const AwVariationsServiceClient&) =
+      delete;
+
   ~AwVariationsServiceClient() override;
 
  private:
-  VersionCallback GetVersionForSimulationCallback() override;
+  base::Version GetVersionForSimulation() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   version_info::Channel GetChannel() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
   bool IsEnterprise() override;
-
-  DISALLOW_COPY_AND_ASSIGN(AwVariationsServiceClient);
 };
 
 }  // namespace android_webview

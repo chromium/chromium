@@ -4,15 +4,13 @@
 
 import 'chrome://diagnostics/input_list.js';
 
-import {ConnectionType, KeyboardInfo, MechanicalLayout, PhysicalLayout, TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/diagnostics_types.js';
+import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeKeyboards, fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
-
-import * as dx_utils from './diagnostics_test_utils.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.js';
 
 export function inputListTestSuite() {
   /** @type {?InputListElement} */
@@ -36,9 +34,10 @@ export function inputListTestSuite() {
     provider.reset();
   });
 
-  function initializeInputList() {
+  function initializeInputList(
+      keyboards = fakeKeyboards, touchDevices = fakeTouchDevices) {
     assertFalse(!!inputListElement);
-    provider.setFakeConnectedDevices(fakeKeyboards, fakeTouchDevices);
+    provider.setFakeConnectedDevices(keyboards, touchDevices);
 
     // Add the input list to the DOM.
     inputListElement =
@@ -49,14 +48,24 @@ export function inputListTestSuite() {
     return flushTasks();
   }
 
+  /** @return {!InputCardElement} */
+  function getCardByDeviceType(deviceType) {
+    const card = inputListElement.$$(`input-card[device-type="${deviceType}"]`);
+    assertTrue(!!card);
+    return /** @type {!InputCardElement} */ (card);
+  }
+
   test('InputListPopulated', () => {
     return initializeInputList().then(() => {
-      dx_utils.assertElementContainsText(
-          inputListElement.$$('#keyboardList'), fakeKeyboards[0].name);
-      dx_utils.assertElementContainsText(
-          inputListElement.$$('#touchpadList'), fakeTouchDevices[0].name);
-      dx_utils.assertElementContainsText(
-          inputListElement.$$('#touchscreenList'), fakeTouchDevices[1].name);
+      assertEquals(
+          fakeKeyboards[0].name,
+          getCardByDeviceType('keyboard').devices[0].name);
+      assertEquals(
+          fakeTouchDevices[0].name,
+          getCardByDeviceType('touchpad').devices[0].name);
+      assertEquals(
+          fakeTouchDevices[1].name,
+          getCardByDeviceType('touchscreen').devices[0].name);
     });
   });
 
@@ -69,23 +78,39 @@ export function inputListTestSuite() {
       physicalLayout: PhysicalLayout.kUnknown,
       mechanicalLayout: MechanicalLayout.kUnknown,
       hasAssistantKey: false,
+      numberPadPresent: NumberPadPresence.kUnknown,
     };
+    let keyboardCard;
     return initializeInputList()
         .then(() => {
+          keyboardCard = getCardByDeviceType('keyboard');
           provider.addFakeConnectedKeyboard(fakeKeyboard);
           return flushTasks();
         })
         .then(() => {
-          dx_utils.assertElementContainsText(
-              inputListElement.$$('#keyboardList'), fakeKeyboards[0].name);
-          dx_utils.assertElementContainsText(
-              inputListElement.$$('#keyboardList'), fakeKeyboard.name);
+          assertEquals(2, keyboardCard.devices.length);
+          assertEquals(fakeKeyboards[0].name, keyboardCard.devices[0].name);
+          assertEquals(fakeKeyboard.name, keyboardCard.devices[1].name);
           provider.removeFakeConnectedKeyboardById(fakeKeyboard.id);
           return flushTasks();
         })
         .then(() => {
-          dx_utils.assertElementDoesNotContainText(
-              inputListElement.$$('#keyboardList'), fakeKeyboard.name);
+          assertEquals(1, keyboardCard.devices.length);
+          assertEquals(fakeKeyboards[0].name, keyboardCard.devices[0].name);
+        });
+  });
+
+  test('KeyboardTesterShow', () => {
+    return initializeInputList([fakeKeyboards[0]], [])
+        .then(() => {
+          const testButton = getCardByDeviceType('keyboard').$$('cr-button');
+          assertTrue(!!testButton);
+          testButton.click();
+          return flushTasks();
+        })
+        .then(() => {
+          const keyboardTester = inputListElement.$$('keyboard-tester');
+          assertTrue(keyboardTester.isOpen());
         });
   });
 
@@ -97,22 +122,23 @@ export function inputListTestSuite() {
       type: TouchDeviceType.kPointer,
       name: 'Sample USB touchpad',
     };
+    let touchpadCard;
     return initializeInputList()
         .then(() => {
+          touchpadCard = getCardByDeviceType('touchpad');
           provider.addFakeConnectedTouchDevice(fakeTouchpad);
           return flushTasks();
         })
         .then(() => {
-          dx_utils.assertElementContainsText(
-              inputListElement.$$('#touchpadList'), fakeTouchDevices[0].name);
-          dx_utils.assertElementContainsText(
-              inputListElement.$$('#touchpadList'), fakeTouchpad.name);
+          assertEquals(2, touchpadCard.devices.length);
+          assertEquals(fakeTouchDevices[0].name, touchpadCard.devices[0].name);
+          assertEquals(fakeTouchpad.name, touchpadCard.devices[1].name);
           provider.removeFakeConnectedTouchDeviceById(fakeTouchpad.id);
           return flushTasks();
         })
         .then(() => {
-          dx_utils.assertElementDoesNotContainText(
-              inputListElement.$$('#touchpadList'), fakeTouchpad.name);
+          assertEquals(1, touchpadCard.devices.length);
+          assertEquals(fakeTouchDevices[0].name, touchpadCard.devices[0].name);
         });
   });
 
@@ -124,23 +150,25 @@ export function inputListTestSuite() {
       type: TouchDeviceType.kDirect,
       name: 'Sample USB touchscreen',
     };
+    let touchscreenCard;
     return initializeInputList()
         .then(() => {
+          touchscreenCard = getCardByDeviceType('touchscreen');
           provider.addFakeConnectedTouchDevice(fakeTouchscreen);
           return flushTasks();
         })
         .then(() => {
-          dx_utils.assertElementContainsText(
-              inputListElement.$$('#touchscreenList'),
-              fakeTouchDevices[1].name);
-          dx_utils.assertElementContainsText(
-              inputListElement.$$('#touchscreenList'), fakeTouchscreen.name);
+          assertEquals(2, touchscreenCard.devices.length);
+          assertEquals(
+              fakeTouchDevices[1].name, touchscreenCard.devices[0].name);
+          assertEquals(fakeTouchscreen.name, touchscreenCard.devices[1].name);
           provider.removeFakeConnectedTouchDeviceById(fakeTouchscreen.id);
           return flushTasks();
         })
         .then(() => {
-          dx_utils.assertElementDoesNotContainText(
-              inputListElement.$$('#touchscreenList'), fakeTouchscreen.name);
+          assertEquals(1, touchscreenCard.devices.length);
+          assertEquals(
+              fakeTouchDevices[1].name, touchscreenCard.devices[0].name);
         });
   });
 }

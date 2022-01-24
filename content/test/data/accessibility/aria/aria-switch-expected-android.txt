@@ -1,5 +1,5 @@
 android.webkit.WebView focusable focused scrollable
-++android.widget.CheckBox role_description='switch' checkable clickable name='Switch1'
-++android.widget.CheckBox role_description='switch' checkable clickable name='Switch2'
-++android.widget.CheckBox role_description='switch' checkable checked clickable name='Switch3'
-++android.widget.CheckBox role_description='switch' checkable checked clickable name='Switch4'
+++android.widget.ToggleButton role_description='switch' checkable clickable name='Switch1'
+++android.widget.ToggleButton role_description='switch' checkable clickable name='Switch2'
+++android.widget.ToggleButton role_description='switch' checkable checked clickable name='Switch3'
+++android.widget.ToggleButton role_description='switch' checkable checked clickable name='Switch4'

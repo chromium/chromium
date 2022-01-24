@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_SYNC_ERROR_NOTIFIER_FACTORY_ASH_H_
 #define CHROME_BROWSER_SYNC_SYNC_ERROR_NOTIFIER_FACTORY_ASH_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -24,6 +23,9 @@ class SyncErrorNotifierFactory : public BrowserContextKeyedServiceFactory {
   // Returns an instance of the SyncErrorNotifierFactory singleton.
   static SyncErrorNotifierFactory* GetInstance();
 
+  SyncErrorNotifierFactory(const SyncErrorNotifierFactory&) = delete;
+  SyncErrorNotifierFactory& operator=(const SyncErrorNotifierFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<SyncErrorNotifierFactory>;
 
@@ -33,8 +35,6 @@ class SyncErrorNotifierFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncErrorNotifierFactory);
 };
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_ERROR_NOTIFIER_FACTORY_ASH_H_

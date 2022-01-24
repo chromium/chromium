@@ -125,8 +125,7 @@ void CountEntriesInEachState(sql::Database* db) {
 
 void ReportMetricsFor(const PrefetchItemStats& url, const base::Time now) {
   // Lifetime reporting.
-  static const int kFourWeeksInSeconds =
-      base::TimeDelta::FromDays(28).InSeconds();
+  static const int kFourWeeksInSeconds = base::Days(28).InSeconds();
   const bool successful = url.error_code == PrefetchItemErrorCode::SUCCESS;
   int64_t lifetime_seconds = (now - url.creation_time).InSeconds();
   if (successful) {

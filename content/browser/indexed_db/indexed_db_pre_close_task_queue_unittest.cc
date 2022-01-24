@@ -27,7 +27,7 @@ using PreCloseTask = IndexedDBPreCloseTaskQueue::PreCloseTask;
 using StopReason = IndexedDBPreCloseTaskQueue::StopReason;
 
 namespace {
-constexpr base::TimeDelta kTestMaxRunTime = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kTestMaxRunTime = base::Seconds(30);
 const std::u16string kDBName = u"TestDBName";
 constexpr int64_t kDBId = 1;
 constexpr int64_t kDBVersion = 2;

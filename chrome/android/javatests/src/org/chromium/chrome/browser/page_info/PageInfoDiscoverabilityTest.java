@@ -47,12 +47,9 @@ import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
-import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -70,7 +67,6 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(PER_CLASS)
-@Batch.SplitByFeature
 public class PageInfoDiscoverabilityTest {
     @ClassRule
     public static final PermissionTestRule sPermissionTestRule = new PermissionTestRule();
@@ -204,7 +200,8 @@ public class PageInfoDiscoverabilityTest {
                     mSearchEngineLogoUtils, mTemplateUrlServiceSupplier,
                     ()
                             -> mProfile,
-                    mPageInfoIPHController, sPermissionTestRule.getActivity().getWindowAndroid());
+                    mPageInfoIPHController, sPermissionTestRule.getActivity().getWindowAndroid(),
+                    null);
             mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         });
     }
@@ -224,38 +221,11 @@ public class PageInfoDiscoverabilityTest {
     }
 
     /**
-     * Tests no omnibox permission with flag off.
-     */
-    @Test
-    @MediumTest
-    @Feature({"PageInfoDiscoverability"})
-    @DisableFeatures({PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME})
-    public void testPageInfoDiscoverabilityFlagOff() throws Exception {
-        Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
-
-        // Prompt for location and accept it.
-        RuntimePermissionTestUtils.setupGeolocationSystemMock();
-        String[] requestablePermission = new String[] {Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION};
-        RuntimePermissionTestUtils.TestAndroidPermissionDelegate testAndroidPermissionDelegate =
-                new RuntimePermissionTestUtils.TestAndroidPermissionDelegate(requestablePermission,
-                        RuntimePermissionTestUtils.RuntimePromptResponse.GRANT);
-        RuntimePermissionTestUtils.runTest(sPermissionTestRule, testAndroidPermissionDelegate,
-                GEOLOCATION_TEST, true /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */, false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */, null /* javascriptToExecute */,
-                0 /* missingPermissionPromptTextId */);
-
-        Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
-    }
-
-    /**
      * Tests omnibox permission when permission is allowed by the user.
      */
     @Test
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
-    @EnableFeatures({PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME})
     public void testPageInfoDiscoverabilityAllowPrompt() throws Exception {
         Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
         // Prompt for location and accept it.
@@ -280,7 +250,6 @@ public class PageInfoDiscoverabilityTest {
     @Test
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
-    @EnableFeatures({PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME})
     public void testPageInfoDiscoverabilityBlockPrompt() throws Exception {
         Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
 
@@ -303,7 +272,6 @@ public class PageInfoDiscoverabilityTest {
     @Test
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
-    @EnableFeatures({PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME})
     public void testPermissionRequestTypeEnumSize() {
         Assert.assertEquals(new RequestTypeTestParams().getPermissionRequestParameters().size(),
                 getRequestTypeEnumSize());
@@ -312,7 +280,6 @@ public class PageInfoDiscoverabilityTest {
     @Test
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
-    @EnableFeatures({PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME})
     @ParameterAnnotations.UseMethodParameter(RequestTypeTestParams.class)
     public void testPermissionRequestTypes(
             @ContentSettingsType int contentSettingsType, boolean isInSiteSettings) {

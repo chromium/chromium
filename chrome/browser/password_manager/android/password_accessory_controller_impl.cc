@@ -36,10 +36,10 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -54,6 +54,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using autofill::AccessorySheetData;
+using autofill::AccessorySheetField;
 using autofill::FooterCommand;
 using autofill::UserInfo;
 using autofill::mojom::FocusedFieldType;
@@ -63,7 +64,7 @@ using password_manager::UiCredential;
 using BlocklistedStatus =
     password_manager::OriginCredentialStore::BlocklistedStatus;
 using FillingSource = ManualFillingController::FillingSource;
-using IsPslMatch = autofill::UserInfo::IsPslMatch;
+using IsExactMatch = autofill::UserInfo::IsExactMatch;
 
 namespace {
 
@@ -71,16 +72,18 @@ autofill::UserInfo TranslateCredentials(bool current_field_is_password,
                                         const url::Origin& frame_origin,
                                         const UiCredential& credential) {
   DCHECK(!credential.origin().opaque());
-  UserInfo user_info(credential.origin().Serialize(),
-                     credential.is_public_suffix_match());
+  UserInfo user_info(
+      credential.origin().Serialize(),
+      IsExactMatch(!credential.is_public_suffix_match().value() &&
+                   !credential.is_affiliation_based_match().value()));
 
   std::u16string username = GetDisplayUsername(credential);
   user_info.add_field(
-      UserInfo::Field(username, username, /*is_password=*/false,
-                      /*selectable=*/!credential.username().empty() &&
-                          !current_field_is_password));
+      AccessorySheetField(username, username, /*is_password=*/false,
+                          /*selectable=*/!credential.username().empty() &&
+                              !current_field_is_password));
 
-  user_info.add_field(UserInfo::Field(
+  user_info.add_field(AccessorySheetField(
       credential.password(),
       l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_DESCRIPTION, username),
@@ -113,7 +116,7 @@ password_manager::PasswordManagerDriver* GetPasswordManagerDriver(
 PasswordAccessoryControllerImpl::~PasswordAccessoryControllerImpl() {
   if (authenticator_) {
     authenticator_->Cancel(
-        password_manager::BiometricAuthRequester::kFallbackSheet);
+        device_reauth::BiometricAuthRequester::kFallbackSheet);
   }
 }
 
@@ -160,9 +163,7 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
 
   if (all_passwords_helper_.available_credentials().has_value() &&
       IsSecureSite() && origin.GetURL().SchemeIsCryptographic() &&
-      all_passwords_helper_.available_credentials().value() > 0 &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kFillingPasswordsFromAnyOrigin)) {
+      all_passwords_helper_.available_credentials().value() > 0) {
     std::u16string button_title =
         is_password_field
             ? l10n_util::GetStringUTF16(
@@ -210,7 +211,7 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
 
 void PasswordAccessoryControllerImpl::OnFillingTriggered(
     autofill::FieldGlobalId focused_field_id,
-    const autofill::UserInfo::Field& selection) {
+    const AccessorySheetField& selection) {
   if (!ShouldTriggerBiometricReauth(selection)) {
     FillSelection(selection);
     return;
@@ -221,7 +222,7 @@ void PasswordAccessoryControllerImpl::OnFillingTriggered(
   // |this| cancels the authentication when it is destroyed if one is ongoing,
   // which resets the callback, so it's safe to use base::Unretained(this) here.
   authenticator_->Authenticate(
-      password_manager::BiometricAuthRequester::kFallbackSheet,
+      device_reauth::BiometricAuthRequester::kFallbackSheet,
       base::BindOnce(&PasswordAccessoryControllerImpl::OnReauthCompleted,
                      base::Unretained(this), selection));
 }
@@ -519,19 +520,19 @@ void PasswordAccessoryControllerImpl::ShowAllPasswords() {
 }
 
 bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
-    const autofill::UserInfo::Field& selection) const {
+    const AccessorySheetField& selection) const {
   if (!selection.is_obfuscated())
     return false;
 
-  scoped_refptr<password_manager::BiometricAuthenticator> authenticator =
+  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
       password_client_->GetBiometricAuthenticator();
-  return authenticator &&
-         authenticator->CanAuthenticate() ==
-             password_manager::BiometricsAvailability::kAvailable;
+  return password_manager_util::CanUseBiometricAuth(
+      authenticator.get(),
+      device_reauth::BiometricAuthRequester::kFallbackSheet);
 }
 
 void PasswordAccessoryControllerImpl::OnReauthCompleted(
-    autofill::UserInfo::Field selection,
+    AccessorySheetField selection,
     bool auth_succeeded) {
   authenticator_.reset();
   if (!auth_succeeded)
@@ -540,7 +541,7 @@ void PasswordAccessoryControllerImpl::OnReauthCompleted(
 }
 
 void PasswordAccessoryControllerImpl::FillSelection(
-    const autofill::UserInfo::Field& selection) {
+    const AccessorySheetField& selection) {
   if (!AppearsInSuggestions(selection.display_text(), selection.is_obfuscated(),
                             GetFocusedFrameOrigin())) {
     NOTREACHED() << "Tried to fill '" << selection.display_text() << "' into "
@@ -571,4 +572,4 @@ bool PasswordAccessoryControllerImpl::IsSecureSite() const {
   return helper && helper->GetSecurityLevel() == security_state::SECURE;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordAccessoryControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordAccessoryControllerImpl);

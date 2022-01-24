@@ -95,6 +95,11 @@ class SettingsResetterTestDelegate
  public:
   explicit SettingsResetterTestDelegate(int* num_resets)
       : num_resets_(num_resets) {}
+
+  SettingsResetterTestDelegate(const SettingsResetterTestDelegate&) = delete;
+  SettingsResetterTestDelegate& operator=(const SettingsResetterTestDelegate&) =
+      delete;
+
   ~SettingsResetterTestDelegate() override = default;
 
   void FetchDefaultSettings(
@@ -114,8 +119,6 @@ class SettingsResetterTestDelegate
 
  private:
   int* num_resets_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetterTestDelegate);
 };
 
 // Indicates the possible values to be written to the registry for cleanup

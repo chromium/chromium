@@ -7,8 +7,6 @@
 #include <utility>
 
 #include "base/guid.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -35,7 +33,6 @@ const char kExpirationYear[] = "2050";
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Expectation;
 using ::testing::InSequence;
 using ::testing::NotNull;
 using ::testing::Pointee;
@@ -74,8 +71,7 @@ class UseCreditCardActionTest : public testing::Test {
           checker->Run(&mock_web_controller_);
         });
     ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
-                                          base::TimeDelta::FromSeconds(0)));
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus(), base::Seconds(0)));
     ON_CALL(mock_action_delegate_, GetFullCard)
         .WillByDefault(
             [](const autofill::CreditCard* credit_card,
@@ -168,8 +164,7 @@ TEST_F(UseCreditCardActionTest, PreconditionFailedNoCreditCardInUserData) {
 
 TEST_F(UseCreditCardActionTest, CreditCardInUserDataSucceeds) {
   ON_CALL(mock_action_delegate_, OnShortWaitForElement(fake_selector_, _))
-      .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
-                                        base::TimeDelta::FromSeconds(0)));
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(), base::Seconds(0)));
   ON_CALL(mock_web_controller_, GetFieldValue(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "not empty"));
   ActionProto action;
@@ -205,8 +200,7 @@ TEST_F(UseCreditCardActionTest,
 
 TEST_F(UseCreditCardActionTest, CreditCardInUserModelSucceeds) {
   ON_CALL(mock_action_delegate_, OnShortWaitForElement(fake_selector_, _))
-      .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
-                                        base::TimeDelta::FromSeconds(0)));
+      .WillByDefault(RunOnceCallback<1>(OkClientStatus(), base::Seconds(0)));
   ON_CALL(mock_web_controller_, GetFieldValue(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), "not empty"));
   ActionProto action;
@@ -412,15 +406,13 @@ TEST_F(UseCreditCardActionTest, ForcedFallbackWithKeystrokes) {
   EXPECT_CALL(mock_action_delegate_,
               WaitUntilDocumentIsInReadyState(
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(), base::Seconds(0)));
   EXPECT_CALL(mock_web_controller_,
               ScrollIntoView(std::string(), "center", "center",
                              EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<4>(OkClientStatus()));
   EXPECT_CALL(mock_web_controller_, WaitUntilElementIsStable(_, _, _, _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(), base::Seconds(0)));
   EXPECT_CALL(
       mock_web_controller_,
       ClickOrTapElement(ClickType::CLICK, EqualsElement(expected_element), _))
@@ -569,7 +561,7 @@ TEST_F(UseCreditCardActionTest, AutofillFailureWithoutRequiredFieldsIsFatal) {
 
   EXPECT_EQ(processed_action.status(),
             ProcessedActionStatusProto::OTHER_ACTION_STATUS);
-  EXPECT_EQ(processed_action.has_status_details(), false);
+  EXPECT_EQ(processed_action.status_details().ByteSizeLong(), 0u);
 }
 
 TEST_F(UseCreditCardActionTest,

@@ -43,6 +43,10 @@ class BASE_EXPORT PeImageReader {
                                             void* context);
 
   PeImageReader();
+
+  PeImageReader(const PeImageReader&) = delete;
+  PeImageReader& operator=(const PeImageReader&) = delete;
+
   ~PeImageReader();
 
   // Returns false if the given data does not appear to be a valid PE image.
@@ -165,7 +169,6 @@ class BASE_EXPORT PeImageReader {
   size_t image_size_ = 0;
   uint32_t validation_state_ = 0;
   std::unique_ptr<OptionalHeader> optional_header_;
-  DISALLOW_COPY_AND_ASSIGN(PeImageReader);
 };
 
 }  // namespace win

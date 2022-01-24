@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -20,6 +19,11 @@ namespace test {
 class TestPaginationModelObserver : public PaginationModelObserver {
  public:
   TestPaginationModelObserver() = default;
+
+  TestPaginationModelObserver(const TestPaginationModelObserver&) = delete;
+  TestPaginationModelObserver& operator=(const TestPaginationModelObserver&) =
+      delete;
+
   ~TestPaginationModelObserver() override = default;
 
   void Reset() {
@@ -117,13 +121,15 @@ class TestPaginationModelObserver : public PaginationModelObserver {
   int transition_start_call_count_ = 0;
   int transition_ended_call_count_ = 0;
   base::RunLoop* wait_loop_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPaginationModelObserver);
 };
 
 class PaginationModelTest : public views::test::WidgetTest {
  public:
   PaginationModelTest() = default;
+
+  PaginationModelTest(const PaginationModelTest&) = delete;
+  PaginationModelTest& operator=(const PaginationModelTest&) = delete;
+
   ~PaginationModelTest() override = default;
 
   // testing::Test overrides:
@@ -132,8 +138,8 @@ class PaginationModelTest : public views::test::WidgetTest {
     widget_.reset(CreateTopLevelPlatformWidget());
     pagination_ = std::make_unique<PaginationModel>(widget_->GetContentsView());
     pagination_->SetTotalPages(5);
-    pagination_->SetTransitionDurations(base::TimeDelta::FromMilliseconds(1),
-                                        base::TimeDelta::FromMilliseconds(1));
+    pagination_->SetTransitionDurations(base::Milliseconds(1),
+                                        base::Milliseconds(1));
     observer_.set_model(pagination_.get());
     pagination_->AddObserver(&observer_);
   }
@@ -170,8 +176,7 @@ class PaginationModelTest : public views::test::WidgetTest {
     while (pagination()->IsRevertingCurrentTransition()) {
       base::RunLoop run_loop;
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(100));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       run_loop.Run();
     }
   }
@@ -184,8 +189,6 @@ class PaginationModelTest : public views::test::WidgetTest {
   WidgetAutoclosePtr widget_;
   std::unique_ptr<PaginationModel> pagination_;
   std::unique_ptr<base::RunLoop> paging_animation_wait_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaginationModelTest);
 };
 
 TEST_F(PaginationModelTest, SelectPage) {

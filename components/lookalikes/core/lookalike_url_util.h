@@ -54,9 +54,12 @@ enum class LookalikeUrlMatchType {
   // you mean <url>?".
   kFailedSpoofChecks = 9,
 
+  kCharacterSwapSiteEngagement = 10,
+  kCharacterSwapTop500 = 11,
+
   // Append new items to the end of the list above; do not modify or replace
   // existing values. Comment out obsolete items.
-  kMaxValue = kFailedSpoofChecks,
+  kMaxValue = kCharacterSwapTop500,
 };
 
 // Used for UKM. There is only a single LookalikeUrlBlockingPageUserAction per
@@ -88,10 +91,20 @@ enum class NavigationSuggestionEvent {
   kMatchSkeletonTop5k = 9,
   kMatchTargetEmbeddingForSafetyTips = 10,
   kFailedSpoofChecks = 11,
+  kMatchCharacterSwapSiteEngagement = 12,
+  kMatchCharacterSwapTop500 = 13,
 
   // Append new items to the end of the list above; do not modify or
   // replace existing values. Comment out obsolete items.
-  kMaxValue = kFailedSpoofChecks,
+  kMaxValue = kMatchCharacterSwapTop500,
+};
+
+struct Top500DomainsParams {
+  // Skeletons of top 500 domains. There can be fewer than 500 skeletons in
+  // this array.
+  const char* const* edit_distance_skeletons;
+  // Number of skeletons in `edit_distance_skeletons`.
+  size_t num_edit_distance_skeletons;
 };
 
 struct DomainInfo {
@@ -141,6 +154,13 @@ bool IsEditDistanceAtMostOne(const std::u16string& str1,
 // Assumes |navigated_domain| and |matched_domain| are edit distance of 1 apart.
 bool IsLikelyEditDistanceFalsePositive(const DomainInfo& navigated_domain,
                                        const DomainInfo& matched_domain);
+
+// Returns whether |navigated_domain| and |matched_domain| are likely to be
+// character swap false positives, and thus the user should *not* be warned.
+//
+// Assumes |navigated_domain| and |matched_domain| are within 1 character swap.
+bool IsLikelyCharacterSwapFalsePositive(const DomainInfo& navigated_domain,
+                                        const DomainInfo& matched_domain);
 
 // Returns true if the domain given by |domain_info| is a top domain.
 bool IsTopDomain(const DomainInfo& domain_info);
@@ -203,5 +223,15 @@ bool IsAllowedByEnterprisePolicy(const PrefService* pref_service,
 // Add the given hosts to the allowlist policy setting.
 void SetEnterpriseAllowlistForTesting(PrefService* pref_service,
                                       const std::vector<std::string>& hosts);
+
+// Returns true if |str1| and |str2| are identical except that two adjacent
+// characters are swapped. E.g. example.com vs exapmle.com.
+bool HasOneCharacterSwap(const std::u16string& str1,
+                         const std::u16string& str2);
+
+// Sets information about top 500 domains for testing.
+void SetTop500DomainsParamsForTesting(const Top500DomainsParams& params);
+// Resets information about top 500 domains for testing.
+void ResetTop500DomainsParamsForTesting();
 
 #endif  // COMPONENTS_LOOKALIKES_CORE_LOOKALIKE_URL_UTIL_H_

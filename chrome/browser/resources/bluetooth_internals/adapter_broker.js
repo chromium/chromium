@@ -10,6 +10,8 @@ import './bluetooth_internals.mojom-lite.js';
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
+const SCAN_CLIENT_NAME = 'Bluetooth Internals Page';
+
 /**
  * Javascript for AdapterBroker, served from
  *     chrome://bluetooth-internals/.
@@ -147,13 +149,14 @@ export class AdapterBroker extends EventTarget {
    * @return {!Promise<!bluetooth.mojom.DiscoverySessionRemote>}
    */
   startDiscoverySession() {
-    return this.adapter_.startDiscoverySession().then(function(response) {
-      if (!response.session) {
-        throw new Error('Discovery session failed to start');
-      }
+    return this.adapter_.startDiscoverySession(SCAN_CLIENT_NAME)
+        .then(function(response) {
+          if (!response.session) {
+            throw new Error('Discovery session failed to start');
+          }
 
-      return response.session;
-    });
+          return response.session;
+        });
   }
 }
 

@@ -38,9 +38,10 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
-// This needs to be here because element.cc also depends on it.
+// Exposes |DumpStatistics()| for dumping information about nodes. To use, call
+// |DumpStatistics()| from the Node constructor or GDB.
+// This needs to be here because Element.h also depends on it.
 #define DUMP_NODE_STATISTICS 0
 
 namespace blink {
@@ -179,19 +180,9 @@ class CORE_EXPORT Node : public EventTarget {
     kDocumentPositionImplementationSpecific = 0x20,
   };
 
-#if !BUILDFLAG(USE_V8_OILPAN)
-  template <typename T>
-  static void* AllocateObject(size_t size) {
-    ThreadState* state =
-        ThreadStateFor<ThreadingTrait<Node>::kAffinity>::GetState();
-    const char* type_name = "blink::Node";
-    return state->Heap().AllocateOnArenaIndex(
-        state, size, BlinkGC::kNodeArenaIndex,
-        GCInfoTrait<GCInfoFoldedType<T>>::Index(), type_name);
-  }
-#endif  // !BUILDFLAG(USE_V8_OILPAN)
-
+#if DUMP_NODE_STATISTICS
   static void DumpStatistics();
+#endif
 
   ~Node() override;
 
@@ -205,7 +196,6 @@ class CORE_EXPORT Node : public EventTarget {
   virtual void setNodeValue(const String&);
   virtual NodeType getNodeType() const = 0;
   ContainerNode* parentNode() const;
-  ContainerNode* ParentNodeWithCounting() const;
   Element* parentElement() const;
   ContainerNode* ParentElementOrShadowRoot() const;
   ContainerNode* ParentElementOrDocumentFragment() const;
@@ -337,6 +327,9 @@ class CORE_EXPORT Node : public EventTarget {
   }
   DISABLE_CFI_PERF bool IsFirstLetterPseudoElement() const {
     return GetPseudoId() == kPseudoIdFirstLetter;
+  }
+  DISABLE_CFI_PERF bool IsBackdropPseudoElement() const {
+    return GetPseudoId() == kPseudoIdBackdrop;
   }
   virtual PseudoId GetPseudoId() const { return kPseudoIdNone; }
 
@@ -507,6 +500,17 @@ class CORE_EXPORT Node : public EventTarget {
     MarkAncestorsWithChildNeedsStyleRecalc();
   }
 
+  // Mark non-slotted shadow host child dirty for style recalc to enforce new
+  // ComputedStyles for elements outside the flat tree for getComputedStyle().
+  // To be called when descendant recalcs are skipped for such subtrees.
+  void SetStyleChangeForNonSlotted() {
+    DCHECK(IsElementNode());
+    DCHECK(isConnected());
+    DCHECK(parentElement() && !GetStyleRecalcParent());
+    if (!NeedsStyleRecalc())
+      SetStyleChange(kLocalStyleChange);
+  }
+
   bool NeedsReattachLayoutTree() const {
     return GetFlag(kNeedsReattachLayoutTree);
   }
@@ -535,8 +539,14 @@ class CORE_EXPORT Node : public EventTarget {
     return GetFlag(kForceReattachLayoutTree);
   }
 
+  bool NeedsLayoutSubtreeUpdate() const;
+  bool NeedsWhitespaceChildrenUpdate() const;
   bool IsDirtyForStyleRecalc() const {
-    return NeedsStyleRecalc() || GetForceReattachLayoutTree();
+    return NeedsStyleRecalc() || GetForceReattachLayoutTree() ||
+           NeedsLayoutSubtreeUpdate();
+  }
+  bool IsDirtyForRebuildLayoutTree() const {
+    return NeedsReattachLayoutTree() || NeedsLayoutSubtreeUpdate();
   }
 
   // True if the style invalidation process should traverse this node's children
@@ -560,14 +570,6 @@ class CORE_EXPORT Node : public EventTarget {
   // Sets the flag for the current node and also calls
   // MarkAncestorsWithChildNeedsStyleInvalidation
   void SetNeedsStyleInvalidation();
-
-  // Please don't use this function.
-  // Background: When we investigated the usage of (old) UpdateDistribution,
-  // some caller's intents were unclear. Thus, we had to introduce this function
-  // for the sake of safety. If we can figure out the intent of each caller, we
-  // can replace that with calling UpdateDistributionForFlatTreeTraversal (or
-  // just RecalcSlotAssignments()) on a case-by-case basis.
-  void UpdateDistributionForUnknownReasons();
 
   void SetIsLink(bool f);
 
@@ -733,7 +735,6 @@ class CORE_EXPORT Node : public EventTarget {
   // these functions.
   inline ComputedStyle* MutableComputedStyleForEditingDeprecated() const;
   inline const ComputedStyle* GetComputedStyle() const;
-  inline const ComputedStyle* ParentComputedStyle() const;
   inline const ComputedStyle& ComputedStyleRef() const;
   bool ShouldSkipMarkingStyleDirty() const;
 
@@ -748,7 +749,7 @@ class CORE_EXPORT Node : public EventTarget {
   // Notification of document structure changes (see container_node.h for more
   // notification methods)
   //
-  // At first, Blinkt notifies the node that it has been inserted into the
+  // At first, Blink notifies the node that it has been inserted into the
   // document. This is called during document parsing, and also when a node is
   // added through the DOM methods insertBefore(), appendChild() or
   // replaceChild(). The call happens _after_ the node has been added to the
@@ -757,12 +758,12 @@ class CORE_EXPORT Node : public EventTarget {
   //
   // Blink notifies this callback regardless if the subtree of the node is a
   // document tree or a floating subtree.  Implementation can determine the type
-  // of subtree by seeing insertion_point->isConnected().  For a performance
-  // reason, notifications are delivered only to ContainerNode subclasses if the
-  // insertion_point is out of document.
+  // of subtree by seeing insertion_point->isConnected().  For performance
+  // reasons, notifications are delivered only to ContainerNode subclasses if
+  // the insertion_point is not in a document tree.
   //
-  // There are another callback named DidNotifySubtreeInsertionsToDocument(),
-  // which is called after all the descendant is notified, if this node was
+  // There is another callback, DidNotifySubtreeInsertionsToDocument(),
+  // which is called after all the descendants are notified, if this node was
   // inserted into the document tree. Only a few subclasses actually need
   // this. To utilize this, the node should return
   // kInsertionShouldCallDidNotifySubtreeInsertions from InsertedInto().
@@ -1092,6 +1093,7 @@ class CORE_EXPORT Node : public EventTarget {
 
   bool HasRareData() const { return GetFlag(kHasRareDataFlag); }
 
+  // |RareData| cannot be replaced or removed once assigned.
   NodeRareData* RareData() const {
     SECURITY_DCHECK(HasRareData());
     return DataAsNodeRareData();
@@ -1139,8 +1141,7 @@ class CORE_EXPORT Node : public EventTarget {
       PseudoId = kPseudoIdNone,
       const AtomicString& pseudo_argument = g_null_atom);
 
-  void TrackForDebugging();
-
+  // Used exclusively by |EnsureRareData|.
   NodeRareData& CreateRareData();
 
   const HeapVector<Member<MutationObserverRegistration>>*
@@ -1189,12 +1190,11 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const Node*);
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showNode(const blink::Node*);
-void showTree(const blink::Node*);
-void showNodePath(const blink::Node*);
+void ShowNode(const blink::Node*);
+void ShowTree(const blink::Node*);
+void ShowNodePath(const blink::Node*);
 #endif
 
-#if BUILDFLAG(USE_V8_OILPAN)
 namespace cppgc {
 // Assign Node to be allocated on custom NodeSpace.
 template <typename T>
@@ -1211,7 +1211,5 @@ struct ThreadingTrait<
   static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
 };
 }  // namespace blink
-
-#endif  // USE_V8_OILPAN
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_H_

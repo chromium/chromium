@@ -11,7 +11,6 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -25,13 +24,14 @@
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/scoped_test_recommend_apps_fetcher_factory.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/fake_eula_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -41,8 +41,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
-#include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/extensions/quick_unlock_private/quick_unlock_private_api.h"
+#include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_downloading_screen_handler.h"
@@ -58,7 +57,7 @@
 #include "chromeos/attestation/attestation_flow_utils.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
-#include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/fake_arc_session.h"
@@ -73,12 +72,12 @@
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_switches.h"
 
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
-
-namespace chromeos {
+namespace ash {
 namespace {
+
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
 
 constexpr char kArcTosID[] = "arc-tos";
 enum class ArcState { kNotAvailable, kAcceptTerms };
@@ -100,29 +99,11 @@ void RunWelcomeScreenChecks() {
   test::OobeJS().ExpectHiddenPath({"connect", "languageScreen"});
   test::OobeJS().ExpectHiddenPath({"connect", "timezoneScreen"});
 
-  if (features::IsNewOobeLayoutEnabled()) {
-    test::OobeJS().ExpectFocused({"connect", "welcomeScreen", "getStarted"});
-  } else {
-    test::OobeJS().ExpectFocused(
-        {"connect", "welcomeScreen", "welcomeNextButton"});
-  }
+  test::OobeJS().ExpectFocused({"connect", "welcomeScreen", "getStarted"});
 
-  if (!features::IsNewOobeLayoutEnabled()) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    constexpr int kNumberOfVideosPlaying = 1;
-#else
-    constexpr int kNumberOfVideosPlaying = 0;
-#endif
-    test::OobeJS().ExpectEQ(
-        "(() => {let cnt = 0; for (let v of "
-        "$('connect').$.welcomeScreen.root.querySelectorAll('video')) "
-        "{  cnt += v.paused ? 0 : 1; }; return cnt; })()",
-        kNumberOfVideosPlaying);
-  }
-
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   EXPECT_TRUE(test::IsScanningRequestedOnNetworkScreen());
 }
@@ -130,9 +111,9 @@ void RunWelcomeScreenChecks() {
 void RunNetworkSelectionScreenChecks() {
   test::OobeJS().ExpectEnabledPath({"network-selection", "nextButton"});
 
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS().CreateFocusWaiter({"network-selection", "nextButton"})->Wait();
   EXPECT_TRUE(test::IsScanningRequestedOnNetworkScreen());
@@ -146,9 +127,9 @@ void RunEulaScreenChecks() {
   test::OobeJS().ExpectEnabledPath({"oobe-eula-md", "acceptButton"});
   test::OobeJS().CreateFocusWaiter({"oobe-eula-md", "crosEulaFrame"})->Wait();
 
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown);
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown);
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
   EXPECT_FALSE(test::IsScanningRequestedOnNetworkScreen());
 }
 
@@ -192,25 +173,24 @@ void RunSyncConsentScreenChecks() {
   screen->SetProfileSyncEngineInitializedForTesting(true);
   screen->OnStateChanged(nullptr);
 
-  const std::string button_name =
-      chromeos::features::IsSyncConsentOptionalEnabled()
-          ? "acceptButton"
-          : "nonSplitSettingsAcceptButton";
+  const std::string button_name = features::IsSyncConsentOptionalEnabled()
+                                      ? "acceptButton"
+                                      : "nonSplitSettingsAcceptButton";
   test::OobeJS().ExpectEnabledPath({"sync-consent", button_name});
   test::OobeJS().CreateFocusWaiter({"sync-consent", button_name})->Wait();
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 }
 
 void RunFingerprintScreenChecks() {
   test::OobeJS().ExpectVisible("fingerprint-setup");
   test::OobeJS().ExpectVisiblePath({"fingerprint-setup", "setupFingerprint"});
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 }
 
 void RunPinSetupScreenChecks() {
@@ -218,9 +198,9 @@ void RunPinSetupScreenChecks() {
   test::OobeJS().ExpectVisiblePath({"pin-setup", "setup"});
   test::OobeJS().CreateFocusWaiter({"pin-setup", "pinKeyboard"})->Wait();
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 }
 
 // Waits for the ARC terms of service screen to be shown, it accepts
@@ -229,9 +209,9 @@ void HandleArcTermsOfServiceScreen() {
   OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
   LOG(INFO) << "OobeInteractiveUITest: Switched to 'arc-tos' screen.";
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS()
       .CreateEnabledWaiter(true, {"arc-tos", "arcTosNextButton"})
@@ -260,9 +240,9 @@ void HandleRecommendAppsScreen() {
   OobeScreenWaiter(RecommendAppsScreenView::kScreenId).Wait();
   LOG(INFO) << "OobeInteractiveUITest: Switched to 'recommend-apps' screen.";
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS()
       .CreateVisibilityWaiter(true, {"recommend-apps", "appsDialog"})
@@ -323,9 +303,9 @@ void HandleAppDownloadingScreen() {
   OobeScreenWaiter(AppDownloadingScreenView::kScreenId).Wait();
   LOG(INFO) << "OobeInteractiveUITest: Switched to 'app-downloading' screen.";
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   const std::initializer_list<base::StringPiece> continue_button = {
       "app-downloading", "continue-setup-button"};
@@ -347,9 +327,9 @@ void HandleAssistantOptInScreen() {
   OobeScreenWaiter(AssistantOptInFlowScreenView::kScreenId).Wait();
   LOG(INFO) << "OobeInteractiveUITest: Switched to 'assistant-optin' screen.";
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS()
       .CreateVisibilityWaiter(true, {"assistant-optin-flow", "card", "loading"})
@@ -398,7 +378,7 @@ void HandleMarketingOptInScreen() {
   // Enable the tablet mode shelf navigation buttons so that the next button
   // is shown on the marketing opt in screen in tablet mode.
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-      ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, true);
+      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, true);
 
   test::OobeJS().CreateVisibilityWaiter(true, {"marketing-opt-in"})->Wait();
   test::OobeJS()
@@ -444,6 +424,12 @@ std::unique_ptr<RecommendAppsFetcher> CreateRecommendAppsFetcher(
 class NativeWindowVisibilityObserver : public aura::WindowObserver {
  public:
   NativeWindowVisibilityObserver() = default;
+
+  NativeWindowVisibilityObserver(const NativeWindowVisibilityObserver&) =
+      delete;
+  NativeWindowVisibilityObserver& operator=(
+      const NativeWindowVisibilityObserver&) = delete;
+
   // aura::Window will remove observers on destruction.
   ~NativeWindowVisibilityObserver() override = default;
 
@@ -464,8 +450,6 @@ class NativeWindowVisibilityObserver : public aura::WindowObserver {
   bool was_visible_ = false;
 
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWindowVisibilityObserver);
 };
 
 // Sets the `NativeWindowVisibilityObserver` to observe the
@@ -478,17 +462,24 @@ class NativeWindowVisibilityBrowserMainExtraParts
   explicit NativeWindowVisibilityBrowserMainExtraParts(
       NativeWindowVisibilityObserver* observer)
       : observer_(observer) {}
+
+  NativeWindowVisibilityBrowserMainExtraParts(
+      const NativeWindowVisibilityBrowserMainExtraParts&) = delete;
+  NativeWindowVisibilityBrowserMainExtraParts& operator=(
+      const NativeWindowVisibilityBrowserMainExtraParts&) = delete;
+
   ~NativeWindowVisibilityBrowserMainExtraParts() override = default;
 
   // ChromeBrowserMainExtraParts:
   void PostProfileInit() override {
-    observer_->Observe(LoginDisplayHost::default_host()->GetNativeWindow());
+    gfx::NativeWindow window =
+        LoginDisplayHost::default_host()->GetNativeWindow();
+    if (window)
+      observer_->Observe(window);
   }
 
  private:
   NativeWindowVisibilityObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWindowVisibilityBrowserMainExtraParts);
 };
 
 class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
@@ -518,13 +509,18 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
              params_.hide_shelf_controls_in_tablet_mode, params_.arc_state) =
         parameters;
     if (params_.hide_shelf_controls_in_tablet_mode) {
-      feature_list_.InitWithFeatures(
-          {ash::features::kHideShelfControlsInTabletMode}, {});
+      feature_list_.InitWithFeatures({features::kHideShelfControlsInTabletMode},
+                                     {});
     } else {
       feature_list_.InitWithFeatures(
-          {}, {ash::features::kHideShelfControlsInTabletMode});
+          {}, {features::kHideShelfControlsInTabletMode});
     }
   }
+
+  OobeEndToEndTestSetupMixin(const OobeEndToEndTestSetupMixin&) = delete;
+  OobeEndToEndTestSetupMixin& operator=(const OobeEndToEndTestSetupMixin&) =
+      delete;
+
   ~OobeEndToEndTestSetupMixin() override = default;
 
   // InProcessBrowserTestMixin:
@@ -536,7 +532,7 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (params_.is_tablet) {
       // Makes the device capable to entering tablet mode.
-      command_line->AppendSwitch(ash::switches::kAshEnableTabletMode);
+      command_line->AppendSwitch(switches::kAshEnableTabletMode);
       // Having an active internal display so that tablet mode does not end
       // on display config change.
       command_line->AppendSwitch(::switches::kUseFirstDisplayAsInternal);
@@ -568,7 +564,7 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
 
   void SetUpOnMainThread() override {
     if (params_.is_tablet)
-      ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+      ShellTestApi().SetTabletModeEnabledForTest(true);
 
     if (params_.arc_state != ArcState::kNotAvailable) {
       // Init ArcSessionManager for testing.
@@ -616,8 +612,6 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
   std::unique_ptr<ScopedTestRecommendAppsFetcherFactory>
       recommend_apps_fetcher_factory_;
   net::EmbeddedTestServer* arc_tos_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeEndToEndTestSetupMixin);
 };
 
 }  // namespace
@@ -626,10 +620,10 @@ class OobeInteractiveUITest : public OobeBaseTest,
                               public ::testing::WithParamInterface<
                                   std::tuple<bool, bool, bool, ArcState>> {
  public:
-  OobeInteractiveUITest() {
-    branded_build_override_ =
-        WizardController::ForceBrandedBuildForTesting(true);
-  }
+  OobeInteractiveUITest(const OobeInteractiveUITest&) = delete;
+  OobeInteractiveUITest& operator=(const OobeInteractiveUITest&) = delete;
+
+  OobeInteractiveUITest() = default;
   ~OobeInteractiveUITest() override = default;
 
   // OobeBaseTest:
@@ -663,18 +657,22 @@ class OobeInteractiveUITest : public OobeBaseTest,
   const OobeEndToEndTestSetupMixin* test_setup() const { return &setup_; }
 
  private:
-  std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  void ForceBrandedBuild() const;
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
 
   net::EmbeddedTestServer arc_tos_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   EmbeddedTestServerSetupMixin arc_tos_server_setup_{&mixin_host_,
                                                      &arc_tos_server_};
   OobeEndToEndTestSetupMixin setup_{&mixin_host_, &arc_tos_server_, GetParam()};
-  DISALLOW_COPY_AND_ASSIGN(OobeInteractiveUITest);
 };
 
+void OobeInteractiveUITest::ForceBrandedBuild() const {
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
+}
+
 void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
+  ForceBrandedBuild();
   test::WaitForWelcomeScreen();
   RunWelcomeScreenChecks();
   test::TapWelcomeNext();
@@ -692,6 +690,7 @@ void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
 }
 
 void OobeInteractiveUITest::PerformSessionSignInSteps() {
+  ForceBrandedBuild();
   if (GetFirstSigninScreen() == UserCreationView::kScreenId) {
     test::WaitForUserCreationScreen();
     test::TapUserCreationNext();
@@ -742,8 +741,9 @@ void OobeInteractiveUITest::SimpleEndToEnd() {
 }
 
 // Disabled on *San bots since they time out.
+// crbug.com/1260131: SimpleEndToEnd is flaky on builder "linux-chromeos-dbg"
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(LEAK_SANITIZER)
+    defined(LEAK_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_SimpleEndToEnd DISABLED_SimpleEndToEnd
 #else
 #define MAYBE_SimpleEndToEnd SimpleEndToEnd
@@ -771,6 +771,12 @@ INSTANTIATE_TEST_SUITE_P(
 class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
  public:
   OobeZeroTouchInteractiveUITest() = default;
+
+  OobeZeroTouchInteractiveUITest(const OobeZeroTouchInteractiveUITest&) =
+      delete;
+  OobeZeroTouchInteractiveUITest& operator=(
+      const OobeZeroTouchInteractiveUITest&) = delete;
+
   ~OobeZeroTouchInteractiveUITest() override = default;
 
   void SetUpOnMainThread() override {
@@ -789,6 +795,11 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OobeInteractiveUITest::SetUpCommandLine(command_line);
 
+    // Enable usage of fake PSM (private set membership) RLWE client (for tests
+    // checking initial enrollment).
+    command_line->AppendSwitch(
+        switches::kEnterpriseUseFakePsmRlweClientForTesting);
+
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,
         AutoEnrollmentController::kInitialEnrollmentAlways);
@@ -800,8 +811,6 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
   LocalPolicyTestServerMixin policy_server_{&mixin_host_};
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeZeroTouchInteractiveUITest);
 };
 
 void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
@@ -811,12 +820,9 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
 
   test::WaitForEnrollmentScreen();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  auto login_screen_waiter =
-      std::make_unique<content::WindowedNotificationObserver>(
-          chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-          content::NotificationService::AllSources());
+  auto login_screen_waiter = std::make_unique<LoginOrLockScreenVisibleWaiter>();
   enrollment_ui_.LeaveSuccessScreen();
-  login_screen_waiter->Wait();
+  login_screen_waiter->WaitEvenIfShown();
 
   PerformSessionSignInSteps();
 
@@ -826,7 +832,7 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
 // crbug.com/997987. Disabled on MSAN since they time out.
 // crbug.com/1055853: EndToEnd is flaky on Linux Chromium OS ASan LSan
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(LEAK_SANITIZER) || (defined(OS_CHROMEOS) && !defined(NDEBUG))
+    defined(LEAK_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_EndToEnd DISABLED_EndToEnd
 #else
 #define MAYBE_EndToEnd EndToEnd
@@ -1016,7 +1022,7 @@ class EphemeralUserOobeTest : public MixinBasedInProcessBrowserTest,
  private:
   EmbeddedTestServerSetupMixin gaia_server_setup_{&mixin_host_,
                                                   embedded_test_server()};
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   net::EmbeddedTestServer arc_tos_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   EmbeddedTestServerSetupMixin arc_tos_server_setup_{&mixin_host_,
@@ -1077,4 +1083,4 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Bool(),
                      testing::Values(ArcState::kNotAvailable,
                                      ArcState::kAcceptTerms)));
-}  //  namespace chromeos
+}  //  namespace ash

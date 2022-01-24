@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/feature_engagement/internal/display_lock_controller.h"
 
 namespace feature_engagement {
@@ -18,14 +17,16 @@ class DisplayLockHandle;
 class NoopDisplayLockController : public DisplayLockController {
  public:
   NoopDisplayLockController();
+
+  NoopDisplayLockController(const NoopDisplayLockController&) = delete;
+  NoopDisplayLockController& operator=(const NoopDisplayLockController&) =
+      delete;
+
   ~NoopDisplayLockController() override;
 
   // DisplayLockController implementation.
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override;
   bool IsDisplayLocked() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoopDisplayLockController);
 };
 
 }  // namespace feature_engagement

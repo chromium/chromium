@@ -4,7 +4,6 @@
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 
 #include <string>
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"

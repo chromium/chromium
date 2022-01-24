@@ -18,7 +18,8 @@ class ChromeAppListItem;
 
 class FakeAppListModelUpdater : public AppListModelUpdater {
  public:
-  explicit FakeAppListModelUpdater(Profile* profile = nullptr);
+  FakeAppListModelUpdater(Profile* profile,
+                          app_list::AppListReorderDelegate* order_delegate);
   FakeAppListModelUpdater(const FakeAppListModelUpdater&) = delete;
   FakeAppListModelUpdater& operator=(const FakeAppListModelUpdater&) = delete;
   ~FakeAppListModelUpdater() override;
@@ -27,51 +28,52 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   void AddItem(std::unique_ptr<ChromeAppListItem> item) override;
   void AddItemToFolder(std::unique_ptr<ChromeAppListItem> item,
                        const std::string& folder_id) override;
-  void AddItemToOemFolder(
-      std::unique_ptr<ChromeAppListItem> item,
-      app_list::AppListSyncableService::SyncItem* oem_sync_item,
-      const std::string& oem_folder_name,
-      const syncer::StringOrdinal& preferred_oem_position) override;
   void UpdateAppItemFromSyncItem(
       app_list::AppListSyncableService::SyncItem* sync_item,
       bool update_name,
       bool update_folder) override;
   void RemoveItem(const std::string& id) override;
   void RemoveUninstalledItem(const std::string& id) override;
-  void MoveItemToFolder(const std::string& id,
-                        const std::string& folder_id) override;
   void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) override;
+  void SetItemFolderId(const std::string& id,
+                       const std::string& folder_id) override;
+  void SetItemPosition(const std::string& id,
+                       const syncer::StringOrdinal& new_position) override;
+  void SetItemName(const std::string& id, const std::string& new_name) override;
   // For SearchModel:
   void SetSearchEngineIsGoogle(bool is_google) override;
   void PublishSearchResults(
-      const std::vector<ChromeSearchResult*>& results) override;
+      const std::vector<ChromeSearchResult*>& results,
+      const std::vector<ash::AppListSearchResultCategory>& categories) override;
 
   void ActivateChromeItem(const std::string& id, int event_flags) override;
   void LoadAppIcon(const std::string& id) override;
 
   // For AppListModel:
   ChromeAppListItem* FindItem(const std::string& id) override;
+  std::vector<const ChromeAppListItem*> GetItems() const override;
   size_t ItemCount() override;
+  std::vector<ChromeAppListItem*> GetTopLevelItems() const override;
   ChromeAppListItem* ItemAtForTest(size_t index) override;
   ChromeAppListItem* FindFolderItem(const std::string& folder_id) override;
   bool FindItemIndexForTest(const std::string& id, size_t* index) override;
   void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) override;
-  syncer::StringOrdinal GetFirstAvailablePosition() const override;
   syncer::StringOrdinal GetPositionBeforeFirstItem() const override;
   void GetContextMenuModel(const std::string& id,
                            GetMenuModelCallback callback) override;
+  syncer::StringOrdinal CalculatePositionForNewItem(
+      const ChromeAppListItem& new_item) override;
   size_t BadgedItemCount() override;
+  void OnSortRequested(ash::AppListSortOrder order) override {}
+  void OnSortRevertRequested() override {}
+
   // For SearchModel:
   bool SearchEngineIsGoogle() override;
   const std::vector<ChromeSearchResult*>& search_results() const {
     return search_results_;
   }
 
-  void OnItemAdded(std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnItemUpdated(std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnFolderDeleted(
-      std::unique_ptr<ash::AppListItemMetadata> item) override {}
-  void OnPageBreakItemDeleted(const std::string& id) override {}
+  void OnAppListHidden() override {}
 
   void AddObserver(AppListModelUpdaterObserver* observer) override;
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;
@@ -80,14 +82,14 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
 
   size_t update_image_count() const { return update_image_count_; }
 
-  std::vector<ChromeAppListItem*> GetTopLevelItems() const;
-
  private:
+  Profile* profile_;
+  app_list::AppListReorderDelegate* const order_delegate_;
+
   bool search_engine_is_google_ = false;
   std::vector<std::unique_ptr<ChromeAppListItem>> items_;
   std::vector<ChromeSearchResult*> search_results_;
   base::ObserverList<AppListModelUpdaterObserver> observers_;
-  Profile* profile_;
 
   size_t update_image_count_ = 0;
   size_t expected_update_image_count_ = 0;

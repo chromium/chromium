@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,7 +21,6 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
-#include "components/password_manager/core/browser/store_metrics_reporter.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
 #include "components/sync/driver/sync_service.h"
@@ -55,6 +53,7 @@ using password_manager::metrics_util::PasswordType;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 using password_manager::SyncState;
 
 namespace {
@@ -77,9 +76,6 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
       helper_(this) {
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
-  static base::NoDestructor<password_manager::StoreMetricsReporter> reporter(
-      this, GetSyncService(bridge_.browserState), GetIdentityManager(),
-      GetPrefs());
   log_manager_ = autofill::LogManager::Create(
       ios::PasswordManagerLogRouterFactory::GetForBrowserState(
           bridge_.browserState),
@@ -180,13 +176,15 @@ PrefService* IOSChromePasswordManagerClient::GetPrefs() const {
   return (bridge_.browserState)->GetPrefs();
 }
 
-PasswordStore* IOSChromePasswordManagerClient::GetProfilePasswordStore() const {
+PasswordStoreInterface*
+IOSChromePasswordManagerClient::GetProfilePasswordStore() const {
   return IOSChromePasswordStoreFactory::GetForBrowserState(
              bridge_.browserState, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }
 
-PasswordStore* IOSChromePasswordManagerClient::GetAccountPasswordStore() const {
+PasswordStoreInterface*
+IOSChromePasswordManagerClient::GetAccountPasswordStore() const {
   // AccountPasswordStore is currenly not supported on iOS.
   return nullptr;
 }
@@ -195,6 +193,11 @@ password_manager::PasswordReuseManager*
 IOSChromePasswordManagerClient::GetPasswordReuseManager() const {
   return IOSChromePasswordReuseManagerFactory::GetForBrowserState(
       bridge_.browserState);
+}
+
+password_manager::PasswordScriptsFetcher*
+IOSChromePasswordManagerClient::GetPasswordScriptsFetcher() {
+  return nullptr;
 }
 
 void IOSChromePasswordManagerClient::NotifyUserAutoSignin(
@@ -236,7 +239,7 @@ bool IOSChromePasswordManagerClient::IsSavingAndFillingEnabled(
 }
 
 bool IOSChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
-  return url.GetOrigin() !=
+  return url.DeprecatedGetOriginAsURL() !=
          GURL(password_manager::kPasswordManagerAccountDashboardURL);
 }
 

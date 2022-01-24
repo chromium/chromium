@@ -28,7 +28,7 @@
 #include "base/feature_list.h"
 #include "chromeos/grit/chromeos_resources.h"
 #include "chromeos/grit/chromeos_resources_map.h"
-#include "ui/chromeos/colors/cros_colors.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #endif
 
 namespace content {
@@ -41,7 +41,10 @@ const std::set<int> GetContentResourceIds() {
       IDR_ORIGIN_MOJO_HTML,
       IDR_ORIGIN_MOJO_JS,
       IDR_ORIGIN_MOJO_WEBUI_JS,
+      IDR_RANGE_MOJOM_WEBUI_JS,
       IDR_TOKEN_MOJO_WEBUI_JS,
+      IDR_UI_WINDOW_OPEN_DISPOSITION_MOJO_JS,
+      IDR_UI_WINDOW_OPEN_DISPOSITION_MOJO_WEBUI_JS,
       IDR_UNGUESSABLE_TOKEN_MOJO_HTML,
       IDR_UNGUESSABLE_TOKEN_MOJO_JS,
       IDR_URL_MOJO_HTML,
@@ -55,6 +58,7 @@ const std::set<int> GetContentResourceIds() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const std::set<int> GetChromeosMojoResourceIds() {
   return std::set<int>{
+      IDR_BLUETOOTH_CONFIG_MOJOM_LITE_JS,
       IDR_CELLULAR_SETUP_MOJOM_HTML,
       IDR_CELLULAR_SETUP_MOJOM_LITE_JS,
       IDR_ESIM_MANAGER_MOJOM_HTML,
@@ -127,12 +131,27 @@ WebUIDataSource* CreateSharedResourcesDataSource() {
   source->AddString(
       "crosColorsDebugOverrides",
       base::FeatureList::IsEnabled(ash::features::kSemanticColorsDebugOverride)
-          ? cros_colors::kDebugOverrideCssString
+          ? cros_styles::kDebugOverrideCssString
           : "");
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   source->AddString("fontFamily", webui::GetFontFamily());
   source->AddString("fontSize", webui::GetFontSize());
+
+  return source;
+}
+
+WebUIDataSource* CreateUntrustedSharedResourcesDataSource() {
+  // This data source only serves resources used by all chrome-untrusted://
+  // WebUI pages.
+  //
+  // Don't put generated Mojo bindings here. Please explicitly add them to each
+  // WebUI's own data source.
+  WebUIDataSource* source =
+      content::WebUIDataSource::Create(kChromeUIUntrustedResourcesURL);
+
+  source->AddResourcePaths(
+      base::make_span(kMojoBindingsResources, kMojoBindingsResourcesSize));
 
   return source;
 }

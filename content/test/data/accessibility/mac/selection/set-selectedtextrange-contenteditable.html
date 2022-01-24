@@ -1,0 +1,27 @@
+<!--
+@SCRIPT:
+  // select 1st word
+  ce.AXSelectedTextRange = {loc: 0, len: 3}
+  wait for AXSelectedTextChanged on AXTextArea
+  ce.AXSelectedText
+
+@SCRIPT:
+  // select text inside span
+  ce.AXSelectedTextRange = {loc: 22, len: 4}
+  wait for AXSelectedTextChanged on AXTextArea
+  ce.AXSelectedText
+
+@SCRIPT:
+  // select text that starts in the <span> and ends in the <em>
+  ce.AXSelectedTextRange = {loc: 24, len: 15}
+  wait for AXSelectedTextChanged on AXTextArea
+  ce.AXSelectedText
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="ce" contenteditable="true">
+    <p>The quick brown foxes <span aria-invalid="grammar">jumps</span> over the <em>lazy</em> dog</p>
+  </div>
+</body>
+</html>

@@ -15,8 +15,8 @@ class GPUTextureView : public DawnObject<WGPUTextureView> {
  public:
   explicit GPUTextureView(GPUDevice* device, WGPUTextureView texture_view);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUTextureView);
+  GPUTextureView(const GPUTextureView&) = delete;
+  GPUTextureView& operator=(const GPUTextureView&) = delete;
 };
 
 }  // namespace blink

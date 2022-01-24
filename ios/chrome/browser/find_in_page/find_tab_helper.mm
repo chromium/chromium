@@ -15,15 +15,23 @@
 #endif
 
 FindTabHelper::FindTabHelper(web::WebState* web_state) {
-  web_state->AddObserver(this);
-  controller_ = [[FindInPageController alloc] initWithWebState:web_state];
+  DCHECK(web_state);
+  observation_.Observe(web_state);
+
+  if (web_state->IsRealized()) {
+    CreateFindInPageController(web_state);
+  }
 }
 
 FindTabHelper::~FindTabHelper() {}
 
 void FindTabHelper::SetResponseDelegate(
     id<FindInPageResponseDelegate> response_delegate) {
-  controller_.responseDelegate = response_delegate;
+  if (!controller_) {
+    response_delegate_ = response_delegate;
+  } else {
+    controller_.responseDelegate = response_delegate;
+  }
 }
 
 void FindTabHelper::StartFinding(NSString* search_term) {
@@ -71,9 +79,24 @@ void FindTabHelper::RestoreSearchTerm() {
   [controller_ restoreSearchTerm];
 }
 
+void FindTabHelper::CreateFindInPageController(web::WebState* web_state) {
+  DCHECK(!controller_);
+  controller_ = [[FindInPageController alloc] initWithWebState:web_state];
+  if (response_delegate_) {
+    controller_.responseDelegate = response_delegate_;
+    response_delegate_ = nil;
+  }
+}
+
+void FindTabHelper::WebStateRealized(web::WebState* web_state) {
+  CreateFindInPageController(web_state);
+}
+
 void FindTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  observation_.Reset();
+
   [controller_ detachFromWebState];
-  web_state->RemoveObserver(this);
+  controller_ = nil;
 }
 
 void FindTabHelper::DidFinishNavigation(

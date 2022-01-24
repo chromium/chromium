@@ -12,10 +12,14 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/engine/entity_data.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using sync_pb::EntityMetadata;
@@ -31,7 +35,7 @@ class TestMetadataChangeList : public MetadataChangeList {
  public:
   explicit TestMetadataChangeList(FakeModelTypeSyncBridge::Store* db)
       : db_(db) {}
-  ~TestMetadataChangeList() override {}
+  ~TestMetadataChangeList() override = default;
 
   // MetadataChangeList implementation.
   void UpdateModelTypeState(
@@ -92,8 +96,8 @@ std::unique_ptr<EntityData> FakeModelTypeSyncBridge::GenerateEntityData(
   return entity_data;
 }
 
-FakeModelTypeSyncBridge::Store::Store() {}
-FakeModelTypeSyncBridge::Store::~Store() {}
+FakeModelTypeSyncBridge::Store::Store() = default;
+FakeModelTypeSyncBridge::Store::~Store() = default;
 
 void FakeModelTypeSyncBridge::Store::PutData(const std::string& key,
                                              const EntityData& data) {

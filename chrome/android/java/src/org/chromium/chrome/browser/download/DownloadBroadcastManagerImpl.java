@@ -119,7 +119,6 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
      * Cancel any download resumption tasks and reset the number of resumption attempts available.
      */
     void cancelQueuedResumptions() {
-        DownloadResumptionScheduler.getDownloadResumptionScheduler().cancel();
         // Reset number of attempts left if the action is triggered by user.
         clearResumptionAttemptLeft();
     }

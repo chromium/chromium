@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/platform_keys_certificate_selector_chromeos.h"
 #include "chrome/browser/ui/views/certificate_selector.h"
@@ -31,6 +30,12 @@ class PlatformKeysCertificateSelector : public chrome::CertificateSelector {
                                   const std::string& extension_name,
                                   CertificateSelectedCallback callback,
                                   content::WebContents* web_contents);
+
+  PlatformKeysCertificateSelector(const PlatformKeysCertificateSelector&) =
+      delete;
+  PlatformKeysCertificateSelector& operator=(
+      const PlatformKeysCertificateSelector&) = delete;
+
   ~PlatformKeysCertificateSelector() override;
 
   void Init();
@@ -44,8 +49,6 @@ class PlatformKeysCertificateSelector : public chrome::CertificateSelector {
 
   // Will be reset to null after it was run.
   CertificateSelectedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformKeysCertificateSelector);
 };
 
 }  // namespace chromeos

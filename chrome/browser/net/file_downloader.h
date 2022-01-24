@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -45,6 +44,10 @@ class FileDownloader {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DownloadFinishedCallback callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  FileDownloader(const FileDownloader&) = delete;
+  FileDownloader& operator=(const FileDownloader&) = delete;
+
   ~FileDownloader();
 
   static bool IsSuccess(Result result) { return result != FAILED; }
@@ -65,8 +68,6 @@ class FileDownloader {
   base::FilePath local_path_;
 
   base::WeakPtrFactory<FileDownloader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileDownloader);
 };
 
 #endif  // CHROME_BROWSER_NET_FILE_DOWNLOADER_H_

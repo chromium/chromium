@@ -60,6 +60,8 @@
 
 #ifdef HAVE_SYMBOLIZE
 
+#include <algorithm>
+
 #if defined(__ELF__)  // defined by gcc
 #if defined(__OpenBSD__)
 #include <sys/exec_elf.h>
@@ -98,6 +100,42 @@ _START_GOOGLE_NAMESPACE_
 // success. Otherwise, returns false.
 bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
                             ElfW(Shdr) *out);
+
+int OpenObjectFileContainingPcAndGetStartAddress(uint64_t pc,
+                                                 uint64_t& start_address,
+                                                 uint64_t& end_address,
+                                                 uint64_t& base_address,
+                                                 char* out_file_name,
+                                                 int out_file_name_size);
+
+ssize_t ReadFromOffset(const int fd,
+                       void* buf,
+                       const size_t count,
+                       const off_t offset);
+
+// Thin wrapper around a file descriptor so that the file descriptor
+// gets closed for sure.
+struct FileDescriptor {
+  int fd_;
+  explicit FileDescriptor(int fd);
+  ~FileDescriptor();
+
+  FileDescriptor(FileDescriptor&& other) : fd_(std::exchange(other.fd_, -1)) {}
+
+  FileDescriptor& operator=(FileDescriptor&& rhs) {
+    if (&rhs != this) {
+      fd_ = std::exchange(rhs.fd_, -1);
+    }
+    return *this;
+  }
+
+  FileDescriptor(const FileDescriptor&) = delete;
+  void operator=(const FileDescriptor&) = delete;
+
+  int get() { return fd_; }
+};
+
+char* itoa_r(intptr_t i, char* buf, size_t sz, int base, size_t padding);
 
 _END_GOOGLE_NAMESPACE_
 

@@ -8,8 +8,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/global_media_controls/public/test/mock_media_item_manager.h"
 #include "components/media_message_center/mock_media_notification_view.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_route.h"
@@ -44,7 +44,7 @@ class CastMediaNotificationProducerTest : public testing::Test {
  public:
   void SetUp() override {
     notification_producer_ = std::make_unique<CastMediaNotificationProducer>(
-        &profile_, &router_, &items_manager_,
+        &profile_, &router_, &item_manager_,
         base::BindRepeating(&MockClosure::Run,
                             base::Unretained(&items_changed_callback_)));
   }
@@ -55,7 +55,7 @@ class CastMediaNotificationProducerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<CastMediaNotificationProducer> notification_producer_;
-  NiceMock<MockMediaItemsManager> items_manager_;
+  NiceMock<global_media_controls::test::MockMediaItemManager> item_manager_;
   NiceMock<media_router::MockMediaRouter> router_;
   NiceMock<MockClosure> items_changed_callback_;
 };
@@ -83,7 +83,7 @@ TEST_F(CastMediaNotificationProducerTest, AddAndRemoveRoute) {
   notification_producer_->OnRoutesUpdated({route}, {});
   testing::Mock::VerifyAndClearExpectations(&items_changed_callback_);
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
-  EXPECT_NE(nullptr, notification_producer_->GetNotificationItem(route_id));
+  EXPECT_NE(nullptr, notification_producer_->GetMediaItem(route_id));
 
   EXPECT_CALL(items_changed_callback_, Run());
   notification_producer_->OnRoutesUpdated({}, {});
@@ -97,7 +97,7 @@ TEST_F(CastMediaNotificationProducerTest, UpdateRoute) {
 
   notification_producer_->OnRoutesUpdated({route}, {});
   auto* item = static_cast<CastMediaNotificationItem*>(
-      notification_producer_->GetNotificationItem(route_id).get());
+      notification_producer_->GetMediaItem(route_id).get());
   NiceMock<media_message_center::test::MockMediaNotificationView> view;
   item->SetView(&view);
 
@@ -136,7 +136,7 @@ TEST_F(CastMediaNotificationProducerTest, DismissNotification) {
   notification_producer_->OnRoutesUpdated({route1}, {});
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
 
-  notification_producer_->OnContainerDismissed(route_id1);
+  notification_producer_->OnMediaItemUIDismissed(route_id1);
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 
   // Adding another route should not bring back the dismissed notification.

@@ -20,6 +20,10 @@ class NET_EXPORT CertIssuerSourceAia : public CertIssuerSource {
   // used only on a single thread, which is the thread |cert_fetcher| will be
   // operated from.
   explicit CertIssuerSourceAia(scoped_refptr<CertNetFetcher> cert_fetcher);
+
+  CertIssuerSourceAia(const CertIssuerSourceAia&) = delete;
+  CertIssuerSourceAia& operator=(const CertIssuerSourceAia&) = delete;
+
   ~CertIssuerSourceAia() override;
 
   // CertIssuerSource implementation:
@@ -30,8 +34,6 @@ class NET_EXPORT CertIssuerSourceAia : public CertIssuerSource {
 
  private:
   scoped_refptr<CertNetFetcher> cert_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertIssuerSourceAia);
 };
 
 }  // namespace net

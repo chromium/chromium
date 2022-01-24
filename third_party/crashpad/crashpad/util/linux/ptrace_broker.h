@@ -19,7 +19,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "base/macros.h"
 #include "util/file/file_io.h"
 #include "util/linux/exception_handler_protocol.h"
 #include "util/linux/ptrace_connection.h"
@@ -163,6 +162,9 @@ class PtraceBroker {
   //!     64-bit process.
   PtraceBroker(int sock, pid_t pid, bool is_64_bit);
 
+  PtraceBroker(const PtraceBroker&) = delete;
+  PtraceBroker& operator=(const PtraceBroker&) = delete;
+
   ~PtraceBroker();
 
   //! \brief Restricts the broker to serving the contents of files under \a
@@ -210,8 +212,6 @@ class PtraceBroker {
   int sock_;
   pid_t memory_pid_;
   bool tried_opening_mem_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(PtraceBroker);
 };
 
 }  // namespace crashpad

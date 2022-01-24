@@ -97,7 +97,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingStatePolicyManaged) {
 
   // First, navigate to an SSL error page and make sure the enhanced protection
   // message appears by default.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired.GetURL("/")));
   EXPECT_EQ(security_interstitials::CMD_TEXT_FOUND,
             IsEnhancedProtectionMessageVisibleOnInterstitial());
 
@@ -116,14 +117,15 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingStatePolicyManaged) {
 
   // Navigate to an SSL error page, the enhanced protection message should not
   // appear.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired.GetURL("/")));
   EXPECT_EQ(security_interstitials::CMD_TEXT_NOT_FOUND,
             IsEnhancedProtectionMessageVisibleOnInterstitial());
 }
 
-// Test that when safe browsing whitelist domains are set by policy, safe
+// Test that when safe browsing allowlist domains are set by policy, safe
 // browsing service gets the correct value.
-IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingWhitelistDomains) {
+IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingAllowlistDomains) {
   // Without setting up the enterprise policy,
   // |GetSafeBrowsingDomainsPref(..) should return empty list.
   const PrefService* const prefs = browser()->profile()->GetPrefs();
@@ -134,14 +136,14 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingWhitelistDomains) {
                                                      &canonicalized_domains);
   EXPECT_TRUE(canonicalized_domains.empty());
 
-  // Add 2 whitelisted domains to this policy.
+  // Add 2 allowlisted domains to this policy.
   PolicyMap policies;
-  base::ListValue whitelist_domains;
-  whitelist_domains.AppendString("mydomain.com");
-  whitelist_domains.AppendString("mydomain.net");
-  policies.Set(key::kSafeBrowsingWhitelistDomains, POLICY_LEVEL_MANDATORY,
+  base::ListValue allowlist_domains;
+  allowlist_domains.Append("mydomain.com");
+  allowlist_domains.Append("mydomain.net");
+  policies.Set(key::kSafeBrowsingAllowlistDomains, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               whitelist_domains.Clone(), nullptr);
+               allowlist_domains.Clone(), nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kSafeBrowsingAllowlistDomains)->IsManaged());
@@ -152,11 +154,11 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingWhitelistDomains) {
   EXPECT_EQ("mydomain.net", canonicalized_domains[1]);
 
   // Invalid domains will be skipped.
-  whitelist_domains.ClearList();
-  whitelist_domains.AppendString(std::string("%EF%BF%BDzyx.com"));
-  policies.Set(key::kSafeBrowsingWhitelistDomains, POLICY_LEVEL_MANDATORY,
+  allowlist_domains.ClearList();
+  allowlist_domains.Append(std::string("%EF%BF%BDzyx.com"));
+  policies.Set(key::kSafeBrowsingAllowlistDomains, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               whitelist_domains.Clone(), nullptr);
+               allowlist_domains.Clone(), nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kSafeBrowsingAllowlistDomains)->IsManaged());
@@ -181,8 +183,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PasswordProtectionLoginURLs) {
   // Add 2 login URLs to this enterprise policy .
   PolicyMap policies;
   base::ListValue login_url_values;
-  login_url_values.AppendString("https://login.mydomain.com");
-  login_url_values.AppendString("https://mydomian.com/login.html");
+  login_url_values.Append("https://login.mydomain.com");
+  login_url_values.Append("https://mydomian.com/login.html");
   policies.Set(key::kPasswordProtectionLoginURLs, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, login_url_values.Clone(),
                nullptr);
@@ -196,8 +198,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PasswordProtectionLoginURLs) {
 
   // Verify non-http/https schemes, or invalid URLs will be skipped.
   login_url_values.ClearList();
-  login_url_values.AppendString(std::string("invalid"));
-  login_url_values.AppendString(std::string("ftp://login.mydomain.com"));
+  login_url_values.Append(std::string("invalid"));
+  login_url_values.Append(std::string("ftp://login.mydomain.com"));
   policies.Set(key::kPasswordProtectionLoginURLs, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, login_url_values.Clone(),
                nullptr);

@@ -50,7 +50,6 @@ const int kRequestId1(1);
 const int kRequestId2(2);
 const long kTestTimeBudgetSeconds = 200;
 const int kBatteryPercentageHigh = 75;
-const int kMaxCompletedTries = 3;
 const bool kPowerRequired = true;
 const bool kUserRequested = true;
 const int kAttemptCount = 1;
@@ -1257,7 +1256,7 @@ TEST_F(RequestCoordinatorTest, RemoveInflightRequestAndAddAnother) {
   AddRequest1();
   PumpLoop();
   // Test a different ordering of tasks, by delaying the offliner cancellation.
-  offliner()->set_cancel_delay(base::TimeDelta::FromSeconds(1));
+  offliner()->set_cancel_delay(base::Seconds(1));
   // Ensure the start processing request stops before the completion callback.
   EnableOfflinerCallback(false);
 
@@ -1281,7 +1280,7 @@ TEST_F(RequestCoordinatorTest, RemoveInflightRequestAndAddAnother) {
       request_ids, base::BindOnce(&RequestCoordinatorTest::RemoveRequestsDone,
                                   base::Unretained(this)));
 
-  AdvanceClockBy(base::TimeDelta::FromSeconds(2));
+  AdvanceClockBy(base::Seconds(2));
 
   // Since offliner was started, it will have seen cancel call.
   EXPECT_TRUE(OfflinerWasCanceled());
@@ -1366,7 +1365,7 @@ TEST_F(RequestCoordinatorTest,
   PumpLoop();
 
   // Advance the mock clock far enough to cause a watchdog timeout
-  AdvanceClockBy(base::TimeDelta::FromSeconds(
+  AdvanceClockBy(base::Seconds(
       coordinator()
           ->policy()
           ->GetSinglePageTimeLimitWhenBackgroundScheduledInSeconds() +
@@ -1397,11 +1396,11 @@ TEST_F(RequestCoordinatorTest,
   EXPECT_TRUE(state() == RequestCoordinatorState::OFFLINING);
 
   // Advance the mock clock 1 second before the watchdog timeout.
-  AdvanceClockBy(base::TimeDelta::FromSeconds(
-      coordinator()
-          ->policy()
-          ->GetSinglePageTimeLimitForImmediateLoadInSeconds() -
-      1));
+  AdvanceClockBy(
+      base::Seconds(coordinator()
+                        ->policy()
+                        ->GetSinglePageTimeLimitForImmediateLoadInSeconds() -
+                    1));
   PumpLoop();
 
   // Verify still busy.
@@ -1409,7 +1408,7 @@ TEST_F(RequestCoordinatorTest,
   EXPECT_FALSE(OfflinerWasCanceled());
 
   // Advance the mock clock past the watchdog timeout now.
-  AdvanceClockBy(base::TimeDelta::FromSeconds(2));
+  AdvanceClockBy(base::Seconds(2));
   PumpLoop();
 
   // Verify the request timed out.
@@ -1436,7 +1435,7 @@ TEST_F(RequestCoordinatorTest, TimeBudgetExceeded) {
   // Advance the mock clock far enough to exceed our time budget.
   // The first request will time out, and because we are over time budget,
   // the second request will not be started.
-  AdvanceClockBy(base::TimeDelta::FromSeconds(kTestTimeBudgetSeconds));
+  AdvanceClockBy(base::Seconds(kTestTimeBudgetSeconds));
   PumpLoop();
 
   // TryNextRequest should decide that there is no more work to be done,
@@ -1728,7 +1727,7 @@ TEST_F(RequestCoordinatorTest, SnapshotOnLastTryForScheduledProcessing) {
   PumpLoop();
 
   // Advance the mock clock far enough to cause a watchdog timeout
-  AdvanceClockBy(base::TimeDelta::FromSeconds(
+  AdvanceClockBy(base::Seconds(
       coordinator()
           ->policy()
           ->GetSinglePageTimeLimitWhenBackgroundScheduledInSeconds() +
@@ -1768,11 +1767,11 @@ TEST_F(RequestCoordinatorTest, SnapshotOnLastTryForImmediateProcessing) {
     EXPECT_TRUE(state() == RequestCoordinatorState::OFFLINING);
 
     // Advance the mock clock 1 second more than the watchdog timeout.
-    AdvanceClockBy(base::TimeDelta::FromSeconds(
-        coordinator()
-            ->policy()
-            ->GetSinglePageTimeLimitForImmediateLoadInSeconds() +
-        1));
+    AdvanceClockBy(
+        base::Seconds(coordinator()
+                          ->policy()
+                          ->GetSinglePageTimeLimitForImmediateLoadInSeconds() +
+                      1));
     PumpLoop();
 
     // Verify the request timed out.
@@ -1787,11 +1786,11 @@ TEST_F(RequestCoordinatorTest, SnapshotOnLastTryForImmediateProcessing) {
   EnableSnapshotOnLastRetry();
 
   // Advance the mock clock 1 second more than the watchdog timeout.
-  AdvanceClockBy(base::TimeDelta::FromSeconds(
-      coordinator()
-          ->policy()
-          ->GetSinglePageTimeLimitForImmediateLoadInSeconds() +
-      1));
+  AdvanceClockBy(
+      base::Seconds(coordinator()
+                        ->policy()
+                        ->GetSinglePageTimeLimitForImmediateLoadInSeconds() +
+                    1));
   PumpLoop();
 
   // The last time would trigger the snapshot on last retry and succeed.

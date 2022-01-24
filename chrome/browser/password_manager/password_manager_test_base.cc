@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
@@ -57,6 +56,11 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
  public:
   explicit CustomManagePasswordsUIController(
       content::WebContents* web_contents);
+
+  CustomManagePasswordsUIController(const CustomManagePasswordsUIController&) =
+      delete;
+  CustomManagePasswordsUIController& operator=(
+      const CustomManagePasswordsUIController&) = delete;
 
   void WaitForState(password_manager::ui::State target_state);
 
@@ -121,8 +125,6 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
 
   // True iff a prompt was automatically shown.
   bool was_prompt_automatically_shown_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomManagePasswordsUIController);
 };
 
 CustomManagePasswordsUIController::CustomManagePasswordsUIController(
@@ -508,16 +510,16 @@ void PasswordManagerBrowserTestBase::GetNewTab(
 
 // static
 void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
-  scoped_refptr<password_manager::PasswordStore> profile_password_store =
-      PasswordStoreFactory::GetForProfile(browser->profile(),
-                                          ServiceAccessType::IMPLICIT_ACCESS);
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      profile_password_store = PasswordStoreFactory::GetForProfile(
+          browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   PasswordStoreResultsObserver profile_syncer;
   profile_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
       &profile_syncer);
   profile_syncer.WaitForResults();
 
-  scoped_refptr<password_manager::PasswordStore> account_password_store =
-      AccountPasswordStoreFactory::GetForProfile(
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      account_password_store = AccountPasswordStoreFactory::GetForProfile(
           browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   if (account_password_store) {
     PasswordStoreResultsObserver account_syncer;
@@ -541,7 +543,7 @@ void PasswordManagerBrowserTestBase::NavigateToFile(const std::string& path) {
             browser()->tab_strip_model()->GetActiveWebContents());
   NavigationObserver observer(WebContents());
   GURL url = embedded_test_server()->GetURL(path);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   observer.Wait();
 }
 
@@ -739,7 +741,7 @@ void PasswordManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
 void PasswordManagerBrowserTestBase::AddHSTSHost(const std::string& host) {
   network::mojom::NetworkContext* network_context =
       browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext();
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
+  base::Time expiry = base::Time::Now() + base::Days(1000);
   bool include_subdomains = false;
   base::RunLoop run_loop;
   network_context->AddHSTS(host, expiry, include_subdomains,

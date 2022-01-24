@@ -12,16 +12,6 @@
 }
 @end
 
-@implementation FakeUNNotificationResponse
-@synthesize notification = _notification;
-@synthesize actionIdentifier = _actionIdentifier;
-- (void)dealloc {
-  [_notification release];
-  [_actionIdentifier release];
-  [super dealloc];
-}
-@end
-
 @implementation FakeUNNotificationSettings
 @synthesize alertStyle = _alertStyle;
 @synthesize authorizationStatus = _authorizationStatus;
@@ -125,26 +115,3 @@
 }
 
 @end
-
-base::scoped_nsobject<FakeUNNotificationResponse>
-CreateFakeUNNotificationResponse(NSDictionary* userInfo) {
-  base::scoped_nsobject<UNMutableNotificationContent> content(
-      [[UNMutableNotificationContent alloc] init]);
-  [content setUserInfo:userInfo];
-
-  UNNotificationRequest* request =
-      [UNNotificationRequest requestWithIdentifier:@"identifier"
-                                           content:content.get()
-                                           trigger:nil];
-
-  base::scoped_nsobject<FakeUNNotification> notification(
-      [[FakeUNNotification alloc] init]);
-  [notification setRequest:request];
-
-  base::scoped_nsobject<FakeUNNotificationResponse> response(
-      [[FakeUNNotificationResponse alloc] init]);
-  [response setNotification:notification.get()];
-  [response setActionIdentifier:UNNotificationDefaultActionIdentifier];
-
-  return response;
-}

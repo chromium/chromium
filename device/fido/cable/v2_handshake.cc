@@ -4,15 +4,18 @@
 
 #include "device/fido/cable/v2_handshake.h"
 
+#include <inttypes.h>
 #include <array>
 #include <type_traits>
 
 #include "base/base64url.h"
 #include "base/bits.h"
+#include "base/cxx17_backports.h"  // for base::size
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -100,7 +103,26 @@ bssl::UniquePtr<EC_KEY> ECKeyFromSeed(
 
 namespace tunnelserver {
 
-std::string DecodeDomain(uint16_t domain) {
+// kAssignedDomains is the list of defined tunnel server domains. These map
+// to values 0..256.
+static const char* kAssignedDomains[] = {"cable.ua5v.com"};
+
+absl::optional<KnownDomainID> ToKnownDomainID(uint16_t domain) {
+  if (domain >= 256 || domain < base::size(kAssignedDomains)) {
+    return KnownDomainID(domain);
+  }
+  return absl::nullopt;
+}
+
+std::string DecodeDomain(KnownDomainID domain_id) {
+  const uint16_t domain = domain_id.value();
+  if (domain < 256) {
+    // The |KnownDomainID| type should only contain valid values for this but,
+    // just in case, CHECK it too.
+    CHECK_LT(domain, base::size(kAssignedDomains));
+    return kAssignedDomains[domain];
+  }
+
   char templ[] = "caBLEv2 tunnel server domain\x00\x00";
   memcpy(&templ[sizeof(templ) - 2], &domain, sizeof(domain));
   uint8_t digest[SHA256_DIGEST_LENGTH];
@@ -108,10 +130,6 @@ std::string DecodeDomain(uint16_t domain) {
   uint64_t result;
   static_assert(sizeof(result) <= sizeof(digest), "");
   memcpy(&result, digest, sizeof(result));
-  // This value causes the range of this function to intersect at a single point
-  // with the function previously used. This allows us not to change the initial
-  // tunnel server domain name.
-  result ^= 0x35286e67508f8e42;
 
   static const char kBase32Chars[33] = "abcdefghijklmnopqrstuvwxyz234567";
   const int tld_value = result & 3;
@@ -130,7 +148,7 @@ std::string DecodeDomain(uint16_t domain) {
   return ret;
 }
 
-GURL GetNewTunnelURL(uint16_t domain, base::span<const uint8_t, 16> id) {
+GURL GetNewTunnelURL(KnownDomainID domain, base::span<const uint8_t, 16> id) {
   std::string ret = "wss://" + DecodeDomain(domain) + "/cable/new/";
 
   ret += base::HexEncode(id);
@@ -139,7 +157,7 @@ GURL GetNewTunnelURL(uint16_t domain, base::span<const uint8_t, 16> id) {
   return url;
 }
 
-GURL GetConnectURL(uint16_t domain,
+GURL GetConnectURL(KnownDomainID domain,
                    std::array<uint8_t, kRoutingIdSize> routing_id,
                    base::span<const uint8_t, 16> id) {
   std::string ret = "wss://" + DecodeDomain(domain) + "/cable/connect/";
@@ -169,6 +187,10 @@ GURL GetContactURL(const std::string& tunnel_server,
 }  // namespace tunnelserver
 
 namespace eid {
+
+Components::Components() = default;
+Components::~Components() = default;
+Components::Components(const Components&) = default;
 
 std::array<uint8_t, kAdvertSize> Encrypt(
     const CableEidArray& eid,
@@ -229,6 +251,15 @@ absl::optional<CableEidArray> Decrypt(
     return absl::nullopt;
   }
 
+  uint16_t tunnel_server_domain;
+  static_assert(EXTENT(plaintext) >= sizeof(tunnel_server_domain), "");
+  memcpy(&tunnel_server_domain,
+         &plaintext[EXTENT(plaintext) - sizeof(tunnel_server_domain)],
+         sizeof(tunnel_server_domain));
+  if (!tunnelserver::ToKnownDomainID(tunnel_server_domain)) {
+    return absl::nullopt;
+  }
+
   return plaintext;
 }
 
@@ -259,9 +290,14 @@ Components ToComponents(const CableEidArray& eid) {
 
   memcpy(ret.nonce.data(), &eid[1], kNonceSize);
   memcpy(ret.routing_id.data(), &eid[1 + kNonceSize], sizeof(ret.routing_id));
-  memcpy(&ret.tunnel_server_domain,
-         &eid[1 + kNonceSize + sizeof(ret.routing_id)],
-         sizeof(ret.tunnel_server_domain));
+
+  uint16_t tunnel_server_domain;
+  memcpy(&tunnel_server_domain, &eid[1 + kNonceSize + sizeof(ret.routing_id)],
+         sizeof(tunnel_server_domain));
+  // |eid| has been checked by |Decrypt| so the tunnel server domain must be
+  // valid.
+  ret.tunnel_server_domain =
+      *tunnelserver::ToKnownDomainID(tunnel_server_domain);
 
   return ret;
 }
@@ -270,7 +306,7 @@ Components ToComponents(const CableEidArray& eid) {
 
 namespace qr {
 
-constexpr char kPrefix[] = "fido://";
+constexpr char kPrefix[] = "FIDO:/";
 
 // DecompressPublicKey converts a compressed public key (from a scanned QR
 // code) into a standard, uncompressed one.
@@ -311,23 +347,19 @@ SeedToCompressedPublicKey(base::span<const uint8_t, 32> seed) {
 
 // static
 absl::optional<Components> Parse(const std::string& qr_url) {
-  if (qr_url.find(kPrefix) != 0) {
+  if (qr_url.size() < sizeof(kPrefix) - 1 ||
+      base::CompareCaseInsensitiveASCII(
+          kPrefix, qr_url.substr(0, sizeof(kPrefix) - 1)) != 0) {
     return absl::nullopt;
   }
 
-  base::StringPiece qr_url_base64(qr_url);
-  qr_url_base64 = qr_url_base64.substr(sizeof(kPrefix) - 1);
-  std::string qr_data_str;
-  if (!base::Base64UrlDecode(qr_url_base64,
-                             base::Base64UrlDecodePolicy::DISALLOW_PADDING,
-                             &qr_data_str)) {
+  absl::optional<std::vector<uint8_t>> qr_bytes =
+      DigitsToBytes(qr_url.substr(sizeof(kPrefix) - 1));
+  if (!qr_bytes) {
     return absl::nullopt;
   }
 
-  absl::optional<cbor::Value> qr_contents =
-      cbor::Reader::Read(base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(qr_data_str.data()),
-          qr_data_str.size()));
+  absl::optional<cbor::Value> qr_contents = cbor::Reader::Read(*qr_bytes);
   if (!qr_contents || !qr_contents->is_map()) {
     return absl::nullopt;
   }
@@ -372,16 +404,113 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key) {
 
   qr_contents.emplace(1, qr_key.subspan(device::cablev2::kQRSeedSize));
 
+  qr_contents.emplace(
+      2, static_cast<int64_t>(base::size(tunnelserver::kAssignedDomains)));
+
+  qr_contents.emplace(3, static_cast<int64_t>(base::Time::Now().ToTimeT()));
+
   const absl::optional<std::vector<uint8_t>> qr_data =
       cbor::Writer::Write(cbor::Value(std::move(qr_contents)));
+  return std::string(kPrefix) + BytesToDigits(*qr_data);
+}
 
-  std::string base64_qr_data;
-  base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(qr_data->data()),
-                        qr_data->size()),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &base64_qr_data);
+// When converting between bytes and digits, chunks of 7 bytes are turned into
+// 17 digits. See https://www.imperialviolet.org/2021/08/26/qrencoding.html.
+constexpr size_t kChunkSize = 7;
+constexpr size_t kChunkDigits = 17;
 
-  return std::string(kPrefix) + base64_qr_data;
+std::string BytesToDigits(base::span<const uint8_t> in) {
+  std::string ret;
+  ret.reserve(((in.size() + kChunkSize - 1) / kChunkSize) * kChunkDigits);
+
+  while (in.size() >= kChunkSize) {
+    uint64_t v = 0;
+    static_assert(sizeof(v) >= kChunkSize, "");
+    memcpy(&v, in.data(), kChunkSize);
+
+    char digits[kChunkDigits + 1];
+    static_assert(kChunkDigits == 17, "Need to change next line");
+    CHECK_LT(snprintf(digits, sizeof(digits), "%017" PRIu64, v),
+             static_cast<int>(sizeof(digits)));
+    ret += digits;
+
+    in = in.subspan(kChunkSize);
+  }
+
+  if (in.size()) {
+    char format[16];
+    // kPartialChunkDigits is the number of digits needed to encode each length
+    // of trailing data from 6 bytes down to zero. I.e. it's 15, 13, 10, 8, 5,
+    // 3, 0 written in hex.
+    constexpr uint32_t kPartialChunkDigits = 0x0fda8530;
+    CHECK_LT(snprintf(format, sizeof(format), "%%0%d" PRIu64,
+                      15 & (kPartialChunkDigits >> (4 * in.size()))),
+             static_cast<int>(sizeof(format)));
+
+    uint64_t v = 0;
+    CHECK_LE(in.size(), sizeof(v));
+    memcpy(&v, in.data(), in.size());
+
+    char digits[kChunkDigits + 1];
+    CHECK_LT(snprintf(digits, sizeof(digits), format, v),
+             static_cast<int>(sizeof(digits)));
+    ret += digits;
+  }
+
+  return ret;
+}
+
+absl::optional<std::vector<uint8_t>> DigitsToBytes(base::StringPiece in) {
+  std::vector<uint8_t> ret;
+  ret.reserve(((in.size() + kChunkDigits - 1) / kChunkDigits) * kChunkSize);
+
+  while (in.size() >= kChunkDigits) {
+    uint64_t v;
+    if (!base::StringToUint64(in.substr(0, kChunkDigits), &v) ||
+        v >> (kChunkSize * 8) != 0) {
+      return absl::nullopt;
+    }
+    const uint8_t* const v_bytes = reinterpret_cast<uint8_t*>(&v);
+    ret.insert(ret.end(), v_bytes, v_bytes + kChunkSize);
+
+    in = in.substr(kChunkDigits);
+  }
+
+  if (in.size()) {
+    size_t remaining_bytes;
+    switch (in.size()) {
+      case 3:
+        remaining_bytes = 1;
+        break;
+      case 5:
+        remaining_bytes = 2;
+        break;
+      case 8:
+        remaining_bytes = 3;
+        break;
+      case 10:
+        remaining_bytes = 4;
+        break;
+      case 13:
+        remaining_bytes = 5;
+        break;
+      case 15:
+        remaining_bytes = 6;
+        break;
+      default:
+        return absl::nullopt;
+    }
+
+    uint64_t v;
+    if (!base::StringToUint64(in, &v) || v >> (remaining_bytes * 8) != 0) {
+      return absl::nullopt;
+    }
+
+    const uint8_t* const v_bytes = reinterpret_cast<uint8_t*>(&v);
+    ret.insert(ret.end(), v_bytes, v_bytes + remaining_bytes);
+  }
+
+  return ret;
 }
 
 }  // namespace qr

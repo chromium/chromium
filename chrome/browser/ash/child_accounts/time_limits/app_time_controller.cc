@@ -63,7 +63,7 @@ const char kEngagementMetric[] = "SupervisedUsers.PerAppTimeLimits.Engagement";
 
 namespace {
 
-constexpr base::TimeDelta kDay = base::TimeDelta::FromHours(24);
+constexpr base::TimeDelta kDay = base::Hours(24);
 
 // Family link notifier id.
 constexpr char kFamilyLinkSourceId[] = "family-link";
@@ -113,11 +113,11 @@ std::u16string GetNotificationMessageFor(
     case AppNotification::kFiveMinutes:
       return l10n_util::GetStringFUTF16(
           IDS_APP_TIME_LIMIT_APP_WILL_PAUSE_SYSTEM_NOTIFICATION_MESSAGE,
-          GetTimeLimitMessage(base::TimeDelta::FromMinutes(5), /* cutoff */ 1));
+          GetTimeLimitMessage(base::Minutes(5), /* cutoff */ 1));
     case AppNotification::kOneMinute:
       return l10n_util::GetStringFUTF16(
           IDS_APP_TIME_LIMIT_APP_WILL_PAUSE_SYSTEM_NOTIFICATION_MESSAGE,
-          GetTimeLimitMessage(base::TimeDelta::FromMinutes(1), /* cutoff */ 1));
+          GetTimeLimitMessage(base::Minutes(1), /* cutoff */ 1));
     case AppNotification::kTimeLimitChanged:
       return time_limit
                  ? l10n_util::GetStringFUTF16(
@@ -223,11 +223,25 @@ AppTimeController::AppTimeController(
           app_service_wrapper_.get())),
       on_policy_updated_callback_(on_policy_updated_callback) {
   DCHECK(profile);
+}
 
+AppTimeController::~AppTimeController() {
+  app_registry_->RemoveAppStateObserver(this);
+
+  auto* time_zone_settings = system::TimezoneSettings::GetInstance();
+  if (time_zone_settings)
+    time_zone_settings->RemoveObserver(this);
+
+  auto* system_clock_client = SystemClockClient::Get();
+  if (system_clock_client)
+    system_clock_client->RemoveObserver(this);
+}
+
+void AppTimeController::Init() {
   if (WebTimeLimitEnforcer::IsEnabled())
     web_time_enforcer_ = std::make_unique<WebTimeLimitEnforcer>(this);
 
-  PrefService* pref_service = profile->GetPrefs();
+  PrefService* pref_service = profile_->GetPrefs();
   RegisterProfilePrefObservers(pref_service);
   TimeLimitsAllowlistPolicyUpdated(prefs::kPerAppTimeLimitsAllowlistPolicy);
   TimeLimitsPolicyUpdated(prefs::kPerAppTimeLimitsPolicy);
@@ -269,18 +283,6 @@ AppTimeController::AppTimeController(
     web_time_enforcer_->OnWebTimeLimitReached(
         web_time_limit->daily_limit().value());
   }
-}
-
-AppTimeController::~AppTimeController() {
-  app_registry_->RemoveAppStateObserver(this);
-
-  auto* time_zone_settings = system::TimezoneSettings::GetInstance();
-  if (time_zone_settings)
-    time_zone_settings->RemoveObserver(this);
-
-  auto* system_clock_client = SystemClockClient::Get();
-  if (system_clock_client)
-    system_clock_client->RemoveObserver(this);
 }
 
 bool AppTimeController::IsExtensionAllowlisted(
@@ -497,7 +499,7 @@ base::Time AppTimeController::GetNextResetTime() const {
   if (now > nearest_midnight)
     prev_midnight = nearest_midnight;
   else
-    prev_midnight = nearest_midnight - base::TimeDelta::FromHours(24);
+    prev_midnight = nearest_midnight - base::Hours(24);
 
   base::Time next_reset_time = prev_midnight + limits_reset_time_;
 
@@ -505,7 +507,7 @@ base::Time AppTimeController::GetNextResetTime() const {
     return next_reset_time;
 
   // We have already reset for this day. The reset time is the next day.
-  return next_reset_time + base::TimeDelta::FromHours(24);
+  return next_reset_time + base::Hours(24);
 }
 
 void AppTimeController::ScheduleForTimeLimitReset() {
@@ -536,8 +538,8 @@ void AppTimeController::RestoreLastResetTime() {
   if (reset_time == 0) {
     SetLastResetTime(base::Time::Now());
   } else {
-    last_limits_reset_time_ = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(reset_time));
+    last_limits_reset_time_ =
+        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(reset_time));
   }
 
   if (HasTimeCrossedResetBoundary()) {
@@ -555,13 +557,13 @@ void AppTimeController::SetLastResetTime(base::Time timestamp) {
   if (timestamp > nearest_midnight)
     prev_midnight = nearest_midnight;
   else
-    prev_midnight = nearest_midnight - base::TimeDelta::FromHours(24);
+    prev_midnight = nearest_midnight - base::Hours(24);
 
   base::Time reset_time = prev_midnight + limits_reset_time_;
   if (reset_time <= timestamp)
     last_limits_reset_time_ = reset_time;
   else
-    last_limits_reset_time_ = reset_time - base::TimeDelta::FromHours(24);
+    last_limits_reset_time_ = reset_time - base::Hours(24);
 
   PrefService* service = profile_->GetPrefs();
   DCHECK(service);

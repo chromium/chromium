@@ -83,4 +83,8 @@ void ShellWebClient::BindInterfaceReceiverFromMainFrame(
   }
 }
 
+bool ShellWebClient::EnableLongPressUIContextMenu() const {
+  return true;
+}
+
 }  // namespace web

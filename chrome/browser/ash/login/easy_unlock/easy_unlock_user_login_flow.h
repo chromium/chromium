@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_USER_LOGIN_FLOW_H_
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_USER_LOGIN_FLOW_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/user_flow.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/login/auth/user_context.h"
@@ -20,14 +19,16 @@ namespace ash {
 class EasyUnlockUserLoginFlow : public ExtendedUserFlow {
  public:
   explicit EasyUnlockUserLoginFlow(const AccountId& account_id);
+
+  EasyUnlockUserLoginFlow(const EasyUnlockUserLoginFlow&) = delete;
+  EasyUnlockUserLoginFlow& operator=(const EasyUnlockUserLoginFlow&) = delete;
+
   ~EasyUnlockUserLoginFlow() override;
 
  private:
   // ExtendedUserFlow implementation.
   bool HandleLoginFailure(const AuthFailure& failure) override;
   void HandleLoginSuccess(const UserContext& context) override;
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockUserLoginFlow);
 };
 
 }  // namespace ash

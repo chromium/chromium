@@ -13,8 +13,8 @@ cast_source_set("receiver") {
   deps = [
     "//base",
     "//chromecast/base",
-    "//chromecast/media/audio/mixer_service:audio_socket_service",
     "//chromecast/media/audio/mixer_service:common",
+    "//chromecast/media/audio/net:audio_socket_service",
     "//net",
   ]
 
@@ -35,6 +35,8 @@ cast_source_set("receiver_cma") {
     "//chromecast/base",
     "//chromecast/media/audio/mixer_service:common",
     "//chromecast/media/audio/mixer_service:proto",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/media/cma/backend",
     "//chromecast/media/cma/base",
     "//chromecast/media/common:media_pipeline_backend_manager",

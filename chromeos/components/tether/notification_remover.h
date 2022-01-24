@@ -31,6 +31,9 @@ class NotificationRemover : public HostScanCache::Observer,
                       HostScanCache* host_scan_cache,
                       ActiveHost* active_host);
 
+  NotificationRemover(const NotificationRemover&) = delete;
+  NotificationRemover& operator=(const NotificationRemover&) = delete;
+
   ~NotificationRemover() override;
 
   // HostScanCache::Observer:
@@ -48,8 +51,6 @@ class NotificationRemover : public HostScanCache::Observer,
   NotificationPresenter* notification_presenter_;
   HostScanCache* host_scan_cache_;
   ActiveHost* active_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationRemover);
 };
 
 }  // namespace tether

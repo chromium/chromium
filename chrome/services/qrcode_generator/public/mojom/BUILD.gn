@@ -10,6 +10,7 @@ mojom("mojom") {
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]

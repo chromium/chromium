@@ -15,10 +15,6 @@ namespace {
 const base::Feature kExpiredHistogramLogicFeature{
     "ExpiredHistogramLogic", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// TODO(jwd): Remove when the study config is updated with the new param.
-const base::FeatureParam<std::string> kWhitelistParam{
-    &kExpiredHistogramLogicFeature, "whitelist", ""};
-
 const base::FeatureParam<std::string> kAllowlistParam{
     &kExpiredHistogramLogicFeature, "allowlist", ""};
 
@@ -29,9 +25,6 @@ void EnableExpiryChecker(const uint32_t* expired_histograms_hashes,
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(kExpiredHistogramLogicFeature)) {
     std::string allowlist = kAllowlistParam.Get();
-    // TODO(jwd): Remove when the study config is updated with the new param.
-    if (allowlist.empty())
-      allowlist = kWhitelistParam.Get();
     base::StatisticsRecorder::SetRecordChecker(
         std::make_unique<ExpiredHistogramsChecker>(
             expired_histograms_hashes, num_expired_histograms, allowlist));

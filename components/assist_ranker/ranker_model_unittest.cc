@@ -47,7 +47,7 @@ std::unique_ptr<RankerModel> NewModel(const std::string& model_url,
 
 TEST(RankerModelTest, Serialization) {
   base::Time last_modified = base::Time::Now();
-  base::TimeDelta cache_duration = base::TimeDelta::FromDays(3);
+  base::TimeDelta cache_duration = base::Days(3);
   std::unique_ptr<RankerModel> original_model =
       NewModel(kModelURL, last_modified, cache_duration);
   std::string original_model_str = original_model->SerializeAsString();
@@ -65,9 +65,9 @@ TEST(RankerModelTest, Serialization) {
 
 TEST(RankerModelTest, IsExpired) {
   base::Time today = base::Time::Now();
-  base::TimeDelta days_15 = base::TimeDelta::FromDays(15);
-  base::TimeDelta days_30 = base::TimeDelta::FromDays(30);
-  base::TimeDelta days_60 = base::TimeDelta::FromDays(60);
+  base::TimeDelta days_15 = base::Days(15);
+  base::TimeDelta days_30 = base::Days(30);
+  base::TimeDelta days_60 = base::Days(60);
 
   EXPECT_FALSE(NewModel(kModelURL, today, days_30)->IsExpired());
   EXPECT_FALSE(NewModel(kModelURL, today - days_15, days_30)->IsExpired());

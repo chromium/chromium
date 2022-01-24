@@ -67,7 +67,6 @@ namespace {
 constexpr char kPngExtension[] = ".png";
 
 using ReadPngCallback = ClipboardAndroid::ReadPngCallback;
-using ReadImageCallback = ClipboardAndroid::ReadImageCallback;
 
 // Fetching image data from Java as PNG bytes.
 std::vector<uint8_t> GetPngData(
@@ -83,25 +82,6 @@ std::vector<uint8_t> GetPngData(
   std::vector<uint8_t> png_data;
   JavaByteArrayToByteVector(env, jimage_data, &png_data);
   return png_data;
-}
-
-// Fetching image data from Java.
-SkBitmap GetImageData(
-    const base::android::ScopedJavaGlobalRef<jobject>& clipboard_manager) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jbitmap =
-      Java_Clipboard_getImage(env, clipboard_manager);
-  if (jbitmap.is_null()) {
-    return SkBitmap();
-  }
-
-  gfx::JavaBitmap java_bitmap(jbitmap);
-  if (java_bitmap.size().IsEmpty() || java_bitmap.bytes_per_row() == 0U ||
-      java_bitmap.pixels() == nullptr) {
-    return SkBitmap();
-  }
-
-  return gfx::CreateSkBitmapFromJavaBitmap(java_bitmap);
 }
 
 // Add a format:jstr pair to map, if jstr is null or is empty, then remove that
@@ -130,9 +110,7 @@ class ClipboardMap {
   void SetJavaSideNativePtr(Clipboard* clipboard);
   std::string Get(const ClipboardFormatType& format);
   void GetPng(ReadPngCallback callback);
-  void GetImage(ReadImageCallback callback);
   void DidGetPng(ReadPngCallback callback, std::vector<uint8_t> result);
-  void DidGetImage(ReadImageCallback callback, const SkBitmap& result);
   const ClipboardSequenceNumberToken& GetSequenceNumber() const;
   base::Time GetLastModifiedTime() const;
   void ClearLastModifiedTime();
@@ -210,14 +188,6 @@ void ClipboardMap::GetPng(ReadPngCallback callback) {
                      std::move(callback)));
 }
 
-void ClipboardMap::GetImage(ReadImageCallback callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&GetImageData, clipboard_manager_),
-      base::BindOnce(&ClipboardMap::DidGetImage, base::Unretained(this),
-                     std::move(callback)));
-}
-
 void ClipboardMap::DidGetPng(ReadPngCallback callback,
                              std::vector<uint8_t> result) {
   // GetPngData attempts to read from the Java Clipboard, which sometimes is
@@ -236,28 +206,6 @@ void ClipboardMap::DidGetPng(ReadPngCallback callback,
   std::string png_str = g_map.Get().Get(ClipboardFormatType::PngType());
   std::vector<uint8_t> png_data{png_str.begin(), png_str.end()};
   std::move(callback).Run(png_data);
-}
-
-void ClipboardMap::DidGetImage(ReadImageCallback callback,
-                               const SkBitmap& result) {
-  // GetImageData attempts to read from the Java Clipboard, which sometimes is
-  // not available (ex. the app is not in focus, such as in unit tests).
-  if (!result.isNull()) {
-    std::move(callback).Run(std::move(result));
-    return;
-  }
-
-  // Since the The Java Clipboard did not provide a valid bitmap, attempt to
-  // read from our in-memory clipboard map if the map is up-to-date.
-  if (map_state_ != MapState::kUpToDate) {
-    std::move(callback).Run(SkBitmap());
-    return;
-  }
-  std::string png_str = g_map.Get().Get(ClipboardFormatType::PngType());
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(reinterpret_cast<const unsigned char*>(png_str.data()),
-                        png_str.size(), &bitmap);
-  std::move(callback).Run(std::move(bitmap));
 }
 
 const ClipboardSequenceNumberToken& ClipboardMap::GetSequenceNumber() const {
@@ -543,6 +491,32 @@ void ClipboardAndroid::Clear(ClipboardBuffer buffer) {
   g_map.Get().Clear();
 }
 
+std::vector<std::u16string> ClipboardAndroid::GetStandardFormats(
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst) const {
+  std::vector<std::u16string> types;
+  // would be nice to ask the ClipboardMap to enumerate the types it supports,
+  // rather than hardcode the list here.
+  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeText));
+  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
+  // We can read images from either the Android clipboard or the local map.
+  if (IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer, data_dst) ||
+      IsFormatAvailable(ClipboardFormatType::PngType(), buffer, data_dst)) {
+    types.push_back(base::UTF8ToUTF16(kMimeTypeImageURI));
+    types.push_back(base::UTF8ToUTF16(kMimeTypePNG));
+  }
+
+  // these formats aren't supported by the ClipboardMap currently, but might
+  // be one day?
+  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+  return types;
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardAndroid::ReadAvailableTypes(
@@ -554,41 +528,7 @@ void ClipboardAndroid::ReadAvailableTypes(
   DCHECK(types);
 
   types->clear();
-
-  // would be nice to ask the ClipboardMap to enumerate the types it supports,
-  // rather than hardcode the list here.
-  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeText));
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
-  // We can read images from either the Android clipboard or the local map.
-  if (IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer, data_dst) ||
-      IsFormatAvailable(ClipboardFormatType::PngType(), buffer, data_dst)) {
-    types->push_back(base::UTF8ToUTF16(kMimeTypeImageURI));
-    types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
-  }
-
-  // these formats aren't supported by the ClipboardMap currently, but might
-  // be one day?
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-std::vector<std::u16string>
-ClipboardAndroid::ReadAvailablePlatformSpecificFormatNames(
-    ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  std::vector<ClipboardFormatType> formats = g_map.Get().GetFormats();
-
-  std::vector<std::u16string> types;
-  types.reserve(formats.size());
-  for (const ClipboardFormatType& format : formats)
-    types.push_back(base::UTF8ToUTF16(format.GetName()));
-
-  return types;
+  *types = GetStandardFormats(buffer, data_dst);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -665,17 +605,6 @@ void ClipboardAndroid::ReadPng(ClipboardBuffer buffer,
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kPng);
   g_map.Get().GetPng(std::move(callback));
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardAndroid::ReadImage(ClipboardBuffer buffer,
-                                 const DataTransferEndpoint* data_dst,
-                                 ReadImageCallback callback) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  RecordRead(ClipboardFormatMetric::kImage);
-  g_map.Get().GetImage(std::move(callback));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

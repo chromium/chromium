@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -33,6 +32,9 @@ class FileStreamWriter::OperationRunner
           content::BrowserThread::DeleteOnUIThread> {
  public:
   OperationRunner() : file_handle_(0) {}
+
+  OperationRunner(const OperationRunner&) = delete;
+  OperationRunner& operator=(const OperationRunner&) = delete;
 
   // Opens a file for writing and calls the completion callback. Must be called
   // on UI thread.
@@ -129,8 +131,6 @@ class FileStreamWriter::OperationRunner
   base::WeakPtr<ProvidedFileSystemInterface> file_system_;
   std::unique_ptr<ScopedFileOpener> file_opener_;
   int file_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(OperationRunner);
 };
 
 FileStreamWriter::FileStreamWriter(const storage::FileSystemURL& url,

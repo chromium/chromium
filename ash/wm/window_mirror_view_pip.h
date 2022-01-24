@@ -15,15 +15,16 @@ namespace ash {
 class ASH_EXPORT WindowMirrorViewPip : public WindowMirrorView {
  public:
   WindowMirrorViewPip(aura::Window* source, bool trilinear_filtering_on_init);
+
+  WindowMirrorViewPip(const WindowMirrorViewPip&) = delete;
+  WindowMirrorViewPip& operator=(const WindowMirrorViewPip&) = delete;
+
   ~WindowMirrorViewPip() override;
 
  protected:
   // WindowMirrorView:
   void InitLayerOwner() override;
   ui::Layer* GetMirrorLayer() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowMirrorViewPip);
 };
 
 }  // namespace ash

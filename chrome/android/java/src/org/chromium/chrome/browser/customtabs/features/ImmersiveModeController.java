@@ -43,6 +43,17 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
     private final Runnable mUpdateImmersiveFlagsRunnable = this::updateImmersiveFlags;
 
     private boolean mInImmersiveMode;
+    private boolean mIsImmersiveModeSticky;
+
+    private static final int IMMERSIVE_MODE_UI_FLAGS = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+            | View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_IMMERSIVE;
+
+    private static final int IMMERSIVE_STICKY_MODE_UI_FLAGS =
+            (IMMERSIVE_MODE_UI_FLAGS & ~View.SYSTEM_UI_FLAG_IMMERSIVE)
+            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     @Inject
     public ImmersiveModeController(ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -68,18 +79,10 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
         if (mInImmersiveMode) return;
 
         mInImmersiveMode = true;
+        mIsImmersiveModeSticky = sticky;
+
         Window window = mActivity.getWindow();
         View decor = window.getDecorView();
-
-        WindowInsetsControllerCompat insetsController =
-                WindowCompat.getInsetsController(window, decor);
-        assert insetsController != null : "Decor View isn't attached to the Window.";
-
-        if (sticky) {
-            insetsController.setSystemBarsBehavior(BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-        } else {
-            insetsController.setSystemBarsBehavior(BEHAVIOR_SHOW_BARS_BY_SWIPE);
-        }
 
         // When we enter immersive mode for the first time, register a
         // SystemUiVisibilityChangeListener that restores immersive mode. This is necessary
@@ -117,6 +120,35 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
     }
 
     private void updateImmersiveFlags() {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
+            // For some reason, on Android R (11) setting the recommended immersive mode flags
+            // (including BEHAVIOR_SHOW_BARS_BY_SWIPE) gives the behaviour of
+            // BEHAVIOR_SHOW_BARS_BY_TOUCH. I can't reproduce this with a sample app, and I cannot
+            // reproduce it with Chrome on an emulator. https://crbug.com/1232956
+            updateImmersiveFlagsOnAndroid11();
+        } else {
+            updateImmersiveFlagsOnAndroidNot11();
+        }
+
+        Window window = mActivity.getWindow();
+        WindowCompat.setDecorFitsSystemWindows(window, !mInImmersiveMode);
+    }
+
+    private void updateImmersiveFlagsOnAndroid11() {
+        View decor = mActivity.getWindow().getDecorView();
+        int currentFlags = decor.getSystemUiVisibility();
+
+        int immersiveModeFlags =
+                mIsImmersiveModeSticky ? IMMERSIVE_STICKY_MODE_UI_FLAGS : IMMERSIVE_MODE_UI_FLAGS;
+        int desiredFlags = mInImmersiveMode ? (currentFlags | immersiveModeFlags)
+                                            : (currentFlags & ~immersiveModeFlags);
+
+        if (currentFlags != desiredFlags) {
+            decor.setSystemUiVisibility(desiredFlags);
+        }
+    }
+
+    private void updateImmersiveFlagsOnAndroidNot11() {
         Window window = mActivity.getWindow();
         View decor = window.getDecorView();
 
@@ -125,13 +157,17 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
 
         assert insetsController != null : "Decor View isn't attached to the Window.";
 
+        if (mIsImmersiveModeSticky) {
+            insetsController.setSystemBarsBehavior(BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        } else {
+            insetsController.setSystemBarsBehavior(BEHAVIOR_SHOW_BARS_BY_SWIPE);
+        }
+
         if (mInImmersiveMode) {
             insetsController.hide(systemBars());
         } else {
             insetsController.show(systemBars());
         }
-
-        WindowCompat.setDecorFitsSystemWindows(window, !mInImmersiveMode);
     }
 
     @Override

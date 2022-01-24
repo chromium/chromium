@@ -34,6 +34,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceWinrt
       Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
                                  GenericAttributeProfile::IGattDeviceService>
           gatt_service);
+
+  BluetoothRemoteGattServiceWinrt(const BluetoothRemoteGattServiceWinrt&) =
+      delete;
+  BluetoothRemoteGattServiceWinrt& operator=(
+      const BluetoothRemoteGattServiceWinrt&) = delete;
+
   ~BluetoothRemoteGattServiceWinrt() override;
 
   // BluetoothRemoteGattService:
@@ -134,8 +140,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceWinrt
   BluetoothUUID uuid_;
   uint16_t attribute_handle_;
   std::string identifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattServiceWinrt);
 };
 
 }  // namespace device

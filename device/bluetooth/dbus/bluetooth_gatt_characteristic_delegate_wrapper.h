@@ -28,6 +28,11 @@ class BluetoothGattCharacteristicDelegateWrapper
       BluetoothLocalGattServiceBlueZ* service,
       BluetoothLocalGattCharacteristicBlueZ* characteristic);
 
+  BluetoothGattCharacteristicDelegateWrapper(
+      const BluetoothGattCharacteristicDelegateWrapper&) = delete;
+  BluetoothGattCharacteristicDelegateWrapper& operator=(
+      const BluetoothGattCharacteristicDelegateWrapper&) = delete;
+
   // BluetoothGattAttributeValueDelegate overrides:
   void GetValue(const dbus::ObjectPath& device_path,
                 device::BluetoothLocalGattService::Delegate::ValueCallback
@@ -52,8 +57,6 @@ class BluetoothGattCharacteristicDelegateWrapper
 
  private:
   BluetoothLocalGattCharacteristicBlueZ* characteristic_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattCharacteristicDelegateWrapper);
 };
 
 }  // namespace bluez

@@ -2,7 +2,6 @@
   "gpu-fyi-try-win10-amd-rel-64": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -10,6 +9,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -18,7 +18,6 @@
   "gpu-fyi-try-win10-intel-exp-64": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -26,6 +25,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -34,7 +34,6 @@
   "gpu-fyi-try-win10-intel-rel-64": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -42,6 +41,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -49,13 +49,13 @@
   },
   "gpu-fyi-try-win10-nvidia-dbg-64": {
     "gn_args": {
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "internal_gles2_conform_tests": true,
       "is_component_build": true,
       "is_debug": true,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -63,7 +63,6 @@
   },
   "gpu-fyi-try-win10-nvidia-dx12vk-dbg-64": {
     "gn_args": {
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "enable_nacl": false,
       "enable_vulkan": true,
@@ -71,6 +70,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": true,
       "is_debug": true,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -79,7 +79,6 @@
   "gpu-fyi-try-win10-nvidia-dx12vk-rel-64": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -88,6 +87,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -96,7 +96,6 @@
   "gpu-fyi-try-win10-nvidia-exp-64": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -104,6 +103,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -112,7 +112,6 @@
   "gpu-fyi-try-win10-nvidia-rel-32": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -120,6 +119,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x86",
@@ -129,7 +129,6 @@
   "gpu-fyi-try-win10-nvidia-rel-64": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -137,6 +136,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -159,7 +159,6 @@
   "gpu-fyi-try-win7-amd-rel-32": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -167,6 +166,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x86",
@@ -176,7 +176,6 @@
   "gpu-fyi-try-win7-nvidia-rel-32": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -184,6 +183,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x86",
@@ -193,7 +193,6 @@
   "gpu-fyi-try-win7-nvidia-rel-64": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -201,6 +200,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -212,7 +212,7 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_goma": true
     }
   },
@@ -280,7 +280,7 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_goma": true
     }
   },
@@ -330,7 +330,7 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_goma": true
     }
   },
@@ -358,7 +358,7 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_cpu": "x86",
       "use_goma": true
     }
@@ -369,7 +369,7 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_cpu": "x86",
       "use_goma": true
     }
@@ -394,7 +394,7 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_cpu": "x86",
       "use_goma": true
     }
@@ -418,7 +418,7 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_goma": true
     }
   },
@@ -428,7 +428,7 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_cpu": "x86",
       "use_goma": true
     }
@@ -436,7 +436,6 @@
   "win_optional_gpu_tests_rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -444,6 +443,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -463,7 +463,7 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_goma": true
     }
   }

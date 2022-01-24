@@ -13,8 +13,8 @@
 #include "base/memory/ptr_util.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/storage.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_module_interface.h"
@@ -34,10 +34,10 @@ void StorageModule::AddRecord(Priority priority,
   storage_->Write(priority, std::move(record), std::move(callback));
 }
 
-void StorageModule::ReportSuccess(SequencingInformation sequencing_information,
+void StorageModule::ReportSuccess(SequenceInformation sequence_information,
                                   bool force) {
   storage_->Confirm(
-      sequencing_information.priority(), sequencing_information.sequencing_id(),
+      sequence_information.priority(), sequence_information.sequencing_id(),
       force, base::BindOnce([](Status status) {
         if (!status.ok()) {
           LOG(ERROR) << "Unable to confirm record deletion: " << status;

@@ -14,7 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -78,6 +78,10 @@ class DevToolsChannelData : public base::trace_event::ConvertableToTraceFormat {
  public:
   static std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
   CreateForChannel(GpuChannel* channel);
+
+  DevToolsChannelData(const DevToolsChannelData&) = delete;
+  DevToolsChannelData& operator=(const DevToolsChannelData&) = delete;
+
   ~DevToolsChannelData() override = default;
 
   void AppendAsTraceFormat(std::string* out) const override {
@@ -89,7 +93,6 @@ class DevToolsChannelData : public base::trace_event::ConvertableToTraceFormat {
  private:
   explicit DevToolsChannelData(base::Value* value) : value_(value) {}
   std::unique_ptr<base::Value> value_;
-  DISALLOW_COPY_AND_ASSIGN(DevToolsChannelData);
 };
 
 std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
@@ -205,7 +208,7 @@ void CommandBufferStub::PerformWork() {
       base::TimeDelta time_since_idle =
           base::TimeTicks::Now() - last_idle_time_;
       base::TimeDelta max_time_since_idle =
-          base::TimeDelta::FromMilliseconds(kMaxTimeSinceIdleMs);
+          base::Milliseconds(kMaxTimeSinceIdleMs);
 
       // Force idle when it's been too long since last time we were idle.
       if (time_since_idle > max_time_since_idle)
@@ -221,8 +224,7 @@ void CommandBufferStub::PerformWork() {
     decoder_context_->PerformPollingWork();
   }
 
-  ScheduleDelayedWork(
-      base::TimeDelta::FromMilliseconds(kHandleMoreWorkPeriodBusyMs));
+  ScheduleDelayedWork(base::Milliseconds(kHandleMoreWorkPeriodBusyMs));
 }
 
 bool CommandBufferStub::HasUnprocessedCommands() {
@@ -764,8 +766,7 @@ CommandBufferStub::ScopedContextOperation::~ScopedContextOperation() {
   if (have_context_) {
     if (stub_.decoder_context_)
       stub_.decoder_context_->ProcessPendingQueries(/*did_finish=*/false);
-    stub_.ScheduleDelayedWork(
-        base::TimeDelta::FromMilliseconds(kHandleMoreWorkPeriodMs));
+    stub_.ScheduleDelayedWork(base::Milliseconds(kHandleMoreWorkPeriodMs));
   }
 }
 

@@ -36,7 +36,7 @@ class TabListViewBinder {
             String title = model.get(TabProperties.TITLE);
             ((TextView) fastView.findViewById(R.id.title)).setText(title);
         } else if (TabProperties.FAVICON == propertyKey) {
-            Drawable favicon = model.get(TabProperties.FAVICON);
+            Drawable favicon = model.get(TabProperties.FAVICON).getDefaultDrawable();
             ImageView faviconView = (ImageView) fastView.findViewById(R.id.start_icon);
             faviconView.setBackgroundResource(R.drawable.list_item_icon_modern_bg);
             faviconView.setImageDrawable(favicon);

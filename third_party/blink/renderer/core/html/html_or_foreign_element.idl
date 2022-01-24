@@ -10,8 +10,7 @@ interface mixin HTMLOrForeignElement {
   [CEReactions] attribute DOMString nonce;
 
   [CEReactions, Reflect] attribute boolean autofocus;
-  [Affects=Nothing, CEReactions] attribute long tabIndex;
+  [CEReactions] attribute long tabIndex;
   void focus(optional FocusOptions options = {});
   void blur();
 };
-

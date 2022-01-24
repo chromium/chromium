@@ -11,12 +11,12 @@ action("remoting_me2me_host_archive") {
   sources = [ "//build/android/gyp/util/build_utils.py" ]
 
   deps = [
-    "//remoting/host:remote_open_url",
     "//remoting/host:remoting_native_messaging_manifests",
     "//remoting/host:remoting_start_host",
     "//remoting/host/installer:credits",
     "//remoting/host/it2me:remote_assistance_host",
     "//remoting/host/it2me:remote_assistance_host_uiaccess",
+    "//remoting/host/remote_open_url",
     "//remoting/host/win:remoting_core",
     "//remoting/host/win:remoting_desktop",
     "//remoting/host/win:remoting_me2me_host",

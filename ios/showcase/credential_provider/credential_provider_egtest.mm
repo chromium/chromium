@@ -4,6 +4,7 @@
 
 #include "base/ios/ios_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/showcase/test/showcase_eg_utils.h"
 #import "ios/showcase/test/showcase_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -15,23 +16,40 @@
 
 namespace {
 
-id<GREYMatcher> TitleMatcher() {
+id<GREYMatcher> ConfirmationAlertTitleMatcher() {
   return grey_accessibilityID(kConfirmationAlertTitleAccessibilityIdentifier);
 }
 
-id<GREYMatcher> SubtitleMatcher() {
+id<GREYMatcher> ConfirmationAlertSubtitleMatcher() {
   return grey_accessibilityID(
       kConfirmationAlertSubtitleAccessibilityIdentifier);
 }
 
-id<GREYMatcher> PrimaryActionButtonMatcher() {
+id<GREYMatcher> ConfirmationAlertPrimaryActionButtonMatcher() {
   return grey_accessibilityID(
       kConfirmationAlertPrimaryActionAccessibilityIdentifier);
 }
 
-id<GREYMatcher> MoreInfoButtonMatcher() {
+id<GREYMatcher> ConfirmationAlertMoreInfoButtonMatcher() {
   return grey_accessibilityID(
       kConfirmationAlertMoreInfoAccessibilityIdentifier);
+}
+
+id<GREYMatcher> PromoStyleTitleMatcher() {
+  return grey_accessibilityID(kPromoStyleTitleAccessibilityIdentifier);
+}
+
+id<GREYMatcher> PromoStyleSubtitleMatcher() {
+  return grey_accessibilityID(kPromoStyleSubtitleAccessibilityIdentifier);
+}
+
+id<GREYMatcher> PromoStylePrimaryActionButtonMatcher() {
+  return grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier);
+}
+
+id<GREYMatcher> PromoStyleMoreInfoButtonMatcher() {
+  return grey_accessibilityID(
+      kPromoStyleLearnMoreActionAccessibilityIdentifier);
 }
 
 }  // namespace
@@ -45,13 +63,29 @@ id<GREYMatcher> MoreInfoButtonMatcher() {
 // Tests ConsentViewController.
 - (void)testConsentScreen {
   showcase_utils::Open(@"ConsentViewController");
-  [[EarlGrey selectElementWithMatcher:TitleMatcher()]
+  [[EarlGrey selectElementWithMatcher:PromoStyleTitleMatcher()]
       assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:SubtitleMatcher()]
+  [[EarlGrey selectElementWithMatcher:PromoStyleSubtitleMatcher()]
       assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:PrimaryActionButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:PromoStylePrimaryActionButtonMatcher()]
       assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:MoreInfoButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:PromoStyleMoreInfoButtonMatcher()]
+      assertWithMatcher:grey_interactable()];
+
+  showcase_utils::Close();
+}
+
+// Tests ConsentLegacyViewController.
+- (void)testLegacyConsentScreen {
+  showcase_utils::Open(@"ConsentLegacyViewController");
+  [[EarlGrey selectElementWithMatcher:ConfirmationAlertTitleMatcher()]
+      assertWithMatcher:grey_interactable()];
+  [[EarlGrey selectElementWithMatcher:ConfirmationAlertSubtitleMatcher()]
+      assertWithMatcher:grey_interactable()];
+  [[EarlGrey
+      selectElementWithMatcher:ConfirmationAlertPrimaryActionButtonMatcher()]
+      assertWithMatcher:grey_interactable()];
+  [[EarlGrey selectElementWithMatcher:ConfirmationAlertMoreInfoButtonMatcher()]
       assertWithMatcher:grey_interactable()];
 
   showcase_utils::Close();
@@ -60,13 +94,14 @@ id<GREYMatcher> MoreInfoButtonMatcher() {
 // Tests ConsentViewController.
 - (void)testEmptyCredentialsScreen {
   showcase_utils::Open(@"EmptyCredentialsViewController");
-  [[EarlGrey selectElementWithMatcher:TitleMatcher()]
+  [[EarlGrey selectElementWithMatcher:ConfirmationAlertTitleMatcher()]
       assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:SubtitleMatcher()]
+  [[EarlGrey selectElementWithMatcher:ConfirmationAlertSubtitleMatcher()]
       assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:PrimaryActionButtonMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:ConfirmationAlertPrimaryActionButtonMatcher()]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:MoreInfoButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:ConfirmationAlertMoreInfoButtonMatcher()]
       assertWithMatcher:grey_nil()];
 
   showcase_utils::Close();
@@ -75,13 +110,14 @@ id<GREYMatcher> MoreInfoButtonMatcher() {
 // Tests ConsentViewController.
 - (void)testStaleCredentialsScreen {
   showcase_utils::Open(@"StaleCredentialsViewController");
-  [[EarlGrey selectElementWithMatcher:TitleMatcher()]
+  [[EarlGrey selectElementWithMatcher:ConfirmationAlertTitleMatcher()]
       assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:SubtitleMatcher()]
+  [[EarlGrey selectElementWithMatcher:ConfirmationAlertSubtitleMatcher()]
       assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:PrimaryActionButtonMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:ConfirmationAlertPrimaryActionButtonMatcher()]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:MoreInfoButtonMatcher()]
+  [[EarlGrey selectElementWithMatcher:ConfirmationAlertMoreInfoButtonMatcher()]
       assertWithMatcher:grey_nil()];
 
   showcase_utils::Close();

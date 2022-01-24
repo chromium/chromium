@@ -30,8 +30,8 @@ class TrialComparisonCertVerifierTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(TrialComparisonCertVerifierTest, TrialDisabled) {
   ASSERT_TRUE(https_test_server_.Start());
   base::HistogramTester histograms;
-  ui_test_utils::NavigateToURL(browser(),
-                               https_test_server_.GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("/title1.html")));
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectTotalCount("Net.CertVerifier_Job_Latency", 1);
   histograms.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 0);
@@ -63,8 +63,8 @@ IN_PROC_BROWSER_TEST_F(TrialComparisonCertVerifierFeatureEnabledTest,
                        TrialEnabledPrefDisabled) {
   ASSERT_TRUE(https_test_server_.Start());
   base::HistogramTester histograms;
-  ui_test_utils::NavigateToURL(browser(),
-                               https_test_server_.GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("/title1.html")));
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectTotalCount("Net.CertVerifier_Job_Latency", 1);
   histograms.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 0);
@@ -77,8 +77,8 @@ IN_PROC_BROWSER_TEST_F(TrialComparisonCertVerifierFeatureEnabledTest,
 
   ASSERT_TRUE(https_test_server_.Start());
   base::HistogramTester histograms;
-  ui_test_utils::NavigateToURL(browser(),
-                               https_test_server_.GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("/title1.html")));
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectTotalCount("Net.CertVerifier_Job_Latency", 1);
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
@@ -127,8 +127,8 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(https_test_server_.Start());
   base::HistogramTester histograms;
-  ui_test_utils::NavigateToURL(browser(),
-                               https_test_server_.GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("/title1.html")));
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectTotalCount("Net.CertVerifier_Job_Latency", 1);
   // If both the dual cert verifier trial feature and the builtin verifier

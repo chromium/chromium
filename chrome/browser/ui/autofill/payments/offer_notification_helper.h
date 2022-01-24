@@ -28,8 +28,7 @@ class OfferNotificationHelper
   void OnDisplayOfferNotification(const std::vector<GURL>& origins);
 
   // WebContentsObserver
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  protected:
   explicit OfferNotificationHelper(content::WebContents* contents);

@@ -9,7 +9,10 @@
 
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/sync/protocol/sync.pb.h"
+
+namespace sync_pb {
+class AutofillWalletSpecifics;
+}
 
 namespace autofill {
 

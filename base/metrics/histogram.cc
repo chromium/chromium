@@ -105,6 +105,9 @@ class Histogram::Factory {
           int32_t flags)
     : Factory(name, HISTOGRAM, minimum, maximum, bucket_count, flags) {}
 
+  Factory(const Factory&) = delete;
+  Factory& operator=(const Factory&) = delete;
+
   // Create histogram based on construction parameters. Caller takes
   // ownership of the returned object.
   HistogramBase* Build();
@@ -151,9 +154,6 @@ class Histogram::Factory {
   HistogramBase::Sample maximum_;
   uint32_t bucket_count_;
   int32_t flags_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Factory);
 };
 
 HistogramBase* Histogram::Factory::Build() {
@@ -699,6 +699,9 @@ class LinearHistogram::Factory : public Histogram::Factory {
     descriptions_ = descriptions;
   }
 
+  Factory(const Factory&) = delete;
+  Factory& operator=(const Factory&) = delete;
+
  protected:
   BucketRanges* CreateRanges() override {
     BucketRanges* ranges = new BucketRanges(bucket_count_ + 1);
@@ -731,8 +734,6 @@ class LinearHistogram::Factory : public Histogram::Factory {
 
  private:
   const DescriptionPair* descriptions_;
-
-  DISALLOW_COPY_AND_ASSIGN(Factory);
 };
 
 LinearHistogram::~LinearHistogram() = default;
@@ -993,6 +994,9 @@ class BooleanHistogram::Factory : public Histogram::Factory {
   Factory(const std::string& name, int32_t flags)
     : Histogram::Factory(name, BOOLEAN_HISTOGRAM, 1, 2, 3, flags) {}
 
+  Factory(const Factory&) = delete;
+  Factory& operator=(const Factory&) = delete;
+
  protected:
   BucketRanges* CreateRanges() override {
     BucketRanges* ranges = new BucketRanges(3 + 1);
@@ -1004,9 +1008,6 @@ class BooleanHistogram::Factory : public Histogram::Factory {
       const BucketRanges* ranges) override {
     return WrapUnique(new BooleanHistogram(GetPermanentName(name_), ranges));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Factory);
 };
 
 HistogramBase* BooleanHistogram::FactoryGet(const std::string& name,
@@ -1090,6 +1091,9 @@ class CustomHistogram::Factory : public Histogram::Factory {
     custom_ranges_ = custom_ranges;
   }
 
+  Factory(const Factory&) = delete;
+  Factory& operator=(const Factory&) = delete;
+
  protected:
   BucketRanges* CreateRanges() override {
     // Remove the duplicates in the custom ranges array.
@@ -1114,8 +1118,6 @@ class CustomHistogram::Factory : public Histogram::Factory {
 
  private:
   const std::vector<Sample>* custom_ranges_;
-
-  DISALLOW_COPY_AND_ASSIGN(Factory);
 };
 
 HistogramBase* CustomHistogram::FactoryGet(

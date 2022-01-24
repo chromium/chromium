@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -45,7 +45,14 @@ namespace apps {
 // static
 std::unique_ptr<content::NavigationThrottle>
 AppsNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
-  if (!handle->IsInMainFrame())
+  // Don't handle navigations in subframes or main frames that are in a nested
+  // frame tree (e.g. portals, fenced-frame). We specifically allow
+  // prerendering navigations so that we can destroy the prerender. Opening an
+  // app must only happen when the user intentionally navigates; however, for a
+  // prerender, the prerender-activating navigation doesn't run throttles so we
+  // must cancel it during initial loading to get a standard (non-prerendering)
+  // navigation at link-click-time.
+  if (!handle->IsInPrimaryMainFrame() && !handle->IsInPrerenderedMainFrame())
     return nullptr;
 
   content::WebContents* web_contents = handle->GetWebContents();
@@ -73,20 +80,10 @@ ThrottleCheckResult AppsNavigationThrottle::WillStartRequest() {
 
 ThrottleCheckResult AppsNavigationThrottle::WillRedirectRequest() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // TODO(crbug.com/824598): This is no longer needed after removing
-  // ChromeOsAppsNavigationThrottle.
-  if (ui_displayed_)
-    return content::NavigationThrottle::PROCEED;
   return HandleRequest();
 }
 
 bool AppsNavigationThrottle::ShouldCancelNavigation(
-    content::NavigationHandle* handle) {
-  return false;
-}
-
-bool AppsNavigationThrottle::ShouldDeferNavigation(
     content::NavigationHandle* handle) {
   return false;
 }
@@ -111,17 +108,12 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
   if (handle->IsSameDocument())
     return content::NavigationThrottle::PROCEED;
 
-  DCHECK(!ui_displayed_);
-
   content::WebContents* web_contents = handle->GetWebContents();
   const GURL& url = handle->GetURL();
   navigate_from_link_ = IsNavigateFromLink(handle);
 
-  MaybeRemoveComingFromArcFlag(web_contents, starting_url_, url);
-
-  // Do not pop up the intent picker bubble or automatically launch the app if
-  // we shouldn't override url loading, or if we don't have a browser, or we are
-  // already in an app browser.
+  // Do not automatically launch the app if we shouldn't override url loading,
+  // or if we don't have a browser, or we are already in an app browser.
   if (ShouldOverrideUrlLoading(starting_url_, url) &&
       !InAppBrowser(web_contents)) {
     // Handles apps that are automatically launched and the navigation needs to
@@ -138,17 +130,6 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
         CaptureWebAppScopeNavigations(web_contents, handle);
     if (web_app_capture.has_value())
       return web_app_capture.value();
-
-    if (ShouldDeferNavigation(handle)) {
-      // Handling is now deferred to ArcIntentPickerAppFetcher, which
-      // asynchronously queries ARC for apps, and runs
-      // OnDeferredNavigationProcessed() with an action based on whether an
-      // acceptable app was found and user consent to open received. We assume
-      // the UI is shown or a preferred app was found; reset to false if we
-      // resume the navigation.
-      ui_displayed_ = true;
-      return content::NavigationThrottle::DEFER;
-    }
 
     if (ShouldShowDisablePage(handle))
       return MaybeShowCustomResult();
@@ -184,16 +165,6 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
       provider->registrar().IsTabbedWindowModeEnabled(*app_id);
   bool tabbed_link_capturing =
       base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripLinkCapturing);
-  bool web_apps_integrated_into_intent_handling =
-      base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence);
-
-  // This particular link capturing code path only applies to tabbed web app
-  // link capturing and the version of declarative link capturing that has not
-  // yet integrated with app service's intent handling system.
-  if ((!app_in_tabbed_mode || !tabbed_link_capturing) &&
-      web_apps_integrated_into_intent_handling) {
-    return absl::nullopt;
-  }
 
   auto* tab_helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
   if (tab_helper && tab_helper->GetAppId() == *app_id) {
@@ -201,10 +172,8 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
     return absl::nullopt;
   }
 
-  blink::mojom::CaptureLinks capture_links = provider->registrar()
-                                                 .AsWebAppRegistrar()
-                                                 ->GetAppById(*app_id)
-                                                 ->capture_links();
+  blink::mojom::CaptureLinks capture_links =
+      provider->registrar().GetAppById(*app_id)->capture_links();
 
   if (capture_links == blink::mojom::CaptureLinks::kUndefined &&
       app_in_tabbed_mode && tabbed_link_capturing) {
@@ -227,6 +196,16 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
       if (web_app::AppBrowserController::IsForWebApp(browser, *app_id)) {
         // Already in the app window; navigation already captured.
         return absl::nullopt;
+      }
+
+      if (handle->IsInPrerenderedMainFrame()) {
+        // If this is a prerender navigation that would otherwise launch an
+        // app, we must cancel it. We only want to launch an app once the URL
+        // is intentionally navigated to by the user. We cancel the navigation
+        // here so that when the link is clicked, we'll run NavigationThrottles
+        // again. If we leave the prerendering alive, the activating navigation
+        // won't run throttles.
+        return content::NavigationThrottle::CANCEL_AND_IGNORE;
       }
 
       if (capture_links ==
@@ -259,8 +238,8 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
 
       apps::AppLaunchParams launch_params(
           *app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::CURRENT_TAB,
-          apps::mojom::AppLaunchSource::kSourceUrlHandler);
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          apps::mojom::LaunchSource::kFromUrlHandler);
       launch_params.override_url = handle->GetURL();
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()

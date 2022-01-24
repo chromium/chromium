@@ -66,15 +66,16 @@ class PopupNotificationBlocker : public message_center::NotificationBlocker {
  public:
   explicit PopupNotificationBlocker(MessageCenter* message_center)
       : NotificationBlocker(message_center) {}
+
+  PopupNotificationBlocker(const PopupNotificationBlocker&) = delete;
+  PopupNotificationBlocker& operator=(const PopupNotificationBlocker&) = delete;
+
   ~PopupNotificationBlocker() override = default;
 
   bool ShouldShowNotificationAsPopup(
       const message_center::Notification& notification) const override {
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PopupNotificationBlocker);
 };
 
 }  // namespace

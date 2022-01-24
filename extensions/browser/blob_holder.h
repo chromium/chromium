@@ -30,6 +30,9 @@ class BlobHolder : public base::SupportsUserData::Data {
   static BlobHolder* FromRenderProcessHost(
       content::RenderProcessHost* render_process_host);
 
+  BlobHolder(const BlobHolder&) = delete;
+  BlobHolder& operator=(const BlobHolder&) = delete;
+
   ~BlobHolder() override;
 
   // Causes BlobHolder to take ownership of |blob|.
@@ -53,8 +56,6 @@ class BlobHolder : public base::SupportsUserData::Data {
   content::RenderProcessHost* render_process_host_;
 
   BlobHandleMultimap held_blobs_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlobHolder);
 };
 
 }  // namespace extensions

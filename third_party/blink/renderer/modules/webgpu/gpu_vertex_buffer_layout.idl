@@ -6,11 +6,11 @@
 
 dictionary GPUVertexBufferLayout {
     required GPUSize64 arrayStride;
-    GPUInputStepMode stepMode = "vertex";
+    GPUVertexStepMode stepMode = "vertex";
     required sequence<GPUVertexAttribute> attributes;
 };
 
-enum GPUInputStepMode {
+enum GPUVertexStepMode {
     "vertex",
     "instance"
 };

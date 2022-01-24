@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
@@ -18,21 +19,19 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::AnyNumber;
-using testing::Return;
-using testing::ReturnNull;
-using testing::_;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Return;
+using ::testing::ReturnNull;
 
 // These values are only used to test the configuration.  They don't
 // delay the test.
@@ -264,4 +263,4 @@ TEST_F(ExistingUserControllerAutoLoginTest, ConfigureAutoLogin) {
   EXPECT_EQ(auto_login_delay(), kAutoLoginDelay2);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -122,8 +122,7 @@ const char* NetworkStateToString(WebMediaPlayer::NetworkState state) {
   }
 }
 
-constexpr base::TimeDelta kForceBeginFramesTimeout =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kForceBeginFramesTimeout = base::Seconds(1);
 }  // namespace
 
 #if defined(OS_WIN)
@@ -153,24 +152,20 @@ class WebMediaPlayerMS::FrameDeliverer {
       : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
         player_(player),
         enqueue_frame_cb_(std::move(enqueue_frame_cb)),
-        media_task_runner_(media_task_runner) {
+        media_task_runner_(media_task_runner),
+        worker_task_runner_(worker_task_runner),
+        gpu_factories_(gpu_factories) {
     DETACH_FROM_THREAD(io_thread_checker_);
 
-    if (gpu_factories && gpu_factories->ShouldUseGpuMemoryBuffersForVideoFrames(
-                             true /* for_media_stream */)) {
-      gpu_memory_buffer_pool_ =
-          std::make_unique<media::GpuMemoryBufferVideoFramePool>(
-              media_task_runner, worker_task_runner, gpu_factories);
-    }
+    CreateGpuMemoryBufferPoolIfNecessary();
   }
+
+  FrameDeliverer(const FrameDeliverer&) = delete;
+  FrameDeliverer& operator=(const FrameDeliverer&) = delete;
 
   ~FrameDeliverer() {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
-    if (gpu_memory_buffer_pool_) {
-      DropCurrentPoolTasks();
-      media_task_runner_->DeleteSoon(FROM_HERE,
-                                     gpu_memory_buffer_pool_.release());
-    }
+    FreeGpuMemoryBufferPool();
   }
 
   void OnVideoFrame(scoped_refptr<media::VideoFrame> frame) {
@@ -233,6 +228,12 @@ class WebMediaPlayerMS::FrameDeliverer {
   void SetRenderFrameSuspended(bool render_frame_suspended) {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
     render_frame_suspended_ = render_frame_suspended;
+    if (render_frame_suspended_) {
+      // Drop GpuMemoryBuffer pool to free memory.
+      FreeGpuMemoryBufferPool();
+    } else {
+      CreateGpuMemoryBufferPoolIfNecessary();
+    }
   }
 
   WTF::CrossThreadRepeatingFunction<
@@ -244,6 +245,26 @@ class WebMediaPlayerMS::FrameDeliverer {
 
  private:
   friend class WebMediaPlayerMS;
+
+  void CreateGpuMemoryBufferPoolIfNecessary() {
+    if (!gpu_memory_buffer_pool_ && gpu_factories_ &&
+        gpu_factories_->ShouldUseGpuMemoryBuffersForVideoFrames(
+            true /* for_media_stream */)) {
+      gpu_memory_buffer_pool_ =
+          std::make_unique<media::GpuMemoryBufferVideoFramePool>(
+              media_task_runner_, worker_task_runner_, gpu_factories_);
+    }
+  }
+
+  void FreeGpuMemoryBufferPool() {
+    DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+
+    if (gpu_memory_buffer_pool_) {
+      DropCurrentPoolTasks();
+      media_task_runner_->DeleteSoon(FROM_HERE,
+                                     gpu_memory_buffer_pool_.release());
+    }
+  }
 
   void EnqueueFrame(int original_frame_id,
                     scoped_refptr<media::VideoFrame> frame) {
@@ -293,14 +314,15 @@ class WebMediaPlayerMS::FrameDeliverer {
   // Pool of GpuMemoryBuffers and resources used to create hardware frames.
   std::unique_ptr<media::GpuMemoryBufferVideoFramePool> gpu_memory_buffer_pool_;
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  const scoped_refptr<base::TaskRunner> worker_task_runner_;
+
+  media::GpuVideoAcceleratorFactories* const gpu_factories_;
 
   // Used for DCHECKs to ensure method calls are executed on the correct thread.
   THREAD_CHECKER(io_thread_checker_);
 
   base::WeakPtrFactory<FrameDeliverer> weak_factory_for_pool_{this};
   base::WeakPtrFactory<FrameDeliverer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FrameDeliverer);
 };
 
 WebMediaPlayerMS::WebMediaPlayerMS(
@@ -1011,7 +1033,7 @@ bool WebMediaPlayerMS::WouldTaintOrigin() const {
 }
 
 double WebMediaPlayerMS::MediaTimeForTimeValue(double timeValue) const {
-  return base::TimeDelta::FromSecondsD(timeValue).InSecondsF();
+  return base::Seconds(timeValue).InSecondsF();
 }
 
 unsigned WebMediaPlayerMS::DecodedFrameCount() const {
@@ -1433,7 +1455,7 @@ void WebMediaPlayerMS::UpdateWatchTimeReporterSecondaryProperties() {
   // TODO(https://crbug.com/1147813) Report codec information once accessible.
   watch_time_reporter_->UpdateSecondaryProperties(
       media::mojom::SecondaryPlaybackProperties::New(
-          media::kUnknownAudioCodec, media::kUnknownVideoCodec,
+          media::AudioCodec::kUnknown, media::VideoCodec::kUnknown,
           media::AudioCodecProfile::kUnknown,
           media::VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN,
           media::AudioDecoderType::kUnknown, media::VideoDecoderType::kUnknown,

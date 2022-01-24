@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/html/html_li_element.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 #include "third_party/blink/renderer/core/paint/list_marker_painter.h"
@@ -45,6 +44,11 @@ LayoutListMarker::LayoutListMarker(Element* element) : LayoutBox(element) {
 }
 
 LayoutListMarker::~LayoutListMarker() = default;
+
+void LayoutListMarker::Trace(Visitor* visitor) const {
+  visitor->Trace(image_);
+  LayoutBox::Trace(visitor);
+}
 
 void LayoutListMarker::WillBeDestroyed() {
   NOT_DESTROYED();
@@ -125,7 +129,6 @@ void LayoutListMarker::Paint(const PaintInfo& paint_info) const {
 void LayoutListMarker::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  LayoutAnalyzer::Scope analyzer(*this);
 
   LayoutUnit block_offset = LogicalTop();
   const LayoutListItem* list_item = ListItem();
@@ -207,6 +210,8 @@ String LayoutListMarker::TextAlternative() const {
     return "";
 
   const CounterStyle& counter_style = GetCounterStyle();
+  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled())
+    return counter_style.GenerateTextAlternative(ListItem()->Value());
   return counter_style.GetPrefix() + text_ + counter_style.GetSuffix();
 }
 

@@ -24,10 +24,14 @@ BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
 // is defined as follow:
 // BLOCKLISTED_MALWARE > BLOCKLISTED_CWS_POLICY_VIOLATION >
 // BLOCKLISTED_POTENTIALLY_UNWANTED > BLOCKLISTED_SECURITY_VULNERABILITY.
-// TODO(crbug.com/1193695): Replace IsExtensionBlocklisted by this method.
 BitMapBlocklistState GetExtensionBlocklistState(
     const std::string& extension_id,
     ExtensionPrefs* extension_prefs);
+
+// Returns whether the extension with |extension_id| is blocklisted for malware
+// by the Safe Browsing blocklist or the Omaha attribute blocklist.
+bool IsExtensionBlocklisted(const std::string& extension_id,
+                            ExtensionPrefs* extension_prefs);
 
 // Adds the `state` to the Omaha blocklist state pref.
 void AddOmahaBlocklistState(const std::string& extension_id,
@@ -57,14 +61,14 @@ void RemoveAcknowledgedBlocklistState(
     const std::string& extension_id,
     BitMapBlocklistState state,
     extensions::ExtensionPrefs* extension_prefs);
-// Clears all states in the acknowledged blocklist state pref.
-void ClearAcknowledgedBlocklistStates(const std::string& extension_id,
-                                      ExtensionPrefs* extension_prefs);
+// Clears all greylisted states in the acknowledged blocklist state pref.
+void ClearAcknowledgedGreylistStates(const std::string& extension_id,
+                                     ExtensionPrefs* extension_prefs);
 // Checks whether the `extension_id` has the `state` in the acknowledged
 // blocklist state pref.
 bool HasAcknowledgedBlocklistState(const std::string& extension_id,
                                    BitMapBlocklistState state,
-                                   ExtensionPrefs* extension_prefs);
+                                   const ExtensionPrefs* extension_prefs);
 // Sets all current greylist states for this `extension_id` as acknowledged.
 // It will consider both Safe Browsing greylist state and Omaha attribute
 // greylist state. Previous acknowledged states will be cleared if the

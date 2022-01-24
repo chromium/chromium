@@ -152,12 +152,28 @@ running with the latest WebView variations seed.
 ### Adding your flags and features to the UI
 
 If you're intending to launch a feature in WebView or start a field trial (AKA
-Finch experiment), we **highly encourage** you to [add to the
-list](/android_webview/java/src/org/chromium/android_webview/common/ProductionSupportedFlagList.java)
-(ex. [CL](https://crrev.com/c/2008007), [CL](https://crrev.com/c/2066144)).
-After that, update `enums.xml` by running
-`android_webview/tools/generate_flag_labels.py` (see [this
-doc](/tools/metrics/histograms/README.md#Flag-Histograms) for more context).
+Finch experiment), we **highly encourage** you to [add to
+ProductionSupportedFlagList](/android_webview/java/src/org/chromium/android_webview/common/ProductionSupportedFlagList.java):
+
+1. Since ProductionSupportedFlagList is in Java, you will need to autogenerate
+   a Java constant for your flag. See [these
+   docs](/docs/android_accessing_cpp_features_in_java.md) if your code is behind
+   a `base::Feature` or [these
+   docs](/docs/android_accessing_cpp_switches_in_java.md) if it is behind a
+   commandline switch ([example
+   CL](https://chromium-review.googlesource.com/c/chromium/src/+/2429252)).
+2. Add your switch/feature to the list with a brief description (this
+   description will be visible to users). If your feature depends on enabling a
+   different feature too, this is a good spot to call that out.
+3. Run `android_webview/tools/generate_flag_labels.py` to generate labels for
+   `enums.xml` ([example
+   CL](https://chromium-review.googlesource.com/c/chromium/src/+/3016396)). Note
+   that this is only a best-effort attempt to generate correct labels, so you
+   may need to [modify the
+   script](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/tools/generate_flag_labels.py;l=46;drc=cf0fb02287669436154b83bf862b4be38226016c)
+   if you think it made a mistake. See
+   [this doc](/tools/metrics/histograms/README.md#Flag-Histograms) for more info
+   about flag labels.
 
 Exposing your feature this way has several benefits:
 
@@ -176,6 +192,26 @@ Exposing your feature this way has several benefits:
 ### See also
 
 - [Design doc](http://go/webview-dev-ui-flags-design) (Google-only)
+
+## Components UI
+
+Components UI shows all the registered components and their respective installed
+versions, similar to `chrome://components`. Components are config files downloaded
+via chrome's [component updater](https://chromium.googlesource.com/chromium/src/+/lkgr/components/component_updater/README.md). This can be accessed by opening the 3-dotted
+menu and tapping the "Components" option.
+
+Tapping the "Update" button located in the options menu will download new versions
+of the components if any are available.
+
+*** note
+**Note:** Updating components via the UI runs in "on-demand" or "user-visible"
+mode by default which may have [different behavior](https://crbug.com/1250837)
+from automated updates. To simulate the behaviour of the automated update
+service, on-demand updates can be turned off using the toggle provided
+below the Components Summary.
+***
+
+![WebView components UI](images/webview_components_ui.png)
 
 ## More cool stuff
 

@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -109,6 +108,9 @@ class ReporterRunnerPolicyTest
                        base::Unretained(this)));
   }
 
+  ReporterRunnerPolicyTest(const ReporterRunnerPolicyTest&) = delete;
+  ReporterRunnerPolicyTest& operator=(const ReporterRunnerPolicyTest&) = delete;
+
   void WaitForComponentRegistration() { waiter_.Wait(); }
 
  protected:
@@ -148,8 +150,6 @@ class ReporterRunnerPolicyTest
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   Waiter waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReporterRunnerPolicyTest);
 };
 
 IN_PROC_BROWSER_TEST_P(ReporterRunnerPolicyTest, CheckComponent) {
@@ -197,6 +197,9 @@ class ReporterRunnerTest
         GetParam();
   }
 
+  ReporterRunnerTest(const ReporterRunnerTest&) = delete;
+  ReporterRunnerTest& operator=(const ReporterRunnerTest&) = delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     internal::SetSwReporterTestingDelegate(this);
     EXPECT_CALL(policy_provider_, IsInitializationComplete(_))
@@ -231,8 +234,7 @@ class ReporterRunnerTest
   void SetUpOnMainThread() override {
     // SetDateInLocalState calculates a time as Now() minus an offset. Move the
     // simulated clock ahead far enough that this calculation won't underflow.
-    FastForwardBy(
-        base::TimeDelta::FromDays(kDaysBetweenSuccessfulSwReporterRuns * 2));
+    FastForwardBy(base::Days(kDaysBetweenSuccessfulSwReporterRuns * 2));
 
     ClearLastTimeSentReport();
 
@@ -341,8 +343,7 @@ class ReporterRunnerTest
   // Sets |path| in the local state to a date corresponding to |days| days ago.
   void SetDateInLocalState(const std::string& path, int days) {
     PrefService* local_state = g_browser_process->local_state();
-    local_state->SetInt64(
-        path, (Now() - base::TimeDelta::FromDays(days)).ToInternalValue());
+    local_state->SetInt64(path, (Now() - base::Days(days)).ToInternalValue());
   }
 
   // Sets local state for last time the software reporter ran to |days| days
@@ -417,7 +418,7 @@ class ReporterRunnerTest
 
     // Checks if the last time sent logs is set as no more than one hour ago,
     // which should be enough time if the execution does not fail.
-    EXPECT_LT(now - base::TimeDelta::FromHours(1), last_time_sent_logs);
+    EXPECT_LT(now - base::Hours(1), last_time_sent_logs);
     EXPECT_GE(now, last_time_sent_logs);
   }
 
@@ -600,9 +601,6 @@ class ReporterRunnerTest
   base::OnceClosure first_launch_callback_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReporterRunnerTest);
 };
 
 }  // namespace
@@ -696,8 +694,7 @@ IN_PROC_BROWSER_TEST_P(ReporterRunnerTest, MultipleLaunches) {
   // Schedule a launch with 2 invocations, then another with the same 2.
   {
     SCOPED_TRACE("Launch 2 times with retry");
-    FastForwardBy(
-        base::TimeDelta::FromDays(kDaysBetweenSuccessfulSwReporterRuns));
+    FastForwardBy(base::Days(kDaysBetweenSuccessfulSwReporterRuns));
     RunReporterQueueAndWait(chrome_cleaner::kSwReporterNothingFound,
                             SwReporterInvocationResult::kNothingFound,
                             invocations);
@@ -721,7 +718,7 @@ IN_PROC_BROWSER_TEST_P(ReporterRunnerTest, MultipleLaunches) {
 
   {
     SCOPED_TRACE("Attempt to launch after a few days");
-    FastForwardBy(base::TimeDelta::FromDays(kAFewDays));
+    FastForwardBy(base::Days(kAFewDays));
     if (IsUserInitiated(invocation_type_)) {
       RunReporterQueueAndWait(chrome_cleaner::kSwReporterNothingFound,
                               SwReporterInvocationResult::kNothingFound,
@@ -734,8 +731,7 @@ IN_PROC_BROWSER_TEST_P(ReporterRunnerTest, MultipleLaunches) {
       ExpectReporterLaunches({}, /*expect_prompt=*/false);
     }
 
-    FastForwardBy(base::TimeDelta::FromDays(
-        kDaysBetweenSuccessfulSwReporterRuns - kAFewDays));
+    FastForwardBy(base::Days(kDaysBetweenSuccessfulSwReporterRuns - kAFewDays));
     RunReporterQueueAndWait(chrome_cleaner::kSwReporterNothingFound,
                             SwReporterInvocationResult::kNothingFound,
                             invocations);
@@ -745,8 +741,7 @@ IN_PROC_BROWSER_TEST_P(ReporterRunnerTest, MultipleLaunches) {
   // Second launch should not occur after a failure.
   {
     SCOPED_TRACE("Launch multiple times with failure");
-    FastForwardBy(
-        base::TimeDelta::FromDays(kDaysBetweenSuccessfulSwReporterRuns));
+    FastForwardBy(base::Days(kDaysBetweenSuccessfulSwReporterRuns));
     RunReporterQueueAndWait(kReporterNotLaunchedExitCode,
                             SwReporterInvocationResult::kProcessFailedToLaunch,
                             invocations);

@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+FAIL AbortController abort() should fire event synchronously assert_true: signal has reason property expected true got false
+PASS controller.signal should always return the same object
+PASS controller.abort() should do nothing the second time it is called
+PASS event handler should not be called if added after controller.abort()
+PASS the abort event should have the right properties
+FAIL AbortController abort(reason) should set signal.reason assert_true: signal has reason property expected true got false
+FAIL aborting AbortController without reason creates an "AbortError" DOMException assert_true: signal has reason property expected true got false
+FAIL AbortController abort(undefined) creates an "AbortError" DOMException assert_true: signal has reason property expected true got false
+FAIL static aborting signal should have right properties assert_true: signal.reason is DOMException expected true got false
+FAIL static aborting signal with reason should set signal.reason assert_equals: signal.reason expected (object) object "Error: hello" but got (undefined) undefined
+Harness: the test ran to completion.
+

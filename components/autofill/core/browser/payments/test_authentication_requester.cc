@@ -23,7 +23,7 @@ TestAuthenticationRequester::GetWeakPtr() {
 void TestAuthenticationRequester::OnCVCAuthenticationComplete(
     const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response) {
   did_succeed_ = response.did_succeed;
-  if (did_succeed_) {
+  if (*did_succeed_) {
     DCHECK(response.card);
     number_ = response.card->number();
   }
@@ -44,7 +44,7 @@ bool TestAuthenticationRequester::UserOptedInToFidoFromSettingsPageOnMobile()
 void TestAuthenticationRequester::OnFIDOAuthenticationComplete(
     const CreditCardFIDOAuthenticator::FidoAuthenticationResponse& response) {
   did_succeed_ = response.did_succeed;
-  if (did_succeed_) {
+  if (*did_succeed_) {
     DCHECK(response.card);
     number_ = response.card->number();
   }
@@ -61,5 +61,16 @@ void TestAuthenticationRequester::IsUserVerifiableCallback(
   is_user_verifiable_ = is_user_verifiable;
 }
 #endif
+
+void TestAuthenticationRequester::OnOtpAuthenticationComplete(
+    const CreditCardOtpAuthenticator::OtpAuthenticationResponse& response) {
+  did_succeed_ =
+      response.result ==
+      CreditCardOtpAuthenticator::OtpAuthenticationResponse::Result::kSuccess;
+  if (*did_succeed_) {
+    DCHECK(response.card);
+    number_ = response.card->number();
+  }
+}
 
 }  // namespace autofill

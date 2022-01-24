@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -42,6 +41,10 @@ class ContentSettingsPref {
                       bool off_the_record,
                       bool restore_session,
                       NotifyObserversCallback notify_callback);
+
+  ContentSettingsPref(const ContentSettingsPref&) = delete;
+  ContentSettingsPref& operator=(const ContentSettingsPref&) = delete;
+
   ~ContentSettingsPref();
 
   // Returns nullptr to indicate the RuleIterator is empty.
@@ -121,8 +124,6 @@ class ContentSettingsPref {
   mutable base::Lock lock_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsPref);
 };
 
 }  // namespace content_settings

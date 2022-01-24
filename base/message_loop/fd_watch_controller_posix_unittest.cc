@@ -31,6 +31,10 @@ class FdWatchControllerPosixTest : public testing::Test {
  public:
   FdWatchControllerPosixTest() = default;
 
+  FdWatchControllerPosixTest(const FdWatchControllerPosixTest&) = delete;
+  FdWatchControllerPosixTest& operator=(const FdWatchControllerPosixTest&) =
+      delete;
+
   // testing::Test interface.
   void SetUp() override {
     // Create a file descriptor.  Doesn't need to be readable or writable,
@@ -52,8 +56,6 @@ class FdWatchControllerPosixTest : public testing::Test {
  protected:
   ScopedFD read_fd_;
   ScopedFD write_fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(FdWatchControllerPosixTest);
 };
 
 class TestHandler : public MessagePumpForIO::FdWatcher {
@@ -204,6 +206,9 @@ class ReaderWriterHandler : public MessagePumpForIO::FdWatcher {
         controller_(FROM_HERE),
         idle_quit_closure_(std::move(idle_quit_closure)) {}
 
+  ReaderWriterHandler(const ReaderWriterHandler&) = delete;
+  ReaderWriterHandler& operator=(const ReaderWriterHandler&) = delete;
+
   // base::WatchableIOMessagePumpPosix::FdWatcher:
   void OnFileCanReadWithoutBlocking(int fd) override {
     if (when_ == kOnReadEvent) {
@@ -240,8 +245,6 @@ class ReaderWriterHandler : public MessagePumpForIO::FdWatcher {
   ActWhen when_;
   MessagePumpForIO::FdWatchController controller_;
   OnceClosure idle_quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReaderWriterHandler);
 };
 
 class MessageLoopForIoPosixReadAndWriteTest
@@ -513,8 +516,7 @@ TEST_F(FdWatchControllerPosixTest, IoEventThenTimer) {
 
   RunLoop timer_run_loop;
   env.GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, timer_run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(10));
+      FROM_HERE, timer_run_loop.QuitClosure(), base::Milliseconds(10));
 
   RunLoop watcher_run_loop;
   CallClosureHandler handler(watcher_run_loop.QuitClosure(), OnceClosure());
@@ -545,7 +547,7 @@ TEST_F(FdWatchControllerPosixTest, TimerThenIoEvent) {
   env.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
       BindOnce(&FdWatchControllerPosixTest::TriggerReadEvent, Unretained(this)),
-      TimeDelta::FromMilliseconds(1));
+      Milliseconds(1));
 
   RunLoop run_loop;
   CallClosureHandler handler(run_loop.QuitClosure(), OnceClosure());

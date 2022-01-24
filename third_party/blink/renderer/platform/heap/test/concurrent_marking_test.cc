@@ -240,33 +240,6 @@ TEST_F(ConcurrentMarkingTest, SwapLinkedHashSet) {
   SwapCollections<HeapLinkedHashSet<Member<IntegerObject>>>();
 }
 
-// HeapListHashSet
-
-template <typename T>
-struct MethodAdapter<HeapListHashSet<T>>
-    : public MethodAdapterBase<HeapListHashSet<T>> {
-  static void Swap(HeapListHashSet<T>& a, HeapListHashSet<T>& b) { a.Swap(b); }
-};
-
-TEST_F(ConcurrentMarkingTest, AddToListHashSet) {
-  AddToCollection<HeapListHashSet<Member<IntegerObject>>>();
-}
-TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfListHashSet) {
-  RemoveFromBeginningOfCollection<HeapListHashSet<Member<IntegerObject>>>();
-}
-TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfListHashSet) {
-  RemoveFromMiddleOfCollection<HeapListHashSet<Member<IntegerObject>>>();
-}
-TEST_F(ConcurrentMarkingTest, RemoveFromEndOfListHashSet) {
-  RemoveFromEndOfCollection<HeapListHashSet<Member<IntegerObject>>>();
-}
-TEST_F(ConcurrentMarkingTest, ClearListHashSet) {
-  ClearCollection<HeapListHashSet<Member<IntegerObject>>>();
-}
-TEST_F(ConcurrentMarkingTest, SwapListHashSet) {
-  SwapCollections<HeapListHashSet<Member<IntegerObject>>>();
-}
-
 // HeapHashCountedSet
 
 TEST_F(ConcurrentMarkingTest, AddToHashCountedSet) {

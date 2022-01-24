@@ -414,6 +414,10 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.subpixel_font_rendering;
   }
 
+  static uint32_t visibility_callback_call_count(const gpu::GPUInfo& input) {
+    return input.visibility_callback_call_count;
+  }
+
 #if BUILDFLAG(ENABLE_VULKAN)
   static const absl::optional<gpu::VulkanInfo> vulkan_info(
       const gpu::GPUInfo& input) {

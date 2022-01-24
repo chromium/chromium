@@ -37,7 +37,8 @@ WebString TestWebFrameContentDumper::DumpWebViewAsText(WebView* web_view,
       DocumentUpdateReason::kTest);
 
   StringBuilder text;
-  FrameContentAsText(max_chars, To<WebLocalFrameImpl>(frame)->GetFrame(), text);
+  FrameContentAsText(static_cast<wtf_size_t>(max_chars),
+                     To<WebLocalFrameImpl>(frame)->GetFrame(), text);
   return text.ToString();
 }
 

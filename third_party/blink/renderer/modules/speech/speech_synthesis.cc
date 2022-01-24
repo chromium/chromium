@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/speech/speech_synthesis.h"
 
+#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -118,7 +119,7 @@ void SpeechSynthesis::RecordVoicesForIdentifiability() const {
     builder.AddToken(voice->localService());
   }
   IdentifiabilityMetricBuilder(GetSupplementable()->UkmSourceID())
-      .Set(surface, builder.GetToken())
+      .Add(surface, builder.GetToken())
       .Record(GetSupplementable()->UkmRecorder());
 }
 

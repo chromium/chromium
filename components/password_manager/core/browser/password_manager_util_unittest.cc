@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -68,7 +67,7 @@ PasswordForm GetTestCredential() {
   PasswordForm form;
   form.scheme = PasswordForm::Scheme::kHtml;
   form.url = GURL(kTestURL);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = kTestUsername;
   form.password_value = kTestPassword;
   return form;
@@ -135,10 +134,36 @@ TEST(PasswordManagerUtil, GetSignonRealmWithProtocolExcluded) {
             "localhost/accounts.federation.com");
 }
 
+TEST(PasswordManagerUtil, GetMatchType_Android) {
+  PasswordForm form = GetTestAndroidCredential();
+  form.is_affiliation_based_match = true;
+
+  EXPECT_EQ(GetLoginMatchType::kExact, GetMatchType(form));
+}
+
+TEST(PasswordManagerUtil, GetMatchType_Web) {
+  PasswordForm form = GetTestCredential();
+  form.is_public_suffix_match = true;
+  form.is_affiliation_based_match = true;
+  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
+
+  form.is_public_suffix_match = false;
+  form.is_affiliation_based_match = true;
+  EXPECT_EQ(GetLoginMatchType::kAffiliated, GetMatchType(form));
+
+  form.is_public_suffix_match = true;
+  form.is_affiliation_based_match = false;
+  EXPECT_EQ(GetLoginMatchType::kPSL, GetMatchType(form));
+
+  form.is_public_suffix_match = false;
+  form.is_affiliation_based_match = false;
+  EXPECT_EQ(GetLoginMatchType::kExact, GetMatchType(form));
+}
+
 TEST(PasswordManagerUtil, FindBestMatches) {
   const base::Time kNow = base::Time::Now();
-  const base::Time kYesterday = kNow - base::TimeDelta::FromDays(1);
-  const base::Time k2DaysAgo = kNow - base::TimeDelta::FromDays(2);
+  const base::Time kYesterday = kNow - base::Days(1);
+  const base::Time k2DaysAgo = kNow - base::Days(2);
   const int kNotFound = -1;
   struct TestMatch {
     bool is_psl_match;
@@ -289,13 +314,13 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   std::vector<const PasswordForm*> same_scheme_matches;
   FindBestMatches(matches, PasswordForm::Scheme::kHtml, &same_scheme_matches,
                   &best_matches, &preferred_match);
-  // All 4 matches should be returned in best matches.
-  EXPECT_EQ(best_matches.size(), 4U);
+  // |profile_form1| is filtered out because it's the same as |account_form1|.
+  EXPECT_EQ(best_matches.size(), 3U);
   EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &account_form1),
             best_matches.end());
   EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &account_form2),
             best_matches.end());
-  EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &profile_form1),
+  EXPECT_EQ(std::find(best_matches.begin(), best_matches.end(), &profile_form1),
             best_matches.end());
   EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &profile_form2),
             best_matches.end());
@@ -426,9 +451,10 @@ TEST(PasswordManagerUtil, MakeNormalizedBlocklistedForm_Html) {
       password_manager::PasswordFormDigest(GetTestCredential()));
   EXPECT_TRUE(blocklisted_credential.blocked_by_user);
   EXPECT_EQ(PasswordForm::Scheme::kHtml, blocklisted_credential.scheme);
-  EXPECT_EQ(GURL(kTestURL).GetOrigin().spec(),
+  EXPECT_EQ(GURL(kTestURL).DeprecatedGetOriginAsURL().spec(),
             blocklisted_credential.signon_realm);
-  EXPECT_EQ(GURL(kTestURL).GetOrigin(), blocklisted_credential.url);
+  EXPECT_EQ(GURL(kTestURL).DeprecatedGetOriginAsURL(),
+            blocklisted_credential.url);
 }
 
 TEST(PasswordManagerUtil, MakeNormalizedBlocklistedForm_Proxy) {
@@ -499,6 +525,46 @@ TEST(PasswordManagerUtil,
   EXPECT_CALL(mock_client, GeneratePassword).Times(0);
 
   UserTriggeredManualGenerationFromContextMenu(&mock_client);
+}
+
+TEST(PasswordManagerUtil, StripAuthAndParams) {
+  GURL url = GURL("https://login:password@example.com/login/?param=value#ref");
+  EXPECT_EQ(GURL("https://example.com/login/"), StripAuthAndParams(url));
+}
+
+TEST(PasswordManagerUtil, ConstructGURLWithScheme) {
+  std::vector<std::pair<std::string, GURL>> test_cases = {
+      {"example.com", GURL("https://example.com")},
+      {"127.0.0.1", GURL("http://127.0.0.1")},
+      {"file:///Test/example.html", GURL("file:///Test/example.html")},
+      {"https://www.example.com", GURL("https://www.example.com")},
+      {"example", GURL("https://example")}};
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(test_case.second, ConstructGURLWithScheme(test_case.first));
+  }
+}
+
+TEST(PasswordManagerUtil, IsValidPasswordURL) {
+  std::vector<std::pair<GURL, bool>> test_cases = {
+      {GURL("noscheme.com"), false},
+      {GURL("https://;/invalid"), false},
+      {GURL("scheme://unsupported"), false},
+      {GURL("http://example.com"), true},
+      {GURL("https://test.com/login"), true}};
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(test_case.second, IsValidPasswordURL(test_case.first));
+  }
+}
+
+TEST(PasswordManagerUtil, GetSignonRealm) {
+  std::vector<std::pair<GURL, std::string>> test_cases = {
+      {GURL("http://example.com/"), "http://example.com/"},
+      {GURL("http://example.com/signup"), "http://example.com/"},
+      {GURL("https://google.com/auth?a=1#b"), "https://google.com/"},
+      {GURL("https://username:password@google.com/"), "https://google.com/"}};
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(test_case.second, GetSignonRealm(test_case.first));
+  }
 }
 
 }  // namespace password_manager_util

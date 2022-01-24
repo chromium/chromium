@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 
+#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -138,6 +139,7 @@ void StyleRuleCounterStyle::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(symbols_);
   visitor->Trace(additive_symbols_);
   visitor->Trace(speak_as_);
+  visitor->Trace(layer_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 

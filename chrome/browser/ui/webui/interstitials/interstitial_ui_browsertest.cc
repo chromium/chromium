@@ -33,7 +33,7 @@ class InterstitialUITest : public InProcessBrowserTest {
   void TestInterstitial(GURL url,
                         const std::string& page_title,
                         const std::u16string& body_text) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_EQ(
       base::ASCIIToUTF16(page_title),
       browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
@@ -201,8 +201,10 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, LegacyTLSInterstitial) {
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialBackButton) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://interstitials"));
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://interstitials/ssl"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://interstitials")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("chrome://interstitials/ssl")));
   content::TestNavigationObserver navigation_observer(web_contents);
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
   navigation_observer.Wait();
@@ -213,8 +215,8 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialBackButton) {
 
 // Tests that view-source: works correctly on chrome://interstitials.
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialViewSource) {
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("view-source:chrome://interstitials/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("view-source:chrome://interstitials/")));
   int found;
   std::u16string expected_title = u"<title>Interstitials</title>";
   found = ui_test_utils::FindInPage(
@@ -238,8 +240,8 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialViewSource) {
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest,
                        MAYBE_InterstitialWithPathViewSource) {
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("view-source:chrome://interstitials/ssl"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("view-source:chrome://interstitials/ssl")));
   int found;
   std::u16string expected_title = u"<title>Privacy error</title";
   found = ui_test_utils::FindInPage(
@@ -255,7 +257,8 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest,
 // See https://crbug.com/611706 for details.
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, UseCorrectWebContents) {
   int current_tab = browser()->tab_strip_model()->active_index();
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://interstitials/ssl"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("chrome://interstitials/ssl")));
   // Duplicate the tab and close it.
   chrome::DuplicateTab(browser());
   EXPECT_NE(current_tab, browser()->tab_strip_model()->active_index());

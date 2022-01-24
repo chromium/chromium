@@ -54,18 +54,6 @@ class IOSIntermediateDumpWriterTest : public testing::Test {
   base::FilePath path_;
 };
 
-// Test file is locked.
-TEST_F(IOSIntermediateDumpWriterTest, OpenLocked) {
-  EXPECT_TRUE(writer_->Open(path()));
-
-  ScopedFileHandle handle(LoggingOpenFileForRead(path()));
-  EXPECT_TRUE(handle.is_valid());
-  EXPECT_EQ(LoggingLockFile(handle.get(),
-                            FileLocking::kExclusive,
-                            FileLockingBlocking::kNonBlocking),
-            FileLockingResult::kWouldBlock);
-}
-
 TEST_F(IOSIntermediateDumpWriterTest, Close) {
   EXPECT_TRUE(writer_->Open(path()));
   EXPECT_TRUE(writer_->Close());

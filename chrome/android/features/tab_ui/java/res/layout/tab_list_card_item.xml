@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:background="@drawable/popup_bg_tinted">
+        android:background="@drawable/menu_bg_tinted">
 
         <include layout="@layout/modern_list_item_view" />
 

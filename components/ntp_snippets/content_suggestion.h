@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/category.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -65,6 +64,8 @@ class ContentSuggestion {
                     const GURL& url);
   ContentSuggestion(ContentSuggestion&&);
   ContentSuggestion& operator=(ContentSuggestion&&);
+  ContentSuggestion(const ContentSuggestion&) = delete;
+  ContentSuggestion& operator=(const ContentSuggestion&) = delete;
 
   ~ContentSuggestion();
 
@@ -184,8 +185,6 @@ class ContentSuggestion {
 
   // Encoded as an Android @ColorInt.
   absl::optional<uint32_t> image_dominant_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSuggestion);
 };
 
 std::ostream& operator<<(std::ostream& os, const ContentSuggestion::ID& id);

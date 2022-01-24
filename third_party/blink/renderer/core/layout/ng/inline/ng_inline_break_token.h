@@ -30,14 +30,13 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   // Creates a break token for a node which did fragment, and can potentially
   // produce more fragments.
   // Takes ownership of the state_stack.
-  static scoped_refptr<NGInlineBreakToken> Create(
+  static NGInlineBreakToken* Create(
       NGInlineNode node,
       const ComputedStyle* style,
       unsigned item_index,
       unsigned text_offset,
       unsigned flags /* NGInlineBreakTokenFlags */,
       const NGBlockBreakToken* block_in_inline_break_token = nullptr);
-  ~NGInlineBreakToken() override;
 
   // The style at the end of this break token. The next line should start with
   // this style.
@@ -86,15 +85,17 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   String ToString() const override;
 #endif
 
+  void Trace(Visitor*) const override;
+
  private:
-  const NGBlockBreakToken* const* BlockInInlineBreakTokenAddress() const;
+  const Member<const NGBlockBreakToken>* BlockInInlineBreakTokenAddress() const;
 
   scoped_refptr<const ComputedStyle> style_;
   unsigned item_index_;
   unsigned text_offset_;
 
   // This is an array of one item if |kHasBlockInInlineToken|, or zero.
-  NGBlockBreakToken* block_in_inline_break_token_[];
+  Member<const NGBlockBreakToken> block_in_inline_break_token_[];
 };
 
 template <>

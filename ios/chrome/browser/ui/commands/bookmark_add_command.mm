@@ -14,16 +14,21 @@
 @interface BookmarkAddCommand ()
 
 @property(nonatomic, strong) NSArray<URLWithTitle*>* URLs;
+@property(nonatomic, assign) BOOL presentFolderChooser;
 
 @end
 
 @implementation BookmarkAddCommand
 
 @synthesize URLs = _URLs;
+@synthesize presentFolderChooser = _presentFolderChooser;
 
-- (instancetype)initWithURL:(const GURL&)URL title:(NSString*)title {
+- (instancetype)initWithURL:(const GURL&)URL
+                      title:(NSString*)title
+       presentFolderChooser:(BOOL)presentFolderChooser {
   if (self = [super init]) {
     _URLs = @[ [[URLWithTitle alloc] initWithURL:URL title:title] ];
+    _presentFolderChooser = presentFolderChooser;
   }
   return self;
 }
@@ -31,6 +36,7 @@
 - (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URLs {
   if (self = [super init]) {
     _URLs = [URLs copy];
+    _presentFolderChooser = YES;
   }
   return self;
 }

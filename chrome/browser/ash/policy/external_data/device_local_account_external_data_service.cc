@@ -15,7 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/path_service.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/policy_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

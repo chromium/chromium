@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_advertiser.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
@@ -27,6 +26,10 @@ namespace secure_channel {
 class FakeBleAdvertiser : public BleAdvertiser {
  public:
   explicit FakeBleAdvertiser(Delegate* delegate);
+
+  FakeBleAdvertiser(const FakeBleAdvertiser&) = delete;
+  FakeBleAdvertiser& operator=(const FakeBleAdvertiser&) = delete;
+
   ~FakeBleAdvertiser() override;
 
   const std::list<DeviceIdPair>& GetRequestsForPriority(
@@ -64,14 +67,17 @@ class FakeBleAdvertiser : public BleAdvertiser {
   }
 
   std::unique_ptr<SharedResourceScheduler> scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleAdvertiser);
 };
 
 // Test BleAdvertiser::Delegate implementation.
 class FakeBleAdvertiserDelegate : public BleAdvertiser::Delegate {
  public:
   FakeBleAdvertiserDelegate();
+
+  FakeBleAdvertiserDelegate(const FakeBleAdvertiserDelegate&) = delete;
+  FakeBleAdvertiserDelegate& operator=(const FakeBleAdvertiserDelegate&) =
+      delete;
+
   ~FakeBleAdvertiserDelegate() override;
 
   using SlotEndedEvent = std::pair<DeviceIdPair, bool>;
@@ -94,8 +100,6 @@ class FakeBleAdvertiserDelegate : public BleAdvertiser::Delegate {
 
   std::vector<SlotEndedEvent> slot_ended_events_;
   std::vector<DeviceIdPair> advertisement_generation_failures_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleAdvertiserDelegate);
 };
 
 }  // namespace secure_channel

@@ -322,6 +322,11 @@ importer.ImportController = class {
    * @private
    */
   checkState_(opt_scan) {
+    if (window.isSWA) {
+      // Disables the Cloud Import for SWA.
+      return;
+    }
+
     // If there is no Google Drive mount, Drive may be disabled
     // or the machine may be running in guest mode.
     if (!this.environment_.isGoogleDriveMounted()) {
@@ -443,6 +448,10 @@ importer.ImportController = class {
    * @private
    */
   isCurrentDirectoryScannable_() {
+    if (window.isSWA) {
+      // Disables the Cloud Import for SWA.
+      return false;
+    }
     const directory = this.environment_.getCurrentDirectory();
     return !!directory &&
         importer.isMediaDirectory(directory, this.environment_.volumeManager);

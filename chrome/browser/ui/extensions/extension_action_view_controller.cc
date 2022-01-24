@@ -67,6 +67,19 @@ ExtensionActionViewController::Create(
       extensions_container));
 }
 
+// static
+bool ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
+    const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
+    content::WebContents* web_contents) {
+  for (const auto& action : actions) {
+    if (action->GetPageInteractionStatus(web_contents) ==
+        PageInteractionStatus::kActive) {
+      return true;
+    }
+  }
+  return false;
+}
+
 ExtensionActionViewController::ExtensionActionViewController(
     scoped_refptr<const extensions::Extension> extension,
     Browser* browser,

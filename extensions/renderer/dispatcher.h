@@ -36,7 +36,7 @@
 #include "extensions/renderer/v8_schema_registry.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 class ChromeRenderViewTest;
 class GURL;
@@ -79,6 +79,10 @@ class Dispatcher : public content::RenderThreadObserver,
                    public mojom::Renderer {
  public:
   explicit Dispatcher(std::unique_ptr<DispatcherDelegate> delegate);
+
+  Dispatcher(const Dispatcher&) = delete;
+  Dispatcher& operator=(const Dispatcher&) = delete;
+
   ~Dispatcher() override;
 
   // Returns Service Worker ScriptContexts belonging to current worker thread.
@@ -250,13 +254,13 @@ class Dispatcher : public content::RenderThreadObserver,
   void UpdateTabSpecificPermissions(const std::string& extension_id,
                                     extensions::URLPatternSet new_hosts,
                                     int tab_id,
-                                    bool update_origin_whitelist) override;
+                                    bool update_origin_allowlist) override;
   void UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
                          mojom::HostIDPtr host_id) override;
   void ClearTabSpecificPermissions(
       const std::vector<std::string>& extension_ids,
       int tab_id,
-      bool update_origin_whitelist) override;
+      bool update_origin_allowlist) override;
   void WatchPages(const std::vector<std::string>& css_selectors) override;
 
   void OnRendererAssociatedRequest(
@@ -287,8 +291,8 @@ class Dispatcher : public content::RenderThreadObserver,
   // the extension currently has, removing any old entries.
   void UpdateOriginPermissions(const Extension& extension);
 
-  // Enable custom element whitelist in Apps.
-  void EnableCustomElementWhiteList();
+  // Enable custom element allowlist in Apps.
+  void EnableCustomElementAllowlist();
 
   // Adds or removes bindings for all contexts.
   void UpdateAllBindings();
@@ -385,8 +389,6 @@ class Dispatcher : public content::RenderThreadObserver,
   std::map<ExtensionId, std::unique_ptr<PendingServiceWorker>>
       service_workers_paused_for_on_loaded_message_;
   base::Lock service_workers_paused_for_on_loaded_message_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(Dispatcher);
 };
 
 }  // namespace extensions

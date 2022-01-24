@@ -23,6 +23,10 @@ class ModelConfigLoader {
   class Observer : public base::CheckedObserver {
    public:
     Observer() = default;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     ~Observer() override = default;
 
     // Called when the ModelConfigLoader is initialized.  |model_config| is only
@@ -30,9 +34,6 @@ class ModelConfigLoader {
     // from experiment flags.
     virtual void OnModelConfigLoaded(
         absl::optional<ModelConfig> model_config) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   virtual ~ModelConfigLoader() = default;

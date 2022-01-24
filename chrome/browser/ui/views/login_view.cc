@@ -8,70 +8,82 @@
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/textfield_layout.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/combobox_model.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/grid_layout.h"
-
-namespace {
-
-constexpr int kHeaderColumnSetId = 0;
-constexpr int kFieldsColumnSetId = 1;
-
-// Adds a row to |layout| and puts a Label in it.
-void AddHeaderLabel(views::GridLayout* layout,
-                    const std::u16string& text,
-                    int text_style) {
-  auto label = std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL,
-                                              text_style);
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetAllowCharacterBreak(true);
-  layout->StartRow(views::GridLayout::kFixedSize, kHeaderColumnSetId);
-  layout->AddView(std::move(label));
-}
-
-}  // namespace
-
-///////////////////////////////////////////////////////////////////////////////
-// LoginView, public:
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/table_layout.h"
+#include "ui/views/layout/table_layout_view.h"
 
 LoginView::LoginView(const std::u16string& authority,
                      const std::u16string& explanation,
                      LoginHandler::LoginModelData* login_model_data)
     : http_auth_manager_(login_model_data ? login_model_data->model : nullptr) {
-  // TODO(tapted): When Harmony is default, this should be removed and left up
-  // to textfield_layout.h to decide.
-  constexpr int kMessageWidth = 320;
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  SetBorder(views::CreateEmptyBorder(provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kControl)));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      provider->GetDialogInsetsForContentType(
+          views::DialogContentType::kText, views::DialogContentType::kControl),
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
-  // Initialize the Grid Layout Manager used for this dialog box.
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* column_set = layout->AddColumnSet(kHeaderColumnSetId);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        views::GridLayout::ColumnSize::kFixed, kMessageWidth,
-                        0);
-  AddHeaderLabel(layout, authority, views::style::STYLE_PRIMARY);
-  if (!explanation.empty())
-    AddHeaderLabel(layout, explanation, views::style::STYLE_SECONDARY);
-  layout->AddPaddingRow(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE));
+  auto* authority_container =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  authority_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  auto* authority_label =
+      authority_container->AddChildView(std::make_unique<views::Label>(
+          authority, views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
+  authority_label->SetMultiLine(true);
+  constexpr int kMessageWidth = 320;
+  authority_label->SetMaximumWidth(kMessageWidth);
+  authority_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  authority_label->SetAllowCharacterBreak(true);
+  if (!explanation.empty()) {
+    auto* explanation_label = authority_container->AddChildView(
+        std::make_unique<views::Label>(explanation, views::style::CONTEXT_LABEL,
+                                       views::style::STYLE_SECONDARY));
+    explanation_label->SetMultiLine(true);
+    explanation_label->SetMaximumWidth(kMessageWidth);
+    explanation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  }
 
-  ConfigureTextfieldStack(layout, kFieldsColumnSetId);
-  username_field_ = AddFirstTextfieldRow(
-      layout, l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_USERNAME_FIELD),
-      kFieldsColumnSetId);
-  password_field_ = AddTextfieldRow(
-      layout, l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_PASSWORD_FIELD),
-      kFieldsColumnSetId);
+  auto* fields_container =
+      AddChildView(std::make_unique<views::TableLayoutView>());
+  fields_container
+      ->AddColumn(views::LayoutAlignment::kStart,
+                  views::LayoutAlignment::kCenter,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(
+          views::GridLayout::kFixedSize,
+          provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL))
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kStretch, 1.0,
+                 views::TableLayout::ColumnSize::kFixed, 0, 0)
+      .AddRows(1, views::TableLayout::kFixedSize)
+      .AddPaddingRow(views::TableLayout::kFixedSize,
+                     ChromeLayoutProvider::Get()->GetDistanceMetric(
+                         DISTANCE_CONTROL_LIST_VERTICAL))
+      .AddRows(1, views::GridLayout::kFixedSize);
+  auto* username_label =
+      fields_container->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_USERNAME_FIELD),
+          views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
+  username_field_ =
+      fields_container->AddChildView(std::make_unique<views::Textfield>());
+  username_field_->SetAssociatedLabel(username_label);
+  auto* password_label =
+      fields_container->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_PASSWORD_FIELD),
+          views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
+  password_field_ =
+      fields_container->AddChildView(std::make_unique<views::Textfield>());
+  password_field_->SetAssociatedLabel(password_label);
   password_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
 
   if (http_auth_manager_) {
@@ -96,9 +108,6 @@ const std::u16string& LoginView::GetPassword() const {
 views::View* LoginView::GetInitiallyFocusedView() {
   return username_field_;
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// LoginView, views::View, password_manager::HttpAuthObserver overrides:
 
 void LoginView::OnAutofillDataAvailable(const std::u16string& username,
                                         const std::u16string& password) {

@@ -41,7 +41,7 @@
 #include "ui/gfx/gdi_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/common_theme.h"
 
 // This was removed from Winvers.h but is still used.
@@ -112,6 +112,9 @@ class ScopedCreateDCWithBitmap {
   explicit ScopedCreateDCWithBitmap(base::win::ScopedCreateDC::Handle hdc)
       : dc_(hdc) {}
 
+  ScopedCreateDCWithBitmap(const ScopedCreateDCWithBitmap&) = delete;
+  ScopedCreateDCWithBitmap& operator=(const ScopedCreateDCWithBitmap&) = delete;
+
   ~ScopedCreateDCWithBitmap() {
     // Delete DC before the bitmap, since objects should not be deleted while
     // selected into a DC.
@@ -135,8 +138,6 @@ class ScopedCreateDCWithBitmap {
  private:
   base::win::ScopedCreateDC dc_;
   base::win::ScopedBitmap bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCreateDCWithBitmap);
 };
 
 base::win::RegKey OpenThemeRegKey(REGSAM access) {
@@ -611,102 +612,29 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
 absl::optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(
     ColorId color_id) const {
   switch (color_id) {
-    // Window Background
     case kColorId_WindowBackground:
-    case kColorId_DialogBackground:
-    case kColorId_BubbleBackground:
-    case kColorId_BubbleFooterBackground:
-    case kColorId_TreeBackground:
-    case kColorId_TableHeaderBackground:
-    case kColorId_TableBackground:
-    case kColorId_TableBackgroundAlternate:
-    case kColorId_TooltipBackground:
-    case kColorId_ProminentButtonDisabledColor:
-    case kColorId_NotificationBackground:
       return system_colors_[SystemThemeColor::kWindow];
 
-    // Window Text
     case kColorId_MenuIconColor:
-    case kColorId_DialogForeground:
-    case kColorId_LabelEnabledColor:
-    case kColorId_LabelSecondaryColor:
-    case kColorId_TreeText:
-    case kColorId_TableText:
-    case kColorId_TableHeaderText:
-    case kColorId_TableGroupingIndicatorColor:
-    case kColorId_TableHeaderSeparator:
-    case kColorId_TooltipIcon:
-    case kColorId_TooltipText:
     case kColorId_ThrobberSpinningColor:
-    case kColorId_AlertSeverityLow:
-    case kColorId_AlertSeverityMedium:
-    case kColorId_AlertSeverityHigh:
     case kColorId_DefaultIconColor:
       return system_colors_[SystemThemeColor::kWindowText];
 
-    // Hyperlinks
-    case kColorId_LinkEnabled:
-    case kColorId_LinkPressed:
-    case kColorId_HighlightedMenuItemForegroundColor:
-      return system_colors_[SystemThemeColor::kHotlight];
-
-    // Gray/Disabled Text
-    case kColorId_DisabledMenuItemForegroundColor:
-    case kColorId_LinkDisabled:
-    case kColorId_LabelDisabledColor:
-    case kColorId_ButtonDisabledColor:
     case kColorId_ThrobberWaitingColor:
       return system_colors_[SystemThemeColor::kGrayText];
 
-    // Button Background
-    case kColorId_ButtonColor:
     case kColorId_MenuBackgroundColor:
-    case kColorId_HighlightedMenuItemBackgroundColor:
-    case kColorId_TextfieldDefaultBackground:
-    case kColorId_TextfieldReadOnlyBackground:
       return system_colors_[SystemThemeColor::kButtonFace];
 
-    // Button Text Foreground
-    case kColorId_EnabledMenuItemForegroundColor:
-    case kColorId_MenuItemMinorTextColor:
-    case kColorId_MenuBorderColor:
     case kColorId_MenuSeparatorColor:
-    case kColorId_SeparatorColor:
-    case kColorId_TextfieldDefaultColor:
-    case kColorId_ButtonEnabledColor:
-    case kColorId_UnfocusedBorderColor:
-    case kColorId_TextfieldPlaceholderColor:
-    case kColorId_TextfieldReadOnlyColor:
     case kColorId_FocusedBorderColor:
-    case kColorId_TabTitleColorActive:
-    case kColorId_TabTitleColorInactive:
-    case kColorId_TabBottomBorder:
       return system_colors_[SystemThemeColor::kButtonText];
 
-    // Highlight/Selected Background
     case kColorId_ProminentButtonColor:
-    case kColorId_ProminentButtonFocusedColor:
-    case kColorId_ButtonBorderColor:
-    case kColorId_DropdownSelectedBackgroundColor:
     case kColorId_FocusedMenuItemBackgroundColor:
-    case kColorId_LabelTextSelectionBackgroundFocused:
-    case kColorId_TextfieldSelectionBackgroundFocused:
-    case kColorId_TooltipIconHovered:
-    case kColorId_TreeSelectionBackgroundFocused:
-    case kColorId_TreeSelectionBackgroundUnfocused:
-    case kColorId_TableSelectionBackgroundFocused:
-    case kColorId_TableSelectionBackgroundUnfocused:
       return system_colors_[SystemThemeColor::kHighlight];
 
-    // Highlight/Selected Text Foreground
     case kColorId_TextOnProminentButtonColor:
-    case kColorId_SelectedMenuItemForegroundColor:
-    case kColorId_TextfieldSelectionColor:
-    case kColorId_LabelTextSelectionColor:
-    case kColorId_TreeSelectedText:
-    case kColorId_TreeSelectedTextUnfocused:
-    case kColorId_TableSelectedText:
-    case kColorId_TableSelectedTextUnfocused:
       return system_colors_[SystemThemeColor::kHighlightText];
 
     default:
@@ -761,10 +689,15 @@ NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
   if (!InForcedColorsMode())
     return NativeTheme::CalculatePreferredContrast();
 
-  // According to the spec [1], "when the user agent can determine whether the
-  // forced color palette chosen by the user has a high or low contrast, one of
-  // 'prefers-contrast: more' or 'prefers-contrast: less' must match in addition
-  // to 'prefers-contrast: forced'."
+  // TODO(sartang@microsoft.com): Update the spec page at
+  // https://www.w3.org/TR/css-color-adjust-1/#forced, it currently does not
+  // mention the relation between forced-colors-active and prefers-contrast.
+  //
+  // According to spec [1], "in addition to forced-colors: active, the user
+  // agent must also match one of prefers-contrast: more or
+  // prefers-contrast: less if it can determine that the forced color
+  // palette chosen by the user has a particularly high or low contrast,
+  // and must make prefers-contrast: custom match otherwise".
   //
   // Using WCAG definitions [2], we have decided to match 'more' in Forced
   // Colors Mode if the contrast ratio between the foreground and background
@@ -778,7 +711,8 @@ NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
   // These ratios will act as an experimental baseline that we can adjust based
   // on user feedback.
   //
-  // [1] https://www.w3.org/TR/css-color-adjust-1/#forced
+  // [1]
+  // https://drafts.csswg.org/mediaqueries-5/#valdef-media-forced-colors-active
   // [2] https://www.w3.org/WAI/WCAG21/Understanding/contrast-enhanced
   SkColor bg_color = system_colors_[SystemThemeColor::kWindow];
   SkColor fg_color = system_colors_[SystemThemeColor::kWindowText];
@@ -786,7 +720,7 @@ NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
   if (contrast_ratio >= 7)
     return NativeTheme::PreferredContrast::kMore;
   return contrast_ratio <= 2.5 ? NativeTheme::PreferredContrast::kLess
-                               : NativeTheme::PreferredContrast::kNoPreference;
+                               : NativeTheme::PreferredContrast::kCustom;
 }
 
 NativeTheme::ColorScheme NativeThemeWin::GetDefaultSystemColorScheme() const {

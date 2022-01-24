@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/data_pipe_bytes_consumer.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
@@ -28,7 +28,7 @@ TEST_F(DataPipeBytesConsumerTest, TwoPhaseRead) {
             MOJO_RESULT_OK);
 
   const std::string kData = "Such hospitality. I'm underwhelmed.";
-  uint32_t write_size = kData.size();
+  uint32_t write_size = static_cast<uint32_t>(kData.size());
 
   MojoResult rv = producer_handle->WriteData(kData.c_str(), &write_size,
                                              MOJO_WRITE_DATA_FLAG_NONE);
@@ -56,7 +56,7 @@ TEST_F(DataPipeBytesConsumerTest, TwoPhaseRead_SignalError) {
             MOJO_RESULT_OK);
 
   const std::string kData = "Such hospitality. I'm underwhelmed.";
-  uint32_t write_size = kData.size();
+  uint32_t write_size = static_cast<uint32_t>(kData.size());
 
   MojoResult rv = producer_handle->WriteData(kData.c_str(), &write_size,
                                              MOJO_WRITE_DATA_FLAG_NONE);

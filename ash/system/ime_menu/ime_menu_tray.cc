@@ -34,8 +34,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -188,7 +188,7 @@ class ImeButtonsView : public views::View {
 
   ~ImeButtonsView() override = default;
 
-  void KeysetButtonPressed(chromeos::input_method::ImeKeyset keyset) {
+  void KeysetButtonPressed(input_method::ImeKeyset keyset) {
     // TODO(dcheng): When https://crbug.com/742517 is fixed, Mojo will generate
     // a constant for the number of values in the enum. For now, we just define
     // it here and keep it in sync with the enum.
@@ -227,7 +227,7 @@ class ImeButtonsView : public views::View {
       handwriting_button_ = new SystemMenuButton(
           base::BindRepeating(&ImeButtonsView::KeysetButtonPressed,
                               base::Unretained(this),
-                              chromeos::input_method::ImeKeyset::kHandwriting),
+                              input_method::ImeKeyset::kHandwriting),
           kImeMenuWriteIcon, IDS_ASH_STATUS_TRAY_IME_HANDWRITING);
       AddChildView(handwriting_button_);
     }
@@ -236,7 +236,7 @@ class ImeButtonsView : public views::View {
       voice_button_ = new SystemMenuButton(
           base::BindRepeating(&ImeButtonsView::KeysetButtonPressed,
                               base::Unretained(this),
-                              chromeos::input_method::ImeKeyset::kVoice),
+                              input_method::ImeKeyset::kVoice),
           kImeMenuMicrophoneIcon, IDS_ASH_STATUS_TRAY_IME_VOICE);
       AddChildView(voice_button_);
     }
@@ -268,6 +268,9 @@ class ImeMenuListView : public ImeListView {
    public:
     Delegate() : DetailedViewDelegate(nullptr /* tray_controller */) {}
 
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     // DetailedViewDelegate:
     void TransitionToMainView(bool restore_focus) override {}
     void CloseBubble() override {}
@@ -275,9 +278,6 @@ class ImeMenuListView : public ImeListView {
     gfx::Insets GetInsetsForDetailedView() const override {
       return gfx::Insets();
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   explicit ImeMenuListView(std::unique_ptr<Delegate> delegate)
@@ -379,8 +379,7 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
   SetIsActive(true);
 }
 
-void ImeMenuTray::ShowKeyboardWithKeyset(
-    chromeos::input_method::ImeKeyset keyset) {
+void ImeMenuTray::ShowKeyboardWithKeyset(input_method::ImeKeyset keyset) {
   CloseBubble();
 
   Shell::Get()
@@ -534,7 +533,7 @@ void ImeMenuTray::UpdateTrayLabel() {
 
   // For ARC IMEs, we use the globe icon instead of the short name of the active
   // IME.
-  if (chromeos::extension_ime_util::IsArcIME(current_ime.id)) {
+  if (extension_ime_util::IsArcIME(current_ime.id)) {
     CreateImageView();
     image_view_->SetImage(gfx::CreateVectorIcon(
         kShelfGlobeIcon,

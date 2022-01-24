@@ -13,23 +13,45 @@
 #include "components/viz/common/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/prediction/kalman_predictor.h"
+#include "ui/base/prediction/least_squares_predictor.h"
+#include "ui/base/prediction/linear_predictor.h"
+#include "ui/base/prediction/linear_resampling.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/delegated_ink_point.h"
 
 namespace viz {
 
 DelegatedInkTrailData::DelegatedInkTrailData() {
-  unsigned int predictor_options =
-      ui::KalmanPredictor::PredictionOptions::kHeuristicsEnabled |
-      ui::KalmanPredictor::PredictionOptions::kDirectionCutOffEnabled;
+  std::string predictor = features::InkPredictor();
   std::string full_name = "Renderer.DelegatedInkTrail.PredictionExperiment";
   for (int i = 0; i < kNumberOfPredictionConfigs; ++i) {
     prediction_handlers_[i].metrics_handler =
         std::make_unique<ui::PredictionMetricsHandler>(
             base::StrCat({full_name, base::NumberToString(i)}));
-    prediction_handlers_[i].predictor =
-        std::make_unique<ui::KalmanPredictor>(predictor_options);
+    prediction_handlers_[i].predictor = CreatePredictor(predictor);
   }
+  should_draw_predicted_ink_points_ = features::ShouldDrawPredictedInkPoints();
+}
+
+std::unique_ptr<ui::InputPredictor> DelegatedInkTrailData::CreatePredictor(
+    std::string predictor) {
+  if (predictor == features::kPredictorLinearResampling) {
+    return std::make_unique<ui::LinearResampling>();
+  } else if (predictor == features::kPredictorLinear1) {
+    return std::make_unique<ui::LinearPredictor>(
+        ui::LinearPredictor::EquationOrder::kFirstOrder);
+  } else if (predictor == features::kPredictorLinear2) {
+    return std::make_unique<ui::LinearPredictor>(
+        ui::LinearPredictor::EquationOrder::kSecondOrder);
+  } else if (predictor == features::kPredictorLsq) {
+    return std::make_unique<ui::LeastSquaresPredictor>();
+  }
+
+  // if `kPredictorKalman` or default, create Kalman predictor
+  unsigned int predictor_options =
+      ui::KalmanPredictor::PredictionOptions::kHeuristicsEnabled |
+      ui::KalmanPredictor::PredictionOptions::kDirectionCutOffEnabled;
+  return std::make_unique<ui::KalmanPredictor>(predictor_options);
 }
 
 DelegatedInkTrailData::~DelegatedInkTrailData() = default;
@@ -64,11 +86,6 @@ void DelegatedInkTrailData::PredictPoints(
   static const char* histogram_base_name =
       "Renderer.DelegatedInkTrail.LatencyImprovementWithPrediction.Experiment";
 
-  // Used to know if the user enabled prediction, and if so, which prediction
-  // config they opted into.
-  absl::optional<int> should_draw_predicted_ink_points =
-      features::ShouldDrawPredictedInkPoints();
-
   for (int experiment = 0; experiment < kNumberOfPredictionConfigs;
        ++experiment) {
     // Used to track the max amount of time predicted for each experiment. Since
@@ -84,9 +101,8 @@ void DelegatedInkTrailData::PredictPoints(
            ++i) {
         base::TimeTicks timestamp =
             ink_points_to_draw->back().timestamp() +
-            base::TimeDelta::FromMilliseconds(
-                kPredictionConfigs[experiment]
-                    .milliseconds_into_future_per_point);
+            base::Milliseconds(kPredictionConfigs[experiment]
+                                   .milliseconds_into_future_per_point);
         std::unique_ptr<ui::InputPredictor::InputData> predicted_point =
             handler.predictor->GeneratePrediction(timestamp);
         if (predicted_point) {
@@ -95,8 +111,8 @@ void DelegatedInkTrailData::PredictPoints(
               metadata->frame_time());
           latency_improvement_with_prediction =
               predicted_point->time_stamp - metadata->timestamp();
-          if (should_draw_predicted_ink_points.has_value() &&
-              experiment == should_draw_predicted_ink_points.value()) {
+          if (should_draw_predicted_ink_points_.has_value() &&
+              experiment == should_draw_predicted_ink_points_.value()) {
             ink_points_to_draw->push_back(gfx::DelegatedInkPoint(
                 predicted_point->pos, predicted_point->time_stamp,
                 pointer_id_));
@@ -124,14 +140,14 @@ void DelegatedInkTrailData::Reset() {
   }
 }
 
-bool DelegatedInkTrailData::ContainsAlmostMatchingPoint(
-    gfx::DelegatedInkMetadata* metadata,
-    const float epsilon) const {
+bool DelegatedInkTrailData::ContainsMatchingPoint(
+    gfx::DelegatedInkMetadata* metadata) const {
   auto point = points_.find(metadata->timestamp());
   if (point == points_.end())
     return false;
 
-  return point->second.IsWithinDistance(metadata->point(), epsilon);
+  return gfx::DelegatedInkPoint(point->second, point->first)
+      .MatchesDelegatedInkMetadata(metadata);
 }
 
 void DelegatedInkTrailData::ErasePointsOlderThanMetadata(

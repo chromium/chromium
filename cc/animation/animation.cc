@@ -26,15 +26,13 @@ scoped_refptr<Animation> Animation::Create(int id) {
   return base::WrapRefCounted(new Animation(id));
 }
 
-Animation::Animation(int id) : Animation(id, nullptr) {}
-
-Animation::Animation(int id, std::unique_ptr<KeyframeEffect> keyframe_effect)
-    : animation_host_(), animation_timeline_(), animation_delegate_(), id_(id) {
+Animation::Animation(int id)
+    : animation_host_(),
+      animation_timeline_(),
+      animation_delegate_(),
+      id_(id),
+      keyframe_effect_(std::make_unique<KeyframeEffect>(this)) {
   DCHECK(id_);
-  if (!keyframe_effect)
-    keyframe_effect = std::make_unique<KeyframeEffect>(this);
-
-  keyframe_effect_ = std::move(keyframe_effect);
 }
 
 Animation::~Animation() {
@@ -89,6 +87,11 @@ void Animation::AttachElementInternal(ElementId element_id) {
   // Register animation only if layer AND host attached.
   if (animation_host_)
     RegisterAnimation();
+}
+
+void Animation::SetKeyframeEffectForTesting(
+    std::unique_ptr<KeyframeEffect> effect) {
+  keyframe_effect_ = std::move(effect);
 }
 
 void Animation::DetachElement() {
@@ -216,8 +219,12 @@ void Animation::DelegateAnimationEvent(const AnimationEvent& event) {
   }
 }
 
-bool Animation::AffectsCustomProperty() const {
-  return keyframe_effect_->AffectsCustomProperty();
+bool Animation::RequiresInvalidation() const {
+  return keyframe_effect_->RequiresInvalidation();
+}
+
+bool Animation::AffectsNativeProperty() const {
+  return keyframe_effect_->AffectsNativeProperty();
 }
 
 void Animation::SetNeedsCommit() {

@@ -61,6 +61,10 @@ class NET_EXPORT_PRIVATE MDnsCache {
   };
 
   MDnsCache();
+
+  MDnsCache(const MDnsCache&) = delete;
+  MDnsCache& operator=(const MDnsCache&) = delete;
+
   ~MDnsCache();
 
   // Return value indicates whether the record was added, changed
@@ -116,8 +120,6 @@ class NET_EXPORT_PRIVATE MDnsCache {
 
   base::Time next_expiration_;
   size_t entry_limit_;
-
-  DISALLOW_COPY_AND_ASSIGN(MDnsCache);
 };
 
 }  // namespace net

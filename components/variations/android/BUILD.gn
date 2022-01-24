@@ -28,6 +28,7 @@ java_library("components_variations_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/variations:variations_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",

@@ -44,7 +44,7 @@ class SelectToSpeakMenuView : public views::BoxLayoutView {
     kSpeed = 7,
   };
 
-  SelectToSpeakMenuView(Delegate* delegate);
+  explicit SelectToSpeakMenuView(Delegate* delegate);
   SelectToSpeakMenuView(const SelectToSpeakMenuView&) = delete;
   SelectToSpeakMenuView& operator=(const SelectToSpeakMenuView&) = delete;
   ~SelectToSpeakMenuView() override = default;

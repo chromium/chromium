@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "chrome/installer/util/experiment_metrics.h"
 #include "ui/events/event_handler.h"
@@ -64,6 +63,9 @@ class TryChromeDialog : public views::WidgetObserver, public ui::EventHandler {
   // corner of the screen or near the Chrome taskbar button.
   // The dialog does not steal focus and does not have an entry in the taskbar.
   static Result Show(size_t group, ActiveModalDialogListener listener);
+
+  TryChromeDialog(const TryChromeDialog&) = delete;
+  TryChromeDialog& operator=(const TryChromeDialog&) = delete;
 
   ~TryChromeDialog() override;
 
@@ -167,8 +169,6 @@ class TryChromeDialog : public views::WidgetObserver, public ui::EventHandler {
   bool has_hover_ = false;
 
   SEQUENCE_CHECKER(my_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TryChromeDialog);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRY_CHROME_DIALOG_WIN_TRY_CHROME_DIALOG_H_

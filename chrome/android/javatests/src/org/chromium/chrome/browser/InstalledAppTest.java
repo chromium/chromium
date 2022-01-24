@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /** Test suite for navigator.getInstalledRelatedApps functionality. */
@@ -78,12 +79,12 @@ public class InstalledAppTest {
 
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mUpdateWaiter = new InstalledAppUpdateWaiter();
-        mTab.addObserver(mUpdateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
     }
 
     @After
     public void tearDown() {
-        mTab.removeObserver(mUpdateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
         mTestServer.stopAndDestroyServer();
     }
 

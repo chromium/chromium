@@ -11,16 +11,16 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
-#include "chrome/browser/ui/app_list/search/score_normalizer/score_normalizer.h"
+#include "chrome/browser/ui/app_list/search/ranking/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -42,6 +42,10 @@ class ZeroStateFileProvider : public SearchProvider,
                               file_manager::file_tasks::FileTasksObserver {
  public:
   explicit ZeroStateFileProvider(Profile* profile);
+
+  ZeroStateFileProvider(const ZeroStateFileProvider&) = delete;
+  ZeroStateFileProvider& operator=(const ZeroStateFileProvider&) = delete;
+
   ~ZeroStateFileProvider() override;
 
   // SearchProvider:
@@ -57,14 +61,20 @@ class ZeroStateFileProvider : public SearchProvider,
   // results. The invalid paths are removed from the model.
   void SetSearchResults(const internal::ValidAndInvalidResults& results);
 
+  // TODO(crbug.com/1216084): Remove this after finishing developing Continue
+  // Section. Appends mock results to the driver provider.
+  void AppendFakeSearchResults(Results* results);
+
   // The reference to profile to get ZeroStateFileProvider service.
   Profile* const profile_;
+
+  ash::ThumbnailLoader thumbnail_loader_;
 
   // The ranking model used to produce local file results for searches with an
   // empty query.
   std::unique_ptr<RecurrenceRanker> files_ranker_;
 
-  // The normalizer normalizes the relevance scores of Results
+  // Score normalizer for Finch experiment. Nullopt if experiment disabled.
   absl::optional<ScoreNormalizer> normalizer_;
 
   base::TimeTicks query_start_time_;
@@ -75,8 +85,6 @@ class ZeroStateFileProvider : public SearchProvider,
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<ZeroStateFileProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ZeroStateFileProvider);
 };
 
 }  // namespace app_list

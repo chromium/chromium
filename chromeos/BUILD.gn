@@ -20,14 +20,6 @@ config("chromeos_implementation") {
   defines = [ "CHROMEOS_IMPLEMENTATION" ]
 }
 
-declare_args() {
-  # Defines a buildflag for ease of iteration on the print team's
-  # PpdProvider class.
-  # TODO(crbug.com/1025995): remove this and all related scaffolding
-  # once we're ready to cut over.
-  is_printing_ppd_provider_v3 = true
-}
-
 component("chromeos") {
   public_deps = []
   deps = [
@@ -72,7 +64,15 @@ component("chromeos") {
       "printing/ppd_cache.h",
       "printing/ppd_line_reader.cc",
       "printing/ppd_line_reader.h",
+      "printing/ppd_metadata_manager.cc",
+      "printing/ppd_metadata_manager.h",
+      "printing/ppd_metadata_parser.cc",
+      "printing/ppd_metadata_parser.h",
+      "printing/ppd_provider.cc",
       "printing/ppd_provider.h",
+      "printing/ppd_provider.h",
+      "printing/printer_config_cache.cc",
+      "printing/printer_config_cache.h",
       "printing/printer_configuration.cc",
       "printing/printer_configuration.h",
       "printing/printer_translator.cc",
@@ -88,21 +88,6 @@ component("chromeos") {
     ]
     if (current_cpu == "arm" || current_cpu == "x86") {
       defines = [ "BINDER_IPC_32BIT" ]
-    }
-
-    if (is_printing_ppd_provider_v3) {
-      sources += [
-        "printing/ppd_metadata_manager.cc",
-        "printing/ppd_metadata_manager.h",
-        "printing/ppd_metadata_parser.cc",
-        "printing/ppd_metadata_parser.h",
-        "printing/ppd_provider_v3.cc",
-        "printing/ppd_provider_v3.h",
-        "printing/printer_config_cache.cc",
-        "printing/printer_config_cache.h",
-      ]
-    } else {
-      sources += [ "printing/ppd_provider.cc" ]
     }
   }
 }
@@ -186,20 +171,16 @@ test("chromeos_unittests") {
       "//chromeos/dbus:unit_tests",
       "//chromeos/dbus/services:unit_tests",
       "//chromeos/disks:unit_tests",
-      "//chromeos/geolocation:unit_tests",
       "//chromeos/language/language_packs:unit_tests",
       "//chromeos/login/auth:unit_tests",
       "//chromeos/login/login_state:unit_tests",
       "//chromeos/login/session:unit_tests",
       "//chromeos/memory:unit_tests",
-      "//chromeos/memory/userspace_swap:unit_tests",
       "//chromeos/network:test_support",
       "//chromeos/network:unit_tests",
       "//chromeos/process_proxy:unit_tests",
       "//chromeos/services:unit_tests",
-      "//chromeos/settings:unit_tests",
       "//chromeos/startup:unit_tests",
-      "//chromeos/timezone:unit_tests",
       "//chromeos/tpm:unit_tests",
       "//chromeos/utils:unit_tests",
       "//components/onc",
@@ -224,8 +205,15 @@ test("chromeos_unittests") {
       "policy/weekly_time/weekly_time_unittest.cc",
       "printing/cups_printer_status_unittest.cc",
       "printing/epson_driver_matching_unittest.cc",
+      "printing/fake_printer_config_cache.cc",
+      "printing/fake_printer_config_cache.h",
       "printing/ppd_cache_unittest.cc",
       "printing/ppd_line_reader_unittest.cc",
+      "printing/ppd_metadata_manager_unittest.cc",
+      "printing/ppd_metadata_matchers.h",
+      "printing/ppd_metadata_parser_unittest.cc",
+      "printing/ppd_provider_unittest.cc",
+      "printing/printer_config_cache_unittest.cc",
       "printing/printer_configuration_unittest.cc",
       "printing/printer_translator_unittest.cc",
       "printing/uri_unittest.cc",
@@ -234,18 +222,8 @@ test("chromeos_unittests") {
       "printing/usb_printer_id_unittest.cc",
     ]
 
-    if (is_printing_ppd_provider_v3) {
-      sources += [
-        "printing/fake_printer_config_cache.cc",
-        "printing/fake_printer_config_cache.h",
-        "printing/ppd_metadata_manager_unittest.cc",
-        "printing/ppd_metadata_matchers.h",
-        "printing/ppd_metadata_parser_unittest.cc",
-        "printing/ppd_provider_v3_unittest.cc",
-        "printing/printer_config_cache_unittest.cc",
-      ]
-    } else {
-      sources += [ "printing/ppd_provider_unittest.cc" ]
+    if (target_cpu == "x64") {
+      deps += [ "//chromeos/memory/userspace_swap:unit_tests" ]
     }
   }
 

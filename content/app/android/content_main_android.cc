@@ -48,7 +48,7 @@ static jint JNI_ContentMain_Start(JNIEnv* env, jboolean start_minimal_browser) {
   TRACE_EVENT0("startup", "content::Start");
   ContentMainParams params(g_content_main_delegate.Get().get());
   params.minimal_browser_mode = start_minimal_browser;
-  return RunContentProcess(params, GetContentMainRunner());
+  return RunContentProcess(std::move(params), GetContentMainRunner());
 }
 
 void SetContentMainDelegate(ContentMainDelegate* delegate) {

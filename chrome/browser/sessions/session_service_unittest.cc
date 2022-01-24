@@ -15,19 +15,21 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sessions/session_service_base_test_helper.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -99,25 +101,24 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
     helper_.SetService(nullptr);
   }
 
-  void UpdateNavigation(
-      const SessionID& window_id,
-      const SessionID& tab_id,
-      const SerializedNavigationEntry& navigation,
-      bool select) {
-    service()->UpdateTabNavigation(window_id, tab_id, navigation);
+  void UpdateNavigation(const SessionID& window_session_id,
+                        const SessionID& tab_id,
+                        const SerializedNavigationEntry& navigation,
+                        bool select) {
+    service()->UpdateTabNavigation(window_session_id, tab_id, navigation);
     if (select) {
-      service()->SetSelectedNavigationIndex(
-          window_id, tab_id, navigation.index());
+      service()->SetSelectedNavigationIndex(window_session_id, tab_id,
+                                            navigation.index());
     }
   }
 
-  SessionID CreateTabWithTestNavigationData(SessionID window_id,
+  SessionID CreateTabWithTestNavigationData(SessionID window_session_id,
                                             int visual_index) {
     const SessionID tab_id = SessionID::NewUnique();
     const SerializedNavigationEntry nav =
         SerializedNavigationEntryTestHelper::CreateNavigationForTest();
-    helper_.PrepareTabInWindow(window_id, tab_id, visual_index, true);
-    UpdateNavigation(window_id, tab_id, nav, true);
+    helper_.PrepareTabInWindow(window_session_id, tab_id, visual_index, true);
+    UpdateNavigation(window_session_id, tab_id, nav, true);
     return tab_id;
   }
 
@@ -568,75 +569,6 @@ TEST_F(SessionServiceTest, RemoveUnusedRestoreWindowsTest) {
   ASSERT_EQ(1U, windows_list.size());
   EXPECT_EQ(sessions::SessionWindow::TYPE_NORMAL, windows_list[0]->type);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
-// Makes sure we track apps. Only applicable on chromeos.
-TEST_F(SessionServiceTest, RestoreApp) {
-  SessionID window2_id = SessionID::NewUnique();
-  SessionID tab_id = SessionID::NewUnique();
-  SessionID tab2_id = SessionID::NewUnique();
-  ASSERT_NE(window2_id, window_id);
-
-  service()->SetWindowType(window2_id, Browser::TYPE_APP);
-  service()->SetWindowBounds(window2_id,
-                             window_bounds,
-                             ui::SHOW_STATE_NORMAL);
-  service()->SetWindowAppName(window2_id, "TestApp");
-
-  SerializedNavigationEntry nav1 =
-      ContentTestHelper::CreateNavigation("http://google.com", "abc");
-  SerializedNavigationEntry nav2 =
-      ContentTestHelper::CreateNavigation("http://google2.com", "abcd");
-
-  helper_.PrepareTabInWindow(window_id, tab_id, 0, true);
-  UpdateNavigation(window_id, tab_id, nav1, true);
-
-  helper_.PrepareTabInWindow(window2_id, tab2_id, 0, false);
-  UpdateNavigation(window2_id, tab2_id, nav2, true);
-
-  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
-
-  ASSERT_EQ(2U, windows.size());
-  int tabbed_index =
-      windows[0]->type == sessions::SessionWindow::TYPE_NORMAL ? 0 : 1;
-  int app_index = tabbed_index == 0 ? 1 : 0;
-  ASSERT_EQ(0, windows[tabbed_index]->selected_tab_index);
-  ASSERT_EQ(window_id, windows[tabbed_index]->window_id);
-  ASSERT_EQ(1U, windows[tabbed_index]->tabs.size());
-
-  sessions::SessionTab* tab = windows[tabbed_index]->tabs[0].get();
-  helper_.AssertTabEquals(window_id, tab_id, 0, 0, 1, *tab);
-  helper_.AssertNavigationEquals(nav1, tab->navigations[0]);
-
-  ASSERT_EQ(0, windows[app_index]->selected_tab_index);
-  ASSERT_EQ(window2_id, windows[app_index]->window_id);
-  ASSERT_EQ(1U, windows[app_index]->tabs.size());
-  ASSERT_TRUE(windows[app_index]->type == sessions::SessionWindow::TYPE_APP);
-  ASSERT_EQ("TestApp", windows[app_index]->app_name);
-
-  tab = windows[app_index]->tabs[0].get();
-  helper_.AssertTabEquals(window2_id, tab2_id, 0, 0, 1, *tab);
-  helper_.AssertNavigationEquals(nav2, tab->navigations[0]);
-}
-
-// Don't track Crostini apps. Only applicable on Chrome OS.
-TEST_F(SessionServiceTest, IgnoreCrostiniApps) {
-  SessionID window2_id = SessionID::NewUnique();
-  ASSERT_NE(window2_id, window_id);
-
-  service()->SetWindowType(window2_id, Browser::TYPE_APP);
-  service()->SetWindowBounds(window2_id, window_bounds, ui::SHOW_STATE_NORMAL);
-  service()->SetWindowAppName(window2_id, "_crostini_fakeappid");
-
-  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
-  ReadWindows(&windows, nullptr);
-
-  for (auto& window : windows)
-    ASSERT_NE(window2_id, window->window_id);
-}
-
-#endif  // defined (OS_CHROMEOS)
 
 // Tests pruning from the front.
 TEST_F(SessionServiceTest, PruneFromFront) {
@@ -1429,4 +1361,26 @@ TEST_F(SessionServiceTest, OnErrorWritingSessionCommandsUnrecoverable) {
   ASSERT_TRUE(write_error_event);
   EXPECT_EQ(1, write_error_event->data.write_error.error_count);
   EXPECT_EQ(0, write_error_event->data.write_error.unrecoverable_error_count);
+}
+
+TEST_F(SessionServiceTest, DisableSaving) {
+  // Disable saving has to be done early on.
+  helper_.SetSavingEnabled(false);
+  helper_.SaveNow();
+  EXPECT_EQ(0, helper_.command_storage_manager()->commands_since_reset());
+  EXPECT_FALSE(helper_.did_save_commands_at_least_once());
+
+  // Schedule another command, it should not trigger any saving.
+  const SessionID window2_id = SessionID::NewUnique();
+  service()->SetWindowType(window2_id, Browser::TYPE_NORMAL);
+  EXPECT_FALSE(helper_.command_storage_manager()->HasPendingSave());
+  EXPECT_TRUE(helper_.command_storage_manager()->pending_commands().empty());
+  helper_.SaveNow();
+  EXPECT_EQ(0, helper_.command_storage_manager()->commands_since_reset());
+  EXPECT_FALSE(helper_.did_save_commands_at_least_once());
+
+  // Turn on saving, and a rebuild should be scheduled.
+  helper_.SetSavingEnabled(true);
+  EXPECT_TRUE(helper_.command_storage_manager()->HasPendingSave());
+  EXPECT_TRUE(helper_.command_storage_manager()->pending_reset());
 }

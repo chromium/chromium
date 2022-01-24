@@ -12,11 +12,13 @@ import './crt0.js';
 /**
  * Load modules.
  */
-import {BrowserProxy} from './browser_proxy.js'
-import {ScriptLoader} from './script_loader.js'
-import {VolumeManagerImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/volume_manager_impl.js';
-import 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/metrics_start.js';
-import {background} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background.js';
+import {BrowserProxy} from './browser_proxy.js';
+import {ScriptLoader} from './script_loader.js';
+import {promisify} from 'chrome://file-manager/common/js/api.js';
+import {GlitchType, reportGlitch} from 'chrome://file-manager/common/js/glitch.js';
+import {VolumeManagerImpl} from 'chrome://file-manager/background/js/volume_manager_impl.js';
+import 'chrome://file-manager/background/js/metrics_start.js';
+import {background} from 'chrome://file-manager/background/js/background.js';
 import './test_util_swa.js';
 
 /**
@@ -43,6 +45,14 @@ class FileManagerApp {
    * the files app foreground scripts.
    */
   async run() {
+    try {
+      const win = await promisify(chrome.windows.getCurrent);
+      window.appID = win.id;
+    } catch (e) {
+      reportGlitch(GlitchType.CAUGHT_EXCEPTION);
+      console.warn('Failed to get the app ID', e);
+    }
+
     await new ScriptLoader('file_manager_fakes.js', {type: 'module'}).load();
 
     // Temporarily remove window.cr.webUI* while the foreground script loads.
@@ -57,7 +67,9 @@ class FileManagerApp {
     window.cr.webUIResponse = origWebUIResponse;
     window.cr.webUIListenerCallback = origWebUIListenerCallback;
 
-    console.debug('Files app UI loaded');
+    console.log(
+        '%cYou are running File System Web App',
+        'font-size: 2em; background-color: #ff0; color: #000;');
   }
 }
 

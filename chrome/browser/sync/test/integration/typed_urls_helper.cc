@@ -367,7 +367,7 @@ base::Time GetTimestamp() {
   if (!::timestamp)
     ::timestamp = new base::Time(base::Time::Now());
   base::Time original = *::timestamp;
-  *::timestamp += base::TimeDelta::FromMilliseconds(1);
+  *::timestamp += base::Milliseconds(1);
   return original;
 }
 

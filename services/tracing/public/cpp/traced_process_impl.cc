@@ -93,12 +93,13 @@ void TracedProcessImpl::SetTaskRunner(
 
 void TracedProcessImpl::RegisterAgent(BaseAgent* agent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  base::AutoLock lock(agents_lock_);
   agents_.insert(agent);
 }
 
 void TracedProcessImpl::UnregisterAgent(BaseAgent* agent) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AutoLock lock(agents_lock_);
   agents_.erase(agent);
 }
 
@@ -125,6 +126,7 @@ void TracedProcessImpl::ConnectToTracingService(
 }
 
 void TracedProcessImpl::GetCategories(std::set<std::string>* category_set) {
+  base::AutoLock lock(agents_lock_);
   for (auto* agent : agents_) {
     agent->GetCategories(category_set);
   }

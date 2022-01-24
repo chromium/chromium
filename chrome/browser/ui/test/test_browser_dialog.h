@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TEST_TEST_BROWSER_DIALOG_H_
 #define CHROME_BROWSER_UI_TEST_TEST_BROWSER_DIALOG_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -17,6 +16,10 @@
 // A dialog-specific subclass of TestBrowserUi, which will verify that a test
 // showed a single dialog.
 class TestBrowserDialog : public TestBrowserUi {
+ public:
+  TestBrowserDialog(const TestBrowserDialog&) = delete;
+  TestBrowserDialog& operator=(const TestBrowserDialog&) = delete;
+
  protected:
   TestBrowserDialog();
   ~TestBrowserDialog() override;
@@ -75,8 +78,6 @@ class TestBrowserDialog : public TestBrowserUi {
   // This should always be true, but some dialogs don't yet size themselves
   // properly. https://crbug.com/893292.
   bool should_verify_dialog_bounds_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserDialog);
 };
 
 template <class Base>

@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
@@ -47,6 +46,11 @@ void CopyLockResult(base::RunLoop* loop,
 }  // namespace
 
 class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
+ public:
+  DeviceCloudPolicyStoreAshTest(const DeviceCloudPolicyStoreAshTest&) = delete;
+  DeviceCloudPolicyStoreAshTest& operator=(
+      const DeviceCloudPolicyStoreAshTest&) = delete;
+
  protected:
   DeviceCloudPolicyStoreAshTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
@@ -140,9 +144,6 @@ class DeviceCloudPolicyStoreAshTest : public ash::DeviceSettingsTestBase {
 
   std::unique_ptr<DeviceCloudPolicyStoreAsh> store_;
   MockCloudPolicyStoreObserver observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyStoreAshTest);
 };
 
 TEST_F(DeviceCloudPolicyStoreAshTest, LoadNoKey) {

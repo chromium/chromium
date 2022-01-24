@@ -63,17 +63,22 @@ struct SelectOption {
   std::u16string content;
 };
 
-// Stores information about a field in a form.
+// Stores information about a field in a form. Read more about forms and fields
+// at FormData.
 struct FormFieldData {
   using CheckStatus = mojom::FormFieldData_CheckStatus;
   using RoleAttribute = mojom::FormFieldData_RoleAttribute;
   using LabelSource = mojom::FormFieldData_LabelSource;
 
+  // TODO(crbug/1211834): This comparator is deprecated.
   // Less-than relation for STL containers. Compares only members needed to
   // uniquely identify a field.
   struct IdentityComparator {
     bool operator()(const FormFieldData& a, const FormFieldData& b) const;
   };
+
+  // Returns true if all members of fields |a| and |b| are identical.
+  static bool DeepEqual(const FormFieldData& a, const FormFieldData& b);
 
   FormFieldData();
   FormFieldData(const FormFieldData&);
@@ -92,16 +97,20 @@ struct FormFieldData {
   // for details on the distinction between renderer and browser forms.
   FormGlobalId renderer_form_id() const { return {host_frame, host_form_id}; }
 
+  // TODO(crbug/1211834): This function is deprecated. Use
+  // FormFieldData::DeepEqual() instead.
   // Returns true if both fields are identical, ignoring value- and
   // parsing related members.
   // See also SimilarFieldAs(), DynamicallySameFieldAs().
   bool SameFieldAs(const FormFieldData& field) const;
 
+  // TODO(crbug/1211834): This function is deprecated.
   // Returns true if both fields are identical, ignoring members that
   // are typically changed dynamically.
   // Strictly weaker than SameFieldAs().
   bool SimilarFieldAs(const FormFieldData& field) const;
 
+  // TODO(crbug/1211834): This function is deprecated.
   // Returns true if both forms are equivalent from the POV of dynamic refills.
   // Strictly weaker than SameFieldAs(): replaces equality of |is_focusable| and
   // |role| with equality of IsVisible().

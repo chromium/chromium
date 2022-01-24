@@ -43,6 +43,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ShareableBlobDataItem
 
   ShareableBlobDataItem(scoped_refptr<BlobDataItem> item, State state);
 
+  ShareableBlobDataItem(const ShareableBlobDataItem&) = delete;
+  ShareableBlobDataItem& operator=(const ShareableBlobDataItem&) = delete;
+
   const scoped_refptr<BlobDataItem>& item() const { return item_; }
 
   void set_item(scoped_refptr<BlobDataItem> item);
@@ -86,8 +89,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ShareableBlobDataItem
   State state_;
   scoped_refptr<BlobDataItem> item_;
   std::unique_ptr<BlobMemoryController::MemoryAllocation> memory_allocation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShareableBlobDataItem);
 };
 
 COMPONENT_EXPORT(STORAGE_BROWSER)

@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/common/content_features.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"

@@ -52,8 +52,8 @@ void FEOffset::SetDy(float dy) {
 
 FloatRect FEOffset::MapEffect(const FloatRect& rect) const {
   FloatRect result = rect;
-  result.Move(GetFilter()->ApplyHorizontalScale(dx_),
-              GetFilter()->ApplyVerticalScale(dy_));
+  result.Offset(GetFilter()->ApplyHorizontalScale(dx_),
+                GetFilter()->ApplyVerticalScale(dy_));
   return result;
 }
 

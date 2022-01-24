@@ -5,6 +5,8 @@
 import os
 import tempfile
 import shutil
+import subprocess
+import sys
 import unittest
 
 from . import commands
@@ -168,9 +170,71 @@ class TestCommands(unittest.TestCase):
 
         self.assertTrue(commands.file_exists(path))
 
+    def test_run_command_with_implicit_stderr(self):
+        r, w = os.pipe()
+        try:
+            commands.run_command([
+                sys.executable, '-c',
+                'import sys; sys.stdout.write("Out."); sys.stdout.flush(); sys.stderr.write("Error."); sys.exit(33)'
+            ],
+                                 stdout=w)
+            self.fail('Should have thrown')
+        except subprocess.CalledProcessError as e:
+            os.close(w)
+            self.assertEqual(33, e.returncode)
+            self.assertEqual(b'Out.Error.', os.read(r, 128))
+        os.close(r)
+
+    def test_run_command_with_stderr(self):
+        ro, wo = os.pipe()
+        re, we = os.pipe()
+        try:
+            commands.run_command([
+                sys.executable, '-c',
+                'import sys; sys.stdout.write("Out."); sys.stderr.write("Error."); sys.exit(19)'
+            ],
+                                 stdout=wo,
+                                 stderr=we)
+            self.fail('Should have thrown')
+        except subprocess.CalledProcessError as e:
+            os.close(wo)
+            os.close(we)
+            self.assertEqual(19, e.returncode)
+            self.assertEqual(b'Out.', os.read(ro, 128))
+            self.assertEqual(b'Error.', os.read(re, 128))
+        os.close(ro)
+        os.close(re)
+
     def test_run_command_output(self):
         output = commands.run_command_output(['echo', 'hello world'])
         self.assertEqual(b'hello world\n', output)
+
+    def test_run_command_output_with_implicit_stderr(self):
+        try:
+            commands.run_command_output([
+                sys.executable, '-c',
+                'import sys; sys.stdout.write("Out."); sys.stdout.flush(); sys.stderr.write("Error."); sys.exit(10)'
+            ])
+            self.fail('Should have thrown')
+        except subprocess.CalledProcessError as e:
+            self.assertEqual(10, e.returncode)
+            self.assertTrue(b'Out.Error.', e.output)
+
+    def test_run_command_output_with_stderr(self):
+        r, w = os.pipe()
+        try:
+            commands.run_command_output([
+                sys.executable, '-c',
+                'import sys; sys.stdout.write("Out."); sys.stderr.write("Error."); sys.exit(5)'
+            ],
+                                        stderr=w)
+            self.fail('Should have thrown')
+        except subprocess.CalledProcessError as e:
+            os.close(w)
+            self.assertEqual(5, e.returncode)
+            self.assertEqual(b'Out.', e.output)
+            self.assertEqual(b'Error.', os.read(r, 128))
+        os.close(r)
 
     def test_lenient_run_command_output(self):
         # Successful command, output on stdout.

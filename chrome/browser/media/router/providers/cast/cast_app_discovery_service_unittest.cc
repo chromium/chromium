@@ -45,6 +45,10 @@ class CastAppDiscoveryServiceTest : public testing::Test {
     task_runner_->RunPendingTasks();
   }
 
+  CastAppDiscoveryServiceTest(const CastAppDiscoveryServiceTest&) = delete;
+  CastAppDiscoveryServiceTest& operator=(const CastAppDiscoveryServiceTest&) =
+      delete;
+
   ~CastAppDiscoveryServiceTest() override { task_runner_->RunPendingTasks(); }
 
   MOCK_METHOD2(OnSinkQueryUpdated,
@@ -81,9 +85,6 @@ class CastAppDiscoveryServiceTest : public testing::Test {
   CastMediaSource source_a_1_;
   CastMediaSource source_a_2_;
   CastMediaSource source_b_1_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastAppDiscoveryServiceTest);
 };
 
 TEST_F(CastAppDiscoveryServiceTest, StartObservingMediaSinks) {
@@ -202,7 +203,7 @@ TEST_F(CastAppDiscoveryServiceTest, Refresh) {
   EXPECT_CALL(message_handler_, RequestAppAvailability(_, "BBBBBBBB", _));
   AddOrUpdateSink(sink2);
 
-  clock_.Advance(base::TimeDelta::FromSeconds(30));
+  clock_.Advance(base::Seconds(30));
 
   // Request app availability for app B for both sinks.
   // App A on |sink2| is not requested due to timing threshold.
@@ -217,7 +218,7 @@ TEST_F(CastAppDiscoveryServiceTest, Refresh) {
       });
   app_discovery_service_->Refresh();
 
-  clock_.Advance(base::TimeDelta::FromSeconds(31));
+  clock_.Advance(base::Seconds(31));
 
   EXPECT_CALL(message_handler_, RequestAppAvailability(_, "AAAAAAAA", _));
   app_discovery_service_->Refresh();

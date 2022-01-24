@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/mojo/common/audio_data_s16_converter.h"
+#include "media/mojo/mojom/audio_logging.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -16,14 +17,15 @@ namespace speech {
 
 class SpeechRecognitionRecognizerImpl;
 
-// Class to get microphone audio data and send it to a
+// Class to get device audio data and send it to a
 // SpeechRecognitionRecognizerImpl for transcription. Runs on the IO thread in
 // the Browser process in Chrome OS and in the Speech Recognition Service
 // utility process on Chrome or web speech fallback.
 class AudioSourceFetcherImpl
     : public media::mojom::AudioSourceFetcher,
       public media::AudioCapturerSource::CaptureCallback,
-      public media::AudioDataS16Converter {
+      public media::AudioDataS16Converter,
+      public media::mojom::AudioLog {
  public:
   AudioSourceFetcherImpl(
       std::unique_ptr<SpeechRecognitionRecognizerImpl> recognition_recognizer);
@@ -51,6 +53,16 @@ class AudioSourceFetcherImpl
   void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
                       const std::string& message) final;
   void OnCaptureMuted(bool is_muted) final {}
+  // media::mojom::AudioLog
+  void OnCreated(const media::AudioParameters& params,
+                 const std::string& device_id) override;
+  void OnStarted() override;
+  void OnStopped() override;
+  void OnClosed() override;
+  void OnError() override;
+  void OnSetVolume(double volume) override;
+  void OnLogMessage(const std::string& message) override;
+  void OnProcessingStateChanged(const std::string& message) override;
 
   void set_audio_capturer_source_for_tests(
       media::AudioCapturerSource* audio_capturer_source_for_tests) {
@@ -86,6 +98,8 @@ class AudioSourceFetcherImpl
 
   // Whether audio capture is started.
   bool is_started_;
+
+  mojo::Receiver<media::mojom::AudioLog> audio_log_receiver_{this};
 
   base::WeakPtrFactory<AudioSourceFetcherImpl> weak_factory_{this};
 };

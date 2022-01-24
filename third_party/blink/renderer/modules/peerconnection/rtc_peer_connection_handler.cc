@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver_impl.h"
+#include "third_party/blink/renderer/modules/peerconnection/speed_limit_uma_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_set_description_observer.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -215,8 +216,6 @@ void CopyConstraintsIntoRtcConfiguration(
   configuration->combined_audio_video_bwe = ConstraintToOptional(
       constraints,
       &MediaTrackConstraintSetPlatform::goog_combined_audio_video_bwe);
-  configuration->enable_dtls_srtp = ConstraintToOptional(
-      constraints, &MediaTrackConstraintSetPlatform::enable_dtls_srtp);
 }
 
 // Class mapping responses from calls to libjingle CreateOffer/Answer and
@@ -1115,19 +1114,19 @@ RTCPeerConnectionHandler::RTCPeerConnectionHandler(
 // Constructor to be used for creating mocks only.
 RTCPeerConnectionHandler::RTCPeerConnectionHandler(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : is_unregistered_(true),  // Avoid StopAndUnregister in destructor
+    : is_unregistered_(true),  // Avoid CloseAndUnregister in destructor
       task_runner_(std::move(task_runner)) {}
 
 RTCPeerConnectionHandler::~RTCPeerConnectionHandler() {
   if (!is_unregistered_) {
-    StopAndUnregister();
+    CloseAndUnregister();
   }
 }
 
-void RTCPeerConnectionHandler::StopAndUnregister() {
+void RTCPeerConnectionHandler::CloseAndUnregister() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  Stop();
+  Close();
 
   GetPeerConnectionHandlers()->erase(this);
   if (peer_connection_tracker_)
@@ -1632,7 +1631,8 @@ void RTCPeerConnectionHandler::AddIceCandidate(
        handler_weak_ptr = weak_factory_.GetWeakPtr(),
        tracker_weak_ptr =
            WrapCrossThreadWeakPersistent(peer_connection_tracker_.Get()),
-       candidate, persistent_request = WrapCrossThreadPersistent(request),
+       persistent_candidate = WrapCrossThreadPersistent(candidate),
+       persistent_request = WrapCrossThreadPersistent(request),
        callback_on_task_runner =
            std::move(callback_on_task_runner)](webrtc::RTCError result) {
         // Grab a snapshot of all the session descriptions. AddIceCandidate may
@@ -1660,7 +1660,7 @@ void RTCPeerConnectionHandler::AddIceCandidate(
                 std::move(current_local_description),
                 std::move(pending_remote_description),
                 std::move(current_remote_description),
-                WrapCrossThreadPersistent(candidate), std::move(result),
+                std::move(persistent_candidate), std::move(result),
                 std::move(persistent_request)));
       });
 }
@@ -2105,6 +2105,17 @@ void RTCPeerConnectionHandler::CloseClientPeerConnection() {
 
 void RTCPeerConnectionHandler::MaybeCreateThermalUmaListner() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  // Instantiate the speed limit listener if we have one track.
+  if (!speed_limit_uma_listener_) {
+    for (const auto& sender : rtp_senders_) {
+      if (sender->Track()) {
+        speed_limit_uma_listener_ =
+            std::make_unique<SpeedLimitUmaListener>(task_runner_);
+        speed_limit_uma_listener_->OnSpeedLimitChange(last_speed_limit_);
+        break;
+      }
+    }
+  }
   if (!thermal_uma_listener_) {
     // Instantiate the thermal uma listener only if we are sending video.
     for (const auto& sender : rtp_senders_) {
@@ -2120,6 +2131,11 @@ void RTCPeerConnectionHandler::MaybeCreateThermalUmaListner() {
 
 ThermalUmaListener* RTCPeerConnectionHandler::thermal_uma_listener() const {
   return thermal_uma_listener_.get();
+}
+
+SpeedLimitUmaListener* RTCPeerConnectionHandler::speed_limit_uma_listener()
+    const {
+  return speed_limit_uma_listener_.get();
 }
 
 void RTCPeerConnectionHandler::OnThermalStateChange(
@@ -2139,6 +2155,15 @@ void RTCPeerConnectionHandler::OnThermalStateChange(
         rtc::scoped_refptr<ThermalResource>(thermal_resource_.get()));
   }
   thermal_resource_->OnThermalMeasurement(thermal_state);
+}
+
+void RTCPeerConnectionHandler::OnSpeedLimitChange(int32_t speed_limit) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (is_closed_)
+    return;
+  last_speed_limit_ = speed_limit;
+  if (speed_limit_uma_listener_)
+    speed_limit_uma_listener_->OnSpeedLimitChange(speed_limit);
 }
 
 void RTCPeerConnectionHandler::StartEventLog(int output_period_ms) {
@@ -2187,7 +2212,7 @@ scoped_refptr<DataChannelInterface> RTCPeerConnectionHandler::CreateDataChannel(
   return base::WrapRefCounted<DataChannelInterface>(webrtc_channel.get());
 }
 
-void RTCPeerConnectionHandler::Stop() {
+void RTCPeerConnectionHandler::Close() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DVLOG(1) << "RTCPeerConnectionHandler::stop";
 
@@ -2195,9 +2220,11 @@ void RTCPeerConnectionHandler::Stop() {
     return;  // Already stopped.
 
   if (peer_connection_tracker_)
-    peer_connection_tracker_->TrackStop(this);
+    peer_connection_tracker_->TrackClose(this);
 
   native_peer_connection_->Close();
+  DCHECK(dependency_factory_);
+  dependency_factory_->OnPeerConnectionClosed();
 
   // This object may no longer forward call backs to blink.
   is_closed_ = true;

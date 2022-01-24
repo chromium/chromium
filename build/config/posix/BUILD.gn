@@ -25,7 +25,7 @@ config("runtime_library") {
   defines = []
   ldflags = []
 
-  if (!is_apple && sysroot != "") {
+  if (!is_apple && sysroot != "" && current_os != "zos") {
     # Pass the sysroot to all C compiler variants, the assembler, and linker.
     sysroot_flags = [ "--sysroot=" + rebase_path(sysroot, root_build_dir) ]
     if (is_linux || is_chromeos) {

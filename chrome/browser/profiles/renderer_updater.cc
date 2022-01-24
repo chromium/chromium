@@ -8,15 +8,18 @@
 
 #include "base/bind.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/content_settings/content_settings_manager_delegate.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/features.h"
@@ -30,8 +33,8 @@ namespace {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-// By default, JavaScript and images are enabled, and blockable mixed content is
-// blocked in guest content
+// By default, JavaScript, images and auto dark are allowed, and blockable mixed
+// content is blocked in guest content
 void GetGuestViewDefaultContentSettingRules(
     bool incognito,
     RendererContentSettingRules* rules) {
@@ -40,7 +43,11 @@ void GetGuestViewDefaultContentSettingRules(
       base::Value::FromUniquePtrValue(
           content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
       std::string(), incognito));
-
+  rules->auto_dark_content_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      base::Value::FromUniquePtrValue(
+          content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+      std::string(), incognito));
   rules->script_rules.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       base::Value::FromUniquePtrValue(
@@ -121,8 +128,18 @@ void RendererUpdater::InitializeRenderer(
     chromeos_listeners_.push_back(std::move(chromeos_listener));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
+      content_settings_manager;
+  if (base::FeatureList::IsEnabled(
+          features::kNavigationThreadingOptimizations)) {
+    content_settings::ContentSettingsManagerImpl::Create(
+        render_process_host,
+        content_settings_manager.InitWithNewPipeAndPassReceiver(),
+        std::make_unique<chrome::ContentSettingsManagerDelegate>());
+  }
   renderer_configuration->SetInitialConfiguration(
-      is_incognito_process, std::move(chromeos_listener_receiver));
+      is_incognito_process, std::move(chromeos_listener_receiver),
+      std::move(content_settings_manager));
 
   UpdateRenderer(&renderer_configuration);
 
@@ -136,6 +153,20 @@ void RendererUpdater::InitializeRenderer(
   } else {
     content_settings::GetRendererContentSettingRules(
         HostContentSettingsMapFactory::GetForProfile(profile), &rules);
+
+    // Always allow scripting in PDF renderers to retain the functionality of
+    // the scripted messaging proxy in between the plugins in the PDF renderers
+    // and the PDF extension UI. Content settings for JavaScript embedded in
+    // PDFs are enforced by the PDF plugin.
+    if (render_process_host->IsPdf()) {
+      rules.script_rules.clear();
+      rules.script_rules.emplace_back(
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsPattern::Wildcard(),
+          base::Value::FromUniquePtrValue(
+              content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+          std::string(), is_incognito_process);
+    }
   }
   renderer_configuration->SetContentSettingRules(rules);
 }

@@ -25,7 +25,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/full_restore/full_restore_app_launch_handler.h"
+#include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
@@ -52,6 +52,9 @@ class ViewsDelegate;
 #endif  // defined(TOOLKIT_VIEWS)
 
 class Browser;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class FakeAccountManagerUI;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 class MainThreadStackSamplingProfiler;
 class Profile;
 #if defined(OS_MAC)
@@ -213,15 +216,13 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // successful.
   virtual bool SetUpUserDataDirectory() WARN_UNUSED_RESULT;
 
-  // Initializes the display::Screen instance on X11.
-  virtual void SetScreenInstance();
+  // Initializes the display::Screen instance.
+  virtual void SetScreenInstance() {}
 
   // BrowserTestBase:
   void PreRunTestOnMainThread() override;
   void PostRunTestOnMainThread() override;
-#if defined(OS_MAC)
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;
-#endif
 
   // Ensures that no devtools are open, and then opens the devtools.
   void OpenDevToolsWindow(content::WebContents* web_contents);
@@ -291,7 +292,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_launch_browser_for_testing(
-      std::unique_ptr<chromeos::full_restore::ScopedLaunchBrowserForTesting>
+      std::unique_ptr<ash::full_restore::ScopedLaunchBrowserForTesting>
           launch_browser_for_testing) {
     launch_browser_for_testing_ = std::move(launch_browser_for_testing);
   }
@@ -300,6 +301,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Runs scheduled layouts on all Widgets using
   // Widget::LayoutRootViewIfNecessary(). No-op outside of Views.
   void RunScheduledLayouts();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  FakeAccountManagerUI* GetFakeAccountManagerUI() const;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
   void Initialize();
@@ -360,7 +365,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // is enabled. However almost all existing browser tests assume a browser is
   // created. Add ScopedLaunchBrowserForTesting to force creating a browser for
   // testing, when the full restore feature is enabled.
-  std::unique_ptr<chromeos::full_restore::ScopedLaunchBrowserForTesting>
+  std::unique_ptr<ash::full_restore::ScopedLaunchBrowserForTesting>
       launch_browser_for_testing_;
 #endif
 };

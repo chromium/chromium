@@ -34,6 +34,7 @@ enum class LabelStyle {
   kChipBody,
   kChipTitle,
   kHeader,
+  kSubtitle,
 };
 
 // Applies the specified `style` to the given `label`.

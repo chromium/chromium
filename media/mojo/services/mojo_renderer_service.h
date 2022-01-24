@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -51,6 +50,9 @@ class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
   // encrypted media. If null, encrypted media is not supported.
   MojoRendererService(MojoCdmServiceContext* mojo_cdm_service_context,
                       std::unique_ptr<media::Renderer> renderer);
+
+  MojoRendererService(const MojoRendererService&) = delete;
+  MojoRendererService& operator=(const MojoRendererService&) = delete;
 
   ~MojoRendererService() final;
 
@@ -135,8 +137,6 @@ class MEDIA_MOJO_EXPORT MojoRendererService final : public mojom::Renderer,
 
   base::WeakPtr<MojoRendererService> weak_this_;
   base::WeakPtrFactory<MojoRendererService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoRendererService);
 };
 
 }  // namespace media

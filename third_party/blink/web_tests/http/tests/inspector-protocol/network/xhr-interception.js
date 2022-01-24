@@ -10,6 +10,9 @@
     'example.txt': event => helper.mockResponse(event, 'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nPayload for the Mock XHR response;'),
   };
 
+  // The XHR triggered in the onload handler of the iframe races with the frameStoppedLoading event
+  // for the frame, so don't record it in the trace.
+  helper.setSilentFrameStoppedLoading(true);
   await helper.startInterceptionTest(requestInterceptedDict, 1);
   session.evaluate(`
     var iframe = document.createElement('iframe');

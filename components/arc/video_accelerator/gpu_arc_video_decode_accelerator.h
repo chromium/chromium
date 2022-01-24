@@ -43,6 +43,11 @@ class GpuArcVideoDecodeAccelerator
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       scoped_refptr<ProtectedBufferManager> protected_buffer_manager);
+
+  GpuArcVideoDecodeAccelerator(const GpuArcVideoDecodeAccelerator&) = delete;
+  GpuArcVideoDecodeAccelerator& operator=(const GpuArcVideoDecodeAccelerator&) =
+      delete;
+
   ~GpuArcVideoDecodeAccelerator() override;
 
   // Implementation of media::VideoDecodeAccelerator::Client interface.
@@ -80,25 +85,6 @@ class GpuArcVideoDecodeAccelerator
   void Flush(FlushCallback callback) override;
   void Reset(ResetCallback callback) override;
  private:
-  // The calling flow of changing resolution is:
-  // 1. VDA calls Client::ProvidePictureBuffers()
-  // 2. Client calls VDA::AssignPictureBuffers()
-  // 3. Client calls VDA::ImportBufferForPicture() for N times
-  // 4. Client calls VDA::ReusePictureBuffer() when a buffer is recycled.
-  //
-  // The enum state is used to check these two situations:
-  // 1. Client should not call VDA::AssignPictureBuffers() twice without calling
-  //    VDA::ImportBufferForPicture() between them.
-  // 2. If VDA::ImportBufferForPicture() or VDA::ReusePictureBuffer() is
-  //    called right after calling Client::ProvidePictureBuffers() without
-  //    VDA::AssignPictureBuffers() be called, then the buffer contains previous
-  //    resolution and should be ignored.
-  enum class DecoderState {
-    kAwaitingAssignPictureBuffers,
-    kAwaitingFirstImport,
-    kDecoding,
-  };
-
   using PendingCallback =
       base::OnceCallback<void(mojom::VideoDecodeAccelerator::Result)>;
   static_assert(std::is_same<ResetCallback, PendingCallback>::value,
@@ -134,11 +120,28 @@ class GpuArcVideoDecodeAccelerator
                      PendingCallback cb,
                      media::VideoDecodeAccelerator* vda);
 
-  // Global counter that keeps track of the number of active clients (i.e., how
-  // many VDAs in use by this class).
+  // Call the ProvidePictureBuffers() to the client.
+  void HandleProvidePictureBuffers(uint32_t requested_num_of_buffers,
+                                   const gfx::Size& dimensions,
+                                   const gfx::Rect& visible_rect);
+  // Call the pending ProvidePictureBuffers() to the client if needed.
+  bool CallPendingProvidePictureBuffers();
+  // Called when the AssignPictureBuffers() is called by the client.
+  void OnAssignPictureBuffersCalled(const gfx::Size& dimensions,
+                                    uint32_t count);
+
+  // Global counter that keeps track of the number of concurrent
+  // GpuArcVideoDecodeAccelerator instances.
   // Since this class only works on the same thread, it's safe to access
-  // |client_count_| without lock.
-  static size_t client_count_;
+  // |instance_count_| without lock.
+  static int instance_count_;
+
+  // Similar to |instance_count_| but only counts the number of concurrent
+  // initialized GpuArcVideoDecodeAccelerator instances (i.e., instances that
+  // have a |vda_|.
+  // Since this class only works on the same thread, it's safe to access
+  // |initialized_instance_count_| without lock.
+  static int initialized_instance_count_;
 
   // |error_state_| is true, if GAVDA gets an error from VDA.
   // All the pending functions are cancelled and the callbacks are
@@ -178,10 +181,17 @@ class GpuArcVideoDecodeAccelerator
   absl::optional<bool> secure_mode_ = absl::nullopt;
   size_t output_buffer_count_ = 0;
 
-  DecoderState decoder_state_ = DecoderState::kDecoding;
+  // When the client resets VDA during requesting new buffers, then VDA will
+  // request new buffers again. These variables are used to handle multiple
+  // ProvidePictureBuffers() requests.
+  // The pending ProvidePictureBuffers() requests.
+  std::queue<base::OnceClosure> pending_provide_picture_buffers_requests_;
+  // The callback of the current ProvidePictureBuffers() requests.
+  base::OnceCallback<void(uint32_t)> current_provide_picture_buffers_cb_;
+  // Set to true when the last ProvidePictureBuffers() is replied.
+  bool awaiting_first_import_ = false;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(GpuArcVideoDecodeAccelerator);
 };
 
 }  // namespace arc

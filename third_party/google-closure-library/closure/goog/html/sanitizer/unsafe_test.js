@@ -1,31 +1,25 @@
-// Copyright 2016 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /** @fileoverview Unit Test for the unsafe API of the HTML Sanitizer. */
 
 goog.module('goog.html.UnsafeTest');
 goog.setTestOnly();
 
-const AttributeWhitelist = goog.require('goog.html.sanitizer.AttributeWhitelist');
 const Const = goog.require('goog.string.Const');
 const HtmlSanitizer = goog.require('goog.html.sanitizer.HtmlSanitizer');
+const HtmlSanitizerAttributePolicy = goog.requireType('goog.html.sanitizer.HtmlSanitizerAttributePolicy');
 const SafeHtml = goog.require('goog.html.SafeHtml');
 const TagWhitelist = goog.require('goog.html.sanitizer.TagWhitelist');
 const dom = goog.require('goog.testing.dom');
+const functions = goog.require('goog.functions');
 const testSuite = goog.require('goog.testing.testSuite');
 const unsafe = goog.require('goog.html.sanitizer.unsafe');
 const userAgent = goog.require('goog.userAgent');
+const {AllowedAttributes} = goog.require('goog.html.sanitizer.attributeallowlists');
 
 const isSupported = !userAgent.IE || userAgent.isVersionOrHigher(10);
 
@@ -37,7 +31,7 @@ const just = Const.from('test');
  * @param {string} originalHtml
  * @param {string} expectedHtml
  * @param {?Array<string>=} tags
- * @param {?Array<(string|!goog.html.sanitizer.HtmlSanitizerAttributePolicy)>=}
+ * @param {?Array<(string|!HtmlSanitizerAttributePolicy)>=}
  *     attrs
  * @param {?HtmlSanitizer.Builder=} opt_builder
  */
@@ -148,21 +142,21 @@ testSuite({
     assertUndefined(TagWhitelist['QQQ']);
     assertUndefined(TagWhitelist['QqQ']);
     assertUndefined(TagWhitelist['qqq']);
-    assertUndefined(AttributeWhitelist['* QQQ']);
-    assertUndefined(AttributeWhitelist['* QqQ']);
-    assertUndefined(AttributeWhitelist['* qqq']);
+    assertUndefined(AllowedAttributes['* QQQ']);
+    assertUndefined(AllowedAttributes['* QqQ']);
+    assertUndefined(AllowedAttributes['* qqq']);
   },
 
   testAllowRelaxExistingAttributePolicyWildcard() {
     const input = '<a href="javascript:alert(1)"></a>';
     // define a tag-specific one, takes precedence
-    assertSanitizedHtml(input, input, null, [
-      {tagName: 'a', attributeName: 'href', policy: goog.functions.identity}
-    ]);
+    assertSanitizedHtml(
+        input, input, null,
+        [{tagName: 'a', attributeName: 'href', policy: functions.identity}]);
     // overwrite the global one
-    assertSanitizedHtml(input, input, null, [
-      {tagName: '*', attributeName: 'href', policy: goog.functions.identity}
-    ]);
+    assertSanitizedHtml(
+        input, input, null,
+        [{tagName: '*', attributeName: 'href', policy: functions.identity}]);
   },
 
   testAllowRelaxExistingAttributePolicySpecific() {
@@ -170,23 +164,20 @@ testSuite({
     const expected = '<a></a>';
     // overwrite the global one, the specific one still has precedence
     assertSanitizedHtml(input, expected, null, [
-      {tagName: '*', attributeName: 'target', policy: goog.functions.identity},
+      {tagName: '*', attributeName: 'target', policy: functions.identity},
     ]);
     // overwrite the tag-specific one, this one should take precedence
     assertSanitizedHtml(input, input, null, [
-      {tagName: 'a', attributeName: 'target', policy: goog.functions.identity},
+      {tagName: 'a', attributeName: 'target', policy: functions.identity},
     ]);
   },
 
   testAlsoAllowTagsInBlacklist() {
-    // Simplified use case taken from KaTex output HTML. The real configuration
-    // would allow more attributes and apply a stricter policy on their values
-    // to reduce the attack surface.
-    const input = '<svg width="1px"><line x1="3" /><path d="M 10 30" /></svg>';
-    assertSanitizedHtml(input, input, ['svg', 'line', 'path'], [
-      {tagName: 'svg', attributeName: 'width', policy: goog.functions.identity},
-      {tagName: 'line', attributeName: 'x1', policy: goog.functions.identity},
-      {tagName: 'path', attributeName: 'd', policy: goog.functions.identity},
+    const input = '<video controls><source src="video.mp4" type="video/mp4">';
+    assertSanitizedHtml(input, input, ['video', 'source'], [
+      {tagName: 'video', attributeName: 'controls', policy: functions.identity},
+      {tagName: 'source', attributeName: 'src', policy: functions.identity},
+      {tagName: 'source', attributeName: 'type', policy: functions.identity},
     ]);
   },
 });

@@ -33,7 +33,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
@@ -114,10 +113,7 @@ public class EntitySuggestionProcessorUnitTest {
     }
 
     ImageFetcher.Params createParams(String url) {
-        int size = ContextUtils.getApplicationContext().getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_decoration_image_size);
-        return ImageFetcher.Params.create(
-                url, ImageFetcher.ENTITY_SUGGESTIONS_UMA_CLIENT_NAME, size, size);
+        return ImageFetcher.Params.create(url, ImageFetcher.ENTITY_SUGGESTIONS_UMA_CLIENT_NAME);
     }
 
     @Test

@@ -55,8 +55,6 @@ void OnGpuChannelEstablished(
           automatic_flushes, support_locking, support_grcontext,
           gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
           viz::command_buffer_metrics::ContextType::UNKNOWN);
-
-  // TODO(xingliu): This is on main thread, move to another thread?
   context_provider->BindToCurrentThread();
 
   auto gpu_factories = std::make_unique<BrowserGpuVideoAcceleratorFactories>(
@@ -85,13 +83,31 @@ bool BrowserGpuVideoAcceleratorFactories::IsGpuVideoAcceleratorEnabled() {
   return false;
 }
 
-base::UnguessableToken BrowserGpuVideoAcceleratorFactories::GetChannelToken() {
-  if (channel_token_.is_empty()) {
-    context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
-        &channel_token_);
+void BrowserGpuVideoAcceleratorFactories::GetChannelToken(
+    gpu::mojom::GpuChannel::GetChannelTokenCallback cb) {
+  DCHECK(cb);
+  if (!channel_token_.is_empty()) {
+    // Use cached token.
+    std::move(cb).Run(channel_token_);
+    return;
   }
 
-  return channel_token_;
+  // Retrieve a channel token if needed.
+  bool request_channel_token = channel_token_callbacks_.empty();
+  channel_token_callbacks_.AddUnsafe(std::move(cb));
+  if (request_channel_token) {
+    context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
+        base::BindOnce(
+            &BrowserGpuVideoAcceleratorFactories::OnChannelTokenReady,
+            base::Unretained(this)));
+  }
+}
+
+void BrowserGpuVideoAcceleratorFactories::OnChannelTokenReady(
+    const base::UnguessableToken& token) {
+  channel_token_ = token;
+  channel_token_callbacks_.Notify(channel_token_);
+  DCHECK(channel_token_callbacks_.empty());
 }
 
 int32_t BrowserGpuVideoAcceleratorFactories::GetCommandBufferRouteId() {

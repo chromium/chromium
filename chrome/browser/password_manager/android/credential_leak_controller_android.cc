@@ -17,6 +17,7 @@
 #include "url/android/gurl_android.h"
 
 using password_manager::metrics_util::LeakDialogDismissalReason;
+using password_manager::metrics_util::LeakDialogType;
 using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
 CredentialLeakControllerAndroid::CredentialLeakControllerAndroid(
@@ -44,10 +45,24 @@ void CredentialLeakControllerAndroid::OnCancelDialog() {
 }
 
 void CredentialLeakControllerAndroid::OnAcceptDialog() {
-  LogLeakDialogTypeAndDismissalReason(
-      password_manager::GetLeakDialogType(leak_type_),
-      ShouldCheckPasswords() ? LeakDialogDismissalReason::kClickedCheckPasswords
-                             : LeakDialogDismissalReason::kClickedOk);
+  LeakDialogType dialog_type = password_manager::GetLeakDialogType(leak_type_);
+  LeakDialogDismissalReason dismissal_reason =
+      LeakDialogDismissalReason::kClickedOk;
+  switch (dialog_type) {
+    case LeakDialogType::kChange:
+      dismissal_reason = LeakDialogDismissalReason::kClickedOk;
+      break;
+    case LeakDialogType::kCheckup:
+    case LeakDialogType::kCheckupAndChange:
+      dismissal_reason = LeakDialogDismissalReason::kClickedCheckPasswords;
+      break;
+    case LeakDialogType::kChangeAutomatically:
+      dismissal_reason =
+          LeakDialogDismissalReason::kClickedChangePasswordAutomatically;
+      break;
+  }
+
+  LogLeakDialogTypeAndDismissalReason(dialog_type, dismissal_reason);
 
   // |window_android_| might be null in tests.
   if (!window_android_) {
@@ -55,16 +70,23 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
     return;
   }
 
-  DCHECK(!(ShouldCheckPasswords() && ShouldShowChangePasswordButton()));
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (ShouldCheckPasswords()) {
-    PasswordCheckupLauncherHelper::LaunchLocalCheckup(
-        env, window_android_->GetJavaObject());
-  } else if (ShouldShowChangePasswordButton()) {
-    Java_PasswordChangeLauncher_start(
-        env, window_android_->GetJavaObject(),
-        url::GURLAndroid::FromNativeGURL(env, origin_),
-        base::android::ConvertUTF16ToJavaString(env, username_));
+
+  switch (dialog_type) {
+    case LeakDialogType::kChange:
+      // No-op.
+      break;
+    case LeakDialogType::kCheckup:
+    case LeakDialogType::kCheckupAndChange:
+      PasswordCheckupLauncherHelper::LaunchLocalCheckup(
+          env, window_android_->GetJavaObject());
+      break;
+    case LeakDialogType::kChangeAutomatically:
+      Java_PasswordChangeLauncher_start(
+          env, window_android_->GetJavaObject(),
+          url::GURLAndroid::FromNativeGURL(env, origin_),
+          base::android::ConvertUTF16ToJavaString(env, username_));
+      break;
   }
 
   delete this;
@@ -91,14 +113,6 @@ std::u16string CredentialLeakControllerAndroid::GetDescription() const {
 
 std::u16string CredentialLeakControllerAndroid::GetTitle() const {
   return password_manager::GetTitle(leak_type_);
-}
-
-bool CredentialLeakControllerAndroid::ShouldCheckPasswords() const {
-  return password_manager::ShouldCheckPasswords(leak_type_);
-}
-
-bool CredentialLeakControllerAndroid::ShouldShowChangePasswordButton() const {
-  return password_manager::ShouldShowChangePasswordButton(leak_type_);
 }
 
 bool CredentialLeakControllerAndroid::ShouldShowCancelButton() const {

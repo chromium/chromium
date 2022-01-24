@@ -4,10 +4,17 @@
 
 #include "ui/views/metadata/view_factory.h"
 
+#include <utility>
+
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
@@ -17,8 +24,56 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 using ViewFactoryTest = views::test::WidgetTest;
+
+namespace internal {
+
+class TestView : public views::View {
+ public:
+  METADATA_HEADER(TestView);
+  TestView() = default;
+  TestView(const TestView&) = delete;
+  TestView& operator=(const TestView&) = delete;
+  ~TestView() override = default;
+
+  // Define a method with an arbitrary number of parameters (>1).
+  // Most PODs and enums should work. Stick to parameters passed by-value
+  // if possible.
+  // TODO(kylixrd): Figure out support for ref and const-ref parameters
+  //                  if ever needed
+  void ArbitraryMethod(int int_param,
+                       float float_param,
+                       views::PropertyEffects property_effects) {
+    int_param_ = int_param;
+    float_param_ = float_param;
+    property_effects_ = property_effects;
+  }
+
+  int get_int_param() const { return int_param_; }
+  float get_float_param() const { return float_param_; }
+  views::PropertyEffects get_property_effects() const {
+    return property_effects_;
+  }
+
+ private:
+  int int_param_ = 0;
+  float float_param_ = 0.0;
+  views::PropertyEffects property_effects_ = views::kPropertyEffectsNone;
+};
+
+BEGIN_VIEW_BUILDER(, TestView, views::View)
+VIEW_BUILDER_METHOD(ArbitraryMethod, int, float, views::PropertyEffects)
+END_VIEW_BUILDER
+
+BEGIN_METADATA(TestView, views::View)
+END_METADATA
+
+}  // namespace internal
+
+DEFINE_VIEW_BUILDER(, ::internal::TestView)
 
 TEST_F(ViewFactoryTest, TestViewBuilder) {
   views::View* parent = nullptr;
@@ -122,4 +177,63 @@ TEST_F(ViewFactoryTest, TestViewBuilderOwnerships) {
   EXPECT_NE(scroll_button, nullptr);
   EXPECT_EQ(scroll_button->GetText(), u"ScrollTest");
   EXPECT_EQ(scroll_button, scroll_view->contents());
+}
+
+TEST_F(ViewFactoryTest, TestViewBuilderArbitraryMethod) {
+  auto view = views::Builder<internal::TestView>()
+                  .SetEnabled(false)
+                  .ArbitraryMethod(10, 5.5, views::kPropertyEffectsLayout)
+                  .Build();
+
+  EXPECT_FALSE(view->GetEnabled());
+  EXPECT_EQ(view->get_int_param(), 10);
+  EXPECT_EQ(view->get_float_param(), 5.5);
+  EXPECT_EQ(view->get_property_effects(), views::kPropertyEffectsLayout);
+}
+
+TEST_F(ViewFactoryTest, TestViewBuilderCustomConfigure) {
+  views::UniqueWidgetPtr widget =
+      base::WrapUnique(CreateTopLevelPlatformWidget());
+  auto* view = widget->GetContentsView()->AddChildView(
+      views::Builder<internal::TestView>()
+          .CustomConfigure(base::BindOnce([](internal::TestView* view) {
+            view->SetEnabled(false);
+            view->GetViewAccessibility().OverridePosInSet(5, 10);
+          }))
+          .Build());
+  EXPECT_FALSE(view->GetEnabled());
+  ui::AXNodeData node_data;
+  view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet), 5);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 10);
+}
+
+TEST_F(ViewFactoryTest, TestViewBuilderAddChildAtIndex) {
+  views::View* parent = nullptr;
+  views::LabelButton* ok_button = nullptr;
+  views::LabelButton* cancel_button = nullptr;
+  std::unique_ptr<views::View> view =
+      views::Builder<views::View>()
+          .CopyAddressTo(&parent)
+          .AddChild(views::Builder<views::LabelButton>()
+                        .CopyAddressTo(&cancel_button)
+                        .SetIsDefault(false)
+                        .SetEnabled(true)
+                        .SetText(u"Cancel"))
+          .AddChildAt(views::Builder<views::LabelButton>()
+                          .CopyAddressTo(&ok_button)
+                          .SetIsDefault(false)
+                          .SetEnabled(true)
+                          .SetText(u"OK"),
+                      0)
+          .Build();
+
+  EXPECT_NE(parent, nullptr);
+  EXPECT_NE(ok_button, nullptr);
+  EXPECT_NE(cancel_button, nullptr);
+  EXPECT_EQ(view.get(), parent);
+  EXPECT_TRUE(view->GetVisible());
+  // Make sure the OK button is inserted into the child list at index 0.
+  EXPECT_EQ(ok_button, view->children()[0]);
+  EXPECT_EQ(cancel_button, view->children()[1]);
 }

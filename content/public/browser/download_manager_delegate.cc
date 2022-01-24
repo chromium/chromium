@@ -117,4 +117,11 @@ download::DownloadItem* DownloadManagerDelegate::GetDownloadByGuid(
   return nullptr;
 }
 
+void DownloadManagerDelegate::CheckSavePackageAllowed(
+    download::DownloadItem* download_item,
+    base::flat_map<base::FilePath, base::FilePath> save_package_files,
+    SavePackageAllowedCallback callback) {
+  std::move(callback).Run(true);
+}
+
 }  // namespace content

@@ -22,7 +22,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
@@ -41,8 +40,7 @@ const base::FilePath::CharType kPlatformNotificationsDirectory[] =
 
 // Max age of a displayed notification before we consider it stale and remove it
 // from the database and ask the platform to close it.
-constexpr base::TimeDelta kMaxDisplayedNotificationAge =
-    base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kMaxDisplayedNotificationAge = base::Days(7);
 
 // Checks if this notification can trigger in the future.
 bool CanTrigger(const NotificationDatabaseData& data) {
@@ -71,7 +69,7 @@ void RecordOldestNotificationTimeUMA(base::Time oldest_notification_time) {
 
   base::UmaHistogramCustomCounts(
       "Notifications.Database.OldestNotificationTimeInMinutes",
-      delta.InMinutes(), 0, base::TimeDelta::FromDays(150).InMinutes(), 50);
+      delta.InMinutes(), 0, base::Days(150).InMinutes(), 50);
 }
 
 // Returns if the notification described by |data| is currently visible.
@@ -144,8 +142,7 @@ void PlatformNotificationContextImpl::Initialize() {
       service_worker_context_, browser_context_);
 
   PlatformNotificationService* service =
-      GetContentClient()->browser()->GetPlatformNotificationService(
-          browser_context_);
+      browser_context_->GetPlatformNotificationService();
   if (!service) {
     std::set<std::string> displayed_notifications;
     DidGetNotifications(std::move(displayed_notifications),
@@ -733,8 +730,7 @@ void PlatformNotificationContextImpl::TryGetDisplayedNotifications(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   PlatformNotificationService* service =
-      GetContentClient()->browser()->GetPlatformNotificationService(
-          browser_context_);
+      browser_context_->GetPlatformNotificationService();
 
   if (!service) {
     // Rely on the database only
@@ -978,7 +974,8 @@ void PlatformNotificationContextImpl::DoWriteNotificationData(
 
   if (CanTrigger(write_database_data) &&
       !DoCheckNotificationTriggerQuota(origin)) {
-    // TODO(knollr): Reply with a custom error so developers can handle this.
+    // TODO(crbug.com/891339): Reply with a custom error so developers can
+    // handle this.
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /* success= */ false,
                                   /* notification_id= */ ""));
@@ -1093,12 +1090,13 @@ void PlatformNotificationContextImpl::DoDeleteNotificationData(
 
 void PlatformNotificationContextImpl::OnRegistrationDeleted(
     int64_t registration_id,
-    const GURL& pattern) {
+    const GURL& pattern,
+    const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  InitializeDatabase(
-      base::BindOnce(&PlatformNotificationContextImpl::
-                         DoDeleteNotificationsForServiceWorkerRegistration,
-                     this, pattern.GetOrigin(), registration_id));
+  InitializeDatabase(base::BindOnce(
+      &PlatformNotificationContextImpl::
+          DoDeleteNotificationsForServiceWorkerRegistration,
+      this, pattern.DeprecatedGetOriginAsURL(), registration_id));
 }
 
 void PlatformNotificationContextImpl::

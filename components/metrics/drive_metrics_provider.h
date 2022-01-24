@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -25,6 +24,10 @@ namespace metrics {
 class DriveMetricsProvider : public metrics::MetricsProvider {
  public:
   explicit DriveMetricsProvider(int local_state_path_key);
+
+  DriveMetricsProvider(const DriveMetricsProvider&) = delete;
+  DriveMetricsProvider& operator=(const DriveMetricsProvider&) = delete;
+
   ~DriveMetricsProvider() override;
 
   // metrics::MetricsDataProvider:
@@ -81,8 +84,6 @@ class DriveMetricsProvider : public metrics::MetricsProvider {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DriveMetricsProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DriveMetricsProvider);
 };
 
 }  // namespace metrics

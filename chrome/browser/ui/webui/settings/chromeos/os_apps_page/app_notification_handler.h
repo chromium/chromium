@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_OS_APPS_PAGE_APP_NOTIFICATION_HANDLER_H_
 
 #include "ash/public/cpp/message_center_ash.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom/app_notification_handler.mojom.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -17,16 +18,11 @@ namespace settings {
 
 class AppNotificationHandler
     : public app_notification::mojom::AppNotificationsHandler,
-      public ::settings::SettingsPageUIHandler,
-      public ash::MessageCenterAsh::Observer {
+      public ash::MessageCenterAsh::Observer,
+      public apps::AppRegistryCache::Observer {
  public:
-  AppNotificationHandler();
+  explicit AppNotificationHandler(apps::AppServiceProxy* app_service_proxy);
   ~AppNotificationHandler() override;
-
-  // SettingsPageUIHandler:
-  void RegisterMessages() override {}
-  void OnJavascriptAllowed() override {}
-  void OnJavascriptDisallowed() override {}
 
   // app_notification::mojom::AppNotificationHandler:
   void AddObserver(
@@ -45,11 +41,24 @@ class AppNotificationHandler
 
   // settings::mojom::AppNotificationHandler:
   void SetQuietMode(bool in_quiet_mode) override;
+  void NotifyPageReady() override;
+  void SetNotificationPermission(
+      const std::string& app_id,
+      apps::mojom::PermissionPtr permission) override;
+  void GetApps(GetAppsCallback callback) override;
 
-  bool in_quiet_mode_;
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+
+  std::vector<app_notification::mojom::AppPtr> GetAppList();
+  void NotifyAppChanged(app_notification::mojom::AppPtr app);
 
   mojo::RemoteSet<app_notification::mojom::AppNotificationsObserver>
       observer_list_;
+
+  apps::AppServiceProxy* app_service_proxy_;
 
   mojo::Receiver<app_notification::mojom::AppNotificationsHandler> receiver_{
       this};

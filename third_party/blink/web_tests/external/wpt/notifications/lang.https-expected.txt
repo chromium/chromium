@@ -1,0 +1,40 @@
+This is a testharness.js-based test.
+NOTRUN Roundtripping lang "". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "en". Expecting "en". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "en-US-x-hixie". Expecting "en-US-x-hixie". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "de-DE". Expecting "de-DE". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "de-de". Expecting "de-de". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "de-De". Expecting "de-De". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "de-dE". Expecting "de-dE". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "de-DE-1996". Expecting "de-DE-1996". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "de-Latn-DE". Expecting "de-Latn-DE". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "de-Latf-DE". Expecting "de-Latf-DE". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "de-Latn-DE-1996". Expecting "de-Latn-DE-1996". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "de-CH". Expecting "de-CH". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "it-CH". Expecting "it-CH". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "fr-CH". Expecting "fr-CH". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "rm-CH". Expecting "rm-CH". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "es-CH". Expecting "es-CH". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "Latn-de". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "Latf-de". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "tic-tac-tac-toe". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "cocoa-1-bar". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "cocoa-a-bar". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "en-". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "en--". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "foo--bar". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "id---Java". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "fr-x". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "fr-xenomorph". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "fr-x-xenomorph". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "a". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "a-fr-lang". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "b-fr-lang". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "es1-KK-aa-bb-cc-dd". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "es2-KL-aa-bb-cc-dd". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "es3-KM-aa-bb-cc-dd". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "fooÉ". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "foöÉ-bÁr". Expecting "". You must allow notifications for this origin before running this test.
+NOTRUN Roundtripping lang "foöÉbÁr". Expecting "". You must allow notifications for this origin before running this test.
+Harness: the test ran to completion.
+

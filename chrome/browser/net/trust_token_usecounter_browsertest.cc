@@ -137,6 +137,11 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsIframeUse) {
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  // Ensure that the previous page won't be stored in the back/forward cache, so
+  // that the histogram will be recorded when the previous page is unloaded.
+  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  web_contents->GetController().GetBackForwardCache().DisableForTesting(
+      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   // It's important to set the trust token arguments before updating src, as
   // the latter triggers a load. It's also important to JsReplace the trustToken
@@ -167,6 +172,11 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsIframeUseViaSetat
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  // Ensure that the previous page won't be stored in the back/forward cache, so
+  // that the histogram will be recorded when the previous page is unloaded.
+  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  web_contents->GetController().GetBackForwardCache().DisableForTesting(
+      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   // It's important to set the trust token arguments before updating src, as
   // the latter triggers a load. It's also important to JsReplace the trustToken

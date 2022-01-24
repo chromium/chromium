@@ -70,7 +70,8 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   void SetFormToBeProbablySubmitted(
       const absl::optional<FormData>& form) override {}
 
-  void FormsSeen(const std::vector<FormData>& forms) override {}
+  void FormsSeen(const std::vector<FormData>& updated_forms,
+                 const std::vector<FormRendererId>& removed_forms) override {}
 
   void FormSubmitted(const FormData& form,
                      bool known_success,
@@ -309,6 +310,10 @@ void SimulateFillFormWithNonFillableFields(
 class FormAutocompleteTest : public ChromeRenderViewTest {
  public:
   FormAutocompleteTest() {}
+
+  FormAutocompleteTest(const FormAutocompleteTest&) = delete;
+  FormAutocompleteTest& operator=(const FormAutocompleteTest&) = delete;
+
   ~FormAutocompleteTest() override {}
 
  protected:
@@ -349,9 +354,6 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
 
   FakeContentAutofillDriver fake_driver_;
   std::unique_ptr<test::FocusTestUtils> focus_test_utils_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FormAutocompleteTest);
 };
 
 // Tests that submitting a form generates FormSubmitted message with the form

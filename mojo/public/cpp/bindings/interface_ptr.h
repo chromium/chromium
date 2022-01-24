@@ -15,7 +15,7 @@
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/interface_ptr_state.h"
@@ -76,6 +76,9 @@ class InterfacePtr {
     reset();
     return *this;
   }
+
+  InterfacePtr(const InterfacePtr&) = delete;
+  InterfacePtr& operator=(const InterfacePtr&) = delete;
 
   // Closes the bound message pipe (if any) on destruction.
   ~InterfacePtr() {}
@@ -224,8 +227,6 @@ class InterfacePtr {
  private:
   typedef internal::InterfacePtrState<Interface> State;
   mutable State internal_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfacePtr);
 };
 
 // If |info| is valid (containing a valid message pipe handle), returns an

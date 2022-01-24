@@ -5,7 +5,7 @@
 import {DangerType, DownloadItem, DownloadListElement, DownloadMode, DownloadShelfApiProxyImpl, DownloadState, MixedContentStatus} from 'chrome://download-shelf.top-chrome/download_shelf.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
-import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
+import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 
 import {TestDownloadShelfApiProxy} from './test_download_shelf_api_proxy.js';
 

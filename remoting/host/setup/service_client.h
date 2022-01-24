@@ -38,6 +38,10 @@ class ServiceClient {
 
   explicit ServiceClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  ServiceClient(const ServiceClient&) = delete;
+  ServiceClient& operator=(const ServiceClient&) = delete;
+
   ~ServiceClient();
 
   // Register a host.
@@ -56,7 +60,6 @@ class ServiceClient {
   // The guts of the implementation live in this class.
   class Core;
   scoped_refptr<Core> core_;
-  DISALLOW_COPY_AND_ASSIGN(ServiceClient);
 };
 
 }  // namespace remoting

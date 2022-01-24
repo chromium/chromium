@@ -42,7 +42,7 @@ apps::AppRegistryCache* GetActiveUserAppRegistryCache() {
   auto account_id = active_user->GetAccountId();
   Profile* profile =
       chromeos::ProfileHelper::Get()->GetProfileByUser(active_user);
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   return &proxy->AppRegistryCache();
 }

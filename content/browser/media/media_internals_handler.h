@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -22,6 +21,11 @@ class MediaInternalsProxy;
 class MediaInternalsMessageHandler : public WebUIMessageHandler {
  public:
   MediaInternalsMessageHandler();
+
+  MediaInternalsMessageHandler(const MediaInternalsMessageHandler&) = delete;
+  MediaInternalsMessageHandler& operator=(const MediaInternalsMessageHandler&) =
+      delete;
+
   ~MediaInternalsMessageHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -39,8 +43,6 @@ class MediaInternalsMessageHandler : public WebUIMessageHandler {
   // Reflects whether the chrome://media-internals HTML+JS has finished loading.
   // If not, it's not safe to send JavaScript calls targeting the page yet.
   bool page_load_complete_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInternalsMessageHandler);
 };
 
 }  // namespace content

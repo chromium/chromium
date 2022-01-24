@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/libaddressinput/chromium/addressinput_util.h"
 #include "third_party/libaddressinput/chromium/input_suggester.h"
@@ -163,7 +163,7 @@ bool AddressValidator::AreRulesLoadedForRegion(const std::string& region_code) {
 AddressValidator::AddressValidator() : load_rules_listener_(nullptr) {}
 
 base::TimeDelta AddressValidator::GetBaseRetryPeriod() const {
-  return base::TimeDelta::FromSeconds(8);
+  return base::Seconds(8);
 }
 
 void AddressValidator::Validated(bool success,

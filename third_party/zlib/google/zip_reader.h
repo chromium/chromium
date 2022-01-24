@@ -79,6 +79,9 @@ class ZipReader {
     EntryInfo(const std::string& filename_in_zip,
               const unz_file_info& raw_file_info);
 
+    EntryInfo(const EntryInfo&) = delete;
+    EntryInfo& operator=(const EntryInfo&) = delete;
+
     // Returns the file path. The path is usually relative like
     // "foo/bar.txt", but if it's absolute, is_unsafe() returns true.
     const base::FilePath& file_path() const { return file_path_; }
@@ -117,10 +120,13 @@ class ZipReader {
     bool is_directory_;
     bool is_unsafe_;
     bool is_encrypted_;
-    DISALLOW_COPY_AND_ASSIGN(EntryInfo);
   };
 
   ZipReader();
+
+  ZipReader(const ZipReader&) = delete;
+  ZipReader& operator=(const ZipReader&) = delete;
+
   ~ZipReader();
 
   // Opens the zip file specified by |zip_file_path|. Returns true on
@@ -225,8 +231,6 @@ class ZipReader {
   std::unique_ptr<EntryInfo> current_entry_info_;
 
   base::WeakPtrFactory<ZipReader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ZipReader);
 };
 
 // A writer delegate that writes to a given File.
@@ -239,6 +243,9 @@ class FileWriterDelegate : public WriterDelegate {
 
   // Constructs a FileWriterDelegate that takes ownership of |file|.
   explicit FileWriterDelegate(std::unique_ptr<base::File> file);
+
+  FileWriterDelegate(const FileWriterDelegate&) = delete;
+  FileWriterDelegate& operator=(const FileWriterDelegate&) = delete;
 
   // Truncates the file to the number of bytes written.
   ~FileWriterDelegate() override;
@@ -267,14 +274,16 @@ class FileWriterDelegate : public WriterDelegate {
   std::unique_ptr<base::File> owned_file_;
 
   int64_t file_length_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FileWriterDelegate);
 };
 
 // A writer delegate that writes a file at a given path.
 class FilePathWriterDelegate : public WriterDelegate {
  public:
   explicit FilePathWriterDelegate(const base::FilePath& output_file_path);
+
+  FilePathWriterDelegate(const FilePathWriterDelegate&) = delete;
+  FilePathWriterDelegate& operator=(const FilePathWriterDelegate&) = delete;
+
   ~FilePathWriterDelegate() override;
 
   // WriterDelegate methods:
@@ -292,8 +301,6 @@ class FilePathWriterDelegate : public WriterDelegate {
  private:
   base::FilePath output_file_path_;
   base::File file_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilePathWriterDelegate);
 };
 
 }  // namespace zip

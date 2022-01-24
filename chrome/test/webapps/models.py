@@ -46,7 +46,7 @@ class TestPlatform(Enum):
     MAC = ("defined(OS_MAC)", "M", "mac")
     WINDOWS = ("defined(OS_WIN)", "W", "win")
     LINUX = ("defined(OS_LINUX)", "L", "linux")
-    CHROME_OS = ("BUILDFLAG(IS_CHROMEOS_ASH)", "C", "cros")
+    CHROME_OS = ("defined(OS_CHROMEOS)", "C", "cros")
 
     def __init__(self, macro: str, char: str, suffix: str):
         self.macro: str = macro
@@ -63,6 +63,20 @@ class TestPlatform(Enum):
         for platform in TestPlatform:
             if platform.char in string:
                 result.add(platform)
+        return result
+
+    @staticmethod
+    def get_test_fixture_suffix(platforms: Set["TestPlatform"]) -> str:
+        """Output a string from the platforms to suffix the test fixture name.
+        If all platforms are specified, the suffix is blank.
+        Example: {MAC, LINUX} outputs "MacLinux"
+        """
+        if len(platforms) == len(TestPlatform):
+            return ""
+        result: str = ""
+        for platform in TestPlatform:
+            if platform in platforms:
+                result += platform.suffix.capitalize()
         return result
 
     @staticmethod
@@ -222,11 +236,12 @@ class CoverageTest:
             "Sheriffs: Disabling this test is supported."
         ]
         body = ''.join(["  // " + comment + "\n" for comment in comments])
-        body += '\n'.join(
-            ["  " + action.cpp_method + ";" for action in self.actions])
-        return (f"IN_PROC_BROWSERTEST_F("
-                f"{test_partition.test_fixture}, "
-                f"{CoverageTest.TEST_ID_PREFIX}{self.id}){{\n"
+        body += '\n'.join([(f"  helper_.{action.cpp_method};")
+                           for action in self.actions])
+        fixture = (f"{test_partition.test_fixture}"
+                   f"{TestPlatform.get_test_fixture_suffix(self.platforms)}")
+        return (f"IN_PROC_BROWSER_TEST_F("
+                f"{fixture}, {CoverageTest.TEST_ID_PREFIX}{self.id}) {{\n"
                 f"{body}\n}}")
 
     def __str__(self):

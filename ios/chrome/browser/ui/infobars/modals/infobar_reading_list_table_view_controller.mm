@@ -7,6 +7,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_reading_list_modal_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
@@ -50,6 +51,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     infobarModalDelegate;
 // YES if the current page has already been added.
 @property(nonatomic, assign) BOOL currentPageAdded;
+// Used to build and record metrics.
+@property(nonatomic, strong) InfobarMetricsRecorder* metricsRecorder;
 
 @end
 
@@ -59,6 +62,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     (id<InfobarReadingListModalDelegate>)modalDelegate {
   self = [super initWithStyle:UITableViewStylePlain];
   if (self) {
+    _metricsRecorder = [[InfobarMetricsRecorder alloc]
+        initWithType:InfobarType::kInfobarTypeAddToReadingList];
     _infobarModalDelegate = modalDelegate;
   }
   return self;
@@ -71,6 +76,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.tableView.sectionHeaderHeight = 0;
+  self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
   [self.tableView
       setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0)];
 
@@ -86,8 +92,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self loadModel];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Presented];
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
   [self.infobarModalDelegate modalInfobarWasDismissed:self];
+  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Dismissed];
   [super viewDidDisappear:animated];
 }
 
@@ -107,6 +119,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewTextItem* timeThresholdContextInformationalItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeInformationalText];
+  timeThresholdContextInformationalItem.textColor =
+      [UIColor colorNamed:kTextSecondaryColor];
+  timeThresholdContextInformationalItem.textFont =
+      [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
   timeThresholdContextInformationalItem.text =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_DESCRIPTION);
   [model addItem:timeThresholdContextInformationalItem
@@ -148,8 +164,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       tableViewTextButtonCell.selectionStyle =
           UITableViewCellSelectionStyleNone;
       [tableViewTextButtonCell.button
-                 addTarget:self.infobarModalDelegate
-                    action:@selector(modalInfobarButtonWasAccepted:)
+                 addTarget:self
+                    action:@selector(addToReadingListButtonWasPressed:)
           forControlEvents:UIControlEventTouchUpInside];
       break;
     }
@@ -186,9 +202,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Private Methods
 
+- (void)addToReadingListButtonWasPressed:(UIButton*)sender {
+  base::RecordAction(
+      base::UserMetricsAction("MobileMessagesModalAcceptedTapped"));
+  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Accepted];
+  [self.infobarModalDelegate modalInfobarButtonWasAccepted:self];
+}
+
 - (void)dismissInfobarModal {
   base::RecordAction(
       base::UserMetricsAction("MobileMessagesModalCancelledTapped"));
+  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Canceled];
   [self.infobarModalDelegate dismissInfobarModal:self];
 }
 

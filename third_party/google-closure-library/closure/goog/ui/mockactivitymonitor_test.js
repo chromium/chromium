@@ -1,33 +1,21 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 /**
- * @fileoverview Tests for goog.ui.MockActivityMonitorTest.
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
-/** @suppress {extraProvide} */
 goog.module('goog.ui.MockActivityMonitorTest');
 goog.setTestOnly();
 
 const ActivityMonitor = goog.require('goog.ui.ActivityMonitor');
 const MockActivityMonitor = goog.require('goog.ui.MockActivityMonitor');
+const dispose = goog.require('goog.dispose');
 const events = goog.require('goog.events');
 const functions = goog.require('goog.functions');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
 
-const googNow = goog.now;
+const googNow = Date.now;
 let monitor;
 let recordedFunction;
 let replacer;
@@ -41,12 +29,12 @@ testSuite({
   },
 
   tearDown() {
-    goog.dispose(monitor);
-    goog.now = googNow;
+    dispose(monitor);
+    Date.now = googNow;
   },
 
   testEventFireSameTime() {
-    goog.now = functions.constant(1000);
+    Date.now = functions.constant(1000);
 
     monitor.simulateEvent();
     assertEquals(1, recordedFunction.getCallCount());
@@ -56,11 +44,11 @@ testSuite({
   },
 
   testEventFireDifferingTime() {
-    goog.now = functions.constant(1000);
+    Date.now = functions.constant(1000);
     monitor.simulateEvent();
     assertEquals(1, recordedFunction.getCallCount());
 
-    goog.now = functions.constant(1001);
+    Date.now = functions.constant(1001);
     monitor.simulateEvent();
     assertEquals(2, recordedFunction.getCallCount());
   },

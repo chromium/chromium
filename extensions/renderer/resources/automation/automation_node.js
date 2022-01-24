@@ -403,6 +403,34 @@ const GetLineThrough = natives.GetLineThrough;
 /**
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
+ * @return {boolean}
+ */
+const GetIsButton = natives.GetIsButton;
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
+ * @return {boolean}
+ */
+const GetIsCheckBox = natives.GetIsCheckBox;
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
+ * @return {boolean}
+ */
+const GetIsComboBox = natives.GetIsComboBox;
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
+ * @return {boolean}
+ */
+const GetIsImage = natives.GetIsImage;
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
  * @return {?Array<automation.CustomAction>} List of custom actions of the
  *     node.
  */
@@ -435,6 +463,14 @@ const GetHasPopup = natives.GetHasPopup;
  * @return {automation.AriaCurrentState}
  */
 const GetAriaCurrentState = natives.GetAriaCurrentState;
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
+ * @return {automation.InvalidState}
+ */
+const GetInvalidState = natives.GetInvalidState;
+
 
 /**
  * @param {string} axTreeID The id of the accessibility tree.
@@ -656,6 +692,19 @@ AutomationNodeImpl.prototype = {
     return GetChecked(this.treeID, this.id);
   },
 
+  get caretBounds() {
+    const data = GetIntListAttribute(this.treeID, this.id, 'caretBounds');
+    if (!data) {
+      return;
+    }
+
+    if (data.length !== 4) {
+      throw 'Internal encoding error for caret bounds.';
+    }
+
+    return {left: data[0], top: data[1], width: data[2], height: data[3]};
+  },
+
   get location() {
     return GetLocation(this.treeID, this.id);
   },
@@ -742,7 +791,15 @@ AutomationNodeImpl.prototype = {
     }
     const info = GetChildIDAtIndex(this.treeID, this.id, 0);
     if (info) {
-      return AutomationRootNodeImpl.getNodeFromTree(info.treeId, info.nodeId);
+      const child =
+          AutomationRootNodeImpl.getNodeFromTree(info.treeId, info.nodeId);
+
+      // A child with an app id should always be in a different tree.
+      if (child.appId && this.treeID === info.treeId) {
+        return;
+      }
+
+      return child;
     }
   },
 
@@ -754,7 +811,15 @@ AutomationNodeImpl.prototype = {
 
     const info = GetChildIDAtIndex(this.treeID, this.id, count - 1);
     if (info) {
-      return AutomationRootNodeImpl.getNodeFromTree(info.treeId, info.nodeId);
+      const child =
+          AutomationRootNodeImpl.getNodeFromTree(info.treeId, info.nodeId);
+
+      // A child with an app id should always be in a different tree.
+      if (child.appId && this.treeID === info.treeId) {
+        return;
+      }
+
+      return child;
     }
   },
 
@@ -769,6 +834,12 @@ AutomationNodeImpl.prototype = {
       const childID = info.nodeIds[i];
       const child =
           AutomationRootNodeImpl.getNodeFromTree(info.treeId, childID);
+
+      // A child with an app id should always be in a different tree.
+      if (child.appId && this.treeID === info.treeId) {
+        continue;
+      }
+
       if (child) {
         $Array.push(children, child);
       }
@@ -834,6 +905,22 @@ AutomationNodeImpl.prototype = {
     return GetLineThrough(this.treeID, this.id);
   },
 
+  get isButton() {
+    return GetIsButton(this.treeID, this.id);
+  },
+
+  get isCheckBox() {
+    return GetIsCheckBox(this.treeID, this.id);
+  },
+
+  get isComboBox() {
+    return GetIsComboBox(this.treeID, this.id);
+  },
+
+  get isImage() {
+    return GetIsImage(this.treeID, this.id);
+  },
+
   get detectedLanguage() {
     return GetDetectedLanguage(this.treeID, this.id);
   },
@@ -861,6 +948,10 @@ AutomationNodeImpl.prototype = {
 
   get ariaCurrentState() {
     return GetAriaCurrentState(this.treeID, this.id);
+  },
+
+  get invalidState() {
+    return GetInvalidState(this.treeID, this.id);
   },
 
   get tableCellColumnHeaders() {
@@ -965,7 +1056,9 @@ AutomationNodeImpl.prototype = {
   },
 
   hitTest: function(x, y, eventToFire) {
-    this.hitTestInternal(x, y, eventToFire);
+    // Set an empty callback to trigger onActionResult.
+    const callback = () => {};
+    this.hitTestInternal(x, y, eventToFire, callback);
   },
 
   hitTestWithReply: function(x, y, opt_callback) {
@@ -1290,16 +1383,21 @@ AutomationNodeImpl.prototype = {
       throw new Error(actionType + ' requires {"desktop": true} or' +
           ' {"interact": true} in the "automation" manifest key.');
     }
+
     let requestID = -1;
     if (opt_callback) {
-      requestID = this.rootImpl.addActionResultCallback(opt_callback);
+      requestID = this.rootImpl.addActionResultCallback(
+          actionType, opt_args, opt_callback);
     }
 
-    automationInternal.performAction({ treeID: this.rootImpl.treeID,
-                                       automationNodeID: this.id,
-                                       actionType: actionType,
-                                       requestID: requestID},
-                                     opt_args || {});
+    automationInternal.performAction(
+        {
+          treeID: this.rootImpl.treeID,
+          automationNodeID: this.id,
+          actionType: actionType,
+          requestID: requestID
+        },
+        opt_args || {});
   },
 
   domQuerySelectorCallback_: function(userCallback, resultAutomationNodeID) {
@@ -1401,7 +1499,6 @@ AutomationNodeImpl.prototype = {
 const stringAttributes = [
   'accessKey',
   'appId',
-  'ariaInvalidValue',
   'autoComplete',
   'checkedStateDescription',
   'className',
@@ -1870,26 +1967,31 @@ AutomationRootNodeImpl.prototype = {
   onAccessibilityEvent: function(eventParams) {
     const targetNode = this.get(eventParams.targetID);
     if (targetNode) {
+      if (eventParams.actionRequestID != -1 &&
+          this.onActionResult(eventParams.actionRequestID, targetNode)) {
+        return;
+      }
+
       const targetNodeImpl = privates(targetNode).impl;
       targetNodeImpl.dispatchEvent(
           eventParams.eventType, eventParams.eventFrom,
           eventParams.eventFromAction, eventParams.mouseX, eventParams.mouseY,
           eventParams.intents);
-
-      if (eventParams.actionRequestID != -1) {
-        this.onActionResult(eventParams.actionRequestID, targetNode);
-      }
     } else {
       logging.WARNING('Got ' + eventParams.eventType +
                       ' event on unknown node: ' + eventParams.targetID +
                       '; this: ' + this.id);
     }
-    return true;
   },
 
-  addActionResultCallback: function(callback) {
-    AutomationRootNodeImpl.actionRequestIDToCallback[
-        ++AutomationRootNodeImpl.actionRequestCounter] = callback;
+  addActionResultCallback: function(actionType, opt_args, callback) {
+    AutomationRootNodeImpl
+        .actionRequestIDToCallback[++AutomationRootNodeImpl
+                                         .actionRequestCounter] = {
+      actionType,
+      opt_args,
+      callback
+    };
     return AutomationRootNodeImpl.actionRequestCounter;
   },
 
@@ -1897,7 +1999,7 @@ AutomationRootNodeImpl.prototype = {
     const requestID = textLocationParams.requestID;
     if (requestID in AutomationRootNodeImpl.actionRequestIDToCallback) {
       const callback =
-          AutomationRootNodeImpl.actionRequestIDToCallback[requestID];
+          AutomationRootNodeImpl.actionRequestIDToCallback[requestID].callback;
       try {
         if (textLocationParams.result) {
           callback(ComputeGlobalBounds(
@@ -1916,8 +2018,63 @@ AutomationRootNodeImpl.prototype = {
 
   onActionResult: function(requestID, result) {
     if (requestID in AutomationRootNodeImpl.actionRequestIDToCallback) {
-      AutomationRootNodeImpl.actionRequestIDToCallback[requestID](result);
+      const data = AutomationRootNodeImpl.actionRequestIDToCallback[requestID];
+      if (data.actionType.indexOf('hitTest') === 0 && result &&
+          result.role === 'window' && result.className &&
+          result.className.indexOf('ExoSurface') === 0) {
+        // Search for a node containing app id, which indicates Lacros.
+        function findApp(node) {
+          // Exit early if we've crossed roots from |result|.
+          if (result.root !== node.root) {
+            return null;
+          }
+
+          // This node is actually in a different backing C++ tree though at
+          // this internal js layer, we merge the trees so that it is rooted to
+          // the desktop tree (same as |result|).
+          if (node.appId) {
+            return node;
+          }
+
+          for (const child of node.children) {
+            const found = findApp(child);
+            if (found) {
+              return found;
+            }
+          }
+
+          return null;
+        }
+
+        // The hit test |result| node is not quite what we need to start
+        // searching in. Find the topmost ExoShell surface.
+        while (result.parent && result.parent.className &&
+               result.parent.className.indexOf('ExoShellSurface') === 0) {
+          result = result.parent;
+        }
+
+        const appNode = findApp(result);
+        if (appNode) {
+          delete AutomationRootNodeImpl.actionRequestIDToCallback[requestID];
+
+          const relativeWindow = appNode.parent;
+          if (!relativeWindow) {
+            return false;
+          }
+
+          // The hit test needs to be relative to the container of the app node.
+          data.opt_args.x -= relativeWindow.location.left;
+          data.opt_args.y -= relativeWindow.location.top;
+
+          privates(appNode).impl.performAction_(
+              data.actionType, data.opt_args, data.callback);
+          return true;
+        }
+      }
+
+      data.callback(result);
       delete AutomationRootNodeImpl.actionRequestIDToCallback[requestID];
+      return false;
     }
   },
 
@@ -1992,6 +2149,7 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
       [
         'ariaCurrentState',
         'bold',
+        'caretBounds',
         'checked',
         'children',
         'customActions',
@@ -2003,6 +2161,8 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
         'htmlAttributes',
         'imageAnnotation',
         'indexInParent',
+        'invalidState',
+        'isButton',
         'isRootNode',
         'italic',
         'lastChild',

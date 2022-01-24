@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -22,6 +21,10 @@ class Profile;
 class CoreAppLauncherHandler : public content::WebUIMessageHandler {
  public:
   CoreAppLauncherHandler();
+
+  CoreAppLauncherHandler(const CoreAppLauncherHandler&) = delete;
+  CoreAppLauncherHandler& operator=(const CoreAppLauncherHandler&) = delete;
+
   ~CoreAppLauncherHandler() override;
 
   // Register app launcher preferences.
@@ -41,8 +44,6 @@ class CoreAppLauncherHandler : public content::WebUIMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
-
-  DISALLOW_COPY_AND_ASSIGN(CoreAppLauncherHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NTP_CORE_APP_LAUNCHER_HANDLER_H_

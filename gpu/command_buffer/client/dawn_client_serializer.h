@@ -13,7 +13,6 @@
 
 namespace gpu {
 
-struct SharedMemoryLimits;
 class TransferBuffer;
 
 namespace webgpu {
@@ -22,19 +21,12 @@ class DawnClientMemoryTransferService;
 class WebGPUCmdHelper;
 class WebGPUImplementation;
 
-class DawnClientSerializer final : public dawn_wire::CommandSerializer {
+class DawnClientSerializer : public dawn_wire::CommandSerializer {
  public:
-  static std::unique_ptr<DawnClientSerializer> Create(
-      WebGPUImplementation* client,
-      WebGPUCmdHelper* helper,
-      DawnClientMemoryTransferService* memory_transfer_service,
-      const SharedMemoryLimits& limits);
-
   DawnClientSerializer(WebGPUImplementation* client,
                        WebGPUCmdHelper* helper,
                        DawnClientMemoryTransferService* memory_transfer_service,
-                       std::unique_ptr<TransferBuffer> transfer_buffer,
-                       uint32_t buffer_initial_size);
+                       std::unique_ptr<TransferBuffer> transfer_buffer);
   ~DawnClientSerializer() override;
 
   // dawn_wire::CommandSerializer implementation

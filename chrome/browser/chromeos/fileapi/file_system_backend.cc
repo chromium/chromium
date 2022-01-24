@@ -37,11 +37,14 @@
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace chromeos {
 namespace {
 
-// TODO(mtomasz): Remove this hacky whitelist.
+// TODO(mtomasz): Remove this hacky allowlist.
 // See: crbug.com/271946
 const char* kOemAccessibleExtensions[] = {
     "mlbmkoenclnokonejhlfakkeabdlmpek",  // TimeScapes,
@@ -341,7 +344,8 @@ FileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return NULL;
 }
 
-storage::FileSystemOperation* FileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<storage::FileSystemOperation>
+FileSystemBackend::CreateFileSystemOperation(
     const storage::FileSystemURL& url,
     storage::FileSystemContext* context,
     base::File::Error* error_code) const {
@@ -354,7 +358,7 @@ storage::FileSystemOperation* FileSystemBackend::CreateFileSystemOperation(
 
   if (url.type() == storage::kFileSystemTypeDeviceMediaAsFileStorage) {
     // MTP file operations run on MediaTaskRunner.
-    return new ObservableFileSystemOperationImpl(
+    return std::make_unique<ObservableFileSystemOperationImpl>(
         account_id_, url, context,
         std::make_unique<storage::FileSystemOperationContext>(
             context, MediaFileSystemBackend::MediaTaskRunner().get()));
@@ -363,7 +367,7 @@ storage::FileSystemOperation* FileSystemBackend::CreateFileSystemOperation(
       url.type() == storage::kFileSystemTypeRestrictedLocal ||
       url.type() == storage::kFileSystemTypeDriveFs ||
       url.type() == storage::kFileSystemTypeSmbFs) {
-    return new ObservableFileSystemOperationImpl(
+    return std::make_unique<ObservableFileSystemOperationImpl>(
         account_id_, url, context,
         std::make_unique<storage::FileSystemOperationContext>(
             context, base::ThreadPool::CreateSequencedTaskRunner(
@@ -374,7 +378,7 @@ storage::FileSystemOperation* FileSystemBackend::CreateFileSystemOperation(
   DCHECK(url.type() == storage::kFileSystemTypeProvided ||
          url.type() == storage::kFileSystemTypeArcContent ||
          url.type() == storage::kFileSystemTypeArcDocumentsProvider);
-  return new ObservableFileSystemOperationImpl(
+  return std::make_unique<ObservableFileSystemOperationImpl>(
       account_id_, url, context,
       std::make_unique<storage::FileSystemOperationContext>(context));
 }
@@ -533,7 +537,7 @@ storage::FileSystemURL FileSystemBackend::CreateInternalURL(
     return storage::FileSystemURL();
 
   return context->CreateCrackedFileSystemURL(
-      url::Origin(), storage::kFileSystemTypeExternal, virtual_path);
+      blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
 }
 
 }  // namespace chromeos

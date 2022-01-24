@@ -110,7 +110,8 @@ void PluginParameters::MapDataParamToSrc() {
   });
 
   if (data != names_.end()) {
-    AppendNameWithValue("src", values_[data - names_.begin()]);
+    AppendNameWithValue(
+        "src", values_[base::checked_cast<wtf_size_t>(data - names_.begin())]);
   }
 }
 
@@ -232,7 +233,7 @@ void HTMLPlugInElement::AttachLayoutTree(AttachContext& context) {
     // add our layout object to the frame view's update list. This is typically
     // done during layout, but if we're blocking layout, we will never update
     // the plugin and thus delay the load event indefinitely.
-    if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*this)) {
+    if (DisplayLockUtilities::LockedAncestorPreventingLayout(*this)) {
       auto* embedded_object = GetLayoutEmbeddedObject();
       if (auto* frame_view = embedded_object->GetFrameView())
         frame_view->AddPartToUpdate(*embedded_object);
@@ -352,13 +353,13 @@ LayoutObject* HTMLPlugInElement::CreateLayoutObject(const ComputedStyle& style,
     return LayoutObject::CreateObject(this, style, legacy);
 
   if (IsImageType()) {
-    LayoutImage* image = new LayoutImage(this);
+    LayoutImage* image = MakeGarbageCollected<LayoutImage>(this);
     image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());
     return image;
   }
 
   plugin_is_available_ = true;
-  return new LayoutEmbeddedObject(this);
+  return MakeGarbageCollected<LayoutEmbeddedObject>(this);
 }
 
 void HTMLPlugInElement::FinishParsingChildren() {
@@ -469,12 +470,11 @@ void HTMLPlugInElement::DefaultEventHandler(Event& event) {
     if (embedded_object->ShowsUnavailablePluginIndicator())
       return;
   }
-  WebPluginContainerImpl* plugin = OwnedPlugin();
-  if (!plugin)
-    return;
-  plugin->HandleEvent(event);
-  if (event.DefaultHandled())
-    return;
+  if (WebPluginContainerImpl* plugin = OwnedPlugin()) {
+    plugin->HandleEvent(event);
+    if (event.DefaultHandled())
+      return;
+  }
   HTMLFrameOwnerElement::DefaultEventHandler(event);
 }
 
@@ -679,7 +679,9 @@ bool HTMLPlugInElement::LoadPlugin(const KURL& url,
         *this, url, plugin_params.Names(), plugin_params.Values(), mime_type,
         load_manually);
     if (!plugin) {
-      if (!layout_object->ShowsUnavailablePluginIndicator()) {
+      layout_object = GetLayoutEmbeddedObject();
+      // LayoutObject can be destroyed between the previous check and here.
+      if (layout_object && !layout_object->ShowsUnavailablePluginIndicator()) {
         plugin_is_available_ = false;
         layout_object->SetPluginAvailability(
             LayoutEmbeddedObject::kPluginMissing);
@@ -777,8 +779,10 @@ void HTMLPlugInElement::RemovePluginFromFrameView(
 }
 
 void HTMLPlugInElement::DidAddUserAgentShadowRoot(ShadowRoot&) {
-  UserAgentShadowRoot()->AppendChild(
-      HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument()));
+  ShadowRoot* shadow_root = UserAgentShadowRoot();
+  DCHECK(shadow_root);
+  shadow_root->AppendChild(
+      MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
 }
 
 bool HTMLPlugInElement::HasFallbackContent() const {

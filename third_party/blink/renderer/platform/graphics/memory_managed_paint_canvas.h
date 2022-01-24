@@ -17,12 +17,20 @@ namespace blink {
 // drawing methods of PaintCanvas and keeps track of how much memory is
 // being pinned between flushes. This allows the rendering context to flush if
 // too much memory is used.
+
 class PLATFORM_EXPORT MemoryManagedPaintCanvas final
     : public cc::RecordPaintCanvas {
  public:
+  // Base class for clients that receive callbacks from
+  // MemoryManagedPaintCanvas.
+  class Client {
+   public:
+    virtual void DidPinImage(size_t bytes) = 0;
+  };
+
   MemoryManagedPaintCanvas(cc::DisplayItemList* list,
                            const SkRect& bounds,
-                           base::RepeatingClosure set_needs_flush_callback);
+                           Client* client);
   explicit MemoryManagedPaintCanvas(const cc::RecordPaintCanvas&) = delete;
   ~MemoryManagedPaintCanvas() override;
 
@@ -47,12 +55,8 @@ class PLATFORM_EXPORT MemoryManagedPaintCanvas final
           DefaultHash<cc::PaintImage::ContentId>::Hash,
           WTF::UnsignedWithZeroKeyHashTraits<cc::PaintImage::ContentId>>
       cached_image_ids_;
-  uint64_t total_stored_image_memory_ = 0;
 
-  base::RepeatingClosure set_needs_flush_callback_;
-
-  // The same value as is used in content::WebGraphicsConext3DProviderImpl.
-  static constexpr uint64_t kMaxPinnedMemory = 64 * 1024 * 1024;
+  Client* client_;
 };
 
 }  // namespace blink

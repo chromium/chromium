@@ -263,37 +263,6 @@ TEST_F(LayoutObjectTest, UseCountContainWithoutContentVisibility) {
       WebFeature::kCSSContainStrictWithoutContentVisibility));
 }
 
-TEST_F(LayoutObjectTest, UseCountContainingBlockFixedPosUnderFlattened3D) {
-  ScopedTransformInteropForTest disabled(false);
-  SetBodyInnerHTML(R"HTML(
-    <div style='transform-style: preserve-3d; opacity: 0.9'>
-      <div id=target style='position:fixed'></div>
-    </div>
-  )HTML");
-
-  LayoutObject* target = GetLayoutObjectByElementId("target");
-  EXPECT_EQ(target->View(), target->Container());
-
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kTransformStyleContainingBlockComputedUsedMismatch));
-}
-
-TEST_F(LayoutObjectTest,
-       UseCountContainingBlockFixedPosUnderFlattened3DTransformInterop) {
-  ScopedTransformInteropForTest enabled(true);
-  SetBodyInnerHTML(R"HTML(
-    <div style='transform-style: preserve-3d; opacity: 0.9'>
-      <div id=target style='position:fixed'></div>
-    </div>
-  )HTML");
-
-  LayoutObject* target = GetLayoutObjectByElementId("target");
-  EXPECT_EQ(target->View(), target->GetDocument().GetLayoutView());
-
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kTransformStyleContainingBlockComputedUsedMismatch));
-}
-
 // Containing block test.
 TEST_F(LayoutObjectTest, ContainingBlockLayoutViewShouldBeNull) {
   EXPECT_EQ(nullptr, GetLayoutView().ContainingBlock());
@@ -352,9 +321,7 @@ TEST_F(
   EXPECT_EQ(PhysicalOffset(2, 10), offset);
 }
 
-TEST_F(LayoutObjectTest, ContainingBlockFixedPosUnderFlattened3DWithInterop) {
-  ScopedTransformInteropForTest enabled(true);
-
+TEST_F(LayoutObjectTest, ContainingBlockFixedPosUnderFlattened3D) {
   SetBodyInnerHTML(R"HTML(
     <div id=container style='transform-style: preserve-3d; opacity: 0.9'>
       <div id=target style='position:fixed'></div>
@@ -456,7 +423,7 @@ TEST_F(
 
 TEST_F(LayoutObjectTest, PaintingLayerOfOverflowClipLayerUnderColumnSpanAll) {
   SetBodyInnerHTML(R"HTML(
-    <div id='columns' style='columns: 3'>
+    <div id='columns' style='position: relative; columns: 3'>
       <div style='column-span: all'>
         <div id='overflow-clip-layer' style='height: 100px; overflow:
     hidden'></div>
@@ -753,7 +720,6 @@ TEST_F(LayoutObjectTest, VisualRect) {
   class MockLayoutObject : public LayoutObject {
    public:
     MockLayoutObject() : LayoutObject(nullptr) {}
-    ~MockLayoutObject() override { SetBeingDestroyedForTesting(); }
     MOCK_CONST_METHOD0(VisualRectRespectsVisibility, bool());
 
    private:
@@ -767,19 +733,20 @@ TEST_F(LayoutObjectTest, VisualRect) {
     }
   };
 
-  MockLayoutObject mock_object;
+  MockLayoutObject* mock_object = MakeGarbageCollected<MockLayoutObject>();
   auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
-  mock_object.SetStyle(style.get());
-  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object.LocalVisualRect());
-  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object.LocalVisualRect());
+  mock_object->SetStyle(style.get());
+  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
+  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
 
   style->SetVisibility(EVisibility::kHidden);
-  EXPECT_CALL(mock_object, VisualRectRespectsVisibility())
+  EXPECT_CALL(*mock_object, VisualRectRespectsVisibility())
       .WillOnce(Return(true));
-  EXPECT_TRUE(mock_object.LocalVisualRect().IsEmpty());
-  EXPECT_CALL(mock_object, VisualRectRespectsVisibility())
+  EXPECT_TRUE(mock_object->LocalVisualRect().IsEmpty());
+  EXPECT_CALL(*mock_object, VisualRectRespectsVisibility())
       .WillOnce(Return(false));
-  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object.LocalVisualRect());
+  EXPECT_EQ(PhysicalRect(10, 10, 20, 20), mock_object->LocalVisualRect());
+  mock_object->SetDestroyedForTesting();
 }
 
 TEST_F(LayoutObjectTest, DisplayContentsInlineWrapper) {
@@ -1379,8 +1346,6 @@ TEST_F(LayoutObjectTest, ContainValueIsRelayoutBoundary) {
 }
 
 TEST_F(LayoutObjectTest, PerspectiveIsNotParent) {
-  ScopedTransformInteropForTest enabled(true);
-
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
   SetBodyInnerHTML(R"HTML(
     <style>body { margin:0; }</style>
@@ -1403,8 +1368,6 @@ TEST_F(LayoutObjectTest, PerspectiveIsNotParent) {
 }
 
 TEST_F(LayoutObjectTest, PerspectiveWithAnonymousTable) {
-  ScopedTransformInteropForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>body { margin:0; }</style>
     <div id='ancestor' style='display: table; perspective: 100px; width: 100px; height: 100px;'>
@@ -1615,6 +1578,38 @@ TEST_F(LayoutObjectTest,
 
   EXPECT_EQ(PhysicalRect(0, 1800, 100, 100),
             target->LocalToAncestorRect(rect, nullptr, 0));
+}
+
+// crbug.com/1246619
+TEST_F(LayoutObjectTest, SetNeedsCollectInlinesForSvgText) {
+  SetBodyInnerHTML(R"HTML(
+    <div>
+    <svg xmlns="http://www.w3.org/2000/svg" id="ancestor">
+    <text id="text">Internet</text>
+    </svg></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* text = GetLayoutObjectByElementId("text");
+  if (text->IsNGSVGText()) {
+    text->SetNeedsCollectInlines();
+    EXPECT_TRUE(GetLayoutObjectByElementId("ancestor")->NeedsCollectInlines());
+  }
+}
+
+// crbug.com/1247686
+TEST_F(LayoutObjectTest, SetNeedsCollectInlinesForSvgInline) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+  SetBodyInnerHTML(R"HTML(
+    <div>
+    <svg xmlns="http://www.w3.org/2000/svg" id="ancestor">
+    <text id="text">Inter<a id="anchor">net</a></text>
+    </svg></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* anchor = GetLayoutObjectByElementId("anchor");
+  anchor->SetNeedsCollectInlines();
+  EXPECT_TRUE(GetLayoutObjectByElementId("text")->NeedsCollectInlines());
 }
 
 static const char* const kTransformsWith3D[] = {"transform: rotateX(20deg)",

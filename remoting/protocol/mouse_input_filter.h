@@ -21,6 +21,10 @@ class MouseInputFilter : public InputFilter {
  public:
   MouseInputFilter();
   explicit MouseInputFilter(InputStub* input_stub);
+
+  MouseInputFilter(const MouseInputFilter&) = delete;
+  MouseInputFilter& operator=(const MouseInputFilter&) = delete;
+
   ~MouseInputFilter() override;
 
   // Specify the input dimensions (DIPs or pixels) for mouse events.
@@ -42,12 +46,12 @@ class MouseInputFilter : public InputFilter {
   void InjectMouseEvent(const protocol::MouseEvent& event) override;
 
  private:
-  int32_t x_input_, y_input_;
-  int32_t x_output_, y_output_;
+  int32_t GetScaledX(int32_t x);
+  int32_t GetScaledY(int32_t y);
 
+  webrtc::DesktopVector input_bounds_;
+  webrtc::DesktopVector output_bounds_;
   webrtc::DesktopVector output_offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseInputFilter);
 };
 
 }  // namespace protocol

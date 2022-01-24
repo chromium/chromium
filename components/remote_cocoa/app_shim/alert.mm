@@ -262,10 +262,12 @@ namespace remote_cocoa {
 AlertBridge::AlertBridge(
     mojo::PendingReceiver<mojom::AlertBridge> bridge_receiver)
     : weak_factory_(this) {
-  mojo_receiver_.Bind(std::move(bridge_receiver),
-                      ui::WindowResizeHelperMac::Get()->task_runner());
-  mojo_receiver_.set_disconnect_handler(base::BindOnce(
-      &AlertBridge::OnMojoDisconnect, weak_factory_.GetWeakPtr()));
+  if (bridge_receiver.is_valid()) {
+    mojo_receiver_.Bind(std::move(bridge_receiver),
+                        ui::WindowResizeHelperMac::Get()->task_runner());
+    mojo_receiver_.set_disconnect_handler(base::BindOnce(
+        &AlertBridge::OnMojoDisconnect, weak_factory_.GetWeakPtr()));
+  }
 }
 
 AlertBridge::~AlertBridge() {

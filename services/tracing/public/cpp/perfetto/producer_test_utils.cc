@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/debug/leak_annotations.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/ext/base/utils.h"
@@ -56,9 +57,7 @@ TestProducerClient::TestProducerClient(
       delegate_(perfetto::base::kPageSize),
       stream_(&delegate_),
       main_thread_task_runner_(std::move(main_thread_task_runner)),
-      log_only_main_thread_(log_only_main_thread) {
-  trace_packet_.Reset(&stream_);
-}
+      log_only_main_thread_(log_only_main_thread) {}
 
 TestProducerClient::~TestProducerClient() = default;
 
@@ -85,30 +84,34 @@ void TestProducerClient::FlushPacketIfPossible() {
   // buffer already used by protozero to write the TracePacket into.
   protozero::ContiguousMemoryRange buffer = delegate_.GetNewBuffer();
 
-  uint32_t message_size = trace_packet_.Finalize();
-  if (message_size) {
-    EXPECT_GE(buffer.size(), message_size);
+  if (!trace_packet_)
+    return;
 
-    auto proto = std::make_unique<perfetto::protos::TracePacket>();
-    EXPECT_TRUE(proto->ParseFromArray(buffer.begin, message_size));
-    if (proto->has_chrome_events() &&
-        proto->chrome_events().metadata().size() > 0) {
-      legacy_metadata_packets_.push_back(std::move(proto));
-    } else if (proto->has_chrome_metadata()) {
-      proto_metadata_packets_.push_back(std::move(proto));
-    } else {
-      finalized_packets_.push_back(std::move(proto));
-    }
+  uint32_t message_size = trace_packet_->Finalize();
+  EXPECT_GE(buffer.size(), message_size);
+
+  auto proto = std::make_unique<perfetto::protos::TracePacket>();
+  EXPECT_TRUE(proto->ParseFromArray(buffer.begin, message_size));
+  if (proto->has_chrome_events() &&
+      proto->chrome_events().metadata().size() > 0) {
+    legacy_metadata_packets_.push_back(std::move(proto));
+  } else if (proto->has_chrome_metadata()) {
+    proto_metadata_packets_.push_back(std::move(proto));
+  } else if (message_size > 0) {
+    finalized_packets_.push_back(std::move(proto));
+  } else {
+    ++empty_finalized_packets_count_;
   }
 
   stream_.Reset(buffer);
-  trace_packet_.Reset(&stream_);
+  trace_packet_.reset();
 }
 
 perfetto::protos::pbzero::TracePacket* TestProducerClient::NewTracePacket() {
   FlushPacketIfPossible();
-
-  return &trace_packet_;
+  trace_packet_.emplace();
+  trace_packet_->Reset(&stream_);
+  return &trace_packet_.value();
 }
 
 size_t TestProducerClient::GetFinalizedPacketCount() {
@@ -161,19 +164,87 @@ uint64_t TestTraceWriter::written() const {
 
 DataSourceTester::DataSourceTester(
     tracing::PerfettoTracedProcess::DataSourceBase* data_source)
-    : data_source_(data_source) {
-  tracing::PerfettoTracedProcess::ResetTaskRunnerForTesting();
-  tracing::PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    : data_source_(data_source)
+#endif
+{
+  features_.InitAndDisableFeature(features::kEnablePerfettoSystemTracing);
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
       base::ThreadTaskRunnerHandle::Get());
 
   producer_ = std::make_unique<tracing::TestProducerClient>(
       std::move(perfetto_wrapper));
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
-DataSourceTester::~DataSourceTester() {
-  tracing::PerfettoTracedProcess::ResetTaskRunnerForTesting();
-  base::RunLoop().RunUntilIdle();
+DataSourceTester::~DataSourceTester() = default;
+
+void DataSourceTester::BeginTrace(
+    const base::trace_event::TraceConfig& trace_config) {
+  auto* trace_log = base::trace_event::TraceLog::GetInstance();
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  perfetto::TraceConfig perfetto_config(
+      tracing::GetDefaultPerfettoConfig(trace_config));
+  trace_log->SetEnabled(trace_config, perfetto_config);
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  trace_log->SetEnabled(trace_config,
+                        base::trace_event::TraceLog::RECORDING_MODE);
+  data_source_->StartTracing(
+      /*data_source_id=*/1, producer_.get(), perfetto::DataSourceConfig());
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
+
+void DataSourceTester::EndTracing() {
+  auto* trace_log = base::trace_event::TraceLog::GetInstance();
+  base::RunLoop wait_for_end;
+  trace_log->SetDisabled();
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  trace_log->Flush(base::BindRepeating(&DataSourceTester::OnTraceData,
+                                       base::Unretained(this),
+                                       wait_for_end.QuitClosure()));
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  data_source_->StopTracing(wait_for_end.QuitClosure());
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  wait_for_end.Run();
+}
+
+size_t DataSourceTester::GetFinalizedPacketCount() {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  return finalized_packets_.size();
+#else
+  return producer_->GetFinalizedPacketCount();
+#endif
+}
+
+const perfetto::protos::TracePacket* DataSourceTester::GetFinalizedPacket(
+    size_t packet_index) {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  return finalized_packets_[packet_index].get();
+#else
+  return producer_->GetFinalizedPacket(packet_index);
+#endif
+}
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+void DataSourceTester::OnTraceData(
+    base::RepeatingClosure quit_closure,
+    const scoped_refptr<base::RefCountedString>& chunk,
+    bool has_more_events) {
+  perfetto::protos::Trace trace;
+  bool ok = trace.ParseFromArray(chunk->data().data(), chunk->data().size());
+  DCHECK(ok);
+  for (const auto& packet : trace.packet()) {
+    // Filter out packets from the tracing service.
+    if (packet.trusted_packet_sequence_id() == 1)
+      continue;
+    auto proto = std::make_unique<perfetto::protos::TracePacket>();
+    *proto = packet;
+    finalized_packets_.push_back(std::move(proto));
+  }
+  if (!has_more_events)
+    std::move(quit_closure).Run();
+}
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace tracing

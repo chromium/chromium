@@ -27,7 +27,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_controller_emitter.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -327,7 +327,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();
   AutocompleteController* autocomplete_controller =
       GetAutocompleteController(browser());
-  OmniboxPopupModel* popup_model = omnibox_view->model()->popup_model();
 
   // Input a keyword query and wait for suggestions from the extension.
   omnibox_view->OnBeforePossibleChange();
@@ -335,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
   omnibox_view->OnAfterPossibleChange(true);
   WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
-  EXPECT_TRUE(popup_model->IsOpen());
+  EXPECT_TRUE(omnibox_view->model()->PopupIsOpen());
 
   // Quickly type another query and accept it before getting suggestions back
   // for the query. The popup will close after accepting input - ensure that it
@@ -354,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
   // This checks that the keyword provider (via javascript)
   // gets told to navigate to the string "command".
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-  EXPECT_FALSE(popup_model->IsOpen());
+  EXPECT_FALSE(omnibox_view->model()->PopupIsOpen());
 }
 
 // Tests deleting a deletable omnibox extension suggestion result.

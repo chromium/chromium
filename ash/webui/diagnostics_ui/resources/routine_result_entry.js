@@ -12,6 +12,8 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
+import {getRoutineFailureMessage} from './diagnostics_utils.js';
+import {RoutineGroup} from './routine_group.js';
 import {ExecutionProgress, ResultStatusItem} from './routine_list_executor.js';
 import {BadgeType} from './text_badge.js';
 
@@ -58,39 +60,17 @@ export function getRoutineType(routineType) {
       return loadTimeData.getString('memoryRoutineText');
     case RoutineType.kSignalStrength:
       return loadTimeData.getString('signalStrengthRoutineText');
+    case RoutineType.kArcHttp:
+      return loadTimeData.getString('arcHttpRoutineText');
+    case RoutineType.kArcPing:
+        return loadTimeData.getString('arcPingRoutineText');
+    case RoutineType.kArcDnsResolution:
+      return loadTimeData.getString('arcDnsResolutionRoutineText');
     default:
       // Values should always be found in the enum.
       assert(false);
       return '';
   }
-}
-
-/**
- * Maps routine to help doc URL
- * @param {!RoutineType} routineType
- * @return {string} url to help docs
- */
-export function lookupLinkForRoutine(routineType) {
-  let url = '';
-  // TODO(ashleydp): Get actual routine links.
-  switch (routineType) {
-    case RoutineType.kCaptivePortal:
-    case RoutineType.kDnsLatency:
-    case RoutineType.kDnsResolution:
-    case RoutineType.kDnsResolverPresent:
-    case RoutineType.kGatewayCanBePinged:
-    case RoutineType.kHasSecureWiFiConnection:
-    case RoutineType.kHttpFirewall:
-    case RoutineType.kHttpsFirewall:
-    case RoutineType.kHttpsLatency:
-    case RoutineType.kLanConnectivity:
-    case RoutineType.kSignalStrength:
-      url = '#'
-      break;
-    default:
-      break;
-  }
-  return url;
 }
 
 /**
@@ -119,7 +99,7 @@ export function getSimpleResult(result) {
 
 /**
  * @fileoverview
- * 'routine-result-entry' shows the status of a single test routine.
+ * 'routine-result-entry' shows the status of a single test routine or group.
  */
 Polymer({
   is: 'routine-result-entry',
@@ -127,7 +107,17 @@ Polymer({
   _template: html`{__html_template__}`,
 
   properties: {
-    /** @type {!ResultStatusItem} */
+    /**
+     * Added to support testing of announce behavior.
+     * @private
+     * @type {string}
+     */
+    announcedText_: {
+      type: String,
+      value: '',
+    },
+
+    /** @type {RoutineGroup|ResultStatusItem} */
     item: {
       type: Object,
     },
@@ -135,13 +125,7 @@ Polymer({
     /** @private */
     routineType_: {
       type: String,
-      computed: 'getRunningRoutineString_(item.routine)',
-    },
-
-    /** @protected */
-    routineLink_: {
-      type: String,
-      computed: 'getRoutineLink_(item.routine)',
+      computed: 'getRunningRoutineString_(item.*)',
     },
 
     /** @protected {!BadgeType} */
@@ -167,9 +151,15 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @type {boolean} */
+    usingRoutineGroups: {
+      type: Boolean,
+      value: false,
+    },
   },
 
-  observers: ['entryStatusChanged_(item.progress, item.result)'],
+  observers: ['entryStatusChanged_(item.*)'],
 
   /** @override */
   attached() {
@@ -178,21 +168,15 @@ Polymer({
 
   /**
    * Get the localized string name for the routine.
-   * @param {!RoutineType} routine
    * @return {string}
    */
-  getRunningRoutineString_(routine) {
-    return loadTimeData.getStringF('routineEntryText', getRoutineType(routine));
-  },
+  getRunningRoutineString_() {
+    if (this.usingRoutineGroups) {
+      return loadTimeData.getString(this.item.groupName);
+    }
 
-  /**
-   * Get routine's help/info link from lookup function
-   * @param {!RoutineType} routine
-   * @return {string}
-   * @private
-   */
-  getRoutineLink_(routine) {
-    return lookupLinkForRoutine(routine);
+    return loadTimeData.getStringF(
+        'routineEntryText', getRoutineType(this.item.routine));
   },
 
   /**
@@ -212,18 +196,37 @@ Polymer({
       case ExecutionProgress.kCancelled:
         this.setBadgeTypeAndText_(
             BadgeType.STOPPED, loadTimeData.getString('testStoppedBadgeText'));
-        this.announceRoutineStatus_();
         break;
       case ExecutionProgress.kCompleted:
         this.testCompleted_ = true;
-        const testPassed = this.item.result &&
-            getSimpleResult(this.item.result) ===
-                StandardRoutineResult.kTestPassed;
+        // Prevent warning state from being overridden.
+        if (this.item.inWarningState) {
+          this.setBadgeTypeAndText_(
+              BadgeType.WARNING,
+              loadTimeData.getString('testWarningBadgeText'));
+          return;
+        }
+
+        const testPassed = this.usingRoutineGroups ?
+            !this.item.failedTest :
+            (this.item.result &&
+             getSimpleResult(this.item.result) ===
+                 StandardRoutineResult.kTestPassed);
         const badgeType = testPassed ? BadgeType.SUCCESS : BadgeType.ERROR;
         const badgeText = loadTimeData.getString(
             testPassed ? 'testSucceededBadgeText' : 'testFailedBadgeText');
         this.setBadgeTypeAndText_(badgeType, badgeText);
-        this.announceRoutineStatus_();
+        if (!testPassed) {
+          this.announceRoutineStatus_();
+        }
+        break;
+      case ExecutionProgress.kSkipped:
+        this.setBadgeTypeAndText_(
+            BadgeType.SKIPPED, loadTimeData.getString('testSkippedBadgeText'));
+        break;
+      case ExecutionProgress.kWarning:
+        this.setBadgeTypeAndText_(
+            BadgeType.WARNING, loadTimeData.getString('testWarningBadgeText'));
         break;
       default:
         assertNotReached();
@@ -244,8 +247,8 @@ Polymer({
 
   /** @private */
   announceRoutineStatus_() {
-    this.fire(
-        'iron-announce', {text: this.routineType_ + ' - ' + this.badgeText_});
+    this.announcedText_ = this.routineType_ + ' - ' + this.badgeText_;
+    this.fire('iron-announce', {text: `${this.announcedText_}`});
   },
 
   /**
@@ -266,6 +269,9 @@ Polymer({
       case BadgeType.ERROR:
         lineColor = 'red';
         break;
+      case BadgeType.WARNING:
+        lineColor = 'yellow';
+        break;
       case BadgeType.STOPPED:
       case BadgeType.QUEUED:
         return '';
@@ -279,5 +285,17 @@ Polymer({
    */
   shouldHideLines_() {
     return this.hideVerticalLines || !this.testCompleted_;
+  },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeFailedTestText_() {
+    if (!this.usingRoutineGroups || !this.item.failedTest) {
+      return '';
+    }
+
+    return getRoutineFailureMessage(this.item.failedTest);
   },
 });

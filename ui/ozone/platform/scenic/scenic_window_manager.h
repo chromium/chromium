@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/scenic/scenic_screen.h"
@@ -31,6 +30,10 @@ class ScenicWindow;
 class COMPONENT_EXPORT(OZONE) ScenicWindowManager {
  public:
   ScenicWindowManager();
+
+  ScenicWindowManager(const ScenicWindowManager&) = delete;
+  ScenicWindowManager& operator=(const ScenicWindowManager&) = delete;
+
   ~ScenicWindowManager();
 
   // Shuts down the window manager.
@@ -50,18 +53,12 @@ class COMPONENT_EXPORT(OZONE) ScenicWindowManager {
   // Called by ScenicWindow destructor to unregister |window|.
   void RemoveWindow(int32_t window_id, ScenicWindow* window);
 
-  ScenicScreen* screen() { return screen_.get(); }
-
   ScenicWindow* GetWindow(int32_t window_id);
 
  private:
   base::IDMap<ScenicWindow*> windows_;
 
-  base::WeakPtr<ScenicScreen> screen_;
-
   fuchsia::ui::scenic::ScenicPtr scenic_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScenicWindowManager);
 };
 
 }  // namespace ui

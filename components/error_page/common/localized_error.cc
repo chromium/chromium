@@ -833,6 +833,8 @@ void AddSuggestionsDetails(int error_code,
         IDS_ERRORPAGES_SUGGESTION_FIREWALL_CONFIG_BODY, false);
   }
 
+  // TODO(https://crbug.com/1254714): Provide meaningful strings for Fuchsia.
+#if !defined(OS_FUCHSIA)
   if (suggestions & SUGGEST_PROXY_CONFIG) {
     AddSuggestionDetailDictionaryToList(
         suggestions_details, IDS_ERRORPAGES_SUGGESTION_PROXY_CONFIG_HEADER, 0,
@@ -848,6 +850,7 @@ void AddSuggestionsDetails(int error_code,
         "proxyTitle",
         l10n_util::GetStringUTF16(IDS_OPTIONS_PROXIES_CONFIGURE_BUTTON));
   }
+#endif  //  !defined(OS_FUCHSIA)
 #endif
 
   if (suggestions & SUGGEST_CONTACT_ADMINISTRATOR &&

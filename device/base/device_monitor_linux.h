@@ -34,6 +34,9 @@ class DEVICE_BASE_EXPORT DeviceMonitorLinux {
 
   DeviceMonitorLinux();
 
+  DeviceMonitorLinux(const DeviceMonitorLinux&) = delete;
+  DeviceMonitorLinux& operator=(const DeviceMonitorLinux&) = delete;
+
   static DeviceMonitorLinux* GetInstance();
 
   void AddObserver(Observer* observer);
@@ -57,8 +60,6 @@ class DEVICE_BASE_EXPORT DeviceMonitorLinux {
   base::ObserverList<Observer, true>::Unchecked observers_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceMonitorLinux);
 };
 
 }  // namespace device

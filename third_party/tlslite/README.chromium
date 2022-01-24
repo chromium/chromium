@@ -64,3 +64,4 @@ Local Modifications:
   inspired by tlslite-ng implementation.
 - patches/signature_algorithms.patch: Add basic signature algorithms
   negotiation.
+- patches/python3.patch: Fix with Python 3.

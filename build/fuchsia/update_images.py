@@ -59,16 +59,17 @@ def DownloadSdkBootImages(bucket, sdk_hash, boot_image_names, image_root_dir):
 
     logging.info('Downloading Fuchsia boot images for %s.%s...' %
                  (device_type, arch))
-    if bucket == 'fuchsia-sdk':
-      images_tarball_url = 'gs://{bucket}/development/{sdk_hash}/images/'\
-          '{device_type}.{arch}.tgz'.format(
-              bucket=bucket, sdk_hash=sdk_hash,
-              device_type=device_type, arch=arch)
+
+    # Images use different formats. See fxbug.dev/85552.
+    if bucket == 'fuchsia-sdk' or device_type == "workstation":
+      type_arch_connector = '.'
     else:
-      images_tarball_url = 'gs://{bucket}/development/{sdk_hash}/images/'\
-          '{device_type}-{arch}.tgz'.format(
-              bucket=bucket, sdk_hash=sdk_hash,
-              device_type=device_type, arch=arch)
+      type_arch_connector = '-'
+
+    images_tarball_url = 'gs://{bucket}/development/{sdk_hash}/images/'\
+        '{device_type}{type_arch_connector}{arch}.tgz'.format(
+            bucket=bucket, sdk_hash=sdk_hash, device_type=device_type,
+            type_arch_connector=type_arch_connector, arch=arch)
     DownloadAndUnpackFromCloudStorage(images_tarball_url, image_output_dir)
 
 

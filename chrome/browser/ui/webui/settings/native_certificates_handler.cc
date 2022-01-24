@@ -17,7 +17,7 @@ NativeCertificatesHandler::NativeCertificatesHandler() {}
 NativeCertificatesHandler::~NativeCertificatesHandler() {}
 
 void NativeCertificatesHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showManageSSLCertificates",
       base::BindRepeating(
           &NativeCertificatesHandler::HandleShowManageSSLCertificates,

@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/external_policy_data_fetcher.h"
 #include "crypto/sha2.h"
 #include "net/base/backoff_entry.h"

@@ -7,7 +7,30 @@
  * 'kerberos-add-account-dialog' is an element to add Kerberos accounts.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/js/action_link.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../controls/settings_textarea.js';
+import '../../settings_shared_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+
+import {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType, ValidateKerberosConfigResult} from './kerberos_accounts_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'kerberos-add-account-dialog',
 
   behaviors: [I18nBehavior],
@@ -16,7 +39,7 @@ Polymer({
     /**
      * If set, some fields are preset from this account (like username or
      * whether to remember the password).
-     * @type {?settings.KerberosAccount}
+     * @type {?KerberosAccount}
      */
     presetAccount: Object,
 
@@ -134,13 +157,12 @@ Polymer({
   /** @private {string} */
   actionButtonLabel_: '',
 
-  /** @private {?settings.KerberosAccountsBrowserProxy} */
+  /** @private {?KerberosAccountsBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   created() {
-    this.browserProxy_ =
-        settings.KerberosAccountsBrowserProxyImpl.getInstance();
+    this.browserProxy_ = KerberosAccountsBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -213,7 +235,7 @@ Polymer({
           this.inProgress_ = false;
 
           // Success case. Close dialog.
-          if (error === settings.KerberosErrorType.kNone) {
+          if (error === KerberosErrorType.kNone) {
             this.accountWasRefreshed = this.presetAccount != null;
             this.$.addDialog.close();
             return;
@@ -222,7 +244,7 @@ Polymer({
           // Triggers the UI to update error messages.
           this.updateErrorMessages_(error);
         });
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /** @private */
@@ -237,7 +259,7 @@ Polymer({
     // Keep a copy of the config in case the user cancels.
     this.editableConfig_ = this.config_;
     this.showAdvancedConfig_ = true;
-    Polymer.dom.flush();
+    flush();
     this.$$('#advancedConfigDialog').showModal();
   },
 
@@ -257,7 +279,7 @@ Polymer({
       this.inProgress_ = false;
 
       // Success case. Close dialog.
-      if (result.error === settings.KerberosErrorType.kNone) {
+      if (result.error === KerberosErrorType.kNone) {
         this.showAdvancedConfig_ = false;
         this.config_ = this.editableConfig_;
         this.configErrorText_ = '';
@@ -268,7 +290,7 @@ Polymer({
       // Triggers the UI to update error messages.
       this.updateConfigErrorMessage_(result);
     });
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   onAdvancedConfigClose_(event) {
@@ -283,7 +305,7 @@ Polymer({
   },
 
   /**
-   * @param {!settings.KerberosErrorType} error Current error enum
+   * @param {!KerberosErrorType} error Current error enum
    * @private
    */
   updateErrorMessages_(error) {
@@ -292,34 +314,34 @@ Polymer({
     this.passwordErrorText_ = '';
 
     switch (error) {
-      case settings.KerberosErrorType.kNone:
+      case KerberosErrorType.kNone:
         break;
 
-      case settings.KerberosErrorType.kNetworkProblem:
+      case KerberosErrorType.kNetworkProblem:
         this.generalErrorText_ = this.i18n('kerberosErrorNetworkProblem');
         break;
-      case settings.KerberosErrorType.kParsePrincipalFailed:
+      case KerberosErrorType.kParsePrincipalFailed:
         this.usernameErrorText_ = this.i18n('kerberosErrorUsernameInvalid');
         break;
-      case settings.KerberosErrorType.kBadPrincipal:
+      case KerberosErrorType.kBadPrincipal:
         this.usernameErrorText_ = this.i18n('kerberosErrorUsernameUnknown');
         break;
-      case settings.KerberosErrorType.kDuplicatePrincipalName:
+      case KerberosErrorType.kDuplicatePrincipalName:
         this.usernameErrorText_ =
             this.i18n('kerberosErrorDuplicatePrincipalName');
         break;
-      case settings.KerberosErrorType.kContactingKdcFailed:
+      case KerberosErrorType.kContactingKdcFailed:
         this.usernameErrorText_ = this.i18n('kerberosErrorContactingServer');
         break;
 
-      case settings.KerberosErrorType.kBadPassword:
+      case KerberosErrorType.kBadPassword:
         this.passwordErrorText_ = this.i18n('kerberosErrorPasswordInvalid');
         break;
-      case settings.KerberosErrorType.kPasswordExpired:
+      case KerberosErrorType.kPasswordExpired:
         this.passwordErrorText_ = this.i18n('kerberosErrorPasswordExpired');
         break;
 
-      case settings.KerberosErrorType.kKdcDoesNotSupportEncryptionType:
+      case KerberosErrorType.kKdcDoesNotSupportEncryptionType:
         this.generalErrorText_ = this.i18n('kerberosErrorKdcEncType');
         break;
       default:
@@ -329,17 +351,17 @@ Polymer({
   },
 
   /**
-   * @param {!settings.ValidateKerberosConfigResult} result Result from a
+   * @param {!ValidateKerberosConfigResult} result Result from a
    *    validateKerberosConfig() call.
    * @private
    */
   updateConfigErrorMessage_(result) {
     // There should be an error at this point.
-    assert(result.error !== settings.KerberosErrorType.kNone);
+    assert(result.error !== KerberosErrorType.kNone);
 
     // Only handle kBadConfig here. Display generic error otherwise. Should only
     // occur if something is wrong with D-Bus, but nothing user-induced.
-    if (result.error !== settings.KerberosErrorType.kBadConfig) {
+    if (result.error !== KerberosErrorType.kBadConfig) {
       this.configErrorText_ =
           this.i18n('kerberosErrorGeneral', result.error.toString());
       return;
@@ -354,38 +376,38 @@ Polymer({
     }
 
     // If kBadConfig, the error code should be set.
-    assert(result.errorInfo.code !== settings.KerberosConfigErrorCode.kNone);
+    assert(result.errorInfo.code !== KerberosConfigErrorCode.kNone);
     this.configErrorText_ =
         this.getConfigErrorString_(result.errorInfo.code, errorLine);
   },
 
   /**
-   * @param {!settings.KerberosConfigErrorCode} code Error code
+   * @param {!KerberosConfigErrorCode} code Error code
    * @param {string} errorLine Line where the error occurred
    * @return {string} Localized error string that corresponds to code
    * @private
    */
   getConfigErrorString_(code, errorLine) {
     switch (code) {
-      case settings.KerberosConfigErrorCode.kSectionNestedInGroup:
+      case KerberosConfigErrorCode.kSectionNestedInGroup:
         return this.i18n('kerberosConfigErrorSectionNestedInGroup', errorLine);
-      case settings.KerberosConfigErrorCode.kSectionSyntax:
+      case KerberosConfigErrorCode.kSectionSyntax:
         return this.i18n('kerberosConfigErrorSectionSyntax', errorLine);
-      case settings.KerberosConfigErrorCode.kExpectedOpeningCurlyBrace:
+      case KerberosConfigErrorCode.kExpectedOpeningCurlyBrace:
         return this.i18n(
             'kerberosConfigErrorExpectedOpeningCurlyBrace', errorLine);
-      case settings.KerberosConfigErrorCode.kExtraCurlyBrace:
+      case KerberosConfigErrorCode.kExtraCurlyBrace:
         return this.i18n('kerberosConfigErrorExtraCurlyBrace', errorLine);
-      case settings.KerberosConfigErrorCode.kRelationSyntax:
+      case KerberosConfigErrorCode.kRelationSyntax:
         return this.i18n('kerberosConfigErrorRelationSyntax', errorLine);
-      case settings.KerberosConfigErrorCode.kKeyNotSupported:
+      case KerberosConfigErrorCode.kKeyNotSupported:
         return this.i18n('kerberosConfigErrorKeyNotSupported', errorLine);
-      case settings.KerberosConfigErrorCode.kSectionNotSupported:
+      case KerberosConfigErrorCode.kSectionNotSupported:
         return this.i18n('kerberosConfigErrorSectionNotSupported', errorLine);
-      case settings.KerberosConfigErrorCode.kKrb5FailedToParse:
+      case KerberosConfigErrorCode.kKrb5FailedToParse:
         // Note: This error doesn't have an error line.
         return this.i18n('kerberosConfigErrorKrb5FailedToParse');
-      case settings.KerberosConfigErrorCode.kTooManyNestedGroups:
+      case KerberosConfigErrorCode.kTooManyNestedGroups:
         return this.i18n('kerberosConfigErrorTooManyNestedGroups', errorLine);
       default:
         assertNotReached();

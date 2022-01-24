@@ -31,7 +31,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -171,9 +173,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
   StartUpdating();
 
   EXPECT_TRUE(tasks().empty());
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
+                     "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                            "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(1);
@@ -189,8 +191,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
               .spec()),
       base::CompareCase::INSENSITIVE_ASCII));
 
-  GetServiceWorkerContext(browser())->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
+  GetServiceWorkerContext(browser())->StopAllServiceWorkersForStorageKey(
+      blink::StorageKey(
+          url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(0);
 
   StopUpdating();
@@ -208,9 +211,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
   // Close the default browser.
   CloseBrowserSynchronously(browser());
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito, embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
+                     "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(incognito->tab_strip_model()->GetActiveWebContents(),
                            "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(1);
@@ -226,8 +229,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
               .spec()),
       base::CompareCase::INSENSITIVE_ASCII));
 
-  GetServiceWorkerContext(incognito)->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
+  GetServiceWorkerContext(incognito)->StopAllServiceWorkersForStorageKey(
+      blink::StorageKey(
+          url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(0);
 
   StopUpdating();
@@ -236,56 +240,60 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
 
 // If the profile are created dynamically and there is more than one profile
 // simultaneously, the WorkerTaskProvider can still works.
+// Flaky on all platforms. https://crrev.com/1244009.
 IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
-                       CreateTasksForMultiProfiles) {
+                       DISABLED_CreateTasksForMultiProfiles) {
   StartUpdating();
 
   EXPECT_TRUE(tasks().empty());
+
+  const GURL kCreateServiceWorkerURL = embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html");
+
   Browser* browser_1 = CreateNewProfileAndSwitch();
-  ui_test_utils::NavigateToURL(
-      browser_1, embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
-  EXPECT_EQ("DONE", EvalJs(browser_1->tab_strip_model()->GetActiveWebContents(),
+  content::RenderFrameHost* render_frame_host_1 =
+      ui_test_utils::NavigateToURL(browser_1, kCreateServiceWorkerURL);
+  ASSERT_EQ(render_frame_host_1->GetLastCommittedURL(),
+            kCreateServiceWorkerURL);
+  EXPECT_EQ("DONE", EvalJs(render_frame_host_1,
                            "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(1);
 
   Browser* browser_2 = CreateNewProfileAndSwitch();
-  ui_test_utils::NavigateToURL(
-      browser_2, embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
-  EXPECT_EQ("DONE", EvalJs(browser_2->tab_strip_model()->GetActiveWebContents(),
+  content::RenderFrameHost* render_frame_host_2 =
+      ui_test_utils::NavigateToURL(browser_2, kCreateServiceWorkerURL);
+  ASSERT_EQ(render_frame_host_2->GetLastCommittedURL(),
+            kCreateServiceWorkerURL);
+  EXPECT_EQ("DONE", EvalJs(render_frame_host_2,
                            "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(2);
+
+  const GURL kServiceWorkerURL = embedded_test_server()->GetURL(
+      "/service_worker/respond_with_fetch_worker.js");
 
   const Task* task_1 = tasks()[0];
   EXPECT_EQ(task_1->GetChildProcessUniqueID(), GetChildProcessID(browser_1));
   EXPECT_EQ(Task::SERVICE_WORKER, task_1->GetType());
-  EXPECT_TRUE(base::StartsWith(
-      task_1->title(),
-      ExpectedTaskTitle(
-          embedded_test_server()
-              ->GetURL("/service_worker/respond_with_fetch_worker.js")
-              .spec()),
-      base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_TRUE(base::StartsWith(task_1->title(),
+                               ExpectedTaskTitle(kServiceWorkerURL.spec()),
+                               base::CompareCase::INSENSITIVE_ASCII));
 
   const Task* task_2 = tasks()[1];
   EXPECT_EQ(task_2->GetChildProcessUniqueID(), GetChildProcessID(browser_2));
   EXPECT_EQ(Task::SERVICE_WORKER, task_2->GetType());
-  EXPECT_TRUE(base::StartsWith(
-      task_2->title(),
-      ExpectedTaskTitle(
-          embedded_test_server()
-              ->GetURL("/service_worker/respond_with_fetch_worker.js")
-              .spec()),
-      base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_TRUE(base::StartsWith(task_2->title(),
+                               ExpectedTaskTitle(kServiceWorkerURL.spec()),
+                               base::CompareCase::INSENSITIVE_ASCII));
 
-  GetServiceWorkerContext(browser_1)->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
+  GetServiceWorkerContext(browser_1)->StopAllServiceWorkersForStorageKey(
+      blink::StorageKey(
+          url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(1);
   EXPECT_EQ(task_2, tasks()[0]);
 
-  GetServiceWorkerContext(browser_2)->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
+  GetServiceWorkerContext(browser_2)->StopAllServiceWorkersForStorageKey(
+      blink::StorageKey(
+          url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(0);
 
   StopUpdating();
@@ -295,9 +303,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest, CreateExistingTasks) {
   EXPECT_TRUE(tasks().empty());
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
+                     "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                            "register('respond_with_fetch_worker.js');"));
 
@@ -318,8 +326,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest, CreateExistingTasks) {
               .spec()),
       base::CompareCase::INSENSITIVE_ASCII));
 
-  GetServiceWorkerContext(browser())->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
+  GetServiceWorkerContext(browser())->StopAllServiceWorkersForStorageKey(
+      blink::StorageKey(
+          url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(0);
 
   StopUpdating();
@@ -336,9 +345,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
   EXPECT_TRUE(tasks().empty());
   Browser* browser = CreateIncognitoBrowser();
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser, embedded_test_server()->GetURL(
-                   "/service_worker/create_service_worker.html"));
+                   "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
                            "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(1);

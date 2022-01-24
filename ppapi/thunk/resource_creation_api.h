@@ -25,7 +25,6 @@
 #include "ppapi/c/ppb_websocket.h"
 #include "ppapi/c/private/pp_private_font_charset.h"
 #include "ppapi/shared_impl/api_id.h"
-#include "ppapi/shared_impl/ppb_image_data_shared.h"
 
 // Windows defines 'PostMessage', so we have to undef it.
 #ifdef PostMessage

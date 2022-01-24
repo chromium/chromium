@@ -39,8 +39,7 @@ using chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdEvent;
 // Interval used between successive connection attempts to the
 // wilco_dtc_supportd. This is a safety measure for avoiding busy loops when the
 // wilco_dtc_supportd is dysfunctional.
-constexpr base::TimeDelta kConnectionAttemptInterval =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kConnectionAttemptInterval = base::Seconds(1);
 // The maximum number of consecutive connection attempts to the
 // wilco_dtc_supportd before giving up. This is to prevent wasting system
 // resources on hopeless attempts to connect in cases when the
@@ -54,6 +53,12 @@ class WilcoDtcSupportdBridgeDelegateImpl final
     : public WilcoDtcSupportdBridge::Delegate {
  public:
   WilcoDtcSupportdBridgeDelegateImpl();
+
+  WilcoDtcSupportdBridgeDelegateImpl(
+      const WilcoDtcSupportdBridgeDelegateImpl&) = delete;
+  WilcoDtcSupportdBridgeDelegateImpl& operator=(
+      const WilcoDtcSupportdBridgeDelegateImpl&) = delete;
+
   ~WilcoDtcSupportdBridgeDelegateImpl() override;
 
   // Delegate overrides:
@@ -62,9 +67,6 @@ class WilcoDtcSupportdBridgeDelegateImpl final
           chromeos::wilco_dtc_supportd::mojom::WilcoDtcSupportdServiceFactory>*
           wilco_dtc_supportd_service_factory_mojo_remote,
       base::ScopedFD* remote_endpoint_fd) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdBridgeDelegateImpl);
 };
 
 WilcoDtcSupportdBridgeDelegateImpl::WilcoDtcSupportdBridgeDelegateImpl() =

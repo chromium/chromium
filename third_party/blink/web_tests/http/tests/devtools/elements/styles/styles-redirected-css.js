@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that styles in redirected css are editable.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="test_div">test</div>

@@ -145,6 +145,11 @@ struct StructTraits<
     return r.mixed_content_rules;
   }
 
+  static const std::vector<ContentSettingPatternSource>&
+  auto_dark_content_rules(const RendererContentSettingRules& r) {
+    return r.auto_dark_content_rules;
+  }
+
   static bool Read(
       content_settings::mojom::RendererContentSettingRulesDataView data,
       RendererContentSettingRules* out);

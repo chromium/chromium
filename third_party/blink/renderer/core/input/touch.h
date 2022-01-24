@@ -51,11 +51,9 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
                        const FloatPoint& page_pos,
                        const FloatSize& radius,
                        float rotation_angle,
-                       float force,
-                       String region) {
+                       float force) {
     return MakeGarbageCollected<Touch>(frame, target, identifier, screen_pos,
-                                       page_pos, radius, rotation_angle, force,
-                                       region);
+                                       page_pos, radius, rotation_angle, force);
   }
 
   static Touch* Create(const Document& document, const TouchInit* initializer) {
@@ -69,8 +67,7 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
         const FloatPoint& page_pos,
         const FloatSize& radius,
         float rotation_angle,
-        float force,
-        String region);
+        float force);
 
   Touch(EventTarget*,
         int identifier,
@@ -80,7 +77,6 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
         const FloatSize& radius,
         float rotation_angle,
         float force,
-        String region,
         LayoutPoint absolute_location);
 
   Touch(LocalFrame*, const TouchInit*);
@@ -88,17 +84,16 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
   // DOM Touch implementation
   EventTarget* target() const { return target_.Get(); }
   int identifier() const { return identifier_; }
-  double clientX() const { return client_pos_.X(); }
-  double clientY() const { return client_pos_.Y(); }
-  double screenX() const { return screen_pos_.X(); }
-  double screenY() const { return screen_pos_.Y(); }
-  double pageX() const { return page_pos_.X(); }
-  double pageY() const { return page_pos_.Y(); }
-  float radiusX() const { return radius_.Width(); }
-  float radiusY() const { return radius_.Height(); }
+  double clientX() const { return client_pos_.x(); }
+  double clientY() const { return client_pos_.y(); }
+  double screenX() const { return screen_pos_.x(); }
+  double screenY() const { return screen_pos_.y(); }
+  double pageX() const { return page_pos_.x(); }
+  double pageY() const { return page_pos_.y(); }
+  float radiusX() const { return radius_.width(); }
+  float radiusY() const { return radius_.height(); }
   float rotationAngle() const { return rotation_angle_; }
   float force() const { return force_; }
-  const String& region() const { return region_; }
 
   // Blink-internal methods
   const LayoutPoint& AbsoluteLocation() const { return absolute_location_; }
@@ -120,7 +115,6 @@ class CORE_EXPORT Touch final : public ScriptWrappable {
   FloatSize radius_;
   float rotation_angle_;
   float force_;
-  String region_;
   // FIXME(rbyers): Shouldn't we be able to migrate callers to relying on
   // screenPos, pagePos or clientPos? absoluteLocation appears to be the same as
   // pagePos but without browser scale applied.

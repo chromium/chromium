@@ -27,11 +27,11 @@ rootWebArea
 ++++++++++++++++++++genericContainer
 ++++++++++++++++++++++button name='Show month selection panel'
 ++++++++++++++++++++++++staticText
-++++++++++++++++++++++++svgRoot
+++++++++++++++++++++++++image
 ++++++++++++++++++++button name='Show previous month'
-++++++++++++++++++++++svgRoot
+++++++++++++++++++++++image
 ++++++++++++++++++++button name='Show next month'
-++++++++++++++++++++++svgRoot
+++++++++++++++++++++++image
 ++++++++++++++++++grid activedescendantId=cell
 ++++++++++++++++++++genericContainer
 ++++++++++++++++++++++genericContainer

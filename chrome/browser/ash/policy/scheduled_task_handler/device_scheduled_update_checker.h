@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "ash/components/settings/timezone_settings.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/os_and_policies_update_checker.h"
@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/task_executor_with_retries.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "services/device/public/mojom/wake_lock.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -26,15 +25,20 @@ namespace policy {
 // This class listens for changes in the scheduled update check policy and then
 // manages recurring update checks based on the policy.
 class DeviceScheduledUpdateChecker
-    : public chromeos::system::TimezoneSettings::Observer {
+    : public ash::system::TimezoneSettings::Observer {
  public:
   DeviceScheduledUpdateChecker(
       ash::CrosSettings* cros_settings,
       chromeos::NetworkStateHandler* network_state_handler,
       std::unique_ptr<ScheduledTaskExecutor> update_check_executor);
+
+  DeviceScheduledUpdateChecker(const DeviceScheduledUpdateChecker&) = delete;
+  DeviceScheduledUpdateChecker& operator=(const DeviceScheduledUpdateChecker&) =
+      delete;
+
   ~DeviceScheduledUpdateChecker() override;
 
-  // chromeos::system::TimezoneSettings::Observer implementation.
+  // ash::system::TimezoneSettings::Observer implementation.
   void TimezoneChanged(const icu::TimeZone& time_zone) override;
 
  protected:
@@ -94,8 +98,6 @@ class DeviceScheduledUpdateChecker
 
   // Timer that is scheduled to check for updates.
   std::unique_ptr<ScheduledTaskExecutor> update_check_executor_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceScheduledUpdateChecker);
 };
 
 namespace update_checker_internal {
@@ -105,15 +107,14 @@ constexpr char kUpdateCheckTimerTag[] = "DeviceScheduledUpdateChecker";
 
 // The timeout after which an OS and policies update is aborted.
 constexpr base::TimeDelta kOsAndPoliciesUpdateCheckHardTimeout =
-    base::TimeDelta::FromMinutes(40);
+    base::Minutes(40);
 
 // The maximum iterations allowed to start an update check timer if the
 // operation fails.
 constexpr int kMaxStartUpdateCheckTimerRetryIterations = 5;
 
 // Time to call |StartUpdateCheckTimer| again in case it failed.
-constexpr base::TimeDelta kStartUpdateCheckTimerRetryTime =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kStartUpdateCheckTimerRetryTime = base::Minutes(1);
 
 }  // namespace update_checker_internal
 

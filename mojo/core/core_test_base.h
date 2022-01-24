@@ -26,6 +26,10 @@ class CoreTestBase : public testing::Test {
   using MockHandleInfo = CoreTestBase_MockHandleInfo;
 
   CoreTestBase();
+
+  CoreTestBase(const CoreTestBase&) = delete;
+  CoreTestBase& operator=(const CoreTestBase&) = delete;
+
   ~CoreTestBase() override;
 
  protected:
@@ -33,14 +37,16 @@ class CoreTestBase : public testing::Test {
   MojoHandle CreateMockHandle(MockHandleInfo* info);
 
   Core* core();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CoreTestBase);
 };
 
 class CoreTestBase_MockHandleInfo {
  public:
   CoreTestBase_MockHandleInfo();
+
+  CoreTestBase_MockHandleInfo(const CoreTestBase_MockHandleInfo&) = delete;
+  CoreTestBase_MockHandleInfo& operator=(const CoreTestBase_MockHandleInfo&) =
+      delete;
+
   ~CoreTestBase_MockHandleInfo();
 
   unsigned GetCtorCallCount() const;
@@ -81,8 +87,6 @@ class CoreTestBase_MockHandleInfo {
   unsigned read_data_call_count_;
   unsigned begin_read_data_call_count_;
   unsigned end_read_data_call_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(CoreTestBase_MockHandleInfo);
 };
 
 }  // namespace test

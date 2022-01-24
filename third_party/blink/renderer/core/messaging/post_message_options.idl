@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/whatwg/html/issues/3799
+// This dictionary doesn't currently exist in the specs. HTML used to define a
+// `PostMessageOptions` dictionary, but it was renamed to
+// `StructuredSerializeOptions` in https://github.com/whatwg/html/pull/3414.
 
-dictionary PostMessageOptions {
-    sequence<object> transfer = [];
+// In Blink we're repurposing the old name to include the
+// `includeUserActivation` member proposed in
+// https://github.com/dtapuska/useractivation.
+
+dictionary PostMessageOptions : StructuredSerializeOptions {
     boolean includeUserActivation = false;
 };

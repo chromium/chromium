@@ -66,8 +66,8 @@ class SubframeTaskBrowserTest : public InProcessBrowserTest {
   }
 
   void NavigateTo(const char* page_url) const {
-    ui_test_utils::NavigateToURL(browser(),
-                                 embedded_test_server()->GetURL(page_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(page_url)));
   }
 };
 
@@ -184,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerHungSubframe) {
   // Simulate a hang in one of the subframe processes.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  std::vector<content::RenderFrameHost*> frames = web_contents->GetAllFrames();
-  content::RenderFrameHost* subframe1 = frames[1];
+  content::RenderFrameHost* subframe1 = ChildFrameAt(web_contents, 0);
+  ASSERT_TRUE(subframe1);
   SimulateUnresponsiveRenderer(web_contents,
                                subframe1->GetView()->GetRenderWidgetHost());
 

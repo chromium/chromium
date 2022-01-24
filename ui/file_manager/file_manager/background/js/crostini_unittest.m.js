@@ -176,13 +176,14 @@ export function testCanSharePath() {
 
   const allowed = [
     'downloads', 'removable', 'android_files', 'drive',
-    'shared_drives_grand_root', 'team_drive'
+    'shared_drives_grand_root', 'team_drive', 'drive_shared_with_me'
   ];
   for (const type of allowed) {
     volumeManagerRootType = type;
     // TODO(crbug.com/958840): Sharing Play files root is disallowed until
     // we can ensure it will not also share Downloads.
-    if (type === 'android_files') {
+    // We don't share 'Shared with me' root since it is fake.
+    if (['android_files', 'drive_shared_with_me'].includes(type)) {
       assertFalse(crostini.canSharePath('vm', root, true));
       assertFalse(crostini.canSharePath('vm', root, false));
     } else {

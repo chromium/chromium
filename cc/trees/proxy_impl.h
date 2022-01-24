@@ -59,15 +59,15 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void BeginMainFrameAbortedOnImpl(
       CommitEarlyOutReason reason,
       base::TimeTicks main_thread_start_time,
-      std::vector<std::unique_ptr<SwapPromise>> swap_promises);
+      std::vector<std::unique_ptr<SwapPromise>> swap_promises,
+      bool scroll_and_viewport_changes_synced);
   void SetVisibleOnImpl(bool visible);
   void ReleaseLayerTreeFrameSinkOnImpl(CompletionEvent* completion);
   void FinishGLOnImpl(CompletionEvent* completion);
-  void NotifyReadyToCommitOnImpl(CompletionEvent* completion,
+  void NotifyReadyToCommitOnImpl(CompletionEvent* completion_event,
                                  LayerTreeHost* layer_tree_host,
                                  base::TimeTicks main_thread_start_time,
-                                 const viz::BeginFrameArgs& commit_args,
-                                 bool hold_commit_for_activation);
+                                 const viz::BeginFrameArgs& commit_args);
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data);
@@ -155,7 +155,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void ScheduledActionBeginMainFrameNotExpectedUntil(
       base::TimeTicks time) override;
   void FrameIntervalUpdated(base::TimeDelta interval) override {}
-  bool HasCustomPropertyAnimations() const override;
+  bool HasInvalidationAnimation() const override;
 
   DrawResult DrawInternal(bool forced_draw);
 
@@ -166,9 +166,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   const int layer_tree_host_id_;
 
   std::unique_ptr<Scheduler> scheduler_;
-
-  // Set when the main thread is waiting on a pending tree activation.
-  bool commit_completion_waits_for_activation_;
 
   // Set when the main thread is waiting on a commit to complete.
   std::unique_ptr<ScopedCompletionEvent> commit_completion_event_;

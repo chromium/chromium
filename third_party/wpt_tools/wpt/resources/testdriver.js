@@ -212,6 +212,42 @@
         },
 
         /**
+         * Minimizes the window.
+         *
+         * This function is modeled after the behaviour of
+         * the {@link https://www.w3.org/TR/webdriver/#minimize-window|Minimize} command
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} fulfilled with the previous {@link
+         *                    https://www.w3.org/TR/webdriver/#dfn-windowrect-object|WindowRect}
+         *                      value, after the window is minimized.
+         */
+        minimize_window: function(context=null) {
+            return window.test_driver_internal.minimize_window(context);
+        },
+
+        /**
+         * Restoring the window from minimized/maximized state to a given rect.
+         *
+         * This function is modeled after the behaviour of
+         * the {@link https://www.w3.org/TR/webdriver/#set-window-rect|Set Window Rect} command
+         *
+         * @param {Object} rect - A {@link
+         *                           https://www.w3.org/TR/webdriver/#dfn-windowrect-object|WindowRect}
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} fulfilled after the window is restored to the given rect.
+         */
+        set_window_rect: function(rect, context=null) {
+            return window.test_driver_internal.set_window_rect(rect, context);
+        },
+
+        /**
          * Send a sequence of actions
          *
          * This function sends a sequence of actions
@@ -231,7 +267,7 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} fufiled after the actions are performed, or rejected in
+         * @returns {Promise} fulfilled after the actions are performed, or rejected in
          *                    the cases the WebDriver command errors
          */
         action_sequence: function(actions, context=null) {
@@ -513,6 +549,14 @@
         },
 
         freeze: function(context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        minimize_window: function(context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        set_window_rect: function(rect, context=null) {
             return Promise.reject(new Error("unimplemented"));
         },
 

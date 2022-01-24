@@ -33,6 +33,9 @@ class MockPaymentStateResolver final
         .WillByDefault(testing::ReturnPointee(&dummy_promise_));
   }
 
+  MockPaymentStateResolver(const MockPaymentStateResolver&) = delete;
+  MockPaymentStateResolver& operator=(const MockPaymentStateResolver&) = delete;
+
   ~MockPaymentStateResolver() override = default;
 
   MOCK_METHOD3(Complete,
@@ -50,8 +53,6 @@ class MockPaymentStateResolver final
 
  private:
   ScriptPromise dummy_promise_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPaymentStateResolver);
 };
 
 TEST(PaymentResponseTest, DataCopiedOver) {

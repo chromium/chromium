@@ -29,7 +29,8 @@ void SampledEffect::RemoveReplacedInterpolations(
       [&](const auto& interpolation) {
         return replaced_properties.Contains(interpolation->GetProperty());
       });
-  interpolations_.Shrink(new_end - interpolations_.begin());
+  interpolations_.Shrink(
+      static_cast<wtf_size_t>(new_end - interpolations_.begin()));
 }
 
 void SampledEffect::UpdateReplacedProperties(

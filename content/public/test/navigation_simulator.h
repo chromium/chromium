@@ -28,6 +28,7 @@ class SSLInfo;
 
 namespace content {
 
+class NavigationController;
 class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
@@ -119,10 +120,13 @@ class NavigationSimulator {
 
   // Creates a NavigationSimulator that will be used to simulate a history
   // navigation to one of the |web_contents|'s navigation controller |offset|.
-  // E.g. offset -1 for back navigations and 1 for forward navigations.
+  // E.g. offset -1 for back navigations and 1 for forward navigations. If
+  // |is_renderer_initiated| is true, the navigation will simulate a history
+  // navigation initiated via JS.
   static std::unique_ptr<NavigationSimulator> CreateHistoryNavigation(
       int offset,
-      WebContents* web_contents);
+      WebContents* web_contents,
+      bool is_renderer_initiated);
 
   // Creates a NavigationSimulator that will be used to simulate a
   // renderer-initiated navigation to |original_url| started by
@@ -135,7 +139,7 @@ class NavigationSimulator {
   // LoadURL / Reload / GoToOffset / history.GoBack() scripts, etc. Can be used
   // to drive the navigation to completion.
   static std::unique_ptr<NavigationSimulator> CreateFromPending(
-      WebContents* contents);
+      NavigationController& controller);
 
   virtual ~NavigationSimulator() {}
 
@@ -281,12 +285,23 @@ class NavigationSimulator {
   // specified before calling |ReadyToCommit| or |Commit|.
   virtual void SetContentsMimeType(const std::string& contents_mime_type) = 0;
 
+  // Provides the response headers that should be received during the next
+  // |Redirect| call. These headers will only be applied to the next
+  // |Redirect| call, and will be reset afterwards.
+  virtual void SetRedirectHeaders(
+      scoped_refptr<net::HttpResponseHeaders> redirect_headers) = 0;
+
   // Provides the response headers received during |ReadyToCommit| specified
   // before calling |ReadyToCommit| or |Commit|.
   // Note that the mime type should be specified separately with
   // |SectContentsMimeType|.
   virtual void SetResponseHeaders(
       scoped_refptr<net::HttpResponseHeaders> response_headers) = 0;
+
+  // Provides the response body received during |ReadyToCommit|. Must be
+  // specified before calling |ReadyToCommit| or |Commit|.
+  virtual void SetResponseBody(
+      mojo::ScopedDataPipeConsumerHandle response_body) = 0;
 
   // Whether or not the NavigationSimulator automatically advances the
   // navigation past the stage requested (e.g. through asynchronous

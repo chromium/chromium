@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_layout_utils.h"
 #include "third_party/blink/renderer/core/mathml/mathml_radical_element.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/ng_text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -20,12 +21,15 @@ void NGMathMLPainter::PaintBar(const PaintInfo& info, const IntRect& bar) {
     return;
 
   GraphicsContextStateSaver state_saver(info.context);
-  info.context.SetStrokeThickness(bar.Height());
+  info.context.SetStrokeThickness(bar.height());
   info.context.SetStrokeStyle(kSolidStroke);
   info.context.SetStrokeColor(
       box_fragment_.Style().VisitedDependentColor(GetCSSPropertyColor()));
-  IntPoint line_end_point = {bar.Width(), 0};
-  info.context.DrawLine(bar.Location(), bar.Location() + line_end_point);
+  gfx::Point line_end_point = {bar.width(), 0};
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      box_fragment_.Style(), DarkModeFilter::ElementRole::kText));
+  info.context.DrawLine(bar.origin(), line_end_point + bar.OffsetFromOrigin(),
+                        auto_dark_mode);
 }
 
 void NGMathMLPainter::PaintStretchyOrLargeOperator(
@@ -39,8 +43,11 @@ void NGMathMLPainter::PaintStretchyOrLargeOperator(
       parameters.operator_shape_result_view.get()};
   GraphicsContextStateSaver state_saver(info.context);
   info.context.SetFillColor(style.VisitedDependentColor(GetCSSPropertyColor()));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
   info.context.DrawText(style.GetFont(), text_fragment_paint_info,
-                        FloatPoint(paint_offset), kInvalidDOMNodeId);
+                        FloatPoint(paint_offset), kInvalidDOMNodeId,
+                        auto_dark_mode);
 }
 
 void NGMathMLPainter::PaintFractionBar(
@@ -79,6 +86,17 @@ void NGMathMLPainter::PaintOperator(const PaintInfo& info,
   auto padding = box_fragment_.Padding();
   physical_offset.left += borders.left + padding.left;
   physical_offset.top += borders.top + padding.top;
+
+  // TODO(http://crbug.com/1124301): NGMathOperatorLayoutAlgorithm::Layout
+  // passes the operator's inline size but this does not match the width of the
+  // box fragment, which relies on the min-max sizes instead. Shift the paint
+  // offset to work around that issue, splitting the size error symmetrically.
+  DCHECK(box_fragment_.Style().IsHorizontalWritingMode());
+  physical_offset.left +=
+      (box_fragment_.Size().width - borders.HorizontalSum() -
+       padding.HorizontalSum() - parameters.operator_inline_size) /
+      2;
+
   PaintStretchyOrLargeOperator(info, paint_offset + physical_offset);
 }
 

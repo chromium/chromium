@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/svg/svg_point.h"
 #include "third_party/blink/renderer/core/svg/svg_zoom_and_pan.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -51,16 +52,18 @@ class SVGSVGElement final : public SVGGraphicsElement,
 
   absl::optional<float> IntrinsicWidth() const;
   absl::optional<float> IntrinsicHeight() const;
-  FloatSize CurrentViewportSize() const;
-  FloatRect CurrentViewBoxRect() const;
+  gfx::SizeF CurrentViewportSize() const;
+  gfx::RectF CurrentViewBoxRect() const;
   bool HasEmptyViewBox() const;
   const SVGPreserveAspectRatio* CurrentPreserveAspectRatio() const;
 
   float currentScale() const;
   void setCurrentScale(float scale);
 
-  FloatPoint CurrentTranslate() { return translation_->Value(); }
-  void SetCurrentTranslate(const FloatPoint&);
+  gfx::Vector2dF CurrentTranslate() {
+    return translation_->Value().OffsetFromOrigin();
+  }
+  void SetCurrentTranslate(const gfx::Vector2dF&);
   SVGPointTearOff* currentTranslateFromJavascript();
 
   SMILTimeContainer* TimeContainer() const { return time_container_.Get(); }
@@ -95,7 +98,7 @@ class SVGSVGElement final : public SVGGraphicsElement,
   static SVGTransformTearOff* createSVGTransform();
   static SVGTransformTearOff* createSVGTransformFromMatrix(SVGMatrixTearOff*);
 
-  AffineTransform ViewBoxToViewTransform(const FloatSize& viewport_size) const;
+  AffineTransform ViewBoxToViewTransform(const gfx::SizeF& viewport_size) const;
 
   void SetupInitialView(const String& fragment_identifier,
                         Element* anchor_node);
@@ -140,10 +143,10 @@ class SVGSVGElement final : public SVGGraphicsElement,
   enum GeometryMatchingMode { kCheckIntersection, kCheckEnclosure };
 
   bool CheckIntersectionOrEnclosure(const SVGElement&,
-                                    const FloatRect&,
+                                    const gfx::RectF&,
                                     GeometryMatchingMode) const;
   StaticNodeList* CollectIntersectionOrEnclosureList(
-      const FloatRect&,
+      const gfx::RectF&,
       SVGElement*,
       GeometryMatchingMode) const;
 

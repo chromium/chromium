@@ -11,7 +11,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
 #include "net/socket/tcp_socket.h"
@@ -29,6 +29,9 @@ namespace device {
 // performed on a separate thread.
 class BluetoothSocketNet : public BluetoothSocket {
  public:
+  BluetoothSocketNet(const BluetoothSocketNet&) = delete;
+  BluetoothSocketNet& operator=(const BluetoothSocketNet&) = delete;
+
   // BluetoothSocket:
   void Disconnect(base::OnceClosure callback) override;
   void Receive(int buffer_size,
@@ -108,8 +111,6 @@ class BluetoothSocketNet : public BluetoothSocket {
   scoped_refptr<net::IOBufferWithSize> read_buffer_;
   base::queue<std::unique_ptr<WriteRequest>> write_queue_;
   std::unique_ptr<WriteRequest> pending_write_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketNet);
 };
 
 }  // namespace device

@@ -419,7 +419,11 @@ void SyncAuthManager::OnRefreshTokenRemovedForAccount(
   // TODO(crbug.com/1156584): Should we stop Sync in this case?
   DCHECK_EQ(
       sync_account_.account_info.account_id,
-      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync));
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+
+  // Note: It's possible that we're in the middle of a signout, and the "refresh
+  // token removed" event just arrived before the "signout" event. In that case,
+  // OnPrimaryAccountChanged() will get called momentarily and stop sync.
 
   // TODO(crbug.com/839834): REQUEST_CANCELED doesn't seem like the right auth
   // error to use here. Maybe INVALID_GAIA_CREDENTIALS?
@@ -468,12 +472,13 @@ bool SyncAuthManager::UpdateSyncAccountIfNecessary() {
   if (new_account.account_info.account_id ==
       sync_account_.account_info.account_id) {
     // We're already using this account (or there was and is no account to use).
-    // If the |is_primary| bit hasn't changed either, then there's nothing to
-    // do.
-    if (new_account.is_primary == sync_account_.is_primary) {
+    // If the |is_sync_consented| bit hasn't changed either, then there's
+    // nothing to do.
+    if (new_account.is_sync_consented == sync_account_.is_sync_consented) {
       return false;
     }
-    // The |is_primary| bit *has* changed, so update our state and notify.
+    // The |is_sync_consented| bit *has* changed, so update our state and
+    // notify.
     sync_account_ = new_account;
     account_state_changed_callback_.Run();
     return true;

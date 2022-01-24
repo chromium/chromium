@@ -18,6 +18,10 @@ namespace ash {
 class LoginTooltipView : public LoginBaseBubbleView {
  public:
   LoginTooltipView(const std::u16string& message, views::View* anchor_view);
+
+  LoginTooltipView(const LoginTooltipView&) = delete;
+  LoginTooltipView& operator=(const LoginTooltipView&) = delete;
+
   ~LoginTooltipView() override;
 
   void set_text(const std::u16string& message) { label_->SetText(message); }
@@ -34,8 +38,6 @@ class LoginTooltipView : public LoginBaseBubbleView {
  private:
   views::Label* label_ = nullptr;
   views::ImageView* info_icon_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginTooltipView);
 };
 
 }  // namespace ash

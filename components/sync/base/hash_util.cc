@@ -9,7 +9,9 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/autofill_offer_specifics.pb.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace syncer {
 

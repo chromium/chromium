@@ -78,8 +78,9 @@ public class ProxyChangeListener {
             if (proxyInfo == null) {
                 return null;
             }
+            final String host = proxyInfo.getHost();
             final Uri pacFileUrl = proxyInfo.getPacFileUrl();
-            return new ProxyConfig(proxyInfo.getHost(), proxyInfo.getPort(),
+            return new ProxyConfig(host == null ? "" : host, proxyInfo.getPort(),
                     Uri.EMPTY.equals(pacFileUrl) ? null : pacFileUrl.toString(),
                     proxyInfo.getExclusionList());
         }
@@ -234,7 +235,7 @@ public class ProxyChangeListener {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                && proxyInfo.getHost().equals("localhost") && proxyInfo.getPort() == -1) {
+                && "localhost".equals(proxyInfo.getHost()) && proxyInfo.getPort() == -1) {
             // There's a bug in Android Q+ PAC support. If ConnectivityManager
             // returns localhost:-1 then use the intent from the PROXY_CHANGE_ACTION
             // broadcast to extract the ProxyConfig. See http://crbug.com/993538.

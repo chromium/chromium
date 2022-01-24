@@ -39,7 +39,7 @@ public class InfoBarControlLayoutTest {
     @Before
     public void setUp() {
         mContext = InstrumentationRegistry.getTargetContext();
-        mContext.setTheme(R.style.Theme_BrowserUI);
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
     }
 
     /**

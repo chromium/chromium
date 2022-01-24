@@ -9,10 +9,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -53,6 +52,13 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
         const gfx::Rect& visible_rect,
         const std::vector<VideoFrame::StorageType>& preferred_storage_types);
     ~PortConfig();
+
+    bool operator==(const PortConfig& other) const {
+      return fourcc == other.fourcc && size == other.size &&
+             planes == other.planes && visible_rect == other.visible_rect &&
+             preferred_storage_types == other.preferred_storage_types;
+    }
+    bool operator!=(const PortConfig& other) const { return !(*this == other); }
 
     // Get the first |preferred_storage_types|.
     // If |preferred_storage_types| is empty, return STORAGE_UNKNOWN.

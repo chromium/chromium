@@ -235,7 +235,12 @@ MULTIPROCESS_TEST_MAIN(HandleWrappingIPCMain) {
   // make sure the test connection actually causes the error with
   // mojo::ScopedHandle. If not, the tests of WindowsHandle will trivially
   // succeed without demonstrating that WindowsHandle avoids the error.
-  CHECK_EQ(nullptr, child_process->EchoRawHandle(HKEY_CLASSES_ROOT));
+  //
+  // TODO(crbug.com/1239934): Re-enable this check when some relevant temporary
+  // assertions are removed from Mojo internals. As long as they're present,
+  // this call will crash.
+  //
+  // CHECK_EQ(nullptr, child_process->EchoRawHandle(HKEY_CLASSES_ROOT));
 
   CHECK_EQ(INVALID_HANDLE_VALUE,
            child_process->EchoHandle(INVALID_HANDLE_VALUE));
@@ -245,11 +250,6 @@ MULTIPROCESS_TEST_MAIN(HandleWrappingIPCMain) {
   CHECK_EQ(HKEY_CURRENT_USER, child_process->EchoHandle(HKEY_CURRENT_USER));
   CHECK_EQ(HKEY_LOCAL_MACHINE, child_process->EchoHandle(HKEY_LOCAL_MACHINE));
   CHECK_EQ(HKEY_USERS, child_process->EchoHandle(HKEY_USERS));
-
-  // mojo::ScopedHandle CHECKS if given an invalid handle, so pass this handle
-  // raw and ensure it is marked as invalid.
-  HANDLE fake_handle = base::win::Uint32ToHandle(0x12345678);
-  CHECK_EQ(nullptr, child_process->EchoRawHandle(fake_handle));
 
   TestFile test_file;
   HANDLE test_handle = test_file.GetPlatformFile();

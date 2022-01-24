@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/payments/core/payment_manifest_downloader.h"
 
 class GURL;
@@ -50,6 +49,10 @@ class TestDownloader : public PaymentManifestDownloader {
  public:
   explicit TestDownloader(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  TestDownloader(const TestDownloader&) = delete;
+  TestDownloader& operator=(const TestDownloader&) = delete;
+
   ~TestDownloader() override;
 
   // Modifies the downloader to replace all instances of |prefix| with
@@ -113,8 +116,6 @@ class TestDownloader : public PaymentManifestDownloader {
   //   "https://bobpay.com": "https://127.0.0.1:9090"
   // }
   std::map<std::string, GURL> test_server_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDownloader);
 };
 
 }  // namespace payments

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_SHADOW_H_
 #define CHROME_BROWSER_VR_ELEMENTS_SHADOW_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/renderers/base_quad_renderer.h"
 #include "chrome/browser/vr/vr_ui_export.h"
@@ -20,6 +19,10 @@ namespace vr {
 class VR_UI_EXPORT Shadow : public UiElement {
  public:
   Shadow();
+
+  Shadow(const Shadow&) = delete;
+  Shadow& operator=(const Shadow&) = delete;
+
   ~Shadow() override;
 
   void Render(UiElementRenderer* renderer,
@@ -34,6 +37,10 @@ class VR_UI_EXPORT Shadow : public UiElement {
   class Renderer : public BaseQuadRenderer {
    public:
     Renderer();
+
+    Renderer(const Renderer&) = delete;
+    Renderer& operator=(const Renderer&) = delete;
+
     ~Renderer() override;
 
     void Draw(const gfx::Transform& model_view_proj_matrix,
@@ -54,8 +61,6 @@ class VR_UI_EXPORT Shadow : public UiElement {
     GLuint opacity_handle_;
     GLuint x_corner_radius_handle_;
     GLuint y_corner_radius_handle_;
-
-    DISALLOW_COPY_AND_ASSIGN(Renderer);
   };
 
  private:
@@ -63,8 +68,6 @@ class VR_UI_EXPORT Shadow : public UiElement {
   float intensity_ = 1.0f;
   UiElement* shadow_caster_ = nullptr;
   gfx::SizeF contributed_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(Shadow);
 };
 
 }  // namespace vr

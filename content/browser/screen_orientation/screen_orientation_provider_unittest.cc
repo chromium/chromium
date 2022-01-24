@@ -27,13 +27,19 @@ class FakeScreenOrientationDelegate : public ScreenOrientationDelegate {
     ScreenOrientationProvider::SetDelegate(this);
   }
 
+  FakeScreenOrientationDelegate(const FakeScreenOrientationDelegate&) = delete;
+  FakeScreenOrientationDelegate& operator=(
+      const FakeScreenOrientationDelegate&) = delete;
+
   ~FakeScreenOrientationDelegate() override = default;
 
   bool FullScreenRequired(WebContents* web_contents) override {
     return full_screen_required_;
   }
 
-  bool ScreenOrientationProviderSupported() override { return supported_; }
+  bool ScreenOrientationProviderSupported(WebContents* web_contents) override {
+    return supported_;
+  }
 
   void Lock(
       WebContents* web_contents,
@@ -52,13 +58,15 @@ class FakeScreenOrientationDelegate : public ScreenOrientationDelegate {
 
   int lock_count_ = 0;
   int unlock_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeScreenOrientationDelegate);
 };
 
 class FakeWebContentsDelegate : public WebContentsDelegate {
  public:
   FakeWebContentsDelegate() = default;
+
+  FakeWebContentsDelegate(const FakeWebContentsDelegate&) = delete;
+  FakeWebContentsDelegate& operator=(const FakeWebContentsDelegate&) = delete;
+
   ~FakeWebContentsDelegate() override = default;
 
   void EnterFullscreenModeForTab(
@@ -77,8 +85,6 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
 
  private:
   WebContents* fullscreened_contents_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWebContentsDelegate);
 };
 
 void LockResultCallback(absl::optional<ScreenOrientationLockResult>* out_result,

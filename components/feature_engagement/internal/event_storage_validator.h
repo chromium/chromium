@@ -7,14 +7,15 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace feature_engagement {
 
 // A EventStorageValidator checks the required storage conditions for a given
 // event, and checks if all conditions are met for storing it.
 class EventStorageValidator {
  public:
+  EventStorageValidator(const EventStorageValidator&) = delete;
+  EventStorageValidator& operator=(const EventStorageValidator&) = delete;
+
   virtual ~EventStorageValidator() = default;
 
   // Returns true iff new events of this type should be stored.
@@ -30,9 +31,6 @@ class EventStorageValidator {
 
  protected:
   EventStorageValidator() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventStorageValidator);
 };
 
 }  // namespace feature_engagement

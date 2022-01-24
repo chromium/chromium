@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -20,6 +19,7 @@
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace views {
+class View;
 class Widget;
 }  // namespace views
 
@@ -43,6 +43,10 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   static constexpr int kDividerEdgeInsetForTouch = 8;
 
   explicit SplitViewDivider(SplitViewController* controller);
+
+  SplitViewDivider(const SplitViewDivider&) = delete;
+  SplitViewDivider& operator=(const SplitViewDivider&) = delete;
+
   ~SplitViewDivider() override;
 
   // static version of GetDividerBoundsInScreen(bool is_dragging) function.
@@ -64,6 +68,13 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   gfx::Rect GetDividerBoundsInScreen(bool is_dragging);
 
   void SetAlwaysOnTop(bool on_top);
+
+  // Set adjustability of the divider bar. Unadjustable divider does not receive
+  // event and the divider bar view is not visible. When the divider is moved
+  // for the virtual keyboard, the divider will be set unadjustable.
+  void SetAdjustable(bool adjustable);
+  // Get the adjustability of the divider bar.
+  bool IsAdjustable() const;
 
   void AddObservedWindow(aura::Window* window);
   void RemoveObservedWindow(aura::Window* window);
@@ -90,6 +101,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
                              aura::Window* transient) override;
   void OnTransientChildRemoved(aura::Window* window,
                                aura::Window* transient) override;
+
+  // Checks if the `window` is observed.
+  bool IsWindowObserved(const aura::Window* window) const;
 
   views::Widget* divider_widget() { return divider_widget_; }
 
@@ -119,11 +133,12 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // Tracks observed windows.
   aura::Window::Windows observed_windows_;
 
+  // The content view of the divider.
+  views::View* divider_view_ = nullptr;
+
   // Tracks observed transient windows.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       transient_windows_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SplitViewDivider);
 };
 
 }  // namespace ash

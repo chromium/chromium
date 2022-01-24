@@ -14,6 +14,10 @@ class ChromecastConfigAndroidDummy : public ChromecastConfigAndroid {
  public:
   ChromecastConfigAndroidDummy() {}
 
+  ChromecastConfigAndroidDummy(const ChromecastConfigAndroidDummy&) = delete;
+  ChromecastConfigAndroidDummy& operator=(const ChromecastConfigAndroidDummy&) =
+      delete;
+
   ~ChromecastConfigAndroidDummy() override {}
 
   bool CanSendUsageStats() override { return false; }
@@ -27,8 +31,6 @@ class ChromecastConfigAndroidDummy : public ChromecastConfigAndroid {
 
  private:
   friend class base::NoDestructor<ChromecastConfigAndroidDummy>;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromecastConfigAndroidDummy);
 };
 
 // static

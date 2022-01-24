@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class ScriptContext;
@@ -18,6 +18,10 @@ class ScriptContext;
 class I18nHooksDelegate : public APIBindingHooksDelegate {
  public:
   I18nHooksDelegate();
+
+  I18nHooksDelegate(const I18nHooksDelegate&) = delete;
+  I18nHooksDelegate& operator=(const I18nHooksDelegate&) = delete;
+
   ~I18nHooksDelegate() override;
 
   // APIBindingHooksDelegate:
@@ -39,8 +43,6 @@ class I18nHooksDelegate : public APIBindingHooksDelegate {
   APIBindingHooks::RequestResult HandleDetectLanguage(
       ScriptContext* script_context,
       const std::vector<v8::Local<v8::Value>>& parsed_arguments);
-
-  DISALLOW_COPY_AND_ASSIGN(I18nHooksDelegate);
 };
 
 }  // namespace extensions

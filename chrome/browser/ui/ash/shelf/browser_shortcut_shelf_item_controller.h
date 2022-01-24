@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 
 namespace ash {
@@ -23,6 +22,11 @@ class BrowserShortcutShelfItemController : public ash::ShelfItemDelegate,
                                            public BrowserListObserver {
  public:
   explicit BrowserShortcutShelfItemController(ash::ShelfModel* shelf_model);
+
+  BrowserShortcutShelfItemController(
+      const BrowserShortcutShelfItemController&) = delete;
+  BrowserShortcutShelfItemController& operator=(
+      const BrowserShortcutShelfItemController&) = delete;
 
   ~BrowserShortcutShelfItemController() override;
 
@@ -62,8 +66,6 @@ class BrowserShortcutShelfItemController : public ash::ShelfItemDelegate,
   std::vector<std::pair<Browser*, size_t>> app_menu_items_;
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserShortcutShelfItemController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_BROWSER_SHORTCUT_SHELF_ITEM_CONTROLLER_H_

@@ -20,8 +20,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/client/aura_constants.h"
@@ -174,7 +174,7 @@ bool SettingsWindowManager::IsSettingsBrowser(Browser* browser) const {
 
   Profile* profile = browser->profile();
   if (!UseDeprecatedSettingsWindow(profile)) {
-    if (!browser->app_controller() || !browser->app_controller()->HasAppId())
+    if (!browser->app_controller())
       return false;
 
     // TODO(calamity): Determine whether, during startup, we need to wait for
@@ -183,7 +183,7 @@ bool SettingsWindowManager::IsSettingsBrowser(Browser* browser) const {
         web_app::GetAppIdForSystemWebApp(profile,
                                          web_app::SystemAppType::SETTINGS);
     return settings_app_id &&
-           browser->app_controller()->GetAppId() == settings_app_id.value();
+           browser->app_controller()->app_id() == settings_app_id.value();
   } else {
     auto iter = settings_session_map_.find(profile);
     return iter != settings_session_map_.end() &&

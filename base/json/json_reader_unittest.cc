@@ -182,6 +182,13 @@ TEST(JSONReaderTest, Doubles) {
   EXPECT_TRUE(root->is_double());
   EXPECT_DOUBLE_EQ(1.0, root->GetDouble());
 
+  // Some "parse to float64" implementations find this one tricky.
+  // https://github.com/serde-rs/json/issues/707
+  root = JSONReader::Read("122.416294033786585");
+  ASSERT_TRUE(root);
+  EXPECT_TRUE(root->is_double());
+  EXPECT_DOUBLE_EQ(122.416294033786585, root->GetDouble());
+
   // This is syntaxtically valid, but out of range of a double.
   auto value_with_error =
       JSONReader::ReadAndReturnValueWithError("1e1000", JSON_PARSE_RFC);
@@ -220,7 +227,7 @@ TEST(JSONReaderTest, InvalidNumbers) {
   EXPECT_FALSE(JSONReader::Read("4.a"));
 }
 
-TEST(JSONReader, SimpleString) {
+TEST(JSONReaderTest, SimpleString) {
   absl::optional<Value> root = JSONReader::Read("\"hello world\"");
   ASSERT_TRUE(root);
   EXPECT_TRUE(root->is_string());

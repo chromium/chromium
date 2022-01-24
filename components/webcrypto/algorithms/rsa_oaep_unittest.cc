@@ -158,11 +158,14 @@ TEST_F(WebCryptoRsaOaepTest, EncryptDecryptKnownAnswerTest) {
   base::ListValue tests;
   ASSERT_TRUE(ReadJsonTestFileToList("rsa_oaep.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests.GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
 
-    base::DictionaryValue* test = nullptr;
-    ASSERT_TRUE(tests.GetDictionary(test_index, &test));
+    const base::Value& test_value = tests.GetList()[test_index];
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     blink::WebCryptoAlgorithm digest_algorithm =
         GetDigestAlgorithm(test, "hash");

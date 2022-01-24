@@ -55,7 +55,7 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final : public NGPhysicalFragment {
   // This may be different from the direction of the container box when
   // first-line style is used, or when 'unicode-bidi: plaintext' is used.
   TextDirection BaseDirection() const {
-    return static_cast<TextDirection>(base_or_resolved_direction_);
+    return static_cast<TextDirection>(base_direction_);
   }
 
   // Compute the baseline metrics for this linebox.

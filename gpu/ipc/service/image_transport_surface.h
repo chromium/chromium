@@ -33,8 +33,8 @@ class GPU_IPC_SERVICE_EXPORT ImageTransportSurface {
       SurfaceHandle surface_handle,
       gl::GLSurfaceFormat format);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageTransportSurface);
+  ImageTransportSurface(const ImageTransportSurface&) = delete;
+  ImageTransportSurface& operator=(const ImageTransportSurface&) = delete;
 };
 
 }  // namespace gpu

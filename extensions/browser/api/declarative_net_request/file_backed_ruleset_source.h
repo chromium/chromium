@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FILE_BACKED_RULESET_SOURCE_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_FILE_BACKED_RULESET_SOURCE_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -58,7 +59,14 @@ struct IndexAndPersistJSONRulesetResult {
   static IndexAndPersistJSONRulesetResult CreateIgnoreResult(
       std::vector<InstallWarning> warnings);
   static IndexAndPersistJSONRulesetResult CreateErrorResult(std::string error);
+
+  IndexAndPersistJSONRulesetResult(const IndexAndPersistJSONRulesetResult&) =
+      delete;
+  IndexAndPersistJSONRulesetResult& operator=(
+      const IndexAndPersistJSONRulesetResult&) = delete;
+
   ~IndexAndPersistJSONRulesetResult();
+
   IndexAndPersistJSONRulesetResult(IndexAndPersistJSONRulesetResult&&);
   IndexAndPersistJSONRulesetResult& operator=(
       IndexAndPersistJSONRulesetResult&&);
@@ -89,7 +97,6 @@ struct IndexAndPersistJSONRulesetResult {
 
  private:
   IndexAndPersistJSONRulesetResult();
-  DISALLOW_COPY_AND_ASSIGN(IndexAndPersistJSONRulesetResult);
 };
 
 struct ReadJSONRulesResult {
@@ -115,9 +122,13 @@ struct ReadJSONRulesResult {
                                                std::string error);
 
   ReadJSONRulesResult();
-  ~ReadJSONRulesResult();
+  ReadJSONRulesResult(const ReadJSONRulesResult&) = delete;
   ReadJSONRulesResult(ReadJSONRulesResult&&);
+
+  ReadJSONRulesResult& operator=(const ReadJSONRulesResult&) = delete;
   ReadJSONRulesResult& operator=(ReadJSONRulesResult&&);
+
+  ~ReadJSONRulesResult();
 
   Status status = Status::kSuccess;
 
@@ -129,9 +140,6 @@ struct ReadJSONRulesResult {
 
   // Populated on error.
   std::string error;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReadJSONRulesResult);
 };
 
 // A Ruleset source which is backed on disk. The indexed version of such a
@@ -139,10 +147,19 @@ struct ReadJSONRulesResult {
 // header to recognise the indexed schema version.
 class FileBackedRulesetSource : public RulesetSource {
  public:
+  enum class RulesetFilter {
+    // Only include static rulesets which are enabled by default in the
+    // manifest.
+    kIncludeManifestEnabled,
+    // Include all static rulesets.
+    kIncludeAll
+  };
+
   // Creates FileBackedRulesetSources corresponding to the static rulesets in
   // the extension package.
   static std::vector<FileBackedRulesetSource> CreateStatic(
-      const Extension& extension);
+      const Extension& extension,
+      RulesetFilter ruleset_filter);
 
   // Creates a static FileBackedRulesetSource corresponding to |info| for the
   // given |extension|.
@@ -180,7 +197,8 @@ class FileBackedRulesetSource : public RulesetSource {
   // Indexes and persists the JSON ruleset. This is potentially unsafe since the
   // JSON rules file is parsed in-process. Note: This must be called on a
   // sequence where file IO is allowed.
-  IndexAndPersistJSONRulesetResult IndexAndPersistJSONRulesetUnsafe() const;
+  IndexAndPersistJSONRulesetResult IndexAndPersistJSONRulesetUnsafe(
+      uint8_t parse_flags) const;
 
   using IndexAndPersistJSONRulesetCallback =
       base::OnceCallback<void(IndexAndPersistJSONRulesetResult)>;
@@ -191,20 +209,17 @@ class FileBackedRulesetSource : public RulesetSource {
   // NOTE: This must be called on a sequence where file IO is allowed.
   void IndexAndPersistJSONRuleset(
       data_decoder::DataDecoder* decoder,
+      uint8_t parse_flags,
       IndexAndPersistJSONRulesetCallback callback) const;
-
-  // Indexes the given |rules| in indexed/flatbuffer format. The number of
-  // |rules| must be less than the rule count limit.
-  ParseInfo IndexAndPersistRules(
-      std::vector<api::declarative_net_request::Rule> rules) const;
 
   // Reads JSON rules synchronously. Callers should only use this if the JSON is
   // trusted. Must be called on a sequence which supports file IO.
   ReadJSONRulesResult ReadJSONRulesUnsafe() const;
 
-  // Serializes and writes |rules| to the json path. Returns false on failure.
-  bool WriteRulesToJSON(
-      const std::vector<api::declarative_net_request::Rule>& rules) const;
+  // Serializes |rules| into the `json` string. Returns false on failure.
+  bool SerializeRulesToJSON(
+      const std::vector<api::declarative_net_request::Rule>& rules,
+      std::string* json) const;
 
   // Creates a verified RulesetMatcher corresponding to indexed ruleset on disk.
   // Returns kSuccess on success along with the ruleset |matcher|. Must be

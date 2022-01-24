@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Wrapper for an IndexedDB index.
@@ -39,6 +31,7 @@ goog.require('goog.debug');
  * @final
  */
 goog.db.Index = function(index) {
+  'use strict';
   /**
    * Underlying IndexedDB index object.
    *
@@ -53,6 +46,7 @@ goog.db.Index = function(index) {
  * @return {string} Name of the index.
  */
 goog.db.Index.prototype.getName = function() {
+  'use strict';
   return this.index_.name;
 };
 
@@ -61,6 +55,7 @@ goog.db.Index.prototype.getName = function() {
  * @return {*} Key path of the index.
  */
 goog.db.Index.prototype.getKeyPath = function() {
+  'use strict';
   return this.index_.keyPath;
 };
 
@@ -70,6 +65,7 @@ goog.db.Index.prototype.getKeyPath = function() {
  *     for each unique value it indexes on.
  */
 goog.db.Index.prototype.isUnique = function() {
+  'use strict';
   return this.index_.unique;
 };
 
@@ -84,8 +80,9 @@ goog.db.Index.prototype.isUnique = function() {
  * @private
  */
 goog.db.Index.prototype.get_ = function(fn, msg, key) {
-  var d = new goog.async.Deferred();
-  var request;
+  'use strict';
+  const d = new goog.async.Deferred();
+  let request;
   try {
     request = this.index_[fn](key);
   } catch (err) {
@@ -93,8 +90,12 @@ goog.db.Index.prototype.get_ = function(fn, msg, key) {
     d.errback(goog.db.Error.fromException(err, msg));
     return d;
   }
-  request.onsuccess = function(ev) { d.callback(ev.target.result); };
+  request.onsuccess = function(ev) {
+    'use strict';
+    d.callback(ev.target.result);
+  };
   request.onerror = function(ev) {
+    'use strict';
     msg += ' with key ' + goog.debug.deepExpose(key);
     d.errback(goog.db.Error.fromRequest(ev.target, msg));
   };
@@ -110,6 +111,7 @@ goog.db.Index.prototype.get_ = function(fn, msg, key) {
  * @return {!goog.async.Deferred} The deferred object for the given record.
  */
 goog.db.Index.prototype.get = function(key) {
+  'use strict';
   return this.get_('get', 'getting from index ' + this.getName(), key);
 };
 
@@ -124,6 +126,7 @@ goog.db.Index.prototype.get = function(key) {
  *     the key.
  */
 goog.db.Index.prototype.getKey = function(key) {
+  'use strict';
   return this.get_('getKey', 'getting key from index ' + this.getName(), key);
 };
 
@@ -141,6 +144,7 @@ goog.db.Index.prototype.getKey = function(key) {
  *     key.
  */
 goog.db.Index.prototype.getAll = function(opt_key, opt_count) {
+  'use strict';
   return this.getAll_(
       'getAll', 'getting all from index ' + this.getName(), opt_key, opt_count);
 };
@@ -159,6 +163,7 @@ goog.db.Index.prototype.getAll = function(opt_key, opt_count) {
  *     match the key.
  */
 goog.db.Index.prototype.getAllKeys = function(opt_key, opt_count) {
+  'use strict';
   return this.getAll_(
       'getAllKeys', 'getting all keys index ' + this.getName(), opt_key,
       opt_count);
@@ -180,7 +185,8 @@ goog.db.Index.prototype.getAllKeys = function(opt_key, opt_count) {
  * @private
  */
 goog.db.Index.prototype.getAll_ = function(fn, msg, keyOrRange, count) {
-  var nativeRange;
+  'use strict';
+  let nativeRange;
   if (keyOrRange === undefined) {
     nativeRange = undefined;
   } else if (keyOrRange instanceof goog.db.KeyRange) {
@@ -189,8 +195,8 @@ goog.db.Index.prototype.getAll_ = function(fn, msg, keyOrRange, count) {
     nativeRange = goog.db.KeyRange.only(keyOrRange).range();
   }
 
-  var d = new goog.async.Deferred();
-  var request;
+  const d = new goog.async.Deferred();
+  let request;
   try {
     request = this.index_[fn](nativeRange, count);
   } catch (err) {
@@ -200,9 +206,11 @@ goog.db.Index.prototype.getAll_ = function(fn, msg, keyOrRange, count) {
     return d;
   }
   request.onsuccess = function() {
+    'use strict';
     d.callback(request.result);
   };
   request.onerror = function(ev) {
+    'use strict';
     msg += ' for range ' +
         (nativeRange ? goog.debug.deepExpose(nativeRange) : '<all>');
     d.errback(goog.db.Error.fromRequest(ev.target, msg));
@@ -243,5 +251,6 @@ goog.db.Index.prototype.getAll_ = function(fn, msg, keyOrRange, count) {
  * @throws {!goog.db.Error} If there was a problem opening the cursor.
  */
 goog.db.Index.prototype.openCursor = function(opt_range, opt_direction) {
+  'use strict';
   return goog.db.Cursor.openCursor(this.index_, opt_range, opt_direction);
 };

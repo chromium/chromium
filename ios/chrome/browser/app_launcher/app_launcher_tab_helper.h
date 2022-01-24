@@ -19,6 +19,9 @@ class AppLauncherTabHelper
     : public web::WebStatePolicyDecider,
       public web::WebStateUserData<AppLauncherTabHelper> {
  public:
+  AppLauncherTabHelper(const AppLauncherTabHelper&) = delete;
+  AppLauncherTabHelper& operator=(const AppLauncherTabHelper&) = delete;
+
   ~AppLauncherTabHelper() override;
 
   // Creates a tab helper for |web_state| that uses |abuse_detector| to make
@@ -48,7 +51,7 @@ class AppLauncherTabHelper
   // web::WebStatePolicyDecider implementation
   void ShouldAllowRequest(
       NSURLRequest* request,
-      const web::WebStatePolicyDecider::RequestInfo& request_info,
+      web::WebStatePolicyDecider::RequestInfo request_info,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
 
  private:
@@ -78,8 +81,6 @@ class AppLauncherTabHelper
   base::WeakPtrFactory<AppLauncherTabHelper> weak_factory_{this};
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AppLauncherTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_TAB_HELPER_H_

@@ -14,6 +14,10 @@ namespace arc {
 class FakeTimerInstance : public mojom::TimerInstance {
  public:
   FakeTimerInstance();
+
+  FakeTimerInstance(const FakeTimerInstance&) = delete;
+  FakeTimerInstance& operator=(const FakeTimerInstance&) = delete;
+
   ~FakeTimerInstance() override;
 
   // mojom::TimerInstance overrides:
@@ -24,8 +28,6 @@ class FakeTimerInstance : public mojom::TimerInstance {
 
  private:
   mojo::Remote<mojom::TimerHost> host_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTimerInstance);
 };
 
 }  // namespace arc

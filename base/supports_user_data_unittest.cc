@@ -4,7 +4,6 @@
 
 #include "base/supports_user_data.h"
 
-#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

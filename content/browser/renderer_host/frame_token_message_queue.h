@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 
@@ -37,6 +36,10 @@ class CONTENT_EXPORT FrameTokenMessageQueue {
     virtual void OnInvalidFrameToken(uint32_t frame_token) = 0;
   };
   FrameTokenMessageQueue();
+
+  FrameTokenMessageQueue(const FrameTokenMessageQueue&) = delete;
+  FrameTokenMessageQueue& operator=(const FrameTokenMessageQueue&) = delete;
+
   virtual ~FrameTokenMessageQueue();
 
   // Initializes this instance. This should always be the first method called
@@ -78,8 +81,6 @@ class CONTENT_EXPORT FrameTokenMessageQueue {
   // The frame token last seen when Reset() is called. To determine if we are
   // getting delayed frame acknowledgements after a reset.
   uint32_t last_received_frame_token_reset_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTokenMessageQueue);
 };
 
 }  // namespace content

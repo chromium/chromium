@@ -11,12 +11,10 @@ function initialize() {
   function submitURL(event) {
     $('try-url-result').textContent = '';
     $('manual-allowlist').textContent = '';
-    $('allowlists').textContent = '';
     sendWithPromise('tryURL', $('try-url-input').value)
-        .then(({allowResult, manual, allowLists}) => {
+        .then(({allowResult, manual}) => {
           $('try-url-result').textContent = allowResult;
           $('manual-allowlist').textContent = manual;
-          $('allowlists').textContent = allowlists;
         });
     event.preventDefault();
   }

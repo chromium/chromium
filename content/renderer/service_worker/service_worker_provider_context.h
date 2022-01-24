@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
@@ -101,6 +100,10 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
           host_remote,
       blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
       scoped_refptr<network::SharedURLLoaderFactory> fallback_loader_factory);
+
+  ServiceWorkerProviderContext(const ServiceWorkerProviderContext&) = delete;
+  ServiceWorkerProviderContext& operator=(const ServiceWorkerProviderContext&) =
+      delete;
 
   blink::mojom::ServiceWorkerContainerType container_type() const {
     return container_type_;
@@ -200,7 +203,6 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   std::string subresource_filter() const { return subresource_filter_; }
   void SetSubresourceFilter(const std::string& filter) {
-    CountFeature(blink::mojom::WebFeature::kServiceWorkerSubresourceFilter);
     subresource_filter_ = filter;
   }
 
@@ -342,8 +344,6 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   WorkerTimingContainerReceiverMap worker_timing_container_receivers_;
 
   base::WeakPtrFactory<ServiceWorkerProviderContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerProviderContext);
 };
 
 struct ServiceWorkerProviderContextDeleter {

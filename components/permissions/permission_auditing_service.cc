@@ -13,11 +13,10 @@ namespace {
 
 // Specifies the permissions usage session lifetime. Each session older
 // than this value is to be deleted.
-constexpr base::TimeDelta kUsageSessionMaxAge = base::TimeDelta::FromDays(90);
+constexpr base::TimeDelta kUsageSessionMaxAge = base::Days(90);
 
 // Specifies the time period between the regular sessions deletions.
-constexpr base::TimeDelta kUsageSessionCullingInterval =
-    base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kUsageSessionCullingInterval = base::Minutes(30);
 
 }  // namespace
 

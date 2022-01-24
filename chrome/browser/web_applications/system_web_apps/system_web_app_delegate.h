@@ -5,15 +5,25 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_DELEGATE_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_DELEGATE_H_
 
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_application_info.h"
+#include "ui/base/models/simple_menu_model.h"
+#include "url/gurl.h"
 
 class Browser;
+class Profile;
 
 namespace web_app {
-class SystemWebAppDelegate;
+
+class WebAppProvider;
 
 using OriginTrialsMap = std::map<url::Origin, std::vector<std::string>>;
 
@@ -69,10 +79,10 @@ class SystemWebAppDelegate {
   virtual gfx::Size GetMinimumWindowSize() const;
 
   // If set, we allow only a single window for this app.
-  virtual bool ShouldBeSingleWindow() const;
+  virtual bool ShouldReuseExistingWindow() const;
 
   // If true, adds a "New Window" option to App's shelf context menu.
-  // ShouldBeSingleWindow() should return false at the same time.
+  // ShouldReuseExistingWindow() should return false at the same time.
   virtual bool ShouldShowNewWindowMenuOption() const;
 
   // If true, when the app is launched through the File Handling Web API, we
@@ -82,7 +92,9 @@ class SystemWebAppDelegate {
   // Map from origin to enabled origin trial names for this app. For example,
   // "chrome://sample-web-app/" to ["Frobulate"]. If set, we will enable the
   // given origin trials when the corresponding origin is loaded in the app.
-  const OriginTrialsMap& GetEnabledOriginTrials() const;
+  const OriginTrialsMap& GetEnabledOriginTrials() const {
+    return origin_trials_map_;
+  }
 
   // Resource Ids for additional search terms.
   virtual std::vector<int> GetAdditionalSearchTerms() const;
@@ -123,6 +135,40 @@ class SystemWebAppDelegate {
 
   // If false, the application will not be installed.
   virtual bool IsAppEnabled() const;
+
+  // If true, GetTabMenuModel() is called to provide the tab menu model.
+  virtual bool HasCustomTabMenuModel() const;
+
+  // Optional custom tab menu model.
+  virtual std::unique_ptr<ui::SimpleMenuModel> GetTabMenuModel(
+      ui::SimpleMenuModel::Delegate* delegate) const;
+
+  // Returns whether the specified Tab Context Menu shortcut should be shown.
+  virtual bool ShouldShowTabContextMenuShortcut(Profile* profile,
+                                                int command_id) const;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Whether the browser should show the Terminal System App select new tab
+  // button in the toolbar.
+  virtual bool HasTitlebarTerminalSelectNewTabButton() const;
+#endif
+
+  // Control the launch of an SWA. The default takes into account single vs.
+  // multiple windows, make sure multiple windows don't open directly above
+  // each other, and a few other niceties. Overriding this will require some
+  // knowledge of browser window and launch internals, so hopefully you'll never
+  // have to roll your own here.
+  //
+  // If a browser is returned, app launch will continue. If false is returned,
+  // it's assumed that this method has cleaned up after itself, and launch is
+  // aborted.
+  //
+  // This is implemented in
+  // chrome/browser/ui/web_applications/system_web_app_delegate_ui_impl.cc.
+  virtual Browser* LaunchAndNavigateSystemWebApp(
+      Profile* profile,
+      WebAppProvider* provider,
+      const GURL& url,
+      const apps::AppLaunchParams& params) const;
 
  protected:
   SystemAppType type_;

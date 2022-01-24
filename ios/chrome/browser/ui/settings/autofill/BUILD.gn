@@ -17,6 +17,8 @@ source_set("autofill") {
     "autofill_credit_card_edit_table_view_controller.mm",
     "autofill_credit_card_table_view_controller.h",
     "autofill_credit_card_table_view_controller.mm",
+    "autofill_credit_card_util.h",
+    "autofill_credit_card_util.mm",
     "autofill_edit_table_view_controller+protected.h",
     "autofill_edit_table_view_controller.h",
     "autofill_edit_table_view_controller.mm",
@@ -30,6 +32,7 @@ source_set("autofill") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
+    "//components/password_manager/core/common",
     "//components/prefs",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -42,7 +45,7 @@ source_set("autofill") {
     "//ios/chrome/browser/ui/autofill",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/browser/ui/autofill/cells",
-    "//ios/chrome/browser/ui/autofill/form_input_accessory:form_input_accessory_ui",
+    "//ios/chrome/browser/ui/autofill/form_input_accessory:form_input_accessory",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/qr_scanner",
@@ -57,6 +60,7 @@ source_set("autofill") {
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ui/base",
   ]
 }
@@ -75,6 +79,7 @@ source_set("unit_tests") {
   sources = [
     "autofill_add_credit_card_mediator_unittest.mm",
     "autofill_credit_card_table_view_controller_unittest.mm",
+    "autofill_credit_card_util_unittest.mm",
     "autofill_profile_edit_table_view_controller_unittest.mm",
     "autofill_profile_table_view_controller_unittest.mm",
   ]
@@ -82,6 +87,7 @@ source_set("unit_tests") {
     ":autofill",
     "//base/test:test_support",
     "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
     "//components/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/autofill",
@@ -99,7 +105,6 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",

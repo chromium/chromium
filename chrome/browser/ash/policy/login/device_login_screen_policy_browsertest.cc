@@ -12,9 +12,8 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -51,6 +50,9 @@ class PrefChangeWatcher {
  public:
   PrefChangeWatcher(const char* pref_name, PrefService* prefs);
 
+  PrefChangeWatcher(const PrefChangeWatcher&) = delete;
+  PrefChangeWatcher& operator=(const PrefChangeWatcher&) = delete;
+
   void Wait();
 
   void OnPrefChange();
@@ -60,8 +62,6 @@ class PrefChangeWatcher {
 
   base::RunLoop run_loop_;
   PrefChangeRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefChangeWatcher);
 };
 
 PrefChangeWatcher::PrefChangeWatcher(const char* pref_name,
@@ -84,6 +84,12 @@ void PrefChangeWatcher::OnPrefChange() {
 
 }  // namespace
 class DeviceLoginScreenPolicyBrowsertest : public DevicePolicyCrosBrowserTest {
+ public:
+  DeviceLoginScreenPolicyBrowsertest(
+      const DeviceLoginScreenPolicyBrowsertest&) = delete;
+  DeviceLoginScreenPolicyBrowsertest& operator=(
+      const DeviceLoginScreenPolicyBrowsertest&) = delete;
+
  protected:
   DeviceLoginScreenPolicyBrowsertest();
   ~DeviceLoginScreenPolicyBrowsertest() override;
@@ -100,9 +106,6 @@ class DeviceLoginScreenPolicyBrowsertest : public DevicePolicyCrosBrowserTest {
   base::Value GetPrefValue(const char* pref_name) const;
 
   Profile* login_profile_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceLoginScreenPolicyBrowsertest);
 };
 
 DeviceLoginScreenPolicyBrowsertest::DeviceLoginScreenPolicyBrowsertest() {}
@@ -211,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, DeviceLocalAccount) {
   RefreshDevicePolicy();
 
   // Wait for Gaia dialog to be hidden.
-  chromeos::test::TestPredicateWaiter(base::BindRepeating([]() {
+  ash::test::TestPredicateWaiter(base::BindRepeating([]() {
     return !ash::LoginScreenTestApi::IsOobeDialogVisible();
   })).Wait();
   EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 1);
@@ -220,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, DeviceLocalAccount) {
   RefreshDevicePolicy();
 
   // Wait for Gaia dialog to be open.
-  chromeos::test::TestPredicateWaiter(base::BindRepeating([]() {
+  ash::test::TestPredicateWaiter(base::BindRepeating([]() {
     return ash::LoginScreenTestApi::IsOobeDialogVisible();
   })).Wait();
 }
@@ -228,22 +231,21 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, DeviceLocalAccount) {
 // Tests that adding public accounts does not close the Oobe dialog when it
 // shows a screen different from the Gaia login screen.
 IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, ResetScreen) {
-  chromeos::OobeScreenWaiter(chromeos::OobeBaseTest::GetFirstSigninScreen())
-      .Wait();
+  ash::OobeScreenWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 0);
 
   // Switch to another (Reset) screen.
   ash::LoginDisplayHost::default_host()->StartWizard(
       chromeos::ResetView::kScreenId);
-  chromeos::OobeScreenWaiter(chromeos::ResetView::kScreenId).Wait();
+  ash::OobeScreenWaiter(chromeos::ResetView::kScreenId).Wait();
 
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
   policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, "test");
   RefreshDevicePolicy();
 
   // Wait for users to propagate.
-  chromeos::test::TestPredicateWaiter(base::BindRepeating([]() {
+  ash::test::TestPredicateWaiter(base::BindRepeating([]() {
     return ash::LoginScreenTestApi::GetUsersCount() > 0;
   })).Wait();
 

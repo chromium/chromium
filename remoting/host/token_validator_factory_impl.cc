@@ -15,9 +15,9 @@
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "crypto/random.h"
@@ -51,6 +51,9 @@ class TokenValidatorImpl : public TokenValidatorBase {
       const std::string& remote_jid,
       scoped_refptr<net::URLRequestContextGetter> request_context_getter);
 
+  TokenValidatorImpl(const TokenValidatorImpl&) = delete;
+  TokenValidatorImpl& operator=(const TokenValidatorImpl&) = delete;
+
  protected:
   void StartValidateRequest(const std::string& token) override;
 
@@ -60,8 +63,6 @@ class TokenValidatorImpl : public TokenValidatorBase {
 
   std::string post_body_;
   scoped_refptr<RsaKeyPair> key_pair_;
-
-  DISALLOW_COPY_AND_ASSIGN(TokenValidatorImpl);
 };
 
 TokenValidatorImpl::TokenValidatorImpl(

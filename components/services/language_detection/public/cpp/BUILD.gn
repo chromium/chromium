@@ -10,7 +10,6 @@ source_set("cpp") {
 
   deps = [
     "//base",
-    "//components/services:sandbox_types",
     "//components/services/language_detection/public/mojom",
     "//content/public/browser",
   ]

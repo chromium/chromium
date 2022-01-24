@@ -35,7 +35,7 @@ gfx::Image CustomThemeSupplier::GetImageNamed(int id) const {
 
 base::RefCountedMemory* CustomThemeSupplier::GetRawData(
     int idr_id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   return NULL;
 }
 

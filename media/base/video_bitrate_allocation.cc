@@ -7,6 +7,7 @@
 #include <cstring>
 #include <limits>
 #include <numeric>
+#include <sstream>
 
 #include "base/check_op.h"
 #include "base/numerics/checked_math.h"
@@ -46,6 +47,47 @@ int VideoBitrateAllocation::GetBitrateBps(size_t spatial_index,
 
 int VideoBitrateAllocation::GetSumBps() const {
   return sum_;
+}
+
+std::string VideoBitrateAllocation::ToString() const {
+  size_t num_active_spatial_layers = 0;
+  size_t num_temporal_layers[kMaxSpatialLayers] = {};
+  for (size_t sid = 0; sid < kMaxSpatialLayers; ++sid) {
+    for (size_t tid = 0; tid < kMaxTemporalLayers; ++tid) {
+      if (bitrates_[sid][tid] > 0)
+        num_temporal_layers[sid] = tid + 1;
+    }
+    if (num_temporal_layers[sid] > 0)
+      num_active_spatial_layers += 1;
+  }
+
+  if (num_active_spatial_layers == 0) {
+    // VideoBitrateAllocation containing no positive value is used to pause an
+    // encoder in webrtc.
+    return "Empty VideoBitrateAllocation";
+  }
+
+  std::stringstream ss;
+  ss << "active spatial layers: " << num_active_spatial_layers;
+  ss << ", {";
+
+  bool first_sid = true;
+  for (size_t sid = 0; sid < kMaxSpatialLayers; ++sid) {
+    if (num_temporal_layers[sid] == 0)
+      continue;
+    if (!first_sid)
+      ss << ", ";
+    first_sid = false;
+    ss << "SL#" << sid << ": {";
+    for (size_t tid = 0; tid < num_temporal_layers[sid]; ++tid) {
+      if (tid)
+        ss << ", ";
+      ss << bitrates_[sid][tid];
+    }
+    ss << "}";
+  }
+  ss << "}";
+  return ss.str();
 }
 
 bool VideoBitrateAllocation::operator==(

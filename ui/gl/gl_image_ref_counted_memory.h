@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image_memory.h"
@@ -22,6 +21,9 @@ class GL_EXPORT GLImageRefCountedMemory : public GLImageMemory {
  public:
   explicit GLImageRefCountedMemory(const gfx::Size& size);
 
+  GLImageRefCountedMemory(const GLImageRefCountedMemory&) = delete;
+  GLImageRefCountedMemory& operator=(const GLImageRefCountedMemory&) = delete;
+
   bool Initialize(base::RefCountedMemory* ref_counted_memory,
                   gfx::BufferFormat format);
 
@@ -35,8 +37,6 @@ class GL_EXPORT GLImageRefCountedMemory : public GLImageMemory {
 
  private:
   scoped_refptr<base::RefCountedMemory> ref_counted_memory_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageRefCountedMemory);
 };
 
 }  // namespace gl

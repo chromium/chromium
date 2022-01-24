@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/site_instance_impl.h"
@@ -57,6 +56,9 @@ class CONTENT_EXPORT FrameNavigationEntry
       std::unique_ptr<SubresourceWebBundleNavigationInfo>
           subresource_web_bundle_navigation_info,
       std::unique_ptr<PolicyContainerPolicies> policy_container_policies);
+
+  FrameNavigationEntry(const FrameNavigationEntry&) = delete;
+  FrameNavigationEntry& operator=(const FrameNavigationEntry&) = delete;
 
   // Creates a copy of this FrameNavigationEntry that can be modified
   // independently from the original.
@@ -280,8 +282,6 @@ class CONTENT_EXPORT FrameNavigationEntry
 
   // TODO(https://crbug.com/1140393): Persist these policies.
   std::unique_ptr<PolicyContainerPolicies> policy_container_policies_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameNavigationEntry);
 };
 
 }  // namespace content

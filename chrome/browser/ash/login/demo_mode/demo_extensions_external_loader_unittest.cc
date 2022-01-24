@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -64,6 +63,11 @@ class TestExternalProviderVisitor
     : public extensions::ExternalProviderInterface::VisitorInterface {
  public:
   TestExternalProviderVisitor() = default;
+
+  TestExternalProviderVisitor(const TestExternalProviderVisitor&) = delete;
+  TestExternalProviderVisitor& operator=(const TestExternalProviderVisitor&) =
+      delete;
+
   ~TestExternalProviderVisitor() override = default;
 
   const std::map<std::string, TestCrxInfo>& loaded_crx_files() const {
@@ -133,8 +137,6 @@ class TestExternalProviderVisitor
   std::unique_ptr<base::RunLoop> ready_waiter_;
 
   std::unique_ptr<base::RunLoop> file_waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExternalProviderVisitor);
 };
 
 class DemoExtensionsExternalLoaderTest : public testing::Test {
@@ -144,6 +146,11 @@ class DemoExtensionsExternalLoaderTest : public testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
         scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
+
+  DemoExtensionsExternalLoaderTest(const DemoExtensionsExternalLoaderTest&) =
+      delete;
+  DemoExtensionsExternalLoaderTest& operator=(
+      const DemoExtensionsExternalLoaderTest&) = delete;
 
   ~DemoExtensionsExternalLoaderTest() override = default;
 
@@ -225,8 +232,6 @@ class DemoExtensionsExternalLoaderTest : public testing::Test {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
 
   user_manager::ScopedUserManager scoped_user_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoExtensionsExternalLoaderTest);
 };
 
 TEST_F(DemoExtensionsExternalLoaderTest, NoDemoExtensionsConfig) {
@@ -519,6 +524,11 @@ class ShouldCreateDemoExtensionsExternalLoaderTest : public testing::Test {
         std::move(fake_user_manager));
   }
 
+  ShouldCreateDemoExtensionsExternalLoaderTest(
+      const ShouldCreateDemoExtensionsExternalLoaderTest&) = delete;
+  ShouldCreateDemoExtensionsExternalLoaderTest& operator=(
+      const ShouldCreateDemoExtensionsExternalLoaderTest&) = delete;
+
   ~ShouldCreateDemoExtensionsExternalLoaderTest() override = default;
 
   void SetUp() override {
@@ -548,8 +558,6 @@ class ShouldCreateDemoExtensionsExternalLoaderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<DemoModeTestHelper> demo_mode_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShouldCreateDemoExtensionsExternalLoaderTest);
 };
 
 TEST_F(ShouldCreateDemoExtensionsExternalLoaderTest, PrimaryDemoProfile) {

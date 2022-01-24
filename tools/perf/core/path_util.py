@@ -27,6 +27,10 @@ def GetChromiumSrcDir():
       os.path.dirname(__file__), '..', '..', '..'))
 
 
+def GetDeviceInteractionDir():
+  return os.path.join(GetChromiumSrcDir(), 'third_party', 'catapult', 'devil')
+
+
 def GetTelemetryDir():
   return os.path.join(
       GetChromiumSrcDir(), 'third_party', 'catapult', 'telemetry')
@@ -64,6 +68,12 @@ def GetAndroidPylibDir():
 
 def GetVariationsDir():
   return os.path.join(GetChromiumSrcDir(), 'tools', 'variations')
+
+
+def AddDeviceInteractionToPath():
+  device_interaction_path = GetDeviceInteractionDir()
+  if device_interaction_path not in sys.path:
+    sys.path.insert(1, device_interaction_path)
 
 
 def AddTelemetryToPath():

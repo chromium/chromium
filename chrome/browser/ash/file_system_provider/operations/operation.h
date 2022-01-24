@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
@@ -34,6 +33,10 @@ class Operation : public RequestManager::HandlerInterface {
 
   Operation(extensions::EventRouter* event_router,
             const ProvidedFileSystemInfo& file_system_info);
+
+  Operation(const Operation&) = delete;
+  Operation& operator=(const Operation&) = delete;
+
   ~Operation() override;
 
   // RequestManager::HandlerInterface overrides.
@@ -61,7 +64,6 @@ class Operation : public RequestManager::HandlerInterface {
 
  private:
   DispatchEventImplCallback dispatch_event_impl_;
-  DISALLOW_COPY_AND_ASSIGN(Operation);
 };
 
 }  // namespace operations

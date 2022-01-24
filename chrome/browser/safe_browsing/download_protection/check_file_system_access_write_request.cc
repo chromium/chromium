@@ -105,6 +105,7 @@ CheckFileSystemAccessWriteRequest::ShouldUploadBinary(
 }
 
 void CheckFileSystemAccessWriteRequest::UploadBinary(
+    DownloadCheckResult result,
     DownloadCheckResultReason reason,
     enterprise_connectors::AnalysisSettings settings) {}
 

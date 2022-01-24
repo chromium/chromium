@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "content/browser/conversions/conversion_host.h"
+#include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/public/android/content_jni_headers/NavigationHandle_jni.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -33,7 +33,7 @@ NavigationHandleProxy::NavigationHandleProxy(
   std::vector<uint8_t> byte_vector;
   if (cpp_navigation_handle_->GetImpression()) {
     blink::mojom::ImpressionPtr impression =
-        ConversionHost::MojoImpressionFromImpression(
+        AttributionHost::MojoImpressionFromImpression(
             *cpp_navigation_handle_->GetImpression());
     byte_vector = blink::mojom::Impression::Serialize(&impression);
     impression_byte_buffer = base::android::ScopedJavaLocalRef<jobject>(

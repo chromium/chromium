@@ -165,18 +165,73 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     LayoutViewHitTestTest,
     ::testing::Values(
-        // Legacy
+        // Legacy 0 to 4
         HitTestConfig{false, mojom::EditingBehavior::kEditingMacBehavior},
         HitTestConfig{false, mojom::EditingBehavior::kEditingWindowsBehavior},
         HitTestConfig{false, mojom::EditingBehavior::kEditingUnixBehavior},
         HitTestConfig{false, mojom::EditingBehavior::kEditingAndroidBehavior},
         HitTestConfig{false, mojom::EditingBehavior::kEditingChromeOSBehavior},
-        // LayoutNG
+        // LayoutNG 5 to 9
         HitTestConfig{true, mojom::EditingBehavior::kEditingMacBehavior},
         HitTestConfig{true, mojom::EditingBehavior::kEditingWindowsBehavior},
         HitTestConfig{true, mojom::EditingBehavior::kEditingUnixBehavior},
         HitTestConfig{true, mojom::EditingBehavior::kEditingAndroidBehavior},
         HitTestConfig{true, mojom::EditingBehavior::kEditingChromeOSBehavior}));
+
+// See editing/pasteboard/drag-drop-list.html
+TEST_P(LayoutViewHitTestTest, BlockInInlineWithListItem) {
+  LoadAhem();
+  InsertStyleElement("body { margin: 0px; font: 10px/15px Ahem; }");
+  SetBodyInnerHTML("<li id=target><span><div id=inner>abc</div></span>");
+  const auto& target = *GetElementById("target");
+  const auto& span = *target.firstChild();
+  const auto& inner = *GetElementById("inner");
+  const auto& abc = *To<Text>(inner.firstChild());
+
+  // Note: span@0 comes from |LayoutObject::FindPosition()| via
+  // |LayoutObject::CreatePositionWithAffinity()| for anonymous block
+  // containing list marker.
+  // LayoutNGBlockFlow (anonymous)
+  //    LayoutNGInsideListMarker {::marker}
+  //      LayoutText (anonymous)
+  //      LayoutInline {SPAN}
+  EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(0, 10));
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    if (IsAndroidOrWindowsEditingBehavior()) {
+      EXPECT_EQ(PositionWithAffinity(Position(abc, 1)), HitTest(10, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(abc, 1)), HitTest(10, 10));
+      EXPECT_EQ(PositionWithAffinity(Position(abc, 3), TextAffinity::kUpstream),
+                HitTest(100, 5));
+      EXPECT_EQ(PositionWithAffinity(Position(abc, 3), TextAffinity::kUpstream),
+                HitTest(100, 10));
+    } else {
+      EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(inner)),
+                HitTest(10, 5));
+      EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(inner)),
+                HitTest(10, 10));
+      EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(inner)),
+                HitTest(100, 5));
+      EXPECT_EQ(PositionWithAffinity(Position::BeforeNode(inner)),
+                HitTest(100, 10));
+    }
+  } else {
+    EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(10, 5));
+    EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(10, 10));
+    EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(100, 5));
+    EXPECT_EQ(PositionWithAffinity(Position(span, 0)), HitTest(100, 10));
+  }
+  if (LayoutNG() || IsAndroidOrWindowsEditingBehavior()) {
+    EXPECT_EQ(PositionWithAffinity(Position(abc, 3), TextAffinity::kUpstream),
+              HitTest(100, 15));
+  } else {
+    EXPECT_EQ(PositionWithAffinity(Position(abc, 0)), HitTest(100, 15));
+  }
+  EXPECT_EQ(PositionWithAffinity(Position(abc, 3), TextAffinity::kUpstream),
+            HitTest(100, 20));
+  EXPECT_EQ(PositionWithAffinity(Position(abc, 3), TextAffinity::kUpstream),
+            HitTest(100, 25));
+}
 
 TEST_P(LayoutViewHitTestTest, EmptySpan) {
   LoadAhem();
@@ -208,6 +263,43 @@ TEST_P(LayoutViewHitTestTest, EmptySpan) {
   EXPECT_EQ(after_ab, HitTest(45, 5));
   EXPECT_EQ(after_ab, HitTest(50, 5));
   EXPECT_EQ(after_ab, HitTest(55, 5));
+}
+
+// http://crbug.com/1233862
+TEST_P(LayoutViewHitTestTest, FlexBlockChildren) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#t { display: flex; }");
+  SetBodyInnerHTML("<div id=t><div id=ab>ab</div><div id=xy>XY</div></div>");
+
+  const auto& ab = *To<Text>(GetElementById("ab")->firstChild());
+  const auto& xy = *To<Text>(GetElementById("xy")->firstChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(5, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(10, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(20, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(25, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(30, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(35, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(40, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(45, 5));
 }
 
 // http://crbug.com/1171070

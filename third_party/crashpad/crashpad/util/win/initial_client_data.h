@@ -19,7 +19,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "util/win/address_types.h"
 
 namespace crashpad {
@@ -67,6 +66,9 @@ class InitialClientData {
                     WinVMAddress non_crash_exception_information,
                     WinVMAddress debug_critical_section_address);
 
+  InitialClientData(const InitialClientData&) = delete;
+  InitialClientData& operator=(const InitialClientData&) = delete;
+
   //! \brief Returns whether the object has been initialized successfully.
   bool IsValid() const { return is_valid_; }
 
@@ -107,8 +109,6 @@ class InitialClientData {
   HANDLE first_pipe_instance_;
   HANDLE client_process_;
   bool is_valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitialClientData);
 };
 
 }  // namespace crashpad

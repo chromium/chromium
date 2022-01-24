@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gl/gl_implementation.h"
@@ -27,6 +26,10 @@ class GbmOverlaySurface;
 class GbmSurfaceFactory : public SurfaceFactoryOzone {
  public:
   explicit GbmSurfaceFactory(DrmThreadProxy* drm_thread_proxy);
+
+  GbmSurfaceFactory(const GbmSurfaceFactory&) = delete;
+  GbmSurfaceFactory& operator=(const GbmSurfaceFactory&) = delete;
+
   ~GbmSurfaceFactory() override;
 
   void RegisterSurface(gfx::AcceleratedWidget widget, GbmSurfaceless* surface);
@@ -103,8 +106,6 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
   GetProtectedNativePixmapCallback get_protected_native_pixmap_callback_;
 
   base::WeakPtrFactory<GbmSurfaceFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GbmSurfaceFactory);
 };
 
 }  // namespace ui

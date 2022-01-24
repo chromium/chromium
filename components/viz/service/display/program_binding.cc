@@ -247,7 +247,7 @@ unsigned ProgramBindingBase::LoadShader(GLES2Interface* context,
   int shader_length[] = {static_cast<int>(shader_source.length())};
   context->ShaderSource(shader, 1, shader_source_str, shader_length);
   context->CompileShader(shader);
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   int compiled = 0;
   context->GetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
   if (!compiled) {
@@ -257,7 +257,7 @@ unsigned ProgramBindingBase::LoadShader(GLES2Interface* context,
                 << "\n shader program: " << shader_source;
     return 0u;
   }
-#endif
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
   return shader;
 }
 

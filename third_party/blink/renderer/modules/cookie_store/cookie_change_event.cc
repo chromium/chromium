@@ -115,6 +115,9 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
           canonical_cookie.ExpiryDate().ToDoubleT()));
     }
   }
+
+  list_item->setPartitioned(canonical_cookie.IsPartitioned());
+
   return list_item;
 }
 

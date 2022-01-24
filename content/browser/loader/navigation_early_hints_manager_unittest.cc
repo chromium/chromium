@@ -13,6 +13,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -20,6 +21,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/link_header.mojom.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
+#include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,17 +35,59 @@ const char kNavigationPath[] = "https://a.test/";
 const char kPreloadPath[] = "https://a.test/script.js";
 const std::string kPreloadBody = "/*empty*/";
 
+struct PreconnectRequest {
+  PreconnectRequest(const GURL& url,
+                    bool allow_credentials,
+                    const net::NetworkIsolationKey& network_isolation_key)
+      : url(url),
+        allow_credentials(allow_credentials),
+        network_isolation_key(network_isolation_key) {}
+
+  GURL const url;
+  bool const allow_credentials;
+  net::NetworkIsolationKey const network_isolation_key;
+};
+
+class FakeNetworkContext : public network::TestNetworkContext {
+ public:
+  FakeNetworkContext() = default;
+  ~FakeNetworkContext() override = default;
+
+  void PreconnectSockets(
+      uint32_t num_streams,
+      const GURL& url,
+      bool allow_credentials,
+      const net::NetworkIsolationKey& network_isolation_key) override {
+    preconnect_requests_.emplace_back(url, allow_credentials,
+                                      network_isolation_key);
+  }
+
+  std::vector<PreconnectRequest>& preconnect_requests() {
+    return preconnect_requests_;
+  }
+
+ private:
+  std::vector<PreconnectRequest> preconnect_requests_;
+};
+
 }  // namespace
 
 class NavigationEarlyHintsManagerTest : public testing::Test {
  public:
   NavigationEarlyHintsManagerTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+    url::Origin origin = url::Origin::Create(GURL(kNavigationPath));
+    auto isolation_info = net::IsolationInfo::CreateForInternalRequest(origin);
+
+    network_isolation_key_ = isolation_info.network_isolation_key();
+
     mojo::Remote<network::mojom::URLLoaderFactory> remote;
     loader_factory_.Clone(remote.BindNewPipeAndPassReceiver());
     early_hints_manager_ = std::make_unique<NavigationEarlyHintsManager>(
-        browser_context_, std::move(remote), url::Origin(),
-        FrameTreeNode::kFrameTreeNodeInvalidId);
+        browser_context_, storage_partition_,
+        FrameTreeNode::kFrameTreeNodeInvalidId,
+        NavigationEarlyHintsManagerParams(origin, std::move(isolation_info),
+                                          std::move(remote)));
   }
 
   ~NavigationEarlyHintsManagerTest() override = default;
@@ -51,6 +95,9 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitAndEnableFeature(
         features::kEarlyHintsPreloadForNavigation);
+    fake_network_context_ = std::make_unique<FakeNetworkContext>();
+    early_hints_manager().SetNetworkContextForTesting(
+        fake_network_context_.get());
   }
 
  protected:
@@ -58,6 +105,12 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
 
   NavigationEarlyHintsManager& early_hints_manager() {
     return *early_hints_manager_;
+  }
+
+  FakeNetworkContext& fake_network_context() { return *fake_network_context_; }
+
+  net::NetworkIsolationKey& network_isolation_key() {
+    return network_isolation_key_;
   }
 
   network::mojom::URLResponseHeadPtr CreatePreloadResponseHead() {
@@ -104,8 +157,11 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
+  TestStoragePartition storage_partition_;
   network::TestURLLoaderFactory loader_factory_;
   std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
+  std::unique_ptr<FakeNetworkContext> fake_network_context_;
+  net::NetworkIsolationKey network_isolation_key_;
 };
 
 TEST_F(NavigationEarlyHintsManagerTest, SimpleResponse) {
@@ -182,8 +238,100 @@ TEST_F(NavigationEarlyHintsManagerTest, PreloadSchemeIsUnsupported) {
   early_hints_manager().HandleEarlyHints(std::move(hints),
                                          CreateNavigationResourceRequest());
 
-  EXPECT_TRUE(early_hints_manager().WasPreloadLinkHeaderReceived());
+  EXPECT_TRUE(early_hints_manager().WasResourceHintsReceived());
   EXPECT_FALSE(early_hints_manager().HasInflightPreloads());
+}
+
+TEST_F(NavigationEarlyHintsManagerTest, SinglePreconnect) {
+  auto preconnect_url = GURL("https://b.test");
+  auto link_header = network::mojom::LinkHeader::New(
+      preconnect_url, network::mojom::LinkRelAttribute::kPreconnect,
+      network::mojom::LinkAsAttribute::kUnspecified,
+      network::mojom::CrossOriginAttribute::kUnspecified,
+      /*mime_type=*/absl::nullopt);
+  auto hints = network::mojom::EarlyHints::New();
+  hints->headers = network::mojom::ParsedHeaders::New();
+  hints->headers->link_headers.push_back(std::move(link_header));
+
+  early_hints_manager().HandleEarlyHints(std::move(hints),
+                                         CreateNavigationResourceRequest());
+
+  std::vector<PreconnectRequest>& requests =
+      fake_network_context().preconnect_requests();
+  ASSERT_EQ(requests.size(), 1UL);
+  EXPECT_EQ(requests[0].url, preconnect_url);
+  EXPECT_TRUE(requests[0].allow_credentials);
+  EXPECT_EQ(requests[0].network_isolation_key, network_isolation_key());
+}
+
+TEST_F(NavigationEarlyHintsManagerTest, MultiplePreconnects) {
+  auto preconnect_url1 = GURL("https://b.test");
+  auto preconnect_url2 = GURL("https://c.test");
+
+  auto hints = network::mojom::EarlyHints::New();
+  hints->headers = network::mojom::ParsedHeaders::New();
+
+  // Add four preconnect Link headers. The first three Links have the same
+  // origin. The third and fourth Links specify crossorigin attribute. The
+  // second Link should be skipped since it is a duplication of the first one.
+  hints->headers->link_headers.push_back(network::mojom::LinkHeader::New(
+      preconnect_url1, network::mojom::LinkRelAttribute::kPreconnect,
+      network::mojom::LinkAsAttribute::kUnspecified,
+      network::mojom::CrossOriginAttribute::kUnspecified,
+      /*mime_type=*/absl::nullopt));
+  hints->headers->link_headers.push_back(network::mojom::LinkHeader::New(
+      preconnect_url1, network::mojom::LinkRelAttribute::kPreconnect,
+      network::mojom::LinkAsAttribute::kUnspecified,
+      network::mojom::CrossOriginAttribute::kUnspecified,
+      /*mime_type=*/absl::nullopt));
+  hints->headers->link_headers.push_back(network::mojom::LinkHeader::New(
+      preconnect_url1, network::mojom::LinkRelAttribute::kPreconnect,
+      network::mojom::LinkAsAttribute::kUnspecified,
+      network::mojom::CrossOriginAttribute::kAnonymous,
+      /*mime_type=*/absl::nullopt));
+  hints->headers->link_headers.push_back(network::mojom::LinkHeader::New(
+      preconnect_url2, network::mojom::LinkRelAttribute::kPreconnect,
+      network::mojom::LinkAsAttribute::kUnspecified,
+      network::mojom::CrossOriginAttribute::kAnonymous,
+      /*mime_type=*/absl::nullopt));
+
+  early_hints_manager().HandleEarlyHints(std::move(hints),
+                                         CreateNavigationResourceRequest());
+
+  std::vector<PreconnectRequest>& requests =
+      fake_network_context().preconnect_requests();
+  ASSERT_EQ(requests.size(), 3UL);
+
+  EXPECT_EQ(requests[0].url, preconnect_url1);
+  EXPECT_TRUE(requests[0].allow_credentials);
+  EXPECT_EQ(requests[0].network_isolation_key, network_isolation_key());
+
+  EXPECT_EQ(requests[1].url, preconnect_url1);
+  EXPECT_FALSE(requests[1].allow_credentials);
+  EXPECT_EQ(requests[1].network_isolation_key, network_isolation_key());
+
+  EXPECT_EQ(requests[2].url, preconnect_url2);
+  EXPECT_FALSE(requests[2].allow_credentials);
+  EXPECT_EQ(requests[2].network_isolation_key, network_isolation_key());
+}
+
+TEST_F(NavigationEarlyHintsManagerTest, InvalidPreconnectLink) {
+  auto preconnect_url = GURL("file:///");
+  auto link_header = network::mojom::LinkHeader::New(
+      preconnect_url, network::mojom::LinkRelAttribute::kPreconnect,
+      network::mojom::LinkAsAttribute::kUnspecified,
+      network::mojom::CrossOriginAttribute::kUnspecified,
+      /*mime_type=*/absl::nullopt);
+  auto hints = network::mojom::EarlyHints::New();
+  hints->headers = network::mojom::ParsedHeaders::New();
+  hints->headers->link_headers.push_back(std::move(link_header));
+
+  early_hints_manager().HandleEarlyHints(std::move(hints),
+                                         CreateNavigationResourceRequest());
+
+  std::vector<PreconnectRequest>& requests =
+      fake_network_context().preconnect_requests();
+  EXPECT_TRUE(requests.empty());
 }
 
 }  // namespace content

@@ -14,8 +14,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner_helpers.h"
 #include "base/supports_user_data.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 
 namespace base {
@@ -112,6 +112,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataHandle
                          uint64_t size,
                          BlobStorageContext* context);
 
+    BlobDataHandleShared(const BlobDataHandleShared&) = delete;
+    BlobDataHandleShared& operator=(const BlobDataHandleShared&) = delete;
+
    private:
     friend class base::DeleteHelper<BlobDataHandleShared>;
     friend class base::RefCountedThreadSafe<BlobDataHandleShared>;
@@ -124,8 +127,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataHandle
     const std::string content_disposition_;
     const uint64_t size_;
     base::WeakPtr<BlobStorageContext> context_;
-
-    DISALLOW_COPY_AND_ASSIGN(BlobDataHandleShared);
   };
 
   friend class BlobStorageContext;

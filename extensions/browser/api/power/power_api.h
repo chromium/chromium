@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -58,6 +58,9 @@ class PowerAPI : public BrowserContextKeyedAPI,
   using ActivateWakeLockFunction =
       base::RepeatingCallback<void(device::mojom::WakeLockType)>;
   using CancelWakeLockFunction = base::RepeatingCallback<void()>;
+
+  PowerAPI(const PowerAPI&) = delete;
+  PowerAPI& operator=(const PowerAPI&) = delete;
 
   static PowerAPI* Get(content::BrowserContext* context);
 
@@ -135,8 +138,6 @@ class PowerAPI : public BrowserContextKeyedAPI,
 
   // Outstanding requests.
   ExtensionLevelMap extension_levels_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerAPI);
 };
 
 }  // namespace extensions

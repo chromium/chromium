@@ -237,9 +237,7 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
 
   void AddCredentials(const ::user_data_auth::AddCredentialsRequest& request,
                       AddCredentialsCallback callback) override {
-    // TODO (crbug.com/1179246): add similar constant in user_data_auth
-    // namespace.
-    CallProtoMethod(::cryptohome::kCryptohomeAddCredentials,
+    CallProtoMethod(::user_data_auth::kAddCredentials,
                     ::user_data_auth::kUserDataAuthInterface, request,
                     std::move(callback));
   }

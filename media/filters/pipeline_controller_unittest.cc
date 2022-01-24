@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -49,6 +48,9 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
                                 base::Unretained(this)),
             base::BindRepeating(&PipelineControllerTest::OnError,
                                 base::Unretained(this))) {}
+
+  PipelineControllerTest(const PipelineControllerTest&) = delete;
+  PipelineControllerTest& operator=(const PipelineControllerTest&) = delete;
 
   ~PipelineControllerTest() override = default;
 
@@ -167,8 +169,6 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
   bool was_resuming_ = false;
   bool was_resumed_ = false;
   base::TimeDelta last_resume_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(PipelineControllerTest);
 };
 
 TEST_F(PipelineControllerTest, Startup) {
@@ -191,7 +191,7 @@ TEST_F(PipelineControllerTest, StartSuspendedSeekAndResume) {
   Mock::VerifyAndClear(pipeline_);
 
   // Initiate a seek before the pipeline completes suspended startup.
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta seek_time = base::Seconds(5);
   EXPECT_CALL(demuxer_, StartWaitingForSeek(seek_time));
   pipeline_controller_.Seek(seek_time, true);
   base::RunLoop().RunUntilIdle();
@@ -282,7 +282,7 @@ TEST_F(PipelineControllerTest, Seek) {
   Complete(StartPipeline());
   was_seeked_ = false;
 
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta seek_time = base::Seconds(5);
   EXPECT_CALL(demuxer_, StartWaitingForSeek(seek_time));
   PipelineStatusCallback seek_cb = SeekPipeline(seek_time);
   base::RunLoop().RunUntilIdle();
@@ -297,7 +297,7 @@ TEST_F(PipelineControllerTest, Seek) {
 TEST_F(PipelineControllerTest, DecoderStateLost) {
   Complete(StartPipeline());
 
-  constexpr auto kCurrentMediaTime = base::TimeDelta::FromSeconds(7);
+  constexpr auto kCurrentMediaTime = base::Seconds(7);
   EXPECT_CALL(*pipeline_, GetMediaTime())
       .WillRepeatedly(Return(kCurrentMediaTime));
 
@@ -313,7 +313,7 @@ TEST_F(PipelineControllerTest, DecoderStateLost_DuringPendingSeek) {
   Complete(StartPipeline());
 
   // Create a pending seek.
-  base::TimeDelta kSeekTime = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta kSeekTime = base::Seconds(5);
   EXPECT_CALL(demuxer_, StartWaitingForSeek(kSeekTime));
   PipelineStatusCallback seek_cb = SeekPipeline(kSeekTime);
   base::RunLoop().RunUntilIdle();
@@ -331,7 +331,7 @@ TEST_F(PipelineControllerTest, SuspendResumeTime) {
   Complete(StartPipeline());
   Complete(SuspendPipeline());
 
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta seek_time = base::Seconds(5);
   pipeline_controller_.Seek(seek_time, true);
   base::RunLoop().RunUntilIdle();
 
@@ -343,7 +343,7 @@ TEST_F(PipelineControllerTest, SuspendResumeTime_WithStreamingData) {
   Complete(StartPipeline_WithStreamingData());
   Complete(SuspendPipeline());
 
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta seek_time = base::Seconds(5);
   pipeline_controller_.Seek(seek_time, true);
   base::RunLoop().RunUntilIdle();
 
@@ -355,14 +355,14 @@ TEST_F(PipelineControllerTest, SeekAborted) {
   Complete(StartPipeline());
 
   // Create a first pending seek.
-  base::TimeDelta seek_time_1 = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta seek_time_1 = base::Seconds(5);
   EXPECT_CALL(demuxer_, StartWaitingForSeek(seek_time_1));
   PipelineStatusCallback seek_cb_1 = SeekPipeline(seek_time_1);
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClear(&demuxer_);
 
   // Create a second seek; the first should be aborted.
-  base::TimeDelta seek_time_2 = base::TimeDelta::FromSeconds(10);
+  base::TimeDelta seek_time_2 = base::Seconds(10);
   EXPECT_CALL(demuxer_, CancelPendingSeek(seek_time_2));
   pipeline_controller_.Seek(seek_time_2, true);
   base::RunLoop().RunUntilIdle();
@@ -377,7 +377,7 @@ TEST_F(PipelineControllerTest, SeekAborted) {
 TEST_F(PipelineControllerTest, PendingSuspend) {
   Complete(StartPipeline());
 
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta seek_time = base::Seconds(5);
   PipelineStatusCallback seek_cb = SeekPipeline(seek_time);
   base::RunLoop().RunUntilIdle();
 
@@ -401,7 +401,7 @@ TEST_F(PipelineControllerTest, SeekMergesWithResume) {
 
   // Request a seek while suspended.
   // It will be a mock failure if pipeline_.Seek() is called.
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta seek_time = base::Seconds(5);
   pipeline_controller_.Seek(seek_time, true);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(was_seeked_);
@@ -415,17 +415,17 @@ TEST_F(PipelineControllerTest, SeekMergesWithResume) {
 TEST_F(PipelineControllerTest, SeekMergesWithSeek) {
   Complete(StartPipeline());
 
-  base::TimeDelta seek_time_1 = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta seek_time_1 = base::Seconds(5);
   PipelineStatusCallback seek_cb_1 = SeekPipeline(seek_time_1);
   base::RunLoop().RunUntilIdle();
 
   // Request another seek while the first is ongoing.
-  base::TimeDelta seek_time_2 = base::TimeDelta::FromSeconds(10);
+  base::TimeDelta seek_time_2 = base::Seconds(10);
   pipeline_controller_.Seek(seek_time_2, true);
   base::RunLoop().RunUntilIdle();
 
   // Request a third seek. (It should replace the second.)
-  base::TimeDelta seek_time_3 = base::TimeDelta::FromSeconds(15);
+  base::TimeDelta seek_time_3 = base::Seconds(15);
   pipeline_controller_.Seek(seek_time_3, true);
   base::RunLoop().RunUntilIdle();
 
@@ -437,7 +437,7 @@ TEST_F(PipelineControllerTest, SeekMergesWithSeek) {
 TEST_F(PipelineControllerTest, SeekToSeekTimeElided) {
   Complete(StartPipeline());
 
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta seek_time = base::Seconds(5);
   PipelineStatusCallback seek_cb_1 = SeekPipeline(seek_time);
   base::RunLoop().RunUntilIdle();
 
@@ -454,7 +454,7 @@ TEST_F(PipelineControllerTest, SeekToSeekTimeElided) {
 TEST_F(PipelineControllerTest, SeekToSeekTimeNotElided) {
   Complete(StartPipeline_WithDynamicData());
 
-  base::TimeDelta seek_time = base::TimeDelta::FromSeconds(5);
+  base::TimeDelta seek_time = base::Seconds(5);
   PipelineStatusCallback seek_cb_1 = SeekPipeline(seek_time);
   base::RunLoop().RunUntilIdle();
 

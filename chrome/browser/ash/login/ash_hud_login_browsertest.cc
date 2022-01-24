@@ -24,10 +24,10 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
-// Two global registries track test ash::hud_display::AshTraceDestinationIO and
+// Two global registries track test hud_display::AshTraceDestinationIO and
 // test perfetto sessions.
 class TestAshTraceDestinationIORegistry;
 class TestTracingSessionRegistry;
@@ -35,30 +35,30 @@ static TestAshTraceDestinationIORegistry*
     test_ash_trace_destination_io_registry = nullptr;
 static TestTracingSessionRegistry* test_tracing_session_registry{nullptr};
 
-std::unique_ptr<ash::hud_display::AshTraceDestinationIO>
+std::unique_ptr<hud_display::AshTraceDestinationIO>
 CreateTestAshTraceDestinationIO();
 
 const char* AshTracingRequestStatus2String(
-    const ash::hud_display::AshTracingRequest::Status& status) {
+    const hud_display::AshTracingRequest::Status& status) {
   switch (status) {
-    case ash::hud_display::AshTracingRequest::Status::kEmpty:
+    case hud_display::AshTracingRequest::Status::kEmpty:
       return "kEmpty";
-    case ash::hud_display::AshTracingRequest::Status::kInitialized:
+    case hud_display::AshTracingRequest::Status::kInitialized:
       return "kInitialized";
-    case ash::hud_display::AshTracingRequest::Status::kStarted:
+    case hud_display::AshTracingRequest::Status::kStarted:
       return "kStarted";
-    case ash::hud_display::AshTracingRequest::Status::kStopping:
+    case hud_display::AshTracingRequest::Status::kStopping:
       return "kStopping";
-    case ash::hud_display::AshTracingRequest::Status::kPendingMount:
+    case hud_display::AshTracingRequest::Status::kPendingMount:
       return "kPendingMount";
-    case ash::hud_display::AshTracingRequest::Status::kWritingFile:
+    case hud_display::AshTracingRequest::Status::kWritingFile:
       return "kWritingFile";
-    case ash::hud_display::AshTracingRequest::Status::kCompleted:
+    case hud_display::AshTracingRequest::Status::kCompleted:
       return "kCompleted";
   }
 }
 
-// Tracks all ash::hud_display::AshTraceDestinationIO objects.
+// Tracks all hud_display::AshTraceDestinationIO objects.
 class TestAshTraceDestinationIORegistry {
  public:
   struct IOStatus {
@@ -99,9 +99,8 @@ class TestAshTraceDestinationIORegistry {
   base::Lock lock_;
 };
 
-// Test ash::hud_display::AshTraceDestinationIO object.
-class TestAshTraceDestinationIO
-    : public ash::hud_display::AshTraceDestinationIO {
+// Test hud_display::AshTraceDestinationIO object.
+class TestAshTraceDestinationIO : public hud_display::AshTraceDestinationIO {
  public:
   explicit TestAshTraceDestinationIO(
       TestAshTraceDestinationIORegistry* registry)
@@ -340,14 +339,14 @@ class TraceDestinationWaiter {
  public:
   TraceDestinationWaiter() = default;
 
-  ash::hud_display::AshTracingRequest::AshTraceDestinationUniquePtr Wait(
+  hud_display::AshTracingRequest::AshTraceDestinationUniquePtr Wait(
       base::Time timestamp) {
     run_loop_ = std::make_unique<base::RunLoop>();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        ash::hud_display::AshTracingRequest::
+        hud_display::AshTracingRequest::
             CreateGenerateTraceDestinationTaskForTesting(
                 CreateTestAshTraceDestinationIO(), base::Time::Now()),
         base::BindOnce(&TraceDestinationWaiter::OnGenerated,
@@ -356,30 +355,28 @@ class TraceDestinationWaiter {
     return std::move(destination_);
   }
 
-  void OnGenerated(
-      ash::hud_display::AshTracingRequest::AshTraceDestinationUniquePtr
-          destination) {
+  void OnGenerated(hud_display::AshTracingRequest::AshTraceDestinationUniquePtr
+                       destination) {
     destination_ = std::move(destination);
     run_loop_->Quit();
   }
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  ash::hud_display::AshTracingRequest::AshTraceDestinationUniquePtr
-      destination_;
+  hud_display::AshTracingRequest::AshTraceDestinationUniquePtr destination_;
 
   base::WeakPtrFactory<TraceDestinationWaiter> weak_factory_{this};
 };
 
-// Waits for ash::hud_display::TracingManager to receive a known status.
+// Waits for hud_display::TracingManager to receive a known status.
 class TestAshTracingManagerObserver
-    : public ash::hud_display::AshTracingManager::Observer {
+    : public hud_display::AshTracingManager::Observer {
  public:
   using Condition =
-      base::RepeatingCallback<bool(ash::hud_display::AshTracingManager&)>;
+      base::RepeatingCallback<bool(hud_display::AshTracingManager&)>;
 
   explicit TestAshTracingManagerObserver(
-      ash::hud_display::AshTracingManager& manager)
+      hud_display::AshTracingManager& manager)
       : manager_(manager) {}
 
   void Wait(Condition condition) {
@@ -399,7 +396,7 @@ class TestAshTracingManagerObserver
   }
 
  private:
-  ash::hud_display::AshTracingManager& manager_;
+  hud_display::AshTracingManager& manager_;
   Condition condition_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -407,17 +404,17 @@ class TestAshTracingManagerObserver
 
 // Waits for the last tracing request to get expected status.
 void WaiFortLastTracingRequestStatus(
-    ash::hud_display::AshTracingRequest::Status expected_status) {
+    hud_display::AshTracingRequest::Status expected_status) {
   LOG(INFO) << "Wait for the last tracing request status = '"
             << AshTracingRequestStatus2String(expected_status) << "'";
-  TestAshTracingManagerObserver(ash::hud_display::AshTracingManager::Get())
+  TestAshTracingManagerObserver(hud_display::AshTracingManager::Get())
       .Wait(base::BindRepeating(
-          [](ash::hud_display::AshTracingRequest::Status expected_status,
-             ash::hud_display::AshTracingManager& manager) {
+          [](hud_display::AshTracingRequest::Status expected_status,
+             hud_display::AshTracingManager& manager) {
             if (manager.GetTracingRequestsForTesting().size() == 0)
               return false;
 
-            const ash::hud_display::AshTracingRequest::Status status =
+            const hud_display::AshTracingRequest::Status status =
                 manager.GetTracingRequestsForTesting().back()->status();
 
             LOG(INFO) << "Last tracing request status = '"
@@ -431,9 +428,9 @@ void WaiFortLastTracingRequestStatus(
 // Waits for all except the last one tracing requests to complete.
 void WaitForAllButLastTracingRequestsToComplete() {
   LOG(INFO) << "WaitForAllButLastTracingRequestsToComplete(): Waiting.";
-  TestAshTracingManagerObserver(ash::hud_display::AshTracingManager::Get())
+  TestAshTracingManagerObserver(hud_display::AshTracingManager::Get())
       .Wait(
-          base::BindRepeating([](ash::hud_display::AshTracingManager& manager) {
+          base::BindRepeating([](hud_display::AshTracingManager& manager) {
             if (manager.GetTracingRequestsForTesting().size() < 2)
               return false;
 
@@ -444,7 +441,7 @@ void WaitForAllButLastTracingRequestsToComplete() {
             bool success = true;
             for (size_t i = 0;
                  i < manager.GetTracingRequestsForTesting().size() - 1; ++i) {
-              const ash::hud_display::AshTracingRequest::Status status =
+              const hud_display::AshTracingRequest::Status status =
                   manager.GetTracingRequestsForTesting()[i]->status();
 
               LOG(INFO) << "request[" << i + 1 << "/"
@@ -452,8 +449,7 @@ void WaitForAllButLastTracingRequestsToComplete() {
                         << "] status = '"
                         << AshTracingRequestStatus2String(status) << "'";
 
-              if (status !=
-                  ash::hud_display::AshTracingRequest::Status::kCompleted)
+              if (status != hud_display::AshTracingRequest::Status::kCompleted)
                 success = false;
             }
             return success;
@@ -461,33 +457,31 @@ void WaitForAllButLastTracingRequestsToComplete() {
 }
 
 // This is used in
-// ash::hud_display::AshTracingHandler::
-//     SetPerfettoTracingSessionCreatorForTesting().
+// hud_display::AshTracingHandler::SetPerfettoTracingSessionCreatorForTesting().
 std::unique_ptr<perfetto::TracingSession> CreateTestPerfettoSession() {
   return std::make_unique<TestTracingSession>(test_tracing_session_registry);
 }
 
 // This is used in
-// ash::hud_display::AshTracingRequest::
-//     SetAshTraceDestinationIOCreatorForTesting().
-std::unique_ptr<ash::hud_display::AshTraceDestinationIO>
+// hud_display::AshTracingRequest::SetAshTraceDestinationIOCreatorForTesting().
+std::unique_ptr<hud_display::AshTraceDestinationIO>
 CreateTestAshTraceDestinationIO() {
   return std::make_unique<TestAshTraceDestinationIO>(
       test_ash_trace_destination_io_registry);
 }
 
 bool GetAshHUDSettingsViewVisible() {
-  return ash::hud_display::HUDDisplayView::GetForTesting()
+  return hud_display::HUDDisplayView::GetForTesting()
       ->GetSettingsViewForTesting()
       ->GetVisible();
 }
 
 void ToggleAshHUDSettingsView() {
-  ash::hud_display::HUDDisplayView::GetForTesting()->ToggleSettingsForTesting();
+  hud_display::HUDDisplayView::GetForTesting()->ToggleSettingsForTesting();
 }
 
 void ToggleAshHUDTracing() {
-  ash::hud_display::HUDDisplayView::GetForTesting()
+  hud_display::HUDDisplayView::GetForTesting()
       ->GetSettingsViewForTesting()
       ->ToggleTracingForTesting();
 }
@@ -526,17 +520,16 @@ class AshHUDLoginTest
 
     if (IsAshDebugFlagSet()) {
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          ash::switches::kAshDebugShortcuts);
+          switches::kAshDebugShortcuts);
     }
     ChromeShellDelegate::SetDisableLoggingRedirectForTesting(
         IsDisableLoggingRedirectFlagSet());
 
-    ash::hud_display::AshTracingHandler::
-        SetPerfettoTracingSessionCreatorForTesting(CreateTestPerfettoSession);
+    hud_display::AshTracingHandler::SetPerfettoTracingSessionCreatorForTesting(
+        CreateTestPerfettoSession);
 
-    ash::hud_display::AshTracingRequest::
-        SetAshTraceDestinationIOCreatorForTesting(
-            &CreateTestAshTraceDestinationIO);
+    hud_display::AshTracingRequest::SetAshTraceDestinationIOCreatorForTesting(
+        &CreateTestAshTraceDestinationIO);
 
     LoginManagerTest::SetUpInProcessBrowserTestFixture();
   }
@@ -544,17 +537,17 @@ class AshHUDLoginTest
   void TearDownInProcessBrowserTestFixture() override {
     LoginManagerTest::TearDownInProcessBrowserTestFixture();
 
-    ash::hud_display::AshTracingRequest::
+    hud_display::AshTracingRequest::
         ResetAshTraceDestinationIOCreatorForTesting();
 
-    ash::hud_display::AshTracingHandler::
+    hud_display::AshTracingHandler::
         ResetPerfettoTracingSessionCreatorForTesting();
 
     ChromeShellDelegate::ResetDisableLoggingRedirectForTesting();
 
     if (IsAshDebugFlagSet()) {
       base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-          ash::switches::kAshDebugShortcuts);
+          switches::kAshDebugShortcuts);
     }
 
     delete test_tracing_session_registry;
@@ -572,7 +565,7 @@ class AshHUDLoginTest
     login_manager_mixin_.LoginAndWaitForActiveSession(context);
   }
 
-  // This call verifies given ash::hud_display::AshTraceDestination status
+  // This call verifies given hud_display::AshTraceDestination status
   // (via TestAshTraceDestinationIO that keeps track of status in global
   // registry TestAshTraceDestinationIORegistry). Current value of
   // --disable-logging-redirect flag is used from the test parameter, but
@@ -594,7 +587,7 @@ class AshHUDLoginTest
     // user has logged in.
     if (user_logged_in) {
       // Trace file should exist and be real file in user downloads.
-      const base::FilePath folder = ash::Shell::Get()
+      const base::FilePath folder = Shell::Get()
                                         ->shell_delegate()
                                         ->GetPrimaryUserDownloadsFolder()
                                         .AppendASCII("tracing");
@@ -618,23 +611,23 @@ class AshHUDLoginTest
 // See "Testing" section in https://goto.google.com/ash-tracing for details.
 IN_PROC_BROWSER_TEST_P(AshHUDLoginTest, AshHUDVerifyTracing) {
   const ui::Accelerator hud_accelerator =
-      ui::Accelerator(ui::VKEY_G, ash::kDebugModifier);
+      ui::Accelerator(ui::VKEY_G, kDebugModifier);
   auto trigger_hud = [&]() {
-    return ash::ShellTestApi().IsActionForAcceleratorEnabled(hud_accelerator) &&
-           ash::ShellTestApi().PressAccelerator(hud_accelerator);
+    return ShellTestApi().IsActionForAcceleratorEnabled(hud_accelerator) &&
+           ShellTestApi().PressAccelerator(hud_accelerator);
   };
 
   // Depending on the test parameters, registry grows to different values.
   unsigned expected_io_registry_size = 0;
 
   // Check that the login screen is shown, but HUD is not.
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_FALSE(ash::ShellTestApi().IsHUDShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_FALSE(ShellTestApi().IsHUDShown());
 
   // Make sure that Ash HUD can be triggered if and only if
   // --ash-debug-shortcuts flag is set.
   EXPECT_EQ(IsAshDebugFlagSet(), trigger_hud());
-  EXPECT_EQ(IsAshDebugFlagSet(), ash::ShellTestApi().IsHUDShown());
+  EXPECT_EQ(IsAshDebugFlagSet(), ShellTestApi().IsHUDShown());
 
   {
     LOG(INFO)
@@ -662,7 +655,7 @@ IN_PROC_BROWSER_TEST_P(AshHUDLoginTest, AshHUDVerifyTracing) {
 
     // Wait for tracing to start.
     WaiFortLastTracingRequestStatus(
-        ash::hud_display::AshTracingRequest::Status::kStarted);
+        hud_display::AshTracingRequest::Status::kStarted);
 
     // Stop tracing.
     ToggleAshHUDTracing();
@@ -671,8 +664,8 @@ IN_PROC_BROWSER_TEST_P(AshHUDLoginTest, AshHUDVerifyTracing) {
     // trace may end up Completed or kPendingMount.
     WaiFortLastTracingRequestStatus(
         IsDisableLoggingRedirectFlagSet()
-            ? ash::hud_display::AshTracingRequest::Status::kCompleted
-            : ash::hud_display::AshTracingRequest::Status::kPendingMount);
+            ? hud_display::AshTracingRequest::Status::kCompleted
+            : hud_display::AshTracingRequest::Status::kPendingMount);
 
     // Start another trace and continue into user session.
     ToggleAshHUDTracing();
@@ -680,7 +673,7 @@ IN_PROC_BROWSER_TEST_P(AshHUDLoginTest, AshHUDVerifyTracing) {
 
     // Wait for tracing to start.
     WaiFortLastTracingRequestStatus(
-        ash::hud_display::AshTracingRequest::Status::kStarted);
+        hud_display::AshTracingRequest::Status::kStarted);
 
     // Check that trace was started using correct destination.
     EXPECT_EQ(test_tracing_session_registry->sessions().size(), 2u);
@@ -695,19 +688,19 @@ IN_PROC_BROWSER_TEST_P(AshHUDLoginTest, AshHUDVerifyTracing) {
 
   // Turn HUD off.
   EXPECT_EQ(IsAshDebugFlagSet(), trigger_hud());
-  EXPECT_FALSE(ash::ShellTestApi().IsHUDShown());
+  EXPECT_FALSE(ShellTestApi().IsHUDShown());
 
   EXPECT_FALSE(user_manager::UserManager::Get()->IsUserLoggedIn());
   Login();
   ASSERT_TRUE(user_manager::UserManager::Get()->IsUserLoggedIn());
   LOG(INFO) << "########### User logged in.";
 
-  EXPECT_FALSE(ash::ShellTestApi().IsHUDShown());
+  EXPECT_FALSE(ShellTestApi().IsHUDShown());
 
   // Make sure that Ash HUD can be triggered if and only if
   // --ash-debug-shortcuts flag is set.
   EXPECT_EQ(IsAshDebugFlagSet(), trigger_hud());
-  EXPECT_EQ(IsAshDebugFlagSet(), ash::ShellTestApi().IsHUDShown());
+  EXPECT_EQ(IsAshDebugFlagSet(), ShellTestApi().IsHUDShown());
 
   {
     LOG(INFO)
@@ -732,7 +725,7 @@ IN_PROC_BROWSER_TEST_P(AshHUDLoginTest, AshHUDVerifyTracing) {
 
     // Make sure saved trace is here and another tracing still continues.
     EXPECT_EQ(test_tracing_session_registry->sessions().size(), 2u);
-    EXPECT_EQ(ash::hud_display::AshTracingManager::Get()
+    EXPECT_EQ(hud_display::AshTracingManager::Get()
                   .GetTracingRequestsForTesting()
                   .size(),
               2u);
@@ -756,7 +749,7 @@ IN_PROC_BROWSER_TEST_P(AshHUDLoginTest, AshHUDVerifyTracing) {
     LOG(INFO) << "########### Verifying AshTraceDestination for trace started "
                  "before login and still running into user session.";
     VerifyTraceDestination(static_cast<TestAshTraceDestinationIO*>(
-                               ash::hud_display::AshTracingManager::Get()
+                               hud_display::AshTracingManager::Get()
                                    .GetTracingRequestsForTesting()
                                    .back()
                                    ->GetTraceDestinationForTesting()
@@ -769,7 +762,7 @@ IN_PROC_BROWSER_TEST_P(AshHUDLoginTest, AshHUDVerifyTracing) {
 
     // Wait for tracing to finish.
     WaiFortLastTracingRequestStatus(
-        ash::hud_display::AshTracingRequest::Status::kCompleted);
+        hud_display::AshTracingRequest::Status::kCompleted);
 
     // We still have two records of ash traces.
     EXPECT_EQ(test_tracing_session_registry->sessions().size(), 2u);
@@ -793,7 +786,7 @@ IN_PROC_BROWSER_TEST_P(AshHUDLoginTest, AshHUDVerifyTracing) {
                  "started before login and finished in user session.";
     // Make sure final trace destination is correct.
     VerifyTraceDestination(static_cast<TestAshTraceDestinationIO*>(
-                               ash::hud_display::AshTracingManager::Get()
+                               hud_display::AshTracingManager::Get()
                                    .GetTracingRequestsForTesting()
                                    .back()
                                    ->GetTraceDestinationForTesting()
@@ -804,11 +797,11 @@ IN_PROC_BROWSER_TEST_P(AshHUDLoginTest, AshHUDVerifyTracing) {
 
   // Turn HUD off.
   EXPECT_EQ(IsAshDebugFlagSet(), trigger_hud());
-  EXPECT_FALSE(ash::ShellTestApi().IsHUDShown());
+  EXPECT_FALSE(ShellTestApi().IsHUDShown());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AshHUDLoginTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
-}  // namespace chromeos
+}  // namespace ash

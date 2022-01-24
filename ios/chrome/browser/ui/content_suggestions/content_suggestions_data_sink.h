@@ -22,11 +22,6 @@
             (ContentSuggestionsSectionInformation*)sectionInfo
                     forceReload:(BOOL)forceReload;
 
-// Notifies the Data Sink that the section identified by |sectionInfo|
-// |isLoading| or not.
-- (void)section:(ContentSuggestionsSectionInformation*)sectionInfo
-      isLoading:(BOOL)isLoading;
-
 // The suggestion associated with |suggestionIdentifier| has been invalidated by
 // the backend data source and should be cleared now. This is why this method is
 // about the data source pushing something to the data sink.

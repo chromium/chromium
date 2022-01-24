@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/download/download_stats.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prompt_status.h"
@@ -12,7 +13,7 @@ namespace {
 
 constexpr char kDownloadCancelReasonHistogram[] = "Download.CancelReason";
 
-#ifdef OS_ANDROID
+#if defined(OS_ANDROID)
 constexpr char kDownloadPromptStatusHistogram[] =
     "MobileDownload.DownloadPromptStatus";
 
@@ -41,7 +42,7 @@ TEST(DownloadStatsTest, RecordDownloadLaterPromptStatus) {
   histogram_tester.ExpectTotalCount(kDownloadLaterPromptStatusHistogram, 1);
 }
 
-#endif  // OS_ANDROID
+#endif  // defined(OS_ANDROID)
 
 TEST(DownloadStatsTest, RecordDownloadCancelReason) {
   base::HistogramTester histogram_tester;

@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A LinkedMap data structure that is accessed using key/value
@@ -65,6 +57,7 @@ goog.require('goog.structs.Map');
  */
 goog.structs.LinkedMap = function(
     opt_maxCount, opt_cache, opt_evictionCallback) {
+  'use strict';
   /**
    * The maximum number of entries to allow, or null if there is no limit.
    * @private {?number}
@@ -96,6 +89,7 @@ goog.structs.LinkedMap = function(
  * @private
  */
 goog.structs.LinkedMap.prototype.findAndMoveToTop_ = function(key) {
+  'use strict';
   var node = this.map_.get(key);
   if (node) {
     if (this.cache_) {
@@ -116,6 +110,7 @@ goog.structs.LinkedMap.prototype.findAndMoveToTop_ = function(key) {
  * @return {VALUE} The retrieved value.
  */
 goog.structs.LinkedMap.prototype.get = function(key, opt_val) {
+  'use strict';
   var node = this.findAndMoveToTop_(key);
   return node ? node.value : opt_val;
 };
@@ -130,6 +125,7 @@ goog.structs.LinkedMap.prototype.get = function(key, opt_val) {
  * @return {VALUE} The retrieved value.
  */
 goog.structs.LinkedMap.prototype.peekValue = function(key, opt_val) {
+  'use strict';
   var node = this.map_.get(key);
   return node ? node.value : opt_val;
 };
@@ -142,6 +138,7 @@ goog.structs.LinkedMap.prototype.peekValue = function(key, opt_val) {
  * @param {VALUE} value Value to be associated with the specified key.
  */
 goog.structs.LinkedMap.prototype.set = function(key, value) {
+  'use strict';
   var node = this.findAndMoveToTop_(key);
   if (node) {
     node.value = value;
@@ -158,6 +155,7 @@ goog.structs.LinkedMap.prototype.set = function(key, value) {
  * @return {VALUE} The value of the first node or undefined if the map is empty.
  */
 goog.structs.LinkedMap.prototype.peek = function() {
+  'use strict';
   return this.head_.next.value;
 };
 
@@ -167,6 +165,7 @@ goog.structs.LinkedMap.prototype.peek = function() {
  * @return {VALUE} The value of the last node or undefined if the map is empty.
  */
 goog.structs.LinkedMap.prototype.peekLast = function() {
+  'use strict';
   return this.head_.prev.value;
 };
 
@@ -177,6 +176,7 @@ goog.structs.LinkedMap.prototype.peekLast = function() {
  *     empty.
  */
 goog.structs.LinkedMap.prototype.shift = function() {
+  'use strict';
   return this.popNode_(this.head_.next);
 };
 
@@ -187,6 +187,7 @@ goog.structs.LinkedMap.prototype.shift = function() {
  *     empty.
  */
 goog.structs.LinkedMap.prototype.pop = function() {
+  'use strict';
   return this.popNode_(this.head_.prev);
 };
 
@@ -198,6 +199,7 @@ goog.structs.LinkedMap.prototype.pop = function() {
  *     found.
  */
 goog.structs.LinkedMap.prototype.remove = function(key) {
+  'use strict';
   var node = this.map_.get(key);
   if (node) {
     this.removeNode(node);
@@ -215,6 +217,7 @@ goog.structs.LinkedMap.prototype.remove = function(key) {
  * @protected
  */
 goog.structs.LinkedMap.prototype.removeNode = function(node) {
+  'use strict';
   node.remove();
   this.map_.remove(node.key);
 };
@@ -227,6 +230,7 @@ goog.structs.LinkedMap.prototype.removeNode = function(node) {
  *     returned from this method is higher than the max count for this map.
  */
 goog.structs.LinkedMap.prototype.getCount = function() {
+  'use strict';
   return this.map_.getCount();
 };
 
@@ -235,6 +239,7 @@ goog.structs.LinkedMap.prototype.getCount = function() {
  * @return {boolean} True if the cache is empty, false if it contains any items.
  */
 goog.structs.LinkedMap.prototype.isEmpty = function() {
+  'use strict';
   return this.map_.isEmpty();
 };
 
@@ -248,6 +253,7 @@ goog.structs.LinkedMap.prototype.isEmpty = function() {
  */
 goog.structs.LinkedMap.prototype.setEvictionCallback = function(
     evictionCallback) {
+  'use strict';
   this.evictionCallback_ = evictionCallback;
 };
 
@@ -258,6 +264,7 @@ goog.structs.LinkedMap.prototype.setEvictionCallback = function(
  * @param {number} maxCount The new maximum number of entries to allow.
  */
 goog.structs.LinkedMap.prototype.setMaxCount = function(maxCount) {
+  'use strict';
   this.maxCount_ = maxCount || null;
   if (this.maxCount_ != null) {
     this.truncate_(this.maxCount_);
@@ -270,7 +277,11 @@ goog.structs.LinkedMap.prototype.setMaxCount = function(maxCount) {
  *     this LinkedMap.
  */
 goog.structs.LinkedMap.prototype.getKeys = function() {
-  return this.map(function(val, key) { return key; });
+  'use strict';
+  return this.map(function(val, key) {
+    'use strict';
+    return key;
+  });
 };
 
 
@@ -279,7 +290,11 @@ goog.structs.LinkedMap.prototype.getKeys = function() {
  *     this LinkedMap.
  */
 goog.structs.LinkedMap.prototype.getValues = function() {
-  return this.map(function(val, key) { return val; });
+  'use strict';
+  return this.map(function(val, key) {
+    'use strict';
+    return val;
+  });
 };
 
 
@@ -290,7 +305,11 @@ goog.structs.LinkedMap.prototype.getValues = function() {
  * @return {boolean} Whether the value is in the LinkedMap.
  */
 goog.structs.LinkedMap.prototype.contains = function(value) {
-  return this.some(function(el) { return el == value; });
+  'use strict';
+  return this.some(function(el) {
+    'use strict';
+    return el == value;
+  });
 };
 
 
@@ -301,6 +320,7 @@ goog.structs.LinkedMap.prototype.contains = function(value) {
  * @return {boolean} Whether the key is in the LinkedMap.
  */
 goog.structs.LinkedMap.prototype.containsKey = function(key) {
+  'use strict';
   return this.map_.containsKey(key);
 };
 
@@ -309,6 +329,7 @@ goog.structs.LinkedMap.prototype.containsKey = function(key) {
  * Removes all entries in this object.
  */
 goog.structs.LinkedMap.prototype.clear = function() {
+  'use strict';
   this.truncate_(0);
 };
 
@@ -322,6 +343,7 @@ goog.structs.LinkedMap.prototype.clear = function() {
  * @template T
  */
 goog.structs.LinkedMap.prototype.forEach = function(f, opt_obj) {
+  'use strict';
   for (var n = this.head_.next; n != this.head_; n = n.next) {
     f.call(opt_obj, n.value, n.key, this);
   }
@@ -344,6 +366,7 @@ goog.structs.LinkedMap.prototype.forEach = function(f, opt_obj) {
  * @template T,RESULT
  */
 goog.structs.LinkedMap.prototype.map = function(f, opt_obj) {
+  'use strict';
   var rv = [];
   for (var n = this.head_.next; n != this.head_; n = n.next) {
     rv.push(f.call(opt_obj, n.value, n.key, this));
@@ -369,6 +392,7 @@ goog.structs.LinkedMap.prototype.map = function(f, opt_obj) {
  * @template T
  */
 goog.structs.LinkedMap.prototype.some = function(f, opt_obj) {
+  'use strict';
   for (var n = this.head_.next; n != this.head_; n = n.next) {
     if (f.call(opt_obj, n.value, n.key, this)) {
       return true;
@@ -394,6 +418,7 @@ goog.structs.LinkedMap.prototype.some = function(f, opt_obj) {
  * @template T
  */
 goog.structs.LinkedMap.prototype.every = function(f, opt_obj) {
+  'use strict';
   for (var n = this.head_.next; n != this.head_; n = n.next) {
     if (!f.call(opt_obj, n.value, n.key, this)) {
       return false;
@@ -412,6 +437,7 @@ goog.structs.LinkedMap.prototype.every = function(f, opt_obj) {
  * @private
  */
 goog.structs.LinkedMap.prototype.insert_ = function(node) {
+  'use strict';
   if (this.cache_) {
     node.next = this.head_.next;
     node.prev = this.head_;
@@ -440,6 +466,7 @@ goog.structs.LinkedMap.prototype.insert_ = function(node) {
  * @private
  */
 goog.structs.LinkedMap.prototype.truncate_ = function(count) {
+  'use strict';
   while (this.getCount() > count) {
     var toRemove = this.cache_ ? this.head_.prev : this.head_.next;
     this.removeNode(toRemove);
@@ -459,6 +486,7 @@ goog.structs.LinkedMap.prototype.truncate_ = function(count) {
  * @private
  */
 goog.structs.LinkedMap.prototype.popNode_ = function(node) {
+  'use strict';
   if (this.head_ != node) {
     this.removeNode(node);
   }
@@ -476,6 +504,7 @@ goog.structs.LinkedMap.prototype.popNode_ = function(node) {
  * @private
  */
 goog.structs.LinkedMap.Node_ = function(key, value) {
+  'use strict';
   /** @type {KEY} */
   this.key = key;
 
@@ -502,6 +531,7 @@ goog.structs.LinkedMap.Node_.prototype.prev;
  * Causes this node to remove itself from the list.
  */
 goog.structs.LinkedMap.Node_.prototype.remove = function() {
+  'use strict';
   this.prev.next = this.next;
   this.next.prev = this.prev;
 

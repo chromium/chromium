@@ -4,7 +4,7 @@
 (async function() {
   TestRunner.addResult('Tests the signed exchange information are available when the navigation succeeded after redirect.\n');
   await TestRunner.loadTestModule('network_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
   NetworkTestRunner.networkLog().reset();
   const url =

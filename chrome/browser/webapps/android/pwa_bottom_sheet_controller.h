@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
@@ -57,6 +56,9 @@ class PwaBottomSheetController {
   // menu item to expand it, we will need to update the source from
   // AMBIENT_BADGE to MENU).
   void UpdateInstallSource(JNIEnv* env, int install_source);
+
+  // Called from the Java side when bottom sheet got closed with swipe.
+  void OnSheetClosedWithSwipe(JNIEnv* env);
 
   // Called from the Java side when bottom sheet got expanded.
   void OnSheetExpanded(JNIEnv* env);

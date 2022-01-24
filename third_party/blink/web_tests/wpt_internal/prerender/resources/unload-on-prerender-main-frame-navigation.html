@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="unload-utils.js"></script>
+<script src="utils.js"></script>
+<body>
+<script type="module">
+const params = new URLSearchParams(location.search);
+const state = params.get('state') || 'start';
+
+const bc = openChannel();
+
+// Test steps:
+//   1. `start` page starts prerendering `prerendering` page.
+//   2. `prerendering` page navigates to `another-page`.
+//   3. `prerendering` page asks the `start` page to navigate.
+//   4. ``pagehide` and unload` may not be handled as the prerendering is
+//      cancelled.
+//   5. `start` does a fallback navigation as the prerendering is cancelled.
+//   6. `prerendering` page loads again with document.prerendering == false.
+//   7. `prerendering` page navigates to `another-page` again.
+//   8. `pagehide`, `visibilitychange`, and `unload` are handled this time.
+//   9. `another-page` finishes the test.
+bc.postMessage('load ' + state +
+               (document.prerendering ? ' in prerendering' : ''));
+if (state === 'start') {
+  const url = createTestUrl('prerendering');
+  startPrerendering(url);
+
+  // Wait for a message from `prerendering` to navigate that results in
+  // fallback network navigation as the prerendering is cancelled.
+  await waitChannelMessage('request fallback');
+
+  // Navigate.
+  document.location = url;
+} else if (state === 'prerendering') {
+  // unload handler may not be triggered for cancellation.
+  addEventListeners('main-frame');
+
+  // Trigger a main frame navigation that will cancel the prerendering.
+  // This navigates successfully if the page isn't prerendered.
+  document.location = createTestUrl('another-page');
+
+  // Ask the `start` page to navigate if on prerendering. Otherwise, finish
+  // the test.
+  if (document.prerendering)
+    bc.postMessage('request fallback');
+} else if (state === 'another-page') {
+  // Reach here after the prerendering is cancelled and fallback request loads
+  // the `prerendering` page with document.prerendering == false. The main
+  // frame navigation will succeed this time.
+  bc.postMessage('Done');
+}
+
+bc.close();
+</script>
+</body>

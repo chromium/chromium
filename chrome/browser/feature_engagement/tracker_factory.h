@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_FEATURE_ENGAGEMENT_TRACKER_FACTORY_H_
 #define CHROME_BROWSER_FEATURE_ENGAGEMENT_TRACKER_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -31,6 +30,9 @@ class TrackerFactory : public BrowserContextKeyedServiceFactory {
   static feature_engagement::Tracker* GetForBrowserContext(
       content::BrowserContext* context);
 
+  TrackerFactory(const TrackerFactory&) = delete;
+  TrackerFactory& operator=(const TrackerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<TrackerFactory>;
 
@@ -42,8 +44,6 @@ class TrackerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackerFactory);
 };
 
 }  // namespace feature_engagement

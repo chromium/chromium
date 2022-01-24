@@ -14,8 +14,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -163,8 +163,7 @@ void OnDeviceHeadProvider::Start(const AutocompleteInput& input,
       FROM_HERE,
       base::BindOnce(&OnDeviceHeadProvider::DoSearch,
                      weak_ptr_factory_.GetWeakPtr(), std::move(params)),
-      delay > 0 ? base::TimeDelta::FromMilliseconds(delay)
-                : base::TimeDelta());
+      delay > 0 ? base::Milliseconds(delay) : base::TimeDelta());
 }
 
 void OnDeviceHeadProvider::Stop(bool clear_cached_results,

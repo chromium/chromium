@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_DETAILS_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_DETAILS_H_
 
-#include <map>
 #include <string>
 
 #include "base/values.h"

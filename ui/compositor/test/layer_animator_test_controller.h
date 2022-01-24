@@ -23,7 +23,8 @@ class LayerAnimatorTestController {
       LayerAnimationElement::AnimatableProperty property);
 
   // Starts threaded animations that are waiting for an effective start time.
-  void StartThreadedAnimationsIfNeeded();
+  void StartThreadedAnimationsIfNeeded(
+      base::TimeTicks started_time = base::TimeTicks::Now());
 
   // Progresses all running animations by the given |duration|.
   void Step(const base::TimeDelta& duration);

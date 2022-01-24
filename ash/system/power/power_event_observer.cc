@@ -67,6 +67,10 @@ class CompositorWatcher : public ui::CompositorObserver {
       : callback_(std::move(callback)), compositor_observations_(this) {
     Start();
   }
+
+  CompositorWatcher(const CompositorWatcher&) = delete;
+  CompositorWatcher& operator=(const CompositorWatcher&) = delete;
+
   ~CompositorWatcher() override = default;
 
   // ui::CompositorObserver:
@@ -207,8 +211,6 @@ class CompositorWatcher : public ui::CompositorObserver {
       compositor_observations_;
 
   base::WeakPtrFactory<CompositorWatcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorWatcher);
 };
 
 const char kLockOnSuspendFeature[] = "LockOnSuspend";

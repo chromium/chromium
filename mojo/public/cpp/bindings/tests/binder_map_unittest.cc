@@ -26,10 +26,11 @@ class BinderMapTest : public testing::Test {
  public:
   BinderMapTest() = default;
 
+  BinderMapTest(const BinderMapTest&) = delete;
+  BinderMapTest& operator=(const BinderMapTest&) = delete;
+
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(BinderMapTest);
 };
 
 class TestInterface1Impl : public mojom::TestInterface1 {

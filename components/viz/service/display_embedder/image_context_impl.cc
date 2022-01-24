@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 
 namespace viz {
 
@@ -92,6 +93,9 @@ void ImageContextImpl::BeginAccessIfNecessary(
     gpu::MailboxManager* mailbox_manager,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
+  if (representation_raster_scoped_access_)
+    return;
+
   // Prepare for accessing shared image.
   if (mailbox_holder().mailbox.IsSharedImage()) {
     if (!BeginAccessIfNecessaryForSharedImage(
@@ -137,7 +141,8 @@ void ImageContextImpl::BeginAccessIfNecessary(
   GrBackendTexture backend_texture;
   gpu::GetGrBackendTexture(
       context_state->feature_info(), texture_base->target(), size(),
-      texture_base->service_id(), resource_format(), &backend_texture);
+      texture_base->service_id(), resource_format(),
+      context_state->gr_context()->threadSafeProxy(), &backend_texture);
   if (!backend_texture.isValid()) {
     DLOG(ERROR) << "Failed to fulfill the promise texture.";
     CreateFallbackImage(context_state);
@@ -154,6 +159,31 @@ void ImageContextImpl::BeginAccessIfNecessary(
   // TODO(crbug.com/1118166): The case above handles textures with the
   // passthrough command decoder, verify if something is required for the
   // validating command decoder as well.
+}
+
+bool ImageContextImpl::BeginRasterAccess(
+    gpu::SharedImageRepresentationFactory* representation_factory) {
+  if (paint_op_buffer()) {
+    DCHECK(raster_representation_);
+    DCHECK(representation_raster_scoped_access_);
+    return true;
+  }
+
+  auto raster = representation_factory->ProduceRaster(mailbox_holder().mailbox);
+  if (!raster)
+    return false;
+
+  auto scoped_access = raster->BeginScopedReadAccess();
+  if (!scoped_access)
+    return false;
+
+  set_paint_op_buffer(scoped_access->paint_op_buffer());
+  set_clear_color(scoped_access->clear_color());
+
+  raster_representation_ = std::move(raster);
+  representation_raster_scoped_access_ = std::move(scoped_access);
+
+  return true;
 }
 
 bool ImageContextImpl::BeginAccessIfNecessaryForSharedImage(
@@ -251,6 +281,11 @@ bool ImageContextImpl::BindOrCopyTextureIfNecessary(
 }
 
 void ImageContextImpl::EndAccessIfNecessary() {
+  if (paint_op_buffer()) {
+    DCHECK(!representation_scoped_read_access_);
+    return;
+  }
+
   if (!representation_scoped_read_access_)
     return;
 

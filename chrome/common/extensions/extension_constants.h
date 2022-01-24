@@ -37,17 +37,8 @@ extern const char kDataSaverExtensionId[];
 // The extension id of the Google Docs Offline extension.
 extern const char kDocsOfflineExtensionId[];
 
-// The extension id of the Drive hosted app.
-extern const char kDriveHostedAppId[];
-
 // The extension id of the Enterprise Web Store component application.
 extern const char kEnterpriseWebStoreAppId[];
-
-// The extension id of GMail application.
-extern const char kGmailAppId[];
-
-// The extension id of the Google Doc application.
-extern const char kGoogleDocAppId[];
 
 // The extension id of the Google Maps application.
 extern const char kGoogleMapsAppId[];
@@ -66,12 +57,6 @@ extern const char kGooglePlayMusicAppId[];
 
 // The extension id of the Google+ application.
 extern const char kGooglePlusAppId[];
-
-// The extension id of the Google Sheets application.
-extern const char kGoogleSheetsAppId[];
-
-// The extension id of the Google Slides application.
-extern const char kGoogleSlidesAppId[];
 
 // The extension id of the Identity API UI application.
 extern const char kIdentityApiUiAppId[];
@@ -171,9 +156,11 @@ enum AppLaunchBucket {
   APP_LAUNCH_BUCKET_INVALID
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // The extension id of the Assessment Assistant extension.
 extern const char kAssessmentAssistantExtensionId[];
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the Accessibility Common extension.
 extern const char kAccessibilityCommonExtensionId[];
 // Path to preinstalled Accessibility Common extension (relative to
@@ -232,10 +219,6 @@ extern const char kEspeakSpeechSynthesisExtensionPath[];
 extern const char kEspeakSpeechSynthesisExtensionId[];
 // The extension id of the wallpaper manager application.
 extern const char kWallpaperManagerId[];
-// The extension id of the zip archiver extension.
-extern const char kZipArchiverExtensionId[];
-// Path to preinstalled zip archiver extension.
-extern const char kZipArchiverExtensionPath[];
 // Path to preinstalled Chrome camera app.
 extern const char kCameraAppPath[];
 #endif

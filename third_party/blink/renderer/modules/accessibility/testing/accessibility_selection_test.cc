@@ -235,7 +235,7 @@ class AXSelectionDeserializer final {
       return ax_selections;
     }
 
-    for (size_t i = 0; i < foci_->size(); ++i) {
+    for (wtf_size_t i = 0; i < foci_->size(); ++i) {
       DCHECK(anchors_->at(i).first);
       const Position base(*anchors_->at(i).first, anchors_->at(i).second);
       const auto ax_base = AXPosition::FromPosition(base);

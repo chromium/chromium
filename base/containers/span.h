@@ -19,7 +19,6 @@
 #include "base/containers/contiguous_iterator.h"
 #include "base/cxx17_backports.h"
 #include "base/cxx20_to_address.h"
-#include "base/macros.h"
 #include "base/template_util.h"
 
 namespace base {

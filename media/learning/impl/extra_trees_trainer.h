@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/learning/common/learning_task.h"
 #include "media/learning/impl/one_hot.h"
@@ -34,6 +33,10 @@ class COMPONENT_EXPORT(LEARNING_IMPL) ExtraTreesTrainer
       public base::SupportsWeakPtr<ExtraTreesTrainer> {
  public:
   ExtraTreesTrainer();
+
+  ExtraTreesTrainer(const ExtraTreesTrainer&) = delete;
+  ExtraTreesTrainer& operator=(const ExtraTreesTrainer&) = delete;
+
   ~ExtraTreesTrainer() override;
 
   // TrainingAlgorithm
@@ -51,8 +54,6 @@ class COMPONENT_EXPORT(LEARNING_IMPL) ExtraTreesTrainer
   std::vector<std::unique_ptr<Model>> trees_;
   std::unique_ptr<OneHotConverter> converter_;
   TrainingData converted_training_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtraTreesTrainer);
 };
 
 }  // namespace learning

@@ -5,6 +5,7 @@
 #include "ui/views/animation/ink_drop.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -41,7 +42,7 @@ std::unique_ptr<InkDrop> CreateInkDropImpl(
 InkDrop::~InkDrop() = default;
 
 void InkDrop::Install(View* host, std::unique_ptr<InkDropHost> ink_drop) {
-  host->SetProperty(kInkDropKey, ink_drop.release());
+  host->SetProperty(kInkDropKey, std::move(ink_drop));
 }
 
 void InkDrop::Remove(View* host) {

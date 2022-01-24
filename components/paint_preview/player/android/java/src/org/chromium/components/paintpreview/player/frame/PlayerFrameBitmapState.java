@@ -112,7 +112,7 @@ public class PlayerFrameBitmapState {
         for (int i = 0; i < mBitmapMatrix.length; i++) {
             for (int j = 0; j < mBitmapMatrix[i].length; j++) {
                 if (mBitmapMatrix[i][j] != null) {
-                    mBitmapMatrix[i][j].destroy();
+                    mBitmapMatrix[i][j].forceDestroy();
                 }
             }
         }

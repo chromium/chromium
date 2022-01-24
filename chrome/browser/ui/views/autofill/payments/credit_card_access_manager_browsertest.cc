@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -70,9 +69,9 @@ IN_PROC_BROWSER_TEST_F(CreditCardAccessManagerBrowserTest,
   EXPECT_FALSE(GetCreditCardAccessManager()->UnmaskedCardCacheIsEmpty());
 
   // Cache should reset upon navigation.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/credit_card_upload_form_cc.html"));
+      embedded_test_server()->GetURL("/credit_card_upload_form_cc.html")));
   EXPECT_TRUE(GetCreditCardAccessManager()->UnmaskedCardCacheIsEmpty());
 }
 

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <string>
-#include <vector>
 
 #include "components/sync/protocol/test.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"

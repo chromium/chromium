@@ -19,6 +19,9 @@
 
       .second-line {
         margin-top: 0.1em;
+        /* 1.54em is the same as the line-height of 154%. Ensures the line is
+           always present when iron-list is calculating item sizes. */
+        min-height: 1.54em;
       }
 
       /* Data units such as "0 KB" should always read left-to-right. */
@@ -31,18 +34,24 @@
         padding-inline-end: 0;
       }
 
+      .origin-link {
+        overflow: hidden;
+      }
+
       .spacing {
         padding-inline-start: 1ch;
       }
     </style>
     <div id="collapseParent" focus-row-container>
       <div class$="list-item [[getClassForIndex_(listIndex)]]">
-        <div id="toggleButton" class="start row-aligned two-line"
+        <div id="toggleButton" class="start row-aligned two-line text-elide"
             on-click="onSiteEntryTap_" actionable aria-expanded="false">
           <site-favicon url="[[getSiteGroupIcon_(siteGroup)]]"></site-favicon>
           <div class="middle text-elide" id="displayName">
             <div class="site-representation">
-              <span class="url-directionality">[[displayName_]]</span>
+              <span class="url-directionality text-elide">
+                [[displayName_]]
+              </span>
               <span class="secondary"
                   hidden$="[[!siteGroupScheme_(siteGroup)]]">
                 &nbsp;$i18nPolymer{siteSettingsSiteRepresentationSeparator}&nbsp;
@@ -69,10 +78,20 @@
               focus-row-control focus-type="show-detail"></cr-icon-button>
         </div>
         <div class="row-aligned">
-          <div class="separator"></div>
-          <cr-icon-button class="icon-more-vert" id="overflowMenuButton"
-              title="$i18n{moreActions}" on-click="showOverflowMenu_"
-              focus-row-control focus-type="more-actions"></cr-icon-button>
+          <template is="dom-if"
+              if="[[!enableConsolidatedSiteStorageControls_]]">
+            <div class="separator"></div>
+            <cr-icon-button class="icon-more-vert" id="overflowMenuButton"
+                title="$i18n{moreActions}" on-click="showOverflowMenu_"
+                focus-row-control focus-type="more-actions"></cr-icon-button>
+          </template>
+          <template is="dom-if" if="[[enableConsolidatedSiteStorageControls_]]">
+            <div class="separator"></div>
+            <cr-icon-button class="icon-delete-gray" id="removeSiteButton"
+                title$="[[i18n('siteSettingsCookieRemoveSite', displayName_)]]"
+                on-click="onRemove_" focus-row-control focus-type="remove">
+            </cr-icon-button>
+          </template>
         </div>
       </div>
 
@@ -87,7 +106,7 @@
                     <site-favicon url="[[item.origin]]"></site-favicon>
                     <div class="site-representation middle text-elide">
                       <span id="originSiteRepresentation"
-                          class="url-directionality">
+                          class="url-directionality text-elide">
                         [[originRepresentation(item.origin)]]
                       </span>
                       <span class="secondary"
@@ -122,15 +141,29 @@
                         focus-row-control focus-type="detailed-sites">
                     </cr-icon-button>
                   </div>
-                  <div class="row-aligned"
-                       hidden$="[[!storagePressureUIEnabled_]]">
-                    <div class="separator"></div>
-                    <cr-icon-button class="icon-more-vert"
-                        id="originOverflowMenuButton"
-                        data-origin$="[[item.origin]]" data-context="origin"
-                        title="$i18n{moreActions}" on-click="showOverflowMenu_"
-                        focus-row-control focus-type="more-actions">
-                    </cr-icon-button>
+                  <div class="row-aligned">
+                    <template is="dom-if"
+                        if="[[!enableConsolidatedSiteStorageControls_]]">
+                      <div class="separator"></div>
+                      <cr-icon-button class="icon-more-vert"
+                          id="originOverflowMenuButton"
+                          data-origin$="[[item.origin]]" data-context="origin"
+                          title="$i18n{moreActions}"
+                          on-click="showOverflowMenu_"
+                          focus-row-control focus-type="more-actions">
+                      </cr-icon-button>
+                    </template>
+                    <template is="dom-if"
+                        if="[[enableConsolidatedSiteStorageControls_]]">
+                      <div class="separator"></div>
+                      <cr-icon-button class="icon-delete-gray"
+                          id="removeOriginButton"
+                          title$="[[getRemoveOriginButtonTitle_(item.origin)]]"
+                          data-origin$="[[item.origin]]" data-context="origin"
+                          on-click="onRemove_" focus-row-control
+                          focus-type="remove">
+                      </cr-icon-button>
+                    </template>
                   </div>
                 </div>
               </template>

@@ -13,10 +13,11 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -49,11 +50,17 @@ constexpr base::FilePath::CharType kUptimePrefix[] = FPL("uptime-");
 // Prefix for the disk usage files.
 constexpr base::FilePath::CharType kDiskPrefix[] = FPL("disk-");
 
+// Prefix and suffix for the "stats saved" flags file.
+constexpr base::FilePath::CharType kStatsPrefix[] = FPL("stats-");
+constexpr base::FilePath::CharType kWrittenSuffix[] = FPL(".written");
+
 // Names of login stats files.
 constexpr base::FilePath::CharType kLoginSuccess[] = FPL("login-success");
 
-// Delay in milliseconds before writing the login times to disk.
-constexpr int64_t kLoginTimeWriteDelayMs = 3000;
+// The login times will be written immediately when the login animation ends,
+// and this is used to ensure the data is always written if this amount is
+// elapsed after login.
+constexpr int64_t kLoginTimeWriteDelayMs = 20000;
 
 // Appends the given buffer into the file. Returns the number of bytes
 // written, or -1 on error.<
@@ -92,8 +99,8 @@ void WriteTimes(const std::string base_name,
   base::Time last = times.back().time();
   base::TimeDelta total = last - first;
   base::HistogramBase* total_hist = base::Histogram::FactoryTimeGet(
-      uma_name, base::TimeDelta::FromMilliseconds(kMinTimeMillis),
-      base::TimeDelta::FromMilliseconds(kMaxTimeMillis), kNumBuckets,
+      uma_name, base::Milliseconds(kMinTimeMillis),
+      base::Milliseconds(kMaxTimeMillis), kNumBuckets,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   total_hist->AddTime(total);
   std::string output =
@@ -135,18 +142,20 @@ void WriteTimes(const std::string base_name,
     if (tm.send_to_uma()) {
       name = uma_prefix + tm.name();
       base::HistogramBase* prev_hist = base::Histogram::FactoryTimeGet(
-          name, base::TimeDelta::FromMilliseconds(kMinTimeMillis),
-          base::TimeDelta::FromMilliseconds(kMaxTimeMillis), kNumBuckets,
+          name, base::Milliseconds(kMinTimeMillis),
+          base::Milliseconds(kMaxTimeMillis), kNumBuckets,
           base::HistogramBase::kUmaTargetedHistogramFlag);
       prev_hist->AddTime(since_prev);
     } else {
       name = tm.name();
     }
-    output += base::StringPrintf("\n%.2f +%.4f %s", since_first.InSecondsF(),
-                                 since_prev.InSecondsF(), name.data());
-    if (tm.url().has_value()) {
-      output += ": ";
-      output += *tm.url();
+    if (tm.write_to_file()) {
+      output += base::StringPrintf("\n%.2f +%.4f %s", since_first.InSecondsF(),
+                                   since_prev.InSecondsF(), name.data());
+      if (tm.url().has_value()) {
+        output += ": ";
+        output += *tm.url();
+      }
     }
     prev = tm.time();
   }
@@ -161,8 +170,12 @@ void WriteTimes(const std::string base_name,
 
 LoginEventRecorder::TimeMarker::TimeMarker(const char* name,
                                            absl::optional<std::string> url,
-                                           bool send_to_uma)
-    : name_(name), url_(url), send_to_uma_(send_to_uma) {}
+                                           bool send_to_uma,
+                                           bool write_to_file)
+    : name_(name),
+      url_(url),
+      send_to_uma_(send_to_uma),
+      write_to_file_(write_to_file) {}
 
 LoginEventRecorder::TimeMarker::TimeMarker(const TimeMarker& other) = default;
 
@@ -238,25 +251,28 @@ bool LoginEventRecorder::Stats::UptimeDouble(double* result) const {
   return false;
 }
 
-void LoginEventRecorder::Stats::RecordStats(const std::string& name) const {
+void LoginEventRecorder::Stats::RecordStats(const std::string& name,
+                                            bool write_flag_file) const {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoginEventRecorder::Stats::RecordStatsAsync,
-                     base::Owned(new Stats(*this)), name));
+                     base::Owned(new Stats(*this)), name, write_flag_file));
 }
 
 void LoginEventRecorder::Stats::RecordStatsWithCallback(
     const std::string& name,
+    bool write_flag_file,
     base::OnceClosure callback) const {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoginEventRecorder::Stats::RecordStatsAsync,
-                     base::Owned(new Stats(*this)), name),
+                     base::Owned(new Stats(*this)), name, write_flag_file),
       std::move(callback));
 }
 
 void LoginEventRecorder::Stats::RecordStatsAsync(
-    const base::FilePath::StringType& name) const {
+    const base::FilePath::StringType& name,
+    bool write_flag_file) const {
   const base::FilePath log_path(kLogPath);
   const base::FilePath uptime_output =
       log_path.Append(base::FilePath(kUptimePrefix + name));
@@ -266,6 +282,11 @@ void LoginEventRecorder::Stats::RecordStatsAsync(
   // Append numbers to the files.
   AppendFile(uptime_output, uptime_.data(), uptime_.size());
   AppendFile(disk_output, disk_.data(), disk_.size());
+  if (write_flag_file) {
+    const base::FilePath flag_path =
+        log_path.Append(base::FilePath(kStatsPrefix + name + kWrittenSuffix));
+    AppendFile(flag_path, "", 0);
+  }
 }
 
 static base::LazyInstance<LoginEventRecorder>::DestructorAtExit
@@ -286,29 +307,26 @@ LoginEventRecorder* LoginEventRecorder::Get() {
 }
 
 void LoginEventRecorder::AddLoginTimeMarker(const char* marker_name,
-                                            bool send_to_uma) {
+                                            bool send_to_uma,
+                                            bool write_to_file) {
   AddLoginTimeMarkerWithURL(marker_name, absl::optional<std::string>(),
-                            send_to_uma);
+                            send_to_uma, write_to_file);
 }
 
 void LoginEventRecorder::AddLoginTimeMarkerWithURL(
     const char* marker_name,
     absl::optional<std::string> url,
-    bool send_to_uma) {
-  // Do not contaminate the UMA in the field.
-  if (write_login_requested_ && send_to_uma) {
-    LOG(WARNING) << "LoginTime Marker was requested after LoginDone()";
-    return;
-  }
-
-  AddMarker(&login_time_markers_, TimeMarker(marker_name, url, send_to_uma));
+    bool send_to_uma,
+    bool write_to_file) {
+  AddMarker(&login_time_markers_,
+            TimeMarker(marker_name, url, send_to_uma, write_to_file));
 }
 
 void LoginEventRecorder::AddLogoutTimeMarker(const char* marker_name,
                                              bool send_to_uma) {
-  AddMarker(
-      &logout_time_markers_,
-      TimeMarker(marker_name, absl::optional<std::string>(), send_to_uma));
+  AddMarker(&logout_time_markers_,
+            TimeMarker(marker_name, absl::optional<std::string>(), send_to_uma,
+                       /*write_to_file=*/true));
 }
 
 void LoginEventRecorder::RecordAuthenticationSuccess() {
@@ -321,24 +339,32 @@ void LoginEventRecorder::RecordAuthenticationFailure() {
 }
 
 void LoginEventRecorder::RecordCurrentStats(const std::string& name) {
-  Stats::GetCurrentStats().RecordStats(name);
+  Stats::GetCurrentStats().RecordStats(name, /*write_flag_file=*/false);
 }
 
 void LoginEventRecorder::ClearLoginTimeMarkers() {
   login_time_markers_.clear();
 }
 
-void LoginEventRecorder::WriteLoginTimes(const std::string base_name,
-                                         const std::string uma_name,
-                                         const std::string uma_prefix) {
+void LoginEventRecorder::ScheduleWriteLoginTimes(const std::string base_name,
+                                                 const std::string uma_name,
+                                                 const std::string uma_prefix) {
+  callback_ = base::BindOnce(&WriteTimes, base_name, uma_name, uma_prefix);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  write_login_requested_ = true;
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
       base::BindOnce(&LoginEventRecorder::WriteLoginTimesDelayed,
-                     weak_ptr_factory_.GetWeakPtr(), base_name, uma_name,
-                     uma_prefix),
-      base::TimeDelta::FromMilliseconds(kLoginTimeWriteDelayMs));
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Milliseconds(kLoginTimeWriteDelayMs));
+}
+
+void LoginEventRecorder::RunScheduledWriteLoginTimes() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (callback_.is_null())
+    return;
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(std::move(callback_), std::move(login_time_markers_)));
 }
 
 void LoginEventRecorder::WriteLogoutTimes(const std::string base_name,
@@ -363,10 +389,13 @@ void LoginEventRecorder::AddMarker(std::vector<TimeMarker>* vector,
   }
 }
 
-void LoginEventRecorder::WriteLoginTimesDelayed(const std::string base_name,
-                                                const std::string uma_name,
-                                                const std::string uma_prefix) {
-  WriteTimes(base_name, uma_name, uma_prefix, std::move(login_time_markers_));
+void LoginEventRecorder::WriteLoginTimesDelayed() {
+  if (callback_.is_null())
+    return;
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(std::move(callback_), std::move(login_time_markers_)));
 }
 
 }  // namespace chromeos

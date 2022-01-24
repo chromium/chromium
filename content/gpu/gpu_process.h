@@ -5,7 +5,6 @@
 #ifndef CONTENT_GPU_GPU_PROCESS_H_
 #define CONTENT_GPU_GPU_PROCESS_H_
 
-#include "base/macros.h"
 #include "content/child/child_process.h"
 
 namespace content {
@@ -13,10 +12,11 @@ namespace content {
 class GpuProcess : public ChildProcess {
  public:
   explicit GpuProcess(base::ThreadPriority io_thread_priority);
-  ~GpuProcess() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GpuProcess);
+  GpuProcess(const GpuProcess&) = delete;
+  GpuProcess& operator=(const GpuProcess&) = delete;
+
+  ~GpuProcess() override;
 };
 
 }

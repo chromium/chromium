@@ -25,6 +25,11 @@ class PasswordReuseDialogViewAndroid {
   explicit PasswordReuseDialogViewAndroid(
       PasswordReuseControllerAndroid* controller);
 
+  PasswordReuseDialogViewAndroid(const PasswordReuseDialogViewAndroid&) =
+      delete;
+  PasswordReuseDialogViewAndroid& operator=(
+      const PasswordReuseDialogViewAndroid&) = delete;
+
   // Destructor must delete its Java counterpart.
   ~PasswordReuseDialogViewAndroid();
 
@@ -44,8 +49,6 @@ class PasswordReuseDialogViewAndroid {
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordReuseDialogViewAndroid);
 };
 
 }  // namespace safe_browsing

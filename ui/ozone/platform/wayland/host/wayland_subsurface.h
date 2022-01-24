@@ -5,9 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SUBSURFACE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SUBSURFACE_H_
 
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
@@ -26,31 +24,21 @@ class WaylandSubsurface {
 
   wl_surface* surface() const { return wayland_surface_.surface(); }
   WaylandSurface* wayland_surface() { return &wayland_surface_; }
-  gfx::Rect bounds_px() { return bounds_px_; }
-  bool IsOpaque() const { return !enable_blend_; }
 
   gfx::AcceleratedWidget GetWidget() const;
 
-  // Sets up wl_surface and wl_subsurface. Allows an overlay to be shown
-  // correctly once a wl_buffer is attached.
-  //   |transform|: specifies the wl_surface buffer_transform.
-  //   |bounds_rect|: The contents of the source rectangle are scaled to the
-  //     destination size (wp_viewport.dst), used to specify opaque region.
-  //   |enable_blend|: whether the wl_surface will be transluscent.
+  // Sets up wl_subsurface by setting the surface location coordinates and the
+  // stacking order of this subsurface.
+  //   |bounds_px|: The pixel bounds of this subsurface content in
+  //     display::Display coordinates used by chrome.
+  //   |parent_bounds_px|: Same as |bounds_px| but for the parent surface.
+  //   |buffer_scale|: the scale factor of the next attached buffer.
   //   |reference_below| & |reference_above|: this subsurface is taken from the
   //     subsurface stack and inserted back to be immediately below/above the
   //     reference subsurface.
-  //   |buffer_scale|: the scale factor of the next attached buffer.
-  //
-  // The coordinate transformations from buffer pixel coordinates up to the
-  // surface-local coordinates happen in the following order:
-  //   1. buffer_transform
-  //   2. buffer_scale
-  //   3. crop and scale of viewport
-  void ConfigureAndShowSurface(gfx::OverlayTransform transform,
-                               const gfx::Rect& bounds_rect,
-                               int32_t buffer_scale,
-                               bool enable_blend,
+  void ConfigureAndShowSurface(const gfx::Rect& bounds_px,
+                               const gfx::Rect& parent_bounds_px,
+                               float buffer_scale,
                                const WaylandSurface* reference_below,
                                const WaylandSurface* reference_above);
 
@@ -64,11 +52,6 @@ class WaylandSubsurface {
  private:
   // Helper of Show(). It does the role-assigning to wl_surface.
   void CreateSubsurface();
-  void SetBounds(const gfx::Rect& bounds);
-
-  // Tells wayland compositor to update the opaque region according to
-  // |enable_blend_| and |bounds_px_|.
-  void UpdateOpaqueRegion();
 
   WaylandSurface wayland_surface_;
   wl::Object<wl_subsurface> subsurface_;
@@ -77,10 +60,6 @@ class WaylandSubsurface {
   // |parent_| refers to the WaylandWindow whose wl_surface is the parent to
   // this subsurface.
   WaylandWindow* const parent_;
-
-  // Pixel bounds within the display to position this subsurface.
-  gfx::Rect bounds_px_;
-  bool enable_blend_ = true;
 };
 
 }  // namespace ui

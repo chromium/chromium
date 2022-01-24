@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/showcase/first_run/sc_first_run_default_screen_coordinator.h"
-
-#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller_delegate.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/showcase/first_run/sc_first_run_default_screen_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -12,7 +11,7 @@
 #endif
 
 @interface SCFirstRunDefaultScreenCoordinator () <
-    FirstRunScreenViewControllerDelegate>
+    PromoStyleViewControllerDelegate>
 
 @property(nonatomic, strong)
     SCFirstRunDefaultScreenViewController* screenViewController;
@@ -35,7 +34,7 @@
                                      animated:YES];
 }
 
-#pragma mark - FirstRunScreenViewControllerDelegate
+#pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
   UIAlertController* alert =

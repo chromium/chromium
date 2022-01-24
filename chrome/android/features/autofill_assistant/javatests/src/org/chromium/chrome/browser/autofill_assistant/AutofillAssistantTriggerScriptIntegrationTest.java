@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.greaterThan;
 
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.createDefaultTriggerScriptUI;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistantWithParams;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilKeyboardMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
@@ -46,6 +47,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -77,6 +79,7 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /** Integration tests for trigger scripts. */
@@ -118,15 +121,10 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     private void startAutofillAssistantOnTabWithParams(
             String pageToLoad, Map<String, Object> scriptParameters) {
-        TriggerContext.Builder argsBuilder =
-                TriggerContext.newBuilder().fromBundle(null).withInitialUrl(getURL(pageToLoad));
-        for (Map.Entry<String, Object> param : scriptParameters.entrySet()) {
-            argsBuilder.addParameter(param.getKey(), param.getValue());
-        }
-        argsBuilder.addParameter("START_IMMEDIATELY", false);
-        argsBuilder.addParameter("ENABLED", true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> AutofillAssistantFacade.start(mTestRule.getActivity(), argsBuilder.build()));
+        HashMap<String, Object> parameters = new HashMap(scriptParameters);
+        parameters.put("START_IMMEDIATELY", false);
+
+        startAutofillAssistantWithParams(mTestRule.getActivity(), getURL(pageToLoad), parameters);
     }
 
     @Before
@@ -246,12 +244,10 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Area visible"), isCompletelyDisplayed());
-        onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.step_progress_bar)).check(matches(isDisplayed()));
 
         tapElement(mTestRule, "touch_area_one");
         waitUntilViewMatchesCondition(withText("Area invisible"), isCompletelyDisplayed());
-        onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.step_progress_bar)).check(matches(not(isDisplayed())));
     }
 
@@ -292,8 +288,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         setupRegularScripts(script);
@@ -305,7 +300,6 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         onView(withId(R.id.button_init_ok)).perform(click());
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         onView(withText("Loading regular script")).check(matches(isDisplayed()));
-        onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.step_progress_bar)).check(matches(isDisplayed()));
         Assert.assertFalse(AutofillAssistantPreferencesUtil.getShowOnboarding());
     }
@@ -345,8 +339,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         setupRegularScripts(script);
@@ -424,8 +417,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         setupRegularScripts(script);
@@ -470,8 +462,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         setupRegularScripts(script);
@@ -518,6 +509,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW,
             ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
+    @DisabledTest(message = "https://crbug.com/1232703")
     public void
     testScrollToHide() throws Exception {
         GetTriggerScriptsResponseProto triggerScripts =
@@ -629,8 +621,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         setupRegularScripts(script);
@@ -692,8 +683,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         setupRegularScripts(script);

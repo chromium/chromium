@@ -169,23 +169,53 @@ per-file *_messages*.h=file://ipc/SECURITY_OWNERS
 ### Owners-Override
 
 Setting the `Owners-Override +1` label will bypass OWNERS enforcement. Active
-[sheriffs](sheriffs.md), [Large Scale Changes](#large-scale-changes) and
-[Global Approvers](#global-approvals) reviewers, and Release Program Managers
-have this capability.
+[sheriffs](sheriffs.md), Release Program Managers, 
+[Large Scale Changes](#large-scale-changes), 
+[Global Approvers](#global-approvals) reviewers, 
+[Chrome Eng Review members](https://chromium.googlesource.com/chromium/src/+/HEAD/ENG_REVIEW_OWNERS) 
+have this capability. The power to use Owners-Override should be restricted 
+as follows:
+
+  * Active sheriffs can set Owners-Override only on sheriffing CLs (e.g.,
+    revert, reland, test fix).
+  * Release Program Managers can set Owners-Override only on sheriffing CLs and
+    CLs needed for releasing (e.g., cherry-pick).
+  * Large Scale Change reviewers can set Owners-Override only on sheriffing CLs
+    and CLs about the approved Large Scale Change.
+  * Global approvers can set Owners-Override only on sheriffing CLs and
+    mechanical CLs associated with their API changes. For example,
+    //base/OWNERS can set Owners-Override on mechanical CLs associated with
+    //base/ API changes.
+  * Chrome Eng Review members can set Owners-Override on any changes to help 
+    with cases that cannot be handled by the above groups and expedite CLs
+    when LSC is too heavyweight.. However, please use one of the above groups
+    before asking Chrome Eng Review members.
+
+When you need Owners-Override on sheriffing CLs, please reach out to the
+Active Sheriffs and Release Program Managers first. If none of them is
+available, please send an email to lsc-owners-override@chromium.org for help.
+
+Note that Owners-Override by itself is not enough on your own CLs. Where this 
+matters is when you are sheriffing. For example, if you want to revert or 
+disable a test, your Owners-Override on the CL is not enough. You need 
+another committer to LGTM the CL.
 
 ## Mechanical changes
-
-### Large Scale Changes
-You can use the [Large Scale Changes](process/lsc/large_scale_changes.md)
-process to get approval to bypass OWNERS enforcement for large changes like
-refactoring, architectural changes, or other repetitive code changes across the
-whole codebase. This is used for work that span many dozen CLs.
 
 ### Global Approvals
 For one-off CLs, API owners of `base`, `build`, `content`, `third_party/blink`
 and `url` can `Owners-Override +1` a change to their APIs to avoid waiting for
 rubberstamp +1s from affected directories' owners. This should only be used for
 mechanical updates to the affected directories.
+
+If you are making one-off CLs that touch many directories and cannot be 
+handled by the global approvers, you can ask one of Chrome Eng Review members.
+
+### Large Scale Changes
+You can use the [Large Scale Changes](process/lsc/large_scale_changes.md)
+process to get approval to bypass OWNERS enforcement for large changes like
+refactoring, architectural changes, or other repetitive code changes across the
+whole codebase. This is used for work that span many dozen CLs.
 
 ## Documentation updates
 

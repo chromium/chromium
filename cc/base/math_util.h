@@ -18,9 +18,9 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace base {
 class Value;
@@ -292,9 +292,6 @@ class CC_BASE_EXPORT MathUtil {
                                base::trace_event::TracedValue* res);
   static void AddToTracedValue(const char* name,
                                const gfx::Vector2dF& v,
-                               base::trace_event::TracedValue* res);
-  static void AddToTracedValue(const char* name,
-                               const gfx::ScrollOffset& v,
                                base::trace_event::TracedValue* res);
   static void AddToTracedValue(const char* name,
                                const gfx::QuadF& q,

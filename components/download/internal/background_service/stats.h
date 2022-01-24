@@ -6,7 +6,7 @@
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_STATS_H_
 
 #include "base/files/file.h"
-#include "components/download/internal/background_service/controller.h"
+#include "components/download/internal/background_service/constants.h"
 #include "components/download/internal/background_service/download_blockage_status.h"
 #include "components/download/internal/background_service/driver_entry.h"
 #include "components/download/public/background_service/clients.h"
@@ -131,6 +131,9 @@ enum class DownloadEvent {
 // if |status| contains more than one initialization failure.
 void LogControllerStartupStatus(bool in_recovery, const StartupStatus& status);
 
+// Logs the service starting up result.
+void LogStartUpResult(bool in_recovery, StartUpResult result);
+
 // Logs an action taken on the service API.
 void LogServiceApiAction(DownloadClient client, ServiceApiAction action);
 
@@ -162,13 +165,6 @@ void LogFileCleanupStatus(FileCleanupReason reason,
 
 // Logs the file life time for successfully completed download.
 void LogFileLifeTime(const base::TimeDelta& file_life_time);
-
-// Logs the total disk space utilized by download files.
-// This includes the total size of all the files in |file_dir|.
-// This function is costly and should be called only once.
-void LogFileDirDiskUtilization(int64_t total_disk_space,
-                               int64_t free_disk_space,
-                               int64_t files_size);
 
 // Logs an action the Controller takes on an active download.
 void LogEntryEvent(DownloadEvent event);

@@ -97,8 +97,9 @@ public class ContentSettingsResources {
     private static ResourceItem getResourceItem(int contentType) {
         switch (contentType) {
             case ContentSettingsType.ADS:
-                return new ResourceItem(R.drawable.web_asset, 0, R.string.ads_permission_title,
-                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK, 0,
+                return new ResourceItem(R.drawable.web_asset, /*smallIcon=*/0,
+                        R.string.ads_permission_title, ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK, 0,
                         R.string.website_settings_category_ads_blocked);
 
             case ContentSettingsType.AR:
@@ -109,22 +110,29 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_ar_blocked);
 
             case ContentSettingsType.AUTOMATIC_DOWNLOADS:
-                return new ResourceItem(R.drawable.infobar_downloading, 0,
+                return new ResourceItem(R.drawable.infobar_downloading, /*smallIcon=*/0,
                         R.string.automatic_downloads_permission_title, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK, R.string.website_settings_category_ask, 0);
 
+            case ContentSettingsType.AUTO_DARK_WEB_CONTENT:
+                return new ResourceItem(R.drawable.ic_brightness_medium_24dp,
+                        R.drawable.ic_brightness_medium_20dp, R.string.auto_dark_web_content_title,
+                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_auto_dark_allowed,
+                        R.string.website_settings_category_auto_dark_blocked);
+
             case ContentSettingsType.BACKGROUND_SYNC:
-                return new ResourceItem(R.drawable.permission_background_sync, 0,
+                return new ResourceItem(R.drawable.permission_background_sync, /*smallIcon=*/0,
                         R.string.background_sync_permission_title, ContentSettingValues.ALLOW,
                         ContentSettingValues.BLOCK,
                         R.string.website_settings_category_allowed_recommended, 0);
 
             case ContentSettingsType.BLUETOOTH_CHOOSER_DATA:
-                return new ResourceItem(R.drawable.settings_bluetooth, 0, 0,
+                return new ResourceItem(R.drawable.settings_bluetooth, /*smallIcon=*/0, 0,
                         ContentSettingValues.ASK, ContentSettingValues.BLOCK, 0, 0);
 
             case ContentSettingsType.BLUETOOTH_GUARD:
-                return new ResourceItem(R.drawable.settings_bluetooth, 0,
+                return new ResourceItem(R.drawable.settings_bluetooth, /*smallIcon=*/0,
                         R.string.website_settings_bluetooth, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK,
                         R.string.website_settings_category_bluetooth_ask,
@@ -145,9 +153,17 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_clipboard_blocked);
 
             case ContentSettingsType.COOKIES:
-                return new ResourceItem(R.drawable.permission_cookie, 0, R.string.cookies_title,
-                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
+                return new ResourceItem(R.drawable.permission_cookie, /*smallIcon=*/0,
+                        R.string.cookies_title, ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK,
                         R.string.website_settings_category_cookie_allowed, 0);
+
+            case ContentSettingsType.REQUEST_DESKTOP_SITE:
+                return new ResourceItem(R.drawable.ic_desktop_windows, /*smallIcon=*/0,
+                        R.string.desktop_site_title, ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_desktop_site_allowed,
+                        R.string.website_settings_category_desktop_site_blocked);
 
             case ContentSettingsType.GEOLOCATION:
                 return new ResourceItem(R.drawable.gm_filled_location_on_24,
@@ -164,7 +180,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_idle_detection_blocked);
 
             case ContentSettingsType.JAVASCRIPT:
-                return new ResourceItem(R.drawable.permission_javascript, 0,
+                return new ResourceItem(R.drawable.permission_javascript, /*smallIcon=*/0,
                         R.string.javascript_permission_title, ContentSettingValues.ALLOW,
                         ContentSettingValues.BLOCK,
                         R.string.website_settings_category_javascript_allowed, 0);
@@ -199,7 +215,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_notifications_ask, 0);
 
             case ContentSettingsType.POPUPS:
-                return new ResourceItem(R.drawable.permission_popups, 0,
+                return new ResourceItem(R.drawable.permission_popups, /*smallIcon=*/0,
                         R.string.popup_permission_title, ContentSettingValues.ALLOW,
                         ContentSettingValues.BLOCK, 0,
                         R.string.website_settings_category_popups_redirects_blocked);
@@ -207,7 +223,7 @@ public class ContentSettingsResources {
             // PROTECTED_MEDIA_IDENTIFIER uses 3-state preference so some values are not used.
             // If 3-state becomes more common we should update localMaps to support it better.
             case ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER:
-                return new ResourceItem(R.drawable.permission_protected_media, 0,
+                return new ResourceItem(R.drawable.permission_protected_media, /*smallIcon=*/0,
                         R.string.protected_content, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK, 0, 0);
 
@@ -232,12 +248,13 @@ public class ContentSettingsResources {
                     // FeatureList.setTestFeatures() with a map that should not need to contain
                     // DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES.
                 }
-                return new ResourceItem(R.drawable.settings_sensors, 0, sensorsPermissionTitle,
-                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
-                        sensorsAllowedDescription, sensorsBlockedDescription);
+                return new ResourceItem(R.drawable.settings_sensors, /*smallIcon=*/0,
+                        sensorsPermissionTitle, ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK, sensorsAllowedDescription,
+                        sensorsBlockedDescription);
 
             case ContentSettingsType.SOUND:
-                return new ResourceItem(R.drawable.ic_volume_up_grey600_24dp, 0,
+                return new ResourceItem(R.drawable.ic_volume_up_grey600_24dp, /*smallIcon=*/0,
                         R.string.sound_permission_title, ContentSettingValues.ALLOW,
                         ContentSettingValues.BLOCK,
                         R.string.website_settings_category_sound_allowed,
@@ -318,7 +335,7 @@ public class ContentSettingsResources {
             @ContentSettingsType int contentSettingsType,
             @ContentSettingValues @Nullable Integer value, boolean isIncognito) {
         int color = isIncognito ? R.color.default_icon_color_blue_light
-                                : R.color.default_icon_color_blue;
+                                : R.color.default_icon_color_accent1_tint_list;
         Drawable icon =
                 SettingsUtils.getTintedIcon(context, getSmallIcon(contentSettingsType), color);
         if (value != null && value == ContentSettingValues.BLOCK) {
@@ -500,6 +517,23 @@ public class ContentSettingsResources {
      */
     public static int getSoundBlockedListSummary() {
         return R.string.website_settings_category_sound_blocked_list;
+    }
+
+    /**
+     * Returns the allowed/blocked summary for the desktop site permission which should be used for
+     * display in the site settings list only.
+     */
+    public static int getDesktopSiteListSummary(boolean enabled) {
+        return enabled ? R.string.website_settings_category_desktop_site_allowed_list
+                       : R.string.website_settings_category_desktop_site_blocked_list;
+    }
+
+    /**
+     * Returns the allowed/blocked summary for the auto dark web content, which should be used for
+     * display in the site settings list only.
+     */
+    public static int getAutoDarkWebContentListSummary(boolean enabled) {
+        return enabled ? R.string.text_on : R.string.text_off;
     }
 
     /**

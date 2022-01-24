@@ -82,9 +82,8 @@ TEST(NetLogUtil, GetNetInfoIncludesFieldTrials) {
   ASSERT_NE(nullptr, trials);
   const auto& trial_list = trials->GetList();
   EXPECT_EQ(1u, trial_list.size());
-  std::string result;
-  EXPECT_TRUE(trial_list[0].GetAsString(&result));
-  EXPECT_EQ("NewFieldTrial:Active", result);
+  EXPECT_TRUE(trial_list[0].is_string());
+  EXPECT_EQ("NewFieldTrial:Active", trial_list[0].GetString());
 }
 
 // Make sure CreateNetLogEntriesForActiveObjects works for requests from a
@@ -95,8 +94,7 @@ TEST(NetLogUtil, CreateNetLogEntriesForActiveObjectsOneContext) {
   // Using same context for each iteration makes sure deleted requests don't
   // appear in the list, or result in crashes.
   TestURLRequestContext context(true);
-  TestNetLog net_log;
-  context.set_net_log(&net_log);
+  context.set_net_log(NetLog::Get());
   context.Init();
   TestDelegate delegate;
   for (size_t num_requests = 0; num_requests < 5; ++num_requests) {
@@ -108,9 +106,9 @@ TEST(NetLogUtil, CreateNetLogEntriesForActiveObjectsOneContext) {
     }
     std::set<URLRequestContext*> contexts;
     contexts.insert(&context);
-    RecordingTestNetLog test_net_log;
-    CreateNetLogEntriesForActiveObjects(contexts, test_net_log.GetObserver());
-    auto entry_list = test_net_log.GetEntries();
+    RecordingNetLogObserver net_log_observer;
+    CreateNetLogEntriesForActiveObjects(contexts, &net_log_observer);
+    auto entry_list = net_log_observer.GetEntries();
     ASSERT_EQ(num_requests, entry_list.size());
 
     for (size_t i = 0; i < num_requests; ++i) {
@@ -126,23 +124,21 @@ TEST(NetLogUtil, CreateNetLogEntriesForActiveObjectsMultipleContexts) {
 
   TestDelegate delegate;
   for (size_t num_requests = 0; num_requests < 5; ++num_requests) {
-    TestNetLog net_log;
     std::vector<std::unique_ptr<TestURLRequestContext>> contexts;
     std::vector<std::unique_ptr<URLRequest>> requests;
     std::set<URLRequestContext*> context_set;
     for (size_t i = 0; i < num_requests; ++i) {
       contexts.push_back(std::make_unique<TestURLRequestContext>(true));
-      contexts[i]->set_net_log(&net_log);
+      contexts[i]->set_net_log(NetLog::Get());
       contexts[i]->Init();
       context_set.insert(contexts[i].get());
       requests.push_back(
           contexts[i]->CreateRequest(GURL("about:hats"), DEFAULT_PRIORITY,
                                      &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     }
-    RecordingTestNetLog test_net_log;
-    CreateNetLogEntriesForActiveObjects(context_set,
-                                        test_net_log.GetObserver());
-    auto entry_list = test_net_log.GetEntries();
+    RecordingNetLogObserver net_log_observer;
+    CreateNetLogEntriesForActiveObjects(context_set, &net_log_observer);
+    auto entry_list = net_log_observer.GetEntries();
     ASSERT_EQ(num_requests, entry_list.size());
 
     for (size_t i = 0; i < num_requests; ++i) {

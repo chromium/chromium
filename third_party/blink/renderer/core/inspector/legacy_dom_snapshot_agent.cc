@@ -113,7 +113,7 @@ Response LegacyDOMSnapshotAgent::GetSnapshot(
         layout_tree_nodes,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::ComputedStyle>>*
         computed_styles) {
-  document->View()->UpdateLifecycleToLayoutClean(
+  document->View()->UpdateLifecycleToCompositingInputsClean(
       DocumentUpdateReason::kInspector);
   // Setup snapshot.
   dom_nodes_ =
@@ -147,7 +147,7 @@ Response LegacyDOMSnapshotAgent::GetSnapshot(
   *computed_styles = std::move(computed_styles_);
   computed_styles_map_.reset();
   css_property_filter_.reset();
-  paint_order_map_.reset();
+  paint_order_map_ = nullptr;
   return Response::Success();
 }
 
@@ -188,10 +188,14 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
     String origin_url = origin_url_map_->at(owned_value->getBackendNodeId());
     // In common cases, it is implicit that a child node would have the same
     // origin url as its parent, so no need to mark twice.
-    if (!node->parentNode() || origin_url_map_->at(DOMNodeIds::IdForNode(
-                                   node->parentNode())) != origin_url) {
-      owned_value->setOriginURL(
-          origin_url_map_->at(owned_value->getBackendNodeId()));
+    if (!node->parentNode()) {
+      owned_value->setOriginURL(std::move(origin_url));
+    } else {
+      DOMNodeId parent_id = DOMNodeIds::IdForNode(node->parentNode());
+      auto it = origin_url_map_->find(parent_id);
+      String parent_url = it != origin_url_map_->end() ? it->value : String();
+      if (parent_url != origin_url)
+        owned_value->setOriginURL(std::move(origin_url));
     }
   }
   protocol::DOMSnapshot::DOMNode* value = owned_value.get();
@@ -280,8 +284,8 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
     value->setFrameId(IdentifiersFactory::FrameId(document->GetFrame()));
     if (document->View() && document->View()->LayoutViewport()) {
       auto offset = document->View()->LayoutViewport()->GetScrollOffset();
-      value->setScrollOffsetX(offset.Width());
-      value->setScrollOffsetY(offset.Height());
+      value->setScrollOffsetX(offset.width());
+      value->setScrollOffsetY(offset.height());
     }
   } else if (auto* doc_type = DynamicTo<DocumentType>(node)) {
     value->setPublicId(doc_type->publicId());
@@ -395,10 +399,9 @@ int LegacyDOMSnapshotAgent::VisitLayoutTreeNode(LayoutObject* layout_object,
     PaintLayer* paint_layer = layout_object->EnclosingLayer();
 
     // We visited all PaintLayers when building |paint_order_map_|.
-    DCHECK(paint_order_map_->Contains(paint_layer));
-
-    if (int paint_order = paint_order_map_->at(paint_layer))
-      layout_tree_node->setPaintOrder(paint_order);
+    const auto paint_order = paint_order_map_->find(paint_layer);
+    if (paint_order != paint_order_map_->end())
+      layout_tree_node->setPaintOrder(paint_order->value);
   }
 
   if (layout_object->IsText()) {

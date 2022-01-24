@@ -9,8 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace password_manager {
 
 // Writes tabular data into CSV (Comma Separated Values) format as defined in

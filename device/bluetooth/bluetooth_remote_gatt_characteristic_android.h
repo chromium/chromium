@@ -46,6 +46,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
       const base::android::JavaRef<
           jobject>& /* ChromeBluetoothDevice */ chrome_bluetooth_device);
 
+  BluetoothRemoteGattCharacteristicAndroid(
+      const BluetoothRemoteGattCharacteristicAndroid&) = delete;
+  BluetoothRemoteGattCharacteristicAndroid& operator=(
+      const BluetoothRemoteGattCharacteristicAndroid&) = delete;
+
   ~BluetoothRemoteGattCharacteristicAndroid() override;
 
   // Returns the associated ChromeBluetoothRemoteGattCharacteristic Java object.
@@ -151,8 +156,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
   ErrorCallback write_error_callback_;
 
   std::vector<uint8_t> value_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattCharacteristicAndroid);
 };
 
 }  // namespace device

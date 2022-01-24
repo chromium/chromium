@@ -22,12 +22,22 @@ void FakeBrowserManager::SignalMojoDisconnected() {
   SetState(State::TERMINATING);
 }
 
+void FakeBrowserManager::StartRunning() {
+  SetState(State::RUNNING);
+}
+
 bool FakeBrowserManager::IsRunning() const {
   return is_running_;
 }
 
 bool FakeBrowserManager::IsRunningOrWillRun() const {
   return is_running_;
+}
+
+void FakeBrowserManager::NewFullscreenWindow(
+    const GURL& url,
+    BrowserManager::NewFullscreenWindowCallback callback) {
+  std::move(callback).Run(new_fullscreen_window_creation_result_);
 }
 
 void FakeBrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {

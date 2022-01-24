@@ -54,7 +54,7 @@ void AudioDecoderConfig::Initialize(AudioCodec codec,
 AudioDecoderConfig::~AudioDecoderConfig() = default;
 
 bool AudioDecoderConfig::IsValidConfig() const {
-  return codec_ != kUnknownAudioCodec &&
+  return codec_ != AudioCodec::kUnknown &&
          channel_layout_ != CHANNEL_LAYOUT_UNSUPPORTED &&
          bytes_per_channel_ > 0 &&
          bytes_per_channel_ <= limits::kMaxBytesPerSample &&
@@ -78,7 +78,8 @@ bool AudioDecoderConfig::Matches(const AudioDecoderConfig& config) const {
           (should_discard_decoder_delay() ==
            config.should_discard_decoder_delay()) &&
           (target_output_channel_layout() ==
-           config.target_output_channel_layout()));
+           config.target_output_channel_layout()) &&
+          (aac_extra_data() == config.aac_extra_data()));
 }
 
 std::string AudioDecoderConfig::AsHumanReadableString() const {
@@ -98,7 +99,9 @@ std::string AudioDecoderConfig::AsHumanReadableString() const {
     << ", discard decoder delay: "
     << (should_discard_decoder_delay() ? "true" : "false")
     << ", target_output_channel_layout: "
-    << ChannelLayoutToString(target_output_channel_layout());
+    << ChannelLayoutToString(target_output_channel_layout())
+    << ", has aac extra data: "
+    << (aac_extra_data().empty() ? "false" : "true");
   return s.str();
 }
 

@@ -23,7 +23,6 @@ MockAutofillSaveCardInfoBarDelegateMobile::
             upload_save_card_prompt_callback,
         autofill::AutofillClient::LocalSaveCardPromptCallback
             local_save_card_prompt_callback,
-        PrefService* pref_service,
         const AccountInfo& displayed_target_account)
     : AutofillSaveCardInfoBarDelegateMobile(
           upload,
@@ -32,7 +31,6 @@ MockAutofillSaveCardInfoBarDelegateMobile::
           legal_message_lines,
           std::move(upload_save_card_prompt_callback),
           std::move(local_save_card_prompt_callback),
-          pref_service,
           displayed_target_account) {}
 
 MockAutofillSaveCardInfoBarDelegateMobile::
@@ -42,8 +40,7 @@ MockAutofillSaveCardInfoBarDelegateMobile::
 
 MockAutofillSaveCardInfoBarDelegateMobileFactory::
     MockAutofillSaveCardInfoBarDelegateMobileFactory()
-    : prefs_(autofill::test::PrefServiceForTesting()),
-      credit_card_(base::GenerateGUID(), "https://www.example.com/") {}
+    : credit_card_(base::GenerateGUID(), "https://www.example.com/") {}
 
 MockAutofillSaveCardInfoBarDelegateMobileFactory::
     ~MockAutofillSaveCardInfoBarDelegateMobileFactory() {}
@@ -52,7 +49,6 @@ std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile>
 MockAutofillSaveCardInfoBarDelegateMobileFactory::
     CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
         bool upload,
-        PrefService* prefs,
         autofill::CreditCard card) {
   return std::make_unique<MockAutofillSaveCardInfoBarDelegateMobile>(
       /*upload=*/upload, autofill::AutofillClient::SaveCreditCardOptions(),
@@ -61,5 +57,5 @@ MockAutofillSaveCardInfoBarDelegateMobileFactory::
       base::BindOnce(
           ^(autofill::AutofillClient::SaveCardOfferUserDecision user_decision){
           }),
-      prefs, AccountInfo());
+      AccountInfo());
 }

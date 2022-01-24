@@ -34,6 +34,8 @@ TouchpadSettings::TouchpadSettings(const TouchpadSettings& other) = default;
 TouchpadSettings& TouchpadSettings::operator=(const TouchpadSettings& other) {
   if (&other != this) {
     acceleration_ = other.acceleration_;
+    haptic_feedback_ = other.haptic_feedback_;
+    haptic_click_sensitivity_ = other.haptic_click_sensitivity_;
     natural_scroll_ = other.natural_scroll_;
     scroll_acceleration_ = other.scroll_acceleration_;
     scroll_sensitivity_ = other.scroll_sensitivity_;
@@ -141,6 +143,30 @@ bool TouchpadSettings::IsScrollAccelerationSet() const {
   return scroll_acceleration_.has_value();
 }
 
+void TouchpadSettings::SetHapticFeedback(bool enabled) {
+  haptic_feedback_ = enabled;
+}
+
+bool TouchpadSettings::GetHapticFeedback() const {
+  return *haptic_feedback_;
+}
+
+bool TouchpadSettings::IsHapticFeedbackSet() const {
+  return haptic_feedback_.has_value();
+}
+
+void TouchpadSettings::SetHapticClickSensitivity(int value) {
+  haptic_click_sensitivity_ = value;
+}
+
+int TouchpadSettings::GetHapticClickSensitivity() const {
+  return *haptic_click_sensitivity_;
+}
+
+bool TouchpadSettings::IsHapticClickSensitivitySet() const {
+  return haptic_click_sensitivity_.has_value();
+}
+
 bool TouchpadSettings::Update(const TouchpadSettings& settings) {
   bool updated = false;
   if (UpdateIfHasValue(settings.sensitivity_, &sensitivity_))
@@ -157,6 +183,12 @@ bool TouchpadSettings::Update(const TouchpadSettings& settings) {
     updated = true;
   if (UpdateIfHasValue(settings.scroll_acceleration_, &scroll_acceleration_))
     updated = true;
+  if (UpdateIfHasValue(settings.haptic_feedback_, &haptic_feedback_))
+    updated = true;
+  if (UpdateIfHasValue(settings.haptic_click_sensitivity_,
+                       &haptic_click_sensitivity_)) {
+    updated = true;
+  }
   UpdateIfHasValue(settings.natural_scroll_, &natural_scroll_);
   // Always send natural scrolling to the shell command, as a workaround.
   // See crbug.com/406480
@@ -201,6 +233,14 @@ void TouchpadSettings::Apply(const TouchpadSettings& touchpad_settings,
   if (touchpad_settings.scroll_acceleration_.has_value()) {
     input_device_settings->SetTouchpadScrollAcceleration(
         touchpad_settings.scroll_acceleration_.value());
+  }
+  if (touchpad_settings.haptic_feedback_.has_value()) {
+    input_device_settings->SetTouchpadHapticFeedback(
+        touchpad_settings.haptic_feedback_.value());
+  }
+  if (touchpad_settings.haptic_click_sensitivity_.has_value()) {
+    input_device_settings->SetTouchpadHapticClickSensitivity(
+        touchpad_settings.haptic_click_sensitivity_.value());
   }
 }
 

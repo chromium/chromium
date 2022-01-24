@@ -12,10 +12,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
-#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 
 namespace network {
 
@@ -48,6 +48,9 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
       scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
       cors::CorsURLLoaderFactory* cors_url_loader_factory);
 
+  URLLoaderFactory(const URLLoaderFactory&) = delete;
+  URLLoaderFactory& operator=(const URLLoaderFactory&) = delete;
+
   ~URLLoaderFactory() override;
 
   // mojom::URLLoaderFactory implementation.
@@ -59,6 +62,17 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
                             const net::MutableNetworkTrafficAnnotationTag&
                                 traffic_annotation) override;
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
+
+  // Allows starting a URLLoader with a synchronous URLLoaderClient as an
+  // optimization.
+  void CreateLoaderAndStartWithSyncClient(
+      mojo::PendingReceiver<mojom::URLLoader> receiver,
+      int32_t request_id,
+      uint32_t options,
+      const ResourceRequest& url_request,
+      mojo::PendingRemote<mojom::URLLoaderClient> client,
+      base::WeakPtr<mojom::URLLoaderClient> sync_client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
   // Called by URLLoaders created by this factory each time before a request is
   // sent.
@@ -93,7 +107,6 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
   mojom::URLLoaderFactoryParamsPtr params_;
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
   mojo::Remote<mojom::TrustedURLLoaderHeaderClient> header_client_;
-  mojo::Remote<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
   // |cors_url_loader_factory_| owns this.
   cors::CorsURLLoaderFactory* cors_url_loader_factory_;
@@ -105,8 +118,6 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
 
   base::OneShotTimer update_load_info_timer_;
   bool waiting_on_load_state_ack_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactory);
 };
 
 }  // namespace network

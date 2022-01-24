@@ -32,8 +32,12 @@ SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.append(os.path.join(SRC_DIR, 'third_party', 'catapult', 'tracing'))
 from tracing.value import convert_chart_json
 
+sys.path.insert(0, os.path.join(SRC_DIR, 'build', 'util'))
+from lib.results import result_sink
+from lib.results import result_types
 
-class ResultsCollector(object):
+
+class ResultsCollector:
 
   def __init__(self):
     self.results = {}
@@ -279,7 +283,7 @@ def main_linux(output_directory, results_collector, size_path):
   # TODO(mcgrathr): This should all be refactored so the mac and win flavors
   # also deliver data structures rather than printing, and the logic for
   # the printing and the summing totals is shared across all three flavors.
-  for (identifier, units), value in sorted(totals.iteritems()):
+  for (identifier, units), value in sorted(totals.items()):
     results_collector.add_result('totals-%s' % identifier, identifier, value,
                                  units)
 
@@ -470,6 +474,7 @@ def main():
       os.makedirs(results_directory)
 
   results_collector = ResultsCollector()
+  result_sink_client = result_sink.TryInitClient()
   try:
     rc = real_main(args.output_directory, results_collector, args.size_path)
     isolated_script_output = {
@@ -498,6 +503,13 @@ def main():
       else:
         with open(histogram_path, 'w') as f:
           f.write(histogram_result.stdout)
+    if result_sink_client:
+      status = result_types.PASS
+      if not isolated_script_output['valid']:
+        status = result_types.UNKNOWN
+      elif isolated_script_output['failures']:
+        status = result_types.FAIL
+      result_sink_client.Post(test_name, status, None, None, None)
 
   return rc
 

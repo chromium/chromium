@@ -36,6 +36,10 @@ class MockSystemWebDialog : public SystemWebDialogDelegate {
     if (id)
       id_ = std::string(id);
   }
+
+  MockSystemWebDialog(const MockSystemWebDialog&) = delete;
+  MockSystemWebDialog& operator=(const MockSystemWebDialog&) = delete;
+
   ~MockSystemWebDialog() override = default;
 
   const std::string& Id() override { return id_; }
@@ -43,7 +47,6 @@ class MockSystemWebDialog : public SystemWebDialogDelegate {
 
  private:
   std::string id_;
-  DISALLOW_COPY_AND_ASSIGN(MockSystemWebDialog);
 };
 
 }  // namespace
@@ -53,13 +56,14 @@ class SystemWebDialogLoginTest : public LoginManagerTest {
   SystemWebDialogLoginTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(1);
   }
+
+  SystemWebDialogLoginTest(const SystemWebDialogLoginTest&) = delete;
+  SystemWebDialogLoginTest& operator=(const SystemWebDialogLoginTest&) = delete;
+
   ~SystemWebDialogLoginTest() override = default;
 
  protected:
   LoginManagerMixin login_mixin_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemWebDialogLoginTest);
 };
 
 using SystemWebDialogOobeTest = OobeBaseTest;

@@ -6,9 +6,8 @@
 #define COMPONENTS_SYNC_ENGINE_CYCLE_MOCK_DEBUG_INFO_GETTER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/sync/engine/cycle/debug_info_getter.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/client_debug_info.pb.h"
 
 namespace syncer {
 
@@ -17,6 +16,10 @@ namespace syncer {
 class MockDebugInfoGetter : public DebugInfoGetter {
  public:
   MockDebugInfoGetter();
+
+  MockDebugInfoGetter(const MockDebugInfoGetter&) = delete;
+  MockDebugInfoGetter& operator=(const MockDebugInfoGetter&) = delete;
+
   ~MockDebugInfoGetter() override;
 
   // DebugInfoGetter implementation.
@@ -27,8 +30,6 @@ class MockDebugInfoGetter : public DebugInfoGetter {
 
  private:
   sync_pb::DebugInfo debug_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDebugInfoGetter);
 };
 
 }  // namespace syncer

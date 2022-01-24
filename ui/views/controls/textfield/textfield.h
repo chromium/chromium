@@ -244,6 +244,8 @@ class VIEWS_EXPORT Textfield : public View,
     force_text_directionality_ = force;
   }
 
+  bool drop_cursor_visible() const { return drop_cursor_visible_; }
+
   // Gets/Sets whether to indicate the textfield has invalid content.
   bool GetInvalid() const;
   void SetInvalid(bool invalid);
@@ -339,6 +341,8 @@ class VIEWS_EXPORT Textfield : public View,
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
   ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override;
+  views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
   void OnDragDone() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -438,7 +442,7 @@ class VIEWS_EXPORT Textfield : public View,
   // Set whether the text should be used to improve typing suggestions.
   void SetShouldDoLearning(bool value) { should_do_learning_ = value; }
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool SetCompositionFromExistingText(
       const gfx::Range& range,
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override;
@@ -450,10 +454,13 @@ class VIEWS_EXPORT Textfield : public View,
   bool SetAutocorrectRange(const gfx::Range& range) override;
 #endif
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
   void GetActiveTextInputControlLayoutBounds(
       absl::optional<gfx::Rect>* control_bounds,
       absl::optional<gfx::Rect>* selection_bounds) override;
+#endif
+
+#if defined(OS_WIN)
   void SetActiveCompositionForAccessibility(
       const gfx::Range& range,
       const std::u16string& active_composition_text,
@@ -635,6 +642,10 @@ class VIEWS_EXPORT Textfield : public View,
 
   void OnEnabledChanged();
 
+  // Drops the dragged text.
+  void DropDraggedText(const ui::DropTargetEvent& event,
+                       ui::mojom::DragOperation& output_drag_op);
+
   // The text model.
   std::unique_ptr<TextfieldModel> model_;
 
@@ -775,6 +786,9 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Used to bind callback functions to this object.
   base::WeakPtrFactory<Textfield> weak_ptr_factory_{this};
+
+  // Used to bind drop callback functions to this object.
+  base::WeakPtrFactory<Textfield> drop_weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Textfield, View)

@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -63,6 +62,11 @@ class BluetoothLowEnergyCharacteristicsFinder
       std::unique_ptr<BackgroundEidGenerator> background_eid_generator,
       scoped_refptr<base::TaskRunner> task_runner =
           base::ThreadTaskRunnerHandle::Get());
+
+  BluetoothLowEnergyCharacteristicsFinder(
+      const BluetoothLowEnergyCharacteristicsFinder&) = delete;
+  BluetoothLowEnergyCharacteristicsFinder& operator=(
+      const BluetoothLowEnergyCharacteristicsFinder&) = delete;
 
   ~BluetoothLowEnergyCharacteristicsFinder() override;
 
@@ -140,8 +144,6 @@ class BluetoothLowEnergyCharacteristicsFinder
 
   base::WeakPtrFactory<BluetoothLowEnergyCharacteristicsFinder>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyCharacteristicsFinder);
 };
 
 }  // namespace secure_channel

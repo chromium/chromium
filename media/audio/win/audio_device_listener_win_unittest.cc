@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/system_monitor.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -43,9 +42,13 @@ class AudioDeviceListenerWinTest
         base::BindRepeating(&AudioDeviceListenerWinTest::OnDeviceChange,
                             base::Unretained(this)));
 
-    tick_clock_.Advance(base::TimeDelta::FromSeconds(12345));
+    tick_clock_.Advance(base::Seconds(12345));
     output_device_listener_->tick_clock_ = &tick_clock_;
   }
+
+  AudioDeviceListenerWinTest(const AudioDeviceListenerWinTest&) = delete;
+  AudioDeviceListenerWinTest& operator=(const AudioDeviceListenerWinTest&) =
+      delete;
 
   ~AudioDeviceListenerWinTest() override {
     system_monitor_.RemoveDevicesChangedObserver(this);
@@ -53,7 +56,7 @@ class AudioDeviceListenerWinTest
 
   void AdvanceLastDeviceChangeTime() {
     tick_clock_.Advance(AudioDeviceListenerWin::kDeviceChangeLimit +
-                        base::TimeDelta::FromMilliseconds(1));
+                        base::Milliseconds(1));
   }
 
   // Simulate a device change where no output devices are available.
@@ -81,8 +84,6 @@ class AudioDeviceListenerWinTest
   base::SystemMonitor system_monitor_;
   base::SimpleTestTickClock tick_clock_;
   std::unique_ptr<AudioDeviceListenerWin> output_device_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceListenerWinTest);
 };
 
 // Simulate a device change events and ensure we get the right callbacks.

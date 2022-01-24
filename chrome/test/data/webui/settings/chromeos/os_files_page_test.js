@@ -10,7 +10,7 @@
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 
@@ -36,7 +36,7 @@ suite('FilesPageTests', function() {
         assert(filesPage.$$('#disconnectGoogleDriveAccount'));
     assertFalse(disconnectGoogleDrive.checked);
 
-    disconnectGoogleDrive.$$('cr-toggle').click();
+    disconnectGoogleDrive.shadowRoot.querySelector('cr-toggle').click();
     Polymer.dom.flush();
     assertTrue(disconnectGoogleDrive.checked);
   });
@@ -52,18 +52,14 @@ suite('FilesPageTests', function() {
   });
 
   test('Deep link to disconnect Google Drive', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
-
     const params = new URLSearchParams;
     params.append('settingId', '1300');
     settings.Router.getInstance().navigateTo(settings.routes.FILES, params);
 
     Polymer.dom.flush();
 
-    const deepLinkElement =
-        filesPage.$$('#disconnectGoogleDriveAccount').$$('cr-toggle');
+    const deepLinkElement = filesPage.$$('#disconnectGoogleDriveAccount')
+                                .shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

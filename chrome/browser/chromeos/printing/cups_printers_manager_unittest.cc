@@ -16,20 +16,20 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/printing/enterprise_printers_provider.h"
+#include "chrome/browser/ash/printing/enterprise_printers_provider.h"
+#include "chrome/browser/ash/printing/printer_event_tracker.h"
+#include "chrome/browser/ash/printing/server_printers_provider.h"
+#include "chrome/browser/ash/printing/synced_printers_manager.h"
+#include "chrome/browser/ash/printing/usb_printer_detector.h"
+#include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
-#include "chrome/browser/chromeos/printing/printer_event_tracker.h"
 #include "chrome/browser/chromeos/printing/printers_map.h"
-#include "chrome/browser/chromeos/printing/server_printers_provider.h"
-#include "chrome/browser/chromeos/printing/synced_printers_manager.h"
 #include "chrome/browser/chromeos/printing/test_printer_configurer.h"
-#include "chrome/browser/chromeos/printing/usb_printer_detector.h"
-#include "chrome/browser/chromeos/printing/usb_printer_notification_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/network/network_state_handler.h"
@@ -46,7 +46,7 @@ namespace {
 
 // Fake backend for EnterprisePrintersProvider.  This allows us to poke
 // arbitrary changes in the enterprise printer lists.
-class FakeEnterprisePrintersProvider : public EnterprisePrintersProvider {
+class FakeEnterprisePrintersProvider : public ash::EnterprisePrintersProvider {
  public:
   FakeEnterprisePrintersProvider() = default;
   ~FakeEnterprisePrintersProvider() override = default;
@@ -85,7 +85,7 @@ class FakeEnterprisePrintersProvider : public EnterprisePrintersProvider {
 
 // Fake backend for SyncedPrintersManager.  This allows us to poke arbitrary
 // changes in the saved printer lists.
-class FakeSyncedPrintersManager : public SyncedPrintersManager {
+class FakeSyncedPrintersManager : public ash::SyncedPrintersManager {
  public:
   FakeSyncedPrintersManager() = default;
   ~FakeSyncedPrintersManager() override = default;
@@ -140,7 +140,7 @@ class FakeSyncedPrintersManager : public SyncedPrintersManager {
   // CupsPrintersManager, or just use in a simple pass-through manner that's not
   // worth additional layers of testing on top of the testing in
   // SyncedPrintersManager.
-  PrintersSyncBridge* GetSyncBridge() override { return nullptr; }
+  ash::PrintersSyncBridge* GetSyncBridge() override { return nullptr; }
   // Returns the printer with id |printer_id|, or nullptr if no such printer
   // exists.
   std::unique_ptr<Printer> GetPrinter(
@@ -299,7 +299,7 @@ void ExpectPrinterIdsAre(const std::vector<Printer>& printers,
 }
 
 class FakeUsbPrinterNotificationController
-    : public UsbPrinterNotificationController {
+    : public ash::UsbPrinterNotificationController {
  public:
   FakeUsbPrinterNotificationController() = default;
   ~FakeUsbPrinterNotificationController() override = default;
@@ -424,7 +424,14 @@ class CupsPrintersManagerTest : public testing::Test,
 
  protected:
   // Everything from PrintServersProvider must be called on Chrome_UIThread
-  content::BrowserTaskEnvironment task_environment_;
+  // Note: MainThreadType::IO is strictly about requesting a specific
+  // MessagePumpType for the main thread. It has nothing to do with
+  // BrowserThread::UI or BrowserThread::IO which are named threads in the
+  // //content/browser code.
+  // See
+  // //docs/threading_and_tasks_testing.md#mainthreadtype-trait
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
 
   // Captured printer lists from observer callbacks.
   base::flat_map<PrinterClass, std::vector<Printer>> observed_printers_;
@@ -440,7 +447,7 @@ class CupsPrintersManagerTest : public testing::Test,
   scoped_refptr<FakePpdProvider> ppd_provider_;
 
   // This is unused, it's just here for memory ownership.
-  PrinterEventTracker event_tracker_;
+  ash::PrinterEventTracker event_tracker_;
 
   // PrefService used to register the |UserPrintersAllowed| pref and
   // change its value for testing.

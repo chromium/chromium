@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "cc/cc_export.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/scrollbar.h"
@@ -115,6 +116,8 @@
 // animation with the new scroller length is kicked off.
 
 namespace cc {
+class LayerTreeHostImpl;
+
 // This class is responsible for hit testing composited scrollbars, event
 // handling and creating gesture scroll deltas.
 class CC_EXPORT ScrollbarController {
@@ -215,14 +218,14 @@ class CC_EXPORT ScrollbarController {
   float ScreenSpaceScaleFactor() const;
 
   // Helper to convert scroll offset to autoscroll velocity.
-  float InitialDeltaToAutoscrollVelocity(gfx::ScrollOffset scroll_offset) const;
+  float InitialDeltaToAutoscrollVelocity(gfx::Vector2dF scroll_offset) const;
 
   // Returns the hit tested ScrollbarPart based on the position_in_widget.
   ScrollbarPart GetScrollbarPartFromPointerDown(
       const gfx::PointF position_in_widget) const;
 
   // Returns scroll offsets based on which ScrollbarPart was hit tested.
-  gfx::ScrollOffset GetScrollOffsetForScrollbarPart(
+  gfx::Vector2dF GetScrollOffsetForScrollbarPart(
       const ScrollbarPart scrollbar_part,
       const bool jump_key_modifier) const;
 

@@ -4,13 +4,15 @@
 
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler_delegate_impl.h"
 
+#include "base/command_line.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -28,13 +30,16 @@ MinimumVersionPolicyHandlerDelegateImpl::
 
 bool MinimumVersionPolicyHandlerDelegateImpl::IsKioskMode() const {
   return user_manager::UserManager::IsInitialized() &&
-         user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp();
+         (ash::ShouldAutoLaunchKioskApp(
+              *(base::CommandLine::ForCurrentProcess()),
+              g_browser_process->local_state()) ||
+          user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
 }
 
 bool MinimumVersionPolicyHandlerDelegateImpl::IsDeviceEnterpriseManaged()
     const {
   return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
+      ->browser_policy_connector_ash()
       ->IsDeviceEnterpriseManaged();
 }
 
@@ -63,9 +68,8 @@ bool MinimumVersionPolicyHandlerDelegateImpl::IsLoginSessionState() const {
 }
 
 bool MinimumVersionPolicyHandlerDelegateImpl::IsLoginInProgress() const {
-  using chromeos::ExistingUserController;
-  const ExistingUserController* existing_user_controller =
-      ExistingUserController::current_controller();
+  const auto* existing_user_controller =
+      ash::ExistingUserController::current_controller();
   return existing_user_controller &&
          existing_user_controller->IsSigninInProgress();
 }

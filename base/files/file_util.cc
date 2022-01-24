@@ -12,6 +12,7 @@
 #include <fstream>
 #include <limits>
 #include <memory>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/files/file_enumerator.h"
@@ -325,7 +326,7 @@ bool TouchFile(const FilePath& path,
 #if defined(OS_WIN)
   // On Windows, FILE_FLAG_BACKUP_SEMANTICS is needed to open a directory.
   if (DirectoryExists(path))
-    flags |= File::FLAG_BACKUP_SEMANTICS;
+    flags |= File::FLAG_WIN_BACKUP_SEMANTICS;
 #elif defined(OS_FUCHSIA)
   // On Fuchsia, we need O_RDONLY for directories, or O_WRONLY for files.
   // TODO(https://crbug.com/947802): Find a cleaner workaround for this.
@@ -406,8 +407,8 @@ bool PreReadFileSlow(const FilePath& file_path, int64_t max_bytes) {
   DCHECK_GE(max_bytes, 0);
 
   File file(file_path, File::FLAG_OPEN | File::FLAG_READ |
-                           File::FLAG_SEQUENTIAL_SCAN |
-                           File::FLAG_SHARE_DELETE);
+                           File::FLAG_WIN_SEQUENTIAL_SCAN |
+                           File::FLAG_WIN_SHARE_DELETE);
   if (!file.IsValid())
     return false;
 

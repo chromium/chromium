@@ -15,13 +15,15 @@ class MockDevicesChangedObserver
     : public base::SystemMonitor::DevicesChangedObserver {
  public:
   MockDevicesChangedObserver();
+
+  MockDevicesChangedObserver(const MockDevicesChangedObserver&) = delete;
+  MockDevicesChangedObserver& operator=(const MockDevicesChangedObserver&) =
+      delete;
+
   ~MockDevicesChangedObserver() override;
 
   MOCK_METHOD1(OnDevicesChanged,
                void(base::SystemMonitor::DeviceType device_type));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDevicesChangedObserver);
 };
 
 }  // namespace base

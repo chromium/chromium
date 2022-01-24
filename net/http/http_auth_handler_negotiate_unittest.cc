@@ -64,9 +64,12 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
 #else
     auth_library_ = new MockAuthLibrary();
 #endif
-    resolver_ = std::make_unique<MockCachingHostResolver>();
-    resolver_->rules_map()[HostResolverSource::ANY]->AddIPLiteralRule(
-        "alias", "10.0.0.2", "canonical.example.com");
+    resolver_ = std::make_unique<MockCachingHostResolver>(
+        /*cache_invalidation_num=*/0,
+        /*default_result=*/MockHostResolverBase::RuleResolver::
+            GetLocalhostResult());
+    resolver_->rules()->AddIPLiteralRule("alias", "10.0.0.2",
+                                         "canonical.example.com");
 
     http_auth_preferences_ = std::make_unique<MockAllowHttpAuthPreferences>();
     factory_ = std::make_unique<HttpAuthHandlerNegotiate::Factory>(

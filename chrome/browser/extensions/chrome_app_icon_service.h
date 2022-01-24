@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
@@ -51,6 +50,9 @@ class ChromeAppIconService : public KeyedService,
       base::RepeatingCallback<void(const gfx::Size&, gfx::ImageSkia*)>;
 
   explicit ChromeAppIconService(content::BrowserContext* context);
+
+  ChromeAppIconService(const ChromeAppIconService&) = delete;
+  ChromeAppIconService& operator=(const ChromeAppIconService&) = delete;
 
   ~ChromeAppIconService() override;
 
@@ -121,8 +123,6 @@ class ChromeAppIconService : public KeyedService,
       observation_{this};
 
   base::WeakPtrFactory<ChromeAppIconService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppIconService);
 };
 
 }  // namespace extensions

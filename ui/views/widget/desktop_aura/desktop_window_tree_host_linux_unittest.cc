@@ -21,6 +21,9 @@ class ShapedNonClientFrameView : public NonClientFrameView {
  public:
   ShapedNonClientFrameView() = default;
 
+  ShapedNonClientFrameView(const ShapedNonClientFrameView&) = delete;
+  ShapedNonClientFrameView& operator=(const ShapedNonClientFrameView&) = delete;
+
   ~ShapedNonClientFrameView() override = default;
 
   // NonClientFrameView:
@@ -62,13 +65,14 @@ class ShapedNonClientFrameView : public NonClientFrameView {
   void Layout() override { layout_requested_ = true; }
 
   bool layout_requested_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ShapedNonClientFrameView);
 };
 
 class ShapedWidgetDelegate : public WidgetDelegateView {
  public:
   ShapedWidgetDelegate() = default;
+
+  ShapedWidgetDelegate(const ShapedWidgetDelegate&) = delete;
+  ShapedWidgetDelegate& operator=(const ShapedWidgetDelegate&) = delete;
 
   ~ShapedWidgetDelegate() override = default;
 
@@ -77,14 +81,15 @@ class ShapedWidgetDelegate : public WidgetDelegateView {
       Widget* widget) override {
     return std::make_unique<ShapedNonClientFrameView>();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShapedWidgetDelegate);
 };
 
 class MouseEventRecorder : public ui::EventHandler {
  public:
   MouseEventRecorder() = default;
+
+  MouseEventRecorder(const MouseEventRecorder&) = delete;
+  MouseEventRecorder& operator=(const MouseEventRecorder&) = delete;
+
   ~MouseEventRecorder() override = default;
 
   void Reset() { mouse_events_.clear(); }
@@ -100,8 +105,6 @@ class MouseEventRecorder : public ui::EventHandler {
   }
 
   std::vector<ui::MouseEvent> mouse_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseEventRecorder);
 };
 
 }  // namespace

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "content/browser/android/synchronous_compositor_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/android/synchronous_compositor.h"
@@ -23,6 +22,12 @@ namespace content {
 class TestSynchronousCompositorClient : public SynchronousCompositorClient {
  public:
   TestSynchronousCompositorClient() = default;
+
+  TestSynchronousCompositorClient(const TestSynchronousCompositorClient&) =
+      delete;
+  TestSynchronousCompositorClient& operator=(
+      const TestSynchronousCompositorClient&) = delete;
+
   ~TestSynchronousCompositorClient() override = default;
 
   // SynchronousCompositorClient overrides.
@@ -65,7 +70,6 @@ class TestSynchronousCompositorClient : public SynchronousCompositorClient {
 
  private:
   std::map<viz::FrameSinkId, SynchronousCompositor*> compositor_map_;
-  DISALLOW_COPY_AND_ASSIGN(TestSynchronousCompositorClient);
 };
 
 class SynchronousCompositorBrowserTest : public ContentBrowserTest {

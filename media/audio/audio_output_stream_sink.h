@@ -8,9 +8,8 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/audio/audio_io.h"
@@ -30,6 +29,9 @@ class MEDIA_EXPORT AudioOutputStreamSink
       public AudioOutputStream::AudioSourceCallback {
  public:
   AudioOutputStreamSink();
+
+  AudioOutputStreamSink(const AudioOutputStreamSink&) = delete;
+  AudioOutputStreamSink& operator=(const AudioOutputStreamSink&) = delete;
 
   // RestartableAudioRendererSink implementation.
   void Initialize(const AudioParameters& params,
@@ -87,8 +89,6 @@ class MEDIA_EXPORT AudioOutputStreamSink
 
   // The actual AudioOutputStream, must only be accessed on the audio thread.
   AudioOutputStream* stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputStreamSink);
 };
 
 }  // namespace media

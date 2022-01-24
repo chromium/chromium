@@ -15,7 +15,7 @@
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/cast_channel/cast_framer.h"
 #include "components/cast_channel/cast_message_util.h"

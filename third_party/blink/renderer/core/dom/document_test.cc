@@ -63,11 +63,11 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_test_helpers.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
-#include "third_party/blink/renderer/core/loader/appcache/application_cache_host_for_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -91,6 +91,8 @@ namespace blink {
 
 using network::mojom::ContentSecurityPolicySource;
 using network::mojom::ContentSecurityPolicyType;
+using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 
 class DocumentTest : public PageTestBase {
  public:
@@ -329,22 +331,6 @@ class MockDocumentValidationMessageClient
 
   // virtual void Trace(Visitor* visitor) const {
   // ValidationMessageClient::trace(visitor); }
-};
-
-class MockApplicationCacheHost final : public ApplicationCacheHostForFrame {
- public:
-  explicit MockApplicationCacheHost(DocumentLoader* loader)
-      : ApplicationCacheHostForFrame(loader,
-                                     GetEmptyBrowserInterfaceBroker(),
-                                     /*task_runner=*/nullptr,
-                                     base::UnguessableToken()) {}
-  ~MockApplicationCacheHost() override = default;
-
-  void SelectCacheWithoutManifest() override {
-    without_manifest_was_called_ = true;
-  }
-
-  bool without_manifest_was_called_ = false;
 };
 
 class PrefersColorSchemeTestListener final : public MediaQueryListListener {
@@ -780,19 +766,6 @@ TEST_F(DocumentTest, ValidationMessageCleanup) {
   EXPECT_FALSE(mock_client->show_validation_message_was_called);
 
   GetPage().SetValidationMessageClientForTesting(original_client);
-}
-
-TEST_F(DocumentTest, SandboxDisablesAppCache) {
-  NavigateWithSandbox(KURL("https://test.com/foobar/document"));
-
-  GetDocument().Loader()->SetApplicationCacheHostForTesting(
-      MakeGarbageCollected<MockApplicationCacheHost>(GetDocument().Loader()));
-  ApplicationCacheHostForFrame* appcache_host =
-      GetDocument().Loader()->GetApplicationCacheHost();
-  appcache_host->SelectCacheWithManifest(
-      KURL("https://test.com/foobar/manifest"));
-  auto* mock_host = static_cast<MockApplicationCacheHost*>(appcache_host);
-  EXPECT_TRUE(mock_host->without_manifest_was_called_);
 }
 
 // Verifies that calling EnsurePaintLocationDataValidForNode cleans compositor
@@ -1473,6 +1446,250 @@ TEST_F(DocumentSimTest, DuplicatedDocumentPolicyViolationsAreIgnored) {
       PolicyValue::CreateDecDouble(1.1), ReportOptions::kReportOnFailure));
 
   EXPECT_EQ(mock_reporting_context->report_count, 1u);
+}
+
+// Tests getting the unassociated listed elements.
+class UnassociatedListedElementTest : public DocumentTest {
+ protected:
+  ListedElement* GetElement(AtomicString id) {
+    Element* element = GetDocument().getElementById(id);
+    return ListedElement::From(*element);
+  }
+};
+
+// Check if the unassociated listed elements are properly extracted.
+// Listed elements are: button, fieldset, input, textarea, output, select,
+// object and form-associated custom elements.
+TEST_F(UnassociatedListedElementTest, GetUnassociatedListedElements) {
+  SetHtmlInnerHTML(R"HTML(
+    <button id='unassociated_button'>Unassociated button</button>
+    <fieldset id='unassociated_fieldset'>
+      <label>Unassociated fieldset</label>
+    </fieldset>
+    <input id='unassociated_input'>
+    <textarea id='unassociated_textarea'>I am unassociated</textarea>
+    <output id='unassociated_output'>Unassociated output</output>
+    <select id='unassociated_select'>
+      <option value='first'>first</option>
+      <option value='second' selected>second</option>
+    </select>
+    <object id='unassociated_object'></object>
+
+    <form id='form'>
+      <button id='form_button'>Form button</button>
+      <fieldset id='form_fieldset'>
+        <label>Form fieldset</label>
+      </fieldset>
+      <input id='form_input'>
+      <textarea id='form_textarea'>I am in a form</textarea>
+      <output id='form_output'>Form output</output>
+      <select name='form_select' id='form_select'>
+        <option value='june'>june</option>
+        <option value='july' selected>july</option>
+      </select>
+      <object id='form_object'></object>
+    </form>
+ )HTML");
+
+  // Add unassociated form-associated custom element.
+  Element* unassociated_custom_element =
+      CreateElement("input").WithIsValue("a-b");
+  unassociated_custom_element->SetIdAttribute("unassociated_custom_element");
+  GetDocument().body()->AppendChild(unassociated_custom_element);
+  ASSERT_TRUE(GetDocument().getElementById("unassociated_custom_element"));
+
+  // Add associated form-associated custom element.
+  Element* associated_custom_element =
+      CreateElement("input").WithIsValue("a-b");
+  associated_custom_element->SetIdAttribute("associated_custom_element");
+  GetDocument().getElementById("form")->AppendChild(associated_custom_element);
+  ASSERT_TRUE(GetDocument().getElementById("associated_custom_element"));
+
+  ListedElement::List expected_elements;
+  expected_elements.push_back(GetElement(u"unassociated_button"));
+  expected_elements.push_back(GetElement(u"unassociated_fieldset"));
+  expected_elements.push_back(GetElement(u"unassociated_input"));
+  expected_elements.push_back(GetElement(u"unassociated_textarea"));
+  expected_elements.push_back(GetElement(u"unassociated_output"));
+  expected_elements.push_back(GetElement(u"unassociated_select"));
+  expected_elements.push_back(GetElement(u"unassociated_object"));
+  expected_elements.push_back(GetElement(u"unassociated_custom_element"));
+
+  ListedElement::List listed_elements =
+      GetDocument().UnassociatedListedElements();
+  EXPECT_THAT(listed_elements, ElementsAreArray(expected_elements));
+
+  // Try getting the cached unassociated listed elements again (calling
+  // UnassociatedListedElements() again will not re-extract them).
+  listed_elements = GetDocument().UnassociatedListedElements();
+  EXPECT_THAT(listed_elements, ElementsAreArray(expected_elements));
+}
+
+// We don't extract unassociated listed element in a shadow DOM.
+TEST_F(UnassociatedListedElementTest,
+       GetUnassociatedListedElementsFromShadowTree) {
+  ShadowRoot& shadow_root =
+      GetDocument().body()->AttachShadowRootInternal(ShadowRootType::kOpen);
+  HTMLInputElement* input = MakeGarbageCollected<HTMLInputElement>(
+      GetDocument(), CreateElementFlags::ByCreateElement());
+  shadow_root.AppendChild(input);
+  ListedElement::List listed_elements =
+      GetDocument().UnassociatedListedElements();
+  EXPECT_EQ(0u, listed_elements.size());
+}
+
+// Check if the dynamically added unassociated listed element is properly
+// extracted.
+TEST_F(UnassociatedListedElementTest,
+       GetDynamicallyAddedUnassociatedListedElements) {
+  SetHtmlInnerHTML(R"HTML(
+    <form id="form_id">
+      <input id='form_input_1'>
+    </form>
+  )HTML");
+
+  ListedElement::List listed_elements =
+      GetDocument().UnassociatedListedElements();
+  EXPECT_EQ(0u, listed_elements.size());
+
+  auto* input = MakeGarbageCollected<HTMLInputElement>(
+      GetDocument(), CreateElementFlags::ByCreateElement());
+  input->SetIdAttribute("unassociated_input");
+  GetDocument().body()->AppendChild(input);
+
+  listed_elements = GetDocument().UnassociatedListedElements();
+  EXPECT_THAT(listed_elements, ElementsAre(GetElement("unassociated_input")));
+}
+
+// Check if the dynamically removed unassociated listed element from the
+// Document is no longer extracted.
+TEST_F(UnassociatedListedElementTest,
+       GetDynamicallyRemovedUnassociatedListedElement) {
+  SetHtmlInnerHTML(R"HTML(
+    <form id='form_id'></form>
+    <input id='input_id'>
+  )HTML");
+
+  ListedElement::List listed_elements =
+      GetDocument().UnassociatedListedElements();
+  EXPECT_THAT(listed_elements, ElementsAre(GetElement("input_id")));
+
+  GetDocument().getElementById("input_id")->remove();
+  listed_elements = GetDocument().UnassociatedListedElements();
+  EXPECT_EQ(0u, listed_elements.size());
+}
+
+// Check if dynamically assigning an unassociated listed element to a form by
+// changing its form attribute is no longer extracted as an unassociated listed
+// element.
+TEST_F(UnassociatedListedElementTest,
+       GetUnassociatedListedElementAfterAddingFormAttr) {
+  SetHtmlInnerHTML(R"HTML(
+    <form id='form_id'></form>
+    <input id='input_id'>
+  )HTML");
+
+  ListedElement::List listed_elements =
+      GetDocument().UnassociatedListedElements();
+  EXPECT_THAT(listed_elements, ElementsAre(GetElement("input_id")));
+
+  GetDocument()
+      .getElementById("input_id")
+      ->setAttribute(html_names::kFormAttr, "form_id");
+  listed_elements = GetDocument().UnassociatedListedElements();
+  EXPECT_EQ(0u, listed_elements.size());
+}
+
+// Check if dynamically removing the form attribute from an associated listed
+// element makes it unassociated.
+TEST_F(UnassociatedListedElementTest,
+       GetUnassociatedListedElementAfterRemovingFormAttr) {
+  SetHtmlInnerHTML(R"HTML(
+    <form id='form_id'></form>
+    <input id='input_id' form='form_id'>
+  )HTML");
+
+  ListedElement::List listed_elements =
+      GetDocument().UnassociatedListedElements();
+  EXPECT_EQ(0u, listed_elements.size());
+
+  GetDocument()
+      .getElementById("input_id")
+      ->removeAttribute(html_names::kFormAttr);
+  listed_elements = GetDocument().UnassociatedListedElements();
+  EXPECT_THAT(listed_elements, ElementsAre(GetElement("input_id")));
+}
+
+// Check if after dynamically setting an associated listed element's form
+// attribute to a non-existent one, the element becomes unassociated even if
+// inside a <form> element.
+TEST_F(UnassociatedListedElementTest,
+       GetUnassociatedListedElementAfterSettingFormAttrToNonexistent) {
+  SetHtmlInnerHTML(
+      R"HTML(<form id='form_id'><input id='input_id'></form>)HTML");
+
+  ListedElement::List listed_elements =
+      GetDocument().UnassociatedListedElements();
+  EXPECT_EQ(0u, listed_elements.size());
+
+  GetDocument()
+      .getElementById("input_id")
+      ->setAttribute(html_names::kFormAttr, "nonexistent_id");
+  listed_elements = GetDocument().UnassociatedListedElements();
+  EXPECT_THAT(listed_elements, ElementsAre(GetElement("input_id")));
+}
+
+// Check if dynamically adding an unassociated listed element to an element
+// that is not in the Document won't be extracted.
+TEST_F(UnassociatedListedElementTest,
+       GeDynamicallyAddedUnassociatedListedElementThatIsNotInTheDocument) {
+  SetHtmlInnerHTML(R"HTML(<body></body>)HTML");
+
+  ListedElement::List listed_elements =
+      GetDocument().UnassociatedListedElements();
+  EXPECT_EQ(0u, listed_elements.size());
+
+  HTMLDivElement* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  HTMLInputElement* input = MakeGarbageCollected<HTMLInputElement>(
+      GetDocument(), CreateElementFlags::ByCreateElement());
+  div->AppendChild(input);
+  listed_elements = GetDocument().UnassociatedListedElements();
+  EXPECT_EQ(0u, listed_elements.size());
+}
+
+// Check if an unassociated listed element added as a nested element will be
+// extracted.
+TEST_F(UnassociatedListedElementTest,
+       GetAttachedNestedUnassociatedFormFieldElements) {
+  SetHtmlInnerHTML(R"HTML(<body></body>)HTML");
+
+  ListedElement::List listed_elements =
+      GetDocument().UnassociatedListedElements();
+  EXPECT_EQ(0u, listed_elements.size());
+
+  HTMLDivElement* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  HTMLInputElement* input = MakeGarbageCollected<HTMLInputElement>(
+      GetDocument(), CreateElementFlags::ByCreateElement());
+  div->AppendChild(input);
+  GetDocument().body()->AppendChild(div);
+  listed_elements = GetDocument().UnassociatedListedElements();
+  EXPECT_EQ(listed_elements[0]->ToHTMLElement(), input);
+}
+
+// Check when removing the ancestor element of an unassociated listed element
+// won't make the unassociated element extracted.
+TEST_F(UnassociatedListedElementTest,
+       GetDetachedNestedUnassociatedFormFieldElements) {
+  SetHtmlInnerHTML(R"HTML(<div id='div_id'><input id='input_id'></div>)HTML");
+
+  ListedElement::List listed_elements =
+      GetDocument().UnassociatedListedElements();
+  EXPECT_THAT(listed_elements, ElementsAre(GetElement("input_id")));
+
+  auto* div = GetDocument().getElementById("div_id");
+  div->remove();
+  listed_elements = GetDocument().UnassociatedListedElements();
+  EXPECT_EQ(0u, listed_elements.size());
 }
 
 }  // namespace blink

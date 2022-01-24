@@ -58,7 +58,7 @@ cmake "${absl_dir}" \
   -DBUILD_TESTING=ON \
   -DBUILD_SHARED_LIBS="${build_shared_libs}"
 make -j $(nproc)
-ctest -j $(nproc)
+ctest -j $(nproc) --output-on-failure
 make install
 ldconfig
 popd

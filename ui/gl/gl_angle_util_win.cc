@@ -15,57 +15,35 @@
 namespace gl {
 
 void* QueryDeviceObjectFromANGLE(int object_type) {
-  EGLDisplay egl_display = nullptr;
+  TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE");
+
+  EGLDisplay egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
+  if (egl_display == EGL_NO_DISPLAY) {
+    DVLOG(1) << "Failed to retrieve EGLDisplay";
+    return nullptr;
+  }
+
+  if (!gl::GLSurfaceEGL::IsEGLQueryDeviceSupported()) {
+    DVLOG(1) << "EGL_EXT_device_query not supported";
+    return nullptr;
+  }
+
   intptr_t egl_device = 0;
+  if (!eglQueryDisplayAttribEXT(egl_display, EGL_DEVICE_EXT, &egl_device)) {
+    DVLOG(1) << "eglQueryDisplayAttribEXT failed";
+    return nullptr;
+  }
+
+  if (!egl_device) {
+    DVLOG(1) << "Failed to retrieve EGLDeviceEXT";
+    return nullptr;
+  }
+
   intptr_t device = 0;
-
-  {
-    TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE. GetHardwareDisplay");
-    egl_display = gl::GLSurfaceEGL::GetHardwareDisplay();
-  }
-
-  if (!gl::GLSurfaceEGL::HasEGLClientExtension("EGL_EXT_device_query"))
+  if (!eglQueryDeviceAttribEXT(reinterpret_cast<EGLDeviceEXT>(egl_device),
+                               object_type, &device)) {
+    DVLOG(1) << "eglQueryDeviceAttribEXT failed";
     return nullptr;
-
-  PFNEGLQUERYDISPLAYATTRIBEXTPROC QueryDisplayAttribEXT = nullptr;
-
-  {
-    TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE. eglGetProcAddress");
-
-    QueryDisplayAttribEXT = reinterpret_cast<PFNEGLQUERYDISPLAYATTRIBEXTPROC>(
-        eglGetProcAddress("eglQueryDisplayAttribEXT"));
-
-    if (!QueryDisplayAttribEXT)
-      return nullptr;
-  }
-
-  PFNEGLQUERYDEVICEATTRIBEXTPROC QueryDeviceAttribEXT = nullptr;
-
-  {
-    TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE. eglGetProcAddress");
-
-    QueryDeviceAttribEXT = reinterpret_cast<PFNEGLQUERYDEVICEATTRIBEXTPROC>(
-        eglGetProcAddress("eglQueryDeviceAttribEXT"));
-    if (!QueryDeviceAttribEXT)
-      return nullptr;
-  }
-
-  {
-    TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE. QueryDisplayAttribEXT");
-
-    if (!QueryDisplayAttribEXT(egl_display, EGL_DEVICE_EXT, &egl_device))
-      return nullptr;
-  }
-  if (!egl_device)
-    return nullptr;
-
-  {
-    TRACE_EVENT0("gpu", "QueryDeviceObjectFromANGLE. QueryDisplayAttribEXT");
-
-    if (!QueryDeviceAttribEXT(reinterpret_cast<EGLDeviceEXT>(egl_device),
-                              object_type, &device)) {
-      return nullptr;
-    }
   }
 
   return reinterpret_cast<void*>(device);

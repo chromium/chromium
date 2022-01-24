@@ -14,7 +14,6 @@
 #include "cc/paint/filter_operations.h"
 #include "cc/test/fake_picture_layer_impl.h"
 #include "cc/test/fake_raster_source.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/test/property_tree_test_utils.h"
 #include "cc/trees/effect_node.h"
@@ -563,7 +562,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForPropertyChanges) {
   expected_rect.Union(gfx::Rect(200, 230, 30, 30));
   EXPECT_TRUE(GetRenderSurface(root)->damage_tracker()->GetDamageRectIfValid(
       &root_damage_rect));
-  EXPECT_FLOAT_RECT_EQ(expected_rect, root_damage_rect);
+  EXPECT_EQ(expected_rect, root_damage_rect);
   EXPECT_TRUE(GetRenderSurface(root)
                   ->damage_tracker()
                   ->has_damage_from_contributing_content());
@@ -1687,7 +1686,7 @@ TEST_F(DamageTrackerTest, VerifyDamageWithNoContributingLayers) {
   EmulateDrawingOneFrame(root);
 
   DCHECK_EQ(GetRenderSurface(empty_surface), empty_surface->render_target());
-  RenderSurfaceImpl* target_surface = GetRenderSurface(empty_surface);
+  const RenderSurfaceImpl* target_surface = GetRenderSurface(empty_surface);
   gfx::Rect damage_rect;
   EXPECT_TRUE(
       target_surface->damage_tracker()->GetDamageRectIfValid(&damage_rect));

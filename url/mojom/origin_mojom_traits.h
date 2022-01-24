@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef URL_MOJO_ORIGIN_MOJOM_TRAITS_H_
-#define URL_MOJO_ORIGIN_MOJOM_TRAITS_H_
+#ifndef URL_MOJOM_ORIGIN_MOJOM_TRAITS_H_
+#define URL_MOJOM_ORIGIN_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
 #include "base/unguessable_token.h"
@@ -36,4 +36,4 @@ struct COMPONENT_EXPORT(URL_MOJOM_TRAITS)
 
 }  // namespace mojo
 
-#endif  // URL_MOJO_ORIGIN_MOJOM_TRAITS_H_
+#endif  // URL_MOJOM_ORIGIN_MOJOM_TRAITS_H_

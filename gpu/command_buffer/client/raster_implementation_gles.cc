@@ -26,7 +26,6 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
 
 namespace gpu {
 namespace raster {
@@ -207,6 +206,15 @@ void RasterImplementationGLES::ConvertYUVAMailboxesToRGB(
   NOTREACHED();
 }
 
+void RasterImplementationGLES::ConvertRGBAToYUVAMailboxes(
+    SkYUVColorSpace planes_yuv_color_space,
+    SkYUVAInfo::PlaneConfig plane_config,
+    SkYUVAInfo::Subsampling subsampling,
+    const gpu::Mailbox yuva_plane_mailboxes[],
+    const gpu::Mailbox& source_mailbox) {
+  NOTREACHED();
+}
+
 void RasterImplementationGLES::BeginRasterCHROMIUM(
     GLuint sk_color,
     GLboolean needs_clear,
@@ -227,7 +235,8 @@ void RasterImplementationGLES::RasterCHROMIUM(
     const gfx::Vector2dF& post_translate,
     const gfx::Vector2dF& post_scale,
     bool requires_clear,
-    size_t* max_op_size_hint) {
+    size_t* max_op_size_hint,
+    bool preserve_recording) {
   NOTREACHED();
 }
 

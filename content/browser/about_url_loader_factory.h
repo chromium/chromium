@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ABOUT_URL_LOADER_FACTORY_H_
 #define CONTENT_BROWSER_ABOUT_URL_LOADER_FACTORY_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
@@ -23,6 +22,9 @@ class AboutURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
   // mojo::PendingRemote and the receivers bound by the Clone method).
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
 
+  AboutURLLoaderFactory(const AboutURLLoaderFactory&) = delete;
+  AboutURLLoaderFactory& operator=(const AboutURLLoaderFactory&) = delete;
+
  private:
   explicit AboutURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
@@ -37,8 +39,6 @@ class AboutURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
-
-  DISALLOW_COPY_AND_ASSIGN(AboutURLLoaderFactory);
 };
 
 }  // namespace content

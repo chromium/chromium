@@ -12,9 +12,7 @@ generate_token.py --version 3 http://127.0.0.1:8000 WebTransport --expire-timest
 test(t => {
   OriginTrialsHelper.check_properties_exist(this,
       {'WebTransport': [],
-       'BidirectionalStream': [],
-       'ReceiveStream': [],
-       'SendStream': [],
+       'WebTransportBidirectionalStream': [],
        });
 }, 'WebTransport API interfaces in Origin-Trial enabled document.');
 </script>

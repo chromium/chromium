@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_params.h"
 
@@ -19,15 +18,17 @@ struct InstallableTask {
   InstallableTask();
   InstallableTask(const InstallableParams& params,
                   InstallableCallback callback);
-  InstallableTask(InstallableTask&& other);
-  ~InstallableTask();
 
+  InstallableTask(const InstallableTask&) = delete;
+  InstallableTask& operator=(const InstallableTask&) = delete;
+
+  InstallableTask(InstallableTask&& other);
   InstallableTask& operator=(InstallableTask&& other);
+
+  ~InstallableTask();
 
   InstallableParams params;
   InstallableCallback callback;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallableTask);
 };
 
 // InstallableTaskQueue keeps track of pending tasks.

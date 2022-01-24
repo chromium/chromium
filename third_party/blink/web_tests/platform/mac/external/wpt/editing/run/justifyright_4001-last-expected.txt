@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 757 tests; 609 PASS, 148 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 809 tests; 645 PASS, 164 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" queryCommandIndeterm("justifyright") before
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" queryCommandState("justifyright") before
 FAIL [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyright",""]] "<p>[foo]<p align=right>bar<p>extra" queryCommandValue("justifyright") before assert_equals: Wrong result returned expected "left" but got "false"
@@ -757,5 +757,57 @@ FAIL [["defaultparagraphseparator","p"],["justifyright",""]] "<div align=right><
 PASS [["defaultparagraphseparator","p"],["justifyright",""]] "<div align=right><p>foo</div> <p>[bar]</p> <div align=right><p>baz</div>" queryCommandIndeterm("justifyright") after
 PASS [["defaultparagraphseparator","p"],["justifyright",""]] "<div align=right><p>foo</div> <p>[bar]</p> <div align=right><p>baz</div>" queryCommandState("justifyright") after
 FAIL [["defaultparagraphseparator","p"],["justifyright",""]] "<div align=right><p>foo</div> <p>[bar]</p> <div align=right><p>baz</div>" queryCommandValue("justifyright") after assert_equals: Wrong result returned expected "right" but got "true"
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" checks for modifications to non-editable content
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" compare innerHTML
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifyleft") before
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandState("justifyleft") before
+FAIL [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "right" but got "false"
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifyleft") after
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandState("justifyleft") after
+FAIL [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyleft") after assert_equals: Wrong result returned expected "right" but got "false"
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifycenter") before
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandState("justifycenter") before
+FAIL [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifycenter") before assert_equals: Wrong result returned expected "right" but got "false"
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifycenter") after
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandState("justifycenter") after
+FAIL [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifycenter") after assert_equals: Wrong result returned expected "right" but got "false"
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifyfull") before
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandState("justifyfull") before
+FAIL [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyfull") before assert_equals: Wrong result returned expected "right" but got "false"
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifyfull") after
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandState("justifyfull") after
+FAIL [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyfull") after assert_equals: Wrong result returned expected "right" but got "false"
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifyright") before
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandState("justifyright") before
+FAIL [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyright") before assert_equals: Wrong result returned expected "right" but got "true"
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifyright") after
+PASS [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandState("justifyright") after
+FAIL [] "<div contenteditable=false align=right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyright") after assert_equals: Wrong result returned expected "right" but got "true"
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" checks for modifications to non-editable content
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" compare innerHTML
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifyleft") before
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandState("justifyleft") before
+FAIL [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "right" but got "false"
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifyleft") after
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandState("justifyleft") after
+FAIL [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyleft") after assert_equals: Wrong result returned expected "right" but got "false"
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifycenter") before
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandState("justifycenter") before
+FAIL [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifycenter") before assert_equals: Wrong result returned expected "right" but got "false"
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifycenter") after
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandState("justifycenter") after
+FAIL [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifycenter") after assert_equals: Wrong result returned expected "right" but got "false"
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifyfull") before
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandState("justifyfull") before
+FAIL [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyfull") before assert_equals: Wrong result returned expected "right" but got "false"
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifyfull") after
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandState("justifyfull") after
+FAIL [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyfull") after assert_equals: Wrong result returned expected "right" but got "false"
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifyright") before
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandState("justifyright") before
+FAIL [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyright") before assert_equals: Wrong result returned expected "right" but got "true"
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandIndeterm("justifyright") after
+PASS [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandState("justifyright") after
+FAIL [] "<div contenteditable=false style=text-align:right><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyright") after assert_equals: Wrong result returned expected "right" but got "true"
 Harness: the test ran to completion.
 

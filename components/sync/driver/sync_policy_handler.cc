@@ -33,7 +33,7 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     // Check for OS types. This includes types that used to be browser types,
     // like "apps" and "preferences".
     absl::optional<UserSelectableOsType> os_type =

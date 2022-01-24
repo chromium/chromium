@@ -61,6 +61,10 @@ class LoginAuthUserViewUnittest : public LoginTestBase,
                                   /*autosubmit_feature*/
                                   public ::testing::WithParamInterface<bool> {
  public:
+  LoginAuthUserViewUnittest(const LoginAuthUserViewUnittest&) = delete;
+  LoginAuthUserViewUnittest& operator=(const LoginAuthUserViewUnittest&) =
+      delete;
+
   static std::string ParamInfoToString(
       testing::TestParamInfo<LoginAuthUserViewUnittest::ParamType> info) {
     return base::StrCat(
@@ -145,9 +149,6 @@ class LoginAuthUserViewUnittest : public LoginTestBase,
   LoginUserInfo user_;
   views::View* container_ = nullptr;   // Owned by test widget view hierarchy.
   LoginAuthUserView* view_ = nullptr;  // Owned by test widget view hierarchy.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginAuthUserViewUnittest);
 };
 
 // Verifies showing the PIN keyboard makes the user view grow.
@@ -200,7 +201,7 @@ TEST_P(LoginAuthUserViewUnittest, PressReturnWithTapToUnlockEnabled) {
                   user_view->current_user().basic_user_info.account_id));
   SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
                  LoginAuthUserView::AUTH_TAP);
-  password_view->Clear();
+  password_view->Reset();
 
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   base::RunLoop().RunUntilIdle();
@@ -504,6 +505,15 @@ TEST_P(LoginAuthUserViewUnittest, PwdWithToggleFieldModeCorrectness) {
 
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   base::RunLoop().RunUntilIdle();
+}
+
+// The LoginAuthFactorsView is part of the Smart Lock UI Revamp, and should not
+// be shown unless the feature flag is enabled.
+TEST_P(LoginAuthUserViewUnittest,
+       AuthFactorsViewNotSetWithSmartLockFeatureDisabled) {
+  LoginAuthUserView::TestApi auth_test(view_);
+  auto* auth_factors_view = auth_test.auth_factors_view();
+  EXPECT_FALSE(auth_factors_view);
 }
 
 INSTANTIATE_TEST_SUITE_P(LoginAuthUserViewTests,

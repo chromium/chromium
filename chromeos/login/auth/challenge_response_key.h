@@ -78,6 +78,7 @@ struct COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) DeserializedChallengeResponseKey {
 // source migration is finished.
 namespace ash {
 using ::chromeos::ChallengeResponseKey;
-}
+using ::chromeos::DeserializedChallengeResponseKey;
+}  // namespace ash
 
 #endif  // CHROMEOS_LOGIN_AUTH_CHALLENGE_RESPONSE_KEY_H_

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that animation with negative start delay gets added.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="node" style="background-color: red; height: 100px"></div>
@@ -33,13 +33,13 @@
   ElementsTestRunner.waitForAnimationAdded(step2);
 
   function step2(group) {
-    TestRunner.addResult(timeline._groupBuffer.indexOf(group) !== -1);
+    TestRunner.addResult(timeline.groupBuffer.indexOf(group) !== -1);
     ElementsTestRunner.waitForAnimationAdded(step3);
     TestRunner.evaluateInPage('startAnimationWithNegativeStartTime()');
   }
 
   function step3(group) {
-    TestRunner.addResult(timeline._groupBuffer.indexOf(group) !== -1);
+    TestRunner.addResult(timeline.groupBuffer.indexOf(group) !== -1);
     TestRunner.completeTest();
   }
 })();

@@ -31,7 +31,7 @@
 namespace viz {
 namespace {
 
-constexpr base::TimeDelta kExpireInterval = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kExpireInterval = base::Seconds(10);
 
 }  // namespace
 

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div style="height:2000px"></div>
+
+<div id=untilfound hidden=until-found>
+  hello world
+</div>
+
+<script>
+test(t => {
+  assert_equals(getComputedStyle(untilfound).contentVisibility, 'hidden',
+    `hidden=until-found elements should be hidden.`);
+  assert_equals(window.pageYOffset, 0,
+    `page should be scrolled to the top at the start of the test.`);
+
+  testRunner.findString('hello world', []);
+
+  assert_false(untilfound.hasAttribute('hidden'),
+    `hidden=until-found should be removed after a matching find-in-page.`);
+  assert_not_equals(window.pageYOffset, 0,
+    `find-in-page should scroll to the active match.`);
+
+}, `Verifies that find-in-page reveals hidden=until-found elements when the target text is inside of them.`);
+</script>

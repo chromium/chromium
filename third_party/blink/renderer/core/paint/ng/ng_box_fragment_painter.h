@@ -21,7 +21,6 @@ class BoxDecorationData;
 class FillLayer;
 class HitTestLocation;
 class HitTestResult;
-class LayoutNGTextCombine;
 class NGFragmentItems;
 class NGInlineCursor;
 class NGInlineBackwardCursor;
@@ -71,7 +70,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                                                 const PhysicalRect&,
                                                 const BoxDecorationData&);
 
-  IntRect VisualRect(const PhysicalOffset& paint_offset);
+  gfx::Rect VisualRect(const PhysicalOffset& paint_offset);
 
  protected:
   LayoutRectOutsets ComputeBorders() const override;
@@ -80,8 +79,8 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
       const Color&,
       const FillLayer&,
       BackgroundBleedAvoidance,
-      bool is_painting_scrolling_background) const override;
-  bool IsPaintingScrollingBackground(const PaintInfo&) const override;
+      bool is_painting_background_in_contents_space) const override;
+  bool IsPaintingBackgroundInContentsSpace(const PaintInfo&) const override;
 
   void PaintTextClipMask(const PaintInfo&,
                          const IntRect& mask_rect,
@@ -115,6 +114,11 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                                             const IntRect& visual_rect,
                                             const PhysicalRect& paint_rect,
                                             const DisplayItemClient&);
+
+  void PaintBoxDecorationBackgroundForBlockInInline(
+      NGInlineCursor* children,
+      const PaintInfo&,
+      const PhysicalOffset& paint_offset);
 
   void PaintColumnRules(const PaintInfo&, const PhysicalOffset& paint_offset);
 
@@ -162,7 +166,11 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                     const PaintInfo& paint_info,
                     const PhysicalOffset& paint_offset,
                     const PhysicalOffset& parent_offset);
-  void PaintFloatingItems(const PaintInfo&, NGInlineCursor* cursor);
+  void PaintFloatingItems(const PaintInfo& paint_info,
+                          const PaintInfo& float_paint_info,
+                          NGInlineCursor* cursor);
+  void PaintFloatingChildren(const NGPhysicalFragment&,
+                             const PaintInfo& paint_info);
   void PaintFloatingChildren(const NGPhysicalFragment&,
                              const PaintInfo& paint_info,
                              const PaintInfo& float_paint_info);
@@ -225,10 +233,6 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
     // The result is set to this member, but its address does not change during
     // the traversal.
     HitTestResult* result;
-
-    // Non-null when processing a line box in |LayoutNGTextCombine| uses
-    // scaling. This field is populated in |NodeAtPoint()|.
-    const LayoutNGTextCombine* text_combine = nullptr;
   };
 
   // Hit tests the children of a container fragment, which is either
@@ -304,6 +308,9 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
     return display_item_client_;
   }
   PhysicalRect InkOverflowIncludingFilters() const;
+
+  static bool ShouldHitTestCulledInlineAncestors(const HitTestContext& hit_test,
+                                                 const NGFragmentItem& item);
 
   const NGPhysicalBoxFragment& box_fragment_;
   const DisplayItemClient& display_item_client_;

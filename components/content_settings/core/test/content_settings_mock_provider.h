@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_CORE_TEST_CONTENT_SETTINGS_MOCK_PROVIDER_H_
 #define COMPONENTS_CONTENT_SETTINGS_CORE_TEST_CONTENT_SETTINGS_MOCK_PROVIDER_H_
 
-#include <vector>
-
-#include "base/macros.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -20,6 +17,10 @@ class MockProvider : public ObservableProvider {
  public:
   MockProvider();
   explicit MockProvider(bool read_only);
+
+  MockProvider(const MockProvider&) = delete;
+  MockProvider& operator=(const MockProvider&) = delete;
+
   ~MockProvider() override;
 
   std::unique_ptr<RuleIterator> GetRuleIterator(
@@ -45,8 +46,6 @@ class MockProvider : public ObservableProvider {
  private:
   OriginIdentifierValueMap value_map_;
   bool read_only_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockProvider);
 };
 
 }  // namespace content_settings

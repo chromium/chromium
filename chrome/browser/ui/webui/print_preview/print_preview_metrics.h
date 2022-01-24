@@ -76,8 +76,7 @@ enum class UserActionBuckets {
 // Record the number of local printers.
 void ReportNumberOfPrinters(size_t number);
 
-void ReportPrintDocumentTypeAndSizeHistograms(PrintDocumentTypeBuckets doctype,
-                                              size_t average_page_size_in_kb);
+void ReportPrintDocumentTypeHistograms(PrintDocumentTypeBuckets doctype);
 
 // Track the popularity of print settings and report the stats.
 void ReportPrintSettingsStats(const base::Value& print_settings,

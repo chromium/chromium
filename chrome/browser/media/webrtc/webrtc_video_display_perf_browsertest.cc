@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "base/json/json_reader.h"
+#include "base/macros.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
@@ -117,7 +118,8 @@ void AssociateEvents(trace_analyzer::TraceAnalyzer* analyzer,
 
 content::WebContents* OpenWebrtcInternalsTab(Browser* browser) {
   chrome::AddTabAt(browser, GURL(url::kAboutBlankURL), -1, true);
-  ui_test_utils::NavigateToURL(browser, GURL("chrome://webrtc-internals"));
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser, GURL("chrome://webrtc-internals")));
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 

@@ -24,9 +24,9 @@ class FakeDevicePostureProvider : public mojom::DevicePostureProvider {
       delete;
 
   // mojom::DevicePostureProvider:
-  void SetListener(
+  void AddListenerAndGetCurrentPosture(
       mojo::PendingRemote<mojom::DevicePostureProviderClient> client,
-      SetListenerCallback callback) override;
+      AddListenerAndGetCurrentPostureCallback callback) override;
 
   void SetCurrentPostureForTesting(device::mojom::DevicePostureType posture);
   void Bind(mojo::PendingReceiver<mojom::DevicePostureProvider> receiver);

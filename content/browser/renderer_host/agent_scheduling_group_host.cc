@@ -19,6 +19,7 @@
 #include "content/common/state_transitions.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_message.h"
 
@@ -325,15 +326,11 @@ void AgentSchedulingGroupHost::CreateView(mojom::CreateViewParamsPtr params) {
   mojo_remote_.get()->CreateView(std::move(params));
 }
 
-void AgentSchedulingGroupHost::DestroyView(
-    int32_t routing_id,
-    mojom::AgentSchedulingGroup::DestroyViewCallback callback) {
+void AgentSchedulingGroupHost::DestroyView(int32_t routing_id) {
   DCHECK_EQ(state_, LifecycleState::kBound);
-  if (mojo_remote_.is_bound()) {
-    mojo_remote_.get()->DestroyView(routing_id, std::move(callback));
-  } else {
-    std::move(callback).Run();
-  }
+  if (!mojo_remote_.is_bound())
+    return;
+  mojo_remote_.get()->DestroyView(routing_id);
 }
 
 void AgentSchedulingGroupHost::CreateFrameProxy(
@@ -351,6 +348,15 @@ void AgentSchedulingGroupHost::CreateFrameProxy(
       token, routing_id, opener_frame_token, view_routing_id, parent_routing_id,
       tree_scope_type, std::move(replicated_state), devtools_frame_token,
       std::move(remote_main_frame_interfaces));
+}
+
+void AgentSchedulingGroupHost::CreateSharedStorageWorkletService(
+    mojo::PendingReceiver<
+        shared_storage_worklet::mojom::SharedStorageWorkletService> receiver) {
+  DCHECK_EQ(state_, LifecycleState::kBound);
+  DCHECK(process_.IsInitializedAndNotDead());
+  DCHECK(mojo_remote_.is_bound());
+  mojo_remote_.get()->CreateSharedStorageWorkletService(std::move(receiver));
 }
 
 void AgentSchedulingGroupHost::ReportNoBinderForInterface(

@@ -22,6 +22,9 @@ class IMEStructTraitsTest : public testing::Test,
  public:
   IMEStructTraitsTest() {}
 
+  IMEStructTraitsTest(const IMEStructTraitsTest&) = delete;
+  IMEStructTraitsTest& operator=(const IMEStructTraitsTest&) = delete;
+
  protected:
   mojo::Remote<mojom::IMEStructTraitsTest> GetTraitsTestRemote() {
     mojo::Remote<mojom::IMEStructTraitsTest> remote;
@@ -39,8 +42,6 @@ class IMEStructTraitsTest : public testing::Test,
   base::test::TaskEnvironment task_environment_;  // A MessageLoop is needed for
                                                   // Mojo IPC to work.
   mojo::ReceiverSet<mojom::IMEStructTraitsTest> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(IMEStructTraitsTest);
 };
 
 }  // namespace

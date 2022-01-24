@@ -42,6 +42,10 @@ class DecoderBufferBase;
 class AvPipelineImpl : CmaBackend::Decoder::Delegate {
  public:
   AvPipelineImpl(CmaBackend::Decoder* decoder, AvPipelineClient client);
+
+  AvPipelineImpl(const AvPipelineImpl&) = delete;
+  AvPipelineImpl& operator=(const AvPipelineImpl&) = delete;
+
   ~AvPipelineImpl() override;
 
   void SetCdm(CastCdmContext* cast_cdm_context);
@@ -194,8 +198,6 @@ class AvPipelineImpl : CmaBackend::Decoder::Delegate {
   // cancel pending asynchronous decryption (by invalidating this factory's weak
   // ptrs) without affecting other bound callbacks.
   base::WeakPtrFactory<AvPipelineImpl> decrypt_weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvPipelineImpl);
 };
 
 }  // namespace media

@@ -12,10 +12,7 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "services/device/public/cpp/hid/fake_input_service_linux.h"
 
-using testing::_;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 void SetUpBluetoothMock(
@@ -128,4 +125,4 @@ void HIDControllerMixin::RemoveDevices() {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

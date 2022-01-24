@@ -150,11 +150,13 @@ void CastMediaBlocker::OnRenderFrameCreated(
 void CastMediaBlocker::UpdateBackgroundVideoPlaybackState() {
   if (!web_contents())
     return;
-  const std::vector<content::RenderFrameHost*> frames =
-      web_contents()->GetAllFrames();
-  for (content::RenderFrameHost* frame : frames) {
-    UpdateRenderFrameBackgroundVideoPlaybackState(frame);
-  }
+  web_contents()->ForEachRenderFrameHost(base::BindRepeating(
+      [](CastMediaBlocker* cast_media_blocker,
+         content::RenderFrameHost* frame) {
+        cast_media_blocker->UpdateRenderFrameBackgroundVideoPlaybackState(
+            frame);
+      },
+      this));
 }
 
 void CastMediaBlocker::UpdateRenderFrameBackgroundVideoPlaybackState(

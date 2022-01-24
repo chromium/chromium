@@ -41,6 +41,10 @@ class MOJO_SYSTEM_IMPL_EXPORT RequestContext {
   RequestContext();
 
   explicit RequestContext(Source source);
+
+  RequestContext(const RequestContext&) = delete;
+  RequestContext& operator=(const RequestContext&) = delete;
+
   ~RequestContext();
 
   // Returns the current thread-local RequestContext.
@@ -98,8 +102,6 @@ class MOJO_SYSTEM_IMPL_EXPORT RequestContext {
   // global LazyInstance, accessing a LazyInstance has a large cost relative to
   // the rest of this class and its usages.
   base::ThreadLocalPointer<RequestContext>* tls_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestContext);
 };
 
 }  // namespace core

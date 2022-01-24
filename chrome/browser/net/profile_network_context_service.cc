@@ -21,6 +21,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -67,10 +68,10 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/policy/networking/policy_cert_service.h"
 #include "chrome/browser/ash/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/net/client_cert_store_chromeos.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -267,6 +268,11 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       base::BindRepeating(&ProfileNetworkContextService::
                               UpdateSplitAuthCacheByNetworkIsolationKey,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kCorsNonWildcardRequestHeadersSupport,
+      base::BindRepeating(&ProfileNetworkContextService::
+                              UpdateCorsNonWildcardRequestHeadersSupport,
+                          base::Unretained(this)));
 }
 
 ProfileNetworkContextService::~ProfileNetworkContextService() = default;
@@ -432,8 +438,7 @@ void ProfileNetworkContextService::UpdateCTPolicy() {
 }
 
 void ProfileNetworkContextService::ScheduleUpdateCTPolicy() {
-  ct_policy_update_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(0),
-                                this,
+  ct_policy_update_timer_.Start(FROM_HERE, base::Seconds(0), this,
                                 &ProfileNetworkContextService::UpdateCTPolicy);
 }
 
@@ -458,6 +463,19 @@ void ProfileNetworkContextService::UpdateSplitAuthCacheByNetworkIsolationKey() {
                 split_auth_cache_by_network_isolation_key);
       },
       split_auth_cache_by_network_isolation_key));
+}
+
+void ProfileNetworkContextService::
+    UpdateCorsNonWildcardRequestHeadersSupport() {
+  const bool value = profile_->GetPrefs()->GetBoolean(
+      prefs::kCorsNonWildcardRequestHeadersSupport);
+
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](bool value, content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()
+            ->SetCorsNonWildcardRequestHeadersSupport(value);
+      },
+      value));
 }
 
 // static
@@ -527,11 +545,12 @@ ProfileNetworkContextService::CreateClientCertStore() {
   bool use_system_key_slot = false;
   // Enable client certificates for the Chrome OS sign-in frame, if this feature
   // is not disabled by a flag.
-  // Note that while this applies to the whole sign-in profile, client
-  // certificates will only be selected for the StoragePartition currently used
-  // in the sign-in frame (see SigninPartitionManager).
+  // Note that while this applies to the whole sign-in profile / lock screen
+  // profile, client certificates will only be selected for the StoragePartition
+  // currently used in the sign-in frame (see SigninPartitionManager).
   if (chromeos::switches::IsSigninFrameClientCertsEnabled() &&
-      chromeos::ProfileHelper::IsSigninProfile(profile_)) {
+      (chromeos::ProfileHelper::IsSigninProfile(profile_) ||
+       chromeos::ProfileHelper::IsLockScreenProfile(profile_))) {
     use_system_key_slot = true;
   }
 
@@ -556,12 +575,12 @@ ProfileNetworkContextService::CreateClientCertStore() {
     certificate_provider = cert_provider_service->CreateCertificateProvider();
   }
 
-  // ClientCertStoreChromeOS internally depends on NSS initialization that
-  // happens when the ResourceContext is created. Call GetResourceContext() so
-  // the dependency is explicit. See https://crbug.com/1018972.
+  // `ClientCertStoreAsh` internally depends on NSS initialization that happens
+  // when the `ResourceContext` is created. Call `GetResourceContext()` so the
+  // dependency is explicit. See https://crbug.com/1018972.
   profile_->GetResourceContext();
 
-  return std::make_unique<chromeos::ClientCertStoreChromeOS>(
+  return std::make_unique<ash::ClientCertStoreAsh>(
       std::move(certificate_provider), use_system_key_slot, username_hash,
       base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
                           kCryptoModulePasswordClientAuth));
@@ -571,14 +590,14 @@ ProfileNetworkContextService::CreateClientCertStore() {
           base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
                               kCryptoModulePasswordClientAuth));
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  CertDbInitializer* cert_db_initializer =
-      CertDbInitializerFactory::GetForProfileIfExists(profile_);
-  if (!cert_db_initializer || !profile_->IsMainProfile()) {
+  if (!profile_->IsMainProfile()) {
     // TODO(crbug.com/1148298): return some cert store for secondary profiles in
     // Lacros-Chrome.
     return nullptr;
   }
 
+  CertDbInitializer* cert_db_initializer =
+      CertDbInitializerFactory::GetForBrowserContext(profile_);
   store = std::make_unique<ClientCertStoreLacros>(cert_db_initializer,
                                                   std::move(store));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -592,6 +611,10 @@ ProfileNetworkContextService::CreateClientCertStore() {
   // Android does not use the ClientCertStore infrastructure. On Android client
   // cert matching is done by the OS as part of the call to show the cert
   // selection dialog.
+  return nullptr;
+#elif defined(OS_FUCHSIA)
+  // TODO(crbug.com/1235293)
+  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 #else
 #error Unknown platform.
@@ -612,7 +635,12 @@ bool GetHttpCacheBackendResetParam(PrefService* local_state) {
   // This used to be for keying on scheme + eTLD+1 vs origin, but the trial was
   // removed, and now it's always keyed on eTLD+1. Still keeping a third "None"
   // to avoid resetting the disk cache.
-  current_field_trial_status += " None";
+  current_field_trial_status += " None ";
+
+  field_trial = base::FeatureList::GetFieldTrial(
+      net::features::kSplitCacheByIncludeCredentials);
+  current_field_trial_status +=
+      (field_trial ? field_trial->group_name() : "None");
 
   std::string previous_field_trial_status =
       local_state->GetString(kHttpCacheFinchExperimentGroups);
@@ -637,15 +665,13 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       ->ConfigureDefaultNetworkContextParams(network_context_params,
                                              cert_verifier_creation_params);
 
-  network_context_params->context_name = std::string("main");
-
   network_context_params->accept_language = ComputeAcceptLanguage();
   network_context_params->enable_referrers = enable_referrers_.GetValue();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(embedder_support::kShortReportingDelay)) {
     network_context_params->reporting_delivery_interval =
-        base::TimeDelta::FromMilliseconds(100);
+        base::Milliseconds(100);
   }
 
   // Always enable the HTTP cache.
@@ -683,25 +709,26 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     network_context_params->http_cache_max_size =
         local_state->GetInteger(prefs::kDiskCacheSize);
 
+    network_context_params->file_paths =
+        ::network::mojom::NetworkContextFilePaths::New();
+
+    network_context_params->file_paths->data_path =
+        path.Append(chrome::kNetworkDataDirname);
+    network_context_params->file_paths->unsandboxed_data_path = path;
+    network_context_params->file_paths->trigger_migration =
+        features::ShouldTriggerNetworkDataMigration();
     // Currently this just contains HttpServerProperties, but that will likely
     // change.
-    network_context_params->http_server_properties_path =
-        path.Append(chrome::kNetworkPersistentStateFilename);
-
-    base::FilePath cookie_path = path;
-    cookie_path = cookie_path.Append(chrome::kCookieFilename);
-    network_context_params->cookie_path = cookie_path;
-
-    base::FilePath trust_token_path = path;
-    trust_token_path = trust_token_path.Append(chrome::kTrustTokenFilename);
-    network_context_params->trust_token_path = std::move(trust_token_path);
+    network_context_params->file_paths->http_server_properties_file_name =
+        base::FilePath(chrome::kNetworkPersistentStateFilename);
+    network_context_params->file_paths->cookie_database_name =
+        base::FilePath(chrome::kCookieFilename);
+    network_context_params->file_paths->trust_token_database_name =
+        base::FilePath(chrome::kTrustTokenFilename);
 
 #if BUILDFLAG(ENABLE_REPORTING)
-    base::FilePath reporting_and_nel_store_path = path;
-    reporting_and_nel_store_path = reporting_and_nel_store_path.Append(
-        chrome::kReportingAndNelStoreFilename);
-    network_context_params->reporting_and_nel_store_path =
-        reporting_and_nel_store_path;
+    network_context_params->file_paths->reporting_and_nel_store_database_name =
+        base::FilePath(chrome::kReportingAndNelStoreFilename);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
     if (relative_partition_path.empty()) {  // This is the main partition.
@@ -715,26 +742,17 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       network_context_params->persist_session_cookies = false;
     }
 
-    network_context_params->transport_security_persister_path = path;
+    network_context_params->file_paths->transport_security_persister_file_name =
+        base::FilePath(chrome::kTransportSecurityPersisterFilename);
   }
   const base::ListValue* hsts_policy_bypass_list =
       g_browser_process->local_state()->GetList(prefs::kHSTSPolicyBypassList);
   for (const auto& value : hsts_policy_bypass_list->GetList()) {
-    std::string string_value;
-    if (!value.GetAsString(&string_value)) {
+    const std::string* string_value = value.GetIfString();
+    if (!string_value)
       continue;
-    }
-    network_context_params->hsts_policy_bypass_list.push_back(string_value);
+    network_context_params->hsts_policy_bypass_list.push_back(*string_value);
   }
-
-  // NOTE(mmenke): Keep these protocol handlers and
-  // ProfileIOData::SetUpJobFactoryDefaultsForBuilder in sync with
-  // ProfileIOData::IsHandledProtocol().
-  // TODO(mmenke): Find a better way of handling tracking supported schemes.
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  network_context_params->enable_ftp_url_support =
-      base::FeatureList::IsEnabled(network::features::kFtpProtocol);
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
   proxy_config_monitor_.AddToNetworkContextParams(network_context_params);
 

@@ -47,6 +47,6 @@ const base::Feature kSyncFilterOutInactiveDevicesForSingleClient{
 // pulse interval to mitigate possible latency after DeviceInfo commit.
 const base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin{
     &kSyncFilterOutInactiveDevicesForSingleClient, "SyncActiveDeviceMargin",
-    base::TimeDelta::FromMinutes(30)};
+    base::Minutes(30)};
 
 }  // namespace switches

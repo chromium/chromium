@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/singleton.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -25,8 +25,7 @@ MockQuotaClient::MockQuotaClient(
     base::span<const MockStorageKeyData> mock_data,
     QuotaClientType client_type)
     : quota_manager_proxy_(std::move(quota_manager_proxy)),
-      client_type_(client_type),
-      mock_time_counter_(0) {
+      client_type_(client_type) {
   for (const MockStorageKeyData& mock_storage_key_data : mock_data) {
     storage_key_data_[{blink::StorageKey::CreateFromStringForTesting(
                            mock_storage_key_data.origin),

@@ -5,11 +5,12 @@
 package org.chromium.chrome.browser.continuous_search;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.continuous_search.SearchResultExtractorClientStatus;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -17,6 +18,9 @@ import org.chromium.url.GURL;
  * A tab observer for watching for SRPs to read data from.
  */
 public class ContinuousSearchTabObserver extends EmptyTabObserver implements SearchResultListener {
+    @VisibleForTesting
+    Boolean mOriginMatchesForTesting;
+
     private Tab mTab;
     private SearchResultProducer mProducer;
 
@@ -26,10 +30,27 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
     }
 
     @Override
-    public void onUpdateUrl(Tab tab, GURL url) {
+    public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
+        if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()
+                || navigation.isSameDocument()) {
+            return;
+        }
+
         ContinuousNavigationUserDataImpl continuousNavigationUserData =
                 ContinuousNavigationUserDataImpl.getOrCreateForTab(tab);
-        continuousNavigationUserData.updateCurrentUrl(url);
+        if (!continuousNavigationUserData.isValid()) return;
+
+        TraceEvent.begin("ContinuousSearchTabObserver#onDidFinishNavigation");
+        GURL originalUrl = null;
+        if (tab.getWebContents() != null) {
+            originalUrl = SearchUrlHelper.getOriginalUrlFromWebContents(tab.getWebContents());
+        }
+        // If a redirect occurs from an expected link to a page with the same origin allow the UI to
+        // still show.
+        GURL currentUrl = currentUrl(originalUrl, navigation.getUrl());
+
+        continuousNavigationUserData.updateCurrentUrl(currentUrl);
+        TraceEvent.end("ContinuousSearchTabObserver#onDidFinishNavigation");
     }
 
     @Override
@@ -84,17 +105,17 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
 
         if (mProducer == null) return;
 
-        reportStatus(mProducer.getSuccessStatus(), mProducer.getClass());
+        TraceEvent.begin("ContinuousSearchTabObserver#onResult");
         mProducer = null;
 
         ContinuousNavigationUserDataImpl.getOrCreateForTab(mTab).updateData(
                 metadata, mTab.getUrl());
+        TraceEvent.end("ContinuousSearchTabObserver#onResult");
     }
 
     @Override
     public void onError(int errorCode) {
         // TODO: Handle errors.
-        reportStatus(errorCode, mProducer.getClass());
         mProducer = null;
     }
 
@@ -103,18 +124,23 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
         // Intentionally do nothing to prevent automatic observer removal on detachment.
     }
 
+    private GURL currentUrl(@Nullable GURL originalUrl, GURL committedUrl) {
+        if (GURL.isEmptyOrInvalid(originalUrl)) return committedUrl;
+
+        return originMatches(originalUrl, committedUrl) ? originalUrl : committedUrl;
+    }
+
+    private boolean originMatches(GURL originalUrl, GURL committedUrl) {
+        if (mOriginMatchesForTesting != null) {
+            return mOriginMatchesForTesting.booleanValue();
+        }
+        return originalUrl.getOrigin().equals(committedUrl.getOrigin());
+    }
+
     private void resetProducer() {
         if (mProducer != null) {
             mProducer.cancel();
             mProducer = null;
-        }
-    }
-
-    private void reportStatus(int status, Class<?> clazz) {
-        if (clazz == SearchResultExtractorProducer.class) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Browser.ContinuousSearch.SearchResultExtractionStatus", status,
-                    SearchResultExtractorClientStatus.MAX_VALUE);
         }
     }
 }

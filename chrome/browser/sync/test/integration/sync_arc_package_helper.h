@@ -9,13 +9,15 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/arc/mojom/app.mojom-forward.h"
-#include "components/sync/protocol/sync.pb.h"
 
 class Profile;
 class SyncTest;
+
+namespace sync_pb {
+class EntitySpecifics;
+}
 
 namespace arc {
 class FakeAppInstance;
@@ -26,6 +28,9 @@ namespace arc {
 class SyncArcPackageHelper {
  public:
   static SyncArcPackageHelper* GetInstance();
+
+  SyncArcPackageHelper(const SyncArcPackageHelper&) = delete;
+  SyncArcPackageHelper& operator=(const SyncArcPackageHelper&) = delete;
 
   static sync_pb::EntitySpecifics GetTestSpecifics(size_t id);
 
@@ -68,8 +73,6 @@ class SyncArcPackageHelper {
   bool setup_completed_;
 
   std::unordered_map<Profile*, std::unique_ptr<FakeAppInstance>> instance_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncArcPackageHelper);
 };
 
 }  // namespace arc

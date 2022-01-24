@@ -50,6 +50,9 @@ class PaletteWelcomeBubble::WelcomeBubbleView
     views::BubbleDialogDelegateView::CreateBubble(this);
   }
 
+  WelcomeBubbleView(const WelcomeBubbleView&) = delete;
+  WelcomeBubbleView& operator=(const WelcomeBubbleView&) = delete;
+
   ~WelcomeBubbleView() override = default;
 
   void Init() override {
@@ -66,9 +69,6 @@ class PaletteWelcomeBubble::WelcomeBubbleView
 
   // views::View:
   const char* GetClassName() const override { return "WelcomeBubbleView"; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WelcomeBubbleView);
 };
 
 PaletteWelcomeBubble::PaletteWelcomeBubble(PaletteTray* tray) : tray_(tray) {

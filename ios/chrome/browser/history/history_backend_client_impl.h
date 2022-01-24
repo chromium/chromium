@@ -21,6 +21,10 @@ class HistoryBackendClientImpl : public history::HistoryBackendClient {
  public:
   explicit HistoryBackendClientImpl(
       scoped_refptr<bookmarks::ModelLoader> model_loader);
+
+  HistoryBackendClientImpl(const HistoryBackendClientImpl&) = delete;
+  HistoryBackendClientImpl& operator=(const HistoryBackendClientImpl&) = delete;
+
   ~HistoryBackendClientImpl() override;
 
  private:
@@ -31,8 +35,6 @@ class HistoryBackendClientImpl : public history::HistoryBackendClient {
 
   // ModelLoader is used to access bookmarks. May be null during testing.
   scoped_refptr<bookmarks::ModelLoader> model_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryBackendClientImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_HISTORY_BACKEND_CLIENT_IMPL_H_

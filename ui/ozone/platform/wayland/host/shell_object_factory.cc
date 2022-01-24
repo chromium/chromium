@@ -54,18 +54,18 @@ std::unique_ptr<ShellPopupWrapper> ShellObjectFactory::CreateShellPopupWrapper(
     if (!surface->Initialize())
       return nullptr;
 
-    auto popup = std::make_unique<XDGPopupWrapperImpl>(std::move(surface),
-                                                       wayland_window);
-    return popup->Initialize(connection, params) ? std::move(popup) : nullptr;
+    auto popup = std::make_unique<XDGPopupWrapperImpl>(
+        std::move(surface), wayland_window, connection);
+    return popup->Initialize(params) ? std::move(popup) : nullptr;
   } else if (connection->shell_v6()) {
     auto surface =
         std::make_unique<ZXDGSurfaceV6WrapperImpl>(wayland_window, connection);
     if (!surface->Initialize())
       return nullptr;
 
-    auto popup = std::make_unique<ZXDGPopupV6WrapperImpl>(std::move(surface),
-                                                          wayland_window);
-    return popup->Initialize(connection, params) ? std::move(popup) : nullptr;
+    auto popup = std::make_unique<ZXDGPopupV6WrapperImpl>(
+        std::move(surface), wayland_window, connection);
+    return popup->Initialize(params) ? std::move(popup) : nullptr;
   }
   LOG(WARNING) << "Shell protocol is not available.";
   return nullptr;

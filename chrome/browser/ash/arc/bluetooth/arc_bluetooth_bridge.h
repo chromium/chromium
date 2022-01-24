@@ -74,6 +74,10 @@ class ArcBluetoothBridge
 
   ArcBluetoothBridge(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);
+
+  ArcBluetoothBridge(const ArcBluetoothBridge&) = delete;
+  ArcBluetoothBridge& operator=(const ArcBluetoothBridge&) = delete;
+
   ~ArcBluetoothBridge() override;
 
   void OnAdapterInitialized(scoped_refptr<device::BluetoothAdapter> adapter);
@@ -673,12 +677,13 @@ class ArcBluetoothBridge
                    std::unique_ptr<device::BluetoothGattConnection> connection,
                    bool need_hard_disconnect);
     GattConnection();
+    GattConnection(const GattConnection&) = delete;
+    GattConnection& operator=(const GattConnection&) = delete;
     ~GattConnection();
     GattConnection(GattConnection&&);
     GattConnection& operator=(GattConnection&&);
 
    private:
-    DISALLOW_COPY_AND_ASSIGN(GattConnection);
   };
   std::unordered_map<std::string, GattConnection> gatt_connections_;
 
@@ -752,8 +757,6 @@ class ArcBluetoothBridge
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcBluetoothBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBluetoothBridge);
 };
 
 }  // namespace arc

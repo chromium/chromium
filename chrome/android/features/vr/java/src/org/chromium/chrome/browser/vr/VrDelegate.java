@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.vr;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -19,16 +20,17 @@ import android.widget.FrameLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.components.page_info.VrHandler;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /** Delegate to call into VR. */
@@ -95,7 +97,7 @@ public abstract class VrDelegate implements VrHandler {
     public abstract boolean isDaydreamReadyDevice();
     public abstract boolean isDaydreamCurrentViewer();
 
-    public boolean willChangeDensityInVr(Activity activity) {
+    public boolean willChangeDensityInVr(WindowAndroid window) {
         // Only N+ support launching in VR at all, other OS versions don't care about this.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return false;
 
@@ -105,36 +107,48 @@ public abstract class VrDelegate implements VrHandler {
         if (expectedDensityChange()) return true;
         if (!isDaydreamReadyDevice()) return false;
 
-        Display display = DisplayAndroidManager.getDefaultDisplayForContext(
-                ContextUtils.getApplicationContext());
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getRealMetrics(metrics);
+        Context context = window.getContext().get();
+        if (context == null) return true;
 
-        int currentDensityDpi = activity.getResources().getConfiguration().densityDpi;
-        if (currentDensityDpi != 0 && currentDensityDpi != metrics.densityDpi) {
+        DisplayAndroid display = window.getDisplay();
+        int widthPixels = display.getDisplayWidth();
+        int heightPixels = display.getDisplayHeight();
+        int densityDpi;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            densityDpi = context.getResources().getConfiguration().densityDpi;
+        } else {
+            DisplayMetrics metrics = new DisplayMetrics();
+            DisplayAndroidManager.getDefaultDisplayForContext(context).getRealMetrics(metrics);
+            densityDpi = metrics.densityDpi;
+        }
+
+        int currentDensityDpi = context.getResources().getConfiguration().densityDpi;
+        if (currentDensityDpi != 0 && currentDensityDpi != densityDpi) {
             return true;
         }
 
         if (!deviceCanChangeResolutionForVr()) return false;
 
-        Display.Mode[] modes = display.getSupportedModes();
+        List<Display.Mode> modes = display.getSupportedModes();
         // Devices with only one mode won't switch modes while in VR.
-        if (modes.length <= 1) return false;
-        Display.Mode vr_mode = modes[0];
-        for (int i = 1; i < modes.length; ++i) {
-            if (modes[i].getPhysicalWidth() > vr_mode.getPhysicalWidth()) vr_mode = modes[i];
+        if (modes.size() <= 1) return false;
+        Display.Mode vr_mode = modes.get(0);
+        for (int i = 1; i < modes.size(); ++i) {
+            if (modes.get(i).getPhysicalWidth() > vr_mode.getPhysicalWidth()) {
+                vr_mode = modes.get(i);
+            }
         }
 
         // If we're currently in the mode supported by VR the density won't change.
         // We actually can't use display.getMode() to get the current mode as that just always
         // returns the same mode ignoring the override, so we just check that our current display
         // size is not equal to the vr mode size.
-        if (vr_mode.getPhysicalWidth() != metrics.widthPixels
-                && vr_mode.getPhysicalWidth() != metrics.heightPixels) {
+        if (vr_mode.getPhysicalWidth() != widthPixels
+                && vr_mode.getPhysicalWidth() != heightPixels) {
             return true;
         }
-        if (vr_mode.getPhysicalHeight() != metrics.widthPixels
-                && vr_mode.getPhysicalHeight() != metrics.heightPixels) {
+        if (vr_mode.getPhysicalHeight() != widthPixels
+                && vr_mode.getPhysicalHeight() != heightPixels) {
             return true;
         }
         return false;

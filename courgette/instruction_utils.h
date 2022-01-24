@@ -18,6 +18,10 @@ namespace courgette {
 class InstructionReceptor {
  public:
   InstructionReceptor() = default;
+
+  InstructionReceptor(const InstructionReceptor&) = delete;
+  InstructionReceptor& operator=(const InstructionReceptor&) = delete;
+
   virtual ~InstructionReceptor() = default;
 
   // Generates an entire base relocation table.
@@ -43,9 +47,6 @@ class InstructionReceptor {
 
   // Generates an 8-byte absolute reference to address of 'label'.
   virtual CheckBool EmitAbs64(Label* label) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstructionReceptor);
 };
 
 // A rerunable callback that emit instructions to a provided receptor. Returns

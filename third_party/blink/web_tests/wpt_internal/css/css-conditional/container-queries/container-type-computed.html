@@ -16,8 +16,7 @@ test_computed_value('container-type', 'inherit', 'inline-size');
 test_computed_value('container-type', 'unset', 'none');
 test_computed_value('container-type', 'inline-size');
 test_computed_value('container-type', 'block-size');
-test_computed_value('container-type', 'inline-size block-size');
-test_computed_value('container-type', 'block-size inline-size', 'inline-size block-size');
+test_computed_value('container-type', 'size');
 
 test(() => {
   assert_equals(getComputedStyle(outer).containerType, 'inline-size');

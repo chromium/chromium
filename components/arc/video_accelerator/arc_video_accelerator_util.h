@@ -19,6 +19,8 @@
 
 namespace arc {
 
+class ProtectedBufferManager;
+
 // Creates ScopedFD from given mojo::ScopedHandle.
 // Returns invalid ScopedFD on failure.
 base::ScopedFD UnwrapFdFromMojoHandle(mojo::ScopedHandle handle);
@@ -45,6 +47,10 @@ absl::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
 
 // Create a temp file and write |data| into the file.
 base::ScopedFD CreateTempFileForTesting(const std::string& data);
+
+// Check whether the specified buffer uses secure memory.
+bool IsBufferSecure(ProtectedBufferManager* protected_buffer_manager,
+                    const base::ScopedFD& fd);
 
 }  // namespace arc
 #endif  // COMPONENTS_ARC_VIDEO_ACCELERATOR_ARC_VIDEO_ACCELERATOR_UTIL_H_

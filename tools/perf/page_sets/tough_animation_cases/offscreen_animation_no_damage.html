@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<style>
+  #outera {
+    transition: all 90s linear;
+    position: absolute; top: 0; left: 0; width: 50px; height: 50px;
+  }
+  #outerb {
+    transition: all 90s linear;
+    position: absolute; top: 0; left: 0; width: 50px; height: 50px;
+  }
+</style>
+
+<!-- push the content off screen -->
+<div style="height: 150vh;"></div>
+
+<div style="position: relative; overflow: hidden; width: 100px; height: 100px;">
+  <div id="outera">a</div>
+  <div id="outerb">b</div>
+</div>
+
+<script>
+  var even = false;
+  var measurementReady = false;
+  window.onload = function () {
+  setInterval(function() {
+    even = !even;
+    outerb.style.zIndex = even ? '1' : '2';
+    outerb.style.opacity = even ? '0.1' : '1';
+
+    outera.style.zIndex = even ? '1' : '2';
+    outera.style.opacity = even ? '1' : '0.1';
+  }, 50);
+    measurementReady = true;
+  }
+</script>

@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_FILE_HANDLERS_PERMISSION_HELPER_H_
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/components/app_registrar_observer.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -38,19 +38,23 @@ class FileHandlersPermissionHelper : public content_settings::Observer,
   // To be called when an app is going to be installed with `web_app_info`.
   void WillInstallApp(const WebApplicationInfo& web_app_info);
 
-  // To be called before the app corresponding to `app_id` is updated with
-  // `web_app_info` changes. Checks whether OS registered file handlers need to
-  // update, taking into account permission settings, as file handlers should be
-  // unregistered when the permission has been denied. Also, downgrades granted
-  // file handling permissions if file handlers have changed. Returns whether
-  // the OS file handling registrations need to be updated.
-  FileHandlerUpdateAction WillUpdateApp(const AppId app_id,
+  // To be called before `web_app` is updated with `web_app_info` changes.
+  // Checks whether OS registered file handlers need to update, taking into
+  // account permission settings, as file handlers should be unregistered when
+  // the permission has been denied. Also, downgrades granted file handling
+  // permissions if file handlers have changed. Returns whether the OS file
+  // handling registrations need to be updated.
+  FileHandlerUpdateAction WillUpdateApp(const WebApp& web_app,
                                         const WebApplicationInfo& web_app_info);
 
+  // Checks if file handling permission is blocked in settings.
+  bool IsPermissionBlocked(const GURL& scope);
+
   // content_settings::Observer:
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   // AppRegistrarObserver:
   void OnWebAppManifestUpdated(const AppId& app_id,
@@ -58,9 +62,6 @@ class FileHandlersPermissionHelper : public content_settings::Observer,
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
 
  private:
-  // Checks if file handling permission is blocked in settings.
-  bool IsPermissionBlocked(const GURL& scope);
-
   // Resets the FILE_HANDLING content setting permission if `web_app_info` is
   // asking for more file handling types than were previously granted to the
   // app's origin. Returns the new content setting, which will be either

@@ -1,18 +1,4 @@
-# Please send significant changes to functionality and non-trivial changes to
-# core files like metrics_web_contents_observer.cc and
-# page_load_tracker.cc to bmcquade or skobes.
-
-skobes@chromium.org
-npm@chromium.org
-sullivan@chromium.org
-csharrison@chromium.org
-jkarlin@chromium.org
-ryansturm@chromium.org
-johnidel@chromium.org
-
-# For straightforward addition/removal to existing observers only (for
-# APAC).
-kinuko@chromium.org
+file://components/page_load_metrics/OWNERS
 
 # For QUIC version changes in ConnectionInfo switch statmenets.
 per-file protocol_util.cc=file://net/quic/OWNERS

@@ -24,25 +24,20 @@ class SafeBrowsingVerdictHandler {
       delete;
   ~SafeBrowsingVerdictHandler() = default;
 
-  // Partitions `before`, `after` and `unchanged` into `no_longer` and
-  // `not_yet`. `no_longer` = `before` - `after` - `unchanged`. `not_yet` =
-  // `after` - `before`.
-  static void Partition(const ExtensionIdSet& before,
-                        const ExtensionIdSet& after,
-                        const ExtensionIdSet& unchanged,
-                        ExtensionIdSet* no_longer,
-                        ExtensionIdSet* not_yet);
-
   // Initializes and load greylist from prefs.
   void Init();
 
   // Manages the blocklisted extensions. Enables/disables/loads/unloads
   // extensions based on the current `state_map`.
-  // TODO(crbug.com/1193695): This function currently only handles greylist
-  // states. We should move blocklist handling into this class too.
   void ManageBlocklist(const Blocklist::BlocklistStateMap& state_map);
 
  private:
+  // Adds extensions in `blocklist` to `blocklist_` and maybe unload them.
+  // Removes extensions that are neither in `blocklist`, nor in `unchanged` from
+  // `blocklist_` and maybe reload them.
+  void UpdateBlocklistedExtensions(const ExtensionIdSet& blocklist,
+                                   const ExtensionIdSet& unchanged);
+
   // Adds extensions in `greylist` to `greylist_` and disables them. Removes
   // extensions that are neither in `greylist`, nor in `unchanged` from
   // `greylist_` and maybe re-enable them.
@@ -55,6 +50,12 @@ class SafeBrowsingVerdictHandler {
   ExtensionRegistry* registry_ = nullptr;
   ExtensionService* extension_service_ = nullptr;
 
+  // Set of blocklisted extensions. These extensions are unloaded if they are
+  // already installed in Chromium at the time when they are added to
+  // the blocklist. This blocklist_ only contains extensions blocklisted by Safe
+  // Browsing while ExtensionRegistry::blocklisted_extensions_ contains
+  // extensions blocklisted by other sources such as Omaha attribute.
+  ExtensionSet blocklist_;
   // Set of greylisted extensions. These extensions are disabled if they are
   // already installed in Chromium at the time when they are added to
   // the greylist. Unlike blocklisted extensions, greylisted ones are visible

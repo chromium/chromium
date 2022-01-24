@@ -53,6 +53,10 @@ const int kAutoFlushBig = 2;     // 1/2 of the buffer
 class GPU_EXPORT CommandBufferHelper {
  public:
   explicit CommandBufferHelper(CommandBuffer* command_buffer);
+
+  CommandBufferHelper(const CommandBufferHelper&) = delete;
+  CommandBufferHelper& operator=(const CommandBufferHelper&) = delete;
+
   virtual ~CommandBufferHelper();
 
   // Initializes the CommandBufferHelper.
@@ -345,7 +349,6 @@ class GPU_EXPORT CommandBufferHelper {
   uint32_t flush_generation_ = 0;
 
   friend class CommandBufferHelperTest;
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferHelper);
 };
 
 }  // namespace gpu

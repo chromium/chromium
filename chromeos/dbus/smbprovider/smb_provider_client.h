@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/smbprovider/directory_entry.pb.h"
@@ -35,6 +34,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_SMBPROVIDER) SmbProviderClient
   using SetupKerberosCallback = base::OnceCallback<void(bool success)>;
   using ParseNetBiosPacketCallback =
       base::OnceCallback<void(const std::vector<std::string>&)>;
+
+  SmbProviderClient(const SmbProviderClient&) = delete;
+  SmbProviderClient& operator=(const SmbProviderClient&) = delete;
 
   ~SmbProviderClient() override;
 
@@ -65,9 +67,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_SMBPROVIDER) SmbProviderClient
  protected:
   // Create() should be used instead.
   SmbProviderClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SmbProviderClient);
 };
 
 }  // namespace chromeos

@@ -9,13 +9,11 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
@@ -63,6 +61,10 @@ class TranslateManager {
   TranslateManager(TranslateClient* translate_client,
                    TranslateRanker* translate_ranker,
                    language::LanguageModel* language_model);
+
+  TranslateManager(const TranslateManager&) = delete;
+  TranslateManager& operator=(const TranslateManager&) = delete;
+
   virtual ~TranslateManager();
 
   // Returns a weak pointer to this instance.
@@ -220,8 +222,15 @@ class TranslateManager {
   // is the target language that would be shown in the UI.
   bool ShouldSuppressBubbleUI(const std::string& target_language);
 
-  // Sets target language.
-  void SetPredefinedTargetLanguage(const std::string& language_code);
+  // Sets target language. Note that showing of the translate UI might still not
+  // happen in certain situations, e.g. if the translation is prevented by user
+  // prefs (i.e., blocklists), if |language_code| isn't a valid target language,
+  // if the translate service isn't reachable, etc. Setting
+  // |should_auto_translate| to true specifies both (1) that translation should
+  // be initiated automatically and (2) that translation should occur even when
+  // it would otherwise be prevented by user prefs.
+  void SetPredefinedTargetLanguage(const std::string& language_code,
+                                   bool should_auto_translate = false);
 
   // Returns a reference to |active_translate_metrics_logger_|. In the event
   // that this value is null, a |NullTranslateMetricsLogger| (a null
@@ -362,8 +371,6 @@ class TranslateManager {
   // By default, don't offer to translate in builds lacking an API key. For
   // testing, set to true to offer anyway.
   static bool ignore_missing_key_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateManager);
 };
 
 }  // namespace translate

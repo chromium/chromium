@@ -92,7 +92,7 @@ public class SmsUserConsentReceiver extends BroadcastReceiver {
                         intent.getExtras().getParcelable(SmsRetriever.EXTRA_CONSENT_INTENT);
                 try {
                     mProvider.getWindow().showIntent(consentIntent,
-                            (window, resultCode, data) -> onConsentResult(resultCode, data), null);
+                            (resultCode, data) -> onConsentResult(resultCode, data), null);
                 } catch (android.content.ActivityNotFoundException e) {
                     if (DEBUG) Log.d(TAG, "Error starting activity for result.");
                 }

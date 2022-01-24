@@ -134,7 +134,7 @@ TEST_F(AccelerometerSamplesObserverTest, GetSamples) {
   base::RunLoop().RunUntilIdle();
 
   // OnObserverDisconnect shouldn't reset SensorDevice's mojo endpoint so that
-  // LightProviderMojo can get the disconnection.
+  // AccelerometerProviderMojo can get the disconnection.
   EXPECT_TRUE(sensor_device_->HasReceivers());
 }
 

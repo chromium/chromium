@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/avatar_menu.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -41,6 +43,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/label_button_border.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -52,7 +55,7 @@ constexpr int kIconSizeForNonTouchUi = 22;
 
 // static
 base::TimeDelta AvatarToolbarButton::g_iph_min_delay_after_creation =
-    base::TimeDelta::FromSeconds(2);
+    base::Seconds(2);
 
 AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
     : AvatarToolbarButton(browser_view, nullptr) {}
@@ -75,6 +78,7 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view,
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
 
   SetID(VIEW_ID_AVATAR_BUTTON);
+  SetProperty(views::kElementIdentifierKey, kAvatarButtonElementId);
 
   // The avatar should not flip with RTL UI. This does not affect text rendering
   // and LabelButton image/label placement is still flipped like usual.
@@ -311,16 +315,25 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
       return ui::ImageModel::FromVectorIcon(kIncognitoIcon, icon_color,
                                             icon_size);
     case State::kGuestSession:
-      return profiles::GetGuestAvatar(icon_size);
+      return profiles::GetGuestAvatar(icon_size, icon_color);
     case State::kAnimatedUserIdentity:
     case State::kSyncError:
     // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon should
     // be different.
     case State::kSyncPaused:
-    case State::kNormal:
+    case State::kNormal: {
+      // Use the alpha value of `icon_color` for the avatar image and paint it
+      // over the toolbar background _color_ (this avoids toolbar background
+      // image bleeding through a semi-transparent avatar if the avatar icon
+      // should be dimmed, i.e. if the alpha value < 255).
+      profiles::AvatarPaintOptions paint_options{
+          /*background_color=*/GetThemeProvider()->GetColor(
+              ThemeProperties::COLOR_TOOLBAR),
+          /*avatar_alpha=*/static_cast<SkAlpha>(SkColorGetA(icon_color))};
       return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
           delegate_->GetProfileAvatarImage(gaia_account_image, icon_size), true,
-          icon_size, icon_size, profiles::SHAPE_CIRCLE));
+          icon_size, icon_size, profiles::SHAPE_CIRCLE, paint_options));
+    }
   }
   NOTREACHED();
   return ui::ImageModel();
@@ -354,8 +367,10 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPHInitialized(bool success) {
 
   DCHECK(
       feature_promo_controller_->feature_engagement_tracker()->IsInitialized());
-  feature_promo_controller_->MaybeShowPromo(
-      feature_engagement::kIPHProfileSwitchFeature);
+  if (browser_->window()->IsActive() ||
+      FeaturePromoControllerViews::IsActiveWindowCheckBlockedForTesting())
+    feature_promo_controller_->MaybeShowPromo(
+        feature_engagement::kIPHProfileSwitchFeature);
 }
 
 BEGIN_METADATA(AvatarToolbarButton, ToolbarButton)

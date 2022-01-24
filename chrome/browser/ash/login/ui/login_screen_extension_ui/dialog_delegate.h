@@ -32,6 +32,10 @@ struct CreateOptions;
 class DialogDelegate : public ui::WebDialogDelegate {
  public:
   explicit DialogDelegate(CreateOptions* create_options);
+
+  DialogDelegate(const DialogDelegate&) = delete;
+  DialogDelegate& operator=(const DialogDelegate&) = delete;
+
   ~DialogDelegate() override;
 
   void set_can_close(bool can_close) { can_close_ = can_close; }
@@ -65,8 +69,6 @@ class DialogDelegate : public ui::WebDialogDelegate {
   base::OnceClosure close_callback_;
 
   gfx::NativeWindow native_window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogDelegate);
 };
 
 }  // namespace login_screen_extension_ui

@@ -19,14 +19,13 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -61,6 +60,9 @@ class ChromeStarter : public base::RefCountedThreadSafe<ChromeStarter> {
         timeout_(timeout),
         user_data_dir_(user_data_dir),
         initial_command_line_for_relaunch_(initial_command_line_for_relaunch) {}
+
+  ChromeStarter(const ChromeStarter&) = delete;
+  ChromeStarter& operator=(const ChromeStarter&) = delete;
 
   // We must reset some data members since we reuse the same ChromeStarter
   // object and start/stop it a few times. We must start fresh! :-)
@@ -127,8 +129,6 @@ class ChromeStarter : public base::RefCountedThreadSafe<ChromeStarter> {
   base::TimeDelta timeout_;
   base::FilePath user_data_dir_;
   base::CommandLine initial_command_line_for_relaunch_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeStarter);
 };
 
 }  // namespace

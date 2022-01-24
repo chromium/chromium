@@ -9,7 +9,6 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/lazy_background_page_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -21,7 +20,9 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -34,6 +35,10 @@ namespace extensions {
 class NativeBindingsApiTest : public ExtensionApiTest {
  public:
   NativeBindingsApiTest() {}
+
+  NativeBindingsApiTest(const NativeBindingsApiTest&) = delete;
+  NativeBindingsApiTest& operator=(const NativeBindingsApiTest&) = delete;
+
   ~NativeBindingsApiTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -48,9 +53,6 @@ class NativeBindingsApiTest : public ExtensionApiTest {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeBindingsApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, SimpleEndToEndTest) {
@@ -101,9 +103,9 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, DeclarativeEvents) {
   EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
 
   // Navigating to example.com should show the page action.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "example.com", "/native_bindings/simple.html"));
+                     "example.com", "/native_bindings/simple.html")));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(action->GetIsVisible(tab_id));
   EXPECT_FALSE(action->GetDeclarativeIcon(tab_id).IsEmpty());
@@ -119,11 +121,15 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, LazyListeners) {
   ProcessManager::SetEventPageIdleTimeForTesting(1);
   ProcessManager::SetEventPageSuspendingTimeForTesting(1);
 
-  LazyBackgroundObserver background_page_done;
+  ExtensionHostTestHelper background_page_done(profile());
+  background_page_done.RestrictToType(
+      mojom::ViewType::kExtensionBackgroundPage);
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("native_bindings/lazy_listeners"));
   ASSERT_TRUE(extension);
-  background_page_done.Wait();
+  // Wait for the event page to cycle.
+  background_page_done.WaitForDocumentElementAvailable();
+  background_page_done.WaitForHostDestroyed();
 
   EventRouter* event_router = EventRouter::Get(profile());
   EXPECT_TRUE(event_router->ExtensionHasEventListener(extension->id(),
@@ -157,9 +163,9 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, WebRequest) {
   ASSERT_TRUE(extension);
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "example.com", "/native_bindings/simple.html"));
+                     "example.com", "/native_bindings/simple.html")));
 
   GURL expected_url = embedded_test_server()->GetURL(
       "example.com", "/native_bindings/simple2.html");
@@ -246,9 +252,9 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, ErrorsInCallbackTest) {
            });
          });)");
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "example.com", "/native_bindings/simple.html"));
+                     "example.com", "/native_bindings/simple.html")));
 
   ExtensionTestMessageListener listener("callback", false);
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
@@ -257,7 +263,8 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, ErrorsInCallbackTest) {
 
 // Tests that bindings are available in WebUI pages.
 IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, WebUIBindings) {
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://extensions"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://extensions")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto api_exists = [web_contents](const std::string& api_name) {
@@ -302,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
            "background": {
              "service_worker": "background.js"
            },
-           "permissions": ["tabs"]
+           "permissions": ["tabs", "storage", "contentSettings", "privacy"]
          })");
   constexpr char kBackgroundJs[] =
       R"(let tabIdExample;
@@ -337,6 +344,58 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
                  chrome.test.succeed();
                });
              },
+             async function storageAreaCustomTypeWithPromises() {
+               await chrome.storage.local.set({foo: 'bar', alpha: 'beta'});
+               {
+                 const {foo} = await chrome.storage.local.get('foo');
+                 chrome.test.assertEq('bar', foo);
+               }
+               await chrome.storage.local.remove('foo');
+               {
+                 const {foo} = await chrome.storage.local.get('foo');
+                 chrome.test.assertEq(undefined, foo);
+               }
+               let allValues = await chrome.storage.local.get(null);
+               chrome.test.assertEq({alpha: 'beta'}, allValues);
+               await chrome.storage.local.clear();
+               allValues = await chrome.storage.local.get(null);
+               chrome.test.assertEq({}, allValues);
+               chrome.test.succeed();
+             },
+             async function contentSettingsCustomTypesWithPromises() {
+               await chrome.contentSettings.cookies.set({
+                   primaryPattern: '<all_urls>', setting: 'block'});
+               {
+                 const {setting} = await chrome.contentSettings.cookies.get({
+                     primaryUrl: exampleUrl});
+                 chrome.test.assertEq('block', setting);
+               }
+               await chrome.contentSettings.cookies.clear({});
+               {
+                 const {setting} = await chrome.contentSettings.cookies.get({
+                     primaryUrl: exampleUrl});
+                 // 'allow' is the default value for the setting.
+                 chrome.test.assertEq('allow', setting);
+               }
+               chrome.test.succeed();
+             },
+             async function chromeSettingCustomTypesWithPromises() {
+               // Short alias for ease of calling.
+               let doNotTrack = chrome.privacy.websites.doNotTrackEnabled;
+               await doNotTrack.set({value: true});
+               {
+                 const {value} = await doNotTrack.get({});
+                 chrome.test.assertEq(true, value);
+               }
+               await doNotTrack.clear({});
+               {
+                 const {value} = await doNotTrack.get({});
+                 // false is the default value for the setting.
+                 chrome.test.assertEq(false, value);
+               }
+               chrome.test.succeed();
+             },
+
 
              function createNewTabCallback() {
                chrome.tabs.create({url: googleUrl}, (tab) => {
@@ -355,7 +414,22 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
                  chrome.test.assertNoLastError();
                  chrome.test.succeed();
                });
-             }
+             },
+             function storageAreaCustomTypeWithCallbacks() {
+               // Lots of stuff would probably fail if the callback version of
+               // storage failed, so this is mostly just a rough sanity check.
+               chrome.storage.local.set({gamma: 'delta'}, () => {
+                 chrome.storage.local.get('gamma', ({gamma}) => {
+                   chrome.test.assertEq('delta', gamma);
+                   chrome.storage.local.clear(() => {
+                     chrome.storage.local.get(null, (allValues) => {
+                       chrome.test.assertEq({}, allValues);
+                       chrome.test.succeed();
+                     });
+                   });
+                 });
+               });
+             },
            ]);
          });)";
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
@@ -379,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
            "background": {
              "scripts": ["background.js"]
            },
-           "permissions": ["tabs"]
+           "permissions": ["tabs", "storage", "contentSettings", "privacy"]
          })");
   constexpr char kBackgroundJs[] =
       R"(let tabIdGooge;
@@ -403,7 +477,36 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
                                         expectedError);
                chrome.test.succeed();
              },
-
+             function storageAreaPromise() {
+               let expectedError = 'Error in invocation of storage.get(' +
+                   'optional [string|array|object] keys, function callback): ' +
+                   'No matching signature.';
+               chrome.test.assertThrows(chrome.storage.local.get,
+                                        chrome.storage.local,
+                                        ['foo'], expectedError);
+               chrome.test.succeed();
+             },
+             function contentSettingPromise() {
+               let expectedError = 'Error in invocation of contentSettings' +
+                   '.ContentSetting.get(object details, function callback): ' +
+                   'No matching signature.';
+               chrome.test.assertThrows(chrome.contentSettings.cookies.get,
+                                        chrome.contentSettings.cookies,
+                                        [{primaryUrl: exampleUrl}],
+                                        expectedError);
+               chrome.test.succeed();
+             },
+             function chromeSettingPromise() {
+               let expectedError = 'Error in invocation of types' +
+                   '.ChromeSetting.get(object details, function callback): ' +
+                   'No matching signature.';
+               chrome.test.assertThrows(
+                   chrome.privacy.websites.doNotTrackEnabled.get,
+                   chrome.privacy.websites.doNotTrackEnabled,
+                   [{}],
+                   expectedError);
+               chrome.test.succeed();
+             },
              function createNewTabCallback() {
                chrome.tabs.create({url: googleUrl}, (tab) => {
                  let url = tab.pendingUrl;

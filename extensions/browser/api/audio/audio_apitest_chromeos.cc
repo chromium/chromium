@@ -96,6 +96,10 @@ AudioNode CreateAudioNode(const AudioNodeInfo& info, int version) {
 class AudioApiTest : public ShellApiTest {
  public:
   AudioApiTest() = default;
+
+  AudioApiTest(const AudioApiTest&) = delete;
+  AudioApiTest& operator=(const AudioApiTest&) = delete;
+
   ~AudioApiTest() override = default;
 
   void SetUp() override {
@@ -116,9 +120,6 @@ class AudioApiTest : public ShellApiTest {
  protected:
   std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
       session_feature_type_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AudioApiTest, Audio) {

@@ -26,6 +26,11 @@ class COMPONENT_EXPORT(UI_BASE) GlobalMediaKeysListenerWin
     : public MediaKeysListener {
  public:
   explicit GlobalMediaKeysListenerWin(MediaKeysListener::Delegate* delegate);
+
+  GlobalMediaKeysListenerWin(const GlobalMediaKeysListenerWin&) = delete;
+  GlobalMediaKeysListenerWin& operator=(const GlobalMediaKeysListenerWin&) =
+      delete;
+
   ~GlobalMediaKeysListenerWin() override;
 
   static bool has_instance() { return has_instance_; }
@@ -44,8 +49,6 @@ class COMPONENT_EXPORT(UI_BASE) GlobalMediaKeysListenerWin
   base::flat_map<KeyboardCode,
                  std::unique_ptr<gfx::SingletonHwndHotKeyObserver>>
       key_codes_hotkey_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalMediaKeysListenerWin);
 };
 
 }  // namespace ui

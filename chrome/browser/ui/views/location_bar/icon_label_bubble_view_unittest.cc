@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -58,6 +59,9 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
     GetImageView()->SetImageSize(gfx::Size(kImageSize, kImageSize));
     SetLabel(u"Label");
   }
+
+  TestIconLabelBubbleView(const TestIconLabelBubbleView&) = delete;
+  TestIconLabelBubbleView& operator=(const TestIconLabelBubbleView&) = delete;
 
   void SetCurrentAnimationValue(int value) {
     value_ = value;
@@ -128,7 +132,6 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
           ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   int value_ = 0;
   bool is_bubble_showing_ = false;
-  DISALLOW_COPY_AND_ASSIGN(TestIconLabelBubbleView);
 };
 
 }  // namespace

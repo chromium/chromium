@@ -27,14 +27,17 @@ class GeneratedResolveTimezoneByGeolocationMethodShort
     : public GeneratedTimeZonePrefBase {
  public:
   explicit GeneratedResolveTimezoneByGeolocationMethodShort(Profile* profile);
+
+  GeneratedResolveTimezoneByGeolocationMethodShort(
+      const GeneratedResolveTimezoneByGeolocationMethodShort&) = delete;
+  GeneratedResolveTimezoneByGeolocationMethodShort& operator=(
+      const GeneratedResolveTimezoneByGeolocationMethodShort&) = delete;
+
   ~GeneratedResolveTimezoneByGeolocationMethodShort() override;
 
   // GeneratedPrefsChromeOSImpl implementation:
   std::unique_ptr<settings_api::PrefObject> GetPrefObject() const override;
   SetPrefResult SetPref(const base::Value* value) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GeneratedResolveTimezoneByGeolocationMethodShort);
 };
 
 GeneratedResolveTimezoneByGeolocationMethodShort::

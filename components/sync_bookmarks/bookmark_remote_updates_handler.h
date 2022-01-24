@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 
@@ -32,6 +31,11 @@ class BookmarkRemoteUpdatesHandler {
   BookmarkRemoteUpdatesHandler(bookmarks::BookmarkModel* bookmark_model,
                                favicon::FaviconService* favicon_service,
                                SyncedBookmarkTracker* bookmark_tracker);
+
+  BookmarkRemoteUpdatesHandler(const BookmarkRemoteUpdatesHandler&) = delete;
+  BookmarkRemoteUpdatesHandler& operator=(const BookmarkRemoteUpdatesHandler&) =
+      delete;
+
   // Processes the updates received from the sync server in |updates| and
   // updates the |bookmark_model_| and |bookmark_tracker_| accordingly. If
   // |got_new_encryption_requirements| is true, it recommits all tracked
@@ -46,7 +50,7 @@ class BookmarkRemoteUpdatesHandler {
 
   static size_t ComputeChildNodeIndexForTest(
       const bookmarks::BookmarkNode* parent,
-      const syncer::UniquePosition& unique_position,
+      const sync_pb::UniquePosition& unique_position,
       const SyncedBookmarkTracker* bookmark_tracker);
 
  private:
@@ -121,8 +125,6 @@ class BookmarkRemoteUpdatesHandler {
   bookmarks::BookmarkModel* const bookmark_model_;
   favicon::FaviconService* const favicon_service_;
   SyncedBookmarkTracker* const bookmark_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkRemoteUpdatesHandler);
 };
 
 }  // namespace sync_bookmarks

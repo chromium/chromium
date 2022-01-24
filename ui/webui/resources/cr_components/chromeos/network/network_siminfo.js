@@ -89,20 +89,12 @@ Polymer({
       computed: 'computeIsActiveSim_(networkState, deviceState)'
     },
 
-    /** @private */
-    isUpdatedCellularUiEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('updatedCellularActivationUi');
-      }
-    },
-
     /** @private {!State} */
     state_: {
       type: Number,
       value: State.SIM_UNLOCKED,
-      computed: 'computeState_(networkState, deviceState, deviceState.*, ' +
-          'isUpdatedCellularUiEnabled_, isActiveSim_)',
+      computed: 'computeState_(networkState, deviceState, deviceState.*,' +
+          'isActiveSim_)',
     },
   },
 

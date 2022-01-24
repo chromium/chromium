@@ -19,6 +19,9 @@ class WebLayerInternalsUI : public ui::MojoWebUIController,
  public:
   explicit WebLayerInternalsUI(content::WebUI* web_ui);
 
+  WebLayerInternalsUI(const WebLayerInternalsUI&) = delete;
+  WebLayerInternalsUI& operator=(const WebLayerInternalsUI&) = delete;
+
   ~WebLayerInternalsUI() override;
 
   // Instantiates implementor of the mojom::PageHandler mojo interface
@@ -38,8 +41,6 @@ class WebLayerInternalsUI : public ui::MojoWebUIController,
   mojo::Receiver<weblayer_internals::mojom::PageHandler> receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebLayerInternalsUI);
 };
 
 }  // namespace weblayer

@@ -234,4 +234,126 @@ TEST_F(ApplyBlockElementCommandTest, IndentSVGWithTable) {
       GetSelectionTextFromBody());
 }
 
+// This is a regression test for https://crbug.com/673056
+TEST_F(ApplyBlockElementCommandTest, IndentOutdentLinesDoubleBr) {
+  Selection().SetSelection(SetSelectionTextToBody("<div contenteditable>"
+                                                  "|a<br><br>"
+                                                  "b"
+                                                  "</div>"),
+                           SetSelectionOptions());
+
+  auto* indent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+  EXPECT_TRUE(indent->Apply());
+
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "|a"
+      "</blockquote>"
+      "<br>"
+      "b"
+      "</div>",
+      GetSelectionTextFromBody());
+
+  auto* outdent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kOutdent);
+
+  // When moving "a" out of the blockquote, the empty line should be preserved.
+  EXPECT_TRUE(outdent->Apply());
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "|a"
+      "<br>"
+      "<br>"
+      "b"
+      "</div>",
+      GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/673056
+TEST_F(ApplyBlockElementCommandTest, IndentOutdentLinesCrash) {
+  Selection().SetSelection(SetSelectionTextToBody("<div contenteditable>"
+                                                  "^a<br>"
+                                                  "b|<br><br>"
+                                                  "c"
+                                                  "</div>"),
+                           SetSelectionOptions());
+
+  auto* indent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+
+  EXPECT_TRUE(indent->Apply());
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "^a<br>"
+      "b|"
+      "</blockquote>"
+      "<br>"
+      "c"
+      "</div>",
+      GetSelectionTextFromBody());
+
+  auto* outdent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kOutdent);
+
+  // Shouldn't crash, and the empty line between b and c should be preserved.
+  // TODO(editing-dev): Get rid of the empty blockquote.
+  EXPECT_TRUE(outdent->Apply());
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: "
+      "0px;\"></blockquote>"
+      "^a<br>"
+      "b|<br><br>"
+      "c"
+      "</div>",
+      GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/673056
+TEST_F(ApplyBlockElementCommandTest, IndentOutdentLinesWithJunkCrash) {
+  Selection().SetSelection(SetSelectionTextToBody("<div contenteditable>"
+                                                  "^a<br>"
+                                                  "b|<br>"
+                                                  "<!----><br>"
+                                                  "c"
+                                                  "</div>"),
+                           SetSelectionOptions());
+
+  auto* indent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+
+  EXPECT_TRUE(indent->Apply());
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "^a<br>"
+      "b|"
+      "</blockquote>"
+      "<!----><br>"
+      "c"
+      "</div>",
+      GetSelectionTextFromBody());
+
+  auto* outdent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kOutdent);
+
+  // Shouldn't crash.
+  EXPECT_TRUE(outdent->Apply());
+
+  // TODO(editing-dev): The result is wrong. We should preserve the empty line
+  // between b and c, and get rid of the empty blockquote.
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: "
+      "0px;\"></blockquote>"
+      "^a<br>"
+      "b|"
+      "<!----><br>"
+      "c"
+      "</div>",
+      GetSelectionTextFromBody());
+}
 }  // namespace blink

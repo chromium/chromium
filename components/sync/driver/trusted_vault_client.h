@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 
 struct CoreAccountInfo;
@@ -36,6 +35,10 @@ class TrustedVaultClient {
   };
 
   TrustedVaultClient() = default;
+
+  TrustedVaultClient(const TrustedVaultClient&) = delete;
+  TrustedVaultClient& operator=(const TrustedVaultClient&) = delete;
+
   virtual ~TrustedVaultClient() = default;
 
   // Adds/removes an observer.
@@ -87,9 +90,6 @@ class TrustedVaultClient {
                                         const std::vector<uint8_t>& public_key,
                                         int method_type_hint,
                                         base::OnceClosure cb) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TrustedVaultClient);
 };
 
 }  // namespace syncer

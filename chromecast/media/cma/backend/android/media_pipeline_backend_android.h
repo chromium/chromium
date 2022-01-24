@@ -31,6 +31,11 @@ class MediaPipelineBackendAndroid : public MediaPipelineBackend {
   using RenderingDelay = AudioDecoder::RenderingDelay;
 
   explicit MediaPipelineBackendAndroid(const MediaPipelineDeviceParams& params);
+
+  MediaPipelineBackendAndroid(const MediaPipelineBackendAndroid&) = delete;
+  MediaPipelineBackendAndroid& operator=(const MediaPipelineBackendAndroid&) =
+      delete;
+
   ~MediaPipelineBackendAndroid() override;
 
   // MediaPipelineBackend implementation:
@@ -63,8 +68,6 @@ class MediaPipelineBackendAndroid : public MediaPipelineBackend {
   const MediaPipelineDeviceParams params_;
   std::unique_ptr<VideoDecoderNull> video_decoder_;
   std::unique_ptr<AudioDecoderAndroid> audio_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPipelineBackendAndroid);
 };
 
 }  // namespace media

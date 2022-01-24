@@ -51,8 +51,9 @@ SystemProfileProto::Channel AsProtobufChannel(version_info::Channel channel) {
 std::string GetAppPackageName() {
 #if defined(OS_ANDROID)
   return base::android::BuildInfo::GetInstance()->package_name();
-#endif
+#else
   return std::string();
+#endif
 }
 
 }  // namespace metrics

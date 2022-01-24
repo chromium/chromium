@@ -31,8 +31,7 @@ class BackgroundDownloadTaskHelper {
       base::OnceCallback<void(bool, const base::FilePath&, int64_t)>;
   // Callback with number of bytes downloaded.
   using UpdateCallback = base::RepeatingCallback<void(int64_t)>;
-  static std::unique_ptr<BackgroundDownloadTaskHelper> Create(
-      const base::FilePath& download_dir);
+  static std::unique_ptr<BackgroundDownloadTaskHelper> Create();
 
   BackgroundDownloadTaskHelper() = default;
   virtual ~BackgroundDownloadTaskHelper() = default;
@@ -42,6 +41,7 @@ class BackgroundDownloadTaskHelper {
 
   // Starts a download.
   virtual void StartDownload(const std::string& guid,
+                             const base::FilePath& target_path,
                              const RequestParams& request_params,
                              const SchedulingParams& scheduling_params,
                              CompletionCallback completion_callback,

@@ -9,5 +9,5 @@
     <padding
         android:left="20dp"
         android:right="20dp"/>
-    <solid android:color="@color/modern_grey_200"/>
+    <solid android:color="@color/toast_bg_color"/>
 </shape>

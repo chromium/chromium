@@ -9,10 +9,6 @@
 
 namespace web_app {
 
-std::unique_ptr<FileUtilsWrapper> FileUtilsWrapper::Clone() const {
-  return std::make_unique<FileUtilsWrapper>();
-}
-
 bool FileUtilsWrapper::PathExists(const base::FilePath& path) {
   return base::PathExists(path);
 }

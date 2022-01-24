@@ -52,6 +52,10 @@ class UiHandler : public session_manager::SessionManagerObserver,
   static void Shutdown();
 
   explicit UiHandler(std::unique_ptr<WindowFactory> window_factory);
+
+  UiHandler(const UiHandler&) = delete;
+  UiHandler& operator=(const UiHandler&) = delete;
+
   ~UiHandler() override;
 
   // Endpoint for calls to the chrome.loginScreenUi.show() API. If an error
@@ -114,8 +118,6 @@ class UiHandler : public session_manager::SessionManagerObserver,
       extension_registry_observation_{this};
 
   base::WeakPtrFactory<UiHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UiHandler);
 };
 
 }  // namespace login_screen_extension_ui

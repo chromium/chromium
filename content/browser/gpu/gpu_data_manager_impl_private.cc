@@ -75,10 +75,6 @@
 #include "ui/gl/gpu_preference.h"
 #include "ui/gl/gpu_switching_manager.h"
 
-#if defined(USE_OZONE) || defined(USE_X11)
-#include "ui/base/ui_base_features.h"
-#endif
-
 #if defined(OS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
@@ -100,21 +96,16 @@ namespace content {
 
 namespace {
 
-// On X11 (Ozone and non-Ozone), we do not know GpuMemoryBuffer configuration
-// support until receiving the initial GPUInfo.
+// On X11, we do not know GpuMemoryBuffer configuration support until receiving
+// the initial GPUInfo.
 bool CanUpdateGmbGpuPreferences() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    return !ui::OzonePlatform::GetInstance()
-                ->GetPlatformProperties()
-                .fetch_buffer_formats_for_gmb_on_gpu;
-  }
-#endif
-#if defined(USE_X11)
-  DCHECK(!features::IsUsingOzonePlatform());
-  return false;
-#endif
+  return !ui::OzonePlatform::GetInstance()
+              ->GetPlatformProperties()
+              .fetch_buffer_formats_for_gmb_on_gpu;
+#else
   return true;
+#endif
 }
 
 #if defined(OS_ANDROID)
@@ -507,36 +498,17 @@ class HDRProxy {
   }
 
   static void RequestHDRStatus() {
-    // The request must be sent to the GPU process from the IO thread.
-    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                           ? GetUIThreadTaskRunner({})
-                           : GetIOThreadTaskRunner({});
-    task_runner->PostTask(FROM_HERE,
-                          base::BindOnce(&HDRProxy::RequestOnProcessThread));
-  }
-
-  static void GotResultOnProcessThread(bool hdr_enabled) {
-    if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-      GotResult(hdr_enabled);
-    } else {
-      GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&HDRProxy::GotResult, hdr_enabled));
-    }
-  }
-
- private:
-  static void RequestOnProcessThread() {
     auto* gpu_process_host =
         GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, false);
     if (gpu_process_host) {
       auto* gpu_service = gpu_process_host->gpu_host()->gpu_service();
-      gpu_service->RequestHDRStatus(
-          base::BindOnce(&HDRProxy::GotResultOnProcessThread));
+      gpu_service->RequestHDRStatus(base::BindOnce(&HDRProxy::GotResult));
     } else {
       bool hdr_enabled = false;
-      GotResultOnProcessThread(hdr_enabled);
+      GotResult(hdr_enabled);
     }
   }
+
   static void GotResult(bool hdr_enabled) {
     display::win::ScreenWin::SetHDREnabled(hdr_enabled);
   }
@@ -581,7 +553,7 @@ GpuDataManagerImplPrivate::~GpuDataManagerImplPrivate() {
 void GpuDataManagerImplPrivate::StartUmaTimer() {
   // Do not change kTimerInterval without also changing the UMA histogram name,
   // as histogram data from before/after the change will not be comparable.
-  constexpr base::TimeDelta kTimerInterval = base::TimeDelta::FromMinutes(5);
+  constexpr base::TimeDelta kTimerInterval = base::Minutes(5);
   compositing_mode_timer_.Start(
       FROM_HERE, kTimerInterval, this,
       &GpuDataManagerImplPrivate::RecordCompositingMode);
@@ -752,10 +724,7 @@ void GpuDataManagerImplPrivate::RequestDxDiagNodeData() {
         }));
   });
 
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? GetUIThreadTaskRunner({})
-                         : GetIOThreadTaskRunner({});
-  task_runner->PostTask(FROM_HERE, std::move(task));
+  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
 #endif
 }
 
@@ -765,7 +734,7 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedDx12Version(bool delayed) {
   base::TimeDelta delta;
   if (delayed &&
       !command_line->HasSwitch(switches::kNoDelayForDX12VulkanInfoCollection)) {
-    delta = base::TimeDelta::FromSeconds(120);
+    delta = base::Seconds(120);
   }
 
   base::OnceClosure task = base::BindOnce(
@@ -822,10 +791,7 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedDx12Version(bool delayed) {
       },
       delta);
 
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? GetUIThreadTaskRunner({})
-                         : GetIOThreadTaskRunner({});
-  task_runner->PostDelayedTask(FROM_HERE, std::move(task), delta);
+  GetUIThreadTaskRunner({})->PostDelayedTask(FROM_HERE, std::move(task), delta);
 #endif
 }
 
@@ -835,7 +801,7 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedVulkanVersion(bool delayed) {
   base::TimeDelta delta;
   if (delayed &&
       !command_line->HasSwitch(switches::kNoDelayForDX12VulkanInfoCollection)) {
-    delta = base::TimeDelta::FromSeconds(120);
+    delta = base::Seconds(120);
   }
 
   base::OnceClosure task = base::BindOnce(
@@ -874,10 +840,7 @@ void GpuDataManagerImplPrivate::RequestGpuSupportedVulkanVersion(bool delayed) {
       },
       delta);
 
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? GetUIThreadTaskRunner({})
-                         : GetIOThreadTaskRunner({});
-  task_runner->PostDelayedTask(FROM_HERE, std::move(task), delta);
+  GetUIThreadTaskRunner({})->PostDelayedTask(FROM_HERE, std::move(task), delta);
 #endif
 }
 
@@ -899,10 +862,7 @@ void GpuDataManagerImplPrivate::RequestDawnInfo() {
         }));
   });
 
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? GetUIThreadTaskRunner({})
-                         : GetIOThreadTaskRunner({});
-  task_runner->PostTask(FROM_HERE, std::move(task));
+  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
 }
 
 void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
@@ -932,11 +892,7 @@ void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
         std::move(remote_decoder)));
   });
 
-  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                         ? GetUIThreadTaskRunner({})
-                         : GetIOThreadTaskRunner({});
-  DCHECK(task_runner);
-  task_runner->PostTask(FROM_HERE, std::move(task));
+  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
 }
 
 bool GpuDataManagerImplPrivate::IsEssentialGpuInfoAvailable() const {
@@ -1027,8 +983,7 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
   gpu_info_ = gpu_info;
   base::UmaHistogramCustomMicrosecondsTimes(
       "GPU.GPUInitializationTime.V3", gpu_info_.initialization_time,
-      base::TimeDelta::FromMilliseconds(5), base::TimeDelta::FromSeconds(5),
-      50);
+      base::Milliseconds(5), base::Seconds(5), 50);
   UMA_HISTOGRAM_EXACT_LINEAR("GPU.GpuCount", gpu_info_.GpuCount(), 10);
   RecordDiscreteGpuHistograms(gpu_info_);
 #if defined(OS_WIN)
@@ -1128,11 +1083,9 @@ void GpuDataManagerImplPrivate::UpdateOverlayInfo(
 }
 
 void GpuDataManagerImplPrivate::UpdateHDRStatus(bool hdr_enabled) {
-  // This is running on the process thread;
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                          ? BrowserThread::UI
-                          : BrowserThread::IO);
-  HDRProxy::GotResultOnProcessThread(hdr_enabled);
+  // This is running on the main thread;
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  HDRProxy::GotResult(hdr_enabled);
 }
 
 void GpuDataManagerImplPrivate::UpdateDxDiagNodeRequestStatus(
@@ -1345,7 +1298,7 @@ void GpuDataManagerImplPrivate::AppendGpuCommandLine(
       break;
     case gpu::GpuMode::SWIFTSHADER: {
       bool legacy_software_gl = true;
-#if (defined(OS_LINUX) && !defined(USE_OZONE)) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_WIN)
       // This setting makes WebGL run on SwANGLE instead of SwiftShader GL.
       legacy_software_gl = false;
 #endif
@@ -1414,11 +1367,9 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
 #endif
 
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    gpu_preferences->message_pump_type = ui::OzonePlatform::GetInstance()
-                                             ->GetPlatformProperties()
-                                             .message_pump_type_for_gpu;
-  }
+  gpu_preferences->message_pump_type = ui::OzonePlatform::GetInstance()
+                                           ->GetPlatformProperties()
+                                           .message_pump_type_for_gpu;
 #endif
 
 #if defined(OS_MAC)

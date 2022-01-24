@@ -12,8 +12,8 @@
 
 #include "base/macros.h"
 #include "gin/public/context_holder.h"
+#include "v8/include/v8-forward.h"
 #include "v8/include/v8-util.h"
-#include "v8/include/v8.h"
 
 namespace extensions {
 class NativeHandler;
@@ -23,6 +23,10 @@ class NativeHandler;
 class V8SchemaRegistry {
  public:
   V8SchemaRegistry();
+
+  V8SchemaRegistry(const V8SchemaRegistry&) = delete;
+  V8SchemaRegistry& operator=(const V8SchemaRegistry&) = delete;
+
   ~V8SchemaRegistry();
 
   // Creates a NativeHandler wrapper |this|. Supports GetSchema.
@@ -46,8 +50,6 @@ class V8SchemaRegistry {
   // Single per-instance gin::ContextHolder to create v8::Values.
   // Created lazily via GetOrCreateContext.
   std::unique_ptr<gin::ContextHolder> context_holder_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8SchemaRegistry);
 };
 
 }  // namespace extensions

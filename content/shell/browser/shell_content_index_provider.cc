@@ -19,7 +19,7 @@ std::vector<gfx::Size> ShellContentIndexProvider::GetIconSizes(
 void ShellContentIndexProvider::OnContentAdded(ContentIndexEntry entry) {
   entries_[entry.description->id] = {
       entry.service_worker_registration_id,
-      url::Origin::Create(entry.launch_url.GetOrigin())};
+      url::Origin::Create(entry.launch_url.DeprecatedGetOriginAsURL())};
 }
 
 void ShellContentIndexProvider::OnContentDeleted(

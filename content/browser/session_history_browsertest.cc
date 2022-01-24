@@ -485,8 +485,8 @@ IN_PROC_BROWSER_TEST_F(SessionHistoryTest, LocationChangeInSubframe) {
       "location_redirect.html", "Default Title"));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   TestFrameNavigationObserver observer(root->child_at(0));
   shell()->LoadURL(GURL("javascript:void(frames[0].navigate())"));
   observer.Wait();
@@ -504,8 +504,8 @@ IN_PROC_BROWSER_TEST_F(SessionHistoryScrollAnchorTest,
       NavigateAndCheckTitle("location_redirect.html", "Default Title"));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   TestFrameNavigationObserver observer(root->child_at(0));
   shell()->LoadURL(GURL("javascript:void(frames[0].navigate())"));
   observer.Wait();

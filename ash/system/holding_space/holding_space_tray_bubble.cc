@@ -38,8 +38,7 @@ namespace ash {
 namespace {
 
 // Animation.
-constexpr base::TimeDelta kAnimationDuration =
-    base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(167);
 
 // Helpers ---------------------------------------------------------------------
 

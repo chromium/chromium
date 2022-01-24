@@ -5,7 +5,7 @@
 /**
  * Namespace for keyboard utility functions.
  */
-var keyboard = {};
+/* #export */ var keyboard = {};
 
 /**
  * keyboard_utils may be injected as content script. This variable gets and

@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/win/conflicts/module_database_observer.h"
@@ -34,6 +34,9 @@ class ConflictsDataFetcher : public ModuleDatabaseObserver {
       std::unique_ptr<ConflictsDataFetcher, base::OnTaskRunnerDeleter>;
   using OnConflictsDataFetchedCallback =
       base::OnceCallback<void(base::DictionaryValue results)>;
+
+  ConflictsDataFetcher(const ConflictsDataFetcher&) = delete;
+  ConflictsDataFetcher& operator=(const ConflictsDataFetcher&) = delete;
 
   ~ConflictsDataFetcher() override;
 
@@ -78,8 +81,6 @@ class ConflictsDataFetcher : public ModuleDatabaseObserver {
 
   base::WeakPtrFactory<ConflictsDataFetcher> weak_ptr_factory_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ConflictsDataFetcher);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CONFLICTS_CONFLICTS_DATA_FETCHER_H_

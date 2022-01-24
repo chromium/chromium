@@ -45,7 +45,7 @@ void FullCardRequester::GetFullCard(
   }
 
   driver->browser_autofill_manager()->GetOrCreateFullCardRequest()->GetFullCard(
-      *card, autofill::AutofillClient::UNMASK_FOR_AUTOFILL,
+      *card, autofill::AutofillClient::UnmaskCardReason::kAutofill,
       weak_ptr_factory_.GetWeakPtr(),
       driver->browser_autofill_manager()->GetAsFullCardRequestUIDelegate());
 }

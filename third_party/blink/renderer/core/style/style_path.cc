@@ -71,7 +71,7 @@ bool StylePath::operator==(const BasicShape& o) const {
 
 void StylePath::GetPath(Path& path, const FloatRect& offset_rect, float zoom) {
   path = GetPath();
-  path.Transform(AffineTransform::Translation(offset_rect.X(), offset_rect.Y())
+  path.Transform(AffineTransform::Translation(offset_rect.x(), offset_rect.y())
                      .Scale(zoom));
 }
 

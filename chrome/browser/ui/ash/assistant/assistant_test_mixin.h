@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/assistant/test_support/fake_s3_server.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -29,8 +28,7 @@ class FakeS3Server;
 class LoggedInUserMixin;
 
 // Default wait time before we conclude the wait actions have timed out.
-constexpr base::TimeDelta kDefaultWaitTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kDefaultWaitTimeout = base::Seconds(10);
 
 // Creates everything required to test the Assistant in browser tests.
 // This includes:
@@ -50,6 +48,10 @@ class AssistantTestMixin : public InProcessBrowserTestMixin {
                      net::EmbeddedTestServer* embedded_test_server,
                      FakeS3Mode mode,
                      int test_data_version);
+
+  AssistantTestMixin(const AssistantTestMixin&) = delete;
+  AssistantTestMixin& operator=(const AssistantTestMixin&) = delete;
+
   ~AssistantTestMixin() override;
 
   // InProcessBrowserTestMixin overrides:
@@ -138,8 +140,6 @@ class AssistantTestMixin : public InProcessBrowserTestMixin {
   FakeS3Mode mode_;
   std::unique_ptr<ash::AssistantTestApi> test_api_;
   std::unique_ptr<LoggedInUserMixin> user_mixin_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantTestMixin);
 };
 
 }  // namespace assistant

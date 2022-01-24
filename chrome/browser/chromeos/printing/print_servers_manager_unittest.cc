@@ -10,11 +10,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/ash/printing/server_printers_provider.h"
 #include "chrome/browser/chromeos/printing/print_servers_provider.h"
-#include "chrome/browser/chromeos/printing/server_printers_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_service.h"
@@ -26,7 +26,7 @@
 namespace chromeos {
 namespace {
 
-class FakeServerPrintersProvider : public ServerPrintersProvider {
+class FakeServerPrintersProvider : public ash::ServerPrintersProvider {
  public:
   FakeServerPrintersProvider() = default;
   ~FakeServerPrintersProvider() override = default;

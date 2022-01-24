@@ -16,13 +16,11 @@ namespace update_client {
 
 TaskSendUninstallPing::TaskSendUninstallPing(
     scoped_refptr<UpdateEngine> update_engine,
-    const std::string& id,
-    const base::Version& version,
+    const CrxComponent& crx_component,
     int reason,
     Callback callback)
     : update_engine_(update_engine),
-      id_(id),
-      version_(version),
+      crx_component_(crx_component),
       reason_(reason),
       callback_(std::move(callback)) {}
 
@@ -33,13 +31,13 @@ TaskSendUninstallPing::~TaskSendUninstallPing() {
 void TaskSendUninstallPing::Run() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (id_.empty()) {
+  if (crx_component_.app_id.empty()) {
     TaskComplete(Error::INVALID_ARGUMENT);
     return;
   }
 
   update_engine_->SendUninstallPing(
-      id_, version_, reason_,
+      crx_component_, reason_,
       base::BindOnce(&TaskSendUninstallPing::TaskComplete, this));
 }
 
@@ -50,7 +48,7 @@ void TaskSendUninstallPing::Cancel() {
 }
 
 std::vector<std::string> TaskSendUninstallPing::GetIds() const {
-  return std::vector<std::string>{id_};
+  return std::vector<std::string>{crx_component_.app_id};
 }
 
 void TaskSendUninstallPing::TaskComplete(Error error) {

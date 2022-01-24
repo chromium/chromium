@@ -152,9 +152,10 @@ class GcpGaiaCredentialGlsRunnerTest : public GlsRunnerTestBase {};
 // Parameters are:
 // 1. Is gem features enabled / disabled.
 // 2. Is ep_url already set via registry.
-class GcpGaiaCredentialGlsTest
-    : public GcpGaiaCredentialGlsRunnerTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {};
+// 3. List of allowed domains.
+class GcpGaiaCredentialGlsTest : public GcpGaiaCredentialGlsRunnerTest,
+                                 public ::testing::WithParamInterface<
+                                     std::tuple<bool, bool, std::wstring>> {};
 
 TEST_P(GcpGaiaCredentialGlsTest, GetUserGlsCommandLine) {
   USES_CONVERSION;
@@ -165,6 +166,8 @@ TEST_P(GcpGaiaCredentialGlsTest, GetUserGlsCommandLine) {
     ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kKeyEnableGemFeatures, 1u));
   else
     ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kKeyEnableGemFeatures, 0u));
+  const std::wstring email_domains = std::get<2>(GetParam());
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", email_domains);
 
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
@@ -192,6 +195,14 @@ TEST_P(GcpGaiaCredentialGlsTest, GetUserGlsCommandLine) {
 
   EXPECT_TRUE(command_line.HasSwitch(kGcpwSigninSwitch));
   EXPECT_TRUE(command_line.HasSwitch(switches::kDisableExtensions));
+  // If domain list has more than one domain, they shouldn't exist in the
+  // command line.
+  if (email_domains.find(L",") != std::wstring::npos) {
+    EXPECT_EQ(command_line.GetSwitchValueASCII(kEmailDomainsSwitch), "");
+  } else {
+    EXPECT_EQ(command_line.GetSwitchValueASCII(kEmailDomainsSwitch),
+              base::WideToUTF8(email_domains));
+  }
 
   if (is_ep_url_set) {
     ASSERT_EQ("http://login.com/",
@@ -208,10 +219,12 @@ TEST_P(GcpGaiaCredentialGlsTest, GetUserGlsCommandLine) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         GcpGaiaCredentialGlsTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GcpGaiaCredentialGlsTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Bool(),
+                       ::testing::Values(L"test.com", L"test1.com,test2.com")));
 
 TEST_F(GcpGaiaCredentialGlsRunnerTest,
        AssociateToExistingAssociatedUser_LongUsername) {

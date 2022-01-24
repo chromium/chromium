@@ -79,7 +79,12 @@ struct NavigateParams {
   NavigateParams(Profile* profile,
                  const GURL& a_url,
                  ui::PageTransition a_transition);
+
+  NavigateParams(const NavigateParams&) = delete;
+  NavigateParams& operator=(const NavigateParams&) = delete;
+
   NavigateParams(NavigateParams&& params);
+
   ~NavigateParams();
 
   // Copies fields from |params| struct to |nav_params| struct.
@@ -190,7 +195,7 @@ struct NavigateParams {
   int tabstrip_index = -1;
 
   // If non-empty, the new tab is an app tab.
-  std::string extension_app_id;
+  std::string app_id;
 
   // If non-empty, specifies the desired initial position and size of the
   // window if |disposition| == NEW_POPUP.
@@ -262,9 +267,10 @@ struct NavigateParams {
   // navigation entry.
   bool should_replace_current_entry = false;
 
-  // Indicates whether |contents_to_insert| is being created with a
-  // window.opener.
-  bool created_with_opener = false;
+  // Indicates whether |contents_to_insert| is being created by another window,
+  // and thus can be closed via window.close(). This may be true even when
+  // "noopener" was used.
+  bool opened_by_another_window = false;
 
   // Whether or not the related navigation was started in the context menu.
   bool started_from_context_menu = false;
@@ -318,7 +324,6 @@ struct NavigateParams {
 
  private:
   NavigateParams();
-  DISALLOW_COPY_AND_ASSIGN(NavigateParams);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_NAVIGATOR_PARAMS_H_

@@ -73,6 +73,10 @@ class MockVideoCaptureObserver final
   explicit MockVideoCaptureObserver(
       mojo::PendingRemote<media::mojom::VideoCaptureHost> host)
       : host_(std::move(host)) {}
+
+  MockVideoCaptureObserver(const MockVideoCaptureObserver&) = delete;
+  MockVideoCaptureObserver& operator=(const MockVideoCaptureObserver&) = delete;
+
   MOCK_METHOD1(OnBufferCreatedCall, void(int buffer_id));
   MOCK_METHOD1(OnBufferReadyCall, void(int buffer_id));
   MOCK_METHOD1(OnBufferDestroyedCall, void(int buffer_id));
@@ -122,8 +126,6 @@ class MockVideoCaptureObserver final
   base::flat_map<int, media::mojom::VideoFrameInfoPtr> frame_infos_;
   const base::UnguessableToken device_id_ = base::UnguessableToken::Create();
   const base::UnguessableToken session_id_ = base::UnguessableToken::Create();
-
-  DISALLOW_COPY_AND_ASSIGN(MockVideoCaptureObserver);
 };
 
 }  // namespace
@@ -135,6 +137,12 @@ class CastMirroringServiceHostBrowserTest
       public mojom::AudioStreamCreatorClient {
  public:
   CastMirroringServiceHostBrowserTest() = default;
+
+  CastMirroringServiceHostBrowserTest(
+      const CastMirroringServiceHostBrowserTest&) = delete;
+  CastMirroringServiceHostBrowserTest& operator=(
+      const CastMirroringServiceHostBrowserTest&) = delete;
+
   ~CastMirroringServiceHostBrowserTest() override = default;
 
  protected:
@@ -242,8 +250,6 @@ class CastMirroringServiceHostBrowserTest
 
   std::unique_ptr<CastMirroringServiceHost> host_;
   std::unique_ptr<MockVideoCaptureObserver> video_frame_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMirroringServiceHostBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, CaptureTabVideo) {

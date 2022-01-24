@@ -42,6 +42,17 @@ public class ModalDialogTestUtils {
      */
     public static PropertyModel createDialog(Activity activity, ModalDialogManager manager,
             String title, @Nullable TestDialogDismissedObserver observer) {
+        return createDialog(activity, manager, title, observer,
+                ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE);
+    }
+
+    /**
+     * @return A {@link PropertyModel} of a modal dialog that is used for testing with
+     *         primary or negative button filled.
+     */
+    public static PropertyModel createDialog(Activity activity, ModalDialogManager manager,
+            String title, @Nullable TestDialogDismissedObserver observer,
+            @ModalDialogProperties.ButtonStyles int buttonStyles) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
                 @Override
@@ -68,6 +79,7 @@ public class ModalDialogTestUtils {
                     .with(ModalDialogProperties.TITLE, title)
                     .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
                     .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources, R.string.cancel)
+                    .with(ModalDialogProperties.BUTTON_STYLES, buttonStyles)
                     .build();
         });
     }

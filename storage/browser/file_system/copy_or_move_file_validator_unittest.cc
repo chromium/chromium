@@ -15,7 +15,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/blob/shareable_file_reference.h"
@@ -33,6 +33,7 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -56,6 +57,11 @@ class CopyOrMoveFileValidatorTestHelper {
       : origin_(url::Origin::Create(GURL(origin))),
         src_type_(src_type),
         dest_type_(dest_type) {}
+
+  CopyOrMoveFileValidatorTestHelper(const CopyOrMoveFileValidatorTestHelper&) =
+      delete;
+  CopyOrMoveFileValidatorTestHelper& operator=(
+      const CopyOrMoveFileValidatorTestHelper&) = delete;
 
   ~CopyOrMoveFileValidatorTestHelper() {
     file_system_context_ = nullptr;
@@ -143,13 +149,13 @@ class CopyOrMoveFileValidatorTestHelper {
  private:
   FileSystemURL SourceURL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        origin_, src_type_,
+        blink::StorageKey(origin_), src_type_,
         base::FilePath().AppendASCII("src").AppendASCII(path));
   }
 
   FileSystemURL DestURL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        origin_, dest_type_,
+        blink::StorageKey(origin_), dest_type_,
         base::FilePath().AppendASCII("dest").AppendASCII(path));
   }
 
@@ -188,8 +194,6 @@ class CopyOrMoveFileValidatorTestHelper {
   FileSystemURL copy_dest_;
   FileSystemURL move_src_;
   FileSystemURL move_dest_;
-
-  DISALLOW_COPY_AND_ASSIGN(CopyOrMoveFileValidatorTestHelper);
 };
 
 // For TestCopyOrMoveFileValidatorFactory
@@ -202,6 +206,12 @@ class TestCopyOrMoveFileValidatorFactory
   // TODO(gbillock): switch args to enum or something
   explicit TestCopyOrMoveFileValidatorFactory(Validity validity)
       : validity_(validity) {}
+
+  TestCopyOrMoveFileValidatorFactory(
+      const TestCopyOrMoveFileValidatorFactory&) = delete;
+  TestCopyOrMoveFileValidatorFactory& operator=(
+      const TestCopyOrMoveFileValidatorFactory&) = delete;
+
   ~TestCopyOrMoveFileValidatorFactory() override = default;
 
   CopyOrMoveFileValidator* CreateCopyOrMoveFileValidator(
@@ -220,6 +230,11 @@ class TestCopyOrMoveFileValidatorFactory
           write_result_(validity == VALID || validity == PRE_WRITE_INVALID
                             ? base::File::FILE_OK
                             : base::File::FILE_ERROR_SECURITY) {}
+
+    TestCopyOrMoveFileValidator(const TestCopyOrMoveFileValidator&) = delete;
+    TestCopyOrMoveFileValidator& operator=(const TestCopyOrMoveFileValidator&) =
+        delete;
+
     ~TestCopyOrMoveFileValidator() override = default;
 
     void StartPreWriteValidation(ResultCallback result_callback) override {
@@ -238,13 +253,9 @@ class TestCopyOrMoveFileValidatorFactory
    private:
     base::File::Error result_;
     base::File::Error write_result_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestCopyOrMoveFileValidator);
   };
 
   Validity validity_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCopyOrMoveFileValidatorFactory);
 };
 
 }  // namespace

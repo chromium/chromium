@@ -63,7 +63,7 @@ void CastWebUI::RegisterMessageCallback(
     const std::string& message,
     mojo::PendingRemote<mojom::MessageCallback> callback) {
   message_callbacks_.emplace(message, std::move(callback));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       message,
       base::BindRepeating(&CastWebUI::InvokeCallback, weak_this_, message));
 }

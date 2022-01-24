@@ -14,12 +14,12 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "chrome/browser/profile_resetter/brandcoded_default_settings.h"
-#include "chrome/browser/search/instant_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browsing_data_remover.h"
 
@@ -64,6 +64,10 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
                 "ResettableFlags should be the same size as Resettable");
 
   explicit ProfileResetter(Profile* profile);
+
+  ProfileResetter(const ProfileResetter&) = delete;
+  ProfileResetter& operator=(const ProfileResetter&) = delete;
+
   ~ProfileResetter() override;
 
   // Resets |resettable_flags| and calls |callback| on the UI thread on
@@ -118,12 +122,7 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Used for resetting NTP customizations.
-  InstantService* ntp_service_;
-
   base::WeakPtrFactory<ProfileResetter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileResetter);
 };
 
 // Path to shortcut and command line arguments.

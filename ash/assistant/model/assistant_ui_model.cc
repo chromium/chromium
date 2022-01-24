@@ -35,6 +35,11 @@ void AssistantUiModel::SetVisible(AssistantEntryPoint entry_point) {
                 /*exit_point=*/absl::nullopt);
 }
 
+void AssistantUiModel::SetClosing(AssistantExitPoint exit_point) {
+  SetVisibility(AssistantVisibility::kClosing,
+                /*entry_point=*/absl::nullopt, exit_point);
+}
+
 void AssistantUiModel::SetClosed(AssistantExitPoint exit_point) {
   SetVisibility(AssistantVisibility::kClosed,
                 /*entry_point=*/absl::nullopt, exit_point);

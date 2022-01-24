@@ -29,6 +29,10 @@ class TestNavigationObserver : public NavigationObserver {
   TestNavigationObserver(const GURL& url,
                          NavigationEvent target_event,
                          Tab* tab);
+
+  TestNavigationObserver(const TestNavigationObserver&) = delete;
+  TestNavigationObserver& operator=(const TestNavigationObserver&) = delete;
+
   ~TestNavigationObserver() override;
 
   // Spins a RunLoop until the requested type of navigation event is observed.
@@ -49,8 +53,6 @@ class TestNavigationObserver : public NavigationObserver {
   Tab* tab_;
   bool done_loading_ = false;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNavigationObserver);
 };
 
 }  // namespace weblayer

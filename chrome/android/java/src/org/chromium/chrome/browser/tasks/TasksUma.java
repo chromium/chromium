@@ -76,7 +76,8 @@ public class TasksUma {
             if (tabLaunchType == TabLaunchType.FROM_CHROME_UI
                     || tabLaunchType == TabLaunchType.FROM_START_SURFACE
                     || tabLaunchType == TabLaunchType.FROM_LONGPRESS_BACKGROUND
-                    || tabLaunchType == TabLaunchType.FROM_LAUNCHER_SHORTCUT) {
+                    || tabLaunchType == TabLaunchType.FROM_LAUNCHER_SHORTCUT
+                    || tabLaunchType == TabLaunchType.FROM_APP_WIDGET) {
                 manuallyCreatedCount++;
             } else if (tabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND) {
                 targetBlankCreatedCount++;

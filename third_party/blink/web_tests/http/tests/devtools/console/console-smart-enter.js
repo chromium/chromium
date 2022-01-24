@@ -5,10 +5,10 @@
 (async function() {
   TestRunner.addResult(
       `Tests that the console enters a newline instead of running a command if the command is incomplete.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
-  var prompt = Console.ConsoleView.instance()._prompt;
+  var prompt = Console.ConsoleView.instance().prompt;
   ConsoleTestRunner.waitUntilConsoleEditorLoaded().then(step1);
 
   function step1() {
@@ -55,11 +55,11 @@
   function pressEnterAfter(text) {
     var fulfill;
     var promise = new Promise(x => fulfill = x);
-    TestRunner.addSniffer(Console.ConsolePrompt.prototype, '_enterProcessedForTest', enterProcessed);
+    TestRunner.addSniffer(Console.ConsolePrompt.prototype, 'enterProcessedForTest', enterProcessed);
 
     prompt.setText(text);
     prompt.moveCaretToEndOfPrompt();
-    prompt._enterKeyPressed(TestRunner.createKeyEvent('Enter'));
+    prompt.enterKeyPressed(TestRunner.createKeyEvent('Enter'));
     return promise;
 
     function enterProcessed() {

@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -84,7 +83,7 @@ class Buffer : public PacketPipe {
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&Buffer::ProcessBuffer, weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMicroseconds(microseconds));
+        base::Microseconds(microseconds));
   }
 
   void ProcessBuffer() {
@@ -150,7 +149,7 @@ class SimpleDelayBase : public PacketPipe {
         FROM_HERE,
         base::BindOnce(&SimpleDelayBase::SendInternal,
                        weak_factory_.GetWeakPtr(), std::move(packet)),
-        base::TimeDelta::FromMicroseconds(static_cast<int64_t>(seconds * 1E6)));
+        base::Microseconds(static_cast<int64_t>(seconds * 1E6)));
   }
  protected:
   virtual double GetDelay() = 0;
@@ -226,10 +225,10 @@ class RandomSortedDelay : public PacketPipe {
   void Send(std::unique_ptr<Packet> packet) final {
     buffer_.push_back(std::move(packet));
     if (buffer_.size() == 1) {
-      next_send_ = std::max(
-          clock_->NowTicks() +
-          base::TimeDelta::FromSecondsD(base::RandDouble() * random_delay_),
-          next_send_);
+      next_send_ =
+          std::max(clock_->NowTicks() +
+                       base::Seconds(base::RandDouble() * random_delay_),
+                   next_send_);
       ProcessBuffer();
     }
   }
@@ -250,13 +249,13 @@ class RandomSortedDelay : public PacketPipe {
         FROM_HERE,
         base::BindOnce(&RandomSortedDelay::CauseExtraDelay,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMicroseconds(microseconds));
+        base::Microseconds(microseconds));
   }
 
   void CauseExtraDelay() {
     next_send_ = std::max<base::TimeTicks>(
-        clock_->NowTicks() + base::TimeDelta::FromMicroseconds(
-                                 static_cast<int64_t>(extra_delay_ * 1E6)),
+        clock_->NowTicks() +
+            base::Microseconds(static_cast<int64_t>(extra_delay_ * 1E6)),
         next_send_);
     // An extra delay just happened, wait up to seconds_between_extra_delay_*2
     // before scheduling another one to make the average equal to
@@ -271,8 +270,7 @@ class RandomSortedDelay : public PacketPipe {
       pipe_->Send(std::move(packet));
       buffer_.pop_front();
 
-      next_send_ += base::TimeDelta::FromSecondsD(
-          base::RandDouble() * random_delay_);
+      next_send_ += base::Seconds(base::RandDouble() * random_delay_);
     }
 
     if (!buffer_.empty()) {
@@ -330,7 +328,7 @@ class NetworkGlitchPipe : public PacketPipe {
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&NetworkGlitchPipe::Flip, weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMicroseconds(microseconds));
+        base::Microseconds(microseconds));
   }
 
   bool works_;
@@ -351,6 +349,9 @@ class InterruptedPoissonProcess::InternalBuffer : public PacketPipe {
  public:
   InternalBuffer(base::WeakPtr<InterruptedPoissonProcess> ipp, size_t size)
       : ipp_(ipp), stored_size_(0), stored_limit_(size), clock_(nullptr) {}
+
+  InternalBuffer(const InternalBuffer&) = delete;
+  InternalBuffer& operator=(const InternalBuffer&) = delete;
 
   void Send(std::unique_ptr<Packet> packet) final {
     // Drop if buffer is full.
@@ -402,8 +403,6 @@ class InterruptedPoissonProcess::InternalBuffer : public PacketPipe {
   base::circular_deque<base::TimeTicks> buffer_time_;
   const base::TickClock* clock_;
   base::WeakPtrFactory<InternalBuffer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InternalBuffer);
 };
 
 InterruptedPoissonProcess::InterruptedPoissonProcess(
@@ -448,8 +447,7 @@ base::TimeDelta InterruptedPoissonProcess::NextEvent(double rate) {
   // Rate is per milliseconds.
   // The time until next event is exponentially distributed to the
   // inverse of |rate|.
-  return base::TimeDelta::FromMillisecondsD(
-      fabs(-log(1.0 - RandDouble()) / rate));
+  return base::Milliseconds(fabs(-log(1.0 - RandDouble()) / rate));
 }
 
 double InterruptedPoissonProcess::RandDouble() {
@@ -481,7 +479,7 @@ void InterruptedPoissonProcess::UpdateRates() {
       FROM_HERE,
       base::BindOnce(&InterruptedPoissonProcess::UpdateRates,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 }
 
 void InterruptedPoissonProcess::SwitchOff() {

@@ -34,6 +34,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -76,6 +77,9 @@ base::FilePath GetMediaTestDir() {
 class MediaFileValidatorTest : public InProcessBrowserTest {
  public:
   MediaFileValidatorTest() : test_file_size_(0) {}
+
+  MediaFileValidatorTest(const MediaFileValidatorTest&) = delete;
+  MediaFileValidatorTest& operator=(const MediaFileValidatorTest&) = delete;
 
   ~MediaFileValidatorTest() override = default;
 
@@ -141,8 +145,8 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
             base);
 
     move_src_ = file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL(kOrigin)), storage::kFileSystemTypeTest,
-        base::FilePath::FromUTF8Unsafe(filename));
+        blink::StorageKey::CreateFromStringForTesting(kOrigin),
+        storage::kFileSystemTypeTest, base::FilePath::FromUTF8Unsafe(filename));
 
     test_file_size_ = content.size();
     base::FilePath test_file = src_path.AppendASCII(filename);
@@ -160,8 +164,8 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
     std::string extension = filename.substr(extension_index);
     std::string dest_root_fs_url = storage::GetIsolatedFileSystemRootURIString(
         GURL(kOrigin), dest_fs_.id(), "dest_fs/");
-    move_dest_ = file_system_context_->CrackURL(GURL(
-          dest_root_fs_url + "move_dest" + extension));
+    const GURL crack_url = GURL(dest_root_fs_url + "move_dest" + extension);
+    move_dest_ = file_system_context_->CrackURLInFirstPartyContext(crack_url);
 
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -221,7 +225,8 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
   void OnTestFilesReady(bool expected_result, bool test_files_ready) {
     ASSERT_TRUE(test_files_ready);
     operation_runner()->Move(
-        move_src_, move_dest_, storage::FileSystemOperation::OPTION_NONE,
+        move_src_, move_dest_,
+        storage::FileSystemOperation::CopyOrMoveOptionSet(),
         storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
         storage::FileSystemOperation::CopyOrMoveProgressCallback(),
         base::BindOnce(&MediaFileValidatorTest::OnMoveResult,
@@ -263,8 +268,6 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
 
   base::OnceClosure quit_closure_;
   scoped_refptr<base::SequencedTaskRunner> file_system_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileValidatorTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, UnsupportedExtension) {

@@ -59,18 +59,21 @@ void PageAnimator::ServiceScriptedAnimations(
   Clock().SetAllowedToDynamicallyUpdateTime(false);
   Clock().UpdateTime(monotonic_animation_start_time);
 
-  DocumentsVector documents =
-      GetAllDocuments(page_->MainFrame(), OnlyNonThrottled);
+  DocumentsVector documents = GetAllDocuments(page_->MainFrame(), AllDocuments);
 
   for (auto& document : documents) {
-    ScopedFrameBlamer frame_blamer(document->GetFrame());
-    TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
+    absl::optional<ScopedFrameBlamer> frame_blamer;
+    // TODO(szager): The following logic evolved piecemeal, and this conditional
+    // is suspect.
+    if (!document->View() || !document->View()->CanThrottleRendering()) {
+      frame_blamer.emplace(document->GetFrame());
+      TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
+    }
     if (!document->View()) {
       document->GetDocumentAnimations()
           .UpdateAnimationTimingForAnimationFrame();
       continue;
     }
-    DCHECK(!document->View()->CanThrottleRendering());
     document->View()->ServiceScriptedAnimations(monotonic_animation_start_time);
   }
 

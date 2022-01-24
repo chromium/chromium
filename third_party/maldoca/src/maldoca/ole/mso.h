@@ -51,8 +51,8 @@ class MSOContent {
  private:
   MSOContent() = delete;
   ~MSOContent() = delete;
-  MSOContent(const MSOContent &) = delete;
-  MSOContent &operator=(const MSOContent &) = delete;
+  MSOContent(const MSOContent&) = delete;
+  MSOContent& operator=(const MSOContent&) = delete;
 };
 }  // namespace maldoca
 

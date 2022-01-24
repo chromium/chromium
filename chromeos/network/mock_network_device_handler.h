@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
@@ -23,6 +22,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkDeviceHandler
     : public NetworkDeviceHandler {
  public:
   MockNetworkDeviceHandler();
+
+  MockNetworkDeviceHandler(const MockNetworkDeviceHandler&) = delete;
+  MockNetworkDeviceHandler& operator=(const MockNetworkDeviceHandler&) = delete;
+
   virtual ~MockNetworkDeviceHandler();
 
   MOCK_CONST_METHOD2(GetDeviceProperties,
@@ -69,15 +72,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkDeviceHandler
                     base::OnceClosure callback,
                     network_handler::ErrorCallback error_callback));
 
-  MOCK_METHOD1(SetCellularAllowRoaming, void(bool allow_roaming));
+  MOCK_METHOD2(SetCellularAllowRoaming,
+               void(bool allow_roaming, bool policy_allow_roaming));
 
   MOCK_METHOD1(SetMACAddressRandomizationEnabled, void(bool enabled));
 
   MOCK_METHOD1(SetUsbEthernetMacAddressSource,
                void(const std::string& enabled));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNetworkDeviceHandler);
 };
 
 }  // namespace chromeos

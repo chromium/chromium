@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_dom.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"

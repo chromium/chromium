@@ -69,7 +69,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
                              GLint,
                              bool,
                              bool,
-                             const IntPoint&,
+                             const gfx::Point&,
                              const IntRect&) {
     NOTREACHED();
     return false;
@@ -87,6 +87,12 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   }
   virtual void UpdateSyncToken(const gpu::SyncToken&) { NOTREACHED(); }
   virtual bool IsPremultiplied() const { return true; }
+
+  // Return resource format for shared image backing.
+  virtual SkColorType GetSkColorType() const {
+    NOTREACHED();
+    return kUnknown_SkColorType;
+  }
 
   // Methods have exactly the same implementation for all sub-classes
   bool OriginClean() const { return is_origin_clean_; }
@@ -109,9 +115,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
                   const cc::PaintFlags&,
                   const FloatRect&,
                   const FloatRect&,
-                  const SkSamplingOptions&,
-                  ImageClampingMode,
-                  RespectImageOrientationEnum,
+                  const ImageDrawOptions&,
                   const PaintImage&);
 
   virtual IntSize SizeInternal() const = 0;

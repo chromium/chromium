@@ -63,5 +63,6 @@ struct BootupConfig {
   array<AuthenticationToken> authentication_tokens;
   string locale;
   bool spoken_feedback_enabled;
+  bool dark_mode_enabled;
   bool hotword_enabled;
 };

@@ -29,21 +29,29 @@ class AccuracyTipSafeBrowsingClient
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
-  void ShutdownOnIOThread();
+  // Check status of URL with SafeBrowsingDatabaseManager. Will call
+  // |callback| with result on UI thread.
+  void CheckAccuracyStatus(const GURL& url, AccuracyCheckCallback callback);
 
+  // Cancels pending tasks in |sb_database|.
+  void Shutdown();
+
+ private:
   // Check status of URL with SafeBrowsingDatabaseManager. Will call
   // |callback| with result on UI thread.
   void CheckAccuracyStatusOnIOThread(const GURL& url,
                                      AccuracyCheckCallback callback);
+
   // Replies to |callback| with |status| and ensure that this happens on the
   // ui thread.
   void ReplyOnUIThread(AccuracyCheckCallback callback,
                        AccuracyTipStatus status);
 
+  void ShutdownOnIOThread();
+
   // SafeBrowsingDatabaseManager::Client:
   void OnCheckUrlForAccuracyTip(bool should_show_accuracy_tip) override;
 
- private:
   friend class base::RefCountedThreadSafe<AccuracyTipSafeBrowsingClient>;
   ~AccuracyTipSafeBrowsingClient() override;
 

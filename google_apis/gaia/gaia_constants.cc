@@ -63,9 +63,17 @@ const char kGoogleUserInfoEmail[] =
 const char kGoogleUserInfoProfile[] =
     "https://www.googleapis.com/auth/userinfo.profile";
 
+// OAuth2 scope for access to the parent approval widget.
+const char kParentApprovalOAuth2Scope[] =
+    "https://www.googleapis.com/auth/kids.parentapproval";
+
 // OAuth2 scope for access to the people API (read-only).
 const char kPeopleApiReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/peopleapi.readonly";
+
+// OAuth2 scope for access to the programmatic challenge API (read-only).
+const char kProgrammaticChallengeOAuth2Scope[] =
+    "https://www.googleapis.com/auth/accounts.programmaticchallenge";
 
 // OAuth2 scope for access to the Reauth flow.
 const char kAccountsReauthOAuth2Scope[] =
@@ -128,6 +136,10 @@ const char kDriveReadOnlyOAuth2Scope[] =
 const char kAssistantOAuth2Scope[] =
     "https://www.googleapis.com/auth/assistant-sdk-prototype";
 
+// OAuth2 scope for access to nearby devices (fast pair) APIs.
+const char kCloudPlatformProjectsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cloudplatformprojects";
+
 // OAuth2 scope for access to nearby sharing.
 const char kNearbyShareOAuth2Scope[] =
     "https://www.googleapis.com/auth/nearbysharing-pa";
@@ -144,6 +156,18 @@ const char kChromeWebstoreOAuth2Scope[] =
 // OAuth2 scope for access to Account Capabilities API.
 const char kAccountCapabilitiesOAuth2Scope[] =
     "https://www.googleapis.com/auth/account.capabilities";
+
+// OAuth2 scope for support content API.
+const char kSupportContentOAuth2Scope[] =
+    "https://www.googleapis.com/auth/supportcontent";
+
+// OAuth 2 scope for NTP Photos module API.
+const char kPhotosModuleOAuth2Scope[] =
+    "https://www.googleapis.com/auth/photos.firstparty.readonly";
+
+// OAuth 2 scope for NTP Photos module image API.
+const char kPhotosModuleImageOAuth2Scope[] =
+    "https://www.googleapis.com/auth/photos.image.readonly";
 
 // Used to mint uber auth tokens when needed.
 const char kGaiaSid[] = "sid";

@@ -65,8 +65,8 @@ NSString* const kSendTabToSelfActivityType =
 }
 
 - (void)performActivity {
-  [self.handler showSendTabToSelfUI];
   [self activityDidFinish:YES];
+  [self.handler showSendTabToSelfUI];
 }
 
 @end

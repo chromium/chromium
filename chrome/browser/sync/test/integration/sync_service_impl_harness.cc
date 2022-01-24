@@ -158,7 +158,7 @@ void ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
       std::move(resource_request), TRAFFIC_ANNOTATION_FOR_TESTS);
   simple_loader->AttachStringForUpload(request_to_send,
                                        "application/octet-stream");
-  simple_loader->SetTimeoutDuration(base::TimeDelta::FromSeconds(10));
+  simple_loader->SetTimeoutDuration(base::Seconds(10));
   content::SimpleURLLoaderTestHelper url_loader_helper;
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory, url_loader_helper.GetCallback());

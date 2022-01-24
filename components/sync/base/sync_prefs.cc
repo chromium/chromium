@@ -5,7 +5,6 @@
 #include "components/sync/base/sync_prefs.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -38,7 +37,7 @@ const char kSyncSuppressStart[] = "sync.suppress_start";
 
 }  // namespace
 
-SyncPrefObserver::~SyncPrefObserver() {}
+SyncPrefObserver::~SyncPrefObserver() = default;
 
 SyncPrefs::SyncPrefs(PrefService* pref_service) : pref_service_(pref_service) {
   DCHECK(pref_service);

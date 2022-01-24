@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
@@ -44,6 +44,10 @@ void DidGetGlobalUsage(bool* done,
 class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
  public:
   UsageTrackerTestQuotaClient() = default;
+
+  UsageTrackerTestQuotaClient(const UsageTrackerTestQuotaClient&) = delete;
+  UsageTrackerTestQuotaClient& operator=(const UsageTrackerTestQuotaClient&) =
+      delete;
 
   void GetStorageKeyUsage(const StorageKey& storage_key,
                           StorageType type,
@@ -110,8 +114,6 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
 
  private:
   std::map<StorageKey, int64_t> storage_key_usage_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageTrackerTestQuotaClient);
 };
 
 }  // namespace
@@ -124,6 +126,9 @@ class UsageTrackerTest : public testing::Test {
         usage_tracker_(GetQuotaClientMap(),
                        StorageType::kTemporary,
                        storage_policy_.get()) {}
+
+  UsageTrackerTest(const UsageTrackerTest&) = delete;
+  UsageTrackerTest& operator=(const UsageTrackerTest&) = delete;
 
   ~UsageTrackerTest() override = default;
 
@@ -212,8 +217,6 @@ class UsageTrackerTest : public testing::Test {
   scoped_refptr<MockSpecialStoragePolicy> storage_policy_;
   std::unique_ptr<UsageTrackerTestQuotaClient> quota_client_;
   UsageTracker usage_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageTrackerTest);
 };
 
 TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {

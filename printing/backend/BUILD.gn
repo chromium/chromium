@@ -32,6 +32,7 @@ component("backend") {
     "printing_restrictions.h",
   ]
 
+  public_configs = []
   configs += [ "//build/config/compiler:noshadowing" ]
   cflags = []
   defines = [ "IS_PRINT_BACKEND_IMPL" ]
@@ -68,7 +69,7 @@ component("backend") {
   }
 
   if (use_cups) {
-    configs += [ "//printing:cups" ]
+    public_configs += [ "//printing:cups" ]
 
     if (is_linux || is_chromeos) {
       # CUPS 1.6 deprecated the PPD APIs, but we will stay with this API
@@ -112,6 +113,8 @@ component("backend") {
       deps += [ ":ipp_handlers_generate" ]
 
       sources += [
+        "cups_connection_pool.cc",
+        "cups_connection_pool.h",
         "ipp_handler_map.h",
         "ipp_handlers.cc",
         "ipp_handlers.h",

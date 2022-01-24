@@ -9,9 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "base/supports_user_data.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
+
+class BrowserContextKeyedServiceFactory;
 
 namespace extensions {
 
@@ -21,7 +25,8 @@ namespace extensions {
 // base::Values; this is because these values could potentially be rather
 // large in size. This results in some slightly unwieldy function
 // signatures.
-class SessionStorageManager : public base::SupportsUserData::Data {
+class SessionStorageManager : public KeyedService,
+                              public ExtensionRegistryObserver {
  public:
   struct ValueChange {
     ValueChange(std::string key,
@@ -41,10 +46,18 @@ class SessionStorageManager : public base::SupportsUserData::Data {
     const base::Value* new_value;
   };
 
-  explicit SessionStorageManager(size_t quota_bytes_per_extension);
+  SessionStorageManager(size_t quota_bytes_per_extension,
+                        content::BrowserContext* browser_context);
   ~SessionStorageManager() override;
   SessionStorageManager(const SessionStorageManager& other) = delete;
   SessionStorageManager& operator=(SessionStorageManager& other) = delete;
+
+  // Retrieves the SessionStorageManager for a given `browser_context`.
+  static SessionStorageManager* GetForBrowserContext(
+      content::BrowserContext* browser_context);
+
+  // Retrieves the factory instance for the SessionStorageManager.
+  static BrowserContextKeyedServiceFactory* GetFactory();
 
   // Returns the value for the given `extension_id` and `key`, or null if none
   // exists.
@@ -62,22 +75,31 @@ class SessionStorageManager : public base::SupportsUserData::Data {
   std::map<std::string, const base::Value*> GetAll(
       const ExtensionId& extension_id) const;
 
-  // Stores multiple values of an extension id.
+  // Stores multiple `values` for an `extension_id`. If storing the values
+  // succeeds, returns true and populates `changes` with the inserted values. Is
+  // storing the values fails (e.g. due to going over quota), returns false and
+  // leaves `changes` untouched.
   bool Set(const ExtensionId& extension_id,
            std::map<std::string, base::Value> values,
            std::vector<ValueChange>& changes);
 
-  // Removes multiple keys for the given `extension_id`.
+  // Removes multiple `keys` for an `extension_id`. Populates `changes` with the
+  // removed values.
   void Remove(const ExtensionId& extension_id,
               const std::vector<std::string>& keys,
               std::vector<ValueChange>& changes);
 
-  // Removes a key for the given `extension_id`.
+  // Removes a `key` for an `extension_id`. Populates `changes` with the removed
+  // value.
   void Remove(const ExtensionId& extension_id,
               const std::string& key,
               std::vector<ValueChange>& changes);
 
-  // Clears the storage of the given `extension_id`.
+  // Clears all keys for an `extension_id`.
+  void Clear(const ExtensionId& extension_id);
+
+  // Clears all keys for an `extension_id`. Populates `changes` with the cleared
+  // values.
   void Clear(const ExtensionId& extension_id,
              std::vector<ValueChange>& changes);
 
@@ -127,6 +149,7 @@ class SessionStorageManager : public base::SupportsUserData::Data {
 
     // Clears the storage.
     void Clear(std::vector<ValueChange>& changes);
+    void Clear();
 
     // Gets the total amount of bytes being used by multiple keys and values.
     size_t GetBytesInUse(const std::vector<std::string>& keys) const;
@@ -151,6 +174,14 @@ class SessionStorageManager : public base::SupportsUserData::Data {
     // Map of value key to its session value.
     std::map<std::string, std::unique_ptr<SessionValue>> values_;
   };
+
+  // ExtensionRegistryObserver:
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const Extension* extension,
+                           UnloadedExtensionReason reason) override;
+
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   // Map of extension id to its storage.
   std::map<ExtensionId, std::unique_ptr<ExtensionStorage>> extensions_storage_;

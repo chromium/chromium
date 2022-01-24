@@ -29,6 +29,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicMac
   BluetoothRemoteGattCharacteristicMac(
       BluetoothRemoteGattServiceMac* gatt_service,
       CBCharacteristic* cb_characteristic);
+
+  BluetoothRemoteGattCharacteristicMac(
+      const BluetoothRemoteGattCharacteristicMac&) = delete;
+  BluetoothRemoteGattCharacteristicMac& operator=(
+      const BluetoothRemoteGattCharacteristicMac&) = delete;
+
   ~BluetoothRemoteGattCharacteristicMac() override;
 
   // Override BluetoothGattCharacteristic methods.
@@ -139,8 +145,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicMac
   PendingNotifyCallbacks unsubscribe_from_notification_callbacks_;
 
   base::WeakPtrFactory<BluetoothRemoteGattCharacteristicMac> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattCharacteristicMac);
 };
 
 // Stream operator for logging.

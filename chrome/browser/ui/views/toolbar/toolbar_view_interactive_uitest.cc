@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonUpdate) {
   // Navigate to title1.html. Back button should be enabled.
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(toolbar_button_provider->GetBackButton()->GetEnabled());
 
   // Delete old navigations. Back button will be disabled.

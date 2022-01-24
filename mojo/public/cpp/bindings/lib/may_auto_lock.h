@@ -23,6 +23,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoLock {
       lock_->Acquire();
   }
 
+  MayAutoLock(const MayAutoLock&) = delete;
+  MayAutoLock& operator=(const MayAutoLock&) = delete;
+
   ~MayAutoLock() {
     if (lock_) {
       lock_->AssertAcquired();
@@ -32,7 +35,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoLock {
 
  private:
   base::Lock* lock_;
-  DISALLOW_COPY_AND_ASSIGN(MayAutoLock);
 };
 
 // Similar to base::AutoUnlock, except that it does nothing if |lock| passed
@@ -47,6 +49,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoUnlock {
     }
   }
 
+  MayAutoUnlock(const MayAutoUnlock&) = delete;
+  MayAutoUnlock& operator=(const MayAutoUnlock&) = delete;
+
   ~MayAutoUnlock() {
     if (lock_)
       lock_->Acquire();
@@ -54,7 +59,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoUnlock {
 
  private:
   base::Lock* lock_;
-  DISALLOW_COPY_AND_ASSIGN(MayAutoUnlock);
 };
 
 }  // namespace internal

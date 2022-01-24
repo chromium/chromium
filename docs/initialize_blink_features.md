@@ -48,14 +48,14 @@ specified, if **not overridden** by field trial or command line switches
 default status):
 
 | |No status|`status:"test"`|`status:"experimental"`|`status:"stable"`|
-|-|---------|-----------------|--------------------------|-------------------|
+|---|---------|-----------------|--------------------------|-------------------|
 |`FEATURE_DISABLED_BY_DEFAULT`|Disabled everywhere|Blink feature is enabled for tests, or everywhere with `--enable-blink-test-features` [1]|Blink feature is enabled for tests, or everywhere with `--enable-experimental-web-platform-features` [1]|Blink feature is enabled everywhere [2]|
 |`FEATURE_ENABLED_BY_DEFAULT`|Enabled everywhere|Enabled everywhere|Enabled everywhere|Enabled everywhere|
 
 \[1]: `base::FeatureList::IsEnabled(features::kNewFeatureX)` is still
 false. These combinations are suitable for features there are fully implemented
 at blink side. Otherwise normally the blink feature should not have a status so
-that the Chromium feature can fully controll the feature.
+that the Chromium feature can fully control the feature.
 
 \[2]: This combination is counter-intuitive and should be avoided.
 

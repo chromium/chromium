@@ -298,11 +298,10 @@ GURL GetQueryUrl(const std::u16string& text_query,
   // QueryOptions uses exclusive `end_time` while the history.google.com API
   // uses it inclusively, so we subtract 1us during conversion.
 
-  base::Time end_time =
-      options.end_time.is_null()
-          ? base::Time::Now()
-          : std::min(options.end_time - base::TimeDelta::FromMicroseconds(1),
-                     base::Time::Now());
+  base::Time end_time = options.end_time.is_null()
+                            ? base::Time::Now()
+                            : std::min(options.end_time - base::Microseconds(1),
+                                       base::Time::Now());
   url = net::AppendQueryParameter(url, "max", ServerTimeString(end_time));
 
   if (!options.begin_time.is_null()) {

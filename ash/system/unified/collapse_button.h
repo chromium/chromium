@@ -15,6 +15,10 @@ namespace ash {
 class CollapseButton : public views::ImageButton {
  public:
   explicit CollapseButton(PressedCallback callback);
+
+  CollapseButton(const CollapseButton&) = delete;
+  CollapseButton& operator=(const CollapseButton&) = delete;
+
   ~CollapseButton() override;
 
   // Change the expanded state. The icon will change.
@@ -28,8 +32,6 @@ class CollapseButton : public views::ImageButton {
 
  private:
   double expanded_amount_ = 1.0;
-
-  DISALLOW_COPY_AND_ASSIGN(CollapseButton);
 };
 
 }  // namespace ash

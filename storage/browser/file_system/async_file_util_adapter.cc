@@ -13,8 +13,8 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "storage/browser/blob/shareable_file_reference.h"
@@ -35,6 +35,9 @@ class EnsureFileExistsHelper {
  public:
   EnsureFileExistsHelper() : error_(base::File::FILE_OK), created_(false) {}
 
+  EnsureFileExistsHelper(const EnsureFileExistsHelper&) = delete;
+  EnsureFileExistsHelper& operator=(const EnsureFileExistsHelper&) = delete;
+
   void RunWork(FileSystemFileUtil* file_util,
                FileSystemOperationContext* context,
                const FileSystemURL& url) {
@@ -48,12 +51,14 @@ class EnsureFileExistsHelper {
  private:
   base::File::Error error_;
   bool created_;
-  DISALLOW_COPY_AND_ASSIGN(EnsureFileExistsHelper);
 };
 
 class GetFileInfoHelper {
  public:
   GetFileInfoHelper() : error_(base::File::FILE_OK) {}
+
+  GetFileInfoHelper(const GetFileInfoHelper&) = delete;
+  GetFileInfoHelper& operator=(const GetFileInfoHelper&) = delete;
 
   void GetFileInfo(FileSystemFileUtil* file_util,
                    FileSystemOperationContext* context,
@@ -96,7 +101,6 @@ class GetFileInfoHelper {
   base::File::Info file_info_;
   base::FilePath platform_path_;
   ScopedFile scoped_file_;
-  DISALLOW_COPY_AND_ASSIGN(GetFileInfoHelper);
 };
 
 void ReadDirectoryHelper(FileSystemFileUtil* file_util,
@@ -283,7 +287,7 @@ void AsyncFileUtilAdapter::CopyFileLocal(
     std::unique_ptr<FileSystemOperationContext> context,
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     CopyFileProgressCallback progress_callback,
     StatusCallback callback) {
   // TODO(hidehiko): Support progress_callback.
@@ -292,7 +296,7 @@ void AsyncFileUtilAdapter::CopyFileLocal(
       context_ptr->task_runner(), FROM_HERE,
       base::BindOnce(&FileSystemFileUtil::CopyOrMoveFile,
                      Unretained(sync_file_util_.get()),
-                     base::Owned(context_ptr), src_url, dest_url, option,
+                     base::Owned(context_ptr), src_url, dest_url, options,
                      true /* copy */),
       std::move(callback));
   DCHECK(success);
@@ -302,14 +306,14 @@ void AsyncFileUtilAdapter::MoveFileLocal(
     std::unique_ptr<FileSystemOperationContext> context,
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     StatusCallback callback) {
   FileSystemOperationContext* context_ptr = context.release();
   const bool success = base::PostTaskAndReplyWithResult(
       context_ptr->task_runner(), FROM_HERE,
       base::BindOnce(&FileSystemFileUtil::CopyOrMoveFile,
                      Unretained(sync_file_util_.get()),
-                     base::Owned(context_ptr), src_url, dest_url, option,
+                     base::Owned(context_ptr), src_url, dest_url, options,
                      false /* copy */),
       std::move(callback));
   DCHECK(success);

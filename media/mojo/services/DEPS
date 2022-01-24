@@ -1,5 +1,5 @@
 specific_include_rules = {
-  "gpu_mojo_media_client_cros_ash\.cc": [
+  "gpu_mojo_media_client_cros\.cc": [
     "+chromeos/components/cdm_factory_daemon",
   ],
   "media_manifest\.cc": [

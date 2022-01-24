@@ -47,6 +47,10 @@ namespace {
 class BackdropEventHandler : public ui::EventHandler {
  public:
   BackdropEventHandler() = default;
+
+  BackdropEventHandler(const BackdropEventHandler&) = delete;
+  BackdropEventHandler& operator=(const BackdropEventHandler&) = delete;
+
   ~BackdropEventHandler() override = default;
 
   // ui::EventHandler:
@@ -72,9 +76,6 @@ class BackdropEventHandler : public ui::EventHandler {
       event->SetHandled();
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackdropEventHandler);
 };
 
 // -----------------------------------------------------------------------------

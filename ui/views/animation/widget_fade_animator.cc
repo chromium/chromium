@@ -94,7 +94,7 @@ void WidgetFadeAnimator::AnimationEnded(const gfx::Animation* animation) {
   fade_complete_callbacks_.Notify(this, animation_type);
 }
 
-void WidgetFadeAnimator::OnWidgetClosing(Widget* widget) {
+void WidgetFadeAnimator::OnWidgetDestroying(Widget* widget) {
   widget_observation_.Reset();
   fade_animation_.End();
   animation_type_ = FadeType::kNone;

@@ -89,12 +89,6 @@ class FakeWebStateDelegate : public WebStateDelegate {
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,
                       AuthCallback callback) override;
-  bool ShouldPreviewLink(WebState* source, const GURL& link_url) override;
-  UIViewController* GetPreviewingViewController(WebState* source,
-                                                const GURL& link_url) override;
-  void CommitPreviewingViewController(
-      WebState* source,
-      UIViewController* previewing_view_controller) override;
 
   // Allows popups requested by a page with |opener_url|.
   void allow_popups(const GURL& opener_url) {
@@ -151,37 +145,6 @@ class FakeWebStateDelegate : public WebStateDelegate {
     last_authentication_request_.reset();
   }
 
-  // Returns the last link URL passed to |ShouldPreviewLink| or
-  // |GetPreviewingViewController|.
-  GURL last_link_url() const { return last_link_url_; }
-
-  // Clears the last link URL passed to |ShouldPreviewLink| or
-  // |GetPreviewingViewController|.
-  void ClearLastLinkURL() { last_link_url_ = GURL(); }
-
-  // Sets the return value of |ShouldPreviewLink|.
-  void SetShouldPreviewLink(bool should_preview_link) {
-    should_preview_link_ = should_preview_link;
-  }
-
-  // Sets the return value of |GetPreviewingViewController|.
-  void SetPreviewingViewController(
-      UIViewController* previewing_view_controller) {
-    previewing_view_controller_ = previewing_view_controller;
-  }
-
-  // Returns the last previewing view controller passed to
-  // |CommitPreviewingViewController|.
-  UIViewController* last_previewing_view_controller() const {
-    return last_previewing_view_controller_;
-  }
-
-  // Clears the last previewing view controller passed to
-  // |CommitPreviewingViewController|.
-  void ClearLastPreviewingViewController() {
-    last_previewing_view_controller_ = nil;
-  }
-
   // Sets the return value of |ShouldAllowAppLaunching|.
   void SetShouldAllowAppLaunching(bool should_allow_apps) {
     should_allow_app_launching_ = should_allow_apps;
@@ -203,11 +166,7 @@ class FakeWebStateDelegate : public WebStateDelegate {
   bool get_java_script_dialog_presenter_called_ = false;
   FakeJavaScriptDialogPresenter java_script_dialog_presenter_;
   std::unique_ptr<FakeAuthenticationRequest> last_authentication_request_;
-  GURL last_link_url_;
-  bool should_preview_link_ = false;
   bool should_allow_app_launching_ = false;
-  UIViewController* previewing_view_controller_ = nil;
-  UIViewController* last_previewing_view_controller_ = nil;
 };
 
 }  // namespace web

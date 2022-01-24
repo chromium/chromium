@@ -187,6 +187,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE" desc="Dialog title to invite the user to sign-in on the web, related to IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL.">
         Sign In to Chrome
       </message>
+      <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_RESTRICTIONS_LABEL" desc="Dialog label to invite the user to sign-in on the web when account restrictions are enabled, related to IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE.">
+        Sign in to this site and Chrome. You can turn on sync later.
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_SWITCH" desc="Title of the default browser promotion modal. [iOS only]">
         Switch to Chrome
       </message>
@@ -226,20 +229,41 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE" desc="The title of the disconnect dialog [Length: 30em].">
         Sign out of Chrome?
       </message>
-     <message name="IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE" desc="The information text on the disconnect footer describing signout for non-managed accounts [Length: 400em].">
-       When you sign out, Chrome won't sync any new data to your Google Account. Data previously synced stays in the account.
+      <message name="IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE" desc="The information text on the disconnect footer describing signout for non-managed accounts [Length: 400em].">
+        When you sign out, Chrome won't sync any new data to your Google Account. Data previously synced stays in the account.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Force Sign In) [iOS only]">
+          Your organization requires you to sign in to use Chrome.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE" desc="Text to inform the user about the forced sign-in policy with a Learn More link that redirects to a page that gives more details. (Force Sign In) [iOS only]">
+        Your organization requires you to sign in to use Chrome. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SIGNOUT_DIALOG_TITLE" desc="The signout dialog title when forced sign-in is enabled. (Force Sign In) [iOS only]">
+        Sign out of Chrome?
       </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
-        You can still see all your bookmarks, history, passwords and other settings on this device. If you make changes, they won't sync to your Google Account.
+          You can still see all your bookmarks, history, passwords and other settings on this device. If you make changes, they won't sync to your Google Account.
       </message>
       <message name="IDS_IOS_FACE_ID_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's Face ID capabilities.">
         Chrome uses Face ID to ensure authorized access to your passwords.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE" desc="Subtitle of the Default Browser screen on First run page explaining the default browser feature's utility. [iOS only]">
+        You can now use Chrome anytime you tap links in messages, documents, and other apps.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP" desc="Text of the row indicating the third step of setting the default browser [iOS only]">
+        Select <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Chrome<ph name="END_BOLD">END_BOLD</ph>
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE" desc="Title of the screen suggesting to the user to use Chrome by default [iOS only]">
+        Use Chrome by Default
       </message>
       <message name="IDS_IOS_FIRST_RUN_LAUNCH_SCREEN_ENTERPRISE" desc="The text of the launch screen presented to the user on First Run when the browser is managed [iOS only]">
         Your organization is setting up Chrome...
       </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE" desc="Subtitle of the screen suggesting to the user to sign in">
         To get the most out of Chrome, sign in to Chrome with your Google Account
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_MANAGED" desc="Subtitle of the screen suggesting to the user to sign in when their Sign In is managed by their administrator.">
+          Sign in to Chrome
       </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE" desc="Title of the screen suggesting to the user to sign in">
         Make Chrome Your Own
@@ -248,7 +272,7 @@ locale.  The strings in this file are specific to iOS.
         Help improve Chrome by sending usage statistics and crash reports to Google
       </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_ENTERPRISE" desc="The title of the welcome screen presented to the user on First Run when the browser is managed [iOS only]">
-        Get more done with Chrome
+        Get More Done with Chrome
       </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE" desc="The subtitle of the welcome screen presented to the user on First Run [iOS only]">
         Get more done with a simple, secure and faster-than-ever Google Chrome
@@ -276,9 +300,6 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME" desc="Name of the Setting to protect Incognito tabs with biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
        Lock Incognito Tabs When You Close Chrome
-      </message>
-      <message name="IDS_IOS_LOCATION_MODAL_DESCRIPTION" desc="The description of the location permissions modal [Length: unlimited] [iOS only].">
-          If you allow Chrome to know your location, Chrome sends it to any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.
       </message>
       <message name="IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's location information while the app is in use [Length: unlimited] [iOS only].">
           Chrome shares your location with sites you allow.

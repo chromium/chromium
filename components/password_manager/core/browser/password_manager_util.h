@@ -11,9 +11,10 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace network {
@@ -35,6 +36,18 @@ class SyncService;
 class PrefService;
 
 namespace password_manager_util {
+
+// For credentials returned from PasswordStore::GetLogins, the enum specifies
+// the type of the match for the requested page. Higher value always means
+// weaker match.
+enum class GetLoginMatchType {
+  // Exact origin or Android credentials.
+  kExact,
+  // A web site affiliated with the requesting page.
+  kAffiliated,
+  // eTLD + 1 match.
+  kPSL,
+};
 
 // Update |credential| to reflect usage.
 void UpdateMetadataForUsage(password_manager::PasswordForm* credential);
@@ -86,7 +99,7 @@ void UserTriggeredManualGenerationFromContextMenu(
 // and it can also be null for some unittests.
 void RemoveUselessCredentials(
     password_manager::CredentialsCleanerRunner* cleaning_tasks_runner,
-    scoped_refptr<password_manager::PasswordStore> store,
+    scoped_refptr<password_manager::PasswordStoreInterface> store,
     PrefService* prefs,
     base::TimeDelta delay,
     base::RepeatingCallback<network::mojom::NetworkContext*()>
@@ -99,6 +112,10 @@ void RemoveUselessCredentials(
 // This assumes that the |form|'s host is a substring of the signon_realm.
 base::StringPiece GetSignonRealmWithProtocolExcluded(
     const password_manager::PasswordForm& form);
+
+// For credentials returned from PasswordStore::GetLogins, specifies the type of
+// the match for the requested page.
+GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form);
 
 // Given all non-blocklisted |non_federated_matches|, finds and populates
 // |non_federated_same_scheme|, |best_matches|, and |preferred_match|
@@ -140,6 +157,25 @@ const password_manager::PasswordForm* GetMatchForUpdating(
 // credentials), the original origin is kept.
 password_manager::PasswordForm MakeNormalizedBlocklistedForm(
     password_manager::PasswordFormDigest digest);
+
+// Helper which checks if biometric authentication is available.
+bool CanUseBiometricAuth(device_reauth::BiometricAuthenticator* authenticator,
+                         device_reauth::BiometricAuthRequester requester);
+
+// Strips any authentication data, as well as query and ref portions of URL.
+GURL StripAuthAndParams(const GURL& gurl);
+
+// Helper which checks for scheme in the |url|. If not present, adds "https://"
+// by default. For ip-addresses, scheme "http://" is used.
+GURL ConstructGURLWithScheme(const std::string& url);
+
+// Returns whether |url| has valid format and either an HTTP or HTTPS scheme.
+bool IsValidPasswordURL(const GURL& url);
+
+// TODO(crbug.com/1261752): Deduplicate GetSignonRealm implementations.
+// Returns the value of PasswordForm::signon_realm for an HTML form with the
+// origin |url|.
+std::string GetSignonRealm(const GURL& url);
 
 }  // namespace password_manager_util
 

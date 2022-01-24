@@ -14,7 +14,6 @@
 #include "ash/components/audio/audio_device.h"
 #include "ash/components/audio/cras_audio_handler.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
@@ -25,6 +24,10 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
  public:
   AudioManagerChromeOS(std::unique_ptr<AudioThread> audio_thread,
                    AudioLogFactory* audio_log_factory);
+
+  AudioManagerChromeOS(const AudioManagerChromeOS&) = delete;
+  AudioManagerChromeOS& operator=(const AudioManagerChromeOS&) = delete;
+
   ~AudioManagerChromeOS() override;
 
   // AudioManager implementation.
@@ -108,8 +111,6 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
   base::WeakPtr<AudioManagerChromeOS> weak_this_;
 
   base::WeakPtrFactory<AudioManagerChromeOS> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerChromeOS);
 };
 
 }  // namespace media

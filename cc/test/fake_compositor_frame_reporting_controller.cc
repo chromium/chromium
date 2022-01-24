@@ -10,7 +10,7 @@
 #include "components/viz/common/frame_timing_details.h"
 
 namespace cc {
-base::TimeDelta INTERVAL = base::TimeDelta::FromMilliseconds(16);
+base::TimeDelta INTERVAL = base::Milliseconds(16);
 
 FakeCompositorFrameReportingController::FakeCompositorFrameReportingController()
     : CompositorFrameReportingController(/*should_report_metrics=*/true,

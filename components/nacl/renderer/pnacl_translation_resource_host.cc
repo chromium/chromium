@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/nacl/common/nacl_host_messages.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/shared_impl/ppapi_globals.h"

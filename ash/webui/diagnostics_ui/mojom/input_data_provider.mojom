@@ -30,6 +30,12 @@ enum MechanicalLayout {
   kJis,
 };
 
+enum NumberPadPresence {
+  kUnknown,
+  kPresent,
+  kNotPresent,
+};
+
 // Describes a connected keyboard.
 struct KeyboardInfo {
   // The number of the keyboard's /dev/input/event* node.
@@ -39,6 +45,18 @@ struct KeyboardInfo {
   PhysicalLayout physical_layout;
   MechanicalLayout mechanical_layout;
   bool has_assistant_key;
+  NumberPadPresence number_pad_present;
+};
+
+// Describes the glyphs that appear on a single key.
+struct KeyGlyphSet {
+  // Glyph if pressed without modifiers. Displayed in the centre or on the lower
+  // half of the key.
+  string main_glyph;
+
+  // Glyph if pressed with Shift. Displayed in the upper half. Null if it's just
+  // the main glyph in upper-case.
+  string? shift_glyph;
 };
 
 enum TouchDeviceType {
@@ -80,4 +98,12 @@ interface InputDataProvider {
      array<TouchDeviceInfo> touch_devices);
   // Registers an observer of connected input devices.
   ObserveConnectedDevices(pending_remote<ConnectedDevicesObserver> observer);
+
+  // Returns the visual layout for the keyboard with the given ID. For external
+  // keyboards where we can't be sure of their layout, this will default to the
+  // system layout.
+  //
+  // The layout is represented as a map from the evdev code of a key to a
+  // KeyGlyphSet describing its glyphs.
+  GetKeyboardVisualLayout(uint32 id) => (map<uint32, KeyGlyphSet> layout);
 };

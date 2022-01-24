@@ -6,7 +6,7 @@ This directory contains a UI library for Chrome OS based on
 This is currently in a prototyping stage. Contact cros-ui-componentization@google.com for more details.
 
 An example can be seen at
-`chromeos/components/sample_system_web_app_ui/resources/component_playground.html`
+`ash/webui/sample_system_web_app_ui/resources/component_playground.html`
 which is served in the Sample System Web App.
 
 ## Build Structure

@@ -751,13 +751,13 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceDeleting(
                                    site_instance->GetId());
 }
 
-void ChromeContentBrowserClientExtensionsPart::OverrideWebkitPrefs(
-    content::WebContents* web_contents,
-    WebPreferences* web_prefs) {
+bool ChromeContentBrowserClientExtensionsPart::
+    OverrideWebPreferencesAfterNavigation(WebContents* web_contents,
+                                          WebPreferences* web_prefs) {
   const ExtensionRegistry* registry =
       ExtensionRegistry::Get(web_contents->GetBrowserContext());
   if (!registry)
-    return;
+    return false;
 
   // Note: it's not possible for kExtensionsScheme to change during the lifetime
   // of the process.
@@ -769,11 +769,18 @@ void ChromeContentBrowserClientExtensionsPart::OverrideWebkitPrefs(
   const GURL& site_url =
       web_contents->GetMainFrame()->GetSiteInstance()->GetSiteURL();
   if (!site_url.SchemeIs(kExtensionScheme))
-    return;
+    return false;
 
   const Extension* extension =
       registry->enabled_extensions().GetByID(site_url.host());
   extension_webkit_preferences::SetPreferences(extension, web_prefs);
+  return true;
+}
+
+void ChromeContentBrowserClientExtensionsPart::OverrideWebkitPrefs(
+    WebContents* web_contents,
+    WebPreferences* web_prefs) {
+  OverrideWebPreferencesAfterNavigation(web_contents, web_prefs);
 }
 
 void ChromeContentBrowserClientExtensionsPart::BrowserURLHandlerCreated(

@@ -23,6 +23,10 @@ class CastSystemGestureEventHandler : public ui::EventHandler {
       CastSystemGestureDispatcher* dispatcher,
       aura::Window* root_window);
 
+  CastSystemGestureEventHandler(const CastSystemGestureEventHandler&) = delete;
+  CastSystemGestureEventHandler& operator=(
+      const CastSystemGestureEventHandler&) = delete;
+
   ~CastSystemGestureEventHandler() override;
 
   // ui::EventHandler implementation.
@@ -32,8 +36,6 @@ class CastSystemGestureEventHandler : public ui::EventHandler {
  private:
   CastSystemGestureDispatcher* dispatcher_;
   aura::Window* root_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastSystemGestureEventHandler);
 };
 
 }  // namespace chromecast

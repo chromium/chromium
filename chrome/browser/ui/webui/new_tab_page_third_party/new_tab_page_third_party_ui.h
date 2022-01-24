@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -33,6 +32,10 @@ class NewTabPageThirdPartyUI
       public most_visited::mojom::MostVisitedPageHandlerFactory {
  public:
   explicit NewTabPageThirdPartyUI(content::WebUI* web_ui);
+
+  NewTabPageThirdPartyUI(const NewTabPageThirdPartyUI&) = delete;
+  NewTabPageThirdPartyUI& operator=(const NewTabPageThirdPartyUI&) = delete;
+
   ~NewTabPageThirdPartyUI() override;
 
   static bool IsNewTabPageOrigin(const GURL& url);
@@ -76,8 +79,6 @@ class NewTabPageThirdPartyUI
   base::Time navigation_start_time_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabPageThirdPartyUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_THIRD_PARTY_NEW_TAB_PAGE_THIRD_PARTY_UI_H_

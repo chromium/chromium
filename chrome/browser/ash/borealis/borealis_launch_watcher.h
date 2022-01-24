@@ -45,7 +45,7 @@ class BorealisLaunchWatcher : public chromeos::CiceroneClient::Observer {
 
   std::string owner_id_;
   std::string vm_name_;
-  base::TimeDelta timeout_ = base::TimeDelta::FromSeconds(30);
+  base::TimeDelta timeout_ = base::Seconds(30);
   absl::optional<vm_tools::cicerone::ContainerStartedSignal>
       container_started_signal_;
   base::queue<OnLaunchCallback> callback_queue_;

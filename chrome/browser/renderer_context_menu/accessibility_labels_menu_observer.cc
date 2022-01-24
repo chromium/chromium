@@ -26,7 +26,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -107,10 +106,6 @@ void AccessibilityLabelsMenuObserver::ExecuteCommand(int command_id) {
 }
 
 bool AccessibilityLabelsMenuObserver::ShouldShowLabelsItem() {
-  // Hidden behind a feature flag.
-  if (!base::FeatureList::IsEnabled(features::kExperimentalAccessibilityLabels))
-    return false;
-
   // Disabled by policy.
   Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
   if (!profile->GetPrefs()->GetBoolean(

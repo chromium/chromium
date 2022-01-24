@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_USERSPACE_SWAP_POLICY_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_USERSPACE_SWAP_POLICY_CHROMEOS_H_
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -33,6 +32,10 @@ class UserspaceSwapPolicy : public GraphOwned,
                             public SystemNode::ObserverDefaultImpl {
  public:
   UserspaceSwapPolicy();
+
+  UserspaceSwapPolicy(const UserspaceSwapPolicy&) = delete;
+  UserspaceSwapPolicy& operator=(const UserspaceSwapPolicy&) = delete;
+
   ~UserspaceSwapPolicy() override;
 
   // GraphOwned implementation:
@@ -110,7 +113,6 @@ class UserspaceSwapPolicy : public GraphOwned,
       std::make_unique<base::RepeatingTimer>();
 
   base::WeakPtrFactory<UserspaceSwapPolicy> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UserspaceSwapPolicy);
 };
 
 }  // namespace policies

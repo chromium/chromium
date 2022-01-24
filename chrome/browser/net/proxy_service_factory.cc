@@ -20,11 +20,16 @@
 #include "chromeos/network/proxy/proxy_config_service_impl.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/net/proxy_config_service_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using content::BrowserThread;
 
 // static
 std::unique_ptr<net::ProxyConfigService>
-ProxyServiceFactory::CreateProxyConfigService(PrefProxyConfigTracker* tracker) {
+ProxyServiceFactory::CreateProxyConfigService(PrefProxyConfigTracker* tracker,
+                                              Profile* profile) {
   // The linux gsettings-based proxy settings getter relies on being initialized
   // from the UI thread. The system proxy config service could also get created
   // without full browser process by launching service manager alone.
@@ -33,8 +38,17 @@ ProxyServiceFactory::CreateProxyConfigService(PrefProxyConfigTracker* tracker) {
 
   std::unique_ptr<net::ProxyConfigService> base_service;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS, base service is NULL; chromeos::ProxyConfigServiceImpl
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The base service for Lacros observes proxy updates coming from Ash-Chrome
+  // via Mojo. Only created for `tracker` instances associated to a profile;
+  // for`tracker` instances associated to local_state the base_service is
+  // nullptr.
+  if (profile) {
+    base_service =
+        std::make_unique<chromeos::ProxyConfigServiceLacros>(profile);
+  }
+#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Ash-Chrome, base service is NULL; chromeos::ProxyConfigServiceImpl
   // determines the effective proxy config to take effect in the network layer,
   // be it from prefs or system (which is network shill on chromeos).
 

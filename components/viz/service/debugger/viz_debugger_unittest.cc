@@ -396,6 +396,40 @@ TEST_F(VisualDebuggerTest, TestDebugFlagAnnoAndFunction) {
   EXPECT_FALSE(FlagFunctionTestEnable());
 }
 
+// This tests makes sure that expensive string logging has no cost unless it is
+// actively being filtered.
+TEST_F(VisualDebuggerTest, NonFilterActiveNoCost) {
+  GetInternal()->ForceEnabled();
+  const char* kStrA = "anno_A";
+  const char* kStrB = "anno_B";
+  // These integers are mutated on a function invocation.
+  int count_a = 0;
+  int count_b = 0;
+
+  auto get_a_string = [&count_a, &kStrA]() {
+    count_a++;
+    return std::string(kStrA);
+  };
+  auto get_b_string = [&count_b, &kStrB]() {
+    count_b++;
+    return std::string(kStrB);
+  };
+
+  // Filter on "anno_A" which should call 'get_a_string'.
+  SetFilter({TestFilter({kStrA})});
+  DBG_DRAW_TEXT(kStrA, gfx::Point(), get_a_string());
+  DBG_DRAW_TEXT(kStrB, gfx::Point(), get_b_string());
+  EXPECT_EQ(1, count_a);
+  EXPECT_EQ(0, count_b);
+
+  // Filter on "anno_B" which should call 'get_b_string'.
+  SetFilter({TestFilter({kStrB})});
+  DBG_DRAW_TEXT(kStrA, gfx::Point(), get_a_string());
+  DBG_DRAW_TEXT(kStrB, gfx::Point(), get_b_string());
+  EXPECT_EQ(1, count_a);
+  EXPECT_EQ(1, count_b);
+}
+
 }  // namespace
 }  // namespace viz
 #else  // VIZ_DEBUGGER_IS_ON()

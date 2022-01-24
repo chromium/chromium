@@ -10,7 +10,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
-import org.chromium.chrome.browser.feed.webfeed.R;
+import org.chromium.chrome.browser.feed.R;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;

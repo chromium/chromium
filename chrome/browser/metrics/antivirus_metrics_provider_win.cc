@@ -46,7 +46,7 @@ void AntiVirusMetricsProvider::ProvideSystemProfileMetrics(
 void AntiVirusMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
   if (!remote_util_win_) {
     remote_util_win_ = LaunchUtilWinServiceInstance();
-    remote_util_win_.reset_on_idle_timeout(base::TimeDelta::FromSeconds(5));
+    remote_util_win_.reset_on_idle_timeout(base::Seconds(5));
   }
 
   // Intentionally don't handle connection errors as not reporting this metric

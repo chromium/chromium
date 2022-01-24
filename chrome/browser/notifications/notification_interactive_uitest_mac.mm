@@ -19,7 +19,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPopupShouldActivateApp) {
   EXPECT_TRUE(embedded_test_server()->Start());
 
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   EXPECT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
       browser()->window()->GetNativeWindow()));

@@ -32,6 +32,11 @@ class OfflinePageInfoBarDelegate
                      const GURL& page_to_download,
                      bool exists_duplicate_request,
                      content::WebContents* web_contents);
+
+  OfflinePageInfoBarDelegate(const OfflinePageInfoBarDelegate&) = delete;
+  OfflinePageInfoBarDelegate& operator=(const OfflinePageInfoBarDelegate&) =
+      delete;
+
   ~OfflinePageInfoBarDelegate() override;
 
  private:
@@ -49,6 +54,7 @@ class OfflinePageInfoBarDelegate
   bool IsOfflinePage() const override;
   std::string GetPageURL() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
+  void InfoBarDismissed() override;
   bool DuplicateRequestExists() const override;
   OfflinePageInfoBarDelegate* AsOfflinePageInfoBarDelegate() override;
 
@@ -58,8 +64,6 @@ class OfflinePageInfoBarDelegate
   std::string page_name_;
   GURL page_to_download_;
   bool duplicate_request_exists_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageInfoBarDelegate);
 };
 
 }  // namespace offline_pages

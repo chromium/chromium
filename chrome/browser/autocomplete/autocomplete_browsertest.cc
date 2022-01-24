@@ -35,7 +35,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/notification_service.h"
@@ -71,8 +71,10 @@ class AutocompleteBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   AutocompleteController* GetAutocompleteController() const {
-    return GetLocationBar()->GetOmniboxView()->model()->popup_model()->
-        autocomplete_controller();
+    return GetLocationBar()
+        ->GetOmniboxView()
+        ->model()
+        ->autocomplete_controller();
   }
 
   void FocusSearchCheckPreconditions() const {

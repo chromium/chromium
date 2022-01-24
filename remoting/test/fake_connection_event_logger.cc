@@ -123,6 +123,10 @@ class MessageCounter {
   MessageCounter(const char* name, const char* unit);
   explicit MessageCounter(const char* name);
 
+  // Copy or assign the start_time_ of a MessageCounter is senseless.
+  MessageCounter(const MessageCounter&) = delete;
+  MessageCounter& operator=(const MessageCounter&) = delete;
+
   int message_count() const { return *count_; }
   int64_t message_size() const { return *size_; }
   int last_message_size() const { return last_size_; }
@@ -141,9 +145,6 @@ class MessageCounter {
   NoBarrierAtomicInt64 size_;
   int last_size_ = 0;
   base::Time start_time_;
-
-  // Copy or assign the start_time_ of a MessageCounter is senseless.
-  DISALLOW_COPY_AND_ASSIGN(MessageCounter);
 };
 
 MessageCounter::MessageCounter(const char* name, const char* unit)

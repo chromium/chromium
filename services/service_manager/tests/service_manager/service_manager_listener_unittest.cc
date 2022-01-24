@@ -34,6 +34,10 @@ class TestListener : public mojom::ServiceManagerListener {
   explicit TestListener(
       mojo::PendingReceiver<mojom::ServiceManagerListener> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestListener(const TestListener&) = delete;
+  TestListener& operator=(const TestListener&) = delete;
+
   ~TestListener() override = default;
 
   void WaitForInit() { wait_for_init_loop_.Run(); }
@@ -71,14 +75,16 @@ class TestListener : public mojom::ServiceManagerListener {
   absl::optional<base::RunLoop> wait_for_start_loop_;
   Identity* wait_for_start_identity_ = nullptr;
   uint32_t* wait_for_start_pid_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestListener);
 };
 
 class TestTargetService : public Service {
  public:
   explicit TestTargetService(mojo::PendingReceiver<mojom::Service> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestTargetService(const TestTargetService&) = delete;
+  TestTargetService& operator=(const TestTargetService&) = delete;
+
   ~TestTargetService() override = default;
 
   Connector* connector() { return receiver_.GetConnector(); }
@@ -98,8 +104,6 @@ class TestTargetService : public Service {
 
   ServiceReceiver receiver_;
   base::RunLoop wait_for_disconnect_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTargetService);
 };
 
 class ServiceManagerListenerTest : public testing::Test, public Service {
@@ -107,6 +111,11 @@ class ServiceManagerListenerTest : public testing::Test, public Service {
   ServiceManagerListenerTest()
       : service_manager_(GetTestManifests(),
                          ServiceManager::ServiceExecutablePolicy::kSupported) {}
+
+  ServiceManagerListenerTest(const ServiceManagerListenerTest&) = delete;
+  ServiceManagerListenerTest& operator=(const ServiceManagerListenerTest&) =
+      delete;
+
   ~ServiceManagerListenerTest() override = default;
 
   Connector* connector() { return service_receiver_.GetConnector(); }
@@ -149,8 +158,6 @@ class ServiceManagerListenerTest : public testing::Test, public Service {
   ServiceManager service_manager_;
   ServiceReceiver service_receiver_{this};
   std::unique_ptr<TestListener> listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceManagerListenerTest);
 };
 
 TEST_F(ServiceManagerListenerTest, InstancesHaveUniqueIdentity) {

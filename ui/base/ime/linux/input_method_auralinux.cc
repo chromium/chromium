@@ -15,8 +15,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kIgnoreCommitsDuration =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kIgnoreCommitsDuration = base::Milliseconds(100);
 
 bool IsEventFromVK(const ui::KeyEvent& event) {
   if (event.HasNativeEvent())
@@ -70,20 +69,20 @@ LinuxInputMethodContext* InputMethodAuraLinux::GetContextForTesting(
 ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     ui::KeyEvent* event) {
   DCHECK(event->type() == ET_KEY_PRESSED || event->type() == ET_KEY_RELEASED);
-  // If there's pending key event, i.e. a key event which is expected to
+  // If there's pending deadkey event, i.e. a key event which is expected to
   // trigger input method actions (like OnCommit, OnPreedit* invocation)
   // and to be dispatched from there, but not yet, dispatch the pending event
   // first.
-  // Practically, this happens with dead-keys. Dead keys are considered
-  // to be consumed by IME. Actually, it updates input method's internal
-  // state. However, it makes no input method actions, so the event won't be
-  // dispatched without this handling.
-  // Note that this is the earliest timing to find the pending event needs
-  // to be dispatched. It is because InputMethodAuraLinux cannot find whether
-  // input method actions will be followed or not on holding the event.
+  // Dead keys are considered to be consumed by IME. Actually, it updates
+  // input method's internal state. However, it makes no input method actions,
+  // so the event won't be dispatched without this handling.
+  // Note that this is the earliest timing to find the pending deadkey event
+  // needs to be dispatched. It is because InputMethodAuraLinux cannot find
+  // whether input method actions will be followed or not on holding the event.
   //
-  // There's exception in the case. Some input framework sends key events
-  // twice to fill the gap of synchronous API v.s. asynchronous operations.
+  // Note that we do not apply this for non-deadkey events intentionally.
+  // It is because some input framework sends key events twice to fill the gap
+  // of synchronous API v.s. asynchronous operations.
   // Specifically:
   // - The first key event is passed to input method via |context_| below.
   // - Inside the function, it triggers asynchronous input method operation.
@@ -100,15 +99,32 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   // To avoid dispatching twice, do not dispatch it here. Following code
   // will handle the second (i.e. fallback) key event, including event
   // dispatching.
+  // Importantly, the second key press event may be arrived after the first
+  // key release event, because everything is working in asynchronous ways.
   if (ime_filtered_key_event_.has_value() &&
-      !IsSameKeyEvent(*ime_filtered_key_event_, *event)) {
+      !IsSameKeyEvent(*ime_filtered_key_event_, *event) &&
+      ime_filtered_key_event_->GetDomKey().IsDeadKey()) {
     std::ignore = DispatchKeyEventPostIME(&*ime_filtered_key_event_);
   }
   ime_filtered_key_event_.reset();
 
-  // If no text input client, do nothing.
-  if (!GetTextInputClient())
+  LinuxInputMethodContext* context =
+      text_input_type_ != TEXT_INPUT_TYPE_NONE &&
+              text_input_type_ != TEXT_INPUT_TYPE_PASSWORD
+          ? context_.get()
+          : context_simple_.get();
+
+  // If no text input client, dispatch immediately.
+  if (!GetTextInputClient()) {
+    // For Wayland, wl_keyboard::key will be sent following the peek key event
+    // if the event is not consumed by IME, so peek key events should not be
+    // dispatched. crbug.com/1225747
+    if (context->IsPeekKeyEvent(*event)) {
+      ime_filtered_key_event_ = std::move(*event);
+      return ui::EventDispatchDetails();
+    }
     return DispatchKeyEventPostIME(event);
+  }
 
   if (IsEventFromVK(*event)) {
     // Faked key events that are sent from input.ime.sendKeyEvents.
@@ -130,11 +146,6 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     suppress_non_key_input_until_ = base::TimeTicks::UnixEpoch();
     composition_changed_ = false;
     result_text_.clear();
-    LinuxInputMethodContext* context =
-        text_input_type_ != TEXT_INPUT_TYPE_NONE &&
-                text_input_type_ != TEXT_INPUT_TYPE_PASSWORD
-            ? context_.get()
-            : context_simple_.get();
     base::AutoReset<bool> flipper(&is_sync_mode_, true);
     filtered = context->DispatchKeyEvent(*event);
   }
@@ -444,12 +455,11 @@ void InputMethodAuraLinux::OnCommit(const std::u16string& text) {
   }
 }
 
-void InputMethodAuraLinux::OnDeleteSurroundingText(int32_t index,
-                                                   uint32_t length) {
-  if (GetTextInputClient() && composition_.text.empty()) {
-    uint32_t before = index >= 0 ? 0U : static_cast<uint32_t>(-1 * index);
-    GetTextInputClient()->ExtendSelectionAndDelete(before, length - before);
-  }
+void InputMethodAuraLinux::OnDeleteSurroundingText(size_t before,
+                                                   size_t after) {
+  auto* client = GetTextInputClient();
+  if (client && composition_.text.empty())
+    client->ExtendSelectionAndDelete(before, after);
 }
 
 void InputMethodAuraLinux::OnPreeditChanged(
@@ -461,6 +471,15 @@ void InputMethodAuraLinux::OnPreeditEnd() {
   TextInputClient* client = GetTextInputClient();
   OnPreeditUpdate(CompositionText(),
                   !is_sync_mode_ && client && client->HasCompositionText());
+}
+
+void InputMethodAuraLinux::OnSetPreeditRegion(
+    const gfx::Range& range,
+    const std::vector<ImeTextSpan>& spans) {
+  auto* text_input_client = GetTextInputClient();
+  if (!text_input_client)
+    return;
+  text_input_client->SetCompositionFromExistingText(range, spans);
 }
 
 // Overridden from InputMethodBase.

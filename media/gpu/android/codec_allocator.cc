@@ -9,13 +9,12 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/android/build_info.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -101,11 +100,7 @@ void CodecAllocator::CreateMediaCodecAsync(
 
   // If we're still allowed to pick any type we want, then limit to software for
   // low resolution.  https://crbug.com/1166833
-  // Software decoders on Lollipop refuse to decode media that played
-  // everywhere else, so let's not force it.   https://crbug.com/1175322
-  bool lollipop = base::android::BuildInfo::GetInstance()->sdk_int() <
-                  base::android::SDK_VERSION_MARSHMALLOW;
-  if (!lollipop && codec_config->codec_type == CodecType::kAny &&
+  if (codec_config->codec_type == CodecType::kAny &&
       (codec_config->initial_expected_coded_size.width() <
            kMinHardwareResolution.width() ||
        codec_config->initial_expected_coded_size.height() <
@@ -193,8 +188,7 @@ bool CodecAllocator::IsPrimaryTaskRunnerLikelyHung() const {
   // typically take 100-200ms on a N5, so 800ms is expected to very rarely
   // result in false positives. Also, false positives have low impact because we
   // resume using the thread when the task completes.
-  constexpr base::TimeDelta kHungTaskDetectionTimeout =
-      base::TimeDelta::FromMilliseconds(800);
+  constexpr base::TimeDelta kHungTaskDetectionTimeout = base::Milliseconds(800);
 
   return !pending_operations_.empty() &&
          tick_clock_->NowTicks() - *pending_operations_.begin() >

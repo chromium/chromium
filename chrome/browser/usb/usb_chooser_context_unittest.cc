@@ -71,8 +71,7 @@ class UsbChooserContextTest : public testing::Test {
 
     // Call GetDevices once to make sure the connection with DeviceManager has
     // been set up, so that it can be notified when device is removed.
-    chooser_context->GetDevices(
-        base::DoNothing::Once<std::vector<UsbDeviceInfoPtr>>());
+    chooser_context->GetDevices(base::DoNothing());
     base::RunLoop().RunUntilIdle();
 
     // Add observers

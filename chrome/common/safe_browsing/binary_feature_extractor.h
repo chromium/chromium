@@ -14,7 +14,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
@@ -37,6 +36,9 @@ class BinaryFeatureExtractor
   static const ExtractHeadersOption kOmitExports = 1U << 0;
 
   BinaryFeatureExtractor();
+
+  BinaryFeatureExtractor(const BinaryFeatureExtractor&) = delete;
+  BinaryFeatureExtractor& operator=(const BinaryFeatureExtractor&) = delete;
 
   // Fills in the DownloadRequest_SignatureInfo for the given file path.
   // This method may be called on any thread.
@@ -78,9 +80,6 @@ class BinaryFeatureExtractor
  protected:
   friend class base::RefCountedThreadSafe<BinaryFeatureExtractor>;
   virtual ~BinaryFeatureExtractor();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BinaryFeatureExtractor);
 };
 }  // namespace safe_browsing
 

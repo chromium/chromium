@@ -141,15 +141,6 @@ TEST(KeyConverter, WebDriverSpecialNonCharKey) {
   CheckEventsReleaseModifiers(keys, key_events);
 }
 
-TEST(KeyConverter, FrenchKeyOnEnglishLayout) {
-  ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
-  KeyEventBuilder builder;
-  std::string e_acute = base::WideToUTF8(L"\u00E9");
-  std::vector<KeyEvent> key_events;
-  builder.SetText(e_acute, e_acute)->Generate(&key_events);
-  CheckEventsReleaseModifiers(u"\u00E9", key_events);
-}
-
 #if defined(OS_WIN)
 TEST(KeyConverter, NeedsCtrlAndAlt) {
   KeyEventBuilder ctrl_builder;
@@ -253,34 +244,6 @@ TEST(KeyConverter, ToggleModifiers) {
       builder.SetType(kKeyUpEventType)->SetModifiers(0)->Build());
   std::u16string keys = u"\uE008\uE008\uE009\uE009\uE00A\uE00A\uE03D\uE03D";
   CheckEventsReleaseModifiers(keys, key_events);
-}
-
-TEST(KeyConverter, AllShorthandKeys) {
-  ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
-  KeyEventBuilder builder;
-  std::vector<KeyEvent> key_events;
-  builder.SetKeyCode(ui::VKEY_RETURN)
-      ->SetText("\r", "\r")
-      ->Generate(&key_events);
-  builder.Generate(&key_events);
-  builder.SetKeyCode(ui::VKEY_TAB);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  builder.SetText("\t", "\t")->Generate(&key_events);
-#else
-  builder.SetText(std::string(), std::string());
-  key_events.push_back(builder.SetType(kRawKeyDownEventType)->Build());
-  key_events.push_back(builder.SetType(kKeyUpEventType)->Build());
-#endif
-  builder.SetKeyCode(ui::VKEY_BACK);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  builder.SetText("\b", "\b")->Generate(&key_events);
-#else
-  builder.SetText(std::string(), std::string());
-  key_events.push_back(builder.SetType(kRawKeyDownEventType)->Build());
-  key_events.push_back(builder.SetType(kKeyUpEventType)->Build());
-#endif
-  builder.SetKeyCode(ui::VKEY_SPACE)->SetText(" ", " ")->Generate(&key_events);
-  CheckEventsReleaseModifiers("\n\r\n\t\b ", key_events);
 }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

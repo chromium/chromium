@@ -155,7 +155,7 @@ class SessionLogHandlerTest : public testing::Test {
         temp_dir_.GetPath().AppendASCII(kRoutineLogFileName);
     auto telemetry_log = std::make_unique<TelemetryLog>();
     auto routine_log = std::make_unique<RoutineLog>(routine_log_path);
-    auto networking_log = std::make_unique<NetworkingLog>();
+    auto networking_log = std::make_unique<NetworkingLog>(temp_dir_.GetPath());
     telemetry_log_ = telemetry_log.get();
     routine_log_ = routine_log.get();
     networking_log_ = networking_log.get();
@@ -183,7 +183,9 @@ class SessionLogHandlerTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   content::TestWebUI web_ui_;
   std::unique_ptr<diagnostics::SessionLogHandler> session_log_handler_;
   TelemetryLog* telemetry_log_;
@@ -194,8 +196,10 @@ class SessionLogHandlerTest : public testing::Test {
 };
 
 TEST_F(SessionLogHandlerTest, SaveSessionLog) {
+  base::RunLoop run_loop;
   // Populate routine log
   routine_log_->LogRoutineStarted(mojom::RoutineType::kCpuStress);
+  task_environment_.RunUntilIdle();
 
   // Populate telemetry log
   const std::string expected_board_name = "board_name";
@@ -220,16 +224,15 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
   base::ListValue args;
   args.Append(kHandlerFunctionName);
-  base::RunLoop run_loop;
   session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
   web_ui_.HandleReceivedMessage("saveSessionLog", &args);
   run_loop.Run();
-  const std::string expected_telemetry_log_header = "=== Telemetry Log ===";
+  const std::string expected_system_log_header = "=== System ===";
   const std::string expected_system_info_section_name = "--- System Info ---";
   const std::string expected_snapshot_time_prefix = "Snapshot Time: ";
   const std::vector<std::string> log_lines = GetCombinedLogContents(log_path);
-  ASSERT_EQ(13u, log_lines.size());
-  EXPECT_EQ(expected_telemetry_log_header, log_lines[0]);
+  ASSERT_EQ(18u, log_lines.size());
+  EXPECT_EQ(expected_system_log_header, log_lines[0]);
   EXPECT_EQ(expected_system_info_section_name, log_lines[1]);
   EXPECT_GT(log_lines[2].size(), expected_snapshot_time_prefix.size());
   EXPECT_TRUE(base::StartsWith(log_lines[2], expected_snapshot_time_prefix));
@@ -248,7 +251,7 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   EXPECT_EQ("Version: " + expected_full_version, log_lines[9]);
   EXPECT_EQ("Has Battery: true", log_lines[10]);
 
-  const std::string expected_routine_log_header = "=== Routine Log ===";
+  const std::string expected_routine_log_header = "--- Test Routines ---";
   EXPECT_EQ(expected_routine_log_header, log_lines[11]);
 
   const std::vector<std::string> first_routine_log_line_contents =
@@ -257,6 +260,13 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   // first_routine_log_line_contents[0] is ignored because it's a timestamp.
   EXPECT_EQ("CpuStress", first_routine_log_line_contents[1]);
   EXPECT_EQ("Started", first_routine_log_line_contents[2]);
+
+  // Networking log contents.
+  EXPECT_EQ("=== Networking ===", log_lines[13]);
+  EXPECT_EQ("--- Network Info ---", log_lines[14]);
+  EXPECT_EQ("--- Test Routines ---", log_lines[15]);
+  EXPECT_EQ("No routines of this type were run in the session.", log_lines[16]);
+  EXPECT_EQ("--- Network Events ---", log_lines[17]);
 }
 
 // Validates that invoking the saveSessionLog Web UI event opens the

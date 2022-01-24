@@ -40,7 +40,7 @@ using index_type = CordRepRing::index_type;
 enum class Direction { kForward, kReversed };
 
 inline bool IsFlatOrExternal(CordRep* rep) {
-  return rep->tag >= FLAT || rep->tag == EXTERNAL;
+  return rep->IsFlat() || rep->IsExternal();
 }
 
 // Verifies that n + extra <= kMaxCapacity: throws std::length_error otherwise.
@@ -229,7 +229,7 @@ void CordRepRing::SetCapacityForTesting(size_t capacity) {
 }
 
 void CordRepRing::Delete(CordRepRing* rep) {
-  assert(rep != nullptr && rep->tag == RING);
+  assert(rep != nullptr && rep->IsRing());
 #if defined(__cpp_sized_deallocation)
   size_t size = AllocSize(rep->capacity_);
   rep->~CordRepRing();
@@ -360,7 +360,7 @@ CordRepRing* CordRepRing::Create(CordRep* child, size_t extra) {
   if (IsFlatOrExternal(child)) {
     return CreateFromLeaf(child, 0, length, extra);
   }
-  if (child->tag == RING) {
+  if (child->IsRing()) {
     return Mutable(child->ring(), extra);
   }
   return CreateSlow(child, extra);
@@ -433,7 +433,7 @@ CordRepRing* CordRepRing::AddRing(CordRepRing* rep, CordRepRing* ring,
 
 CordRepRing* CordRepRing::AppendSlow(CordRepRing* rep, CordRep* child) {
   Consume(child, [&rep](CordRep* child_arg, size_t offset, size_t len) {
-    if (child_arg->tag == RING) {
+    if (child_arg->IsRing()) {
       rep = AddRing<AddMode::kAppend>(rep, child_arg->ring(), offset, len);
     } else {
       rep = AppendLeaf(rep, child_arg, offset, len);
@@ -460,7 +460,7 @@ CordRepRing* CordRepRing::Append(CordRepRing* rep, CordRep* child) {
   if (IsFlatOrExternal(child)) {
     return AppendLeaf(rep, child, 0, length);
   }
-  if (child->tag == RING) {
+  if (child->IsRing()) {
     return AddRing<AddMode::kAppend>(rep, child->ring(), 0, length);
   }
   return AppendSlow(rep, child);
@@ -496,7 +496,7 @@ CordRepRing* CordRepRing::Prepend(CordRepRing* rep, CordRep* child) {
   if (IsFlatOrExternal(child)) {
     return PrependLeaf(rep, child, 0, length);
   }
-  if (child->tag == RING) {
+  if (child->IsRing()) {
     return AddRing<AddMode::kPrepend>(rep, child->ring(), 0, length);
   }
   return PrependSlow(rep, child);

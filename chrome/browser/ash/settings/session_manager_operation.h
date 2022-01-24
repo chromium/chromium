@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_validator.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -39,6 +38,10 @@ class SessionManagerOperation {
 
   // Creates a new load operation.
   explicit SessionManagerOperation(Callback callback);
+
+  SessionManagerOperation(const SessionManagerOperation&) = delete;
+  SessionManagerOperation& operator=(const SessionManagerOperation&) = delete;
+
   virtual ~SessionManagerOperation();
 
   // Starts the operation.
@@ -53,6 +56,12 @@ class SessionManagerOperation {
   std::unique_ptr<enterprise_management::PolicyData>& policy_data() {
     return policy_data_;
   }
+
+  std::unique_ptr<enterprise_management::PolicyFetchResponse>&
+  policy_fetch_response() {
+    return policy_fetch_response_;
+  }
+
   std::unique_ptr<enterprise_management::ChromeDeviceSettingsProto>&
   device_settings() {
     return device_settings_;
@@ -94,6 +103,9 @@ class SessionManagerOperation {
 
   bool force_immediate_load_ = false;
 
+  std::unique_ptr<enterprise_management::PolicyFetchResponse>
+      policy_fetch_response_;
+
  private:
   // Loads the owner key from disk. Must be run on a thread that can do I/O.
   static scoped_refptr<ownership::PublicKey> LoadPublicKey(
@@ -131,8 +143,6 @@ class SessionManagerOperation {
       device_settings_;
 
   base::WeakPtrFactory<SessionManagerOperation> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionManagerOperation);
 };
 
 // This operation loads the public owner key from disk if appropriate, fetches
@@ -147,14 +157,15 @@ class LoadSettingsOperation : public SessionManagerOperation {
                         bool cloud_validations,
                         bool force_immediate_load,
                         Callback callback);
+
+  LoadSettingsOperation(const LoadSettingsOperation&) = delete;
+  LoadSettingsOperation& operator=(const LoadSettingsOperation&) = delete;
+
   ~LoadSettingsOperation() override;
 
  protected:
   // SessionManagerOperation:
   void Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoadSettingsOperation);
 };
 
 // Stores a pre-generated policy blob and reloads the device settings from
@@ -165,6 +176,10 @@ class StoreSettingsOperation : public SessionManagerOperation {
   StoreSettingsOperation(
       Callback callback,
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
+
+  StoreSettingsOperation(const StoreSettingsOperation&) = delete;
+  StoreSettingsOperation& operator=(const StoreSettingsOperation&) = delete;
+
   ~StoreSettingsOperation() override;
 
  protected:
@@ -175,11 +190,7 @@ class StoreSettingsOperation : public SessionManagerOperation {
   // Handles the result of the store operation and triggers the load.
   void HandleStoreResult(bool success);
 
-  std::unique_ptr<enterprise_management::PolicyFetchResponse> policy_;
-
   base::WeakPtrFactory<StoreSettingsOperation> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StoreSettingsOperation);
 };
 
 }  // namespace ash

@@ -128,7 +128,7 @@ void WifiDataProviderChromeOs::ScheduleNextScan(int interval) {
       base::BindOnce(
           &WifiDataProviderChromeOs::DoWifiScanTaskOnNetworkHandlerThread,
           this),
-      base::TimeDelta::FromMilliseconds(interval));
+      base::Milliseconds(interval));
 }
 
 void WifiDataProviderChromeOs::ScheduleStop() {

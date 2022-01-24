@@ -40,7 +40,7 @@ class DOMPluginArray final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit DOMPluginArray(LocalDOMWindow*);
+  DOMPluginArray(LocalDOMWindow*, bool should_return_fixed_plugin_data);
 
   void UpdatePluginData();
 
@@ -52,6 +52,12 @@ class DOMPluginArray final : public ScriptWrappable,
 
   void refresh(bool reload);
 
+  // This function returns the "fixed" list of mime types, for the PDF viewer
+  // only. This function should only be used when
+  // should_return_fixed_plugin_data_ is true.
+  HeapVector<Member<DOMMimeType>> GetFixedMimeTypeArray();
+  bool IsPdfViewerAvailable();
+
   // PluginsChangedObserver implementation.
   void PluginsChanged() override;
 
@@ -61,7 +67,7 @@ class DOMPluginArray final : public ScriptWrappable,
   PluginData* GetPluginData() const;
   void ContextDestroyed() override;
 
-  bool ShouldReturnEmptyPluginData() const;
+  const bool should_return_fixed_plugin_data_;
 
   HeapVector<Member<DOMPlugin>> dom_plugins_;
 };

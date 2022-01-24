@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "media/base/media_export.h"
 
@@ -41,6 +40,9 @@ class MEDIA_EXPORT AudioPowerMonitor {
   // level; and is the amount of time it takes a zero power level to increase to
   // ~63.2% of maximum given a step input signal.
   AudioPowerMonitor(int sample_rate, base::TimeDelta time_constant);
+
+  AudioPowerMonitor(const AudioPowerMonitor&) = delete;
+  AudioPowerMonitor& operator=(const AudioPowerMonitor&) = delete;
 
   ~AudioPowerMonitor();
 
@@ -79,8 +81,6 @@ class MEDIA_EXPORT AudioPowerMonitor {
   base::Lock reading_lock_;
   float power_reading_;
   bool clipped_reading_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPowerMonitor);
 };
 
 }  // namespace media

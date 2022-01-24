@@ -262,7 +262,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
           // Fire the event on the root object, which in the absence of a text
           // field ancestor is the closest UIA text provider (other than the
           // focused object) in which the selection has changed.
-          DCHECK(node->IsPlatformDocument());
+          DCHECK(ui::IsPlatformDocument(node->GetRole()));
           EnqueueSelectionChangedEvent(*node);
 
           // "IA2_EVENT_TEXT_CARET_MOVED" should only be fired when a visible
@@ -385,7 +385,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       }
       // Only fire name changes when the name comes from an attribute, otherwise
       // name changes are redundant with text removed/inserted events.
-      if (node->GetData().GetNameFrom() != ax::mojom::NameFrom::kContents)
+      if (node->GetNameFrom() != ax::mojom::NameFrom::kContents)
         FireWinAccessibilityEvent(EVENT_OBJECT_NAMECHANGE, node);
       break;
     case ui::AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED:
@@ -492,6 +492,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     // Currently unused events on this platform.
     case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
+    case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
     case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
     case ui::AXEventGenerator::Event::DETAILS_CHANGED:
     case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
@@ -705,28 +706,6 @@ bool BrowserAccessibilityManagerWin::CanFireEvents() const {
   return BrowserAccessibilityManager::CanFireEvents() &&
          GetDelegateFromRootManager() &&
          GetDelegateFromRootManager()->AccessibilityGetAcceleratedWidget();
-}
-
-gfx::Rect BrowserAccessibilityManagerWin::GetViewBoundsInScreenCoordinates()
-    const {
-  // We have to take the device scale factor into account on Windows.
-  BrowserAccessibilityDelegate* delegate = GetDelegateFromRootManager();
-  if (delegate) {
-    gfx::Rect bounds = delegate->AccessibilityGetViewBounds();
-
-    // http://www.chromium.org/developers/design-documents/blink-coordinate-spaces
-    // The bounds returned by the delegate are always in device-independent
-    // pixels (DIPs), meaning physical pixels divided by device scale factor
-    // (DSF). However, if UseZoomForDSF is enabled, then Blink does not apply
-    // DSF when going from physical to screen pixels. In that case, we need to
-    // multiply DSF back in to get to Blink's notion of "screen pixels."
-    if (IsUseZoomForDSFEnabled() && device_scale_factor() > 0.0 &&
-        device_scale_factor() != 1.0) {
-      bounds = ScaleToEnclosingRect(bounds, device_scale_factor());
-    }
-    return bounds;
-  }
-  return gfx::Rect();
 }
 
 void BrowserAccessibilityManagerWin::OnSubtreeWillBeDeleted(ui::AXTree* tree,
@@ -949,7 +928,7 @@ void BrowserAccessibilityManagerWin::BeforeAccessibilityEvents() {
   for (const auto& targeted_event : event_generator()) {
     if (targeted_event.event_params.event ==
         ui::AXEventGenerator::Event::IGNORED_CHANGED) {
-      BrowserAccessibility* event_target = GetFromAXNode(targeted_event.node);
+      BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
       if (!event_target)
         continue;
 

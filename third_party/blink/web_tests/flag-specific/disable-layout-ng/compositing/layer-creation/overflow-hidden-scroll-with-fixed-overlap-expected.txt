@@ -2,15 +2,10 @@ Before:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [300, 150],
-      "transform": 1
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
@@ -18,14 +13,6 @@ Before:
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 2
-    },
-    {
-      "name": "LayoutBlockFlow (relative positioned) DIV class='overlapped'",
-      "position": [8, 1008],
-      "bounds": [40, 40],
-      "contentsOpaque": true,
-      "backgroundColor": "#FFA500",
-      "transform": 1
     }
   ],
   "transforms": [
@@ -55,15 +42,10 @@ After scroll:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [300, 150],
-      "transform": 1
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='fixed'",

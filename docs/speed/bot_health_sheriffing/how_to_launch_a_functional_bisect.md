@@ -1,5 +1,7 @@
 # How to launch a functional bisect and interpret its results
 
+**Important**: When making changes to this document, also update duplicate files under the [internal docs](http://goto.google.com/perf-bot-health-sheriffs).
+
 A functional bisect determines the revision at which a particular benchmark or story started failing more often. It does this by doing a binary search between a known good and known bad revision, running the test multiple times at each potential revision until it narrows down the culprit to a single revision.
 
 [TOC]

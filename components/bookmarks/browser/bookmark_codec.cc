@@ -306,6 +306,11 @@ bool BookmarkCodec::DecodeNode(const base::Value& value,
       guids_reassigned_ = true;
     }
 
+    if (guid.AsLowercaseString() == BookmarkNode::kBannedGuidDueToPastSyncBug) {
+      guid = base::GUID::GenerateRandomV4();
+      guids_reassigned_ = true;
+    }
+
     // Guard against GUID collisions, which would violate BookmarkModel's
     // invariant that each GUID is unique.
     if (base::Contains(guids_, guid)) {
@@ -322,8 +327,8 @@ bool BookmarkCodec::DecodeNode(const base::Value& value,
     date_added_string = *string_value;
   else
     date_added_string = base::NumberToString(Time::Now().ToInternalValue());
-  int64_t internal_time;
-  base::StringToInt64(date_added_string, &internal_time);
+  int64_t date_added_time;
+  base::StringToInt64(date_added_string, &date_added_time);
 
   const std::string* type_string = value.FindStringKey(kTypeKey);
   if (!type_string)
@@ -382,7 +387,7 @@ bool BookmarkCodec::DecodeNode(const base::Value& value,
   }
 
   node->SetTitle(title);
-  node->set_date_added(Time::FromInternalValue(internal_time));
+  node->set_date_added(Time::FromInternalValue(date_added_time));
 
   BookmarkNode::MetaInfoMap meta_info_map;
   if (!DecodeMetaInfo(value, &meta_info_map))

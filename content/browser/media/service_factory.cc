@@ -13,18 +13,22 @@
 #include "base/logging.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/time.h"
-#include "content/browser/service_sandbox_type.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
 #include "media/base/cdm_context.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/mojom/cdm_service.mojom.h"
 
 #if defined(OS_MAC)
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "sandbox/mac/seatbelt_extension.h"
 #endif  // defined(OS_MAC)
+
+#if defined(OS_WIN)
+#include "media/mojo/mojom/media_foundation_service.mojom.h"
+#endif  // defined(OS_WIN)
 
 namespace content {
 
@@ -44,7 +48,7 @@ base::FilePath GetSigFilePath(const base::FilePath& file_path) {
 }
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
-class SeatbeltExtensionTokenProviderImpl
+class SeatbeltExtensionTokenProviderImpl final
     : public media::mojom::SeatbeltExtensionTokenProvider {
  public:
   explicit SeatbeltExtensionTokenProviderImpl(const base::FilePath& cdm_path)
@@ -53,9 +57,9 @@ class SeatbeltExtensionTokenProviderImpl
       const SeatbeltExtensionTokenProviderImpl&) = delete;
   SeatbeltExtensionTokenProviderImpl operator=(
       const SeatbeltExtensionTokenProviderImpl&) = delete;
-  ~SeatbeltExtensionTokenProviderImpl() final = default;
+  ~SeatbeltExtensionTokenProviderImpl() override = default;
 
-  void GetTokens(GetTokensCallback callback) final {
+  void GetTokens(GetTokensCallback callback) override {
     DVLOG(1) << __func__;
 
     std::vector<sandbox::SeatbeltExtensionToken> tokens;
@@ -94,7 +98,7 @@ class SeatbeltExtensionTokenProviderImpl
 
 // How long an instance of the service is allowed to sit idle before we
 // disconnect and effectively kill it.
-constexpr auto kServiceIdleTimeout = base::TimeDelta::FromSeconds(5);
+constexpr auto kServiceIdleTimeout = base::Seconds(5);
 
 // Services are keyed on CDM type, user profile and site URL. Note that site
 // is not normal URL nor origin. See chrome/browser/site_isolation for details.

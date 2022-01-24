@@ -17,6 +17,8 @@
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -34,29 +36,93 @@
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_gatt_service_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_input_client.h"
+#include "device/bluetooth/test/mock_pairing_delegate.h"
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
-#include "device/bluetooth/test/test_pairing_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
+#include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
 #endif
 
-using device::BluetoothAdapter;
-using device::BluetoothAdapterFactory;
-using device::BluetoothDevice;
-using device::BluetoothDeviceType;
-using device::BluetoothDiscoveryFilter;
-using device::BluetoothDiscoverySession;
-using device::BluetoothUUID;
-using device::TestBluetoothAdapterObserver;
-using device::TestPairingDelegate;
+namespace {
+
+using ::device::BluetoothAdapter;
+using ::device::BluetoothAdapterFactory;
+using ::device::BluetoothDevice;
+using BatteryInfo = ::device::BluetoothDevice::BatteryInfo;
+using BatteryType = ::device::BluetoothDevice::BatteryType;
+using ::device::BluetoothDeviceType;
+using ::device::BluetoothDiscoveryFilter;
+using ::device::BluetoothDiscoverySession;
+using ::device::BluetoothUUID;
+using ::device::MockPairingDelegate;
+using ::device::TestBluetoothAdapterObserver;
+using ::testing::_;
+using ::testing::StrictMock;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Background scanning filter values.
+constexpr int16_t kBackgroundScanningDeviceFoundRSSIThreshold = -80;
+constexpr int16_t kBackgroundScanningDeviceLostRSSIThreshold = -100;
+constexpr base::TimeDelta kBackgroundScanningDeviceFoundTimeout =
+    base::Seconds(1);
+constexpr base::TimeDelta kBackgroundScanningDeviceLostTimeout =
+    base::Seconds(5);
+// This pattern value encodes the Fast Initiation service ID of 0xfe2c and the
+// model ID of 0xfc128e.
+constexpr uint8_t kBackgroundScanningFilterPatternValue[] = {0x2c, 0xfe, 0xfc,
+                                                             0x12, 0x8e};
+std::unique_ptr<device::BluetoothLowEnergyScanFilter>
+CreateLowEnergyScanFilter() {
+  auto pattern_value =
+      std::vector<uint8_t>(std::begin(kBackgroundScanningFilterPatternValue),
+                           std::end(kBackgroundScanningFilterPatternValue));
+  device::BluetoothLowEnergyScanFilter::Pattern pattern(
+      /*start_position=*/0,
+      device::BluetoothLowEnergyScanFilter::AdvertisementDataType::kServiceData,
+      std::move(pattern_value));
+  return device::BluetoothLowEnergyScanFilter::Create(
+      kBackgroundScanningDeviceFoundRSSIThreshold,
+      kBackgroundScanningDeviceLostRSSIThreshold,
+      kBackgroundScanningDeviceFoundTimeout,
+      kBackgroundScanningDeviceLostTimeout, {pattern});
+}
+
+bluez::FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+GetAdvertisementMonitorApplicationManger() {
+  return static_cast<bluez::FakeBluetoothAdvertisementMonitorManagerClient*>(
+             bluez::BluezDBusManager::Get()
+                 ->GetBluetoothAdvertisementMonitorManagerClient())
+      ->application_provider();
+}
+#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+void ScheduleAsynchronousCancelPairing(BluetoothDevice* device) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&BluetoothDevice::CancelPairing,
+                                base::Unretained(device)));
+}
+
+void ScheduleAsynchronousRejectPairing(BluetoothDevice* device) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&BluetoothDevice::RejectPairing,
+                                base::Unretained(device)));
+}
+
+}  // namespace
 
 namespace bluez {
 
@@ -85,6 +151,10 @@ int GetDeviceIndexByAddress(const BluetoothAdapter::DeviceList& devices,
 class FakeBleScanParserImpl : public data_decoder::mojom::BleScanParser {
  public:
   FakeBleScanParserImpl() = default;
+
+  FakeBleScanParserImpl(const FakeBleScanParserImpl&) = delete;
+  FakeBleScanParserImpl& operator=(const FakeBleScanParserImpl&) = delete;
+
   ~FakeBleScanParserImpl() override = default;
 
   // mojom::BleScanParser:
@@ -92,8 +162,6 @@ class FakeBleScanParserImpl : public data_decoder::mojom::BleScanParser {
              ParseCallback callback) override {
     std::move(callback).Run(nullptr);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleScanParserImpl);
 };
 #endif
 
@@ -117,11 +185,88 @@ class FakeBluetoothProfileServiceProviderDelegate
   void Cancel() override {}
 };
 
-}  // namespace
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class FakeBluetoothLowEnergyScanSessionDelegate
+    : public device::BluetoothLowEnergyScanSession::Delegate {
+ public:
+  FakeBluetoothLowEnergyScanSessionDelegate() = default;
 
+  // device::BluetoothLowEnergyScanSession::Delegate
+  void OnSessionStarted(
+      device::BluetoothLowEnergyScanSession* scan_session,
+      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+          error_code) override {
+    sessions_started_.push_back(std::make_pair(scan_session, error_code));
+  }
+  void OnDeviceFound(device::BluetoothLowEnergyScanSession* scan_session,
+                     device::BluetoothDevice* device) override {
+    devices_found_.push_back(std::make_pair(scan_session, device));
+  }
+  void OnDeviceLost(device::BluetoothLowEnergyScanSession* scan_session,
+                    device::BluetoothDevice* device) override {
+    devices_lost_.push_back(std::make_pair(scan_session, device));
+  }
+  void OnSessionInvalidated(
+      device::BluetoothLowEnergyScanSession* scan_session) override {
+    sessions_invalidated_.push_back(scan_session);
+  }
+
+  const std::vector<std::pair<
+      device::BluetoothLowEnergyScanSession*,
+      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>>&
+  sessions_started() const {
+    return sessions_started_;
+  }
+
+  const std::vector<std::pair<device::BluetoothLowEnergyScanSession*,
+                              device::BluetoothDevice*>>&
+  devices_found() const {
+    return devices_found_;
+  }
+
+  const std::vector<std::pair<device::BluetoothLowEnergyScanSession*,
+                              device::BluetoothDevice*>>&
+  devices_lost() const {
+    return devices_lost_;
+  }
+
+  const std::vector<device::BluetoothLowEnergyScanSession*>&
+  sessions_invalidated() const {
+    return sessions_invalidated_;
+  }
+
+  base::WeakPtr<FakeBluetoothLowEnergyScanSessionDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  std::vector<std::pair<
+      device::BluetoothLowEnergyScanSession*,
+      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>>
+      sessions_started_;
+  std::vector<std::pair<device::BluetoothLowEnergyScanSession*,
+                        device::BluetoothDevice*>>
+      devices_found_;
+  std::vector<std::pair<device::BluetoothLowEnergyScanSession*,
+                        device::BluetoothDevice*>>
+      devices_lost_;
+  std::vector<device::BluetoothLowEnergyScanSession*> sessions_invalidated_;
+
+  base::WeakPtrFactory<FakeBluetoothLowEnergyScanSessionDelegate>
+      weak_ptr_factory_{this};
+};
+#endif
+}  // namespace
 
 class BluetoothBlueZTest : public testing::Test {
  public:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  BluetoothBlueZTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ash::features::kBluetoothAdvertisementMonitoring},
+        /*disabled_features=*/{});
+  }
+#endif
   static const char kGapUuid[];
   static const char kGattUuid[];
   static const char kPnpUuid[];
@@ -177,7 +322,6 @@ class BluetoothBlueZTest : public testing::Test {
 
     callback_count_ = 0;
     error_callback_count_ = 0;
-    last_connect_error_ = BluetoothDevice::ERROR_UNKNOWN;
     last_client_error_ = "";
   }
 
@@ -256,17 +400,6 @@ class BluetoothBlueZTest : public testing::Test {
     QuitMessageLoop();
   }
 
-  void ConnectCallback(
-      absl::optional<BluetoothDevice::ConnectErrorCode> error) {
-    if (error.has_value()) {
-      ++error_callback_count_;
-      last_connect_error_ = error.value();
-      return;
-    }
-    ++callback_count_;
-    QuitMessageLoop();
-  }
-
   void ErrorCompletionCallback(const std::string& error_message) {
     ++error_callback_count_;
     QuitMessageLoop();
@@ -311,6 +444,7 @@ class BluetoothBlueZTest : public testing::Test {
 
     adapter_->SetPowered(true, GetCallback(), GetErrorCallback());
     adapter_->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                        base::Unretained(this)),
         GetErrorCallback());
@@ -348,7 +482,6 @@ class BluetoothBlueZTest : public testing::Test {
 
   int callback_count_;
   int error_callback_count_;
-  enum BluetoothDevice::ConnectErrorCode last_connect_error_;
   std::string last_client_error_;
   std::vector<std::unique_ptr<BluetoothDiscoverySession>> discovery_sessions_;
   BluetoothAdapterProfileBlueZ* adapter_profile_;
@@ -363,6 +496,9 @@ class BluetoothBlueZTest : public testing::Test {
     if (base::RunLoop::IsRunningOnCurrentThread())
       base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 };
 const char BluetoothBlueZTest::kGapUuid[] =
     "00001800-0000-1000-8000-00805f9b34fb";
@@ -709,6 +845,7 @@ TEST_F(BluetoothBlueZTest, StopDiscovery) {
 
   adapter_->SetPowered(true, GetCallback(), GetErrorCallback());
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       GetErrorCallback());
@@ -745,6 +882,7 @@ TEST_F(BluetoothBlueZTest, Discovery) {
 
   adapter_->SetPowered(true, GetCallback(), GetErrorCallback());
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       GetErrorCallback());
@@ -782,6 +920,7 @@ TEST_F(BluetoothBlueZTest, PoweredAndDiscovering) {
   GetAdapter();
   adapter_->SetPowered(true, GetCallback(), GetErrorCallback());
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       GetErrorCallback());
@@ -861,6 +1000,7 @@ TEST_F(BluetoothBlueZTest, StopAndStartDiscoverySimultaneously) {
   // Start Discovery in order to call Stop.
   base::RunLoop start_loop_1;
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallbackWithClosure,
                      base::Unretained(this), start_loop_1.QuitClosure()),
       GetErrorCallback());
@@ -879,7 +1019,6 @@ TEST_F(BluetoothBlueZTest, StopAndStartDiscoverySimultaneously) {
   EXPECT_TRUE(observer.last_discovering());
   EXPECT_TRUE(IsAdapterDiscovering());
   ASSERT_EQ(1u, discovery_sessions_.size());
-
 
   // Register loop to watch for Discovery changes.
   base::RunLoop discovering_changed_loop;
@@ -905,6 +1044,7 @@ TEST_F(BluetoothBlueZTest, StopAndStartDiscoverySimultaneously) {
   // StartDiscoverySession pending.
   base::RunLoop start_loop_2;
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallbackWithClosure,
                      base::Unretained(this), start_loop_2.QuitClosure()),
       GetErrorCallback());
@@ -941,6 +1081,7 @@ TEST_F(BluetoothBlueZTest, MultipleDiscoverySessions) {
   // Request device discovery 3 times.
   for (int i = 0; i < 3; i++) {
     adapter_->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                        base::Unretained(this)),
         GetErrorCallback());
@@ -973,6 +1114,7 @@ TEST_F(BluetoothBlueZTest, MultipleDiscoverySessions) {
   // Request device discovery 3 times.
   for (int i = 0; i < 3; i++) {
     adapter_->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                        base::Unretained(this)),
         GetErrorCallback());
@@ -1023,6 +1165,7 @@ TEST_F(BluetoothBlueZTest, UnexpectedChangesDuringMultipleDiscoverySessions) {
   // Request device discovery 3 times.
   for (int i = 0; i < 3; i++) {
     adapter_->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                        base::Unretained(this)),
         GetErrorCallback());
@@ -1078,6 +1221,7 @@ TEST_F(BluetoothBlueZTest, UnexpectedChangesDuringMultipleDiscoverySessions) {
   // It should be possible to successfully start discovery.
   for (int i = 0; i < 2; i++) {
     adapter_->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                        base::Unretained(this)),
         GetErrorCallback());
@@ -1126,6 +1270,7 @@ TEST_F(BluetoothBlueZTest, UnexpectedChangesDuringMultipleDiscoverySessions) {
   // application other than us. Starting and stopping discovery will succeed
   // but it won't cause the discovery state to change.
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       GetErrorCallback());
@@ -1147,6 +1292,7 @@ TEST_F(BluetoothBlueZTest, UnexpectedChangesDuringMultipleDiscoverySessions) {
 
   // Start discovery again.
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       GetErrorCallback());
@@ -1204,6 +1350,7 @@ TEST_F(BluetoothBlueZTest, InvalidatedDiscoverySessions) {
   // Request device discovery 3 times.
   for (int i = 0; i < 3; i++) {
     adapter_->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                        base::Unretained(this)),
         GetErrorCallback());
@@ -1274,6 +1421,7 @@ TEST_F(BluetoothBlueZTest, StartDiscoverySession) {
 
   // Request a new discovery session.
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       GetErrorCallback());
@@ -1290,6 +1438,7 @@ TEST_F(BluetoothBlueZTest, StartDiscoverySession) {
   // in turn will destroy the previous session. Adapter should still be
   // discovering and the reference count should be 1.
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       GetErrorCallback());
@@ -1304,6 +1453,7 @@ TEST_F(BluetoothBlueZTest, StartDiscoverySession) {
 
   // Request a new session.
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       GetErrorCallback());
@@ -1362,6 +1512,7 @@ TEST_F(BluetoothBlueZTest, SetDiscoveryFilterBeforeStartDiscovery) {
   auto* comparison_filter_holder = discovery_filter.get();
   adapter_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothBlueZTest::ErrorCallback,
@@ -1425,6 +1576,7 @@ TEST_F(BluetoothBlueZTest, SetDiscoveryFilterBeforeStartDiscoveryFail) {
 
   adapter_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothBlueZTest::ErrorCallback,
@@ -1491,6 +1643,7 @@ TEST_F(BluetoothBlueZTest, SetDiscoveryFilterBeforeStartDiscoveryMultiple) {
 
     adapter_->StartDiscoverySessionWithFilter(
         std::move(discovery_filter),
+        /*client_name=*/std::string(),
         base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                        base::Unretained(this)),
         base::BindOnce(&BluetoothBlueZTest::ErrorCallback,
@@ -1617,6 +1770,7 @@ TEST_F(BluetoothBlueZTest, SetDiscoveryFilterBeforeStartDiscoveryMultiple) {
 
     adapter_->StartDiscoverySessionWithFilter(
         std::move(discovery_filter),
+        /*client_name=*/std::string(),
         base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                        base::Unretained(this)),
         base::BindOnce(&BluetoothBlueZTest::ErrorCallback,
@@ -1695,6 +1849,7 @@ TEST_F(BluetoothBlueZTest, SetDiscoveryFilterMergingTest) {
 
   adapter_->StartDiscoverySessionWithFilter(
       std::move(df),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothBlueZTest::ErrorCallback,
@@ -1719,6 +1874,7 @@ TEST_F(BluetoothBlueZTest, SetDiscoveryFilterMergingTest) {
 
   adapter_->StartDiscoverySessionWithFilter(
       std::move(df),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothBlueZTest::ErrorCallback,
@@ -1748,6 +1904,7 @@ TEST_F(BluetoothBlueZTest, SetDiscoveryFilterMergingTest) {
 
   adapter_->StartDiscoverySessionWithFilter(
       std::move(discovery_filter3),
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothBlueZTest::ErrorCallback,
@@ -1767,6 +1924,7 @@ TEST_F(BluetoothBlueZTest, SetDiscoveryFilterMergingTest) {
 
   // start additionally classic scan
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       base::BindOnce(&BluetoothBlueZTest::ErrorCallback,
@@ -2382,12 +2540,15 @@ TEST_F(BluetoothBlueZTest, ForgetUnpairedDevice) {
   ASSERT_FALSE(device->IsPaired());
 
   // Connect the device so it becomes trusted and remembered.
-  device->Connect(nullptr, base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                          base::Unretained(this)));
-
-  ASSERT_EQ(1, callback_count_);
-  ASSERT_EQ(0, error_callback_count_);
-  callback_count_ = 0;
+  base::RunLoop run_loop;
+  device->Connect(
+      nullptr,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   ASSERT_TRUE(device->IsConnected());
   ASSERT_FALSE(device->IsConnecting());
@@ -2427,11 +2588,15 @@ TEST_F(BluetoothBlueZTest, ConnectPairedDevice) {
 
   // Connect without a pairing delegate; since the device is already Paired
   // this should succeed and the device should become connected.
-  device->Connect(nullptr, base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                          base::Unretained(this)));
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  base::RunLoop run_loop;
+  device->Connect(
+      nullptr,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Two changes for connecting, one for connected and one for for trusted
   // after connecting.
@@ -2455,11 +2620,15 @@ TEST_F(BluetoothBlueZTest, ConnectUnpairableDevice) {
 
   // Connect without a pairing delegate; since the device does not require
   // pairing, this should succeed and the device should become connected.
-  device->Connect(nullptr, base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                          base::Unretained(this)));
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  base::RunLoop run_loop;
+  device->Connect(
+      nullptr,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Two changes for connecting, one for connected, one for for trusted after
   // connection, and one for the reconnect mode (IsConnectable).
@@ -2490,12 +2659,18 @@ TEST_F(BluetoothBlueZTest, ConnectConnectedDevice) {
   ASSERT_TRUE(device != nullptr);
   ASSERT_TRUE(device->IsPaired());
 
-  device->Connect(nullptr, base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                          base::Unretained(this)));
-
-  ASSERT_EQ(1, callback_count_);
-  ASSERT_EQ(0, error_callback_count_);
-  callback_count_ = 0;
+  {
+    base::RunLoop run_loop;
+    device->Connect(
+        nullptr,
+        base::BindLambdaForTesting(
+            [&run_loop](
+                absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+              EXPECT_FALSE(error.has_value());
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
 
   ASSERT_TRUE(device->IsConnected());
 
@@ -2503,11 +2678,18 @@ TEST_F(BluetoothBlueZTest, ConnectConnectedDevice) {
   // anything to initiate the connection.
   TestBluetoothAdapterObserver observer(adapter_);
 
-  device->Connect(nullptr, base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                          base::Unretained(this)));
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  {
+    base::RunLoop run_loop;
+    device->Connect(
+        nullptr,
+        base::BindLambdaForTesting(
+            [&run_loop](
+                absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+              EXPECT_FALSE(error.has_value());
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
 
   // The observer will be called because Connecting will toggle true and false,
   // and the trusted property will be updated to true.
@@ -2530,12 +2712,15 @@ TEST_F(BluetoothBlueZTest, ConnectDeviceFails) {
 
   // Connect without a pairing delegate; since the device requires pairing,
   // this should fail with an error.
-  device->Connect(nullptr, base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                          base::Unretained(this)));
-
-  EXPECT_EQ(0, callback_count_);
-  EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothDevice::ERROR_FAILED, last_connect_error_);
+  base::RunLoop run_loop;
+  device->Connect(
+      nullptr,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_EQ(BluetoothDevice::ERROR_FAILED, error);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   EXPECT_EQ(2, observer.device_changed_count());
 
@@ -2553,11 +2738,11 @@ TEST_F(BluetoothBlueZTest, RemoveDeviceDuringConnection) {
   ASSERT_TRUE(device != nullptr);
 
   fake_bluetooth_device_client_->LeaveConnectionsPending();
-  device->Connect(nullptr, base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                          base::Unretained(this)));
-
-  EXPECT_EQ(0, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  device->Connect(
+      nullptr, base::BindLambdaForTesting(
+                   [](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+                     FAIL() << "Connection callback should never be called.";
+                   }));
 
   EXPECT_FALSE(device->IsConnected());
   EXPECT_TRUE(device->IsConnecting());
@@ -2589,12 +2774,15 @@ TEST_F(BluetoothBlueZTest, DisconnectDevice) {
   ASSERT_TRUE(device != nullptr);
   ASSERT_TRUE(device->IsPaired());
 
-  device->Connect(nullptr, base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                          base::Unretained(this)));
-
-  ASSERT_EQ(1, callback_count_);
-  ASSERT_EQ(0, error_callback_count_);
-  callback_count_ = 0;
+  base::RunLoop run_loop;
+  device->Connect(
+      nullptr,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   ASSERT_TRUE(device->IsConnected());
   ASSERT_FALSE(device->IsConnecting());
@@ -2669,21 +2857,24 @@ TEST_F(BluetoothBlueZTest, PairTrustedDevice) {
   // The |kConnectedTrustedNotPairedDevicePath| requests a passkey confirmation.
   // Obs.: This is the flow when CrOS triggers pairing with a iOS device.
   TestBluetoothAdapterObserver observer(adapter_);
-  TestPairingDelegate pairing_delegate;
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, ConfirmPasskey)
+      .WillOnce([](BluetoothDevice* device, uint32_t passkey) {
+        ASSERT_NE(device, nullptr);
+        EXPECT_EQ(123456U, passkey);
+        device->ConfirmPairing();
+      });
   adapter_->AddPairingDelegate(
       &pairing_delegate, BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH);
-  device->Pair(&pairing_delegate,
-               base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                              base::Unretained(this)));
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.confirm_passkey_count_);
-  EXPECT_EQ(123456U, pairing_delegate.last_passkey_);
-
-  // Confirm the passkey.
-  device->ConfirmPairing();
-  base::RunLoop().Run();
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  base::RunLoop run_loop;
+  device->Pair(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Make sure the paired property has been set to true.
   properties = fake_bluetooth_device_client_->GetProperties(dbus::ObjectPath(
@@ -2710,18 +2901,21 @@ TEST_F(BluetoothBlueZTest, PairAlreadyPairedDevice) {
   ASSERT_TRUE(device->IsPaired());
 
   TestBluetoothAdapterObserver observer(adapter_);
-  TestPairingDelegate pairing_delegate;
-  adapter_->AddPairingDelegate(
-      &pairing_delegate, BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH);
-  device->Pair(&pairing_delegate,
-               base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                              base::Unretained(this)));
-
   // For already paired devices a call to |Pair| should succeed without calling
   // the pairing delegate.
-  EXPECT_EQ(0, pairing_delegate.call_count_);
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  adapter_->AddPairingDelegate(
+      &pairing_delegate, BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH);
+
+  base::RunLoop run_loop;
+  device->Pair(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 }
 
 TEST_F(BluetoothBlueZTest, PairLegacyAutopair) {
@@ -2739,18 +2933,16 @@ TEST_F(BluetoothBlueZTest, PairLegacyAutopair) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(0, pairing_delegate.call_count_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  base::RunLoop().Run();
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Two changes for connecting, one change for connected, one for paired,
   // two for trusted (after pairing and connection), and one for the reconnect
@@ -2790,20 +2982,17 @@ TEST_F(BluetoothBlueZTest, PairDisplayPinCode) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.display_pincode_count_);
-  EXPECT_EQ("123456", pairing_delegate.last_pincode_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  base::RunLoop().Run();
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, DisplayPinCode(_, "123456")).Times(1);
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Two changes for connecting, one change for connected, one for paired,
   // two for trusted (after pairing and connection), and one for the reconnect
@@ -2844,39 +3033,21 @@ TEST_F(BluetoothBlueZTest, PairDisplayPasskey) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  // One call for DisplayPasskey() and one for KeysEntered().
-  EXPECT_EQ(2, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.display_passkey_count_);
-  EXPECT_EQ(123456U, pairing_delegate.last_passkey_);
-  EXPECT_EQ(1, pairing_delegate.keys_entered_count_);
-  EXPECT_EQ(0U, pairing_delegate.last_entered_);
-
-  EXPECT_TRUE(device->IsConnecting());
-
-  // One call to KeysEntered() for each key, including [enter].
-  for (int i = 1; i <= 7; ++i) {
-    base::RunLoop().Run();
-
-    EXPECT_EQ(2 + i, pairing_delegate.call_count_);
-    EXPECT_EQ(1 + i, pairing_delegate.keys_entered_count_);
-    EXPECT_EQ(static_cast<uint32_t>(i), pairing_delegate.last_entered_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, DisplayPasskey(_, 123456U)).Times(1);
+  testing::InSequence seq;
+  for (int i = 0; i < 8; ++i) {
+    EXPECT_CALL(pairing_delegate, KeysEntered(_, i));
   }
-
-  base::RunLoop().Run();
-
-  // 8 KeysEntered notifications (0 to 7, inclusive) and one aditional call for
-  // DisplayPasskey().
-  EXPECT_EQ(9, pairing_delegate.call_count_);
-  EXPECT_EQ(8, pairing_delegate.keys_entered_count_);
-  EXPECT_EQ(7U, pairing_delegate.last_entered_);
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Two changes for connecting, one change for connected, one for paired,
   // two for trusted (after pairing and connection), and one for the reconnect
@@ -2917,21 +3088,18 @@ TEST_F(BluetoothBlueZTest, PairRequestPinCode) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_pincode_count_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  // Set the PIN.
-  device->SetPinCode("1234");
-  base::RunLoop().Run();
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, RequestPinCode)
+      .WillOnce([](BluetoothDevice* device) { device->SetPinCode("1234"); });
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Two changes for connecting, one change for connected, one for paired and
   // two for trusted (after pairing and connection).
@@ -2971,22 +3139,23 @@ TEST_F(BluetoothBlueZTest, PairConfirmPasskey) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, ConfirmPasskey)
+      .WillOnce([](BluetoothDevice* device, uint32_t passkey) {
+        ASSERT_NE(device, nullptr);
+        EXPECT_EQ(123456U, passkey);
+        device->ConfirmPairing();
+      });
 
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.confirm_passkey_count_);
-  EXPECT_EQ(123456U, pairing_delegate.last_passkey_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  // Confirm the passkey.
-  device->ConfirmPairing();
-  base::RunLoop().Run();
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Two changes for connecting, one change for connected, one for paired and
   // two for trusted (after pairing and connection).
@@ -3023,21 +3192,22 @@ TEST_F(BluetoothBlueZTest, PairRequestPasskey) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, RequestPasskey)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        device->SetPasskey(1234);
+      });
 
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_passkey_count_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  // Set the Passkey.
-  device->SetPasskey(1234);
-  base::RunLoop().Run();
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Two changes for connecting, one change for connected, one for paired and
   // two for trusted (after pairing and connection).
@@ -3074,17 +3244,16 @@ TEST_F(BluetoothBlueZTest, PairJustWorks) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(0, pairing_delegate.call_count_);
-
-  base::RunLoop().Run();
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Two changes for connecting, one change for connected, one for paired and
   // two for trusted (after pairing and connection).
@@ -3119,21 +3288,16 @@ TEST_F(BluetoothBlueZTest, PairUnpairableDeviceFails) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(0, pairing_delegate.call_count_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  // Run the loop to get the error..
-  base::RunLoop().Run();
-
-  EXPECT_EQ(0, callback_count_);
-  EXPECT_EQ(1, error_callback_count_);
-
-  EXPECT_EQ(BluetoothDevice::ERROR_FAILED, last_connect_error_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_EQ(BluetoothDevice::ERROR_FAILED, error);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   EXPECT_FALSE(device->IsConnected());
   EXPECT_FALSE(device->IsConnecting());
@@ -3154,21 +3318,16 @@ TEST_F(BluetoothBlueZTest, PairingFails) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(0, pairing_delegate.call_count_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  // Run the loop to get the error..
-  base::RunLoop().Run();
-
-  EXPECT_EQ(0, callback_count_);
-  EXPECT_EQ(1, error_callback_count_);
-
-  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_TIMEOUT, last_connect_error_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_EQ(BluetoothDevice::ERROR_AUTH_TIMEOUT, error);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   EXPECT_FALSE(device->IsConnected());
   EXPECT_FALSE(device->IsConnecting());
@@ -3190,19 +3349,16 @@ TEST_F(BluetoothBlueZTest, PairingFailsAtConnection) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(0, pairing_delegate.call_count_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  base::RunLoop().Run();
-
-  EXPECT_EQ(0, callback_count_);
-  EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothDevice::ERROR_FAILED, last_connect_error_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_EQ(BluetoothDevice::ERROR_FAILED, error);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Two changes for connecting, one for paired and one for trusted after
   // pairing. The device should not be connected.
@@ -3236,22 +3392,21 @@ TEST_F(BluetoothBlueZTest, PairingRejectedAtPinCode) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_pincode_count_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  // Reject the pairing.
-  device->RejectPairing();
-  base::RunLoop().Run();
-
-  EXPECT_EQ(0, callback_count_);
-  EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_REJECTED, last_connect_error_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, RequestPinCode)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        ScheduleAsynchronousRejectPairing(device);
+      });
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_EQ(BluetoothDevice::ERROR_AUTH_REJECTED, error);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Should be no changes except connecting going true and false.
   EXPECT_EQ(2, observer.device_changed_count());
@@ -3274,22 +3429,21 @@ TEST_F(BluetoothBlueZTest, PairingCancelledAtPinCode) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_pincode_count_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  // Cancel the pairing.
-  device->CancelPairing();
-  base::RunLoop().Run();
-
-  EXPECT_EQ(0, callback_count_);
-  EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, last_connect_error_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, RequestPinCode)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        ScheduleAsynchronousCancelPairing(device);
+      });
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, error);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Should be no changes except connecting going true and false.
   EXPECT_EQ(2, observer.device_changed_count());
@@ -3312,22 +3466,21 @@ TEST_F(BluetoothBlueZTest, PairingRejectedAtPasskey) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_passkey_count_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  // Reject the pairing.
-  device->RejectPairing();
-  base::RunLoop().Run();
-
-  EXPECT_EQ(0, callback_count_);
-  EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_REJECTED, last_connect_error_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, RequestPasskey)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        ScheduleAsynchronousRejectPairing(device);
+      });
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_EQ(BluetoothDevice::ERROR_AUTH_REJECTED, error);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Should be no changes except connecting going true and false.
   EXPECT_EQ(2, observer.device_changed_count());
@@ -3350,22 +3503,21 @@ TEST_F(BluetoothBlueZTest, PairingCancelledAtPasskey) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_passkey_count_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  // Cancel the pairing.
-  device->CancelPairing();
-  base::RunLoop().Run();
-
-  EXPECT_EQ(0, callback_count_);
-  EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, last_connect_error_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, RequestPasskey)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        ScheduleAsynchronousCancelPairing(device);
+      });
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, error);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Should be no changes except connecting going true and false.
   EXPECT_EQ(2, observer.device_changed_count());
@@ -3388,22 +3540,22 @@ TEST_F(BluetoothBlueZTest, PairingRejectedAtConfirmation) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.confirm_passkey_count_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  // Reject the pairing.
-  device->RejectPairing();
-  base::RunLoop().Run();
-
-  EXPECT_EQ(0, callback_count_);
-  EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_REJECTED, last_connect_error_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, ConfirmPasskey)
+      .WillOnce([](BluetoothDevice* device, uint32_t passkey) {
+        ASSERT_NE(device, nullptr);
+        EXPECT_EQ(passkey, 123456U);
+        ScheduleAsynchronousRejectPairing(device);
+      });
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_EQ(BluetoothDevice::ERROR_AUTH_REJECTED, error);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Should be no changes except connecting going true and false.
   EXPECT_EQ(2, observer.device_changed_count());
@@ -3426,22 +3578,22 @@ TEST_F(BluetoothBlueZTest, PairingCancelledAtConfirmation) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.confirm_passkey_count_);
-  EXPECT_TRUE(device->IsConnecting());
-
-  // Cancel the pairing.
-  device->CancelPairing();
-  base::RunLoop().Run();
-
-  EXPECT_EQ(0, callback_count_);
-  EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, last_connect_error_);
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, ConfirmPasskey)
+      .WillOnce([](BluetoothDevice* device, uint32_t passkey) {
+        ASSERT_NE(device, nullptr);
+        EXPECT_EQ(passkey, 123456U);
+        ScheduleAsynchronousCancelPairing(device);
+      });
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, error);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
 
   // Should be no changes except connecting going true and false.
   EXPECT_EQ(2, observer.device_changed_count());
@@ -3464,21 +3616,24 @@ TEST_F(BluetoothBlueZTest, PairingCancelledInFlight) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
-  TestPairingDelegate pairing_delegate;
-  device->Connect(&pairing_delegate,
-                  base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                 base::Unretained(this)));
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  bool callback_called = false;
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            callback_called = true;
+            EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, error);
+            run_loop.Quit();
+          }));
 
-  EXPECT_EQ(0, pairing_delegate.call_count_);
+  EXPECT_FALSE(callback_called);
   EXPECT_TRUE(device->IsConnecting());
 
   // Cancel the pairing.
   device->CancelPairing();
-  base::RunLoop().Run();
-
-  EXPECT_EQ(0, callback_count_);
-  EXPECT_EQ(1, error_callback_count_);
-  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, last_connect_error_);
+  run_loop.Run();
 
   // Should be no changes except connecting going true and false.
   EXPECT_EQ(2, observer.device_changed_count());
@@ -3492,7 +3647,7 @@ TEST_F(BluetoothBlueZTest, IncomingPairRequestPinCode) {
 
   GetAdapter();
 
-  TestPairingDelegate pairing_delegate;
+  StrictMock<MockPairingDelegate> pairing_delegate;
   adapter_->AddPairingDelegate(
       &pairing_delegate, BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH);
 
@@ -3507,21 +3662,22 @@ TEST_F(BluetoothBlueZTest, IncomingPairRequestPinCode) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
+  EXPECT_CALL(pairing_delegate, RequestPinCode)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        device->SetPinCode("1234");
+      });
+
+  base::RunLoop run_loop;
   fake_bluetooth_device_client_->SimulatePairing(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kRequestPinCodePath),
-      true, GetCallback(),
-      base::BindOnce(&BluetoothBlueZTest::DBusErrorCallback,
-                     base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_pincode_count_);
-
-  // Set the PIN.
-  device->SetPinCode("1234");
-  base::RunLoop().Run();
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+      true, base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }),
+      base::BindLambdaForTesting([&run_loop](const std::string& error_name,
+                                             const std::string& error_message) {
+        ADD_FAILURE() << "Pairing unexpectedly failed: " << error_message;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 
   // One change for paired, and one for trusted.
   EXPECT_EQ(2, observer.device_changed_count());
@@ -3546,7 +3702,7 @@ TEST_F(BluetoothBlueZTest, IncomingPairConfirmPasskey) {
 
   GetAdapter();
 
-  TestPairingDelegate pairing_delegate;
+  StrictMock<MockPairingDelegate> pairing_delegate;
   adapter_->AddPairingDelegate(
       &pairing_delegate, BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH);
 
@@ -3561,22 +3717,22 @@ TEST_F(BluetoothBlueZTest, IncomingPairConfirmPasskey) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
+  EXPECT_CALL(pairing_delegate, ConfirmPasskey)
+      .WillOnce([](BluetoothDevice* device, uint32_t passkey) {
+        EXPECT_EQ(passkey, 123456U);
+        device->ConfirmPairing();
+      });
+
+  base::RunLoop run_loop;
   fake_bluetooth_device_client_->SimulatePairing(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kConfirmPasskeyPath),
-      true, GetCallback(),
-      base::BindOnce(&BluetoothBlueZTest::DBusErrorCallback,
-                     base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.confirm_passkey_count_);
-  EXPECT_EQ(123456U, pairing_delegate.last_passkey_);
-
-  // Confirm the passkey.
-  device->ConfirmPairing();
-  base::RunLoop().Run();
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+      true, base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }),
+      base::BindLambdaForTesting([&run_loop](const std::string& error_name,
+                                             const std::string& error_message) {
+        ADD_FAILURE() << "Pairing unexpectedly failed: " << error_message;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 
   // One change for paired, and one for trusted.
   EXPECT_EQ(2, observer.device_changed_count());
@@ -3601,7 +3757,7 @@ TEST_F(BluetoothBlueZTest, IncomingPairRequestPasskey) {
 
   GetAdapter();
 
-  TestPairingDelegate pairing_delegate;
+  StrictMock<MockPairingDelegate> pairing_delegate;
   adapter_->AddPairingDelegate(
       &pairing_delegate, BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH);
 
@@ -3616,21 +3772,22 @@ TEST_F(BluetoothBlueZTest, IncomingPairRequestPasskey) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
+  EXPECT_CALL(pairing_delegate, RequestPasskey)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        device->SetPasskey(1234);
+      });
+
+  base::RunLoop run_loop;
   fake_bluetooth_device_client_->SimulatePairing(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kRequestPasskeyPath),
-      true, GetCallback(),
-      base::BindOnce(&BluetoothBlueZTest::DBusErrorCallback,
-                     base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_passkey_count_);
-
-  // Set the Passkey.
-  device->SetPasskey(1234);
-  base::RunLoop().Run();
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+      true, base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }),
+      base::BindLambdaForTesting([&run_loop](const std::string& error_name,
+                                             const std::string& error_message) {
+        ADD_FAILURE() << "Pairing unexpectedly failed: " << error_message;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 
   // One change for paired, and one for trusted.
   EXPECT_EQ(2, observer.device_changed_count());
@@ -3655,7 +3812,7 @@ TEST_F(BluetoothBlueZTest, IncomingPairJustWorks) {
 
   GetAdapter();
 
-  TestPairingDelegate pairing_delegate;
+  StrictMock<MockPairingDelegate> pairing_delegate;
   adapter_->AddPairingDelegate(
       &pairing_delegate, BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH);
 
@@ -3671,21 +3828,22 @@ TEST_F(BluetoothBlueZTest, IncomingPairJustWorks) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
+  EXPECT_CALL(pairing_delegate, AuthorizePairing)
+      .WillOnce([](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        device->ConfirmPairing();
+      });
+
+  base::RunLoop run_loop;
   fake_bluetooth_device_client_->SimulatePairing(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kJustWorksPath), true,
-      GetCallback(),
-      base::BindOnce(&BluetoothBlueZTest::DBusErrorCallback,
-                     base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.authorize_pairing_count_);
-
-  // Confirm the pairing.
-  device->ConfirmPairing();
-  base::RunLoop().Run();
-
-  EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(0, error_callback_count_);
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }),
+      base::BindLambdaForTesting([&run_loop](const std::string& error_name,
+                                             const std::string& error_message) {
+        ADD_FAILURE() << "Pairing unexpectedly failed: " << error_message;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 
   // One change for paired, and one for trusted.
   EXPECT_EQ(2, observer.device_changed_count());
@@ -3870,7 +4028,7 @@ TEST_F(BluetoothBlueZTest, RemovePairingDelegateDuringPairing) {
 
   GetAdapter();
 
-  TestPairingDelegate pairing_delegate;
+  StrictMock<MockPairingDelegate> pairing_delegate;
   adapter_->AddPairingDelegate(
       &pairing_delegate, BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH);
 
@@ -3885,28 +4043,35 @@ TEST_F(BluetoothBlueZTest, RemovePairingDelegateDuringPairing) {
 
   TestBluetoothAdapterObserver observer(adapter_);
 
+  EXPECT_CALL(pairing_delegate, RequestPasskey)
+      .WillOnce([&](BluetoothDevice* device) {
+        ASSERT_NE(device, nullptr);
+        // A pairing context should now be set on the device.
+        BluetoothDeviceBlueZ* device_bluez =
+            static_cast<BluetoothDeviceBlueZ*>(device);
+        EXPECT_NE(device_bluez->GetPairing(), nullptr);
+
+        // Removing the pairing delegate should remove that pairing context.
+        adapter_->RemovePairingDelegate(&pairing_delegate);
+        EXPECT_EQ(device_bluez->GetPairing(), nullptr);
+
+        // This passkey won't be used because of the delegate removal above.
+        device->SetPasskey(111u);
+      });
+
+  base::RunLoop run_loop;
   fake_bluetooth_device_client_->SimulatePairing(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kRequestPasskeyPath),
-      true, GetCallback(),
-      base::BindOnce(&BluetoothBlueZTest::DBusErrorCallback,
-                     base::Unretained(this)));
-
-  EXPECT_EQ(1, pairing_delegate.call_count_);
-  EXPECT_EQ(1, pairing_delegate.request_passkey_count_);
-
-  // A pairing context should now be set on the device.
-  BluetoothDeviceBlueZ* device_bluez =
-      static_cast<BluetoothDeviceBlueZ*>(device);
-  ASSERT_TRUE(device_bluez->GetPairing() != nullptr);
-
-  // Removing the pairing delegate should remove that pairing context.
-  adapter_->RemovePairingDelegate(&pairing_delegate);
-
-  EXPECT_TRUE(device_bluez->GetPairing() == nullptr);
-
-  // Set the Passkey, this should now have no effect since the pairing has
-  // been, in-effect, cancelled
-  device->SetPasskey(1234);
+      true, base::BindLambdaForTesting([&run_loop]() {
+        ADD_FAILURE() << "Pairing unexpectedly succeeded.";
+        run_loop.Quit();
+      }),
+      base::BindLambdaForTesting([&run_loop](const std::string& error_name,
+                                             const std::string& error_message) {
+        EXPECT_EQ("org.bluez.Error.AuthenticationCanceled", error_name);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 
   EXPECT_EQ(0, callback_count_);
   EXPECT_EQ(0, error_callback_count_);
@@ -3991,8 +4156,15 @@ TEST_F(BluetoothBlueZTest, GetConnectionInfoForConnectedDevice) {
   BluetoothDevice* device = adapter_->GetDevice(
       bluez::FakeBluetoothDeviceClient::kPairedDeviceAddress);
 
-  device->Connect(nullptr, base::BindOnce(&BluetoothBlueZTest::ConnectCallback,
-                                          base::Unretained(this)));
+  base::RunLoop run_loop;
+  device->Connect(
+      nullptr,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
   EXPECT_TRUE(device->IsConnected());
 
   // Calling GetConnectionInfo for a connected device should return valid
@@ -4030,6 +4202,7 @@ TEST_F(BluetoothBlueZTest, Shutdown) {
   adapter_->SetPowered(true, GetCallback(), GetErrorCallback());
   adapter_->SetDiscoverable(true, GetCallback(), GetErrorCallback());
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       GetErrorCallback());
@@ -4038,7 +4211,7 @@ TEST_F(BluetoothBlueZTest, Shutdown) {
   ASSERT_EQ(0, error_callback_count_);
   callback_count_ = 0;
 
-  TestPairingDelegate pairing_delegate;
+  StrictMock<MockPairingDelegate> pairing_delegate;
   adapter_->AddPairingDelegate(
       &pairing_delegate, BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH);
 
@@ -4168,6 +4341,7 @@ TEST_F(BluetoothBlueZTest, Shutdown) {
   EXPECT_EQ(1, error_callback_count_--) << "OnPropertyChangeCompleted error";
 
   adapter_bluez->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       GetErrorCallback());
@@ -4209,6 +4383,7 @@ TEST_F(BluetoothBlueZTest, Shutdown) {
   // From BluetoothAdapater:
 
   adapter_->StartDiscoverySession(
+      /*client_name=*/std::string(),
       base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                      base::Unretained(this)),
       GetErrorCallback());
@@ -4219,7 +4394,7 @@ TEST_F(BluetoothBlueZTest, Shutdown) {
   EXPECT_EQ(nullptr,
             adapter_->GetDevice(
                 bluez::FakeBluetoothDeviceClient::kPairedDeviceAddress));
-  TestPairingDelegate pairing_delegate2;
+  StrictMock<MockPairingDelegate> pairing_delegate2;
   adapter_->AddPairingDelegate(
       &pairing_delegate2, BluetoothAdapter::PAIRING_DELEGATE_PRIORITY_HIGH);
   adapter_->RemovePairingDelegate(&pairing_delegate2);
@@ -4232,6 +4407,7 @@ TEST_F(BluetoothBlueZTest, StartDiscovery_DiscoveringStopped_StartAgain) {
   {
     base::RunLoop loop;
     adapter_->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<BluetoothDiscoverySession> session) {
               loop.Quit();
@@ -4245,6 +4421,7 @@ TEST_F(BluetoothBlueZTest, StartDiscovery_DiscoveringStopped_StartAgain) {
   {
     base::RunLoop loop;
     adapter_->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<BluetoothDiscoverySession> session) {
               loop.Quit();
@@ -4265,6 +4442,7 @@ TEST_F(BluetoothBlueZTest, Shutdown_OnStartDiscovery) {
 
   for (int i = 0; i < kNumberOfDiscoverySessions; i++) {
     adapter_bluez->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                        base::Unretained(this)),
         GetErrorCallback());
@@ -4285,6 +4463,7 @@ TEST_F(BluetoothBlueZTest, Shutdown_OnStartDiscoveryError) {
 
   for (int i = 0; i < kNumberOfDiscoverySessions; i++) {
     adapter_bluez->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindOnce(&BluetoothBlueZTest::DiscoverySessionCallback,
                        base::Unretained(this)),
         GetErrorCallback());
@@ -4303,6 +4482,7 @@ TEST_F(BluetoothBlueZTest, StartDiscoveryError_ThenStartAgain) {
   {
     base::RunLoop loop;
     adapter_->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindOnce([](std::unique_ptr<BluetoothDiscoverySession> session) {
           ADD_FAILURE() << "Unexpected discovery session start success.";
         }),
@@ -4313,6 +4493,7 @@ TEST_F(BluetoothBlueZTest, StartDiscoveryError_ThenStartAgain) {
   {
     base::RunLoop loop;
     adapter_->StartDiscoverySession(
+        /*client_name=*/std::string(),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<BluetoothDiscoverySession> session) {
               loop.Quit();
@@ -4484,25 +4665,25 @@ TEST_F(BluetoothBlueZTest, BatteryEvents) {
       adapter_->GetDevice(bluez::FakeBluetoothDeviceClient::kLowEnergyAddress);
   EXPECT_TRUE(device);
   // A new device does not have battery level set.
-  EXPECT_FALSE(device->battery_percentage().has_value());
+  EXPECT_FALSE(device->GetBatteryInfo(BatteryType::kDefault).has_value());
 
   // A battery appears, check that the device battery percentage is updated..
   fake_bluetooth_battery_client_->CreateBattery(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath), 50);
-  EXPECT_TRUE(device->battery_percentage().has_value());
-  EXPECT_EQ(50, device->battery_percentage().value());
+  EXPECT_TRUE(device->GetBatteryInfo(BatteryType::kDefault).has_value());
+  EXPECT_EQ(50, device->GetBatteryInfo(BatteryType::kDefault)->percentage);
 
   // Property percentage changes, check that the corresponding device also
   // updates its battery percentage field.
   fake_bluetooth_battery_client_->ChangeBatteryPercentage(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath), 40);
-  EXPECT_EQ(40, device->battery_percentage().value());
+  EXPECT_EQ(40, device->GetBatteryInfo(BatteryType::kDefault)->percentage);
 
   // Battery object disappears, check that the corresponding device gets its
   // battery percentage field cleared.
   fake_bluetooth_battery_client_->RemoveBattery(
       dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath));
-  EXPECT_FALSE(device->battery_percentage().has_value());
+  EXPECT_FALSE(device->GetBatteryInfo(BatteryType::kDefault).has_value());
 }
 
 TEST_F(BluetoothBlueZTest, DeviceUUIDsCombinedFromServiceAndAdvertisement) {
@@ -4577,5 +4758,277 @@ TEST_F(BluetoothBlueZTest, DeviceUUIDsCombinedFromServiceAndAdvertisement) {
                              uuidLaterAdv, uuidLaterServ, uuidLaterBoth,
                              uuidAlwaysAdv, uuidAlwaysServ, uuidAlwaysBoth));
 }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(BluetoothBlueZTest, StartLowEnergyScanSessionAdapterPresent) {
+  GetAdapter();
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager = GetAdvertisementMonitorApplicationManger();
+
+  auto filter = CreateLowEnergyScanFilter();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      std::move(filter), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was added to d-bus layer.
+  ASSERT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  // Check that advertisement monitor gets removed from d-bus layer when the
+  // scan session is destroyed.
+  background_scan_session.reset();
+  ASSERT_EQ(0u, application_manager->AdvertisementMonitorsCount());
+}
+
+TEST_F(BluetoothBlueZTest, StartLowEnergyScanSessionAdapterAddedLater) {
+  fake_bluetooth_adapter_client_->SetPresent(false);
+  GetAdapter();
+  ASSERT_FALSE(adapter_->IsPresent());
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager = GetAdvertisementMonitorApplicationManger();
+
+  auto filter = CreateLowEnergyScanFilter();
+
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      std::move(filter), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that the advertisement monitor is not yet added to the d-bus layer.
+  // It is queued up until the adapter gets added.
+  ASSERT_EQ(0u, application_manager->AdvertisementMonitorsCount());
+
+  fake_bluetooth_adapter_client_->SetPresent(true);
+  EXPECT_TRUE(adapter_->IsPresent());
+
+  ASSERT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  background_scan_session.reset();
+  ASSERT_EQ(0u, application_manager->AdvertisementMonitorsCount());
+}
+
+TEST_F(BluetoothBlueZTest, StartLowEnergyScanSessionAdapterBecomeNotPresent) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  // Remove Adapter
+  fake_bluetooth_adapter_client_->SetPresent(false);
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager = GetAdvertisementMonitorApplicationManger();
+
+  auto filter = CreateLowEnergyScanFilter();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      std::move(filter), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was not added to d-bus layer since there
+  // is no adapter present.
+  ASSERT_EQ(0u, application_manager->AdvertisementMonitorsCount());
+
+  // Add Adapter
+  fake_bluetooth_adapter_client_->SetPresent(true);
+
+  // Check that queued advertisement monitor was added to d-bus after adapter
+  // becomes present.
+  ASSERT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+}
+
+TEST_F(BluetoothBlueZTest, BluetoothLowEnergyScanSessionBlueZDeviceFound) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager = GetAdvertisementMonitorApplicationManger();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      CreateLowEnergyScanFilter(), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was added to d-bus layer.
+  EXPECT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  // Get advertisement fake advertisement monitor to forward events to
+  // BluetoothLowEnergyScanSessionBlueZ.
+  FakeBluetoothAdvertisementMonitorServiceProvider* advertisement_monitor =
+      application_manager->GetLastAddedAdvertisementMonitorServiceProvider();
+  ASSERT_TRUE(advertisement_monitor);
+
+  // Simulate a device found event.
+  advertisement_monitor->delegate()->OnDeviceFound(
+      dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kPairedDevicePath));
+  EXPECT_EQ(1u, delegate.devices_found().size());
+
+  std::pair<device::BluetoothLowEnergyScanSession*, device::BluetoothDevice*>
+      devices_found_pair = delegate.devices_found()[0];
+  EXPECT_EQ(background_scan_session.get(), devices_found_pair.first);
+  EXPECT_EQ(adapter_->GetDevice(
+                bluez::FakeBluetoothDeviceClient::kPairedDeviceAddress),
+            devices_found_pair.second);
+}
+
+TEST_F(BluetoothBlueZTest, BluetoothLowEnergyScanSessionBlueZDeviceLost) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager = GetAdvertisementMonitorApplicationManger();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      CreateLowEnergyScanFilter(), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was added to d-bus layer.
+  EXPECT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  // Get advertisement fake advertisement monitor to forward events to
+  // BluetoothLowEnergyScanSessionBlueZ.
+  FakeBluetoothAdvertisementMonitorServiceProvider* advertisement_monitor =
+      application_manager->GetLastAddedAdvertisementMonitorServiceProvider();
+  ASSERT_TRUE(advertisement_monitor);
+
+  // Simulate a device lost event.
+  advertisement_monitor->delegate()->OnDeviceLost(
+      dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kPairedDevicePath));
+  EXPECT_EQ(1u, delegate.devices_lost().size());
+
+  std::pair<device::BluetoothLowEnergyScanSession*, device::BluetoothDevice*>
+      devices_lost_pair = delegate.devices_lost()[0];
+  EXPECT_EQ(background_scan_session.get(), devices_lost_pair.first);
+  EXPECT_EQ(adapter_->GetDevice(
+                bluez::FakeBluetoothDeviceClient::kPairedDeviceAddress),
+            devices_lost_pair.second);
+}
+
+TEST_F(BluetoothBlueZTest,
+       BluetoothLowEnergyScanSessionBlueZStartThenInvalidate) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager = GetAdvertisementMonitorApplicationManger();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      CreateLowEnergyScanFilter(), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was added to d-bus layer.
+  EXPECT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  // Get advertisement fake advertisement monitor to forward events to
+  // BluetoothLowEnergyScanSessionBlueZ.
+  FakeBluetoothAdvertisementMonitorServiceProvider* advertisement_monitor =
+      application_manager->GetLastAddedAdvertisementMonitorServiceProvider();
+  ASSERT_TRUE(advertisement_monitor);
+
+  // Successfully start scan session.
+  advertisement_monitor->delegate()->OnActivate();
+  EXPECT_EQ(1u, delegate.sessions_started().size());
+  std::pair<device::BluetoothLowEnergyScanSession*,
+            absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>
+      session_started_pair = delegate.sessions_started()[0];
+
+  // Check that the correct scan session is started.
+  EXPECT_EQ(background_scan_session.get(), session_started_pair.first);
+
+  // Check that there was no error when starting the scan session.
+  EXPECT_FALSE(session_started_pair.second.has_value());
+
+  // Invalidate scan session after successful start.
+  advertisement_monitor->delegate()->OnRelease();
+  EXPECT_EQ(1u, delegate.sessions_invalidated().size());
+  EXPECT_EQ(background_scan_session.get(),
+            delegate.sessions_invalidated().front());
+}
+
+TEST_F(BluetoothBlueZTest, BluetoothLowEnergyScanSessionBlueZFailsToStart) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager = GetAdvertisementMonitorApplicationManger();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      CreateLowEnergyScanFilter(), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was added to d-bus layer.
+  EXPECT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+
+  // Get advertisement fake advertisement monitor to forward events to
+  // BluetoothLowEnergyScanSessionBlueZ.
+  FakeBluetoothAdvertisementMonitorServiceProvider* advertisement_monitor =
+      application_manager->GetLastAddedAdvertisementMonitorServiceProvider();
+  ASSERT_TRUE(advertisement_monitor);
+
+  // Scan session failed to start.
+  advertisement_monitor->delegate()->OnRelease();
+  EXPECT_EQ(1u, delegate.sessions_started().size());
+
+  std::pair<device::BluetoothLowEnergyScanSession*,
+            absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>>
+      session_started_pair = delegate.sessions_started()[0];
+
+  // Check that the correct scan session.
+  EXPECT_EQ(background_scan_session.get(), session_started_pair.first);
+
+  // Check that there was an error indicating failure to start.
+  EXPECT_TRUE(session_started_pair.second.has_value());
+}
+
+TEST_F(BluetoothBlueZTest,
+       LowEnergyScanSession_HardwareOffloadingNotSupported) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  // We haven't added any supported features to the list, so this should report
+  // hardware offloading as not supported.
+  EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kNotSupported);
+}
+
+TEST_F(BluetoothBlueZTest, LowEnergyScanSession_HardwareOffloadingSupported) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  BluetoothAdapterBlueZ* adapter_bluez =
+      static_cast<BluetoothAdapterBlueZ*>(adapter_.get());
+  FakeBluetoothAdvertisementMonitorManagerClient* client =
+      static_cast<bluez::FakeBluetoothAdvertisementMonitorManagerClient*>(
+          bluez::BluezDBusManager::Get()
+              ->GetBluetoothAdvertisementMonitorManagerClient());
+
+  // If no properties are returned we should get |kUndetermined| status.
+  client->RemoveProperties();
+  EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kUndetermined);
+
+  // Once we add the "controller-patterns" feature, the adapter should report
+  // hardware offloading as supported.
+  client->InitializeProperties();
+  BluetoothAdvertisementMonitorManagerClient::Properties* properties =
+      client->GetProperties(adapter_bluez->object_path());
+  ASSERT_TRUE(properties);
+  properties->supported_features.ReplaceValue(
+      {bluetooth_advertisement_monitor_manager::
+           kSupportedFeaturesControllerPatterns});
+  EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kSupported);
+
+  // Ensure that if no properties are returned we still get the cached value.
+  client->RemoveProperties();
+  EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kSupported);
+
+  // If the adapter becomes not present we should clear the cached value.
+  fake_bluetooth_adapter_client_->SetPresent(false);
+  GetAdapter();
+  ASSERT_FALSE(adapter_->IsPresent());
+  EXPECT_EQ(adapter_->GetLowEnergyScanSessionHardwareOffloadingStatus(),
+            BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+                kUndetermined);
+}
+#endif
 
 }  // namespace bluez

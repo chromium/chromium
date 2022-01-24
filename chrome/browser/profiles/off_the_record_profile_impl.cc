@@ -4,8 +4,10 @@
 
 #include "chrome/browser/profiles/off_the_record_profile_impl.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -34,6 +36,8 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
+#include "chrome/browser/notifications/platform_notification_service_factory.h"
+#include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -44,6 +48,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#include "chrome/browser/ui/zoom/chrome_zoom_level_otr_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -61,8 +66,10 @@
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/zoom/zoom_event_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_data_source.h"
@@ -76,15 +83,11 @@
 
 #if defined(OS_ANDROID)
 #include "components/prefs/scoped_user_pref_update.h"
-#else  // !defined(OS_ANDROID)
-#include "chrome/browser/ui/zoom/chrome_zoom_level_otr_delegate.h"
-#include "components/zoom/zoom_event_manager.h"
-#include "content/public/browser/host_zoom_map.h"
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/preferences.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/preferences.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -110,6 +113,7 @@
 
 using content::BrowserThread;
 using content::DownloadManagerDelegate;
+using content::HostZoomMap;
 
 namespace {
 
@@ -173,7 +177,9 @@ void OffTheRecordProfileImpl::Init() {
   // Always crash when incognito is not available.
   CHECK(!IsIncognitoProfile() ||
         IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
-            IncognitoModePrefs::DISABLED);
+            IncognitoModePrefs::Availability::kDisabled);
+
+  TrackZoomLevelsFromParent();
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   ChromePluginServiceFilter::GetInstance()->RegisterProfile(this);
@@ -241,9 +247,9 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
   // Store incognito lifetime and navigations count histogram.
   if (IsIncognitoProfile()) {
     auto duration = base::Time::Now() - start_time_;
-    base::UmaHistogramCustomCounts(
-        "Profile.Incognito.Lifetime", duration.InMinutes(), 1,
-        base::TimeDelta::FromDays(28).InMinutes(), 100);
+    base::UmaHistogramCustomCounts("Profile.Incognito.Lifetime",
+                                   duration.InMinutes(), 1,
+                                   base::Days(28).InMinutes(), 100);
 
     base::UmaHistogramCounts1000(
         "Profile.Incognito.MainFrameNavigationsPerSession",
@@ -251,6 +257,29 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
 
     base::RecordAction(base::UserMetricsAction("IncognitoMode_Ended"));
   }
+}
+
+void OffTheRecordProfileImpl::TrackZoomLevelsFromParent() {
+  // Here we only want to use zoom levels stored in the main-context's default
+  // storage partition. We're not interested in zoom levels in special
+  // partitions, e.g. those used by WebViewGuests.
+  HostZoomMap* host_zoom_map = HostZoomMap::GetDefaultForBrowserContext(this);
+  HostZoomMap* parent_host_zoom_map =
+      HostZoomMap::GetDefaultForBrowserContext(profile_);
+  host_zoom_map->CopyFrom(parent_host_zoom_map);
+  // Observe parent profile's HostZoomMap changes so they can also be applied
+  // to this profile's HostZoomMap.
+  track_zoom_subscription_ = parent_host_zoom_map->AddZoomLevelChangedCallback(
+      base::BindRepeating(&OffTheRecordProfileImpl::OnParentZoomLevelChanged,
+                          base::Unretained(this)));
+  if (!profile_->GetZoomLevelPrefs())
+    return;
+
+  // Also track changes to the parent profile's default zoom level.
+  parent_default_zoom_level_subscription_ =
+      profile_->GetZoomLevelPrefs()->RegisterDefaultZoomLevelCallback(
+          base::BindRepeating(&OffTheRecordProfileImpl::UpdateDefaultZoomLevel,
+                              base::Unretained(this)));
 }
 
 std::string OffTheRecordProfileImpl::GetProfileUserName() const {
@@ -270,14 +299,12 @@ base::Time OffTheRecordProfileImpl::GetCreationTime() const {
   return start_time_;
 }
 
-#if !defined(OS_ANDROID)
 std::unique_ptr<content::ZoomLevelDelegate>
 OffTheRecordProfileImpl::CreateZoomLevelDelegate(
     const base::FilePath& partition_path) {
   return std::make_unique<ChromeZoomLevelOTRDelegate>(
       zoom::ZoomEventManager::GetForBrowserContext(this)->GetWeakPtr());
 }
-#endif  // !defined(OS_ANDROID)
 
 scoped_refptr<base::SequencedTaskRunner>
 OffTheRecordProfileImpl::GetIOTaskRunner() {
@@ -379,9 +406,9 @@ OffTheRecordProfileImpl::GetPolicySchemaRegistryService() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-policy::UserCloudPolicyManagerChromeOS*
-OffTheRecordProfileImpl::GetUserCloudPolicyManagerChromeOS() {
-  return GetOriginalProfile()->GetUserCloudPolicyManagerChromeOS();
+policy::UserCloudPolicyManagerAsh*
+OffTheRecordProfileImpl::GetUserCloudPolicyManagerAsh() {
+  return GetOriginalProfile()->GetUserCloudPolicyManagerAsh();
 }
 
 policy::ActiveDirectoryPolicyManager*
@@ -415,6 +442,12 @@ OffTheRecordProfileImpl::GetSpecialStoragePolicy() {
 #else
   return NULL;
 #endif
+}
+
+content::PlatformNotificationService*
+OffTheRecordProfileImpl::GetPlatformNotificationService() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return PlatformNotificationServiceFactory::GetForProfile(this);
 }
 
 content::PushMessagingService*
@@ -508,9 +541,6 @@ OffTheRecordProfileImpl::GetProfilePolicyConnector() const {
   return profile_->GetProfilePolicyConnector();
 }
 
-void OffTheRecordProfileImpl::SetExitType(ExitType exit_type) {
-}
-
 base::FilePath OffTheRecordProfileImpl::last_selected_directory() {
   const base::FilePath& directory = last_selected_directory_;
   if (directory.empty()) {
@@ -527,10 +557,6 @@ void OffTheRecordProfileImpl::set_last_selected_directory(
 bool OffTheRecordProfileImpl::WasCreatedByVersionOrLater(
     const std::string& version) {
   return profile_->WasCreatedByVersionOrLater(version);
-}
-
-Profile::ExitType OffTheRecordProfileImpl::GetLastSessionExitType() const {
-  return profile_->GetLastSessionExitType();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -572,14 +598,14 @@ class GuestSessionProfile : public OffTheRecordProfileImpl {
   }
 
   void InitChromeOSPreferences() override {
-    chromeos_preferences_ = std::make_unique<chromeos::Preferences>();
+    chromeos_preferences_ = std::make_unique<ash::Preferences>();
     chromeos_preferences_->Init(
         this, user_manager::UserManager::Get()->GetActiveUser());
   }
 
  private:
   // The guest user should be able to customize Chrome OS preferences.
-  std::unique_ptr<chromeos::Preferences> chromeos_preferences_;
+  std::unique_ptr<ash::Preferences> chromeos_preferences_;
 };
 #endif
 
@@ -602,6 +628,34 @@ bool OffTheRecordProfileImpl::IsSignedIn() {
   return false;
 }
 
-void OffTheRecordProfileImpl::RecordMainFrameNavigation() {
+void OffTheRecordProfileImpl::OnParentZoomLevelChanged(
+    const HostZoomMap::ZoomLevelChange& change) {
+  HostZoomMap* host_zoom_map = HostZoomMap::GetDefaultForBrowserContext(this);
+  switch (change.mode) {
+    case HostZoomMap::ZOOM_CHANGED_TEMPORARY_ZOOM:
+      return;
+    case HostZoomMap::ZOOM_CHANGED_FOR_HOST:
+      host_zoom_map->SetZoomLevelForHost(change.host, change.zoom_level);
+      return;
+    case HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST:
+      host_zoom_map->SetZoomLevelForHostAndScheme(change.scheme,
+          change.host,
+          change.zoom_level);
+      return;
+  }
+}
+
+void OffTheRecordProfileImpl::UpdateDefaultZoomLevel() {
+  HostZoomMap* host_zoom_map = HostZoomMap::GetDefaultForBrowserContext(this);
+  double default_zoom_level =
+      profile_->GetZoomLevelPrefs()->GetDefaultZoomLevelPref();
+  host_zoom_map->SetDefaultZoomLevel(default_zoom_level);
+  // HostZoomMap does not trigger zoom notification events when the default
+  // zoom level is set, so we need to do it here.
+  zoom::ZoomEventManager::GetForBrowserContext(this)
+      ->OnDefaultZoomLevelChanged();
+}
+
+void OffTheRecordProfileImpl::RecordPrimaryMainFrameNavigation() {
   main_frame_navigations_++;
 }

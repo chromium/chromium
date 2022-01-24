@@ -30,7 +30,7 @@ class PrefService;
 
 namespace password_manager {
 
-class PasswordStore;
+class PasswordStoreInterface;
 
 // This class is responsible for removing obsolete HTTP credentials that can
 // safely be deleted and reporting metrics about HTTP to HTTPS migration. This
@@ -60,10 +60,14 @@ class HttpCredentialCleaner : public PasswordStoreConsumer,
   // A preference from |prefs| is used to set the last time (in seconds) when
   // the cleaning was performed.
   HttpCredentialCleaner(
-      scoped_refptr<PasswordStore> store,
+      scoped_refptr<PasswordStoreInterface> store,
       base::RepeatingCallback<network::mojom::NetworkContext*()>
           network_context_getter,
       PrefService* prefs);
+
+  HttpCredentialCleaner(const HttpCredentialCleaner&) = delete;
+  HttpCredentialCleaner& operator=(const HttpCredentialCleaner&) = delete;
+
   ~HttpCredentialCleaner() override;
 
   // CredentialsCleaner:
@@ -98,7 +102,7 @@ class HttpCredentialCleaner : public PasswordStoreConsumer,
   void SetPrefIfDone();
 
   // Clean-up is performed on |store_|.
-  scoped_refptr<PasswordStore> store_;
+  scoped_refptr<PasswordStoreInterface> store_;
 
   // Needed to create HSTS request.
   base::RepeatingCallback<network::mojom::NetworkContext*()>
@@ -125,8 +129,6 @@ class HttpCredentialCleaner : public PasswordStoreConsumer,
   size_t total_http_credentials_ = 0;
 
   base::WeakPtrFactory<HttpCredentialCleaner> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpCredentialCleaner);
 };
 
 }  // namespace password_manager

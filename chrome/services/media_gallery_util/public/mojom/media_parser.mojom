@@ -8,6 +8,7 @@ import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // Contains either encoded video frame in |encoded_data|, or decoded video
 // frame in |decoded_frame|.
@@ -54,6 +55,7 @@ interface MediaParser {
   GetCpuInfo() => (int64 libyuv_cpu_flags, int64 ffmpeg_cpu_flags);
 };
 
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
 interface MediaParserFactory {
   // Creates a MediaParser. |libyuv_cpuf_lags| are the flags returned by
   // libyuv::InitCpuFlags() from third-party/libyuv and |libavutil_cpu_flags|

@@ -34,6 +34,10 @@ class DownloadDriverImpl : public DownloadDriver,
   // Create the driver.
   DownloadDriverImpl(
       SimpleDownloadManagerCoordinator* download_manager_coordinator);
+
+  DownloadDriverImpl(const DownloadDriverImpl&) = delete;
+  DownloadDriverImpl& operator=(const DownloadDriverImpl&) = delete;
+
   ~DownloadDriverImpl() override;
 
   // DownloadDriver implementation.
@@ -90,8 +94,6 @@ class DownloadDriverImpl : public DownloadDriver,
 
   // Only used to post tasks on the same thread.
   base::WeakPtrFactory<DownloadDriverImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadDriverImpl);
 };
 
 }  // namespace download

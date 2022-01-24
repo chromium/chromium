@@ -19,6 +19,11 @@ from py_utils import tempfile_ext
 import mock  # pylint: disable=import-error
 
 
+def isSliceInList(s, l):
+  lenOfSlice = len(s)
+  return any(s == l[i:lenOfSlice + i] for i in range(len(l) - lenOfSlice + 1))
+
+
 class LocalDeviceGtestRunTest(unittest.TestCase):
   def setUp(self):
     self._obj = local_device_gtest_run.LocalDeviceGtestRun(
@@ -73,6 +78,34 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
       link = self._obj._UploadTestArtifacts(mock.MagicMock(), temp_f)
     self.assertTrue(mock_gsh.called)
     self.assertEqual(result, link)
+
+  def testGroupTests(self):
+    test = [
+        "TestClass1.testcase1",
+        "TestClass1.otherTestCase",
+        "TestClass1.PRE_testcase1",
+        "TestClass1.abc_testcase2",
+        "TestClass1.PRE_PRE_testcase1",
+        "TestClass1.PRE_abc_testcase2",
+        "TestClass1.PRE_PRE_abc_testcase2",
+    ]
+    expectedTestcase1 = [
+        "TestClass1.PRE_PRE_testcase1",
+        "TestClass1.PRE_testcase1",
+        "TestClass1.testcase1",
+    ]
+    expectedTestcase2 = [
+        "TestClass1.PRE_PRE_abc_testcase2",
+        "TestClass1.PRE_abc_testcase2",
+        "TestClass1.abc_testcase2",
+    ]
+    expectedOtherTestcase = [
+        "TestClass1.otherTestCase",
+    ]
+    actualTestCase = self._obj._GroupTests(test)
+    self.assertTrue(isSliceInList(expectedTestcase1, actualTestCase))
+    self.assertTrue(isSliceInList(expectedTestcase2, actualTestCase))
+    self.assertTrue(isSliceInList(expectedOtherTestcase, actualTestCase))
 
 
 if __name__ == '__main__':

@@ -33,13 +33,13 @@ namespace blink {
 namespace audio_utilities {
 
 float DecibelsToLinear(float decibels) {
-  return fdlibm::powf(10, 0.05f * decibels);
+  return powf(10, 0.05f * decibels);
 }
 
 float LinearToDecibels(float linear) {
   DCHECK_GE(linear, 0);
 
-  return 20 * fdlibm::log10f(linear);
+  return 20 * log10f(linear);
 }
 
 double DiscreteTimeConstantForSampleRate(double time_constant,

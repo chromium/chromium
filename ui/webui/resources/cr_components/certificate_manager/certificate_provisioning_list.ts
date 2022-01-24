@@ -11,18 +11,17 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import './certificate_provisioning_details_dialog.js';
 import './certificate_provisioning_entry.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from '../../js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from '../../js/web_ui_listener_behavior.m.js';
+import {I18nMixin} from '../../js/i18n_mixin.js';
+import {WebUIListenerMixin} from '../../js/web_ui_listener_mixin.js';
 
 import {CertificateProvisioningActionEventDetail, CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
 import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 
 const CertificateProvisioningListElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
+    WebUIListenerMixin(I18nMixin(PolymerElement));
 
 export class CertificateProvisioningListElement extends
     CertificateProvisioningListElementBase {

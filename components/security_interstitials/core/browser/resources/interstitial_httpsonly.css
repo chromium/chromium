@@ -16,6 +16,6 @@
 
 @media (prefers-color-scheme: dark) {
   .https-only .icon {
-    filter: invert(1);
+    filter: invert(1) grayscale(1);
   }
 }

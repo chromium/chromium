@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -27,7 +26,7 @@
 
 using blink::mojom::ShareError;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
 #endif
@@ -48,9 +47,10 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    share_service_ = std::make_unique<ShareServiceImpl>(*main_rfh());
+    ShareServiceImpl::Create(
+        main_rfh(), share_service_remote_.BindNewPipeAndPassReceiver());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     webshare::SharesheetClient::SetSharesheetCallbackForTesting(
         base::BindRepeating(&ShareServiceUnitTest::AcceptShareRequest));
 #endif
@@ -59,19 +59,12 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&ShareServiceUnitTest::AcceptShareRequest));
 #endif
 #if defined(OS_WIN)
-    if (!IsSupportedEnvironment())
-      return;
+    if (!webshare::ScopedShareOperationFakeComponents::IsSupportedEnvironment())
+      GTEST_SKIP();
 
     ASSERT_NO_FATAL_FAILURE(scoped_fake_components_.SetUp());
 #endif
   }
-
-#if defined(OS_WIN)
-  bool IsSupportedEnvironment() {
-    return webshare::ScopedShareOperationFakeComponents::
-        IsSupportedEnvironment();
-  }
-#endif
 
   ShareError ShareGeneratedFileData(const std::string& extension,
                                     const std::string& content_type,
@@ -90,7 +83,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
 
     ShareError result;
     base::RunLoop run_loop;
-    share_service_->Share(
+    share_service_remote_->Share(
         kTitle, kText, kUrl, std::move(files),
         base::BindLambdaForTesting([&result, &run_loop](ShareError error) {
           result = error;
@@ -109,6 +102,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
     auto blob = blink::mojom::SerializedBlob::New();
     blob->uuid = uuid;
     blob->content_type = content_type;
+    blob->size = file_length;
 
     base::RunLoop run_loop;
     auto blob_context_getter = browser_context()->GetBlobStorageContext();
@@ -138,11 +132,12 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
     return builder;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   static void AcceptShareRequest(
       content::WebContents* web_contents,
       const std::vector<base::FilePath>& file_paths,
       const std::vector<std::string>& content_types,
+      const std::vector<uint64_t>& file_sizes,
       const std::string& text,
       const std::string& title,
       sharesheet::DeliveredCallback delivered_callback) {
@@ -166,15 +161,10 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
   webshare::ScopedShareOperationFakeComponents scoped_fake_components_;
 #endif
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<ShareServiceImpl> share_service_;
+  mojo::Remote<blink::mojom::ShareService> share_service_remote_;
 };
 
 TEST_F(ShareServiceUnitTest, FileCount) {
-#if defined(OS_WIN)
-  if (!IsSupportedEnvironment())
-    return;
-#endif
-
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".txt", "text/plain", 1234,
                                                    kMaxSharedFileCount));
   EXPECT_EQ(ShareError::PERMISSION_DENIED,
@@ -215,11 +205,6 @@ TEST_F(ShareServiceUnitTest, DangerousMimeType) {
 }
 
 TEST_F(ShareServiceUnitTest, Multimedia) {
-#if defined(OS_WIN)
-  if (!IsSupportedEnvironment())
-    return;
-#endif
-
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".bmp", "image/bmp"));
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".xbm", "image/x-xbitmap"));
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".flac", "audio/flac"));
@@ -227,11 +212,6 @@ TEST_F(ShareServiceUnitTest, Multimedia) {
 }
 
 TEST_F(ShareServiceUnitTest, PortableDocumentFormat) {
-#if defined(OS_WIN)
-  if (!IsSupportedEnvironment())
-    return;
-#endif
-
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".pdf", "application/pdf"));
 }
 
@@ -248,7 +228,7 @@ TEST_F(ShareServiceUnitTest, ReservedNames) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // On Chrome OS, like Android, we prevent sharing of Android applications.
 TEST_F(ShareServiceUnitTest, AndroidPackage) {
   EXPECT_EQ(ShareError::PERMISSION_DENIED,

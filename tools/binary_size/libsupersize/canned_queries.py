@@ -10,13 +10,13 @@ import re
 import models
 
 
-class _Grouper(object):
+class _Grouper:
   def __init__(self):
     self.groups = []
 
   def Add(self, name, group):
     logging.debug('Computed %s (%d syms)', name, len(group))
-    if len(group):
+    if group:
       sorted_group = group.Sorted()
       sorted_group.SetName(name)
       self.groups.append(sorted_group)
@@ -158,7 +158,7 @@ def _CategorizeGenerated(symbols):
   return g.Finalize(symbols)
 
 
-class CannedQueries(object):
+class CannedQueries:
   """A set of pre-written queries."""
 
   def __init__(self, size_infos):

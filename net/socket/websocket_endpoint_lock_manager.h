@@ -50,6 +50,10 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
    public:
     LockReleaser(WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
                  IPEndPoint endpoint);
+
+    LockReleaser(const LockReleaser&) = delete;
+    LockReleaser& operator=(const LockReleaser&) = delete;
+
     ~LockReleaser();
 
    private:
@@ -59,11 +63,14 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
     // destroyed.
     WebSocketEndpointLockManager* websocket_endpoint_lock_manager_;
     const IPEndPoint endpoint_;
-
-    DISALLOW_COPY_AND_ASSIGN(LockReleaser);
   };
 
   WebSocketEndpointLockManager();
+
+  WebSocketEndpointLockManager(const WebSocketEndpointLockManager&) = delete;
+  WebSocketEndpointLockManager& operator=(const WebSocketEndpointLockManager&) =
+      delete;
+
   ~WebSocketEndpointLockManager();
 
   // Returns OK if lock was acquired immediately, ERR_IO_PENDING if not. If the
@@ -130,8 +137,6 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
   size_t pending_unlock_count_;
 
   base::WeakPtrFactory<WebSocketEndpointLockManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketEndpointLockManager);
 };
 
 }  // namespace net

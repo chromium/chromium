@@ -19,6 +19,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/test/browser_task_environment.h"
+#include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
@@ -41,9 +42,12 @@ class TestQuery : public PrinterQuery {
 
   void GetSettingsDone(base::OnceClosure callback,
                        std::unique_ptr<PrintSettings> new_settings,
-                       PrintingContext::Result result) override {
+                       mojom::ResultCode result) override {
     FAIL();
   }
+
+  TestQuery(const TestQuery&) = delete;
+  TestQuery& operator=(const TestQuery&) = delete;
 
   ~TestQuery() override {}
 
@@ -62,9 +66,6 @@ class TestQuery : public PrinterQuery {
 
     return std::move(worker);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestQuery);
 };
 
 class TestPrintJob : public PrintJob {

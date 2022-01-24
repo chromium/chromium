@@ -80,6 +80,8 @@ def ParseLog(logdata):
       if dst_fullpath in completed_files:
         continue
 
+      if line[:3] != '---':
+        start = start + 1  # Skip separator line of hyphens
       actual = [Fix(line) for line in lines[start : i] if line]
       fp = open(dst_fullpath, 'w')
       fp.write('\n'.join(actual))
@@ -110,39 +112,38 @@ def Run():
   data = json.loads(try_result)
   os.unlink(tmppath)
 
-  #print(json.dumps(data, indent=4))
-
   for builder in data:
     print(builder['builder']['builder'], builder['status'])
     if builder['status'] == 'FAILURE':
-      logdog_tokens = [
-          'chromium',
-          'buildbucket',
-          'cr-buildbucket.appspot.com',
+      bb_command = [
+          'bb',
+          'get',
           builder['id'],
-          '+',
-          'steps',
-          '**']
-      logdog_path = '/'.join(logdog_tokens)
-      logdog_query = 'cit logdog query -results 999 -path "%s"' % logdog_path
-      print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % logdog_query)
-      steps = os.popen(logdog_query).readlines()
-      a11y_step = None
-      for step in steps:
-        if (step.find('/content_browsertests') >= 0 and
-            step.find('with_patch') >= 0 and
-            step.find('trigger') == -1 and
-            step.find('swarming.summary') == -1 and
-            step.find('step_metadata') == -1 and
-            step.find('Upload') == -1):
+          '-steps',
+          '-json',
+      ]
+      bb_command_expanded = ' '.join(bb_command)
+      # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % bb_command_expanded)
+      output = os.popen(bb_command_expanded).read()
+      steps_json = json.loads(output)
 
-          a11y_step = step.rstrip()
-          logdog_cat = 'cit logdog cat -raw "%s"' % a11y_step
-          # A bit noisy but useful for debugging.
-          # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % logdog_cat)
-          output = os.popen(logdog_cat).read()
-          ParseLog(output)
-      if not a11y_step:
+      s_name = None
+      for step in steps_json['steps']:
+        name = step['name']
+        if name.startswith('content_browsertests') and '(with patch)' in name:
+          s_name = name
+
+      bb_command = [
+          'bb',
+          'log',
+          builder['id'],
+          '\'%s\'' % s_name,
+      ]
+      bb_command_expanded = ' '.join(bb_command)
+      # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % bb_command_expanded)
+      output = os.popen(bb_command_expanded).readlines()
+      ParseLog('\n'.join(output))
+      if not output:
         print('No content_browsertests (with patch) step found')
         continue
 

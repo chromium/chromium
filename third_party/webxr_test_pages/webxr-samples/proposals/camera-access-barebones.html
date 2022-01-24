@@ -29,9 +29,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <title>Barebones WebXR Camera Access</title>
     <link href='../css/common.css' rel='stylesheet'></link>
     <style>
-      #session-info {
-          font-weight: bold;
-          font-family: monospace;
+      #text-info {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: large;
+        color: red;
       }
     </style>
   </head>
@@ -43,16 +47,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           This sample demonstrates extremely simple use of WebXR's camera access by creating a rotating cube and applying the camera's image as a texture to it.
           <a class="back" href="./index.html">Back</a>
         </p>
-        <div id="session-info"></div>
         <div id="warning-zone"></div>
         <button id="xr-button" class="barebones-button" disabled>XR not found</button>
       </details>
     </header>
+    <div id="text-overlay">
+      <div id="text-info"></div>
+    </div>
     <main style='text-align: center;'>
       <p>Click 'Enter AR' to see content</p>
     </main>
     <script type="module">
         import * as mat4 from "../js/third-party/gl-matrix/mat4.js"
+        import {QueryArgs} from '../js/cottontail/src/util/query-args.js';
 
         // XR globals.
         let xrButton = document.getElementById('xr-button');
@@ -68,6 +75,27 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         let programInfo = null;
         let buffers = null;
         let texture = null;
+        let readback_framebuffer = null;
+        let readback_pixels = null;
+
+        // If requested, perform readback:
+        const perform_readback = QueryArgs.getBool('performReadback', false);
+        // If requested, use DOM overlay to provide information about the read color:
+        const use_dom_overlay = perform_readback && QueryArgs.getBool('useDomOverlay', false);
+
+        const render_cube = QueryArgs.getBool('renderCube', true);
+
+        const textOverlayElement = document.querySelector("#text-overlay");
+        if (!textOverlayElement) {
+          console.error("#text-overlay element not found!");
+          throw new Error("#text-overlay element not found!");
+        }
+
+        const textInfoElement = document.querySelector("#text-info");
+        if (!textInfoElement) {
+          console.error("#text-info element not found!");
+          throw new Error("#text-info element not found!");
+        }
 
         // Vertex shader program
         const vsSource = `
@@ -121,9 +149,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         function onButtonClicked() {
             if (!xrSession) {
-                navigator.xr.requestSession('immersive-ar', {
+                const sessionOptions = {
                     requiredFeatures: ['camera-access']
-                }).then(onSessionStarted, onRequestSessionError);
+                };
+
+                if (use_dom_overlay) {
+                  sessionOptions.requiredFeatures.push('dom-overlay');
+                  sessionOptions.domOverlay = { root: textOverlayElement };
+                }
+
+                navigator.xr.requestSession('immersive-ar', sessionOptions)
+                            .then(onSessionStarted, onRequestSessionError);
             } else {
                 xrSession.end();
             }
@@ -163,7 +199,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         function onSessionEnded(event) {
             xrSession = null;
             xrButton.innerHTML = 'Enter AR';
-            document.getElementById('session-info').innerHTML = '';
             gl = null;
         }
 
@@ -321,9 +356,64 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                       getCameraIntrinsics(view.projectionMatrix, cameraViewport);
 
                       // Update camera image texture.
-                      let texture = glBinding.getCameraImage(view.camera);
-                      // Render cube with camera image texture on each face.
-                      drawScene(gl, programInfo, buffers, texture, rotationSpeed, view);
+                      const texture = glBinding.getCameraImage(view.camera);
+
+                      if (perform_readback) {
+                        const texture_bytes = view.camera.width * view.camera.height * 4;
+                        if (!readback_pixels || readback_pixels.length != texture_bytes) {
+                          readback_pixels = new Uint8Array(texture_bytes);
+                        }
+
+                        readback_pixels.fill(0);
+
+                        gl.bindTexture(gl.TEXTURE_2D, texture);
+                        gl.bindFramebuffer(gl.FRAMEBUFFER, readback_framebuffer);
+                        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0,
+                                                gl.TEXTURE_2D, texture, 0);
+
+                        if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) == gl.FRAMEBUFFER_COMPLETE) {
+                          gl.readPixels(0, 0, view.camera.width, view.camera.height,
+                                        gl.RGBA, gl.UNSIGNED_BYTE, readback_pixels);
+                          const e = gl.getError()
+                          if (e != 0) {
+                            console.warn("Got a GL error:", e);
+                          } else {
+                            // Texel index (row-major):
+                            const middle_coords = view.camera.height/2 * view.camera.width
+                                                + view.camera.width/2;
+
+                            // The multiplication (x4) is needed to convert from texel index to
+                            // byte index in our buffer (each texel is 4 bytes).
+                            const middle_color = readback_pixels.slice(4*middle_coords, 4*(middle_coords+1));
+
+                            // Print out color in the middle of the texture.
+                            console.debug("Color in the middle of the texture:", middle_color);
+
+                            const colorIsBlack = (middle_color[0] == 0) && (middle_color[1] == 0) && (middle_color[2] == 0);
+
+                            const colorBlackMsg = "Color in the middle of the texture is black (session warming up?).";
+                            // It is very unlikely for the color in the middle of the texture to be pure black, so notify the user:
+                            if (use_dom_overlay) {
+                              if (colorIsBlack) {
+                                textInfoElement.innerHTML = colorBlackMsg;
+                              } else {
+                                textInfoElement.innerHTML = "";
+                              }
+                            } else if (colorIsBlack) {
+                              console.warn(colorBlackMsg);
+                            }
+                          }
+                        } else {
+                          console.warn("Framebuffer incomplete!");
+                        }
+
+                        gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+                      }
+
+                      if (render_cube) {
+                        // Render cube with camera image texture on each face.
+                        drawScene(gl, programInfo, buffers, texture, rotationSpeed, view);
+                      }
                     }
                 }
             }
@@ -357,6 +447,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             // objects we'll be drawing.
             buffers = initBuffers(gl);
             texture = loadTexture(gl, '../media/textures/cube-sea.png');
+
+            readback_framebuffer = gl.createFramebuffer();
         }
 
         // Initialize the buffers we'll need. For this demo, we just

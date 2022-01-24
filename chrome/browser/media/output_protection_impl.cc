@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "chrome/browser/media/output_protection_proxy.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 
 // static
@@ -24,14 +25,14 @@ void OutputProtectionImpl::Create(
   DCHECK(render_frame_host);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See DocumentServiceBase for details.
+  // connection. See DocumentService for details.
   new OutputProtectionImpl(render_frame_host, std::move(receiver));
 }
 
 OutputProtectionImpl::OutputProtectionImpl(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<media::mojom::OutputProtection> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)),
+    : DocumentService(render_frame_host, std::move(receiver)),
       render_process_id_(render_frame_host->GetProcess()->GetID()),
       render_frame_id_(render_frame_host->GetRoutingID()) {}
 

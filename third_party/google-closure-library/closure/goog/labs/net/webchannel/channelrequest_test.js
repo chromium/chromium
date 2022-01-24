@@ -1,16 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /** @fileoverview Unit tests for ChannelRequest. */
 
@@ -57,6 +49,7 @@ class MockWebChannelBase {
   constructor() {
     this.isClosed = () => false;
     this.isActive = () => true;
+    this.usesFetchStreams = () => false;
     this.shouldUseSecondaryDomains = () => false;
     this.completedRequests = [];
     this.onRequestComplete = function(request) {
@@ -82,14 +75,25 @@ function createChannelRequest() {
 
   // Install mock channel and no-op debug logger.
   mockChannel = new MockWebChannelBase();
+  /** @suppress {checkTypes} suppression added to enable type checking */
   channelRequest = new ChannelRequest(mockChannel, new WebChannelDebug());
 
   // Install test XhrIo.
+  /** @suppress {checkTypes} suppression added to enable type checking */
   mockChannel.createXhrIo = () => xhrIo;
 
   // Install watchdogTimeoutCallCount.
+  /** @suppress {checkTypes} suppression added to enable type checking */
   channelRequest.watchdogTimeoutCallCount = 0;
+  /**
+   * @suppress {checkTypes,visibility} suppression added to enable type
+   * checking
+   */
   channelRequest.originalOnWatchDogTimeout = channelRequest.onWatchDogTimeout_;
+  /**
+   * @suppress {visibility,checkTypes,missingProperties} suppression added to
+   * enable type checking
+   */
   channelRequest.onWatchDogTimeout_ = function() {
     channelRequest.watchdogTimeoutCallCount++;
     return channelRequest.originalOnWatchDogTimeout();
@@ -149,10 +153,10 @@ testSuite({
       checkReachabilityEvents(1, 0, 0, 1);
       xhrIo.simulatePartialResponse('23\nI am another BC Message');
       checkReachabilityEvents(1, 0, 0, 2);
-      xhrIo.simulateResponse(200, '16\Final BC Message');
+      xhrIo.simulateResponse(200, '16Final BC Message');
       checkReachabilityEvents(1, 1, 0, 2);
     } else {
-      xhrIo.simulateResponse(200, '16\Final BC Message');
+      xhrIo.simulateResponse(200, '16Final BC Message');
       checkReachabilityEvents(1, 1, 0, 0);
     }
   },
@@ -162,6 +166,7 @@ testSuite({
     createChannelRequest();
     channelRequest.setReadyStateChangeThrottle(THROTTLE_TIME);
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const recordedHandler = recordFunction(channelRequest.xmlHttpHandler_);
     stubs.set(channelRequest, 'xmlHttpHandler_', recordedHandler);
 
@@ -186,11 +191,11 @@ testSuite({
       // Only one more call because of throttling.
       assertEquals(4, recordedHandler.getCallCount());
 
-      xhrIo.simulateResponse(200, '16\Final BC Message');
+      xhrIo.simulateResponse(200, '16Final BC Message');
       checkReachabilityEvents(1, 1, 0, 3);
       assertEquals(5, recordedHandler.getCallCount());
     } else {
-      xhrIo.simulateResponse(200, '16\Final BC Message');
+      xhrIo.simulateResponse(200, '16Final BC Message');
       checkReachabilityEvents(1, 1, 0, 0);
     }
   },
@@ -198,6 +203,8 @@ testSuite({
   /**
    * Make sure that the request "completes" with an error when the timeout
    * expires.
+   * @suppress {missingProperties,visibility} suppression added to enable type
+   * checking
    */
   testRequestTimeout() {
     createChannelRequest();
@@ -220,8 +227,13 @@ testSuite({
     checkReachabilityEvents(1, 0, 1, 0);
   },
 
+  /**
+     @suppress {missingProperties,visibility} suppression added to enable type
+     checking
+   */
   testRequestTimeoutWithUnexpectedException() {
     createChannelRequest();
+    /** @suppress {visibility} suppression added to enable type checking */
     channelRequest.channel_.createXhrIo = functions.error('Weird error');
 
     try {

@@ -35,6 +35,10 @@ class TaskManager {
   };
 
   TaskManager() = default;
+
+  TaskManager(const TaskManager&) = delete;
+  TaskManager& operator=(const TaskManager&) = delete;
+
   virtual ~TaskManager() = default;
 
   // Called to schedule a new task. Overwrites the params if a task of the same
@@ -66,9 +70,6 @@ class TaskManager {
   // |needs_reschedule| is true.
   virtual void NotifyTaskFinished(DownloadTaskType task_type,
                                   bool needs_reschedule) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskManager);
 };
 
 }  // namespace download

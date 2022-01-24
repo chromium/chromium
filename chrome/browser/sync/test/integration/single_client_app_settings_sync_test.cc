@@ -13,7 +13,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
+#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
 #endif
 
 using syncer::UserSelectableType;
@@ -23,15 +23,16 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Chrome OS syncs apps as an OS type.
-class SingleClientAppSettingsOsSyncTest : public OsSyncTest {
+class SingleClientAppSettingsOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
-  SingleClientAppSettingsOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {}
+  SingleClientAppSettingsOsSyncTest()
+      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
   ~SingleClientAppSettingsOsSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientAppSettingsOsSyncTest,
                        DisablingOsSyncFeatureDisablesDataType) {
-  ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
+  ASSERT_TRUE(chromeos::features::IsSyncConsentOptionalEnabled());
   ASSERT_TRUE(SetupSync());
   syncer::SyncServiceImpl* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();

@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
                        GetUserConsent_AllowRedeemPrefTrue) {
   const int tab_id = OpenAndActivateTab();
   scoped_testing_cros_settings_.device_settings()->Set(
-      kAllowRedeemChromeOsRegistrationOffers, base::Value(true));
+      ash::kAllowRedeemChromeOsRegistrationOffers, base::Value(true));
 
   expected_dialog_buttons_ = ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
   dialog_action_ = DIALOG_TEST_ACTION_ACCEPT;
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
                        GetUserConsent_ConsentDenied) {
   const int tab_id = OpenAndActivateTab();
   scoped_testing_cros_settings_.device_settings()->Set(
-      kAllowRedeemChromeOsRegistrationOffers, base::Value(true));
+      ash::kAllowRedeemChromeOsRegistrationOffers, base::Value(true));
 
   expected_dialog_buttons_ = ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
   dialog_action_ = DIALOG_TEST_ACTION_CANCEL;
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
                        GetUserConsent_AllowRedeemPrefFalse) {
   const int tab_id = OpenAndActivateTab();
   scoped_testing_cros_settings_.device_settings()->Set(
-      kAllowRedeemChromeOsRegistrationOffers, base::Value(false));
+      ash::kAllowRedeemChromeOsRegistrationOffers, base::Value(false));
 
   expected_dialog_buttons_ = ui::DIALOG_BUTTON_CANCEL;
   dialog_action_ = DIALOG_TEST_ACTION_CANCEL;

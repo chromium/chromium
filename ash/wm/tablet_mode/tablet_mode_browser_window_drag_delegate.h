@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_drag_delegate.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -21,6 +20,12 @@ class ASH_EXPORT TabletModeBrowserWindowDragDelegate
     : public TabletModeWindowDragDelegate {
  public:
   TabletModeBrowserWindowDragDelegate();
+
+  TabletModeBrowserWindowDragDelegate(
+      const TabletModeBrowserWindowDragDelegate&) = delete;
+  TabletModeBrowserWindowDragDelegate& operator=(
+      const TabletModeBrowserWindowDragDelegate&) = delete;
+
   ~TabletModeBrowserWindowDragDelegate() override;
 
  private:
@@ -66,8 +71,6 @@ class ASH_EXPORT TabletModeBrowserWindowDragDelegate
   // after drag ends. If it's false, it means the drag ends because of a fling
   // event and the fling velocity has exceeded kFlingToStayAsNewWindowThreshold.
   bool can_merge_back_to_source_window_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeBrowserWindowDragDelegate);
 };
 
 }  // namespace ash

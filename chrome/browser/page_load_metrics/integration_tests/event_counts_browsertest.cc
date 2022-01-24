@@ -27,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_EventCounts) {
   content::SimulateMouseClick(web_contents(), 0,
                               blink::WebMouseEvent::Button::kLeft);
 
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(3000));
+  base::PlatformThread::Sleep(base::Milliseconds(3000));
 
   // Check event counts.
   int expected_pointerdown =

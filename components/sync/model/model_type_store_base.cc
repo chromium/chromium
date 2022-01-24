@@ -14,9 +14,9 @@ ModelTypeStoreBase::WriteBatch::CreateMetadataChangeList() {
   return std::make_unique<InMemoryMetadataChangeList>();
 }
 
-ModelTypeStoreBase::WriteBatch::WriteBatch() {}
+ModelTypeStoreBase::WriteBatch::WriteBatch() = default;
 
-ModelTypeStoreBase::WriteBatch::~WriteBatch() {}
+ModelTypeStoreBase::WriteBatch::~WriteBatch() = default;
 
 void ModelTypeStoreBase::WriteBatch::TakeMetadataChangesFrom(
     std::unique_ptr<MetadataChangeList> mcl) {

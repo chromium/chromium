@@ -1,0 +1,9 @@
+Tests Target.autoAttachRelated attachers to new SW version when watchin a SW target
+Registering service worker for scope1
+Registering service worker for scope2
+Enabling auto-attach
+Attached to target http://127.0.0.1:8000/inspector-protocol/target/resources/mint-service-worker.pl?scope1 (service_worker), waiting: false
+Updating service workers
+Attached to target http://127.0.0.1:8000/inspector-protocol/target/resources/mint-service-worker.pl?scope1 (service_worker), waiting: true
+Token in the new version: 42
+

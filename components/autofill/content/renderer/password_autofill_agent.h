@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -113,6 +112,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   PasswordAutofillAgent(content::RenderFrame* render_frame,
                         blink::AssociatedInterfaceRegistry* registry);
+
+  PasswordAutofillAgent(const PasswordAutofillAgent&) = delete;
+  PasswordAutofillAgent& operator=(const PasswordAutofillAgent&) = delete;
+
   ~PasswordAutofillAgent() override;
 
   void BindPendingReceiver(
@@ -123,8 +126,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   void SetPasswordGenerationAgent(PasswordGenerationAgent* generation_agent);
 
-  const mojo::AssociatedRemote<mojom::PasswordManagerDriver>&
-  GetPasswordManagerDriver();
+  // Callers should not store the returned value longer than a function scope.
+  mojom::PasswordManagerDriver& GetPasswordManagerDriver();
 
   // mojom::PasswordAutofillAgent:
   void FillPasswordForm(const PasswordFormFillData& form_data) override;
@@ -240,7 +243,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   virtual bool FrameCanAccessPasswordManager();
 
   // RenderFrameObserver:
-  void DidFinishDocumentLoad() override;
+  void DidDispatchDOMContentLoadedEvent() override;
   void DidFinishLoad() override;
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
@@ -251,8 +254,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     return field_data_manager_;
   }
 
+  bool IsPrerendering() const;
+
  private:
   using OnPasswordField = base::StrongAlias<class OnPasswordFieldTag, bool>;
+
+  class DeferringPasswordManagerDriver;
 
   // Enumeration representing possible Touch To Fill states. This is used to
   // make sure that Touch To Fill will only be shown in response to the first
@@ -306,6 +313,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     // Creates a new notifier that uses the agent which owns it to access the
     // real driver implementation.
     explicit FocusStateNotifier(PasswordAutofillAgent* agent);
+
+    FocusStateNotifier(const FocusStateNotifier&) = delete;
+    FocusStateNotifier& operator=(const FocusStateNotifier&) = delete;
+
     ~FocusStateNotifier();
 
     void FocusedInputChanged(FieldRendererId focused_field_id,
@@ -316,8 +327,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     mojom::FocusedFieldType focused_field_type_ =
         mojom::FocusedFieldType::kUnknown;
     PasswordAutofillAgent* agent_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(FocusStateNotifier);
   };
 
   // This class keeps track of autofilled username and password input elements
@@ -327,6 +336,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   class PasswordValueGatekeeper {
    public:
     PasswordValueGatekeeper();
+
+    PasswordValueGatekeeper(const PasswordValueGatekeeper&) = delete;
+    PasswordValueGatekeeper& operator=(const PasswordValueGatekeeper&) = delete;
+
     ~PasswordValueGatekeeper();
 
     // Call this for every autofilled username and password field, so that
@@ -346,8 +359,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
     bool was_user_gesture_seen_;
     std::vector<blink::WebInputElement> elements_;
-
-    DISALLOW_COPY_AND_ASSIGN(PasswordValueGatekeeper);
   };
 
   // Annotate |forms| and all fields in the current frame with form and field
@@ -550,6 +561,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   mojo::AssociatedRemote<mojom::PasswordManagerDriver> password_manager_driver_;
 
+  // Used for deferring messages while prerendering.
+  std::unique_ptr<DeferringPasswordManagerDriver>
+      deferring_password_manager_driver_;
+
   mojo::AssociatedReceiver<mojom::PasswordAutofillAgent> receiver_{this};
 
   bool prefilled_username_metrics_logged_ = false;
@@ -583,8 +598,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Current state of Touch To Fill. This is reset during
   // CleanupOnDocumentShutdown.
   TouchToFillState touch_to_fill_state_ = TouchToFillState::kShouldShow;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordAutofillAgent);
 };
 
 }  // namespace autofill

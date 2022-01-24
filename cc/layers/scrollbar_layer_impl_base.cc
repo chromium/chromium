@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/scroll_node.h"
@@ -211,10 +211,14 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRectWithThumbThicknessScale(
   float track_length = TrackLength();
   int thumb_length = ThumbLength();
   int thumb_thickness = ThumbThickness();
-  float maximum = scroll_layer_length() - clip_layer_length();
+  // TODO(crbug.com/1239770): This is a speculative fix.
+  float maximum = std::max(scroll_layer_length() - clip_layer_length(), 0.0f);
+  // TODO(crbug.com/1239510): Re-enable the following DCHECK once the
+  // underlying issue is resolved.
+  // DCHECK(scroll_layer_length() >= clip_layer_length());
 
   // With the length known, we can compute the thumb's position.
-  float clamped_current_pos = base::ClampToRange(current_pos(), 0.0f, maximum);
+  float clamped_current_pos = base::clamp(current_pos(), 0.0f, maximum);
 
   int thumb_offset = TrackStart();
   if (maximum > 0) {

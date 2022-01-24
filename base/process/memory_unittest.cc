@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
+#include "base/macros.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/page_size.h"
 #include "build/build_config.h"
@@ -179,8 +180,9 @@ class OutOfMemoryDeathTest : public OutOfMemoryTest {
 #if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
     return base::android::BuildInfo::GetInstance()->sdk_int() <
            base::android::SDK_VERSION_NOUGAT;
-#endif
+#else
     return false;
+#endif
   }
 };
 
@@ -448,7 +450,9 @@ TEST_F(OutOfMemoryDeathTest, PosixMemalignPurgeable) {
 // it's likely that they'll fail because they would require a preposterous
 // amount of (virtual) memory.
 
-TEST_F(OutOfMemoryDeathTest, CFAllocatorSystemDefault) {
+// Disabled to investigate crbug.com/1268776.
+// TODO(crbug.com/1268776): Re-enable or remove if no longer relevant.
+TEST_F(OutOfMemoryDeathTest, DISABLED_CFAllocatorSystemDefault) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     while ((value_ =
@@ -457,7 +461,7 @@ TEST_F(OutOfMemoryDeathTest, CFAllocatorSystemDefault) {
   });
 }
 
-TEST_F(OutOfMemoryDeathTest, CFAllocatorMalloc) {
+TEST_F(OutOfMemoryDeathTest, DISABLED_CFAllocatorMalloc) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     while ((value_ = base::AllocateViaCFAllocatorMalloc(signed_test_size_))) {
@@ -465,7 +469,7 @@ TEST_F(OutOfMemoryDeathTest, CFAllocatorMalloc) {
   });
 }
 
-TEST_F(OutOfMemoryDeathTest, CFAllocatorMallocZone) {
+TEST_F(OutOfMemoryDeathTest, DISABLED_CFAllocatorMallocZone) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     while (
@@ -594,20 +598,25 @@ TEST_F(OutOfMemoryHandledTest, NewReleasesReservation) {
 #endif  // defined(ARCH_CPU_32_BITS) && (defined(OS_WIN) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS))
 
-// See the comment in |UncheckedMalloc()|, it behaves as malloc() in these
-// cases.
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+// Fuchsia and Android do not allow overcommits, so very large
+// UncheckedMallocs will yield OOM errors on those platforms.
 
+#if defined(OS_ANDROID)
 // TODO(crbug.com/1112840): Fails on some Android bots.
 #define MAYBE_UncheckedMallocDies DISABLED_UncheckedMallocDies
 #define MAYBE_UncheckedCallocDies DISABLED_UncheckedCallocDies
+#elif defined(OS_FUCHSIA)
+#define MAYBE_UncheckedMallocDies UncheckedMallocDies
+#define MAYBE_UncheckedCallocDies UncheckedCallocDies
+#endif  // defined(OS_ANDROID)
 
 TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedMallocDies) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     void* data;
-    bool ok = base::UncheckedMalloc(test_size_, &data);
-    EXPECT_TRUE(!data || ok);
+    ignore_result(base::UncheckedMalloc(test_size_, &data));
+    // Death expected here.
   });
 }
 
@@ -615,8 +624,8 @@ TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedCallocDies) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     void* data;
-    bool ok = base::UncheckedCalloc(1, test_size_, &data);
-    EXPECT_TRUE(!data || ok);
+    ignore_result(base::UncheckedCalloc(1, test_size_, &data));
+    // Death expected here.
   });
 }
 
@@ -651,7 +660,6 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
   EXPECT_TRUE(value_ == nullptr);
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || defined(OS_ANDROID)
-
+#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
 #endif  // !defined(OS_OPENBSD) && BUILDFLAG(USE_ALLOCATOR_SHIM) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

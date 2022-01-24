@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_BROWSER_THREAD_IMPL_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"

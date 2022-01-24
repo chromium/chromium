@@ -9,7 +9,6 @@
 #include <string>
 
 #include <string>
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;

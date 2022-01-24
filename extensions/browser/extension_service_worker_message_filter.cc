@@ -29,6 +29,9 @@ namespace {
 class ShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
+  ShutdownNotifierFactory(const ShutdownNotifierFactory&) = delete;
+  ShutdownNotifierFactory& operator=(const ShutdownNotifierFactory&) = delete;
+
   static ShutdownNotifierFactory* GetInstance() {
     return base::Singleton<ShutdownNotifierFactory>::get();
   }
@@ -43,8 +46,6 @@ class ShutdownNotifierFactory
     DependsOn(ProcessManagerFactory::GetInstance());
   }
   ~ShutdownNotifierFactory() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownNotifierFactory);
 };
 
 }  // namespace
@@ -142,7 +143,7 @@ void ExtensionServiceWorkerMessageFilter::OnResponseWorker(
 void ExtensionServiceWorkerMessageFilter::OnIncrementServiceWorkerActivity(
     int64_t service_worker_version_id,
     const std::string& request_uuid) {
-  DCHECK_CURRENTLY_ON(content::ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!browser_context_)
     return;
   active_request_uuids_.insert(request_uuid);
@@ -156,7 +157,7 @@ void ExtensionServiceWorkerMessageFilter::OnIncrementServiceWorkerActivity(
 void ExtensionServiceWorkerMessageFilter::OnDecrementServiceWorkerActivity(
     int64_t service_worker_version_id,
     const std::string& request_uuid) {
-  DCHECK_CURRENTLY_ON(content::ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!browser_context_)
     return;
   content::ServiceWorkerExternalRequestResult result =

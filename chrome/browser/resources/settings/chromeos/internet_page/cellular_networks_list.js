@@ -24,6 +24,7 @@ import {getSimSlotCount, hasActiveCellularNetwork, isActiveSim, isConnectedToNon
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 import {NetworkList} from '//resources/cr_components/chromeos/network/network_list_types.m.js';
 import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
@@ -499,7 +500,7 @@ Polymer({
     if (!this.deviceIsEnabled_(cellularDeviceState)) {
       return false;
     }
-    return globalPolicy && !globalPolicy.allowOnlyPolicyNetworksToConnect;
+    return globalPolicy && !globalPolicy.allowOnlyPolicyCellularNetworks;
   },
 
   /**
@@ -562,6 +563,9 @@ Polymer({
         return this.i18n('cellularNetworkConnectingToProfile');
       case mojom.kRefreshingProfileList:
         return this.i18n('cellularNetworRefreshingProfileListProfile');
+      case mojom.kResettingEuiccMemory:
+        // TODO(crbug.com/1231305) Fix string when finalized.
+        return this.i18n('cellularNetworkRemovingProfile');
     }
 
     return '';

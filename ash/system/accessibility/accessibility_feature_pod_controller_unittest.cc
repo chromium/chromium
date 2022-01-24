@@ -15,6 +15,12 @@ namespace ash {
 class AccessibilityFeaturePodControllerTest : public NoSessionAshTestBase {
  public:
   AccessibilityFeaturePodControllerTest() = default;
+
+  AccessibilityFeaturePodControllerTest(
+      const AccessibilityFeaturePodControllerTest&) = delete;
+  AccessibilityFeaturePodControllerTest& operator=(
+      const AccessibilityFeaturePodControllerTest&) = delete;
+
   ~AccessibilityFeaturePodControllerTest() override = default;
 
   void SetUp() override {
@@ -51,8 +57,6 @@ class AccessibilityFeaturePodControllerTest : public NoSessionAshTestBase {
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   std::unique_ptr<AccessibilityFeaturePodController> controller_;
   std::unique_ptr<FeaturePodButton> button_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFeaturePodControllerTest);
 };
 
 TEST_F(AccessibilityFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {

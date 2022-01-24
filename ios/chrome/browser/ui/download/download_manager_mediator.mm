@@ -84,30 +84,10 @@ void DownloadManagerMediator::DownloadWithDestinationDir(
     return;
   }
 
-  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   std::u16string file_name = task_->GetSuggestedFilename();
+  DCHECK(!file_name.empty());
   base::FilePath path = destination_dir.Append(base::UTF16ToUTF8(file_name));
-  auto writer = std::make_unique<net::URLFetcherFileWriter>(task_runner, path);
-  writer->Initialize(base::BindRepeating(
-      &DownloadManagerMediator::DownloadWithWriter,
-      weak_ptr_factory_.GetWeakPtr(), base::Passed(std::move(writer)), task_));
-}
-
-void DownloadManagerMediator::DownloadWithWriter(
-    std::unique_ptr<net::URLFetcherFileWriter> writer,
-    web::DownloadTask* task,
-    int writer_initialization_status) {
-  if (task_ != task) {
-    // Download task has been replaced, so simply ignore the old download.
-    return;
-  }
-
-  if (writer_initialization_status == net::OK) {
-    task_->Start(std::move(writer));
-  } else {
-    [consumer_ setState:kDownloadManagerStateFailed];
-  }
+  task->Start(path, web::DownloadTask::Destination::kToDisk);
 }
 
 void DownloadManagerMediator::OnDownloadUpdated(web::DownloadTask* task) {
@@ -122,7 +102,7 @@ void DownloadManagerMediator::UpdateConsumer() {
   DownloadManagerState state = GetDownloadManagerState();
 
   if (state == kDownloadManagerStateSucceeded) {
-    download_path_ = task_->GetResponseWriter()->AsFileWriter()->file_path();
+    download_path_ = task_->GetResponsePath();
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
@@ -151,7 +131,7 @@ void DownloadManagerMediator::UpdateConsumer() {
 }
 
 void DownloadManagerMediator::MoveToUserDocumentsIfFileExists(
-    base::FilePath download_path_,
+    base::FilePath download_path,
     bool file_exists) {
   if (!file_exists || !task_)
     return;
@@ -164,7 +144,7 @@ void DownloadManagerMediator::MoveToUserDocumentsIfFileExists(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&base::Move, download_path_, user_download_path),
+      base::BindOnce(&base::Move, download_path, user_download_path),
       base::BindOnce(&DownloadManagerMediator::RestoreDownloadPath,
                      weak_ptr_factory_.GetWeakPtr(), user_download_path));
 }

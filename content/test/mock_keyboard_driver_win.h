@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace content {
 
 // Implements the platform-dependent part of a pseudo keyboard device for
@@ -19,6 +17,10 @@ namespace content {
 class MockKeyboardDriverWin {
  public:
   MockKeyboardDriverWin();
+
+  MockKeyboardDriverWin(const MockKeyboardDriverWin&) = delete;
+  MockKeyboardDriverWin& operator=(const MockKeyboardDriverWin&) = delete;
+
   ~MockKeyboardDriverWin();
 
   bool SetLayout(int layout);
@@ -37,8 +39,6 @@ class MockKeyboardDriverWin {
   BYTE original_keyboard_states_[256];
 
   BYTE keyboard_states_[256];
-
-  DISALLOW_COPY_AND_ASSIGN(MockKeyboardDriverWin);
 };
 
 }  // namespace content

@@ -23,6 +23,7 @@
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 
 namespace {
@@ -55,12 +56,13 @@ std::set<SignalIdentifier> CollectAllSignalIdentifiers(
 
 // Takes in the list of tasks and creates a link between each of them, and
 // returns the first task which points to the next one, which points to the next
-// one, etc., until the last task points to base::DoNothing::Once().
+// one, etc., until the last task points to a callback that does nothing.
 base::OnceClosure LinkTasks(
     std::vector<base::OnceCallback<void(base::OnceClosure)>> tasks) {
   // Iterate in reverse order over the list of tasks and put them into a type
-  // of linked list, where the last task refers to base::DoNothing::Once().
-  base::OnceClosure first_task = base::DoNothing::Once();
+  // of linked list, where the last task refers to a callback that does
+  // nothing.
+  base::OnceClosure first_task = base::DoNothing();
   for (auto curr_task = tasks.rbegin(); curr_task != tasks.rend();
        ++curr_task) {
     // We need to first perform the current task, and then move on to the next
@@ -85,12 +87,12 @@ struct DatabaseMaintenanceImpl::CleanupState {
 };
 
 DatabaseMaintenanceImpl::DatabaseMaintenanceImpl(
-    Config* config,
+    const base::flat_set<OptimizationTarget>& segment_ids,
     base::Clock* clock,
     SegmentInfoDatabase* segment_info_database,
     SignalDatabase* signal_database,
     SignalStorageConfig* signal_storage_config)
-    : config_(config),
+    : segment_ids_(segment_ids),
       clock_(clock),
       segment_info_database_(segment_info_database),
       signal_database_(signal_database),
@@ -99,8 +101,10 @@ DatabaseMaintenanceImpl::DatabaseMaintenanceImpl(
 DatabaseMaintenanceImpl::~DatabaseMaintenanceImpl() = default;
 
 void DatabaseMaintenanceImpl::ExecuteMaintenanceTasks() {
+  std::vector<OptimizationTarget> segment_ids(segment_ids_.begin(),
+                                              segment_ids_.end());
   segment_info_database_->GetSegmentInfoForSegments(
-      config_->segment_ids,
+      segment_ids,
       base::BindOnce(&DatabaseMaintenanceImpl::OnSegmentInfoCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -110,6 +114,7 @@ void DatabaseMaintenanceImpl::OnSegmentInfoCallback(
         segment_infos) {
   std::set<SignalIdentifier> signal_ids =
       CollectAllSignalIdentifiers(segment_infos);
+  stats::RecordMaintenanceSignalIdentifierCount(signal_ids.size());
 
   auto all_tasks = GetAllTasks(signal_ids);
   auto first_task = LinkTasks(std::move(all_tasks));
@@ -184,6 +189,7 @@ void DatabaseMaintenanceImpl::CleanupSignalStorageProcessNext(
 void DatabaseMaintenanceImpl::CleanupSignalStorageDone(
     base::OnceClosure next_action,
     std::vector<CleanupItem> cleaned_up_signals) {
+  stats::RecordMaintenanceCleanupSignalSuccessCount(cleaned_up_signals.size());
   signal_storage_config_->UpdateSignalsForCleanup(cleaned_up_signals);
   std::move(next_action).Run();
 }
@@ -193,8 +199,7 @@ void DatabaseMaintenanceImpl::CompactSamples(
     base::OnceClosure next_action) {
   for (uint64_t days_ago = kFirstCompactionDay;
        days_ago <= kMaxSignalStorageDays; ++days_ago) {
-    base::Time compaction_day =
-        clock_->Now() - base::TimeDelta::FromDays(days_ago);
+    base::Time compaction_day = clock_->Now() - base::Days(days_ago);
     for (auto signal_id : signal_ids) {
       signal_database_->CompactSamplesForDay(
           signal_id.second, signal_id.first, compaction_day,
@@ -213,7 +218,7 @@ void DatabaseMaintenanceImpl::RecordCompactionResult(
     proto::SignalType signal_type,
     uint64_t name_hash,
     bool success) {
-  // TODO(nyquist): Add metrics for this.
+  stats::RecordMaintenanceCompactionResult(signal_type, success);
 }
 
 void DatabaseMaintenanceImpl::CompactSamplesDone(

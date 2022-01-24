@@ -1,0 +1,25 @@
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<!--
+  The <html-echo> injects given |content| into its innerHTML, bypassing HTML
+  escaping, which is always made by Polymer when we insert the result of an
+  Polymer expression into element's body.
+
+  Example:
+
+  <html-echo content="<div>Hello</div>"></html-element>
+
+  will be equivalent to:
+
+  <span><div>Hello</div></span>
+-->
+<dom-module id="html-echo">
+  <template>
+    <span id="echo"></span>
+  </template>
+  <script src="html_echo.js"></script>
+</dom-module>

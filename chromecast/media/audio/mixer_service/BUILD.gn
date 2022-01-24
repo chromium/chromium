@@ -13,16 +13,16 @@ buildflag_header("buildflags") {
 }
 
 proto_library("proto") {
+  proto_in_dir = "../../../.."
   proto_out_dir = "chromecast/media/audio/mixer_service"
-  sources = [ "mixer_service.proto" ]
+  sources = [ "mixer_service_transport.proto" ]
+  link_deps = [ "//chromecast/media/audio/net:proto" ]
 }
 
 cast_source_set("common") {
   sources = [
     "constants.cc",
     "constants.h",
-    "conversions.cc",
-    "conversions.h",
     "loopback_interrupt_reason.h",
     "mixer_socket.cc",
     "mixer_socket.h",
@@ -32,14 +32,12 @@ cast_source_set("common") {
     ":buildflags",
     "//base",
     "//chromecast/net:io_buffer_pool",
-    "//chromecast/public",
-    "//chromecast/public/media",
     "//net",
   ]
 
   public_deps = [
     ":proto",
-    "//chromecast/net:small_message_socket",
+    "//chromecast/media/audio/net:audio_socket",
   ]
 }
 
@@ -50,10 +48,10 @@ cast_source_set("connection") {
   ]
 
   deps = [
-    ":audio_socket_service",
     ":common",
     "//base",
     "//chromecast/base",
+    "//chromecast/media/audio/net:audio_socket_service",
     "//net",
   ]
 }
@@ -69,6 +67,8 @@ cast_source_set("output_stream_connection") {
     ":connection",
     ":proto",
     "//base",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/net:io_buffer_pool",
     "//net",
   ]
@@ -85,6 +85,8 @@ cast_source_set("control_connection") {
     ":connection",
     ":proto",
     "//base",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/public",
     "//net",
   ]
@@ -116,6 +118,8 @@ cast_source_set("loopback_connection") {
     ":connection",
     ":proto",
     "//base",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/net:io_buffer_pool",
     "//chromecast/public/media",
     "//net",
@@ -133,27 +137,11 @@ cast_source_set("redirected_audio_connection") {
     ":connection",
     ":proto",
     "//base",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/net:io_buffer_pool",
     "//chromecast/public",
     "//chromecast/public/media",
-    "//net",
-  ]
-}
-
-cast_source_set("audio_socket_service") {
-  sources = [
-    "audio_socket_service.cc",
-    "audio_socket_service.h",
-  ]
-
-  if (use_unix_sockets) {
-    sources += [ "audio_socket_service_uds.cc" ]
-  } else {
-    sources += [ "audio_socket_service_tcp.cc" ]
-  }
-
-  deps = [
-    "//base",
     "//net",
   ]
 }

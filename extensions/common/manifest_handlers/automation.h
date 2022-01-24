@@ -44,6 +44,10 @@ struct AutomationInfo : public Extension::ManifestData {
       std::u16string* error);
 
   static std::unique_ptr<base::Value> ToValue(const AutomationInfo& info);
+
+  AutomationInfo(const AutomationInfo&) = delete;
+  AutomationInfo& operator=(const AutomationInfo&) = delete;
+
   ~AutomationInfo() override;
 
   // true if the extension has requested 'desktop' permission.
@@ -63,8 +67,6 @@ struct AutomationInfo : public Extension::ManifestData {
 
   static std::unique_ptr<api::extensions_manifest_types::Automation>
   AsManifestType(const AutomationInfo& info);
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationInfo);
   friend class AutomationManifestPermission;
   friend class AutomationHandler;
 };
@@ -73,6 +75,10 @@ struct AutomationInfo : public Extension::ManifestData {
 class AutomationHandler : public ManifestHandler {
  public:
   AutomationHandler();
+
+  AutomationHandler(const AutomationHandler&) = delete;
+  AutomationHandler& operator=(const AutomationHandler&) = delete;
+
   ~AutomationHandler() override;
 
  private:
@@ -83,8 +89,6 @@ class AutomationHandler : public ManifestHandler {
   ManifestPermission* CreateInitialRequiredPermission(
       const Extension* extension) override;
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationHandler);
 };
 
 }  // namespace extensions

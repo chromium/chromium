@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 
@@ -42,6 +41,9 @@ class BookmarkModelMerger {
                       bookmarks::BookmarkModel* bookmark_model,
                       favicon::FaviconService* favicon_service,
                       SyncedBookmarkTracker* bookmark_tracker);
+
+  BookmarkModelMerger(const BookmarkModelMerger&) = delete;
+  BookmarkModelMerger& operator=(const BookmarkModelMerger&) = delete;
 
   ~BookmarkModelMerger();
 
@@ -97,6 +99,9 @@ class BookmarkModelMerger {
     RemoteTreeNode();
 
     syncer::UpdateResponseData update_;
+    // Redundant, parsed instance of the unique position in specifics, used
+    // to sort siblings by their position information.
+    syncer::UniquePosition unique_position_;
     std::vector<RemoteTreeNode> children_;
   };
 
@@ -205,8 +210,6 @@ class BookmarkModelMerger {
   // permanent node. Computed upon construction via BuildRemoteForest().
   const RemoteForest remote_forest_;
   std::unordered_map<base::GUID, GuidMatch, base::GUIDHash> guid_to_match_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelMerger);
 };
 
 }  // namespace sync_bookmarks

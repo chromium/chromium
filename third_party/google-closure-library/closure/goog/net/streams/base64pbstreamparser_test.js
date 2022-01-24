@@ -1,16 +1,8 @@
-// Copyright 2016 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.net.streams.Base64PbStreamParserTest');
 goog.setTestOnly('goog.net.streams.Base64PbStreamParserTest');
@@ -56,25 +48,29 @@ function encodeBytes(input) {
 
 
 testSuite({
-  testSingleMessage: function() {
-    const parser = new Base64PbStreamParser();
+  testSingleMessage: /**
+                        @suppress {checkTypes} suppression added to enable type
+                        checking
+                      */
+      function() {
+        const parser = new Base64PbStreamParser();
 
-    const input = 'CgX__gABdw==';
-    let result = parser.parse(input);
-    assertEquals(1, result.length);
-    assertElementsEquals(['1'], object.getKeys(result[0]));
-    assertElementsEquals([0xFF, 0xFE, 0x00, 0x01, 0x77], result[0][1]);
+        const input = 'CgX__gABdw==';
+        let result = parser.parse(input);
+        assertEquals(1, result.length);
+        assertElementsEquals(['1'], object.getKeys(result[0]));
+        assertElementsEquals([0xFF, 0xFE, 0x00, 0x01, 0x77], result[0][1]);
 
-    if (typeof Uint8Array !== 'undefined') {
-      assertTrue(result[0][1] instanceof Uint8Array);
-    } else {
-      assertTrue(result[0][1] instanceof Array);
-    }
+        if (typeof Uint8Array !== 'undefined') {
+          assertTrue(result[0][1] instanceof Uint8Array);
+        } else {
+          assertTrue(result[0][1] instanceof Array);
+        }
 
-    result = parser.parse('');
-    assertNull(result);
-    assertTrue(parser.isInputValid());
-  },
+        result = parser.parse('');
+        assertNull(result);
+        assertTrue(parser.isInputValid());
+      },
 
   testMultipleMessages: function() {
     const parser = new Base64PbStreamParser();
@@ -84,6 +80,7 @@ testSuite({
 
     assertEquals(expected.length, result.length);
     for (let i = 0; i < expected.length; i++) {
+      /** @suppress {checkTypes} suppression added to enable type checking */
       const keys = object.getKeys(result[i]);
       assertElementsEquals(object.getKeys(expected[i]), keys);
 
@@ -112,30 +109,34 @@ testSuite({
     assertFalse(parser3.isInputValid());
   },
 
-  testMessagesInChunks: function() {
-    // clang-format off
+  testMessagesInChunks: /**
+                           @suppress {checkTypes} suppression added to enable
+                           type checking
+                         */
+      function() {
+        // clang-format off
     const data = [
       0x0a, 0x03, 0x61, 0x62, 0x63,
       0x0a, 0x03, 0x64, 0x65, 0x66,
       0x12, 0x03, 0x67, 0x68, 0x69,
     ];
-    // clang-format on
+        // clang-format on
 
-    const parser = new Base64PbStreamParser();
+        const parser = new Base64PbStreamParser();
 
-    let result = parser.parse(encodeBytes(data.slice(0, 3)));
-    assertNull(result);
+        let result = parser.parse(encodeBytes(data.slice(0, 3)));
+        assertNull(result);
 
-    result = parser.parse(encodeBytes(data.slice(3, 12)));
-    assertEquals(2, result.length);
-    assertElementsEquals(['1'], object.getKeys(result[0]));
-    assertElementsEquals([0x61, 0x62, 0x63], result[0][1]);
-    assertElementsEquals(['1'], object.getKeys(result[1]));
-    assertElementsEquals([0x64, 0x65, 0x66], result[1][1]);
+        result = parser.parse(encodeBytes(data.slice(3, 12)));
+        assertEquals(2, result.length);
+        assertElementsEquals(['1'], object.getKeys(result[0]));
+        assertElementsEquals([0x61, 0x62, 0x63], result[0][1]);
+        assertElementsEquals(['1'], object.getKeys(result[1]));
+        assertElementsEquals([0x64, 0x65, 0x66], result[1][1]);
 
-    result = parser.parse(encodeBytes(data.slice(12)));
-    assertEquals(1, result.length);
-    assertElementsEquals(['2'], object.getKeys(result[0]));
-    assertElementsEquals([0x67, 0x68, 0x69], result[0][2]);
-  },
+        result = parser.parse(encodeBytes(data.slice(12)));
+        assertEquals(1, result.length);
+        assertElementsEquals(['2'], object.getKeys(result[0]));
+        assertElementsEquals([0x67, 0x68, 0x69], result[0][2]);
+      },
 });

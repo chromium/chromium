@@ -111,8 +111,6 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   SyntheticEventType GetSyntheticEventType() const {
     return synthetic_event_type_;
   }
-  const String& region() const { return region_; }
-
   virtual Node* toElement() const;
   virtual Node* fromElement() const;
 
@@ -217,7 +215,6 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   uint16_t buttons_;
   Member<EventTarget> related_target_;
   SyntheticEventType synthetic_event_type_;
-  String region_;
 
   // Only used for contextmenu events.
   WebMenuSourceType menu_source_type_;

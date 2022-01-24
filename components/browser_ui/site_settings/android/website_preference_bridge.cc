@@ -18,7 +18,6 @@
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "components/browser_ui/site_settings/android/site_settings_jni_headers/WebsitePreferenceBridge_jni.h"
@@ -30,7 +29,6 @@
 #include "components/content_settings/core/browser/uma_util.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/embedder_support/android/browser_context/browser_context_handle.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
@@ -38,12 +36,15 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
+#include "url/android/gurl_android.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
@@ -65,7 +66,7 @@ const char kHttpPortSuffix[] = ":80";
 const char kHttpsPortSuffix[] = ":443";
 
 BrowserContext* unwrap(const JavaParamRef<jobject>& jbrowser_context_handle) {
-  return browser_context::BrowserContextFromJavaHandle(jbrowser_context_handle);
+  return content::BrowserContextFromJavaHandle(jbrowser_context_handle);
 }
 
 HostContentSettingsMap* GetHostContentSettingsMap(
@@ -199,7 +200,7 @@ void GetOrigins(JNIEnv* env,
   }
 }
 
-ContentSetting GetSettingForOrigin(
+ContentSetting GetPermissionSettingForOrigin(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     ContentSettingsType content_type,
@@ -221,12 +222,13 @@ ContentSetting GetSettingForOrigin(
       .content_setting;
 }
 
-void SetSettingForOrigin(JNIEnv* env,
-                         const JavaParamRef<jobject>& jbrowser_context_handle,
-                         ContentSettingsType content_type,
-                         jstring origin,
-                         jstring embedder,
-                         ContentSetting setting) {
+void SetPermissionSettingForOrigin(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    ContentSettingsType content_type,
+    jstring origin,
+    jstring embedder,
+    ContentSetting setting) {
   GURL origin_url(ConvertJavaStringToUTF8(env, origin));
   GURL embedder_url =
       embedder ? GURL(ConvertJavaStringToUTF8(env, embedder)) : GURL();
@@ -395,11 +397,11 @@ static void JNI_WebsitePreferenceBridge_ReportNotificationRevokedForOrigin(
 
   permissions::PermissionUmaUtil::PermissionRevoked(
       ContentSettingsType::NOTIFICATIONS,
-      permissions::PermissionSourceUI::ANDROID_SETTINGS, url.GetOrigin(),
-      unwrap(jbrowser_context_handle));
+      permissions::PermissionSourceUI::ANDROID_SETTINGS,
+      url.DeprecatedGetOriginAsURL(), unwrap(jbrowser_context_handle));
 }
 
-static jint JNI_WebsitePreferenceBridge_GetSettingForOrigin(
+static jint JNI_WebsitePreferenceBridge_GetPermissionSettingForOrigin(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     jint content_settings_type,
@@ -407,11 +409,11 @@ static jint JNI_WebsitePreferenceBridge_GetSettingForOrigin(
     const JavaParamRef<jstring>& embedder) {
   ContentSettingsType type =
       static_cast<ContentSettingsType>(content_settings_type);
-  return GetSettingForOrigin(env, jbrowser_context_handle, type, origin,
-                             embedder);
+  return GetPermissionSettingForOrigin(env, jbrowser_context_handle, type,
+                                       origin, embedder);
 }
 
-static void JNI_WebsitePreferenceBridge_SetSettingForOrigin(
+static void JNI_WebsitePreferenceBridge_SetPermissionSettingForOrigin(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     jint content_settings_type,
@@ -427,11 +429,13 @@ static void JNI_WebsitePreferenceBridge_SetSettingForOrigin(
                                              origin, value);
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::MEDIASTREAM_CAMERA:
-      return SetSettingForOrigin(env, jbrowser_context_handle, type, origin,
-                                 nullptr, static_cast<ContentSetting>(value));
+      return SetPermissionSettingForOrigin(env, jbrowser_context_handle, type,
+                                           origin, nullptr,
+                                           static_cast<ContentSetting>(value));
     default:
-      SetSettingForOrigin(env, jbrowser_context_handle, type, origin, embedder,
-                          static_cast<ContentSetting>(value));
+      SetPermissionSettingForOrigin(env, jbrowser_context_handle, type, origin,
+                                    embedder,
+                                    static_cast<ContentSetting>(value));
   }
 }
 
@@ -644,11 +648,11 @@ static void JNI_WebsitePreferenceBridge_ClearLocalStorageData(
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   auto local_storage_helper =
       base::MakeRefCounted<browsing_data::LocalStorageHelper>(browser_context);
-  auto origin =
-      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin)));
-  local_storage_helper->DeleteOrigin(
-      origin, base::BindOnce(&OnLocalStorageCleared,
-                             ScopedJavaGlobalRef<jobject>(java_callback)));
+  auto storage_key = blink::StorageKey(
+      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))));
+  local_storage_helper->DeleteStorageKey(
+      storage_key, base::BindOnce(&OnLocalStorageCleared,
+                                  ScopedJavaGlobalRef<jobject>(java_callback)));
 }
 
 static void JNI_WebsitePreferenceBridge_ClearStorageData(
@@ -712,6 +716,15 @@ static jboolean JNI_WebsitePreferenceBridge_IsPermissionControlledByDSE(
   return permissions::PermissionsClient::Get()->IsPermissionControlledByDse(
       unwrap(jbrowser_context_handle),
       static_cast<ContentSettingsType>(content_settings_type),
+      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))));
+}
+
+static jboolean JNI_WebsitePreferenceBridge_IsDSEOrigin(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    const JavaParamRef<jstring>& jorigin) {
+  return permissions::PermissionsClient::Get()->IsDseOrigin(
+      unwrap(jbrowser_context_handle),
       url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))));
 }
 
@@ -798,8 +811,10 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
         value = CONTENT_SETTING_ASK;
         break;
       case ContentSettingsType::ADS:
+      case ContentSettingsType::AUTO_DARK_WEB_CONTENT:
       case ContentSettingsType::BACKGROUND_SYNC:
       case ContentSettingsType::COOKIES:
+      case ContentSettingsType::REQUEST_DESKTOP_SITE:
       case ContentSettingsType::JAVASCRIPT:
       case ContentSettingsType::POPUPS:
       case ContentSettingsType::SENSORS:
@@ -815,7 +830,22 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
       ->SetDefaultContentSetting(type, value);
 }
 
-static void JNI_WebsitePreferenceBridge_SetContentSettingForPattern(
+static void JNI_WebsitePreferenceBridge_SetContentSettingDefaultScope(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    int content_settings_type,
+    const JavaParamRef<jobject>& jprimary_url,
+    const JavaParamRef<jobject>& jsecondary_url,
+    int setting) {
+  GetHostContentSettingsMap(jbrowser_context_handle)
+      ->SetContentSettingDefaultScope(
+          *url::GURLAndroid::ToNativeGURL(env, jprimary_url),
+          *url::GURLAndroid::ToNativeGURL(env, jsecondary_url),
+          static_cast<ContentSettingsType>(content_settings_type),
+          static_cast<ContentSetting>(setting));
+}
+
+static void JNI_WebsitePreferenceBridge_SetContentSettingCustomScope(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     int content_settings_type,
@@ -834,6 +864,19 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingForPattern(
               : ContentSettingsPattern::FromString(secondary_pattern_string),
           static_cast<ContentSettingsType>(content_settings_type),
           static_cast<ContentSetting>(setting));
+}
+
+static int JNI_WebsitePreferenceBridge_GetContentSetting(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    int content_settings_type,
+    const JavaParamRef<jobject>& jprimary_url,
+    const JavaParamRef<jobject>& jsecondary_url) {
+  return GetHostContentSettingsMap(jbrowser_context_handle)
+      ->GetContentSetting(
+          *url::GURLAndroid::ToNativeGURL(env, jprimary_url),
+          *url::GURLAndroid::ToNativeGURL(env, jsecondary_url),
+          static_cast<ContentSettingsType>(content_settings_type));
 }
 
 static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
@@ -855,7 +898,7 @@ static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
   }
 }
 
-static jint JNI_WebsitePreferenceBridge_GetContentSetting(
+static jint JNI_WebsitePreferenceBridge_GetDefaultContentSetting(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     int content_settings_type) {
@@ -864,7 +907,7 @@ static jint JNI_WebsitePreferenceBridge_GetContentSetting(
           static_cast<ContentSettingsType>(content_settings_type), nullptr);
 }
 
-static void JNI_WebsitePreferenceBridge_SetContentSetting(
+static void JNI_WebsitePreferenceBridge_SetDefaultContentSetting(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
     int content_settings_type,

@@ -51,14 +51,13 @@
                     "description": "Where to clear the setting (default: regular)."
                   }
                 }
-              },
-              {
-                "type": "function",
-                "name": "callback",
-                "optional": true,
-                "parameters": []
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "optional": true,
+              "parameters": []
+            }
           },
           {
             "name": "get",
@@ -89,24 +88,23 @@
                     "description": "Whether to check the content settings for an incognito session. (default false)"
                   }
                 }
-              },
-              {
-                "type": "function",
-                "name": "callback",
-                "parameters": [
-                  {
-                    "name": "details",
-                    "type": "object",
-                    "properties": {
-                      "setting": {
-                        "type": "any",
-                        "description": "The content setting. See the description of the individual ContentSetting objects for the possible values."
-                      }
+              }
+            ],
+            "returns_async": {
+              "name": "callback",
+              "parameters": [
+                {
+                  "name": "details",
+                  "type": "object",
+                  "properties": {
+                    "setting": {
+                      "type": "any",
+                      "description": "The content setting. See the description of the individual ContentSetting objects for the possible values."
                     }
                   }
-                ]
-              }
-            ]
+                }
+              ]
+            }
           },
           {
             "name": "set",
@@ -141,36 +139,33 @@
                     "description": "Where to set the setting (default: regular)."
                   }
                 }
-              },
-              {
-                "type": "function",
-                "name": "callback",
-                "optional": true,
-                "parameters": []
               }
-            ]
+            ],
+            "returns_async": {
+              "name": "callback",
+              "optional": true,
+              "parameters": []
+            }
           },
           {
             "name": "getResourceIdentifiers",
             "type": "function",
             "description": "",
-            "parameters": [
-              {
-                "name": "callback",
-                "type": "function",
-                "parameters": [
-                  {
-                    "name": "resourceIdentifiers",
-                    "type": "array",
-                    "description": "A list of resource identifiers for this content type, or <var>undefined</var> if this content type does not use resource identifiers.",
-                    "optional": true,
-                    "items": {
-                      "$ref": "ResourceIdentifier"
-                    }
+            "parameters": [],
+            "returns_async": {
+              "name": "callback",
+              "parameters": [
+                {
+                  "name": "resourceIdentifiers",
+                  "type": "array",
+                  "description": "A list of resource identifiers for this content type, or <var>undefined</var> if this content type does not use resource identifiers.",
+                  "optional": true,
+                  "items": {
+                    "$ref": "ResourceIdentifier"
                   }
-                ]
-              }
-            ]
+                }
+              ]
+            }
           }
         ]
       },

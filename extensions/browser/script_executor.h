@@ -44,6 +44,10 @@ using ScriptsExecutedNotification = base::RepeatingCallback<
 class ScriptExecutor {
  public:
   explicit ScriptExecutor(content::WebContents* web_contents);
+
+  ScriptExecutor(const ScriptExecutor&) = delete;
+  ScriptExecutor& operator=(const ScriptExecutor&) = delete;
+
   ~ScriptExecutor();
 
   // The scope of the script injection across the frames.
@@ -129,8 +133,6 @@ class ScriptExecutor {
   content::WebContents* web_contents_;
 
   ScriptsExecutedNotification observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptExecutor);
 };
 
 }  // namespace extensions

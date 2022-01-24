@@ -29,9 +29,9 @@ const unsigned kWindowInteractionTimeout = 10;
 const unsigned kWindowInteractionTimeoutForTest = 1;
 
 base::TimeDelta WindowInteractionTimeout() {
-  return base::TimeDelta::FromSeconds(WebTestSupport::IsRunningWebTest()
-                                          ? kWindowInteractionTimeoutForTest
-                                          : kWindowInteractionTimeout);
+  return base::Seconds(WebTestSupport::IsRunningWebTest()
+                           ? kWindowInteractionTimeoutForTest
+                           : kWindowInteractionTimeout);
 }
 
 }  // anonymous namespace

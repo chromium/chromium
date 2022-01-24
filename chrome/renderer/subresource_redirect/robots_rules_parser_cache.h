@@ -5,7 +5,7 @@
 #ifndef CHROME_RENDERER_SUBRESOURCE_REDIRECT_ROBOTS_RULES_PARSER_CACHE_H_
 #define CHROME_RENDERER_SUBRESOURCE_REDIRECT_ROBOTS_RULES_PARSER_CACHE_H_
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/renderer/subresource_redirect/robots_rules_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -62,7 +62,7 @@ class RobotsRulesParserCache {
   friend class SubresourceRedirectLoginRobotsURLLoaderThrottleTest;
 
   // The underlying cache of robots rules parsers.
-  base::MRUCache<url::Origin, std::unique_ptr<RobotsRulesParser>>
+  base::LRUCache<url::Origin, std::unique_ptr<RobotsRulesParser>>
       parsers_cache_;
 
   // Used to get a weak pointer to |this|.

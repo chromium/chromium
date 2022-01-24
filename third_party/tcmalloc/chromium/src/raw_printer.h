@@ -55,6 +55,9 @@ class RawPrinter {
   // will arrange to always keep buf[] null-terminated.
   RawPrinter(char* buf, int length);
 
+  RawPrinter(const RawPrinter&) = delete;
+  RawPrinter& operator=(const RawPrinter&) = delete;
+
   // Return the number of bytes that have been appended to the string
   // so far.  Does not count any bytes that were dropped due to overflow.
   int length() const { return (ptr_ - base_); }
@@ -81,8 +84,6 @@ class RawPrinter {
   char* base_;          // Initial pointer
   char* ptr_;           // Where should we write next
   char* limit_;         // One past last non-\0 char we can write
-
-  DISALLOW_COPY_AND_ASSIGN(RawPrinter);
 };
 
 }

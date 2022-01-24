@@ -7,6 +7,8 @@ import datetime
 import json
 import logging
 
+import six
+
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.servers import server_base
 
@@ -29,6 +31,7 @@ class WPTServe(server_base.ServerBase):
         h2_port = 9000
         ws_port = 9001
         wss_port = 9444
+        webtransport_h3_port = 11000
 
         self._name = 'wptserve'
         self._log_prefixes = ('wptserve_stderr', )
@@ -102,6 +105,13 @@ class WPTServe(server_base.ServerBase):
         # handlers, so we only add the flag if the directory exists.
         if self._port_obj.host.filesystem.exists(path_to_ws_handlers):
             start_cmd += ['--ws_doc_root', path_to_ws_handlers]
+
+        if six.PY3:
+            self._mappings.append({
+                'port': webtransport_h3_port,
+                'scheme': 'webtransport-h3'
+            })
+            start_cmd.append('--webtransport-h3')
 
         # TODO(burnik): We should stop setting the CWD once WPT can be run without it.
         self._cwd = path_to_wpt_root

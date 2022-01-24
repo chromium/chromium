@@ -28,8 +28,8 @@ void PluginInstaller::RemoveObserver(PluginInstallerObserver* observer) {
   strong_observer_count_--;
   observers_.RemoveObserver(observer);
   if (strong_observer_count_ == 0) {
-    for (WeakPluginInstallerObserver& observer : weak_observers_)
-      observer.OnlyWeakObserversLeft();
+    for (WeakPluginInstallerObserver& weak_observer : weak_observers_)
+      weak_observer.OnlyWeakObserversLeft();
   }
 }
 

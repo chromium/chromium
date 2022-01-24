@@ -1,0 +1,76 @@
+This is a testharness.js-based test.
+Found 72 tests; 40 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Inserting paragraph when selection is collapsed in <br> in <div> which is only child
+PASS Inserting paragraph when selection is collapsed in <br> in <div> which is only child (explicitly flushes maybe pending layout)
+PASS Inserting paragraph when selection is collapsed in <br> which follows a text node in <div>
+PASS Inserting paragraph when selection is collapsed in <br> which is followed by a text node in <div>
+FAIL Inserting paragraph when selection is collapsed in <embed> in <div> which is only child assert_in_array: The paragraph should be inserted before the <embed> element value "<div><embed></div>" not in array ["<div><br></div><div><embed></div>", "<div><br></div><div><embed><br></div>"]
+FAIL Inserting paragraph when selection is collapsed in <embed> in <div> which is only child (explicitly flushes maybe pending layout) assert_in_array: The paragraph should be inserted before the <embed> element value "<div><embed></div>" not in array ["<div><br></div><div><embed></div>", "<div><br></div><div><embed><br></div>"]
+FAIL Inserting paragraph when selection is collapsed in <embed> which follows a text node in <div> assert_in_array: The paragraph should be split before the <embed> element value "<div>abc<embed></div><div><br></div>" not in array ["<div>abc</div><div><embed></div>", "<div>abc<br></div><div><embed></div>", "<div>abc</div><div><embed><br></div>", "<div>abc<br></div><div><embed><br></div>"]
+PASS Inserting paragraph when selection is collapsed in <embed> which is followed by a text node in <div>
+FAIL Inserting paragraph when selection is collapsed in <hr> in <div> which is only child assert_in_array: The paragraph should be inserted before the <hr> element value "<div><br><hr></div>" not in array ["<div><br></div><div><hr></div>", "<div><br></div><div><hr><br></div>"]
+FAIL Inserting paragraph when selection is collapsed in <hr> in <div> which is only child (explicitly flushes maybe pending layout) assert_in_array: The paragraph should be inserted before the <hr> element value "<div><br><hr></div>" not in array ["<div><br></div><div><hr></div>", "<div><br></div><div><hr><br></div>"]
+FAIL Inserting paragraph when selection is collapsed in <hr> which follows a text node in <div> assert_in_array: The paragraph should be split before the <hr> element value "<div>abc<br><br><hr></div>" not in array ["<div>abc</div><div><hr></div>", "<div>abc<br></div><div><hr></div>", "<div>abc</div><div><hr><br></div>", "<div>abc<br></div><div><hr><br></div>"]
+FAIL Inserting paragraph when selection is collapsed in <hr> which is followed by a text node in <div> assert_in_array: The paragraph should be inserted before the <hr> element value "<div><br><hr>abc</div>" not in array ["<div><br></div><div><hr>abc</div>", "<div><br></div><div><hr>abc<br></div>"]
+PASS Inserting paragraph when selection is collapsed in <img> in <div> which is only child
+PASS Inserting paragraph when selection is collapsed in <img> in <div> which is only child (explicitly flushes maybe pending layout)
+PASS Inserting paragraph when selection is collapsed in <img> which follows a text node in <div>
+PASS Inserting paragraph when selection is collapsed in <img> which is followed by a text node in <div>
+PASS Inserting paragraph when selection is collapsed in <input> in <div> which is only child
+PASS Inserting paragraph when selection is collapsed in <input> in <div> which is only child (explicitly flushes maybe pending layout)
+PASS Inserting paragraph when selection is collapsed in <input> which follows a text node in <div>
+PASS Inserting paragraph when selection is collapsed in <input> which is followed by a text node in <div>
+FAIL Inserting paragraph when selection is collapsed in <wbr> in <div> which is only child assert_in_array: The paragraph should be inserted before the <wbr> element value "<div><wbr></div><div><br></div>" not in array ["<div><br></div><div><wbr></div>", "<div><br></div><div><wbr><br></div>"]
+FAIL Inserting paragraph when selection is collapsed in <wbr> in <div> which is only child (explicitly flushes maybe pending layout) assert_in_array: The paragraph should be inserted before the <wbr> element value "<div><wbr></div><div><br></div>" not in array ["<div><br></div><div><wbr></div>", "<div><br></div><div><wbr><br></div>"]
+FAIL Inserting paragraph when selection is collapsed in <wbr> which follows a text node in <div> assert_in_array: The paragraph should be split before the <wbr> element value "<div>abc<wbr></div><div><br></div>" not in array ["<div>abc</div><div><wbr></div>", "<div>abc<br></div><div><wbr></div>", "<div>abc</div><div><wbr><br></div>", "<div>abc<br></div><div><wbr><br></div>"]
+PASS Inserting paragraph when selection is collapsed in <wbr> which is followed by a text node in <div>
+PASS Inserting paragraph when selection is collapsed in <br> in <h1> which is only child
+PASS Inserting paragraph when selection is collapsed in <br> in <h1> which is only child (explicitly flushes maybe pending layout)
+PASS Inserting paragraph when selection is collapsed in <br> which follows a text node in <h1>
+PASS Inserting paragraph when selection is collapsed in <br> which is followed by a text node in <h1>
+FAIL Inserting paragraph when selection is collapsed in <embed> in <h1> which is only child assert_in_array: The paragraph should be inserted before the <embed> element value "<h1><embed></h1>" not in array ["<h1><br></h1><div><embed></div>", "<h1><br></h1><div><embed><br></div>"]
+FAIL Inserting paragraph when selection is collapsed in <embed> in <h1> which is only child (explicitly flushes maybe pending layout) assert_in_array: The paragraph should be inserted before the <embed> element value "<h1><embed></h1>" not in array ["<h1><br></h1><div><embed></div>", "<h1><br></h1><div><embed><br></div>"]
+FAIL Inserting paragraph when selection is collapsed in <embed> which follows a text node in <h1> assert_in_array: The paragraph should be split before the <embed> element value "<h1>abc<embed></h1><div><br></div>" not in array ["<h1>abc</h1><div><embed></div>", "<h1>abc<br></h1><div><embed></div>", "<h1>abc</h1><div><embed><br></div>", "<h1>abc<br></h1><div><embed><br></div>"]
+PASS Inserting paragraph when selection is collapsed in <embed> which is followed by a text node in <h1>
+FAIL Inserting paragraph when selection is collapsed in <hr> in <h1> which is only child assert_in_array: The paragraph should be inserted before the <hr> element value "<h1><br><hr></h1>" not in array ["<h1><br></h1><h1><hr></h1>", "<h1><br></h1><h1><hr><br></h1>"]
+FAIL Inserting paragraph when selection is collapsed in <hr> in <h1> which is only child (explicitly flushes maybe pending layout) assert_in_array: The paragraph should be inserted before the <hr> element value "<h1><br><hr></h1>" not in array ["<h1><br></h1><h1><hr></h1>", "<h1><br></h1><h1><hr><br></h1>"]
+FAIL Inserting paragraph when selection is collapsed in <hr> which follows a text node in <h1> assert_in_array: The paragraph should be split before the <hr> element value "<h1>abc<br><br><hr></h1>" not in array ["<h1>abc</h1><h1><hr></h1>", "<h1>abc<br></h1><h1><hr></h1>", "<h1>abc</h1><h1><hr><br></h1>", "<h1>abc<br></h1><h1><hr><br></h1>"]
+FAIL Inserting paragraph when selection is collapsed in <hr> which is followed by a text node in <h1> assert_in_array: The paragraph should be inserted before the <hr> element value "<h1><br><hr>abc</h1>" not in array ["<h1><br></h1><h1><hr>abc</h1>", "<h1><br></h1><h1><hr>abc<br></h1>"]
+PASS Inserting paragraph when selection is collapsed in <img> in <h1> which is only child
+PASS Inserting paragraph when selection is collapsed in <img> in <h1> which is only child (explicitly flushes maybe pending layout)
+PASS Inserting paragraph when selection is collapsed in <img> which follows a text node in <h1>
+PASS Inserting paragraph when selection is collapsed in <img> which is followed by a text node in <h1>
+PASS Inserting paragraph when selection is collapsed in <input> in <h1> which is only child
+PASS Inserting paragraph when selection is collapsed in <input> in <h1> which is only child (explicitly flushes maybe pending layout)
+PASS Inserting paragraph when selection is collapsed in <input> which follows a text node in <h1>
+PASS Inserting paragraph when selection is collapsed in <input> which is followed by a text node in <h1>
+FAIL Inserting paragraph when selection is collapsed in <wbr> in <h1> which is only child assert_in_array: The paragraph should be inserted before the <wbr> element value "<h1><wbr></h1><div><br></div>" not in array ["<h1><br></h1><div><wbr></div>", "<h1><br></h1><div><wbr><br></div>"]
+FAIL Inserting paragraph when selection is collapsed in <wbr> in <h1> which is only child (explicitly flushes maybe pending layout) assert_in_array: The paragraph should be inserted before the <wbr> element value "<h1><wbr></h1><div><br></div>" not in array ["<h1><br></h1><div><wbr></div>", "<h1><br></h1><div><wbr><br></div>"]
+FAIL Inserting paragraph when selection is collapsed in <wbr> which follows a text node in <h1> assert_in_array: The paragraph should be split before the <wbr> element value "<h1>abc<wbr></h1><div><br></div>" not in array ["<h1>abc</h1><div><wbr></div>", "<h1>abc<br></h1><div><wbr></div>", "<h1>abc</h1><div><wbr><br></div>", "<h1>abc<br></h1><div><wbr><br></div>"]
+PASS Inserting paragraph when selection is collapsed in <wbr> which is followed by a text node in <h1>
+FAIL Inserting paragraph when selection is collapsed in <br> in <li> which is only child assert_in_array: The paragraph should be inserted before the <br> element value "<div><br></div>" not in array "<ol><li><br></li><li><br></li></ol>"
+FAIL Inserting paragraph when selection is collapsed in <br> in <li> which is only child (explicitly flushes maybe pending layout) assert_in_array: The paragraph should be inserted before the <br> element value "<div><br></div>" not in array "<ol><li><br></li><li><br></li></ol>"
+PASS Inserting paragraph when selection is collapsed in <br> which follows a text node in <li>
+PASS Inserting paragraph when selection is collapsed in <br> which is followed by a text node in <li>
+FAIL Inserting paragraph when selection is collapsed in <embed> in <li> which is only child assert_in_array: The paragraph should be inserted before the <embed> element value "<div><br></div>" not in array ["<ol><li><br></li><li><embed></li></ol>", "<ol><li><br></li><li><embed><br></li></ol>"]
+FAIL Inserting paragraph when selection is collapsed in <embed> in <li> which is only child (explicitly flushes maybe pending layout) assert_in_array: The paragraph should be inserted before the <embed> element value "<div><br></div>" not in array ["<ol><li><br></li><li><embed></li></ol>", "<ol><li><br></li><li><embed><br></li></ol>"]
+FAIL Inserting paragraph when selection is collapsed in <embed> which follows a text node in <li> assert_in_array: The paragraph should be split before the <embed> element value "<ol><li>abc<embed></li><li><br></li></ol>" not in array ["<ol><li>abc</li><li><embed></li></ol>", "<ol><li>abc<br></li><li><embed></li></ol>", "<ol><li>abc</li><li><embed><br></li></ol>", "<ol><li>abc<br></li><li><embed><br></li></ol>"]
+PASS Inserting paragraph when selection is collapsed in <embed> which is followed by a text node in <li>
+FAIL Inserting paragraph when selection is collapsed in <hr> in <li> which is only child assert_in_array: The paragraph should be inserted before the <hr> element value "<ol><li><br><hr></li></ol>" not in array ["<ol><li><br></li><li><hr></li></ol>", "<ol><li><br></li><li><hr><br></li></ol>"]
+FAIL Inserting paragraph when selection is collapsed in <hr> in <li> which is only child (explicitly flushes maybe pending layout) assert_in_array: The paragraph should be inserted before the <hr> element value "<ol><li><br><hr></li></ol>" not in array ["<ol><li><br></li><li><hr></li></ol>", "<ol><li><br></li><li><hr><br></li></ol>"]
+FAIL Inserting paragraph when selection is collapsed in <hr> which follows a text node in <li> assert_in_array: The paragraph should be split before the <hr> element value "<ol><li>abc<br><br><hr></li></ol>" not in array ["<ol><li>abc</li><li><hr></li></ol>", "<ol><li>abc<br></li><li><hr></li></ol>", "<ol><li>abc</li><li><hr><br></li></ol>", "<ol><li>abc<br></li><li><hr><br></li></ol>"]
+FAIL Inserting paragraph when selection is collapsed in <hr> which is followed by a text node in <li> assert_in_array: The paragraph should be inserted before the <hr> element value "<ol><li><br><hr>abc</li></ol>" not in array ["<ol><li><br></li><li><hr>abc</li></ol>", "<ol><li><br></li><li><hr>abc<br></li></ol>"]
+PASS Inserting paragraph when selection is collapsed in <img> in <li> which is only child
+PASS Inserting paragraph when selection is collapsed in <img> in <li> which is only child (explicitly flushes maybe pending layout)
+PASS Inserting paragraph when selection is collapsed in <img> which follows a text node in <li>
+PASS Inserting paragraph when selection is collapsed in <img> which is followed by a text node in <li>
+PASS Inserting paragraph when selection is collapsed in <input> in <li> which is only child
+PASS Inserting paragraph when selection is collapsed in <input> in <li> which is only child (explicitly flushes maybe pending layout)
+PASS Inserting paragraph when selection is collapsed in <input> which follows a text node in <li>
+PASS Inserting paragraph when selection is collapsed in <input> which is followed by a text node in <li>
+FAIL Inserting paragraph when selection is collapsed in <wbr> in <li> which is only child assert_in_array: The paragraph should be inserted before the <wbr> element value "<div><br></div>" not in array ["<ol><li><br></li><li><wbr></li></ol>", "<ol><li><br></li><li><wbr><br></li></ol>"]
+FAIL Inserting paragraph when selection is collapsed in <wbr> in <li> which is only child (explicitly flushes maybe pending layout) assert_in_array: The paragraph should be inserted before the <wbr> element value "<div><br></div>" not in array ["<ol><li><br></li><li><wbr></li></ol>", "<ol><li><br></li><li><wbr><br></li></ol>"]
+FAIL Inserting paragraph when selection is collapsed in <wbr> which follows a text node in <li> assert_in_array: The paragraph should be split before the <wbr> element value "<ol><li>abc<wbr></li><li><br></li></ol>" not in array ["<ol><li>abc</li><li><wbr></li></ol>", "<ol><li>abc<br></li><li><wbr></li></ol>", "<ol><li>abc</li><li><wbr><br></li></ol>", "<ol><li>abc<br></li><li><wbr><br></li></ol>"]
+PASS Inserting paragraph when selection is collapsed in <wbr> which is followed by a text node in <li>
+Harness: the test ran to completion.
+

@@ -11,6 +11,7 @@
     <color name="baseline_primary_100">#D3E3FD</color>
     <color name="baseline_primary_200">#A8C7FA</color>
     <color name="baseline_primary_200_alpha_10" tools:ignore="UnusedResources">#19A8C7FA</color>
+    <color name="baseline_primary_200_alpha_20">#33A8C7FA</color>
     <color name="baseline_primary_200_alpha_50">#80A8C7FA</color>
     <color name="baseline_primary_600">#0B57D0</color>
     <color name="baseline_primary_600_alpha_6">#0F0B57D0</color>
@@ -29,6 +30,7 @@
     <color name="baseline_neutral_0_with_neutral_600_alpha_20_with_primary_600_2" tools:ignore="UnusedResources">#DADBDE</color>
     <color name="baseline_neutral_50">#F2F2F2</color>
     <color name="baseline_neutral_100">#E3E3E3</color>
+    <color name="baseline_neutral_100_alpha_10">#19E3E3E3</color>
     <color name="baseline_neutral_100_alpha_12">#1EE3E3E3</color>
     <color name="baseline_neutral_100_alpha_38">#61E3E3E3</color>
     <color name="baseline_neutral_200">#C7C7C7</color>
@@ -41,6 +43,7 @@
     <color name="baseline_neutral_800">#303030</color>
     <color name="baseline_neutral_800_alpha_38">#61303030</color>
     <color name="baseline_neutral_900">#1F1F1F</color>
+    <color name="baseline_neutral_900_alpha_10">#191F1F1F</color>
     <color name="baseline_neutral_900_alpha_12">#1E1F1F1F</color>
     <color name="baseline_neutral_900_alpha_38">#611F1F1F</color>
     <color name="baseline_neutral_900_with_neutral_100_alpha_38">#696969</color>
@@ -50,6 +53,9 @@
     <color name="baseline_neutral_900_with_neutral_200_alpha_12_with_primary_200_alpha_2">#353637</color>
     <color name="baseline_neutral_900_with_neutral_200_alpha_14_with_primary_200_alpha_2">#393A3B</color>
     <color name="baseline_neutral_900_with_neutral_200_alpha_20_with_primary_200_alpha_2">#434445</color>
+    <color name="baseline_neutral_900_with_neutral_1000_alpha_30">#161616</color>
+    <color name="baseline_neutral_900_with_neutral_1000_alpha_30_with_neutral_variant_400_alpha_15">#282828</color>
+    <color name="baseline_neutral_1000">@android:color/black</color>
     <color name="baseline_neutral_variant_100">#E1E3E1</color>
     <color name="baseline_neutral_variant_200">#C4C7C5</color>
     <color name="baseline_neutral_variant_200_alpha_15">#26C4C7C5</color>
@@ -62,6 +68,7 @@
     <color name="baseline_secondary_300">#5AB3F0</color>
     <color name="baseline_secondary_300_with_neutral_100_alpha_8">#53A7E1</color>
     <color name="baseline_secondary_300_with_neutral_100_alpha_24">#448FC4</color>
+    <color name="baseline_secondary_900">#001D35</color>
     <color name="baseline_tertiary_200">#6DD58C</color>
     <color name="baseline_tertiary_600">#146C2E</color>
 
@@ -103,7 +110,6 @@
     <color name="google_red_600">@color/baseline_error_600</color>
 
     <!-- No 2021 color palette mapping exists. -->
-    <color name="alpha_100">@android:color/transparent</color>
     <color name="black_alpha_11" tools:ignore="UnusedResources">#1D000000</color>
     <color name="black_alpha_38" tools:ignore="UnusedResources">#61000000</color>
     <color name="black_alpha_65" tools:ignore="UnusedResources">#A6000000</color>

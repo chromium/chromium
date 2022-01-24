@@ -4,13 +4,9 @@
 
 #include "ash/app_list/views/ghost_image_view.h"
 
-#include <algorithm>
-#include <memory>
-
-#include "ash/app_list/model/app_list_folder_item.h"
-#include "ash/app_list/model/app_list_item_list.h"
-#include "ash/app_list/views/app_list_item_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/style/ash_color_provider.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/tween.h"
@@ -23,50 +19,27 @@ namespace {
 
 constexpr int kGhostCircleStrokeWidth = 2;
 constexpr int kGhostColorOpacity = 0x4D;  // 30% opacity.
-constexpr int kRootGridGhostColor = gfx::kGoogleGrey200;
-constexpr int kInFolderGhostColor = gfx::kGoogleGrey700;
-constexpr base::TimeDelta kGhostFadeInOutLength =
-    base::TimeDelta::FromMilliseconds(180);
+constexpr base::TimeDelta kGhostFadeInOutLength = base::Milliseconds(180);
 constexpr gfx::Tween::Type kGhostTween = gfx::Tween::FAST_OUT_SLOW_IN;
 
 }  // namespace
 
-GhostImageView::GhostImageView(bool is_folder, bool is_in_folder, int page)
-    : is_hiding_(false),
-      is_in_folder_(is_in_folder),
-      is_folder_(is_folder),
-      page_(page) {}
+GhostImageView::GhostImageView(GridIndex index)
+    : is_hiding_(false), index_(index) {}
 
 GhostImageView::~GhostImageView() {
   StopObservingImplicitAnimations();
 }
 
-void GhostImageView::Init(AppListItemView* drag_view,
+void GhostImageView::Init(const AppListConfig* app_list_config,
                           const gfx::Rect& drop_target_bounds) {
+  DCHECK(app_list_config);
+  corner_radius_ = app_list_config->grid_focus_corner_radius();
+
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetOpacity(0.0f);
   SetBoundsRect(drop_target_bounds);
-  icon_bounds_ = drag_view->GetIconBounds();
-
-  if (is_folder_) {
-    inner_icon_radius_ =
-        drag_view->GetAppListConfig().item_icon_in_folder_icon_size().width() /
-        2;
-
-    AppListFolderItem* folder_item =
-        static_cast<AppListFolderItem*>(drag_view->item());
-    num_items_ = std::min(FolderImage::kNumFolderTopItems,
-                          folder_item->item_list()->item_count());
-
-    std::vector<gfx::Rect> top_icon_bounds = FolderImage::GetTopIconsBounds(
-        drag_view->GetAppListConfig(), icon_bounds_, num_items_.value());
-
-    // Push back the position for each app to be shown within the folder icon.
-    for (size_t i = 0; i < num_items_.value(); i++) {
-      inner_folder_icon_origins_.push_back(top_icon_bounds[i].CenterPoint());
-    }
-  }
 }
 
 void GhostImageView::FadeOut() {
@@ -85,10 +58,6 @@ void GhostImageView::SetTransitionOffset(
   SetPosition(bounds().origin() + transition_offset);
 }
 
-const char* GhostImageView::GetClassName() const {
-  return "GhostImageView";
-}
-
 void GhostImageView::DoAnimation(bool hide) {
   ui::ScopedLayerAnimationSettings animation(layer()->GetAnimator());
   animation.SetTransitionDuration(kGhostFadeInOutLength);
@@ -105,41 +74,27 @@ void GhostImageView::DoAnimation(bool hide) {
 }
 
 void GhostImageView::OnPaint(gfx::Canvas* canvas) {
-  const gfx::PointF circle_center(icon_bounds_.CenterPoint());
-
-  // Draw a circle to represent the ghost image icon.
-  cc::PaintFlags circle_flags;
-  circle_flags.setAntiAlias(true);
-  circle_flags.setColor(is_in_folder_ ? kInFolderGhostColor
-                                      : kRootGridGhostColor);
-  circle_flags.setAlpha(kGhostColorOpacity);
-  circle_flags.setStyle(cc::PaintFlags::kStroke_Style);
-  circle_flags.setStrokeWidth(kGhostCircleStrokeWidth);
-
-  const float ghost_radius = icon_bounds_.width() / 2;
-
-  // Draw a circle to represent an app or folder outline.
-  canvas->DrawCircle(circle_center, ghost_radius, circle_flags);
-
-  if (is_folder_) {
-    // Draw a mask so inner folder icons do not overlap the outer circle.
-    SkPath outer_circle_mask;
-    outer_circle_mask.addCircle(circle_center.x(), circle_center.y(),
-                                ghost_radius - kGhostCircleStrokeWidth / 2);
-    canvas->ClipPath(outer_circle_mask, true);
-
-    // Draw ghost items within the ghost folder circle.
-    for (size_t i = 0; i < num_items_.value(); i++) {
-      canvas->DrawCircle(inner_folder_icon_origins_[i], inner_icon_radius_,
-                         circle_flags);
-    }
-  }
-  ImageView::OnPaint(canvas);
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  // TODO(crbug.com/1255369): Get the highlight color from the ash color
+  // provider once it is implemented.
+  flags.setColor(AshColorProvider::Get()->IsDarkModeEnabled()
+                     ? gfx::kGoogleGrey200
+                     : gfx::kGoogleGrey700);
+  flags.setAlpha(kGhostColorOpacity);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setStrokeWidth(kGhostCircleStrokeWidth);
+  gfx::Rect bounds = GetContentsBounds();
+  bounds.Inset(gfx::Insets(kGhostCircleStrokeWidth / 2));
+  canvas->DrawRoundRect(gfx::RectF(bounds), corner_radius_, flags);
 }
 
 void GhostImageView::OnImplicitAnimationsCompleted() {
   // Delete this GhostImageView when the fade out animation is done.
   delete this;
 }
+
+BEGIN_METADATA(GhostImageView, views::View)
+END_METADATA
 
 }  // namespace ash

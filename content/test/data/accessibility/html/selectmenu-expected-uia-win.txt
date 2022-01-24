@@ -1,0 +1,8 @@
+Document
+++Group IsControlElement=false
+++++Group IsControlElement=false
+++++++Button Name='Option 1' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++++Group IsControlElement=false
+++++++++++Text Name='Option 1'
+++++Group IsControlElement=false
+++++++Button Name='Custom selectmenu button' ExpandCollapse.ExpandCollapseState='Collapsed'

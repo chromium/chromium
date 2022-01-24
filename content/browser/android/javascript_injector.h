@@ -8,7 +8,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -22,6 +21,10 @@ class JavascriptInjector : public WebContentsUserData<JavascriptInjector> {
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& retained_objects,
       WebContents* web_contents);
+
+  JavascriptInjector(const JavascriptInjector&) = delete;
+  JavascriptInjector& operator=(const JavascriptInjector&) = delete;
+
   ~JavascriptInjector() override;
 
   void SetAllowInspection(JNIEnv* env,
@@ -48,8 +51,6 @@ class JavascriptInjector : public WebContentsUserData<JavascriptInjector> {
   scoped_refptr<GinJavaBridgeDispatcherHost> java_bridge_dispatcher_host_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(JavascriptInjector);
 };
 
 }  // namespace content

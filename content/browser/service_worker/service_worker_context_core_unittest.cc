@@ -30,6 +30,10 @@ class ServiceWorkerContextCoreTest : public testing::Test,
   ServiceWorkerContextCoreTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
 
+  ServiceWorkerContextCoreTest(const ServiceWorkerContextCoreTest&) = delete;
+  ServiceWorkerContextCoreTest& operator=(const ServiceWorkerContextCoreTest&) =
+      delete;
+
   void SetUp() override {
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
   }
@@ -142,8 +146,10 @@ class ServiceWorkerContextCoreTest : public testing::Test,
     remote_endpoints_.emplace_back();
     base::WeakPtr<ServiceWorkerContainerHost> container_host =
         CreateContainerHostForWindow(
-            /*dummy_render_process_id=*/33, /*is_parent_frame_secure=*/true,
-            helper_->context()->AsWeakPtr(), &remote_endpoints_.back());
+            GlobalRenderFrameHostId(/*mock process_id=*/33,
+                                    /*mock frame_routing_id=*/1),
+            /*is_parent_frame_secure=*/true, helper_->context()->AsWeakPtr(),
+            &remote_endpoints_.back());
     return container_host.get();
   }
 
@@ -151,6 +157,7 @@ class ServiceWorkerContextCoreTest : public testing::Test,
   // ServiceWorkerContextCoreObserver overrides:
   void OnVersionStateChanged(int64_t version_id,
                              const GURL& scope,
+                             const blink::StorageKey& key,
                              ServiceWorkerVersion::Status status) override {
     if (status == ServiceWorkerVersion::ACTIVATED &&
         scope == scope_for_wait_for_activated_ &&
@@ -166,8 +173,6 @@ class ServiceWorkerContextCoreTest : public testing::Test,
   GURL scope_for_wait_for_activated_;
   base::OnceClosure quit_closure_for_wait_for_activated_;
   bool is_observing_context_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextCoreTest);
 };
 
 TEST_F(ServiceWorkerContextCoreTest, FailureInfo) {
@@ -266,8 +271,8 @@ TEST_F(ServiceWorkerContextCoreTest,
 
   // Add a controlled client.
   ServiceWorkerContainerHost* container_host = CreateControllee();
-  container_host->UpdateUrls(scope, net::SiteForCookies::FromUrl(scope),
-                             origin);
+  container_host->UpdateUrls(scope, net::SiteForCookies::FromUrl(scope), origin,
+                             key);
   container_host->SetControllerRegistration(registration,
                                             /*notify_controllerchange=*/false);
 

@@ -18,10 +18,8 @@ if (use_cups) {
     deps = [
       "//base",
       "//net",
-      "//printing",
+      "//printing/backend",
     ]
-
-    configs += [ "//printing:cups" ]
   }
 
   # Fuzzer target only available on fuzzing builds.

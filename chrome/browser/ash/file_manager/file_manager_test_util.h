@@ -55,7 +55,7 @@ class FolderInMyFiles {
 void AddDefaultComponentExtensionsOnMainThread(Profile* profile);
 
 // Installs the chrome app at the provided |test_path_ascii| under DIR_TEST_DATA
-// and waits for NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY.
+// and waits for the background page to start up.
 scoped_refptr<const extensions::Extension> InstallTestingChromeApp(
     Profile* profile,
     const char* test_path_ascii);

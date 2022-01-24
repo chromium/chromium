@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -82,6 +81,9 @@ class WebAuthFlow : public content::WebContentsObserver,
               Mode mode,
               Partition partition);
 
+  WebAuthFlow(const WebAuthFlow&) = delete;
+  WebAuthFlow& operator=(const WebAuthFlow&) = delete;
+
   ~WebAuthFlow() override;
 
   // Starts the flow.
@@ -114,7 +116,8 @@ class WebAuthFlow : public content::WebContentsObserver,
   void DidStopLoading() override;
   void InnerWebContentsCreated(
       content::WebContents* inner_web_contents) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -135,8 +138,6 @@ class WebAuthFlow : public content::WebContentsObserver,
   AppWindow* app_window_;
   std::string app_window_key_;
   bool embedded_window_created_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAuthFlow);
 };
 
 }  // namespace extensions

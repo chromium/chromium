@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -118,8 +118,7 @@ void ComponentCloudPolicyUpdaterTest::SetUp() {
                                            task_env_.GetMainThreadTaskRunner(),
                                            /* max_cache_size */ absl::nullopt);
   store_ = std::make_unique<ComponentCloudPolicyStore>(
-      &store_delegate_, cache_.get(), dm_protocol::kChromeExtensionPolicyType,
-      POLICY_SOURCE_CLOUD);
+      &store_delegate_, cache_.get(), dm_protocol::kChromeExtensionPolicyType);
   store_->SetCredentials(PolicyBuilder::kFakeUsername,
                          PolicyBuilder::kFakeGaiaId, PolicyBuilder::kFakeToken,
                          PolicyBuilder::kFakeDeviceId, public_key_,
@@ -458,7 +457,7 @@ TEST_F(ComponentCloudPolicyUpdaterTest, RetryAfterDataTooLarge) {
   // After 12 hours (minus some random jitter), the next download attempt
   // happens.
   EXPECT_EQ(0, loader_factory_.NumPending());
-  task_env_.FastForwardBy(base::TimeDelta::FromHours(12));
+  task_env_.FastForwardBy(base::Hours(12));
   EXPECT_TRUE(loader_factory_.IsPending(kTestDownload));
 
   // Complete the download.
@@ -493,7 +492,7 @@ TEST_F(ComponentCloudPolicyUpdaterTest, RetryAfterDataValidationFails) {
   // After 12 hours (minus some random jitter), the next download attempt
   // happens.
   EXPECT_EQ(0, loader_factory_.NumPending());
-  task_env_.FastForwardBy(base::TimeDelta::FromHours(12));
+  task_env_.FastForwardBy(base::Hours(12));
   EXPECT_TRUE(loader_factory_.IsPending(kTestDownload));
 
   // Complete the download with an invalid (empty) JSON. This tests against the

@@ -6,7 +6,6 @@
 #define COMPONENTS_BACKGROUND_TASK_SCHEDULER_BACKGROUND_TASK_SCHEDULER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/background_task_scheduler/task_info.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -18,6 +17,9 @@ namespace background_task {
 // BackgroundTaskScheduler.java.
 class BackgroundTaskScheduler : public KeyedService {
  public:
+  BackgroundTaskScheduler(const BackgroundTaskScheduler&) = delete;
+  BackgroundTaskScheduler& operator=(const BackgroundTaskScheduler&) = delete;
+
   // Schedules a background task with various scheduling related params
   // contained in |task_info|.
   virtual bool Schedule(const TaskInfo& task_info) = 0;
@@ -28,9 +30,6 @@ class BackgroundTaskScheduler : public KeyedService {
  protected:
   BackgroundTaskScheduler() = default;
   ~BackgroundTaskScheduler() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTaskScheduler);
 };
 
 }  // namespace background_task

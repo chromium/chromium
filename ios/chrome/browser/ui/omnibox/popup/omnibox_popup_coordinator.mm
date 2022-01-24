@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_coordinator.h"
 
 #include "base/feature_list.h"
-#import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/common/omnibox_features.h"
 #import "components/search_engines/template_url_service.h"
@@ -58,8 +58,8 @@
 }
 
 - (void)start {
-  std::unique_ptr<image_fetcher::IOSImageDataFetcherWrapper> imageFetcher =
-      std::make_unique<image_fetcher::IOSImageDataFetcherWrapper>(
+  std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
+      std::make_unique<image_fetcher::ImageDataFetcher>(
           self.browser->GetBrowserState()->GetSharedURLLoaderFactory());
 
   self.mediator = [[OmniboxPopupMediator alloc]

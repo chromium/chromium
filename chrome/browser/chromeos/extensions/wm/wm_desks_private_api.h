@@ -32,8 +32,8 @@ class WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction
   ResponseAction Run() override;
 
   void OnCaptureActiveDeskAndSaveTemplateCompleted(
-      bool success,
-      std::unique_ptr<ash::DeskTemplate> desk_template);
+      std::unique_ptr<ash::DeskTemplate> desk_template,
+      std::string error_string);
 };
 
 class WmDesksPrivateUpdateDeskTemplateFunction : public ExtensionFunction {
@@ -53,7 +53,7 @@ class WmDesksPrivateUpdateDeskTemplateFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnUpdateDeskTemplateCompleted(bool success);
+  void OnUpdateDeskTemplateCompleted(std::string error_string);
 };
 
 class WmDesksPrivateGetSavedDeskTemplatesFunction : public ExtensionFunction {
@@ -74,8 +74,8 @@ class WmDesksPrivateGetSavedDeskTemplatesFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   void OnGetSavedDeskTemplate(
-      bool success,
-      const std::vector<ash::DeskTemplate*>& desk_templates);
+      const std::vector<ash::DeskTemplate*>& desk_templates,
+      std::string error_string);
 };
 
 class WmDesksPrivateDeleteDeskTemplateFunction : public ExtensionFunction {
@@ -95,7 +95,7 @@ class WmDesksPrivateDeleteDeskTemplateFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnDeleteDeskTemplateCompleted(bool success);
+  void OnDeleteDeskTemplateCompleted(std::string error_string);
 };
 
 class WmDesksPrivateLaunchDeskTemplateFunction : public ExtensionFunction {
@@ -115,7 +115,7 @@ class WmDesksPrivateLaunchDeskTemplateFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnLaunchDeskTemplate(bool success);
+  void OnLaunchDeskTemplate(std::string error_string);
 };
 
 }  // namespace extensions

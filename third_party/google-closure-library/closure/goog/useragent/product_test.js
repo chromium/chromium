@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.userAgent.productTest');
 goog.setTestOnly();
@@ -24,13 +16,11 @@ const product = goog.require('goog.userAgent.product');
 const testAgents = goog.require('goog.labs.userAgent.testAgents');
 const testSuite = goog.require('goog.testing.testSuite');
 const userAgentTestUtil = goog.require('goog.userAgentTestUtil');
-const util = goog.require('goog.labs.userAgent.util');
 
 let mockAgent;
 let replacer;
 
 function updateUserAgentUtils() {
-  util.setUserAgent(null);
   userAgentTestUtil.reinitializeUserAgent();
 }
 
@@ -48,21 +38,18 @@ function assertIsBrowser(currentBrowser) {
       product[currentBrowser]);
 
   // Make sure we don't have any false positives for other browsers.
-  googArray.forEach(DETECTED_BROWSER_KEYS, (browserKey) => {
+  DETECTED_BROWSER_KEYS.forEach(browserKey => {
     // Ignore the iPad/Safari case, as the new code correctly
     // identifies the test useragent as both iPad and Safari.
     if (currentBrowser == 'IPAD' && browserKey == 'SAFARI') {
       return;
     }
-
     if (currentBrowser == 'IPHONE' && browserKey == 'SAFARI') {
       return;
     }
-
     if (currentBrowser == 'CHROME' && browserKey == 'IPHONE') {
       return;
     }
-
     if (currentBrowser != browserKey) {
       assertFalse(
           `Current browser key is ${currentBrowser}` +
@@ -96,7 +83,7 @@ function checkEachUserAgentDetected(userAgents, browser) {
     assertIsBrowser(browser);
 
     // Check versions
-    googArray.forEach(ua.versions, (v) => {
+    ua.versions.forEach(v => {
       mockAgent.setUserAgentString(ua.ua);
       updateUserAgentUtils();
       assertEquals(
@@ -181,7 +168,7 @@ testSuite({
         {num: 11, truth: false},
       ],
     }];
-    replacer.set(goog.global, 'opera', opera);
+    replacer.set(globalThis, 'opera', opera);
     opera.version = '10.01';
     checkEachUserAgentDetected(userAgents, 'OPERA');
   },
@@ -247,6 +234,24 @@ testSuite({
           {num: '4.1.223.13', truth: false},
           {num: '4.0.223.10', truth: true},
         ],
+      },
+      {
+        ua: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
+        versions: [
+          {num: 91, truth: true},
+          {num: '91.0.4472.114', truth: true},
+          {num: '0.4472.114', truth: true},
+          {num: '91.1.4472.114', truth: false},
+        ]
+      },
+      {
+        ua: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) CriOS/91.0.4472.114 Safari/537.36',
+        versions: [
+          {num: 91, truth: true},
+          {num: '91.0.4472.114', truth: true},
+          {num: '0.4472.114', truth: true},
+          {num: '91.1.4472.114', truth: false},
+        ]
       },
       {
         ua: 'Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B)' +

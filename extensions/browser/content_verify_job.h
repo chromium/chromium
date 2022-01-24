@@ -69,6 +69,9 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
                    const base::FilePath& relative_path,
                    FailureCallback failure_callback);
 
+  ContentVerifyJob(const ContentVerifyJob&) = delete;
+  ContentVerifyJob& operator=(const ContentVerifyJob&) = delete;
+
   // This begins the process of getting expected hashes, so it should be called
   // as early as possible.
   void Start(ContentVerifier* verifier);
@@ -174,8 +177,6 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
   // Used to synchronize all public methods.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentVerifyJob);
 };
 
 }  // namespace extensions

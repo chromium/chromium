@@ -43,19 +43,21 @@ class FontData;
 class FontDescription;
 class FontFaceCache;
 class FontFallbackMap;
+class FontFamily;
 class FontSelectorClient;
 class GenericFontFamilySettings;
+class UseCounter;
 
 class PLATFORM_EXPORT FontSelector : public FontCacheClient {
  public:
   ~FontSelector() override = default;
   virtual scoped_refptr<FontData> GetFontData(const FontDescription&,
-                                       const AtomicString& family_name) = 0;
+                                              const FontFamily&) = 0;
 
   // TODO crbug.com/542629 - The String variant of this method shouldbe replaced
   // with a better approach, now that we only have complex text.
   virtual void WillUseFontData(const FontDescription&,
-                               const AtomicString& family_name,
+                               const FontFamily& family,
                                const String& text) = 0;
   virtual void WillUseRange(const FontDescription&,
                             const AtomicString& family_name,
@@ -131,7 +133,7 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
 
   virtual bool IsPlatformFamilyMatchAvailable(
       const FontDescription&,
-      const AtomicString& passed_family) = 0;
+      const FontFamily& passed_family) = 0;
 
   FontFallbackMap& GetFontFallbackMap();
 
@@ -141,7 +143,8 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   static AtomicString FamilyNameFromSettings(
       const GenericFontFamilySettings&,
       const FontDescription&,
-      const AtomicString& generic_family_name);
+      const FontFamily& generic_family_name,
+      UseCounter*);
 
  private:
   Member<FontFallbackMap> font_fallback_map_;

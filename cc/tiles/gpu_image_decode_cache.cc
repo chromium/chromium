@@ -48,7 +48,7 @@
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/trace_util.h"
 
 namespace cc {
@@ -2192,6 +2192,8 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
           decoded_target_colorspace.get(),
           image_data->yuva_pixmap_info->yuvaInfo().yuvColorSpace(),
           image_data->needs_mips);
+      if (!image_entry.IsValid())
+        return;
       InsertTransferCacheEntry(image_entry, image_data);
     } else {
       SkPixmap pixmap;
@@ -2202,6 +2204,8 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
 
       ClientImageTransferCacheEntry image_entry(&pixmap, color_space.get(),
                                                 image_data->needs_mips);
+      if (!image_entry.IsValid())
+        return;
       InsertTransferCacheEntry(image_entry, image_data);
     }
 

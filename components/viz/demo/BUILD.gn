@@ -69,13 +69,6 @@ executable("viz_demo") {
     "//ui/platform_window",
   ]
 
-  if (use_x11) {
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/platform_window/x11",
-    ]
-  }
-
   if (is_win) {
     deps += [ "//ui/platform_window/win" ]
   }

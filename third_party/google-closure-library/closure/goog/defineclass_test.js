@@ -52,6 +52,7 @@ testSuite({
     assertEquals(SomeClass.prototype.trueMethod(), true);
   },
 
+  /** @suppress {missingProperties} */
   testStaticProp() {
     const SomeClass = goog.defineClass(null, {
       constructor: function() {},
@@ -63,6 +64,7 @@ testSuite({
     assertEquals(SomeClass.someProp, 100);
   },
 
+  /** @suppress {missingProperties} */
   testStaticPropFn() {
     const SomeClass = goog.defineClass(null, {
       constructor: function() {},

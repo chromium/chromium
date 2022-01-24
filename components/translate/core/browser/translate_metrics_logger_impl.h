@@ -92,7 +92,8 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void LogDetectionReliabilityScore(
       const float& model_detection_reliability_score) override {}
   void LogUIInteraction(UIInteraction ui_interaction) override {}
-  TranslationType GetNextManualTranslationType() override;
+  TranslationType GetNextManualTranslationType(
+      bool is_context_menu_initiated_translation) override;
   void SetHasHrefTranslateTarget(bool has_href_translate_target) override {}
   void LogWasContentEmpty(bool was_content_empty) override {}
 };
@@ -153,7 +154,8 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void LogDetectionReliabilityScore(
       const float& model_detection_reliability_score) override;
   void LogUIInteraction(UIInteraction ui_interaction) override;
-  TranslationType GetNextManualTranslationType() override;
+  TranslationType GetNextManualTranslationType(
+      bool is_context_menu_initiated_translation) override;
   void SetHasHrefTranslateTarget(bool has_href_translate_target) override;
   void LogWasContentEmpty(bool was_content_empty) override;
 

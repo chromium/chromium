@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
 
 #include "base/run_loop.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
@@ -47,14 +48,19 @@ class ModelExecutionSchedulerTest : public testing::Test {
   ~ModelExecutionSchedulerTest() override = default;
 
   void SetUp() override {
+    clock_.SetNow(base::Time::Now());
+    std::vector<ModelExecutionScheduler::Observer*> observers = {&observer1_,
+                                                                 &observer2_};
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
-        &observer_, segment_database_.get(), &signal_storage_config_,
-        &model_execution_manager_);
+        std::move(observers), segment_database_.get(), &signal_storage_config_,
+        &model_execution_manager_, &clock_, PlatformOptions::CreateDefault());
   }
 
   base::test::TaskEnvironment task_environment_;
-  MockModelExecutionObserver observer_;
+  base::SimpleTestClock clock_;
+  MockModelExecutionObserver observer1_;
+  MockModelExecutionObserver observer2_;
   MockSignalStorageConfig signal_storage_config_;
   MockModelExecutionManager model_execution_manager_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
@@ -91,7 +97,7 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
   auto* prediction_result = segment_info->mutable_prediction_result();
   prediction_result->set_result(0.9);
   prediction_result->set_timestamp_us(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+      clock_.Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   EXPECT_CALL(model_execution_manager_,
               ExecuteModel(kTestOptimizationTarget, _))
       .Times(0);
@@ -101,9 +107,8 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
 
   // If we have a non-fresh, but not expired result, we SHOULD NOT try to
   // execute the model.
-  base::Time not_expired_timestamp = base::Time::Now() -
-                                     base::TimeDelta::FromDays(1) +
-                                     base::TimeDelta::FromHours(1);
+  base::Time not_expired_timestamp =
+      clock_.Now() - base::Days(1) + base::Hours(1);
   prediction_result->set_result(0.9);
   prediction_result->set_timestamp_us(
       not_expired_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -113,9 +118,8 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
   model_execution_scheduler_->OnNewModelInfoReady(*segment_info);
 
   // If we have an expired result, we SHOULD try to execute the model.
-  base::Time just_expired_timestamp = base::Time::Now() -
-                                      base::TimeDelta::FromDays(1) -
-                                      base::TimeDelta::FromHours(1);
+  base::Time just_expired_timestamp =
+      clock_.Now() - base::Days(1) - base::Hours(1);
   prediction_result->set_result(0.9);
   prediction_result->set_timestamp_us(
       just_expired_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -146,12 +150,14 @@ TEST_F(ModelExecutionSchedulerTest, OnModelExecutionCompleted) {
       segment_database_->FindOrCreateSegment(kTestOptimizationTarget);
 
   // TODO(shaktisahu): Add tests for model failure.
-  EXPECT_CALL(observer_, OnModelExecutionCompleted(kTestOptimizationTarget))
+  EXPECT_CALL(observer2_, OnModelExecutionCompleted(kTestOptimizationTarget))
+      .Times(1);
+  EXPECT_CALL(observer1_, OnModelExecutionCompleted(kTestOptimizationTarget))
       .Times(1);
   float score = 0.4;
   model_execution_scheduler_->OnModelExecutionCompleted(
       kTestOptimizationTarget,
-      std::make_pair(score, ModelExecutionStatus::SUCCESS));
+      std::make_pair(score, ModelExecutionStatus::kSuccess));
 
   // Verify that the results are written to the DB.
   segment_info =

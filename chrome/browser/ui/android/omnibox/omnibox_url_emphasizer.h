@@ -7,12 +7,13 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 
 // Helper functions for the Omnibox URL emphasizer on Android.
 class OmniboxUrlEmphasizer {
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(OmniboxUrlEmphasizer);
+ public:
+  OmniboxUrlEmphasizer() = delete;
+  OmniboxUrlEmphasizer(const OmniboxUrlEmphasizer&) = delete;
+  OmniboxUrlEmphasizer& operator=(const OmniboxUrlEmphasizer&) = delete;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_OMNIBOX_OMNIBOX_URL_EMPHASIZER_H_

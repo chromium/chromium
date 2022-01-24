@@ -74,7 +74,7 @@ public class BookmarkModel extends BookmarkBridge {
      *                  children, because deleting folder will also remove all its children, and
      *                  deleting children once more will cause errors.
      */
-    void deleteBookmarks(BookmarkId... bookmarks) {
+    public void deleteBookmarks(BookmarkId... bookmarks) {
         assert bookmarks != null && bookmarks.length > 0;
         // Store all titles of bookmarks.
         List<String> titles = new ArrayList<>();
@@ -132,9 +132,19 @@ public class BookmarkModel extends BookmarkBridge {
     }
 
     /**
-     * @return The id of the default folder to add bookmarks/folders to.
+     * @return The id of the default folder to save bookmarks/folders to.
      */
     public BookmarkId getDefaultFolder() {
+        return getMobileFolderId();
+    }
+
+    /**
+     * @return The id of the default folder to view bookmarks.
+     */
+    public BookmarkId getDefaultFolderViewLocation() {
+        if (ReadingListFeatures.shouldUseRootFolderAsDefaultForReadLater()) {
+            return getRootFolderId();
+        }
         return getMobileFolderId();
     }
 }

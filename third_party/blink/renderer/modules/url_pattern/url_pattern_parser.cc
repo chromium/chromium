@@ -101,16 +101,16 @@ void Parser::Parse(ExceptionState& exception_state) {
     // past any tokens that are within `{` and `}`.  Note, the tokenizer
     // handles grouping `(` and `)` and `:foo` groups for us automatically, so
     // we don't need special code for them here.
+    if (IsGroupOpen()) {
+      group_depth_ += 1;
+      continue;
+    }
+
     if (group_depth_ > 0) {
       if (IsGroupClose())
         group_depth_ -= 1;
       else
         continue;
-    }
-
-    if (IsGroupOpen()) {
-      group_depth_ += 1;
-      continue;
     }
 
     switch (state_) {
@@ -210,8 +210,15 @@ void Parser::Parse(ExceptionState& exception_state) {
         break;
 
       case StringParseState::kHostname:
+        // Track whether we are inside ipv6 address brackets.
+        if (IsIPv6Open())
+          hostname_ipv6_bracket_depth_ += 1;
+        else if (IsIPv6Close())
+          hostname_ipv6_bracket_depth_ -= 1;
+
         // If we find a `:` then we transition to the port component state.
-        if (IsPortPrefix())
+        // However, we ignore `:` when parsing an ipv6 address.
+        else if (IsPortPrefix() && !hostname_ipv6_bracket_depth_)
           ChangeState(StringParseState::kPort, Skip(1));
 
         // If we find a `/` then we transition to the pathname component state.
@@ -422,6 +429,14 @@ bool Parser::IsGroupOpen() const {
 
 bool Parser::IsGroupClose() const {
   return token_list_[token_index_].type == liburlpattern::TokenType::kClose;
+}
+
+bool Parser::IsIPv6Open() const {
+  return IsNonSpecialPatternChar(token_index_, "[");
+}
+
+bool Parser::IsIPv6Close() const {
+  return IsNonSpecialPatternChar(token_index_, "]");
 }
 
 String Parser::MakeComponentString() const {

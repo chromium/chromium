@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/ime/input_method_delegate.h"
@@ -43,7 +44,7 @@ void InputMethodBase::OnBlur() {
 
 #if defined(OS_WIN)
 bool InputMethodBase::OnUntranslatedIMEMessage(
-    const MSG event,
+    const CHROME_MSG event,
     InputMethod::NativeEventResult* result) {
   return false;
 }

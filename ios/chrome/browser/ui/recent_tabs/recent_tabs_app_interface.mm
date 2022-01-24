@@ -16,16 +16,14 @@
 
 + (void)clearCollapsedListViewSectionStates {
   if (base::ios::IsSceneStartupSupported()) {
-    if (@available(iOS 13, *)) {
-      NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
-      for (UIWindow* window in windows) {
-        UISceneSession* session = window.windowScene.session;
+    NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
+    for (UIWindow* window in windows) {
+      UISceneSession* session = window.windowScene.session;
 
-        NSMutableDictionary* newUserInfo =
-            [NSMutableDictionary dictionaryWithDictionary:session.userInfo];
-        [newUserInfo removeObjectForKey:kListModelCollapsedKey];
-        session.userInfo = newUserInfo;
-      }
+      NSMutableDictionary* newUserInfo =
+          [NSMutableDictionary dictionaryWithDictionary:session.userInfo];
+      [newUserInfo removeObjectForKey:kListModelCollapsedKey];
+      session.userInfo = newUserInfo;
     }
   } else {
     [NSUserDefaults.standardUserDefaults setObject:@{}

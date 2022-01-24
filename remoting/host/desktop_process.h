@@ -15,8 +15,14 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ipc/ipc_listener.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/desktop_session_agent.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
+
+namespace base {
+class Location;
+}
 
 namespace IPC {
 class ChannelProxy;
@@ -35,11 +41,16 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
                  scoped_refptr<AutoThreadTaskRunner> input_task_runner,
                  scoped_refptr<AutoThreadTaskRunner> io_task_runner,
                  mojo::ScopedMessagePipeHandle daemon_channel_handle);
+
+  DesktopProcess(const DesktopProcess&) = delete;
+  DesktopProcess& operator=(const DesktopProcess&) = delete;
+
   ~DesktopProcess() override;
 
   // DesktopSessionAgent::Delegate implementation.
   DesktopEnvironmentFactory& desktop_environment_factory() override;
   void OnNetworkProcessDisconnected() override;
+  void CrashNetworkProcess(const base::Location& location) override;
 
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -88,9 +99,10 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
   // the network process.
   scoped_refptr<DesktopSessionAgent> desktop_agent_;
 
-  base::WeakPtrFactory<DesktopProcess> weak_factory_{this};
+  mojo::AssociatedRemote<mojom::DesktopSessionRequestHandler>
+      desktop_session_request_handler_;
 
-  DISALLOW_COPY_AND_ASSIGN(DesktopProcess);
+  base::WeakPtrFactory<DesktopProcess> weak_factory_{this};
 };
 
 }  // namespace remoting

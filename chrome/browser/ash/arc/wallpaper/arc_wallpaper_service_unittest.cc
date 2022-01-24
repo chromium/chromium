@@ -11,7 +11,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
@@ -21,8 +20,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_wallpaper_instance.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -64,6 +63,10 @@ class ArcWallpaperServiceTest : public testing::Test {
       : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()),
         user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)) {}
+
+  ArcWallpaperServiceTest(const ArcWallpaperServiceTest&) = delete;
+  ArcWallpaperServiceTest& operator=(const ArcWallpaperServiceTest&) = delete;
+
   ~ArcWallpaperServiceTest() override = default;
 
   void SetUp() override {
@@ -126,8 +129,6 @@ class ArcWallpaperServiceTest : public testing::Test {
   // testing_profile_ needs to be deleted before arc_service_manager_.
   TestingProfile testing_profile_;
   TestingPrefServiceSimple pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcWallpaperServiceTest);
 };
 
 }  // namespace

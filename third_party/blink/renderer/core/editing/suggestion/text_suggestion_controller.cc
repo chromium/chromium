@@ -449,7 +449,7 @@ void TextSuggestionController::ShowSpellCheckMenu(
       GetFrame().View()->FrameToViewport(absolute_bounds);
 
   text_suggestion_host_->ShowSpellCheckSuggestionMenu(
-      viewport_bounds.X(), viewport_bounds.MaxY(), std::move(misspelled_word),
+      viewport_bounds.x(), viewport_bounds.bottom(), std::move(misspelled_word),
       std::move(suggestion_ptrs));
 }
 
@@ -529,7 +529,7 @@ void TextSuggestionController::CallMojoShowTextSuggestionMenu(
       GetFrame().View()->FrameToViewport(absolute_bounds);
 
   text_suggestion_host_->ShowTextSuggestionMenu(
-      viewport_bounds.X(), viewport_bounds.MaxY(), misspelled_word,
+      viewport_bounds.x(), viewport_bounds.bottom(), misspelled_word,
       std::move(suggestion_info_ptrs));
 }
 

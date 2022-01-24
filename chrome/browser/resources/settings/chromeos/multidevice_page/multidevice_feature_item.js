@@ -45,6 +45,12 @@ Polymer({
       value: false,
       reflectToAttribute: true,
     },
+
+    /** Whether feature icon is present next to text in row */
+    isFeatureIconHidden: {
+      type: Boolean,
+      value: false,
+    }
   },
 
   /** settings.RouteOriginBehavior override */
@@ -116,5 +122,18 @@ Polymer({
     settings.Router.getInstance().navigateTo(
         /** @type {!settings.Route} */ (this.subpageRoute),
         this.subpageRouteUrlSearchParams, true /* opt_removeSearch */);
+  },
+
+
+  /**
+   * The class name used for given multidevice feature item text container
+   * Checks if icon is present next to text to determine if class 'middle'
+   * applies
+   * @param {boolean} isFeatureIconHidden
+   * @return {string}
+   * @private
+   */
+  getItemTextContainerClassName_(isFeatureIconHidden) {
+    return isFeatureIconHidden ? 'start' : 'middle';
   },
 });

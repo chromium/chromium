@@ -15,7 +15,6 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -28,10 +27,6 @@ import org.chromium.ui.widget.ButtonCompat;
  */
 public class FlocSettingsFragment extends PreferenceFragmentCompat
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
-    public static final String FLOC_REGIONS_DEFAULT_URL =
-            "https://www.privacysandbox.com/proposals/floc";
-    public static final String EXPERIMENT_URL_PARAM = "floc-website-url";
-
     public static final String FLOC_DESCRIPTION = "floc_description";
     public static final String FLOC_TOGGLE = "floc_toggle";
     public static final String FLOC_STATUS = "floc_status";
@@ -116,11 +111,7 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
     }
 
     private String getFlocRegionsUrl() {
-        // Get the URL from Finch, if defined.
-        String url = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_2, EXPERIMENT_URL_PARAM);
-        if (url == null || url.isEmpty()) return FLOC_REGIONS_DEFAULT_URL;
-        return url;
+        return "https://www.privacysandbox.com/proposals/floc";
     }
 
     private void openUrlInCct(String url) {

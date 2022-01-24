@@ -107,14 +107,18 @@ constexpr int kInvokeDemoModeGestureTapsCount = 10;
 class DemoSetupTestBase : public OobeBaseTest {
  public:
   DemoSetupTestBase() = default;
+
+  DemoSetupTestBase(const DemoSetupTestBase&) = delete;
+  DemoSetupTestBase& operator=(const DemoSetupTestBase&) = delete;
+
   ~DemoSetupTestBase() override = default;
 
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
     update_engine_client()->set_update_check_result(
         UpdateEngineClient::UPDATE_RESULT_FAILED);
-    branded_build_override_ =
-        WizardController::ForceBrandedBuildForTesting(true);
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
     DisconnectAllNetworks();
   }
 
@@ -302,8 +306,6 @@ class DemoSetupTestBase : public OobeBaseTest {
   base::ScopedTempDir fake_demo_resources_dir_;
   policy::MockCloudPolicyStore mock_policy_store_;
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupTestBase);
 };
 
 class DemoSetupArcSupportedTest : public DemoSetupTestBase {
@@ -436,8 +438,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   // Advance time to make interval in between taps longer than expected by
   // multi-tap gesture detector.
-  SetFakeTimeForMultiTapDetector(kFakeTime +
-                                 base::TimeDelta::FromMilliseconds(500));
+  SetFakeTimeForMultiTapDetector(kFakeTime + base::Milliseconds(500));
 
   MultiTapOobeContainer(5);
   IsConfirmationDialogHidden();
@@ -507,7 +508,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
     ASSERT_NE(kCountryCodeToNameMap.end(), it);
     const std::string query =
         base::StrCat({test::GetOobeElementPath(kDemoPreferencesCountry),
-                      ".$$('option[value=\"", country_code, "\"]').innerHTML"});
+                      ".shadowRoot.querySelector('option[value=\"", country_code,
+                      "\"]').innerHTML"});
     EXPECT_EQ(it->second, test::OobeJS().GetString(query));
   }
 
@@ -595,8 +597,16 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OnlineSetupFlowCrosComponentFailure \
+  DISABLED_OnlineSetupFlowCrosComponentFailure
+#else
+#define MAYBE_OnlineSetupFlowCrosComponentFailure \
+  OnlineSetupFlowCrosComponentFailure
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       OnlineSetupFlowCrosComponentFailure) {
+                       MAYBE_OnlineSetupFlowCrosComponentFailure) {
   // Simulate failure to load demo resources CrOS component.
   // There is no enrollment attempt, as process fails earlier.
   enrollment_helper_.ExpectNoEnrollment();
@@ -623,7 +633,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineDemoModeUnavailable) {
+// Flake on ASAN: crbug.com/1234593
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OfflineDemoModeUnavailable DISABLED_OfflineDemoModeUnavailable
+#else
+#define MAYBE_OfflineDemoModeUnavailable OfflineDemoModeUnavailable
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       MAYBE_OfflineDemoModeUnavailable) {
   SimulateNetworkDisconnected();
 
   TriggerDemoModeOnWelcomeScreen();
@@ -639,7 +656,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineDemoModeUnavailable) {
   EXPECT_FALSE(IsOfflineNetworkListElementShown());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineSetupFlowSuccess) {
+// Flake on ASAN: crbug.com/1234593
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OfflineSetupFlowSuccess DISABLED_OfflineSetupFlowSuccess
+#else
+#define MAYBE_OfflineSetupFlowSuccess OfflineSetupFlowSuccess
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       MAYBE_OfflineSetupFlowSuccess) {
   // Simulate offline setup success.
   enrollment_helper_.ExpectOfflineEnrollmentSuccess();
   SimulateNetworkDisconnected();
@@ -778,7 +802,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::WaitForNetworkSelectionScreen();
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickNetworkOnNetworkScreen) {
+// Flake on ASAN: crbug.com/1234593
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_ClickNetworkOnNetworkScreen DISABLED_ClickNetworkOnNetworkScreen
+#else
+#define MAYBE_ClickNetworkOnNetworkScreen ClickNetworkOnNetworkScreen
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       MAYBE_ClickNetworkOnNetworkScreen) {
   TriggerDemoModeOnWelcomeScreen();
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
   test::WaitForNetworkSelectionScreen();
@@ -933,6 +964,11 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 class DemoSetupProgressStepsTest : public DemoSetupArcSupportedTest {
  public:
   DemoSetupProgressStepsTest() = default;
+
+  DemoSetupProgressStepsTest(const DemoSetupProgressStepsTest&) = delete;
+  DemoSetupProgressStepsTest& operator=(const DemoSetupProgressStepsTest&) =
+      delete;
+
   ~DemoSetupProgressStepsTest() override = default;
 
   // Checks how many steps have been rendered in the demo setup screen.
@@ -955,7 +991,6 @@ class DemoSetupProgressStepsTest : public DemoSetupArcSupportedTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupProgressStepsTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
@@ -989,6 +1024,11 @@ IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
 class DemoSetupArcUnsupportedTest : public DemoSetupTestBase {
  public:
   DemoSetupArcUnsupportedTest() = default;
+
+  DemoSetupArcUnsupportedTest(const DemoSetupArcUnsupportedTest&) = delete;
+  DemoSetupArcUnsupportedTest& operator=(const DemoSetupArcUnsupportedTest&) =
+      delete;
+
   ~DemoSetupArcUnsupportedTest() override = default;
 
   // DemoSetupTestBase:
@@ -997,12 +1037,16 @@ class DemoSetupArcUnsupportedTest : public DemoSetupTestBase {
     command_line->AppendSwitchASCII(switches::kArcAvailability, "none");
     ASSERT_FALSE(arc::IsArcAvailable());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupArcUnsupportedTest);
 };
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcUnsupportedTest, DoNotStartWithAccelerator) {
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DoNotStartWithAccelerator DISABLED_DoNotStartWithAccelerator
+#else
+#define MAYBE_DoNotStartWithAccelerator DoNotStartWithAccelerator
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcUnsupportedTest,
+                       MAYBE_DoNotStartWithAccelerator) {
   IsConfirmationDialogHidden();
 
   InvokeDemoModeWithAccelerator();
@@ -1020,6 +1064,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcUnsupportedTest, DoNotInvokeWithTaps) {
 
 // Demo setup tests related to Force Re-Enrollment.
 class DemoSetupFRETest : public DemoSetupArcSupportedTest {
+ public:
+  DemoSetupFRETest(const DemoSetupFRETest&) = delete;
+  DemoSetupFRETest& operator=(const DemoSetupFRETest&) = delete;
+
  protected:
   DemoSetupFRETest() {
     statistics_provider_.SetMachineStatistic(system::kSerialNumberKeyForTest,
@@ -1036,9 +1084,6 @@ class DemoSetupFRETest : public DemoSetupArcSupportedTest {
   }
 
   system::ScopedFakeStatisticsProvider statistics_provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupFRETest);
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, DeviceFromFactory) {
@@ -1094,7 +1139,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, NonEnterpriseDevice) {
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, LegacyDemoModeDevice) {
+// Flake on ASAN: crbug.com/1234593
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_LegacyDemoModeDevice DISABLED_LegacyDemoModeDevice
+#else
+#define MAYBE_LegacyDemoModeDevice LegacyDemoModeDevice
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, MAYBE_LegacyDemoModeDevice) {
   // Simulating device enrolled into legacy demo mode:
   // * "active_date" and "check_enrollment" are set
   // * "block_devmode" is set to false, because legacy demo mode does not have

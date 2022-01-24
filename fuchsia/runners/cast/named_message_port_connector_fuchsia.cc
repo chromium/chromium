@@ -4,6 +4,7 @@
 
 #include "fuchsia/runners/cast/named_message_port_connector_fuchsia.h"
 
+#include <fuchsia/mem/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <memory>
 #include <string>
@@ -11,10 +12,10 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "components/cast/named_message_port_connector/grit/named_message_port_connector_resources.h"
-#include "fuchsia/base/mem_buffer_util.h"
 
 namespace {
 constexpr uint64_t kPortConnectorBindingsId = 1000;
@@ -39,7 +40,7 @@ NamedMessagePortConnectorFuchsia::NamedMessagePortConnectorFuchsia(
 
   // Inject the JS connection API into the Frame.
   constexpr char kBindingsScriptVmoName[] = "port-connector-js";
-  fuchsia::mem::Buffer bindings_script = cr_fuchsia::MemBufferFromString(
+  fuchsia::mem::Buffer bindings_script = base::MemBufferFromString(
       std::move(bindings_script_string), kBindingsScriptVmoName);
 
   std::vector<std::string> origins = {"*"};

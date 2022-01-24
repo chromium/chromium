@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout xmlns:a="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    a:layout_width="match_parent"
+    a:layout_height="match_parent"
+    a:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools">
+
+  <TextView
+      a:layout_width="match_parent"
+      a:layout_height="wrap_content"
+      a:layout_marginTop="104dp"
+      a:layout_marginLeft="24dp"
+      a:layout_marginRight="24dp"
+      a:gravity="center_horizontal"
+      tools:ignore="HardcodedText"
+      a:text="Connect to device"
+      a:textSize="24sp" />
+
+  <TextView
+      a:layout_width="wrap_content"
+      a:layout_height="wrap_content"
+      a:layout_marginTop="52dp"
+      a:layout_marginLeft="24dp"
+      a:layout_marginRight="24dp"
+      a:layout_gravity="center_horizontal"
+      a:padding="0px"
+      tools:ignore="HardcodedText"
+      a:text="The device displaying this QR Code is requesting a connection in order to sign-in with, or register, this phone/tablet. (The QR Code should have been displayed by the device itself and not be a picture in a document or email displayed on the device, nor have been printed out. If unsure, ignore this QR Code.)"
+      a:textSize="14sp" />
+
+  <LinearLayout
+      a:layout_width="match_parent"
+      a:layout_height="wrap_content"
+      a:orientation="horizontal"
+      a:paddingTop="52dp">
+
+    <LinearLayout
+        a:layout_width="0dp"
+        a:layout_height="wrap_content"
+        a:layout_weight="1"
+        a:orientation="vertical">
+
+      <TextView
+          a:layout_width="wrap_content"
+          a:layout_height="wrap_content"
+          style="@style/TextAppearance.TextMedium.Primary"
+          tools:ignore="HardcodedText"
+          a:text="One time connection" />
+
+      <TextView
+          a:layout_width="wrap_content"
+          a:layout_height="wrap_content"
+          style="@style/TextAppearance.TextSmall.Secondary"
+          tools:ignore="HardcodedText"
+          a:text="Don't allow device to connect automatically in the future" />
+    </LinearLayout>
+
+    <CheckBox
+        a:id="@+id/qr_no_link"
+        a:checked="true"
+        a:layout_width="wrap_content"
+        a:layout_height="wrap_content" />
+
+  </LinearLayout>
+
+  <Button
+      a:id="@+id/qr_connect"
+      a:layout_marginTop="52dp"
+      a:layout_gravity="center_horizontal"
+      a:layout_width="wrap_content"
+      a:layout_height="wrap_content"
+      tools:ignore="HardcodedText"
+      a:text="Connect" />
+
+</LinearLayout>

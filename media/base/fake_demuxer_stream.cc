@@ -15,7 +15,7 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
@@ -75,8 +75,8 @@ void FakeDemuxerStream::Initialize() {
   num_configs_left_ = num_configs_;
   num_buffers_left_in_current_config_ = num_buffers_in_one_config_;
   num_buffers_returned_ = 0;
-  current_timestamp_ = base::TimeDelta::FromMilliseconds(kStartTimestampMs);
-  duration_ = base::TimeDelta::FromMilliseconds(kDurationMs);
+  current_timestamp_ = base::Milliseconds(kStartTimestampMs);
+  duration_ = base::Milliseconds(kDurationMs);
   next_size_ = start_coded_size_;
   next_read_num_ = 0;
 }
@@ -172,7 +172,7 @@ void FakeDemuxerStream::SeekToEndOfStream() {
 void FakeDemuxerStream::UpdateVideoDecoderConfig() {
   const gfx::Rect kVisibleRect(next_size_.width(), next_size_.height());
   video_decoder_config_.Initialize(
-      kCodecVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
+      VideoCodec::kVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
       VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
       kNoTransformation, next_size_, kVisibleRect, next_size_, EmptyExtraData(),
       is_encrypted_ ? EncryptionScheme::kCenc : EncryptionScheme::kUnencrypted);

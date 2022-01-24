@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/metrics/histogram_macros.h"
@@ -42,91 +43,138 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
   switch (type_) {
     case FULLSCREEN_SUGGESTED:
       UMA_HISTOGRAM_ENUMERATION(
-          "Apps.ContextMenuShowSource.SuggestedAppFullscreen", source_type(),
+          "Apps.ContextMenuShowSourceV2.SuggestedAppFullscreen", source_type(),
           ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
       UMA_HISTOGRAM_TIMES(
-          "Apps.ContextMenuUserJourneyTime.SuggestedAppFullscreen",
+          "Apps.ContextMenuUserJourneyTimeV2.SuggestedAppFullscreen",
           user_journey_time);
       if (is_tablet_mode()) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Apps.ContextMenuShowSource.SuggestedAppFullscreen.TabletMode",
+            "Apps.ContextMenuShowSourceV2.SuggestedAppFullscreen.TabletMode",
             source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
         UMA_HISTOGRAM_TIMES(
-            "Apps.ContextMenuUserJourneyTime.SuggestedAppFullscreen.TabletMode",
+            "Apps.ContextMenuUserJourneyTimeV2.SuggestedAppFullscreen."
+            "TabletMode",
             user_journey_time);
       } else {
         UMA_HISTOGRAM_ENUMERATION(
-            "Apps.ContextMenuShowSource.SuggestedAppFullscreen.ClamshellMode",
+            "Apps.ContextMenuShowSourceV2.SuggestedAppFullscreen.ClamshellMode",
             source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
         UMA_HISTOGRAM_TIMES(
-            "Apps.ContextMenuUserJourneyTime.SuggestedAppFullscreen."
+            "Apps.ContextMenuUserJourneyTimeV2.SuggestedAppFullscreen."
             "ClamshellMode",
             user_journey_time);
       }
       break;
     case FULLSCREEN_APP_GRID:
-      UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSource.AppGrid",
+      UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSourceV2.AppGrid",
                                 source_type(), ui::MENU_SOURCE_TYPE_LAST);
-      UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTime.AppGrid",
+      UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTimeV2.AppGrid",
                           user_journey_time);
       if (is_tablet_mode()) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Apps.ContextMenuShowSource.AppGrid.TabletMode", source_type(),
+            "Apps.ContextMenuShowSourceV2.AppGrid.TabletMode", source_type(),
             ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
         UMA_HISTOGRAM_TIMES(
-            "Apps.ContextMenuUserJourneyTime.AppGrid.TabletMode",
+            "Apps.ContextMenuUserJourneyTimeV2.AppGrid.TabletMode",
             user_journey_time);
       } else {
         UMA_HISTOGRAM_ENUMERATION(
-            "Apps.ContextMenuShowSource.AppGrid.ClamshellMode", source_type(),
+            "Apps.ContextMenuShowSourceV2.AppGrid.ClamshellMode", source_type(),
             ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
         UMA_HISTOGRAM_TIMES(
-            "Apps.ContextMenuUserJourneyTime.AppGrid.ClamshellMode",
+            "Apps.ContextMenuUserJourneyTimeV2.AppGrid.ClamshellMode",
             user_journey_time);
       }
       break;
     case PEEKING_SUGGESTED:
       UMA_HISTOGRAM_ENUMERATION(
-          "Apps.ContextMenuShowSource.SuggestedAppPeeking", source_type(),
+          "Apps.ContextMenuShowSourceV2.SuggestedAppPeeking", source_type(),
           ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
-      UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTime.SuggestedAppPeeking",
-                          user_journey_time);
+      UMA_HISTOGRAM_TIMES(
+          "Apps.ContextMenuUserJourneyTimeV2.SuggestedAppPeeking",
+          user_journey_time);
       if (is_tablet_mode()) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Apps.ContextMenuShowSource.SuggestedAppPeeking.TabletMode",
+            "Apps.ContextMenuShowSourceV2.SuggestedAppPeeking.TabletMode",
             source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
         UMA_HISTOGRAM_TIMES(
-            "Apps.ContextMenuUserJourneyTime.SuggestedAppPeeking.TabletMode",
+            "Apps.ContextMenuUserJourneyTimeV2.SuggestedAppPeeking.TabletMode",
             user_journey_time);
       } else {
         UMA_HISTOGRAM_ENUMERATION(
-            "Apps.ContextMenuShowSource.SuggestedAppPeeking.ClamshellMode",
+            "Apps.ContextMenuShowSourceV2.SuggestedAppPeeking.ClamshellMode",
             source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
         UMA_HISTOGRAM_TIMES(
-            "Apps.ContextMenuUserJourneyTime.SuggestedAppPeeking.ClamshellMode",
+            "Apps.ContextMenuUserJourneyTimeV2.SuggestedAppPeeking."
+            "ClamshellMode",
+            user_journey_time);
+      }
+      break;
+    case PRODUCTIVITY_LAUNCHER_RECENT_APP:
+      DCHECK(features::IsProductivityLauncherEnabled());
+      if (is_tablet_mode()) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "Apps.ContextMenuShowSourceV2.ProductivityLauncherRecentApp."
+            "TabletMode",
+            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+        UMA_HISTOGRAM_TIMES(
+            "Apps.ContextMenuUserJourneyTimeV2.ProductivityLauncherRecentApp."
+            "TabletMode",
+            user_journey_time);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(
+            "Apps.ContextMenuShowSourceV2.ProductivityLauncherRecentApp."
+            "ClamshellMode",
+            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+        UMA_HISTOGRAM_TIMES(
+            "Apps.ContextMenuUserJourneyTimeV2.ProductivityLauncherRecentApp."
+            "ClamshellMode",
+            user_journey_time);
+      }
+      break;
+    case PRODUCTIVITY_LAUNCHER_APP_GRID:
+      DCHECK(features::IsProductivityLauncherEnabled());
+      if (is_tablet_mode()) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "Apps.ContextMenuShowSourceV2.ProductivityLauncherAppGrid."
+            "TabletMode",
+            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+        UMA_HISTOGRAM_TIMES(
+            "Apps.ContextMenuUserJourneyTimeV2.ProductivityLauncherAppGrid."
+            "TabletMode",
+            user_journey_time);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(
+            "Apps.ContextMenuShowSourceV2.ProductivityLauncherAppGrid."
+            "ClamshellMode",
+            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+        UMA_HISTOGRAM_TIMES(
+            "Apps.ContextMenuUserJourneyTimeV2.ProductivityLauncherAppGrid."
+            "ClamshellMode",
             user_journey_time);
       }
       break;
     case HALF_SEARCH_RESULT:
     case FULLSCREEN_SEARCH_RESULT:
-      UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSource.SearchResult",
+      UMA_HISTOGRAM_ENUMERATION("Apps.ContextMenuShowSourceV2.SearchResult",
                                 source_type(),
                                 ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
-      UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTime.SearchResult",
+      UMA_HISTOGRAM_TIMES("Apps.ContextMenuUserJourneyTimeV2.SearchResult",
                           user_journey_time);
       if (is_tablet_mode()) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Apps.ContextMenuShowSource.SearchResult.TabletMode", source_type(),
-            ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+            "Apps.ContextMenuShowSourceV2.SearchResult.TabletMode",
+            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
         UMA_HISTOGRAM_TIMES(
-            "Apps.ContextMenuUserJourneyTime.SearchResult.TabletMode",
+            "Apps.ContextMenuUserJourneyTimeV2.SearchResult.TabletMode",
             user_journey_time);
       } else {
         UMA_HISTOGRAM_ENUMERATION(
-            "Apps.ContextMenuShowSource.SearchResult.ClamshellMode",
+            "Apps.ContextMenuShowSourceV2.SearchResult.ClamshellMode",
             source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
         UMA_HISTOGRAM_TIMES(
-            "Apps.ContextMenuUserJourneyTime.SearchResult.ClamshellMode",
+            "Apps.ContextMenuUserJourneyTimeV2.SearchResult.ClamshellMode",
             user_journey_time);
       }
       break;

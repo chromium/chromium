@@ -12,10 +12,10 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -55,11 +55,11 @@ const char* kVariationsRestrictionsByPolicy =
 // which cannot be converted will be skipped.
 std::vector<std::string> ListValueToStringVector(const base::ListValue* value) {
   std::vector<std::string> results;
-  results.reserve(value->GetSize());
-  std::string s;
+  results.reserve(value->GetList().size());
   for (const auto& entry : value->GetList()) {
-    if (entry.GetAsString(&s))
-      results.push_back(s);
+    const std::string* s = entry.GetIfString();
+    if (s)
+      results.push_back(*s);
   }
   return results;
 }
@@ -128,6 +128,11 @@ std::vector<std::string> CanonicalizeHostnamePatterns(
 class SSLConfigServiceManagerPref : public SSLConfigServiceManager {
  public:
   explicit SSLConfigServiceManagerPref(PrefService* local_state);
+
+  SSLConfigServiceManagerPref(const SSLConfigServiceManagerPref&) = delete;
+  SSLConfigServiceManagerPref& operator=(const SSLConfigServiceManagerPref&) =
+      delete;
+
   ~SSLConfigServiceManagerPref() override {}
 
   // Register local_state SSL preferences.
@@ -173,7 +178,6 @@ class SSLConfigServiceManagerPref : public SSLConfigServiceManager {
   StringPrefMember ssl_version_max_;
   StringListPrefMember h2_client_cert_coalescing_host_patterns_;
   BooleanPrefMember cecpq2_enabled_;
-  BooleanPrefMember triple_des_enabled_;
 
   // The cached list of disabled SSL cipher suites.
   std::vector<uint16_t> disabled_cipher_suites_;
@@ -183,8 +187,6 @@ class SSLConfigServiceManagerPref : public SSLConfigServiceManager {
   bool variations_unrestricted_ = true;
 
   mojo::RemoteSet<network::mojom::SSLConfigClient> ssl_config_client_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLConfigServiceManagerPref);
 };
 
 SSLConfigServiceManagerPref::SSLConfigServiceManagerPref(
@@ -208,8 +210,6 @@ SSLConfigServiceManagerPref::SSLConfigServiceManagerPref(
       prefs::kH2ClientCertCoalescingHosts, local_state, local_state_callback);
   cecpq2_enabled_.Init(prefs::kCECPQ2Enabled, local_state,
                        local_state_callback);
-  triple_des_enabled_.Init(prefs::kTripleDESEnabled, local_state,
-                           local_state_callback);
 
   local_state_change_registrar_.Init(local_state);
   local_state_change_registrar_.Add(prefs::kCipherSuiteBlacklist,
@@ -238,10 +238,6 @@ void SSLConfigServiceManagerPref::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kH2ClientCertCoalescingHosts);
   registry->RegisterBooleanPref(prefs::kCECPQ2Enabled,
                                 default_context_config.cecpq2_enabled);
-  // Note the default value here is ignored due to the IsDefaultValue() check in
-  // GetSSLConfigFromPrefs().
-  registry->RegisterBooleanPref(prefs::kTripleDESEnabled,
-                                default_context_config.triple_des_enabled);
 }
 
 void SSLConfigServiceManagerPref::AddToNetworkContextParams(
@@ -312,14 +308,6 @@ SSLConfigServiceManagerPref::GetSSLConfigFromPrefs() const {
   // is especially conservative.
   config->cecpq2_enabled =
       cecpq2_enabled_.GetValue() && variations_unrestricted_;
-
-  // If the preference is unset, check base::Feature. This cannot be set as the
-  // default value of the pref because base::FeatureList is not initialized when
-  // prefs are registered.
-  config->triple_des_enabled =
-      triple_des_enabled_.IsDefaultValue()
-          ? base::FeatureList::IsEnabled(features::kSSLCipher3DES)
-          : triple_des_enabled_.GetValue();
 
   return config;
 }

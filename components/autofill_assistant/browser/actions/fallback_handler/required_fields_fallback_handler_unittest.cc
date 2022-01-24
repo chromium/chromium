@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/guid.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -65,13 +65,11 @@ class RequiredFieldsFallbackHandlerTest : public testing::Test {
     ON_CALL(mock_web_controller_, SetValueAttribute(_, _, _))
         .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, WaitUntilDocumentIsInReadyState(_, _, _, _))
-        .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
-                                          base::TimeDelta::FromSeconds(0)));
+        .WillByDefault(RunOnceCallback<3>(OkClientStatus(), base::Seconds(0)));
     ON_CALL(mock_web_controller_, ScrollIntoView(_, _, _, _, _))
         .WillByDefault(RunOnceCallback<4>(OkClientStatus()));
     ON_CALL(mock_web_controller_, WaitUntilElementIsStable(_, _, _, _))
-        .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
-                                          base::TimeDelta::FromSeconds(0)));
+        .WillByDefault(RunOnceCallback<3>(OkClientStatus(), base::Seconds(0)));
   }
 
  protected:
@@ -163,11 +161,11 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       CreateRequiredField(52, {"#card_number"}),
       CreateRequiredField(-3, {"#card_network"})};
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
            static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL)),
        "John Doe"},
-      {base::NumberToString(
+      {field_formatter::Key(
            static_cast<int>(AutofillFormatProto::CREDIT_CARD_NETWORK)),
        std::string()}};
 
@@ -214,11 +212,11 @@ TEST_F(RequiredFieldsFallbackHandlerTest, AddsFirstFieldFillingError) {
       CreateRequiredField(51, {"#card_name"}),
       CreateRequiredField(52, {"#card_number"})};
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
            static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL)),
        "John Doe"},
-      {base::NumberToString(
+      {field_formatter::Key(
            static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NUMBER)),
        "4111111111111111"}};
 
@@ -256,11 +254,11 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       CreateRequiredField(51, {"#card_name"}),
       CreateRequiredField(52, {"#card_number"})};
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
            static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL)),
        "John Doe"},
-      {base::NumberToString(
+      {field_formatter::Key(
            static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NUMBER)),
        "4111111111111111"}};
 
@@ -323,8 +321,8 @@ TEST_F(RequiredFieldsFallbackHandlerTest, FillsEmptyRequiredField) {
   std::vector<RequiredField> required_fields = {
       CreateRequiredField(51, {"#card_name"})};
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
            static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL)),
        "John Doe"}};
 
@@ -351,8 +349,8 @@ TEST_F(RequiredFieldsFallbackHandlerTest, FallsBackForForcedFilledField) {
       CreateRequiredField(51, {"#card_name"})};
   required_fields[0].proto.set_forced(true);
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
            static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL)),
        "John Doe"}};
 
@@ -420,12 +418,11 @@ TEST_F(RequiredFieldsFallbackHandlerTest, FillsFieldWithPattern) {
   std::vector<RequiredField> required_fields = {
       CreateRequiredField(value_expression, {"#card_expiry"})};
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(
-           static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_EXP_MONTH)),
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(autofill::ServerFieldType::CREDIT_CARD_EXP_MONTH),
        "08"},
-      {base::NumberToString(static_cast<int>(
-           autofill::ServerFieldType::CREDIT_CARD_EXP_4_DIGIT_YEAR)),
+      {field_formatter::Key(
+           autofill::ServerFieldType::CREDIT_CARD_EXP_4_DIGIT_YEAR),
        "2050"}};
 
   RequiredFieldsFallbackHandler fallback_handler(
@@ -447,10 +444,9 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       CreateRequiredField(53, {"#card_expiry"}),
       CreateRequiredField(-3, {"#card_network"})};
 
-  std::map<std::string, std::string> fallback_values;
-  fallback_values.emplace(base::NumberToString(static_cast<int>(
-                              AutofillFormatProto::CREDIT_CARD_NETWORK)),
-                          "");
+  base::flat_map<field_formatter::Key, std::string> fallback_values;
+  fallback_values.emplace(
+      static_cast<int>(AutofillFormatProto::CREDIT_CARD_NETWORK), "");
 
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
@@ -521,9 +517,9 @@ TEST_F(RequiredFieldsFallbackHandlerTest, UsesSelectOptionForDropdowns) {
   required_fields[0].proto.set_select_strategy(
       DropdownSelectStrategy::VALUE_MATCH);
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(static_cast<int>(
-           autofill::ServerFieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)),
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
+           autofill::ServerFieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR),
        "05/2050"}};
 
   RequiredFieldsFallbackHandler fallback_handler(
@@ -577,9 +573,9 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       value_expression_re2;
   std::vector<RequiredField> required_fields = {required_field};
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(static_cast<int>(
-           autofill::ServerFieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)),
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
+           autofill::ServerFieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR),
        "05/2050"}};
 
   RequiredFieldsFallbackHandler fallback_handler(
@@ -606,8 +602,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, ClicksOnCustomDropdown) {
                                              /* case_sensitive= */ false);
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_option_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(0)));
   EXPECT_CALL(
       mock_web_controller_,
       ClickOrTapElement(ClickType::TAP,
@@ -621,9 +616,9 @@ TEST_F(RequiredFieldsFallbackHandlerTest, ClicksOnCustomDropdown) {
   *required_fields[0].proto.mutable_option_element_to_click() =
       ToSelectorProto(".option");
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(static_cast<int>(
-           autofill::ServerFieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)),
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
+           autofill::ServerFieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR),
        "05/2050"}};
 
   RequiredFieldsFallbackHandler fallback_handler(
@@ -631,6 +626,48 @@ TEST_F(RequiredFieldsFallbackHandlerTest, ClicksOnCustomDropdown) {
   fallback_handler.CheckAndFallbackRequiredFields(
       OkClientStatus(), base::BindOnce([](const ClientStatus& status) {
         EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
+      }));
+}
+
+TEST_F(RequiredFieldsFallbackHandlerTest, SkipsOptionalCustomDropdown) {
+  EXPECT_CALL(mock_web_controller_, GetFieldValue(_, _)).Times(0);
+  EXPECT_CALL(mock_web_controller_, SetValueAttribute(_, _, _)).Times(0);
+  Selector expected_main_selector({"#card_expiry"});
+  EXPECT_CALL(mock_action_delegate_, FindElement(expected_main_selector, _))
+      .WillOnce(
+          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+  EXPECT_CALL(mock_web_controller_, ClickOrTapElement(ClickType::TAP, _, _))
+      .Times(0);
+
+  std::vector<RequiredField> required_fields = {
+      CreateRequiredField(57, {"#card_expiry"})};
+  *required_fields[0].proto.mutable_option_element_to_click() =
+      ToSelectorProto(".option");
+  required_fields[0].proto.set_is_optional(true);
+
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
+           autofill::ServerFieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR),
+       "05/2050"}};
+
+  RequiredFieldsFallbackHandler fallback_handler(
+      required_fields, fallback_values, &mock_action_delegate_);
+  fallback_handler.CheckAndFallbackRequiredFields(
+      OkClientStatus(), base::BindOnce([](const ClientStatus& status) {
+        EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
+        ASSERT_EQ(
+            status.details().autofill_error_info().autofill_field_error_size(),
+            1);
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .value_expression(),
+                  "${57}");
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .status(),
+                  ELEMENT_RESOLUTION_FAILED);
       }));
 }
 
@@ -652,7 +689,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, CustomDropdownClicksStopOnError) {
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_option_selector, _))
       .WillOnce(RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED),
-                                   base::TimeDelta::FromSeconds(0)));
+                                   base::Seconds(0)));
   EXPECT_CALL(mock_action_delegate_, FindElement(_, _))
       .Times(0)
       .After(main_click);
@@ -665,9 +702,9 @@ TEST_F(RequiredFieldsFallbackHandlerTest, CustomDropdownClicksStopOnError) {
   *required_fields[0].proto.mutable_option_element_to_click() =
       ToSelectorProto(".option");
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(static_cast<int>(
-           autofill::ServerFieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)),
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
+           autofill::ServerFieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR),
        "05/2050"}};
 
   RequiredFieldsFallbackHandler fallback_handler(
@@ -675,6 +712,19 @@ TEST_F(RequiredFieldsFallbackHandlerTest, CustomDropdownClicksStopOnError) {
   fallback_handler.CheckAndFallbackRequiredFields(
       OkClientStatus(), base::BindOnce([](const ClientStatus& status) {
         EXPECT_EQ(status.proto_status(), AUTOFILL_INCOMPLETE);
+        ASSERT_EQ(
+            status.details().autofill_error_info().autofill_field_error_size(),
+            1);
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .value_expression(),
+                  "${57}");
+        EXPECT_EQ(status.details()
+                      .autofill_error_info()
+                      .autofill_field_error(0)
+                      .status(),
+                  OPTION_VALUE_NOT_FOUND);
       }));
 }
 
@@ -707,7 +757,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, ClearsFilledField) {
 
   std::vector<RequiredField> required_fields = {
       CreateRequiredField(ValueExpression(), {"#field"})};
-  std::map<std::string, std::string> fallback_values;
+  base::flat_map<field_formatter::Key, std::string> fallback_values;
 
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
@@ -747,7 +797,7 @@ TEST_F(RequiredFieldsFallbackHandlerTest, SkipsForcedFieldCheckOnFirstRun) {
   forced_field.proto.set_forced(true);
   std::vector<RequiredField> required_fields = {forced_field};
 
-  std::map<std::string, std::string> fallback_values;
+  base::flat_map<field_formatter::Key, std::string> fallback_values;
 
   RequiredFieldsFallbackHandler fallback_handler(
       required_fields, fallback_values, &mock_action_delegate_);
@@ -784,8 +834,8 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       CreateRequiredField(51, {"#card_name"}),
       CreateRequiredField(52, {"#card_number"})};
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
            static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL)),
        "John Doe"}};
 
@@ -834,8 +884,8 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       CreateRequiredField(52, {"#card_number"})};
   required_fields[0].proto.set_is_optional(true);
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
            static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NUMBER)),
        "4111111111111111"}};
 
@@ -867,10 +917,10 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
        AddsNotFoundElementToDetailsForOptionalFieldsWithoutFailing) {
   Selector card_name_selector({"#card_name"});
   Selector card_number_selector({"#card_number"});
-  EXPECT_CALL(mock_web_controller_, OnFindElement(card_name_selector, _))
+  EXPECT_CALL(mock_web_controller_, FindElement(card_name_selector, _, _))
       .Times(2)
       .WillRepeatedly(
-          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
   EXPECT_CALL(mock_action_delegate_, FindElement(card_name_selector, _))
       .WillOnce(
           RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
@@ -893,11 +943,11 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
       CreateRequiredField(52, {"#card_number"})};
   required_fields[0].proto.set_is_optional(true);
 
-  std::map<std::string, std::string> fallback_values = {
-      {base::NumberToString(
+  base::flat_map<field_formatter::Key, std::string> fallback_values = {
+      {field_formatter::Key(
            static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL)),
        "John Doe"},
-      {base::NumberToString(
+      {field_formatter::Key(
            static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NUMBER)),
        "4111111111111111"}};
 

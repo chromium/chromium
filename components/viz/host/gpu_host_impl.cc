@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -24,7 +23,6 @@
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/host/shader_disk_cache.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_render_params.h"
 
 #if defined(OS_ANDROID)
@@ -49,6 +47,9 @@ namespace {
 // the same thread.
 class FontRenderParams {
  public:
+  FontRenderParams(const FontRenderParams&) = delete;
+  FontRenderParams& operator=(const FontRenderParams&) = delete;
+
   void Set(const gfx::FontRenderParams& params);
   void Reset();
   const absl::optional<gfx::FontRenderParams>& Get();
@@ -61,8 +62,6 @@ class FontRenderParams {
 
   THREAD_CHECKER(thread_checker_);
   absl::optional<gfx::FontRenderParams> params_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontRenderParams);
 };
 
 void FontRenderParams::Set(const gfx::FontRenderParams& params) {
@@ -104,8 +103,7 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
                          InitParams params)
     : delegate_(delegate),
       viz_main_(std::move(viz_main)),
-      params_(std::move(params)),
-      host_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      params_(std::move(params)) {
   // Create a special GPU info collection service if the GPU process is used for
   // info collection only.
 #if defined(OS_WIN)
@@ -137,8 +135,7 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
       GetFontRenderParams().Get()->subpixel_rendering);
 
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    InitOzone();
+  InitOzone();
 #endif  // defined(USE_OZONE)
 }
 
@@ -339,7 +336,6 @@ mojom::InfoCollectionGpuService* GpuHostImpl::info_collection_gpu_service() {
 #if defined(USE_OZONE)
 
 void GpuHostImpl::InitOzone() {
-  DCHECK(features::IsUsingOzonePlatform());
   // Ozone needs to send the primary DRM device to GPU service as early as
   // possible to ensure the latter always has a valid device.
   // https://crbug.com/608839
@@ -354,9 +350,7 @@ void GpuHostImpl::InitOzone() {
 
   ui::OzonePlatform::GetInstance()
       ->GetGpuPlatformSupportHost()
-      ->OnGpuServiceLaunched(params_.restart_id,
-                             params_.main_thread_task_runner,
-                             host_thread_task_runner_, interface_binder,
+      ->OnGpuServiceLaunched(params_.restart_id, interface_binder,
                              std::move(terminate_callback));
 }
 
@@ -516,7 +510,7 @@ void GpuHostImpl::DidDestroyAllChannels() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!channel_requests_.empty())
     return;
-  constexpr base::TimeDelta kShutDownTimeout = base::TimeDelta::FromSeconds(10);
+  constexpr base::TimeDelta kShutDownTimeout = base::Seconds(10);
   shutdown_timeout_.Start(FROM_HERE, kShutDownTimeout,
                           base::BindOnce(&GpuHostImpl::MaybeShutdownGpuProcess,
                                          base::Unretained(this)));

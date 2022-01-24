@@ -2,24 +2,44 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 component("cdm_factory_daemon_browser") {
   sources = [
     "cdm_factory_daemon_proxy.cc",
     "cdm_factory_daemon_proxy.h",
-    "output_protection_impl.cc",
-    "output_protection_impl.h",
   ]
   public_deps = [ "//chromeos/components/cdm_factory_daemon/mojom" ]
   deps = [
-    "//ash",
     "//base",
-    "//chromeos/dbus/cdm_factory_daemon",
+    "//build:chromeos_buildflags",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
-    "//ui/display/manager",
   ]
+  if (is_chromeos_lacros) {
+    sources += [
+      "cdm_factory_daemon_proxy_lacros.cc",
+      "cdm_factory_daemon_proxy_lacros.h",
+    ]
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
+  }
+  if (is_chromeos_ash) {
+    sources += [
+      "cdm_factory_daemon_proxy_ash.cc",
+      "cdm_factory_daemon_proxy_ash.h",
+      "output_protection_impl.cc",
+      "output_protection_impl.h",
+    ]
+    deps += [
+      "//ash",
+      "//chromeos/dbus/cdm_factory_daemon",
+      "//ui/display/manager",
+    ]
+  }
   defines = [ "IS_CDM_FACTORY_DAEMON_IMPL" ]
 }
 

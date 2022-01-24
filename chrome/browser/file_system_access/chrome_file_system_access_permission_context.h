@@ -159,14 +159,13 @@ class ChromeFileSystemAccessPermissionContext
   // This long after the handle has last been used, revoke the persisted
   // permission.
   static constexpr base::TimeDelta
-      kPersistentPermissionExpirationTimeoutNonPWA =
-          base::TimeDelta::FromHours(5);
+      kPersistentPermissionExpirationTimeoutNonPWA = base::Hours(5);
   static constexpr base::TimeDelta kPersistentPermissionExpirationTimeoutPWA =
-      base::TimeDelta::FromDays(30);
+      base::Days(30);
   // Amount of time a persisted permission will remain persisted after its
   // expiry. Used for metrics.
   static constexpr base::TimeDelta kPersistentPermissionGracePeriod =
-      base::TimeDelta::FromDays(1);
+      base::Days(1);
 
  protected:
   SEQUENCE_CHECKER(sequence_checker_);

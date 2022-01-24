@@ -24,6 +24,9 @@ class AutofillLogRouterFactory : public BrowserStateKeyedServiceFactory {
 
   static AutofillLogRouterFactory* GetInstance();
 
+  AutofillLogRouterFactory(const AutofillLogRouterFactory&) = delete;
+  AutofillLogRouterFactory& operator=(const AutofillLogRouterFactory&) = delete;
+
  private:
   friend class base::NoDestructor<AutofillLogRouterFactory>;
 
@@ -33,8 +36,6 @@ class AutofillLogRouterFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillLogRouterFactory);
 };
 
 }  // namespace autofill

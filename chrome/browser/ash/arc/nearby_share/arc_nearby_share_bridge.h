@@ -46,7 +46,7 @@ class ArcNearbyShareBridge : public KeyedService,
 
   // mojom::NearbyShareHost overrides.
   void StartNearbyShare(
-      int32_t task_id,
+      uint32_t task_id,
       mojom::ShareIntentInfoPtr info,
       mojo::PendingRemote<mojom::NearbyShareSessionInstance> instance,
       StartNearbyShareCallback callback) override;
@@ -54,7 +54,7 @@ class ArcNearbyShareBridge : public KeyedService,
  private:
   // Called by NearbyShareSessionImpl when the session is finished and can be
   // cleaned up.
-  void OnNearbyShareSessionFinished(int32_t task_id);
+  void OnNearbyShareSessionFinished(uint32_t task_id);
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
@@ -62,7 +62,7 @@ class ArcNearbyShareBridge : public KeyedService,
   Profile* const profile_;
 
   // Map that keeps track of a task_id with its NearbyShareSessionImpl instance.
-  std::map<int32_t, std::unique_ptr<NearbyShareSessionImpl>> session_map_;
+  std::map<uint32_t, std::unique_ptr<NearbyShareSessionImpl>> session_map_;
 
   base::WeakPtrFactory<ArcNearbyShareBridge> weak_ptr_factory_{this};
 };

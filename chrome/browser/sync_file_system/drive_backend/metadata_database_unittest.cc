@@ -194,6 +194,9 @@ class MetadataDatabaseTest : public testing::TestWithParam<bool> {
         next_file_id_number_(1),
         next_md5_sequence_number_(1) {}
 
+  MetadataDatabaseTest(const MetadataDatabaseTest&) = delete;
+  MetadataDatabaseTest& operator=(const MetadataDatabaseTest&) = delete;
+
   virtual ~MetadataDatabaseTest() {}
 
   void SetUp() override {
@@ -634,8 +637,6 @@ class MetadataDatabaseTest : public testing::TestWithParam<bool> {
   int64_t next_tracker_id_;
   int64_t next_file_id_number_;
   int64_t next_md5_sequence_number_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetadataDatabaseTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(MetadataDatabaseTestWithIndexesOnDisk,
@@ -1161,7 +1162,7 @@ TEST_P(MetadataDatabaseTest, DumpFiles) {
 
   std::unique_ptr<base::ListValue> files =
       metadata_database()->DumpFiles(app_root.tracker.app_id());
-  ASSERT_EQ(2u, files->GetSize());
+  ASSERT_EQ(2u, files->GetList().size());
 
   base::DictionaryValue* file = nullptr;
   std::string str;

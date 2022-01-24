@@ -22,6 +22,10 @@ const base::Feature kClickInputTracker{"ClickInputTracker",
 class ClickInputTracker {
  public:
   ClickInputTracker();
+
+  ClickInputTracker(const ClickInputTracker&) = delete;
+  ClickInputTracker& operator=(const ClickInputTracker&) = delete;
+
   ~ClickInputTracker();
 
   // Considers whether |event| is part of a user click burst. Must be called
@@ -66,8 +70,6 @@ class ClickInputTracker {
 
   // Position of the last click input.
   gfx::PointF last_click_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClickInputTracker);
 };
 
 }  // namespace page_load_metrics

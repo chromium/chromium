@@ -10,7 +10,6 @@
 #include <map>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/base/weak_handle.h"
@@ -35,6 +34,10 @@ class DataTypeManagerImpl : public DataTypeManager,
       const DataTypeEncryptionHandler* encryption_handler,
       ModelTypeConfigurer* configurer,
       DataTypeManagerObserver* observer);
+
+  DataTypeManagerImpl(const DataTypeManagerImpl&) = delete;
+  DataTypeManagerImpl& operator=(const DataTypeManagerImpl&) = delete;
+
   ~DataTypeManagerImpl() override;
 
   // DataTypeManager interface.
@@ -137,8 +140,8 @@ class DataTypeManagerImpl : public DataTypeManager,
   void ConfigureImpl(ModelTypeSet desired_types,
                      const ConfigureContext& context);
 
-  // Calls data type controllers of requested types to activate.
-  void ActivateDataTypes();
+  // Calls data type controllers of requested types to connect.
+  void ConnectDataTypes();
 
   DataTypeConfigStateMap BuildDataTypeConfigStateMap(
       const ModelTypeSet& types_being_configured) const;
@@ -225,8 +228,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   std::map<ModelType, DataTypeConfigurationStats> configuration_stats_;
 
   base::WeakPtrFactory<DataTypeManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataTypeManagerImpl);
 };
 
 }  // namespace syncer

@@ -12,6 +12,8 @@ source_set("credential_provider") {
     "archivable_credential.mm",
     "archivable_credential_store.h",
     "archivable_credential_store.mm",
+    "archivable_credential_util.h",
+    "archivable_credential_util.mm",
     "as_password_credential_identity+credential.h",
     "as_password_credential_identity+credential.mm",
     "constants.h",

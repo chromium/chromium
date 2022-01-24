@@ -8,6 +8,8 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -22,15 +24,15 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows settings related to Bluetooth devices (e.g. to add a device).
   virtual void ShowBluetoothSettings() = 0;
 
-  // Shows the web UI dialog to pair a Bluetooth device.
-  // |address| is the unique device address in the form "XX:XX:XX:XX:XX:XX"
-  // with hex digits X. |name_for_display| is a human-readable name, not
-  // necessarily the device name.
+  // Shows the detailed settings for the Bluetooth device with ID |device_id|.
+  virtual void ShowBluetoothSettings(const std::string& device_id) = 0;
+
+  // Show the Bluetooth pairing dialog. When provided, |device_address| is the
+  // unique device address that the dialog should attempt to pair with and
+  // should be in the form "XX:XX:XX:XX:XX:XX". When |device_address| is not
+  // provided the dialog will show the device list instead.
   virtual void ShowBluetoothPairingDialog(
-      const std::string& address,
-      const std::u16string& name_for_display,
-      bool paired,
-      bool connected) = 0;
+      absl::optional<base::StringPiece> device_address) = 0;
 
   // Shows the settings related to date, timezone etc.
   virtual void ShowDateSettings() = 0;

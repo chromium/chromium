@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -28,8 +28,7 @@ namespace {
 
 // The time that InitiateUserRemoval waits on the passed callback to do a log
 // out, otherwise it does the log out itself.
-constexpr base::TimeDelta kFailsafeTimerTimeout =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kFailsafeTimerTimeout = base::Seconds(60);
 
 // Override for the LogOut function inside of tests.
 base::OnceClosure& GetLogOutOverrideCallbackForTest() {
@@ -54,7 +53,10 @@ bool RemoveUsersIfNeeded() {
   const user_manager::UserList user_list = user_manager->GetUsers();
 
   for (user_manager::User* user : user_list)
-    user_manager->RemoveUser(user->GetAccountId(), nullptr);
+    user_manager->RemoveUser(
+        user->GetAccountId(),
+        user_manager::UserRemovalReason::REMOTE_ADMIN_INITIATED,
+        /*delegate=*/nullptr);
 
   return true;
 }

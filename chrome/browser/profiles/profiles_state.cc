@@ -54,8 +54,9 @@ namespace profiles {
 bool IsMultipleProfilesEnabled() {
 #if defined(OS_ANDROID)
   return false;
-#endif
+#else
   return true;
+#endif
 }
 
 base::FilePath GetDefaultProfileDir(const base::FilePath& user_data_dir) {
@@ -88,15 +89,15 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 #endif  // defined(OS_CHROMEOS)
 }
 
-void SetLastUsedProfile(const std::string& profile_dir) {
+void SetLastUsedProfile(const base::FilePath& profile_dir) {
   // We should never be saving the System Profile as the last one used since it
   // shouldn't have a browser.
-  if (profile_dir == base::FilePath(chrome::kSystemProfileDir).AsUTF8Unsafe())
+  if (profile_dir == base::FilePath(chrome::kSystemProfileDir))
     return;
 
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  local_state->SetString(prefs::kProfileLastUsed, profile_dir);
+  local_state->SetFilePath(prefs::kProfileLastUsed, profile_dir);
 }
 
 #if !defined(OS_ANDROID)
@@ -275,15 +276,15 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
 
 bool IsPublicSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::LoginState::IsInitialized()) {
-    return chromeos::LoginState::Get()->IsPublicSessionUser();
-  }
+  return chromeos::LoginState::IsInitialized() &&
+         chromeos::LoginState::Get()->IsPublicSessionUser();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(chromeos::LacrosService::Get());
   return chromeos::LacrosService::Get()->init_params()->session_type ==
          crosapi::mojom::SessionType::kPublicSession;
-#endif
+#else
   return false;
+#endif
 }
 
 bool ArePublicSessionRestrictionsEnabled() {
@@ -293,6 +294,19 @@ bool ArePublicSessionRestrictionsEnabled() {
   }
 #endif
   return false;
+}
+
+bool IsKioskApp() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return chromeos::LoginState::IsInitialized() &&
+         chromeos::LoginState::Get()->IsKioskApp();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(chromeos::LacrosService::Get());
+  return chromeos::LacrosService::Get()->init_params()->session_type ==
+         crosapi::mojom::SessionType::kWebKioskSession;
+#else
+  return false;
+#endif
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

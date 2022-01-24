@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
@@ -39,6 +38,12 @@ std::unique_ptr<StartPresentationContext> CreateStartPresentationContext(
 class MediaRouterDialogControllerViewsTest : public InProcessBrowserTest {
  public:
   MediaRouterDialogControllerViewsTest() = default;
+
+  MediaRouterDialogControllerViewsTest(
+      const MediaRouterDialogControllerViewsTest&) = delete;
+  MediaRouterDialogControllerViewsTest& operator=(
+      const MediaRouterDialogControllerViewsTest&) = delete;
+
   ~MediaRouterDialogControllerViewsTest() override = default;
 
   void OpenMediaRouterDialog();
@@ -47,9 +52,6 @@ class MediaRouterDialogControllerViewsTest : public InProcessBrowserTest {
  protected:
   WebContents* initiator_;
   MediaRouterDialogControllerViews* dialog_controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterDialogControllerViewsTest);
 };
 
 void MediaRouterDialogControllerViewsTest::CreateDialogController() {
@@ -107,8 +109,8 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest, OpenGMCDialog) {
   EXPECT_FALSE(MediaDialogView::IsShowing());
   // Navigate to a page with origin so that the PresentationRequest notification
   // created on this page has an origin to be displayed.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/simple_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple_page.html")));
   CreateDialogController();
   dialog_controller_->ShowMediaRouterDialogForPresentation(
       CreateStartPresentationContext(initiator_));
@@ -117,8 +119,8 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest, OpenGMCDialog) {
 
 IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
                        ActivateInitiatorBeforeDialogOpen) {
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/simple_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple_page.html")));
   CreateDialogController();
 
   // Create a new foreground tab that covers |web_contents|.

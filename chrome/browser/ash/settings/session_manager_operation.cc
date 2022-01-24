@@ -10,11 +10,10 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/net/nss_context.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -209,6 +208,7 @@ void SessionManagerOperation::ValidateDeviceSettings(
 void SessionManagerOperation::ReportValidatorStatus(
     policy::DeviceCloudPolicyValidator* validator) {
   if (validator->success()) {
+    policy_fetch_response_ = std::move(validator->policy());
     policy_data_ = std::move(validator->policy_data());
     device_settings_ = std::move(validator->payload());
     ReportResult(DeviceSettingsService::STORE_SUCCESS);
@@ -242,9 +242,10 @@ void LoadSettingsOperation::Run() {
 
 StoreSettingsOperation::StoreSettingsOperation(
     Callback callback,
-    std::unique_ptr<em::PolicyFetchResponse> policy)
-    : SessionManagerOperation(std::move(callback)), policy_(std::move(policy)) {
-  if (policy_->has_new_public_key())
+    std::unique_ptr<em::PolicyFetchResponse> policy_fetch_response)
+    : SessionManagerOperation(std::move(callback)) {
+  policy_fetch_response_ = std::move(policy_fetch_response);
+  if (policy_fetch_response_->has_new_public_key())
     force_key_load_ = true;
 }
 
@@ -252,7 +253,7 @@ StoreSettingsOperation::~StoreSettingsOperation() {}
 
 void StoreSettingsOperation::Run() {
   session_manager_client()->StoreDevicePolicy(
-      policy_->SerializeAsString(),
+      policy_fetch_response_->SerializeAsString(),
       base::BindOnce(&StoreSettingsOperation::HandleStoreResult,
                      weak_factory_.GetWeakPtr()));
 }

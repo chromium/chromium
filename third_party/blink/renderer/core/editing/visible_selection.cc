@@ -401,20 +401,20 @@ std::ostream& operator<<(std::ostream& ostream,
 
 #if DCHECK_IS_ON()
 
-void showTree(const blink::VisibleSelection& sel) {
+void ShowTree(const blink::VisibleSelection& sel) {
   sel.ShowTreeForThis();
 }
 
-void showTree(const blink::VisibleSelection* sel) {
+void ShowTree(const blink::VisibleSelection* sel) {
   if (sel)
     sel->ShowTreeForThis();
 }
 
-void showTree(const blink::VisibleSelectionInFlatTree& sel) {
+void ShowTree(const blink::VisibleSelectionInFlatTree& sel) {
   sel.ShowTreeForThis();
 }
 
-void showTree(const blink::VisibleSelectionInFlatTree* sel) {
+void ShowTree(const blink::VisibleSelectionInFlatTree* sel) {
   if (sel)
     sel->ShowTreeForThis();
 }

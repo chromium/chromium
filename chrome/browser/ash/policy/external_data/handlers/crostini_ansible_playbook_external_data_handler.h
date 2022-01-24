@@ -24,6 +24,12 @@ class CrostiniAnsiblePlaybookExternalDataHandler
   CrostiniAnsiblePlaybookExternalDataHandler(
       ash::CrosSettings* cros_settings,
       DeviceLocalAccountPolicyService* policy_service);
+
+  CrostiniAnsiblePlaybookExternalDataHandler(
+      const CrostiniAnsiblePlaybookExternalDataHandler&) = delete;
+  CrostiniAnsiblePlaybookExternalDataHandler& operator=(
+      const CrostiniAnsiblePlaybookExternalDataHandler&) = delete;
+
   ~CrostiniAnsiblePlaybookExternalDataHandler() override;
 
   // CloudExternalDataPolicyHandler:
@@ -37,8 +43,6 @@ class CrostiniAnsiblePlaybookExternalDataHandler
 
  private:
   CloudExternalDataPolicyObserver crostini_ansible_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniAnsiblePlaybookExternalDataHandler);
 };
 
 }  // namespace policy

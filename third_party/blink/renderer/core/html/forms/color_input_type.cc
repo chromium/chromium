@@ -158,15 +158,21 @@ void ColorInputType::HandleDOMActivateEvent(Event& event) {
         (event.UnderlyingEvent() && event.UnderlyingEvent()->isTrusted())
             ? WebFeature::kColorInputTypeChooserByTrustedClick
             : WebFeature::kColorInputTypeChooserByUntrustedClick);
-    chooser_ = chrome_client->OpenColorChooser(document.GetFrame(), this,
-                                               ValueAsColor());
-    if (GetElement().GetLayoutObject()) {
-      // Invalidate paint to ensure that the focus ring is removed.
-      GetElement().GetLayoutObject()->SetShouldDoFullPaintInvalidation();
-    }
+    OpenPopupView();
   }
 
   event.SetDefaultHandled();
+}
+
+void ColorInputType::OpenPopupView() {
+  ChromeClient* chrome_client = GetChromeClient();
+  Document& document = GetElement().GetDocument();
+  chooser_ = chrome_client->OpenColorChooser(document.GetFrame(), this,
+                                             ValueAsColor());
+  if (GetElement().GetLayoutObject()) {
+    // Invalidate paint to ensure that the focus ring is removed.
+    GetElement().GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+  }
 }
 
 void ColorInputType::ClosePopupView() {

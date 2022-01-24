@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   sources = [ "crostini_installer.mojom" ]
-
+  webui_module_path = "/"
   public_deps =
       [ "//chrome/browser/ash/crostini:crostini_installer_types_mojom" ]
 }

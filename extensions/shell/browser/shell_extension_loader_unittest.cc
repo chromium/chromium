@@ -21,7 +21,6 @@
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/mock_extension_system.h"
 #include "extensions/browser/null_app_sorting.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/test_event_router.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/api/app_runtime.h"
@@ -47,18 +46,17 @@ namespace {
 class TestExtensionSystem : public MockExtensionSystem {
  public:
   explicit TestExtensionSystem(content::BrowserContext* context)
-      : MockExtensionSystem(context),
-        runtime_data_(ExtensionRegistry::Get(context)) {}
+      : MockExtensionSystem(context) {}
+
+  TestExtensionSystem(const TestExtensionSystem&) = delete;
+  TestExtensionSystem& operator=(const TestExtensionSystem&) = delete;
+
   ~TestExtensionSystem() override = default;
 
-  RuntimeData* runtime_data() override { return &runtime_data_; }
   AppSorting* app_sorting() override { return &app_sorting_; }
 
  private:
-  RuntimeData runtime_data_;
   NullAppSorting app_sorting_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionSystem);
 };
 
 #if defined(USE_AURA)
@@ -66,6 +64,10 @@ class TestExtensionSystem : public MockExtensionSystem {
 class TestAppWindowClient : public ShellAppWindowClient {
  public:
   TestAppWindowClient() = default;
+
+  TestAppWindowClient(const TestAppWindowClient&) = delete;
+  TestAppWindowClient& operator=(const TestAppWindowClient&) = delete;
+
   ~TestAppWindowClient() override = default;
 
   // ShellAppWindowClient:
@@ -74,15 +76,16 @@ class TestAppWindowClient : public ShellAppWindowClient {
       AppWindow::CreateParams* params) override {
     return new ShellNativeAppWindowAura(window, *params);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestAppWindowClient);
 };
 #endif
 
 }  // namespace
 
 class ShellExtensionLoaderTest : public ExtensionsTest {
+ public:
+  ShellExtensionLoaderTest(const ShellExtensionLoaderTest&) = delete;
+  ShellExtensionLoaderTest& operator=(const ShellExtensionLoaderTest&) = delete;
+
  protected:
   ShellExtensionLoaderTest() = default;
   ~ShellExtensionLoaderTest() override = default;
@@ -137,8 +140,6 @@ class ShellExtensionLoaderTest : public ExtensionsTest {
   MockExtensionSystemFactory<TestExtensionSystem> factory_;
 
   TestEventRouter* event_router_ = nullptr;  // Created in SetUp().
-
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionLoaderTest);
 };
 
 // Tests with a non-existent directory.
@@ -212,6 +213,11 @@ TEST_F(ShellExtensionLoaderTest, LoadDisabledExtension) {
 
 #if defined(USE_AURA)
 class ShellExtensionLoaderTestAura : public ShellExtensionLoaderTest {
+ public:
+  ShellExtensionLoaderTestAura(const ShellExtensionLoaderTestAura&) = delete;
+  ShellExtensionLoaderTestAura& operator=(const ShellExtensionLoaderTestAura&) =
+      delete;
+
  protected:
   ShellExtensionLoaderTestAura() = default;
   ~ShellExtensionLoaderTestAura() override = default;
@@ -247,8 +253,6 @@ class ShellExtensionLoaderTestAura : public ShellExtensionLoaderTest {
  private:
   std::unique_ptr<ShellTestHelperAura> aura_helper_;
   TestAppWindowClient app_window_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionLoaderTestAura);
 };
 
 // Tests loading and launching a platform app.

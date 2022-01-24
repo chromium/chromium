@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.i18n.bidiTest');
 goog.setTestOnly();
@@ -31,24 +23,29 @@ const RLM = '\u200F';
  * @private
  */
 function SampleItem() {
+  /** @suppress {globalThis} suppression added to enable type checking */
   this.text = '';
+  /** @suppress {globalThis} suppression added to enable type checking */
   this.isRtl = false;
+  /** @suppress {globalThis} suppression added to enable type checking */
   this.isHtml = false;
 }
 
 /**
  * Creates an array of BiDi text objects for testing,
  * setting the direction and HTML flags appropriately.
- * @return {Array<Object<string,boolean,boolean>>}
+ * @return {!Array<?>}
  * @private
  */
 function getBidiTextSamples() {
   const bidiText = [];
+  /** @suppress {checkTypes} suppression added to enable type checking */
   let item = new SampleItem;
   item.text = 'Pure Ascii content';
   item.isRtl = false;
   bidiText.push(item);
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   item = new SampleItem;
   item.text = '\u05d0\u05d9\u05df \u05de\u05de\u05e9 \u05de\u05d4 ' +
       '\u05dc\u05e8\u05d0\u05d5\u05ea: \u05dc\u05d0 ' +
@@ -58,6 +55,7 @@ function getBidiTextSamples() {
   item.isRtl = true;
   bidiText.push(item);
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   item = new SampleItem;
   item.text = '\u05db\u05d0\u05df - http://geek.co.il/gallery/v/2007-06 - ' +
       '\u05d0\u05d9\u05df \u05de\u05de\u05e9 \u05de\u05d4 ' +
@@ -78,12 +76,14 @@ function getBidiTextSamples() {
   item.isRtl = true;
   bidiText.push(item);
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   item = new SampleItem;
   item.text =
       'CAPTCHA \u05de\u05e9\u05d5\u05db\u05dc\u05dc \u05de\u05d3\u05d9?';
   item.isRtl = true;
   bidiText.push(item);
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   item = new SampleItem;
   item.text = 'Yes Prime Minister \u05e2\u05d3\u05db\u05d5\u05df. ' +
       '\u05e9\u05d0\u05dc\u05d5 \u05d0\u05d5\u05ea\u05d9 \u05de\u05d4 ' +
@@ -92,30 +92,35 @@ function getBidiTextSamples() {
   item.isRtl = true;
   bidiText.push(item);
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   item = new SampleItem;
   item.text = '17.4.02 \u05e9\u05e2\u05d4:13-20 .15-00 .\u05dc\u05d0 ' +
       '\u05d4\u05d9\u05d9\u05ea\u05d9 \u05db\u05d0\u05df.';
   item.isRtl = true;
   bidiText.push(item);
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   item = new SampleItem;
   item.text = '5710 5720 5730. \u05d4\u05d3\u05dc\u05ea. ' +
       '\u05d4\u05e0\u05e9\u05d9\u05e7\u05d4';
   item.isRtl = true;
   bidiText.push(item);
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   item = new SampleItem;
   item.text =
       '\u05d4\u05d3\u05dc\u05ea http://www.google.com http://www.gmail.com';
   item.isRtl = true;
   bidiText.push(item);
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   item = new SampleItem;
   item.text = '&gt;\u05d4&lt;';
   item.isHtml = true;
   item.isRtl = true;
   bidiText.push(item);
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   item = new SampleItem;
   item.text = '&gt;\u05d4&lt;';
   item.isHtml = false;
@@ -602,13 +607,25 @@ testSuite({
     assertEquals(Dir.LTR, bidi.estimateDirection('foo/<b>\u05d0</b>', true));
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDetectRtlDirectionality() {
     const bidiText = getBidiTextSamples();
     for (let i = 0; i < bidiText.length; i++) {
       // alert(bidiText[i].text);
+      /**
+       * @suppress {strictMissingProperties} suppression added to enable type
+       * checking
+       */
       const is_rtl =
           bidi.detectRtlDirectionality(bidiText[i].text, bidiText[i].isHtml);
       if (is_rtl != bidiText[i].isRtl) {
+        /**
+         * @suppress {strictMissingProperties} suppression added to enable type
+         * checking
+         */
         const str = '"' + bidiText[i].text + '" should be ' +
             (bidiText[i].isRtl ? 'rtl' : 'ltr') + ' but detected as ' +
             (is_rtl ? 'rtl' : 'ltr');
@@ -618,6 +635,10 @@ testSuite({
     }
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testSetElementDirByTextDirectionality() {
     const el = document.createElement('DIV');
 

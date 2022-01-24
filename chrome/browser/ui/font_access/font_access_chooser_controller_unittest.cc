@@ -23,7 +23,6 @@ class FontAccessChooserControllerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     mock_font_chooser_view_ =
         std::make_unique<permissions::MockChooserControllerView>();
-    content::ResetFontEnumerationCache();
   }
 
  protected:

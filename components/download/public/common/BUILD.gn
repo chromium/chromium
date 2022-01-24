@@ -64,6 +64,8 @@ component("public") {
     "resume_mode.h",
     "simple_download_manager.h",
     "simple_download_manager_coordinator.h",
+    "storage_partition_config.cc",
+    "storage_partition_config.h",
     "stream_handle_input_stream.h",
     "url_download_handler_factory.h",
     "url_download_request_handle.h",
@@ -77,10 +79,11 @@ component("public") {
     "//base",
     "//components/download/network",
     "//components/download/public/background_service:public",
-    "//components/enterprise/common/proto:download_item_reroute_info_proto",
+    "//components/enterprise/common:download_item_reroute_info",
     "//components/services/quarantine/public/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
+    "//services/network/public/mojom:url_loader_base",
   ]
 
   deps = [
@@ -169,6 +172,7 @@ source_set("unit_tests") {
   sources = [
     "auto_resumption_handler_unittest.cc",
     "download_schedule_unittest.cc",
+    "storage_partition_config_unittest.cc",
   ]
 
   deps = [

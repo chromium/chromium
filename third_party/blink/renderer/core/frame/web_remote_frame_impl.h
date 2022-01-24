@@ -149,7 +149,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
   // Oilpan: WebRemoteFrameImpl must remain alive until close() is called.
   // Accomplish that by keeping a self-referential Persistent<>. It is
   // cleared upon close().
-  SelfKeepAlive<WebRemoteFrameImpl> self_keep_alive_;
+  SelfKeepAlive<WebRemoteFrameImpl> self_keep_alive_{this};
 };
 
 template <>

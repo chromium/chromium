@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -76,6 +75,9 @@ class ShillPropertyObserver : public ShillPropertyChangedObserver {
     }
   }
 
+  ShillPropertyObserver(const ShillPropertyObserver&) = delete;
+  ShillPropertyObserver& operator=(const ShillPropertyObserver&) = delete;
+
   ~ShillPropertyObserver() override {
     switch (type_) {
       case ManagedState::MANAGED_TYPE_NETWORK:
@@ -99,8 +101,6 @@ class ShillPropertyObserver : public ShillPropertyChangedObserver {
   ManagedState::ManagedType type_;
   std::string path_;
   Handler handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShillPropertyObserver);
 };
 
 //------------------------------------------------------------------------------
@@ -302,20 +302,23 @@ void ShillPropertyHandler::RequestProperties(ManagedState::ManagedType type,
 
 void ShillPropertyHandler::RequestTrafficCounters(
     const std::string& service_path,
-    ShillServiceClient::ListValueCallback callback) {
+    DBusMethodCallback<base::Value> callback) {
   ShillServiceClient::Get()->RequestTrafficCounters(
       dbus::ObjectPath(service_path),
       base::BindOnce(
-          [](const std::string* sp, ShillServiceClient::ListValueCallback cb,
-             const base::ListValue& traffic_counters) {
-            NET_LOG(EVENT) << "Received traffic counters for "
-                           << NetworkPathId(*sp);
-            std::move(cb).Run(traffic_counters);
+          [](const std::string& service_path,
+             DBusMethodCallback<base::Value> callback,
+             absl::optional<base::Value> traffic_counters) {
+            if (!traffic_counters) {
+              NET_LOG(ERROR) << "Error requesting traffic counters for: "
+                             << NetworkPathId(service_path);
+            } else {
+              NET_LOG(EVENT) << "Received traffic counters for "
+                             << NetworkPathId(service_path);
+            }
+            std::move(callback).Run(std::move(traffic_counters));
           },
-          &service_path, std::move(callback)),
-      base::BindOnce(&network_handler::ShillErrorCallbackFunction,
-                     "RequestTrafficCounters Failed", service_path,
-                     network_handler::ErrorCallback()));
+          service_path, std::move(callback)));
 }
 
 void ShillPropertyHandler::ResetTrafficCounters(
@@ -423,7 +426,7 @@ void ShillPropertyHandler::UpdateProperties(ManagedState::ManagedType type,
   std::set<std::string>& requested_updates = requested_updates_[type];
   std::set<std::string> new_requested_updates;
   NET_LOG(DEBUG) << "UpdateProperties: " << ManagedState::TypeToString(type)
-                 << ": " << entries.GetSize();
+                 << ": " << entries.GetList().size();
   for (const auto& entry : entries.GetList()) {
     const std::string* path = entry.GetIfString();
     if (!path || (*path).empty())

@@ -10,12 +10,10 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"  // for FALLTHROUGH;
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -44,12 +42,11 @@ net::CookieOptions MakeOptionsForSet(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const net::IsolationInfo& isolation_info,
-    const CookieSettings* cookie_settings,
+    const CookieSettings& cookie_settings,
     const net::CookieAccessDelegate* cookie_access_delegate) {
   net::CookieOptions options;
   bool force_ignore_site_for_cookies =
-      cookie_settings->ShouldIgnoreSameSiteRestrictions(
-          url, site_for_cookies.RepresentativeUrl());
+      cookie_settings.ShouldIgnoreSameSiteRestrictions(url, site_for_cookies);
   if (role == mojom::RestrictedCookieManagerRole::SCRIPT) {
     options.set_exclude_httponly();  // Default, but make it explicit here.
     options.set_same_site_cookie_context(
@@ -97,13 +94,12 @@ net::CookieOptions MakeOptionsForGet(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const net::IsolationInfo& isolation_info,
-    const CookieSettings* cookie_settings,
+    const CookieSettings& cookie_settings,
     const net::CookieAccessDelegate* cookie_access_delegate) {
   // TODO(https://crbug.com/925311): Wire initiator here.
   net::CookieOptions options;
   bool force_ignore_site_for_cookies =
-      cookie_settings->ShouldIgnoreSameSiteRestrictions(
-          url, site_for_cookies.RepresentativeUrl());
+      cookie_settings.ShouldIgnoreSameSiteRestrictions(url, site_for_cookies);
   if (role == mojom::RestrictedCookieManagerRole::SCRIPT) {
     options.set_exclude_httponly();  // Default, but make it explicit here.
     options.set_same_site_cookie_context(
@@ -144,6 +140,77 @@ net::CookieOptions MakeOptionsForGet(
 
 }  // namespace
 
+bool CookieWithAccessResultComparer::operator()(
+    const net::CookieWithAccessResult& cookie_with_access_result1,
+    const net::CookieWithAccessResult& cookie_with_access_result2) const {
+  // Compare just the cookie portion of the CookieWithAccessResults so a cookie
+  // only ever has one entry in the map. For a given cookie we want to send a
+  // new access notification whenever its access results change. If we keyed off
+  // of both the cookie and its current access result, if a cookie shifted from
+  // "allowed" to "blocked" the cookie would wind up with two entries in the
+  // map. If the cookie then shifted back to "allowed" we wouldn't send a new
+  // notification because cookie/allowed already existed in the map. In the case
+  // of a cookie shifting from "allowed" to "blocked,"
+  // SkipAccessNotificationForCookieItem() checks the access result. If the
+  // cookie exists in the map but its status is "allowed" we evict the old
+  // entry.
+  return cookie_with_access_result1.cookie < cookie_with_access_result2.cookie;
+}
+
+CookieAccesses* RestrictedCookieManager::GetCookieAccessesForURLAndSite(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies) {
+  std::unique_ptr<CookieAccesses>& entry =
+      recent_cookie_accesses_[std::make_pair(url, site_for_cookies)];
+  if (!entry) {
+    entry = std::make_unique<CookieAccesses>();
+  }
+
+  return entry.get();
+}
+
+bool RestrictedCookieManager::SkipAccessNotificationForCookieItem(
+    CookieAccesses* cookie_accesses,
+    const net::CookieWithAccessResult& cookie_item) {
+  DCHECK(cookie_accesses);
+
+  // Have we sent information about this cookie to the |cookie_observer_|
+  // before?
+  std::set<net::CookieWithAccessResult>::iterator existing_slot =
+      cookie_accesses->find(cookie_item);
+
+  // If this is the first time seeing this cookie make a note and don't skip
+  // the notification.
+  if (existing_slot == cookie_accesses->end()) {
+    // Don't store more than a max number of cookies, in the interest of
+    // limiting memory consumption.
+    const int kMaxCookieCount = 32;
+    if (cookie_accesses->size() == kMaxCookieCount) {
+      cookie_accesses->clear();
+    }
+    cookie_accesses->insert(cookie_item);
+
+    return false;
+  }
+
+  // If the cookie and its access result are unchanged since we last updated
+  // the |cookie_observer_|, skip notifying the |cookie_observer_| again.
+  if (existing_slot->cookie.HasEquivalentDataMembers(cookie_item.cookie) &&
+      existing_slot->access_result == cookie_item.access_result) {
+    return true;
+  }
+
+  // The cookie's access result has changed - update it in our record of what
+  // we've sent to the |cookie_observer_|. It's safe to update the existing
+  // entry in the set because the access_result field does not determine the
+  // CookieWithAccessResult's location in the set.
+  const_cast<net::CookieWithAccessResult&>(*existing_slot).access_result =
+      cookie_item.access_result;
+
+  // Don't skip notifying the |cookie_observer_| of the change.
+  return false;
+}
+
 class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
  public:
   Listener(net::CookieStore* cookie_store,
@@ -151,6 +218,7 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
            const GURL& url,
            const net::SiteForCookies& site_for_cookies,
            const url::Origin& top_frame_origin,
+           const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
            net::CookieOptions options,
            mojo::PendingRemote<mojom::CookieChangeListener> mojo_listener)
       : cookie_store_(cookie_store),
@@ -163,14 +231,18 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
     // TODO(pwnall): add a constructor w/options to net::CookieChangeDispatcher.
     cookie_store_subscription_ =
         cookie_store->GetChangeDispatcher().AddCallbackForUrl(
-            url, base::BindRepeating(
-                     &Listener::OnCookieChange,
-                     // Safe because net::CookieChangeDispatcher guarantees that
-                     // the callback will stop being called immediately after we
-                     // remove the subscription, and the cookie store lives on
-                     // the same thread as we do.
-                     base::Unretained(this)));
+            url, cookie_partition_key,
+            base::BindRepeating(
+                &Listener::OnCookieChange,
+                // Safe because net::CookieChangeDispatcher guarantees that
+                // the callback will stop being called immediately after we
+                // remove the subscription, and the cookie store lives on
+                // the same thread as we do.
+                base::Unretained(this)));
   }
+
+  Listener(const Listener&) = delete;
+  Listener& operator=(const Listener&) = delete;
 
   ~Listener() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
@@ -208,9 +280,8 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
     // not deleted. This check prevents the site from observing their cookies
     // being deleted at a later time, which can happen due to eviction or due to
     // the user explicitly deleting all cookies.
-    if (!restricted_cookie_manager_->cookie_settings()->IsCookieAccessible(
-            change.cookie, url_, site_for_cookies_.RepresentativeUrl(),
-            top_frame_origin_)) {
+    if (!restricted_cookie_manager_->cookie_settings().IsCookieAccessible(
+            change.cookie, url_, site_for_cookies_, top_frame_origin_)) {
       return;
     }
 
@@ -243,14 +314,12 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
   mojo::Remote<mojom::CookieChangeListener> mojo_listener_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Listener);
 };
 
 RestrictedCookieManager::RestrictedCookieManager(
     const mojom::RestrictedCookieManagerRole role,
     net::CookieStore* cookie_store,
-    const CookieSettings* cookie_settings,
+    const CookieSettings& cookie_settings,
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer)
@@ -263,6 +332,7 @@ RestrictedCookieManager::RestrictedCookieManager(
   DCHECK(cookie_store);
   CHECK(origin_ == isolation_info_.frame_origin().value() ||
         role_ != mojom::RestrictedCookieManagerRole::SCRIPT);
+  ComputeCookiePartitionKey();
 }
 
 RestrictedCookieManager::~RestrictedCookieManager() {
@@ -275,6 +345,13 @@ RestrictedCookieManager::~RestrictedCookieManager() {
     // The entire list is going away, no need to remove nodes from it.
     delete listener_reference;
   }
+}
+
+void RestrictedCookieManager::ComputeCookiePartitionKey() {
+  cookie_partition_key_ = net::CookiePartitionKey::FromNetworkIsolationKey(
+      isolation_info_.network_isolation_key());
+  cookie_partition_keychain_ =
+      net::CookiePartitionKeychain::FromOptional(cookie_partition_key_);
 }
 
 void RestrictedCookieManager::GetAllForUrl(
@@ -300,7 +377,7 @@ void RestrictedCookieManager::GetAllForUrl(
   net_options.set_return_excluded_cookies();
 
   cookie_store_->GetCookieListWithOptionsAsync(
-      url, net_options,
+      url, net_options, cookie_partition_keychain_,
       base::BindOnce(&RestrictedCookieManager::CookieListToGetAllForUrlCallback,
                      weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
                      top_frame_origin, net_options, std::move(options),
@@ -320,25 +397,36 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
 
   net::CookieAccessResultList maybe_included_cookies = cookie_list;
   net::CookieAccessResultList excluded_cookies = excluded_list;
-  cookie_settings()->AnnotateAndMoveUserBlockedCookies(
-      url, site_for_cookies.RepresentativeUrl(), &top_frame_origin,
-      maybe_included_cookies, excluded_cookies);
+  cookie_settings().AnnotateAndMoveUserBlockedCookies(
+      url, site_for_cookies, &top_frame_origin, maybe_included_cookies,
+      excluded_cookies);
 
   std::vector<net::CookieWithAccessResult> result;
   std::vector<mojom::CookieOrLineWithAccessResultPtr>
       on_cookies_accessed_result;
 
+  CookieAccesses* cookie_accesses =
+      GetCookieAccessesForURLAndSite(url, site_for_cookies);
+
   // TODO(https://crbug.com/977040): Stop reporting accesses of cookies with
   // warning reasons once samesite tightening up is rolled out.
   for (const auto& cookie_and_access_result : excluded_cookies) {
-    if (cookie_and_access_result.access_result.status.ShouldWarn() ||
-        cookie_and_access_result.access_result.status.HasOnlyExclusionReason(
+    if (!cookie_and_access_result.access_result.status.ShouldWarn() &&
+        !cookie_and_access_result.access_result.status.HasOnlyExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES)) {
-      on_cookies_accessed_result.push_back(
-          mojom::CookieOrLineWithAccessResult::New(
-              mojom::CookieOrLine::NewCookie(cookie_and_access_result.cookie),
-              cookie_and_access_result.access_result));
+      continue;
     }
+
+    // Skip sending a notification about this cookie access?
+    if (SkipAccessNotificationForCookieItem(cookie_accesses,
+                                            cookie_and_access_result)) {
+      continue;
+    }
+
+    on_cookies_accessed_result.push_back(
+        mojom::CookieOrLineWithAccessResult::New(
+            mojom::CookieOrLine::NewCookie(cookie_and_access_result.cookie),
+            cookie_and_access_result.access_result));
   }
 
   if (!maybe_included_cookies.empty())
@@ -366,12 +454,18 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     if (access_result.status.IsInclude()) {
       result.push_back(cookie_item);
     }
+
+    // Skip sending a notification about this cookie access?
+    if (SkipAccessNotificationForCookieItem(cookie_accesses, cookie_item)) {
+      continue;
+    }
+
     on_cookies_accessed_result.push_back(
         mojom::CookieOrLineWithAccessResult::New(
             mojom::CookieOrLine::NewCookie(cookie), access_result));
   }
 
-  if (cookie_observer_) {
+  if (cookie_observer_ && !on_cookies_accessed_result.empty()) {
     cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
         mojom::CookieAccessDetails::Type::kRead, url, site_for_cookies,
         std::move(on_cookies_accessed_result), absl::nullopt));
@@ -400,8 +494,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
   }
 
   // TODO(morlovich): Try to validate site_for_cookies as well.
-  bool blocked = !cookie_settings_->IsCookieAccessible(
-      cookie, url, site_for_cookies.RepresentativeUrl(), top_frame_origin);
+  bool blocked = !cookie_settings_.IsCookieAccessible(
+      cookie, url, site_for_cookies, top_frame_origin);
 
   net::CookieInclusionStatus status;
   if (blocked)
@@ -440,12 +534,48 @@ void RestrictedCookieManager::SetCanonicalCookie(
       GURL::SchemeIsCryptographic(origin_.scheme())
           ? net::CookieSourceScheme::kSecure
           : net::CookieSourceScheme::kNonSecure;
+
+  // If the renderer's cookie has a partition key that was not created using
+  // CookiePartitionKey::FromScript, then the cookie's partition key should be
+  // equal to RestrictedCookieManager's partition key.
+  absl::optional<net::CookiePartitionKey> cookie_partition_key =
+      cookie.PartitionKey();
+  if (cookie_partition_key) {
+    // RestrictedCookieManager having a null partition key strictly implies the
+    // feature is disabled. If that is the case, we treat the cookie as
+    // unpartitioned.
+    if (!cookie_partition_key_) {
+      cookie_partition_key = absl::nullopt;
+    } else {
+      bool cookie_partition_key_ok =
+          cookie.PartitionKey()->from_script() ||
+          cookie.PartitionKey().value() == cookie_partition_key_.value();
+      UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.CookiePartitionKeyOK",
+                            cookie_partition_key_ok);
+      if (!cookie_partition_key_ok) {
+        mojo::ReportBadMessage(
+            "RestrictedCookieManager: unexpected cookie partition key");
+        std::move(callback).Run(false);
+        return;
+      }
+      if (cookie.PartitionKey()->from_script()) {
+        cookie_partition_key = cookie_partition_key_;
+      }
+    }
+  }
+
   auto sanitized_cookie = net::CanonicalCookie::FromStorage(
       cookie.Name(), cookie.Value(), cookie.Domain(), cookie.Path(), now,
       cookie.ExpiryDate(), now, cookie.IsSecure(), cookie.IsHttpOnly(),
       cookie.SameSite(), cookie.Priority(), cookie.IsSameParty(),
-      cookie.PartitionKey(), source_scheme, origin_.port());
+      cookie_partition_key, source_scheme, origin_.port());
   DCHECK(sanitized_cookie);
+  // FromStorage() uses a less strict version of IsCanonical(), we need to check
+  // the stricter version as well here.
+  if (!sanitized_cookie->IsCanonical()) {
+    std::move(callback).Run(false);
+    return;
+  }
   net::CanonicalCookie cookie_copy = *sanitized_cookie;
 
   net::CookieOptions options = MakeOptionsForSet(
@@ -500,8 +630,8 @@ void RestrictedCookieManager::AddChangeListener(
       role_, url, site_for_cookies, isolation_info_, cookie_settings(),
       cookie_store_->cookie_access_delegate());
   auto listener = std::make_unique<Listener>(
-      cookie_store_, this, url, site_for_cookies, top_frame_origin, net_options,
-      std::move(mojo_listener));
+      cookie_store_, this, url, site_for_cookies, top_frame_origin,
+      cookie_partition_key_, net_options, std::move(mojo_listener));
 
   listener->mojo_listener().set_disconnect_handler(
       base::BindOnce(&RestrictedCookieManager::RemoveChangeListener,
@@ -527,7 +657,8 @@ void RestrictedCookieManager::SetCookieFromString(
   net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> parsed_cookie =
       net::CanonicalCookie::Create(url, cookie, base::Time::Now(),
-                                   absl::nullopt /* server_time */, &status);
+                                   absl::nullopt /* server_time */,
+                                   cookie_partition_key_, &status);
   if (!parsed_cookie) {
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>
@@ -586,8 +717,8 @@ void RestrictedCookieManager::CookiesEnabledFor(
     return;
   }
 
-  std::move(callback).Run(cookie_settings_->IsFullCookieAccessAllowed(
-      url, site_for_cookies.RepresentativeUrl(), top_frame_origin));
+  std::move(callback).Run(cookie_settings_.IsFullCookieAccessAllowed(
+      url, site_for_cookies, top_frame_origin));
 }
 
 void RestrictedCookieManager::RemoveChangeListener(Listener* listener) {
@@ -630,28 +761,6 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 
   if (origin_.IsSameOriginWith(url::Origin::Create(url)))
     return true;
-
-  if (url.IsAboutBlank() || url.IsAboutSrcdoc()) {
-    // Temporary mitigation for 983090, classification improvement for parts of
-    // 992587.
-    static base::debug::CrashKeyString* bound_origin =
-        base::debug::AllocateCrashKeyString(
-            "restricted_cookie_manager_bound_origin",
-            base::debug::CrashKeySize::Size256);
-    base::debug::ScopedCrashKeyString scoped_key_string_bound(
-        bound_origin, origin_.GetDebugString());
-
-    static base::debug::CrashKeyString* url_origin =
-        base::debug::AllocateCrashKeyString(
-            "restricted_cookie_manager_url_origin",
-            base::debug::CrashKeySize::Size256);
-    base::debug::ScopedCrashKeyString scoped_key_string_url(
-        url_origin, url::Origin::Create(url).GetDebugString());
-
-    NOTREACHED();
-    base::debug::DumpWithoutCrashing();
-    return false;
-  }
 
   mojo::ReportBadMessage("Incorrect url origin");
   return false;

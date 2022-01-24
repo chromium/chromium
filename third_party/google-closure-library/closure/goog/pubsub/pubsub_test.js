@@ -1,23 +1,14 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.pubsub.PubSubTest');
 goog.setTestOnly();
 
 const MockClock = goog.require('goog.testing.MockClock');
 const PubSub = goog.require('goog.pubsub.PubSub');
-const googArray = goog.require('goog.array');
 const testSuite = goog.require('goog.testing.testSuite');
 
 let pubsub;
@@ -302,6 +293,7 @@ testSuite({
     assertEquals('Value must have been updated', 17, value);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testSelfResubscribe() {
     let value = null;
 
@@ -392,14 +384,14 @@ testSuite({
     assertEquals(
         'Topic "Z" must not have any subscribers', 0, pubsub.getCount('Z'));
 
-    googArray.forEach(['X', 'Y', 'Z'], (topic) => {
+    ['X', 'Y', 'Z'].forEach(topic => {
       pubsub.subscribe(topic, foo);
     });
     assertEquals('Topic "X" must have 1 subscriber', 1, pubsub.getCount('X'));
     assertEquals('Topic "Y" must have 1 subscriber', 1, pubsub.getCount('Y'));
     assertEquals('Topic "Z" must have 1 subscriber', 1, pubsub.getCount('Z'));
 
-    googArray.forEach(['X', 'Y', 'Z'], (topic) => {
+    ['X', 'Y', 'Z'].forEach(topic => {
       pubsub.subscribe(topic, bar, context);
     });
     assertEquals('Topic "X" must have 2 subscribers', 2, pubsub.getCount('X'));
@@ -410,14 +402,14 @@ testSuite({
         'Pubsub channel must have a total of 6 subscribers', 6,
         pubsub.getCount());
 
-    googArray.forEach(['X', 'Y', 'Z'], (topic) => {
+    ['X', 'Y', 'Z'].forEach(topic => {
       pubsub.unsubscribe(topic, foo);
     });
     assertEquals('Topic "X" must have 1 subscriber', 1, pubsub.getCount('X'));
     assertEquals('Topic "Y" must have 1 subscriber', 1, pubsub.getCount('Y'));
     assertEquals('Topic "Z" must have 1 subscriber', 1, pubsub.getCount('Z'));
 
-    googArray.forEach(['X', 'Y', 'Z'], (topic) => {
+    ['X', 'Y', 'Z'].forEach(topic => {
       pubsub.unsubscribe(topic, bar, context);
     });
     assertEquals(
@@ -581,6 +573,7 @@ testSuite({
         'The second subscriber must also have been called', secondCalled);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testUnsubscribeWhilePublishing() {
     // It's OK for a subscriber to unsubscribe another subscriber from its
     // own topic, but the subscriber in question won't actually be removed
@@ -632,6 +625,7 @@ testSuite({
         pubsub.pendingKeys_.length);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testUnsubscribeSelfWhilePublishing() {
     // It's OK for a subscriber to unsubscribe itself, but it won't actually
     // be removed until after publishing is complete.
@@ -662,6 +656,28 @@ testSuite({
     assertEquals(
         'PubSub must not have any subscriptions pending removal', 0,
         pubsub.pendingKeys_.length);
+  },
+
+  /** @suppress {visibility} suppression added to enable type checking */
+  testDisposeWhilePublishing() {
+    let callDispose = function() {
+      pubsub.dispose();
+    };
+    let afterDisposeCalled = false;
+    let afterDispose = function() {
+      afterDisposeCalled = true;
+    };
+    pubsub.subscribe('someTopic', callDispose);
+    pubsub.subscribe('someTopic', afterDispose);
+    let exceptionThrown = false;
+    try {
+      pubsub.publish('someTopic');
+    } catch (e) {
+      exceptionThrown = true;
+    }
+    assertFalse('publishing did not throw an error', exceptionThrown);
+    assertTrue('pubsub is disposed', pubsub.isDisposed());
+    assertFalse('afterDispose must not have been called', afterDisposeCalled);
   },
 
   testPublishReturnValue() {
@@ -713,7 +729,7 @@ testSuite({
   testClear() {
     function fn() {}
 
-    googArray.forEach(['W', 'X', 'Y', 'Z'], (topic) => {
+    ['W', 'X', 'Y', 'Z'].forEach(topic => {
       pubsub.subscribe(topic, fn);
     });
     assertEquals(
@@ -723,7 +739,7 @@ testSuite({
     assertEquals(
         'Pubsub channel must have 3 subscribers', 3, pubsub.getCount());
 
-    googArray.forEach(['X', 'Y'], (topic) => {
+    ['X', 'Y'].forEach(topic => {
       pubsub.clear(topic);
     });
     assertEquals('Pubsub channel must have 1 subscriber', 1, pubsub.getCount());

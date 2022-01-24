@@ -25,6 +25,12 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
 
   out->max_framerate_numerator = data.max_framerate_numerator();
   out->max_framerate_denominator = data.max_framerate_denominator();
+
+  std::vector<media::SVCScalabilityMode> scalability_modes;
+  if (!data.ReadScalabilityModes(&scalability_modes))
+    return false;
+  out->scalability_modes = std::move(scalability_modes);
+
   return true;
 }
 
@@ -116,6 +122,9 @@ bool UnionTraits<media::mojom::CodecMetadataDataView,
     Read(media::mojom::CodecMetadataDataView data,
          media::BitstreamBufferMetadata* out) {
   switch (data.tag()) {
+    case media::mojom::CodecMetadataDataView::Tag::H264: {
+      return data.ReadH264(&out->h264);
+    }
     case media::mojom::CodecMetadataDataView::Tag::VP8: {
       return data.ReadVp8(&out->vp8);
     }
@@ -142,6 +151,15 @@ bool StructTraits<media::mojom::BitstreamBufferMetadataDataView,
 }
 
 // static
+bool StructTraits<media::mojom::H264MetadataDataView, media::H264Metadata>::
+    Read(media::mojom::H264MetadataDataView data,
+         media::H264Metadata* out_metadata) {
+  out_metadata->temporal_idx = data.temporal_idx();
+  out_metadata->layer_sync = data.layer_sync();
+  return true;
+}
+
+// static
 bool StructTraits<media::mojom::Vp8MetadataDataView, media::Vp8Metadata>::Read(
     media::mojom::Vp8MetadataDataView data,
     media::Vp8Metadata* out_metadata) {
@@ -155,7 +173,7 @@ bool StructTraits<media::mojom::Vp8MetadataDataView, media::Vp8Metadata>::Read(
 bool StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata>::Read(
     media::mojom::Vp9MetadataDataView data,
     media::Vp9Metadata* out_metadata) {
-  out_metadata->has_reference = data.has_reference();
+  out_metadata->inter_pic_predicted = data.inter_pic_predicted();
   out_metadata->temporal_up_switch = data.temporal_up_switch();
   out_metadata->referenced_by_upper_spatial_layers =
       data.referenced_by_upper_spatial_layers();

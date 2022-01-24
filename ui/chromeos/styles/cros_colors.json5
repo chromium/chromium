@@ -1,0 +1,470 @@
+/* Copyright 2020 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD_style license that can be
+ * found in the LICENSE file. */
+
+/*
+ * Chrome OS semantic colors.
+ *
+ * Colors that are used across all Chrome OS WebUIS and System Web Apps should
+ * be semantically represented here.
+ */
+{
+  options: {
+    CSS: {
+      prefix: 'cros',
+    },
+    proto: {
+      field_name: 'cros_colors',
+      field_id: 2,
+    },
+  },
+  colors: {
+    /* =========================================================================
+     * Core colors.
+     * =======================================================================*/
+    light_color_primary: "$google_grey_900",
+    dark_color_primary: "$google_grey_200",
+    color_primary: {
+      light: "$light_color_primary",
+      dark: "$dark_color_primary",
+    },
+    color_secondary: {
+      light: "$google_grey_700",
+      dark: "$google_grey_400",
+    },
+    color_disabled: {
+      light: "$google_grey_600",
+      dark: "$google_grey_500",
+    },
+    color_prominent: {
+      light: "$google_blue_600",
+      dark: "$google_blue_300",
+      debug: "$google_red_600",
+    },
+    light_color_alert: "$google_red_600",
+    dark_color_alert: "$google_red_300",
+    color_alert: {
+      light: "$light_color_alert",
+      dark: "$dark_color_alert",
+    },
+    light_color_warning: "$google_yellow_600",
+    dark_color_warning: "$google_yellow_300",
+    color_warning: {
+      light: "$light_color_warning",
+      dark: "$dark_color_warning",
+    },
+    color_positive: {
+      light: "$google_green_600",
+      dark: "$google_green_300",
+    },
+    color_selection: {
+      light: "$google_blue_700",
+      dark: "$google_blue_200",
+      debug: "$google_red_700",
+    },
+
+    /*
+     * Background colors.
+     */
+    bg_color: {
+      light: "$white",
+      dark: "$google_grey_900",
+    },
+    bg_color_elevation_1: {
+      light: "$white",
+      dark: "#2a2a2d", /* google_grey_900 + white 4% */
+    },
+    light_bg_color_elevation_2: "$white",
+    dark_bg_color_elevation_2: "#2e2e31", /* google_grey_900 + white 6% */
+    bg_color_elevation_2: {
+      light: "$light_bg_color_elevation_2",
+      dark: "$dark_bg_color_elevation_2",
+    },
+    bg_color_elevation_3: {
+      light: "$white",
+      dark: "#333336", /* google_grey_900 + white 8% */
+    },
+    bg_color_elevation_4: {
+      light: "$white",
+      dark: "#37373a", /* google_grey_900 + white 10% */
+    },
+    bg_color_elevation_5: {
+      light: "$white",
+      dark: "#3c3c3e", /* google_grey_900 + white 12% */
+    },
+    bg_color_dropped_elevation_1: {
+      light: "$google_grey_50",
+      dark: "#1a1a1d", /* google_grey_900 + black 20% */
+    },
+    bg_color_dropped_elevation_2: {
+      light: "$google_grey_200",
+      dark: "$black",
+    },
+
+    /*
+     * Text colors.
+     */
+    text_color_primary: {
+      default: "$color_primary",
+      debug: "$google_green_400",
+    },
+    text_color_secondary: {
+      default: "$color_secondary",
+      debug: "$google_green_400",
+    },
+    text_color_disabled: "$color_disabled",
+    text_color_prominent: "$color_prominent",
+    text_color_selection: "$color_selection",
+    text_color_positive: "$color_positive",
+    text_color_warning: "$color_warning",
+    text_color_alert: "$color_alert",
+    text_highlight_color: {
+      light: "rgba($google_blue_600_rgb, 0.3)",
+      dark: "rgba($google_blue_400_rgb, 0.3)",
+    },
+
+    /*
+     * Icon colors.
+     */
+    icon_color_primary: {
+      default: "$color_primary",
+      debug: "#ff00ff",
+    },
+    icon_color_secondary: {
+      default: "$color_secondary",
+      debug: "#00ffff",
+    },
+    icon_color_disabled: "$color_disabled",
+    icon_color_prominent: "$color_prominent",
+    icon_color_selection: "$color_selection",
+    icon_color_positive: "$color_positive",
+    icon_color_warning: "$color_warning",
+    icon_color_alert: "$color_alert",
+
+    // TODO(calamity): add attribute to allow generation of named variables for
+    // each mode.
+    dark_icon_color_primary: "$google_grey_900",
+    light_icon_color_warning: "$google_yellow_300",
+
+    /*
+     * App shield colors.
+     */
+    app_shield_color: {
+      light: "rgb($google_grey_300_rgb)",
+      dark: "rgb($black_rgb)",
+    },
+    app_shield_80: {
+      light: "rgba($google_grey_300_rgb, 0.8)",
+      dark: "rgba($black_rgb, 0.8)",
+    },
+    app_shield_60: {
+      light: "rgba($google_grey_300_rgb, 0.6)",
+      dark: "rgba($black_rgb, 0.6)",
+    },
+    app_shield_40: {
+      light: "rgba($google_grey_300_rgb, 0.4)",
+      dark: "rgba($black_rgb, 0.4)",
+    },
+    app_shield_20: {
+      light: "rgba($google_grey_300_rgb, 0.2)",
+      dark: "rgba($black_rgb, 0.2)",
+    },
+
+    /*
+     * Other foundational colors.
+     */
+    focus_ring_color: "$color_prominent",
+    focus_aura_color: "rgba($color_prominent_rgb, 0.24)",
+    separator_color: {
+      light: "rgba($black_rgb, 0.14)",
+      dark: "rgba($white_rgb, 0.14)",
+    },
+    shadow_color_key: {
+      light: "rgba($google_grey_800_rgb, 0.3)",
+      dark: "rgba($black_rgb, 0.3)",
+    },
+    shadow_color_ambient: {
+      light: "rgba($google_grey_800_rgb, 0.15)",
+      dark: "rgba($black_rgb, 0.15)",
+    },
+    link_color: "$color_prominent",
+    highlight_color: {
+      light: "$google_blue_50",
+      dark: "rgba($google_blue_300_rgb, 0.3)",
+      debug: "rgba($google_red_300_rgb, 0.3)",
+    },
+    highlight_color_hover: {
+      light: "rgba($google_grey_700_rgb, 0.2)",
+      dark: "rgba($white_rgb, 0.2)",
+    },
+    highlight_color_focus: {
+      light: "rgba($black_rgb, 0.06)",
+      dark: "rgba($white_rgb, 0.08)",
+    },
+    ripple_color: {
+      light: "rgba($black_rgb, 0.06)",
+      dark: "rgba($white_rgb, 0.08)",
+    },
+    ripple_color_prominent: {
+      light: "rgba($color_prominent_rgb, 0.06)",
+      dark: "rgba($color_prominent_rgb, 0.08)",
+    },
+
+    /* =========================================================================
+     * Component colors.
+     * =======================================================================*/
+    toolbar_search_bg_color: {
+      light: "$google_grey_100",
+      dark: "rgba($white_rgb, 0.1)",
+    },
+
+    menu_item_bg_color_focus: {
+      light: "rgba($black_rgb, 0.06)",
+      dark: "rgba($white_rgb, 0.08)",
+    },
+    menu_item_ripple_color: "$ripple_color",
+
+    toggle_color: "$color_prominent",
+    toggle_bg_color_inactive: "$google_grey_400",
+    toggle_button_color_inactive: "$white",
+    toggle_ripple_color: "rgba($toggle_color_rgb, .2)",
+    toggle_ripple_color_inactive: "rgba($google_grey_600_rgb, .15)",
+
+    radio_button_color: "$color_prominent",
+    radio_button_ripple_color: "rgba($radio_button_color_rgb, .2)",
+    radio_button_color_unchecked: "$google_grey_700",
+    radio_button_ripple_color_unchecked: "rgba($google_grey_600_rgb, .15)",
+
+    /* button-primary */
+    button_background_color_primary: "$color_prominent",
+    button_label_color_primary: {
+      light: "$google_grey_200",
+      dark: "$google_grey_900",
+    },
+    button_ripple_color_primary: { light: "$white", dark: "$black" },
+    /* button-primary:hover */
+    button_background_color_primary_hover_overlay: {
+      light:"rgba($black_rgb, 0.08)",
+      dark: "rgba($white_rgb,0.08)"
+    },
+    /* button-primary:active */
+    button_active_shadow_color_ambient_primary: {
+      light: "rgba($google_blue_500_rgb, 0.15)",
+      dark: "rgba($google_blue_400_rgb, 0.15)"
+    },
+    button_active_shadow_color_key_primary: {
+      light: "rgba($google_blue_500_rgb, 0.3)",
+      dark: "rgba($google_blue_400_rgb, 0.3)"
+    },
+    /* button-primary[disabled] */
+    button_background_color_primary_disabled: {
+      light: "$google_grey_100",
+      dark: "$google_grey_800",
+    },
+    button_label_color_primary_disabled: {
+      light: "$google_grey_600",
+      dark: "$google_grey_500",
+    },
+
+    /* button-secondary */
+    button_label_color_secondary: "$color_prominent",
+    button_stroke_color_secondary: {
+      light: "$google_grey_300",
+      dark: "$google_grey_700",
+    },
+    button_ripple_color_secondary: "$color_prominent",
+    /* button-secondary:hover */
+    button_stroke_color_secondary_hover: {
+      light: "$google_blue_100",
+      dark: "rgba($google_blue_300_rgb, 0.32)"
+    },
+    button_background_color_secondary_hover: {
+      light: "rgba($google_blue_500_rgb, 0.04)",
+      dark: "rgba($google_blue_300_rgb, 0.08)",
+    },
+    /* button-secondary:active */
+    button_active_shadow_color_ambient_secondary: {
+      light: "rgba($google_grey_500_rgb, 0.15)",
+      dark: "rgba($google_grey_600_rgb, 0.15)"
+    },
+    button_active_shadow_color_key_secondary: {
+      light: "rgba($google_grey_500_rgb, 0.3)",
+      dark: "rgba($google_grey_600_rgb, 0.3)"
+    },
+    /* button-secondary[disabled] */
+    button_label_color_secondary_disabled: {
+      light: "$google_grey_600",
+      dark: "$google_grey_500",
+    },
+    button_stroke_color_secondary_disabled: {
+      light: "$google_grey_100",
+      dark: "$google_grey_800",
+    },
+    /* button-icon */
+    button_icon_color_primary: {
+      light: "$google_grey_200",
+      dark: "$google_grey_900",
+    },
+    button_icon_color_primary_disabled: {
+      light: "$google_grey_600",
+      dark: "$google_grey_500",
+    },
+    button_icon_color_secondary: {
+      light: "$google_blue_600",
+      dark: "$google_blue_300",
+    },
+    button_icon_color_secondary_disabled: {
+      light: "$google_grey_200",
+      dark: "$google_grey_900",
+    },
+
+    /* icon-button */
+    icon_button_background_color: {
+      light: "rgba($black_rgb, 0.05)",
+      dark: "rgba($white_rgb, 0.1)",
+    },
+
+    /* menu */
+    menu_label_color: {
+      light: "$google_grey_900",
+      dark: "$google_grey_200",
+    },
+    menu_icon_color: {
+      light: "$google_grey_900",
+      dark: "$google_grey_200",
+    },
+    menu_shortcut_color: {
+      light: "$google_grey_700",
+      dark: "$google_grey_500",
+    },
+    menu_item_background_hover: "$ripple_color",
+
+    /* slider */
+    slider_color_active: "$color_prominent",
+    slider_color_inactive: "$color_secondary",
+    slider_track_color_active: "rgba($slider_color_active_rgb, $second_tone_opacity)",
+    slider_track_color_inactive: "rgba($slider_color_inactive_rgb, $second_tone_opacity)",
+
+    /* switch */
+    switch_knob_color_active: "$color_prominent",
+    switch_knob_color_inactive: {
+      light: "$white",
+      dark: "$google_grey_400",
+    },
+    switch_track_color_active: "$slider_track_color_active",
+    switch_track_color_inactive: "$slider_track_color_inactive",
+
+    /* tab */
+    tab_label_color_active: {
+      light: "$google_blue_600",
+      dark: "$google_blue_300",
+    },
+    tab_label_color_inactive: {
+      light: "$google_grey_600",
+      dark: "$google_grey_500",
+    },
+    tab_icon_color_active: {
+      light: "$google_blue_600",
+      dark: "$google_blue_300",
+    },
+    tab_icon_color_inactive: {
+      light: "$google_grey_600",
+      dark: "$google_grey_500",
+    },
+    tab_slider_track_color: {
+      light: "rgba($black_rgb, 0.06)",
+      dark: "rgba($white_rgb, 0.1)",
+    },
+
+    /* textfield */
+    textfield_background_color: {
+      light: "$google_grey_100",
+      dark: "rgba($black_rgb, 0.3)",
+    },
+    textfield_label_color: {
+      light: "$google_grey_700",
+      dark: "rgba($white_rgb, 0.6)",
+    },
+    textfield_input_color: "$icon_color_primary",
+    /* textfield:focus */
+    textfield_cursor_color_focus: "$color_prominent",
+    textfield_label_color_focus: "$color_prominent",
+    /* textfield[error] */
+    textfield_label_color_error: {
+      light: "$google_red_600",
+      dark: "$google_red_300",
+    },
+    textfield_underline_color_error: "$color_alert",
+    textfield_cursor_color_error: "$color_alert",
+    /* textfield[disabled] */
+    textfield_background_color_disabled: {
+      light: "rgba($google_grey_100_rgb, 0.38)",
+      dark: "rgba($black_rgb, 0.11)",
+    },
+    textfield_label_color_disabled: {
+      light: "rgba($google_grey_700_rgb, 0.38)",
+      dark: "rgba($black_rgb, 0.23)",
+    },
+    textfield_input_color_disabled: {
+      light: "rgba($google_grey_900_rgb, 0.38)",
+      dark: "rgba($white_rgb, 0.33)",
+    },
+
+    /* tooltip */
+    tooltip_background_color: {
+      light:"rgba($google_grey_900_rgb, 0.8)",
+      dark:"rgba($white_rgb, 0.8)",
+    },
+    tooltip_label_color: {
+      light:"$google_grey_100",
+      dark:"$google_grey_900",
+    },
+
+    /* shortcut */
+    shortcut_background_color: {
+      light:"$google_grey_200",
+      dark:"$google_grey_900",
+    },
+    shortcut_background_gradient_color: {
+      light:"rgba($white_rgb, 0)",
+      dark:"rgba($white_rgb, 0.12)"
+    },
+
+    /* dialog */
+    dialog_title_background_color: {
+      light:"$google_grey_100",
+      dark:"$google_grey_900",
+    },
+
+    /* toast */
+    /* Toast colors are inverted for contrast. */
+    toast_background_color: {
+      light:"$dark_bg_color_elevation_2",
+      dark:"$light_bg_color_elevation_2",
+    },
+    toast_text_color: {
+      light:"$dark_color_primary",
+      dark:"$light_color_primary",
+    },
+    toast_icon_color: {
+      light:"$dark_color_primary",
+      dark:"$light_color_primary",
+    },
+    toast_icon_color_warning: {
+      light:"$dark_color_warning",
+      dark:"$light_color_warning",
+    },
+    toast_icon_color_error: {
+      light:"$dark_color_alert",
+      dark:"$light_color_alert",
+    },
+  },
+  opacities: {
+    disabled_opacity: 0.38,
+
+    button_primary_ripple_opacity: { light: 0.32, dark: 0.16 },
+    button_secondary_ripple_opacity: { light: 0.1, dark: 0.16 },
+
+    second_tone_opacity: 0.3,
+  },
+}

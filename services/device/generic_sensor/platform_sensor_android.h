@@ -25,6 +25,9 @@ class PlatformSensorAndroid : public PlatformSensor {
                         SensorReadingSharedBuffer* reading_buffer,
                         PlatformSensorProvider* provider);
 
+  PlatformSensorAndroid(const PlatformSensorAndroid&) = delete;
+  PlatformSensorAndroid& operator=(const PlatformSensorAndroid&) = delete;
+
   mojom::ReportingMode GetReportingMode() override;
   PlatformSensorConfiguration GetDefaultConfiguration() override;
   double GetMaximumSupportedFrequency() override;
@@ -51,7 +54,6 @@ class PlatformSensorAndroid : public PlatformSensor {
  private:
   // Java object org.chromium.device.sensors.PlatformSensor
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorAndroid);
 };
 
 }  // namespace device

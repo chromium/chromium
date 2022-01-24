@@ -14,8 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
@@ -49,65 +49,11 @@ bool IsTextField(const FormFieldData& field) {
 // that a different website or different form uses the same field name for a
 // totally different purpose.
 bool IsMeaningfulFieldName(const std::u16string& name) {
-  // If the corresponding feature is not enabled, every field name is considered
-  // as meaningful.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutocompleteFilterForMeaningfulNames)) {
-    return true;
-  }
   return !MatchesPattern(
       name, u"^(((field|input)(_|-)?\\d+)|tan|otp|title|captcha)$");
 }
 
 }  // namespace
-
-void AutocompleteHistoryManager::UMARecorder::OnGetAutocompleteSuggestions(
-    const std::u16string& name,
-    WebDataServiceBase::Handle pending_query_handle) {
-  // log only if the current field is different than the latest one that has
-  // been logged. we assume that user works at the same field if
-  // measuring_name_ is same as the name of current field.
-  bool should_log_query = measuring_name_ != name;
-
-  if (should_log_query) {
-    AutofillMetrics::LogAutocompleteQuery(pending_query_handle /* created */);
-    measuring_name_ = name;
-  }
-  // We should track the query and log the suggestions, only if
-  // - query has been logged.
-  // - or, the query we previously tracked has been cancelled
-  // The previous query must be cancelled if measuring_query_handle_ isn't
-  // reset.
-  if (should_log_query || measuring_query_handle_)
-    measuring_query_handle_ = pending_query_handle;
-}
-
-void AutocompleteHistoryManager::UMARecorder::OnWebDataServiceRequestDone(
-    WebDataServiceBase::Handle pending_query_handle,
-    bool has_suggestion) {
-  // If handle of completed query does not match the query we're currently
-  // measuring then we've already logged a query for this name.
-  bool was_already_logged = (pending_query_handle != measuring_query_handle_);
-  measuring_query_handle_ = 0;
-  if (was_already_logged)
-    return;
-  AutofillMetrics::LogAutocompleteSuggestions(has_suggestion);
-}
-
-AutocompleteHistoryManager::QueryHandler::QueryHandler(
-    int client_query_id,
-    bool autoselect_first_suggestion,
-    std::u16string prefix,
-    base::WeakPtr<SuggestionsHandler> handler)
-    : client_query_id_(client_query_id),
-      autoselect_first_suggestion_(autoselect_first_suggestion),
-      prefix_(prefix),
-      handler_(std::move(handler)) {}
-
-AutocompleteHistoryManager::QueryHandler::QueryHandler(
-    const QueryHandler& original) = default;
-
-AutocompleteHistoryManager::QueryHandler::~QueryHandler() = default;
 
 AutocompleteHistoryManager::AutocompleteHistoryManager()
     // It is safe to base::Unretained a raw pointer to the current instance,
@@ -129,38 +75,7 @@ AutocompleteHistoryManager::~AutocompleteHistoryManager() {
   CancelAllPendingQueries();
 }
 
-void AutocompleteHistoryManager::Init(
-    scoped_refptr<AutofillWebDataService> profile_database,
-    PrefService* pref_service,
-    bool is_off_the_record) {
-  profile_database_ = profile_database;
-  pref_service_ = pref_service;
-  is_off_the_record_ = is_off_the_record;
-
-  if (!profile_database_) {
-    // In some tests, there are no dbs.
-    return;
-  }
-
-  // No need to run the retention policy in OTR.
-  if (!is_off_the_record_) {
-    // Upon successful cleanup, the last cleaned-up major version is being
-    // stored in this pref.
-    int last_cleaned_version = pref_service_->GetInteger(
-        prefs::kAutocompleteLastVersionRetentionPolicy);
-    if (CHROME_VERSION_MAJOR > last_cleaned_version) {
-      // Trigger the cleanup.
-      profile_database_->RemoveExpiredAutocompleteEntries(this);
-    }
-  }
-}
-
-base::WeakPtr<AutocompleteHistoryManager>
-AutocompleteHistoryManager::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-void AutocompleteHistoryManager::OnGetAutocompleteSuggestions(
+void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     int query_id,
     bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
@@ -214,14 +129,31 @@ void AutocompleteHistoryManager::OnWillSubmitForm(
   }
 }
 
-void AutocompleteHistoryManager::OnRemoveAutocompleteEntry(
-    const std::u16string& name,
-    const std::u16string& value) {
-  if (profile_database_)
-    profile_database_->RemoveFormValueForElementName(name, value);
+void AutocompleteHistoryManager::CancelPendingQueries(
+    const SuggestionsHandler* handler) {
+  if (handler && profile_database_) {
+    for (auto iter : pending_queries_) {
+      const QueryHandler& query_handler = iter.second;
+
+      if (query_handler.handler_ && query_handler.handler_.get() == handler) {
+        profile_database_->CancelRequest(iter.first);
+      }
+    }
+  }
+
+  // Cleaning up the map with the cancelled handler to remove cancelled
+  // requests.
+  CleanupEntries(handler);
 }
 
-void AutocompleteHistoryManager::OnAutocompleteEntrySelected(
+void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
+    const std::u16string& field_name,
+    const std::u16string& value) {
+  if (profile_database_)
+    profile_database_->RemoveFormValueForElementName(field_name, value);
+}
+
+void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
     const std::u16string& value) {
   // Try to find the AutofillEntry associated with the given suggestion.
   auto last_entries_iter = last_entries_.find(value);
@@ -239,21 +171,35 @@ void AutocompleteHistoryManager::OnAutocompleteEntrySelected(
   AutofillMetrics::LogAutocompleteDaysSinceLastUse(time_delta.InDays());
 }
 
-void AutocompleteHistoryManager::CancelPendingQueries(
-    const SuggestionsHandler* handler) {
-  if (handler && profile_database_) {
-    for (auto iter : pending_queries_) {
-      const QueryHandler& query_handler = iter.second;
+void AutocompleteHistoryManager::Init(
+    scoped_refptr<AutofillWebDataService> profile_database,
+    PrefService* pref_service,
+    bool is_off_the_record) {
+  profile_database_ = profile_database;
+  pref_service_ = pref_service;
+  is_off_the_record_ = is_off_the_record;
 
-      if (query_handler.handler_ && query_handler.handler_.get() == handler) {
-        profile_database_->CancelRequest(iter.first);
-      }
-    }
+  if (!profile_database_) {
+    // In some tests, there are no dbs.
+    return;
   }
 
-  // Cleaning up the map with the cancelled handler to remove cancelled
-  // requests.
-  CleanupEntries(handler);
+  // No need to run the retention policy in OTR.
+  if (!is_off_the_record_) {
+    // Upon successful cleanup, the last cleaned-up major version is being
+    // stored in this pref.
+    int last_cleaned_version = pref_service_->GetInteger(
+        prefs::kAutocompleteLastVersionRetentionPolicy);
+    if (CHROME_VERSION_MAJOR > last_cleaned_version) {
+      // Trigger the cleanup.
+      profile_database_->RemoveExpiredAutocompleteEntries(this);
+    }
+  }
+}
+
+base::WeakPtr<AutocompleteHistoryManager>
+AutocompleteHistoryManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
@@ -278,6 +224,54 @@ void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
 
   request_callbacks_iter->second.Run(current_handle, std::move(result));
 }
+
+void AutocompleteHistoryManager::UMARecorder::OnGetAutocompleteSuggestions(
+    const std::u16string& name,
+    WebDataServiceBase::Handle pending_query_handle) {
+  // log only if the current field is different than the latest one that has
+  // been logged. we assume that user works at the same field if
+  // measuring_name_ is same as the name of current field.
+  bool should_log_query = measuring_name_ != name;
+
+  if (should_log_query) {
+    AutofillMetrics::LogAutocompleteQuery(pending_query_handle /* created */);
+    measuring_name_ = name;
+  }
+  // We should track the query and log the suggestions, only if
+  // - query has been logged.
+  // - or, the query we previously tracked has been cancelled
+  // The previous query must be cancelled if measuring_query_handle_ isn't
+  // reset.
+  if (should_log_query || measuring_query_handle_)
+    measuring_query_handle_ = pending_query_handle;
+}
+
+void AutocompleteHistoryManager::UMARecorder::OnWebDataServiceRequestDone(
+    WebDataServiceBase::Handle pending_query_handle,
+    bool has_suggestion) {
+  // If handle of completed query does not match the query we're currently
+  // measuring then we've already logged a query for this name.
+  bool was_already_logged = (pending_query_handle != measuring_query_handle_);
+  measuring_query_handle_ = 0;
+  if (was_already_logged)
+    return;
+  AutofillMetrics::LogAutocompleteSuggestions(has_suggestion);
+}
+
+AutocompleteHistoryManager::QueryHandler::QueryHandler(
+    int client_query_id,
+    bool autoselect_first_suggestion,
+    std::u16string prefix,
+    base::WeakPtr<SuggestionsHandler> handler)
+    : client_query_id_(client_query_id),
+      autoselect_first_suggestion_(autoselect_first_suggestion),
+      prefix_(prefix),
+      handler_(std::move(handler)) {}
+
+AutocompleteHistoryManager::QueryHandler::QueryHandler(
+    const QueryHandler& original) = default;
+
+AutocompleteHistoryManager::QueryHandler::~QueryHandler() = default;
 
 void AutocompleteHistoryManager::SendSuggestions(
     const std::vector<AutofillEntry>& entries,
@@ -305,6 +299,24 @@ void AutocompleteHistoryManager::SendSuggestions(
   query_handler.handler_->OnSuggestionsReturned(
       query_handler.client_query_id_,
       query_handler.autoselect_first_suggestion_, suggestions);
+}
+
+void AutocompleteHistoryManager::CancelAllPendingQueries() {
+  if (profile_database_) {
+    for (const auto& pending_query : pending_queries_) {
+      profile_database_->CancelRequest(pending_query.first);
+    }
+  }
+
+  pending_queries_.clear();
+}
+
+void AutocompleteHistoryManager::CleanupEntries(
+    const SuggestionsHandler* handler) {
+  base::EraseIf(pending_queries_, [handler](const auto& pending_query) {
+    const QueryHandler& query_handler = pending_query.second;
+    return !query_handler.handler_ || query_handler.handler_.get() == handler;
+  });
 }
 
 void AutocompleteHistoryManager::OnAutofillValuesReturned(
@@ -350,24 +362,6 @@ void AutocompleteHistoryManager::OnAutofillCleanupReturned(
                             CHROME_VERSION_MAJOR);
 
   Notify(NotificationType::AutocompleteCleanupDone);
-}
-
-void AutocompleteHistoryManager::CancelAllPendingQueries() {
-  if (profile_database_) {
-    for (const auto& pending_query : pending_queries_) {
-      profile_database_->CancelRequest(pending_query.first);
-    }
-  }
-
-  pending_queries_.clear();
-}
-
-void AutocompleteHistoryManager::CleanupEntries(
-    const SuggestionsHandler* handler) {
-  base::EraseIf(pending_queries_, [handler](const auto& pending_query) {
-    const QueryHandler& query_handler = pending_query.second;
-    return !query_handler.handler_ || query_handler.handler_.get() == handler;
-  });
 }
 
 // We put the following restriction on stored FormFields:

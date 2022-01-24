@@ -44,8 +44,13 @@ bool FakeMessageCenter::IsSpokenFeedbackEnabled() const {
   return false;
 }
 
-Notification* FakeMessageCenter::FindOldestNotificationByNotiferId(
-    const NotifierId& notifier_id) {
+Notification* FakeMessageCenter::FindNotificationById(const std::string& id) {
+  // stub
+  return nullptr;
+}
+
+Notification* FakeMessageCenter::FindParentNotificationForOriginUrl(
+    const GURL& notifier_id) {
   // stub
   return nullptr;
 }

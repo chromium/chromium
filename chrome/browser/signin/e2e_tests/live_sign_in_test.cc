@@ -22,10 +22,10 @@
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -43,7 +43,7 @@
 namespace signin {
 namespace test {
 
-const base::TimeDelta kDialogTimeout = base::TimeDelta::FromSeconds(10);
+const base::TimeDelta kDialogTimeout = base::Seconds(10);
 
 // A wrapper importing the settings module when the chrome://settings serve the
 // Polymer 3 version.
@@ -726,23 +726,48 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 IN_PROC_BROWSER_TEST_F(LiveSignInTest,
                        MANUAL_AccountCapabilities_FetchedOnSignIn) {
   EnableAccountCapabilitiesFetches(identity_manager());
-  AccountCapabilitiesObserver capabilities_observer(identity_manager());
 
-  TestAccount ta;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", ta));
-  SignInFromSettings(ta, 0);
+  // Test primary adult account.
+  {
+    AccountCapabilitiesObserver capabilities_observer(identity_manager());
 
-  CoreAccountInfo core_account_info =
-      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin);
-  EXPECT_TRUE(gaia::AreEmailsSame(core_account_info.email, ta.user));
+    TestAccount ta;
+    ASSERT_TRUE(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", ta));
+    SignInFromSettings(ta, 0);
 
-  capabilities_observer.WaitForAllCapabilitiesToBeKnown(
-      core_account_info.account_id);
-  AccountInfo account_info =
-      identity_manager()->FindExtendedAccountInfoByAccountId(
-          core_account_info.account_id);
-  EXPECT_EQ(account_info.capabilities.can_offer_extended_chrome_sync_promos(),
-            Tribool::kTrue);
+    CoreAccountInfo core_account_info =
+        identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin);
+    ASSERT_TRUE(gaia::AreEmailsSame(core_account_info.email, ta.user));
+
+    capabilities_observer.WaitForAllCapabilitiesToBeKnown(
+        core_account_info.account_id);
+    AccountInfo account_info =
+        identity_manager()->FindExtendedAccountInfoByAccountId(
+            core_account_info.account_id);
+    EXPECT_EQ(account_info.capabilities.can_offer_extended_chrome_sync_promos(),
+              Tribool::kTrue);
+  }
+
+  // Test secondary minor account.
+  {
+    AccountCapabilitiesObserver capabilities_observer(identity_manager());
+
+    TestAccount ta;
+    ASSERT_TRUE(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_MINOR", ta));
+    SignInFromWeb(ta, /*previously_signed_in_accounts=*/1);
+
+    CoreAccountInfo core_account_info =
+        identity_manager()->FindExtendedAccountInfoByEmailAddress(ta.user);
+    ASSERT_FALSE(core_account_info.IsEmpty());
+
+    capabilities_observer.WaitForAllCapabilitiesToBeKnown(
+        core_account_info.account_id);
+    AccountInfo account_info =
+        identity_manager()->FindExtendedAccountInfoByAccountId(
+            core_account_info.account_id);
+    EXPECT_EQ(account_info.capabilities.can_offer_extended_chrome_sync_promos(),
+              Tribool::kFalse);
+  }
 }
 
 }  // namespace test

@@ -71,9 +71,6 @@ PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
   form.signon_realm = std::string(signon_realm);
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
-  // TODO(crbug.com/1223022): Remove this when it becomes part of the default
-  // constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
 }
 
@@ -99,7 +96,7 @@ class BulkLeakCheckServiceAdapterTest : public ::testing::Test {
     auto factory = std::make_unique<MockLeakDetectionCheckFactory>();
     factory_ = factory.get();
     service_.set_leak_factory(std::move(factory));
-    store_->Init(/*prefs=*/nullptr);
+    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
     prefs_.registry()->RegisterBooleanPref(prefs::kPasswordLeakDetectionEnabled,
                                            true);
     prefs_.registry()->RegisterBooleanPref(::prefs::kSafeBrowsingEnabled, true);

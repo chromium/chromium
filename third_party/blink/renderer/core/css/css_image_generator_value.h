@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -78,7 +79,8 @@ struct SizeAndCount {
   int count;
 };
 
-using ClientSizeCountMap = HashMap<const ImageResourceObserver*, SizeAndCount>;
+using ClientSizeCountMap =
+    HeapHashMap<Member<const ImageResourceObserver>, SizeAndCount>;
 
 class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
  public:
@@ -99,9 +101,7 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
   bool IsUsingCustomProperty(const AtomicString& custom_property_name,
                              const Document&) const;
 
-  void TraceAfterDispatch(blink::Visitor* visitor) const {
-    CSSValue::TraceAfterDispatch(visitor);
-  }
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  protected:
   explicit CSSImageGeneratorValue(ClassType);

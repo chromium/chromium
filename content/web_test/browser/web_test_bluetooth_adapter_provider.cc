@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -29,44 +30,45 @@
 #include "device/bluetooth/test/mock_bluetooth_gatt_notify_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using base::StringPiece;
-using base::test::RunOnceCallback;
-using device::BluetoothAdapter;
-using device::BluetoothDevice;
-using device::BluetoothGattCharacteristic;
-using device::BluetoothGattService;
-using device::BluetoothRemoteGattCharacteristic;
-using device::BluetoothRemoteGattDescriptor;
-using device::BluetoothRemoteGattService;
-using device::BluetoothUUID;
-using device::MockBluetoothAdapter;
-using device::MockBluetoothDevice;
-using device::MockBluetoothGattCharacteristic;
-using device::MockBluetoothGattConnection;
-using device::MockBluetoothGattDescriptor;
-using device::MockBluetoothGattNotifySession;
-using device::MockBluetoothGattService;
-using testing::_;
-using testing::ElementsAre;
-using testing::Invoke;
-using testing::InvokeWithoutArgs;
-using testing::ResultOf;
-using testing::Return;
-
-typedef testing::NiceMock<MockBluetoothAdapter> NiceMockBluetoothAdapter;
-typedef testing::NiceMock<MockBluetoothDevice> NiceMockBluetoothDevice;
-typedef testing::NiceMock<MockBluetoothGattDescriptor>
-    NiceMockBluetoothGattDescriptor;
-typedef testing::NiceMock<MockBluetoothGattCharacteristic>
-    NiceMockBluetoothGattCharacteristic;
-typedef testing::NiceMock<MockBluetoothGattConnection>
-    NiceMockBluetoothGattConnection;
-typedef testing::NiceMock<MockBluetoothGattService>
-    NiceMockBluetoothGattService;
-typedef testing::NiceMock<MockBluetoothGattNotifySession>
-    NiceMockBluetoothGattNotifySession;
-
 namespace {
+
+using ::base::StringPiece;
+using ::base::test::RunOnceCallback;
+using ::device::BluetoothAdapter;
+using ::device::BluetoothDevice;
+using ::device::BluetoothGattCharacteristic;
+using ::device::BluetoothGattService;
+using ::device::BluetoothRemoteGattCharacteristic;
+using ::device::BluetoothRemoteGattDescriptor;
+using ::device::BluetoothRemoteGattService;
+using ::device::BluetoothUUID;
+using ::device::MockBluetoothAdapter;
+using ::device::MockBluetoothDevice;
+using ::device::MockBluetoothGattCharacteristic;
+using ::device::MockBluetoothGattConnection;
+using ::device::MockBluetoothGattDescriptor;
+using ::device::MockBluetoothGattNotifySession;
+using ::device::MockBluetoothGattService;
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
+using ::testing::ResultOf;
+using ::testing::Return;
+using ::testing::WithArg;
+using NiceMockBluetoothAdapter = ::testing::NiceMock<MockBluetoothAdapter>;
+using NiceMockBluetoothDevice = ::testing::NiceMock<MockBluetoothDevice>;
+using NiceMockBluetoothGattDescriptor =
+    ::testing::NiceMock<MockBluetoothGattDescriptor>;
+using NiceMockBluetoothGattCharacteristic =
+    ::testing::NiceMock<MockBluetoothGattCharacteristic>;
+using NiceMockBluetoothGattConnection =
+    ::testing::NiceMock<MockBluetoothGattConnection>;
+using NiceMockBluetoothGattService =
+    ::testing::NiceMock<MockBluetoothGattService>;
+using NiceMockBluetoothGattNotifySession =
+    ::testing::NiceMock<MockBluetoothGattNotifySession>;
+
 // Bluetooth UUIDs suitable to pass to BluetoothUUID():
 // Services:
 const char kBatteryServiceUUID[] = "180f";
@@ -1354,6 +1356,16 @@ WebTestBluetoothAdapterProvider::GetBaseDevice(
   ON_CALL(*device, CreateGattConnection_(_))
       .WillByDefault(RunOnceCallback<0>(
           /*connection=*/nullptr, BluetoothDevice::ERROR_UNSUPPORTED_DEVICE));
+
+  auto* device_ptr = device.get();
+  ON_CALL(*device, Pair_(_, _))
+      .WillByDefault(
+          WithArg<1>([device_ptr](BluetoothDevice::ConnectCallback& callback) {
+            device_ptr->SetPaired(/*paired=*/true);
+            base::SequencedTaskRunnerHandle::Get()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback),
+                                          /*error_code=*/absl::nullopt));
+          }));
 
   return device;
 }

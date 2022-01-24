@@ -63,6 +63,10 @@ template <typename T>
 class ThreadLocalPointer {
  public:
   ThreadLocalPointer() = default;
+
+  ThreadLocalPointer(const ThreadLocalPointer&) = delete;
+  ThreadLocalPointer& operator=(const ThreadLocalPointer&) = delete;
+
   ~ThreadLocalPointer() = default;
 
   T* Get() const { return static_cast<T*>(slot_.Get()); }
@@ -73,8 +77,6 @@ class ThreadLocalPointer {
 
  private:
   ThreadLocalStorage::Slot slot_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadLocalPointer<T>);
 };
 
 // A ThreadLocalOwnedPointer<T> is like a ThreadLocalPointer<T> except that
@@ -94,6 +96,9 @@ template <typename T>
 class ThreadLocalOwnedPointer {
  public:
   ThreadLocalOwnedPointer() = default;
+
+  ThreadLocalOwnedPointer(const ThreadLocalOwnedPointer&) = delete;
+  ThreadLocalOwnedPointer& operator=(const ThreadLocalOwnedPointer&) = delete;
 
   ~ThreadLocalOwnedPointer() {
     // Assume that this thread is the only one with potential state left. This
@@ -116,14 +121,16 @@ class ThreadLocalOwnedPointer {
   static void DeleteTlsPtr(void* ptr) { delete static_cast<T*>(ptr); }
 
   ThreadLocalStorage::Slot slot_{&DeleteTlsPtr};
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadLocalOwnedPointer<T>);
 };
 #endif  // DCHECK_IS_ON()
 
 class ThreadLocalBoolean {
  public:
   ThreadLocalBoolean() = default;
+
+  ThreadLocalBoolean(const ThreadLocalBoolean&) = delete;
+  ThreadLocalBoolean& operator=(const ThreadLocalBoolean&) = delete;
+
   ~ThreadLocalBoolean() = default;
 
   bool Get() const { return tlp_.Get() != nullptr; }
@@ -132,8 +139,6 @@ class ThreadLocalBoolean {
 
  private:
   ThreadLocalPointer<void> tlp_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadLocalBoolean);
 };
 
 }  // namespace base

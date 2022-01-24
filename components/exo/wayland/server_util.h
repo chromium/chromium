@@ -18,6 +18,7 @@ struct wl_resource;
 
 namespace exo {
 
+class Capabilities;
 class DataOffer;
 
 namespace wayland {
@@ -59,6 +60,19 @@ void SetSurfaceResource(Surface* surface, wl_resource* resource);
 wl_resource* GetDataOfferResource(const DataOffer* data_offer);
 void SetDataOfferResource(DataOffer* data_offer,
                           wl_resource* data_offer_resource);
+
+// Associates the given |display| with its |capabilities|.
+void SetCapabilities(wl_display* display, Capabilities* capabilities);
+
+// Clears the capability association for |display|.
+void RemoveCapabilities(wl_display* display);
+
+// Returns the associated capabilities for this |display|.
+Capabilities* GetCapabilities(wl_display* display);
+
+// Returns the associated capabilities for the display this |client| is
+// connected to.
+Capabilities* GetCapabilities(wl_client* client);
 
 }  // namespace wayland
 }  // namespace exo

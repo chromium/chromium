@@ -8,7 +8,6 @@
 namespace blink {
 
 bool CoreTextVersionSupportsVariations();
-bool CoreTextVersionSupportsColrCpal();
 
 }  // namespace blink
 

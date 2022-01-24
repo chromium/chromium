@@ -39,9 +39,22 @@ void AssistantHeaderModel::SetBubbleMessage(const std::string& bubble_message) {
       base::android::ConvertUTF8ToJavaString(env, bubble_message));
 }
 
-void AssistantHeaderModel::SetProgress(int progress) {
-  Java_AssistantHeaderModel_setProgress(AttachCurrentThread(), jmodel_,
-                                        progress);
+void AssistantHeaderModel::SetProfileIconMenuSettingsMessage(
+    const std::string& profile_icon_menu_settings_message) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_AssistantHeaderModel_setProfileIconMenuSettingsMessage(
+      env, jmodel_,
+      base::android::ConvertUTF8ToJavaString(
+          env, profile_icon_menu_settings_message));
+}
+
+void AssistantHeaderModel::SetProfileIconMenuSendFeedbackMessage(
+    const std::string& profile_icon_menu_send_feedback_message) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_AssistantHeaderModel_setProfileIconMenuSendFeedbackMessage(
+      env, jmodel_,
+      base::android::ConvertUTF8ToJavaString(
+          env, profile_icon_menu_send_feedback_message));
 }
 
 void AssistantHeaderModel::SetProgressActiveStep(int active_step) {
@@ -63,8 +76,6 @@ void AssistantHeaderModel::SetStepProgressBarConfiguration(
     const ShowProgressBarProto::StepProgressBarConfiguration& configuration,
     const base::android::ScopedJavaLocalRef<jobject>& jcontext) {
   JNIEnv* env = AttachCurrentThread();
-  Java_AssistantHeaderModel_setUseStepProgressBar(
-      env, jmodel_, configuration.use_step_progress_bar());
   if (!configuration.annotated_step_icons().empty()) {
     auto jlist = Java_AssistantHeaderModel_createIconList(env);
     for (const auto& icon : configuration.annotated_step_icons()) {
@@ -85,6 +96,16 @@ void AssistantHeaderModel::SetSpinPoodle(bool enabled) {
 void AssistantHeaderModel::SetChips(
     const base::android::ScopedJavaLocalRef<jobject>& jchips) {
   Java_AssistantHeaderModel_setChips(AttachCurrentThread(), jmodel_, jchips);
+}
+
+void AssistantHeaderModel::SetTtsButtonVisible(bool visible) {
+  Java_AssistantHeaderModel_setTtsButtonVisible(AttachCurrentThread(), jmodel_,
+                                                visible);
+}
+
+void AssistantHeaderModel::SetTtsButtonState(TtsButtonState state) {
+  Java_AssistantHeaderModel_setTtsButtonState(AttachCurrentThread(), jmodel_,
+                                              state);
 }
 
 void AssistantHeaderModel::SetDisableAnimations(bool disable_animations) {

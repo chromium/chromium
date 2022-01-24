@@ -57,20 +57,18 @@ CanMakePaymentEvent::modifiers() const {
 void CanMakePaymentEvent::respondWith(ScriptState* script_state,
                                       ScriptPromise script_promise,
                                       ExceptionState& exception_state) {
-  RespondToCanMakePaymentEvent(script_state, script_promise, exception_state,
-                               /*is_minimal_ui=*/false);
-}
+  if (!isTrusted()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot respond with data when the event is not trusted");
+    return;
+  }
 
-const String& CanMakePaymentEvent::currency() const {
-  return currency_;
-}
-
-void CanMakePaymentEvent::respondWithMinimalUI(
-    ScriptState* script_state,
-    ScriptPromise script_promise,
-    ExceptionState& exception_state) {
-  RespondToCanMakePaymentEvent(script_state, script_promise, exception_state,
-                               /*is_minimal_ui=*/true);
+  stopImmediatePropagation();
+  if (observer_) {
+    observer_->ObservePromiseResponse(script_state, script_promise,
+                                      exception_state);
+  }
 }
 
 void CanMakePaymentEvent::Trace(Visitor* visitor) const {
@@ -98,27 +96,6 @@ CanMakePaymentEvent::CanMakePaymentEvent(
       modifiers_(initializer->hasModifiers()
                      ? initializer->modifiers()
                      : HeapVector<Member<PaymentDetailsModifier>>()),
-      currency_(initializer->hasCurrency() ? initializer->currency()
-                                           : String()),
       observer_(respond_with_observer) {}
-
-void CanMakePaymentEvent::RespondToCanMakePaymentEvent(
-    ScriptState* script_state,
-    ScriptPromise script_promise,
-    ExceptionState& exception_state,
-    bool is_minimal_ui) {
-  if (!isTrusted()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Cannot respond with data when the event is not trusted");
-    return;
-  }
-
-  stopImmediatePropagation();
-  if (observer_) {
-    observer_->ObservePromiseResponse(script_state, script_promise,
-                                      exception_state, is_minimal_ui);
-  }
-}
 
 }  // namespace blink

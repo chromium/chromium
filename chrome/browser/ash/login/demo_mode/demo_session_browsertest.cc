@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -52,6 +51,11 @@ void CheckNoDemoMode() {
 // Tests locking device to policy::DEVICE_MODE_DEMO mode. It is an equivalent to
 // going through online demo mode setup or using offline setup.
 class DemoSessionDemoDeviceModeTest : public OobeBaseTest {
+ public:
+  DemoSessionDemoDeviceModeTest(const DemoSessionDemoDeviceModeTest&) = delete;
+  DemoSessionDemoDeviceModeTest& operator=(
+      const DemoSessionDemoDeviceModeTest&) = delete;
+
  protected:
   DemoSessionDemoDeviceModeTest() = default;
   ~DemoSessionDemoDeviceModeTest() override = default;
@@ -65,8 +69,6 @@ class DemoSessionDemoDeviceModeTest : public OobeBaseTest {
  private:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionDemoDeviceModeTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionDemoDeviceModeTest, IsDemoMode) {
@@ -77,6 +79,12 @@ IN_PROC_BROWSER_TEST_F(DemoSessionDemoDeviceModeTest, IsDemoMode) {
 // mode. It is an equivalent to enrolling device directly by using enterprise
 // enrollment flow.
 class DemoSessionDemoEnrolledDeviceTest : public OobeBaseTest {
+ public:
+  DemoSessionDemoEnrolledDeviceTest(const DemoSessionDemoEnrolledDeviceTest&) =
+      delete;
+  DemoSessionDemoEnrolledDeviceTest& operator=(
+      const DemoSessionDemoEnrolledDeviceTest&) = delete;
+
  protected:
   DemoSessionDemoEnrolledDeviceTest() : OobeBaseTest() {
     device_state_.set_domain(policy::kDemoModeDomain);
@@ -93,8 +101,6 @@ class DemoSessionDemoEnrolledDeviceTest : public OobeBaseTest {
  private:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionDemoEnrolledDeviceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionDemoEnrolledDeviceTest, IsDemoMode) {
@@ -104,13 +110,17 @@ IN_PROC_BROWSER_TEST_F(DemoSessionDemoEnrolledDeviceTest, IsDemoMode) {
 class DemoSessionNonDemoEnrolledDeviceTest : public OobeBaseTest {
  public:
   DemoSessionNonDemoEnrolledDeviceTest() = default;
+
+  DemoSessionNonDemoEnrolledDeviceTest(
+      const DemoSessionNonDemoEnrolledDeviceTest&) = delete;
+  DemoSessionNonDemoEnrolledDeviceTest& operator=(
+      const DemoSessionNonDemoEnrolledDeviceTest&) = delete;
+
   ~DemoSessionNonDemoEnrolledDeviceTest() override = default;
 
  private:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionNonDemoEnrolledDeviceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionNonDemoEnrolledDeviceTest, NotDemoMode) {
@@ -120,13 +130,16 @@ IN_PROC_BROWSER_TEST_F(DemoSessionNonDemoEnrolledDeviceTest, NotDemoMode) {
 class DemoSessionConsumerDeviceTest : public OobeBaseTest {
  public:
   DemoSessionConsumerDeviceTest() = default;
+
+  DemoSessionConsumerDeviceTest(const DemoSessionConsumerDeviceTest&) = delete;
+  DemoSessionConsumerDeviceTest& operator=(
+      const DemoSessionConsumerDeviceTest&) = delete;
+
   ~DemoSessionConsumerDeviceTest() override = default;
 
  private:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionConsumerDeviceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionConsumerDeviceTest, NotDemoMode) {
@@ -136,13 +149,16 @@ IN_PROC_BROWSER_TEST_F(DemoSessionConsumerDeviceTest, NotDemoMode) {
 class DemoSessionUnownedDeviceTest : public OobeBaseTest {
  public:
   DemoSessionUnownedDeviceTest() = default;
+
+  DemoSessionUnownedDeviceTest(const DemoSessionUnownedDeviceTest&) = delete;
+  DemoSessionUnownedDeviceTest& operator=(const DemoSessionUnownedDeviceTest&) =
+      delete;
+
   ~DemoSessionUnownedDeviceTest() override = default;
 
  private:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionUnownedDeviceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionUnownedDeviceTest, NotDemoMode) {
@@ -152,14 +168,18 @@ IN_PROC_BROWSER_TEST_F(DemoSessionUnownedDeviceTest, NotDemoMode) {
 class DemoSessionActiveDirectoryDeviceTest : public OobeBaseTest {
  public:
   DemoSessionActiveDirectoryDeviceTest() = default;
+
+  DemoSessionActiveDirectoryDeviceTest(
+      const DemoSessionActiveDirectoryDeviceTest&) = delete;
+  DemoSessionActiveDirectoryDeviceTest& operator=(
+      const DemoSessionActiveDirectoryDeviceTest&) = delete;
+
   ~DemoSessionActiveDirectoryDeviceTest() override = default;
 
  private:
   DeviceStateMixin device_state_{
       &mixin_host_,
       DeviceStateMixin::State::OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionActiveDirectoryDeviceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionActiveDirectoryDeviceTest, NotDemoMode) {

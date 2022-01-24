@@ -49,6 +49,10 @@ class RestrictedToken {
  public:
   // Init() has to be called before calling any other method in the class.
   RestrictedToken();
+
+  RestrictedToken(const RestrictedToken&) = delete;
+  RestrictedToken& operator=(const RestrictedToken&) = delete;
+
   ~RestrictedToken();
 
   // Initializes the RestrictedToken object with effective_token.
@@ -198,8 +202,6 @@ class RestrictedToken {
   bool init_;
   // Lockdown the default DACL when creating new tokens.
   bool lockdown_default_dacl_;
-
-  DISALLOW_COPY_AND_ASSIGN(RestrictedToken);
 };
 
 }  // namespace sandbox

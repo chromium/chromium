@@ -12,6 +12,18 @@ if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
 }
 
+if (is_win) {
+  config("usb_linker_flags") {
+    ldflags = [
+      "/DELAYLOAD:advapi32.dll",
+      "/DELAYLOAD:cfgmgr32.dll",
+      "/DELAYLOAD:ole32.dll",
+      "/DELAYLOAD:setupapi.dll",
+      "/DELAYLOAD:winusb.dll",
+    ]
+  }
+}
+
 static_library("usb") {
   # Only targets under //services/device folder can depend on it.
   visibility = [
@@ -62,10 +74,14 @@ static_library("usb") {
       "usb_service_android.cc",
       "usb_service_android.h",
     ]
+
+    deps += [ ":jni_headers" ]
   }
 
   if (is_win) {
     sources += [
+      "scoped_winusb_handle.cc",
+      "scoped_winusb_handle.h",
       "usb_device_handle_win.cc",
       "usb_device_handle_win.h",
       "usb_device_win.cc",
@@ -73,6 +89,17 @@ static_library("usb") {
       "usb_service_win.cc",
       "usb_service_win.h",
     ]
+
+    libs = [
+      "advapi32.lib",
+      "ole32.lib",
+      "setupapi.lib",
+      "winusb.lib",
+    ]
+
+    all_dependent_configs = [ ":usb_linker_flags" ]
+
+    deps += [ "//third_party/re2" ]
   }
 
   if (is_mac) {
@@ -84,30 +111,9 @@ static_library("usb") {
       "usb_service_mac.cc",
       "usb_service_mac.h",
     ]
-  }
 
-  if (is_linux || is_chromeos) {
-    sources += [
-      "usb_device_linux.cc",
-      "usb_device_linux.h",
-    ]
-  }
-
-  if (use_udev) {
-    if (is_linux || is_chromeos) {
-      sources += [
-        "usb_service_linux.cc",
-        "usb_service_linux.h",
-      ]
-    }
-    deps += [ "//device/udev_linux" ]
-  }
-
-  if (is_android) {
-    deps += [ ":jni_headers" ]
-  }
-
-  if (is_win || is_mac) {
+    # These sources and deps are required for libusb.
+    # TODO(https://crbug.com/1096743) Remove these sources.
     sources += [
       "scoped_libusb_device_handle.cc",
       "scoped_libusb_device_handle.h",
@@ -128,18 +134,21 @@ static_library("usb") {
     deps += [ "//third_party/libusb" ]
   }
 
-  if (is_win) {
+  if (is_linux || is_chromeos) {
     sources += [
-      "scoped_winusb_handle.cc",
-      "scoped_winusb_handle.h",
+      "usb_device_linux.cc",
+      "usb_device_linux.h",
     ]
+  }
 
-    libs = [
-      "setupapi.lib",
-      "winusb.lib",
-    ]
-
-    deps += [ "//third_party/re2" ]
+  if (use_udev) {
+    if (is_linux || is_chromeos) {
+      sources += [
+        "usb_service_linux.cc",
+        "usb_service_linux.h",
+      ]
+    }
+    deps += [ "//device/udev_linux" ]
   }
 
   if (is_android || is_chromeos || is_linux) {

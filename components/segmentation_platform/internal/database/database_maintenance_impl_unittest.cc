@@ -55,15 +55,6 @@ struct SignalData {
   bool success;
 };
 
-std::unique_ptr<Config> CreateTestConfig() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kTestSegmentationKey;
-  config->segment_selection_ttl = base::TimeDelta::FromDays(28);
-  config->segment_ids = {
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
-  return config;
-}
 }  // namespace
 
 class DatabaseMaintenanceImplTest : public testing::Test {
@@ -72,12 +63,14 @@ class DatabaseMaintenanceImplTest : public testing::Test {
   ~DatabaseMaintenanceImplTest() override = default;
 
   void SetUp() override {
-    config_ = CreateTestConfig();
     segment_info_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     signal_database_ = std::make_unique<MockSignalDatabase>();
     signal_storage_config_ = std::make_unique<MockSignalStorageConfig>();
+    base::flat_set<OptimizationTarget> segment_ids = {
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
     database_maintenance_ = std::make_unique<DatabaseMaintenanceImpl>(
-        config_.get(), &clock_, segment_info_database_.get(),
+        segment_ids, &clock_, segment_info_database_.get(),
         signal_database_.get(), signal_storage_config_.get());
 
     clock_.SetNow(base::Time::Now());
@@ -146,13 +139,13 @@ TEST_F(DatabaseMaintenanceImplTest, ExecuteMaintenanceTasks) {
   std::vector<SignalData> signal_datas = {
       {OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
        SignalType::HISTOGRAM_VALUE, "Foo", base::HashMetricName("Foo"), 44, 1,
-       Aggregation::COUNT, clock_.Now() - base::TimeDelta::FromDays(10), true},
+       Aggregation::COUNT, clock_.Now() - base::Days(10), true},
       {OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
        SignalType::HISTOGRAM_ENUM, "Bar", base::HashMetricName("Bar"), 33, 1,
-       Aggregation::COUNT, clock_.Now() - base::TimeDelta::FromDays(5), true},
+       Aggregation::COUNT, clock_.Now() - base::Days(5), true},
       {OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
        SignalType::USER_ACTION, "Failed", base::HashMetricName("Failed"), 22, 1,
-       Aggregation::COUNT, clock_.Now() - base::TimeDelta::FromDays(1), false},
+       Aggregation::COUNT, clock_.Now() - base::Days(1), false},
   };
 
   // Prepare test setup.
@@ -189,9 +182,8 @@ TEST_F(DatabaseMaintenanceImplTest, ExecuteMaintenanceTasks) {
     for (uint64_t days_ago = kLatestCompactionDaysAgo;
          days_ago <= kEarliestCompactionDaysAgo; ++days_ago) {
       EXPECT_CALL(*signal_database_,
-                  CompactSamplesForDay(
-                      sd.signal_type, sd.name_hash,
-                      clock_.Now() - base::TimeDelta::FromDays(days_ago), _))
+                  CompactSamplesForDay(sd.signal_type, sd.name_hash,
+                                       clock_.Now() - base::Days(days_ago), _))
           .WillOnce(RunOnceCallback<3>(/*success=*/sd.success));
     }
   }

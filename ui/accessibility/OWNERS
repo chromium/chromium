@@ -1,10 +1,13 @@
 abigailbklein@google.com
-aboxhall@chromium.org
 aleventhal@chromium.org
-dmazzoni@chromium.org
+dlibby@microsoft.com
 dtseng@chromium.org
 katie@chromium.org
+kschmi@microsoft.com
 nektar@chromium.org
+
+# For Android / Java related changes:
+mschillaci@google.com
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

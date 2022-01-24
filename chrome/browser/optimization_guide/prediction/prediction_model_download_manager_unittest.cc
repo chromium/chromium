@@ -9,7 +9,6 @@
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -119,15 +118,7 @@ class PredictionModelDownloadManagerTest : public testing::Test {
     download_manager()->OnDownloadFailed(guid);
   }
 
-  void RunUntilIdle() {
-    task_environment_.RunUntilIdle();
-
-    // Wait for all delayed tasks to finish.
-    base::RunLoop run_loop;
-    base::ThreadPoolInstance::Get()->FlushAsyncForTesting(
-        run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   base::FilePath GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus file_status) {
@@ -285,6 +276,7 @@ TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
   EXPECT_EQ(download_params.request_params.method, "GET");
   EXPECT_TRUE(download_params.request_params.request_headers.HasHeader(
       "X-Goog-Api-Key"));
+  EXPECT_FALSE(download_params.request_params.require_safety_checks);
   EXPECT_EQ(download_params.scheduling_params.priority,
             download::SchedulingParams::Priority::NORMAL);
   EXPECT_EQ(
@@ -325,6 +317,7 @@ TEST_F(PredictionModelDownloadManagerTest,
   EXPECT_EQ(download_params.request_params.method, "GET");
   EXPECT_TRUE(download_params.request_params.request_headers.HasHeader(
       "X-Goog-Api-Key"));
+  EXPECT_FALSE(download_params.request_params.require_safety_checks);
   EXPECT_EQ(download_params.scheduling_params.priority,
             download::SchedulingParams::Priority::HIGH);
   EXPECT_EQ(
@@ -537,7 +530,9 @@ TEST_F(PredictionModelDownloadManagerTest,
   // The error code for ReplaceFile varies by platform for this test, only
   // care that the error code is recorded.
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError", 1);
+      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError."
+      "PainfulPageLoad",
+      1);
 }
 
 TEST_F(

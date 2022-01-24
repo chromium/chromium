@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
@@ -33,7 +34,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIco
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
@@ -43,6 +43,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.io.IOException;
 
@@ -50,7 +51,7 @@ import java.io.IOException;
  * Render tests for {@link StatusView}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class StatusViewRenderTest extends DummyUiChromeActivityTestCase {
+public class StatusViewRenderTest extends DummyUiActivityTestCase {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
@@ -108,9 +109,8 @@ public class StatusViewRenderTest extends DummyUiChromeActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testStatusViewIncognitoWithIcon() throws IOException {
-        mLocationBarModel.setTab(null, /*  incognito= */ true);
-
         runOnUiThreadBlocking(() -> {
+            mLocationBarModel.setTab(null, /*  incognito= */ true);
             mStatusView.setIncognitoBadgeVisibility(true);
             mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
                     new StatusIconResource(R.drawable.ic_search, 0));
@@ -122,9 +122,8 @@ public class StatusViewRenderTest extends DummyUiChromeActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testStatusViewIncognitoNoIcon() throws IOException {
-        mLocationBarModel.setTab(null, /*  incognito= */ true);
-
         runOnUiThreadBlocking(() -> {
+            mLocationBarModel.setTab(null, /*  incognito= */ true);
             mStatusView.setIncognitoBadgeVisibility(true);
             mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
         });
@@ -159,5 +158,21 @@ public class StatusViewRenderTest extends DummyUiChromeActivityTestCase {
             mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
         });
         mRenderTestRule.render(mStatusView, "status_view_with_location_permission_icon");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStatusViewWithStoreIcon() throws IOException {
+        runOnUiThreadBlocking(() -> {
+            Drawable storeIconDrawable = ResourcesCompat.getDrawable(getActivity().getResources(),
+                    R.drawable.ic_storefront_blue, getActivity().getTheme());
+            StatusIconResource statusIcon = new StatusIconResource(storeIconDrawable);
+            statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
+            mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+            mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
+        });
+        mRenderTestRule.render(mStatusView, "status_view_with_store_icon");
     }
 }

@@ -9,6 +9,13 @@
     "unprivileged": true,
     "types": [
       {
+        "id": "AccessLevel",
+        "nodoc": true,
+        "type": "string",
+        "enum": ["TRUSTED_CONTEXTS", "TRUSTED_AND_UNTRUSTED_CONTEXTS"],
+        "description": "The storage area's access level."
+      },
+      {
         "id": "StorageChange",
         "type": "object",
         "properties": {
@@ -139,6 +146,29 @@
             "type": "function",
             "description": "Removes all items from storage.",
             "parameters": [],
+            "returns_async":  {
+              "name": "callback",
+              "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "parameters": [],
+              "optional": true
+            }
+          }, {
+            "name": "setAccessLevel",
+            "nodoc": true,
+            "type": "function",
+            "description": "Sets the desired access level for the storage area. The default will be only trusted contexts.",
+            "parameters": [
+              {
+                "type": "object",
+                "name": "accessOptions",
+                "properties": {
+                  "accessLevel": {
+                    "$ref": "AccessLevel",
+                    "description": "The access level of the storage area."
+                  }
+                }
+              }
+            ],
             "returns_async":  {
               "name": "callback",
               "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",

@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_FOCUS_RULES_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_FOCUS_RULES_H_
 
-#include "base/macros.h"
 #include "ui/wm/core/base_focus_rules.h"
 
 namespace views {
@@ -13,6 +12,10 @@ namespace views {
 class DesktopFocusRules : public wm::BaseFocusRules {
  public:
   explicit DesktopFocusRules(aura::Window* content_window);
+
+  DesktopFocusRules(const DesktopFocusRules&) = delete;
+  DesktopFocusRules& operator=(const DesktopFocusRules&) = delete;
+
   ~DesktopFocusRules() override;
 
  private:
@@ -30,8 +33,6 @@ class DesktopFocusRules : public wm::BaseFocusRules {
   // The content window. This is an activatable window even though it is a
   // child.
   aura::Window* content_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopFocusRules);
 };
 
 }  // namespace views

@@ -7,9 +7,8 @@
 
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/vr/model/capturing_state_model.h"
@@ -35,6 +34,10 @@ class VRUiHostImpl : public content::VrUiHost,
  public:
   VRUiHostImpl(device::mojom::XRDeviceId device_id,
                mojo::PendingRemote<device::mojom::XRCompositorHost> compositor);
+
+  VRUiHostImpl(const VRUiHostImpl&) = delete;
+  VRUiHostImpl& operator=(const VRUiHostImpl&) = delete;
+
   ~VRUiHostImpl() override;
 
  private:
@@ -119,8 +122,6 @@ class VRUiHostImpl : public content::VrUiHost,
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<VRUiHostImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VRUiHostImpl);
 };
 
 }  // namespace vr

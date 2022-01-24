@@ -22,13 +22,13 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/drive/file_errors.h"
 #include "components/drive/file_system_core_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#include "google_apis/drive/task_util.h"
+#include "google_apis/common/task_util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "storage/browser/file_system/file_system_context.h"
 
@@ -151,7 +151,7 @@ bool IsUnderNonNativeLocalPath(Profile* profile,
 
   storage::FileSystemURL filesystem_url =
       GetFileSystemContextForSourceURL(profile, GetFileManagerURL())
-          ->CrackURL(url);
+          ->CrackURLInFirstPartyContext(url);
   if (!filesystem_url.is_valid())
     return false;
 

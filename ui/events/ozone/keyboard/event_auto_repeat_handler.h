@@ -30,6 +30,10 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
   };
 
   explicit EventAutoRepeatHandler(Delegate* delegate);
+
+  EventAutoRepeatHandler(const EventAutoRepeatHandler&) = delete;
+  EventAutoRepeatHandler& operator=(const EventAutoRepeatHandler&) = delete;
+
   ~EventAutoRepeatHandler();
 
   void UpdateKeyRepeat(unsigned int key,
@@ -66,8 +70,6 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
   Delegate* delegate_ = nullptr;
 
   base::WeakPtrFactory<EventAutoRepeatHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventAutoRepeatHandler);
 };
 
 }  // namespace ui

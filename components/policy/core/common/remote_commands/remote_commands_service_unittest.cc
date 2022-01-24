@@ -66,8 +66,7 @@ class MockTestRemoteCommandFactory : public RemoteCommandsFactory {
   MockTestRemoteCommandFactory() {
     ON_CALL(*this, BuildTestCommand())
         .WillByDefault(ReturnNew<TestRemoteCommandJob>(
-            true,
-            base::TimeDelta::FromSeconds(kTestCommandExecutionTimeInSeconds)));
+            true, base::Seconds(kTestCommandExecutionTimeInSeconds)));
   }
   MockTestRemoteCommandFactory(const MockTestRemoteCommandFactory&) = delete;
   MockTestRemoteCommandFactory& operator=(const MockTestRemoteCommandFactory&) =
@@ -158,8 +157,7 @@ class TestingCloudPolicyClientForRemoteCommands : public CloudPolicyClient {
             &TestingCloudPolicyClientForRemoteCommands::DoFetchRemoteCommands,
             base::Unretained(this), std::move(last_command_id), command_results,
             std::move(callback), fetch_call_expectation),
-        base::TimeDelta::FromSeconds(
-            kTestClientServerCommunicationDelayInSeconds));
+        base::Seconds(kTestClientServerCommunicationDelayInSeconds));
   }
 
   void DoFetchRemoteCommands(
@@ -191,8 +189,7 @@ class TestingCloudPolicyClientForRemoteCommands : public CloudPolicyClient {
         FROM_HERE,
         base::BindOnce(std::move(callback), DM_STATUS_SUCCESS, fetched_commands,
                        signed_commands),
-        base::TimeDelta::FromSeconds(
-            kTestClientServerCommunicationDelayInSeconds));
+        base::Seconds(kTestClientServerCommunicationDelayInSeconds));
   }
 
   base::queue<FetchCallExpectation> expected_fetch_commands_calls_;
@@ -437,8 +434,9 @@ class SignedRemoteCommandsServiceTest : public RemoteCommandsServiceTest {
     std::vector<uint8_t> public_key = PolicyBuilder::GetPublicTestKey();
     store_.policy_signature_public_key_.assign(public_key.begin(),
                                                public_key.end());
-    store_.policy_ = std::make_unique<em::PolicyData>();
-    store_.policy_->set_device_id("acme-device");
+    auto policy_data = std::make_unique<em::PolicyData>();
+    policy_data->set_device_id("acme-device");
+    store_.set_policy_data_for_testing(std::move(policy_data));
 
     // Set up expectations on fetch commands calls. The first request will fetch
     // one secure command, and the second will fetch none but provide result for
@@ -524,8 +522,9 @@ class RemoteCommandsServiceHistogramTest : public RemoteCommandsServiceTest {
     std::vector<uint8_t> public_key = PolicyBuilder::GetPublicTestKey();
     store_.policy_signature_public_key_.assign(public_key.begin(),
                                                public_key.end());
-    store_.policy_ = std::make_unique<em::PolicyData>();
-    store_.policy_->set_device_id("acme-device");
+    auto policy_data = std::make_unique<em::PolicyData>();
+    policy_data->set_device_id("acme-device");
+    store_.set_policy_data_for_testing(std::move(policy_data));
   }
 
   void ExpectCommand() {

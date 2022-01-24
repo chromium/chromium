@@ -14,7 +14,7 @@ CallbackFunctionBase::CallbackFunctionBase(
   DCHECK(!callback_function.IsEmpty());
 
   v8::Isolate* isolate = callback_function->GetIsolate();
-  callback_function_.Set(isolate, callback_function);
+  callback_function_.Reset(isolate, callback_function);
 
   incumbent_script_state_ = ScriptState::From(isolate->GetIncumbentContext());
 
@@ -77,7 +77,7 @@ void CallbackFunctionBase::EvaluateAsPartOfCallback(
   if (!callback_relevant_script_state_)
     return;
 
-  // https://heycam.github.io/webidl/#es-invoking-callback-functions
+  // https://webidl.spec.whatwg.org/#es-invoking-callback-functions
   // step 8: Prepare to run script with relevant settings.
   ScriptState::Scope callback_relevant_context_scope(
       callback_relevant_script_state_);

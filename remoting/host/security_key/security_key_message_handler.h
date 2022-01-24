@@ -25,6 +25,11 @@ class SecurityKeyMessageWriter;
 class SecurityKeyMessageHandler {
  public:
   SecurityKeyMessageHandler();
+
+  SecurityKeyMessageHandler(const SecurityKeyMessageHandler&) = delete;
+  SecurityKeyMessageHandler& operator=(const SecurityKeyMessageHandler&) =
+      delete;
+
   ~SecurityKeyMessageHandler();
 
   // Sets up the handler to begin receiving and processing messages.
@@ -87,8 +92,6 @@ class SecurityKeyMessageHandler {
   bool expect_ipc_channel_close_ = false;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyMessageHandler);
 };
 
 }  // namespace remoting

@@ -25,6 +25,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -32,6 +33,9 @@
 class DownloadController : public DownloadControllerBase {
  public:
   static DownloadController* GetInstance();
+
+  DownloadController(const DownloadController&) = delete;
+  DownloadController& operator=(const DownloadController&) = delete;
 
   // DownloadControllerBase implementation.
   void AcquireFileAccessPermission(
@@ -105,7 +109,7 @@ class DownloadController : public DownloadControllerBase {
   // from the beginning and all downloaded data will be lost.
   StrongValidatorsMap strong_validators_map_;
 
-  DISALLOW_COPY_AND_ASSIGN(DownloadController);
+  std::unique_ptr<DangerousDownloadDialogBridge> dangerous_download_bridge_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_CONTROLLER_H_

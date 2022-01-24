@@ -9,6 +9,7 @@
 #include "content/browser/sms/sms_parser.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 
@@ -56,6 +57,14 @@ void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(subscriber);
   DCHECK(render_frame_host);
+  // This function cannot get called during prerendering because
+  // WebOTPService::Receive() calls this, but WebOTPService is deferred during
+  // prerendering by MojoBinderPolicyApplier. This DCHECK proves we don't have
+  // to worry about prerendering when using WebContents::FromRenderFrameHost()
+  // below (see function comments for WebContents::FromRenderFrameHost() for
+  // more details).
+  DCHECK_NE(render_frame_host->GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kPrerendering);
   // Should not be called multiple times for the same subscriber.
   DCHECK(!remote_cancel_callbacks_.count(subscriber));
   DCHECK(!subscribers_.HasSubscriber(origin_list, subscriber));

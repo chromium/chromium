@@ -7,12 +7,15 @@
 #include <memory>
 #include <utility>
 
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
+#include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
@@ -33,9 +36,7 @@ IOSChromeAffiliationServiceFactory::GetForBrowserState(
 IOSChromeAffiliationServiceFactory::IOSChromeAffiliationServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "AffiliationService",
-          BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(SyncServiceFactory::GetInstance());
-}
+          BrowserStateDependencyManager::GetInstance()) {}
 
 IOSChromeAffiliationServiceFactory::~IOSChromeAffiliationServiceFactory() =
     default;
@@ -43,10 +44,17 @@ IOSChromeAffiliationServiceFactory::~IOSChromeAffiliationServiceFactory() =
 std::unique_ptr<KeyedService>
 IOSChromeAffiliationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state);
-  return std::make_unique<password_manager::AffiliationServiceImpl>(
-      sync_service, context->GetSharedURLLoaderFactory());
+  scoped_refptr<base::SequencedTaskRunner> backend_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  auto affiliation_service =
+      std::make_unique<password_manager::AffiliationServiceImpl>(
+          context->GetSharedURLLoaderFactory(), backend_task_runner);
+
+  base::FilePath database_path = context->GetStatePath().Append(
+      password_manager::kAffiliationDatabaseFileName);
+  affiliation_service->Init(
+      GetApplicationContext()->GetNetworkConnectionTracker(), database_path);
+
+  return affiliation_service;
 }

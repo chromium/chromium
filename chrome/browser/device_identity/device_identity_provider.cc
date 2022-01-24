@@ -21,6 +21,12 @@ class ActiveAccountAccessTokenFetcherImpl
       DeviceOAuth2TokenService* token_service,
       const OAuth2AccessTokenManager::ScopeSet& scopes,
       invalidation::ActiveAccountAccessTokenCallback callback);
+
+  ActiveAccountAccessTokenFetcherImpl(
+      const ActiveAccountAccessTokenFetcherImpl&) = delete;
+  ActiveAccountAccessTokenFetcherImpl& operator=(
+      const ActiveAccountAccessTokenFetcherImpl&) = delete;
+
   ~ActiveAccountAccessTokenFetcherImpl() override;
 
  private:
@@ -39,8 +45,6 @@ class ActiveAccountAccessTokenFetcherImpl
 
   invalidation::ActiveAccountAccessTokenCallback callback_;
   std::unique_ptr<OAuth2AccessTokenManager::Request> access_token_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveAccountAccessTokenFetcherImpl);
 };
 
 }  // namespace

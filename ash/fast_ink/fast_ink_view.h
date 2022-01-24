@@ -49,6 +49,10 @@ class FastInkView : public views::View {
   class ScopedPaint {
    public:
     ScopedPaint(FastInkView* view, const gfx::Rect& damage_rect_in_window);
+
+    ScopedPaint(const ScopedPaint&) = delete;
+    ScopedPaint& operator=(const ScopedPaint&) = delete;
+
     ~ScopedPaint();
 
     gfx::Canvas& canvas() { return canvas_; }
@@ -58,8 +62,6 @@ class FastInkView : public views::View {
     // Damage rect in the buffer coordinates.
     const gfx::Rect damage_rect_;
     gfx::Canvas canvas_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedPaint);
   };
 
   FastInkView();

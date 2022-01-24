@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -98,6 +98,9 @@ class CastContentBrowserClient
   // preflight checks.
   static std::vector<std::string> GetCorsExemptHeadersList();
 
+  CastContentBrowserClient(const CastContentBrowserClient&) = delete;
+  CastContentBrowserClient& operator=(const CastContentBrowserClient&) = delete;
+
   ~CastContentBrowserClient() override;
 
   // Generally we discourage Initialize methods. Unfortunately, we can't do
@@ -178,7 +181,7 @@ class CastContentBrowserClient
 
   // content::ContentBrowserClient implementation:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      const content::MainFunctionParams& parameters) override;
+      content::MainFunctionParams parameters) override;
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
   bool IsHandledURL(const GURL& url) override;
   void SiteInstanceGotProcess(content::SiteInstance* site_instance) override;
@@ -295,6 +298,10 @@ class CastContentBrowserClient
     CHECK(connector_);
     return connector_.get();
   }
+  external_service_support::ExternalConnector* media_connector() {
+    CHECK(media_connector_);
+    return media_connector_.get();
+  }
 
  protected:
   explicit CastContentBrowserClient(
@@ -378,9 +385,10 @@ class CastContentBrowserClient
   std::unique_ptr<external_mojo::BrokerService> broker_service_;
   std::unique_ptr<external_service_support::ExternalConnector> connector_;
 
-  CastFeatureListCreator* cast_feature_list_creator_;
+  // ExternalConnector for running on the media task runner.
+  std::unique_ptr<external_service_support::ExternalConnector> media_connector_;
 
-  DISALLOW_COPY_AND_ASSIGN(CastContentBrowserClient);
+  CastFeatureListCreator* cast_feature_list_creator_;
 };
 
 }  // namespace shell

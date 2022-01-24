@@ -21,8 +21,7 @@ class ThumbnailStatsTracker {
 
   friend class ThumbnailStatsTrackerTest;
 
-  static constexpr base::TimeDelta kReportingInterval =
-      base::TimeDelta::FromMinutes(5);
+  static constexpr base::TimeDelta kReportingInterval = base::Minutes(5);
 
   // Gets the global instance for this process.
   static ThumbnailStatsTracker& GetInstance();

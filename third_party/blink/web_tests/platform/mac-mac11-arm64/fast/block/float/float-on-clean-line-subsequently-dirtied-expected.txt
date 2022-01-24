@@ -1,0 +1,3 @@
+crbug.com/532712 : A float on a clean line that is dirtied again during layout should not cause an assert.
+E
+XT

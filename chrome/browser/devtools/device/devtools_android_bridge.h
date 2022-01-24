@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
@@ -48,6 +47,9 @@ class DevToolsAndroidBridge : public KeyedService {
     // Returns DevToolsAndroidBridge associated with |profile|.
     static DevToolsAndroidBridge* GetForProfile(Profile* profile);
 
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
    private:
     friend struct base::DefaultSingletonTraits<Factory>;
 
@@ -57,7 +59,6 @@ class DevToolsAndroidBridge : public KeyedService {
     // BrowserContextKeyedServiceFactory overrides:
     KeyedService* BuildServiceInstanceFor(
         content::BrowserContext* context) const override;
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
   using RemotePage = DevToolsDeviceDiscovery::RemotePage;
@@ -79,6 +80,10 @@ class DevToolsAndroidBridge : public KeyedService {
   };
 
   explicit DevToolsAndroidBridge(Profile* profile);
+
+  DevToolsAndroidBridge(const DevToolsAndroidBridge&) = delete;
+  DevToolsAndroidBridge& operator=(const DevToolsAndroidBridge&) = delete;
+
   void AddDeviceListListener(DeviceListListener* listener);
   void RemoveDeviceListListener(DeviceListListener* listener);
 
@@ -189,8 +194,6 @@ class DevToolsAndroidBridge : public KeyedService {
   std::unique_ptr<DevToolsDeviceDiscovery> device_discovery_;
 
   base::WeakPtrFactory<DevToolsAndroidBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsAndroidBridge);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVICE_DEVTOOLS_ANDROID_BRIDGE_H_

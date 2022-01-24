@@ -40,10 +40,10 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/strings/grit/components_strings.h"
@@ -57,6 +57,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -100,36 +101,40 @@ SyncConfigInfo::SyncConfigInfo()
 SyncConfigInfo::~SyncConfigInfo() {}
 
 bool GetConfiguration(const std::string& json, SyncConfigInfo* config) {
-  std::unique_ptr<base::Value> parsed_value =
-      base::JSONReader::ReadDeprecated(json);
-  base::DictionaryValue* result;
-  if (!parsed_value || !parsed_value->GetAsDictionary(&result)) {
+  absl::optional<base::Value> parsed_value = base::JSONReader::Read(json);
+  if (!parsed_value.has_value() || !parsed_value->is_dict()) {
     DLOG(ERROR) << "GetConfiguration() not passed a Dictionary";
     return false;
   }
 
-  if (!result->GetBoolean("syncAllDataTypes", &config->sync_everything)) {
+  absl::optional<bool> sync_everything =
+      parsed_value->FindBoolKey("syncAllDataTypes");
+  if (!sync_everything.has_value()) {
     DLOG(ERROR) << "GetConfiguration() not passed a syncAllDataTypes value";
     return false;
   }
+  config->sync_everything = *sync_everything;
 
-  if (!result->GetBoolean("paymentsIntegrationEnabled",
-                          &config->payments_integration_enabled)) {
+  absl::optional<bool> payments_integration_enabled =
+      parsed_value->FindBoolKey("paymentsIntegrationEnabled");
+  if (!payments_integration_enabled.has_value()) {
     DLOG(ERROR) << "GetConfiguration() not passed a paymentsIntegrationEnabled "
                 << "value";
     return false;
   }
+  config->payments_integration_enabled = *payments_integration_enabled;
 
   for (syncer::UserSelectableType type : syncer::UserSelectableTypeSet::All()) {
     std::string key_name =
         syncer::GetUserSelectableTypeName(type) + std::string("Synced");
-    bool sync_value;
-    if (!result->GetBoolean(key_name, &sync_value)) {
+    absl::optional<bool> type_synced = parsed_value->FindBoolKey(key_name);
+    if (!type_synced.has_value()) {
       DLOG(ERROR) << "GetConfiguration() not passed a value for " << key_name;
       return false;
     }
-    if (sync_value)
+    if (*type_synced) {
       config->selected_types.Put(type);
+    }
   }
 
   return true;
@@ -139,8 +144,8 @@ bool GetConfiguration(const std::string& json, SyncConfigInfo* config) {
 void ParseConfigurationArguments(const base::ListValue* args,
                                  SyncConfigInfo* config,
                                  const base::Value** callback_id) {
-  std::string json;
-  if (args->Get(0, callback_id) && args->GetString(1, &json) && !json.empty())
+  const std::string& json = args->GetList()[1].GetString();
+  if ((*callback_id = &args->GetList()[0]) && !json.empty())
     CHECK(GetConfiguration(json, config));
   else
     NOTREACHED();
@@ -150,8 +155,6 @@ std::string GetSyncErrorAction(SyncStatusActionType action_type) {
   switch (action_type) {
     case SyncStatusActionType::kReauthenticate:
       return "reauthenticate";
-    case SyncStatusActionType::kSignoutAndSignin:
-      return "signOutAndSignIn";
     case SyncStatusActionType::kUpgradeClient:
       return "upgradeClient";
     case SyncStatusActionType::kEnterPassphrase:
@@ -173,13 +176,13 @@ std::string GetSyncErrorAction(SyncStatusActionType action_type) {
 base::Value GetAccountValue(const AccountInfo& account) {
   DCHECK(!account.IsEmpty());
   base::Value dictionary(base::Value::Type::DICTIONARY);
-  dictionary.SetKey("email", base::Value(account.email));
-  dictionary.SetKey("fullName", base::Value(account.full_name));
-  dictionary.SetKey("givenName", base::Value(account.given_name));
+  dictionary.SetStringKey("email", account.email);
+  dictionary.SetStringKey("fullName", account.full_name);
+  dictionary.SetStringKey("givenName", account.given_name);
   if (!account.account_image.IsEmpty()) {
-    dictionary.SetKey(
+    dictionary.SetStringKey(
         "avatarImage",
-        base::Value(webui::GetBitmapDataUrl(account.account_image.AsBitmap())));
+        webui::GetBitmapDataUrl(account.account_image.AsBitmap()));
   }
   return dictionary;
 }
@@ -215,70 +218,70 @@ PeopleHandler::~PeopleHandler() {
 
 void PeopleHandler::RegisterMessages() {
   InitializeSyncBlocker();
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupDidClosePage",
       base::BindRepeating(&PeopleHandler::OnDidClosePage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupSetDatatypes",
       base::BindRepeating(&PeopleHandler::HandleSetDatatypes,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupSetEncryptionPassphrase",
       base::BindRepeating(&PeopleHandler::HandleSetEncryptionPassphrase,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupSetDecryptionPassphrase",
       base::BindRepeating(&PeopleHandler::HandleSetDecryptionPassphrase,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupShowSetupUI",
       base::BindRepeating(&PeopleHandler::HandleShowSyncSetupUI,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupGetSyncStatus",
       base::BindRepeating(&PeopleHandler::HandleGetSyncStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncPrefsDispatch",
       base::BindRepeating(&PeopleHandler::HandleSyncPrefsDispatch,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncOfferTrustedVaultOptInDispatch",
       base::BindRepeating(&PeopleHandler::HandleOfferTrustedVaultOptInDispatch,
                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "AttemptUserExit",
       base::BindRepeating(&PeopleHandler::HandleAttemptUserExit,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "TurnOnSync", base::BindRepeating(&PeopleHandler::HandleTurnOnSync,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "TurnOffSync", base::BindRepeating(&PeopleHandler::HandleTurnOffSync,
                                          base::Unretained(this)));
 #else
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupSignout", base::BindRepeating(&PeopleHandler::HandleSignout,
                                               base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupPauseSync", base::BindRepeating(&PeopleHandler::HandlePauseSync,
                                                 base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupStartSignIn",
       base::BindRepeating(&PeopleHandler::HandleStartSignin,
                           base::Unretained(this)));
 #endif
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupGetStoredAccounts",
       base::BindRepeating(&PeopleHandler::HandleGetStoredAccounts,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncSetupStartSyncingWithEmail",
       base::BindRepeating(&PeopleHandler::HandleStartSyncingWithEmail,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "SyncStartKeyRetrieval",
       base::BindRepeating(&PeopleHandler::HandleStartKeyRetrieval,
                           base::Unretained(this)));
@@ -410,11 +413,10 @@ void PeopleHandler::HandleSetDatatypes(const base::ListValue* args) {
 
 void PeopleHandler::HandleGetStoredAccounts(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const base::Value& callback_id = args->GetList()[0];
 
-  ResolveJavascriptCallback(*callback_id, GetStoredAccountsList());
+  ResolveJavascriptCallback(callback_id, GetStoredAccountsList());
 }
 
 void PeopleHandler::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
@@ -454,22 +456,20 @@ base::Value PeopleHandler::GetStoredAccountsList() {
 void PeopleHandler::HandleStartSyncingWithEmail(const base::ListValue* args) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_));
-  const base::Value* email;
-  const base::Value* is_default_promo_account;
-  CHECK(args->Get(0, &email));
-  CHECK(args->Get(1, &is_default_promo_account));
+  const base::Value& email = args->GetList()[0];
+  const base::Value& is_default_promo_account = args->GetList()[1];
 
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
 
   AccountInfo maybe_account =
       IdentityManagerFactory::GetForProfile(profile_)
-          ->FindExtendedAccountInfoByEmailAddress(email->GetString());
+          ->FindExtendedAccountInfoByEmailAddress(email.GetString());
 
   signin_ui_util::EnableSyncFromMultiAccountPromo(
       browser, maybe_account,
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
-      is_default_promo_account->GetBool());
+      is_default_promo_account.GetBool());
 #else
   // TODO(jamescook): Enable sync on non-DICE platforms (e.g. Chrome OS).
   NOTIMPLEMENTED();
@@ -612,7 +612,8 @@ void PeopleHandler::HandleStartSignin(const base::ListValue* args) {
 
 void PeopleHandler::HandleSignout(const base::ListValue* args) {
   bool delete_profile = false;
-  args->GetBoolean(0, &delete_profile);
+  if (args->GetList()[0].is_bool())
+    delete_profile = args->GetList()[0].GetBool();
   base::FilePath profile_path = profile_->GetPath();
 
   if (!signin_util::IsUserSignoutAllowedForProfile(profile_)) {
@@ -681,11 +682,10 @@ void PeopleHandler::HandleStartKeyRetrieval(const base::ListValue* args) {
 void PeopleHandler::HandleGetSyncStatus(const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const base::Value& callback_id = args->GetList()[0];
 
-  ResolveJavascriptCallback(*callback_id, *GetSyncStatusDictionary());
+  ResolveJavascriptCallback(callback_id, *GetSyncStatusDictionary());
 }
 
 void PeopleHandler::HandleSyncPrefsDispatch(const base::ListValue* args) {
@@ -796,6 +796,7 @@ void PeopleHandler::OnPrimaryAccountChanged(
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       sync_blocker_.reset();
+      configuring_sync_ = false;
       UpdateSyncStatus();
       return;
     case signin::PrimaryAccountChangeEvent::Type::kNone:

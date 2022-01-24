@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -26,6 +25,11 @@ class EnableAdbSideloadingScreen : public BaseScreen {
  public:
   EnableAdbSideloadingScreen(EnableAdbSideloadingScreenView* view,
                              const base::RepeatingClosure& exit_callback);
+
+  EnableAdbSideloadingScreen(const EnableAdbSideloadingScreen&) = delete;
+  EnableAdbSideloadingScreen& operator=(const EnableAdbSideloadingScreen&) =
+      delete;
+
   ~EnableAdbSideloadingScreen() override;
 
   // Called by EnableAdbSideloadingHandler.
@@ -59,8 +63,6 @@ class EnableAdbSideloadingScreen : public BaseScreen {
   EnableAdbSideloadingScreenView* view_;
   base::RepeatingClosure exit_callback_;
   base::WeakPtrFactory<EnableAdbSideloadingScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnableAdbSideloadingScreen);
 };
 
 }  // namespace ash

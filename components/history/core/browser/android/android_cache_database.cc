@@ -11,7 +11,6 @@
 #include "sql/statement.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace history {
 

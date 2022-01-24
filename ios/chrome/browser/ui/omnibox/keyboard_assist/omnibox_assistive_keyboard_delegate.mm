@@ -11,8 +11,7 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,9 +26,7 @@
 #pragma mark - Public
 
 - (void)keyboardAccessoryVoiceSearchTouchUpInside:(UIView*)view {
-  if (ios::GetChromeBrowserProvider()
-          .GetVoiceSearchProvider()
-          ->IsVoiceSearchEnabled()) {
+  if (ios::provider::IsVoiceSearchEnabled()) {
     [self.dispatcher preloadVoiceSearch];
     base::RecordAction(base::UserMetricsAction("MobileCustomRowVoiceSearch"));
     // Since the keyboard accessory view is in a different window than the main

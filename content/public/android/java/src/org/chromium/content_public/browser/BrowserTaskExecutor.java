@@ -4,7 +4,10 @@
 
 package org.chromium.content_public.browser;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.SingleThreadTaskRunner;
@@ -14,6 +17,8 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.content.browser.UiThreadTaskTraitsImpl;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
@@ -27,6 +32,17 @@ import javax.annotation.concurrent.GuardedBy;
  * UiThreadTaskTraits}.
  */
 public class BrowserTaskExecutor implements TaskExecutor {
+    // These values are persisted in histograms. Please do not renumber. Append only.
+    @IntDef({BootstrapTaskRunnerType.POST_AT_BACK_OF_QUEUE,
+            BootstrapTaskRunnerType.POST_AT_FRONT_OF_QUEUE, BootstrapTaskRunnerType.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface BootstrapTaskRunnerType {
+        int POST_AT_BACK_OF_QUEUE = 0;
+        int POST_AT_FRONT_OF_QUEUE = 1;
+
+        int NUM_ENTRIES = 2;
+    }
+
     @Override
     public TaskRunner createTaskRunner(TaskTraits taskTraits) {
         return createSingleThreadTaskRunner(taskTraits);
@@ -50,11 +66,25 @@ public class BrowserTaskExecutor implements TaskExecutor {
                 if (taskRunner != null) return taskRunner;
             }
 
+            boolean shouldPostPreNativeTasksAtFront =
+                    shouldPostPreNativeTasksAtFrontOfQueue(taskTraits);
             // TODO(alexclarke): ThreadUtils.getUiThreadHandler shouldn't be in base.
-            SingleThreadTaskRunner taskRunner =
-                    new SingleThreadTaskRunnerImpl(ThreadUtils.getUiThreadHandler(), taskTraits,
-                            shouldPrioritizeTraits(taskTraits));
+            SingleThreadTaskRunner taskRunner = new SingleThreadTaskRunnerImpl(
+                    ThreadUtils.getUiThreadHandler(), taskTraits, shouldPostPreNativeTasksAtFront);
             mTaskRunners.put(taskTraits, new WeakReference<>(taskRunner));
+
+            UiThreadTaskTraitsImpl uiThreadTaskTraits =
+                    taskTraits.getExtension(UiThreadTaskTraitsImpl.DESCRIPTOR);
+            if (uiThreadTaskTraits != null
+                    && uiThreadTaskTraits.getTaskType() == BrowserTaskType.BOOTSTRAP) {
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.TaskScheduling.BootstrapTaskRunnerType",
+                        shouldPostPreNativeTasksAtFront
+                                ? BootstrapTaskRunnerType.POST_AT_FRONT_OF_QUEUE
+                                : BootstrapTaskRunnerType.POST_AT_BACK_OF_QUEUE,
+                        BootstrapTaskRunnerType.NUM_ENTRIES);
+            }
+
             return taskRunner;
         }
     }
@@ -78,16 +108,17 @@ public class BrowserTaskExecutor implements TaskExecutor {
                 UiThreadTaskTraitsImpl.DESCRIPTOR.getId(), new BrowserTaskExecutor());
     }
 
-    public static boolean getShouldPrioritizeBootstrapTasks() {
-        return sShouldPrioritizeBootstrapTasks;
+    public static boolean getShouldPrioritizePreNativeBootstrapTasks() {
+        return sShouldPrioritizePreNativeBootstrapTasks;
     }
 
-    public static void setShouldPrioritizeBootstrapTasks(boolean shouldPrioritizeBootstrapTasks) {
-        sShouldPrioritizeBootstrapTasks = shouldPrioritizeBootstrapTasks;
+    public static void setShouldPrioritizePreNativeBootstrapTasks(
+            boolean shouldPrioritizePreNativeBootstrapTasks) {
+        sShouldPrioritizePreNativeBootstrapTasks = shouldPrioritizePreNativeBootstrapTasks;
     }
 
-    private static boolean shouldPrioritizeTraits(TaskTraits taskTraits) {
-        if (!sShouldPrioritizeBootstrapTasks) return false;
+    private static boolean shouldPostPreNativeTasksAtFrontOfQueue(TaskTraits taskTraits) {
+        if (!sShouldPrioritizePreNativeBootstrapTasks) return false;
 
         UiThreadTaskTraitsImpl impl = taskTraits.getExtension(UiThreadTaskTraitsImpl.DESCRIPTOR);
         if (impl == null) return false;
@@ -106,5 +137,5 @@ public class BrowserTaskExecutor implements TaskExecutor {
             new WeakHashMap<>();
 
     private static boolean sRegistered;
-    private static boolean sShouldPrioritizeBootstrapTasks;
+    private static boolean sShouldPrioritizePreNativeBootstrapTasks;
 }

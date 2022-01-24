@@ -33,9 +33,9 @@ def ValidatePrefixInFile(xml_path):
       variants_name = node.getAttribute('name')
       logging.error(
           'Variants of name %s is not placed in the correct directory, '
-          'please remove it from the histograms_xml/%s directory '
-          'and place it in the histograms_xml/%s directory.', variants_name,
-          prefix, correct_dir)
+          'please remove it from the metadata/%s directory '
+          'and place it in the metadata/%s directory.', variants_name, prefix,
+          correct_dir)
       has_prefix_error = True
 
   for node in extract_histograms.IterElementsWithTag(tree, 'histogram', 3):
@@ -44,9 +44,9 @@ def ValidatePrefixInFile(xml_path):
       histogram_name = node.getAttribute('name')
       logging.error(
           'Histogram of name %s is not placed in the correct directory, '
-          'please remove it from the histograms_xml/%s directory '
-          'and place it in the histograms_xml/%s directory.', histogram_name,
-          prefix, correct_dir)
+          'please remove it from the metadata/%s directory '
+          'and place it in the metadata/%s directory.', histogram_name, prefix,
+          correct_dir)
       has_prefix_error = True
 
   return has_prefix_error
@@ -59,7 +59,7 @@ def main():
     sys.argv[1]: The relative path to xml file.
 
   Example usage:
-    validate_prefix.py histograms_xml/Fingerprint/histograms.xml
+    validate_prefix.py metadata/Fingerprint/histograms.xml
   """
   if len(sys.argv) != 2:
     sys.stderr.write('Usage: %s <rel-path-to-xml>' % sys.argv[0])

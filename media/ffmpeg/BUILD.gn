@@ -15,9 +15,6 @@ source_set("ffmpeg") {
     "//media/filters",
   ]
   configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-
     "//media:subcomponent_config",
   ]
   sources = [

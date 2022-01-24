@@ -4,14 +4,34 @@
 
 #include "ui/aura/window_tree_host_platform.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/window_tree_host_observer.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/platform_window/stub/stub_window.h"
 
 namespace aura {
 namespace {
 
-using WindowTreeHostPlatformTest = test::AuraTestBase;
+class WindowTreeHostPlatformTest : public test::AuraTestBase {
+ public:
+  WindowTreeHostPlatformTest() = default;
+
+  // test::AuraTestBase:
+  void SetUp() override {
+    test::AuraTestBase::SetUp();
+#if defined(OS_WIN)
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kApplyNativeOcclusionToCompositor);
+#endif
+  }
+
+ private:
+#if defined(OS_WIN)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
+};
 
 // Trivial WindowTreeHostPlatform implementation that installs a StubWindow as
 // the PlatformWindow.
@@ -22,12 +42,12 @@ class TestWindowTreeHost : public WindowTreeHostPlatform {
     CreateCompositor();
   }
 
+  TestWindowTreeHost(const TestWindowTreeHost&) = delete;
+  TestWindowTreeHost& operator=(const TestWindowTreeHost&) = delete;
+
   ui::PlatformWindow* platform_window() {
     return WindowTreeHostPlatform::platform_window();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWindowTreeHost);
 };
 
 // WindowTreeHostObserver that tracks calls to
@@ -41,6 +61,11 @@ class TestWindowTreeHostObserver : public WindowTreeHostObserver {
       : host_(host), platform_window_(platform_window) {
     host_->AddObserver(this);
   }
+
+  TestWindowTreeHostObserver(const TestWindowTreeHostObserver&) = delete;
+  TestWindowTreeHostObserver& operator=(const TestWindowTreeHostObserver&) =
+      delete;
+
   ~TestWindowTreeHostObserver() override { host_->RemoveObserver(this); }
 
   int on_host_did_process_bounds_change_count() const {
@@ -74,8 +99,6 @@ class TestWindowTreeHostObserver : public WindowTreeHostObserver {
   bool should_change_bounds_in_on_resized_ = true;
   int on_host_will_process_bounds_change_count_ = 0;
   int on_host_did_process_bounds_change_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowTreeHostObserver);
 };
 
 // Regression test for https://crbug.com/958449
@@ -100,6 +123,12 @@ class DeleteHostWindowTreeHostObserver : public WindowTreeHostObserver {
       : host_(std::move(host)) {
     host_->AddObserver(this);
   }
+
+  DeleteHostWindowTreeHostObserver(const DeleteHostWindowTreeHostObserver&) =
+      delete;
+  DeleteHostWindowTreeHostObserver& operator=(
+      const DeleteHostWindowTreeHostObserver&) = delete;
+
   ~DeleteHostWindowTreeHostObserver() override = default;
 
   TestWindowTreeHost* host() { return host_.get(); }
@@ -113,8 +142,6 @@ class DeleteHostWindowTreeHostObserver : public WindowTreeHostObserver {
 
  private:
   std::unique_ptr<TestWindowTreeHost> host_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteHostWindowTreeHostObserver);
 };
 
 // Verifies WindowTreeHostPlatform can be safely deleted when calling

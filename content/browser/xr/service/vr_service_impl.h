@@ -10,7 +10,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "content/browser/xr/metrics/session_metrics_helper.h"
@@ -45,6 +44,9 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
 
   // Constructor for tests.
   explicit VRServiceImpl(base::PassKey<XRRuntimeManagerTest>);
+
+  VRServiceImpl(const VRServiceImpl&) = delete;
+  VRServiceImpl& operator=(const VRServiceImpl&) = delete;
 
   ~VRServiceImpl() override;
 
@@ -183,8 +185,6 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   std::vector<XrCompatibleCallback> xr_compatible_callbacks_;
 
   base::WeakPtrFactory<VRServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VRServiceImpl);
 };
 
 }  // namespace content

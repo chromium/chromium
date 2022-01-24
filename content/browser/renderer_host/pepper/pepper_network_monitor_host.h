@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_RENDERER_HOST_PEPPER_PEPPER_NETWORK_MONITOR_HOST_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "net/base/network_interfaces.h"
@@ -27,6 +26,9 @@ class CONTENT_EXPORT PepperNetworkMonitorHost
                            PP_Instance instance,
                            PP_Resource resource);
 
+  PepperNetworkMonitorHost(const PepperNetworkMonitorHost&) = delete;
+  PepperNetworkMonitorHost& operator=(const PepperNetworkMonitorHost&) = delete;
+
   ~PepperNetworkMonitorHost() override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver interface.
@@ -45,8 +47,6 @@ class CONTENT_EXPORT PepperNetworkMonitorHost
   network::NetworkConnectionTracker* network_connection_tracker_;
 
   base::WeakPtrFactory<PepperNetworkMonitorHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperNetworkMonitorHost);
 };
 
 }  // namespace content

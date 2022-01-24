@@ -14,7 +14,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -41,7 +41,7 @@ const float kSlopLengthDips = 10;
 const float kHalfSlopLengthDips = kSlopLengthDips / 2;
 
 base::TimeDelta DefaultTouchTimeoutDelay() {
-  return base::TimeDelta::FromMilliseconds(1);
+  return base::Milliseconds(1);
 }
 }  // namespace
 
@@ -255,7 +255,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
 
   void AdvanceTouchTime(double seconds) {
     touch_event_.SetTimeStamp(touch_event_.TimeStamp() +
-                              base::TimeDelta::FromSecondsD(seconds));
+                              base::Seconds(seconds));
   }
 
   size_t GetAndResetAckedEventCount() {

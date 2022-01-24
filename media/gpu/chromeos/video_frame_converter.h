@@ -10,7 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/media_gpu_export.h"
 
@@ -25,6 +25,9 @@ class MEDIA_GPU_EXPORT VideoFrameConverter {
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>;
 
   VideoFrameConverter();
+
+  VideoFrameConverter(const VideoFrameConverter&) = delete;
+  VideoFrameConverter& operator=(const VideoFrameConverter&) = delete;
 
   // Initialize the converter. This method must be called before any
   // ConvertFrame() is called.
@@ -60,8 +63,6 @@ class MEDIA_GPU_EXPORT VideoFrameConverter {
   friend struct std::default_delete<VideoFrameConverter>;
   // Called by std::default_delete.
   virtual void Destroy();
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameConverter);
 };
 
 }  // namespace media

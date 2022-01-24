@@ -133,7 +133,7 @@ void AnimatedContainerView::RemoveAllViews() {
   // We can prevent over-propagation of the PreferredSizeChanged event by
   // stopping propagation during batched view hierarchy add/remove operations.
   ScopedDisablePreferredSizeChanged disable_preferred_size_changed(this);
-  content_view()->RemoveAllChildViews(/*delete_children=*/true);
+  content_view()->RemoveAllChildViews();
 
   // We inform our derived class all views have been removed.
   OnAllViewsRemoved();

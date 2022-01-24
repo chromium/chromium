@@ -15,7 +15,7 @@
 #include "base/hash/md5.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -67,6 +67,9 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
             const ExtensionId& extension_id,
             const std::string& device_path,
             const base::FilePath& download_folder);
+
+  Operation(const Operation&) = delete;
+  Operation& operator=(const Operation&) = delete;
 
   // Starts the operation.
   void Start();
@@ -245,8 +248,6 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // Sequenced task runner where all I/O operation will be performed.
   // Most of the methods of this class run in this task runner.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Operation);
 };
 
 }  // namespace image_writer

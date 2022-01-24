@@ -49,6 +49,11 @@ std::unique_ptr<KeyedService> CreateTestingTemplateURLService(
 
 // Test fixture for SearchEngineTabHelper class.
 class SearchEngineTabHelperTest : public ChromeWebTest {
+ public:
+  SearchEngineTabHelperTest(const SearchEngineTabHelperTest&) = delete;
+  SearchEngineTabHelperTest& operator=(const SearchEngineTabHelperTest&) =
+      delete;
+
  protected:
   SearchEngineTabHelperTest()
       : ChromeWebTest(web::WebTaskEnvironment::Options::IO_MAINLOOP) {}
@@ -80,29 +85,7 @@ class SearchEngineTabHelperTest : public ChromeWebTest {
     return ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
   }
 
-  // Sends a message that a OSDD <link> is found in page, with |page_url| and
-  // |osdd_url| as message content.
-  bool SendMessageOfOpenSearch(const GURL& page_url, const GURL& osdd_url) {
-    id result = ExecuteJavaScript([NSString
-        stringWithFormat:@"__gCrWeb.message.invokeOnHost({'command': "
-                         @"'searchEngine.openSearch', 'pageUrl' : '%s', "
-                         @"'osddUrl': '%s'}); true;",
-                         page_url.spec().c_str(), osdd_url.spec().c_str()]);
-    return [result isEqual:@YES];
-  }
-
-  // Sends a message that |searchable_url| is generated from <form> submission.
-  bool SendMessageOfSearchableUrl(const GURL& searchable_url) {
-    id result = ExecuteJavaScript([NSString
-        stringWithFormat:@"__gCrWeb.message.invokeOnHost({'command': "
-                         @"'searchEngine.searchableUrl', 'url' : '%s'}); true;",
-                         searchable_url.spec().c_str()]);
-    return [result isEqual:@YES];
-  }
-
   net::EmbeddedTestServer server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchEngineTabHelperTest);
 };
 
 // Tests that SearchEngineTabHelper can add TemplateURL to TemplateURLService
@@ -117,7 +100,8 @@ TEST_F(SearchEngineTabHelperTest, AddTemplateURLByOpenSearch) {
 
   // Load an empty page, and send a message of openSearchUrl from Js.
   LoadHtml(@"<html></html>", page_url);
-  ASSERT_TRUE(SendMessageOfOpenSearch(page_url, osdd_url));
+  SearchEngineTabHelper::FromWebState(web_state())
+      ->AddTemplateURLByOSDD(page_url, osdd_url);
 
   // Wait for TemplateURL added to TemplateURLService.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
@@ -165,7 +149,8 @@ TEST_F(SearchEngineTabHelperTest, AddTemplateURLBySearchableURL) {
 
   // Load an empty page, and send a message of openSearchUrl from Js.
   LoadHtml(html, page_url);
-  SendMessageOfSearchableUrl(searchable_url);
+  SearchEngineTabHelper::FromWebState(web_state())
+      ->SetSearchableUrl(searchable_url);
   SubmitWebViewFormWithId(web_state(), "f");
 
   // Wait for TemplateURL added to TemplateURLService.
@@ -195,6 +180,12 @@ TEST_F(SearchEngineTabHelperTest, AddTemplateURLBySearchableURL) {
 
 // Test fixture for SearchEngineTabHelper class in incognito mode.
 class SearchEngineTabHelperIncognitoTest : public SearchEngineTabHelperTest {
+ public:
+  SearchEngineTabHelperIncognitoTest(
+      const SearchEngineTabHelperIncognitoTest&) = delete;
+  SearchEngineTabHelperIncognitoTest& operator=(
+      const SearchEngineTabHelperIncognitoTest&) = delete;
+
  protected:
   SearchEngineTabHelperIncognitoTest() {}
 
@@ -202,8 +193,6 @@ class SearchEngineTabHelperIncognitoTest : public SearchEngineTabHelperTest {
   web::BrowserState* GetBrowserState() override {
     return chrome_browser_state_->GetOffTheRecordChromeBrowserState();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SearchEngineTabHelperIncognitoTest);
 };
 
 // Tests that SearchEngineTabHelper doesn't add TemplateURL to
@@ -220,7 +209,8 @@ TEST_F(SearchEngineTabHelperIncognitoTest,
 
   // Load an empty page, and send a message of openSearchUrl from Js.
   LoadHtml(@"<html></html>", page_url);
-  ASSERT_TRUE(SendMessageOfOpenSearch(page_url, osdd_url));
+  SearchEngineTabHelper::FromWebState(web_state())
+      ->AddTemplateURLByOSDD(page_url, osdd_url);
 
   // No new TemplateURL should be added to TemplateURLService, wait for timeout.
   ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
@@ -251,7 +241,8 @@ TEST_F(SearchEngineTabHelperIncognitoTest,
 
   // Load an empty page, and send a message of openSearchUrl from Js.
   LoadHtml(html, page_url);
-  SendMessageOfSearchableUrl(searchable_url);
+  SearchEngineTabHelper::FromWebState(web_state())
+      ->SetSearchableUrl(searchable_url);
   SubmitWebViewFormWithId(web_state(), "f");
 
   // Wait for TemplateURL added to TemplateURLService.

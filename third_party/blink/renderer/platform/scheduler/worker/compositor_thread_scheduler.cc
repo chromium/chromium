@@ -54,6 +54,7 @@ void CompositorThreadScheduler::OnTaskCompleted(
     base::sequence_manager::TaskQueue::TaskTiming* task_timing,
     base::sequence_manager::LazyNow* lazy_now) {
   task_timing->RecordTaskEnd(lazy_now);
+  DispatchOnTaskCompletionCallbacks();
   compositor_metrics_helper_.RecordTaskMetrics(task, *task_timing);
 }
 
@@ -76,6 +77,11 @@ CompositorThreadScheduler::V8TaskRunner() {
 scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadScheduler::DefaultTaskRunner() {
   return helper()->DefaultTaskRunner();
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+CompositorThreadScheduler::InputTaskRunner() {
+  return helper()->InputTaskRunner();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -117,7 +123,7 @@ base::TimeTicks CompositorThreadScheduler::WillProcessIdleTask() {
   // TODO(flackr): Return the next frame time as the deadline instead.
   // TODO(flackr): Ensure that oilpan GC does happen on the compositor thread
   // even though we will have no long idle periods. https://crbug.com/609531
-  return base::TimeTicks::Now() + base::TimeDelta::FromMillisecondsD(16.7);
+  return base::TimeTicks::Now() + base::Milliseconds(16.7);
 }
 
 void CompositorThreadScheduler::DidProcessIdleTask() {}

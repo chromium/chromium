@@ -37,6 +37,9 @@ class NET_EXPORT CertDatabase {
   // CertDatabase::RemoveObserver.
   class NET_EXPORT Observer {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // Called whenever the Cert Database is known to have changed.
@@ -47,13 +50,13 @@ class NET_EXPORT CertDatabase {
 
    protected:
     Observer() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Returns the CertDatabase singleton.
   static CertDatabase* GetInstance();
+
+  CertDatabase(const CertDatabase&) = delete;
+  CertDatabase& operator=(const CertDatabase&) = delete;
 
   // Registers |observer| to receive notifications of certificate changes.  The
   // thread on which this is called is the thread on which |observer| will be
@@ -91,8 +94,6 @@ class NET_EXPORT CertDatabase {
   friend class Notifier;
   Notifier* notifier_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(CertDatabase);
 };
 
 }  // namespace net

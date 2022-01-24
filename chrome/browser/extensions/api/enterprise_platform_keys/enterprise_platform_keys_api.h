@@ -54,7 +54,8 @@ class EnterprisePlatformKeysGetCertificatesFunction : public ExtensionFunction {
   ~EnterprisePlatformKeysGetCertificatesFunction() override = default;
   ResponseAction Run() override;
 
-  void OnGetCertificates(crosapi::mojom::GetCertificatesResultPtr result);
+  void OnGetCertificates(
+      crosapi::mojom::DEPRECATED_GetCertificatesResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.getCertificates",
                              ENTERPRISE_PLATFORMKEYS_GETCERTIFICATES)
 };
@@ -87,7 +88,7 @@ class EnterprisePlatformKeysInternalGetTokensFunction
   ~EnterprisePlatformKeysInternalGetTokensFunction() override = default;
   ResponseAction Run() override;
 
-  void OnGetKeyStores(crosapi::mojom::GetKeyStoresResultPtr result);
+  void OnGetKeyStores(crosapi::mojom::DEPRECATED_GetKeyStoresResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.getTokens",
                              ENTERPRISE_PLATFORMKEYSINTERNAL_GETTOKENS)
 };
@@ -99,7 +100,7 @@ class EnterprisePlatformKeysChallengeMachineKeyFunction
   ResponseAction Run() override;
 
   void OnChallengeAttestationOnlyKeystore(
-      crosapi::mojom::KeystoreStringResultPtr result);
+      crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeMachineKey",
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEMACHINEKEY)
 };
@@ -111,7 +112,7 @@ class EnterprisePlatformKeysChallengeUserKeyFunction
   ResponseAction Run() override;
 
   void OnChallengeAttestationOnlyKeystore(
-      crosapi::mojom::KeystoreStringResultPtr result);
+      crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeUserKey",
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEUSERKEY)
 };

@@ -25,12 +25,15 @@ const void* const kSmartSelectionClientUDKey = &kSmartSelectionClientUDKey;
 // This class deletes SmartSelectionClient when WebContents is destroyed.
 class UserData : public base::SupportsUserData::Data {
  public:
+  UserData() = delete;
+
   explicit UserData(SmartSelectionClient* client) : client_(client) {}
+
+  UserData(const UserData&) = delete;
+  UserData& operator=(const UserData&) = delete;
 
  private:
   std::unique_ptr<SmartSelectionClient> client_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(UserData);
 };
 }
 
@@ -41,6 +44,10 @@ jlong JNI_SmartSelectionClient_Init(
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents)
       << "A SmartSelectionClient should be created with a valid WebContents.";
+
+  if (web_contents->GetUserData(kSmartSelectionClientUDKey))
+    return reinterpret_cast<intptr_t>(
+        web_contents->GetUserData(kSmartSelectionClientUDKey));
 
   return reinterpret_cast<intptr_t>(
       new SmartSelectionClient(env, obj, web_contents));

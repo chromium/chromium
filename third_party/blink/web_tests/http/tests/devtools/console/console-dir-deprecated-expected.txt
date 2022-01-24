@@ -1,8 +1,5 @@
 Tests that console does not log deprecated warning messages while dir-dumping objects.
 
 console-dir-deprecated.js:17 Window
-console-dir-deprecated.js:18 [Deprecation] 'Range.expand()' is deprecated. Please use 'Selection.modify()' instead.
-logObjects @ console-dir-deprecated.js:18
-(anonymous) @ console-dir-deprecated.js:22
 console-dir-deprecated.js:18 undefined
 

@@ -28,7 +28,8 @@ ResolveHostRequest::ResolveHostRequest(
 
   internal_request_ = resolver->CreateRequest(
       host, network_isolation_key,
-      net::NetLogWithSource::Make(net_log, net::NetLogSourceType::NONE),
+      net::NetLogWithSource::Make(
+          net_log, net::NetLogSourceType::NETWORK_SERVICE_HOST_RESOLVER),
       optional_parameters);
 }
 

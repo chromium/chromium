@@ -26,6 +26,8 @@
 
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
@@ -37,6 +39,23 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
+
+namespace {
+
+bool WillReattachChildLayoutObject(const Node& parent) {
+  for (const Node* child = LayoutTreeBuilderTraversal::FirstChild(parent);
+       child; child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
+    if (child->NeedsReattachLayoutTree())
+      return true;
+    if (child->ChildNeedsReattachLayoutTree() && child->GetComputedStyle() &&
+        child->GetComputedStyle()->Display() == EDisplay::kContents &&
+        WillReattachChildLayoutObject(*child))
+      return true;
+  }
+  return false;
+}
+
+}  // namespace
 
 HTMLFieldSetElement::HTMLFieldSetElement(Document& document)
     : HTMLFormControlElement(html_names::kFieldsetTag, document) {
@@ -137,7 +156,7 @@ LayoutBox* HTMLFieldSetElement::GetLayoutBoxForScrolling() const {
 }
 
 void HTMLFieldSetElement::DidRecalcStyle(const StyleRecalcChange change) {
-  if (ChildNeedsReattachLayoutTree())
+  if (ChildNeedsReattachLayoutTree() && WillReattachChildLayoutObject(*this))
     SetNeedsReattachLayoutTree();
 }
 

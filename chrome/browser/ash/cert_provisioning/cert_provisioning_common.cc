@@ -9,11 +9,11 @@
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -77,6 +77,36 @@ void DeleteVaKeysWithMatchBehavior(
 
 }  // namespace
 
+std::string CertificateProvisioningWorkerStateToString(
+    CertProvisioningWorkerState state) {
+  switch (state) {
+    case CertProvisioningWorkerState::kInitState:
+      return "InitState";
+    case CertProvisioningWorkerState::kKeypairGenerated:
+      return "KeypairGenerated";
+    case CertProvisioningWorkerState::kStartCsrResponseReceived:
+      return "StartCsrResponseReceived";
+    case CertProvisioningWorkerState::kVaChallengeFinished:
+      return "VaChallengeFinished";
+    case CertProvisioningWorkerState::kKeyRegistered:
+      return "KeyRegistered";
+    case CertProvisioningWorkerState::kKeypairMarked:
+      return "KeypairMarked";
+    case CertProvisioningWorkerState::kSignCsrFinished:
+      return "SignCsrFinished";
+    case CertProvisioningWorkerState::kFinishCsrResponseReceived:
+      return "FinishCsrResponseReceived";
+    case CertProvisioningWorkerState::kSucceeded:
+      return "Succeeded";
+    case CertProvisioningWorkerState::kInconsistentDataError:
+      return "InconsistentDataError";
+    case CertProvisioningWorkerState::kFailed:
+      return "Failed";
+    case CertProvisioningWorkerState::kCanceled:
+      return "Canceled";
+  }
+}
+
 bool IsFinalState(CertProvisioningWorkerState state) {
   switch (state) {
     case CertProvisioningWorkerState::kSucceeded:
@@ -129,8 +159,7 @@ absl::optional<CertProfile> CertProfile::MakeFromValue(
   result.name = name ? *name : std::string();
   result.policy_version = *policy_version;
   result.is_va_enabled = is_va_enabled.value_or(true);
-  result.renewal_period =
-      base::TimeDelta::FromSeconds(renewal_period_sec.value_or(0));
+  result.renewal_period = base::Seconds(renewal_period_sec.value_or(0));
 
   return result;
 }

@@ -41,6 +41,14 @@ class BLINK_COMMON_EXPORT UseCounterFeatureTracker {
   std::bitset<static_cast<size_t>(mojom::PermissionsPolicyFeature::kMaxValue) +
               1>
       violated_permissions_policy_features_;
+  std::bitset<static_cast<size_t>(
+                  blink::mojom::PermissionsPolicyFeature::kMaxValue) +
+              1>
+      iframe_permissions_policy_features_;
+  std::bitset<static_cast<size_t>(
+                  blink::mojom::PermissionsPolicyFeature::kMaxValue) +
+              1>
+      header_permissions_policy_features_;
 };
 
 }  // namespace blink

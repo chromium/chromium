@@ -129,6 +129,10 @@ static void ConvertBigEndian(HFSPlusCatalogFile* file) {
 class HFSForkReadStream : public ReadStream {
  public:
   HFSForkReadStream(HFSIterator* hfs, const HFSPlusForkData& fork);
+
+  HFSForkReadStream(const HFSForkReadStream&) = delete;
+  HFSForkReadStream& operator=(const HFSForkReadStream&) = delete;
+
   ~HFSForkReadStream() override;
 
   bool Read(uint8_t* buffer, size_t buffer_size, size_t* bytes_read) override;
@@ -142,8 +146,6 @@ class HFSForkReadStream : public ReadStream {
   bool read_current_extent_;  // Whether the current_extent_ has been read.
   std::vector<uint8_t> current_extent_data_;  // Data for |current_extent_|.
   size_t fork_logical_offset_;  // The logical offset into the fork.
-
-  DISALLOW_COPY_AND_ASSIGN(HFSForkReadStream);
 };
 
 // HFSBTreeIterator iterates over the HFS+ catalog file.
@@ -160,6 +162,10 @@ class HFSBTreeIterator {
   };
 
   HFSBTreeIterator();
+
+  HFSBTreeIterator(const HFSBTreeIterator&) = delete;
+  HFSBTreeIterator& operator=(const HFSBTreeIterator&) = delete;
+
   ~HFSBTreeIterator();
 
   bool Init(ReadStream* stream);
@@ -217,8 +223,6 @@ class HFSBTreeIterator {
   const std::u16string kHFSMetadataFolder{u"\0\0\0\0HFS+ Private Data", 21};
   const std::u16string kHFSDirMetadataFolder =
       u".HFS+ Private Directory Data\r";
-
-  DISALLOW_COPY_AND_ASSIGN(HFSBTreeIterator);
 };
 
 HFSIterator::HFSIterator(ReadStream* stream)

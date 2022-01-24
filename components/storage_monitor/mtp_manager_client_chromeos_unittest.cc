@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/mock_removable_storage_observer.h"
@@ -80,6 +79,10 @@ class FakeMtpManagerClientChromeOS : public MtpManagerClientChromeOS {
                                device::mojom::MtpManager* mtp_manager)
       : MtpManagerClientChromeOS(receiver, mtp_manager) {}
 
+  FakeMtpManagerClientChromeOS(const FakeMtpManagerClientChromeOS&) = delete;
+  FakeMtpManagerClientChromeOS& operator=(const FakeMtpManagerClientChromeOS&) =
+      delete;
+
   // Notifies MtpManagerClientChromeOS about the attachment of MTP storage
   // device given the |storage_name|.
   void MtpStorageAttached(const std::string& storage_name) {
@@ -96,9 +99,6 @@ class FakeMtpManagerClientChromeOS : public MtpManagerClientChromeOS {
     StorageDetached(storage_name);
     base::RunLoop().RunUntilIdle();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeMtpManagerClientChromeOS);
 };
 
 }  // namespace
@@ -109,6 +109,10 @@ class MtpManagerClientChromeOSTest : public testing::Test {
  public:
   MtpManagerClientChromeOSTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+
+  MtpManagerClientChromeOSTest(const MtpManagerClientChromeOSTest&) = delete;
+  MtpManagerClientChromeOSTest& operator=(const MtpManagerClientChromeOSTest&) =
+      delete;
 
   ~MtpManagerClientChromeOSTest() override {}
 
@@ -140,8 +144,6 @@ class MtpManagerClientChromeOSTest : public testing::Test {
 
   std::unique_ptr<FakeMtpManagerClientChromeOS> mtp_device_observer_;
   std::unique_ptr<MockRemovableStorageObserver> mock_storage_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MtpManagerClientChromeOSTest);
 };
 
 // Test to verify basic MTP storage attach and detach notifications.

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -61,6 +60,10 @@ class DataUseMeasurement
   DataUseMeasurement(
       PrefService* pref_service,
       network::NetworkConnectionTracker* network_connection_tracker);
+
+  DataUseMeasurement(const DataUseMeasurement&) = delete;
+  DataUseMeasurement& operator=(const DataUseMeasurement&) = delete;
+
   ~DataUseMeasurement() override;
 
 #if defined(OS_ANDROID)
@@ -191,8 +194,6 @@ class DataUseMeasurement
   DataUseTrackerPrefs data_use_tracker_prefs_;
 
   base::WeakPtrFactory<DataUseMeasurement> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataUseMeasurement);
 };
 
 }  // namespace data_use_measurement

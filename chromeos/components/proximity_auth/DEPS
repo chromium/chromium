@@ -11,4 +11,7 @@ specific_include_rules = {
   "screenlock_bridge\.*|unlock_manager\.*": [
     "+chromeos",
   ],
+  "proximity_auth_client\.*|unlock_manager\.*": [
+    "+ash/public/cpp",
+  ],
 }

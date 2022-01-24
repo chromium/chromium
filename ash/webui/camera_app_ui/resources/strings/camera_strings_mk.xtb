@@ -1,0 +1,141 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="mk">
+<translation id="1113173431709655881">Режим на камера</translation>
+<translation id="1175958423215084756">Препознаен е линк. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Ротирајте 90 степени во насока на стрелките на часовникот</translation>
+<translation id="1276998909102132017">Слики од галеријата</translation>
+<translation id="1300209025925956156">Скенирајте го документот</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + стрелка налево за пристап.</translation>
+<translation id="1430915738399379752">Печати</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> е исклучена.</translation>
+<translation id="1473110567575736769">Тајмер од 3 секунди</translation>
+<translation id="1545749641540134597">Скенирајте QR код</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">Нормален</translation>
+<translation id="1620510694547887537">Камера</translation>
+<translation id="1627744224761163218">4 x 4</translation>
+<translation id="1664224225747386870">Ништо не е снимено</translation>
+<translation id="1838104802459806957">Навалeте нагоре</translation>
+<translation id="1851169887664797861">Достапни се дополнителни контроли за камерата</translation>
+<translation id="1851616744363735765">ПАУЗИРАНО</translation>
+<translation id="1862930711583847113">Не може да се извезе <ph name="FILE" /></translation>
+<translation id="1899697626337024495">Фоторезолуција</translation>
+<translation id="2022953316617983419">QR-код</translation>
+<translation id="2036868001356139588">Времетраење на тајмерот</translation>
+<translation id="2050339315714019657">Портрет</translation>
+<translation id="2064538373111010176"><ph name="CAMERA" /> е активна</translation>
+<translation id="2144806332417375165">Приспособени видеопараметри</translation>
+<translation id="2175927920773552910">QR-код</translation>
+<translation id="229579744168541441">Извези на диск</translation>
+<translation id="2320741269052147773">Движење надесно</translation>
+<translation id="2501278716633472235">Врати се</translation>
+<translation id="2501853267655415902">Снимањето е запрено</translation>
+<translation id="2501953888035679275">Фотографирајте и снимајте видеа со камерата.</translation>
+<translation id="2517472476991765520">Скенирај</translation>
+<translation id="2549985041256363841">Започни со снимање</translation>
+<translation id="2599796128805996109">Задна камера</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> сек.</translation>
+<translation id="2761536921376153655">Тип скенирање</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> е приклучена.</translation>
+<translation id="2968794441791257519">Фотографиите и видеата снимени со камерата ќе се преместат во папката „Преземања“. До нив може да пристапувате од „Датотеки“.
+
+        Апликациите со дозволи за складирање ќе имаат пристап до вашите фотографии и видеа.</translation>
+<translation id="3067436040345934772">Движење надесно</translation>
+<translation id="3081586908890909590">Префрли на снимање видео</translation>
+<translation id="313467653172006084">30 FPS</translation>
+<translation id="3183731565330012717">Тип решетка</translation>
+<translation id="3227137524299004712">Микрофон</translation>
+<translation id="3240426699337459095">Врската е копирана</translation>
+<translation id="3259149966178251584">Резолуција на камерата</translation>
+<translation id="3260401663013584785">Не може да се открие документ</translation>
+<translation id="3305962767867348165">Поправи</translation>
+<translation id="3448774564454087943">Видеото не се зачува бидејќи е прекратко</translation>
+<translation id="346539236881580388">Фотографирај пак</translation>
+<translation id="3517926952904427380">Не може да фотографира во портрет</translation>
+<translation id="3569311554794739032">Дали навистина сакате да ја отстраните <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Префрли на режим на скенирање</translation>
+<translation id="3789724198583203151">Ротирајте 90 степени спротивно од стрелките на часовникот</translation>
+<translation id="3810838688059735925">Видео</translation>
+<translation id="3838931309141338733">Скенирајте го бар-кодот</translation>
+<translation id="3892148308691398805">Копирај текст</translation>
+<translation id="4118525110028899586">Паузирај го снимањето</translation>
+<translation id="4121305183798804752">Откриен е документ</translation>
+<translation id="4269820728363426813">Копирај адреса на врска</translation>
+<translation id="4279490309300973883">Отсликување</translation>
+<translation id="4329152592498422850">Префрли на фотографирање во квадратна форма</translation>
+<translation id="4383571725254449280">Евиденција за изведба на печатењето</translation>
+<translation id="4445542136948522167">Сопри го фотографирањето</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксели</translation>
+<translation id="4570032796877367747">Предна камера</translation>
+<translation id="4628948037717959914">Фотографија</translation>
+<translation id="4649291346448517080">Не може да се зачува датотеката</translation>
+<translation id="4890010094662541459">3 x 3</translation>
+<translation id="491895758387112773">Видеоснимање за мултипреноси</translation>
+<translation id="5057360777601936059">Камерата е недостапна во моментов.
+        Проверете дали камерата е правилно поврзана.</translation>
+<translation id="5152121255775685072">Оди во галеријата</translation>
+<translation id="520537883758714667">Отсега е достапно скенирање документи</translation>
+<translation id="5317780077021120954">Зачувај</translation>
+<translation id="5444515100983837161">Поставете ги сите рабови на документот во рамката. Скенирањето функционира најдобро кога документот и заднината имаат различни бои.</translation>
+<translation id="5671277269877808209">Квадрат</translation>
+<translation id="5746169159649715125">Зачувај како ПДФ</translation>
+<translation id="5753488212459587150">Овозможи режим на експерт</translation>
+<translation id="5759254179196327752">Скенирајте документ</translation>
+<translation id="5775960006311140197">Експертски режим</translation>
+<translation id="5869546221129391014">Мрежа</translation>
+<translation id="5975083100439434680">Одзумирај</translation>
+<translation id="6073451960410192870">Сопри со снимање</translation>
+<translation id="6197807149213783179">Зачувувај метаподатоци</translation>
+<translation id="6233780560267770709">3 на 3</translation>
+<translation id="6243827288366940320">Златен сооднос</translation>
+<translation id="6248749904681914629">Надворешна камера</translation>
+<translation id="6353688143752491039">Фала за повратните информации за апликацијата „Камера“.
+
+Ако повратните информации се за квалитетот на сликата или видеото, прикачете пример од фотографија или видео и опишете што не е во ред. (На пример, фотографијата е претемна или предметот не е во фокус.)</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксели</translation>
+<translation id="6527303717912515753">Сподели</translation>
+<translation id="667999046851023355">Документ</translation>
+<translation id="6681668084120808868">Фотографирај</translation>
+<translation id="6778482348691154169">Не може да се фотографира</translation>
+<translation id="695140971690006676">Ресетирај ги сите</translation>
+<translation id="6965382102122355670">Во ред</translation>
+<translation id="698156982839284926">3 секунди</translation>
+<translation id="712848772518857951">Дали навистина сакате да отстраните <ph name="COUNT" /> ставки?</translation>
+<translation id="7134221860976209830">Тајмер од 10 секунди</translation>
+<translation id="7191890674911603392">Тип снимка</translation>
+<translation id="7243947652761655814">Видеорезолуција</translation>
+<translation id="7337660886763914220">Грешки во системот со датотеки.</translation>
+<translation id="7450541714075000668">Текстот е копиран</translation>
+<translation id="7476762461674917065">Прикажи опција за снимање GIF</translation>
+<translation id="7488619942230388918">Снимете GIF-видео</translation>
+<translation id="7557677699350329807">Префрли на следната камера</translation>
+<translation id="7607002721634913082">Паузирано</translation>
+<translation id="7608223098072244877">4 на 4</translation>
+<translation id="7649070708921625228">Помош</translation>
+<translation id="7658239707568436148">Откажи</translation>
+<translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Снимете нормално видео</translation>
+<translation id="7983668134180549431">Препознаен е текст.</translation>
+<translation id="8067883171444229417">Пушти го видеото</translation>
+<translation id="8120146556401698679">Движи Навали Зумирај</translation>
+<translation id="8131740175452115882">Потврди</translation>
+<translation id="8145038249676204903">Префрли на фотографирање</translation>
+<translation id="8167081290930651932">Зачувај како фотографија</translation>
+<translation id="8239780215768881278">Создајте слика од видеото</translation>
+<translation id="8261506727792406068">Избриши</translation>
+<translation id="8425673304802773841">Навалете надолу</translation>
+<translation id="8428213095426709021">Поставки</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" /> пиксели (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Сфатив</translation>
+<translation id="8730621377337864115">Готово</translation>
+<translation id="8732462232047530626">Прегледувај метаподатоци</translation>
+<translation id="8815966864175525708">Префрли за фотографирање во портрет</translation>
+<translation id="8828441885228359828">Продолжи со снимање</translation>
+<translation id="8870695351537079478">Не може да се започне со снимање</translation>
+<translation id="8903921497873541725">Зумирај</translation>
+<translation id="9045010116236796332">Поставете ги сите рабови на документот во кадарот</translation>
+<translation id="9045155556724273246">10 секунди</translation>
+<translation id="906331135292332864">Сликата се обработува…</translation>
+<translation id="945522503751344254">Испратете повратни информации</translation>
+</translationbundle>

@@ -1,0 +1,10 @@
+[document web] tag:#document
+++[section] tag:body
+++++[document frame] name='Text descendants' tag:svg
+++++++[section] tag:text
+++++++++[section] name='focusable' tag:a
+++++++++++[static] name='focusable'
+++++++[section] tag:text
+++++++++[static] name='not focusable'
+++++[document frame] name='Not text descendants' tag:svg
+++++++[panel] tag:a

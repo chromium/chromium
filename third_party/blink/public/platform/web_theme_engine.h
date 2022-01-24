@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THEME_ENGINE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THEME_ENGINE_H_
 
+#include <map>
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -179,6 +180,13 @@ class WebThemeEngine {
     bool right_to_left;
   };
 
+  // Represents ui::NativeTheme System Info
+  struct SystemColorInfoState {
+    bool is_dark_mode;
+    bool forced_colors;
+    std::map<SystemThemeColor, uint32_t> colors;
+  };
+
 #if defined(OS_MAC)
   enum ScrollbarOrientation {
     // Vertical scrollbar on the right side of content.
@@ -262,7 +270,14 @@ class WebThemeEngine {
   }
 
   virtual ForcedColors GetForcedColors() const { return ForcedColors::kNone; }
+  virtual void OverrideForcedColorsTheme(bool is_dark_theme) {}
   virtual void SetForcedColors(const blink::ForcedColors forced_colors) {}
+  virtual void ResetToSystemColors(
+      SystemColorInfoState system_color_info_state) {}
+  virtual SystemColorInfoState GetSystemColorInfo() {
+    SystemColorInfoState state;
+    return state;
+  }
 };
 
 }  // namespace blink

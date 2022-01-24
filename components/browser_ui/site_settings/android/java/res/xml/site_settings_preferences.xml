@@ -71,7 +71,7 @@
         android:fragment="org.chromium.components.browser_ui.site_settings.AllSiteSettings"
         android:key="use_storage"
         android:title="@string/website_settings_storage"
-        android:icon="@drawable/settings_storage"
+        android:icon="@drawable/ic_storage"
         app:iconTint="@color/default_icon_color" />
     <!-- NFC -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
@@ -105,4 +105,13 @@
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="idle_detection" />
+    <!-- Auto-dark Web Content -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="auto_dark_web_content" />
+    <!-- Request Desktop Site -->
+    <!-- TODO(crbug.com/1243758): Update the location of this setting once approved. -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="request_desktop_site" />
 </PreferenceScreen>

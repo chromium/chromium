@@ -41,11 +41,14 @@ ShortcutCustomizationAppBrowserTest.prototype = {
 // You must register all suites in unified test here as well for consistency,
 // although technically is not necessary.
 const debug_suites_list = [
-  'ShortcutCustomizationApp',
   'AcceleratorEditViewTest',
+  'AcceleratorLookupManagerTest',
   'AcceleratorViewTest',
   'AcceleratorRowTest',
   'AcceleratorEditDialogTest',
+  'AcceleratorSubsectionTest',
+  'FakeShortcutProviderTest',
+  'ShortcutCustomizationApp',
 ];
 
 TEST_F('ShortcutCustomizationAppBrowserTest', 'All', function() {

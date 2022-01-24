@@ -31,6 +31,11 @@ static const char kFileName[] = "event.log";
 }  // namespace
 
 class ArcAppInstallEventLogTest : public testing::Test {
+ public:
+  ArcAppInstallEventLogTest(const ArcAppInstallEventLogTest&) = delete;
+  ArcAppInstallEventLogTest& operator=(const ArcAppInstallEventLogTest&) =
+      delete;
+
  protected:
   ArcAppInstallEventLogTest() {}
 
@@ -124,9 +129,6 @@ class ArcAppInstallEventLogTest : public testing::Test {
   base::FilePath file_name_;
   std::unique_ptr<ArcAppInstallEventLog> log_;
   em::AppInstallReportRequest report_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppInstallEventLogTest);
 };
 
 // Do not add any log entries. Serialize the log. Verify that the serialization

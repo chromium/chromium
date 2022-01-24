@@ -71,6 +71,10 @@ const CryptAuthDevice& GetLocalDeviceForTest() {
              multidevice::SoftwareFeatureState::kNotSupported},
             {multidevice::SoftwareFeature::kEcheClient,
              multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubCameraRollClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
         });
   }());
   return *device;
@@ -129,6 +133,10 @@ const CryptAuthDevice& GetRemoteDeviceNeedsGroupPrivateKeyForTest() {
              multidevice::SoftwareFeatureState::kNotSupported},
             {multidevice::SoftwareFeature::kEcheClient,
              multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubCameraRollClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
         });
   }());
   return *device;
@@ -186,6 +194,10 @@ const CryptAuthDevice& GetRemoteDeviceHasGroupPrivateKeyForTest() {
             {multidevice::SoftwareFeature::kEcheHost,
              multidevice::SoftwareFeatureState::kNotSupported},
             {multidevice::SoftwareFeature::kEcheClient,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
+             multidevice::SoftwareFeatureState::kNotSupported},
+            {multidevice::SoftwareFeature::kPhoneHubCameraRollClient,
              multidevice::SoftwareFeatureState::kNotSupported},
         });
   }());

@@ -18,9 +18,6 @@ class DocumentPolicyFeatureWriter(json5_generator.Writer):
             'templates/' + self.file_basename + '.cc.tmpl')
         def generate_implementation():
             return {
-                'header_guard':
-                self.make_header_guard(self._relative_output_dir +
-                                       self.file_basename + '.h'),
                 'input_files':
                 self._input_files,
                 'features':

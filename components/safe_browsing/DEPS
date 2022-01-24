@@ -25,7 +25,7 @@ include_rules = [
   "+services/network/test",
   "+services/service_manager/public",
   "+testing/gtest",
-  "+third_party/tflite-support",
+  "+third_party/tflite_support",
   "+third_party/tflite",
   "+third_party/protobuf",
   "+ui/base/resource/resource_bundle.h",

@@ -16,7 +16,7 @@
 LoadingBarView::LoadingBarView() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  animation_.SetDuration(base::TimeDelta::FromMilliseconds(300));
+  animation_.SetDuration(base::Milliseconds(300));
 }
 
 double LoadingBarView::GetDisplayedLoadingProgress() const {

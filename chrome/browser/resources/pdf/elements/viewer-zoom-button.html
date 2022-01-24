@@ -1,24 +1,4 @@
     <style>
-      :host {
-        --translate-x-distance: 96px;
-      }
-
-      #wrapper {
-        transition: transform 250ms;
-        transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
-      }
-
-      :host([closed_]) #wrapper {
-        /* 132px roughly flips the location of the button across the right edge
-         * of the page. */
-        transform: translateX(calc(-1 * var(--translate-x-distance)));
-        transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
-      }
-
-      :host-context([dir='rtl']):host([closed_]) #wrapper {
-        transform: translateX(var(--translate-x-distance));
-      }
-
       cr-icon-button {
         --cr-icon-button-fill-color: white;
         --cr-icon-button-icon-size: 20px;
@@ -54,9 +34,7 @@
         box-shadow: var(--cr-elevation-5);
       }
     </style>
-    <div id="wrapper">
-      <cr-icon-button iron-icon="[[visibleIcon_]]" on-click="fireClick_"
-          aria-label$="[[visibleTooltip_]]" title="[[visibleTooltip_]]"
-          disabled="[[disabled]]">
-      </cr-icon-button>
-    </div>
+    <cr-icon-button iron-icon="[[visibleIcon_]]" on-click="fireClick_"
+        aria-label$="[[visibleTooltip_]]" title="[[visibleTooltip_]]"
+        disabled="[[disabled]]">
+    </cr-icon-button>

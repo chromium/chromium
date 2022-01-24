@@ -27,6 +27,10 @@ const char* const kGuidArray[] = {kGuid0, kGuid1, kGuid2};
 }  // namespace
 
 class NetworkListSorterTest : public testing::Test {
+ public:
+  NetworkListSorterTest(const NetworkListSorterTest&) = delete;
+  NetworkListSorterTest& operator=(const NetworkListSorterTest&) = delete;
+
  protected:
   NetworkListSorterTest() = default;
 
@@ -72,9 +76,6 @@ class NetworkListSorterTest : public testing::Test {
   std::unique_ptr<NetworkStateHandler::ManagedStateList> list_;
 
   std::unique_ptr<NetworkListSorter> network_list_sorter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkListSorterTest);
 };
 
 TEST_F(NetworkListSorterTest, ConnectionState) {

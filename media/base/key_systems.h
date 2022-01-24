@@ -14,6 +14,7 @@
 #include "media/base/eme_constants.h"
 #include "media/base/media_export.h"
 #include "media/media_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -92,13 +93,18 @@ MEDIA_EXPORT bool IsSupportedKeySystemWithInitDataType(
     const std::string& key_system,
     EmeInitDataType init_data_type);
 
-// Returns a name for |key_system| suitable to UMA logging.
-MEDIA_EXPORT std::string GetKeySystemNameForUMA(const std::string& key_system);
+// Returns a name for `key_system` for UMA logging. When `use_hw_secure_codecs`
+// is specified (non-nullopt), names with robustness will be returned for
+// supported key systems.
+MEDIA_EXPORT std::string GetKeySystemNameForUMA(
+    const std::string& key_system,
+    absl::optional<bool> use_hw_secure_codecs = absl::nullopt);
 
-// Returns an int mapping to |key_system| suitable for UKM reporting.
+// Returns an int mapping to `key_system` suitable for UKM reporting. CdmConfig
+// is not needed here because we can report CdmConfig fields in UKM directly.
 MEDIA_EXPORT int GetKeySystemIntForUKM(const std::string& key_system);
 
-// Returns whether AesDecryptor can be used for the given |key_system|.
+// Returns whether AesDecryptor can be used for the given `key_system`.
 MEDIA_EXPORT bool CanUseAesDecryptor(const std::string& key_system);
 
 #if defined(UNIT_TEST)

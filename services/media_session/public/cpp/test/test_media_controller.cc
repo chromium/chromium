@@ -254,9 +254,9 @@ void TestMediaController::NextTrack() {
 void TestMediaController::Seek(base::TimeDelta seek_time) {
   DCHECK(!seek_time.is_zero());
 
-  if (seek_time > base::TimeDelta()) {
+  if (seek_time.is_positive()) {
     ++seek_forward_count_;
-  } else if (seek_time < base::TimeDelta()) {
+  } else if (seek_time.is_negative()) {
     ++seek_backward_count_;
   }
 }

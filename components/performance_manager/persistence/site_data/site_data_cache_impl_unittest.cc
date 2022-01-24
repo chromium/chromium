@@ -6,7 +6,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
@@ -23,18 +22,19 @@ namespace performance_manager {
 
 namespace {
 
-constexpr base::TimeDelta kDelay = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kDelay = base::Minutes(1);
 
 class MockSiteCache : public testing::NoopSiteDataStore {
  public:
   MockSiteCache() = default;
+
+  MockSiteCache(const MockSiteCache&) = delete;
+  MockSiteCache& operator=(const MockSiteCache&) = delete;
+
   ~MockSiteCache() = default;
 
   MOCK_METHOD1(RemoveSiteDataFromStore, void(const std::vector<url::Origin>&));
   MOCK_METHOD0(ClearStore, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSiteCache);
 };
 
 }  // namespace
@@ -258,6 +258,21 @@ TEST_F(SiteDataCacheImplTest, InspectorWorks) {
   EXPECT_EQ(nullptr,
             SiteDataCacheFactory::GetInstance()->GetInspectorForBrowserContext(
                 browser_context_.UniqueId()));
+}
+
+// TODO(https://crbug.com/1231933): Turn this into a death test to verify that
+//     the data cache asserts that no readers outlive the cache.
+TEST_F(SiteDataCacheImplTest, NoUAFWhenReaderHeldAfterTeardown) {
+  {
+    // Hold on to this reader while destroying the data cache.
+    // This is a violation of the data cache contract. For the purpose
+    // of quick-fixing https://crbug.com/1231933, allow and survive this
+    // for now.
+    auto reader = data_cache_->GetReaderForOrigin(origin_);
+
+    // This should not UAF under ASAN.
+    data_cache_.reset();
+  }
 }
 
 }  // namespace performance_manager

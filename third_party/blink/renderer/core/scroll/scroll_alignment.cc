@@ -5,7 +5,7 @@
  *
  * Other contributors:
  *   Robert O'Callahan <roc+@cs.cmu.edu>
- *   David Baron <dbaron@fas.harvard.edu>
+ *   David Baron <dbaron@dbaron.org>
  *   Christian Biesinger <cbiesinger@web.de>
  *   Randall Jesup <rjesup@wgate.com>
  *   Roland Mainz <roland.mainz@informatik.med.uni-giessen.de>
@@ -144,7 +144,7 @@ ScrollOffset ScrollAlignment::GetScrollOffsetToExpose(
   // Given the X behavior, compute the X coordinate.
   float x;
   if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kNoScroll) {
-    x = current_scroll_offset.Width();
+    x = current_scroll_offset.width();
   } else if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kRight) {
     x = (expose_rect.Right() - non_zero_visible_rect.Right()).ToFloat();
   } else if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kCenter) {
@@ -159,7 +159,7 @@ ScrollOffset ScrollAlignment::GetScrollOffsetToExpose(
   // Given the Y behavior, compute the Y coordinate.
   float y;
   if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kNoScroll) {
-    y = current_scroll_offset.Height();
+    y = current_scroll_offset.height();
   } else if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kBottom) {
     y = (expose_rect.Bottom() - non_zero_visible_rect.Bottom()).ToFloat();
   } else if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kCenter) {

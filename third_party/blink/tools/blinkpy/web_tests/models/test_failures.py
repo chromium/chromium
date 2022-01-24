@@ -389,14 +389,22 @@ class FailureTextMismatch(FailureText):
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
         super(FailureTextMismatch, self).create_artifacts(
             typ_artifacts, force_overwrite)
-        html = repaint_overlay.generate_repaint_overlay_html(
-            self.test_name, self.actual_driver_output.text,
-            self.expected_driver_output.text)
+        if six.PY2:
+            html = repaint_overlay.generate_repaint_overlay_html(
+                self.test_name, self.actual_driver_output.text,
+                self.expected_driver_output.text)
+        else:
+            html = repaint_overlay.generate_repaint_overlay_html(
+                self.test_name,
+                self.actual_driver_output.text.decode('utf8', 'replace'),
+                self.expected_driver_output.text.decode('utf8', 'replace'))
         if html:
             overlay_filename = self.port.output_filename(
                 self.test_name, FILENAME_SUFFIX_OVERLAY, '.html')
             self._write_to_artifacts(typ_artifacts, 'overlay',
-                                     overlay_filename, html, force_overwrite)
+                                     overlay_filename,
+                                     html.encode('utf8',
+                                                 'replace'), force_overwrite)
 
     def message(self):
         return 'text diff'

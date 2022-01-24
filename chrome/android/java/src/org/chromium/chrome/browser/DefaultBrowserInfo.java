@@ -170,7 +170,7 @@ public final class DefaultBrowserInfo {
                     List<ResolveInfo> ris = PackageManagerUtils.queryAllWebBrowsersInfo();
                     if (ris != null) {
                         for (ResolveInfo ri : ris) {
-                            String packageName = ri.activityInfo.applicationInfo.packageName;
+                            String packageName = ri.activityInfo.packageName;
                             if (!uniquePackages.add(packageName)) continue;
 
                             if (isSystemPackage(ri)) {

@@ -5,7 +5,6 @@
 #include "media/mojo/mojom/video_frame_mojom_traits.h"
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -33,6 +32,10 @@ class VideoFrameStructTraitsTest : public testing::Test,
  public:
   VideoFrameStructTraitsTest() = default;
 
+  VideoFrameStructTraitsTest(const VideoFrameStructTraitsTest&) = delete;
+  VideoFrameStructTraitsTest& operator=(const VideoFrameStructTraitsTest&) =
+      delete;
+
  protected:
   mojo::Remote<mojom::TraitsTestService> GetTraitsTestRemote() {
     mojo::Remote<mojom::TraitsTestService> remote;
@@ -54,8 +57,6 @@ class VideoFrameStructTraitsTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<TraitsTestService> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameStructTraitsTest);
 };
 
 }  // namespace
@@ -80,7 +81,7 @@ TEST_F(VideoFrameStructTraitsTest, MojoSharedBufferVideoFrame) {
   for (auto format : formats) {
     scoped_refptr<VideoFrame> frame =
         MojoSharedBufferVideoFrame::CreateDefaultForTesting(
-            format, gfx::Size(100, 100), base::TimeDelta::FromSeconds(100));
+            format, gfx::Size(100, 100), base::Seconds(100));
     frame->metadata().frame_rate = 42.0;
 
     ASSERT_TRUE(RoundTrip(&frame));
@@ -88,7 +89,7 @@ TEST_F(VideoFrameStructTraitsTest, MojoSharedBufferVideoFrame) {
     EXPECT_FALSE(frame->metadata().end_of_stream);
     EXPECT_EQ(*frame->metadata().frame_rate, 42.0);
     EXPECT_EQ(frame->coded_size(), gfx::Size(100, 100));
-    EXPECT_EQ(frame->timestamp(), base::TimeDelta::FromSeconds(100));
+    EXPECT_EQ(frame->timestamp(), base::Seconds(100));
 
     ASSERT_EQ(frame->storage_type(), VideoFrame::STORAGE_MOJO_SHARED_BUFFER);
     MojoSharedBufferVideoFrame* mojo_shared_buffer_frame =
@@ -104,7 +105,7 @@ TEST_F(VideoFrameStructTraitsTest, MailboxVideoFrame) {
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
       PIXEL_FORMAT_ARGB, mailbox_holder, VideoFrame::ReleaseMailboxCB(),
       gfx::Size(100, 100), gfx::Rect(10, 10, 80, 80), gfx::Size(200, 100),
-      base::TimeDelta::FromSeconds(100));
+      base::Seconds(100));
 
   ASSERT_TRUE(RoundTrip(&frame));
   ASSERT_TRUE(frame);
@@ -113,7 +114,7 @@ TEST_F(VideoFrameStructTraitsTest, MailboxVideoFrame) {
   EXPECT_EQ(frame->coded_size(), gfx::Size(100, 100));
   EXPECT_EQ(frame->visible_rect(), gfx::Rect(10, 10, 80, 80));
   EXPECT_EQ(frame->natural_size(), gfx::Size(200, 100));
-  EXPECT_EQ(frame->timestamp(), base::TimeDelta::FromSeconds(100));
+  EXPECT_EQ(frame->timestamp(), base::Seconds(100));
   ASSERT_TRUE(frame->HasTextures());
   ASSERT_EQ(frame->mailbox_holder(0).mailbox, mailbox);
 }
@@ -126,7 +127,7 @@ TEST_F(VideoFrameStructTraitsTest, MailboxVideoFrame) {
 TEST_F(VideoFrameStructTraitsTest, GpuMemoryBufferVideoFrame) {
   gfx::Size coded_size = gfx::Size(256, 256);
   gfx::Rect visible_rect(coded_size);
-  auto timestamp = base::TimeDelta::FromMilliseconds(1);
+  auto timestamp = base::Milliseconds(1);
   std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
       std::make_unique<FakeGpuMemoryBuffer>(
           coded_size, gfx::BufferFormat::YUV_420_BIPLANAR);

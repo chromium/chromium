@@ -55,6 +55,12 @@ void SetTapDraggingEnabled(bool enabled) {
 class TouchDevicesControllerSigninTest : public NoSessionAshTestBase {
  public:
   TouchDevicesControllerSigninTest() = default;
+
+  TouchDevicesControllerSigninTest(const TouchDevicesControllerSigninTest&) =
+      delete;
+  TouchDevicesControllerSigninTest& operator=(
+      const TouchDevicesControllerSigninTest&) = delete;
+
   ~TouchDevicesControllerSigninTest() override = default;
 
   // NoSessionAshTestBase:
@@ -80,9 +86,6 @@ class TouchDevicesControllerSigninTest : public NoSessionAshTestBase {
     GetSessionControllerClient()->SwitchActiveUser(
         AccountId::FromUserEmail(email));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TouchDevicesControllerSigninTest);
 };
 
 TEST_F(TouchDevicesControllerSigninTest, PrefsAreRegistered) {

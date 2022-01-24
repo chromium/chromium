@@ -221,29 +221,24 @@ public class ChromeActivitySessionTracker {
      * {@link #onStart} instead of {@link #initialize}.
      */
     private void updateAcceptLanguages() {
-        String localeString = LocaleUtils.getDefaultLocaleListString();
-        if (hasLocaleChanged(localeString)) {
-            // Clear cache so that accept-languages change can be applied immediately.
-            // TODO(changwan): The underlying BrowsingDataRemover::Remove() is an asynchronous call.
-            // So cache-clearing may not be effective if URL rendering can happen before
-            // OnBrowsingDataRemoverDone() is called, in which case we may have to reload as well.
-            // Check if it can happen.
-            BrowsingDataBridge.getInstance().clearBrowsingData(
-                    null, new int[] {BrowsingDataType.CACHE}, TimePeriod.ALL_TIME);
-        }
-    }
-
-    private boolean hasLocaleChanged(String newLocale) {
+        String currentLocale = LocaleUtils.getDefaultLocaleListString();
         String previousLocale = SharedPreferencesManager.getInstance().readString(
                 ChromePreferenceKeys.APP_LOCALE, null);
-        if (!TextUtils.equals(previousLocale, newLocale)) {
+        ChromeLocalizationUtils.recordLocaleUpdateStatus(previousLocale, currentLocale);
+        if (!TextUtils.equals(previousLocale, currentLocale)) {
             SharedPreferencesManager.getInstance().writeString(
-                    ChromePreferenceKeys.APP_LOCALE, newLocale);
-            TranslateBridge.resetAcceptLanguages(newLocale);
-            // We consider writing the initial value to prefs as _not_ changing the locale.
-            return previousLocale != null;
+                    ChromePreferenceKeys.APP_LOCALE, currentLocale);
+            TranslateBridge.resetAcceptLanguages(currentLocale);
+            if (previousLocale != null) {
+                // Clear cache so that accept-languages change can be applied immediately.
+                // TODO(changwan): The underlying BrowsingDataRemover::Remove() is an asynchronous
+                // call. So cache-clearing may not be effective if URL rendering can happen before
+                // OnBrowsingDataRemoverDone() is called, in which case we may have to reload as
+                // well. Check if it can happen.
+                BrowsingDataBridge.getInstance().clearBrowsingData(
+                        null, new int[] {BrowsingDataType.CACHE}, TimePeriod.ALL_TIME);
+            }
         }
-        return false;
     }
 
     /**

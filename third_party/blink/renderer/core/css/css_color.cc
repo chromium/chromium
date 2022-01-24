@@ -58,7 +58,7 @@ String CSSColor::SerializeAsCSSComponentValue(Color color) {
   }
 
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 }  // namespace cssvalue

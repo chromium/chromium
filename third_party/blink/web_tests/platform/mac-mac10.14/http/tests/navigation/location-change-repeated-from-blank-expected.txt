@@ -1,0 +1,10 @@
+This test checks the following case:
+* Create an iframe
+* Set its location to about:blank
+* In a setTimeout(), navigate to a non-blank page
+The iframe navigations should not create new history entries, even though the non-blank navigation is after the load (there is only one history entry in the iframe context, and it is about:blank). 
+
+============== Back Forward List ==============
+curr->  http://127.0.0.1:8000/navigation/location-change-repeated-from-blank.html
+            http://127.0.0.1:8000/navigation/resources/pass-and-notify-done.html (in frame "i")
+===============================================

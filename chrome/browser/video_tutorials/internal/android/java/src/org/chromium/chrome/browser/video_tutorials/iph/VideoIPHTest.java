@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
@@ -75,7 +75,7 @@ public class VideoIPHTest {
             TestImageFetcher imageFetcher = new TestImageFetcher(testImage);
             mCoordinator = new VideoIPHCoordinatorImpl(
                     viewStub, imageFetcher, mOnClickListener, mOnDismissListener);
-            ChromeFeatureList.setTestFeatures(new HashMap<>());
+            FeatureList.setTestFeatures(new HashMap<String, Boolean>());
         });
     }
 

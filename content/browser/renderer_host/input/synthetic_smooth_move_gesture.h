@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
@@ -43,6 +42,7 @@ class CONTENT_EXPORT SyntheticSmoothMoveGestureParams {
   ui::ScrollGranularity granularity = ui::ScrollGranularity::kScrollByPixel;
   // A bitfield of values from blink::WebInputEvent::Modifiers.
   int modifiers = 0;
+  bool from_devtools_debugger = false;
 };
 
 // This class is used as helper class for simulation of scroll and drag.
@@ -56,6 +56,11 @@ class CONTENT_EXPORT SyntheticSmoothMoveGestureParams {
 class CONTENT_EXPORT SyntheticSmoothMoveGesture : public SyntheticGesture {
  public:
   explicit SyntheticSmoothMoveGesture(SyntheticSmoothMoveGestureParams params);
+
+  SyntheticSmoothMoveGesture(const SyntheticSmoothMoveGesture&) = delete;
+  SyntheticSmoothMoveGesture& operator=(const SyntheticSmoothMoveGesture&) =
+      delete;
+
   ~SyntheticSmoothMoveGesture() override;
 
   // SyntheticGesture implementation:
@@ -116,8 +121,6 @@ class CONTENT_EXPORT SyntheticSmoothMoveGesture : public SyntheticGesture {
   base::TimeTicks current_move_segment_stop_time_;
   // Used to set phase information for synthetic wheel events.
   bool needs_scroll_begin_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticSmoothMoveGesture);
 };
 
 }  // namespace content

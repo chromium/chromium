@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -27,6 +26,10 @@ class LoginScreenStrategy : public PortalDetectorStrategy {
 
   explicit LoginScreenStrategy(PortalDetectorStrategy::Delegate* delegate)
       : PortalDetectorStrategy(delegate) {}
+
+  LoginScreenStrategy(const LoginScreenStrategy&) = delete;
+  LoginScreenStrategy& operator=(const LoginScreenStrategy&) = delete;
+
   ~LoginScreenStrategy() override = default;
 
  protected:
@@ -40,13 +43,10 @@ class LoginScreenStrategy : public PortalDetectorStrategy {
         timeout =
             kBaseAttemptTimeoutSec * (delegate_->NoResponseResultCount() + 1);
       }
-      return base::TimeDelta::FromSeconds(timeout);
+      return base::Seconds(timeout);
     }
-    return base::TimeDelta::FromSeconds(kBaseAttemptTimeoutSec);
+    return base::Seconds(kBaseAttemptTimeoutSec);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenStrategy);
 };
 
 class ErrorScreenStrategy : public PortalDetectorStrategy {
@@ -55,17 +55,18 @@ class ErrorScreenStrategy : public PortalDetectorStrategy {
 
   explicit ErrorScreenStrategy(PortalDetectorStrategy::Delegate* delegate)
       : PortalDetectorStrategy(delegate) {}
+
+  ErrorScreenStrategy(const ErrorScreenStrategy&) = delete;
+  ErrorScreenStrategy& operator=(const ErrorScreenStrategy&) = delete;
+
   ~ErrorScreenStrategy() override = default;
 
  protected:
   // PortalDetectorStrategy overrides:
   StrategyId Id() const override { return STRATEGY_ID_ERROR_SCREEN; }
   base::TimeDelta GetNextAttemptTimeoutImpl() override {
-    return base::TimeDelta::FromSeconds(kAttemptTimeoutSec);
+    return base::Seconds(kAttemptTimeoutSec);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ErrorScreenStrategy);
 };
 
 class SessionStrategy : public PortalDetectorStrategy {
@@ -76,6 +77,10 @@ class SessionStrategy : public PortalDetectorStrategy {
 
   explicit SessionStrategy(PortalDetectorStrategy::Delegate* delegate)
       : PortalDetectorStrategy(delegate) {}
+
+  SessionStrategy(const SessionStrategy&) = delete;
+  SessionStrategy& operator=(const SessionStrategy&) = delete;
+
   ~SessionStrategy() override = default;
 
  protected:
@@ -86,11 +91,8 @@ class SessionStrategy : public PortalDetectorStrategy {
       timeout = kFastAttemptTimeoutSec;
     else
       timeout = kSlowAttemptTimeoutSec;
-    return base::TimeDelta::FromSeconds(timeout);
+    return base::Seconds(timeout);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionStrategy);
 };
 
 }  // namespace

@@ -116,9 +116,9 @@ WebViewInttestBase::WebViewInttestBase()
   // The WKWebView must be present in the view hierarchy in order to prevent
   // WebKit optimizations which may pause internal parts of the web view
   // without notice. Work around this by adding the view directly.
-  // TODO:(crbug.com/944077) Remove this workaround once fixed in ios/web.
   UIViewController* view_controller = [GetAnyKeyWindow() rootViewController];
   [view_controller.view addSubview:web_view_];
+
   test_server_->AddDefaultHandlers(FILE_PATH_LITERAL(base::FilePath()));
   test_server_->RegisterRequestHandler(
       base::BindRepeating(&TestRequestHandler));

@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
@@ -29,6 +28,10 @@ class COMPONENT_EXPORT(UI_BASE) UserActivityDetector
   static const int kDisplayPowerChangeIgnoreMouseMs;
 
   UserActivityDetector();
+
+  UserActivityDetector(const UserActivityDetector&) = delete;
+  UserActivityDetector& operator=(const UserActivityDetector&) = delete;
+
   ~UserActivityDetector() override;
 
   // Returns the UserActivityDetector instance if one was created.
@@ -90,8 +93,6 @@ class COMPONENT_EXPORT(UI_BASE) UserActivityDetector
   // is to avoid reporting mouse events that occur when displays are turned
   // on or off as user activity.
   base::TimeTicks honor_mouse_events_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserActivityDetector);
 };
 
 }  // namespace ui

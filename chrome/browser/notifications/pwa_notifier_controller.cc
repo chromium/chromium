@@ -6,13 +6,13 @@
 
 #include "ash/public/cpp/notifier_metadata.h"
 #include "base/bind.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/notifications/notifier_dataset.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/permission_utils.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
@@ -41,24 +41,19 @@ std::vector<ash::NotifierMetadata> PwaNotifierController::GetNotifierList(
           return;
 
         for (const auto& permission : update.Permissions()) {
-          if (static_cast<app_management::mojom::PwaPermissionType>(
-                  permission->permission_id) !=
-              app_management::mojom::PwaPermissionType::NOTIFICATIONS) {
+          if (permission->permission_type !=
+              apps::mojom::PermissionType::kNotifications) {
             continue;
           }
-          DCHECK(permission->value_type ==
-                 apps::mojom::PermissionValueType::kTriState);
+          DCHECK(permission->value->is_tristate_value());
           // Do not include notifier metadata for system apps.
-          if (update.InstallSource() == apps::mojom::InstallSource::kSystem) {
+          if (update.InstallReason() == apps::mojom::InstallReason::kSystem) {
             return;
           }
           notifier_dataset.push_back(NotifierDataset{
               update.AppId() /*app_id*/, update.ShortName() /*app_name*/,
               update.PublisherId() /*publisher_id*/,
-              static_cast<apps::mojom::TriState>(permission->value) ==
-                      apps::mojom::TriState::kAllow
-                  ? true
-                  : false /*enabled*/});
+              apps_util::IsPermissionEnabled(permission->value)});
         }
       });
   std::vector<ash::NotifierMetadata> notifiers;
@@ -90,10 +85,9 @@ void PwaNotifierController::SetNotifierEnabled(
   // We should not set permissions for a profile we are not currently observing.
   DCHECK(observed_profile_->IsSameOrParent(profile));
   auto permission = apps::mojom::Permission::New();
-  permission->permission_id =
-      static_cast<int>(app_management::mojom::PwaPermissionType::NOTIFICATIONS);
-  permission->value_type = apps::mojom::PermissionValueType::kTriState;
-  permission->value = static_cast<uint32_t>(
+  permission->permission_type = apps::mojom::PermissionType::kNotifications;
+  permission->value = apps::mojom::PermissionValue::New();
+  permission->value->set_tristate_value(
       enabled ? apps::mojom::TriState::kAllow : apps::mojom::TriState::kBlock);
   permission->is_managed = false;
   apps::AppServiceProxy* service =
@@ -106,10 +100,7 @@ void PwaNotifierController::CallLoadIcon(const std::string& app_id,
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       observed_profile_));
 
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
 
   apps::AppServiceProxyFactory::GetForProfile(observed_profile_)
       ->LoadIcon(apps::mojom::AppType::kWeb, app_id, icon_type,
@@ -121,10 +112,7 @@ void PwaNotifierController::CallLoadIcon(const std::string& app_id,
 
 void PwaNotifierController::OnLoadIcon(const std::string& app_id,
                                        apps::mojom::IconValuePtr icon_value) {
-  auto expected_icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto expected_icon_type = apps::mojom::IconType::kStandard;
   if (icon_value->icon_type != expected_icon_type)
     return;
 
@@ -147,12 +135,12 @@ void PwaNotifierController::OnAppUpdate(const apps::AppUpdate& update) {
 
   if (update.PermissionsChanged()) {
     for (const auto& permission : update.Permissions()) {
-      if (static_cast<app_management::mojom::PwaPermissionType>(
-              permission->permission_id) ==
-          app_management::mojom::PwaPermissionType::NOTIFICATIONS) {
+      if (permission->permission_type ==
+          apps::mojom::PermissionType::kNotifications) {
         message_center::NotifierId notifier_id(
             message_center::NotifierType::APPLICATION, update.AppId());
-        observer_->OnNotifierEnabledChanged(notifier_id, permission->value);
+        observer_->OnNotifierEnabledChanged(
+            notifier_id, apps_util::IsPermissionEnabled(permission->value));
       }
     }
   }

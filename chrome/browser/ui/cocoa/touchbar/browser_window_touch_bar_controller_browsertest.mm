@@ -31,6 +31,11 @@ class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
  public:
   BrowserWindowTouchBarControllerTest() : InProcessBrowserTest() {}
 
+  BrowserWindowTouchBarControllerTest(
+      const BrowserWindowTouchBarControllerTest&) = delete;
+  BrowserWindowTouchBarControllerTest& operator=(
+      const BrowserWindowTouchBarControllerTest&) = delete;
+
   API_AVAILABLE(macos(10.12.2))
   NSTouchBar* MakeTouchBar() {
     auto* delegate =
@@ -54,9 +59,6 @@ class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
         browser_view->frame()->native_browser_frame());
     return browser_frame->GetTouchBarController();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserWindowTouchBarControllerTest);
 };
 
 // Test if the touch bar gets invalidated when the active tab is changed.
@@ -106,14 +108,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
 
 // Tests to see if the touch bar's bookmark tab helper observer gets removed
 // when the touch bar is destroyed.
-// Flaky on Mac ASAN and arm: https://crbug.com/1035117.
-#if defined(ADDRESS_SANITIZER) || defined(ARCH_CPU_ARM64)
-#define MAYBE_DestroyNotificationBridge DISABLED_DestroyNotificationBridge
-#else
-#define MAYBE_DestroyNotificationBridge DestroyNotificationBridge
-#endif
 IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
-                       MAYBE_DestroyNotificationBridge) {
+                       DestroyNotificationBridge) {
   if (@available(macOS 10.12.2, *)) {
     MakeTouchBar();
 
@@ -131,8 +127,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
     ASSERT_TRUE(tab_helper);
     EXPECT_TRUE(tab_helper->HasObserver(observer));
 
-    CloseBrowserSynchronously(browser());
-
+    [[browser_touch_bar_controller() defaultTouchBar] setBrowser:nullptr];
     EXPECT_FALSE(tab_helper->HasObserver(observer));
   }
 }

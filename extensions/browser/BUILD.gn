@@ -87,10 +87,10 @@ source_set("browser_sources") {
     "api/declarative_net_request/flat_ruleset_indexer.h",
     "api/declarative_net_request/global_rules_tracker.cc",
     "api/declarative_net_request/global_rules_tracker.h",
-    "api/declarative_net_request/index_helper.cc",
-    "api/declarative_net_request/index_helper.h",
     "api/declarative_net_request/indexed_rule.cc",
     "api/declarative_net_request/indexed_rule.h",
+    "api/declarative_net_request/install_index_helper.cc",
+    "api/declarative_net_request/install_index_helper.h",
     "api/declarative_net_request/parse_info.cc",
     "api/declarative_net_request/parse_info.h",
     "api/declarative_net_request/regex_rules_matcher.cc",
@@ -151,6 +151,7 @@ source_set("browser_sources") {
     "api/hid/hid_connection_resource.h",
     "api/hid/hid_device_manager.cc",
     "api/hid/hid_device_manager.h",
+    "api/scripting/constants.h",
     "api/system_display/display_info_provider.cc",
     "api/system_display/display_info_provider.h",
     "api/system_display/system_display_api.cc",
@@ -185,6 +186,8 @@ source_set("browser_sources") {
     "api/web_request/web_request_proxying_url_loader_factory.h",
     "api/web_request/web_request_proxying_websocket.cc",
     "api/web_request/web_request_proxying_websocket.h",
+    "api/web_request/web_request_proxying_webtransport.cc",
+    "api/web_request/web_request_proxying_webtransport.h",
     "api/web_request/web_request_resource_type.cc",
     "api/web_request/web_request_resource_type.h",
     "api/web_request/web_request_time_tracker.cc",
@@ -296,6 +299,8 @@ source_set("browser_sources") {
     "extension_host_observer.h",
     "extension_host_queue.cc",
     "extension_host_queue.h",
+    "extension_host_registry.cc",
+    "extension_host_registry.h",
     "extension_icon_image.cc",
     "extension_icon_image.h",
     "extension_icon_placeholder.cc",
@@ -432,8 +437,6 @@ source_set("browser_sources") {
     "management_policy.h",
     "media_capture_util.cc",
     "media_capture_util.h",
-    "media_router_extension_access_logger.cc",
-    "media_router_extension_access_logger.h",
     "mojo/keep_alive_impl.cc",
     "mojo/keep_alive_impl.h",
     "notification_types.h",
@@ -461,14 +464,14 @@ source_set("browser_sources") {
     "process_map.h",
     "process_map_factory.cc",
     "process_map_factory.h",
+    "process_util.cc",
+    "process_util.h",
     "quota_service.cc",
     "quota_service.h",
     "renderer_startup_helper.cc",
     "renderer_startup_helper.h",
     "requirements_checker.cc",
     "requirements_checker.h",
-    "runtime_data.cc",
-    "runtime_data.h",
     "sandboxed_unpacker.cc",
     "sandboxed_unpacker.h",
     "script_executor.cc",
@@ -574,7 +577,6 @@ source_set("browser_sources") {
     "//skia",
     "//skia/public/mojom",
     "//third_party/blink/public/common",
-    "//third_party/blink/public/mojom/frame",
     "//third_party/flatbuffers:flatbuffers",
     "//third_party/re2",
     "//third_party/zlib/google:zip",
@@ -587,11 +589,11 @@ source_set("browser_sources") {
     "//base",
     "//components/url_matcher",
     "//components/url_pattern_index",
+    "//components/value_store",
     "//content/public/common",
     "//extensions/browser/api/declarative_net_request/flat:extension_ruleset",
     "//extensions/browser/install",
     "//extensions/browser/kiosk",
-    "//extensions/browser/value_store",
     "//ipc",
     "//services/device/public/cpp/usb:usb",
     "//third_party/re2",
@@ -602,11 +604,19 @@ source_set("browser_sources") {
     frameworks = [ "CoreServices.framework" ]
   }
 
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/login/login_state" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
+  }
+
   configs += [
     "//build/config:precompiled_headers",
-
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config/compiler:wexit_time_destructors",
   ]
 }
@@ -695,6 +705,7 @@ source_set("browser_tests") {
       "//ash/components/audio",
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/audio",
+      "//chromeos/dbus/cec_service",
       "//chromeos/dbus/media_analytics",
       "//chromeos/dbus/media_analytics:media_perception_proto",
       "//chromeos/dbus/permission_broker",
@@ -714,10 +725,14 @@ source_set("test_support") {
   sources = [
     "api/declarative_net_request/test_utils.cc",
     "api/declarative_net_request/test_utils.h",
+    "api/idle/test_idle_provider.cc",
+    "api/idle/test_idle_provider.h",
     "api/sockets_udp/test_udp_echo_server.cc",
     "api/sockets_udp/test_udp_echo_server.h",
     "browsertest_util.cc",
     "browsertest_util.h",
+    "extension_host_test_helper.cc",
+    "extension_host_test_helper.h",
     "mock_display_info_provider.cc",
     "mock_display_info_provider.h",
     "mock_screen.cc",
@@ -732,15 +747,12 @@ source_set("test_support") {
     "updater/extension_cache_fake.h",
     "updater/extension_downloader_test_helper.cc",
     "updater/extension_downloader_test_helper.h",
-    "value_store/test_value_store_factory.cc",
-    "value_store/test_value_store_factory.h",
-    "value_store/testing_value_store.cc",
-    "value_store/testing_value_store.h",
   ]
 
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/value_store:test_support",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions/browser",
@@ -753,6 +765,7 @@ source_set("test_support") {
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/idle:idle",
   ]
 
   if (is_chromeos_ash) {
@@ -765,22 +778,6 @@ source_set("test_support") {
       "//net:test_support",
     ]
   }
-}
-
-source_set("value_store_test_support") {
-  testonly = true
-  sources = [
-    "value_store/value_store_unittest.cc",
-    "value_store/value_store_unittest.h",
-  ]
-
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//content/test:test_support",
-    "//extensions/browser",
-    "//testing/gtest",
-  ]
 }
 
 source_set("unit_tests") {
@@ -806,6 +803,7 @@ source_set("unit_tests") {
     "api/file_handlers/directory_util_unittest.cc",
     "api/file_handlers/mime_util_unittest.cc",
     "api/idle/idle_api_unittest.cc",
+    "api/mime_handler_private/mime_handler_private_unittest.cc",
     "api/power/power_api_unittest.cc",
     "api/runtime/restart_after_delay_api_unittest.cc",
     "api/socket/mojo_data_pump_unittest.cc",
@@ -860,7 +858,6 @@ source_set("unit_tests") {
     "quota_service_unittest.cc",
     "renderer_startup_helper_unittest.cc",
     "requirements_checker_unittest.cc",
-    "runtime_data_unittest.cc",
     "sandboxed_unpacker_unittest.cc",
     "service_worker/worker_id_set_unittest.cc",
     "updater/extension_downloader_unittest.cc",
@@ -868,10 +865,6 @@ source_set("unit_tests") {
     "updater/safe_manifest_parser_unittest.cc",
     "updater/update_data_provider_unittest.cc",
     "updater/update_service_unittest.cc",
-    "value_store/leveldb_value_store_unittest.cc",
-    "value_store/testing_value_store_unittest.cc",
-    "value_store/value_store_change_unittest.cc",
-    "value_store/value_store_frontend_unittest.cc",
     "verified_contents_unittest.cc",
     "warning_service_unittest.cc",
   ]
@@ -879,12 +872,12 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     ":test_support",
-    ":value_store_test_support",
     "//base",
     "//base/test:test_support",
     "//components/cast_certificate",
     "//components/cast_certificate:test_support",
     "//components/crx_file",
+    "//components/feedback",
     "//components/keyed_service/content",
     "//components/onc",
     "//components/pref_registry:pref_registry",
@@ -896,6 +889,7 @@ source_set("unit_tests") {
     "//components/update_client",
     "//components/url_matcher",
     "//components/user_prefs",
+    "//components/value_store:test_support",
     "//components/version_info",
     "//content/test:test_support",
     "//device/bluetooth:mocks",
@@ -908,6 +902,7 @@ source_set("unit_tests") {
     "//extensions/common:mojom",
     "//extensions/common:test_support",
     "//extensions/common/api",
+    "//extensions/shell:app_shell_lib",
     "//extensions/strings",
     "//ipc:test_support",
     "//net:test_support",
@@ -947,6 +942,7 @@ source_set("unit_tests") {
       "//chromeos/dbus/audio",
       "//chromeos/dbus/media_analytics",
       "//chromeos/dbus/media_analytics:media_perception_proto",
+      "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/power",
       "//chromeos/dbus/upstart",
       "//chromeos/login/login_state",

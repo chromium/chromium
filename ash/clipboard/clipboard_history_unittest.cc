@@ -26,6 +26,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/skia_util.h"
 
 namespace ash {
 

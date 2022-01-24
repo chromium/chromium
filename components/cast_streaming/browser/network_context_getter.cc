@@ -12,4 +12,12 @@ void SetNetworkContextGetter(NetworkContextGetter getter) {
   openscreen_platform::SetNetworkContextGetter(std::move(getter));
 }
 
+void ClearNetworkContextGetter() {
+  openscreen_platform::ClearNetworkContextGetter();
+}
+
+bool HasNetworkContextGetter() {
+  return openscreen_platform::HasNetworkContextGetter();
+}
+
 }  // namespace cast_streaming

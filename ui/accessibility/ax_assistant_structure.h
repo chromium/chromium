@@ -11,15 +11,15 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/strings/string_split.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 
 namespace ui {
+
+struct AXTreeUpdate;
 
 struct AssistantNode {
   AssistantNode();

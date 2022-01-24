@@ -67,7 +67,7 @@ static void EmpiricallyTestBounds(const TransformOperations& from,
     if (first_time)
       empirical_bounds = transformed;
     else
-      empirical_bounds.UnionBounds(transformed);
+      empirical_bounds.Union(transformed);
     first_time = false;
   }
 
@@ -216,7 +216,7 @@ TEST(TransformOperationsTest, AbsoluteAnimatedRotationBounds) {
   float sizes[] = {0, 0.1f, sqrt2, 2 * sqrt2};
   to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds);
   for (size_t i = 0; i < base::size(sizes); ++i) {
-    box.SetSize(FloatPoint3D(sizes[i], sizes[i], 0));
+    box.set_size(FloatPoint3D(sizes[i], sizes[i], 0));
 
     EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
     EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,

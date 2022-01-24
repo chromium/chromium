@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/base/device_monitor_win.h"
 #include "services/device/usb/usb_device_win.h"
 
@@ -25,6 +25,10 @@ class UsbServiceWin final : public DeviceMonitorWin::Observer,
                             public UsbService {
  public:
   UsbServiceWin();
+
+  UsbServiceWin(const UsbServiceWin&) = delete;
+  UsbServiceWin& operator=(const UsbServiceWin&) = delete;
+
   ~UsbServiceWin() override;
 
  private:
@@ -75,8 +79,6 @@ class UsbServiceWin final : public DeviceMonitorWin::Observer,
       device_observation_{this};
 
   base::WeakPtrFactory<UsbServiceWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsbServiceWin);
 };
 
 }  // namespace device

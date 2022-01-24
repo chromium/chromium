@@ -35,6 +35,9 @@ class LoginScreenUiApitest : public LoginScreenApitestBase {
  public:
   LoginScreenUiApitest() : LoginScreenApitestBase(version_info::Channel::DEV) {}
 
+  LoginScreenUiApitest(const LoginScreenUiApitest&) = delete;
+  LoginScreenUiApitest& operator=(const LoginScreenUiApitest&) = delete;
+
   ~LoginScreenUiApitest() override = default;
 
   bool HasOpenWindow() const {
@@ -62,9 +65,6 @@ class LoginScreenUiApitest : public LoginScreenApitestBase {
         ->GetDialogWidgetForTesting()
         ->movement_disabled();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenUiApitest);
 };
 
 IN_PROC_BROWSER_TEST_F(LoginScreenUiApitest, ExtensionCanOpenWindow) {

@@ -21,7 +21,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/exception_snapshot.h"
@@ -50,6 +49,10 @@ union CPUContextUnion {
 class ExceptionSnapshotWin final : public ExceptionSnapshot {
  public:
   ExceptionSnapshotWin();
+
+  ExceptionSnapshotWin(const ExceptionSnapshotWin&) = delete;
+  ExceptionSnapshotWin& operator=(const ExceptionSnapshotWin&) = delete;
+
   ~ExceptionSnapshotWin() override;
 
   //! \brief Initializes the object.
@@ -102,8 +105,6 @@ class ExceptionSnapshotWin final : public ExceptionSnapshot {
   uint32_t exception_flags_;
   DWORD exception_code_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionSnapshotWin);
 };
 
 }  // namespace internal

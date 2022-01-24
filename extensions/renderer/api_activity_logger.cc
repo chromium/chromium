@@ -19,6 +19,10 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/worker_script_context_set.h"
 #include "extensions/renderer/worker_thread_util.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 

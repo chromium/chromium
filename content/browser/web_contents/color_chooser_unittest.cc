@@ -25,13 +25,14 @@ namespace {
 class MockColorChooser : public content::ColorChooser {
  public:
   MockColorChooser() = default;
+
+  MockColorChooser(const MockColorChooser&) = delete;
+  MockColorChooser& operator=(const MockColorChooser&) = delete;
+
   ~MockColorChooser() override = default;
 
   MOCK_METHOD0(End, void());
   MOCK_METHOD1(SetSelectedColor, void(SkColor color));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockColorChooser);
 };
 
 // Delegate to override OpenColorChooser.
@@ -40,6 +41,9 @@ class OpenColorChooserDelegate : public WebContentsDelegate {
   explicit OpenColorChooserDelegate(
       std::unique_ptr<MockColorChooser> mock_color_chooser)
       : mock_color_chooser_(std::move(mock_color_chooser)) {}
+
+  OpenColorChooserDelegate(const OpenColorChooserDelegate&) = delete;
+  OpenColorChooserDelegate& operator=(const OpenColorChooserDelegate&) = delete;
 
   ~OpenColorChooserDelegate() override = default;
 
@@ -56,8 +60,6 @@ class OpenColorChooserDelegate : public WebContentsDelegate {
 
  private:
   std::unique_ptr<MockColorChooser> mock_color_chooser_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenColorChooserDelegate);
 };
 
 }  // namespace

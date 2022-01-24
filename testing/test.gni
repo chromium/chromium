@@ -8,6 +8,7 @@
 
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/devtools.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/rts.gni")
 import("//build_overrides/build.gni")
@@ -52,6 +53,8 @@ if (is_android) {
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
+#   allow_cleartext_traffic: (Android, optional) whether to allow cleartext
+#      network requests during the test.
 template("test") {
   # Ensures the rts file exists and if not, creates a dummy file
   if (use_rts) {
@@ -68,6 +71,11 @@ template("test") {
     assert(!defined(invoker.is_xctest) || !invoker.is_xctest,
            "is_xctest can be set only for iOS builds")
   }
+  if (!is_android) {
+    assert(!defined(invoker.allow_cleartext_traffic),
+           "allow_cleartext_traffic can be set only for Android tests")
+  }
+
   if (is_android) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
 
@@ -168,6 +176,7 @@ template("test") {
       _library_target = "${target_name}__library"
       _apk_target = "${target_name}__apk"
       _apk_specific_vars = [
+        "allow_cleartext_traffic",
         "android_manifest",
         "android_manifest_dep",
         "android_manifest_template",
@@ -317,66 +326,128 @@ template("test") {
     _pkg_target = "${_output_name}_pkg"
     _exec_target = "${_output_name}__exec"
 
-    manifest_fragments =
-        [ "//build/config/fuchsia/test/minimum_capabilities.test-cmx" ]
+    # Generate a CMX fragment that provides the program name.
+    _test_program_fragment_target = "${target_name}_program-fragment"
+    _test_program_fragment = "${target_out_dir}/${target_name}_program.test-cmx"
+    _program_name = get_label_info(":${_exec_target}", "name")
+    generated_file(_test_program_fragment_target) {
+      contents = "{ \"program\": { \"binary\": \"${_program_name}\"}}"
+      outputs = [ _test_program_fragment ]
+    }
 
+    # Collate the complete set of elements to include in the test component's
+    # manifest.
+    _manifest_fragments = [
+      "//build/config/fuchsia/test/minimum_capabilities.test-cmx",
+      _test_program_fragment,
+    ]
     if (defined(invoker.additional_manifest_fragments)) {
-      manifest_fragments += invoker.additional_manifest_fragments
+      _manifest_fragments += invoker.additional_manifest_fragments
     }
 
-    combined_manifest = "${target_name}.test-cmx"
-    cmc_merge(combined_manifest) {
-      sources = manifest_fragments
-      output_name = target_name
+    # Generate the test component manifest from the specified elements.
+    _test_component_manifest_target = "${target_name}_component-manifest"
+    _test_component_manifest = "${target_out_dir}/${target_name}.cmx"
+    cmc_merge(_test_component_manifest_target) {
+      sources = _manifest_fragments
+      output_name = "${_output_name}.cmx"
+      deps = [ ":${_test_program_fragment_target}" ]
     }
-    manifest = "${target_out_dir}/${combined_manifest}"
 
-    fuchsia_package_runner(target_name) {
-      is_test_exe = true
+    # Define the test component, dependent on the generated manifest, and the
+    # test executable target.
+    _test_component_target = "${target_name}_component"
+    fuchsia_component(_test_component_target) {
+      deps = [ ":$_test_component_manifest_target" ]
+      data_deps = [ ":$_exec_target" ]
+      manifest = _test_component_manifest
+      visibility = [ ":*" ]
+    }
+
+    # Define components for each entry in |additional_manifests|, if any. Since
+    # manifests may themselves depend-on the outputs of |deps|, these components
+    # must each individually depend on |invoker.deps|.
+    _test_component_targets = [ ":${_test_component_target}" ]
+    if (defined(invoker.additional_manifests)) {
+      foreach(filename, invoker.additional_manifests) {
+        _additional_component_target =
+            target_name + "_" + get_path_info(filename, "name")
+        _test_component_targets += [ ":${_additional_component_target}" ]
+        fuchsia_component(_additional_component_target) {
+          forward_variables_from(invoker, [ "testonly" ])
+          data_deps = [ ":$_exec_target" ]
+          visibility = [ ":*" ]
+          manifest = filename
+
+          # Depend on |invoker.deps|, in case it includes a dependency that
+          # creates this additional component's manifest.
+          if (defined(invoker.deps)) {
+            deps = invoker.deps
+          }
+        }
+      }
+    }
+
+    # Define the package target that will bundle the test and additional
+    # components and their data.
+    fuchsia_package(_pkg_target) {
       forward_variables_from(invoker,
                              [
-                               "use_run_test_component",
-                               "use_test_server",
-                               "package_deps",
-                               "visibility",
+                               "excluded_files",
+                               "excluded_dirs",
                              ])
-      runner_script = "//build/fuchsia/test_runner.py"
-      package = ":$_pkg_target"
-      package_name_override = _output_name
+      package_name = _output_name
+      deps = _test_component_targets
 
-      if (tests_have_location_tags) {
-        data = [ "//testing/location_tags.json" ]
+      if (!defined(excluded_dirs)) {
+        excluded_dirs = []
       }
-      data_deps = [ "//testing/buildbot/filters:fuchsia_filters" ]
-
-      if (use_rts) {
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
-      }
+      excluded_dirs += [ devtools_root_location ]
     }
 
-    cr_fuchsia_package(_pkg_target) {
-      forward_variables_from(invoker, [ "additional_manifests" ])
-      binary = ":$_exec_target"
-      package_name_override = _output_name
-      deps = [ ":$combined_manifest" ]
+    # |target_name| refers to the package-runner rule, so that building
+    # "base_unittests" will build not only the executable, component, and
+    # package, but also the script required to run them.
+    fuchsia_test_runner(target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "data",
+                               "data_deps",
+                               "package_deps",
+                               "use_test_server",
+                             ])
 
-      # Pass on the test() target's |deps|, in case any of the files listed in
-      # |additional_manifests| are generated by them.
+      is_test_exe = true
+      package = ":$_pkg_target"
+      package_name = _output_name
+
+      if (!defined(deps)) {
+        deps = []
+      }
       if (defined(invoker.deps)) {
         deps += invoker.deps
+      }
+
+      if (!defined(data)) {
+        data = []
+      }
+      if (tests_have_location_tags) {
+        data += [ "//testing/location_tags.json" ]
+      }
+
+      if (!defined(data_deps)) {
+        data_deps = []
+      }
+      data_deps += [ "//testing/buildbot/filters:fuchsia_filters" ]
+
+      if (use_rts) {
+        data_deps += [ ":${target_name}__rts_filters" ]
       }
     }
 
     executable(_exec_target) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       output_name = _exec_target
-
-      if (use_rts) {
-        if (!defined(data_deps)) {
-          data_deps = []
-        }
-        data_deps += [ ":${invoker.target_name}__rts_filters" ]
-      }
     }
   } else if (is_ios) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
@@ -391,6 +462,11 @@ template("test") {
     }
 
     _test_target = target_name
+    _output_name = target_name
+    if (defined(invoker.output_name)) {
+      _output_name = invoker.output_name
+    }
+
     _wrapper_output_name = "run_${target_name}"
     ios_test_runner_wrapper(_wrapper_output_name) {
       forward_variables_from(invoker,
@@ -398,6 +474,7 @@ template("test") {
                                "data",
                                "deps",
                                "executable_args",
+                               "output_name",
                                "retries",
                                "shards",
                              ])
@@ -454,14 +531,13 @@ template("test") {
         info_plist = "//testing/gtest_ios/unittest-Info.plist"
       }
 
-      _gtest_bundle_id_suffix = "${target_name}"
-      xcode_product_bundle_id = "gtest.$_gtest_bundle_id_suffix"
-
-      if (!defined(extra_substitutions)) {
-        extra_substitutions = []
+      if (ios_use_shared_bundle_id_for_test_apps) {
+        bundle_identifier = "$ios_app_bundle_id_prefix.gtest.unittests"
+        not_needed([ "_output_name" ])
+      } else {
+        bundle_identifier = "$ios_app_bundle_id_prefix.gtest." +
+                            string_replace(_output_name, "_", "-")
       }
-      extra_substitutions +=
-          [ "GTEST_BUNDLE_ID_SUFFIX=$_gtest_bundle_id_suffix" ]
 
       if (!defined(bundle_deps)) {
         bundle_deps = []
@@ -586,7 +662,11 @@ template("test") {
       ]
 
       if (_use_ash_chrome) {
-        executable_args += [ "--ash-chrome-path=ash_clang_x64/test_ash_chrome" ]
+        executable_args += [ "--ash-chrome-path" ]
+
+        # Can't use --ash-chrome-path=path because WrappedPath
+        # won't be expanded for that usage.
+        executable_args += [ "@WrappedPath(./ash_clang_x64/test_ash_chrome)" ]
       }
 
       if (is_asan) {

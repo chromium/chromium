@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 

@@ -20,6 +20,6 @@ BASE_EXPORT uint64_t HashMetricName(base::StringPiece name);
 // can be more suitable for contexts where memory use is a concern.
 BASE_EXPORT uint32_t HashMetricNameAs32Bits(base::StringPiece name);
 
-}  // namespace metrics
+}  // namespace base
 
 #endif  // BASE_METRICS_METRICS_HASHES_H_

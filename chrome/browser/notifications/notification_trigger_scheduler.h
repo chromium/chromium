@@ -15,6 +15,8 @@ namespace content {
 class StoragePartition;
 }  // namespace content
 
+class Profile;
+
 class NotificationTriggerScheduler {
  public:
   static std::unique_ptr<NotificationTriggerScheduler> Create();
@@ -33,16 +35,19 @@ class NotificationTriggerScheduler {
   // overwrites the existing trigger so only the earliest is set at any time.
   virtual void ScheduleTrigger(base::Time timestamp);
 
-  // Triggers pending notifications for |partition|.
-  // TODO(knollr): Mock the actual storage partitions to observe this call in
-  // tests and make this static in the implementation.
+ protected:
+  // Use NotificationTriggerScheduler::Create() to get an instance of this.
+  NotificationTriggerScheduler();
+
+  // Triggers pending notifications for |partition|. Virtual so we can observe
+  // PlatformNotificationContextImpl::TriggerNotifications() calls in tests.
   virtual void TriggerNotificationsForStoragePartition(
       content::StoragePartition* partition);
 
- protected:
-  NotificationTriggerScheduler();
-
  private:
+  // Triggers pending notifications for |profile|.
+  static void TriggerNotificationsForProfile(Profile* profile);
+
   base::OneShotTimer trigger_timer_;
 };
 

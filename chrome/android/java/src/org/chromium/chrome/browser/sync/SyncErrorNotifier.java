@@ -146,9 +146,8 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
         // ensures there's only one sync notification at a time.
         NotificationWrapper notification =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(true /* preferCompat */,
+                        .createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.BROWSER,
-                                null /*remoteAppPackageName*/,
                                 new NotificationMetadata(
                                         NotificationUmaTracker.SystemNotificationType.SYNC, null,
                                         NotificationConstants.NOTIFICATION_ID_SYNC))

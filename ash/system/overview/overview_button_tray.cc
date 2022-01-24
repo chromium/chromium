@@ -14,6 +14,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
@@ -32,17 +33,51 @@
 
 namespace ash {
 
+namespace {
+
+gfx::ImageSkia GetIconImage() {
+  return gfx::CreateVectorIcon(
+      kShelfOverviewIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonIconColor));
+}
+
+bool ShouldButtonBeVisible() {
+  auto* shell = Shell::Get();
+  SessionControllerImpl* session_controller = shell->session_controller();
+  if (session_controller->GetSessionState() !=
+          session_manager::SessionState::ACTIVE ||
+      session_controller->IsRunningInAppMode()) {
+    return false;
+  }
+
+  // Check whether the button should be visible for 'kOverviewButton' feature,
+  // which is running as an experiment now. It is only enabled for a specific
+  // group of existing desks users, see `kUserHasUsedDesksRecently` for more
+  // details. But we also want to enable it if the user has explicitly enabled
+  // `kOverviewButton` from chrome://flags or from the command line. Even though
+  // the user is not in the group of existing desks users. Note, can be removed
+  // once the experiment is done.
+  if (base::FeatureList::IsEnabled(features::kOverviewButton) &&
+      (desks_restore_util::HasPrimaryUserUsedDesksRecently() ||
+       base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+           features::kOverviewButton.name))) {
+    return true;
+  }
+
+  return shell->tablet_mode_controller()->ShouldShowOverviewButton() &&
+         ShelfConfig::Get()->shelf_controls_shown();
+}
+
+}  // namespace
+
 constexpr base::TimeDelta OverviewButtonTray::kDoubleTapThresholdMs;
 
 OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf),
       icon_(new views::ImageView()),
       scoped_session_observer_(this) {
-  gfx::ImageSkia image = gfx::CreateVectorIcon(
-      kShelfOverviewIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonIconColor));
-  icon_->SetImage(image);
+  const gfx::ImageSkia image = GetIconImage();
   const int vertical_padding = (kTrayItemSize - image.height()) / 2;
   const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
   icon_->SetBorder(views::CreateEmptyBorder(
@@ -192,25 +227,13 @@ void OverviewButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
   // This class has no bubbles to hide.
 }
 
+void OverviewButtonTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  icon_->SetImage(GetIconImage());
+}
+
 void OverviewButtonTray::UpdateIconVisibility() {
-  if (base::FeatureList::IsEnabled(features::kOverviewButton)) {
-    SetVisiblePreferred(true);
-    return;
-  }
-
-  SessionControllerImpl* session_controller =
-      Shell::Get()->session_controller();
-  bool active_session = session_controller->GetSessionState() ==
-                        session_manager::SessionState::ACTIVE;
-  bool app_mode = session_controller->IsRunningInAppMode();
-
-  bool should_show =
-      Shell::Get()->tablet_mode_controller()->ShouldShowOverviewButton();
-
-  bool shelf_controls_shown = ShelfConfig::Get()->shelf_controls_shown();
-
-  SetVisiblePreferred(should_show && active_session && shelf_controls_shown &&
-                      !app_mode);
+  SetVisiblePreferred(ShouldButtonBeVisible());
 }
 
 BEGIN_METADATA(OverviewButtonTray, TrayBackgroundView)

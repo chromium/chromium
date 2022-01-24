@@ -109,9 +109,9 @@ void TabCapturePerformanceTestBase::NavigateToTestPage(
     const std::string& test_page_html_content) {
   LOG(INFO) << "Navigating to test page...";
   test_page_to_serve_ = test_page_html_content;
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL(kTestWebPageHostname, kTestWebPagePath));
+      embedded_test_server()->GetURL(kTestWebPageHostname, kTestWebPagePath)));
 }
 
 base::Value TabCapturePerformanceTestBase::SendMessageToExtension(

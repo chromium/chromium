@@ -261,8 +261,7 @@ Practical advice:
    is being pulled in.
    * Use ProGuard's [-whyareyoukeeping] to see why unwanted symbols are kept
      (e.g. to [//base/android/proguard/chromium_apk.flags](/base/android/proguard/chromium_apk.flags)).
-   * Try adding [-assumenosideeffects] rules to strip out unwanted calls
-     (equivalent to adding @RemovableInRelease annotations).
+   * Try adding [-assumenosideeffects] rules to strip out unwanted calls.
  * Consider removing all resources via `strip_resources = true`.
  * Remove specific drawables via `resource_exclusion_regex`.
 

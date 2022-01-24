@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 
 namespace extensions {
@@ -20,6 +19,10 @@ class DevModeBubbleDelegate
     : public ExtensionMessageBubbleController::Delegate {
  public:
   explicit DevModeBubbleDelegate(Profile* profile);
+
+  DevModeBubbleDelegate(const DevModeBubbleDelegate&) = delete;
+  DevModeBubbleDelegate& operator=(const DevModeBubbleDelegate&) = delete;
+
   ~DevModeBubbleDelegate() override;
 
   // ExtensionMessageBubbleController::Delegate methods.
@@ -48,8 +51,6 @@ class DevModeBubbleDelegate
 
  private:
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevModeBubbleDelegate);
 };
 
 }  // namespace extensions

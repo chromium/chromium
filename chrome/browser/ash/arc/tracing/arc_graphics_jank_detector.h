@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace arc {
@@ -49,13 +48,17 @@ class ArcGraphicsJankDetector {
   // Constant to detect pause to reduce the chance of triggering jank detection
   // in case Android app just not producing the samples due to inactivity.
   static constexpr base::TimeDelta kPauseDetectionThreshold =
-      base::TimeDelta::FromSecondsD(0.25);
+      base::Seconds(0.25);
 
   // Threshold relative to the normal rate to consider the current frame as a
   // jank if its duration longer than this threshold.
   static constexpr int kJankDetectionThresholdPercent = 190;
 
   explicit ArcGraphicsJankDetector(const JankCallback& callback);
+
+  ArcGraphicsJankDetector(const ArcGraphicsJankDetector&) = delete;
+  ArcGraphicsJankDetector& operator=(const ArcGraphicsJankDetector&) = delete;
+
   ~ArcGraphicsJankDetector();
 
   // Resets detector to its initial state, stage is set to |Stage::kWarmUp| with
@@ -90,8 +93,6 @@ class ArcGraphicsJankDetector {
   base::TimeDelta period_;
   // Period fixed.
   bool period_fixed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcGraphicsJankDetector);
 };
 
 }  // namespace arc

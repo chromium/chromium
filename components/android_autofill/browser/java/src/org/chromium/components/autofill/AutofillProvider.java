@@ -62,10 +62,6 @@ import java.util.ArrayList;
 public class AutofillProvider {
     private static final String TAG = "AutofillProvider";
 
-    // This member is initialize at first use. Not access it directly, always through
-    // isQueryServerFieldTypesEnabled().
-    private static Boolean sIsQueryServerFieldTypesEnabled;
-
     private static class FocusField {
         public final short fieldIndex;
         public final Rect absBound;
@@ -134,16 +130,13 @@ public class AutofillProvider {
                                 .addAttribute("label", field.mLabel)
                                 .addAttribute("ua-autofill-hints", field.mHeuristicType)
                                 .addAttribute("id", field.mId);
-
-                if (isQueryServerFieldTypesEnabled()) {
-                    builder.addAttribute("crowdsourcing-autofill-hints", field.getServerType());
-                    builder.addAttribute("computed-autofill-hints", field.getComputedType());
-                    // Compose multiple predictions to a string separated by ','.
-                    String[] predictions = field.getServerPredictions();
-                    if (predictions != null && predictions.length > 0) {
-                        builder.addAttribute("crowdsourcing-predictions-autofill-hints",
-                                String.join(",", predictions));
-                    }
+                builder.addAttribute("crowdsourcing-autofill-hints", field.getServerType());
+                builder.addAttribute("computed-autofill-hints", field.getComputedType());
+                // Compose multiple predictions to a string separated by ','.
+                String[] predictions = field.getServerPredictions();
+                if (predictions != null && predictions.length > 0) {
+                    builder.addAttribute("crowdsourcing-predictions-autofill-hints",
+                            String.join(",", predictions));
                 }
                 switch (field.getControlType()) {
                     case FormFieldData.ControlType.LIST:
@@ -383,12 +376,9 @@ public class AutofillProvider {
             bundle.putCharSequence("VIRTUAL_STRUCTURE_PROVIDER_NAME", mProviderName);
             bundle.putCharSequence(
                     "VIRTUAL_STRUCTURE_PROVIDER_VERSION", VersionConstants.PRODUCT_VERSION);
-
-            if (isQueryServerFieldTypesEnabled()) {
-                AutofillHintsService autofillHintsService = mRequest.getAutofillHintsService();
-                if (autofillHintsService != null) {
-                    bundle.putBinder("AUTOFILL_HINTS_SERVICE", autofillHintsService.getBinder());
-                }
+            AutofillHintsService autofillHintsService = mRequest.getAutofillHintsService();
+            if (autofillHintsService != null) {
+                bundle.putBinder("AUTOFILL_HINTS_SERVICE", autofillHintsService.getBinder());
             }
         }
         mRequest.fillViewStructure(structure);
@@ -816,18 +806,13 @@ public class AutofillProvider {
 
     @CalledByNative
     private void onQueryDone(boolean success) {
-        mRequest.onQueryDone(success);
-        mAutofillUMA.onServerTypeAvailable(
-                success ? mRequest.mFormData : null, /*afterSessionStarted*/ true);
-        mAutofillManager.onQueryDone(success);
-    }
-
-    public static boolean isQueryServerFieldTypesEnabled() {
-        if (sIsQueryServerFieldTypesEnabled == null) {
-            sIsQueryServerFieldTypesEnabled =
-                    AutofillProviderJni.get().isQueryServerFieldTypesEnabled();
+        if (mRequest != null) {
+            mRequest.onQueryDone(success);
         }
-        return sIsQueryServerFieldTypesEnabled;
+        mAutofillUMA.onServerTypeAvailable(
+                (success && mRequest != null) ? mRequest.mFormData : null,
+                /*afterSessionStarted*/ true);
+        mAutofillManager.onQueryDone(success);
     }
 
     private void forceNotifyFormValues() {
@@ -921,6 +906,5 @@ public class AutofillProvider {
                 long nativeAutofillProviderAndroid, AutofillProvider caller, String value);
         void setAnchorViewRect(long nativeAutofillProviderAndroid, AutofillProvider caller,
                 View anchorView, float x, float y, float width, float height);
-        boolean isQueryServerFieldTypesEnabled();
     }
 }

@@ -47,6 +47,11 @@ class TabletModeWindowDragDelegate {
   };
 
   TabletModeWindowDragDelegate();
+
+  TabletModeWindowDragDelegate(const TabletModeWindowDragDelegate&) = delete;
+  TabletModeWindowDragDelegate& operator=(const TabletModeWindowDragDelegate&) =
+      delete;
+
   virtual ~TabletModeWindowDragDelegate();
 
   // Called when a window starts being dragged.
@@ -157,9 +162,6 @@ class TabletModeWindowDragDelegate {
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
 
   base::WeakPtrFactory<TabletModeWindowDragDelegate> weak_ptr_factory_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabletModeWindowDragDelegate);
 };
 
 }  // namespace ash

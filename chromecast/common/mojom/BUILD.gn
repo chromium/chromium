@@ -6,10 +6,16 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
+    "accessibility.mojom",
     "activity_url_filter.mojom",
+    "activity_window.mojom",
     "application_media_capabilities.mojom",
+    "assistant_messenger.mojom",
+    "audio_socket.mojom",
+    "cast_demo.mojom",
     "constants.mojom",
     "feature_manager.mojom",
+    "gesture.mojom",
     "identification_settings.mojom",
     "js_channel.mojom",
     "media_caps.mojom",
@@ -18,10 +24,13 @@ mojom("mojom") {
     "multiroom.mojom",
     "queryable_data_store.mojom",
     "service_connector.mojom",
+    "settings_ui.mojom",
   ]
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//ui/events/mojom",
+    "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 

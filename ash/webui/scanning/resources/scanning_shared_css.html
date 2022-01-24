@@ -1,5 +1,5 @@
 <link rel="stylesheet"
-    href="chrome://resources/chromeos/colors/cros_colors.generated.css">
+    href="chrome://resources/chromeos/colors/cros_styles.css">
 <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
 <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
 <link rel="stylesheet" href="chrome://resources/cr_elements/md_select_css.html">
@@ -39,6 +39,20 @@
     ::-webkit-scrollbar-thumb {
       background-color: rgba(0, 0, 0, 0.5);
       border-radius: 4px;
+    }
+
+    cr-dialog::part(dialog) {
+      width: 340px;
+    }
+
+    cr-dialog [slot=title] {
+      font-weight: 500;
+      padding-bottom: 12px;
+    }
+
+    :host {
+      --action-toolbar-height: 40px;
+      --action-toolbar-width: 176px;
     }
 
     @media (min-width: 600px) {

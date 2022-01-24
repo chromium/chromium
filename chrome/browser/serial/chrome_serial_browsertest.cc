@@ -44,7 +44,7 @@ class SerialTest : public InProcessBrowserTest {
     context_->SetPortManagerForTesting(std::move(port_manager));
 
     GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
   void TearDown() override {

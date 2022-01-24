@@ -16,15 +16,16 @@ namespace cast_streaming {
 
 // Owns the CastStreamingSession and sends buffers to the renderer process via
 // a Mojo service.
-class ReceiverSessionImpl : public cast_streaming::CastStreamingSession::Client,
-                            public ReceiverSession {
+class ReceiverSessionImpl final
+    : public cast_streaming::CastStreamingSession::Client,
+      public ReceiverSession {
  public:
   // |av_constraints| specifies the supported media codecs and limitations
   // surrounding this support.
   ReceiverSessionImpl(
       std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
       MessagePortProvider message_port_provider);
-  ~ReceiverSessionImpl() final;
+  ~ReceiverSessionImpl() override;
 
   ReceiverSessionImpl(const ReceiverSessionImpl&) = delete;
   ReceiverSessionImpl& operator=(const ReceiverSessionImpl&) = delete;
@@ -46,15 +47,15 @@ class ReceiverSessionImpl : public cast_streaming::CastStreamingSession::Client,
       absl::optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
           audio_stream_info,
       absl::optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
-          video_stream_info) final;
-  void OnAudioBufferReceived(media::mojom::DecoderBufferPtr buffer) final;
-  void OnVideoBufferReceived(media::mojom::DecoderBufferPtr buffer) final;
+          video_stream_info) override;
+  void OnAudioBufferReceived(media::mojom::DecoderBufferPtr buffer) override;
+  void OnVideoBufferReceived(media::mojom::DecoderBufferPtr buffer) override;
   void OnSessionReinitialization(
       absl::optional<cast_streaming::CastStreamingSession::AudioStreamInfo>
           audio_stream_info,
       absl::optional<cast_streaming::CastStreamingSession::VideoStreamInfo>
-          video_stream_info) final;
-  void OnSessionEnded() final;
+          video_stream_info) override;
+  void OnSessionEnded() override;
 
   // Populated in the ctor, and empty following a call to either
   // OnReceiverEnabled() or OnMojoDisconnect().

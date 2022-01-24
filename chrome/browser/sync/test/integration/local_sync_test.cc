@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -44,6 +43,10 @@ class SyncTransportActiveChecker : public SingleClientStatusChangeChecker {
 // This test verifies some basic functionality of local sync, used for roaming
 // profiles (enterprise use-case).
 class LocalSyncTest : public InProcessBrowserTest {
+ public:
+  LocalSyncTest(const LocalSyncTest&) = delete;
+  LocalSyncTest& operator=(const LocalSyncTest&) = delete;
+
  protected:
   LocalSyncTest() {
     EXPECT_TRUE(local_sync_backend_dir_.CreateUniqueTempDir());
@@ -66,7 +69,6 @@ class LocalSyncTest : public InProcessBrowserTest {
 
  private:
   base::ScopedTempDir local_sync_backend_dir_;
-  DISALLOW_COPY_AND_ASSIGN(LocalSyncTest);
 };
 
 // The local sync backend is currently only supported on Windows, Mac and Linux.

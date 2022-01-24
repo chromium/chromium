@@ -38,11 +38,8 @@ source_set("cups_proxy") {
     "//chromeos/dbus/cups_proxy",
     "//net",
     "//net/traffic_annotation",
+    "//printing/backend",
   ]
-
-  public_deps = [ "//printing" ]
-
-  configs += [ "//printing:cups" ]
 }
 
 static_library("test_support") {
@@ -68,8 +65,6 @@ test("libcups_unittests") {
     "proxy_manager_unittest.cc",
     "socket_manager_unittest.cc",
   ]
-
-  configs += [ "//printing:cups" ]
 
   deps = [
     ":cups_proxy",

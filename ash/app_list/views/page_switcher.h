@@ -6,7 +6,6 @@
 #define ASH_APP_LIST_VIEWS_PAGE_SWITCHER_H_
 
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
-#include "base/macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"
 

@@ -53,14 +53,14 @@ TEST_F(PollingDeviceMonitorImplTest, DeviceChangeNotifiesObserver) {
   provider.device_descriptions.emplace_back("1", "1", "1");
   EXPECT_CALL(observer, OnDevicesChanged).Times(1);
   monitor.StartMonitoring();
-  task_environment.FastForwardBy(base::TimeDelta::FromSeconds(
+  task_environment.FastForwardBy(base::Seconds(
       PollingDeviceMonitorImpl::get_polling_interval_for_testing()));
 
   // When the monitor polls a second time, the observer should not be notified
   // as the list of devices hasn't changed.
   testing::Mock::VerifyAndClearExpectations(&observer);
   EXPECT_CALL(observer, OnDevicesChanged).Times(0);
-  task_environment.FastForwardBy(base::TimeDelta::FromSeconds(
+  task_environment.FastForwardBy(base::Seconds(
       PollingDeviceMonitorImpl::get_polling_interval_for_testing()));
   testing::Mock::VerifyAndClearExpectations(&observer);
 }

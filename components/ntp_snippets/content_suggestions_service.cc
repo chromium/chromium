@@ -690,7 +690,7 @@ void ContentSuggestionsService::RestoreDismissedCategoriesFromPrefs() {
 void ContentSuggestionsService::StoreDismissedCategoriesToPrefs() {
   base::ListValue list;
   for (const auto& category_provider_pair : dismissed_providers_by_category_) {
-    list.AppendInteger(category_provider_pair.first.id());
+    list.Append(category_provider_pair.first.id());
   }
 
   pref_service_->Set(prefs::kDismissedCategories, list);

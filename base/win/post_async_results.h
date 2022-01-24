@@ -17,7 +17,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
 namespace win {
@@ -102,15 +102,15 @@ HRESULT GetAsyncResultsT(IAsyncOperationT<T>* async_operation,
 //
 // Callers need to ensure that this method is invoked in the correct COM
 // apartment, i.e. the one that created |async_operation|. The
-// |completed_handler| will be run on the same thread that invoked this method.
-// This call does not ensure the lifetime of the |async_operation|, which must
-// be done by the caller.
+// |completed_handler| will be run on the same sequence that invoked this
+// method. This call does not ensure the lifetime of the |async_operation|,
+// which must be done by the caller.
 template <typename T>
 HRESULT PostAsyncOperationCompletedHandler(
     IAsyncOperationT<T>* async_operation,
     IAsyncOperationCompletedHandlerT<T> completed_handler) {
   auto internal_completed_handler = base::BindOnce(
-      [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      [](scoped_refptr<base::SequencedTaskRunner> task_runner,
          IAsyncOperationCompletedHandlerT<T> completed_handler,
          IAsyncOperationT<T>* async_operation, AsyncStatus async_status) {
         // The raw |async_operation| pointer received as part of this
@@ -136,7 +136,7 @@ HRESULT PostAsyncOperationCompletedHandler(
                 async_status));
         return S_OK;
       },
-      base::ThreadTaskRunnerHandle::Get(), std::move(completed_handler));
+      base::SequencedTaskRunnerHandle::Get(), std::move(completed_handler));
 
   using CompletedHandler = Microsoft::WRL::Implements<
       Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
@@ -164,9 +164,9 @@ HRESULT PostAsyncOperationCompletedHandler(
 //
 // Callers need to ensure that this method is invoked in the correct COM
 // apartment, i.e. the one that created |async_operation|. The resulting
-// callback (i.e. |success_callback|) will be run on the same
-// thread that invoked this method. This call does not ensure the lifetime of
-// the |async_operation|, which must be done by the caller.
+// callback (i.e. |success_callback|) will be run on the same sequence that
+// invoked this method. This call does not ensure the lifetime of the
+// |async_operation|, which must be done by the caller.
 template <typename T>
 HRESULT PostAsyncHandlers(
     internal::IAsyncOperationT<T>* async_operation,
@@ -196,7 +196,7 @@ HRESULT PostAsyncHandlers(
 // Callers need to ensure that this method is invoked in the correct COM
 // apartment, i.e. the one that created |async_operation|. The resulting
 // callback (|success_callback| or |failure_callback|) will be run on the same
-// thread that invoked this method. This call does not ensure the lifetime of
+// sequence that invoked this method. This call does not ensure the lifetime of
 // the |async_operation|, which must be done by the caller.
 template <typename T>
 HRESULT PostAsyncHandlers(
@@ -231,7 +231,7 @@ HRESULT PostAsyncHandlers(
 // Callers need to ensure that this method is invoked in the correct COM
 // apartment, i.e. the one that created |async_operation|. The resulting
 // callback (|success_callback| or |failure_callback|) will be run on the same
-// thread that invoked this method. This call does not ensure the lifetime of
+// sequence that invoked this method. This call does not ensure the lifetime of
 // the |async_operation|, which must be done by the caller.
 template <typename T>
 HRESULT PostAsyncHandlers(
@@ -272,7 +272,7 @@ HRESULT PostAsyncHandlers(
 // Callers need to ensure that this method is invoked in the correct COM
 // apartment, i.e. the one that created |async_operation|. The resulting
 // callback (|success_callback| or |failure_callback|) will be run on the same
-// thread that invoked this method. This call does not ensure the lifetime of
+// sequence that invoked this method. This call does not ensure the lifetime of
 // the |async_operation|, which must be done by the caller.
 template <typename T>
 HRESULT PostAsyncHandlers(
@@ -311,7 +311,7 @@ HRESULT PostAsyncHandlers(
 //
 // Callers need to ensure that this method is invoked in the correct COM
 // apartment, i.e. the one that created |async_operation|. The |callback| will
-// be run on the same thread that invoked this method.
+// be run on the same sequence that invoked this method.
 //
 // WARNING: This call holds a reference to the provided |async_operation| until
 // it completes.

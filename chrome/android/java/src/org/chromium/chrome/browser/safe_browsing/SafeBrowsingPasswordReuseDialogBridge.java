@@ -45,12 +45,11 @@ public class SafeBrowsingPasswordReuseDialogBridge {
 
     @CalledByNative
     public void showDialog(String dialogTitle, String dialogDetails, String primaryButtonText,
-            @Nullable String secondaryButtonText, int[] boldStartRanges, int[] boldEndRanges) {
+            @Nullable String secondaryButtonText) {
         if (mWindowAndroid.getActivity().get() == null) return;
 
         PasswordManagerDialogContents contents = createDialogContents(
                 dialogTitle, dialogDetails, primaryButtonText, secondaryButtonText);
-        contents.setBoldRanges(boldStartRanges, boldEndRanges);
         contents.setPrimaryButtonFilled(secondaryButtonText != null);
 
         mDialogCoordinator.initialize(mWindowAndroid.getActivity().get(), contents);

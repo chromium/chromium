@@ -3,10 +3,11 @@
 # found in the LICENSE file.
 
 import os
-from chrome_ent_test.infra.core import environment, before_all, test
+from chrome_ent_test.infra.core import before_all, category, environment, test
 from infra import ChromeEnterpriseTestCase
 
 
+@category("chrome_only")
 @environment(file="../policy_test.asset.textpb")
 class SafeBrowsingEnabledTest(ChromeEnterpriseTestCase):
   """Test the SafeBrowsingEnabled policy.

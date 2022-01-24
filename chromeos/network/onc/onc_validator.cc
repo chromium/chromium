@@ -279,9 +279,8 @@ bool Validator::ValidateRecommendedField(
     return true;
   }
 
-  base::ListValue* recommended_list = nullptr;
-  recommended_value->GetAsList(&recommended_list);
-  DCHECK(recommended_list);  // The types of field values are already verified.
+  // The types of field values are already verified.
+  DCHECK(recommended_value->is_list());
 
   if (!managed_onc_) {
     std::ostringstream msg;
@@ -292,7 +291,7 @@ bool Validator::ValidateRecommendedField(
   }
 
   base::ListValue repaired_recommended;
-  for (const auto& entry : recommended_list->GetList()) {
+  for (const auto& entry : recommended_value->GetList()) {
     const std::string* field_name = entry.GetIfString();
     if (!field_name) {
       NOTREACHED();  // The types of field values are already verified.
@@ -325,7 +324,7 @@ bool Validator::ValidateRecommendedField(
       continue;
     }
 
-    repaired_recommended.AppendString(*field_name);
+    repaired_recommended.Append(*field_name);
   }
 
   result->SetKey(::onc::kRecommended, std::move(repaired_recommended));
@@ -382,7 +381,7 @@ std::string JoinStringRange(const std::vector<const char*>& strings,
 
 bool Validator::IsInDevicePolicy(base::DictionaryValue* result,
                                  const std::string& field_name) {
-  if (result->HasKey(field_name)) {
+  if (result->FindKey(field_name)) {
     if (onc_source_ != ::onc::ONC_SOURCE_DEVICE_POLICY) {
       std::ostringstream msg;
       msg << "Field '" << field_name << "' is only allowed in a device policy.";
@@ -448,12 +447,11 @@ bool Validator::FieldExistsAndIsEmpty(const base::DictionaryValue& object,
     return false;
 
   const std::string* str = value->GetIfString();
-  const base::ListValue* list = NULL;
   if (str) {
     if (!(*str).empty())
       return false;
-  } else if (value->GetAsList(&list)) {
-    if (!list->GetList().empty())
+  } else if (value->is_list()) {
+    if (!value->GetList().empty())
       return false;
   } else {
     NOTREACHED();
@@ -471,7 +469,7 @@ bool Validator::FieldExistsAndIsEmpty(const base::DictionaryValue& object,
 bool Validator::FieldShouldExistOrBeRecommended(
     const base::DictionaryValue& object,
     const std::string& field_name) {
-  if (object.HasKey(field_name) || FieldIsRecommended(object, field_name))
+  if (object.FindKey(field_name) || FieldIsRecommended(object, field_name))
     return true;
 
   std::ostringstream msg;
@@ -484,7 +482,7 @@ bool Validator::FieldShouldExistOrBeRecommended(
 bool Validator::OnlyOneFieldSet(const base::DictionaryValue& object,
                                 const std::string& field_name1,
                                 const std::string& field_name2) {
-  if (object.HasKey(field_name1) && object.HasKey(field_name2)) {
+  if (object.FindKey(field_name1) && object.FindKey(field_name2)) {
     std::ostringstream msg;
     msg << "At most one of '" << field_name1 << "' and '" << field_name2
         << "' can be set.";
@@ -530,7 +528,7 @@ bool Validator::ValidateSSIDAndHexSSID(base::DictionaryValue* object) {
     // If the HexSSID field is present, ignore errors in SSID because these
     // might be caused by the usage of a non-UTF-8 encoding when the SSID
     // field was automatically added (see FillInHexSSIDField).
-    if (!object->HasKey(::onc::wifi::kHexSSID)) {
+    if (!object->FindKey(::onc::wifi::kHexSSID)) {
       AddValidationIssue(true /* is_error */, msg.str());
       path_.pop_back();
       return false;
@@ -582,7 +580,7 @@ bool Validator::ValidateSSIDAndHexSSID(base::DictionaryValue* object) {
 
 bool Validator::RequireField(const base::DictionaryValue& dict,
                              const std::string& field_name) {
-  if (dict.HasKey(field_name))
+  if (dict.FindKey(field_name))
     return true;
 
   std::ostringstream msg;
@@ -681,13 +679,14 @@ bool Validator::ValidateNetworkConfiguration(base::DictionaryValue* result) {
 
     std::string type = GetStringFromDict(*result, ::onc::network_config::kType);
 
-    // Prohibit anything but WiFi, Ethernet and VPN for device-level policy
-    // (which corresponds to shared networks). See also
+    // Prohibit anything but WiFi, Ethernet, VPN and Cellular for device-level
+    // policy (which corresponds to shared networks). See also
     // http://crosbug.com/28741.
     if (onc_source_ == ::onc::ONC_SOURCE_DEVICE_POLICY && !type.empty() &&
         type != ::onc::network_type::kVPN &&
         type != ::onc::network_type::kWiFi &&
-        type != ::onc::network_type::kEthernet) {
+        type != ::onc::network_type::kEthernet &&
+        type != ::onc::network_type::kCellular) {
       std::ostringstream msg;
       msg << "Networks of type '" << type
           << "' are prohibited in ONC device policies.";
@@ -710,6 +709,9 @@ bool Validator::ValidateNetworkConfiguration(base::DictionaryValue* result) {
     } else if (type == ::onc::network_type::kTether) {
       all_required_exist &=
           RequireField(*result, ::onc::network_config::kTether);
+    } else if (type == ::onc::network_type::kCellular) {
+      all_required_exist &=
+          RequireField(*result, ::onc::network_config::kCellular);
     }
   }
 
@@ -811,9 +813,9 @@ bool Validator::ValidateWiFi(base::DictionaryValue* result) {
   bool all_required_exist = RequireField(*result, ::onc::wifi::kSecurity);
 
   // One of {kSSID, kHexSSID} must be present.
-  if (!result->HasKey(::onc::wifi::kSSID))
+  if (!result->FindKey(::onc::wifi::kSSID))
     all_required_exist &= RequireField(*result, ::onc::wifi::kHexSSID);
-  if (!result->HasKey(::onc::wifi::kHexSSID))
+  if (!result->FindKey(::onc::wifi::kHexSSID))
     all_required_exist &= RequireField(*result, ::onc::wifi::kSSID);
 
   std::string security = GetStringFromDict(*result, ::onc::wifi::kSecurity);
@@ -883,8 +885,8 @@ bool Validator::ValidateIPsec(base::DictionaryValue* result) {
       RequireField(*result, ::onc::ipsec::kIKEVersion);
   std::string auth =
       GetStringFromDict(*result, ::onc::ipsec::kAuthenticationType);
-  bool has_server_ca_cert = result->HasKey(::onc::ipsec::kServerCARefs) ||
-                            result->HasKey(::onc::ipsec::kServerCARef);
+  bool has_server_ca_cert = result->FindKey(::onc::ipsec::kServerCARefs) ||
+                            result->FindKey(::onc::ipsec::kServerCARef);
   if (auth == ::onc::ipsec::kCert) {
     all_required_exist &=
         RequireField(*result, ::onc::client_cert::kClientCertType);
@@ -1034,9 +1036,9 @@ bool Validator::ValidateVerifyX509(base::DictionaryValue* result) {
 
 bool Validator::ValidateCertificatePattern(base::DictionaryValue* result) {
   bool all_required_exist = true;
-  if (!result->HasKey(::onc::client_cert::kSubject) &&
-      !result->HasKey(::onc::client_cert::kIssuer) &&
-      !result->HasKey(::onc::client_cert::kIssuerCARef)) {
+  if (!result->FindKey(::onc::client_cert::kSubject) &&
+      !result->FindKey(::onc::client_cert::kIssuer) &&
+      !result->FindKey(::onc::client_cert::kIssuerCARef)) {
     all_required_exist = false;
     std::ostringstream msg;
     msg << "None of the fields '" << ::onc::client_cert::kSubject << "', '"
@@ -1052,7 +1054,7 @@ bool Validator::ValidateCertificatePattern(base::DictionaryValue* result) {
 bool Validator::ValidateGlobalNetworkConfiguration(
     base::DictionaryValue* result) {
   // Replace the deprecated kBlacklistedHexSSIDs with kBlockedHexSSIDs.
-  if (!result->HasKey(::onc::global_network_config::kBlockedHexSSIDs)) {
+  if (!result->FindKey(::onc::global_network_config::kBlockedHexSSIDs)) {
     absl::optional<base::Value> blocked =
         result->ExtractKey(::onc::global_network_config::kBlacklistedHexSSIDs);
     if (blocked) {
@@ -1061,16 +1063,19 @@ bool Validator::ValidateGlobalNetworkConfiguration(
     }
   }
 
-  // Validate that kDisableNetworkTypes, kAllowOnlyPolicyNetworksToConnect and
-  // kBlockedHexSSIDs are only allowed in device policy.
+  // Validate that kDisableNetworkTypes, kAllowOnlyPolicyWiFiToConnect,
+  // kAllowOnlyPolicyCellularNetworks and kBlockedHexSSIDs are only allowed in
+  // device policy.
   if (!IsInDevicePolicy(result,
                         ::onc::global_network_config::kDisableNetworkTypes) ||
       !IsInDevicePolicy(
           result,
-          ::onc::global_network_config::kAllowOnlyPolicyNetworksToConnect) ||
-      !IsInDevicePolicy(result,
-                        ::onc::global_network_config::
-                            kAllowOnlyPolicyNetworksToConnectIfAvailable) ||
+          ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks) ||
+      !IsInDevicePolicy(
+          result,
+          ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect) ||
+      !IsInDevicePolicy(result, ::onc::global_network_config::
+                                    kAllowOnlyPolicyWiFiToConnectIfAvailable) ||
       !IsInDevicePolicy(result,
                         ::onc::global_network_config::kBlockedHexSSIDs)) {
     return false;

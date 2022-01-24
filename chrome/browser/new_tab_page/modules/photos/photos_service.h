@@ -12,10 +12,14 @@
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+
+class PrefRegistrySimple;
+class PrefService;
 
 namespace signin {
 class IdentityManager;
@@ -23,27 +27,55 @@ class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
 
 // Handles requests for user Google Photos data.
-class PhotosService : public KeyedService {
+class PhotosService : public KeyedService,
+                      public signin::IdentityManager::Observer {
  public:
+  // Enumeration of various request results we want to log.
+  // This is reported to histogram, please do not change the values.
+  enum class RequestResult {
+    kError = 0,
+    kSuccess = 1,
+    kCached = 2,
+    kMaxValue = kCached,
+  };
+  static const char kLastDismissedTimePrefName[];
+  static const char kOptInAcknowledgedPrefName[];
+  static const char kLastMemoryOpenTimePrefName[];
+  static const base::TimeDelta kDismissDuration;
+
   PhotosService(const PhotosService&) = delete;
   PhotosService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      PrefService* pref_service);
   ~PhotosService() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // IdentityManager::Observer overrides.
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   using GetMemoriesCallback = photos::mojom::PhotosHandler::GetMemoriesCallback;
   // Retrieves Google Photos memories from API.
   void GetMemories(GetMemoriesCallback callback);
+  // Makes the service not return data for a specified amount of time.
+  void DismissModule();
+  // Makes the service return data again even if dimiss time is not yet over.
+  void RestoreModule();
+  // Returns whether to show opt-in surface in the module.
+  bool ShouldShowOptInScreen();
+  // Stores whether the user has opt-in to see the module content.
+  void OnUserOptIn(bool accept);
+  // Stores the last time the user opened a memory.
+  void OnMemoryOpen();
 
  private:
-  void OnTokenReceived(GetMemoriesCallback callback,
-                       GoogleServiceAuthError error,
+  void OnTokenReceived(GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
-  void OnJsonReceived(GetMemoriesCallback callback,
-                      const std::string& token,
+  void OnJsonReceived(const std::string& token,
                       const std::unique_ptr<std::string> json_response);
-  void OnJsonParsed(GetMemoriesCallback callback,
-                    const std::string& token,
+  void OnJsonParsed(const std::string& token,
                     data_decoder::DataDecoder::ValueOrError result);
 
   // Used for fetching OAuth2 access tokens. Only non-null when a token
@@ -51,7 +83,9 @@ class PhotosService : public KeyedService {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  std::vector<GetMemoriesCallback> callbacks_;
   signin::IdentityManager* identity_manager_;
+  PrefService* pref_service_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PhotosService> weak_factory_{this};
 };

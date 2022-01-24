@@ -48,9 +48,10 @@ SectionDimensionsElf MakeSectionDimensions(const BufferRegion& region,
 }
 
 // Helper to manipulate an image with one or more relocation tables.
-template <class ElfIntelTraits>
+template <class ELF_INTEL_TRAITS>
 class FakeImageWithReloc {
  public:
+  using ElfIntelTraits = ELF_INTEL_TRAITS;
   struct RelocSpec {
     offset_t start;
     std::vector<uint8_t> data;

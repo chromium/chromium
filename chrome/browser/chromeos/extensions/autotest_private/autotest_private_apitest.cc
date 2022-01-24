@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -20,7 +19,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "components/arc/arc_prefs.h"
@@ -40,7 +39,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -54,11 +52,15 @@ namespace extensions {
 class AutotestPrivateApiTest : public ExtensionApiTest {
  public:
   AutotestPrivateApiTest() {
-    // SplitSettingsSync makes an untitled Play Store icon appear in the shelf
-    // due to app pin syncing code. Sync isn't relevant to this test, so skip
-    // pinned app sync. https://crbug.com/1085597
-    SkipPinnedAppsFromSyncForTest();
+    // SyncSettingsCategorization makes an untitled Play Store icon appear in
+    // the shelf due to app pin syncing code. Sync isn't relevant to this test,
+    // so skip pinned app sync. https://crbug.com/1085597
+    ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest();
   }
+
+  AutotestPrivateApiTest(const AutotestPrivateApiTest&) = delete;
+  AutotestPrivateApiTest& operator=(const AutotestPrivateApiTest&) = delete;
+
   ~AutotestPrivateApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -81,9 +83,6 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
   }
 
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutotestPrivateApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivate) {
@@ -245,6 +244,11 @@ class AutotestPrivateWithPolicyApiTest : public AutotestPrivateApiTest {
  public:
   AutotestPrivateWithPolicyApiTest() {}
 
+  AutotestPrivateWithPolicyApiTest(const AutotestPrivateWithPolicyApiTest&) =
+      delete;
+  AutotestPrivateWithPolicyApiTest& operator=(
+      const AutotestPrivateWithPolicyApiTest&) = delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     provider_.SetDefaultReturns(
         /*is_initialization_complete_return=*/true,
@@ -266,9 +270,6 @@ class AutotestPrivateWithPolicyApiTest : public AutotestPrivateApiTest {
 
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutotestPrivateWithPolicyApiTest);
 };
 
 // GetAllEnterprisePolicies Sanity check.
@@ -282,6 +283,12 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateWithPolicyApiTest, PolicyAPITest) {
 class AutotestPrivateArcPerformanceTracing : public AutotestPrivateApiTest {
  public:
   AutotestPrivateArcPerformanceTracing() = default;
+
+  AutotestPrivateArcPerformanceTracing(
+      const AutotestPrivateArcPerformanceTracing&) = delete;
+  AutotestPrivateArcPerformanceTracing& operator=(
+      const AutotestPrivateArcPerformanceTracing&) = delete;
+
   ~AutotestPrivateArcPerformanceTracing() override = default;
 
  protected:
@@ -312,8 +319,6 @@ class AutotestPrivateArcPerformanceTracing : public AutotestPrivateApiTest {
 
  private:
   arc::ArcAppPerformanceTracingTestHelper tracing_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutotestPrivateArcPerformanceTracing);
 };
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateArcPerformanceTracing, Basic) {
@@ -326,30 +331,6 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateArcPerformanceTracing, Basic) {
 
   ASSERT_TRUE(RunExtensionTest("autotest_private",
                                {.custom_arg = "arcPerformanceTracing"},
-                               {.load_as_component = true}))
-      << message_;
-}
-
-class AutotestPrivateStartStopTracing : public AutotestPrivateApiTest {
- public:
-  AutotestPrivateStartStopTracing() = default;
-  ~AutotestPrivateStartStopTracing() override = default;
-  AutotestPrivateStartStopTracing(const AutotestPrivateStartStopTracing&) =
-      delete;
-  AutotestPrivateStartStopTracing& operator=(
-      const AutotestPrivateStartStopTracing&) = delete;
-
- protected:
-  // AutotestPrivateApiTest:
-  void SetUpOnMainThread() override {
-    AutotestPrivateApiTest::SetUpOnMainThread();
-    tracing::PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(AutotestPrivateStartStopTracing, StartStopTracing) {
-  ASSERT_TRUE(RunExtensionTest("autotest_private",
-                               {.custom_arg = "startStopTracing"},
                                {.load_as_component = true}))
       << message_;
 }

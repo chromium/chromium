@@ -63,6 +63,8 @@ const char* ImageAcceptHeader() {
 namespace {
 
 constexpr char kStylesheetAcceptHeader[] = "text/css,*/*;q=0.1";
+constexpr char kWebBundleAcceptHeader[] =
+    "application/webbundle;v=b2,application/webbundle;v=b1;q=0.8";
 
 // TODO(yhirano): Unify these with variables in
 // content/public/common/content_constants.h.
@@ -298,6 +300,13 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   } else {
     dest->request_initiator = src.RequestorOrigin()->ToUrlOrigin();
   }
+
+  DCHECK(dest->navigation_redirect_chain.empty());
+  dest->navigation_redirect_chain.reserve(src.NavigationRedirectChain().size());
+  for (const auto& url : src.NavigationRedirectChain()) {
+    dest->navigation_redirect_chain.push_back(url);
+  }
+
   if (src.IsolatedWorldOrigin()) {
     dest->isolated_world_origin = src.IsolatedWorldOrigin()->ToUrlOrigin();
   }
@@ -331,7 +340,6 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
                          .GetLoadFlagsForWebUrlRequest();
   dest->recursive_prefetch_token = src.RecursivePrefetchToken();
   dest->priority = ConvertWebKitPriorityToNetPriority(src.Priority());
-  dest->should_reset_appcache = src.ShouldResetAppCache();
   dest->is_external_request = src.IsExternalRequest();
   dest->cors_preflight_policy = src.CorsPreflightPolicy();
   dest->skip_service_worker = src.GetSkipServiceWorker();
@@ -345,7 +353,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
         absl::make_optional(network::ResourceRequest::WebBundleTokenParams(
             src.GetWebBundleTokenParams()->bundle_url,
             src.GetWebBundleTokenParams()->token,
-            src.GetWebBundleTokenParams()->CloneHandle()));
+            ToCrossVariantMojoType(
+                src.GetWebBundleTokenParams()->CloneHandle())));
   }
 
   // TODO(kinuko): Deprecate this.
@@ -365,7 +374,6 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->has_user_gesture = src.HasUserGesture();
   dest->enable_load_timing = true;
   dest->enable_upload_progress = src.ReportUploadProgress();
-  dest->report_raw_headers = src.ReportRawHeaders();
   // TODO(ryansturm): Remove dest->previews_state once it is no
   // longer used in a network delegate. https://crbug.com/842233
   dest->previews_state = static_cast<int>(src.GetPreviewsState());
@@ -410,12 +418,18 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
              network::mojom::RequestDestination::kImage) {
     dest->headers.SetHeaderIfMissing(net::HttpRequestHeaders::kAccept,
                                      ImageAcceptHeader());
+  } else if (request_destination ==
+             network::mojom::RequestDestination::kWebBundle) {
+    dest->headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                            kWebBundleAcceptHeader);
   } else {
     // Calling SetHeaderIfMissing() instead of SetHeader() because JS can
     // manually set an accept header on an XHR.
     dest->headers.SetHeaderIfMissing(net::HttpRequestHeaders::kAccept,
                                      network::kDefaultAcceptHeaderValue);
   }
+
+  dest->original_destination = src.GetOriginalDestination();
 }
 
 }  // namespace blink

@@ -39,6 +39,10 @@ class DisplayColorManagerForTest : public DisplayColorManager {
       display::DisplayConfigurator* configurator)
       : DisplayColorManager(configurator) {}
 
+  DisplayColorManagerForTest(const DisplayColorManagerForTest&) = delete;
+  DisplayColorManagerForTest& operator=(const DisplayColorManagerForTest&) =
+      delete;
+
   void SetOnFinishedForTest(base::OnceClosure on_finished_for_test) {
     on_finished_for_test_ = std::move(on_finished_for_test);
   }
@@ -73,8 +77,6 @@ class DisplayColorManagerForTest : public DisplayColorManager {
   }
 
   base::OnceClosure on_finished_for_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayColorManagerForTest);
 };
 
 // Implementation of QuirksManager::Delegate to fake chrome-restricted parts.
@@ -82,6 +84,10 @@ class QuirksManagerDelegateTestImpl : public quirks::QuirksManager::Delegate {
  public:
   QuirksManagerDelegateTestImpl(base::FilePath color_path)
       : color_path_(color_path) {}
+
+  QuirksManagerDelegateTestImpl(const QuirksManagerDelegateTestImpl&) = delete;
+  QuirksManagerDelegateTestImpl& operator=(
+      const QuirksManagerDelegateTestImpl&) = delete;
 
   // Unused by these tests.
   std::string GetApiKey() const override { return std::string(); }
@@ -96,8 +102,6 @@ class QuirksManagerDelegateTestImpl : public quirks::QuirksManager::Delegate {
   ~QuirksManagerDelegateTestImpl() override = default;
 
   base::FilePath color_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuirksManagerDelegateTestImpl);
 };
 
 }  // namespace
@@ -141,6 +145,10 @@ class DisplayColorManagerTest : public testing::Test {
   }
 
   DisplayColorManagerTest() : test_api_(&configurator_) {}
+
+  DisplayColorManagerTest(const DisplayColorManagerTest&) = delete;
+  DisplayColorManagerTest& operator=(const DisplayColorManagerTest&) = delete;
+
   ~DisplayColorManagerTest() override = default;
 
  protected:
@@ -153,9 +161,6 @@ class DisplayColorManagerTest : public testing::Test {
   display::test::TestNativeDisplayDelegate*
       native_display_delegate_;  // not owned
   std::unique_ptr<DisplayColorManagerForTest> color_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayColorManagerTest);
 };
 
 TEST_F(DisplayColorManagerTest, VCGTOnly) {

@@ -112,4 +112,4 @@ bool FormInteractionTabHelper::had_form_interaction() const {
   return had_form_interaction_;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FormInteractionTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FormInteractionTabHelper);

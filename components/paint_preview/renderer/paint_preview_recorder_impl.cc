@@ -9,11 +9,11 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -30,6 +30,32 @@
 namespace paint_preview {
 
 namespace {
+
+// Returns a bound origin value centered about `offset` or clamped to the start
+// or end of the document if centering would result in capturing less area.
+// NOTE: this centers about a scroll offset ignoring the size of the viewport.
+int GetBoundOrigin(int document_dimension, int bounds_dimension, int offset) {
+  // `offset` must be less than the `document_dimension` or if the
+  // `bounds_dimension` is 0 capture the whole document.
+  if (document_dimension <= offset || bounds_dimension == 0) {
+    return 0;
+  }
+
+  const int half_bounds = bounds_dimension / 2;
+  if (document_dimension != 0 && document_dimension - offset < half_bounds) {
+    // `document_dimension - offset` is the distance remaining from the current
+    // scroll offset to the document end. If this is less than `half_bounds`
+    // then the capture would be smaller than requested due to the position of
+    // the offset relative to the document end.
+    //
+    // In this case, capture starting `bounds_dimension` from the document end
+    // or the document start (0) whichever is greater.
+    return std::max(document_dimension - bounds_dimension, 0);
+  }
+  // Center about `offset` if it is further than `half_bounds` from the document
+  // start (0). Otherwise start the capture from the start of the document.
+  return std::max(offset - half_bounds, 0);
+}
 
 // Represents a finished recording of the page represented by the response and
 // status of the mojo message.
@@ -114,7 +140,9 @@ void SerializeMemoryBufferRecording(
       RecordToBuffer(skp, tracker.get(), max_capture_size, &serialized_size);
   out.status = buffer.has_value() ? mojom::PaintPreviewStatus::kOk
                                   : mojom::PaintPreviewStatus::kCaptureFailed;
-  out.response->skp.emplace(std::move(buffer.value()));
+  if (buffer.has_value()) {
+    out.response->skp.emplace(std::move(buffer.value()));
+  }
   out.response->serialized_size = serialized_size;
 
   BuildAndSendResponse(std::move(tracker), std::move(out), std::move(callback));
@@ -234,7 +262,20 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
   DCHECK_EQ(is_main_frame_, params->is_main_frame);
   // Default to using the clip rect.
   gfx::Rect bounds = params->clip_rect;
+
+  auto offset = frame->GetScrollOffset();
   auto document_size = frame->DocumentSize();
+  // If the special values of -1 are used for the initial position center about
+  // the scroll offset.
+  if (bounds.x() == -1) {
+    bounds.set_x(
+        GetBoundOrigin(document_size.width(), bounds.width(), offset.x()));
+  }
+  if (bounds.y() == -1) {
+    bounds.set_y(
+        GetBoundOrigin(document_size.height(), bounds.height(), offset.y()));
+  }
+
   gfx::Rect document_rect = gfx::Rect(document_size);
   if (bounds.IsEmpty() || params->clip_rect_is_hint) {
     // If the clip rect is empty or only a hint try to use the document size.
@@ -280,8 +321,17 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
 
   auto tracker = std::make_unique<PaintPreviewTracker>(
       params->guid, frame->GetEmbeddingToken(), is_main_frame_);
-  auto offset = frame->GetScrollOffset();
-  response->scroll_offsets = gfx::Size(offset.x(), offset.y());
+  // Ensure `offset_x` and `offset_y` point to a value in the range
+  // [0, bounds.dimension() - 1]. This means the offsets are valid for the
+  // captured region.
+  int offset_x = std::max(
+      std::min(static_cast<int>(offset.x() - bounds.x()), bounds.width() - 1),
+      0);
+  int offset_y = std::max(
+      std::min(static_cast<int>(offset.y() - bounds.y()), bounds.height() - 1),
+      0);
+  response->scroll_offsets = gfx::Point(offset_x, offset_y);
+  response->frame_offsets = gfx::Point(bounds.x(), bounds.y());
 
   cc::PaintRecorder recorder;
   cc::PaintCanvas* canvas =

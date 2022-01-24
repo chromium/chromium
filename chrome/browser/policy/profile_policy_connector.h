@@ -164,6 +164,16 @@ class ProfilePolicyConnector final {
 
   std::unique_ptr<PolicyService> policy_service_;
   std::unique_ptr<bool> is_managed_override_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns |true| when this is the main profile.
+  bool IsMainProfile() const;
+
+  // The |browser_policy_connector_| is owned by the |BrowserProcess| whereas
+  // the |ProfilePolicyConnector| is owned by the Profile - which gets deleted
+  // first - so the lifetime of the pointer is guaranteed.
+  ChromeBrowserPolicyConnector* browser_policy_connector_ = nullptr;
+#endif
 };
 
 }  // namespace policy

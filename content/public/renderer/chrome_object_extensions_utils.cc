@@ -5,7 +5,8 @@
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 
 #include "gin/converter.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-object.h"
 
 namespace content {
 

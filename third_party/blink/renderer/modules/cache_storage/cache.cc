@@ -102,7 +102,7 @@ void ValidateResponseForPut(const Response* response,
     exception_state.ThrowTypeError("Vary header contains *");
     return;
   }
-  if (response->GetResponse()->InternalStatus() == 206) {
+  if (response->GetResponse()->Status() == 206) {
     exception_state.ThrowTypeError(
         "Partial response (status code 206) is unsupported");
     return;
@@ -183,15 +183,13 @@ class Cache::BarrierCallbackForPutResponse final
                                 Cache* cache,
                                 const String& method_name,
                                 const HeapVector<Member<Request>>& request_list,
-                                const ExceptionState& exception_state,
+                                const ExceptionContext& exception_context,
                                 int64_t trace_id)
       : resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
         cache_(cache),
         method_name_(method_name),
         request_list_(request_list),
-        context_type_(exception_state.Context()),
-        property_name_(exception_state.PropertyName()),
-        interface_name_(exception_state.InterfaceName()),
+        exception_context_(exception_context),
         trace_id_(trace_id),
         response_list_(request_list_.size()),
         blob_list_(request_list_.size()) {
@@ -224,8 +222,8 @@ class Cache::BarrierCallbackForPutResponse final
 
     if (num_complete_ == request_list_.size()) {
       ScriptState* script_state = resolver_->GetScriptState();
-      ExceptionState exception_state(script_state->GetIsolate(), context_type_,
-                                     property_name_, interface_name_);
+      ExceptionState exception_state(script_state->GetIsolate(),
+                                     exception_context_);
       cache_->PutImpl(resolver_, method_name_, request_list_, response_list_,
                       blob_list_, exception_state, trace_id_);
       blob_list_.clear();
@@ -288,9 +286,7 @@ class Cache::BarrierCallbackForPutResponse final
   Member<Cache> cache_;
   const String method_name_;
   const HeapVector<Member<Request>> request_list_;
-  ExceptionState::ContextType context_type_;
-  const char* property_name_;
-  const char* interface_name_;
+  const ExceptionContext exception_context_;
   const int64_t trace_id_;
   HeapVector<Member<Response>> response_list_;
   WTF::Vector<scoped_refptr<BlobDataHandle>> blob_list_;
@@ -557,32 +553,30 @@ class Cache::FetchHandler final : public ScriptFunction {
       ScriptState* script_state,
       ResponseBodyLoader* response_loader,
       BarrierCallbackForPutResponse* barrier_callback,
-      const ExceptionState& exception_state) {
+      const ExceptionContext& exception_context) {
     FetchHandler* self = MakeGarbageCollected<FetchHandler>(
-        script_state, response_loader, barrier_callback, exception_state);
+        script_state, response_loader, barrier_callback, exception_context);
     return self->BindToV8Function();
   }
 
   static v8::Local<v8::Function> CreateForReject(
       ScriptState* script_state,
       BarrierCallbackForPutResponse* barrier_callback,
-      const ExceptionState& exception_state) {
+      const ExceptionContext& exception_context) {
     FetchHandler* self = MakeGarbageCollected<FetchHandler>(
         script_state, /*response_loader=*/nullptr, barrier_callback,
-        exception_state);
+        exception_context);
     return self->BindToV8Function();
   }
 
   FetchHandler(ScriptState* script_state,
                ResponseBodyLoader* response_loader,
                BarrierCallbackForPutResponse* barrier_callback,
-               const ExceptionState& exception_state)
+               const ExceptionContext& exception_context)
       : ScriptFunction(script_state),
         response_loader_(response_loader),
         barrier_callback_(barrier_callback),
-        context_type_(exception_state.Context()),
-        property_name_(exception_state.PropertyName()),
-        interface_name_(exception_state.InterfaceName()) {}
+        exception_context_(exception_context) {}
 
   ScriptValue Call(ScriptValue value) override {
     // We always resolve undefined from this promise handler since the
@@ -599,8 +593,7 @@ class Cache::FetchHandler final : public ScriptFunction {
     }
 
     ExceptionState exception_state(GetScriptState()->GetIsolate(),
-                                   context_type_, property_name_,
-                                   interface_name_);
+                                   exception_context_);
 
     // Resolve handler, so try to process a Response.
     Response* response = NativeValueTraits<Response>::NativeValue(
@@ -622,9 +615,7 @@ class Cache::FetchHandler final : public ScriptFunction {
  private:
   Member<ResponseBodyLoader> response_loader_;
   Member<BarrierCallbackForPutResponse> barrier_callback_;
-  ExceptionState::ContextType context_type_;
-  const char* property_name_;
-  const char* interface_name_;
+  const ExceptionContext exception_context_;
 };
 
 class Cache::CodeCacheHandleCallbackForPut final
@@ -763,8 +754,7 @@ ScriptPromise Cache::match(ScriptState* script_state,
   return MatchImpl(script_state, request_object, options);
 }
 
-ScriptPromise Cache::matchAll(ScriptState* script_state,
-                              ExceptionState& exception_state) {
+ScriptPromise Cache::matchAll(ScriptState* script_state, ExceptionState&) {
   return MatchAllImpl(script_state, nullptr, CacheQueryOptions::Create());
 }
 
@@ -772,18 +762,19 @@ ScriptPromise Cache::matchAll(ScriptState* script_state,
                               const V8RequestInfo* request,
                               const CacheQueryOptions* options,
                               ExceptionState& exception_state) {
-  DCHECK(request);
   Request* request_object = nullptr;
-  switch (request->GetContentType()) {
-    case V8RequestInfo::ContentType::kRequest:
-      request_object = request->GetAsRequest();
-      break;
-    case V8RequestInfo::ContentType::kUSVString:
-      request_object = Request::Create(script_state, request->GetAsUSVString(),
-                                       exception_state);
-      if (exception_state.HadException())
-        return ScriptPromise();
-      break;
+  if (request) {
+    switch (request->GetContentType()) {
+      case V8RequestInfo::ContentType::kRequest:
+        request_object = request->GetAsRequest();
+        break;
+      case V8RequestInfo::ContentType::kUSVString:
+        request_object = Request::Create(
+            script_state, request->GetAsUSVString(), exception_state);
+        if (exception_state.HadException())
+          return ScriptPromise();
+        break;
+    }
   }
   return MatchAllImpl(script_state, request_object, options);
 }
@@ -875,7 +866,8 @@ ScriptPromise Cache::put(ScriptState* script_state,
 
   auto* barrier_callback = MakeGarbageCollected<BarrierCallbackForPutResponse>(
       script_state, this, "Cache.put()",
-      HeapVector<Member<Request>>(1, request), exception_state, trace_id);
+      HeapVector<Member<Request>>(1, request), exception_state.GetContext(),
+      trace_id);
 
   // We must get the promise before any rejections can happen during loading.
   ScriptPromise promise = barrier_callback->Promise();
@@ -896,18 +888,19 @@ ScriptPromise Cache::keys(ScriptState* script_state,
                           const V8RequestInfo* request,
                           const CacheQueryOptions* options,
                           ExceptionState& exception_state) {
-  DCHECK(request);
   Request* request_object = nullptr;
-  switch (request->GetContentType()) {
-    case V8RequestInfo::ContentType::kRequest:
-      request_object = request->GetAsRequest();
-      break;
-    case V8RequestInfo::ContentType::kUSVString:
-      request_object = Request::Create(script_state, request->GetAsUSVString(),
-                                       exception_state);
-      if (exception_state.HadException())
-        return ScriptPromise();
-      break;
+  if (request) {
+    switch (request->GetContentType()) {
+      case V8RequestInfo::ContentType::kRequest:
+        request_object = request->GetAsRequest();
+        break;
+      case V8RequestInfo::ContentType::kUSVString:
+        request_object = Request::Create(
+            script_state, request->GetAsUSVString(), exception_state);
+        if (exception_state.HadException())
+          return ScriptPromise();
+        break;
+    }
   }
   return KeysImpl(script_state, request_object, options);
 }
@@ -953,16 +946,19 @@ ScriptPromise Cache::MatchImpl(ScriptState* script_state,
   }
 
   bool in_related_fetch_event = false;
+  bool in_range_fetch_event = false;
   ExecutionContext* context = ExecutionContext::From(script_state);
-  if (auto* global_scope = DynamicTo<ServiceWorkerGlobalScope>(context))
+  if (auto* global_scope = DynamicTo<ServiceWorkerGlobalScope>(context)) {
     in_related_fetch_event = global_scope->HasRelatedFetchEvent(request->url());
+    in_range_fetch_event = global_scope->HasRangeFetchEvent(request->url());
+  }
 
   // Make sure to bind the Cache object to keep the mojo remote alive during
   // the operation. Otherwise GC might prevent the callback from ever being
   // executed.
   cache_remote_->Match(
       std::move(mojo_request), std::move(mojo_options), in_related_fetch_event,
-      trace_id,
+      in_range_fetch_event, trace_id,
       WTF::Bind(
           [](ScriptPromiseResolver* resolver, base::TimeTicks start_time,
              const CacheQueryOptions* options, int64_t trace_id, Cache* self,
@@ -1111,7 +1107,8 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
   }
 
   auto* barrier_callback = MakeGarbageCollected<BarrierCallbackForPutResponse>(
-      script_state, this, method_name, request_list, exception_state, trace_id);
+      script_state, this, method_name, request_list,
+      exception_state.GetContext(), trace_id);
 
   // We must get the promise before any rejections can happen during loading.
   ScriptPromise promise = barrier_callback->Promise();
@@ -1131,9 +1128,10 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
     scoped_fetcher_
         ->Fetch(script_state, info, RequestInit::Create(), exception_state)
         .Then(FetchHandler::CreateForResolve(script_state, response_loader,
-                                             barrier_callback, exception_state),
+                                             barrier_callback,
+                                             exception_state.GetContext()),
               FetchHandler::CreateForReject(script_state, barrier_callback,
-                                            exception_state));
+                                            exception_state.GetContext()));
   }
 
   return promise;

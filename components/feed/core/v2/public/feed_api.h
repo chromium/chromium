@@ -72,6 +72,19 @@ class FeedApi {
   // events).
   virtual std::string GetSessionId() const = 0;
 
+  // Sets the requested content order of the feed, and triggers a refresh if
+  // necessary. Note that currently, only Web Feed can change the content order.
+  virtual void SetContentOrder(const StreamType& stream_type,
+                               ContentOrder content_order) = 0;
+
+  // Returns the current `ContentOrder` for `stream_type`.
+  virtual ContentOrder GetContentOrder(const StreamType& stream_type) = 0;
+
+  // Gets the "raw" content order value stored in prefs. Returns `kUnspecified`
+  // if the user has not selected one yet.
+  virtual ContentOrder GetContentOrderFromPrefs(
+      const StreamType& stream_type) = 0;
+
   // Invoked by RefreshTaskScheduler's scheduled task.
   virtual void ExecuteRefreshTask(RefreshTaskId task_id) = 0;
 
@@ -84,7 +97,7 @@ class FeedApi {
 
   // Refresh the feed content by fetching the fresh content from the server.
   // Calls |callback| when complete. If the fetch fails, the parameter is false.
-  virtual void ManualRefresh(const FeedStreamSurface& surface,
+  virtual void ManualRefresh(const StreamType& stream_type,
                              base::OnceCallback<void(bool)> callback) = 0;
 
   // Request to fetch and image for use in the feed. Calls |callback|
@@ -144,7 +157,8 @@ class FeedApi {
                                  const std::string& slice_id) = 0;
   // Some feed content has been loaded and is now available to the user on the
   // feed surface. Reported only once after a surface is attached.
-  virtual void ReportFeedViewed(SurfaceId surface_id) = 0;
+  virtual void ReportFeedViewed(const StreamType& stream_type,
+                                SurfaceId surface_id) = 0;
   // A web page was loaded in response to opening a link from the Feed.
   virtual void ReportPageLoaded() = 0;
   // The user triggered the default open action, usually by tapping the card.
@@ -171,12 +185,25 @@ class FeedApi {
   // reporting function above..
   virtual void ReportOtherUserAction(const StreamType& stream_type,
                                      FeedUserActionType action_type) = 0;
+  // The notice identified by |key| is created.
+  virtual void ReportNoticeCreated(const StreamType& stream_type,
+                                   const std::string& key) = 0;
+  // The notice identified by |key| is viewed (fully visible in the viewport).
+  virtual void ReportNoticeViewed(const StreamType& stream_type,
+                                  const std::string& key) = 0;
+  // The notice identified by |key| has been clicked/tapped to perform an open
+  // action.
+  virtual void ReportNoticeOpenAction(const StreamType& stream_type,
+                                      const std::string& key) = 0;
+  // The notice identified by |key| is dismissed.
+  virtual void ReportNoticeDismissed(const StreamType& stream_type,
+                                     const std::string& key) = 0;
 
   // The following methods are used for the internals page.
 
   virtual DebugStreamData GetDebugStreamData() = 0;
   // Forces a Feed refresh from the server.
-  virtual void ForceRefreshForDebugging() = 0;
+  virtual void ForceRefreshForDebugging(const StreamType& stream_type) = 0;
   // Dumps some state information for debugging.
   virtual std::string DumpStateForDebugging() = 0;
   // Forces to render a StreamUpdate on all subsequent surface attaches.

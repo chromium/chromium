@@ -253,16 +253,17 @@ namespace certificateProvider {
     // |callback|: Is called when the dialog is resolved with the user input, or
     // when the dialog request finishes unsuccessfully (e.g. the dialog was
     // canceled by the user or was not allowed to be shown).
-    static void requestPin(RequestPinDetails details,
-                           RequestPinCallback callback);
+    [supportsPromises] static void requestPin(RequestPinDetails details,
+                                              RequestPinCallback callback);
 
     // Stops the pin request started by the $(ref:requestPin) function.
     // |details|: Contains the details about the reason for stopping the
     // request flow.
     // |callback|: To be used by Chrome to send to the extension the status from
     // their request to close PIN dialog for user.
-    static void stopPinRequest(StopPinRequestDetails details,
-                               StopPinRequestCallback callback);
+    [supportsPromises] static void stopPinRequest(
+        StopPinRequestDetails details,
+        StopPinRequestCallback callback);
 
     // Sets a list of certificates to use in the browser.
     // <p>The extension should call this function after initialization and on
@@ -272,15 +273,17 @@ namespace certificateProvider {
     // received.</p>
     // |details|: The certificates to set. Invalid certificates will be ignored.
     // |callback|: Called upon completion.
-    static void setCertificates(SetCertificatesDetails details,
-                                optional SetCertificatesCallback callback);
+    [supportsPromises] static void setCertificates(
+        SetCertificatesDetails details,
+        optional SetCertificatesCallback callback);
 
     // Should be called as a response to $(ref:onSignatureRequested).
     // <p>The extension must eventually call this function for every
     // $(ref:onSignatureRequested) event; the API implementation will stop
     // waiting for this call after some time and respond with a timeout
     // error when this function is called.</p>
-    static void reportSignature(ReportSignatureDetails details,
-                                optional ReportSignatureCallback callback);
+    [supportsPromises] static void reportSignature(
+        ReportSignatureDetails details,
+        optional ReportSignatureCallback callback);
   };
 };

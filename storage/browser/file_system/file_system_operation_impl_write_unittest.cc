@@ -22,6 +22,7 @@
 #include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/local_file_util.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_blob_util.h"
@@ -58,6 +59,11 @@ class FileSystemOperationImplWriteTest : public testing::Test {
         complete_(false) {
     change_observers_ = MockFileChangeObserver::CreateList(&change_observer_);
   }
+
+  FileSystemOperationImplWriteTest(const FileSystemOperationImplWriteTest&) =
+      delete;
+  FileSystemOperationImplWriteTest& operator=(
+      const FileSystemOperationImplWriteTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
@@ -106,7 +112,8 @@ class FileSystemOperationImplWriteTest : public testing::Test {
 
   FileSystemURL URLForPath(const base::FilePath& path) const {
     return file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL(kOrigin)), kFileSystemType, path);
+        blink::StorageKey::CreateFromStringForTesting(kOrigin), kFileSystemType,
+        path);
   }
 
   // Callback function for recording test results.
@@ -161,8 +168,6 @@ class FileSystemOperationImplWriteTest : public testing::Test {
   ChangeObserverList change_observers_;
 
   base::WeakPtrFactory<FileSystemOperationImplWriteTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemOperationImplWriteTest);
 };
 
 TEST_F(FileSystemOperationImplWriteTest, TestWriteSuccess) {

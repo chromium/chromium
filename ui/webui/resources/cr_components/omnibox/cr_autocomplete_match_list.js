@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getTrustedHTML} from '../../js/static_types.js';
+
 /**
  * @fileoverview Custom element for the omnibox popup used in the
  * WebUI NTP realbox and (experimentally) in the top chrome omnibox.
@@ -16,14 +18,11 @@
  */
 let AutocompleteMatch;
 
-const staticHtmlPolicy = trustedTypes.createPolicy(
-    'cr-autocomplete-match', {createHTML: () => `{__html_template__}`});
-
 class AutocompleteMatchElement extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({mode: 'open'});
-    this.shadowRoot.innerHTML = staticHtmlPolicy.createHTML('');
+    this.shadowRoot.innerHTML = getTrustedHTML`{__html_template__}`;
   }
 
   /** @param {!AutocompleteMatch} match */

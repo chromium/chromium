@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_pixmap.h"
@@ -27,6 +26,9 @@ class ProtectedBufferManager
     : public base::RefCountedThreadSafe<ProtectedBufferManager> {
  public:
   ProtectedBufferManager();
+
+  ProtectedBufferManager(const ProtectedBufferManager&) = delete;
+  ProtectedBufferManager& operator=(const ProtectedBufferManager&) = delete;
 
   // Creates ProtectedBufferAllocatorImpl and return it as
   // unique_ptr<ProtectedBufferAllocator>.
@@ -131,8 +133,6 @@ class ProtectedBufferManager
   uint64_t next_protected_buffer_allocator_id_ GUARDED_BY(buffer_map_lock_);
 
   base::Lock buffer_map_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProtectedBufferManager);
 };
 }  // namespace arc
 

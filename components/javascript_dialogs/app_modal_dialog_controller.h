@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
 namespace javascript_dialogs {
@@ -45,6 +44,10 @@ class AppModalDialogController {
       bool is_before_unload_dialog,
       bool is_reload,
       content::JavaScriptDialogManager::DialogClosedCallback callback);
+
+  AppModalDialogController(const AppModalDialogController&) = delete;
+  AppModalDialogController& operator=(const AppModalDialogController&) = delete;
+
   ~AppModalDialogController();
 
   // Called by the AppModalDialogQueue to show this dialog.
@@ -136,21 +139,20 @@ class AppModalDialogController {
   // used when notifying the delegate, if |use_override_prompt_text_| is true.
   std::u16string override_prompt_text_;
   bool use_override_prompt_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppModalDialogController);
 };
 
 // An interface to observe that a modal dialog is shown.
 class AppModalDialogObserver {
  public:
   AppModalDialogObserver();
+
+  AppModalDialogObserver(const AppModalDialogObserver&) = delete;
+  AppModalDialogObserver& operator=(const AppModalDialogObserver&) = delete;
+
   virtual ~AppModalDialogObserver();
 
   // Called when the modal dialog is shown.
   virtual void Notify(AppModalDialogController* dialog) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppModalDialogObserver);
 };
 
 }  // namespace javascript_dialogs

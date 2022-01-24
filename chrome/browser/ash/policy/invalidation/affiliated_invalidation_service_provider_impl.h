@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
@@ -32,6 +31,12 @@ class AffiliatedInvalidationServiceProviderImpl
       public session_manager::SessionManagerObserver {
  public:
   AffiliatedInvalidationServiceProviderImpl();
+
+  AffiliatedInvalidationServiceProviderImpl(
+      const AffiliatedInvalidationServiceProviderImpl&) = delete;
+  AffiliatedInvalidationServiceProviderImpl& operator=(
+      const AffiliatedInvalidationServiceProviderImpl&) = delete;
+
   ~AffiliatedInvalidationServiceProviderImpl() override;
 
   // session_manager::SessionManagerObserver:
@@ -111,8 +116,6 @@ class AffiliatedInvalidationServiceProviderImpl
   int consumer_count_;
 
   bool is_shut_down_;
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliatedInvalidationServiceProviderImpl);
 };
 
 }  // namespace policy

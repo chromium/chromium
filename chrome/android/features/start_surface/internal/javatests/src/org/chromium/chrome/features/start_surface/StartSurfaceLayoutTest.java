@@ -576,6 +576,7 @@ public class StartSurfaceLayoutTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    @DisabledTest(message = "crbug.com/1237623 test is flaky")
     public void testGridToTabToOtherFrozen() throws InterruptedException {
         assertFalse(TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
         prepareTabs(2, 0, mUrl);
@@ -767,6 +768,7 @@ public class StartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M,
             message = "https://crbug.com/1023833")
+    @DisabledTest(message = "https://crbug.com/1233169")
     public void testIncognitoToggle_thumbnailFetchCount() throws InterruptedException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -990,6 +992,7 @@ public class StartSurfaceLayoutTest {
     @DisableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS})
     @CommandLineFlags.Add({BASE_PARAMS + "/tab_grid_layout_android_new_tab_tile/NewTabTile"
             + "/tab_grid_layout_android_new_tab/false"})
+    @DisabledTest(message = "https://crbug.com/1051961")
     public void testNewTabTile() throws InterruptedException {
         // clang-format on
         // TODO(yuezhanggg): Modify TabUiTestHelper.verifyTabSwitcherCardCount so that it can be
@@ -1087,8 +1090,9 @@ public class StartSurfaceLayoutTest {
         @Override
         public void check(View view, NoMatchingViewException noMatchException) {
             if (noMatchException != null) throw noMatchException;
-            int tabListPadding =
-                    (int) TabUiThemeProvider.getTabCardPaddingDimension(view.getContext());
+            float tabListPadding = TabUiThemeProvider.getTabCardPaddingDimension(view.getContext());
+            float messageCardMargin =
+                    TabUiThemeProvider.getMessageCardMarginDimension(view.getContext());
 
             assertTrue(view instanceof RecyclerView);
             RecyclerView recyclerView = (RecyclerView) view;
@@ -1101,8 +1105,10 @@ public class StartSurfaceLayoutTest {
             assertEquals(TabProperties.UiType.MESSAGE, messageItemViewHolder.getItemViewType());
             View messageItemView = messageItemViewHolder.itemView;
 
-            // The message card item width should always be recyclerView width minus padding.
-            assertEquals(recyclerView.getWidth() - 2 * tabListPadding, messageItemView.getWidth());
+            // The message card item width should always be recyclerView width minus padding and
+            // margin.
+            assertEquals(recyclerView.getWidth() - 2 * tabListPadding - 2 * messageCardMargin,
+                    (float) messageItemView.getWidth(), 1.0f);
         }
     }
 

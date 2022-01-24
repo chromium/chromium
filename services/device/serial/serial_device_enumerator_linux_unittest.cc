@@ -18,6 +18,7 @@ constexpr char kSerialDriverInfo[] =
 /dev/console         /dev/console    5       1 system:console
 /dev/ptmx            /dev/ptmx       5       2 system
 /dev/vc/0            /dev/vc/0       4       0 system:vtmaster
+rfcomm               /dev/rfcomm   216 0-255 serial
 acm                  /dev/ttyACM   166 0-255 serial
 ttyAMA               /dev/ttyAMA   204 64-77 serial
 ttyprintk            /dev/ttyprintk   5       3 console
@@ -48,7 +49,7 @@ class SerialDeviceEnumeratorLinuxTest : public testing::Test {
   base::FilePath drivers_file_;
 };
 
-TEST_F(SerialDeviceEnumeratorLinuxTest, Enumerate) {
+TEST_F(SerialDeviceEnumeratorLinuxTest, EnumerateUsb) {
   testing::FakeUdevLoader fake_udev;
   fake_udev.AddFakeDevice(/*name=*/"ttyACM0",
                           /*syspath=*/"/sys/class/tty/ttyACM0",
@@ -75,6 +76,29 @@ TEST_F(SerialDeviceEnumeratorLinuxTest, Enumerate) {
   EXPECT_TRUE(devices[0]->has_product_id);
   EXPECT_EQ(devices[0]->product_id, 0x0043);
   EXPECT_EQ(devices[0]->display_name, "Arduino Uno");
+}
+
+TEST_F(SerialDeviceEnumeratorLinuxTest, EnumerateRfcomm) {
+  testing::FakeUdevLoader fake_udev;
+  fake_udev.AddFakeDevice(/*name=*/"rfcomm0",
+                          /*syspath=*/"/sys/class/tty/rfcomm0",
+                          /*subsystem=*/"tty", /*devnode=*/absl::nullopt,
+                          /*devtype=*/absl::nullopt, /*sysattrs=*/{},
+                          /*properties=*/
+                          {
+                              {"DEVNAME", "/dev/rfcomm0"},
+                              {"MAJOR", "216"},
+                              {"MINOR", "0"},
+                          });
+
+  std::unique_ptr<SerialDeviceEnumeratorLinux> enumerator = CreateEnumerator();
+  std::vector<mojom::SerialPortInfoPtr> devices = enumerator->GetDevices();
+  ASSERT_EQ(devices.size(), 1u);
+  EXPECT_FALSE(devices[0]->serial_number.has_value());
+  EXPECT_EQ(devices[0]->path, base::FilePath("/dev/rfcomm0"));
+  EXPECT_FALSE(devices[0]->has_vendor_id);
+  EXPECT_FALSE(devices[0]->has_product_id);
+  EXPECT_FALSE(devices[0]->display_name.has_value());
 }
 
 }  // namespace device

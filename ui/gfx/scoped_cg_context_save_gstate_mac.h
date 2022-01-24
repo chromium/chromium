@@ -7,8 +7,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#include "base/macros.h"
-
 namespace gfx {
 
 class ScopedCGContextSaveGState {
@@ -17,14 +15,16 @@ class ScopedCGContextSaveGState {
     CGContextSaveGState(context_);
   }
 
+  ScopedCGContextSaveGState(const ScopedCGContextSaveGState&) = delete;
+  ScopedCGContextSaveGState& operator=(const ScopedCGContextSaveGState&) =
+      delete;
+
   ~ScopedCGContextSaveGState() {
     CGContextRestoreGState(context_);
   }
 
  private:
   CGContextRef context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCGContextSaveGState);
 };
 
 }  // namespace gfx

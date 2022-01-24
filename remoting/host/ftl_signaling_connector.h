@@ -29,6 +29,10 @@ class FtlSignalingConnector
   // called.
   FtlSignalingConnector(SignalStrategy* signal_strategy,
                         base::OnceClosure auth_failed_callback);
+
+  FtlSignalingConnector(const FtlSignalingConnector&) = delete;
+  FtlSignalingConnector& operator=(const FtlSignalingConnector&) = delete;
+
   ~FtlSignalingConnector() override;
 
   void Start();
@@ -59,8 +63,6 @@ class FtlSignalingConnector
   base::OneShotTimer backoff_reset_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FtlSignalingConnector);
 };
 
 }  // namespace remoting

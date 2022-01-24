@@ -4,6 +4,7 @@
 
 #include "chrome/updater/external_constants_default.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/updater_branding.h"
@@ -15,7 +16,6 @@ namespace {
 class DefaultExternalConstants : public ExternalConstants {
  public:
   DefaultExternalConstants() : ExternalConstants(nullptr) {}
-  ~DefaultExternalConstants() override = default;
 
   // Overrides of ExternalConstants:
   std::vector<GURL> UpdateURL() const override {
@@ -29,12 +29,15 @@ class DefaultExternalConstants : public ExternalConstants {
   int ServerKeepAliveSeconds() const override {
     return kServerKeepAliveSeconds;
   }
+
+ private:
+  ~DefaultExternalConstants() override = default;
 };
 
 }  // namespace
 
-std::unique_ptr<ExternalConstants> CreateDefaultExternalConstants() {
-  return std::make_unique<DefaultExternalConstants>();
+scoped_refptr<ExternalConstants> CreateDefaultExternalConstants() {
+  return base::MakeRefCounted<DefaultExternalConstants>();
 }
 
 }  // namespace updater

@@ -55,6 +55,48 @@ class ConditionalFeaturesTest(unittest.TestCase):
     """
     self.parseAndAssertEqual(const_source, expected_source)
 
+  def testFilterIfNotConst(self):
+    """Test that Consts are correctly filtered."""
+    const_source = """
+      [EnableIfNot=blue]
+      const int kMyConst1 = 1;
+      [EnableIfNot=orange]
+      const double kMyConst2 = 2;
+      [EnableIf=blue]
+      const int kMyConst3 = 3;
+      [EnableIfNot=blue]
+      const int kMyConst4 = 4;
+      [EnableIfNot=purple]
+      const int kMyConst5 = 5;
+    """
+    expected_source = """
+      [EnableIfNot=orange]
+      const double kMyConst2 = 2;
+      [EnableIf=blue]
+      const int kMyConst3 = 3;
+      [EnableIfNot=purple]
+      const int kMyConst5 = 5;
+    """
+    self.parseAndAssertEqual(const_source, expected_source)
+
+  def testFilterIfNotMultipleConst(self):
+    """Test that Consts are correctly filtered."""
+    const_source = """
+      [EnableIfNot=blue]
+      const int kMyConst1 = 1;
+      [EnableIfNot=orange]
+      const double kMyConst2 = 2;
+      [EnableIfNot=orange]
+      const int kMyConst3 = 3;
+    """
+    expected_source = """
+      [EnableIfNot=orange]
+      const double kMyConst2 = 2;
+      [EnableIfNot=orange]
+      const int kMyConst3 = 3;
+    """
+    self.parseAndAssertEqual(const_source, expected_source)
+
   def testFilterEnum(self):
     """Test that EnumValues are correctly filtered from an Enum."""
     enum_source = """
@@ -87,6 +129,24 @@ class ConditionalFeaturesTest(unittest.TestCase):
     expected_source = """
       [EnableIf=blue]
       import "foo.mojom";
+      import "bar.mojom";
+    """
+    self.parseAndAssertEqual(import_source, expected_source)
+
+  def testFilterIfNotImport(self):
+    """Test that imports are correctly filtered from a Mojom."""
+    import_source = """
+      [EnableIf=blue]
+      import "foo.mojom";
+      [EnableIfNot=purple]
+      import "bar.mojom";
+      [EnableIfNot=green]
+      import "baz.mojom";
+    """
+    expected_source = """
+      [EnableIf=blue]
+      import "foo.mojom";
+      [EnableIfNot=purple]
       import "bar.mojom";
     """
     self.parseAndAssertEqual(import_source, expected_source)
@@ -175,6 +235,50 @@ class ConditionalFeaturesTest(unittest.TestCase):
     """
     self.parseAndAssertEqual(struct_source, expected_source)
 
+  def testFilterIfNotStruct(self):
+    """Test that definitions are correctly filtered from a Struct."""
+    struct_source = """
+      struct MyStruct {
+        [EnableIf=blue]
+        enum MyEnum {
+          VALUE1,
+          [EnableIfNot=red]
+          VALUE2,
+        };
+        [EnableIfNot=yellow]
+        const double kMyConst = 1.23;
+        [EnableIf=green]
+        int32 a;
+        double b;
+        [EnableIfNot=purple]
+        int32 c;
+        [EnableIf=blue]
+        double d;
+        int32 e;
+        [EnableIfNot=red]
+        double f;
+      };
+    """
+    expected_source = """
+      struct MyStruct {
+        [EnableIf=blue]
+        enum MyEnum {
+          VALUE1,
+        };
+        [EnableIfNot=yellow]
+        const double kMyConst = 1.23;
+        [EnableIf=green]
+        int32 a;
+        double b;
+        [EnableIfNot=purple]
+        int32 c;
+        [EnableIf=blue]
+        double d;
+        int32 e;
+      };
+    """
+    self.parseAndAssertEqual(struct_source, expected_source)
+
   def testFilterUnion(self):
     """Test that UnionFields are correctly filtered from a Union."""
     union_source = """
@@ -220,6 +324,30 @@ class ConditionalFeaturesTest(unittest.TestCase):
     source = """
       enum Foo {
         [EnableIf=red,EnableIf=yellow]
+        kBarValue = 5,
+      };
+    """
+    definition = parser.Parse(source, "my_file.mojom")
+    self.assertRaises(conditional_features.EnableIfError,
+                      conditional_features.RemoveDisabledDefinitions,
+                      definition, ENABLED_FEATURES)
+
+  def testMultipleEnableIfs(self):
+    source = """
+      enum Foo {
+        [EnableIf=red,EnableIfNot=yellow]
+        kBarValue = 5,
+      };
+    """
+    definition = parser.Parse(source, "my_file.mojom")
+    self.assertRaises(conditional_features.EnableIfError,
+                      conditional_features.RemoveDisabledDefinitions,
+                      definition, ENABLED_FEATURES)
+
+  def testMultipleEnableIfs(self):
+    source = """
+      enum Foo {
+        [EnableIfNot=red,EnableIfNot=yellow]
         kBarValue = 5,
       };
     """

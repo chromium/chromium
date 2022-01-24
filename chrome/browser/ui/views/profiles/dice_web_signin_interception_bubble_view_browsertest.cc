@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   // Take a handle on the bubble, to close it later.
   bubble_handle_ = bubble->GetHandle();
 
-  views::test::WidgetClosingObserver closing_observer(widget);
+  views::test::WidgetDestroyedWaiter closing_observer(widget);
   EXPECT_FALSE(bubble->GetAccepted());
   // Simulate clicking Accept in the WebUI.
   bubble->OnWebUIUserChoice(SigninInterceptionUserChoice::kAccept);
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
   EXPECT_TRUE(bubble->GetAccepted());
 
   // Widget was not closed yet.
-  ASSERT_FALSE(closing_observer.widget_closed());
+  ASSERT_FALSE(widget->IsClosed());
   // Simulate completion of the interception process.
   bubble_handle_.reset();
   // Widget will close now.

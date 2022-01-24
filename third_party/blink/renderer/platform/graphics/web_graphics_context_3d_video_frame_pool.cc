@@ -89,13 +89,32 @@ WebGraphicsContext3DVideoFramePool::WebGraphicsContext3DVideoFramePool(
 WebGraphicsContext3DVideoFramePool::~WebGraphicsContext3DVideoFramePool() =
     default;
 
+gpu::raster::RasterInterface*
+WebGraphicsContext3DVideoFramePool::GetRasterInterface() const {
+  if (weak_context_provider_) {
+    if (auto* context_provider = weak_context_provider_->ContextProvider()) {
+      if (auto* raster_context_provider =
+              context_provider->RasterContextProvider()) {
+        return raster_context_provider->RasterInterface();
+      }
+    }
+  }
+  return nullptr;
+}
+
 bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     viz::ResourceFormat src_format,
     const gfx::Size& src_size,
     const gfx::ColorSpace& src_color_space,
     GrSurfaceOrigin src_surface_origin,
     const gpu::MailboxHolder& src_mailbox_holder,
-    base::OnceCallback<void(scoped_refptr<media::VideoFrame>)> callback) {
+    const gfx::ColorSpace& dst_color_space,
+    FrameReadyCallback callback) {
+  // Issue `callback` with a nullptr VideoFrame if we return early.
+  base::ScopedClosureRunner failure_runner(WTF::Bind(
+      [](FrameReadyCallback* callback) { std::move(*callback).Run(nullptr); },
+      base::Unretained(&callback)));
+
   if (!weak_context_provider_)
     return false;
   auto* context_provider = weak_context_provider_->ContextProvider();
@@ -106,7 +125,7 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     return false;
 
   scoped_refptr<media::VideoFrame> dst_frame =
-      pool_->MaybeCreateVideoFrame(src_size);
+      pool_->MaybeCreateVideoFrame(src_size, dst_color_space);
   if (!dst_frame)
     return false;
 
@@ -118,6 +137,7 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   if (!copy_succeeded)
     return false;
 
+  IgnoreResult(failure_runner.Release());
   raster_context_provider->ContextSupport()->SignalSyncToken(
       copy_done_sync_token, base::BindOnce(std::move(callback), dst_frame));
   return true;

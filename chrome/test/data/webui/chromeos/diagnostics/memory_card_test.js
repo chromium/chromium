@@ -12,7 +12,7 @@ import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interfa
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isChildVisible, isVisible} from '../../test_util.m.js';
+import {flushTasks, isChildVisible, isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 

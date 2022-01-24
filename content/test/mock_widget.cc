@@ -81,4 +81,10 @@ void MockWidget::WasShown(base::TimeTicks show_request_timestamp,
     std::move(shown_hidden_callback_).Run();
 }
 
+void MockWidget::RequestPresentationTimeForNextFrame(
+    base::TimeTicks show_request_timestamp,
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {}
+
+void MockWidget::CancelPresentationTimeRequest() {}
+
 }  // namespace content

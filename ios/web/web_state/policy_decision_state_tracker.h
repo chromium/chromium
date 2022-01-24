@@ -28,7 +28,7 @@ class PolicyDecisionStateTracker
   // Constructor that takes a |callback| to be called once all decisions have
   // been received.
   PolicyDecisionStateTracker(
-      base::OnceCallback<void(WebStatePolicyDecider::PolicyDecision)> callback);
+      WebStatePolicyDecider::PolicyDecisionCallback callback);
 
   ~PolicyDecisionStateTracker();
 

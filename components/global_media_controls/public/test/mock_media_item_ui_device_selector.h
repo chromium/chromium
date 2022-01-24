@@ -1,0 +1,31 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_TEST_MOCK_MEDIA_ITEM_UI_DEVICE_SELECTOR_H_
+#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_TEST_MOCK_MEDIA_ITEM_UI_DEVICE_SELECTOR_H_
+
+#include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+namespace global_media_controls {
+namespace test {
+
+class MockMediaItemUIDeviceSelector : public MediaItemUIDeviceSelector {
+ public:
+  MockMediaItemUIDeviceSelector();
+  MockMediaItemUIDeviceSelector(const MockMediaItemUIDeviceSelector&) = delete;
+  MockMediaItemUIDeviceSelector& operator=(
+      const MockMediaItemUIDeviceSelector&) = delete;
+  ~MockMediaItemUIDeviceSelector() override;
+
+  // MediaItemUIDeviceSelector:
+  MOCK_METHOD(void, SetMediaItemUIView, (MediaItemUIView*));
+  MOCK_METHOD(void, OnColorsChanged, (SkColor, SkColor));
+  MOCK_METHOD(void, UpdateCurrentAudioDevice, (const std::string&));
+};
+
+}  // namespace test
+}  // namespace global_media_controls
+
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_TEST_MOCK_MEDIA_ITEM_UI_DEVICE_SELECTOR_H_

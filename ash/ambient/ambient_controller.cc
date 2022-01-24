@@ -115,7 +115,10 @@ bool IsAmbientModeEnabled() {
 
 class AmbientWidgetDelegate : public views::WidgetDelegate {
  public:
-  AmbientWidgetDelegate() { SetCanMaximize(true); }
+  AmbientWidgetDelegate() {
+    SetCanMaximize(true);
+    SetOwnedByWidget(true);
+  }
 };
 
 }  // namespace
@@ -566,7 +569,9 @@ void AmbientController::OnEnabledPrefChanged() {
     OnLockScreenBackgroundTimeoutPrefChanged();
     OnPhotoRefreshIntervalPrefChanged();
 
-    ambient_photo_controller_ = std::make_unique<AmbientPhotoController>();
+    DCHECK(AmbientClient::Get());
+    ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
+        *AmbientClient::Get(), access_token_controller_);
 
     ambient_ui_model_observer_.Observe(&ambient_ui_model_);
 
@@ -609,7 +614,7 @@ void AmbientController::OnLockScreenInactivityTimeoutPrefChanged() {
     return;
 
   ambient_ui_model_.SetLockScreenInactivityTimeout(
-      base::TimeDelta::FromSeconds(pref_service->GetInteger(
+      base::Seconds(pref_service->GetInteger(
           ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds)));
 }
 
@@ -619,7 +624,7 @@ void AmbientController::OnLockScreenBackgroundTimeoutPrefChanged() {
     return;
 
   ambient_ui_model_.SetBackgroundLockScreenTimeout(
-      base::TimeDelta::FromSeconds(pref_service->GetInteger(
+      base::Seconds(pref_service->GetInteger(
           ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds)));
 }
 
@@ -629,7 +634,7 @@ void AmbientController::OnPhotoRefreshIntervalPrefChanged() {
     return;
 
   ambient_ui_model_.SetPhotoRefreshInterval(
-      base::TimeDelta::FromSeconds(pref_service->GetInteger(
+      base::Seconds(pref_service->GetInteger(
           ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds)));
 }
 

@@ -68,9 +68,9 @@ class DocumentTransitionTest : public testing::Test,
   // callback directly.
   void UpdateAllLifecyclePhasesAndFinishDirectives() {
     UpdateAllLifecyclePhasesForTest();
-    for (auto& request :
-         LayerTreeHost()->TakeDocumentTransitionRequestsForTesting()) {
-      request->TakeFinishedCallback().Run();
+    for (auto& callback :
+         LayerTreeHost()->TakeDocumentTransitionCallbacksForTesting()) {
+      std::move(callback).Run();
     }
   }
 

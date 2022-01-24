@@ -44,6 +44,9 @@ LacrosAppWindow::LacrosAppWindow(const ash::ShelfID& shelf_id,
       gfx::Size(kWindowIconSizeDips, kWindowIconSizeDips));
   views::NativeWidgetAura::AssignIconToAuraWindow(GetNativeWindow(),
                                                   window_icon, app_icon);
+  auto* win = widget->GetNativeWindow();
+  if (win)
+    win->SetProperty(aura::client::kUseWindowBoundsForShadow, false);
 }
 
 LacrosAppWindow::~LacrosAppWindow() = default;

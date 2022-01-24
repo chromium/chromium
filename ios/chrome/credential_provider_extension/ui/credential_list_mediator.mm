@@ -10,6 +10,7 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_list_consumer.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_ui_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
+#import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,9 +63,14 @@
 }
 
 - (void)fetchCredentials {
-  NSString* identifier = self.serviceIdentifiers.firstObject.identifier;
-  NSURL* promptURL = identifier ? [NSURL URLWithString:identifier] : nil;
-  [self.consumer setTopPrompt:promptURL.host];
+  if (IsPasswordCreationEnabled()) {
+    [self.consumer
+        setTopPrompt:PromptForServiceIdentifiers(self.serviceIdentifiers)];
+  } else {
+    NSString* identifier = self.serviceIdentifiers.firstObject.identifier;
+    NSURL* promptURL = identifier ? [NSURL URLWithString:identifier] : nil;
+    [self.consumer setTopPrompt:promptURL.host];
+  }
 
   dispatch_queue_t priorityQueue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
@@ -79,7 +85,15 @@
     for (id<Credential> credential in self.allCredentials) {
       for (ASCredentialServiceIdentifier* identifier in self
                .serviceIdentifiers) {
-        if ([identifier.identifier containsString:credential.serviceName]) {
+        if (credential.serviceName &&
+            [identifier.identifier
+                localizedStandardContainsString:credential.serviceName]) {
+          [suggestions addObject:credential];
+          break;
+        }
+        if (credential.serviceIdentifier &&
+            [identifier.identifier
+                localizedStandardContainsString:credential.serviceIdentifier]) {
           [suggestions addObject:credential];
           break;
         }
@@ -88,13 +102,16 @@
     self.suggestedCredentials = suggestions;
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (!self.allCredentials.count) {
+      BOOL canCreatePassword =
+          IsPasswordCreationEnabled() && IsPasswordCreationUserRestricted();
+      if (!canCreatePassword && !self.allCredentials.count) {
         [self.UIHandler showEmptyCredentials];
         return;
       }
       [self.consumer presentSuggestedPasswords:self.suggestedCredentials
                                   allPasswords:self.allCredentials
-                         showNewPasswordOption:IsPasswordCreationEnabled()];
+                                 showSearchBar:self.allCredentials.count > 0
+                         showNewPasswordOption:canCreatePassword];
     });
   });
 }
@@ -114,29 +131,34 @@
 }
 
 - (void)updateResultsWithFilter:(NSString*)filter {
+  BOOL showNewPasswordOption = !filter.length && IsPasswordCreationEnabled() &&
+                               IsPasswordCreationUserRestricted();
+  if (!filter.length) {
+    [self.consumer presentSuggestedPasswords:self.suggestedCredentials
+                                allPasswords:self.allCredentials
+                               showSearchBar:YES
+                       showNewPasswordOption:showNewPasswordOption];
+    return;
+  }
+
   NSMutableArray<id<Credential>>* suggested = [[NSMutableArray alloc] init];
-  if (self.suggestedCredentials.count > 0) {
-    for (id<Credential> credential in self.suggestedCredentials) {
-      if ([filter length] == 0 ||
-          [credential.serviceName localizedStandardContainsString:filter] ||
-          [credential.user localizedStandardContainsString:filter]) {
-        [suggested addObject:credential];
-      }
+  for (id<Credential> credential in self.suggestedCredentials) {
+    if ([credential.serviceName localizedStandardContainsString:filter] ||
+        [credential.user localizedStandardContainsString:filter]) {
+      [suggested addObject:credential];
     }
   }
+
   NSMutableArray<id<Credential>>* all = [[NSMutableArray alloc] init];
-  if (self.allCredentials.count > 0) {
-    for (id<Credential> credential in self.allCredentials) {
-      if ([filter length] == 0 ||
-          [credential.serviceName localizedStandardContainsString:filter] ||
-          [credential.user localizedStandardContainsString:filter]) {
-        [all addObject:credential];
-      }
+  for (id<Credential> credential in self.allCredentials) {
+    if ([credential.serviceName localizedStandardContainsString:filter] ||
+        [credential.user localizedStandardContainsString:filter]) {
+      [all addObject:credential];
     }
   }
-  BOOL showNewPasswordOption = !filter.length && IsPasswordCreationEnabled();
   [self.consumer presentSuggestedPasswords:suggested
                               allPasswords:all
+                             showSearchBar:YES
                      showNewPasswordOption:showNewPasswordOption];
 }
 

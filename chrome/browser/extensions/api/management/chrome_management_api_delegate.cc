@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -32,14 +31,16 @@
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
-#include "chrome/browser/web_applications/components/install_manager.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/favicon/core/favicon_service.h"
@@ -62,10 +63,11 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "components/arc/arc_service_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -91,7 +93,7 @@ using InstallOrLaunchWebAppCallback =
     extensions::ManagementAPIDelegate::InstallOrLaunchWebAppCallback;
 using InstallOrLaunchWebAppResult =
     extensions::ManagementAPIDelegate::InstallOrLaunchWebAppResult;
-using InstallableCheckResult = web_app::InstallManager::InstallableCheckResult;
+using InstallableCheckResult = web_app::InstallableCheckResult;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void OnDidCheckForIntentToPlayStore(const std::string& intent,
@@ -141,6 +143,12 @@ class ManagementSetEnabledFunctionInstallPromptDelegate
         std::make_unique<ExtensionInstallPrompt::Prompt>(type),
         ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   }
+
+  ManagementSetEnabledFunctionInstallPromptDelegate(
+      const ManagementSetEnabledFunctionInstallPromptDelegate&) = delete;
+  ManagementSetEnabledFunctionInstallPromptDelegate& operator=(
+      const ManagementSetEnabledFunctionInstallPromptDelegate&) = delete;
+
   ~ManagementSetEnabledFunctionInstallPromptDelegate() override {}
 
  private:
@@ -157,8 +165,6 @@ class ManagementSetEnabledFunctionInstallPromptDelegate
 
   base::WeakPtrFactory<ManagementSetEnabledFunctionInstallPromptDelegate>
       weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementSetEnabledFunctionInstallPromptDelegate);
 };
 
 class ManagementUninstallFunctionUninstallDialogDelegate
@@ -201,6 +207,11 @@ class ManagementUninstallFunctionUninstallDialogDelegate
     }
   }
 
+  ManagementUninstallFunctionUninstallDialogDelegate(
+      const ManagementUninstallFunctionUninstallDialogDelegate&) = delete;
+  ManagementUninstallFunctionUninstallDialogDelegate& operator=(
+      const ManagementUninstallFunctionUninstallDialogDelegate&) = delete;
+
   ~ManagementUninstallFunctionUninstallDialogDelegate() override {}
 
   // ExtensionUninstallDialog::Delegate implementation.
@@ -213,8 +224,6 @@ class ManagementUninstallFunctionUninstallDialogDelegate
   extensions::ManagementUninstallFunctionBase* function_;
   std::unique_ptr<extensions::ExtensionUninstallDialog>
       extension_uninstall_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementUninstallFunctionUninstallDialogDelegate);
 };
 
 void OnGenerateAppForLinkCompleted(
@@ -229,6 +238,10 @@ void OnGenerateAppForLinkCompleted(
 class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
  public:
   ChromeAppForLinkDelegate() {}
+
+  ChromeAppForLinkDelegate(const ChromeAppForLinkDelegate&) = delete;
+  ChromeAppForLinkDelegate& operator=(const ChromeAppForLinkDelegate&) = delete;
+
   ~ChromeAppForLinkDelegate() override {}
 
   void OnFaviconForApp(
@@ -237,23 +250,33 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
       const std::string& title,
       const GURL& launch_url,
       const favicon_base::FaviconImageResult& image_result) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Avoid accessing the WebAppProvider when web apps are enabled in Lacros
+    // (and thus disabled in Ash).
+    if (web_app::IsWebAppsCrosapiEnabled()) {
+      function->FinishCreateWebApp(std::string(),
+                                   /*install_success=*/false);
+      return;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->title = base::UTF8ToUTF16(title);
     web_app_info->start_url = launch_url;
     web_app_info->display_mode = web_app::DisplayMode::kBrowser;
-    web_app_info->open_as_window = false;
+    web_app_info->user_display_mode = blink::mojom::DisplayMode::kBrowser;
 
     if (!image_result.image.IsEmpty()) {
       web_app_info->icon_bitmaps.any[image_result.image.Width()] =
           image_result.image.AsBitmap();
     }
 
-    auto* provider =
-        web_app::WebAppProvider::Get(Profile::FromBrowserContext(context));
-    DCHECK(provider);
+    auto* provider = web_app::WebAppProvider::GetForWebApps(
+        Profile::FromBrowserContext(context));
 
     provider->install_manager().InstallWebAppFromInfo(
-        std::move(web_app_info), web_app::ForInstallableSite::kNo,
+        std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
+        web_app::ForInstallableSite::kNo,
         webapps::WebappInstallSource::MANAGEMENT_API,
         base::BindOnce(OnGenerateAppForLinkCompleted,
                        base::RetainedRef(function)));
@@ -262,8 +285,8 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
   extensions::api::management::ExtensionInfo CreateExtensionInfoFromWebApp(
       const std::string& app_id,
       content::BrowserContext* context) override {
-    auto* provider =
-        web_app::WebAppProvider::Get(Profile::FromBrowserContext(context));
+    auto* provider = web_app::WebAppProvider::GetForWebApps(
+        Profile::FromBrowserContext(context));
     DCHECK(provider);
     const web_app::WebAppRegistrar& registrar = provider->registrar();
 
@@ -280,10 +303,10 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
 
     info.icons =
         std::make_unique<std::vector<extensions::api::management::IconInfo>>();
-    std::vector<WebApplicationIconInfo> icon_infos =
+    std::vector<apps::IconInfo> manifest_icons =
         registrar.GetAppIconInfos(app_id);
-    info.icons->reserve(icon_infos.size());
-    for (const WebApplicationIconInfo& web_app_icon_info : icon_infos) {
+    info.icons->reserve(manifest_icons.size());
+    for (const apps::IconInfo& web_app_icon_info : manifest_icons) {
       extensions::api::management::IconInfo icon_info;
       if (web_app_icon_info.square_size_px)
         icon_info.size = *web_app_icon_info.square_size_px;
@@ -318,9 +341,6 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
 
   // Used for favicon loading tasks.
   base::CancelableTaskTracker cancelable_task_tracker_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppForLinkDelegate);
 };
 
 void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {
@@ -328,7 +348,7 @@ void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {
   // preference, the default launch value will be returned.
   // TODO(crbug.com/1003602): Make AppLaunchParams launch container Optional or
   // add a "default" launch container enum value.
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
   blink::mojom::DisplayMode display_mode =
       provider->registrar().GetAppUserDisplayMode(app_id);
@@ -348,7 +368,7 @@ void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {
       ->BrowserAppLauncher()
       ->LaunchAppWithParams(apps::AppLaunchParams(
           app_id, launch_container, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::mojom::AppLaunchSource::kSourceManagementApi));
+          apps::mojom::LaunchSource::kFromManagementApi));
 }
 
 void OnWebAppInstallCompleted(InstallOrLaunchWebAppCallback callback,
@@ -419,10 +439,10 @@ void ChromeManagementAPIDelegate::LaunchAppFunctionDelegate(
   }
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), launch_container,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::mojom::AppLaunchSource::kSourceManagementApi));
+      ->LaunchAppWithParams(
+          apps::AppLaunchParams(extension->id(), launch_container,
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                apps::mojom::LaunchSource::kFromManagementApi));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::DemoSession::RecordAppLaunchSourceIfInDemoMode(
@@ -530,8 +550,17 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
     content::BrowserContext* context,
     const GURL& web_app_url,
     InstallOrLaunchWebAppCallback callback) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Avoid accessing the WebAppProvider when web apps are enabled in Lacros (and
+  // thus disabled in Ash).
+  if (web_app::IsWebAppsCrosapiEnabled()) {
+    std::move(callback).Run(InstallOrLaunchWebAppResult::kUnknownError);
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   Profile* profile = Profile::FromBrowserContext(context);
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
 
   // Launch the app if web_app_url happens to match start_url. If not, the app

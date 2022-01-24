@@ -65,6 +65,9 @@ class InputDelegateForCompositor {
   // completed.
   virtual void ScrollOffsetAnimationFinished() = 0;
 
+  // Called to inform the input handler when prefers-reduced-motion changes.
+  virtual void SetPrefersReducedMotion(bool prefers_reduced_motion) = 0;
+
   // Returns true if we're currently in a "gesture" (user-initiated) scroll.
   // That is, between a GestureScrollBegin and a GestureScrollEnd. Note, a
   // GestureScrollEnd is deferred if the gesture ended but we're still

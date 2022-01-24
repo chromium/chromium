@@ -5,3 +5,4 @@
 // clang-format off
 
 // <include src="../screens/common/os_install.js">
+// <include src="../screens/common/os_trial.js">

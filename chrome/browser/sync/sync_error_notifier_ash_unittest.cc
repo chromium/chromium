@@ -25,7 +25,7 @@ namespace {
 // profile's name.
 const char kNotificationId[] = "chrome://settings/sync/testing_profile";
 
-class FakeLoginUIService: public LoginUIService {
+class FakeLoginUIService : public LoginUIService {
  public:
   FakeLoginUIService() : LoginUIService(nullptr) {}
   ~FakeLoginUIService() override = default;
@@ -47,6 +47,10 @@ std::unique_ptr<KeyedService> BuildFakeLoginUIService(
 class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
  public:
   SyncErrorNotifierTest() = default;
+
+  SyncErrorNotifierTest(const SyncErrorNotifierTest&) = delete;
+  SyncErrorNotifierTest& operator=(const SyncErrorNotifierTest&) = delete;
+
   ~SyncErrorNotifierTest() override = default;
 
   void SetUp() override {
@@ -88,9 +92,6 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   user_manager::ScopedUserManager scoped_user_manager_{
       std::make_unique<ash::MockUserManager>()};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncErrorNotifierTest);
 };
 
 TEST_F(SyncErrorNotifierTest, NoNotificationWhenNoPassphrase) {
@@ -117,7 +118,11 @@ TEST_F(SyncErrorNotifierTest, NotificationShownWhenBrowserSyncEnabled) {
 
 TEST_F(SyncErrorNotifierTest, NotificationShownWhenOsSyncEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  // SyncConsentOptional requires SyncSettingsCategorization.
+  feature_list.InitWithFeatures(
+      {chromeos::features::kSyncSettingsCategorization,
+       chromeos::features::kSyncConsentOptional},
+      {});
   service_.SetPassphraseRequiredForPreferredDataTypes(true);
   service_.GetUserSettings()->SetOsSyncFeatureEnabled(true);
   service_.SetFirstSetupComplete(false);

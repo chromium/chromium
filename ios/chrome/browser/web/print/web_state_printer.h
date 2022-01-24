@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_PRINT_WEB_STATE_PRINTER_H_
 #define IOS_CHROME_BROWSER_WEB_PRINT_WEB_STATE_PRINTER_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 namespace web {
 class WebState;
@@ -15,6 +15,14 @@ class WebState;
 // command "window.print".
 @protocol WebStatePrinter <NSObject>
 
+// Print WebState.
+// Print preview will be presented on top of |baseViewController|.
+- (void)printWebState:(web::WebState*)webState
+    baseViewController:(UIViewController*)baseViewController;
+
+// Print WebState.
+// The receiver is in charge of choosing the presenting VC for the print
+// preview.
 - (void)printWebState:(web::WebState*)webState;
 
 @end

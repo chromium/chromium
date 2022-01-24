@@ -133,6 +133,7 @@ bool SyscallSets::IsFileSystem(int sysno) {
 
     case __NR_execve:
     case __NR_faccessat:  // EPERM not a valid errno.
+    case __NR_faccessat2:
     case __NR_fchmodat:
     case __NR_fchownat:  // Should be called chownat ?
 #if defined(__x86_64__) || defined(__aarch64__)
@@ -843,6 +844,22 @@ bool SyscallSets::IsEventFd(int sysno) {
     case __NR_eventfd:
 #endif
     case __NR_eventfd2:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool SyscallSets::IsDlopen(int sysno) {
+  switch (sysno) {
+    // Chrome OS needs fstatfs for supporting a local glibc patch
+    // which hooks into dlopen(), LD_PRELOAD, and --preload.
+    // https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/2910526
+    case __NR_fstatfs:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_fstatfs64:
+#endif
       return true;
     default:
       return false;

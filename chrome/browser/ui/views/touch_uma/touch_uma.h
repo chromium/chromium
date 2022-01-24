@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOUCH_UMA_TOUCH_UMA_H_
 #define CHROME_BROWSER_UI_VIEWS_TOUCH_UMA_TOUCH_UMA_H_
 
-#include "base/macros.h"
-
 class TouchUMA {
  public:
   enum GestureActionType {
@@ -18,10 +16,11 @@ class TouchUMA {
     kMaxValue = kGestureRootViewTopTap,
   };
 
-  static void RecordGestureAction(GestureActionType action);
+  TouchUMA() = delete;
+  TouchUMA(const TouchUMA&) = delete;
+  TouchUMA& operator=(const TouchUMA&) = delete;
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TouchUMA);
+  static void RecordGestureAction(GestureActionType action);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOUCH_UMA_TOUCH_UMA_H_

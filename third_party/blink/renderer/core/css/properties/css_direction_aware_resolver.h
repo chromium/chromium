@@ -76,6 +76,7 @@ class CSSDirectionAwareResolver {
   static PhysicalMapping<4> PhysicalBorderRadiusMapping();
   static PhysicalMapping<4> PhysicalBorderStyleMapping();
   static PhysicalMapping<4> PhysicalBorderWidthMapping();
+  static PhysicalMapping<2> PhysicalContainIntrinsicSizeMapping();
   static PhysicalMapping<4> PhysicalInsetMapping();
   static PhysicalMapping<4> PhysicalMarginMapping();
   static PhysicalMapping<2> PhysicalMaxSizeMapping();

@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
@@ -146,6 +145,10 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   GpuHostImpl(Delegate* delegate,
               mojo::PendingRemote<mojom::VizMain> viz_main,
               InitParams params);
+
+  GpuHostImpl(const GpuHostImpl&) = delete;
+  GpuHostImpl& operator=(const GpuHostImpl&) = delete;
+
   ~GpuHostImpl() override;
 
   static void InitFontRenderParams(const gfx::FontRenderParams& params);
@@ -270,9 +273,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   mojo::Remote<mojom::VizMain> viz_main_;
   const InitParams params_;
 
-  // Task runner corresponding to the thread |this| is created on.
-  scoped_refptr<base::SingleThreadTaskRunner> host_thread_task_runner_;
-
   mojo::Remote<mojom::GpuService> gpu_service_remote_;
 #if defined(OS_WIN)
   mojo::Remote<mojom::InfoCollectionGpuService>
@@ -315,8 +315,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<GpuHostImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GpuHostImpl);
 };
 
 }  // namespace viz

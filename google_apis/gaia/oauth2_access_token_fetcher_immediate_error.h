@@ -32,6 +32,12 @@ class OAuth2AccessTokenFetcherImmediateError : public OAuth2AccessTokenFetcher {
  public:
   OAuth2AccessTokenFetcherImmediateError(OAuth2AccessTokenConsumer* consumer,
                                          const GoogleServiceAuthError& error);
+
+  OAuth2AccessTokenFetcherImmediateError(
+      const OAuth2AccessTokenFetcherImmediateError&) = delete;
+  OAuth2AccessTokenFetcherImmediateError& operator=(
+      const OAuth2AccessTokenFetcherImmediateError&) = delete;
+
   ~OAuth2AccessTokenFetcherImmediateError() override;
 
   void Start(const std::string& client_id,
@@ -59,7 +65,6 @@ class OAuth2AccessTokenFetcherImmediateError : public OAuth2AccessTokenFetcher {
 
   scoped_refptr<FailCaller> failer_;
   GoogleServiceAuthError immediate_error_;
-  DISALLOW_COPY_AND_ASSIGN(OAuth2AccessTokenFetcherImmediateError);
 };
 
 #endif  // GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_FETCHER_IMMEDIATE_ERROR_H_

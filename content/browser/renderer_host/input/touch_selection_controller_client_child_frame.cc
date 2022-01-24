@@ -154,10 +154,6 @@ TouchSelectionControllerClientChildFrame::CreateDrawable() {
   return nullptr;
 }
 
-const char* TouchSelectionControllerClientChildFrame::GetType() {
-  return "TouchSelectionControllerClientChildFrame";
-}
-
 bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
     int command_id) const {
   bool editable = rwhv_->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE;

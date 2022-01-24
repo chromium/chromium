@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
@@ -112,8 +112,7 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
 
   base::UmaHistogramCustomTimes(histogram_tag_ + ".TimeInitializeDB",
                                 base::Time::Now() - start,
-                                base::TimeDelta::FromMilliseconds(1),
-                                base::TimeDelta::FromMinutes(1), 50);
+                                base::Milliseconds(1), base::Minutes(1), 50);
 
   initialized_ = DoInitializeDatabase();
 

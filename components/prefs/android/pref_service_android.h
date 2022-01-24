@@ -25,6 +25,9 @@ class PrefServiceAndroid {
 
   void ClearPref(JNIEnv* env,
                  const base::android::JavaParamRef<jstring>& j_preference);
+  jboolean HasPrefPath(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& j_preference);
   jboolean GetBoolean(JNIEnv* env,
                       const base::android::JavaParamRef<jstring>& j_preference);
   void SetBoolean(JNIEnv* env,

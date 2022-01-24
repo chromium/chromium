@@ -60,6 +60,12 @@ class MimeHandlerViewContainerManager
       bool create_if_does_not_exist = false);
 
   explicit MimeHandlerViewContainerManager(content::RenderFrame* render_frame);
+
+  MimeHandlerViewContainerManager(const MimeHandlerViewContainerManager&) =
+      delete;
+  MimeHandlerViewContainerManager& operator=(
+      const MimeHandlerViewContainerManager&) = delete;
+
   ~MimeHandlerViewContainerManager() override;
 
   // Called to create a MimeHandlerViewFrameContainer for an <embed> or <object>
@@ -149,8 +155,6 @@ class MimeHandlerViewContainerManager
       receivers_;
   mojo::Receiver<mime_handler::BeforeUnloadControl>
       before_unload_control_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MimeHandlerViewContainerManager);
 };
 
 }  // namespace extensions

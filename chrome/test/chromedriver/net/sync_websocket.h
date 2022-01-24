@@ -13,11 +13,7 @@ class Timeout;
 // Proxy for using a WebSocket running on a background thread synchronously.
 class SyncWebSocket {
  public:
-  enum StatusCode {
-    kOk = 0,
-    kTimeout,
-    kDisconnected
-  };
+  enum class StatusCode { kOk = 0, kTimeout, kDisconnected };
 
   virtual ~SyncWebSocket() {}
 

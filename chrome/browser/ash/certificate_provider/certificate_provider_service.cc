@@ -15,11 +15,10 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider.h"
 #include "net/base/net_errors.h"
@@ -51,6 +50,10 @@ class CertificateProviderService::CertificateProviderImpl
   // CertificateProviderService.
   explicit CertificateProviderImpl(
       const base::WeakPtr<CertificateProviderService>& service);
+
+  CertificateProviderImpl(const CertificateProviderImpl&) = delete;
+  CertificateProviderImpl& operator=(const CertificateProviderImpl&) = delete;
+
   ~CertificateProviderImpl() override;
 
   void GetCertificates(
@@ -60,8 +63,6 @@ class CertificateProviderService::CertificateProviderImpl
 
   const base::WeakPtr<CertificateProviderService> service_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateProviderImpl);
 };
 
 // Implements an SSLPrivateKey backed by the signing function exposed by an
@@ -72,6 +73,9 @@ class CertificateProviderService::SSLPrivateKey : public net::SSLPrivateKey {
   SSLPrivateKey(const std::string& extension_id,
                 const CertificateInfo& cert_info,
                 const base::WeakPtr<CertificateProviderService>& service);
+
+  SSLPrivateKey(const SSLPrivateKey&) = delete;
+  SSLPrivateKey& operator=(const SSLPrivateKey&) = delete;
 
   // net::SSLPrivateKey:
   std::string GetProviderName() override;
@@ -87,8 +91,6 @@ class CertificateProviderService::SSLPrivateKey : public net::SSLPrivateKey {
   const CertificateInfo cert_info_;
   const base::WeakPtr<CertificateProviderService> service_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SSLPrivateKey);
 };
 
 class CertificateProviderService::ClientCertIdentity
@@ -97,6 +99,10 @@ class CertificateProviderService::ClientCertIdentity
   ClientCertIdentity(scoped_refptr<net::X509Certificate> cert,
                      base::WeakPtr<CertificateProviderService> service)
       : net::ClientCertIdentity(std::move(cert)), service_(service) {}
+
+  ClientCertIdentity(const ClientCertIdentity&) = delete;
+  ClientCertIdentity& operator=(const ClientCertIdentity&) = delete;
+
   ~ClientCertIdentity() override;
 
   void AcquirePrivateKey(
@@ -106,8 +112,6 @@ class CertificateProviderService::ClientCertIdentity
  private:
   SEQUENCE_CHECKER(sequence_checker_);
   const base::WeakPtr<CertificateProviderService> service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertIdentity);
 };
 
 CertificateProviderService::ClientCertIdentity::~ClientCertIdentity() {

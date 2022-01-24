@@ -37,6 +37,9 @@ class NET_EXPORT NSSCertDatabase {
  public:
   class NET_EXPORT Observer {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // Will be called when a certificate is added, removed, or trust settings
@@ -45,9 +48,6 @@ class NET_EXPORT NSSCertDatabase {
 
    protected:
     Observer() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Holds an NSS certificate along with additional information.
@@ -137,6 +137,10 @@ class NET_EXPORT NSSCertDatabase {
   // be identical.
   NSSCertDatabase(crypto::ScopedPK11Slot public_slot,
                   crypto::ScopedPK11Slot private_slot);
+
+  NSSCertDatabase(const NSSCertDatabase&) = delete;
+  NSSCertDatabase& operator=(const NSSCertDatabase&) = delete;
+
   virtual ~NSSCertDatabase();
 
   // Asynchronously get a list of unique certificates in the certificate
@@ -155,18 +159,14 @@ class NET_EXPORT NSSCertDatabase {
   // deleted.
   virtual void ListCertsInfo(ListCertsInfoCallback callback);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Get the slot for system-wide key data. May be NULL if the system token was
-  // not explicitly set.
-  // Note: The System slot is set after the NSSCertDatabase is constructed and
-  // this call returns synchronously. Thus, it is possible to call this function
-  // before SetSystemSlot is called and get a NULL result.
-  // See https://crbug.com/399554 .
+  // not enabled for this database.
   virtual crypto::ScopedPK11Slot GetSystemSlot() const;
 
   // Checks whether |cert| is stored on |slot|.
   static bool IsCertificateOnSlot(CERTCertificate* cert, PK11SlotInfo* slot);
-#endif
+#endif  // defined(OS_CHROMEOS)
 
   // Get the default slot for public key data.
   crypto::ScopedPK11Slot GetPublicSlot() const;
@@ -331,8 +331,6 @@ class NET_EXPORT NSSCertDatabase {
   const scoped_refptr<base::ObserverListThreadSafe<Observer>> observer_list_;
 
   base::WeakPtrFactory<NSSCertDatabase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NSSCertDatabase);
 };
 
 }  // namespace net

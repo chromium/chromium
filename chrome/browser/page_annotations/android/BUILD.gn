@@ -23,6 +23,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//components/embedder_support/android:util_java",
+    "//net/android:net_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//url:gurl_java",
   ]

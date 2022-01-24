@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -41,6 +40,12 @@ class CancellingNavigationSimulatorTest
                      TestNavigationThrottle::ResultSynchrony>> {
  public:
   CancellingNavigationSimulatorTest() {}
+
+  CancellingNavigationSimulatorTest(const CancellingNavigationSimulatorTest&) =
+      delete;
+  CancellingNavigationSimulatorTest& operator=(
+      const CancellingNavigationSimulatorTest&) = delete;
+
   ~CancellingNavigationSimulatorTest() override {}
 
   void SetUp() override {
@@ -85,15 +90,18 @@ class CancellingNavigationSimulatorTest
   bool will_fail_request_called_ = false;
   base::WeakPtrFactory<CancellingNavigationSimulatorTest> weak_ptr_factory_{
       this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CancellingNavigationSimulatorTest);
 };
 
 class MethodCheckingNavigationSimulatorTest : public NavigationSimulatorTest,
                                               public WebContentsObserver {
  public:
   MethodCheckingNavigationSimulatorTest() = default;
+
+  MethodCheckingNavigationSimulatorTest(
+      const MethodCheckingNavigationSimulatorTest&) = delete;
+  MethodCheckingNavigationSimulatorTest& operator=(
+      const MethodCheckingNavigationSimulatorTest&) = delete;
+
   ~MethodCheckingNavigationSimulatorTest() override = default;
 
   void SetUp() override {
@@ -116,8 +124,6 @@ class MethodCheckingNavigationSimulatorTest : public NavigationSimulatorTest,
 
   // Not valid until |did_finish_navigation_| is true;
   bool is_post_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MethodCheckingNavigationSimulatorTest);
 };
 
 class ResponseHeadersCheckingNavigationSimulatorTest

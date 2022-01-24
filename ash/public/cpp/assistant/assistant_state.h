@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/assistant/assistant_state_base.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -23,6 +22,10 @@ class ASH_PUBLIC_EXPORT AssistantState : public AssistantStateBase {
   static AssistantState* Get();
 
   AssistantState();
+
+  AssistantState(const AssistantState&) = delete;
+  AssistantState& operator=(const AssistantState&) = delete;
+
   ~AssistantState() override;
 
   void NotifyStatusChanged(chromeos::assistant::AssistantStatus status);
@@ -30,9 +33,6 @@ class ASH_PUBLIC_EXPORT AssistantState : public AssistantStateBase {
   void NotifyLocaleChanged(const std::string& locale);
   void NotifyArcPlayStoreEnabledChanged(bool enabled);
   void NotifyLockedFullScreenStateChanged(bool enabled);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantState);
 };
 
 }  // namespace ash

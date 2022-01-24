@@ -5,10 +5,13 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "content/public/browser/storage_partition.h"
 
 // static
@@ -30,6 +33,8 @@ HistoryClustersServiceFactory::HistoryClustersServiceFactory()
           "HistoryClustersService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(TemplateURLServiceFactory::GetInstance());
+  DependsOn(PageContentAnnotationsServiceFactory::GetInstance());
 }
 
 HistoryClustersServiceFactory::~HistoryClustersServiceFactory() = default;
@@ -47,8 +52,10 @@ KeyedService* HistoryClustersServiceFactory::BuildServiceInstanceFor(
 
   auto url_loader_factory = context->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
-  return new history_clusters::HistoryClustersService(history_service,
-                                                      url_loader_factory);
+  return new history_clusters::HistoryClustersService(
+      history_service, TemplateURLServiceFactory::GetForProfile(profile),
+      PageContentAnnotationsServiceFactory::GetForProfile(profile),
+      url_loader_factory);
 }
 
 content::BrowserContext* HistoryClustersServiceFactory::GetBrowserContextToUse(

@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/policy/core/common/policy_service.h"
@@ -102,7 +103,8 @@ enum class UpgradedMedium {
   kWifiDirect = 8,
   kWebRtc = 9,
   kNoUpgrade = 10,
-  kMaxValue = kNoUpgrade
+  kBleL2Cap = 11,
+  kMaxValue = kBleL2Cap
 };
 
 AttachmentType FileMetadataTypeToAttachmentType(
@@ -299,6 +301,7 @@ std::string GetUpgradedMediumSubcategoryName(
     case location::nearby::connections::mojom::Medium::kWifiAware:
     case location::nearby::connections::mojom::Medium::kNfc:
     case location::nearby::connections::mojom::Medium::kWifiDirect:
+    case location::nearby::connections::mojom::Medium::kBleL2Cap:
       return ".UnknownMediumUpgrade";
   }
 }
@@ -331,6 +334,8 @@ UpgradedMedium GetUpgradedMediumForMetrics(
       return UpgradedMedium::kWifiDirect;
     case location::nearby::connections::mojom::Medium::kWebRtc:
       return UpgradedMedium::kWebRtc;
+    case location::nearby::connections::mojom::Medium::kBleL2Cap:
+      return UpgradedMedium::kBleL2Cap;
   }
 }
 
@@ -348,8 +353,7 @@ void RecordNearbySharePayloadAttachmentTypeMetric(
 
 }  // namespace
 
-void RecordNearbyShareEnabledMetric(
-    NearbyShareFeatureUsageMetrics::NearbyShareEnabledState state) {
+void RecordNearbyShareEnabledMetric(NearbyShareEnabledState state) {
   base::UmaHistogramEnumeration("Nearby.Share.Enabled", state);
 }
 

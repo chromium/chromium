@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/shell/browser/shell_devtools_bindings.h"
 
@@ -21,6 +20,9 @@ class ShellDevToolsFrontend : public ShellDevToolsDelegate,
                               public WebContentsObserver {
  public:
   static ShellDevToolsFrontend* Show(WebContents* inspected_contents);
+
+  ShellDevToolsFrontend(const ShellDevToolsFrontend&) = delete;
+  ShellDevToolsFrontend& operator=(const ShellDevToolsFrontend&) = delete;
 
   void Activate();
   void InspectElementAt(int x, int y);
@@ -38,8 +40,6 @@ class ShellDevToolsFrontend : public ShellDevToolsDelegate,
   ~ShellDevToolsFrontend() override;
   Shell* frontend_shell_;
   std::unique_ptr<ShellDevToolsBindings> devtools_bindings_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellDevToolsFrontend);
 };
 
 }  // namespace content

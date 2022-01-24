@@ -43,7 +43,7 @@ class StubFeedApi : public FeedApi {
   void ExecuteRefreshTask(RefreshTaskId task_id) override {}
   void LoadMore(const FeedStreamSurface& surface,
                 base::OnceCallback<void(bool)> callback) override {}
-  void ManualRefresh(const FeedStreamSurface& surface,
+  void ManualRefresh(const StreamType& stream_type,
                      base::OnceCallback<void(bool)> callback) override {}
   ImageFetchId FetchImage(
       const GURL& url,
@@ -69,7 +69,8 @@ class StubFeedApi : public FeedApi {
   void ReportSliceViewed(SurfaceId surface_id,
                          const StreamType& stream_type,
                          const std::string& slice_id) override {}
-  void ReportFeedViewed(SurfaceId surface_id) override {}
+  void ReportFeedViewed(const StreamType& stream_type,
+                        SurfaceId surface_id) override {}
   void ReportPageLoaded() override {}
   void ReportOpenAction(const GURL& url,
                         const StreamType& stream_type,
@@ -83,12 +84,24 @@ class StubFeedApi : public FeedApi {
   void ReportStreamScrollStart() override {}
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override {}
+  void ReportNoticeCreated(const StreamType& stream_type,
+                           const std::string& key) override {}
+  void ReportNoticeViewed(const StreamType& stream_type,
+                          const std::string& key) override {}
+  void ReportNoticeOpenAction(const StreamType& stream_type,
+                              const std::string& key) override {}
+  void ReportNoticeDismissed(const StreamType& stream_type,
+                             const std::string& key) override {}
   DebugStreamData GetDebugStreamData() override;
-  void ForceRefreshForDebugging() override {}
+  void ForceRefreshForDebugging(const StreamType& stream_type) override {}
   std::string DumpStateForDebugging() override;
   void SetForcedStreamUpdateForDebugging(
       const feedui::StreamUpdate& stream_update) override {}
   base::Time GetLastFetchTime(const StreamType& stream_type) override;
+  void SetContentOrder(const StreamType& stream_type,
+                       ContentOrder content_order) override {}
+  ContentOrder GetContentOrder(const StreamType& stream_type) override;
+  ContentOrder GetContentOrderFromPrefs(const StreamType& stream_type) override;
 
  private:
   StubWebFeedSubscriptions web_feed_subscriptions_;

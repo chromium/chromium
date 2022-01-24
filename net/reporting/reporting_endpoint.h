@@ -47,6 +47,10 @@ struct NET_EXPORT ReportingEndpointGroupKey {
 
   std::string ToString() const;
 
+  // True if this endpoint "group" is actually being used to represent a single
+  // V1 document endpoint.
+  bool IsDocumentEndpoint() const { return reporting_source.has_value(); }
+
   // The NetworkIsolationKey the group is scoped to. Needed to prevent leaking
   // third party contexts across sites.
   NetworkIsolationKey network_isolation_key;

@@ -56,7 +56,8 @@
 
   await PerformanceTestRunner.stopTimeline();
   await PerformanceTestRunner.printTimelineRecordsWithDetails(
-      TimelineModel.TimelineModel.RecordType.CompileModule);
+      TimelineModel.TimelineModel.RecordType.CompileModule,
+      TimelineModel.TimelineModel.RecordType.CacheModule);
 
   TestRunner.addResult('-----------------------------------------------');
   TestRunner.completeTest();

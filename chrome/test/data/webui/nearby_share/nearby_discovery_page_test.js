@@ -12,7 +12,7 @@ import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {isVisible} from '../test_util.m.js';
+import {isVisible} from '../test_util.js';
 
 import {FakeConfirmationManagerRemote, FakeDiscoveryManagerRemote} from './fake_mojo_interfaces.js';
 

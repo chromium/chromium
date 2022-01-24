@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"
@@ -25,17 +24,17 @@ namespace syncer {
 class InvalidationInterface;
 
 struct WaitInterval {
-  enum BlockingMode {
+  enum class BlockingMode {
     // Uninitialized state, should not be set in practice.
-    UNKNOWN = -1,
+    kUnknown = -1,
     // We enter a series of increasingly longer WaitIntervals if we experience
     // repeated transient failures.  We retry at the end of each interval.
-    EXPONENTIAL_BACKOFF,
+    kExponentialBackoff,
     // A server-initiated throttled interval.  We do not allow any syncing
     // during such an interval.
-    THROTTLED,
+    kThrottled,
     // We re retrying for exponetial backoff.
-    EXPONENTIAL_BACKOFF_RETRYING,
+    kExponentialBackoffRetrying,
   };
   WaitInterval();
   WaitInterval(BlockingMode mode, base::TimeDelta length);
@@ -49,6 +48,10 @@ struct WaitInterval {
 class DataTypeTracker {
  public:
   explicit DataTypeTracker(ModelType type);
+
+  DataTypeTracker(const DataTypeTracker&) = delete;
+  DataTypeTracker& operator=(const DataTypeTracker&) = delete;
+
   ~DataTypeTracker();
 
   // For STL compatibility, we do not forbid the creation of a default copy
@@ -199,8 +202,6 @@ class DataTypeTracker {
   // The amount of time to delay a sync cycle by when a local change for this
   // type occurs.
   base::TimeDelta local_change_nudge_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataTypeTracker);
 };
 
 }  // namespace syncer

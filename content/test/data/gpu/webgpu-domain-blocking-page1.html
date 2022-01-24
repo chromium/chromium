@@ -1,0 +1,41 @@
+<script type="text/javascript">
+function reportProgress(msg) {
+  if (window.domAutomationController) {
+    window.domAutomationController.send(msg);
+  }
+  console.log(msg);
+}
+
+async function init()
+{
+  const adapter = await navigator.gpu.requestAdapter();
+  if (!adapter) {
+    console.log('TEST FAILED - Could not get a GPUAdapter');
+    reportProgress('FAILED');
+    return;
+  }
+
+  let device;
+  try {
+    device = await adapter.requestDevice();
+  } catch {
+    console.log('TEST FAILED - Could not get a GPUDevice');
+    reportProgress('FAILED');
+    return;
+  }
+
+
+  reportProgress('LOADED');
+
+  console.log('Waiting for a GPU crash to cause device loss');
+  const {reason} = await device.lost;
+  if (reason !== undefined) {
+    console.log('TEST FAILED - Expected undefined device lost reason');
+    reportProgress('FAILED');
+  }
+
+  window.location.href = 'webgpu-domain-blocking-page2.html';
+}
+
+init();
+</script>

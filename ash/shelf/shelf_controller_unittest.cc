@@ -7,8 +7,10 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
+#include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -22,22 +24,17 @@
 #include "ash/wm/window_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace ash {
-namespace {
 
 Shelf* GetShelfForDisplay(int64_t display_id) {
   return Shell::GetRootWindowControllerWithDisplayId(display_id)->shelf();
 }
-
-}  // namespace
 
 using ShelfControllerTest = AshTestBase;
 
@@ -74,11 +71,15 @@ TEST_F(ShelfControllerTest, ShelfIDUpdate) {
 class ShelfControllerNotificationIndicatorTest : public AshTestBase {
  public:
   ShelfControllerNotificationIndicatorTest() = default;
+
+  ShelfControllerNotificationIndicatorTest(
+      const ShelfControllerNotificationIndicatorTest&) = delete;
+  ShelfControllerNotificationIndicatorTest& operator=(
+      const ShelfControllerNotificationIndicatorTest&) = delete;
+
   ~ShelfControllerNotificationIndicatorTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kNotificationIndicator},
-                                          {});
     AshTestBase::SetUp();
 
     account_id_ = AccountId::FromUserEmail("test@gmail.com");
@@ -101,9 +102,6 @@ class ShelfControllerNotificationIndicatorTest : public AshTestBase {
 
  private:
   AccountId account_id_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfControllerNotificationIndicatorTest);
 };
 
 // Tests that the ShelfController keeps the ShelfModel updated on calls to
@@ -114,7 +112,8 @@ TEST_F(ShelfControllerNotificationIndicatorTest, HasNotificationBasic) {
   ShelfItem item;
   item.type = TYPE_APP;
   item.id = ShelfID(app_id);
-  const int index = controller->model()->Add(item);
+  const int index = controller->model()->Add(
+      item, std::make_unique<TestShelfItemDelegate>(item.id));
   EXPECT_FALSE(controller->model()->items()[index].has_notification);
 
   // Send an app update to ShelfController for adding a notification badge.
@@ -131,10 +130,11 @@ TEST_F(ShelfControllerNotificationIndicatorTest, HasNotificationBasic) {
 class ShelfControllerPrefsTest : public AshTestBase {
  public:
   ShelfControllerPrefsTest() = default;
-  ~ShelfControllerPrefsTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfControllerPrefsTest);
+  ShelfControllerPrefsTest(const ShelfControllerPrefsTest&) = delete;
+  ShelfControllerPrefsTest& operator=(const ShelfControllerPrefsTest&) = delete;
+
+  ~ShelfControllerPrefsTest() override = default;
 };
 
 // Ensure shelf settings are updated on preference changes.

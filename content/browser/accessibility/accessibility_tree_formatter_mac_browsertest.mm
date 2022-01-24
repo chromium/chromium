@@ -413,6 +413,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Document) {
+  TestScript(R"~~(data:text/html,
+                    <input id='textbox' aria-label='input'>)~~",
+             {"document.AXRole"},
+             R"~~(document.AXRole='AXWebArea'
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_ByDOMId) {
   TestScript(R"~~(data:text/html,
                     <input id='textbox' aria-label='input'>)~~",
@@ -439,6 +448,74 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_NotApplicableAttribute) {
+  TestScript(R"~~(data:text/html,
+                    <input id='textbox'>)~~",
+             {"textbox.AXARIABusy"},
+             R"~~(textbox.AXARIABusy=n/a
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_NullValue) {
+  TestScript(R"~~(data:text/html,
+                    <input id='input'>)~~",
+             {"input.AXTitleUIElement"},
+             R"~~(input.AXTitleUIElement=NULL
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Comment) {
+  TestScript(R"~~(data:text/html,
+                    <input id='textbox' aria-label='input'>)~~",
+             {"// textbox.AXRolio"},
+             R"~~(// textbox.AXRolio
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Object_IntArray) {
+  TestScript("data:text/html,", {"var:= [3, 4]"},
+             R"~~(var=[3, 4]
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Object_NSRange) {
+  TestScript("data:text/html,", {"var:= {loc: 3, len: 2}"},
+             R"~~(var={loc: 3, len: 2}
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Object_TextMarker) {
+  TestScript(R"~~(data:text/html,
+                    <textarea id="textarea">Text</textarea>)~~",
+             {"var:= {:2, 2, down}"},
+             R"~~(var={:2, 2, down}
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Object_TextMarkerArray) {
+  TestScript(R"~~(data:text/html,
+                    <textarea id="textarea">Text</textarea>)~~",
+             {"var:= [{:2, 2, down}, {:1, 1, up}]"},
+             R"~~(var=[{:2, 2, down}, {:1, 1, up}]
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Object_TextMarkerRange) {
+  TestScript(R"~~(data:text/html,
+                    <textarea id="textarea">Text</textarea>)~~",
+             {"var:= {anchor: {:3, 0, down}, focus: {:3, 4, down}}"},
+             R"~~(var={anchor: {:3, 0, down}, focus: {:3, 4, down}}
+)~~");
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script_Chain) {
   TestScript(R"~~(data:text/html,
                     <input id='input' aria-label='input'>)~~",
@@ -462,6 +539,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                     <p id='p'>Paragraph</p>)~~",
              {"p.AXChildren[9999].AXRole"},
              R"~~(p.AXChildren[9999].AXRole=ERROR:FAILED_TO_PARSE
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Chain_Array_Count) {
+  TestScript(R"~~(data:text/html,
+                    <p id='p'><span>1</span><span>2</span><span>3</span></p>)~~",
+             {"p.AXChildren.count"},
+             R"~~(p.AXChildren.count=3
 )~~");
 }
 
@@ -503,6 +589,16 @@ text.AXRole='AXStaticText'
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Variables_Null) {
+  TestScript(R"~~(data:text/html,
+                    <p id='p'>Paragraph</p>)~~",
+             {"var:= p.AXTitleUIElement", "var"},
+             R"~~(var=NULL
+var=NULL
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_ActionNames) {
   TestScript(
       R"~~(data:text/html,
@@ -521,11 +617,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_SetAttribute) {
-  TestScript(R"~~(data:text/html,
+  TestScript(
+      R"~~(data:text/html,
                     <textarea id="textarea">Text</textarea>)~~",
-             {"textarea.AXSelectedTextMarkerRange = "
-              "textarea.AXTextMarkerRangeForUIElement(textarea)"},
-             "");
+      {"textarea.AXSelectedTextMarkerRange = "
+       "textarea.AXTextMarkerRangeForUIElement(textarea)"},
+      R"~~(textarea.AXSelectedTextMarkerRange={anchor: {:3, 0, down}, focus: {:3, 4, down}}
+)~~");
 }
 
 }  // namespace content

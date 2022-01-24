@@ -39,6 +39,26 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
                                   uint64_t reclaim_target_kb) = 0;
   };
 
+  enum class PressureLevelArcVm {
+    // There is enough memory to use.
+    NONE = 0,
+    // ARCVM is advised to kill cached apps to free memory.
+    CACHED = 1,
+    // ARCVM is advised to kill perceptible apps to free memory.
+    PERCEPTIBLE = 2,
+    // ARCVM is advised to kill foreground apps to free memory.
+    FOREGROUND = 3,
+  };
+
+  // Observer class for ARCVM memory pressure signal.
+  class ArcVmObserver : public base::CheckedObserver {
+   public:
+    ~ArcVmObserver() override = default;
+
+    virtual void OnMemoryPressure(PressureLevelArcVm level,
+                                  uint64_t reclaim_target_kb) = 0;
+  };
+
   ResourcedClient(const ResourcedClient&) = delete;
   ResourcedClient& operator=(const ResourcedClient&) = delete;
 
@@ -55,13 +75,25 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   static ResourcedClient* Get();
 
   // Attempts to enter game mode if state is true, exit if state is false.
-  virtual void SetGameMode(bool state, DBusMethodCallback<bool> callback) = 0;
+  // Will automatically exit game mode once refresh_seconds is reached.
+  // Callback will be called with whether game mode was on prior to this.
+  virtual void SetGameModeWithTimeout(bool state,
+                                      uint32_t refresh_seconds,
+                                      DBusMethodCallback<bool> callback) = 0;
 
   // Adds an observer to the observer list to listen on memory pressure events.
   virtual void AddObserver(Observer* observer) = 0;
 
   // Removes an observer from observer list.
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Adds an observer to be called when there is an ARCVM memory pressure
+  // signal.
+  virtual void AddArcVmObserver(ArcVmObserver* observer) = 0;
+
+  // Stops a previously added observer from being called on ARCVM memory
+  // pressure signals.
+  virtual void RemoveArcVmObserver(ArcVmObserver* observer) = 0;
 
  protected:
   ResourcedClient();

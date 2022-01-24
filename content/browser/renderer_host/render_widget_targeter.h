@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/common/content_export.h"
@@ -27,7 +28,6 @@ class PointF;
 namespace content {
 
 class RenderWidgetHostViewBase;
-class OneShotTimeoutMonitor;
 
 // TODO(sunxd): Make |RenderWidgetTargetResult| a class. Merge the booleans into
 // a mask to reduce the size. Make the constructor take in enums for better
@@ -98,6 +98,10 @@ class RenderWidgetTargeter {
 
   // The delegate must outlive this targeter.
   explicit RenderWidgetTargeter(Delegate* delegate);
+
+  RenderWidgetTargeter(const RenderWidgetTargeter&) = delete;
+  RenderWidgetTargeter& operator=(const RenderWidgetTargeter&) = delete;
+
   ~RenderWidgetTargeter();
 
   // Finds the appropriate target inside |root_view| for |event|, and dispatches
@@ -142,6 +146,10 @@ class RenderWidgetTargeter {
                      RenderWidgetHostAtPointCallback);
     TargetingRequest(TargetingRequest&& request);
     TargetingRequest& operator=(TargetingRequest&& other);
+
+    TargetingRequest(const TargetingRequest&) = delete;
+    TargetingRequest& operator=(const TargetingRequest&) = delete;
+
     ~TargetingRequest();
 
     void RunCallback(RenderWidgetHostViewBase* target,
@@ -165,8 +173,6 @@ class RenderWidgetTargeter {
     // |event| if set is in the coordinate space of |root_view|.
     ui::WebScopedInputEvent event;
     ui::LatencyInfo latency;
-
-    DISALLOW_COPY_AND_ASSIGN(TargetingRequest);
   };
 
   void ResolveTargetingRequest(TargetingRequest);
@@ -248,7 +254,7 @@ class RenderWidgetTargeter {
   // process before giving up and resuming event processing.
   base::TimeDelta async_hit_test_timeout_delay_;
 
-  std::unique_ptr<OneShotTimeoutMonitor> async_hit_test_timeout_;
+  base::OneShotTimer async_hit_test_timeout_;
 
   uint64_t trace_id_;
 
@@ -259,8 +265,6 @@ class RenderWidgetTargeter {
 
   Delegate* const delegate_;
   base::WeakPtrFactory<RenderWidgetTargeter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetTargeter);
 };
 
 }  // namespace content

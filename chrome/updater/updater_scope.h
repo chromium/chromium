@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_UPDATER_SCOPE_H_
 
 #include <ostream>
+#include <string>
 
 namespace updater {
 
@@ -18,13 +19,17 @@ enum class UpdaterScope {
   kSystem = 2,
 };
 
-inline std::ostream& operator<<(std::ostream& os, UpdaterScope scope) {
+inline std::string UpdaterScopeToString(UpdaterScope scope) {
   switch (scope) {
     case UpdaterScope::kUser:
-      return os << "User";
+      return "User";
     case UpdaterScope::kSystem:
-      return os << "System";
+      return "System";
   }
+}
+
+inline std::ostream& operator<<(std::ostream& os, UpdaterScope scope) {
+  return os << UpdaterScopeToString(scope).c_str();
 }
 
 // Returns the scope of the updater, which is either per-system or per-user.

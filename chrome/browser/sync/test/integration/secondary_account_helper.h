@@ -33,29 +33,30 @@ base::CallbackListSubscription SetUpSigninClient(
 // Sets up necessary fakes for fake network responses to work. Meant to be
 // called from SetUpOnMainThread.
 // TODO(crbug.com/882770): On ChromeOS, we need to set up a fake
-// NetworkPortalDetector, otherwise chromeos::DelayNetworkCall will think it's
+// `NetworkPortalDetector`, otherwise `ash::DelayNetworkCall` will think it's
 // behind a captive portal and delay all network requests forever, which means
 // the ListAccounts requests (i.e. getting cookie accounts) will never make it
 // far enough to even request our fake response.
 void InitNetwork();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Makes a non-primary account available with both a refresh token and cookie.
-AccountInfo SignInSecondaryAccount(
+// Sets an account as primary with `signin::ConsentLevel::kSignin`. There is no
+// consent for Sync. The account is available with both a refresh token and
+// cookie.
+AccountInfo SignInUnconsentedAccount(
     Profile* profile,
     network::TestURLLoaderFactory* test_url_loader_factory,
     const std::string& email);
 
 // Clears signin cookies and removes the refresh token for the given account.
-void SignOutSecondaryAccount(
-    Profile* profile,
-    network::TestURLLoaderFactory* test_url_loader_factory,
-    const CoreAccountId& account_id);
+void SignOutAccount(Profile* profile,
+                    network::TestURLLoaderFactory* test_url_loader_factory,
+                    const CoreAccountId& account_id);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Makes the given account Chrome's primary one. The account must already be
-// signed in (per SignInSecondaryAccount).
-void MakeAccountPrimary(Profile* profile, const std::string& email);
+// Grants sync consent to an account (`signin::ConsentLevel::kSync`). The
+// account must already be signed in (per SignInUnconsentedAccount).
+void GrantSyncConsent(Profile* profile, const std::string& email);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace secondary_account_helper

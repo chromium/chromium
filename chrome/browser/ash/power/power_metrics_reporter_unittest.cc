@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/pref_names.h"
@@ -20,6 +19,10 @@ namespace ash {
 class PowerMetricsReporterTest : public testing::Test {
  public:
   PowerMetricsReporterTest() = default;
+
+  PowerMetricsReporterTest(const PowerMetricsReporterTest&) = delete;
+  PowerMetricsReporterTest& operator=(const PowerMetricsReporterTest&) = delete;
+
   ~PowerMetricsReporterTest() override = default;
 
   void SetUp() override {
@@ -89,9 +92,6 @@ class PowerMetricsReporterTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<PowerMetricsReporter> reporter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerMetricsReporterTest);
 };
 
 TEST_F(PowerMetricsReporterTest, CountAndReportEvents) {

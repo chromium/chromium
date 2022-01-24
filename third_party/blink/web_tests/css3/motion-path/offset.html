@@ -45,7 +45,7 @@ test(function() {
     assert_equals(getComputedStyle(div3, null).offsetDistance, '70px');
     assert_equals(getComputedStyle(div3, null).offsetRotate, '0deg');
     assert_equals(getComputedStyle(div3, null).offset, 'path("M 10 20 H 40 V 170") 70px 0deg');
-    assert_equals(getComputedStyle(div3, null).transform, 'matrix(1, 0, 0, 1, 0, 0)');
+    assert_equals(getComputedStyle(div3, null).transform, 'none');
 }, 'offset supports SVG path data');
 
 test(function() {

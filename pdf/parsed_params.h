@@ -13,30 +13,39 @@
 
 namespace blink {
 struct WebPluginParams;
-}
+}  // namespace blink
 
 namespace chrome_pdf {
 
 struct ParsedParams {
   ParsedParams();
   ParsedParams(const ParsedParams& other);
+  ParsedParams& operator=(const ParsedParams& other);
+  ParsedParams(ParsedParams&& other);
+  ParsedParams& operator=(ParsedParams&& other);
   ~ParsedParams();
-
-  // The document original URL. Must not be empty.
-  std::string original_url;
 
   // The plugin source URL. Must not be empty.
   std::string src_url;
 
-  // The background color for the PDF viewer.
-  absl::optional<SkColor> background_color;
+  // The document original URL. Must not be empty.
+  std::string original_url;
+
+  // The top-level URL.
+  std::string top_level_url;
 
   // Whether the plugin should occupy the entire frame.
   bool full_frame = false;
 
+  // The background color for the PDF viewer.
+  SkColor background_color = SK_ColorTRANSPARENT;
+
   // Whether to execute JavaScript and maybe XFA.
   PDFiumFormFiller::ScriptOption script_option =
       PDFiumFormFiller::DefaultScriptOption();
+
+  // Whether the PDF was edited previously in annotation mode.
+  bool has_edits = false;
 };
 
 // Creates an `ParsedParams` by parsing a `blink::WebPluginParams`. If

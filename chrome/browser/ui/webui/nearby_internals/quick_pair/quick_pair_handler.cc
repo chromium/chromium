@@ -48,19 +48,19 @@ QuickPairHandler::QuickPairHandler()
 QuickPairHandler::~QuickPairHandler() = default;
 
 void QuickPairHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getQuickPairLogMessages",
       base::BindRepeating(&QuickPairHandler::HandleGetLogMessages,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "notifyFastPairError",
       base::BindRepeating(&QuickPairHandler::NotifyFastPairError,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "notifyFastPairDiscovery",
       base::BindRepeating(&QuickPairHandler::NotifyFastPairDiscovery,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "notifyFastPairPairing",
       base::BindRepeating(&QuickPairHandler::NotifyFastPairPairing,
                           base::Unretained(this)));

@@ -12,10 +12,4 @@ bool CoreTextVersionSupportsVariations() {
   return base::mac::IsAtLeastOS10_14();
 }
 
-// CoreText versions below 10.13 display COLR cpal as black/foreground-color
-// glyphs and do not interpret color glyph layers correctly.
-bool CoreTextVersionSupportsColrCpal() {
-  return base::mac::IsAtLeastOS10_13();
-}
-
 }  // namespace blink

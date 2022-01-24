@@ -16,6 +16,10 @@ class CourierRendererFactory : public RendererFactory {
  public:
   explicit CourierRendererFactory(
       std::unique_ptr<RendererController> controller);
+
+  CourierRendererFactory(const CourierRendererFactory&) = delete;
+  CourierRendererFactory& operator=(const CourierRendererFactory&) = delete;
+
   ~CourierRendererFactory() override;
 
   std::unique_ptr<Renderer> CreateRenderer(
@@ -33,8 +37,6 @@ class CourierRendererFactory : public RendererFactory {
 
  private:
   const std::unique_ptr<RendererController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(CourierRendererFactory);
 };
 
 }  // namespace remoting

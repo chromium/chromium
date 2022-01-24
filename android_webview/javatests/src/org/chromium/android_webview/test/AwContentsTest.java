@@ -4,6 +4,9 @@
 
 package org.chromium.android_webview.test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
@@ -27,6 +30,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.SettableFuture;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -44,10 +48,13 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.viz.common.VizFeatures;
+import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -871,6 +878,47 @@ public class AwContentsTest {
     }
 
     /**
+     * Regression test for https://crbug.com/1231883. Call stopLoading() before any page has been
+     * loaded, load a page, and then call evaluateJavaScript. The JavaScript code should execute.
+     */
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testEvaluateJavaScriptAfterStopLoading() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        // It should always be safe to call stopLoading() even if we haven't loaded anything yet.
+        mActivityTestRule.stopLoading(awContents);
+        mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(),
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        mActivityTestRule.runOnUiThread(() -> {
+            // We specifically call AwContents.evaluateJavaScript() rather than the
+            // AwActivityTestRule helper methods to make sure we're using the same code path as
+            // production.
+            awContents.evaluateJavaScript("location.reload()", null);
+        });
+
+        // Wait for the page to reload and trigger another onPageFinished()
+        mContentsClient.getOnPageFinishedHelper().waitForCallback(
+                0, 2, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
+        // Verify the callback actually contains the execution result.
+        final SettableFuture<String> jsResult = SettableFuture.create();
+        mActivityTestRule.runOnUiThread(() -> {
+            // We specifically call AwContents.evaluateJavaScript() rather than the
+            // AwActivityTestRule helper methods to make sure we're using the same code path as
+            // production.
+            awContents.evaluateJavaScript("1 + 2", jsResult::set);
+        });
+        Assert.assertEquals("JavaScript expression result should be correct", "3",
+                AwActivityTestRule.waitForFuture(jsResult));
+    }
+
+    /**
      * Regression test for https://crbug.com/1145717. Load a URL that requires fixing and verify
      * that the legacy behavior is preserved (i.e. that the URL is fixed + that no crashes happen in
      * the product).
@@ -905,6 +953,45 @@ public class AwContentsTest {
         Assert.assertEquals("chrome://safe-browsing/", awContents.getLastCommittedUrl());
     }
 
+    private void pollForQuadrantColors(AwTestContainerView testView, int[] expectedQuadrantColors)
+            throws Throwable {
+        int[] lastQuadrantColors = null;
+        // Poll for 10s in case raster is slow.
+        for (int i = 0; i < 100; ++i) {
+            final CallbackHelper callbackHelper = new CallbackHelper();
+            final Object[] resultHolder = new Object[1];
+            mActivityTestRule.runOnUiThread(() -> {
+                testView.readbackQuadrantColors((int[] result) -> {
+                    resultHolder[0] = result;
+                    callbackHelper.notifyCalled();
+                });
+            });
+            try {
+                callbackHelper.waitForFirst();
+            } catch (TimeoutException e) {
+                Log.w(TAG, "Timeout", e);
+                continue;
+            }
+            int[] quadrantColors = (int[]) resultHolder[0];
+            lastQuadrantColors = quadrantColors;
+            if (quadrantColors != null && expectedQuadrantColors[0] == quadrantColors[0]
+                    && expectedQuadrantColors[1] == quadrantColors[1]
+                    && expectedQuadrantColors[2] == quadrantColors[2]
+                    && expectedQuadrantColors[3] == quadrantColors[3]) {
+                return;
+            }
+            Thread.sleep(100);
+        }
+        Assert.assertNotNull(lastQuadrantColors);
+        // If this test is failing for your CL, then chances are your change is breaking Android
+        // WebView hardware rendering. Please build the "real" webview and check if this is the
+        // case and if so, fix your CL.
+        Assert.assertEquals(expectedQuadrantColors[0], lastQuadrantColors[0]);
+        Assert.assertEquals(expectedQuadrantColors[1], lastQuadrantColors[1]);
+        Assert.assertEquals(expectedQuadrantColors[2], lastQuadrantColors[2]);
+        Assert.assertEquals(expectedQuadrantColors[3], lastQuadrantColors[3]);
+    }
+
     private void doHardwareRenderingSmokeTest() throws Throwable {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -927,41 +1014,10 @@ public class AwContentsTest {
                 mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
         mActivityTestRule.waitForVisualStateCallback(testView.getAwContents());
 
-        int[] lastQuadrantColors = null;
-        // Poll for 10s in case raster is slow.
-        for (int i = 0; i < 100; ++i) {
-            final CallbackHelper callbackHelper = new CallbackHelper();
-            final Object[] resultHolder = new Object[1];
-            mActivityTestRule.runOnUiThread(() -> {
-                testView.readbackQuadrantColors((int[] result) -> {
-                    resultHolder[0] = result;
-                    callbackHelper.notifyCalled();
-                });
-            });
-            try {
-                callbackHelper.waitForFirst();
-            } catch (TimeoutException e) {
-                Log.w(TAG, "Timeout", e);
-                continue;
-            }
-            int[] quadrantColors = (int[]) resultHolder[0];
-            lastQuadrantColors = quadrantColors;
-            if (quadrantColors != null && Color.rgb(255, 0, 0) == quadrantColors[0]
-                    && Color.rgb(0, 255, 0) == quadrantColors[1]
-                    && Color.rgb(0, 0, 255) == quadrantColors[2]
-                    && Color.rgb(128, 128, 128) == quadrantColors[3]) {
-                return;
-            }
-            Thread.sleep(100);
-        }
-        Assert.assertNotNull(lastQuadrantColors);
-        // If this test is failing for your CL, then chances are your change is breaking Android
-        // WebView hardware rendering. Please build the "real" webview and check if this is the
-        // case and if so, fix your CL.
-        Assert.assertEquals(Color.rgb(255, 0, 0), lastQuadrantColors[0]);
-        Assert.assertEquals(Color.rgb(0, 255, 0), lastQuadrantColors[1]);
-        Assert.assertEquals(Color.rgb(0, 0, 255), lastQuadrantColors[2]);
-        Assert.assertEquals(Color.rgb(128, 128, 128), lastQuadrantColors[3]);
+        int expectedQuadrantColors[] = {Color.rgb(255, 0, 0), Color.rgb(0, 255, 0),
+                Color.rgb(0, 0, 255), Color.rgb(128, 128, 128)};
+
+        pollForQuadrantColors(testView, expectedQuadrantColors);
     }
 
     @Test
@@ -1193,6 +1249,68 @@ public class AwContentsTest {
         }
     }
 
+    // This test verifies that Private Network Access' secure context
+    // restriction (feature flag BlockInsecurePrivateNetworkRequests) does not
+    // apply to Webview: insecure private network requests are allowed.
+    //
+    // This is a regression test for crbug.com/1255675.
+    @Test
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add(ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1")
+    @SmallTest
+    public void testInsecurePrivateNetworkAccess() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        final AwTestContainerView testContainer =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testContainer.getAwContents();
+
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+
+        // This SettableFuture and its accompanying injected object allows us to
+        // synchronize on the fetch result.
+        final SettableFuture<Boolean> fetchResultFuture = SettableFuture.create();
+        Object injectedObject = new Object() {
+            @JavascriptInterface
+            public void success() {
+                fetchResultFuture.set(true);
+            }
+            @JavascriptInterface
+            public void error() {
+                fetchResultFuture.set(false);
+            }
+        };
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                awContents, injectedObject, "injectedObject");
+
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+
+        // Need to avoid http://localhost, which is considered secure, so we
+        // use http://foo.test, which resolves to 127.0.0.1 thanks to the
+        // host resolver rules command-line flag.
+        //
+        // The resulting document is a non-secure context in the public IP
+        // address space. If the secure context restriction were applied, it
+        // would not be allowed to fetch subresources from localhost.
+        String url = testServer.getURLWithHostName(
+                "foo.test", "/set-header?Content-Security-Policy: treat-as-public-address");
+
+        mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+        // Fetch a subresource from the same server, whose IP address is still
+        // 127.0.0.1, thus belonging to the local IP address space.
+        // This should succeed.
+        mActivityTestRule.executeJavaScriptAndWaitForResult(awContents, mContentsClient,
+                "fetch('/defaultresponse')"
+                        + ".then(() => { injectedObject.success() })"
+                        + ".catch((err) => { "
+                        + "  console.log(err); "
+                        + "  injectedObject.error(); "
+                        + "})");
+
+        Assert.assertTrue(AwActivityTestRule.waitForFuture(fetchResultFuture));
+    }
+
     private static final String HELLO_WORLD_URL = "/android_webview/test/data/hello_world.html";
     private static final String HELLO_WORLD_TITLE = "Hello, World!";
     private static final String WEBUI_URL = "chrome://safe-browsing";
@@ -1293,6 +1411,75 @@ public class AwContentsTest {
             Assert.assertNull(webuiProcess);
         } finally {
             testServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    @OnlyRunIn(MULTI_PROCESS)
+    @CommandLineFlags.Add(ContentSwitches.SITE_PER_PROCESS)
+    @DisabledTest(message = "https://crbug.com/1246585")
+    public void testOutOfProcessIframeSmokeTest() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        TestWebServer webServer = TestWebServer.start();
+        try {
+            // Destination iframe has blue color.
+            final String iframeDestinationPath = webServer.setResponse("/iframe_destination.html",
+                    "<html><body style=\"background-color:rgb(0,0,255);\"></body></html>", null);
+            // Initial iframe has red color with a full-page link to navigate to destination.
+            final String iframePath = webServer.setResponse("/iframe.html",
+                    "<html><body style=\"background-color:rgb(255,0,0);\">"
+                            + "<a href=\"" + iframeDestinationPath + "\" "
+                            + "style=\"width:100%;height:100%;display:block;\"></a>"
+                            + "</body></html>",
+                    null);
+            // Main frame has green color at the top half, and iframe in the bottom half.
+            final String pageHtml = "<html><body>"
+                    + "<div style=\"width:100%;height:50%;background-color:rgb(0,255,0);\"></div>"
+                    + "<iframe style=\"width:100%;height:50%;\" src=\"" + iframePath
+                    + "\"></iframe>"
+                    + "</body></html>";
+
+            // Iframes are loaded with origin of the test server, and the main page is loaded with
+            // origin http://foo.bar. This ensures that the main and iframe are different renderer
+            // processes when site isolation is enabled.
+            mActivityTestRule.loadDataWithBaseUrlSync(awContents,
+                    mContentsClient.getOnPageFinishedHelper(), pageHtml, "text/html", false,
+                    "http://foo.bar", null);
+
+            // Check initial iframe is displayed.
+            int expectedQuadrantColors[] = {
+                    Color.rgb(0, 255, 0),
+                    Color.rgb(0, 255, 0),
+                    Color.rgb(255, 0, 0),
+                    Color.rgb(255, 0, 0),
+            };
+            pollForQuadrantColors(testView, expectedQuadrantColors);
+            assertThat(RenderProcessHostUtils.getCurrentRenderProcessCount(), greaterThan(1));
+
+            // Click iframe to navigate. This exercises hit testing code paths.
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                int width = testView.getWidth();
+                int height = testView.getHeight();
+                TouchCommon.singleClickView(testView, width / 2, height * 3 / 4);
+            });
+
+            // Check destination iframe is displayed.
+            expectedQuadrantColors = new int[] {
+                    Color.rgb(0, 255, 0),
+                    Color.rgb(0, 255, 0),
+                    Color.rgb(0, 0, 255),
+                    Color.rgb(0, 0, 255),
+            };
+            pollForQuadrantColors(testView, expectedQuadrantColors);
+            assertThat(RenderProcessHostUtils.getCurrentRenderProcessCount(), greaterThan(1));
+        } finally {
+            webServer.shutdown();
         }
     }
 }

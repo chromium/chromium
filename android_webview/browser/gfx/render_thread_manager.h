@@ -14,8 +14,8 @@
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -30,6 +30,10 @@ class RenderThreadManager : public CompositorFrameConsumer {
  public:
   explicit RenderThreadManager(
       const scoped_refptr<base::SingleThreadTaskRunner>& ui_loop);
+
+  RenderThreadManager(const RenderThreadManager&) = delete;
+  RenderThreadManager& operator=(const RenderThreadManager&) = delete;
+
   ~RenderThreadManager() override;
 
   // CompositorFrameConsumer methods.
@@ -126,8 +130,6 @@ class RenderThreadManager : public CompositorFrameConsumer {
   uint32_t presented_frame_token_ = 0u;
 
   base::WeakPtrFactory<RenderThreadManager> weak_factory_on_ui_thread_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderThreadManager);
 };
 
 }  // namespace android_webview

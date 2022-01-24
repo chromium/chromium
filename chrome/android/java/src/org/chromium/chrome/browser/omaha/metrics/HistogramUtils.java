@@ -50,8 +50,6 @@ class HistogramUtils {
     private static String typeToHistogram(Type type) {
         if (type == Type.INTENT) {
             return "Intent";
-        } else if (type == Type.INLINE) {
-            return "Inline";
         } else {
             return "Unknown";
         }

@@ -9,38 +9,44 @@
 #include <tuple>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "base/hash/md5.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 
 namespace {
 
 // The total number of Ash accelerators.
-constexpr int kAshAcceleratorsTotalNum = 123;
+constexpr int kAshAcceleratorsTotalNum = 134;
 // The hash of Ash accelerators.
-constexpr char kAshAcceleratorsHash[] = "2eb0030cecca7fdf9ea2ec181f02ce43";
+constexpr char kAshAcceleratorsHash[] = "fa5ce79337b4c24766e97caf126f414d";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Internal builds add an extra accelerator for the Feedback app.
 // The total number of Chrome accelerators (available on Chrome OS).
-constexpr int kChromeAcceleratorsTotalNum = 98;
+constexpr int kChromeAcceleratorsTotalNum = 99;
 // The hash of Chrome accelerators (available on Chrome OS).
-constexpr char kChromeAcceleratorsHash[] = "ae0381db45f4d0fde37ff78948963369";
+constexpr char kChromeAcceleratorsHash[] = "52367fa960a90c00613936377d7aa157";
 #else
 // The total number of Chrome accelerators (available on Chrome OS).
 constexpr int kChromeAcceleratorsTotalNum = 97;
 // The hash of Chrome accelerators (available on Chrome OS).
-constexpr char kChromeAcceleratorsHash[] = "aeb70dfa2e53c0aba34fc3bc6228e9a5";
+constexpr char kChromeAcceleratorsHash[] = "7ffc641448d3a8bcae2d0ad1ee563b12";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 const char* BooleanToString(bool value) {
   return value ? "true" : "false";
+}
+
+bool ShouldDesksKeyboardShortcutsBeEnabled() {
+  return ::features::IsImprovedKeyboardShortcutsEnabled() &&
+         ash::features::IsImprovedDesksKeyboardShortcutsEnabled();
 }
 
 std::string ModifiersToString(int modifiers) {
@@ -122,12 +128,29 @@ std::string AcceleratorIdsToString(
 class KeyboardShortcutViewerMetadataTest : public testing::Test {
  public:
   KeyboardShortcutViewerMetadataTest() = default;
+
+  KeyboardShortcutViewerMetadataTest(
+      const KeyboardShortcutViewerMetadataTest&) = delete;
+  KeyboardShortcutViewerMetadataTest& operator=(
+      const KeyboardShortcutViewerMetadataTest&) = delete;
+
   ~KeyboardShortcutViewerMetadataTest() override = default;
 
   void SetUp() override {
     for (size_t i = 0; i < ash::kAcceleratorDataLength; ++i) {
       const ash::AcceleratorData& accel_data = ash::kAcceleratorData[i];
       ash_accelerator_ids_.insert({accel_data.keycode, accel_data.modifiers});
+    }
+
+    if (ShouldDesksKeyboardShortcutsBeEnabled()) {
+      for (size_t i = 0;
+           i <
+           ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength;
+           ++i) {
+        const ash::AcceleratorData& accel_data =
+            ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData[i];
+        ash_accelerator_ids_.insert({accel_data.keycode, accel_data.modifiers});
+      }
     }
 
     for (const auto& accel_mapping : GetAcceleratorList()) {
@@ -144,9 +167,6 @@ class KeyboardShortcutViewerMetadataTest : public testing::Test {
 
   // Chrome accelerator ids.
   std::set<ash::AcceleratorId> chrome_accelerator_ids_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardShortcutViewerMetadataTest);
 };
 
 }  // namespace
@@ -237,6 +257,16 @@ TEST_F(KeyboardShortcutViewerMetadataTest,
         ash::kDisableWithNewMappingAcceleratorData[i]);
   for (const auto& accel_mapping : GetAcceleratorList())
     chrome_accelerators.emplace_back(accel_mapping);
+
+  if (ShouldDesksKeyboardShortcutsBeEnabled()) {
+    for (size_t i = 0;
+         i <
+         ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength;
+         ++i) {
+      ash_accelerators.emplace_back(
+          ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData[i]);
+    }
+  }
 
   const char kCommonMessage[] =
       "If you are modifying Chrome OS available shortcuts, please update "

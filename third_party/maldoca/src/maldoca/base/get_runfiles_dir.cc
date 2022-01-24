@@ -56,7 +56,10 @@ std::string GetExecutablePath() {
   HMODULE hModule = GetModuleHandleW(NULL);
   WCHAR wc_file_path[MAX_PATH] = {0};
   GetModuleFileNameW(hModule, wc_file_path, MAX_PATH);
-  std::string file_path = base::WideToUTF8(wc_file_path);
+  // see
+  // https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=cmd
+  std::string file_path("\\\\?\\");
+  file_path.append(base::WideToUTF8(wc_file_path));
   std::copy(file_path.begin(), file_path.end(), exe_path);
 #else
   char buf[PATH_MAX] = {0};

@@ -55,7 +55,7 @@ Printer CreateAutoconfPrinter() {
 
 // Check the values populated in |printer_info| match the values of |printer|.
 void CheckGenericPrinterInfo(const Printer& printer,
-                             const base::DictionaryValue& printer_info) {
+                             const base::Value& printer_info) {
   ExpectDictStringValue(printer.id(), printer_info, "printerId");
   ExpectDictStringValue(printer.display_name(), printer_info, "printerName");
   ExpectDictStringValue(printer.description(), printer_info,
@@ -66,7 +66,7 @@ void CheckGenericPrinterInfo(const Printer& printer,
 
 // Check that the corresponding values in |printer_info| match the given URI
 // components of |address|, |queue|, and |protocol|.
-void CheckPrinterInfoUri(const base::DictionaryValue& printer_info,
+void CheckPrinterInfoUri(const base::Value& printer_info,
                          const std::string& protocol,
                          const std::string& address,
                          const std::string& queue) {
@@ -78,39 +78,41 @@ void CheckPrinterInfoUri(const base::DictionaryValue& printer_info,
 }  // anonymous namespace
 
 TEST(PrinterTranslatorTest, RecommendedPrinterToPrinterMissingId) {
-  base::DictionaryValue value;
+  base::Value value(base::Value::Type::DICTIONARY);
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(value);
 
   EXPECT_FALSE(printer);
 }
 
 TEST(PrinterTranslatorTest, MissingDisplayNameFails) {
-  base::DictionaryValue preference;
-  preference.SetString("id", kHash);
+  base::Value preference(base::Value::Type::DICTIONARY);
+  preference.SetStringKey("id", kHash);
   // display name omitted
-  preference.SetString("uri", kUri);
-  preference.SetString("ppd_resource.effective_model", kEffectiveMakeAndModel);
+  preference.SetStringKey("uri", kUri);
+  preference.SetStringPath("ppd_resource.effective_model",
+                           kEffectiveMakeAndModel);
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   EXPECT_FALSE(printer);
 }
 
 TEST(PrinterTranslatorTest, MissingUriFails) {
-  base::DictionaryValue preference;
-  preference.SetString("id", kHash);
-  preference.SetString("display_name", kName);
+  base::Value preference(base::Value::Type::DICTIONARY);
+  preference.SetStringKey("id", kHash);
+  preference.SetStringKey("display_name", kName);
   // uri omitted
-  preference.SetString("ppd_resource.effective_model", kEffectiveMakeAndModel);
+  preference.SetStringPath("ppd_resource.effective_model",
+                           kEffectiveMakeAndModel);
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   EXPECT_FALSE(printer);
 }
 
 TEST(PrinterTranslatorTest, MissingPpdResourceFails) {
-  base::DictionaryValue preference;
-  preference.SetString("id", kHash);
-  preference.SetString("display_name", kName);
-  preference.SetString("uri", kUri);
+  base::Value preference(base::Value::Type::DICTIONARY);
+  preference.SetStringKey("id", kHash);
+  preference.SetStringKey("display_name", kName);
+  preference.SetStringKey("uri", kUri);
   // ppd resource omitted
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
@@ -118,11 +120,11 @@ TEST(PrinterTranslatorTest, MissingPpdResourceFails) {
 }
 
 TEST(PrinterTranslatorTest, MissingEffectiveMakeModelFails) {
-  base::DictionaryValue preference;
-  preference.SetString("id", kHash);
-  preference.SetString("display_name", kName);
-  preference.SetString("uri", kUri);
-  preference.SetString("ppd_resource.foobarwrongfield", "gibberish");
+  base::Value preference(base::Value::Type::DICTIONARY);
+  preference.SetStringKey("id", kHash);
+  preference.SetStringKey("display_name", kName);
+  preference.SetStringKey("uri", kUri);
+  preference.SetStringPath("ppd_resource.foobarwrongfield", "gibberish");
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   EXPECT_FALSE(printer);
@@ -131,36 +133,39 @@ TEST(PrinterTranslatorTest, MissingEffectiveMakeModelFails) {
 // The test verifies that setting both true autoconf flag and non-empty
 // effective_model properties is not considered as the valid policy.
 TEST(PrinterTranslatorTest, AutoconfAndMakeModelSet) {
-  base::DictionaryValue preference;
-  preference.SetString("id", kHash);
-  preference.SetString("display_name", kName);
-  preference.SetString("uri", kUri);
-  preference.SetString("ppd_resource.effective_model", kEffectiveMakeAndModel);
-  preference.SetBoolean("ppd_resource.autoconf", true);
+  base::Value preference(base::Value::Type::DICTIONARY);
+  preference.SetStringKey("id", kHash);
+  preference.SetStringKey("display_name", kName);
+  preference.SetStringKey("uri", kUri);
+  preference.SetStringPath("ppd_resource.effective_model",
+                           kEffectiveMakeAndModel);
+  preference.SetBoolPath("ppd_resource.autoconf", true);
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   EXPECT_FALSE(printer);
 }
 
 TEST(PrinterTranslatorTest, InvalidUriFails) {
-  base::DictionaryValue preference;
-  preference.SetString("id", kHash);
-  preference.SetString("display_name", kName);
-  preference.SetString("ppd_resource.effective_model", kEffectiveMakeAndModel);
+  base::Value preference(base::Value::Type::DICTIONARY);
+  preference.SetStringKey("id", kHash);
+  preference.SetStringKey("display_name", kName);
+  preference.SetStringPath("ppd_resource.effective_model",
+                           kEffectiveMakeAndModel);
 
   // uri with incorrect port
-  preference.SetString("uri", "ipp://hostname.tld:-1");
+  preference.SetStringKey("uri", "ipp://hostname.tld:-1");
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   EXPECT_FALSE(printer);
 }
 
 TEST(PrinterTranslatorTest, RecommendedPrinterMinimalSetup) {
-  base::DictionaryValue preference;
-  preference.SetString("id", kHash);
-  preference.SetString("display_name", kName);
-  preference.SetString("uri", kUri);
-  preference.SetString("ppd_resource.effective_model", kEffectiveMakeAndModel);
+  base::Value preference(base::Value::Type::DICTIONARY);
+  preference.SetStringKey("id", kHash);
+  preference.SetStringKey("display_name", kName);
+  preference.SetStringKey("uri", kUri);
+  preference.SetStringPath("ppd_resource.effective_model",
+                           kEffectiveMakeAndModel);
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   ASSERT_TRUE(printer);
@@ -171,17 +176,18 @@ TEST(PrinterTranslatorTest, RecommendedPrinterMinimalSetup) {
 }
 
 TEST(PrinterTranslatorTest, RecommendedPrinterToPrinter) {
-  base::DictionaryValue preference;
-  preference.SetString("id", kHash);
-  preference.SetString("display_name", kName);
-  preference.SetString("description", kDescription);
-  preference.SetString("manufacturer", kMake);
-  preference.SetString("model", kModel);
-  preference.SetString("uri", kUri);
-  preference.SetString("uuid", kUUID);
+  base::Value preference(base::Value::Type::DICTIONARY);
+  preference.SetStringKey("id", kHash);
+  preference.SetStringKey("display_name", kName);
+  preference.SetStringKey("description", kDescription);
+  preference.SetStringKey("manufacturer", kMake);
+  preference.SetStringKey("model", kModel);
+  preference.SetStringKey("uri", kUri);
+  preference.SetStringKey("uuid", kUUID);
 
-  preference.SetBoolean("ppd_resource.autoconf", false);
-  preference.SetString("ppd_resource.effective_model", kEffectiveMakeAndModel);
+  preference.SetBoolPath("ppd_resource.autoconf", false);
+  preference.SetStringPath("ppd_resource.effective_model",
+                           kEffectiveMakeAndModel);
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   EXPECT_TRUE(printer);
@@ -199,12 +205,12 @@ TEST(PrinterTranslatorTest, RecommendedPrinterToPrinter) {
 }
 
 TEST(PrinterTranslatorTest, RecommendedPrinterToPrinterAutoconf) {
-  base::DictionaryValue preference;
-  preference.SetString("id", kHash);
-  preference.SetString("display_name", kName);
-  preference.SetString("uri", kUri);
+  base::Value preference(base::Value::Type::DICTIONARY);
+  preference.SetStringKey("id", kHash);
+  preference.SetStringKey("display_name", kName);
+  preference.SetStringKey("uri", kUri);
 
-  preference.SetBoolean("ppd_resource.autoconf", true);
+  preference.SetBoolPath("ppd_resource.autoconf", true);
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   EXPECT_TRUE(printer);
@@ -217,12 +223,13 @@ TEST(PrinterTranslatorTest, RecommendedPrinterToPrinterAutoconf) {
 }
 
 TEST(PrinterTranslatorTest, RecommendedPrinterToPrinterBlankManufacturer) {
-  base::DictionaryValue preference;
-  preference.SetString("id", kHash);
-  preference.SetString("display_name", kName);
-  preference.SetString("model", kModel);
-  preference.SetString("uri", kUri);
-  preference.SetString("ppd_resource.effective_model", kEffectiveMakeAndModel);
+  base::Value preference(base::Value::Type::DICTIONARY);
+  preference.SetStringKey("id", kHash);
+  preference.SetStringKey("display_name", kName);
+  preference.SetStringKey("model", kModel);
+  preference.SetStringKey("uri", kUri);
+  preference.SetStringPath("ppd_resource.effective_model",
+                           kEffectiveMakeAndModel);
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   EXPECT_TRUE(printer);
@@ -231,12 +238,13 @@ TEST(PrinterTranslatorTest, RecommendedPrinterToPrinterBlankManufacturer) {
 }
 
 TEST(PrinterTranslatorTest, RecommendedPrinterToPrinterBlankModel) {
-  base::DictionaryValue preference;
-  preference.SetString("id", kHash);
-  preference.SetString("display_name", kName);
-  preference.SetString("manufacturer", kMake);
-  preference.SetString("uri", kUri);
-  preference.SetString("ppd_resource.effective_model", kEffectiveMakeAndModel);
+  base::Value preference(base::Value::Type::DICTIONARY);
+  preference.SetStringKey("id", kHash);
+  preference.SetStringKey("display_name", kName);
+  preference.SetStringKey("manufacturer", kMake);
+  preference.SetStringKey("uri", kUri);
+  preference.SetStringPath("ppd_resource.effective_model",
+                           kEffectiveMakeAndModel);
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   EXPECT_TRUE(printer);
@@ -245,11 +253,12 @@ TEST(PrinterTranslatorTest, RecommendedPrinterToPrinterBlankModel) {
 }
 
 TEST(PrinterTranslatorTest, BulkPrinterJson) {
-  base::DictionaryValue preference;
-  preference.SetString("guid", kGUID);
-  preference.SetString("display_name", kName);
-  preference.SetString("uri", kUri);
-  preference.SetString("ppd_resource.effective_model", kEffectiveMakeAndModel);
+  base::Value preference(base::Value::Type::DICTIONARY);
+  preference.SetStringKey("guid", kGUID);
+  preference.SetStringKey("display_name", kName);
+  preference.SetStringKey("uri", kUri);
+  preference.SetStringPath("ppd_resource.effective_model",
+                           kEffectiveMakeAndModel);
 
   std::unique_ptr<Printer> printer = RecommendedPrinterToPrinter(preference);
   EXPECT_TRUE(printer);
@@ -259,57 +268,52 @@ TEST(PrinterTranslatorTest, BulkPrinterJson) {
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinter) {
   Printer printer = CreateGenericPrinter();
-  std::unique_ptr<base::DictionaryValue> printer_info =
-      GetCupsPrinterInfo(printer);
-  CheckGenericPrinterInfo(CreateGenericPrinter(), *printer_info);
+  base::Value printer_info = GetCupsPrinterInfo(printer);
+  CheckGenericPrinterInfo(CreateGenericPrinter(), printer_info);
 
   // We expect the default values to be set for the URI components since the
   // generic printer does not have the URI field set.
-  CheckPrinterInfoUri(*printer_info, "ipp", "", "");
+  CheckPrinterInfoUri(printer_info, "ipp", "", "");
 
-  ExpectDictBooleanValue(false, *printer_info, "printerPpdReference.autoconf");
+  ExpectDictBooleanValue(false, printer_info, "printerPpdReference.autoconf");
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinterWithUri) {
   Printer printer = CreateGenericPrinter();
   ASSERT_TRUE(printer.SetUri(kUri));
 
-  std::unique_ptr<base::DictionaryValue> printer_info =
-      GetCupsPrinterInfo(printer);
-  CheckGenericPrinterInfo(CreateGenericPrinter(), *printer_info);
+  base::Value printer_info = GetCupsPrinterInfo(printer);
+  CheckGenericPrinterInfo(CreateGenericPrinter(), printer_info);
 
-  CheckPrinterInfoUri(*printer_info, "ipp", "printy.domain.co:555",
-                      "ipp/print");
+  CheckPrinterInfoUri(printer_info, "ipp", "printy.domain.co:555", "ipp/print");
 
-  ExpectDictBooleanValue(false, *printer_info, "printerPpdReference.autoconf");
+  ExpectDictBooleanValue(false, printer_info, "printerPpdReference.autoconf");
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoGenericPrinterWithUsbUri) {
   Printer printer = CreateGenericPrinter();
   ASSERT_TRUE(printer.SetUri(kUsbUri));
 
-  std::unique_ptr<base::DictionaryValue> printer_info =
-      GetCupsPrinterInfo(printer);
-  CheckGenericPrinterInfo(CreateGenericPrinter(), *printer_info);
+  base::Value printer_info = GetCupsPrinterInfo(printer);
+  CheckGenericPrinterInfo(CreateGenericPrinter(), printer_info);
 
-  CheckPrinterInfoUri(*printer_info, "usb", "1234", "af9d?serial=ink1");
+  CheckPrinterInfoUri(printer_info, "usb", "1234", "af9d?serial=ink1");
 
-  ExpectDictBooleanValue(false, *printer_info, "printerPpdReference.autoconf");
+  ExpectDictBooleanValue(false, printer_info, "printerPpdReference.autoconf");
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoAutoconfPrinter) {
   Printer printer = CreateAutoconfPrinter();
-  std::unique_ptr<base::DictionaryValue> printer_info =
-      GetCupsPrinterInfo(printer);
-  CheckGenericPrinterInfo(CreateGenericPrinter(), *printer_info);
+  base::Value printer_info = GetCupsPrinterInfo(printer);
+  CheckGenericPrinterInfo(CreateGenericPrinter(), printer_info);
 
   // We expect the default values to be set for the URI components since the
   // generic printer does not have the URI field set.
-  CheckPrinterInfoUri(*printer_info, "ipp", "", "");
+  CheckPrinterInfoUri(printer_info, "ipp", "", "");
 
   // Since this is an autoconf printer we expect "printerPpdReference.autoconf"
   // to be true.
-  ExpectDictBooleanValue(true, *printer_info, "printerPpdReference.autoconf");
+  ExpectDictBooleanValue(true, printer_info, "printerPpdReference.autoconf");
 }
 
 TEST(PrinterTranslatorTest, GetCupsPrinterStatusOneReason) {
@@ -372,13 +376,12 @@ TEST(PrinterTranslatorTest, GetCupsPrinterStatusTwoReasons) {
 TEST(PrinterTranslatorTest, GetCupsPrinterInfoManagedPrinter) {
   Printer printer = CreateGenericPrinter();
   printer.set_source(Printer::Source::SRC_USER_PREFS);
-  std::unique_ptr<base::DictionaryValue> printer_info =
-      GetCupsPrinterInfo(printer);
-  ExpectDictBooleanValue(false, *printer_info, "isManaged");
+  base::Value printer_info = GetCupsPrinterInfo(printer);
+  ExpectDictBooleanValue(false, printer_info, "isManaged");
 
   printer.set_source(Printer::Source::SRC_POLICY);
   printer_info = GetCupsPrinterInfo(printer);
-  ExpectDictBooleanValue(true, *printer_info, "isManaged");
+  ExpectDictBooleanValue(true, printer_info, "isManaged");
 }
 
 }  // namespace chromeos

@@ -25,6 +25,7 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/common/content_features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -142,8 +143,7 @@ int GetNumberOfDaysRoundedAboveOne(base::TimeDelta time) {
   if (number_of_days == 0)
     return 0;
 
-  int number_of_hours_past_day =
-      (time - base::TimeDelta::FromDays(number_of_days)).InHours();
+  int number_of_hours_past_day = (time - base::Days(number_of_days)).InHours();
 
   if (number_of_hours_past_day >= 12)
     number_of_days++;
@@ -206,17 +206,7 @@ PrivacySandboxSettings::PrivacySandboxSettings(
 
 PrivacySandboxSettings::~PrivacySandboxSettings() = default;
 
-/*static*/ bool PrivacySandboxSettings::PrivacySandboxSettingsFunctional() {
-  return base::FeatureList::IsEnabled(features::kPrivacySandboxSettings);
-}
-
 bool PrivacySandboxSettings::IsFlocAllowed() const {
-  if (!PrivacySandboxSettingsFunctional()) {
-    // Simply respect 3rd-party cookies blocking settings if the UI is not
-    // available.
-    return !cookie_settings_->ShouldBlockThirdPartyCookies();
-  }
-
   return IsFlocAllowedByPrefs(pref_service_);
 }
 
@@ -246,8 +236,6 @@ std::u16string PrivacySandboxSettings::GetFlocDescriptionForDisplay() const {
 }
 
 std::u16string PrivacySandboxSettings::GetFlocIdForDisplay() const {
-  DCHECK(PrivacySandboxSettingsFunctional());
-
   const bool floc_feature_enabled = base::FeatureList::IsEnabled(
       blink::features::kInterestCohortAPIOriginTrial);
   auto floc_id = federated_learning::FlocId::ReadFromPrefs(pref_service_);
@@ -261,7 +249,6 @@ std::u16string PrivacySandboxSettings::GetFlocIdForDisplay() const {
     federated_learning::FlocIdProvider* floc_id_provider,
     PrefService* pref_service,
     const base::Time& current_time) {
-  DCHECK(PrivacySandboxSettingsFunctional());
   const bool floc_feature_enabled = base::FeatureList::IsEnabled(
       blink::features::kInterestCohortAPIOriginTrial);
 
@@ -313,10 +300,12 @@ bool PrivacySandboxSettings::IsFlocIdResettable() const {
   return floc_feature_enabled && IsFlocAllowed();
 }
 
-void PrivacySandboxSettings::ResetFlocId() const {
+void PrivacySandboxSettings::ResetFlocId(bool user_initiated) const {
   SetFlocDataAccessibleFromNow(/*reset_calculate_timer=*/true);
-  base::RecordAction(
-      base::UserMetricsAction("Settings.PrivacySandbox.ResetFloc"));
+  if (user_initiated) {
+    base::RecordAction(
+        base::UserMetricsAction("Settings.PrivacySandbox.ResetFloc"));
+  }
 }
 
 bool PrivacySandboxSettings::IsFlocPrefEnabled() const {
@@ -362,31 +351,27 @@ bool PrivacySandboxSettings::ShouldSendConversionReport(
 bool PrivacySandboxSettings::IsFledgeAllowed(
     const url::Origin& top_frame_origin,
     const GURL& auction_party) {
-  // If the sandbox is available and disabled, then FLEDGE is never allowed.
-  if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings) &&
-      !pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled)) {
+  // If the sandbox is disabled, then FLEDGE is never allowed.
+  if (!pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled))
     return false;
-  }
 
   // Third party cookies must also be available for this context. An empty site
   // for cookies is provided so the context is always treated as a third party.
-  return cookie_settings_->IsFullCookieAccessAllowed(auction_party, GURL(),
-                                                     top_frame_origin);
+  return cookie_settings_->IsFullCookieAccessAllowed(
+      auction_party, net::SiteForCookies(), top_frame_origin);
 }
 
 std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
     const url::Origin& top_frame_origin,
     const std::vector<GURL>& auction_parties) {
-  // If the sandbox is available and disabled, then no parties are allowed.
-  if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings) &&
-      !pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled)) {
+  // If the sandbox is disabled, then no parties are allowed.
+  if (!pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled))
     return {};
-  }
 
   std::vector<GURL> allowed_parties;
   for (const auto& party : auction_parties) {
-    if (cookie_settings_->IsFullCookieAccessAllowed(party, GURL(),
-                                                    top_frame_origin)) {
+    if (cookie_settings_->IsFullCookieAccessAllowed(
+            party, net::SiteForCookies(), top_frame_origin)) {
       allowed_parties.push_back(party);
     }
   }
@@ -394,12 +379,6 @@ std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
 }
 
 bool PrivacySandboxSettings::IsPrivacySandboxAllowed() {
-  if (!PrivacySandboxSettingsFunctional()) {
-    // Simply respect 3rd-party cookies blocking settings if the UI is not
-    // available.
-    return !cookie_settings_->ShouldBlockThirdPartyCookies();
-  }
-
   return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
 }
 
@@ -412,9 +391,6 @@ bool PrivacySandboxSettings::IsPrivacySandboxManaged() {
 }
 
 void PrivacySandboxSettings::SetPrivacySandboxEnabled(bool enabled) {
-  if (!base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
-    return;
-  }
   pref_service_->SetBoolean(prefs::kPrivacySandboxManuallyControlled, true);
   pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabled, enabled);
 }
@@ -429,7 +405,7 @@ void PrivacySandboxSettings::OnPrivacySandboxPrefChanged() {
   // transition from FLoC being effectively disabled to effectively enabled,
   // but performing it on every pref change achieves the same user visible
   // behavior, and is much simpler.
-  ResetFlocId();
+  ResetFlocId(/*user_initiated=*/false);
 }
 
 void PrivacySandboxSettings::AddObserver(Observer* observer) {
@@ -470,13 +446,6 @@ bool PrivacySandboxSettings::IsPrivacySandboxAllowedForContext(
     const GURL& url,
     const absl::optional<url::Origin>& top_frame_origin,
     const ContentSettingsForOneType& cookie_settings) const {
-  if (!base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
-    // Simply respect cookie settings if the UI is not available. An empty site
-    // for cookies is provided so the context is always as a third party.
-    return cookie_settings_->IsFullCookieAccessAllowed(url, GURL(),
-                                                       top_frame_origin);
-  }
-
   if (!pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled))
     return false;
 
@@ -489,10 +458,6 @@ bool PrivacySandboxSettings::IsPrivacySandboxAllowedForContext(
 }
 
 void PrivacySandboxSettings::MaybeReconcilePrivacySandboxPref() {
-  // No action required if the user does not have the UI available.
-  if (!PrivacySandboxSettingsFunctional())
-    return;
-
   // No need to reconcile preferences if it has already happened.
   if (pref_service_->GetBoolean(prefs::kPrivacySandboxPreferencesReconciled)) {
     LogPrivacySandboxState();

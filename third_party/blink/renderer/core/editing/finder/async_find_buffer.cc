@@ -11,8 +11,7 @@ namespace blink {
 
 namespace {
 // Indicates how long FindBuffer task should run before pausing the work.
-constexpr base::TimeDelta kFindBufferTaskTimeoutMs =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kFindBufferTaskTimeoutMs = base::Milliseconds(100);
 }  // namespace
 
 void AsyncFindBuffer::FindMatchInRange(RangeInFlatTree* search_range,

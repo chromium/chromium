@@ -29,7 +29,6 @@
 #include <map>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 
 namespace content {
 
@@ -46,6 +45,11 @@ class RenderFrameObserverTracker {
       : render_frame_(render_frame) {
     render_frame_map_.Get()[render_frame] = this;
   }
+
+  RenderFrameObserverTracker<T>(const RenderFrameObserverTracker<T>&) = delete;
+  RenderFrameObserverTracker<T>& operator=(
+      const RenderFrameObserverTracker<T>&) = delete;
+
   ~RenderFrameObserverTracker() {
     render_frame_map_.Get().erase(render_frame_);
   }
@@ -56,8 +60,6 @@ class RenderFrameObserverTracker {
   static typename base::LazyInstance<
       std::map<const RenderFrame*, RenderFrameObserverTracker<T>*>>::
       DestructorAtExit render_frame_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameObserverTracker<T>);
 };
 
 template <class T>

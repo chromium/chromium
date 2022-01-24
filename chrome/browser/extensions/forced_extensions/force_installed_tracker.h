@@ -160,8 +160,12 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
   void ChangeExtensionStatus(const ExtensionId& extension_id,
                              ExtensionStatus status);
 
+  // Proceeds and returns true if `kInstallForceList` pref is not empty.
+  bool ProceedIfForcedExtensionsPrefReady();
   // Loads list of force-installed extensions if available. Only called once.
   void OnForcedExtensionsPrefReady();
+
+  void OnInstallForcelistChanged();
 
   const ExtensionManagement* extension_management_;
 
@@ -188,6 +192,10 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
     // Waiting for PolicyService to finish initializing. Listening for
     // OnPolicyServiceInitialized().
     kWaitingForPolicyService,
+    // At the startup the `kInstallForceList` preference might be empty, meaning
+    // that no extensions are yet specified to be force installed.
+    // Waiting for `kInstallForceList` to be populated.
+    kWaitingForInstallForcelistPref,
     // Waiting for one or more extensions to finish loading. Listening for
     // |ExtensionRegistryObserver| events.
     kWaitingForExtensionLoads,
@@ -202,6 +210,8 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
     kComplete,
   };
   Status status_ = kWaitingForPolicyService;
+  bool forced_extensions_pref_ready_ = false;
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};

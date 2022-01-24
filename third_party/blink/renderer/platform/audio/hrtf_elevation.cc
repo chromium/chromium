@@ -157,7 +157,7 @@ bool HRTFElevation::CalculateKernelsForAzimuthElevation(
 
   // Note that depending on the fftSize returned by the panner, we may be
   // truncating the impulse response we just loaded in, or we might zero-pad it.
-  const size_t fft_size = HRTFPanner::FftSizeForSampleRate(sample_rate);
+  const unsigned fft_size = HRTFPanner::FftSizeForSampleRate(sample_rate);
 
   if (2 * response->length() < fft_size) {
     // Need to resize the response buffer length so that it fis the fft size.

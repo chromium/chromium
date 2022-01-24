@@ -1,0 +1,20 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("password_manager") {
+  public_deps = [ ":backend_factory" ]
+}
+
+source_set("backend_factory") {
+  deps = [
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common:common",
+    "//components/prefs",
+  ]
+  if (is_android) {
+    deps += [ "//chrome/browser/password_manager/android:backend" ]
+  }
+
+  sources = [ "password_store_backend_factory.cc" ]
+}

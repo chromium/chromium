@@ -43,6 +43,8 @@ import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -58,6 +60,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -78,7 +81,8 @@ import java.util.List;
 class LocationBarMediator
         implements LocationBarDataProvider.Observer, OmniboxStub, VoiceRecognitionHandler.Delegate,
                    VoiceRecognitionHandler.Observer, AssistantVoiceSearchService.Observer,
-                   UrlBarDelegate, OnKeyListener, ComponentCallbacks {
+                   UrlBarDelegate, OnKeyListener, ComponentCallbacks,
+                   TemplateUrlService.TemplateUrlServiceObserver {
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
     private static final int ICON_FADE_ANIMATION_DELAY_MS = 75;
     private static final long NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
@@ -175,6 +179,8 @@ class LocationBarMediator
     private boolean mUrlHasFocus;
     private LensController mLensController;
     private final BooleanSupplier mIsToolbarMicEnabledSupplier;
+    // Tracks if the location bar is laid out in a focused state due to an ntp scroll.
+    private boolean mIsLocationBarFocusedFromNtpScroll;
 
     /*package */ LocationBarMediator(@NonNull Context context,
             @NonNull LocationBarLayout locationBarLayout,
@@ -237,6 +243,9 @@ class LocationBarMediator
         if (mAssistantVoiceSearchServiceSupplier.get() != null) {
             mAssistantVoiceSearchServiceSupplier.get().destroy();
         }
+        if (mTemplateUrlServiceSupplier.hasValue()) {
+            mTemplateUrlServiceSupplier.get().removeObserver(this);
+        }
         mStatusCoordinator = null;
         mAutocompleteCoordinator = null;
         mUrlCoordinator = null;
@@ -293,9 +302,13 @@ class LocationBarMediator
     /*package */ void onFinishNativeInitialization() {
         mNativeInitialized = true;
         mOmniboxPrerender = new OmniboxPrerender();
+        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
+        if (templateUrlService != null) {
+            templateUrlService.addObserver(this);
+        }
         mAssistantVoiceSearchServiceSupplier.set(new AssistantVoiceSearchService(mContext,
-                ExternalAuthUtils.getInstance(), mTemplateUrlServiceSupplier.get(),
-                GSAState.getInstance(mContext), this, SharedPreferencesManager.getInstance(),
+                ExternalAuthUtils.getInstance(), templateUrlService, GSAState.getInstance(mContext),
+                this, SharedPreferencesManager.getInstance(),
                 IdentityServicesProvider.get().getIdentityManager(
                         Profile.getLastUsedRegularProfile()),
                 AccountManagerFacadeProvider.getInstance()));
@@ -311,12 +324,20 @@ class LocationBarMediator
         updateButtonVisibility();
     }
 
-    /*package */ void setUrlFocusChangeFraction(float fraction) {
+    /* package */ void setUrlFocusChangeFraction(float fraction) {
         mUrlFocusChangeFraction = fraction;
         if (mIsTablet) {
             mLocationBarDataProvider.getNewTabPageDelegate().setUrlFocusChangeAnimationPercent(
                     fraction);
         } else {
+            // Determine when the focus state changes as a result of ntp scrolling.
+            boolean isLocationBarFocusedFromNtpScroll =
+                    fraction > 0f && !mIsUrlFocusChangeInProgress;
+            if (isLocationBarFocusedFromNtpScroll != mIsLocationBarFocusedFromNtpScroll) {
+                mIsLocationBarFocusedFromNtpScroll = isLocationBarFocusedFromNtpScroll;
+                onUrlFocusedFromNtpScrollChanged();
+            }
+
             if (fraction > 0f) {
                 mLocationBarLayout.setUrlActionContainerVisibility(View.VISIBLE);
             } else if (fraction == 0f && !mIsUrlFocusChangeInProgress) {
@@ -327,8 +348,11 @@ class LocationBarMediator
             }
 
             mStatusCoordinator.setUrlFocusChangePercent(fraction);
-            updateButtonVisibility();
         }
+    }
+
+    /* package */ void onUrlFocusedFromNtpScrollChanged() {
+        updateButtonVisibility();
     }
 
     /*package */ void setUnfocusedWidth(int unfocusedWidth) {
@@ -902,26 +926,27 @@ class LocationBarMediator
     }
 
     /**
-     * Update visuals to use a correct light or dark color scheme depending on the primary color.
+     * Update visuals to use a correct color scheme depending on the primary color.
      */
     @VisibleForTesting
-    /* package */ void updateUseDarkColors() {
+    /* package */ void updateOmniboxTheme() {
         // TODO(crbug.com/1114183): Unify light and dark color logic in chrome and make it clear
         // whether the foreground or background color is dark.
-        final boolean useDarkColors =
+        final boolean useDarkForegroundColors =
                 !ColorUtils.shouldUseLightForegroundOnBackground(getPrimaryBackgroundColor());
+        final @OmniboxTheme int omniboxTheme = OmniboxResourceProvider.getOmniboxTheme(
+                mContext, mLocationBarDataProvider.isIncognito(), getPrimaryBackgroundColor());
 
         mLocationBarLayout.setDeleteButtonTint(
-                ChromeColors.getPrimaryIconTint(mContext, !useDarkColors));
+                ChromeColors.getPrimaryIconTint(mContext, !useDarkForegroundColors));
         // If the URL changed colors and is not focused, update the URL to account for the new
         // color scheme.
-        if (mUrlCoordinator.setUseDarkTextColors(useDarkColors) && !isUrlBarFocused()) {
+        if (mUrlCoordinator.setOmniboxTheme(omniboxTheme) && !isUrlBarFocused()) {
             updateUrl();
         }
-        mStatusCoordinator.setUseDarkColors(useDarkColors);
+        mStatusCoordinator.setUseDarkForegroundColors(useDarkForegroundColors);
         if (mAutocompleteCoordinator != null) {
-            mAutocompleteCoordinator.updateVisualsForState(
-                    useDarkColors, mLocationBarDataProvider.isIncognito());
+            mAutocompleteCoordinator.updateVisualsForState(omniboxTheme);
         }
     }
 
@@ -931,7 +956,7 @@ class LocationBarMediator
         // of whether it is branded or not.
         if (isUrlBarFocused()) {
             return ChromeColors.getDefaultThemeColor(
-                    mContext.getResources(), mLocationBarDataProvider.isIncognito());
+                    mContext, mLocationBarDataProvider.isIncognito());
         } else {
             return mLocationBarDataProvider.getPrimaryColor();
         }
@@ -1000,19 +1025,35 @@ class LocationBarMediator
             boolean deleteButtonVisible = shouldShowDeleteButton();
             boolean canShowMicButton = !mIsTablet || !isToolbarMicEnabled;
             return canShowMicButton && !deleteButtonVisible
-                    && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
+                    && (mUrlHasFocus || mIsUrlFocusChangeInProgress
+                            || mIsLocationBarFocusedFromNtpScroll
                             || mShouldShowMicButtonWhenUnfocused);
         }
     }
 
     private boolean shouldShowLensButton() {
-        if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
-            return mNativeInitialized && (mUrlHasFocus || mIsUrlFocusChangeInProgress)
-                    && isLensOnOmniboxEnabled();
+        // When this method is called on UI inflation, return false as the native is not ready.
+        if (!mNativeInitialized) {
+            return false;
         }
+        // When this method is called after native initialized, check omnibox conditions and Lens
+        // eligibility.
+        if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
+            return (mUrlHasFocus || mIsUrlFocusChangeInProgress) && isLensOnOmniboxEnabled();
+        }
+
+        // Never show Lens in the old search widget page context.
+        // This widget must guarantee consistent feature set regardless of search engine choice or
+        // other aspects that may not be met by Lens.
+        LocationBarDataProvider dataProvider = getLocationBarDataProvider();
+        if (dataProvider.getPageClassification(dataProvider.isIncognito())
+                == PageClassification.ANDROID_SEARCH_WIDGET_VALUE) {
+            return false;
+        }
+
         return !shouldShowDeleteButton()
-                && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
-                        || mShouldShowLensButtonWhenUnfocused)
+                && (mUrlHasFocus || mIsUrlFocusChangeInProgress
+                        || mIsLocationBarFocusedFromNtpScroll || mShouldShowLensButtonWhenUnfocused)
                 && isLensOnOmniboxEnabled();
     }
 
@@ -1120,6 +1161,8 @@ class LocationBarMediator
         sLastCachedIsLensOnOmniboxEnabled = Boolean.valueOf(isLensEnabled(LensEntryPoint.OMNIBOX));
         updateButtonVisibility();
         updateSearchEngineStatusIconShownState();
+        // Update the visuals to use correct incognito colors.
+        mUrlCoordinator.setIncognitoColorsEnabled(mLocationBarDataProvider.isIncognito());
     }
 
     @Override
@@ -1131,7 +1174,7 @@ class LocationBarMediator
     public void onPrimaryColorChanged() {
         updateAssistantVoiceSearchDrawableAndColors();
         updateLensButtonColors();
-        updateUseDarkColors();
+        updateOmniboxTheme();
     }
 
     @Override
@@ -1144,6 +1187,12 @@ class LocationBarMediator
     @Override
     public void hintZeroSuggestRefresh() {
         mAutocompleteCoordinator.prefetchZeroSuggestResults();
+    }
+
+    // TemplateUrlService.TemplateUrlServiceObserver implementation
+    @Override
+    public void onTemplateURLServiceChanged() {
+        sLastCachedIsLensOnOmniboxEnabled = Boolean.valueOf(isLensEnabled(LensEntryPoint.OMNIBOX));
     }
 
     // OmniboxStub implementation.
@@ -1230,6 +1279,11 @@ class LocationBarMediator
     @Override
     public void clearOmniboxFocus() {
         setUrlBarFocus(/*shouldBeFocused=*/false, /*pastedText=*/null, OmniboxFocusReason.UNFOCUS);
+    }
+
+    @Override
+    public void notifyVoiceRecognitionCanceled() {
+        mLocationBarLayout.notifyVoiceRecognitionCanceled();
     }
 
     // AssistantVoiceSearchService.Observer implementation.

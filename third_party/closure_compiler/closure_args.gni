@@ -65,7 +65,7 @@ mojom_js_args = [
   # Mojom WebUI JS modules load bindings.js which may be compiled and stripped
   # of type annotations. Rewrite these references to the uncompiled equivalent
   # for compilation and type-checking.
-  "browser_resolver_prefix_replacements=\"chrome://resources/mojo/mojo/public/js/bindings.js=/bindings_uncompiled.js\"",
+  "browser_resolver_prefix_replacements=\"//resources/mojo/mojo/public/js/bindings.js=/bindings_uncompiled.js\"",
 
   # Shared Mojom WebUI JS modules are by convention exposed through URLs like
   # chrome://resources/mojo/<path-to-module>. At build time these will be given

@@ -32,7 +32,7 @@ export class MenuManager {
     /** @private {!EventHandler} */
     this.clickHandler_ = new EventHandler(
         [], chrome.automation.EventType.CLICKED,
-        this.onButtonClicked_.bind(this));
+        event => this.onButtonClicked_(event));
   }
 
   static get instance() {
@@ -134,7 +134,7 @@ export class MenuManager {
           role: chrome.automation.RoleType.MENU,
           attributes: {className: 'SwitchAccessMenuView'}
         },
-        this.jumpToMenuAutomationNode_.bind(this));
+        node => this.jumpToMenuAutomationNode_(node));
   }
 
   /** @private */
@@ -163,7 +163,7 @@ export class MenuManager {
             chrome.automation.EventType.CHILDREN_CHANGED,
             chrome.automation.EventType.LOCATION_CHANGED
           ],
-          this.jumpToMenuAutomationNode_.bind(this, node), {listenOnce: true})
+          () => this.jumpToMenuAutomationNode_(node), {listenOnce: true})
           .start();
       return;
     }

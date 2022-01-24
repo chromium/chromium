@@ -1,0 +1,263 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Geolocation histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Geolocation.AuthorizationActionExistingUser"
+    enum="GeolocationAuthorizationAction" expires_after="2022-04-10">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the action performed by an existing user when prompted to authorize
+    the use of location by Chrome.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.AuthorizationActionNewUser"
+    enum="GeolocationAuthorizationAction" expires_after="2022-04-10">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the action performed by a new user when prompted to authorize the
+    use of location by Chrome.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Geolocation.Header.LocationAge" units="seconds"
+    expires_after="M85">
+  <owner>kcarattini@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <summary>
+    For Geolocation requests from the omnibox on Android, the time since the
+    location was most recently acquired. If no location has been acquired, the
+    maximum bucket is incremented.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.Header.PermissionState"
+    enum="GeolocationHeaderPermissionState" expires_after="M85">
+  <owner>kcarattini@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <summary>
+    Counts Geolocation requests for omnibox searches sliced by various
+    permission combinations. The location mode abbreviations indicate one of:
+    High Accuracy, Battery Saving, GPS On or Location Mode Off.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Geolocation.Header.TimeListening" units="ms"
+    expires_after="M85">
+  <owner>kcarattini@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <summary>
+    For Geolocation requests from the omnibox on Android, the time since the
+    location was first acquired. If no location has been acquired, the minimum
+    bucket is incremented.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.HeaderSentOrNot" enum="GeolocationHeaderSentOrNot"
+    expires_after="M85">
+  <owner>kiyun@google.com</owner>
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>newt@chromium.org</owner>
+  <summary>
+    Reason why the X-Geo header was or was not included in a Google search from
+    the omnibox.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.LocationUpdate.ErrorCode"
+    enum="GeopositionErrorCode" expires_after="2022-04-17">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>Error code for the geoposition sent to the renderers.</summary>
+</histogram>
+
+<histogram name="Geolocation.NetworkLocationRequest.AccessPoints" units="units"
+    expires_after="M85">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    The number of WiFi access points used to determine geolocation.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.NetworkLocationRequest.Event"
+    enum="NetworkLocationRequestEvent" expires_after="2022-05-22">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Events in NetworkLocationRequest.
+
+    Warning: this histogram was expired after M85 and brought back 2021-04-23;
+    data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.NetworkLocationRequest.NetError"
+    enum="NetErrorCodes" expires_after="2022-05-22">
+  <owner>JamesHollyer@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>Network errors in NetworkLocationRequest.</summary>
+</histogram>
+
+<histogram name="Geolocation.NetworkLocationRequest.ResponseCode"
+    enum="HttpResponseCode" expires_after="2022-05-22">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    HTTP response codes in NetworkLocationRequest.
+
+    Warning: this histogram was expired after M85 and brought back 2021-05-21;
+    data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.PositionCache.CacheHit" enum="BooleanCacheHit"
+    expires_after="2022-05-22">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    For each query into the position cache used by the network location
+    provider, records whether a position was returned from the cache.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.PositionCache.CacheSize" units="count"
+    expires_after="2022-05-22">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    For each query into the position cache used by the network location
+    provider, records the number of items in the cache.
+
+    Warning: this histogram was expired after 2021-03-10 and brought back
+    2021-05-21; data may be missing.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Geolocation.SettingsDialog.AcceptEvent"
+    enum="GeolocationSettingsDialogBackOff" expires_after="M89">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the backoff level when the Location Settings Dialog is accepted by
+    the user.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Geolocation.SettingsDialog.DenyEvent"
+    enum="GeolocationSettingsDialogBackOff" expires_after="M89">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the backoff level when the Location Settings Dialog is rejected by
+    the user.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Geolocation.SettingsDialog.ShowEvent"
+    enum="GeolocationSettingsDialogBackOff" expires_after="M89">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the backoff level when the Location Settings Dialog is shown to the
+    user.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Geolocation.SettingsDialog.SuppressEvent"
+    enum="GeolocationSettingsDialogBackOff" expires_after="M89">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the backoff level when the Location Settings Dialog is suppressed
+    due to backoff.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.Timeout" units="ms" expires_after="M85">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Counts Geolocation request timeout values, bucketing by timeout duration.
+    This is recorded for all requests upon creation, see
+    Geolocation.TimeoutExpired for timeouts that actually expired.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.TimeoutExpired" units="ms"
+    expires_after="2020-02-01">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Counts Geolocation request timeout expirations, bucketing by timeout
+    duration. This means no position was received within the allowed time from
+    the browser process due to e.g. a slow network or an unresponsive system
+    location provider.
+  </summary>
+</histogram>
+
+<histogram name="GeolocationDisclosure.DisclosureResult"
+    enum="GeolocationDisclosureResult" expires_after="2022-01-02">
+  <owner>benwells@chromium.org</owner>
+  <summary>
+    Records the action the user took after the geolocation disclosure has been
+    displayed.
+  </summary>
+</histogram>
+
+<histogram name="GeolocationDisclosure.InfoBarVisibleTime" units="ms"
+    expires_after="2022-04-17">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records how long the search geolocation disclosure infobar was visible for.
+  </summary>
+</histogram>
+
+<histogram name="GeolocationDisclosure.PostDisclosureDSESetting"
+    enum="BooleanAllowed" expires_after="2022-04-24">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the geolocation default search engine setting after the search
+    geolocation disclosure has been shown and won't be shown again. This metric
+    is only recorded once per client.
+  </summary>
+</histogram>
+
+<histogram name="GeolocationDisclosure.PreDisclosureDSESetting"
+    enum="BooleanAllowed" expires_after="2022-04-24">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the geolocation default search engine setting immediately before the
+    search geolocation disclosure has been shown. This metric is only recorded
+    once per client.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

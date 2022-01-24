@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ENTERPRISE_CERT_STORE_CERT_STORE_SERVICE_H_
 #define CHROME_BROWSER_ASH_ARC_ENTERPRISE_CERT_STORE_CERT_STORE_SERVICE_H_
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -29,11 +28,6 @@ namespace arc {
 class CertStoreService : public KeyedService,
                          public net::CertDatabase::Observer {
  public:
-  struct KeyInfo {
-    std::string nickname;
-    std::string id;
-  };
-
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static CertStoreService* GetForBrowserContext(
@@ -56,10 +50,6 @@ class CertStoreService : public KeyedService,
   // CertDatabase::Observer overrides.
   void OnCertDBChanged() override;
 
-  // Returns a real nickname and chaps id for a dummy SPKI |dummy_spki|.
-  // Returns nullopt if the key is unknown.
-  absl::optional<KeyInfo> GetKeyInfoForDummySpki(const std::string& dummy_spki);
-
   std::vector<std::string> get_required_cert_names() const {
     return certificate_cache_.get_required_cert_names();
   }
@@ -76,7 +66,8 @@ class CertStoreService : public KeyedService,
   using FilterAllowedCertificatesCallback =
       base::OnceCallback<void(net::ScopedCERTCertificateList allowed_certs)>;
 
-  // TODO(b/177051802) Some of certificate cache is obsolete. Clean up.
+  //  Stores certificates required in ARC. This is used to check if a policy
+  //  update is needed.
   class CertificateCache {
    public:
     CertificateCache();
@@ -84,14 +75,10 @@ class CertStoreService : public KeyedService,
     CertificateCache& operator=(const CertificateCache&) = delete;
     ~CertificateCache();
 
-    void Update(const std::vector<CertDescription>& certificates);
-    void Update(std::map<std::string, std::string> dummy_spki_by_name);
+    // Returns true if new certificates are different from previous ones.
+    // If true, policy update is needed.
+    bool Update(const std::vector<CertDescription>& certificates);
 
-    absl::optional<KeyInfo> GetKeyInfoForDummySpki(
-        const std::string& dummy_spki);
-
-    bool need_policy_update() { return need_policy_update_; }
-    void clear_need_policy_update() { need_policy_update_ = false; }
     std::vector<std::string> get_required_cert_names() const {
       return std::vector<std::string>(required_cert_names_.begin(),
                                       required_cert_names_.end());
@@ -101,14 +88,9 @@ class CertStoreService : public KeyedService,
     }
 
    private:
-    bool need_policy_update_ = false;
+    //  Set of certificates that must be installed in ARC. Corresponds to
+    //  corporate usage keys.
     std::set<std::string> required_cert_names_;
-    // Map dummy SPKI to real key info.
-    std::map<std::string, KeyInfo> key_info_by_dummy_spki_cache_;
-    // Map cert name to dummy SPKI.
-    std::map<std::string, std::string> dummy_spki_by_name_cache_;
-    // Intermediate map name to real SPKI.
-    std::map<std::string, KeyInfo> key_info_by_name_cache_;
   };
 
   void UpdateCertificates();
@@ -159,7 +141,7 @@ class CertStoreService : public KeyedService,
       net::ScopedCERTCertificateList allowed_certs);
   void OnUpdatedKeymasterKeys(std::vector<CertDescription> certificates,
                               bool success);
-  void OnArcCertsInstalled(bool success);
+  void OnArcCertsInstalled(bool need_policy_update, bool success);
 
   content::BrowserContext* const context_;
 

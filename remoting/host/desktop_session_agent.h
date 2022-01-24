@@ -18,19 +18,27 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ipc/ipc_listener.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/client_session_control.h"
-#include "remoting/host/current_process_stats_agent.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/desktop_environment_options.h"
 #include "remoting/host/file_transfer/session_file_operations_handler.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
+#include "remoting/host/mojom/remoting_mojom_traits.h"
+#include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
-#include "remoting/protocol/process_stats_stub.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 #include "ui/events/event.h"
+
+namespace base {
+class Location;
+}
 
 namespace IPC {
 class ChannelProxy;
@@ -47,10 +55,10 @@ class DesktopEnvironment;
 class DesktopEnvironmentFactory;
 class InputInjector;
 class KeyboardLayoutMonitor;
-class ProcessStatsSender;
 class RemoteInputFilter;
 class ScreenControls;
 class ScreenResolution;
+class UrlForwarderConfigurator;
 
 namespace protocol {
 class ActionRequest;
@@ -65,8 +73,8 @@ class DesktopSessionAgent
       public webrtc::DesktopCapturer::Callback,
       public webrtc::MouseCursorMonitor::Callback,
       public ClientSessionControl,
-      public protocol::ProcessStatsStub,
-      public IpcFileOperations::ResultHandler {
+      public IpcFileOperations::ResultHandler,
+      public mojom::DesktopSessionControl {
  public:
   class Delegate {
    public:
@@ -78,6 +86,12 @@ class DesktopSessionAgent
     // Notifies the delegate that the network-to-desktop channel has been
     // disconnected.
     virtual void OnNetworkProcessDisconnected() = 0;
+
+    // Allows the desktop process to ask the daemon process to crash the network
+    // process. This should be called any time the network process sends an
+    // invalid IPC message to the desktop process (indicating that the network
+    // process might have been compromised).
+    virtual void CrashNetworkProcess(const base::Location& location) = 0;
   };
 
   DesktopSessionAgent(
@@ -86,10 +100,16 @@ class DesktopSessionAgent
       scoped_refptr<AutoThreadTaskRunner> input_task_runner,
       scoped_refptr<AutoThreadTaskRunner> io_task_runner);
 
+  DesktopSessionAgent(const DesktopSessionAgent&) = delete;
+  DesktopSessionAgent& operator=(const DesktopSessionAgent&) = delete;
+
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // webrtc::DesktopCapturer::Callback implementation.
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
@@ -99,9 +119,8 @@ class DesktopSessionAgent
   void OnMouseCursor(webrtc::MouseCursor* cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
-  // Forwards a local clipboard event though the IPC channel to the network
-  // process.
-  void InjectClipboardEvent(const protocol::ClipboardEvent& event);
+  // Forwards a local clipboard event to the network process over IPC.
+  void OnClipboardEvent(const protocol::ClipboardEvent& event);
 
   // Forwards an audio packet though the IPC channel to the network process.
   void ProcessAudioPacket(std::unique_ptr<AudioPacket> packet);
@@ -112,6 +131,10 @@ class DesktopSessionAgent
                     ResultHandler::InfoResult result) override;
   void OnDataResult(std::uint64_t file_id,
                     ResultHandler::DataResult result) override;
+
+  // mojom::DesktopSessionControl implementation.
+  void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
+  void SetUpUrlForwarder() override;
 
   // Creates desktop integration components and a connected IPC channel to be
   // used to access them. The client end of the channel is returned.
@@ -135,10 +158,6 @@ class DesktopSessionAgent
   void OnDesktopDisplayChanged(
       std::unique_ptr<protocol::VideoLayout> layout) override;
 
-  // ProcessStatsStub interface.
-  void OnProcessStats(
-      const protocol::AggregatedProcessResourceUsage& usage) override;
-
   // Handles StartSessionAgent request from the client.
   void OnStartSessionAgent(const std::string& authenticated_jid,
                            const ScreenResolution& resolution,
@@ -151,7 +170,6 @@ class DesktopSessionAgent
   void OnSelectSource(int id);
 
   // Handles event executor requests from the client.
-  void OnInjectClipboardEvent(const std::string& serialized_event);
   void OnInjectKeyEvent(const std::string& serialized_event);
   void OnInjectTextEvent(const std::string& serialized_event);
   void OnInjectMouseEvent(const std::string& serialized_event);
@@ -183,6 +201,10 @@ class DesktopSessionAgent
   void StopProcessStatsReport();
 
  private:
+  void OnCheckUrlForwarderSetUpResult(bool is_set_up);
+  void OnUrlForwarderSetUpStateChanged(
+      protocol::UrlForwarderControl::SetUpUrlForwarderResponse::State state);
+
   // Task runner dedicated to running methods of |audio_capturer_|.
   scoped_refptr<AutoThreadTaskRunner> audio_capture_task_runner_;
 
@@ -243,15 +265,17 @@ class DesktopSessionAgent
   // executed.
   absl::optional<SessionFileOperationsHandler> session_file_operations_handler_;
 
-  // Reports process statistic data to network process.
-  std::unique_ptr<ProcessStatsSender> stats_sender_;
+  mojo::AssociatedRemote<mojom::DesktopSessionEventHandler>
+      desktop_session_event_handler_;
+  mojo::AssociatedReceiver<mojom::DesktopSessionControl>
+      desktop_session_control_{this};
 
-  CurrentProcessStatsAgent current_process_stats_;
+  // Checks and configures the URL forwarder.
+  std::unique_ptr<::remoting::UrlForwarderConfigurator>
+      url_forwarder_configurator_;
 
   // Used to disable callbacks to |this|.
   base::WeakPtrFactory<DesktopSessionAgent> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopSessionAgent);
 };
 
 }  // namespace remoting

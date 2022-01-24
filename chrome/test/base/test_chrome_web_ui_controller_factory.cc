@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/test_data_source.h"
+#include "chrome/test/base/web_ui_test_data_source.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -64,9 +65,14 @@ TestChromeWebUIControllerFactory::CreateWebUIControllerForURL(
                : ChromeWebUIControllerFactory::CreateWebUIControllerForURL(
                      web_ui, webui_url);
   // Add an empty callback since managed-footnote always sends this message.
-  web_ui->RegisterMessageCallback("observeManagedUI", base::DoNothing());
+  web_ui->RegisterDeprecatedMessageCallback("observeManagedUI",
+                                            base::DoNothing());
   content::URLDataSource::Add(profile,
                               std::make_unique<TestDataSource>("webui"));
+
+  content::WebUIDataSource* source = webui::CreateWebUITestDataSource();
+  content::WebUIDataSource::Add(profile, source);
+
   return controller;
 }
 

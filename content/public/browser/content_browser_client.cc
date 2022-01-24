@@ -20,7 +20,7 @@
 #include "base/guid.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -46,9 +46,11 @@
 #include "content/public/common/url_utils.h"
 #include "media/audio/audio_manager.h"
 #include "media/mojo/mojom/media_service.mojom.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_store.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/features.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
@@ -76,7 +78,7 @@
 namespace content {
 
 std::unique_ptr<BrowserMainParts> ContentBrowserClient::CreateBrowserMainParts(
-    const MainFunctionParams& parameters) {
+    MainFunctionParams parameters) {
   return nullptr;
 }
 
@@ -259,6 +261,10 @@ bool ContentBrowserClient::ShouldSubframesTryToReuseExistingProcess(
   return true;
 }
 
+bool ContentBrowserClient::ShouldAllowNoLongerUsedProcessToExit() {
+  return true;
+}
+
 bool ContentBrowserClient::ShouldSwapBrowsingInstancesForNavigation(
     SiteInstance* site_instance,
     const GURL& current_effective_url,
@@ -296,13 +302,30 @@ bool ContentBrowserClient::ShouldEnableStrictSiteIsolation() {
 #endif
 }
 
-bool ContentBrowserClient::ShouldDisableSiteIsolation() {
+bool ContentBrowserClient::ShouldDisableSiteIsolation(
+    SiteIsolationMode site_isolation_mode) {
   return false;
 }
 
 std::vector<std::string>
 ContentBrowserClient::GetAdditionalSiteIsolationModes() {
   return std::vector<std::string>();
+}
+
+bool ContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
+    BrowserContext* browser_context,
+    const GURL& url) {
+  // For short-term testing, use kDirectSockets to enable isolated application
+  // level. DirectSocket WPT and browser tests require application isolation
+  // level.
+  //
+  // TODO(crbug.com/1206150): Figure out a better way to enable isolated
+  // application level in tests.
+  return base::FeatureList::IsEnabled(features::kDirectSockets);
+}
+
+size_t ContentBrowserClient::GetMaxRendererProcessCountOverride() {
+  return 0u;
 }
 
 bool ContentBrowserClient::IsFileAccessAllowed(
@@ -343,17 +366,9 @@ base::FilePath ContentBrowserClient::GetLoggingFileName(
   return base::FilePath();
 }
 
-bool ContentBrowserClient::AllowAppCache(
-    const GURL& manifest_url,
-    const GURL& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin,
-    BrowserContext* context) {
-  return true;
-}
-
 AllowServiceWorkerResult ContentBrowserClient::AllowServiceWorker(
     const GURL& scope,
-    const GURL& site_for_cookies,
+    const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
     const GURL& script_url,
     BrowserContext* context) {
@@ -362,7 +377,7 @@ AllowServiceWorkerResult ContentBrowserClient::AllowServiceWorker(
 
 bool ContentBrowserClient::AllowSharedWorker(
     const GURL& worker_url,
-    const GURL& site_for_cookies,
+    const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
     const std::string& name,
     const blink::StorageKey& storage_key,
@@ -523,13 +538,6 @@ bool ContentBrowserClient::ShouldUseGmsCoreGeolocationProvider() {
 }
 #endif
 
-StoragePartitionId ContentBrowserClient::GetStoragePartitionIdForSite(
-    BrowserContext* browser_context,
-    const GURL& site) {
-  DCHECK(browser_context);
-  return StoragePartitionId(browser_context);
-}
-
 StoragePartitionConfig ContentBrowserClient::GetStoragePartitionConfigForSite(
     BrowserContext* browser_context,
     const GURL& site) {
@@ -543,12 +551,6 @@ MediaObserver* ContentBrowserClient::GetMediaObserver() {
 }
 
 FeatureObserverClient* ContentBrowserClient::GetFeatureObserverClient() {
-  return nullptr;
-}
-
-PlatformNotificationService*
-ContentBrowserClient::GetPlatformNotificationService(
-    BrowserContext* browser_context) {
   return nullptr;
 }
 
@@ -602,6 +604,10 @@ base::FilePath ContentBrowserClient::GetShaderDiskCacheDirectory() {
 }
 
 base::FilePath ContentBrowserClient::GetGrShaderDiskCacheDirectory() {
+  return base::FilePath();
+}
+
+base::FilePath ContentBrowserClient::GetNetLogDefaultDirectory() {
   return base::FilePath();
 }
 
@@ -717,10 +723,9 @@ std::unique_ptr<NavigationUIData> ContentBrowserClient::GetNavigationUIData(
 }
 
 #if defined(OS_WIN)
-bool ContentBrowserClient::PreSpawnChild(
-    sandbox::TargetPolicy* policy,
-    sandbox::policy::SandboxType sandbox_type,
-    ChildSpawnFlags flags) {
+bool ContentBrowserClient::PreSpawnChild(sandbox::TargetPolicy* policy,
+                                         sandbox::mojom::Sandbox sandbox_type,
+                                         ChildSpawnFlags flags) {
   return true;
 }
 
@@ -730,7 +735,7 @@ bool ContentBrowserClient::IsUtilityCetCompatible(
 }
 
 std::wstring ContentBrowserClient::GetAppContainerSidForSandboxType(
-    sandbox::policy::SandboxType sandbox_type) {
+    sandbox::mojom::Sandbox sandbox_type) {
   // Embedders should override this method and return different SIDs for each
   // sandbox type. Note: All content level tests will run child processes in the
   // same AppContainer.
@@ -825,10 +830,14 @@ void ContentBrowserClient::CreateWebSocket(
 }
 
 void ContentBrowserClient::WillCreateWebTransport(
-    RenderFrameHost* frame,
+    int process_id,
+    int frame_routing_id,
     const GURL& url,
+    const url::Origin& initiator_origin,
+    mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
+        handshake_client,
     WillCreateWebTransportCallback callback) {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::move(handshake_client), absl::nullopt);
 }
 
 bool ContentBrowserClient::WillCreateRestrictedCookieManager(
@@ -975,7 +984,7 @@ std::unique_ptr<LoginDelegate> ContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
     const GlobalRequestID& request_id,
-    bool is_request_for_main_frame,
+    bool is_request_for_primary_main_frame,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
@@ -990,6 +999,7 @@ bool ContentBrowserClient::HandleExternalProtocol(
     int frame_tree_node_id,
     NavigationUIData* navigation_data,
     bool is_main_frame,
+    network::mojom::WebSandboxFlags sandbox_flags,
     ui::PageTransition page_transition,
     bool has_user_gesture,
     const absl::optional<url::Origin>& initiating_origin,
@@ -1034,6 +1044,10 @@ bool ContentBrowserClient::ShouldSandboxAudioService() {
   return base::FeatureList::IsEnabled(features::kAudioServiceSandbox);
 }
 
+bool ContentBrowserClient::ShouldSandboxNetworkService() {
+  return sandbox::policy::features::IsNetworkSandboxEnabled();
+}
+
 blink::PreviewsState ContentBrowserClient::DetermineAllowedPreviews(
     blink::PreviewsState initial_state,
     content::NavigationHandle* navigation_handle,
@@ -1054,6 +1068,10 @@ std::string ContentBrowserClient::GetProduct() {
 
 std::string ContentBrowserClient::GetUserAgent() {
   return std::string();
+}
+
+std::string ContentBrowserClient::GetReducedUserAgent() {
+  return GetUserAgent();
 }
 
 blink::UserAgentMetadata ContentBrowserClient::GetUserAgentMetadata() {
@@ -1104,7 +1122,6 @@ ContentBrowserClient::GetPluginMimeTypesWithExternalHandlers(
 }
 
 void ContentBrowserClient::AugmentNavigationDownloadPolicy(
-    WebContents* web_contents,
     RenderFrameHost* frame_host,
     bool user_gesture,
     blink::NavigationDownloadPolicy* download_policy) {}
@@ -1135,7 +1152,7 @@ bool ContentBrowserClient::ShouldLoadExtraIcuDataFile(std::string* split_name) {
 bool ContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(
     content::BrowserContext* browser_context,
     const GURL& scope,
-    const GURL& site_for_cookies,
+    const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin) {
   return false;
 }
@@ -1182,15 +1199,6 @@ XrIntegrationClient* ContentBrowserClient::GetXrIntegrationClient() {
 }
 #endif
 
-bool ContentBrowserClient::IsOriginTrialRequiredForAppCache(
-    content::BrowserContext* browser_context) {
-  // In Chrome proper, this also considers Profile preferences.
-  // As a default, only consider the base::Feature.
-  // Compare this with the ChromeContentBrowserClient implementation.
-  return base::FeatureList::IsEnabled(
-      blink::features::kAppCacheRequireOriginTrial);
-}
-
 void ContentBrowserClient::BindBrowserControlInterface(
     mojo::ScopedMessagePipeHandle pipe) {}
 
@@ -1220,7 +1228,7 @@ void ContentBrowserClient::OnKeepaliveRequestFinished() {}
 
 #if defined(OS_MAC)
 bool ContentBrowserClient::SetupEmbedderSandboxParameters(
-    sandbox::policy::SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     sandbox::SeatbeltExecClient* client) {
   return false;
 }
@@ -1256,6 +1264,11 @@ void ContentBrowserClient::ShowDirectSocketsConnectionDialog(
     base::OnceCallback<void(bool, const std::string&, const std::string&)>
         callback) {
   std::move(callback).Run(false, std::string(), std::string());
+}
+
+bool ContentBrowserClient::IsFindInPageDisabledForOrigin(
+    const url::Origin& origin) {
+  return false;
 }
 
 }  // namespace content

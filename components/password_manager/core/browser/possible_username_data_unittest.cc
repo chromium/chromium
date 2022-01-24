@@ -10,7 +10,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace password_manager {
 
@@ -39,11 +38,11 @@ TEST_F(IsPossibleUsernameValidTest, IsPossibleUsernameStale) {
   // Fast forward for a little less than expiration time, but not
   // exactly to not flake the test.
   task_environment_.FastForwardBy(kPossibleUsernameExpirationTimeout -
-                                  TimeDelta::FromSeconds(3));
+                                  base::Seconds(3));
   EXPECT_FALSE(possible_username_data_.IsStale());
 
   // Fast forward more until the data becomes stale.
-  task_environment_.FastForwardBy(TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
   EXPECT_TRUE(possible_username_data_.IsStale());
 }
 

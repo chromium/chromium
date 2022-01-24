@@ -34,10 +34,11 @@
 #include <utility>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/command_line.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom-blink.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
@@ -60,6 +61,10 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "v8/include/v8.h"
+
+#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
+#include "third_party/blink/renderer/extensions/chromeos/chromeos_extensions.h"
+#endif
 
 #if defined(OS_ANDROID)
 #include "third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.h"
@@ -128,13 +133,21 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   // BlinkInitializer::Initialize() must be called before InitializeMainThread
   GetBlinkInitializer().Initialize();
 
-  V8Initializer::InitializeMainThread(V8ContextSnapshot::GetReferenceTable());
+  std::string js_command_line_flag =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          blink::switches::kJavaScriptFlags);
+  V8Initializer::InitializeMainThread(V8ContextSnapshot::GetReferenceTable(),
+                                      js_command_line_flag);
 
   GetBlinkInitializer().RegisterInterfaces(*binders);
 
   DCHECK(!g_end_of_task_runner);
   g_end_of_task_runner = new EndOfTaskRunner;
   Thread::Current()->AddTaskObserver(g_end_of_task_runner);
+
+#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
+  ChromeOSExtensions::Initialize();
+#endif
 
 #if defined(OS_ANDROID)
   // Initialize CrashMemoryMetricsReporterImpl in order to assure that memory
@@ -206,7 +219,7 @@ void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
 
 #if defined(OS_ANDROID)
   binders.Add(ConvertToBaseRepeatingCallback(
-                  CrossThreadBindRepeating(&OomInterventionImpl::Bind)),
+                  CrossThreadBindRepeating(&OomInterventionImpl::BindReceiver)),
               main_thread->GetTaskRunner());
 
   binders.Add(ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(

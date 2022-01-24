@@ -12,7 +12,9 @@
 #include "base/notreached.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
-// TODO(crbug.com/1204670): Implement zwp primary selection support.
+// ZwpPrimarySelection* classes contain protocol-specific implementation of
+// TestSelection*::Delegate interfaces, such that primary selection test
+// cases may be set-up and run against test wayland compositor.
 
 namespace wl {
 
@@ -22,35 +24,67 @@ void Destroy(wl_client* client, wl_resource* resource) {
   wl_resource_destroy(resource);
 }
 
-struct ZwpPrimarySelectionOffer : public TestSelectionOffer::Delegate {
-  void SendOffer(const std::string& mime_type,
-                 ui::PlatformClipboard::Data data) override {
-    NOTIMPLEMENTED();
+struct ZwpPrimarySelectionOffer final : public TestSelectionOffer::Delegate {
+  void SendOffer(const std::string& mime_type) override {
+    zwp_primary_selection_offer_v1_send_offer(offer->resource(),
+                                              mime_type.c_str());
   }
 
-  void OnDestroying() override { NOTIMPLEMENTED(); }
+  void OnDestroying() override { delete this; }
+
+  TestSelectionOffer* offer = nullptr;
 };
 
-struct ZwpPrimarySelectionDevice : public TestSelectionDevice::Delegate {
+struct ZwpPrimarySelectionDevice final : public TestSelectionDevice::Delegate {
   TestSelectionOffer* CreateAndSendOffer() override {
-    NOTIMPLEMENTED();
-    return nullptr;
+    const struct zwp_primary_selection_offer_v1_interface kOfferImpl = {
+        &TestSelectionOffer::Receive, &Destroy};
+    wl_resource* device_resource = device->resource();
+    const int version = wl_resource_get_version(device_resource);
+    auto* delegate = new ZwpPrimarySelectionOffer;
+
+    wl_resource* new_offer_resource =
+        CreateResourceWithImpl<TestSelectionOffer>(
+            wl_resource_get_client(device->resource()),
+            &zwp_primary_selection_offer_v1_interface, version, &kOfferImpl, 0,
+            delegate);
+    delegate->offer = GetUserDataAs<TestSelectionOffer>(new_offer_resource);
+    zwp_primary_selection_device_v1_send_data_offer(device_resource,
+                                                    new_offer_resource);
+    return delegate->offer;
   }
 
-  void SendSelection(TestSelectionOffer* offer) override { NOTIMPLEMENTED(); }
+  void SendSelection(TestSelectionOffer* offer) override {
+    CHECK(offer);
+    zwp_primary_selection_device_v1_send_selection(device->resource(),
+                                                   offer->resource());
+  }
 
   void HandleSetSelection(TestSelectionSource* source,
                           uint32_t serial) override {
     NOTIMPLEMENTED();
   }
 
-  void OnDestroying() override { NOTIMPLEMENTED(); }
+  void OnDestroying() override { delete this; }
+
+  TestSelectionDevice* device = nullptr;
 };
 
 struct ZwpPrimarySelectionSource : public TestSelectionSource::Delegate {
-  void HandleOffer(const std::string& mime_type) override { NOTIMPLEMENTED(); }
+  void SendSend(const std::string& mime_type,
+                base::ScopedFD write_fd) override {
+    zwp_primary_selection_source_v1_send_send(
+        source->resource(), mime_type.c_str(), write_fd.get());
+    wl_client_flush(wl_resource_get_client(source->resource()));
+  }
 
-  void OnDestroying() override { NOTIMPLEMENTED(); }
+  void SendCancelled() override {
+    zwp_primary_selection_source_v1_send_cancelled(source->resource());
+  }
+
+  void OnDestroying() override { delete this; }
+
+  TestSelectionSource* source = nullptr;
 };
 
 struct ZwpPrimarySelectionDeviceManager
@@ -63,19 +97,23 @@ struct ZwpPrimarySelectionDeviceManager
     const struct zwp_primary_selection_device_v1_interface
         kTestSelectionDeviceImpl = {&TestSelectionDevice::SetSelection,
                                     &Destroy};
+    auto* delegate = new ZwpPrimarySelectionDevice;
     wl_resource* resource = CreateResourceWithImpl<TestSelectionDevice>(
         client, &zwp_primary_selection_device_v1_interface, version_,
-        &kTestSelectionDeviceImpl, id, new ZwpPrimarySelectionDevice);
-    return GetUserDataAs<TestSelectionDevice>(resource);
+        &kTestSelectionDeviceImpl, id, delegate);
+    delegate->device = GetUserDataAs<TestSelectionDevice>(resource);
+    return delegate->device;
   }
 
   TestSelectionSource* CreateSource(wl_client* client, uint32_t id) override {
     const struct zwp_primary_selection_source_v1_interface
         kTestSelectionSourceImpl = {&TestSelectionSource::Offer, &Destroy};
+    auto* delegate = new ZwpPrimarySelectionSource;
     wl_resource* resource = CreateResourceWithImpl<TestSelectionSource>(
         client, &zwp_primary_selection_source_v1_interface, version_,
-        &kTestSelectionSourceImpl, id, new ZwpPrimarySelectionSource);
-    return GetUserDataAs<TestSelectionSource>(resource);
+        &kTestSelectionSourceImpl, id, delegate);
+    delegate->source = GetUserDataAs<TestSelectionSource>(resource);
+    return delegate->source;
   }
 
   void OnDestroying() override { delete this; }
@@ -92,7 +130,7 @@ TestSelectionDeviceManager* CreateTestSelectionManagerZwp() {
       kTestSelectionManagerImpl = {&TestSelectionDeviceManager::CreateSource,
                                    &TestSelectionDeviceManager::GetDevice,
                                    &Destroy};
-  const TestSelectionDeviceManager::InterfaceInfo interface_info = {
+  static const TestSelectionDeviceManager::InterfaceInfo interface_info = {
       .interface = &zwp_primary_selection_device_manager_v1_interface,
       .implementation = &kTestSelectionManagerImpl,
       .version = kVersion};

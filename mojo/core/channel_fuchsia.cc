@@ -25,7 +25,7 @@
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "mojo/core/platform_handle_in_transit.h"
 
 namespace mojo {
@@ -46,25 +46,14 @@ bool UnwrapFdioHandle(PlatformHandleInTransit handle,
     return true;
   }
 
-  // Try to transfer the FD, and if that fails (for example if the file has
-  // already been dup()d into another FD) then fall back to cloning it.
+  // Try to transfer the FD if possible, otherwise take a clone of it.
+  // This allows non-dup()d FDs to be efficiently unwrapped, while dup()d FDs
+  // have a new handle attached to the same underlying resource created.
   zx::handle result;
-  zx_status_t status = fdio_fd_transfer(handle.handle().GetFD().get(),
-                                        result.reset_and_get_address());
-  if (status == ZX_OK) {
-    // On success, the fd in |handle| has been transferred and is no longer
-    // valid. Release from the PlatformHandle to avoid close()ing an invalid
-    // an invalid handle.
-    handle.CompleteTransit();
-  } else if (status == ZX_ERR_UNAVAILABLE) {
-    // No luck, try cloning instead.
-    status = fdio_fd_clone(handle.handle().GetFD().get(),
-                           result.reset_and_get_address());
-  }
-
+  zx_status_t status = fdio_fd_transfer_or_clone(
+      handle.TakeHandle().ReleaseFD(), result.reset_and_get_address());
   if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "fdio_fd_clone/transfer("
-                           << handle.handle().GetFD().get() << ")";
+    ZX_DLOG(ERROR, status) << "fdio_fd_transfer_or_clone";
     return false;
   }
 
@@ -103,6 +92,9 @@ class MessageView {
   MessageView(MessageView&& other) = default;
 
   MessageView& operator=(MessageView&& other) = default;
+
+  MessageView(const MessageView&) = delete;
+  MessageView& operator=(const MessageView&) = delete;
 
   ~MessageView() = default;
 
@@ -144,8 +136,6 @@ class MessageView {
   Channel::MessagePtr message_;
   size_t offset_;
   std::vector<PlatformHandleInTransit> handles_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageView);
 };
 
 class ChannelFuchsia : public Channel,
@@ -163,6 +153,9 @@ class ChannelFuchsia : public Channel,
         io_task_runner_(io_task_runner) {
     CHECK(handle_.is_valid());
   }
+
+  ChannelFuchsia(const ChannelFuchsia&) = delete;
+  ChannelFuchsia& operator=(const ChannelFuchsia&) = delete;
 
   void Start() override {
     if (io_task_runner_->RunsTasksInCurrentSequence()) {
@@ -403,8 +396,6 @@ class ChannelFuchsia : public Channel,
 
   base::Lock write_lock_;
   bool reject_writes_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelFuchsia);
 };
 
 }  // namespace

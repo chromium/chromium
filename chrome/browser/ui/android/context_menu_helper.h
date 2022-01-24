@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/optimization_guide/proto/performance_hints_metadata.pb.h"
 #include "content/public/browser/context_menu_params.h"
@@ -21,9 +20,12 @@ class WebContents;
 class ContextMenuHelper
     : public content::WebContentsUserData<ContextMenuHelper> {
  public:
+  ContextMenuHelper(const ContextMenuHelper&) = delete;
+  ContextMenuHelper& operator=(const ContextMenuHelper&) = delete;
+
   ~ContextMenuHelper() override;
 
-  void ShowContextMenu(content::RenderFrameHost* render_frame_host,
+  void ShowContextMenu(content::RenderFrameHost& render_frame_host,
                        const content::ContextMenuParams& params);
 
   void OnContextMenuClosed(JNIEnv* env,
@@ -45,8 +47,6 @@ class ContextMenuHelper
   content::ContextMenuParams context_menu_params_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_CONTEXT_MENU_HELPER_H_

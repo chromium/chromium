@@ -6,28 +6,28 @@ Testing methods to run to upgrade from 0 to 0.
 Methods to run: []
 
 Testing methods to run to upgrade from 0 to 1.
-Methods to run: ["_updateVersionFrom0To1"]
+Methods to run: ["updateVersionFrom0To1"]
 
 Testing methods to run to upgrade from 0 to 2.
-Methods to run: ["_updateVersionFrom0To1","_updateVersionFrom1To2"]
+Methods to run: ["updateVersionFrom0To1","updateVersionFrom1To2"]
 
 Testing methods to run to upgrade from 0 to 3.
-Methods to run: ["_updateVersionFrom0To1","_updateVersionFrom1To2","_updateVersionFrom2To3"]
+Methods to run: ["updateVersionFrom0To1","updateVersionFrom1To2","updateVersionFrom2To3"]
 
 Testing methods to run to upgrade from 1 to 1.
 Methods to run: []
 
 Testing methods to run to upgrade from 1 to 2.
-Methods to run: ["_updateVersionFrom1To2"]
+Methods to run: ["updateVersionFrom1To2"]
 
 Testing methods to run to upgrade from 1 to 3.
-Methods to run: ["_updateVersionFrom1To2","_updateVersionFrom2To3"]
+Methods to run: ["updateVersionFrom1To2","updateVersionFrom2To3"]
 
 Testing methods to run to upgrade from 2 to 2.
 Methods to run: []
 
 Testing methods to run to upgrade from 2 to 3.
-Methods to run: ["_updateVersionFrom2To3"]
+Methods to run: ["updateVersionFrom2To3"]
 
 
 Running: testClearBreakpointsWhenTooMany

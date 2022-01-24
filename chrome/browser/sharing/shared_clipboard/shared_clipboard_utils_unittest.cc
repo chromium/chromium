@@ -46,17 +46,21 @@ class MockSharingDeviceRegistration : public SharingDeviceRegistration {
                                   /*instance_id_driver=*/nullptr,
                                   /*sync_service=*/nullptr) {}
 
+  MockSharingDeviceRegistration(const MockSharingDeviceRegistration&) = delete;
+  MockSharingDeviceRegistration& operator=(
+      const MockSharingDeviceRegistration&) = delete;
+
   ~MockSharingDeviceRegistration() override = default;
 
   MOCK_CONST_METHOD0(IsSharedClipboardSupported, bool());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSharingDeviceRegistration);
 };
 
 class SharedClipboardUtilsTest : public testing::Test {
  public:
   SharedClipboardUtilsTest() = default;
+
+  SharedClipboardUtilsTest(const SharedClipboardUtilsTest&) = delete;
+  SharedClipboardUtilsTest& operator=(const SharedClipboardUtilsTest&) = delete;
 
   ~SharedClipboardUtilsTest() override = default;
 
@@ -76,8 +80,6 @@ class SharedClipboardUtilsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   bool create_service_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardUtilsTest);
 };
 
 }  // namespace

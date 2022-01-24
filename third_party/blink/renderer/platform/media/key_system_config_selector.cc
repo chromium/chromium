@@ -8,16 +8,19 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/cdm_config.h"
 #include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_permission.h"
+#include "media/base/media_switches.h"
 #include "media/base/mime_util.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -164,11 +167,18 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
 
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
   // EME HEVC is supported on under this build flag, but it is not supported for
-  // clear playback. Remove the HEVC codec strings to avoid asking
-  // IsSupported*MediaFormat() about HEVC. EME support for HEVC profiles is
-  // described via KeySystemProperties::GetSupportedCodecs().
+  // clear playback or when using ClearKey. Remove the HEVC codec strings to
+  // avoid asking IsSupported*MediaFormat() about HEVC. EME support for HEVC
+  // profiles is described via KeySystemProperties::GetSupportedCodecs().
   // TODO(1156282): Decouple the rest of clear vs EME codec support.
-  if (base::ToLowerASCII(container_mime_type) == "video/mp4" &&
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const bool allow_hevc = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kLacrosEnablePlatformEncryptedHevc);
+#else
+  const bool allow_hevc = true;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (allow_hevc && !use_aes_decryptor &&
+      base::ToLowerASCII(container_mime_type) == "video/mp4" &&
       !codec_vector.empty()) {
     auto it = codec_vector.begin();
     while (it != codec_vector.end()) {

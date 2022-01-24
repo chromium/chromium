@@ -51,6 +51,11 @@ struct NotificationItem {
 [Stable]
 struct ButtonInfo {
   mojo_base.mojom.String16 title@0;
+
+  // The placeholder string that should be displayed in the input field for
+  // text input type buttons until the user has entered a response themselves.
+  // If the value is null, there is no input field associated with the button.
+  [MinVersion=1] mojo_base.mojom.String16? placeholder@1;
 };
 
 // A notification to show in the system message center. Fields exist to support

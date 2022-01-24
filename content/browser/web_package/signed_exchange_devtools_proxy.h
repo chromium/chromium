@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/common/content_export.h"
@@ -51,6 +50,11 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
       int frame_tree_node_id,
       absl::optional<const base::UnguessableToken> devtools_navigation_token,
       bool report_raw_headers);
+
+  SignedExchangeDevToolsProxy(const SignedExchangeDevToolsProxy&) = delete;
+  SignedExchangeDevToolsProxy& operator=(const SignedExchangeDevToolsProxy&) =
+      delete;
+
   ~SignedExchangeDevToolsProxy();
 
   void ReportError(
@@ -78,8 +82,6 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
   const absl::optional<const base::UnguessableToken> devtools_navigation_token_;
   const bool devtools_enabled_;
   std::vector<SignedExchangeError> errors_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeDevToolsProxy);
 };
 
 }  // namespace content

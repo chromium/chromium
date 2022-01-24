@@ -232,7 +232,7 @@ TEST_F(LoadingPredictorTest, TestMainFrameRequestDoesntCancelExternalHint) {
 
   // To check that the hint is not replaced, set the start time in the past,
   // and check later that it didn't change.
-  base::TimeTicks start_time = it->second - base::TimeDelta::FromSeconds(10);
+  base::TimeTicks start_time = it->second - base::Seconds(10);
   it->second = start_time;
 
   auto navigation_id = GetNextId();
@@ -257,7 +257,7 @@ TEST_F(LoadingPredictorTest, TestDuplicateHintAfterPreconnectCompleteCalled) {
 
   // To check that the hint is replaced, set the start time in the past,
   // and check later that it changed.
-  base::TimeTicks start_time = it->second - base::TimeDelta::FromSeconds(10);
+  base::TimeTicks start_time = it->second - base::Seconds(10);
   it->second = start_time;
 
   std::unique_ptr<PreconnectStats> preconnect_stats =
@@ -291,7 +291,7 @@ TEST_F(LoadingPredictorTest,
 
   // To check that the hint is not replaced, set the start time in the recent
   // past, and check later that it didn't change.
-  base::TimeTicks start_time = it->second - base::TimeDelta::FromSeconds(10);
+  base::TimeTicks start_time = it->second - base::Seconds(10);
   it->second = start_time;
 
   predictor_->PrepareForPageLoad(url, HintOrigin::NAVIGATION_PREDICTOR);

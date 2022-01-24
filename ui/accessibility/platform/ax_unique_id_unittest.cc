@@ -21,11 +21,14 @@ static const int32_t kMaxId = 100;
 class AXTestSmallBankUniqueId : public AXUniqueId {
  public:
   AXTestSmallBankUniqueId();
+
+  AXTestSmallBankUniqueId(const AXTestSmallBankUniqueId&) = delete;
+  AXTestSmallBankUniqueId& operator=(const AXTestSmallBankUniqueId&) = delete;
+
   ~AXTestSmallBankUniqueId() override;
 
  private:
   friend class AXUniqueId;
-  DISALLOW_COPY_AND_ASSIGN(AXTestSmallBankUniqueId);
 };
 
 AXTestSmallBankUniqueId::AXTestSmallBankUniqueId() : AXUniqueId(kMaxId) {}

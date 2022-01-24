@@ -13,8 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/capture/video/linux/v4l2_capture_device.h"
 #include "media/capture/video_capture_types.h"
 
@@ -35,6 +34,12 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryLinux
 
   explicit VideoCaptureDeviceFactoryLinux(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+  VideoCaptureDeviceFactoryLinux(const VideoCaptureDeviceFactoryLinux&) =
+      delete;
+  VideoCaptureDeviceFactoryLinux& operator=(
+      const VideoCaptureDeviceFactoryLinux&) = delete;
+
   ~VideoCaptureDeviceFactoryLinux() override;
 
   void SetV4L2EnvironmentForTesting(
@@ -63,7 +68,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryLinux
   scoped_refptr<V4L2CaptureDevice> v4l2_;
   std::unique_ptr<DeviceProvider> device_provider_;
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactoryLinux);
 };
 
 }  // namespace media

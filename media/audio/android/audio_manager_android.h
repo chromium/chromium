@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/audio/audio_manager_base.h"
@@ -22,6 +21,10 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
  public:
   AudioManagerAndroid(std::unique_ptr<AudioThread> audio_thread,
                       AudioLogFactory* audio_log_factory);
+
+  AudioManagerAndroid(const AudioManagerAndroid&) = delete;
+  AudioManagerAndroid& operator=(const AudioManagerAndroid&) = delete;
+
   ~AudioManagerAndroid() override;
 
   void InitializeIfNeeded();
@@ -127,8 +130,6 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   // If set, overrides volume level on output streams
   bool output_volume_override_set_;
   double output_volume_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerAndroid);
 };
 
 }  // namespace media

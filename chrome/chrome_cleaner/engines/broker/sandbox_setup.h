@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/chrome_cleaner/engines/broker/engine_client.h"
 #include "chrome/chrome_cleaner/engines/broker/interface_metadata_observer.h"
@@ -27,6 +26,10 @@ namespace chrome_cleaner {
 class EngineSandboxSetupHooks : public MojoSandboxSetupHooks {
  public:
   explicit EngineSandboxSetupHooks(scoped_refptr<EngineClient> engine_client);
+
+  EngineSandboxSetupHooks(const EngineSandboxSetupHooks&) = delete;
+  EngineSandboxSetupHooks& operator=(const EngineSandboxSetupHooks&) = delete;
+
   ~EngineSandboxSetupHooks() override;
 
   // SandboxSetupHooks
@@ -37,8 +40,6 @@ class EngineSandboxSetupHooks : public MojoSandboxSetupHooks {
 
  private:
   scoped_refptr<EngineClient> engine_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(EngineSandboxSetupHooks);
 };
 
 std::pair<ResultCode, scoped_refptr<EngineClient>> SpawnEngineSandbox(

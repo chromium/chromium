@@ -41,7 +41,6 @@ class BaseTestServer {
   // http://www.iana.org/assignments/uri-schemes.html
   enum Type {
     TYPE_BASIC_AUTH_PROXY,
-    TYPE_FTP,
     TYPE_HTTP,
     TYPE_HTTPS,
     TYPE_WS,
@@ -54,10 +53,6 @@ class BaseTestServer {
   struct SSLOptions {
     enum ServerCertificate {
       CERT_OK,
-
-      // CERT_AUTO causes the testserver to generate a test certificate issued
-      // by "Testing CA" (see net/data/ssl/certificates/ocsp-test-root.pem).
-      CERT_AUTO,
 
       CERT_MISMATCHED_NAME,
       CERT_EXPIRED,
@@ -82,38 +77,11 @@ class BaseTestServer {
       // A certificate with invalid notBefore and notAfter times. Windows'
       // certificate library will not parse this certificate.
       CERT_BAD_VALIDITY,
-    };
 
-    // Bitmask of key exchange algorithms that the test server supports and that
-    // can be selectively enabled or disabled.
-    enum KeyExchange {
-      // Special value used to indicate that any algorithm the server supports
-      // is acceptable. Preferred over explicitly OR-ing all key exchange
-      // algorithms.
-      KEY_EXCHANGE_ANY = 0,
-
-      KEY_EXCHANGE_RSA = (1 << 0),
-      KEY_EXCHANGE_DHE_RSA = (1 << 1),
-      KEY_EXCHANGE_ECDHE_RSA = (1 << 2),
-    };
-
-    // Bitmask of bulk encryption algorithms that the test server supports
-    // and that can be selectively enabled or disabled.
-    enum BulkCipher {
-      // Special value used to indicate that any algorithm the server supports
-      // is acceptable. Preferred over explicitly OR-ing all ciphers.
-      BULK_CIPHER_ANY = 0,
-
-      BULK_CIPHER_RC4 = (1 << 0),
-      BULK_CIPHER_AES128 = (1 << 1),
-      BULK_CIPHER_AES256 = (1 << 2),
-
-      // NOTE: 3DES support in the Python test server has external
-      // dependencies and not be available on all machines. Clients may not
-      // be able to connect if only 3DES is specified.
-      BULK_CIPHER_3DES = (1 << 3),
-
-      BULK_CIPHER_AES128GCM = (1 << 4),
+      // A certificate that covers a number of test names. See [test_names] in
+      // net/data/ssl/scripts/ee.cnf. More may be added by editing this list and
+      // and rerunning net/data/ssl/scripts/generate-test-certs.sh.
+      CERT_TEST_NAMES,
     };
 
     // NOTE: the values of these enumerators are passed to the the Python test
@@ -146,6 +114,7 @@ class BaseTestServer {
 
     // Initialize a new SSLOptions that will use the specified certificate.
     explicit SSLOptions(ServerCertificate cert);
+    explicit SSLOptions(base::FilePath cert);
     SSLOptions(const SSLOptions& other);
     ~SSLOptions();
 
@@ -155,6 +124,7 @@ class BaseTestServer {
 
     // The certificate to use when serving requests.
     ServerCertificate server_certificate = CERT_OK;
+    base::FilePath custom_certificate;
 
     // True if a CertificateRequest should be sent to the client during
     // handshaking.
@@ -171,21 +141,6 @@ class BaseTestServer {
     // CertificateRequest.
     std::vector<SSLClientCertType> client_cert_types;
 
-    // A bitwise-OR of KeyExchnage that should be used by the
-    // HTTPS server, or KEY_EXCHANGE_ANY to indicate that all implemented
-    // key exchange algorithms are acceptable.
-    int key_exchanges = KEY_EXCHANGE_ANY;
-
-    // A bitwise-OR of BulkCipher that should be used by the
-    // HTTPS server, or BULK_CIPHER_ANY to indicate that all implemented
-    // ciphers are acceptable.
-    int bulk_ciphers = BULK_CIPHER_ANY;
-
-    // If true, pass the --https-record-resume argument to testserver.py which
-    // causes it to log session cache actions and echo the log on
-    // /ssl-session-cache.
-    bool record_resume = false;
-
     // If not TLS_INTOLERANT_NONE, the server will abort any handshake that
     // negotiates an intolerant TLS version in order to test version fallback.
     TLSIntolerantLevel tls_intolerant = TLS_INTOLERANT_NONE;
@@ -197,37 +152,8 @@ class BaseTestServer {
     // The maximum TLS version to support.
     TLSMaxVersion tls_max_version = TLS_MAX_VERSION_DEFAULT;
 
-    // fallback_scsv_enabled, if true, causes the server to process the
-    // TLS_FALLBACK_SCSV cipher suite. This cipher suite is sent by Chrome
-    // when performing TLS version fallback in response to an SSL handshake
-    // failure. If this option is enabled then the server will reject fallback
-    // connections.
-    bool fallback_scsv_enabled = false;
-
-    // Temporary glue for testing: validation of SCTs is application-controlled
-    // and can be appropriately mocked out, so sending fake data here does not
-    // affect handshaking behaviour.
-    // TODO(ekasper): replace with valid SCT files for test certs.
-    // (Fake) SignedCertificateTimestampList (as a raw binary string) to send in
-    // a TLS extension.
-    std::string signed_cert_timestamps_tls_ext;
-
-    // List of protocols to advertise in NPN extension.  NPN is not supported if
-    // list is empty.  Note that regardless of what protocol is negotiated, the
-    // test server will continue to speak HTTP/1.1.
-    std::vector<std::string> npn_protocols;
-
-    // List of supported ALPN protocols.
-    std::vector<std::string> alpn_protocols;
-
     // Whether to send a fatal alert immediately after completing the handshake.
     bool alert_after_handshake = false;
-
-    // If true, disables channel ID on the server.
-    bool disable_channel_id = false;
-
-    // If true, disables extended master secret tls extension.
-    bool disable_extended_master_secret = false;
 
     // If true, sends the TLS 1.3 to TLS 1.2 downgrade signal in the ServerHello
     // random.
@@ -243,6 +169,9 @@ class BaseTestServer {
 
   // Initialize a TestServer with a specific set of SSLOptions for HTTPS or WSS.
   BaseTestServer(Type type, const SSLOptions& ssl_options);
+
+  BaseTestServer(const BaseTestServer&) = delete;
+  BaseTestServer& operator=(const BaseTestServer&) = delete;
 
   // Starts the server blocking until the server is ready.
   bool Start() WARN_UNUSED_RESULT;
@@ -277,6 +206,8 @@ class BaseTestServer {
   bool GetAddressList(AddressList* address_list) const WARN_UNUSED_RESULT;
 
   GURL GetURL(const std::string& path) const;
+  GURL GetURL(const std::string& hostname,
+              const std::string& relative_url) const;
 
   GURL GetURLWithUser(const std::string& path,
                       const std::string& user) const;
@@ -299,11 +230,6 @@ class BaseTestServer {
   // TYPE_WSS.
   void set_websocket_basic_auth(bool ws_basic_auth) {
     ws_basic_auth_ = ws_basic_auth;
-  }
-
-  // Disable creation of anonymous FTP user.
-  void set_no_anonymous_ftp_user(bool no_anonymous_ftp_user) {
-    no_anonymous_ftp_user_ = no_anonymous_ftp_user;
   }
 
   // Redirect proxied CONNECT requests to localhost.
@@ -395,15 +321,10 @@ class BaseTestServer {
   // Is WebSocket basic HTTP authentication enabled?
   bool ws_basic_auth_ = false;
 
-  // Disable creation of anonymous FTP user?
-  bool no_anonymous_ftp_user_ = false;
-
   // Redirect proxied CONNECT requests to localhost?
   bool redirect_connect_to_localhost_ = false;
 
   std::unique_ptr<ScopedPortException> allowed_port_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseTestServer);
 };
 
 }  // namespace net

@@ -8,5 +8,5 @@
          intents are not always immediately sent when Chrome is docked to
          the top of the screen in multi-window mode. Use Translucent.NoTitleBar
          for the theme instead. See crbug.com/645074. -->
-    <style name="LauncherTheme" parent="@android:style/Theme.Translucent.NoTitleBar" />
+    <style name="LauncherTheme" parent="Theme.BrowserUI.Translucent.NoTitleBar" />
 </resources>

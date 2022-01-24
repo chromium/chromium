@@ -8,12 +8,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/controls/image_view_base.h"
 #include "ui/views/metadata/view_factory.h"
-#include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -32,14 +31,16 @@ namespace views {
 // provided image size.
 //
 /////////////////////////////////////////////////////////////////////////////
-class VIEWS_EXPORT ImageView : public View {
+class VIEWS_EXPORT ImageView : public ImageViewBase {
  public:
   METADATA_HEADER(ImageView);
 
-  enum class Alignment { kLeading, kCenter, kTrailing };
-
   ImageView();
   explicit ImageView(const ui::ImageModel& image_model);
+
+  ImageView(const ImageView&) = delete;
+  ImageView& operator=(const ImageView&) = delete;
+
   ~ImageView() override;
 
   // Set the image that should be displayed.
@@ -58,47 +59,19 @@ class VIEWS_EXPORT ImageView : public View {
   // Sets the image that should be displayed.
   void SetImage(const ui::ImageModel& image_model);
 
-  // Sets the desired size of the image to be displayed.
-  void SetImageSize(const gfx::Size& size);
-
-  // Reset the image size to the current image dimensions.
-  void ResetImageSize();
-
-  // Returns the actual bounds of the visible image inside the view.
-  gfx::Rect GetImageBounds() const;
-
   // Returns the image currently displayed, which can be empty if not set.
   // TODO(pkasting): Convert to an ImageModel getter.
   gfx::ImageSkia GetImage() const;
 
   ui::ImageModel GetImageModel() const;
 
-  // Set / Get the horizontal alignment.
-  void SetHorizontalAlignment(Alignment ha);
-  Alignment GetHorizontalAlignment() const;
-
-  // Set / Get the vertical alignment.
-  void SetVerticalAlignment(Alignment va);
-  Alignment GetVerticalAlignment() const;
-
-  // Set / Get the accessible name text.
-  void SetAccessibleName(const std::u16string& name);
-  const std::u16string& GetAccessibleName() const;
-
-  // Set the tooltip text.
-  void SetTooltipText(const std::u16string& tooltip);
-  const std::u16string& GetTooltipText() const;
-
   // Overridden from View:
   void OnPaint(gfx::Canvas* canvas) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
-  gfx::Size CalculatePreferredSize() const override;
-  views::PaintInfo::ScaleType GetPaintScaleType() const override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void PreferredSizeChanged() override;
 
  protected:
+  // Overridden from ImageViewBase:
+  gfx::Size GetImageSize() const override;
+
   void OnThemeChanged() override;
 
  private:
@@ -116,26 +89,6 @@ class VIEWS_EXPORT ImageView : public View {
   // possible for this to return false even though the images are in fact equal.
   bool IsImageEqual(const ui::ImageModel& image_model) const;
 
-  // Recomputes and updates the |image_origin_|.
-  void UpdateImageOrigin();
-
-  gfx::Size GetImageSize() const;
-
-  // The origin of the image.
-  gfx::Point image_origin_;
-
-  // The current tooltip text.
-  std::u16string tooltip_text_;
-
-  // The current accessible name text.
-  std::u16string accessible_name_;
-
-  // Horizontal alignment.
-  Alignment horizontal_alignment_ = Alignment::kCenter;
-
-  // Vertical alignment.
-  Alignment vertical_alignment_ = Alignment::kCenter;
-
   // The underlying image.
   ui::ImageModel image_model_;
 
@@ -148,14 +101,9 @@ class VIEWS_EXPORT ImageView : public View {
   // Address of bytes we last painted. This is used only for comparison, so its
   // safe to cache.
   void* last_painted_bitmap_pixels_ = nullptr;
-
-  // The requested image size.
-  absl::optional<gfx::Size> image_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageView);
 };
 
-BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ImageView, View)
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ImageView, ImageViewBase)
 // Explicitly declare the overloaded SetImage methods in order to properly
 // disambiguate between them.
 BuilderT& SetImage(const gfx::ImageSkia& value) & {
@@ -182,11 +130,18 @@ BuilderT& SetImage(const gfx::ImageSkia* value) & {
 BuilderT&& SetImage(const gfx::ImageSkia* value) && {
   return std::move(this->SetImage(value));
 }
-VIEW_BUILDER_PROPERTY(gfx::Size, ImageSize)
-VIEW_BUILDER_PROPERTY(ImageView::Alignment, HorizontalAlignment)
-VIEW_BUILDER_PROPERTY(ImageView::Alignment, VerticalAlignment)
-VIEW_BUILDER_PROPERTY(std::u16string, AccessibleName)
-VIEW_BUILDER_PROPERTY(std::u16string, TooltipText)
+BuilderT& SetImage(const ui::ImageModel& value) & {
+  auto setter = std::make_unique<::views::internal::PropertySetter<
+      ViewClass_, ui::ImageModel,
+      decltype((static_cast<void (ViewClass_::*)(const ui::ImageModel&)>(
+          &ViewClass_::SetImage))),
+      &ViewClass_::SetImage>>(value);
+  ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
+  return *static_cast<BuilderT*>(this);
+}
+BuilderT&& SetImage(const ui::ImageModel& value) && {
+  return std::move(this->SetImage(value));
+}
 END_VIEW_BUILDER
 
 }  // namespace views

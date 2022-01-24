@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "components/prefs/persistent_pref_store.h"
@@ -42,6 +41,9 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
   SegregatedPrefStore(scoped_refptr<PersistentPrefStore> default_pref_store,
                       scoped_refptr<PersistentPrefStore> selected_pref_store,
                       std::set<std::string> selected_pref_names);
+
+  SegregatedPrefStore(const SegregatedPrefStore&) = delete;
+  SegregatedPrefStore& operator=(const SegregatedPrefStore&) = delete;
 
   // PrefStore implementation
   void AddObserver(Observer* observer) override;
@@ -73,7 +75,6 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
       base::OnceClosure reply_callback = base::OnceClosure(),
       base::OnceClosure synchronous_done_callback =
           base::OnceClosure()) override;
-  void CommitPendingWriteSynchronously() override;
   void SchedulePendingLossyWrites() override;
   void ClearMutableValues() override;
   void OnStoreDeletionFromDisk() override;
@@ -89,6 +90,10 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
    public:
     explicit UnderlyingPrefStoreObserver(SegregatedPrefStore* outer);
 
+    UnderlyingPrefStoreObserver(const UnderlyingPrefStoreObserver&) = delete;
+    UnderlyingPrefStoreObserver& operator=(const UnderlyingPrefStoreObserver&) =
+        delete;
+
     // PrefStore::Observer implementation
     void OnPrefValueChanged(const std::string& key) override;
     void OnInitializationCompleted(bool succeeded) override;
@@ -98,8 +103,6 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
    private:
     SegregatedPrefStore* const outer_;
     bool initialization_succeeded_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(UnderlyingPrefStoreObserver);
   };
 
   // Returns true only if all underlying PrefStores have initialized
@@ -119,8 +122,6 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
   UnderlyingPrefStoreObserver default_observer_;
   UnderlyingPrefStoreObserver selected_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SegregatedPrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_SEGREGATED_PREF_STORE_H_

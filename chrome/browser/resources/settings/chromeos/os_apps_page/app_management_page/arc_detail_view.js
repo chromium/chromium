@@ -1,11 +1,27 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './icons.js';
+import './more_permissions_item.js';
+import './permission_item.js';
+import './pin_to_shelf_item.js';
+import './resize_lock_item.js';
+import './shared_style.js';
+import './supported_links_item.js';
+import '//resources/cr_elements/icons.m.js';
+
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {getAppIcon, getPermission, getSelectedApp} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-arc-detail-view',
 
   behaviors: [
-    app_management.AppManagementStoreClient,
+    AppManagementStoreClient,
   ],
 
   properties: {
@@ -24,17 +40,10 @@ Polymer({
   },
 
   attached() {
-    this.watch('app_', state => app_management.util.getSelectedApp(state));
+    this.watch('app_', state => getSelectedApp(state));
     this.updateFromStore();
 
     this.listExpanded_ = false;
-  },
-
-  onClickNativeSettingsButton_() {
-    app_management.BrowserProxy.getInstance().handler.openNativeSettings(
-        this.app_.id);
-    app_management.util.recordAppManagementUserAction(
-        this.app_.type, AppManagementUserAction.NativeSettingsOpened);
   },
 
   /**
@@ -50,7 +59,7 @@ Polymer({
    * @private
    */
   iconUrlFromId_(app) {
-    return app_management.util.getAppIcon(app);
+    return getAppIcon(app);
   },
 
   /**
@@ -75,8 +84,7 @@ Polymer({
             .querySelectorAll('app-management-permission-item');
     for (let i = 0; i < permissionItems.length; i++) {
       const permissionItem = permissionItems[i];
-      const permission =
-          app_management.util.getPermission(app, permissionItem.permissionType);
+      const permission = getPermission(app, permissionItem.permissionType);
       if (permission !== undefined) {
         return false;
       }

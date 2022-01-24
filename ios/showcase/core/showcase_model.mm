@@ -55,6 +55,11 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       showcase::kUseCaseKey : @"Credential Provider Consent UI",
     },
     @{
+      showcase::kClassForDisplayKey : @"ConsentLegacyViewController",
+      showcase::kClassForInstantiationKey : @"ConsentLegacyViewController",
+      showcase::kUseCaseKey : @"Legacy Credential Provider Consent UI",
+    },
+    @{
       showcase::kClassForDisplayKey : @"EnterpriseLoadScreenViewController",
       showcase::
       kClassForInstantiationKey : @"EnterpriseLoadScreenViewController",
@@ -78,11 +83,6 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
     },
 #endif
     @{
-      showcase::kClassForDisplayKey : @"ContentSuggestionsViewController",
-      showcase::kClassForInstantiationKey : @"SCContentSuggestionsCoordinator",
-      showcase::kUseCaseKey : @"Content Suggestions UI",
-    },
-    @{
       showcase::kClassForDisplayKey : @"SettingsViewController",
       showcase::kClassForInstantiationKey : @"SCSettingsCoordinator",
       showcase::kUseCaseKey : @"Main settings screen",
@@ -92,20 +92,6 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       showcase::kClassForInstantiationKey : @"UIKitTableViewCellViewController",
       showcase::kUseCaseKey : @"UIKit Table Cells",
     },
-#if BUILDFLAG(SHOWCASE_SEARCH_WIDGET_ENABLED)
-    @{
-      showcase::kClassForDisplayKey : @"SearchWidgetViewController",
-      showcase::kClassForInstantiationKey : @"SCSearchWidgetCoordinator",
-      showcase::kUseCaseKey : @"Search Widget",
-    },
-#endif
-#if BUILDFLAG(SHOWCASE_CONTENT_WIDGET_ENABLED)
-    @{
-      showcase::kClassForDisplayKey : @"ContentWidgetViewController",
-      showcase::kClassForInstantiationKey : @"SCContentWidgetCoordinator",
-      showcase::kUseCaseKey : @"Content Widget",
-    },
-#endif
     @{
       showcase::kClassForDisplayKey : @"TextBadgeView",
       showcase::kClassForInstantiationKey : @"SCTextBadgeViewController",
@@ -207,6 +193,11 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       showcase::
       kClassForInstantiationKey : @"SCFirstRunScrollingScreenCoordinator",
       showcase::kUseCaseKey : @"New FRE screen with scrolling example",
+    },
+    @{
+      showcase::kClassForDisplayKey : @"LinkPreviewViewController",
+      showcase::kClassForInstantiationKey : @"SCLinkPreviewCoordinator",
+      showcase::kUseCaseKey : @"Link Preview",
     },
   ];
   DCHECK(IsShowcaseModelValid(model));

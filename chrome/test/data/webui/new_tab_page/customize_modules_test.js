@@ -7,9 +7,9 @@ import 'chrome://new-tab-page/lazy_load.js';
 import {$$, ChromeCartProxy, ModuleDescriptor, ModuleRegistry, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
-import {assertNotStyle, assertStyle} from 'chrome://test/new_tab_page/test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {isVisible} from 'chrome://test/test_util.m.js';
+import {assertNotStyle, assertStyle, installMock} from 'chrome://test/new_tab_page/test_support.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {isVisible} from 'chrome://test/test_util.js';
 
 /**
  * @param {!HTMLElement} host
@@ -21,29 +21,20 @@ function queryAll(host, selector) {
 }
 
 suite('NewTabPageCustomizeModulesTest', () => {
-  /**
-   * @implements {newTabPage.mojom.PageHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let handler;
 
-  /** @type {newTabPage.mojom.PageHandlerRemote} */
+  /** @type {!newTabPage.mojom.PageHandlerRemote} */
   let callbackRouterRemote;
 
-  /**
-   * @implements {ModuleRegistry}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let moduleRegistry;
 
-  /** @type {MetricsTracker} */
+  /** @type {!MetricsTracker} */
   let metrics;
 
-  /**
-   * @implements {ChromeCartProxy}
-   * @extends {TestBrowserProxy}
-   */
-  let cartTestProxy;
+  /** @type {!TestBrowserProxy} */
+  let cartHandler;
 
   /**
    * @param {boolean} allDisabled
@@ -67,19 +58,18 @@ suite('NewTabPageCustomizeModulesTest', () => {
   setup(() => {
     PolymerTest.clearBody();
 
-    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
-    const callbackRouter = new newTabPage.mojom.PageCallbackRouter();
-    NewTabPageProxy.setInstance(handler, callbackRouter);
-    callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
-    moduleRegistry = TestBrowserProxy.fromClass(ModuleRegistry);
-    ModuleRegistry.setInstance(moduleRegistry);
+    handler = installMock(
+        newTabPage.mojom.PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(
+            mock, new newTabPage.mojom.PageCallbackRouter()));
+    callbackRouterRemote = NewTabPageProxy.getInstance()
+                               .callbackRouter.$.bindNewPipeAndPassRemote();
+    moduleRegistry = installMock(ModuleRegistry);
     metrics = fakeMetricsPrivate();
     loadTimeData.overrideValues({modulesVisibleManagedByPolicy: false});
-    cartTestProxy = TestBrowserProxy.fromClass(ChromeCartProxy);
-    cartTestProxy.handler =
-        TestBrowserProxy.fromClass(chromeCart.mojom.CartHandlerRemote);
-    ChromeCartProxy.setInstance(cartTestProxy);
-    cartTestProxy.handler.setResultFor(
+    cartHandler = installMock(
+        chromeCart.mojom.CartHandlerRemote, ChromeCartProxy.setHandler);
+    cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: false}));
   });
 
@@ -200,7 +190,7 @@ suite('NewTabPageCustomizeModulesTest', () => {
   test('discount toggle shows correct config', async () => {
     // Arrange.
     loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
-    cartTestProxy.handler.setResultFor(
+    cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: true}));
     const customizeModules = await createCustomizeModules(false, [
       {id: 'chrome_cart', name: 'foo name', disabled: false},
@@ -225,7 +215,7 @@ suite('NewTabPageCustomizeModulesTest', () => {
   test(`discount toggle sets discount status`, async () => {
     // Arrange.
     loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
-    cartTestProxy.handler.setResultFor(
+    cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: true}));
     const customizeModules = await createCustomizeModules(false, [
       {id: 'chrome_cart', name: 'foo name', disabled: false},
@@ -237,15 +227,14 @@ suite('NewTabPageCustomizeModulesTest', () => {
     customizeModules.apply();
 
     // Assert.
-    assertEquals(1, cartTestProxy.handler.getCallCount('setDiscountEnabled'));
-    assertDeepEquals(
-        false, cartTestProxy.handler.getArgs('setDiscountEnabled')[0]);
+    assertEquals(1, cartHandler.getCallCount('setDiscountEnabled'));
+    assertDeepEquals(false, cartHandler.getArgs('setDiscountEnabled')[0]);
   });
 
   test(`toggling off cart module hides discount toggle`, async () => {
     // Arrange.
     loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
-    cartTestProxy.handler.setResultFor(
+    cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: true}));
     const customizeModules = await createCustomizeModules(false, [
       {id: 'chrome_cart', name: 'foo name', disabled: false},
@@ -293,7 +282,7 @@ suite('NewTabPageCustomizeModulesTest', () => {
   test('record disable discount', async () => {
     // Arrange.
     loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
-    cartTestProxy.handler.setResultFor(
+    cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: true}));
     const customizeModules = await createCustomizeModules(false, [
       {id: 'chrome_cart', name: 'foo name', disabled: false},
@@ -307,15 +296,14 @@ suite('NewTabPageCustomizeModulesTest', () => {
     customizeModules.apply();
 
     // Assert.
-    assertDeepEquals(
-        false, cartTestProxy.handler.getArgs('setDiscountEnabled')[0]);
+    assertDeepEquals(false, cartHandler.getArgs('setDiscountEnabled')[0]);
     assertEquals(1, metrics.count('NewTabPage.Carts.DisableDiscount'));
   });
 
   test('record enable discount', async () => {
     // Arrange.
     loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
-    cartTestProxy.handler.setResultFor(
+    cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: false}));
     const customizeModules = await createCustomizeModules(false, [
       {id: 'chrome_cart', name: 'foo name', disabled: false},
@@ -329,8 +317,7 @@ suite('NewTabPageCustomizeModulesTest', () => {
     customizeModules.apply();
 
     // Assert.
-    assertDeepEquals(
-        true, cartTestProxy.handler.getArgs('setDiscountEnabled')[0]);
+    assertDeepEquals(true, cartHandler.getArgs('setDiscountEnabled')[0]);
     assertEquals(1, metrics.count('NewTabPage.Carts.EnableDiscount'));
   });
 });

@@ -42,8 +42,8 @@ grit("resources") {
   if (is_chromeos_ash) {
     deps += [
       "//ash/components/enhanced_network_tts/mojom:mojom_js",
+      "//ash/services/ime/public/mojom:mojom_js",
       "//chromeos/components/remote_apps/mojom:mojom_js",
-      "//chromeos/services/ime/public/mojom:mojom_js",
       "//chromeos/services/tts/public/mojom:mojom_js",
     ]
   }
@@ -157,6 +157,7 @@ static_library("renderer") {
     "//chrome/common/performance_manager/mojom",
     "//chrome/common/search:mojo_bindings",
     "//components/autofill/content/renderer",
+    "//components/autofill_assistant/content/renderer",
     "//components/base32",
     "//components/cdm/renderer",
     "//components/content_capture/common",
@@ -164,11 +165,13 @@ static_library("renderer") {
     "//components/content_settings/common:mojom",
     "//components/content_settings/renderer",
     "//components/contextual_search/content:renderer",
+    "//components/continuous_search/renderer",
     "//components/data_reduction_proxy/core/common",
     "//components/dom_distiller/content/renderer",
     "//components/feed:buildflags",
     "//components/feed:feature_list",
     "//components/feed/content/renderer:feed_renderer",
+    "//components/history_clusters/core",
     "//components/network_hints/renderer",
     "//components/no_state_prefetch/common",
     "//components/no_state_prefetch/renderer",
@@ -285,6 +288,7 @@ static_library("renderer") {
     deps += [
       "//components/pdf/common",
       "//components/pdf/renderer",
+      "//pdf:features",
     ]
 
     if (is_linux || is_chromeos) {
@@ -293,7 +297,10 @@ static_library("renderer") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
+    deps += [
+      "//ash/constants",
+      "//ash/webui/file_manager:constants",
+    ]
   }
 
   if (enable_widevine_cdm_component) {
@@ -357,6 +364,7 @@ static_library("renderer") {
   if (enable_basic_printing) {
     deps += [
       "//components/printing/renderer",
+      "//pdf:features",
       "//printing",
     ]
     sources += [
@@ -394,7 +402,6 @@ static_library("renderer") {
       "extensions/file_manager_private_custom_bindings.h",
     ]
     if (use_cups) {
-      configs += [ "//printing:cups" ]
       sources += [
         "extensions/printing_hooks_delegate.cc",
         "extensions/printing_hooks_delegate.h",
@@ -406,6 +413,8 @@ static_library("renderer") {
     sources += [
       "cart/commerce_hint_agent.cc",
       "cart/commerce_hint_agent.h",
+      "cart/commerce_renderer_feature_list.cc",
+      "cart/commerce_renderer_feature_list.h",
       "media/chrome_speech_recognition_client.cc",
       "media/chrome_speech_recognition_client.h",
       "searchbox/searchbox.cc",
@@ -416,8 +425,6 @@ static_library("renderer") {
 
     deps += [
       "//chrome/common/cart:mojo_bindings",
-      "//chrome/common/search:generate_chrome_colors_info",
-      "//chrome/common/search:generate_colors_info",
       "//components/crx_file",
       "//components/search:search",
     ]
@@ -432,7 +439,6 @@ static_library("renderer") {
       "sandbox_status_extension_android.cc",
       "sandbox_status_extension_android.h",
     ]
-    deps += [ "//components/continuous_search/renderer" ]
   }
 
   if (is_chromeos_ash) {
@@ -448,15 +454,21 @@ static_library("renderer") {
     sources += [
       "performance_manager/mechanisms/tcmalloc_tunables_impl.cc",
       "performance_manager/mechanisms/tcmalloc_tunables_impl.h",
-      "performance_manager/mechanisms/userspace_swap_impl_chromeos.cc",
-      "performance_manager/mechanisms/userspace_swap_impl_chromeos.h",
     ]
 
-    deps += [
-      "//chrome/common/performance_manager/mojom",
-      "//chromeos/memory/userspace_swap",
-      "//chromeos/memory/userspace_swap:mojom",
-    ]
+    deps += [ "//chrome/common/performance_manager/mojom" ]
+
+    if (target_cpu == "x64") {
+      sources += [
+        "performance_manager/mechanisms/userspace_swap_impl_chromeos.cc",
+        "performance_manager/mechanisms/userspace_swap_impl_chromeos.h",
+      ]
+
+      deps += [
+        "//chromeos/memory/userspace_swap",
+        "//chromeos/memory/userspace_swap:mojom",
+      ]
+    }
   }
 }
 

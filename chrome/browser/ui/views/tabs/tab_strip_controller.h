@@ -129,9 +129,6 @@ class TabStripController {
   // search-result page for |location|.
   virtual void CreateNewTabWithLocation(const std::u16string& location) = 0;
 
-  // Invoked if the stacked layout (on or off) might have changed.
-  virtual void StackedLayoutMaybeChanged() = 0;
-
   // Notifies controller that the user started dragging this tabstrip's tabs.
   // |dragging_window| indicates if the whole window is moving, or if tabs are
   // moving within a window.

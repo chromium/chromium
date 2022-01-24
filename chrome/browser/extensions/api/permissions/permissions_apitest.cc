@@ -48,7 +48,9 @@ class ExperimentalApiTest : public ExtensionApiTest {
 
 class PermissionsApiTest : public ExtensionApiTest {
  public:
-  PermissionsApiTest() = default;
+ public:
+  explicit PermissionsApiTest(ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
   ~PermissionsApiTest() override = default;
   PermissionsApiTest(const PermissionsApiTest&) = delete;
   PermissionsApiTest& operator=(const PermissionsApiTest&) = delete;
@@ -63,23 +65,16 @@ class PermissionsApiTestWithContextType
     : public PermissionsApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  PermissionsApiTestWithContextType() = default;
+  PermissionsApiTestWithContextType() : PermissionsApiTest(GetParam()) {}
   ~PermissionsApiTestWithContextType() override = default;
   PermissionsApiTestWithContextType(const PermissionsApiTestWithContextType&) =
       delete;
   PermissionsApiTestWithContextType& operator=(
       const PermissionsApiTestWithContextType&) = delete;
-
- protected:
-  bool RunTest(const char* extension_name) {
-    return RunExtensionTest(
-        extension_name, {},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
-  }
 };
 
 IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType, PermissionsFail) {
-  ASSERT_TRUE(RunTest("permissions/disabled")) << message_;
+  ASSERT_TRUE(RunExtensionTest("permissions/disabled")) << message_;
 
   // Since the experimental APIs require a flag, this will fail even though
   // it's enabled.
@@ -100,7 +95,8 @@ IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
   // function that will not be graduating soon, and does not require a
   // tab id as an argument.  So, we need the tab permission to get
   // a tab id.
-  ASSERT_TRUE(RunTest("permissions/experimental_disabled")) << message_;
+  ASSERT_TRUE(RunExtensionTest("permissions/experimental_disabled"))
+      << message_;
 }
 
 // TODO(crbug/1065399): Flaky on ChromeOS and Linux non-dbg builds.
@@ -147,7 +143,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
 
   PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
   ASSERT_TRUE(StartEmbeddedTestServer());
-  EXPECT_TRUE(RunTest("permissions/optional")) << message_;
+  EXPECT_TRUE(RunExtensionTest("permissions/optional")) << message_;
 }
 
 // Tests that the optional permissions API works correctly.
@@ -158,7 +154,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
   PermissionsRequestFunction::SetAutoConfirmForTests(true);
   PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
   ASSERT_TRUE(StartEmbeddedTestServer());
-  EXPECT_TRUE(RunTest("permissions/optional")) << message_;
+  EXPECT_TRUE(RunExtensionTest("permissions/optional")) << message_;
 }
 
 // Test that denying the optional permissions confirmation dialog works.
@@ -186,7 +182,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
                        OptionalPermissionsGesture) {
   PermissionsRequestFunction::SetIgnoreUserGestureForTests(false);
   ASSERT_TRUE(StartEmbeddedTestServer());
-  EXPECT_TRUE(RunTest("permissions/optional_gesture")) << message_;
+  EXPECT_TRUE(RunExtensionTest("permissions/optional_gesture")) << message_;
 }
 
 // Tests that the user gesture is retained in the permissions.request function
@@ -262,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, FileLoad) {
 IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType, HostSubsets) {
   PermissionsRequestFunction::SetAutoConfirmForTests(true);
   PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
-  EXPECT_TRUE(RunTest("permissions/host_subsets")) << message_;
+  EXPECT_TRUE(RunExtensionTest("permissions/host_subsets")) << message_;
 }
 
 // Tests that requesting an optional permission from a background page, with

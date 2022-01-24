@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -36,6 +36,9 @@ class ExtensionMessageFilter : public content::BrowserMessageFilter {
  public:
   ExtensionMessageFilter(int render_process_id,
                          content::BrowserContext* context);
+
+  ExtensionMessageFilter(const ExtensionMessageFilter&) = delete;
+  ExtensionMessageFilter& operator=(const ExtensionMessageFilter&) = delete;
 
   int render_process_id() { return render_process_id_; }
 
@@ -91,8 +94,6 @@ class ExtensionMessageFilter : public content::BrowserMessageFilter {
 
   // Only access from the UI thread.
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMessageFilter);
 };
 
 }  // namespace extensions

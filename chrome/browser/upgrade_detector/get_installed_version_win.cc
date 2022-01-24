@@ -6,9 +6,16 @@
 
 #include <utility>
 
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/location.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/installer/util/install_util.h"
 
-InstalledAndCriticalVersion GetInstalledVersion() {
+namespace {
+
+InstalledAndCriticalVersion GetInstalledVersionSynchronous() {
   base::Version installed_version =
       InstallUtil::GetChromeVersion(!InstallUtil::IsPerUserInstall());
   if (installed_version.IsValid()) {
@@ -19,4 +26,14 @@ InstalledAndCriticalVersion GetInstalledVersion() {
     }
   }
   return InstalledAndCriticalVersion(std::move(installed_version));
+}
+
+}  // namespace
+
+void GetInstalledVersion(InstalledVersionCallback callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
+      base::BindOnce(&GetInstalledVersionSynchronous), std::move(callback));
 }

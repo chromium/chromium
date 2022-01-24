@@ -45,6 +45,8 @@ void BrowserContentSettingBubbleModelDelegate::ShowContentSettingsPage(
     ContentSettingsType type) {
   if (type == ContentSettingsType::PROTOCOL_HANDLERS)
     chrome::ShowSettingsSubPage(browser_, chrome::kHandlerSettingsSubPage);
+  else if (type == ContentSettingsType::COOKIES)
+    chrome::ShowSettingsSubPage(browser_, chrome::kCookieSettingsSubPage);
   else
     chrome::ShowContentSettingsExceptions(browser_, type);
 }

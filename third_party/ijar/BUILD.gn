@@ -5,6 +5,15 @@
 # A tool that removes all non-interface-specific parts from a .jar file.
 
 if (is_linux || is_chromeos) {
+  config("ijar_compiler_flags") {
+    if (is_clang) {
+      cflags = [
+        "-Wno-shadow",
+        "-Wno-unused-but-set-variable",
+      ]
+    }
+  }
+
   executable("ijar") {
     sources = [
       "classfile.cc",
@@ -21,6 +30,8 @@ if (is_linux || is_chromeos) {
     ]
 
     deps = [ "//third_party/zlib" ]
+
+    configs += [ ":ijar_compiler_flags" ]
 
     # Always build release since this is a build tool.
     if (is_debug) {

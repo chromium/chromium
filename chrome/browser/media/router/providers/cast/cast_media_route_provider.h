@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chrome/browser/media/router/providers/cast/cast_app_discovery_service.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
@@ -46,6 +45,10 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
       cast_channel::CastMessageHandler* message_handler,
       const std::string& hash_token,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  CastMediaRouteProvider(const CastMediaRouteProvider&) = delete;
+  CastMediaRouteProvider& operator=(const CastMediaRouteProvider&) = delete;
+
   ~CastMediaRouteProvider() override;
 
   // mojom::MediaRouteProvider:
@@ -132,7 +135,6 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
   std::unique_ptr<CastActivityManager> activity_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(CastMediaRouteProvider);
 };
 
 }  // namespace media_router

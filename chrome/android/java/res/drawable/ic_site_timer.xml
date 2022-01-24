@@ -12,5 +12,5 @@
         android:viewportHeight="60.0">
     <path
         android:pathData="M0.03,18L12,30 0,42v18h36l-0.03,-17.97L36,42 24,30l12,-12V0H0l0.03,18zM30,6v9.51L19.77,25.74 18,27.51l-1.74,-1.74L6.03,15.51 6,6h24z"
-        android:fillColor="@color/default_icon_color"/>
+        android:fillColor="?attr/default_icon_color"/>
 </vector>

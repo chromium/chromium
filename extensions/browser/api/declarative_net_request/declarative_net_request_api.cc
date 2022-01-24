@@ -13,7 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -70,7 +70,7 @@ DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
   using Params = dnr_api::UpdateDynamicRules::Params;
 
   std::u16string error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -165,7 +165,7 @@ DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
   using Params = dnr_api::UpdateSessionRules::Params;
 
   std::u16string error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -229,7 +229,7 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
   using DNRManifestData = declarative_net_request::DNRManifestData;
 
   std::u16string error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -342,7 +342,7 @@ DeclarativeNetRequestGetMatchedRulesFunction::Run() {
   using Params = dnr_api::GetMatchedRules::Params;
 
   std::u16string error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -393,7 +393,7 @@ void DeclarativeNetRequestGetMatchedRulesFunction::GetQuotaLimitHeuristics(
     QuotaLimitHeuristics* heuristics) const {
   QuotaLimitHeuristic::Config limit = {
       dnr_api::MAX_GETMATCHEDRULES_CALLS_PER_INTERVAL,
-      base::TimeDelta::FromMinutes(dnr_api::GETMATCHEDRULES_QUOTA_INTERVAL)};
+      base::Minutes(dnr_api::GETMATCHEDRULES_QUOTA_INTERVAL)};
 
   heuristics->push_back(std::make_unique<QuotaService::TimedLimit>(
       limit, std::make_unique<QuotaLimitHeuristic::SingletonBucketMapper>(),
@@ -415,7 +415,7 @@ DeclarativeNetRequestSetExtensionActionOptionsFunction::Run() {
   using Params = dnr_api::SetExtensionActionOptions::Params;
 
   std::u16string error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 
@@ -484,7 +484,7 @@ DeclarativeNetRequestIsRegexSupportedFunction::Run() {
   using Params = dnr_api::IsRegexSupported::Params;
 
   std::u16string error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
+  std::unique_ptr<Params> params(Params::Create(args(), &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
 

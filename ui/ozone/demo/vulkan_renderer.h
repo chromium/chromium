@@ -5,12 +5,11 @@
 #ifndef UI_OZONE_DEMO_VULKAN_RENDERER_H_
 #define UI_OZONE_DEMO_VULKAN_RENDERER_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/buffer_types.h"
@@ -36,6 +35,10 @@ class VulkanRenderer : public RendererBase {
                  gpu::VulkanImplementation* vulkan_instance,
                  gfx::AcceleratedWidget widget,
                  const gfx::Size& size);
+
+  VulkanRenderer(const VulkanRenderer&) = delete;
+  VulkanRenderer& operator=(const VulkanRenderer&) = delete;
+
   ~VulkanRenderer() override;
 
   // Renderer:
@@ -87,8 +90,6 @@ class VulkanRenderer : public RendererBase {
   VkRenderPass render_pass_ = VK_NULL_HANDLE;
 
   base::WeakPtrFactory<VulkanRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanRenderer);
 };
 
 }  // namespace ui

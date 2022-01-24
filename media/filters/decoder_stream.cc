@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
@@ -1021,6 +1021,11 @@ void DecoderStream<StreamType>::ReportEncryptionType(
     encryption_type = !is_buffer_encrypted
                           ? EncryptionType::kEncryptedWithClearLead
                           : EncryptionType::kEncrypted;
+  }
+
+  if (encryption_type == EncryptionType::kEncryptedWithClearLead) {
+    MEDIA_LOG(INFO, media_log_)
+        << GetStreamTypeString() << "stream is encrypted with clear lead";
   }
 
   traits_->SetEncryptionType(encryption_type);

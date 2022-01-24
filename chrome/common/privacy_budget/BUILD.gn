@@ -4,9 +4,9 @@
 
 source_set("privacy_budget") {
   sources = [
-    "container_ops.h",
     "field_trial_param_conversions.cc",
     "field_trial_param_conversions.h",
+    "order_preserving_set.h",
     "privacy_budget_features.cc",
     "privacy_budget_features.h",
     "privacy_budget_settings_provider.cc",
@@ -24,8 +24,8 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "container_ops_unittest.cc",
     "field_trial_param_conversions_unittest.cc",
+    "order_preserving_set_unittest.cc",
   ]
 
   deps = [

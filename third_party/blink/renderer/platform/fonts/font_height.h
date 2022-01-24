@@ -23,7 +23,9 @@ struct PLATFORM_EXPORT FontHeight {
   static FontHeight Empty() {
     return FontHeight(LayoutUnit::Min(), LayoutUnit::Min());
   }
-  bool IsEmpty() const { return ascent == LayoutUnit::Min(); }
+  bool IsEmpty() const {
+    return ascent == LayoutUnit::Min() && descent == LayoutUnit::Min();
+  }
 
   LayoutUnit LineHeight() const { return ascent + descent; }
 

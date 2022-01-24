@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -86,7 +87,9 @@ bool GetCurrentTabTitle(const Browser* browser, std::u16string* title);
 // succeeds or fails, which generally happens earlier).
 //
 // Some of these functions return RenderFrameHost* where the navigation was
-// committed or nullptr if the navigation failed.
+// committed or nullptr if the navigation failed. The caller should inspect the
+// return value - typically with: ASSERT_TRUE(NavigateToURL(...)).
+//
 // Note: if the navigation has committed, this doesn't mean that the old
 // RenderFrameHost was destroyed:
 // - it either can wait for the renderer process to finish running unload
@@ -108,7 +111,8 @@ void NavigateToURLWithPost(Browser* browser, const GURL& url);
 
 // Navigate current tab of the |browser| to |url|, simulating a user typing
 // |url| into the omnibox.
-content::RenderFrameHost* NavigateToURL(Browser* browser, const GURL& url);
+WARN_UNUSED_RESULT content::RenderFrameHost* NavigateToURL(Browser* browser,
+                                                           const GURL& url);
 
 // Same as |NavigateToURL|, but:
 // - |disposition| allows to specify in which tab navigation should happen

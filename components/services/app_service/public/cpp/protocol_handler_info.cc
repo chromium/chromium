@@ -18,6 +18,11 @@ bool operator==(const ProtocolHandlerInfo& handler1,
   return handler1.protocol == handler2.protocol && handler1.url == handler2.url;
 }
 
+bool operator!=(const ProtocolHandlerInfo& handler1,
+                const ProtocolHandlerInfo& handler2) {
+  return !(handler1 == handler2);
+}
+
 base::Value ProtocolHandlerInfo::AsDebugValue() const {
   base::Value root(base::Value::Type::DICTIONARY);
   root.SetStringKey("protocol", protocol);

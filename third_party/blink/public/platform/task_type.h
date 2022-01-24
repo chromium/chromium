@@ -13,7 +13,7 @@ namespace blink {
 // For the task type usage guideline, see https://bit.ly/2vMAsQ4
 //
 // When a new task type is created:
-// * use kCount value as a new value,
+// * Update kMaxValue to point to a new value
 // * in tools/metrics/histograms/enums.xml update the
 //   "RendererSchedulerTaskType" enum
 // * update TaskTypes.md
@@ -164,6 +164,13 @@ enum class TaskType : unsigned char {
   // https://wicg.github.io/web-locks/#web-locks-tasks-source
   kWebLocks = 66,
 
+  // Task type used for the Prioritized Task Scheduling API
+  // (https://wicg.github.io/scheduling-apis/#the-posted-task-task-source).
+  // This task type should not be passed directly to
+  // FrameScheduler::GetTaskRunner(); it is used indirectly by
+  // WebSchedulingTaskQueues.
+  kWebSchedulingPostedTask = 67,
+
   // https://w3c.github.io/screen-wake-lock/#dfn-screen-wake-lock-task-source
   kWakeLock = 76,
 
@@ -238,13 +245,6 @@ enum class TaskType : unsigned char {
   // Task used to split a script loading task for cooperative scheduling
   kInternalContinueScriptLoading = 65,
 
-  // Experimental tasks types used for main thread scheduling postTask API
-  // (https://github.com/WICG/main-thread-scheduling).
-  // These task types should not be passed directly to
-  // FrameScheduler::GetTaskRunner(); they are used indirectly by
-  // WebSchedulingTaskQueues.
-  kExperimentalWebScheduling = 67,
-
   // Tasks used to control frame lifecycle - they should run even when the frame
   // is frozen.
   kInternalFrameLifecycleControl = 68,
@@ -291,7 +291,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kCount = 80,
+  kMaxValue = kInternalPostMessageForwarding,
 };
 
 }  // namespace blink

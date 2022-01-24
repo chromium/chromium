@@ -9,9 +9,12 @@
 #include <string>
 
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/fake_server/fake_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace sync_pb {
+class SyncEntity;
+}
 
 // A helper class that waits for a certain set of DeviceInfos on the FakeServer.
 // The desired state is passed in as a GTest matcher.

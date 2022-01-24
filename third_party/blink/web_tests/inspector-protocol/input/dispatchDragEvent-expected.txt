@@ -15,3 +15,6 @@ div innerHTML:
 wrong dragOperationsMask should not drop
 div innerHTML: 
 
+Dropping files
+div innerHTML: path1<br>
+

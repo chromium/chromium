@@ -15,9 +15,9 @@ if pycryptoLoaded:
     class PyCrypto_RSAKey(RSAKey):
         def __init__(self, n=0, e=0, d=0, p=0, q=0, dP=0, dQ=0, qInv=0):
             if not d:
-                self.rsa = RSA.construct( (long(n), long(e)) )
+                self.rsa = RSA.construct( (n, e) )
             else:
-                self.rsa = RSA.construct( (long(n), long(e), long(d), long(p), long(q)) )
+                self.rsa = RSA.construct( (n, e, d, p, q) )
 
         def __getattr__(self, name):
             return getattr(self.rsa, name)

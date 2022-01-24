@@ -15,10 +15,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "mojo/public/cpp/bindings/sync_handle_watcher.h"
 #include "mojo/public/cpp/system/core.h"
 #include "mojo/public/cpp/system/handle_signal_tracker.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -32,6 +31,8 @@ namespace mojo {
 namespace internal {
 class MessageQuotaChecker;
 }
+
+class SyncHandleWatcher;
 
 // The Connector class is responsible for performing read/write operations on a
 // MessagePipe. It writes messages it receives through the MessageReceiver
@@ -95,6 +96,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
             ConnectorConfig config,
             scoped_refptr<base::SequencedTaskRunner> runner,
             const char* interface_name = "unknown interface");
+
+  Connector(const Connector&) = delete;
+  Connector& operator=(const Connector&) = delete;
 
   ~Connector() override;
 
@@ -358,8 +362,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // transferred (i.e., when |connected_| is set to false).
   base::WeakPtr<Connector> weak_self_;
   base::WeakPtrFactory<Connector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Connector);
 };
 
 }  // namespace mojo

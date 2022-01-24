@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/core/bloom_filter.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -28,6 +27,9 @@ class OptimizationFilter {
                               std::unique_ptr<RegexpList> regexps,
                               std::unique_ptr<RegexpList> exclusion_regexps,
                               bool skip_host_suffix_checking);
+
+  OptimizationFilter(const OptimizationFilter&) = delete;
+  OptimizationFilter& operator=(const OptimizationFilter&) = delete;
 
   ~OptimizationFilter();
 
@@ -57,8 +59,6 @@ class OptimizationFilter {
   bool skip_host_suffix_checking_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(OptimizationFilter);
 };
 
 }  // namespace optimization_guide

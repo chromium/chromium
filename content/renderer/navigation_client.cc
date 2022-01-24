@@ -6,7 +6,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "content/renderer/render_frame_impl.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
@@ -35,7 +38,11 @@ void NavigationClient::CommitNavigation(
     const base::UnguessableToken& devtools_navigation_token,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
+    mojom::CookieManagerInfoPtr cookie_manager_info,
+    mojom::StorageInfoPtr storage_info,
     CommitNavigationCallback callback) {
+  DCHECK(blink::IsRequestDestinationFrame(common_params->request_destination));
+
   // TODO(ahemery): The reset should be done when the navigation did commit
   // (meaning at a later stage). This is not currently possible because of
   // race conditions leading to the early deletion of NavigationRequest would
@@ -49,6 +56,7 @@ void NavigationClient::CommitNavigation(
       std::move(controller_service_worker_info), std::move(container_info),
       std::move(prefetch_loader_factory), devtools_navigation_token,
       std::move(policy_container), std::move(code_cache_host),
+      std::move(cookie_manager_info), std::move(storage_info),
       std::move(callback));
 }
 

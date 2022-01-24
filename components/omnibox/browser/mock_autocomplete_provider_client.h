@@ -10,11 +10,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/document_suggestions_service.h"
+#include "components/omnibox/browser/mock_tab_matcher.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -92,6 +92,7 @@ class MockAutocompleteProviderClient
       override {
     return nullptr;
   }
+  const TabMatcher& GetTabMatcher() const override { return tab_matcher_; }
 
   signin::IdentityManager* GetIdentityManager() const override {
     return identity_manager_;
@@ -119,9 +120,9 @@ class MockAutocompleteProviderClient
                void(history::KeywordID keyword_id, const std::u16string& term));
   MOCK_METHOD1(PrefetchImage, void(const GURL& url));
 
-  bool IsTabOpenWithURL(const GURL& url,
-                        const AutocompleteInput* input) override {
-    return false;
+  void set_pedal_provider(
+      std::unique_ptr<OmniboxPedalProvider> pedal_provider) {
+    pedal_provider_ = std::move(pedal_provider);
   }
 
   void set_template_url_service(std::unique_ptr<TemplateURLService> service) {
@@ -136,6 +137,12 @@ class MockAutocompleteProviderClient
     return &test_url_loader_factory_;
   }
 
+  MOCK_METHOD0(OpenSharingHub, void());
+  MOCK_METHOD0(NewIncognitoWindow, void());
+  MOCK_METHOD0(OpenIncognitoClearBrowsingDataDialog, void());
+  MOCK_METHOD0(CloseIncognitoWindows, void());
+  MOCK_METHOD0(PromptPageTranslation, void());
+
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
@@ -146,6 +153,7 @@ class MockAutocompleteProviderClient
   std::unique_ptr<OmniboxPedalProvider> pedal_provider_;
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;
+  MockTabMatcher tab_matcher_;
   signin::IdentityManager* identity_manager_ = nullptr;  // Not owned.
 };
 

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -22,6 +21,11 @@ namespace {
 class TestConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   TestConfirmInfoBarDelegate() = default;
+
+  TestConfirmInfoBarDelegate(const TestConfirmInfoBarDelegate&) = delete;
+  TestConfirmInfoBarDelegate& operator=(const TestConfirmInfoBarDelegate&) =
+      delete;
+
   ~TestConfirmInfoBarDelegate() override = default;
 
   InfoBarIdentifier GetIdentifier() const override { return TEST_INFOBAR; }
@@ -29,14 +33,15 @@ class TestConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetMessageText() const override {
     return u"GlobalConfirmInfoBar browser tests delegate.";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestConfirmInfoBarDelegate);
 };
 
 class GlobalConfirmInfoBarTest : public InProcessBrowserTest {
  public:
   GlobalConfirmInfoBarTest() = default;
+
+  GlobalConfirmInfoBarTest(const GlobalConfirmInfoBarTest&) = delete;
+  GlobalConfirmInfoBarTest& operator=(const GlobalConfirmInfoBarTest&) = delete;
+
   ~GlobalConfirmInfoBarTest() override = default;
 
  protected:
@@ -50,9 +55,6 @@ class GlobalConfirmInfoBarTest : public InProcessBrowserTest {
   void AddTab() {
     AddTabAtIndex(0, GURL("chrome://blank/"), ui::PAGE_TRANSITION_LINK);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GlobalConfirmInfoBarTest);
 };
 
 }  // namespace

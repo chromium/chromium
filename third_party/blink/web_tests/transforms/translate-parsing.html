@@ -12,7 +12,7 @@ expect('inherit').parsesAs('inherit');
 expect('none').parsesAs('none').isComputedTo('none');
 expect('10px').parsesAs('10px').isComputedTo('10px');
 expect('10px -2.5px').parsesAs('10px -2.5px').isComputedTo('10px -2.5px');
-expect('10px -2.5px 0').parsesAs('10px -2.5px 0px').isComputedTo('10px -2.5px');
+expect('10px -2.5px 0').parsesAs('10px -2.5px').isComputedTo('10px -2.5px');
 
 expect('42.5%').parsesAs('42.5%').isComputedTo('42.5%');
 expect('42.5% -20.5%').parsesAs('42.5% -20.5%').isComputedTo('42.5% -20.5%');

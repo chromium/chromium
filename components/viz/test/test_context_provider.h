@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -163,6 +162,9 @@ class TestContextProvider
       std::unique_ptr<TestSharedImageInterface> sii,
       bool support_locking);
 
+  TestContextProvider(const TestContextProvider&) = delete;
+  TestContextProvider& operator=(const TestContextProvider&) = delete;
+
   // ContextProvider / RasterContextProvider implementation.
   void AddRef() const override;
   void Release() const override;
@@ -224,8 +226,6 @@ class TestContextProvider
   base::ObserverList<ContextLostObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<TestContextProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestContextProvider);
 };
 
 class TestVizProcessContextProvider : public VizProcessContextProvider {

@@ -55,19 +55,17 @@ namespace pref_keys = extensions::preference_api_constants;
 
 namespace {
 
-bool RemoveContentType(base::ListValue* args,
+bool RemoveContentType(std::vector<base::Value>& args,
                        ContentSettingsType* content_type) {
-  base::Value::ListView args_view = args->GetList();
-
-  if (args_view.empty() || !args_view[0].is_string())
+  if (args.empty() || !args[0].is_string())
     return false;
 
   // Not a ref since we remove the underlying value after.
-  std::string content_type_str = args_view[0].GetString();
+  std::string content_type_str = args[0].GetString();
 
   // We remove the ContentSettingsType parameter since this is added by the
   // renderer, and is not part of the JSON schema.
-  args->EraseListIter(args_view.begin());
+  args.erase(args.begin());
   *content_type =
       extensions::content_settings_helpers::StringToContentSettingsType(
           content_type_str);
@@ -81,9 +79,9 @@ namespace extensions {
 ExtensionFunction::ResponseAction
 ContentSettingsContentSettingClearFunction::Run() {
   ContentSettingsType content_type;
-  EXTENSION_FUNCTION_VALIDATE(RemoveContentType(args_.get(), &content_type));
+  EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
 
-  std::unique_ptr<Clear::Params> params(Clear::Params::Create(*args_));
+  std::unique_ptr<Clear::Params> params(Clear::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ExtensionPrefsScope scope = kExtensionPrefsScopeRegular;
@@ -115,9 +113,9 @@ ContentSettingsContentSettingClearFunction::Run() {
 ExtensionFunction::ResponseAction
 ContentSettingsContentSettingGetFunction::Run() {
   ContentSettingsType content_type;
-  EXTENSION_FUNCTION_VALIDATE(RemoveContentType(args_.get(), &content_type));
+  EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
 
-  std::unique_ptr<Get::Params> params(Get::Params::Create(*args_));
+  std::unique_ptr<Get::Params> params(Get::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
 
@@ -183,9 +181,9 @@ ContentSettingsContentSettingGetFunction::Run() {
 ExtensionFunction::ResponseAction
 ContentSettingsContentSettingSetFunction::Run() {
   ContentSettingsType content_type;
-  EXTENSION_FUNCTION_VALIDATE(RemoveContentType(args_.get(), &content_type));
+  EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
 
-  std::unique_ptr<Set::Params> params(Set::Params::Create(*args_));
+  std::unique_ptr<Set::Params> params(Set::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::string primary_error;

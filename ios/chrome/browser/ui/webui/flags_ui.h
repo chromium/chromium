@@ -18,12 +18,15 @@ class WebUIIOSDataSource;
 class FlagsUI : public web::WebUIIOSController {
  public:
   explicit FlagsUI(web::WebUIIOS* web_ui, const std::string& host);
+
+  FlagsUI(const FlagsUI&) = delete;
+  FlagsUI& operator=(const FlagsUI&) = delete;
+
   ~FlagsUI() override;
   static void AddFlagsIOSStrings(web::WebUIIOSDataSource* source);
 
  private:
   base::WeakPtrFactory<FlagsUI> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(FlagsUI);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_FLAGS_UI_H_

@@ -37,6 +37,12 @@ v8::Local<v8::Template> WrapperTypeInfo::GetV8ClassTemplate(
       v8_template = v8::FunctionTemplate::New(
           isolate, V8ObjectConstructor::IsValidConstructorMode);
       break;
+    case kIdlBufferSourceType:
+      NOTREACHED();
+      break;
+    case kIdlObservableArray:
+      v8_template = v8::FunctionTemplate::New(isolate);
+      break;
     case kCustomWrappableKind:
       v8_template = v8::FunctionTemplate::New(isolate);
       break;
@@ -47,20 +53,6 @@ v8::Local<v8::Template> WrapperTypeInfo::GetV8ClassTemplate(
 
   per_isolate_data->AddV8Template(world, this, v8_template);
   return v8_template;
-}
-
-void WrapperTypeInfo::Trace(Visitor* visitor, const void* impl) const {
-  switch (wrapper_class_id) {
-    case WrapperTypeInfo::kNodeClassId:
-    case WrapperTypeInfo::kObjectClassId:
-      visitor->Trace(reinterpret_cast<const ScriptWrappable*>(impl));
-      break;
-    case WrapperTypeInfo::kCustomWrappableId:
-      visitor->Trace(reinterpret_cast<const CustomWrappable*>(impl));
-      break;
-    default:
-      NOTREACHED();
-  }
 }
 
 }  // namespace blink

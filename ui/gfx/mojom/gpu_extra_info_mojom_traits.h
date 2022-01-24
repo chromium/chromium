@@ -61,7 +61,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
     return input.angle_features;
   }
 
-#if defined(USE_OZONE_PLATFORM_X11) || defined(USE_X11)
+#if defined(USE_OZONE_PLATFORM_X11)
   static const std::vector<gfx::BufferUsageAndFormat>&
   gpu_memory_buffer_support_x11(const gfx::GpuExtraInfo& input) {
     return input.gpu_memory_buffer_support_x11;

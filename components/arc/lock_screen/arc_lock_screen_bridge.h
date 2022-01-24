@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_LOCK_SCREEN_ARC_LOCK_SCREEN_BRIDGE_H_
 #define COMPONENTS_ARC_LOCK_SCREEN_ARC_LOCK_SCREEN_BRIDGE_H_
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/lock_screen.mojom.h"
 #include "components/arc/session/connection_observer.h"
@@ -35,6 +34,10 @@ class ArcLockScreenBridge
 
   ArcLockScreenBridge(content::BrowserContext* context,
                       ArcBridgeService* bridge_service);
+
+  ArcLockScreenBridge(const ArcLockScreenBridge&) = delete;
+  ArcLockScreenBridge& operator=(const ArcLockScreenBridge&) = delete;
+
   ~ArcLockScreenBridge() override;
 
   // ConnectionObserver<mojom::LockScreenInstance> overrides:
@@ -50,8 +53,6 @@ class ArcLockScreenBridge
   THREAD_CHECKER(thread_checker_);
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
-
-  DISALLOW_COPY_AND_ASSIGN(ArcLockScreenBridge);
 };
 
 }  // namespace arc

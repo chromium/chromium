@@ -4,7 +4,6 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the changes sidebar contains the changed uisourcecodes.\n`);
-  await TestRunner.loadModule('changes');
   await TestRunner.loadLegacyModule('workspace_diff');
   await TestRunner.loadLegacyModule('changes');
 
@@ -14,7 +13,7 @@
       new Bindings.ContentProviderBasedProject(workspace, 'mockProject', Workspace.projectTypes.Network, '', false);
   var workspaceDiff = new WorkspaceDiff.WorkspaceDiff(workspace);
   TestRunner.addSniffer(
-      WorkspaceDiff.WorkspaceDiff.prototype, '_uiSourceCodeProcessedForTest', modifiedStatusChanged, true);
+      WorkspaceDiff.WorkspaceDiff.prototype, 'uiSourceCodeProcessedForTest', modifiedStatusChanged, true);
 
   var uiSourceCodeList = new Changes.ChangesSidebar(workspaceDiff);
 
@@ -46,12 +45,12 @@
   ]);
 
   function modifiedStatusChanged() {
-    if (!workspaceDiff._loadingUISourceCodes.size)
+    if (!workspaceDiff.loadingUISourceCodes.size)
       fulfill();
   }
 
   function dumpUISourceCodeList() {
-    uiSourceCodeList._treeoutline.rootElement().children().forEach(treeElement => {
+    uiSourceCodeList.treeoutline.rootElement().children().forEach(treeElement => {
       TestRunner.addResult(treeElement.title);
     });
   }

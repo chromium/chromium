@@ -46,7 +46,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   SiteInstanceImpl* site_instance =
       static_cast<SiteInstanceImpl*>(frame->GetSiteInstance());
   frame_info->site_instance = ::mojom::SiteInstanceInfo::New();
-  frame_info->site_instance->id = site_instance->GetId();
+  frame_info->site_instance->id = site_instance->GetId().value();
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   frame_info->site_instance->locked =
@@ -81,15 +81,19 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 }
 
 // Adds `host` to `out_frames` if it is a prerendered main frame.
-void CollectPrerenders(std::vector<::mojom::FrameInfoPtr>& out_frames,
-                       RenderFrameHost* host) {
-  if (!host->GetParent() &&
-      host->GetLifecycleState() ==
-          RenderFrameHost::LifecycleState::kPrerendering) {
-    out_frames.push_back(
-        RenderFrameHostToFrameInfo(static_cast<RenderFrameHostImpl*>(host),
-                                   ::mojom::FrameInfo::Type::kPrerender));
+RenderFrameHost::FrameIterationAction CollectPrerenders(
+    std::vector<::mojom::FrameInfoPtr>& out_frames,
+    RenderFrameHost* host) {
+  if (!host->GetParentOrOuterDocument()) {
+    if (host->GetLifecycleState() ==
+        RenderFrameHost::LifecycleState::kPrerendering) {
+      out_frames.push_back(
+          RenderFrameHostToFrameInfo(static_cast<RenderFrameHostImpl*>(host),
+                                     ::mojom::FrameInfo::Type::kPrerender));
+    }
+    return RenderFrameHost::FrameIterationAction::kSkipChildren;
   }
+  return RenderFrameHost::FrameIterationAction::kContinue;
 }
 
 std::string IsolatedOriginSourceToString(IsolatedOriginSource source) {
@@ -222,7 +226,7 @@ void ProcessInternalsHandlerImpl::GetAllWebContentsInfo(
     const auto& entries = controller.GetBackForwardCache().GetEntries();
     for (const auto& entry : entries) {
       info->bfcached_root_frames.push_back(RenderFrameHostToFrameInfo(
-          (*entry).render_frame_host.get(),
+          (*entry).render_frame_host(),
           ::mojom::FrameInfo::Type::kBackForwardCache));
     }
 

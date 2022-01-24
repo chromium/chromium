@@ -85,6 +85,17 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
     base::WeakPtr<FrameOrWorkerScheduler> scheduler_;
   };
 
+  class PLATFORM_EXPORT Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Notifies that the list of active features for this worker has changed.
+    // See SchedulingPolicy::Feature for the list of features and the meaning
+    // of individual features.
+    virtual void UpdateBackForwardCacheDisablingFeatures(
+        uint64_t features_mask) = 0;
+  };
+
   virtual ~FrameOrWorkerScheduler();
 
   using Preempted = base::StrongAlias<class PreemptedTag, bool>;
@@ -140,7 +151,10 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   virtual void OnStoppedUsingFeature(SchedulingPolicy::Feature feature,
                                      const SchedulingPolicy& policy) = 0;
 
-  virtual base::WeakPtr<FrameOrWorkerScheduler> GetDocumentBoundWeakPtr();
+  // Gets a weak pointer for this scheduler that is reset when the influence by
+  // registered features to this scheduler is reset.
+  virtual base::WeakPtr<FrameOrWorkerScheduler>
+  GetSchedulingAffectingFeatureWeakPtr() = 0;
 
  private:
   void RemoveLifecycleObserver(Observer* observer);

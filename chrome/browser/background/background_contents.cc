@@ -129,7 +129,8 @@ bool BackgroundContents::IsNeverComposited(content::WebContents* web_contents) {
   return true;
 }
 
-void BackgroundContents::RenderProcessGone(base::TerminationStatus status) {
+void BackgroundContents::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   delegate_->OnBackgroundContentsTerminated(this);
   // |this| is deleted.
 }

@@ -26,7 +26,7 @@ tr {
 }
 
 .label {
-  -webkit-padding-end: 5px;
+  padding-inline-end: 5px;
   font-size: 0.9em;
   font-weight: bold;
   text-align: end;

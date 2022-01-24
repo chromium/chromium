@@ -31,16 +31,20 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -75,68 +79,64 @@ void Partitions::Initialize() {
 
 // static
 bool Partitions::InitializeOnce() {
+  bool enable_brp =
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocBackupRefPtr) &&
+      base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
+          base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer;
+#else
+      false;
+#endif
+  base::PartitionOptions::LazyCommit lazy_commit =
+      base::FeatureList::IsEnabled(base::features::kPartitionAllocLazyCommit)
+          ? base::PartitionOptions::LazyCommit::kEnabled
+          : base::PartitionOptions::LazyCommit::kDisabled;
+
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   static base::NoDestructor<base::PartitionAllocator> fast_malloc_allocator{};
-  fast_malloc_allocator->init({
-    base::PartitionOptions::AlignedAlloc::kDisallowed,
-        base::PartitionOptions::ThreadCache::kEnabled,
-        base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::Cookies::kAllowed,
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
-        base::PartitionOptions::RefCount::kAllowed
-#else
-        base::PartitionOptions::RefCount::kDisallowed
-#endif
-  });
+  fast_malloc_allocator->init(
+      {base::PartitionOptions::AlignedAlloc::kDisallowed,
+       base::PartitionOptions::ThreadCache::kEnabled,
+       base::PartitionOptions::Quarantine::kAllowed,
+       base::PartitionOptions::Cookie::kAllowed,
+       (enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
+                   : base::PartitionOptions::BackupRefPtr::kDisabled),
+       base::PartitionOptions::UseConfigurablePool::kNo, lazy_commit});
 
   fast_malloc_root_ = fast_malloc_allocator->root();
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-  static base::NoDestructor<base::PartitionAllocator> array_buffer_allocator{};
   static base::NoDestructor<base::PartitionAllocator> buffer_allocator{};
   static base::NoDestructor<base::ThreadUnsafePartitionAllocator>
       layout_allocator{};
 
   base::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
-  // RefCount disallowed because it will prevent allocations from being 16B
-  // aligned as required by ArrayBufferContents.
-  array_buffer_allocator->init({
-    base::PartitionOptions::AlignedAlloc::kDisallowed,
-        base::PartitionOptions::ThreadCache::kDisabled,
-        base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::Cookies::kAllowed,
-        base::PartitionOptions::RefCount::kDisallowed
-  });
-  buffer_allocator->init({
-    base::PartitionOptions::AlignedAlloc::kDisallowed,
-        base::PartitionOptions::ThreadCache::kDisabled,
-        base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::Cookies::kAllowed,
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
-        base::PartitionOptions::RefCount::kAllowed
-#else
-        base::PartitionOptions::RefCount::kDisallowed
-#endif
-  });
-  // RefCount disallowed because layout code will be excluded from CheckedPtr
+  buffer_allocator->init(
+      {base::PartitionOptions::AlignedAlloc::kDisallowed,
+       base::PartitionOptions::ThreadCache::kDisabled,
+       base::PartitionOptions::Quarantine::kAllowed,
+       base::PartitionOptions::Cookie::kAllowed,
+       (enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
+                   : base::PartitionOptions::BackupRefPtr::kDisabled),
+       base::PartitionOptions::UseConfigurablePool::kNo, lazy_commit});
+  // RefCount disallowed because layout code will be excluded from raw_ptr<T>
   // rewrite due to performance.
-  layout_allocator->init({
-    base::PartitionOptions::AlignedAlloc::kDisallowed,
-        base::PartitionOptions::ThreadCache::kDisabled,
-        base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::Cookies::kAllowed,
-        base::PartitionOptions::RefCount::kDisallowed
-  });
+  layout_allocator->init({base::PartitionOptions::AlignedAlloc::kDisallowed,
+                          base::PartitionOptions::ThreadCache::kDisabled,
+                          base::PartitionOptions::Quarantine::kAllowed,
+                          base::PartitionOptions::Cookie::kAllowed,
+                          base::PartitionOptions::BackupRefPtr::kDisabled,
+                          base::PartitionOptions::UseConfigurablePool::kNo,
+                          lazy_commit});
 
-  array_buffer_root_ = array_buffer_allocator->root();
   buffer_root_ = buffer_allocator->root();
   layout_root_ = layout_allocator->root();
 
 #if defined(PA_ALLOW_PCSCAN)
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) ||
       base::FeatureList::IsEnabled(kPCScanBlinkPartitions)) {
-    base::internal::PCScan::RegisterNonScannableRoot(array_buffer_root_);
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     base::internal::PCScan::RegisterScannableRoot(fast_malloc_root_);
 #endif
@@ -149,12 +149,49 @@ bool Partitions::InitializeOnce() {
 }
 
 // static
+void Partitions::InitializeArrayBufferPartition() {
+  CHECK(!ArrayBufferPartitionInitialized());
+
+  static base::NoDestructor<base::PartitionAllocator> array_buffer_allocator{};
+
+  base::PartitionOptions::LazyCommit lazy_commit =
+      base::FeatureList::IsEnabled(base::features::kPartitionAllocLazyCommit)
+          ? base::PartitionOptions::LazyCommit::kEnabled
+          : base::PartitionOptions::LazyCommit::kDisabled;
+
+  // BackupRefPtr disallowed because it will prevent allocations from being 16B
+  // aligned as required by ArrayBufferContents.
+  array_buffer_allocator->init(
+      {base::PartitionOptions::AlignedAlloc::kDisallowed,
+       base::PartitionOptions::ThreadCache::kDisabled,
+       base::PartitionOptions::Quarantine::kAllowed,
+       base::PartitionOptions::Cookie::kAllowed,
+       base::PartitionOptions::BackupRefPtr::kDisabled,
+       // When the V8 virtual memory cage is enabled, the ArrayBuffer partition
+       // must be placed inside of it. For that, PA's ConfigurablePool is
+       // created inside the V8 Cage during initialization. As such, here all we
+       // need to do is indicate that we'd like to use that Pool if it has been
+       // created by now (if it hasn't been created, the cage isn't enabled, and
+       // so we'll use the default Pool).
+       base::PartitionOptions::UseConfigurablePool::kIfAvailable, lazy_commit});
+
+  array_buffer_root_ = array_buffer_allocator->root();
+
+#if defined(PA_ALLOW_PCSCAN)
+  if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) ||
+      base::FeatureList::IsEnabled(kPCScanBlinkPartitions)) {
+    base::internal::PCScan::RegisterNonScannableRoot(array_buffer_root_);
+  }
+#endif  // defined(PA_ALLOW_PCSCAN)
+}
+
+// static
 void Partitions::StartPeriodicReclaim(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   CHECK(IsMainThread());
   DCHECK(initialized_);
 
-  base::PartitionAllocMemoryReclaimer::Instance()->Start(task_runner);
+  base::allocator::StartMemoryReclaimer(task_runner);
 }
 
 // static
@@ -169,8 +206,10 @@ void Partitions::DumpMemoryStats(
   FastMallocPartition()->DumpStats("fast_malloc", is_light_dump,
                                    partition_stats_dumper);
 #endif
-  ArrayBufferPartition()->DumpStats("array_buffer", is_light_dump,
-                                    partition_stats_dumper);
+  if (ArrayBufferPartitionInitialized()) {
+    ArrayBufferPartition()->DumpStats("array_buffer", is_light_dump,
+                                      partition_stats_dumper);
+  }
   BufferPartition()->DumpStats("buffer", is_light_dump, partition_stats_dumper);
   LayoutPartition()->DumpStats("layout", is_light_dump, partition_stats_dumper);
 }
@@ -208,8 +247,10 @@ size_t Partitions::TotalSizeOfCommittedPages() {
   total_size +=
       TS_UNCHECKED_READ(FastMallocPartition()->total_size_of_committed_pages);
 #endif
-  total_size +=
-      TS_UNCHECKED_READ(ArrayBufferPartition()->total_size_of_committed_pages);
+  if (ArrayBufferPartitionInitialized()) {
+    total_size += TS_UNCHECKED_READ(
+        ArrayBufferPartition()->total_size_of_committed_pages);
+  }
   total_size +=
       TS_UNCHECKED_READ(BufferPartition()->total_size_of_committed_pages);
   total_size +=

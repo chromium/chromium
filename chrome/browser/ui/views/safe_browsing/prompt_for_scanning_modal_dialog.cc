@@ -24,7 +24,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace safe_browsing {
@@ -69,15 +68,7 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  // Use a fixed maximum message width, so longer messages will wrap.
-  const int kMaxMessageWidth = 400;
-  views::ColumnSet* cs = layout->AddColumnSet(0);
-  cs->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                views::GridLayout::kFixedSize,
-                views::GridLayout::ColumnSize::kFixed, kMaxMessageWidth, false);
+  SetUseDefaultFillLayout(true);
 
   // Create the message label text.
   std::vector<size_t> offsets;
@@ -89,8 +80,10 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
       &offsets);
 
   // Add the message label.
-  auto label = std::make_unique<views::StyledLabel>();
+  auto* label = AddChildView(std::make_unique<views::StyledLabel>());
   label->SetText(message_text);
+  label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+  label->SetDefaultTextStyle(views::style::STYLE_PRIMARY);
 
   gfx::Range learn_more_range(offsets[1], message_text.length());
   views::StyledLabel::RangeStyleInfo link_style =
@@ -107,9 +100,8 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
   label->AddStyleRange(learn_more_range, link_style);
 
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  constexpr int kMaxMessageWidth = 400;
   label->SizeToFit(kMaxMessageWidth);
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  layout->AddView(std::move(label));
 }
 
 PromptForScanningModalDialog::~PromptForScanningModalDialog() = default;

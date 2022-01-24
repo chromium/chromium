@@ -17,12 +17,6 @@ constexpr gfx::Size kButtonSize{32, 32};
 
 constexpr gfx::Insets kButtonPadding{0};
 
-constexpr float kInkDropVisibleOpacity = 0.2f;
-
-constexpr float kInkDropHighlightVisibleOpacity = 0.3f;
-
-constexpr SkColor kInkDropBaseColor = SK_ColorWHITE;
-
 // The spacing used by the BoxLayout manager to space out child views in the
 // CaptureModeBarView.
 constexpr int kBetweenChildSpacing = 16;
@@ -31,9 +25,6 @@ constexpr int kBetweenChildSpacing = 16;
 constexpr int kCtrlArrowKeyboardRegionChangeDp = 1;
 constexpr int kArrowKeyboardRegionChangeDp = 15;
 constexpr int kShiftArrowKeyboardRegionChangeDp = 40;
-
-// Blur quality applied to the capture bar and settings menu backdrop.
-constexpr float kBlurQuality = 0.33f;
 
 constexpr int kSpaceBetweenCaptureBarAndSettingsMenu = 8;
 

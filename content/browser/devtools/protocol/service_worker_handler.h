@@ -9,7 +9,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/service_worker.h"
@@ -32,6 +31,10 @@ class ServiceWorkerHandler : public DevToolsDomainHandler,
                              public ServiceWorker::Backend {
  public:
   explicit ServiceWorkerHandler(bool allow_inspect_worker);
+
+  ServiceWorkerHandler(const ServiceWorkerHandler&) = delete;
+  ServiceWorkerHandler& operator=(const ServiceWorkerHandler&) = delete;
+
   ~ServiceWorkerHandler() override;
 
   void Wire(UberDispatcher* dispatcher) override;
@@ -81,8 +84,6 @@ class ServiceWorkerHandler : public DevToolsDomainHandler,
   StoragePartitionImpl* storage_partition_;
 
   base::WeakPtrFactory<ServiceWorkerHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerHandler);
 };
 
 }  // namespace protocol

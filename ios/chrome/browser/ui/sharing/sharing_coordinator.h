@@ -51,7 +51,6 @@ class Browser;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SHARING_SHARING_COORDINATOR_H_

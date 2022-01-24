@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, RootPath} from '../test_util.js';
+import {addEntries, ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall} from './background.js';
@@ -19,6 +19,9 @@ testcase.androidPhotosBanner = async () => {
   // Open Files app.
   const appId = await openNewWindow(RootPath.DOWNLOADS);
 
+  const isBannersFrameworkEnabled =
+      (await sendTestMessage({name: 'isBannersFrameworkEnabled'})) === 'true';
+
   const click = async (query) => {
     chrome.test.assertTrue(
         !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [query]),
@@ -34,10 +37,31 @@ testcase.androidPhotosBanner = async () => {
     await remoteCall.waitForElement(appId, `#file-list [file-name="${name}"]`);
   };
 
-  // Initial state: banner root element should be hidden and children not
-  // constructed.
-  await waitForElement('#photos-welcome[hidden]');
-  await waitForElementLost('.photos-welcome-message');
+  let photosBannerHiddenQuery = '#photos-welcome.photos-welcome-hidden';
+  let photosBannerShownQuery = '#photos-welcome:not(.photos-welcome-hidden)';
+  let photosBannerTextQuery = '.photos-welcome-message';
+  let photosBannerDismissButton = '#photos-welcome-dismiss';
+  if (isBannersFrameworkEnabled) {
+    await remoteCall.isolateBannerForTesting(appId, 'photos-welcome-banner');
+    photosBannerHiddenQuery = '#banners > photos-welcome-banner[hidden]';
+    photosBannerShownQuery = '#banners > photos-welcome-banner:not([hidden])';
+    photosBannerTextQuery = [
+      '#banners > photos-welcome-banner', 'educational-banner',
+      '#educational-text-group'
+    ];
+    photosBannerDismissButton = [
+      '#banners > photos-welcome-banner', 'educational-banner',
+      '#dismiss-button'
+    ];
+  }
+
+  // Initial state: In the new framework banner is lazily loaded so will not be
+  // attached to the DOM, without the banners framework the root element should
+  // exist but the text should not be attached yet.
+  if (!isBannersFrameworkEnabled) {
+    await waitForElement('#photos-welcome[hidden]');
+  }
+  await waitForElementLost(photosBannerTextQuery);
 
   // Wait for the DocumentsProvider volume to mount and navigate to Photos.
   const photosVolumeQuery =
@@ -45,28 +69,28 @@ testcase.androidPhotosBanner = async () => {
   await waitForElement(photosVolumeQuery);
   await click(photosVolumeQuery);
   // Banner should be created and made visible.
-  await waitForElement('#photos-welcome:not(.photos-welcome-hidden)');
-  await waitForElement('.photos-welcome-message');
+  await waitForElement(photosBannerShownQuery);
+  await waitForElement(photosBannerTextQuery);
 
   // Banner should disappear when navigating away (child elements are still in
   // DOM).
   await click('[volume-type-icon="downloads"]');
-  await waitForElement('#photos-welcome.photos-welcome-hidden');
-  await waitForElement('.photos-welcome-message');
+  await waitForElement(photosBannerHiddenQuery);
+  await waitForElement(photosBannerTextQuery);
 
   // Banner should re-appear when navigating to Photos again.
   await click(photosVolumeQuery);
-  await waitForElement('#photos-welcome:not(.photos-welcome-hidden)');
+  await waitForElement(photosBannerShownQuery);
 
   // Dismiss the banner (created banner still in DOM).
-  await waitForElement('#photos-welcome-dismiss');
-  await click('#photos-welcome-dismiss');
-  await waitForElement('#photos-welcome.photos-welcome-hidden');
+  await waitForElement(photosBannerDismissButton);
+  await click(photosBannerDismissButton);
+  await waitForElement(photosBannerHiddenQuery);
 
   // Navigate away and then back, it should not re-appear.
   await click('[volume-type-icon="downloads"]');
   await waitForFile('hello.txt');
   await click(photosVolumeQuery);
   await waitForFile('image2.png');
-  await waitForElement('#photos-welcome.photos-welcome-hidden');
+  await waitForElement(photosBannerHiddenQuery);
 };

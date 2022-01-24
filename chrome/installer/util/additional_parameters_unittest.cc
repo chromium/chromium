@@ -257,6 +257,8 @@ TEST_F(AdditionalParametersTest, SetChannel) {
           EXPECT_THAT(ap.value(), ::testing::StartsWith(L"x64-stable"));
 #elif defined(ARCH_CPU_X86)
           EXPECT_THAT(ap.value(), ::testing::StartsWith(L"stable-arch_x86"));
+#elif defined(ARCH_CPU_ARM64)
+          EXPECT_THAT(ap.value(), ::testing::StartsWith(L"stable-arch_arm64"));
 #else
 #error unsupported processor architecture.
 #endif

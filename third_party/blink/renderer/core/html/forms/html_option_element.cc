@@ -125,6 +125,8 @@ bool HTMLOptionElement::SupportsFocus() const {
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList())
     return false;
+  if (is_descendant_of_select_menu_)
+    return !IsDisabledFormControl();
   return HTMLElement::SupportsFocus();
 }
 
@@ -411,7 +413,6 @@ HTMLFormElement* HTMLOptionElement::form() const {
 }
 
 void HTMLOptionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
-  root.EnableNameBasedSlotAssignment();
   UpdateLabel();
 }
 

@@ -34,6 +34,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "net/base/net_errors.h"
@@ -248,7 +249,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
       int index,
       GetElementFormAndFieldDataAtIndexCallback callback) override {}
 
-  void SetAssistantActionState(bool running) override {}
+  void SetAssistantKeyboardSuppressState(bool suppress) override {}
 
   void SetFieldsEligibleForManualFilling(
       const std::vector<FieldRendererId>& fields) override {}
@@ -391,7 +392,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
     std::vector<FormData> augmented_forms;
     EXPECT_CALL(*driver_->mock_browser_autofill_manager(), ShouldParseForms(_))
         .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
-    driver_->FormsSeen({form});
+    driver_->FormsSeen(/*updated_forms=*/{form}, /*removed_forms=*/{});
     return augmented_forms.front();
   }
 
@@ -456,6 +457,44 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
   EXPECT_EQ(form2.fields.front().host_frame, form2.fields.front().host_frame);
 }
 
+// Test that forms in "about:" without parents have an empty FormData::url.
+TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_AboutScheme) {
+  NavigateAndCommit(GURL("about:blank"));
+  ASSERT_TRUE(main_rfh()->GetLastCommittedURL().IsAboutBlank());
+
+  FormData form;
+  ContentAutofillDriverTestApi(driver_.get())
+      .SetFrameAndFormMetaData(form, nullptr);
+
+  EXPECT_TRUE(form.url.is_empty());
+}
+
+// Test that forms in "about:" subframes inherit the URL of their next
+// non-"about:" ancestor in FormData::url.
+TEST_P(ContentAutofillDriverTest,
+       SetFrameAndFormMetaDataOfForm_AboutSchemeInheritsFromGrandParent) {
+  NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
+  content::RenderFrameHost* child_rfh =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("about:blank"), content::RenderFrameHostTester::For(main_rfh())
+                                   ->AppendChild("child"));
+  content::RenderFrameHost* grandchild_rfh =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("about:blank"),
+          content::RenderFrameHostTester::For(child_rfh)->AppendChild(
+              "grandchild"));
+  auto grandchild_driver = std::make_unique<TestContentAutofillDriver>(
+      grandchild_rfh, test_autofill_client_.get(), router_.get());
+  ASSERT_TRUE(child_rfh->GetLastCommittedURL().IsAboutBlank());
+  ASSERT_TRUE(grandchild_rfh->GetLastCommittedURL().IsAboutBlank());
+
+  FormData form;
+  ContentAutofillDriverTestApi(grandchild_driver.get())
+      .SetFrameAndFormMetaData(form, nullptr);
+
+  EXPECT_EQ(form.url, GURL("https://hostname"));
+}
+
 TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
   NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
   // We test that `SetFrameAndFormMetaData(form, &field) sets the meta data not
@@ -481,12 +520,17 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
 
 TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
   int input_page_id = autofill_across_iframes_ ? kCrossFrameFill : 42;
+  url::Origin triggered_origin;
   FormData input_form_data = SeeAddressFormData();
+  for (FormFieldData& field : input_form_data.fields) {
+    field.origin = triggered_origin;
+    field.value = u"dummy_value";
+  }
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
   driver_->FillOrPreviewForm(input_page_id,
                              mojom::RendererFormDataAction::kFill,
-                             input_form_data, url::Origin(), {});
+                             input_form_data, triggered_origin, {});
 
   run_loop.RunUntilIdle();
 
@@ -503,12 +547,20 @@ TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
 
 TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
   int input_page_id = autofill_across_iframes_ ? kCrossFrameFill : 42;
+  url::Origin triggered_origin;
   FormData input_form_data = SeeAddressFormData();
+  for (FormFieldData& field : input_form_data.fields) {
+    field.origin = triggered_origin;
+    field.value = u"dummy_value";
+  }
+  ASSERT_TRUE(base::ranges::all_of(input_form_data.fields,
+                                   base::not_fn(&std::u16string::empty),
+                                   &FormFieldData::value));
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
   driver_->FillOrPreviewForm(input_page_id,
                              mojom::RendererFormDataAction::kPreview,
-                             input_form_data, url::Origin(), {});
+                             input_form_data, triggered_origin, {});
 
   run_loop.RunUntilIdle();
 
@@ -519,7 +571,8 @@ TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
   EXPECT_TRUE(fake_agent_.GetAutofillPreviewFormMessage(&output_page_id,
                                                         &output_form_data));
   EXPECT_EQ(input_page_id, output_page_id);
-  EXPECT_TRUE(input_form_data.SameFormAs(output_form_data));
+  EXPECT_TRUE(test::WithoutUnserializedData(input_form_data)
+                  .SameFormAs(output_form_data));
 }
 
 TEST_P(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
@@ -532,7 +585,7 @@ TEST_P(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   std::vector<FormData> augmented_forms;
   EXPECT_CALL(*driver_->mock_browser_autofill_manager(), ShouldParseForms(_))
       .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
-  driver_->FormsSeen({form});
+  driver_->FormsSeen(/*updated_forms=*/{form}, /*removed_forms=*/{});
 
   ContentAutofillDriverTestApi(driver_.get())
       .SetFrameAndFormMetaData(form, nullptr);

@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -55,7 +54,6 @@ class GCMDriverDesktop : public GCMDriver,
   GCMDriverDesktop(
       std::unique_ptr<GCMClientFactory> gcm_client_factory,
       const GCMClient::ChromeBuildInfo& chrome_build_info,
-      const std::string& user_agent,
       PrefService* prefs,
       const base::FilePath& store_path,
       bool remove_account_mappings_with_email_key,
@@ -67,6 +65,10 @@ class GCMDriverDesktop : public GCMDriver,
       const scoped_refptr<base::SequencedTaskRunner>& ui_thread,
       const scoped_refptr<base::SequencedTaskRunner>& io_thread,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
+
+  GCMDriverDesktop(const GCMDriverDesktop&) = delete;
+  GCMDriverDesktop& operator=(const GCMDriverDesktop&) = delete;
+
   ~GCMDriverDesktop() override;
 
   // GCMDriver implementation:
@@ -250,8 +252,6 @@ class GCMDriverDesktop : public GCMDriver,
 
   // Used to pass a weak pointer to the IO worker.
   base::WeakPtrFactory<GCMDriverDesktop> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverDesktop);
 };
 
 }  // namespace gcm

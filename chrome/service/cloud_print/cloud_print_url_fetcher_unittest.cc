@@ -10,8 +10,8 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -27,7 +27,6 @@
 #include "url/gurl.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace cloud_print {
 
@@ -100,6 +99,9 @@ class CloudPrintURLFetcherTest : public testing::Test,
         fetcher_(nullptr),
         quit_run_loop_(run_loop_.QuitClosure()) {}
 
+  CloudPrintURLFetcherTest(const CloudPrintURLFetcherTest&) = delete;
+  CloudPrintURLFetcherTest& operator=(const CloudPrintURLFetcherTest&) = delete;
+
   // Creates a URLFetcher, using the program's main thread to do IO.
   virtual void CreateFetcher(const GURL& url, int max_retries);
 
@@ -153,8 +155,6 @@ class CloudPrintURLFetcherTest : public testing::Test,
   scoped_refptr<TestCloudPrintURLFetcher> fetcher_;
   base::RunLoop run_loop_;
   base::OnceClosure quit_run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintURLFetcherTest);
 };
 
 class CloudPrintURLFetcherBasicTest : public CloudPrintURLFetcherTest {
@@ -310,7 +310,7 @@ CloudPrintURLFetcherOverloadTest::HandleRawData(
     const net::URLFetcher* source,
     const GURL& url,
     const std::string& data) {
-  const TimeDelta one_second = TimeDelta::FromMilliseconds(1000);
+  const base::TimeDelta one_second = base::Milliseconds(1000);
   response_count_++;
   if (response_count_ < 20) {
     fetcher_->StartGetRequest(url, this, max_retries_);
@@ -336,7 +336,7 @@ CloudPrintURLFetcherRetryBackoffTest::HandleRawData(
 
 void CloudPrintURLFetcherRetryBackoffTest::OnRequestGiveUp() {
   // It takes more than 200 ms to finish all 11 requests.
-  EXPECT_TRUE(Time::Now() - start_time_ >= TimeDelta::FromMilliseconds(200));
+  EXPECT_TRUE(Time::Now() - start_time_ >= base::Milliseconds(200));
   std::move(quit_run_loop_).Run();
 }
 

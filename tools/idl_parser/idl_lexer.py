@@ -9,7 +9,7 @@ The lexer uses the PLY library to build a tokenizer which understands
 Web IDL tokens.
 
 Web IDL, and Web IDL regular expressions can be found at:
-   http://heycam.github.io/webidl/
+   http://webidl.spec.whatwg.org/
 PLY can be found at:
    http://www.dabeaz.com/ply/
 """

@@ -4,8 +4,6 @@
 
 #include "components/metrics/content/content_stability_metrics_provider.h"
 
-#include <vector>
-
 #include "base/check.h"
 #include "base/notreached.h"
 #include "build/build_config.h"

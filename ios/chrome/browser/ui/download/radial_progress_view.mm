@@ -56,14 +56,12 @@
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 13, *)) {
-    BOOL differentColorAppearance = [self.traitCollection
-        hasDifferentColorAppearanceComparedToTraitCollection:
-            previousTraitCollection];
-    if (differentColorAppearance) {
-      self.trackLayer.strokeColor = self.trackTintColor.CGColor;
-      self.progressLayer.strokeColor = self.progressTintColor.CGColor;
-    }
+  BOOL differentColorAppearance = [self.traitCollection
+      hasDifferentColorAppearanceComparedToTraitCollection:
+          previousTraitCollection];
+  if (differentColorAppearance) {
+    self.trackLayer.strokeColor = self.trackTintColor.CGColor;
+    self.progressLayer.strokeColor = self.progressTintColor.CGColor;
   }
 }
 

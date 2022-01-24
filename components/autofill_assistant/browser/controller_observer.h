@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/state.h"
+#include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/ui_delegate.h"
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_data.h"
@@ -30,6 +31,10 @@ class ControllerObserver : public base::CheckedObserver {
 
   // Called when the controller has entered a new state.
   virtual void OnStateChanged(AutofillAssistantState new_state) = 0;
+
+  // Called when the suppression state of the keyboard changed.
+  virtual void OnKeyboardSuppressionStateChanged(
+      bool should_suppress_keyboard) = 0;
 
   // Report that the status message has changed.
   virtual void OnStatusMessageChanged(const std::string& message) = 0;
@@ -50,7 +55,7 @@ class ControllerObserver : public base::CheckedObserver {
       const CollectUserDataOptions* options) = 0;
 
   // Report that a field in |user_data| has changed.
-  virtual void OnUserDataChanged(const UserData* state,
+  virtual void OnUserDataChanged(const UserData& user_data,
                                  UserData::FieldChange field_change) = 0;
 
   // Called when details have changed. Details will be empty if they have been
@@ -60,10 +65,6 @@ class ControllerObserver : public base::CheckedObserver {
   // Called when info box has changed. |info_box| will be null if it has been
   // cleared.
   virtual void OnInfoBoxChanged(const InfoBox* info_box) = 0;
-
-  // Called when the current progress has changed. Progress, is expressed as a
-  // percentage.
-  virtual void OnProgressChanged(int progress) = 0;
 
   // Called when the currently active progress step has changed.
   virtual void OnProgressActiveStepChanged(int active_step) = 0;
@@ -82,6 +83,10 @@ class ControllerObserver : public base::CheckedObserver {
   // Updates the area of the visible viewport that is accessible when the
   // overlay state is OverlayState::PARTIAL.
   //
+  // |visual_viewport| contains the position and size of the visual viewport in
+  // the layout viewport. It might be empty if not known or the touchable area
+  // is empty.
+  //
   // |touchable_areas| contains one element per configured rectangle that should
   // be visible/touchable, though these can correspond to empty rectangles.
   //
@@ -91,6 +96,7 @@ class ControllerObserver : public base::CheckedObserver {
   //
   // All rectangles are expressed in absolute CSS coordinates.
   virtual void OnTouchableAreaChanged(
+      const RectF& visual_viewport,
       const std::vector<RectF>& touchable_areas,
       const std::vector<RectF>& restricted_areas) = 0;
 
@@ -129,6 +135,13 @@ class ControllerObserver : public base::CheckedObserver {
 
   // Called when the desired overlay behavior has changed.
   virtual void OnShouldShowOverlayChanged(bool should_show) = 0;
+
+  // Called when the TTS button visibility has changed. If |visible| is true,
+  // then the button is shown.
+  virtual void OnTtsButtonVisibilityChanged(bool visible) = 0;
+
+  // Called when Tts Button State has changed.
+  virtual void OnTtsButtonStateChanged(TtsButtonState state) = 0;
 };
 }  // namespace autofill_assistant
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CONTROLLER_OBSERVER_H_

@@ -11,8 +11,9 @@ ModelTypeConfigurer::ConfigureParams::ConfigureParams()
 ModelTypeConfigurer::ConfigureParams::ConfigureParams(ConfigureParams&& other) =
     default;
 ModelTypeConfigurer::ConfigureParams::~ConfigureParams() = default;
-ModelTypeConfigurer::ConfigureParams& ModelTypeConfigurer::ConfigureParams::
-operator=(ConfigureParams&& other) = default;
+ModelTypeConfigurer::ConfigureParams&
+ModelTypeConfigurer::ConfigureParams::operator=(ConfigureParams&& other) =
+    default;
 
 ModelTypeConfigurer::ModelTypeConfigurer() = default;
 ModelTypeConfigurer::~ModelTypeConfigurer() = default;

@@ -8,8 +8,8 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_limit_enforcer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -85,7 +85,7 @@ WebTimeNavigationObserver::WebTimeNavigationObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebTimeNavigationObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebTimeNavigationObserver);
 
 }  // namespace app_time
 }  // namespace ash

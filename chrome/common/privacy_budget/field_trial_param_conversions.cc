@@ -72,6 +72,10 @@ std::string EncodeIdentifiabilityType(const unsigned int& v) {
   return base::NumberToString(v);
 }
 
+std::string EncodeIdentifiabilityType(const double& value) {
+  return base::NumberToString(value);
+}
+
 std::string EncodeIdentifiabilityType(
     const std::vector<blink::IdentifiableSurface>& value) {
   std::vector<std::string> parts;

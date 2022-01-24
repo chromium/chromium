@@ -26,6 +26,9 @@ class SensorReader {
       const SensorInfoLinux& sensor_info,
       base::WeakPtr<PlatformSensorLinux> sensor);
 
+  SensorReader(const SensorReader&) = delete;
+  SensorReader& operator=(const SensorReader&) = delete;
+
   virtual ~SensorReader();
 
   // Starts fetching data based on strategy this reader has chosen.
@@ -48,8 +51,6 @@ class SensorReader {
 
   // Indicates if reading is active.
   bool is_reading_active_;
-
-  DISALLOW_COPY_AND_ASSIGN(SensorReader);
 };
 
 }  // namespace device

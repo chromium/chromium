@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that stepping into dispatchEvent() method will lead to a pause in the first event listener.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <div id="myDiv"></div>

@@ -104,7 +104,7 @@ void PaintUnderInvalidationChecker::WouldUseCachedSubsequence(
     const DisplayItemClient& client) {
   DCHECK(!IsChecking());
 
-  const auto* markers = paint_controller_.GetSubsequenceMarkers(client);
+  const auto* markers = paint_controller_.GetSubsequenceMarkers(client.Id());
   DCHECK(markers);
   old_chunk_index_ = markers->start_chunk_index;
   new_chunk_index_ = NewPaintChunks().size();
@@ -127,19 +127,19 @@ void PaintUnderInvalidationChecker::CheckNewChunk() {
 }
 
 void PaintUnderInvalidationChecker::WillEndSubsequence(
-    const DisplayItemClient& client,
+    DisplayItemClientId client_id,
     wtf_size_t start_chunk_index) {
   DCHECK(IsChecking());
   if (!IsCheckingSubsequence())
     return;
 
-  const auto* markers = paint_controller_.GetSubsequenceMarkers(client);
+  const auto* markers = paint_controller_.GetSubsequenceMarkers(client_id);
   if (!markers) {
     if (start_chunk_index != NewPaintChunks().size())
-      ShowSubsequenceError("unexpected subsequence", &client);
+      ShowSubsequenceError("unexpected subsequence", client_id);
   } else if (markers->end_chunk_index - markers->start_chunk_index !=
              NewPaintChunks().size() - start_chunk_index) {
-    ShowSubsequenceError("new subsequence wrong length", &client);
+    ShowSubsequenceError("new subsequence wrong length", client_id);
   } else {
     // Now we know that the last chunk in the subsequence is complete. See also
     // CheckNewChunk().
@@ -151,22 +151,24 @@ void PaintUnderInvalidationChecker::WillEndSubsequence(
     }
   }
 
-  if (subsequence_client_ == &client)
+  if (subsequence_client_->Id() == client_id)
     Stop();
 }
 
 void PaintUnderInvalidationChecker::CheckNewChunkInternal() {
   DCHECK(subsequence_client_);
   const auto* markers =
-      paint_controller_.GetSubsequenceMarkers(*subsequence_client_);
+      paint_controller_.GetSubsequenceMarkers(subsequence_client_->Id());
   DCHECK(markers);
   const auto& new_chunk = NewPaintChunks()[new_chunk_index_];
   if (old_chunk_index_ >= markers->end_chunk_index) {
-    ShowSubsequenceError("extra chunk", nullptr, &new_chunk);
+    ShowSubsequenceError("extra chunk", kInvalidDisplayItemClientId,
+                         &new_chunk);
   } else {
     const auto& old_chunk = OldPaintChunks()[old_chunk_index_];
     if (!old_chunk.EqualsForUnderInvalidationChecking(new_chunk)) {
-      ShowSubsequenceError("chunk changed", nullptr, &new_chunk, &old_chunk);
+      ShowSubsequenceError("chunk changed", kInvalidDisplayItemClientId,
+                           &new_chunk, &old_chunk);
     }
   }
   new_chunk_index_++;
@@ -183,9 +185,13 @@ void PaintUnderInvalidationChecker::ShowItemError(
   }
   LOG(ERROR) << "Under-invalidation: " << reason;
 #if DCHECK_IS_ON()
-  LOG(ERROR) << "New display item: " << new_item.AsDebugString();
-  if (old_item)
-    LOG(ERROR) << "Old display item: " << old_item->AsDebugString();
+  LOG(ERROR) << "New display item: "
+             << new_item.AsDebugString(*paint_controller_.new_paint_artifact_);
+  if (old_item) {
+    LOG(ERROR) << "Old display item: "
+               << old_item->AsDebugString(
+                      *paint_controller_.current_paint_artifact_);
+  }
   LOG(ERROR) << "See http://crbug.com/619103.";
 
   if (auto* new_drawing = DynamicTo<DrawingDisplayItem>(new_item)) {
@@ -208,7 +214,7 @@ void PaintUnderInvalidationChecker::ShowItemError(
 
 void PaintUnderInvalidationChecker::ShowSubsequenceError(
     const char* reason,
-    const DisplayItemClient* client,
+    DisplayItemClientId client_id,
     const PaintChunk* new_chunk,
     const PaintChunk* old_chunk) {
   if (subsequence_client_) {
@@ -216,15 +222,22 @@ void PaintUnderInvalidationChecker::ShowSubsequenceError(
                << subsequence_client_->DebugName() << ")";
   }
   LOG(ERROR) << "Under-invalidation: " << reason;
-  if (client) {
+  if (client_id != kInvalidDisplayItemClientId) {
     // |client| may be different from |subsequence_client_| if the error occurs
     // in a descendant subsequence of the cached subsequence.
-    LOG(ERROR) << "Subsequence client: " << client->DebugName();
+    LOG(ERROR) << "Subsequence client: "
+               << paint_controller_.new_paint_artifact_->ClientDebugName(
+                      client_id);
   }
-  if (new_chunk)
-    LOG(ERROR) << "New paint chunk: " << *new_chunk;
-  if (old_chunk)
-    LOG(ERROR) << "Old paint chunk: " << *old_chunk;
+  if (new_chunk) {
+    LOG(ERROR) << "New paint chunk: "
+               << new_chunk->ToString(*paint_controller_.new_paint_artifact_);
+  }
+  if (old_chunk) {
+    LOG(ERROR) << "Old paint chunk: "
+               << old_chunk->ToString(
+                      *paint_controller_.current_paint_artifact_);
+  }
 #if DCHECK_IS_ON()
   paint_controller_.ShowDebugData();
 #else

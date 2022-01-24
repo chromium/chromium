@@ -33,6 +33,10 @@ struct ClientStruct {
     id_ = std::move(other.id_);
     data_ = std::move(other.data_);
   }
+
+  ClientStruct(const ClientStruct&) = delete;
+  ClientStruct& operator=(const ClientStruct&) = delete;
+
   ~ClientStruct() = default;
 
   // The methods below are convenience methods to have a similar API as protocol
@@ -43,9 +47,6 @@ struct ClientStruct {
 
   std::string id_;
   std::string data_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientStruct);
 };
 
 void CreateData(const std::string& key,

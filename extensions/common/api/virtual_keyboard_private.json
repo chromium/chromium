@@ -134,14 +134,14 @@
           { "name": "text",
             "type": "string",
             "description": "The text that will be inserted."
-          },
-          { "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when the insertion is completed.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when the insertion is completed.",
+          "parameters": []
+        }
       },
       {
         "name": "sendKeyEvent",
@@ -151,27 +151,26 @@
           { "name": "keyEvent",
             "$ref": "VirtualKeyboardEvent",
             "description": ""
-          },
-          { "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "Called after processing the event.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called after processing the event.",
+          "parameters": []
+        }
       },
       {
         "name": "hideKeyboard",
         "type": "function",
         "description": "Hides the virtual keyboard.",
-        "parameters": [
-          { "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when the keyboard is hidden.",
-            "parameters": []
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when the keyboard is hidden.",
+          "parameters": []
+        }
       },
       {
         "name": "setHotrodKeyboard",
@@ -199,46 +198,41 @@
         "name": "keyboardLoaded",
         "type": "function",
         "description": "Inform the system that the keyboard has loaded.",
-        "parameters": [
-          { "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when load acknowledgement is complete.",
-            "parameters": []
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when load acknowledgement is complete.",
+          "parameters": []
+        }
       },
       {
         "name": "getKeyboardConfig",
         "type": "function",
         "description": "Gets the virtual keyboard configuration.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Called when querying virtual keyboard configuration is complete.",
-            "parameters": [
-              {
-                "$ref": "KeyboardConfig",
-                "name": "config"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when querying virtual keyboard configuration is complete.",
+          "parameters": [
+            {
+              "$ref": "KeyboardConfig",
+              "name": "config"
+            }
+          ]
+        }
       },
       {
         "name": "openSettings",
         "type": "function",
         "description": "Opens chrome://os-settings/osLanguages page.",
-        "parameters": [
-        ]
+        "parameters": []
       },
       {
         "name": "openSuggestionSettings",
         "type": "function",
         "description": "Opens chrome://os-settings/osLanguages/smartInputs page.",
-        "parameters": [
-        ]
+        "parameters": []
       },
       {
         "name": "setContainerBehavior",
@@ -249,21 +243,20 @@
             "$ref": "ContainerBehaviorOptions",
             "name": "options",
             "description": "Optional parameters for new container behavior."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when container mode is ready to change, or if the operation failed.",
-            "parameters": [
-              {
-                "name": "success",
-                "type": "boolean",
-                "description": "Whether the container mode changed successfully"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when container mode is ready to change, or if the operation failed.",
+          "parameters": [
+            {
+              "name": "success",
+              "type": "boolean",
+              "description": "Whether the container mode changed successfully"
+            }
+          ]
+        }
       },
       {
         "name": "setDraggableArea",
@@ -355,21 +348,20 @@
                 "description": "A filter represented as a list of clipboard item ids. getClipboardHistory will only return the items in this list. If this list is empty, getClipboardHistory will return all clipboard items in the history."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Called when querying the ClipboardHistory is complete.",
-            "parameters": [
-              {
-                "name": "clipboardHistory",
-                "type": "array",
-                "description": "List of clipboard items corresponding to the requested items (or everything if 'itemIds' was not specified).",
-                "items": {"$ref": "ClipboardItem"}
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when querying the ClipboardHistory is complete.",
+          "parameters": [
+            {
+              "name": "clipboardHistory",
+              "type": "array",
+              "description": "List of clipboard items corresponding to the requested items (or everything if 'itemIds' was not specified).",
+              "items": {"$ref": "ClipboardItem"}
+            }
+          ]
+        }
       },
       {
         "name": "pasteClipboardItem",
@@ -380,15 +372,13 @@
             "name": "itemId",
             "type": "string",
             "description": "The unique id which identifies this clipboard item.",
-            "parameters": [
-              {
-                "type": "function",
-                "name": "callback",
-                "optional": true,
-                "description": "Called when pasting the clipboard item is complete.",
-                "parameters": []
-              }
-            ]
+            "parameters": [],
+            "returns_async": {
+              "name": "callback",
+              "optional": true,
+              "description": "Called when pasting the clipboard item is complete.",
+              "parameters": []
+            }
           }
         ]
       },
@@ -401,15 +391,13 @@
             "name": "itemId",
             "type": "string",
             "description": "The unique id which identifies this clipboard item.",
-            "parameters": [
-              {
-                "type": "function",
-                "name": "callback",
-                "optional": true,
-                "description": "Called when deleting the clipboard item is complete.",
-                "parameters": []
-              }
-            ]
+            "parameters": [],
+            "returns_async": {
+              "name": "callback",
+              "optional": true,
+              "description": "Called when deleting the clipboard item is complete.",
+              "parameters": []
+            }
           }
         ]
       }

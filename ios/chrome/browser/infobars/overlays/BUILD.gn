@@ -5,6 +5,8 @@
 source_set("overlays") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "default_infobar_overlay_request_factory.h",
+    "default_infobar_overlay_request_factory.mm",
     "infobar_banner_overlay_request_cancel_handler.h",
     "infobar_banner_overlay_request_cancel_handler.mm",
     "infobar_modal_completion_notifier.h",
@@ -14,8 +16,6 @@ source_set("overlays") {
     "infobar_overlay_request_cancel_handler.h",
     "infobar_overlay_request_cancel_handler.mm",
     "infobar_overlay_request_factory.h",
-    "infobar_overlay_request_factory_impl.h",
-    "infobar_overlay_request_factory_impl.mm",
     "infobar_overlay_request_inserter.h",
     "infobar_overlay_request_inserter.mm",
     "infobar_overlay_tab_helper.h",
@@ -86,11 +86,11 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "default_infobar_overlay_request_factory_unittest.mm",
     "infobar_banner_overlay_request_cancel_handler_unittest.mm",
     "infobar_modal_completion_notifier_unittest.mm",
     "infobar_modal_overlay_request_cancel_handler_unittest.mm",
     "infobar_overlay_request_cancel_handler_unittest.mm",
-    "infobar_overlay_request_factory_impl_unittest.mm",
     "infobar_overlay_request_inserter_unittest.mm",
     "infobar_overlay_tab_helper_unittest.mm",
     "infobar_overlay_util_unittest.mm",
@@ -121,7 +121,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords:infobar_delegates",
     "//ios/chrome/browser/passwords/test",
     "//ios/chrome/browser/translate:test_support",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test:test_support",

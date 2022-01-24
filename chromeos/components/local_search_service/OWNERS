@@ -2,7 +2,3 @@ jiameng@chromium.org
 tby@chromium.org
 thanhdng@chromium.org
 wrong@chromium.org
-
-# Service sandbox specialization must be reviewed by SECURITY_OWNERS
-per-file service_sandbox_type.h=set noparent
-per-file service_sandbox_type.h=file://ipc/SECURITY_OWNERS

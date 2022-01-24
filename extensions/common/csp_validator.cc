@@ -17,12 +17,14 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -41,6 +43,7 @@ const char kChildSrc[] = "child-src";
 const char kWorkerSrc[] = "worker-src";
 const char kSelfSource[] = "'self'";
 const char kNoneSource[] = "'none'";
+const char kWasmEvalSource[] = "'wasm-eval'";
 
 const char kDirectiveSeparator = ';';
 
@@ -112,7 +115,10 @@ class DirectiveStatus {
   DirectiveStatus(std::initializer_list<const char*> directives)
       : directive_names_(directives.begin(), directives.end()) {}
 
+  DirectiveStatus(const DirectiveStatus&) = delete;
   DirectiveStatus(DirectiveStatus&&) = default;
+
+  DirectiveStatus& operator=(const DirectiveStatus&) = delete;
   DirectiveStatus& operator=(DirectiveStatus&&) = default;
 
   // Returns true if |directive_name| matches this DirectiveStatus.
@@ -137,8 +143,6 @@ class DirectiveStatus {
   std::vector<std::string> directive_names_;
   // Whether or not we've seen any directive name that matches |this|.
   bool seen_in_policy_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectiveStatus);
 };
 
 // Returns whether |url| starts with |scheme_and_separator| and does not have a
@@ -237,7 +241,7 @@ std::string GetSecureDirectiveValues(
 
     // We might need to relax this whitelist over time.
     if (source_lower == kSelfSource || source_lower == kNoneSource ||
-        source_lower == "'wasm-eval'" || source_lower == "blob:" ||
+        source_lower == kWasmEvalSource || source_lower == "blob:" ||
         source_lower == "filesystem:" ||
         isNonWildcardTLD(source_lower, "https://", true) ||
         isNonWildcardTLD(source_lower, "chrome://", false) ||
@@ -325,6 +329,9 @@ class CSPDirectiveToken {
   explicit CSPDirectiveToken(const Directive& directive)
       : directive_(directive) {}
 
+  CSPDirectiveToken(const CSPDirectiveToken&) = delete;
+  CSPDirectiveToken& operator=(const CSPDirectiveToken&) = delete;
+
   // Returns true if this token affects |status|. In that case, the token's
   // directive values are secured by |secure_function|.
   bool MatchAndUpdateStatus(DirectiveStatus* status,
@@ -357,8 +364,6 @@ class CSPDirectiveToken {
  private:
   const Directive& directive_;
   absl::optional<std::string> secure_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPDirectiveToken);
 };
 
 // Class responsible for parsing a given CSP string |policy|, and enforcing
@@ -376,6 +381,10 @@ class CSPEnforcer {
       : manifest_key_(std::move(manifest_key)),
         show_missing_csp_warnings_(show_missing_csp_warnings),
         secure_function_(secure_function) {}
+
+  CSPEnforcer(const CSPEnforcer&) = delete;
+  CSPEnforcer& operator=(const CSPEnforcer&) = delete;
+
   virtual ~CSPEnforcer() {}
 
   // Returns the enforced CSP.
@@ -397,8 +406,6 @@ class CSPEnforcer {
   const std::string manifest_key_;
   const bool show_missing_csp_warnings_;
   const SecureDirectiveValueFunction secure_function_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPEnforcer);
 };
 
 std::string CSPEnforcer::Enforce(const DirectiveList& directives,
@@ -478,6 +485,9 @@ class ExtensionCSPEnforcer : public CSPEnforcer {
       secure_directives_.emplace_back(new DirectiveStatus({kObjectSrc}));
   }
 
+  ExtensionCSPEnforcer(const ExtensionCSPEnforcer&) = delete;
+  ExtensionCSPEnforcer& operator=(const ExtensionCSPEnforcer&) = delete;
+
  protected:
   std::string GetDefaultCSPValue(const DirectiveStatus& status) override {
     if (status.Matches(kObjectSrc))
@@ -485,9 +495,6 @@ class ExtensionCSPEnforcer : public CSPEnforcer {
     DCHECK(status.Matches(kScriptSrc));
     return kScriptSrcDefaultDirective;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCSPEnforcer);
 };
 
 class AppSandboxPageCSPEnforcer : public CSPEnforcer {
@@ -501,6 +508,10 @@ class AppSandboxPageCSPEnforcer : public CSPEnforcer {
     secure_directives_.emplace_back(new DirectiveStatus({kScriptSrc}));
   }
 
+  AppSandboxPageCSPEnforcer(const AppSandboxPageCSPEnforcer&) = delete;
+  AppSandboxPageCSPEnforcer& operator=(const AppSandboxPageCSPEnforcer&) =
+      delete;
+
  protected:
   std::string GetDefaultCSPValue(const DirectiveStatus& status) override {
     if (status.Matches(kChildSrc))
@@ -508,9 +519,6 @@ class AppSandboxPageCSPEnforcer : public CSPEnforcer {
     DCHECK(status.Matches(kScriptSrc));
     return kAppSandboxScriptSrcDefaultDirective;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppSandboxPageCSPEnforcer);
 };
 
 }  //  namespace
@@ -694,8 +702,18 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
         directive_values.begin(), directive_values.end(),
         [](base::StringPiece source) {
           std::string source_lower = base::ToLowerASCII(source);
-          return source_lower == kSelfSource || source_lower == kNoneSource ||
-                 IsLocalHostSource(source_lower);
+          if (source_lower == kSelfSource || source_lower == kNoneSource ||
+              IsLocalHostSource(source_lower)) {
+            return true;
+          }
+
+          if (source_lower == kWasmEvalSource &&
+              base::FeatureList::IsEnabled(
+                  extensions_features::kAllowWasmInMV3)) {
+            return true;
+          }
+
+          return false;
         });
 
     if (it == directive_values.end())

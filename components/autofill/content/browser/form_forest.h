@@ -14,6 +14,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 namespace internal {
@@ -220,14 +221,16 @@ class FormForest {
   // The |field_type_map| should contain the field types of the fields in
   // |browser_form|.
   //
-  // A field is *safe to fill* iff at least one of the following conditions
-  // holds:
+  // A field is *safe to fill* iff at least one of the conditions (1), (2), (3)
+  // and additionally condition (4) hold:
   // (1) The field's origin is the |triggered_origin|.
   // (2) The field's origin is the main origin and the field's type in
   //     |field_type_map| is not sensitive (see is_sensitive_field_type()).
   // (3) The |triggered_origin| is main origin and the field's frame's
   //     permissions policy allows shared-autofill.
-  // See below for a future additional necessary condition.
+  // (4) No frame on the shortest path from the field on which Autofill was
+  //     triggered to the field in question, except perhaps the shallowest
+  //     frame, is a fenced frame.
   //
   // The *origin of a field* is the origin of the frame that contains the
   // corresponding form-control element.
@@ -237,24 +240,18 @@ class FormForest {
   // A frame's *permissions policy allows shared-autofill* if that frame is a
   // main frame or its embedding <iframe> element lists "shared-autofill" in
   // its "allow" attribute (see https://www.w3.org/TR/permissions-policy-1/).
-  //
-  // When fenced frames (crbug/1111084) or disallowdocumentaccess (crbug/961448)
-  // ships, a necessary requirement for a field to be *safe to fill* will be:
-  // (4) No frame on the shortest path from the field on from which Autofill was
-  //     triggered to the field in question frame in the frame tree, except
-  //     perhaps the shallowest frame, is a fenced frame or has the has the
-  //     disallowdocumentaccess attribute.
-  // TODO(crbug/1201854): Implement fenced frames and/or disallowdocumentaccess
-  // if and when they ship.
   std::vector<FormData> GetRendererFormsOfBrowserForm(
       const FormData& browser_form,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       const;
 
-  // Deletes all forms and fields that originate from |frame|. Fields from
-  // descendant frames of |frame| are not erased because EraseFrame() will be or
-  // has been called for them individually.
+  // Deletes all forms and fields that originate from |form| and unsets the
+  // FrameData::parent_form pointers of all child forms.
+  void EraseForm(FormGlobalId form);
+
+  // Deletes all forms and fields that originate from |frame| and unsets the
+  // FrameData::parent_form pointers of all child forms.
   void EraseFrame(LocalFrameToken frame);
 
   // Resets the object to the initial state.
@@ -312,12 +309,12 @@ class FormForest {
   // The first example is the reason why UpdateTreeOfRendererForm() may trigger
   // a reparse in a parent frame. The second example is the reason why we do not
   // cache LocalFrameTokens.
-  static absl::optional<LocalFrameToken> Resolve(const FrameData& reference,
-                                                 FrameToken query);
+  absl::optional<LocalFrameToken> Resolve(const FrameData& reference,
+                                          FrameToken query);
 
   // Returns the FrameData known for |frame|, or creates a new one and returns
   // it, in which case all members but FrameData::host_frame are uninitialized.
-  FrameData* GetOrCreateFrame(LocalFrameToken frame);
+  FrameData* GetOrCreateFrameData(LocalFrameToken frame);
 
   // Returns the FrameData known for |frame|, or null.
   // May be used in const qualified methods if the return value is not mutated.
@@ -339,12 +336,31 @@ class FormForest {
   // May be used in const qualified methods if the return value is not mutated.
   FrameAndForm GetRoot(FormGlobalId form);
 
+  // Helper for EraseFrame() and EraseForm() that removes all fields that
+  // originate from |frame_or_form| and unsets FrameData::parent_form pointer of
+  // |frame_or_form|'s children. We intentionally iterate over all frames and
+  // forms to search for fields from |frame_or_form|. Alternatively, we could
+  // limit this to the root form of |frame_or_form|. However, this would rely on
+  // |frame_or_form| being erased before its ancestors, since otherwise
+  // |frame_or_form| is disconnected from its root already.
+  void EraseReferencesTo(
+      absl::variant<LocalFrameToken, FormGlobalId> frame_or_form);
+
   // Adds |renderer_form| and |driver| to the relevant tree, where |driver| must
   // be the ContentAutofillDriver of the |renderer_form|'s FormData::host_frame.
   // Leaves `*renderer_form` in a valid but unspecified state (like after a
   // move). In particular, `*renderer_form` and its members can be reassigned.
   void UpdateTreeOfRendererForm(FormData* renderer_form,
                                 ContentAutofillDriver* driver);
+
+  // The URL of a main frame managed by the FormForest.
+  // TODO(crbug.com/1240247): Remove and make Resolve() static.
+  std::string MainUrlForDebugging() const;
+
+  // The frame managed by the FormForest that was last passed to
+  // UpdateTreeOfRendererForm().
+  // TODO(crbug.com/1240247): Remove and make Resolve() static.
+  content::GlobalRenderFrameHostId some_rfh_for_debugging_;
 
   // The FrameData nodes of the forest.
   // The members FrameData::frame_token must not be mutated.

@@ -23,8 +23,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/one_shot_event.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -439,7 +439,7 @@ void BackgroundModeManager::LaunchBackgroundApplication(
       ->BrowserAppLauncher()
       ->LaunchAppWithParams(CreateAppLaunchParamsUserContainer(
           profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          apps::mojom::AppLaunchSource::kSourceBackground));
+          apps::mojom::LaunchSource::kFromBackgroundMode));
 }
 
 // static

@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -24,7 +23,7 @@
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -61,6 +60,7 @@ const char kEnrollmentStepSignin[] = "signin";
 const char kEnrollmentStepAdJoin[] = "ad-join";
 const char kEnrollmentStepSuccess[] = "success";
 const char kEnrollmentStepWorking[] = "working";
+const char kEnrollmentStepTPMChecking[] = "tpm-checking";
 
 // Enrollment mode constants used in the UI. This needs to be kept in sync with
 // oobe_screen_oauth_enrollment.js.
@@ -94,7 +94,6 @@ std::string EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
     case policy::EnrollmentConfig::MODE_INITIAL_SERVER_FORCED:
     case policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED:
     case policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK:
-    case policy::EnrollmentConfig::MODE_ATTESTATION_ENROLLMENT_TOKEN:
       return kEnrollmentModeUIForced;
     case policy::EnrollmentConfig::MODE_RECOVERY:
       return kEnrollmentModeUIRecovery;
@@ -197,15 +196,19 @@ EnrollmentScreenHandler::EnrollmentScreenHandler(
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
   network_state_informer_->AddObserver(this);
+  set_user_acted_method_path("login.OAuthEnrollmentScreen.userActed");
 }
 
 EnrollmentScreenHandler::~EnrollmentScreenHandler() {
   network_state_informer_->RemoveObserver(this);
+  if (screen_)
+    screen_->OnViewDestroyed(this);
 }
 
 // EnrollmentScreenHandler, WebUIMessageHandler implementation --
 
 void EnrollmentScreenHandler::RegisterMessages() {
+  BaseScreenHandler::RegisterMessages();
   AddCallback("toggleFakeEnrollment",
               &EnrollmentScreenHandler::HandleToggleFakeEnrollment);
   AddCallback("oauthEnrollClose", &EnrollmentScreenHandler::HandleClose);
@@ -248,6 +251,16 @@ void EnrollmentScreenHandler::Show() {
 
 void EnrollmentScreenHandler::Hide() {}
 
+void EnrollmentScreenHandler::Bind(ash::EnrollmentScreen* screen) {
+  screen_ = screen;
+  BaseScreenHandler::SetBaseScreen(screen_);
+}
+
+void EnrollmentScreenHandler::Unbind() {
+  screen_ = nullptr;
+  BaseScreenHandler::SetBaseScreen(nullptr);
+}
+
 void EnrollmentScreenHandler::ShowSigninScreen() {
   observe_network_failure_ = true;
   ShowStep(kEnrollmentStepSignin);
@@ -260,16 +273,18 @@ void EnrollmentScreenHandler::ShowUserError(UserErrorType error_type,
   CallJS("login.OAuthEnrollmentScreen.doReload");
   switch (error_type) {
     case UserErrorType::kConsumerDomain: {
-      ShowError(
-          IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE,
+      ShowErrorMessage(
+          l10n_util::GetStringFUTF8(
+              IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE_ACCOUNT_CHECK,
+              base::ASCIIToUTF16(email)),
           true);
       break;
     }
     case UserErrorType::kBusinessDomain: {
       ShowErrorMessage(
           l10n_util::GetStringFUTF8(
-              IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_BUSINESS_DOMAIN_WITH_PACKAGED_LICENSE,
-              base::ASCIIToUTF16(gaia::ExtractDomainName(email))),
+              IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE_ACCOUNT_CHECK,
+              base::ASCIIToUTF16(email)),
           true);
       break;
     }
@@ -277,7 +292,8 @@ void EnrollmentScreenHandler::ShowUserError(UserErrorType error_type,
 }
 
 void EnrollmentScreenHandler::ShowEnrollmentCloudReadyNotAllowedError() {
-  ShowError(IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED, false);
+  ShowScreen(EnrollmentScreenView::kScreenId);
+  CallJS("login.OAuthEnrollmentScreen.showOSNotInstalledError");
 }
 
 void EnrollmentScreenHandler::ShowActiveDirectoryScreen(
@@ -381,8 +397,13 @@ void EnrollmentScreenHandler::ShowAttributePromptScreen(
          location);
 }
 
-void EnrollmentScreenHandler::ShowEnrollmentSpinnerScreen() {
+void EnrollmentScreenHandler::ShowEnrollmentWorkingScreen() {
   ShowStep(kEnrollmentStepWorking);
+}
+
+void EnrollmentScreenHandler::ShowEnrollmentTPMCheckingScreen() {
+  ShowScreen(EnrollmentScreenView::kScreenId);
+  ShowStep(kEnrollmentStepTPMChecking);
 }
 
 void EnrollmentScreenHandler::SetEnterpriseDomainInfo(
@@ -438,6 +459,10 @@ void EnrollmentScreenHandler::ShowOtherError(
 
 void EnrollmentScreenHandler::Shutdown() {
   shutdown_ = true;
+}
+
+void EnrollmentScreenHandler::SetIsBrandedBuild(bool is_branded) {
+  CallJS("login.OAuthEnrollmentScreen.setIsBrandedBuild", is_branded);
 }
 
 void EnrollmentScreenHandler::ShowEnrollmentStatus(
@@ -630,10 +655,8 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   builder->Add("oauthEnrollSuccessTitle",
                IDS_ENTERPRISE_ENROLLMENT_SUCCESS_TITLE);
   builder->Add("oauthEnrollErrorTitle", IDS_ENTERPRISE_ENROLLMENT_ERROR_TITLE);
-  builder->Add("enrollmentSuccessIllustrationTitle",
-               IDS_ENTERPRISE_ENROLLMENT_SUCCESS_ILLUSTRATION_TITLE);
-  builder->Add("enrollmentErrorIllustrationTitle",
-               IDS_ENTERPRISE_ENROLLMENT_ERROR_ILLUSTRATION_TITLE);
+  builder->Add("oauthOSNotInstalledError",
+               IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED);
   builder->Add("oauthEnrollDeviceInformation",
                IDS_ENTERPRISE_ENROLLMENT_DEVICE_INFORMATION);
   builder->Add("oauthEnrollExplainAttributeLink",
@@ -648,6 +671,11 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   // Do not use AddF for this string as it will be rendered by the JS code.
   builder->Add("oauthEnrollAbeSuccessDomain",
                IDS_ENTERPRISE_ENROLLMENT_SUCCESS_DOMAIN);
+
+  // TPM checking spinner strings.
+  builder->Add("TPMCheckTitle", IDS_TPM_CHECK_TITLE);
+  builder->Add("TPMCheckSubtitle", IDS_TPM_CHECK_SUBTITLE);
+  builder->Add("cancelButton", IDS_CANCEL);
 
   /* Active Directory strings */
   builder->Add("oauthEnrollAdMachineNameInput", IDS_AD_DEVICE_NAME_INPUT_LABEL);
@@ -823,7 +851,7 @@ void EnrollmentScreenHandler::HandleClose(const std::string& reason) {
   DCHECK(controller_);
   if (active_directory_join_type_ != ActiveDirectoryDomainJoinType::COUNT) {
     DCHECK(g_browser_process->platform_part()
-               ->browser_policy_connector_chromeos()
+               ->browser_policy_connector_ash()
                ->IsActiveDirectoryManaged());
     // Record Active Directory join type in case of successful enrollment and
     // domain join.
@@ -891,6 +919,7 @@ void EnrollmentScreenHandler::ContinueAuthenticationWhenCookiesAvailable(
   cookie_manager->GetCookieList(
       GaiaUrls::GetInstance()->gaia_url(),
       net::CookieOptions::MakeAllInclusive(),
+      net::CookiePartitionKeychain::Todo(),
       base::BindOnce(&EnrollmentScreenHandler::OnGetCookiesForCompleteLogin,
                      weak_ptr_factory_.GetWeakPtr(), user));
 }

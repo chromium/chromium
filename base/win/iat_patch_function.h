@@ -23,6 +23,10 @@ namespace win {
 class BASE_EXPORT IATPatchFunction {
  public:
   IATPatchFunction();
+
+  IATPatchFunction(const IATPatchFunction&) = delete;
+  IATPatchFunction& operator=(const IATPatchFunction&) = delete;
+
   ~IATPatchFunction();
 
   // Intercept a function in an import table of a specific
@@ -68,8 +72,6 @@ class BASE_EXPORT IATPatchFunction {
   void* intercept_function_ = nullptr;
   void* original_function_ = nullptr;
   IMAGE_THUNK_DATA* iat_thunk_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(IATPatchFunction);
 };
 
 }  // namespace win

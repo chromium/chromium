@@ -181,8 +181,8 @@ TEST_F(SnapshotManagerTest, TakeSnapshot) {
       TestFolderAndFiles::CreateFilesAndFolders(user_data_dir()));
 
   // Files and folders at User Data level that should be snapshotted.
-  base::File file(user_data_dir().Append(kUserDataFile),
-                  base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  base::File user_data_file(user_data_dir().Append(kUserDataFile),
+                            base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   ASSERT_NO_FATAL_FAILURE(TestFolderAndFiles::CreateFilesAndFolders(
       user_data_dir().Append(kUserDataFolder)));
 

@@ -22,29 +22,25 @@
       }
     ]
   },
-  "linux-component-rel": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "linux-control-rel": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "linux-local-ssd-nvme-rel": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "linux-local-ssd-scsi-rel": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "linux-pd-ssd-rel": {
-    "additional_compile_targets": [
-      "all"
+  "win-bootstrap-tests": {
+    "gtest_tests": [
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Windows-10-19042"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/"
+      }
     ]
   }
 }

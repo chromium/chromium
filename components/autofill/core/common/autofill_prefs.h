@@ -21,7 +21,6 @@ namespace prefs {
 
 // Alphabetical list of preference names specific to the Autofill
 // component. Keep alphabetized, and document each in the .cc file.
-extern const char kAutofillAcceptSaveCreditCardPromptState[];
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 extern const char kAutofillCreditCardEnabled[];
 extern const char kAutofillCreditCardFidoAuthEnabled[];
@@ -54,15 +53,6 @@ enum Flags {
   kWallet = 1 << 0,
 };
 }  // namespace sync_transport_opt_in
-
-// Possible values for previous user decision when we displayed a save credit
-// card prompt.
-enum PreviousSaveCreditCardPromptUserDecision {
-  PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE,
-  PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_ACCEPTED,
-  PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_DENIED,
-  NUM_PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISIONS
-};
 
 // Registers Autofill prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

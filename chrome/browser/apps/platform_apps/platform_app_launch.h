@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "build/build_config.h"
+
 class GURL;
 class Profile;
 
@@ -33,6 +35,14 @@ bool OpenExtensionApplicationWindow(Profile* profile,
 // application tab. Returns true if |app_id| was successfully opened in a tab,
 // and false otherwise.
 bool OpenExtensionApplicationTab(Profile* profile, const std::string& app_id);
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+// Opens the deprecated Chrome Apps flow if |app_id| refers to a Chrome App and
+// Chrome Apps are deprecated on the |profile|. Returns true if that was the
+// case, or false otherwise.
+bool OpenDeprecatedApplicationPrompt(Profile* profile,
+                                     const std::string& app_id);
+#endif
 
 // Tries to open |app_id|, and prompts the user if the app is disabled. Returns
 // true if the app was successfully opened and false otherwise.

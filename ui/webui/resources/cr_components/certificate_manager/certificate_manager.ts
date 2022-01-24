@@ -18,19 +18,18 @@ import './certificates_error_dialog.js';
 import './certificate_provisioning_list.js';
 // </if>
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {I18nMixin} from '../../js/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
-import {WebUIListenerBehavior} from '../../js/web_ui_listener_behavior.m.js';
+import {WebUIListenerMixin} from '../../js/web_ui_listener_mixin.js';
 
 import {CertificateAction, CertificateActionEvent, CertificatesErrorEventDetail} from './certificate_manager_types.js';
 import {CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateSubnode, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
 
 const CertificateManagerElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
+    WebUIListenerMixin(I18nMixin(PolymerElement));
 
 export class CertificateManagerElement extends CertificateManagerElementBase {
   static get is() {

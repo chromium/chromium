@@ -182,7 +182,8 @@ void FidoHidDevice::Connect(
   hid_manager_->Connect(device_info_->guid,
                         /*connection_client=*/mojo::NullRemote(),
                         /*watcher=*/mojo::NullRemote(),
-                        /*allow_protected_reports=*/true, std::move(callback));
+                        /*allow_protected_reports=*/true,
+                        /*allow_fido_reports=*/true, std::move(callback));
 }
 
 void FidoHidDevice::OnConnect(
@@ -491,7 +492,7 @@ void FidoHidDevice::MessageReceived(FidoHidMessage message) {
             FROM_HERE,
             base::BindOnce(&FidoHidDevice::RetryAfterChannelBusy,
                            weak_factory_.GetWeakPtr()),
-            base::TimeDelta::FromMilliseconds(100));
+            base::Milliseconds(100));
         break;
       default:
         FIDO_LOG(DEBUG) << "Invalid CTAPHID_ERROR "

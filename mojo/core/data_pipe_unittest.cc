@@ -63,7 +63,7 @@ base::TimeDelta EpsilonDeadline() {
 #else
   const int64_t deadline = (tiny_timeout * 2) / 10;
 #endif
-  return base::TimeDelta::FromMicroseconds(deadline);
+  return base::Microseconds(deadline);
 }
 
 // TODO(rockot): There are many uses of ASSERT where EXPECT would be more
@@ -73,6 +73,9 @@ class DataPipeTest : public test::MojoTestBase {
  public:
   DataPipeTest()
       : producer_(MOJO_HANDLE_INVALID), consumer_(MOJO_HANDLE_INVALID) {}
+
+  DataPipeTest(const DataPipeTest&) = delete;
+  DataPipeTest& operator=(const DataPipeTest&) = delete;
 
   ~DataPipeTest() override {
     if (producer_ != MOJO_HANDLE_INVALID)
@@ -173,9 +176,6 @@ class DataPipeTest : public test::MojoTestBase {
   }
 
   MojoHandle producer_, consumer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DataPipeTest);
 };
 
 TEST_F(DataPipeTest, Basic) {

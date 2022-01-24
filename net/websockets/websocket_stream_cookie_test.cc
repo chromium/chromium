@@ -155,7 +155,8 @@ TEST_P(WebSocketStreamClientUseCookieTest, ClientUseCookie) {
   base::RunLoop run_loop;
   auto cookie =
       CanonicalCookie::Create(cookie_url, cookie_line, base::Time::Now(),
-                              absl::nullopt /* server_time */);
+                              absl::nullopt /* server_time */,
+                              absl::nullopt /* cookie_partition_key */);
   store->SetCanonicalCookieAsync(
       std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
       base::BindOnce(&SetCookieHelperFunction, run_loop.QuitClosure(),
@@ -210,6 +211,7 @@ TEST_P(WebSocketStreamServerSetCookieTest, ServerSetCookie) {
   base::RunLoop run_loop;
   store->GetCookieListWithOptionsAsync(
       cookie_url, net::CookieOptions::MakeAllInclusive(),
+      CookiePartitionKeychain(),
       base::BindOnce(&GetCookieListHelperFunction, run_loop.QuitClosure(),
                      weak_is_called.GetWeakPtr(),
                      weak_get_cookie_list_result.GetWeakPtr()));

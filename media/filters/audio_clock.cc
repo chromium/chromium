@@ -120,7 +120,7 @@ base::TimeDelta AudioClock::TimeUntilPlayback(base::TimeDelta timestamp) const {
     frames_until_timestamp += buffered_[i].frames;
   }
 
-  return base::TimeDelta::FromMicroseconds(
+  return base::Microseconds(
       std::round(frames_until_timestamp * microseconds_per_frame_));
 }
 
@@ -146,10 +146,9 @@ void AudioClock::ContiguousAudioDataBufferedForTesting(
       scaled_frames_at_same_rate = scaled_frames;
   }
 
-  *total = base::TimeDelta::FromMicroseconds(scaled_frames *
-                                             microseconds_per_frame_);
-  *same_rate_total = base::TimeDelta::FromMicroseconds(
-      scaled_frames_at_same_rate * microseconds_per_frame_);
+  *total = base::Microseconds(scaled_frames * microseconds_per_frame_);
+  *same_rate_total =
+      base::Microseconds(scaled_frames_at_same_rate * microseconds_per_frame_);
 }
 
 AudioClock::AudioData::AudioData(int64_t frames, double playback_rate)

@@ -84,8 +84,7 @@ class MockOAuthTokenGetter : public OAuthTokenGetter {
 };
 
 EchoResponseCallback DoNothingResponse() {
-  return base::DoNothing::Once<const ProtobufHttpStatus&,
-                               std::unique_ptr<EchoResponse>>();
+  return base::DoNothing();
 }
 
 std::unique_ptr<ProtobufHttpRequestConfig> CreateDefaultRequestConfig() {
@@ -108,11 +107,10 @@ std::unique_ptr<ProtobufHttpRequest> CreateDefaultTestRequest() {
 std::unique_ptr<ProtobufHttpStreamRequest> CreateDefaultTestStreamRequest() {
   auto request =
       std::make_unique<ProtobufHttpStreamRequest>(CreateDefaultRequestConfig());
-  request->SetStreamReadyCallback(base::DoNothing::Once());
-  request->SetStreamClosedCallback(
-      base::DoNothing::Once<const ProtobufHttpStatus&>());
+  request->SetStreamReadyCallback(base::DoNothing());
+  request->SetStreamClosedCallback(base::DoNothing());
   request->SetMessageCallback(
-      base::DoNothing::Repeatedly<std::unique_ptr<EchoResponse>>());
+      base::BindRepeating([](std::unique_ptr<EchoResponse>) {}));
   return request;
 }
 
@@ -399,14 +397,14 @@ TEST_F(ProtobufHttpClientTest, RequestTimeout_ReturnsDeadlineExceeded) {
       .WillOnce([&]() { run_loop.Quit(); });
 
   auto request = CreateDefaultTestRequest();
-  request->SetTimeoutDuration(base::TimeDelta::FromSeconds(15));
+  request->SetTimeoutDuration(base::Seconds(15));
   request->SetResponseCallback(response_callback.Get());
   client_.ExecuteRequest(std::move(request));
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(16));
+  task_environment_.FastForwardBy(base::Seconds(16));
 
   run_loop.Run();
   ASSERT_FALSE(client_.HasPendingRequests());
@@ -546,14 +544,12 @@ TEST_F(ProtobufHttpClientTest, StartStreamRequestAndDecodeMessages) {
   // TestURLLoaderFactory can't simulate streaming, so we invoke the request
   // directly.
   stream_consumer->OnDataReceived(
-      CreateSerializedStreamBodyWithText("response text 1"),
-      base::DoNothing::Once());
+      CreateSerializedStreamBodyWithText("response text 1"), base::DoNothing());
   stream_consumer->OnDataReceived(
-      CreateSerializedStreamBodyWithText("response text 2"),
-      base::DoNothing::Once());
+      CreateSerializedStreamBodyWithText("response text 2"), base::DoNothing());
   stream_consumer->OnDataReceived(CreateSerializedStreamBodyWithStatusCode(
                                       ProtobufHttpStatus::Code::CANCELLED),
-                                  base::DoNothing::Once());
+                                  base::DoNothing());
   ASSERT_FALSE(client_.HasPendingRequests());
 }
 
@@ -669,7 +665,7 @@ TEST_F(ProtobufHttpClientTest, StreamReadyTimeout) {
 
   task_environment_.FastForwardBy(
       ProtobufHttpStreamRequest::kStreamReadyTimeoutDuration +
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
   ASSERT_FALSE(client_.HasPendingRequests());
 }
 

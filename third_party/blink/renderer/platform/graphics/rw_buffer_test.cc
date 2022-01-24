@@ -39,6 +39,15 @@ void check_alphabet_buffer(const ROBuffer* reader) {
   check_abcs(storage.data(), size);
 }
 
+size_t write_into_buffer(size_t reps, void* buffer, size_t capacity) {
+  size_t len = std::min(capacity, reps * sizeof(gABC));
+  for (size_t i = 0; i < len; i += 26U) {
+    memcpy(static_cast<char*>(buffer) + i, gABC,
+           std::min<size_t>(26U, len - i));
+  }
+  return len;
+}
+
 class ROBufferTestThread : public base::PlatformThread::Delegate {
  public:
   ROBufferTestThread(scoped_refptr<ROBuffer> reader, size_t i)
@@ -160,7 +169,7 @@ TEST(RWBufferTest, HasNoSnapshotsEmpty) {
 }
 
 // Tests that |HasNoSnapshots| returns the correct value when the buffer is
-// empty.
+// non-empty.
 TEST(RWBufferTest, HasNoSnapshots) {
   RWBuffer buffer;
   ASSERT_EQ(0u, buffer.size());
@@ -170,14 +179,35 @@ TEST(RWBufferTest, HasNoSnapshots) {
   EXPECT_TRUE(buffer.HasNoSnapshots());
 
   {
-    scoped_refptr<ROBuffer> first = buffer.MakeROBufferSnapshot();
-    EXPECT_FALSE(buffer.HasNoSnapshots());
+    {
+      scoped_refptr<ROBuffer> first = buffer.MakeROBufferSnapshot();
+      EXPECT_FALSE(buffer.HasNoSnapshots());
+    }
 
     scoped_refptr<ROBuffer> second = buffer.MakeROBufferSnapshot();
     EXPECT_FALSE(buffer.HasNoSnapshots());
   }
 
   EXPECT_TRUE(buffer.HasNoSnapshots());
+}
+
+TEST(RWBufferTest, FunctionConstructorSmall) {
+  RWBuffer buffer(base::BindOnce(&write_into_buffer, 1), 20);
+
+  EXPECT_EQ(20U, buffer.size());
+
+  scoped_refptr<ROBuffer> roBuffer = buffer.MakeROBufferSnapshot();
+  ROBuffer::Iter iter(roBuffer.get());
+  EXPECT_EQ(0, memcmp(iter.data(), gABC, 20U));
+}
+
+TEST(RWBufferTest, FunctionConstructorLarge) {
+  RWBuffer buffer(base::BindOnce(&write_into_buffer, 1000), 1000 * 26);
+
+  EXPECT_EQ(1000U * 26, buffer.size());
+
+  auto ro_buffer = buffer.MakeROBufferSnapshot();
+  check_alphabet_buffer(ro_buffer.get());
 }
 
 }  // namespace blink

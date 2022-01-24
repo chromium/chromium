@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Runtime development CSS Compiler emulation, via javascript.
@@ -20,7 +12,6 @@
  * style block in HEAD when in development mode, i.e. you are not using a
  * running instance of a CSS Compiler to pass your CSS through.
  */
-
 
 goog.provide('goog.debug.DevCss');
 goog.provide('goog.debug.DevCss.UserAgent');
@@ -46,6 +37,7 @@ goog.require('goog.userAgent');
  * @final
  */
 goog.debug.DevCss = function(opt_userAgent, opt_userAgentVersion) {
+  'use strict';
   if (!opt_userAgent) {
     // Walks through the known goog.userAgents.
     if (goog.userAgent.IE) {
@@ -56,14 +48,11 @@ goog.debug.DevCss = function(opt_userAgent, opt_userAgentVersion) {
       opt_userAgent = goog.debug.DevCss.UserAgent.WEBKIT;
     } else if (goog.userAgent.MOBILE) {
       opt_userAgent = goog.debug.DevCss.UserAgent.MOBILE;
-    } else if (goog.userAgent.OPERA) {
-      opt_userAgent = goog.debug.DevCss.UserAgent.OPERA;
     } else if (goog.userAgent.EDGE) {
       opt_userAgent = goog.debug.DevCss.UserAgent.EDGE;
     }
   }
   switch (opt_userAgent) {
-    case goog.debug.DevCss.UserAgent.OPERA:
     case goog.debug.DevCss.UserAgent.IE:
     case goog.debug.DevCss.UserAgent.GECKO:
     case goog.debug.DevCss.UserAgent.FIREFOX:
@@ -122,12 +111,13 @@ goog.debug.DevCss = function(opt_userAgent, opt_userAgentVersion) {
  */
 goog.debug.DevCss.prototype.activateBrowserSpecificCssRules = function(
     opt_enableIe6ReadyHandler) {
-  var enableIe6EventHandler = (opt_enableIe6ReadyHandler !== undefined) ?
+  'use strict';
+  const enableIe6EventHandler = (opt_enableIe6ReadyHandler !== undefined) ?
       opt_enableIe6ReadyHandler :
       true;
-  var cssRules = goog.cssom.getAllCssStyleRules();
+  let cssRules = goog.cssom.getAllCssStyleRules();
 
-  for (var i = 0, cssRule; cssRule = cssRules[i]; i++) {
+  for (let i = 0, cssRule; cssRule = cssRules[i]; i++) {
     this.replaceBrowserSpecificClassNames_(cssRule);
   }
 
@@ -136,7 +126,7 @@ goog.debug.DevCss.prototype.activateBrowserSpecificCssRules = function(
   // matter for this tool.
   if (this.isIe6OrLess_) {
     cssRules = goog.cssom.getAllCssStyleRules();
-    for (var i = 0, cssRule; cssRule = cssRules[i]; i++) {
+    for (let i = 0, cssRule; cssRule = cssRules[i]; i++) {
       this.replaceIe6CombinedSelectors_(cssRule);
     }
   }
@@ -192,6 +182,7 @@ goog.debug.DevCss.CssToken_ = {
  * @private
  */
 goog.debug.DevCss.prototype.generateUserAgentTokens_ = function() {
+  'use strict';
   this.userAgentTokens_.ANY = goog.debug.DevCss.CssToken_.USERAGENT +
       goog.debug.DevCss.CssToken_.SEPARATOR + this.userAgent_;
   this.userAgentTokens_.EQUALS =
@@ -220,8 +211,9 @@ goog.debug.DevCss.prototype.generateUserAgentTokens_ = function() {
  */
 goog.debug.DevCss.prototype.getVersionNumberFromSelectorText_ = function(
     selectorText, userAgentToken) {
-  var regex = new RegExp(userAgentToken + '([\\d\\.]+)');
-  var matches = regex.exec(selectorText);
+  'use strict';
+  const regex = new RegExp(userAgentToken + '([\\d\\.]+)');
+  const matches = regex.exec(selectorText);
   if (matches && matches.length == 2) {
     return matches[1];
   }
@@ -240,16 +232,17 @@ goog.debug.DevCss.prototype.getVersionNumberFromSelectorText_ = function(
  */
 goog.debug.DevCss.prototype.getRuleVersionAndCompare_ = function(
     cssRule, token) {
+  'use strict';
   if (!cssRule.selectorText || !cssRule.selectorText.match(token)) {
     return;
   }
-  var ruleVersion =
+  const ruleVersion =
       this.getVersionNumberFromSelectorText_(cssRule.selectorText, token);
   if (!ruleVersion) {
     return;
   }
 
-  var comparison =
+  const comparison =
       goog.string.compareVersions(this.userAgentVersion_, ruleVersion);
   return [comparison, ruleVersion];
 };
@@ -265,7 +258,7 @@ goog.debug.DevCss.prototype.getRuleVersionAndCompare_ = function(
  */
 goog.debug.DevCss.prototype.replaceBrowserSpecificClassNames_ = function(
     cssRule) {
-
+  'use strict';
   // If we don't match the browser token, we can stop now.
   if (!cssRule.selectorText ||
       !cssRule.selectorText.match(this.userAgentTokens_.ANY)) {
@@ -273,10 +266,10 @@ goog.debug.DevCss.prototype.replaceBrowserSpecificClassNames_ = function(
   }
 
   // We know it will begin as a classname.
-  var additionalRegexString;
+  let additionalRegexString;
 
   // Tests "Less than or equals".
-  var compared = this.getRuleVersionAndCompare_(
+  let compared = this.getRuleVersionAndCompare_(
       cssRule, this.userAgentTokens_.LESS_THAN_OR_EQUAL);
   if (compared && compared.length) {
     if (compared[0] > 0) {
@@ -336,13 +329,13 @@ goog.debug.DevCss.prototype.replaceBrowserSpecificClassNames_ = function(
 
   // We need to match at least a single whitespace character to know that
   // we are matching the entire useragent string token.
-  var regexString = '\\.' + additionalRegexString + '\\s+';
-  var re = new RegExp(regexString, 'g');
+  const regexString = '\\.' + additionalRegexString + '\\s+';
+  const re = new RegExp(regexString, 'g');
 
-  var currentCssText = goog.cssom.getCssTextFromCssRule(cssRule);
+  const currentCssText = goog.cssom.getCssTextFromCssRule(cssRule);
 
   // Replacing the token with '' activates the selector for this useragent.
-  var newCssText = currentCssText.replace(re, '');
+  const newCssText = currentCssText.replace(re, '');
 
   if (newCssText != currentCssText) {
     goog.cssom.replaceCssRule(cssRule, newCssText);
@@ -360,15 +353,17 @@ goog.debug.DevCss.prototype.replaceBrowserSpecificClassNames_ = function(
  * @private
  */
 goog.debug.DevCss.prototype.replaceIe6CombinedSelectors_ = function(cssRule) {
+  'use strict';
   // This match only ever works in IE because other UA's won't have our
   // IE6_SELECTOR_TEXT in the cssText property.
   if (cssRule.style && cssRule.style.cssText &&
       cssRule.style.cssText.match(
           goog.debug.DevCss.CssToken_.IE6_SELECTOR_TEXT)) {
-    var cssText = goog.cssom.getCssTextFromCssRule(cssRule);
-    var combinedSelectorText = this.getIe6CombinedSelectorText_(cssText);
+    const cssText = goog.cssom.getCssTextFromCssRule(cssRule);
+    const combinedSelectorText = this.getIe6CombinedSelectorText_(cssText);
     if (combinedSelectorText) {
-      var newCssText = combinedSelectorText + '{' + cssRule.style.cssText + '}';
+      const newCssText =
+          combinedSelectorText + '{' + cssRule.style.cssText + '}';
       goog.cssom.replaceCssRule(cssRule, newCssText);
     }
   }
@@ -388,22 +383,23 @@ goog.debug.DevCss.prototype.replaceIe6CombinedSelectors_ = function(cssRule) {
  * @private
  */
 goog.debug.DevCss.prototype.getIe6CombinedSelectorText_ = function(cssText) {
-  var regex = new RegExp(
+  'use strict';
+  const regex = new RegExp(
       goog.debug.DevCss.CssToken_.IE6_SELECTOR_TEXT +
           '\\s*:\\s*\\"([^\\"]+)\\"',
       'gi');
-  var matches = regex.exec(cssText);
+  const matches = regex.exec(cssText);
   if (matches) {
-    var combinedSelectorText = matches[1];
+    const combinedSelectorText = matches[1];
     // To aid in later fixing the DOM, we need to split up the possible
     // selector groups by commas.
-    var groupedSelectors = combinedSelectorText.split(/\s*\,\s*/);
-    for (var i = 0, selector; selector = groupedSelectors[i]; i++) {
+    const groupedSelectors = combinedSelectorText.split(/\s*\,\s*/);
+    for (let i = 0, selector; selector = groupedSelectors[i]; i++) {
       // Strips off the leading ".".
-      var combinedClassName = selector.substr(1);
-      var classNames = combinedClassName.split(
+      const combinedClassName = selector.substr(1);
+      const classNames = combinedClassName.split(
           goog.debug.DevCss.CssToken_.IE6_COMBINED_GLUE);
-      var entry = {
+      const entry = {
         classNames: classNames,
         combinedClassName: combinedClassName,
         els: []
@@ -422,16 +418,17 @@ goog.debug.DevCss.prototype.getIe6CombinedSelectorText_ = function(cssText) {
  * @private
  */
 goog.debug.DevCss.prototype.addIe6CombinedClassNames_ = function() {
+  'use strict';
   if (!this.ie6CombinedMatches_.length) {
     return;
   }
-  var allEls = document.getElementsByTagName('*');
+  const allEls = document.getElementsByTagName('*');
   // Match nodes for all classNames.
-  for (var i = 0, classNameEntry; classNameEntry = this.ie6CombinedMatches_[i];
+  for (let i = 0, classNameEntry; classNameEntry = this.ie6CombinedMatches_[i];
        i++) {
-    for (var j = 0, el; el = allEls[j]; j++) {
-      var classNamesLength = classNameEntry.classNames.length;
-      for (var k = 0, className; className = classNameEntry.classNames[k];
+    for (let j = 0, el; el = allEls[j]; j++) {
+      const classNamesLength = classNameEntry.classNames.length;
+      for (let k = 0, className; className = classNameEntry.classNames[k];
            k++) {
         if (!goog.dom.classlist.contains(el, className)) {
           break;
@@ -443,7 +440,7 @@ goog.debug.DevCss.prototype.addIe6CombinedClassNames_ = function() {
     }
     // Walks over our matching nodes and fixes them.
     if (classNameEntry.els.length) {
-      for (var j = 0, el; el = classNameEntry.els[j]; j++) {
+      for (let j = 0, el; el = classNameEntry.els[j]; j++) {
         goog.asserts.assert(el);
         if (!goog.dom.classlist.contains(
                 el, classNameEntry.combinedClassName)) {

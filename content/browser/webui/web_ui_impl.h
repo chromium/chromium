@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/browser/web_ui.h"
@@ -53,10 +52,10 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   void RenderFrameDeleted();
 
   // Called right after AllowBindings is notified to a RenderFrame.
-  void SetupMojoConnection();
+  void SetUpMojoConnection();
 
   // Called when a RenderFrame is deleted for a WebUI (i.e. a renderer crash).
-  void InvalidateMojoConnection();
+  void TearDownMojoConnection();
 
   // Add a property to the WebUI binding object.
   void SetProperty(const std::string& name, const std::string& value);
@@ -74,7 +73,10 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   void AddRequestableScheme(const char* scheme) override;
   void AddMessageHandler(std::unique_ptr<WebUIMessageHandler> handler) override;
   void RegisterMessageCallback(base::StringPiece message,
-                               const MessageCallback& callback) override;
+                               MessageCallback callback) override;
+  void RegisterDeprecatedMessageCallback(
+      base::StringPiece message,
+      const DeprecatedMessageCallback& callback) override;
   void ProcessWebUIMessage(const GURL& source_url,
                            const std::string& message,
                            const base::ListValue& args) override;
@@ -123,6 +125,10 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
 
   // A map of message name -> message handling callback.
   std::map<std::string, MessageCallback> message_callbacks_;
+
+  // A map of message name -> message handling callback.
+  std::map<std::string, DeprecatedMessageCallback>
+      deprecated_message_callbacks_;
 
   // Options that may be overridden by individual Web UI implementations. The
   // bool options default to false. See the public getters for more information.

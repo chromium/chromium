@@ -33,6 +33,9 @@ class TestStrikeDatabase : public StrikeDatabase {
     database_initialized_ = true;
   }
 
+  TestStrikeDatabase(const TestStrikeDatabase&) = delete;
+  TestStrikeDatabase& operator=(const TestStrikeDatabase&) = delete;
+
   void AddProtoEntries(
       std::vector<std::pair<std::string, StrikeData>> entries_to_add,
       const SetValueCallback& callback) {
@@ -46,9 +49,6 @@ class TestStrikeDatabase : public StrikeDatabase {
         /*keys_to_remove=*/std::make_unique<std::vector<std::string>>(),
         callback);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestStrikeDatabase);
 };
 
 }  // anonymous namespace

@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {Router, routes, Route, pageVisibility} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {Router, routes, Route, osPageVisibility} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
@@ -35,7 +35,7 @@ suite('OSSettingsMenu', function() {
     setupRouter();
     PolymerTest.clearBody();
     settingsMenu = document.createElement('os-settings-menu');
-    settingsMenu.pageVisibility = settings.pageVisibility;
+    settingsMenu.pageVisibility = settings.osPageVisibility;
     document.body.appendChild(settingsMenu);
   });
 

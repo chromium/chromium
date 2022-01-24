@@ -22,12 +22,6 @@ class ExecutionContext;
 class SanitizerConfig;
 class ScriptState;
 
-enum ElementKind {
-  kCustom,
-  kUnknown,
-  kRegular,
-};
-
 class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -49,6 +43,9 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   SanitizerConfig* getConfiguration() const;
   static SanitizerConfig* getDefaultConfiguration();
 
+  // Get a (shared) Sanitizer instance with the default configuration.
+  static Sanitizer* getDefaultInstance();
+
   // Implementation of ElementSanitizer::SetHTML, so that we have
   // all the sanitizer logic in one place.
   void ElementSetHTML(ScriptState* script_state,
@@ -59,6 +56,9 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  bool AttrListMatches(const HashMap<String, Vector<String>>&,
+                       const String& attr,
+                       const String& element);
   Node* DropElement(Node*, ContainerNode*);
   Node* BlockElement(Node*, ContainerNode*, ExceptionState&);
   Node* KeepElement(Node*, ContainerNode*, String&, LocalDOMWindow*);

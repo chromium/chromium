@@ -95,6 +95,10 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
 class PdfPrinterHandlerWinTest : public BrowserWithTestWindowTest {
  public:
   PdfPrinterHandlerWinTest() {}
+
+  PdfPrinterHandlerWinTest(const PdfPrinterHandlerWinTest&) = delete;
+  PdfPrinterHandlerWinTest& operator=(const PdfPrinterHandlerWinTest&) = delete;
+
   ~PdfPrinterHandlerWinTest() override {}
 
   void SetUp() override {
@@ -111,9 +115,6 @@ class PdfPrinterHandlerWinTest : public BrowserWithTestWindowTest {
 
  protected:
   std::unique_ptr<FakePdfPrinterHandler> pdf_printer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PdfPrinterHandlerWinTest);
 };
 
 TEST_F(PdfPrinterHandlerWinTest, TestSaveAsPdf) {

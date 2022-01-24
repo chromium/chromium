@@ -20,6 +20,11 @@
 class FullscreenControlPopupTest : public views::test::WidgetTest {
  public:
   FullscreenControlPopupTest() {}
+
+  FullscreenControlPopupTest(const FullscreenControlPopupTest&) = delete;
+  FullscreenControlPopupTest& operator=(const FullscreenControlPopupTest&) =
+      delete;
+
   ~FullscreenControlPopupTest() override {}
 
   // views::test::WidgetTest:
@@ -46,9 +51,7 @@ class FullscreenControlPopupTest : public views::test::WidgetTest {
     animation_api_->Step(now + duration);
   }
 
-  void CompleteAnimation() {
-    RunAnimationFor(base::TimeDelta::FromMilliseconds(5000));
-  }
+  void CompleteAnimation() { RunAnimationFor(base::Milliseconds(5000)); }
 
   gfx::Rect GetParentBounds() const {
     return parent_widget_->GetClientAreaBoundsInScreen();
@@ -63,8 +66,6 @@ class FullscreenControlPopupTest : public views::test::WidgetTest {
  private:
   std::unique_ptr<gfx::AnimationTestApi> animation_api_;
   views::Widget* parent_widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControlPopupTest);
 };
 
 TEST_F(FullscreenControlPopupTest, ShowPopupAnimated) {
@@ -91,7 +92,7 @@ TEST_F(FullscreenControlPopupTest, ShowPopupAnimated) {
 TEST_F(FullscreenControlPopupTest, HidePopupWhileStillShowing) {
   popup_->Show(GetParentBounds());
 
-  RunAnimationFor(base::TimeDelta::FromMilliseconds(50));
+  RunAnimationFor(base::Milliseconds(50));
 
   EXPECT_TRUE(popup_->IsAnimating());
   EXPECT_TRUE(popup_->IsVisible());

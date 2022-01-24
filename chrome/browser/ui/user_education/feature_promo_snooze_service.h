@@ -32,7 +32,7 @@ class FeaturePromoSnoozeService {
 
   // Maximum count of snoozes to track in UMA histogram.
   // Snooze counts that are equal or larger than this value will be conflated.
-  static const int kUmaMaxSnoozeCount;
+  static constexpr int kUmaMaxSnoozeCount = 10;
 
   explicit FeaturePromoSnoozeService(Profile* profile);
 
@@ -44,9 +44,8 @@ class FeaturePromoSnoozeService {
   // The IPH controller must call this method when the user snoozes an IPH.
   // The snooze duration defaults to 1 day plus 2 additional hours in hope to
   // stagger busy hours in the days.
-  void OnUserSnooze(
-      const base::Feature& iph_feature,
-      base::TimeDelta snooze_duration = base::TimeDelta::FromHours(26));
+  void OnUserSnooze(const base::Feature& iph_feature,
+                    base::TimeDelta snooze_duration = base::Hours(26));
 
   // The IPH controller must call this method when the user actively dismiss an
   // IPH. Don't call this method in case of a passive dismiss, i.e. auto dismiss

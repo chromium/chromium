@@ -39,8 +39,8 @@ class BoxDecorationData {
                     const NGPhysicalFragment& fragment)
       : BoxDecorationData(paint_info, fragment, fragment.Style()) {}
 
-  bool IsPaintingScrollingBackground() const {
-    return is_painting_scrolling_background_;
+  bool IsPaintingBackgroundInContentsSpace() const {
+    return is_painting_background_in_contents_space_;
   }
   bool HasAppearance() const { return has_appearance_; }
   bool ShouldPaintBackground() const { return should_paint_background_; }
@@ -63,10 +63,10 @@ class BoxDecorationData {
     return style_.VisitedDependentColor(GetCSSPropertyBackgroundColor());
   }
 
-  static bool IsPaintingScrollingBackground(const PaintInfo& paint_info,
-                                            const LayoutBox& layout_box) {
+  static bool IsPaintingBackgroundInContentsSpace(const PaintInfo& paint_info,
+                                                  const LayoutBox& layout_box) {
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      return paint_info.IsPaintingScrollingBackground();
+      return paint_info.IsPaintingBackgroundInContentsSpace();
     return (paint_info.PaintFlags() & kPaintLayerPaintingOverflowContents) &&
            !(paint_info.PaintFlags() &
              kPaintLayerPaintingCompositingBackgroundPhase) &&
@@ -81,8 +81,8 @@ class BoxDecorationData {
       : paint_info_(paint_info),
         layout_box_(layout_box),
         style_(style),
-        is_painting_scrolling_background_(
-            IsPaintingScrollingBackground(paint_info, layout_box)),
+        is_painting_background_in_contents_space_(
+            IsPaintingBackgroundInContentsSpace(paint_info, layout_box)),
         has_appearance_(style.HasEffectiveAppearance()),
         should_paint_background_(ComputeShouldPaintBackground()),
         should_paint_border_(
@@ -102,13 +102,13 @@ class BoxDecorationData {
 
   bool ComputeShouldPaintBorder(
       bool has_non_collapsed_border_decoration) const {
-    if (is_painting_scrolling_background_)
+    if (is_painting_background_in_contents_space_)
       return false;
     return has_non_collapsed_border_decoration;
   }
 
   bool ComputeShouldPaintShadow() const {
-    return !is_painting_scrolling_background_ && style_.BoxShadow();
+    return !is_painting_background_in_contents_space_ && style_.BoxShadow();
   }
 
   bool BorderObscuresBackgroundEdge() const;
@@ -118,8 +118,12 @@ class BoxDecorationData {
   const PaintInfo& paint_info_;
   const LayoutBox& layout_box_;
   const ComputedStyle& style_;
+
   // Outputs that are initialized in the constructor.
-  const bool is_painting_scrolling_background_;
+
+  // True if painting the background in the coordinate space of
+  // FragmentData::ContentsProperties().
+  const bool is_painting_background_in_contents_space_;
   const bool has_appearance_;
   const bool should_paint_background_;
   const bool should_paint_border_;

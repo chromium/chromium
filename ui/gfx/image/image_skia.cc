@@ -20,9 +20,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/switches.h"
 
 namespace gfx {
@@ -88,6 +88,9 @@ class ImageSkiaStorage : public base::RefCountedThreadSafe<ImageSkiaStorage> {
                    const gfx::Size& size);
   ImageSkiaStorage(std::unique_ptr<ImageSkiaSource> source, float scale);
 
+  ImageSkiaStorage(const ImageSkiaStorage&) = delete;
+  ImageSkiaStorage& operator=(const ImageSkiaStorage&) = delete;
+
   bool has_source() const { return source_ != nullptr; }
   std::vector<gfx::ImageSkiaRep>& image_reps() { return image_reps_; }
   const gfx::Size& size() const { return size_; }
@@ -150,8 +153,6 @@ class ImageSkiaStorage : public base::RefCountedThreadSafe<ImageSkiaStorage> {
   // This isn't using SEQUENCE_CHECKER() macros because we use the sequence
   // checker outside of DCHECKs to make branching decisions.
   base::SequenceChecker sequence_checker_;  // nocheck
-
-  DISALLOW_COPY_AND_ASSIGN(ImageSkiaStorage);
 };
 
 ImageSkiaStorage::ImageSkiaStorage(std::unique_ptr<ImageSkiaSource> source,

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>Stress test length interpolation.</title>
+<body>
+  <output name="answer">Test passes if there is no crash.</output>
+</body>
+<script type="text/javascript">
+  // Test passes if it does not crash (crbug.com/1204099).
+  // The combination of high iteration count and small zoom, lead to the
+  // accumulation of small-precision errors, which can trigger a mismatch
+  // when comparing results on two code paths.
+  if (window.testRunner)
+    testRunner.dumpAsText();
+
+  const elem = document.querySelector('output');
+  elem.animate([
+    {'top':'-200vh' },
+    {'top':'-webkit-calc(-455% + 65in)' },
+  ],{duration:1, iterations:2500});
+  document.body.style.zoom=0.08;
+</script>

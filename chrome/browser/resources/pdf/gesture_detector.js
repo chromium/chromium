@@ -7,6 +7,14 @@ import {Point} from './constants.js';
 
 /**
  * @typedef {{
+ *   type: string,
+ *   detail: !PinchEventDetail,
+ * }}
+ */
+export let Gesture;
+
+/**
+ * @typedef {{
  *   center: !Point,
  *   direction: (string|undefined),
  *   scaleRatio: (?number|undefined),
@@ -260,7 +268,3 @@ function center(event) {
     y: (touch1.clientY + touch2.clientY) / 2
   };
 }
-
-// Export on |window| such that scripts injected from pdf_extension_test.cc can
-// access it.
-window.GestureDetector = GestureDetector;

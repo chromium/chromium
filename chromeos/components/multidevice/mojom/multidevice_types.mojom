@@ -46,7 +46,12 @@ enum SoftwareFeature {
 
   // Eche
   ECHE_HOST = 13,
-  ECHE_CLIENT = 14
+  ECHE_CLIENT = 14,
+
+  // Camera Roll allows users to view and download recent photos and videos from
+  // the Phone Hub tray
+  PHONE_HUB_CAMERA_ROLL_HOST = 15,
+  PHONE_HUB_CAMERA_ROLL_CLIENT = 16
 };
 
 // Enumeration of what value a SoftwareFeature can be.

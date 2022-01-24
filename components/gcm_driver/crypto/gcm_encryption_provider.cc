@@ -5,7 +5,6 @@
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/base64.h"
 #include "base/big_endian.h"

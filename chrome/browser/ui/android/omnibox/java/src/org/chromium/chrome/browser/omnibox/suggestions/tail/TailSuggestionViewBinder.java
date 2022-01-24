@@ -4,10 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.tail;
 
-import androidx.annotation.ColorRes;
+import androidx.annotation.ColorInt;
 
-import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -24,12 +22,9 @@ public class TailSuggestionViewBinder {
         } else if (propertyKey == TailSuggestionViewProperties.FILL_INTO_EDIT) {
             view.setFullText(model.get(TailSuggestionViewProperties.FILL_INTO_EDIT));
         } else if (propertyKey == SuggestionCommonProperties.OMNIBOX_THEME) {
-            final boolean useDarkMode = !OmniboxResourceProvider.isDarkMode(
-                    model.get(SuggestionCommonProperties.OMNIBOX_THEME));
-            @ColorRes
-            final int color = useDarkMode ? R.color.default_text_color_dark
-                                          : R.color.default_text_color_light;
-            view.setTextColor(ApiCompatibilityUtils.getColor(view.getResources(), color));
+            final @ColorInt int color = OmniboxResourceProvider.getSuggestionPrimaryTextColor(
+                    view.getContext(), model.get(SuggestionCommonProperties.OMNIBOX_THEME));
+            view.setTextColor(color);
         }
     }
 }

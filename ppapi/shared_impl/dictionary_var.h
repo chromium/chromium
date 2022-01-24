@@ -23,6 +23,9 @@ class PPAPI_SHARED_EXPORT DictionaryVar : public Var {
 
   DictionaryVar();
 
+  DictionaryVar(const DictionaryVar&) = delete;
+  DictionaryVar& operator=(const DictionaryVar&) = delete;
+
   // Helper function that converts a PP_Var to a DictionaryVar. This will
   // return NULL if the PP_Var is not of type PP_VARTYPE_DICTIONARY or the
   // dictionary cannot be found from the var tracker.
@@ -52,8 +55,6 @@ class PPAPI_SHARED_EXPORT DictionaryVar : public Var {
 
  private:
   KeyValueMap key_value_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DictionaryVar);
 };
 
 }  // namespace ppapi

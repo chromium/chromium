@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_SAFE_BROWSING_LOUD_ERROR_UI_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_SAFE_BROWSING_LOUD_ERROR_UI_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
@@ -36,6 +35,9 @@ class SafeBrowsingLoudErrorUI
       ControllerClient* controller,
       bool created_prior_to_navigation);
 
+  SafeBrowsingLoudErrorUI(const SafeBrowsingLoudErrorUI&) = delete;
+  SafeBrowsingLoudErrorUI& operator=(const SafeBrowsingLoudErrorUI&) = delete;
+
   ~SafeBrowsingLoudErrorUI() override;
 
   // Implement BaseSafeBrowsingErrorUI.
@@ -55,8 +57,6 @@ class SafeBrowsingLoudErrorUI
   void PopulateEnhancedProtectionMessage(base::Value* load_time_data);
 
   const bool created_prior_to_navigation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingLoudErrorUI);
 };
 
 }  // security_interstitials

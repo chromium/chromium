@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/formats/mpeg/mpeg_audio_stream_parser_base.h"
 
@@ -16,6 +15,10 @@ namespace media {
 class MEDIA_EXPORT ADTSStreamParser : public MPEGAudioStreamParserBase {
  public:
   ADTSStreamParser();
+
+  ADTSStreamParser(const ADTSStreamParser&) = delete;
+  ADTSStreamParser& operator=(const ADTSStreamParser&) = delete;
+
   ~ADTSStreamParser() override;
 
   // MPEGAudioStreamParserBase overrides.
@@ -30,8 +33,6 @@ class MEDIA_EXPORT ADTSStreamParser : public MPEGAudioStreamParserBase {
 
  private:
   size_t adts_parse_error_limit_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ADTSStreamParser);
 };
 
 }  // namespace media

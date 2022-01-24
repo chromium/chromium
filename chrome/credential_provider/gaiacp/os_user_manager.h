@@ -68,6 +68,7 @@ class [[clang::lto_visibility_public]] OSUserManager {
   // should free it with a call to LocalFree().
   virtual HRESULT GetUserSID(const wchar_t* domain, const wchar_t* username,
                              PSID* sid);
+
   // Gets the SID in string format of the given OS user.
   HRESULT GetUserSID(const wchar_t* domain, const wchar_t* username,
                      std::wstring* sid_string);
@@ -81,6 +82,14 @@ class [[clang::lto_visibility_public]] OSUserManager {
   virtual HRESULT FindUserBySID(const wchar_t* sid, wchar_t* username,
                                 DWORD username_size, wchar_t* domain,
                                 DWORD domain_size);
+
+  // Finds the username and domain for the provided user sid. Provided that a
+  // SID mapping exists in the registry, function uses the user properties
+  // registries as a fallback if the user can't be found via a network lookup
+  // call.
+  virtual HRESULT FindUserBySidWithFallback(
+      const wchar_t* sid, wchar_t* username, DWORD username_size,
+      wchar_t* domain, DWORD domain_size);
 
   // Verify if a user with provided sid is domain joined.
   virtual bool IsUserDomainJoined(const std::wstring& sid);

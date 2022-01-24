@@ -29,10 +29,12 @@ class PrefetchProxyProxyConfigurator
   // Adds a config client that can be used to update Data Reduction Proxy
   // settings.
   void AddCustomProxyConfigClient(
-      mojo::Remote<network::mojom::CustomProxyConfigClient> config_client);
+      mojo::Remote<network::mojom::CustomProxyConfigClient> config_client,
+      base::OnceCallback<void()> callback);
 
   // Updates the custom proxy config to all clients.
-  void UpdateCustomProxyConfig();
+  void UpdateCustomProxyConfig(
+      base::OnceCallback<void()> callback);
 
   // Creates a config that can be sent to the NetworkContext.
   network::mojom::CustomProxyConfigPtr CreateCustomProxyConfig() const;

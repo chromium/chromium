@@ -889,7 +889,7 @@
     {
       name: "forceDarkModeEnabled",
       initial: false,
-      invalidate: ["ColorScheme", "Paint"],
+      invalidate: ["ColorScheme", "Style", "Paint"],
     },
 
     {

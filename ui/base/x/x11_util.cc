@@ -25,10 +25,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -185,6 +185,15 @@ bool GetDecoratedWindowBounds(x11::Window window, gfx::Rect* rect) {
   return true;
 }
 
+// Returns true if the event has event_x and event_y fields.
+bool EventHasCoordinates(const x11::Event& event) {
+  return event.As<x11::KeyEvent>() || event.As<x11::ButtonEvent>() ||
+         event.As<x11::MotionNotifyEvent>() || event.As<x11::CrossingEvent>() ||
+         event.As<x11::Input::LegacyDeviceEvent>() ||
+         event.As<x11::Input::DeviceEvent>() ||
+         event.As<x11::Input::CrossingEvent>();
+}
+
 }  // namespace
 
 bool GetWmNormalHints(x11::Window window, SizeHints* hints) {
@@ -332,34 +341,38 @@ bool QueryShmSupport() {
 
 int CoalescePendingMotionEvents(const x11::Event& x11_event,
                                 x11::Event* last_event) {
+  auto* conn = x11::Connection::Get();
+  auto* ddmx11 = ui::DeviceDataManagerX11::GetInstance();
+  int num_coalesced = 0;
+
   const auto* motion = x11_event.As<x11::MotionNotifyEvent>();
   const auto* device = x11_event.As<x11::Input::DeviceEvent>();
   DCHECK(motion || device);
-  auto* conn = x11::Connection::Get();
-  int num_coalesced = 0;
+  DCHECK(!device || device->opcode == x11::Input::DeviceEvent::Motion ||
+         device->opcode == x11::Input::DeviceEvent::TouchUpdate);
 
   conn->ReadResponses();
-  if (motion) {
-    for (auto& next_event : conn->events()) {
+  for (auto& event : conn->events()) {
+    // There may be non-input events such as ConfigureNotifyEvents and
+    // PropertyNotifyEvents that get interleaved between mouse events, so it is
+    // necessary to skip over those to coalesce as many pending motion events as
+    // possible so mouse dragging is smooth.
+    if (!EventHasCoordinates(event))
+      continue;
+
+    if (motion) {
+      const auto* next_motion = event.As<x11::MotionNotifyEvent>();
+
       // Discard all but the most recent motion event that targets the same
       // window with unchanged state.
-      const auto* next_motion = next_event.As<x11::MotionNotifyEvent>();
       if (next_motion && next_motion->event == motion->event &&
           next_motion->child == motion->child &&
           next_motion->state == motion->state) {
-        *last_event = std::move(next_event);
-      } else {
-        break;
+        *last_event = std::move(event);
+        continue;
       }
-    }
-  } else {
-    DCHECK(device->opcode == x11::Input::DeviceEvent::Motion ||
-           device->opcode == x11::Input::DeviceEvent::TouchUpdate);
-
-    auto* ddmx11 = ui::DeviceDataManagerX11::GetInstance();
-    for (auto& event : conn->events()) {
+    } else {
       auto* next_device = event.As<x11::Input::DeviceEvent>();
-
       if (!next_device)
         break;
 
@@ -373,27 +386,26 @@ int CoalescePendingMotionEvents(const x11::Event& x11_event,
         continue;
       }
 
+      // Confirm that the motion event is of the same type, is
+      // targeted at the same window, and that no buttons or modifiers
+      // have changed.
       if (next_device->opcode == device->opcode &&
           !ddmx11->IsCMTGestureEvent(event) &&
-          ddmx11->GetScrollClassEventDetail(event) == SCROLL_TYPE_NO_SCROLL) {
-        // Confirm that the motion event is targeted at the same window
-        // and that no buttons or modifiers have changed.
-        if (device->event == next_device->event &&
-            device->child == next_device->child &&
-            device->detail == next_device->detail &&
-            device->button_mask == next_device->button_mask &&
-            device->mods.base == next_device->mods.base &&
-            device->mods.latched == next_device->mods.latched &&
-            device->mods.locked == next_device->mods.locked &&
-            device->mods.effective == next_device->mods.effective) {
-          *last_event = std::move(event);
-          num_coalesced++;
-          continue;
-        }
+          ddmx11->GetScrollClassEventDetail(event) == SCROLL_TYPE_NO_SCROLL &&
+          device->event == next_device->event &&
+          device->child == next_device->child &&
+          device->detail == next_device->detail &&
+          device->button_mask == next_device->button_mask &&
+          device->mods.base == next_device->mods.base &&
+          device->mods.latched == next_device->mods.latched &&
+          device->mods.locked == next_device->mods.locked &&
+          device->mods.effective == next_device->mods.effective) {
+        *last_event = std::move(event);
+        num_coalesced++;
+        continue;
       }
-
-      break;
     }
+    break;
   }
 
   return num_coalesced;
@@ -447,9 +459,7 @@ void SetHideTitlebarWhenMaximizedProperty(x11::Window window,
 bool IsWindowVisible(x11::Window window) {
   TRACE_EVENT0("ui", "IsWindowVisible");
 
-  auto x11_window = static_cast<x11::Window>(window);
-  auto* connection = x11::Connection::Get();
-  auto response = connection->GetWindowAttributes({x11_window}).Sync();
+  auto response = x11::Connection::Get()->GetWindowAttributes({window}).Sync();
   if (!response || response->map_state != x11::MapState::Viewable)
     return false;
 
@@ -461,12 +471,11 @@ bool IsWindowVisible(x11::Window window) {
       return false;
   }
 
-  // Some compositing window managers (notably kwin) do not actually unmap
-  // windows on desktop switch, so we also must check the current desktop.
-  int32_t window_desktop, current_desktop;
-  return (!GetWindowDesktop(window, &window_desktop) ||
-          !GetCurrentDesktop(&current_desktop) ||
-          window_desktop == kAllDesktops || window_desktop == current_desktop);
+  // Do not check _NET_CURRENT_DESKTOP/_NET_WM_DESKTOP since some
+  // window managers (eg. i3) have per-monitor workspaces where more
+  // than one workspace can be visible at once, but only one will be
+  // "active".
+  return true;
 }
 
 bool WindowContainsPoint(x11::Window window, gfx::Point screen_loc) {
@@ -529,7 +538,7 @@ bool WindowContainsPoint(x11::Window window, gfx::Point screen_loc) {
 bool PropertyExists(x11::Window window, x11::Atom property) {
   auto response = x11::Connection::Get()
                       ->GetProperty(x11::GetPropertyRequest{
-                          .window = static_cast<x11::Window>(window),
+                          .window = window,
                           .property = property,
                           .long_length = 1,
                       })
@@ -542,7 +551,7 @@ bool GetRawBytesOfProperty(x11::Window window,
                            scoped_refptr<base::RefCountedMemory>* out_data,
                            x11::Atom* out_type) {
   auto future = x11::Connection::Get()->GetProperty(x11::GetPropertyRequest{
-      .window = static_cast<x11::Window>(window),
+      .window = window,
       .property = property,
       // Don't limit the amount of returned data.
       .long_length = std::numeric_limits<uint32_t>::max(),
@@ -661,17 +670,6 @@ bool IsWmTiling(WindowManagerName window_manager) {
 
 bool GetWindowDesktop(x11::Window window, int32_t* desktop) {
   return GetProperty(window, x11::GetAtom("_NET_WM_DESKTOP"), desktop);
-}
-
-bool GetXWindowStack(x11::Window window, std::vector<x11::Window>* windows) {
-  if (!GetArrayProperty(window, x11::GetAtom("_NET_CLIENT_LIST_STACKING"),
-                        windows)) {
-    return false;
-  }
-  // It's more common to iterate from lowest window to highest,
-  // so reverse the vector.
-  std::reverse(windows->begin(), windows->end());
-  return true;
 }
 
 WindowManagerName GuessWindowManager() {
@@ -1131,6 +1129,10 @@ x11::ColorMap XVisualManager::XVisualData::GetColormap() {
     colormap_ = connection->GenerateId<x11::ColorMap>();
     connection->CreateColormap({x11::ColormapAlloc::None, colormap_,
                                 connection->default_root(), info->visual_id});
+    // In single-process mode, XVisualManager may be used on multiple threads,
+    // so we need to flush colormap creation early so that other threads are
+    // able to use it.
+    connection->Flush();
   }
   return colormap_;
 }

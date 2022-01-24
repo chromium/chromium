@@ -69,6 +69,7 @@ NSString* const kRequestDesktopOrMobileSiteActivityType =
 }
 
 - (void)performActivity {
+  [self activityDidFinish:YES];
   if (self.userAgent == web::UserAgentType::MOBILE) {
     base::RecordAction(
         base::UserMetricsAction("MobileShareActionRequestDesktop"));
@@ -78,7 +79,6 @@ NSString* const kRequestDesktopOrMobileSiteActivityType =
         base::UserMetricsAction("MobileShareActionRequestMobile"));
     [self.handler requestMobileSite];
   }
-  [self activityDidFinish:YES];
 }
 
 @end

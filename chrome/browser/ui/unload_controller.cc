@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -287,6 +287,12 @@ void UnloadController::TabAttachedImpl(content::WebContents* contents) {
 void UnloadController::TabDetachedImpl(content::WebContents* contents) {
   if (is_attempting_to_close_browser_)
     ClearUnloadState(contents, false);
+  // TODO(crbug.com/1171997): This CHECK is only in place to diagnose a UAF bug.
+  // This is both used to confirm that a WebContents* isn't being removed from
+  // this set, and also if that hypothesis is correct turns a UAF into a
+  // non-security crash.
+  CHECK(tabs_needing_before_unload_fired_.find(contents) ==
+        tabs_needing_before_unload_fired_.end());
   web_contents_collection_.StopObserving(contents);
 }
 

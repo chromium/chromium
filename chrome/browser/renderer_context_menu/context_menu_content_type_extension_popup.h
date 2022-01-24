@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_EXTENSION_POPUP_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_EXTENSION_POPUP_H_
 
-#include "base/macros.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 
 class ContextMenuContentTypeExtensionPopup : public ContextMenuContentType {
  public:
+  ContextMenuContentTypeExtensionPopup(
+      const ContextMenuContentTypeExtensionPopup&) = delete;
+  ContextMenuContentTypeExtensionPopup& operator=(
+      const ContextMenuContentTypeExtensionPopup&) = delete;
+
   ~ContextMenuContentTypeExtensionPopup() override;
 
   // ContextMenuContentType overrides.
@@ -22,8 +26,6 @@ class ContextMenuContentTypeExtensionPopup : public ContextMenuContentType {
 
  private:
   friend class ContextMenuContentTypeFactory;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuContentTypeExtensionPopup);
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_EXTENSION_POPUP_H_

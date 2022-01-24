@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
@@ -77,7 +78,9 @@ TEST_F(CWVCreditCardSaverTest, Ignore) {
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
             callback_called = YES;
-            EXPECT_EQ(autofill::AutofillClient::IGNORED, decision);
+            EXPECT_EQ(
+                autofill::AutofillClient::SaveCardOfferUserDecision::kIgnored,
+                decision);
           });
 
   CWVCreditCardSaver* credit_card_saver =
@@ -87,6 +90,7 @@ TEST_F(CWVCreditCardSaverTest, Ignore) {
                                   savePromptCallback:std::move(callback)];
   // Force -[CWVCreditCardSaver dealloc].
   credit_card_saver = nil;
+  ALLOW_UNUSED_LOCAL(credit_card_saver);
 
   EXPECT_TRUE(callback_called);
 }
@@ -104,7 +108,9 @@ TEST_F(CWVCreditCardSaverTest, Decline) {
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
             callback_called = YES;
-            EXPECT_EQ(autofill::AutofillClient::DECLINED, decision);
+            EXPECT_EQ(
+                autofill::AutofillClient::SaveCardOfferUserDecision::kDeclined,
+                decision);
           });
 
   CWVCreditCardSaver* credit_card_saver =
@@ -129,7 +135,9 @@ TEST_F(CWVCreditCardSaverTest, Accept) {
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
             callback_called = YES;
-            EXPECT_EQ(autofill::AutofillClient::ACCEPTED, decision);
+            EXPECT_EQ(
+                autofill::AutofillClient::SaveCardOfferUserDecision::kAccepted,
+                decision);
             EXPECT_EQ(u"John Doe", user_provided_card_details.cardholder_name);
             EXPECT_EQ(u"08", user_provided_card_details.expiration_date_month);
             EXPECT_EQ(u"2021", user_provided_card_details.expiration_date_year);

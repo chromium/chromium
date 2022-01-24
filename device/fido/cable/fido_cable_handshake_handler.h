@@ -47,6 +47,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableV1HandshakeHandler
   FidoCableV1HandshakeHandler(FidoCableDevice* device,
                               base::span<const uint8_t, 8> nonce,
                               base::span<const uint8_t, 32> session_pre_key);
+
+  FidoCableV1HandshakeHandler(const FidoCableV1HandshakeHandler&) = delete;
+  FidoCableV1HandshakeHandler& operator=(const FidoCableV1HandshakeHandler&) =
+      delete;
+
   ~FidoCableV1HandshakeHandler() override;
 
   // FidoCableHandshakeHandler:
@@ -69,8 +74,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableV1HandshakeHandler
   std::string handshake_key_;
 
   base::WeakPtrFactory<FidoCableV1HandshakeHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoCableV1HandshakeHandler);
 };
 
 }  // namespace device

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/callback_tracker_internal.h"
 
@@ -40,6 +39,10 @@ class CallbackTracker {
       std::map<internal::AbortHelper*, base::OnceClosure>;
 
   CallbackTracker();
+
+  CallbackTracker(const CallbackTracker&) = delete;
+  CallbackTracker& operator=(const CallbackTracker&) = delete;
+
   ~CallbackTracker();
 
   // Returns a wrapped callback.
@@ -65,8 +68,6 @@ class CallbackTracker {
       internal::AbortHelper* helper);
 
   AbortClosureByHelper helpers_;  // Owns AbortHelpers.
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackTracker);
 };
 
 }  // namespace drive_backend

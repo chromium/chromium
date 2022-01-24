@@ -162,8 +162,8 @@ public class AutoFetchNotifier {
                 IN_PROGRESS_NOTIFICATION_TAG, /*notificationId=*/0);
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(true /* preferCompat */,
-                                ChromeChannelDefinitions.ChannelId.DOWNLOADS, null, metadata)
+                        .createNotificationWrapperBuilder(
+                                ChromeChannelDefinitions.ChannelId.DOWNLOADS, metadata)
                         .setContentTitle(title)
                         .setGroup(COMPLETE_NOTIFICATION_TAG)
                         .setPriorityBeforeO(NotificationCompat.PRIORITY_LOW)
@@ -316,9 +316,8 @@ public class AutoFetchNotifier {
                 COMPLETE_NOTIFICATION_TAG, notificationId);
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(true /* preferCompat */,
-                                ChromeChannelDefinitions.ChannelId.DOWNLOADS,
-                                null /* remoteAppPackageName */, metadata)
+                        .createNotificationWrapperBuilder(
+                                ChromeChannelDefinitions.ChannelId.DOWNLOADS, metadata)
                         .setAutoCancel(true)
                         .setContentIntent(pendingClickIntent)
                         .setContentTitle(pageTitle)

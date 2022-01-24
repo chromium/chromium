@@ -23,7 +23,7 @@ namespace command_line_private = api::command_line_private;
 
 ExtensionFunction::ResponseAction CommandLinePrivateHasSwitchFunction::Run() {
   std::unique_ptr<command_line_private::HasSwitch::Params> params(
-      command_line_private::HasSwitch::Params::Create(*args_));
+      command_line_private::HasSwitch::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->name.empty())

@@ -1,0 +1,50 @@
+<style include="cr-shared-style shimless-rma-shared">
+  :host {
+    padding: 1px;
+  }
+
+  /* TODO(gavindodd): update colors to CrOS */
+  :host([skip]) #containerButton {
+    background-color: lightgray;
+  }
+
+  :host([completed]) #containerButton {
+    background-color: yellowgreen;
+  }
+
+  :host([failed]) #containerButton {
+    background-color: IndianRed;
+  }
+
+  #containerDiv {
+    height: 40px;
+    width: 180px;
+  }
+
+  #containerButton {
+    border-radius: 10px;
+    box-shadow: 0px 2px 2px 2px #bbb;
+    height: 40px;
+    width: 180px;
+  }
+
+  .icon-top-right {
+    height: 15px;
+    position: relative;
+    right: 20px;
+    top: -5px;
+    width: 15px;
+  }
+</style>
+
+<div id="containerDiv">
+  <cr-button disabled$="[[disabled]]"
+      id="containerButton" on-click="onComponentButtonClicked_">
+    <span id="componentName">[[componentName]]</span>
+  </cr-button>
+
+  <!-- TODO(gavindodd): Replace icon with checked icon -->
+  <iron-icon id="skipIcon" icon="shimless-icon:wifi"
+    hidden$="[[!skip]]" class="icon-top-right">
+  </iron-icon>
+</div>

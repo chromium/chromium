@@ -28,10 +28,10 @@ void EditPasswordAction::InternalProcessAction(ProcessActionCallback callback) {
     return;
   }
 
-  if (!delegate_->GetUserData()->has_additional_value(
+  if (!delegate_->GetUserData()->HasAdditionalValue(
           edit_password.memory_key()) ||
       delegate_->GetUserData()
-              ->additional_value(edit_password.memory_key())
+              ->GetAdditionalValue(edit_password.memory_key())
               ->strings()
               .values()
               .size() != 1) {
@@ -49,7 +49,7 @@ void EditPasswordAction::InternalProcessAction(ProcessActionCallback callback) {
   }
 
   std::string password = delegate_->GetUserData()
-                             ->additional_value(edit_password.memory_key())
+                             ->GetAdditionalValue(edit_password.memory_key())
                              ->strings()
                              .values(0);
 

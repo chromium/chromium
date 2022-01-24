@@ -48,8 +48,10 @@ class TestURLRequestContextWithProxy : public net::TestURLRequestContext {
     context_storage_.set_proxy_resolution_service(
         net::ConfiguredProxyResolutionService::CreateFixedFromPacResult(
             pac_result, TRAFFIC_ANNOTATION_FOR_TESTS));
-    // net::MockHostResolver maps all hosts to localhost.
-    auto host_resolver = std::make_unique<net::MockCachingHostResolver>();
+    auto host_resolver = std::make_unique<net::MockCachingHostResolver>(
+        /*cache_invalidation_num=*/0,
+        /*default_result=*/net::MockHostResolverBase::RuleResolver::
+            GetLocalhostResult());
     context_storage_.set_host_resolver(std::move(host_resolver));
     set_client_socket_factory(client_socket_factory);
     Init();
@@ -147,7 +149,7 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
             kDestinationHostPortPair, other_nik, net::NetLogWithSource(),
             params);
     net::TestCompletionCallback callback3;
-    int result = request2->Start(callback3.callback());
+    result = request2->Start(callback3.callback());
     EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, callback3.GetResult(result));
   }
 }

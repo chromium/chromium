@@ -86,7 +86,7 @@ TEST_F(SMILTimeContainerTest, ServiceAnimationsFlushesPendingSynchronizations) {
   // The frame callback should have flushed any pending updates.
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(500));
+  StepTime(base::Milliseconds(500));
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
   EXPECT_EQ(SMILTime::FromSecondsD(0.5), time_container->Elapsed());
 }
@@ -169,10 +169,10 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, NoAction) {
   EXPECT_FALSE(time_container->IsPaused());
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(2500));
+  StepTime(base::Milliseconds(2500));
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(500));
+  StepTime(base::Milliseconds(500));
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
   EXPECT_EQ(SMILTime::FromSecondsD(3), time_container->Elapsed());
 }
@@ -201,13 +201,13 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, SetElapsedAfterStart) {
   EXPECT_EQ(SMILTime::FromSecondsD(5.5), time_container->Elapsed());
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(2000));
+  StepTime(base::Milliseconds(2000));
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1000));
+  StepTime(base::Milliseconds(1000));
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1000));
+  StepTime(base::Milliseconds(1000));
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
   EXPECT_EQ(SMILTime::FromSecondsD(8.5), time_container->Elapsed());
 }
@@ -248,13 +248,13 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, SetElapsedBeforeStart) {
   EXPECT_EQ(SMILTime::FromSecondsD(5.5), time_container->Elapsed());
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(2000));
+  StepTime(base::Milliseconds(2000));
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1000));
+  StepTime(base::Milliseconds(1000));
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1000));
+  StepTime(base::Milliseconds(1000));
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
   EXPECT_EQ(SMILTime::FromSecondsD(8.5), time_container->Elapsed());
 }
@@ -281,7 +281,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseAfterStart) {
   EXPECT_FALSE(time_container->IsPaused());
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1500));
+  StepTime(base::Milliseconds(1500));
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
 
   time_container->Pause();
@@ -292,7 +292,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseAfterStart) {
   EXPECT_FALSE(time_container->IsPaused());
   EXPECT_EQ(SMILTime::FromSecondsD(1.5), time_container->Elapsed());
 
-  StepTime(base::TimeDelta::FromMilliseconds(4000));
+  StepTime(base::Milliseconds(4000));
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
   EXPECT_EQ(SMILTime::FromSecondsD(4.5), time_container->Elapsed());
 }
@@ -333,7 +333,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseBeforeStart) {
   EXPECT_TRUE(time_container->IsPaused());
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1500));
+  StepTime(base::Milliseconds(1500));
   EXPECT_EQ(SMILTime::FromSecondsD(0), time_container->Elapsed());
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
 
@@ -341,10 +341,10 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseBeforeStart) {
   EXPECT_FALSE(time_container->IsPaused());
   EXPECT_EQ(SMILTime::FromSecondsD(0), time_container->Elapsed());
 
-  StepTime(base::TimeDelta::FromMilliseconds(1500));
+  StepTime(base::Milliseconds(1500));
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(2500));
+  StepTime(base::Milliseconds(2500));
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
   EXPECT_EQ(SMILTime::FromSecondsD(3), time_container->Elapsed());
 }
@@ -371,7 +371,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseAndSetElapsedAfterStart) {
   EXPECT_FALSE(time_container->IsPaused());
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1500));
+  StepTime(base::Milliseconds(1500));
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
 
   time_container->Pause();
@@ -385,7 +385,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseAndSetElapsedAfterStart) {
   EXPECT_FALSE(time_container->IsPaused());
   EXPECT_EQ(SMILTime::FromSecondsD(0.5), time_container->Elapsed());
 
-  StepTime(base::TimeDelta::FromMilliseconds(4000));
+  StepTime(base::Milliseconds(4000));
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
   EXPECT_EQ(SMILTime::FromSecondsD(3.5), time_container->Elapsed());
 }
@@ -430,7 +430,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest,
   EXPECT_EQ(SMILTime::FromSecondsD(1.5), time_container->Elapsed());
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1500));
+  StepTime(base::Milliseconds(1500));
   EXPECT_EQ(SMILTime::FromSecondsD(1.5), time_container->Elapsed());
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
 
@@ -438,10 +438,10 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest,
   EXPECT_FALSE(time_container->IsPaused());
   EXPECT_EQ(SMILTime::FromSecondsD(1.5), time_container->Elapsed());
 
-  StepTime(base::TimeDelta::FromMilliseconds(2000));
+  StepTime(base::Milliseconds(2000));
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(2000));
+  StepTime(base::Milliseconds(2000));
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
   EXPECT_EQ(SMILTime::FromSecondsD(4.5), time_container->Elapsed());
 }
@@ -484,10 +484,10 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseAndResumeBeforeStart) {
   EXPECT_FALSE(time_container->IsPaused());
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(2500));
+  StepTime(base::Milliseconds(2500));
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(500));
+  StepTime(base::Milliseconds(500));
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
   EXPECT_EQ(SMILTime::FromSecondsD(3), time_container->Elapsed());
 }
@@ -515,15 +515,15 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseAndResumeAfterSuspended) {
   EXPECT_EQ(SMILTime::FromSecondsD(0), time_container->Elapsed());
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1000));
+  StepTime(base::Milliseconds(1000));
   EXPECT_EQ(SMILTime::FromSecondsD(1.0), time_container->Elapsed());
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1000));
+  StepTime(base::Milliseconds(1000));
   EXPECT_EQ(SMILTime::FromSecondsD(2.0), time_container->Elapsed());
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1500));
+  StepTime(base::Milliseconds(1500));
   EXPECT_EQ(SMILTime::FromSecondsD(3.0), time_container->Elapsed());
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
 
@@ -535,15 +535,15 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseAndResumeAfterSuspended) {
   EXPECT_FALSE(time_container->IsPaused());
   EXPECT_EQ(SMILTime::FromSecondsD(3.0), time_container->Elapsed());
 
-  StepTime(base::TimeDelta::FromMilliseconds(1000));
+  StepTime(base::Milliseconds(1000));
   EXPECT_EQ(SMILTime::FromSecondsD(4.0), time_container->Elapsed());
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1000));
+  StepTime(base::Milliseconds(1000));
   EXPECT_EQ(SMILTime::FromSecondsD(5.0), time_container->Elapsed());
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1500));
+  StepTime(base::Milliseconds(1500));
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
   EXPECT_EQ(SMILTime::FromSecondsD(6.0), time_container->Elapsed());
 }
@@ -571,15 +571,15 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, SetElapsedAfterSuspended) {
   EXPECT_EQ(SMILTime::FromSecondsD(0), time_container->Elapsed());
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1000));
+  StepTime(base::Milliseconds(1000));
   EXPECT_EQ(SMILTime::FromSecondsD(1.0), time_container->Elapsed());
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1000));
+  StepTime(base::Milliseconds(1000));
   EXPECT_EQ(SMILTime::FromSecondsD(2.0), time_container->Elapsed());
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1500));
+  StepTime(base::Milliseconds(1500));
   EXPECT_EQ(SMILTime::FromSecondsD(3.0), time_container->Elapsed());
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
 
@@ -588,15 +588,15 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, SetElapsedAfterSuspended) {
   EXPECT_EQ(SMILTime::FromSecondsD(5.5), time_container->Elapsed());
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1000));
+  StepTime(base::Milliseconds(1000));
   EXPECT_EQ(SMILTime::FromSecondsD(6.5), time_container->Elapsed());
   EXPECT_EQ(30, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1000));
+  StepTime(base::Milliseconds(1000));
   EXPECT_EQ(SMILTime::FromSecondsD(7.5), time_container->Elapsed());
   EXPECT_EQ(50, rect->height()->CurrentValue()->Value(length_context));
 
-  StepTime(base::TimeDelta::FromMilliseconds(1500));
+  StepTime(base::Milliseconds(1500));
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
   EXPECT_EQ(SMILTime::FromSecondsD(8.5), time_container->Elapsed());
 }

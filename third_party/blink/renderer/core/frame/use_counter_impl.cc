@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -52,6 +53,20 @@ mojom::blink::UseCounterFeatureType ToFeatureType(
       return mojom::blink::UseCounterFeatureType::kCssProperty;
     case UseCounterImpl::CSSPropertyType::kAnimation:
       return mojom::blink::UseCounterFeatureType::kAnimatedCssProperty;
+  }
+}
+
+mojom::blink::UseCounterFeatureType ToFeatureType(
+    UseCounterImpl::PermissionsPolicyUsageType type) {
+  switch (type) {
+    case UseCounterImpl::PermissionsPolicyUsageType::kViolation:
+      return mojom::blink::UseCounterFeatureType::
+          kPermissionsPolicyViolationEnforce;
+    case UseCounterImpl::PermissionsPolicyUsageType::kHeader:
+      return mojom::blink::UseCounterFeatureType::kPermissionsPolicyHeader;
+    case UseCounterImpl::PermissionsPolicyUsageType::kIframeAttribute:
+      return mojom::blink::UseCounterFeatureType::
+          kPermissionsPolicyIframeAttribute;
   }
 }
 }  // namespace
@@ -104,7 +119,7 @@ void UseCounterImpl::Trace(Visitor* visitor) const {
 
 void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
   const KURL url = frame->GetDocument()->Url();
-  if (SchemeRegistry::IsExtensionScheme(url.Protocol())) {
+  if (CommonSchemeRegistry::IsExtensionScheme(url.Protocol().Ascii())) {
     context_ = kExtensionContext;
   } else if (url.ProtocolIs("file")) {
     context_ = kFileContext;
@@ -197,14 +212,14 @@ void UseCounterImpl::Count(WebFeature web_feature,
         source_frame);
 }
 
-void UseCounterImpl::CountPermissionsPolicyViolation(
+void UseCounterImpl::CountPermissionsPolicyUsage(
     mojom::blink::PermissionsPolicyFeature feature,
+    PermissionsPolicyUsageType usage_type,
     const LocalFrame& source_frame) {
   DCHECK_NE(mojom::blink::PermissionsPolicyFeature::kNotFound, feature);
-  Count(
-      {mojom::blink::UseCounterFeatureType::kPermissionsPolicyViolationEnforce,
-       static_cast<uint32_t>(feature)},
-      &source_frame);
+
+  Count({ToFeatureType(usage_type), static_cast<uint32_t>(feature)},
+        &source_frame);
 }
 
 void UseCounterImpl::NotifyFeatureCounted(WebFeature feature) {
@@ -285,6 +300,8 @@ void UseCounterImpl::TraceMeasurement(const UseCounterFeature& feature) {
       break;
     case mojom::blink::UseCounterFeatureType::
         kPermissionsPolicyViolationEnforce:
+    case mojom::blink::UseCounterFeatureType::kPermissionsPolicyHeader:
+    case mojom::blink::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
       // TODO(crbug.com/1206004): Add trace event for permissions policy metrics
       // gathering.
       return;

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/android/compositor_client.h"
 #include "ui/gfx/native_widget_types.h"
@@ -24,6 +23,9 @@ class ContentViewRenderView : public content::CompositorClient {
   ContentViewRenderView(JNIEnv* env,
                         jobject obj,
                         gfx::NativeWindow root_window);
+
+  ContentViewRenderView(const ContentViewRenderView&) = delete;
+  ContentViewRenderView& operator=(const ContentViewRenderView&) = delete;
 
   // Methods called from Java via JNI -----------------------------------------
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -66,8 +68,6 @@ class ContentViewRenderView : public content::CompositorClient {
 
   gfx::NativeWindow root_window_;
   int current_surface_format_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentViewRenderView);
 };
 
 }  // namespace embedder_support

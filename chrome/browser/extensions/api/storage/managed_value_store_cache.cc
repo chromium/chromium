@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
@@ -25,16 +24,17 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
 #include "components/policy/core/common/schema_registry.h"
+#include "components/value_store/value_store_change.h"
+#include "components/value_store/value_store_factory.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
+#include "extensions/browser/api/storage/value_store_util.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/value_store/value_store_change.h"
-#include "extensions/browser/value_store/value_store_factory.h"
 #include "extensions/common/api/storage.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -56,8 +56,8 @@ class ExtensionRegistry;
 namespace {
 
 // Only extension settings are stored in the managed namespace - not apps.
-const ValueStoreFactory::ModelType kManagedModelType =
-    ValueStoreFactory::ModelType::EXTENSION;
+const value_store_util::ModelType kManagedModelType =
+    value_store_util::ModelType::EXTENSION;
 
 }  // namespace
 
@@ -70,6 +70,10 @@ class ManagedValueStoreCache::ExtensionTracker
     : public ExtensionRegistryObserver {
  public:
   ExtensionTracker(Profile* profile, policy::PolicyDomain policy_domain);
+
+  ExtensionTracker(const ExtensionTracker&) = delete;
+  ExtensionTracker& operator=(const ExtensionTracker&) = delete;
+
   ~ExtensionTracker() override {}
 
  private:
@@ -103,8 +107,6 @@ class ManagedValueStoreCache::ExtensionTracker
       extension_registry_observation_{this};
   policy::SchemaRegistry* schema_registry_;
   base::WeakPtrFactory<ExtensionTracker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionTracker);
 };
 
 ManagedValueStoreCache::ExtensionTracker::ExtensionTracker(
@@ -229,7 +231,7 @@ void ManagedValueStoreCache::ExtensionTracker::Register(
 
 ManagedValueStoreCache::ManagedValueStoreCache(
     BrowserContext* context,
-    scoped_refptr<ValueStoreFactory> factory,
+    scoped_refptr<value_store::ValueStoreFactory> factory,
     scoped_refptr<SettingsObserverList> observers)
     : profile_(Profile::FromBrowserContext(context)),
       policy_domain_(GetPolicyDomain(profile_)),
@@ -359,8 +361,9 @@ PolicyValueStore* ManagedValueStoreCache::GetStoreFor(
   // sends updated values.
   std::unique_ptr<PolicyValueStore> store(new PolicyValueStore(
       extension_id, observers_,
-      storage_factory_->CreateSettingsStore(settings_namespace::MANAGED,
-                                            kManagedModelType, extension_id)));
+      value_store_util::CreateSettingsStore(settings_namespace::MANAGED,
+                                            kManagedModelType, extension_id,
+                                            storage_factory_)));
   PolicyValueStore* raw_store = store.get();
   store_map_[extension_id] = std::move(store);
 
@@ -369,8 +372,9 @@ PolicyValueStore* ManagedValueStoreCache::GetStoreFor(
 
 bool ManagedValueStoreCache::HasStore(const std::string& extension_id) const {
   // Note: Currently only manage extensions (not apps).
-  return storage_factory_->HasSettings(settings_namespace::MANAGED,
-                                       kManagedModelType, extension_id);
+  return value_store_util::HasValueStore(settings_namespace::MANAGED,
+                                         kManagedModelType, extension_id,
+                                         storage_factory_);
 }
 
 }  // namespace extensions

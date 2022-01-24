@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "content/public/test/browser_task_environment.h"
@@ -149,6 +148,10 @@ class SafeDialAppInfoParserTest : public testing::Test {
  public:
   SafeDialAppInfoParserTest() = default;
 
+  SafeDialAppInfoParserTest(const SafeDialAppInfoParserTest&) = delete;
+  SafeDialAppInfoParserTest& operator=(const SafeDialAppInfoParserTest&) =
+      delete;
+
   std::unique_ptr<ParsedDialAppInfo> Parse(
       const std::string& xml,
       SafeDialAppInfoParser::ParsingResult expected_result) {
@@ -172,7 +175,6 @@ class SafeDialAppInfoParserTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<ParsedDialAppInfo> app_info_;
-  DISALLOW_COPY_AND_ASSIGN(SafeDialAppInfoParserTest);
 };
 
 TEST_F(SafeDialAppInfoParserTest, TestInvalidXmlNoService) {

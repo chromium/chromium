@@ -5,10 +5,10 @@
 #ifndef CHROME_RENDERER_WORKER_CONTENT_SETTINGS_CLIENT_H_
 #define CHROME_RENDERER_WORKER_CONTENT_SETTINGS_CLIENT_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -25,6 +25,10 @@ struct RendererContentSettingRules;
 class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
  public:
   explicit WorkerContentSettingsClient(content::RenderFrame* render_frame);
+
+  WorkerContentSettingsClient& operator=(const WorkerContentSettingsClient&) =
+      delete;
+
   ~WorkerContentSettingsClient() override;
 
   // WebContentSettingsClient overrides.
@@ -46,7 +50,7 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
   // Loading document context for this worker.
   bool is_unique_origin_ = false;
   url::Origin document_origin_;
-  GURL site_for_cookies_;
+  net::SiteForCookies site_for_cookies_;
   url::Origin top_frame_origin_;
   bool allow_running_insecure_content_;
   const int32_t render_frame_id_;
@@ -54,15 +58,13 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
 
   // Because instances of this class are created on the parent's thread (i.e,
   // on the renderer main thread or on the thread of the parent worker), it is
-  // necessary to lazily bind the |content_settings_manager_| remote. The
+  // necessary to lazily bind the `content_settings_manager_` remote. The
   // pending remote is initialized on the parent thread and then the remote is
   // bound when needed on the worker's thread.
   mutable mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
       pending_content_settings_manager_;
   mutable mojo::Remote<content_settings::mojom::ContentSettingsManager>
       content_settings_manager_;
-
-  DISALLOW_ASSIGN(WorkerContentSettingsClient);
 };
 
 #endif  // CHROME_RENDERER_WORKER_CONTENT_SETTINGS_CLIENT_H_

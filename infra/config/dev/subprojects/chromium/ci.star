@@ -48,7 +48,6 @@ defaults.os.set(os.LINUX_BIONIC_SWITCH_TO_DEFAULT)
 defaults.service_account.set(
     "chromium-ci-builder-dev@chops-service-accounts.iam.gserviceaccount.com",
 )
-defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 
 def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
     resultdb_bigquery_exports = resultdb_bigquery_exports or []
@@ -56,24 +55,18 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium_staging.ci_test_results",
         ),
+        resultdb.export_text_artifacts(
+            bq_table = "chrome-luci-data.chromium_staging.ci_text_artifacts",
+        ),
     ])
     return builder(
         name = name,
         triggered_by = ["chromium-gitiles-trigger"],
         resultdb_bigquery_exports = resultdb_bigquery_exports,
-        isolated_server = "https://isolateserver-dev.appspot.com",
         goma_backend = goma.backend.RBE_PROD,
         resultdb_index_by_timestamp = True,
-        # TODO(crbug.com/1225524): remove this after migration.
-        experiments = {
-            "chromium.isolate.use_new_lib": 50,
-        },
         **kwargs
     )
-
-ci_builder(
-    name = "android-lollipop-arm-rel-swarming",
-)
 
 ci_builder(
     name = "android-marshmallow-arm64-rel-swarming",
@@ -82,11 +75,6 @@ ci_builder(
 ci_builder(
     name = "linux-rel-swarming",
     description_html = "Test description. <b>Test HTML</b>.",
-    resultdb_bigquery_exports = [
-        resultdb.export_text_artifacts(
-            bq_table = "chrome-luci-data.chromium_staging.ci_text_artifacts",
-        ),
-    ],
 )
 
 ci_builder(
@@ -98,6 +86,12 @@ ci_builder(
 ci_builder(
     name = "mac-rel-swarming",
     os = os.MAC_DEFAULT,
+)
+
+ci_builder(
+    name = "mac-arm-rel-swarming",
+    cpu = cpu.ARM64,
+    os = os.MAC_11,
 )
 
 ci_builder(

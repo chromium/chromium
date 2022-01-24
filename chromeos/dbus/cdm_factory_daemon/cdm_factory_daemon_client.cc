@@ -26,6 +26,11 @@ CdmFactoryDaemonClient* g_instance = nullptr;
 class CdmFactoryDaemonClientImpl : public CdmFactoryDaemonClient {
  public:
   CdmFactoryDaemonClientImpl() = default;
+
+  CdmFactoryDaemonClientImpl(const CdmFactoryDaemonClientImpl&) = delete;
+  CdmFactoryDaemonClientImpl& operator=(const CdmFactoryDaemonClientImpl&) =
+      delete;
+
   ~CdmFactoryDaemonClientImpl() override = default;
 
   // CdmFactoryDaemonClient overrides:
@@ -60,7 +65,6 @@ class CdmFactoryDaemonClientImpl : public CdmFactoryDaemonClient {
   dbus::ObjectProxy* proxy_ = nullptr;
 
   base::WeakPtrFactory<CdmFactoryDaemonClientImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CdmFactoryDaemonClientImpl);
 };
 
 }  // namespace

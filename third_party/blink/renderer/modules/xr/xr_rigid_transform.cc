@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 
+#include <cmath>
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
@@ -13,6 +14,15 @@
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
 namespace blink {
+
+namespace {
+
+bool IsComponentValid(DOMPointInit* point) {
+  DCHECK(point);
+  return std::isfinite(point->x()) && std::isfinite(point->y()) &&
+         std::isfinite(point->z()) && std::isfinite(point->w());
+}
+}  // anonymous namespace
 
 // makes a deep copy of transformationMatrix
 XRRigidTransform::XRRigidTransform(
@@ -64,6 +74,13 @@ XRRigidTransform* XRRigidTransform::Create(DOMPointInit* position,
     return nullptr;
   }
 
+  if ((position && !IsComponentValid(position)) ||
+      (orientation && !IsComponentValid(orientation))) {
+    exception_state.ThrowTypeError(
+        "Position and Orientation must consist of only finite values");
+    return nullptr;
+  }
+
   if (orientation) {
     double x = orientation->x();
     double y = orientation->y();
@@ -76,6 +93,14 @@ XRRigidTransform* XRRigidTransform::Create(DOMPointInit* position,
     if (sq_len == 0.0) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Orientation's length cannot be 0");
+      return nullptr;
+    } else if (!std::isfinite(sq_len)) {
+      // If the orientation has any large numbers that cause us to overflow when
+      // calculating the length, we won't be able to generate a valid normalized
+      // quaternion.
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "Orientation is too large to normalize");
       return nullptr;
     }
   }
@@ -143,8 +168,15 @@ void XRRigidTransform::EnsureInverse() {
   // the caching is safe.
   if (!inverse_) {
     EnsureMatrix();
-    DCHECK(matrix_->IsInvertible());
-    inverse_ = MakeGarbageCollected<XRRigidTransform>(matrix_->Inverse());
+    if (matrix_->IsInvertible()) {
+      inverse_ = MakeGarbageCollected<XRRigidTransform>(matrix_->Inverse());
+    } else {
+      DLOG(ERROR) << "Matrix was not invertible: " << matrix_->ToString();
+      // TODO(https://crbug.com/1258611): Define behavior for non-invertible
+      // matrices. Note that this is consistent with earlier behavior, which
+      // just always passed matrix_->Inverse() whether it was invertible or not.
+      inverse_ = MakeGarbageCollected<XRRigidTransform>(TransformationMatrix());
+    }
     inverse_->inverse_ = this;
   }
 }

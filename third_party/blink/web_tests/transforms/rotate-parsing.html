@@ -11,7 +11,7 @@ expect('inherit').parsesAs('inherit');
 
 expect('none').parsesAs('none').isComputedTo('none');
 expect('10deg').parsesAs('10deg').isComputedTo('10deg');
-expect('0 0 1 10deg').parsesAs('z 10deg').isComputedTo('10deg');
+expect('0 0 1 10deg').parsesAs('10deg').isComputedTo('10deg');
 expect('-1.5 2 3 10deg').parsesAs('-1.5 2 3 10deg').isComputedTo('-1.5 2 3 10deg');
 expect('45deg 1 2 3').parsesAs('1 2 3 45deg').isComputedTo('1 2 3 45deg');
 
@@ -19,8 +19,8 @@ expect('x 45deg').parsesAs('x 45deg').isComputedTo('x 45deg');
 expect('45deg x').parsesAs('x 45deg').isComputedTo('x 45deg');
 expect('y 45deg').parsesAs('y 45deg').isComputedTo('y 45deg');
 expect('45deg y').parsesAs('y 45deg').isComputedTo('y 45deg');
-expect('z 45deg').parsesAs('z 45deg').isComputedTo('45deg');
-expect('45deg z').parsesAs('z 45deg').isComputedTo('45deg');
+expect('z 45deg').parsesAs('45deg').isComputedTo('45deg');
+expect('45deg z').parsesAs('45deg').isComputedTo('45deg');
 
 expect('200grad').parsesAs('200grad').isComputedTo('180deg');
 expect('1rad').parsesAs('1rad').isComputedTo('57.2958deg');

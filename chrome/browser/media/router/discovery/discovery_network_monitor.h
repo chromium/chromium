@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
@@ -54,6 +53,9 @@ class DiscoveryNetworkMonitor
 
   static std::unique_ptr<DiscoveryNetworkMonitor> CreateInstanceForTest(
       NetworkInfoFunction strategy);
+
+  DiscoveryNetworkMonitor(const DiscoveryNetworkMonitor&) = delete;
+  DiscoveryNetworkMonitor& operator=(const DiscoveryNetworkMonitor&) = delete;
 
   void AddObserver(Observer* const observer);
   void RemoveObserver(Observer* const observer);
@@ -106,8 +108,6 @@ class DiscoveryNetworkMonitor
 
   // SequenceChecker for |task_runner_|.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DiscoveryNetworkMonitor);
 };
 
 }  // namespace media_router

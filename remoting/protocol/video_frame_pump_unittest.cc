@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -79,6 +79,10 @@ class ThreadCheckVideoEncoder : public VideoEncoderVerbatim {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(task_runner) {
   }
+
+  ThreadCheckVideoEncoder(const ThreadCheckVideoEncoder&) = delete;
+  ThreadCheckVideoEncoder& operator=(const ThreadCheckVideoEncoder&) = delete;
+
   ~ThreadCheckVideoEncoder() override {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
   }
@@ -90,8 +94,6 @@ class ThreadCheckVideoEncoder : public VideoEncoderVerbatim {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckVideoEncoder);
 };
 
 class ThreadCheckDesktopCapturer : public webrtc::DesktopCapturer {
@@ -99,6 +101,11 @@ class ThreadCheckDesktopCapturer : public webrtc::DesktopCapturer {
   ThreadCheckDesktopCapturer(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(task_runner), callback_(nullptr) {}
+
+  ThreadCheckDesktopCapturer(const ThreadCheckDesktopCapturer&) = delete;
+  ThreadCheckDesktopCapturer& operator=(const ThreadCheckDesktopCapturer&) =
+      delete;
+
   ~ThreadCheckDesktopCapturer() override {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
   }
@@ -135,8 +142,6 @@ class ThreadCheckDesktopCapturer : public webrtc::DesktopCapturer {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   webrtc::DesktopCapturer::Callback* callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckDesktopCapturer);
 };
 
 class VideoFramePumpTest : public testing::Test {

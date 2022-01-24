@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_PIP_WINDOW_THROTTLE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_PIP_WINDOW_THROTTLE_OBSERVER_H_
 
-#include "chrome/browser/chromeos/throttle_observer.h"
+#include "chrome/browser/ash/throttle_observer.h"
 #include "ui/aura/window_observer.h"
 
 namespace content {
@@ -16,7 +16,7 @@ namespace arc {
 
 // This class observes the PIP window container and sets the state to active if
 // an ARC PIP window is currently visible.
-class ArcPipWindowThrottleObserver : public chromeos::ThrottleObserver,
+class ArcPipWindowThrottleObserver : public ash::ThrottleObserver,
                                      public aura::WindowObserver {
  public:
   ArcPipWindowThrottleObserver();
@@ -25,7 +25,7 @@ class ArcPipWindowThrottleObserver : public chromeos::ThrottleObserver,
   ArcPipWindowThrottleObserver& operator=(const ArcPipWindowThrottleObserver&) =
       delete;
 
-  // chromeos::ThrottleObserver:
+  // ash::ThrottleObserver:
   void StartObserving(content::BrowserContext*,
                       const ObserverStateChangedCallback& callback) override;
   void StopObserving() override;

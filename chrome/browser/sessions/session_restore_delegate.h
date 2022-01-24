@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/token.h"
 #include "components/sessions/core/session_id.h"
@@ -29,7 +28,8 @@ class SessionRestoreDelegate {
                 bool is_app,
                 bool is_pinned,
                 const absl::optional<tab_groups::TabGroupId>& group);
-    RestoredTab(const RestoredTab& other);
+    RestoredTab(const RestoredTab&);
+    RestoredTab& operator=(const RestoredTab&);
 
     bool operator<(const RestoredTab& right) const;
 
@@ -53,11 +53,12 @@ class SessionRestoreDelegate {
     absl::optional<tab_groups::TabGroupId> group_;
   };
 
+  SessionRestoreDelegate() = delete;
+  SessionRestoreDelegate(const SessionRestoreDelegate&) = delete;
+  SessionRestoreDelegate& operator=(const SessionRestoreDelegate&) = delete;
+
   static void RestoreTabs(const std::vector<RestoredTab>& tabs,
                           const base::TimeTicks& restore_started);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SessionRestoreDelegate);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_RESTORE_DELEGATE_H_

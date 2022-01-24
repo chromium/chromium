@@ -7,7 +7,7 @@
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 let smartInputsPage;
@@ -55,7 +55,6 @@ suite('SmartInputsPage', function() {
 
   test('Deep link to emoji suggestion toggle', async () => {
     loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
       allowEmojiSuggestion: true,
     });
     createSmartInputsPage();
@@ -67,8 +66,8 @@ suite('SmartInputsPage', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement =
-        smartInputsPage.$$('#emojiSuggestion').$$('cr-toggle');
+    const deepLinkElement = smartInputsPage.$$('#emojiSuggestion')
+                                .shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -91,7 +90,6 @@ suite('SmartInputsPage', function() {
     const PREDICTIVE_WRITING_SETTING_ID = '1208';
 
     loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
       allowPredictiveWriting: true,
     });
     createSmartInputsPage();
@@ -103,8 +101,8 @@ suite('SmartInputsPage', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement =
-        smartInputsPage.$$('#predictiveWriting').$$('cr-toggle');
+    const deepLinkElement = smartInputsPage.$$('#predictiveWriting')
+                                .shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

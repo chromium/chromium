@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/site_instance_group_manager.h"
@@ -18,6 +17,8 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/storage_partition_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -67,6 +68,10 @@ struct UrlInfo;
 ///////////////////////////////////////////////////////////////////////////////
 class CONTENT_EXPORT BrowsingInstance final
     : public base::RefCounted<BrowsingInstance> {
+ public:
+  BrowsingInstance(const BrowsingInstance&) = delete;
+  BrowsingInstance& operator=(const BrowsingInstance&) = delete;
+
  private:
   friend class base::RefCounted<BrowsingInstance>;
   friend class SiteInstanceImpl;
@@ -127,13 +132,16 @@ class CONTENT_EXPORT BrowsingInstance final
 
   // Returns a SiteInfo with site and process-lock URLs for |url_info| that are
   // identical with what these values would be if we called
-  // GetSiteInstanceForURL() with the same |url_info| and
-  // |allow_default_instance|. This method is used when we need this
+  // GetSiteInstanceForURL() with the same `url_info` and
+  // `allow_default_instance`. This method is used when we need this
   // information, but do not want to create a SiteInstance yet.
   //
   // Note: Unlike ComputeSiteInfoForURL() this method can return a SiteInfo for
-  // a default SiteInstance, if |url_info| can be placed in the default
-  // SiteInstance and |allow_default_instance| is true.
+  // a default SiteInstance, if `url_info` can be placed in the default
+  // SiteInstance and `allow_default_instance` is true.
+  // TODO(http://crbug.com/1243449): This function has become ambiguous
+  // regarding the web_exposed_isolation_info of `url_info`. It is currently
+  // disregarded but we should probably check that the values are equal.
   SiteInfo GetSiteInfoForURL(const UrlInfo& url_info,
                              bool allow_default_instance);
 
@@ -230,7 +238,14 @@ class CONTENT_EXPORT BrowsingInstance final
   // and if so, from which top level origin.
   const WebExposedIsolationInfo web_exposed_isolation_info_;
 
-  DISALLOW_COPY_AND_ASSIGN(BrowsingInstance);
+  // The StoragePartitionConfig that must be used by all SiteInstances in this
+  // BrowsingInstance. This will be set to the StoragePartitionConfig of the
+  // first SiteInstance that has its SiteInfo assigned in this
+  // BrowsingInstance, and cannot be changed afterwards.
+  //
+  // See crbug.com/1212266 for more context on why we track the
+  // StoragePartitionConfig here.
+  absl::optional<StoragePartitionConfig> storage_partition_config_;
 };
 
 }  // namespace content

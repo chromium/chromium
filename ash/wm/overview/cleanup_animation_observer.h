@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/delayed_animation_observer.h"
-#include "base/macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 
 namespace views {
@@ -25,6 +24,10 @@ class ASH_EXPORT CleanupAnimationObserver
       public DelayedAnimationObserver {
  public:
   explicit CleanupAnimationObserver(std::unique_ptr<views::Widget> widget);
+
+  CleanupAnimationObserver(const CleanupAnimationObserver&) = delete;
+  CleanupAnimationObserver& operator=(const CleanupAnimationObserver&) = delete;
+
   ~CleanupAnimationObserver() override;
 
   // ui::ImplicitAnimationObserver:
@@ -39,8 +42,6 @@ class ASH_EXPORT CleanupAnimationObserver
  private:
   std::unique_ptr<views::Widget> widget_;
   OverviewDelegate* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CleanupAnimationObserver);
 };
 
 }  // namespace ash

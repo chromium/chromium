@@ -9,7 +9,4 @@ dictionary CanMakePaymentEventInit : ExtendableEventInit {
     USVString paymentRequestOrigin;
     sequence<PaymentMethodData> methodData;
     sequence<PaymentDetailsModifier> modifiers;
-
-    // https://gist.github.com/rsolomakhin/eba91c185028899883d2c7f37f357d7c
-    DOMString currency;
 };

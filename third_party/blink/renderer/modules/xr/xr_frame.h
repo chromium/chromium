@@ -91,14 +91,14 @@ class XRFrame final : public ScriptWrappable {
 
   XRJointPose* getJointPose(XRJointSpace* joint,
                             XRSpace* baseSpace,
-                            ExceptionState& exception_state);
+                            ExceptionState& exception_state) const;
   bool fillJointRadii(HeapVector<Member<XRJointSpace>>& jointSpaces,
                       NotShared<DOMFloat32Array> radii,
-                      ExceptionState& exception_state);
+                      ExceptionState& exception_state) const;
   bool fillPoses(HeapVector<Member<XRSpace>>& spaces,
                  XRSpace* baseSpace,
                  NotShared<DOMFloat32Array> transforms,
-                 ExceptionState& exception_state);
+                 ExceptionState& exception_state) const;
 
  private:
   std::unique_ptr<TransformationMatrix> GetAdjustedPoseMatrix(XRSpace*) const;
@@ -115,6 +115,10 @@ class XRFrame final : public ScriptWrappable {
       XRSpace* space,
       absl::optional<uint64_t> maybe_plane_id,
       ExceptionState& exception_state);
+  // Helper for checking if space and frame have the same session.
+  // Sets kInvalidStateError exception state if sessions are different.
+  bool IsSameSession(XRSession* space_session,
+                     ExceptionState& exception_state) const;
 
   const Member<XRSession> session_;
 

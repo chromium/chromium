@@ -43,6 +43,7 @@ source_set("unit_tests") {
     ":browser",
     ":test_support",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",

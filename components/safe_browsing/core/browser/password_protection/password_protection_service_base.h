@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -25,6 +24,7 @@
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -69,7 +69,12 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       bool is_off_the_record,
       signin::IdentityManager* identity_manager,
-      bool try_token_fetch);
+      bool try_token_fetch,
+      SafeBrowsingMetricsCollector* metrics_collector);
+
+  PasswordProtectionServiceBase(const PasswordProtectionServiceBase&) = delete;
+  PasswordProtectionServiceBase& operator=(
+      const PasswordProtectionServiceBase&) = delete;
 
   ~PasswordProtectionServiceBase() override;
 
@@ -239,6 +244,10 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // Returns the URL where PasswordProtectionRequest instances send requests.
   static GURL GetPasswordProtectionRequestUrl();
 
+  // Gets the UserPopulation value for this profile.
+  virtual ChromeUserPopulation::UserPopulation GetUserPopulationPref()
+      const = 0;
+
  protected:
   friend class PasswordProtectionRequest;
   friend class PasswordProtectionRequestContent;
@@ -250,6 +259,11 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   bool CanSendPing(LoginReputationClientRequest::TriggerType trigger_type,
                    const GURL& main_frame_url,
                    ReusedPasswordAccountType password_type);
+
+  // If ReusedPasswordAccountType is GMAIL and syncing and
+  // kPasswordProtectionForSignedInUsers is enabled.
+  bool IsSyncingGMAILPasswordWithSignedInProtectionEnabled(
+      ReusedPasswordAccountType password_type) const;
 
   // Called by a PasswordProtectionRequest instance when it finishes to remove
   // itself from |requests_|.
@@ -290,6 +304,7 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
       LoginReputationClientRequest::Frame* frame) = 0;
 
   virtual void FillUserPopulation(
+      const GURL& main_frame_url,
       LoginReputationClientRequest* request_proto) = 0;
 
   virtual bool IsExtendedReporting() = 0;
@@ -309,17 +324,13 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // If primary account is signed in.
   virtual bool IsPrimaryAccountSignedIn() const = 0;
 
-  // If a domain is not defined for the primary account. This means the primary
-  // account is a Gmail account.
-  virtual bool IsPrimaryAccountGmail() const = 0;
-
-  // If the domain for the non sync account is equal to |kNoHostedDomainFound|,
+  // If the domain for the account is equal to |kNoHostedDomainFound|,
   // this means that the account is a Gmail account.
-  virtual bool IsOtherGaiaAccountGmail(const std::string& username) const = 0;
+  virtual bool IsAccountGmail(const std::string& username) const = 0;
 
   // Gets the account based off of the username from a list of signed in
   // accounts.
-  virtual AccountInfo GetSignedInNonSyncAccount(
+  virtual AccountInfo GetAccountInfoForUsername(
       const std::string& username) const = 0;
 
   // If Safe browsing endpoint is not enabled in the country.
@@ -348,10 +359,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
       LoginReputationClientRequest::TriggerType trigger_type,
       const GURL& url,
       ReusedPasswordAccountType password_type) = 0;
-
-  const std::list<std::string>& common_spoofed_domains() const {
-    return common_spoofed_domains_;
-  }
 
   // Subclasses may override this method to either cancel or resume deferred
   // navigations. By default, deferred navigations are not handled.
@@ -434,10 +441,6 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // cookie store.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // List of most commonly spoofed domains to default to on the password warning
-  // dialog.
-  std::list<std::string> common_spoofed_domains_;
-
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
@@ -464,8 +467,10 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // Use this to disable token fetches from ios and certain tests.
   bool try_token_fetch_;
 
+  // Unowned object used for recording metrics/prefs.
+  SafeBrowsingMetricsCollector* metrics_collector_;
+
   base::WeakPtrFactory<PasswordProtectionServiceBase> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PasswordProtectionServiceBase);
 };
 
 }  // namespace safe_browsing

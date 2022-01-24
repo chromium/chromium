@@ -40,6 +40,9 @@ public class ContextualSearchFieldTrial {
     static final String RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME =
             "default_query_max_width_sp";
 
+    static final String CONTEXTUAL_SEARCH_PROMO_CARD_MAX_SHOWN_PARAM_NAME = "promo_card_max_shown";
+    private static final int PROMO_DEFAULT_LIMIT = 3;
+
     // Deprecated.
     private static final int MANDATORY_PROMO_DEFAULT_LIMIT = 10;
 
@@ -334,6 +337,13 @@ public class ContextualSearchFieldTrial {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX,
                 RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME, 0);
+    }
+
+    /* Return the max times to show the promo card. */
+    static int getDefaultPromoCardShownTimes() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS,
+                CONTEXTUAL_SEARCH_PROMO_CARD_MAX_SHOWN_PARAM_NAME, PROMO_DEFAULT_LIMIT);
     }
 
     // --------------------------------------------------------------------------------------------

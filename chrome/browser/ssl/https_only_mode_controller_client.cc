@@ -18,7 +18,7 @@
 std::unique_ptr<security_interstitials::MetricsHelper>
 HttpsOnlyModeControllerClient::GetMetricsHelper(const GURL& url) {
   security_interstitials::MetricsHelper::ReportDetails settings;
-  settings.metric_prefix = "https_only_mode";
+  settings.metric_prefix = "https_first_mode";
   return std::make_unique<security_interstitials::MetricsHelper>(url, settings,
                                                                  nullptr);
 }
@@ -51,9 +51,10 @@ void HttpsOnlyModeControllerClient::Proceed() {
           profile->GetSSLHostStateDelegate());
   // StatefulSSLHostStateDelegate can be null during tests.
   if (state) {
-    state->AllowHttpForHost(request_url_.host());
+    state->AllowHttpForHost(request_url_.host(), web_contents_);
   }
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents_);
+  tab_helper->set_is_navigation_upgraded(false);
   tab_helper->set_is_navigation_fallback(true);
   web_contents_->GetController().Reload(content::ReloadType::NORMAL, false);
   // The failed https navigation will remain as a forward entry, so it needs to

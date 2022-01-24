@@ -35,6 +35,10 @@ class VaapiPictureNativePixmap : public VaapiPicture {
       uint32_t texture_id,
       uint32_t client_texture_id,
       uint32_t texture_target);
+
+  VaapiPictureNativePixmap(const VaapiPictureNativePixmap&) = delete;
+  VaapiPictureNativePixmap& operator=(const VaapiPictureNativePixmap&) = delete;
+
   ~VaapiPictureNativePixmap() override;
 
   // VaapiPicture implementation.
@@ -48,9 +52,6 @@ class VaapiPictureNativePixmap : public VaapiPicture {
 
   // VASurface used to transfer from the decoder's pixel format.
   scoped_refptr<VASurface> va_surface_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VaapiPictureNativePixmap);
 };
 
 }  // namespace media

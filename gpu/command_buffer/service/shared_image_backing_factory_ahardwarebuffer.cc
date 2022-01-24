@@ -145,6 +145,9 @@ class SharedImageBackingAHB : public SharedImageBackingAndroid {
                         bool is_thread_safe,
                         base::ScopedFD initial_upload_fd);
 
+  SharedImageBackingAHB(const SharedImageBackingAHB&) = delete;
+  SharedImageBackingAHB& operator=(const SharedImageBackingAHB&) = delete;
+
   ~SharedImageBackingAHB() override;
 
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
@@ -183,8 +186,6 @@ class SharedImageBackingAHB : public SharedImageBackingAndroid {
   // mode.
   gles2::Texture* legacy_texture_ = nullptr;
   scoped_refptr<OverlayImage> overlay_image_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(SharedImageBackingAHB);
 };
 
 // Vk backed Skia representation of SharedImageBackingAHB.

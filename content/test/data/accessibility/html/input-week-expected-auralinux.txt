@@ -1,6 +1,6 @@
 [document web]
 ++[section]
-++++[dateeditor]
+++++[dateeditor] text-input-type:week
 ++++++[section]
 ++++++++[section]
 ++++++++++[static] name='Week '

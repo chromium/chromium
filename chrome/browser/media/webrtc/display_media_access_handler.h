@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chrome/browser/media/capture_access_handler_base.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -30,6 +29,11 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   DisplayMediaAccessHandler(
       std::unique_ptr<DesktopMediaPickerFactory> picker_factory,
       bool display_notification);
+
+  DisplayMediaAccessHandler(const DisplayMediaAccessHandler&) = delete;
+  DisplayMediaAccessHandler& operator=(const DisplayMediaAccessHandler&) =
+      delete;
+
   ~DisplayMediaAccessHandler() override;
 
   // MediaAccessHandler implementation.
@@ -77,8 +81,6 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   RequestsQueues pending_requests_;
 
   WebContentsCollection web_contents_collection_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayMediaAccessHandler);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DISPLAY_MEDIA_ACCESS_HANDLER_H_

@@ -1,33 +1,23 @@
-<style>
+<style include="mwb-element-shared-style">
   :host(:focus) {
     outline: none;
   }
 
   :host(:is(.hovered, .selected)) .button-container {
     height: auto;
+    overflow: visible;
     width: auto;
   }
 
   .button-container {
-    flex-shrink: 0;
     height: 0;
+    margin-inline-start: 2px;
     overflow: hidden;
     width: 0;
   }
 
   .button-container cr-icon-button {
     --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
-    --cr-icon-button-focus-outline-color: transparent;
-    border: 2px solid transparent;
-    border-radius: 50%;
-  }
-
-  .button-container cr-icon-button:hover {
-    background-color: var(--mwb-icon-button-hover-background-color);
-  }
-
-  .button-container cr-icon-button:focus {
-    border-color: var(--mwb-icon-button-focus-ring-color);
   }
 
   .favicon {
@@ -82,10 +72,8 @@
   }
 
   cr-icon-button {
-    --cr-icon-button-icon-size: var(--mwb-icon-size);
     --cr-icon-button-margin-end: 0;
     --cr-icon-button-margin-start: 0;
-    --cr-icon-button-size: calc(var(--mwb-icon-size) * 1.5);
   }
 
   .search-highlight-hit {

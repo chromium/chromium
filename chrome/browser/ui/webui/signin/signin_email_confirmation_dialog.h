@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -51,6 +50,10 @@ class SigninEmailConfirmationDialog : public ui::WebDialogDelegate,
       const std::string& last_email,
       const std::string& email,
       Callback callback);
+
+  SigninEmailConfirmationDialog(const SigninEmailConfirmationDialog&) = delete;
+  SigninEmailConfirmationDialog& operator=(
+      const SigninEmailConfirmationDialog&) = delete;
 
   ~SigninEmailConfirmationDialog() override;
 
@@ -106,8 +109,6 @@ class SigninEmailConfirmationDialog : public ui::WebDialogDelegate,
 
   // Observer for lifecycle events of the web contents of the dialog.
   std::unique_ptr<DialogWebContentsObserver> dialog_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninEmailConfirmationDialog);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_EMAIL_CONFIRMATION_DIALOG_H_

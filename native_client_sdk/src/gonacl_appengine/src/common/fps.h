@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef GONACL_APPENGINE_SRC_COMMON_FPS_H_
+#define GONACL_APPENGINE_SRC_COMMON_FPS_H_
+
 #include <sys/time.h>
 
 // Timer helper for fps.  Returns seconds elapsed since first call to
@@ -56,3 +59,5 @@ inline int FpsStep(struct FpsState* state, double* out_fps) {
   state->frame_count = 0;
   return 1;
 }
+
+#endif  // GONACL_APPENGINE_SRC_COMMON_FPS_H_

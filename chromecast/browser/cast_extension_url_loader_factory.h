@@ -47,6 +47,10 @@ class CastExtensionURLLoaderFactory
       content::BrowserContext* browser_context,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> extension_factory);
 
+  CastExtensionURLLoaderFactory(const CastExtensionURLLoaderFactory&) = delete;
+  CastExtensionURLLoaderFactory& operator=(
+      const CastExtensionURLLoaderFactory&) = delete;
+
   static void EnsureShutdownNotifierFactoryBuilt();
 
  private:
@@ -92,8 +96,6 @@ class CastExtensionURLLoaderFactory
   scoped_refptr<network::SharedURLLoaderFactory> network_factory_;
 
   base::CallbackListSubscription browser_context_shutdown_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionURLLoaderFactory);
 };
 
 }  // namespace shell

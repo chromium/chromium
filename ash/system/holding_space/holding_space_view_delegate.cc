@@ -28,6 +28,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -369,6 +370,18 @@ void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewMouseReleased(
   SetSelection(view);
 }
 
+void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewPrimaryActionPressed(
+    HoldingSpaceItemView* view) {
+  if (!view->selected())
+    ClearSelection();
+}
+
+void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewSecondaryActionPressed(
+    HoldingSpaceItemView* view) {
+  if (!view->selected())
+    ClearSelection();
+}
+
 void HoldingSpaceViewDelegate::OnHoldingSpaceItemViewSelectedChanged(
     HoldingSpaceItemView* view) {
   selection_size_ += view->selected() ? 1 : -1;
@@ -555,17 +568,23 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   for (const HoldingSpaceItemView* view : selection) {
     const HoldingSpaceItem* item = view->item();
 
-    // The "Pause" command should only be present if *all* of the selected
-    // holding space items are pausable.
-    is_pausable &= !item->progress().IsComplete() && !item->IsPaused();
+    // NOTE: The "Pause"/"Resume"/"Cancel" commands are only currently supported
+    // by download type holding space items.
+    if (HoldingSpaceItem::IsDownload(item->type())) {
+      // The "Pause" command should only be present if *all* of the selected
+      // holding space items are pausable.
+      is_pausable &= !item->progress().IsComplete() && !item->IsPaused();
 
-    // The "Resume" command should only be present if *all* of the selected
-    // holding space items are resumable.
-    is_resumable &= item->IsPaused();
+      // The "Resume" command should only be present if *all* of the selected
+      // holding space items are resumable.
+      is_resumable &= item->IsPaused();
 
-    // The "Cancel" command should only be present if *all* of the selected
-    // holding space items are cancelable.
-    is_cancelable &= !item->progress().IsComplete();
+      // The "Cancel" command should only be present if *all* of the selected
+      // holding space items are cancelable.
+      is_cancelable &= !item->progress().IsComplete();
+    } else {
+      is_pausable = is_resumable = is_cancelable = false;
+    }
 
     // The "Remove" command should only be present if *all* of the selected
     // holding space items are removable.
@@ -585,43 +604,47 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
                                        item->file_path());
   }
 
+  struct MenuItemModel {
+    const HoldingSpaceCommandId command_id;
+    const int label_id;
+    const gfx::VectorIcon& icon;
+  };
+
+  using MenuSectionModel = std::vector<MenuItemModel>;
+  std::vector<MenuSectionModel> menu_sections(1);
+
   if (is_pausable) {
-    context_menu_model_->AddItemWithIcon(
-        static_cast<int>(HoldingSpaceCommandId::kPauseItem),
-        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PAUSE),
-        ui::ImageModel::FromVectorIcon(kPauseIcon, /*color_id=*/-1,
-                                       kHoldingSpaceIconSize));
+    menu_sections.back().emplace_back(
+        MenuItemModel{.command_id = HoldingSpaceCommandId::kPauseItem,
+                      .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PAUSE,
+                      .icon = kPauseIcon});
   }
 
   if (is_resumable) {
-    context_menu_model_->AddItemWithIcon(
-        static_cast<int>(HoldingSpaceCommandId::kResumeItem),
-        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_RESUME),
-        ui::ImageModel::FromVectorIcon(kResumeIcon, /*color_id=*/-1,
-                                       kHoldingSpaceIconSize));
+    menu_sections.back().emplace_back(
+        MenuItemModel{.command_id = HoldingSpaceCommandId::kResumeItem,
+                      .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_RESUME,
+                      .icon = kResumeIcon});
   }
 
   if (is_cancelable) {
-    context_menu_model_->AddItemWithIcon(
-        static_cast<int>(HoldingSpaceCommandId::kCancelItem),
-        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_CANCEL),
-        ui::ImageModel::FromVectorIcon(kCancelIcon, /*color_id=*/-1,
-                                       kHoldingSpaceIconSize));
+    menu_sections.back().emplace_back(
+        MenuItemModel{.command_id = HoldingSpaceCommandId::kCancelItem,
+                      .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_CANCEL,
+                      .icon = kCancelIcon});
   }
 
   // The "Pause"/"Resume"/"Cancel" commands are separated from other commands.
-  if (context_menu_model_->GetItemCount())
-    context_menu_model_->AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
+  if (!menu_sections.back().empty())
+    menu_sections.emplace_back();
 
   if (selection.size() == 1u) {
     // The "Show in folder" command should only be present if there is only one
     // holding space item selected.
-    context_menu_model_->AddItemWithIcon(
-        static_cast<int>(HoldingSpaceCommandId::kShowInFolder),
-        l10n_util::GetStringUTF16(
-            IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER),
-        ui::ImageModel::FromVectorIcon(kFolderIcon, /*color_id=*/-1,
-                                       kHoldingSpaceIconSize));
+    menu_sections.back().emplace_back(MenuItemModel{
+        .command_id = HoldingSpaceCommandId::kShowInFolder,
+        .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER,
+        .icon = kFolderIcon});
 
     std::string mime_type;
     const bool is_image =
@@ -632,37 +655,54 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
     if (is_image) {
       // The "Copy image" command should only be present if there is only one
       // holding space item selected and that item is backed by an image file.
-      context_menu_model_->AddItemWithIcon(
-          static_cast<int>(HoldingSpaceCommandId::kCopyImageToClipboard),
-          l10n_util::GetStringUTF16(
-              IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_IMAGE_TO_CLIPBOARD),
-          ui::ImageModel::FromVectorIcon(kCopyIcon, /*color_id=*/-1,
-                                         kHoldingSpaceIconSize));
+      menu_sections.back().emplace_back(MenuItemModel{
+          .command_id = HoldingSpaceCommandId::kCopyImageToClipboard,
+          .label_id =
+              IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_COPY_IMAGE_TO_CLIPBOARD,
+          .icon = kCopyIcon});
     }
   }
 
   if (is_pinnable.has_value()) {
     if (is_pinnable.value()) {
-      context_menu_model_->AddItemWithIcon(
-          static_cast<int>(HoldingSpaceCommandId::kPinItem),
-          l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN),
-          ui::ImageModel::FromVectorIcon(views::kPinIcon, /*color_id=*/-1,
-                                         kHoldingSpaceIconSize));
+      menu_sections.back().emplace_back(
+          MenuItemModel{.command_id = HoldingSpaceCommandId::kPinItem,
+                        .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN,
+                        .icon = views::kPinIcon});
     } else {
-      context_menu_model_->AddItemWithIcon(
-          static_cast<int>(HoldingSpaceCommandId::kUnpinItem),
-          l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN),
-          ui::ImageModel::FromVectorIcon(views::kUnpinIcon, /*color_id=*/-1,
-                                         kHoldingSpaceIconSize));
+      menu_sections.back().emplace_back(
+          MenuItemModel{.command_id = HoldingSpaceCommandId::kUnpinItem,
+                        .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN,
+                        .icon = views::kUnpinIcon});
     }
   }
 
   if (is_removable) {
-    context_menu_model_->AddItemWithIcon(
-        static_cast<int>(HoldingSpaceCommandId::kRemoveItem),
-        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_REMOVE),
-        ui::ImageModel::FromVectorIcon(kRemoveCircleOutlineIcon,
-                                       /*color_id=*/-1, kHoldingSpaceIconSize));
+    menu_sections.back().emplace_back(
+        MenuItemModel{.command_id = HoldingSpaceCommandId::kRemoveItem,
+                      .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_REMOVE,
+                      .icon = kCancelCircleOutlineIcon});
+  }
+
+  // Add modeled `menu_sections` to the `context_menu_model_`.
+  for (const MenuSectionModel& menu_section : menu_sections) {
+    if (menu_section.empty())
+      continue;
+
+    // Each `menu_section` should be separated by a normal separator.
+    if (context_menu_model_->GetItemCount()) {
+      context_menu_model_->AddSeparator(
+          ui::MenuSeparatorType::NORMAL_SEPARATOR);
+    }
+
+    // Each `menu_section` should contain their respective `menu_item`s.
+    for (const MenuItemModel& menu_item : menu_section) {
+      context_menu_model_->AddItemWithIcon(
+          static_cast<int>(menu_item.command_id),
+          l10n_util::GetStringUTF16(menu_item.label_id),
+          ui::ImageModel::FromVectorIcon(menu_item.icon, ui::kColorMenuIcon,
+                                         kHoldingSpaceIconSize));
+    }
   }
 
   return context_menu_model_.get();

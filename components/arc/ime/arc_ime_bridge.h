@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/event.h"
 
@@ -27,6 +26,9 @@ namespace arc {
 // Chromium and the ARC container.
 class ArcImeBridge {
  public:
+  ArcImeBridge(const ArcImeBridge&) = delete;
+  ArcImeBridge& operator=(const ArcImeBridge&) = delete;
+
   virtual ~ArcImeBridge() {}
 
   // Received IPCs are deserialized and passed to this delegate.
@@ -65,9 +67,6 @@ class ArcImeBridge {
 
  protected:
   ArcImeBridge() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcImeBridge);
 };
 
 }  // namespace arc

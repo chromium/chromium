@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // TODO(rsorokin): Move all these functions into a Mixin.
@@ -26,6 +26,8 @@ void SkipToEnrollmentOnRecovery();
 void WaitForEnrollmentScreen();
 void WaitForUserCreationScreen();
 void TapUserCreationNext();
+// Wait for OobeUI to finish loading.
+void WaitForOobeJSReady();
 
 void WaitForEulaScreen();
 void TapEulaAccept();
@@ -55,20 +57,33 @@ class LanguageReloadObserver : public WelcomeScreen::Observer {
 };
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
+namespace chromeos {
 namespace test {
-using ::chromeos::test::LanguageReloadObserver;
-using ::chromeos::test::SkipToEnrollmentOnRecovery;
-using ::chromeos::test::TapEulaAccept;
-using ::chromeos::test::TapWelcomeNext;
-using ::chromeos::test::WaitForEulaScreen;
-using ::chromeos::test::WaitForNetworkSelectionScreen;
-using ::chromeos::test::WaitForWelcomeScreen;
+using ::ash::test::ClickSignInFatalScreenActionButton;
+using ::ash::test::ExitFingerprintPinSetupScreen;
+using ::ash::test::ExitPinSetupScreen;
+using ::ash::test::ExitScreenSyncConsent;
+using ::ash::test::ExitUpdateScreenNoUpdate;
+using ::ash::test::IsScanningRequestedOnErrorScreen;
+using ::ash::test::IsScanningRequestedOnNetworkScreen;
+using ::ash::test::TapEulaAccept;
+using ::ash::test::TapNetworkSelectionNext;
+using ::ash::test::TapUserCreationNext;
+using ::ash::test::TapWelcomeNext;
+using ::ash::test::WaitForEnrollmentScreen;
+using ::ash::test::WaitForEulaScreen;
+using ::ash::test::WaitForFingerprintScreen;
+using ::ash::test::WaitForNetworkSelectionScreen;
+using ::ash::test::WaitForPinSetupScreen;
+using ::ash::test::WaitForSyncConsentScreen;
+using ::ash::test::WaitForUpdateScreen;
+using ::ash::test::WaitForUserCreationScreen;
+using ::ash::test::WaitForWelcomeScreen;
 }  // namespace test
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_SCREENS_UTILS_H_

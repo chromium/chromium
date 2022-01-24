@@ -34,6 +34,10 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
 
   BrowsingDataQuotaHelperTest() = default;
 
+  BrowsingDataQuotaHelperTest(const BrowsingDataQuotaHelperTest&) = delete;
+  BrowsingDataQuotaHelperTest& operator=(const BrowsingDataQuotaHelperTest&) =
+      delete;
+
   ~BrowsingDataQuotaHelperTest() override = default;
 
   void SetUp() override {
@@ -43,8 +47,8 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
         content::GetIOThreadTaskRunner({}).get(),
         /*quota_change_callback=*/base::DoNothing(),
         /*special_storage_policy=*/nullptr, storage::GetQuotaSettingsFunc());
-    helper_ = base::WrapRefCounted(
-        new BrowsingDataQuotaHelperImpl(quota_manager_.get()));
+    helper_ =
+        base::MakeRefCounted<BrowsingDataQuotaHelperImpl>(quota_manager_.get());
   }
 
   void TearDown() override {
@@ -133,8 +137,6 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
   QuotaInfoArray quota_info_;
   int64_t quota_ = -1;
   base::WeakPtrFactory<BrowsingDataQuotaHelperTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataQuotaHelperTest);
 };
 
 TEST_F(BrowsingDataQuotaHelperTest, Empty) {

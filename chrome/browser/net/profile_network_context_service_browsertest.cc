@@ -98,7 +98,7 @@ class ProfileNetworkContextServiceBrowsertest : public InProcessBrowserTest {
     do {
       content::FetchHistogramsFromChildProcesses();
       metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(5));
+      base::PlatformThread::Sleep(base::Milliseconds(5));
       all_metrics = histograms_.GetAllHistogramsRecorded();
     } while (std::string::npos ==
              all_metrics.find("HttpCache.MaxFileSizeOnInit"));
@@ -110,8 +110,8 @@ class ProfileNetworkContextServiceBrowsertest : public InProcessBrowserTest {
   // The HttpCache is only created when a request is issued, thus we perform a
   // navigation to ensure that the http cache is initialized.
   void NavigateToCreateHttpCache() {
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/createbackend"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/createbackend")));
   }
 
  private:
@@ -233,7 +233,7 @@ void CheckCacheResetStatus(base::HistogramTester* histograms, bool reset) {
   while (!histograms->GetBucketCount("HttpCache.HardReset", reset)) {
     content::FetchHistogramsFromChildProcesses();
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(5));
+    base::PlatformThread::Sleep(base::Milliseconds(5));
   }
 
   if (reset) {
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheSameBrowsertest,
   DCHECK_EQ(
       local_state->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
-      "None None None");
+      "None None None None");
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheSameBrowsertest,
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheSameBrowsertest,
   DCHECK_EQ(
       local_state->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
-      "None None None");
+      "None None None None");
 }
 
 class ProfileNetworkContextServiceCacheChangeBrowsertest
@@ -319,15 +319,15 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
   DCHECK_EQ(
       local_state->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
-      "scoped_feature_list_trial_group None None");
+      "scoped_feature_list_trial_group None None None");
   // Set the local state for the next test.
   local_state->SetString(
       "profile_network_context_service.http_cache_finch_experiment_groups",
-      "None None None");
+      "None None None None");
 }
 
-// The second time we load we know the state, which was "None None None" for the
-// previous test, so we should see a reset being in an experiment.
+// The second time we load we know the state, which was "None None None None"
+// for the previous test, so we should see a reset being in an experiment.
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
                        TestCacheResetParameter) {
   NavigateToCreateHttpCache();
@@ -339,7 +339,57 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
   DCHECK_EQ(
       local_state->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
-      "scoped_feature_list_trial_group None None");
+      "scoped_feature_list_trial_group None None None");
+}
+
+// This subclass adds the "SplitCacheByIncludeCredentials" feature.
+class ProfileNetworkContextServiceCacheCredentialsBrowserTest
+    : public ProfileNetworkContextServiceBrowsertest {
+ public:
+  ProfileNetworkContextServiceCacheCredentialsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kSplitCacheByIncludeCredentials, {});
+  }
+  ~ProfileNetworkContextServiceCacheCredentialsBrowserTest() override = default;
+
+  base::HistogramTester histograms_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheCredentialsBrowserTest,
+                       PRE_TestCacheResetParameter) {
+  NavigateToCreateHttpCache();
+  CheckCacheResetStatus(&histograms_, false);
+
+  // At this point, we have already called the initialization.
+  // Verify that we have the correct values in the local_state.
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK_EQ(
+      local_state->GetString(
+          "profile_network_context_service.http_cache_finch_experiment_groups"),
+      "None None None scoped_feature_list_trial_group");
+  // Set the local state for the next test.
+  local_state->SetString(
+      "profile_network_context_service.http_cache_finch_experiment_groups",
+      "None None None None");
+}
+
+// The second time we load we know the state, which was "None None None None"
+// for the previous test, so we should see a reset being in an experiment.
+IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheCredentialsBrowserTest,
+                       TestCacheResetParameter) {
+  NavigateToCreateHttpCache();
+  CheckCacheResetStatus(&histograms_, true);
+
+  // At this point, we have already called the initialization once.
+  // Verify that we have the correct values in the local_state.
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK_EQ(
+      local_state->GetString(
+          "profile_network_context_service.http_cache_finch_experiment_groups"),
+      "None None None scoped_feature_list_trial_group");
 }
 
 class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
@@ -526,14 +576,18 @@ class ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest
   void ExpectUseBuiltinCertVerifierCorrect(
       cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl
           use_builtin_cert_verifier) {
-    ASSERT_EQ(1ul, test_cert_verifier_service_factory_.num_captured_params());
-    ASSERT_TRUE(test_cert_verifier_service_factory_.GetParamsAtIndex(0)
-                    ->creation_params);
-    EXPECT_EQ(use_builtin_cert_verifier,
-              test_cert_verifier_service_factory_.GetParamsAtIndex(0)
-                  ->creation_params->use_builtin_cert_verifier);
-    // Send it to the actual CertVerifierServiceFactory.
-    test_cert_verifier_service_factory_.ReleaseNextCertVerifierParams();
+    ASSERT_LE(1ul, test_cert_verifier_service_factory_.num_captured_params());
+    for (size_t i = 0;
+         i < test_cert_verifier_service_factory_.num_captured_params(); i++) {
+      ASSERT_TRUE(test_cert_verifier_service_factory_.GetParamsAtIndex(i)
+                      ->creation_params);
+      EXPECT_EQ(use_builtin_cert_verifier,
+                test_cert_verifier_service_factory_.GetParamsAtIndex(i)
+                    ->creation_params->use_builtin_cert_verifier);
+    }
+
+    // Send them to the actual CertVerifierServiceFactory.
+    test_cert_verifier_service_factory_.ReleaseAllCertVerifierParams();
   }
 
   Profile* CreateNewProfile() {

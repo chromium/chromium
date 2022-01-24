@@ -63,8 +63,8 @@ std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
 
   for (const auto& family : sorted_families) {
     std::unique_ptr<base::ListValue> font_item(new base::ListValue());
-    font_item->AppendString(family);
-    font_item->AppendString(family);  // localized name.
+    font_item->Append(family);
+    font_item->Append(family);  // localized name.
     // TODO(yusukes): Support localized family names.
     font_list->Append(std::move(font_item));
   }

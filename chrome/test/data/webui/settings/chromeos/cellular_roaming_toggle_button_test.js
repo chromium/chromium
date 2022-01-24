@@ -9,7 +9,6 @@
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // clang-format on
 
 suite('CellularRoamingToggleButton', function() {
@@ -67,88 +66,62 @@ suite('CellularRoamingToggleButton', function() {
     prefs_.cros.signed.data_roaming_enabled.value = true;
   });
 
-  // Run this test twice, once with the per-network cellular roaming feature
-  // flag enabled and a second time with it disabled.
-  [true, false].forEach(
-      (allowPerNetworkRoaming) => test(
-          `Cellular roaming subtext with per-network roaming ${
-              allowPerNetworkRoaming ? 'enabled' : 'disabled'}`,
-          function() {
-            loadTimeData.overrideValues({
-              allowPerNetworkRoaming: allowPerNetworkRoaming,
-            });
-            createCellularRoamingToggleButton();
+  test('Cellular roaming subtext', function() {
+    createCellularRoamingToggleButton();
 
-            setManagedProperties(
-                /* allowRoaming= */ {activeValue: false},
-                /* roamingState= */ null);
+    // Regardless of whether roaming is enabled or not, the subtext should
+    // notify the user if roaming is required by the provider.
+    for (const allowRoaming in [true, false]) {
+      setManagedProperties(
+          /* allowRoaming= */ {activeValue: allowRoaming},
+          /* roamingState= */ 'Required');
 
-            assertEquals(
-                cellularRoamingToggleButton.i18n(
-                    'networkAllowDataRoamingDisabled'),
-                cellularRoamingToggleButton.getSubLabelForTesting());
+      assertEquals(
+          cellularRoamingToggleButton.i18n('networkAllowDataRoamingRequired'),
+          cellularRoamingToggleButton.getSubLabelForTesting());
+    }
 
-            setManagedProperties(
-                /* allowRoaming= */ {activeValue: true},
-                /* roamingState= */ 'Home');
+    // Regardless of the roaming state, except when roaming is required, the
+    // subtext should notify the user that roaming is disabled when applicable.
+    for (const roamingState in ['Home', 'Roaming']) {
+      setManagedProperties(
+          /* allowRoaming= */ {activeValue: false},
+          /* roamingState= */ roamingState);
 
-            assertEquals(
-                cellularRoamingToggleButton.i18n(
-                    'networkAllowDataRoamingEnabledHome'),
-                cellularRoamingToggleButton.getSubLabelForTesting());
+      assertEquals(
+          cellularRoamingToggleButton.i18n('networkAllowDataRoamingDisabled'),
+          cellularRoamingToggleButton.getSubLabelForTesting());
+    }
 
-            setManagedProperties(
-                /* allowRoaming= */ {activeValue: true},
-                /* roamingState= */ 'Roaming');
+    // Roaming is allowed but we are not roaming.
+    setManagedProperties(
+        /* allowRoaming= */ {activeValue: true},
+        /* roamingState= */ 'Home');
 
-            assertEquals(
-                cellularRoamingToggleButton.i18n(
-                    'networkAllowDataRoamingEnabledRoaming'),
-                cellularRoamingToggleButton.getSubLabelForTesting());
+    assertEquals(
+        cellularRoamingToggleButton.i18n('networkAllowDataRoamingEnabledHome'),
+        cellularRoamingToggleButton.getSubLabelForTesting());
 
-            prefs_.cros.signed.data_roaming_enabled.value = false;
-            cellularRoamingToggleButton.prefs = Object.assign({}, prefs_);
+    // Roaming is allowed and we are roaming.
+    setManagedProperties(
+        /* allowRoaming= */ {activeValue: true},
+        /* roamingState= */ 'Roaming');
 
-            assertEquals(
-                cellularRoamingToggleButton.i18n(
-                    'networkAllowDataRoamingDisabled'),
-                cellularRoamingToggleButton.getSubLabelForTesting());
-          }));
+    assertEquals(
+        cellularRoamingToggleButton.i18n(
+            'networkAllowDataRoamingEnabledRoaming'),
+        cellularRoamingToggleButton.getSubLabelForTesting());
 
-  suite('Cellular per-network roaming disabled', function() {
-    suiteSetup(function() {
-      loadTimeData.overrideValues({
-        allowPerNetworkRoaming: false,
-      });
-    });
+    // Simulate disabling roaming via policy.
+    prefs_.cros.signed.data_roaming_enabled.value = false;
+    cellularRoamingToggleButton.prefs = Object.assign({}, prefs_);
 
-    setup(function() {
-      createCellularRoamingToggleButton();
-    });
-
-    test('Toggle controls preference', async function() {
-      const cellularRoamingToggle =
-          cellularRoamingToggleButton.getCellularRoamingToggle();
-
-      assertTrue(cellularRoamingToggle.checked);
-      assertTrue(cellularRoamingToggleButton.prefs.cros.signed
-                     .data_roaming_enabled.value);
-
-      cellularRoamingToggle.click();
-
-      assertFalse(cellularRoamingToggle.checked);
-      assertFalse(cellularRoamingToggleButton.prefs.cros.signed
-                      .data_roaming_enabled.value);
-    });
+    assertEquals(
+        cellularRoamingToggleButton.i18n('networkAllowDataRoamingDisabled'),
+        cellularRoamingToggleButton.getSubLabelForTesting());
   });
 
-  suite('Cellular per-network roaming enabled', function() {
-    suiteSetup(function() {
-      loadTimeData.overrideValues({
-        allowPerNetworkRoaming: true,
-      });
-    });
-
+  suite('Cellular per-network roaming', function() {
     setup(function() {
       mojoApi_.resetForTest();
       createCellularRoamingToggleButton();

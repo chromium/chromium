@@ -19,8 +19,7 @@ namespace scheduler {
 
 namespace {
 // Minimum time interval between nested loop runs.
-constexpr base::TimeDelta kNestedLoopMinimumInterval =
-    base::TimeDelta::FromMilliseconds(15);
+constexpr base::TimeDelta kNestedLoopMinimumInterval = base::Milliseconds(15);
 }  // namespace
 
 // static
@@ -71,13 +70,8 @@ void CooperativeSchedulingManager::SafepointSlow() {
     return;
 
   // TODO(keishi): Also bail if V8 EnteredContextCount is more than 1
-  // This task slice completes here.
-  Thread::MainThread()->Scheduler()->OnSafepointEntered();
 
   RunNestedLoop();
-
-  // A new task slice starts here.
-  Thread::MainThread()->Scheduler()->OnSafepointExited();
 }
 
 void CooperativeSchedulingManager::RunNestedLoop() {

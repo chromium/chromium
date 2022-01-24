@@ -37,6 +37,11 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL,
                                    bool force_full_damage,
                                    bool force_full_damage_always);
 
+  DirectCompositionChildSurfaceWin(const DirectCompositionChildSurfaceWin&) =
+      delete;
+  DirectCompositionChildSurfaceWin& operator=(
+      const DirectCompositionChildSurfaceWin&) = delete;
+
   // GLSurfaceEGL implementation.
   bool Initialize(GLSurfaceFormat format) override;
   void Destroy() override;
@@ -159,8 +164,6 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL,
   base::TimeDelta last_vsync_interval_;
 
   base::WeakPtrFactory<DirectCompositionChildSurfaceWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DirectCompositionChildSurfaceWin);
 };
 
 }  // namespace gl

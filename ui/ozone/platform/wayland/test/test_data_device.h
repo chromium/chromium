@@ -9,7 +9,6 @@
 
 #include <cstdint>
 
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
@@ -32,6 +31,10 @@ class TestDataDevice : public TestSelectionDevice {
   };
 
   TestDataDevice(wl_resource* resource, wl_client* client);
+
+  TestDataDevice(const TestDataDevice&) = delete;
+  TestDataDevice& operator=(const TestDataDevice&) = delete;
+
   ~TestDataDevice() override;
 
   void set_drag_delegate(DragDelegate* delegate) { drag_delegate_ = delegate; }
@@ -56,8 +59,6 @@ class TestDataDevice : public TestSelectionDevice {
  private:
   wl_client* client_ = nullptr;
   DragDelegate* drag_delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataDevice);
 };
 
 }  // namespace wl

@@ -6,18 +6,23 @@
 
 #import <AppKit/AppKit.h>
 #import <CoreText/CoreText.h>
-#import <cmath>
-#import <limits>
+#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
+
+#include <cmath>
+#include <limits>
+#include <memory>
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
+#include "base/types/pass_key.h"
+#include "content/browser/font_access/font_enumeration_cache.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -117,38 +122,30 @@ float CTWidthToWebStretch(CGFloat width) {
 
 }  // namespace
 
-FontEnumerationCacheMac::FontEnumerationCacheMac() = default;
+// static
+base::SequenceBound<FontEnumerationCache>
+FontEnumerationCache::CreateForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    absl::optional<std::string> locale_override) {
+  return base::SequenceBound<FontEnumerationCacheMac>(
+      std::move(task_runner), std::move(locale_override),
+      base::PassKey<FontEnumerationCache>());
+}
+
+FontEnumerationCacheMac::FontEnumerationCacheMac(
+    absl::optional<std::string> locale_override,
+    base::PassKey<FontEnumerationCache>)
+    : FontEnumerationCache(std::move(locale_override)) {}
+
 FontEnumerationCacheMac::~FontEnumerationCacheMac() = default;
 
-// static
-FontEnumerationCache* FontEnumerationCache::GetInstance() {
-  static base::NoDestructor<FontEnumerationCacheMac> instance;
-  return instance.get();
-}
+blink::FontEnumerationTable FontEnumerationCacheMac::ComputeFontEnumerationData(
+    const std::string& locale) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-void FontEnumerationCacheMac::SchedulePrepareFontEnumerationCache() {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
-
-  scoped_refptr<base::SequencedTaskRunner> results_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-
-  results_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FontEnumerationCacheMac::PrepareFontEnumerationCache,
-                     // Safe because this is an initialized singleton.
-                     base::Unretained(this)));
-}
-
-void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
-  DCHECK(!enumeration_cache_built_->IsSet());
+  blink::FontEnumerationTable font_enumeration_table;
 
   @autoreleasepool {
-    // Metrics.
-    const base::ElapsedTimer start_timer;
-    auto font_enumeration_table =
-        std::make_unique<blink::FontEnumerationTable>();
-
     CFTypeRef values[1] = {kCFBooleanTrue};
     base::ScopedCFTypeRef<CFDictionaryRef> options(CFDictionaryCreate(
         kCFAllocatorDefault,
@@ -164,7 +161,6 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
 
     // Used to filter duplicates.
     std::set<std::string> fonts_seen;
-    int duplicate_count = 0;
 
     for (CFIndex i = 0; i < CFArrayGetCount(font_descs); ++i) {
       CTFontDescriptorRef fd = base::mac::CFCast<CTFontDescriptorRef>(
@@ -181,12 +177,11 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
       std::string postscript_name =
           base::SysCFStringRefToUTF8(cf_postscript_name.get());
 
-      if (fonts_seen.count(postscript_name) != 0) {
-        ++duplicate_count;
-        // Skip duplicates.
+      auto it_and_success = fonts_seen.emplace(postscript_name);
+      if (!it_and_success.second) {
+        // Skip duplicate.
         continue;
       }
-      fonts_seen.insert(postscript_name);
 
       // These defaults should map to the default web values when passed to the
       // CTXXXToWebYYY functions.
@@ -206,29 +201,18 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
                                          width);
       }
 
-      blink::FontEnumerationTable_FontMetadata metadata;
-      metadata.set_postscript_name(postscript_name.c_str());
-      metadata.set_full_name(
-          base::SysCFStringRefToUTF8(cf_full_name.get()).c_str());
-      metadata.set_family(base::SysCFStringRefToUTF8(cf_family.get()).c_str());
-      metadata.set_style(base::SysCFStringRefToUTF8(cf_style.get()).c_str());
-      metadata.set_italic(CTSlantToWebItalic(slant));
-      metadata.set_weight(CTWeightToWebWeight(weight));
-      metadata.set_stretch(CTWidthToWebStretch(width));
-
-      blink::FontEnumerationTable_FontMetadata* added_font_meta =
-          font_enumeration_table->add_fonts();
-      *added_font_meta = metadata;
+      blink::FontEnumerationTable_FontMetadata* metadata =
+          font_enumeration_table.add_fonts();
+      metadata->set_postscript_name(std::move(postscript_name));
+      metadata->set_full_name(base::SysCFStringRefToUTF8(cf_full_name.get()));
+      metadata->set_family(base::SysCFStringRefToUTF8(cf_family.get()));
+      metadata->set_style(base::SysCFStringRefToUTF8(cf_style.get()));
+      metadata->set_italic(CTSlantToWebItalic(slant));
+      metadata->set_weight(CTWeightToWebWeight(weight));
+      metadata->set_stretch(CTWidthToWebStretch(width));
     }
 
-    BuildEnumerationCache(std::move(font_enumeration_table));
-
-    base::UmaHistogramCounts100(
-        "Fonts.AccessAPI.EnumerationCache.DuplicateFontCount", duplicate_count);
-    base::UmaHistogramMediumTimes("Fonts.AccessAPI.EnumerationTime",
-                                  start_timer.Elapsed());
-    // Respond to pending and future requests.
-    StartCallbacksTaskQueue();
+    return font_enumeration_table;
   }
 }
 

@@ -78,7 +78,7 @@ TEST_F(CleanupVisualsTaskTest, CleanupAllCombinations) {
 
   // Start slightly above base::Time() to avoid negative time below.
   TestScopedOfflineClock test_clock;
-  test_clock.SetNow(base::Time() + base::TimeDelta::FromDays(1));
+  test_clock.SetNow(base::Time() + base::Days(1));
 
   // 1. Has item, not expired.
   OfflinePageItem item1 = generator()->CreateItem();
@@ -92,21 +92,21 @@ TEST_F(CleanupVisualsTaskTest, CleanupAllCombinations) {
   // 2. Has item, expired.
   OfflinePageItem item2 = generator()->CreateItem();
   store_test_util()->InsertItem(item2);
-  test_clock.Advance(base::TimeDelta::FromSeconds(-1));
+  test_clock.Advance(base::Seconds(-1));
   OfflinePageVisuals visuals2(item2.offline_id,
                               OfflineTimeNow() + kVisualsExpirationDelta,
                               "thumb2", "favicon2");
   StoreVisuals(visuals2.offline_id, visuals2.thumbnail, visuals2.favicon);
 
   // 3. No item, not expired.
-  test_clock.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock.Advance(base::Seconds(1));
   OfflinePageVisuals visuals3(store_utils::GenerateOfflineId(),
                               OfflineTimeNow() + kVisualsExpirationDelta,
                               "thumb3", "favicon3");
   StoreVisuals(visuals3.offline_id, visuals3.thumbnail, visuals3.favicon);
 
   // 4. No item, expired. This one gets removed.
-  test_clock.Advance(base::TimeDelta::FromSeconds(-1));
+  test_clock.Advance(base::Seconds(-1));
   OfflinePageVisuals visuals4(store_utils::GenerateOfflineId(),
                               OfflineTimeNow() + kVisualsExpirationDelta,
                               "thumb4", "favicon4");
@@ -115,7 +115,7 @@ TEST_F(CleanupVisualsTaskTest, CleanupAllCombinations) {
   base::MockCallback<CleanupVisualsCallback> callback;
   EXPECT_CALL(callback, Run(true)).Times(1);
 
-  test_clock.Advance(kVisualsExpirationDelta + base::TimeDelta::FromSeconds(1));
+  test_clock.Advance(kVisualsExpirationDelta + base::Seconds(1));
 
   base::HistogramTester histogram_tester;
   RunTask(std::make_unique<CleanupVisualsTask>(store(), OfflineTimeNow(),

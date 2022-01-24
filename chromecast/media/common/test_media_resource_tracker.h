@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/media/common/media_resource_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -34,6 +34,9 @@ class TestMediaResourceTracker : public MediaResourceTracker {
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       MediaResourceTrackerTestMocks* test_mocks);
 
+  TestMediaResourceTracker(const TestMediaResourceTracker&) = delete;
+  TestMediaResourceTracker& operator=(const TestMediaResourceTracker&) = delete;
+
   ~TestMediaResourceTracker() override;
 
   size_t media_use_count() const { return media_use_count_; }
@@ -44,8 +47,6 @@ class TestMediaResourceTracker : public MediaResourceTracker {
   void DoFinalizeMediaLib() override;
 
   MediaResourceTrackerTestMocks* const test_mocks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaResourceTracker);
 };
 
 }  // namespace media

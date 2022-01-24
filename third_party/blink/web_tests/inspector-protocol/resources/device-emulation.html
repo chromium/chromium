@@ -122,11 +122,14 @@ function dumpWindowSegments() {
 
 function dumpWindowSegmentsForWindow(window_object) {
     let output = [];
-    output.push(window_object.getWindowSegments().length);
-    window_object.getWindowSegments().forEach((segment) => {
-        let segmentString = `${segment.x} ${segment.y} ${segment.width} ${segment.height}`;
-        output.push(segmentString);
-    });
+    let segments = window_object.visualViewport.segments;
+    output.push(segments ? segments.length : 0);
+    if (segments) {
+      segments.forEach((segment) => {
+          let segmentString = `${segment.x} ${segment.y} ${segment.width} ${segment.height}`;
+          output.push(segmentString);
+      });
+    }
     return output;
 }
 

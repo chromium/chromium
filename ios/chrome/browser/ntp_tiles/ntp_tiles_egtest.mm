@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -127,9 +128,14 @@ using web::test::HttpServer;
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabel(@"title2")]
-      assertWithMatcher:grey_nil()];
+  // Wait for clear browsing data to completed before checking for title2 to
+  // disappear.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          chrome_test_util::StaticTextWithAccessibilityLabel(@"title2")
+                                     timeout:
+                                         base::test::ios::
+                                             kWaitForClearBrowsingDataTimeout];
 }
 
 @end

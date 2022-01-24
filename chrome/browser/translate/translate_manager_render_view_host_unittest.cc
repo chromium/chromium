@@ -77,6 +77,10 @@ class MockTranslateBubbleFactory : public TranslateBubbleFactory {
  public:
   MockTranslateBubbleFactory() {}
 
+  MockTranslateBubbleFactory(const MockTranslateBubbleFactory&) = delete;
+  MockTranslateBubbleFactory& operator=(const MockTranslateBubbleFactory&) =
+      delete;
+
   ShowTranslateBubbleResult ShowImplementation(
       BrowserWindow* window,
       content::WebContents* web_contents,
@@ -115,8 +119,6 @@ class MockTranslateBubbleFactory : public TranslateBubbleFactory {
 
  private:
   std::unique_ptr<TranslateBubbleModel> model_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTranslateBubbleFactory);
 };
 
 class TranslateManagerRenderViewHostTest
@@ -130,6 +132,11 @@ class TranslateManagerRenderViewHostTest
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
+
+  TranslateManagerRenderViewHostTest(
+      const TranslateManagerRenderViewHostTest&) = delete;
+  TranslateManagerRenderViewHostTest& operator=(
+      const TranslateManagerRenderViewHostTest&) = delete;
 
 #if !defined(USE_AURA) && !defined(OS_MAC)
   // Ensure that we are testing under the bubble UI.
@@ -351,7 +358,7 @@ class TranslateManagerRenderViewHostTest
     params.writing_direction_right_to_left = 0;
 #endif  // OS_MAC
     params.edit_flags = blink::ContextMenuDataEditFlags::kCanTranslate;
-    return new TestRenderViewContextMenu(web_contents()->GetMainFrame(),
+    return new TestRenderViewContextMenu(*web_contents()->GetMainFrame(),
                                          params);
   }
 
@@ -461,8 +468,6 @@ class TranslateManagerRenderViewHostTest
   base::ScopedObservation<infobars::InfoBarManager,
                           infobars::InfoBarManager::Observer>
       infobar_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateManagerRenderViewHostTest);
 };
 
 // A variant of the above test class that sets the UI language to an invalid
@@ -479,6 +484,11 @@ class TranslateManagerRenderViewHostInvalidLocaleTest
     SetApplicationLocale(kInvalidLocale);
   }
 
+  TranslateManagerRenderViewHostInvalidLocaleTest(
+      const TranslateManagerRenderViewHostInvalidLocaleTest&) = delete;
+  TranslateManagerRenderViewHostInvalidLocaleTest& operator=(
+      const TranslateManagerRenderViewHostInvalidLocaleTest&) = delete;
+
   ~TranslateManagerRenderViewHostInvalidLocaleTest() override {
     SetApplicationLocale(original_locale_);
   }
@@ -491,8 +501,6 @@ class TranslateManagerRenderViewHostInvalidLocaleTest
     translate::TranslateDownloadManager::GetInstance()->set_application_locale(
         g_browser_process->GetApplicationLocale());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateManagerRenderViewHostInvalidLocaleTest);
 };
 
 // A list of languages to fake being returned by the translate server.

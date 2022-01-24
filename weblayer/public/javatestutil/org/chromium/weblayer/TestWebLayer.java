@@ -205,4 +205,8 @@ public final class TestWebLayer {
         mITestWebLayer.fireOnAccessTokenIdentifiedAsInvalid(
                 profile.getIProfile(), ObjectWrapper.wrap(scopes), ObjectWrapper.wrap(token));
     }
+
+    public void grantLocationPermission(String url) throws RemoteException {
+        mITestWebLayer.grantLocationPermission(url);
+    }
 }

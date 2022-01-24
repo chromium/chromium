@@ -13,7 +13,8 @@ namespace autofill {
 
 WebauthnDialogControllerImpl::WebauthnDialogControllerImpl(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<WebauthnDialogControllerImpl>(
+          *web_contents) {}
 
 WebauthnDialogControllerImpl::~WebauthnDialogControllerImpl() {
   // This part of code is executed only if browser window is closed when the
@@ -70,7 +71,8 @@ void WebauthnDialogControllerImpl::OnDialogClosed() {
 }
 
 content::WebContents* WebauthnDialogControllerImpl::GetWebContents() {
-  return web_contents();
+  return &content::WebContentsUserData<
+      WebauthnDialogControllerImpl>::GetWebContents();
 }
 
 void WebauthnDialogControllerImpl::OnOkButtonClicked() {
@@ -100,6 +102,6 @@ void WebauthnDialogControllerImpl::OnCancelButtonClicked() {
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebauthnDialogControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebauthnDialogControllerImpl);
 
 }  // namespace autofill

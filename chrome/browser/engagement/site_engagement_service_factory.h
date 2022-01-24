@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ENGAGEMENT_SITE_ENGAGEMENT_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -31,6 +30,10 @@ class SiteEngagementServiceFactory
 
   static SiteEngagementServiceFactory* GetInstance();
 
+  SiteEngagementServiceFactory(const SiteEngagementServiceFactory&) = delete;
+  SiteEngagementServiceFactory& operator=(const SiteEngagementServiceFactory&) =
+      delete;
+
   // SiteEngagementService::ServiceProvider:
   SiteEngagementService* GetSiteEngagementService(
       content::BrowserContext* browser_context) override;
@@ -46,8 +49,6 @@ class SiteEngagementServiceFactory
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteEngagementServiceFactory);
 };
 
 }  // namespace site_engagement

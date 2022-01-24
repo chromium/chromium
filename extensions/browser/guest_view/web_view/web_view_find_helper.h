@@ -26,6 +26,10 @@ class WebViewGuest;
 class WebViewFindHelper {
  public:
   explicit WebViewFindHelper(WebViewGuest* webview_guest);
+
+  WebViewFindHelper(const WebViewFindHelper&) = delete;
+  WebViewFindHelper& operator=(const WebViewFindHelper&) = delete;
+
   ~WebViewFindHelper();
 
   // Cancels all find requests in progress and calls their callback functions.
@@ -56,6 +60,10 @@ class WebViewFindHelper {
   class FindResults {
    public:
     FindResults();
+
+    FindResults(const FindResults&) = delete;
+    FindResults& operator=(const FindResults&) = delete;
+
     ~FindResults();
 
     // Aggregate the find results.
@@ -74,14 +82,16 @@ class WebViewFindHelper {
 
     friend void WebViewFindHelper::EndFindSession(int session_request_id,
                                                   bool canceled);
-
-    DISALLOW_COPY_AND_ASSIGN(FindResults);
   };
 
   // Stores and processes the results for the |findupdate| event.
   class FindUpdateEvent {
    public:
     explicit FindUpdateEvent(const std::u16string& search_text);
+
+    FindUpdateEvent(const FindUpdateEvent&) = delete;
+    FindUpdateEvent& operator=(const FindUpdateEvent&) = delete;
+
     ~FindUpdateEvent();
 
     // Aggregate the find results.
@@ -96,8 +106,6 @@ class WebViewFindHelper {
    private:
     const std::u16string search_text_;
     FindResults find_results_;
-
-    DISALLOW_COPY_AND_ASSIGN(FindUpdateEvent);
   };
 
   // Handles all information about a find request and its results.
@@ -107,6 +115,9 @@ class WebViewFindHelper {
              const std::u16string& search_text,
              blink::mojom::FindOptionsPtr options,
              scoped_refptr<WebViewInternalFindFunction> find_function);
+
+    FindInfo(const FindInfo&) = delete;
+    FindInfo& operator=(const FindInfo&) = delete;
 
     // Add another request to |find_next_requests_|.
     void AddFindNextRequest(const base::WeakPtr<FindInfo>& request) {
@@ -159,8 +170,6 @@ class WebViewFindHelper {
                                                   bool canceled);
 
     base::WeakPtrFactory<FindInfo> weak_ptr_factory_{this};
-
-    DISALLOW_COPY_AND_ASSIGN(FindInfo);
   };
 
   // Pointer to the webview that is being helped.
@@ -181,8 +190,6 @@ class WebViewFindHelper {
   // function can be called when its find results are available.
   using FindInfoMap = std::map<int, scoped_refptr<FindInfo>>;
   FindInfoMap find_info_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewFindHelper);
 };
 
 } // namespace extensions

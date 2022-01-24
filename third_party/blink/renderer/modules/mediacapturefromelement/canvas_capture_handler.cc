@@ -9,72 +9,43 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/limits.h"
-#include "media/base/video_util.h"
-#include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
-#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
-#include "third_party/libyuv/include/libyuv.h"
-#include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
-namespace {
-
-const base::Feature kOneCopyCanvasCapture {
-  "OneCopyCanvasCapture",
-#if defined(OS_MAC)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
-
-// Return the gfx::ColorSpace that the pixels resulting from calling
-// ConvertToYUVFrame on |image| will be in.
-gfx::ColorSpace GetImageYUVColorSpace(scoped_refptr<StaticBitmapImage> image) {
-  // TODO: Determine the ColorSpace::MatrixID and ColorSpace::RangeID that the
-  // calls to libyuv are assuming.
-  return gfx::ColorSpace();
-}
-
-}  // namespace
-
 // Implementation VideoCapturerSource that is owned by
 // MediaStreamVideoCapturerSource and delegates the Start/Stop calls to
 // CanvasCaptureHandler.
 // This class is single threaded and pinned to main render thread.
-class VideoCapturerSource : public media::VideoCapturerSource {
+class CanvasVideoCapturerSource : public VideoCapturerSource {
  public:
-  VideoCapturerSource(base::WeakPtr<CanvasCaptureHandler> canvas_handler,
-                      const gfx::Size& size,
-                      double frame_rate)
+  CanvasVideoCapturerSource(base::WeakPtr<CanvasCaptureHandler> canvas_handler,
+                            const gfx::Size& size,
+                            double frame_rate)
       : size_(size),
         frame_rate_(static_cast<float>(
             std::min(static_cast<double>(media::limits::kMaxFramesPerSecond),
                      frame_rate))),
-        canvas_handler_(canvas_handler) {
+        canvas_handler_(std::move(canvas_handler)) {
     DCHECK_LE(0, frame_rate_);
   }
 
@@ -128,10 +99,15 @@ class VideoCapturerSource : public media::VideoCapturerSource {
 class CanvasCaptureHandler::CanvasCaptureHandlerDelegate {
  public:
   explicit CanvasCaptureHandlerDelegate(
-      media::VideoCapturerSource::VideoCaptureDeliverFrameCB new_frame_callback)
+      VideoCaptureDeliverFrameCB new_frame_callback)
       : new_frame_callback_(new_frame_callback) {
     DETACH_FROM_THREAD(io_thread_checker_);
   }
+
+  CanvasCaptureHandlerDelegate(const CanvasCaptureHandlerDelegate&) = delete;
+  CanvasCaptureHandlerDelegate& operator=(const CanvasCaptureHandlerDelegate&) =
+      delete;
+
   ~CanvasCaptureHandlerDelegate() {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   }
@@ -147,13 +123,10 @@ class CanvasCaptureHandler::CanvasCaptureHandlerDelegate {
   }
 
  private:
-  const media::VideoCapturerSource::VideoCaptureDeliverFrameCB
-      new_frame_callback_;
+  const VideoCaptureDeliverFrameCB new_frame_callback_;
   // Bound to IO thread.
   THREAD_CHECKER(io_thread_checker_);
   base::WeakPtrFactory<CanvasCaptureHandlerDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasCaptureHandlerDelegate);
 };
 
 CanvasCaptureHandler::CanvasCaptureHandler(
@@ -162,10 +135,10 @@ CanvasCaptureHandler::CanvasCaptureHandler(
     double frame_rate,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     MediaStreamComponent** component)
-    : ask_for_new_frame_(false), io_task_runner_(std::move(io_task_runner)) {
-  std::unique_ptr<media::VideoCapturerSource> video_source(
-      new VideoCapturerSource(weak_ptr_factory_.GetWeakPtr(), size,
-                              frame_rate));
+    : io_task_runner_(std::move(io_task_runner)) {
+  std::unique_ptr<VideoCapturerSource> video_source(
+      new CanvasVideoCapturerSource(weak_ptr_factory_.GetWeakPtr(), size,
+                                    frame_rate));
   AddVideoCapturerSourceToVideoTrack(frame, std::move(video_source), component);
 }
 
@@ -191,78 +164,38 @@ CanvasCaptureHandler::CreateCanvasCaptureHandler(
       frame, size, frame_rate, std::move(io_task_runner), component));
 }
 
-void CanvasCaptureHandler::SendNewFrame(
-    scoped_refptr<StaticBitmapImage> image,
-    base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
-        context_provider) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  TRACE_EVENT0("webrtc", "CanvasCaptureHandler::SendNewFrame");
-  if (!image)
-    return;
-
-  if (!image->IsTextureBacked()) {
-    // Initially try accessing pixels directly if they are in memory.
-    sk_sp<SkImage> sk_image = image->PaintImageForCurrentFrame().GetSwSkImage();
-    if (sk_image->alphaType() != kPremul_SkAlphaType) {
-      const gfx::Size sk_image_size(sk_image->width(), sk_image->height());
-      auto sk_image_video_frame = media::CreateFromSkImage(
-          std::move(sk_image), gfx::Rect(sk_image_size), sk_image_size,
-          base::TimeDelta());
-      if (sk_image_video_frame) {
-        const base::TimeTicks timestamp = base::TimeTicks::Now();
-        SendFrame(ConvertToYUVFrame(std::move(sk_image_video_frame),
-                                    /* flip = */ false),
-                  timestamp, GetImageYUVColorSpace(image));
-        return;
-      }
-    }
-
-    // Copy the pixels into memory synchronously. This call may block the main
-    // render thread.
-    ReadARGBPixelsSync(image);
-    return;
-  }
-
-  if (!context_provider) {
-    DLOG(ERROR) << "Context lost, skipping frame";
-    return;
-  }
-
-  // Try async reading if image is texture backed.
-  if (image->CurrentFrameKnownToBeOpaque() || can_discard_alpha_) {
-    if (base::FeatureList::IsEnabled(kOneCopyCanvasCapture)) {
-      if (!accelerated_frame_pool_) {
-        accelerated_frame_pool_ =
-            std::make_unique<WebGraphicsContext3DVideoFramePool>(
-                context_provider);
-      }
-      auto blit_done_lambda = [](base::WeakPtr<CanvasCaptureHandler> handler,
-                                 base::TimeTicks timestamp,
-                                 scoped_refptr<media::VideoFrame> video_frame) {
+CanvasCaptureHandler::NewFrameCallback
+CanvasCaptureHandler::GetNewFrameCallback() {
+  // Increment the number of pending calls, and create a ScopedClosureRunner
+  // to ensure that it be decremented even if the returned callback is dropped
+  // instead of being run.
+  pending_send_new_frame_calls_ += 1;
+  auto decrement_closure = WTF::Bind(
+      [](base::WeakPtr<CanvasCaptureHandler> handler) {
         if (handler)
-          handler->OnYUVPixelsReadAsync(video_frame, timestamp, true);
-      };
-      auto blit_done_callback =
-          WTF::Bind(blit_done_lambda, weak_ptr_factory_.GetWeakPtr(),
-                    base::TimeTicks::Now());
-      // TODO(https://crbug.com/1224279): This assumes that all
-      // StaticBitmapImages are 8-bit sRGB. Expose the color space and pixel
-      // format that is backing `image->GetMailboxHolder()`, or, alternatively,
-      // expose an accelerated SkImage.
-      if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
-              viz::SkColorTypeToResourceFormat(kRGBA_8888_SkColorType),
-              gfx::Size(image->width(), image->height()),
-              gfx::ColorSpace::CreateSRGB(),
-              image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
-                                       : kBottomLeft_GrSurfaceOrigin,
-              image->GetMailboxHolder(), std::move(blit_done_callback))) {
-        return;
-      }
-    }
-    ReadYUVPixelsAsync(image, context_provider);
-  } else {
-    ReadARGBPixelsAsync(image, context_provider->ContextProvider());
-  }
+          handler->pending_send_new_frame_calls_ -= 1;
+      },
+      weak_ptr_factory_.GetWeakPtr());
+
+  return WTF::Bind(&CanvasCaptureHandler::OnNewFrameCallback,
+                   weak_ptr_factory_.GetWeakPtr(),
+                   base::ScopedClosureRunner(std::move(decrement_closure)),
+                   base::TimeTicks::Now(), gfx::ColorSpace());
+}
+
+void CanvasCaptureHandler::OnNewFrameCallback(
+    base::ScopedClosureRunner decrement_runner,
+    base::TimeTicks this_frame_ticks,
+    const gfx::ColorSpace& color_space,
+    scoped_refptr<media::VideoFrame> video_frame) {
+  DCHECK_GT(pending_send_new_frame_calls_, 0u);
+  decrement_runner.RunAndReset();
+
+  if (video_frame)
+    SendFrame(this_frame_ticks, color_space, video_frame);
+
+  if (!pending_send_new_frame_calls_ && deferred_request_refresh_frame_)
+    SendRefreshFrame();
 }
 
 bool CanvasCaptureHandler::NeedsNewFrame() const {
@@ -272,9 +205,8 @@ bool CanvasCaptureHandler::NeedsNewFrame() const {
 
 void CanvasCaptureHandler::StartVideoCapture(
     const media::VideoCaptureParams& params,
-    const media::VideoCapturerSource::VideoCaptureDeliverFrameCB&
-        new_frame_callback,
-    const media::VideoCapturerSource::RunningCallback& running_callback) {
+    const VideoCaptureDeliverFrameCB& new_frame_callback,
+    const VideoCapturerSource::RunningCallback& running_callback) {
   DVLOG(3) << __func__ << " requested "
            << media::VideoCaptureFormat::ToString(params.requested_format);
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
@@ -295,7 +227,7 @@ void CanvasCaptureHandler::RequestRefreshFrame() {
     // emitting frames with non-incrementally increasing timestamps.
     // Defer sending the refresh frame until we have completed those async
     // reads.
-    if (num_ongoing_async_pixel_readouts_ > 0) {
+    if (pending_send_new_frame_calls_) {
       deferred_request_refresh_frame_ = true;
       return;
     }
@@ -310,240 +242,10 @@ void CanvasCaptureHandler::StopVideoCapture() {
   io_task_runner_->DeleteSoon(FROM_HERE, delegate_.release());
 }
 
-void CanvasCaptureHandler::ReadARGBPixelsSync(
-    scoped_refptr<StaticBitmapImage> image) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-
-  PaintImage paint_image = image->PaintImageForCurrentFrame();
-  const base::TimeTicks timestamp = base::TimeTicks::Now();
-  const gfx::Size image_size(paint_image.width(), paint_image.height());
-  const bool is_opaque = paint_image.IsOpaque();
-  const media::VideoPixelFormat temp_argb_pixel_format =
-      media::VideoPixelFormatFromSkColorType(kN32_SkColorType, is_opaque);
-  scoped_refptr<media::VideoFrame> temp_argb_frame = frame_pool_.CreateFrame(
-      temp_argb_pixel_format, image_size, gfx::Rect(image_size), image_size,
-      base::TimeDelta());
-  if (!temp_argb_frame) {
-    DLOG(ERROR) << "Couldn't allocate video frame";
-    return;
-  }
-  SkImageInfo image_info = SkImageInfo::MakeN32(
-      image_size.width(), image_size.height(),
-      is_opaque ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
-  if (!paint_image.readPixels(
-          image_info,
-          temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane),
-          temp_argb_frame->stride(media::VideoFrame::kARGBPlane), 0 /*srcX*/,
-          0 /*srcY*/)) {
-    DLOG(ERROR) << "Couldn't read pixels from PaintImage";
-    return;
-  }
-  SendFrame(ConvertToYUVFrame(std::move(temp_argb_frame), /* flip = */ false),
-            timestamp, GetImageYUVColorSpace(image));
-}
-
-void CanvasCaptureHandler::ReadARGBPixelsAsync(
-    scoped_refptr<StaticBitmapImage> image,
-    blink::WebGraphicsContext3DProvider* context_provider) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  DCHECK(context_provider);
-  DCHECK(!image->CurrentFrameKnownToBeOpaque());
-
-  const base::TimeTicks timestamp = base::TimeTicks::Now();
-  const media::VideoPixelFormat temp_argb_pixel_format =
-      media::VideoPixelFormatFromSkColorType(kN32_SkColorType,
-                                             /*is_opaque = */ false);
-  const gfx::Size image_size(image->width(), image->height());
-  scoped_refptr<media::VideoFrame> temp_argb_frame = frame_pool_.CreateFrame(
-      temp_argb_pixel_format, image_size, gfx::Rect(image_size), image_size,
-      base::TimeDelta());
-  if (!temp_argb_frame) {
-    DLOG(ERROR) << "Couldn't allocate video frame";
-    return;
-  }
-
-  static_assert(kN32_SkColorType == kRGBA_8888_SkColorType ||
-                    kN32_SkColorType == kBGRA_8888_SkColorType,
-                "CanvasCaptureHandler::ReadARGBPixelsAsync supports only "
-                "kRGBA_8888_SkColorType and kBGRA_8888_SkColorType.");
-  SkImageInfo info = SkImageInfo::MakeN32(
-      image_size.width(), image_size.height(), kUnpremul_SkAlphaType);
-  GLuint row_bytes;
-  if (!base::CheckedNumeric<size_t>(info.minRowBytes())
-           .AssignIfValid(&row_bytes)) {
-    DLOG(ERROR) << "Row stride must fit in GLuint (32 bits), given stride: "
-                << info.minRowBytes();
-    return;
-  }
-
-  GrSurfaceOrigin image_origin = image->IsOriginTopLeft()
-                                     ? kTopLeft_GrSurfaceOrigin
-                                     : kBottomLeft_GrSurfaceOrigin;
-
-  IncrementOngoingAsyncPixelReadouts();
-  gpu::MailboxHolder mailbox_holder = image->GetMailboxHolder();
-  DCHECK(context_provider->RasterInterface());
-  context_provider->RasterInterface()->WaitSyncTokenCHROMIUM(
-      mailbox_holder.sync_token.GetConstData());
-  context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
-      mailbox_holder.mailbox, mailbox_holder.texture_target, image_origin, info,
-      row_bytes, temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane),
-      WTF::Bind(&CanvasCaptureHandler::OnARGBPixelsReadAsync,
-                weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
-                timestamp));
-}
-
-void CanvasCaptureHandler::ReadYUVPixelsAsync(
-    scoped_refptr<StaticBitmapImage> image,
-    base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
-        context_provider) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  DCHECK(context_provider);
-
-  const base::TimeTicks timestamp = base::TimeTicks::Now();
-  const gfx::Size image_size(image->width(), image->height());
-  scoped_refptr<media::VideoFrame> output_frame = frame_pool_.CreateFrame(
-      media::PIXEL_FORMAT_I420, image_size, gfx::Rect(image_size), image_size,
-      base::TimeDelta());
-  if (!output_frame) {
-    DLOG(ERROR) << "Couldn't allocate video frame";
-    return;
-  }
-
-  gpu::MailboxHolder mailbox_holder = image->GetMailboxHolder();
-  context_provider->ContextProvider()->RasterInterface()->WaitSyncTokenCHROMIUM(
-      mailbox_holder.sync_token.GetConstData());
-  context_provider->ContextProvider()
-      ->RasterInterface()
-      ->ReadbackYUVPixelsAsync(
-          mailbox_holder.mailbox, mailbox_holder.texture_target, image_size,
-          gfx::Rect(image_size), !image->IsOriginTopLeft(),
-          output_frame->stride(media::VideoFrame::kYPlane),
-          output_frame->visible_data(media::VideoFrame::kYPlane),
-          output_frame->stride(media::VideoFrame::kUPlane),
-          output_frame->visible_data(media::VideoFrame::kUPlane),
-          output_frame->stride(media::VideoFrame::kVPlane),
-          output_frame->visible_data(media::VideoFrame::kVPlane),
-          gfx::Point(0, 0),
-          WTF::Bind(&CanvasCaptureHandler::OnReleaseMailbox,
-                    weak_ptr_factory_.GetWeakPtr(), image),
-          WTF::Bind(&CanvasCaptureHandler::OnYUVPixelsReadAsync,
-                    weak_ptr_factory_.GetWeakPtr(), output_frame, timestamp));
-}
-
-void CanvasCaptureHandler::OnARGBPixelsReadAsync(
-    scoped_refptr<StaticBitmapImage> image,
-    scoped_refptr<media::VideoFrame> temp_argb_frame,
-    base::TimeTicks this_frame_ticks,
-    GrSurfaceOrigin result_origin,
-    bool success) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  DecrementOngoingAsyncPixelReadouts();
-  if (!success) {
-    DLOG(ERROR) << "Couldn't read SkImage using async callback";
-    // Async reading is not supported on some platforms, see
-    // http://crbug.com/788386.
-    ReadARGBPixelsSync(image);
-    return;
-  }
-  // Let |image| fall out of scope after we are done reading.
-  const auto color_space = GetImageYUVColorSpace(image);
-
-  bool flip = result_origin == kBottomLeft_GrSurfaceOrigin;
-  SendFrame(ConvertToYUVFrame(std::move(temp_argb_frame), flip),
-            this_frame_ticks, color_space);
-  if (num_ongoing_async_pixel_readouts_ == 0 && deferred_request_refresh_frame_)
-    SendRefreshFrame();
-}
-
-void CanvasCaptureHandler::OnYUVPixelsReadAsync(
-    scoped_refptr<media::VideoFrame> yuv_frame,
-    base::TimeTicks this_frame_ticks,
-    bool success) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-
-  if (!success) {
-    DLOG(ERROR) << "Couldn't read SkImage using async callback";
-    return;
-  }
-  SendFrame(yuv_frame, this_frame_ticks, gfx::ColorSpace());
-}
-
-void CanvasCaptureHandler::OnReleaseMailbox(
-    scoped_refptr<StaticBitmapImage> image) {
-  // All shared image operations have been completed, stop holding the ref.
-  image = nullptr;
-}
-
-scoped_refptr<media::VideoFrame> CanvasCaptureHandler::ConvertToYUVFrame(
-    scoped_refptr<media::VideoFrame> temp_argb_frame,
-    bool flip) {
-  DVLOG(4) << __func__;
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  TRACE_EVENT0("webrtc", "CanvasCaptureHandler::ConvertToYUVFrame");
-
-  const bool skip_alpha =
-      media::IsOpaque(temp_argb_frame->format()) || can_discard_alpha_;
-  const uint8_t* source_ptr =
-      temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane);
-  const gfx::Size image_size = temp_argb_frame->coded_size();
-  const int stride = temp_argb_frame->stride(media::VideoFrame::kARGBPlane);
-
-  scoped_refptr<media::VideoFrame> video_frame = frame_pool_.CreateFrame(
-      skip_alpha ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
-      image_size, gfx::Rect(image_size), image_size, base::TimeDelta());
-  if (!video_frame) {
-    DLOG(ERROR) << "Couldn't allocate video frame";
-    return nullptr;
-  }
-
-  int (*ConvertToI420)(const uint8_t* src_argb, int src_stride_argb,
-                       uint8_t* dst_y, int dst_stride_y, uint8_t* dst_u,
-                       int dst_stride_u, uint8_t* dst_v, int dst_stride_v,
-                       int width, int height) = nullptr;
-  switch (temp_argb_frame->format()) {
-    case media::PIXEL_FORMAT_XBGR:
-    case media::PIXEL_FORMAT_ABGR:
-      ConvertToI420 = libyuv::ABGRToI420;
-      break;
-    case media::PIXEL_FORMAT_XRGB:
-    case media::PIXEL_FORMAT_ARGB:
-      ConvertToI420 = libyuv::ARGBToI420;
-      break;
-    default:
-      NOTIMPLEMENTED() << "Unexpected pixel format.";
-      return nullptr;
-  }
-
-  if (ConvertToI420(source_ptr, stride,
-                    video_frame->visible_data(media::VideoFrame::kYPlane),
-                    video_frame->stride(media::VideoFrame::kYPlane),
-                    video_frame->visible_data(media::VideoFrame::kUPlane),
-                    video_frame->stride(media::VideoFrame::kUPlane),
-                    video_frame->visible_data(media::VideoFrame::kVPlane),
-                    video_frame->stride(media::VideoFrame::kVPlane),
-                    image_size.width(),
-                    (flip ? -1 : 1) * image_size.height()) != 0) {
-    DLOG(ERROR) << "Couldn't convert to I420";
-    return nullptr;
-  }
-  if (!skip_alpha) {
-    // It is ok to use ARGB function because alpha has the same alignment for
-    // both ABGR and ARGB.
-    libyuv::ARGBExtractAlpha(
-        source_ptr, stride,
-        video_frame->visible_data(media::VideoFrame::kAPlane),
-        video_frame->stride(media::VideoFrame::kAPlane), image_size.width(),
-        (flip ? -1 : 1) * image_size.height());
-  }
-
-  return video_frame;
-}
-
 void CanvasCaptureHandler::SendFrame(
-    scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks this_frame_ticks,
-    const gfx::ColorSpace& color_space) {
+    const gfx::ColorSpace& color_space,
+    scoped_refptr<media::VideoFrame> video_frame) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
 
   // If this function is called asynchronously, |delegate_| might have been
@@ -568,7 +270,7 @@ void CanvasCaptureHandler::SendFrame(
 
 void CanvasCaptureHandler::AddVideoCapturerSourceToVideoTrack(
     LocalFrame* frame,
-    std::unique_ptr<media::VideoCapturerSource> source,
+    std::unique_ptr<VideoCapturerSource> source,
     MediaStreamComponent** component) {
   uint8_t track_id_bytes[64];
   base::RandBytes(track_id_bytes, sizeof(track_id_bytes));
@@ -592,20 +294,9 @@ void CanvasCaptureHandler::AddVideoCapturerSourceToVideoTrack(
           MediaStreamVideoSource::ConstraintsOnceCallback(), true));
 }
 
-void CanvasCaptureHandler::IncrementOngoingAsyncPixelReadouts() {
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  ++num_ongoing_async_pixel_readouts_;
-}
-
-void CanvasCaptureHandler::DecrementOngoingAsyncPixelReadouts() {
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  --num_ongoing_async_pixel_readouts_;
-  DCHECK_GE(num_ongoing_async_pixel_readouts_, 0);
-}
-
 void CanvasCaptureHandler::SendRefreshFrame() {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  DCHECK_EQ(num_ongoing_async_pixel_readouts_, 0);
+  DCHECK_EQ(pending_send_new_frame_calls_, 0u);
   if (last_frame_ && delegate_) {
     io_task_runner_->PostTask(
         FROM_HERE,

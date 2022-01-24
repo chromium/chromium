@@ -9,7 +9,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/fileapi/av_scanning_file_validator.h"
 #include "components/download/public/common/quarantine_connection.h"
@@ -23,6 +22,10 @@ class SafeAudioVideoChecker;
 // this class does not make the file safe to use in the browser process.
 class SupportedAudioVideoChecker : public AVScanningFileValidator {
  public:
+  SupportedAudioVideoChecker(const SupportedAudioVideoChecker&) = delete;
+  SupportedAudioVideoChecker& operator=(const SupportedAudioVideoChecker&) =
+      delete;
+
   ~SupportedAudioVideoChecker() override;
 
   static bool SupportsFileType(const base::FilePath& path);
@@ -42,8 +45,6 @@ class SupportedAudioVideoChecker : public AVScanningFileValidator {
   storage::CopyOrMoveFileValidator::ResultCallback callback_;
   std::unique_ptr<SafeAudioVideoChecker> safe_checker_;
   base::WeakPtrFactory<SupportedAudioVideoChecker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SupportedAudioVideoChecker);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_SUPPORTED_AUDIO_VIDEO_CHECKER_H_

@@ -37,6 +37,12 @@ class VIZ_SERVICE_EXPORT InProcessGpuMemoryBufferManager
   InProcessGpuMemoryBufferManager(
       gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       gpu::SyncPointManager* sync_point_manager);
+
+  InProcessGpuMemoryBufferManager(const InProcessGpuMemoryBufferManager&) =
+      delete;
+  InProcessGpuMemoryBufferManager& operator=(
+      const InProcessGpuMemoryBufferManager&) = delete;
+
   // Note: Any GpuMemoryBuffers that haven't been destroyed yet will be leaked
   // until the GpuMemoryBufferFactory is destroyed.
   ~InProcessGpuMemoryBufferManager() override;
@@ -83,8 +89,6 @@ class VIZ_SERVICE_EXPORT InProcessGpuMemoryBufferManager
 
   base::WeakPtr<InProcessGpuMemoryBufferManager> weak_ptr_;
   base::WeakPtrFactory<InProcessGpuMemoryBufferManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessGpuMemoryBufferManager);
 };
 
 }  // namespace viz

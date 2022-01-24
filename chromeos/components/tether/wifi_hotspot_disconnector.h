@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_TETHER_WIFI_HOTSPOT_DISCONNECTOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/network/network_connection_handler.h"
 
 namespace chromeos {
@@ -20,6 +19,10 @@ class WifiHotspotDisconnector {
       NetworkConnectionHandler::TetherDelegate::StringErrorCallback;
 
   WifiHotspotDisconnector() {}
+
+  WifiHotspotDisconnector(const WifiHotspotDisconnector&) = delete;
+  WifiHotspotDisconnector& operator=(const WifiHotspotDisconnector&) = delete;
+
   virtual ~WifiHotspotDisconnector() {}
 
   // Disconnects from the Wi-Fi network with GUID |wifi_network_guid| and
@@ -29,9 +32,6 @@ class WifiHotspotDisconnector {
       const std::string& wifi_network_guid,
       base::OnceClosure success_callback,
       StringErrorCallback error_callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WifiHotspotDisconnector);
 };
 
 }  // namespace tether

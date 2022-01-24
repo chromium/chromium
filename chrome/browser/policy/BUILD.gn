@@ -49,6 +49,99 @@ source_set("test_support") {
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash:ash",
+      "//ash/public/cpp:cpp",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "policy_test_utils.cc",
+      "policy_test_utils.h",
+      "url_blocking_policy_test_utils.cc",
+      "url_blocking_policy_test_utils.h",
+    ]
+
+    deps += [
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui",
+      "//chrome/common:constants",
+      "//chrome/common/net:net",
+      "//chrome/test:test_support",
+      "//components/omnibox/browser:browser",
+      "//components/policy/core/browser:browser",
+      "//components/policy/core/common:test_support",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/security_interstitials/core:core",
+      "//components/variations:test_support",
+      "//content/public/browser:browser",
+      "//content/public/common:common",
+      "//content/test:test_support",
+      "//mojo/public/cpp/bindings:bindings",
+      "//net:net",
+      "//net:test_support",
+      "//services/network/public/mojom:mojom",
+      "//ui/snapshot:snapshot",
+      "//url:url",
+    ]
+  }
+}
+
+# Browser tests for specific policies.
+source_set("policy_specific_browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = []
+
+  if (!is_android) {
+    sources += [
+      "test/autoplay_policy_browsertest.cc",
+      "test/bookmark_bar_enabled_browsertest.cc",
+      "test/component_updater_policy_browsertest.cc",
+      "test/developer_tools_policy_browsertest.cc",
+      "test/download_directory_browsertest.cc",
+      "test/hide_webstore_icon_policy_browsertest.cc",
+      "test/media_stream_policy_browsertest.cc",
+      "test/signed_exchange_browsertest.cc",
+      "test/task_manager_end_process_enabled_browsertest.cc",
+      "test/web_rtc_event_log_collection_allowed_policy_browsertest.cc",
+      "test/web_rtc_local_ips_allowed_urls_policy_browsertest.cc",
+    ]
+
+    deps = [
+      ":test_support",
+      "//base",
+      "//chrome/app:command_ids",
+      "//chrome/browser",
+      "//chrome/browser/devtools:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//components/bookmarks/common:common",
+      "//components/enterprise",
+      "//components/enterprise:test_support",
+      "//components/policy:chrome_settings_proto_generated_compile",
+      "//components/policy/core/browser",
+      "//components/policy/core/common",
+      "//components/policy/core/common:common_constants",
+      "//components/policy/proto",
+      "//components/policy/test_support",
+      "//components/prefs",
+      "//components/webrtc:webrtc",
+      "//content/test:test_support",
+      "//testing/gmock",
+    ]
+  }
+
+  if (!is_android && !is_chromeos_ash) {
+    sources += [ "policy_startup_browsertest.cc" ]
+  }
 }
 
 source_set("browser_tests") {
@@ -62,6 +155,7 @@ source_set("browser_tests") {
   ]
 
   deps = [
+    ":policy_specific_browser_tests",
     ":test_support",
     "//base",
     "//build:branding_buildflags",
@@ -93,6 +187,13 @@ source_set("browser_tests") {
     "//testing/gmock",
   ]
 
+  if (is_android) {
+    sources += [
+      "cloud/chrome_browser_cloud_management_browsertest_delegate_android.cc",
+      "cloud/chrome_browser_cloud_management_browsertest_delegate_android.h",
+    ]
+  }
+
   if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/chromeos",
@@ -100,6 +201,22 @@ source_set("browser_tests") {
       "//chromeos/dbus/constants",
       "//chromeos/dbus/userdataauth",
       "//components/account_id",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "cloud/chrome_browser_cloud_management_browsertest_mac_util.h",
+      "cloud/chrome_browser_cloud_management_browsertest_mac_util.mm",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [ "cloud/component_cloud_policy_browsertest.cc" ]
+
+    deps += [
+      "//chrome/browser/ui:ui",
+      "//chrome/test:test_support",
     ]
   }
 
@@ -112,27 +229,10 @@ source_set("browser_tests") {
     deps += [ "//components/signin/public/identity_manager" ]
   }
 
-  if (is_mac) {
-    sources += [
-      "cloud/chrome_browser_cloud_management_browsertest_mac_util.h",
-      "cloud/chrome_browser_cloud_management_browsertest_mac_util.mm",
-    ]
-  }
-
-  if (is_android) {
-    sources += [
-      "cloud/chrome_browser_cloud_management_browsertest_delegate_android.cc",
-    ]
-  } else if (!is_chromeos_ash) {
+  if (!is_android && !is_chromeos_ash) {
     sources += [
       "cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.cc",
-    ]
-  }
-
-  if (!is_android) {
-    deps += [
-      "//chrome/browser/ui:ui",
-      "//chrome/test:test_support_ui",
+      "cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.h",
     ]
   }
 }

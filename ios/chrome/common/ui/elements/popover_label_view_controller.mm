@@ -14,7 +14,7 @@
 namespace {
 
 // Vertical inset for the text content.
-constexpr CGFloat kVerticalInsetValue = 20;
+constexpr CGFloat kVerticalInsetValue = 16;
 // Horizontal inset for the text content.
 constexpr CGFloat kHorizontalInsetValue = 16;
 // Desired percentage of the width of the presented view controller.
@@ -22,7 +22,11 @@ constexpr CGFloat kWidthProportion = 0.75;
 // Max width for the popover.
 constexpr CGFloat kMaxWidth = 300;
 // Distance between the primary text label and the secondary text label.
-constexpr CGFloat kVerticalDistance = 24;
+constexpr CGFloat kVerticalDistance = 10;
+// Distance between the icon and the first letter in the secondary text box.
+constexpr CGFloat kIconDistance = 10;
+// The size of the icon at the left of the secondary text.
+constexpr CGFloat kIconSize = 16;
 
 }  // namespace
 
@@ -40,6 +44,13 @@ constexpr CGFloat kVerticalDistance = 24;
 // The attributed string being presented as secondary text.
 @property(nonatomic, strong, readonly)
     NSAttributedString* secondaryAttributedString;
+
+// The image of the icon at the left of the secondary text. No icon if left
+// nil.
+@property(nonatomic, strong, readonly) UIImage* icon;
+
+// Visual effect view used to add a blur effect to the popover.
+@property(nonatomic, strong) UIVisualEffectView* blurBackgroundView;
 
 @end
 
@@ -62,10 +73,22 @@ constexpr CGFloat kVerticalDistance = 24;
                     (NSAttributedString*)primaryAttributedString
                       secondaryAttributedString:
                           (NSAttributedString*)secondaryAttributedString {
+  self = [self initWithPrimaryAttributedString:primaryAttributedString
+                     secondaryAttributedString:secondaryAttributedString
+                                          icon:nil];
+  return self;
+}
+
+- (instancetype)initWithPrimaryAttributedString:
+                    (NSAttributedString*)primaryAttributedString
+                      secondaryAttributedString:
+                          (NSAttributedString*)secondaryAttributedString
+                                           icon:(UIImage*)icon {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _primaryAttributedString = primaryAttributedString;
     _secondaryAttributedString = secondaryAttributedString;
+    _icon = icon;
     self.modalPresentationStyle = UIModalPresentationPopover;
     self.popoverPresentationController.delegate = self;
   }
@@ -77,7 +100,7 @@ constexpr CGFloat kVerticalDistance = 24;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.view.backgroundColor = UIColor.clearColor;
 
   _scrollView = [[UIScrollView alloc] init];
   _scrollView.backgroundColor = UIColor.clearColor;
@@ -93,6 +116,7 @@ constexpr CGFloat kVerticalDistance = 24;
   // Using a UIView instead of UILayoutGuide as the later behaves weirdly with
   // the scroll view.
   UIView* textContainerView = [[UIView alloc] init];
+  textContainerView.backgroundColor = UIColor.clearColor;
   textContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   [_scrollView addSubview:textContainerView];
   AddSameConstraints(textContainerView, _scrollView);
@@ -105,6 +129,7 @@ constexpr CGFloat kVerticalDistance = 24;
   textView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   textView.adjustsFontForContentSizeCategory = YES;
   textView.translatesAutoresizingMaskIntoConstraints = NO;
+  textView.textContainerInset = UIEdgeInsetsZero;
   textView.textColor = [UIColor colorNamed:kTextSecondaryColor];
   textView.linkTextAttributes =
       @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
@@ -127,6 +152,7 @@ constexpr CGFloat kVerticalDistance = 24;
         [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
     secondaryTextView.adjustsFontForContentSizeCategory = YES;
     secondaryTextView.translatesAutoresizingMaskIntoConstraints = NO;
+    secondaryTextView.textContainerInset = UIEdgeInsetsZero;
     secondaryTextView.textColor = [UIColor colorNamed:kTextSecondaryColor];
     secondaryTextView.linkTextAttributes =
         @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
@@ -134,14 +160,48 @@ constexpr CGFloat kVerticalDistance = 24;
 
     [_scrollView addSubview:secondaryTextView];
 
+    if (self.icon) {
+      // Add an icon at the left of the secondary text box.
+
+      UIImageView* imageView = [[UIImageView alloc] initWithImage:self.icon];
+      imageView.translatesAutoresizingMaskIntoConstraints = NO;
+      imageView.contentMode = UIViewContentModeScaleAspectFit;
+      imageView.clipsToBounds = YES;
+
+      [_scrollView addSubview:imageView];
+
+      const CGFloat lineFragmentPadding =
+          secondaryTextView.textContainer.lineFragmentPadding;
+
+      [NSLayoutConstraint activateConstraints:@[
+        [textContainerView.leadingAnchor
+            constraintEqualToAnchor:imageView.leadingAnchor
+                           constant:-kHorizontalInsetValue -
+                                    lineFragmentPadding],
+        [secondaryTextView.leadingAnchor
+            constraintEqualToAnchor:imageView.trailingAnchor
+                           constant:kIconDistance - lineFragmentPadding],
+        [textView.bottomAnchor constraintEqualToAnchor:imageView.topAnchor
+                                              constant:-kVerticalDistance],
+        [imageView.heightAnchor constraintEqualToConstant:kIconSize],
+        [imageView.widthAnchor constraintEqualToConstant:kIconSize],
+
+      ]];
+    } else {
+      // Set default secondary text constraints when there is no icon.
+      [NSLayoutConstraint activateConstraints:@[
+        [textContainerView.leadingAnchor
+            constraintEqualToAnchor:secondaryTextView.leadingAnchor
+                           constant:-kHorizontalInsetValue],
+
+      ]];
+    }
+
     [NSLayoutConstraint activateConstraints:@[
       [textContainerView.widthAnchor
           constraintEqualToAnchor:_scrollView.widthAnchor],
       [textContainerView.leadingAnchor
           constraintEqualToAnchor:textView.leadingAnchor
-                         constant:-kHorizontalInsetValue],
-      [textContainerView.leadingAnchor
-          constraintEqualToAnchor:secondaryTextView.leadingAnchor
                          constant:-kHorizontalInsetValue],
       [textContainerView.trailingAnchor
           constraintEqualToAnchor:textView.trailingAnchor
@@ -186,6 +246,8 @@ constexpr CGFloat kVerticalDistance = 24;
   // scroll view.
   heightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   heightConstraint.active = YES;
+
+  [self updateBackgroundColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -201,6 +263,47 @@ constexpr CGFloat kVerticalDistance = 24;
        previousTraitCollection.horizontalSizeClass)) {
     [self updatePreferredContentSize];
   }
+
+  if (self.traitCollection.userInterfaceStyle !=
+      previousTraitCollection.userInterfaceStyle) {
+    [self updateBackgroundColor];
+  }
+}
+
+#pragma mark - Private methods
+
+- (void)updateBackgroundColor {
+  // The popover background in dark mode needs more contrast.
+  BOOL darkMode = UITraitCollection.currentTraitCollection.userInterfaceStyle ==
+                  UIUserInterfaceStyleDark;
+
+  self.view.backgroundColor =
+      darkMode ? [UIColor colorNamed:kTertiaryBackgroundColor]
+               : UIColor.clearColor;
+
+  if (darkMode && self.blurBackgroundView.superview) {
+    // Remove blurred background in dark mode if it has been added.
+    [self.blurBackgroundView removeFromSuperview];
+  } else if (!darkMode && !self.blurBackgroundView.superview) {
+    // Add blurred background in light mode only if it has not been added
+    // already.
+    [self.view insertSubview:self.blurBackgroundView atIndex:0];
+  }
+}
+
+#pragma mark - Properties
+
+- (UIVisualEffectView*)blurBackgroundView {
+  if (!_blurBackgroundView) {
+    // Set up a blurred background.
+    UIBlurEffect* blurEffect =
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
+    _blurBackgroundView =
+        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+    _blurBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    _blurBackgroundView.frame = self.view.bounds;
+  }
+  return _blurBackgroundView;
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

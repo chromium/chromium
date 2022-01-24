@@ -1,12 +1,11 @@
-CONSOLE WARNING: line 139: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
-CONSOLE WARNING: line 143: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
-CONSOLE WARNING: line 253: SharedArrayBuffer will require cross-origin isolation as of M92, around July 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
-CONSOLE WARNING: line 348: The provided value 'fancy' is not a valid enum value of type ChannelCountMode.
-CONSOLE WARNING: line 354: The provided value 'undefined' is not a valid enum value of type ChannelInterpretation.
-CONSOLE WARNING: line 524: The provided value '9x' is not a valid enum value of type OverSampleType.
-CONSOLE WARNING: line 770: The provided value 'junk' is not a valid enum value of type ChannelCountMode.
-CONSOLE WARNING: line 780: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
-CONSOLE WARNING: line 801: The provided value 'junk' is not a valid enum value of type ChannelCountMode.
+CONSOLE WARNING: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
+CONSOLE WARNING: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
+CONSOLE WARNING: The provided value 'fancy' is not a valid enum value of type ChannelCountMode.
+CONSOLE WARNING: The provided value 'undefined' is not a valid enum value of type ChannelInterpretation.
+CONSOLE WARNING: The provided value '9x' is not a valid enum value of type OverSampleType.
+CONSOLE WARNING: The provided value 'junk' is not a valid enum value of type ChannelCountMode.
+CONSOLE WARNING: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
+CONSOLE WARNING: The provided value 'junk' is not a valid enum value of type ChannelCountMode.
 This is a testharness.js-based test.
 PASS # AUDIT TASK RUNNER STARTED.
 PASS Executing "initialize"

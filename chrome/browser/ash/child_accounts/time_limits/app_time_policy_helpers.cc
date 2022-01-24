@@ -154,9 +154,9 @@ absl::optional<AppLimit> AppLimitFromDict(const base::Value& dict) {
 
   absl::optional<base::TimeDelta> daily_limit;
   if (daily_limit_mins) {
-    daily_limit = base::TimeDelta::FromMinutes(*daily_limit_mins);
-    if (daily_limit && (*daily_limit < base::TimeDelta::FromHours(0) ||
-                        *daily_limit > base::TimeDelta::FromHours(24))) {
+    daily_limit = base::Minutes(*daily_limit_mins);
+    if (daily_limit &&
+        (*daily_limit < base::Hours(0) || *daily_limit > base::Hours(24))) {
       DLOG(ERROR) << "Invalid daily limit.";
       return absl::nullopt;
     }
@@ -172,8 +172,7 @@ absl::optional<AppLimit> AppLimitFromDict(const base::Value& dict) {
   }
 
   const base::Time last_updated =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMilliseconds(last_updated_millis);
+      base::Time::UnixEpoch() + base::Milliseconds(last_updated_millis);
 
   return AppLimit(restriction, daily_limit, last_updated);
 }
@@ -213,9 +212,8 @@ absl::optional<base::TimeDelta> ResetTimeFromDict(const base::Value& dict) {
     return absl::nullopt;
   }
 
-  const int hour_in_mins = base::TimeDelta::FromHours(1).InMinutes();
-  return base::TimeDelta::FromMinutes(hour.value() * hour_in_mins +
-                                      minutes.value());
+  const int hour_in_mins = base::Hours(1).InMinutes();
+  return base::Minutes(hour.value() * hour_in_mins + minutes.value());
 }
 
 base::Value ResetTimeToDict(int hour, int minutes) {

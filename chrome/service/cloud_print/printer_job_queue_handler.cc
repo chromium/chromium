@@ -100,8 +100,7 @@ base::TimeDelta PrinterJobQueueHandler::ComputeBackoffTime(
     return base::TimeDelta();
   }
 
-  base::TimeDelta backoff_time =
-      base::TimeDelta::FromSeconds(kJobFirstWaitTimeSecs);
+  base::TimeDelta backoff_time = base::Seconds(kJobFirstWaitTimeSecs);
   backoff_time *=
       // casting argument to double and result to uint64_t to avoid compilation
       // issues

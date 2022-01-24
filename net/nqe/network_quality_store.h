@@ -29,6 +29,11 @@ class NET_EXPORT_PRIVATE NetworkQualityStore {
   // Observes changes in the cached network qualities.
   class NET_EXPORT_PRIVATE NetworkQualitiesCacheObserver {
    public:
+    NetworkQualitiesCacheObserver(const NetworkQualitiesCacheObserver&) =
+        delete;
+    NetworkQualitiesCacheObserver& operator=(
+        const NetworkQualitiesCacheObserver&) = delete;
+
     // Notifies the observer of a change in the cached network quality. The
     // observer must register and unregister itself on the IO thread. All the
     // observers would be notified on the IO thread. |network_id| is the ID of
@@ -40,12 +45,13 @@ class NET_EXPORT_PRIVATE NetworkQualityStore {
    protected:
     NetworkQualitiesCacheObserver() {}
     virtual ~NetworkQualitiesCacheObserver() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(NetworkQualitiesCacheObserver);
   };
 
   NetworkQualityStore();
+
+  NetworkQualityStore(const NetworkQualityStore&) = delete;
+  NetworkQualityStore& operator=(const NetworkQualityStore&) = delete;
+
   ~NetworkQualityStore();
 
   // Stores the network quality |cached_network_quality| of network with ID
@@ -100,8 +106,6 @@ class NET_EXPORT_PRIVATE NetworkQualityStore {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<NetworkQualityStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityStore);
 };
 
 }  // namespace internal

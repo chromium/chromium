@@ -44,17 +44,29 @@ void FeatureManagerOnAssociatedInterface::ConfigureFeatures(
     features_map_[feature->name] = std::move(feature);
   }
 
-  if (FeatureEnabled(feature::kEnableTrackAppRendererFeatureUse)) {
+  if (FeatureEnabled(feature::kEnableTrackControlAppRendererFeatureUse)) {
     std::string app_id("MissingAppId");
-    auto& feature = GetFeature(feature::kEnableTrackAppRendererFeatureUse);
-    std::string* app_id_received = feature->config.FindStringPath("app_id");
+    auto& feature =
+        GetFeature(feature::kEnableTrackControlAppRendererFeatureUse);
+    std::string* app_id_received =
+        feature->config.FindStringPath(feature::kKeyAppId);
     if (app_id_received) {
       app_id = *app_id_received;
     } else {
       LOG(ERROR) << __func__ << " failed to receive valid app_id";
     }
+    bool allow_insecure_content = false;
+    absl::optional<bool> allow_insecure_content_received =
+        feature->config.FindBoolPath(feature::kKeyAllowInsecureContent);
+    if (allow_insecure_content_received) {
+      allow_insecure_content = *allow_insecure_content_received;
+    } else {
+      LOG(ERROR) << __func__
+                 << " failed to receive valid allow_insecure_content";
+    }
     // Lifetime is tied to |render_frame| via content::RenderFrameObserver.
-    new CastContentSettingsClient(render_frame(), app_id);
+    new CastContentSettingsClient(render_frame(), app_id,
+                                  allow_insecure_content);
   }
 }
 

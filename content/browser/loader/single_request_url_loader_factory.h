@@ -29,6 +29,10 @@ class CONTENT_EXPORT SingleRequestURLLoaderFactory
 
   explicit SingleRequestURLLoaderFactory(RequestHandler handler);
 
+  SingleRequestURLLoaderFactory(const SingleRequestURLLoaderFactory&) = delete;
+  SingleRequestURLLoaderFactory& operator=(
+      const SingleRequestURLLoaderFactory&) = delete;
+
   // SharedURLLoaderFactory:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -54,8 +58,6 @@ class CONTENT_EXPORT SingleRequestURLLoaderFactory
   mojo::ReceiverSet<network::mojom::URLLoaderFactory,
                     scoped_refptr<SingleRequestURLLoaderFactory>>
       receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleRequestURLLoaderFactory);
 };
 
 }  // namespace content

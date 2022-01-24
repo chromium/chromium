@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<title>Navigate ancestor helper</title>
+
+<body>
+<script>
+// This document is loaded into either a top-level fenced frame, a nested
+// fenced frame, or an iframe in a top-level fenced frame. In any case, this
+// document is always the inner-most document in any test. It navigates an
+// ancestor frame by clicking the anchor above via script. When this document is
+// loaded in a fenced frame, the frame that should actually navigate is this
+// one, since fenced frames are top-level browsing contexts. We always test that
+// the right frame is navigated in `navigate-ancestor-test-runner.html`, which
+// runs all of the test configurations.
+const a = document.createElement('a');
+a.href = `navigate-ancestor-destination.html`;
+const ancestor_type = new URL(location.href).searchParams.get('ancestor_type');
+a.target = ancestor_type;
+a.click();
+</script>
+</body>

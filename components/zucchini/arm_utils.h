@@ -213,6 +213,8 @@ class AArch32Rel32Translator {
   //   |instr_rva| as aid.
   static ArmAlign DecodeA24(uint32_t code32, arm_disp_t* disp);
   static bool EncodeA24(arm_disp_t disp, uint32_t* code32);
+  // TODO(huangs): Refactor the Read*() functions: These are identical
+  // except for Decode*() and Get*TargetRvaFromDisp().
   static bool ReadA24(rva_t instr_rva, uint32_t code32, rva_t* target_rva);
   static bool WriteA24(rva_t instr_rva, rva_t target_rva, uint32_t* code32);
 
@@ -362,6 +364,8 @@ class AArch64Rel32Translator {
   // to the counterparts in AArch32Rel32Translator.
   static ArmAlign DecodeImmd14(uint32_t code32, arm_disp_t* disp);
   static bool EncodeImmd14(arm_disp_t disp, uint32_t* code32);
+  // TODO(huangs): Refactor the Read*() functions: These are identical
+  // except for Decode*().
   static bool ReadImmd14(rva_t instr_rva, uint32_t code32, rva_t* target_rva);
   static bool WriteImmd14(rva_t instr_rva, rva_t target_rva, uint32_t* code32);
 

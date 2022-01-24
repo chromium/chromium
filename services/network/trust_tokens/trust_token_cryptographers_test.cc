@@ -178,7 +178,7 @@ void RedeemSingleToken(const ProtocolKeys& keys,
   //  TRUST_TOKEN **out_token, uint8_t **out_client_data,
   //  size_t *out_client_data_len, uint64_t *out_redemption_time,
   //  const uint8_t *request, size_t request_len, uint64_t lifetime);
-  constexpr base::TimeDelta kRrLifetime = base::TimeDelta::FromSeconds(100);
+  constexpr base::TimeDelta kRrLifetime = base::Seconds(100);
   ScopedBoringsslBytes raw_redemption_response;
   TRUST_TOKEN* redeemed_token;
   ScopedBoringsslBytes redeemed_client_data;

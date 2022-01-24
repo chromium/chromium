@@ -681,8 +681,7 @@ void OfflinePageModelTaskified::RemovePagesMatchingUrlAndNamespace(
   auto task = DeletePageTask::CreateTaskDeletingForPageLimit(
       store_.get(),
       base::BindOnce(&OfflinePageModelTaskified::OnDeleteDone,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::DoNothing::Once<DeletePageResult>()),
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()),
       page);
   task_queue_.AddTask(std::move(task));
 }

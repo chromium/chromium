@@ -12,7 +12,6 @@
 #include <vector>
 
 #include <string>
-#include "base/macros.h"
 #include "chrome/chrome_cleaner/http/http_agent_factory.h"
 #include "chrome/chrome_cleaner/http/http_status_codes.h"
 
@@ -72,6 +71,10 @@ class MockHttpAgentConfig {
   };
 
   MockHttpAgentConfig();
+
+  MockHttpAgentConfig(const MockHttpAgentConfig&) = delete;
+  MockHttpAgentConfig& operator=(const MockHttpAgentConfig&) = delete;
+
   ~MockHttpAgentConfig();
 
   // Adds a call configuration. There should be one configuration for each
@@ -115,8 +118,6 @@ class MockHttpAgentConfig {
 
   // The index of the current Calls configuration being used.
   size_t current_index_{kInvalidIndex};
-
-  DISALLOW_COPY_AND_ASSIGN(MockHttpAgentConfig);
 };
 
 // HttpAgent factory that creates mock HttpAgent objects that are controlled by
@@ -125,13 +126,14 @@ class MockHttpAgentFactory : public HttpAgentFactory {
  public:
   explicit MockHttpAgentFactory(MockHttpAgentConfig* config);
 
+  MockHttpAgentFactory(const MockHttpAgentFactory&) = delete;
+  MockHttpAgentFactory& operator=(const MockHttpAgentFactory&) = delete;
+
   // HttpAgentFactory:
   std::unique_ptr<chrome_cleaner::HttpAgent> CreateHttpAgent() const override;
 
  private:
   MockHttpAgentConfig* config_{nullptr};
-
-  DISALLOW_COPY_AND_ASSIGN(MockHttpAgentFactory);
 };
 
 }  // namespace chrome_cleaner

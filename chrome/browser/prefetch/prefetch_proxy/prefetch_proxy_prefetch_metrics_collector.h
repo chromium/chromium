@@ -9,7 +9,6 @@
 #include <map>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
@@ -28,6 +27,11 @@ class PrefetchProxyPrefetchMetricsCollector
  public:
   PrefetchProxyPrefetchMetricsCollector(base::TimeTicks navigation_start_time,
                                         ukm::SourceId ukm_source_id);
+
+  PrefetchProxyPrefetchMetricsCollector(
+      const PrefetchProxyPrefetchMetricsCollector&) = delete;
+  PrefetchProxyPrefetchMetricsCollector& operator=(
+      const PrefetchProxyPrefetchMetricsCollector&) = delete;
 
   // Called when a mainframe resource is not eligible for prefetching. Note that
   // if a mainframe is given here, |OnSubresourceNotEligible| is not expected to
@@ -78,7 +82,7 @@ class PrefetchProxyPrefetchMetricsCollector
                                const GURL& subresource_url);
 
  private:
-  friend class RefCounted<PrefetchProxyPrefetchMetricsCollector>;
+  friend class base::RefCounted<PrefetchProxyPrefetchMetricsCollector>;
   ~PrefetchProxyPrefetchMetricsCollector();
 
   // Helper method that makes a corresponding entry in
@@ -135,8 +139,6 @@ class PrefetchProxyPrefetchMetricsCollector
 
   // Holds all the metrics that will be recorded, indexed by their url.
   std::map<GURL, PrefetchMetric> resources_by_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchProxyPrefetchMetricsCollector);
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PREFETCH_METRICS_COLLECTOR_H_

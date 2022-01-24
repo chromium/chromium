@@ -48,6 +48,7 @@ int DaemonProcessMain();
 int DesktopProcessMain();
 int FileChooserMain();
 int RdpDesktopSessionMain();
+int UrlForwarderConfiguratorMain();
 #endif  // defined(OS_WIN)
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 int XSessionChooserMain();
@@ -148,6 +149,8 @@ MainRoutineFn SelectMainRoutine(const std::string& process_type) {
     main_routine = &FileChooserMain;
   } else if (process_type == kProcessTypeRdpDesktopSession) {
     main_routine = &RdpDesktopSessionMain;
+  } else if (process_type == kProcessTypeUrlForwarderConfigurator) {
+    main_routine = &UrlForwarderConfiguratorMain;
 #endif  // defined(OS_WIN)
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   } else if (process_type == kProcessTypeXSessionChooser) {

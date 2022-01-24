@@ -66,10 +66,8 @@ void CheckSystemCookie(const base::Time& expires, bool secure, bool httponly) {
   // Allow 1 second difference as iOS rounds expiry time to the nearest second.
   base::Time system_cookie_expire_date = base::Time::FromDoubleT(
       [[system_cookie expiresDate] timeIntervalSince1970]);
-  EXPECT_LE(expires - base::TimeDelta::FromSeconds(1),
-            system_cookie_expire_date);
-  EXPECT_GE(expires + base::TimeDelta::FromSeconds(1),
-            system_cookie_expire_date);
+  EXPECT_LE(expires - base::Seconds(1), system_cookie_expire_date);
+  EXPECT_GE(expires + base::Seconds(1), system_cookie_expire_date);
 }
 
 void VerifyGetCookiesResultHistogram(
@@ -86,7 +84,7 @@ using CookieUtil = PlatformTest;
 
 TEST_F(CookieUtil, CanonicalCookieFromSystemCookie) {
   base::Time creation_time = base::Time::Now();
-  base::Time expire_date = creation_time + base::TimeDelta::FromHours(2);
+  base::Time expire_date = creation_time + base::Hours(2);
   NSDate* system_expire_date =
       [NSDate dateWithTimeIntervalSince1970:expire_date.ToDoubleT()];
   NSMutableDictionary* properties =
@@ -117,10 +115,8 @@ TEST_F(CookieUtil, CanonicalCookieFromSystemCookie) {
   EXPECT_TRUE(chrome_cookie->LastAccessDate().is_null());
   EXPECT_TRUE(chrome_cookie->IsPersistent());
   // Allow 1 second difference as iOS rounds expiry time to the nearest second.
-  EXPECT_LE(expire_date - base::TimeDelta::FromSeconds(1),
-            chrome_cookie->ExpiryDate());
-  EXPECT_GE(expire_date + base::TimeDelta::FromSeconds(1),
-            chrome_cookie->ExpiryDate());
+  EXPECT_LE(expire_date - base::Seconds(1), chrome_cookie->ExpiryDate());
+  EXPECT_GE(expire_date + base::Seconds(1), chrome_cookie->ExpiryDate());
   EXPECT_FALSE(chrome_cookie->IsSecure());
   EXPECT_TRUE(chrome_cookie->IsHttpOnly());
   EXPECT_EQ(net::COOKIE_PRIORITY_DEFAULT, chrome_cookie->Priority());
@@ -185,7 +181,7 @@ TEST_F(CookieUtil, ReportGetCookiesForURLResult) {
 }
 
 TEST_F(CookieUtil, SystemCookieFromCanonicalCookie) {
-  base::Time expire_date = base::Time::Now() + base::TimeDelta::FromHours(2);
+  base::Time expire_date = base::Time::Now() + base::Hours(2);
 
   // Test various combinations of session, secure and httponly attributes.
   CheckSystemCookie(expire_date, false, false);
@@ -213,7 +209,7 @@ TEST_F(CookieUtil, SystemCookieFromBadCanonicalCookie) {
 }
 
 TEST_F(CookieUtil, SystemCookiesFromCanonicalCookieList) {
-  base::Time expire_date = base::Time::Now() + base::TimeDelta::FromHours(2);
+  base::Time expire_date = base::Time::Now() + base::Hours(2);
   net::CookieList cookie_list = {
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "name1", "value1", "domain1", "path1/",

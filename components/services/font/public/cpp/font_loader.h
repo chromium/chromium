@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "components/services/font/public/cpp/mapped_font_file.h"
@@ -33,6 +32,10 @@ class FontLoader : public SkFontConfigInterface,
  public:
   explicit FontLoader(
       mojo::PendingRemote<mojom::FontService> pending_font_service);
+
+  FontLoader(const FontLoader&) = delete;
+  FontLoader& operator=(const FontLoader&) = delete;
+
   ~FontLoader() override;
 
   // SkFontConfigInterface:
@@ -95,8 +98,6 @@ class FontLoader : public SkFontConfigInterface,
 
   // Maps font identity ID to the memory-mapped file with font data.
   std::unordered_map<uint32_t, internal::MappedFontFile*> mapped_font_files_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontLoader);
 };
 
 }  // namespace font_service

@@ -26,6 +26,9 @@ class FrameHostInterceptor::FrameAgent
         rfhi_(static_cast<RenderFrameHostImpl*>(rfh)),
         impl_(receiver().SwapImplForTesting(this)) {}
 
+  FrameAgent(const FrameAgent&) = delete;
+  FrameAgent& operator=(const FrameAgent&) = delete;
+
   ~FrameAgent() override {
     auto* old_impl = receiver().SwapImplForTesting(impl_);
     // TODO(https://crbug.com/729021): Investigate the scenario where
@@ -63,16 +66,17 @@ class FrameHostInterceptor::FrameAgent
 
   RenderFrameHostImpl* rfhi_;
   mojom::FrameHost* impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameAgent);
 };
 
 FrameHostInterceptor::FrameHostInterceptor(WebContents* web_contents)
     : WebContentsObserver(web_contents) {
-  for (auto* rfh : web_contents->GetAllFrames()) {
-    if (rfh->IsRenderFrameLive())
-      RenderFrameCreated(rfh);
-  }
+  web_contents->ForEachRenderFrameHost(base::BindRepeating(
+      [](FrameHostInterceptor* interceptor,
+         RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsRenderFrameLive())
+          interceptor->RenderFrameCreated(render_frame_host);
+      },
+      this));
 }
 
 FrameHostInterceptor::~FrameHostInterceptor() = default;

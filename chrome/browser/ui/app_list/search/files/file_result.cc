@@ -9,22 +9,28 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
+#include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace app_list {
 
@@ -86,6 +92,7 @@ FileResult::FileResult(const std::string& schema,
     : filepath_(filepath), type_(type), profile_(profile) {
   DCHECK(profile);
   set_id(schema + filepath.value());
+  SetCategory(Category::kFiles);
 
   SetResultType(result_type);
   switch (result_type) {
@@ -143,10 +150,11 @@ FileResult::FileResult(const std::string& schema,
                                ash::ColorProvider::Get()->IsDarkModeEnabled();
   switch (display_type) {
     case DisplayType::kChip:
+    case DisplayType::kContinue:
       SetChipIcon(ash::GetChipIconForPath(filepath, dark_background));
       break;
     case DisplayType::kList:
-      SetIcon(ash::GetIconForPath(filepath, dark_background));
+      SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background)));
       break;
     default:
       NOTREACHED();
@@ -177,13 +185,13 @@ FileResult::FileResult(const std::string& schema,
                                ash::ColorProvider::Get()->IsDarkModeEnabled();
   switch (type) {
     case Type::kFile:
-      SetIcon(ash::GetIconForPath(filepath, dark_background));
+      SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background)));
       break;
     case Type::kDirectory:
-      SetIcon(ash::GetIconFromType("folder", dark_background));
+      SetIcon(IconInfo(ash::GetIconFromType("folder", dark_background)));
       break;
     case Type::kSharedDirectory:
-      SetIcon(ash::GetIconFromType("shared", dark_background));
+      SetIcon(IconInfo(ash::GetIconFromType("shared", dark_background)));
       break;
   }
 }
@@ -226,6 +234,39 @@ double FileResult::CalculateRelevance(
   TokenizedStringMatch match;
   match.Calculate(query.value(), title);
   return match.relevance();
+}
+
+void FileResult::RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader) {
+  // Thumbnails are only available for list results.
+  DCHECK_EQ(display_type(), DisplayType::kList);
+
+  // Request a thumbnail for all file types. For unsupported types, this will
+  // just call OnThumbnailLoaded with an error.
+  const gfx::Size size =
+      ash::SharedAppListConfig::instance().search_list_thumbnail_size();
+  thumbnail_loader->Load({filepath_, size},
+                         base::BindOnce(&FileResult::OnThumbnailLoaded,
+                                        weak_factory_.GetWeakPtr()));
+}
+
+void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
+                                   base::File::Error error) {
+  if (!bitmap) {
+    DCHECK_NE(error, base::File::Error::FILE_OK);
+    base::UmaHistogramExactLinear(
+        "Apps.AppList.FileResult.ThumbnailLoadedError", -error,
+        -base::File::FILE_ERROR_MAX);
+    return;
+  }
+
+  DCHECK_EQ(error, base::File::Error::FILE_OK);
+
+  const int dimension =
+      ash::SharedAppListConfig::instance().search_list_thumbnail_dimension();
+  const auto image = gfx::ImageSkia::CreateFromBitmap(*bitmap, 1.0f);
+
+  SetIcon(ChromeSearchResult::IconInfo(image, dimension,
+                                       ash::SearchResultIconShape::kCircle));
 }
 
 ::std::ostream& operator<<(::std::ostream& os, const FileResult& result) {

@@ -78,10 +78,9 @@ There’s two main steps to adding a hint to Chromium: adding the token, and pop
 
 The canonical enum for client hint tokens is [network::mojom::WebClientHintsType]. Any new token should be added to the end of that list. Along with that:
 
-*   Add the header name to `kClientHintsNameMapping` in [/services/network/public/cpp/client_hints.cc].
-*   Add the header name to `kClientHintsHeaderMapping` in [/third_party/blink/common/client_hints/client_hints.cc] and update its test.
+*   Add the header name to the map in `MakeClientHintToNameMap` in [/services/network/public/cpp/client_hints.cc].
 *   Add an enum value to `WebFeature` in [/third_party/blink/public/mojom/web_feature/web_feature.mojom].
-*   Add the feature enum to `kWebFeatureMapping` in [/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc].
+*   Add the feature enum to the map in `MakeClientHintToWebFeatureMap` in [/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc].
 *   Add the client hint header to the `Accept-CH` header in the appropriate test files in [/chrome/test/data/client_hints/] and [/third_party/blink/web_tests/external/wpt/client-hints].
 *   Update `expected_client_hints_number` to the current value + 1 in [/chrome/browser/client_hints/client_hints_browsertest.cc].
 
@@ -91,7 +90,7 @@ There should also be a new feature policy created:
 
 *   Define the permission policy in [/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5].
 *   Add an enum to [/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom].
-*   Add the same enum to `kClientHintsPermissionsPolicyMapping` in [/third_party/blink/common/client_hints/client_hints.cc].
+*   Add the same enum to the map in `MakeClientHintToPolicyFeatureMap` in [/third_party/blink/common/client_hints/client_hints.cc].
 *   Add the permission policy token to the `PermissionsPolicyFeature` enum in [/third_party/blink/public/devtools_protocol/browser_protocol.pdl], [/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.pdl], and [/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.json].
 *   Add the permission policy token to [/third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt] and [/third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt].
 

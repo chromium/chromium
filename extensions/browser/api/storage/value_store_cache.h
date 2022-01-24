@@ -10,7 +10,9 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 
+namespace value_store {
 class ValueStore;
+}
 
 namespace extensions {
 
@@ -27,7 +29,7 @@ class Extension;
 // posted to FILE after ShutdownOnUI().
 class ValueStoreCache {
  public:
-  using StorageCallback = base::OnceCallback<void(ValueStore*)>;
+  using StorageCallback = base::OnceCallback<void(value_store::ValueStore*)>;
 
   // Invoked on FILE.
   virtual ~ValueStoreCache();

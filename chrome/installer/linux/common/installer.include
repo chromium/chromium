@@ -102,6 +102,7 @@ process_template() (
     -e "s#@@USR_BIN_SYMLINK_NAME@@#${USR_BIN_SYMLINK_NAME:-}#g" \
     -e "s#@@LOGO_RESOURCES_PNG@@#${LOGO_RESOURCES_PNG}#g" \
     -e "s#@@LOGO_RESOURCE_XPM@@#${LOGO_RESOURCE_XPM}#g" \
+    -e "s#@@DATE_RFC5322@@#$(date --rfc-email)#g" \
     > "$TMPLOUT" <<< "$TMPLINCL"
 )
 
@@ -142,11 +143,11 @@ stage_install_common() {
   install -m 755 "${STRIPPEDFILE}" "${STAGEDIR}/${INSTALLDIR}/${PROGNAME}"
 
   # crashpad
-  buildfile="${OUTPUTDIR}/crashpad_handler"
+  buildfile="${OUTPUTDIR}/chrome_crashpad_handler"
   strippedfile="${buildfile}.stripped"
   debugfile="${buildfile}.debug"
   "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
-  install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/crashpad_handler"
+  install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/chrome_crashpad_handler"
 
   # resources
   install -m 644 "${OUTPUTDIR}/resources.pak" "${STAGEDIR}/${INSTALLDIR}/"

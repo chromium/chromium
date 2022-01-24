@@ -5,12 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_VISITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_VISITOR_H_
 
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "v8/include/cppgc/visitor.h"
 
-#if BUILDFLAG(USE_V8_OILPAN)
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/visitor.h"
-#else  // !USE_V8_OILPAN
-#include "third_party/blink/renderer/platform/heap/impl/visitor.h"
-#endif  // !USE_V8_OILPAN
+namespace blink {
+
+using Visitor = cppgc::Visitor;
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_VISITOR_H_

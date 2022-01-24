@@ -47,7 +47,7 @@ class OptimizationGuideTabUrlProviderTest : public BrowserWithTestWindowTest {
 
 TEST_F(OptimizationGuideTabUrlProviderTest, GetUrlsNoOpenTabs) {
   std::vector<GURL> urls =
-      tab_url_provider()->GetUrlsOfActiveTabs(base::TimeDelta::FromDays(90));
+      tab_url_provider()->GetUrlsOfActiveTabs(base::Days(90));
   EXPECT_TRUE(urls.empty());
 }
 
@@ -57,7 +57,7 @@ TEST_F(OptimizationGuideTabUrlProviderTest, GetUrlsFiltersOutIncognitoTabs) {
   AddTab(browser(), GURL("https://example2.com"));
 
   std::vector<GURL> urls =
-      tab_url_provider()->GetUrlsOfActiveTabs(base::TimeDelta::FromDays(90));
+      tab_url_provider()->GetUrlsOfActiveTabs(base::Days(90));
   EXPECT_THAT(urls, ElementsAre(GURL("https://example2.com"),
                                 GURL("https://example.com")));
 }

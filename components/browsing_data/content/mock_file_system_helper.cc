@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "components/browsing_data/content/file_system_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -91,15 +91,6 @@
   }
 }
 
-- (ToolbarComponentVisibility)bookmarkButtonVisibility {
-  switch (self.type) {
-    case PRIMARY:
-      return ToolbarComponentVisibilityRegularWidthRegularHeight;
-    case SECONDARY:
-      return ToolbarComponentVisibilityNone;
-  }
-}
-
 - (ToolbarComponentVisibility)voiceSearchButtonVisibility {
   switch (self.type) {
     case PRIMARY:

@@ -105,6 +105,11 @@ void DelegatingProvider::ProvideCurrentSessionData(
     provider->ProvideCurrentSessionData(uma_proto);
 }
 
+void DelegatingProvider::ProvideCurrentSessionUKMData() {
+  for (const auto& provider : metrics_providers_)
+    provider->ProvideCurrentSessionUKMData();
+}
+
 void DelegatingProvider::ClearSavedStabilityMetrics() {
   for (auto& provider : metrics_providers_)
     provider->ClearSavedStabilityMetrics();

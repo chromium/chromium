@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 10: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 Test that setRequestHeader properly checks for invalid characters in header values.
 
 %0AE%0Avil%3A%20on -> SUCCESS, setRequestHeader() raised an exception SyntaxError: Failed to execute 'setRequestHeader' on 'XMLHttpRequest': 'E vil: on' is not a valid HTTP header field value.

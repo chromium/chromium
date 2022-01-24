@@ -6,8 +6,11 @@
 
 #include <utility>
 
-#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
+#include "base/task/bind_post_task.h"
+#include "base/token.h"
+#include "media/capture/mojom/video_capture_types.mojom-blink.h"
+#include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -77,6 +80,14 @@ void LocalVideoCapturerSource::Resume() {
   manager_->Resume(session_id_);
 }
 
+void LocalVideoCapturerSource::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  manager_->Crop(session_id_, crop_id,
+                 base::BindPostTask(task_runner_, std::move(callback)));
+}
+
 void LocalVideoCapturerSource::StopCapture() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Immediately make sure we don't provide more frames.
@@ -119,7 +130,7 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
           frame && frame->Client()
               ? manager_->UseDevice(session_id_,
                                     &frame->GetBrowserInterfaceBroker())
-              : base::DoNothing::Once();
+              : base::DoNothing();
       OnLog(
           "LocalVideoCapturerSource::OnStateUpdate signaling to "
           "consumer that source is no longer running.");
@@ -135,7 +146,7 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
 }
 
 // static
-std::unique_ptr<media::VideoCapturerSource> LocalVideoCapturerSource::Create(
+std::unique_ptr<VideoCapturerSource> LocalVideoCapturerSource::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     LocalFrame* frame,
     const base::UnguessableToken& session_id) {

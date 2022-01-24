@@ -181,7 +181,15 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
   const FeatureContext* feature_context = GetExecutionContext();
   ManifestParser parser(data, response.CurrentRequestUrl(), document_url,
                         feature_context);
-  parser.Parse();
+
+  // Monitoring whether the manifest has comments is temporary. Once
+  // warning/deprecation period is over, we should remove this as it's
+  // technically incorrect JSON syntax anyway. See crbug.com/1264024
+  bool has_comments = parser.Parse();
+  if (has_comments) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestHasComments);
+  }
 
   manifest_debug_info_ = mojom::blink::ManifestDebugInfo::New();
   manifest_debug_info_->raw_manifest = data;

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,7 +20,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
@@ -40,6 +39,10 @@ class AboutHandler : public settings::SettingsPageUIHandler,
                      public UpgradeObserver {
  public:
   explicit AboutHandler(Profile* profile);
+
+  AboutHandler(const AboutHandler&) = delete;
+  AboutHandler& operator=(const AboutHandler&) = delete;
+
   ~AboutHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -132,7 +135,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   // status.
   void HandleRefreshTPMFirmwareUpdateStatus(const base::ListValue* args);
   void RefreshTPMFirmwareUpdateStatus(
-      const std::set<chromeos::tpm_firmware_update::Mode>& modes);
+      const std::set<ash::tpm_firmware_update::Mode>& modes);
 #endif
 
   // Checks for and applies update.
@@ -194,8 +197,6 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 
   // Used for callbacks.
   base::WeakPtrFactory<AboutHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AboutHandler);
 };
 
 }  // namespace settings

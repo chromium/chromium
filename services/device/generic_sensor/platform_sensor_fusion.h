@@ -24,8 +24,8 @@ class PlatformSensorFusionAlgorithm;
 //
 // This class implements the generic concept of sensor fusion. It implements
 // a new sensor using data from one or more existing sensors. For example,
-// it can implements a *_EULER_ANGLES orientation sensor using a
-// *_QUATERNION orientation sensor, or vice a versa.
+// it can implement a *_EULER_ANGLES orientation sensor using a
+// *_QUATERNION orientation sensor, or vice-versa.
 //
 // It can also implement an orientation sensor using an ACCELEROMETER, etc.
 class PlatformSensorFusion : public PlatformSensor,
@@ -43,6 +43,9 @@ class PlatformSensorFusion : public PlatformSensor,
       std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm,
       PlatformSensorProviderBase::CreateSensorCallback callback);
 
+  PlatformSensorFusion(const PlatformSensorFusion&) = delete;
+  PlatformSensorFusion& operator=(const PlatformSensorFusion&) = delete;
+
   // PlatformSensor:
   mojom::ReportingMode GetReportingMode() override;
   PlatformSensorConfiguration GetDefaultConfiguration() override;
@@ -59,11 +62,8 @@ class PlatformSensorFusion : public PlatformSensor,
 
  protected:
   class Factory;
-  friend class Factory;
   using SourcesMap =
       base::flat_map<mojom::SensorType, scoped_refptr<PlatformSensor>>;
-  using SourcesMapEntry =
-      std::pair<mojom::SensorType, scoped_refptr<PlatformSensor>>;
   PlatformSensorFusion(
       SensorReadingSharedBuffer* reading_buffer,
       PlatformSensorProvider* provider,
@@ -78,8 +78,6 @@ class PlatformSensorFusion : public PlatformSensor,
   std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm_;
   SourcesMap source_sensors_;
   mojom::ReportingMode reporting_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorFusion);
 };
 
 }  // namespace device

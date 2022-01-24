@@ -193,7 +193,8 @@ TEST_F(GLRendererCopierTest, FallsBackToSRGBForInvalidSkColorSpaces) {
   std::unique_ptr<CopyOutputResult> result;
   base::RunLoop loop;
   auto request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(
           [](std::unique_ptr<CopyOutputResult>* result_out,
              base::OnceClosure quit_closure,

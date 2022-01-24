@@ -105,7 +105,7 @@ class RenderViewContextMenuViews::SubmenuViewObserver
 // RenderViewContextMenuViews, public:
 
 RenderViewContextMenuViews::RenderViewContextMenuViews(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params)
     : RenderViewContextMenu(render_frame_host, params),
       bidi_submenu_model_(this) {
@@ -118,7 +118,7 @@ RenderViewContextMenuViews::~RenderViewContextMenuViews() {
 
 // static
 RenderViewContextMenuViews* RenderViewContextMenuViews::Create(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   return new RenderViewContextMenuViews(render_frame_host, params);
 }

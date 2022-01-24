@@ -26,6 +26,8 @@
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_mock.h"
@@ -35,6 +37,7 @@
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,6 +86,9 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<AuthenticationServiceDelegateFake>());
+    account_manager_service_ =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            browser_state_.get());
 
     // Load TemplateURLService.
     template_url_service_ = ios::TemplateURLServiceFactory::GetForBrowserState(
@@ -108,8 +114,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
   }
 
   ChromeIdentity* fake_identity() {
-    return [ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-                ->GetAllIdentities(nullptr) firstObject];
+    return account_manager_service_->GetDefaultIdentity();
   }
 
   // Adds a prepopulated search engine to TemplateURLService.
@@ -156,6 +161,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   TableViewModel* model_;
   std::unique_ptr<BrowsingDataRemover> remover_;
@@ -163,6 +169,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
   syncer::TestSyncService* test_sync_service_;
   IntegerPrefMember time_range_pref_;
   TemplateURLService* template_url_service_;  // weak
+  ChromeAccountManagerService* account_manager_service_;
 };
 
 // Tests model is set up with all appropriate items and sections.
@@ -410,11 +417,11 @@ TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
   const std::string kEngineC1Name = "custom-1";
   const GURL kEngineC1Url = GURL("https://c1.com?q={searchTerms}");
 
-  AddCustomSearchEngine(/* short_name */ kEngineC1Name,
-                        /* searchable_url */ kEngineC1Url,
-                        /* last_visited_time */ base::Time::Now() -
-                            base::TimeDelta::FromSeconds(10),
-                        /* set_default */ true);
+  AddCustomSearchEngine(
+      /* short_name */ kEngineC1Name,
+      /* searchable_url */ kEngineC1Url,
+      /* last_visited_time */ base::Time::Now() - base::Seconds(10),
+      /* set_default */ true);
 
   [manager_ loadModel:model_];
 
@@ -448,11 +455,11 @@ TEST_F(ClearBrowsingDataManagerTest, TestCustomeTextSignedOut) {
   const std::string kEngineC1Name = "custom-1";
   const GURL kEngineC1Url = GURL("https://c1.com?q={searchTerms}");
 
-  AddCustomSearchEngine(/* short_name */ kEngineC1Name,
-                        /* searchable_url */ kEngineC1Url,
-                        /* last_visited_time */ base::Time::Now() -
-                            base::TimeDelta::FromSeconds(10),
-                        /* set_default */ true);
+  AddCustomSearchEngine(
+      /* short_name */ kEngineC1Name,
+      /* searchable_url */ kEngineC1Url,
+      /* last_visited_time */ base::Time::Now() - base::Seconds(10),
+      /* set_default */ true);
 
   [manager_ loadModel:model_];
 

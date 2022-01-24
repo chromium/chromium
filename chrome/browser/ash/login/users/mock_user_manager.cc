@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/users/fake_supervised_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 

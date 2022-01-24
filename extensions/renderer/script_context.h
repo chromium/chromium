@@ -23,7 +23,10 @@
 #include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_injection_callback.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
+#include "v8-exception.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-script.h"
 
 namespace blink {
 class WebDocumentLoader;
@@ -56,6 +59,10 @@ class ScriptContext {
                 Feature::Context context_type,
                 const Extension* effective_extension,
                 Feature::Context effective_context_type);
+
+  ScriptContext(const ScriptContext&) = delete;
+  ScriptContext& operator=(const ScriptContext&) = delete;
+
   ~ScriptContext();
 
   // Returns whether |url| from any Extension in |extension_set| is sandboxed,
@@ -186,12 +193,16 @@ class ScriptContext {
    public:
     ScopedFrameDocumentLoader(blink::WebLocalFrame* frame,
                               blink::WebDocumentLoader* document_loader);
+
+    ScopedFrameDocumentLoader(const ScopedFrameDocumentLoader&) = delete;
+    ScopedFrameDocumentLoader& operator=(const ScopedFrameDocumentLoader&) =
+        delete;
+
     ~ScopedFrameDocumentLoader();
 
    private:
     blink::WebLocalFrame* frame_;
     blink::WebDocumentLoader* document_loader_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedFrameDocumentLoader);
   };
 
   // TODO(devlin): Move all these Get*URL*() methods out of here? While they are
@@ -324,8 +335,6 @@ class ScriptContext {
   int64_t service_worker_version_id_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptContext);
 };
 
 }  // namespace extensions

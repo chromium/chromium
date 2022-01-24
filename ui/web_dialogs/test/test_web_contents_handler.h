@@ -6,7 +6,6 @@
 #define UI_WEB_DIALOGS_TEST_TEST_WEB_CONTENTS_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
 
 namespace ui {
@@ -16,6 +15,10 @@ class TestWebContentsHandler
     : public WebDialogWebContentsDelegate::WebContentsHandler {
  public:
   TestWebContentsHandler();
+
+  TestWebContentsHandler(const TestWebContentsHandler&) = delete;
+  TestWebContentsHandler& operator=(const TestWebContentsHandler&) = delete;
+
   ~TestWebContentsHandler() override;
 
  private:
@@ -34,8 +37,6 @@ class TestWebContentsHandler
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsHandler);
 };
 
 }  // namespace test

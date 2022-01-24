@@ -23,8 +23,7 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
                      OnceModelTypeStoreFactory store_factory,
                      base::WeakPtr<SyncableService> syncable_service,
                      const base::RepeatingClosure& dump_stack)
-      : type_(type),
-        dump_stack_(dump_stack) {
+      : type_(type), dump_stack_(dump_stack) {
     DCHECK(store_factory);
 
     // The |syncable_service| can be null in tests.
@@ -37,7 +36,10 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
     }
   }
 
-  ~ControllerDelegate() override {}
+  ControllerDelegate(const ControllerDelegate&) = delete;
+  ControllerDelegate& operator=(const ControllerDelegate&) = delete;
+
+  ~ControllerDelegate() override = default;
 
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override {
@@ -71,8 +73,6 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
   const ModelType type_;
   const base::RepeatingClosure dump_stack_;
   std::unique_ptr<ModelTypeSyncBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(ControllerDelegate);
 };
 
 }  // namespace

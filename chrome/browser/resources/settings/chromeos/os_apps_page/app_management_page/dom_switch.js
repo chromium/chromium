@@ -31,10 +31,16 @@
  */
 
 // TODO(crbug.com/992795) Merge with cr-view-manager.
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
+import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-dom-switch',
 
-  behaviors: [Polymer.Templatizer],
+  behaviors: [Templatizer],
 
   properties: {
     /**

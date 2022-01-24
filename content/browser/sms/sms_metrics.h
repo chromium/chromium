@@ -7,7 +7,6 @@
 
 #include "content/browser/sms/sms_parser.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/common/sms/webotp_service_destroyed_reason.h"
 #include "third_party/blink/public/common/sms/webotp_service_outcome.h"
 
 namespace base {
@@ -29,8 +28,6 @@ void RecordCancelOnSuccessTime(base::TimeDelta duration);
 // Records the time from when a successful SMS was retrieved to when the user
 // presses the Continue button.
 void RecordContinueOnSuccessTime(base::TimeDelta duration);
-
-void RecordDestroyedReason(blink::WebOTPServiceDestroyedReason reason);
 
 // Records the status of parsing an incoming SMS when using the WebOTP API.
 void RecordSmsParsingStatus(SmsParsingStatus status, ukm::SourceId source_id);

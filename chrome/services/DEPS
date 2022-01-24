@@ -6,7 +6,6 @@ include_rules = [
   # Services have to list which other services they depend on.
   "-chrome/services",
   "-services",
-  "+chrome/services/service_sandbox_type.h",
   "+content/public/browser/service_process_host.h",
   "+services/service_manager/public",  # Every service talks to Service Manager.
   "+sandbox/policy/sandbox_type.h",  # Services specify their SandboxType.

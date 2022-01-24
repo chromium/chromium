@@ -67,7 +67,7 @@ String CSSShadowValue::CustomCSSText() const {
     text.Append(style->CssText());
   }
 
-  return text.ToString();
+  return text.ReleaseString();
 }
 
 bool CSSShadowValue::Equals(const CSSShadowValue& other) const {

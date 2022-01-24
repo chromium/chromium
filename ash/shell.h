@@ -15,7 +15,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/window.h"
@@ -88,6 +87,7 @@ class AccessibilityDelegate;
 class AccessibilityFocusRingControllerImpl;
 class AmbientController;
 class AppListControllerImpl;
+class AppListFeatureUsageMetrics;
 class AshColorProvider;
 class AshDBusServices;
 class AshFocusRules;
@@ -99,6 +99,7 @@ class BacklightsForcedOffSetter;
 class BluetoothNotificationController;
 class BluetoothPowerController;
 class BrightnessControlDelegate;
+class CalendarController;
 class CaptureModeController;
 class ControlVHistogramRecorder;
 class CrosDisplayConfig;
@@ -120,7 +121,8 @@ class DragDropController;
 class EventClientImpl;
 class EventRewriterControllerImpl;
 class EventTransformationHandler;
-class FullRestoreController;
+class WindowRestoreController;
+class FloatController;
 class FocusCycler;
 class FrameThrottlingController;
 class FullscreenMagnifierController;
@@ -139,6 +141,7 @@ class LogoutConfirmationController;
 class LoginScreenController;
 class LoginUnlockThroughputRecorder;
 class MarkerController;
+class MediaNotificationProviderImpl;
 class TabClusterUIController;
 class TabletModeController;
 class MediaControllerImpl;
@@ -167,7 +170,6 @@ class PowerPrefs;
 class PrivacyScreenController;
 class ProjectingObserver;
 class ProjectorControllerImpl;
-class QuickAnswersController;
 class ResizeShadowController;
 class ResolutionNotificationController;
 class RootWindowController;
@@ -222,6 +224,9 @@ class ASH_EXPORT Shell : public SessionObserver,
                          public ::wm::ActivationChangeObserver {
  public:
   typedef std::vector<RootWindowController*> RootWindowControllerList;
+
+  Shell(const Shell&) = delete;
+  Shell& operator=(const Shell&) = delete;
 
   // Creates the single Shell instance.
   static Shell* CreateInstance(ShellInitParams init_params);
@@ -349,6 +354,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   BrightnessControlDelegate* brightness_control_delegate() {
     return brightness_control_delegate_.get();
   }
+  CalendarController* calendar_controller() {
+    return calendar_controller_.get();
+  }
   CrosDisplayConfig* cros_display_config() {
     return cros_display_config_.get();
   }
@@ -395,6 +403,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   EventTransformationHandler* event_transformation_handler() {
     return event_transformation_handler_.get();
   }
+  FloatController* float_controller() { return float_controller_.get(); }
   ::wm::FocusController* focus_controller() { return focus_controller_.get(); }
   AshFocusRules* focus_rules() { return focus_rules_; }
   FocusCycler* focus_cycler() { return focus_cycler_.get(); }
@@ -477,6 +486,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   PowerEventObserver* power_event_observer() {
     return power_event_observer_.get();
+  }
+  quick_pair::Mediator* quick_pair_mediator() {
+    return quick_pair_mediator_.get();
   }
   ResizeShadowController* resize_shadow_controller() {
     return resize_shadow_controller_.get();
@@ -579,7 +591,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   pcie_peripheral_notification_controller() {
     return pcie_peripheral_notification_controller_.get();
   }
-
   OcclusionTrackerPauser* occlusion_tracker_pauser() {
     return occlusion_tracker_pauser_.get();
   }
@@ -703,12 +714,14 @@ class ASH_EXPORT Shell : public SessionObserver,
       accessibility_focus_ring_controller_;
   std::unique_ptr<AmbientController> ambient_controller_;
   std::unique_ptr<AppListControllerImpl> app_list_controller_;
+  std::unique_ptr<AppListFeatureUsageMetrics> app_list_feature_usage_metrics_;
   // May be null in tests or when running on linux-chromeos.
   scoped_refptr<dbus::Bus> dbus_bus_;
   std::unique_ptr<AshDBusServices> ash_dbus_services_;
   std::unique_ptr<AssistantControllerImpl> assistant_controller_;
   std::unique_ptr<BacklightsForcedOffSetter> backlights_forced_off_setter_;
   std::unique_ptr<BrightnessControlDelegate> brightness_control_delegate_;
+  std::unique_ptr<CalendarController> calendar_controller_;
   std::unique_ptr<CrosDisplayConfig> cros_display_config_;
   std::unique_ptr<DesksController> desks_controller_;
   std::unique_ptr<DetachableBaseHandler> detachable_base_handler_;
@@ -718,7 +731,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<DisplaySpeakerController> display_speaker_controller_;
   std::unique_ptr<DragDropController> drag_drop_controller_;
   std::unique_ptr<FocusCycler> focus_cycler_;
-  std::unique_ptr<FullRestoreController> full_restore_controller_;
+  std::unique_ptr<FloatController> float_controller_;
+  std::unique_ptr<WindowRestoreController> window_restore_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<chromeos::ImmersiveContext> immersive_context_;
@@ -733,6 +747,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<TabletModeController> tablet_mode_controller_;
   std::unique_ptr<MessageCenterAshImpl> message_center_ash_impl_;
   std::unique_ptr<MediaControllerImpl> media_controller_;
+  std::unique_ptr<MediaNotificationProviderImpl> media_notification_provider_;
   std::unique_ptr<MruWindowTracker> mru_window_tracker_;
   std::unique_ptr<MultiDeviceNotificationPresenter>
       multidevice_notification_presenter_;
@@ -743,7 +758,6 @@ class ASH_EXPORT Shell : public SessionObserver,
       pcie_peripheral_notification_controller_;
   std::unique_ptr<PersistentDesksBarController>
       persistent_desks_bar_controller_;
-  std::unique_ptr<QuickAnswersController> quick_answers_controller_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;
   std::unique_ptr<SessionControllerImpl> session_controller_;
   std::unique_ptr<AshColorProvider> ash_color_provider_;
@@ -897,8 +911,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   base::ObserverList<ShellObserver>::Unchecked shell_observers_;
 
   base::WeakPtrFactory<Shell> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Shell);
 };
 
 }  // namespace ash

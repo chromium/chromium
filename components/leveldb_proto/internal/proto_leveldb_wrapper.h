@@ -14,9 +14,9 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper_metrics.h"
@@ -49,12 +49,15 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
       Callbacks::DestroyCallback callback);
 
   // All blocking calls/disk access will happen on the provided |task_runner|.
-  ProtoLevelDBWrapper(
+  explicit ProtoLevelDBWrapper(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
   ProtoLevelDBWrapper(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       LevelDB* db);
+
+  ProtoLevelDBWrapper(const ProtoLevelDBWrapper&) = delete;
+  ProtoLevelDBWrapper& operator=(const ProtoLevelDBWrapper&) = delete;
 
   virtual ~ProtoLevelDBWrapper();
 
@@ -95,16 +98,25 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
       const std::string& target_prefix,
       Callbacks::LoadKeysAndEntriesCallback callback);
 
-  void LoadKeysAndEntriesWhile(const KeyFilter& while_callback,
-                               const KeyFilter& filter,
-                               const leveldb::ReadOptions& options,
-                               const std::string& target_prefix,
-                               Callbacks::LoadKeysAndEntriesCallback callback);
-
   void LoadKeysAndEntriesInRange(
       const std::string& start,
       const std::string& end,
       Callbacks::LoadKeysAndEntriesCallback callback);
+
+  void LoadKeysAndEntriesWhile(const KeyIteratorController& controller,
+                               const leveldb::ReadOptions& options,
+                               const std::string& start_key,
+                               Callbacks::LoadKeysAndEntriesCallback callback);
+
+  void LoadKeysAndEntriesWhile(const KeyFilter& while_callback,
+                               const KeyFilter& filter,
+                               const leveldb::ReadOptions& options,
+                               const std::string& start_key,
+                               Callbacks::LoadKeysAndEntriesCallback callback);
+
+  void LoadKeysAndEntriesWhile(const std::string& start_key,
+                               const KeyIteratorController& controller,
+                               Callbacks::LoadKeysAndEntriesCallback callback);
 
   void LoadKeys(Callbacks::LoadKeysCallback callback);
   void LoadKeys(const std::string& target_prefix,
@@ -147,8 +159,6 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
   std::string metrics_id_ = "Default";
 
   base::WeakPtrFactory<ProtoLevelDBWrapper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProtoLevelDBWrapper);
 };
 
 }  // namespace leveldb_proto

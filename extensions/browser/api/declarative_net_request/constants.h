@@ -13,8 +13,8 @@
 namespace extensions {
 namespace declarative_net_request {
 
-// The result of parsing JSON rules provided by an extension. Can correspond to
-// a single or multiple rules.
+// The result of parsing JSON rules provided by an extension. Corresponds to a
+// single rule.
 enum class ParseResult {
   NONE,
   SUCCESS,
@@ -29,7 +29,6 @@ enum class ParseResult {
   ERROR_EMPTY_URL_FILTER,
   ERROR_INVALID_REDIRECT_URL,
   ERROR_DUPLICATE_IDS,
-  ERROR_PERSISTING_RULESET,
 
   // Parse errors related to fields containing non-ascii characters.
   ERROR_NON_ASCII_URL_FILTER,
@@ -75,23 +74,26 @@ enum class UpdateDynamicRulesStatus {
   kSuccess = 0,
   kErrorReadJSONRules = 1,
   kErrorRuleCountExceeded = 2,
-  kErrorCreateTemporarySource = 3,
-  kErrorWriteTemporaryJSONRuleset = 4,
-  kErrorWriteTemporaryIndexedRuleset = 5,
+  // kErrorCreateTemporarySource_Deprecated = 3,
+  // kErrorWriteTemporaryJSONRuleset_Deprecated = 4,
+  // kErrorWriteTemporaryIndexedRuleset_Deprecated = 5,
   kErrorInvalidRules = 6,
   kErrorCreateDynamicRulesDirectory = 7,
-  kErrorReplaceIndexedFile = 8,
-  kErrorReplaceJSONFile = 9,
+  // kErrorReplaceIndexedFile_Deprecated = 8,
+  // kErrorReplaceJSONFile_Deprecated = 9,
   kErrorCreateMatcher_InvalidPath = 10,
   kErrorCreateMatcher_FileReadError = 11,
   kErrorCreateMatcher_ChecksumMismatch = 12,
   kErrorCreateMatcher_VersionMismatch = 13,
   kErrorRegexTooLarge = 14,
   kErrorRegexRuleCountExceeded = 15,
+  kErrorSerializeToJson = 16,
+  kErrorWriteJson = 17,
+  kErrorWriteFlatbuffer = 18,
 
   // Magic constant used by histograms code. Should be equal to the largest enum
   // value.
-  kMaxValue = kErrorRegexRuleCountExceeded,
+  kMaxValue = kErrorWriteFlatbuffer,
 };
 
 // Describes the result of loading a single JSON Ruleset.
@@ -127,6 +129,17 @@ enum class LoadRulesetResult {
   kMaxValue = kErrorChecksumNotFound,
 };
 
+// Specifies whether and how extensions require host permissions to modify the
+// request.
+enum class HostPermissionsAlwaysRequired {
+  // In this case, all actions require host permissions to the request url and
+  // initiator.
+  kTrue,
+  // In this case, only redirecting (excluding upgrading) requests and modifying
+  // headers require host permissions to the request url and initiator.
+  kFalse
+};
+
 // Schemes which can be used as part of url transforms.
 extern const char* const kAllowedTransformSchemes[4];
 
@@ -149,7 +162,6 @@ extern const char kErrorMultipleFilters[];
 extern const char kErrorRegexSubstitutionWithoutFilter[];
 extern const char kErrorInvalidAllowAllRequestsResourceType[];
 extern const char kErrorRegexTooLarge[];
-extern const char kErrorRegexesTooLarge[];
 extern const char kErrorNoHeaderListsSpecified[];
 extern const char kErrorInvalidHeaderName[];
 extern const char kErrorInvalidHeaderValue[];
@@ -185,6 +197,7 @@ extern const char kInvalidRulesetIDError[];
 extern const char kEnabledRulesetsRuleCountExceeded[];
 extern const char kEnabledRulesetsRegexRuleCountExceeded[];
 extern const char kInternalErrorUpdatingEnabledRulesets[];
+extern const char kEnabledRulesetCountExceeded[];
 
 // setExtensionActionOptions API errors.
 extern const char kTabNotFoundError[];
@@ -192,7 +205,6 @@ extern const char kIncrementActionCountWithoutUseAsBadgeTextError[];
 
 // Histogram names.
 extern const char kIndexAndPersistRulesTimeHistogram[];
-extern const char kManifestRulesCountHistogram[];
 extern const char kManifestEnabledRulesCountHistogram[];
 extern const char kUpdateDynamicRulesStatusHistogram[];
 extern const char kReadDynamicRulesJSONStatusHistogram[];

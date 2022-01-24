@@ -76,7 +76,7 @@ TEST_F(PageTimingMetricsSenderTest, Basic) {
 
 TEST_F(PageTimingMetricsSenderTest, CoalesceMultipleTimings) {
   base::Time nav_start = base::Time::FromDoubleT(10);
-  base::TimeDelta load_event = base::TimeDelta::FromMillisecondsD(4);
+  base::TimeDelta load_event = base::Milliseconds(4);
 
   mojom::PageLoadTiming timing;
   InitPageLoadTimingForTest(&timing);
@@ -101,7 +101,7 @@ TEST_F(PageTimingMetricsSenderTest, CoalesceMultipleTimings) {
 
 TEST_F(PageTimingMetricsSenderTest, MultipleTimings) {
   base::Time nav_start = base::Time::FromDoubleT(10);
-  base::TimeDelta load_event = base::TimeDelta::FromMillisecondsD(4);
+  base::TimeDelta load_event = base::Milliseconds(4);
 
   mojom::PageLoadTiming timing;
   InitPageLoadTimingForTest(&timing);
@@ -145,8 +145,8 @@ TEST_F(PageTimingMetricsSenderTest, SendTimingOnSendLatest) {
 TEST_F(PageTimingMetricsSenderTest, SendInputEvents) {
   mojom::PageLoadTiming timing;
   InitPageLoadTimingForTest(&timing);
-  base::TimeDelta input_delay_1 = base::TimeDelta::FromMilliseconds(40);
-  base::TimeDelta input_delay_2 = base::TimeDelta::FromMilliseconds(60);
+  base::TimeDelta input_delay_1 = base::Milliseconds(40);
+  base::TimeDelta input_delay_2 = base::Milliseconds(60);
 
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
@@ -167,7 +167,7 @@ TEST_F(PageTimingMetricsSenderTest, SendMobileFriendlinessEvents) {
   mojom::PageLoadTiming timing;
   blink::MobileFriendliness mobile_friendliness;
   mobile_friendliness.viewport_hardcoded_width = 480;
-  mobile_friendliness.allow_user_zoom = blink::mojom::ViewportStatus::kYes;
+  mobile_friendliness.allow_user_zoom = true;
   InitPageLoadTimingForTest(&timing);
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
@@ -177,7 +177,7 @@ TEST_F(PageTimingMetricsSenderTest, SendMobileFriendlinessEvents) {
 
   blink::MobileFriendliness expected_mf;
   expected_mf.viewport_hardcoded_width = 480;
-  expected_mf.allow_user_zoom = blink::mojom::ViewportStatus::kYes;
+  expected_mf.allow_user_zoom = true;
   validator_.UpdateExpectedMobileFriendliness(expected_mf);
   metrics_sender_->mock_timer()->Fire();
   validator_.VerifyExpectedMobileFriendliness();
@@ -272,7 +272,7 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleFeaturesTwice) {
   metrics_sender_->mock_timer()->Fire();
   validator_.VerifyExpectedFeatures();
 
-  base::TimeDelta load_event = base::TimeDelta::FromMillisecondsD(4);
+  base::TimeDelta load_event = base::Milliseconds(4);
   // Send an updated PageLoadTiming after the timer for the first send request
   // has fired, and verify that a second list of features is sent.
   timing.document_timing->load_event_start = load_event;
@@ -337,14 +337,14 @@ TEST_F(PageTimingMetricsSenderTest, SendFrameIntersectionUpdate) {
 TEST_F(PageTimingMetricsSenderTest, FirstContentfulPaintForcesSend) {
   mojom::PageLoadTiming timing;
   InitPageLoadTimingForTest(&timing);
-  timing.paint_timing->first_contentful_paint = base::TimeDelta::FromSeconds(1);
+  timing.paint_timing->first_contentful_paint = base::Seconds(1);
   validator_.ExpectPageLoadTiming(timing);
 
   // Updating when |timing| has FCP will cause the metrics to be sent urgently.
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
   EXPECT_EQ(metrics_sender_->mock_timer()->GetCurrentDelay(),
-            base::TimeDelta::FromMilliseconds(0));
+            base::Milliseconds(0));
   metrics_sender_->mock_timer()->Fire();
 }
 

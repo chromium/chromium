@@ -23,6 +23,7 @@
 #include "net/http/http_proxy_connect_job.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
+#include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/test_net_log.h"
@@ -129,6 +130,11 @@ class SpdyProxyClientSocketTest : public PlatformTest,
                                   public ::testing::WithParamInterface<bool> {
  public:
   SpdyProxyClientSocketTest();
+
+  SpdyProxyClientSocketTest(const SpdyProxyClientSocketTest&) = delete;
+  SpdyProxyClientSocketTest& operator=(const SpdyProxyClientSocketTest&) =
+      delete;
+
   ~SpdyProxyClientSocketTest() override;
 
   void TearDown() override;
@@ -183,7 +189,9 @@ class SpdyProxyClientSocketTest : public PlatformTest,
   // Whether to use net::Socket::ReadIfReady() instead of net::Socket::Read().
   bool use_read_if_ready() const { return GetParam(); }
 
-  RecordingBoundTestNetLog net_log_;
+  NetLogWithSource net_log_with_source_{
+      NetLogWithSource::Make(NetLogSourceType::NONE)};
+  RecordingNetLogObserver net_log_observer_;
   SpdyTestUtil spdy_util_;
   std::unique_ptr<SpdyProxyClientSocket> sock_;
   TestCompletionCallback read_callback_;
@@ -204,8 +212,6 @@ class SpdyProxyClientSocketTest : public PlatformTest,
   SpdySessionKey endpoint_spdy_session_key_;
   std::unique_ptr<CommonConnectJobParams> common_connect_job_params_;
   SSLSocketDataProvider ssl_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpdyProxyClientSocketTest);
 };
 
 SpdyProxyClientSocketTest::SpdyProxyClientSocketTest()
@@ -224,7 +230,7 @@ SpdyProxyClientSocketTest::SpdyProxyClientSocketTest()
                                  NetworkIsolationKey(),
                                  SecureDnsPolicy::kAllow),
       ssl_(SYNCHRONOUS, OK) {
-  session_deps_.net_log = net_log_.bound().net_log();
+  session_deps_.net_log = NetLog::Get();
 }
 
 SpdyProxyClientSocketTest::~SpdyProxyClientSocketTest() {
@@ -264,15 +270,14 @@ void SpdyProxyClientSocketTest::Initialize(base::span<const MockRead> reads,
       endpoint_spdy_session_key_, common_connect_job_params_.get());
 
   base::WeakPtr<SpdyStream> spdy_stream(
-      CreateStreamSynchronously(
-          SPDY_BIDIRECTIONAL_STREAM, spdy_session_, url_, LOWEST,
-          net_log_.bound()));
+      CreateStreamSynchronously(SPDY_BIDIRECTIONAL_STREAM, spdy_session_, url_,
+                                LOWEST, net_log_with_source_));
   ASSERT_TRUE(spdy_stream.get() != nullptr);
 
   // Create the SpdyProxyClientSocket.
   sock_ = std::make_unique<SpdyProxyClientSocket>(
       spdy_stream, ProxyServer(ProxyServer::SCHEME_HTTPS, proxy_host_port_),
-      user_agent_, endpoint_host_port_pair_, net_log_.bound(),
+      user_agent_, endpoint_host_port_pair_, net_log_with_source_,
       new HttpAuthController(
           HttpAuth::AUTH_PROXY, GURL("https://" + proxy_host_port_.ToString()),
           NetworkIsolationKey(), session_->http_auth_cache(),
@@ -1426,7 +1431,7 @@ TEST_P(SpdyProxyClientSocketTest, NetLog) {
   NetLogSource sock_source = sock_->NetLog().source();
   sock_.reset();
 
-  auto entry_list = net_log_.GetEntriesForSource(sock_source);
+  auto entry_list = net_log_observer_.GetEntriesForSource(sock_source);
 
   ASSERT_EQ(entry_list.size(), 10u);
   EXPECT_TRUE(
@@ -1465,6 +1470,9 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
   explicit DeleteSockCallback(std::unique_ptr<SpdyProxyClientSocket>* sock)
       : sock_(sock) {}
 
+  DeleteSockCallback(const DeleteSockCallback&) = delete;
+  DeleteSockCallback& operator=(const DeleteSockCallback&) = delete;
+
   ~DeleteSockCallback() override = default;
 
   CompletionOnceCallback callback() {
@@ -1479,8 +1487,6 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
   }
 
   std::unique_ptr<SpdyProxyClientSocket>* sock_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteSockCallback);
 };
 
 // If the socket is Reset when both a read and write are pending, and the

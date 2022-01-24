@@ -81,8 +81,7 @@ class BackgroundTracingManager {
   virtual bool SetActiveScenarioWithReceiveCallback(
       std::unique_ptr<BackgroundTracingConfig> config,
       ReceiveCallback receive_callback,
-      DataFiltering data_filtering,
-      bool local_output = false) = 0;
+      DataFiltering data_filtering) = 0;
 
   // Notifies the caller when the manager is idle (not recording or uploading),
   // so that a call to SetActiveScenario() is likely to succeed.

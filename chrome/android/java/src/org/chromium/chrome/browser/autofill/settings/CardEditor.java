@@ -32,8 +32,6 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.Dropd
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.content_public.browser.WebContents;
@@ -171,7 +169,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
     private boolean mIsScanning;
     private int mCurrentMonth;
     private int mCurrentYear;
-    private boolean mIsIncognito;
+    private final boolean mSaveToDisk;
 
     /**
      * Builds a credit card editor.
@@ -181,14 +179,16 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
      *                        billing addresses.
      * @param includeOrgLabel Whether the labels in the billing address dropdown should include the
      *                        organization name.
+     * @param saveToDisk      Whether to allow saving changes to disk after editing.
      */
-    public CardEditor(
-            WebContents webContents, AddressEditor addressEditor, boolean includeOrgLabel) {
+    public CardEditor(WebContents webContents, AddressEditor addressEditor, boolean includeOrgLabel,
+            boolean saveToDisk) {
         assert webContents != null;
         assert addressEditor != null;
 
         mWebContents = webContents;
         mAddressEditor = addressEditor;
+        mSaveToDisk = saveToDisk;
 
         List<AutofillProfile> profiles =
                 PersonalDataManager.getInstance().getBillingAddressesToSuggest(includeOrgLabel);
@@ -291,10 +291,6 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
             }
         };
         mCalendar.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        TabModelSelector tabModelSelector =
-                TabModelSelectorSupplier.getValueOrNullFrom(mWebContents.getTopLevelNativeWindow());
-        mIsIncognito = tabModelSelector != null && tabModelSelector.isIncognitoSelected();
     }
 
     private boolean isCardNumberLengthMaximum(@Nullable CharSequence value) {
@@ -427,7 +423,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
         addBillingAddressDropdown(editor, card);
 
         // Allow saving new cards on disk unless in incognito mode.
-        if (isNewCard && !mIsIncognito) addSaveCardCheckbox(editor);
+        if (isNewCard && mSaveToDisk) addSaveCardCheckbox(editor);
 
         // If the user clicks [Cancel], send |toEdit| card back to the caller (will return original
         // state, which could be null, a full card, or a partial card).
@@ -815,7 +811,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
 
         PersonalDataManager pdm = PersonalDataManager.getInstance();
         if (!card.getIsLocal()) {
-            if (!mIsIncognito) pdm.updateServerCardBillingAddress(card);
+            if (mSaveToDisk) pdm.updateServerCardBillingAddress(card);
             return;
         }
 
@@ -834,12 +830,12 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
         card.setIssuerIconDrawableId(displayableCard.getIssuerIconDrawableId());
 
         if (!isNewCard) {
-            if (!mIsIncognito) pdm.setCreditCard(card);
+            if (mSaveToDisk) pdm.setCreditCard(card);
             return;
         }
 
         if (mSaveCardCheckbox != null && mSaveCardCheckbox.isChecked()) {
-            assert !mIsIncognito;
+            assert mSaveToDisk;
             card.setGUID(pdm.setCreditCard(card));
         }
     }

@@ -11,13 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 import org.chromium.weblayer_private.WebLayerImpl;
 
@@ -80,22 +79,12 @@ public class WebLayerSiteSettingsDelegate
     @Override
     @Nullable
     public String getDelegateAppNameForOrigin(Origin origin, @ContentSettingsType int type) {
-        if (WebLayerImpl.isLocationPermissionManaged(origin)
-                && type == ContentSettingsType.GEOLOCATION) {
-            return WebLayerImpl.getClientApplicationName();
-        }
-
         return null;
     }
 
     @Override
     @Nullable
     public String getDelegatePackageNameForOrigin(Origin origin, @ContentSettingsType int type) {
-        if (WebLayerImpl.isLocationPermissionManaged(origin)
-                && type == ContentSettingsType.GEOLOCATION) {
-            return ContextUtils.getApplicationContext().getPackageName();
-        }
-
         return null;
     }
 

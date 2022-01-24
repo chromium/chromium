@@ -33,7 +33,7 @@ interface MediaControllerManager {
 // session, otherwise media sessions will be associated with a particular media
 // session provided to the service when creating the media controller. If the
 // media session is not controllable then the commands will be no-ops.
-// Next Method ID: 18
+// Next Method ID: 19
 [Stable]
 interface MediaController {
   // Suspend the media session.
@@ -109,6 +109,9 @@ interface MediaController {
   // Display the source of the MediaSession (e.g. show the tab or the
   // application).
   [MinVersion=2] Raise@17();
+
+  // Mute or unmute the media player.
+  [MinVersion=3] SetMute@18(bool mute);
 };
 
 // The observer for observing media controller events. This is different to a

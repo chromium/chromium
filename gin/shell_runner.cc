@@ -10,6 +10,7 @@
 #include "gin/per_context_data.h"
 #include "gin/public/context_holder.h"
 #include "gin/try_catch.h"
+#include "v8/include/v8-script.h"
 
 using v8::Context;
 using v8::HandleScope;

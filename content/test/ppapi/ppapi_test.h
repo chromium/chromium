@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/javascript_test_observer.h"
 #include "url/gurl.h"
@@ -27,6 +26,9 @@ class PPAPITestMessageHandler : public content::TestMessageHandler {
  public:
   PPAPITestMessageHandler();
 
+  PPAPITestMessageHandler(const PPAPITestMessageHandler&) = delete;
+  PPAPITestMessageHandler& operator=(const PPAPITestMessageHandler&) = delete;
+
   MessageResponse HandleMessage(const std::string& json) override;
   void Reset() override;
 
@@ -36,8 +38,6 @@ class PPAPITestMessageHandler : public content::TestMessageHandler {
 
  private:
   std::string message_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPAPITestMessageHandler);
 };
 
 class PPAPITestBase : public ContentBrowserTest {

@@ -42,10 +42,12 @@ static constexpr char kAnswerJsonImageData[] = "d";
 
 void AppendWithSpace(const SuggestionAnswer::TextField* text,
                      std::u16string* output) {
-  if (!text)
+  if (!text) {
     return;
-  if (!output->empty() && !text->text().empty())
+  }
+  if (!output->empty() && !text->text().empty()) {
     *output += ' ';
+  }
   *output += text->text();
 }
 
@@ -65,7 +67,9 @@ SuggestionAnswer::TextField& SuggestionAnswer::TextField::operator=(
 // static
 bool SuggestionAnswer::TextField::ParseTextField(const base::Value& field_json,
                                                  TextField* text_field) {
-  DCHECK(field_json.is_dict());
+  if (!field_json.is_dict()) {
+    return false;
+  }
   const std::string* text = field_json.FindStringKey(kAnswerJsonText);
   absl::optional<int> type = field_json.FindIntKey(kAnswerJsonTextType);
   const bool parsed = text && !text->empty() && type;
@@ -78,8 +82,9 @@ bool SuggestionAnswer::TextField::ParseTextField(const base::Value& field_json,
     if (num_lines) {
       text_field->has_num_lines_ = true;
       text_field->num_lines_ = *num_lines;
-    } else
+    } else {
       text_field->has_num_lines_ = false;
+    }
   }
   return parsed;
 }
@@ -111,23 +116,28 @@ SuggestionAnswer::ImageLine::~ImageLine() {}
 // static
 bool SuggestionAnswer::ImageLine::ParseImageLine(const base::Value& line_json,
                                                  ImageLine* image_line) {
-  DCHECK(line_json.is_dict());
+  if (!line_json.is_dict()) {
+    return false;
+  }
   const base::Value* inner_json = line_json.FindKeyOfType(
       kAnswerJsonImageLine, base::Value::Type::DICTIONARY);
-  if (!inner_json)
+  if (!inner_json || !inner_json->is_dict()) {
     return false;
+  }
 
   const base::Value* fields_json =
       inner_json->FindKeyOfType(kAnswerJsonText, base::Value::Type::LIST);
-  if (!fields_json || fields_json->GetList().empty())
+  if (!fields_json || fields_json->GetList().empty()) {
     return false;
+  }
 
   bool found_num_lines = false;
   for (const base::Value& field_json : fields_json->GetList()) {
     TextField text_field;
     if (!field_json.is_dict() ||
-        !TextField::ParseTextField(field_json, &text_field))
+        !TextField::ParseTextField(field_json, &text_field)) {
       return false;
+    }
 
     image_line->text_fields_.push_back(text_field);
     if (!found_num_lines && text_field.has_num_lines()) {
@@ -142,8 +152,9 @@ bool SuggestionAnswer::ImageLine::ParseImageLine(const base::Value& line_json,
     image_line->additional_text_ = TextField();
     if (!additional_text_json->is_dict() ||
         !TextField::ParseTextField(*additional_text_json,
-                                   &image_line->additional_text_.value()))
+                                   &image_line->additional_text_.value())) {
       return false;
+    }
   }
 
   const base::Value* status_text_json =
@@ -152,16 +163,18 @@ bool SuggestionAnswer::ImageLine::ParseImageLine(const base::Value& line_json,
     image_line->status_text_ = TextField();
     if (!status_text_json->is_dict() ||
         !TextField::ParseTextField(*status_text_json,
-                                   &image_line->status_text_.value()))
+                                   &image_line->status_text_.value())) {
       return false;
+    }
   }
 
   const base::Value* image_json = inner_json->FindKey(kAnswerJsonImage);
-  if (image_json) {
+  if (image_json && image_json->is_dict()) {
     const std::string* url_string =
         image_json->FindStringKey(kAnswerJsonImageData);
-    if (!url_string || url_string->empty())
+    if (!url_string || url_string->empty()) {
       return false;
+    }
     // If necessary, concatenate scheme and host/path using only ':' as
     // separator. This is due to the results delivering strings of the form
     // "//host/path", which is web-speak for "use the enclosing page's scheme",
@@ -172,36 +185,44 @@ bool SuggestionAnswer::ImageLine::ParseImageLine(const base::Value& line_json,
                  ? (std::string(url::kHttpsScheme) + ":" + *url_string)
                  : *url_string);
 
-    if (!image_line->image_url_.is_valid())
+    if (!image_line->image_url_.is_valid()) {
       return false;
+    }
   }
 
   return true;
 }
 
 bool SuggestionAnswer::ImageLine::Equals(const ImageLine& line) const {
-  if (text_fields_.size() != line.text_fields_.size())
+  if (text_fields_.size() != line.text_fields_.size()) {
     return false;
+  }
   for (size_t i = 0; i < text_fields_.size(); ++i) {
-    if (!text_fields_[i].Equals(line.text_fields_[i]))
+    if (!text_fields_[i].Equals(line.text_fields_[i])) {
       return false;
+    }
   }
 
-  if (num_text_lines_ != line.num_text_lines_)
+  if (num_text_lines_ != line.num_text_lines_) {
     return false;
+  }
 
   if (additional_text_ || line.additional_text_) {
-    if (!additional_text_ || !line.additional_text_)
+    if (!additional_text_ || !line.additional_text_) {
       return false;
-    if (!additional_text_->Equals(*line.additional_text_))
+    }
+    if (!additional_text_->Equals(*line.additional_text_)) {
       return false;
+    }
   }
 
   if (status_text_ || line.status_text_) {
-    if (!status_text_ || !line.status_text_)
+    if (!status_text_ || !line.status_text_) {
       return false;
-    if (!status_text_->Equals(*line.status_text_))
+    }
+    if (!status_text_->Equals(*line.status_text_)) {
       return false;
+    }
   }
 
   return image_url_ == line.image_url_;
@@ -211,8 +232,9 @@ bool SuggestionAnswer::ImageLine::Equals(const ImageLine& line) const {
 // modify this to be consistent.
 std::u16string SuggestionAnswer::ImageLine::AccessibleText() const {
   std::u16string result;
-  for (const TextField& text_field : text_fields_)
+  for (const TextField& text_field : text_fields_) {
     AppendWithSpace(&text_field, &result);
+  }
   AppendWithSpace(additional_text(), &result);
   AppendWithSpace(status_text(), &result);
   return result;
@@ -223,15 +245,17 @@ size_t SuggestionAnswer::ImageLine::EstimateMemoryUsage() const {
 
   res += base::trace_event::EstimateMemoryUsage(text_fields_);
   res += sizeof(int);
-  if (additional_text_)
+  if (additional_text_) {
     res += base::trace_event::EstimateMemoryUsage(additional_text_.value());
-  else
+  } else {
     res += sizeof(TextField);
+  }
   res += sizeof(int);
-  if (status_text_)
+  if (status_text_) {
     res += base::trace_event::EstimateMemoryUsage(status_text_.value());
-  else
+  } else {
     res += sizeof(TextField);
+  }
   res += base::trace_event::EstimateMemoryUsage(image_url_);
 
   return res;
@@ -246,12 +270,15 @@ void SuggestionAnswer::ImageLine::SetTextStyles(
       field->set_style(style);
     }
   };
-  for (auto& field : text_fields_)
+  for (auto& field : text_fields_) {
     replace(&field);
-  if (additional_text_)
+  }
+  if (additional_text_) {
     replace(&additional_text_.value());
-  if (status_text_)
+  }
+  if (status_text_) {
     replace(&status_text_.value());
+  }
 }
 
 // SuggestionAnswer ------------------------------------------------------------
@@ -274,10 +301,13 @@ SuggestionAnswer::~SuggestionAnswer() = default;
 bool SuggestionAnswer::ParseAnswer(const base::Value& answer_json,
                                    const std::u16string& answer_type_str,
                                    SuggestionAnswer* result) {
-  DCHECK(answer_json.is_dict());
-  int answer_type = 0;
-  if (!base::StringToInt(answer_type_str, &answer_type))
+  if (!answer_json.is_dict()) {
     return false;
+  }
+  int answer_type = 0;
+  if (!base::StringToInt(answer_type_str, &answer_type)) {
+    return false;
+  }
 
   result->set_type(answer_type);
 
@@ -302,7 +332,8 @@ bool SuggestionAnswer::ParseAnswer(const base::Value& answer_json,
   const std::string* image_url;
   const base::Value* optional_image =
       answer_json.FindKeyOfType("i", base::Value::Type::DICTIONARY);
-  if (optional_image && (image_url = optional_image->FindStringKey("d"))) {
+  if (optional_image && optional_image->is_dict() &&
+      (image_url = optional_image->FindStringKey("d"))) {
     result->image_url_ = GURL(*image_url);
   } else {
     result->image_url_ = result->second_line_.image_url();
@@ -319,10 +350,11 @@ bool SuggestionAnswer::Equals(const SuggestionAnswer& answer) const {
 
 void SuggestionAnswer::AddImageURLsTo(URLs* urls) const {
   // Note: first_line_.image_url() is not used in practice (so it's ignored).
-  if (image_url_.is_valid())
+  if (image_url_.is_valid()) {
     urls->push_back(image_url_);
-  else if (second_line_.image_url().is_valid())
+  } else if (second_line_.image_url().is_valid()) {
     urls->push_back(second_line_.image_url());
+  }
 }
 
 size_t SuggestionAnswer::EstimateMemoryUsage() const {
@@ -411,12 +443,14 @@ ScopedJavaLocalRef<jobject> CreateJavaImageLine(
   }
 
   ScopedJavaLocalRef<jobject> jadditional_text;
-  if (image_line->additional_text())
+  if (image_line->additional_text()) {
     jadditional_text = CreateJavaTextField(env, *image_line->additional_text());
+  }
 
   ScopedJavaLocalRef<jobject> jstatus_text;
-  if (image_line->status_text())
+  if (image_line->status_text()) {
     jstatus_text = CreateJavaTextField(env, *image_line->status_text());
+  }
 
   ScopedJavaLocalRef<jstring> jimage_url;
   if (image_line->image_url().is_valid()) {

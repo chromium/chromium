@@ -35,14 +35,17 @@ export class ViewerZoomToolbarElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      /** @private */
+      visible_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
   constructor() {
     super();
-
-    /** @private {boolean} */
-    this.visible_ = true;
   }
 
   /** @override */
@@ -144,21 +147,11 @@ export class ViewerZoomToolbarElement extends PolymerElement {
   }
 
   show() {
-    if (!this.visible_) {
-      this.visible_ = true;
-      this.$['fit-button'].show();
-      this.$['zoom-in-button'].show();
-      this.$['zoom-out-button'].show();
-    }
+    this.visible_ = true;
   }
 
   hide() {
-    if (this.visible_) {
-      this.visible_ = false;
-      this.$['fit-button'].hide();
-      this.$['zoom-in-button'].hide();
-      this.$['zoom-out-button'].hide();
-    }
+    this.visible_ = false;
   }
 
   /**

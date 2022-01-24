@@ -9,4 +9,5 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <files-path name="images" path="images/"/>
     <external-path name="external_files" path="."/>
+    <cache-path name="cache" path="weblayer/net-export/"/>
 </paths>

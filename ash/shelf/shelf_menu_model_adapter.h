@@ -25,6 +25,10 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter {
                         base::OnceClosure on_menu_closed_callback,
                         bool is_tablet_mode,
                         bool for_application_menu_items);
+
+  ShelfMenuModelAdapter(const ShelfMenuModelAdapter&) = delete;
+  ShelfMenuModelAdapter& operator=(const ShelfMenuModelAdapter&) = delete;
+
   ~ShelfMenuModelAdapter() override;
 
   // Overridden from AppMenuModelAdapter:
@@ -40,8 +44,6 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter {
 
   // True if this adapter was created for the shelf application menu items.
   const bool for_application_menu_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfMenuModelAdapter);
 };
 
 }  // namespace ash

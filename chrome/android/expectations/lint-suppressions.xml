@@ -133,6 +133,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- The double dash in the following file is a command line flag. -->
     <ignore regexp="chrome/app/policy/android/values-v21/restriction_values.xml"/>
   </issue>
+  <issue id="TypographyEllipsis">
+    <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-uz/android_chrome_strings.xml"/>
+  </issue>
   <issue id="UnusedIds" severity="ignore"/>
   <issue id="UnusedQuantity" severity="ignore"/>
   <issue id="UnusedResources">
@@ -202,6 +205,16 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.translate_dont_offer_site` appears to be unused"/>
     <ignore regexp="The resource `R.string.translate_dont_offer_lang` appears to be unused"/>
 
+    <!-- crbug.com/1231370 remove this line and the following 8 lines after the bug is resolved -->
+    <ignore regexp="The resource `R.string.download_message_download_in_progress_description` appears to be unused"/>
+    <ignore regexp="The resource `R.string.download_message_download_complete_description` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.download_message_multiple_download_in_progress` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.download_message_multiple_download_complete` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.download_message_multiple_download_failed` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.download_message_multiple_download_pending` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.download_message_multiple_download_scheduled` appears to be unused"/>
+    <ignore regexp="The resource `R.string.download_message_download_scheduled_description` appears to be unused"/>
+
     <!-- Old-style and new-style WebAPKs use same resources for simplicity. Old-style WebAPKs do
          not use R.style.SplashTheme but new-style WebAPKs do.
          TODO(crbug.com/971254): Remove suppression once old-style WebAPKs are deprecated. -->
@@ -241,20 +254,22 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.hide_content` appears to be unused"/>
     <!-- 1: TODO(crbug.com/1137985) resource is used in downstream image editor. -->
     <ignore regexp="The resource `R.string.clear` appears to be unused"/>
-    <!-- 1: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1169845. -->
-    <ignore regexp="The resource `R.string.notification_category_price_drop` appears to be unused"/>
-    <!-- 5: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1166702 -->
-    <ignore regexp="The resource `R.string.price_drop_alerts_card_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.price_drop_alerts_card_get_notified_content` appears to be unused"/>
-    <ignore regexp="The resource `R.string.price_drop_alerts_card_get_notified` appears to be unused"/>
-    <ignore regexp="The resource `R.string.price_drop_alerts_card_go_to_settings_content` appears to be unused"/>
-    <ignore regexp="The resource `R.string.price_drop_alerts_card_go_to_settings` appears to be unused"/>
     <!-- 5: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1195477 -->
     <ignore regexp="The resource `R.string.merchant_viewer_message_description_rating` appears to be unused"/>
     <ignore regexp="The resource `R.string.merchant_viewer_message_rating_word` appears to be unused"/>
     <ignore regexp="The resource `R.plurals.accessibility_merchant_viewer_message_description` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_merchant_viewer_message_announcement` appears to be unused"/>
     <ignore regexp="The resource `R.string.merchant_viewer_message_rating_numerical` appears to be unused"/>
+    <!-- 4: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1246562 -->
+    <ignore regexp="The resource `R.string.merchant_viewer_omnibox_icon_iph` appears to be unused"/>
+    <ignore regexp="The resource `R.string.page_info_store_info_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.page_info_store_info_description_with_no_review` appears to be unused"/>
+    <ignore regexp="The resource `R.string.page_info_store_info_description_with_no_rating` appears to be unused"/>
+    <!-- 4: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1251446 -->
+    <ignore regexp="The resource `R.string.price_drop_notification_content_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_notification_content_text` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_notification_action_visit_site` appears to be unused"/>
+    <ignore regexp="The resource `R.string.price_drop_notification_action_turn_off_alert` appears to be unused"/>
 
     <!-- crbug.com/1208536 remove this line and following 4 lines after the bug is resolved -->
     <ignore regexp="The resource `R.string.adaptive_toolbar_button_new_tab_iph` appears to be unused"/>
@@ -266,6 +281,11 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.adaptive_toolbar_button_new_tab_iph_settings` appears to be unused"/>
     <ignore regexp="The resource `R.string.adaptive_toolbar_button_share_iph_settings` appears to be unused"/>
     <ignore regexp="The resource `R.string.adaptive_toolbar_button_voice_search_iph_settings` appears to be unused"/>
+
+    <!-- 3: TODO(crbug.com/1213541) Remove when Shortcuts Widget is ready to ship. -->
+    <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_google_lens` appears to be unused"/>
+    <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_incognito` appears to be unused"/>
+    <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_voice_search` appears to be unused"/>
 
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>

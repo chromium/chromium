@@ -59,6 +59,9 @@ class PendingAssociatedRemote {
                 std::move(other))) {}
 #endif  // !defined(OS_NACL)
 
+  PendingAssociatedRemote(const PendingAssociatedRemote&) = delete;
+  PendingAssociatedRemote& operator=(const PendingAssociatedRemote&) = delete;
+
   ~PendingAssociatedRemote() = default;
 
   PendingAssociatedRemote& operator=(PendingAssociatedRemote&& other) {
@@ -118,8 +121,6 @@ class PendingAssociatedRemote {
  private:
   ScopedInterfaceEndpointHandle handle_;
   uint32_t version_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingAssociatedRemote);
 };
 
 // Constructs an invalid PendingAssociatedRemote of any arbitrary interface

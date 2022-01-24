@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
-#include "base/metrics/field_trial.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -36,7 +35,7 @@
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "ui/base/ui_base_switches.h"
@@ -67,6 +66,11 @@ class PpapiPluginSandboxedProcessLauncherDelegate
 #endif
   {
   }
+
+  PpapiPluginSandboxedProcessLauncherDelegate(
+      const PpapiPluginSandboxedProcessLauncherDelegate&) = delete;
+  PpapiPluginSandboxedProcessLauncherDelegate& operator=(
+      const PpapiPluginSandboxedProcessLauncherDelegate&) = delete;
 
   ~PpapiPluginSandboxedProcessLauncherDelegate() override {}
 
@@ -119,8 +123,8 @@ class PpapiPluginSandboxedProcessLauncherDelegate
   }
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-  sandbox::policy::SandboxType GetSandboxType() override {
-    return sandbox::policy::SandboxType::kPpapi;
+  sandbox::mojom::Sandbox GetSandboxType() override {
+    return sandbox::mojom::Sandbox::kPpapi;
   }
 
 #if defined(OS_MAC)
@@ -132,8 +136,6 @@ class PpapiPluginSandboxedProcessLauncherDelegate
 #if defined(OS_WIN)
   const ppapi::PpapiPermissions permissions_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(PpapiPluginSandboxedProcessLauncherDelegate);
 };
 
 class PpapiPluginProcessHost::PluginNetworkObserver
@@ -319,7 +321,6 @@ bool PpapiPluginProcessHost::Init(const PepperPluginInfo& info) {
       std::make_unique<base::CommandLine>(exe_path);
   cmd_line->AppendSwitchASCII(switches::kProcessType,
                               switches::kPpapiPluginProcess);
-  BrowserChildProcessHostImpl::CopyFeatureAndFieldTrialFlags(cmd_line.get());
   BrowserChildProcessHostImpl::CopyTraceStartupFlags(cmd_line.get());
 
 #if defined(OS_WIN)

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -17,6 +18,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_checker.h"
+#include "components/leveldb_proto/public/proto_database.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/cache.h"
@@ -34,10 +36,26 @@ namespace {
 // Covers 8MB block cache,
 const int kMaxApproxMemoryUseMB = 16;
 
-}  // namespace
-
 bool PrefixStopCallback(const std::string& prefix, const std::string& key) {
   return base::StartsWith(key, prefix, base::CompareCase::SENSITIVE);
+}
+
+}  // namespace
+
+Enums::KeyIteratorAction LevelDB::ComputeIteratorAction(
+    const KeyFilter& while_callback,
+    const KeyFilter& filter,
+    const std::string& key) {
+  DCHECK(!while_callback.is_null());
+  if (while_callback.is_null())
+    return Enums::kSkipAndStop;
+  if (!while_callback.Run(key))
+    return Enums::kSkipAndStop;
+  if (filter.is_null())
+    return Enums::kLoadAndContinue;
+  if (filter.Run(key))
+    return Enums::kLoadAndContinue;
+  return Enums::kSkipAndContinue;
 }
 
 LevelDB::LevelDB(const char* client_name) {
@@ -228,32 +246,41 @@ bool LevelDB::LoadKeysAndEntriesWithFilter(
 }
 
 bool LevelDB::LoadKeysAndEntriesWhile(
+    std::map<std::string, std::string>* keys_entries,
+    const leveldb::ReadOptions& options,
+    const std::string& start_key,
+    const KeyIteratorController& controller) {
+  DFAKE_SCOPED_LOCK(thread_checker_);
+  if (!db_)
+    return false;
+  DCHECK(!controller.is_null());
+
+  std::unique_ptr<leveldb::Iterator> db_iterator(db_->NewIterator(options));
+
+  for (db_iterator->Seek(leveldb::Slice(start_key)); db_iterator->Valid();
+       db_iterator->Next()) {
+    const std::string key = db_iterator->key().ToString();
+    const Enums::KeyIteratorAction action = controller.Run(key);
+    if (action == Enums::kLoadAndContinue || action == Enums::kLoadAndStop) {
+      keys_entries->insert(
+          std::make_pair(key, db_iterator->value().ToString()));
+    }
+    if (action == Enums::kLoadAndStop || action == Enums::kSkipAndStop)
+      break;
+  }
+  return true;
+}
+
+bool LevelDB::LoadKeysAndEntriesWhile(
     const KeyFilter& filter,
     std::map<std::string, std::string>* keys_entries,
     const leveldb::ReadOptions& options,
     const std::string& start_key,
     const KeyFilter& while_callback) {
-  DFAKE_SCOPED_LOCK(thread_checker_);
-  if (!db_)
-    return false;
-
-  std::unique_ptr<leveldb::Iterator> db_iterator(db_->NewIterator(options));
-  leveldb::Slice start(start_key);
-  for (db_iterator->Seek(start);
-       db_iterator->Valid() &&
-       while_callback.Run(db_iterator->key().ToString());
-       db_iterator->Next()) {
-    leveldb::Slice key_slice = db_iterator->key();
-    std::string key_slice_str(key_slice.data(), key_slice.size());
-    if (!filter.is_null() && !filter.Run(key_slice_str)) {
-      continue;
-    }
-
-    leveldb::Slice value_slice = db_iterator->value();
-    keys_entries->insert(std::make_pair(
-        key_slice_str, std::string(value_slice.data(), value_slice.size())));
-  }
-  return true;
+  return LoadKeysAndEntriesWhile(
+      keys_entries, options, start_key,
+      base::BindRepeating(LevelDB::ComputeIteratorAction, while_callback,
+                          filter));
 }
 
 bool LevelDB::LoadKeys(std::vector<std::string>* keys) {

@@ -17,6 +17,7 @@
 #include "content/public/browser/presentation_receiver_flags.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
 #if defined(USE_AURA)
 #include "base/threading/thread_task_runner_handle.h"
@@ -33,8 +34,8 @@ namespace {
 
 // Time intervals used by the logic that detects when the capture of an
 // offscreen tab has stopped, to automatically tear it down and free resources.
-constexpr base::TimeDelta kMaxWaitForCapture = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kPollInterval = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kMaxWaitForCapture = base::Minutes(1);
+constexpr base::TimeDelta kPollInterval = base::Seconds(1);
 
 }  // namespace
 
@@ -56,6 +57,9 @@ class OffscreenTab::WindowAdoptionAgent final : protected aura::WindowObserver {
       ScheduleFindNewParentIfDetached(content_window_->GetRootWindow());
     }
   }
+
+  WindowAdoptionAgent(const WindowAdoptionAgent&) = delete;
+  WindowAdoptionAgent& operator=(const WindowAdoptionAgent&) = delete;
 
   ~WindowAdoptionAgent() final {
     if (content_window_)
@@ -115,8 +119,6 @@ class OffscreenTab::WindowAdoptionAgent final : protected aura::WindowObserver {
 
   aura::Window* content_window_;
   base::WeakPtrFactory<WindowAdoptionAgent> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WindowAdoptionAgent);
 };
 #endif  // defined(USE_AURA)
 
@@ -244,7 +246,7 @@ void OffscreenTab::CanDownload(const GURL& url,
 }
 
 bool OffscreenTab::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Context menus should never be shown.  Do nothing, but indicate the context
   // menu was shown so that default implementation in libcontent does not
@@ -331,18 +333,16 @@ void OffscreenTab::RequestMediaAccessPermission(
     WebContents* contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), contents);
-  owner_->RequestMediaAccessPermission(request, std::move(callback));
+  std::move(callback).Run(blink::MediaStreamDevices(),
+                          blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
+                          nullptr);
 }
 
 bool OffscreenTab::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
     blink::mojom::MediaStreamType type) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(),
-            content::WebContents::FromRenderFrameHost(render_frame_host));
-  return type == blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE ||
-         type == blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE;
+  return false;
 }
 
 void OffscreenTab::DidStartNavigation(

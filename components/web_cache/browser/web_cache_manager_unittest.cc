@@ -11,7 +11,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 namespace web_cache {
 
 class WebCacheManagerTest : public testing::Test {
@@ -34,8 +33,9 @@ class WebCacheManagerTest : public testing::Test {
   }
 
   static void SimulateInactivity(WebCacheManager* h, int renderer_id) {
-    stats(h)[renderer_id].access = Time::Now() - TimeDelta::FromMinutes(
-        WebCacheManager::kRendererInactiveThresholdMinutes);
+    stats(h)[renderer_id].access =
+        Time::Now() -
+        base::Minutes(WebCacheManager::kRendererInactiveThresholdMinutes);
     h->FindInactiveRenderers();
   }
 

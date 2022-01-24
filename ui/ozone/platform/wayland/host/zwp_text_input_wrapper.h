@@ -54,6 +54,17 @@ class ZWPTextInputWrapperClient {
   // for normal text input operations, which should be done with
   // commit_string, delete_surrounding_text, etc.
   virtual void OnKeysym(uint32_t key, uint32_t state, uint32_t modifiers) = 0;
+
+  // Called when a new preedit region is specified. The region is specified
+  // by |index| and |length| on the surrounding text sent do wayland compositor
+  // in advance. |index| is relative to the current caret position, and |length|
+  // is the preedit length. Both are measured in UTF-8 bytes.
+  // |spans| are representing the text spanning for the new preedit. All its
+  // indices and length are relative to the beginning of the new preedit,
+  // and measured in UTF-8 bytes.
+  virtual void OnSetPreeditRegion(int32_t index,
+                                  uint32_t length,
+                                  const std::vector<SpanStyle>& spans) = 0;
 };
 
 // A wrapper around different versions of wayland text input protocols.

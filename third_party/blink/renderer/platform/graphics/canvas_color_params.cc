@@ -6,7 +6,6 @@
 
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/resources/resource_format_utils.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_params.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
@@ -105,10 +104,11 @@ CanvasColorParams::CanvasColorParams(const WTF::String& color_space,
     opacity_mode_ = kOpaque;
 }
 
-CanvasResourceParams CanvasColorParams::GetAsResourceParams() const {
-  SkAlphaType alpha_type =
-      opacity_mode_ == kOpaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType;
-  return CanvasResourceParams(color_space_, GetSkColorType(), alpha_type);
+SkColorInfo CanvasColorParams::GetSkColorInfo() const {
+  return SkColorInfo(
+      GetSkColorType(),
+      opacity_mode_ == kOpaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType,
+      GetSkColorSpace());
 }
 
 String CanvasColorParams::GetColorSpaceAsString() const {

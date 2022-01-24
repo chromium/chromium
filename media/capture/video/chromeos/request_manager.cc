@@ -18,6 +18,7 @@
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
@@ -774,8 +775,7 @@ void RequestManager::Notify(cros::mojom::Camera3NotifyMsgPtr message) {
     pending_result.shutter_timestamp = shutter_time;
     // Shutter timestamp is in ns.
     base::TimeTicks reference_time =
-        base::TimeTicks() +
-        base::TimeDelta::FromMicroseconds(shutter_time / 1000);
+        base::TimeTicks() + base::Microseconds(shutter_time / 1000);
     pending_result.reference_time = reference_time;
     if (first_frame_shutter_time_.is_null()) {
       // Record the shutter time of the first frame for calculating the
@@ -961,6 +961,7 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
     StreamType stream_type) {
   const CaptureResult& pending_result = pending_results_[frame_number];
   auto client_type = kStreamClientTypeMap[static_cast<int>(stream_type)];
+
   if (video_capture_use_gmb_) {
     VideoCaptureFormat format;
     absl::optional<VideoCaptureDevice::Client::Buffer> buffer =
@@ -995,6 +996,18 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
       // All frames are pre-rotated to the display orientation.
       metadata.transformation = VIDEO_ROTATION_0;
     }
+
+    auto camera_app_device =
+        CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+            device_id_);
+    if (camera_app_device && stream_type == StreamType::kPreviewOutput) {
+      camera_app_device->MaybeDetectDocumentCorners(
+          stream_buffer_manager_->CreateGpuMemoryBuffer(
+              buffer->handle_provider->GetGpuMemoryBufferHandle(), format,
+              gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE),
+          metadata.transformation->rotation);
+    }
+
     device_context_->SubmitCapturedVideoCaptureBuffer(
         client_type, std::move(*buffer), format, pending_result.reference_time,
         pending_result.timestamp, metadata);

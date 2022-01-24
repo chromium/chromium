@@ -11,6 +11,7 @@
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
+#import "ios/chrome/credential_provider_extension/ui/credential_list_header_view.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,6 +27,8 @@ NSString* kNewPasswordCellIdentifier = @"clvcNewPasswordCell";
 
 const CGFloat kHeaderHeight = 70;
 const CGFloat kNewCredentialHeaderHeight = 35;
+// Add extra space to offset the top of the table view from the search bar.
+const CGFloat kTableViewTopSpace = 8;
 
 UIColor* BackgroundColor() {
   return IsPasswordCreationEnabled()
@@ -44,9 +47,7 @@ UIColor* BackgroundColor() {
               reuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
-    if (@available(iOS 13.4, *)) {
-      [self addInteraction:[[ViewPointerInteraction alloc] init]];
-    }
+    [self addInteraction:[[ViewPointerInteraction alloc] init]];
   }
   return self;
 }
@@ -104,13 +105,32 @@ UIColor* BackgroundColor() {
   // hidden under the accessories.
   self.tableView.tableFooterView =
       [[UIView alloc] initWithFrame:self.searchController.searchBar.frame];
+  if (IsPasswordCreationEnabled()) {
+    self.tableView.contentInset = UIEdgeInsetsMake(kTableViewTopSpace, 0, 0, 0);
+  }
   self.navigationItem.searchController = self.searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
 
-  self.navigationController.navigationBar.barTintColor = BackgroundColor();
+  if (IsPasswordCreationEnabled()) {
+    UINavigationBarAppearance* appearance =
+        [[UINavigationBarAppearance alloc] init];
+    [appearance configureWithDefaultBackground];
+    appearance.backgroundColor = BackgroundColor();
+    if (@available(iOS 15, *)) {
+      self.navigationItem.scrollEdgeAppearance = appearance;
+    } else {
+      // On iOS 14, scrollEdgeAppearance only affects navigation bars with large
+      // titles, so it can't be used. Instead, the navigation bar will always be
+      // the same style.
+      self.navigationItem.standardAppearance = appearance;
+    }
+  } else {
+    self.navigationController.navigationBar.barTintColor = BackgroundColor();
+    self.navigationController.navigationBar.shadowImage =
+        [[UIImage alloc] init];
+  }
   self.navigationController.navigationBar.tintColor =
       [UIColor colorNamed:kBlueColor];
-  self.navigationController.navigationBar.shadowImage = [[UIImage alloc] init];
 
   // Presentation of searchController will walk up the view controller hierarchy
   // until it finds the root view controller or one that defines a presentation
@@ -119,18 +139,32 @@ UIColor* BackgroundColor() {
   self.definesPresentationContext = YES;
   [self.tableView registerClass:[UITableViewHeaderFooterView class]
       forHeaderFooterViewReuseIdentifier:kHeaderIdentifier];
+  [self.tableView registerClass:[CredentialListHeaderView class]
+      forHeaderFooterViewReuseIdentifier:CredentialListHeaderView.reuseID];
 }
 
 #pragma mark - CredentialListConsumer
 
 - (void)presentSuggestedPasswords:(NSArray<id<Credential>>*)suggested
                      allPasswords:(NSArray<id<Credential>>*)all
+                    showSearchBar:(BOOL)showSearchBar
             showNewPasswordOption:(BOOL)showNewPasswordOption {
   self.suggestedPasswords = suggested;
   self.allPasswords = all;
   self.showNewPasswordOption = showNewPasswordOption;
   [self.tableView reloadData];
   [self.tableView layoutIfNeeded];
+
+  // Remove or add the search controller depending on whether there are
+  // passwords to search.
+  if (showSearchBar) {
+    self.navigationItem.searchController = self.searchController;
+  } else {
+    if (self.navigationItem.searchController.isActive) {
+      self.navigationItem.searchController.active = NO;
+    }
+    self.navigationItem.searchController = nil;
+  }
 }
 
 - (void)setTopPrompt:(NSString*)prompt {
@@ -154,30 +188,6 @@ UIColor* BackgroundColor() {
   }
 }
 
-- (NSString*)tableView:(UITableView*)tableView
-    titleForHeaderInSection:(NSInteger)section {
-  if ([self isEmptyTable]) {
-    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NO_SEARCH_RESULTS",
-                             @"No search results found");
-  } else if ([self isSuggestedPasswordSection:section]) {
-    if (IsPasswordCreationEnabled()) {
-      return nil;
-    }
-    if (self.suggestedPasswords.count > 1) {
-      return NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORDS",
-          @"Suggested Passwords");
-    } else {
-      return NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORD",
-          @"Suggested Password");
-    }
-  } else {
-    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ALL_PASSWORDS",
-                             @"All Passwords");
-  }
-}
-
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   if ([self isIndexPathNewPasswordRow:indexPath]) {
@@ -187,6 +197,7 @@ UIColor* BackgroundColor() {
       cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                     reuseIdentifier:kNewPasswordCellIdentifier];
     }
+    cell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     cell.textLabel.text =
         NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CREATE_PASSWORD_ROW",
                           @"Add New Password");
@@ -219,14 +230,22 @@ UIColor* BackgroundColor() {
 
 - (UIView*)tableView:(UITableView*)tableView
     viewForHeaderInSection:(NSInteger)section {
-  UITableViewHeaderFooterView* view = [self.tableView
-      dequeueReusableHeaderFooterViewWithIdentifier:kHeaderIdentifier];
-  UIFontTextStyle textStyle = IsPasswordCreationEnabled()
-                                  ? UIFontTextStyleHeadline
-                                  : UIFontTextStyleCaption1;
-  view.textLabel.font = [UIFont preferredFontForTextStyle:textStyle];
-  view.contentView.backgroundColor = BackgroundColor();
-  return view;
+  if (IsPasswordCreationEnabled()) {
+    CredentialListHeaderView* view = [self.tableView
+        dequeueReusableHeaderFooterViewWithIdentifier:CredentialListHeaderView
+                                                          .reuseID];
+    view.headerTextLabel.text = [self titleForHeaderInSection:section];
+    view.contentView.backgroundColor = BackgroundColor();
+    return view;
+  } else {
+    UITableViewHeaderFooterView* view = [self.tableView
+        dequeueReusableHeaderFooterViewWithIdentifier:kHeaderIdentifier];
+    UIFontTextStyle textStyle = UIFontTextStyleCaption1;
+    view.textLabel.text = [self titleForHeaderInSection:section];
+    view.textLabel.font = [UIFont preferredFontForTextStyle:textStyle];
+    view.contentView.backgroundColor = BackgroundColor();
+    return view;
+  }
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -291,21 +310,19 @@ UIColor* BackgroundColor() {
       @"IDS_IOS_CREDENTIAL_PROVIDER_SHOW_DETAILS_ACCESSIBILITY_LABEL",
       @"Show Details.");
 
-  if (@available(iOS 13.4, *)) {
-    button.pointerInteractionEnabled = YES;
-    button.pointerStyleProvider = ^UIPointerStyle*(
-        UIButton* button, __unused UIPointerEffect* proposedEffect,
-        __unused UIPointerShape* proposedShape) {
-      UITargetedPreview* preview =
-          [[UITargetedPreview alloc] initWithView:button];
-      UIPointerHighlightEffect* effect =
-          [UIPointerHighlightEffect effectWithPreview:preview];
-      UIPointerShape* shape =
-          [UIPointerShape shapeWithRoundedRect:button.frame
-                                  cornerRadius:button.frame.size.width / 2];
-      return [UIPointerStyle styleWithEffect:effect shape:shape];
-    };
-  }
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = ^UIPointerStyle*(
+      UIButton* theButton, __unused UIPointerEffect* proposedEffect,
+      __unused UIPointerShape* proposedShape) {
+    UITargetedPreview* preview =
+        [[UITargetedPreview alloc] initWithView:theButton];
+    UIPointerHighlightEffect* effect =
+        [UIPointerHighlightEffect effectWithPreview:preview];
+    UIPointerShape* shape =
+        [UIPointerShape shapeWithRoundedRect:theButton.frame
+                                cornerRadius:theButton.frame.size.width / 2];
+    return [UIPointerStyle styleWithEffect:effect shape:shape];
+  };
 
   return button;
 }
@@ -340,7 +357,7 @@ UIColor* BackgroundColor() {
 - (BOOL)isSuggestedPasswordSection:(int)section {
   int sections = [self numberOfSections];
   if ((sections == 2 && section == 0) ||
-      (sections == 1 && self.suggestedPasswords.count)) {
+      (sections == 1 && [self numberOfRowsInSuggestedPasswordSection])) {
     return YES;
   } else {
     return NO;
@@ -367,6 +384,30 @@ UIColor* BackgroundColor() {
 // Returns the number of rows in suggested passwords section.
 - (NSUInteger)numberOfRowsInSuggestedPasswordSection {
   return [self.suggestedPasswords count] + (self.showNewPasswordOption ? 1 : 0);
+}
+
+// Returns the title of the given section
+- (NSString*)titleForHeaderInSection:(NSInteger)section {
+  if ([self isEmptyTable]) {
+    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NO_SEARCH_RESULTS",
+                             @"No search results found");
+  } else if ([self isSuggestedPasswordSection:section]) {
+    if (IsPasswordCreationEnabled()) {
+      return nil;
+    }
+    if (self.suggestedPasswords.count > 1) {
+      return NSLocalizedString(
+          @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORDS",
+          @"Suggested Passwords");
+    } else {
+      return NSLocalizedString(
+          @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORD",
+          @"Suggested Password");
+    }
+  } else {
+    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ALL_PASSWORDS",
+                             @"All Passwords");
+  }
 }
 
 @end

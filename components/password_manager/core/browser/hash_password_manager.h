@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -25,6 +24,10 @@ class HashPasswordManager {
  public:
   HashPasswordManager();
   explicit HashPasswordManager(PrefService* prefs);
+
+  HashPasswordManager(const HashPasswordManager&) = delete;
+  HashPasswordManager& operator=(const HashPasswordManager&) = delete;
+
   ~HashPasswordManager();
 
   bool SavePasswordHash(const std::string username,
@@ -75,8 +78,6 @@ class HashPasswordManager {
   // saving the password hash actually succeeded.
   base::RepeatingCallbackList<void(const std::string& username)>
       state_callback_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HashPasswordManager);
 };
 
 }  // namespace password_manager

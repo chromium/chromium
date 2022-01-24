@@ -65,7 +65,6 @@ DevToolsCallback GetDevToolsCallback(BrowserContext* browser_context,
       url::Origin::Create(data.origin),
       DevToolsBackgroundService::kNotifications);
 
-  // TODO(knollr): Reorder parameters of LogBackgroundServiceEvent instead.
   return base::BindOnce(
       [](DevToolsBaseCallback callback, const std::string& notification_id,
          const std::string& event_name, const EventMetadata& metadata) {

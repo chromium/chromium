@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
  *
  * Should only be called on the UI thread.
  */
-public interface SurfaceScopeDependencyProvider extends FeedLoggingDependencyProvider {
+public interface SurfaceScopeDependencyProvider {
     /** Returns the activity. */
     @Nullable
     default Activity getActivity() {
@@ -47,31 +47,6 @@ public interface SurfaceScopeDependencyProvider extends FeedLoggingDependencyPro
     default AutoplayPreference getAutoplayPreference() {
         return AutoplayPreference.AUTOPLAY_DISABLED;
     }
-
-    /** Events that are triggered during the video auto-play. */
-    @Deprecated
-    public enum AutoplayEvent {
-        /**
-         * Auto-play is triggered, but not started yet. This occurs when the video card becomes
-         * fully visible.
-         */
-        AUTOPLAY_REQUESTED,
-        /** The player starts to auto-play the video. */
-        AUTOPLAY_STARTED,
-        /**
-         * Auto-play stops before reaching the end. This occurs when the video card becomes
-         * partially visible or invisible.
-         */
-        AUTOPLAY_STOPPED,
-        /** Auto-play reaches the end. */
-        AUTOPLAY_ENDED,
-        /** User clicks on the auto-play video. */
-        AUTOPLAY_CLICKED,
-    }
-
-    /** Reports the event related to video auto-play. */
-    @Deprecated
-    default void reportAutoplayEvent(AutoplayEvent event) {}
 
     /** Events that are triggered during the video playing. */
     public @interface VideoPlayEvent {
@@ -155,5 +130,25 @@ public interface SurfaceScopeDependencyProvider extends FeedLoggingDependencyPro
      */
     default Rect getToolbarGlobalVisibleRect() {
         return new Rect();
+    }
+
+    /**
+     * Adds a header offset observer to the surface this scope is associated with.
+     *
+     * @param observer The observer to add.
+     * @Return a reference to be used when removing the observer, or null if not successful.
+     */
+    default void addHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {}
+
+    /**
+     * Removes a header offset observer.
+     *
+     * @param observer An Object returned by |addHeaderOffsetObserver|.
+     */
+    default void removeHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {}
+
+    /** Returns whether or not activity logging should be enabled. */
+    default boolean isActivityLoggingEnabled() {
+        return false;
     }
 }

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_APP_BASE_WINDOW_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_APP_BASE_WINDOW_H_
 
-#include "base/macros.h"
 #include "ui/base/base_window.h"
 
 namespace extensions {
@@ -19,6 +18,10 @@ class NativeAppWindow;
 class AppBaseWindow : public ui::BaseWindow {
  public:
   explicit AppBaseWindow(AppWindow* app_window);
+
+  AppBaseWindow(const AppBaseWindow&) = delete;
+  AppBaseWindow& operator=(const AppBaseWindow&) = delete;
+
   virtual ~AppBaseWindow();
 
  private:
@@ -49,8 +52,6 @@ class AppBaseWindow : public ui::BaseWindow {
   NativeAppWindow* GetBaseWindow() const;
 
   AppWindow* app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppBaseWindow);
 };
 
 }  // namespace extensions

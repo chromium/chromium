@@ -80,7 +80,7 @@ class DspHotwordStateManager : public AudioInputImpl::HotwordStateManager {
       // libassistant has rejected the hotword supplied by DSP. Thus, we reset
       // and reopen the device on hotword state.
       second_phase_timer_.Start(
-          FROM_HERE, base::TimeDelta::FromSeconds(1),
+          FROM_HERE, base::Seconds(1),
           base::BindRepeating(
               &DspHotwordStateManager::OnConversationTurnFinished,
               base::Unretained(this)));
@@ -236,8 +236,7 @@ class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
     captured_frames_count_ += num_arrived_frames;
     if (VLOG_IS_ON(1)) {
       auto now = base::TimeTicks::Now();
-      if ((now - last_frame_count_report_time_) >
-          base::TimeDelta::FromMinutes(2)) {
+      if ((now - last_frame_count_report_time_) > base::Minutes(2)) {
         VLOG(1) << "Captured frames: " << captured_frames_count_;
         last_frame_count_report_time_ = now;
       }

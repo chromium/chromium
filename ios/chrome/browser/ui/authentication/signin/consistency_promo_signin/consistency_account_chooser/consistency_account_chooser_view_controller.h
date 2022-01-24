@@ -12,6 +12,7 @@
 @protocol ConsistencyAccountChooserTableViewControllerActionDelegate;
 @protocol ConsistencyAccountChooserTableViewControllerModelDelegate;
 @protocol ConsistencyAccountChooserConsumer;
+@protocol ConsistencyLayoutDelegate;
 
 // View controller for ConsistencyAccountChooserCoordinator.
 @interface ConsistencyAccountChooserViewController
@@ -20,6 +21,7 @@
 @property(nonatomic, weak)
     id<ConsistencyAccountChooserTableViewControllerActionDelegate>
         actionDelegate;
+@property(nonatomic, weak) id<ConsistencyLayoutDelegate> layoutDelegate;
 @property(nonatomic, weak)
     id<ConsistencyAccountChooserTableViewControllerModelDelegate>
         modelDelegate;

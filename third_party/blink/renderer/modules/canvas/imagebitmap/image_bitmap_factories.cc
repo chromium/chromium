@@ -184,9 +184,9 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
     absl::optional<IntRect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
-  if (crop_rect && (crop_rect->Width() == 0 || crop_rect->Height() == 0)) {
+  if (crop_rect && (crop_rect->width() == 0 || crop_rect->height() == 0)) {
     exception_state.ThrowRangeError(String::Format(
-        "The crop rect %s is 0.", crop_rect->Width() ? "height" : "width"));
+        "The crop rect %s is 0.", crop_rect->width() ? "height" : "width"));
     return ScriptPromise();
   }
 
@@ -195,13 +195,13 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
                                      options);
   }
 
-  if (bitmap_source->BitmapSourceSize().Width() == 0 ||
-      bitmap_source->BitmapSourceSize().Height() == 0) {
+  if (bitmap_source->BitmapSourceSize().width() == 0 ||
+      bitmap_source->BitmapSourceSize().height() == 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         String::Format(
             "The source image %s is 0.",
-            bitmap_source->BitmapSourceSize().Width() ? "height" : "width"));
+            bitmap_source->BitmapSourceSize().width() ? "height" : "width"));
     return ScriptPromise();
   }
 

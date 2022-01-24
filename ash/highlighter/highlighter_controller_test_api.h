@@ -6,7 +6,6 @@
 #define ASH_HIGHLIGHTER_HIGHLIGHTER_CONTROLLER_TEST_API_H_
 
 #include "ash/highlighter/highlighter_controller.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -22,6 +21,11 @@ namespace ash {
 class HighlighterControllerTestApi : public HighlighterController::Observer {
  public:
   explicit HighlighterControllerTestApi(HighlighterController* instance);
+
+  HighlighterControllerTestApi(const HighlighterControllerTestApi&) = delete;
+  HighlighterControllerTestApi& operator=(const HighlighterControllerTestApi&) =
+      delete;
+
   ~HighlighterControllerTestApi() override;
 
   // Attaches itself as the client to the controller. This method is called
@@ -66,8 +70,6 @@ class HighlighterControllerTestApi : public HighlighterController::Observer {
   bool handle_enabled_state_changed_called_ = false;
   gfx::Rect selection_;
   bool enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HighlighterControllerTestApi);
 };
 
 }  // namespace ash

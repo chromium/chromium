@@ -70,6 +70,10 @@ base::Process FindProcess(const std::wstring& name) {
 }  // namespace
 
 class NotificationHelperTest : public testing::Test {
+ public:
+  NotificationHelperTest(const NotificationHelperTest&) = delete;
+  NotificationHelperTest& operator=(const NotificationHelperTest&) = delete;
+
  protected:
   NotificationHelperTest() : root_(HKEY_CURRENT_USER) {}
 
@@ -116,8 +120,6 @@ class NotificationHelperTest : public testing::Test {
   std::unique_ptr<WorkItemList> work_item_list_;
 
   base::win::ScopedCOMInitializer scoped_com_initializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationHelperTest);
 };
 
 TEST_F(NotificationHelperTest, NotificationHelperServerTest) {

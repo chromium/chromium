@@ -335,7 +335,8 @@ public final class EditUrlSuggestionUnitTest {
         actions.get(ACTION_COPY).callback.run();
         verify(mClipboardManager, times(1)).setPrimaryClip(argument.capture());
 
-        ClipData clip = ClipData.newPlainText("url", mTestUrl.getSpec());
+        ClipData clip = new ClipData(
+                "url", new String[] {"text/x-moz-url"}, new ClipData.Item(mTestUrl.getSpec()));
 
         // ClipData doesn't implement equals, but their string representations matching should be
         // good enough.

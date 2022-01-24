@@ -8,7 +8,7 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_cpu": "arm64",
       "target_os": "android",
       "use_errorprone_java_compiler": false,
@@ -19,11 +19,10 @@
   "android-angle-try": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
       "dcheck_always_on": true,
       "is_component_build": true,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_cpu": "arm64",
       "target_os": "android",
       "use_goma": true
@@ -58,23 +57,9 @@
       "use_static_angle": true
     }
   },
-  "angle-try-mac-amd-exp": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "fuchsia-angle-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -82,6 +67,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "fuchsia",
@@ -91,13 +77,12 @@
   "fuchsia-angle-try": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "is_component_build": true,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_os": "fuchsia",
       "use_goma": true
     }
@@ -106,7 +91,6 @@
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -114,7 +98,7 @@
       "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_cpu": "x64",
       "target_environment": "simulator",
       "target_os": "ios",
@@ -129,14 +113,13 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_goma": true
     }
   },
   "linux-angle-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
@@ -144,6 +127,7 @@
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
+      "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_goma": true
@@ -152,13 +136,12 @@
   "linux-angle-try": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "is_component_build": true,
       "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_goma": true
     }
   },
@@ -180,20 +163,7 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "mac-angle-try": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_goma": true
     }
   },
@@ -205,7 +175,7 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_goma": true
     }
   },
@@ -217,7 +187,7 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_cpu": "x86",
       "use_goma": true
     }
@@ -225,27 +195,12 @@
   "win-angle-x64-try": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
       "enable_nacl": false,
       "is_component_build": true,
       "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "win-angle-x86-try": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
+      "symbol_level": 0,
       "use_goma": true
     }
   }

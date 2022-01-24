@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
-#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -47,6 +46,10 @@
 // Module containing the reauthentication mechanism for viewing and copying
 // passwords.
 @property(nonatomic, weak) ReauthenticationModule* reauthenticationModule;
+
+// Denotes the type of the credential passed to this coordinator. Could be
+// blocked, federated, new or regular.
+@property(nonatomic, assign) CredentialType credentialType;
 
 // Modal alert for interactions with password.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
@@ -81,6 +84,12 @@
     _password = password;
     _manager = manager;
     _reauthenticationModule = reauthModule;
+    _credentialType = password.blocked_by_user ? CredentialTypeBlocked
+                                               : CredentialTypeRegular;
+    if (_credentialType == CredentialTypeRegular &&
+        !_password.federation_origin.opaque()) {
+      _credentialType = CredentialTypeFederation;
+    }
     _dispatcher = static_cast<id<BrowserCommands, ApplicationCommands>>(
         browser->GetCommandDispatcher());
   }
@@ -89,7 +98,7 @@
 
 - (void)start {
   self.viewController = [[PasswordDetailsTableViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+      initWithCredentialType:_credentialType];
 
   self.mediator = [[PasswordDetailsMediator alloc] initWithPassword:_password
                                                passwordCheckManager:_manager];
@@ -161,8 +170,7 @@
                          browser:self.browser
                            title:nil
                          message:message
-                   barButtonItem:self.viewController.navigationItem
-                                     .rightBarButtonItem];
+                   barButtonItem:self.viewController.deleteButton];
 
   __weak __typeof(self) weakSelf = self;
 
@@ -208,6 +216,10 @@
                  style:UIAlertActionStyleCancel];
 
   [self.actionSheetCoordinator start];
+}
+
+- (void)showPasswordDetailsInEditModeWithoutAuthentication {
+  [self.viewController showEditViewWithoutAuthentication];
 }
 
 #pragma mark - Private

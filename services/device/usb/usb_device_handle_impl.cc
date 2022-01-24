@@ -12,13 +12,12 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
@@ -123,6 +122,9 @@ class UsbDeviceHandleImpl::InterfaceClaimer
                    int interface_number,
                    scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  InterfaceClaimer(const InterfaceClaimer&) = delete;
+  InterfaceClaimer& operator=(const InterfaceClaimer&) = delete;
+
   int interface_number() const { return interface_number_; }
   int alternate_setting() const { return alternate_setting_; }
   void set_alternate_setting(const int alternate_setting) {
@@ -143,8 +145,6 @@ class UsbDeviceHandleImpl::InterfaceClaimer
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ResultCallback release_callback_;
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceClaimer);
 };
 
 UsbDeviceHandleImpl::InterfaceClaimer::InterfaceClaimer(
@@ -864,8 +864,7 @@ UsbDeviceHandleImpl::~UsbDeviceHandleImpl() {
   } else {
     blocking_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(base::DoNothing::Once<ScopedLibusbDeviceHandle>(),
-                       std::move(handle_)));
+        base::BindOnce([](ScopedLibusbDeviceHandle) {}, std::move(handle_)));
   }
 }
 

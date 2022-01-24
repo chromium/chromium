@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 declare_args() {
-  enable_extensions = !is_android && !is_ios && !is_fuchsia
+  enable_extensions = !is_android && !is_ios
 
   # Compile time flag for the Autofill Assistant API.
   # WARNING: This must not be enabled in official builds.

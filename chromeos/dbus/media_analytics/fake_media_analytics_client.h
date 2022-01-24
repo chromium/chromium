@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/media_analytics/media_analytics_client.h"
@@ -21,6 +20,10 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) FakeMediaAnalyticsClient
     : public MediaAnalyticsClient {
  public:
   FakeMediaAnalyticsClient();
+
+  FakeMediaAnalyticsClient(const FakeMediaAnalyticsClient&) = delete;
+  FakeMediaAnalyticsClient& operator=(const FakeMediaAnalyticsClient&) = delete;
+
   ~FakeMediaAnalyticsClient() override;
 
   // Checks that a FakeMediaAnalyticsClient instance was initialized and returns
@@ -75,8 +78,6 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) FakeMediaAnalyticsClient
   bool process_running_;
 
   base::WeakPtrFactory<FakeMediaAnalyticsClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMediaAnalyticsClient);
 };
 
 }  // namespace chromeos

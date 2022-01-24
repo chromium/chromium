@@ -8,14 +8,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
@@ -35,7 +33,7 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
-#include "third_party/blink/public/mojom/page/drag.mojom-forward.h"
+#include "third_party/blink/public/mojom/drag/drag.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -64,7 +62,7 @@ bool IsRendererPasteAllowed(RenderFrameHost& render_frame_host) {
 //  - Scans that succeed will apply their verdicts without the risk that their
 //    associated IsPasteContentAllowedRequest is already too old.
 const base::TimeDelta ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld =
-    base::TimeDelta::FromMinutes(5);
+    base::Minutes(5);
 
 ClipboardHostImpl::IsPasteContentAllowedRequest::
     IsPasteContentAllowedRequest() = default;
@@ -113,7 +111,7 @@ void ClipboardHostImpl::IsPasteContentAllowedRequest::InvokeCallbacks() {
 ClipboardHostImpl::ClipboardHostImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)) {
+    : DocumentService(render_frame_host, std::move(receiver)) {
   clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste,
       render_frame_host->GetBrowserContext()->IsOffTheRecord()
@@ -126,7 +124,7 @@ void ClipboardHostImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver) {
   // The object is bound to the lifetime of |render_frame_host| and the mojo
-  // connection. See DocumentServiceBase for details.
+  // connection. See DocumentService for details.
   new ClipboardHostImpl(render_frame_host, std::move(receiver));
 }
 
@@ -145,13 +143,20 @@ void ClipboardHostImpl::ReadAvailableTypes(
     ui::ClipboardBuffer clipboard_buffer,
     ReadAvailableTypesCallback callback) {
   std::vector<std::u16string> types;
-  ui::Clipboard::GetForCurrentThread()->ReadAvailableTypes(
-      clipboard_buffer, CreateDataEndpoint().get(), &types);
-  // If files are available, do not include other types such as text/plain
-  // which contain the full path on some platforms (http://crbug.com/1214108).
-  std::u16string filenames_type = base::UTF8ToUTF16(ui::kMimeTypeURIList);
-  if (base::Contains(types, filenames_type)) {
-    types = {filenames_type};
+  auto* clipboard = ui::Clipboard::GetForCurrentThread();
+  auto data_endpoint = CreateDataEndpoint();
+
+  // ReadAvailableTypes() returns 'text/uri-list' if either files are provided,
+  // or if it was set as a custom web type. If it is set because files are
+  // available, do not include other types such as text/plain which contain the
+  // full path on some platforms (http://crbug.com/1214108). But do not exclude
+  // other types when it is set as a custom web type (http://crbug.com/1241671).
+  if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
+                                   clipboard_buffer, data_endpoint.get())) {
+    types = {base::UTF8ToUTF16(ui::kMimeTypeURIList)};
+  } else {
+    clipboard->ReadAvailableTypes(clipboard_buffer, data_endpoint.get(),
+                                  &types);
   }
   std::move(callback).Run(types);
 }
@@ -191,11 +196,6 @@ void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
 #else
       result = false;
 #endif
-      break;
-    case blink::mojom::ClipboardFormat::kRtf:
-      result =
-          clipboard->IsFormatAvailable(ui::ClipboardFormatType::RtfType(),
-                                       clipboard_buffer, data_endpoint.get());
       break;
   }
   std::move(callback).Run(result);
@@ -348,36 +348,6 @@ void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
           },
           std::move(data), std::move(callback)));
 }
-void ClipboardHostImpl::ReadImage(ui::ClipboardBuffer clipboard_buffer,
-                                  ReadImageCallback callback) {
-  if (!IsRendererPasteAllowed(*render_frame_host())) {
-    std::move(callback).Run(SkBitmap());
-    return;
-  }
-  auto data_dst = CreateDataEndpoint();
-  ui::Clipboard::GetForCurrentThread()->ReadImage(
-      clipboard_buffer, data_dst.get(),
-      base::BindOnce(&ClipboardHostImpl::OnReadImage,
-                     weak_ptr_factory_.GetWeakPtr(), clipboard_buffer,
-                     std::move(callback)));
-}
-
-void ClipboardHostImpl::OnReadImage(ui::ClipboardBuffer clipboard_buffer,
-                                    ReadImageCallback callback,
-                                    const SkBitmap& bitmap) {
-  std::string data(reinterpret_cast<const char*>(bitmap.getPixels()),
-                  bitmap.computeByteSize());
-  PasteIfPolicyAllowed(clipboard_buffer, ui::ClipboardFormatType::BitmapType(),
-                       std::move(data),
-                       base::BindOnce(
-                           [](SkBitmap bitmap, ReadImageCallback callback,
-                              ClipboardPasteContentAllowed allowed) {
-                             if (!allowed)
-                               bitmap.reset();
-                             std::move(callback).Run(bitmap);
-                           },
-                           std::move(bitmap), std::move(callback)));
-}
 
 void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                                   ReadFilesCallback callback) {
@@ -492,6 +462,79 @@ void ClipboardHostImpl::CommitWrite() {
       ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
 }
 
+bool ClipboardHostImpl::IsUnsanitizedCustomFormatContentAllowed() {
+  if (!base::FeatureList::IsEnabled(blink::features::kClipboardCustomFormats)) {
+    mojo::ReportBadMessage("Custom format read/write is not enabled.");
+    return false;
+  }
+
+  if (render_frame_host()->HasTransientUserActivation())
+    return true;
+  return false;
+}
+
+void ClipboardHostImpl::ReadAvailableCustomAndStandardFormats(
+    ReadAvailableCustomAndStandardFormatsCallback callback) {
+  if (!IsUnsanitizedCustomFormatContentAllowed())
+    return;
+  std::vector<std::u16string> format_types =
+      ui::Clipboard::GetForCurrentThread()
+          ->ReadAvailableStandardAndCustomFormatNames(
+              ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint().get());
+  std::move(callback).Run(format_types);
+}
+
+void ClipboardHostImpl::ReadUnsanitizedCustomFormat(
+    const std::u16string& format,
+    ReadUnsanitizedCustomFormatCallback callback) {
+  if (!IsUnsanitizedCustomFormatContentAllowed())
+    return;
+  // `kMaxFormatSize` includes the null terminator as well so we check if
+  // the `format` size is strictly less than `kMaxFormatSize` or not.
+  if (format.length() >= blink::mojom::ClipboardHost::kMaxFormatSize)
+    return;
+
+  // Extract the custom format names and then query the web custom format
+  // corresponding to the MIME type.
+  std::string format_name = base::UTF16ToASCII(format);
+  auto data_endpoint = CreateDataEndpoint();
+  std::map<std::string, std::string> custom_format_names =
+      ui::Clipboard::GetForCurrentThread()->ExtractCustomPlatformNames(
+          ui::ClipboardBuffer::kCopyPaste, data_endpoint.get());
+  std::string web_custom_format_string;
+  if (custom_format_names.find(format_name) != custom_format_names.end())
+    web_custom_format_string = custom_format_names[format_name];
+  if (web_custom_format_string.empty())
+    return;
+
+  std::string result;
+  ui::Clipboard::GetForCurrentThread()->ReadData(
+      ui::ClipboardFormatType::GetType(web_custom_format_string),
+      data_endpoint.get(), &result);
+  if (result.size() >= blink::mojom::ClipboardHost::kMaxDataSize)
+    return;
+  base::span<const uint8_t> span = base::as_bytes(base::make_span(result));
+  mojo_base::BigBuffer buffer = mojo_base::BigBuffer(span);
+  std::move(callback).Run(std::move(buffer));
+}
+
+void ClipboardHostImpl::WriteUnsanitizedCustomFormat(
+    const std::u16string& format,
+    mojo_base::BigBuffer data) {
+  if (!IsUnsanitizedCustomFormatContentAllowed())
+    return;
+  // `kMaxFormatSize` & `kMaxDataSize` includes the null terminator.
+  if (format.length() >= blink::mojom::ClipboardHost::kMaxFormatSize)
+    return;
+  if (data.size() >= blink::mojom::ClipboardHost::kMaxDataSize)
+    return;
+
+  // The `format` is mapped to user agent defined web custom format before
+  // writing to the clipboard. This happens in
+  // `ScopedClipboardWriter::WriteData`.
+  clipboard_writer_->WriteData(format, std::move(data));
+}
+
 void ClipboardHostImpl::PasteIfPolicyAllowed(
     ui::ClipboardBuffer clipboard_buffer,
     const ui::ClipboardFormatType& data_type,
@@ -508,14 +551,9 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
                      data_type, std::move(data), std::move(callback));
 
   if (ui::DataTransferPolicyController::HasInstance()) {
-    WebContents* web_contents = nullptr;
-    auto* delegate =
-        static_cast<RenderFrameHostImpl*>(render_frame_host())->delegate();
-    web_contents = delegate ? delegate->GetAsWebContents() : nullptr;
-
     ui::DataTransferPolicyController::Get()->PasteIfAllowed(
         ui::Clipboard::GetForCurrentThread()->GetSource(clipboard_buffer),
-        CreateDataEndpoint().get(), data_size, web_contents,
+        CreateDataEndpoint().get(), data_size, render_frame_host(),
         std::move(policy_cb));
     return;
   }

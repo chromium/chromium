@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--
-Copyright 2010 The Closure Library Authors. All Rights Reserved.
+Copyright The Closure Library Authors. All Rights Reserved.
 
 Use of this source code is governed by the Apache License, Version 2.0.
 See the COPYING file for details.
@@ -41,7 +41,7 @@ var $ = goog.dom.getElement;
 var logger = goog.log.getLogger('demo');
 var logconsole = new goog.debug.DivConsole(goog.dom.getElement('log'));
 
-goog.debug.LogManager.getRoot().setLevel(goog.log.Level.FINER);
+goog.log.setLevel(goog.log.getRootLogger(), goog.log.Level.FINER);
 logconsole.setCapturing(true);
 
 var DOM_EVENTS = ['keydown', 'keyup', 'keypress', 'change', 'cut', 'paste',

@@ -8,8 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
-#include "base/macros.h"
+#include "base/containers/lru_cache.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
@@ -25,6 +24,10 @@ class DrmOverlayManager : public OverlayManagerOzone {
  public:
   explicit DrmOverlayManager(
       bool allow_sync_and_real_buffer_page_flip_testing = true);
+
+  DrmOverlayManager(const DrmOverlayManager&) = delete;
+  DrmOverlayManager& operator=(const DrmOverlayManager&) = delete;
+
   ~DrmOverlayManager() override;
 
   // OverlayManagerOzone:
@@ -78,7 +81,7 @@ class DrmOverlayManager : public OverlayManagerOzone {
   };
 
   using OverlayCandidatesListCache =
-      base::MRUCache<std::vector<OverlaySurfaceCandidate>,
+      base::LRUCache<std::vector<OverlaySurfaceCandidate>,
                      OverlayValidationCacheValue>;
 
   // Map of each widget to the cache of list of all OverlaySurfaceCandidate
@@ -87,8 +90,6 @@ class DrmOverlayManager : public OverlayManagerOzone {
       widget_cache_map_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DrmOverlayManager);
 };
 
 }  // namespace ui

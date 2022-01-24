@@ -20,7 +20,7 @@ process_version_rc_template("sign_config") {
 
   process_only = true
 
-  template_file = "//chrome/installer/mac/signing/build_props_config.py.in"
+  template_file = "//chrome/updater/mac/signing/build_props_config.py.in"
 
   output = "$_packaging_dir/signing/build_props_config.py"
 
@@ -35,12 +35,19 @@ process_version_rc_template("sign_config") {
     "-e",
     "MAC_BUNDLE_ID=\"" + mac_updater_bundle_identifier + "\"",
     "-e",
+    "KEYSTONE_APP_NAME=\"" + keystone_app_name + "\"",
   ]
 
   if (is_chrome_branded) {
-    extra_args += [ "IS_CHROME_BRANDED=True" ]
+    extra_args += [
+      "-e",
+      "IS_CHROME_BRANDED=True",
+    ]
   } else {
-    extra_args += [ "IS_CHROME_BRANDED=False" ]
+    extra_args += [
+      "-e",
+      "IS_CHROME_BRANDED=False",
+    ]
   }
 }
 

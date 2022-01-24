@@ -9,6 +9,8 @@
 
 #include "base/containers/flat_set.h"
 
+namespace optimization_guide {
+
 // Keeps a set of unique element, while preserving the insertion order. vector()
 // can be accessed to get the ordered elements.
 template <typename T>
@@ -39,5 +41,7 @@ class InsertionOrderedSet {
   base::flat_set<T> set_;
   std::vector<T> vector_;
 };
+
+}  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_INSERTION_ORDERED_SET_H_

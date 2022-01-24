@@ -27,9 +27,25 @@
 
 namespace ash {
 
+namespace {
+
+gfx::ImageSkia GetIconImage() {
+  return gfx::CreateVectorIcon(
+      kShelfKeyboardNewuiIcon,
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
+}
+
+}  // namespace
+
 VirtualKeyboardTray::VirtualKeyboardTray(Shelf* shelf)
     : TrayBackgroundView(shelf), icon_(new views::ImageView), shelf_(shelf) {
-  UpdateIcon();
+  const gfx::ImageSkia image = GetIconImage();
+  icon_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
+  const int vertical_padding = (kTrayItemSize - image.height()) / 2;
+  const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
+  icon_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets(vertical_padding, horizontal_padding)));
   tray_container()->AddChildView(icon_);
 
   // The Shell may not exist in some unit tests.
@@ -98,6 +114,11 @@ bool VirtualKeyboardTray::PerformAction(const ui::Event& event) {
   return true;
 }
 
+void VirtualKeyboardTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  icon_->SetImage(GetIconImage());
+}
+
 void VirtualKeyboardTray::OnAccessibilityStatusChanged() {
   bool new_enabled =
       Shell::Get()->accessibility_controller()->virtual_keyboard().enabled();
@@ -110,25 +131,11 @@ void VirtualKeyboardTray::OnKeyboardVisibilityChanged(const bool is_visible) {
 
 void VirtualKeyboardTray::OnSessionStateChanged(
     session_manager::SessionState state) {
-  UpdateIcon();
+  icon_->SetImage(GetIconImage());
 }
 
 const char* VirtualKeyboardTray::GetClassName() const {
   return "VirtualKeyboardTray";
-}
-
-void VirtualKeyboardTray::UpdateIcon() {
-  const gfx::VectorIcon& icon = kShelfKeyboardNewuiIcon;
-  gfx::ImageSkia image = gfx::CreateVectorIcon(
-      icon,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
-  icon_->SetImage(image);
-  icon_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
-  const int vertical_padding = (kTrayItemSize - image.height()) / 2;
-  const int horizontal_padding = (kTrayItemSize - image.width()) / 2;
-  icon_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_padding, horizontal_padding)));
 }
 
 }  // namespace ash

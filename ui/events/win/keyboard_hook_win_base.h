@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
@@ -31,6 +30,10 @@ class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookWinBase
   KeyboardHookWinBase(absl::optional<base::flat_set<DomCode>> dom_codes,
                       KeyEventCallback callback,
                       bool enable_hook_registration);
+
+  KeyboardHookWinBase(const KeyboardHookWinBase&) = delete;
+  KeyboardHookWinBase& operator=(const KeyboardHookWinBase&) = delete;
+
   ~KeyboardHookWinBase() override;
 
   // Create a KeyboardHookWinBase instance which does not register a
@@ -66,8 +69,6 @@ class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookWinBase
   const bool enable_hook_registration_ = true;
   HHOOK hook_ = nullptr;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardHookWinBase);
 };
 
 }  // namespace ui

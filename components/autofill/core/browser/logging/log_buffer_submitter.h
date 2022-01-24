@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_LOG_BUFFER_SUBMITTER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_LOG_BUFFER_SUBMITTER_H_
 
-#include "base/macros.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 
 namespace autofill {

@@ -4,18 +4,19 @@
 
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -73,12 +74,17 @@ bool IsDisabledByPolicy(const Profile* profile) {
 //------------------
 
 void LogStatus(ItemSuggestCache::Status status) {
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppList.ItemSuggestCache.Status", status);
+  base::UmaHistogramEnumeration("Apps.AppList.ItemSuggestCache.Status", status);
 }
 
 void LogResponseSize(const int size) {
-  UMA_HISTOGRAM_COUNTS_100000("Apps.AppList.ItemSuggestCache.ResponseSize",
-                              size);
+  base::UmaHistogramCounts100000("Apps.AppList.ItemSuggestCache.ResponseSize",
+                                 size);
+}
+
+void LogLatency(base::TimeDelta latency) {
+  base::UmaHistogramTimes("Apps.AppList.ItemSuggestCache.UpdateCacheLatency",
+                          latency);
 }
 
 //---------------
@@ -129,8 +135,10 @@ absl::optional<ItemSuggestCache::Results> ConvertResults(
   ItemSuggestCache::Results results(suggestion_id.value());
 
   const auto items = GetList(value, "item");
-  if (!items)
-    return absl::nullopt;
+  if (!items) {
+    // Return empty results if there are no items.
+    return results;
+  }
 
   for (const auto& result_value : items.value()) {
     auto result = ConvertResult(&result_value);
@@ -154,6 +162,7 @@ constexpr base::FeatureParam<bool> ItemSuggestCache::kEnabled;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kServerUrl;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kModelName;
 constexpr base::FeatureParam<int> ItemSuggestCache::kMinMinutesBetweenUpdates;
+constexpr base::FeatureParam<bool> ItemSuggestCache::kMultipleQueriesPerSession;
 
 ItemSuggestCache::Result::Result(const std::string& id,
                                  const std::string& title)
@@ -175,10 +184,13 @@ ItemSuggestCache::Results::~Results() = default;
 ItemSuggestCache::ItemSuggestCache(
     Profile* profile,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : enabled_(kEnabled.Get()),
+    : made_request_(false),
+      enabled_(kEnabled.Get()),
       server_url_(kServerUrl.Get()),
-      min_time_between_updates_(
-          base::TimeDelta::FromMinutes(kMinMinutesBetweenUpdates.Get())),
+      min_time_between_updates_(base::Minutes(kMinMinutesBetweenUpdates.Get())),
+      multiple_queries_per_session_(
+          app_list_features::IsSuggestedFilesEnabled() ||
+          kMultipleQueriesPerSession.Get()),
       profile_(profile),
       url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -195,8 +207,9 @@ absl::optional<ItemSuggestCache::Results> ItemSuggestCache::GetResults() {
 std::string ItemSuggestCache::GetRequestBody() {
   // We request that ItemSuggest serve our request via particular model by
   // specifying the model name in client_tags. This is a non-standard part of
-  // the API, implemented so we can experiment with model backends. The valid
-  // values for the tag are DCHECKed below.
+  // the API, implemented so we can experiment with model backends. The
+  // client_tags can be set via Finch based on what is expected by the
+  // ItemSuggest backend, and unexpected tags will be assigned a default model.
   static constexpr char kRequestBody[] = R"({
         'client_info': {
           'platform_type': 'CHROME_OS',
@@ -211,12 +224,12 @@ std::string ItemSuggestCache::GetRequestBody() {
       })";
 
   const std::string& model = kModelName.Get();
-  DCHECK(model == "quick_access" || model == "future_access");
   return base::ReplaceStringPlaceholders(kRequestBody, {model}, nullptr);
 }
 
 void ItemSuggestCache::UpdateCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  update_start_time_ = base::TimeTicks::Now();
 
   const auto& now = base::Time::Now();
   if (now - time_of_last_update_ < min_time_between_updates_)
@@ -224,13 +237,12 @@ void ItemSuggestCache::UpdateCache() {
   time_of_last_update_ = now;
 
   // Make no requests and exit in these cases:
-  // - another request is in-flight (url_loader_ is non-null)
-  // - item suggest has been disabled via experiment
-  // - item suggest has been disabled by policy
-  // - the server url is not https or not trusted by Google
-  if (url_loader_) {
-    return;
-  } else if (!enabled_) {
+  // - Item suggest has been disabled via experiment.
+  // - Item suggest has been disabled by policy.
+  // - The server url is not https or not trusted by Google.
+  // - We've already made a request this session and we are not configured to
+  //   query multiple times.
+  if (!enabled_) {
     LogStatus(Status::kDisabledByExperiment);
     return;
   } else if (IsDisabledByPolicy(profile_)) {
@@ -239,6 +251,9 @@ void ItemSuggestCache::UpdateCache() {
   } else if (!server_url_.SchemeIs(url::kHttpsScheme) ||
              !google_util::IsGoogleAssociatedDomainUrl(server_url_)) {
     LogStatus(Status::kInvalidServerUrl);
+    return;
+  } else if (made_request_ && !multiple_queries_per_session_) {
+    LogStatus(Status::kPostLaunchUpdateIgnored);
     return;
   }
 
@@ -269,7 +284,9 @@ void ItemSuggestCache::OnTokenReceived(GoogleServiceAuthError error,
     return;
   }
 
-  // Make a new request.
+  // Make a new request. This destroys any existing |url_loader_| which will
+  // cancel that request if it is in-progress.
+  made_request_ = true;
   url_loader_ = MakeRequestLoader(token_info.token);
   url_loader_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
   url_loader_->AttachStringForUpload(GetRequestBody(), "application/json");
@@ -338,6 +355,7 @@ void ItemSuggestCache::OnJsonParsed(
     LogStatus(Status::kNoResultsInResponse);
   } else {
     LogStatus(Status::kOk);
+    LogLatency(base::TimeTicks::Now() - update_start_time_);
     results_ = std::move(results.value());
   }
 }

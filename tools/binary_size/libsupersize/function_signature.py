@@ -213,7 +213,7 @@ def Parse(name):
       # there was a return value.
       name = _NormalizeTopLevelGccLambda(name, left_paren_idx)
       return Parse(name)
-    elif name_no_params.endswith('::__invoke') and '$' in name_no_params:
+    if name_no_params.endswith('::__invoke') and '$' in name_no_params:
       assert '$_' in name_no_params, 'Surprising lambda: ' + name
       name = _NormalizeTopLevelClangLambda(name, left_paren_idx)
       return Parse(name)

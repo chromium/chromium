@@ -49,16 +49,15 @@ void PipeControlMessageProxy::NotifyPeerEndpointClosed(
 }
 
 void PipeControlMessageProxy::PausePeerUntilFlushCompletes(PendingFlush flush) {
-  auto input = pipe_control::RunOrClosePipeInput::New();
-  input->set_pause_until_flush_completes(
+  auto input = pipe_control::RunOrClosePipeInput::NewPauseUntilFlushCompletes(
       pipe_control::PauseUntilFlushCompletes::New(flush.PassPipe()));
   Message message(ConstructRunOrClosePipeMessage(std::move(input)));
   ignore_result(receiver_->Accept(&message));
 }
 
 void PipeControlMessageProxy::FlushAsync(AsyncFlusher flusher) {
-  auto input = pipe_control::RunOrClosePipeInput::New();
-  input->set_flush_async(pipe_control::FlushAsync::New(flusher.PassPipe()));
+  auto input = pipe_control::RunOrClosePipeInput::NewFlushAsync(
+      pipe_control::FlushAsync::New(flusher.PassPipe()));
   Message message(ConstructRunOrClosePipeMessage(std::move(input)));
   ignore_result(receiver_->Accept(&message));
 }
@@ -75,8 +74,9 @@ Message PipeControlMessageProxy::ConstructPeerEndpointClosedMessage(
     event->disconnect_reason->description = reason->description;
   }
 
-  auto input = pipe_control::RunOrClosePipeInput::New();
-  input->set_peer_associated_endpoint_closed_event(std::move(event));
+  auto input =
+      pipe_control::RunOrClosePipeInput::NewPeerAssociatedEndpointClosedEvent(
+          std::move(event));
 
   return ConstructRunOrClosePipeMessage(std::move(input));
 }

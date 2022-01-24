@@ -29,7 +29,7 @@ namespace policy {
 namespace off_hours {
 
 DeviceOffHoursController::DeviceOffHoursController()
-    : timer_(std::make_unique<util::WallClockTimer>()),
+    : timer_(std::make_unique<base::WallClockTimer>()),
       clock_(base::DefaultClock::GetInstance()) {
   auto* system_clock_client = chromeos::SystemClockClient::Get();
   if (system_clock_client) {
@@ -57,7 +57,7 @@ void DeviceOffHoursController::SetClockForTesting(
     base::Clock* clock,
     const base::TickClock* timer_clock) {
   clock_ = clock;
-  timer_ = std::make_unique<util::WallClockTimer>(clock, timer_clock);
+  timer_ = std::make_unique<base::WallClockTimer>(clock, timer_clock);
 }
 
 bool DeviceOffHoursController::IsCurrentSessionAllowedOnlyForOffHours() const {

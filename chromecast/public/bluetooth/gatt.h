@@ -123,6 +123,12 @@ class CHROMECAST_EXPORT Gatt {
       AUTH_REQ_MAX = AUTH_REQ_MITM,
     };
 
+    enum class Transport {
+      kAuto,
+      kBrEdr,
+      kLe,
+    };
+
     // These callbacks may be on any thead.
     class Delegate {
      public:
@@ -193,8 +199,8 @@ class CHROMECAST_EXPORT Gatt {
     static bool IsSupported();
     static void SetDelegate(Delegate* delegate);
 
-    // Create a connection to remote device |addr|.
-    static bool Connect(const Addr& addr);
+    // Create a connection to remote device |addr| using |transport|.
+    static bool Connect(const Addr& addr, Transport transport);
 
     // Remove connection to remote device |addr|.
     static bool Disconnect(const Addr& addr);
@@ -261,8 +267,7 @@ class CHROMECAST_EXPORT Gatt {
     static bool GetServices(const Addr& addr);
 
     // Clear pending connect request of remote device with |addr|.
-    static bool ClearPendingConnect(const Addr& addr)
-        __attribute__((__weak__));
+    static bool ClearPendingConnect(const Addr& addr) __attribute__((__weak__));
 
     // Clear pending disconnect request of remote device with |addr|.
     static bool ClearPendingDisconnect(const Addr& addr)

@@ -39,6 +39,15 @@ ScriptPromise Ink::requestPresenter(ScriptState* state,
     return ScriptPromise();
   }
 
+  if (presenter_param->presentationArea() &&
+      (presenter_param->presentationArea()->GetDocument() !=
+       GetSupplementable()->DomWindow()->GetFrame()->GetDocument())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Presentation area element does not belong to the document.");
+    return ScriptPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(state);
   ScriptPromise promise = resolver->Promise();
   resolver->Resolve(MakeGarbageCollected<DelegatedInkTrailPresenter>(

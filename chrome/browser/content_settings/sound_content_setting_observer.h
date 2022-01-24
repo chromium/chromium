@@ -27,6 +27,10 @@ class SoundContentSettingObserver
                          // block.
   };
 
+  SoundContentSettingObserver(const SoundContentSettingObserver&) = delete;
+  SoundContentSettingObserver& operator=(const SoundContentSettingObserver&) =
+      delete;
+
   ~SoundContentSettingObserver() override;
 
   // content::WebContentsObserver implementation.
@@ -37,9 +41,10 @@ class SoundContentSettingObserver
   void OnAudioStateChanged(bool audible) override;
 
   // content_settings::Observer implementation.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   bool HasLoggedSiteMutedUkmForTesting() { return logged_site_muted_ukm_; }
 
@@ -76,8 +81,6 @@ class SoundContentSettingObserver
       observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SoundContentSettingObserver);
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_SOUND_CONTENT_SETTING_OBSERVER_H_

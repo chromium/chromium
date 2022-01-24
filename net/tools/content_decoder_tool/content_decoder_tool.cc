@@ -31,6 +31,10 @@ class StdinSourceStream : public SourceStream {
  public:
   explicit StdinSourceStream(std::istream* input_stream)
       : SourceStream(SourceStream::TYPE_NONE), input_stream_(input_stream) {}
+
+  StdinSourceStream(const StdinSourceStream&) = delete;
+  StdinSourceStream& operator=(const StdinSourceStream&) = delete;
+
   ~StdinSourceStream() override = default;
 
   // SourceStream implementation.
@@ -53,8 +57,6 @@ class StdinSourceStream : public SourceStream {
 
  private:
   std::istream* input_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(StdinSourceStream);
 };
 
 }  // namespace

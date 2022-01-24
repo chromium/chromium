@@ -86,9 +86,8 @@ TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_Empty) {
   ApplyPolicies();
   base::Value* out;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlAllowlist, &out));
-  base::ListValue* out_list;
-  EXPECT_TRUE(out->GetAsList(&out_list));
-  EXPECT_EQ(0U, out_list->GetSize());
+  ASSERT_TRUE(out->is_list());
+  EXPECT_EQ(0U, out->GetList().size());
 }
 
 TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_WrongElementType) {
@@ -101,9 +100,8 @@ TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_WrongElementType) {
   // The element should be skipped.
   base::Value* out;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlAllowlist, &out));
-  base::ListValue* out_list;
-  EXPECT_TRUE(out->GetAsList(&out_list));
-  EXPECT_EQ(0U, out_list->GetSize());
+  ASSERT_TRUE(out->is_list());
+  EXPECT_EQ(0U, out->GetList().size());
 }
 
 TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_Successful) {
@@ -114,13 +112,12 @@ TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_Successful) {
 
   base::Value* out;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlAllowlist, &out));
-  base::ListValue* out_list;
-  EXPECT_TRUE(out->GetAsList(&out_list));
-  EXPECT_EQ(1U, out_list->GetSize());
+  ASSERT_TRUE(out->is_list());
+  ASSERT_EQ(1U, out->GetList().size());
 
-  std::string out_string;
-  EXPECT_TRUE(out_list->GetString(0U, &out_string));
-  EXPECT_EQ(kTestAllowlistValue, out_string);
+  const std::string* out_string = out->GetList()[0].GetIfString();
+  ASSERT_TRUE(out_string);
+  EXPECT_EQ(kTestAllowlistValue, *out_string);
 }
 
 TEST_F(URLAllowlistPolicyHandlerTest,
@@ -136,9 +133,8 @@ TEST_F(URLAllowlistPolicyHandlerTest,
 
   base::Value* out;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlAllowlist, &out));
-  base::ListValue* out_list;
-  EXPECT_TRUE(out->GetAsList(&out_list));
-  EXPECT_EQ(max_filters_per_policy, out_list->GetSize());
+  ASSERT_TRUE(out->is_list());
+  EXPECT_EQ(max_filters_per_policy, out->GetList().size());
 }
 
 // Test that the warning message, mapped to
@@ -163,9 +159,8 @@ TEST_F(URLAllowlistPolicyHandlerTest,
 
   base::Value* out;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlAllowlist, &out));
-  base::ListValue* out_list;
-  EXPECT_TRUE(out->GetAsList(&out_list));
-  EXPECT_EQ(max_filters_per_policy + 1, out_list->GetSize());
+  ASSERT_TRUE(out->is_list());
+  EXPECT_EQ(max_filters_per_policy + 1, out->GetList().size());
 }
 
 TEST_F(URLAllowlistPolicyHandlerTest, ValidatePolicy) {

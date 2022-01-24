@@ -76,7 +76,8 @@ class PLATFORM_EXPORT Matrix3DTransformOperation final
     return matrix_.IsIdentityOrTranslation();
   }
 
-  Matrix3DTransformOperation(const TransformationMatrix& mat) { matrix_ = mat; }
+  explicit Matrix3DTransformOperation(const TransformationMatrix& mat)
+      : matrix_(mat) {}
 
   TransformationMatrix matrix_;
 };

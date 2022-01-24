@@ -25,6 +25,8 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
       await importModule(
           'SelectToSpeakConstants',
           '/select_to_speak/select_to_speak_constants.js');
+      selectToSpeak.prefsManager_.enhancedVoicesDialogShown_ = true;
+
       runTest();
     })();
   }

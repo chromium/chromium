@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
@@ -42,15 +43,27 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMonitorServiceProviderImpl
 
   void Release(dbus::MethodCall* method_call,
                dbus::ExportedObject::ResponseSender response_sender);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothAdvertisementMonitorServiceProviderImplTest,
+                           Release);
 
   void Activate(dbus::MethodCall* method_call,
                 dbus::ExportedObject::ResponseSender response_sender);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothAdvertisementMonitorServiceProviderImplTest,
+                           Activate);
 
   void DeviceFound(dbus::MethodCall* method_call,
                    dbus::ExportedObject::ResponseSender response_sender);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothAdvertisementMonitorServiceProviderImplTest,
+                           DeviceFound);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothAdvertisementMonitorServiceProviderImplTest,
+                           DeviceFoundFailure);
 
   void DeviceLost(dbus::MethodCall* method_call,
                   dbus::ExportedObject::ResponseSender response_sender);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothAdvertisementMonitorServiceProviderImplTest,
+                           DeviceLost);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothAdvertisementMonitorServiceProviderImplTest,
+                           DeviceLostFailure);
 
   void WriteProperties(dbus::MessageWriter* writer) override;
 

@@ -17,7 +17,7 @@
 
 namespace weblayer {
 namespace {
-constexpr base::TimeDelta kCookieFlushDelay = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kCookieFlushDelay = base::Seconds(1);
 
 void GetCookieComplete(CookieManager::GetCookieCallback callback,
                        const net::CookieAccessResultList& cookies,
@@ -76,6 +76,7 @@ void CookieManagerImpl::GetCookie(const GURL& url, GetCookieCallback callback) {
   browser_context_->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->GetCookieList(url, net::CookieOptions::MakeAllInclusive(),
+                      net::CookiePartitionKeychain::Todo(),
                       base::BindOnce(&GetCookieComplete, std::move(callback)));
 }
 
@@ -151,8 +152,9 @@ bool CookieManagerImpl::FireFlushTimerForTesting() {
 bool CookieManagerImpl::SetCookieInternal(const GURL& url,
                                           const std::string& value,
                                           SetCookieCallback callback) {
-  auto cc = net::CanonicalCookie::Create(url, value, base::Time::Now(),
-                                         absl::nullopt);
+  auto cc =
+      net::CanonicalCookie::Create(url, value, base::Time::Now(), absl::nullopt,
+                                   net::CookiePartitionKey::Todo());
   if (!cc) {
     return false;
   }

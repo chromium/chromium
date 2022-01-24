@@ -21,6 +21,11 @@ class PasswordFormManagerForUI;
 // IOSChromeSavePasswordInfoBarDelegate.
 class IOSChromePasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  IOSChromePasswordManagerInfoBarDelegate(
+      const IOSChromePasswordManagerInfoBarDelegate&) = delete;
+  IOSChromePasswordManagerInfoBarDelegate& operator=(
+      const IOSChromePasswordManagerInfoBarDelegate&) = delete;
+
   ~IOSChromePasswordManagerInfoBarDelegate() override;
 
   // Getter for the message displayed in addition to the title. If no message
@@ -75,7 +80,5 @@ class IOSChromePasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Handler for calling Application commands.
   __weak id<ApplicationCommands> handler_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromePasswordManagerInfoBarDelegate);
 };
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_PASSWORD_MANAGER_INFOBAR_DELEGATE_H_

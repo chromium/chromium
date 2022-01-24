@@ -26,6 +26,9 @@ class WatcherImpl {
                  SimpleWatcher::ArmingPolicy::AUTOMATIC,
                  base::SequencedTaskRunnerHandle::Get()) {}
 
+  WatcherImpl(const WatcherImpl&) = delete;
+  WatcherImpl& operator=(const WatcherImpl&) = delete;
+
   ~WatcherImpl() = default;
 
   jint Start(JNIEnv* env,
@@ -67,8 +70,6 @@ class WatcherImpl {
 
   SimpleWatcher watcher_;
   base::android::ScopedJavaGlobalRef<jobject> java_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatcherImpl);
 };
 
 }  // namespace

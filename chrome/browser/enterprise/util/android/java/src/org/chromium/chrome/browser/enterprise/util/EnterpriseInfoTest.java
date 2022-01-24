@@ -48,6 +48,7 @@ public class EnterpriseInfoTest {
 
     @After
     public void tearDown() {
+        ShadowPostTask.reset();
         EnterpriseInfoJni.TEST_HOOKS.setInstanceForTesting(null);
     }
 

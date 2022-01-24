@@ -10,7 +10,7 @@ namespace external_service_support {
 
 // Common initialization code for external Mojo processes. Should be called
 // early in main().
-void CommonProcessInitialization(int argc, char** argv);
+void CommonProcessInitialization(int argc, const char* const* argv);
 
 }  // namespace external_service_support
 }  // namespace chromecast

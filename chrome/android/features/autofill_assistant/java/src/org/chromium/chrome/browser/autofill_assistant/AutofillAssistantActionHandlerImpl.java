@@ -114,6 +114,15 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
         afterOnboarding.onResult(null);
     }
 
+    @Override
+    public void showFatalError() {
+        AutofillAssistantClient client = getOrCreateClient();
+        if (client == null) {
+            return;
+        }
+        client.showFatalError();
+    }
+
     private WebContents getWebContents() {
         Tab tab = mActivityTabProvider.get();
         if (tab == null) {

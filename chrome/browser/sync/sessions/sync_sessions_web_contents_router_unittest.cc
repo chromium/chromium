@@ -28,6 +28,12 @@ class StartSyncFlareMock {
 
 class SyncSessionsWebContentsRouterTest
     : public ChromeRenderViewHostTestHarness {
+ public:
+  SyncSessionsWebContentsRouterTest(const SyncSessionsWebContentsRouterTest&) =
+      delete;
+  SyncSessionsWebContentsRouterTest& operator=(
+      const SyncSessionsWebContentsRouterTest&) = delete;
+
  protected:
   SyncSessionsWebContentsRouterTest() = default;
   ~SyncSessionsWebContentsRouterTest() override = default;
@@ -43,8 +49,6 @@ class SyncSessionsWebContentsRouterTest
 
  private:
   SyncSessionsWebContentsRouter* router_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSessionsWebContentsRouterTest);
 };
 
 // Disabled on android due to complexity of creating a full TabAndroid object

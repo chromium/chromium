@@ -9,7 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/browser/quota/quota_change_dispatcher.h"
 #include "content/browser/quota/quota_manager_host.h"
 #include "content/public/browser/browser_task_traits.h"

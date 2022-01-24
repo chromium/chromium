@@ -35,10 +35,11 @@ bool PathProviderAndroid(int key, FilePath* result) {
       return false;
     case base::DIR_MODULE:
       return base::android::GetNativeLibraryDirectory(result);
-    case base::DIR_SOURCE_ROOT:
-      // Used only by tests.
-      // In that context, hooked up via base/test/test_support_android.cc.
-      NOTIMPLEMENTED();
+    case base::DIR_SRC_TEST_DATA_ROOT:
+    case base::DIR_GEN_TEST_DATA_ROOT:
+      // These are only used by tests. In that context, they are overridden by
+      // PathProviders in //base/test/test_support_android.cc.
+      NOTREACHED();
       return false;
     case base::DIR_USER_DESKTOP:
       // Android doesn't support GetUserDesktop.
@@ -55,12 +56,10 @@ bool PathProviderAndroid(int key, FilePath* result) {
       return base::android::GetDataDirectory(result);
     case base::DIR_ANDROID_EXTERNAL_STORAGE:
       return base::android::GetExternalStorageDirectory(result);
-    default:
-      // Note: the path system expects this function to override the default
-      // behavior. So no need to log an error if we don't support a given
-      // path. The system will just use the default.
-      return false;
   }
+
+  // For all other keys, let the PathService fall back to a default, if defined.
+  return false;
 }
 
 }  // namespace base

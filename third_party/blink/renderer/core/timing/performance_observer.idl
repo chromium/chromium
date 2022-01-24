@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // https://w3c.github.io/performance-timeline/#dom-performanceobservercallback
-callback PerformanceObserverCallback = void (PerformanceObserverEntryList entries, PerformanceObserver observer);
+callback PerformanceObserverCallback = void (PerformanceObserverEntryList entries, PerformanceObserver observer, optional PerformanceObserverCallbackOptions options = {});
 
 // https://w3c.github.io/performance-timeline/#the-performanceobserver-interface
 [

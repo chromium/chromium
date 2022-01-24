@@ -12,8 +12,12 @@ import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {assertOrderedAlphabetically, changeSelect} from './scanning_app_test_utils.js';
 
 const PageSize = {
+  A3: ash.scanning.mojom.PageSize.kIsoA3,
   A4: ash.scanning.mojom.PageSize.kIsoA4,
+  B4: ash.scanning.mojom.PageSize.kIsoB4,
+  Legal: ash.scanning.mojom.PageSize.kLegal,
   Letter: ash.scanning.mojom.PageSize.kNaLetter,
+  Tabloid: ash.scanning.mojom.PageSize.kTabloid,
   Max: ash.scanning.mojom.PageSize.kMax,
 };
 
@@ -67,7 +71,10 @@ export function pageSizeSelectTest() {
 
   // Verify the pages sizes are sorted correctly.
   test('pageSizesSortedCorrectly', () => {
-    pageSizeSelect.options = [PageSize.Letter, PageSize.Max, PageSize.A4];
+    pageSizeSelect.options = [
+      PageSize.Tabloid, PageSize.Letter, PageSize.A3, PageSize.Max,
+      PageSize.Legal, PageSize.B4, PageSize.A4
+    ];
     flush();
 
     // Verify the page sizes are sorted alphabetically except for the fit to

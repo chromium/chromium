@@ -167,7 +167,7 @@ float SkFontGetWidthForGlyph(const SkFont& font, Glyph glyph) {
 hb_position_t SkiaScalarToHarfBuzzPosition(SkScalar value) {
   // We treat HarfBuzz hb_position_t as 16.16 fixed-point.
   static const int kHbPosition1 = 1 << 16;
-  return clampTo<int>(value * kHbPosition1);
+  return ClampTo<int>(value * kHbPosition1);
 }
 
 }  // namespace blink

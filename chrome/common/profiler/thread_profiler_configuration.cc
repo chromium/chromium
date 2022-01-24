@@ -53,13 +53,13 @@ ThreadProfilerConfiguration* ThreadProfilerConfiguration::Get() {
 base::StackSamplingProfiler::SamplingParams
 ThreadProfilerConfiguration::GetSamplingParams() const {
   base::StackSamplingProfiler::SamplingParams params;
-  params.initial_delay = base::TimeDelta::FromMilliseconds(0);
+  params.initial_delay = base::Milliseconds(0);
   // Trim the sampling duration when testing the profiler using browser tests.
   // The standard 30 second duration risks flaky timeouts since it's close to
   // the test timeout of 45 seconds.
   const base::TimeDelta duration =
-      base::TimeDelta::FromSeconds(IsBrowserTestModeEnabled() ? 1 : 30);
-  params.sampling_interval = base::TimeDelta::FromMilliseconds(100);
+      base::Seconds(IsBrowserTestModeEnabled() ? 1 : 30);
+  params.sampling_interval = base::Milliseconds(100);
   params.samples_per_profile = duration / params.sampling_interval;
 
   return params;
@@ -240,7 +240,7 @@ ThreadProfilerConfiguration::Configuration
 ThreadProfilerConfiguration::GenerateConfiguration(
     metrics::CallStackProfileParams::Process process,
     const ThreadProfilerPlatformConfiguration& platform_configuration) {
-  if (process == metrics::CallStackProfileParams::BROWSER_PROCESS)
+  if (process == metrics::CallStackProfileParams::Process::kBrowser)
     return GenerateBrowserProcessConfiguration(platform_configuration);
 
   return GenerateChildProcessConfiguration(

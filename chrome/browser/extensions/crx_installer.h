@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
@@ -91,6 +90,9 @@ class CrxInstaller : public SandboxedUnpackerClient {
   // Used to indicate if host permissions should be withheld during
   // installation.
   enum WithholdingBehavior { kWithholdPermissions, kDontWithholdPermissions };
+
+  CrxInstaller(const CrxInstaller&) = delete;
+  CrxInstaller& operator=(const CrxInstaller&) = delete;
 
   // Extensions will be installed into service->install_directory(), then
   // registered with |service|. This does a silent install - see below for
@@ -538,8 +540,6 @@ class CrxInstaller : public SandboxedUnpackerClient {
   // Invoked when the expectations from CRXFileInfo match with the crx file
   // after unpack success.
   ExpectationsVerifiedCallback expectations_verified_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrxInstaller);
 };
 
 }  // namespace extensions

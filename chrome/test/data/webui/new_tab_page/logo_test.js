@@ -5,9 +5,9 @@
 import {$$, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {assertNotStyle, assertStyle, keydown} from 'chrome://test/new_tab_page/test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
+import {assertNotStyle, assertStyle, installMock, keydown} from 'chrome://test/new_tab_page/test_support.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 
 /**
  * @param {!Element} element
@@ -81,16 +81,10 @@ function createImageDoodle(width, height) {
 }
 
 suite('NewTabPageLogoTest', () => {
-  /**
-   * @implements {WindowProxy}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let windowProxy;
 
-  /**
-   * @implements {newTabPage.mojom.PageHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let handler;
 
   async function createLogo(doodle = null) {
@@ -107,17 +101,17 @@ suite('NewTabPageLogoTest', () => {
   setup(() => {
     PolymerTest.clearBody();
 
-    windowProxy = TestBrowserProxy.fromClass(WindowProxy);
+    windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('createIframeSrc', '');
-    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    handler = installMock(
+        newTabPage.mojom.PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(
+            mock, new newTabPage.mojom.PageCallbackRouter()));
     handler.setResultFor('onDoodleImageRendered', Promise.resolve({
       imageClickParams: '',
       interactionLogUrl: null,
       shareId: '',
     }));
-    WindowProxy.setInstance(windowProxy);
-    NewTabPageProxy.setInstance(
-        handler, new newTabPage.mojom.PageCallbackRouter());
   });
 
   [true, false].forEach(dark => {
@@ -489,78 +483,94 @@ suite('NewTabPageLogoTest', () => {
     assertEquals('https://foo.com', origin);
   });
 
-  test('clicking simple doodle opens link', async () => {
-    // Arrange.
-    const doodle = createImageDoodle();
-    doodle.image.onClickUrl = {url: 'https://foo.com'};
-    const logo = await createLogo(doodle);
-
-    // Act.
-    $$(logo, '#image').click();
-    const url = await windowProxy.whenCalled('open');
-
-    // Assert.
-    assertEquals(url, 'https://foo.com/');
-  });
-
-  [' ', 'Enter'].forEach(key => {
-    test(`pressing ${key} on simple doodle opens link`, async () => {
+  [true, false].forEach(hasUrl => {
+    const with_out = hasUrl ? 'with' : 'without';
+    test(`clicking simple doodle ${with_out} URL`, async () => {
       // Arrange.
       const doodle = createImageDoodle();
-      doodle.image.onClickUrl = {url: 'https://foo.com'};
+      doodle.image.onClickUrl = hasUrl ? {url: 'https://foo.com'} : null;
       const logo = await createLogo(doodle);
 
       // Act.
-      keydown($$(logo, '#image'), key);
-      const url = await windowProxy.whenCalled('open');
+      $$(logo, '#image').click();
 
       // Assert.
-      assertEquals(url, 'https://foo.com/');
+      assertEquals(hasUrl ? 1 : 0, windowProxy.getCallCount('open'));
+      if (hasUrl) {
+        assertEquals('https://foo.com/', windowProxy.getArgs('open')[0]);
+      }
+      assertEquals(hasUrl ? 0 : -1, $$(logo, '#imageDoodle').tabIndex);
     });
-  });
 
-  test('animated doodle starts and stops', async () => {
-    // Arrange.
-    const doodle = createImageDoodle();
-    doodle.image.light.animationUrl = {url: 'https://foo.com'};
-    const logo = await createLogo(doodle);
+    [' ', 'Enter'].forEach(key => {
+      test(`pressing ${key} on simple doodle ${with_out} URL`, async () => {
+        // Arrange.
+        const doodle = createImageDoodle();
+        doodle.image.onClickUrl = hasUrl ? {url: 'https://foo.com'} : null;
+        const logo = await createLogo(doodle);
 
-    // Act (start animation).
-    $$(logo, '#image').click();
+        // Act.
+        keydown($$(logo, '#image'), key);
 
-    // Assert (animation started).
-    assertEquals(windowProxy.getCallCount('open'), 0);
-    assertNotStyle($$(logo, '#image'), 'display', 'none');
-    assertNotStyle($$(logo, '#animation'), 'display', 'none');
-    assertEquals(
-        $$(logo, '#animation').src,
-        'chrome-untrusted://new-tab-page/image?https://foo.com');
-    assertDeepEquals(
-        $$(logo, '#image').getBoundingClientRect(),
-        $$(logo, '#animation').getBoundingClientRect());
+        // Assert.
+        assertEquals(hasUrl ? 1 : 0, windowProxy.getCallCount('open'));
+        if (hasUrl) {
+          assertEquals('https://foo.com/', windowProxy.getArgs('open')[0]);
+        }
+        assertEquals(hasUrl ? 0 : -1, $$(logo, '#imageDoodle').tabIndex);
+      });
+    });
 
-    // Act (switch mode).
-    logo.dark = true;
+    test(`animated doodle starts and stops ${with_out} URL`, async () => {
+      // Arrange.
+      const doodle = createImageDoodle();
+      doodle.image.light.animationUrl = {url: 'https://foo.com'};
+      doodle.image.onClickUrl = hasUrl ? {url: 'https://bar.com'} : null;
+      const logo = await createLogo(doodle);
+      assertEquals(0, $$(logo, '#imageDoodle').tabIndex);
 
-    // Assert (animation stopped).
-    assertNotStyle($$(logo, '#image'), 'display', 'none');
-    assertStyle($$(logo, '#animation'), 'display', 'none');
-  });
+      // Act (start animation).
+      $$(logo, '#image').click();
 
-  test('clicking animation of animated doodle opens link', async () => {
-    // Arrange.
-    const doodle = createImageDoodle();
-    doodle.image.light.animationUrl = {url: 'https://foo.com'};
-    doodle.image.onClickUrl = {url: 'https://bar.com'};
-    const logo = await createLogo(doodle);
-    $$(logo, '#image').click();
+      // Assert (animation started).
+      assertEquals(windowProxy.getCallCount('open'), 0);
+      assertNotStyle($$(logo, '#image'), 'display', 'none');
+      assertNotStyle($$(logo, '#animation'), 'display', 'none');
+      assertEquals(
+          $$(logo, '#animation').src,
+          'chrome-untrusted://new-tab-page/image?https://foo.com');
+      assertDeepEquals(
+          $$(logo, '#image').getBoundingClientRect(),
+          $$(logo, '#animation').getBoundingClientRect());
+      assertEquals(hasUrl ? 0 : -1, $$(logo, '#imageDoodle').tabIndex);
 
-    // Act.
-    $$(logo, '#animation').click();
-    const url = await windowProxy.whenCalled('open');
+      // Act (switch mode).
+      logo.dark = true;
 
-    // Assert.
-    assertEquals(url, 'https://bar.com/');
+      // Assert (animation stopped).
+      assertNotStyle($$(logo, '#image'), 'display', 'none');
+      assertStyle($$(logo, '#animation'), 'display', 'none');
+      assertEquals(hasUrl ? 0 : -1, $$(logo, '#imageDoodle').tabIndex);
+    });
+
+    test(`clicking animation of animated doodle ${with_out} URL`, async () => {
+      // Arrange.
+      const doodle = createImageDoodle();
+      doodle.image.light.animationUrl = {url: 'https://foo.com'};
+      doodle.image.onClickUrl = hasUrl ? {url: 'https://bar.com'} : null;
+      const logo = await createLogo(doodle);
+      $$(logo, '#image').click();
+
+      // Act.
+      $$(logo, '#animation').click();
+
+      // Assert.
+      assertEquals(hasUrl ? 1 : 0, windowProxy.getCallCount('open'));
+      if (hasUrl) {
+        assertEquals('https://bar.com/', windowProxy.getArgs('open')[0]);
+      }
+      assertEquals(hasUrl ? 0 : -1, $$(logo, '#imageDoodle').tabIndex);
+    });
   });
 
   test('share dialog removed on start', async () => {

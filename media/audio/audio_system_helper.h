@@ -18,6 +18,10 @@ class AudioManager;
 class MEDIA_EXPORT AudioSystemHelper {
  public:
   AudioSystemHelper(AudioManager* audio_manager);
+
+  AudioSystemHelper(const AudioSystemHelper&) = delete;
+  AudioSystemHelper& operator=(const AudioSystemHelper&) = delete;
+
   ~AudioSystemHelper();
 
   void GetInputStreamParameters(
@@ -51,8 +55,6 @@ class MEDIA_EXPORT AudioSystemHelper {
       const std::string& device_id);
 
   AudioManager* const audio_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioSystemHelper);
 };
 
 }  // namespace media

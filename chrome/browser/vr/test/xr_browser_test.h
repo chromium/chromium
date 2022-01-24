@@ -39,15 +39,13 @@ namespace vr {
 class XrBrowserTestBase : public InProcessBrowserTest {
  public:
   static constexpr base::TimeDelta kPollCheckIntervalShort =
-      base::TimeDelta::FromMilliseconds(50);
+      base::Milliseconds(50);
   static constexpr base::TimeDelta kPollCheckIntervalLong =
-      base::TimeDelta::FromMilliseconds(100);
-  static constexpr base::TimeDelta kPollTimeoutShort =
-      base::TimeDelta::FromMilliseconds(1000);
+      base::Milliseconds(100);
+  static constexpr base::TimeDelta kPollTimeoutShort = base::Milliseconds(1000);
   static constexpr base::TimeDelta kPollTimeoutMedium =
-      base::TimeDelta::FromMilliseconds(5000);
-  static constexpr base::TimeDelta kPollTimeoutLong =
-      base::TimeDelta::FromMilliseconds(10000);
+      base::Milliseconds(5000);
+  static constexpr base::TimeDelta kPollTimeoutLong = base::Milliseconds(10000);
   static constexpr char kOpenXrConfigPathEnvVar[] = "XR_RUNTIME_JSON";
   static constexpr char kOpenXrConfigPathVal[] =
       "./mock_vr_clients/bin/openxr/openxr.json";
@@ -70,6 +68,10 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   };
 
   XrBrowserTestBase();
+
+  XrBrowserTestBase(const XrBrowserTestBase&) = delete;
+  XrBrowserTestBase& operator=(const XrBrowserTestBase&) = delete;
+
   ~XrBrowserTestBase() override;
 
   void SetUp() override;
@@ -235,7 +237,6 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   bool test_skipped_at_startup_ = false;
   bool javascript_failed_ = false;
-  DISALLOW_COPY_AND_ASSIGN(XrBrowserTestBase);
 };
 
 }  // namespace vr

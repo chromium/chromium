@@ -120,7 +120,7 @@ Status FocusToElement(
     if (base::TimeTicks::Now() - start_time >= session->implicit_wait) {
       return Status(kElementNotVisible);
     }
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+    base::PlatformThread::Sleep(base::Milliseconds(100));
   }
 
   bool is_enabled = false;
@@ -199,6 +199,62 @@ Status ExecuteFindChildElement(int interval_ms,
                                std::unique_ptr<base::Value>* value) {
   return FindElement(
       interval_ms, true, &element_id, session, web_view, params, value);
+}
+
+Status ExecuteFindChildElementFromShadowRoot(
+    int interval_ms,
+    Session* session,
+    WebView* web_view,
+    const std::string& shadow_root_id,
+    const base::DictionaryValue& params,
+    std::unique_ptr<base::Value>* value) {
+  return FindShadowElement(interval_ms, true, &shadow_root_id, session,
+                           web_view, params, value);
+}
+
+Status ExecuteFindChildElementsFromShadowRoot(
+    int interval_ms,
+    Session* session,
+    WebView* web_view,
+    const std::string& shadow_root_id,
+    const base::DictionaryValue& params,
+    std::unique_ptr<base::Value>* value) {
+  return FindShadowElement(interval_ms, false, &shadow_root_id, session,
+                           web_view, params, value);
+}
+
+Status ExecuteGetElementShadowRoot(Session* session,
+                                   WebView* web_view,
+                                   const std::string& element_id,
+                                   const base::DictionaryValue& params,
+                                   std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+
+  if (status.IsError())
+    return status;
+
+  base::ListValue args;
+  args.Append(CreateElement(element_id));
+
+  std::string currentFrameId = session->GetCurrentFrameId();
+
+  status = web_view->CallFunction(session->GetCurrentFrameId(),
+                                  "function(elem) { return elem.shadowRoot; }",
+                                  args, value);
+
+  if (status.IsError()) {
+    if (status.message().find("no such shadow root") != std::string::npos) {
+      return Status(kNoSuchShadowRoot);
+    }
+
+    return status;
+  }
+
+  if (value->get()->is_none()) {
+    return Status(kNoSuchShadowRoot);
+  }
+
+  return status;
 }
 
 Status ExecuteFindChildElements(int interval_ms,
@@ -365,7 +421,7 @@ Status ExecuteFlick(Session* session,
     if (status.IsError())
       return status;
     base::PlatformThread::Sleep(
-        base::TimeDelta::FromMilliseconds(1000 / kFlickTouchEventsPerSecond));
+        base::Milliseconds(1000 / kFlickTouchEventsPerSecond));
   }
   return web_view->DispatchTouchEvent(
       TouchEvent(kTouchEnd, location.x + xoffset, location.y + yoffset), false);
@@ -443,7 +499,7 @@ Status ExecuteClearElement(Session* session,
     if (base::TimeTicks::Now() - start_time >= session->implicit_wait) {
       return Status(kElementNotVisible);
     }
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
+    base::PlatformThread::Sleep(base::Milliseconds(50));
   }
   static bool isClearWarningNotified = false;
   if (!isClearWarningNotified) {
@@ -509,7 +565,7 @@ Status ExecuteSendKeysToElement(Session* session,
     }
     // Compress array into a single string.
     std::string paths_string;
-    for (size_t i = 0; i < key_list->GetSize(); ++i) {
+    for (size_t i = 0; i < key_list->GetList().size(); ++i) {
       std::string path_part;
       if (!key_list->GetString(i, &path_part))
         return Status(kInvalidArgument, "'value' is invalid");
@@ -562,7 +618,7 @@ Status ExecuteSendKeysToElement(Session* session,
     DCHECK(text != nullptr);
     base::ListValue args;
     args.Append(CreateElement(element_id));
-    args.AppendString(text->GetString());
+    args.Append(text->GetString());
     std::unique_ptr<base::Value> result;
     // Set value to text as given by user; if this does not match the defined
     // format for the input type, results are not defined
@@ -720,7 +776,7 @@ Status ExecuteGetElementProperty(Session* session,
   std::string name;
   if (!params.GetString("name", &name))
     return Status(kInvalidArgument, "missing 'name'");
-  args.AppendString(name);
+  args.Append(name);
 
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
@@ -993,7 +1049,7 @@ Status ExecuteGetElementAttribute(Session* session,
     return status;
   base::ListValue args;
   args.Append(CreateElement(element_id));
-  args.AppendString(attribute_name);
+  args.Append(attribute_name);
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       booleanAttributes.count(base::ToLowerASCII(attribute_name))

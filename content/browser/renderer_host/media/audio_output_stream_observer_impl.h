@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_AUDIO_OUTPUT_STREAM_OBSERVER_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_AUDIO_OUTPUT_STREAM_OBSERVER_IMPL_H_
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 
@@ -17,6 +16,11 @@ class CONTENT_EXPORT AudioOutputStreamObserverImpl
   AudioOutputStreamObserverImpl(int render_process_id,
                                 int render_frame_id,
                                 int stream_id);
+
+  AudioOutputStreamObserverImpl(const AudioOutputStreamObserverImpl&) = delete;
+  AudioOutputStreamObserverImpl& operator=(
+      const AudioOutputStreamObserverImpl&) = delete;
+
   ~AudioOutputStreamObserverImpl() override;
 
   // media::mojom::AudioOutputStreamObserver implementation
@@ -31,8 +35,6 @@ class CONTENT_EXPORT AudioOutputStreamObserverImpl
   bool did_start_playing_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputStreamObserverImpl);
 };
 
 }  // namespace content

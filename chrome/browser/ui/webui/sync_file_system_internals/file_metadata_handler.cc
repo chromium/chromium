@@ -31,11 +31,11 @@ FileMetadataHandler::FileMetadataHandler(Profile* profile)
 FileMetadataHandler::~FileMetadataHandler() {}
 
 void FileMetadataHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getExtensions",
       base::BindRepeating(&FileMetadataHandler::HandleGetExtensions,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getFileMetadata",
       base::BindRepeating(&FileMetadataHandler::HandleGetFileMetadata,
                           base::Unretained(this)));

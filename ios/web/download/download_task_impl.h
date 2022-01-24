@@ -62,9 +62,10 @@ class DownloadTaskImpl : public DownloadTask {
   // DownloadTask overrides:
   WebState* GetWebState() override;
   DownloadTask::State GetState() const override;
-  void Start(std::unique_ptr<net::URLFetcherResponseWriter> writer) override;
+  void Start(const base::FilePath& path, Destination destination_hint) override;
   void Cancel() override;
-  net::URLFetcherResponseWriter* GetResponseWriter() const override;
+  NSData* GetResponseData() const override;
+  const base::FilePath& GetResponsePath() const override;
   NSString* GetIndentifier() const override;
   const GURL& GetOriginalUrl() const override;
   NSString* GetHttpMethod() const override;
@@ -81,9 +82,21 @@ class DownloadTaskImpl : public DownloadTask {
   bool HasPerformedBackgroundDownload() const override;
   void AddObserver(DownloadTaskObserver* observer) override;
   void RemoveObserver(DownloadTaskObserver* observer) override;
+
+  DownloadTaskImpl(const DownloadTaskImpl&) = delete;
+  DownloadTaskImpl& operator=(const DownloadTaskImpl&) = delete;
+
   ~DownloadTaskImpl() override;
 
  private:
+  // Called once the net::URLFetcherResponseWriter created in
+  // Start() has been initialised. The download can be started
+  // unless the initialisation has failed (as reported by the
+  // |writer_initialization_status| result).
+  void OnWriterInitialized(
+      std::unique_ptr<net::URLFetcherResponseWriter> writer,
+      int writer_initialization_status);
+
   // Creates background NSURLSession with given |identifier| and |cookies|.
   NSURLSession* CreateSession(NSString* identifier,
                               NSArray<NSHTTPCookie*>* cookies);
@@ -142,9 +155,7 @@ class DownloadTaskImpl : public DownloadTask {
   // Observes UIApplicationWillResignActiveNotification notifications.
   id<NSObject> observer_ = nil;
 
-  base::WeakPtrFactory<DownloadTaskImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTaskImpl);
+  base::WeakPtrFactory<DownloadTaskImpl> weak_factory_{this};
 };
 
 }  // namespace web

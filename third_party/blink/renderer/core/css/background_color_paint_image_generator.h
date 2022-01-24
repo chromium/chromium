@@ -14,8 +14,6 @@
 
 namespace blink {
 
-class Animation;
-class Element;
 class Image;
 class LocalFrame;
 class Node;
@@ -47,8 +45,6 @@ class CORE_EXPORT BackgroundColorPaintImageGenerator
       Vector<Color>* animated_colors,
       Vector<double>* offsets,
       absl::optional<double>* progress) = 0;
-
-  virtual Animation* GetAnimationIfCompositable(const Element* element) = 0;
 };
 
 }  // namespace blink

@@ -351,13 +351,16 @@ class WebstorePrivateGetReferrerChainFunction : public ExtensionFunction {
 
   WebstorePrivateGetReferrerChainFunction();
 
+  WebstorePrivateGetReferrerChainFunction(
+      const WebstorePrivateGetReferrerChainFunction&) = delete;
+  WebstorePrivateGetReferrerChainFunction& operator=(
+      const WebstorePrivateGetReferrerChainFunction&) = delete;
+
  private:
   ~WebstorePrivateGetReferrerChainFunction() override;
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstorePrivateGetReferrerChainFunction);
 };
 
 class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
@@ -366,6 +369,11 @@ class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
                              WEBSTOREPRIVATE_GETEXTENSIONSTATUS)
 
   WebstorePrivateGetExtensionStatusFunction();
+
+  WebstorePrivateGetExtensionStatusFunction(
+      const WebstorePrivateGetExtensionStatusFunction&) = delete;
+  WebstorePrivateGetExtensionStatusFunction& operator=(
+      const WebstorePrivateGetExtensionStatusFunction&) = delete;
 
  private:
   ~WebstorePrivateGetExtensionStatusFunction() override;
@@ -377,8 +385,6 @@ class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstorePrivateGetExtensionStatusFunction);
 };
 
 class WebstorePrivateRequestExtensionFunction : public ExtensionFunction {
@@ -387,13 +393,16 @@ class WebstorePrivateRequestExtensionFunction : public ExtensionFunction {
                              WEBSTOREPRIVATE_REQUESTEXTENSION)
   WebstorePrivateRequestExtensionFunction();
 
+  WebstorePrivateRequestExtensionFunction(
+      const WebstorePrivateRequestExtensionFunction&) = delete;
+  WebstorePrivateRequestExtensionFunction& operator=(
+      const WebstorePrivateRequestExtensionFunction&) = delete;
+
  private:
   ~WebstorePrivateRequestExtensionFunction() override;
 
   // Extensionfunction:
   ExtensionFunction::ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstorePrivateRequestExtensionFunction);
 };
 
 }  // namespace extensions

@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 function FindProxyForURL(url, host) {
-  return "PROXY " + myIpAddress() + "-" + myIpAddressEx() + ":99";
+  return "PROXY " + myIpAddress() + "-" + myIpAddressEx() + ".test:99";
 }

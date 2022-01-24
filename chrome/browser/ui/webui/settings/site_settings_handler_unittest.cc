@@ -21,6 +21,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -31,9 +33,7 @@
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
-#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -53,6 +53,9 @@
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_controller.h"
@@ -66,9 +69,11 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/webui/webui_allowlist.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
@@ -106,6 +111,32 @@ const struct PatternContentTypeTestCase {
     {{"http://google.com", "location"}, {false, "Origin must be secure"}},
     {{"http://127.0.0.1", "location"}, {true, ""}},  // Localhost is secure.
     {{"http://[::1]", "location"}, {true, ""}}};
+
+apps::mojom::AppPtr MakeApp(const std::string& app_id,
+                            apps::mojom::AppType app_type,
+                            const std::string& publisher_id,
+                            apps::mojom::Readiness readiness,
+                            apps::mojom::InstallReason install_reason) {
+  apps::mojom::AppPtr app = apps::mojom::App::New();
+  app->app_id = app_id;
+  app->app_type = app_type;
+  app->publisher_id = publisher_id;
+  app->readiness = readiness;
+  app->install_reason = install_reason;
+  return app;
+}
+
+void InstallWebApp(Profile* profile, const GURL& start_url) {
+  apps::AppRegistryCache& cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  std::vector<apps::mojom::AppPtr> deltas;
+  deltas.push_back(MakeApp(
+      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url),
+      apps::mojom::AppType::kWeb, start_url.spec(),
+      apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kSync));
+  cache.OnApps(std::move(deltas), apps::mojom::AppType::kWeb,
+               /*should_notify_initialized=*/true);
+}
 
 }  // namespace
 
@@ -168,22 +199,13 @@ class SiteSettingsHandlerTest : public testing::Test {
   }
 
   void SetUp() override {
-    test_registry_controller_ =
-        std::make_unique<web_app::TestWebAppRegistryController>();
-    test_registry_controller_->SetUp(profile());
-    controller().Init();
-
-    handler_ =
-        std::make_unique<SiteSettingsHandler>(profile_.get(), app_registrar());
+    handler_ = std::make_unique<SiteSettingsHandler>(profile_.get());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
     // AllowJavascript() adds a callback to create leveldb_env::ChromiumEnv
     // which reads the FeatureList. Wait for the callback to be finished so that
     // we won't destruct |feature_list_| before the callback is executed.
-    // We also want to let the storage system finish setting up, to avoid test
-    // flakiness caused by the quota storage system shutting down at test end,
-    // while still being set up.
-    task_environment_.RunUntilIdle();
+    base::RunLoop().RunUntilIdle();
     web_ui()->ClearTrackedCalls();
   }
 
@@ -195,25 +217,6 @@ class SiteSettingsHandlerTest : public testing::Test {
     }
   }
 
-  std::unique_ptr<web_app::WebApp> CreateWebApp() {
-    const GURL app_url = GURL("http://abc.example.com/path");
-    const web_app::AppId app_id =
-        web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, app_url);
-
-    auto web_app = std::make_unique<web_app::WebApp>(app_id);
-    web_app->AddSource(web_app::Source::kSync);
-    web_app->SetDisplayMode(web_app::DisplayMode::kStandalone);
-    web_app->SetUserDisplayMode(web_app::DisplayMode::kStandalone);
-    web_app->SetName("Name");
-    web_app->SetStartUrl(app_url);
-
-    return web_app;
-  }
-
-  web_app::TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
-  }
-  web_app::WebAppRegistrar& app_registrar() { return controller().registrar(); }
   TestingProfile* profile() { return profile_.get(); }
   TestingProfile* incognito_profile() { return incognito_profile_; }
   content::TestWebUI* web_ui() { return &web_ui_; }
@@ -226,19 +229,19 @@ class SiteSettingsHandlerTest : public testing::Test {
     ASSERT_TRUE(data.arg1()->is_string());
     EXPECT_EQ("onBlockAutoplayStatusChanged", data.arg1()->GetString());
 
-    const base::DictionaryValue* event_data = nullptr;
-    ASSERT_TRUE(data.arg2()->GetAsDictionary(&event_data));
+    const base::Value* event_data = data.arg2();
+    ASSERT_TRUE(event_data->is_dict());
 
-    bool enabled;
-    ASSERT_TRUE(event_data->GetBoolean("enabled", &enabled));
-    EXPECT_EQ(expected_enabled, enabled);
+    absl::optional<bool> enabled = event_data->FindBoolKey("enabled");
+    ASSERT_TRUE(enabled.has_value());
+    EXPECT_EQ(expected_enabled, *enabled);
 
-    const base::DictionaryValue* pref_data = nullptr;
-    ASSERT_TRUE(event_data->GetDictionary("pref", &pref_data));
+    const base::Value* pref_data = event_data->FindDictPath("pref");
+    ASSERT_TRUE(pref_data && pref_data->is_dict());
 
-    bool value;
-    ASSERT_TRUE(pref_data->GetBoolean("value", &value));
-    EXPECT_EQ(expected_value, value);
+    absl::optional<bool> value = pref_data->FindBoolKey("value");
+    ASSERT_TRUE(value.has_value());
+    EXPECT_EQ(expected_value, *value);
   }
 
   void SetSoundContentSettingDefault(ContentSetting value) {
@@ -262,16 +265,17 @@ class SiteSettingsHandlerTest : public testing::Test {
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    const base::DictionaryValue* default_value = nullptr;
-    ASSERT_TRUE(data.arg3()->GetAsDictionary(&default_value));
-    std::string setting;
-    ASSERT_TRUE(default_value->GetString(kSetting, &setting));
+    const base::Value* default_value = data.arg3();
+    ASSERT_TRUE(default_value->is_dict());
+    const std::string* setting = default_value->FindStringKey(kSetting);
+    ASSERT_TRUE(setting);
     EXPECT_EQ(content_settings::ContentSettingToString(expected_setting),
-              setting);
-    std::string source;
-    if (default_value->GetString(kSource, &source))
+              *setting);
+    const std::string* source = default_value->FindStringKey(kSource);
+    if (source) {
       EXPECT_EQ(site_settings::SiteSettingSourceToString(expected_source),
-                source);
+                *source);
+    }
   }
 
   void ValidateOrigin(const std::string& expected_origin,
@@ -290,26 +294,36 @@ class SiteSettingsHandlerTest : public testing::Test {
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    const base::ListValue* exceptions;
-    ASSERT_TRUE(data.arg3()->GetAsList(&exceptions));
-    EXPECT_EQ(1U, exceptions->GetSize());
-    const base::DictionaryValue* exception;
-    ASSERT_TRUE(exceptions->GetDictionary(0, &exception));
-    std::string origin, embedding_origin, display_name, setting, source;
-    ASSERT_TRUE(exception->GetString(site_settings::kOrigin, &origin));
-    ASSERT_EQ(expected_origin, origin);
-    ASSERT_TRUE(
-        exception->GetString(site_settings::kDisplayName, &display_name));
-    ASSERT_EQ(expected_display_name, display_name);
-    ASSERT_TRUE(exception->GetString(site_settings::kEmbeddingOrigin,
-                                     &embedding_origin));
-    ASSERT_EQ(expected_embedding, embedding_origin);
-    ASSERT_TRUE(exception->GetString(site_settings::kSetting, &setting));
+    ASSERT_TRUE(data.arg3()->is_list());
+    EXPECT_EQ(1U, data.arg3()->GetList().size());
+
+    const base::Value& exception = data.arg3()->GetList()[0];
+    ASSERT_TRUE(exception.is_dict());
+
+    const std::string* origin = exception.FindStringKey(site_settings::kOrigin);
+    ASSERT_TRUE(origin);
+    ASSERT_EQ(expected_origin, *origin);
+
+    const std::string* display_name =
+        exception.FindStringKey(site_settings::kDisplayName);
+    ASSERT_TRUE(display_name);
+    ASSERT_EQ(expected_display_name, *display_name);
+
+    const std::string* embedding_origin =
+        exception.FindStringKey(site_settings::kEmbeddingOrigin);
+    ASSERT_TRUE(embedding_origin);
+    ASSERT_EQ(expected_embedding, *embedding_origin);
+
+    const std::string* setting =
+        exception.FindStringKey(site_settings::kSetting);
+    ASSERT_TRUE(setting);
     ASSERT_EQ(content_settings::ContentSettingToString(expected_setting),
-              setting);
-    ASSERT_TRUE(exception->GetString(site_settings::kSource, &source));
+              *setting);
+
+    const std::string* source = exception.FindStringKey(site_settings::kSource);
+    ASSERT_TRUE(source);
     ASSERT_EQ(site_settings::SiteSettingSourceToString(expected_source),
-              source);
+              *source);
   }
 
   void ValidateNoOrigin(size_t expected_total_calls) {
@@ -324,9 +338,9 @@ class SiteSettingsHandlerTest : public testing::Test {
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    const base::ListValue* exceptions;
-    ASSERT_TRUE(data.arg3()->GetAsList(&exceptions));
-    EXPECT_EQ(0U, exceptions->GetSize());
+    const base::Value& exceptions = *data.arg3();
+    ASSERT_TRUE(exceptions.is_list());
+    EXPECT_EQ(0U, exceptions.GetList().size());
   }
 
   void ValidatePattern(bool expected_validity,
@@ -343,16 +357,16 @@ class SiteSettingsHandlerTest : public testing::Test {
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    const base::DictionaryValue* result = nullptr;
-    ASSERT_TRUE(data.arg3()->GetAsDictionary(&result));
+    const base::Value* result = data.arg3();
+    ASSERT_TRUE(result->is_dict());
 
-    bool valid = false;
-    ASSERT_TRUE(result->GetBoolean("isValid", &valid));
-    EXPECT_EQ(expected_validity, valid);
+    absl::optional<bool> valid = result->FindBoolKey("isValid");
+    ASSERT_TRUE(valid.has_value());
+    EXPECT_EQ(expected_validity, *valid);
 
-    std::string reason;
-    ASSERT_TRUE(result->GetString("reason", &reason));
-    EXPECT_EQ(expected_reason, reason);
+    const std::string* reason = result->FindStringKey("reason");
+    ASSERT_TRUE(reason);
+    EXPECT_EQ(expected_reason, *reason);
   }
 
   void ValidateIncognitoExists(bool expected_incognito,
@@ -380,23 +394,23 @@ class SiteSettingsHandlerTest : public testing::Test {
     ASSERT_TRUE(data.arg1()->is_string());
     EXPECT_EQ("onZoomLevelsChanged", data.arg1()->GetString());
 
-    const base::ListValue* exceptions;
-    ASSERT_TRUE(data.arg2()->GetAsList(&exceptions));
+    ASSERT_TRUE(data.arg2()->is_list());
+    base::Value::ConstListView exceptions = data.arg2()->GetList();
     if (expected_host.empty()) {
-      EXPECT_EQ(0U, exceptions->GetSize());
+      EXPECT_EQ(0U, exceptions.size());
     } else {
-      EXPECT_EQ(1U, exceptions->GetSize());
+      EXPECT_EQ(1U, exceptions.size());
 
-      const base::DictionaryValue* exception;
-      ASSERT_TRUE(exceptions->GetDictionary(0, &exception));
+      const base::Value& exception = exceptions[0];
+      ASSERT_TRUE(exception.is_dict());
 
-      std::string host;
-      ASSERT_TRUE(exception->GetString("origin", &host));
-      ASSERT_EQ(expected_host, host);
+      const std::string* host = exception.FindStringKey("origin");
+      ASSERT_TRUE(host);
+      ASSERT_EQ(expected_host, *host);
 
-      std::string zoom;
-      ASSERT_TRUE(exception->GetString("zoom", &zoom));
-      ASSERT_EQ(expected_zoom, zoom);
+      const std::string* zoom = exception.FindStringKey("zoom");
+      ASSERT_TRUE(zoom);
+      ASSERT_EQ(expected_zoom, *zoom);
     }
   }
 
@@ -438,7 +452,6 @@ class SiteSettingsHandlerTest : public testing::Test {
         mock_browsing_data_cookie_helper,
         /*database_helper=*/nullptr, mock_browsing_data_local_storage_helper,
         /*session_storage_helper=*/nullptr,
-        /*appcache_helper=*/nullptr,
         /*indexed_db_helper=*/nullptr,
         /*file_system_helper=*/nullptr,
         /*quota_helper=*/nullptr,
@@ -449,11 +462,15 @@ class SiteSettingsHandlerTest : public testing::Test {
     auto mock_cookies_tree_model = std::make_unique<CookiesTreeModel>(
         std::move(container), profile()->GetExtensionSpecialStoragePolicy());
 
-    mock_browsing_data_local_storage_helper->AddLocalStorageForOrigin(
-        url::Origin::Create(GURL("https://www.example.com/")), 2);
+    mock_browsing_data_local_storage_helper->AddLocalStorageForStorageKey(
+        blink::StorageKey::CreateFromStringForTesting(
+            "https://www.example.com/"),
+        2);
 
-    mock_browsing_data_local_storage_helper->AddLocalStorageForOrigin(
-        url::Origin::Create(GURL("https://www.google.com/")), 50000000000);
+    mock_browsing_data_local_storage_helper->AddLocalStorageForStorageKey(
+        blink::StorageKey::CreateFromStringForTesting(
+            "https://www.google.com/"),
+        50000000000);
     mock_browsing_data_local_storage_helper->Notify();
 
     mock_browsing_data_cookie_helper->AddCookieSamples(
@@ -474,13 +491,11 @@ class SiteSettingsHandlerTest : public testing::Test {
         std::move(mock_cookies_tree_model));
   }
 
-  const base::ListValue* GetOnStorageFetchedSentListValue() {
+  base::Value::ConstListView GetOnStorageFetchedSentListView() {
     handler()->ClearAllSitesMapForTesting();
     handler()->OnStorageFetched();
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-    const base::ListValue* storage_and_cookie_list;
-    data.arg2()->GetAsList(&storage_and_cookie_list);
-    return storage_and_cookie_list;
+    return data.arg2()->GetList();
   }
 
   // Content setting group name for the relevant ContentSettingsType.
@@ -498,8 +513,6 @@ class SiteSettingsHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   TestingProfile* incognito_profile_;
-  std::unique_ptr<web_app::TestWebAppRegistryController>
-      test_registry_controller_;
   content::TestWebUI web_ui_;
   std::unique_ptr<SiteSettingsHandler> handler_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -643,7 +656,7 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
   }
 
   // Check |url4| disappears from the list when its embargo expires.
-  clock.Advance(base::TimeDelta::FromDays(8));
+  clock.Advance(base::Days(8));
   handler()->HandleGetAllSites(&base::Value::AsListValue(get_all_sites_args));
 
   {
@@ -668,7 +681,7 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
       CONTENT_SETTING_BLOCK,
       auto_blocker->GetEmbargoResult(url3, ContentSettingsType::NOTIFICATIONS)
           .content_setting);
-  clock.Advance(base::TimeDelta::FromDays(8));
+  clock.Advance(base::Days(8));
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
       auto_blocker->GetEmbargoResult(url3, ContentSettingsType::NOTIFICATIONS)
@@ -697,7 +710,7 @@ TEST_F(SiteSettingsHandlerTest, GetAllSites) {
       CONTENT_SETTING_BLOCK,
       auto_blocker->GetEmbargoResult(url5, ContentSettingsType::NOTIFICATIONS)
           .content_setting);
-  clock.Advance(base::TimeDelta::FromDays(8));
+  clock.Advance(base::Days(8));
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
       auto_blocker->GetEmbargoResult(url5, ContentSettingsType::NOTIFICATIONS)
@@ -747,7 +760,7 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
   permissions::PermissionDecisionAutoBlocker* auto_blocker =
       PermissionDecisionAutoBlockerFactory::GetForProfile(profile());
   auto_blocker->SetClockForTesting(&clock);
-  clock.Advance(base::TimeDelta::FromHours(1));
+  clock.Advance(base::Hours(1));
 
   // Test recent permissions is empty when there are no preferences.
   handler()->HandleGetRecentSitePermissions(
@@ -772,14 +785,14 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
     auto_blocker->RecordDismissAndEmbargo(
         url1, ContentSettingsType::NOTIFICATIONS, false);
 
-  clock.Advance(base::TimeDelta::FromHours(2));
-  clock.Advance(base::TimeDelta::FromHours(1));
+  clock.Advance(base::Hours(2));
+  clock.Advance(base::Hours(1));
   CreateIncognitoProfile();
   HostContentSettingsMap* incognito_map =
       HostContentSettingsMapFactory::GetForProfile(incognito_profile());
   incognito_map->SetClockForTesting(&clock);
 
-  clock.Advance(base::TimeDelta::FromHours(1));
+  clock.Advance(base::Hours(1));
   permissions::PermissionDecisionAutoBlocker* incognito_auto_blocker =
       PermissionDecisionAutoBlockerFactory::GetForProfile(incognito_profile());
   incognito_auto_blocker->SetClockForTesting(&clock);
@@ -837,123 +850,155 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
   ASSERT_TRUE(data.arg1()->is_string());
   EXPECT_EQ("onStorageListFetched", data.arg1()->GetString());
 
-  const base::ListValue* storage_and_cookie_list;
-  ASSERT_TRUE(data.arg2()->GetAsList(&storage_and_cookie_list));
-  EXPECT_EQ(3U, storage_and_cookie_list->GetSize());
+  ASSERT_TRUE(data.arg2()->is_list());
+  base::Value::ConstListView storage_and_cookie_list = data.arg2()->GetList();
+  EXPECT_EQ(3U, storage_and_cookie_list.size());
 
-  const base::DictionaryValue* site_group;
-  ASSERT_TRUE(storage_and_cookie_list->GetDictionary(0, &site_group));
+  {
+    const base::Value& site_group = storage_and_cookie_list[0];
+    ASSERT_TRUE(site_group.is_dict());
 
-  std::string etld_plus1_string;
-  ASSERT_TRUE(site_group->GetString("etldPlus1", &etld_plus1_string));
-  ASSERT_EQ("example.com", etld_plus1_string);
+    ASSERT_TRUE(site_group.FindStringKey("etldPlus1"));
+    ASSERT_EQ("example.com", *site_group.FindStringKey("etldPlus1"));
 
-  EXPECT_EQ(3, site_group->FindKey("numCookies")->GetDouble());
+    EXPECT_EQ(3, site_group.FindKey("numCookies")->GetDouble());
 
-  const base::ListValue* origin_list;
-  ASSERT_TRUE(site_group->GetList("origins", &origin_list));
-  // There will be 2 origins in this case. Cookie node with url
-  // http://www.example.com/ will be treat as https://www.example.com/ because
-  // this url existed in the storage nodes.
-  EXPECT_EQ(2U, origin_list->GetSize());
+    const base::Value* origin_list = site_group.FindListKey("origins");
+    ASSERT_TRUE(origin_list && origin_list->is_list());
+    // There will be 2 origins in this case. Cookie node with url
+    // http://www.example.com/ will be treat as https://www.example.com/ because
+    // this url existed in the storage nodes.
+    EXPECT_EQ(2U, origin_list->GetList().size());
 
-  const base::DictionaryValue* origin_info;
+    const base::Value& origin_info_0 = origin_list->GetList()[0];
+    ASSERT_TRUE(origin_info_0.is_dict());
 
-  ASSERT_TRUE(origin_list->GetDictionary(0, &origin_info));
-  EXPECT_EQ("http://abc.example.com/",
-            origin_info->FindKey("origin")->GetString());
-  EXPECT_EQ(0, origin_info->FindKey("engagement")->GetDouble());
-  EXPECT_EQ(0, origin_info->FindKey("usage")->GetDouble());
-  EXPECT_EQ(1, origin_info->FindKey("numCookies")->GetDouble());
+    EXPECT_EQ("http://abc.example.com/",
+              origin_info_0.FindKey("origin")->GetString());
+    EXPECT_EQ(0, origin_info_0.FindKey("engagement")->GetDouble());
+    EXPECT_EQ(0, origin_info_0.FindKey("usage")->GetDouble());
+    EXPECT_EQ(1, origin_info_0.FindKey("numCookies")->GetDouble());
 
-  ASSERT_TRUE(origin_list->GetDictionary(1, &origin_info));
-  // Even though in the cookies the scheme is http, it still stored as https
-  // because there is https data stored.
-  EXPECT_EQ("https://www.example.com/",
-            origin_info->FindKey("origin")->GetString());
-  EXPECT_EQ(0, origin_info->FindKey("engagement")->GetDouble());
-  EXPECT_EQ(2, origin_info->FindKey("usage")->GetDouble());
-  EXPECT_EQ(1, origin_info->FindKey("numCookies")->GetDouble());
+    const base::Value& origin_info_1 = origin_list->GetList()[1];
+    ASSERT_TRUE(origin_info_1.is_dict());
 
-  ASSERT_TRUE(storage_and_cookie_list->GetDictionary(1, &site_group));
+    // Even though in the cookies the scheme is http, it still stored as https
+    // because there is https data stored.
+    EXPECT_EQ("https://www.example.com/",
+              origin_info_1.FindKey("origin")->GetString());
+    EXPECT_EQ(0, origin_info_1.FindKey("engagement")->GetDouble());
+    EXPECT_EQ(2, origin_info_1.FindKey("usage")->GetDouble());
+    EXPECT_EQ(1, origin_info_1.FindKey("numCookies")->GetDouble());
+  }
 
-  ASSERT_TRUE(site_group->GetString("etldPlus1", &etld_plus1_string));
-  ASSERT_EQ("google.com", etld_plus1_string);
+  {
+    const base::Value& site_group = storage_and_cookie_list[1];
+    ASSERT_TRUE(site_group.is_dict());
 
-  EXPECT_EQ(2, site_group->FindKey("numCookies")->GetDouble());
+    ASSERT_TRUE(site_group.FindStringKey("etldPlus1"));
+    ASSERT_EQ("google.com", *site_group.FindStringKey("etldPlus1"));
 
-  ASSERT_TRUE(site_group->GetList("origins", &origin_list));
+    EXPECT_EQ(2, site_group.FindKey("numCookies")->GetDouble());
 
-  EXPECT_EQ(1U, origin_list->GetSize());
+    const base::Value* origin_list = site_group.FindListKey("origins");
+    ASSERT_TRUE(origin_list && origin_list->is_list());
 
-  ASSERT_TRUE(origin_list->GetDictionary(0, &origin_info));
-  EXPECT_EQ("https://www.google.com/",
-            origin_info->FindKey("origin")->GetString());
-  EXPECT_EQ(0, origin_info->FindKey("engagement")->GetDouble());
-  EXPECT_EQ(50000000000, origin_info->FindKey("usage")->GetDouble());
-  EXPECT_EQ(0, origin_info->FindKey("numCookies")->GetDouble());
+    EXPECT_EQ(1U, origin_list->GetList().size());
 
-  ASSERT_TRUE(storage_and_cookie_list->GetDictionary(2, &site_group));
+    const base::Value& origin_info = origin_list->GetList()[0];
+    ASSERT_TRUE(origin_info.is_dict());
 
-  ASSERT_TRUE(site_group->GetString("etldPlus1", &etld_plus1_string));
-  ASSERT_EQ("google.com.au", etld_plus1_string);
+    EXPECT_EQ("https://www.google.com/",
+              origin_info.FindKey("origin")->GetString());
+    EXPECT_EQ(0, origin_info.FindKey("engagement")->GetDouble());
+    EXPECT_EQ(50000000000, origin_info.FindKey("usage")->GetDouble());
+    EXPECT_EQ(0, origin_info.FindKey("numCookies")->GetDouble());
+  }
 
-  EXPECT_EQ(1, site_group->FindKey("numCookies")->GetDouble());
+  {
+    const base::Value& site_group = storage_and_cookie_list[2];
+    ASSERT_TRUE(site_group.is_dict());
 
-  ASSERT_TRUE(site_group->GetList("origins", &origin_list));
-  EXPECT_EQ(1U, origin_list->GetSize());
+    ASSERT_TRUE(site_group.FindStringKey("etldPlus1"));
+    ASSERT_EQ("google.com.au", *site_group.FindStringKey("etldPlus1"));
 
-  ASSERT_TRUE(origin_list->GetDictionary(0, &origin_info));
-  EXPECT_EQ("http://google.com.au/",
-            origin_info->FindKey("origin")->GetString());
-  EXPECT_EQ(0, origin_info->FindKey("engagement")->GetDouble());
-  EXPECT_EQ(0, origin_info->FindKey("usage")->GetDouble());
-  EXPECT_EQ(1, origin_info->FindKey("numCookies")->GetDouble());
+    EXPECT_EQ(1, site_group.FindKey("numCookies")->GetDouble());
+
+    const base::Value* origin_list = site_group.FindListKey("origins");
+    ASSERT_TRUE(origin_list && origin_list->is_list());
+
+    EXPECT_EQ(1U, origin_list->GetList().size());
+
+    const base::Value& origin_info = origin_list->GetList()[0];
+    ASSERT_TRUE(origin_info.is_dict());
+
+    EXPECT_EQ("http://google.com.au/",
+              origin_info.FindKey("origin")->GetString());
+    EXPECT_EQ(0, origin_info.FindKey("engagement")->GetDouble());
+    EXPECT_EQ(0, origin_info.FindKey("usage")->GetDouble());
+    EXPECT_EQ(1, origin_info.FindKey("numCookies")->GetDouble());
+  }
 }
 
 TEST_F(SiteSettingsHandlerTest, InstalledApps) {
-  auto web_app = CreateWebApp();
-  controller().RegisterApp(std::move(web_app));
+  InstallWebApp(profile(), GURL("http://abc.example.com/path"));
 
   SetUpCookiesTreeModel();
 
-  const base::ListValue* storage_and_cookie_list =
-      GetOnStorageFetchedSentListValue();
-  EXPECT_EQ(3U, storage_and_cookie_list->GetSize());
+  base::Value::ConstListView storage_and_cookie_list =
+      GetOnStorageFetchedSentListView();
+  EXPECT_EQ(3U, storage_and_cookie_list.size());
 
-  const base::DictionaryValue* site_group;
-  ASSERT_TRUE(storage_and_cookie_list->GetDictionary(0, &site_group));
+  {
+    const base::Value& site_group = storage_and_cookie_list[0];
+    ASSERT_TRUE(site_group.is_dict());
 
-  std::string etld_plus1_string;
-  ASSERT_TRUE(site_group->GetString("etldPlus1", &etld_plus1_string));
-  ASSERT_EQ("example.com", etld_plus1_string);
+    ASSERT_TRUE(site_group.FindStringKey("etldPlus1"));
+    ASSERT_EQ("example.com", *site_group.FindStringKey("etldPlus1"));
 
-  ASSERT_TRUE(site_group->FindKey("hasInstalledPWA")->GetBool());
+    ASSERT_TRUE(site_group.FindKey("hasInstalledPWA")->GetBool());
 
-  const base::ListValue* origin_list;
-  ASSERT_TRUE(site_group->GetList("origins", &origin_list));
-  const base::DictionaryValue* origin_info;
+    const base::Value* origin_list = site_group.FindListKey("origins");
+    ASSERT_TRUE(origin_list);
 
-  ASSERT_TRUE(origin_list->GetDictionary(0, &origin_info));
-  EXPECT_EQ("http://abc.example.com/",
-            origin_info->FindKey("origin")->GetString());
-  EXPECT_TRUE(origin_info->FindKey("isInstalled")->GetBool());
+    const base::Value& origin_info = origin_list->GetList()[0];
+    ASSERT_TRUE(origin_info.is_dict());
+
+    EXPECT_EQ("http://abc.example.com/",
+              origin_info.FindKey("origin")->GetString());
+    EXPECT_TRUE(origin_info.FindKey("isInstalled")->GetBool());
+  }
 
   // Verify that installed booleans are false for other siteGroups/origins
-  ASSERT_TRUE(storage_and_cookie_list->GetDictionary(1, &site_group));
+  {
+    const base::Value& site_group = storage_and_cookie_list[1];
+    ASSERT_TRUE(site_group.is_dict());
 
-  ASSERT_TRUE(site_group->GetString("etldPlus1", &etld_plus1_string));
-  ASSERT_EQ("google.com", etld_plus1_string);
-  ASSERT_TRUE(site_group->GetList("origins", &origin_list));
-  ASSERT_TRUE(origin_list->GetDictionary(0, &origin_info));
-  EXPECT_EQ("https://www.google.com/",
-            origin_info->FindKey("origin")->GetString());
-  EXPECT_FALSE(site_group->FindKey("hasInstalledPWA")->GetBool());
-  EXPECT_FALSE(origin_info->FindKey("isInstalled")->GetBool());
+    ASSERT_TRUE(site_group.FindStringKey("etldPlus1"));
+    ASSERT_EQ("google.com", *site_group.FindStringKey("etldPlus1"));
+
+    const base::Value* origin_list = site_group.FindListKey("origins");
+    ASSERT_TRUE(origin_list);
+
+    const base::Value& origin_info = origin_list->GetList()[0];
+    ASSERT_TRUE(origin_info.is_dict());
+
+    EXPECT_EQ("https://www.google.com/",
+              origin_info.FindKey("origin")->GetString());
+    EXPECT_FALSE(site_group.FindKey("hasInstalledPWA")->GetBool());
+    EXPECT_FALSE(origin_info.FindKey("isInstalled")->GetBool());
+  }
 }
 
 TEST_F(SiteSettingsHandlerTest, IncognitoExceptions) {
   constexpr char kOriginToBlock[] = "https://www.blocked.com:443";
+
+  auto validate_exception = [&kOriginToBlock](const base::Value& exception) {
+    ASSERT_TRUE(exception.is_dict());
+
+    ASSERT_TRUE(exception.FindStringKey(site_settings::kOrigin));
+    ASSERT_EQ(kOriginToBlock, *exception.FindStringKey(site_settings::kOrigin));
+  };
 
   CreateIncognitoProfile();
 
@@ -976,15 +1021,12 @@ TEST_F(SiteSettingsHandlerTest, IncognitoExceptions) {
         &base::Value::AsListValue(get_exception_list_args));
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-    const base::ListValue* exceptions;
-    ASSERT_TRUE(data.arg3()->GetAsList(&exceptions));
-    ASSERT_EQ(1U, exceptions->GetSize());
 
-    const base::DictionaryValue* exception;
-    ASSERT_TRUE(exceptions->GetDictionary(0, &exception));
-    std::string origin;
-    ASSERT_TRUE(exception->GetString(site_settings::kOrigin, &origin));
-    EXPECT_EQ(kOriginToBlock, origin);
+    ASSERT_TRUE(data.arg3()->is_list());
+    base::Value::ConstListView exceptions = data.arg3()->GetList();
+    ASSERT_EQ(1U, exceptions.size());
+
+    validate_exception(exceptions[0]);
   }
 
   {
@@ -1006,19 +1048,13 @@ TEST_F(SiteSettingsHandlerTest, IncognitoExceptions) {
         &base::Value::AsListValue(get_exception_list_args));
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-    const base::ListValue* exceptions;
-    ASSERT_TRUE(data.arg3()->GetAsList(&exceptions));
-    ASSERT_EQ(2U, exceptions->GetSize());
 
-    const base::DictionaryValue* exception;
-    ASSERT_TRUE(exceptions->GetDictionary(0, &exception));
-    std::string origin;
-    ASSERT_TRUE(exception->GetString(site_settings::kOrigin, &origin));
-    ASSERT_EQ(kOriginToBlock, origin);
+    ASSERT_TRUE(data.arg3()->is_list());
+    base::Value::ConstListView exceptions = data.arg3()->GetList();
+    ASSERT_EQ(2U, exceptions.size());
 
-    ASSERT_TRUE(exceptions->GetDictionary(1, &exception));
-    ASSERT_TRUE(exception->GetString(site_settings::kOrigin, &origin));
-    EXPECT_EQ(kOriginToBlock, origin);
+    validate_exception(exceptions[0]);
+    validate_exception(exceptions[1]);
   }
 
   DestroyIncognitoProfile();
@@ -1068,7 +1104,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
         /*incognito=*/false, &exceptions);
 
     // The size should be 2, 1st is blocked origin, 2nd is embargoed origin.
-    ASSERT_EQ(2U, exceptions.GetSize());
+    ASSERT_EQ(2U, exceptions.GetList().size());
   }
 
   {
@@ -1087,7 +1123,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
         kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
         web_ui(),
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(1U, exceptions.GetSize());
+    ASSERT_EQ(1U, exceptions.GetList().size());
   }
 
   {
@@ -1106,7 +1142,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
         kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
         web_ui(),
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(0U, exceptions.GetSize());
+    ASSERT_EQ(0U, exceptions.GetList().size());
   }
 }
 
@@ -1416,21 +1452,18 @@ TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
               site_settings::SiteSettingSource::kPreference),
           false);
 
-  std::string primary_pattern, secondary_pattern, display_name, type;
-  bool incognito;
-  CHECK(exception->GetString(site_settings::kOrigin, &primary_pattern));
-  CHECK(exception->GetString(site_settings::kDisplayName, &display_name));
-  CHECK(exception->GetString(site_settings::kEmbeddingOrigin,
-                             &secondary_pattern));
-  CHECK(exception->GetString(site_settings::kSetting, &type));
-  CHECK(exception->GetBoolean(site_settings::kIncognito, &incognito));
+  CHECK(exception->FindStringKey(site_settings::kOrigin));
+  CHECK(exception->FindStringKey(site_settings::kDisplayName));
+  CHECK(exception->FindStringKey(site_settings::kEmbeddingOrigin));
+  CHECK(exception->FindStringKey(site_settings::kSetting));
+  CHECK(exception->FindBoolKey(site_settings::kIncognito).has_value());
 
   base::Value args(base::Value::Type::LIST);
-  args.Append(primary_pattern);
-  args.Append(secondary_pattern);
+  args.Append(*exception->FindStringKey(site_settings::kOrigin));
+  args.Append(*exception->FindStringKey(site_settings::kEmbeddingOrigin));
   args.Append(kNotifications);  // Chosen arbitrarily.
-  args.Append(type);
-  args.Append(incognito);
+  args.Append(*exception->FindStringKey(site_settings::kSetting));
+  args.Append(*exception->FindBoolKey(site_settings::kIncognito));
 
   // We don't need to check the results. This is just to make sure it doesn't
   // crash on the input.
@@ -1451,14 +1484,13 @@ TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
   site_settings::AddExceptionForHostedApp("[*.]google.com", *extension.get(),
                                           exceptions.get());
 
-  const base::DictionaryValue* dictionary;
-  CHECK(exceptions->GetDictionary(0, &dictionary));
-  CHECK(dictionary->GetString(site_settings::kOrigin, &primary_pattern));
-  CHECK(dictionary->GetString(site_settings::kDisplayName, &display_name));
-  CHECK(dictionary->GetString(site_settings::kEmbeddingOrigin,
-                              &secondary_pattern));
-  CHECK(dictionary->GetString(site_settings::kSetting, &type));
-  CHECK(dictionary->GetBoolean(site_settings::kIncognito, &incognito));
+  const base::Value& dictionary = exceptions->GetList()[0];
+  CHECK(dictionary.is_dict());
+  CHECK(dictionary.FindStringKey(site_settings::kOrigin));
+  CHECK(dictionary.FindStringKey(site_settings::kDisplayName));
+  CHECK(dictionary.FindStringKey(site_settings::kEmbeddingOrigin));
+  CHECK(dictionary.FindStringKey(site_settings::kSetting));
+  CHECK(dictionary.FindBoolKey(site_settings::kIncognito).has_value());
 
   // Again, don't need to check the results.
   handler()->HandleSetCategoryPermissionForPattern(
@@ -1555,12 +1587,7 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    test_registry_controller_ =
-        std::make_unique<web_app::TestWebAppRegistryController>();
-    test_registry_controller_->SetUp(profile());
-
-    handler_ =
-        std::make_unique<SiteSettingsHandler>(profile(), app_registrar());
+    handler_ = std::make_unique<SiteSettingsHandler>(profile());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
     web_ui()->ClearTrackedCalls();
@@ -1574,9 +1601,6 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
             extensions::ExtensionSystem::Get(profile()));
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-
-    // Wait for the sync bridge to be ready synchronously.
-    controller().Init();
   }
 
   void TearDown() override {
@@ -1607,17 +1631,9 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
 
   Browser* browser2() { return browser2_.get(); }
 
-  web_app::TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
-  }
-
-  web_app::WebAppRegistrar& app_registrar() { return controller().registrar(); }
-
   const std::string kNotifications;
 
  private:
-  std::unique_ptr<web_app::TestWebAppRegistryController>
-      test_registry_controller_;
   content::TestWebUI web_ui_;
   std::unique_ptr<SiteSettingsHandler> handler_;
   std::unique_ptr<BrowserWindow> window2_;
@@ -1715,20 +1731,14 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   // Navigate the |foo| tab to the same origin as |origin_anchor|, and the
   // |origin_query| tab to a different origin.
   const GURL origin_path("https://www.example.com/path/to/page.html");
-  content::NavigationController* foo_controller =
-      &browser()
-           ->tab_strip_model()
-           ->GetWebContentsAt(/*foo=*/0)
-           ->GetController();
-  NavigateAndCommit(foo_controller, origin_path);
+  content::WebContents* foo_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(/*foo=*/0);
+  NavigateAndCommit(foo_contents, origin_path);
 
   const GURL example_without_www("https://example.com/");
-  content::NavigationController* origin_query_controller =
-      &browser2()
-           ->tab_strip_model()
-           ->GetWebContentsAt(/*origin_query=*/1)
-           ->GetController();
-  NavigateAndCommit(origin_query_controller, example_without_www);
+  content::WebContents* origin_query_contents =
+      browser2()->tab_strip_model()->GetWebContentsAt(/*origin_query=*/1);
+  NavigateAndCommit(origin_query_contents, example_without_www);
 
   // Reset all permissions.
   base::Value reset_args(base::Value::Type::LIST);
@@ -2022,8 +2032,7 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
     device_manager_.AddReceiver(
         device_manager.InitWithNewPipeAndPassReceiver());
     chooser_context->SetDeviceManagerForTesting(std::move(device_manager));
-    chooser_context->GetDevices(
-        base::DoNothing::Once<std::vector<device::mojom::UsbDeviceInfoPtr>>());
+    chooser_context->GetDevices(base::DoNothing());
     base::RunLoop().RunUntilIdle();
 
     const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
@@ -2067,8 +2076,7 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
     device_manager_.AddReceiver(
         device_manager.InitWithNewPipeAndPassReceiver());
     chooser_context->SetDeviceManagerForTesting(std::move(device_manager));
-    chooser_context->GetDevices(
-        base::DoNothing::Once<std::vector<device::mojom::UsbDeviceInfoPtr>>());
+    chooser_context->GetDevices(base::DoNothing());
     base::RunLoop().RunUntilIdle();
 
     const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
@@ -2186,7 +2194,8 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   EXPECT_EQ(exceptions.GetList().size(), 5u);
 
   // Don't include WebUI schemes.
-  const std::string kWebUIOriginStr = kWebUIUrl.GetOrigin().spec();
+  const std::string kWebUIOriginStr =
+      kWebUIUrl.DeprecatedGetOriginAsURL().spec();
   EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
                                                      kWebUIOriginStr));
 }
@@ -2235,9 +2244,12 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
   const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
   const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);
-  const std::string kAndroidOriginStr = kAndroidUrl.GetOrigin().spec();
-  const std::string kChromiumOriginStr = kChromiumUrl.GetOrigin().spec();
-  const std::string kGoogleOriginStr = kGoogleUrl.GetOrigin().spec();
+  const std::string kAndroidOriginStr =
+      kAndroidUrl.DeprecatedGetOriginAsURL().spec();
+  const std::string kChromiumOriginStr =
+      kChromiumUrl.DeprecatedGetOriginAsURL().spec();
+  const std::string kGoogleOriginStr =
+      kGoogleUrl.DeprecatedGetOriginAsURL().spec();
 
   {
     const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
@@ -2377,14 +2389,18 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
 
   EXPECT_EQ(22, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
-  const base::ListValue* storage_and_cookie_list =
-      GetOnStorageFetchedSentListValue();
-  EXPECT_EQ(3U, storage_and_cookie_list->GetSize());
-  const base::DictionaryValue* site_group;
-  ASSERT_TRUE(storage_and_cookie_list->GetDictionary(0, &site_group));
-  std::string etld_plus1_string;
-  ASSERT_TRUE(site_group->GetString("etldPlus1", &etld_plus1_string));
-  ASSERT_EQ("example.com", etld_plus1_string);
+  auto verify_site_group = [](const base::Value& site_group,
+                              std::string expected_etld_plus1) {
+    ASSERT_TRUE(site_group.is_dict());
+    const std::string* etld_plus1 = site_group.FindStringKey("etldPlus1");
+    ASSERT_TRUE(etld_plus1);
+    ASSERT_EQ(expected_etld_plus1, *etld_plus1);
+  };
+
+  base::ListValue::ConstListView storage_and_cookie_list =
+      GetOnStorageFetchedSentListView();
+  EXPECT_EQ(3U, storage_and_cookie_list.size());
+  verify_site_group(storage_and_cookie_list[0], "example.com");
 
   base::Value args(base::Value::Type::LIST);
   args.Append("example.com");
@@ -2392,11 +2408,9 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
       &base::Value::AsListValue(args));
   EXPECT_EQ(11, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
-  storage_and_cookie_list = GetOnStorageFetchedSentListValue();
-  EXPECT_EQ(2U, storage_and_cookie_list->GetSize());
-  ASSERT_TRUE(storage_and_cookie_list->GetDictionary(0, &site_group));
-  ASSERT_TRUE(site_group->GetString("etldPlus1", &etld_plus1_string));
-  ASSERT_EQ("google.com", etld_plus1_string);
+  storage_and_cookie_list = GetOnStorageFetchedSentListView();
+  EXPECT_EQ(2U, storage_and_cookie_list.size());
+  verify_site_group(storage_and_cookie_list[0], "google.com");
 
   args.ClearList();
   args.Append("google.com");
@@ -2406,11 +2420,9 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
 
   EXPECT_EQ(4, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
-  storage_and_cookie_list = GetOnStorageFetchedSentListValue();
-  EXPECT_EQ(1U, storage_and_cookie_list->GetSize());
-  ASSERT_TRUE(storage_and_cookie_list->GetDictionary(0, &site_group));
-  ASSERT_TRUE(site_group->GetString("etldPlus1", &etld_plus1_string));
-  ASSERT_EQ("google.com.au", etld_plus1_string);
+  storage_and_cookie_list = GetOnStorageFetchedSentListView();
+  EXPECT_EQ(1U, storage_and_cookie_list.size());
+  verify_site_group(storage_and_cookie_list[0], "google.com.au");
 
   args.ClearList();
   args.Append("google.com.au");
@@ -2420,8 +2432,8 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
 
   EXPECT_EQ(1, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
-  storage_and_cookie_list = GetOnStorageFetchedSentListValue();
-  EXPECT_EQ(0U, storage_and_cookie_list->GetSize());
+  storage_and_cookie_list = GetOnStorageFetchedSentListView();
+  EXPECT_EQ(0U, storage_and_cookie_list.size());
 }
 
 TEST_F(SiteSettingsHandlerTest, CookieSettingDescription) {

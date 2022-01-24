@@ -50,6 +50,10 @@ class UseCounter : public GarbageCollectedMixin {
 
   // Counts a use of the given feature. Repeated calls are ignored.
   virtual void CountUse(mojom::WebFeature feature) = 0;
+
+  // Counts a use of the given feature which is being deprecated. Repeated
+  // calls are ignored.
+  virtual void CountDeprecation(mojom::WebFeature feature) = 0;
 };
 
 }  // namespace blink

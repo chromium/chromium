@@ -22,6 +22,10 @@
 <translation id="2168108852149185974">部份外掛程式造成 Chromium 當機。請解除安裝以下程式：</translation>
 <translation id="2178608107313874732">Chromium 目前無法使用您的相機</translation>
 <translation id="2195025571279539885">您希望 Chromium 將來翻譯此網站的<ph name="LANGUAGE_NAME" />頁面嗎？</translation>
+<translation id="2218146227246548550">您的機構要求您登入才能使用 Chromium。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="2426113998523353159">您的機構要求您登入才能使用 Chromium。</translation>
+<translation id="2450140762465183767">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chromium。</translation>
+<translation id="2478931088402984578">選取 [Chromium]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">Chromium 比以前更簡便、安全而快速，讓您事半功倍</translation>
 <translation id="2590893390871230428">同步處理 Chromium 資料</translation>
 <translation id="2650312721222849884">如要在任何使用 Chromium 的裝置上查看分頁，請開啟同步處理功能</translation>
@@ -38,7 +42,6 @@
 <translation id="3805899903892079518">Chromium 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
 <translation id="3946918322491238254">您仍可在此裝置上查看自己的所有書籤、記錄、密碼和其他設定，但您作出的變更將不會同步到 Google 帳戶。</translation>
 <translation id="4099085513035183040">Chromium Beta 版本上不支援此功能</translation>
-<translation id="4166206055865952171">將 Chromium 設定為預設瀏覽器</translation>
 <translation id="4555020257205549924">開啟這項功能後，Chromium 會使用「Google 翻譯」來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chromium。</translation>
 <translation id="4681781466797808448">開啟 Chromium 掃瞄器</translation>
@@ -54,8 +57,6 @@
 <translation id="5521125884468363740">如要在任何使用 Chromium 的裝置上查看分頁，請登入並開啟同步功能</translation>
 <translation id="5573014823074921752">Chromium 提示。如果要多啲標籤選項，請㩒住螢幕底部或者頂部工具列入面中嘅 [顯示分頁] 掣。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查密碼</translation>
-<translation id="5715349567881822785">Chromium 讓您事半功倍</translation>
-<translation id="5742135483959137648">使用 Chromium 開啟連結</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
 <translation id="5945387852661427312">您即將登入由 <ph name="DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chromium 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chromium，系統將刪除此裝置上的資料，但這些資料仍會儲存在您的 Google 帳戶中。</translation>
@@ -65,16 +66,17 @@
 2. 輕按 [預設瀏覽器應用程式]
 3. 選取 [Chromium]。</translation>
 <translation id="6155422572367400359">登入此網站、您的 Google 帳戶及 Chromium。您可稍後再開啟同步功能。</translation>
+<translation id="6183442264225539303">登入此網站和 Chromium。您可稍後再開啟同步功能。</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="632825460376924298">允許登入 Chromium</translation>
 <translation id="6337530241089703714">選擇要從此裝置上清除 Chromium 資料，還是要保留資料</translation>
 <translation id="6424492062988593837">Chromium 現在更進一步！歡迎您升級使用新版本。</translation>
 <translation id="6752854822223394465">您的機構正在設定 Chromium…</translation>
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼。請明天再試。</translation>
-<translation id="6827294685447036764">如果您允許 Chromium 存取您的位置，Chromium 會將位置資料傳送至您允許的任何網站。當網站向您提供附近商家或新聞等本地資訊時，可能會要求您提供位置。</translation>
 <translation id="7018284295775193585">Chromium 無法更新</translation>
 <translation id="7045244423563602563">自訂屬於您的 Chromium</translation>
 <translation id="7099326575020694068">Chromium 無法在「分割檢視」模式中使用相機</translation>
+<translation id="7108914401277488191">Chromium 讓您事半功倍</translation>
 <translation id="7118091470949186573">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chromium。</translation>
 <translation id="7208566199746267865">Chromium 允許您將帳戶同步至網路上，以節省時間。您可在設定中新增或移除帳戶。</translation>
 <translation id="725427773388857052">Chromium 能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題。</translation>
@@ -102,6 +104,7 @@
 <translation id="894437814105052438">登出時，Chromium 將不會同步任何新資料至您的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
+<translation id="9110075932708282655">預設為使用 Chromium</translation>
 <translation id="921174536258924340">Chromium 無法檢查所有密碼。請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

@@ -8,13 +8,16 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 
 // All data needed by TemplateURLRef::ReplaceSearchTerms which typically may
 // only be accessed on the UI thread.
 class SearchTermsData {
  public:
   SearchTermsData();
+
+  SearchTermsData(const SearchTermsData&) = delete;
+  SearchTermsData& operator=(const SearchTermsData&) = delete;
+
   virtual ~SearchTermsData();
 
   // Returns the value to use for replacements of type GOOGLE_BASE_URL.  This
@@ -68,9 +71,6 @@ class SearchTermsData {
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   virtual size_t EstimateMemoryUsage() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SearchTermsData);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_TERMS_DATA_H_

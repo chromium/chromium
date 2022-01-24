@@ -5,7 +5,7 @@
 #ifndef GPU_VULKAN_VULKAN_IMPLEMENTATION_H_
 #define GPU_VULKAN_VULKAN_IMPLEMENTATION_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include <memory>
 #include <vector>
@@ -51,6 +51,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
  public:
   explicit VulkanImplementation(bool use_swiftshader = false,
                                 bool allow_protected_memory = false);
+
+  VulkanImplementation(const VulkanImplementation&) = delete;
+  VulkanImplementation& operator=(const VulkanImplementation&) = delete;
 
   virtual ~VulkanImplementation();
 
@@ -146,7 +149,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
  private:
   const bool use_swiftshader_;
   const bool allow_protected_memory_;
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementation);
 };
 
 COMPONENT_EXPORT(VULKAN)

@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "dbus/object_proxy.h"
 
 namespace dbus {
@@ -65,6 +64,9 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) SystemClockClient {
   // Returns the global instance if initialized. May return null.
   static SystemClockClient* Get();
 
+  SystemClockClient(const SystemClockClient&) = delete;
+  SystemClockClient& operator=(const SystemClockClient&) = delete;
+
   // Adds the given observer.
   virtual void AddObserver(Observer* observer) = 0;
   // Removes the given observer if this object has the observer.
@@ -92,9 +94,6 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) SystemClockClient {
   // Initialize/Shutdown should be used instead.
   SystemClockClient();
   virtual ~SystemClockClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemClockClient);
 };
 
 }  // namespace chromeos

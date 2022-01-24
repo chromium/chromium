@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(PortalInteractiveUITest,
                        FocusTransfersAcrossActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/portal/activate.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(true, content::EvalJs(contents, "loadPromise"));
@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(PortalInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(PortalInteractiveUITest, AutofocusAcrossActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/portal/autofocus.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(true, content::EvalJs(contents, "loadComplete"));

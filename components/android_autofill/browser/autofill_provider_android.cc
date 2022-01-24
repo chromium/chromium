@@ -53,12 +53,6 @@ static jlong JNI_AutofillProvider_Init(
       AutofillProviderAndroid::Create(env, jcaller, web_contents));
 }
 
-static jboolean JNI_AutofillProvider_IsQueryServerFieldTypesEnabled(
-    JNIEnv* env) {
-  return base::FeatureList::IsEnabled(
-      features::kAndroidAutofillQueryServerFieldTypes);
-}
-
 // Static
 AutofillProviderAndroid* AutofillProviderAndroid::Create(
     JNIEnv* env,

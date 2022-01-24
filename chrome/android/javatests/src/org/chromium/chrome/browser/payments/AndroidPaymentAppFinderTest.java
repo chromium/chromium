@@ -24,6 +24,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.payments.AndroidPaymentAppFinder;
+import org.chromium.components.payments.AppCreationFailureReason;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
@@ -130,7 +131,8 @@ public class AndroidPaymentAppFinderTest
 
     // PaymentAppFactoryDelegate implementation.
     @Override
-    public void onPaymentAppCreationError(String errorMessage) {}
+    public void onPaymentAppCreationError(
+            String errorMessage, @AppCreationFailureReason int errorReason) {}
 
     // PaymentAppFactoryDelegate implementation.
     @Override

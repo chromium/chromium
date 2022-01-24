@@ -58,20 +58,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 @implementation ErrorPageTestCase
 @synthesize serverRespondsWithContent = _serverRespondsWithContent;
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  // Features are enabled or disabled based on the name of the test that is
-  // running. This is done because it is inefficient to use
-  // ensureAppLaunchedWithConfiguration for each test.
-  if ([self isRunningTest:@selector(testRestoreErrorPage)]) {
-    config.features_disabled.push_back(kEnableCloseAllTabsConfirmation);
-  } else {
-    config.features_enabled.push_back(kEnableCloseAllTabsConfirmation);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
 
@@ -104,24 +90,24 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForWebStateContainingText:errorText];
   // Add some delay otherwise the back/forward navigations are occurring too
   // fast.
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   // Navigate to a page which responds.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo-query?bar")];
   [ChromeEarlGrey waitForWebStateContainingText:"bar"];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:errorText];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey waitForWebStateContainingText:"bar"];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:errorText];
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.2));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
 
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey waitForWebStateContainingText:"bar"];

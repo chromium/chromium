@@ -21,6 +21,10 @@ class Modeller {
   class Observer : public base::CheckedObserver {
    public:
     Observer() = default;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     ~Observer() override = default;
 
     // Called when a new curve (|brightness_curve|) is trained.
@@ -31,9 +35,6 @@ class Modeller {
     // |global_curve| and |personal_curve| will be nullopt. If there is only a
     // global curve, then |personal_curve| will be nullopt.
     virtual void OnModelInitialized(const Model& model) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   virtual ~Modeller() = default;

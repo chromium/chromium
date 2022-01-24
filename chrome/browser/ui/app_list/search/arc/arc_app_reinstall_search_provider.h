@@ -73,6 +73,10 @@ class ArcAppReinstallSearchProvider : public SearchProvider,
   ArcAppReinstallSearchProvider(Profile* profile,
                                 unsigned int max_result_count);
 
+  ArcAppReinstallSearchProvider(const ArcAppReinstallSearchProvider&) = delete;
+  ArcAppReinstallSearchProvider& operator=(
+      const ArcAppReinstallSearchProvider&) = delete;
+
   ~ArcAppReinstallSearchProvider() override;
 
   // SearchProvider:
@@ -177,7 +181,6 @@ class ArcAppReinstallSearchProvider : public SearchProvider,
   std::unordered_map<std::string, gfx::ImageSkia> loading_icon_urls_;
 
   base::WeakPtrFactory<ArcAppReinstallSearchProvider> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ArcAppReinstallSearchProvider);
 };
 
 }  // namespace app_list

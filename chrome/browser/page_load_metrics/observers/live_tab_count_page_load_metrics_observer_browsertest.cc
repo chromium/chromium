@@ -29,6 +29,11 @@ class LiveTabCountPageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
   LiveTabCountPageLoadMetricsBrowserTest() = default;
 
+  LiveTabCountPageLoadMetricsBrowserTest(
+      const LiveTabCountPageLoadMetricsBrowserTest&) = delete;
+  LiveTabCountPageLoadMetricsBrowserTest& operator=(
+      const LiveTabCountPageLoadMetricsBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -57,8 +62,6 @@ class LiveTabCountPageLoadMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(LiveTabCountPageLoadMetricsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(LiveTabCountPageLoadMetricsBrowserTest,
@@ -68,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(LiveTabCountPageLoadMetricsBrowserTest,
   auto waiter = CreatePageLoadMetricsTestWaiterForForegroundTab();
   waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
 
-  ui_test_utils::NavigateToURL(browser(), GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   waiter->Wait();
 
   size_t live_tab_count = tab_count_metrics::LiveTabCount();
@@ -111,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(LiveTabCountPageLoadMetricsBrowserTest,
   auto waiter = CreatePageLoadMetricsTestWaiterForForegroundTab();
   waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
 
-  ui_test_utils::NavigateToURL(browser(), GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   waiter->Wait();
 
   size_t live_tab_count = tab_count_metrics::LiveTabCount();

@@ -22,6 +22,13 @@ class TestCellularESimProfileHandler : public CellularESimProfileHandler {
   void SetHasRefreshedProfilesForEuicc(const std::string& eid,
                                        bool has_refreshed);
 
+  // Enables or disables profile list update notification.
+  // When set to false, this class will disable triggering the
+  // NotifyESimProfileListUpdated() and when the next time it's set to true, it
+  // will call the NotifyESimProfileListUpdated() to fire any pending list
+  // update notification.
+  void SetEnableNotifyProfileListUpdate(bool enable_notify_profile_list_update);
+
   // CellularESimProfileHandler:
   std::vector<CellularESimProfile> GetESimProfiles() override;
   bool HasRefreshedProfilesForEuicc(const std::string& eid) override;
@@ -31,6 +38,8 @@ class TestCellularESimProfileHandler : public CellularESimProfileHandler {
  private:
   std::vector<CellularESimProfile> esim_profile_states_;
   base::flat_set<std::string> refreshed_eids_;
+  bool enable_notify_profile_list_update_;
+  bool has_pending_notify_list_update_;
 };
 
 }  // namespace chromeos

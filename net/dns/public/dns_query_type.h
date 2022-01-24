@@ -5,7 +5,9 @@
 #ifndef NET_DNS_PUBLIC_DNS_QUERY_TYPE_H_
 #define NET_DNS_PUBLIC_DNS_QUERY_TYPE_H_
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/cxx17_backports.h"
+#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -14,7 +16,7 @@ namespace net {
 // See:
 // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-4
 enum class DnsQueryType {
-  UNSPECIFIED,
+  UNSPECIFIED = 0,
   A,
   AAAA,
   TXT,
@@ -26,15 +28,17 @@ enum class DnsQueryType {
   MAX = HTTPS_EXPERIMENTAL
 };
 
-const DnsQueryType kDnsQueryTypes[] = {DnsQueryType::UNSPECIFIED,
-                                       DnsQueryType::A,
-                                       DnsQueryType::AAAA,
-                                       DnsQueryType::TXT,
-                                       DnsQueryType::PTR,
-                                       DnsQueryType::SRV,
-                                       DnsQueryType::INTEGRITY,
-                                       DnsQueryType::HTTPS,
-                                       DnsQueryType::HTTPS_EXPERIMENTAL};
+constexpr auto kDnsQueryTypes =
+    base::MakeFixedFlatMap<DnsQueryType, base::StringPiece>(
+        {{DnsQueryType::UNSPECIFIED, "UNSPECIFIED"},
+         {DnsQueryType::A, "A"},
+         {DnsQueryType::AAAA, "AAAA"},
+         {DnsQueryType::TXT, "TXT"},
+         {DnsQueryType::PTR, "PTR"},
+         {DnsQueryType::SRV, "SRV"},
+         {DnsQueryType::INTEGRITY, "INTEGRITY"},
+         {DnsQueryType::HTTPS, "HTTPS"},
+         {DnsQueryType::HTTPS_EXPERIMENTAL, "HTTPS_EXPERIMENTAL"}});
 
 static_assert(base::size(kDnsQueryTypes) ==
                   static_cast<unsigned>(DnsQueryType::MAX) + 1,

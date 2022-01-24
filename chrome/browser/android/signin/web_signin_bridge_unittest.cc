@@ -79,6 +79,9 @@ class WebSigninBridgeTest : public ::testing::Test {
         identity_test_env_.identity_manager(), &signin_client_);
   }
 
+  WebSigninBridgeTest(const WebSigninBridgeTest&) = delete;
+  WebSigninBridgeTest& operator=(const WebSigninBridgeTest&) = delete;
+
   ~WebSigninBridgeTest() override { account_reconcilor_->Shutdown(); }
 
   std::unique_ptr<WebSigninBridge> CreateWebSigninBridge(
@@ -95,8 +98,6 @@ class WebSigninBridgeTest : public ::testing::Test {
   TestSigninClient signin_client_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<StubAccountReconcilor> account_reconcilor_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSigninBridgeTest);
 };
 
 TEST_F(WebSigninBridgeTest,

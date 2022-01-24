@@ -19,8 +19,7 @@ namespace arc {
 
 namespace {
 
-constexpr base::TimeDelta kRefreshTokenTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kRefreshTokenTimeout = base::Seconds(10);
 
 }  // namespace
 

@@ -19,7 +19,6 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "gtest/gtest.h"
 #include "snapshot/test/test_thread_snapshot.h"
 
@@ -34,6 +33,9 @@ class MinidumpThreadIDMapTest : public testing::Test {
         thread_snapshots_(),
         test_thread_snapshots_() {
   }
+
+  MinidumpThreadIDMapTest(const MinidumpThreadIDMapTest&) = delete;
+  MinidumpThreadIDMapTest& operator=(const MinidumpThreadIDMapTest&) = delete;
 
   ~MinidumpThreadIDMapTest() override {}
 
@@ -72,8 +74,6 @@ class MinidumpThreadIDMapTest : public testing::Test {
  private:
   std::vector<const ThreadSnapshot*> thread_snapshots_;
   TestThreadSnapshot test_thread_snapshots_[5];
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpThreadIDMapTest);
 };
 
 TEST_F(MinidumpThreadIDMapTest, NoThreads) {

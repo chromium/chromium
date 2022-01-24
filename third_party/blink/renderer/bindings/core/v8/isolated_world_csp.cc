@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -102,8 +103,8 @@ class IsolatedWorldCSPDelegate final
     window_->AddConsoleMessage(console_message);
   }
 
-  void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr info) override {
-    window_->AddInspectorIssue(std::move(info));
+  void AddInspectorIssue(AuditsIssue issue) override {
+    window_->AddInspectorIssue(std::move(issue));
   }
 
   void DisableEval(const String& error_message) override {

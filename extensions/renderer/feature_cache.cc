@@ -31,8 +31,8 @@ FeatureCache::FeatureNameVector FeatureCache::GetAvailableFeatures(
   DCHECK_NE(Feature::UNSPECIFIED_CONTEXT, context_type)
       << "FeatureCache shouldn't be used for unspecified contexts.";
 
-  const FeatureVector& features =
-      GetFeaturesFromCache(context_type, extension, url.GetOrigin());
+  const FeatureVector& features = GetFeaturesFromCache(
+      context_type, extension, url.DeprecatedGetOriginAsURL());
   FeatureNameVector names;
   names.reserve(features.size());
   for (const Feature* feature : features) {

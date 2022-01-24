@@ -6,7 +6,6 @@
 #define MEDIA_FILTERS_VPX_VIDEO_DECODER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
@@ -34,6 +33,10 @@ class MEDIA_EXPORT VpxVideoDecoder : public OffloadableVideoDecoder {
   static SupportedVideoDecoderConfigs SupportedConfigs();
 
   explicit VpxVideoDecoder(OffloadState offload_state = OffloadState::kNormal);
+
+  VpxVideoDecoder(const VpxVideoDecoder&) = delete;
+  VpxVideoDecoder& operator=(const VpxVideoDecoder&) = delete;
+
   ~VpxVideoDecoder() override;
 
   // VideoDecoder implementation.
@@ -55,13 +58,7 @@ class MEDIA_EXPORT VpxVideoDecoder : public OffloadableVideoDecoder {
   }
 
  private:
-  enum DecoderState {
-    kUninitialized,
-    kNormal,
-    kFlushCodec,
-    kDecodeFinished,
-    kError
-  };
+  enum class DecoderState { kUninitialized, kNormal, kDecodeFinished, kError };
 
   // Return values for decoding alpha plane.
   enum AlphaDecodeStatus {
@@ -99,7 +96,7 @@ class MEDIA_EXPORT VpxVideoDecoder : public OffloadableVideoDecoder {
 
   // |state_| must only be read and written to on |offload_task_runner_| if it
   // is non-null and there are outstanding tasks on the offload thread.
-  DecoderState state_ = kUninitialized;
+  DecoderState state_ = DecoderState::kUninitialized;
 
   OutputCB output_cb_;
 
@@ -112,8 +109,6 @@ class MEDIA_EXPORT VpxVideoDecoder : public OffloadableVideoDecoder {
   // with no alpha. |frame_pool_| is used for all other cases.
   scoped_refptr<FrameBufferPool> memory_pool_;
   VideoFramePool frame_pool_;
-
-  DISALLOW_COPY_AND_ASSIGN(VpxVideoDecoder);
 };
 
 // Helper class for creating a VpxVideoDecoder which will offload > 720p VP9
@@ -123,7 +118,7 @@ class OffloadingVpxVideoDecoder : public OffloadingVideoDecoder {
   OffloadingVpxVideoDecoder()
       : OffloadingVideoDecoder(
             1024,
-            std::vector<VideoCodec>(1, kCodecVP9),
+            std::vector<VideoCodec>(1, VideoCodec::kVP9),
             std::make_unique<VpxVideoDecoder>(
                 OffloadableVideoDecoder::OffloadState::kOffloaded)) {}
 };

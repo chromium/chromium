@@ -72,15 +72,13 @@ TEST(TracedValueSupportTest, WeakPtr) {
 }
 
 TEST(TracedValueSupportTest, Time) {
+  EXPECT_EQ(perfetto::TracedValueToString(base::Microseconds(42)), "42");
   EXPECT_EQ(
-      perfetto::TracedValueToString(base::TimeDelta::FromMicroseconds(42)),
+      perfetto::TracedValueToString(base::Time() + base::Microseconds(42)),
       "42");
-  EXPECT_EQ(perfetto::TracedValueToString(
-                base::Time() + base::TimeDelta::FromMicroseconds(42)),
-            "42");
-  EXPECT_EQ(perfetto::TracedValueToString(
-                base::TimeTicks() + base::TimeDelta::FromMicroseconds(42)),
-            "42");
+  EXPECT_EQ(
+      perfetto::TracedValueToString(base::TimeTicks() + base::Microseconds(42)),
+      "42");
 }
 
 TEST(TracedValueSupportTest, UnguessableToken) {

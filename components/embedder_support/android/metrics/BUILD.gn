@@ -20,6 +20,8 @@ static_library("metrics") {
 
   deps = [
     ":jni",
+    "//base",
+    "//cc/base",
     "//components/metrics",
     "//components/metrics:content",
     "//components/metrics:net",

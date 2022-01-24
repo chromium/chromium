@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that matching selectors are marked properly after new rule creation and selector change.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected"></div>
@@ -24,7 +24,7 @@
 
       function nodeCallback(node) {
         nodeId = node.id;
-        stylesPane = UI.panels.elements._stylesWidget;
+        stylesPane = UI.panels.elements.stylesWidget;
         ElementsTestRunner.addNewRule('foo, #inspected, .bar, #inspected', callback);
       }
 
@@ -37,7 +37,7 @@
     function changeSelector(next) {
       var section = ElementsTestRunner.firstMatchedStyleSection();
       section.startEditingSelector();
-      var selectorElement = section._selectorElement;
+      var selectorElement = section.selectorElement;
       selectorElement.textContent = '#inspected, a, hr';
       ElementsTestRunner.waitForSelectorCommitted(callback);
       selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));

@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_clock.h"
@@ -100,6 +99,10 @@ class ClientCertResolverTest : public testing::Test,
                                public ClientCertResolver::Observer {
  public:
   ClientCertResolverTest() = default;
+
+  ClientCertResolverTest(const ClientCertResolverTest&) = delete;
+  ClientCertResolverTest& operator=(const ClientCertResolverTest&) = delete;
+
   ~ClientCertResolverTest() override = default;
 
   void SetUp() override {
@@ -243,8 +246,9 @@ class ClientCertResolverTest : public testing::Test,
     network_config_handler_->Init(network_state_handler_.get(),
                                   nullptr /* network_device_handler */);
     managed_config_handler_->Init(
-        network_state_handler_.get(), network_profile_handler_.get(),
-        network_config_handler_.get(), nullptr /* network_device_handler */,
+        /*cellular_policy_handler=*/nullptr, network_state_handler_.get(),
+        network_profile_handler_.get(), network_config_handler_.get(),
+        nullptr /* network_device_handler */,
         nullptr /* prohibited_technologies_handler */);
     // Run all notifications before starting the cert loader to reduce run time.
     task_environment_.RunUntilIdle();
@@ -504,8 +508,6 @@ class ClientCertResolverTest : public testing::Test,
   std::string test_ca_cert_pem_;
   crypto::ScopedTestNSSDB test_nssdb_;
   crypto::ScopedTestNSSDB test_system_nssdb_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertResolverTest);
 };
 
 TEST_F(ClientCertResolverTest, NoMatchingCertificates) {

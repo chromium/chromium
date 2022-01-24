@@ -4,5 +4,5 @@
 
 // https://github.com/WICG/app-history/
 dictionary AppHistoryNavigationOptions {
-  any navigateInfo;
+  any info;
 };

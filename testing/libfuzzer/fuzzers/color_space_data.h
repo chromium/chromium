@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TESTING_LIBFUZZER_FUZZERS_COLOR_SPACE_DATA_H
-#define TESTING_LIBFUZZER_FUZZERS_COLOR_SPACE_DATA_H
+#ifndef TESTING_LIBFUZZER_FUZZERS_COLOR_SPACE_DATA_H_
+#define TESTING_LIBFUZZER_FUZZERS_COLOR_SPACE_DATA_H_
 
 static const uint8_t kSRGBData[] = {
     // sRGB profile with tabular gamma curves.
@@ -376,4 +376,4 @@ static const uint8_t kAdobeData[] = {
     0x00, 0x00, 0x10, 0x2f, 0x00, 0x00, 0xbe, 0x9c,
 };
 
-#endif  // TESTING_LIBFUZZER_FUZZERS_COLOR_SPACE_DATA_H
+#endif  // TESTING_LIBFUZZER_FUZZERS_COLOR_SPACE_DATA_H_

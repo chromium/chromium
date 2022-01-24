@@ -1154,6 +1154,18 @@ def main(argv):
       help='For bundles, the paths of all non-async module .build_configs '
       'for modules that are part of the bundle.')
 
+  parser.add_option(
+      '--add-view-trace-events',
+      action='store_true',
+      help=
+      'Specifies that trace events will be added with an additional bytecode '
+      'rewriting step.')
+  parser.add_option(
+      '--base-module-gen-dir',
+      help=
+      'Path to base module\'s target_gen_dir. Needed for bundles and modules '
+      'when --add-view-trace-events is set.')
+
   parser.add_option('--version-name', help='Version name for this APK.')
   parser.add_option('--version-code', help='Version code for this APK.')
 
@@ -1959,6 +1971,20 @@ def main(argv):
   if options.type in ('android_apk', 'dist_jar', 'android_app_bundle_module',
                       'android_app_bundle'):
     deps_info['device_classpath'] = device_classpath
+    if options.add_view_trace_events:
+      trace_event_rewritten_device_classpath = []
+      for jar_path in device_classpath:
+        file_path = jar_path.replace('../', '')
+        file_path = file_path.replace('obj/', '')
+        file_path = file_path.replace('gen/', '')
+        file_path = file_path.replace('.jar', '.tracing_rewritten.jar')
+        rewritten_jar_path = os.path.join(options.base_module_gen_dir,
+                                          file_path)
+        trace_event_rewritten_device_classpath.append(rewritten_jar_path)
+
+      deps_info['trace_event_rewritten_device_classpath'] = (
+          trace_event_rewritten_device_classpath)
+
     if options.tested_apk_config:
       deps_info['device_classpath_extended'] = device_classpath_extended
 
@@ -2061,6 +2087,9 @@ def main(argv):
     RemoveObjDups(config, base, 'deps_info', 'jni', 'all_source')
     RemoveObjDups(config, base, 'final_dex', 'all_dex_files')
     RemoveObjDups(config, base, 'extra_android_manifests')
+    if options.add_view_trace_events:
+      RemoveObjDups(config, base, 'deps_info',
+                    'trace_event_rewritten_device_classpath')
 
   if is_java_target:
     jar_to_target = {}

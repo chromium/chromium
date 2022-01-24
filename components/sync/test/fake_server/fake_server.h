@@ -37,7 +37,10 @@ extern const char kDisableFakeServerFailureOutput[];
 }  // namespace switches
 
 namespace sync_pb {
+class EntitySpecifics;
 class DataTypeProgressMarker;
+class SyncEntity;
+enum SyncEnums_ErrorType : int;
 }  // namespace sync_pb
 
 namespace fake_server {
@@ -179,18 +182,18 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // ClientToServerResponse on all subsequent commit requests. If any of errors
   // triggerings currently configured it must be called only with
   // sync_pb::SyncEnums::SUCCESS.
-  void TriggerCommitError(const sync_pb::SyncEnums::ErrorType& error_type);
+  void TriggerCommitError(const sync_pb::SyncEnums_ErrorType& error_type);
 
   // Force the server to return |error_type| in the error_code field of
   // ClientToServerResponse on all subsequent sync requests. If any of errors
   // triggerings currently configured it must be called only with
   // sync_pb::SyncEnums::SUCCESS.
-  void TriggerError(const sync_pb::SyncEnums::ErrorType& error_type);
+  void TriggerError(const sync_pb::SyncEnums_ErrorType& error_type);
 
   // Force the server to return the given data as part of the error field of
   // ClientToServerResponse on all subsequent sync requests. Must not be called
   // if any of errors triggerings currently configured.
-  void TriggerActionableError(const sync_pb::SyncEnums::ErrorType& error_type,
+  void TriggerActionableError(const sync_pb::SyncEnums_ErrorType& error_type,
                               const std::string& description,
                               const std::string& url,
                               const sync_pb::SyncEnums::Action& action);
@@ -283,10 +286,10 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
   // Used as the error_code field of ClientToServerResponse on all commit
   // requests.
-  sync_pb::SyncEnums::ErrorType commit_error_type_;
+  sync_pb::SyncEnums_ErrorType commit_error_type_;
 
   // Used as the error_code field of ClientToServerResponse on all responses.
-  sync_pb::SyncEnums::ErrorType error_type_;
+  sync_pb::SyncEnums_ErrorType error_type_;
 
   // Used as the error field of ClientToServerResponse when its pointer is not
   // null.

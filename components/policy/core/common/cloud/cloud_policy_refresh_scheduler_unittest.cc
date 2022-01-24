@@ -50,12 +50,12 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
     // Set up the protobuf timestamp to be one minute in the past. Since the
     // protobuf field only has millisecond precision, we convert the actual
     // value back to get a millisecond-clamped time stamp for the checks below.
-    store_.policy_ = std::make_unique<em::PolicyData>();
     base::Time now = base::Time::NowFromSystemTime();
-    base::TimeDelta initial_age =
-        base::TimeDelta::FromMinutes(kInitialCacheAgeMinutes);
-    store_.policy_->set_timestamp((now - initial_age).ToJavaTime());
-    last_update_ = base::Time::FromJavaTime(store_.policy_->timestamp());
+    base::TimeDelta initial_age = base::Minutes(kInitialCacheAgeMinutes);
+    policy_data_.set_timestamp((now - initial_age).ToJavaTime());
+    store_.set_policy_data_for_testing(
+        std::make_unique<em::PolicyData>(policy_data_));
+    last_update_ = base::Time::FromJavaTime(store_.policy()->timestamp());
     last_update_ticks_ = base::TimeTicks::Now() +
                          (last_update_ - base::Time::NowFromSystemTime());
   }
@@ -84,7 +84,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
     // out to be earlier than the next refresh time point, calculated from the
     // ticks count clock.
     scheduler->set_last_refresh_for_testing(base::Time::NowFromSystemTime() -
-                                            base::TimeDelta::FromDays(1));
+                                            base::Days(1));
   }
 
   base::TimeDelta GetLastDelay() const {
@@ -95,8 +95,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
 
   void CheckTiming(CloudPolicyRefreshScheduler* const scheduler,
                    int64_t expected_delay_ms) const {
-    CheckTimingWithAge(scheduler,
-                       base::TimeDelta::FromMilliseconds(expected_delay_ms),
+    CheckTimingWithAge(scheduler, base::Milliseconds(expected_delay_ms),
                        base::TimeDelta());
   }
 
@@ -112,8 +111,8 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
     base::TimeDelta offset_since_refresh_plus_salt = offset_from_last_refresh;
     // The salt is only applied for non-immediate scheduled refreshes.
     if (!offset_from_last_refresh.is_zero()) {
-      offset_since_refresh_plus_salt += base::TimeDelta::FromMilliseconds(
-          scheduler->GetSaltDelayForTesting());
+      offset_since_refresh_plus_salt +=
+          base::Milliseconds(scheduler->GetSaltDelayForTesting());
     }
     // |last_update_| was updated and then a refresh was scheduled at time S,
     // so |last_update_| is a bit before that.
@@ -161,12 +160,11 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
     // The mobile platforms take the cache age into account for the initial
     // fetch. Usually the cache age is ignored for the initial refresh, but on
     // mobile it's used to restrain from refreshing on every startup.
-    base::TimeDelta rate = base::TimeDelta::FromMilliseconds(
+    base::TimeDelta rate = base::Milliseconds(
         with_invalidations
             ? CloudPolicyRefreshScheduler::kWithInvalidationsRefreshDelayMs
             : kPolicyRefreshRate);
-    CheckTimingWithAge(scheduler, rate,
-                       base::TimeDelta::FromMinutes(kInitialCacheAgeMinutes));
+    CheckTimingWithAge(scheduler, rate, base::Minutes(kInitialCacheAgeMinutes));
 #else
     // Other platforms refresh immediately.
     EXPECT_EQ(base::TimeDelta(), GetLastDelay());
@@ -181,6 +179,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockCloudPolicyClient client_;
   MockCloudPolicyStore store_;
+  em::PolicyData policy_data_;
   std::unique_ptr<MockCloudPolicyService> service_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 
@@ -190,7 +189,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
 };
 
 TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshNoPolicy) {
-  store_.policy_.reset();
+  store_.set_policy_data_for_testing(std::make_unique<em::PolicyData>());
   std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
       CreateRefreshScheduler());
   EXPECT_TRUE(task_runner_->HasPendingTask());
@@ -201,7 +200,9 @@ TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshNoPolicy) {
 }
 
 TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshUnmanaged) {
-  store_.policy_->set_state(em::PolicyData::UNMANAGED);
+  policy_data_.set_state(em::PolicyData::UNMANAGED);
+  store_.set_policy_data_for_testing(
+      std::make_unique<em::PolicyData>(policy_data_));
   std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
       CreateRefreshScheduler());
   CheckTiming(scheduler.get(),

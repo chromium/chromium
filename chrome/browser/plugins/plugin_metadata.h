@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/version.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "url/gurl.h"
@@ -57,6 +56,10 @@ class PluginMetadata {
                  const std::u16string& group_name_matcher,
                  const std::string& language,
                  bool plugin_is_deprecated);
+
+  PluginMetadata(const PluginMetadata&) = delete;
+  PluginMetadata& operator=(const PluginMetadata&) = delete;
+
   ~PluginMetadata();
 
   // Unique identifier for the plugin.
@@ -119,8 +122,6 @@ class PluginMetadata {
   std::vector<std::string> all_mime_types_;
   std::vector<std::string> matching_mime_types_;
   const bool plugin_is_deprecated_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginMetadata);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_METADATA_H_

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/unguessable_token.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 
 namespace extensions {
 
@@ -26,6 +27,8 @@ using ChannelId = std::pair<base::UnguessableToken, int>;
 //                port with the number '1' in each.
 // - is_opener: Whether or not this port id is for the opener port (false
 //              indicating it is the receiver port).
+// Additionally, this also holds `serialization_format` which is the
+// preferred SerializationFormat to be used for messages sent by this port.
 // A few more notes:
 // - There should only be a single existent opener port. That is, in all the
 //   contexts, there should only be one with a given context_id, port_number,
@@ -41,16 +44,21 @@ using ChannelId = std::pair<base::UnguessableToken, int>;
 //   this means that multiple contexts could have the same id. However, GUIDs
 //   are sufficiently random as to be globally unique in practice (the chance
 //   of a duplicate is about the same as the sun exploding right now).
+// - The `serialization_format` for a port may sometimes differ from that of the
+//   Messages sent on the port. For example this can happen if a message can't
+//   be structure cloned in which case we fallback to JSON.
 struct PortId {
   // See class comments for the description of these fields.
   base::UnguessableToken context_id;
   int port_number = 0;
   bool is_opener = false;
+  SerializationFormat serialization_format = SerializationFormat::kJson;
 
   PortId();
   PortId(const base::UnguessableToken& context_id,
          int port_number,
-         bool is_opener);
+         bool is_opener,
+         SerializationFormat format);
   ~PortId();
   PortId(PortId&& other);
   PortId(const PortId& other);
@@ -64,7 +72,7 @@ struct PortId {
   // receiver port returns the ID of the opener, and a call on the opener port
   // returns the ID of all receivers.
   PortId GetOppositePortId() const {
-    return PortId(context_id, port_number, !is_opener);
+    return PortId(context_id, port_number, !is_opener, serialization_format);
   }
 
   bool operator==(const PortId& other) const;

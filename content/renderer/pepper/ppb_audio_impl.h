@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
@@ -34,6 +33,9 @@ class PPB_Audio_Impl : public ppapi::Resource,
                        public AudioHelper {
  public:
   explicit PPB_Audio_Impl(PP_Instance instance);
+
+  PPB_Audio_Impl(const PPB_Audio_Impl&) = delete;
+  PPB_Audio_Impl& operator=(const PPB_Audio_Impl&) = delete;
 
   // Resource overrides.
   ppapi::thunk::PPB_Audio_API* AsPPB_Audio_API() override;
@@ -62,8 +64,6 @@ class PPB_Audio_Impl : public ppapi::Resource,
   // PluginDelegate audio object that we delegate audio IPC through. We don't
   // own this pointer but are responsible for calling Shutdown on it.
   PepperPlatformAudioOutput* audio_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_Audio_Impl);
 };
 
 }  // namespace content

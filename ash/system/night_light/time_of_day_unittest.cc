@@ -63,7 +63,7 @@ TEST(TimeOfDayTest, TestFromTime) {
 
   base::Time now_today = base::Time::Now();
   ASSERT_TRUE(base::Time::FromLocalExploded(now, &now_today));
-  base::Time now_tomorrow = now_today + base::TimeDelta::FromDays(1);
+  base::Time now_tomorrow = now_today + base::Days(1);
   EXPECT_EQ(TimeOfDay::FromTime(now_today), TimeOfDay::FromTime(now_tomorrow));
 }
 

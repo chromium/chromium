@@ -134,7 +134,7 @@ void FindCharsetInMediaType(const String& media_type,
                             unsigned& charset_len) {
   charset_len = 0;
 
-  size_t pos = charset_pos;
+  unsigned pos = charset_pos;
   unsigned length = media_type.length();
 
   while (pos < length) {
@@ -470,7 +470,7 @@ void XMLHttpRequest::setTimeout(unsigned timeout,
     return;
   }
 
-  timeout_ = base::TimeDelta::FromMilliseconds(timeout);
+  timeout_ = base::Milliseconds(timeout);
 
   // From http://www.w3.org/TR/XMLHttpRequest/#the-timeout-attribute:
   // Note: This implies that the timeout attribute can be set while fetching is
@@ -944,7 +944,8 @@ void XMLHttpRequest::SendBytesData(const void* data,
   scoped_refptr<EncodedFormData> http_body;
 
   if (AreMethodAndURLValidForSend()) {
-    http_body = EncodedFormData::Create(data, length);
+    http_body =
+        EncodedFormData::Create(data, base::checked_cast<wtf_size_t>(length));
   }
 
   CreateRequest(std::move(http_body), exception_state);

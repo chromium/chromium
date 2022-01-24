@@ -155,6 +155,9 @@ class SafeBrowsingServiceTest : public PlatformTest {
     base::RunLoop().RunUntilIdle();
   }
 
+  SafeBrowsingServiceTest(const SafeBrowsingServiceTest&) = delete;
+  SafeBrowsingServiceTest& operator=(const SafeBrowsingServiceTest&) = delete;
+
   ~SafeBrowsingServiceTest() override {
     safe_browsing_service_->ShutDown();
 
@@ -231,8 +234,6 @@ class SafeBrowsingServiceTest : public PlatformTest {
   safe_browsing::TestV4GetHashProtocolManagerFactory* v4_get_hash_factory_;
   // Owned by V4Database.
   safe_browsing::TestV4StoreFactory* store_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingServiceTest);
 };
 
 TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
@@ -268,16 +269,21 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
 // lookups are enabled, and that opting out of real-time checks works as
 // expected.
 TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
-  TestingApplicationContext::GetGlobal();
+  TestUrlCheckerClient client(safe_browsing_service_.get(),
+                              browser_state_.get());
+
+  // Wait for an initial result to make sure the Safe Browsing database has
+  // been initialized, before calling into functions that mark URLs as safe
+  // or unsafe in the database.
+  GURL safe_url(kSafePage);
+  client.CheckUrl(safe_url);
+  client.WaitForResult();
 
   // Opt into real-time checks.
   browser_state_->GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
-  GURL safe_url(kSafePage);
   MarkUrlAsRealTimeSafe(safe_url);
-  TestUrlCheckerClient client(safe_browsing_service_.get(),
-                              browser_state_.get());
   client.CheckUrl(safe_url);
   EXPECT_TRUE(client.result_pending());
   client.WaitForResult();

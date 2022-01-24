@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/sync/engine/entity_data.h"
 
 namespace syncer {
@@ -26,6 +25,9 @@ class EntityChange {
   static std::unique_ptr<EntityChange> CreateDelete(
       const std::string& storage_key);
 
+  EntityChange(const EntityChange&) = delete;
+  EntityChange& operator=(const EntityChange&) = delete;
+
   virtual ~EntityChange();
 
   std::string storage_key() const { return storage_key_; }
@@ -40,8 +42,6 @@ class EntityChange {
   std::string storage_key_;
   ChangeType type_;
   EntityData data_;
-
-  DISALLOW_COPY_AND_ASSIGN(EntityChange);
 };
 
 using EntityChangeList = std::vector<std::unique_ptr<EntityChange>>;

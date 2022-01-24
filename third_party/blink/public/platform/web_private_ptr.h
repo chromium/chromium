@@ -139,7 +139,7 @@ template <typename T, WebPrivatePtrDestruction, WebPrivatePtrStrength>
 struct WebPrivatePtrPersistentStorageType {
  public:
   using Type = Persistent<T>;
-  static Type* Create() { return new Type(PERSISTENT_FROM_HERE); }
+  static Type* Create() { return new Type(); }
 };
 
 template <typename T>
@@ -157,7 +157,7 @@ struct WebPrivatePtrPersistentStorageType<T,
                                           WebPrivatePtrStrength::kNormal> {
  public:
   using Type = CrossThreadPersistent<T>;
-  static Type* Create() { return new Type(PERSISTENT_FROM_HERE); }
+  static Type* Create() { return new Type(); }
 };
 
 template <typename T>

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
@@ -184,8 +184,7 @@ bool UrlData::Valid() {
   // When ranges are not supported, we cannot re-use cached data.
   if (valid_until_ > now)
     return true;
-  if (now - last_used_ <
-      base::TimeDelta::FromSeconds(kUrlMappingTimeoutSeconds))
+  if (now - last_used_ < base::Seconds(kUrlMappingTimeoutSeconds))
     return true;
   return false;
 }

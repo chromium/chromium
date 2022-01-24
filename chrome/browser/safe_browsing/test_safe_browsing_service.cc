@@ -144,13 +144,6 @@ TestSafeBrowsingService::CreateIncidentReportingService() {
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-TestSafeBrowsingService::GetURLLoaderFactory() {
-  if (use_test_url_loader_factory_)
-    return test_shared_loader_factory_;
-  return SafeBrowsingService::GetURLLoaderFactory();
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
 TestSafeBrowsingService::GetURLLoaderFactory(
     content::BrowserContext* browser_context) {
   if (use_test_url_loader_factory_)

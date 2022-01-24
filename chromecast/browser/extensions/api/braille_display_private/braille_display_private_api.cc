@@ -30,7 +30,7 @@ BrailleDisplayPrivateWriteDotsFunction::
     ~BrailleDisplayPrivateWriteDotsFunction() {}
 
 bool BrailleDisplayPrivateWriteDotsFunction::Prepare() {
-  params_ = braille_display_private::WriteDots::Params::Create(*args_);
+  params_ = braille_display_private::WriteDots::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
   EXTENSION_FUNCTION_VALIDATE(
       params_->cells.size() >=

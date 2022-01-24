@@ -24,8 +24,8 @@
 #include "maldoca/base/endian.h"
 
 namespace {
-using maldoca::BigEndianReader;
-using maldoca::LittleEndianReader;
+using ::maldoca::BigEndianReader;
+using ::maldoca::LittleEndianReader;
 
 const int kMaxStrParseLength = 1024;
 
@@ -78,7 +78,7 @@ TEST(EndianReaderTest, ReadLittleEndian) {
   EXPECT_TRUE(
       LittleEndianReader::ConsumeUInt64(&piece_eight_bytes, &eight_bytes));
   EXPECT_EQ(eight_bytes,
-            ((0x0aL << 56) + (0x0bL << 48) + (0x0cL << 40) + (0x0dL << 32) +
+            ((0x0aLL << 56) + (0x0bLL << 48) + (0x0cLL << 40) + (0x0dLL << 32) +
              (0x01 << 24) + (0x02 << 16) + (0x03 << 8) + 0x04));
   EXPECT_EQ(piece_eight_bytes.size(), 0);
 
@@ -117,7 +117,7 @@ TEST(EndianReaderTest, ReadBigEndian) {
       absl::string_view("\x04\x03\x02\x01\x0d\x0c\x0b\x0a");
   EXPECT_TRUE(BigEndianReader::ConsumeUInt64(&piece_eight_bytes, &eight_bytes));
   EXPECT_EQ(eight_bytes,
-            ((0x04L << 56) + (0x03L << 48) + (0x02L << 40) + (0x01L << 32) +
+            ((0x04LL << 56) + (0x03LL << 48) + (0x02LL << 40) + (0x01LL << 32) +
              (0x0d << 24) + (0x0c << 16) + (0x0b << 8) + 0x0a));
   EXPECT_EQ(piece_eight_bytes.size(), 0);
 
@@ -217,7 +217,7 @@ TEST(EndianReaderTest, ReadAtTest) {
   EXPECT_EQ(eight_bytes, 0);
   EXPECT_TRUE(LittleEndianReader::LoadUInt64At(input, 0, &eight_bytes));
   EXPECT_EQ(eight_bytes,
-            ((0x08L << 56) + (0x07L << 48) + (0x06L << 40) + (0x05L << 32) +
+            ((0x08LL << 56) + (0x07LL << 48) + (0x06LL << 40) + (0x05LL << 32) +
              (0x04 << 24) + (0x03 << 16) + (0x02 << 8) + 0x01));
 
   byte = 0;
@@ -249,7 +249,7 @@ TEST(EndianReaderTest, ReadAtTest) {
   EXPECT_EQ(eight_bytes, 0);
   EXPECT_TRUE(BigEndianReader::LoadUInt64At(input, 0, &eight_bytes));
   EXPECT_EQ(eight_bytes,
-            ((0x01L << 56) + (0x02L << 48) + (0x03L << 40) + (0x04L << 32) +
+            ((0x01LL << 56) + (0x02LL << 48) + (0x03LL << 40) + (0x04LL << 32) +
              (0x05 << 24) + (0x06 << 16) + (0x07 << 8) + 0x08));
 }
 
@@ -270,7 +270,7 @@ TEST(EndianReaderTest, LittleEndianWrapper) {
   EXPECT_EQ(*ptrdouble, 5.447603722011605e-270);
 }
 
-void CheckCharReplacement(const char *const input_chars, uint32_t input_size,
+void CheckCharReplacement(const char* const input_chars, uint32_t input_size,
                           const std::string &output) {
   absl::string_view input(input_chars, input_size);
   std::string read_string;

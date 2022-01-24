@@ -28,6 +28,7 @@ namespace header_names {
 
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlAllowCredentials[];
+// TODO(https://crbug.com/1263483): Remove this.
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlAllowExternal[];
 COMPONENT_EXPORT(NETWORK_CPP)
@@ -37,20 +38,46 @@ extern const char kAccessControlAllowMethods[];
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlAllowOrigin[];
 COMPONENT_EXPORT(NETWORK_CPP)
+extern const char kAccessControlAllowPrivateNetwork[];
+COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlMaxAge[];
+// TODO(https://crbug.com/1263483): Remove this.
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlRequestExternal[];
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlRequestHeaders[];
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlRequestMethod[];
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const char kAccessControlRequestPrivateNetwork[];
 
 }  // namespace header_names
+
+// These values are used for logging to UMA. Entries should not be renumbered
+// and numeric values should never be reused. Please keep in sync with
+// "CorsAccessCheckResult" in src/tools/metrics/histograms/enums.xml.
+enum class AccessCheckResult {
+  kPermitted = 0,
+  kNotPermitted = 1,
+  kPermittedInPreflight = 2,
+  kNotPermittedInPreflight = 3,
+
+  kMaxValue = kNotPermittedInPreflight,
+};
 
 // Performs a CORS access check on the response parameters.
 // This implements https://fetch.spec.whatwg.org/#concept-cors-check
 COMPONENT_EXPORT(NETWORK_CPP)
 absl::optional<CorsErrorStatus> CheckAccess(
+    const GURL& response_url,
+    const absl::optional<std::string>& allow_origin_header,
+    const absl::optional<std::string>& allow_credentials_header,
+    mojom::CredentialsMode credentials_mode,
+    const url::Origin& origin);
+
+// Performs a CORS access check and reports result and error.
+COMPONENT_EXPORT(NETWORK_CPP)
+absl::optional<CorsErrorStatus> CheckAccessAndReportMetrics(
     const GURL& response_url,
     const absl::optional<std::string>& allow_origin_header,
     const absl::optional<std::string>& allow_credentials_header,
@@ -65,38 +92,6 @@ COMPONENT_EXPORT(NETWORK_CPP)
 bool ShouldCheckCors(const GURL& request_url,
                      const absl::optional<url::Origin>& request_initiator,
                      mojom::RequestMode request_mode);
-
-// Performs a CORS access check on the CORS-preflight response parameters.
-// According to the note at https://fetch.spec.whatwg.org/#cors-preflight-fetch
-// step 6, even for a preflight check, |credentials_mode| should be checked on
-// the actual request rather than preflight one.
-COMPONENT_EXPORT(NETWORK_CPP)
-absl::optional<CorsErrorStatus> CheckPreflightAccess(
-    const GURL& response_url,
-    const int response_status_code,
-    const absl::optional<std::string>& allow_origin_header,
-    const absl::optional<std::string>& allow_credentials_header,
-    mojom::CredentialsMode actual_credentials_mode,
-    const url::Origin& origin);
-
-// Given a redirected-to URL, checks if the location is allowed
-// according to CORS. That is:
-// - the URL has a CORS supported scheme and
-// - the URL does not contain the userinfo production.
-COMPONENT_EXPORT(NETWORK_CPP)
-absl::optional<CorsErrorStatus> CheckRedirectLocation(
-    const GURL& url,
-    mojom::RequestMode request_mode,
-    const absl::optional<url::Origin>& origin,
-    bool cors_flag,
-    bool tainted);
-
-// Checks errors for the currently experimental "Access-Control-Allow-External:"
-// header. Shares error conditions with standard preflight checking.
-// See https://crbug.com/590714.
-COMPONENT_EXPORT(NETWORK_CPP)
-absl::optional<CorsErrorStatus> CheckExternalPreflight(
-    const absl::optional<std::string>& allow_external);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 bool IsCorsEnabledRequestMode(mojom::RequestMode mode);
@@ -124,18 +119,6 @@ COMPONENT_EXPORT(NETWORK_CPP)
 std::vector<std::string> CorsUnsafeRequestHeaderNames(
     const net::HttpRequestHeaders::HeaderVector& headers);
 
-// https://fetch.spec.whatwg.org/#cors-unsafe-request-header-names
-// Returns header names which are not CORS-safelisted AND not forbidden.
-// |headers| must not contain multiple headers for the same name.
-// When |is_revalidating| is true, "if-modified-since", "if-none-match", and
-// "cache-control" are also exempted.
-// The returned list is NOT sorted.
-// The returned list consists of lower-cased names.
-COMPONENT_EXPORT(NETWORK_CPP)
-std::vector<std::string> CorsUnsafeNotForbiddenRequestHeaderNames(
-    const net::HttpRequestHeaders::HeaderVector& headers,
-    bool is_revalidating);
-
 // https://fetch.spec.whatwg.org/#privileged-no-cors-request-header-name
 // The returned list is NOT sorted.
 // The returned list consists of lower-cased names.
@@ -144,8 +127,6 @@ std::vector<std::string> PrivilegedNoCorsHeaderNames();
 
 // Checks forbidden method in the fetch spec.
 // See https://fetch.spec.whatwg.org/#forbidden-method.
-// TODO(toyoshim): Move Blink FetchUtils::IsForbiddenMethod to cors:: and use
-// this implementation internally.
 COMPONENT_EXPORT(NETWORK_CPP) bool IsForbiddenMethod(const std::string& name);
 
 // https://fetch.spec.whatwg.org/#ok-status aka a successful 2xx status code,

@@ -34,6 +34,10 @@ std::vector<T> ToVector(const T (&array)[N]) {
 class Logger {
  public:
   Logger() = default;
+
+  Logger(const Logger&) = delete;
+  Logger& operator=(const Logger&) = delete;
+
   ~Logger() = default;
 
   void AddLog(const std::string& message) { log_ += message; }
@@ -45,13 +49,15 @@ class Logger {
 
  private:
   std::string log_;
-
-  DISALLOW_COPY_AND_ASSIGN(Logger);
 };
 
 class FakeUsbMidiDevice : public UsbMidiDevice {
  public:
   explicit FakeUsbMidiDevice(Logger* logger) : logger_(logger) {}
+
+  FakeUsbMidiDevice(const FakeUsbMidiDevice&) = delete;
+  FakeUsbMidiDevice& operator=(const FakeUsbMidiDevice&) = delete;
+
   ~FakeUsbMidiDevice() override = default;
 
   std::vector<uint8_t> GetDescriptors() override {
@@ -91,8 +97,6 @@ class FakeUsbMidiDevice : public UsbMidiDevice {
   std::string product_name_;
   std::string device_version_;
   Logger* logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUsbMidiDevice);
 };
 
 class FakeMidiManagerClient : public MidiManagerClient {
@@ -101,6 +105,10 @@ class FakeMidiManagerClient : public MidiManagerClient {
       : complete_start_session_(false),
         result_(Result::NOT_SUPPORTED),
         logger_(logger) {}
+
+  FakeMidiManagerClient(const FakeMidiManagerClient&) = delete;
+  FakeMidiManagerClient& operator=(const FakeMidiManagerClient&) = delete;
+
   ~FakeMidiManagerClient() override = default;
 
   void AddInputPort(const mojom::PortInfo& info) override {
@@ -148,13 +156,15 @@ class FakeMidiManagerClient : public MidiManagerClient {
 
  private:
   Logger* logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMidiManagerClient);
 };
 
 class TestUsbMidiDeviceFactory : public UsbMidiDevice::Factory {
  public:
   TestUsbMidiDeviceFactory() = default;
+
+  TestUsbMidiDeviceFactory(const TestUsbMidiDeviceFactory&) = delete;
+  TestUsbMidiDeviceFactory& operator=(const TestUsbMidiDeviceFactory&) = delete;
+
   ~TestUsbMidiDeviceFactory() override = default;
   void EnumerateDevices(UsbMidiDeviceDelegate* device,
                         Callback callback) override {
@@ -162,9 +172,6 @@ class TestUsbMidiDeviceFactory : public UsbMidiDevice::Factory {
   }
 
   Callback callback_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestUsbMidiDeviceFactory);
 };
 
 class MidiManagerUsbForTesting : public MidiManagerUsb {
@@ -173,6 +180,10 @@ class MidiManagerUsbForTesting : public MidiManagerUsb {
       std::unique_ptr<UsbMidiDevice::Factory> device_factory,
       MidiService* service)
       : MidiManagerUsb(service, std::move(device_factory)) {}
+
+  MidiManagerUsbForTesting(const MidiManagerUsbForTesting&) = delete;
+  MidiManagerUsbForTesting& operator=(const MidiManagerUsbForTesting&) = delete;
+
   ~MidiManagerUsbForTesting() override = default;
 
   void CallCompleteInitialization(Result result) {
@@ -180,9 +191,6 @@ class MidiManagerUsbForTesting : public MidiManagerUsb {
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MidiManagerUsbForTesting);
 };
 
 class MidiManagerFactoryForTesting : public midi::MidiService::ManagerFactory {
@@ -226,6 +234,10 @@ class MidiManagerUsbTest : public ::testing::Test {
     factory_ = factory.get();
     service_ = std::make_unique<MidiService>(std::move(factory));
   }
+
+  MidiManagerUsbTest(const MidiManagerUsbTest&) = delete;
+  MidiManagerUsbTest& operator=(const MidiManagerUsbTest&) = delete;
+
   ~MidiManagerUsbTest() override {
     service_->Shutdown();
     base::RunLoop run_loop;
@@ -276,8 +288,6 @@ class MidiManagerUsbTest : public ::testing::Test {
  private:
   std::unique_ptr<MidiService> service_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiManagerUsbTest);
 };
 
 

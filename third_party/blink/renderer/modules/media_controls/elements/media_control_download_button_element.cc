@@ -41,7 +41,8 @@ bool MediaControlDownloadButtonElement::ShouldDisplayDownloadButton() const {
   // The attribute disables the download button.
   // This is run after `SupportSave()` to guarantee that it is recorded only if
   // it blocks the download button from showing up.
-  if (MediaElement().ControlsListInternal()->ShouldHideDownload()) {
+  if (MediaElement().ControlsListInternal()->ShouldHideDownload() &&
+      !MediaElement().UserWantsControlsVisible()) {
     UseCounter::Count(MediaElement().GetDocument(),
                       WebFeature::kHTMLMediaElementControlsListNoDownload);
     return false;

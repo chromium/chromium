@@ -22,6 +22,11 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
   MediaControlsProgressViewTest()
       : views::ViewsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  MediaControlsProgressViewTest(const MediaControlsProgressViewTest&) = delete;
+  MediaControlsProgressViewTest& operator=(
+      const MediaControlsProgressViewTest&) = delete;
+
   ~MediaControlsProgressViewTest() override = default;
 
   // ViewsTestBase:
@@ -52,8 +57,6 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
 
  private:
   views::Widget widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControlsProgressViewTest);
 };
 
 // TODO(crbug.com/1009356): many of these tests are failing on TSan builds.
@@ -68,8 +71,8 @@ class DISABLED_MediaControlsProgressViewTest
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, InitProgress) {
   media_session::MediaPosition media_position(
-      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromSeconds(600),
-      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -80,8 +83,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, InitProgress) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, InitProgressOverHour) {
   media_session::MediaPosition media_position(
-      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromHours(2),
-      /*position=*/base::TimeDelta::FromMinutes(30), /*end_of_media=*/false);
+      /*playback_rate=*/1, /*duration=*/base::Hours(2),
+      /*position=*/base::Minutes(30), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -92,8 +95,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, InitProgressOverHour) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, InitProgressOverDay) {
   media_session::MediaPosition media_position(
-      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromHours(25),
-      /*position=*/base::TimeDelta::FromHours(5), /*end_of_media=*/false);
+      /*playback_rate=*/1, /*duration=*/base::Hours(25),
+      /*position=*/base::Hours(5), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -105,8 +108,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, InitProgressOverDay) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgress) {
   media_session::MediaPosition media_position(
-      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromSeconds(600),
-      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -114,7 +117,7 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgress) {
   EXPECT_EQ(progress_view_->progress_time_for_testing(), u"05:00");
   EXPECT_EQ(progress_view_->progress_bar_for_testing()->GetValue(), .5);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment()->FastForwardBy(base::Seconds(30));
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(progress_view_->duration_for_testing(), u"10:00");
@@ -124,8 +127,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgress) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressFastPlayback) {
   media_session::MediaPosition media_position(
-      /*playback_rate=*/2, /*duration=*/base::TimeDelta::FromSeconds(600),
-      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
+      /*playback_rate=*/2, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -133,7 +136,7 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressFastPlayback) {
   EXPECT_EQ(progress_view_->progress_time_for_testing(), u"05:00");
   EXPECT_EQ(progress_view_->progress_bar_for_testing()->GetValue(), .5);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(15));
+  task_environment()->FastForwardBy(base::Seconds(15));
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(progress_view_->duration_for_testing(), u"10:00");
@@ -143,8 +146,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressFastPlayback) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressSlowPlayback) {
   media_session::MediaPosition media_position(
-      /*playback_rate=*/.5, /*duration=*/base::TimeDelta::FromSeconds(600),
-      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
+      /*playback_rate=*/.5, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -152,7 +155,7 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressSlowPlayback) {
   EXPECT_EQ(progress_view_->progress_time_for_testing(), u"05:00");
   EXPECT_EQ(progress_view_->progress_bar_for_testing()->GetValue(), .5);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(60));
+  task_environment()->FastForwardBy(base::Seconds(60));
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(progress_view_->duration_for_testing(), u"10:00");
@@ -162,8 +165,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressSlowPlayback) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressNegativePlayback) {
   media_session::MediaPosition media_position(
-      /*playback_rate=*/-1, /*duration=*/base::TimeDelta::FromSeconds(600),
-      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
+      /*playback_rate=*/-1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -171,7 +174,7 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressNegativePlayback) {
   EXPECT_EQ(progress_view_->progress_time_for_testing(), u"05:00");
   EXPECT_EQ(progress_view_->progress_bar_for_testing()->GetValue(), .5);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment()->FastForwardBy(base::Seconds(30));
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(progress_view_->duration_for_testing(), u"10:00");
@@ -181,8 +184,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressNegativePlayback) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressPastDuration) {
   media_session::MediaPosition media_position(
-      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromSeconds(600),
-      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -191,7 +194,7 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressPastDuration) {
   EXPECT_EQ(progress_view_->progress_bar_for_testing()->GetValue(), .5);
 
   // Move forward in time past the duration.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(6));
+  task_environment()->FastForwardBy(base::Minutes(6));
   task_environment()->RunUntilIdle();
 
   // Verify the progress does not go past the duration.
@@ -202,8 +205,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressPastDuration) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressBeforeStart) {
   media_session::MediaPosition media_position(
-      /*playback_rate=*/-1, /*duration=*/base::TimeDelta::FromSeconds(600),
-      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
+      /*playback_rate=*/-1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -212,7 +215,7 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressBeforeStart) {
   EXPECT_EQ(progress_view_->progress_bar_for_testing()->GetValue(), .5);
 
   // Move forward in time before the start using negative playback rate.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(6));
+  task_environment()->FastForwardBy(base::Minutes(6));
   task_environment()->RunUntilIdle();
 
   // Verify the progress does not go below 0.
@@ -223,8 +226,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressBeforeStart) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressPaused) {
   media_session::MediaPosition media_position(
-      /*playback_rate=*/0, /*duration=*/base::TimeDelta::FromSeconds(600),
-      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
+      /*playback_rate=*/0, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
   progress_view_->UpdateProgress(media_position);
 
@@ -232,7 +235,7 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressPaused) {
   EXPECT_EQ(progress_view_->progress_time_for_testing(), u"05:00");
   EXPECT_EQ(progress_view_->progress_bar_for_testing()->GetValue(), .5);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(6));
+  task_environment()->FastForwardBy(base::Minutes(6));
   task_environment()->RunUntilIdle();
 
   // Verify the progress does not change while media is paused.
@@ -243,8 +246,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressPaused) {
 
 TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressTwice) {
   media_session::MediaPosition media_position(
-      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromSeconds(600),
-      /*position=*/base::TimeDelta::FromSeconds(300), /*end_of_media=*/false);
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
   // Simulate first position change.
   progress_view_->UpdateProgress(media_position);
@@ -254,8 +257,8 @@ TEST_F(MAYBE_MediaControlsProgressViewTest, UpdateProgressTwice) {
   EXPECT_EQ(progress_view_->progress_bar_for_testing()->GetValue(), .5);
 
   media_session::MediaPosition new_media_position(
-      /*playback_rate=*/1, /*duration=*/base::TimeDelta::FromSeconds(200),
-      /*position=*/base::TimeDelta::FromSeconds(50), /*end_of_media=*/false);
+      /*playback_rate=*/1, /*duration=*/base::Seconds(200),
+      /*position=*/base::Seconds(50), /*end_of_media=*/false);
 
   // Simulate second position change.
   progress_view_->UpdateProgress(new_media_position);

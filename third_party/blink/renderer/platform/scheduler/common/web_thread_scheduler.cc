@@ -64,6 +64,12 @@ WebThreadScheduler::DefaultTaskRunner() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
+WebThreadScheduler::InputTaskRunner() {
+  NOTREACHED();
+  return nullptr;
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
 WebThreadScheduler::CompositorTaskRunner() {
   NOTREACHED();
   return nullptr;
@@ -149,10 +155,6 @@ void WebThreadScheduler::SetRendererHidden(bool hidden) {
 }
 
 void WebThreadScheduler::SetRendererBackgrounded(bool backgrounded) {
-  NOTREACHED();
-}
-
-void WebThreadScheduler::SetSchedulerKeepActive(bool keep_active) {
   NOTREACHED();
 }
 

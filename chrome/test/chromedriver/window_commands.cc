@@ -261,12 +261,12 @@ std::unique_ptr<base::DictionaryValue> CreateDictionaryFrom(
   return dict;
 }
 
-Status GetVisibleCookies(Session* session,
+Status GetVisibleCookies(Session* for_session,
                          WebView* web_view,
                          std::list<Cookie>* cookies) {
   std::string current_page_url;
   Status status =
-      GetUrl(web_view, session->GetCurrentFrameId(), &current_page_url);
+      GetUrl(web_view, for_session->GetCurrentFrameId(), &current_page_url);
   if (status.IsError())
     return status;
   std::unique_ptr<base::ListValue> internal_cookies;
@@ -274,32 +274,34 @@ Status GetVisibleCookies(Session* session,
   if (status.IsError())
     return status;
   std::list<Cookie> cookies_tmp;
-  for (size_t i = 0; i < internal_cookies->GetSize(); ++i) {
-    base::DictionaryValue* cookie_dict;
-    if (!internal_cookies->GetDictionary(i, &cookie_dict))
+  for (const base::Value& cookie_value : internal_cookies->GetList()) {
+    if (!cookie_value.is_dict())
       return Status(kUnknownError, "DevTools returns a non-dictionary cookie");
 
+    const base::DictionaryValue& cookie_dict =
+        base::Value::AsDictionaryValue(cookie_value);
+
     std::string name;
-    cookie_dict->GetString("name", &name);
+    cookie_dict.GetString("name", &name);
     std::string value;
-    cookie_dict->GetString("value", &value);
+    cookie_dict.GetString("value", &value);
     std::string domain;
-    cookie_dict->GetString("domain", &domain);
+    cookie_dict.GetString("domain", &domain);
     std::string path;
-    cookie_dict->GetString("path", &path);
+    cookie_dict.GetString("path", &path);
     std::string samesite;
-    GetOptionalString(cookie_dict, "sameSite", &samesite);
+    GetOptionalString(&cookie_dict, "sameSite", &samesite);
     int64_t expiry =
-        static_cast<int64_t>(cookie_dict->FindDoubleKey("expires").value_or(0));
+        static_cast<int64_t>(cookie_dict.FindDoubleKey("expires").value_or(0));
     // Truncate & convert the value to an integer as required by W3C spec.
     if (expiry >= (1ll << 53) || expiry <= -(1ll << 53))
       expiry = 0;
     bool http_only = false;
-    cookie_dict->GetBoolean("httpOnly", &http_only);
+    cookie_dict.GetBoolean("httpOnly", &http_only);
     bool session = false;
-    cookie_dict->GetBoolean("session", &session);
+    cookie_dict.GetBoolean("session", &session);
     bool secure = false;
-    cookie_dict->GetBoolean("secure", &secure);
+    cookie_dict.GetBoolean("secure", &secure);
 
     cookies_tmp.push_back(Cookie(name, value, domain, path, samesite, expiry,
                                  http_only, secure, session));
@@ -313,8 +315,8 @@ Status ScrollCoordinateInToView(
     int* offset_y) {
   std::unique_ptr<base::Value> value;
   base::ListValue args;
-  args.AppendInteger(x);
-  args.AppendInteger(y);
+  args.Append(x);
+  args.Append(y);
   Status status = web_view->CallFunction(
       std::string(),
       "function(x, y) {"
@@ -906,7 +908,7 @@ Status ExecuteSwitchToFrame(Session* session,
     } else {
       return Status(kInvalidArgument, "invalid 'id'");
     }
-    args.AppendString(xpath);
+    args.Append(xpath);
   }
   std::string frame;
   Status status = web_view->GetFrameByFunction(
@@ -930,7 +932,7 @@ Status ExecuteSwitchToFrame(Session* session,
       "}";
   base::ListValue new_args;
   new_args.Append(element->CreateDeepCopy());
-  new_args.AppendString(chrome_driver_id);
+  new_args.Append(chrome_driver_id);
   result.reset(NULL);
   status = web_view->CallFunction(
       session->GetCurrentFrameId(), kSetFrameIdentifier, new_args, &result);
@@ -1251,7 +1253,6 @@ Status ProcessInputActionSequence(
     std::vector<std::unique_ptr<base::DictionaryValue>>* action_list) {
   std::string id;
   std::string type;
-  const base::DictionaryValue* source;
   const base::DictionaryValue* parameters;
   std::string pointer_type;
   if (!action_sequence->GetString("type", &type) ||
@@ -1280,19 +1281,21 @@ Status ProcessInputActionSequence(
   }
 
   bool found = false;
-  for (size_t i = 0; i < session->active_input_sources.GetSize(); i++) {
-    session->active_input_sources.GetDictionary(i, &source);
-    DCHECK(source);
+  for (const base::Value& source_value :
+       session->active_input_sources.GetList()) {
+    DCHECK(source_value.is_dict());
+    const base::DictionaryValue& source =
+        base::Value::AsDictionaryValue(source_value);
 
     std::string source_id;
     std::string source_type;
-    source->GetString("id", &source_id);
-    source->GetString("type", &source_type);
+    source.GetString("id", &source_id);
+    source.GetString("type", &source_type);
     if (source_id == id && source_type == type) {
       found = true;
       if (type == "pointer") {
         std::string source_pointer_type;
-        if (!source->GetString("pointerType", &source_pointer_type) ||
+        if (!source.GetString("pointerType", &source_pointer_type) ||
             pointer_type != source_pointer_type) {
           return Status(kInvalidArgument,
                         "'pointerType' must be a string that matches sources "
@@ -1346,14 +1349,17 @@ Status ProcessInputActionSequence(
     return Status(kInvalidArgument, "'actions' must be an array");
 
   std::unique_ptr<base::ListValue> actions_result(new base::ListValue);
-  for (size_t i = 0; i < actions->GetSize(); i++) {
+  for (const base::Value& action_item_value : actions->GetList()) {
     std::unique_ptr<base::DictionaryValue> action(new base::DictionaryValue());
 
-    const base::DictionaryValue* action_item;
-    if (!actions->GetDictionary(i, &action_item))
+    if (!action_item_value.is_dict()) {
       return Status(
           kInvalidArgument,
           "each argument in the action sequence must be a dictionary");
+    }
+
+    const base::DictionaryValue* action_item =
+        &base::Value::AsDictionaryValue(action_item_value);
 
     action->SetString("id", id);
     action->SetString("type", type);
@@ -1568,15 +1574,15 @@ Status ExecutePerformActions(Session* session,
 
   // the processed actions
   std::vector<std::vector<std::unique_ptr<base::DictionaryValue>>> actions_list;
-  for (size_t i = 0; i < actions_input->GetSize(); i++) {
-    // proccess input action sequence
-    const base::DictionaryValue* action_sequence;
-    if (!actions_input->GetDictionary(i, &action_sequence))
+  for (const base::Value& action_sequence : actions_input->GetList()) {
+    // process input action sequence
+    if (!action_sequence.is_dict())
       return Status(kInvalidArgument, "each argument must be a dictionary");
 
     std::vector<std::unique_ptr<base::DictionaryValue>> action_list;
-    Status status =
-        ProcessInputActionSequence(session, action_sequence, &action_list);
+    Status status = ProcessInputActionSequence(
+        session, &base::Value::AsDictionaryValue(action_sequence),
+        &action_list);
     actions_list.push_back(std::move(action_list));
 
     if (status.IsError())
@@ -1702,14 +1708,13 @@ Status ExecutePerformActions(Session* session,
                   session->sticky_modifiers &= ~KeyToKeyModifiers(event.key);
                 }
 
-                Status status = web_view->DispatchKeyEvents(
-                    dispatch_key_events, async_dispatch_event);
+                status = web_view->DispatchKeyEvents(dispatch_key_events,
+                                                     async_dispatch_event);
                 if (status.IsError())
                   return status;
               }
             }
           } else if (type == "pointer" || type == "wheel") {
-            OriginType origin = kViewPort;
             std::string element_id;
             if (action_type == "pointerMove" || action_type == "scroll") {
               double x = action->FindDoubleKey("x").value_or(0);
@@ -1717,7 +1722,6 @@ Status ExecutePerformActions(Session* session,
               const base::DictionaryValue* origin_dict;
               if (action->FindKey("origin")) {
                 if (action->GetDictionary("origin", &origin_dict)) {
-                  origin = kElement;
                   origin_dict->GetString(GetElementKey(), &element_id);
                   if (!element_id.empty()) {
                     int center_x = 0, center_y = 0;
@@ -1732,7 +1736,6 @@ Status ExecutePerformActions(Session* session,
                   std::string origin_str;
                   action->GetString("origin", &origin_str);
                   if (origin_str == "pointer") {
-                    origin = kPointer;
                     x += action_locations[id].x();
                     y += action_locations[id].y();
                   }
@@ -1894,8 +1897,7 @@ Status ExecutePerformActions(Session* session,
     }
 
     if (tick_duration > 0) {
-      base::PlatformThread::Sleep(
-          base::TimeDelta::FromMilliseconds(tick_duration));
+      base::PlatformThread::Sleep(base::Milliseconds(tick_duration));
     }
   }
 
@@ -2028,7 +2030,7 @@ Status ExecuteGetStorageItem(const char* storage,
   if (!params.GetString("key", &key))
     return Status(kInvalidArgument, "'key' must be a string");
   base::ListValue args;
-  args.AppendString(key);
+  args.Append(key);
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       base::StringPrintf("function(key) { return %s[key]; }", storage),
@@ -2067,8 +2069,8 @@ Status ExecuteSetStorageItem(const char* storage,
   if (!params.GetString("value", &storage_value))
     return Status(kInvalidArgument, "'value' must be a string");
   base::ListValue args;
-  args.AppendString(key);
-  args.AppendString(storage_value);
+  args.Append(key);
+  args.Append(storage_value);
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       base::StringPrintf("function(key, value) { %s[key] = value; }", storage),
@@ -2086,7 +2088,7 @@ Status ExecuteRemoveStorageItem(const char* storage,
   if (!params.GetString("key", &key))
     return Status(kInvalidArgument, "'key' must be a string");
   base::ListValue args;
-  args.AppendString(key);
+  args.Append(key);
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       base::StringPrintf("function(key) { %s.removeItem(key) }", storage),

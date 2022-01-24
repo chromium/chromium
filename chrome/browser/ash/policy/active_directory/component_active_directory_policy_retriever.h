@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -49,6 +48,11 @@ class ComponentActiveDirectoryPolicyRetriever {
       std::vector<PolicyNamespace> namespaces,
       RetrieveCallback callback);
 
+  ComponentActiveDirectoryPolicyRetriever(
+      const ComponentActiveDirectoryPolicyRetriever&) = delete;
+  ComponentActiveDirectoryPolicyRetriever& operator=(
+      const ComponentActiveDirectoryPolicyRetriever&) = delete;
+
   ~ComponentActiveDirectoryPolicyRetriever();
 
   // Starts retrieving policy from Session Manager as specified in the
@@ -86,7 +90,6 @@ class ComponentActiveDirectoryPolicyRetriever {
 
   base::WeakPtrFactory<ComponentActiveDirectoryPolicyRetriever>
       weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ComponentActiveDirectoryPolicyRetriever);
 };
 
 }  // namespace policy

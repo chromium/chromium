@@ -1,0 +1,40 @@
+<style include="privacy-review-fragment-shared">
+  :host {
+    display: flex;
+    flex-flow: column;
+  }
+
+  .main-content {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--cr-section-padding) 120px;
+    text-align: center;
+  }
+
+  .footer {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+  }
+</style>
+<div class="main-content">
+  <img aria-hidden="true"
+      src="chrome://settings/images/privacy_review_promo_banner.svg">
+  <div class="headline">$i18n{privacyReviewWelcomeCardHeader}</div>
+  <div class="cr-secondary-text">$i18n{privacyReviewWelcomeCardSubHeader}</div>
+</div>
+<div class="footer">
+  <settings-checkbox id="dontShowAgainCheckbox"
+      pref="{{prefs.privacy_review.show_welcome_card}}"
+      label="$i18n{privacyReviewWelcomeCardDontShowAgainCheckbox}"
+      inverted no-set-pref>
+  </settings-checkbox>
+  <cr-button class="action-button" id="startButton"
+      on-click="onStartButtonClick_">
+    $i18n{privacyReviewWelcomeCardStartButton}
+  </cr-button>
+</div>

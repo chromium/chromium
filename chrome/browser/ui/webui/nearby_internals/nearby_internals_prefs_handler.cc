@@ -23,7 +23,7 @@ NearbyInternalsPrefsHandler::NearbyInternalsPrefsHandler(
 NearbyInternalsPrefsHandler::~NearbyInternalsPrefsHandler() = default;
 
 void NearbyInternalsPrefsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "clearNearbyPrefs",
       base::BindRepeating(&NearbyInternalsPrefsHandler::HandleClearNearbyPrefs,
                           base::Unretained(this)));
@@ -35,6 +35,10 @@ void NearbyInternalsPrefsHandler::OnJavascriptDisallowed() {}
 
 void NearbyInternalsPrefsHandler::HandleClearNearbyPrefs(
     const base::ListValue* args) {
+  // Reset onboarding otherwise turning off Nearby also sets Fast Initiation
+  // pref.
+  pref_service_->SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
+                            false);
   // Turn Nearby feature off.
   pref_service_->SetBoolean(prefs::kNearbySharingEnabledPrefName, false);
 

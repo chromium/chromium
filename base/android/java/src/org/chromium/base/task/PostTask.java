@@ -119,6 +119,14 @@ public class PostTask {
     }
 
     /**
+     * Returns true if the task can be executed immediately (i.e. the current thread is the same as
+     * the one corresponding to the SingleThreadTaskRunner)
+     */
+    public static boolean canRunTaskImmediately(TaskTraits taskTraits) {
+        return getTaskExecutorForTraits(taskTraits).canRunTaskImmediately(taskTraits);
+    }
+
+    /**
      * This function executes the task immediately if the current thread is the
      * same as the one corresponding to the SingleThreadTaskRunner, otherwise it
      * posts it and blocks until the task finishes.

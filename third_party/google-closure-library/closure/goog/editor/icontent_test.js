@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.editor.icontentTest');
 goog.setTestOnly();
@@ -38,7 +30,7 @@ let propertyReplacer;
  * @param {boolean=} rtl If true, expect RTL directionality
  */
 function assertBodyCorrect(body, id, bodyHTML, rtl = undefined) {
-  assertEquals(bodyHTML, body.innerHTML);
+  assertEquals(bodyHTML, body.innerHTML.toString());
   // We can't just check
   // assert(HAS_CONTENTE_EDITABLE, !!body.contentEditable) since in
   // FF 3 we don't currently use contentEditable, but body.contentEditable
@@ -58,16 +50,22 @@ function assertBodyCorrect(body, id, bodyHTML, rtl = undefined) {
   assertEquals(id, body.id);
 }
 
-/** @return {Object} A mock document */
+/** @return {!Object} A mock document */
 function createMockDocument() {
   return {
     body: {
+      tagName: 'BODY',
       setAttribute: function(key, val) {
+        /** @suppress {globalThis} suppression added to enable type checking */
         this[key] = val;
       },
-      getAttribute: function(key) {
-        return this[key];
-      },
+      getAttribute: /**
+                       @suppress {globalThis} suppression added to enable type
+                       checking
+                     */
+          function(key) {
+            return this[key];
+          },
       style: {direction: ''},
     },
   };
@@ -86,6 +84,10 @@ testSuite({
     propertyReplacer.reset();
   },
 
+  /**
+     @suppress {checkTypes,strictMissingProperties} suppression added to enable
+     type checking
+   */
   testWriteHttpsInitialIframeContent() {
     // This is not a particularly useful test; it's just a sanity check to make
     // sure nothing explodes
@@ -95,6 +97,10 @@ testSuite({
     assertBodyCorrect(doc.body, 'id', 'some html');
   },
 
+  /**
+     @suppress {checkTypes,strictMissingProperties} suppression added to enable
+     type checking
+   */
   testWriteHttpsInitialIframeContentRtl() {
     const info = new FieldFormatInfo('id', false, false, true);
     const doc = createMockDocument();
@@ -174,9 +180,11 @@ testSuite({
     const styleInfo = null;
     const html = 'Some Html';
     propertyReplacer.set(BrowserFeature, 'HAS_CONTENT_EDITABLE', false);
+    /** @suppress {visibility} suppression added to enable type checking */
     let htmlOut = icontent.getInitialIframeContent_(info, html, styleInfo);
     assertEquals(/contentEditable/i.test(htmlOut), false);
     propertyReplacer.set(BrowserFeature, 'HAS_CONTENT_EDITABLE', true);
+    /** @suppress {visibility} suppression added to enable type checking */
     htmlOut = icontent.getInitialIframeContent_(info, html, styleInfo);
     assertEquals(/<body[^>]+?contentEditable/i.test(htmlOut), true);
     assertEquals(/<html[^>]+?style="[^>"]*min-width:\s*0/i.test(htmlOut), true);

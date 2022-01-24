@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/audio/audio_logging.h"
 #include "media/audio/audio_manager.h"

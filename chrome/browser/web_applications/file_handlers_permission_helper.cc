@@ -4,17 +4,19 @@
 
 #include "chrome/browser/web_applications/file_handlers_permission_helper.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/common/chrome_features.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "url/gurl.h"
@@ -45,15 +47,16 @@ FileHandlersPermissionHelper::~FileHandlersPermissionHelper() = default;
 void FileHandlersPermissionHelper::WillInstallApp(
     const WebApplicationInfo& web_app_info) {
   // This step is necessary in case this app shares an origin with another PWA
-  // which already asked for file handling permissions, and the new app asks to
-  // handle more file types.
+  // which already asked for file handling permissions, and the new app asks
+  // to handle more file types.
   MaybeResetPermission(web_app_info);
 }
 
 FileHandlerUpdateAction FileHandlersPermissionHelper::WillUpdateApp(
-    const AppId app_id,
+    const WebApp& web_app,
     const WebApplicationInfo& web_app_info) {
-  if (!finalizer_->os_integration_manager().IsFileHandlingAPIAvailable(app_id))
+  if (!finalizer_->os_integration_manager().IsFileHandlingAPIAvailable(
+          web_app.app_id()))
     return FileHandlerUpdateAction::kNoUpdate;
 
   const GURL& url = web_app_info.scope;
@@ -67,40 +70,56 @@ FileHandlerUpdateAction FileHandlersPermissionHelper::WillUpdateApp(
   // and Camera System Web Apps (SWAs), which have permissions granted by
   // default. This exception and check is only relevant in ChromeOS, the only
   // platform where SWAs are in use.
-  if (url == kChromeUIMediaAppURL || url == kChromeUICameraAppURL) {
+  if (url == kChromeUIMediaAppURL || url == kChromeUICameraAppURL)
     return FileHandlerUpdateAction::kUpdate;
+
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFileHandlingSettingsGated)) {
+    if (web_app.file_handler_approval_state() ==
+        ApiApprovalState::kDisallowed) {
+      return FileHandlerUpdateAction::kNoUpdate;
+    }
+  } else {
+    // It's possible we'll downgrade the permission and then fail to update OS
+    // integrations (ex. if the disk or icon downloads fail), but this is ok
+    // because these failures should rarely occur.
+    ContentSetting content_setting = MaybeResetPermission(web_app_info);
+
+    // If the permission is "BLOCK", leave it as is. When permission is
+    // "BLOCK", the `OnContentSettingChanged()` and
+    // `DetectAndCorrectFileHandlingPermissionBlocks()` should capture the
+    // permission change and make sure the OS and db state are in sync with the
+    // PermissionManager permission setting. Therefore, manifest update task
+    // should not update file handlers due to blocked permission state.
+    if (content_setting == CONTENT_SETTING_BLOCK)
+      return FileHandlerUpdateAction::kNoUpdate;
   }
 
-  // It's possible we'll downgrade the permission and then fail to update OS
-  // integrations (ex. if the disk or icon downloads fail), but this is ok
-  // because these failures should rarely occur.
-  ContentSetting content_setting = MaybeResetPermission(web_app_info);
-
-  // If the permission is "BLOCK", leave it as is. When permission is
-  // "BLOCK", the `OnContentSettingChanged()` and
-  // `DetectAndCorrectFileHandlingPermissionBlocks()` should capture the
-  // permission change and make sure the OS and db state are in sync with the
-  // PermissionManager permission setting. Therefore, manifest update task
-  // should not update file handlers due to blocked permission state.
-  if (content_setting == CONTENT_SETTING_BLOCK)
+  // TODO(https://crbug.com/1197013): Consider trying to re-use the comparison
+  // results from the ManifestUpdateTask.
+  const apps::FileHandlers* old_handlers =
+      finalizer_->registrar().GetAppFileHandlers(web_app.app_id());
+  DCHECK(old_handlers);
+  if (*old_handlers == web_app_info.file_handlers)
     return FileHandlerUpdateAction::kNoUpdate;
-
-  // TODO(https://crbug.com/1197013): Consider trying to re-use
-  // HaveFileHandlersChanged() results from the ManifestUpdateTask.
-  if (!HaveFileHandlersChanged(
-          /*old_handlers=*/finalizer_->registrar().GetAppFileHandlers(app_id),
-          /*new_handlers=*/web_app_info.file_handlers)) {
-    return FileHandlerUpdateAction::kNoUpdate;
-  }
 
   return FileHandlerUpdateAction::kUpdate;
+}
+
+bool FileHandlersPermissionHelper::IsPermissionBlocked(const GURL& scope) {
+  permissions::PermissionManager* permission_manager =
+      PermissionManagerFactory::GetForProfile(finalizer_->profile());
+  permissions::PermissionResult status =
+      permission_manager->GetPermissionStatus(
+          ContentSettingsType::FILE_HANDLING, scope, scope);
+  return status.content_setting == CONTENT_SETTING_BLOCK;
 }
 
 void FileHandlersPermissionHelper::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  if (content_type != ContentSettingsType::FILE_HANDLING)
+    ContentSettingsTypeSet content_type_set) {
+  if (!content_type_set.Contains(ContentSettingsType::FILE_HANDLING))
     return;
 
   UpdateAppsMatchingPattern(primary_pattern);
@@ -109,8 +128,7 @@ void FileHandlersPermissionHelper::OnContentSettingChanged(
 void FileHandlersPermissionHelper::OnWebAppManifestUpdated(
     const AppId& app_id,
     base::StringPiece old_name) {
-  ScopedRegistryUpdate update(
-      finalizer_->registry_controller().AsWebAppSyncBridge());
+  ScopedRegistryUpdate update(&finalizer_->sync_bridge());
   WebApp* app = update->UpdateApp(app_id);
   app->SetFileHandlerPermissionBlocked(IsPermissionBlocked(app->scope()));
 }
@@ -125,7 +143,7 @@ void FileHandlersPermissionHelper::OnWebAppWillBeUninstalled(
   // See if there are any remaining apps in the same origin that have file
   // handlers. If so, do nothing.
   const WebApp* app = registrar.GetAppById(app_id);
-  const GURL origin = app->scope().GetOrigin();
+  const GURL origin = app->scope().DeprecatedGetOriginAsURL();
   std::vector<AppId> app_ids = registrar.FindAppsInScope(origin);
   for (const AppId& app_id_iter : app_ids) {
     const apps::FileHandlers* handlers =
@@ -138,15 +156,6 @@ void FileHandlersPermissionHelper::OnWebAppWillBeUninstalled(
   // the permission.
   PermissionManagerFactory::GetForProfile(finalizer_->profile())
       ->ResetPermission(content::PermissionType::FILE_HANDLING, origin, origin);
-}
-
-bool FileHandlersPermissionHelper::IsPermissionBlocked(const GURL& scope) {
-  permissions::PermissionManager* permission_manager =
-      PermissionManagerFactory::GetForProfile(finalizer_->profile());
-  permissions::PermissionResult status =
-      permission_manager->GetPermissionStatus(
-          ContentSettingsType::FILE_HANDLING, scope, scope);
-  return status.content_setting == CONTENT_SETTING_BLOCK;
 }
 
 ContentSetting FileHandlersPermissionHelper::MaybeResetPermission(
@@ -177,8 +186,12 @@ ContentSetting FileHandlersPermissionHelper::MaybeResetPermission(
 
 void FileHandlersPermissionHelper::UpdateAppsMatchingPattern(
     const ContentSettingsPattern& pattern) {
-  ScopedRegistryUpdate update(
-      finalizer_->registry_controller().AsWebAppSyncBridge());
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFileHandlingSettingsGated)) {
+    return;
+  }
+
+  ScopedRegistryUpdate update(&finalizer_->sync_bridge());
   for (const AppId& app_id : finalizer_->registrar().GetAppIds()) {
     const WebApp* app = finalizer_->GetWebAppRegistrar().GetAppById(app_id);
     if (!app || !app->is_locally_installed())
@@ -198,7 +211,7 @@ void FileHandlersPermissionHelper::UpdateAppsMatchingPattern(
         permission_blocked ? FileHandlerUpdateAction::kRemove
                            : FileHandlerUpdateAction::kUpdate;
     finalizer_->os_integration_manager().UpdateFileHandlers(
-        app_id, file_handlers_need_os_update);
+        app_id, file_handlers_need_os_update, base::DoNothing());
   }
 }
 

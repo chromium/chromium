@@ -41,6 +41,7 @@ class FakeMediaSession : public content::MediaSession {
   MOCK_METHOD0(ToggleCamera, void());
   MOCK_METHOD0(HangUp, void());
   MOCK_METHOD0(Raise, void());
+  MOCK_METHOD1(SetMute, void(bool));
 
   // content::MediaSession APIs faked to implement testing behaviour.
   MOCK_METHOD1(DidReceiveAction,
@@ -83,6 +84,10 @@ class MediaPlayerImplTest : public testing::Test {
  public:
   MediaPlayerImplTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+
+  MediaPlayerImplTest(const MediaPlayerImplTest&) = delete;
+  MediaPlayerImplTest& operator=(const MediaPlayerImplTest&) = delete;
+
   ~MediaPlayerImplTest() override = default;
 
   void OnPlayerDisconnected() {}
@@ -94,8 +99,6 @@ class MediaPlayerImplTest : public testing::Test {
   fuchsia::media::sessions2::PlayerPtr player_;
 
   std::unique_ptr<MediaPlayerImpl> player_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerImplTest);
 };
 
 // Verify that the |on_disconnect| closure is invoked if the client disconnects.

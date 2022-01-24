@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -33,14 +34,16 @@ class StartSurfaceToolbarProperties {
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IDENTITY_DISC_IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
-    // These two property keys are intended for boolean types. We need to skip the equality check
+    // This property key is intended for boolean types. We need to skip the equality check
     // here to make sure the toolbar animations are started.
     public static final PropertyModel.WritableObjectPropertyKey<Boolean> IS_VISIBLE =
             new PropertyModel.WritableObjectPropertyKey<>(true);
-    public static final PropertyModel.WritableObjectPropertyKey<Boolean> IN_START_SURFACE_MODE =
+    public static final PropertyModel.WritableObjectPropertyKey<Boolean> SHOW_ANIMATION =
             new PropertyModel.WritableObjectPropertyKey<>(true);
-    public static final PropertyModel.WritableBooleanPropertyKey SHOW_ANIMATION =
-            new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey<Bitmap> LOGO_IMAGE =
+            new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<String> LOGO_CONTENT_DESCRIPTION =
+            new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableBooleanPropertyKey LOGO_IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =
@@ -49,7 +52,11 @@ class StartSurfaceToolbarProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey MENU_IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey NEW_TAB_BUTTON_IS_VISIBLE =
+    public static final PropertyModel.WritableBooleanPropertyKey NEW_TAB_VIEW_IS_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey NEW_TAB_VIEW_AT_START =
+            new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey NEW_TAB_VIEW_TEXT_IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey BUTTONS_CLICKABLE =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -70,12 +77,8 @@ class StartSurfaceToolbarProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IDENTITY_DISC_AT_START =
             new PropertyModel.WritableBooleanPropertyKey();
 
-    /**
-     * This is a hacky workaround for {@link IncognitoSwitchProperties#IS_VISIBLE}.
-     * TODO(crbug.com/1042997): control the visibility through IncognitoSwitchCoordinator.
-     */
-    public static final PropertyModel.WritableObjectPropertyKey INCOGNITO_SWITCHER_VISIBLE =
-            new PropertyModel.WritableObjectPropertyKey(true);
+    public static final PropertyModel.WritableBooleanPropertyKey INCOGNITO_SWITCHER_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyModel.WritableFloatPropertyKey TRANSLATION_Y =
             new PropertyModel.WritableFloatPropertyKey();
@@ -93,13 +96,13 @@ class StartSurfaceToolbarProperties {
             new PropertyModel.WritableObjectPropertyKey<View.OnClickListener>();
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {NEW_TAB_CLICK_HANDLER,
-            IS_VISIBLE, SHOW_ANIMATION, LOGO_IS_VISIBLE, IS_INCOGNITO, INCOGNITO_STATE_PROVIDER,
-            ACCESSIBILITY_ENABLED, MENU_IS_VISIBLE, NEW_TAB_BUTTON_IS_VISIBLE, BUTTONS_CLICKABLE,
-            GRID_TAB_SWITCHER_ENABLED, IDENTITY_DISC_AT_START, INCOGNITO_SWITCHER_VISIBLE,
-            IDENTITY_DISC_IS_VISIBLE, IDENTITY_DISC_CLICK_HANDLER, IDENTITY_DISC_IMAGE,
-            IDENTITY_DISC_DESCRIPTION, IN_START_SURFACE_MODE, NEW_TAB_BUTTON_HIGHLIGHT,
-            TRANSLATION_Y, HOME_BUTTON_IS_VISIBLE, HOMEPAGE_ENABLED_SUPPLIER,
-            HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER, HOME_BUTTON_CLICK_HANDLER,
-            TAB_SWITCHER_BUTTON_IS_VISIBLE, INCOGNITO_TAB_COUNT_PROVIDER,
+            IS_VISIBLE, SHOW_ANIMATION, LOGO_IS_VISIBLE, LOGO_IMAGE, LOGO_CONTENT_DESCRIPTION,
+            IS_INCOGNITO, INCOGNITO_STATE_PROVIDER, ACCESSIBILITY_ENABLED, MENU_IS_VISIBLE,
+            NEW_TAB_VIEW_IS_VISIBLE, NEW_TAB_VIEW_AT_START, NEW_TAB_VIEW_TEXT_IS_VISIBLE,
+            BUTTONS_CLICKABLE, GRID_TAB_SWITCHER_ENABLED, IDENTITY_DISC_AT_START,
+            INCOGNITO_SWITCHER_VISIBLE, IDENTITY_DISC_IS_VISIBLE, IDENTITY_DISC_CLICK_HANDLER,
+            IDENTITY_DISC_IMAGE, IDENTITY_DISC_DESCRIPTION, NEW_TAB_BUTTON_HIGHLIGHT, TRANSLATION_Y,
+            HOME_BUTTON_IS_VISIBLE, HOMEPAGE_ENABLED_SUPPLIER, HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER,
+            HOME_BUTTON_CLICK_HANDLER, TAB_SWITCHER_BUTTON_IS_VISIBLE, INCOGNITO_TAB_COUNT_PROVIDER,
             INCOGNITO_TAB_MODEL_SELECTOR};
 }

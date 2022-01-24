@@ -31,6 +31,10 @@ class HeadlessWindowTreeHost : public aura::WindowTreeHost,
                                public ui::PlatformEventDispatcher {
  public:
   explicit HeadlessWindowTreeHost(bool use_external_begin_frame_control);
+
+  HeadlessWindowTreeHost(const HeadlessWindowTreeHost&) = delete;
+  HeadlessWindowTreeHost& operator=(const HeadlessWindowTreeHost&) = delete;
+
   ~HeadlessWindowTreeHost() override;
 
   void SetParentWindow(gfx::NativeWindow window);
@@ -62,8 +66,6 @@ class HeadlessWindowTreeHost : public aura::WindowTreeHost,
   gfx::Rect bounds_;
   std::unique_ptr<aura::client::FocusClient> focus_client_;
   std::unique_ptr<aura::client::WindowParentingClient> window_parenting_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessWindowTreeHost);
 };
 
 }  // namespace headless

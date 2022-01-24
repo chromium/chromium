@@ -201,7 +201,7 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
     AddProperty("suggestionLabels", suggestion_labels, data);
     AddProperty(
         "inputWidth",
-        static_cast<unsigned>(parameters_->anchor_rect_in_screen.Width()),
+        static_cast<unsigned>(parameters_->anchor_rect_in_screen.width()),
         data);
     AddProperty(
         "showOtherDateEntry",

@@ -5,168 +5,103 @@
 #include "ui/ozone/platform/wayland/host/shell_popup_wrapper.h"
 
 #include "base/check_op.h"
+#include "base/command_line.h"
+#include "base/debug/stack_trace.h"
+#include "base/environment.h"
+#include "base/logging.h"
+#include "base/nix/xdg_util.h"
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_popup.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/public/ozone_switches.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
 
-constexpr uint32_t kAnchorDefaultWidth = 1;
-constexpr uint32_t kAnchorDefaultHeight = 1;
-constexpr uint32_t kAnchorHeightParentMenu = 30;
+namespace {
 
-gfx::Rect GetAnchorRect(MenuType menu_type,
-                        const gfx::Rect& menu_bounds,
-                        const gfx::Rect& parent_window_bounds) {
-  gfx::Rect anchor_rect;
-  switch (menu_type) {
-    case MenuType::kRootContextMenu:
-      // Place anchor for context menus normally.
-      anchor_rect = gfx::Rect(menu_bounds.x(), menu_bounds.y(),
-                              kAnchorDefaultWidth, kAnchorDefaultHeight);
-      break;
-    case MenuType::kRootMenu:
-      // The anchor for parent menu windows is positioned slightly above the
-      // specified bounds to ensure flipped window along y-axis won't hide 3-dot
-      // menu button.
-      anchor_rect = gfx::Rect(menu_bounds.x() - kAnchorDefaultWidth,
-                              menu_bounds.y() - kAnchorHeightParentMenu,
-                              kAnchorDefaultWidth, kAnchorHeightParentMenu);
-      break;
-    case MenuType::kChildMenu:
-      // The child menu's anchor must meet the following requirements: at some
-      // point, the Wayland compositor can flip it along x-axis. To make sure
-      // it's positioned correctly, place it closer to the beginning of the
-      // parent menu shifted by the same value along x-axis. The width of anchor
-      // must correspond the width between two points - specified origin by the
-      // Chromium and calculated point shifted by the same value along x-axis
-      // from the beginning of the parent menu width.
-      //
-      // We also have to bear in mind that Chromium may decide to flip the
-      // position of the menu window along the x-axis and show it on the other
-      // side of the parent menu window (normally, the Wayland compositor does
-      // it). Thus, check which side the child menu window is going to be
-      // presented on and create right anchor.
-      if (menu_bounds.x() >= 0) {
-        auto anchor_width =
-            parent_window_bounds.width() -
-            (parent_window_bounds.width() - menu_bounds.x()) * 2;
-        if (anchor_width <= 0) {
-          anchor_rect = gfx::Rect(menu_bounds.x(), menu_bounds.y(),
-                                  kAnchorDefaultWidth, kAnchorDefaultHeight);
-        } else {
-          anchor_rect =
-              gfx::Rect(parent_window_bounds.width() - menu_bounds.x(),
-                        menu_bounds.y(), anchor_width, kAnchorDefaultHeight);
-        }
-      } else {
-        DCHECK_LE(menu_bounds.x(), 0);
-        auto position = menu_bounds.width() + menu_bounds.x();
-        DCHECK(position > 0 && position < parent_window_bounds.width());
-        auto anchor_width = parent_window_bounds.width() - position * 2;
-        if (anchor_width <= 0) {
-          anchor_rect = gfx::Rect(position, menu_bounds.y(),
-                                  kAnchorDefaultWidth, kAnchorDefaultHeight);
-        } else {
-          anchor_rect = gfx::Rect(position, menu_bounds.y(), anchor_width,
-                                  kAnchorDefaultHeight);
-        }
-      }
-      break;
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+bool IsGnomeShell() {
+  auto env = base::Environment::Create();
+  return base::nix::GetDesktopEnvironment(env.get()) ==
+         base::nix::DESKTOP_ENVIRONMENT_GNOME;
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+}  // namespace
+
+ShellPopupParams::ShellPopupParams() = default;
+ShellPopupParams::ShellPopupParams(const ShellPopupParams&) = default;
+ShellPopupParams& ShellPopupParams::operator=(const ShellPopupParams&) =
+    default;
+ShellPopupParams::~ShellPopupParams() = default;
+
+void ShellPopupWrapper::FillAnchorData(
+    const ShellPopupParams& params,
+    gfx::Rect* anchor_rect,
+    OwnedWindowAnchorPosition* anchor_position,
+    OwnedWindowAnchorGravity* anchor_gravity,
+    OwnedWindowConstraintAdjustment* constraints) const {
+  DCHECK(anchor_rect && anchor_position && anchor_gravity && constraints);
+  if (params.anchor.has_value()) {
+    *anchor_rect = params.anchor->anchor_rect;
+    *anchor_position = params.anchor->anchor_position;
+    *anchor_gravity = params.anchor->anchor_gravity;
+    *constraints = params.anchor->constraint_adjustment;
+    return;
   }
 
-  return anchor_rect;
+  // Use default parameters if params.anchor doesn't have any data.
+  *anchor_rect = params.bounds;
+  anchor_rect->set_size({1, 1});
+  *anchor_position = OwnedWindowAnchorPosition::kTopLeft;
+  *anchor_gravity = OwnedWindowAnchorGravity::kBottomRight;
+  *constraints = OwnedWindowConstraintAdjustment::kAdjustmentFlipY;
 }
 
-WlAnchor GetAnchor(MenuType menu_type, const gfx::Rect& bounds) {
-  WlAnchor anchor = WlAnchor::None;
-  switch (menu_type) {
-    case MenuType::kRootContextMenu:
-      anchor = WlAnchor::TopLeft;
-      break;
-    case MenuType::kRootMenu:
-      anchor = WlAnchor::BottomRight;
-      break;
-    case MenuType::kChildMenu:
-      // Chromium may want to manually position a child menu on the left side of
-      // its parent menu. Thus, react accordingly. Positive x means the child is
-      // located on the right side of the parent and negative - on the left
-      // side.
-      if (bounds.x() >= 0)
-        anchor = WlAnchor::TopRight;
-      else
-        anchor = WlAnchor::TopLeft;
-      break;
-  }
+void ShellPopupWrapper::GrabIfPossible(WaylandConnection* connection,
+                                       WaylandWindow* parent_window) {
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (!cmd_line->HasSwitch(switches::kUseWaylandExplicitGrab))
+    return;
 
-  return anchor;
-}
-
-WlGravity GetGravity(MenuType menu_type, const gfx::Rect& bounds) {
-  WlGravity gravity = WlGravity::None;
-  switch (menu_type) {
-    case MenuType::kRootContextMenu:
-      gravity = WlGravity::BottomRight;
-      break;
-    case MenuType::kRootMenu:
-      gravity = WlGravity::BottomRight;
-      break;
-    case MenuType::kChildMenu:
-      // Chromium may want to manually position a child menu on the left side of
-      // its parent menu. Thus, react accordingly. Positive x means the child is
-      // located on the right side of the parent and negative - on the left
-      // side.
-      if (bounds.x() >= 0)
-        gravity = WlGravity::BottomRight;
-      else
-        gravity = WlGravity::BottomLeft;
-      break;
-  }
-
-  return gravity;
-}
-
-WlConstraintAdjustment GetConstraintAdjustment(MenuType menu_type) {
-  WlConstraintAdjustment constraint = WlConstraintAdjustment::None;
-
-  switch (menu_type) {
-    case MenuType::kRootContextMenu:
-      constraint =
-          WlConstraintAdjustment::SlideX | WlConstraintAdjustment::SlideY |
-          WlConstraintAdjustment::FlipY | WlConstraintAdjustment::ResizeY;
-      break;
-    case MenuType::kRootMenu:
-      constraint = WlConstraintAdjustment::SlideX |
-                   WlConstraintAdjustment::FlipY |
-                   WlConstraintAdjustment::ResizeY;
-      break;
-    case MenuType::kChildMenu:
-      constraint = WlConstraintAdjustment::SlideY |
-                   WlConstraintAdjustment::FlipX |
-                   WlConstraintAdjustment::ResizeY;
-      break;
-  }
-
-  return constraint;
-}
-
-bool ShellPopupWrapper::CanGrabPopup(WaylandConnection* connection) const {
   // When drag process starts, as described the protocol -
   // https://goo.gl/1Mskq3, the client must have an active implicit grab. If
   // we try to create a popup and grab it, it will be immediately dismissed.
   // Thus, do not take explicit grab during drag process.
   if (connection->IsDragInProgress() || !connection->seat())
-    return false;
+    return;
 
   // According to the definition of the xdg protocol, the grab request must be
   // used in response to some sort of user action like a button press, key
   // press, or touch down event.
-  EventType last_event_type = connection->event_serial().event_type;
-  return last_event_type == ET_TOUCH_PRESSED ||
-         last_event_type == ET_KEY_PRESSED ||
-         last_event_type == ET_MOUSE_PRESSED;
+  auto serial = connection->serial_tracker().GetSerial(
+      {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
+       wl::SerialType::kKeyPress});
+  if (!serial.has_value())
+    return;
+
+  // The parent of a grabbing popup must either be an xdg_toplevel surface or
+  // another xdg_popup with an explicit grab. If it is a popup that did not take
+  // an explicit grab, an error will be raised, so early out if that's the case.
+  auto* parent_popup = parent_window->AsWaylandPopup();
+  if (parent_popup && !parent_popup->shell_popup()->has_grab_) {
+    return;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (serial->type == wl::SerialType::kTouchPress && IsGnomeShell())
+    return;
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  Grab(serial->value);
+  has_grab_ = true;
 }
 
 }  // namespace ui

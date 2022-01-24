@@ -133,6 +133,9 @@ class AdapterTest : public testing::Test {
   AdapterTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  AdapterTest(const AdapterTest&) = delete;
+  AdapterTest& operator=(const AdapterTest&) = delete;
+
   ~AdapterTest() override = default;
 
   void SetUp() override {
@@ -168,7 +171,7 @@ class AdapterTest : public testing::Test {
     // Simulate the real clock that will not produce TimeTicks equal to 0.
     // This is because the Adapter will treat 0 TimeTicks are uninitialized
     // values.
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
     sync_preferences::PrefServiceMockFactory factory;
     factory.set_user_prefs(base::WrapRefCounted(new TestingPrefStore()));
     scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
@@ -276,7 +279,7 @@ class AdapterTest : public testing::Test {
     for (const int als_value : als_values) {
       // Forward 1 second to simulate the real AlsReader that samples data at
       // 1hz.
-      task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+      task_environment_.FastForwardBy(base::Seconds(1));
       ReportAls(als_value);
     }
   }
@@ -314,9 +317,6 @@ class AdapterTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<Adapter> adapter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AdapterTest);
 };
 
 // AlsReader is |kDisabled| when Adapter is created.
@@ -579,7 +579,7 @@ TEST_F(AdapterTest, SequenceOfBrightnessUpdatesWithDefaultParams) {
   // |params.auto_brightness_als_horizon_seconds| has elapsed since we've made
   // the change, but there's no new ALS value, hence no brightness change is
   // triggered.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(test_observer_.num_changes(), 2);
   CheckAvgLog({20, 30, 40, 50, 60},
               adapter_->GetCurrentAvgLogAlsForTesting().value());
@@ -621,7 +621,7 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingExists) {
   CheckAvgLog({1, 2, 3, 4}, adapter_->GetCurrentAvgLogAlsForTesting().value());
 
   // Another user manual adjustment comes in.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   ReportUserBrightnessChangeRequest(30.0, 40.0);
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
@@ -679,7 +679,7 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingExistsContinue) {
               adapter_->GetCurrentAvgLogAlsForTesting().value());
 
   // Another user manual adjustment comes in.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   ReportUserBrightnessChangeRequest(30.0, 40.0);
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
@@ -714,7 +714,7 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingAbsent) {
   EXPECT_FALSE(adapter_->GetCurrentAvgLogAlsForTesting());
 
   // Another user manual adjustment comes in.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   ReportUserBrightnessChangeRequest(30.0, 40.0);
   histogram_tester_.ExpectBucketCount(
       "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", true, 1);
@@ -754,7 +754,7 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingAbsentContinue) {
   EXPECT_EQ(test_observer_.num_changes(), 0);
 
   // Another user manual adjustment comes in.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   ReportUserBrightnessChangeRequest(30.0, 40.0);
   histogram_tester_.ExpectBucketCount(
       "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", true, 1);
@@ -924,7 +924,7 @@ TEST_F(AdapterTest, UseLatestCurve) {
                        adapter_->GetCurrentAvgLogAlsForTesting().value()));
 
   // A new personal curve is received but adapter still uses the global curve.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+  task_environment_.FastForwardBy(base::Seconds(20));
   fake_modeller_.ReportModelTrained(*personal_curve_);
   ReportAls(20);
   EXPECT_EQ(test_observer_.num_changes(), 2);

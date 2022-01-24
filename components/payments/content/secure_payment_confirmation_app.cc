@@ -4,7 +4,6 @@
 
 #include "components/payments/content/secure_payment_confirmation_app.h"
 
-#include <sstream>
 #include <utility>
 
 #include "base/base64.h"
@@ -15,11 +14,10 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/payments/content/payment_request_spec.h"
+#include "components/payments/core/error_strings.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payer_data.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
@@ -36,66 +34,6 @@ namespace payments {
 namespace {
 
 static constexpr int kDefaultTimeoutMinutes = 3;
-
-std::string EncodeSecurePaymentConfirmationString(
-    const std::vector<uint8_t>& vector_to_encode) {
-  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
-    std::string encoded_string;
-    base::Base64UrlEncode(
-        std::string(vector_to_encode.begin(), vector_to_encode.end()),
-        base::Base64UrlEncodePolicy::OMIT_PADDING, &encoded_string);
-    return encoded_string;
-  } else {
-    return base::Base64Encode(vector_to_encode);
-  }
-}
-
-// Creates a SHA-256 hash over the Secure Payment Confirmation bundle, which is
-// a JSON string (without whitespace) with the following structure:
-//   {
-//     "merchantData" {
-//       "merchantOrigin": "https://merchant.example",
-//       "total": {
-//         "currency": "CAD",
-//         "value": "1.25",
-//        },
-//     },
-//     "networkData": "YW=",
-//   }
-// where "networkData" is the base64 encoding of the `networkData` specified in
-// the SecurePaymentConfirmationRequest. Sets the `challenge` out-param value to
-// this JSON string.
-std::vector<uint8_t> GetSecurePaymentConfirmationChallenge(
-    const std::vector<uint8_t>& network_data,
-    const url::Origin& merchant_origin,
-    const mojom::PaymentCurrencyAmountPtr& amount,
-    std::string* challenge) {
-  DCHECK(
-      !base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2));
-
-  base::Value total(base::Value::Type::DICTIONARY);
-  total.SetKey("currency", base::Value(amount->currency));
-  total.SetKey("value", base::Value(amount->value));
-
-  base::Value merchant_data(base::Value::Type::DICTIONARY);
-  merchant_data.SetKey("merchantOrigin",
-                       base::Value(merchant_origin.Serialize()));
-  merchant_data.SetKey("total", std::move(total));
-
-  base::Value transaction_data(base::Value::Type::DICTIONARY);
-
-  transaction_data.SetKey(
-      "networkData",
-      base::Value(EncodeSecurePaymentConfirmationString(network_data)));
-  transaction_data.SetKey("merchantData", std::move(merchant_data));
-
-  bool success = base::JSONWriter::Write(transaction_data, challenge);
-  DCHECK(success) << "Failed to write JSON for " << transaction_data;
-
-  std::string sha256_hash = crypto::SHA256HashString(*challenge);
-  std::vector<uint8_t> output_bytes(sha256_hash.begin(), sha256_hash.end());
-  return output_bytes;
-}
 
 // Records UMA metric for the system prompt result.
 void RecordSystemPromptResult(
@@ -116,7 +54,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     const url::Origin& merchant_origin,
     base::WeakPtr<PaymentRequestSpec> spec,
     mojom::SecurePaymentConfirmationRequestPtr request,
-    std::unique_ptr<autofill::InternalAuthenticator> authenticator)
+    std::unique_ptr<webauthn::InternalAuthenticator> authenticator)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::INTERNAL),
       content::WebContentsObserver(web_contents_to_observe),
       authenticator_frame_routing_id_(
@@ -125,14 +63,10 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       icon_(std::move(icon)),
       label_(label),
       credential_id_(std::move(credential_id)),
-      encoded_credential_id_(
-          EncodeSecurePaymentConfirmationString(credential_id_)),
       merchant_origin_(merchant_origin),
       spec_(spec),
       request_(std::move(request)),
       authenticator_(std::move(authenticator)) {
-  DCHECK(web_contents_to_observe->GetMainFrame()->GetGlobalId() ==
-         authenticator_frame_routing_id_);
   DCHECK(!credential_id_.empty());
 
   app_method_names_.insert(methods::kSecurePaymentConfirmation);
@@ -151,7 +85,7 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
   options->relying_party_id = effective_relying_party_identity_;
   options->timeout = request_->timeout.has_value()
                          ? request_->timeout.value()
-                         : base::TimeDelta::FromMinutes(kDefaultTimeoutMinutes);
+                         : base::Minutes(kDefaultTimeoutMinutes);
   options->user_verification = device::UserVerificationRequirement::kRequired;
   std::vector<device::PublicKeyCredentialDescriptor> credentials;
 
@@ -171,23 +105,10 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
 
   options->allow_credentials = std::move(credentials);
 
-  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
-    options->challenge = request_->challenge;
-    options->payment = blink::mojom::PaymentOptions::New(
-        spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
-        request_->instrument.Clone());
-  } else {
-    // Create a new challenge that is a hash of the transaction data.
-    options->challenge = GetSecurePaymentConfirmationChallenge(
-        request_->challenge, merchant_origin_,
-        spec_->GetTotal(/*selected_app=*/this)->amount, &challenge_);
-  }
-
-  // We are nullifying the security check by design, and the origin that created
-  // the credential isn't saved anywhere.
-  authenticator_->SetEffectiveOrigin(url::Origin::Create(
-      GURL(base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
-                         effective_relying_party_identity_}))));
+  options->challenge = request_->challenge;
+  authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(
+      spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
+      request_->instrument.Clone(), request_->payee_origin));
 
   authenticator_->GetAssertion(
       std::move(options),
@@ -229,7 +150,7 @@ bool SecurePaymentConfirmationApp::NeedsInstallation() const {
 }
 
 std::string SecurePaymentConfirmationApp::GetId() const {
-  return encoded_credential_id_;
+  return base::Base64Encode(credential_id_);
 }
 
 std::u16string SecurePaymentConfirmationApp::GetLabel() const {
@@ -294,12 +215,11 @@ void SecurePaymentConfirmationApp::AbortPaymentApp(
 mojom::PaymentResponsePtr
 SecurePaymentConfirmationApp::SetAppSpecificResponseFields(
     mojom::PaymentResponsePtr response) const {
-  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
-    response->secure_payment_confirmation =
-        mojom::SecurePaymentConfirmationResponse::New(response_->info.Clone(),
-                                                      response_->signature,
-                                                      response_->user_handle);
-  }
+  response->secure_payment_confirmation =
+      mojom::SecurePaymentConfirmationResponse::New(
+          response_->info.Clone(), response_->signature,
+          response_->has_transport, response_->transport,
+          response_->user_handle);
   return response;
 }
 
@@ -320,10 +240,8 @@ void SecurePaymentConfirmationApp::OnGetAssertion(
     return;
 
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS || !response) {
-    std::stringstream status_string_stream;
-    status_string_stream << status;
-    delegate->OnInstrumentDetailsError(base::StringPrintf(
-        "Authenticator returned %s.", status_string_stream.str().c_str()));
+    delegate->OnInstrumentDetailsError(
+        errors::kWebAuthnOperationTimedOutOrNotAllowed);
     RecordSystemPromptResult(
         SecurePaymentConfirmationSystemPromptResult::kCanceled);
     return;
@@ -332,58 +250,10 @@ void SecurePaymentConfirmationApp::OnGetAssertion(
   RecordSystemPromptResult(
       SecurePaymentConfirmationSystemPromptResult::kAccepted);
 
-  base::DictionaryValue json;
-  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
-    response_ = std::move(response);
-  } else {
-    // Serialize response into a JSON string. Browser will pass this string over
-    // Mojo IPC into Blink, which will parse it into a JavaScript object for the
-    // merchant.
-    base::DictionaryValue info_json;
-    if (response->info) {
-      info_json.SetString("id", response->info->id);
-      info_json.SetString("client_data_json",
-                          EncodeSecurePaymentConfirmationString(
-                              response->info->client_data_json));
-      info_json.SetString("authenticator_data",
-                          EncodeSecurePaymentConfirmationString(
-                              response->info->authenticator_data));
-    }
+  response_ = std::move(response);
 
-    base::DictionaryValue prf_results_json;
-    if (response->prf_results) {
-      DCHECK(!response->prf_results->id.has_value());
-      prf_results_json.SetString("first", EncodeSecurePaymentConfirmationString(
-                                              response->prf_results->first));
-      if (response->prf_results->second) {
-        prf_results_json.SetString("second",
-                                   EncodeSecurePaymentConfirmationString(
-                                       *response->prf_results->second));
-      }
-    }
-
-    json.SetKey("info", std::move(info_json));
-    if (!base::FeatureList::IsEnabled(
-            features::kSecurePaymentConfirmationAPIV2)) {
-      json.SetString("challenge", challenge_);
-    }
-    json.SetString("signature",
-                   EncodeSecurePaymentConfirmationString(response->signature));
-    if (response->user_handle.has_value()) {
-      json.SetString("user_handle", EncodeSecurePaymentConfirmationString(
-                                        response->user_handle.value()));
-    }
-    json.SetBoolean("echo_appid_extension", response->echo_appid_extension);
-    json.SetBoolean("appid_extension", response->appid_extension);
-    json.SetBoolean("echo_prf", response->echo_prf);
-    json.SetKey("prf_results", std::move(prf_results_json));
-    json.SetBoolean("prf_not_evaluated", response->echo_prf);
-  }
-
-  std::string json_serialized_response;
-  base::JSONWriter::Write(json, &json_serialized_response);
-  delegate->OnInstrumentDetailsReady(methods::kSecurePaymentConfirmation,
-                                     json_serialized_response, PayerData());
+  delegate->OnInstrumentDetailsReady(methods::kSecurePaymentConfirmation, "{}",
+                                     PayerData());
 }
 
 }  // namespace payments

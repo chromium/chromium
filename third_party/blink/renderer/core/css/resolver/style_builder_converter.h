@@ -233,7 +233,7 @@ class StyleBuilderConverter {
       Vector<GridTrackSize, 1>& auto_repeat_track_sizes,
       NamedGridLinesMap&,
       OrderedNamedGridLines&,
-      size_t& auto_repeat_insertion_point,
+      wtf_size_t& auto_repeat_insertion_point,
       AutoRepeatType&,
       StyleResolverState&);
   static void CreateImplicitNamedGridLinesFromGridArea(
@@ -278,8 +278,6 @@ class StyleBuilderConverter {
       const CSSValue&,
       bool is_animation_tainted);
 
-  static LengthSize ConvertIntrinsicSize(StyleResolverState&, const CSSValue&);
-
   static StyleAspectRatio ConvertAspectRatio(const StyleResolverState&,
                                              const CSSValue&);
 
@@ -298,6 +296,10 @@ class StyleBuilderConverter {
 
   static AtomicString ConvertContainerName(StyleResolverState&,
                                            const CSSValue&);
+
+  static absl::optional<StyleIntrinsicLength> ConvertIntrinsicDimension(
+      const StyleResolverState&,
+      const CSSValue&);
 
   static void CountSystemColorComputeToSelfUsage(
       const StyleResolverState& state);
@@ -356,8 +358,8 @@ T StyleBuilderConverter::ConvertLineWidth(StyleResolverState& state,
   double zoomed_result = state.StyleRef().EffectiveZoom() * result;
   if (zoomed_result > 0.0 && zoomed_result < 1.0)
     return 1.0;
-  return clampTo<T>(RoundForImpreciseConversion<T>(result),
-                    defaultMinimumForClamp<T>(), defaultMaximumForClamp<T>());
+  return ClampTo<T>(RoundForImpreciseConversion<T>(result),
+                    DefaultMinimumForClamp<T>(), DefaultMaximumForClamp<T>());
 }
 
 template <CSSValueID cssValueFor0, CSSValueID cssValueFor100>

@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -138,6 +139,10 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                << routine_enum_;
 
   switch (routine_enum_) {
+    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kUnknown: {
+      NOTREACHED() << "This default value should not be used.";
+      break;
+    }
     case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
         kBatteryCapacity: {
       chromeos::cros_healthd::ServiceConnection::GetInstance()
@@ -171,7 +176,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                             MakeInvalidParametersResponse())));
           break;
         }
-        routine_parameter = base::TimeDelta::FromSeconds(value);
+        routine_parameter = base::Seconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunUrandomRoutine(
@@ -239,7 +244,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                             MakeInvalidParametersResponse())));
           break;
         }
-        routine_duration = base::TimeDelta::FromSeconds(value);
+        routine_duration = base::Seconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunCpuCacheRoutine(
@@ -266,7 +271,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                             MakeInvalidParametersResponse())));
           break;
         }
-        routine_duration = base::TimeDelta::FromSeconds(value);
+        routine_duration = base::Seconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunCpuStressRoutine(
@@ -295,7 +300,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                             MakeInvalidParametersResponse())));
           break;
         }
-        routine_duration = base::TimeDelta::FromSeconds(value);
+        routine_duration = base::Seconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunFloatingPointAccuracyRoutine(
@@ -376,7 +381,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                           MakeInvalidParametersResponse())));
         break;
       }
-      auto exec_duration = base::TimeDelta::FromSeconds(length_seconds.value());
+      auto exec_duration = base::Seconds(length_seconds.value());
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunDiskReadRoutine(
               type_enum, exec_duration, file_size_mb.value(),
@@ -402,7 +407,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                             MakeInvalidParametersResponse())));
           break;
         }
-        routine_duration = base::TimeDelta::FromSeconds(value);
+        routine_duration = base::Seconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunPrimeSearchRoutine(
@@ -436,7 +441,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunBatteryDischargeRoutine(
-              base::TimeDelta::FromSeconds(length_seconds.value()),
+              base::Seconds(length_seconds.value()),
               maximum_discharge_percent_allowed.value(),
               base::BindOnce(
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
@@ -466,7 +471,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunBatteryChargeRoutine(
-              base::TimeDelta::FromSeconds(length_seconds.value()),
+              base::Seconds(length_seconds.value()),
               minimum_charge_percent_required.value(),
               base::BindOnce(
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
@@ -588,6 +593,31 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
                   weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
                   std::move(failed_callback)));
+      break;
+    }
+    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kArcHttp: {
+      chromeos::cros_healthd::ServiceConnection::GetInstance()
+          ->RunArcHttpRoutine(base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
+      break;
+    }
+    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kArcPing: {
+      chromeos::cros_healthd::ServiceConnection::GetInstance()
+          ->RunArcPingRoutine(base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
+      break;
+    }
+    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
+        kArcDnsResolution: {
+      chromeos::cros_healthd::ServiceConnection::GetInstance()
+          ->RunArcDnsResolutionRoutine(base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
       break;
     }
   }

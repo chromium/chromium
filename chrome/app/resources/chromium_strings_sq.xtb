@@ -20,6 +20,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1774152462503052664">Lejo që Chromium të ekzekutohet në sfond</translation>
 <translation id="1779356040007214683">Për ta bërë më të sigurt Chromium, çaktivizuam disa shtesa që nuk janë të listuara në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jenë shtuar pa dijeninë tënde.</translation>
 <translation id="1808667845054772817">Instalo përsëri Chromium</translation>
+<translation id="185970820835152459">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar. "Llogaritë e tua të Google" përdoren për shfletuesin Chromium, Play Store, Gmail etj. Nëse do të shtosh një llogari për dikë tjetër, si p.sh. anëtar të familjes, shto më mirë një person të ri te <ph name="DEVICE_TYPE" /> yt. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1881322772814446296">Po identifikohesh me një llogari të menaxhuar dhe po i jep administratorit të saj kontrollin mbi profilin tënd të Chromium. Të dhënat e tua të Chromium, si aplikacionet, faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tjera do të bëhen të lidhura përgjithmonë me <ph name="USER_NAME" />. Do të mund t'i fshish këto të dhëna nëpërmjet "Panelit të llogarive të Google", por nuk do të mund t'i lidhësh këto të dhëna me një llogari tjetër. Mund të krijosh si opsion një profil të ri për t'i mbajtur më vete të dhënat ekzistuese të Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Duke çaktivizuar këtë, mund të identifikohesh në sajtet e Google si Gmail pa u identifikuar në Chromium</translation>
 <translation id="1929939181775079593">Chromium nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
@@ -31,18 +32,20 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2185166961232948079">Chromium - identifikimi në rrjet - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Nëse e ndan një kompjuter, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chromium pikërisht ashtu si dëshirojnë.</translation>
 <translation id="2294245788148774212">Opsionale: Ndihmo në përmirësimin e veçorive dhe cilësisë së funksionimit të sistemit operativ Chromium duke dërguar automatikisht te Google të dhëna përdorimi dhe diagnostikuese.</translation>
+<translation id="2313870531055795960">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chromium. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chromium mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqes, te "Shfletimi i sigurt".</translation>
 <translation id="2343156876103232566">Për të dërguar një numër nga këtu te telefoni yt Android, identifikohu në Chromium në të dyja pajisjet.</translation>
 <translation id="2347108572062610441">Kjo shtesë ka ndryshuar se cila faqe shfaqet kur nis Chromium.</translation>
 <translation id="2396765026452590966">Shtesa "<ph name="EXTENSION_NAME" />" ka ndryshuar se cila faqe shfaqet kur nis Chromium.</translation>
+<translation id="2401032172288869980">Chromium ka nevojë për lejet e kamerës dhe të mikrofonit për këtë sajt</translation>
 <translation id="2483889755041906834">Në Chromium</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
 <translation id="2535480412977113886">Chromium OS nuk mundi të sinkronizonte të dhënat e tua, sepse detajet e llogarisë tënde të identifikimit janë të vjetruara.</translation>
 <translation id="2560420686485554789">Chromium ka nevojë për qasje te hapësira ruajtëse për të shkarkuar skedarë</translation>
 <translation id="2572494885440352020">Ndihmuesi i Chromium</translation>
 <translation id="2577788541081224677">Për t'u qasur te gjërat e Chromium nëpër të gjitha pajisjet, identifikohu që të mund të aktivizosh sinkronizimin.</translation>
-<translation id="2580426763510374355">Instalo Chromium OS</translation>
 <translation id="2583187216237139145">Çdo e dhënë e Chromium që krijohet gjatë përdorimit të këtij profili (si p.sh. krijimi i faqeshënuesve, historikut, fjalëkalimeve dhe cilësimeve të tjera) mund të hiqet nga administratori i profilit të punës. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS ka nevojë të riniset për të zbatuar përditësimin.</translation>
+<translation id="2614883797045469742">Cilësimet e parazgjedhura funksionojnë për shumicën e njerëzve, por mund t'i personalizosh ato për t'u përshtatur me mënyrën që dëshiron të përdorësh Chromium</translation>
 <translation id="2648074677641340862">Ndodhi një gabim në sistemin operativ gjatë instalimit. Shkarko përsëri Chromium.</translation>
 <translation id="2661879430930417727">Nëse e ndan një pajisje, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chromium pikërisht ashtu si dëshirojnë</translation>
 <translation id="2711502716910134313">Skeda Chromium</translation>
@@ -51,6 +54,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2799223571221894425">Nis sërish</translation>
 <translation id="2837693172913560447">Kjo do të krijojë një profil të ri të Chromium për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Hiqe nga Chromium...</translation>
+<translation id="2850691299438350830">Të mban të sigurt në Chromium dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je identifikuar</translation>
 <translation id="2885378588091291677">Menaxheri i detyrave</translation>
 <translation id="2910007522516064972">Rreth &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium është i përditësuar</translation>
@@ -76,13 +80,11 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3350761136195634146">Ekziston tashmë një profil i Chromium me këtë llogari</translation>
 <translation id="3406848076815591792">Të kalohet te profili ekzistues i Chromium?</translation>
 <translation id="3430503420100763906">Me profilet e Chromium mund t'i mbash të ndara të gjitha gjërat e tua të Chromium. Krijo profile për miqtë dhe familjen ose ndaje punën nga argëtimi.</translation>
-<translation id="3433271666494956603">Instalimi i Chromium OS është në vazhdim</translation>
 <translation id="347328004046849135">Chromium do të të njoftojë kur të identifikohesh me një fjalëkalim të komprometuar</translation>
 <translation id="3474745554856756813">Kjo do të fshijë <ph name="ITEMS_COUNT" /> artikuj nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chromium si <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> mund të kalojë nga një profil i Chromium te një tjetër</translation>
 <translation id="3509308970982693815">Mbyll të gjitha dritaret e Chromium dhe provo sërish.</translation>
 <translation id="3575459661164320785">Ka një softuer keqdashës në kompjuterin tënd. Chromium mund ta heqë atë, të restaurojë cilësimet e tua dhe të çaktivizojë shtesat për të bërë që shfletuesi yt të punojë përsëri si normalisht.</translation>
-<translation id="3610776674893128619">Spastro diskun e ngurtë dhe instalo Chromium OS</translation>
 <translation id="3639635944603682591">Të dhënat e shfletimit të këtij personi do të fshihen nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu në Chromium si <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Ka një përditësim të ri për Chromium dhe do të zbatohet sapo ta rinisësh.}=1{Ka një përditësim të ri për Chromium dhe do të zbatohet sapo ta rinisësh. Dritarja jote "e fshehtë" nuk do të rihapet.}other{Ka një përditësim të ri për Chromium dhe do të zbatohet sapo ta rinisësh. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="3651803019964686660">Për të dërguar një numër nga <ph name="ORIGIN" /> te telefoni yt Android, identifikohu në Chromium në të dyja pajisjet.</translation>
@@ -105,7 +107,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4264410486868823224"><ph name="MANAGER" /> kërkon që të lexosh dhe të pranosh Kushtet e shërbimit më poshtë para se të përdorësh këtë pajisje. Këto kushte nuk i zgjerojnë, modifikojnë ose kufizojnë kushtet e sistemit operativ të Chromium.</translation>
 <translation id="4271805377592243930">Merr ndihmë me Chromium</translation>
 <translation id="4285930937574705105">Instalimi dështoi për shkak të një gabimi të paspecifikuar. Nëse Chromium është aktualisht në ekzekutim, mbylle dhe provo përsëri.</translation>
-<translation id="429583012151745428">Instalimi është në vazhdim. Mos e fik pajisjen. Instalimi nuk duhet të zgjasë më shumë se njëzet minuta. Pajisja do të fiket automatikisht pas instalimit.</translation>
 <translation id="4407044323746248786">Dëshiron të dalësh nga Chromium gjithsesi?</translation>
 <translation id="4415566066719264597">Lejo që Chromium të ekzekutohet në sfond</translation>
 <translation id="4423735387467980091">Personalizo dhe kontrollo Chromium</translation>
@@ -135,7 +136,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5386450000063123300">Po përditëson Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Lejo identifikimin në Chromium</translation>
 <translation id="5398878173008909840">Ofrohet një version i ri i Chromium.</translation>
-<translation id="5416696090975899932">Chromium nuk mund ta tregojë afishimin paraprak të printimit kur mungon shikuesi i integruar për PDF-të.</translation>
 <translation id="5427571867875391349">Caktoje Chromium si shfletuesin tënd të parazgjedhur</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5479196819031988440">Sistemi operativ Chromium nuk mund ta hapë këtë faqe.</translation>
@@ -150,6 +150,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="5862307444128926510">Mirë se vjen në Chromium</translation>
+<translation id="5883558403894052917">Chromium vuri re se këta artikuj përmbajnë softuer keqdashës:</translation>
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - identifikimi në rrjet</translation>
 <translation id="5987687638152509985">Përditëso Chromium për të nisur sinkronizimin</translation>
@@ -164,18 +165,10 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> është i rrezikshëm, prandaj Chromium e ka bllokuar.</translation>
 <translation id="6134968993075716475">"Shfletimi i sigurt" është joaktiv. Chromium rekomandon aktivizimin e tij.</translation>
 <translation id="6145820983052037069">Këtu mund të kalosh nga një profil i Chromium te një tjetër</translation>
-<translation id="61577490437262925"><ph name="BEGIN_PARAGRAPH1" />Jemi gati për instalimin e Chromium OS! Pasi të vazhdosh:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Skedarët, të dhënat dhe sistemi yt operativ do të fshihen.
-          <ph name="LIST_ITEM" />Chromium OS do të instalohet.
-          <ph name="LIST_ITEM" />Pajisja jote do të fiket pasi të përfundojë instalimi.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Një rikujtim i fundit: instalimi do të fshijë të gjithë diskun tënd të ngurtë. Sigurohu që t'i rezervosh të dhënat e rëndësishme për ty.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Pasi të fillojë instalimi, nuk mund të anulohet.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6183079672144801177">Sigurohu që të jesh identifikuar në Chromium në pajisjen tënde <ph name="TARGET_DEVICE_NAME" /> dhe më pas provo ta dërgosh përsëri.</translation>
 <translation id="6212496753309875659">Ky kompjuter e ka tashmë një version më të ri të Chromium. Nëse softueri nuk punon, çinstaloje Chromium dhe provo përsëri.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium do të hapet përsëri tani}=1{Chromium do të hapet përsëri për 1 sekondë}other{Chromium do të hapet përsëri për # sekonda}}</translation>
+<translation id="6241367896540709610">Chromium ka nevojë për leje qasjeje te hapësira ruajtëse për të shkarkuar skedarë</translation>
 <translation id="6248213926982192922">Bëje Chromium, shfletuesin tënd të parazgjedhur</translation>
 <translation id="6266342355635466082">Chromium nuk mund të kontrollojë për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="6268381023930128611">Dëshiron të dalësh nga Chromium?</translation>
@@ -190,25 +183,25 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="6434250628340475518">Sistemi i Chromium OS</translation>
 <translation id="6455857529632101747">Mirë se vjen në profilet e Chromium</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium do të riniset për 1 sekondë}other{Chromium do të riniset për # sekonda}}</translation>
-<translation id="646620589868199210">Gati për të instaluar Chromium OS</translation>
 <translation id="6475912303565314141">Gjithashtu kontrollon se cila faqe shfaqet kur fillon Chromium</translation>
 <translation id="6510925080656968729">Çinstaloje Chromium</translation>
 <translation id="6542839706527980775">Secili profil duhet të zotërojë informacionin e vet të Chromium, si: faqeshënuesit, historikun, fjalëkalimet etj.</translation>
 <translation id="6570579332384693436">Për të korrigjuar gabimet drejtshkrimore, Chromium e dërgon te Google tekstin që ti shkruan në fushat e tekstit</translation>
 <translation id="6598877126913850652">Shko te "Cilësimet e njoftimeve" të Chromium</translation>
 <translation id="6613594504749178791">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh Chromium.</translation>
+<translation id="665732753414869868">Chromium ka nevojë për lejen e kamerës për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="6676384891291319759">Qasu në internet</translation>
+<translation id="6709350901466051922">Chromium ka nevojë për lejen e mikrofonit për këtë sajt</translation>
 <translation id="6717134281241384636">Profili yt nuk mund të përdoret sepse është nga një version më i ri i Chromium.
 
 Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili ose përdor një version më të ri të Chromium.</translation>
-<translation id="6734080038664603509">Përditëso &amp;Chromium</translation>
 <translation id="6734291798041940871">Chromium është i instaluar tashmë për të gjithë përdoruesit në kompjuterin tënd.</translation>
 <translation id="673636774878526923">Për t'u qasur te gjërat e Chromium nëpër të gjitha pajisjet, identifikohu dhe më pas aktivizo sinkronizimin.</translation>
 <translation id="6774082503108938489">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chromium. Nuk lejohet aktivizimi për këtë <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="6827182711503025204">Instalimi i Chromium OS do të mbishkruajë të gjitha të dhënat në pajisjen tënde.</translation>
 <translation id="6847869444787758381">Chromium të informon nëse fjalëkalimet e tua komprometohen ndonjëherë</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopjuar në Chromium)</translation>
+<translation id="6873893289264747459">Chromium vuri re se "<ph name="EXTENSION_NAME" />" përmban softuer keqdashës</translation>
 <translation id="6893813176749746474">Chromium është përditësuar, por nuk e ke përdorur për të paktën 30 ditë.</translation>
 <translation id="691026815377248078">Chromium i nevojitet leje te Bluetooth-i për të vazhduar me çiftimin. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Hape lidhjen në një dritare të fshe&amp;htë të Chromium</translation>
@@ -216,10 +209,12 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="6990124437352146030">Chromium ka nevojë për leje për t'u qasur te mikrofoni yt për këtë sajt</translation>
 <translation id="705851970750939768">Përditëso Chromium</translation>
 <translation id="7067091210845072982">Nëse një imazh nuk ka një përshkrim të dobishëm, Chromium do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google.</translation>
+<translation id="7147279922647361552">Personalizo disa nga zgjedhjet më të rëndësishme të privatësisë të Chromium</translation>
+<translation id="718435575166326686">Chromium ka nevojë për lejen e kamerës për këtë sajt</translation>
 <translation id="7196312274710523067">Chromium nuk mund të hapej. Provo përsëri.</translation>
 <translation id="7197677400338048821">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri pas 24 orësh.</translation>
+<translation id="7218568399872925918">Sajtet që ti viziton i kujtojnë informacionet e tua derisa ti mbyll Chromium</translation>
 <translation id="7223968959479464213">Menaxheri i detyrave - Chromium</translation>
-<translation id="731644333568559921">Përditëso sistemin operativ Chromium</translation>
 <translation id="731795002583552498">Po përditëson Chromium</translation>
 <translation id="7318036098707714271">Skedari i preferencave është i dëmtuar ose i pavlefshëm.
 
@@ -239,10 +234,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
       cilësimet e sistemit operativ të Chromium<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="7617377681829253106">Chromium sapo është përmirësuar</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Përpara se fillojmë, sigurohu që të kesh një rezervë të përditësuar të të dhënave të tua. Instalimi i Chromium OS do të mbishkruajë të gjitha të dhënat në diskun e ngurtë.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google nuk është përgjegjëse për humbjen e mundshme të të dhënave dhe nuk jep garanci se Chromium OS do të punojë në modele të pacertifikuara. Vizito [TBD] për të mësuar më shumë për modele të certifikuara. <ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Mëso më shumë për instalimin e Chromium OS dhe fshirjen e të dhënave: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />nëse je gati për të vazhduar, kliko “Instalo Chromium OS” dhe do të të orientojmë gjatë instalimit në vetëm pak hapa të thjeshtë. Do të kesh një mundësi tjetër për të konfirmuar përpara se të bëjmë ndonjë ndryshim në kompjuterin tënd.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium nuk është shfletuesi i parazgjedhur</translation>
 <translation id="7689606757190482937">Sinkronizo dhe personalizo Chromium nëpër pajisjet e tua</translation>
 <translation id="7729447699958282447">Chromium nuk mundi të sinkronizonte të dhënat e tua, sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>
@@ -256,6 +247,8 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7937630085815544518">Je identifikuar në Chromium si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
 <translation id="7975919845073681630">Ky është instalim dytësor i Chromium dhe nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
 <translation id="8013436988911883588">Pasi Chromium të ketë qasje, sajtet e uebit do të jenë në gjendje të kërkojnë prej teje qasje.</translation>
+<translation id="8045118833343856403">Llogaritë e mëposhtme nuk janë të identifikuara në ndonjë profil të Chromium. Nëse do të përdorësh një llogari në një profil tjetër, hiq atë profil përpara.</translation>
+<translation id="8105840573057009683">Chromium ka nevojë për lejen e vendndodhjes për të këtë sajt</translation>
 <translation id="81770708095080097">Ky skedar është i rrezikshëm, prandaj Chromium e ka bllokuar.</translation>
 <translation id="8248265253516264921">Nëse një imazh nuk ka një përshkrim të dobishëm, Chromium do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google. Këtë mund ta çaktivizosh te cilësimet në çdo moment.</translation>
 <translation id="8266560134891435528">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua sepse nuk je identifikuar</translation>
@@ -274,6 +267,8 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8621669128220841554">Instalimi dështoi për shkak të një gabimi të papërcaktuar. Shkarko përsëri Chromium.</translation>
 <translation id="8697124171261953979">Kontrollon po ashtu se cila faqe shfaqet kur nis Chromium ose kur kërkon nga Omnibox.</translation>
 <translation id="8704119203788522458">Ky është Chromium për ty</translation>
+<translation id="8713679423359107094">Kur të mbyllësh të gjitha dritaret e Chromium, kukit dhe të dhënat e sajtit do të pastrohen automatikisht</translation>
+<translation id="8796443464227412154">Do të <ph name="BEGIN_BOLD" />dalësh nga shumica e sajteve<ph name="END_BOLD" /> kur të mbyllësh Chromium. Nëse sinkronizimi është joaktiv, do të <ph name="BEGIN_BOLD" />dalësh gjithashtu nga shërbimet e Google dhe nga Chromium<ph name="END_BOLD" />.</translation>
 <translation id="8796602469536043152">Chromium ka nevojë për leje për t'u qasur te kamera dhe mikrofoni yt për këtë sajt</translation>
 <translation id="8803635938069941624">Kushtet e sistemit operativ Chromium</translation>
 <translation id="8821041990367117597">Chromium nuk mund të sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>

@@ -9,6 +9,8 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
+
 #if defined(OS_APPLE) || defined(OS_BSD)
 #include <sys/socket.h>  // Must be included before ifaddrs.h.
 #include <ifaddrs.h>

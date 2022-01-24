@@ -12,9 +12,12 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -42,13 +45,17 @@ using RelationshipCheckResultCallback =
 // relationships between different asset types like web domains or Android apps.
 // The lifecycle of this handler will be governed by the owner.
 // The WebContents are used for logging console messages.
-class DigitalAssetLinksHandler : public content::WebContentsObserver {
+class DigitalAssetLinksHandler {
  public:
   // Optionally include |web_contents| for logging error messages to DevTools.
   explicit DigitalAssetLinksHandler(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       content::WebContents* web_contents = nullptr);
-  ~DigitalAssetLinksHandler() override;
+
+  DigitalAssetLinksHandler(const DigitalAssetLinksHandler&) = delete;
+  DigitalAssetLinksHandler& operator=(const DigitalAssetLinksHandler&) = delete;
+
+  ~DigitalAssetLinksHandler();
 
   // Checks whether the given "relationship" has been declared by the target
   // |web_domain| for the source Android app which is uniquely defined by the
@@ -120,9 +127,9 @@ class DigitalAssetLinksHandler : public content::WebContentsObserver {
 
   base::TimeDelta timeout_duration_ = base::TimeDelta();
 
-  base::WeakPtrFactory<DigitalAssetLinksHandler> weak_ptr_factory_{this};
+  base::WeakPtr<content::WebContents> web_contents_;
 
-  DISALLOW_COPY_AND_ASSIGN(DigitalAssetLinksHandler);
+  base::WeakPtrFactory<DigitalAssetLinksHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace digital_asset_links

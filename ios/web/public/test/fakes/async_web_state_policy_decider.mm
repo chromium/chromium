@@ -17,8 +17,8 @@ AsyncWebStatePolicyDecider::~AsyncWebStatePolicyDecider() = default;
 
 void AsyncWebStatePolicyDecider::ShouldAllowResponse(
     NSURLResponse* response,
-    bool for_main_frame,
-    base::OnceCallback<void(PolicyDecision)> callback) {
+    WebStatePolicyDecider::ResponseInfo response_info,
+    WebStatePolicyDecider::PolicyDecisionCallback callback) {
   callback_ = std::move(callback);
 }
 

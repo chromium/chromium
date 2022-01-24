@@ -14,9 +14,7 @@
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/device_form_factor.h"
@@ -49,6 +47,9 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 // Delete button for the toolbar.
 @property(nonatomic, strong) UIBarButtonItem* deleteButton;
 
+// Add button for the toolbar.
+@property(nonatomic, strong) UIBarButtonItem* addButtonInToolbar;
+
 // Item displayed before the user interactions are prevented. This is used to
 // store the item while the interaction is prevented.
 @property(nonatomic, strong) UIBarButtonItem* savedBarButtonItem;
@@ -78,10 +79,12 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                                      animated:YES];
 
   // Update edit button.
-  if (self.tableView.editing) {
-    self.navigationItem.rightBarButtonItem = [self createEditModeDoneButton];
+  if ([self shouldShowEditDoneButton] && self.tableView.editing) {
+    self.navigationItem.rightBarButtonItem =
+        [self createEditModeDoneButtonForToolbar:NO];
   } else if (self.shouldShowEditButton) {
-    self.navigationItem.rightBarButtonItem = [self createEditButton];
+    self.navigationItem.rightBarButtonItem =
+        [self createEditButtonForToolbar:NO];
   } else {
     self.navigationItem.rightBarButtonItem = [self doneButtonIfNeeded];
   }
@@ -91,6 +94,40 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
     self.navigationItem.leftBarButtonItem =
         self.tableView.editing ? [self createEditModeCancelButton]
                                : self.backButtonItem;
+  }
+}
+
+- (void)updatedToolbarForEditState {
+  if (self.shouldHideToolbar) {
+    return;
+  }
+  UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                           target:nil
+                           action:nil];
+
+  UIBarButtonItem* toolbarLeftButton = nil;
+  if (self.tableView.editing && self.shouldShowDeleteButtonInToolbar) {
+    toolbarLeftButton = self.deleteButton;
+  } else if (self.shouldShowAddButtonInToolbar) {
+    toolbarLeftButton = self.addButtonInToolbar;
+  }
+
+  UIBarButtonItem* editOrDoneButton =
+      self.tableView.editing ? [self createEditModeDoneButtonForToolbar:YES]
+                             : [self createEditButtonForToolbar:YES];
+
+  if (toolbarLeftButton) {
+    [self
+        setToolbarItems:@[ toolbarLeftButton, flexibleSpace, editOrDoneButton ]
+               animated:YES];
+  } else {
+    [self setToolbarItems:@[ flexibleSpace, editOrDoneButton, flexibleSpace ]
+                 animated:YES];
+  }
+
+  if (self.tableView.editing) {
+    self.deleteButton.enabled = NO;
   }
 }
 
@@ -114,13 +151,21 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   return _deleteButton;
 }
 
+- (UIBarButtonItem*)addButtonInToolbar {
+  if (!_addButtonInToolbar) {
+    _addButtonInToolbar = [[UIBarButtonItem alloc]
+        initWithTitle:l10n_util::GetNSString(IDS_IOS_SETTINGS_TOOLBAR_ADD)
+                style:UIBarButtonItemStylePlain
+               target:self
+               action:@selector(addButtonCallback)];
+    _addButtonInToolbar.accessibilityIdentifier = kSettingsToolbarAddButtonId;
+  }
+  return _addButtonInToolbar;
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.styler.tableViewBackgroundColor =
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-  }
   UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
@@ -131,7 +176,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   [super viewDidLoad];
   self.styler.cellBackgroundColor =
       [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-  self.styler.cellTitleColor = UIColor.cr_labelColor;
+  self.styler.cellTitleColor = [UIColor colorNamed:kTextPrimaryColor];
   self.tableView.estimatedSectionHeaderHeight = kEstimatedHeaderFooterHeight;
   self.tableView.estimatedRowHeight = kSettingsCellDefaultHeight;
   self.tableView.estimatedSectionFooterHeight = kEstimatedHeaderFooterHeight;
@@ -142,6 +187,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
       UINavigationItemLargeTitleDisplayModeNever;
 
   self.backButtonItem = self.navigationItem.leftBarButtonItem;
+  self.shouldShowDeleteButtonInToolbar = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -166,12 +212,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  if (@available(iOS 13, *)) {
-  } else {
-    // This is a workaround to fix the vertical alignment of the back button.
-    // The bug has been fixed in iOS 13. See crbug.com/931173 if needed.
-    [self.navigationController.navigationBar setNeedsLayout];
-  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -231,28 +271,32 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   SettingsNavigationController* navigationController =
       base::mac::ObjCCast<SettingsNavigationController>(
           self.navigationController);
-  return [navigationController doneButton];
+  UIBarButtonItem* doneButton = [navigationController doneButton];
+  if (_shouldDisableDoneButtonOnEdit) {
+    doneButton.enabled = !self.tableView.editing;
+  }
+  return doneButton;
 }
 
-- (UIBarButtonItem*)createEditButton {
+- (UIBarButtonItem*)createEditButtonForToolbar:(BOOL)toolbar {
   // Create a custom Edit bar button item, as Material Navigation Bar does not
   // handle a system UIBarButtonSystemItemEdit item.
   UIBarButtonItem* button = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON)
-              style:UIBarButtonItemStyleDone
-             target:self
+              style:(toolbar ? UIBarButtonItemStylePlain
+                             : UIBarButtonItemStyleDone)target:self
              action:@selector(editButtonPressed)];
   [button setEnabled:[self editButtonEnabled]];
   return button;
 }
 
-- (UIBarButtonItem*)createEditModeDoneButton {
+- (UIBarButtonItem*)createEditModeDoneButtonForToolbar:(BOOL)toolbar {
   // Create a custom Done bar button item, as Material Navigation Bar does not
   // handle a system UIBarButtonSystemItemDone item.
   return [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_DONE_BUTTON)
-              style:UIBarButtonItemStyleDone
-             target:self
+              style:(toolbar ? UIBarButtonItemStylePlain
+                             : UIBarButtonItemStyleDone)target:self
              action:@selector(editButtonPressed)];
 }
 
@@ -287,6 +331,10 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (BOOL)showCancelDuringEditing {
   return NO;
+}
+
+- (BOOL)shouldShowEditDoneButton {
+  return YES;
 }
 
 - (void)editButtonPressed {
@@ -380,6 +428,11 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   }
   self.savedBarButtonItem = nil;
   self.savedBarButtonItemPosition = kUndefinedBarButtonItemPosition;
+}
+
+- (void)addButtonCallback {
+  // Subclasses should implement.
+  NOTREACHED();
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

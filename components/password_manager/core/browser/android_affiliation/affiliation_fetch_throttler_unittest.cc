@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
@@ -35,6 +34,12 @@ class MockAffiliationFetchThrottlerDelegate
       : tick_clock_(tick_clock),
         emulated_return_value_(true),
         can_send_count_(0u) {}
+
+  MockAffiliationFetchThrottlerDelegate(
+      const MockAffiliationFetchThrottlerDelegate&) = delete;
+  MockAffiliationFetchThrottlerDelegate& operator=(
+      const MockAffiliationFetchThrottlerDelegate&) = delete;
+
   ~MockAffiliationFetchThrottlerDelegate() override {
     EXPECT_EQ(0u, can_send_count_);
   }
@@ -56,8 +61,6 @@ class MockAffiliationFetchThrottlerDelegate
   bool emulated_return_value_;
   size_t can_send_count_;
   base::TimeTicks last_can_send_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAffiliationFetchThrottlerDelegate);
 };
 
 }  // namespace
@@ -65,6 +68,10 @@ class MockAffiliationFetchThrottlerDelegate
 class AffiliationFetchThrottlerTest : public testing::Test {
  public:
   AffiliationFetchThrottlerTest() { SimulateHasNetworkConnectivity(true); }
+
+  AffiliationFetchThrottlerTest(const AffiliationFetchThrottlerTest&) = delete;
+  AffiliationFetchThrottlerTest& operator=(
+      const AffiliationFetchThrottlerTest&) = delete;
 
   std::unique_ptr<AffiliationFetchThrottler> CreateThrottler() {
     return std::make_unique<AffiliationFetchThrottler>(
@@ -104,7 +111,7 @@ class AffiliationFetchThrottlerTest : public testing::Test {
   // Runs the task runner for |secs| and asserts that OnCanSendNetworkRequest()
   // will not have been called by the end of this period.
   void AssertNoReleaseForSecs(int64_t secs) {
-    task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(secs));
+    task_runner_->FastForwardBy(base::Seconds(secs));
     ASSERT_EQ(0u, mock_delegate_.can_send_count());
   }
 
@@ -127,8 +134,6 @@ class AffiliationFetchThrottlerTest : public testing::Test {
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   MockAffiliationFetchThrottlerDelegate mock_delegate_{
       task_runner_->GetMockTickClock()};
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliationFetchThrottlerTest);
 };
 
 TEST_F(AffiliationFetchThrottlerTest, SuccessfulRequests) {

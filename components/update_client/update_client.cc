@@ -15,11 +15,9 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/crx_file/crx_verifier.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_update_item.h"
@@ -46,12 +44,7 @@ CrxUpdateItem::CrxUpdateItem() : state(ComponentState::kNew) {}
 CrxUpdateItem::~CrxUpdateItem() = default;
 CrxUpdateItem::CrxUpdateItem(const CrxUpdateItem& other) = default;
 
-CrxComponent::CrxComponent()
-    : allows_background_download(true),
-      requires_network_encryption(true),
-      crx_format_requirement(
-          crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF),
-      supports_group_policy_enable_component_updates(false) {}
+CrxComponent::CrxComponent() = default;
 CrxComponent::CrxComponent(const CrxComponent& other) = default;
 CrxComponent::~CrxComponent() = default;
 
@@ -155,9 +148,9 @@ void UpdateClientImpl::OnTaskComplete(Callback callback,
   // Pick up a task from the queue if the queue has pending tasks and no other
   // task is running.
   if (tasks_.empty() && !task_queue_.empty()) {
-    auto task = task_queue_.front();
+    auto queued_task = task_queue_.front();
     task_queue_.pop_front();
-    RunTask(task);
+    RunTask(queued_task);
   }
 }
 
@@ -228,25 +221,23 @@ void UpdateClientImpl::Stop() {
   }
 }
 
-void UpdateClientImpl::SendUninstallPing(const std::string& id,
-                                         const base::Version& version,
+void UpdateClientImpl::SendUninstallPing(const CrxComponent& crx_component,
                                          int reason,
                                          Callback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   RunTask(base::MakeRefCounted<TaskSendUninstallPing>(
-      update_engine_.get(), id, version, reason,
+      update_engine_.get(), crx_component, reason,
       base::BindOnce(&UpdateClientImpl::OnTaskComplete, this,
                      std::move(callback))));
 }
 
-void UpdateClientImpl::SendRegistrationPing(const std::string& id,
-                                            const base::Version& version,
+void UpdateClientImpl::SendRegistrationPing(const CrxComponent& crx_component,
                                             Callback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   RunTask(base::MakeRefCounted<TaskSendRegistrationPing>(
-      update_engine_.get(), id, version,
+      update_engine_.get(), crx_component,
       base::BindOnce(&UpdateClientImpl::OnTaskComplete, this,
                      std::move(callback))));
 }

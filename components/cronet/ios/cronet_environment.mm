@@ -14,11 +14,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/cronet/cronet_buildflags.h"
 #include "components/cronet/cronet_global_state.h"
@@ -41,6 +40,7 @@
 #include "net/http/http_server_properties.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_util.h"
+#include "net/http/transport_security_state.h"
 #include "net/log/file_net_log_observer.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
@@ -69,6 +69,10 @@ class CronetURLRequestContextGetter : public net::URLRequestContextGetter {
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner)
       : environment_(environment), task_runner_(task_runner) {}
 
+  CronetURLRequestContextGetter(const CronetURLRequestContextGetter&) = delete;
+  CronetURLRequestContextGetter& operator=(
+      const CronetURLRequestContextGetter&) = delete;
+
   net::URLRequestContext* GetURLRequestContext() override {
     DCHECK(environment_);
     return environment_->GetURLRequestContext();
@@ -85,7 +89,6 @@ class CronetURLRequestContextGetter : public net::URLRequestContextGetter {
 
   cronet::CronetEnvironment* environment_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(CronetURLRequestContextGetter);
 };
 
 // Cronet implementation of net::CookieStoreIOSClient.
@@ -96,6 +99,10 @@ class CronetCookieStoreIOSClient : public net::CookieStoreIOSClient {
       const scoped_refptr<base::SequencedTaskRunner>& task_runner)
       : task_runner_(task_runner) {}
 
+  CronetCookieStoreIOSClient(const CronetCookieStoreIOSClient&) = delete;
+  CronetCookieStoreIOSClient& operator=(const CronetCookieStoreIOSClient&) =
+      delete;
+
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() const override {
     return task_runner_;
   }
@@ -104,7 +111,6 @@ class CronetCookieStoreIOSClient : public net::CookieStoreIOSClient {
   ~CronetCookieStoreIOSClient() override {}
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(CronetCookieStoreIOSClient);
 };
 
 void SignalEvent(base::WaitableEvent* event) {
@@ -347,9 +353,9 @@ void CronetEnvironment::InitializeOnNetworkThread() {
 
   // Explicitly disable the persister for Cronet to avoid persistence of dynamic
   // HPKP.  This is a safety measure ensuring that nobody enables the
-  // persistence of HPKP by specifying transport_security_persister_path in the
-  // future.
-  context_builder.set_transport_security_persister_path(base::FilePath());
+  // persistence of HPKP by specifying transport_security_persister_file_path in
+  // the future.
+  context_builder.set_transport_security_persister_file_path(base::FilePath());
 
   config->ConfigureURLRequestContextBuilder(&context_builder);
 

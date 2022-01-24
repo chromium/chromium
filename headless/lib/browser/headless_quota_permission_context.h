@@ -14,6 +14,11 @@ class HeadlessQuotaPermissionContext : public content::QuotaPermissionContext {
  public:
   HeadlessQuotaPermissionContext();
 
+  HeadlessQuotaPermissionContext(const HeadlessQuotaPermissionContext&) =
+      delete;
+  HeadlessQuotaPermissionContext& operator=(
+      const HeadlessQuotaPermissionContext&) = delete;
+
   // The callback will be dispatched on the IO thread.
   void RequestQuotaPermission(const content::StorageQuotaParams& params,
                               int render_process_id,
@@ -21,8 +26,6 @@ class HeadlessQuotaPermissionContext : public content::QuotaPermissionContext {
 
  private:
   ~HeadlessQuotaPermissionContext() override;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessQuotaPermissionContext);
 };
 
 }  // namespace headless

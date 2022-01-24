@@ -27,6 +27,18 @@ enum class ConsentLevel;
 // available at runtime (thus accessors may return null).
 class PrimaryAccountMutator {
  public:
+  // Error returned by SetPrimaryAccount().
+  enum class PrimaryAccountError {
+    // No error, the operation was successful.
+    kNoError = 0,
+    // Account info is empty.
+    kAccountInfoEmpty = 1,
+    // Sync consent was already set.
+    kSyncConsentAlreadySet = 2,
+    // Sign-in is disallowed.
+    kSigninNotAllowed = 4,
+  };
+
   PrimaryAccountMutator() = default;
   virtual ~PrimaryAccountMutator() = default;
 
@@ -55,8 +67,8 @@ class PrimaryAccountMutator {
   // (i.e. without implying browser sync consent). Requires that the account
   // is known by the IdentityManager. See README.md for details on the meaning
   // of "unconsented". Returns whether the operation succeeded or not.
-  virtual bool SetPrimaryAccount(const CoreAccountId& account_id,
-                                 ConsentLevel consent_level) = 0;
+  virtual PrimaryAccountError SetPrimaryAccount(const CoreAccountId& account_id,
+                                                ConsentLevel consent_level) = 0;
 
   // Revokes sync consent from the primary account. We distinguish the following
   // cases:

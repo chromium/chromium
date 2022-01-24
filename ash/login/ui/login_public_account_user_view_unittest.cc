@@ -20,6 +20,12 @@ namespace {
 constexpr int kNonEmptySize = 20;
 
 class LoginPublicAccountUserViewTest : public LoginTestBase {
+ public:
+  LoginPublicAccountUserViewTest(const LoginPublicAccountUserViewTest&) =
+      delete;
+  LoginPublicAccountUserViewTest& operator=(
+      const LoginPublicAccountUserViewTest&) = delete;
+
  protected:
   LoginPublicAccountUserViewTest() = default;
   ~LoginPublicAccountUserViewTest() override = default;
@@ -73,8 +79,6 @@ class LoginPublicAccountUserViewTest : public LoginTestBase {
   }
 
   void OnPublicAccountTapped() { ++public_account_tap_count_; }
-
-  DISALLOW_COPY_AND_ASSIGN(LoginPublicAccountUserViewTest);
 };
 
 }  // namespace

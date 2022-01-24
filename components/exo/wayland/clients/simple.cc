@@ -60,7 +60,7 @@ void FeedbackPresented(void* data,
   int64_t microseconds = seconds * base::Time::kMicrosecondsPerSecond +
                          tv_nsec / base::Time::kNanosecondsPerMicrosecond;
   base::TimeTicks presentation_time =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(microseconds);
+      base::TimeTicks() + base::Microseconds(microseconds);
   presentation->feedback.total_presentation_latency +=
       presentation_time - frame.submit_time;
   ++presentation->feedback.num_frames_presented;

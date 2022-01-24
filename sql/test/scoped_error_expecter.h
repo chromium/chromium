@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "sql/database.h"
 
 // This is not strictly necessary for the operation of ScopedErrorExpecter, but
@@ -44,10 +45,6 @@ class ScopedErrorExpecter {
   // to call this results in an EXPECT failure when the instance is destructed.
   bool SawExpectedErrors() WARN_UNUSED_RESULT;
 
-  // Expose sqlite3_libversion_number() so that clients don't have to add a
-  // dependency on third_party/sqlite.
-  static int SQLiteLibVersionNumber() WARN_UNUSED_RESULT;
-
  private:
   // The target of the callback passed to Database::SetErrorExpecter().  If
   // |err| matches an error passed to ExpectError(), records |err| and returns
@@ -57,7 +54,7 @@ class ScopedErrorExpecter {
   bool ErrorSeen(int err);
 
   // Callback passed to Database::SetErrorExpecter().
-  Database::ErrorExpecterCallback callback_;
+  Database::ScopedErrorExpecterCallback callback_;
 
   // Record whether SawExpectedErrors() has been called.
   bool checked_;

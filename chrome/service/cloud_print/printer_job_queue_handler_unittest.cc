@@ -57,13 +57,15 @@ class PrinterJobQueueHandlerWithMockedTime : public PrinterJobQueueHandler {
   PrinterJobQueueHandlerWithMockedTime()
       : PrinterJobQueueHandler(base::WrapUnique(new TimeProviderMock)) {}
 
+  PrinterJobQueueHandlerWithMockedTime(
+      const PrinterJobQueueHandlerWithMockedTime&) = delete;
+  PrinterJobQueueHandlerWithMockedTime& operator=(
+      const PrinterJobQueueHandlerWithMockedTime&) = delete;
+
   TimeProviderMock* GetMock() {
     return static_cast<TimeProviderMock*>(
         PrinterJobQueueHandler::time_provider());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrinterJobQueueHandlerWithMockedTime);
 };
 
 class PrinterJobQueueHandlerTest : public ::testing::Test {
@@ -127,8 +129,7 @@ TEST_F(PrinterJobQueueHandlerTest, PreferNoTimeTest) {
     job_queue_handler.JobFetchFailed("__testjob1");
 
   ON_CALL((*job_queue_handler.GetMock()), GetNow())
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromMinutes(4)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Minutes(4)));
 
   for (int i = 0; i < 2; i++)
     job_queue_handler.JobFetchFailed("__testjob2");
@@ -155,8 +156,7 @@ TEST_F(PrinterJobQueueHandlerTest, PreferLowerTimeTest) {
     job_queue_handler.JobFetchFailed("__testjob1");
 
   ON_CALL((*job_queue_handler.GetMock()), GetNow())
-      .WillByDefault(
-          Return(base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(4)));
+      .WillByDefault(Return(base::Time::UnixEpoch() + base::Seconds(4)));
 
   for (int i = 0; i < 2; i++)
     job_queue_handler.JobFetchFailed("__testjob2");
@@ -172,8 +172,8 @@ TEST_F(PrinterJobQueueHandlerTest, PreferLowerTimeTest) {
 
   jobs.clear();
   ON_CALL((*job_queue_handler.GetMock()), GetNow())
-      .WillByDefault(Return(base::Time::UnixEpoch() +
-                            base::TimeDelta::FromSeconds(4) + time_to_wait));
+      .WillByDefault(
+          Return(base::Time::UnixEpoch() + base::Seconds(4) + time_to_wait));
 
   jobs = job_queue_handler.GetJobsFromQueue(GetDictionary());
 

@@ -10,28 +10,19 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/net_export_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/net_internals_resources.h"
 #include "chrome/grit/net_internals_resources_map.h"
 #include "components/prefs/pref_member.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "net/log/net_log_util.h"
 #include "services/network/expect_ct_reporter.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -64,6 +55,11 @@ void IgnoreBoolCallback(bool result) {}
 class NetInternalsMessageHandler : public content::WebUIMessageHandler {
  public:
   explicit NetInternalsMessageHandler(content::WebUI* web_ui);
+
+  NetInternalsMessageHandler(const NetInternalsMessageHandler&) = delete;
+  NetInternalsMessageHandler& operator=(const NetInternalsMessageHandler&) =
+      delete;
+
   ~NetInternalsMessageHandler() override = default;
 
  protected:
@@ -100,8 +96,6 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
 
   content::WebUI* web_ui_;
   base::WeakPtrFactory<NetInternalsMessageHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetInternalsMessageHandler);
 };
 
 NetInternalsMessageHandler::NetInternalsMessageHandler(content::WebUI* web_ui)
@@ -110,46 +104,46 @@ NetInternalsMessageHandler::NetInternalsMessageHandler(content::WebUI* web_ui)
 void NetInternalsMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "reloadProxySettings",
       base::BindRepeating(&NetInternalsMessageHandler::OnReloadProxySettings,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "clearBadProxies",
       base::BindRepeating(&NetInternalsMessageHandler::OnClearBadProxies,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "clearHostResolverCache",
       base::BindRepeating(&NetInternalsMessageHandler::OnClearHostResolverCache,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "domainSecurityPolicyDelete",
       base::BindRepeating(
           &NetInternalsMessageHandler::OnDomainSecurityPolicyDelete,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "hstsQuery", base::BindRepeating(&NetInternalsMessageHandler::OnHSTSQuery,
                                        base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "hstsAdd", base::BindRepeating(&NetInternalsMessageHandler::OnHSTSAdd,
                                      base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "expectCTQuery",
       base::BindRepeating(&NetInternalsMessageHandler::OnExpectCTQuery,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "expectCTAdd",
       base::BindRepeating(&NetInternalsMessageHandler::OnExpectCTAdd,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "expectCTTestReport",
       base::BindRepeating(&NetInternalsMessageHandler::OnExpectCTTestReport,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "closeIdleSockets",
       base::BindRepeating(&NetInternalsMessageHandler::OnCloseIdleSockets,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "flushSocketPools",
       base::BindRepeating(&NetInternalsMessageHandler::OnFlushSocketPools,
                           base::Unretained(this)));
@@ -177,29 +171,26 @@ void NetInternalsMessageHandler::OnClearHostResolverCache(
 void NetInternalsMessageHandler::OnDomainSecurityPolicyDelete(
     const base::ListValue* list) {
   // |list| should be: [<domain to query>].
-  std::string domain;
-  bool result = list->GetString(0, &domain);
-  DCHECK(result);
-  if (!base::IsStringASCII(domain)) {
+  const std::string* domain = list->GetList()[0].GetIfString();
+  DCHECK(domain);
+  if (!base::IsStringASCII(*domain)) {
     // There cannot be a unicode entry in the HSTS set.
     return;
   }
   GetNetworkContext()->DeleteDynamicDataForHost(
-      domain, base::BindOnce(&IgnoreBoolCallback));
+      *domain, base::BindOnce(&IgnoreBoolCallback));
 }
 
 void NetInternalsMessageHandler::OnHSTSQuery(const base::ListValue* list) {
-  std::string callback_id;
-  bool get_callback_id = list->GetString(0, &callback_id);
-  std::string domain;
-  bool get_domain_result = list->GetString(1, &domain);
-  DCHECK(get_domain_result && get_callback_id);
+  const std::string* callback_id = list->GetList()[0].GetIfString();
+  const std::string* domain = list->GetList()[1].GetIfString();
+  DCHECK(callback_id && domain);
 
   AllowJavascript();
   GetNetworkContext()->GetHSTSState(
-      domain,
+      *domain,
       base::BindOnce(&NetInternalsMessageHandler::ResolveCallbackWithResult,
-                     weak_factory_.GetWeakPtr(), callback_id));
+                     weak_factory_.GetWeakPtr(), *callback_id));
 }
 
 void NetInternalsMessageHandler::ResolveCallbackWithResult(
@@ -209,66 +200,59 @@ void NetInternalsMessageHandler::ResolveCallbackWithResult(
 }
 
 void NetInternalsMessageHandler::OnHSTSAdd(const base::ListValue* list) {
+  const auto list_view = list->GetList();
+  DCHECK_GE(2u, list_view.size());
+
   // |list| should be: [<domain to query>, <STS include subdomains>]
-  std::string domain;
-  bool result = list->GetString(0, &domain);
-  DCHECK(result);
-  if (!base::IsStringASCII(domain)) {
+  const std::string* domain = list->GetList()[0].GetIfString();
+  DCHECK(domain);
+  if (!base::IsStringASCII(*domain)) {
     // Silently fail. The user will get a helpful error if they query for the
     // name.
     return;
   }
-  bool sts_include_subdomains;
-  result = list->GetBoolean(1, &sts_include_subdomains);
-  DCHECK(result);
+  const bool sts_include_subdomains = list_view[1].GetBool();
 
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
-  GetNetworkContext()->AddHSTS(domain, expiry, sts_include_subdomains,
+  base::Time expiry = base::Time::Now() + base::Days(1000);
+  GetNetworkContext()->AddHSTS(*domain, expiry, sts_include_subdomains,
                                base::DoNothing());
 }
 
 void NetInternalsMessageHandler::OnExpectCTQuery(const base::ListValue* list) {
-  std::string callback_id;
-  std::string domain;
-  bool callback_result = list->GetString(0, &callback_id);
-  bool result = list->GetString(1, &domain);
+  const std::string* callback_id = list->GetList()[0].GetIfString();
+  const std::string* domain = list->GetList()[1].GetIfString();
+  DCHECK(callback_id && domain);
 
-  DCHECK(result && callback_result);
-
-  url::Origin origin = url::Origin::Create(GURL("https://" + domain));
+  url::Origin origin = url::Origin::Create(GURL("https://" + *domain));
   AllowJavascript();
 
   GetNetworkContext()->GetExpectCTState(
-      domain,
+      *domain,
       net::NetworkIsolationKey(origin /* top_frame_site */,
                                origin /* frame_site */),
       base::BindOnce(&NetInternalsMessageHandler::ResolveCallbackWithResult,
-                     weak_factory_.GetWeakPtr(), callback_id));
+                     weak_factory_.GetWeakPtr(), *callback_id));
 }
 
 void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
   // |list| should be: [<domain to add>, <report URI>, <enforce>].
-  std::string domain;
-  bool result = list->GetString(0, &domain);
-  DCHECK(result);
-  if (!base::IsStringASCII(domain)) {
+  const std::string* domain = list->GetList()[0].GetIfString();
+  DCHECK(domain);
+  if (!base::IsStringASCII(*domain)) {
     // Silently fail. The user will get a helpful error if they query for the
     // name.
     return;
   }
 
-  std::string report_uri_str;
-  result = list->GetString(1, &report_uri_str);
-  DCHECK(result);
-  bool enforce;
-  result = list->GetBoolean(2, &enforce);
-  DCHECK(result);
+  const std::string* report_uri_str = list->GetList()[1].GetIfString();
+  absl::optional<bool> enforce = list->GetList()[2].GetIfBool();
+  DCHECK(report_uri_str && enforce);
 
-  url::Origin origin = url::Origin::Create(GURL("https://" + domain));
+  url::Origin origin = url::Origin::Create(GURL("https://" + *domain));
 
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
+  base::Time expiry = base::Time::Now() + base::Days(1000);
   GetNetworkContext()->AddExpectCT(
-      domain, expiry, enforce, GURL(report_uri_str),
+      *domain, expiry, *enforce, GURL(*report_uri_str),
       net::NetworkIsolationKey(origin /* top_frame_site */,
                                origin /* frame_site */),
       base::DoNothing());
@@ -276,22 +260,20 @@ void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
 
 void NetInternalsMessageHandler::OnExpectCTTestReport(
     const base::ListValue* list) {
-  std::string callback_id;
-  std::string report_uri_str;
-  bool callback_result = list->GetString(0, &callback_id);
-  bool result = list->GetString(1, &report_uri_str);
-  DCHECK(result && callback_result);
-  GURL report_uri(report_uri_str);
+  const std::string* callback_id = list->GetList()[0].GetIfString();
+  const std::string* report_uri_str = list->GetList()[1].GetIfString();
+  DCHECK(callback_id && report_uri_str);
+  GURL report_uri(*report_uri_str);
   AllowJavascript();
   if (!report_uri.is_valid()) {
-    ResolveCallbackWithResult(callback_id, base::Value("invalid"));
+    ResolveCallbackWithResult(*callback_id, base::Value("invalid"));
     return;
   }
 
   GetNetworkContext()->SetExpectCTTestReport(
       report_uri,
       base::BindOnce(&NetInternalsMessageHandler::OnExpectCTTestReportCallback,
-                     weak_factory_.GetWeakPtr(), callback_id));
+                     weak_factory_.GetWeakPtr(), *callback_id));
 }
 
 void NetInternalsMessageHandler::OnExpectCTTestReportCallback(

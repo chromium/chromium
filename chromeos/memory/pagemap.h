@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "chromeos/chromeos_export.h"
 
 namespace chromeos {
@@ -36,6 +35,10 @@ class CHROMEOS_EXPORT Pagemap {
                 "PagemapEntry is expected to be 8 bytes");
 
   explicit Pagemap(pid_t pid);
+
+  Pagemap(const Pagemap&) = delete;
+  Pagemap& operator=(const Pagemap&) = delete;
+
   ~Pagemap();
 
   bool IsValid() const;
@@ -65,8 +68,6 @@ class CHROMEOS_EXPORT Pagemap {
   friend class PagemapTest;
 
   base::ScopedFD fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(Pagemap);
 };
 
 }  // namespace memory

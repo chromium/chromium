@@ -23,6 +23,9 @@ namespace chromecast {
 
 class DeviceCapabilitiesImpl : public DeviceCapabilities {
  public:
+  DeviceCapabilitiesImpl(const DeviceCapabilitiesImpl&) = delete;
+  DeviceCapabilitiesImpl& operator=(const DeviceCapabilitiesImpl&) = delete;
+
   ~DeviceCapabilitiesImpl() override;
 
   // DeviceCapabilities implementation:
@@ -46,6 +49,10 @@ class DeviceCapabilitiesImpl : public DeviceCapabilities {
   class ValidatorInfo : public base::SupportsWeakPtr<ValidatorInfo> {
    public:
     explicit ValidatorInfo(Validator* validator);
+
+    ValidatorInfo(const ValidatorInfo&) = delete;
+    ValidatorInfo& operator=(const ValidatorInfo&) = delete;
+
     ~ValidatorInfo();
 
     Validator* validator() const { return validator_; }
@@ -60,8 +67,6 @@ class DeviceCapabilitiesImpl : public DeviceCapabilities {
     Validator* const validator_;
     // TaskRunner of thread that validator_ was registered on
     const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(ValidatorInfo);
   };
 
   // For DeviceCapabilitiesImpl()
@@ -104,8 +109,6 @@ class DeviceCapabilitiesImpl : public DeviceCapabilities {
 
   ValidatorMap validator_map_;
   const scoped_refptr<base::ObserverListThreadSafe<Observer>> observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCapabilitiesImpl);
 };
 
 }  // namespace chromecast

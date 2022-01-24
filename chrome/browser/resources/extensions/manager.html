@@ -56,6 +56,7 @@
     <template>
       <extensions-detail-view delegate="[[delegate]]" slot="view"
           in-dev-mode="[[inDevMode]]"
+          use-new-site-access-page="[[useNewSiteAccessPage]]"
           from-activity-log="[[fromActivityLog_]]"
           show-activity-log="[[showActivityLog]]"
           incognito-available="[[incognitoAvailable_]]"
@@ -68,6 +69,13 @@
       <extensions-activity-log delegate="[[delegate]]" slot="view"
           extension-info="[[activityLogItem_]]">
       </extensions-activity-log>
+    </template>
+  </cr-lazy-render>
+  <cr-lazy-render id="extension-site-access">
+    <template>
+      <extensions-site-access slot="view"
+          extension-info="[[extensionSiteAccessItem_]]">
+      </extensions-site-access>
     </template>
   </cr-lazy-render>
   <cr-lazy-render id="keyboard-shortcuts">

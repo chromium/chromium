@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CRASH_CORE_BROWSER_CRASH_UPLOAD_LIST_CRASHPAD_H_
 #define COMPONENTS_CRASH_CORE_BROWSER_CRASH_UPLOAD_LIST_CRASHPAD_H_
 
-#include "base/macros.h"
 #include "components/upload_list/upload_list.h"
 
 namespace base {

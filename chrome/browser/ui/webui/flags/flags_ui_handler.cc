@@ -14,7 +14,10 @@
 #include "components/version_info/channel.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/settings/about_flags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #endif
 
@@ -26,27 +29,33 @@ FlagsUIHandler::FlagsUIHandler()
 FlagsUIHandler::~FlagsUIHandler() {}
 
 void FlagsUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kRequestExperimentalFeatures,
       base::BindRepeating(&FlagsUIHandler::HandleRequestExperimentalFeatures,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kEnableExperimentalFeature,
       base::BindRepeating(
           &FlagsUIHandler::HandleEnableExperimentalFeatureMessage,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kSetOriginListFlag,
       base::BindRepeating(&FlagsUIHandler::HandleSetOriginListFlagMessage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kRestartBrowser,
       base::BindRepeating(&FlagsUIHandler::HandleRestartBrowser,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       flags_ui::kResetAllFlags,
       base::BindRepeating(&FlagsUIHandler::HandleResetAllFlags,
                           base::Unretained(this)));
+#if defined(OS_CHROMEOS)
+  web_ui()->RegisterDeprecatedMessageCallback(
+      flags_ui::kCrosUrlFlagsRedirect,
+      base::BindRepeating(&FlagsUIHandler::HandleCrosUrlFlagsRedirect,
+                          base::Unretained(this)));
+#endif
 }
 
 void FlagsUIHandler::Init(flags_ui::FlagsStorage* flags_storage,
@@ -97,6 +106,13 @@ void FlagsUIHandler::SendExperimentalFeatures() {
   results.SetBoolean(flags_ui::kShowOwnerWarning,
                      access_ == flags_ui::kGeneralAccessFlagsOnly);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool showSystemFlagsLink = crosapi::browser_util::IsLacrosEnabled();
+#else
+  const bool showSystemFlagsLink = true;
+#endif
+  results.SetBoolean(flags_ui::kShowSystemFlagsLink, showSystemFlagsLink);
+
 #if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   version_info::Channel channel = chrome::GetChannel();
   results.SetBoolean(
@@ -117,14 +133,17 @@ void FlagsUIHandler::SendExperimentalFeatures() {
 void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
     const base::ListValue* args) {
   DCHECK(flags_storage_);
-  DCHECK_EQ(2u, args->GetSize());
-  if (args->GetSize() != 2)
+  DCHECK_EQ(2u, args->GetList().size());
+  if (args->GetList().size() != 2)
     return;
 
-  std::string entry_internal_name;
-  std::string enable_str;
-  if (!args->GetString(0, &entry_internal_name) ||
-      !args->GetString(1, &enable_str) || entry_internal_name.empty()) {
+  if (!args->GetList()[0].is_string() || !args->GetList()[1].is_string()) {
+    NOTREACHED();
+    return;
+  }
+  const std::string& entry_internal_name = args->GetList()[0].GetString();
+  const std::string& enable_str = args->GetList()[1].GetString();
+  if (entry_internal_name.empty()) {
     NOTREACHED();
     return;
   }
@@ -136,15 +155,18 @@ void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
 void FlagsUIHandler::HandleSetOriginListFlagMessage(
     const base::ListValue* args) {
   DCHECK(flags_storage_);
-  if (args->GetSize() != 2) {
+  if (args->GetList().size() != 2) {
     NOTREACHED();
     return;
   }
 
-  std::string entry_internal_name;
-  std::string value_str;
-  if (!args->GetString(0, &entry_internal_name) ||
-      !args->GetString(1, &value_str) || entry_internal_name.empty()) {
+  if (!args->GetList()[0].is_string() || !args->GetList()[1].is_string()) {
+    NOTREACHED();
+    return;
+  }
+  const std::string& entry_internal_name = args->GetList()[0].GetString();
+  const std::string& value_str = args->GetList()[1].GetString();
+  if (entry_internal_name.empty()) {
     NOTREACHED();
     return;
   }
@@ -162,6 +184,14 @@ void FlagsUIHandler::HandleRestartBrowser(const base::ListValue* args) {
   ash::about_flags::FeatureFlagsUpdate(*flags_storage_,
                                        Profile::FromWebUI(web_ui())->GetPrefs())
       .UpdateSessionManager();
+  // Call `ClearMigrationStep()` so that we can run migration for the following
+  // case.
+  // 1. User has lacros enabled.
+  // 2. User logs in and migration is completed.
+  // 3. User disabled lacros in session.
+  // 4. User re-enables lacros in session.
+  ash::BrowserDataMigrator::ClearMigrationStep(
+      g_browser_process->local_state());
 #endif
   chrome::AttemptRestart();
 }
@@ -170,3 +200,9 @@ void FlagsUIHandler::HandleResetAllFlags(const base::ListValue* args) {
   DCHECK(flags_storage_);
   about_flags::ResetAllFlags(flags_storage_.get());
 }
+
+#if defined(OS_CHROMEOS)
+void FlagsUIHandler::HandleCrosUrlFlagsRedirect(const base::ListValue* args) {
+  about_flags::CrosUrlFlagsRedirect();
+}
+#endif

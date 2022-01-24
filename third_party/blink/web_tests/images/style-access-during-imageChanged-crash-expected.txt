@@ -1,5 +1,5 @@
-CONSOLE WARNING: line 14: Failed to decode downloaded font: data:text/plain,1
-CONSOLE WARNING: line 14: OTS parsing error: file less than 4 bytes
+CONSOLE WARNING: Failed to decode downloaded font: data:text/plain,1
+CONSOLE WARNING: OTS parsing error: file less than 4 bytes
 This test passes if it does not cause an assertion failure or a crash.
 
 A 

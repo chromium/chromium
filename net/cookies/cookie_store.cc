@@ -45,8 +45,4 @@ void CookieStore::SetCookieAccessDelegate(
   cookie_access_delegate_ = std::move(delegate);
 }
 
-void CookieStore::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_absolute_name) const {}
-
 }  // namespace net

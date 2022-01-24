@@ -1,1 +1,0 @@
-FAIL: Plugin not instantiated on property access while waiting for style sheets to load

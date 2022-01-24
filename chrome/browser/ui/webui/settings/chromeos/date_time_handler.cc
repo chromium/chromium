@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/date_time_handler.h"
 
+#include "ash/components/settings/timezone_settings.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"
@@ -12,14 +13,13 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
+#include "chrome/browser/ash/set_time_dialog.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/set_time_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -69,18 +69,18 @@ DateTimeHandler::DateTimeHandler() {}
 DateTimeHandler::~DateTimeHandler() = default;
 
 void DateTimeHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "dateTimePageReady",
       base::BindRepeating(&DateTimeHandler::HandleDateTimePageReady,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getTimeZones", base::BindRepeating(&DateTimeHandler::HandleGetTimeZones,
                                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showSetDateTimeUI",
       base::BindRepeating(&DateTimeHandler::HandleShowSetDateTimeUI,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "handleShowParentAccessForTimeZone",
       base::BindRepeating(&DateTimeHandler::HandleShowParentAccessForTimeZone,
                           base::Unretained(this)));
@@ -126,10 +126,10 @@ void DateTimeHandler::HandleDateTimePageReady(const base::ListValue* args) {
 void DateTimeHandler::HandleGetTimeZones(const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
-  ResolveJavascriptCallback(*callback_id, *system::GetTimezoneList().release());
+  ResolveJavascriptCallback(*callback_id, *system::GetTimezoneList());
 }
 
 void DateTimeHandler::HandleShowSetDateTimeUI(const base::ListValue* args) {

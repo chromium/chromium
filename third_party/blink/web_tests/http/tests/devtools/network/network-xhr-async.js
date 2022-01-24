@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests XHR network resource type and content for asynchronous requests. Bug 61205\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();

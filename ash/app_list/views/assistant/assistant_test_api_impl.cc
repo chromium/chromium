@@ -46,13 +46,9 @@ std::unique_ptr<AssistantTestApi> AssistantTestApi::Create() {
 
 AssistantTestApiImpl::AssistantTestApiImpl() = default;
 
-AssistantTestApiImpl::~AssistantTestApiImpl() {
-  EnableAnimations();
-}
+AssistantTestApiImpl::~AssistantTestApiImpl() = default;
 
 void AssistantTestApiImpl::DisableAnimations() {
-  AppListView::SetShortAnimationForTesting(true);
-
   scoped_animation_duration_ =
       std::make_unique<ui::ScopedAnimationDurationScaleMode>(
           ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
@@ -60,7 +56,7 @@ void AssistantTestApiImpl::DisableAnimations() {
 
 bool AssistantTestApiImpl::IsVisible() {
   if (!TabletMode::Get()->InTabletMode() &&
-      features::IsAppListBubbleEnabled()) {
+      features::IsProductivityLauncherEnabled()) {
     auto* bubble_view = GetAppListBubbleView();
     // `bubble_view` is null when the bubble launcher is closed.
     return bubble_view && bubble_view->assistant_page_->GetVisible();
@@ -81,7 +77,7 @@ void AssistantTestApiImpl::SendTextQuery(const std::string& query) {
 
 views::View* AssistantTestApiImpl::page_view() {
   if (!TabletMode::Get()->InTabletMode() &&
-      features::IsAppListBubbleEnabled()) {
+      features::IsProductivityLauncherEnabled()) {
     auto* bubble_view = GetAppListBubbleView();
     DCHECK(bubble_view)
         << "App list is not showing. Display the assistant UI first.";
@@ -229,11 +225,6 @@ AssistantState* AssistantTestApiImpl::GetAssistantState() {
 
 void AssistantTestApiImpl::WaitUntilIdle() {
   base::RunLoop().RunUntilIdle();
-}
-
-void AssistantTestApiImpl::EnableAnimations() {
-  scoped_animation_duration_ = nullptr;
-  AppListView::SetShortAnimationForTesting(false);
 }
 
 bool AssistantTestApiImpl::AppListViewsHaveBeenCreated() const {

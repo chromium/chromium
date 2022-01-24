@@ -26,6 +26,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MessageDispatcher
 
   MessageDispatcher(MessageDispatcher&& other);
   MessageDispatcher& operator=(MessageDispatcher&& other);
+
+  MessageDispatcher(const MessageDispatcher&) = delete;
+  MessageDispatcher& operator=(const MessageDispatcher&) = delete;
+
   ~MessageDispatcher() override;
 
   void SetValidator(std::unique_ptr<MessageReceiver> validator);
@@ -45,8 +49,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MessageDispatcher
   MessageReceiver* sink_;
 
   base::WeakPtrFactory<MessageDispatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessageDispatcher);
 };
 
 }  // namespace mojo

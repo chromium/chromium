@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -38,6 +37,10 @@ class InteractionResponse {
   class Response;
 
   InteractionResponse();
+
+  InteractionResponse(const InteractionResponse&) = delete;
+  InteractionResponse& operator=(const InteractionResponse&) = delete;
+
   ~InteractionResponse();
 
   // A simple textual response.
@@ -54,8 +57,6 @@ class InteractionResponse {
   void AddResponse(std::unique_ptr<Response> responses);
 
   std::vector<std::unique_ptr<Response>> responses_;
-
-  DISALLOW_COPY_AND_ASSIGN(InteractionResponse);
 };
 
 // Fake implementation of the Assistant service.
@@ -72,6 +73,10 @@ class InteractionResponse {
 class TestAssistantService : public chromeos::assistant::Assistant {
  public:
   TestAssistantService();
+
+  TestAssistantService(const TestAssistantService&) = delete;
+  TestAssistantService& operator=(const TestAssistantService&) = delete;
+
   ~TestAssistantService() override;
 
   // Set the response that will be invoked when the next interaction starts.
@@ -105,12 +110,15 @@ class TestAssistantService : public chromeos::assistant::Assistant {
   void DismissNotification(
       const chromeos::assistant::AssistantNotification& notification) override;
   void OnAccessibilityStatusChanged(bool spoken_feedback_enabled) override;
+  void OnColorModeChanged(bool dark_mode_enabled) override;
   void SendAssistantFeedback(
       const chromeos::assistant::AssistantFeedback& feedback) override;
   void AddTimeToTimer(const std::string& id, base::TimeDelta duration) override;
   void PauseTimer(const std::string& id) override;
   void RemoveAlarmOrTimer(const std::string& id) override;
   void ResumeTimer(const std::string& id) override;
+
+  absl::optional<bool> dark_mode_enabled() { return dark_mode_enabled_; }
 
  private:
   void StartInteraction(
@@ -124,11 +132,11 @@ class TestAssistantService : public chromeos::assistant::Assistant {
   std::unique_ptr<CurrentInteractionSubscriber> current_interaction_subscriber_;
   std::unique_ptr<InteractionResponse> interaction_response_;
 
+  absl::optional<bool> dark_mode_enabled_;
+
   base::ObserverList<chromeos::assistant::AssistantInteractionSubscriber>
       interaction_subscribers_;
   bool running_active_interaction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAssistantService);
 };
 
 }  // namespace ash

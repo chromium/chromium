@@ -14,10 +14,9 @@
 
 namespace net {
 
-CertificateList CreateCertificateListFromFile(
-    const base::FilePath& certs_dir,
-    const std::string& cert_file,
-    int format) {
+CertificateList CreateCertificateListFromFile(const base::FilePath& certs_dir,
+                                              base::StringPiece cert_file,
+                                              int format) {
   base::FilePath cert_path = certs_dir.AppendASCII(cert_file);
   std::string cert_data;
   if (!base::ReadFileToString(cert_path, &cert_data))
@@ -45,7 +44,7 @@ CertificateList CreateCertificateListFromFile(
 
 scoped_refptr<X509Certificate> CreateCertificateChainFromFile(
     const base::FilePath& certs_dir,
-    const std::string& cert_file,
+    base::StringPiece cert_file,
     int format) {
   CertificateList certs = CreateCertificateListFromFile(
       certs_dir, cert_file, format);
@@ -63,7 +62,7 @@ scoped_refptr<X509Certificate> CreateCertificateChainFromFile(
 
 scoped_refptr<X509Certificate> ImportCertFromFile(
     const base::FilePath& certs_dir,
-    const std::string& cert_file) {
+    base::StringPiece cert_file) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath cert_path = certs_dir.AppendASCII(cert_file);
   std::string cert_data;

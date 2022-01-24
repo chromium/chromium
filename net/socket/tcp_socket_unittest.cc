@@ -73,6 +73,11 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
       : should_notify_updated_rtt_(should_notify_updated_rtt),
         connection_changed_count_(0u),
         rtt_notification_count_(0u) {}
+
+  TestSocketPerformanceWatcher(const TestSocketPerformanceWatcher&) = delete;
+  TestSocketPerformanceWatcher& operator=(const TestSocketPerformanceWatcher&) =
+      delete;
+
   ~TestSocketPerformanceWatcher() override = default;
 
   bool ShouldNotifyUpdatedRTT() const override {
@@ -93,8 +98,6 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
   const bool should_notify_updated_rtt_;
   size_t connection_changed_count_;
   size_t rtt_notification_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketPerformanceWatcher);
 };
 
 const int kListenBacklog = 5;
@@ -523,9 +526,9 @@ TEST_F(TCPSocketTest, DestroyWithPendingWrite) {
   memset(write_buffer->data(), '1', write_buffer->size());
   TestCompletionCallback write_callback;
   while (true) {
-    int result = connecting_socket->Write(
-        write_buffer.get(), write_buffer->size(), write_callback.callback(),
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+    result = connecting_socket->Write(write_buffer.get(), write_buffer->size(),
+                                      write_callback.callback(),
+                                      TRAFFIC_ANNOTATION_FOR_TESTS);
     if (result == ERR_IO_PENDING)
       break;
     ASSERT_LT(0, result);

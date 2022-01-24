@@ -454,6 +454,39 @@ message AutofillUploadContents {
 
   // Captures whether or not this upload was a candidate for throttling.
   optional bool was_throttleable = 38;
+
+  // Type of the value seen in the potential single username field.
+  enum ValueType {
+    TYPE_UNSPECIFIED = 0;
+    NO_VALUE_TYPE = 1;
+    STORED_FOR_CURRENT_DOMAIN = 2;
+    // TODO(crbug.com/959776) Not used yet. Check against all domains to be
+    // implemented.
+    STORED_FOR_ANOTHER_DOMAIN = 3;
+    EMAIL = 4;
+    PHONE = 5;
+    USERNAME_LIKE = 6;
+    VALUE_WITH_NO_WHITESPACE = 7;
+    VALUE_WITH_WHITESPACE = 8;
+  }
+  // Information received from user interaction with the prompt.
+  enum SingleUsernamePromptEdit {
+    EDIT_UNSPECIFIED = 0;
+    NOT_EDITED_POSITIVE = 1;
+    NOT_EDITED_NEGATIVE = 2;
+    EDITED_POSITIVE = 3;
+    EDITED_NEGATIVE = 4;
+  }
+  message SingleUsernameData {
+    optional fixed64 username_form_signature = 1;
+    optional fixed32 username_field_signature = 2;
+    optional ValueType value_type = 3;
+    optional SingleUsernamePromptEdit prompt_edit = 4;
+  }
+  // This message is recorded on forms that do not have a username field.
+  // The message contains data on a preceding form with potential username
+  // field.
+  optional SingleUsernameData single_username_data = 42;
 }
 
 // This proto contains information about the validity of each field in an

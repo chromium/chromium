@@ -24,15 +24,19 @@
 #include "content/public/renderer/render_thread.h"
 #include "crypto/sha2.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
 #include "third_party/tflite/src/tensorflow/lite/op_resolver.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h"
+#endif
 
 namespace safe_browsing {
 
 namespace {
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 std::unique_ptr<tflite::MutableOpResolver> CreateOpResolver() {
   tflite::MutableOpResolver resolver;
   // The minimal set of OPs required to run the visual model.
@@ -100,9 +104,11 @@ std::string GetModelInput(const SkBitmap& bitmap, int width, int height) {
 
   return data;
 }
+#endif
 
 }  // namespace
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 std::vector<double> Scorer::ApplyVisualTfLiteModelHelper(
     const SkBitmap& bitmap,
     int input_width,
@@ -139,6 +145,7 @@ std::vector<double> Scorer::ApplyVisualTfLiteModelHelper(
     return scores;
   }
 }
+#endif
 
 double Scorer::LogOdds2Prob(double log_odds) {
   // 709 = floor(1023*ln(2)).  2**1023 is the largest finite double.

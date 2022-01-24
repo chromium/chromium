@@ -39,7 +39,7 @@ TEST(TaskAnnotatorTest, QueueAndRunTask) {
   TaskAnnotator annotator;
   annotator.WillQueueTask("TaskAnnotatorTest::Queue", &pending_task, "?");
   EXPECT_EQ(0, result);
-  annotator.RunTask("TaskAnnotatorTest::Queue", &pending_task);
+  annotator.RunTask("TaskAnnotator::RunTask", pending_task);
   EXPECT_EQ(123, result);
 }
 
@@ -54,6 +54,11 @@ class TaskAnnotatorBacktraceIntegrationTest
   using ExpectedTrace = std::vector<const void*>;
 
   TaskAnnotatorBacktraceIntegrationTest() = default;
+
+  TaskAnnotatorBacktraceIntegrationTest(
+      const TaskAnnotatorBacktraceIntegrationTest&) = delete;
+  TaskAnnotatorBacktraceIntegrationTest& operator=(
+      const TaskAnnotatorBacktraceIntegrationTest&) = delete;
 
   ~TaskAnnotatorBacktraceIntegrationTest() override = default;
 
@@ -147,8 +152,6 @@ class TaskAnnotatorBacktraceIntegrationTest
       last_task_backtrace_ = {};
 
   uint32_t last_ipc_hash_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskAnnotatorBacktraceIntegrationTest);
 };
 
 // Ensure the task backtrace populates correctly.

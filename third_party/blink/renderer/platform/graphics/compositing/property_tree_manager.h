@@ -25,7 +25,7 @@ enum class RenderSurfaceReason : uint8_t;
 }
 
 namespace gfx {
-class ScrollOffset;
+class Vector2dF;
 }
 
 namespace blink {
@@ -149,7 +149,7 @@ class PropertyTreeManager {
   // update the cc transform node's scroll offset.
   static void DirectlySetScrollOffset(cc::LayerTreeHost&,
                                       CompositorElementId,
-                                      const gfx::ScrollOffset&);
+                                      const gfx::Vector2dF&);
 
   // Ensures a cc::ScrollNode for all scroll translations.
   void EnsureCompositorScrollNodes(

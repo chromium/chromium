@@ -6,8 +6,8 @@
 
 namespace sync_sessions {
 
-SyncedWindowDelegatesGetter::SyncedWindowDelegatesGetter() {}
+SyncedWindowDelegatesGetter::SyncedWindowDelegatesGetter() = default;
 
-SyncedWindowDelegatesGetter::~SyncedWindowDelegatesGetter() {}
+SyncedWindowDelegatesGetter::~SyncedWindowDelegatesGetter() = default;
 
 }  // namespace sync_sessions

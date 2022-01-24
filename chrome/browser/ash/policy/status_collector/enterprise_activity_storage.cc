@@ -22,7 +22,7 @@ EnterpriseActivityStorage::EnterpriseActivityStorage(
     const std::string& pref_name)
     : ActivityStorage(pref_service,
                       pref_name,
-                      /*day_start_offset=*/base::TimeDelta::FromSeconds(0)) {}
+                      /*day_start_offset=*/base::Seconds(0)) {}
 
 EnterpriseActivityStorage::~EnterpriseActivityStorage() = default;
 

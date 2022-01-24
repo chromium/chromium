@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"

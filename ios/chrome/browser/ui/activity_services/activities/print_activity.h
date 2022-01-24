@@ -8,14 +8,23 @@
 #import <UIKit/UIKit.h>
 
 @protocol BrowserCommands;
+@class ShareImageData;
 @class ShareToData;
 
 // Activity that triggers the printing service.
 @interface PrintActivity : UIActivity
 
-// Initializes the print activity with the given |data| and the |handler|.
+// Initializes the print activity with the given tab |data| and the |handler|.
+// Print preview will be presented on top of |baseViewController|.
 - (instancetype)initWithData:(ShareToData*)data
                      handler:(id<BrowserCommands>)handler
+          baseViewController:(UIViewController*)baseViewController
+    NS_DESIGNATED_INITIALIZER;
+// Initializes the print activity with the given |imageData| and the |handler|.
+// Print preview will be presented on top of |baseViewController|.
+- (instancetype)initWithImageData:(ShareImageData*)imageData
+                          handler:(id<BrowserCommands>)handler
+               baseViewController:(UIViewController*)baseViewController
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

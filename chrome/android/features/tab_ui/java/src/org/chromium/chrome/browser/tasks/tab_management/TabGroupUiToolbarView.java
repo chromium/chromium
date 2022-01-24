@@ -17,6 +17,9 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.TextViewCompat;
 
@@ -144,6 +147,20 @@ public class TabGroupUiToolbarView extends FrameLayout {
             throw new IllegalStateException("Current Toolbar doesn't have a title text view");
         }
         mTitleTextView.setText(title);
+    }
+
+    void setIsIncognito(boolean isIncognito) {
+        @ColorRes
+        int primaryColorRes = isIncognito ? R.color.dialog_bg_color_dark : R.color.dialog_bg_color;
+        @ColorInt
+        int primaryColor = getResources().getColor(primaryColorRes);
+        setPrimaryColor(primaryColor);
+
+        @ColorRes
+        int tintListRes = isIncognito ? R.color.default_icon_color_light_tint_list
+                                      : R.color.default_icon_color_tint_list;
+        ColorStateList tintList = ContextCompat.getColorStateList(getContext(), tintListRes);
+        setTint(tintList);
     }
 
     void setPrimaryColor(int color) {

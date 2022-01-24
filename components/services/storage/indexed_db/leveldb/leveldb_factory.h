@@ -9,7 +9,6 @@
 #include <tuple>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
@@ -62,6 +61,10 @@ class DefaultLevelDBFactory : public LevelDBFactory {
   // for memory profiling reporting in the in-memory database environment.
   DefaultLevelDBFactory(leveldb_env::Options database_options,
                         const std::string& in_memory_db_name);
+
+  DefaultLevelDBFactory(const DefaultLevelDBFactory&) = delete;
+  DefaultLevelDBFactory& operator=(const DefaultLevelDBFactory&) = delete;
+
   ~DefaultLevelDBFactory() override;
 
   std::tuple<std::unique_ptr<leveldb::DB>, leveldb::Status> OpenInMemoryDB(
@@ -84,8 +87,6 @@ class DefaultLevelDBFactory : public LevelDBFactory {
  protected:
   leveldb_env::Options options_;
   std::string in_memory_db_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultLevelDBFactory);
 };
 
 }  // namespace content

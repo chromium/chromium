@@ -23,6 +23,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/types/pass_key.h"
 #include "sql/internal_api_token.h"
 #include "sql/sql_features.h"
 #include "sql/statement_id.h"
@@ -215,8 +216,17 @@ class COMPONENT_EXPORT(SQL) Database {
   // Set an error-handling callback.  On errors, the error number (and
   // statement, if available) will be passed to the callback.
   //
-  // If no callback is set, the default action is to crash in debug
-  // mode or return failure in release mode.
+  // If no callback is set, the default error-handling behavior is invoked. The
+  // default behavior is to LOGs the error and propagate the failure.
+  //
+  // In DCHECK-enabled builds, the default error-handling behavior currently
+  // DCHECKs on errors. This is not correct, because DCHECKs are supposed to
+  // cover invariants and never fail, whereas SQLite errors can surface even on
+  // correct usage, due to I/O errors and data corruption. At some point in the
+  // future, errors will not result in DCHECKs.
+  //
+  // The callback will be called on the sequence used for database operations.
+  // The callback will never be called after the Database instance is destroyed.
   using ErrorCallback = base::RepeatingCallback<void(int, Statement*)>;
   void set_error_callback(const ErrorCallback& callback) {
     error_callback_ = callback;
@@ -364,6 +374,13 @@ class COMPONENT_EXPORT(SQL) Database {
   // be scoped transactions on the stack.
   void RollbackAllTransactions();
 
+  bool HasActiveTransactions() const {
+    DCHECK_GE(transaction_nesting_, 0);
+    return transaction_nesting_ > 0;
+  }
+
+  // Deprecated in favor of HasActiveTransactions().
+  //
   // Returns the current transaction nesting, which will be 0 if there are
   // no open transactions.
   int transaction_nesting() const { return transaction_nesting_; }
@@ -515,7 +532,7 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Return a reproducible representation of the schema equivalent to
   // running the following statement at a sqlite3 command-line:
-  //   SELECT type, name, tbl_name, sql FROM sqlite_master ORDER BY 1, 2, 3, 4;
+  //   SELECT type, name, tbl_name, sql FROM sqlite_schema ORDER BY 1, 2, 3, 4;
   std::string GetSchema();
 
   // Returns |true| if there is an error expecter (see SetErrorExpecter), and
@@ -562,10 +579,14 @@ class COMPONENT_EXPORT(SQL) Database {
   sqlite3* db(InternalApiToken) const { return db_; }
   bool poisoned(InternalApiToken) const { return poisoned_; }
 
- private:
-  // Allow test-support code to set/reset error expecter.
-  friend class test::ScopedErrorExpecter;
+  // Interface with sql::test::ScopedErrorExpecter.
+  using ScopedErrorExpecterCallback = base::RepeatingCallback<bool(int)>;
+  static void SetScopedErrorExpecter(ScopedErrorExpecterCallback* expecter,
+                                     base::PassKey<test::ScopedErrorExpecter>);
+  static void ResetScopedErrorExpecter(
+      base::PassKey<test::ScopedErrorExpecter>);
 
+ private:
   // Statement accesses StatementRef which we don't want to expose to everybody
   // (they should go through Statement).
   friend class Statement;
@@ -604,12 +625,8 @@ class COMPONENT_EXPORT(SQL) Database {
   // Internal helper for Does*Exist() functions.
   bool DoesSchemaItemExist(base::StringPiece name, base::StringPiece type);
 
-  // Accessors for global error-expecter, for injecting behavior during tests.
-  // See test/scoped_error_expecter.h.
-  using ErrorExpecterCallback = base::RepeatingCallback<bool(int)>;
-  static ErrorExpecterCallback* current_expecter_cb_;
-  static void SetErrorExpecter(ErrorExpecterCallback* expecter);
-  static void ResetErrorExpecter();
+  // Used to implement the interface with sql::test::ScopedErrorExpecter.
+  static ScopedErrorExpecterCallback* current_expecter_cb_;
 
   // A StatementRef is a refcounted wrapper around a sqlite statement pointer.
   // Refcounting allows us to give these statements out to sql::Statement
@@ -801,6 +818,15 @@ class COMPONENT_EXPORT(SQL) Database {
   // since memory was last released.
   int total_changes_at_last_release_ = 0;
 
+  // Called when a SQLite error occurs.
+  //
+  // This callback may be null, in which case errors are handled using a default
+  // behavior.
+  //
+  // This callback must never be exposed outside this Database instance. This is
+  // a straight-forward way to guarantee that this callback will not be called
+  // after the Database instance goes out of scope. set_error_callback() makes
+  // this guarantee.
   ErrorCallback error_callback_;
 
   // Developer-friendly database ID used in logging output and memory dumps.

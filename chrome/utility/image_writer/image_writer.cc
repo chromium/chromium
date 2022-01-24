@@ -8,7 +8,7 @@
 
 #include "base/location.h"
 #include "base/memory/aligned_memory.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/utility/image_writer/error_message_strings.h"

@@ -1,7 +1,0 @@
-<script>
-var req = new XMLHttpRequest;
-req.open("GET", "simple.txt", false);
-req.send(null);
-if (req.responseText.length > 0)
-    parent.postMessage("allDone", "*");
-</script>

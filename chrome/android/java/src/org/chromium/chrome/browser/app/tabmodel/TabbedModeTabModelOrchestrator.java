@@ -8,13 +8,14 @@ import android.app.Activity;
 import android.os.Build;
 import android.util.Pair;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
-import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.ui.widget.Toast;
@@ -42,8 +43,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
      */
     public boolean createTabModels(Activity activity, TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
-        boolean mergeTabs = shouldMergeTabs(activity);
-        if (mergeTabs) {
+        boolean mergeTabsOnStartup = shouldMergeTabs(activity);
+        if (mergeTabsOnStartup) {
             MultiInstanceManager.mergedOnStartup();
         }
 
@@ -54,7 +55,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         if (selectorAssignment == null) {
             mTabModelSelector = null;
         } else {
-            mTabModelSelector = (TabModelSelectorImpl) selectorAssignment.second;
+            mTabModelSelector = (TabModelSelectorBase) selectorAssignment.second;
         }
 
         if (mTabModelSelector == null) {
@@ -70,10 +71,11 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         int assignedIndex = selectorAssignment.first;
 
         // Instantiate TabPersistentStore
-        TabPersistencePolicy tabPersistencePolicy =
-                new TabbedModeTabPersistencePolicy(assignedIndex, mergeTabs, mTabMergingEnabled);
+        int maxSelectors = TabWindowManagerSingleton.getInstance().getMaxSimultaneousSelectors();
+        mTabPersistencePolicy = new TabbedModeTabPersistencePolicy(
+                assignedIndex, mergeTabsOnStartup, mTabMergingEnabled, maxSelectors);
         mTabPersistentStore =
-                new TabPersistentStore(tabPersistencePolicy, mTabModelSelector, tabCreatorManager);
+                new TabPersistentStore(mTabPersistencePolicy, mTabModelSelector, tabCreatorManager);
 
         wireSelectorAndStore();
         markTabModelsInitialized();
@@ -81,6 +83,13 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     }
 
     private boolean shouldMergeTabs(Activity activity) {
+        if (isMultiInstanceApi31Enabled()) {
+            // For multi-instance on Android S, this is a restart after the upgrade or fresh
+            // installation. Allow merging tabs from CTA/CTA2 used by the previous version
+            // if present.
+            return MultiWindowUtils.getInstanceCount() == 0;
+        }
+
         // Merge tabs if this TabModelSelector is for a ChromeTabbedActivity created in
         // fullscreen mode and there are no TabModelSelector's currently alive. This indicates
         // that it is a cold start or process restart in fullscreen mode.
@@ -99,5 +108,20 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                             == 0;
         }
         return mergeTabs;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    protected boolean isMultiInstanceApi31Enabled() {
+        return MultiWindowUtils.isMultiInstanceApi31Enabled();
+    }
+
+    @Override
+    public void cleanupInstance(int instanceId) {
+        mTabPersistentStore.cleanupStateFile(instanceId);
+    }
+
+    @VisibleForTesting
+    public TabPersistentStore getTabPersistentStoreForTesting() {
+        return mTabPersistentStore;
     }
 }

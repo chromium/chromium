@@ -6,12 +6,16 @@
 #define CHROME_BROWSER_UI_ASH_CHROME_ACCESSIBILITY_DELEGATE_H_
 
 #include "ash/accessibility/accessibility_delegate.h"
-#include "base/macros.h"
 
 // See ash::AccessibilityDelegate for details.
 class ChromeAccessibilityDelegate : public ash::AccessibilityDelegate {
  public:
   ChromeAccessibilityDelegate();
+
+  ChromeAccessibilityDelegate(const ChromeAccessibilityDelegate&) = delete;
+  ChromeAccessibilityDelegate& operator=(const ChromeAccessibilityDelegate&) =
+      delete;
+
   ~ChromeAccessibilityDelegate() override;
 
   // ash::AccessibilityDelegate:
@@ -20,9 +24,6 @@ class ChromeAccessibilityDelegate : public ash::AccessibilityDelegate {
   bool ShouldShowAccessibilityMenu() const override;
   void SaveScreenMagnifierScale(double scale) override;
   double GetSavedScreenMagnifierScale() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeAccessibilityDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_ACCESSIBILITY_DELEGATE_H_

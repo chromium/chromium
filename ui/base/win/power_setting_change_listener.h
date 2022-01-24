@@ -13,6 +13,8 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE) PowerSettingChangeListener {
  public:
   virtual void OnDisplayStateChanged(bool display_on) = 0;
+  virtual void OnResume() = 0;
+  virtual void OnSuspend() = 0;
 
  protected:
   virtual ~PowerSettingChangeListener() = default;

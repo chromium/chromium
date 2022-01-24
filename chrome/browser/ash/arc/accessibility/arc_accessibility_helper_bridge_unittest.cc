@@ -76,6 +76,11 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
       event_router_->AddEventObserver(this);
     }
 
+    TestArcAccessibilityHelperBridge(const TestArcAccessibilityHelperBridge&) =
+        delete;
+    TestArcAccessibilityHelperBridge& operator=(
+        const TestArcAccessibilityHelperBridge&) = delete;
+
     ~TestArcAccessibilityHelperBridge() override = default;
 
     int GetEventCount(const std::string& event_name) const {
@@ -103,8 +108,6 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
     extensions::TestEventRouter* const event_router_;
     arc::mojom::AccessibilityFilterType filter_type_for_test_ =
         arc::mojom::AccessibilityFilterType::ALL;
-
-    DISALLOW_COPY_AND_ASSIGN(TestArcAccessibilityHelperBridge);
   };
 
   class ArcNotificationSurfaceManagerTest
@@ -149,6 +152,11 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
   };
 
   ArcAccessibilityHelperBridgeTest() = default;
+
+  ArcAccessibilityHelperBridgeTest(const ArcAccessibilityHelperBridgeTest&) =
+      delete;
+  ArcAccessibilityHelperBridgeTest& operator=(
+      const ArcAccessibilityHelperBridgeTest&) = delete;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -206,8 +214,6 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
   std::unique_ptr<ArcBridgeService> bridge_service_;
   std::unique_ptr<TestArcAccessibilityHelperBridge>
       accessibility_helper_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAccessibilityHelperBridgeTest);
 };
 
 TEST_F(ArcAccessibilityHelperBridgeTest, AnnouncementEvent) {

@@ -37,6 +37,9 @@ class FilesListRequestRunner {
       const std::string& fields,
       FileListCallback callback);
 
+  FilesListRequestRunner(const FilesListRequestRunner&) = delete;
+  FilesListRequestRunner& operator=(const FilesListRequestRunner&) = delete;
+
   ~FilesListRequestRunner();
 
   void SetRequestCompletedCallbackForTesting(base::OnceClosure callback);
@@ -67,7 +70,6 @@ class FilesListRequestRunner {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FilesListRequestRunner> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FilesListRequestRunner);
 };
 
 }  // namespace google_apis

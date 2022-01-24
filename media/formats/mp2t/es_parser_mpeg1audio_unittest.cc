@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/media_util.h"
 #include "media/base/stream_parser_buffer.h"
@@ -23,12 +22,14 @@ class EsParserMpeg1AudioTest : public EsParserTestBase,
  public:
   EsParserMpeg1AudioTest();
 
+  EsParserMpeg1AudioTest(const EsParserMpeg1AudioTest&) = delete;
+  EsParserMpeg1AudioTest& operator=(const EsParserMpeg1AudioTest&) = delete;
+
  protected:
   bool Process(const std::vector<Packet>& pes_packets, bool force_timing);
 
  private:
   NullMediaLog media_log_;
-  DISALLOW_COPY_AND_ASSIGN(EsParserMpeg1AudioTest);
 };
 
 EsParserMpeg1AudioTest::EsParserMpeg1AudioTest() {
@@ -50,7 +51,7 @@ TEST_F(EsParserMpeg1AudioTest, SinglePts) {
   LoadStream("sfx.mp3");
 
   std::vector<Packet> pes_packets = GenerateFixedSizePesPacket(512);
-  pes_packets.front().pts = base::TimeDelta::FromSeconds(10);
+  pes_packets.front().pts = base::Seconds(10);
 
   // Note: there is no parsing of metadata as part of Mpeg2 TS,
   // so the tag starting at 0x80d with 0x54 0x41 0x47 (ascii for "TAG")

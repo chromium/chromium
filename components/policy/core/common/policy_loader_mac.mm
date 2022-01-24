@@ -15,8 +15,8 @@
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/external_data_fetcher.h"
@@ -53,13 +53,10 @@ bool ShouldHonorPolicies() {
                base::MacDeviceManagementStateNew::kLimitedMDMEnrollment ||
            mdm_state == base::MacDeviceManagementStateNew::kFullMDMEnrollment ||
            mdm_state == base::MacDeviceManagementStateNew::kDEPMDMEnrollment;
-  } else {
-    base::MacDeviceManagementStateOld mdm_state =
-        base::IsDeviceRegisteredWithManagementOld();
-    return mdm_state == base::MacDeviceManagementStateOld::kMDMEnrollment;
   }
-
-  return false;
+  base::MacDeviceManagementStateOld mdm_state =
+      base::IsDeviceRegisteredWithManagementOld();
+  return mdm_state == base::MacDeviceManagementStateOld::kMDMEnrollment;
 }
 
 }  // namespace

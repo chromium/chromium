@@ -40,6 +40,9 @@ class TestObserver : public ExtensionRegistryObserver {
  public:
   TestObserver() {}
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   void Reset() {
     loaded_.clear();
     unloaded_.clear();
@@ -83,8 +86,6 @@ class TestObserver : public ExtensionRegistryObserver {
   ExtensionList unloaded_;
   ExtensionList installed_;
   ExtensionList uninstalled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 TEST_F(ExtensionRegistryTest, FillAndClearRegistry) {

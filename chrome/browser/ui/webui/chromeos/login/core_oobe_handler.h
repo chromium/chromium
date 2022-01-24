@@ -12,13 +12,12 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/version_info_updater.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,6 +71,10 @@ class CoreOobeHandler : public BaseWebUIHandler,
                         public OobeConfiguration::Observer {
  public:
   explicit CoreOobeHandler(JSCallsContainer* js_calls_container);
+
+  CoreOobeHandler(const CoreOobeHandler&) = delete;
+  CoreOobeHandler& operator=(const CoreOobeHandler&) = delete;
+
   ~CoreOobeHandler() override;
 
   // BaseScreenHandler implementation:
@@ -182,8 +185,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
 
   base::WeakPtrFactory<CoreOobeHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CoreOobeHandler);
 };
 
 }  // namespace chromeos

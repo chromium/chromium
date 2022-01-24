@@ -59,6 +59,10 @@ class ProfileItem : public PaymentRequestItemList::Item {
         profile_(profile) {
     Init();
   }
+
+  ProfileItem(const ProfileItem&) = delete;
+  ProfileItem& operator=(const ProfileItem&) = delete;
+
   ~ProfileItem() override {}
 
  private:
@@ -98,8 +102,6 @@ class ProfileItem : public PaymentRequestItemList::Item {
 
   base::WeakPtr<ProfileListViewController> controller_;
   autofill::AutofillProfile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileItem);
 };
 
 // The ProfileListViewController subtype for the Shipping address list
@@ -116,6 +118,10 @@ class ShippingProfileViewController : public ProfileListViewController,
     spec->AddObserver(this);
     PopulateList();
   }
+
+  ShippingProfileViewController(const ShippingProfileViewController&) = delete;
+  ShippingProfileViewController& operator=(
+      const ShippingProfileViewController&) = delete;
 
   ~ShippingProfileViewController() override {
     if (spec())
@@ -225,8 +231,6 @@ class ShippingProfileViewController : public ProfileListViewController,
   }
 
   base::WeakPtrFactory<ShippingProfileViewController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShippingProfileViewController);
 };
 
 class ContactProfileViewController : public ProfileListViewController {
@@ -239,6 +243,11 @@ class ContactProfileViewController : public ProfileListViewController {
     DCHECK(spec);
     PopulateList();
   }
+
+  ContactProfileViewController(const ContactProfileViewController&) = delete;
+  ContactProfileViewController& operator=(const ContactProfileViewController&) =
+      delete;
+
   ~ContactProfileViewController() override {}
 
  protected:
@@ -300,9 +309,6 @@ class ContactProfileViewController : public ProfileListViewController {
   int GetSecondaryButtonId() override {
     return static_cast<int>(DialogViewID::PAYMENT_METHOD_ADD_CONTACT_BUTTON);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContactProfileViewController);
 };
 
 }  // namespace

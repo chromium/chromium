@@ -63,8 +63,8 @@ config("symbol_visibility_default") {
 #    configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
 #  }
 config("rpath_for_built_shared_libraries") {
-  if (!is_android) {
-    # Note: Android doesn't support rpath.
+  if (!is_android && current_os != "aix") {
+    # Note: Android, Aix don't support rpath.
     if (current_toolchain != default_toolchain || gcc_target_rpath == "") {
       ldflags = [
         # Want to pass "\$". GN will re-escape as required for ninja.

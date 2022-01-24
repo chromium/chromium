@@ -29,9 +29,12 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
   LookalikeUrlDecider(web::WebState* web_state)
       : web::WebStatePolicyDecider(web_state), web_state_(web_state) {}
 
+  LookalikeUrlDecider(const LookalikeUrlDecider&) = delete;
+  LookalikeUrlDecider& operator=(const LookalikeUrlDecider&) = delete;
+
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
+      web::WebStatePolicyDecider::ResponseInfo response_info,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override {
     LookalikeUrlContainer* lookalike_container =
         LookalikeUrlContainer::FromWebState(web_state_);
@@ -77,8 +80,6 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
 
  private:
   web::WebState* web_state_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LookalikeUrlDecider);
 };
 
 WEB_STATE_USER_DATA_KEY_IMPL(LookalikeUrlDecider)

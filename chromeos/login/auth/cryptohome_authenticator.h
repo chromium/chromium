@@ -11,9 +11,8 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/login/auth/auth_attempt_state.h"
 #include "chromeos/login/auth/authenticator.h"
@@ -103,6 +102,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   CryptohomeAuthenticator(scoped_refptr<base::SequencedTaskRunner> task_runner,
                           std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
                           AuthStatusConsumer* consumer);
+
+  CryptohomeAuthenticator(const CryptohomeAuthenticator&) = delete;
+  CryptohomeAuthenticator& operator=(const CryptohomeAuthenticator&) = delete;
 
   // Authenticator overrides.
   void CompleteLogin(const UserContext& user_context) override;
@@ -258,8 +260,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   // When |remove_user_data_on_failure_| is set, we delay calling
   // consumer_->OnAuthFailure() until we removed the user cryptohome.
   AuthFailure delayed_login_failure_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptohomeAuthenticator);
 };
 
 }  // namespace chromeos

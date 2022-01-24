@@ -8,13 +8,12 @@
 #include <utility>
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/remote_commands/device_commands_factory_chromeos.h"
+#include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -26,18 +25,22 @@
 
 namespace policy {
 
-constexpr base::TimeDelta kCommandAge = base::TimeDelta::FromMinutes(10);
-constexpr base::TimeDelta kVeryoldCommandAge =
-    base::TimeDelta::FromDays(5 * 365 - 1);
+constexpr base::TimeDelta kCommandAge = base::Minutes(10);
+constexpr base::TimeDelta kVeryoldCommandAge = base::Days(5 * 365 - 1);
 
 class TestingRemoteCommandsService : public RemoteCommandsService {
  public:
   explicit TestingRemoteCommandsService(MockCloudPolicyClient* client)
-      : RemoteCommandsService(std::make_unique<DeviceCommandsFactoryChromeOS>(
+      : RemoteCommandsService(std::make_unique<DeviceCommandsFactoryAsh>(
                                   /*policy_manager=*/nullptr),
                               client,
                               /*store=*/nullptr,
                               PolicyInvalidationScope::kDevice) {}
+
+  TestingRemoteCommandsService(const TestingRemoteCommandsService&) = delete;
+  TestingRemoteCommandsService& operator=(const TestingRemoteCommandsService&) =
+      delete;
+
   // RemoteCommandsService:
   void SetOnCommandAckedCallback(base::OnceClosure callback) override {
     on_command_acked_callback_ = std::move(callback);
@@ -49,9 +52,6 @@ class TestingRemoteCommandsService : public RemoteCommandsService {
 
  protected:
   base::OnceClosure on_command_acked_callback_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingRemoteCommandsService);
 };
 
 std::unique_ptr<policy::RemoteCommandJob> CreateRemotePowerwashJob(
@@ -78,6 +78,12 @@ std::unique_ptr<policy::RemoteCommandJob> CreateRemotePowerwashJob(
 }
 
 class DeviceCommandRemotePowerwashJobTest : public testing::Test {
+ public:
+  DeviceCommandRemotePowerwashJobTest(
+      const DeviceCommandRemotePowerwashJobTest&) = delete;
+  DeviceCommandRemotePowerwashJobTest& operator=(
+      const DeviceCommandRemotePowerwashJobTest&) = delete;
+
  protected:
   DeviceCommandRemotePowerwashJobTest();
   ~DeviceCommandRemotePowerwashJobTest() override;
@@ -88,9 +94,6 @@ class DeviceCommandRemotePowerwashJobTest : public testing::Test {
   const std::unique_ptr<MockCloudPolicyClient> client_;
   const std::unique_ptr<TestingRemoteCommandsService> service_;
   chromeos::ScopedFakeInMemorySessionManagerClient scoped_session_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandRemotePowerwashJobTest);
 };
 
 DeviceCommandRemotePowerwashJobTest::DeviceCommandRemotePowerwashJobTest()
@@ -161,12 +164,12 @@ TEST_F(DeviceCommandRemotePowerwashJobTest, TestFailsafeTimerStartsPowerwash) {
   run_loop_.Run();
 
   // After 5s the timer is not run yet.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_runner_->FastForwardBy(base::Seconds(5));
   EXPECT_EQ(0, chromeos::FakeSessionManagerClient::Get()
                    ->start_device_wipe_call_count());
 
   // After 10s the timer is run.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_runner_->FastForwardBy(base::Seconds(5));
   EXPECT_EQ(1, chromeos::FakeSessionManagerClient::Get()
                    ->start_device_wipe_call_count());
 }

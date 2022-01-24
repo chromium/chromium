@@ -206,6 +206,10 @@ TEST(ProcessInfo, Pid1) {
 class ProcessInfoForkedTest : public Multiprocess {
  public:
   ProcessInfoForkedTest() : Multiprocess() {}
+
+  ProcessInfoForkedTest(const ProcessInfoForkedTest&) = delete;
+  ProcessInfoForkedTest& operator=(const ProcessInfoForkedTest&) = delete;
+
   ~ProcessInfoForkedTest() {}
 
   // Multiprocess:
@@ -233,9 +237,6 @@ class ProcessInfoForkedTest : public Multiprocess {
     // Hang around until the parent is done.
     CheckedReadFileAtEOF(ReadPipeHandle());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessInfoForkedTest);
 };
 
 TEST(ProcessInfo, Forked) {

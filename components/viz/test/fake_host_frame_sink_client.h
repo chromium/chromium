@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_TEST_FAKE_HOST_FRAME_SINK_CLIENT_H_
 #define COMPONENTS_VIZ_TEST_FAKE_HOST_FRAME_SINK_CLIENT_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/host_frame_sink_client.h"
@@ -16,6 +15,10 @@ namespace viz {
 class FakeHostFrameSinkClient : public HostFrameSinkClient {
  public:
   FakeHostFrameSinkClient();
+
+  FakeHostFrameSinkClient(const FakeHostFrameSinkClient&) = delete;
+  FakeHostFrameSinkClient& operator=(const FakeHostFrameSinkClient&) = delete;
+
   ~FakeHostFrameSinkClient() override;
 
   // HostFrameSinkClient implementation.
@@ -26,7 +29,6 @@ class FakeHostFrameSinkClient : public HostFrameSinkClient {
 
  private:
   uint32_t last_frame_token_seen_ = 0u;
-  DISALLOW_COPY_AND_ASSIGN(FakeHostFrameSinkClient);
 };
 
 }  // namespace viz

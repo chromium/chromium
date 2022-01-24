@@ -30,7 +30,7 @@ DataSource<T>::DataSource(T* data_source,
 
 template <typename T>
 void DataSource<T>::HandleFinishEvent(bool completed) {
-  delegate_->OnDataSourceFinish(/*completed=*/false);
+  delegate_->OnDataSourceFinish(completed);
 }
 
 template <typename T>
@@ -86,13 +86,9 @@ void DataSource<T>::OnDnDDropPerformed(void* data, T* source) {
 
 template <>
 void DataSource<wl_data_source>::Initialize() {
-  static const struct wl_data_source_listener kDataSourceListener = {
-      DataSource<wl_data_source>::OnTarget,
-      DataSource<wl_data_source>::OnSend,
-      DataSource<wl_data_source>::OnCancel,
-      DataSource<wl_data_source>::OnDnDDropPerformed,
-      DataSource<wl_data_source>::OnDnDFinished,
-      DataSource<wl_data_source>::OnAction};
+  static constexpr wl_data_source_listener kDataSourceListener = {
+      &OnTarget,           &OnSend,        &OnCancel,
+      &OnDnDDropPerformed, &OnDnDFinished, &OnAction};
   wl_data_source_add_listener(data_source_.get(), &kDataSourceListener, this);
 }
 
@@ -105,19 +101,14 @@ void DataSource<wl_data_source>::Offer(
 }
 
 template <typename T>
-void DataSource<T>::SetAction(int operation) {
+void DataSource<T>::SetDndActions(uint32_t dnd_actions) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 template <>
-void DataSource<wl_data_source>::SetAction(int operation) {
+void DataSource<wl_data_source>::SetDndActions(uint32_t dnd_actions) {
   if (wl::get_version_of_object(data_source_.get()) >=
       WL_DATA_SOURCE_SET_ACTIONS_SINCE_VERSION) {
-    uint32_t dnd_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
-    if (operation & ui::DragDropTypes::DRAG_COPY)
-      dnd_actions |= WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY;
-    if (operation & ui::DragDropTypes::DRAG_MOVE)
-      dnd_actions |= WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE;
     wl_data_source_set_actions(data_source_.get(), dnd_actions);
   }
 }
@@ -130,10 +121,8 @@ template class DataSource<wl_data_source>;
 
 template <>
 void DataSource<gtk_primary_selection_source>::Initialize() {
-  static const struct gtk_primary_selection_source_listener
-      kDataSourceListener = {
-          DataSource<gtk_primary_selection_source>::OnSend,
-          DataSource<gtk_primary_selection_source>::OnCancel};
+  static constexpr gtk_primary_selection_source_listener kDataSourceListener = {
+      &OnSend, &OnCancel};
   gtk_primary_selection_source_add_listener(data_source_.get(),
                                             &kDataSourceListener, this);
 }
@@ -148,7 +137,7 @@ void DataSource<gtk_primary_selection_source>::Offer(
 
 template <>
 void DataSource<zwp_primary_selection_source_v1>::Initialize() {
-  static const struct zwp_primary_selection_source_v1_listener
+  static constexpr zwp_primary_selection_source_v1_listener
       kDataSourceListener = {
           DataSource<zwp_primary_selection_source_v1>::OnSend,
           DataSource<zwp_primary_selection_source_v1>::OnCancel};

@@ -45,7 +45,6 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/appcache_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -77,7 +76,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
 
 using prerender::test_utils::DestructionWaiter;
 using prerender::test_utils::TestPrerender;
@@ -102,8 +100,6 @@ static constexpr char kOriginTrialPublicKeyForTesting[] =
 namespace prerender {
 
 const char k302RedirectPage[] = "/prerender/302_redirect.html";
-const char kPrefetchAppcache[] = "/prerender/prefetch_appcache.html";
-const char kPrefetchAppcacheManifest[] = "/prerender/appcache.manifest";
 const char kPrefetchCookiePage[] = "/prerender/cookie.html";
 const char kPrefetchFromSubframe[] = "/prerender/prefetch_from_subframe.html";
 const char kPrefetchImagePage[] = "/prerender/prefetch_image.html";
@@ -228,6 +224,11 @@ class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
       browser->tab_strip_model()->AddObserver(this);
   }
 
+  NewTabNavigationOrSwapObserver(const NewTabNavigationOrSwapObserver&) =
+      delete;
+  NewTabNavigationOrSwapObserver& operator=(
+      const NewTabNavigationOrSwapObserver&) = delete;
+
   ~NewTabNavigationOrSwapObserver() override {
     BrowserList::RemoveObserver(this);
   }
@@ -261,14 +262,16 @@ class NewTabNavigationOrSwapObserver : public TabStripModelObserver,
  private:
   base::RunLoop new_tab_run_loop_;
   std::unique_ptr<NavigationOrSwapObserver> swap_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabNavigationOrSwapObserver);
 };
 
 class NoStatePrefetchBrowserTest
     : public test_utils::PrerenderInProcessBrowserTest {
  public:
   NoStatePrefetchBrowserTest() {}
+
+  NoStatePrefetchBrowserTest(const NoStatePrefetchBrowserTest&) = delete;
+  NoStatePrefetchBrowserTest& operator=(const NoStatePrefetchBrowserTest&) =
+      delete;
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     test_utils::PrerenderInProcessBrowserTest::SetUpDefaultCommandLine(
@@ -286,29 +289,8 @@ class NoStatePrefetchBrowserTest
 
   void OverrideNoStatePrefetchManagerTimeTicks() {
     // The default zero time causes the prerender manager to do strange things.
-    clock_.Advance(base::TimeDelta::FromSeconds(1));
+    clock_.Advance(base::Seconds(1));
     GetNoStatePrefetchManager()->SetTickClockForTesting(&clock_);
-  }
-
-  // Block until an AppCache exists for |manifest_url|.
-  void WaitForAppcache(const GURL& manifest_url) {
-    bool found_manifest = false;
-    content::AppCacheService* appcache_service =
-        current_browser()
-            ->profile()
-            ->GetDefaultStoragePartition()
-            ->GetAppCacheService();
-    do {
-      base::RunLoop wait_loop;
-      WaitForAppcache(manifest_url, appcache_service, base::DoNothing(),
-                      &found_manifest);
-      // There seems to be some flakiness in the appcache getting back to us, so
-      // use a timeout task to try the appcache query again.
-      content::GetUIThreadTaskRunner({})->PostDelayedTask(
-          FROM_HERE, wait_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(2000));
-      wait_loop.Run();
-    } while (!found_manifest);
   }
 
  protected:
@@ -384,7 +366,7 @@ class NoStatePrefetchBrowserTest
     base::ListValue* history_list;
     if (!prerender_dict->GetList("history", &history_list))
       return std::numeric_limits<size_t>::max();
-    return history_list->GetSize();
+    return history_list->GetList().size();
   }
 
   // Clears the specified data using BrowsingDataRemover.
@@ -443,48 +425,7 @@ class NoStatePrefetchBrowserTest
   base::SimpleTestTickClock clock_;
 
  private:
-  // Schedule a task to retrieve AppCacheInfo from |appcache_service|. This sets
-  // |found_manifest| if an appcache exists for |manifest_url|. |callback| will
-  // be called on the UI thread after the info is retrieved, whether or not the
-  // manifest exists.
-  static void WaitForAppcache(const GURL& manifest_url,
-                              content::AppCacheService* appcache_service,
-                              base::OnceClosure callback,
-                              bool* found_manifest) {
-    scoped_refptr<content::AppCacheInfoCollection> info_collection =
-        new content::AppCacheInfoCollection();
-    appcache_service->GetAllAppCacheInfo(
-        info_collection.get(),
-        base::BindOnce(ProcessAppCacheInfo, manifest_url, std::move(callback),
-                       found_manifest, info_collection));
-  }
-
-  // Look through |info_collection| for an entry matching |target_manifest|,
-  // setting |found_manifest| appropriately. Then |callback| will be invoked on
-  // the UI thread.
-  static void ProcessAppCacheInfo(
-      const GURL& target_manifest,
-      base::OnceClosure callback,
-      bool* found_manifest,
-      scoped_refptr<content::AppCacheInfoCollection> info_collection,
-      int status) {
-    if (status == net::OK) {
-      for (const auto& origin_pair : info_collection->infos_by_origin) {
-        for (const auto& info : origin_pair.second) {
-          if (info.manifest_url == target_manifest) {
-            *found_manifest = true;
-            break;
-          }
-        }
-      }
-    }
-    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
-                                                 std::move(callback));
-  }
-
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchBrowserTest);
 };
 
 class NoStatePrefetchBrowserTestHttpCache
@@ -533,8 +474,8 @@ IN_PROC_BROWSER_TEST_P(
       std::make_pair("IFRAME_2_SRC", iframe_src_2.spec()));
   std::string prerender_path = net::test_server::GetFilePathWithReplacements(
       "/prerender/two_iframes.html", replacement_text_iframe_src);
-  ui_test_utils::NavigateToURL(current_browser(),
-                               src_server()->GetURL(prerender_path));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL(prerender_path)));
 
   WaitForRequestCount(image_src, 2);
 }
@@ -588,8 +529,8 @@ IN_PROC_BROWSER_TEST_P(
     WaitForRequestCount(src_server()->GetURL(kPrefetchJpeg), 1);
     WaitForRequestCount(src_server()->GetURL(kPrefetchPng2), 1);
   }
-  ui_test_utils::NavigateToURL(current_browser(),
-                               src_server()->GetURL(kPrefetchPageBigger));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL(kPrefetchPageBigger)));
   // Check that the request counts did not increase.
   WaitForRequestCount(src_server()->GetURL(kPrefetchPageBigger), 1);
   WaitForRequestCount(src_server()->GetURL(kPrefetchJpeg), 1);
@@ -611,7 +552,8 @@ IN_PROC_BROWSER_TEST_P(
   WaitForRequestCount(src_server()->GetURL(kPrefetchJpeg), 1);
   WaitForRequestCount(src_server()->GetURL(kPrefetchPng2), 1);
 
-  ui_test_utils::NavigateToURL(current_browser(), cross_domain_url);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(current_browser(), cross_domain_url));
   // Check that the request counts did not increase.
   WaitForRequestCount(src_server()->GetURL(kPrefetchPageBigger), 1);
   WaitForRequestCount(src_server()->GetURL(kPrefetchJpeg), 1);
@@ -844,7 +786,8 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchCookie) {
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   base::RunLoop loop;
   storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
-      url, options, base::BindOnce(GetCookieCallback, loop.QuitClosure()));
+      url, options, net::CookiePartitionKeychain(),
+      base::BindOnce(GetCookieCallback, loop.QuitClosure()));
   loop.Run();
 }
 
@@ -866,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchCookieCrossDomain) {
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   base::RunLoop loop;
   storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
-      cross_domain_url, options,
+      cross_domain_url, options, net::CookiePartitionKeychain(),
       base::BindOnce(GetCookieCallback, loop.QuitClosure()));
   loop.Run();
 }
@@ -886,7 +829,8 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   std::unique_ptr<TestPrerender> test_prerender =
       PrefetchFromURL(cross_domain_url, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
-  ui_test_utils::NavigateToURL(current_browser(), cross_domain_url);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(current_browser(), cross_domain_url));
 
   EXPECT_TRUE(WaitForLoadStop(
       current_browser()->tab_strip_model()->GetActiveWebContents()));
@@ -915,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   std::unique_ptr<TestPrerender> test_prerender =
       PrefetchFromURL(same_domain_url, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
-  ui_test_utils::NavigateToURL(current_browser(), same_domain_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(current_browser(), same_domain_url));
 
   EXPECT_TRUE(WaitForLoadStop(
       current_browser()->tab_strip_model()->GetActiveWebContents()));
@@ -992,7 +936,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   content::URLLoaderMonitor monitor(
       {prefetch_page, prefetch_script, prefetch_script2});
 
-  ui_test_utils::NavigateToURL(current_browser(), prefetch_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(current_browser(), prefetch_page));
   WaitForRequestCount(prefetch_page, 1);
   WaitForRequestCount(prefetch_script, 1);
   WaitForRequestCount(prefetch_script2, 1);
@@ -1134,8 +1078,8 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, NoPrefetchRecursive) {
   // test may finish before the prefetcher is torn down, so
   // IgnoreNoStatePrefetchContents() is called to skip the final status check.
   no_state_prefetch_contents_factory()->IgnoreNoStatePrefetchContents();
-  ui_test_utils::NavigateToURL(current_browser(),
-                               src_server()->GetURL(kPrefetchRecursePage));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL(kPrefetchRecursePage)));
   WaitForRequestCount(src_server()->GetURL(kPrefetchNostorePage), 1);
 }
 
@@ -1197,8 +1141,8 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchClientRedirect) {
   PrefetchFromFile(
       "/client-redirect/?" + net::EscapeQueryParamValue(kPrefetchPage, false),
       FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
-  ui_test_utils::NavigateToURL(current_browser(),
-                               src_server()->GetURL(kPrefetchPage2));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL(kPrefetchPage2)));
   // A complete load of kPrefetchPage2 is used as a sentinel. Otherwise the test
   // ends before script_counter would reliably see the load of kPrefetchScript,
   // were it to happen.
@@ -1294,7 +1238,8 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, Loop) {
 
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, RendererCrash) {
   // Navigate to about:blank to get the session storage namespace.
-  ui_test_utils::NavigateToURL(current_browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(current_browser(),
+                                           GURL(url::kAboutBlankURL)));
   content::SessionStorageNamespace* storage_namespace =
       GetActiveWebContents()
           ->GetController()
@@ -1308,7 +1253,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, RendererCrash) {
           FINAL_STATUS_RENDERER_CRASHED);
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      GetNoStatePrefetchManager()->AddPrerenderFromExternalRequest(
+      GetNoStatePrefetchManager()->StartPrefetchingFromExternalRequest(
           GURL(blink::kChromeUICrashURL), content::Referrer(),
           storage_namespace, gfx::Rect(kSize)));
   ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
@@ -1364,7 +1309,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
       url, safe_browsing::SB_THREAT_TYPE_URL_MALWARE);
 
   constexpr char kPrefetchCanceledHistogram[] =
-      "SB2Test.ResourceTypes2.UnsafePrefetchCanceled";
+      "SB2Test.RequestDestination.UnsafePrefetchCanceled";
 
   base::RunLoop run_loop;
   bool prefetch_canceled_histogram_added = false;
@@ -1407,7 +1352,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, HistoryUntouchedByPrefetch) {
 
   // Navigate to another page.
   GURL navigated_url = src_server()->GetURL(kPrefetchPage2);
-  ui_test_utils::NavigateToURL(current_browser(), navigated_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(current_browser(), navigated_url));
   WaitForHistoryBackendToRun(profile);
 
   // Check that the URL that was explicitly navigated to is already in history.
@@ -1452,8 +1397,8 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServiceWorkerIntercept) {
   // Register and launch a SW.
   std::u16string expected_title = u"SW READY";
   content::TitleWatcher title_watcher(GetActiveWebContents(), expected_title);
-  ui_test_utils::NavigateToURL(current_browser(),
-                               src_server()->GetURL(kServiceWorkerLoader));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL(kServiceWorkerLoader)));
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   // Stop any SW, killing the render process in order to test that the
@@ -1488,114 +1433,6 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServiceWorkerIntercept) {
   // observing the fetch of the image.
   PrefetchFromFile(kPrefetchPage, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
   WaitForRequestCount(src_server()->GetURL(kPrefetchPng), 1);
-}
-
-// Checks that prefetching happens if an appcache is mentioned in the html tag
-// but is uninitialized.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, AppCacheHtmlUninitialized) {
-  PrefetchFromFile(kPrefetchAppcache, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
-  WaitForRequestCount(src_server()->GetURL(kPrefetchPng), 1);
-}
-
-// Checks that prefetching does not if an initialized appcache is mentioned in
-// the html tag.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, AppCacheHtmlInitialized) {
-  base::TimeTicks current_time =
-      GetNoStatePrefetchManager()->GetCurrentTimeTicks();
-  OverrideNoStatePrefetchManagerTimeTicks();
-  // Some navigations have already occurred in test setup. In order to track
-  // duplicate prefetches correctly the test clock needs to be beyond those
-  // navigations.
-  clock_.SetNowTicks(current_time);
-  clock_.Advance(base::TimeDelta::FromSeconds(600));
-
-  std::string origin = "http://127.0.0.1:8080";
-  GURL image_url(origin + kPrefetchPng);
-  GURL manifest_url(origin + kPrefetchAppcacheManifest);
-  GURL appcache_page_url(origin + kPrefetchAppcache);
-  GURL script_url(origin + kPrefetchScript);
-
-  base::RunLoop run_loop;
-  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor =
-      content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-          "chrome/test/data", GURL(origin),
-          base::BindRepeating(base::BindLambdaForTesting([&](const GURL& url) {
-            if (url == script_url)
-              run_loop.Quit();
-          })));
-
-  // Load the page into the appcache.
-  ui_test_utils::NavigateToURL(current_browser(), appcache_page_url);
-
-  WaitForAppcache(manifest_url);
-
-  // If a page is prefetch shortly after being loading, the prefetch is
-  // canceled. Advancing the clock prevents the cancelation.
-  clock_.Advance(base::TimeDelta::FromSeconds(6000));
-
-  // While the prefetch stops when it sees the AppCache manifest, from the point
-  // of view of the prerender manager the prefetch stops normally.
-  PrefetchFromURL(appcache_page_url, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
-
-  // The prefetch should have been canceled before the script in
-  // kPrefetchAppcache is loaded (note the script is not mentioned in the
-  // manifest).
-  run_loop.Run();
-}
-
-// If a page has been cached by another AppCache, the prefetch should be
-// canceled.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, AppCacheRegistered) {
-  base::TimeTicks current_time =
-      GetNoStatePrefetchManager()->GetCurrentTimeTicks();
-  OverrideNoStatePrefetchManagerTimeTicks();
-  // Some navigations have already occurred in test setup. In order to track
-  // duplicate prefetches correctly the test clock needs to be beyond those
-  // navigations.
-  clock_.SetNowTicks(current_time);
-  clock_.Advance(base::TimeDelta::FromSeconds(600));
-
-  std::string origin = "http://127.0.0.1:8080";
-  // This manifest lists kPrefetchPage, but does not explicitly
-  // list a manifest itself.
-  GURL manifest_url(origin + kPrefetchAppcacheManifest);
-  GURL appcache_page_url(origin + kPrefetchAppcache);
-  GURL prefetch_page_url(origin + kPrefetchPage);
-  GURL script_url(origin + kPrefetchScript);
-
-  bool seen_page_url = false;
-  bool seen_script_url = false;
-  base::RunLoop run_loop;
-  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor =
-      content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
-          "chrome/test/data", GURL(origin),
-          base::BindRepeating(base::BindLambdaForTesting([&](const GURL& url) {
-            if (url == script_url)
-              seen_script_url = true;
-            if (url == prefetch_page_url)
-              seen_page_url = true;
-            if (seen_script_url && seen_page_url)
-              run_loop.Quit();
-          })));
-
-  // Load the page into the appcache, and then the prefetch page so it can be
-  // cached. After each navigation, wait for the appcache to catch up. This
-  // avoids timeouts which for an unknown reason occur if the Appcache is
-  // queried only after both navitations.
-  ui_test_utils::NavigateToURL(current_browser(), appcache_page_url);
-  WaitForAppcache(manifest_url);
-  ui_test_utils::NavigateToURL(current_browser(), prefetch_page_url);
-  WaitForAppcache(manifest_url);
-
-  // If a page is prefetch shortly after being loading, the prefetch is
-  // canceled. Advancing the clock prevents the cancelation.
-  clock_.Advance(base::TimeDelta::FromSeconds(6000));
-
-  PrefetchFromURL(prefetch_page_url, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
-
-  // Neither the page nor the script should be prefetched, so
-  // wait until we see both.
-  run_loop.Run();
 }
 
 class NoStatePrefetchIncognitoBrowserTest : public NoStatePrefetchBrowserTest {
@@ -1745,9 +1582,8 @@ class NoStatePrefetchOmniboxBrowserTest : public NoStatePrefetchBrowserTest {
     std::unique_ptr<TestPrerender> prerender =
         ExpectPrerender(expected_final_status);
     content::WebContents* web_contents = GetActiveWebContents();
-    GetAutocompleteActionPredictor()->StartPrerendering(
-        url, web_contents->GetController().GetDefaultSessionStorageNamespace(),
-        gfx::Size(50, 50));
+    GetAutocompleteActionPredictor()->StartPrerendering(url, *web_contents,
+                                                        gfx::Size(50, 50));
     prerender->WaitForStart();
     return prerender;
   }
@@ -1813,7 +1649,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrerenderNoSSLReferrer) {
   UseHttpsSrcServer();
 
   PrefetchFromURL(url, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
-  ui_test_utils::NavigateToURL(current_browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(current_browser(), url));
   EXPECT_TRUE(WaitForLoadStop(
       current_browser()->tab_strip_model()->GetActiveWebContents()));
   content::WebContents* web_contents =
@@ -1856,8 +1692,8 @@ class SpeculationNoStatePrefetchBrowserTest
             expected_final_status);
     EXPECT_TRUE(ExecuteScript(GetActiveWebContents(), speculation_script));
     if (should_navigate_away) {
-      ui_test_utils::NavigateToURL(
-          current_browser(), src_server()->GetURL("/defaultresponse?page"));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
+          current_browser(), src_server()->GetURL("/defaultresponse?page")));
     }
     test_prerender->WaitForStop();
   }
@@ -1869,8 +1705,8 @@ class SpeculationNoStatePrefetchBrowserTest
 IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
                        SpeculationPrefetch) {
   UseHttpsSrcServer();
-  ui_test_utils::NavigateToURL(
-      current_browser(), src_server()->GetURL("/defaultresponse?landing"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL("/defaultresponse?landing")));
   InsertSpeculation(src_server()->GetURL(kPrefetchPage),
                     FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
   WaitForRequestCount(src_server()->GetURL(kPrefetchPage), 1);
@@ -1880,8 +1716,8 @@ IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
 IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
                        SpeculationDisallowsCrossOriginRedirect) {
   UseHttpsSrcServer();
-  ui_test_utils::NavigateToURL(
-      current_browser(), src_server()->GetURL("/defaultresponse?landing"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL("/defaultresponse?landing")));
   InsertSpeculation(
       src_server()->GetURL("/server-redirect-307?" +
                            src_server()->GetURL(kPrefetchPage).spec()),
@@ -1893,8 +1729,8 @@ IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
 IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
                        SpeculationAllowsSameOriginRedirectBlocked) {
   UseHttpsSrcServer();
-  ui_test_utils::NavigateToURL(
-      current_browser(), src_server()->GetURL("/defaultresponse?landing"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL("/defaultresponse?landing")));
   InsertSpeculation(src_server()->GetURL(
                         "/server-redirect-307?" +
                         embedded_test_server()->GetURL(kPrefetchPage).spec()),
@@ -1913,9 +1749,9 @@ IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
       content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   UseHttpsSrcServer();
   GetNoStatePrefetchManager()->mutable_config().abandon_time_to_live =
-      base::TimeDelta::FromMilliseconds(500);
-  ui_test_utils::NavigateToURL(
-      current_browser(), src_server()->GetURL("/defaultresponse?landing"));
+      base::Milliseconds(500);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      current_browser(), src_server()->GetURL("/defaultresponse?landing")));
   InsertSpeculation(src_server()->GetURL("/hung"), FINAL_STATUS_TIMED_OUT,
                     /*should_navigate_away=*/true);
 }

@@ -25,10 +25,10 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/painter.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/widget/widget.h"
 
@@ -132,7 +132,8 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
   SetNotifyEnterExitOnChild(true);
 
   // Accessibility.
-  GetViewAccessibility().OverrideName(item->GetText());
+  GetViewAccessibility().OverrideName(item->GetAccessibleName());
+  GetViewAccessibility().OverrideDescription(base::EmptyString16());
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
 
   // Layer.
@@ -141,6 +142,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
 
   // Focus.
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  set_suppress_default_focus_handling();
   focused_layer_owner_ =
       CallbackPainter::CreatePaintedLayer(base::BindRepeating(
           &HoldingSpaceItemView::OnPaintFocus, base::Unretained(this)));
@@ -295,10 +297,17 @@ void HoldingSpaceItemView::OnThemeChanged() {
 void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item,
     uint32_t updated_fields) {
-  if (item_ == item) {
-    GetViewAccessibility().OverrideName(item->GetText());
-    UpdatePrimaryAction();
+  if (item_ != item)
+    return;
+
+  // Accessibility.
+  if (updated_fields & UpdatedField::kAccessibleName) {
+    GetViewAccessibility().OverrideName(item_->GetAccessibleName());
+    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
   }
+
+  // Primary action.
+  UpdatePrimaryAction();
 }
 
 void HoldingSpaceItemView::StartDrag(const ui::LocatedEvent& event,
@@ -405,7 +414,7 @@ void HoldingSpaceItemView::OnPaintFocus(gfx::Canvas* canvas, gfx::Size size) {
   flags.setAntiAlias(true);
   flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
-  flags.setStrokeWidth(views::PlatformStyle::kFocusHaloThickness);
+  flags.setStrokeWidth(views::FocusRing::kDefaultHaloThickness);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
 
   gfx::Rect bounds = gfx::Rect(size);
@@ -437,6 +446,9 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
 
   DCHECK_NE(primary_action_cancel_->GetVisible(),
             primary_action_pin_->GetVisible());
+
+  if (delegate())
+    delegate()->OnHoldingSpaceItemViewPrimaryActionPressed(this);
 
   // Cancel.
   if (primary_action_cancel_->GetVisible()) {
@@ -473,8 +485,10 @@ void HoldingSpaceItemView::UpdatePrimaryAction() {
   }
 
   // Cancel.
+  // NOTE: Only download type items currently support cancellation.
   const bool is_item_in_progress = !item()->progress().IsComplete();
-  primary_action_cancel_->SetVisible(is_item_in_progress);
+  primary_action_cancel_->SetVisible(
+      is_item_in_progress && HoldingSpaceItem::IsDownload(item()->type()));
 
   // Pin.
   const bool is_item_pinned =
@@ -483,8 +497,10 @@ void HoldingSpaceItemView::UpdatePrimaryAction() {
   primary_action_pin_->SetToggled(!is_item_pinned);
   primary_action_pin_->SetVisible(!is_item_in_progress);
 
-  primary_action_container_->SetVisible(true);
-  OnPrimaryActionVisibilityChanged(true);
+  // Container.
+  primary_action_container_->SetVisible(primary_action_cancel_->GetVisible() ||
+                                        primary_action_pin_->GetVisible());
+  OnPrimaryActionVisibilityChanged(primary_action_container_->GetVisible());
 }
 
 BEGIN_METADATA(HoldingSpaceItemView, views::View)

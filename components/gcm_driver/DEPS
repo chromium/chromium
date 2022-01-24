@@ -5,7 +5,6 @@ include_rules = [
   "+components/pref_registry",
   "+components/prefs",
   "+components/signin/public",
-  "+components/sync/base",
   "+components/version_info",
   "+content/public/browser/browser_context.h",
   "+content/public/test",  # Only used for tests.

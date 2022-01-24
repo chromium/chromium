@@ -49,6 +49,10 @@ class SynchronizedMinidumpManager {
   // Number of dumps allowed per period.
   static const int kRatelimitPeriodMaxDumps;
 
+  SynchronizedMinidumpManager(const SynchronizedMinidumpManager&) = delete;
+  SynchronizedMinidumpManager& operator=(const SynchronizedMinidumpManager&) =
+      delete;
+
   virtual ~SynchronizedMinidumpManager();
 
  protected:
@@ -143,8 +147,6 @@ class SynchronizedMinidumpManager {
   int lockfile_fd_;
   std::unique_ptr<base::Value> metadata_;
   std::unique_ptr<base::ListValue> dumps_;
-
-  DISALLOW_COPY_AND_ASSIGN(SynchronizedMinidumpManager);
 };
 
 }  // namespace chromecast

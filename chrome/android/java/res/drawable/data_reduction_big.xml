@@ -13,13 +13,13 @@
   <path
       android:pathData="M31.7987,13.7962C32.597,15.3095 33.1187,17.0012 33.2803,18.8095C33.9387,26.1295 28.5137,32.6245 21.192,33.2795C13.872,33.9378 7.3787,28.5128 6.722,21.1912C6.0637,13.8712 11.4887,7.3762 18.8103,6.7212C21.547,6.4745 24.167,7.0812 26.412,8.3162L29.1687,6.0978C26.1303,4.0895 22.4203,3.0495 18.5103,3.4012C9.3487,4.2228 2.5787,12.3262 3.4003,21.4895C4.2237,30.6528 12.327,37.4228 21.4903,36.6012C30.6537,35.7778 37.4237,27.6745 36.6003,18.5112C36.3303,15.4945 35.2587,12.7445 33.6303,10.4312L31.7987,13.7962Z"
       android:strokeWidth="1"
-      android:fillColor="@color/default_icon_color_secondary"
+      android:fillColor="?attr/default_icon_color_secondary"
       android:fillType="evenOdd"
       android:strokeColor="#00000000"/>
   <path
       android:pathData="M17.6515,22.3508C18.2765,22.9775 19.1248,23.3292 20.0098,23.3275C20.8948,23.3275 21.7432,22.9758 22.3682,22.3492L31.7982,8.1975L17.6515,17.6342C17.0248,18.2608 16.6732,19.1092 16.6732,19.9925C16.6732,20.8775 17.0265,21.7258 17.6515,22.3508"
       android:strokeWidth="1"
-      android:fillColor="@color/default_icon_color_secondary"
+      android:fillColor="?attr/default_icon_color_secondary"
       android:fillType="evenOdd"
       android:strokeColor="#00000000"/>
 </vector>

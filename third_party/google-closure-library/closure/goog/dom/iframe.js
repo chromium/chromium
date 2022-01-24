@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Utilities for creating and working with iframes
@@ -122,6 +114,7 @@ goog.dom.iframe.STYLES_ = 'border:0;vertical-align:bottom;';
  * @return {!HTMLIFrameElement} A completely blank iframe.
  */
 goog.dom.iframe.createBlank = function(domHelper, opt_styles) {
+  'use strict';
   var styles;
   if (opt_styles) {
     // SafeStyle has to be converted back to a string for now, since there's
@@ -151,6 +144,7 @@ goog.dom.iframe.createBlank = function(domHelper, opt_styles) {
  *     from doctype to the HTML close tag.
  */
 goog.dom.iframe.writeSafeContent = function(iframe, content) {
+  'use strict';
   var doc = goog.dom.getFrameContentDocument(iframe);
   doc.open();
   goog.dom.safe.documentWrite(doc, content);
@@ -183,6 +177,7 @@ goog.dom.iframe.writeSafeContent = function(iframe, content) {
  */
 goog.dom.iframe.createWithContent = function(
     parentElement, opt_headContents, opt_bodyContents, opt_styles, opt_quirks) {
+  'use strict';
   var domHelper = goog.dom.getDomHelper(parentElement);
 
   var content = goog.html.SafeHtml.create(

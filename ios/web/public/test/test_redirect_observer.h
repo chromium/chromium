@@ -19,10 +19,13 @@ class NavigationItem;
 
 // A utility class that is used to track redirects during tests to enable URL
 // verification for redirected page loads.
-class TestRedirectObserver
+class TestRedirectObserver final
     : public web::WebStateObserver,
       public web::WebStateUserData<TestRedirectObserver> {
  public:
+  TestRedirectObserver(const TestRedirectObserver&) = delete;
+  TestRedirectObserver& operator=(const TestRedirectObserver&) = delete;
+
   // Notifies the observer that |url| is about to be loaded by the associated
   // WebState, triggering the TestRedirectObserver to start observing redirects.
   void BeginObservingRedirectsForUrl(const GURL& url);
@@ -34,7 +37,7 @@ class TestRedirectObserver
   friend class web::WebStateUserData<TestRedirectObserver>;
 
   TestRedirectObserver(WebState* web_state);
-  ~TestRedirectObserver() final;
+  ~TestRedirectObserver() override;
 
   // WebStateObserver:
   void DidStartNavigation(web::WebState* web_state,
@@ -57,8 +60,6 @@ class TestRedirectObserver
   std::set<GURL> expected_urls_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(TestRedirectObserver);
 };
 
 }  // namespace web

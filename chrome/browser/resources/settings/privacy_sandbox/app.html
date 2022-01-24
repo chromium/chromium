@@ -50,10 +50,6 @@
     padding-top: 8px;
   }
 
-  .updated-toggle-button {
-    font-weight: 500;
-  }
-
   #flocCard {
     margin-top: var(--cr-section-vertical-margin);
   }
@@ -84,6 +80,10 @@
     padding: 28px 0 14px 0;
     text-align: center;
   }
+
+  settings-toggle-button {
+    font-weight: 500;
+  }
 </style>
 
 <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
@@ -96,119 +96,79 @@
     <img class="banner" alt=""
         src="chrome://settings/images/privacy_sandbox_banner.svg">
   </picture>
-  <template is="dom-if" if="[[!privacySandboxSettings2Enabled_]]">
-    <div>
-      <h2 id="pageHeader" class="section-header" tabindex="-1">
-        $i18n{privacySandboxPageHeading}
-      </h2>
-    </div>
-    <p>$i18n{privacySandboxPageExplanation1}</p>
-    <p>$i18n{privacySandboxPageExplanation2}</p>
-    <p>$i18n{privacySandboxPageExplanation3}</p>
-    <p>$i18nRaw{privacySandboxPageExplanation4}</p>
-  </template>
-  <template is="dom-if" if="[[privacySandboxSettings2Enabled_]]">
-    <p>$i18nRaw{privacySandboxPageExplanation1Phase2}</p>
-    <p>$i18n{privacySandboxPageExplanation2Phase2}</p>
-  </template>
+  <p>$i18nRaw{privacySandboxPageExplanation1Phase2}</p>
+  <p>$i18n{privacySandboxPageExplanation2Phase2}</p>
   <div class="card">
     <settings-toggle-button id="apiToggleButton"
-        class$="[[apiToggleButtonClass_()]]"
         pref="{{prefs.privacy_sandbox.apis_enabled}}"
         label="$i18n{privacySandboxPageSettingTitle}"
         on-change="onApiToggleButtonChange_">
     </settings-toggle-button>
-    <template is="dom-if" if="[[!privacySandboxSettings2Enabled_]]">
-      <div id="phase1SettingExplanation" class="cr-row continuation">
-        <div class="secondary">
-          $i18n{privacySandboxPageSettingExplanation1}
-        </div>
-      </div>
-      <div class="cr-row continuation">
-        <div class="secondary">
-          <ul>
-            <li><span>$i18n{privacySandboxPageSettingExplanation2}</span></li>
-            <li><span>$i18n{privacySandboxPageSettingExplanation3}</span></li>
-          </ul>
-        </div>
-      </div>
-      <div class="cr-row continuation box-last">
-        <cr-button class="cr-button" id="learnMoreButton" role="button"
-            tabindex="0" on-click="onLearnMoreButtonClick_">
-          $i18n{privacySandboxPageDetails}
-        </cr-button>
-      </div>
-    </template>
-    <template is="dom-if" if="[[privacySandboxSettings2Enabled_]]">
-      <div id="phase2SettingExplanation" class="cr-row continuation">
-        <div class="secondary">
-          $i18n{privacySandboxPageSettingExplanation1Phase2}
-        </div>
-      </div>
-      <div class="cr-row continuation box-last">
-        <div class="secondary">
-          <ul>
-            <li>
-              <span>$i18n{privacySandboxPageSettingExplanation2Phase2}</span>
-            </li>
-            <li>
-              <span>$i18n{privacySandboxPageSettingExplanation3Phase2}</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </template>
-  </div>
-  <template is="dom-if" if="[[privacySandboxSettings2Enabled_]]">
-    <div id="flocCard" class="card">
-      <picture>
-        <source class="card-banner" media="(prefers-color-scheme: dark)"
-            srcset="./images/privacy_sandbox_floc_banner_dark.svg">
-        <img class="card-banner" alt=""
-            src="./images/privacy_sandbox_floc_banner.svg">
-      </picture>
-      <settings-toggle-button id="flocToggleButton"
-          class="updated-toggle-button"
-          pref="{{prefs.generated.floc_enabled}}"
-          label="$i18n{privacySandboxPageFlocHeading}"
-          on-change="onFlocToggleButtonChange_">
-      </settings-toggle-button>
-      <div id="flocExplanation" class="cr-row continuation">
-        <div class="secondary">$i18nRaw{privacySandboxPageFlocExplanation}</div>
-      </div>
-      <div class="cr-row continuation">
-        <div class="label-wrapper">
-          <div class="info-header">$i18n{privacySandboxPageFlocStatus}</div>
-          <div id="flocStatus" class="cr-secondary-text">
-            [[flocId_.trialStatus]]
-          </div>
-        </div>
-      </div>
-      <div class="cr-row continuation">
-        <div class="label-wrapper">
-          <div class="info-header">$i18n{privacySandboxPageFlocCohort}</div>
-          <div id="flocId" class="cr-secondary-text">[[flocId_.cohort]]</div>
-        </div>
-      </div>
-      <div class="cr-row continuation">
-        <div class="label-wrapper">
-          <div class="info-header">
-            $i18n{privacySandboxPageFlocCohortNextUpdate}
-          </div>
-          <div id="flocUpdatedOn" class="cr-secondary-text">
-            [[flocId_.nextUpdate]]
-          </div>
-        </div>
-      </div>
     <div class="cr-row continuation">
-      <div class="secondary">$i18n{privacySandboxPageFlocResetExplanation}</div>
+      <div class="secondary">
+        $i18n{privacySandboxPageSettingExplanation1Phase2}
+      </div>
     </div>
     <div class="cr-row continuation box-last">
-      <cr-button id="resetFlocIdButton" class="cr-button" role="button"
-          disabled$="[[!flocId_.canReset]]" on-click="onResetFlocClick_">
-        $i18n{privacySandboxPageFlocResetCohort}
-      </cr-button>
+      <div class="secondary">
+        <ul>
+          <li>
+            <span>$i18n{privacySandboxPageSettingExplanation2Phase2}</span>
+          </li>
+          <li>
+            <span>$i18n{privacySandboxPageSettingExplanation3Phase2}</span>
+          </li>
+        </ul>
+      </div>
     </div>
-  </template>
+  </div>
+  <div id="flocCard" class="card">
+    <picture>
+      <source class="card-banner" media="(prefers-color-scheme: dark)"
+          srcset="./images/privacy_sandbox_floc_banner_dark.svg">
+      <img class="card-banner" alt=""
+          src="./images/privacy_sandbox_floc_banner.svg">
+    </picture>
+    <settings-toggle-button id="flocToggleButton"
+        pref="{{prefs.generated.floc_enabled}}"
+        label="$i18n{privacySandboxPageFlocHeading}"
+        on-change="onFlocToggleButtonChange_">
+    </settings-toggle-button>
+    <div id="flocExplanation" class="cr-row continuation">
+      <div class="secondary">$i18nRaw{privacySandboxPageFlocExplanation}</div>
+    </div>
+    <div class="cr-row continuation">
+      <div class="label-wrapper">
+        <div class="info-header">$i18n{privacySandboxPageFlocStatus}</div>
+        <div id="flocStatus" class="cr-secondary-text">
+          [[flocId_.trialStatus]]
+        </div>
+      </div>
+    </div>
+    <div class="cr-row continuation">
+      <div class="label-wrapper">
+        <div class="info-header">$i18n{privacySandboxPageFlocCohort}</div>
+        <div id="flocId" class="cr-secondary-text">[[flocId_.cohort]]</div>
+      </div>
+    </div>
+    <div class="cr-row continuation">
+      <div class="label-wrapper">
+        <div class="info-header">
+          $i18n{privacySandboxPageFlocCohortNextUpdate}
+        </div>
+        <div id="flocUpdatedOn" class="cr-secondary-text">
+          [[flocId_.nextUpdate]]
+        </div>
+      </div>
+    </div>
+  <div class="cr-row continuation">
+    <div class="secondary">$i18n{privacySandboxPageFlocResetExplanation}</div>
+  </div>
+  <div class="cr-row continuation box-last">
+    <cr-button id="resetFlocIdButton" class="cr-button" role="button"
+        disabled$="[[!flocId_.canReset]]" on-click="onResetFlocClick_">
+      $i18n{privacySandboxPageFlocResetCohort}
+    </cr-button>
+  </div>
 </div>
 <div id="overscroll"></div>

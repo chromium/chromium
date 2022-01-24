@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_TAB_DELEGATE_H_
 #define CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_TAB_DELEGATE_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -20,6 +19,9 @@ class BrowserSyncedTabDelegate
     : public TabContentsSyncedTabDelegate,
       public content::WebContentsUserData<BrowserSyncedTabDelegate> {
  public:
+  BrowserSyncedTabDelegate(const BrowserSyncedTabDelegate&) = delete;
+  BrowserSyncedTabDelegate& operator=(const BrowserSyncedTabDelegate&) = delete;
+
   ~BrowserSyncedTabDelegate() override;
 
   // SyncedTabDelegate:
@@ -32,8 +34,6 @@ class BrowserSyncedTabDelegate
   friend class content::WebContentsUserData<BrowserSyncedTabDelegate>;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSyncedTabDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_SYNC_BROWSER_SYNCED_TAB_DELEGATE_H_

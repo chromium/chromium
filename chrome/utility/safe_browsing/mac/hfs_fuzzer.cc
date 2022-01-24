@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/macros.h"
 #include "chrome/utility/safe_browsing/mac/hfs.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"

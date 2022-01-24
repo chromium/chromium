@@ -7,13 +7,11 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
 
 namespace password_manager {
@@ -37,6 +35,10 @@ class PasswordManagerExporter {
   explicit PasswordManagerExporter(
       CredentialProviderInterface* credential_provider_interface,
       ProgressCallback on_progress);
+
+  PasswordManagerExporter(const PasswordManagerExporter&) = delete;
+  PasswordManagerExporter& operator=(const PasswordManagerExporter&) = delete;
+
   virtual ~PasswordManagerExporter();
 
   // Pre-load the passwords from the password store.
@@ -128,8 +130,6 @@ class PasswordManagerExporter {
   // the same sequence.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<PasswordManagerExporter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerExporter);
 };
 
 }  // namespace password_manager

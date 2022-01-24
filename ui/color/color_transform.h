@@ -117,6 +117,14 @@ ColorTransform SelectBasedOnDarkInput(
 COMPONENT_EXPORT(COLOR)
 ColorTransform SetAlpha(ColorTransform transform, SkAlpha alpha);
 
+// A transform that computes the Google color that matches the hue of `color`
+// and contrasts well enough against `background_color` to meet `min_contrast`.
+// If `color` isn't very saturated, grey will be used instead.
+COMPONENT_EXPORT(COLOR)
+ColorTransform PickGoogleColor(ColorTransform color,
+                               ColorTransform background_color,
+                               float min_contrast);
+
 #if defined(OS_MAC)
 COMPONENT_EXPORT(COLOR)
 ColorTransform ApplySystemControlTintIfNeeded();

@@ -21,6 +21,10 @@ class DeclarativeManifestData : public Extension::ManifestData {
   using Rule = extensions::api::events::Rule;
 
   DeclarativeManifestData();
+
+  DeclarativeManifestData(const DeclarativeManifestData&) = delete;
+  DeclarativeManifestData& operator=(const DeclarativeManifestData&) = delete;
+
   ~DeclarativeManifestData() override;
 
   // Gets the DeclarativeManifestData for |extension|, or NULL if none was
@@ -37,7 +41,6 @@ class DeclarativeManifestData : public Extension::ManifestData {
 
  private:
   std::map<std::string, std::vector<Rule>> event_rules_map_;
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeManifestData);
 };
 
 }  // namespace extensions

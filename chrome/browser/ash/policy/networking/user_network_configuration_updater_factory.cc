@@ -7,6 +7,7 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/policy/networking/user_network_configuration_updater.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,7 +36,9 @@ UserNetworkConfigurationUpdaterFactory::GetInstance() {
 UserNetworkConfigurationUpdaterFactory::UserNetworkConfigurationUpdaterFactory()
     : BrowserContextKeyedServiceFactory(
           "UserNetworkConfigurationUpdater",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(NssServiceFactory::GetInstance());
+}
 
 UserNetworkConfigurationUpdaterFactory::
     ~UserNetworkConfigurationUpdaterFactory() {}

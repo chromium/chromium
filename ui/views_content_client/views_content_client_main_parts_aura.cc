@@ -10,10 +10,10 @@
 namespace ui {
 
 ViewsContentClientMainPartsAura::ViewsContentClientMainPartsAura(
-    const content::MainFunctionParams& content_params,
+    content::MainFunctionParams content_params,
     ViewsContentClient* views_content_client)
-    : ViewsContentClientMainParts(content_params, views_content_client) {
-}
+    : ViewsContentClientMainParts(std::move(content_params),
+                                  views_content_client) {}
 
 ViewsContentClientMainPartsAura::~ViewsContentClientMainPartsAura() {
 }

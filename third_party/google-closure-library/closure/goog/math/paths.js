@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 
 /**
@@ -34,6 +26,7 @@ goog.require('goog.math.Path');
  * @return {!goog.math.Path} The path.
  */
 goog.math.paths.createRegularNGon = function(center, vertex, n) {
+  'use strict';
   var path = new goog.math.Path();
   path.moveTo(vertex.x, vertex.y);
 
@@ -61,6 +54,7 @@ goog.math.paths.createRegularNGon = function(center, vertex, n) {
  * @return {!goog.math.Path} The path.
  */
 goog.math.paths.createArrow = function(a, b, aHead, bHead) {
+  'use strict';
   var path = new goog.math.Path();
   path.moveTo(a.x, a.y);
   path.lineTo(b.x, b.y);

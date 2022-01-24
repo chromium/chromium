@@ -6,7 +6,7 @@ There's a [bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-rel)
 that builds for Arm. It cross-builds on an Intel machine.
 
 There's also a [tester
-bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-rel-tests)
+bot](https://ci.chromium.org/p/chromium/builders/ci/mac11-arm64-rel-tests)
 that continuously runs tests. Most tests pass.
 
 ## Building _for_ Arm Macs
@@ -35,8 +35,8 @@ valid: -67050`. To fix this, open a terminal and run
 After that, it should start fine.
 
 As an alternative to building locally, changes can be submitted to the opt-in
-[mac-arm64-rel
-trybot](https://ci.chromium.org/p/chromium/builders/try/mac-arm64-rel). A small
+[mac11-arm64-rel
+trybot](https://ci.chromium.org/p/chromium/builders/try/mac11-arm64-rel). A small
 number of [swarming bots](https://goto.corp.google.com/run-on-dtk) are also
 available for Googlers to run tests on.
 

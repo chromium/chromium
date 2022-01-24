@@ -17,6 +17,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
@@ -162,6 +164,30 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     };
 
     /**
+     * Whether to use the toolbar as handle to resize the Window height.
+     */
+    public interface HandleStrategy {
+        /**
+         * Decide whether we need to intercept the touch events so the events will be passed to the
+         * {@link #onTouchEvent()} method.
+         *
+         * @param event The touch event to be examined.
+         * @return whether the event will be passed to {@link #onTouchEvent()}.
+         */
+        boolean onInterceptTouchEvent(MotionEvent event);
+
+        /**
+         * Handling the touch events.
+         *
+         * @param event The touch event to be handled.
+         * @return whether the event is consumed..
+         */
+        boolean onTouchEvent(MotionEvent event);
+    }
+
+    private HandleStrategy mHandleStrategy;
+
+    /**
      * Constructor for getting this class inflated from an xml layout file.
      */
     public CustomTabToolbar(Context context, AttributeSet attrs) {
@@ -174,7 +200,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        final int backgroundColor = ChromeColors.getDefaultThemeColor(getResources(), false);
+        final int backgroundColor = ChromeColors.getDefaultThemeColor(getContext(), false);
         setBackground(new ColorDrawable(backgroundColor));
         mUseDarkColors = !ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
         mUrlBar = (TextView) findViewById(R.id.url_bar);
@@ -216,8 +242,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     protected void addCustomActionButton(
             Drawable drawable, String description, OnClickListener listener) {
-        ImageButton button = (ImageButton) LayoutInflater.from(getContext())
-                                     .inflate(R.layout.custom_tabs_toolbar_button, null);
+        ImageButton button =
+                (ImageButton) LayoutInflater.from(getContext())
+                        .inflate(R.layout.custom_tabs_toolbar_button, mCustomActionButtons, false);
         button.setOnLongClickListener(this);
         button.setOnClickListener(listener);
         button.setVisibility(VISIBLE);
@@ -359,6 +386,27 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
         }
         mLocationBarModel.notifySecurityStateChanged();
+    }
+
+    @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mHandleStrategy != null) {
+            return mHandleStrategy.onTouchEvent(event);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (mHandleStrategy != null) {
+            return mHandleStrategy.onInterceptTouchEvent(event);
+        }
+        return false;
+    }
+
+    public void setHandleStrategy(HandleStrategy strategy) {
+        mHandleStrategy = strategy;
     }
 
     private void updateButtonsTint() {
@@ -534,9 +582,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         + fraction * (Color.blue(finalColor) - Color.blue(initialColor)));
                 int color = Color.rgb(red, green, blue);
                 background.setColor(color);
-                if (mHandleView != null) {
-                    mHandleView.getBackground().setTint(color);
-                }
+                setHandleViewBackgroundColor(color);
             }
         });
         mBrandColorTransitionAnimation.addListener(new AnimatorListenerAdapter() {
@@ -575,7 +621,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     public void setHandleView(ImageView view) {
         mHandleView = view;
-        mHandleView.getBackground().setTint(getBackground().getColor());
+        setHandleViewBackgroundColor(getBackground().getColor());
+    }
+
+    private void setHandleViewBackgroundColor(int color) {
+        if (mHandleView == null) return;
+        GradientDrawable drawable = (GradientDrawable) mHandleView.getBackground();
+        ((GradientDrawable) drawable.mutate()).setColor(color);
     }
 
     @Override
@@ -659,8 +711,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mModalDialogManagerSupplier = modalDialogManagerSupplier;
             mUrlCoordinator =
                     new UrlBarCoordinator(urlBar, /*windowDelegate=*/null, actionModeCallback,
-                            /*focusChangeCallback=*/
-                            (unused) -> {}, this, new NoOpkeyboardVisibilityDelegate());
+                            /*focusChangeCallback=*/ (unused) -> {}, this,
+                            new NoOpkeyboardVisibilityDelegate(),
+                            locationBarDataProvider.isIncognito());
             updateUseDarkColors();
             updateSecurityIcon();
             updateProgressBarColors();
@@ -675,9 +728,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 if (webContents == null) return;
                 Activity activity = currentTab.getWindowAndroid().getActivity().get();
                 if (activity == null) return;
+                // For now we don't show "store info" row for custom tab.
                 new ChromePageInfo(mModalDialogManagerSupplier, getContentPublisher(),
-                        OpenedFromSource.TOOLBAR)
-                        .show(currentTab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+                        OpenedFromSource.TOOLBAR, /*storeInfoActionHandlerSupplier=*/null)
+                        .show(currentTab, PageInfoController.NO_HIGHLIGHTED_PERMISSION,
+                                /*fromStoreIcon=*/false);
             });
         }
 
@@ -732,10 +787,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private void updateProgressBarColors() {
             final ToolbarProgressBar progressBar = getProgressBar();
             if (progressBar == null) return;
+            final Context context = getContext();
             final Resources resources = getResources();
             final int backgroundColor = getBackground().getColor();
             if (ThemeUtils.isUsingDefaultToolbarColor(
-                        resources, /*isIncognito=*/false, backgroundColor)) {
+                        context, /*isIncognito=*/false, backgroundColor)) {
                 progressBar.setBackgroundColor(
                         ApiCompatibilityUtils.getColor(resources, R.color.progress_bar_background));
                 progressBar.setForegroundColor(
@@ -840,14 +896,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         private void updateUseDarkColors() {
             updateButtonsTint();
-            if (mUrlCoordinator.setUseDarkTextColors(mUseDarkColors)) {
+            @OmniboxTheme
+            int omniboxTheme = mUseDarkColors ? OmniboxTheme.LIGHT_THEME : OmniboxTheme.DARK_THEME;
+            if (mUrlCoordinator.setOmniboxTheme(omniboxTheme)) {
                 // Update the URL to make it use the new color scheme.
                 updateUrlBar();
             }
 
             mTitleBar.setTextColor(ApiCompatibilityUtils.getColor(getResources(),
-                    mUseDarkColors ? R.color.default_text_color_dark
-                                   : R.color.default_text_color_light));
+                    mUseDarkColors ? R.color.branded_url_text_on_light_bg
+                                   : R.color.branded_url_text_on_dark_bg));
         }
 
         @Override

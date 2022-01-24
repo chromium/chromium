@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
@@ -55,6 +54,9 @@ class CONTENT_EXPORT PepperGraphics2DHost
       const PP_Size& size,
       PP_Bool is_always_opaque,
       scoped_refptr<PPB_ImageData_Impl> backing_store);
+
+  PepperGraphics2DHost(const PepperGraphics2DHost&) = delete;
+  PepperGraphics2DHost& operator=(const PepperGraphics2DHost&) = delete;
 
   ~PepperGraphics2DHost() override;
 
@@ -258,7 +260,6 @@ class CONTENT_EXPORT PepperGraphics2DHost
   const bool enable_gpu_memory_buffer_;
 
   friend class PepperGraphics2DHostTest;
-  DISALLOW_COPY_AND_ASSIGN(PepperGraphics2DHost);
 };
 
 }  // namespace content

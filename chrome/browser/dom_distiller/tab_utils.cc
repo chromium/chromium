@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
@@ -56,7 +56,8 @@ class SelfDeletingRequestDelegate : public ViewRequestDelegate,
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
 
   // Takes ownership of the ViewerHandle to keep distillation alive until |this|
@@ -82,7 +83,7 @@ void SelfDeletingRequestDelegate::DidFinishNavigation(
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
 }
 
-void SelfDeletingRequestDelegate::RenderProcessGone(
+void SelfDeletingRequestDelegate::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   Observe(NULL);
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);

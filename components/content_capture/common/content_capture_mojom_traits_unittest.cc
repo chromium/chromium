@@ -17,6 +17,11 @@ class ContentCaptureStructTraitsTest : public testing::Test,
  public:
   ContentCaptureStructTraitsTest() = default;
 
+  ContentCaptureStructTraitsTest(const ContentCaptureStructTraitsTest&) =
+      delete;
+  ContentCaptureStructTraitsTest& operator=(
+      const ContentCaptureStructTraitsTest&) = delete;
+
  protected:
   mojo::Remote<mojom::TraitsTestService> GetTraitsTestRemote() {
     mojo::Remote<mojom::TraitsTestService> remote;
@@ -34,8 +39,6 @@ class ContentCaptureStructTraitsTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<TraitsTestService> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentCaptureStructTraitsTest);
 };
 
 TEST_F(ContentCaptureStructTraitsTest, ContentCaptureData) {

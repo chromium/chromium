@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -75,7 +75,8 @@ export class ModulesElement extends mixinBehaviors
       /** @private */
       dragEnabled_: {
         type: Boolean,
-        value: loadTimeData.getBoolean('modulesDragAndDropEnabled'),
+        value: () => loadTimeData.getBoolean('modulesDragAndDropEnabled'),
+        reflectToAttribute: true,
       },
     };
   }
@@ -131,10 +132,11 @@ export class ModulesElement extends mixinBehaviors
       modules.forEach(module => {
         const moduleWrapper = new ModuleWrapperElement();
         moduleWrapper.module = module;
-        moduleWrapper.setAttribute('draggable', this.dragEnabled_);
-        moduleWrapper.addEventListener('dragstart', event => {
-          this.onDragStart_(/** @type {!DragEvent} */ (event));
-        });
+        if (this.dragEnabled_) {
+          moduleWrapper.addEventListener('mousedown', event => {
+            this.onDragStart_(/** @type {!DragEvent} */ (event));
+          });
+        }
         moduleWrapper.addEventListener('dismiss-module', event => {
           this.onDismissModule_(
               /**
@@ -151,10 +153,10 @@ export class ModulesElement extends mixinBehaviors
                */
               (event));
         });
-        moduleWrapper.hidden = this.moduleDisabled_(module.descriptor.id);
 
         const moduleContainer = this.ownerDocument.createElement('div');
         moduleContainer.classList.add('module-container');
+        moduleContainer.hidden = this.moduleDisabled_(module.descriptor.id);
         moduleContainer.appendChild(moduleWrapper);
         this.$.modules.appendChild(moduleContainer);
       });
@@ -192,13 +194,12 @@ export class ModulesElement extends mixinBehaviors
   /** @private */
   onModulesLoadedAndVisibilityDeterminedChange_() {
     if (this.modulesLoadedAndVisibilityDetermined_) {
-      this.shadowRoot.querySelectorAll('ntp-module-wrapper')
-          .forEach(({module}) => {
-            chrome.metricsPrivate.recordBoolean(
-                `NewTabPage.Modules.EnabledOnNTPLoad.${module.descriptor.id}`,
-                !this.disabledModules_.all &&
-                    !this.disabledModules_.ids.includes(module.descriptor.id));
-          });
+      ModuleRegistry.getInstance().getDescriptors().forEach(({id}) => {
+        chrome.metricsPrivate.recordBoolean(
+            `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
+            !this.disabledModules_.all &&
+                !this.disabledModules_.ids.includes(id));
+      });
       chrome.metricsPrivate.recordBoolean(
           'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
       this.dispatchEvent(new Event('modules-loaded'));
@@ -297,7 +298,7 @@ export class ModulesElement extends mixinBehaviors
   onRemovedModulesChange_() {
     this.shadowRoot.querySelectorAll('ntp-module-wrapper')
         .forEach(moduleWrapper => {
-          moduleWrapper.hidden =
+          moduleWrapper.parentElement.hidden =
               this.moduleDisabled_(moduleWrapper.module.descriptor.id);
         });
   }
@@ -311,13 +312,6 @@ export class ModulesElement extends mixinBehaviors
   onDragStart_(e) {
     assert(loadTimeData.getBoolean('modulesDragAndDropEnabled'));
 
-    // |dataTransfer| is null in tests.
-    if (e.dataTransfer) {
-      // Remove the transparent image that appears on top when dragging.
-      e.dataTransfer.setDragImage(new Image(), 0, 0);
-      e.dataTransfer.effectAllowed = 'move';
-    }
-
     const dragElement = e.target;
     const dragElementRect = dragElement.getBoundingClientRect();
     // This is the offset between the pointer and module so that the
@@ -330,11 +324,12 @@ export class ModulesElement extends mixinBehaviors
     dragElement.parentElement.style.width = `${dragElementRect.width}px`;
     dragElement.parentElement.style.height = `${dragElementRect.height}px`;
 
+    const undraggedModuleWrappers =
+        [...this.shadowRoot.querySelectorAll('ntp-module-wrapper')].filter(
+            moduleWrapper => moduleWrapper !== dragElement);
+
     const dragOver = e => {
       e.preventDefault();
-      if (e.dataTransfer) {
-        e.dataTransfer.dropEffect = 'move';
-      }
 
       dragElement.setAttribute('dragging', '');
       dragElement.style.left = `${e.x - dragOffset.x}px`;
@@ -350,29 +345,69 @@ export class ModulesElement extends mixinBehaviors
       const dragContainer = moduleContainers[dragIndex];
       const previousContainer = moduleContainers[dropIndex];
 
+      // To animate the modules as they are reordered we use the FLIP
+      // (First, Last, Invert, Play) animation approach by @paullewis.
+      // https://aerotwist.com/blog/flip-your-animations/
+
+      // The first and last positions of the modules are used to
+      // calculate how the modules have changed.
+      const firstRects = undraggedModuleWrappers.map(moduleWrapper => {
+        return moduleWrapper.getBoundingClientRect();
+      });
+
       dragContainer.remove();
       previousContainer.insertAdjacentElement(positionType, dragContainer);
+
+      undraggedModuleWrappers.forEach((moduleWrapper, i) => {
+        const lastRect = moduleWrapper.getBoundingClientRect();
+        const invertX = firstRects[i].left - lastRect.left;
+        const invertY = firstRects[i].top - lastRect.top;
+        moduleWrapper.animate(
+            [
+              // A translation is applied to invert the module and make it
+              // appear to be in its first position when it actually is in its
+              // final position already.
+              {transform: `translate(${invertX}px, ${invertY}px)`, zIndex: 0},
+              // Removing the inversion translation animates the module from
+              // the fake first position to its current (final) position.
+              {transform: 'translate(0)', zIndex: 0},
+            ],
+            {duration: 800, easing: 'ease'});
+      });
     };
 
-    const undraggedModuleWrappers =
-        [...this.shadowRoot.querySelectorAll('ntp-module-wrapper')].filter(
-            moduleWrapper => moduleWrapper !== dragElement);
-
     undraggedModuleWrappers.forEach(moduleWrapper => {
-      moduleWrapper.addEventListener('dragenter', dragEnter);
+      moduleWrapper.addEventListener('mouseover', dragEnter);
     });
 
-    this.ownerDocument.addEventListener('dragover', dragOver);
-    this.ownerDocument.addEventListener('dragend', () => {
-      this.ownerDocument.removeEventListener('dragover', dragOver);
+    this.ownerDocument.addEventListener('mousemove', dragOver);
+    this.ownerDocument.addEventListener('mouseup', () => {
+      this.ownerDocument.removeEventListener('mousemove', dragOver);
 
       undraggedModuleWrappers.forEach(moduleWrapper => {
-        moduleWrapper.removeEventListener('dragenter', dragEnter);
+        moduleWrapper.removeEventListener('mouseover', dragEnter);
       });
+
+      // The FLIP approach is also used for the dropping animation
+      // of the dragged module because of the position changes caused
+      // by removing the dragging styles. (Removing the styles after
+      // the animation causes the animation to be fixed.)
+      const firstRect = dragElement.getBoundingClientRect();
 
       dragElement.removeAttribute('dragging');
       dragElement.style.removeProperty('left');
       dragElement.style.removeProperty('top');
+
+      const lastRect = dragElement.getBoundingClientRect();
+      const invertX = firstRect.left - lastRect.left;
+      const invertY = firstRect.top - lastRect.top;
+
+      dragElement.animate(
+          [
+            {transform: `translate(${invertX}px, ${invertY}px)`, zIndex: 2},
+            {transform: 'translate(0)', zIndex: 2},
+          ],
+          {duration: 800, easing: 'ease'});
 
       const moduleIds =
           [...this.shadowRoot.querySelectorAll('ntp-module-wrapper')].map(

@@ -20,14 +20,13 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme_color_id.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
@@ -97,36 +96,11 @@ void ReportExtensionInstallFrictionDialogAction(
 
 }  // namespace
 
-class ExtensionInstallFrictionDialogView::WebContentsDestructionObserver
-    : public content::WebContentsObserver {
- public:
-  WebContentsDestructionObserver(const WebContentsDestructionObserver&) =
-      delete;
-  WebContentsDestructionObserver(WebContentsDestructionObserver&&) = delete;
-
-  explicit WebContentsDestructionObserver(
-      ExtensionInstallFrictionDialogView* parent_view)
-      : content::WebContentsObserver(parent_view->parent_web_contents()),
-        parent_view_(parent_view) {}
-
-  ~WebContentsDestructionObserver() override = default;
-
-  void WebContentsDestroyed() override {
-    parent_view_->parent_web_contents_ = nullptr;
-  }
-
- private:
-  // Not owned.
-  ExtensionInstallFrictionDialogView* parent_view_;
-};
-
 ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> callback)
     : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
-      parent_web_contents_(web_contents),
-      web_contents_destruction_observer_(
-          std::make_unique<WebContentsDestructionObserver>(this)),
+      parent_web_contents_(web_contents->GetWeakPtr()),
       callback_(std::move(callback)) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
@@ -212,9 +186,9 @@ ExtensionInstallFrictionDialogView::~ExtensionInstallFrictionDialogView() {
 
 // override
 ui::ImageModel ExtensionInstallFrictionDialogView::GetWindowIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      vector_icons::kGppMaybeIcon,
-      ui::NativeTheme::kColorId_AlertSeverityMedium, kWarningIconSize);
+  return ui::ImageModel::FromVectorIcon(vector_icons::kGppMaybeIcon,
+                                        ui::kColorAlertMediumSeverity,
+                                        kWarningIconSize);
 }
 
 void ExtensionInstallFrictionDialogView::OnLearnMoreLinkClicked() {

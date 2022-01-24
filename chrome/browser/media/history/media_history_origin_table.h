@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/updateable_sequenced_task_runner.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "chrome/browser/media/history/media_history_table_base.h"
 #include "sql/init_status.h"
 
@@ -21,6 +21,9 @@ namespace media_history {
 class MediaHistoryOriginTable : public MediaHistoryTableBase {
  public:
   static const char kTableName[];
+
+  MediaHistoryOriginTable(const MediaHistoryOriginTable&) = delete;
+  MediaHistoryOriginTable& operator=(const MediaHistoryOriginTable&) = delete;
 
   // Returns the origin as a string for storage.
   static std::string GetOriginForStorage(const url::Origin& origin);
@@ -53,8 +56,6 @@ class MediaHistoryOriginTable : public MediaHistoryTableBase {
   // Gets the origins which have watchtime above the given threshold.
   std::vector<url::Origin> GetHighWatchTimeOrigins(
       const base::TimeDelta& audio_video_watchtime_min);
-
-  DISALLOW_COPY_AND_ASSIGN(MediaHistoryOriginTable);
 };
 
 }  // namespace media_history

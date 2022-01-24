@@ -12,7 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace chromeos {
+namespace ash {
 
 // Controller class to handle debug_daemon_client's notifications.
 class DebugdNotificationHandler : public DebugDaemonClient::Observer {
@@ -36,5 +36,6 @@ class DebugdNotificationHandler : public DebugDaemonClient::Observer {
   base::WeakPtrFactory<DebugdNotificationHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_DEBUGD_NOTIFICATION_HANDLER_H_

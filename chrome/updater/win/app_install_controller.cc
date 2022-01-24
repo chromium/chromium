@@ -13,10 +13,10 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -25,14 +25,20 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/atl.h"
+#include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/install_progress_observer.h"
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-braces"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/splash_screen.h"
-#include "chrome/updater/win/ui/util.h"
+#include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/win_util.h"
+#pragma clang diagnostic pop
 
 namespace updater {
 namespace {
@@ -404,7 +410,7 @@ class AppInstallControllerImpl : public AppInstallController,
   DWORD GetUIThreadID() const;
 
   // Receives the state changes during handling of the Install function call.
-  void StateChange(UpdateService::UpdateState update_state);
+  void StateChange(const UpdateService::UpdateState& update_state);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -472,7 +478,7 @@ void AppInstallControllerImpl::DoInstallApp() {
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AppInstallControllerImpl::RunUI, this));
 
-  update_service_ = CreateUpdateService();
+  update_service_ = CreateUpdateServiceProxy(GetUpdaterScope());
 
   install_progress_observer_ipc_ =
       std::make_unique<InstallProgressObserverIPC>(progress_wnd_.get());
@@ -499,7 +505,7 @@ void AppInstallControllerImpl::InstallComplete(UpdateService::Result result) {
 }
 
 void AppInstallControllerImpl::StateChange(
-    UpdateService::UpdateState update_state) {
+    const UpdateService::UpdateState& update_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(install_progress_observer_ipc_);
 

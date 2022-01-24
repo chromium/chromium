@@ -8,6 +8,6 @@ specific_include_rules = {
     "+ash/frame/non_client_frame_view_ash.h",
     "+ash/wm/window_state.h",
     "+ash/wm/window_state_observer.h",
-    "+components/full_restore/full_restore_utils.h",
+    "+components/app_restore/full_restore_utils.h",
   ],
 }

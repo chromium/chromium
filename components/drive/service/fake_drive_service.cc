@@ -29,9 +29,9 @@
 #include "base/values.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_system_core_util.h"
+#include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/drive_common_callbacks.h"
-#include "google_apis/drive/test_util.h"
 #include "net/base/escape.h"
 #include "net/base/url_util.h"
 
@@ -1688,12 +1688,10 @@ const FakeDriveService::EntryInfo* FakeDriveService::AddNewEntry(
   AddNewChangestamp(new_change, team_drive_id);
   UpdateETag(new_file);
 
-  new_file->set_created_date(base::Time() +
-                             base::TimeDelta::FromMilliseconds(++date_seq_));
-  new_file->set_modified_by_me_date(
-      base::Time() + base::TimeDelta::FromMilliseconds(++date_seq_));
-  new_file->set_modified_date(base::Time() +
-                              base::TimeDelta::FromMilliseconds(++date_seq_));
+  new_file->set_created_date(base::Time() + base::Milliseconds(++date_seq_));
+  new_file->set_modified_by_me_date(base::Time() +
+                                    base::Milliseconds(++date_seq_));
+  new_file->set_modified_date(base::Time() + base::Milliseconds(++date_seq_));
 
   EntryInfo* raw_new_entry = new_entry.get();
   entries_[resource_id] = std::move(new_entry);
@@ -1724,8 +1722,7 @@ const FakeDriveService::EntryInfo* FakeDriveService::AddNewTeamDriveEntry(
 
   AddNewChangestamp(&change, std::string());
 
-  change.set_modification_date(base::Time() +
-                               base::TimeDelta::FromMilliseconds(++date_seq_));
+  change.set_modification_date(base::Time() + base::Milliseconds(++date_seq_));
 
   EntryInfo* raw_new_entry = new_entry.get();
   entries_[team_drive_id] = std::move(new_entry);

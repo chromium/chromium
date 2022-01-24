@@ -25,6 +25,10 @@ class InstantController::TabObserver : public content::WebContentsObserver {
               base::RepeatingClosure callback)
       : content::WebContentsObserver(web_contents),
         callback_(std::move(callback)) {}
+
+  TabObserver(const TabObserver&) = delete;
+  TabObserver& operator=(const TabObserver&) = delete;
+
   ~TabObserver() override = default;
 
  private:
@@ -37,8 +41,6 @@ class InstantController::TabObserver : public content::WebContentsObserver {
   }
 
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabObserver);
 };
 
 InstantController::InstantController(Profile* profile,

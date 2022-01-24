@@ -15,7 +15,7 @@ FAIL Property text-decoration-line value 'underline overline blink' assert_equal
 FAIL Property text-decoration-line value 'underline line-through blink' assert_equals: expected "underline line-through blink" but got "underline line-through"
 FAIL Property text-decoration-line value 'overline line-through blink' assert_equals: expected "overline line-through blink" but got "overline line-through"
 FAIL Property text-decoration-line value 'underline overline line-through blink' assert_equals: expected "underline overline line-through blink" but got "underline overline line-through"
-FAIL Property text-decoration-line value 'spelling-error' assert_true: 'spelling-error' is a supported value for text-decoration-line. expected true got false
-FAIL Property text-decoration-line value 'grammar-error' assert_true: 'grammar-error' is a supported value for text-decoration-line. expected true got false
+PASS Property text-decoration-line value 'spelling-error'
+PASS Property text-decoration-line value 'grammar-error'
 Harness: the test ran to completion.
 

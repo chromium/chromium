@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {removeBookmark, Store, StoreClient} from 'chrome://bookmarks/bookmarks.js';
-import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {removeBookmark, Store, StoreClientMixin} from 'chrome://bookmarks/bookmarks.js';
+import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {TestStore} from './test_store.js';
+import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('bookmarks.Store', function() {
   let store;
@@ -45,7 +45,7 @@ suite('bookmarks.Store', function() {
   });
 });
 
-suite('bookmarks.StoreClient', function() {
+suite('bookmarks.StoreClientMixin', function() {
   let store;
   let client;
 
@@ -60,38 +60,42 @@ suite('bookmarks.StoreClient', function() {
   }
 
   suiteSetup(function() {
-    Polymer({
-      is: 'test-store-client',
+    const TestStoreClientBase = StoreClientMixin(PolymerElement);
+    class TestStoreClient extends TestStoreClientBase {
+      static get template() {
+        return html`
+          <template is="dom-repeat" items="[[items]]">
+            <div class="item">[[item]]</div>
+          </template>
+        `;
+      }
 
-      _template: html`
-        <template is="dom-repeat" items="[[items]]">
-          <div class="item">[[item]]</div>
-        </template>
-      `,
+      static get properties() {
+        return {
+          items: {
+            type: Array,
+            observer: 'itemsChanged_',
+          },
+        };
+      }
 
-      behaviors: [StoreClient],
-
-      properties: {
-        items: {
-          type: Array,
-          observer: 'itemsChanged_',
-        },
-      },
-
-      attached: function() {
+      connectedCallback() {
+        super.connectedCallback();
         this.hasChanged = false;
         this.watch('items', function(state) {
           return state.items;
         });
         this.updateFromStore();
-      },
+      }
 
-      itemsChanged_: function(newItems, oldItems) {
+      itemsChanged_(newItems, oldItems) {
         if (oldItems) {
           this.hasChanged = true;
         }
-      },
-    });
+      }
+    }
+
+    customElements.define('test-store-client', TestStoreClient);
   });
 
   setup(function() {

@@ -10,6 +10,10 @@
 class PrefService;
 class Profile;
 
+namespace base {
+class CommandLine;
+}
+
 namespace ash {
 
 class KioskAppId;
@@ -24,6 +28,10 @@ void LaunchAppOrDie(Profile* profile, const KioskAppId& kiosk_app_id);
 void ResetEphemeralKioskPreferences(PrefService* prefs);
 // Replace the list of preferences which are reset in tests.
 void SetEphemeralKioskPreferencesListForTesting(std::vector<std::string>*);
+
+// Checks whether kiosk auto launch should be started.
+bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
+                              PrefService* local_state);
 
 }  // namespace ash
 

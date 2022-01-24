@@ -6,7 +6,6 @@
 #define COMPONENTS_CRONET_NATIVE_RUNNABLES_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/cronet/native/generated/cronet.idl_impl_interface.h"
 
 namespace cronet {
@@ -16,6 +15,10 @@ namespace cronet {
 class OnceClosureRunnable : public Cronet_Runnable {
  public:
   explicit OnceClosureRunnable(base::OnceClosure task);
+
+  OnceClosureRunnable(const OnceClosureRunnable&) = delete;
+  OnceClosureRunnable& operator=(const OnceClosureRunnable&) = delete;
+
   ~OnceClosureRunnable() override;
 
   void Run() override;
@@ -23,8 +26,6 @@ class OnceClosureRunnable : public Cronet_Runnable {
  private:
   // Closure to run.
   base::OnceClosure task_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnceClosureRunnable);
 };
 
 }  // namespace cronet

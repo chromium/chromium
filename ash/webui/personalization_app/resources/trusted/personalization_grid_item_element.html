@@ -1,0 +1,38 @@
+<style include="common-style">
+  :host {
+    box-sizing: border-box;
+    display: block;
+    height: calc(
+      var(--personalization-app-grid-item-height) +
+      var(--personalization-app-grid-item-spacing));
+    overflow: hidden;
+    padding: calc(var(--personalization-app-grid-item-spacing) / 2);
+    /* Subtract 0.34px to fix subpixel rounding issues with iron-list. This
+     * ensures all grid items in a row add up to at least 1px smaller than the
+     * parent width. */
+    width: calc(100% / 3 - 0.34px);
+  }
+
+  @media(min-width: 720px) {
+    :host {
+      /* Subtract 0.25px to fix subpixel rounding issues with iron-list. This
+       * ensures all grid items in a row add up to at least 1px smaller than the
+       * parent width. */
+      width: calc(100% / 4 - 0.25px) !important;
+    }
+  }
+
+  :host > ::slotted(*) {
+    border-radius: var(--personalization-app-grid-item-border-radius);
+    box-sizing: border-box;
+    display: block;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  :host > ::slotted(*:focus-within) {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+</style>
+<slot></slot>

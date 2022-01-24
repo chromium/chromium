@@ -26,6 +26,10 @@ class NET_EXPORT_PRIVATE QuicChromiumAlarmFactory
  public:
   QuicChromiumAlarmFactory(base::SequencedTaskRunner* task_runner,
                            const quic::QuicClock* clock);
+
+  QuicChromiumAlarmFactory(const QuicChromiumAlarmFactory&) = delete;
+  QuicChromiumAlarmFactory& operator=(const QuicChromiumAlarmFactory&) = delete;
+
   ~QuicChromiumAlarmFactory() override;
 
   // quic::QuicAlarmFactory
@@ -37,8 +41,6 @@ class NET_EXPORT_PRIVATE QuicChromiumAlarmFactory
  private:
   base::SequencedTaskRunner* task_runner_;
   const quic::QuicClock* const clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicChromiumAlarmFactory);
 };
 
 }  // namespace net

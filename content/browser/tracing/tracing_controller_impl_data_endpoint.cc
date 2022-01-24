@@ -10,8 +10,8 @@
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/pattern.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
@@ -29,6 +29,9 @@ class StringTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   explicit StringTraceDataEndpoint(
       TracingController::CompletionCallback callback)
       : completion_callback_(std::move(callback)) {}
+
+  StringTraceDataEndpoint(const StringTraceDataEndpoint&) = delete;
+  StringTraceDataEndpoint& operator=(const StringTraceDataEndpoint&) = delete;
 
   void ReceivedTraceFinalContents() override {
     auto str = std::make_unique<std::string>(trace_.str());
@@ -49,8 +52,6 @@ class StringTraceDataEndpoint : public TracingController::TraceDataEndpoint {
 
   TracingController::CompletionCallback completion_callback_;
   std::ostringstream trace_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringTraceDataEndpoint);
 };
 
 class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
@@ -63,6 +64,9 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
         may_block_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), write_priority,
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
+
+  FileTraceDataEndpoint(const FileTraceDataEndpoint&) = delete;
+  FileTraceDataEndpoint& operator=(const FileTraceDataEndpoint&) = delete;
 
   void ReceiveTraceChunk(std::unique_ptr<std::string> chunk) override {
     may_block_task_runner_->PostTask(
@@ -141,8 +145,6 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   base::OnceClosure completion_callback_;
   FILE* file_ = nullptr;
   const scoped_refptr<base::SequencedTaskRunner> may_block_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileTraceDataEndpoint);
 };
 
 class CompressedTraceDataEndpoint
@@ -156,6 +158,10 @@ class CompressedTraceDataEndpoint
             {compress_with_background_priority
                  ? base::TaskPriority::BEST_EFFORT
                  : base::TaskPriority::USER_VISIBLE})) {}
+
+  CompressedTraceDataEndpoint(const CompressedTraceDataEndpoint&) = delete;
+  CompressedTraceDataEndpoint& operator=(const CompressedTraceDataEndpoint&) =
+      delete;
 
   void ReceiveTraceChunk(std::unique_ptr<std::string> chunk) override {
     background_task_runner_->PostTask(
@@ -242,8 +248,6 @@ class CompressedTraceDataEndpoint
   std::unique_ptr<z_stream> stream_;
   bool already_tried_open_;
   const scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompressedTraceDataEndpoint);
 };
 
 }  // namespace

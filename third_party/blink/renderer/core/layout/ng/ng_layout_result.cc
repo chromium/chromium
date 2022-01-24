@@ -58,15 +58,11 @@ NGLayoutResult::NGLayoutResult(
                      static_cast<NGContainerFragmentBuilder*>(builder)) {
   bitfields_.is_initial_block_size_indefinite =
       builder->is_initial_block_size_indefinite_;
-  bitfields_.subtree_modified_margin_strut =
-      builder->subtree_modified_margin_strut_;
   intrinsic_block_size_ = builder->intrinsic_block_size_;
   if (builder->custom_layout_data_) {
     EnsureRareData()->custom_layout_data =
         std::move(builder->custom_layout_data_);
   }
-  if (builder->lines_until_clamp_)
-    EnsureRareData()->lines_until_clamp = *builder->lines_until_clamp_;
   if (builder->annotation_overflow_)
     EnsureRareData()->annotation_overflow = builder->annotation_overflow_;
   if (builder->block_end_annotation_space_) {
@@ -88,11 +84,10 @@ NGLayoutResult::NGLayoutResult(
       rare_data->minimal_space_shortage = builder->minimal_space_shortage_;
     }
 
-    rare_data->has_violating_break = builder->has_violating_break_;
+    rare_data->block_size_for_fragmentation =
+        builder->block_size_for_fragmentation_;
 
-    if (builder->column_spanner_)
-      rare_data->column_spanner = builder->column_spanner_;
-
+    bitfields_.break_appeal = builder->break_appeal_;
     bitfields_.initial_break_before = static_cast<unsigned>(
         builder->initial_break_before_.value_or(EBreakBetween::kAuto));
     bitfields_.final_break_after =
@@ -103,8 +98,8 @@ NGLayoutResult::NGLayoutResult(
     EnsureRareData()->table_column_count_ = *builder->table_column_count_;
   if (builder->math_data_.has_value())
     EnsureRareData()->math_layout_data_ = builder->math_data_;
-  if (builder->grid_data_)
-    EnsureRareData()->grid_layout_data_ = std::move(builder->grid_data_);
+  if (builder->grid_layout_data_)
+    EnsureRareData()->grid_layout_data_ = std::move(builder->grid_layout_data_);
 }
 
 NGLayoutResult::NGLayoutResult(
@@ -112,7 +107,20 @@ NGLayoutResult::NGLayoutResult(
     scoped_refptr<const NGPhysicalFragment> physical_fragment,
     NGLineBoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
-                     static_cast<NGContainerFragmentBuilder*>(builder)) {}
+                     static_cast<NGContainerFragmentBuilder*>(builder)) {
+  DCHECK_EQ(builder->bfc_block_offset_.has_value(),
+            builder->line_box_bfc_block_offset_.has_value());
+  if (builder->bfc_block_offset_ != builder->line_box_bfc_block_offset_) {
+    EnsureRareData()->line_box_bfc_block_offset =
+        builder->line_box_bfc_block_offset_;
+  }
+  if (builder->annotation_block_offset_adjustment_) {
+    EnsureRareData()->annotation_block_offset_adjustment =
+        builder->annotation_block_offset_adjustment_;
+  }
+  if (builder->clearance_after_line_)
+    EnsureRareData()->clearance_after_line = builder->clearance_after_line_;
+}
 
 NGLayoutResult::NGLayoutResult(NGContainerFragmentBuilderPassKey key,
                                EStatus status,
@@ -195,12 +203,11 @@ NGLayoutResult::NGLayoutResult(
     : space_(builder->space_ ? NGConstraintSpace(*builder->space_)
                              : NGConstraintSpace()),
       physical_fragment_(std::move(physical_fragment)),
-      bitfields_(
-          /* is_self_collapsing */ builder->is_self_collapsing_,
-          /* is_pushed_by_floats */ builder->is_pushed_by_floats_,
-          /* adjoining_object_types */ builder->adjoining_object_types_,
-          /* has_descendant_that_depends_on_percentage_block_size */
-          builder->has_descendant_that_depends_on_percentage_block_size_) {
+      bitfields_(builder->is_self_collapsing_,
+                 builder->is_pushed_by_floats_,
+                 builder->adjoining_object_types_,
+                 builder->has_descendant_that_depends_on_percentage_block_size_,
+                 builder->subtree_modified_margin_strut_) {
 #if DCHECK_IS_ON()
   if (bitfields_.is_self_collapsing && physical_fragment_) {
     // A new formatting-context shouldn't be self-collapsing.
@@ -227,6 +234,8 @@ NGLayoutResult::NGLayoutResult(
   } else {
     space_.ExclusionSpace().MoveDerivedGeometry(builder->exclusion_space_);
   }
+  if (builder->lines_until_clamp_)
+    EnsureRareData()->lines_until_clamp = *builder->lines_until_clamp_;
 
   // If we produced a fragment that we didn't break inside, provide the best
   // early possible breakpoint that we found inside. This early breakpoint will
@@ -235,10 +244,12 @@ NGLayoutResult::NGLayoutResult(
   // re-layout now, and break at the early breakpoint (i.e. the status is
   // kNeedsEarlierBreak).
   if (builder->early_break_ &&
-      (!physical_fragment_ || !physical_fragment_->BreakToken())) {
-    auto* rare_data = EnsureRareData();
-    rare_data->early_break = builder->early_break_;
-    rare_data->early_break_appeal = builder->break_appeal_;
+      (!physical_fragment_ || !physical_fragment_->BreakToken()))
+    EnsureRareData()->early_break = builder->early_break_;
+
+  if (builder->column_spanner_) {
+    EnsureRareData()->column_spanner = builder->column_spanner_;
+    bitfields_.is_empty_spanner_parent = builder->is_empty_spanner_parent_;
   }
 
   if (HasRareData()) {

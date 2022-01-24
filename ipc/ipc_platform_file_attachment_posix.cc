@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/macros.h"
+
 namespace IPC {
 namespace internal {
 

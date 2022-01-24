@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REFRESH_MACHINE_CERTIFICATE_JOB_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REFRESH_MACHINE_CERTIFICATE_JOB_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
@@ -22,6 +21,12 @@ class DeviceCommandRefreshMachineCertificateJob : public RemoteCommandJob {
   explicit DeviceCommandRefreshMachineCertificateJob(
       ash::attestation::MachineCertificateUploader*
           machine_certificate_uploader);
+
+  DeviceCommandRefreshMachineCertificateJob(
+      const DeviceCommandRefreshMachineCertificateJob&) = delete;
+  DeviceCommandRefreshMachineCertificateJob& operator=(
+      const DeviceCommandRefreshMachineCertificateJob&) = delete;
+
   ~DeviceCommandRefreshMachineCertificateJob() override;
 
   // RemoteCommandJob:
@@ -41,8 +46,6 @@ class DeviceCommandRefreshMachineCertificateJob : public RemoteCommandJob {
 
   base::WeakPtrFactory<DeviceCommandRefreshMachineCertificateJob>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCommandRefreshMachineCertificateJob);
 };
 
 }  // namespace policy

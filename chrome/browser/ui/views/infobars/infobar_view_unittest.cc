@@ -24,6 +24,10 @@ class TestInfoBarDelegate : public infobars::InfoBarDelegate {
 class InfoBarViewTest : public BrowserWithTestWindowTest {
  public:
   InfoBarViewTest() : infobar_container_view_(nullptr) {}
+
+  InfoBarViewTest(const InfoBarViewTest&) = delete;
+  InfoBarViewTest& operator=(const InfoBarViewTest&) = delete;
+
   ~InfoBarViewTest() override = default;
 
   // ChromeViewsTestBase:
@@ -53,8 +57,6 @@ class InfoBarViewTest : public BrowserWithTestWindowTest {
 
  private:
   InfoBarContainerView infobar_container_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarViewTest);
 };
 
 // Regression test for crbug.com/834728 .

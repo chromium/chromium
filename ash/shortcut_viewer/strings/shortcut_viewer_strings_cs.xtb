@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">Otevřít nové okno v anonymním režimu</translation>
 <translation id="152892567002884378">Zvýšit hlasitost</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> a poté <ph name="ESC" /></translation>
-<translation id="1633761758045565086">Přesunout zaměření na dialogové okno nápovědy</translation>
 <translation id="1652741121070700329">Přesunout kurzor na začátek předchozího slova.</translation>
 <translation id="1679841710523778799">Zvýšit jas</translation>
 <translation id="168356808214100546">Stiskněte a podržte <ph name="ALT" /> a opakovaně stiskněte klávesu <ph name="TAB" />, dokud nepřejdete na okno, které chcete otevřít. Poté klávesy uvolněte.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">Posunout webovou stránku dolů</translation>
 <translation id="2530896289327917474">Zapnout nebo vypnout procházení pomocí kurzoru</translation>
 <translation id="2574014812750545982">Resetovat úroveň přiblížení na stránce</translation>
-<translation id="2596078834055697711">Pořídit snímek obrazovky okna</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> a poté <ph name="TAB" /> nebo <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Znovu načíst aktuální stránku</translation>
 <translation id="2764005613199379871">Přejít do vyhledávacího adresního řádku</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">Zkratky</translation>
 <translation id="3084301071537457911">Zvýraznit další položku na poličce</translation>
 <translation id="309173601632226815">Zvýraznit tlačítko spouštěče na poličce</translation>
-<translation id="3105917916468784889">Pořídit snímek obrazovky</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Přepnout do adresního řádku</translation>
 <translation id="3256109297135787951">Odebrat zvýraznění z položky na poličce</translation>
 <translation id="3288816184963444640">Zavřít aktuální okno</translation>
+<translation id="3350805006883559974">Plovoucí aktivní okno nahoře</translation>
 <translation id="3407560819924487926">Otevřít správce úloh</translation>
 <translation id="3417835166382867856">Hledat karty</translation>
 <translation id="3422679037938588196">Přejít na předchozí výskyt hledaného výrazu</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">Zobrazit nápovědu ke klávesovým zkratkám</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> nebo <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Otevřít stavovou oblast (kde se zobrazuje obrázek účtu)</translation>
-<translation id="4642092649622328492">Pořídit částečný snímek obrazovky</translation>
 <translation id="4698850295812410683">Zobrazit nástroje pro dotykové pero</translation>
 <translation id="4801989101741319327">Přesunout kurzor na konec dalšího slova.</translation>
 <translation id="4866066940972151697">Aktivovat plochu vpravo</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">Přesunout aktivní okno na plochu vlevo</translation>
 <translation id="88986195241502842">O stránku dolů</translation>
 <translation id="8924883688469390268">Přepnout na předchozího uživatele</translation>
+<translation id="8941626538514548667">Vybrat webový obsah v prohlížeči</translation>
 <translation id="8977648847395357314">Vybrat obsah adresního řádku</translation>
 <translation id="8982190978301344584">Zobrazit nabídku se seznamem dostupných editorů IME</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 až 8</translation>

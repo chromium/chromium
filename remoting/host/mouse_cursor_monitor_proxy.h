@@ -27,6 +27,10 @@ class MouseCursorMonitorProxy : public webrtc::MouseCursorMonitor {
   MouseCursorMonitorProxy(
       scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
       const webrtc::DesktopCaptureOptions& options);
+
+  MouseCursorMonitorProxy(const MouseCursorMonitorProxy&) = delete;
+  MouseCursorMonitorProxy& operator=(const MouseCursorMonitorProxy&) = delete;
+
   ~MouseCursorMonitorProxy() override;
 
   // webrtc::MouseCursorMonitor interface.
@@ -49,8 +53,6 @@ class MouseCursorMonitorProxy : public webrtc::MouseCursorMonitor {
   Callback* callback_ = nullptr;
 
   base::WeakPtrFactory<MouseCursorMonitorProxy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MouseCursorMonitorProxy);
 };
 
 }  // namespace remoting

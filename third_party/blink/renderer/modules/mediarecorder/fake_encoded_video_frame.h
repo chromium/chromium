@@ -45,7 +45,7 @@ class FakeEncodedVideoFrame : public EncodedVideoFrame {
    private:
     bool is_key_frame_ = false;
     std::string data_;
-    media::VideoCodec codec_ = media::kCodecVP8;
+    media::VideoCodec codec_ = media::VideoCodec::kVP8;
     absl::optional<media::VideoColorSpace> color_space_;
     gfx::Size resolution_{0, 0};
   };

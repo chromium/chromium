@@ -25,6 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_IMAGE_H_
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_model_object.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -35,6 +36,7 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
  public:
   explicit LayoutSVGImage(SVGImageElement*);
   ~LayoutSVGImage() override;
+  void Trace(Visitor*) const override;
 
   void SetNeedsBoundariesUpdate() override { NOT_DESTROYED(); }
   void SetNeedsTransformUpdate() override {
@@ -51,7 +53,7 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
     return image_resource_.Get();
   }
 
-  FloatRect ObjectBoundingBox() const override {
+  gfx::RectF ObjectBoundingBox() const override {
     NOT_DESTROYED();
     return object_bounding_box_;
   }
@@ -81,7 +83,7 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
   void WillBeDestroyed() override;
 
  private:
-  FloatRect StrokeBoundingBox() const override {
+  gfx::RectF StrokeBoundingBox() const override {
     NOT_DESTROYED();
     return object_bounding_box_;
   }
@@ -98,14 +100,14 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
                    const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
 
-  FloatSize CalculateObjectSize() const;
+  gfx::SizeF CalculateObjectSize() const;
   bool HasOverriddenIntrinsicSize() const;
 
   bool needs_transform_update_ : 1;
   bool transform_uses_reference_box_ : 1;
   AffineTransform local_transform_;
-  FloatRect object_bounding_box_;
-  Persistent<LayoutImageResource> image_resource_;
+  gfx::RectF object_bounding_box_;
+  Member<LayoutImageResource> image_resource_;
 };
 
 template <>

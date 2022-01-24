@@ -15,12 +15,13 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_track_metrics.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_impl.h"
+#include "third_party/blink/renderer/modules/peerconnection/speed_limit_uma_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/thermal_resource.h"
 #include "third_party/blink/renderer/modules/peerconnection/thermal_uma_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/transceiver_state_surfacer.h"
@@ -168,6 +169,10 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool force_encoded_audio_insertable_streams,
       bool force_encoded_video_insertable_streams);
+
+  RTCPeerConnectionHandler(const RTCPeerConnectionHandler&) = delete;
+  RTCPeerConnectionHandler& operator=(const RTCPeerConnectionHandler&) = delete;
+
   virtual ~RTCPeerConnectionHandler();
 
   // Initialize method only used for unit test.
@@ -186,8 +191,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       WebLocalFrame* web_frame,
       ExceptionState& exception_state);
 
-  virtual void Stop();
-  virtual void StopAndUnregister();
+  virtual void Close();
+  virtual void CloseAndUnregister();
 
   virtual Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOffer(
       RTCSessionDescriptionRequest* request,
@@ -267,6 +272,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // Virtual for testing purposes.
   virtual void OnThermalStateChange(
       mojom::blink::DeviceThermalState thermal_state);
+  // Invoked when a new CPU speed limit is received from the OS.
+  virtual void OnSpeedLimitChange(int32_t speed_limit);
 
   // Start recording an event log.
   void StartEventLog(int output_period_ms);
@@ -348,6 +355,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
 
   // Protected for testing.
   ThermalUmaListener* thermal_uma_listener() const;
+  SpeedLimitUmaListener* speed_limit_uma_listener() const;
 
  private:
   // Record info about the first SessionDescription from the local and
@@ -445,14 +453,14 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // |client_| is a raw pointer to the blink object (blink::RTCPeerConnection)
   // that owns this object.
   // It is valid for the lifetime of this object, but is cleared when
-  // StopAndUnregister() is called, in order to make sure it doesn't
+  // CloseAndUnregister() is called, in order to make sure it doesn't
   // interfere with garbage collection of the owner object.
   RTCPeerConnectionHandlerClient* client_ = nullptr;
   // True if this PeerConnection has been closed.
   // After the PeerConnection has been closed, this object may no longer
   // forward callbacks to blink.
   bool is_closed_ = false;
-  // True if StopAndUnregister has been called.
+  // True if CloseAndUnregister has been called.
   bool is_unregistered_ = false;
 
   // Transition from kHaveLocalOffer to kHaveRemoteOffer indicates implicit
@@ -460,7 +468,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   webrtc::PeerConnectionInterface::SignalingState previous_signaling_state_ =
       webrtc::PeerConnectionInterface::kStable;
 
-  // Will be reset to nullptr when the handler is `StopAndUnregister()`-ed, so
+  // Will be reset to nullptr when the handler is `CloseAndUnregister()`-ed, so
   // it doesn't prevent the factory from being garbage-collected.
   Persistent<PeerConnectionDependencyFactory> dependency_factory_;
 
@@ -521,6 +529,11 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   std::unique_ptr<ThermalUmaListener> thermal_uma_listener_;
   mojom::blink::DeviceThermalState last_thermal_state_ =
       mojom::blink::DeviceThermalState::kUnknown;
+  // Last received OS speed limit.
+  int32_t last_speed_limit_ = mojom::blink::kSpeedLimitMax;
+  // SpeedLimitUmaListener is only tracked on peer connection that add an audio
+  // or video track.
+  std::unique_ptr<SpeedLimitUmaListener> speed_limit_uma_listener_;
 
   // Record info about the first SessionDescription from the local and
   // remote side to record UMA stats once both are set.  We only check
@@ -537,8 +550,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<RTCPeerConnectionHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RTCPeerConnectionHandler);
 };
 
 }  // namespace blink

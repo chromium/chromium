@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "content/browser/service_worker/service_worker_register_job.h"
 #include "content/browser/service_worker/service_worker_unregister_job.h"
 #include "content/common/content_export.h"
@@ -27,6 +26,11 @@ class ServiceWorkerRegistration;
 class CONTENT_EXPORT ServiceWorkerJobCoordinator {
  public:
   explicit ServiceWorkerJobCoordinator(ServiceWorkerContextCore* context);
+
+  ServiceWorkerJobCoordinator(const ServiceWorkerJobCoordinator&) = delete;
+  ServiceWorkerJobCoordinator& operator=(const ServiceWorkerJobCoordinator&) =
+      delete;
+
   ~ServiceWorkerJobCoordinator();
 
   void Register(const GURL& script_url,
@@ -73,6 +77,10 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
    public:
     JobQueue();
     JobQueue(JobQueue&&);
+
+    JobQueue(const JobQueue&) = delete;
+    JobQueue& operator=(const JobQueue&) = delete;
+
     ~JobQueue();
 
     // Adds a job to the queue. If an identical job is already at the end of the
@@ -94,15 +102,11 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
 
    private:
     base::circular_deque<std::unique_ptr<ServiceWorkerRegisterJobBase>> jobs_;
-
-    DISALLOW_COPY_AND_ASSIGN(JobQueue);
   };
 
   // The ServiceWorkerContextCore object must outlive this.
   ServiceWorkerContextCore* const context_;
   std::map<UniqueRegistrationKey, JobQueue> job_queues_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerJobCoordinator);
 };
 
 }  // namespace content

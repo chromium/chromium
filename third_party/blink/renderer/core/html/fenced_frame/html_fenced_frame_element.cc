@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_mparch_delegate.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_shadow_dom_delegate.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -23,6 +24,7 @@ HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
       frame_delegate_(FencedFrameDelegate::Create(this)) {
   DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()));
   UseCounter::Count(document, WebFeature::kHTMLFencedFrameElement);
+  DocumentFencedFrames::From(document).RegisterFencedFrame(this);
 }
 
 HTMLFencedFrameElement::~HTMLFencedFrameElement() = default;
@@ -30,6 +32,11 @@ HTMLFencedFrameElement::~HTMLFencedFrameElement() = default;
 void HTMLFencedFrameElement::Trace(Visitor* visitor) const {
   HTMLFrameOwnerElement::Trace(visitor);
   visitor->Trace(frame_delegate_);
+}
+
+void HTMLFencedFrameElement::DisconnectContentFrame() {
+  HTMLFrameOwnerElement::DisconnectContentFrame();
+  DocumentFencedFrames::From(GetDocument()).DeregisterFencedFrame(this);
 }
 
 // START HTMLFencedFrameElement::FencedFrameDelegate.
@@ -90,7 +97,13 @@ void HTMLFencedFrameElement::Navigate() {
   if (!isConnected())
     return;
 
-  KURL url = KURL(GetNonEmptyURLAttribute(html_names::kSrcAttr));
+  KURL url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
+
+  // TODO(crbug.com/1243568): Convert empty URLs to about:blank, and more
+  // generally implement the navigation restrictions to potentially-trustworthy
+  // URLs + urn:uuids.
+  if (url.IsEmpty())
+    return;
 
   DCHECK(frame_delegate_);
   frame_delegate_->Navigate(url);
@@ -98,9 +111,7 @@ void HTMLFencedFrameElement::Navigate() {
 
 void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {
   HTMLFrameOwnerElement::AttachLayoutTree(context);
-
-  if (features::kFencedFramesImplementationTypeParam.Get() ==
-      features::FencedFramesImplementationType::kMPArch) {
+  if (features::IsFencedFramesMPArchBased()) {
     if (GetLayoutEmbeddedContent() && ContentFrame()) {
       SetEmbeddedContentView(ContentFrame()->View());
     }
@@ -110,12 +121,15 @@ void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {
 LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy_layout) {
-  if (features::kFencedFramesImplementationTypeParam.Get() ==
-      features::FencedFramesImplementationType::kMPArch) {
-    return new LayoutIFrame(this);
+  if (features::IsFencedFramesMPArchBased()) {
+    return MakeGarbageCollected<LayoutIFrame>(this);
   }
 
   return HTMLFrameOwnerElement::CreateLayoutObject(style, legacy_layout);
+}
+
+bool HTMLFencedFrameElement::SupportsFocus() const {
+  return features::IsFencedFramesMPArchBased();
 }
 
 }  // namespace blink

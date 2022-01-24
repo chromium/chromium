@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
@@ -36,6 +35,9 @@ namespace views {
 class DialogClientViewTest : public test::WidgetTest {
  public:
   DialogClientViewTest() = default;
+
+  DialogClientViewTest(const DialogClientViewTest&) = delete;
+  DialogClientViewTest& operator=(const DialogClientViewTest&) = delete;
 
   // testing::Test:
   void SetUp() override {
@@ -175,8 +177,6 @@ class DialogClientViewTest : public test::WidgetTest {
   gfx::Size preferred_size_;
   gfx::Size min_size_;
   gfx::Size max_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogClientViewTest);
 };
 
 TEST_F(DialogClientViewTest, UpdateButtons) {
@@ -530,8 +530,7 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_ClickAfterShown) {
 
   cancel_button.NotifyClick(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-      ui::EventTimeForNow() +
-          base::TimeDelta::FromMilliseconds(GetDoubleClickInterval()),
+      ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
       ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget()->IsClosed());
 }
@@ -544,7 +543,7 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_RepeatedClicks) {
 
   const base::TimeTicks kNow = ui::EventTimeForNow();
   const base::TimeDelta kShortClickInterval =
-      base::TimeDelta::FromMilliseconds(GetDoubleClickInterval());
+      base::Milliseconds(GetDoubleClickInterval());
 
   // Should ignore clicks right after the dialog is shown.
   ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),

@@ -15,7 +15,7 @@
 #include "chromecast/browser/webview/proto/webview.pb.h"
 #include "chromecast/browser/webview/webview_input_method_observer.h"
 #include "chromecast/browser/webview/webview_navigation_throttle.h"
-#include "chromecast/common/cast_content_client.h"
+#include "chromecast/common/user_agent.h"
 #include "chromecast/graphics/cast_focus_client_aura.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -44,7 +44,7 @@ namespace chromecast {
 namespace {
 
 base::TimeTicks TimeTicksFromTimestamp(int64_t timestamp) {
-  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(timestamp);
+  return base::TimeTicks() + base::Microseconds(timestamp);
 }
 
 }  // namespace
@@ -285,8 +285,7 @@ void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {
         ui::TouchEvent evt(
             type, gfx::PointF(touch.x(), touch.y()),
             gfx::PointF(touch.root_x(), touch.root_y()),
-            base::TimeTicks() +
-                base::TimeDelta::FromMicroseconds(ev.timestamp()),
+            base::TimeTicks() + base::Microseconds(ev.timestamp()),
             ui::PointerDetails(
                 static_cast<ui::EventPointerType>(touch.pointer_type()),
                 static_cast<ui::PointerId>(touch.pointer_id()),
@@ -343,9 +342,8 @@ void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {
         ui::MouseEvent evt(
             type, gfx::PointF(mouse.x(), mouse.y()),
             gfx::PointF(mouse.root_x(), mouse.root_y()),
-            base::TimeTicks() +
-                base::TimeDelta::FromMicroseconds(ev.timestamp()),
-            ev.flags(), mouse.changed_button_flags());
+            base::TimeTicks() + base::Microseconds(ev.timestamp()), ev.flags(),
+            mouse.changed_button_flags());
         if (contents->GetAccessibilityMode().has_mode(
                 ui::AXMode::kWebContents)) {
           evt.set_flags(evt.flags() | ui::EF_TOUCH_ACCESSIBILITY);
@@ -569,7 +567,7 @@ void WebContentController::HandleGetUserAgent(int64_t id) {
       std::make_unique<webview::WebviewResponse>();
 
   response->set_id(id);
-  response->mutable_get_user_agent()->set_user_agent(shell::GetUserAgent());
+  response->mutable_get_user_agent()->set_user_agent(GetUserAgent());
   client_->EnqueueSend(std::move(response));
 }
 
@@ -592,7 +590,7 @@ void WebContentController::OnSurfaceDestroying(exo::Surface* surface) {
   surface_ = nullptr;
 }
 
-void WebContentController::MainFrameWasResized(bool width_changed) {
+void WebContentController::PrimaryMainFrameWasResized(bool width_changed) {
   // The surface ID may have changed, so trigger a new commit to re-issue the
   // draw quad.
   if (surface_) {

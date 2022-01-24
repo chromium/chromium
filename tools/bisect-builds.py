@@ -62,7 +62,7 @@ OMAHA_REVISIONS_URL = ('https://omahaproxy.appspot.com/deps.json?version=%s')
 CHROMIUM_SEARCH_PATTERN_OLD = (
     r'.*git-svn-id: svn://svn.chromium.org/chrome/trunk/src@(\d+) ')
 CHROMIUM_SEARCH_PATTERN = (
-    r'Cr-Commit-Position: refs/heads/master@{#(\d+)}')
+    r'Cr-Commit-Position: refs/heads/(?:master|main)@{#(\d+)}')
 
 # Search pattern to be matched in the json output from
 # BLINK_GITHASH_TO_SVN_URL to get the blink revision (svn revision).

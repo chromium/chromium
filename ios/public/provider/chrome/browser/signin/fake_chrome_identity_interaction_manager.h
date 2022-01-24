@@ -11,8 +11,12 @@
 @interface FakeChromeIdentityInteractionManager
     : ChromeIdentityInteractionManager
 
-// Fake identity that will be returned by the add account method.
-@property(nonatomic, weak) ChromeIdentity* fakeIdentity;
+// Identity that will be returned by the add account method if the dialog is
+// closed successfully.
+@property(nonatomic, strong, class) ChromeIdentity* identity;
+
+// YES if the fake add account view is presented.
+@property(nonatomic, assign, readonly) BOOL viewControllerPresented;
 
 // Simulates a user tapping the sign-in button.
 - (void)addAccountViewControllerDidTapSignIn;
@@ -22,6 +26,9 @@
 
 // Simulates the user encountering an error not handled by ChromeIdentity.
 - (void)addAccountViewControllerDidThrowUnhandledError;
+
+// Simulates the add account view being interrupted.
+- (void)addAccountViewControllerDidInterrupt;
 
 @end
 

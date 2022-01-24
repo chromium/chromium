@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/force_signin_verifier.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -52,11 +54,12 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/net/delay_network_call.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
+#include "chromeos/network/network_handler.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager_util.h"
+#include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/account_manager_core/account.h"
@@ -92,6 +95,13 @@ SigninClient::SignoutDecision IsSignoutAllowed(
     const signin_metrics::ProfileSignout signout_source) {
   if (signin_util::IsUserSignoutAllowedForProfile(profile))
     return SigninClient::SignoutDecision::ALLOW_SIGNOUT;
+
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(profile);
+  if (identity_manager &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return SigninClient::SignoutDecision::ALLOW_SIGNOUT;
+  }
 
   for (const auto& always_allowed_source : kAlwaysAllowedSignoutSources) {
     if (signout_source == always_allowed_source)
@@ -172,13 +182,19 @@ void ChromeSigninClient::PreSignOut(
   on_signout_decision_reached_ = std::move(on_signout_decision_reached);
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
+  // `signout_source_metric` is `signin_metrics::ABORT_SIGNIN` if the user
+  // declines sync in the signin process. In case the user accepts the managed
+  // account but declines sync, we should keep the window open.
+  bool user_declines_sync_after_consenting_to_management =
+      signout_source_metric == signin_metrics::ABORT_SIGNIN &&
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
   // These sign out won't remove the policy cache, keep the window opened.
   bool keep_window_opened =
       signout_source_metric ==
           signin_metrics::GOOGLE_SERVICE_NAME_PATTERN_CHANGED ||
       signout_source_metric == signin_metrics::SERVER_FORCED_DISABLE ||
-      signout_source_metric == signin_metrics::SIGNOUT_PREF_CHANGED;
+      signout_source_metric == signin_metrics::SIGNOUT_PREF_CHANGED ||
+      user_declines_sync_after_consenting_to_management;
   if (signin_util::IsForceSigninEnabled() && !profile_->IsSystemProfile() &&
       !profile_->IsGuestSession() && !profile_->IsSupervised() &&
       !keep_window_opened) {
@@ -226,9 +242,15 @@ void ChromeSigninClient::OnConnectionChanged(
 
 void ChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::DelayNetworkCall(
-      base::TimeDelta::FromMilliseconds(chromeos::kDefaultNetworkRetryDelayMS),
-      std::move(callback));
+  // Do not make network requests in unit tests. chromeos::NetworkHandler should
+  // not be used and is not expected to have been initialized in unit tests.
+  if (url_loader_factory_for_testing_ &&
+      !chromeos::NetworkHandler::IsInitialized()) {
+    std::move(callback).Run();
+    return;
+  }
+  ash::DelayNetworkCall(base::Milliseconds(ash::kDefaultNetworkRetryDelayMS),
+                        std::move(callback));
   return;
 #else
   // Don't bother if we don't have any kind of network connection.
@@ -261,15 +283,6 @@ void ChromeSigninClient::VerifySyncToken() {
 #endif
 }
 
-void ChromeSigninClient::SetDiceMigrationCompleted() {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  AccountConsistencyModeManager::GetForProfile(profile_)
-      ->SetDiceMigrationCompleted();
-#else
-  NOTREACHED();
-#endif
-}
-
 bool ChromeSigninClient::IsNonEnterpriseUser(const std::string& username) {
   return policy::BrowserPolicyConnector::IsNonEnterpriseUser(username);
 }
@@ -290,11 +303,8 @@ bool ChromeSigninClient::IsNonEnterpriseUser(const std::string& username) {
 // signed-in by default.
 absl::optional<account_manager::Account>
 ChromeSigninClient::GetInitialPrimaryAccount() {
-  if (!IsAccountManagerAvailable(profile_)) {
-    // Secondary Profiles in Lacros do not start with the Device Account signed
-    // in.
+  if (!profile_->IsMainProfile())
     return absl::nullopt;
-  }
 
   const crosapi::mojom::AccountPtr& device_account =
       chromeos::LacrosService::Get()->init_params()->device_account;

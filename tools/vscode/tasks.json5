@@ -1,8 +1,10 @@
 {
   // Note!
-  // You can set the value used for ${config:chrome.outputDir} in your settings.json
+  // Set the value used for ${config:chrome.outputDir} in your settings.json
   // file with a line like:
-  // "chrome.outputDir": "/path/to/chromium/src/out/Debug",
+  //   "chrome.outputDir": "/path/to/chromium/src/out/current_link",
+  // Then run "0-set_chrome_output_directory" to set the `current_link`
+  // symbolic link (see below).
   "version": "2.0.0",
   "runner": "terminal",
   // The default problem matcher matches build output, which is useful for most tasks.
@@ -58,6 +60,12 @@
         "/path/to/chromium/src/out/Debug",
         "/path/to/chromium/src/out/Debug_x86"
       ]
+    },
+    {
+      "type": "promptString",
+      "id": "gtestFilter",
+      "description": "Filter for 4-test_current_file_with_filter",
+      "default": "*"
     }
   ],
   "tasks": [
@@ -103,33 +111,48 @@
     {
       "label": "3-test_current_file",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --run_all ${file}"
+      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --run-all ${file}"
     },
     {
-      "label": "4-test_current_directory",
+      "label": "4-test_current_file_with_filter",
       "type": "shell",
-      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --run_all ${fileDirname}"
+      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --gtest_filter ${input:gtestFilter} ${file}"
     },
     {
-      "label": "5-build_current_file",
+      "label": "5-test_current_line",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --line ${lineNumber} ${file}"
+    },
+    {
+      "label": "6-test_current_directory",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/autotest.py -C ${config:chrome.outputDir} --run-all ${fileDirname}"
+    },
+    {
+      "label": "7-build_current_file",
       "type": "shell",
       "command": "compile_single_file --build-dir=${config:chrome.outputDir} --file-path=${file}"
     },
     // Some more specific build tasks, which hard-code the output directory.
     {
-      "label": "6-build_chrome_debug",
+      "label": "8-build_chrome_debug",
       "type": "shell",
       "command": "autoninja -C ${workspaceFolder}/out/Debug chrome"
     },
     {
-      "label": "7-build_chrome_release",
+      "label": "9-build_chrome_release",
       "type": "shell",
       "command": "autoninja -C ${workspaceFolder}/out/Release chrome"
     },
     {
-      "label": "8-build_test_debug",
+      "label": "10-build_test_debug",
       "type": "shell",
       "command": "autoninja -C ${workspaceFolder}/out/Debug unit_tests components_unittests browser_tests"
+    },
+    {
+      "label": "11-generate_compile_commands",
+      "type": "shell",
+      "command": "${workspaceFolder}/tools/clang/scripts/generate_compdb.py -p ${config:chrome.outputDir} > ${workspaceFolder}/compile_commands.json"
     }
   ]
 }

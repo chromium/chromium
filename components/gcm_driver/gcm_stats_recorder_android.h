@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "components/gcm_driver/gcm_activity.h"
 
 namespace gcm {
@@ -34,6 +33,10 @@ class GCMStatsRecorderAndroid {
 
   // A weak reference to |delegate| is stored, so it must outlive the recorder.
   explicit GCMStatsRecorderAndroid(Delegate* delegate);
+
+  GCMStatsRecorderAndroid(const GCMStatsRecorderAndroid&) = delete;
+  GCMStatsRecorderAndroid& operator=(const GCMStatsRecorderAndroid&) = delete;
+
   ~GCMStatsRecorderAndroid();
 
   // Clears the recorded activities.
@@ -88,8 +91,6 @@ class GCMStatsRecorderAndroid {
   // Recorded message decryption failure activities.
   base::circular_deque<DecryptionFailureActivity>
       decryption_failure_activities_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMStatsRecorderAndroid);
 };
 
 }  // namespace gcm

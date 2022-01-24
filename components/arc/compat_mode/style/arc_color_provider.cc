@@ -5,7 +5,7 @@
 #include "components/arc/compat_mode/style/arc_color_provider.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/style/scoped_light_mode_as_default.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 
 namespace arc {
 
@@ -37,6 +37,11 @@ SkColor GetContentLayerColor(ContentLayerType type) {
 SkColor GetDialogBackgroundBaseColor() {
   return IsDarkModeEnabled() ? kDialogBackgroundBaseColorDark
                              : kDialogBackgroundBaseColorLight;
+}
+
+SkColor GetCrOSColor(cros_styles::ColorName color_name) {
+  return cros_styles::ResolveColor(color_name, IsDarkModeEnabled(),
+                                   /*use_debug_colors=*/false);
 }
 
 bool IsDarkModeEnabled() {

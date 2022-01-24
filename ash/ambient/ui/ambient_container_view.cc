@@ -14,6 +14,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
@@ -23,6 +24,10 @@ namespace ash {
 
 AmbientContainerView::AmbientContainerView(AmbientViewDelegate* delegate)
     : delegate_(delegate) {
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks, but this focusable View needs to
+  // add a name so that the screen reader knows what to announce.
+  SetProperty(views::kSkipAccessibilityPaintChecks, true);
   SetID(AmbientViewID::kAmbientContainerView);
   Init();
 }

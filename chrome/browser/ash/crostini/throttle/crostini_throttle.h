@@ -9,8 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
-#include "chrome/browser/chromeos/throttle_service.h"
+#include "chrome/browser/ash/throttle_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -21,17 +20,18 @@ namespace crostini {
 
 // This class holds a number observers which watch for conditions and adjust the
 // throttle state of the Crostini VM on a change in conditions.
-class CrostiniThrottle : public KeyedService, public chromeos::ThrottleService {
+class CrostiniThrottle : public KeyedService, public ash::ThrottleService {
  public:
   class Delegate {
    public:
     Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() = default;
 
     virtual void SetCpuRestriction(bool) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Returns singleton instance for the given BrowserContext, or nullptr if
@@ -40,6 +40,10 @@ class CrostiniThrottle : public KeyedService, public chromeos::ThrottleService {
       content::BrowserContext* context);
 
   explicit CrostiniThrottle(content::BrowserContext* context);
+
+  CrostiniThrottle(const CrostiniThrottle&) = delete;
+  CrostiniThrottle& operator=(const CrostiniThrottle&) = delete;
+
   ~CrostiniThrottle() override;
 
   // KeyedService:
@@ -50,15 +54,12 @@ class CrostiniThrottle : public KeyedService, public chromeos::ThrottleService {
   }
 
  private:
-  // chromeos::ThrottleService:
-  void ThrottleInstance(
-      chromeos::ThrottleObserver::PriorityLevel level) override;
+  // ash::ThrottleService:
+  void ThrottleInstance(ash::ThrottleObserver::PriorityLevel level) override;
   void RecordCpuRestrictionDisabledUMA(const std::string& observer_name,
                                        base::TimeDelta delta) override {}
 
   std::unique_ptr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniThrottle);
 };
 
 }  // namespace crostini

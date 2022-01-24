@@ -27,6 +27,11 @@ class WebViewPersonalDataManagerFactory
       WebViewBrowserState* browser_state);
   static WebViewPersonalDataManagerFactory* GetInstance();
 
+  WebViewPersonalDataManagerFactory(const WebViewPersonalDataManagerFactory&) =
+      delete;
+  WebViewPersonalDataManagerFactory& operator=(
+      const WebViewPersonalDataManagerFactory&) = delete;
+
  private:
   friend class base::NoDestructor<WebViewPersonalDataManagerFactory>;
 
@@ -36,8 +41,6 @@ class WebViewPersonalDataManagerFactory
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewPersonalDataManagerFactory);
 };
 
 }  // namespace ios_web_view

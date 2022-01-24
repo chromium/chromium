@@ -92,33 +92,6 @@ enum NotificationType {
   NOTIFICATION_PRINT_JOB_EVENT,
 
   // Misc --------------------------------------------------------------------
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Sent when a network error message is displayed on the WebUI login screen.
-  // First paint event of this fires NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE.
-  // TODO(https://crbug.com/1174791): Remove.
-  NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN,
-
-  // Sent when the specific part of login/lock WebUI is considered to be
-  // visible. That moment is tracked as the first paint event after one of the:
-  // NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN
-  //
-  // Possible series of notifications:
-  // 1. Boot into fresh OOBE
-  //    NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE
-  // 2. Boot into user pods list (normal boot). Same for lock screen.
-  //    NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE
-  // 3. Boot into GAIA sign in UI (user pods display disabled or no users):
-  //    if no network is connected or flaky network
-  //    (NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN +
-  //     NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE)
-  //    NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE
-  // 4. Boot into retail mode
-  //    NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE
-  // TODO(https://crbug.com/1174793): Remove.
-  NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-#endif
-
   // Note:-
   // Currently only Content and Chrome define and use notifications.
   // Custom notifications not belonging to Content and Chrome should start

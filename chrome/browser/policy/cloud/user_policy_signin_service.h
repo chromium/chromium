@@ -10,7 +10,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_base.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -27,7 +29,8 @@ class CloudPolicyClientRegistrationHelper;
 
 // A specialization of the UserPolicySigninServiceBase for the desktop
 // platforms (Windows, Mac and Linux).
-class UserPolicySigninService : public UserPolicySigninServiceBase {
+class UserPolicySigninService : public UserPolicySigninServiceBase,
+                                public ProfileAttributesStorage::Observer {
  public:
   // Creates a UserPolicySigninService associated with the passed
   // |policy_manager| and |identity_manager|.
@@ -66,6 +69,9 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
   // the manager must be shutdown manually.
   void ShutdownUserCloudPolicyManager() override;
 
+  void OnProfileUserManagementAcceptanceChanged(
+      const base::FilePath& profile_path) override;
+
  protected:
   // UserPolicySigninServiceBase implementation:
   void InitializeUserCloudPolicyManager(
@@ -88,9 +94,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
   // cloud policy.
   void ProhibitSignoutIfNeeded();
 
-  // Called when the value of the `profile.account_management` pref changes.
-  void OnAccountManagementPrefChange();
-
   // Helper method that attempts calls |InitializeForSignedInUser| only if
   // |policy_manager| is not-nul. Expects that there is a refresh token for
   // the primary account.
@@ -101,7 +104,9 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
                                       PolicyRegistrationCallback callback);
 
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
-  PrefChangeRegistrar profile_pref_change_registrar_;
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      observed_profile_{this};
 };
 
 }  // namespace policy

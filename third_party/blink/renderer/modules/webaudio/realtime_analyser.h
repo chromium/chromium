@@ -44,6 +44,9 @@ class RealtimeAnalyser final {
  public:
   explicit RealtimeAnalyser(unsigned render_quantum_frames);
 
+  RealtimeAnalyser(const RealtimeAnalyser&) = delete;
+  RealtimeAnalyser& operator=(const RealtimeAnalyser&) = delete;
+
   uint32_t FftSize() const { return fft_size_; }
   bool SetFftSize(uint32_t);
 
@@ -115,8 +118,6 @@ class RealtimeAnalyser final {
 
   // Time at which the FFT was last computed.
   double last_analysis_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(RealtimeAnalyser);
 };
 
 }  // namespace blink

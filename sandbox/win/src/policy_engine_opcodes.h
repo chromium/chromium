@@ -281,6 +281,9 @@ class OpcodeFactory {
     memory_bottom_ = &memory_top_[memory_size];
   }
 
+  OpcodeFactory(const OpcodeFactory&) = delete;
+  OpcodeFactory& operator=(const OpcodeFactory&) = delete;
+
   // Returns the available memory to make opcodes.
   size_t memory_size() const;
 
@@ -366,8 +369,6 @@ class OpcodeFactory {
   // used to make the opcodes. This pointer decrements as opcode strings are
   // allocated.
   char* memory_bottom_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpcodeFactory);
 };
 
 }  // namespace sandbox

@@ -40,6 +40,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.ExecutionException;
@@ -151,7 +152,9 @@ public class BottomSheetTest {
     public void testTabObscuringState() throws TimeoutException {
         CallbackHelper obscuringStateChangedHelper = new CallbackHelper();
         TabObscuringHandler handler = mTestRule.getActivity().getTabObscuringHandler();
-        handler.addObserver((isObscured) -> obscuringStateChangedHelper.notifyCalled());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            handler.addObserver((isObscured) -> obscuringStateChangedHelper.notifyCalled());
+        });
         mHighPriorityContent.setHasCustomScrimLifecycle(false);
 
         assertFalse("The tab should not yet be obscured.", handler.areAllTabsObscured());
@@ -173,7 +176,9 @@ public class BottomSheetTest {
     public void testTabObscuringState_customScrim() throws ExecutionException {
         CallbackHelper obscuringStateChangedHelper = new CallbackHelper();
         TabObscuringHandler handler = mTestRule.getActivity().getTabObscuringHandler();
-        handler.addObserver((isObscured) -> obscuringStateChangedHelper.notifyCalled());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            handler.addObserver((isObscured) -> obscuringStateChangedHelper.notifyCalled());
+        });
         mHighPriorityContent.setHasCustomScrimLifecycle(true);
 
         assertFalse("The tab should not be obscured.", handler.areAllTabsObscured());

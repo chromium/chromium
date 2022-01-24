@@ -60,7 +60,7 @@ void AsynchronousFreeMemoryMonitor() {
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&AsynchronousFreeMemoryMonitor),
-      base::TimeDelta::FromSeconds(kMemoryMonitorDelayInSeconds));
+      base::Seconds(kMemoryMonitorDelayInSeconds));
 }
 }  // namespace
 

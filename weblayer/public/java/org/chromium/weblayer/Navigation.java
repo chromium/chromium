@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IClientNavigation;
@@ -306,6 +305,28 @@ public class Navigation extends IClientNavigation.Stub {
     }
 
     /**
+     * Disables intent processing for the lifetime of this navigation (including following
+     * redirects). This method may only be called from
+     * {@link NavigationCallback.onNavigationStarted}.
+     *
+     * @throws IllegalStateException If not called during start.
+     *
+     * @since 97
+     */
+    public void disableIntentProcessing() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.shouldPerformVersionChecks()
+                && WebLayer.getSupportedMajorVersionInternal() < 97) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            mNavigationImpl.disableIntentProcessing();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
      * Sets the user-agent string that applies to the current navigation. This user-agent is not
      * sticky, it applies to this navigation only (and any redirects or resources that are loaded).
      * This method may only be called from {@link NavigationCallback.onNavigationStarted}.
@@ -429,15 +450,15 @@ public class Navigation extends IClientNavigation.Stub {
 
     /*
      * Returns the Page object this navigation is occurring for.
-     * This method may only be called in or after {@link NavigationCallback.onNavigationCompleted}
-     * or {@link NavigationCallback.onNavigationFailed}. It can return null if the navigation didn't
-     * commit (e.g. 204/205 or download).
+     * This method may only be called in (1) {@link NavigationCallback.onNavigationCompleted} or
+     * (2) {@link NavigationCallback.onNavigationFailed} when {@link Navigation#isErrorPage}
+     * returns true. It will return a non-null object in these cases.
      *
-     * @throws IllegalStateException If called before completion or failure.
+     * @throws IllegalStateException if called outside the above circumstances.
      *
      * @since 90
      */
-    @Nullable
+    @NonNull
     public Page getPage() {
         ThreadCheck.ensureOnUiThread();
         if (WebLayer.getSupportedMajorVersionInternal() < 90) {

@@ -40,11 +40,11 @@ constexpr int kHttpPostFailServerError = 500;
 // backoff delay is applied on successive failures.
 // This value can be overriden by tests by calling
 // FeedbackUploader::SetMinimumRetryDelayForTesting().
-base::TimeDelta g_minimum_retry_delay = base::TimeDelta::FromMinutes(60);
+base::TimeDelta g_minimum_retry_delay = base::Minutes(60);
 
 // If a new report is queued to be dispatched immediately while another is being
 // dispatched, this is the time to wait for the on-going dispatching to finish.
-base::TimeDelta g_dispatching_wait_delay = base::TimeDelta::FromSeconds(4);
+base::TimeDelta g_dispatching_wait_delay = base::Seconds(4);
 
 GURL GetFeedbackPostGURL() {
   const base::CommandLine& command_line =

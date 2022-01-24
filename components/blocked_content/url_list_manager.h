@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 class GURL;
@@ -29,6 +28,10 @@ class UrlListManager {
   };
 
   UrlListManager();
+
+  UrlListManager(const UrlListManager&) = delete;
+  UrlListManager& operator=(const UrlListManager&) = delete;
+
   ~UrlListManager();
 
   void AddObserver(Observer* observer);
@@ -38,8 +41,6 @@ class UrlListManager {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlListManager);
 };
 
 }  // namespace blocked_content

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HANDLER_H_
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -26,6 +25,11 @@ class BluetoothInternalsHandler : public mojom::BluetoothInternalsHandler {
  public:
   explicit BluetoothInternalsHandler(
       mojo::PendingReceiver<mojom::BluetoothInternalsHandler> receiver);
+
+  BluetoothInternalsHandler(const BluetoothInternalsHandler&) = delete;
+  BluetoothInternalsHandler& operator=(const BluetoothInternalsHandler&) =
+      delete;
+
   ~BluetoothInternalsHandler() override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -51,8 +55,6 @@ class BluetoothInternalsHandler : public mojom::BluetoothInternalsHandler {
 #endif
 
   base::WeakPtrFactory<BluetoothInternalsHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothInternalsHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HANDLER_H_

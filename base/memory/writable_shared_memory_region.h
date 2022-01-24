@@ -5,7 +5,6 @@
 #ifndef BASE_MEMORY_WRITABLE_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_WRITABLE_SHARED_MEMORY_REGION_H_
 
-#include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -69,6 +68,10 @@ class BASE_EXPORT WritableSharedMemoryRegion {
   WritableSharedMemoryRegion(WritableSharedMemoryRegion&&);
   WritableSharedMemoryRegion& operator=(WritableSharedMemoryRegion&&);
 
+  WritableSharedMemoryRegion(const WritableSharedMemoryRegion&) = delete;
+  WritableSharedMemoryRegion& operator=(const WritableSharedMemoryRegion&) =
+      delete;
+
   // Destructor closes shared memory region if valid.
   // All created mappings will remain valid.
   ~WritableSharedMemoryRegion();
@@ -121,8 +124,6 @@ class BASE_EXPORT WritableSharedMemoryRegion {
   static CreateFunction* create_hook_;
 
   subtle::PlatformSharedMemoryRegion handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(WritableSharedMemoryRegion);
 };
 
 }  // namespace base

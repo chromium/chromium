@@ -1,6 +1,6 @@
 {
   "name": "Login screen APIs test extension",
-  "version": "1.24",
+  "version": "1.25",
   "manifest_version": 2,
   "description": "Login screen APIs test extension",
   "default_locale": "en",
@@ -12,6 +12,7 @@
     "i18n",
     "login",
     "loginScreenUi",
+    "loginScreenStorage",
     "storage"
   ]
 }

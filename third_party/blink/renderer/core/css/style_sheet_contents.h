@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -115,6 +116,10 @@ class CORE_EXPORT StyleSheetContents final
   // Rules other than @import.
   const HeapVector<Member<StyleRuleBase>>& ChildRules() const {
     return child_rules_;
+  }
+  const HeapVector<Member<StyleRuleLayerStatement>>&
+  PreImportLayerStatementRules() const {
+    return pre_import_layer_statement_rules_;
   }
   const HeapVector<Member<StyleRuleImport>>& ImportRules() const {
     return import_rules_;
@@ -207,6 +212,7 @@ class CORE_EXPORT StyleSheetContents final
 
   String original_url_;
 
+  HeapVector<Member<StyleRuleLayerStatement>> pre_import_layer_statement_rules_;
   HeapVector<Member<StyleRuleImport>> import_rules_;
   HeapVector<Member<StyleRuleNamespace>> namespace_rules_;
   HeapVector<Member<StyleRuleBase>> child_rules_;

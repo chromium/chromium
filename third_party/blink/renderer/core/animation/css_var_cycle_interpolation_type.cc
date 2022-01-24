@@ -21,20 +21,21 @@ namespace blink {
 
 class CycleChecker : public InterpolationType::ConversionChecker {
  public:
-  CycleChecker(const CSSCustomPropertyDeclaration& declaration,
+  CycleChecker(const PropertyHandle& property,
+               const CSSValue& value,
                bool cycle_detected)
-      : declaration_(declaration), cycle_detected_(cycle_detected) {}
+      : property_(property), value_(value), cycle_detected_(cycle_detected) {}
 
  private:
   bool IsValid(const InterpolationEnvironment& environment,
                const InterpolationValue&) const final {
     const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
-    bool cycle_detected = !css_environment.Resolve(
-        PropertyHandle(declaration_->GetName()), declaration_);
+    bool cycle_detected = !css_environment.Resolve(property_, value_);
     return cycle_detected == cycle_detected_;
   }
 
-  Persistent<const CSSCustomPropertyDeclaration> declaration_;
+  PropertyHandle property_;
+  Persistent<const CSSValue> value_;
   const bool cycle_detected_;
 };
 
@@ -56,7 +57,6 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
     ConversionCheckers& conversion_checkers) const {
   const auto& declaration = *To<CSSCustomPropertyDeclaration>(
       To<CSSPropertySpecificKeyframe>(keyframe).Value());
-  DCHECK_EQ(GetProperty().CustomPropertyName(), declaration.GetName());
   if ((!declaration.Value() ||
        !declaration.Value()->NeedsVariableResolution()) &&
       !declaration.IsRevert()) {
@@ -65,9 +65,10 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
 
   const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
 
-  bool cycle_detected = !css_environment.Resolve(GetProperty(), &declaration);
+  PropertyHandle property = GetProperty();
+  bool cycle_detected = !css_environment.Resolve(property, &declaration);
   conversion_checkers.push_back(
-      std::make_unique<CycleChecker>(declaration, cycle_detected));
+      std::make_unique<CycleChecker>(property, declaration, cycle_detected));
   return cycle_detected ? CreateCycleDetectedValue() : nullptr;
 }
 
@@ -117,10 +118,9 @@ void CSSVarCycleInterpolationType::Apply(
   StyleBuilder::ApplyProperty(
       GetProperty().GetCSSPropertyName(),
       To<CSSInterpolationEnvironment>(environment).GetState(),
-      ScopedCSSValue(
-          *MakeGarbageCollected<CSSCustomPropertyDeclaration>(
-              GetProperty().CustomPropertyName(), CSSValueID::kUnset),
-          nullptr));
+      ScopedCSSValue(*MakeGarbageCollected<CSSCustomPropertyDeclaration>(
+                         CSSValueID::kUnset),
+                     nullptr));
 }
 
 }  // namespace blink

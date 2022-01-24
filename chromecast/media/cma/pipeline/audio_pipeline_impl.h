@@ -27,6 +27,10 @@ class CodedFrameProvider;
 class AudioPipelineImpl : public AvPipelineImpl {
  public:
   AudioPipelineImpl(CmaBackend::AudioDecoder* decoder, AvPipelineClient client);
+
+  AudioPipelineImpl(const AudioPipelineImpl&) = delete;
+  AudioPipelineImpl& operator=(const AudioPipelineImpl&) = delete;
+
   ~AudioPipelineImpl() override;
 
   ::media::PipelineStatus Initialize(
@@ -49,8 +53,6 @@ class AudioPipelineImpl : public AvPipelineImpl {
   CmaBackend::AudioDecoder* const audio_decoder_;
 
   EncryptionScheme encryption_scheme_ = EncryptionScheme::kUnencrypted;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPipelineImpl);
 };
 
 }  // namespace media

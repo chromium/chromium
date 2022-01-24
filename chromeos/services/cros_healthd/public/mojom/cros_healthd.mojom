@@ -10,44 +10,45 @@
 
 module chromeos.cros_healthd.mojom;
 
+import "ash/services/network_health/public/mojom/network_diagnostics.mojom";
+import "ash/services/network_health/public/mojom/network_health.mojom";
 import "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom";
 import "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom";
 import "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom";
 import "chromeos/services/cros_healthd/public/mojom/nullable_primitives.mojom";
-import "chromeos/services/network_health/public/mojom/network_diagnostics.mojom";
-import "chromeos/services/network_health/public/mojom/network_health.mojom";
+import "chromeos/services/cros_healthd/public/mojom/wilco_ec.mojom";
 
 // Factory interface which allows remote ends to request implementations of the
 // probe, diagnostics, or event services. Additionally, the browser can send
 // network-related implementations to the cros_healthd daemon.
+//
+// NextMinVersion: 1, NextIndex: 6
 interface CrosHealthdServiceFactory {
   // Returns a bound interface to the diagnostics service.
-  GetDiagnosticsService(
-      pending_receiver<CrosHealthdDiagnosticsService> service);
+  GetDiagnosticsService@0(pending_receiver<CrosHealthdDiagnosticsService> service);
   // Returns a bound interface to the event service.
-  GetEventService(pending_receiver<CrosHealthdEventService> service);
+  GetEventService@1(pending_receiver<CrosHealthdEventService> service);
   // Returns a bound interface to the probe service.
-  GetProbeService(pending_receiver<CrosHealthdProbeService> service);
+  GetProbeService@2(pending_receiver<CrosHealthdProbeService> service);
   // Sends a bound interface to the Network Health service in Chrome.
-  SendNetworkHealthService(
-      pending_remote<
-          chromeos.network_health.mojom.NetworkHealthService> remote);
+  SendNetworkHealthService@3(
+      pending_remote<ash.network_health.mojom.NetworkHealthService> remote);
   // Sends a NetworkDiagnosticsRoutines pending remote to the cros_healthd
   // daemon.
-  SendNetworkDiagnosticsRoutines(
-      pending_remote<
-          chromeos.network_diagnostics.mojom.NetworkDiagnosticsRoutines>
-              network_diagnostics_routines);
+  SendNetworkDiagnosticsRoutines@4(
+      pending_remote<ash.network_diagnostics.mojom.NetworkDiagnosticsRoutines>
+          network_diagnostics_routines);
   // TODO(http://b/181133872): Move this service out of this interface
   // Returns a bound interface to the system service.
-  GetSystemService(pending_receiver<CrosHealthdSystemService> service);
+  GetSystemService@5(pending_receiver<CrosHealthdSystemService> service);
 };
 
-// Diagnostics interface exposed by the cros_healthd daemon. Consumed in Chrome
-// by remote commands, which are made available via the cloud EMM API.
+// Diagnostics interface exposed by the cros_healthd daemon.
+//
+// NextMinVersion: 1, NextIndex: 32
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
-  GetAvailableRoutines()
+  GetAvailableRoutines@0()
       => (array<DiagnosticRoutineEnum> available_routines);
 
   // Sends commands to an existing routine. Also returns status information for
@@ -64,7 +65,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |routine_update| - status information for the specified routine. See
   //                      cros_healthd_diagnostics.mojom for the structure.
-  GetRoutineUpdate(int32 id, DiagnosticRoutineCommandEnum command,
+  GetRoutineUpdate@1(int32 id, DiagnosticRoutineCommandEnum command,
                    bool include_output)
       => (RoutineUpdate routine_update);
 
@@ -83,7 +84,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunUrandomRoutine(NullableUint32? length_seconds)
+  RunUrandomRoutine@2(NullableUint32? length_seconds)
       => (RunRoutineResponse response);
 
   // Requests that the BatteryCapacity routine is created and started on the
@@ -97,7 +98,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunBatteryCapacityRoutine() => (RunRoutineResponse response);
+  RunBatteryCapacityRoutine@3() => (RunRoutineResponse response);
 
   // Requests that the BatteryHealth routine is created and started on the
   // platform. This routine checks the cycle count and percent wear of the
@@ -110,7 +111,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunBatteryHealthRoutine() => (RunRoutineResponse response);
+  RunBatteryHealthRoutine@4() => (RunRoutineResponse response);
 
   // Requests that the SmartctlCheck routine is created and started on the
   // platform. This routine checks available spare NVMe capacity against the
@@ -120,7 +121,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunSmartctlCheckRoutine() => (RunRoutineResponse response);
+  RunSmartctlCheckRoutine@5() => (RunRoutineResponse response);
 
   // Requests that the AcPower routine is created and started on the
   // platform. This routine checks the status of the power supply, and if
@@ -136,7 +137,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunAcPowerRoutine(AcPowerStatusEnum expected_status,
+  RunAcPowerRoutine@6(AcPowerStatusEnum expected_status,
                     string? expected_power_type)
       => (RunRoutineResponse response);
 
@@ -154,7 +155,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunCpuCacheRoutine(NullableUint32? length_seconds)
+  RunCpuCacheRoutine@7(NullableUint32? length_seconds)
       => (RunRoutineResponse response);
 
   // Requests that the CPU stress routine is created and started on the
@@ -171,7 +172,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunCpuStressRoutine(NullableUint32? length_seconds)
+  RunCpuStressRoutine@8(NullableUint32? length_seconds)
       => (RunRoutineResponse response);
 
   // Requests that the FloatingPointAccuracy routine is created and started
@@ -192,7 +193,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunFloatingPointAccuracyRoutine(NullableUint32? length_seconds)
+  RunFloatingPointAccuracyRoutine@9(NullableUint32? length_seconds)
       => (RunRoutineResponse response);
 
   // Requests that the NvmeWearLevel routine is created and started on the
@@ -207,7 +208,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunNvmeWearLevelRoutine(uint32 wear_level_threshold)
+  RunNvmeWearLevelRoutine@10(uint32 wear_level_threshold)
       => (RunRoutineResponse response);
 
   // Requests that the NvmeSelfTest routine is created and started on the
@@ -222,7 +223,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunNvmeSelfTestRoutine(NvmeSelfTestTypeEnum nvme_self_test_type)
+  RunNvmeSelfTestRoutine@11(NvmeSelfTestTypeEnum nvme_self_test_type)
       => (RunRoutineResponse response);
 
   // Requests that the DiskRead routine is created and started on the platform.
@@ -243,7 +244,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunDiskReadRoutine(DiskReadRoutineTypeEnum type, uint32 length_seconds,
+  RunDiskReadRoutine@12(DiskReadRoutineTypeEnum type, uint32 length_seconds,
                      uint32 file_size_mb)
       => (RunRoutineResponse response);
 
@@ -261,7 +262,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunPrimeSearchRoutine(NullableUint32? length_seconds)
+  RunPrimeSearchRoutine@13(NullableUint32? length_seconds)
       => (RunRoutineResponse response);
 
   // Requests that the BatteryDischarge routine is created and started on the
@@ -278,7 +279,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunBatteryDischargeRoutine(uint32 length_seconds,
+  RunBatteryDischargeRoutine@14(uint32 length_seconds,
                              uint32 maximum_discharge_percent_allowed)
       => (RunRoutineResponse response);
 
@@ -295,7 +296,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunBatteryChargeRoutine(uint32 length_seconds,
+  RunBatteryChargeRoutine@15(uint32 length_seconds,
                           uint32 minimum_charge_percent_required)
       => (RunRoutineResponse response);
 
@@ -306,7 +307,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunMemoryRoutine() => (RunRoutineResponse response);
+  RunMemoryRoutine@16() => (RunRoutineResponse response);
 
   // Requests that the LanConnectivity routine is created and started on the
   // platform. This routine checks whether the device is connected to a LAN.
@@ -316,17 +317,17 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunLanConnectivityRoutine() => (RunRoutineResponse response);
+  RunLanConnectivityRoutine@17() => (RunRoutineResponse response);
 
   // Requests that the SignalStrength routine is created and started on the
   // platform. This routine checks whether there is an acceptable signal
-  // strength on wireless networks.  This routine is only available if
+  // strength on wireless networks. This routine is only available if
   // GetAvailableRoutines returned kSignalStrength.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunSignalStrengthRoutine() => (RunRoutineResponse response);
+  RunSignalStrengthRoutine@18() => (RunRoutineResponse response);
 
   // Requests that the GatewayCanBePinged routine is created and started on the
   // platform. This routine checks whether the gateway of connected networks is
@@ -336,7 +337,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunGatewayCanBePingedRoutine() => (RunRoutineResponse response);
+  RunGatewayCanBePingedRoutine@19() => (RunRoutineResponse response);
 
   // Requests that the HasSecureWiFiConnection routine is created and started
   // on the platform. This routine checks whether the WiFi connection is
@@ -347,7 +348,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunHasSecureWiFiConnectionRoutine() => (RunRoutineResponse response);
+  RunHasSecureWiFiConnectionRoutine@20() => (RunRoutineResponse response);
 
   // Requests that the DnsResolverPresent routine is created and started on the
   // platform. This routine checks whether a DNS resolver is available to the
@@ -357,7 +358,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunDnsResolverPresentRoutine() => (RunRoutineResponse response);
+  RunDnsResolverPresentRoutine@21() => (RunRoutineResponse response);
 
   // Requests that the DnsLatency routine is created and started on the
   // platform. This routine checks whether the DNS latency is below an
@@ -367,7 +368,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunDnsLatencyRoutine() => (RunRoutineResponse response);
+  RunDnsLatencyRoutine@22() => (RunRoutineResponse response);
 
   // Requests that the DnsResolution routine is created and started on the
   // platform. This routine checks whether a DNS resolution can be completed
@@ -377,17 +378,17 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunDnsResolutionRoutine() => (RunRoutineResponse response);
+  RunDnsResolutionRoutine@23() => (RunRoutineResponse response);
 
   // Requests that the CaptivePortal routine is created and started on the
-  // platform. This routine checks whether the internet connection is behind
-  // a captive portal. This routine is only available if GetAvailableRoutines
+  // platform. This routine checks whether the internet connection is behind a
+  // captive portal. This routine is only available if GetAvailableRoutines
   // returned kCaptivePortal.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunCaptivePortalRoutine() => (RunRoutineResponse response);
+  RunCaptivePortalRoutine@24() => (RunRoutineResponse response);
 
   // Requests that the HttpFirewall routine is created and started on the
   // platform. This routine checks whether a firewall is blocking HTTP port 80.
@@ -397,7 +398,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunHttpFirewallRoutine() => (RunRoutineResponse response);
+  RunHttpFirewallRoutine@25() => (RunRoutineResponse response);
 
   // Requests that the HttpsFirewall routine is created and started on the
   // platform. This routine checks whether a firewall is blocking HTTPS port
@@ -407,7 +408,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunHttpsFirewallRoutine() => (RunRoutineResponse response);
+  RunHttpsFirewallRoutine@26() => (RunRoutineResponse response);
 
   // Requests that the HttpsLatency routine is created and started on the
   // platform. This routine checks whether the HTTPS latency is within
@@ -417,7 +418,7 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunHttpsLatencyRoutine() => (RunRoutineResponse response);
+  RunHttpsLatencyRoutine@27() => (RunRoutineResponse response);
 
   // Requests that the VideoConferencing routine is created and started on the
   // platform. This routine checks the device's video conferencing capabalities
@@ -435,51 +436,93 @@ interface CrosHealthdDiagnosticsService {
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunVideoConferencingRoutine(string? stun_server_hostname)
+  RunVideoConferencingRoutine@28(string? stun_server_hostname)
       => (RunRoutineResponse response);
+
+  // Requests that the ArcHttp routine is created and started on the
+  // platform. This routine checks whether the HTTP latency from inside ARC
+  // is within established tolerance levels for the system. This routine is
+  // only available if GetAvailableRoutines returned kArcHttp.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunArcHttpRoutine@29() => (RunRoutineResponse response);
+
+  // Requests that the ArcPing routine is created and started on the
+  // platform. This routine checks whether the gateway of connected networks is
+  // pingable inside ARC. This routine is only available if GetAvailableRoutines
+  // returned kArcPing.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunArcPingRoutine@30() => (RunRoutineResponse response);
+
+  // Requests that the ArcDnsResolution routine is created and started on the
+  // platform. This routine checks whether a DNS resolution can be completed
+  // successfully inside ARC. This routine is only available if
+  // GetAvailableRoutines returned kDnsResolution.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunArcDnsResolutionRoutine@31() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.
+//
+// NextMinVersion: 1, NextIndex: 6
 interface CrosHealthdEventService {
   // Adds an observer to be notified on Bluetooth events. The caller can remove
   // the observer created by this call by closing their end of the message pipe.
   //
   // The request:
   // * |observer| - Bluetooth observer to be added to cros_healthd.
-  AddBluetoothObserver(pending_remote<CrosHealthdBluetoothObserver> observer);
+  AddBluetoothObserver@0(pending_remote<CrosHealthdBluetoothObserver> observer);
 
   // Adds an observer to be notified on lid events. The caller can remove the
   // observer created by this call by closing their end of the message pipe.
   //
   // The request:
   // * |observer| - lid observer to be added to cros_healthd.
-  AddLidObserver(pending_remote<CrosHealthdLidObserver> observer);
+  AddLidObserver@1(pending_remote<CrosHealthdLidObserver> observer);
 
   // Adds an observer to be notified on power events. The caller can remove the
   // observer created by this call by closing their end of the message pipe.
   //
   // The request:
   // * |observer| - power observer to be added to cros_healthd.
-  AddPowerObserver(pending_remote<CrosHealthdPowerObserver> observer);
+  AddPowerObserver@2(pending_remote<CrosHealthdPowerObserver> observer);
 
   // Adds an observer to be notified on network events. The caller can remove
   // the observer created by this call by closing their end of the message pipe.
   //
   // The request:
   // * |observer| - network observer to be added to cros_healthd.
-  AddNetworkObserver(
-      pending_remote<
-          chromeos.network_health.mojom.NetworkEventsObserver> observer);
+  AddNetworkObserver@3(
+      pending_remote<ash.network_health.mojom.NetworkEventsObserver> observer);
 
   // Adds an observer to be notified on audio events. The caller can remove the
   // observer created by this call by closing their end of the message pipe.
   //
   // The request:
   // * |observer| - audio observer to be added to cros_healthd.
-  AddAudioObserver(pending_remote<CrosHealthdAudioObserver> observer);
+  AddAudioObserver@4(pending_remote<CrosHealthdAudioObserver> observer);
+
+  // Adds an observer to be notified on Thunderbolt events. The caller can
+  // remove the observer created by this call by closing their end of the
+  // message pipe.
+  //
+  // The request:
+  // * |observer| - Thunderbolt observer to be added to cros_healthd.
+  AddThunderboltObserver@5(
+      pending_remote<CrosHealthdThunderboltObserver> observer);
 };
 
 // Probe interface exposed by the cros_healthd daemon.
+//
+// NextMinVersion: 1, NextIndex: 2
 interface CrosHealthdProbeService {
   // Returns information about a specific process running on the device.
   //
@@ -488,7 +531,7 @@ interface CrosHealthdProbeService {
   //
   // The response:
   // * |process_info| - Information about the requested process.
-  ProbeProcessInfo(uint32 process_id) => (ProcessResult process_info);
+  ProbeProcessInfo@0(uint32 process_id) => (ProcessResult process_info);
 
   // Returns telemetry information for the desired categories.
   //
@@ -500,22 +543,61 @@ interface CrosHealthdProbeService {
   // * |telemetry_info| - information for each of the requested categories. Only
   //                      the fields corresponding to the requested categories
   //                      will be non-null.
-  ProbeTelemetryInfo(array<ProbeCategoryEnum> categories)
+  ProbeTelemetryInfo@1(array<ProbeCategoryEnum> categories)
       => (TelemetryInfo telemetry_info);
 };
 
 // Contains data about the current service instance of cros_healthd.
+//
+// NextMinVersion: 1, NextIndex: 2
 struct ServiceStatus {
   // Boolean flag if the NetworkHealthService mojo remote has been sent from
   // Chrome and bound in cros_healthd.
-  bool network_health_bound;
+  bool network_health_bound@0;
   // Boolean flag if the NetworkDiagnosticsService mojo remote has been sent
   // from Chrome and bound in cros_healthd.
-  bool network_diagnostics_bound;
+  bool network_diagnostics_bound@1;
 };
 
 // Interface to query the status of the cros_healthd service.
+//
+// NextMinVersion: 1, NextIndex: 1
 interface CrosHealthdSystemService {
   // Returns the status of the cros_healthd service and external mojo remotes.
-  GetServiceStatus() => (ServiceStatus response);
+  GetServiceStatus@0() => (ServiceStatus response);
+};
+
+// Wilco EC (embedded controller) interface exposed by the cros_healthd daemon.
+// This is to be used by the wilco_dtc and wilco_dtc_supportd processes to
+// interact with the cros_healthd ec_service, observe EC events, and request
+// telemetry information.
+// ChromeOS wilco_dtc_supportd will use this to capture EC events and telemetry
+// to be communicated to the sandboxed wilco_dtc which uses external,
+// proprietary code to communicate with Dell enterprise telemetry services
+// through the browser.
+// See go/wilco-ec for more information
+//
+// NextMinVersion: 1, NextIndex: 4
+interface WilcoEcServiceController {
+  // Adds an observer to be notified on EC events. The caller can remove the
+  // observer created by this call by closing their end of the message pipe.
+  //
+  // The request:
+  // * |observer| - EC observer to be added to cros_healthd.
+  AddEcObserver@0(pending_remote<WilcoEcObserver> observer);
+
+  // Returns EC telemetry
+  //
+  // The request:
+  // * |payload_string| - a byte string produced by the wilco_dtc VM.
+  //
+  // The response:
+  // * |response| - a structure containing a byte string and a status code.
+  GetEcTelemetry@1(string payload_string) => (GetEcTelemetryResponse response);
+
+  // Starts the Service.
+  StartEcService@2();
+
+  // Shuts down the Service.
+  ShutdownEcService@3();
 };

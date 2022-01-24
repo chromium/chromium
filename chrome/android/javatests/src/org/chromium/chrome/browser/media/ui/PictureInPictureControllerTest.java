@@ -148,6 +148,7 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @DisabledTest(message = "crbug.com/1249669")
     public void testExitOnNewForegroundTab() throws Throwable {
         testExitOn(new Runnable() {
             @Override

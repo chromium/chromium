@@ -10,8 +10,8 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -98,7 +98,7 @@ class DomDistillerJsTest : public content::ContentBrowserTest {
     pak_file =
         pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        pak_file, ui::SCALE_FACTOR_NONE);
+        pak_file, ui::kScaleFactorNone);
   }
 
   void SetUpTestServer() {

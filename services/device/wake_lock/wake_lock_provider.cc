@@ -19,6 +19,10 @@ namespace device {
 // would be 3.
 struct WakeLockProvider::WakeLockDataPerType {
   WakeLockDataPerType() = default;
+
+  WakeLockDataPerType(const WakeLockDataPerType&) = delete;
+  WakeLockDataPerType& operator=(const WakeLockDataPerType&) = delete;
+
   ~WakeLockDataPerType() = default;
 
   // Currently activated wake locks of this wake lock type.
@@ -30,8 +34,6 @@ struct WakeLockProvider::WakeLockDataPerType {
 
   // Observers for this wake lock type.
   mojo::RemoteSet<mojom::WakeLockObserver> observers;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeLockDataPerType);
 };
 
 WakeLockProvider::WakeLockProvider(

@@ -51,6 +51,10 @@ test("services_unittests") {
     ]
   }
 
+  if (is_win) {
+    deps += [ "//services/proxy_resolver_win:tests" ]
+  }
+
   if (is_android) {
     deps += [
       "//components/signin/public/android:java",

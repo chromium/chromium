@@ -61,6 +61,9 @@ class PtraceBroker::AttachmentsArray {
  public:
   AttachmentsArray() : allocation_(false), attach_count_(0) {}
 
+  AttachmentsArray(const AttachmentsArray&) = delete;
+  AttachmentsArray& operator=(const AttachmentsArray&) = delete;
+
   ~AttachmentsArray() {
     for (size_t index = 0; index < attach_count_; ++index) {
       PtraceDetach(Attachments()[index], false);
@@ -98,8 +101,6 @@ class PtraceBroker::AttachmentsArray {
 
   ScopedMmap allocation_;
   size_t attach_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(AttachmentsArray);
 };
 
 PtraceBroker::PtraceBroker(int sock, pid_t pid, bool is_64_bit)

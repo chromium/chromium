@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.editor.TableTest');
 goog.setTestOnly();
@@ -32,6 +24,7 @@ function tableSanityCheck(editableTable, rowCount, colCount) {
 }
 
 
+/** @suppress {missingProperties} suppression added to enable type checking */
 function _testInsertRowResult(element, editableTable, newTr, index) {
   let originalRowCount;
   if (element == testElements.basic) {
@@ -66,11 +59,14 @@ function _testInsertColumnResult(newCells, element, editableTable, index) {
       editableTable.rows[0].columns[index].element);
 }
 
+/** @suppress {missingProperties} suppression added to enable type checking */
 function _testRemoveColumn(index) {
+  /** @suppress {missingProperties} suppression added to enable type checking */
   let tr = dom.getElementsByTagName(TagName.TR, testElements.basic)[0];
   const sampleCell = dom.getElementsByTagName(TagName.TH, tr)[index];
   testObjects.basic.removeColumn(index);
   tableSanityCheck(testObjects.basic, 4, 2);
+  /** @suppress {missingProperties} suppression added to enable type checking */
   tr = dom.getElementsByTagName(TagName.TR, testElements.basic)[0];
   assertNotEquals(
       'Test cell removed from column', sampleCell,
@@ -131,9 +127,17 @@ testSuite({
     testObjects = null;
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testBasicTable() {
     // Do some basic sanity checking on the editable table structure
     tableSanityCheck(testObjects.basic, 4, 3);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const originalRows =
         dom.getElementsByTagName(TagName.TR, testElements.basic);
     assertEquals(
@@ -155,9 +159,17 @@ testSuite({
         testObjects.basic.rows[3].columns.length);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testTortureTable() {
     // Do basic sanity checking on torture table structure
     tableSanityCheck(testObjects.torture, 9, 3);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const originalRows =
         dom.getElementsByTagName(TagName.TR, testElements.torture);
     assertEquals(
@@ -168,32 +180,68 @@ testSuite({
         testObjects.torture.rows.length);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testInsertRowAtBeginning() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const tr = testObjects.basic.insertRow(0);
     _testInsertRowResult(testElements.basic, testObjects.basic, tr, 0);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testInsertRowInMiddle() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const tr = testObjects.basic.insertRow(2);
     _testInsertRowResult(testElements.basic, testObjects.basic, tr, 2);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testInsertRowAtEnd() {
     assertEquals(
         'Table has expected number of existing rows', 4,
         testObjects.basic.rows.length);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const tr = testObjects.basic.insertRow(4);
     _testInsertRowResult(testElements.basic, testObjects.basic, tr, 4);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testInsertRowAtEndNoIndexArgument() {
     assertEquals(
         'Table has expected number of existing rows', 4,
         testObjects.basic.rows.length);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const tr = testObjects.basic.insertRow();
     _testInsertRowResult(testElements.basic, testObjects.basic, tr, 4);
   },
 
+  /**
+     @suppress {missingProperties,strictMissingProperties} suppression
+     added to enable type checking
+   */
   testInsertRowAtBeginningRowspan() {
     // Test inserting a row when the existing DOM row at that index has
     // a cell with a rowspan. This should be just like a regular insert -
@@ -203,11 +251,19 @@ testSuite({
         dom.getFirstElementChild(
                dom.getElementsByTagName(TagName.TR, testElements.torture)[0])
             .rowSpan);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const tr = testObjects.torture.insertRow(0);
     // Among other things this verifies that the new row has 3 child TDs.
     _testInsertRowResult(testElements.torture, testObjects.torture, tr, 0);
   },
 
+  /**
+     @suppress {missingProperties,strictMissingProperties} suppression
+     added to enable type checking
+   */
   testInsertRowAtEndingRowspan() {
     // Test inserting a row when there's a cell in a previous DOM row
     // with a rowspan that extends into the row with the given index
@@ -218,20 +274,36 @@ testSuite({
         dom.getLastElementChild(
                dom.getElementsByTagName(TagName.TR, testElements.torture)[5])
             .rowSpan);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const tr = testObjects.torture.insertRow();
     // Among other things this verifies that the new row has 3 child TDs.
     _testInsertRowResult(testElements.torture, testObjects.torture, tr, 9);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testInsertRowAtSpanningRowspan() {
     // Test inserting a row at an index where there's a cell with a rowspan
-    // that begins in a previous row and continues into the next row. In this
-    // case the existing cell's rowspan should be extended, and the new
+    // that begins in a previous row and continues into the next row. In
+    // this case the existing cell's rowspan should be extended, and the new
     // tr should have one less child element.
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const rowSpannedCell = testObjects.torture.rows[7].columns[2];
     assertTrue(
         'Existing cell has overlapping rowspan',
         rowSpannedCell.startRow == 5 && rowSpannedCell.endRow == 8);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const tr = testObjects.torture.insertRow(7);
     assertEquals(
         'New DOM row has one less cell', 2,
@@ -242,8 +314,20 @@ testSuite({
         testObjects.torture.rows[7].columns[2].element);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testInsertColumnAtBeginning() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const startColCount = testObjects.basic.rows[0].columns.length;
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const newCells = testObjects.basic.insertColumn(0);
     assertEquals(
         'New cell added for each row', testObjects.basic.rows.length,
@@ -254,8 +338,20 @@ testSuite({
     _testInsertColumnResult(newCells, testElements.basic, testObjects.basic, 0);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testInsertColumnAtEnd() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const startColCount = testObjects.basic.rows[0].columns.length;
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const newCells = testObjects.basic.insertColumn(3);
     assertEquals(
         'New cell added for each row', testObjects.basic.rows.length,
@@ -266,8 +362,20 @@ testSuite({
     _testInsertColumnResult(newCells, testElements.basic, testObjects.basic, 3);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testInsertColumnAtEndNoIndexArgument() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const startColCount = testObjects.basic.rows[0].columns.length;
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const newCells = testObjects.basic.insertColumn();
     assertEquals(
         'New cell added for each row', testObjects.basic.rows.length,
@@ -278,8 +386,20 @@ testSuite({
     _testInsertColumnResult(newCells, testElements.basic, testObjects.basic, 3);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testInsertColumnInMiddle() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const startColCount = testObjects.basic.rows[0].columns.length;
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const newCells = testObjects.basic.insertColumn(2);
     assertEquals(
         'New cell added for each row', testObjects.basic.rows.length,
@@ -290,7 +410,15 @@ testSuite({
     _testInsertColumnResult(newCells, testElements.basic, testObjects.basic, 2);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testInsertColumnAtBeginningColSpan() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const cells = testObjects.torture.insertColumn(0);
     tableSanityCheck(testObjects.torture, 9, 4);
     assertEquals(
@@ -301,7 +429,15 @@ testSuite({
         testObjects.torture.rows[3].columns[0].element, cells[3]);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testInsertColumnAtEndingColSpan() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const cells = testObjects.torture.insertColumn();
     tableSanityCheck(testObjects.torture, 9, 4);
     assertEquals(
@@ -312,10 +448,18 @@ testSuite({
         testObjects.torture.rows[0].columns[3].element, cells[0]);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testInsertColumnAtSpanningColSpan() {
     assertEquals(
         'Existing cell has expected colspan', 3,
         testObjects.torture.rows[4].columns[1].colSpan);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const cells = testObjects.torture.insertColumn(1);
     tableSanityCheck(testObjects.torture, 9, 4);
     assertEquals(
@@ -325,7 +469,15 @@ testSuite({
         '3 cells weren\'t created due to existing colspans', 6, cells.length);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testRemoveFirstRow() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const originalRow =
         dom.getElementsByTagName(TagName.TR, testElements.basic)[0];
     testObjects.basic.removeRow(0);
@@ -335,7 +487,15 @@ testSuite({
         dom.getElementsByTagName(TagName.TR, testElements.basic)[0]);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testRemoveLastRow() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const originalRow =
         dom.getElementsByTagName(TagName.TR, testElements.basic)[3];
     testObjects.basic.removeRow(3);
@@ -345,7 +505,15 @@ testSuite({
         dom.getElementsByTagName(TagName.TR, testElements.basic)[3]);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testRemoveMiddleRow() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const originalRow =
         dom.getElementsByTagName(TagName.TR, testElements.basic)[2];
     testObjects.basic.removeRow(2);
@@ -355,7 +523,15 @@ testSuite({
         dom.getElementsByTagName(TagName.TR, testElements.basic)[2]);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testRemoveRowAtBeginingRowSpan() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const originalRow = testObjects.torture.removeRow(0);
     tableSanityCheck(testObjects.torture, 8, 3);
     assertNotEquals(
@@ -366,7 +542,15 @@ testSuite({
         testObjects.torture.rows[0].columns[0].rowSpan);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testRemoveRowAtEndingRowSpan() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const originalRow =
         dom.getElementsByTagName(TagName.TR, testElements.torture)[8];
     testObjects.torture.removeRow(8);
@@ -379,7 +563,15 @@ testSuite({
         testObjects.torture.rows[7].columns[2].rowSpan);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testRemoveRowAtSpanningRowSpan() {
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const originalRow =
         dom.getElementsByTagName(TagName.TR, testElements.torture)[7];
     testObjects.torture.removeRow(7);
@@ -404,36 +596,68 @@ testSuite({
     _testRemoveColumn(2);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testRemoveColumnAtStartingColSpan() {
     testObjects.torture.removeColumn(0);
     tableSanityCheck(testObjects.torture, 9, 2);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const tr = dom.getElementsByTagName(TagName.TR, testElements.torture)[5];
     assertEquals(
         'Colspan was decremented correctly', 1,
         dom.getElementsByTagName(TagName.TH, tr)[0].colSpan);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testRemoveColumnAtEndingColSpan() {
     testObjects.torture.removeColumn(2);
     tableSanityCheck(testObjects.torture, 9, 2);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const tr = dom.getElementsByTagName(TagName.TR, testElements.torture)[1];
     assertEquals(
         'Colspan was decremented correctly', 1,
         dom.getElementsByTagName(TagName.TD, tr)[0].colSpan);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testRemoveColumnAtSpanningColSpan() {
     testObjects.torture.removeColumn(2);
     tableSanityCheck(testObjects.torture, 9, 2);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const tr = dom.getElementsByTagName(TagName.TR, testElements.torture)[4];
     assertEquals(
         'Colspan was decremented correctly', 2,
         dom.getElementsByTagName(TagName.TH, tr)[0].colSpan);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testMergeCellsInRow() {
     testObjects.basic.mergeCells(0, 0, 0, 2);
     tableSanityCheck(testObjects.basic, 4, 3);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const trs = dom.getElementsByTagName(TagName.TR, testElements.basic);
     assertEquals(
         'Cells merged', 1, dom.getElementsByTagName(TagName.TH, trs[0]).length);
@@ -445,9 +669,17 @@ testSuite({
         dom.getElementsByTagName(TagName.TH, trs[0])[0].rowSpan);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testMergeCellsInColumn() {
     testObjects.basic.mergeCells(0, 0, 2, 0);
     tableSanityCheck(testObjects.basic, 4, 3);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const trs = dom.getElementsByTagName(TagName.TR, testElements.basic);
     assertEquals(
         'Other cells still in row', 3,
@@ -464,27 +696,51 @@ testSuite({
             testObjects.basic.rows[2].columns[0]);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testMergeCellsInRowAndColumn() {
     testObjects.basic.mergeCells(1, 1, 3, 2);
     tableSanityCheck(testObjects.basic, 4, 3);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const trs = dom.getElementsByTagName(TagName.TR, testElements.basic);
     const mergedCell = dom.getElementsByTagName(TagName.TD, trs[1])[1];
     assertEquals('Merged cell has correct rowspan', 3, mergedCell.rowSpan);
     assertEquals('Merged cell has correct colspan', 2, mergedCell.colSpan);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testMergeCellsAlreadyMerged() {
     testObjects.torture.mergeCells(5, 0, 8, 2);
     tableSanityCheck(testObjects.torture, 9, 3);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const trs = dom.getElementsByTagName(TagName.TR, testElements.torture);
     const mergedCell = dom.getElementsByTagName(TagName.TH, trs[5])[0];
     assertEquals('Merged cell has correct rowspan', 4, mergedCell.rowSpan);
     assertEquals('Merged cell has correct colspan', 3, mergedCell.colSpan);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testIllegalMergeNonRectangular() {
     // This should fail because it involves trying to merge two parts
     // of a 3-colspan cell with other cells
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const mergeSucceeded = testObjects.torture.mergeCells(3, 1, 5, 2);
     if (mergeSucceeded) {
       throw 'EditableTable allowed impossible merge!';
@@ -492,8 +748,16 @@ testSuite({
     tableSanityCheck(testObjects.torture, 9, 3);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testIllegalMergeSingleCell() {
     // This should fail because it involves merging a single cell
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const mergeSucceeded = testObjects.torture.mergeCells(0, 1, 0, 1);
     if (mergeSucceeded) {
       throw 'EditableTable allowed impossible merge!';
@@ -501,9 +765,17 @@ testSuite({
     tableSanityCheck(testObjects.torture, 9, 3);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testSplitCell() {
     testObjects.torture.splitCell(1, 1);
     tableSanityCheck(testObjects.torture, 9, 3);
+    /**
+     * @suppress {missingProperties} suppression added to enable type
+     * checking
+     */
     const trs = dom.getElementsByTagName(TagName.TR, testElements.torture);
     assertEquals(
         'Cell was split into multiple columns in row 1', 3,
@@ -513,9 +785,17 @@ testSuite({
         trs[2].getElementsByTagName('*').length);
   },
 
+  /**
+     @suppress {missingProperties} suppression added to enable type
+     checking
+   */
   testChildTableRowsNotCountedInParentTable() {
     tableSanityCheck(testObjects.nested, 2, 3);
     for (let i = 0; i < testObjects.nested.rows.length; i++) {
+      /**
+       * @suppress {missingProperties} suppression added to enable type
+       * checking
+       */
       const tr = testObjects.nested.rows[i].element;
       // A tr's parent is tbody, parent of that is table - check to
       // make sure the ancestor table is as expected. This means

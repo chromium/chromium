@@ -73,6 +73,9 @@ class ConnectivityCheckerImpl
       network::NetworkConnectionTracker* network_connection_tracker,
       TimeSyncTracker* time_sync_tracker);
 
+  ConnectivityCheckerImpl(const ConnectivityCheckerImpl&) = delete;
+  ConnectivityCheckerImpl& operator=(const ConnectivityCheckerImpl&) = delete;
+
   // ConnectivityChecker implementation:
   bool Connected() const override;
   void Check() override;
@@ -147,8 +150,6 @@ class ConnectivityCheckerImpl
 
   base::WeakPtr<ConnectivityCheckerImpl> weak_this_;
   base::WeakPtrFactory<ConnectivityCheckerImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectivityCheckerImpl);
 };
 
 }  // namespace chromecast

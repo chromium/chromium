@@ -6,7 +6,6 @@
 #include "ui/events/gesture_detection/snap_scroll_controller.h"
 #include "ui/events/test/motion_event_test_utils.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 using ui::test::MockMotionEvent;
 

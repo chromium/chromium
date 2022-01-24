@@ -8,7 +8,20 @@
  * settings.
  */
 
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import './storage_external_entry.js';
+import '../../prefs/prefs.js';
+import '../../settings_shared_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from './device_page_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-storage-external',
 
   behaviors: [
@@ -19,7 +32,7 @@ Polymer({
   properties: {
     /**
      * List of the plugged-in external storages.
-     * @private {Array<!settings.ExternalStorage>}
+     * @private {Array<!ExternalStorage>}
      */
     externalStorages_: {
       type: Array,
@@ -37,12 +50,12 @@ Polymer({
     },
   },
 
-  /** @private {?settings.DevicePageBrowserProxy} */
+  /** @private {?DevicePageBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.DevicePageBrowserProxyImpl.getInstance();
+    this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -53,7 +66,7 @@ Polymer({
   },
 
   /**
-   * @param {Array<!settings.ExternalStorage>} storages
+   * @param {Array<!ExternalStorage>} storages
    * @private
    */
   handleExternalStoragesUpdated_(storages) {
@@ -61,7 +74,7 @@ Polymer({
   },
 
   /**
-   * @param {Array<!settings.ExternalStorage>} externalStorages
+   * @param {Array<!ExternalStorage>} externalStorages
    * @return {string}
    * @private
    */

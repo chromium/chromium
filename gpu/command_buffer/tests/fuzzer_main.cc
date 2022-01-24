@@ -51,6 +51,10 @@
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace gpu {
 namespace {
 
@@ -323,6 +327,10 @@ class CommandBufferSetup {
 
     auto* command_line = base::CommandLine::ForCurrentProcess();
     ALLOW_UNUSED_LOCAL(command_line);
+
+#if defined(USE_OZONE)
+    ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
+#endif
 
 #if defined(GPU_FUZZER_USE_ANGLE)
     command_line->AppendSwitchASCII(switches::kUseGL,

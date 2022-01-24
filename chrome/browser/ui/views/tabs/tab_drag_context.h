@@ -42,10 +42,6 @@ class TabDragContext {
       const tab_groups::TabGroupId& group) const = 0;
   virtual TabStripModel* GetTabStripModel() = 0;
 
-  // Returns the index of the active tab in touch mode, or no value if not in
-  // touch mode.
-  virtual absl::optional<int> GetActiveTouchIndex() const = 0;
-
   // Returns the tab drag controller owned by this delegate, or null if none.
   virtual TabDragController* GetDragController() = 0;
 
@@ -98,8 +94,6 @@ class TabDragContext {
   // transformation applied.
   // |dragged_views| are the view children of |attached_tabstrip_| that are
   // part of the drag.
-  // |mouse_has_ever_moved_left| and |mouse_has_ever_moved_right| are used
-  // only in stacked tabs cases.
   // |group| is set if the drag is originating from a group header, in which
   // case the entire group is dragged and should not be dropped into other
   // groups.
@@ -107,29 +101,7 @@ class TabDragContext {
       const gfx::Rect& dragged_bounds,
       std::vector<TabSlotView*> dragged_views,
       int num_dragged_tabs,
-      bool mouse_has_ever_moved_left,
-      bool mouse_has_ever_moved_right,
       absl::optional<tab_groups::TabGroupId> group) const = 0;
-
-  // Returns true if |dragged_bounds| is close enough to the next stacked tab
-  // so that the active tab should be dragged there.
-  virtual bool ShouldDragToNextStackedTab(
-      const gfx::Rect& dragged_bounds,
-      int index,
-      bool mouse_has_ever_moved_right) const = 0;
-
-  // Returns true if |dragged_bounds| is close enough to the previous stacked
-  // tab so that the active tab should be dragged there.
-  virtual bool ShouldDragToPreviousStackedTab(
-      const gfx::Rect& dragged_bounds,
-      int index,
-      bool mouse_has_ever_moved_left) const = 0;
-
-  // Drags the active tab by |delta|. |initial_positions| is the x-coordinates
-  // of the tabs when the drag started.  This is only called when
-  // |touch_layout_| is non-null.
-  virtual void DragActiveTabStacked(const std::vector<int>& initial_positions,
-                                    int delta) = 0;
 
   // Returns the bounds needed for each of the views, relative to a leading
   // coordinate of 0 for the left edge of the first view's bounds.
@@ -146,13 +118,11 @@ class TabDragContext {
   // Invoked when TabDragController detaches a set of tabs.
   virtual void DraggedTabsDetached() = 0;
 
-  // Used by TabDragController when the user stops dragging. |move_only| is
-  // true if the move behavior is TabDragController::MOVE_VISIBLE_TABS.
-  // |completed| is true if the drag operation completed successfully, false if
-  // it was reverted.
+  // Used by TabDragController when the user stops dragging. |completed| is
+  // true if the drag operation completed successfully, false if it was
+  // reverted.
   virtual void StoppedDragging(const std::vector<TabSlotView*>& views,
                                const std::vector<int>& initial_positions,
-                               bool move_only,
                                bool completed) = 0;
 
   // Invoked during drag to layout the views being dragged in |views| at

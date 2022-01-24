@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/accessibility_browsertest.h"
@@ -26,6 +25,9 @@
 namespace content {
 
 namespace {
+
+const char16_t kBullet[2] = {u'\x2022', ' '};
+const std::u16string kString16Bullet = std::u16string(kBullet, 2);
 
 AtkObject* FindAtkObjectParentFrame(AtkObject* atk_object) {
   while (atk_object) {
@@ -55,6 +57,12 @@ static bool IsAtkObjectEditable(AtkObject* object) {
 class AccessibilityAuraLinuxBrowserTest : public AccessibilityBrowserTest {
  public:
   AccessibilityAuraLinuxBrowserTest() = default;
+
+  AccessibilityAuraLinuxBrowserTest(const AccessibilityAuraLinuxBrowserTest&) =
+      delete;
+  AccessibilityAuraLinuxBrowserTest& operator=(
+      const AccessibilityAuraLinuxBrowserTest&) = delete;
+
   ~AccessibilityAuraLinuxBrowserTest() override = default;
 
  protected:
@@ -102,8 +110,6 @@ class AccessibilityAuraLinuxBrowserTest : public AccessibilityBrowserTest {
   // at a given node and for a node with the given role and returns its AtkText
   // interface if found, otherwise returns nullptr.
   AtkText* FindNode(AtkObject* root, const AtkRole role) const;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityAuraLinuxBrowserTest);
 };
 
 void AccessibilityAuraLinuxBrowserTest::CheckTextAtOffset(
@@ -1201,11 +1207,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   AtkText* atk_list_item = FindNode(ATK_ROLE_LIST_ITEM);
   ASSERT_NE(nullptr, atk_list_item);
 
-  // The hypertext expose by "list_item_text" includes an embedded object
-  // character for the list bullet and the joined word "Bananafruit.". The word
-  // "Banana" is exposed as text because its container paragraph is ignored.
+  // The hypertext expose by "list_item_text" includes a bullet (U+2022)
+  // followed by a space for the list bullet and the joined word "Bananafruit.".
+  // The word "Banana" is exposed as text because its container paragraph is
+  // ignored.
   int n_characters = atk_text_get_character_count(atk_list_item);
-  ASSERT_EQ(13, n_characters);
+  ASSERT_EQ(14, n_characters);
 
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
@@ -1214,10 +1221,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   // First select the whole of the text found in the hypertext.
   int start_offset = 0;
   int end_offset = n_characters;
-  std::string embedded_character;
-  ASSERT_TRUE(
-      base::UTF16ToUTF8(&ui::AXPlatformNodeAuraLinux::kEmbeddedCharacter, 1,
-                        &embedded_character));
+  std::string bullet = base::UTF16ToUTF8(kString16Bullet);
   char* selected_text = nullptr;
 
   EXPECT_TRUE(
@@ -1229,14 +1233,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   ASSERT_NE(nullptr, selected_text);
   EXPECT_EQ(0, start_offset);
   EXPECT_EQ(n_characters, end_offset);
-  // The list bullet should be represented by an embedded object character.
-  EXPECT_STREQ((embedded_character + std::string("Bananafruit.")).c_str(),
-               selected_text);
+  // The list bullet should be represented by a bullet character (U+2022)
+  // followed by a space.
+  EXPECT_STREQ((bullet + std::string("Bananafruit.")).c_str(), selected_text);
   g_free(selected_text);
 
   // Select only the list bullet.
   start_offset = 0;
-  end_offset = 1;
+  end_offset = 2;
   EXPECT_TRUE(
       atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
   waiter.WaitForNotification();
@@ -1245,14 +1249,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
   ASSERT_NE(nullptr, selected_text);
   EXPECT_EQ(0, start_offset);
-  EXPECT_EQ(1, end_offset);
-  // The list bullet should be represented by an embedded object character.
-  EXPECT_STREQ(embedded_character.c_str(), selected_text);
+  EXPECT_EQ(2, end_offset);
+  // The list bullet should be represented by a bullet character (U+2022)
+  // followed by a space.
+  EXPECT_STREQ(bullet.c_str(), selected_text);
   g_free(selected_text);
 
   // Select the word "Banana" in the ignored paragraph.
-  start_offset = 1;
-  end_offset = 7;
+  start_offset = 2;
+  end_offset = 8;
   EXPECT_TRUE(
       atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
   waiter.WaitForNotification();
@@ -1260,14 +1265,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   selected_text =
       atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
   ASSERT_NE(nullptr, selected_text);
-  EXPECT_EQ(1, start_offset);
-  EXPECT_EQ(7, end_offset);
+  EXPECT_EQ(2, start_offset);
+  EXPECT_EQ(8, end_offset);
   EXPECT_STREQ("Banana", selected_text);
   g_free(selected_text);
 
   // Select both the list bullet and the word "Banana" in the ignored paragraph.
   start_offset = 0;
-  end_offset = 7;
+  end_offset = 8;
   EXPECT_TRUE(
       atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
   waiter.WaitForNotification();
@@ -1276,15 +1281,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
   ASSERT_NE(nullptr, selected_text);
   EXPECT_EQ(0, start_offset);
-  EXPECT_EQ(7, end_offset);
-  // The list bullet should be represented by an embedded object character.
-  EXPECT_STREQ((embedded_character + std::string("Banana")).c_str(),
-               selected_text);
+  EXPECT_EQ(8, end_offset);
+  // The list bullet should be represented by a bullet character (U+2022)
+  // followed by a space.
+  EXPECT_STREQ((bullet + std::string("Banana")).c_str(), selected_text);
   g_free(selected_text);
 
   // Select the joined word "Bananafruit." both in the ignored paragraph and in
   // the unignored span.
-  start_offset = 1;
+  start_offset = 2;
   end_offset = n_characters;
   EXPECT_TRUE(
       atk_text_set_selection(atk_list_item, 0, start_offset, end_offset));
@@ -1293,7 +1298,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   selected_text =
       atk_text_get_selection(atk_list_item, 0, &start_offset, &end_offset);
   ASSERT_NE(nullptr, selected_text);
-  EXPECT_EQ(1, start_offset);
+  EXPECT_EQ(2, start_offset);
   EXPECT_EQ(n_characters, end_offset);
   EXPECT_STREQ("Bananafruit.", selected_text);
   g_free(selected_text);
@@ -1320,22 +1325,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestAtkTextListItem) {
 
   EXPECT_TRUE(ATK_IS_TEXT(list_item_1));
 
-  const std::u16string string16_embed(
-      1, ui::AXPlatformNodeAuraLinux::kEmbeddedCharacter);
-  std::string expected_string = base::UTF16ToUTF8(string16_embed) + "Text 1";
+  std::string expected_string = base::UTF16ToUTF8(kString16Bullet) + "Text 1";
 
-  // The text of the list item should include the list marker as an embedded
-  // object.
+  // The text of the list item should include the list marker as a bullet char.
   gchar* text = atk_text_get_text(ATK_TEXT(list_item_1), 0, -1);
-  ASSERT_STREQ(text, expected_string.c_str());
+  EXPECT_STREQ(text, expected_string.c_str());
   g_free(text);
+
   text = atk_text_get_text_at_offset(
       ATK_TEXT(list_item_2), 0, ATK_TEXT_BOUNDARY_WORD_START, nullptr, nullptr);
-  ASSERT_STREQ(text, base::UTF16ToUTF8(string16_embed).c_str());
+  ASSERT_STREQ(text, base::UTF16ToUTF8(kString16Bullet).c_str());
   g_free(text);
 
   text = atk_text_get_text_at_offset(
-      ATK_TEXT(list_item_2), 1, ATK_TEXT_BOUNDARY_WORD_START, nullptr, nullptr);
+      ATK_TEXT(list_item_2), 2, ATK_TEXT_BOUNDARY_WORD_START, nullptr, nullptr);
   ASSERT_STREQ(text, "Text ");
   g_free(text);
 
@@ -2172,6 +2175,41 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   atk_text_get_range_extents(atk_text, 0, 7, AtkCoordType::ATK_XY_SCREEN,
                              &atk_rect);
   g_object_unref(atk_text);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestCaretMovedInNumberInput) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<input type="number" value="12">
+      )HTML");
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kTextSelectionChanged);
+  auto caret_callback =
+      G_CALLBACK(+[](AtkText*, int new_position, int* out_caret_position) {
+        *out_caret_position = new_position;
+      });
+  int out_caret_position = -1;
+  AtkText* input_text = FindNode(ATK_ROLE_SPIN_BUTTON);
+  g_signal_connect(input_text, "text-caret-moved", caret_callback,
+                   &out_caret_position);
+
+  atk_text_set_caret_offset(input_text, 0);
+  waiter.WaitForNotification();
+  EXPECT_EQ(atk_text_get_caret_offset(input_text), 0);
+  EXPECT_EQ(out_caret_position, 0);
+
+  atk_text_set_caret_offset(input_text, 1);
+  waiter.WaitForNotification();
+  EXPECT_EQ(atk_text_get_caret_offset(input_text), 1);
+  EXPECT_EQ(out_caret_position, 1);
+
+  atk_text_set_caret_offset(input_text, 2);
+  waiter.WaitForNotification();
+  EXPECT_EQ(atk_text_get_caret_offset(input_text), 2);
+  EXPECT_EQ(out_caret_position, 2);
+
+  g_object_unref(input_text);
 }
 
 }  // namespace content

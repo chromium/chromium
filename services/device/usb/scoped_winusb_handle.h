@@ -17,6 +17,10 @@ class WinUsbHandleTraits {
  public:
   using Handle = WINUSB_INTERFACE_HANDLE;
 
+  WinUsbHandleTraits() = delete;
+  WinUsbHandleTraits(const WinUsbHandleTraits&) = delete;
+  WinUsbHandleTraits& operator=(const WinUsbHandleTraits&) = delete;
+
   static bool CloseHandle(Handle handle);
 
   static bool IsHandleValid(Handle handle) {
@@ -24,9 +28,6 @@ class WinUsbHandleTraits {
   }
 
   static Handle NullHandle() { return nullptr; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WinUsbHandleTraits);
 };
 
 using ScopedWinUsbHandle =

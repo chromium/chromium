@@ -6,6 +6,6 @@
 
 namespace gcm {
 
-constexpr base::TimeDelta kIncomingMessageTTL = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kIncomingMessageTTL = base::Days(7);
 
 }  // namespace gcm

@@ -51,8 +51,8 @@ class MockProcess(object):
 
     def poll(self):
         # Consider the process completed when all the stdout and stderr has been read.
-        if (self.stdout.len != self.stdout.tell()
-                or self.stderr.len != self.stderr.tell()):
+        if (len(self.stdout.getvalue()) != self.stdout.tell()
+                or len(self.stderr.getvalue()) != self.stderr.tell()):
             return None
         return self.returncode
 
@@ -103,11 +103,11 @@ class MockExecutive(object):
         self.full_calls.append(MockCall(args=args, kwargs=kwargs))
 
     def check_running_pid(self, pid):
-        return pid in self._running_pids.values()
+        return pid in list(self._running_pids.values())
 
     def running_pids(self, process_name_filter):
         running_pids = []
-        for process_name, process_pid in self._running_pids.iteritems():
+        for process_name, process_pid in self._running_pids.items():
             if process_name_filter(process_name):
                 running_pids.append(process_pid)
 
@@ -115,7 +115,7 @@ class MockExecutive(object):
         return running_pids
 
     def command_for_printing(self, args):
-        string_args = map(unicode, args)
+        string_args = list(map(six.text_type, args))
         return ' '.join(string_args)
 
     # The argument list should match Executive.run_command, even if
@@ -185,7 +185,7 @@ class MockExecutive(object):
         pass
 
     def popen(self, args, cwd=None, env=None, **_):
-        assert all(isinstance(arg, basestring) for arg in args)
+        assert all(isinstance(arg, six.string_types) for arg in args)
         self._append_call(args, cwd=cwd, env=env)
         if self._should_log:
             cwd_string = ''
@@ -203,7 +203,7 @@ class MockExecutive(object):
         return self._proc
 
     def call(self, args, **_):
-        assert all(isinstance(arg, basestring) for arg in args)
+        assert all(isinstance(arg, six.string_types) for arg in args)
         self._append_call(args)
         _log.info('Mock call: %s', args)
 
@@ -213,7 +213,7 @@ class MockExecutive(object):
         num_previous_calls = len(self.full_calls)
         command_outputs = []
         for cmd_line, cwd in commands:
-            assert all(isinstance(arg, basestring) for arg in cmd_line)
+            assert all(isinstance(arg, six.string_types) for arg in cmd_line)
             command_outputs.append(
                 [0, self.run_command(cmd_line, cwd=cwd), ''])
 

@@ -1,3 +1,1 @@
-monorail {
-  component: "UI>Browser>Downloads"
-}
+mixins: "//components/download/COMMON_METADATA"

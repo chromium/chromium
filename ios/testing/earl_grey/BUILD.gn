@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
@@ -28,7 +27,6 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -41,9 +39,11 @@ source_set("eg_test_support+eg2") {
     "app_launch_manager.h",
     "app_launch_manager.mm",
     "app_launch_manager_app_interface.h",
+    "app_launch_manager_app_interface_stub.mm",
     "base_earl_grey_test_case.h",
     "base_earl_grey_test_case.mm",
     "base_earl_grey_test_case_app_interface.h",
+    "base_earl_grey_test_case_app_interface_stub.mm",
     "base_eg_test_helper_impl.h",
     "base_eg_test_helper_impl.mm",
     "coverage_utils.h",

@@ -14,12 +14,13 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
 #include "chromecast/device/bluetooth/le/remote_descriptor.h"
 #include "chromecast/device/bluetooth/le/remote_device.h"
+#include "chromecast/public/bluetooth/gatt.h"
 
 namespace chromecast {
 namespace bluetooth {
@@ -34,11 +35,13 @@ class RemoteDeviceImpl : public RemoteDevice {
  public:
   // If commands take longer than this amount of time, we will disconnect the
   // device.
-  static constexpr base::TimeDelta kCommandTimeout =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kCommandTimeout = base::Seconds(30);
+
+  RemoteDeviceImpl(const RemoteDeviceImpl&) = delete;
+  RemoteDeviceImpl& operator=(const RemoteDeviceImpl&) = delete;
 
   // RemoteDevice implementation
-  void Connect(ConnectCallback cb) override;
+  void Connect(ConnectCallback cb, bluetooth_v2_shlib::Gatt::Client::Transport transport) override;
   void Disconnect(StatusCallback cb) override;
   void CreateBond(StatusCallback cb) override;
   void RemoveBond(StatusCallback cb) override;
@@ -190,8 +193,6 @@ class RemoteDeviceImpl : public RemoteDevice {
       handle_to_descriptor_read_cbs_;
   std::map<uint16_t, std::queue<RemoteDescriptor::StatusCallback>>
       handle_to_descriptor_write_cbs_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceImpl);
 };
 
 }  // namespace bluetooth

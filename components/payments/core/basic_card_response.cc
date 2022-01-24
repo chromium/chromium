@@ -39,17 +39,14 @@ bool BasicCardResponse::operator!=(const BasicCardResponse& other) const {
   return !(*this == other);
 }
 
-std::unique_ptr<base::DictionaryValue> BasicCardResponse::ToDictionaryValue()
-    const {
-  auto result = std::make_unique<base::DictionaryValue>();
-  result->SetString(kCardCardholderName, cardholder_name);
-  result->SetString(kCardCardNumber, card_number);
-  result->SetString(kCardExpiryMonth, expiry_month);
-  result->SetString(kCardExpiryYear, expiry_year);
-  result->SetString(kCardCardSecurityCode, card_security_code);
-  result->SetKey(kCardBillingAddress,
-                 base::Value::FromUniquePtrValue(
-                     PaymentAddressToDictionaryValue(*billing_address)));
+base::Value BasicCardResponse::ToValue() const {
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetStringKey(kCardCardholderName, cardholder_name);
+  result.SetStringKey(kCardCardNumber, card_number);
+  result.SetStringKey(kCardExpiryMonth, expiry_month);
+  result.SetStringKey(kCardExpiryYear, expiry_year);
+  result.SetStringKey(kCardCardSecurityCode, card_security_code);
+  result.SetKey(kCardBillingAddress, PaymentAddressToValue(*billing_address));
 
   return result;
 }

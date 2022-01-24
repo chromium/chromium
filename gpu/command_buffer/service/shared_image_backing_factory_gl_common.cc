@@ -119,7 +119,8 @@ bool SharedImageBackingFactoryGLCommon::CanCreateSharedImage(
 
   if (size.width() < 1 || size.height() < 1 ||
       size.width() > max_texture_size_ || size.height() > max_texture_size_) {
-    LOG(ERROR) << "CreateSharedImage: invalid size";
+    LOG(ERROR) << "CreateSharedImage: invalid size: " << size.ToString()
+               << ", max_texture_size_=" << max_texture_size_;
     return false;
   }
 

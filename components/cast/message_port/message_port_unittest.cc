@@ -7,17 +7,19 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/cast/message_port/blink_message_port_adapter.h"
+#include "components/cast/message_port/cast/message_port_cast.h"
 #include "components/cast/message_port/cast_core/create_message_port_core.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast/message_port/message_port_buildflags.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/messaging/web_message_port.h"
+
 #if defined(OS_FUCHSIA)
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #endif  // defined(OS_FUCHSIA)
-#include "components/cast/message_port/cast/message_port_cast.h"
-#include "third_party/blink/public/common/messaging/web_message_port.h"
 
 #ifdef PostMessage
 #undef PostMessage
@@ -27,6 +29,25 @@ namespace cast_api_bindings {
 
 using CreatePairFunction = void (*)(std::unique_ptr<MessagePort>*,
                                     std::unique_ptr<MessagePort>*);
+
+// Creates a PlatformMessagePort |client | talking to MessagePortCast |server|
+static void CreatePlatformToBlinkPair(std::unique_ptr<MessagePort>* client,
+                                      std::unique_ptr<MessagePort>* server) {
+  std::unique_ptr<MessagePort> server_adapter;
+  MessagePortCast::CreatePair(&server_adapter, server);
+  *client = BlinkMessagePortAdapter::ToClientPlatformMessagePort(
+      MessagePortCast::FromMessagePort(server_adapter.get())->TakePort());
+}
+
+// Creates a MessagePortCast |client | talking to PlatformMessagePort |server|
+static void CreateBlinkToPlatformPair(std::unique_ptr<MessagePort>* client,
+                                      std::unique_ptr<MessagePort>* server) {
+  std::unique_ptr<MessagePort> server_adapter;
+  CreatePlatformMessagePortPair(&server_adapter, server);
+  *client = std::make_unique<MessagePortCast>(
+      BlinkMessagePortAdapter::FromServerPlatformMessagePort(
+          std::move(server_adapter)));
+}
 
 class MessagePortTest : public ::testing::Test {
  public:
@@ -140,23 +161,42 @@ TEST_F(MessagePortTest, UnwrapPlatformPort) {
   TestPostMessage();
 }
 
+enum MessagePortTestType {
+  PLATFORM,
+  PLATFORM_TO_BLINK,
+  BLINK_TO_PLATFORM,
+  FUCHSIA,
+  CORE,
+  CAST
+};
+
+struct MessagePortTestParam {
+  MessagePortTestType type;
+  CreatePairFunction func;
+};
+
+const MessagePortTestParam MessagePortTestParams[] = {
+    {MessagePortTestType::PLATFORM, &CreatePlatformMessagePortPair},
+    {MessagePortTestType::PLATFORM_TO_BLINK, &CreatePlatformToBlinkPair},
+    {MessagePortTestType::BLINK_TO_PLATFORM, &CreateBlinkToPlatformPair},
+#if defined(OS_FUCHSIA)
+    {MessagePortTestType::FUCHSIA, &MessagePortFuchsia::CreatePair},
+#endif  // defined(OS_FUCHSIA)
+    {MessagePortTestType::CORE, &CreateMessagePortCorePair},
+    {MessagePortTestType::CAST, &MessagePortCast::CreatePair}};
+
 class ParameterizedMessagePortTest
     : public MessagePortTest,
-      public ::testing::WithParamInterface<CreatePairFunction> {
+      public ::testing::WithParamInterface<MessagePortTestParam> {
  public:
-  ParameterizedMessagePortTest() : MessagePortTest(GetParam()) {}
+  ParameterizedMessagePortTest() : MessagePortTest(GetParam().func) {}
   ~ParameterizedMessagePortTest() override = default;
 };
 
 // Run the tests on all port types supported by the platform.
 INSTANTIATE_TEST_SUITE_P(ParameterizedMessagePortTest,
                          ParameterizedMessagePortTest,
-                         testing::Values(&CreatePlatformMessagePortPair,
-#if defined(OS_FUCHSIA)
-                                         &MessagePortFuchsia::CreatePair,
-#endif  // defined(OS_FUCHSIA)
-                                         &CreateMessagePortCorePair,
-                                         &MessagePortCast::CreatePair));
+                         testing::ValuesIn(MessagePortTestParams));
 
 TEST_P(ParameterizedMessagePortTest, Close) {
   SetDefaultReceivers();
@@ -209,7 +249,20 @@ TEST_P(ParameterizedMessagePortTest, PostMessageWithTransferables) {
   std::unique_ptr<MessagePort> port1;
   TestMessagePortReceiver port0_receiver;
   TestMessagePortReceiver port1_receiver;
-  CreatePair(&port1, &port0);
+
+  // For the adapter tests, the ports being passed are inverted:
+  // - CreateBlinkToPlatformPair gives a client blink and server platform port,
+  //   but port0 needs to be server blink and port1 client platform
+  // - CreatePlatformToBlinkPair gives a client platform and server blink port,
+  //   but port0 needs to be server platform and port1 client blink
+  MessagePortTestType t = GetParam().type;
+  if (t == MessagePortTestType::BLINK_TO_PLATFORM) {
+    CreatePlatformToBlinkPair(&port1, &port0);
+  } else if (t == MessagePortTestType::PLATFORM_TO_BLINK) {
+    CreateBlinkToPlatformPair(&port1, &port0);
+  } else {
+    CreatePair(&port1, &port0);
+  }
 
   // If the ports are represented by multiple types as in the case of
   // MessagePortFuchsia, make sure both are transferrable

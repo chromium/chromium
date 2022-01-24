@@ -17,7 +17,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -106,6 +105,9 @@ class ShellDevToolsBindings::NetworkResourceLoader
     loader_->DownloadAsStream(url_loader_factory, this);
   }
 
+  NetworkResourceLoader(const NetworkResourceLoader&) = delete;
+  NetworkResourceLoader& operator=(const NetworkResourceLoader&) = delete;
+
  private:
   void OnResponseStarted(const GURL& final_url,
                          const network::mojom::URLResponseHead& response_head) {
@@ -147,8 +149,6 @@ class ShellDevToolsBindings::NetworkResourceLoader
   ShellDevToolsBindings* const bindings_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkResourceLoader);
 };
 
 // This constant should be in sync with
@@ -214,7 +214,8 @@ void ShellDevToolsBindings::ReadyToCommitNavigation(
                    base::Unretained(this)));
     return;
   }
-  std::string origin = navigation_handle->GetURL().GetOrigin().spec();
+  std::string origin =
+      navigation_handle->GetURL().DeprecatedGetOriginAsURL().spec();
   auto it = extensions_api_.find(origin);
   if (it == extensions_api_.end())
     return;
@@ -339,7 +340,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
     resource_request->headers.AddHeadersFromString(*headers);
 
     auto* partition =
-        web_contents()->GetBrowserContext()->GetStoragePartitionForUrl(gurl);
+        inspected_contents()->GetMainFrame()->GetStoragePartition();
     auto factory = partition->GetURLLoaderFactoryForBrowserProcess();
 
     auto simple_url_loader = network::SimpleURLLoader::Create(

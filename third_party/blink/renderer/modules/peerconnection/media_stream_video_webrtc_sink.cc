@@ -10,8 +10,8 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -58,19 +58,19 @@ webrtc::VideoTrackInterface::ContentHint ContentHintTypeToWebRtcContentHint(
 
 // Simple help class used for receiving video frames on the IO-thread from a
 // MediaStreamVideoTrack and forward the frames to a WebRtcVideoCapturerAdapter
-// on libjingle's worker thread. WebRtcVideoCapturerAdapter implements a video
+// on libjingle's network thread. WebRtcVideoCapturerAdapter implements a video
 // capturer for libjingle.
 class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
     : public WTF::ThreadSafeRefCounted<WebRtcVideoSourceAdapter> {
  public:
   WebRtcVideoSourceAdapter(
       const scoped_refptr<base::SingleThreadTaskRunner>&
-          libjingle_worker_thread,
+          libjingle_network_task_runner,
       const scoped_refptr<WebRtcVideoTrackSource>& source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // MediaStreamVideoWebRtcSink can be destroyed on the main render thread or
-  // libjingles worker thread since it posts video frames on that thread. But
+  // libjingles network thread since it posts video frames on that thread. But
   // |video_source_| must be released on the main render thread before the
   // PeerConnectionFactory has been destroyed. The only way to ensure that is to
   // make sure |video_source_| is released when MediaStreamVideoWebRtcSink() is
@@ -85,7 +85,7 @@ class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
  private:
   friend class WTF::ThreadSafeRefCounted<WebRtcVideoSourceAdapter>;
 
-  void OnVideoFrameOnWorkerThread(
+  void OnVideoFrameOnNetworkThread(
       scoped_refptr<media::VideoFrame> frame,
       std::vector<scoped_refptr<media::VideoFrame>> scaled_frames);
 
@@ -98,13 +98,13 @@ class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
   // Used to DCHECK that frames are called on the IO-thread.
   THREAD_CHECKER(io_thread_checker_);
 
-  // Used for posting frames to libjingle's worker thread. Accessed on the
+  // Used for posting frames to libjingle's network thread. Accessed on the
   // IO-thread.
-  scoped_refptr<base::SingleThreadTaskRunner> libjingle_worker_thread_;
+  scoped_refptr<base::SingleThreadTaskRunner> libjingle_network_task_runner_;
 
   scoped_refptr<WebRtcVideoTrackSource> video_source_;
 
-  // Used to protect |video_source_|. It is taken by libjingle's worker
+  // Used to protect |video_source_|. It is taken by libjingle's network
   // thread for each video frame that is delivered but only taken on the
   // main render thread in ReleaseSourceOnMainThread() when
   // the owning MediaStreamVideoWebRtcSink is being destroyed.
@@ -112,11 +112,12 @@ class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
 };
 
 MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::WebRtcVideoSourceAdapter(
-    const scoped_refptr<base::SingleThreadTaskRunner>& libjingle_worker_thread,
+    const scoped_refptr<base::SingleThreadTaskRunner>&
+        libjingle_network_task_runner,
     const scoped_refptr<WebRtcVideoTrackSource>& source,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : render_task_runner_(std::move(task_runner)),
-      libjingle_worker_thread_(libjingle_worker_thread),
+      libjingle_network_task_runner_(libjingle_network_task_runner),
       video_source_(source) {
   DCHECK(render_task_runner_->RunsTasksInCurrentSequence());
   DETACH_FROM_THREAD(io_thread_checker_);
@@ -126,17 +127,18 @@ MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
     ~WebRtcVideoSourceAdapter() {
   DVLOG(3) << "~WebRtcVideoSourceAdapter()";
   DCHECK(!video_source_);
-  // This object can be destroyed on the main render thread or libjingles worker
-  // thread since it posts video frames on that thread. But |video_source_| must
-  // be released on the main render thread before the PeerConnectionFactory has
-  // been destroyed. The only way to ensure that is to make sure |video_source_|
-  // is released when MediaStreamVideoWebRtcSink() is destroyed.
+  // This object can be destroyed on the main render thread or libjingles
+  // network thread since it posts video frames on that thread. But
+  // |video_source_| must be released on the main render thread before the
+  // PeerConnectionFactory has been destroyed. The only way to ensure that is to
+  // make sure |video_source_| is released when MediaStreamVideoWebRtcSink() is
+  // destroyed.
 }
 
 void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
     ReleaseSourceOnMainThread() {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
-  // Since frames are posted to the worker thread, this object might be deleted
+  // Since frames are posted to the network thread, this object might be deleted
   // on that thread. However, since |video_source_| was created on the render
   // thread, it should be released on the render thread.
   base::AutoLock auto_lock(video_source_stop_lock_);
@@ -149,17 +151,17 @@ void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::OnVideoFrameOnIO(
     base::TimeTicks estimated_capture_time) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   PostCrossThreadTask(
-      *libjingle_worker_thread_.get(), FROM_HERE,
-      CrossThreadBindOnce(&WebRtcVideoSourceAdapter::OnVideoFrameOnWorkerThread,
-                          WrapRefCounted(this), std::move(frame),
-                          std::move(scaled_frames)));
+      *libjingle_network_task_runner_.get(), FROM_HERE,
+      CrossThreadBindOnce(
+          &WebRtcVideoSourceAdapter::OnVideoFrameOnNetworkThread,
+          WrapRefCounted(this), std::move(frame), std::move(scaled_frames)));
 }
 
 void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
-    OnVideoFrameOnWorkerThread(
+    OnVideoFrameOnNetworkThread(
         scoped_refptr<media::VideoFrame> frame,
         std::vector<scoped_refptr<media::VideoFrame>> scaled_frames) {
-  DCHECK(libjingle_worker_thread_->BelongsToCurrentThread());
+  DCHECK(libjingle_network_task_runner_->BelongsToCurrentThread());
   base::AutoLock auto_lock(video_source_stop_lock_);
   if (video_source_)
     video_source_->OnFrameCaptured(std::move(frame), std::move(scaled_frames));
@@ -233,6 +235,16 @@ void MediaStreamVideoWebRtcSink::OnContentHintChanged(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   video_track_->set_content_hint(
       ContentHintTypeToWebRtcContentHint(content_hint));
+}
+
+void MediaStreamVideoWebRtcSink::OnVideoConstraintsChanged(
+    absl::optional<double> min_fps,
+    absl::optional<double> max_fps) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DVLOG(3) << __func__ << " min " << min_fps.value_or(-1) << " max "
+           << max_fps.value_or(-1);
+  video_source_proxy_->ProcessConstraints(
+      webrtc::VideoTrackSourceConstraints{min_fps, max_fps});
 }
 
 absl::optional<bool>

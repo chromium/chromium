@@ -15,10 +15,6 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 
-#if defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 16, 0)
-#define ATK_216
-#endif
-
 namespace content {
 
 using ui::AtkRoleToString;
@@ -123,24 +119,6 @@ void AccessibilityEventRecorderAuraLinux::RemoveATKEventListeners() {
   atk_listener_ids.clear();
 }
 
-// Pruning states which are not supported on older bots makes it possible to
-// run the events tests in more environments.
-bool AccessibilityEventRecorderAuraLinux::IncludeState(
-    AtkStateType state_type) {
-  switch (state_type) {
-#if defined(ATK_216)
-    case ATK_STATE_CHECKABLE:
-    case ATK_STATE_HAS_POPUP:
-    case ATK_STATE_READ_ONLY:
-      return false;
-#endif
-    case ATK_STATE_LAST_DEFINED:
-      return false;
-    default:
-      return true;
-  }
-}
-
 std::string AccessibilityEventRecorderAuraLinux::AtkObjectToString(
     AtkObject* obj,
     bool include_name) {
@@ -217,12 +195,6 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
     log += base::ToUpperASCII(event);
     if (event_name.find("state-change") != std::string::npos) {
       std::string state_type = g_value_get_string(&params[1]);
-
-      // We do this to make it possible to run the events tests in more
-      // environments.
-      if (!IncludeState(atk_state_type_for_name(state_type.c_str())))
-        return;
-
       log += ":" + base::ToUpperASCII(state_type);
 
       gchar* parameter = g_strdup_value_contents(&params[2]);
@@ -245,10 +217,8 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
   AtkStateSet* state_set = atk_object_ref_state_set(obj);
   for (int i = ATK_STATE_INVALID; i < ATK_STATE_LAST_DEFINED; i++) {
     AtkStateType state_type = static_cast<AtkStateType>(i);
-    if (atk_state_set_contains_state(state_set, state_type) &&
-        IncludeState(state_type)) {
+    if (atk_state_set_contains_state(state_set, state_type))
       states += " " + base::ToUpperASCII(atk_state_type_get_name(state_type));
-    }
   }
   states = base::CollapseWhitespaceASCII(states, false);
   base::ReplaceChars(states, " ", ",", &states);
@@ -355,7 +325,7 @@ void AccessibilityEventRecorderAuraLinux::ProcessATSPIEvent(
   GError* error = nullptr;
 
   // Ignore irrelevant events, i.e. fired for other applications.
-  if (!selector_.empty()) {
+  if (!pid_ && !selector_.empty()) {
     AtspiAccessible* application =
         atspi_accessible_get_application(event->source, &error);
     if (error) {

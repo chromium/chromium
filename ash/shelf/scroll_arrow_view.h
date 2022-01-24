@@ -19,6 +19,10 @@ class ASH_EXPORT ScrollArrowView : public ShelfButton {
                   bool is_horizontal_alignment,
                   Shelf* shelf,
                   ShelfButtonDelegate* button_listener);
+
+  ScrollArrowView(const ScrollArrowView&) = delete;
+  ScrollArrowView& operator=(const ScrollArrowView&) = delete;
+
   ~ScrollArrowView() override;
 
   void set_is_horizontal_alignment(bool is_horizontal_alignment) {
@@ -36,8 +40,6 @@ class ASH_EXPORT ScrollArrowView : public ShelfButton {
  private:
   ArrowType arrow_type_ = kLeft;
   bool is_horizontal_alignment_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollArrowView);
 };
 
 }  // namespace ash

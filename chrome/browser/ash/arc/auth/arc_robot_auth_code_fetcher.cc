@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -27,15 +27,15 @@ constexpr char kAndoidClientId[] =
     "1070009224336-sdh77n7uot3oc99ais00jmuft6sk2fg9.apps.googleusercontent.com";
 
 policy::DeviceManagementService* GetDeviceManagementService() {
-  policy::BrowserPolicyConnectorChromeOS* const connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* const connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->device_management_service();
 }
 
 const policy::CloudPolicyClient* GetCloudPolicyClient() {
-  const policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  const policy::DeviceCloudPolicyManagerChromeOS* policy_manager =
+  const policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  const policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
   return policy_manager->core()->client();
 }

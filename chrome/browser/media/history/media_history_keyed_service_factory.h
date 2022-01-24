@@ -25,6 +25,11 @@ class MediaHistoryKeyedServiceFactory
   static MediaHistoryKeyedService* GetForProfile(Profile* profile);
   static MediaHistoryKeyedServiceFactory* GetInstance();
 
+  MediaHistoryKeyedServiceFactory(const MediaHistoryKeyedServiceFactory&) =
+      delete;
+  MediaHistoryKeyedServiceFactory& operator=(
+      const MediaHistoryKeyedServiceFactory&) = delete;
+
  protected:
   bool ServiceIsCreatedWithBrowserContext() const override;
 
@@ -39,8 +44,6 @@ class MediaHistoryKeyedServiceFactory
 
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaHistoryKeyedServiceFactory);
 };
 
 }  // namespace media_history

@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "dbus/bus.h"
@@ -372,7 +372,7 @@ void FakeBluetoothAdapterClient::OnPropertyChanged(
 void FakeBluetoothAdapterClient::PostDelayedTask(base::OnceClosure callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, std::move(callback),
-      base::TimeDelta::FromMilliseconds(simulation_interval_ms_));
+      base::Milliseconds(simulation_interval_ms_));
 }
 
 }  // namespace bluez

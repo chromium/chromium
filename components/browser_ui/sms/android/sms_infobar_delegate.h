@@ -6,7 +6,6 @@
 #define COMPONENTS_BROWSER_UI_SMS_ANDROID_SMS_INFOBAR_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/origin.h"
 
@@ -22,6 +21,10 @@ class SmsInfoBarDelegate : public ConfirmInfoBarDelegate {
                      const std::string& one_time_code,
                      base::OnceClosure on_confirm,
                      base::OnceClosure on_cancel);
+
+  SmsInfoBarDelegate(const SmsInfoBarDelegate&) = delete;
+  SmsInfoBarDelegate& operator=(const SmsInfoBarDelegate&) = delete;
+
   ~SmsInfoBarDelegate() override;
 
   // ConfirmInfoBarDelegate:
@@ -40,7 +43,6 @@ class SmsInfoBarDelegate : public ConfirmInfoBarDelegate {
   const std::string one_time_code_;
   base::OnceClosure on_confirm_;
   base::OnceClosure on_cancel_;
-  DISALLOW_COPY_AND_ASSIGN(SmsInfoBarDelegate);
 };
 
 }  // namespace sms

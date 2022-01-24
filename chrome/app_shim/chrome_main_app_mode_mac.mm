@@ -18,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/mac_logging.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"

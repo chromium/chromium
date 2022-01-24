@@ -171,11 +171,12 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
       std::move(gaia_cookie_manager_service);
   init_params.primary_account_manager = std::move(primary_account_manager);
   init_params.token_service = std::move(token_service);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  init_params.ash_account_manager = params->account_manager;
-#endif
+  init_params.account_consistency = params->account_consistency;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   init_params.signin_client = params->signin_client;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  init_params.account_manager_facade = params->account_manager_facade;
 #endif
 
   return init_params;

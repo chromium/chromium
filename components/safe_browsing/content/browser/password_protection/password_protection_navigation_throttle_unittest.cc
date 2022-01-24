@@ -5,6 +5,8 @@
 #include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/test/bind.h"
 #include "components/safe_browsing/content/browser/password_protection/mock_password_protection_service.h"
@@ -19,11 +21,17 @@
 
 namespace safe_browsing {
 
+using testing::NiceMock;
+
 class PasswordProtectionNavigationThrottleTest
     : public content::RenderViewHostTestHarness,
       public content::WebContentsObserver {
  public:
   PasswordProtectionNavigationThrottleTest() = default;
+  PasswordProtectionNavigationThrottleTest(
+      const PasswordProtectionNavigationThrottleTest&) = delete;
+  PasswordProtectionNavigationThrottleTest& operator=(
+      const PasswordProtectionNavigationThrottleTest&) = delete;
   ~PasswordProtectionNavigationThrottleTest() override = default;
 
   // content::RenderViewHostTestHarness:
@@ -49,8 +57,8 @@ class PasswordProtectionNavigationThrottleTest
     std::vector<password_manager::MatchingReusedCredential> credentials = {
         {"http://example.test"}, {"http://2.example.com"}};
     std::unique_ptr<safe_browsing::MockPasswordProtectionService>
-        password_protection_service =
-            std::make_unique<safe_browsing::MockPasswordProtectionService>();
+        password_protection_service = std::make_unique<
+            NiceMock<safe_browsing::MockPasswordProtectionService>>();
 
     scoped_refptr<PasswordProtectionRequestContent> request =
         new PasswordProtectionRequestContent(
@@ -83,9 +91,6 @@ class PasswordProtectionNavigationThrottleTest
 
   bool is_warning_shown_ = false;
   std::unique_ptr<PasswordProtectionNavigationThrottle> throttle_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordProtectionNavigationThrottleTest);
 };
 
 TEST_F(PasswordProtectionNavigationThrottleTest, DeferOnNavigation) {

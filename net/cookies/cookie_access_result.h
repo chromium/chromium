@@ -33,6 +33,14 @@ struct NET_EXPORT CookieAccessResult {
 
   ~CookieAccessResult();
 
+  bool operator==(const CookieAccessResult& other) const {
+    return status == other.status &&
+           effective_same_site == other.effective_same_site &&
+           access_semantics == other.access_semantics &&
+           is_allowed_to_access_secure_cookies ==
+               other.is_allowed_to_access_secure_cookies;
+  }
+
   CookieInclusionStatus status;
   CookieEffectiveSameSite effective_same_site =
       CookieEffectiveSameSite::UNDEFINED;

@@ -7,7 +7,7 @@
 
 #include "remoting/host/mac/permission_wizard.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/mac/permission_process_utils.h"
 
 namespace remoting {

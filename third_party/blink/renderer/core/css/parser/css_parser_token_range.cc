@@ -64,7 +64,7 @@ String CSSParserTokenRange::Serialize() const {
   StringBuilder builder;
   for (const CSSParserToken* it = first_; it != last_; ++it)
     it->Serialize(builder);
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 }  // namespace blink

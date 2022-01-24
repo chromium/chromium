@@ -27,10 +27,10 @@ ExtensionFunction::ResponseAction SystemIndicatorSetIconFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(extension());
   EXTENSION_FUNCTION_VALIDATE(HasSystemIndicator(*extension()));
 
-  EXTENSION_FUNCTION_VALIDATE(args_->GetList().size() == 1);
-  EXTENSION_FUNCTION_VALIDATE(args_->GetList()[0].is_dict());
+  EXTENSION_FUNCTION_VALIDATE(args().size() == 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_dict());
 
-  const base::Value& set_icon_details = args_->GetList()[0];
+  const base::Value& set_icon_details = args()[0];
 
   // NOTE: For historical reasons, this code is primarily taken from
   // ExtensionActionSetIconFunction.

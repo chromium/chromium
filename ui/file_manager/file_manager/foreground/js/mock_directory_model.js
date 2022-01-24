@@ -4,7 +4,9 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
@@ -66,6 +68,20 @@ export function createFakeDirectoryModel() {
      * @return {DirectoryEntry|FakeEntry|FilesAppDirEntry} Current directory.
      */
     getCurrentDirEntry() {
+      return null;
+    }
+
+    /**
+     * @returns {?VolumeInfo}
+     */
+    getCurrentVolumeInfo() {
+      return null;
+    }
+
+    /**
+     * @returns {?VolumeManagerCommon.RootType}
+     */
+    getCurrentRootType() {
       return null;
     }
 

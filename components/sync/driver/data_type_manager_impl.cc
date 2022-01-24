@@ -4,6 +4,7 @@
 
 #include "components/sync/driver/data_type_manager_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,12 +14,13 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/data_type_encryption_handler.h"
 #include "components/sync/driver/data_type_manager_observer.h"
 #include "components/sync/driver/data_type_status_table.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/data_type_debug_info_listener.h"
 
 namespace syncer {
@@ -188,32 +190,46 @@ void DataTypeManagerImpl::ConfigureImpl(ModelTypeSet desired_types,
   Restart();
 }
 
-void DataTypeManagerImpl::ActivateDataTypes() {
+void DataTypeManagerImpl::ConnectDataTypes() {
   for (ModelType type : last_enabled_types_) {
     const auto& dtc_iter = controllers_->find(type);
-    if (dtc_iter == controllers_->end())
+    if (dtc_iter == controllers_->end()) {
       continue;
-    DataTypeController* dtc = dtc_iter->second.get();
-    if (dtc->state() == DataTypeController::MODEL_LOADED) {
-      // Only call ActivateDataType for types that completed LoadModels
-      // successfully. Such types shouldn't be in an error state at the same
-      // time.
-      DCHECK(!data_type_status_table_.GetFailedTypes().Has(dtc->type()));
-      switch (dtc->ActivateDataType(configurer_)) {
-        case DataTypeController::TYPE_ALREADY_DOWNLOADED:
-          // Proxy types (as opposed to protocol types) don't actually have any
-          // data, so keep proxy types out of |downloaded_types_|.
-          if (!IsProxyType(type))
-            downloaded_types_.Put(type);
-          break;
-        case DataTypeController::TYPE_NOT_YET_DOWNLOADED:
-          downloaded_types_.Remove(type);
-          break;
-      }
-      if (force_redownload_types_.Has(type)) {
-        downloaded_types_.Remove(type);
-      }
     }
+    DataTypeController* dtc = dtc_iter->second.get();
+    if (dtc->state() != DataTypeController::MODEL_LOADED) {
+      continue;
+    }
+    // Only call Connect() for types that completed LoadModels()
+    // successfully. Such types shouldn't be in an error state at the same
+    // time.
+    DCHECK(!data_type_status_table_.GetFailedTypes().Has(dtc->type()));
+
+    std::unique_ptr<DataTypeActivationResponse> activation_response =
+        dtc->Connect();
+    DCHECK(activation_response);
+    DCHECK_EQ(dtc->state(), DataTypeController::RUNNING);
+
+    if (activation_response->skip_engine_connection) {
+      // |skip_engine_connection| means ConnectDataType() shouldn't be invoked
+      // because the datatype has some alternative way to sync changes to the
+      // server, without relying on this instance of the sync engine. This is
+      // currently possible for PROXY_TABS and, on Android, for PASSWORDS.
+      DCHECK(!activation_response->type_processor);
+      downloaded_types_.Put(type);
+      continue;
+    }
+
+    if (activation_response->model_type_state.initial_sync_done()) {
+      downloaded_types_.Put(type);
+    } else {
+      downloaded_types_.Remove(type);
+    }
+    if (force_redownload_types_.Has(type)) {
+      downloaded_types_.Remove(type);
+    }
+
+    configurer_->ConnectDataType(type, std::move(activation_response));
   }
 }
 
@@ -338,7 +354,15 @@ void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
   // TODO(pavely): By now some of datatypes in |configuration_types_queue_|
   // could have failed loading and should be excluded from configuration. I need
   // to adjust |configuration_types_queue_| for such types.
-  ActivateDataTypes();
+  ConnectDataTypes();
+
+  // Propagate the state of PROXY_TABS to the sync engine.
+  const auto& dtc_iter = controllers_->find(PROXY_TABS);
+  if (dtc_iter != controllers_->end()) {
+    configurer_->SetProxyTabsDatatypeEnabled(dtc_iter->second->state() ==
+                                             DataTypeController::RUNNING);
+  }
+
   StartNextConfiguration(/*higher_priority_types_before=*/ModelTypeSet());
 }
 
@@ -552,12 +576,16 @@ DataTypeManagerImpl::PrepareConfigureParams(
   DCHECK(Intersection(active_types, disabled_types).Empty());
 
   ModelTypeSet types_to_download = Difference(active_types, downloaded_types_);
-  // Proxy and commit-only types never require downloading.
-  types_to_download.RemoveAll(ProxyTypes());
+  // Commit-only types never require downloading.
   types_to_download.RemoveAll(CommitOnlyTypes());
   if (!types_to_download.Empty()) {
     types_to_download.PutAll(ControlTypes());
   }
+
+  // All types to download are expected to be protocol types (proxy types should
+  // have skipped full activation via
+  // |DataTypeActivationResponse::skip_engine_connection|).
+  DCHECK(ProtocolTypes().HasAll(types_to_download));
 
   // Already (optimistically) update the |downloaded_types_|, so that the next
   // time we get here, it has the correct value.
@@ -618,10 +646,8 @@ void DataTypeManagerImpl::RecordConfigurationStats(
 
 void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
                                                    const SyncError& error) {
-  auto c_it = controllers_->find(type);
-  DCHECK(c_it != controllers_->end());
-  // Delegate deactivation to the controller.
-  c_it->second->DeactivateDataType(configurer_);
+  // No-op if the type is not connected.
+  configurer_->DisconnectDataType(type);
 
   if (error.IsSet()) {
     data_type_status_table_.UpdateFailedDataType(type, error);
@@ -629,7 +655,7 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
     last_requested_context_.reason =
         GetReasonForProgrammaticReconfigure(last_requested_context_.reason);
     // Do this asynchronously so the ModelLoadManager has a chance to
-    // finish stopping this type, otherwise DeactivateDataType() and Stop()
+    // finish stopping this type, otherwise Disconnect() and Stop()
     // end up getting called twice on the controller.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&DataTypeManagerImpl::ProcessReconfigure,

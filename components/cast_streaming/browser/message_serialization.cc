@@ -15,6 +15,7 @@ const char kMirroringNamespace[] = "urn:x-cast:com.google.cast.webrtc";
 const char kRemotingNamespace[] = "urn:x-cast:com.google.cast.remoting";
 const char kSystemNamespace[] = "urn:x-cast:com.google.cast.system";
 const char kInjectNamespace[] = "urn:x-cast:com.google.cast.inject";
+const char kMediaNamespace[] = "urn:x-cast:com.google.cast.media";
 
 const char kKeySenderId[] = "senderId";
 const char kKeyNamespace[] = "namespace";
@@ -22,11 +23,17 @@ const char kKeyData[] = "data";
 const char kKeyType[] = "type";
 const char kKeyRequestId[] = "requestId";
 const char kKeyCode[] = "code";
+const char kKeyStatus[] = "status";
 
 const char kValueSystemSenderId[] = "SystemSender";
 const char kValueWrapped[] = "WRAPPED";
 const char kValueError[] = "ERROR";
 const char kValueWrappedError[] = "WRAPPED_ERROR";
+const char kValueMediaPlay[] = "PLAY";
+const char kValueMediaPause[] = "PAUSE";
+const char kValueMediaGetStatus[] = "GET_STATUS";
+const char kValueMediaStatus[] = "MEDIA_STATUS";
+
 const char kValueInjectNotSupportedError[] =
     R"({"code":"NOT_SUPPORTED","type":"ERROR"})";
 
@@ -36,7 +43,8 @@ const char kInitialConnectMessage[] = R"(
       "activeNamespaces": [
         "urn:x-cast:com.google.cast.webrtc",
         "urn:x-cast:com.google.cast.remoting",
-        "urn:x-cast:com.google.cast.inject"
+        "urn:x-cast:com.google.cast.inject",
+        "urn:x-cast:com.google.cast.media"
       ],
       "version": "2.0.0",
       "messagesVersion": "1.0"

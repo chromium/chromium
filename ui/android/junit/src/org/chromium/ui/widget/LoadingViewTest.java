@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,11 +59,16 @@ public class LoadingViewTest {
         mActivity.setContentView(content);
 
         mLoadingView = new LoadingView(mActivity);
-        mLoadingView.setDisableAnimationForTest(true);
+        LoadingView.setDisableAnimationForTest(true);
         content.addView(mLoadingView);
 
         mLoadingView.addObserver(mTestObserver1);
         mLoadingView.addObserver(mTestObserver2);
+    }
+
+    @After
+    public void tearDown() {
+        LoadingView.setDisableAnimationForTest(false);
     }
 
     @Test

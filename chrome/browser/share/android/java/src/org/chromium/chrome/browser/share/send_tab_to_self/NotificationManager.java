@@ -156,9 +156,8 @@ public class NotificationManager {
         // Build the notification itself.
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(true /* preferCompat */,
+                        .createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.SHARING,
-                                null /* remoteAppPackageName */,
                                 new NotificationMetadata(
                                         NotificationUmaTracker.SystemNotificationType
                                                 .SEND_TAB_TO_SELF,

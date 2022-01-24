@@ -66,6 +66,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
       FinishedCallback finished_callback,
       std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory =
           std::make_unique<FidoDiscoveryFactory>());
+
+  SetPINRequestHandler(const SetPINRequestHandler&) = delete;
+  SetPINRequestHandler& operator=(const SetPINRequestHandler&) = delete;
+
   ~SetPINRequestHandler() override;
 
   // ProvidePIN may be called after |get_pin_callback| has been used to indicate
@@ -106,8 +110,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
   std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory_;
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<SetPINRequestHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SetPINRequestHandler);
 };
 
 }  // namespace device

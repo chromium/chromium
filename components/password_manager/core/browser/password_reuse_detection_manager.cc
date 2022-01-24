@@ -14,13 +14,12 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace password_manager {
 
 namespace {
 constexpr size_t kMaxNumberOfCharactersToStore = 45;
-constexpr TimeDelta kMaxInactivityTime = TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMaxInactivityTime = base::Seconds(10);
 }  // namespace
 
 PasswordReuseDetectionManager::PasswordReuseDetectionManager(
@@ -151,7 +150,7 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
           ? client_->GetPasswordManager()->IsPasswordFieldDetectedOnPage()
           : false;
 
-  metrics_util::LogPasswordReuse(password_length, saved_passwords,
+  metrics_util::LogPasswordReuse(saved_passwords,
                                  matching_reused_credentials.size(),
                                  password_field_detected, reused_password_type);
   if (reused_password_type ==
@@ -193,7 +192,8 @@ void PasswordReuseDetectionManager::CheckStoresForReuse(
     const std::u16string& input) {
   PasswordReuseManager* reuse_manager = client_->GetPasswordReuseManager();
   if (reuse_manager) {
-    reuse_manager->CheckReuse(input, main_frame_url_.GetOrigin().spec(), this);
+    reuse_manager->CheckReuse(
+        input, main_frame_url_.DeprecatedGetOriginAsURL().spec(), this);
   }
 }
 

@@ -7,6 +7,7 @@ from webdriver import Element, NoSuchAlertException, WebDriverException
 
 # WebDriver specification ID: dfn-error-response-data
 errors = {
+    "detached shadow root": 404,
     "element click intercepted": 400,
     "element not selectable": 400,
     "element not interactable": 400,
@@ -23,6 +24,7 @@ errors = {
     "no such cookie": 404,
     "no such element": 404,
     "no such frame": 404,
+    "no such shadow root": 404,
     "no such window": 404,
     "script timeout": 500,
     "session not created": 500,

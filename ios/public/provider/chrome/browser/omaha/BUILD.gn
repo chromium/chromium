@@ -2,25 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("omaha") {
+source_set("omaha_api") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "omaha_service_provider.h",
-    "omaha_service_provider.mm",
-    "omaha_xml_writer.h",
-  ]
+  sources = [ "omaha_api.h" ]
   deps = [
     "//base",
     "//url",
   ]
 }
 
-source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
+source_set("test_omaha") {
   testonly = true
-  sources = [
-    "test_omaha_service_provider.h",
-    "test_omaha_service_provider.mm",
-  ]
-  deps = [ ":omaha" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "test_omaha.cc" ]
+  deps = [ ":omaha_api" ]
 }

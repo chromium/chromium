@@ -55,9 +55,9 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/table_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace {
 constexpr int kPermissionSectionPaddingTop = 20;
@@ -113,12 +113,12 @@ class ParentPermissionInputSection : public views::TextfieldController {
       : main_view_(main_view) {
     DCHECK_GT(parent_permission_email_addresses.size(), 0u);
 
-    auto view = std::make_unique<views::View>();
-
-    view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+    auto view = views::Builder<views::BoxLayoutView>()
+                    .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                    .SetBetweenChildSpacing(
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            views::DISTANCE_RELATED_CONTROL_VERTICAL))
+                    .Build();
 
     if (parent_permission_email_addresses.size() > 1) {
       // If there is more than one parent listed, show radio buttons.
@@ -332,49 +332,49 @@ std::u16string ParentPermissionDialogView::GetActiveUserFirstName() const {
 }
 
 void ParentPermissionDialogView::AddedToWidget() {
-  auto message_container = std::make_unique<views::View>();
-
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  views::GridLayout* layout = message_container->SetLayoutManager(
-      std::make_unique<views::GridLayout>());
-  constexpr int kTitleColumnSetId = 0;
-  views::ColumnSet* column_set = layout->AddColumnSet(kTitleColumnSetId);
   constexpr int icon_size = extension_misc::EXTENSION_ICON_SMALL;
-  column_set->AddColumn(views::GridLayout::CENTER, views::GridLayout::LEADING,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kFixed, icon_size, 0);
-
-  // Equalize padding on the left and the right of the icon.
-  column_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      provider->GetInsetsMetric(views::INSETS_DIALOG).left());
-  // Set a resize weight so that the message label will be expanded to the
-  // available width.
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING,
-                        1.0, views::GridLayout::ColumnSize::kUsePreferred, 0,
-                        0);
-  layout->StartRow(views::GridLayout::kFixedSize, kTitleColumnSetId);
+  auto message_container =
+      views::Builder<views::TableLayoutView>()
+          .AddColumn(views::LayoutAlignment::kCenter,
+                     views::LayoutAlignment::kStart,
+                     views::TableLayout::kFixedSize,
+                     views::TableLayout::ColumnSize::kFixed, icon_size, 0)
+          // Equalize padding on the left and the right of the icon.
+          .AddPaddingColumn(
+              views::TableLayout::kFixedSize,
+              provider->GetInsetsMetric(views::INSETS_DIALOG).left())
+          // Set a resize weight so that the message label will be expanded to
+          // the available width.
+          .AddColumn(views::LayoutAlignment::kStretch,
+                     views::LayoutAlignment::kStart, 1.0,
+                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+          .AddRows(1, views::TableLayout::kFixedSize, 0);
 
   // Scale down to icon size, but allow smaller icons (don't scale up).
   if (!params_->icon.isNull()) {
     const gfx::ImageSkia& image = params_->icon;
-    auto icon = std::make_unique<views::ImageView>();
     gfx::Size size(image.width(), image.height());
+    auto icon = std::make_unique<views::ImageView>();
     size.SetToMin(gfx::Size(icon_size, icon_size));
-    icon->SetImageSize(size);
-    icon->SetImage(image);
-    layout->AddView(std::move(icon));
+    message_container.AddChild(
+        views::Builder<views::ImageView>().SetImageSize(size).SetImage(image));
+  } else {
+    // Add an empty view if there is no icon. This is required to ensure the
+    // the label below still lands in the correct TableLayout column.
+    message_container.AddChild(views::Builder<views::View>());
   }
 
   DCHECK(!params_->message.empty());
-  std::unique_ptr<views::Label> message_label =
-      views::BubbleFrameView::CreateDefaultTitleLabel(params_->message);
-  // Setting the message's preferred size to 0 ensures it won't influence the
-  // overall size of the dialog. It will be expanded by GridLayout.
-  message_label->SetPreferredSize(gfx::Size(0, 0));
-  layout->AddView(std::move(message_label));
+  message_container.AddChild(
+      views::Builder<views::Label>(
+          views::BubbleFrameView::CreateDefaultTitleLabel(params_->message))
+          // Setting the message's preferred size to 0 ensures it won't
+          // influence the overall size of the dialog. It will be expanded by
+          // TableLayout.
+          .SetPreferredSize(gfx::Size(0, 0)));
 
-  GetBubbleFrameView()->SetTitleView(std::move(message_container));
+  GetBubbleFrameView()->SetTitleView(std::move(message_container).Build());
 }
 
 bool ParentPermissionDialogView::Cancel() {

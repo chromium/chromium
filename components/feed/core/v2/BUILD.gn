@@ -70,6 +70,8 @@ source_set("feed_core_v2") {
     "scheduling.h",
     "stream/notice_card_tracker.cc",
     "stream/notice_card_tracker.h",
+    "stream/privacy_notice_card_tracker.cc",
+    "stream/privacy_notice_card_tracker.h",
     "stream/unread_content_notifier.cc",
     "stream/unread_content_notifier.h",
     "stream/upload_criteria.cc",
@@ -80,6 +82,8 @@ source_set("feed_core_v2") {
     "stream_model/ephemeral_change.h",
     "stream_model/feature_tree.cc",
     "stream_model/feature_tree.h",
+    "stream_surface_set.cc",
+    "stream_surface_set.h",
     "surface_updater.cc",
     "surface_updater.h",
     "tasks/clear_all_task.cc",
@@ -128,6 +132,7 @@ source_set("feed_core_v2") {
     "//components/leveldb_proto:leveldb_proto",
     "//components/offline_pages/task:task",
     "//components/prefs",
+    "//components/reading_list/features:flags",
     "//components/signin/public/identity_manager",
     "//components/url_matcher:url_matcher",
     "//components/variations",
@@ -143,7 +148,6 @@ source_set("feed_core_v2") {
   public_deps = [
     ":ios_shared",
     "//base",
-    "//base/util/values:values_util",
     "//components/feed/core/common:feed_core_common",
     "//components/feed/core/proto:proto_v2",
   ]
@@ -157,7 +161,6 @@ source_set("ios_shared") {
   ]
   deps = [
     "//base",
-    "//base/util/values:values_util",
     "//components/feed/core/common:feed_core_common",
     "//components/prefs",
   ]
@@ -198,6 +201,7 @@ source_set("core_unit_tests") {
     "request_throttler_unittest.cc",
     "scheduling_unittest.cc",
     "stream/notice_card_tracker_unittest.cc",
+    "stream/privacy_notice_card_tracker_unittest.cc",
     "stream_model_unittest.cc",
     "test/callback_receiver_unittest.cc",
     "test/proto_printer.cc",
@@ -226,6 +230,7 @@ source_set("core_unit_tests") {
     "//components/leveldb_proto:test_support",
     "//components/offline_pages/core:test_support",
     "//components/prefs:test_support",
+    "//components/reading_list/features:flags",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/variations:test_support",

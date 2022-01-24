@@ -27,6 +27,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/value_store/test_value_store_factory.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/api/lock_screen_data/data_item.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_value_store_migrator.h"
@@ -37,7 +38,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/test_extensions_browser_client.h"
-#include "extensions/browser/value_store/test_value_store_factory.h"
 #include "extensions/common/api/lock_screen_data.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
@@ -85,6 +85,10 @@ class TestEventRouter : public extensions::EventRouter {
  public:
   explicit TestEventRouter(content::BrowserContext* context)
       : extensions::EventRouter(context, nullptr) {}
+
+  TestEventRouter(const TestEventRouter&) = delete;
+  TestEventRouter& operator=(const TestEventRouter&) = delete;
+
   ~TestEventRouter() override = default;
 
   bool ExtensionHasEventListener(const std::string& extension_id,
@@ -122,8 +126,6 @@ class TestEventRouter : public extensions::EventRouter {
 
  private:
   std::vector<bool> was_locked_values_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventRouter);
 };
 
 std::unique_ptr<KeyedService> TestEventRouterFactoryFunction(
@@ -136,6 +138,10 @@ class ItemRegistry {
  public:
   explicit ItemRegistry(const std::string& extension_id)
       : extension_id_(extension_id) {}
+
+  ItemRegistry(const ItemRegistry&) = delete;
+  ItemRegistry& operator=(const ItemRegistry&) = delete;
+
   ~ItemRegistry() = default;
 
   // Adds a new item to set of registered items.
@@ -213,8 +219,6 @@ class ItemRegistry {
   DataItem::RegisteredValuesCallback pending_callback_;
   // Set of registered item ids.
   std::set<std::string> items_;
-
-  DISALLOW_COPY_AND_ASSIGN(ItemRegistry);
 };
 
 // Keeps track of all operations requested from the test data item.
@@ -246,6 +250,9 @@ class OperationQueue {
 
   OperationQueue(const std::string& id, ItemRegistry* item_registry)
       : id_(id), item_registry_(item_registry) {}
+
+  OperationQueue(const OperationQueue&) = delete;
+  OperationQueue& operator=(const OperationQueue&) = delete;
 
   ~OperationQueue() = default;
 
@@ -344,8 +351,6 @@ class OperationQueue {
   base::queue<PendingOperation> pending_operations_;
   std::vector<char> content_;
   bool deleted_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OperationQueue);
 };
 
 // Test data item - routes all requests to the OperationQueue provided through
@@ -361,6 +366,9 @@ class TestDataItem : public DataItem {
                OperationQueue* operations)
       : DataItem(id, extension_id, nullptr, nullptr, nullptr, crypto_key),
         operations_(operations) {}
+
+  TestDataItem(const TestDataItem&) = delete;
+  TestDataItem& operator=(const TestDataItem&) = delete;
 
   ~TestDataItem() override = default;
 
@@ -382,13 +390,17 @@ class TestDataItem : public DataItem {
 
  private:
   OperationQueue* operations_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataItem);
 };
 
 class TestLockScreenValueStoreMigrator : public LockScreenValueStoreMigrator {
  public:
   TestLockScreenValueStoreMigrator() = default;
+
+  TestLockScreenValueStoreMigrator(const TestLockScreenValueStoreMigrator&) =
+      delete;
+  TestLockScreenValueStoreMigrator& operator=(
+      const TestLockScreenValueStoreMigrator&) = delete;
+
   ~TestLockScreenValueStoreMigrator() override = default;
 
   void Run(const std::set<ExtensionId>& extensions_to_migrate,
@@ -443,13 +455,16 @@ class TestLockScreenValueStoreMigrator : public LockScreenValueStoreMigrator {
   ExtensionMigratedCallback migration_callback_;
   std::set<ExtensionId> extensions_to_migrate_;
   std::map<ExtensionId, base::OnceClosure> clear_data_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLockScreenValueStoreMigrator);
 };
 
 class LockScreenItemStorageTest : public ExtensionsTest {
  public:
   LockScreenItemStorageTest() = default;
+
+  LockScreenItemStorageTest(const LockScreenItemStorageTest&) = delete;
+  LockScreenItemStorageTest& operator=(const LockScreenItemStorageTest&) =
+      delete;
+
   ~LockScreenItemStorageTest() override = default;
 
   void SetUp() override {
@@ -706,7 +721,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
         << "Unexpected value store path " << root.value();
 
     return std::make_unique<LocalValueStoreCache>(
-        base::MakeRefCounted<TestValueStoreFactory>());
+        base::MakeRefCounted<value_store::TestValueStoreFactory>());
   }
 
   // Callback for creating value store migrator - this is the callback passed to
@@ -773,8 +788,6 @@ class LockScreenItemStorageTest : public ExtensionsTest {
   bool can_create_deprecated_value_store_ = false;
 
   TestLockScreenValueStoreMigrator* value_store_migrator_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenItemStorageTest);
 };
 
 }  // namespace

@@ -58,11 +58,10 @@ const media::AudioParameters::Format kFormat =
 // Time constant for AudioPowerMonitor. See See AudioPowerMonitor ctor comments
 // for details.
 constexpr base::TimeDelta kPowerMeasurementTimeConstant =
-    base::TimeDelta::FromMilliseconds(10);
+    base::Milliseconds(10);
 
 // Time in seconds between two successive measurements of audio power levels.
-constexpr base::TimeDelta kPowerMonitorLogInterval =
-    base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kPowerMonitorLogInterval = base::Seconds(15);
 
 // Used for UMA histograms.
 const int kRenderTimeHistogramMinMicroseconds = 100;
@@ -238,7 +237,7 @@ WebRtcAudioRenderer::AudioStreamTracker::AudioStreamTracker(
   // CheckAlive() will look to see if |render_callbacks_started_| is true
   // after the timeout expires and log this. If the stream is paused/closed
   // before the timer fires, a warning is logged instead.
-  check_alive_timer_.StartOneShot(base::TimeDelta::FromSeconds(5), FROM_HERE);
+  check_alive_timer_.StartOneShot(base::Seconds(5), FROM_HERE);
 }
 
 WebRtcAudioRenderer::AudioStreamTracker::~AudioStreamTracker() {

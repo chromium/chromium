@@ -52,6 +52,7 @@ PreresolveJob::PreresolveJob(const GURL& url,
       network_isolation_key(std::move(network_isolation_key)),
       info(info) {
   DCHECK_GE(num_sockets, 0);
+  DCHECK(!network_isolation_key.IsEmpty());
 }
 
 PreresolveJob::PreresolveJob(PreconnectRequest preconnect_request,
@@ -63,6 +64,7 @@ PreresolveJob::PreresolveJob(PreconnectRequest preconnect_request,
           std::move(preconnect_request.network_isolation_key)),
       info(info) {
   DCHECK_GE(num_sockets, 0);
+  DCHECK(!network_isolation_key.IsEmpty());
 }
 
 PreresolveJob::PreresolveJob(PreresolveJob&& other) = default;
@@ -108,7 +110,7 @@ void PreconnectManager::StartPreresolveHost(
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
   PreresolveJobId job_id = preresolve_jobs_.Add(std::make_unique<PreresolveJob>(
-      url.GetOrigin(), 0, kAllowCredentialsOnPreconnectByDefault,
+      url.DeprecatedGetOriginAsURL(), 0, kAllowCredentialsOnPreconnectByDefault,
       network_isolation_key, nullptr));
   queued_jobs_.push_front(job_id);
 
@@ -139,8 +141,8 @@ void PreconnectManager::StartPreconnectUrl(
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
   PreresolveJobId job_id = preresolve_jobs_.Add(std::make_unique<PreresolveJob>(
-      url.GetOrigin(), 1, allow_credentials, std::move(network_isolation_key),
-      nullptr));
+      url.DeprecatedGetOriginAsURL(), 1, allow_credentials,
+      std::move(network_isolation_key), nullptr));
   queued_jobs_.push_front(job_id);
 
   TryToLaunchPreresolveJobs();
@@ -161,7 +163,7 @@ void PreconnectManager::PreconnectUrl(
     int num_sockets,
     bool allow_credentials,
     const net::NetworkIsolationKey& network_isolation_key) const {
-  DCHECK(url.GetOrigin() == url);
+  DCHECK(url.DeprecatedGetOriginAsURL() == url);
   DCHECK(url.SchemeIsHTTPOrHTTPS());
   if (observer_)
     observer_->OnPreconnectUrl(url, num_sockets, allow_credentials);
@@ -178,7 +180,7 @@ std::unique_ptr<ResolveHostClientImpl> PreconnectManager::PreresolveUrl(
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key,
     ResolveHostCallback callback) const {
-  DCHECK(url.GetOrigin() == url);
+  DCHECK(url.DeprecatedGetOriginAsURL() == url);
   DCHECK(url.SchemeIsHTTPOrHTTPS());
 
   auto* network_context = GetNetworkContext();
@@ -198,7 +200,7 @@ std::unique_ptr<ProxyLookupClientImpl> PreconnectManager::LookupProxyForUrl(
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key,
     ProxyLookupCallback callback) const {
-  DCHECK(url.GetOrigin() == url);
+  DCHECK(url.DeprecatedGetOriginAsURL() == url);
   DCHECK(url.SchemeIsHTTPOrHTTPS());
 
   auto* network_context = GetNetworkContext();

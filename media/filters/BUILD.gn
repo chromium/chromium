@@ -78,8 +78,6 @@ source_set("filters") {
   ]
 
   configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//media:subcomponent_config",
   ]
 
@@ -261,11 +259,6 @@ static_library("test_support") {
     "ivf_parser.h",
   ]
 
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
-
   deps = [
     "//base/test:test_support",
     "//media/base:test_support",
@@ -310,11 +303,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx:test_support",
-  ]
-
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   if (is_android) {

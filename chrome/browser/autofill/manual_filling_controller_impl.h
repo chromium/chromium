@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "chrome/browser/autofill/accessory_controller.h"
@@ -32,6 +31,10 @@ class ManualFillingControllerImpl
       public content::WebContentsUserData<ManualFillingControllerImpl>,
       public base::trace_event::MemoryDumpProvider {
  public:
+  ManualFillingControllerImpl(const ManualFillingControllerImpl&) = delete;
+  ManualFillingControllerImpl& operator=(const ManualFillingControllerImpl&) =
+      delete;
+
   ~ManualFillingControllerImpl() override;
 
   // ManualFillingController:
@@ -46,8 +49,9 @@ class ManualFillingControllerImpl
   void OnAutomaticGenerationStatusChanged(bool available) override;
   void ShowAccessorySheetTab(
       const autofill::AccessoryTabType& tab_type) override;
-  void OnFillingTriggered(autofill::AccessoryTabType type,
-                          const autofill::UserInfo::Field& selection) override;
+  void OnFillingTriggered(
+      autofill::AccessoryTabType type,
+      const autofill::AccessorySheetField& selection) override;
   void OnOptionSelected(
       autofill::AccessoryAction selected_action) const override;
   void OnToggleChanged(autofill::AccessoryAction toggled_action,
@@ -165,8 +169,6 @@ class ManualFillingControllerImpl
   base::WeakPtrFactory<ManualFillingControllerImpl> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ManualFillingControllerImpl);
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_CONTROLLER_IMPL_H_

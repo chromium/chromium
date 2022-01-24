@@ -27,9 +27,9 @@ def ArchFromElf(elf_path, tool_prefix):
     return 'x86'
   if machine == 'Advanced Micro Devices X86-64':
     return 'x64'
-  elif machine == 'ARM':
+  if machine == 'ARM':
     return 'arm'
-  elif machine == 'AArch64':
+  if machine == 'AArch64':
     return 'arm64'
   return machine
 

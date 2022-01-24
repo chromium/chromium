@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_tick_clock.h"
@@ -30,10 +29,14 @@ constexpr int kDataPipeCapacity = 1024;
 
 // Implements the CastTransport interface to capture output from the
 // RemotingSender.
-class FakeTransport : public media::cast::CastTransport {
+class FakeTransport final : public media::cast::CastTransport {
  public:
-  FakeTransport() {}
-  ~FakeTransport() final {}
+  FakeTransport() = default;
+
+  FakeTransport(const FakeTransport&) = delete;
+  FakeTransport& operator=(const FakeTransport&) = delete;
+
+  ~FakeTransport() override = default;
 
   void TakeSentFrames(std::vector<media::cast::EncodedFrame>* frames) {
     frames->swap(sent_frames_);
@@ -54,19 +57,19 @@ class FakeTransport : public media::cast::CastTransport {
 
  protected:
   void InsertFrame(uint32_t ssrc,
-                   const media::cast::EncodedFrame& frame) final {
+                   const media::cast::EncodedFrame& frame) override {
     sent_frames_.push_back(frame);
   }
 
   void CancelSendingFrames(
       uint32_t ssrc,
-      const std::vector<media::cast::FrameId>& frame_ids) final {
+      const std::vector<media::cast::FrameId>& frame_ids) override {
     for (media::cast::FrameId frame_id : frame_ids)
       canceled_frame_ids_.push_back(frame_id);
   }
 
   void ResendFrameForKickstart(uint32_t ssrc,
-                               media::cast::FrameId frame_id) final {
+                               media::cast::FrameId frame_id) override {
     kickstarted_frame_id_ = frame_id;
     if (!kickstarted_callback_.is_null())
       std::move(kickstarted_callback_).Run();
@@ -76,20 +79,20 @@ class FakeTransport : public media::cast::CastTransport {
   void SendSenderReport(
       uint32_t ssrc,
       base::TimeTicks current_time,
-      media::cast::RtpTimeTicks current_time_as_rtp_timestamp) final {}
+      media::cast::RtpTimeTicks current_time_as_rtp_timestamp) override {}
   void AddValidRtpReceiver(uint32_t rtp_sender_ssrc,
-                           uint32_t rtp_receiver_ssrc) final {}
+                           uint32_t rtp_receiver_ssrc) override {}
   void InitializeRtpReceiverRtcpBuilder(
       uint32_t rtp_receiver_ssrc,
-      const media::cast::RtcpTimeData& time_data) final {}
+      const media::cast::RtcpTimeData& time_data) override {}
   void AddCastFeedback(const media::cast::RtcpCastMessage& cast_message,
-                       base::TimeDelta target_delay) final {}
-  void AddPli(const media::cast::RtcpPliMessage& pli_message) final {}
+                       base::TimeDelta target_delay) override {}
+  void AddPli(const media::cast::RtcpPliMessage& pli_message) override {}
   void AddRtcpEvents(
-      const media::cast::ReceiverRtcpEventSubscriber::RtcpEvents& e) final {}
-  void AddRtpReceiverReport(const media::cast::RtcpReportBlock& b) final {}
-  void SendRtcpFromRtpReceiver() final {}
-  void SetOptions(const base::DictionaryValue& options) final {}
+      const media::cast::ReceiverRtcpEventSubscriber::RtcpEvents& e) override {}
+  void AddRtpReceiverReport(const media::cast::RtcpReportBlock& b) override {}
+  void SendRtcpFromRtpReceiver() override {}
+  void SetOptions(const base::DictionaryValue& options) override {}
 
  private:
   std::vector<media::cast::EncodedFrame> sent_frames_;
@@ -97,13 +100,15 @@ class FakeTransport : public media::cast::CastTransport {
 
   base::RepeatingClosure kickstarted_callback_;
   media::cast::FrameId kickstarted_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTransport);
 };
 
 }  // namespace
 
 class RemotingSenderTest : public ::testing::Test {
+ public:
+  RemotingSenderTest(const RemotingSenderTest&) = delete;
+  RemotingSenderTest& operator=(const RemotingSenderTest&) = delete;
+
  protected:
   RemotingSenderTest()
       : cast_environment_(new media::cast::CastEnvironment(
@@ -136,8 +141,7 @@ class RemotingSenderTest : public ::testing::Test {
 
     // Give CastRemotingSender a small RTT measurement to prevent kickstart
     // testing from taking too long.
-    remoting_sender_->OnMeasuredRoundTripTime(
-        base::TimeDelta::FromMilliseconds(1));
+    remoting_sender_->OnMeasuredRoundTripTime(base::Milliseconds(1));
     RunPendingTasks();
   }
 
@@ -258,8 +262,6 @@ class RemotingSenderTest : public ::testing::Test {
   mojo::ScopedDataPipeProducerHandle producer_end_;
   bool expecting_error_callback_run_;
   uint32_t receiver_ssrc_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemotingSenderTest);
 };
 
 TEST_F(RemotingSenderTest, SendsFramesViaMojoDataPipe) {

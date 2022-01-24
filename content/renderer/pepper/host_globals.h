@@ -6,7 +6,6 @@
 #define CONTENT_RENDERER_PEPPER_HOST_GLOBALS_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/renderer/pepper/host_var_tracker.h"
 #include "ppapi/shared_impl/callback_tracker.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
@@ -21,6 +20,10 @@ class PluginModule;
 class HostGlobals : public ppapi::PpapiGlobals {
  public:
   HostGlobals();
+
+  HostGlobals(const HostGlobals&) = delete;
+  HostGlobals& operator=(const HostGlobals&) = delete;
+
   ~HostGlobals() override;
 
   // Getter for the global singleton. Generally, you should use
@@ -103,8 +106,6 @@ class HostGlobals : public ppapi::PpapiGlobals {
   ModuleMap module_map_;
 
   scoped_refptr<base::TaskRunner> file_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostGlobals);
 };
 
 }  // namespace content

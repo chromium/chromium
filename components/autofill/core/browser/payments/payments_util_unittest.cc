@@ -19,13 +19,14 @@ namespace payments {
 class PaymentsUtilTest : public testing::Test {
  public:
   PaymentsUtilTest() {}
+
+  PaymentsUtilTest(const PaymentsUtilTest&) = delete;
+  PaymentsUtilTest& operator=(const PaymentsUtilTest&) = delete;
+
   ~PaymentsUtilTest() override {}
 
  protected:
   TestPersonalDataManager personal_data_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentsUtilTest);
 };
 
 TEST_F(PaymentsUtilTest, GetBillingCustomerId_PaymentsCustomerData_Normal) {

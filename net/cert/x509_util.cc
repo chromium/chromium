@@ -33,6 +33,7 @@
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
+#include "third_party/boringssl/src/include/openssl/pkcs7.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/stack.h"
 
@@ -385,6 +386,13 @@ bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
                         data.size(), GetBufferPool()));
 }
 
+bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBufferFromStaticDataUnsafe(
+    base::span<const uint8_t> data) {
+  return bssl::UniquePtr<CRYPTO_BUFFER>(
+      CRYPTO_BUFFER_new_from_static_data_unsafe(data.data(), data.size(),
+                                                GetBufferPool()));
+}
+
 bool CryptoBufferEqual(const CRYPTO_BUFFER* a, const CRYPTO_BUFFER* b) {
   DCHECK(a && b);
   if (a == b)
@@ -398,6 +406,10 @@ base::StringPiece CryptoBufferAsStringPiece(const CRYPTO_BUFFER* buffer) {
   return base::StringPiece(
       reinterpret_cast<const char*>(CRYPTO_BUFFER_data(buffer)),
       CRYPTO_BUFFER_len(buffer));
+}
+
+base::span<const uint8_t> CryptoBufferAsSpan(const CRYPTO_BUFFER* buffer) {
+  return base::make_span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer));
 }
 
 scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(
@@ -415,6 +427,30 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(
   return X509Certificate::CreateFromBuffer(
       bssl::UpRef(sk_CRYPTO_BUFFER_value(buffers, 0)),
       std::move(intermediate_chain));
+}
+
+bool CreateCertBuffersFromPKCS7Bytes(
+    base::span<const uint8_t> data,
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>* handles) {
+  crypto::EnsureOpenSSLInit();
+  crypto::OpenSSLErrStackTracer err_cleaner(FROM_HERE);
+
+  CBS der_data;
+  CBS_init(&der_data, data.data(), data.size());
+  STACK_OF(CRYPTO_BUFFER)* certs = sk_CRYPTO_BUFFER_new_null();
+  bool success =
+      PKCS7_get_raw_certificates(certs, &der_data, x509_util::GetBufferPool());
+  if (success) {
+    for (size_t i = 0; i < sk_CRYPTO_BUFFER_num(certs); ++i) {
+      handles->push_back(
+          bssl::UniquePtr<CRYPTO_BUFFER>(sk_CRYPTO_BUFFER_value(certs, i)));
+    }
+  }
+  // |handles| took ownership of the individual buffers, so only free the list
+  // itself.
+  sk_CRYPTO_BUFFER_free(certs);
+
+  return success;
 }
 
 ParseCertificateOptions DefaultParseCertificateOptions() {

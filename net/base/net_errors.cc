@@ -14,6 +14,12 @@
 
 namespace net {
 
+// Validate all error values in net_error_list.h are negative.
+#define NET_ERROR(label, value) \
+  static_assert(value < 0, "ERR_" #label " should be negative");
+#include "net/base/net_error_list.h"
+#undef NET_ERROR
+
 std::string ErrorToString(int error) {
   return "net::" + ErrorToShortString(error);
 }

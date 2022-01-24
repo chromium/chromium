@@ -20,6 +20,9 @@ class MessageBoxDialog : public views::DialogDelegate,
   using MessageBoxResultCallback =
       base::OnceCallback<void(chrome::MessageBoxResult result)>;
 
+  MessageBoxDialog(const MessageBoxDialog&) = delete;
+  MessageBoxDialog& operator=(const MessageBoxDialog&) = delete;
+
   static chrome::MessageBoxResult Show(
       gfx::NativeWindow parent,
       const std::u16string& title,
@@ -61,8 +64,6 @@ class MessageBoxDialog : public views::DialogDelegate,
   const chrome::MessageBoxType type_;
   views::MessageBoxView* message_box_view_;
   MessageBoxResultCallback result_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageBoxDialog);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MESSAGE_BOX_DIALOG_H_

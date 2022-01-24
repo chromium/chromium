@@ -10,12 +10,11 @@
 #include "base/version.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/app_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -27,13 +26,6 @@ const char kVersion[] = "1.0.0.1";
 const char kValidUpdateUrl[] =
     "https://clients2.google.com/service/update2/crx";
 const int kValidDisableReasons = disable_reason::DISABLE_USER_ACTION;
-const char kName[] = "MyExtension";
-
-const char kBookmarkAppUrl[] = "https://www.example.com/path";
-const char kBookmarkAppDescription[] = "My bookmark app";
-const char kBookmarkAppScope[] = "https://www.example.com/";
-const char kBookmarkIconColor[] = "#F00FED";
-const SkColor kBookmarkThemeColor = SK_ColorBLUE;
 
 // Serializes a protobuf structure (entity specifics) into an ExtensionSyncData
 // and back again, and confirms that the input is the same as the output.
@@ -52,7 +44,6 @@ void ProtobufToSyncDataEqual(const sync_pb::EntitySpecifics& entity) {
   // AssertionResults here (instead of EXPECT_EQ) so that we could get valid
   // line numbers, but it's not worth the ugliness of the verbose comparison.
   EXPECT_EQ(input.id(), output.id());
-  EXPECT_EQ(input.name(), output.name());
   EXPECT_EQ(input.version(), output.version());
   EXPECT_EQ(input.update_url(), output.update_url());
   EXPECT_EQ(input.enabled(), output.enabled());
@@ -94,7 +85,6 @@ TEST_F(ExtensionSyncDataTest, ExtensionSyncDataForExtension) {
   extension_specifics->set_incognito_enabled(true);
   extension_specifics->set_remote_install(false);
   extension_specifics->set_version(kVersion);
-  extension_specifics->set_name(kName);
 
   // Check the serialize-deserialize process for proto to ExtensionSyncData.
   ProtobufToSyncDataEqual(entity);
@@ -110,7 +100,6 @@ TEST_F(ExtensionSyncDataTest, ExtensionSyncDataForExtension) {
   EXPECT_EQ(true, extension_sync_data.incognito_enabled());
   EXPECT_FALSE(extension_sync_data.remote_install());
   EXPECT_EQ(base::Version(kVersion), extension_sync_data.version());
-  EXPECT_EQ(std::string(kName), extension_sync_data.name());
 
   // Check the serialize-deserialize process for ExtensionSyncData to proto.
   SyncDataToProtobufEqual(extension_sync_data);
@@ -140,7 +129,6 @@ class AppSyncDataTest : public testing::Test {
     extension_specifics->set_disable_reasons(kValidDisableReasons);
     extension_specifics->set_incognito_enabled(true);
     extension_specifics->set_remote_install(false);
-    extension_specifics->set_name(kName);
   }
 };
 
@@ -208,42 +196,6 @@ TEST_F(AppSyncDataTest, ExtensionSyncDataInvalidOrdinal) {
       ExtensionSyncData::CreateFromSyncData(sync_data);
   ASSERT_TRUE(app_sync_data.get());
   app_sync_data->GetSyncData();
-}
-
-TEST_F(AppSyncDataTest, SyncDataToExtensionSyncDataForBookmarkApp) {
-  sync_pb::EntitySpecifics entity;
-  sync_pb::AppSpecifics* app_specifics = entity.mutable_app();
-  app_specifics->set_bookmark_app_url(kBookmarkAppUrl);
-  app_specifics->set_bookmark_app_description(kBookmarkAppDescription);
-  app_specifics->set_bookmark_app_scope(kBookmarkAppScope);
-  app_specifics->set_bookmark_app_icon_color(kBookmarkIconColor);
-  app_specifics->set_bookmark_app_theme_color(kBookmarkThemeColor);
-
-  SetRequiredExtensionValues(app_specifics->mutable_extension());
-
-  syncer::SyncData sync_data =
-      syncer::SyncData::CreateLocalData("sync_tag", "non_unique_title", entity);
-
-  std::unique_ptr<ExtensionSyncData> app_sync_data =
-      ExtensionSyncData::CreateFromSyncData(sync_data);
-  ASSERT_TRUE(app_sync_data.get());
-  EXPECT_EQ(app_specifics->bookmark_app_url(),
-            app_sync_data->bookmark_app_url());
-  EXPECT_EQ(app_specifics->bookmark_app_description(),
-            app_sync_data->bookmark_app_description());
-  EXPECT_EQ(app_specifics->bookmark_app_scope(),
-            app_sync_data->bookmark_app_scope());
-  EXPECT_EQ(app_specifics->bookmark_app_icon_color(),
-            app_sync_data->bookmark_app_icon_color());
-  EXPECT_EQ(app_specifics->bookmark_app_theme_color(),
-            app_sync_data->bookmark_app_theme_color());
-
-  syncer::SyncData output_sync_data = app_sync_data->GetSyncData();
-  EXPECT_TRUE(sync_data.GetSpecifics().has_app());
-  const sync_pb::AppSpecifics& output_specifics =
-      output_sync_data.GetSpecifics().app();
-  EXPECT_EQ(app_specifics->SerializeAsString(),
-            output_specifics.SerializeAsString());
 }
 
 }  // namespace extensions

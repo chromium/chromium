@@ -12,7 +12,6 @@ import collections
 import logging
 import os
 import psutil
-import re
 import shutil
 import subprocess
 import threading
@@ -21,8 +20,8 @@ import time
 import file_util
 import gtest_utils
 import iossim_util
-import standard_json_util as sju
 import test_apps
+from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner_errors
 import xcode_log_parser
 import xcode_util
@@ -35,14 +34,6 @@ READLINE_TIMEOUT = 180
 
 # TODO(crbug.com/1077277): Move commonly used error classes to
 # test_runner_errors module.
-class OtoolError(test_runner_errors.Error):
-  """OTool non-zero error code"""
-
-  def __init__(self, code):
-    super(OtoolError,
-          self).__init__('otool returned a non-zero return code: %s' % code)
-
-
 class TestRunnerError(test_runner_errors.Error):
   """Base class for TestRunner-related errors."""
   pass
@@ -269,6 +260,12 @@ def print_process_output(proc,
       parser.ProcessLine(line)
     LOGGER.info(line)
     sys.stdout.flush()
+
+  if parser:
+    parser.Finalize()
+  if sys.version_info.major == 3:
+    for index in range(len(out)):
+      out[index] = out[index].decode('utf-8')
   LOGGER.debug('Finished print_process_output.')
   return out
 
@@ -307,7 +304,8 @@ class TestRunner(object):
       out_dir: Directory to emit test data into.
       (Following are potential args in **kwargs)
       env_vars: List of environment variables to pass to the test itself.
-      retries: Number of times to retry failed test cases.
+      repeat_count: Number of times to run each test case (passed to test app).
+      retries: Number of times to retry failed test cases in test runner.
       test_args: List of strings to pass as arguments to the test when
         launching.
       test_cases: List of tests to be included in the test run. None or [] to
@@ -339,6 +337,7 @@ class TestRunner(object):
     self.env_vars = kwargs.get('env_vars') or []
     self.logs = collections.OrderedDict()
     self.out_dir = out_dir
+    self.repeat_count = kwargs.get('repeat_count') or 1
     self.retries = kwargs.get('retries') or 0
     self.shards = kwargs.get('shards') or 1
     self.test_args = kwargs.get('test_args') or []
@@ -436,13 +435,6 @@ class TestRunner(object):
     """Performs cleanup actions which must occur after every test launch."""
     raise NotImplementedError
 
-  def screenshot_desktop(self):
-    """Saves a screenshot of the desktop in the output directory."""
-    subprocess.check_call([
-        'screencapture',
-        os.path.join(self.out_dir, 'desktop_%s.png' % time.time()),
-    ])
-
   def retrieve_derived_data(self):
     """Retrieves the contents of DerivedData"""
     # DerivedData contains some logs inside workspace-specific directories.
@@ -536,10 +528,8 @@ class TestRunner(object):
       cmd: List of strings forming the command to run.
 
     Returns:
-      GTestResult instance.
+      TestResult.ResultCollection() object.
     """
-    result = gtest_utils.GTestResult(cmd)
-
     parser = gtest_utils.GTestLogParser()
 
     # TODO(crbug.com/812705): Implement test sharding for unit tests.
@@ -556,38 +546,23 @@ class TestRunner(object):
     LOGGER.debug('Stdout flushed after test process.')
     returncode = proc.returncode
 
-    LOGGER.debug('Processing test results.')
-    for test in parser.FailedTests(include_flaky=True):
-      # Test cases are named as <test group>.<test case>. If the test case
-      # is prefixed with "FLAKY_", it should be reported as flaked not failed.
-      if '.' in test and test.split('.', 1)[1].startswith('FLAKY_'):
-        result.flaked_tests[test] = parser.FailureDescription(test)
-      else:
-        result.failed_tests[test] = parser.FailureDescription(test)
-
-    result.passed_tests.extend(parser.PassedTests(include_flaky=True))
-
-    # Only GTest outputs compiled tests in a json file.
-    result.disabled_tests_from_compiled_tests_file.extend(
-        parser.DisabledTestsFromCompiledTestsFile())
-
     LOGGER.info('%s returned %s\n', cmd[0], returncode)
 
-    # xcodebuild can return 5 if it exits noncleanly even if all tests passed.
-    # Therefore we cannot rely on process exit code to determine success.
-    result.finalize(returncode, parser.CompletedWithoutFailure())
-    return result
+    return parser.GetResultCollection()
 
   def launch(self):
     """Launches the test app."""
     self.set_up()
+    # The overall ResultCorrection object holding all runs of all tests in the
+    # runner run. It will be updated with each test application launch.
+    overall_result = ResultCollection()
     destination = 'id=%s' % self.udid
     test_app = self.get_launch_test_app()
     out_dir = os.path.join(self.out_dir, 'TestResults')
     cmd = self.get_launch_command(test_app, out_dir, destination, self.shards)
     try:
       result = self._run(cmd=cmd, shards=self.shards or 1)
-      if result.crashed and not result.crashed_test:
+      if result.crashed and not result.crashed_tests():
         # If the app crashed but not during any particular test case, assume
         # it crashed on startup. Try one more time.
         self.shutdown_and_restart()
@@ -597,33 +572,31 @@ class TestRunner(object):
                                       self.shards)
         result = self._run(cmd)
 
-      if result.crashed and not result.crashed_test:
+      result.report_to_result_sink()
+
+      if result.crashed and not result.crashed_tests():
         raise AppLaunchError
 
-      passed = result.passed_tests
-      failed = result.failed_tests
-      flaked = result.flaked_tests
-      disabled = result.disabled_tests_from_compiled_tests_file
+      overall_result.add_result_collection(result)
 
       try:
-        while result.crashed and result.crashed_test:
+        while result.crashed and result.crashed_tests():
           # If the app crashes during a specific test case, then resume at the
           # next test case. This is achieved by filtering out every test case
           # which has already run.
           LOGGER.warning('Crashed during %s, resuming...\n',
-                         result.crashed_test)
-          test_app.excluded_tests = passed + failed.keys() + flaked.keys()
+                         list(result.crashed_tests()))
+          test_app.excluded_tests = list(overall_result.all_test_names())
           retry_out_dir = os.path.join(
               self.out_dir, 'retry_after_crash_%d' % int(time.time()))
           result = self._run(
               self.get_launch_command(
                   test_app, os.path.join(retry_out_dir, str(int(time.time()))),
                   destination))
-          passed.extend(result.passed_tests)
-          failed.update(result.failed_tests)
-          flaked.update(result.flaked_tests)
-          if not disabled:
-            disabled = result.disabled_tests_from_compiled_tests_file
+          result.report_to_result_sink()
+          # Only keep the last crash status in crash retries in overall crash
+          # status.
+          overall_result.add_result_collection(result, overwrite_crash=True)
 
       except OSError as e:
         if e.errno == errno.E2BIG:
@@ -631,61 +604,46 @@ class TestRunner(object):
         else:
           raise
 
-      # Instantiate this after crash retries so that all tests have a first
-      # pass before entering the retry block below.
-      # For each retry that passes, we want to mark it separately as passed
-      # (ie/ "FAIL PASS"), with is_flaky=True.
-      # TODO(crbug.com/1132476): Report failed GTest logs to ResultSink.
-      output = sju.StdJson(passed=passed, failed=failed, flaked=flaked)
-
       # Retry failed test cases.
-      retry_results = {}
       test_app.excluded_tests = []
-      if self.retries and failed:
-        LOGGER.warning('%s tests failed and will be retried.\n', len(failed))
+      never_expected_tests = overall_result.never_expected_tests()
+      if self.retries and never_expected_tests:
+        LOGGER.warning('%s tests failed and will be retried.\n',
+                       len(never_expected_tests))
         for i in xrange(self.retries):
-          for test in failed.keys():
+          tests_to_retry = list(overall_result.never_expected_tests())
+          for test in tests_to_retry:
             LOGGER.info('Retry #%s for %s.\n', i + 1, test)
             test_app.included_tests = [test]
             retry_out_dir = os.path.join(self.out_dir, test + '_failed',
                                          'retry_%d' % i)
             retry_result = self._run(
                 self.get_launch_command(test_app, retry_out_dir, destination))
-            # If the test passed on retry, consider it flake instead of failure.
-            if test in retry_result.passed_tests:
-              flaked[test] = failed.pop(test)
-              output.mark_passed(test, flaky=True)
-            # Save the result of the latest run for each test.
-            retry_results[test] = retry_result
 
-      output.mark_all_disabled(disabled)
-      output.finalize()
+            if not retry_result.all_test_names():
+              retry_result.add_test_result(
+                  TestResult(
+                      test,
+                      TestStatus.SKIP,
+                      test_log='In single test retry, result of this test '
+                      'didn\'t appear in log.'))
+            retry_result.report_to_result_sink()
+            # No unknown tests might be skipped so do not change
+            # |overall_result|'s crash status.
+            overall_result.add_result_collection(
+                retry_result, ignore_crash=True)
 
-      # Build test_results.json.
-      # Check if if any of the retries crashed in addition to the original run.
-      interrupted = (result.crashed or
-                     any([r.crashed for r in retry_results.values()]))
-      self.test_results['interrupted'] = interrupted
-      self.test_results['num_failures_by_type'] = {
-        'FAIL': len(failed) + len(flaked),
-        'PASS': len(passed),
-      }
+      interrupted = overall_result.crashed
 
-      self.test_results['tests'] = output.tests
+      if interrupted:
+        overall_result.add_and_report_crash(
+            crash_message_prefix_line='Test application crashed when running '
+            'tests which might have caused some tests never ran or finished.')
 
-      self.logs['passed tests'] = passed
-      if disabled:
-        self.logs['disabled tests'] = disabled
-      if flaked:
-        self.logs['flaked tests'] = flaked
-      if failed:
-        self.logs['failed tests'] = failed
-      for test, log_lines in failed.iteritems():
-        self.logs[test] = log_lines
-      for test, log_lines in flaked.iteritems():
-        self.logs[test] = log_lines
+      self.test_results = overall_result.standard_json_output()
+      self.logs.update(overall_result.test_runner_logs())
 
-      return not failed and not interrupted
+      return not overall_result.never_expected_tests() and not interrupted
     finally:
       self.tear_down()
 
@@ -707,6 +665,7 @@ class SimulatorTestRunner(TestRunner):
       out_dir: Directory to emit test data into.
       (Following are potential args in **kwargs)
       env_vars: List of environment variables to pass to the test itself.
+      repeat_count: Number of times to run each test case (passed to test app).
       retries: Number of times to retry failed test cases.
       test_args: List of strings to pass as arguments to the test when
         launching.
@@ -841,8 +800,6 @@ class SimulatorTestRunner(TestRunner):
     self.retrieve_derived_data()
     LOGGER.debug('Processing xcresult folder.')
     self.process_xcresult_dir()
-    LOGGER.debug('Making desktop screenshots.')
-    self.screenshot_desktop()
     LOGGER.debug('Killing simulators.')
     self.kill_simulators()
     LOGGER.debug('Wiping simulator.')
@@ -921,12 +878,14 @@ class SimulatorTestRunner(TestRunner):
           self.app_path,
           included_tests=self.test_cases,
           env_vars=self.env_vars,
+          repeat_count=self.repeat_count,
           test_args=self.test_args)
 
     return test_apps.SimulatorXCTestUnitTestsApp(
         self.app_path,
         included_tests=self.test_cases,
         env_vars=self.env_vars,
+        repeat_count=self.repeat_count,
         test_args=self.test_args)
 
 
@@ -941,6 +900,7 @@ class DeviceTestRunner(TestRunner):
       out_dir: Directory to emit test data into.
       (Following are potential args in **kwargs)
       env_vars: List of environment variables to pass to the test itself.
+      repeat_count: Number of times to run each test case (passed to test app).
       restart: Whether or not restart device when test app crashes on startup.
       retries: Number of times to retry failed test cases.
       test_args: List of strings to pass as arguments to the test when
@@ -1035,7 +995,6 @@ class DeviceTestRunner(TestRunner):
 
   def tear_down(self):
     """Performs cleanup actions which must occur after every test launch."""
-    self.screenshot_desktop()
     self.retrieve_derived_data()
     self.extract_test_data()
     self.process_xcresult_dir()
@@ -1113,10 +1072,12 @@ class DeviceTestRunner(TestRunner):
           self.app_path,
           included_tests=self.test_cases,
           env_vars=self.env_vars,
+          repeat_count=self.repeat_count,
           test_args=self.test_args)
 
     return test_apps.DeviceXCTestUnitTestsApp(
         self.app_path,
         included_tests=self.test_cases,
         env_vars=self.env_vars,
+        repeat_count=self.repeat_count,
         test_args=self.test_args)

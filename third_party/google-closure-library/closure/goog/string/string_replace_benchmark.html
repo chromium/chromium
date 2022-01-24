@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Closure Benchmarks - goog.dom</title>
+<script src="../base.js"></script>
+<script>
+  goog.require('goog.string');
+  goog.require('goog.testing.benchmark');
+</script>
+<link rel="stylesheet" href="../testing/performancetable.css"/>
+</head>
+<body>
+<script>
+
+  var junkstring1 = 'try{goog$module$ModuleManager.getInstance().beforeLoadMo' +
+                    'duleCode("sy177");var pi... (length: 212208)\n';
+
+  // Make the length of the strings about 200k characters.
+  junkstring1 = goog.string.repeat(junkstring1, 2048);
+
+  function benchmarkReplaceAll() {
+    for (var i = 0; i < 100; i++) {
+      goog.string.replaceAll(junkstring1, 'get', 'take');
+    }
+  }
+
+  function benchmarkReplaceAllSplit() {
+    for (var i = 0; i < 100; i++) {
+      replaceAllSplit(junkstring1, 'get', 'take');
+    }
+  }
+
+  function replaceAllSplit(str, ss, replacement) {
+    return str.split(ss).join(replacement);
+  }
+</script>
+</body>
+</html>

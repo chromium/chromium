@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident.h"
 
 namespace safe_browsing {
@@ -22,15 +21,16 @@ class ResourceRequestIncident : public Incident {
   explicit ResourceRequestIncident(
       std::unique_ptr<ClientIncidentReport_IncidentData_ResourceRequestIncident>
           script_detection_incident);
+
+  ResourceRequestIncident(const ResourceRequestIncident&) = delete;
+  ResourceRequestIncident& operator=(const ResourceRequestIncident&) = delete;
+
   ~ResourceRequestIncident() override;
 
   // Incident methods:
   IncidentType GetType() const override;
   std::string GetKey() const override;
   uint32_t ComputeDigest() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceRequestIncident);
 };
 
 }  // namespace safe_browsing

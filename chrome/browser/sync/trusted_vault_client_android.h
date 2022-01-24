@@ -45,14 +45,14 @@ class TrustedVaultClientAndroid : public syncer::TrustedVaultClient {
   // operation previously initiated from C++ and identified by |request_id|.
   void MarkLocalKeysAsStaleCompleted(JNIEnv* env,
                                      jint request_id,
-                                     jboolean result);
+                                     jboolean succeeded);
 
   // Called from Java to notify the completion of a
   // GetIsRecoverabilityDegraded() operation previously initiated from C++ and
   // identified by |request_id|.
   void GetIsRecoverabilityDegradedCompleted(JNIEnv* env,
                                             jint request_id,
-                                            jboolean result);
+                                            jboolean is_degraded);
 
   // Called from Java to notify that the keys in the vault may have changed.
   void NotifyKeysChanged(JNIEnv* env);

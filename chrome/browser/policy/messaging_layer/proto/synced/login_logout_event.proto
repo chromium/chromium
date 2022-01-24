@@ -1,0 +1,47 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Events related to logging into and out of Chrome.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+import "session_affiliated_user.proto";
+
+package ash.reporting;
+
+enum LoginFailureReason {
+  UNKNOWN_LOGIN_FAILURE_REASON = 0;
+  AUTHENTICATION_ERROR = 1;
+  COULD_NOT_MOUNT_TMPFS = 2;
+  OWNER_REQUIRED = 3;
+  TPM_ERROR = 4;
+  TPM_UPDATE_REQUIRED = 5;
+  MISSING_CRYPTOHOME = 6;
+  UNRECOVERABLE_CRYPTOHOME = 7;
+}
+
+message LoginFailure {
+  optional LoginFailureReason reason = 1;
+}
+
+message LoginEvent {
+  optional LoginFailure failure = 1;
+}
+
+message LogoutEvent {}
+
+message LoginLogoutRecord {
+  optional int64 event_timestamp_sec = 1;
+
+  optional .reporting.SessionAffiliatedUser affiliated_user = 2;
+
+  optional bool is_guest_session = 3;
+
+  oneof event {
+    LoginEvent login_event = 4;
+    LogoutEvent logout_event = 5;
+  }
+}

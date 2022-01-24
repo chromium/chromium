@@ -20,7 +20,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
+#include "components/signin/public/base/consent_level.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -121,8 +122,7 @@ void FileManagerPrivateGetThumbnailFunction::SendEncodedThumbnail(
 
 FileManagerPrivateInternalGetDriveThumbnailFunction::
     FileManagerPrivateInternalGetDriveThumbnailFunction() {
-  SetWarningThresholds(base::TimeDelta::FromSeconds(5),
-                       base::TimeDelta::FromMinutes(1));
+  SetWarningThresholds(base::Seconds(5), base::Minutes(1));
 }
 
 FileManagerPrivateInternalGetDriveThumbnailFunction::
@@ -132,7 +132,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetDriveThumbnailFunction::Run() {
   using extensions::api::file_manager_private_internal::GetDriveThumbnail::
       Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -141,7 +141,7 @@ FileManagerPrivateInternalGetDriveThumbnailFunction::Run() {
           profile, render_frame_host());
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
-      file_system_context->CrackURL(url);
+      file_system_context->CrackURLInFirstPartyContext(url);
 
   if (file_system_url.type() != storage::kFileSystemTypeDriveFs) {
     return RespondNow(Error("Expected a Drivefs URL"));
@@ -198,7 +198,7 @@ FileManagerPrivateInternalGetPdfThumbnailFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetPdfThumbnailFunction::Run() {
   using extensions::api::file_manager_private_internal::GetPdfThumbnail::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -207,7 +207,7 @@ FileManagerPrivateInternalGetPdfThumbnailFunction::Run() {
           profile, render_frame_host());
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
-      file_system_context->CrackURL(url);
+      file_system_context->CrackURLInFirstPartyContext(url);
 
   if (file_system_url.type() != storage::kFileSystemTypeLocal) {
     return RespondNow(Error("Expected a native local URL"));
@@ -288,7 +288,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::Run() {
   using extensions::api::file_manager_private_internal::
       GetArcDocumentsProviderThumbnail::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -296,7 +296,7 @@ FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::Run() {
           Profile::FromBrowserContext(browser_context()), render_frame_host());
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
-      file_system_context->CrackURL(url);
+      file_system_context->CrackURLInFirstPartyContext(url);
 
   auto* root_map =
       arc::ArcDocumentsProviderRootMap::GetForBrowserContext(browser_context());

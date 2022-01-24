@@ -5,7 +5,7 @@
 import {ScanningBrowserProxy, SelectedPath} from 'chrome://scanning/scanning_browser_proxy.js';
 
 import {assertEquals} from '../../chai_assert.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 const EMPTY_SELECTED_PATH = {
   baseName: '',
@@ -86,6 +86,14 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
         break;
       case ('scanButtonText'):
         pluralString = count === 0 ? 'Scan' : 'Scan page ' + count;
+        break;
+      case ('removePageDialogTitle'):
+        pluralString =
+            count === 0 ? 'Remove page?' : 'Remove page ' + count + '?';
+        break;
+      case ('rescanPageDialogTitle'):
+        pluralString =
+            count === 0 ? 'Rescan page?' : 'Rescan page ' + count + '?';
         break;
     }
 

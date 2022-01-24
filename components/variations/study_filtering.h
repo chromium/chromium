@@ -45,6 +45,10 @@ bool CheckStudyHardwareClass(const Study::Filter& filter,
 COMPONENT_EXPORT(VARIATIONS)
 bool CheckStudyLocale(const Study::Filter& filter, const std::string& locale);
 
+// Checks whether a study is applicable for the given |country| per |filter|.
+COMPONENT_EXPORT(VARIATIONS)
+bool CheckStudyCountry(const Study::Filter& filter, const std::string& country);
+
 // Checks whether a study is applicable for the given |platform| per |filter|.
 COMPONENT_EXPORT(VARIATIONS)
 bool CheckStudyPlatform(const Study::Filter& filter, Study::Platform platform);
@@ -78,10 +82,6 @@ bool CheckStudyVersion(const Study::Filter& filter,
 COMPONENT_EXPORT(VARIATIONS)
 bool CheckStudyOSVersion(const Study::Filter& filter,
                          const base::Version& os_version);
-
-// Checks whether a study is applicable for the given |country| per |filter|.
-COMPONENT_EXPORT(VARIATIONS)
-bool CheckStudyCountry(const Study::Filter& filter, const std::string& country);
 
 // Checks whether a study is applicable given |is_enterprise| per |filter|.
 COMPONENT_EXPORT(VARIATIONS)

@@ -30,6 +30,7 @@
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
+#import "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -69,13 +70,11 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
-#import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #include "ios/chrome/browser/voice/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/web/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -120,6 +119,19 @@ const char kOmniboxGeolocationLastAuthorizationAlertVersion[] =
 const char kMetricsReportingWifiOnly[] =
     "ios.user_experience_metrics.wifi_only";
 
+// Deprecated 07/2021
+const char kLastSessionExitedCleanly[] =
+    "ios.user_experience_metrics.last_session_exited_cleanly";
+
+// Deprecated 08/2021
+const char kSigninAllowedByPolicy[] = "signin.allowed_by_policy";
+
+// Deprecated 09/2021
+const char kTrialGroupPrefName[] = "location_permissions.trial_group";
+
+// Deprecated 10/2021
+const char kSigninBottomSheetShownCount[] =
+    "ios.signin.bottom_sheet_shown_count";
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -135,7 +147,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   sessions::SessionIdGenerator::RegisterPrefs(registry);
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
-  location_permissions_field_trial::RegisterLocalStatePrefs(registry);
   fre_field_trial::RegisterLocalStatePrefs(registry);
   component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
       registry);
@@ -157,7 +168,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kEulaAccepted, false);
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 false);
-  registry->RegisterBooleanPref(prefs::kLastSessionExitedCleanly, true);
+  registry->RegisterBooleanPref(kLastSessionExitedCleanly, true);
   registry->RegisterBooleanPref(kMetricsReportingWifiOnly, true);
   registry->RegisterBooleanPref(kGCMChannelStatus, true);
   registry->RegisterIntegerPref(kGCMChannelPollIntervalSeconds, 0);
@@ -178,7 +189,14 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kOmniboxGeolocationLastAuthorizationAlertVersion,
                                "");
 
+  // Preferences related to Enterprise policies.
   registry->RegisterListPref(prefs::kRestrictAccountsToPatterns);
+  registry->RegisterIntegerPref(prefs::kBrowserSigninPolicy,
+                                static_cast<int>(BrowserSigninMode::kEnabled));
+
+  registry->RegisterIntegerPref(kTrialGroupPrefName, 0);
+
+  registry->RegisterIntegerPref(kSigninBottomSheetShownCount, 0);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -201,6 +219,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   ntp_snippets::UserClassifier::RegisterProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);
   ntp_tiles::PopularSitesImpl::RegisterProfilePrefs(registry);
+  optimization_guide::prefs::RegisterProfilePrefs(registry);
   password_manager::PasswordManager::RegisterProfilePrefs(registry);
   payments::RegisterProfilePrefs(registry);
   policy::URLBlocklistManager::RegisterProfilePrefs(registry);
@@ -242,6 +261,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kSavingBrowserHistoryDisabled, false);
 
+  // Register pref used to show the link preview.
+  registry->RegisterBooleanPref(prefs::kLinkPreviewEnabled, true);
+
   // This comes from components/bookmarks/core/browser/bookmark_model.h
   // Defaults to 3, which is the id of bookmarkModel_->mobile_node()
   registry->RegisterInt64Pref(prefs::kNtpShownBookmarksFolder, 3);
@@ -274,6 +296,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   if (IsReadingListMessagesEnabled()) {
     registry->RegisterBooleanPref(kPrefReadingListMessagesNeverShow, false);
   }
+
+  // Preference related to the browser sign-in policy that is being deprecated.
+  registry->RegisterBooleanPref(kSigninAllowedByPolicy, true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -294,6 +319,15 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 7/2021
   prefs->ClearPref(kMetricsReportingWifiOnly);
+
+  // Added 7/2021
+  prefs->ClearPref(kLastSessionExitedCleanly);
+
+  // Added 09/2021
+  prefs->ClearPref(kTrialGroupPrefName);
+
+  // Added 10/2021
+  prefs->ClearPref(kSigninBottomSheetShownCount);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -330,4 +364,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 2/2021.
   syncer::ClearObsoletePassphrasePromptPrefs(prefs);
+
+  // Added 8/2021.
+  prefs->ClearPref(kSigninAllowedByPolicy);
 }

@@ -79,15 +79,15 @@ bool ExperimentsManager::ReloadExperiments(const std::wstring& sid) {
     return false;
   }
 
-  const base::Value* experiments =
+  const base::Value* experiments_value =
       experiments_data->FindListKey(kResponseExperimentsKeyName);
-  if (!experiments) {
+  if (!experiments_value) {
     LOGFN(ERROR) << "User experiments not found!";
     return false;
   }
 
-  if (experiments->is_list()) {
-    for (const auto& item : experiments->GetList()) {
+  if (experiments_value->is_list()) {
+    for (const auto& item : experiments_value->GetList()) {
       auto* f = item.FindStringKey(kResponseFeatureKeyName);
       auto* v = item.FindStringKey(kResponseValueKeyName);
       if (!f || !v) {

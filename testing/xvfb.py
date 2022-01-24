@@ -196,6 +196,8 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
       raise _XvfbProcessError('Failed to start after 10 tries')
 
     env['DISPLAY'] = display
+    # Set dummy variable for scripts.
+    env['XVFB_DISPLAY'] = display
 
     dbus_pid = launch_dbus(env)
 

@@ -44,6 +44,11 @@ class ImageMetadataStoreLevelDB : public ImageMetadataStore {
       std::unique_ptr<leveldb_proto::ProtoDatabase<CachedImageMetadataProto>>
           database,
       base::Clock* clock);
+
+  ImageMetadataStoreLevelDB(const ImageMetadataStoreLevelDB&) = delete;
+  ImageMetadataStoreLevelDB& operator=(const ImageMetadataStoreLevelDB&) =
+      delete;
+
   ~ImageMetadataStoreLevelDB() override;
 
   // ImageMetadataStorage:
@@ -105,8 +110,6 @@ class ImageMetadataStoreLevelDB : public ImageMetadataStore {
   // Clock is owned by the service that creates this object.
   base::Clock* clock_;
   base::WeakPtrFactory<ImageMetadataStoreLevelDB> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageMetadataStoreLevelDB);
 };
 
 }  // namespace image_fetcher

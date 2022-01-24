@@ -21,6 +21,9 @@ class WebContentsForcedTitle
   static void CreateForWebContentsWithTitle(content::WebContents* web_contents,
                                             const std::u16string& title);
 
+  WebContentsForcedTitle(const WebContentsForcedTitle&) = delete;
+  WebContentsForcedTitle& operator=(const WebContentsForcedTitle&) = delete;
+
   ~WebContentsForcedTitle() override;
 
  private:
@@ -34,8 +37,6 @@ class WebContentsForcedTitle
   std::u16string title_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsForcedTitle);
 };
 
 }  // namespace ash

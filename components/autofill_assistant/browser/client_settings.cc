@@ -34,48 +34,47 @@ ClientSettings::~ClientSettings() = default;
 
 void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
   if (proto.has_periodic_script_check_interval_ms()) {
-    periodic_script_check_interval = base::TimeDelta::FromMilliseconds(
-        proto.periodic_script_check_interval_ms());
+    periodic_script_check_interval =
+        base::Milliseconds(proto.periodic_script_check_interval_ms());
   }
   if (proto.has_periodic_element_check_interval_ms()) {
-    periodic_element_check_interval = base::TimeDelta::FromMilliseconds(
-        proto.periodic_element_check_interval_ms());
+    periodic_element_check_interval =
+        base::Milliseconds(proto.periodic_element_check_interval_ms());
   }
   if (proto.has_periodic_script_check_count()) {
     periodic_script_check_count = proto.periodic_script_check_count();
   }
   if (proto.has_element_position_update_interval_ms()) {
-    element_position_update_interval = base::TimeDelta::FromMilliseconds(
-        proto.element_position_update_interval_ms());
+    element_position_update_interval =
+        base::Milliseconds(proto.element_position_update_interval_ms());
   }
   if (proto.has_short_wait_for_element_deadline_ms()) {
-    short_wait_for_element_deadline = base::TimeDelta::FromMilliseconds(
-        proto.short_wait_for_element_deadline_ms());
+    short_wait_for_element_deadline =
+        base::Milliseconds(proto.short_wait_for_element_deadline_ms());
   }
   if (proto.has_box_model_check_interval_ms()) {
     box_model_check_interval =
-        base::TimeDelta::FromMilliseconds(proto.box_model_check_interval_ms());
+        base::Milliseconds(proto.box_model_check_interval_ms());
   }
   if (proto.has_box_model_check_count()) {
     box_model_check_count = proto.box_model_check_count();
   }
   if (proto.has_document_ready_check_timeout_ms()) {
-    document_ready_check_timeout = base::TimeDelta::FromMilliseconds(
-        proto.document_ready_check_timeout_ms());
+    document_ready_check_timeout =
+        base::Milliseconds(proto.document_ready_check_timeout_ms());
   }
   if (proto.has_cancel_delay_ms()) {
-    cancel_delay = base::TimeDelta::FromMilliseconds(proto.cancel_delay_ms());
+    cancel_delay = base::Milliseconds(proto.cancel_delay_ms());
   }
   if (proto.has_tap_count()) {
     tap_count = proto.tap_count();
   }
   if (proto.has_tap_tracking_duration_ms()) {
     tap_tracking_duration =
-        base::TimeDelta::FromMilliseconds(proto.tap_tracking_duration_ms());
+        base::Milliseconds(proto.tap_tracking_duration_ms());
   }
   if (proto.has_tap_shutdown_delay_ms()) {
-    tap_shutdown_delay =
-        base::TimeDelta::FromMilliseconds(proto.tap_shutdown_delay_ms());
+    tap_shutdown_delay = base::Milliseconds(proto.tap_shutdown_delay_ms());
   }
   if (proto.has_overlay_image()) {
     // TODO(b/170202574): Add integration test and remove legacy |image_url|.
@@ -127,11 +126,11 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
           proto.slow_warning_settings().only_show_website_warning_once();
     }
     if (proto.slow_warning_settings().has_warning_delay_ms()) {
-      warning_delay = base::TimeDelta::FromMilliseconds(
-          proto.slow_warning_settings().warning_delay_ms());
+      warning_delay =
+          base::Milliseconds(proto.slow_warning_settings().warning_delay_ms());
     }
     if (proto.slow_warning_settings().has_slow_roundtrip_threshold_ms()) {
-      slow_roundtrip_threshold = base::TimeDelta::FromMilliseconds(
+      slow_roundtrip_threshold = base::Milliseconds(
           proto.slow_warning_settings().slow_roundtrip_threshold_ms());
     }
     if (proto.slow_warning_settings().has_max_consecutive_slow_roundtrips()) {
@@ -148,13 +147,25 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
     }
     if (proto.slow_warning_settings()
             .has_minimum_warning_message_duration_ms()) {
-      minimum_warning_duration = base::TimeDelta::FromMilliseconds(
+      minimum_warning_duration = base::Milliseconds(
           proto.slow_warning_settings().minimum_warning_message_duration_ms());
     }
     if (proto.slow_warning_settings().message_mode() !=
         ClientSettingsProto::SlowWarningSettings::UNKNOWN) {
       message_mode = proto.slow_warning_settings().message_mode();
     }
+  }
+  if (!proto.display_strings_locale().empty()) {
+    if (display_strings_locale != proto.display_strings_locale()) {
+      display_strings.clear();
+    }
+    display_strings_locale = proto.display_strings_locale();
+    for (const ClientSettingsProto::DisplayString& display_string :
+         proto.display_strings()) {
+      display_strings[display_string.id()] = display_string.value();
+    }
+  } else if (!proto.display_strings().empty()) {
+    VLOG(1) << "Rejecting new display strings: no locale provided";
   }
   // Test only settings.
   if (proto.has_integration_test_settings()) {

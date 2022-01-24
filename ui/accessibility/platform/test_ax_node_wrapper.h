@@ -80,7 +80,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
       ax::mojom::TextAffinity affinity =
           ax::mojom::TextAffinity::kDownstream) const override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
-  gfx::NativeViewAccessible GetParent() override;
+  gfx::NativeViewAccessible GetParent() const override;
   int GetChildCount() const override;
   gfx::NativeViewAccessible ChildAtIndex(int index) override;
   gfx::Rect GetBoundsRect(const AXCoordinateSystem coordinate_system,
@@ -132,8 +132,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
   absl::optional<int32_t> GetCellId(int row_index,
                                     int col_index) const override;
   absl::optional<int32_t> CellIndexToId(int cell_index) const override;
-  bool IsCellOrHeaderOfARIATable() const override;
-  bool IsCellOrHeaderOfARIAGrid() const override;
+  bool IsCellOrHeaderOfAriaGrid() const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
   bool AccessibilityPerformAction(const AXActionData& data) override;
   std::u16string GetLocalizedRoleDescriptionForUnlabeledImage() const override;
@@ -156,8 +155,9 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
   SkColor GetColor() const override;
   SkColor GetBackgroundColor() const override;
 
-  const std::vector<gfx::NativeViewAccessible> GetUIADescendants()
-      const override;
+  const std::vector<gfx::NativeViewAccessible> GetUIADirectChildrenInRange(
+      ui::AXPlatformNodeDelegate* start,
+      ui::AXPlatformNodeDelegate* end) override;
   gfx::RectF GetLocation() const;
   int InternalChildCount() const;
   TestAXNodeWrapper* InternalGetChild(int index) const;

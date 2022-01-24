@@ -974,6 +974,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method unregister
 [Worker] interface PermissionStatus : EventTarget
 [Worker]     attribute @@toStringTag
+[Worker]     getter name
 [Worker]     getter onchange
 [Worker]     getter state
 [Worker]     method constructor
@@ -1108,6 +1109,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method formData
 [Worker]     method json
 [Worker]     method text
+[Worker] interface Scheduler
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method postTask
 [Worker] interface SecurityPolicyViolationEvent : Event
 [Worker]     attribute @@toStringTag
 [Worker]     getter blockedURI
@@ -1174,6 +1179,20 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method getTags
 [Worker]     method register
+[Worker] interface TaskController : AbortController
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method setPriority
+[Worker] interface TaskPriorityChangeEvent : Event
+[Worker]     attribute @@toStringTag
+[Worker]     getter previousPriority
+[Worker]     method constructor
+[Worker] interface TaskSignal : AbortSignal
+[Worker]     attribute @@toStringTag
+[Worker]     getter onprioritychange
+[Worker]     getter priority
+[Worker]     method constructor
+[Worker]     setter onprioritychange
 [Worker] interface TextDecoder
 [Worker]     attribute @@toStringTag
 [Worker]     getter encoding
@@ -1280,6 +1299,19 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter protocol
 [Worker]     setter search
 [Worker]     setter username
+[Worker] interface URLPattern
+[Worker]     attribute @@toStringTag
+[Worker]     getter hash
+[Worker]     getter hostname
+[Worker]     getter password
+[Worker]     getter pathname
+[Worker]     getter port
+[Worker]     getter protocol
+[Worker]     getter search
+[Worker]     getter username
+[Worker]     method constructor
+[Worker]     method exec
+[Worker]     method test
 [Worker] interface URLSearchParams
 [Worker]     attribute @@toStringTag
 [Worker]     method @@iterator
@@ -2602,6 +2634,41 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onerror
 [Worker]     setter onmessage
 [Worker]     setter onopen
+[Worker] interface WebTransport
+[Worker]     attribute @@toStringTag
+[Worker]     getter closed
+[Worker]     getter datagrams
+[Worker]     getter incomingBidirectionalStreams
+[Worker]     getter incomingUnidirectionalStreams
+[Worker]     getter ready
+[Worker]     method close
+[Worker]     method constructor
+[Worker]     method createBidirectionalStream
+[Worker]     method createUnidirectionalStream
+[Worker] interface WebTransportBidirectionalStream
+[Worker]     attribute @@toStringTag
+[Worker]     getter readable
+[Worker]     getter writable
+[Worker]     method constructor
+[Worker] interface WebTransportDatagramDuplexStream
+[Worker]     attribute @@toStringTag
+[Worker]     getter incomingHighWaterMark
+[Worker]     getter incomingMaxAge
+[Worker]     getter maxDatagramSize
+[Worker]     getter outgoingHighWaterMark
+[Worker]     getter outgoingMaxAge
+[Worker]     getter readable
+[Worker]     getter writable
+[Worker]     method constructor
+[Worker]     setter incomingHighWaterMark
+[Worker]     setter incomingMaxAge
+[Worker]     setter outgoingHighWaterMark
+[Worker]     setter outgoingMaxAge
+[Worker] interface WebTransportError : DOMException
+[Worker]     attribute @@toStringTag
+[Worker]     getter source
+[Worker]     getter streamErrorCode
+[Worker]     method constructor
 [Worker] interface WorkerGlobalScope : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter caches
@@ -2618,6 +2685,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter onunhandledrejection
 [Worker]     getter origin
 [Worker]     getter performance
+[Worker]     getter scheduler
 [Worker]     getter self
 [Worker]     getter trustedTypes
 [Worker]     method atob
@@ -2629,14 +2697,17 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method fetch
 [Worker]     method importScripts
 [Worker]     method queueMicrotask
+[Worker]     method reportError
 [Worker]     method setInterval
 [Worker]     method setTimeout
+[Worker]     method structuredClone
 [Worker]     setter onerror
 [Worker]     setter onlanguagechange
 [Worker]     setter onrejectionhandled
 [Worker]     setter onunhandledrejection
 [Worker]     setter origin
 [Worker]     setter performance
+[Worker]     setter scheduler
 [Worker] interface WorkerLocation
 [Worker]     attribute @@toStringTag
 [Worker]     getter hash

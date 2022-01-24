@@ -76,9 +76,8 @@ TEST_F(ScopedTimedTaskLoggerTest, CallbackCalled) {
 TEST_F(ScopedTimedTaskLoggerTest, NoLog) {
   static const char kNoShow[] = "Should not show up";
   {
-    ScopedTimedTaskLogger no_logs(
-        base::BindOnce(ScopedTimedTaskLogger::LogIfExceedThreshold, kNoShow,
-                       base::TimeDelta::FromDays(1)));
+    ScopedTimedTaskLogger no_logs(base::BindOnce(
+        ScopedTimedTaskLogger::LogIfExceedThreshold, kNoShow, base::Days(1)));
   }
   EXPECT_FALSE(LoggingMessagesContain(kNoShow));
 }
@@ -88,7 +87,7 @@ TEST_F(ScopedTimedTaskLoggerTest, Log) {
   {
     ScopedTimedTaskLogger logs(
         base::BindOnce(ScopedTimedTaskLogger::LogIfExceedThreshold, kShow,
-                       base::TimeDelta::FromMilliseconds(0)));
+                       base::Milliseconds(0)));
     ::Sleep(2);
   }
   EXPECT_TRUE(LoggingMessagesContain(kShow));

@@ -34,7 +34,6 @@
 <translation id="174539241580958092">Google Chrome kunne ikke synkronisere dataene dine på grunn av en påloggingsfeil.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Sørg for at du er logget på Chrome på <ph name="TARGET_DEVICE_NAME" />, og prøv å sende på nytt.</translation>
-<translation id="1810203443153428607">Når Chrome OS installeres, blir alle dataene på enheten din overskrevet.</translation>
 <translation id="1812689907177901597">Ved å slå dette av kan du logge på Google-sider, som Gmail, uten å logge på Chrome</translation>
 <translation id="1860536484129686729">Chrome trenger tilgang til kameraet ditt for dette nettstedet</translation>
 <translation id="1873233029667955273">Google Chrome er ikke standardnettleseren din</translation>
@@ -48,23 +47,14 @@
 <translation id="2121284319307530122">Start på nytt for å oppdatere &amp;Chrome</translation>
 <translation id="2123055963409958220">Bidra til å gjøre Chrome bedre ved å rapportere de <ph name="BEGIN_LINK" />nåværende innstillingene<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Start Chrome på nytt nå</translation>
-<translation id="2246246234298806438">Google Chrome kan ikke vise forhåndsvisningen av utskrift når det innebygde PDF-visningsprogrammet mangler.</translation>
+<translation id="2189289170880510015">Tilpass noen av de viktigste personvernvalgene i Chrome</translation>
 <translation id="2290014774651636340">API-nøkler for Google mangler. Noe funksjonalitet i Google Chrome blir deaktivert.</translation>
 <translation id="2290095356545025170">Er du sikker på at du vil avinstallere Google Chrome?</translation>
 <translation id="2309047409763057870">Dette er en sekundær installering av Google Chrome. Den kan ikke brukes som standardnettleser.</translation>
+<translation id="2345992953227471816">Chrome har oppdaget at disse utvidelsene inneholder skadelig programvare:</translation>
 <translation id="2348335408836342058">Chrome trenger tilgang til kameraet ditt og mikrofonen din for dette nettstedet</translation>
 <translation id="234869673307233423">Chrome kan ikke sjekke passordene dine. Prøv igjen senere.</translation>
 <translation id="235650106824528204">Alle Chrome-data som genereres mens denne profilen brukes (f.eks. oppretting av bokmerker, logg, passord og andre innstillinger), kan fjernes av administratoren for jobbprofilen. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Tøm harddisken og installer Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Vi er klare til å installere Chrome OS! Når du fortsetter, skjer følgende:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Filer, data, og det nåværende operativsystemet ditt blir slettet.
-          <ph name="LIST_ITEM" />Chrome OS blir installert.
-          <ph name="LIST_ITEM" />Enheten din slår seg av når installasjonen er fullført.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Én siste påminnelse: Installasjonen kommer til å tømme hele harddisken din. Forsikre deg om at du har sikkerhetskopiert eventuelle data du bryr deg om.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Når installasjonen er startet, kan den ikke avbrytes.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome kunne ikke synkronisere dataene dine fordi synkronisering ikke er tilgjengelig for domenet ditt.</translation>
 <translation id="2467438592969358367">Google Chrome forsøker å eksportere passordene dine. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
@@ -90,11 +80,13 @@
 <translation id="2885378588091291677">Oppgavebehandling</translation>
 <translation id="2888126860611144412">Om Chrome</translation>
 <translation id="2926676257163822632">Svake passord er enkle å gjette. La Chrome <ph name="BEGIN_LINK" />opprette og huske sterke passord for deg<ph name="END_LINK" />.</translation>
+<translation id="2926952073016206995">Chrome trenger kameratillatelse for dette nettstedet</translation>
 <translation id="2929907241665500097">Chrome ble ikke oppdatert. Noe gikk galt. <ph name="BEGIN_LINK" />Løs problemer med Chrome-oppdateringer og mislykkede oppdateringer.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – nettverkspålogging – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome er i bakgrunnsmodus.</translation>
 <translation id="3059710691562604940">Safe Browsing er slått av. Chrome anbefaler at du slår det på.</translation>
 <translation id="3065168410429928842">Chrome-fane</translation>
+<translation id="3069821012350118710">Nettsteder du besøker, husker informasjonen din til du lukker Chrome</translation>
 <translation id="3080151273017101988">Fortsett kjøringen av bakgrunnsprogrammer når Google Chrome er lukket</translation>
 <translation id="3089968997497233615">En ny, sikrere versjon av Google Chrome er tilgjengelig</translation>
 <translation id="3100998948628680988">Gi navn til Chrome-profilen din</translation>
@@ -105,6 +97,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome startes på nytt nå}=1{Chrome startes på nytt om 1 sekund}other{Chrome startes på nytt om # sekunder}}</translation>
 <translation id="3395323229510056640">Få hjelp med Chrome OS</translation>
 <translation id="3396977131400919238">Det oppstod en feil i operativsystemet under installeringen. Last ned Google Chrome på nytt.</translation>
+<translation id="3428747202529429621">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget</translation>
 <translation id="3434246496373299699">Chrome kan sjekke passordene dine når du logger på med Google-kontoen din</translation>
 <translation id="3451115285585441894">Legger til i Chrome …</translation>
 <translation id="345171907106878721">Legg til deg selv i Chrome</translation>
@@ -116,6 +109,8 @@
 <translation id="3582972582564653026">Synkroniser og gi Chrome et personlig preg på alle enhetene dine</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering}=1{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="3622797965165704966">Nå er det enklere å bruke Chrome med Google-kontoen din og på datamaskiner du deler med andre.</translation>
+<translation id="3673813398384385993">Chrome har oppdaget at «<ph name="EXTENSION_NAME" />» inneholder skadelig programvare</translation>
+<translation id="3678552270983184277">Standardinnstillingene fungerer greit for de fleste, men du kan tilpasse dem etter hvordan du liker å bruke Chrome</translation>
 <translation id="3718181793972440140">Dette sletter 1 element fra denne enheten. For å hente dataene dine igjen senere må du logge på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Utvidelsen «<ph name="EXTENSION_NAME" />» har endret hvilken side som vises når du starter Chrome.</translation>
 <translation id="3779473566290487688">For å få fremtidige Google Chrome-oppdateringer trenger du OS X 10.11 eller nyere. Denne datamaskinen bruker OS X 10.10.</translation>
@@ -132,11 +127,11 @@
 <translation id="4149882025268051530">Installasjonsprogrammet fikk ikke dekomprimert arkivet. Last ned Google Chrome på nytt.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Start Chrome på nytt innen en dag}other{Start Chrome på nytt innen # dager}}</translation>
 <translation id="4205939740494406371">Chrome kan ikke sjekke passordene dine. Prøv på nytt om 24 timer, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
+<translation id="4242034826641750751">Chrome trenger kamera- og mikrofontillatelse for dette nettstedet</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4251615635259297716">Vil du koble Chrome-dataene dine til denne kontoen?</translation>
 <translation id="4281844954008187215">Vilkår for bruk</translation>
 <translation id="4293420128516039005">Logg på for å synkronisere og gi Chrome et personlig preg på alle enhetene dine</translation>
-<translation id="429583012151745428">Installasjonen pågår. Ikke slå av enheten. Installasjonen skal ikke ta mer enn tjue minutter. Maskinen slår seg automatisk av etter at installasjonen er fullført.</translation>
 <translation id="4325083532956419387">Chrome OS-versjon</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS – inn)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -174,14 +169,10 @@
 <translation id="521447420733633466">Hvis du deler en enhet med andre, kan venner og familie surfe hver for seg og konfigurere Chrome akkurat slik de vil</translation>
 <translation id="5251420635869119124">Gjester kan bruke Chrome uten å etterlate seg spor.</translation>
 <translation id="5251679006894510177">Nesten ferdig oppdatert! Start Chrome på nytt for å fullføre oppdateringen. Inkognitovinduer blir ikke gjenåpnet.</translation>
+<translation id="5334487786912937552">Chrome må ha lagringstilgang for å kunne laste ned filer</translation>
 <translation id="5386244825306882791">Den styrer også hvilken side som vises når du starter Chrome eller søker fra multifunksjonsfeltet.</translation>
 <translation id="5394833366792865639">Del en Chrome-fane</translation>
 <translation id="5430073640787465221">Innstillingsfilen er skadet eller ugyldig. Google Chrome kan ikke gjenopprette innstillingene dine.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Før vi setter i gang, må du forsikre deg om at du har en oppdatert sikkerhetskopi av dataene dine. Når Chrome OS installeres, blir alle dataene på harddisken din overskrevet.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google tar intet ansvar for eventuelle tap av data og stiller ingen garanti for at Chrome OS fungerer på ikke-sertifiserte modeller. Gå til [TBD] for å finne ut mer om sertifiserte modeller.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Finn ut mer om installering av Chrome OS og sletting av data: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Hvis du er klar til å fortsette, klikker du på «Installer Chrome OS», så veileder vi deg gjennom installasjonen på bare noen få enkle trinn. Du får en ny mulighet til å bekrefte før vi gjør endringer på datamaskinen din.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5486618155264784386">Installer Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome prøver å vise passord.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-Inn)</translation>
 <translation id="5657226924540934362">Hvis en innstilling ikke vises på denne siden, kan du gå til <ph name="LINK_BEGIN" />
@@ -197,6 +188,7 @@
 <translation id="5804318322022881572">Kunne ikke starte Chrome. Prøv på nytt.</translation>
 <translation id="5867197326698922595">Google Chrome prøver å redigere passord.</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
+<translation id="5901850848447342934">Du blir <ph name="BEGIN_BOLD" />logget av de fleste nettsteder<ph name="END_BOLD" /> når du lukker Chrome. Hvis synkronisering er av, blir du også <ph name="BEGIN_BOLD" />logget av Google-tjenester og Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – nettverkspålogging</translation>
 <translation id="5940385492829620908">Her finner du nettinnholdet, bokmerkene og de andre Chrome-tingene dine.</translation>
 <translation id="5941830788786076944">Gjør Google Chrome til standardleser</translation>
@@ -206,17 +198,18 @@
 <translation id="6145313976051292476">Åpne PDF-filer i Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – betaversjon av Google Chrome</translation>
-<translation id="61852838583753520">Oppdater &amp;Chrome OS</translation>
 <translation id="6235018212288296708">Regel om innkommende trafikk for Google Chrome for å tillate mDNS-trafikk.</translation>
 <translation id="6291089322031436445">Chrome Dev-apper</translation>
 <translation id="6291549208091401781">Google Chrome er allerede installert for alle brukerne på datamaskinen din.</translation>
 <translation id="6368958679917195344">Chrome OS muliggjøres av <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="6418662306461808273">Vil du bytte til den eksisterende Chrome-profilen?</translation>
+<translation id="6506909944137591434">Chrome trenger kameratillatelse for å lage et 3D-kart av omgivelsene dine</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome for utviklere</translation>
 <translation id="6568793831116033768">Chrome OS-systemet</translation>
-<translation id="664235759707825982">Klar til å installere Chrome OS</translation>
 <translation id="6676384891291319759">Gå til Internett</translation>
 <translation id="6679975945624592337">La Google Chrome kjøre i bakgrunnen</translation>
+<translation id="6696915334902295848">Chrome trenger mikrofontillatelse for dette nettstedet</translation>
 <translation id="6739177684496155661">Vil du fortsette i en ny Chrome-profil?</translation>
 <translation id="6750954913813541382">For å rette stavefeil sender Chrome teksten du skriver inn i nettleseren, til Google</translation>
 <translation id="677276454032249905">Vil du avslutte Chrome likevel?</translation>
@@ -235,7 +228,6 @@
 <translation id="7155997830309522122">I så fall bør du endre det lagrede passordet i Chrome så det samsvarer med det nye passordet.</translation>
 <translation id="7161904924553537242">Velkommen til Google Chrome</translation>
 <translation id="7242029209006116544">Du er i ferd med å logge deg på med en administrert konto og gir administratoren kontroll over Chrome-profilen din. Chrome-dataene dine, som apper, bokmerker, loggen, passord og andre innstillinger, blir permanent knyttet til <ph name="USER_NAME" />. Du kan slette disse dataene via kontooversikten for Google, men du kan ikke knytte disse dataene til en annen konto. Du kan velge om du vil opprette en ny profil for å holde de eksisterende Chrome-dataene dine atskilte. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Installasjonen av Chrome OS pågår</translation>
 <translation id="7295052994004373688">Dette språket brukes for UI-et i Google Chrome</translation>
 <translation id="7296210096911315575">Viktig informasjon om bruk og sikkerhet</translation>
 <translation id="7308322188646931570">Chrome må ha lagringstilgang for å laste ned filer</translation>
@@ -256,18 +248,21 @@
 <translation id="7761834446675418963">Klikk på navnet ditt for å åpne Chrome og starte surfingen.</translation>
 <translation id="7777080907402804672">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chrome å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google. Du kan slå av dette i innstillingene når som helst.</translation>
 <translation id="7781002470561365167">En ny versjon av Google Chrome er tilgjengelig.</translation>
+<translation id="778331955594035129">Chrome trenger posisjonstillatelse for dette nettstedet</translation>
 <translation id="7787950393032327779">Profilen ser ut til å være i bruk av en annen Google Chrome-prosess (<ph name="PROCESS_ID" />) på en annen datamaskin (<ph name="HOST_NAME" />). Chrome har låst profilen slik at den ikke blir infisert. Hvis du er sikker på at ingen andre prosesser bruker profilen, kan du låse opp profilen og starte Chrome på nytt.</translation>
 <translation id="7801699035218095297">Google Chrome prøver å kopiere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="7808348361785373670">Fjern fra Chrome</translation>
 <translation id="7825851276765848807">Installeringen mislyktes på grunn av en uspesifisert feil. Last ned Google Chrome på nytt.</translation>
 <translation id="7890208801193284374">Hvis du deler en datamaskin med andre, kan venner og familie surfe hver for seg og konfigurere Chrome akkurat slik de vil.</translation>
 <translation id="7896673875602241923">Noen har tidligere logget på Chrome på denne datamaskinen som <ph name="ACCOUNT_EMAIL_LAST" />. Opprett en ny Chrome-bruker for å holde informasjonen din atskilt.</translation>
+<translation id="7917876797003313048">Du kan administrere de påloggede Google-kontoene dine. Google-kontoene dine brukes i Chrome-nettleseren, Play-butikken, Gmail med mer. Hvis du vil legge til en konto for noen andre, for eksempel et familiemedlem, legger du til en ny person på <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome prøver å kopiere passord.</translation>
 <translation id="7962410387636238736">Denne datamaskinen kommer ikke lenger til å motta oppdateringer av Google Chrome, fordi Windows XP og Windows Vista ikke støttes lenger</translation>
 <translation id="79947657522496226">Chrome OS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Installer Chrome på nytt</translation>
 <translation id="8013993649590906847">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chrome å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google.</translation>
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
+<translation id="822971176939352383">Disse kontoene er ikke logget på noen Chrome-profiler. Hvis du vil bruke en konto på en annen profil, fjerner du den profilen først.</translation>
 <translation id="8255190535488645436">Google Chrome bruker kameraet og mikrofonen din.</translation>
 <translation id="8286862437124483331">Google Chrome forsøker å vise passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="828798499196665338">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chrome. Du har ikke tillatelse til å slå på denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
@@ -284,11 +279,11 @@
 <translation id="8614913330719544658">Google Chrome svarer ikke. Vil du starte på nytt nå?</translation>
 <translation id="861702415419836452">Chrome trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome startes på nytt om 1 minutt}other{Chrome startes på nytt om # minutter}}</translation>
+<translation id="8629311577791198377">Når du lukker alle Chrome-vinduer, blir informasjonskapsler og nettstedsdata slettet automatisk</translation>
 <translation id="8641606876632989680">Chrome varsler deg når du logger på med passord som er utsatt for sikkerhetsbrudd</translation>
 <translation id="8669527147644353129">Google Chrome-hjelper</translation>
 <translation id="8679801911857917785">Den styrer også hvilken side som vises når du starter Chrome.</translation>
 <translation id="8686817260976772516">Med Chrome-profiler kan du holde alle Chrome-tingene dine atskilt. Opprett profiler for venner og familie, eller skill mellom arbeid og fritid.</translation>
-<translation id="870251953148363156">Oppdater &amp;Google Chrome</translation>
 <translation id="873133009373065397">Google Chrome kan ikke fastslå eller angi standardnettleseren</translation>
 <translation id="8823341990149967727">Chrome er utdatert</translation>
 <translation id="8834965163890861871">Google Chrome prøver å redigere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>

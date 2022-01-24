@@ -201,8 +201,7 @@ TEST_F(HistogramBaseTest, AddTimeMillisecondsGranularityOverflow) {
   while (large_positive > std::numeric_limits<HistogramBase::Sample>::max()) {
     // Add the TimeDelta corresponding to |large_positive| milliseconds to the
     // histogram.
-    histogram->AddTimeMillisecondsGranularity(
-        TimeDelta::FromMilliseconds(large_positive));
+    histogram->AddTimeMillisecondsGranularity(Milliseconds(large_positive));
     ++add_count;
     // Reduce the value of |large_positive|. The choice of 7 here is
     // arbitrary.
@@ -219,8 +218,7 @@ TEST_F(HistogramBaseTest, AddTimeMillisecondsGranularityOverflow) {
   int64_t large_negative = std::numeric_limits<int64_t>::min();
   add_count = 0;
   while (large_negative < std::numeric_limits<HistogramBase::Sample>::min()) {
-    histogram->AddTimeMillisecondsGranularity(
-        TimeDelta::FromMilliseconds(large_negative));
+    histogram->AddTimeMillisecondsGranularity(Milliseconds(large_negative));
     ++add_count;
     large_negative /= 7;
   }
@@ -246,8 +244,7 @@ TEST_F(HistogramBaseTest, AddTimeMicrosecondsGranularityOverflow) {
   while (large_positive > std::numeric_limits<HistogramBase::Sample>::max()) {
     // Add the TimeDelta corresponding to |large_positive| microseconds to the
     // histogram.
-    histogram->AddTimeMicrosecondsGranularity(
-        TimeDelta::FromMicroseconds(large_positive));
+    histogram->AddTimeMicrosecondsGranularity(Microseconds(large_positive));
     ++add_count;
     // Reduce the value of |large_positive|. The choice of 7 here is
     // arbitrary.
@@ -264,8 +261,7 @@ TEST_F(HistogramBaseTest, AddTimeMicrosecondsGranularityOverflow) {
   int64_t large_negative = std::numeric_limits<int64_t>::min();
   add_count = 0;
   while (large_negative < std::numeric_limits<HistogramBase::Sample>::min()) {
-    histogram->AddTimeMicrosecondsGranularity(
-        TimeDelta::FromMicroseconds(large_negative));
+    histogram->AddTimeMicrosecondsGranularity(Microseconds(large_negative));
     ++add_count;
     large_negative /= 7;
   }

@@ -50,9 +50,8 @@ struct TestModuleData {
 };
 
 // NOTE: TestTimeouts::action_max_timeout() is not long enough here.
-base::TimeDelta g_timeout = ::IsDebuggerPresent()
-                                ? base::TimeDelta::Max()
-                                : base::TimeDelta::FromMilliseconds(5000);
+base::TimeDelta g_timeout =
+    ::IsDebuggerPresent() ? base::TimeDelta::Max() : base::Milliseconds(5000);
 
 // Centralize child test process control.
 void LaunchChildAndWait(const base::CommandLine& command_line, int* exit_code) {
@@ -173,6 +172,10 @@ bool QueryStatusCodes(std::vector<ThirdPartyStatus>* status_array) {
 //------------------------------------------------------------------------------
 
 class ThirdPartyTest : public testing::Test {
+ public:
+  ThirdPartyTest(const ThirdPartyTest&) = delete;
+  ThirdPartyTest& operator=(const ThirdPartyTest&) = delete;
+
  protected:
   ThirdPartyTest() = default;
 
@@ -236,8 +239,6 @@ class ThirdPartyTest : public testing::Test {
   base::File bl_file_;
   std::wstring bl_test_file_path_;
   std::wstring exe_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyTest);
 };
 
 //------------------------------------------------------------------------------

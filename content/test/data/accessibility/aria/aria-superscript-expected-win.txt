@@ -1,0 +1,6 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_PARAGRAPH text-position:super
+++++ROLE_SYSTEM_STATICTEXT name='This text contains '
+++++IA2_ROLE_TEXT_FRAME text-position:super
+++++++ROLE_SYSTEM_STATICTEXT name='superscript' text-position:super
+++++ROLE_SYSTEM_STATICTEXT name=' text.'

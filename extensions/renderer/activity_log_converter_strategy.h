@@ -8,7 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 
@@ -21,6 +21,11 @@ class ActivityLogConverterStrategy
     : public content::V8ValueConverter::Strategy {
  public:
   ActivityLogConverterStrategy();
+
+  ActivityLogConverterStrategy(const ActivityLogConverterStrategy&) = delete;
+  ActivityLogConverterStrategy& operator=(const ActivityLogConverterStrategy&) =
+      delete;
+
   ~ActivityLogConverterStrategy() override;
 
   // content::V8ValueConverter::Strategy implementation.
@@ -35,8 +40,6 @@ class ActivityLogConverterStrategy
   bool FromV8Internal(v8::Local<v8::Object> value,
                       std::unique_ptr<base::Value>* out,
                       v8::Isolate* isolate) const;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivityLogConverterStrategy);
 };
 
 }  // namespace extensions

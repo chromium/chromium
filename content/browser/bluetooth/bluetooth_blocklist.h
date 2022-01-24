@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -34,6 +33,9 @@ class CONTENT_EXPORT BluetoothBlocklist final {
     EXCLUDE_READS,  // Excluded from read operations.
     EXCLUDE_WRITES  // Excluded from write operations.
   };
+
+  BluetoothBlocklist(const BluetoothBlocklist&) = delete;
+  BluetoothBlocklist& operator=(const BluetoothBlocklist&) = delete;
 
   ~BluetoothBlocklist();
 
@@ -97,8 +99,6 @@ class CONTENT_EXPORT BluetoothBlocklist final {
 
   // Map of UUID to blocklisted value.
   std::map<device::BluetoothUUID, Value> blocklisted_uuids_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothBlocklist);
 };
 
 }  // namespace content

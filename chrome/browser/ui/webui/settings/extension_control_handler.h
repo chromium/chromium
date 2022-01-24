@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_EXTENSION_CONTROL_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_EXTENSION_CONTROL_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 namespace base {
@@ -17,6 +16,10 @@ namespace settings {
 class ExtensionControlHandler : public SettingsPageUIHandler {
  public:
   ExtensionControlHandler();
+
+  ExtensionControlHandler(const ExtensionControlHandler&) = delete;
+  ExtensionControlHandler& operator=(const ExtensionControlHandler&) = delete;
+
   ~ExtensionControlHandler() override;
 
   // SettingsPageUIHandler:
@@ -28,8 +31,6 @@ class ExtensionControlHandler : public SettingsPageUIHandler {
   // Handler for the "disableExtension" message. Extension ID is passed as the
   // single string argument.
   void HandleDisableExtension(const base::ListValue* args);
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionControlHandler);
 };
 
 }  // namespace settings

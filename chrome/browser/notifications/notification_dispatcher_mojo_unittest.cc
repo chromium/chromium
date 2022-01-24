@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/process/process_handle.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -14,6 +16,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/notifications/mac_notification_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -27,6 +30,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
+
+const char kNotificationId[] = "notification-id";
+const char kProfileId[] = "profile-id";
 
 class MockNotificationService
     : public mac_notifications::mojom::MacNotificationService {
@@ -68,9 +74,9 @@ CreateOneNotificationList() {
   std::vector<mac_notifications::mojom::NotificationIdentifierPtr>
       notifications;
   auto profile_id = mac_notifications::mojom::ProfileIdentifier::New(
-      "profileId", /*incognito=*/true);
+      kProfileId, /*incognito=*/true);
   notifications.push_back(mac_notifications::mojom::NotificationIdentifier::New(
-      "notificationId", std::move(profile_id)));
+      kNotificationId, std::move(profile_id)));
   return notifications;
 }
 
@@ -78,7 +84,8 @@ class FakeMacNotificationProviderFactory
     : public MacNotificationProviderFactory,
       public mac_notifications::mojom::MacNotificationProvider {
  public:
-  explicit FakeMacNotificationProviderFactory(base::OnceClosure on_disconnect)
+  explicit FakeMacNotificationProviderFactory(
+      base::RepeatingClosure on_disconnect)
       : MacNotificationProviderFactory(/*in_process=*/false),
         on_disconnect_(std::move(on_disconnect)) {}
   ~FakeMacNotificationProviderFactory() override = default;
@@ -88,7 +95,9 @@ class FakeMacNotificationProviderFactory
   LaunchProvider() override {
     mojo::Remote<mac_notifications::mojom::MacNotificationProvider> remote;
     provider_receiver_.Bind(remote.BindNewPipeAndPassReceiver());
-    provider_receiver_.set_disconnect_handler(std::move(on_disconnect_));
+    provider_receiver_.set_disconnect_handler(
+        base::BindOnce(&FakeMacNotificationProviderFactory::Disconnect,
+                       base::Unretained(this)));
     return remote;
   }
 
@@ -109,14 +118,17 @@ class FakeMacNotificationProviderFactory
     return handler_remote_.get();
   }
 
-  void disconnect() {
+  void Disconnect() {
     handler_remote_.reset();
     service_receiver_.reset();
     provider_receiver_.reset();
+    on_disconnect_.Run();
   }
 
+  bool is_service_connected() { return service_receiver_.is_bound(); }
+
  private:
-  base::OnceClosure on_disconnect_;
+  base::RepeatingClosure on_disconnect_;
   mojo::Receiver<mac_notifications::mojom::MacNotificationProvider>
       provider_receiver_{this};
   MockNotificationService mock_service_;
@@ -128,7 +140,7 @@ class FakeMacNotificationProviderFactory
 
 message_center::Notification CreateNotification() {
   return message_center::Notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, "notification_id", u"title",
+      message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, u"title",
       u"message", /*icon=*/gfx::Image(),
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
       message_center::NotifierId(), message_center::RichNotificationData(),
@@ -137,10 +149,10 @@ message_center::Notification CreateNotification() {
 
 mac_notifications::mojom::NotificationMetadataPtr CreateNotificationMetadata() {
   auto profile_identifier = mac_notifications::mojom::ProfileIdentifier::New(
-      "profile", /*incognito=*/false);
+      kProfileId, /*incognito=*/true);
   auto notification_identifier =
       mac_notifications::mojom::NotificationIdentifier::New(
-          "notification_id", std::move(profile_identifier));
+          kNotificationId, std::move(profile_identifier));
   return mac_notifications::mojom::NotificationMetadata::New(
       std::move(notification_identifier), /*notification_type=*/0,
       /*origin_url=*/GURL("https://example.com"), base::GetCurrentProcId());
@@ -150,7 +162,7 @@ mac_notifications::mojom::NotificationActionInfoPtr
 CreateNotificationActionInfo() {
   auto meta = CreateNotificationMetadata();
   return mac_notifications::mojom::NotificationActionInfo::New(
-      std::move(meta), NotificationOperation::NOTIFICATION_CLICK,
+      std::move(meta), NotificationOperation::kClick,
       /*button_index=*/-1, /*reply=*/absl::nullopt);
 }
 
@@ -158,24 +170,34 @@ CreateNotificationActionInfo() {
 
 class NotificationDispatcherMojoTest : public testing::Test {
  public:
-  NotificationDispatcherMojoTest() {
-    auto provider_factory =
-        std::make_unique<FakeMacNotificationProviderFactory>(
-            on_disconnect_.Get());
-    provider_factory_ = provider_factory.get();
-    notification_dispatcher_ = std::make_unique<NotificationDispatcherMojo>(
-        std::move(provider_factory));
-  }
+  NotificationDispatcherMojoTest() = default;
 
   ~NotificationDispatcherMojoTest() override {
-    provider_factory_->disconnect();
-    task_environment_.RunUntilIdle();
+    base::RunLoop run_loop;
+    ExpectDisconnect(run_loop.QuitClosure());
+    provider_factory_->Disconnect();
+    run_loop.Run();
   }
 
   // testing::Test:
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     profile_ = testing_profile_manager_.CreateTestingProfile("profile");
+
+    auto provider_factory =
+        std::make_unique<FakeMacNotificationProviderFactory>(
+            on_disconnect_.Get());
+    provider_factory_ = provider_factory.get();
+
+    // NotificationDispatcherMojo will query the list of displayed notifications
+    // at startup. Once that finishes it should disconnect due to inactivity.
+    base::RunLoop run_loop;
+    EmulateNoNotifications();
+    ExpectDisconnect(run_loop.QuitClosure());
+
+    notification_dispatcher_ = std::make_unique<NotificationDispatcherMojo>(
+        std::move(provider_factory));
+    run_loop.Run();
   }
 
   MockNotificationService& service() { return provider_factory_->service(); }
@@ -187,7 +209,8 @@ class NotificationDispatcherMojoTest : public testing::Test {
  protected:
   void ExpectDisconnect(base::OnceClosure callback) {
     EXPECT_CALL(on_disconnect_, Run())
-        .WillOnce(base::test::RunOnceClosure(std::move(callback)));
+        .WillOnce(base::test::RunOnceClosure(std::move(callback)))
+        .WillRepeatedly(testing::DoDefault());
   }
 
   void ExpectKeepConnected() {
@@ -218,40 +241,54 @@ class NotificationDispatcherMojoTest : public testing::Test {
             }));
   }
 
+  void DisplayNotificationSync() {
+    base::RunLoop run_loop;
+    EXPECT_CALL(service(), DisplayNotification)
+        .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+    notification_dispatcher_->DisplayNotification(
+        NotificationHandler::Type::WEB_PERSISTENT, profile_,
+        CreateNotification());
+    run_loop.Run();
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   Profile* profile_;
-  base::MockOnceClosure on_disconnect_;
+  base::MockRepeatingClosure on_disconnect_;
   std::unique_ptr<NotificationDispatcherMojo> notification_dispatcher_;
   FakeMacNotificationProviderFactory* provider_factory_ = nullptr;
 };
 
 TEST_F(NotificationDispatcherMojoTest, CloseNotificationAndDisconnect) {
+  DisplayNotificationSync();
+
   base::RunLoop run_loop;
   // Expect that we disconnect after closing the last notification.
   ExpectDisconnect(run_loop.QuitClosure());
   EXPECT_CALL(service(), CloseNotification)
       .WillOnce(
           [](mac_notifications::mojom::NotificationIdentifierPtr identifier) {
-            EXPECT_EQ("notificationId", identifier->id);
-            EXPECT_EQ("profileId", identifier->profile->id);
+            EXPECT_EQ(kNotificationId, identifier->id);
+            EXPECT_EQ(kProfileId, identifier->profile->id);
             EXPECT_TRUE(identifier->profile->incognito);
           });
   EmulateNoNotifications();
   notification_dispatcher_->CloseNotificationWithId(
-      {"notificationId", "profileId", /*incognito=*/true});
+      {kNotificationId, kProfileId, /*incognito=*/true});
   run_loop.Run();
 }
 
 TEST_F(NotificationDispatcherMojoTest, CloseNotificationAndKeepConnected) {
+  DisplayNotificationSync();
+
   base::RunLoop run_loop;
   // Expect that we continue running if there are remaining notifications.
   EXPECT_CALL(service(), CloseNotification);
   EmulateOneNotification(run_loop.QuitClosure());
   notification_dispatcher_->CloseNotificationWithId(
-      {"notificationId", "profileId", /*incognito=*/true});
+      {kNotificationId, kProfileId, /*incognito=*/true});
   run_loop.Run();
   ExpectKeepConnected();
 }
@@ -259,12 +296,14 @@ TEST_F(NotificationDispatcherMojoTest, CloseNotificationAndKeepConnected) {
 TEST_F(NotificationDispatcherMojoTest,
        CloseThenDispatchNotificationAndKeepConnected) {
   base::RunLoop run_loop;
+  DisplayNotificationSync();
+
   // Expect that we continue running when showing a new notification just after
   // closing the last one.
   EXPECT_CALL(service(), CloseNotification);
   EmulateNoNotifications();
   notification_dispatcher_->CloseNotificationWithId(
-      {"notificationId", "profileId", /*incognito=*/true});
+      {kNotificationId, kProfileId, /*incognito=*/true});
 
   EXPECT_CALL(service(), DisplayNotification)
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
@@ -284,16 +323,18 @@ TEST_F(NotificationDispatcherMojoTest,
 }
 
 TEST_F(NotificationDispatcherMojoTest, CloseProfileNotificationsAndDisconnect) {
+  DisplayNotificationSync();
+
   base::RunLoop run_loop;
   // Expect that we disconnect after closing the last notification.
   ExpectDisconnect(run_loop.QuitClosure());
   EXPECT_CALL(service(), CloseNotificationsForProfile)
       .WillOnce([](mac_notifications::mojom::ProfileIdentifierPtr profile) {
-        EXPECT_EQ("profileId", profile->id);
+        EXPECT_EQ(kProfileId, profile->id);
         EXPECT_TRUE(profile->incognito);
       });
   EmulateNoNotifications();
-  notification_dispatcher_->CloseNotificationsWithProfileId("profileId",
+  notification_dispatcher_->CloseNotificationsWithProfileId(kProfileId,
                                                             /*incognito=*/true);
   run_loop.Run();
 }
@@ -307,7 +348,7 @@ TEST_F(NotificationDispatcherMojoTest, CloseAndDisconnectTiming) {
       CreateNotification());
 
   // Wait for 30 seconds and close the notification.
-  auto delay = base::TimeDelta::FromSeconds(30);
+  auto delay = base::Seconds(30);
   task_environment_.FastForwardBy(delay);
 
   // Expect that we disconnect after closing the last notification.
@@ -316,7 +357,7 @@ TEST_F(NotificationDispatcherMojoTest, CloseAndDisconnectTiming) {
   EmulateNoNotifications();
   EXPECT_CALL(service(), CloseNotification);
   notification_dispatcher_->CloseNotificationWithId(
-      {"notificationId", "profileId", /*incognito=*/true});
+      {kNotificationId, kProfileId, /*incognito=*/true});
 
   // Verify that we log the runtime length and no unexpected kill.
   run_loop.Run();
@@ -335,10 +376,10 @@ TEST_F(NotificationDispatcherMojoTest, KillServiceTiming) {
       CreateNotification());
 
   // Wait for 30 seconds and terminate the service.
-  auto delay = base::TimeDelta::FromSeconds(30);
+  auto delay = base::Seconds(30);
   task_environment_.FastForwardBy(delay);
   // Simulate a dying service process.
-  provider_factory_->disconnect();
+  provider_factory_->Disconnect();
 
   // Run remaining tasks as we can't observe the disconnect callback.
   task_environment_.RunUntilIdle();
@@ -368,4 +409,47 @@ TEST_F(NotificationDispatcherMojoTest, DidActivateNotification) {
   histograms.ExpectUniqueSample("Notifications.macOS.ActionReceived.Alert",
                                 /*sample=*/true,
                                 /*expected_count=*/1);
+}
+
+TEST_F(NotificationDispatcherMojoTest, TestUnexpectedDisconnectReconnects) {
+  // Display a notification and verify that the service is running.
+  DisplayNotificationSync();
+  EXPECT_TRUE(provider_factory_->is_service_connected());
+
+  // Disconnect after 30 seconds while there is still a notification on screen.
+  task_environment_.FastForwardBy(base::Seconds(30));
+  provider_factory_->Disconnect();
+  EXPECT_FALSE(provider_factory_->is_service_connected());
+
+  // Expect the service to be restarted after a short timeout.
+  EmulateOneNotification(base::DoNothing());
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  EXPECT_TRUE(provider_factory_->is_service_connected());
+}
+
+TEST_F(NotificationDispatcherMojoTest, TestReconnectBackoff) {
+  // Display a notification and verify that the service is running.
+  DisplayNotificationSync();
+  // Disconnect after 30 seconds while there is still a notification on screen.
+  task_environment_.FastForwardBy(base::Seconds(30));
+  provider_factory_->Disconnect();
+
+  // Verify the service hasn't restarted if not enough time has passed.
+  task_environment_.FastForwardBy(base::Milliseconds(499));
+  EXPECT_FALSE(provider_factory_->is_service_connected());
+  // Expect the service to be restarted after a short timeout.
+  EmulateOneNotification(base::DoNothing());
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_TRUE(provider_factory_->is_service_connected());
+
+  // Disconnect again immediately which should double the restart timeout.
+  provider_factory_->Disconnect();
+
+  // Verify the service hasn't restarted if not enough time has passed.
+  task_environment_.FastForwardBy(base::Milliseconds(999));
+  EXPECT_FALSE(provider_factory_->is_service_connected());
+  // Expect the service to be restarted after a short timeout.
+  EmulateOneNotification(base::DoNothing());
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_TRUE(provider_factory_->is_service_connected());
 }

@@ -7,11 +7,12 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "components/component_updater/android/component_loader_policy.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/page_info/android/page_info_client.h"
 #include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
-#include "weblayer/browser/default_search_engine.h"
+#include "weblayer/browser/component_updater/registration.h"
 #include "weblayer/browser/devtools_server_android.h"
 #include "weblayer/browser/java/jni/WebLayerImpl_jni.h"
 #include "weblayer/browser/url_bar/page_info_client_impl.h"
@@ -64,12 +65,11 @@ std::u16string GetClientApplicationName() {
       env, Java_WebLayerImpl_getEmbedderName(env));
 }
 
-static jboolean JNI_WebLayerImpl_IsLocationPermissionManaged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& origin) {
-  return IsPermissionControlledByDse(
-      ContentSettingsType::GEOLOCATION,
-      url::Origin::Create(GURL(ConvertJavaStringToUTF8(origin))));
+static base::android::ScopedJavaLocalRef<jobjectArray>
+JNI_WebLayerImpl_GetComponentLoaderPolicies(JNIEnv* env) {
+  return component_updater::AndroidComponentLoaderPolicy::
+      ToJavaArrayOfAndroidComponentLoaderPolicy(env,
+                                                GetComponentLoaderPolicies());
 }
 
 }  // namespace weblayer

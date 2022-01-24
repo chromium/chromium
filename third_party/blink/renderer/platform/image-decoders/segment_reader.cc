@@ -246,10 +246,10 @@ size_t ParkableImageSegmentReader::GetSomeData(const char*& data,
   if (!parkable_image_)
     return 0;
 
-  MutexLocker lock(parkable_image_->lock_);
-  DCHECK(parkable_image_->is_locked());
+  MutexLocker lock(parkable_image_->impl_->lock_);
+  DCHECK(parkable_image_->impl_->is_locked());
 
-  RWBuffer::ROIter iter(parkable_image_->rw_buffer_.get(), available_);
+  RWBuffer::ROIter iter(parkable_image_->impl_->rw_buffer_.get(), available_);
   size_t position_of_block = 0;
 
   return BufferGetSomeData(iter, position_of_block, data, position);
@@ -259,10 +259,10 @@ sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
   if (!parkable_image_)
     return nullptr;
 
-  MutexLocker lock(parkable_image_->lock_);
-  parkable_image_->Unpark();
+  MutexLocker lock(parkable_image_->impl_->lock_);
+  parkable_image_->impl_->Unpark();
 
-  RWBuffer::ROIter iter(parkable_image_->rw_buffer_.get(), available_);
+  RWBuffer::ROIter iter(parkable_image_->impl_->rw_buffer_.get(), available_);
 
   if (!iter.HasNext()) {  // No need to copy because the data is contiguous.
     // We lock here so that we don't get a use-after-free. ParkableImage can
@@ -270,14 +270,14 @@ sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
     // lifetime of the SkData. We add the ref so that the ParkableImage has a
     // longer limetime than the SkData.
     parkable_image_->AddRef();
-    parkable_image_->Lock();
+    parkable_image_->LockData();
     return SkData::MakeWithProc(
         iter.data(), available_,
         [](const void* ptr, void* context) -> void {
           auto* parkable_image = static_cast<ParkableImage*>(context);
           {
-            MutexLocker lock(parkable_image->lock_);
-            parkable_image->Unlock();
+            MutexLocker lock(parkable_image->impl_->lock_);
+            parkable_image->UnlockData();
           }
           // Don't hold the mutex while we call |Release|, since |Release| can
           // free the ParkableImage, if this is the last reference to it;
@@ -293,16 +293,16 @@ sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
 }
 
 void ParkableImageSegmentReader::LockData() {
-  MutexLocker lock(parkable_image_->lock_);
-  parkable_image_->Unpark();
+  MutexLocker lock(parkable_image_->impl_->lock_);
+  parkable_image_->impl_->Unpark();
 
-  parkable_image_->Lock();
+  parkable_image_->LockData();
 }
 
 void ParkableImageSegmentReader::UnlockData() {
-  MutexLocker lock(parkable_image_->lock_);
+  MutexLocker lock(parkable_image_->impl_->lock_);
 
-  parkable_image_->Unlock();
+  parkable_image_->UnlockData();
 }
 
 // SegmentReader ---------------------------------------------------------------

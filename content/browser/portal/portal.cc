@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 
 namespace content {
@@ -83,8 +84,7 @@ void Portal::BindPortalHostReceiver(
 
   // This guards against the blink::mojom::PortalHost interface being used
   // outside the main frame of a Portal's guest.
-  if (!web_contents || !web_contents->IsPortal() ||
-      !frame->frame_tree_node()->IsMainFrame()) {
+  if (!web_contents || !web_contents->IsPortal() || !frame->is_main_frame()) {
     mojo::ReportBadMessage(
         "blink.mojom.PortalHost can only be used by the the main frame of a "
         "Portal's guest.");
@@ -131,21 +131,23 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
 
   // Create a FrameTreeNode in the outer WebContents to host the portal, in
   // response to the creation of a portal in the renderer process.
-  FrameTreeNode* outer_node = outer_contents_impl->GetFrameTree()->AddFrame(
-      owner_render_frame_host_, owner_render_frame_host_->GetProcess()->GetID(),
-      owner_render_frame_host_->GetProcess()->GetNextRoutingID(),
-      // The renderer frame doesn't exist yet and will be created later with the
-      // CreateRenderView message.
-      /*frame_remote=*/mojo::NullAssociatedRemote(),
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
-          .InitWithNewPipeAndPassReceiver(),
-      // The PolicyContainerHost remote is sent to Blink in the CreateRenderView
-      // mojo message.
-      /*policy_container_bind_params=*/nullptr,
-      blink::mojom::TreeScopeType::kDocument, "", "", true,
-      blink::LocalFrameToken(), base::UnguessableToken::Create(),
-      blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
-      blink::mojom::FrameOwnerElementType::kPortal);
+  FrameTreeNode* outer_node =
+      outer_contents_impl->GetPrimaryFrameTree().AddFrame(
+          owner_render_frame_host_,
+          owner_render_frame_host_->GetProcess()->GetID(),
+          owner_render_frame_host_->GetProcess()->GetNextRoutingID(),
+          // The renderer frame doesn't exist yet and will be created later with
+          // the CreateRenderView message.
+          /*frame_remote=*/mojo::NullAssociatedRemote(),
+          /*browser_interface_broker_receiver=*/mojo::NullReceiver(),
+          // The PolicyContainerHost remote is sent to Blink in the
+          // CreateRenderView mojo message.
+          /*policy_container_bind_params=*/nullptr,
+          blink::mojom::TreeScopeType::kDocument, "", "", true,
+          blink::LocalFrameToken(), base::UnguessableToken::Create(),
+          blink::FramePolicy(), blink::mojom::FrameOwnerProperties(), false,
+          blink::FrameOwnerElementType::kPortal,
+          /*is_dummy_frame_for_inner_tree=*/true);
   outer_node->AddObserver(this);
 
   bool web_contents_created = false;
@@ -170,8 +172,11 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
 
   // Create the view for all RenderViewHosts that don't have a
   // RenderWidgetHostViewChildFrame view.
+  // TODO(https://crbug.com/1264031): With MPArch a WebContents might have
+  // multiple FrameTrees. Make sure this code really just needs the
+  // primary one.
   for (auto& render_view_host :
-       portal_contents_->GetFrameTree()->render_view_hosts()) {
+       portal_contents_->GetPrimaryFrameTree().render_view_hosts()) {
     if (!render_view_host.second->GetWidget()->GetView() ||
         !render_view_host.second->GetWidget()
              ->GetView()
@@ -228,11 +233,11 @@ void Portal::Navigate(const GURL& url,
   owner_render_frame_host_->GetSiteInstance()->GetProcess()->FilterURL(
       false, &out_validated_url);
 
-  FrameTreeNode* portal_root = portal_contents_->GetFrameTree()->root();
+  FrameTreeNode* portal_root = portal_contents_->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* portal_frame = portal_root->current_frame_host();
 
-  // TODO(lfg): Figure out download policies for portals.
-  // https://github.com/WICG/portals/issues/150
+  // TODO(crbug.com/1237547): Change our implementation to disallow downloads for
+  // portals.
   blink::NavigationDownloadPolicy download_policy;
 
   // Navigations in portals do not affect the host's session history. Upon
@@ -354,6 +359,9 @@ void Portal::PostMessageToGuest(blink::TransferableMessage message) {
     owner_render_frame_host()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         kCrossOriginPostMessageError);
+
+    devtools_instrumentation::DidRejectCrossOriginPortalMessage(
+        owner_render_frame_host());
     return;
   }
   portal_contents_->GetMainFrame()->ForwardMessageFromHost(
@@ -363,9 +371,12 @@ void Portal::PostMessageToGuest(blink::TransferableMessage message) {
 void Portal::PostMessageToHost(blink::TransferableMessage message) {
   DCHECK(GetPortalContents());
   if (!IsSameOrigin()) {
-    portal_contents_->GetMainFrame()->AddMessageToConsole(
+    GetPortalContents()->GetMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         kCrossOriginPostMessageError);
+
+    devtools_instrumentation::DidRejectCrossOriginPortalMessage(
+        GetPortalContents()->GetMainFrame());
     return;
   }
   client().ForwardMessageFromGuest(
@@ -567,8 +578,11 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
     // attached to an outer WebContents, and may not have an outer frame tree
     // node created (i.e. CreateProxyAndAttachPortal isn't called). In this
     // case, we can skip a few of the detachment steps above.
+    // TODO(https://crbug.com/1264031): With MPArch a WebContents might have
+    // multiple FrameTrees. Make sure this code really just needs the
+    // primary one.
     for (auto& render_view_host :
-         portal_contents_->GetFrameTree()->render_view_hosts()) {
+         portal_contents_->GetPrimaryFrameTree().render_view_hosts()) {
       CreatePortalRenderWidgetHostView(portal_contents_.get(),
                                        render_view_host.second);
     }
@@ -583,8 +597,8 @@ void Portal::ActivateImpl(blink::TransferableMessage data,
 
   auto* outer_contents_main_frame_view = static_cast<RenderWidgetHostViewBase*>(
       outer_contents->GetMainFrame()->GetView());
-  DCHECK(!outer_contents->GetFrameTree()
-              ->root()
+  DCHECK(!outer_contents->GetPrimaryFrameTree()
+              .root()
               ->render_manager()
               ->speculative_frame_host());
   auto* portal_contents_main_frame_view =

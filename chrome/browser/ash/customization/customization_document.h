@@ -13,9 +13,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "url/gurl.h"
 
@@ -58,6 +58,9 @@ class ServicesCustomizationExternalLoader;
 // Base class for OEM customization document classes.
 class CustomizationDocument {
  public:
+  CustomizationDocument(const CustomizationDocument&) = delete;
+  CustomizationDocument& operator=(const CustomizationDocument&) = delete;
+
   virtual ~CustomizationDocument();
 
   // Return true if the document was successfully fetched and parsed.
@@ -78,9 +81,6 @@ class CustomizationDocument {
   // Value of the "version" attribute that is supported.
   // Otherwise config is not loaded.
   std::string accepted_version_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CustomizationDocument);
 };
 
 // OEM startup customization document class.
@@ -90,6 +90,10 @@ class CustomizationDocument {
 class StartupCustomizationDocument : public CustomizationDocument {
  public:
   static StartupCustomizationDocument* GetInstance();
+
+  StartupCustomizationDocument(const StartupCustomizationDocument&) = delete;
+  StartupCustomizationDocument& operator=(const StartupCustomizationDocument&) =
+      delete;
 
   std::string GetEULAPage(const std::string& locale) const;
 
@@ -132,8 +136,6 @@ class StartupCustomizationDocument : public CustomizationDocument {
   std::vector<std::string> configured_locales_;
   std::string initial_timezone_;
   std::string keyboard_layout_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupCustomizationDocument);
 };
 
 // OEM services customization document class.
@@ -145,6 +147,10 @@ class StartupCustomizationDocument : public CustomizationDocument {
 class ServicesCustomizationDocument : public CustomizationDocument {
  public:
   static ServicesCustomizationDocument* GetInstance();
+
+  ServicesCustomizationDocument(const ServicesCustomizationDocument&) = delete;
+  ServicesCustomizationDocument& operator=(
+      const ServicesCustomizationDocument&) = delete;
 
   // Registers preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -323,8 +329,6 @@ class ServicesCustomizationDocument : public CustomizationDocument {
 
   // Weak factory for callbacks.
   base::WeakPtrFactory<ServicesCustomizationDocument> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServicesCustomizationDocument);
 };
 
 }  // namespace ash

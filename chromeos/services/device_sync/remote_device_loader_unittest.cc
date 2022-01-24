@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/services/device_sync/proto/enum_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -63,6 +62,11 @@ class DeviceSyncRemoteDeviceLoaderTest : public testing::Test {
         user_private_key_(secure_message_delegate_->GetPrivateKeyForPublicKey(
             kUserPublicKey)) {}
 
+  DeviceSyncRemoteDeviceLoaderTest(const DeviceSyncRemoteDeviceLoaderTest&) =
+      delete;
+  DeviceSyncRemoteDeviceLoaderTest& operator=(
+      const DeviceSyncRemoteDeviceLoaderTest&) = delete;
+
   ~DeviceSyncRemoteDeviceLoaderTest() {}
 
   void OnRemoteDevicesLoaded(
@@ -84,8 +88,6 @@ class DeviceSyncRemoteDeviceLoaderTest : public testing::Test {
 
   // Stores the result of the RemoteDeviceLoader.
   multidevice::RemoteDeviceList remote_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncRemoteDeviceLoaderTest);
 };
 
 TEST_F(DeviceSyncRemoteDeviceLoaderTest, LoadZeroDevices) {

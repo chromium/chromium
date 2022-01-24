@@ -9,6 +9,7 @@ include_rules = [
   "+components/services/unzip",
   "+components/update_client",
   "+components/version_info",
+  "+components/winhttp",
   "+courgette",
   "+crypto",
   "+third_party/boringssl",

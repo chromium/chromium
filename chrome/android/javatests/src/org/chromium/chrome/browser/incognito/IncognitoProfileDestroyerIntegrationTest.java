@@ -66,8 +66,11 @@ public class IncognitoProfileDestroyerIntegrationTest {
         doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
 
         mActivityTestRule.startMainActivityOnBlankPage();
-        ProfileManager.addObserver(mMockProfileManagerObserver);
-        mIncognitoTabModel = mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ProfileManager.addObserver(mMockProfileManagerObserver);
+            mIncognitoTabModel =
+                    mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
+        });
     }
 
     @Test

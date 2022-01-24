@@ -151,6 +151,15 @@ TEST_F(CacheUtilTest, PreferredCacheSize) {
     EXPECT_EQ(test_case.expected_without_trial,
               PreferredCacheSize(test_case.available))
         << test_case.available;
+
+    // Preferred size for WebUI code cache matches expected_without_trial but
+    // should never be more than 5 MB.
+    int expected_webui_code_cache_size =
+        std::min(5 * 1024 * 1024, test_case.expected_without_trial);
+    EXPECT_EQ(expected_webui_code_cache_size,
+              PreferredCacheSize(test_case.available,
+                                 net::GENERATED_WEBUI_BYTE_CODE_CACHE))
+        << test_case.available;
   }
 
   // Check that the cache size cap is 50% higher for native code caches.
@@ -189,6 +198,15 @@ TEST_F(CacheUtilTest, PreferredCacheSize) {
       EXPECT_EQ(test_case.expected_without_trial,
                 PreferredCacheSize(test_case.available,
                                    net::GENERATED_BYTE_CODE_CACHE));
+
+      // Preferred size for WebUI code cache is not scaled by the trial, and
+      // should never be more than 5 MB.
+      int expected_webui_code_cache_size =
+          std::min(5 * 1024 * 1024, test_case.expected_without_trial);
+      EXPECT_EQ(expected_webui_code_cache_size,
+                PreferredCacheSize(test_case.available,
+                                   net::GENERATED_WEBUI_BYTE_CODE_CACHE))
+          << test_case.available;
     }
 
     // Check that the cache size cap is 50% higher for native code caches but is

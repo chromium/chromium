@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_names.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -24,20 +23,29 @@ const char kUser1[] = "songttim@gmail.com";
 const bool kIsChromeOSLoginEnabled1 = true;
 const bool kIsEasyUnlockAllowed1 = true;
 const bool kIsEasyUnlockEnabled1 = true;
+const bool kIsSmartLockEligible1 = true;
 
 const char kUser2[] = "tengs@google.com";
 const bool kIsChromeOSLoginEnabled2 = false;
 const bool kIsEasyUnlockAllowed2 = false;
 const bool kIsEasyUnlockEnabled2 = false;
+const bool kIsSmartLockEligible2 = false;
 
 const char kUnknownUser[] = "tengs@chromium.org";
 const bool kIsChromeOSLoginEnabledDefault = false;
 const bool kIsEasyUnlockAllowedDefault = true;
 const bool kIsEasyUnlockEnabledDefault = false;
+const bool kIsSmartLockEligibleDefault = true;
 
 }  //  namespace
 
 class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
+ public:
+  ProximityAuthLocalStatePrefManagerTest(
+      const ProximityAuthLocalStatePrefManagerTest&) = delete;
+  ProximityAuthLocalStatePrefManagerTest& operator=(
+      const ProximityAuthLocalStatePrefManagerTest&) = delete;
+
  protected:
   ProximityAuthLocalStatePrefManagerTest()
       : user1_(AccountId::FromUserEmail(kUser1)),
@@ -60,6 +68,8 @@ class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
                         base::Value(kIsEasyUnlockAllowed1));
     user1_prefs->SetKey(chromeos::multidevice_setup::kSmartLockEnabledPrefName,
                         base::Value(kIsEasyUnlockEnabled1));
+    user1_prefs->SetKey(prefs::kSmartLockEligiblePrefName,
+                        base::Value(kIsSmartLockEligible1));
     DictionaryPrefUpdate update1(&local_state_,
                                  prefs::kEasyUnlockLocalStateUserPrefs);
     update1->SetKey(user1_.GetUserEmail(),
@@ -74,7 +84,8 @@ class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
                         base::Value(kIsEasyUnlockAllowed2));
     user2_prefs->SetKey(chromeos::multidevice_setup::kSmartLockEnabledPrefName,
                         base::Value(kIsEasyUnlockEnabled2));
-
+    user2_prefs->SetKey(prefs::kSmartLockEligiblePrefName,
+                        base::Value(kIsSmartLockEligible2));
     DictionaryPrefUpdate update2(&local_state_,
                                  prefs::kEasyUnlockLocalStateUserPrefs);
     update2->SetKey(user2_.GetUserEmail(),
@@ -85,9 +96,6 @@ class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
   AccountId user2_;
   AccountId unknown_user_;
   TestingPrefServiceSimple local_state_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthLocalStatePrefManagerTest);
 };
 
 TEST_F(ProximityAuthLocalStatePrefManagerTest, RegisterPrefs) {
@@ -127,6 +135,23 @@ TEST_F(ProximityAuthLocalStatePrefManagerTest, IsEasyUnlockEnabled) {
   EXPECT_EQ(kIsEasyUnlockEnabled1, pref_manager.IsEasyUnlockEnabled());
   pref_manager.SetActiveUser(user2_);
   EXPECT_EQ(kIsEasyUnlockEnabled2, pref_manager.IsEasyUnlockEnabled());
+}
+
+TEST_F(ProximityAuthLocalStatePrefManagerTest, IsSmartLockEligible) {
+  ProximityAuthLocalStatePrefManager pref_manager(&local_state_);
+
+  // If no active user is set, return the default value.
+  EXPECT_EQ(kIsSmartLockEligibleDefault, pref_manager.IsSmartLockEligible());
+
+  // Unknown users should return the default value.
+  pref_manager.SetActiveUser(unknown_user_);
+  EXPECT_EQ(kIsSmartLockEligibleDefault, pref_manager.IsSmartLockEligible());
+
+  // Test users with set values.
+  pref_manager.SetActiveUser(user1_);
+  EXPECT_EQ(kIsSmartLockEligible1, pref_manager.IsSmartLockEligible());
+  pref_manager.SetActiveUser(user2_);
+  EXPECT_EQ(kIsSmartLockEligible2, pref_manager.IsSmartLockEligible());
 }
 
 TEST_F(ProximityAuthLocalStatePrefManagerTest, IsChromeOSLoginEnabled) {

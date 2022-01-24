@@ -11,11 +11,10 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
@@ -60,6 +59,10 @@ class SyncEngineImpl : public SyncEngine,
                  const base::FilePath& sync_data_folder,
                  scoped_refptr<base::SequencedTaskRunner> sync_task_runner,
                  const base::RepeatingClosure& sync_transport_data_cleared_cb);
+
+  SyncEngineImpl(const SyncEngineImpl&) = delete;
+  SyncEngineImpl& operator=(const SyncEngineImpl&) = delete;
+
   ~SyncEngineImpl() override;
 
   // SyncEngine implementation.
@@ -75,16 +78,15 @@ class SyncEngineImpl : public SyncEngine,
   void StartSyncingWithServer() override;
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   void SetDecryptionPassphrase(const std::string& passphrase) override;
-  void SetKeystoreEncryptionBootstrapToken(const std::string& token) override;
   void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys,
       base::OnceClosure done_cb) override;
   void StopSyncingForShutdown() override;
   void Shutdown(ShutdownReason reason) override;
   void ConfigureDataTypes(ConfigureParams params) override;
-  void ActivateDataType(ModelType type,
-                        std::unique_ptr<DataTypeActivationResponse>) override;
-  void DeactivateDataType(ModelType type) override;
+  void ConnectDataType(ModelType type,
+                       std::unique_ptr<DataTypeActivationResponse>) override;
+  void DisconnectDataType(ModelType type) override;
   void SetProxyTabsDatatypeEnabled(bool enabled) override;
   const Status& GetDetailedStatus() const override;
   void HasUnsyncedItemsForTest(
@@ -219,8 +221,6 @@ class SyncEngineImpl : public SyncEngine,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncEngineImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineImpl);
 };
 
 }  // namespace syncer

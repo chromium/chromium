@@ -23,6 +23,9 @@ class WaylandPointerDelegate : public WaylandInputDelegate,
   explicit WaylandPointerDelegate(wl_resource* pointer_resource,
                                   SerialTracker* serial_tracker);
 
+  WaylandPointerDelegate(const WaylandPointerDelegate&) = delete;
+  WaylandPointerDelegate& operator=(const WaylandPointerDelegate&) = delete;
+
   // Overridden from PointerDelegate:
   void OnPointerDestroying(Pointer* pointer) override;
   bool CanAcceptPointerEventsForSurface(Surface* surface) const override;
@@ -50,8 +53,6 @@ class WaylandPointerDelegate : public WaylandInputDelegate,
 
   // Owned by Server, which always outlives this delegate.
   SerialTracker* const serial_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandPointerDelegate);
 };
 
 }  // namespace wayland

@@ -21,9 +21,6 @@
 
 namespace base {
 class Value;
-namespace trace_event {
-class ProcessMemoryDump;
-}
 }
 
 namespace net {
@@ -80,12 +77,6 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManager {
 
   // Creates a Value summary of the state of the socket pools.
   virtual std::unique_ptr<base::Value> SocketPoolInfoToValue() const = 0;
-
-  // Dumps memory allocation stats. |parent_dump_absolute_name| is the name
-  // used by the parent MemoryAllocatorDump in the memory dump hierarchy.
-  virtual void DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_dump_absolute_name) const = 0;
 };
 
 // A helper method that uses the passed in proxy information to initialize a

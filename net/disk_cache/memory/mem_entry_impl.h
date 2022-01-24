@@ -62,9 +62,9 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
     : public Entry,
       public base::LinkNode<MemEntryImpl> {
  public:
-  enum EntryType {
-    PARENT_ENTRY,
-    CHILD_ENTRY,
+  enum class EntryType {
+    kParent,
+    kChild,
   };
 
   // Provided to better document calls to |UpdateStateOnUse()|.
@@ -84,10 +84,15 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
                MemEntryImpl* parent,
                net::NetLog* net_log);
 
+  MemEntryImpl(const MemEntryImpl&) = delete;
+  MemEntryImpl& operator=(const MemEntryImpl&) = delete;
+
   void Open();
   bool InUse() const;
 
-  EntryType type() const { return parent_ ? CHILD_ENTRY : PARENT_ENTRY; }
+  EntryType type() const {
+    return parent_ ? EntryType::kChild : EntryType::kParent;
+  }
   const std::string& key() const { return key_; }
   const MemEntryImpl* parent() const { return parent_; }
   int64_t child_id() const { return child_id_; }
@@ -133,7 +138,6 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   void CancelSparseIO() override {}
   net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;
   void SetLastUsedTimeForTest(base::Time time) override;
-  size_t EstimateMemoryUsage() const;
 
  private:
   MemEntryImpl(base::WeakPtr<MemBackendImpl> backend,
@@ -194,8 +198,6 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   bool doomed_;               // True if this entry was removed from the cache.
 
   net::NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemEntryImpl);
 };
 
 }  // namespace disk_cache

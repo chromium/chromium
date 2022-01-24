@@ -47,6 +47,14 @@ window.media.onReceiveAudioFocusState = function(audioFocusState) {
   manager.updateAudioFocusSessions(audioFocusState.sessions);
 };
 
+window.media.updateRegisteredCdms = function(cdms) {
+  if (!cdms) {
+    return;
+  }
+
+  manager.updateRegisteredCdms(cdms);
+};
+
 window.media.updateAudioComponent = function(component) {
   var uniqueComponentId = component.owner_id + ':' + component.component_id;
   switch (component.status) {

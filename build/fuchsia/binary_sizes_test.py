@@ -1,20 +1,53 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import copy
-import math
 import os
 import shutil
 import subprocess
 import tempfile
-import time
 import unittest
 
 import binary_sizes
 
 from common import DIR_SOURCE_ROOT
+
+
+_EXAMPLE_BLOBS = """
+{
+  "web_engine": [
+    {
+      "merkle": "77e876447dd2daaaab7048d646e87fe8b6d9fecef6cbfcc4af30b8fbfa50b881",
+      "path": "locales/ta.pak",
+      "bytes": 17916,
+      "is_counted": true,
+      "size": 16384
+    },
+    {
+      "merkle": "5f1932b8c9fe954f3c3fdb34ab2089d2af34e5a0cef90cad41a1cd37d92234bf",
+      "path": "lib/libEGL.so",
+      "bytes": 226960,
+      "is_counted": true,
+      "size": 90112
+    },
+    {
+      "merkle": "9822fc0dd95cdd1cc46b5c6632a928a6ad19b76ed0157397d82a2f908946fc34",
+      "path": "meta.far",
+      "bytes": 24576,
+      "is_counted": true,
+      "size": 16384
+    },
+    {
+      "merkle": "090aed4593c4f7d04a3ad80e9971c0532dd5b1d2bdf4754202cde510a88fd220",
+      "path": "locales/ru.pak",
+      "bytes": 11903,
+      "is_counted": true,
+      "size": 16384
+    }
+  ]
+}
+"""
 
 
 class TestBinarySizes(unittest.TestCase):
@@ -28,33 +61,22 @@ class TestBinarySizes(unittest.TestCase):
   def tearDownClass(cls):
     shutil.rmtree(cls.tmpdir)
 
-  # TODO(crbug.com/1145648): Add tests covering FAR file input and histogram
-  # output.
+  def testReadAndWritePackageBlobs(self):
+    with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
+      tmp_file.write(_EXAMPLE_BLOBS)
+      tmp_file.flush()
 
-  def testCommitFromBuildProperty(self):
-    commit_position = binary_sizes.CommitPositionFromBuildProperty(
-        'refs/heads/master@{#819458}')
-    self.assertEqual(commit_position, 819458)
+      package_blobs = binary_sizes.ReadPackageBlobsJson(tmp_file.name)
 
-  def testCompressedSize(self):
-    """Verifies that the compressed file size can be extracted from the
-    blobfs-compression output."""
+    tmp_package_file = tempfile.NamedTemporaryFile(mode='w', delete=False)
+    tmp_package_file.close()
+    try:
+      binary_sizes.WritePackageBlobsJson(tmp_package_file.name, package_blobs)
 
-    uncompressed_file = tempfile.NamedTemporaryFile(delete=False)
-    for line in range(200):
-      uncompressed_file.write(
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
-          'Sed eleifend')
-    uncompressed_file.close()
-    compressed_path = uncompressed_file.name + '.compressed'
-    compressor_path = os.path.join(DIR_SOURCE_ROOT, 'third_party',
-                                   'fuchsia-sdk', 'sdk', 'tools', 'x64',
-                                   'blobfs-compression')
-    subprocess.call([compressor_path, uncompressed_file.name, compressed_path])
-    self.assertEqual(binary_sizes.CompressedSize(uncompressed_file.name),
-                     os.path.getsize(compressed_path))
-    os.remove(uncompressed_file.name)
-    os.remove(compressed_path)
+      self.assertEqual(binary_sizes.ReadPackageBlobsJson(tmp_package_file.name),
+                       package_blobs)
+    finally:
+      os.remove(tmp_package_file.name)
 
 
 if __name__ == '__main__':

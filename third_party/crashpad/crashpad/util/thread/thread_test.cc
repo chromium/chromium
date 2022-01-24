@@ -24,31 +24,39 @@ namespace {
 class NoopThread : public Thread {
  public:
   NoopThread() {}
+
+  NoopThread(const NoopThread&) = delete;
+  NoopThread& operator=(const NoopThread&) = delete;
+
   ~NoopThread() override {}
 
  private:
   void ThreadMain() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(NoopThread);
 };
 
 class WaitThread : public Thread {
  public:
   explicit WaitThread(Semaphore* semaphore) : semaphore_(semaphore) {}
+
+  WaitThread(const WaitThread&) = delete;
+  WaitThread& operator=(const WaitThread&) = delete;
+
   ~WaitThread() override {}
 
  private:
   void ThreadMain() override { semaphore_->Wait(); }
 
   Semaphore* semaphore_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitThread);
 };
 
 class JoinAndSignalThread : public Thread {
  public:
   JoinAndSignalThread(Thread* thread, Semaphore* semaphore)
       : thread_(thread), semaphore_(semaphore) {}
+
+  JoinAndSignalThread(const JoinAndSignalThread&) = delete;
+  JoinAndSignalThread& operator=(const JoinAndSignalThread&) = delete;
+
   ~JoinAndSignalThread() override {}
 
  private:
@@ -59,8 +67,6 @@ class JoinAndSignalThread : public Thread {
 
   Thread* thread_;
   Semaphore* semaphore_;
-
-  DISALLOW_COPY_AND_ASSIGN(JoinAndSignalThread);
 };
 
 TEST(ThreadTest, NoStart) {

@@ -14,8 +14,7 @@ namespace chromecast {
 
 namespace {
 
-constexpr base::TimeDelta kManualAnimationDuration =
-    base::TimeDelta::FromSeconds(0);
+constexpr base::TimeDelta kManualAnimationDuration = base::Seconds(0);
 
 // Brightness changes are smoothed linearly over a 50 ms interval by the
 // backlight controller IC.
@@ -52,7 +51,7 @@ void BrightnessAnimation::AnimateToNewValue(float new_target_brightness,
         << "Brightness animation started from invalid start_brightness_="
         << start_brightness_;
     start_brightness_ = target_brightness_;
-    SetDuration(base::TimeDelta::FromSeconds(0));
+    SetDuration(base::Seconds(0));
   } else {
     // This will reset the animation timer to the beginning.
     SetDuration(duration);

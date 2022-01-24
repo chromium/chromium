@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_model_object.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -22,6 +23,12 @@ class SVGModelObjectPainter {
   // painted in the kForeground paint phase.
   static void RecordHitTestData(const LayoutObject& svg_object,
                                 const PaintInfo&);
+
+  // Records region capture bounds for the current paint chunk. This should
+  // be called when painting the background even if there is no other painted
+  // content.
+  static void RecordRegionCaptureData(const LayoutObject& svg_object,
+                                      const PaintInfo&);
 
   explicit SVGModelObjectPainter(
       const LayoutSVGModelObject& layout_svg_model_object)
@@ -52,7 +59,7 @@ class SVGDrawingRecorder : public DrawingRecorder {
             context,
             object,
             type,
-            EnclosingIntRect(object.VisualRectInLocalSVGCoordinates())) {
+            gfx::ToEnclosingRect(object.VisualRectInLocalSVGCoordinates())) {
     DCHECK(object.IsSVGChild());
     // We should not use this for SVG containers which paint effects only,
     // while VisualRectInLocalSVGCoordinates() contains visual rects from

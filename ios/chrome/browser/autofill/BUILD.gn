@@ -63,11 +63,11 @@ source_set("autofill") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/passwords:passwords_generation_utils",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill_ui",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/common/ui/util",
     "//ios/web/common",
     "//ios/web/public/js_messaging",
@@ -315,6 +315,7 @@ autofill_test_files = [
   "//components/test/data/autofill/heuristics/input/176_id_payment_shopee.co.id.html",
   "//components/test/data/autofill/heuristics/input/177_reichelt.html",
   "//components/test/data/autofill/heuristics/input/178_zip_file_extension.html",
+  "//components/test/data/autofill/heuristics/input/179_twtcgirls.html",
   "//components/test/data/autofill/heuristics/output/000_i18n_de.out",
   "//components/test/data/autofill/heuristics/output/001_i18n_de2.out",
   "//components/test/data/autofill/heuristics/output/002_i18n_en.out",
@@ -493,6 +494,7 @@ autofill_test_files = [
   "//components/test/data/autofill/heuristics/output/176_id_payment_shopee.co.id.out",
   "//components/test/data/autofill/heuristics/output/177_reichelt.out",
   "//components/test/data/autofill/heuristics/output/178_zip_file_extension.out",
+  "//components/test/data/autofill/heuristics/output/179_twtcgirls.out",
 ]
 
 # Generate a file containing the list of test input files. This list will
@@ -557,6 +559,7 @@ source_set("unit_tests") {
     "//ios/testing:block_swizzler",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//testing/data_driven_testing",
     "//testing/gtest",
     "//third_party/leveldatabase",
     "//third_party/ocmock",
@@ -578,7 +581,6 @@ bundle_data("unit_tests_bundle_data_list") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",

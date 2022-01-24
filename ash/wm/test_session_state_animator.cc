@@ -37,6 +37,9 @@ class TestSessionStateAnimator::AnimationSequence
         sequence_aborted_(false),
         animator_(animator) {}
 
+  AnimationSequence(const AnimationSequence&) = delete;
+  AnimationSequence& operator=(const AnimationSequence&) = delete;
+
   ~AnimationSequence() override = default;
 
   virtual void SequenceAttached() { ++sequence_count_; }
@@ -70,8 +73,6 @@ class TestSessionStateAnimator::AnimationSequence
 
   // The TestSessionAnimator that created this.  Not owned.
   TestSessionStateAnimator* animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationSequence);
 };
 
 TestSessionStateAnimator::ActiveAnimation::ActiveAnimation(

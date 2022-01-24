@@ -45,9 +45,6 @@ class WallpaperSetWallpaperFunction : public WallpaperFunctionBase {
 
   // User id of the user who initiate this API call.
   AccountId account_id_ = EmptyAccountId();
-
-  // Id used to identify user wallpaper files on hard drive.
-  std::string wallpaper_files_id_;
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_WALLPAPER_API_H_

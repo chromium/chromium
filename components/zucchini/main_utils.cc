@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/zucchini/io_utils.h"
+#include "components/zucchini/patch_utils.h"
 #include "components/zucchini/zucchini_commands.h"
 
 #if defined(OS_WIN)
@@ -69,6 +70,7 @@ constexpr Command kCommands[] = {
      3, &MainGen},
     {"apply", "-apply <old_file> <patch_file> <new_file> [-keep]", 3,
      &MainApply},
+    {"verify", "-verify <patch_file>", 1, &MainVerify},
     {"read", "-read <exe> [-dump]", 1, &MainRead},
     {"detect", "-detect <archive_file>", 1, &MainDetect},
     {"match", "-match <old_file> <new_file> [-impose=#+#=#+#,#+#=#+#,...]", 2,
@@ -206,6 +208,8 @@ bool CheckAndGetFilePathParams(const base::CommandLine& command_line,
 
 // Prints main Zucchini usage text.
 void PrintUsage(std::ostream& err) {
+  err << "Version: " << zucchini::kMajorVersion << "."
+      << zucchini::kMinorVersion << std::endl;
   err << "Usage:" << std::endl;
   for (const Command& command : kCommands)
     err << "  zucchini " << command.usage << std::endl;

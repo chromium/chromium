@@ -75,8 +75,8 @@ class NetInfoBrowserTest : public InProcessBrowserTest {
   // Repeatedly runs NetInfo JavaScript API to get RTT until it returns
   // |expected_rtt|.
   void RunGetRttUntilExpectedValueReached(base::TimeDelta expected_rtt) {
-    if (expected_rtt > base::TimeDelta::FromMilliseconds(3000))
-      expected_rtt = base::TimeDelta::FromMilliseconds(3000);
+    if (expected_rtt > base::Milliseconds(3000))
+      expected_rtt = base::Milliseconds(3000);
 
     while (true) {
       int32_t got_rtt_milliseconds = RunScriptExtractInt("getRtt()");
@@ -121,8 +121,8 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest,
                        EffectiveConnectionTypeChangeNotfied) {
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   EXPECT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/net_info.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/net_info.html")));
 
   // Change effective connection type so that the renderer process is notified.
   // Changing the effective connection type from 2G to 3G is guaranteed to
@@ -140,21 +140,21 @@ IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest,
 // thread, and the changed network quality is accessible via Javascript API.
 IN_PROC_BROWSER_TEST_F(NetInfoBrowserTest, NetworkQualityChangeNotified) {
   GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
-      base::TimeDelta::FromSeconds(1), 300);
+      base::Seconds(1), 300);
 
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   EXPECT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/net_info.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/net_info.html")));
 
-  RunGetRttUntilExpectedValueReached(base::TimeDelta::FromSeconds(1));
+  RunGetRttUntilExpectedValueReached(base::Seconds(1));
   // If the updated RTT is available via JavaScript, then downlink must have
   // been updated too.
   VerifyDownlinkKbps(300, RunScriptExtractDouble("getDownlink()") * 1000);
 
   // Verify that the network quality change is accessible via Javascript API.
   GetNetworkQualityTracker()->ReportRTTsAndThroughputForTesting(
-      base::TimeDelta::FromSeconds(10), 3000);
-  RunGetRttUntilExpectedValueReached(base::TimeDelta::FromSeconds(10));
+      base::Seconds(10), 3000);
+  RunGetRttUntilExpectedValueReached(base::Seconds(10));
   VerifyDownlinkKbps(3000, RunScriptExtractDouble("getDownlink()") * 1000);
 }

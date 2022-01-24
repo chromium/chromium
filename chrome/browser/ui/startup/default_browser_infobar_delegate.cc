@@ -38,7 +38,7 @@ DefaultBrowserInfoBarDelegate::DefaultBrowserInfoBarDelegate(Profile* profile)
       FROM_HERE,
       base::BindOnce(&DefaultBrowserInfoBarDelegate::AllowExpiry,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(8));
+      base::Seconds(8));
 }
 
 DefaultBrowserInfoBarDelegate::~DefaultBrowserInfoBarDelegate() {

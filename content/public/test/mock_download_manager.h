@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "components/download/public/common/download_item_rename_progress_update.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/input_stream.h"
 #include "content/public/browser/download_manager.h"
@@ -58,6 +59,7 @@ class MockDownloadManager : public DownloadManager {
     base::Time last_access_time;
     bool transient;
     std::vector<download::DownloadItem::ReceivedSlice> received_slices;
+    download::DownloadItemRerouteInfo reroute_info;
 
     CreateDownloadItemAdapter(
         const std::string& guid,
@@ -86,7 +88,9 @@ class MockDownloadManager : public DownloadManager {
         base::Time last_access_time,
         bool transient,
         const std::vector<download::DownloadItem::ReceivedSlice>&
-            received_slices);
+            received_slices,
+        const download::DownloadItemRerouteInfo& reroute_info);
+
     // Required by clang compiler.
     CreateDownloadItemAdapter(const CreateDownloadItemAdapter& rhs);
     ~CreateDownloadItemAdapter();
@@ -147,8 +151,8 @@ class MockDownloadManager : public DownloadManager {
       bool opened,
       base::Time last_access_time,
       bool transient,
-      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices)
-      override;
+      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+      const download::DownloadItemRerouteInfo& reroute_info) override;
 
   MOCK_METHOD1(MockCreateDownloadItem,
                download::DownloadItem*(CreateDownloadItemAdapter adapter));

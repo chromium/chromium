@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -14,22 +13,11 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/attestation/attestation_flow_utils.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/stub_install_attributes.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace {
-
-constexpr char kFakeChallenge[] = "fake challenge";
-
-}  // namespace
 
 namespace policy {
 
@@ -50,16 +38,13 @@ class DeviceCloudPolicyInitializerTest
     : public testing::TestWithParam<ZeroTouchParam> {
  protected:
   DeviceCloudPolicyInitializerTest()
-      : device_cloud_policy_initializer_(
-            &local_state_,
-            nullptr,
-            nullptr,
-            &install_attributes_,
-            nullptr,
-            nullptr,
-            nullptr,
-            std::make_unique<chromeos::attestation::MockAttestationFlow>(),
-            &statistics_provider_) {
+      : device_cloud_policy_initializer_(&local_state_,
+                                         nullptr,
+                                         &install_attributes_,
+                                         nullptr,
+                                         nullptr,
+                                         nullptr,
+                                         &statistics_provider_) {
     RegisterLocalState(local_state_.registry());
     statistics_provider_.SetMachineStatistic(
         chromeos::system::kSerialNumberKeyForTest, "fake-serial");
@@ -164,7 +149,7 @@ TEST_P(DeviceCloudPolicyInitializerTest,
 
   // If OOBE is complete, we may re-enroll to the domain configured in install
   // attributes. This is only enforced after detecting enrollment loss.
-  local_state_.SetBoolean(chromeos::prefs::kOobeComplete, true);
+  local_state_.SetBoolean(ash::prefs::kOobeComplete, true);
   EnrollmentConfig config =
       device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
   EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
@@ -209,79 +194,5 @@ INSTANTIATE_TEST_SUITE_P(
         ZeroTouchParam("forced",
                        EnrollmentConfig::AUTH_MECHANISM_ATTESTATION,
                        EnrollmentConfig::AUTH_MECHANISM_ATTESTATION)));
-
-class DeviceCloudPolicyInitializerTpmEnrollmentKeySigningServiceTest
-    : public testing::Test {
- public:
-  DeviceCloudPolicyInitializerTpmEnrollmentKeySigningServiceTest() {
-    chromeos::AttestationClient::InitializeFake();
-  }
-  ~DeviceCloudPolicyInitializerTpmEnrollmentKeySigningServiceTest() override {
-    chromeos::AttestationClient::Shutdown();
-  }
-
-  static void SaveChallengeResponseAndRunCallback(
-      base::OnceClosure callback,
-      bool* out_success,
-      enterprise_management::SignedData* out_signed_data,
-      bool in_success,
-      enterprise_management::SignedData in_signed_data) {
-    *out_success = in_success;
-    *out_signed_data = in_signed_data;
-    std::move(callback).Run();
-  }
-
- protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-};
-
-TEST_F(DeviceCloudPolicyInitializerTpmEnrollmentKeySigningServiceTest,
-       SigningSuccess) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->AllowlistSignSimpleChallengeKey(
-          /*username=*/"",
-          chromeos::attestation::GetKeyNameForProfile(
-              chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
-              ""));
-
-  base::RunLoop run_loop;
-  bool returned_success = false;
-  enterprise_management::SignedData returned_signed_data;
-  DeviceCloudPolicyInitializer::TpmEnrollmentKeySigningService signing_service;
-  signing_service.SignData(
-      kFakeChallenge,
-      BindOnce(DeviceCloudPolicyInitializerTpmEnrollmentKeySigningServiceTest::
-                   SaveChallengeResponseAndRunCallback,
-               run_loop.QuitClosure(), &returned_success,
-               &returned_signed_data));
-  run_loop.Run();
-  EXPECT_TRUE(returned_success);
-  ::attestation::SignedData result_challenge_response;
-  result_challenge_response.set_data(returned_signed_data.data());
-  result_challenge_response.set_signature(returned_signed_data.signature());
-  EXPECT_TRUE(chromeos::AttestationClient::Get()
-                  ->GetTestInterface()
-                  ->VerifySimpleChallengeResponse(kFakeChallenge,
-                                                  result_challenge_response));
-}
-
-TEST_F(DeviceCloudPolicyInitializerTpmEnrollmentKeySigningServiceTest,
-       SigningFailure) {
-  // This is expected to be failed because we don't allowslit any key in
-  // `FakeAttestationClient`.
-  base::RunLoop run_loop;
-  bool returned_success = true;
-  enterprise_management::SignedData returned_signed_data;
-  DeviceCloudPolicyInitializer::TpmEnrollmentKeySigningService signing_service;
-  signing_service.SignData(
-      kFakeChallenge,
-      BindOnce(DeviceCloudPolicyInitializerTpmEnrollmentKeySigningServiceTest::
-                   SaveChallengeResponseAndRunCallback,
-               run_loop.QuitClosure(), &returned_success,
-               &returned_signed_data));
-  run_loop.Run();
-  EXPECT_FALSE(returned_success);
-}
 
 }  // namespace policy

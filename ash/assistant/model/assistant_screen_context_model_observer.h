@@ -6,7 +6,6 @@
 #define ASH_ASSISTANT_MODEL_ASSISTANT_SCREEN_CONTEXT_MODEL_OBSERVER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 
 namespace ash {
@@ -18,6 +17,11 @@ enum class ScreenContextRequestState;
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantScreenContextModelObserver
     : public base::CheckedObserver {
  public:
+  AssistantScreenContextModelObserver(
+      const AssistantScreenContextModelObserver&) = delete;
+  AssistantScreenContextModelObserver& operator=(
+      const AssistantScreenContextModelObserver&) = delete;
+
   // Invoked when the screen context request state is changed.
   virtual void OnScreenContextRequestStateChanged(
       ScreenContextRequestState request_state) {}
@@ -25,8 +29,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantScreenContextModelObserver
  protected:
   AssistantScreenContextModelObserver() = default;
   ~AssistantScreenContextModelObserver() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantScreenContextModelObserver);
 };
 
 }  // namespace ash

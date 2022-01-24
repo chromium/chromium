@@ -5,8 +5,8 @@
 #include "components/sync/engine/cancelation_signal.h"
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -123,7 +123,7 @@ CancelationSignalTest::CancelationSignalTest()
                        base::WaitableEvent::InitialState::NOT_SIGNALED),
       blocking_task_(&signal_) {}
 
-CancelationSignalTest::~CancelationSignalTest() {}
+CancelationSignalTest::~CancelationSignalTest() = default;
 
 void CancelationSignalTest::StartBlockingTaskAsync() {
   blocking_task_.RunAsync(&task_start_event_, &task_done_event_);

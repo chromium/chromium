@@ -30,7 +30,7 @@ for (let id of ids) {
     test(function() {
         const el = document.getElementById(id);
         const style = window.getComputedStyle(el);
-        assert_equals(style["background-image"], 'url("about:invalid")');
+        assert_equals(style["background-image"], 'url("")');
     }, "empty URL: " + id);
 }
 </script>

@@ -31,41 +31,8 @@ extern const char kSafeBrowsingEnabledHistogramName[];
 // Command-line flag for caching an artificial PhishGuard unsafe verdict.
 extern const char kArtificialCachedPhishGuardVerdictFlag[];
 
-// The bearer token prefix in authorization header. Used when various Safe
-// Browsing requests are GAIA-keyed by attaching oauth2 tokens as bearer tokens.
-extern const char kAuthHeaderBearer[];
-
 // Countries that has no endpoint for Safe Browsing.
 const std::vector<std::string> GetExcludedCountries();
-
-// This enum must be kept in-sync with content::ResourceType. This is enforced
-// by static_asserts in safebrowsing_constants_content.cc. content::ResourceType
-// cannot be used on iOS because iOS cannot depend on content/.
-enum class ResourceType {
-  kMainFrame = 0,        // top level page
-  kSubFrame = 1,         // frame or iframe
-  kStylesheet = 2,       // a CSS stylesheet
-  kScript = 3,           // an external script
-  kImage = 4,            // an image (jpg/gif/png/etc)
-  kFontResource = 5,     // a font
-  kSubResource = 6,      // an "other" subresource.
-  kObject = 7,           // an object (or embed) tag for a plugin.
-  kMedia = 8,            // a media resource.
-  kWorker = 9,           // the main resource of a dedicated worker.
-  kSharedWorker = 10,    // the main resource of a shared worker.
-  kPrefetch = 11,        // an explicitly requested prefetch
-  kFavicon = 12,         // a favicon
-  kXhr = 13,             // a XMLHttpRequest
-  kPing = 14,            // a ping request for <a ping>/sendBeacon.
-  kServiceWorker = 15,   // the main resource of a service worker.
-  kCspReport = 16,       // a report of Content Security Policy violations.
-  kPluginResource = 17,  // a resource that a plugin requested.
-  // a main-frame service worker navigation preload request.
-  kNavigationPreloadMainFrame = 19,
-  // a sub-frame service worker navigation preload request.
-  kNavigationPreloadSubFrame = 20,
-  kMaxValue = kNavigationPreloadSubFrame,
-};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

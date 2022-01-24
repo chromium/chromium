@@ -12,9 +12,9 @@
 namespace ntp_snippets {
 
 TEST(TimeSerializationTest, TimeSerialization) {
-  std::vector<base::Time> values_to_test = {
-      base::Time::Min(), base::Time(),
-      base::Time() + base::TimeDelta::FromHours(1), base::Time::Max()};
+  std::vector<base::Time> values_to_test = {base::Time::Min(), base::Time(),
+                                            base::Time() + base::Hours(1),
+                                            base::Time::Max()};
   for (const base::Time& value : values_to_test) {
     EXPECT_EQ(SerializeTime(value), value.ToInternalValue());
     EXPECT_EQ(base::Time::FromInternalValue(SerializeTime(value)), value);

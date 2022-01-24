@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
@@ -36,6 +35,10 @@ class BufferingFileStreamReader : public storage::FileStreamReader {
       std::unique_ptr<storage::FileStreamReader> file_stream_reader,
       int preloading_buffer_length,
       int64_t max_bytes_to_read);
+
+  BufferingFileStreamReader(const BufferingFileStreamReader&) = delete;
+  BufferingFileStreamReader& operator=(const BufferingFileStreamReader&) =
+      delete;
 
   ~BufferingFileStreamReader() override;
 
@@ -72,7 +75,6 @@ class BufferingFileStreamReader : public storage::FileStreamReader {
   int preloaded_bytes_;
 
   base::WeakPtrFactory<BufferingFileStreamReader> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BufferingFileStreamReader);
 };
 
 }  // namespace file_system_provider

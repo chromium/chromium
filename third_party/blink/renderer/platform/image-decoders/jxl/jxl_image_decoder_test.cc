@@ -6,8 +6,8 @@
 
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -135,7 +135,7 @@ void TestSize(const char* jxl_file, IntSize expected_size) {
 
 struct FramePoint {
   size_t frame;
-  IntPoint point;
+  gfx::Point point;
 };
 
 void TestPixel(const char* jxl_file,
@@ -161,8 +161,8 @@ void TestPixel(const char* jxl_file,
   for (size_t i = 0; i < coordinates.size(); ++i) {
     const SkBitmap& bitmap =
         decoder->DecodeFrameBufferAtIndex(coordinates[i].frame)->Bitmap();
-    int x = coordinates[i].point.X();
-    int y = coordinates[i].point.Y();
+    int x = coordinates[i].point.x();
+    int y = coordinates[i].point.y();
     SkColor frame_color = bitmap.getColor(x, y);
     int r_expected = (expected_colors[i] >> 16) & 255;
     int g_expected = (expected_colors[i] >> 8) & 255;
@@ -604,6 +604,15 @@ TEST(JXLTests, JXLHDRTest) {
   TestHDR("/images/resources/jxl/pq_gradient_icc_lossless.jxl",
           ColorBehavior::Tag(), true, 0.58039218187332153, 0.73725491762161255,
           0.45098039507865906, 1);
+}
+
+TEST(JXLTests, RandomFrameDecode) {
+  TestRandomFrameDecode(&CreateJXLDecoder, "/images/resources/jxl/count.jxl");
+}
+
+TEST(JXLTests, RandomDecodeAfterClearFrameBufferCache) {
+  TestRandomDecodeAfterClearFrameBufferCache(&CreateJXLDecoder,
+                                             "/images/resources/jxl/count.jxl");
 }
 
 }  // namespace

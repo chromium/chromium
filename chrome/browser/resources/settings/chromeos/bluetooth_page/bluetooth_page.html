@@ -50,8 +50,7 @@
     </template>
   </div>
   <template is="dom-if" route-path="/bluetoothDevices">
-    <settings-subpage associated-control="[[$$('#bluetoothDevices')]]"
-        page-title="$i18n{bluetoothPageTitle}">
+    <settings-subpage page-title="$i18n{bluetoothPageTitle}">
       <settings-bluetooth-subpage
           adapter-state="[[adapterState_]]"
           bluetooth-toggle-state="{{bluetoothToggleState_}}"

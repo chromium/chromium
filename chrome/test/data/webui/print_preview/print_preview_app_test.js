@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterface, CloudPrintInterfaceImpl, Destination, DuplexMode, NativeLayer, NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceImpl, Destination, DuplexMode, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {CloudPrintInterfaceStub} from 'chrome://test/print_preview/cloud_print_interface_stub.js';
-import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {getCddTemplate, getCloudDestination} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {TestPluginProxy} from 'chrome://test/print_preview/test_plugin_proxy.js';
+
+import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 
 // <if expr="chromeos or lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
+
+import {NativeLayerStub} from './native_layer_stub.js';
+import {getCddTemplate, getCloudDestination} from './print_preview_test_utils.js';
+import {TestPluginProxy} from './test_plugin_proxy.js';
+
 
 window.print_preview_app_test = {};
 print_preview_app_test.suiteName = 'PrintPreviewAppTest';
@@ -79,14 +82,14 @@ suite(print_preview_app_test.suiteName, function() {
     // Stub out the native layer, the cloud print interface, and the plugin.
     document.body.innerHTML = '';
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="chromeos or lacros">
     setNativeLayerCrosInstance();
     // </if>
     cloudPrintInterface = new CloudPrintInterfaceStub();
-    CloudPrintInterfaceImpl.instance_ = cloudPrintInterface;
+    CloudPrintInterfaceImpl.setInstance(cloudPrintInterface);
     pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.instance_ = pluginProxy;
+    PluginProxyImpl.setInstance(pluginProxy);
   });
 
   // Regression test for https://crbug.com/936029
@@ -99,7 +102,7 @@ suite(print_preview_app_test.suiteName, function() {
         page.destination_.capabilities = getCddTemplate(page.destination_.id);
 
         // Trigger print.
-        const sidebar = page.$$('print-preview-sidebar');
+        const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
         sidebar.dispatchEvent(new CustomEvent(
             'print-requested', {composed: true, bubbles: true}));
 
@@ -131,7 +134,7 @@ suite(print_preview_app_test.suiteName, function() {
       async () => {
         initialSettings.destinationsManaged = true;
         await initialize();
-        const sidebar = page.$$('print-preview-sidebar');
+        const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
         assertTrue(sidebar.controlsManaged);
       });
 
@@ -140,7 +143,7 @@ suite(print_preview_app_test.suiteName, function() {
       async () => {
         initialSettings.policies = {headerFooter: {allowedMode: true}};
         await initialize();
-        const sidebar = page.$$('print-preview-sidebar');
+        const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
         assertTrue(sidebar.controlsManaged);
       });
 
@@ -149,14 +152,14 @@ suite(print_preview_app_test.suiteName, function() {
       async () => {
         initialSettings.policies = {cssBackground: {allowedMode: 1}};
         await initialize();
-        const sidebar = page.$$('print-preview-sidebar');
+        const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
         assertTrue(sidebar.controlsManaged);
       });
 
   test(assert(print_preview_app_test.TestNames.SheetsManaged), async () => {
     initialSettings.policies = {sheets: {value: 2}};
     await initialize();
-    const sidebar = page.$$('print-preview-sidebar');
+    const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
     assertTrue(sidebar.controlsManaged);
   });
 });

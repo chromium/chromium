@@ -23,8 +23,7 @@ class ClientHintsBrowserTest : public WebLayerBrowserTest {
     WebLayerBrowserTest::SetUpOnMainThread();
     BrowserProcess::GetInstance()
         ->GetNetworkQualityTracker()
-        ->ReportRTTsAndThroughputForTesting(
-            base::TimeDelta::FromMilliseconds(500), 100);
+        ->ReportRTTsAndThroughputForTesting(base::Milliseconds(500), 100);
 
     EXPECT_TRUE(embedded_test_server()->Start());
   }

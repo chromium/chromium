@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -29,6 +28,10 @@ enum class UpdateSeverity;
 class ASH_EXPORT SystemTrayNotifier {
  public:
   SystemTrayNotifier();
+
+  SystemTrayNotifier(const SystemTrayNotifier&) = delete;
+  SystemTrayNotifier& operator=(const SystemTrayNotifier&) = delete;
+
   ~SystemTrayNotifier();
 
   // Input methods.
@@ -77,8 +80,6 @@ class ASH_EXPORT SystemTrayNotifier {
   base::ObserverList<SystemTrayObserver>::Unchecked system_tray_observers_;
   base::ObserverList<VirtualKeyboardObserver>::Unchecked
       virtual_keyboard_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemTrayNotifier);
 };
 
 }  // namespace ash

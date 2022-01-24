@@ -8,7 +8,6 @@
 #include <windows.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 
 namespace gfx {
 
@@ -23,6 +22,9 @@ class ScopedSetMapMode {
     DCHECK_NE(old_map_mode_, 0);
   }
 
+  ScopedSetMapMode(const ScopedSetMapMode&) = delete;
+  ScopedSetMapMode& operator=(const ScopedSetMapMode&) = delete;
+
   ~ScopedSetMapMode() {
     const int mode = SetMapMode(hdc_, old_map_mode_);
     DCHECK_NE(mode, 0);
@@ -31,8 +33,6 @@ class ScopedSetMapMode {
  private:
   HDC hdc_;
   int old_map_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetMapMode);
 };
 
 }  // namespace gfx

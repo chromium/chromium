@@ -15,24 +15,29 @@ class LinearPredictorFirstOrderTest : public InputPredictorTest {
  public:
   explicit LinearPredictorFirstOrderTest() {}
 
+  LinearPredictorFirstOrderTest(const LinearPredictorFirstOrderTest&) = delete;
+  LinearPredictorFirstOrderTest& operator=(
+      const LinearPredictorFirstOrderTest&) = delete;
+
   void SetUp() override {
     predictor_ = std::make_unique<LinearPredictor>(
         LinearPredictor::EquationOrder::kFirstOrder);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LinearPredictorFirstOrderTest);
 };
 
 class LinearPredictorSecondOrderTest : public InputPredictorTest {
  public:
   explicit LinearPredictorSecondOrderTest() {}
 
+  LinearPredictorSecondOrderTest(const LinearPredictorSecondOrderTest&) =
+      delete;
+  LinearPredictorSecondOrderTest& operator=(
+      const LinearPredictorSecondOrderTest&) = delete;
+
   void SetUp() override {
     predictor_ = std::make_unique<LinearPredictor>(
         LinearPredictor::EquationOrder::kSecondOrder);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LinearPredictorSecondOrderTest);
 };
 
 // Test if the output name of the predictor is taking account of the
@@ -127,8 +132,7 @@ TEST_F(LinearPredictorFirstOrderTest, TimeInterval) {
   for (size_t i = 0; i < n; i++) {
     predictor_->Update({gfx::PointF(x[i], y[i]), FromMilliseconds(t[i])});
   }
-  EXPECT_EQ(predictor_->TimeInterval(),
-            base::TimeDelta::FromMilliseconds(t[1] - t[0]));
+  EXPECT_EQ(predictor_->TimeInterval(), base::Milliseconds(t[1] - t[0]));
 }
 
 // Test time interval in second order
@@ -141,8 +145,7 @@ TEST_F(LinearPredictorSecondOrderTest, TimeInterval) {
   for (size_t i = 0; i < n; i++) {
     predictor_->Update({gfx::PointF(x[i], y[i]), FromMilliseconds(t[i])});
   }
-  EXPECT_EQ(predictor_->TimeInterval(),
-            base::TimeDelta::FromMillisecondsD((t[2] - t[0]) / 2));
+  EXPECT_EQ(predictor_->TimeInterval(), base::Milliseconds((t[2] - t[0]) / 2));
 }
 
 }  // namespace test

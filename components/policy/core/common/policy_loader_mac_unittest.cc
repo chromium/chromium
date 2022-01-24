@@ -14,8 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/configuration_policy_provider_test.h"
@@ -55,9 +55,8 @@ class TestHarness : public PolicyProviderTestHarness {
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
-  void InstallDictionaryPolicy(
-      const std::string& policy_name,
-      const base::DictionaryValue* policy_value) override;
+  void InstallDictionaryPolicy(const std::string& policy_name,
+                               const base::Value* policy_value) override;
 
   static PolicyProviderTestHarness* Create();
 
@@ -116,9 +115,8 @@ void TestHarness::InstallStringListPolicy(const std::string& policy_name,
   prefs_->AddTestItem(name, array, true);
 }
 
-void TestHarness::InstallDictionaryPolicy(
-    const std::string& policy_name,
-    const base::DictionaryValue* policy_value) {
+void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
+                                          const base::Value* policy_value) {
   ScopedCFTypeRef<CFStringRef> name(base::SysUTF8ToCFStringRef(policy_name));
   ScopedCFTypeRef<CFPropertyListRef> dict(ValueToProperty(*policy_value));
   ASSERT_TRUE(dict);

@@ -34,8 +34,8 @@ assert(is_linux || is_chromeos)
 
 packaging_files_executables = [
   "$root_out_dir/chrome",
+  "$root_out_dir/chrome_crashpad_handler",
   "$root_out_dir/chrome_sandbox",
-  "$root_out_dir/crashpad_handler",
 ]
 packaging_files_shlibs = []
 
@@ -322,8 +322,8 @@ group("installer_deps") {
     "//chrome",
     "//chrome:packed_resources",
     "//chrome/browser/resources/media/mei_preload:component",
+    "//components/crash/core/app:chrome_crashpad_handler",
     "//sandbox/linux:chrome_sandbox",
-    "//third_party/crashpad/crashpad/handler:crashpad_handler",
   ]
   if (enable_nacl) {
     public_deps += [

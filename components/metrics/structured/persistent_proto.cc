@@ -11,9 +11,9 @@
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/metrics/structured/histogram_util.h"
@@ -95,11 +95,11 @@ void PersistentProto<T>::OnReadComplete(
     QueueWrite();
   }
 
-  if (wipe_after_reading_) {
+  if (purge_after_reading_) {
     proto_.reset();
     proto_ = std::make_unique<T>();
-    QueueWrite();
-    wipe_after_reading_ = false;
+    StartWrite();
+    purge_after_reading_ = false;
   }
 
   std::move(on_read_).Run(result.first);
@@ -160,13 +160,13 @@ void PersistentProto<T>::OnWriteComplete(const WriteStatus status) {
 }
 
 template <class T>
-void PersistentProto<T>::Wipe() {
+void PersistentProto<T>::Purge() {
   if (proto_) {
     proto_.reset();
     proto_ = std::make_unique<T>();
-    QueueWrite();
+    StartWrite();
   } else {
-    wipe_after_reading_ = true;
+    purge_after_reading_ = true;
   }
 }
 

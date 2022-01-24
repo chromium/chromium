@@ -13,6 +13,9 @@ namespace fileManagerPrivateInternal {
     DOMString fileFullPath;
     boolean fileIsDirectory;
   };
+  dictionary IOTaskParams {
+    DOMString? destinationFolderUrl;
+  };
 
   callback SimpleCallback = void();
   callback ResolveIsolatedEntriesCallback = void(EntryDescription[] entries);
@@ -31,7 +34,7 @@ namespace fileManagerPrivateInternal {
   callback GetUrlCallback = void(DOMString url);
   callback GetUrlCallback = void(DOMString url);
   callback StartCopyCallback = void(long copyId);
-  callback ZipSelectionCallback = void(optional boolean success);
+  callback ZipSelectionCallback = void(long zipId, double totalBytes);
   callback ValidatePathNameLengthCallback = void(boolean result);
   callback GetDirectorySizeCallback = void(double size);
   callback GetRecentFilesCallback = void(EntryDescription[] entries);
@@ -94,7 +97,6 @@ namespace fileManagerPrivateInternal {
                              DOMString[] urls,
                              DOMString destName,
                              ZipSelectionCallback callback);
-    static void cancelZip(DOMString parentUrl, DOMString destName);
     static void validatePathNameLength(
         DOMString parentUrl,
         DOMString name,
@@ -137,5 +139,8 @@ namespace fileManagerPrivateInternal {
         SimpleCallback callback);
     static void toggleAddedToHoldingSpace(DOMString[] urls, boolean add,
                                           optional SimpleCallback callback);
+    static void startIOTask(fileManagerPrivate.IOTaskType type,
+                            DOMString[] urls,
+                            IOTaskParams params);
   };
 };

@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,9 +20,9 @@
 
 namespace {
 
-using autofill::ServerFieldType;
 using autofill::AutofillKey;
 using autofill::AutofillProfile;
+using autofill::ServerFieldType;
 using autofill_helper::GetAllAutoFillProfiles;
 using autofill_helper::GetAllKeys;
 using autofill_helper::GetKeyCount;
@@ -74,6 +73,10 @@ class AutofillProfileSyncPerfTest : public SyncTest {
   AutofillProfileSyncPerfTest()
       : SyncTest(TWO_CLIENT), guid_number_(0), name_number_(0) {}
 
+  AutofillProfileSyncPerfTest(const AutofillProfileSyncPerfTest&) = delete;
+  AutofillProfileSyncPerfTest& operator=(const AutofillProfileSyncPerfTest&) =
+      delete;
+
   // Adds |num_profiles| new autofill profiles to the sync profile |profile|.
   void AddProfiles(int profile, int num_profiles);
 
@@ -98,7 +101,6 @@ class AutofillProfileSyncPerfTest : public SyncTest {
 
   int guid_number_;
   int name_number_;
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncPerfTest);
 };
 
 void AutofillProfileSyncPerfTest::AddProfiles(int profile, int num_profiles) {
@@ -176,6 +178,9 @@ class AutocompleteSyncPerfTest : public SyncTest {
  public:
   AutocompleteSyncPerfTest() : SyncTest(TWO_CLIENT), name_number_(0) {}
 
+  AutocompleteSyncPerfTest(const AutocompleteSyncPerfTest&) = delete;
+  AutocompleteSyncPerfTest& operator=(const AutocompleteSyncPerfTest&) = delete;
+
   // Adds |num_keys| new autofill keys to the sync profile |profile|.
   void AddKeys(int profile, int num_keys);
 
@@ -187,7 +192,6 @@ class AutocompleteSyncPerfTest : public SyncTest {
   const std::string NextName();
 
   int name_number_;
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteSyncPerfTest);
 };
 
 void AutocompleteSyncPerfTest::AddKeys(int profile, int num_keys) {

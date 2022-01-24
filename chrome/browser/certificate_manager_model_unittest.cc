@@ -65,6 +65,10 @@ class CertificateManagerModelTest : public testing::Test {
  public:
   CertificateManagerModelTest() {}
 
+  CertificateManagerModelTest(const CertificateManagerModelTest&) = delete;
+  CertificateManagerModelTest& operator=(const CertificateManagerModelTest&) =
+      delete;
+
  protected:
   void SetUp() override {
     ASSERT_TRUE(test_nssdb_.is_open());
@@ -78,8 +82,7 @@ class CertificateManagerModelTest : public testing::Test {
     fake_observer_ = std::make_unique<FakeObserver>();
     certificate_manager_model_ = std::make_unique<CertificateManagerModel>(
         GetCertificateManagerModelParams(), fake_observer_.get(),
-        nss_cert_db_.get(), true /* is_user_db_available */,
-        true /* bool is_tpm_available */);
+        nss_cert_db_.get());
   }
 
   void TearDown() override {
@@ -111,9 +114,6 @@ class CertificateManagerModelTest : public testing::Test {
   std::unique_ptr<net::NSSCertDatabase> nss_cert_db_;
   std::unique_ptr<FakeObserver> fake_observer_;
   std::unique_ptr<CertificateManagerModel> certificate_manager_model_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CertificateManagerModelTest);
 };
 
 // CertificateManagerModel correctly lists CA certificates from the platform NSS

@@ -122,7 +122,7 @@ bool MakeIndexWriters(IndexedDBTransaction* transaction,
   *completed = false;
 
   for (const auto& it : index_keys) {
-    const auto& found = object_store.indexes.find(it.id);
+    auto found = object_store.indexes.find(it.id);
     if (found == object_store.indexes.end())
       continue;
     const IndexedDBIndexMetadata& index = found->second;

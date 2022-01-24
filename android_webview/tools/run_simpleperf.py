@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -13,12 +13,17 @@ Typical Usage:
 """
 
 import argparse
-import cgi
 import logging
 import os
 import re
+import six
 import subprocess
 import sys
+
+if six.PY2:
+  import cgi as html
+else:
+  import html
 
 sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
@@ -61,7 +66,7 @@ class StackAddressInterpreter(object):
     cmd = ['third_party/android_platform/development/scripts/stack',
            '--output-directory', output_dir,
            stack_input_path]
-    return subprocess.check_output(cmd).splitlines()
+    return subprocess.check_output(cmd, universal_newlines=True).splitlines()
 
   @staticmethod
   def _ConvertAddressToFakeTraceLine(address, lib_path):
@@ -266,7 +271,7 @@ class SimplePerfRunner(object):
     # than using a double loop (by the order of 1,000).
     # '+address' will be replaced by function name.
     address_function_dict = {
-        '+' + k: cgi.escape(v)
+        '+' + k: html.escape(v, quote=False)
         for k, v in address_function_pairs
     }
     # Look behind the lib_name and '[' which will not be substituted. Note that

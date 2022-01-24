@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
@@ -79,8 +79,8 @@ base::span<const DemoSetupStepInfo> GetDemoSetupStepsInfo() {
 // Get the DeviceLocalAccountPolicyStore for the account_id.
 policy::CloudPolicyStore* GetDeviceLocalAccountPolicyStore(
     const std::string& account_id) {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector)
     return nullptr;
 

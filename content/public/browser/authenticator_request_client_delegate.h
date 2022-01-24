@@ -9,10 +9,10 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/web_authentication_request_proxy.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_request_handler_base.h"
@@ -117,6 +117,11 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   virtual absl::optional<bool>
   IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       RenderFrameHost* render_frame_host);
+
+  // Returns the WebAuthenticationRequestProxy for the |browser_context|, if
+  // any.
+  virtual WebAuthenticationRequestProxy* MaybeGetRequestProxy(
+      BrowserContext* browser_context);
 };
 
 // AuthenticatorRequestClientDelegate is an interface that lets embedders
@@ -149,6 +154,12 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   };
 
   AuthenticatorRequestClientDelegate();
+
+  AuthenticatorRequestClientDelegate(
+      const AuthenticatorRequestClientDelegate&) = delete;
+  AuthenticatorRequestClientDelegate& operator=(
+      const AuthenticatorRequestClientDelegate&) = delete;
+
   ~AuthenticatorRequestClientDelegate() override;
 
   // SetRelyingPartyId sets the RP ID for this request. This is called after
@@ -258,9 +269,6 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   void OnSampleCollected(int bio_samples_remaining) override;
   void FinishCollectToken() override;
   void OnRetryUserVerification(int attempts) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestClientDelegate);
 };
 
 }  // namespace content

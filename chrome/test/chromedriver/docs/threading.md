@@ -21,7 +21,7 @@ to post tasks between threads.
 Each thread in ChromeDriver is wrapped by a
 [`base::Thread`](https://source.chromium.org/chromium/chromium/src/+/main:base/threading/thread.h?q=%22class%20BASE_EXPORT%20Thread%22) object.
 This object exposes a
-[`base::TaskRunner`](https://source.chromium.org/chromium/chromium/src/+/main:base/task_runner.h?q=base::TaskRunner),
+[`base::TaskRunner`](https://source.chromium.org/chromium/chromium/src/+/main:base/task/task_runner.h?q=base::TaskRunner),
 which provides the ability to post tasks to that thread.\
 When thread A wants to call a function on thread B, it finds the `TaskRunner`
 object corresponding to thread B, and calls its `TaskRunner::PostTask` method.\

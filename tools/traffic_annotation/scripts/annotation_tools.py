@@ -8,6 +8,7 @@ from __future__ import print_function
 
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -16,6 +17,9 @@ tool_dir = os.path.abspath(os.path.join(script_dir, '../../clang/pylib'))
 sys.path.insert(0, tool_dir)
 
 from clang import compile_db  # type: ignore
+
+# Valid return values for GetCurrentPlatform().
+SUPPORTED_PLATFORMS = ['android', 'linux', 'windows']
 
 
 class NetworkTrafficAnnotationTools():
@@ -39,14 +43,14 @@ class NetworkTrafficAnnotationTools():
 
     # For each platform, map the returned platform name from python sys, to
     # directory name of traffic_annotation_auditor executable.
-    platform = {
+    host_platform = {
         'linux': 'linux64',
         'linux2': 'linux64',
         'darwin': 'mac',
         'win32': 'win32',
     }[sys.platform]
 
-    path = os.path.join(self.this_dir, '..', 'bin', platform,
+    path = os.path.join(self.this_dir, '..', 'bin', host_platform,
                         'traffic_annotation_auditor')
     if sys.platform == 'win32':
       path += '.exe'
@@ -78,6 +82,35 @@ class NetworkTrafficAnnotationTools():
     """
     return all(os.path.exists(
         os.path.join(path, item)) for item in ('gen', 'build.ninja'))
+
+  def GetCurrentPlatform(self):
+    """Return the target platform of |self.build_path| based on heuristics."""
+    # Use host platform as the source of truth (in most cases).
+    current_platform = {
+        'linux': 'linux',
+        'linux2': 'linux',
+        'win32': 'windows',
+    }[sys.platform]
+
+    if current_platform == 'linux' and self.build_path is not None:
+      # It could be an Android build directory, being compiled from a Linux
+      # host. Look for a target_os='android' line in args.gn.
+      try:
+        with open(os.path.join(self.build_path, 'args.gn')) as f:
+          gn_args = f.read()
+        pattern = re.compile(r'^\s*target_os\s*=\s*"android"\s*$', re.MULTILINE)
+        if pattern.search(gn_args):
+          current_platform = 'android'
+      except (ValueError, OSError) as e:
+        print(e)
+        # Maybe the file's absent, or it can't be decoded as UTF-8, or
+        # something. It's probably not Android in that case.
+        pass
+
+    if current_platform not in SUPPORTED_PLATFORMS:
+      raise ValueError('Unsupported platform {}'.format(current_platform))
+
+    return current_platform
 
   def GetCompDBFiles(self, generate_compdb):
     """Gets the list of files.

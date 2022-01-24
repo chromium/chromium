@@ -47,15 +47,16 @@ enum DCLayerResult {
   DC_LAYER_FAILED_OCCLUDED [[deprecated]] = 4,
   DC_LAYER_FAILED_COMPLEX_TRANSFORM = 5,
   DC_LAYER_FAILED_TRANSPARENT = 6,
-  DC_LAYER_FAILED_NON_ROOT [[deprecated]] = 7,  // not recorded
+  DC_LAYER_FAILED_NON_ROOT [[deprecated]] = 7,
   DC_LAYER_FAILED_TOO_MANY_OVERLAYS = 8,
   DC_LAYER_FAILED_NO_HW_OVERLAY_SUPPORT [[deprecated]] = 9,
-  DC_LAYER_FAILED_ROUNDED_CORNERS = 10,
+  DC_LAYER_FAILED_ROUNDED_CORNERS [[deprecated]] = 10,
   DC_LAYER_FAILED_BACKDROP_FILTERS = 11,
   kMaxValue = DC_LAYER_FAILED_BACKDROP_FILTERS,
 };
 
 enum : size_t {
+  kStreamVideoResourceIndex = 0,
   kTextureResourceIndex = 0,
   kYPlaneResourceIndex = 0,
   kUVPlaneResourceIndex = 1,
@@ -117,10 +118,6 @@ DCLayerResult ValidateYUVQuad(
   if (processed_yuv_overlay_count >= allowed_yuv_overlay_count)
     return DC_LAYER_FAILED_TOO_MANY_OVERLAYS;
 
-  // Rounded corner on overlays are not supported.
-  if (quad->shared_quad_state->mask_filter_info.HasRoundedCorners())
-    return DC_LAYER_FAILED_ROUNDED_CORNERS;
-
   auto quad_target_rect = gfx::ToEnclosingRect(ClippedQuadRectangle(quad));
   for (const auto& filter_target_rect : backdrop_filter_rects) {
     if (filter_target_rect.Intersects(quad_target_rect))
@@ -168,10 +165,7 @@ void FromYUVQuad(const YUVVideoDrawQuad* quad,
 void FromStreamVideoQuad(const StreamVideoDrawQuad* quad,
                          const gfx::Transform& transform_to_root_target,
                          DCLayerOverlay* dc_layer) {
-  dc_layer->resources[kYPlaneResourceIndex] = quad->resource_id();
-  // UV resource ID needs to be populated for checks in GLRenderer, even though
-  // it is not used with Media Foundation DirectComposition images.
-  dc_layer->resources[kUVPlaneResourceIndex] = quad->resource_id();
+  dc_layer->resources[kStreamVideoResourceIndex] = quad->resource_id();
   dc_layer->quad_rect = quad->rect;
   // Quad rect is in quad content space so both quad to target, and target to
   // root transforms must be applied to it.
@@ -218,10 +212,6 @@ DCLayerResult ValidateTextureQuad(
            .Preserves2dAxisAlignment()) {
     return DC_LAYER_FAILED_COMPLEX_TRANSFORM;
   }
-
-  // Rounded corner on overlays are not supported.
-  if (quad->shared_quad_state->mask_filter_info.HasRoundedCorners())
-    return DC_LAYER_FAILED_ROUNDED_CORNERS;
 
   auto quad_target_rect = gfx::ToEnclosingRect(ClippedQuadRectangle(quad));
   for (const auto& filter_target_rect : backdrop_filter_rects) {
@@ -279,18 +269,26 @@ bool IsProtectedVideo(const QuadList::Iterator& it) {
 }
 
 DCLayerResult IsUnderlayAllowed(const QuadList::Iterator& it) {
-  if (it->ShouldDrawWithBlending()) {
+  if (it->ShouldDrawWithBlending() &&
+      !it->shared_quad_state->mask_filter_info.HasRoundedCorners()) {
     return DC_LAYER_FAILED_TRANSPARENT;
   }
+
   return DC_LAYER_SUCCESS;
 }
 
 // Any occluding quads in the quad list on top of the overlay/underlay
-bool HasOccludingQuads(
+bool IsOccluded(
     const gfx::RectF& target_quad,
     QuadList::ConstIterator quad_list_begin,
     QuadList::ConstIterator quad_list_end,
     const DCLayerOverlayProcessor::FilterOperationsMap& render_pass_filters) {
+  // If the current quad |quad_list_end| has rounded corners, force it
+  // to underlay mode.
+  if (quad_list_end->shared_quad_state->mask_filter_info.HasRoundedCorners()) {
+    return true;
+  }
+
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
        ++overlap_iter) {
     float opacity = overlap_iter->shared_quad_state->opacity;
@@ -386,6 +384,10 @@ void RecordDCLayerResult(DCLayerResult result, QuadList::Iterator it) {
       RecordVideoDCLayerResult(
           result, YUVVideoDrawQuad::MaterialCast(*it)->protected_video_type);
       break;
+    case DrawQuad::Material::kStreamVideoContent:
+      UMA_HISTOGRAM_ENUMERATION(
+          "GPU.DirectComposition.DCLayerResult.StreamVideo", result);
+      break;
     case DrawQuad::Material::kTextureContent:
       UMA_HISTOGRAM_ENUMERATION("GPU.DirectComposition.DCLayerResult.Texture",
                                 result);
@@ -464,6 +466,7 @@ void DCLayerOverlayProcessor::OnDisplayRemoved() {
 
 void DCLayerOverlayProcessor::ClearOverlayState() {
   previous_frame_overlay_rects_.clear();
+  previous_frame_underlay_is_opaque_ = true;
 }
 
 gfx::Rect DCLayerOverlayProcessor::PreviousFrameOverlayDamageContribution() {
@@ -565,15 +568,18 @@ void DCLayerOverlayProcessor::InsertDebugBorderDrawQuad(
   auto& quad_list = render_pass->quad_list;
 
   // Add debug borders for the root damage rect after overlay promotion.
-  SkColor border_color = SK_ColorGREEN;
-  auto it = quad_list.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
-      quad_list.begin(), 1u);
-  auto* debug_quad = static_cast<DebugBorderDrawQuad*>(*it);
+  {
+    SkColor border_color = SK_ColorGREEN;
+    auto it =
+        quad_list.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
+            quad_list.begin(), 1u);
+    auto* debug_quad = static_cast<DebugBorderDrawQuad*>(*it);
 
-  gfx::Rect rect = *damage_rect;
-  rect.Inset(kDCLayerDebugBorderInsets);
-  debug_quad->SetNew(shared_quad_state, rect, rect, border_color,
-                     kDCLayerDebugBorderWidth);
+    gfx::Rect rect = *damage_rect;
+    rect.Inset(kDCLayerDebugBorderInsets);
+    debug_quad->SetNew(shared_quad_state, rect, rect, border_color,
+                       kDCLayerDebugBorderWidth);
+  }
 
   // Add debug borders for overlays/underlays
   for (const auto& dc_layer : *dc_layer_overlays) {
@@ -646,7 +652,7 @@ void DCLayerOverlayProcessor::Process(
   // Used for generating the candidate index list.
   QuadList* quad_list = &root_render_pass->quad_list;
   std::vector<size_t> candidate_index_list;
-  size_t index = 0;
+  size_t candidate = 0;
 
   // Used for looping through candidate_index_list to UpdateDCLayerOverlays()
   size_t prev_index = 0;
@@ -656,7 +662,8 @@ void DCLayerOverlayProcessor::Process(
   int yuv_quads_in_quad_list = 0;
   bool has_protected_video_or_texture_overlays = false;
 
-  for (auto it = quad_list->begin(); it != quad_list->end(); ++it, ++index) {
+  for (auto it = quad_list->begin(); it != quad_list->end();
+       ++it, ++candidate) {
     if (it->material == DrawQuad::Material::kAggregatedRenderPass) {
       const auto* rpdq = AggregatedRenderPassDrawQuad::MaterialCast(*it);
       auto render_pass_it =
@@ -704,11 +711,11 @@ void DCLayerOverlayProcessor::Process(
       has_protected_video_or_texture_overlays = true;
 
     if (candidate_index_list.size() == 0) {
-      prev_index = index;
+      prev_index = candidate;
       prev_it = it;
     }
 
-    candidate_index_list.push_back(index);
+    candidate_index_list.push_back(candidate);
   }
 
   // We might not save power if there are more than one videos and only part of
@@ -740,9 +747,8 @@ void DCLayerOverlayProcessor::Process(
         gfx::ToEnclosingRect(ClippedQuadRectangle(*it));
 
     // Quad is considered an "overlay" if it has no occluders.
-    bool is_overlay =
-        !HasOccludingQuads(gfx::RectF(quad_rectangle_in_target_space),
-                           quad_list->begin(), it, render_pass_filters);
+    bool is_overlay = !IsOccluded(gfx::RectF(quad_rectangle_in_target_space),
+                                  quad_list->begin(), it, render_pass_filters);
 
     // Protected video is always put in an overlay, but texture quads can be
     // skipped if they're not underlay compatible.
@@ -913,6 +919,8 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
   //    B is the background
   //    SrcOver_quad uses opacity of source quad (V_alpha)
   //    SrcOver_premul uses alpha channel and assumes premultipled alpha
+  //
+  // This also applies to quads with a mask filter for rounded corners.
   bool is_opaque = false;
 
   if (it->ShouldDrawWithBlending() &&
@@ -928,14 +936,16 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
     is_opaque = true;
   }
 
-  const bool display_rect_changed = (display_rect != previous_display_rect_);
+  const bool display_rect_unchanged = (display_rect == previous_display_rect_);
   const bool underlay_rect_unchanged =
       IsPreviousFrameUnderlayRect(quad_rectangle, processed_overlay_count);
   const bool is_axis_aligned = it->shared_quad_state->quad_to_target_transform
                                    .Preserves2dAxisAlignment();
+  bool opacity_unchanged = (is_opaque == previous_frame_underlay_is_opaque_);
+  previous_frame_underlay_is_opaque_ = is_opaque;
 
-  if (is_axis_aligned && is_opaque && underlay_rect_unchanged &&
-      !display_rect_changed) {
+  if (is_axis_aligned && opacity_unchanged && underlay_rect_unchanged &&
+      display_rect_unchanged) {
     // If this underlay rect is the same as for last frame, Remove its area
     // from the damage of the main surface, as the cleared area was already
     // cleared last frame.

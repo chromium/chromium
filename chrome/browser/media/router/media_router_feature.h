@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_MEDIA_ROUTER_FEATURE_H_
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -32,12 +34,6 @@ void ClearMediaRouterStoredPrefsForTesting();
 // and triggers a permission prompt.
 extern const base::Feature kMediaRouter;
 
-// TODO(crbug.com/1028753): Remove default-enabled kDialMediaRouteProvider after
-// tests stop disabling it.
-extern const base::Feature kDialMediaRouteProvider;
-
-extern const base::Feature kCastMediaRouteProvider;
-
 // If enabled, allows Media Router to connect to Cast devices on all IP
 // addresses, not just RFC1918/RFC4193 private addresses. Workaround for
 // https://crbug.com/813974.
@@ -50,15 +46,6 @@ extern const base::Feature kGlobalMediaControlsCastStartStop;
 // Presentation API. If disabled, only the allowlisted sites can do so.
 extern const base::Feature kAllowAllSitesToInitiateMirroring;
 
-// If enabled, meetings appear as receivers in the Cast menu.
-extern const base::Feature kCastToMeetingFromCastDialog;
-
-// If enabled, users can submit Cast feedback via the chrome://cast-feedback
-// WebUI.
-// TODO(crbug.com/1173633): Remove this flag now that the feature is enabled by
-// default.
-extern const base::Feature kCastFeedbackDialog;
-
 namespace prefs {
 // Pref name for the enterprise policy for allowing Cast devices on all IPs.
 constexpr char kMediaRouterCastAllowAllIPs[] =
@@ -67,6 +54,14 @@ constexpr char kMediaRouterCastAllowAllIPs[] =
 // hash when externalizing MediaSink IDs.
 constexpr char kMediaRouterReceiverIdHashToken[] =
     "media_router.receiver_id_hash_token";
+// Pref name that allows the AccessCode/QR code scanning dialog button to be
+// shown.
+constexpr char kAccessCodeCastEnabled[] =
+    "media_router.access_code_cast_enabled";
+// Pref name for the pref that determines how long a scanned receiver remains in
+// the receiver list.
+constexpr char kAccessCodeCastDeviceDuration[] =
+    "media_router.access_code_cast_device_duration";
 }  // namespace prefs
 
 // Registers |kMediaRouterCastAllowAllIPs| with local state pref |registry|.
@@ -84,15 +79,21 @@ bool GetCastAllowAllIPsPref(PrefService* pref_service);
 // randomly generated string and stored in |pref_service|.
 std::string GetReceiverIdHashToken(PrefService* pref_service);
 
-// Returns true if browser side DIAL Media Route Provider is enabled.
+// Returns true if support for DIAL devices is enabled.  Disabling DIAL support
+// also disables SSDP-based discovery for Cast devices.
 bool DialMediaRouteProviderEnabled();
-
-// Returns true if browser side Cast Media Route Provider and sink query are
-// enabled.
-bool CastMediaRouteProviderEnabled();
 
 // Returns true if global media controls are used to start and stop casting.
 bool GlobalMediaControlsCastStartStopEnabled();
+
+// Returns true if this user is allowed to use Access Codes & QR codes to
+// discover cast devices.
+bool GetAccessCodeCastEnabledPref(PrefService* pref_service);
+
+// Returns the duration that a scanned cast device is allowed to remain
+// in the cast list.
+base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service);
+
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace media_router

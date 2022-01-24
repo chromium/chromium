@@ -6,41 +6,66 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/desks_helper.h"
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/ui/ash/desk_template_app_launch_handler.h"
+#include "components/desks_storage/core/desk_sync_service.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
+#include "components/sync/model/model_type_store.h"
 #include "extensions/common/constants.h"
 
 namespace {
 DesksClient* g_desks_client_instance = nullptr;
 
+// Histogram names
 constexpr char kWindowCountHistogramName[] = "Ash.DeskTemplate.WindowCount";
 constexpr char kTabCountHistogramName[] = "Ash.DeskTemplate.TabCount";
 constexpr char kWindowAndTabCountHistogramName[] =
     "Ash.DeskTemplate.WindowAndTabCount";
 constexpr char kLaunchFromTemplateHistogramName[] =
     "Ash.DeskTemplate.LaunchFromTemplate";
+constexpr char kUserTemplateCountHistogramName[] =
+    "Ash.DeskTemplate.UserTemplateCount";
+
+// Error strings
+constexpr char kMaximumDesksOpenedError[] =
+    "The maximum number of desks is already open.";
+constexpr char kMissingTemplateDataError[] =
+    "The desk template has invalid or missing data.";
+constexpr char kStorageError[] = "The operation failed due to a storage error.";
+constexpr char kNoCurrentUserError[] = "There is no active profile.";
+constexpr char kNoSavedTemplatesError[] = "You can create up to 6 templates.";
+
+// Returns true if |profile| is a supported profile in desk template feature.
+bool IsSupportedProfile(Profile* profile) {
+  // Public users & guest users are not supported.
+  return profile && profile->IsRegularProfile();
+}
 
 }  // namespace
 
-DesksClient::DesksClient()
-    : desks_helper_(ash::DesksHelper::Get()),
-      storage_manager_(std::make_unique<desks_storage::LocalDeskDataManager>(
-          ProfileManager::GetActiveUserProfile()->GetPath())) {
+DesksClient::DesksClient() : desks_controller_(ash::DesksController::Get()) {
   DCHECK(!g_desks_client_instance);
   g_desks_client_instance = this;
+  ash::SessionController::Get()->AddObserver(this);
 }
 
 DesksClient::~DesksClient() {
   DCHECK_EQ(this, g_desks_client_instance);
   g_desks_client_instance = nullptr;
+  ash::SessionController::Get()->RemoveObserver(this);
 }
 
 // static
@@ -48,22 +73,48 @@ DesksClient* DesksClient::Get() {
   return g_desks_client_instance;
 }
 
+void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
+  Profile* profile =
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  if (profile == active_profile_ || !IsSupportedProfile(profile))
+    return;
+
+  active_profile_ = profile;
+  DCHECK(active_profile_);
+
+  if (!chromeos::features::IsDeskTemplateSyncEnabled()) {
+    storage_manager_ = std::make_unique<desks_storage::LocalDeskDataManager>(
+        active_profile_->GetPath());
+  }
+
+  auto policy_desk_templates_it =
+      preconfigured_desk_templates_json_.find(account_id);
+  if (policy_desk_templates_it != preconfigured_desk_templates_json_.end())
+    GetDeskModel()->SetPolicyDeskTemplates(policy_desk_templates_it->second);
+}
+
 void DesksClient::CaptureActiveDeskAndSaveTemplate(
     CaptureActiveDeskAndSaveTemplateCallback callback) {
-  std::unique_ptr<ash::DeskTemplate> desk_template =
-      desks_helper_->CaptureActiveDeskAsTemplate();
-  RecordWindowAndTabCount(desk_template.get());
-  storage_manager_->AddOrUpdateEntry(
-      desk_template->Clone(),
-      base::BindOnce(&DesksClient::OnCaptureActiveDeskAndSaveTemplate,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(desk_template)));
+  if (!active_profile_) {
+    std::move(callback).Run(/*desk_template=*/nullptr,
+                            std::string(kNoCurrentUserError));
+    return;
+  }
+
+  desks_controller_->CaptureActiveDeskAsTemplate(
+      base::BindOnce(&DesksClient::OnCapturedDeskTemplate,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DesksClient::UpdateDeskTemplate(const std::string& template_uuid,
                                      const std::u16string& template_name,
                                      UpdateDeskTemplateCallback callback) {
-  storage_manager_->GetEntryByUUID(
+  if (!active_profile_) {
+    std::move(callback).Run(std::string(kNoCurrentUserError));
+    return;
+  }
+
+  GetDeskModel()->GetEntryByUUID(
       template_uuid, base::BindOnce(&DesksClient::OnGetTemplateToBeUpdated,
                                     weak_ptr_factory_.GetWeakPtr(),
                                     template_name, std::move(callback)));
@@ -71,27 +122,40 @@ void DesksClient::UpdateDeskTemplate(const std::string& template_uuid,
 
 void DesksClient::DeleteDeskTemplate(const std::string& template_uuid,
                                      DeleteDeskTemplateCallback callback) {
-  storage_manager_->DeleteEntry(
+  if (!active_profile_) {
+    std::move(callback).Run(std::string(kNoCurrentUserError));
+    return;
+  }
+
+  GetDeskModel()->DeleteEntry(
       template_uuid,
       base::BindOnce(&DesksClient::OnDeleteDeskTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DesksClient::GetDeskTemplates(GetDeskTemplatesCallback callback) {
-  storage_manager_->GetAllEntries(
-      base::BindOnce(&DesksClient::OnGetAllTemplates,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  if (!active_profile_) {
+    std::move(callback).Run(/*desk_templates=*/{},
+                            std::string(kNoCurrentUserError));
+    return;
+  }
+
+  GetDeskModel()->GetAllEntries(base::BindOnce(&DesksClient::OnGetAllTemplates,
+                                               weak_ptr_factory_.GetWeakPtr(),
+                                               std::move(callback)));
 }
 
 void DesksClient::LaunchDeskTemplate(const std::string& template_uuid,
                                      LaunchDeskTemplateCallback callback) {
-  MaybeCreateAppLaunchHandler();
-  if (!app_launch_handler_) {
-    std::move(callback).Run(/*success=*/false);
+  if (!active_profile_) {
+    std::move(callback).Run(std::string(kNoCurrentUserError));
     return;
   }
 
-  // TODO: verify this method works in tests when reading from storage.
+  MaybeCreateAppLaunchHandler();
+  DCHECK(app_launch_handler_);
+
+  // TODO: Verify this method works in tests when reading from storage.
   if (launch_template_for_test_) {
     OnGetTemplateForDeskLaunch(
         std::move(callback),
@@ -100,27 +164,77 @@ void DesksClient::LaunchDeskTemplate(const std::string& template_uuid,
     return;
   }
 
-  storage_manager_->GetEntryByUUID(
+  GetDeskModel()->GetEntryByUUID(
       template_uuid,
       base::BindOnce(&DesksClient::OnGetTemplateForDeskLaunch,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void DesksClient::MaybeCreateAppLaunchHandler() {
-  if (app_launch_handler_)
+void DesksClient::LaunchAppsFromTemplate(
+    std::unique_ptr<ash::DeskTemplate> desk_template) {
+  DCHECK(desk_template);
+  const app_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
+  if (!restore_data)
     return;
 
-  // TODO(sammiequon): Handle multiple profile case.
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(!ash::ProfileHelper::IsSigninProfile(profile));
-  if (profile) {
-    app_launch_handler_ =
-        std::make_unique<DeskTemplateAppLaunchHandler>(profile);
-  }
+  MaybeCreateAppLaunchHandler();
+  DCHECK(app_launch_handler_);
+  app_launch_handler_->SetRestoreDataAndLaunch(restore_data->Clone());
+
+  RecordLaunchFromTemplateHistogram();
 }
 
-void DesksClient::RecordWindowAndTabCount(ash::DeskTemplate* desk_template) {
-  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+desks_storage::DeskModel* DesksClient::GetDeskModel() {
+  if (chromeos::features::IsDeskTemplateSyncEnabled()) {
+    return DeskSyncServiceFactory::GetForProfile(active_profile_)
+        ->GetDeskModel();
+  }
+
+  DCHECK(storage_manager_.get());
+  return storage_manager_.get();
+}
+
+// Sets the preconfigured desk template.  Data contains the contents of the JSON
+// file with the template information
+void DesksClient::SetPolicyPreconfiguredTemplate(
+    const AccountId& account_id,
+    std::unique_ptr<std::string> data) {
+  Profile* profile =
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  if (!data || !IsSupportedProfile(profile))
+    return;
+
+  std::string& in_map_data = preconfigured_desk_templates_json_[account_id];
+  if (in_map_data == *data)
+    return;
+
+  in_map_data = *data;
+
+  if (profile && profile == active_profile_)
+    GetDeskModel()->SetPolicyDeskTemplates(*data);
+}
+
+void DesksClient::RemovePolicyPreconfiguredTemplate(
+    const AccountId& account_id) {
+  preconfigured_desk_templates_json_.erase(account_id);
+}
+
+void DesksClient::MaybeCreateAppLaunchHandler() {
+  if (app_launch_handler_ &&
+      app_launch_handler_->profile() == active_profile_) {
+    return;
+  }
+
+  DCHECK(active_profile_);
+  app_launch_handler_ =
+      std::make_unique<DeskTemplateAppLaunchHandler>(active_profile_);
+}
+
+void DesksClient::RecordWindowAndTabCountHistogram(
+    ash::DeskTemplate* desk_template) {
+  const app_restore::RestoreData* restore_data =
+      desk_template->desk_restore_data();
   DCHECK(restore_data);
 
   int window_count = 0;
@@ -153,8 +267,14 @@ void DesksClient::RecordWindowAndTabCount(ash::DeskTemplate* desk_template) {
   base::UmaHistogramCounts100(kWindowAndTabCountHistogramName, total_count);
 }
 
-void DesksClient::RecordLaunchFromTemplate() {
+void DesksClient::RecordLaunchFromTemplateHistogram() {
   base::UmaHistogramBoolean(kLaunchFromTemplateHistogramName, true);
+}
+
+void DesksClient::RecordTemplateCountHistogram() {
+  UMA_HISTOGRAM_EXACT_LINEAR(kUserTemplateCountHistogramName,
+                             GetDeskModel()->GetEntryCount(),
+                             GetDeskModel()->GetMaxEntryCount());
 }
 
 void DesksClient::OnGetTemplateForDeskLaunch(
@@ -162,16 +282,16 @@ void DesksClient::OnGetTemplateForDeskLaunch(
     desks_storage::DeskModel::GetEntryByUuidStatus status,
     std::unique_ptr<ash::DeskTemplate> entry) {
   if (status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk) {
-    std::move(callback).Run(/*success=*/false);
+    std::move(callback).Run(std::string(kStorageError));
     return;
   }
 
   // Launch the windows as specified in the template to a new desk.
-  desks_helper_->CreateAndActivateNewDeskForTemplate(
-      entry->template_name(),
-      base::BindOnce(&DesksClient::OnCreateAndActivateNewDesk,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(entry),
-                     std::move(callback)));
+  const auto template_name = entry->template_name();
+  desks_controller_->CreateAndActivateNewDeskForTemplate(
+      template_name, base::BindOnce(&DesksClient::OnCreateAndActivateNewDesk,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(entry), std::move(callback)));
 }
 
 void DesksClient::OnCreateAndActivateNewDesk(
@@ -179,22 +299,19 @@ void DesksClient::OnCreateAndActivateNewDesk(
     LaunchDeskTemplateCallback callback,
     bool on_create_activate_success) {
   if (!on_create_activate_success) {
-    std::move(callback).Run(/*success=*/false);
+    // This only returns false if the number of desks is at a maximum.
+    std::move(callback).Run(std::string(kMaximumDesksOpenedError));
     return;
   }
 
   DCHECK(desk_template);
-  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
-  if (!restore_data) {
-    std::move(callback).Run(/*success=*/false);
+  if (!desk_template->desk_restore_data()) {
+    std::move(callback).Run(std::string(kMissingTemplateDataError));
     return;
   }
 
-  DCHECK(app_launch_handler_);
-  app_launch_handler_->SetRestoreDataAndLaunch(restore_data->Clone());
-  std::move(callback).Run(/*success=*/true);
-
-  RecordLaunchFromTemplate();
+  LaunchAppsFromTemplate(std::move(desk_template));
+  std::move(callback).Run(std::string(""));
 }
 
 void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
@@ -202,22 +319,32 @@ void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
     std::unique_ptr<ash::DeskTemplate> desk_template,
     desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
   std::move(callback).Run(
-      status == desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
-      std::move(desk_template));
+      std::move(desk_template),
+      std::string(status !=
+                          desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk
+                      ? kNoSavedTemplatesError
+                      : ""));
+
+  RecordTemplateCountHistogram();
 }
 
 void DesksClient::OnDeleteDeskTemplate(
     DesksClient::DeleteDeskTemplateCallback callback,
     desks_storage::DeskModel::DeleteEntryStatus status) {
-  std::move(callback).Run(status ==
-                          desks_storage::DeskModel::DeleteEntryStatus::kOk);
+  std::move(callback).Run(
+      std::string(status != desks_storage::DeskModel::DeleteEntryStatus::kOk
+                      ? kNoCurrentUserError
+                      : ""));
+  RecordTemplateCountHistogram();
 }
 
 void DesksClient::OnUpdateDeskTemplate(
     DesksClient::UpdateDeskTemplateCallback callback,
     desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
-  std::move(callback).Run(
-      status == desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk);
+  std::move(callback).Run(std::string(
+      status != desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk
+          ? kStorageError
+          : ""));
 }
 
 void DesksClient::OnGetTemplateToBeUpdated(
@@ -226,12 +353,12 @@ void DesksClient::OnGetTemplateToBeUpdated(
     desks_storage::DeskModel::GetEntryByUuidStatus status,
     std::unique_ptr<ash::DeskTemplate> entry) {
   if (status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(std::string(kStorageError));
     return;
   }
 
   entry->set_template_name(template_name);
-  storage_manager_->AddOrUpdateEntry(
+  GetDeskModel()->AddOrUpdateEntry(
       std::move(entry),
       base::BindOnce(&DesksClient::OnUpdateDeskTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -242,5 +369,23 @@ void DesksClient::OnGetAllTemplates(
     desks_storage::DeskModel::GetAllEntriesStatus status,
     std::vector<ash::DeskTemplate*> entries) {
   std::move(callback).Run(
-      status == desks_storage::DeskModel::GetAllEntriesStatus::kOk, entries);
+      entries,
+      std::string(status != desks_storage::DeskModel::GetAllEntriesStatus::kOk
+                      ? kStorageError
+                      : ""));
+}
+
+void DesksClient::OnCapturedDeskTemplate(
+    CaptureActiveDeskAndSaveTemplateCallback callback,
+    std::unique_ptr<ash::DeskTemplate> desk_template) {
+  if (!desk_template)
+    return;
+
+  RecordWindowAndTabCountHistogram(desk_template.get());
+  auto desk_template_clone = desk_template->Clone();
+  GetDeskModel()->AddOrUpdateEntry(
+      std::move(desk_template_clone),
+      base::BindOnce(&DesksClient::OnCaptureActiveDeskAndSaveTemplate,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(desk_template)));
 }

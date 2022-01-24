@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_engine_type.h"
@@ -631,6 +630,9 @@ class TemplateURL {
               base::Time install_time,
               bool wants_to_be_default_engine);
 
+  TemplateURL(const TemplateURL&) = delete;
+  TemplateURL& operator=(const TemplateURL&) = delete;
+
   ~TemplateURL();
 
   // For two engines with the same keyword, |this| and |other|,
@@ -722,6 +724,8 @@ class TemplateURL {
   int prepopulate_id() const { return data_.prepopulate_id; }
 
   const std::string& sync_guid() const { return data_.sync_guid; }
+
+  TemplateURLData::ActiveStatus is_active() const { return data_.is_active; }
 
   const std::vector<TemplateURLRef>& url_refs() const { return url_refs_; }
   const TemplateURLRef& url_ref() const {
@@ -875,8 +879,6 @@ class TemplateURL {
   mutable SearchEngineType engine_type_;
 
   // TODO(sky): Add date last parsed OSD file.
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURL);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_H_

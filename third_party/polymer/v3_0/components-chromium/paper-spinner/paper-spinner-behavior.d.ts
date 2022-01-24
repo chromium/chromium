@@ -15,7 +15,7 @@ interface PaperSpinnerBehavior {
   /**
    * Displays the spinner.
    */
-  active: boolean|null|undefined;
+  active: boolean;
 
   /**
    * Alternative text content for accessibility support.

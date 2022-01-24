@@ -120,7 +120,7 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
           base::BindOnce(&LoginScreenController::OnAuthenticateComplete,
                          weak_factory_.GetWeakPtr(), std::move(callback),
                          false),
-          base::TimeDelta::FromSeconds(1));
+          base::Seconds(1));
       return;
   }
 
@@ -220,6 +220,12 @@ void LoginScreenController::LoginAsGuest() {
   if (!client_)
     return;
   client_->LoginAsGuest();
+}
+
+void LoginScreenController::ShowGuestTosScreen() {
+  if (!client_)
+    return;
+  client_->ShowGuestTosScreen();
 }
 
 void LoginScreenController::OnMaxIncorrectPasswordAttempted(

@@ -45,7 +45,7 @@ base::TimeDelta MovingAverage::Deviation() const {
   }
 
   deviation_secs /= size;
-  return base::TimeDelta::FromSecondsD(std::sqrt(deviation_secs));
+  return base::Seconds(std::sqrt(deviation_secs));
 }
 
 void MovingAverage::Reset() {

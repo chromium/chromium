@@ -269,19 +269,19 @@ class FakeDataPackage final
     }
     return S_OK;
   }
-  IFACEMETHODIMP SetUri(IUriRuntimeClass* value) final {
+  IFACEMETHODIMP SetUri(IUriRuntimeClass* value) final { return S_OK; }
+
+  // IDataPackage2
+  IFACEMETHODIMP SetApplicationLink(IUriRuntimeClass* value) final {
+    return S_OK;
+  }
+  IFACEMETHODIMP SetWebLink(IUriRuntimeClass* value) final {
     HSTRING raw_uri;
     value->get_RawUri(&raw_uri);
     base::win::ScopedHString wrapped_value(raw_uri);
     data_requested_content_.uri = wrapped_value.GetAsUTF8();
     return S_OK;
   }
-
-  // IDataPackage2
-  IFACEMETHODIMP SetApplicationLink(IUriRuntimeClass* value) final {
-    return S_OK;
-  }
-  IFACEMETHODIMP SetWebLink(IUriRuntimeClass* value) final { return S_OK; }
 
  private:
   FakeDataTransferManager::DataRequestedContent& data_requested_content_;
@@ -401,11 +401,7 @@ class FakeDataRequestedEventArgs final
 
 // static
 bool FakeDataTransferManager::IsSupportedEnvironment() {
-  if (base::win::ResolveCoreWinRTDelayload() &&
-      base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    return true;
-  EXPECT_LT(base::win::GetVersion(), base::win::Version::WIN8);
-  return false;
+  return base::win::GetVersion() >= base::win::Version::WIN10;
 }
 
 FakeDataTransferManager::FakeDataTransferManager() {

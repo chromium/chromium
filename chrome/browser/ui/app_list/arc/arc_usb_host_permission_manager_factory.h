@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_ARC_ARC_USB_HOST_PERMISSION_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_UI_APP_LIST_ARC_ARC_USB_HOST_PERMISSION_MANAGER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -16,6 +15,11 @@ class ArcUsbHostPermissionManager;
 class ArcUsbHostPermissionManagerFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  ArcUsbHostPermissionManagerFactory(
+      const ArcUsbHostPermissionManagerFactory&) = delete;
+  ArcUsbHostPermissionManagerFactory& operator=(
+      const ArcUsbHostPermissionManagerFactory&) = delete;
+
   static ArcUsbHostPermissionManager* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -32,8 +36,6 @@ class ArcUsbHostPermissionManagerFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcUsbHostPermissionManagerFactory);
 };
 
 }  // namespace arc

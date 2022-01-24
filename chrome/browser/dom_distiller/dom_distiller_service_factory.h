@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DOM_DISTILLER_DOM_DISTILLER_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_DOM_DISTILLER_DOM_DISTILLER_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller_ui_handle.h"
@@ -29,10 +28,13 @@ class DomDistillerContextKeyedService : public KeyedService,
       std::unique_ptr<DistillerPageFactory> distiller_page_factory,
       std::unique_ptr<DistilledPagePrefs> distilled_page_prefs,
       std::unique_ptr<DistillerUIHandle> distiller_ui_handle);
-  ~DomDistillerContextKeyedService() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DomDistillerContextKeyedService);
+  DomDistillerContextKeyedService(const DomDistillerContextKeyedService&) =
+      delete;
+  DomDistillerContextKeyedService& operator=(
+      const DomDistillerContextKeyedService&) = delete;
+
+  ~DomDistillerContextKeyedService() override {}
 };
 
 class DomDistillerServiceFactory : public BrowserContextKeyedServiceFactory {

@@ -39,6 +39,9 @@ class FirstAppRunToastManager::AppWidgetObserver
     widget_->AddObserver(this);
   }
 
+  AppWidgetObserver(const AppWidgetObserver&) = delete;
+  AppWidgetObserver& operator=(const AppWidgetObserver&) = delete;
+
   ~AppWidgetObserver() override {
     // This is a no-op of the observer was previously removed.
     widget_->RemoveObserver(this);
@@ -58,8 +61,6 @@ class FirstAppRunToastManager::AppWidgetObserver
  private:
   FirstAppRunToastManager* manager_;
   views::Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWidgetObserver);
 };
 
 FirstAppRunToastManager::FirstAppRunToastManager(Profile* profile)

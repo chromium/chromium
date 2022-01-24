@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS minsize < 0 is treated as 0
-FAIL maxsize < minsize is treated as maxsize = minsize assert_approx_equals: expected 175 +/- 1 but got 125
-FAIL minsize < maxsize < 0 is treated as maxsize = minsize = 0 assert_less_than: expected a number less than 50 but got 125
-FAIL target size = 0 is treated as Tascent = Tdescent = minsize/2 assert_approx_equals: expected 100 +/- 1 but got 25
-Harness: the test ran to completion.
-

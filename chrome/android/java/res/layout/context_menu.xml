@@ -12,7 +12,7 @@
     android:id="@+id/context_menu_frame"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/popup_bg_tinted"
+    android:background="@drawable/menu_bg_tinted"
     android:layout_marginHorizontal="@dimen/context_menu_lateral_margin"
     android:layout_marginVertical="@dimen/context_menu_vertical_margin"
     android:layout_gravity="center">

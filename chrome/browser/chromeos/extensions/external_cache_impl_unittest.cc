@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -53,6 +52,10 @@ class ExternalCacheImplTest : public testing::Test,
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
+
+  ExternalCacheImplTest(const ExternalCacheImplTest&) = delete;
+  ExternalCacheImplTest& operator=(const ExternalCacheImplTest&) = delete;
+
   ~ExternalCacheImplTest() override = default;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() {
@@ -137,8 +140,6 @@ class ExternalCacheImplTest : public testing::Test,
   std::set<extensions::ExtensionId> deleted_extension_files_;
 
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalCacheImplTest);
 };
 
 TEST_F(ExternalCacheImplTest, Basic) {
@@ -146,7 +147,7 @@ TEST_F(ExternalCacheImplTest, Basic) {
   ExternalCacheImpl external_cache(
       cache_dir, url_loader_factory(),
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}), this,
-      true, false);
+      true, false, false);
 
   std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
   prefs->SetKey(kTestExtensionId1, CreateEntryWithUpdateUrl(true));
@@ -285,7 +286,7 @@ TEST_F(ExternalCacheImplTest, PreserveExternalCrx) {
   ExternalCacheImpl external_cache(
       cache_dir, url_loader_factory(),
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}), this,
-      true, false);
+      true, false, false);
 
   std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
   prefs->SetKey(kTestExtensionId1, CreateEntryWithExternalCrx());

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_OBSERVER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
@@ -48,6 +49,7 @@ class CORE_EXPORT PerformanceObserver final
   void EnqueuePerformanceEntry(PerformanceEntry&);
   PerformanceEntryTypeMask FilterOptions() const { return filter_options_; }
   bool CanObserve(const PerformanceEntry&) const;
+  bool RequiresDroppedEntries() const { return requires_dropped_entries_; }
 
   // ScriptWrappable
   bool HasPendingActivity() const final;
@@ -70,7 +72,9 @@ class CORE_EXPORT PerformanceObserver final
     kTypeObserver,
     kUnknown,
   };
-  void Deliver();
+  // Deliver the PerformanceObserverCallback. Receives the number of dropped
+  // entries to be passed to the callback.
+  void Deliver(absl::optional<int> dropped_entries_count);
 
   Member<V8PerformanceObserverCallback> callback_;
   WeakMember<Performance> performance_;
@@ -78,6 +82,7 @@ class CORE_EXPORT PerformanceObserver final
   PerformanceEntryTypeMask filter_options_;
   PerformanceObserverType type_;
   bool is_registered_;
+  bool requires_dropped_entries_ = false;
   // PerformanceEventTiming entries with a duration that is as long as this
   // threshold are regarded as long-latency events by the Event Timing API.
   // Shorter-latency events are ignored. Default value can be overriden via a

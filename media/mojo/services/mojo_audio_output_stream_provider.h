@@ -41,6 +41,10 @@ class MEDIA_MOJO_EXPORT MojoAudioOutputStreamProvider
       DeleterCallback deleter_callback,
       std::unique_ptr<mojom::AudioOutputStreamObserver> observer);
 
+  MojoAudioOutputStreamProvider(const MojoAudioOutputStreamProvider&) = delete;
+  MojoAudioOutputStreamProvider& operator=(
+      const MojoAudioOutputStreamProvider&) = delete;
+
   ~MojoAudioOutputStreamProvider() override;
 
  private:
@@ -64,8 +68,6 @@ class MEDIA_MOJO_EXPORT MojoAudioOutputStreamProvider
   mojo::Receiver<mojom::AudioOutputStreamObserver> observer_receiver_;
   absl::optional<MojoAudioOutputStream> audio_output_;
   mojo::Remote<mojom::AudioOutputStreamProviderClient> provider_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioOutputStreamProvider);
 };
 
 }  // namespace media

@@ -34,6 +34,10 @@ namespace win {
 class BASE_EXPORT ComInitCheckHook {
  public:
   ComInitCheckHook();
+
+  ComInitCheckHook(const ComInitCheckHook&) = delete;
+  ComInitCheckHook& operator=(const ComInitCheckHook&) = delete;
+
   ~ComInitCheckHook();
 
  private:
@@ -44,8 +48,6 @@ class BASE_EXPORT ComInitCheckHook {
   friend class device::XrDeviceService;
 
   static void DisableCOMChecksForProcess();
-
-  DISALLOW_COPY_AND_ASSIGN(ComInitCheckHook);
 };
 
 }  // namespace win

@@ -19,6 +19,9 @@ namespace chromeos {
 // connection to the ML service daemon.
 class COMPONENT_EXPORT(MACHINE_LEARNING) MachineLearningClient {
  public:
+  MachineLearningClient(const MachineLearningClient&) = delete;
+  MachineLearningClient& operator=(const MachineLearningClient&) = delete;
+
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 
@@ -46,9 +49,6 @@ class COMPONENT_EXPORT(MACHINE_LEARNING) MachineLearningClient {
   // Initialize/Shutdown should be used instead.
   MachineLearningClient();
   virtual ~MachineLearningClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MachineLearningClient);
 };
 
 }  // namespace chromeos

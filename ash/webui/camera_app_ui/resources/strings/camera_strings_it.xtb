@@ -1,0 +1,141 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="it">
+<translation id="1113173431709655881">Modalità Fotocamera</translation>
+<translation id="1175958423215084756">Link rilevato. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Ruota di 90 gradi in senso orario</translation>
+<translation id="1276998909102132017">Immagini della galleria</translation>
+<translation id="1300209025925956156">Scansiona il tuo documento</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tasto per la ricerca + Freccia sinistra per accedere.</translation>
+<translation id="1430915738399379752">Stampa</translation>
+<translation id="1467231725790366244">Videocamera <ph name="CAMERA" /> scollegata.</translation>
+<translation id="1473110567575736769">Timer di 3 secondi</translation>
+<translation id="1545749641540134597">Scansiona codice QR</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">Normale</translation>
+<translation id="1620510694547887537">Fotocamera</translation>
+<translation id="1627744224761163218">4 x 4</translation>
+<translation id="1664224225747386870">Nessun dato registrato</translation>
+<translation id="1838104802459806957">Inclinazione verso l'alto</translation>
+<translation id="1851169887664797861">Disponibili controlli della videocamera aggiuntivi</translation>
+<translation id="1851616744363735765">IN PAUSA</translation>
+<translation id="1862930711583847113">Impossibile esportare <ph name="FILE" /></translation>
+<translation id="1899697626337024495">Risoluzione foto</translation>
+<translation id="2022953316617983419">Codice QR</translation>
+<translation id="2036868001356139588">Durata del timer</translation>
+<translation id="2050339315714019657">Verticale</translation>
+<translation id="2064538373111010176">Fotocamera <ph name="CAMERA" /> attiva</translation>
+<translation id="2144806332417375165">Parametri video personalizzati</translation>
+<translation id="2175927920773552910">Codice QR</translation>
+<translation id="229579744168541441">Esporta su disco</translation>
+<translation id="2320741269052147773">Esegui una panoramica a sinistra</translation>
+<translation id="2501278716633472235">Indietro</translation>
+<translation id="2501853267655415902">Registrazione interrotta</translation>
+<translation id="2501953888035679275">Realizza foto e video con la tua fotocamera.</translation>
+<translation id="2517472476991765520">Scansiona</translation>
+<translation id="2549985041256363841">Avvia registrazione</translation>
+<translation id="2599796128805996109">Fotocamera posteriore</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
+<translation id="2761536921376153655">Tipo di scansione</translation>
+<translation id="2879583609344924966">Videocamera <ph name="CAMERA" /> collegata.</translation>
+<translation id="2968794441791257519">Le foto e i video acquisiti con la fotocamera verranno spostati nella cartella Download e potrai accedervi dall'app File.
+
+Le app con autorizzazioni di accesso allo spazio di archiviazione potranno accedere alle foto e ai video.</translation>
+<translation id="3067436040345934772">Panoramica a destra</translation>
+<translation id="3081586908890909590">Passa alla modalità video</translation>
+<translation id="313467653172006084">30 f/s</translation>
+<translation id="3183731565330012717">Tipo di griglia</translation>
+<translation id="3227137524299004712">Microfono</translation>
+<translation id="3240426699337459095">Link copiato</translation>
+<translation id="3259149966178251584">Risoluzione della fotocamera</translation>
+<translation id="3260401663013584785">Impossibile rilevare un documento</translation>
+<translation id="3305962767867348165">Sistema</translation>
+<translation id="3448774564454087943">Video non salvato perché è troppo breve</translation>
+<translation id="346539236881580388">Nuovo scatto</translation>
+<translation id="3517926952904427380">Impossibile scattare foto verticale</translation>
+<translation id="3569311554794739032">Vuoi rimuovere <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Passa alla modalità di scansione</translation>
+<translation id="3789724198583203151">Ruota di 90 gradi in senso antiorario</translation>
+<translation id="3810838688059735925">Video</translation>
+<translation id="3838931309141338733">Scansiona il codice a barre</translation>
+<translation id="3892148308691398805">Copia testo</translation>
+<translation id="4118525110028899586">Metti in pausa la registrazione</translation>
+<translation id="4121305183798804752">Documento rilevato</translation>
+<translation id="4269820728363426813">Copia indirizzo link</translation>
+<translation id="4279490309300973883">Mirroring</translation>
+<translation id="4329152592498422850">Passa alla modalità foto quadrata</translation>
+<translation id="4383571725254449280">Log relativi alle prestazioni di stampa</translation>
+<translation id="4445542136948522167">Interrompi acquisizione foto</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
+<translation id="4570032796877367747">Fotocamera anteriore</translation>
+<translation id="4628948037717959914">Foto</translation>
+<translation id="4649291346448517080">Impossibile salvare il file</translation>
+<translation id="4890010094662541459">3 x 3</translation>
+<translation id="491895758387112773">Registrazione video multistream</translation>
+<translation id="5057360777601936059">La tua fotocamera non è attualmente disponibile.
+        Controlla se la fotocamera è collegata correttamente.</translation>
+<translation id="5152121255775685072">Vai alla galleria</translation>
+<translation id="520537883758714667">Ora è disponibile la scansione di documenti</translation>
+<translation id="5317780077021120954">Salva</translation>
+<translation id="5444515100983837161">Posiziona i bordi del documento all'interno dell'inquadratura. La qualità della scansione è migliore se il documento e lo sfondo sono di colori diversi.</translation>
+<translation id="5671277269877808209">Quadrato</translation>
+<translation id="5746169159649715125">Salva come PDF</translation>
+<translation id="5753488212459587150">Attiva modalità Esperto</translation>
+<translation id="5759254179196327752">Esegui la scansione del documento</translation>
+<translation id="5775960006311140197">Modalità Esperto</translation>
+<translation id="5869546221129391014">Griglia</translation>
+<translation id="5975083100439434680">Diminuisci lo zoom</translation>
+<translation id="6073451960410192870">Interrompi registrazione</translation>
+<translation id="6197807149213783179">Salva metadati</translation>
+<translation id="6233780560267770709">3 x 3</translation>
+<translation id="6243827288366940320">Sezione aurea</translation>
+<translation id="6248749904681914629">Videocamera esterna</translation>
+<translation id="6353688143752491039">Grazie per aver deciso di dare il tuo feedback sull'app Fotocamera.
+
+Se il feedback riguarda la qualità di immagini o video, allega una foto o un video di esempio e descrivi il problema (ad esempio, la foto è troppo scura o il soggetto non è a fuoco).</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
+<translation id="6527303717912515753">Condividi</translation>
+<translation id="667999046851023355">Documento</translation>
+<translation id="6681668084120808868">Scatta foto</translation>
+<translation id="6778482348691154169">Impossibile scattare una foto</translation>
+<translation id="695140971690006676">Reimposta tutto</translation>
+<translation id="6965382102122355670">OK</translation>
+<translation id="698156982839284926">3 secondi</translation>
+<translation id="712848772518857951">Vuoi rimuovere <ph name="COUNT" /> elementi?</translation>
+<translation id="7134221860976209830">Timer di 10 secondi</translation>
+<translation id="7191890674911603392">Tipo di registrazione</translation>
+<translation id="7243947652761655814">Risoluzione video</translation>
+<translation id="7337660886763914220">Errori del file system.</translation>
+<translation id="7450541714075000668">Testo copiato</translation>
+<translation id="7476762461674917065">Mostra opzione di registrazione GIF</translation>
+<translation id="7488619942230388918">Registra video GIF</translation>
+<translation id="7557677699350329807">Passa alla fotocamera successiva</translation>
+<translation id="7607002721634913082">In pausa</translation>
+<translation id="7608223098072244877">4 x 4</translation>
+<translation id="7649070708921625228">Guida</translation>
+<translation id="7658239707568436148">Annulla</translation>
+<translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Registra video normale</translation>
+<translation id="7983668134180549431">Testo rilevato.</translation>
+<translation id="8067883171444229417">Guarda il video</translation>
+<translation id="8120146556401698679">Panoramica Inclinazione Zoom</translation>
+<translation id="8131740175452115882">Conferma</translation>
+<translation id="8145038249676204903">Passa alla modalità foto</translation>
+<translation id="8167081290930651932">Salva come foto</translation>
+<translation id="8239780215768881278">Scatta istantanea video</translation>
+<translation id="8261506727792406068">Elimina</translation>
+<translation id="8425673304802773841">Inclinazione verso il basso</translation>
+<translation id="8428213095426709021">Impostazioni</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Fatto</translation>
+<translation id="8730621377337864115">Fine</translation>
+<translation id="8732462232047530626">Anteprima metadati</translation>
+<translation id="8815966864175525708">Passa alla modalità foto verticale</translation>
+<translation id="8828441885228359828">Riprendi la registrazione</translation>
+<translation id="8870695351537079478">Impossibile avviare la registrazione</translation>
+<translation id="8903921497873541725">Aumenta lo zoom</translation>
+<translation id="9045010116236796332">Posiziona i bordi del documento all'interno dell'inquadratura</translation>
+<translation id="9045155556724273246">10 secondi</translation>
+<translation id="906331135292332864">Elaborazione dell'immagine in corso…</translation>
+<translation id="945522503751344254">Invia feedback</translation>
+</translationbundle>

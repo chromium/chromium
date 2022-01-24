@@ -33,13 +33,15 @@ class ProfilePickerTestBase : public InProcessBrowserTest {
   // Returns the internal web view for the profile picker.
   views::WebView* web_view();
 
-  // Waits until a relayout of the main view has been performed. This implies
-  // the appropriate web_contents() is attached to the layout.
-  void WaitForLayoutWithToolbar();
-  void WaitForLayoutWithoutToolbar();
+  // Wait until the widget of the picker gets created and the initialization of
+  // the picker is thus finished (and notably `widget()` is not null).
+  void WaitForPickerWidgetCreated();
 
-  // Waits until the web contents stops loading `url`.
-  void WaitForLoadStop(content::WebContents* contents, const GURL& url);
+  // Waits until `target` WebContents stops loading `url`. If no `target` is
+  // provided, it checks for the current `web_contents()` to stop loading `url`.
+  // This also works if `web_contents()` changes throughout the waiting as it is
+  // technically observing all web contents.
+  void WaitForLoadStop(const GURL& url, content::WebContents* target = nullptr);
 
   // Waits until the picker gets closed.
   void WaitForPickerClosed();

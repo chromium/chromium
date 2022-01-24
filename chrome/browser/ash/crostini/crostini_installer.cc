@@ -93,17 +93,16 @@ constexpr char kCrostiniAvailableDiskError[] = "Crostini.AvailableDiskError";
 void RecordTimeFromDeviceSetupToInstallMetric() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&chromeos::StartupUtils::GetTimeSinceOobeFlagFileCreation),
+      base::BindOnce(&ash::StartupUtils::GetTimeSinceOobeFlagFileCreation),
       base::BindOnce([](base::TimeDelta time_from_device_setup) {
         if (time_from_device_setup.is_zero())
           return;
 
         // The magic number 1471228928 is used for legacy reasons and changing
         // it would invalidate already logged data.
-        base::UmaHistogramCustomTimes(
-            kCrostiniTimeFromDeviceSetupToInstall, time_from_device_setup,
-            base::TimeDelta::FromMinutes(1),
-            base::TimeDelta::FromMilliseconds(1471228928), 50);
+        base::UmaHistogramCustomTimes(kCrostiniTimeFromDeviceSetupToInstall,
+                                      time_from_device_setup, base::Minutes(1),
+                                      base::Milliseconds(1471228928), 50);
       }));
 }
 
@@ -470,7 +469,7 @@ void CrostiniInstaller::RunProgressCallback() {
 
   double state_start_mark = 0;
   double state_end_mark = 0;
-  auto state_max_time = base::TimeDelta::FromSeconds(1);
+  auto state_max_time = base::Seconds(1);
 
   switch (installing_state_) {
     case InstallerState::kStart:
@@ -480,7 +479,7 @@ void CrostiniInstaller::RunProgressCallback() {
     case InstallerState::kInstallImageLoader:
       state_start_mark = 0.0;
       state_end_mark = 0.20;
-      state_max_time = base::TimeDelta::FromSeconds(30);
+      state_max_time = base::Seconds(30);
       break;
     case InstallerState::kCreateDiskImage:
       state_start_mark = 0.20;
@@ -489,33 +488,33 @@ void CrostiniInstaller::RunProgressCallback() {
     case InstallerState::kStartTerminaVm:
       state_start_mark = 0.22;
       state_end_mark = 0.28;
-      state_max_time = base::TimeDelta::FromSeconds(8);
+      state_max_time = base::Seconds(8);
       break;
     case InstallerState::kStartLxd:
       state_start_mark = 0.28;
       state_end_mark = 0.30;
-      state_max_time = base::TimeDelta::FromSeconds(2);
+      state_max_time = base::Seconds(2);
       break;
     case InstallerState::kCreateContainer:
       state_start_mark = 0.30;
       state_end_mark = 0.72;
-      state_max_time = base::TimeDelta::FromSeconds(180);
+      state_max_time = base::Seconds(180);
       break;
     case InstallerState::kSetupContainer:
       state_start_mark = 0.72;
       state_end_mark = 0.76;
-      state_max_time = base::TimeDelta::FromSeconds(8);
+      state_max_time = base::Seconds(8);
       break;
     case InstallerState::kStartContainer:
       state_start_mark = 0.76;
       state_end_mark = 0.79;
-      state_max_time = base::TimeDelta::FromSeconds(8);
+      state_max_time = base::Seconds(8);
       break;
     case InstallerState::kConfigureContainer:
       state_start_mark = 0.79;
       state_end_mark = 1;
       // Ansible installation and playbook application.
-      state_max_time = base::TimeDelta::FromSeconds(140 + 300);
+      state_max_time = base::Seconds(140 + 300);
       break;
     default:
       NOTREACHED();
@@ -550,7 +549,7 @@ void CrostiniInstaller::UpdateState(State new_state) {
                           /*run_callback=*/false);
 
     state_progress_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(500),
+        FROM_HERE, base::Milliseconds(500),
         base::BindRepeating(&CrostiniInstaller::RunProgressCallback,
                             weak_ptr_factory_.GetWeakPtr()));
   } else {

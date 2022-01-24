@@ -23,20 +23,23 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.media.PictureInPicture;
+import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.notifications.WebPlatformNotificationMetrics;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -114,7 +117,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public int getDisplayMode() {
-        return WebDisplayMode.BROWSER;
+        return DisplayMode.BROWSER;
     }
 
     @Override
@@ -387,6 +390,28 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
+    protected boolean isForceDarkWebContentEnabled() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE)) {
+            return true;
+        }
+        if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
+            return false;
+        }
+        WebContents webContents = mTab.getWebContents();
+        if (webContents == null) {
+            return false;
+        }
+        Profile profile = Profile.fromWebContents(mTab.getWebContents());
+        if (profile == null) {
+            return false;
+        }
+        return isNightModeEnabled()
+                && WebContentsDarkModeController.isEnabledForUrl(
+                        profile, webContents.getVisibleUrl());
+    }
+
+    @Override
     protected boolean isCustomTab() {
         return mIsCustomTab;
     }
@@ -424,7 +449,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                         .with(ModalDialogProperties.CONTROLLER, dialogController)
                         .with(ModalDialogProperties.TITLE, resources,
                                 R.string.http_post_warning_title)
-                        .with(ModalDialogProperties.MESSAGE, resources, R.string.http_post_warning)
+                        .with(ModalDialogProperties.MESSAGE,
+                                resources.getString(R.string.http_post_warning))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                                 R.string.http_post_warning_resend)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,

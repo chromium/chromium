@@ -26,9 +26,11 @@ struct RequestInfo {
 
   RequestInfo(uint32_t remaining_requests, FindHostsCallback callback);
   RequestInfo(RequestInfo&& other);
-  ~RequestInfo();
 
-  DISALLOW_COPY_AND_ASSIGN(RequestInfo);
+  RequestInfo(const RequestInfo&) = delete;
+  RequestInfo& operator=(const RequestInfo&) = delete;
+
+  ~RequestInfo();
 };
 
 // NetworkScanner discovers SMB hosts in the local network by querying
@@ -39,6 +41,10 @@ struct RequestInfo {
 class NetworkScanner : public base::SupportsWeakPtr<NetworkScanner> {
  public:
   NetworkScanner();
+
+  NetworkScanner(const NetworkScanner&) = delete;
+  NetworkScanner& operator=(const NetworkScanner&) = delete;
+
   ~NetworkScanner();
 
   // Query the registered HostLocators and return all the hosts found.
@@ -96,8 +102,6 @@ class NetworkScanner : public base::SupportsWeakPtr<NetworkScanner> {
   // FindHostsInNetwork() from concurrently executing. Used only for DCHECKing
   // if FindHostsInNetwork() is already running.
   bool running_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkScanner);
 };
 
 }  // namespace smb_client

@@ -64,6 +64,10 @@ class PLATFORM_EXPORT FontDataForRangeSet
     return font_data_ && font_data_->IsLoadingFallback();
   }
 
+  bool IsPendingDataUrlCustomFont() const {
+    return font_data_ && font_data_->IsPendingDataUrlCustomFont();
+  }
+
  protected:
   scoped_refptr<SimpleFontData> font_data_;
   scoped_refptr<UnicodeRangeSet> range_set_;

@@ -18,13 +18,15 @@ class MessageView;
 class Notification;
 
 // The widget delegate of a notification popup. The view is owned by the widget.
-class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
-                                               public views::WidgetObserver {
+class MESSAGE_CENTER_EXPORT MessagePopupView
+    : public views::FocusChangeListener,
+      public views::WidgetDelegateView {
  public:
   METADATA_HEADER(MessagePopupView);
 
-  MessagePopupView(const Notification& notification,
-                   MessagePopupCollection* popup_collection);
+  MessagePopupView(MessageView* message_view,
+                   MessagePopupCollection* popup_collection,
+                   bool a11y_feedback_on_init);
   MessagePopupView(const MessagePopupView&) = delete;
   MessagePopupView& operator=(const MessagePopupView&) = delete;
   ~MessagePopupView() override;
@@ -53,6 +55,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
   // in such case MessagePopupView should be deleted. Virtual for unit testing.
   virtual void Close();
 
+  void OnWillChangeFocus(views::View* before, views::View* now) override {}
+  void OnDidChangeFocus(views::View* before, views::View* now) override;
+
   // views::WidgetDelegateView:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -61,13 +66,11 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
   void OnDisplayChanged() override;
   void OnWorkAreaChanged() override;
   void OnFocus() override;
-
-  // views::WidgetObserver:
-  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
-  void OnWidgetDestroyed(views::Widget* widget) override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   bool is_hovered() const { return is_hovered_; }
-  bool is_active() const { return is_active_; }
+  bool is_focused() const { return is_focused_; }
 
   MessageView* message_view() { return message_view_; }
 
@@ -87,10 +90,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
 
   const bool a11y_feedback_on_init_;
   bool is_hovered_ = false;
-  bool is_active_ = false;
+  bool is_focused_ = false;
 
-  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
-      this};
+  // Owned by the widget associated with this view.
+  views::FocusManager* focus_manager_ = nullptr;
 };
 
 }  // namespace message_center

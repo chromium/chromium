@@ -192,6 +192,16 @@ void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
 
 void FormTracker::WillSubmitForm(const WebFormElement& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
+
+  // A form submission may target a frame other than the frame that owns |form|.
+  // The WillSubmitForm() event is only fired on the target frame's FormTracker
+  // (provided that both have the same origin). In such a case, we ignore the
+  // form submission event. If we didn't, we would send |form| to an
+  // AutofillAgent and then to a ContentAutofillDriver etc. which haven't seen
+  // this form before. See crbug.com/1240247#c13 for details.
+  if (!form_util::IsOwnedByFrame(form, render_frame()))
+    return;
+
   FireFormSubmitted(form);
 }
 
@@ -237,9 +247,10 @@ bool FormTracker::CanInferFormSubmitted() {
   // form is now gone, either invisible or removed from the DOM.
   // Otherwise (i.e., there is no form tag), we check if the last element the
   // user has interacted with are gone, to decide if submission has occurred.
-  if (!last_interacted_form_.IsNull())
-    return !form_util::AreFormContentsVisible(last_interacted_form_);
-  else if (!last_interacted_formless_element_.IsNull())
+  if (!last_interacted_form_.IsNull()) {
+    return !base::ranges::any_of(last_interacted_form_.GetFormControlElements(),
+                                 &form_util::IsWebElementVisible);
+  } else if (!last_interacted_formless_element_.IsNull())
     return !form_util::IsWebElementVisible(last_interacted_formless_element_);
 
   return false;

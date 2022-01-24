@@ -8,7 +8,6 @@
 #include <cmath>
 #include <limits>
 #include <utility>
-#include <vector>
 
 #include "base/containers/contains.h"
 #include "media/base/limits.h"
@@ -18,6 +17,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -31,7 +31,7 @@ using BoolSet = media_constraints::DiscreteSet<bool>;
 // TODO(crbug.com/704136): Replace VideoInputDeviceCapabilities with Blink
 // mojo pointer type once dependent types are migrated to Blink.
 using DeviceInfo = VideoInputDeviceCapabilities;
-using DistanceVector = std::vector<double>;
+using DistanceVector = WTF::Vector<double>;
 
 // Number of default settings to be used as final tie-breaking criteria for
 // settings that are equally good at satisfying constraints:
@@ -833,7 +833,10 @@ VideoCaptureSettings SelectSettingsVideoDeviceCapture(
                                    &candidate_distance_vector);
 
         DCHECK_EQ(best_distance.size(), candidate_distance_vector.size());
-        if (candidate_distance_vector < best_distance) {
+        if (std::lexicographical_compare(candidate_distance_vector.begin(),
+                                         candidate_distance_vector.end(),
+                                         best_distance.begin(),
+                                         best_distance.end())) {
           best_distance = candidate_distance_vector;
 
           media::VideoCaptureParams capture_params;

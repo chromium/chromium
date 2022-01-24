@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace gfx {
@@ -30,6 +29,12 @@ class WidgetDelegateView;
 class PresentationReceiverWindowFrame final : public views::Widget {
  public:
   explicit PresentationReceiverWindowFrame(Profile* profile);
+
+  PresentationReceiverWindowFrame(const PresentationReceiverWindowFrame&) =
+      delete;
+  PresentationReceiverWindowFrame& operator=(
+      const PresentationReceiverWindowFrame&) = delete;
+
   ~PresentationReceiverWindowFrame() final;
 
   void InitReceiverFrame(std::unique_ptr<views::WidgetDelegateView> delegate,
@@ -37,11 +42,10 @@ class PresentationReceiverWindowFrame final : public views::Widget {
 
  private:
   const ui::ThemeProvider* GetThemeProvider() const final;
+  ui::ColorProviderManager::InitializerSupplier* GetCustomTheme() const final;
 
   // The profile from which we get the theme.
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationReceiverWindowFrame);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_PRESENTATION_RECEIVER_WINDOW_FRAME_H_

@@ -10,10 +10,12 @@ import android.os.Build;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
+import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -40,6 +42,9 @@ public class AuthenticatorImpl implements Authenticator {
      * process.
      */
     private Origin mOrigin;
+
+    /** The payment information to be added to the "clientDataJson". */
+    private PaymentOptions mPayment;
 
     private org.chromium.mojo.bindings.Callbacks
             .Callback2<Integer, MakeCredentialAuthenticatorResponse> mMakeCredentialCallback;
@@ -70,6 +75,14 @@ public class AuthenticatorImpl implements Authenticator {
      */
     public void setEffectiveOrigin(Origin origin) {
         mOrigin = origin;
+    }
+
+    /**
+     * @param payment The payment information to be added to the "clientDataJson". Should be used
+     * only if the user has confirmed the payment information that was displayed to the user.
+     */
+    public void setPaymentOptions(PaymentOptions payment) {
+        mPayment = payment;
     }
 
     @Override
@@ -113,33 +126,39 @@ public class AuthenticatorImpl implements Authenticator {
             return;
         }
 
-        Fido2ApiHandler.getInstance().getAssertion(options, mRenderFrameHost, mOrigin,
+        Fido2ApiHandler.getInstance().getAssertion(options, mRenderFrameHost, mOrigin, mPayment,
                 (status, response) -> onSignResponse(status, response), status -> onError(status));
     }
 
     @Override
     @TargetApi(Build.VERSION_CODES.N)
     public void isUserVerifyingPlatformAuthenticatorAvailable(
-            IsUserVerifyingPlatformAuthenticatorAvailableResponse callback) {
+            final IsUserVerifyingPlatformAuthenticatorAvailableResponse callback) {
+        IsUserVerifyingPlatformAuthenticatorAvailableResponse decoratedCallback = (isUvpaa) -> {
+            RecordHistogram.recordBooleanHistogram(
+                    "WebAuthentication.IsUVPlatformAuthenticatorAvailable2", isUvpaa);
+            callback.call(isUvpaa);
+        };
+
         Context context = ContextUtils.getApplicationContext();
         // ChromeActivity could be null.
         if (context == null) {
-            callback.call(false);
+            decoratedCallback.call(false);
             return;
         }
 
         if (!ContentFeatureList.isEnabled(ContentFeatureList.WEB_AUTH)) {
-            callback.call(false);
+            decoratedCallback.call(false);
             return;
         }
 
         if (PackageUtils.getPackageVersion(context, GMSCORE_PACKAGE_NAME)
                 < Fido2ApiHandler.GMSCORE_MIN_VERSION) {
-            callback.call(false);
+            decoratedCallback.call(false);
             return;
         }
 
-        mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(callback);
+        mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(decoratedCallback);
         Fido2ApiHandler.getInstance().isUserVerifyingPlatformAuthenticatorAvailable(
                 mRenderFrameHost,
                 isUvpaa -> onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));

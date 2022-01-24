@@ -10,6 +10,7 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -57,6 +58,9 @@ class PLATFORM_EXPORT SurfaceLayerBridge
     return current_surface_id_;
   }
 
+  void RegisterFrameSinkHierarchy() override;
+  void UnregisterFrameSinkHierarchy() override;
+
  private:
   scoped_refptr<cc::SurfaceLayer> surface_layer_;
   scoped_refptr<cc::SolidColorLayer> solid_color_layer_;
@@ -68,6 +72,8 @@ class PLATFORM_EXPORT SurfaceLayerBridge
   mojo::Receiver<blink::mojom::blink::EmbeddedFrameSinkClient> receiver_{this};
   mojo::Receiver<blink::mojom::blink::SurfaceEmbedder>
       surface_embedder_receiver_{this};
+  mojo::Remote<mojom::blink::EmbeddedFrameSinkProvider>
+      embedded_frame_sink_provider_;
 
   const viz::FrameSinkId frame_sink_id_;
   const ContainsVideo contains_video_;

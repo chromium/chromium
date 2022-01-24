@@ -3,27 +3,30 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
+#include "base/containers/span.h"
 
 #include <memory>
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/grit/ash_media_app_resources.h"
+#include "ash/webui/media_app_ui/url_constants.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chromeos/components/media_app_ui/url_constants.h"
-#include "chromeos/grit/chromeos_media_app_resources.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
+using FileHandlerConfig = std::pair<const char*, const char*>;
+
 // FileHandler configuration.
-// See https://github.com/WICG/file-handling/blob/master/explainer.md.
-constexpr std::tuple<const char*, const char*> kFileHandlers[] = {
+// See https://github.com/WICG/file-handling/blob/main/explainer.md.
+constexpr FileHandlerConfig kFileHandlers[] = {
     {"image/*", ""},
     {"video/*", ""},
 
@@ -57,19 +60,45 @@ constexpr std::tuple<const char*, const char*> kFileHandlers[] = {
 
     // PDF.
     {"application/pdf", ".pdf"},
+
+    // When updating this list, `FOO_EXTENSIONS` in go/bl-launch should be
+    // updated as well.
 };
 
-using AcceptMap = decltype(blink::Manifest::FileHandler::accept);
+constexpr FileHandlerConfig kAudioFileHandlers[] = {
+    {"audio/*", ""},
 
-// Converts the kFileHandlers constexpr into the std::map needed to populate the
-// web app manifest's `accept` property.
-AcceptMap MakeHandlerAccept() {
-  AcceptMap result;
-  const std::u16string separator = u",";
-  for (const auto& handler : kFileHandlers) {
-    result[base::ASCIIToUTF16(std::get<0>(handler))] =
-        base::SplitString(base::ASCIIToUTF16(std::get<1>(handler)), separator,
-                          base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    // More audio formats.
+    {"audio/flac", ".flac"},
+    {"audio/m4a", ".m4a"},
+    {"audio/mpeg", ".mp3"},
+    {"audio/ogg", ".oga,.ogg,.opus"},
+    {"audio/wav", ".wav"},
+    {"audio/webm", "weba"},
+
+    // Note: some extensions appear twice. See mime_util.cc.
+    {"audio/mp3", "mp3"},
+    {"audio/x-m4a", "m4a"},
+
+    // When updating this list, `AUDIO_EXTENSIONS` in go/bl-launch should be
+    // updated as well.
+};
+
+// Converts a FileHandlerConfig constexpr into the type needed to populate the
+// WebApplicationInfo's `accept` property.
+std::vector<apps::FileHandler::AcceptEntry> MakeFileHandlerAccept(
+    base::span<const FileHandlerConfig> config) {
+  std::vector<apps::FileHandler::AcceptEntry> result;
+  result.reserve(config.size());
+
+  const std::string separator = ",";
+  for (const auto& handler : config) {
+    result.emplace_back();
+    result.back().mime_type = handler.first;
+    auto file_extensions = base::SplitString(
+        handler.second, separator, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    result.back().file_extensions.insert(file_extensions.begin(),
+                                         file_extensions.end());
   }
   return result;
 }
@@ -89,8 +118,8 @@ MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->start_url = GURL(chromeos::kChromeUIMediaAppURL);
-  info->scope = GURL(chromeos::kChromeUIMediaAppURL);
+  info->start_url = GURL(ash::kChromeUIMediaAppURL);
+  info->scope = GURL(ash::kChromeUIMediaAppURL);
 
   info->title = l10n_util::GetStringUTF16(IDS_MEDIA_APP_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
@@ -104,19 +133,26 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
           {"app_icon_128.png", 128, IDR_MEDIA_APP_GALLERY_ICON_128_PNG},
           {"app_icon_192.png", 192, IDR_MEDIA_APP_GALLERY_ICON_192_PNG},
           {"app_icon_256.png", 256, IDR_MEDIA_APP_GALLERY_ICON_256_PNG},
-
       },
       *info);
   info->theme_color = 0xff202124;
   info->background_color = 0xff3c4043;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->open_as_window = true;
+  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
-  blink::Manifest::FileHandler file_handler;
-  file_handler.action = GURL(chromeos::kChromeUIMediaAppURL);
-  file_handler.name = u"Media File";
-  file_handler.accept = MakeHandlerAccept();
-  info->file_handlers.push_back(std::move(file_handler));
+  // Add handlers for image+video and audio. We keep them separate since their
+  // UX are sufficiently different (we don't want audio files to have a carousel
+  // since this would be a second layer of navigation in conjunction with the
+  // play queue). Order matters here; the Files app will prefer earlier
+  // handlers.
+  apps::FileHandler image_video_handler;
+  image_video_handler.action = GURL(ash::kChromeUIMediaAppURL);
+  image_video_handler.accept = MakeFileHandlerAccept(kFileHandlers);
+  info->file_handlers.push_back(std::move(image_video_handler));
+  apps::FileHandler audio_handler;
+  audio_handler.action = GURL(ash::kChromeUIMediaAppURL);
+  audio_handler.accept = MakeFileHandlerAccept(kAudioFileHandlers);
+  info->file_handlers.push_back(std::move(audio_handler));
   return info;
 }
 
@@ -133,14 +169,19 @@ bool MediaSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
+bool MediaSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
 bool MediaSystemAppDelegate::ShouldShowInSearch() const {
   return false;
 }
 
 bool MediaSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
-  return base::FeatureList::IsEnabled(chromeos::features::kMediaAppMultiWindow);
+  return base::FeatureList::IsEnabled(
+      chromeos::features::kMediaAppHandlesAudio);
 }
 
-bool MediaSystemAppDelegate::ShouldBeSingleWindow() const {
+bool MediaSystemAppDelegate::ShouldReuseExistingWindow() const {
   return !ShouldShowNewWindowMenuOption();
 }

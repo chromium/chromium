@@ -83,7 +83,8 @@
       hasDistillationDetails ? entry->DistillationSize() : 0;
   item.distillationSizeText =
       GetReadingListCellDistillationSizeText(distillationSize);
-  if (IsReadingListMessagesEnabled() && !entry->EstimatedReadTime().is_zero()) {
+  if (IsReadingListTimeToReadEnabled() &&
+      !entry->EstimatedReadTime().is_zero()) {
     item.estimatedReadTimeText =
         base::SysUTF16ToNSString(ui::TimeFormat::Simple(
             ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_SHORT,

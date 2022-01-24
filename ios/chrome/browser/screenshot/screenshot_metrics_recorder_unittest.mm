@@ -31,8 +31,7 @@ class ScreenshotMetricsRecorderTest : public PlatformTest {
         OCMPartialMock([UIApplication sharedApplication]);
     screenshot_metrics_recorder_ = [[ScreenshotMetricsRecorder alloc] init];
     [screenshot_metrics_recorder_ startRecordingMetrics];
-    if (@available(iOS 13, *))
-      window_scene_mock_ = OCMClassMock([UIWindowScene class]);
+    window_scene_mock_ = OCMClassMock([UIWindowScene class]);
   }
 
   void SendScreenshotNotification() {
@@ -49,48 +48,30 @@ class ScreenshotMetricsRecorderTest : public PlatformTest {
 };
 
 // Tests when a UIApplicationUserDidTakeScreenshotNotification
-// happens on a device with an iOS less than 13.
-TEST_F(ScreenshotMetricsRecorderTest, iOS12Screenshot) {
-  // Expected: Metric recorded
-  if (@available(iOS 13, *))
-    // If iOS13 test will automatically pass
-    return;
-
-  SendScreenshotNotification();
-  EXPECT_EQ(1, user_action_tester_.GetActionCount(kSingleScreenUserActionName));
-}
-
-// Tests when a UIApplicationUserDidTakeScreenshotNotification
 // happens on a device where multiple windows are not enabled.
 TEST_F(ScreenshotMetricsRecorderTest, iOS13MultiWindowNotEnabled) {
   // Expected: Metric recorded
-  if (@available(iOS 13, *)) {
-    OCMStub([application_partial_mock_ supportsMultipleScenes]).andReturn(NO);
-    SendScreenshotNotification();
-    EXPECT_EQ(1,
-              user_action_tester_.GetActionCount(kSingleScreenUserActionName));
-  }
+  OCMStub([application_partial_mock_ supportsMultipleScenes]).andReturn(NO);
+  SendScreenshotNotification();
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(kSingleScreenUserActionName));
 }
 
 // Tests that a metric is logged if there's a single screen with a single window
 // and a UIApplicationUserDidTakeScreenshotNotification is sent.
 TEST_F(ScreenshotMetricsRecorderTest, iOS13SingleScreenSingleWindow) {
   // Expected: Metric recorded
-  if (@available(iOS 13, *)) {
-    OCMStub([application_partial_mock_ supportsMultipleScenes]).andReturn(YES);
+  OCMStub([application_partial_mock_ supportsMultipleScenes]).andReturn(YES);
 
-    id window_scene_mock_ = OCMClassMock([UIWindowScene class]);
-    // Mark the window as foregroundActive
-    OCMStub([window_scene_mock_ activationState])
-        .andReturn(UISceneActivationStateForegroundActive);
+  id window_scene_mock_ = OCMClassMock([UIWindowScene class]);
+  // Mark the window as foregroundActive
+  OCMStub([window_scene_mock_ activationState])
+      .andReturn(UISceneActivationStateForegroundActive);
 
-    NSSet* scenes = [NSSet setWithObject:window_scene_mock_];
-    // Attach it to the sharedApplication
-    OCMStub([application_partial_mock_ connectedScenes]).andReturn(scenes);
-    SendScreenshotNotification();
-    EXPECT_EQ(1,
-              user_action_tester_.GetActionCount(kSingleScreenUserActionName));
-  }
+  NSSet* scenes = [NSSet setWithObject:window_scene_mock_];
+  // Attach it to the sharedApplication
+  OCMStub([application_partial_mock_ connectedScenes]).andReturn(scenes);
+  SendScreenshotNotification();
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(kSingleScreenUserActionName));
 }
 
 // Tests that a metric is logged if there're are multiple screens each with
@@ -98,55 +79,48 @@ TEST_F(ScreenshotMetricsRecorderTest, iOS13SingleScreenSingleWindow) {
 // sent.
 TEST_F(ScreenshotMetricsRecorderTest, iOS13MultiScreenSingleWindow) {
   // Expected: Metric recorded
-  if (@available(iOS 13, *)) {
-    OCMStub([application_partial_mock_ supportsMultipleScenes]).andReturn(YES);
+  OCMStub([application_partial_mock_ supportsMultipleScenes]).andReturn(YES);
 
-    // Mark the window as foregroundActive.
-    id foreground_window_scene_mock = OCMClassMock([UIWindowScene class]);
-    OCMStub([window_scene_mock_ activationState])
-        .andReturn(UISceneActivationStateForegroundActive);
+  // Mark the window as foregroundActive.
+  id foreground_window_scene_mock = OCMClassMock([UIWindowScene class]);
+  OCMStub([window_scene_mock_ activationState])
+      .andReturn(UISceneActivationStateForegroundActive);
 
-    // Mark the window as Background.
-    id background_window_scene_mock = OCMClassMock([UIWindowScene class]);
-    OCMStub([background_window_scene_mock activationState])
-        .andReturn(UISceneActivationStateBackground);
+  // Mark the window as Background.
+  id background_window_scene_mock = OCMClassMock([UIWindowScene class]);
+  OCMStub([background_window_scene_mock activationState])
+      .andReturn(UISceneActivationStateBackground);
 
-    NSSet* scenes =
-        [[NSSet alloc] initWithObjects:foreground_window_scene_mock,
-                                       background_window_scene_mock, nil];
-    // Attatch the Scene State to the sharedApplication.
-    OCMStub([application_partial_mock_ connectedScenes]).andReturn(scenes);
-    SendScreenshotNotification();
-    EXPECT_EQ(1,
-              user_action_tester_.GetActionCount(kSingleScreenUserActionName));
-  }
+  NSSet* scenes =
+      [[NSSet alloc] initWithObjects:foreground_window_scene_mock,
+                                     background_window_scene_mock, nil];
+  // Attatch the Scene State to the sharedApplication.
+  OCMStub([application_partial_mock_ connectedScenes]).andReturn(scenes);
+  SendScreenshotNotification();
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(kSingleScreenUserActionName));
 }
 
 // Tests that a metric is not logged if there is a multi-window screen in the
 // foreground and a UIApplicationUserDidTakeScreenshotNotification is sent.
 TEST_F(ScreenshotMetricsRecorderTest, iOS13MultiScreenMultiWindow) {
   // Expected: Metric not recorded
-  if (@available(iOS 13, *)) {
-    OCMStub([application_partial_mock_ supportsMultipleScenes]).andReturn(YES);
+  OCMStub([application_partial_mock_ supportsMultipleScenes]).andReturn(YES);
 
-    // Mark the window as foregroundActive.
-    id first_foreground_window_scene_mock = OCMClassMock([UIWindowScene class]);
-    OCMStub([window_scene_mock_ activationState])
-        .andReturn(UISceneActivationStateForegroundActive);
+  // Mark the window as foregroundActive.
+  id first_foreground_window_scene_mock = OCMClassMock([UIWindowScene class]);
+  OCMStub([window_scene_mock_ activationState])
+      .andReturn(UISceneActivationStateForegroundActive);
 
-    // Mark the window as foregroundActive.
-    id second_foreground_window_scene_mock =
-        OCMClassMock([UIWindowScene class]);
-    OCMStub([second_foreground_window_scene_mock activationState])
-        .andReturn(UISceneActivationStateForegroundActive);
+  // Mark the window as foregroundActive.
+  id second_foreground_window_scene_mock = OCMClassMock([UIWindowScene class]);
+  OCMStub([second_foreground_window_scene_mock activationState])
+      .andReturn(UISceneActivationStateForegroundActive);
 
-    NSSet* scenes = [[NSSet alloc]
-        initWithObjects:first_foreground_window_scene_mock,
-                        second_foreground_window_scene_mock, nil];
-    // Attatch the Scene State to the sharedApplication.
-    OCMStub([application_partial_mock_ connectedScenes]).andReturn(scenes);
-    SendScreenshotNotification();
-    EXPECT_EQ(0,
-              user_action_tester_.GetActionCount(kSingleScreenUserActionName));
-  }
+  NSSet* scenes =
+      [[NSSet alloc] initWithObjects:first_foreground_window_scene_mock,
+                                     second_foreground_window_scene_mock, nil];
+  // Attatch the Scene State to the sharedApplication.
+  OCMStub([application_partial_mock_ connectedScenes]).andReturn(scenes);
+  SendScreenshotNotification();
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(kSingleScreenUserActionName));
 }

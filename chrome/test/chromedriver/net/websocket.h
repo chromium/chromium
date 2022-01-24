@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/completion_once_callback.h"
@@ -32,6 +31,10 @@ class WebSocket {
   WebSocket(const GURL& url,
             WebSocketListener* listener,
             size_t read_buffer_size = 4096);
+
+  WebSocket(const WebSocket&) = delete;
+  WebSocket& operator=(const WebSocket&) = delete;
+
   virtual ~WebSocket();
 
   // Initializes the WebSocket connection. Invokes the given callback with
@@ -81,10 +84,9 @@ class WebSocket {
   net::WebSocketFrameParser parser_;
   net::WebSocketMaskingKey current_masking_key_ = {};
   bool is_current_frame_masked_ = false;
+  bool is_current_message_opcode_text_ = false;
   uint64_t current_frame_offset_ = 0;
   std::string next_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocket);
 };
 
 // Listens for WebSocket messages and disconnects on the same thread as the

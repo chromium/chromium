@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_CHROMEOS_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
 
@@ -18,6 +17,9 @@ class WebContents;
 class VersionUpdaterCros : public VersionUpdater,
                            public chromeos::UpdateEngineClient::Observer {
  public:
+  VersionUpdaterCros(const VersionUpdaterCros&) = delete;
+  VersionUpdaterCros& operator=(const VersionUpdaterCros&) = delete;
+
   // VersionUpdater implementation.
   void CheckForUpdate(StatusCallback callback, PromoteCallback) override;
   void SetChannel(const std::string& channel,
@@ -68,8 +70,6 @@ class VersionUpdaterCros : public VersionUpdater,
   bool check_for_update_when_idle_;
 
   base::WeakPtrFactory<VersionUpdaterCros> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VersionUpdaterCros);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_CHROMEOS_H_

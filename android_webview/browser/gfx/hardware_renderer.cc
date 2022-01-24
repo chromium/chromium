@@ -239,4 +239,9 @@ ChildFrameQueue HardwareRenderer::WaitAndPruneFrameQueue(
   return pruned_frames;
 }
 
+void HardwareRenderer::SetChildFrameForTesting(
+    std::unique_ptr<ChildFrame> child_frame) {
+  child_frame_ = std::move(child_frame);
+}
+
 }  // namespace android_webview

@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_CONTROLLER_OBSERVER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -14,6 +13,10 @@ namespace ash {
 class ASH_PUBLIC_EXPORT WallpaperControllerObserver {
  public:
   WallpaperControllerObserver();
+
+  WallpaperControllerObserver(const WallpaperControllerObserver&) = delete;
+  WallpaperControllerObserver& operator=(const WallpaperControllerObserver&) =
+      delete;
 
   // Invoked when the wallpaper is about to change.
   virtual void OnWallpaperChanging() {}
@@ -41,9 +44,6 @@ class ASH_PUBLIC_EXPORT WallpaperControllerObserver {
 
  protected:
   virtual ~WallpaperControllerObserver();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WallpaperControllerObserver);
 };
 
 }  // namespace ash

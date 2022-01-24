@@ -56,7 +56,7 @@ class RepeatedEventHandler {
     this.listening_ = false;
 
     /** @private {!function(!chrome.automation.AutomationEvent)} */
-    this.handler_ = this.onEvent_.bind(this);
+    this.handler_ = event => this.onEvent_(event);
 
     this.start();
   }
@@ -89,7 +89,7 @@ class RepeatedEventHandler {
    */
   onEvent_(event) {
     this.eventStack_.push(event);
-    setTimeout(this.handleEvent_.bind(this), 0);
+    setTimeout(() => this.handleEvent_( ), 0);
   }
 
   /** @private */

@@ -23,6 +23,10 @@ class IpcMouseCursorMonitor : public webrtc::MouseCursorMonitor {
  public:
   explicit IpcMouseCursorMonitor(
       scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
+
+  IpcMouseCursorMonitor(const IpcMouseCursorMonitor&) = delete;
+  IpcMouseCursorMonitor& operator=(const IpcMouseCursorMonitor&) = delete;
+
   ~IpcMouseCursorMonitor() override;
 
   // webrtc::MouseCursorMonitor interface.
@@ -41,8 +45,6 @@ class IpcMouseCursorMonitor : public webrtc::MouseCursorMonitor {
 
   // Used to cancel tasks pending on the capturer when it is stopped.
   base::WeakPtrFactory<IpcMouseCursorMonitor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IpcMouseCursorMonitor);
 };
 
 }  // namespace remoting

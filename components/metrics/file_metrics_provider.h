@@ -163,6 +163,10 @@ class FileMetricsProvider : public MetricsProvider,
   };
 
   explicit FileMetricsProvider(PrefService* local_state);
+
+  FileMetricsProvider(const FileMetricsProvider&) = delete;
+  FileMetricsProvider& operator=(const FileMetricsProvider&) = delete;
+
   ~FileMetricsProvider() override;
 
   // Indicates a file or directory to be monitored and how the file or files
@@ -355,8 +359,6 @@ class FileMetricsProvider : public MetricsProvider,
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FileMetricsProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileMetricsProvider);
 };
 
 }  // namespace metrics

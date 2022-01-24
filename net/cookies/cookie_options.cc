@@ -48,29 +48,6 @@ void CookieOptions::SameSiteCookieContext::SetContextTypesForTesting(
   schemeful_context_ = schemeful_context_type;
 }
 
-bool CookieOptions::SameSiteCookieContext::AffectedByBugfix1166211() const {
-  return GetMetadataForCurrentSchemefulMode().affected_by_bugfix_1166211;
-}
-
-void CookieOptions::SameSiteCookieContext::
-    MaybeApplyBugfix1166211WarningToStatusAndLogHistogram(
-        CookieInclusionStatus& status) const {
-  DCHECK(AffectedByBugfix1166211());
-  bool changed =
-      status.HasOnlyExclusionReason(
-          CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX) ||
-      status.HasOnlyExclusionReason(
-          CookieInclusionStatus::ExclusionReason::
-              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX);
-  if (changed) {
-    status.AddWarningReason(
-        CookieInclusionStatus::WarningReason::
-            WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211);
-  }
-  base::UmaHistogramBoolean(
-      "Cookie.SameSiteCookieInclusionChangedByBugfix1166211", changed);
-}
-
 bool CookieOptions::SameSiteCookieContext::CompleteEquivalenceForTesting(
     const SameSiteCookieContext& other) const {
   return (*this == other) && (metadata() == other.metadata()) &&
@@ -91,10 +68,7 @@ bool operator!=(const CookieOptions::SameSiteCookieContext& lhs,
 bool operator==(
     const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
     const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs) {
-  return std::tie(lhs.affected_by_bugfix_1166211,
-                  lhs.cross_site_redirect_downgrade) ==
-         std::tie(rhs.affected_by_bugfix_1166211,
-                  rhs.cross_site_redirect_downgrade);
+  return lhs.cross_site_redirect_downgrade == rhs.cross_site_redirect_downgrade;
 }
 
 bool operator!=(

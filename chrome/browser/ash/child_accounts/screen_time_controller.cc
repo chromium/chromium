@@ -33,8 +33,7 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kUsageTimeLimitWarningTime =
-    base::TimeDelta::FromMinutes(15);
+constexpr base::TimeDelta kUsageTimeLimitWarningTime = base::Minutes(15);
 
 // Dictionary keys for prefs::kScreenTimeLastState.
 constexpr char kScreenStateLocked[] = "locked";
@@ -401,8 +400,7 @@ ScreenTimeController::GetLastStateFromPref() {
       last_state->FindKey(kScreenStateRemainingUsage);
   if (!remaining_usage || !remaining_usage->is_int())
     return absl::nullopt;
-  result.remaining_usage =
-      base::TimeDelta::FromMilliseconds(remaining_usage->GetInt());
+  result.remaining_usage = base::Milliseconds(remaining_usage->GetInt());
 
   // Verify time_usage_limit_started from the pref is a double value.
   const base::Value* time_usage_limit_started =
@@ -474,13 +472,10 @@ ScreenTimeController::ConvertPolicyType(
   switch (policy_type) {
     case usage_time_limit::PolicyType::kFixedLimit:
       return absl::make_optional(TimeLimitNotifier::LimitType::kBedTime);
-      break;
     case usage_time_limit::PolicyType::kUsageLimit:
       return absl::make_optional(TimeLimitNotifier::LimitType::kScreenTime);
-      break;
     case usage_time_limit::PolicyType::kOverride:
       return absl::make_optional(TimeLimitNotifier::LimitType::kOverride);
-      break;
     case usage_time_limit::PolicyType::kNoPolicy:
       return absl::nullopt;
   }

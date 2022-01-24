@@ -22,4 +22,4 @@ add_executable(simple simple.cc)
 
 find_package(absl REQUIRED)
 
-target_link_libraries(simple absl::strings)
+target_link_libraries(simple absl::strings absl::config)

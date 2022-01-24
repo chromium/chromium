@@ -37,7 +37,7 @@ FEConvolveMatrix::FEConvolveMatrix(Filter* filter,
                                    const IntSize& kernel_size,
                                    float divisor,
                                    float bias,
-                                   const IntPoint& target_offset,
+                                   const gfx::Vector2d& target_offset,
                                    FEConvolveMatrix::EdgeModeType edge_mode,
                                    bool preserve_alpha,
                                    const Vector<float>& kernel_matrix)
@@ -54,7 +54,7 @@ FloatRect FEConvolveMatrix::MapEffect(const FloatRect& rect) const {
   if (!ParametersValid())
     return rect;
   FloatRect result = rect;
-  result.MoveBy(FloatPoint(-target_offset_));
+  result.Offset(FloatSize(-target_offset_));
   result.Expand(FloatSize(kernel_size_));
   return result;
 }
@@ -73,7 +73,7 @@ bool FEConvolveMatrix::SetBias(float bias) {
   return true;
 }
 
-bool FEConvolveMatrix::SetTargetOffset(const IntPoint& target_offset) {
+bool FEConvolveMatrix::SetTargetOffset(const gfx::Vector2d& target_offset) {
   if (target_offset_ == target_offset)
     return false;
   target_offset_ = target_offset;
@@ -115,9 +115,9 @@ bool FEConvolveMatrix::ParametersValid() const {
     return false;
   if (SafeCast<size_t>(kernel_area) != kernel_matrix_.size())
     return false;
-  if (target_offset_.X() < 0 || target_offset_.X() >= kernel_size_.Width())
+  if (target_offset_.x() < 0 || target_offset_.x() >= kernel_size_.width())
     return false;
-  if (target_offset_.Y() < 0 || target_offset_.Y() >= kernel_size_.Height())
+  if (target_offset_.y() < 0 || target_offset_.y() >= kernel_size_.height())
     return false;
   if (!divisor_)
     return false;
@@ -131,12 +131,12 @@ sk_sp<PaintFilter> FEConvolveMatrix::CreateImageFilter() {
   sk_sp<PaintFilter> input(paint_filter_builder::Build(
       InputEffect(0), OperatingInterpolationSpace()));
   SkISize kernel_size(
-      SkISize::Make(kernel_size_.Width(), kernel_size_.Height()));
+      SkISize::Make(kernel_size_.width(), kernel_size_.height()));
   // parametersValid() above checks that the kernel area fits in int.
   int num_elements = SafeCast<int>(kernel_size_.Area());
   SkScalar gain = SkFloatToScalar(1.0f / divisor_);
   SkScalar bias = SkFloatToScalar(bias_ * 255);
-  SkIPoint target = SkIPoint::Make(target_offset_.X(), target_offset_.Y());
+  SkIPoint target = SkIPoint::Make(target_offset_.x(), target_offset_.y());
   SkTileMode tile_mode = ToSkiaTileMode(edge_mode_);
   bool convolve_alpha = !preserve_alpha_;
   auto kernel = std::make_unique<SkScalar[]>(num_elements);
@@ -176,7 +176,7 @@ WTF::TextStream& FEConvolveMatrix::ExternalRepresentation(WTF::TextStream& ts,
      << "kernelMatrix=\"" << kernel_matrix_ << "\" "
      << "divisor=\"" << divisor_ << "\" "
      << "bias=\"" << bias_ << "\" "
-     << "target=\"" << target_offset_ << "\" "
+     << "target=\"" << target_offset_.ToString() << "\" "
      << "edgeMode=\"" << edge_mode_ << "\" "
      << "preserveAlpha=\"" << preserve_alpha_ << "\"]\n";
   InputEffect(0)->ExternalRepresentation(ts, indent + 1);

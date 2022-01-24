@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_DATA_USE_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_DATA_USE_METRICS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
@@ -22,6 +21,10 @@ class DataUseMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   DataUseMetricsObserver();
+
+  DataUseMetricsObserver(const DataUseMetricsObserver&) = delete;
+  DataUseMetricsObserver& operator=(const DataUseMetricsObserver&) = delete;
+
   ~DataUseMetricsObserver() override;
 
  private:
@@ -36,8 +39,6 @@ class DataUseMetricsObserver
       const std::string& mime_type) const override;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DataUseMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_DATA_USE_METRICS_OBSERVER_H_

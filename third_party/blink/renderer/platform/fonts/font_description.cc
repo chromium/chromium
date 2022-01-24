@@ -107,6 +107,9 @@ FontDescription::FontDescription()
   fields_.subpixel_ascent_descent_ = false;
   fields_.font_optical_sizing_ = OpticalSizing::kAutoOpticalSizing;
   fields_.hash_category_ = kHashRegularValue;
+  fields_.font_synthesis_weight_ = kAutoFontSynthesisWeight;
+  fields_.font_synthesis_style_ = kAutoFontSynthesisStyle;
+  fields_.font_synthesis_small_caps_ = kAutoFontSynthesisSmallCaps;
 }
 
 FontDescription::FontDescription(const FontDescription&) = default;
@@ -247,8 +250,7 @@ FontDescription FontDescription::SizeAdjustedFontDescription(
 
 FontCacheKey FontDescription::CacheKey(
     const FontFaceCreationParams& creation_params,
-    bool is_unique_match,
-    const FontSelectionRequest& font_selection_request) const {
+    bool is_unique_match) const {
   unsigned options =
       static_cast<unsigned>(fields_.font_optical_sizing_) << 7 |  // bit 8
       static_cast<unsigned>(fields_.synthetic_italic_) << 6 |     // bit 7
@@ -389,9 +391,11 @@ unsigned FontDescription::GetHash() const {
   unsigned hash = StyleHashWithoutFamilyList();
   for (const FontFamily* family = &family_list_; family;
        family = family->Next()) {
-    if (!family->Family().length())
+    if (family->FamilyName().IsEmpty())
       continue;
-    WTF::AddIntToHash(hash, WTF::AtomicStringHash::GetHash(family->Family()));
+    WTF::AddIntToHash(hash, family->FamilyIsGeneric());
+    WTF::AddIntToHash(hash,
+                      WTF::AtomicStringHash::GetHash(family->FamilyName()));
   }
   return hash;
 }
@@ -591,6 +595,57 @@ String FontDescription::ToString(FontVariantCaps variant) {
   return "Unknown";
 }
 
+String FontDescription::ToStringForIdl(FontVariantCaps variant) {
+  switch (variant) {
+    case FontVariantCaps::kCapsNormal:
+      return "normal";
+    case FontVariantCaps::kSmallCaps:
+      return "small-caps";
+    case FontVariantCaps::kAllSmallCaps:
+      return "all-small-caps";
+    case FontVariantCaps::kPetiteCaps:
+      return "petite-caps";
+    case FontVariantCaps::kAllPetiteCaps:
+      return "all-petite-caps";
+    case FontVariantCaps::kUnicase:
+      return "unicase";
+    case FontVariantCaps::kTitlingCaps:
+      return "titling-caps";
+  }
+  return "Unknown";
+}
+
+String FontDescription::ToString(FontSynthesisWeight font_synthesis_weight) {
+  switch (font_synthesis_weight) {
+    case FontSynthesisWeight::kAutoFontSynthesisWeight:
+      return "Auto";
+    case FontSynthesisWeight::kNoneFontSynthesisWeight:
+      return "None";
+  }
+  return "Unknown";
+}
+
+String FontDescription::ToString(FontSynthesisStyle font_synthesis_style) {
+  switch (font_synthesis_style) {
+    case FontSynthesisStyle::kAutoFontSynthesisStyle:
+      return "Auto";
+    case FontSynthesisStyle::kNoneFontSynthesisStyle:
+      return "None";
+  }
+  return "Unknown";
+}
+
+String FontDescription::ToString(
+    FontSynthesisSmallCaps font_synthesis_small_caps) {
+  switch (font_synthesis_small_caps) {
+    case FontSynthesisSmallCaps::kAutoFontSynthesisSmallCaps:
+      return "Auto";
+    case FontSynthesisSmallCaps::kNoneFontSynthesisSmallCaps:
+      return "None";
+  }
+  return "Unknown";
+}
+
 String FontDescription::VariantLigatures::ToString() const {
   return String::Format(
       "common=%s, discretionary=%s, historical=%s, contextual=%s",
@@ -639,7 +694,8 @@ String FontDescription::ToString() const {
       "keyword_size=%u, font_smoothing=%s, text_rendering=%s, "
       "synthetic_bold=%s, synthetic_italic=%s, subpixel_positioning=%s, "
       "subpixel_ascent_descent=%s, variant_numeric=[%s], "
-      "variant_east_asian=[%s], font_optical_sizing=%s",
+      "variant_east_asian=[%s], font_optical_sizing=%s, "
+      "font_synthesis_weight=%s, font_synthesis_style=%s",
       family_list_.ToString().Ascii().c_str(),
       (feature_settings_ ? feature_settings_->ToString().Ascii().c_str() : ""),
       (variation_settings_ ? variation_settings_->ToString().Ascii().c_str()
@@ -668,7 +724,9 @@ String FontDescription::ToString() const {
       ToBooleanString(SubpixelAscentDescent()),
       VariantNumeric().ToString().Ascii().c_str(),
       VariantEastAsian().ToString().Ascii().c_str(),
-      blink::ToString(FontOpticalSizing()).Ascii().c_str());
+      blink::ToString(FontOpticalSizing()).Ascii().c_str(),
+      FontDescription::ToString(GetFontSynthesisWeight()).Ascii().c_str(),
+      FontDescription::ToString(GetFontSynthesisStyle()).Ascii().c_str());
 }
 
 }  // namespace blink

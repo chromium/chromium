@@ -10,6 +10,7 @@
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/worker_thread_util.h"
+#include "v8/include/v8-context.h"
 
 namespace extensions {
 

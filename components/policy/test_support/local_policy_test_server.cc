@@ -14,6 +14,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"

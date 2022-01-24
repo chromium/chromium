@@ -192,13 +192,13 @@ std::vector<AssistantNotificationButton> CreateTimerNotificationButtons(
          /*remove_notification_on_click=*/true});
 
     // "ADD 1 MIN" button.
-    buttons.push_back({l10n_util::GetStringUTF8(
-                           IDS_ASSISTANT_TIMER_NOTIFICATION_ADD_1_MIN_BUTTON),
-                       assistant::util::CreateAlarmTimerDeepLink(
-                           AlarmTimerAction::kAddTimeToTimer, timer.id,
-                           base::TimeDelta::FromMinutes(1))
-                           .value(),
-                       /*remove_notification_on_click=*/false});
+    buttons.push_back(
+        {l10n_util::GetStringUTF8(
+             IDS_ASSISTANT_TIMER_NOTIFICATION_ADD_1_MIN_BUTTON),
+         assistant::util::CreateAlarmTimerDeepLink(
+             AlarmTimerAction::kAddTimeToTimer, timer.id, base::Minutes(1))
+             .value(),
+         /*remove_notification_on_click=*/false});
   } else {
     // "CANCEL" button.
     buttons.push_back({l10n_util::GetStringUTF8(
@@ -222,7 +222,7 @@ AssistantNotificationPriority CreateTimerNotificationPriority(
 
   // If the notification has lived for at least |kPopupThreshold|, drop the
   // priority to |kLow| so that the notification will not pop up to the user.
-  constexpr base::TimeDelta kPopupThreshold = base::TimeDelta::FromSeconds(6);
+  constexpr base::TimeDelta kPopupThreshold = base::Seconds(6);
   const base::TimeDelta lifetime =
       base::Time::Now() - timer.creation_time.value_or(base::Time::Now());
   if (lifetime >= kPopupThreshold)
@@ -463,8 +463,7 @@ void AssistantAlarmTimerControllerImpl::ScheduleNextTick(
   // when Tick() is called due to the possibility of the |model_| being updated
   // via a call to OnTimerStateChanged(), such as might happen if a timer is
   // created, paused, resumed, or removed by LibAssistant.
-  ticker.Start(FROM_HERE,
-               base::TimeDelta::FromMilliseconds(millis_to_next_full_sec),
+  ticker.Start(FROM_HERE, base::Milliseconds(millis_to_next_full_sec),
                base::BindOnce(&AssistantAlarmTimerControllerImpl::Tick,
                               base::Unretained(this), timer.id));
 }

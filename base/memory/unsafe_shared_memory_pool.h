@@ -5,6 +5,8 @@
 #ifndef BASE_MEMORY_UNSAFE_SHARED_MEMORY_POOL_H_
 #define BASE_MEMORY_UNSAFE_SHARED_MEMORY_POOL_H_
 
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/memory/ref_counted.h"

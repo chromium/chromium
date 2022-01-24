@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
@@ -53,6 +52,9 @@ class FileErrorData : public base::trace_event::ConvertableToTraceFormat {
         os_error_(os_error),
         interrupt_reason_(interrupt_reason) {}
 
+  FileErrorData(const FileErrorData&) = delete;
+  FileErrorData& operator=(const FileErrorData&) = delete;
+
   ~FileErrorData() override = default;
 
   void AppendAsTraceFormat(std::string* out) const override {
@@ -70,7 +72,6 @@ class FileErrorData : public base::trace_event::ConvertableToTraceFormat {
   std::string operation_;
   int os_error_;
   DownloadInterruptReason interrupt_reason_;
-  DISALLOW_COPY_AND_ASSIGN(FileErrorData);
 };
 
 void InitializeFile(base::File* file, const base::FilePath& file_path) {
@@ -82,17 +83,12 @@ void InitializeFile(base::File* file, const base::FilePath& file_path) {
 #endif  // defined(OS_ANDROID)
 
   // Use exclusive write to prevent another process from writing the file.
-  file->Initialize(
-      file_path,
-      base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
-          base::File::FLAG_READ
-#if defined(OS_WIN)
-          // Don't allow other process to write to the file while Chrome is
-          // writing to it. On posix systems, use FLAG_EXCLUSIVE_WRITE will
-          // cause file creation to fail if the file already exists.
-          | base::File::FLAG_EXCLUSIVE_WRITE
-#endif  // defined(OS_WIN)
-  );
+  file->Initialize(file_path,
+                   base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
+                       base::File::FLAG_READ |
+                       // Don't allow other processes to write to the file while
+                       // Chrome is writing (Windows-specific).
+                       base::File::FLAG_WIN_EXCLUSIVE_WRITE);
 }
 
 void DeleteFileWrapper(const base::FilePath& file_path) {

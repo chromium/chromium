@@ -16,7 +16,7 @@ namespace cc {
 
 namespace {
 
-constexpr auto kMinimumTimeInterval = base::TimeDelta::FromMinutes(1);
+constexpr auto kMinimumTimeInterval = base::Minutes(1);
 constexpr unsigned kMinimumFrameInterval = 500;
 
 // This must be the same as that used in DeviceScaleEnsuresTextQuality() in

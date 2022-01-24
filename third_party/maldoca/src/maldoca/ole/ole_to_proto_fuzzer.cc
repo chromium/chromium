@@ -15,7 +15,7 @@
 #include "maldoca/ole/ole_to_proto.h"
 #include "maldoca/ole/proto/ole_to_proto_settings.proto.h"
 
-using maldoca::ole::OleToProtoSettings;
+using ::maldoca::ole::OleToProtoSettings;
 
 namespace {
 OleToProtoSettings EnableAllSettings() {

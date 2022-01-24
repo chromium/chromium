@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/byte_queue.h"
 #include "media/formats/mp2t/ts_section.h"
 
@@ -22,6 +21,10 @@ class TsSectionCetsPssh : public TsSection {
       base::RepeatingCallback<void(const std::vector<uint8_t>&)>;
 
   explicit TsSectionCetsPssh(RegisterPsshBoxesCB register_pssh_boxes_cb);
+
+  TsSectionCetsPssh(const TsSectionCetsPssh&) = delete;
+  TsSectionCetsPssh& operator=(const TsSectionCetsPssh&) = delete;
+
   ~TsSectionCetsPssh() override;
 
   // TsSection implementation.
@@ -33,8 +36,6 @@ class TsSectionCetsPssh : public TsSection {
 
  private:
   const RegisterPsshBoxesCB register_pssh_boxes_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(TsSectionCetsPssh);
 };
 
 }  // namespace mp2t

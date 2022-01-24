@@ -33,6 +33,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaReservation
  public:
   using StatusCallback = base::OnceCallback<void(base::File::Error error)>;
 
+  QuotaReservation(const QuotaReservation&) = delete;
+  QuotaReservation& operator=(const QuotaReservation&) = delete;
+
   // Reclaims unused quota and reserves another |size| of quota.  So that the
   // resulting new |remaining_quota_| will be same as |size| as far as available
   // space is enough.  |remaining_quota_| may be less than |size| if there is
@@ -92,8 +95,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaReservation
 
   base::SequenceChecker sequence_checker_;
   base::WeakPtrFactory<QuotaReservation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaReservation);
 };
 
 }  // namespace storage

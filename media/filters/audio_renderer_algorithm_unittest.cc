@@ -964,7 +964,7 @@ TEST_F(AudioRendererAlgorithmTest, LowLatencyHint) {
   EXPECT_FALSE(algorithm_.IsQueueFull());
 
   // Set a new *slightly higher* hint. Verify we're no longer "adequate".
-  low_latency_hint += base::TimeDelta::FromMilliseconds(10);
+  low_latency_hint += base::Milliseconds(10);
   algorithm_.SetLatencyHint(low_latency_hint);
   EXPECT_FALSE(algorithm_.IsQueueAdequateForPlayback());
 
@@ -1070,9 +1070,9 @@ TEST_F(AudioRendererAlgorithmTest, ClampLatencyHint) {
   algorithm_.FlushBuffers();
 
   // Set a crazy high latency hint.
-  algorithm_.SetLatencyHint(base::TimeDelta::FromSeconds(100));
+  algorithm_.SetLatencyHint(base::Seconds(100));
 
-  const base::TimeDelta kDefaultMax = base::TimeDelta::FromSeconds(3);
+  const base::TimeDelta kDefaultMax = base::Seconds(3);
   // Verify "full" and "adequate" thresholds increased, but to a known max well
   // bellow the hinted value.
   EXPECT_GT(algorithm_.QueueCapacity(), default_capacity);
@@ -1083,7 +1083,7 @@ TEST_F(AudioRendererAlgorithmTest, ClampLatencyHint) {
   algorithm_.FlushBuffers();
 
   // Set an impossibly low latency hint.
-  algorithm_.SetLatencyHint(base::TimeDelta::FromSeconds(0));
+  algorithm_.SetLatencyHint(base::Seconds(0));
 
   // Verify "full" and "adequate" thresholds decreased, but to a known minimum
   // well above the hinted value.

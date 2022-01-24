@@ -33,6 +33,9 @@ class TriViewTest : public testing::Test {
  public:
   TriViewTest();
 
+  TriViewTest(const TriViewTest&) = delete;
+  TriViewTest& operator=(const TriViewTest&) = delete;
+
  protected:
   // Convenience function to get the minimum height of |container|.
   int GetMinHeight(TriView::Container container) const;
@@ -46,9 +49,6 @@ class TriViewTest : public testing::Test {
 
   // The test target.
   std::unique_ptr<TriView> tri_view_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TriViewTest);
 };
 
 TriViewTest::TriViewTest() : tri_view_(std::make_unique<TriView>()) {}
@@ -175,27 +175,6 @@ TEST_F(TriViewTest, MultipleViewsAddedToTheSameContainer) {
 
   EXPECT_TRUE(GetContainer(TriView::Container::START)->Contains(child1));
   EXPECT_TRUE(GetContainer(TriView::Container::START)->Contains(child2));
-}
-
-TEST_F(TriViewTest, ViewsRemovedOnRemoveAllChildren) {
-  views::View* child1 = new views::StaticSizedView();
-  views::View* child2 = new views::StaticSizedView();
-
-  tri_view_->AddView(TriView::Container::START, child1);
-  tri_view_->AddView(TriView::Container::START, child2);
-
-  EXPECT_TRUE(GetContainer(TriView::Container::START)->Contains(child1));
-  EXPECT_TRUE(GetContainer(TriView::Container::START)->Contains(child2));
-  EXPECT_EQ(2u, GetContainer(TriView::Container::START)->children().size());
-
-  tri_view_->RemoveAllChildren(TriView::Container::START, false);
-
-  EXPECT_FALSE(GetContainer(TriView::Container::START)->Contains(child1));
-  EXPECT_FALSE(GetContainer(TriView::Container::START)->Contains(child2));
-  EXPECT_EQ(0u, GetContainer(TriView::Container::START)->children().size());
-
-  delete child1;
-  delete child2;
 }
 
 TEST_F(TriViewTest, Insets) {

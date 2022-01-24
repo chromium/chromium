@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 load(
     "//absl:copts/configure_copts.bzl",
     "ABSL_DEFAULT_COPTS",
@@ -270,13 +269,20 @@ cc_library(
     srcs = [
         "internal/cord_internal.cc",
         "internal/cord_rep_btree.cc",
+        "internal/cord_rep_btree_navigator.cc",
+        "internal/cord_rep_btree_reader.cc",
+        "internal/cord_rep_concat.cc",
         "internal/cord_rep_consume.cc",
+        "internal/cord_rep_crc.cc",
         "internal/cord_rep_ring.cc",
     ],
     hdrs = [
         "internal/cord_internal.h",
         "internal/cord_rep_btree.h",
+        "internal/cord_rep_btree_navigator.h",
+        "internal/cord_rep_btree_reader.h",
         "internal/cord_rep_consume.h",
+        "internal/cord_rep_crc.h",
         "internal/cord_rep_flat.h",
         "internal/cord_rep_ring.h",
         "internal/cord_rep_ring_reader.h",
@@ -303,6 +309,20 @@ cc_library(
 )
 
 cc_test(
+    name = "cord_rep_concat_test",
+    size = "small",
+    srcs = ["internal/cord_rep_concat_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":cord_internal",
+        ":cord_rep_test_util",
+        "//absl/base:config",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
     name = "cord_rep_btree_test",
     size = "medium",
     srcs = ["internal/cord_rep_btree_test.cc"],
@@ -314,6 +334,54 @@ cc_test(
         ":strings",
         "//absl/base:config",
         "//absl/base:raw_logging_internal",
+        "//absl/cleanup",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "cord_rep_btree_navigator_test",
+    size = "medium",
+    srcs = ["internal/cord_rep_btree_navigator_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":cord_internal",
+        ":cord_rep_test_util",
+        ":strings",
+        "//absl/base:config",
+        "//absl/base:raw_logging_internal",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "cord_rep_btree_reader_test",
+    size = "medium",
+    srcs = ["internal/cord_rep_btree_reader_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":cord",
+        ":cord_internal",
+        ":cord_rep_test_util",
+        ":strings",
+        "//absl/base:config",
+        "//absl/base:raw_logging_internal",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "cord_rep_crc_test",
+    size = "small",
+    srcs = ["internal/cord_rep_crc_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":cord_internal",
+        ":cord_rep_test_util",
+        "//absl/base:config",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -470,8 +538,8 @@ cc_library(
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
-        "//absl/base:exponential_biased",
         "//absl/base:raw_logging_internal",
+        "//absl/profiling:exponential_biased",
     ],
 )
 
@@ -647,6 +715,8 @@ cc_test(
         "//absl/base:endian",
         "//absl/base:raw_logging_internal",
         "//absl/container:fixed_array",
+        "//absl/hash",
+        "//absl/random",
         "@com_google_googletest//:gtest_main",
     ],
 )

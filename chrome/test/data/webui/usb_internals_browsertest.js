@@ -18,14 +18,28 @@ UsbInternalsTest.prototype = {
   __proto__: testing.Test.prototype,
 
   /** @override */
-  browsePreload:
-      'chrome://usb-internals/test_loader.html?module=usb_internals_test.js',
+  browsePreload: 'chrome://usb-internals/',
 
   /** @override */
   isAsync: true,
+
+  /** @override */
+  extraLibraries: [
+    '//third_party/mocha/mocha.js',
+    '//chrome/test/data/webui/mocha_adapter.js',
+  ],
 };
 
 TEST_F('UsbInternalsTest', 'WebUIValueRenderTest', function() {
-  // Run all registered tests.
-  mocha.run();
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.onload = () => {
+    // Run all registered tests.
+    mocha.run();
+  };
+  const staticUrlPolicy = trustedTypes.createPolicy(
+      'usb-test-static',
+      {createScriptURL: () => 'chrome://test/usb_internals_test.js'});
+  script.src = staticUrlPolicy.createScriptURL('');
+  document.body.appendChild(script);
 });

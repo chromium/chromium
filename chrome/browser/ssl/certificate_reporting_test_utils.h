@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ssl/certificate_error_reporter.h"
 #include "components/security_interstitials/content/cert_logger.pb.h"
@@ -38,6 +37,10 @@ enum ExpectReport { CERT_REPORT_NOT_EXPECTED, CERT_REPORT_EXPECTED };
 class SSLCertReporterCallback {
  public:
   explicit SSLCertReporterCallback(base::RunLoop* run_loop);
+
+  SSLCertReporterCallback(const SSLCertReporterCallback&) = delete;
+  SSLCertReporterCallback& operator=(const SSLCertReporterCallback&) = delete;
+
   ~SSLCertReporterCallback();
 
   void ReportSent(const std::string& hostname,
@@ -52,8 +55,6 @@ class SSLCertReporterCallback {
   base::RunLoop* run_loop_;
   std::string latest_hostname_reported_;
   chrome_browser_ssl::CertLoggerRequest::ChromeChannel chrome_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLCertReporterCallback);
 };
 
 #if !defined(OS_ANDROID)

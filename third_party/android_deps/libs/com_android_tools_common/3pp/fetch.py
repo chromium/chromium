@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/android/tools/common/30.0.0-alpha10/common-30.0.0-alpha10.jar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/common/30.0.0-alpha10/common-30.0.0-alpha10.jar'
 _FILE_NAME = 'common-30.0.0-alpha10.jar'
 _FILE_VERSION = '30.0.0-alpha10'
 

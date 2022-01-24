@@ -123,17 +123,15 @@ const char kTouchActionURLWithOverlapArea[] =
 void GiveItSomeTime(int t) {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(t));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(t));
   run_loop.Run();
 }
 
-constexpr base::TimeDelta kNoJankTime = base::TimeDelta::FromMilliseconds(0);
-constexpr base::TimeDelta kShortJankTime =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kNoJankTime = base::Milliseconds(0);
+constexpr base::TimeDelta kShortJankTime = base::Milliseconds(100);
 // 1200ms is larger than both desktop / mobile_touch_ack_timeout_delay in the
 // PassthroughTouchEventQueue, which ensures timeout to be triggered.
-constexpr base::TimeDelta kLongJankTime =
-    base::TimeDelta::FromMilliseconds(1200);
+constexpr base::TimeDelta kLongJankTime = base::Milliseconds(1200);
 }  // namespace
 
 namespace content {
@@ -141,6 +139,10 @@ namespace content {
 class TouchActionBrowserTest : public ContentBrowserTest {
  public:
   TouchActionBrowserTest() = default;
+
+  TouchActionBrowserTest(const TouchActionBrowserTest&) = delete;
+  TouchActionBrowserTest& operator=(const TouchActionBrowserTest&) = delete;
+
   ~TouchActionBrowserTest() override = default;
 
   RenderWidgetHostImpl* GetWidgetHost() {
@@ -329,7 +331,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
         base::BindOnce(&TouchActionBrowserTest::OnSyntheticGestureCompleted,
                        base::Unretained(this)));
 
-    if (jank_time > base::TimeDelta::FromMilliseconds(0))
+    if (jank_time > base::Milliseconds(0))
       JankMainThread(jank_time);
 
     // Runs until we get the OnSyntheticGestureCompleted callback
@@ -472,8 +474,6 @@ class TouchActionBrowserTest : public ContentBrowserTest {
  private:
   std::unique_ptr<RenderFrameSubmissionObserver> frame_observer_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchActionBrowserTest);
 };
 
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||       \

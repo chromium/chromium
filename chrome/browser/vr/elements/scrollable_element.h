@@ -22,6 +22,10 @@ class VR_UI_EXPORT ScrollableElement : public UiElement {
   enum Orientation { kVertical, kHorizontal };
 
   explicit ScrollableElement(Orientation orientation);
+
+  ScrollableElement(const ScrollableElement&) = delete;
+  ScrollableElement& operator=(const ScrollableElement&) = delete;
+
   ~ScrollableElement() override;
 
   // Sets the maximum size the element can have in the axis of orientation.
@@ -68,8 +72,6 @@ class VR_UI_EXPORT ScrollableElement : public UiElement {
   float scroll_offset_ = 0.0f;
 
   gfx::Transition cached_transition_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollableElement);
 };
 
 }  // namespace vr

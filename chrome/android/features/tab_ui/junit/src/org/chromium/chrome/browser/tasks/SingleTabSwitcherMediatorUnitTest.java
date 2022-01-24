@@ -132,7 +132,8 @@ public class SingleTabSwitcherMediatorUnitTest {
                 .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabListFaviconProvider)
-                .getFaviconForUrlAsync(eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
+                .getFaviconDrawableForUrlAsync(
+                        eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
         assertTrue(mMediator.overviewVisible());
         verify(mOverviewModeObserver).startedShowing();
         verify(mOverviewModeObserver).finishedShowing();
@@ -162,7 +163,8 @@ public class SingleTabSwitcherMediatorUnitTest {
                 .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabListFaviconProvider)
-                .getFaviconForUrlAsync(eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
+                .getFaviconDrawableForUrlAsync(
+                        eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
         assertTrue(mMediator.overviewVisible());
         verify(mOverviewModeObserver).startedShowing();
         verify(mOverviewModeObserver).finishedShowing();
@@ -201,7 +203,8 @@ public class SingleTabSwitcherMediatorUnitTest {
                 .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabListFaviconProvider)
-                .getFaviconForUrlAsync(eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
+                .getFaviconDrawableForUrlAsync(
+                        eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
         assertTrue(mMediator.overviewVisible());
         verify(mOverviewModeObserver).startedShowing();
         verify(mOverviewModeObserver).finishedShowing();
@@ -230,7 +233,8 @@ public class SingleTabSwitcherMediatorUnitTest {
                 .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabListFaviconProvider)
-                .getFaviconForUrlAsync(eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
+                .getFaviconDrawableForUrlAsync(
+                        eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
         assertEquals(mPropertyModel.get(TITLE), mTitle);
 
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(

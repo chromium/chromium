@@ -276,16 +276,22 @@
   <message name="IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DATA_USAGE" desc="Text for search result item which, when clicked, navigates the user to Nearby Share edit data usage button in settings.">
     Nearby Share data usage
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub settings, with a toggle to enable/disable the feature. Phone hub provides the user with information about their Android phone and allows the user to perform phone-side actions directly in the Chrome OS UI.">
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB" desc="Text for search result item which, when clicked, navigates the user to Phone Hub settings, with a toggle to enable/disable the feature. Phone hub provides the user with information about their Android phone and allows the user to perform phone-side actions directly in the Chrome OS UI.">
     Phone Hub
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Notifications mirrors all standard notifications currently being shown on connected phone device.">
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL" desc="Text for search result item which, when clicked, navigates the user to Phone Hub photo settings, with a toggle to enable/disable the feature. Phone hub populates the 4 most recently updated photos/videos thumbnail in connected phone's camera roll on Chromebook, and give options to intereact with them.">
+    Recent Photos
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Notifications mirrors all standard notifications currently being shown on connected phone device.">
     Phone Hub notifications
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Task Continuation allows user to continue a task between connected device and Chrome OS">
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Notifications settings, with a toggle to enable/disable the feature. Phone Hub Task Continuation allows user to continue a task between connected device and Chrome OS">
     Phone Hub task continuation
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC" translateable="false" desc="Text for search result item which, when clicked, navigates the user to Wi-Fi Sync V2 settings, with a toggle to enable/disable the feature. Wi-Fi Sync V2 allows user to sync network configurations between Chrome OS devices and a connected Android phone">
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB_APPS" desc="Text for search result item which, when clicked, navigates the user to Phone Hub Apps settings, with a toggle to enable/disable the feature. Phone Hub Aapps allows user to app streaming from connected phone device.">
+    Phone Hub apps
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC" desc="Text for search result item which, when clicked, navigates the user to Wi-Fi Sync settings, with a toggle to enable/disable the feature. Wi-Fi Sync V2 allows user to sync network configurations between Chrome OS devices and a connected Android phone">
     Wi-Fi Sync
   </message>
 
@@ -311,9 +317,6 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_SYNC" desc="Text for search result item which, when clicked, navigates the user to sync settings.">
     Sync
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_LOCK_SCREEN" desc="Text for search result item which, when clicked, navigates the user to security and sign-in settings.">
-    Security and sign-in
   </message>
   <message name="IDS_OS_SETTINGS_TAG_LOCK_SCREEN_V2" desc="Text for search result item which, when clicked, navigates the user to security and sign-in settings.">
     Lock screen and sign-in
@@ -525,6 +528,12 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD_SPEED" desc="Text for search result item which, when clicked, navigates the user to touchpad settings, with a slider to set speed.">
     Touchpad speed
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_FEEDBACK" desc="Text for search result item which, when clicked, navigates the user to touchpad settings, with a toggle to enable/disable haptic feedback.">
+    Touchpad haptic feedback
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY" translateable="false" desc="Text for search result item which, when clicked, navigates the user to touchpad settings, with a slider to adjust the haptic touchpad click sensitivity.">
+    Touchpad haptic click sensitivity
   </message>
   <message name="IDS_OS_SETTINGS_TAG_MOUSE" desc="Text for search result item which, when clicked, navigates the user to mouse settings.">
     Mouse
@@ -858,6 +867,21 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_APPS_MANAGEMENT_ALT1" desc="Text for search result item which, when clicked, navigates the user to app mangement settings. Alternate phrase for: 'Manage apps'">
     View installed apps
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_APP_NOTIFICATIONS" desc="Text for search result item which, when clicked, navigates the user to app notification settings.">
+    Notifications
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_ON" desc="Text for search result item which, when clicked, navigates the user to app notification settings, with toggle to silence notifications. Alternate phrase for: 'Mute Notificatons'">
+    Turn on Do Not Disturb
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_ON_ALT1" desc="Text for search result item which, when clicked, navigates the user to app notification settings with toggle to silence notifications. Alternate phrase for: 'Turn on Do Not Disturb'">
+    Mute Notifications
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_OFF" desc="Text for search result item which, when clicked, navigates the user to app notification settings, with toggle to silence notifications. Alternate phrase for: 'Unmute Notificatons'">
+    Turn off Do Not Disturb
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_OFF_ALT1" desc="Text for search result item which, when clicked, navigates the user to app notification settings with toggle to silence notifications. Alternate phrase for: 'Turn off Do Not Disturb'">
+    Unmute Notifications
   </message>
   <message name="IDS_OS_SETTINGS_TAG_REMOVE_PLAY_STORE" desc="Text for search result item which, when clicked, navigates the user to Android app settings, with a button to remove the Play Store (Android app store). Alternate phrase for: 'Uninstall Google Play Store'">
     Remove Google Play Store
@@ -1296,6 +1320,12 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_ABOUT_TERMS_OF_SERVICE" desc="Text for search result item which, when clicked, navigates the user to 'About Chrome OS' settings, with a link to the Terms of Service.">
     Terms of Service
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME" desc="Text for search result item which, when clicked, navigates the user to detailed build information settings, with a button to change the device name.">
+    Change device name
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME_ALT1" desc="Text for search result item which, when clicked, navigates the user to detailed build information settings, with a button to change the device name.">
+    Change hostname
   </message>
   <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Troubleshooting', 'Battery Health', 'CPU Usage', 'Memory Usage'">
     Diagnostics

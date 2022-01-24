@@ -136,7 +136,8 @@ ChannelParseState MakeChannelParseState(
     return {std::wstring(kExtendedChannel), channel_range, includes_arch};
   }
 
-  // Beta channel: /^1.1-.*$/ with an optional -arch_FOO.
+  // Beta channel: /^1.1-.*$/ with an optional -arch_FOO. Note that '.' is the
+  // regexp wildcard, not a literal period.
   if (ap.size() >= 4 && ap[0] == L'1' && ap[2] == L'1' && ap[3] == L'-') {
     base::WStringPiece channel_range =
         ap.substr(0, ap.find(kTokenSeparator, 4));
@@ -144,7 +145,8 @@ ChannelParseState MakeChannelParseState(
     return {L"beta", channel_range, includes_arch};
   }
 
-  // Dev channel: /^2.0-d.*$/ with an optional -arch_FOO.
+  // Dev channel: /^2.0-d.*$/ with an optional -arch_FOO. Note that '.' is the
+  // regexp wildcard, not a literal period.
   if (ap.size() >= 5 && ap[0] == L'2' && ap[2] == L'0' && ap[3] == L'-' &&
       ap[4] == L'd') {
     base::WStringPiece channel_range =
@@ -153,7 +155,7 @@ ChannelParseState MakeChannelParseState(
     return {L"dev", channel_range, includes_arch};
   }
 
-  // Middle ages channels.
+  // Older channels.
   static constexpr struct {
     base::WStringPiece literal;
     bool is_stable;  // if false, the channel name is embedded in `literal`.
@@ -201,6 +203,8 @@ std::wstring GetChannelIdentifier(version_info::Channel channel,
   static constexpr base::WStringPiece kArchSuffix = L"-arch_x64";
 #elif defined(ARCH_CPU_X86)
   static constexpr base::WStringPiece kArchSuffix = L"-arch_x86";
+#elif defined(ARCH_CPU_ARM64)
+  static constexpr base::WStringPiece kArchSuffix = L"-arch_arm64";
 #else
 #error unsupported processor architecture.
 #endif
@@ -236,6 +240,8 @@ std::wstring GetChannelIdentifier(version_info::Channel channel,
       return L"x64-stable";
 #elif defined(ARCH_CPU_X86)
       return L"stable-arch_x86";
+#elif defined(ARCH_CPU_ARM64)
+      return L"stable-arch_arm64";
 #else
 #error unsupported processor architecture.
 #endif

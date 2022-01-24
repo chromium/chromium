@@ -4,7 +4,6 @@
 
 #include "ui/wm/core/cursor_manager.h"
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/test/aura_test_base.h"

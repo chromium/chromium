@@ -13,27 +13,26 @@ namespace web {
 
 bool WebUIIOSMessageHandler::ExtractIntegerValue(const base::ListValue* value,
                                                  int* out_int) {
-  std::string string_value;
-  if (value->GetString(0, &string_value))
-    return base::StringToInt(string_value, out_int);
-  double double_value;
-  if (value->GetDouble(0, &double_value)) {
-    *out_int = static_cast<int>(double_value);
+  const base::Value& single_element = value->GetList()[0];
+  absl::optional<double> double_value = single_element.GetIfDouble();
+  if (double_value) {
+    *out_int = static_cast<int>(*double_value);
     return true;
   }
-  NOTREACHED();
-  return false;
+
+  return base::StringToInt(single_element.GetString(), out_int);
 }
 
 bool WebUIIOSMessageHandler::ExtractDoubleValue(const base::ListValue* value,
                                                 double* out_value) {
-  std::string string_value;
-  if (value->GetString(0, &string_value))
-    return base::StringToDouble(string_value, out_value);
-  if (value->GetDouble(0, out_value))
+  const base::Value& single_element = value->GetList()[0];
+  absl::optional<double> double_value = single_element.GetIfDouble();
+  if (double_value) {
+    *out_value = *double_value;
     return true;
-  NOTREACHED();
-  return false;
+  }
+
+  return base::StringToDouble(single_element.GetString(), out_value);
 }
 
 std::u16string WebUIIOSMessageHandler::ExtractStringValue(

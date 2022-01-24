@@ -9,5 +9,5 @@ Version: @VERSION@
 Description: XSLT library version 2.
 Requires: libxml-2.0
 Cflags: @XSLT_INCLUDEDIR@
-Libs: @XSLT_LIBDIR@ @XSLT_LIBS@ @EXTRA_LIBS@
+Libs: @XSLT_LIBDIR@ -lxslt
 Libs.private: @XSLT_PRIVATE_LIBS@

@@ -14,10 +14,12 @@ PRESUBMIT_VERSION = '2.0.0'
 USE_PYTHON3 = True
 
 _EXCLUDED_PATHS = (
+    # File needs to write to stdout to emulate a tool it's replacing.
+    r"chrome[\\/]updater[\\/]mac[\\/]keystone[\\/]ksadmin.mm",
     # Generated file.
     (r"^components[\\/]variations[\\/]proto[\\/]devtools[\\/]"
      r"client_variations.js"),
-    r"^native_client_sdk[\\/]src[\\/]build_tools[\\/]make_rules.py",
+    r"^native_client_sdksrc[\\/]build_tools[\\/]make_rules.py",
     r"^native_client_sdk[\\/]src[\\/]build_tools[\\/]make_simple.py",
     r"^native_client_sdk[\\/]src[\\/]tools[\\/].*.mk",
     r"^net[\\/]tools[\\/]spdyshark[\\/].*",
@@ -476,7 +478,7 @@ _BANNED_CPP_FUNCTIONS = (
         'being done on time values. For interfacing with platform/library',
         'APIs, use FromMicroseconds() or InMicroseconds(), or one of the other',
         'type converter methods instead. For faking TimeXXX values (for unit',
-        'testing only), use TimeXXX() + TimeDelta::FromMicroseconds(N). For',
+        'testing only), use TimeXXX() + Microseconds(N). For',
         'other use cases, please contact base/time/OWNERS.',
       ),
       False,
@@ -651,6 +653,8 @@ _BANNED_CPP_FUNCTIONS = (
        # Needed for interop with third-party library.
        '^third_party/blink/renderer/core/typed_arrays/array_buffer/' +
          'array_buffer_contents\.(cc|h)',
+       '^third_party/blink/renderer/bindings/core/v8/' +
+         'v8_wasm_response_extensions.cc',
        '^gin/array_buffer\.(cc|h)',
        '^chrome/services/sharing/nearby/',
        # gRPC provides some C++ libraries that use std::shared_ptr<>.
@@ -737,10 +741,9 @@ _BANNED_CPP_FUNCTIONS = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     (
-      (r'/base::ThreadRestrictions::(ScopedAllowIO|AssertIOAllowed|'
-       r'DisallowWaiting|AssertWaitAllowed|SetWaitAllowed|ScopedAllowWait)'),
+      ('base::ThreadRestrictions::ScopedAllowIO'),
       (
-        'Use the new API in base/threading/thread_restrictions.h.',
+        'ScopedAllowIO is deprecated, use ScopedAllowBlocking instead.',
       ),
       False,
       (),
@@ -936,6 +939,16 @@ _BANNED_CPP_FUNCTIONS = (
       (),
     ),
     (
+      'RemoveAllChildViewsWithoutDeleting',
+      (
+        'RemoveAllChildViewsWithoutDeleting is deprecated.',
+        'This method is deemed dangerous as, unless raw pointers are re-added,',
+        'calls to this method introduce memory leaks.'
+      ),
+      False,
+      (),
+    ),
+    (
       r'/\bTRACE_EVENT_ASYNC_',
       (
           'Please use TRACE_EVENT_NESTABLE_ASYNC_.. macros instead',
@@ -958,14 +971,6 @@ _BANNED_CPP_FUNCTIONS = (
       (
           r'^base[\\/]win[\\/]scoped_winrt_initializer\.cc$'
       ),
-    ),
-    (
-      r'/DISALLOW_(COPY|ASSIGN|COPY_AND_ASSIGN|IMPLICIT_CONSTRUCTORS)\(',
-      (
-        'DISALLOW_xxx macros are deprecated. See base/macros.h for details.',
-      ),
-      False,
-      (),
     ),
 )
 
@@ -1111,7 +1116,6 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/create_r_txt.pydeps',
     'build/android/gyp/create_size_info_files.pydeps',
     'build/android/gyp/create_ui_locale_resources.pydeps',
-    'build/android/gyp/desugar.pydeps',
     'build/android/gyp/dex.pydeps',
     'build/android/gyp/dex_jdk_libs.pydeps',
     'build/android/gyp/dexsplitter.pydeps',
@@ -1175,7 +1179,8 @@ _KNOWN_ROBOTS = set(
   ) | set('%s@developer.gserviceaccount.com' % s for s in ('3su6n15k.default',)
   ) | set('%s@chops-service-accounts.iam.gserviceaccount.com' % s
           for s in ('bling-autoroll-builder', 'v8-ci-autoroll-builder',
-                    'wpt-autoroller', 'chrome-weblayer-builder')
+                    'wpt-autoroller', 'chrome-weblayer-builder',
+                    'lacros-version-skew-roller', 'skylab-test-cros-roller')
   ) | set('%s@skia-public.iam.gserviceaccount.com' % s
           for s in ('chromium-autoroll', 'chromium-release-autoroll')
   ) | set('%s@skia-corp.google.com.iam.gserviceaccount.com' % s
@@ -1183,6 +1188,9 @@ _KNOWN_ROBOTS = set(
   ) | set('%s@owners-cleanup-prod.google.com.iam.gserviceaccount.com' % s
           for s in ('swarming-tasks',))
 
+_INVALID_GRD_FILE_LINE = [
+        (r'<file lang=.* path=.*', 'Path should come before lang in GRD files.')
+]
 
 def _IsCPlusPlusFile(input_api, file_path):
   """Returns True if this file contains C++-like code (and not Python,
@@ -1460,6 +1468,51 @@ def CheckNoDISABLETypoInTests(input_api, output_api):
           '\n'.join(problems))
   ]
 
+def CheckForgettingMAYBEInTests(input_api, output_api):
+  """Checks to make sure tests disabled conditionally are not missing a
+  corresponding MAYBE_ prefix.
+  """
+  # Expect at least a lowercase character in the test name. This helps rule out
+  # false positives with macros wrapping the actual tests name.
+  define_maybe_pattern = input_api.re.compile(
+      r'^\#define MAYBE_(?P<test_name>\w*[a-z]\w*)')
+  test_maybe_pattern = r'^\s*\w*TEST[^(]*\(\s*\w+,\s*MAYBE_{test_name}\)'
+  suite_maybe_pattern = r'^\s*\w*TEST[^(]*\(\s*MAYBE_{test_name}[\),]'
+  warnings = []
+
+  # Read the entire files. We can't just read the affected lines, forgetting to
+  # add MAYBE_ on a change would not show up otherwise.
+  for f in input_api.AffectedFiles(False):
+    if not 'test' in f.LocalPath() or not f.LocalPath().endswith('.cc'):
+      continue
+    contents = input_api.ReadFile(f)
+    lines = contents.splitlines(True)
+    current_position = 0
+    warning_test_names = set()
+    for line_num, line in enumerate(lines, start=1):
+      current_position += len(line)
+      maybe_match = define_maybe_pattern.search(line)
+      if maybe_match:
+        test_name = maybe_match.group('test_name')
+        # Do not warn twice for the same test.
+        if (test_name in warning_test_names):
+          continue
+        warning_test_names.add(test_name)
+
+        # Attempt to find the corresponding MAYBE_ test or suite, starting from
+        # the current position.
+        test_match = input_api.re.compile(
+            test_maybe_pattern.format(test_name=test_name),
+            input_api.re.MULTILINE).search(contents, current_position)
+        suite_match = input_api.re.compile(
+            suite_maybe_pattern.format(test_name=test_name),
+            input_api.re.MULTILINE).search(contents, current_position)
+        if not test_match and not suite_match:
+          warnings.append(
+              output_api.PresubmitPromptWarning(
+                '%s:%d found MAYBE_ defined without corresponding test %s' %
+                (f.LocalPath(), line_num, test_name)))
+  return warnings
 
 def CheckDCHECK_IS_ONHasBraces(input_api, output_api):
   """Checks to make sure DCHECK_IS_ON() does not skip the parentheses."""
@@ -2245,8 +2298,8 @@ def CheckSpamLogging(input_api, output_api):
                     r"^courgette[\\/]courgette_minimal_tool\.cc$",
                     r"^courgette[\\/]courgette_tool\.cc$",
                     r"^extensions[\\/]renderer[\\/]logging_native_handler\.cc$",
+                    r"^fuchsia[\\/]base[\\/]init_logging.cc$",
                     r"^fuchsia[\\/]engine[\\/]browser[\\/]frame_impl.cc$",
-                    r"^fuchsia[\\/]engine[\\/]context_provider_main.cc$",
                     r"^fuchsia[\\/]runners[\\/]common[\\/]web_component.cc$",
                     r"^headless[\\/]app[\\/]headless_shell\.cc$",
                     r"^ipc[\\/]ipc_logging\.cc$",
@@ -2434,7 +2487,7 @@ def CheckUniquePtrOnUpload(input_api, output_api):
 
   errors = []
   if problems_nullptr:
-    errors.append(output_api.PresubmitError(
+    errors.append(output_api.PresubmitPromptWarning(
         'The following files use std::unique_ptr<T>(). Use nullptr instead.',
         problems_nullptr))
   if problems_constructor:
@@ -2671,7 +2724,6 @@ def _GetOwnersFilesToCheckForIpcOwners(input_api):
       'third_party/blink/renderer/platform/bindings/*',
       'third_party/protobuf/benchmarks/python/*',
       'third_party/win_build_output/*',
-      'third_party/feed_library/*',
       # These files are just used to communicate between class loaders running
       # in the same process.
       'weblayer/browser/java/org/chromium/weblayer_private/interfaces/*',
@@ -4202,20 +4254,24 @@ def ChecksCommon(input_api, output_api):
         # run the tests if they still exist.
         use_python3 = False
         with open(f.LocalPath()) as fp:
-            use_python3 = any(line.startswith('USE_PYTHON3 = True')
-                              for line in fp.readlines())
+          use_python3 = any(line.startswith('USE_PYTHON3 = True')
+                            for line in fp.readlines())
 
         results.extend(input_api.canned_checks.RunUnitTestsInDirectory(
             input_api, output_api, full_path,
             files_to_check=[r'^PRESUBMIT_test\.py$'],
             run_on_python2=not use_python3,
-            run_on_python3=use_python3))
+            run_on_python3=use_python3,
+            skip_shebang_check=True))
   return results
 
 
 def CheckPatchFiles(input_api, output_api):
   problems = [f.LocalPath() for f in input_api.AffectedFiles()
       if f.LocalPath().endswith(('.orig', '.rej'))]
+  # Cargo.toml.orig files are part of third-party crates downloaded from
+  # crates.io and should be included.
+  problems = [f for f in problems if not f.endswith('Cargo.toml.orig')]
   if problems:
     return [output_api.PresubmitError(
         "Don't commit .rej and .orig files.", problems)]
@@ -4811,7 +4867,7 @@ def CheckStrings(input_api, output_api):
 
 
   def _ValidateIcuSyntax(text, level, signatures):
-      """Validates ICU syntax of a text string.
+    """Validates ICU syntax of a text string.
 
       Check if text looks similar to ICU and checks for ICU syntax correctness
       in this case. Reports various issues with ICU syntax and values of
@@ -4828,77 +4884,77 @@ def CheckStrings(input_api, output_api):
         None if a string is not ICU or no issue detected.
         A tuple of (message, start index, end index) if an issue detected.
       """
-      valid_types = {
-          'plural': (frozenset(
-              ['=0', '=1', 'zero', 'one', 'two', 'few', 'many', 'other']),
-                     frozenset(['=1', 'other'])),
-          'selectordinal': (frozenset(
-              ['=0', '=1', 'zero', 'one', 'two', 'few', 'many', 'other']),
-                            frozenset(['one', 'other'])),
-          'select': (frozenset(), frozenset(['other'])),
-      }
+    valid_types = {
+        'plural': (frozenset(
+            ['=0', '=1', 'zero', 'one', 'two', 'few', 'many', 'other']),
+                   frozenset(['=1', 'other'])),
+        'selectordinal': (frozenset(
+            ['=0', '=1', 'zero', 'one', 'two', 'few', 'many', 'other']),
+                          frozenset(['one', 'other'])),
+        'select': (frozenset(), frozenset(['other'])),
+    }
 
-      # Check if the message looks like an attempt to use ICU
-      # plural. If yes - check if its syntax strictly matches ICU format.
-      like = re.match(r'^[^{]*\{[^{]*\b(plural|selectordinal|select)\b', text)
-      if not like:
-        signatures.append((level, None, None, None))
-        return
+    # Check if the message looks like an attempt to use ICU
+    # plural. If yes - check if its syntax strictly matches ICU format.
+    like = re.match(r'^[^{]*\{[^{]*\b(plural|selectordinal|select)\b', text)
+    if not like:
+      signatures.append((level, None, None, None))
+      return
 
-      # Check for valid prefix and suffix
-      m = re.match(
-          r'^([^{]*\{)([a-zA-Z0-9_]+),\s*'
-          r'(plural|selectordinal|select),\s*'
-          r'(?:offset:\d+)?\s*(.*)', text, re.DOTALL)
-      if not m:
-        return (('This message looks like an ICU plural, '
-                 'but does not follow ICU syntax.'), like.start(), like.end())
-      starting, variable, kind, variant_pairs = m.groups()
-      variants, depth, last_pos = _ParseIcuVariants(variant_pairs, m.start(4))
-      if depth:
-        return ('Invalid ICU format. Unbalanced opening bracket', last_pos,
-                len(text))
-      first = text[0]
-      ending = text[last_pos:]
-      if not starting:
-        return ('Invalid ICU format. No initial opening bracket', last_pos - 1,
-                last_pos)
-      if not ending or '}' not in ending:
-        return ('Invalid ICU format. No final closing bracket', last_pos - 1,
-                last_pos)
-      elif first != '{':
-        return (
-            ('Invalid ICU format. Extra characters at the start of a complex '
-             'message (go/icu-message-migration): "%s"') %
-            starting, 0, len(starting))
-      elif ending != '}':
-        return (('Invalid ICU format. Extra characters at the end of a complex '
-                 'message (go/icu-message-migration): "%s"')
-                % ending, last_pos - 1, len(text) - 1)
-      if kind not in valid_types:
-        return (('Unknown ICU message type %s. '
-                 'Valid types are: plural, select, selectordinal') % kind, 0, 0)
-      known, required = valid_types[kind]
-      defined_variants = set()
-      for variant, variant_range, value, value_range in variants:
-        start, end = variant_range
-        if variant in defined_variants:
-          return ('Variant "%s" is defined more than once' % variant,
-                  start, end)
-        elif known and variant not in known:
-          return ('Variant "%s" is not valid for %s message' % (variant, kind),
-                  start, end)
-        defined_variants.add(variant)
-        # Check for nested structure
-        res = _ValidateIcuSyntax(value[1:-1], level + 1, signatures)
-        if res:
-          return (res[0], res[1] + value_range[0] + 1,
-                  res[2] + value_range[0] + 1)
-      missing = required - defined_variants
-      if missing:
-        return ('Required variants missing: %s' % ', '.join(missing), 0,
-                len(text))
-      signatures.append((level, variable, kind, defined_variants))
+    # Check for valid prefix and suffix
+    m = re.match(
+        r'^([^{]*\{)([a-zA-Z0-9_]+),\s*'
+        r'(plural|selectordinal|select),\s*'
+        r'(?:offset:\d+)?\s*(.*)', text, re.DOTALL)
+    if not m:
+      return (('This message looks like an ICU plural, '
+               'but does not follow ICU syntax.'), like.start(), like.end())
+    starting, variable, kind, variant_pairs = m.groups()
+    variants, depth, last_pos = _ParseIcuVariants(variant_pairs, m.start(4))
+    if depth:
+      return ('Invalid ICU format. Unbalanced opening bracket', last_pos,
+              len(text))
+    first = text[0]
+    ending = text[last_pos:]
+    if not starting:
+      return ('Invalid ICU format. No initial opening bracket', last_pos - 1,
+              last_pos)
+    if not ending or '}' not in ending:
+      return ('Invalid ICU format. No final closing bracket', last_pos - 1,
+              last_pos)
+    elif first != '{':
+      return (
+          ('Invalid ICU format. Extra characters at the start of a complex '
+           'message (go/icu-message-migration): "%s"') %
+          starting, 0, len(starting))
+    elif ending != '}':
+      return (('Invalid ICU format. Extra characters at the end of a complex '
+               'message (go/icu-message-migration): "%s"')
+              % ending, last_pos - 1, len(text) - 1)
+    if kind not in valid_types:
+      return (('Unknown ICU message type %s. '
+               'Valid types are: plural, select, selectordinal') % kind, 0, 0)
+    known, required = valid_types[kind]
+    defined_variants = set()
+    for variant, variant_range, value, value_range in variants:
+      start, end = variant_range
+      if variant in defined_variants:
+        return ('Variant "%s" is defined more than once' % variant,
+                start, end)
+      elif known and variant not in known:
+        return ('Variant "%s" is not valid for %s message' % (variant, kind),
+                start, end)
+      defined_variants.add(variant)
+      # Check for nested structure
+      res = _ValidateIcuSyntax(value[1:-1], level + 1, signatures)
+      if res:
+        return (res[0], res[1] + value_range[0] + 1,
+                res[2] + value_range[0] + 1)
+    missing = required - defined_variants
+    if missing:
+      return ('Required variants missing: %s' % ', '.join(missing), 0,
+              len(text))
+    signatures.append((level, variable, kind, defined_variants))
 
 
   def _ParseIcuVariants(text, offset=0):
@@ -4988,8 +5044,8 @@ def CheckStrings(input_api, output_api):
     for key in old_ids.intersection(new_ids):
       if (old_id_to_msg_map[key].ContentsAsXml('', True)
           != new_id_to_msg_map[key].ContentsAsXml('', True)):
-          # The message content itself changed. Require an updated screenshot.
-          modified_ids.add(key)
+        # The message content itself changed. Require an updated screenshot.
+        modified_ids.add(key)
       elif old_id_to_msg_map[key].attrs['meaning'] != \
           new_id_to_msg_map[key].attrs['meaning']:
         # The message meaning changed. Ensure there is a screenshot for it.
@@ -5249,3 +5305,20 @@ def CheckDeprecationOfPreferences(input_api, output_api):
       potential_problems
     )]
   return []
+
+def CheckConsistentGrdChanges(input_api, output_api):
+  """Changes to GRD files must be consistent for tools to read them."""
+  changed_grds = input_api.AffectedFiles(
+      include_deletes=False,
+      file_filter=lambda f: f.LocalPath().endswith(('.grd')))
+  errors = []
+  invalid_file_regexes = [(input_api.re.compile(matcher), msg)
+                          for matcher, msg in _INVALID_GRD_FILE_LINE]
+  for grd in changed_grds:
+    for i, line in enumerate(grd.NewContents()):
+      for matcher, msg in invalid_file_regexes:
+        if matcher.search(line):
+          errors.append(
+              output_api.PresubmitError('Problem on {grd}:{i} - {msg}'.format(
+                  grd=grd.LocalPath(), i=i + 1, msg=msg)))
+  return errors

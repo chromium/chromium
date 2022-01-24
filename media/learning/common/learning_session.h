@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "media/learning/common/labelled_example.h"
 #include "media/learning/common/learning_task.h"
@@ -24,14 +23,15 @@ class COMPONENT_EXPORT(LEARNING_COMMON) LearningSession
     : public base::SupportsUserData::Data {
  public:
   LearningSession();
+
+  LearningSession(const LearningSession&) = delete;
+  LearningSession& operator=(const LearningSession&) = delete;
+
   ~LearningSession() override;
 
   // Return a LearningTaskController for the given task.
   virtual std::unique_ptr<LearningTaskController> GetController(
       const std::string& task_name) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LearningSession);
 };
 
 }  // namespace learning

@@ -290,6 +290,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSucceedsAndReturnsResponse) {
             // 2GB of expandable space less 1GB of headroom is 1GB of expandable
             // space.
             EXPECT_EQ(response_or_error.Value().expandable_bytes, 1 * kGiB);
+            EXPECT_EQ(response_or_error.Value().disk_size, 20 * kGiB);
           }));
   disk_manager_->GetDiskInfo(callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
@@ -581,13 +582,13 @@ TEST_F(BorealisDiskManagerTest,
       BorealisResizeDiskResult::kWouldNotLeaveEnoughSpace, 1);
 }
 
-TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestIsBelowMinimum) {
+TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfDiskIsBelowMinimum) {
   EXPECT_CALL(*free_space_provider_, Get(_))
       .WillOnce(
           testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
             auto response = BuildValidListVmDisksResponse(
-                /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
-                /*available_space=*/10 * kGiB);
+                /*min_size=*/8 * kGiB, /*size=*/7 * kGiB,
+                /*available_space=*/4 * kGiB);
             FakeConciergeClient()->set_list_vm_disks_response(response);
             std::move(callback).Run(5 * kGiB);
           }));
@@ -601,12 +602,64 @@ TEST_F(BorealisDiskManagerTest, RequestDeltaFailsIfRequestIsBelowMinimum) {
             EXPECT_EQ(response_or_error.Error().error(),
                       BorealisResizeDiskResult::kViolatesMinimumSize);
           }));
-  // Release space is requesting a negative delta. 7GB-2GB < 6GB min_size.
+  // Release space is requesting a negative delta. 7GB-2GB < 8GB min_size, and
+  // min size is already smaller than the disk, so the disk cannot be shrunk
+  // at all.
   disk_manager_->ReleaseSpace(2 * kGiB, callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
       kBorealisDiskClientReleaseSpaceResultHistogram,
       BorealisResizeDiskResult::kViolatesMinimumSize, 1);
+}
+
+TEST_F(BorealisDiskManagerTest, RequestDeltaShrinksAsSmallAsPossible) {
+  // This object forces all EXPECT_CALLs to occur in the order they are
+  // declared.
+  testing::InSequence sequence;
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/7 * kGiB,
+                /*available_space=*/4 * kGiB);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
+            std::move(callback).Run(5 * kGiB);
+          }));
+
+  vm_tools::concierge::ResizeDiskImageResponse disk_response;
+  disk_response.set_status(
+      vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED);
+  FakeConciergeClient()->set_resize_disk_image_response(disk_response);
+
+  EXPECT_CALL(*free_space_provider_, Get(_))
+      .WillOnce(
+          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
+            auto response = BuildValidListVmDisksResponse(
+                /*min_size=*/6 * kGiB, /*size=*/6 * kGiB,
+                /*available_space=*/3 * kGiB);
+            FakeConciergeClient()->set_list_vm_disks_response(response);
+            std::move(callback).Run(6 * kGiB);
+          }));
+
+  RequestDeltaCallbackFactory callback_factory;
+  EXPECT_CALL(callback_factory, Call(_))
+      .WillOnce(testing::Invoke(
+          [](Expected<uint64_t, Described<BorealisResizeDiskResult>>
+                 response_or_error) {
+            EXPECT_TRUE(response_or_error);
+            EXPECT_EQ(response_or_error.Value(), 1 * kGiB);
+          }));
+
+  // Release space is requesting a negative delta. 7GB-2GB < 6GB min_size, but
+  // as the disk size is greater than the min size, the disk can still be
+  // partially shrunk (whilst maintaining enough available space and not going
+  // below the minimum disk size).
+  disk_manager_->ReleaseSpace(2 * kGiB, callback_factory.BindOnce());
+  run_loop()->RunUntilIdle();
+  histogram_tester_.ExpectUniqueSample(
+      kBorealisDiskClientReleaseSpaceResultHistogram,
+      BorealisResizeDiskResult::kSuccess, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, RequestDeltaFailsOnNoResizeDiskResponse) {

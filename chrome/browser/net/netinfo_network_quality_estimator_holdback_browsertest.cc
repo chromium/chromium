@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
@@ -52,8 +51,8 @@ class NetInfoNetworkQualityEstimatorHoldbackBrowserTest
 
   void VerifyNetworkQualityNetInfoWebAPI(
       const std::string& expected_effective_connection_type) {
-    ui_test_utils::NavigateToURL(browser(),
-                                 test_server_.GetURL("/net_info.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), test_server_.GetURL("/net_info.html")));
     content::NavigationEntry* entry =
         GetWebContents()->GetController().GetVisibleEntry();
     EXPECT_EQ(content::PAGE_TYPE_NORMAL, entry->GetPageType());
@@ -62,20 +61,16 @@ class NetInfoNetworkQualityEstimatorHoldbackBrowserTest
               RunScriptExtractString("getEffectiveType()"));
 
     if (expected_effective_connection_type == "slow-2g") {
-      VerifyRtt(base::TimeDelta::FromMilliseconds(3600),
-                RunScriptExtractDouble("getRtt()"));
+      VerifyRtt(base::Milliseconds(3600), RunScriptExtractDouble("getRtt()"));
       VerifyDownlinkKbps(40, RunScriptExtractDouble("getDownlink()") * 1000);
     } else if (expected_effective_connection_type == "2g") {
-      VerifyRtt(base::TimeDelta::FromMilliseconds(1800),
-                RunScriptExtractDouble("getRtt()"));
+      VerifyRtt(base::Milliseconds(1800), RunScriptExtractDouble("getRtt()"));
       VerifyDownlinkKbps(75, RunScriptExtractDouble("getDownlink()") * 1000);
     } else if (expected_effective_connection_type == "3g") {
-      VerifyRtt(base::TimeDelta::FromMilliseconds(450),
-                RunScriptExtractDouble("getRtt()"));
+      VerifyRtt(base::Milliseconds(450), RunScriptExtractDouble("getRtt()"));
       VerifyDownlinkKbps(400, RunScriptExtractDouble("getDownlink()") * 1000);
     } else if (expected_effective_connection_type == "4g") {
-      VerifyRtt(base::TimeDelta::FromMilliseconds(175),
-                RunScriptExtractDouble("getRtt()"));
+      VerifyRtt(base::Milliseconds(175), RunScriptExtractDouble("getRtt()"));
       VerifyDownlinkKbps(1600, RunScriptExtractDouble("getDownlink()") * 1000);
     } else {
       DCHECK(false);
@@ -101,12 +96,10 @@ class NetInfoNetworkQualityEstimatorHoldbackBrowserTest
     // them directly.
     if (type == net::EFFECTIVE_CONNECTION_TYPE_3G) {
       g_browser_process->network_quality_tracker()
-          ->ReportRTTsAndThroughputForTesting(
-              base::TimeDelta::FromMilliseconds(450), 400);
+          ->ReportRTTsAndThroughputForTesting(base::Milliseconds(450), 400);
     } else if (type == net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G) {
       g_browser_process->network_quality_tracker()
-          ->ReportRTTsAndThroughputForTesting(
-              base::TimeDelta::FromMilliseconds(3600), 40);
+          ->ReportRTTsAndThroughputForTesting(base::Milliseconds(3600), 40);
     } else {
       NOTREACHED();
     }
@@ -121,8 +114,8 @@ class NetInfoNetworkQualityEstimatorHoldbackBrowserTest
     EXPECT_EQ(0, got_rtt_milliseconds % 50)
         << " got_rtt_milliseconds=" << got_rtt_milliseconds;
 
-    if (expected_rtt > base::TimeDelta::FromMilliseconds(3000))
-      expected_rtt = base::TimeDelta::FromMilliseconds(3000);
+    if (expected_rtt > base::Milliseconds(3000))
+      expected_rtt = base::Milliseconds(3000);
 
     // The difference between the actual and the estimate value should be within
     // 10%. Add 50 (bucket size used in Blink) to account for the cases when the
@@ -190,8 +183,8 @@ IN_PROC_BROWSER_TEST_P(NetInfoNetworkQualityEstimatorHoldbackBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/net_info.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/net_info.html")));
 
   if (GetParam()) {
     // ConfigureHoldbackExperiment() sets holdback ECT to 2G.

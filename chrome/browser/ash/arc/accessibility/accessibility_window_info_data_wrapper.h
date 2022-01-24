@@ -22,6 +22,11 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
       AXTreeSourceArc* tree_source,
       mojom::AccessibilityWindowInfoData* window);
 
+  AccessibilityWindowInfoDataWrapper(
+      const AccessibilityWindowInfoDataWrapper&) = delete;
+  AccessibilityWindowInfoDataWrapper& operator=(
+      const AccessibilityWindowInfoDataWrapper&) = delete;
+
   // AccessibilityInfoDataWrapper overrides.
   bool IsNode() const override;
   mojom::AccessibilityNodeInfoData* GetNode() const override;
@@ -53,8 +58,6 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
                    std::vector<int32_t>* out_value) const;
 
   mojom::AccessibilityWindowInfoData* window_ptr_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityWindowInfoDataWrapper);
 };
 
 }  // namespace arc

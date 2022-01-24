@@ -52,13 +52,6 @@ declare_args() {
 # ubsan_security_ignorelist_path = "path/to/ubsan/security_ignorelist.txt"
 # cfi_ignorelist_path = "path/to/cfi/ignores.txt"
 
-declare_args() {
-  # Android 32-bit non-component, non-clang builds cannot have symbol_level=2
-  # due to 4GiB file size limit, see https://crbug.com/648948.
-  # Set this flag to true to skip the assertion.
-  ignore_elf32_limitations = false
-}
-
 if (host_os == "mac" || is_apple) {
   # Needed for is_apple when targeting macOS or iOS, independent of host.
   # Needed for host_os=="mac" for running host tool such as gperf in blink

@@ -22,6 +22,10 @@
 #include "components/sync/base/unique_position.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/model/conflict_resolution.h"
+#include "components/sync/protocol/bookmark_model_metadata.pb.h"
+#include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync_bookmarks/bookmark_model_merger.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
@@ -55,7 +59,7 @@ const char kOtherBookmarksTag[] = "other_bookmarks";
 enum class ExpectedRemoteBookmarkUpdateError {
   kConflictingTypes = 0,
   kInvalidSpecifics = 1,
-  kInvalidUniquePosition = 2,
+  // kDeprecatedInvalidUniquePosition = 2,
   kPermanentNodeCreationAfterMerge = 3,
   kMissingParentEntity = 4,
   kMissingParentNode = 5,
@@ -68,6 +72,11 @@ enum class ExpectedRemoteBookmarkUpdateError {
   kTrackedServerIdWithoutServerTagMatchesPermanentNode = 12,
   kMaxValue = kTrackedServerIdWithoutServerTagMatchesPermanentNode,
 };
+
+syncer::UniquePosition RandomUniquePosition() {
+  return syncer::UniquePosition::InitialPosition(
+      syncer::UniquePosition::RandomSuffix());
+}
 
 // |node| must not be nullptr.
 sync_pb::BookmarkMetadata CreateNodeMetadata(
@@ -98,7 +107,7 @@ sync_pb::BookmarkModelMetadata CreateMetadataForPermanentNodes(
     const bookmarks::BookmarkModel* bookmark_model) {
   sync_pb::BookmarkModelMetadata model_metadata;
   model_metadata.mutable_model_type_state()->set_initial_sync_done(true);
-  model_metadata.set_bookmarks_full_title_reuploaded(true);
+  model_metadata.set_bookmarks_hierarchy_fields_reuploaded(true);
 
   *model_metadata.add_bookmarks_metadata() =
       CreateNodeMetadata(bookmark_model->bookmark_bar_node(),
@@ -124,7 +133,6 @@ syncer::UpdateResponseData CreateUpdateResponseData(
   syncer::EntityData data;
   data.id = server_id;
   data.parent_id = parent_id;
-  data.unique_position = unique_position;
   data.originator_client_item_id = guid.AsLowercaseString();
 
   // EntityData would be considered a deletion if its specifics hasn't been set.
@@ -134,8 +142,10 @@ syncer::UpdateResponseData CreateUpdateResponseData(
     bookmark_specifics->set_guid(guid.AsLowercaseString());
     bookmark_specifics->set_legacy_canonicalized_title(title);
     bookmark_specifics->set_full_title(title);
+    bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
+    *bookmark_specifics->mutable_unique_position() = unique_position.ToProto();
   }
-  data.is_folder = true;
+
   syncer::UpdateResponseData response_data;
   response_data.entity = std::move(data);
   response_data.response_version = version;
@@ -152,8 +162,7 @@ syncer::UpdateResponseData CreateUpdateResponseData(
     int version = 0) {
   return CreateUpdateResponseData(server_id, parent_id, guid,
                                   /*title=*/server_id, is_deletion, version,
-                                  syncer::UniquePosition::InitialPosition(
-                                      syncer::UniquePosition::RandomSuffix()));
+                                  RandomUniquePosition());
 }
 
 syncer::UpdateResponseData CreateBookmarkRootUpdateData() {
@@ -459,9 +468,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldIgnoreRemoteCreationWithInvalidGuidInSpecifics) {
   const std::string kId = "id";
   const std::string kTitle = "title";
-  const syncer::UniquePosition kPosition =
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix());
+  const syncer::UniquePosition kPosition = RandomUniquePosition();
 
   syncer::UpdateResponseDataList updates;
 
@@ -490,9 +497,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldIgnoreRemoteCreationWithUnexpectedGuidInSpecifics) {
   const std::string kId = "id";
   const std::string kTitle = "title";
-  const syncer::UniquePosition kPosition =
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix());
+  const syncer::UniquePosition kPosition = RandomUniquePosition();
 
   syncer::UpdateResponseDataList updates;
 
@@ -527,9 +532,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   const std::string kTitle = "title";
   const base::GUID kOldGuid = base::GUID::GenerateRandomV4();
   const base::GUID kNewGuid = base::GUID::GenerateRandomV4();
-  const syncer::UniquePosition kPosition =
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix());
+  const syncer::UniquePosition kPosition = RandomUniquePosition();
 
   syncer::UpdateResponseDataList updates;
 
@@ -558,9 +561,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*title=*/kTitle,
       /*is_deletion=*/false,
       /*version=*/1,
-      /*unique_position=*/
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())));
+      /*unique_position=*/RandomUniquePosition()));
 
   base::HistogramTester histogram_tester;
   updates_handler()->Process(updates,
@@ -592,9 +593,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*title=*/"title",
       /*is_deletion=*/false,
       /*version=*/1,
-      /*unique_position=*/
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())));
+      /*unique_position=*/RandomUniquePosition()));
 
   base::HistogramTester histogram_tester;
   updates_handler()->Process(updates,
@@ -613,9 +612,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   const std::string kId = "id";
   const std::string kTitle = "title";
   const base::GUID kGuid = base::GUID::GenerateRandomV4();
-  const syncer::UniquePosition kPosition =
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix());
+  const syncer::UniquePosition kPosition = RandomUniquePosition();
 
   syncer::UpdateResponseDataList updates;
 
@@ -642,9 +639,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*title=*/kTitle,
       /*is_deletion=*/false,
       /*version=*/1,
-      /*unique_position=*/
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())));
+      /*unique_position=*/RandomUniquePosition()));
 
   updates_handler()->Process(updates,
                              /*got_new_encryption_requirements=*/false);
@@ -918,8 +913,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   syncer::EntityData data;
   data.id = kParentId;
   data.parent_id = kBookmarkBarId;
-  data.unique_position = syncer::UniquePosition::InitialPosition(
-      syncer::UniquePosition::RandomSuffix());
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       data.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(
@@ -927,7 +920,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   // Use the server id as the title for simplicity.
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
-  data.is_folder = false;
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::URL);
+  *bookmark_specifics->mutable_unique_position() =
+      RandomUniquePosition().ToProto();
   data.originator_client_item_id = bookmark_specifics->guid();
 
   syncer::UpdateResponseData response_data;
@@ -970,8 +965,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   syncer::EntityData data;
   data.id = "server_id";
   data.parent_id = kBookmarkBarId;
-  data.unique_position = syncer::UniquePosition::InitialPosition(
-      syncer::UniquePosition::RandomSuffix());
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       data.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(
@@ -981,7 +974,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   bookmark_specifics->set_url(kUrl.spec());
   bookmark_specifics->set_icon_url(kIconUrl.spec());
   bookmark_specifics->set_favicon("PNG");
-  data.is_folder = false;
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::URL);
+  *bookmark_specifics->mutable_unique_position() =
+      RandomUniquePosition().ToProto();
   data.originator_client_item_id = bookmark_specifics->guid();
 
   syncer::UpdateResponseData response_data;
@@ -1011,8 +1006,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   syncer::EntityData data;
   data.id = "server_id";
   data.parent_id = kBookmarkBarId;
-  data.unique_position = syncer::UniquePosition::InitialPosition(
-      syncer::UniquePosition::RandomSuffix());
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       data.specifics.mutable_bookmark();
   bookmark_specifics->set_guid(
@@ -1020,7 +1013,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   // Use the server id as the title for simplicity.
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
-  data.is_folder = false;
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::URL);
+  *bookmark_specifics->mutable_unique_position() =
+      RandomUniquePosition().ToProto();
   data.originator_client_item_id = bookmark_specifics->guid();
 
   syncer::UpdateResponseData response_data;
@@ -1047,25 +1042,27 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   const std::string kOriginatorClientItemId = kBookmarkGuid.AsLowercaseString();
   const std::string kSyncId = "server_id";
   const int64_t kServerVersion = 1000;
-  const base::Time kModificationTime(base::Time::Now() -
-                                     base::TimeDelta::FromSeconds(1));
+  const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
 
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_initial_sync_done(true);
 
-  const syncer::UniquePosition unique_position;
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
   bookmark_specifics->set_guid(
       base::GUID::GenerateRandomV4().AsLowercaseString());
   bookmark_specifics->set_legacy_canonicalized_title("Title");
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
+  *bookmark_specifics->mutable_unique_position() =
+      RandomUniquePosition().ToProto();
+
   bookmarks::BookmarkNode node(/*id=*/1, kBookmarkGuid, GURL());
   // Track a sync entity (similar to what happens after a local creation). The
   // |originator_client_item_id| is used a temp sync id and mark the entity that
   // it needs to be committed..
   const SyncedBookmarkTracker::Entity* entity =
-      tracker()->Add(&node, /*sync_id=*/kOriginatorClientItemId, kServerVersion,
-                     kModificationTime, unique_position, specifics);
+      tracker()->Add(&node, /*sync_id=*/kOriginatorClientItemId,
+                     /*server_version=*/0, kModificationTime, specifics);
   tracker()->IncrementSequenceNumber(entity);
 
   ASSERT_THAT(tracker()->GetEntityForSyncId(kOriginatorClientItemId),
@@ -1077,16 +1074,16 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   data.id = kSyncId;
   data.originator_client_item_id = kOriginatorClientItemId;
   // Set the other required fields.
-  data.unique_position = syncer::UniquePosition::InitialPosition(
-      syncer::UniquePosition::RandomSuffix());
   data.specifics = specifics;
   data.specifics.mutable_bookmark()->set_guid(kOriginatorClientItemId);
-  data.is_folder = true;
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
+  *bookmark_specifics->mutable_unique_position() =
+      RandomUniquePosition().ToProto();
 
   syncer::UpdateResponseData response_data;
   response_data.entity = std::move(data);
   // Similar to what's done in the loopback_server.
-  response_data.response_version = 0;
+  response_data.response_version = kServerVersion;
   updates.push_back(std::move(response_data));
 
   updates_handler()->Process(updates,
@@ -1111,25 +1108,27 @@ TEST_F(
       base::GUID::GenerateRandomV4().AsLowercaseString();
   const std::string kSyncId = "server_id";
   const int64_t kServerVersion = 1000;
-  const base::Time kModificationTime(base::Time::Now() -
-                                     base::TimeDelta::FromSeconds(1));
+  const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
 
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_initial_sync_done(true);
 
-  const syncer::UniquePosition unique_position;
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
   bookmark_specifics->set_guid(kBookmarkGuid);
   bookmark_specifics->set_legacy_canonicalized_title("Title");
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
+  *bookmark_specifics->mutable_unique_position() =
+      RandomUniquePosition().ToProto();
+
   bookmarks::BookmarkNode node(
       /*id=*/1, base::GUID::ParseLowercase(kBookmarkGuid), GURL());
   // Track a sync entity (similar to what happens after a local creation). The
   // |originator_client_item_id| is used a temp sync id and mark the entity that
   // it needs to be committed..
   const SyncedBookmarkTracker::Entity* entity =
-      tracker()->Add(&node, /*sync_id=*/kBookmarkGuid, kServerVersion,
-                     kModificationTime, unique_position, specifics);
+      tracker()->Add(&node, /*sync_id=*/kBookmarkGuid, /*server_version=*/0,
+                     kModificationTime, specifics);
   tracker()->IncrementSequenceNumber(entity);
 
   ASSERT_THAT(tracker()->GetEntityForSyncId(kBookmarkGuid), Eq(entity));
@@ -1141,16 +1140,16 @@ TEST_F(
   data.client_tag_hash =
       syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS, kBookmarkGuid);
   // Set the other required fields.
-  data.unique_position = syncer::UniquePosition::InitialPosition(
-      syncer::UniquePosition::RandomSuffix());
   data.specifics = specifics;
   data.specifics.mutable_bookmark()->set_guid(kBookmarkGuid);
-  data.is_folder = true;
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
+  *bookmark_specifics->mutable_unique_position() =
+      RandomUniquePosition().ToProto();
 
   syncer::UpdateResponseData response_data;
   response_data.entity = std::move(data);
   // Similar to what's done in the loopback_server.
-  response_data.response_version = 0;
+  response_data.response_version = kServerVersion;
   updates.push_back(std::move(response_data));
 
   updates_handler()->Process(updates,
@@ -1215,9 +1214,10 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(entity->bookmark_node(), NotNull());
   ASSERT_THAT(entity->bookmark_node()->guid(), Eq(kGuid));
 
-  bookmark_model()->Remove(entity->bookmark_node());
+  auto* node = entity->bookmark_node();
   tracker()->MarkDeleted(entity);
   tracker()->IncrementSequenceNumber(entity);
+  bookmark_model()->Remove(node);
 
   // Process an update with outdated encryption. This should cause a conflict
   // and the remote version must be applied. Local tombstone entity will be
@@ -1296,14 +1296,14 @@ TEST_F(
       tracker()->GetEntityForSyncId(kId);
   ASSERT_THAT(entity, NotNull());
 
-  // Remove the bookmark from the local bookmark model.
-  bookmark_model()->Remove(bookmark_bar_node->children().front().get());
-  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(0u));
-
   // Mark the entity as deleted locally.
   tracker()->MarkDeleted(entity);
   tracker()->IncrementSequenceNumber(entity);
   ASSERT_THAT(tracker()->GetEntityForSyncId(kId)->IsUnsynced(), Eq(true));
+
+  // Remove the bookmark from the local bookmark model.
+  bookmark_model()->Remove(bookmark_bar_node->children().front().get());
+  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(0u));
 
   // Push a remote deletion for the same entity with an out of date encryption
   // key name.
@@ -1374,9 +1374,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*title=*/kTitle,
       /*is_deletion=*/false,
       /*version=*/0,
-      /*unique_position=*/
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())));
+      /*unique_position=*/RandomUniquePosition()));
 
   updates_handler()->Process(updates,
                              /*got_new_encryption_requirements=*/false);
@@ -1388,14 +1386,14 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       bookmark_model()->bookmark_bar_node();
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(1u));
 
-  // Remove the bookmark from the local bookmark model.
-  bookmark_model()->Remove(bookmark_bar_node->children().front().get());
-  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(0u));
-
   // Mark the entity as deleted locally.
   tracker()->MarkDeleted(entity);
   tracker()->IncrementSequenceNumber(entity);
   ASSERT_THAT(entity->IsUnsynced(), Eq(true));
+
+  // Remove the bookmark from the local bookmark model.
+  bookmark_model()->Remove(bookmark_bar_node->children().front().get());
+  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(0u));
 
   // Push a remote deletion for the same entity.
   updates.clear();
@@ -1406,9 +1404,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*title=*/std::string(),
       /*is_deletion=*/true,
       /*version=*/1,
-      /*unique_position=*/
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())));
+      /*unique_position=*/RandomUniquePosition()));
 
   updates_handler()->Process(updates,
                              /*got_new_encryption_requirements=*/false);
@@ -1434,9 +1430,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*title=*/kTitle,
       /*is_deletion=*/false,
       /*version=*/0,
-      /*unique_position=*/
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())));
+      /*unique_position=*/RandomUniquePosition()));
 
   updates_handler()->Process(updates,
                              /*got_new_encryption_requirements=*/false);
@@ -1458,9 +1452,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*title=*/std::string(),
       /*is_deletion=*/true,
       /*version=*/1,
-      /*unique_position=*/
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())));
+      /*unique_position=*/RandomUniquePosition()));
 
   updates_handler()->Process(updates,
                              /*got_new_encryption_requirements=*/false);
@@ -1489,9 +1481,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*title=*/kTitle,
       /*is_deletion=*/false,
       /*version=*/0,
-      /*unique_position=*/
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())));
+      /*unique_position=*/RandomUniquePosition()));
 
   updates_handler()->Process(updates,
                              /*got_new_encryption_requirements=*/false);
@@ -1506,14 +1496,14 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       bookmark_model()->bookmark_bar_node();
   ASSERT_THAT(bookmark_bar_node->children().size(), Eq(1u));
 
-  // Remove the bookmark from the local bookmark model.
-  bookmark_model()->Remove(bookmark_bar_node->children().front().get());
-  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(0u));
-
   // Mark the entity as deleted locally.
   tracker()->MarkDeleted(entity);
   tracker()->IncrementSequenceNumber(entity);
   ASSERT_THAT(entity->IsUnsynced(), Eq(true));
+
+  // Remove the bookmark from the local bookmark model.
+  bookmark_model()->Remove(bookmark_bar_node->children().front().get());
+  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(0u));
 
   // Push an update for the same entity.
   updates.clear();
@@ -1524,9 +1514,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*title=*/kTitle,
       /*is_deletion=*/false,
       /*version=*/1,
-      /*unique_position=*/
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix())));
+      /*unique_position=*/RandomUniquePosition()));
 
   updates_handler()->Process(updates,
                              /*got_new_encryption_requirements=*/false);
@@ -1655,12 +1643,10 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
-       ShouldReuploadOnEmptyGuidOnUpdateWithSameSpecifics) {
-  const std::string kServerId = "server_id";
-
+       ShouldReuploadOnEmptyUniquePositionOnUpdateWithSameSpecifics) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncReuploadBookmarksUponMatchingData);
+  override_features.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
+  const std::string kServerId = "server_id";
 
   syncer::UpdateResponseDataList updates;
   updates.push_back(
@@ -1683,9 +1669,10 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(entity, NotNull());
   ASSERT_FALSE(entity->IsUnsynced());
 
-  // Mimic the case when there is another update but without GUID in the
-  // original specifics.
-  updates.back().entity.is_bookmark_guid_in_specifics_preprocessed = true;
+  // Mimic the case when there is another update but without |unique_position|
+  // in the original specifics.
+  updates.back().entity.is_bookmark_unique_position_in_specifics_preprocessed =
+      true;
   updates.back().response_version++;
   BookmarkRemoteUpdatesHandler(bookmark_model(), favicon_service(), tracker())
       .Process(updates,
@@ -1697,14 +1684,14 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldIncrementSequenceNumberOnConflict) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncReuploadBookmarkFullTitles);
-
+  override_features.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
   const std::string kId = "id";
   const base::GUID kGuid = base::GUID::GenerateRandomV4();
   const std::string kTitle = "title";
   const std::string kNewTitle = "New title";
 
+  // Create a local bookmark with unsynced state (it should be unsynced due to
+  // enabled reupload).
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/kId,
@@ -1716,7 +1703,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*unique_position=*/
       syncer::UniquePosition::InitialPosition(
           syncer::UniquePosition::RandomSuffix())));
-  updates.back().entity.specifics.mutable_bookmark()->clear_full_title();
+  updates.back().entity.is_bookmark_unique_position_in_specifics_preprocessed =
+      true;
 
   {
     BookmarkRemoteUpdatesHandler updates_handler(bookmark_model(),
@@ -1727,12 +1715,15 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   const SyncedBookmarkTracker::Entity* entity =
       tracker()->GetEntityForSyncId(kId);
   ASSERT_THAT(entity, NotNull());
-  EXPECT_TRUE(entity->IsUnsynced());
+  ASSERT_TRUE(entity->IsUnsynced());
 
-  // Check reupload on conflict with new title.
+  // Check that the |entity| is applied an incoming update (by verifying that
+  // the node's title has been changed) and that it will be reuploaded after
+  // conflict resolution.
   updates.back()
       .entity.specifics.mutable_bookmark()
       ->set_legacy_canonicalized_title(kNewTitle);
+  updates.back().entity.specifics.mutable_bookmark()->set_full_title(kNewTitle);
   updates.back().response_version++;
   {
     BookmarkRemoteUpdatesHandler updates_handler(bookmark_model(),
@@ -1747,7 +1738,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   EXPECT_EQ(base::UTF16ToUTF8(node->GetTitle()), kNewTitle);
   EXPECT_TRUE(entity->IsUnsynced());
 
-  // Check reupload on conflict when specifics matches.
+  // Same as above but with the same title in specifics (the local entity
+  // contains the same specifics as the incoming update).
   updates.back().response_version++;
   {
     BookmarkRemoteUpdatesHandler updates_handler(bookmark_model(),
@@ -1763,9 +1755,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldIncrementSequenceNumberOnUpdate) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncReuploadBookmarkFullTitles);
-
+  override_features.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
   const std::string kId = "id";
   const base::GUID kGuid = base::GUID::GenerateRandomV4();
   const std::string kTitle = "title";
@@ -1782,7 +1772,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*unique_position=*/
       syncer::UniquePosition::InitialPosition(
           syncer::UniquePosition::RandomSuffix())));
-  updates.back().entity.specifics.mutable_bookmark()->set_full_title(kTitle);
 
   {
     BookmarkRemoteUpdatesHandler updates_handler(bookmark_model(),
@@ -1795,11 +1784,14 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(entity, NotNull());
   ASSERT_FALSE(entity->IsUnsynced());
 
-  // Check reupload on conflict.
+  // Check reupload on update.
   updates.back()
       .entity.specifics.mutable_bookmark()
       ->set_legacy_canonicalized_title(kRemoteTitle);
-  updates.back().entity.specifics.mutable_bookmark()->clear_full_title();
+  updates.back().entity.specifics.mutable_bookmark()->set_full_title(
+      kRemoteTitle);
+  updates.back().entity.is_bookmark_unique_position_in_specifics_preprocessed =
+      true;
   updates.back().response_version++;
   {
     BookmarkRemoteUpdatesHandler updates_handler(bookmark_model(),
@@ -1816,11 +1808,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
-       ShouldReuploadBookmarkOnEmptyGuid) {
+       ShouldReuploadBookmarkOnEmptyUniquePosition) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncReuploadBookmarkFullTitles);
-
+  override_features.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
   const std::string kFolder1Title = "folder1";
   const std::string kFolder2Title = "folder2";
 
@@ -1839,8 +1829,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       syncer::UniquePosition::InitialPosition(
           syncer::UniquePosition::RandomSuffix())));
 
-  // Remove GUID field for the first item only.
-  updates.back().entity.is_bookmark_guid_in_specifics_preprocessed = true;
+  // Remove |unique_position| field for the first item only.
+  updates.back().entity.is_bookmark_unique_position_in_specifics_preprocessed =
+      true;
 
   updates.push_back(CreateUpdateResponseData(
       /*server_id=*/kFolder2Id,
@@ -1853,7 +1844,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       syncer::UniquePosition::InitialPosition(
           syncer::UniquePosition::RandomSuffix())));
   ASSERT_FALSE(
-      updates.back().entity.is_bookmark_guid_in_specifics_preprocessed);
+      updates.back()
+          .entity.is_bookmark_unique_position_in_specifics_preprocessed);
 
   updates_handler()->Process(std::move(updates),
                              /*got_new_encryption_requirements=*/false);
@@ -1869,14 +1861,12 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   EXPECT_FALSE(entity2->IsUnsynced());
 }
 
-// Tests that the reflection which doesn't have GUID in specifics will be
-// reuploaded.
+// Tests that the reflection which doesn't have |unique_position| in specifics
+// will be reuploaded.
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
-       ShouldReuploadBookmarkOnEmptyGuidForReflection) {
+       ShouldReuploadBookmarkOnEmptyUniquePositionForReflection) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncReuploadBookmarkFullTitles);
-
+  override_features.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
   const std::string kFolderTitle = "folder";
   const std::string kFolderId = "FolderId";
   const base::GUID kGuid = base::GUID::GenerateRandomV4();
@@ -1921,7 +1911,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       syncer::UniquePosition::InitialPosition(
           syncer::UniquePosition::RandomSuffix())));
 
-  updates.back().entity.is_bookmark_guid_in_specifics_preprocessed = true;
+  updates.back().entity.is_bookmark_unique_position_in_specifics_preprocessed =
+      true;
 
   BookmarkRemoteUpdatesHandler updates_handler(
       bookmark_model(), favicon_service(), tracker.get());
@@ -1930,6 +1921,56 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_EQ(entity, tracker->GetEntityForSyncId(kFolderId));
 
   EXPECT_TRUE(entity->IsUnsynced());
+}
+
+TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
+       ShouldProcessDifferentEntitiesWithSameGuid) {
+  const std::string kServerId1 = "server_id_1";
+  const std::string kServerId2 = "server_id_2";
+
+  const std::string kTitle = "Title";
+  const base::GUID kGuid = base::GUID::GenerateRandomV4();
+
+  // Initialize the model with one node.
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/kServerId1,
+      /*parent_id=*/kBookmarkBarId,
+      /*guid=*/kGuid,
+      /*is_deletion=*/false,
+      /*version=*/0));
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+  ASSERT_THAT(tracker()->TrackedEntitiesCountForTest(), Eq(4U));
+  ASSERT_THAT(tracker()->GetEntityForSyncId(kServerId1), NotNull());
+  updates.clear();
+
+  // Create two updates having the same GUID, one is a tombstone for the old
+  // |server_id|, another with a new one. The tombstone is processed after the
+  // update and should be ignored due to its server version.
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/kServerId2,
+      /*parent_id=*/kBookmarkBarId,
+      /*guid=*/kGuid,
+      /*is_deletion=*/false,
+      /*version=*/2));
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/kServerId1,
+      /*parent_id=*/kBookmarkBarId,
+      /*guid=*/kGuid,
+      /*is_deletion=*/true,
+      /*version=*/1));
+
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+
+  EXPECT_THAT(tracker()->TrackedEntitiesCountForTest(), Eq(4U));
+  EXPECT_THAT(tracker()->GetEntityForSyncId(kServerId1), IsNull());
+  const SyncedBookmarkTracker::Entity* entity =
+      tracker()->GetEntityForSyncId(kServerId2);
+  EXPECT_THAT(entity, NotNull());
+  EXPECT_THAT(entity->bookmark_node(), NotNull());
+  EXPECT_THAT(entity->bookmark_node()->guid(), Eq(kGuid));
 }
 
 TEST(BookmarkRemoteUpdatesHandlerTest,
@@ -1950,7 +1991,7 @@ TEST(BookmarkRemoteUpdatesHandlerTest,
 
   // Should always return 0 for any UniquePosition in the initial state.
   EXPECT_EQ(0u, BookmarkRemoteUpdatesHandler::ComputeChildNodeIndexForTest(
-                    bookmark_bar_node, pos1, tracker.get()));
+                    bookmark_bar_node, pos1.ToProto(), tracker.get()));
 }
 
 TEST(BookmarkRemoteUpdatesHandlerTest, ShouldComputeRightChildNodeIndex) {
@@ -1992,30 +2033,32 @@ TEST(BookmarkRemoteUpdatesHandlerTest, ShouldComputeRightChildNodeIndex) {
   // Check for the same position as existing bookmarks have. In practice this
   // shouldn't happen.
   EXPECT_EQ(1u, BookmarkRemoteUpdatesHandler::ComputeChildNodeIndexForTest(
-                    bookmark_bar_node, pos1, tracker.get()));
+                    bookmark_bar_node, pos1.ToProto(), tracker.get()));
   EXPECT_EQ(2u, BookmarkRemoteUpdatesHandler::ComputeChildNodeIndexForTest(
-                    bookmark_bar_node, pos2, tracker.get()));
+                    bookmark_bar_node, pos2.ToProto(), tracker.get()));
   EXPECT_EQ(3u, BookmarkRemoteUpdatesHandler::ComputeChildNodeIndexForTest(
-                    bookmark_bar_node, pos3, tracker.get()));
+                    bookmark_bar_node, pos3.ToProto(), tracker.get()));
 
-  EXPECT_EQ(0u,
-            BookmarkRemoteUpdatesHandler::ComputeChildNodeIndexForTest(
-                bookmark_bar_node, syncer::UniquePosition::Before(pos1, suffix),
-                tracker.get()));
+  EXPECT_EQ(0u, BookmarkRemoteUpdatesHandler::ComputeChildNodeIndexForTest(
+                    bookmark_bar_node,
+                    syncer::UniquePosition::Before(pos1, suffix).ToProto(),
+                    tracker.get()));
   EXPECT_EQ(1u, BookmarkRemoteUpdatesHandler::ComputeChildNodeIndexForTest(
                     bookmark_bar_node,
                     syncer::UniquePosition::Between(/*before=*/pos1,
-                                                    /*after=*/pos2, suffix),
+                                                    /*after=*/pos2, suffix)
+                        .ToProto(),
                     tracker.get()));
   EXPECT_EQ(2u, BookmarkRemoteUpdatesHandler::ComputeChildNodeIndexForTest(
                     bookmark_bar_node,
                     syncer::UniquePosition::Between(/*before=*/pos2,
-                                                    /*after=*/pos3, suffix),
+                                                    /*after=*/pos3, suffix)
+                        .ToProto(),
                     tracker.get()));
-  EXPECT_EQ(3u,
-            BookmarkRemoteUpdatesHandler::ComputeChildNodeIndexForTest(
-                bookmark_bar_node, syncer::UniquePosition::After(pos3, suffix),
-                tracker.get()));
+  EXPECT_EQ(3u, BookmarkRemoteUpdatesHandler::ComputeChildNodeIndexForTest(
+                    bookmark_bar_node,
+                    syncer::UniquePosition::After(pos3, suffix).ToProto(),
+                    tracker.get()));
 }
 
 }  // namespace

@@ -12,7 +12,6 @@
 #include "ash/ash_export.h"
 #include "ash/constants/app_types.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -87,6 +86,11 @@ class ASH_EXPORT DemoSessionMetricsRecorder
   // mock timer to control sampling periods.
   explicit DemoSessionMetricsRecorder(
       std::unique_ptr<base::RepeatingTimer> timer = nullptr);
+
+  DemoSessionMetricsRecorder(const DemoSessionMetricsRecorder&) = delete;
+  DemoSessionMetricsRecorder& operator=(const DemoSessionMetricsRecorder&) =
+      delete;
+
   ~DemoSessionMetricsRecorder() override;
 
   // ui::UserActivityObserver:
@@ -159,8 +163,6 @@ class ASH_EXPORT DemoSessionMetricsRecorder
 
   std::unique_ptr<ActiveAppArcPackageNameObserver>
       active_app_arc_package_name_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionMetricsRecorder);
 };
 
 }  // namespace ash

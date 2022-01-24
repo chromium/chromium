@@ -4,7 +4,7 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
  * Enables custom implementation for the notification site settings category, similar to

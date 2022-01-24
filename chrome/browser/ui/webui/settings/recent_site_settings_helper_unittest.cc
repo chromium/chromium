@@ -97,7 +97,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
     auto_blocker->RecordDismissAndEmbargo(url1, kNotifications, false);
   }
 
-  clock()->Advance(base::TimeDelta::FromHours(2));
+  clock()->Advance(base::Hours(2));
   map->SetContentSettingDefaultScope(url2, url2, kImages, kAllowed);
   CreateIncognitoProfile();
 
@@ -123,13 +123,13 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
   }
 
   // Ensure incognito generated permissions are separated correctly.
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   HostContentSettingsMap* incognito_map =
       HostContentSettingsMapFactory::GetForProfile(incognito_profile());
   incognito_map->SetClockForTesting(clock());
   incognito_map->SetContentSettingDefaultScope(url1, url1, kImages, kAllowed);
 
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   permissions::PermissionDecisionAutoBlocker* incognito_auto_blocker =
       PermissionDecisionAutoBlockerFactory::GetForProfile(incognito_profile());
   incognito_auto_blocker->SetClockForTesting(clock());
@@ -168,15 +168,15 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
   // maximum number of sources and that order of origins is based on the
   // most recent permission for that source.
   const GURL url3("https://example.com:8443");
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   map->SetContentSettingDefaultScope(url1, url1, kImages, kBlocked);
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   for (int i = 0; i < 4; ++i) {
     auto_blocker->RecordIgnoreAndEmbargo(url3, kNotifications, false);
   }
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   map->SetContentSettingDefaultScope(url2, url2, kPopups, kAllowed);
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   map->SetContentSettingDefaultScope(url3, url3, kPopups, kBlocked);
 
   recent_permissions = GetRecentSitePermissions(profile(), content_types, 3);
@@ -216,7 +216,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
 
   // Assign a new permission to a previously recorded site whose other
   // permissions are too old and ensure only the recent permission is returned.
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   incognito_map->SetContentSettingDefaultScope(url1, url1, kPopups, kBlocked);
   recent_permissions = GetRecentSitePermissions(profile(), content_types, 3);
   {
@@ -232,7 +232,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
 
   // Reset a changed permission to default and confirm it does not appear as a
   // recent permission change.
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   map->SetContentSettingDefaultScope(url3, url3, kPopups, kDefault);
   recent_permissions = GetRecentSitePermissions(profile(), content_types, 3);
   {
@@ -247,7 +247,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
   // considered. I.e. url3 now has an expired embargo and a default setting. It
   // should not be considered and should allow the images setting for url1 to
   // be included as a recent change.
-  clock()->Advance(base::TimeDelta::FromDays(7));
+  clock()->Advance(base::Days(7));
   auto_blocker->RecordDismissAndEmbargo(url1, kNotifications, false);
   recent_permissions = GetRecentSitePermissions(profile(), content_types, 3);
   {
@@ -271,11 +271,11 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
 
   // Confirm that powerful permissions are listed first, and that other
   // permissions remain sorted by time.
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   map->SetContentSettingDefaultScope(url1, url1, kPopups, kBlocked);
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   map->SetContentSettingDefaultScope(url1, url1, kLocation, kAllowed);
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   map->SetContentSettingDefaultScope(url1, url1, kImages, kAllowed);
 
   recent_permissions = GetRecentSitePermissions(profile(), content_types, 3);
@@ -294,9 +294,9 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
   // Check that adding a conflicting permission to the regular profile after
   // the incognito profile has been created returns correctly for each profile.
   const GURL url4("http://example.com:8443");
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   incognito_map->SetContentSettingDefaultScope(url4, url4, kLocation, kAllowed);
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   map->SetContentSettingDefaultScope(url4, url4, kLocation, kBlocked);
 
   recent_permissions = GetRecentSitePermissions(profile(), content_types, 3);
@@ -316,7 +316,7 @@ TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {
 
   // Check that resetting the permission to default in the regular profile
   // does not affect the permission in the incognito profile.
-  clock()->Advance(base::TimeDelta::FromHours(1));
+  clock()->Advance(base::Hours(1));
   map->SetContentSettingDefaultScope(url4, url4, kLocation, kDefault);
 
   recent_permissions = GetRecentSitePermissions(profile(), content_types, 3);

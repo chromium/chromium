@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -28,6 +27,10 @@ class CONTENT_EXPORT NetworkQualityObserverImpl
  public:
   explicit NetworkQualityObserverImpl(
       network::NetworkQualityTracker* network_quality_tracker);
+
+  NetworkQualityObserverImpl(const NetworkQualityObserverImpl&) = delete;
+  NetworkQualityObserverImpl& operator=(const NetworkQualityObserverImpl&) =
+      delete;
 
   ~NetworkQualityObserverImpl() override;
 
@@ -58,8 +61,6 @@ class CONTENT_EXPORT NetworkQualityObserverImpl
   content::NotificationRegistrar registrar_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityObserverImpl);
 };
 
 }  // namespace content

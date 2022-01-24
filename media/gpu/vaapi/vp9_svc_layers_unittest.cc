@@ -152,8 +152,8 @@ void VP9SVCLayersTest::VerifyRefFrames(
       true, false, false};
   EXPECT_EQ(frame_hdr.refresh_frame_flags & ~(0b111111u), 0u);
   EXPECT_EQ(ref_frames_used, kExpectedRefFramesUsed);
-  EXPECT_EQ(metadata.has_reference, !metadata.p_diffs.empty());
-  EXPECT_EQ(metadata.has_reference, !key_pic);
+  EXPECT_EQ(metadata.inter_pic_predicted, !metadata.p_diffs.empty());
+  EXPECT_EQ(metadata.inter_pic_predicted, !key_pic);
   if (key_pic) {
     EXPECT_TRUE(metadata.reference_lower_spatial_layers);
     EXPECT_EQ(metadata.referenced_by_upper_spatial_layers,

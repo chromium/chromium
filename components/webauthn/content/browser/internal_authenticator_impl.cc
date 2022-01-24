@@ -36,6 +36,11 @@ void InternalAuthenticatorImpl::SetEffectiveOrigin(const url::Origin& origin) {
   DCHECK(!effective_origin_.opaque());
 }
 
+void InternalAuthenticatorImpl::SetPaymentOptions(
+    blink::mojom::PaymentOptionsPtr payment) {
+  payment_ = std::move(payment);
+}
+
 void InternalAuthenticatorImpl::MakeCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     blink::mojom::Authenticator::MakeCredentialCallback callback) {
@@ -47,7 +52,7 @@ void InternalAuthenticatorImpl::GetAssertion(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
     blink::mojom::Authenticator::GetAssertionCallback callback) {
   authenticator_common_->GetAssertion(effective_origin_, std::move(options),
-                                      std::move(callback));
+                                      std::move(payment_), std::move(callback));
 }
 
 void InternalAuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(

@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
@@ -58,7 +57,7 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/image_source.h"
@@ -123,8 +122,7 @@ bool CanChangeChannel(Profile* profile) {
     bool value = false;
     // On a managed machine we delegate this setting to the affiliated users
     // only if the policy value is true.
-    ash::CrosSettings::Get()->GetBoolean(chromeos::kReleaseChannelDelegated,
-                                         &value);
+    ash::CrosSettings::Get()->GetBoolean(ash::kReleaseChannelDelegated, &value);
     if (!value)
       return false;
 
@@ -270,71 +268,71 @@ AboutHandler::~AboutHandler() {
 }
 
 void AboutHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "aboutPageReady", base::BindRepeating(&AboutHandler::HandlePageReady,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "refreshUpdateStatus",
       base::BindRepeating(&AboutHandler::HandleRefreshUpdateStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openFeedbackDialog",
       base::BindRepeating(&AboutHandler::HandleOpenFeedbackDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openHelpPage", base::BindRepeating(&AboutHandler::HandleOpenHelpPage,
                                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openDiagnostics",
       base::BindRepeating(&AboutHandler::HandleOpenDiagnostics,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "openOsHelpPage", base::BindRepeating(&AboutHandler::HandleOpenOsHelpPage,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setChannel", base::BindRepeating(&AboutHandler::HandleSetChannel,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestUpdate", base::BindRepeating(&AboutHandler::HandleRequestUpdate,
                                            base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestUpdateOverCellular",
       base::BindRepeating(&AboutHandler::HandleRequestUpdateOverCellular,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getVersionInfo", base::BindRepeating(&AboutHandler::HandleGetVersionInfo,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getRegulatoryInfo",
       base::BindRepeating(&AboutHandler::HandleGetRegulatoryInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getChannelInfo", base::BindRepeating(&AboutHandler::HandleGetChannelInfo,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "canChangeChannel",
       base::BindRepeating(&AboutHandler::HandleCanChangeChannel,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "refreshTPMFirmwareUpdateStatus",
       base::BindRepeating(&AboutHandler::HandleRefreshTPMFirmwareUpdateStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getEndOfLifeInfo",
       base::BindRepeating(&AboutHandler::HandleGetEndOfLifeInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "launchReleaseNotes",
       base::BindRepeating(&AboutHandler::HandleLaunchReleaseNotes,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "checkInternetConnection",
       base::BindRepeating(&AboutHandler::HandleCheckInternetConnection,
                           base::Unretained(this)));
 #endif
 #if defined(OS_MAC)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "promoteUpdater", base::BindRepeating(&AboutHandler::PromoteUpdater,
                                             base::Unretained(this)));
 #endif
@@ -442,9 +440,8 @@ void AboutHandler::HandleOpenDiagnostics(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   chromeos::NetworkStateHandler* network_state_handler =
       chromeos::NetworkHandler::Get()->network_state_handler();
@@ -471,23 +468,21 @@ void AboutHandler::HandleOpenOsHelpPage(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleSetChannel(const base::ListValue* args) {
-  DCHECK(args->GetSize() == 2);
+  DCHECK(args->GetList().size() == 2);
 
   if (!CanChangeChannel(profile_)) {
     LOG(WARNING) << "Non-owner tried to change release track.";
     return;
   }
 
-  std::u16string channel;
-  bool is_powerwash_allowed;
-  if (!args->GetString(0, &channel) ||
-      !args->GetBoolean(1, &is_powerwash_allowed)) {
+  if (!args->GetList()[0].is_string() || !args->GetList()[1].is_bool()) {
     LOG(ERROR) << "Can't parse SetChannel() args";
     return;
   }
+  const std::string& channel = args->GetList()[0].GetString();
+  const bool& is_powerwash_allowed = args->GetList()[1].GetBool();
 
-  version_updater_->SetChannel(base::UTF16ToUTF8(channel),
-                               is_powerwash_allowed);
+  version_updater_->SetChannel(channel, is_powerwash_allowed);
   if (user_manager::UserManager::Get()->IsCurrentUserOwner()) {
     // Check for update after switching release channel.
     version_updater_->CheckForUpdate(
@@ -498,9 +493,8 @@ void AboutHandler::HandleSetChannel(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleGetVersionInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&GetVersionInfo),
@@ -515,9 +509,8 @@ void AboutHandler::OnGetVersionInfoReady(
 }
 
 void AboutHandler::HandleGetRegulatoryInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -527,9 +520,8 @@ void AboutHandler::HandleGetRegulatoryInfo(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleGetChannelInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
   version_updater_->GetChannel(
       true /* get current channel */,
       base::BindOnce(&AboutHandler::OnGetCurrentChannel,
@@ -537,9 +529,8 @@ void AboutHandler::HandleGetChannelInfo(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleCanChangeChannel(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(CanChangeChannel(profile_)));
 }
@@ -564,7 +555,7 @@ void AboutHandler::OnGetTargetChannel(std::string callback_id,
   // its value.
   std::string value;
   bool is_lts =
-      ash::CrosSettings::Get()->GetString(chromeos::kReleaseLtsTag, &value);
+      ash::CrosSettings::Get()->GetString(ash::kReleaseLtsTag, &value);
   channel_info->SetBoolean("isLts", is_lts);
 
   ResolveJavascriptCallback(base::Value(callback_id), *channel_info);
@@ -576,14 +567,11 @@ void AboutHandler::HandleRequestUpdate(const base::ListValue* args) {
 
 void AboutHandler::HandleRequestUpdateOverCellular(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
 
-  std::string update_version;
-  std::string update_size_string;
+  const std::string& update_version = args->GetList()[0].GetString();
+  const std::string& update_size_string = args->GetList()[1].GetString();
   int64_t update_size;
-
-  CHECK(args->GetString(0, &update_version));
-  CHECK(args->GetString(1, &update_size_string));
   CHECK(base::StringToInt64(update_size_string, &update_size));
 
   RequestUpdateOverCellular(update_version, update_size);
@@ -599,23 +587,22 @@ void AboutHandler::RequestUpdateOverCellular(const std::string& update_version,
 
 void AboutHandler::HandleRefreshTPMFirmwareUpdateStatus(
     const base::ListValue* args) {
-  chromeos::tpm_firmware_update::GetAvailableUpdateModes(
+  ash::tpm_firmware_update::GetAvailableUpdateModes(
       base::BindOnce(&AboutHandler::RefreshTPMFirmwareUpdateStatus,
                      weak_factory_.GetWeakPtr()),
       base::TimeDelta());
 }
 
 void AboutHandler::RefreshTPMFirmwareUpdateStatus(
-    const std::set<chromeos::tpm_firmware_update::Mode>& modes) {
+    const std::set<ash::tpm_firmware_update::Mode>& modes) {
   std::unique_ptr<base::DictionaryValue> event(new base::DictionaryValue);
   event->SetBoolean("updateAvailable", !modes.empty());
   FireWebUIListener("tpm-firmware-update-status-changed", *event);
 }
 
 void AboutHandler::HandleGetEndOfLifeInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const std::string& callback_id = args->GetList()[0].GetString();
   version_updater_->GetEolInfo(base::BindOnce(&AboutHandler::OnGetEndOfLifeInfo,
                                               weak_factory_.GetWeakPtr(),
                                               callback_id));

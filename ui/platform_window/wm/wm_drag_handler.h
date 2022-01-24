@@ -6,6 +6,7 @@
 #define UI_PLATFORM_WINDOW_WM_WM_DRAG_HANDLER_H_
 
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -28,19 +29,21 @@ class COMPONENT_EXPORT(WM) WmDragHandler {
     virtual void OnDragOperationChanged(mojom::DragOperation operation) = 0;
     // Called once when the operation has finished.
     virtual void OnDragFinished(mojom::DragOperation operation) = 0;
+    // DragWidget (if any) should be ignored when finding top window and
+    // dispatching mouse events.
+    virtual absl::optional<gfx::AcceleratedWidget> GetDragWidget() = 0;
 
    protected:
     virtual ~Delegate();
   };
 
-  // Starts dragging |data|.
-  // |operation| is bitmask of DRAG_NONE, DRAG_MOVE, DRAG_COPY and DRAG_LINK
-  // in DragDropTypes::DragOperation that defines operations possible for the
-  // drag source.  The destination sets the resulting operation when the drop
-  // action is performed.
-  // |can_grab_pointer| indicates whether the implementation can grab the mouse
-  // pointer (some platforms may need this).
-  // In progress updates on the drag operation come back through the |delegate|.
+  // Starts dragging |data|. Whereas, |operations| is a bitmask of
+  // DragDropTypes::DragOperation values, which defines possible operations for
+  // the drag source. The destination sets the resulting operation when the drop
+  // action is performed. |source| indicates the source event type triggering
+  // the drag, and |can_grab_pointer| indicates whether the implementation can
+  // grab the mouse pointer (some platforms may need this). In progress updates
+  // on the drag operation come back through the |delegate|.
   //
   // This method runs a nested message loop, returning when the drag operation
   // is done. Care must be taken when calling this as it's entirely possible
@@ -49,7 +52,8 @@ class COMPONENT_EXPORT(WM) WmDragHandler {
   //
   // Returns whether the operation ended well (i.e., had not been canceled).
   virtual bool StartDrag(const OSExchangeData& data,
-                         int operation,
+                         int operations,
+                         mojom::DragEventSource source,
                          gfx::NativeCursor cursor,
                          bool can_grab_pointer,
                          Delegate* delegate) = 0;

@@ -166,10 +166,6 @@ void WebRuntimeFeatures::EnableCacheInlineScriptCode(bool enable) {
   RuntimeEnabledFeatures::SetCacheInlineScriptCodeEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableCookiesWithoutSameSiteMustBeSecure(bool enable) {
-  RuntimeEnabledFeatures::SetCookiesWithoutSameSiteMustBeSecureEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableCanvas2dImageChromium(bool enable) {
   RuntimeEnabledFeatures::SetCanvas2dImageChromiumEnabled(enable);
 }
@@ -180,10 +176,6 @@ void WebRuntimeFeatures::EnableCompositedSelectionUpdate(bool enable) {
 
 void WebRuntimeFeatures::EnableCSSHexAlphaColor(bool enable) {
   RuntimeEnabledFeatures::SetCSSHexAlphaColorEnabled(enable);
-}
-
-void WebRuntimeFeatures::EnableSameSiteByDefaultCookies(bool enable) {
-  RuntimeEnabledFeatures::SetSameSiteByDefaultCookiesEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnableScrollTopLeftInterop(bool enable) {
@@ -282,18 +274,17 @@ void WebRuntimeFeatures::EnablePaymentApp(bool enable) {
   RuntimeEnabledFeatures::SetPaymentAppEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnablePaymentHandlerMinimalUI(bool enable) {
-  RuntimeEnabledFeatures::SetPaymentHandlerMinimalUIEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnablePaymentRequest(bool enable) {
   RuntimeEnabledFeatures::SetPaymentRequestEnabled(enable);
   if (!enable) {
     // Disable features that depend on Payment Request API.
     RuntimeEnabledFeatures::SetPaymentAppEnabled(false);
-    RuntimeEnabledFeatures::SetPaymentHandlerMinimalUIEnabled(false);
     RuntimeEnabledFeatures::SetPaymentMethodChangeEventEnabled(false);
   }
+}
+
+void WebRuntimeFeatures::EnablePaymentRequestBasicCard(bool enable) {
+  RuntimeEnabledFeatures::SetPaymentRequestBasicCardEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnablePercentBasedScrolling(bool enable) {
@@ -380,16 +371,16 @@ void WebRuntimeFeatures::EnableSharedAutofill(bool enable) {
   RuntimeEnabledFeatures::SetSharedAutofillEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableSharedStorageAPI(bool enable) {
+  RuntimeEnabledFeatures::SetSharedStorageAPIEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableSharedWorker(bool enable) {
   RuntimeEnabledFeatures::SetSharedWorkerEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnableTextFragmentAnchor(bool enable) {
   RuntimeEnabledFeatures::SetTextFragmentIdentifiersEnabled(enable);
-}
-
-void WebRuntimeFeatures::EnableTextFragmentColorChange(bool enable) {
-  RuntimeEnabledFeatures::SetTextFragmentColorChangeEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnablePreciseMemoryInfo(bool enable) {
@@ -402,6 +393,10 @@ void WebRuntimeFeatures::EnablePrerender2(bool enable) {
 
 bool WebRuntimeFeatures::IsPrerender2Enabled() {
   return RuntimeEnabledFeatures::Prerender2EnabledByRuntimeFlag();
+}
+
+void WebRuntimeFeatures::EnablePrerender2RelatedFeatures(bool enable) {
+  RuntimeEnabledFeatures::SetPrerender2RelatedFeaturesEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnableV8IdleTasks(bool enable) {
@@ -472,10 +467,6 @@ void WebRuntimeFeatures::EnableWebXRViewportScale(bool enable) {
   RuntimeEnabledFeatures::SetWebXRViewportScaleEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableWheelEventRegions(bool enable) {
-  RuntimeEnabledFeatures::SetWheelEventRegionsEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnablePresentationAPI(bool enable) {
   RuntimeEnabledFeatures::SetPresentationEnabled(enable);
 }
@@ -492,12 +483,8 @@ void WebRuntimeFeatures::EnableRestrictAutomaticLazyImageLoadingToDataSaver(
       SetRestrictAutomaticLazyImageLoadingToDataSaverEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableSecurePaymentConfirmationAPIV2(bool enable) {
-  RuntimeEnabledFeatures::SetSecurePaymentConfirmationAPIV2Enabled(enable);
-}
-
-void WebRuntimeFeatures::EnableSecurePaymentConfirmationAPIV3(bool enable) {
-  RuntimeEnabledFeatures::SetSecurePaymentConfirmationAPIV3Enabled(enable);
+void WebRuntimeFeatures::EnableSecurePaymentConfirmation(bool enable) {
+  RuntimeEnabledFeatures::SetSecurePaymentConfirmationEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnableSecurePaymentConfirmationDebug(bool enable) {
@@ -506,10 +493,6 @@ void WebRuntimeFeatures::EnableSecurePaymentConfirmationDebug(bool enable) {
 
 void WebRuntimeFeatures::EnableAutoLazyLoadOnReloads(bool enable) {
   RuntimeEnabledFeatures::SetAutoLazyLoadOnReloadsEnabled(enable);
-}
-
-void WebRuntimeFeatures::EnableExpensiveBackgroundTimerThrottling(bool enable) {
-  RuntimeEnabledFeatures::SetExpensiveBackgroundTimerThrottlingEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnableTimerThrottlingForBackgroundTabs(bool enable) {
@@ -536,6 +519,10 @@ void WebRuntimeFeatures::EnableCrossOriginWebAssemblyModuleSharingAllowed(
     bool enable) {
   RuntimeEnabledFeatures::SetCrossOriginWebAssemblyModuleSharingAllowedEnabled(
       enable);
+}
+
+void WebRuntimeFeatures::EnableDisplayCapturePermissionsPolicy(bool enable) {
+  RuntimeEnabledFeatures::SetDisplayCapturePermissionsPolicyEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnableRemotePlaybackAPI(bool enable) {
@@ -604,18 +591,8 @@ void WebRuntimeFeatures::EnableGetDisplayMedia(bool enable) {
   RuntimeEnabledFeatures::SetGetDisplayMediaEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableGetCurrentBrowsingContextMedia(bool enable) {
-  RuntimeEnabledFeatures::SetGetCurrentBrowsingContextMediaEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableAllowSyncXHRInPageDismissal(bool enable) {
   RuntimeEnabledFeatures::SetAllowSyncXHRInPageDismissalEnabled(enable);
-}
-
-void WebRuntimeFeatures::EnableSignedExchangePrefetchCacheForNavigations(
-    bool enable) {
-  RuntimeEnabledFeatures::SetSignedExchangePrefetchCacheForNavigationsEnabled(
-      enable);
 }
 
 void WebRuntimeFeatures::EnableSignedExchangeSubresourcePrefetch(bool enable) {
@@ -664,10 +641,6 @@ void WebRuntimeFeatures::EnableTrustTokensAlwaysAllowIssuance(bool enable) {
 
 void WebRuntimeFeatures::EnableInstalledApp(bool enable) {
   RuntimeEnabledFeatures::SetInstalledAppEnabled(enable);
-}
-
-void WebRuntimeFeatures::EnableTransformInterop(bool enable) {
-  RuntimeEnabledFeatures::SetTransformInteropEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnableBackfaceVisibilityInterop(bool enable) {

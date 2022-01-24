@@ -1,0 +1,15 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++group name='Appearance' setSize=0
+++++++++legend
+++++++++++staticText name='Appearance'
+++++++++++++inlineTextBox name='Appearance'
+++++++++labelText
+++++++++++radioButton inputType='radio' name='System' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++++staticText name='System'
+++++++++++++inlineTextBox name='System'
+++++++++labelText
+++++++++++radioButton inputType='radio' name='Dark' setSize=2 posInSet=2 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++++staticText name='Dark'
+++++++++++++inlineTextBox name='Dark'

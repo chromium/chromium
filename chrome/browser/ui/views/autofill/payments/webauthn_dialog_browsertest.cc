@@ -25,6 +25,10 @@ class WebauthnDialogBrowserTest : public DialogBrowserTest {
  public:
   WebauthnDialogBrowserTest() = default;
 
+  WebauthnDialogBrowserTest(const WebauthnDialogBrowserTest&) = delete;
+  WebauthnDialogBrowserTest& operator=(const WebauthnDialogBrowserTest&) =
+      delete;
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     content::WebContents* web_contents =
@@ -59,9 +63,6 @@ class WebauthnDialogBrowserTest : public DialogBrowserTest {
     return WebauthnDialogControllerImpl::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebauthnDialogBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WebauthnDialogBrowserTest, InvokeUi_Offer) {

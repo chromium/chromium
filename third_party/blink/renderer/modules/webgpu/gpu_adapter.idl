@@ -10,7 +10,7 @@
     [HighEntropy=Direct, MeasureAs=GPUAdapter_Name] readonly attribute DOMString name;
     [SameObject] readonly attribute GPUSupportedFeatures features;
     [SameObject] readonly attribute GPUSupportedLimits limits;
-    readonly attribute boolean isSoftware;
+    readonly attribute boolean isFallbackAdapter;
 
     [CallWith=ScriptState] Promise<GPUDevice> requestDevice(optional GPUDeviceDescriptor descriptor = {});
 };

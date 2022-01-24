@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "base/process/kill.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/reload_type.h"
@@ -25,6 +24,10 @@ class RenderFrameHost;
 class WebContentsObserverProxy : public WebContentsObserver {
  public:
   WebContentsObserverProxy(JNIEnv* env, jobject obj, WebContents* web_contents);
+
+  WebContentsObserverProxy(const WebContentsObserverProxy&) = delete;
+  WebContentsObserverProxy& operator=(const WebContentsObserverProxy&) = delete;
+
   ~WebContentsObserverProxy() override;
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -32,8 +35,8 @@ class WebContentsObserverProxy : public WebContentsObserver {
  private:
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
-  void RenderViewReady() override;
-  void RenderProcessGone(base::TerminationStatus termination_status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus termination_status) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
   void LoadProgressChanged(double progress) override;
@@ -77,8 +80,6 @@ class WebContentsObserverProxy : public WebContentsObserver {
 
   base::android::ScopedJavaGlobalRef<jobject> java_observer_;
   GURL base_url_of_last_started_data_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsObserverProxy);
 };
 
 }  // namespace content

@@ -39,6 +39,10 @@ namespace extensions {
 class ExtensionThrottleManager {
  public:
   ExtensionThrottleManager();
+
+  ExtensionThrottleManager(const ExtensionThrottleManager&) = delete;
+  ExtensionThrottleManager& operator=(const ExtensionThrottleManager&) = delete;
+
   virtual ~ExtensionThrottleManager();
 
   // Creates a throttle which uses this class to prevent extensions from
@@ -126,8 +130,6 @@ class ExtensionThrottleManager {
 
   // Used to synchronize all public methods.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionThrottleManager);
 };
 
 }  // namespace extensions

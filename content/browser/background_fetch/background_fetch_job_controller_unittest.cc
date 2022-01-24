@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "components/download/public/common/download_item.h"
 #include "content/browser/background_fetch/background_fetch_constants.h"
@@ -32,8 +31,10 @@
 #include "content/public/test/mock_download_manager.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "url/origin.h"
 
 using blink::FetchAPIRequestHeadersMap;
 using testing::_;
@@ -52,6 +53,12 @@ enum class JobCompletionStatus { kRunning, kCompleted, kAborted };
 class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
  public:
   BackgroundFetchJobControllerTest() = default;
+
+  BackgroundFetchJobControllerTest(const BackgroundFetchJobControllerTest&) =
+      delete;
+  BackgroundFetchJobControllerTest& operator=(
+      const BackgroundFetchJobControllerTest&) = delete;
+
   ~BackgroundFetchJobControllerTest() override = default;
 
   // Returns the status for the active job for |registration_id|. The
@@ -163,7 +170,8 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
     controller->InitializeRequestStatus(/* completed_downloads= */ 0,
                                         total_downloads,
                                         /* outstanding_guids= */ {},
-                                        /* start_paused= */ false);
+                                        /* start_paused= */ false,
+                                        /* isolation_info= */ absl::nullopt);
 
     return controller;
   }
@@ -234,8 +242,6 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
     finished_requests_[registration_id] = reason_to_abort;
     pending_requests_counts_.erase(iter);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchJobControllerTest);
 };
 
 TEST_F(BackgroundFetchJobControllerTest, SingleRequestJob) {
@@ -430,6 +436,39 @@ TEST_F(BackgroundFetchJobControllerTest, Abort) {
             GetCompletionStatus(registration_id));
 }
 
+TEST_F(BackgroundFetchJobControllerTest, AbortDownloadExceededCrossOrigin) {
+  BackgroundFetchRegistrationId registration_id;
+
+  auto requests = CreateRegistrationForRequests(
+      &registration_id, {{GURL("https://example2.com/funny_cat.png"), "GET"}},
+      /* auto_complete_requests= */ true);
+
+  EXPECT_EQ(JobCompletionStatus::kRunning,
+            GetCompletionStatus(registration_id));
+
+  std::unique_ptr<BackgroundFetchJobController> controller =
+      CreateJobController(registration_id, requests.size());
+
+  controller->StartRequest(requests[0], base::DoNothing());
+
+  controller->DidStartRequest(
+      requests[0]->download_guid(),
+      std::make_unique<BackgroundFetchResponse>(
+          std::vector<GURL>{GURL("https://example2.com/funny_cat.png")},
+          nullptr));
+  EXPECT_FALSE(requests[0]->can_populate_body());
+
+  controller->AbortFromDelegate(
+      blink::mojom::BackgroundFetchFailureReason::DOWNLOAD_TOTAL_EXCEEDED);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(JobCompletionStatus::kAborted,
+            GetCompletionStatus(registration_id));
+  EXPECT_EQ(finished_requests_[registration_id],
+            blink::mojom::BackgroundFetchFailureReason::FETCH_ERROR);
+}
+
 TEST_F(BackgroundFetchJobControllerTest, Progress) {
   BackgroundFetchRegistrationId registration_id;
 
@@ -468,10 +507,11 @@ TEST_F(BackgroundFetchJobControllerTest, Progress) {
 
 TEST_F(BackgroundFetchJobControllerTest, ServiceWorkerRegistrationDeleted) {
   BackgroundFetchRegistrationId registration_id;
+  const GURL kFunnyCatUrl("https://example.com/funny_cat.png");
 
-  auto requests = CreateRegistrationForRequests(
-      &registration_id, {{GURL("https://example.com/funny_cat.png"), "GET"}},
-      /* auto_complete_requests= */ true);
+  auto requests =
+      CreateRegistrationForRequests(&registration_id, {{kFunnyCatUrl, "GET"}},
+                                    /* auto_complete_requests= */ true);
 
   EXPECT_EQ(JobCompletionStatus::kRunning,
             GetCompletionStatus(registration_id));
@@ -481,8 +521,9 @@ TEST_F(BackgroundFetchJobControllerTest, ServiceWorkerRegistrationDeleted) {
 
   AddControllerToSchedulerMap(registration_id.unique_id(),
                               std::move(controller));
-  scheduler()->OnRegistrationDeleted(kExampleServiceWorkerRegistrationId,
-                                     GURL("https://example.com/funny_cat.png"));
+  scheduler()->OnRegistrationDeleted(
+      kExampleServiceWorkerRegistrationId, kFunnyCatUrl,
+      blink::StorageKey(url::Origin::Create(kFunnyCatUrl)));
 
   base::RunLoop().RunUntilIdle();
 

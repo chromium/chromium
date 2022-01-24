@@ -41,6 +41,10 @@ class URLRequestTestJobBackedByFile : public URLRequestJob {
       const base::FilePath& file_path,
       const scoped_refptr<base::TaskRunner>& file_task_runner);
 
+  URLRequestTestJobBackedByFile(const URLRequestTestJobBackedByFile&) = delete;
+  URLRequestTestJobBackedByFile& operator=(
+      const URLRequestTestJobBackedByFile&) = delete;
+
   // URLRequestJob:
   void Start() override;
   void Kill() override;
@@ -129,8 +133,6 @@ class URLRequestTestJobBackedByFile : public URLRequestJob {
   Error range_parse_result_;
 
   base::WeakPtrFactory<URLRequestTestJobBackedByFile> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestTestJobBackedByFile);
 };
 
 }  // namespace net

@@ -31,6 +31,10 @@ class ShellKeepAliveRequester : public ExtensionRegistryObserver,
                                 public apps::AppLifetimeMonitor::Observer {
  public:
   explicit ShellKeepAliveRequester(content::BrowserContext* browser_context);
+
+  ShellKeepAliveRequester(const ShellKeepAliveRequester&) = delete;
+  ShellKeepAliveRequester& operator=(const ShellKeepAliveRequester&) = delete;
+
   ~ShellKeepAliveRequester() override;
 
   // Owner should call this before starting to reload an app, so that a
@@ -69,8 +73,6 @@ class ShellKeepAliveRequester : public ExtensionRegistryObserver,
   base::ScopedObservation<apps::AppLifetimeMonitor,
                           apps::AppLifetimeMonitor::Observer>
       app_lifetime_monitor_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShellKeepAliveRequester);
 };
 
 }  // namespace extensions

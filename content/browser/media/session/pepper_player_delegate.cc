@@ -20,9 +20,13 @@ const double kDuckVolume = 0.2f;
 
 const int PepperPlayerDelegate::kPlayerId = 0;
 
-PepperPlayerDelegate::PepperPlayerDelegate(RenderFrameHost* render_frame_host,
-                                           int32_t pp_instance)
-    : render_frame_host_(render_frame_host), pp_instance_(pp_instance) {}
+PepperPlayerDelegate::PepperPlayerDelegate(
+    RenderFrameHost* render_frame_host,
+    int32_t pp_instance,
+    media::MediaContentType media_content_type)
+    : render_frame_host_(render_frame_host),
+      pp_instance_(pp_instance),
+      media_content_type_(media_content_type) {}
 
 PepperPlayerDelegate::~PepperPlayerDelegate() = default;
 
@@ -80,6 +84,8 @@ void PepperPlayerDelegate::OnSetAudioSinkId(int player_id,
   NOTREACHED();
 }
 
+void PepperPlayerDelegate::OnSetMute(int player_id, bool mute) {}
+
 absl::optional<media_session::MediaPosition> PepperPlayerDelegate::GetPosition(
     int player_id) const {
   // Pepper does not support position data.
@@ -119,6 +125,10 @@ std::string PepperPlayerDelegate::GetAudioOutputSinkId(int player_id) const {
 bool PepperPlayerDelegate::SupportsAudioOutputDeviceSwitching(
     int player_id) const {
   return false;
+}
+
+media::MediaContentType PepperPlayerDelegate::GetMediaContentType() const {
+  return media_content_type_;
 }
 
 }  // namespace content

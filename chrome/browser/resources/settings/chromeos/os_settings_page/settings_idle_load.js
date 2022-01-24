@@ -8,7 +8,13 @@
  * loading and rendering of elements that are accessed imperatively. A URL is
  * given that holds the elements to be loaded lazily.
  */
+import {assert} from '//resources/js/assert.m.js';
+import {html, Polymer, TemplateInstanceBase, templatize} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {ensureLazyLoaded} from '../ensure_lazy_loaded.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-idle-load',
 
   properties: {
@@ -51,7 +57,7 @@ Polymer({
       requestFn().then(() => {
         const template =
             /** @type {!HTMLTemplateElement} */ (this.getContentChildren()[0]);
-        const TemplateClass = Polymer.Templatize.templatize(template, this, {
+        const TemplateClass = templatize(template, this, {
           mutableData: false,
           forwardHostProp: this._forwardHostPropV2,
         });
@@ -78,17 +84,7 @@ Polymer({
       return this.loading_;
     }
 
-    // clang-format off
-    // Polymer 2 codepath
-    /* #ignore */ const requestLazyModuleFn = () => {
-      /* #ignore */ return new Promise((resolve, reject) => {
-        /* #ignore */ this.importHref(this.url, resolve, reject, true);
-      /* #ignore */ });
-    /* #ignore */ };
-    // clang-format on
-
-    // Polymer 3 codepath, do not delete next line comment.
-    // #polymer3 const requestLazyModuleFn = ensureLazyLoaded;
+    const requestLazyModuleFn = ensureLazyLoaded;
 
     this.loading_ = this.requestLazyModule_(requestLazyModuleFn);
     return this.loading_;

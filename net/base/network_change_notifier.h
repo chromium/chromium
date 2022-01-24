@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -452,7 +453,8 @@ class NET_EXPORT NetworkChangeNotifier {
   // thread on which this is called is the thread on which |observer| will be
   // called back with notifications.  This is safe to call if Create() has not
   // been called (as long as it doesn't race the Create() call on another
-  // thread), in which case it will simply do nothing.
+  // thread), in which case it will add the observers to the static observer
+  // list and be notified once the network change notifier is created.
 
   // DEPRECATED. IPAddressObserver is deprecated. Please use
   // NetworkChangeObserver instead. crbug.com/754695.
@@ -530,11 +532,11 @@ class NET_EXPORT NetworkChangeNotifier {
  protected:
   // Types of network changes specified to
   // NotifyObserversOfSpecificNetworkChange.
-  enum NetworkChangeType {
-    CONNECTED,
-    DISCONNECTED,
-    SOON_TO_DISCONNECT,
-    MADE_DEFAULT
+  enum class NetworkChangeType {
+    kConnected,
+    kDisconnected,
+    kSoonToDisconnect,
+    kMadeDefault
   };
 
   // NetworkChanged signal is calculated from the IPAddressChanged and
@@ -635,6 +637,9 @@ class NET_EXPORT NetworkChangeNotifier {
 
   class NetworkChangeCalculator;
   class SystemDnsConfigObserver;
+  class ObserverList;
+
+  static ObserverList& GetObserverList();
 
   void NotifyObserversOfIPAddressChangeImpl();
   void NotifyObserversOfConnectionTypeChangeImpl(ConnectionType type);
@@ -645,21 +650,6 @@ class NET_EXPORT NetworkChangeNotifier {
   void NotifyObserversOfSpecificNetworkChangeImpl(NetworkChangeType type,
                                                   NetworkHandle network);
   void NotifyObserversOfConnectionCostChangeImpl(ConnectionCost cost);
-
-  const scoped_refptr<base::ObserverListThreadSafe<IPAddressObserver>>
-      ip_address_observer_list_;
-  const scoped_refptr<base::ObserverListThreadSafe<ConnectionTypeObserver>>
-      connection_type_observer_list_;
-  const scoped_refptr<base::ObserverListThreadSafe<DNSObserver>>
-      resolver_state_observer_list_;
-  const scoped_refptr<base::ObserverListThreadSafe<NetworkChangeObserver>>
-      network_change_observer_list_;
-  const scoped_refptr<base::ObserverListThreadSafe<MaxBandwidthObserver>>
-      max_bandwidth_observer_list_;
-  const scoped_refptr<base::ObserverListThreadSafe<NetworkObserver>>
-      network_observer_list_;
-  const scoped_refptr<base::ObserverListThreadSafe<ConnectionCostObserver>>
-      connection_cost_observer_list_;
 
   SystemDnsConfigChangeNotifier* system_dns_config_notifier_;
   std::unique_ptr<SystemDnsConfigObserver> system_dns_config_observer_;
@@ -672,10 +662,6 @@ class NET_EXPORT NetworkChangeNotifier {
 
   // Indicates if this instance cleared g_network_change_notifier_ yet.
   bool cleared_global_pointer_ = false;
-
-  // Whether observers can be added. This may only be false during construction
-  // in tests. See comment above the constructor.
-  bool can_add_observers_;
 };
 
 }  // namespace net

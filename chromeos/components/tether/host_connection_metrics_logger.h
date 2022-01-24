@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chromeos/components/tether/active_host.h"
 
 namespace base {
@@ -49,6 +48,11 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
                                             const std::string& device_id);
 
   HostConnectionMetricsLogger(ActiveHost* active_host);
+
+  HostConnectionMetricsLogger(const HostConnectionMetricsLogger&) = delete;
+  HostConnectionMetricsLogger& operator=(const HostConnectionMetricsLogger&) =
+      delete;
+
   virtual ~HostConnectionMetricsLogger();
 
  protected:
@@ -202,8 +206,6 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
 
   base::Time connect_to_host_start_time_;
   std::string active_host_device_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostConnectionMetricsLogger);
 };
 
 }  // namespace tether

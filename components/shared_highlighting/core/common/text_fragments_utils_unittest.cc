@@ -12,6 +12,52 @@
 namespace shared_highlighting {
 namespace {
 
+TEST(TextFragmentsUtilsTest, SplitUrlTextFragmentDirective_NoDelimiter) {
+  GURL webpage_url;
+  std::string highlight_directive;
+  std::string url = "https://www.example.com/hello/";
+
+  EXPECT_FALSE(
+      SplitUrlTextFragmentDirective(url, &webpage_url, &highlight_directive));
+  EXPECT_TRUE(webpage_url.spec().empty());
+  EXPECT_TRUE(highlight_directive.empty());
+}
+
+TEST(TextFragmentsUtilsTest,
+     SplitUrlTextFragmentDirective_NormalUrlWithFragment) {
+  GURL webpage_url;
+  std::string highlight_directive;
+
+  std::string url = "https://www.example.com/hello/#:~:text=blahblah";
+  EXPECT_TRUE(
+      SplitUrlTextFragmentDirective(url, &webpage_url, &highlight_directive));
+  EXPECT_EQ("https://www.example.com/hello/", webpage_url.spec());
+  EXPECT_EQ("blahblah", highlight_directive);
+}
+
+TEST(TextFragmentsUtilsTest, SplitUrlTextFragmentDirective_JustFragment) {
+  GURL webpage_url;
+  std::string highlight_directive;
+  std::string url = "#:~:text=blueblue";
+
+  EXPECT_TRUE(
+      SplitUrlTextFragmentDirective(url, &webpage_url, &highlight_directive));
+  EXPECT_EQ("", webpage_url.spec());
+  EXPECT_EQ("blueblue", highlight_directive);
+}
+
+TEST(TextFragmentsUtilsTest,
+     SplitUrlTextFragmentDirective_OtherAnchorBeforeFragment) {
+  GURL webpage_url;
+  std::string highlight_directive;
+  std::string url = "https://www.example.com/hello/#AnAnchor&:~:text=blahblah";
+
+  EXPECT_TRUE(
+      SplitUrlTextFragmentDirective(url, &webpage_url, &highlight_directive));
+  EXPECT_EQ("https://www.example.com/hello/#AnAnchor", webpage_url.spec());
+  EXPECT_EQ("blahblah", highlight_directive);
+}
+
 TEST(TextFragmentsUtilsTest, ParseTextFragments) {
   GURL url_with_fragment(
       "https://www.example.com/#idFrag:~:text=text%201&text=text%202");

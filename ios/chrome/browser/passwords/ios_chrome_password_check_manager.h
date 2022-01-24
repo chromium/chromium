@@ -75,8 +75,11 @@ class IOSChromePasswordCheckManager
 
   // Edits |username| and |password| for |form| and its duplicates.
   bool EditPasswordForm(const password_manager::PasswordForm& form,
-                        base::StringPiece new_username,
-                        base::StringPiece new_password);
+                        const std::u16string& new_username,
+                        const std::u16string& new_password);
+
+  // Adds new password credentials |form| to the store.
+  bool AddPasswordForm(const password_manager::PasswordForm& form);
 
   // Edits password form using |insecure_credentials_manager_|.
   void EditCompromisedPasswordForm(const password_manager::PasswordForm& form,
@@ -99,7 +102,7 @@ class IOSChromePasswordCheckManager
   }
 
  private:
-  friend class RefCounted<IOSChromePasswordCheckManager>;
+  friend class base::RefCounted<IOSChromePasswordCheckManager>;
   friend class IOSChromePasswordCheckManagerProxy;
 
   explicit IOSChromePasswordCheckManager(ChromeBrowserState* browser_state);
@@ -130,7 +133,7 @@ class IOSChromePasswordCheckManager
 
   // Handle to the password store, powering both |saved_passwords_presenter_|
   // and |insecure_credentials_manager_|.
-  scoped_refptr<password_manager::PasswordStore> password_store_;
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store_;
 
   // Used by |insecure_credentials_manager_| to obtain the list of saved
   // passwords.

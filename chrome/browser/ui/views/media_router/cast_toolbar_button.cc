@@ -17,13 +17,15 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button_controller.h"
 
@@ -152,7 +154,14 @@ void CastToolbarButton::OnGestureEvent(ui::GestureEvent* event) {
   ToolbarButton::OnGestureEvent(event);
 }
 
+void CastToolbarButton::OnThemeChanged() {
+  ToolbarButton::OnThemeChanged();
+  UpdateIcon();
+}
+
 void CastToolbarButton::UpdateIcon() {
+  if (!GetWidget())
+    return;
   using Severity = media_router::IssueInfo::Severity;
   const auto severity =
       current_issue_ ? current_issue_->severity : Severity::NOTIFICATION;
@@ -164,12 +173,10 @@ void CastToolbarButton::UpdateIcon() {
     icon_color = gfx::kPlaceholderColor;
   } else if (severity == Severity::FATAL) {
     new_icon = &vector_icons::kMediaRouterErrorIcon;
-    icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_AlertSeverityHigh);
+    icon_color = GetColorProvider()->GetColor(ui::kColorAlertHighSeverity);
   } else if (severity == Severity::WARNING) {
     new_icon = &vector_icons::kMediaRouterWarningIcon;
-    icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_AlertSeverityMedium);
+    icon_color = GetColorProvider()->GetColor(ui::kColorAlertMediumSeverity);
   } else {
     new_icon = &vector_icons::kMediaRouterActiveIcon;
     icon_color = gfx::kGoogleBlue500;

@@ -24,6 +24,6 @@ void TrustedCDNObserver::PrimaryPageChanged(content::Page& page) {
   web_contents()->DidChangeVisibleSecurityState();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TrustedCDNObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TrustedCDNObserver);
 
 }  // namespace weblayer

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -49,7 +48,7 @@ namespace media {
 namespace {
 const int kNumConfigs = 4;
 const int kNumBuffersInOneConfig = 5;
-constexpr base::TimeDelta kPrepareDelay = base::TimeDelta::FromMilliseconds(5);
+constexpr base::TimeDelta kPrepareDelay = base::Milliseconds(5);
 
 static int GetDecoderId(int i) {
   return i;
@@ -142,6 +141,9 @@ class VideoDecoderStreamTest
     EXPECT_MEDIA_LOG(HasSubstr("Audio")).Times(AnyNumber());
     EXPECT_MEDIA_LOG(HasSubstr("decryptor")).Times(AnyNumber());
   }
+
+  VideoDecoderStreamTest(const VideoDecoderStreamTest&) = delete;
+  VideoDecoderStreamTest& operator=(const VideoDecoderStreamTest&) = delete;
 
   ~VideoDecoderStreamTest() {
     // Check that the pipeline statistics callback was fired correctly.
@@ -556,9 +558,6 @@ class VideoDecoderStreamTest
 
   // Decryptor has no key to decrypt a frame.
   bool has_no_key_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderStreamTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -689,8 +688,7 @@ TEST_P(VideoDecoderStreamTest, Read_ProperMetadata) {
                             base::Unretained(this)));
   }
 
-  constexpr base::TimeDelta kDecodeDelay =
-      base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDecodeDelay = base::Milliseconds(10);
 
   Initialize();
 

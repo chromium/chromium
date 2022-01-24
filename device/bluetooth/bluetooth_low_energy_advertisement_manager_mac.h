@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_advertisement_mac.h"
 
 namespace device {
@@ -18,6 +18,12 @@ namespace device {
 class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyAdvertisementManagerMac {
  public:
   BluetoothLowEnergyAdvertisementManagerMac();
+
+  BluetoothLowEnergyAdvertisementManagerMac(
+      const BluetoothLowEnergyAdvertisementManagerMac&) = delete;
+  BluetoothLowEnergyAdvertisementManagerMac& operator=(
+      const BluetoothLowEnergyAdvertisementManagerMac&) = delete;
+
   ~BluetoothLowEnergyAdvertisementManagerMac();
 
   // Initializes the advertisement manager.
@@ -52,8 +58,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyAdvertisementManagerMac {
   CBPeripheralManager* peripheral_manager_;
 
   scoped_refptr<BluetoothAdvertisementMac> active_advertisement_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyAdvertisementManagerMac);
 };
 
 }  // namespace device

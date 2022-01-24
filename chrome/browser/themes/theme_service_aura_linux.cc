@@ -5,7 +5,6 @@
 #include "chrome/browser/themes/theme_service_aura_linux.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/common/pref_names.h"
@@ -19,6 +18,9 @@ namespace {
 class SystemThemeX11 : public CustomThemeSupplier {
  public:
   explicit SystemThemeX11(PrefService* pref_service);
+
+  SystemThemeX11(const SystemThemeX11&) = delete;
+  SystemThemeX11& operator=(const SystemThemeX11&) = delete;
 
   // Overridden from CustomThemeSupplier:
   void StartUsingTheme() override;
@@ -35,8 +37,6 @@ class SystemThemeX11 : public CustomThemeSupplier {
   // These pointers are not owned by us.
   views::LinuxUI* const linux_ui_;
   PrefService* const pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemThemeX11);
 };
 
 SystemThemeX11::SystemThemeX11(PrefService* pref_service)

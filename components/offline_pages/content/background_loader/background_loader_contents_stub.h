@@ -17,6 +17,11 @@ namespace background_loader {
 class BackgroundLoaderContentsStub : public BackgroundLoaderContents {
  public:
   BackgroundLoaderContentsStub(content::BrowserContext* browser_context);
+
+  BackgroundLoaderContentsStub(const BackgroundLoaderContentsStub&) = delete;
+  BackgroundLoaderContentsStub& operator=(const BackgroundLoaderContentsStub&) =
+      delete;
+
   ~BackgroundLoaderContentsStub() override;
 
   void LoadPage(const GURL& url) override;
@@ -24,7 +29,6 @@ class BackgroundLoaderContentsStub : public BackgroundLoaderContents {
 
  private:
   bool is_loading_;
-  DISALLOW_COPY_AND_ASSIGN(BackgroundLoaderContentsStub);
 };
 
 }  // namespace background_loader

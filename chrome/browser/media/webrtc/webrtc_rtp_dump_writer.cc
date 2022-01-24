@@ -110,6 +110,9 @@ class WebRtcRtpDumpWriter::FileWorker {
     DCHECK_EQ(Z_OK, result);
   }
 
+  FileWorker(const FileWorker&) = delete;
+  FileWorker& operator=(const FileWorker&) = delete;
+
   ~FileWorker() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -243,8 +246,6 @@ class WebRtcRtpDumpWriter::FileWorker {
   z_stream stream_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FileWorker);
 };
 
 WebRtcRtpDumpWriter::WebRtcRtpDumpWriter(

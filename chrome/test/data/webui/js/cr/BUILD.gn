@@ -3,14 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
-
-group("modulize") {
-  deps = [
-    ":modulize_local",
-    "./ui:modulize",
-  ]
-}
 
 group("closure_compile") {
   deps = [
@@ -19,20 +11,13 @@ group("closure_compile") {
   ]
 }
 
-js_modulizer("modulize_local") {
-  input_files = [ "event_target_test.js" ]
-}
-
-js_library("event_target_test.m") {
-  sources =
-      [ "$root_gen_dir/chrome/test/data/webui/js/cr/event_target_test.m.js" ]
+js_library("event_target_test") {
   deps = [
     "../..:chai_assert",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
-  extra_deps = [ ":modulize_local" ]
 }
 
 js_type_check("closure_compile_local") {
-  deps = [ ":event_target_test.m" ]
+  deps = [ ":event_target_test" ]
 }

@@ -18,12 +18,11 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event_watcher.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/ppapi_plugin_process_host.h"
@@ -43,6 +42,9 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
  public:
   // Returns the PluginServiceImpl singleton.
   static PluginServiceImpl* GetInstance();
+
+  PluginServiceImpl(const PluginServiceImpl&) = delete;
+  PluginServiceImpl& operator=(const PluginServiceImpl&) = delete;
 
   // PluginService implementation:
   void Init() override;
@@ -136,7 +138,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   int max_ppapi_processes_per_profile_ = kDefaultMaxPpapiProcessesPerProfile;
 
   // Weak pointer; set during the startup on UI thread and must outlive us.
-  PluginServiceFilter* filter_;
+  PluginServiceFilter* filter_ = nullptr;
 
   // Used to load plugins from disk.
   scoped_refptr<base::SequencedTaskRunner> plugin_list_task_runner_;
@@ -145,9 +147,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   base::SequenceChecker plugin_list_sequence_checker_;
 
   // Used to detect if a given plugin is crashing over and over.
-  std::map<base::FilePath, std::vector<base::Time> > crash_times_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginServiceImpl);
+  std::map<base::FilePath, std::vector<base::Time>> crash_times_;
 };
 
 }  // namespace content

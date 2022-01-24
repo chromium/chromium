@@ -21,17 +21,11 @@ namespace test {
 
 AppListTestViewDelegate::AppListTestViewDelegate()
     : model_(std::make_unique<AppListTestModel>()),
-      search_model_(std::make_unique<SearchModel>()) {}
-
-AppListTestViewDelegate::~AppListTestViewDelegate() {}
-
-AppListModel* AppListTestViewDelegate::GetModel() {
-  return model_.get();
+      search_model_(std::make_unique<SearchModel>()) {
+  model_provider_.SetActiveModel(model_.get(), search_model_.get());
 }
 
-SearchModel* AppListTestViewDelegate::GetSearchModel() {
-  return search_model_.get();
-}
+AppListTestViewDelegate::~AppListTestViewDelegate() = default;
 
 bool AppListTestViewDelegate::KeyboardTraversalEngaged() {
   return true;
@@ -76,9 +70,10 @@ void AppListTestViewDelegate::DismissAppList() {
 }
 
 void AppListTestViewDelegate::ReplaceTestModel(int item_count) {
+  search_model_ = std::make_unique<SearchModel>();
   model_ = std::make_unique<AppListTestModel>();
   model_->PopulateApps(item_count);
-  search_model_ = std::make_unique<SearchModel>();
+  model_provider_.SetActiveModel(model_.get(), search_model_.get());
 }
 
 void AppListTestViewDelegate::SetSearchEngineIsGoogle(bool is_google) {
@@ -193,9 +188,24 @@ void AppListTestViewDelegate::MarkSuggestedContentInfoDismissed() {
 }
 
 void AppListTestViewDelegate::OnStateTransitionAnimationCompleted(
-    ash::AppListViewState state) {}
+    AppListViewState state,
+    bool was_animation_interrupted) {}
 
-void AppListTestViewDelegate::OnViewStateChanged(AppListViewState state) {}
+AppListState AppListTestViewDelegate::GetCurrentAppListPage() const {
+  return app_list_page_;
+}
+
+void AppListTestViewDelegate::OnAppListPageChanged(AppListState page) {
+  app_list_page_ = page;
+}
+
+AppListViewState AppListTestViewDelegate::GetAppListViewState() const {
+  return app_list_view_state_;
+}
+
+void AppListTestViewDelegate::OnViewStateChanged(AppListViewState state) {
+  app_list_view_state_ = state;
+}
 
 void AppListTestViewDelegate::GetAppLaunchedMetricParams(
     AppLaunchedMetricParams* metric_params) {}
@@ -225,7 +235,7 @@ AppListNotifier* AppListTestViewDelegate::GetNotifier() {
 
 void AppListTestViewDelegate::RecordAppLaunched(
     ash::AppListLaunchedFrom launched_from) {
-  RecordAppListAppLaunched(launched_from, model_->state_fullscreen(),
+  RecordAppListAppLaunched(launched_from, app_list_view_state_,
                            false /*tablet mode*/,
                            false /*home launcher shown*/);
 }

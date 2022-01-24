@@ -355,7 +355,7 @@ class MediaCapabilitiesTestContext {
 const char kVideoContentType[] = "video/webm; codecs=\"vp09.00.10.08\"";
 const char kAudioContentType[] = "audio/webm; codecs=\"opus\"";
 const media::VideoCodecProfile kCodecProfile = media::VP9PROFILE_PROFILE0;
-const media::VideoCodec kCodec = media::kCodecVP9;
+const media::VideoCodec kCodec = media::VideoCodec::kVP9;
 const double kFramerate = 20.5;
 const int kWidth = 3840;
 const int kHeight = 2160;
@@ -449,7 +449,7 @@ Vector<media::learning::FeatureValue> CreateFeaturesML() {
   // WebMediaPlayerImpl::UpdateSmoothnessHelper().
   // TODO(chcunningham): refactor into something more robust.
   Vector<media::learning::FeatureValue> ml_features(
-      {media::learning::FeatureValue(kCodec),
+      {media::learning::FeatureValue(static_cast<int>(kCodec)),
        media::learning::FeatureValue(kCodecProfile),
        media::learning::FeatureValue(kWidth),
        media::learning::FeatureValue(kFramerate)});

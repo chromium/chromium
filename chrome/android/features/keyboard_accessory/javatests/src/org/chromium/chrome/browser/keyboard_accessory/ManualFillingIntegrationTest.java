@@ -365,7 +365,8 @@ public class ManualFillingIntegrationTest {
 
         // Initialize and wait for the infobar.
         InfoBarTestAnimationListener listener = new InfoBarTestAnimationListener();
-        mActivityTestRule.getInfoBarContainer().addAnimationListener(listener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getInfoBarContainer().addAnimationListener(listener));
         final String kInfoBarText = "SomeInfoBar";
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             SimpleConfirmInfoBarBuilder.create(
@@ -409,7 +410,8 @@ public class ManualFillingIntegrationTest {
 
         // Initialize and wait for the infobar.
         InfoBarTestAnimationListener listener = new InfoBarTestAnimationListener();
-        mActivityTestRule.getInfoBarContainer().addAnimationListener(listener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getInfoBarContainer().addAnimationListener(listener));
         final String kInfoBarText = "SomeInfoBar";
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             SimpleConfirmInfoBarBuilder.create(
@@ -498,7 +500,8 @@ public class ManualFillingIntegrationTest {
 
         // Initialize and wait for the infobar.
         InfoBarTestAnimationListener listener = new InfoBarTestAnimationListener();
-        mActivityTestRule.getInfoBarContainer().addAnimationListener(listener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getInfoBarContainer().addAnimationListener(listener));
         final String kInfoBarText = "SomeInfoBar";
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             SimpleConfirmInfoBarBuilder.create(

@@ -13,7 +13,7 @@ absl_source_set("hash") {
   public = [ "hash.h" ]
   deps = [
     ":city",
-    ":wyhash",
+    ":low_level_hash",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:endian",
@@ -60,13 +60,25 @@ absl_source_set("city") {
   ]
 }
 
-absl_source_set("wyhash") {
-  public = [ "internal/wyhash.h" ]
-  sources = [ "internal/wyhash.cc" ]
+absl_source_set("low_level_hash") {
+  public = [ "internal/low_level_hash.h" ]
+  sources = [ "internal/low_level_hash.cc" ]
   deps = [
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:endian",
+    "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
   ]
   visibility = [ ":*" ]
+}
+
+absl_source_set("low_level_hash_test") {
+  testonly = true
+  sources = [ "internal/low_level_hash_test.cc" ]
+  deps = [
+    ":low_level_hash",
+    "//third_party/abseil-cpp/absl/strings",
+    "//third_party/googletest:gtest",
+    "//third_party/googletest:gmock",
+  ]
 }

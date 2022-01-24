@@ -28,12 +28,29 @@
     boolean embedded;
   };
 
+  dictionary PdfPluginAttributes {
+    // The background color in ARGB format for painting. Since the background
+    // color is an unsigned 32-bit integer which can be outside the range of
+    // "long" type, define it as a "double" type here.
+    double backgroundColor;
+
+    // Indicates whether the plugin allows to execute JavaScript and maybe XFA.
+    // Loading XFA for PDF forms will automatically be disabled if this flag is
+    // false.
+    boolean allowJavascript;
+  };
+
   callback GetStreamDetailsCallback = void (StreamInfo streamInfo);
   callback SetShowBeforeUnloadDialogCallback = void ();
 
   interface Functions {
     // Returns the StreamInfo for the stream for this context if there is one.
     [nocompile] static void getStreamInfo(GetStreamDetailsCallback callback);
+
+    // Sets PDF plugin attributes in the stream for this context if there is
+    // one.
+    [nocompile] static void setPdfPluginAttributes(
+        PdfPluginAttributes pdfPluginAttributes);
 
     // Instructs the PluginDocument, if running in one, to show a dialog in
     // response to beforeunload events.

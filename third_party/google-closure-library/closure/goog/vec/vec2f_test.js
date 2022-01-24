@@ -1,5 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-// Use of this source code is governed by the Apache License, Version 2.0.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 ////////////////////////// NOTE ABOUT EDITING THIS FILE ///////////////////////
 //                                                                           //
@@ -12,6 +15,7 @@ goog.module('goog.vec.vec2fTest');
 goog.setTestOnly();
 
 const testSuite = goog.require('goog.testing.testSuite');
+const vec = goog.require('goog.vec');
 const vec2f = goog.require('goog.vec.vec2f');
 
 testSuite({
@@ -148,6 +152,7 @@ testSuite({
     assertElementsEquals([1, 2], v0);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testScale() {
     const v0 = vec2f.setFromArray(vec2f.create(), [1, 2]);
     const v1 = vec2f.create();
@@ -171,6 +176,7 @@ testSuite({
     assertEquals(Math.sqrt(5), vec2f.magnitude(v0));
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testNormalize() {
     const v0 = vec2f.setFromArray(vec2f.create(), [2, 3]);
     const v1 = vec2f.create();
@@ -225,7 +231,7 @@ testSuite({
     vec2f.setFromValues(v1, 0, 0);
     vec2f.direction(v0, v1, dirVec);
     assertElementsRoughlyEqual(
-        [-0.707106781, -0.707106781], dirVec, goog.vec.EPSILON);
+        [-0.707106781, -0.707106781], dirVec, vec.EPSILON);
   },
 
   testLerp() {

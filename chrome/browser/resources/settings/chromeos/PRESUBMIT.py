@@ -5,45 +5,28 @@
 
 USE_PYTHON3 = True
 
-import re
+import sys
 
+def _CheckSemanticCssColors(input_api, output_api):
+  original_sys_path = sys.path
+  join = input_api.os_path.join
+  src_root = input_api.change.RepositoryRoot()
+  try:
+    # Change the system path to SemanticCssChecker's directory to be
+    # able to import it.
+    sys.path.append(join(src_root, 'chrome', 'browser','resources',
+                         'chromeos'))
+    from semantic_css_checker import SemanticCssChecker
+  finally:
+    sys.path = original_sys_path
 
-def _CheckSemanticColors(input_api, output_api):
-    problems = []
-    for f in input_api.AffectedFiles():
-        exts = ['html', 'css']
-        if not any(f.LocalPath().endswith(ext) for ext in exts):
-            continue
-
-        paper_color_re = re.compile(r'--paper-\w+-\d+')
-        google_refresh_color_re = re.compile(r'--google-\w+-refresh-\d+')
-
-        for line_num, line in f.ChangedContents():
-            # Search for paper-colors.
-            if paper_color_re.search(line):
-                problems.append(line.strip())
-
-            # Search for google-refresh-colors.
-            if google_refresh_color_re.search(line):
-                problems.append(line.strip())
-
-    if not problems:
-        return []
-    return [
-        output_api.PresubmitPromptWarning(
-            'Please avoid using paper-colors and google-refresh-colors on ' +
-            'Chrome OS.\n' + 'Allowed colors are listed in ' +
-            'ui/webui/resources/css/cros_palette.json5.\n' +
-            'See https://crbug.com/1062154 or contact calamity@chromium.org ' +
-            'or ortuno@chromium.org for more information.',
-            items=problems)
-    ]
+  return SemanticCssChecker.RunChecks(input_api, output_api)
 
 
 def _CommonChecks(input_api, output_api):
     """Checks common to both upload and commit."""
     results = []
-    results.extend(_CheckSemanticColors(input_api, output_api))
+    results.extend(_CheckSemanticCssColors(input_api, output_api))
     return results
 
 

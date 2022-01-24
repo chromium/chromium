@@ -93,6 +93,9 @@ void FakeLocalFrame::MediaPlayerActionAt(
     const gfx::Point& location,
     blink::mojom::MediaPlayerActionPtr action) {}
 
+void FakeLocalFrame::PluginActionAt(const gfx::Point& location,
+                                    blink::mojom::PluginActionType action) {}
+
 void FakeLocalFrame::AdvanceFocusInFrame(
     blink::mojom::FocusType focus_type,
     const absl::optional<blink::RemoteFrameToken>& source_frame_token) {}
@@ -104,8 +107,6 @@ void FakeLocalFrame::ReportContentSecurityPolicyViolation(
 
 void FakeLocalFrame::DidUpdateFramePolicy(
     const blink::FramePolicy& frame_policy) {}
-
-void FakeLocalFrame::OnScreensChange() {}
 
 void FakeLocalFrame::PostMessageEvent(
     const absl::optional<blink::RemoteFrameToken>& source_frame_token,

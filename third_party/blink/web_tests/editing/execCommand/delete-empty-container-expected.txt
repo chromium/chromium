@@ -1,2 +1,2 @@
-CONSOLE WARNING: line 13: document.execCommand() doesn't work with an invalid HTML structure. It is corrected automatically.
+CONSOLE WARNING: document.execCommand() doesn't work with an invalid HTML structure. It is corrected automatically.
 Deleting an empty selection should have no effect.

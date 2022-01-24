@@ -9,7 +9,7 @@ interface ISafeModeService {
     // apply to all WebView-based apps.
     //
     // `actions` is a collection of Strings, each of which represents a SafeModeAction. Passing an
-    //     empty list will disable SafeMode.
+    // empty list will disable SafeMode.
     //
     // Only certain trusted (Google-managed) services are permitted to call this API, as determined
     // by an allowlist. If the caller's UID does not match a trusted package (determined by both

@@ -24,7 +24,6 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/system_tray_observer.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
@@ -52,6 +51,7 @@ class LoginExpandedPublicAccountView;
 class LoginUserView;
 class NoteActionLaunchButton;
 class ScrollableUsersListView;
+enum class SmartLockState;
 
 namespace mojom {
 enum class TrayActionState;
@@ -111,6 +111,7 @@ class ASH_EXPORT LockContentsView
     LoginUserView* FindUserView(const AccountId& account_id);
     bool RemoveUser(const AccountId& account_id);
     bool IsOobeDialogVisible() const;
+    FingerprintState GetFingerPrintState(const AccountId& account_id) const;
 
    private:
     LockContentsView* const view_;
@@ -135,6 +136,10 @@ class ASH_EXPORT LockContentsView
       LockScreen::ScreenType screen_type,
       LoginDataDispatcher* data_dispatcher,
       std::unique_ptr<LoginDetachableBaseModel> detachable_base_model);
+
+  LockContentsView(const LockContentsView&) = delete;
+  LockContentsView& operator=(const LockContentsView&) = delete;
+
   ~LockContentsView() override;
 
   void FocusNextUser();
@@ -168,6 +173,10 @@ class ASH_EXPORT LockContentsView
                                  FingerprintState state) override;
   void OnFingerprintAuthResult(const AccountId& account_id,
                                bool success) override;
+  void OnSmartLockStateChanged(const AccountId& account_id,
+                               SmartLockState state) override;
+  void OnSmartLockAuthResult(const AccountId& account_id,
+                             bool success) override;
   void OnAuthEnabledForUser(const AccountId& user) override;
   void OnAuthDisabledForUser(
       const AccountId& user,
@@ -179,6 +188,8 @@ class ASH_EXPORT LockContentsView
   void OnTapToUnlockEnabledForUserChanged(const AccountId& user,
                                           bool enabled) override;
   void OnForceOnlineSignInForUser(const AccountId& user) override;
+  // TODO(https://crbug.com/1233614): Delete this method in favor of
+  // OnSmartLockStateChanged once Smart Lock UI revamp is enabled.
   void OnShowEasyUnlockIcon(const AccountId& user,
                             const EasyUnlockIconInfo& icon_info) override;
   void OnWarningMessageUpdated(const std::u16string& message) override;
@@ -248,6 +259,10 @@ class ASH_EXPORT LockContentsView
    public:
     explicit UserState(const LoginUserInfo& user_info);
     UserState(UserState&&);
+
+    UserState(const UserState&) = delete;
+    UserState& operator=(const UserState&) = delete;
+
     ~UserState();
 
     AccountId account_id;
@@ -262,9 +277,6 @@ class ASH_EXPORT LockContentsView
     FingerprintState fingerprint_state;
     // When present, indicates that the TPM is locked.
     absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(UserState);
   };
 
  private:
@@ -516,6 +528,13 @@ class ASH_EXPORT LockContentsView
   // to show the PIN keyboard or not.
   bool keyboard_shown_ = false;
 
+  // Whether there is an ongoing auth layout. The keyboard visibility might
+  // change during an auth layout, if triggered by a focus request on the
+  // password view. Since a keyboard visibility change triggers an auth layout
+  // and since we do not want an auth layout during an auth layout, we cancel
+  // the new layout request (the new keyboard visibility info is useless).
+  bool ongoing_auth_layout_ = false;
+
   // Accelerators handled by login screen.
   std::map<ui::Accelerator, LoginAcceleratorAction> accel_map_;
 
@@ -528,8 +547,6 @@ class ASH_EXPORT LockContentsView
       BottomIndicatorState::kNone;
 
   base::WeakPtrFactory<LockContentsView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockContentsView);
 };
 
 }  // namespace ash

@@ -157,7 +157,7 @@ class GeolocationLocationArbitratorTest : public testing::Test {
   base::TimeDelta SwitchOnFreshnessCliff() {
     // Add 1, to ensure it meets any greater-than test.
     return LocationArbitrator::kFixStaleTimeoutTimeDelta +
-           base::TimeDelta::FromMilliseconds(1);
+           base::Milliseconds(1);
   }
 
   FakeLocationProvider* network_location_provider() {
@@ -344,7 +344,7 @@ TEST_F(GeolocationLocationArbitratorTest, TwoOneShotsIsNewPositionBetter) {
   arbitrator_->StartProvider(false);
 
   // Advance the time a short while to simulate successive calls.
-  AdvanceTimeNow(base::TimeDelta::FromMilliseconds(5));
+  AdvanceTimeNow(base::Milliseconds(5));
 
   // Update with a less accurate position to verify 240956.
   SetPositionFix(network_location_provider(), 3, 139, 150);

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.ContextUtils;
@@ -33,7 +34,8 @@ import org.chromium.webapk.lib.client.WebApkNavigationClient;
 /** Java counterpart to webapk_install_service.h. */
 public class WebApkInstallService {
     /** Prefix used for generating a unique notification tag. */
-    private static final String WEBAPK_INSTALL_NOTIFICATION_TAG_PREFIX =
+    @VisibleForTesting
+    static final String WEBAPK_INSTALL_NOTIFICATION_TAG_PREFIX =
             "webapk_install_notification_tag_prefix.";
 
     /** We always use the same platform id for notifications. */
@@ -41,7 +43,8 @@ public class WebApkInstallService {
 
     /** Displays a notification when a WebAPK is successfully installed. */
     @CalledByNative
-    private static void showInstalledNotification(String webApkPackage, String manifestUrl,
+    @VisibleForTesting
+    static void showInstalledNotification(String webApkPackage, String manifestUrl,
             String shortName, String url, Bitmap icon, boolean isIconMaskable) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = WebApkNavigationClient.createLaunchWebApkIntent(webApkPackage, url, false
@@ -60,7 +63,8 @@ public class WebApkInstallService {
 
     /** Display a notification when an install starts. */
     @CalledByNative
-    private static void showInstallInProgressNotification(
+    @VisibleForTesting
+    static void showInstallInProgressNotification(
             String manifestUrl, String shortName, String url, Bitmap icon, boolean isIconMaskable) {
         String message = ContextUtils.getApplicationContext().getResources().getString(
                 R.string.notification_webapk_install_in_progress, shortName);
@@ -96,7 +100,7 @@ public class WebApkInstallService {
 
         NotificationWrapperBuilder notificationBuilder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        false /* preferCompat */, channelId, null, metadata);
+                        channelId, metadata);
         notificationBuilder.setContentTitle(shortName)
                 .setContentText(message)
                 .setLargeIcon(icon)

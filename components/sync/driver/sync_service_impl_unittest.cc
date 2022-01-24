@@ -48,10 +48,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using testing::_;
 using testing::AnyNumber;
 using testing::ByMove;
@@ -66,8 +62,7 @@ constexpr char kTestUser[] = "test_user@gmail.com";
 
 class TestSyncServiceObserver : public SyncServiceObserver {
  public:
-  TestSyncServiceObserver()
-      : setup_in_progress_(false), auth_error_(GoogleServiceAuthError()) {}
+  TestSyncServiceObserver() = default;
 
   void OnStateChanged(SyncService* sync) override {
     setup_in_progress_ = sync->IsSetupInProgress();
@@ -78,7 +73,7 @@ class TestSyncServiceObserver : public SyncServiceObserver {
   GoogleServiceAuthError auth_error() const { return auth_error_; }
 
  private:
-  bool setup_in_progress_;
+  bool setup_in_progress_ = false;
   GoogleServiceAuthError auth_error_;
 };
 
@@ -89,8 +84,8 @@ class TestSyncServiceObserver : public SyncServiceObserver {
 // testing the SyncEngine.
 class SyncServiceImplTest : public ::testing::Test {
  protected:
-  SyncServiceImplTest() {}
-  ~SyncServiceImplTest() override {}
+  SyncServiceImplTest() = default;
+  ~SyncServiceImplTest() override = default;
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -965,7 +960,7 @@ TEST_F(SyncServiceImplTest, CredentialErrorClearsOnNewToken) {
   // Again, wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "this one works", base::Time::Now() + base::TimeDelta::FromDays(10));
+      "this one works", base::Time::Now() + base::Days(10));
 
   // Check that sync auth error state cleared.
   EXPECT_EQ(GoogleServiceAuthError::NONE, service()->GetAuthError().state());
@@ -1016,8 +1011,10 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   client_cmd.action = DISABLE_SYNC_ON_CLIENT;
   service()->OnActionableError(client_cmd);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // ChromeOS does not support signout.
+  // TODO(https://crbug.com/1233933): Update this when Lacros profiles support
+  //                                  signed-in-but-not-consented-to-sync state.
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_EQ(
@@ -1122,37 +1119,8 @@ TEST_F(SyncServiceImplTest, ShouldProvideDisableReasonsAfterShutdown) {
   EXPECT_FALSE(service()->GetDisableReasons().Empty());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(SyncServiceImplTest, ShouldDisableAllDataTypesForMinorsOnFirstSync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kMinorModeRestriction);
-  SignIn();
-
-  // All data types should be disabled for first sync.
-  CreateService(SyncServiceImpl::AUTO_START);
-  InitializeForFirstSync();
-  EXPECT_FALSE(service()->GetUserSettings()->IsSyncEverythingEnabled());
-  EXPECT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Empty());
-}
-
-TEST_F(SyncServiceImplTest, ShouldNotDisableDataTypesForMinorsOnNthSync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kMinorModeRestriction);
-  SignIn();
-
-  // Data types should not be disabled for Nth sync.
-  CreateService(SyncServiceImpl::AUTO_START);
-  InitializeForNthSync();
-  EXPECT_TRUE(service()->GetUserSettings()->IsSyncEverythingEnabled());
-}
-#endif
-
 #if defined(OS_ANDROID)
 TEST_F(SyncServiceImplTest, DecoupleFromMasterSyncIfInitializedSignedOut) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      switches::kDecoupleSyncFromAndroidMasterSync);
-
   SyncPrefs sync_prefs(prefs());
   CreateService(SyncServiceImpl::MANUAL_START);
   ASSERT_FALSE(sync_prefs.GetDecoupledFromAndroidMasterSync());
@@ -1162,10 +1130,6 @@ TEST_F(SyncServiceImplTest, DecoupleFromMasterSyncIfInitializedSignedOut) {
 }
 
 TEST_F(SyncServiceImplTest, DecoupleFromMasterSyncIfSignsOut) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      switches::kDecoupleSyncFromAndroidMasterSync);
-
   SyncPrefs sync_prefs(prefs());
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);

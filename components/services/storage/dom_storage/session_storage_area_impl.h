@@ -53,6 +53,10 @@ class SessionStorageAreaImpl : public blink::mojom::StorageArea {
                          blink::StorageKey storage_key,
                          scoped_refptr<SessionStorageDataMap> data_map,
                          RegisterNewAreaMap register_new_map_callback);
+
+  SessionStorageAreaImpl(const SessionStorageAreaImpl&) = delete;
+  SessionStorageAreaImpl& operator=(const SessionStorageAreaImpl&) = delete;
+
   ~SessionStorageAreaImpl() override;
 
   // Creates a shallow copy clone for the new namespace entry.
@@ -119,8 +123,6 @@ class SessionStorageAreaImpl : public blink::mojom::StorageArea {
   mojo::ReceiverSet<blink::mojom::StorageArea> receivers_;
 
   base::WeakPtrFactory<SessionStorageAreaImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStorageAreaImpl);
 };
 
 }  // namespace storage

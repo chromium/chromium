@@ -70,6 +70,9 @@ class HttpServer : public base::RefCountedThreadSafe<HttpServer> {
   static HttpServer& GetSharedInstanceWithResponseProviders(
       ProviderList response_providers);
 
+  HttpServer(const HttpServer&) = delete;
+  HttpServer& operator=(const HttpServer&) = delete;
+
   // A convenience method for the longer form of
   // |web::test::HttpServer::GetSharedInstance().MakeUrlForHttpServer|
   static GURL MakeUrl(const std::string& url);
@@ -143,7 +146,6 @@ class HttpServer : public base::RefCountedThreadSafe<HttpServer> {
       const net::test_server::HttpRequest& request);
   // Status tracking if the server is hung.
   bool isSuspended;
-  DISALLOW_COPY_AND_ASSIGN(HttpServer);
 };
 
 }  // namespace test

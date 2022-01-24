@@ -8,7 +8,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/dependency_manager.h"
 #include "components/keyed_service/core/keyed_service_export.h"
@@ -78,6 +77,11 @@ class KEYED_SERVICE_EXPORT BrowserContextDependencyManager
 
   static BrowserContextDependencyManager* GetInstance();
 
+  BrowserContextDependencyManager(const BrowserContextDependencyManager&) =
+      delete;
+  BrowserContextDependencyManager& operator=(
+      const BrowserContextDependencyManager&) = delete;
+
  private:
   friend class BrowserContextDependencyManagerUnittests;
   friend class base::NoDestructor<BrowserContextDependencyManager>;
@@ -97,8 +101,6 @@ class KEYED_SERVICE_EXPORT BrowserContextDependencyManager
   // A list of callbacks to call just before executing
   // CreateBrowserContextServices() or CreateBrowserContextServicesForTest().
   CreateServicesCallbackList create_services_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserContextDependencyManager);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CONTENT_BROWSER_CONTEXT_DEPENDENCY_MANAGER_H_

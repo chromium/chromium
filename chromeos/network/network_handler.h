@@ -8,9 +8,8 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 class PrefService;
 
@@ -19,10 +18,11 @@ namespace chromeos {
 class AutoConnectHandler;
 class CellularConnectionHandler;
 class CellularESimProfileHandler;
-class CellularInhibitor;
 class CellularESimInstaller;
 class CellularESimUninstallHandler;
+class CellularInhibitor;
 class CellularMetricsLogger;
+class CellularPolicyHandler;
 class ClientCertResolver;
 class GeolocationHandler;
 class ManagedNetworkConfigurationHandler;
@@ -56,6 +56,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   // Gets the global instance. Initialize() must be called first.
   static NetworkHandler* Get();
 
+  NetworkHandler(const NetworkHandler&) = delete;
+  NetworkHandler& operator=(const NetworkHandler&) = delete;
+
   // Returns true if the global instance has been initialized.
   static bool IsInitialized();
 
@@ -87,6 +90,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   CellularESimProfileHandler* cellular_esim_profile_handler();
   CellularESimUninstallHandler* cellular_esim_uninstall_handler();
   CellularInhibitor* cellular_inhibitor();
+  CellularPolicyHandler* cellular_policy_handler();
   NetworkStateHandler* network_state_handler();
   NetworkDeviceHandler* network_device_handler();
   NetworkProfileHandler* network_profile_handler();
@@ -127,6 +131,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<CellularESimInstaller> cellular_esim_installer_;
   std::unique_ptr<CellularESimUninstallHandler>
       cellular_esim_uninstall_handler_;
+  std::unique_ptr<CellularPolicyHandler> cellular_policy_handler_;
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
   std::unique_ptr<NetworkCertMigrator> network_cert_migrator_;
   std::unique_ptr<ClientCertResolver> client_cert_resolver_;
@@ -142,8 +147,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
 
   // True when the device is managed by policy.
   bool is_enterprise_managed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkHandler);
 };
 
 }  // namespace chromeos

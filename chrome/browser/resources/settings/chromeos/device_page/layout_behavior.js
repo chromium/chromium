@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {getDisplayApi} from './device_page_browser_proxy.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {getDisplayApi} from './device_page_browser_proxy.js';
 // clang-format on
 
 /**
@@ -13,7 +13,7 @@
  */
 
 /** @polymerBehavior */
-/* #export */ const LayoutBehavior = {
+export const LayoutBehavior = {
   properties: {
     /**
      * Array of display layouts.
@@ -185,7 +185,7 @@
     this.updateOrphans_(orphanIds);
 
     // Send the updated layouts.
-    settings.getDisplayApi().setDisplayLayout(
+    getDisplayApi().setDisplayLayout(
         this.layouts, function() {
           if (chrome.runtime.lastError) {
             console.error(

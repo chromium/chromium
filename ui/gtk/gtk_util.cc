@@ -19,6 +19,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/color_palette.h"
@@ -55,17 +56,6 @@ void CommonInitFromCommandLine(const base::CommandLine& command_line) {
   // overwrites the LC_NUMERIC locale to something other than "C".
   gtk_disable_setlocale();
   GtkInit(command_line.argv());
-}
-
-GdkModifierType GetImeFlags(const ui::KeyEvent& key_event) {
-  auto* properties = key_event.properties();
-  if (!properties)
-    return static_cast<GdkModifierType>(0);
-  auto it = properties->find(ui::kPropertyKeyboardImeFlag);
-  DCHECK(it == properties->end() || it->second.size() == 1);
-  uint8_t flags = (it != properties->end()) ? it->second[0] : 0;
-  return static_cast<GdkModifierType>(flags
-                                      << ui::kPropertyKeyboardImeFlagOffset);
 }
 
 GtkCssContext AppendCssNodeToStyleContextImpl(
@@ -586,6 +576,31 @@ int BuildXkbStateFromGdkEvent(unsigned int state, unsigned char group) {
   return state | ((group & 0x3) << 13);
 }
 
+GdkModifierType ExtractGdkEventStateFromKeyEventFlags(int flags) {
+  auto event_flags = static_cast<ui::EventFlags>(flags);
+  static const struct {
+    ui::EventFlags event_flag;
+    GdkModifierType gdk_modifier;
+  } mapping[] = {
+      {ui::EF_SHIFT_DOWN, GDK_SHIFT_MASK},
+      {ui::EF_CAPS_LOCK_ON, GDK_LOCK_MASK},
+      {ui::EF_CONTROL_DOWN, GDK_CONTROL_MASK},
+      {ui::EF_ALT_DOWN, GDK_ALT_MASK},
+      {ui::EF_LEFT_MOUSE_BUTTON, GDK_BUTTON1_MASK},
+      {ui::EF_MIDDLE_MOUSE_BUTTON, GDK_BUTTON2_MASK},
+      {ui::EF_RIGHT_MOUSE_BUTTON, GDK_BUTTON3_MASK},
+      {ui::EF_BACK_MOUSE_BUTTON, GDK_BUTTON4_MASK},
+      {ui::EF_FORWARD_MOUSE_BUTTON, GDK_BUTTON5_MASK},
+  };
+  unsigned int gdk_modifier_type = 0;
+  for (const auto& map : mapping) {
+    if (event_flags & map.event_flag) {
+      gdk_modifier_type = gdk_modifier_type | map.gdk_modifier;
+    }
+  }
+  return static_cast<GdkModifierType>(gdk_modifier_type);
+}
+
 int GetKeyEventProperty(const ui::KeyEvent& key_event,
                         const char* property_key) {
   auto* properties = key_event.properties();
@@ -598,21 +613,24 @@ int GetKeyEventProperty(const ui::KeyEvent& key_event,
 
 GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) {
   // ui::KeyEvent uses a normalized modifier state which is not respected by
-  // Gtk, so we need to get the state from the display backend. Gtk instead
-  // follows the X11 spec in which the state of a key event is expected to be
-  // the mask of modifier keys _prior_ to this event. Some IMEs rely on this
-  // behavior. See https://crbug.com/1086946#c11.
-
-  GdkModifierType state = GetImeFlags(key_event);
-  if (key_event.key_code() != ui::VKEY_PROCESSKEY) {
-    // This is an synthetized event when |key_code| is VKEY_PROCESSKEY.
-    // In such a case there is no event being dispatching in the display
-    // backend.
-    state = static_cast<GdkModifierType>(
-        state | GtkUi::GetPlatform()->GetGdkKeyState());
+  // Gtk, so instead we obtain the original value from annotated properties.
+  // See also x11_event_translation.cc where it is annotated.
+  // cf) https://crbug.com/1086946#c11.
+  const ui::Event::Properties* properties = key_event.properties();
+  if (!properties)
+    return static_cast<GdkModifierType>(0);
+  auto it = properties->find(ui::kPropertyKeyboardState);
+  if (it == properties->end())
+    return static_cast<GdkModifierType>(0);
+  DCHECK_EQ(it->second.size(), 4u);
+  // Stored in little endian.
+  int result = 0;
+  int bitshift = 0;
+  for (uint8_t value : it->second) {
+    result |= value << bitshift;
+    bitshift += 8;
   }
-
-  return state;
+  return static_cast<GdkModifierType>(result);
 }
 
 GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
@@ -909,10 +927,6 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
       return GetFgColor("GtkButton#button.text-button GtkLabel#label");
     case ui::kColorButtonForegroundDisabled:
       return GetFgColor("GtkButton#button.text-button:disabled GtkLabel#label");
-    // TODO(thomasanderson): Add this once this CL lands:
-    // https://chromium-review.googlesource.com/c/chromium/src/+/2053144
-    // case ui::kColorId_ButtonHoverColor:
-    //   return GetBgColor("GtkButton#button:hover");
 
     // ProminentButton
     case ui::kColorAccent:
@@ -920,6 +934,7 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     case ui::kColorButtonBackgroundProminent:
     case ui::kColorButtonBackgroundProminentFocused:
     case ui::kColorNotificationInputBackground:
+    case ui::kColorProgressBar:
       return GetBgColor(
           "GtkTreeView#treeview.view "
           "GtkTreeView#treeview.view.cell:selected:focus");
@@ -933,12 +948,6 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
       return GetBgColor("GtkButton#button.text-button:disabled");
     case ui::kColorButtonBorder:
       return GetBorderColor("GtkButton#button.text-button");
-    // TODO(thomasanderson): Add this once this CL lands:
-    // https://chromium-review.googlesource.com/c/chromium/src/+/2053144
-    // case ui::kColorId_ProminentButtonHoverColor:
-    //   return GetBgColor(
-    //       "GtkTreeView#treeview.view "
-    //       "GtkTreeView#treeview.view.cell:selected:focus:hover");
 
     // ToggleButton
     case ui::kColorToggleButtonTrackOff:

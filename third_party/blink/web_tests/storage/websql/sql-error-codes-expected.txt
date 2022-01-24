@@ -1,5 +1,5 @@
-CONSOLE ERROR: line 37: Uncaught Exception thrown in transaction callback.
-CONSOLE ERROR: line 69: Uncaught Cannot call toString() on this object.
+CONSOLE ERROR: Uncaught Exception thrown in transaction callback.
+CONSOLE ERROR: Uncaught Cannot call toString() on this object.
 This test tests the error codes reported in exceptional situations.
 
 PASS: expected and got error code UNKNOWN_ERR

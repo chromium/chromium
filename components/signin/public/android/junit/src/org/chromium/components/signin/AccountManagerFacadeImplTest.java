@@ -4,7 +4,11 @@
 
 package org.chromium.components.signin;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -42,6 +46,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.test.util.AccountHolder;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
@@ -97,7 +102,7 @@ public class AccountManagerFacadeImplTest {
                 shadowOf((UserManager) mContext.getSystemService(Context.USER_SERVICE));
         mShadowAccountManager = shadowOf(AccountManager.get(mContext));
         ThreadUtils.setThreadAssertsDisabledForTesting(true);
-        mDelegate = new FakeAccountManagerDelegate();
+        mDelegate = spy(new FakeAccountManagerDelegate());
         mFacade = new AccountManagerFacadeImpl(mDelegate);
 
         mFacadeWithSystemDelegate =
@@ -258,7 +263,8 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.REGULAR_CHILD);
+        verify(mChildAccountStatusListenerMock)
+                .onStatusReady(ChildAccountStatus.REGULAR_CHILD, account);
     }
 
     @Test
@@ -268,7 +274,8 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.USM_CHILD);
+        verify(mChildAccountStatusListenerMock)
+                .onStatusReady(ChildAccountStatus.USM_CHILD, account);
     }
 
     @Test
@@ -279,7 +286,8 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.REGULAR_CHILD);
+        verify(mChildAccountStatusListenerMock)
+                .onStatusReady(ChildAccountStatus.REGULAR_CHILD, account);
     }
 
     @Test
@@ -288,7 +296,7 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD);
+        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD, null);
     }
 
     @Test
@@ -301,6 +309,17 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testAccountCanNotOfferExtendedSyncPromos() {
         final AccountHolder accountHolder = AccountHolder.createFromEmail("test@gmail.com");
+        mDelegate.addAccount(accountHolder);
+
+        Assert.assertFalse(mFacade.canOfferExtendedSyncPromos(accountHolder.getAccount()).get());
+    }
+
+    @Test
+    public void testAccountCanNotOfferExtendedSyncPromosWhenExceptionCodeReturns() {
+        final AccountHolder accountHolder = AccountHolder.createFromEmail("test@gmail.com");
+        doReturn(CapabilityResponse.EXCEPTION)
+                .when(mDelegate)
+                .hasCapability(eq(accountHolder.getAccount()), any());
         mDelegate.addAccount(accountHolder);
 
         Assert.assertFalse(mFacade.canOfferExtendedSyncPromos(accountHolder.getAccount()).get());

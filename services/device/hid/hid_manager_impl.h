@@ -25,6 +25,8 @@ namespace device {
 class HidManagerImpl : public mojom::HidManager, public HidService::Observer {
  public:
   HidManagerImpl();
+  HidManagerImpl(HidManagerImpl&) = delete;
+  HidManagerImpl& operator=(HidManagerImpl&) = delete;
   ~HidManagerImpl() override;
 
   // SetHidServiceForTesting only effects the next call to HidManagerImpl's
@@ -49,6 +51,7 @@ class HidManagerImpl : public mojom::HidManager, public HidService::Observer {
       mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
       mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
       bool allow_protected_reports,
+      bool allow_fido_reports,
       ConnectCallback callback) override;
 
  private:
@@ -75,7 +78,6 @@ class HidManagerImpl : public mojom::HidManager, public HidService::Observer {
       hid_service_observation_{this};
 
   base::WeakPtrFactory<HidManagerImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(HidManagerImpl);
 };
 
 }  // namespace device

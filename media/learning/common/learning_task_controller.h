@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "media/learning/common/labelled_example.h"
 #include "media/learning/common/learning_task.h"
@@ -49,6 +48,10 @@ class COMPONENT_EXPORT(LEARNING_COMMON) LearningTaskController {
       const absl::optional<TargetHistogram>& predicted)>;
 
   LearningTaskController() = default;
+
+  LearningTaskController(const LearningTaskController&) = delete;
+  LearningTaskController& operator=(const LearningTaskController&) = delete;
+
   virtual ~LearningTaskController() = default;
 
   // Start a new observation.  Call this at the time one would try to predict
@@ -95,9 +98,6 @@ class COMPONENT_EXPORT(LEARNING_COMMON) LearningTaskController {
   // may be called immediately without posting.
   virtual void PredictDistribution(const FeatureVector& features,
                                    PredictionCB callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LearningTaskController);
 };
 
 }  // namespace learning

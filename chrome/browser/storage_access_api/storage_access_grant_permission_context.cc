@@ -28,10 +28,8 @@ constexpr int kDefaultImplicitGrantLimit = 5;
 
 namespace {
 
-constexpr base::TimeDelta kImplicitGrantDuration =
-    base::TimeDelta::FromHours(24);
-constexpr base::TimeDelta kExplicitGrantDuration =
-    base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kImplicitGrantDuration = base::Hours(24);
+constexpr base::TimeDelta kExplicitGrantDuration = base::Days(30);
 
 const base::FeatureParam<int> kImplicitGrantLimit{
     &blink::features::kStorageAccessAPI,

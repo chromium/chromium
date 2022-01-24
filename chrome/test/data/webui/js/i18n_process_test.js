@@ -75,13 +75,13 @@ TEST_F('I18nProcessTest', 'All', function() {
     });
 
     test('fragment', function() {
-      var span = document.createElement('span');
+      const span = document.createElement('span');
       span.setAttribute('i18n-content', 'content');
 
-      var docFrag = document.createDocumentFragment();
+      const docFrag = document.createDocumentFragment();
       docFrag.appendChild(span);
 
-      var div = document.createElement('div');
+      const div = document.createElement('div');
       docFrag.appendChild(div);
 
       i18nTemplate.process(docFrag, loadTimeData);
@@ -99,8 +99,8 @@ TEST_F('I18nProcessTest', 'All', function() {
     });
 
     test('templates', function() {
-      var outerDocFrag = document.querySelector('template').content;
-      var innerDocFrag = outerDocFrag.querySelector('template').content;
+      const outerDocFrag = document.querySelector('template').content;
+      const innerDocFrag = outerDocFrag.querySelector('template').content;
       assertNotEquals('', innerDocFrag.querySelector('div').textContent);
     });
   });

@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/bloom_filter.h"
@@ -26,6 +25,9 @@ const base::FilePath::CharType kFileName[] = FILE_PATH_LITERAL("somefile.pb");
 class HintsComponentUtilTest : public testing::Test {
  public:
   HintsComponentUtilTest() {}
+
+  HintsComponentUtilTest(const HintsComponentUtilTest&) = delete;
+  HintsComponentUtilTest& operator=(const HintsComponentUtilTest&) = delete;
 
   ~HintsComponentUtilTest() override {}
 
@@ -44,8 +46,6 @@ class HintsComponentUtilTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(HintsComponentUtilTest);
 };
 
 TEST_F(HintsComponentUtilTest, RecordProcessHintsComponentResult) {

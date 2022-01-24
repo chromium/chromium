@@ -21,6 +21,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -126,7 +127,7 @@ TestingLegacySessionStorageDatabase::~TestingLegacySessionStorageDatabase() {
 void TestingLegacySessionStorageDatabase::ReadAreaValues(
     const std::string& namespace_id,
     const std::vector<std::string>& original_permanent_namespace_ids,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     LegacyDomStorageValuesMap* result) {
   // We don't create a database if it doesn't exist. In that case, there is
   // nothing to be added to the result.
@@ -143,8 +144,8 @@ void TestingLegacySessionStorageDatabase::ReadAreaValues(
 
   std::string map_id;
   bool exists;
-  if (GetMapForArea(namespace_id, origin.GetURL().spec(), options, &exists,
-                    &map_id) &&
+  if (GetMapForArea(namespace_id, storage_key.origin().GetURL().spec(), options,
+                    &exists, &map_id) &&
       exists)
     ReadMap(map_id, options, result, false);
 
@@ -153,14 +154,14 @@ void TestingLegacySessionStorageDatabase::ReadAreaValues(
     return;
   }
 
-  // If the area does not exist, |namespace_id| might refer to a clone that
+  // If the area does not exist, `namespace_id` might refer to a clone that
   // is not yet created. Reading from the original database is expected to be
   // consistent because tasks posted on commit sequence after clone did not
   // run before capturing the snapshot.
   for (const auto& original_db_id : original_permanent_namespace_ids) {
     map_id.clear();
-    if (GetMapForArea(original_db_id, origin.GetURL().spec(), options, &exists,
-                      &map_id) &&
+    if (GetMapForArea(original_db_id, storage_key.origin().GetURL().spec(),
+                      options, &exists, &map_id) &&
         exists) {
       ReadMap(map_id, options, result, false);
     }
@@ -172,7 +173,7 @@ void TestingLegacySessionStorageDatabase::ReadAreaValues(
 
 bool TestingLegacySessionStorageDatabase::CommitAreaChanges(
     const std::string& namespace_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     bool clear_all_first,
     const LegacyDomStorageValuesMap& changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -191,7 +192,7 @@ bool TestingLegacySessionStorageDatabase::CommitAreaChanges(
 
   std::string map_id;
   bool exists;
-  if (!GetMapForArea(namespace_id, origin.GetURL().spec(),
+  if (!GetMapForArea(namespace_id, storage_key.origin().GetURL().spec(),
                      leveldb::ReadOptions(), &exists, &map_id))
     return false;
 
@@ -200,7 +201,7 @@ bool TestingLegacySessionStorageDatabase::CommitAreaChanges(
     if (!GetMapRefCount(map_id, &ref_count))
       return false;
     if (ref_count > 1) {
-      if (!DeepCopyArea(namespace_id, origin, !clear_all_first, &map_id,
+      if (!DeepCopyArea(namespace_id, storage_key, !clear_all_first, &map_id,
                         &batch))
         return false;
     } else if (clear_all_first) {
@@ -210,7 +211,7 @@ bool TestingLegacySessionStorageDatabase::CommitAreaChanges(
   } else {
     // Map doesn't exist, create it now if needed.
     if (!changes.empty()) {
-      if (!CreateMapForArea(namespace_id, origin, &map_id, &batch))
+      if (!CreateMapForArea(namespace_id, storage_key, &map_id, &batch))
         return false;
     }
   }
@@ -225,8 +226,9 @@ bool TestingLegacySessionStorageDatabase::CommitAreaChanges(
 bool TestingLegacySessionStorageDatabase::CloneNamespace(
     const std::string& namespace_id,
     const std::string& new_namespace_id) {
-  // Go through all origins in the namespace |namespace_id|, create placeholders
-  // for them in |new_namespace_id|, and associate them with the existing maps.
+  // Go through all storage_keys in the namespace `namespace_id`, create
+  // placeholders for them in `new_namespace_id`, and associate them with the
+  // existing maps.
 
   // Example, data before shallow copy:
   // | map-1-                         | 1 (refcount)        |
@@ -258,11 +260,11 @@ bool TestingLegacySessionStorageDatabase::CloneNamespace(
 
   for (std::map<std::string, std::string>::const_iterator it = areas.begin();
        it != areas.end(); ++it) {
-    const std::string& origin = it->first;
+    const std::string& serialized_origin = it->first;
     const std::string& map_id = it->second;
     if (!IncreaseMapRefCount(map_id, &batch))
       return false;
-    AddAreaToNamespace(new_namespace_id, origin, map_id, &batch);
+    AddAreaToNamespace(new_namespace_id, serialized_origin, map_id, &batch);
   }
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync_primitives;
   leveldb::Status s = db_->Write(leveldb::WriteOptions(), &batch);
@@ -271,7 +273,7 @@ bool TestingLegacySessionStorageDatabase::CloneNamespace(
 
 bool TestingLegacySessionStorageDatabase::DeleteArea(
     const std::string& namespace_id,
-    const url::Origin& origin) {
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyOpen(false)) {
     // No need to create the database if it doesn't exist.
@@ -279,7 +281,8 @@ bool TestingLegacySessionStorageDatabase::DeleteArea(
   }
   DBOperation operation(this);
   leveldb::WriteBatch batch;
-  if (!DeleteAreaHelper(namespace_id, origin.GetURL().spec(), &batch))
+  if (!DeleteAreaHelper(namespace_id, storage_key.origin().GetURL().spec(),
+                        &batch))
     return false;
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync_primitives;
   leveldb::Status s = db_->Write(leveldb::WriteOptions(), &batch);
@@ -306,8 +309,8 @@ bool TestingLegacySessionStorageDatabase::DeleteNamespace(
     return false;
   for (std::map<std::string, std::string>::const_iterator it = areas.begin();
        it != areas.end(); ++it) {
-    const std::string& origin = it->first;
-    if (!DeleteAreaHelper(namespace_id, origin, &batch))
+    const std::string& serialized_origin = it->first;
+    if (!DeleteAreaHelper(namespace_id, serialized_origin, &batch))
       return false;
   }
   batch.Delete(NamespaceStartKey(namespace_id));
@@ -316,13 +319,14 @@ bool TestingLegacySessionStorageDatabase::DeleteNamespace(
   return DatabaseErrorCheck(s.ok());
 }
 
-bool TestingLegacySessionStorageDatabase::ReadNamespacesAndOrigins(
-    std::map<std::string, std::vector<url::Origin>>* namespaces_and_origins) {
+bool TestingLegacySessionStorageDatabase::ReadNamespacesAndStorageKeys(
+    std::map<std::string, std::vector<blink::StorageKey>>*
+        namespaces_and_storage_keys) {
   if (!LazyOpen(true))
     return false;
   DBOperation operation(this);
 
-  // While ReadNamespacesAndOrigins is in progress, another thread can call
+  // While ReadNamespacesAndStorageKeys is in progress, another thread can call
   // CommitAreaChanges. To protect the reading operation, create a snapshot and
   // read from it.
   leveldb::ReadOptions options;
@@ -354,7 +358,8 @@ bool TestingLegacySessionStorageDatabase::ReadNamespacesAndOrigins(
       break;
     }
     // For each namespace, the first key is "namespace-<namespaceid>-", and the
-    // subsequent keys are "namespace-<namespaceid>-<origin>". Read the unique
+    // subsequent keys are "namespace-<namespaceid>-<storage_key>". Read the
+    // unique
     // "<namespaceid>" parts from the keys.
     if (current_namespace_start_key.empty() ||
         key.substr(0, current_namespace_start_key.length()) !=
@@ -366,14 +371,15 @@ bool TestingLegacySessionStorageDatabase::ReadNamespacesAndOrigins(
           key.substr(namespace_prefix.length(),
                      key.length() - namespace_prefix.length() - 1);
       // Ensure that we keep track of the namespace even if it doesn't contain
-      // any origins.
-      namespaces_and_origins->insert(
-          std::make_pair(current_namespace_id, std::vector<url::Origin>()));
+      // any storage_key.
+      namespaces_and_storage_keys->insert(std::make_pair(
+          current_namespace_id, std::vector<blink::StorageKey>()));
     } else {
-      // The key is of the form "namespace-<namespaceid>-<origin>".
-      std::string origin = key.substr(current_namespace_start_key.length());
-      (*namespaces_and_origins)[current_namespace_id].push_back(
-          url::Origin::Create(GURL(origin)));
+      // The key is of the form "namespace-<namespaceid>-<storage_key>".
+      std::string serialized_origin =
+          key.substr(current_namespace_start_key.length());
+      (*namespaces_and_storage_keys)[current_namespace_id].push_back(
+          blink::StorageKey::CreateFromStringForTesting(serialized_origin));
     }
   }
   db_->ReleaseSnapshot(options.snapshot);
@@ -590,44 +596,45 @@ bool TestingLegacySessionStorageDatabase::GetAreasInNamespace(
   if (!DatabaseErrorCheck(it->status().ok()))
     return false;
 
-  // Skip the dummy entry "namespace-<namespaceid>-" and iterate the origins.
+  // Skip the dummy entry "namespace-<namespaceid>-" and iterate the
+  // `serialized_origin`s.
   for (it->Next(); it->Valid(); it->Next()) {
     std::string key = it->key().ToString();
     if (!base::StartsWith(key, namespace_start_key,
                           base::CompareCase::SENSITIVE)) {
-      // Iterated past the origins for this namespace.
+      // Iterated past the `serialized_origin`s for this namespace.
       break;
     }
-    std::string origin = key.substr(namespace_start_key.length());
+    std::string serialized_origin = key.substr(namespace_start_key.length());
     std::string map_id = it->value().ToString();
-    (*areas)[origin] = map_id;
+    (*areas)[serialized_origin] = map_id;
   }
   return true;
 }
 
 void TestingLegacySessionStorageDatabase::AddAreaToNamespace(
     const std::string& namespace_id,
-    const std::string& origin,
+    const std::string& serialized_origin,
     const std::string& map_id,
     leveldb::WriteBatch* batch) {
-  std::string namespace_key = NamespaceKey(namespace_id, origin);
+  std::string namespace_key = NamespaceKey(namespace_id, serialized_origin);
   batch->Put(namespace_key, map_id);
 }
 
 bool TestingLegacySessionStorageDatabase::DeleteAreaHelper(
     const std::string& namespace_id,
-    const std::string& origin,
+    const std::string& serialized_origin,
     leveldb::WriteBatch* batch) {
   std::string map_id;
   bool exists;
-  if (!GetMapForArea(namespace_id, origin, leveldb::ReadOptions(), &exists,
-                     &map_id))
+  if (!GetMapForArea(namespace_id, serialized_origin, leveldb::ReadOptions(),
+                     &exists, &map_id))
     return false;
   if (!exists)
     return true;  // Nothing to delete.
   if (!DecreaseMapRefCount(map_id, 1, batch))
     return false;
-  std::string namespace_key = NamespaceKey(namespace_id, origin);
+  std::string namespace_key = NamespaceKey(namespace_id, serialized_origin);
   batch->Delete(namespace_key);
 
   // If this was the only area in the namespace, delete the namespace start key,
@@ -654,11 +661,11 @@ bool TestingLegacySessionStorageDatabase::DeleteAreaHelper(
 
 bool TestingLegacySessionStorageDatabase::GetMapForArea(
     const std::string& namespace_id,
-    const std::string& origin,
+    const std::string& serialized_origin,
     const leveldb::ReadOptions& options,
     bool* exists,
     std::string* map_id) {
-  std::string namespace_key = NamespaceKey(namespace_id, origin);
+  std::string namespace_key = NamespaceKey(namespace_id, serialized_origin);
   leveldb::Status s = db_->Get(options, namespace_key, map_id);
   if (s.IsNotFound()) {
     *exists = false;
@@ -670,7 +677,7 @@ bool TestingLegacySessionStorageDatabase::GetMapForArea(
 
 bool TestingLegacySessionStorageDatabase::CreateMapForArea(
     const std::string& namespace_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     std::string* map_id,
     leveldb::WriteBatch* batch) {
   leveldb::Slice next_map_id_key = NextMapIdKey();
@@ -687,7 +694,7 @@ bool TestingLegacySessionStorageDatabase::CreateMapForArea(
   }
   batch->Put(next_map_id_key, base::NumberToString(++next_map_id));
   std::string namespace_key =
-      NamespaceKey(namespace_id, origin.GetURL().spec());
+      NamespaceKey(namespace_id, storage_key.origin().GetURL().spec());
   batch->Put(namespace_key, *map_id);
   batch->Put(MapRefCountKey(*map_id), "1");
   return true;
@@ -809,7 +816,7 @@ bool TestingLegacySessionStorageDatabase::ClearMap(const std::string& map_id,
 
 bool TestingLegacySessionStorageDatabase::DeepCopyArea(
     const std::string& namespace_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     bool copy_data,
     std::string* map_id,
     leveldb::WriteBatch* batch) {
@@ -841,7 +848,7 @@ bool TestingLegacySessionStorageDatabase::DeepCopyArea(
   // Create a new map (this will also break the association to the old map) and
   // write the old data into it. This will write the id of the created map into
   // |map_id|.
-  if (!CreateMapForArea(namespace_id, origin, map_id, batch))
+  if (!CreateMapForArea(namespace_id, storage_key, map_id, batch))
     return false;
   WriteValuesToMap(*map_id, values, batch);
   return true;
@@ -854,9 +861,9 @@ std::string TestingLegacySessionStorageDatabase::NamespaceStartKey(
 
 std::string TestingLegacySessionStorageDatabase::NamespaceKey(
     const std::string& namespace_id,
-    const std::string& origin) {
+    const std::string& serialized_origin) {
   return base::StringPrintf("namespace-%s-%s", namespace_id.c_str(),
-                            origin.c_str());
+                            serialized_origin.c_str());
 }
 
 const char* TestingLegacySessionStorageDatabase::NamespacePrefix() {

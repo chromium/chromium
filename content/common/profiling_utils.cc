@@ -31,21 +31,46 @@
 
 namespace content {
 
-base::File OpenProfilingFile() {
-  base::ScopedAllowBlockingForTesting allows_blocking;
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string prof_template;
+namespace {
+
+// Returns the path where the PGO profiles should be saved.
+// On Android this is always a static path, on other platforms it's either
+// the path specified by the LLVM_PROFILE_FILE environment variable or the
+// current path if it's not set.
+base::FilePath GetProfileFileDirectory() {
   base::FilePath path;
+
+  // Android differs from the other platforms because it's not possible to
+  // write in base::DIR_CURRENT and environment variables aren't well supported.
+#if defined(OS_ANDROID)
+  base::PathService::Get(base::DIR_TEMP, &path);
+  path = path.Append("pgo_profiles/");
+#else  // !defined(OS_ANDROID)
+  std::string prof_template;
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
   if (env->GetVar("LLVM_PROFILE_FILE", &prof_template)) {
 #if defined(OS_WIN)
     path = base::FilePath(base::UTF8ToWide(prof_template)).DirName();
 #else
     path = base::FilePath(prof_template).DirName();
 #endif
+  }
+#endif
+
+  if (!path.empty()) {
     base::CreateDirectory(path);
   } else {
     base::PathService::Get(base::DIR_CURRENT, &path);
   }
+
+  return path;
+}
+
+}  // namespace
+
+base::File OpenProfilingFile() {
+  base::ScopedAllowBlockingForTesting allows_blocking;
+  base::FilePath path = GetProfileFileDirectory();
 
   // sajjadm@ and liaoyuke@ experimentally determined that a size 4 pool works
   // well for the coverage builder.

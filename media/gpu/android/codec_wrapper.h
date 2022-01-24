@@ -33,6 +33,9 @@ using CodecSurfacePair = std::pair<std::unique_ptr<MediaCodecBridge>,
 // soon as we know we no longer need them.
 class MEDIA_GPU_EXPORT CodecOutputBuffer {
  public:
+  CodecOutputBuffer(const CodecOutputBuffer&) = delete;
+  CodecOutputBuffer& operator=(const CodecOutputBuffer&) = delete;
+
   // Releases the buffer without rendering it.
   ~CodecOutputBuffer();
 
@@ -48,6 +51,9 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
     render_cb_ = std::move(render_cb);
   }
 
+  // Color space of the image.
+  const gfx::ColorSpace& color_space() const { return color_space_; }
+
   // Note that you can't use the first ctor, since CodecWrapperImpl isn't
   // defined here.  Use the second, and it'll be nullptr.
   template <typename... Args>
@@ -62,17 +68,20 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   friend class CodecWrapperImpl;
   CodecOutputBuffer(scoped_refptr<CodecWrapperImpl> codec,
                     int64_t id,
-                    const gfx::Size& size);
+                    const gfx::Size& size,
+                    const gfx::ColorSpace& color_space);
 
   // For testing, since CodecWrapperImpl isn't available.  Uses nullptr.
-  CodecOutputBuffer(int64_t id, const gfx::Size& size);
+  CodecOutputBuffer(int64_t id,
+                    const gfx::Size& size,
+                    const gfx::ColorSpace& color_space);
 
   scoped_refptr<CodecWrapperImpl> codec_;
   int64_t id_;
   bool was_rendered_ = false;
   gfx::Size size_;
   base::OnceClosure render_cb_;
-  DISALLOW_COPY_AND_ASSIGN(CodecOutputBuffer);
+  gfx::ColorSpace color_space_;
 };
 
 // This wraps a MediaCodecBridge and provides higher level features and tracks
@@ -99,6 +108,10 @@ class MEDIA_GPU_EXPORT CodecWrapper {
   CodecWrapper(CodecSurfacePair codec_surface_pair,
                OutputReleasedCB output_buffer_release_cb,
                scoped_refptr<base::SequencedTaskRunner> release_task_runner);
+
+  CodecWrapper(const CodecWrapper&) = delete;
+  CodecWrapper& operator=(const CodecWrapper&) = delete;
+
   ~CodecWrapper();
 
   // Takes the backing codec and surface, implicitly discarding all outstanding
@@ -150,7 +163,6 @@ class MEDIA_GPU_EXPORT CodecWrapper {
 
  private:
   scoped_refptr<CodecWrapperImpl> impl_;
-  DISALLOW_COPY_AND_ASSIGN(CodecWrapper);
 };
 
 }  // namespace media

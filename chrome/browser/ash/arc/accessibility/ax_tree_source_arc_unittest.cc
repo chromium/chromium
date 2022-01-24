@@ -42,6 +42,8 @@ using AXWindowIntProperty = mojom::AccessibilityWindowIntProperty;
 using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
 using AXWindowStringProperty = mojom::AccessibilityWindowStringProperty;
 
+namespace {
+
 class MockAutomationEventRouter
     : public extensions::AutomationEventRouterInterface {
  public:
@@ -91,27 +93,24 @@ class MockAutomationEventRouter
   std::vector<ui::AXEvent> last_dispatched_events_;
 };
 
+}  // namespace
+
 class AXTreeSourceArcTest : public testing::Test,
                             public AXTreeSourceArc::Delegate {
  public:
-  class TestAXTreeSourceArc : public AXTreeSourceArc {
-   public:
-    TestAXTreeSourceArc(AXTreeSourceArc::Delegate* delegate,
-                        MockAutomationEventRouter* router)
-        : AXTreeSourceArc(delegate, /*window=*/nullptr), router_(router) {}
-
-   private:
-    extensions::AutomationEventRouterInterface* GetAutomationEventRouter()
-        const override {
-      return router_;
-    }
-
-    MockAutomationEventRouter* const router_;
-  };
-
   AXTreeSourceArcTest()
-      : router_(new MockAutomationEventRouter()),
-        tree_source_(new TestAXTreeSourceArc(this, router_.get())) {}
+      : router_(std::make_unique<MockAutomationEventRouter>()),
+        tree_source_(
+            std::make_unique<AXTreeSourceArc>(this, /*window=*/nullptr)) {
+    tree_source_->set_automation_event_router_for_test(router_.get());
+  }
+
+  AXTreeSourceArcTest(const AXTreeSourceArcTest&) = delete;
+  AXTreeSourceArcTest& operator=(const AXTreeSourceArcTest&) = delete;
+
+  // AXTreeSourceArc::Delegate overrides.
+  void OnAction(const ui::AXActionData& data) const override {}
+  bool UseFullFocusMode() const override { return full_focus_mode_; }
 
  protected:
   void CallNotifyAccessibilityEvent(AXEventData* event_data) {
@@ -161,17 +160,11 @@ class AXTreeSourceArcTest : public testing::Test,
 
   void set_full_focus_mode(bool enabled) { full_focus_mode_ = enabled; }
 
-  bool UseFullFocusMode() const override { return full_focus_mode_; }
-
  private:
-  void OnAction(const ui::AXActionData& data) const override {}
-
   const std::unique_ptr<MockAutomationEventRouter> router_;
   const std::unique_ptr<AXTreeSourceArc> tree_source_;
 
   bool full_focus_mode_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSourceArcTest);
 };
 
 TEST_F(AXTreeSourceArcTest, ReorderChildrenByLayout) {
@@ -741,6 +734,7 @@ TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
 
   // focus moved to node3 for some reason.
   event->event_type = AXEventType::VIEW_FOCUSED;
+  SetProperty(node3, AXBooleanProperty::FOCUSED, true);
   event->source_id = node3->id;
   CallNotifyAccessibilityEvent(event.get());
 
@@ -824,9 +818,10 @@ TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
   node2->window_id = 100;
   SetProperty(node2, AXBooleanProperty::IMPORTANCE, true);
   SetProperty(node2, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(node2, AXBooleanProperty::FOCUSED, true);
   SetProperty(node2, AXStringProperty::TEXT, "sample string2.");
 
-  // Chrome should focus to node2, even if node1 has 'focus' in Android.
+  // Chrome should focus to node2, even if node1 has ax focused in Android.
   event->source_id = node2->id;
   CallNotifyAccessibilityEvent(event.get());
 
@@ -834,7 +829,9 @@ TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(node2->id, data.focus_id);
 
-  // Chrome should focus to node1, even if Android sends focus on List.
+  // Chrome should focus to node1, when Android sends focus on List.
+  SetProperty(node2, AXBooleanProperty::FOCUSED, false);
+  SetProperty(root, AXBooleanProperty::FOCUSED, true);
   event->source_id = root->id;
   CallNotifyAccessibilityEvent(event.get());
 
@@ -1096,6 +1093,7 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
   node1->id = 1;
   node1->window_id = 100;
   SetProperty(node1, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(node1, AXBooleanProperty::FOCUSED, true);
   SetProperty(node1, AXBooleanProperty::IMPORTANCE, true);
   SetProperty(node1, AXBooleanProperty::VISIBLE_TO_USER, true);
   SetProperty(node1, AXStringProperty::CONTENT_DESCRIPTION, "node1");
@@ -1122,9 +1120,17 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(node1->id, data.focus_id);
 
-  // Focus event to a non-important node. The descendant important node |node1|
+  // Focus event from a non-important node. The ancestry important node |node1|
   // gets focus instead.
   event->source_id = node3->id;
+  event->event_type = AXEventType::VIEW_FOCUSED;
+  CallNotifyAccessibilityEvent(event.get());
+
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(node1->id, data.focus_id);
+
+  // Focus event from a non-focused node. Focus won't be updated.
+  event->source_id = node2->id;
   event->event_type = AXEventType::VIEW_FOCUSED;
   CallNotifyAccessibilityEvent(event.get());
 
@@ -1261,7 +1267,7 @@ TEST_F(AXTreeSourceArcTest, EnsureNodeIdMapCleared) {
   CallNotifyAccessibilityEvent(event.get());
 }
 
-TEST_F(AXTreeSourceArcTest, ControlReceivesFocus) {
+TEST_F(AXTreeSourceArcTest, ControlWithoutNameReceivesFocus) {
   auto event = AXEventData::New();
   event->source_id = 1;
   event->task_id = 1;
@@ -1288,6 +1294,7 @@ TEST_F(AXTreeSourceArcTest, ControlReceivesFocus) {
   SetProperty(node, AXStringProperty::TEXT, "");
   SetProperty(node, AXBooleanProperty::VISIBLE_TO_USER, true);
   SetProperty(node, AXBooleanProperty::FOCUSABLE, true);
+  SetProperty(node, AXBooleanProperty::FOCUSED, true);
   SetProperty(node, AXBooleanProperty::IMPORTANCE, true);
 
   CallNotifyAccessibilityEvent(event.get());

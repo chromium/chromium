@@ -31,6 +31,10 @@ class GPU_GLES2_EXPORT ShaderTranslatorCache
     : public ShaderTranslator::DestructionObserver {
  public:
   explicit ShaderTranslatorCache(const GpuPreferences& gpu_preferences);
+
+  ShaderTranslatorCache(const ShaderTranslatorCache&) = delete;
+  ShaderTranslatorCache& operator=(const ShaderTranslatorCache&) = delete;
+
   ~ShaderTranslatorCache() override;
 
   // ShaderTranslator::DestructionObserver implementation
@@ -89,8 +93,6 @@ class GPU_GLES2_EXPORT ShaderTranslatorCache
 
   typedef std::map<ShaderTranslatorInitParams, ShaderTranslator* > Cache;
   Cache cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderTranslatorCache);
 };
 
 }  // namespace gles2

@@ -113,7 +113,12 @@ void OnSafetyTipClosed(ReputationCheckResult result,
       action_suffix = "SwitchTab";
       break;
     case SafetyTipInteraction::kStartNewNavigation:
-      action_suffix = "StartNewNavigation";
+      NOTREACHED();
+      // Do nothing because the safety tip is no longer listening directly
+      // with navigation start.
+      break;
+    case SafetyTipInteraction::kChangePrimaryPage:
+      action_suffix = "ChangePrimaryPage";
       break;
   }
   if (warning_dismissed) {
@@ -132,8 +137,8 @@ void OnSafetyTipClosed(ReputationCheckResult result,
         security_state::GetSafetyTipHistogramName(
             std::string("Security.SafetyTips.OpenTime.Dismiss"),
             result.safety_tip_status),
-        base::Time::Now() - start_time, base::TimeDelta::FromMilliseconds(1),
-        base::TimeDelta::FromHours(1), 100);
+        base::Time::Now() - start_time, base::Milliseconds(1), base::Hours(1),
+        100);
   }
   base::UmaHistogramEnumeration(security_state::GetSafetyTipHistogramName(
                                     "Security.SafetyTips.Interaction", status),
@@ -142,8 +147,8 @@ void OnSafetyTipClosed(ReputationCheckResult result,
       security_state::GetSafetyTipHistogramName(
           std::string("Security.SafetyTips.OpenTime.") + action_suffix,
           result.safety_tip_status),
-      base::Time::Now() - start_time, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromHours(1), 100);
+      base::Time::Now() - start_time, base::Milliseconds(1), base::Hours(1),
+      100);
 
   RecordHeuristicsUKMData(result, navigation_source_id, action);
 
@@ -515,4 +520,4 @@ void ReputationWebContentsObserver::FinalizeReputationCheckWhenTipNotShown(
   MaybeCallReputationCheckCallback(true);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ReputationWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ReputationWebContentsObserver);

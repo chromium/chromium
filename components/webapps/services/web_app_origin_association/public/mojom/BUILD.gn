@@ -7,5 +7,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "web_app_origin_association_parser.mojom" ]
 
-  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  public_deps = [
+    "//sandbox/policy/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }

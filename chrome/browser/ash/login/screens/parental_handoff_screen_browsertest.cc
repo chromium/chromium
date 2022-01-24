@@ -26,7 +26,7 @@
 #include "chrome/browser/ash/login/test/wizard_controller_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/ui/webui/chromeos/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
@@ -84,7 +84,7 @@ class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
 
   ParentalHandoffScreen::ScreenExitCallback original_callback_;
 
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   base::test::ScopedFeatureList feature_list_;
 
@@ -99,14 +99,11 @@ class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
 };
 
 ParentalHandoffScreenBrowserTest::ParentalHandoffScreenBrowserTest() {
-  feature_list_.InitWithFeatures(
-      {supervised_users::kEduCoexistenceFlowV2, kFamilyLinkOobeHandoff},
-      {} /*disable_features*/);
+  feature_list_.InitWithFeatures({kFamilyLinkOobeHandoff},
+                                 {} /*disable_features*/);
 }
 
 void ParentalHandoffScreenBrowserTest::SetUpOnMainThread() {
-  is_google_branded_build_ =
-      WizardController::ForceBrandedBuildForTesting(true);
   assistant_is_enabled_ =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(false);
   ParentalHandoffScreen* screen = GetParentalHandoffScreen();
@@ -115,6 +112,7 @@ void ParentalHandoffScreenBrowserTest::SetUpOnMainThread() {
       base::BindRepeating(&ParentalHandoffScreenBrowserTest::HandleScreenExit,
                           base::Unretained(this)));
   OobeBaseTest::SetUpOnMainThread();
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
 }
 
 void ParentalHandoffScreenBrowserTest::WaitForScreenExit() {
@@ -145,7 +143,9 @@ void ParentalHandoffScreenBrowserTest::HandleScreenExit(
 }
 
 IN_PROC_BROWSER_TEST_F(ParentalHandoffScreenBrowserTest, RegularUserLogin) {
+  OobeScreenExitWaiter signin_screen_exit_waiter(GetFirstSigninScreen());
   login_manager_mixin().LoginAsNewRegularUser();
+  signin_screen_exit_waiter.Wait();
   SkipToParentalHandoffScreen();
 
   // Wait for exit from parental handoff screen.
@@ -169,8 +169,8 @@ class ParentalHandoffScreenChildBrowserTest
   }
 
   void LoginAsNewChildUser() {
-    WizardController::default_controller()
-        ->get_wizard_context_for_testing()
+    LoginDisplayHost::default_host()
+        ->GetWizardContextForTesting()
         ->sign_in_as_child = true;
     login_manager_mixin().LoginAsNewChildUser();
 

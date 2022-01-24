@@ -35,8 +35,7 @@ struct CrossThreadCopier<blink::V8WorkerMemoryReporter::WorkerMemoryUsage>
 
 namespace blink {
 
-const base::TimeDelta V8WorkerMemoryReporter::kTimeout =
-    base::TimeDelta::FromSeconds(60);
+const base::TimeDelta V8WorkerMemoryReporter::kTimeout = base::Seconds(60);
 
 namespace {
 

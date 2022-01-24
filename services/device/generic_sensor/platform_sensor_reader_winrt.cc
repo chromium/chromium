@@ -210,7 +210,7 @@ base::TimeDelta PlatformSensorReaderWinrtBase<
     return base::TimeDelta();
   }
 
-  return base::TimeDelta::FromMilliseconds(minimum_report_interval_ms);
+  return base::Milliseconds(minimum_report_interval_ms);
 }
 
 template <wchar_t const* runtime_class_id,

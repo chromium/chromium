@@ -142,7 +142,7 @@ bool IOSIntermediateDumpReader::Parse(FileReaderInterface* reader,
         if (key == IntermediateDumpKey::kInvalid)
           return false;
 
-        off_t value_length;
+        size_t value_length;
         if (!reader->ReadExactly(&value_length, sizeof(value_length))) {
           return false;
         }

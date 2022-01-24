@@ -16,8 +16,9 @@ namespace leveldb_proto {
 // Static metrics recording helper functions for ProtoLevelDBWrapper.
 //
 // When adding database clients that require UMA metrics recording, ensure that
-// the client name is added as a suffix in histograms.xml for the appropriate
-// ProtoDB.* metrics.
+// the client name is added as a LevelDBClient variant in
+// //tools/metrics/histograms/metadata/leveldb_proto/histograms.xml for the
+// appropriate ProtoDB.* metrics.
 class ProtoLevelDBWrapperMetrics {
  public:
   static void RecordInit(const std::string& client,

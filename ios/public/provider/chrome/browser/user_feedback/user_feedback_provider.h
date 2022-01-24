@@ -50,6 +50,10 @@
 class UserFeedbackProvider {
  public:
   UserFeedbackProvider();
+
+  UserFeedbackProvider(const UserFeedbackProvider&) = delete;
+  UserFeedbackProvider& operator=(const UserFeedbackProvider&) = delete;
+
   virtual ~UserFeedbackProvider();
   // Returns true if user feedback is enabled.
   virtual bool IsUserFeedbackEnabled();
@@ -65,9 +69,6 @@ class UserFeedbackProvider {
       UserFeedbackSender sender);
   // Uploads collected feedback reports.
   virtual void Synchronize();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserFeedbackProvider);
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_USER_FEEDBACK_USER_FEEDBACK_PROVIDER_H_

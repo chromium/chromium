@@ -23,6 +23,10 @@ const size_t kMaxStackFrames = 40;
 class StackUnwinderTest : public testing::Test {
  public:
   StackUnwinderTest() : testing::Test() {}
+
+  StackUnwinderTest(const StackUnwinderTest&) = delete;
+  StackUnwinderTest& operator=(const StackUnwinderTest&) = delete;
+
   ~StackUnwinderTest() override {}
 
   void SetUp() override {
@@ -36,8 +40,6 @@ class StackUnwinderTest : public testing::Test {
  private:
   StackUnwinderAndroid unwinder_;
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(StackUnwinderTest);
 };
 
 uintptr_t GetCurrentPC() {
@@ -126,7 +128,7 @@ TEST_F(StackUnwinderTest, UnwindOtherThreadOnJNICall) {
       FROM_HERE,
       base::BindOnce(callback, base::Unretained(unwinder()),
                      base::PlatformThread::CurrentId(), GetCurrentPC()),
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_UnwindTestHelper_blockCurrentThread(env);
 }

@@ -29,7 +29,8 @@ class PooledSharedImageVideoProviderTest : public testing::Test {
     // PooledSharedImageVideoProvider::GpuHelper
     void OnImageReturned(const gpu::SyncToken& sync_token,
                          scoped_refptr<CodecImageHolder> codec_image_holder,
-                         base::OnceClosure cb) override {
+                         base::OnceClosure cb,
+                         scoped_refptr<gpu::RefCountedLock> lock) override {
       *sync_token_out_ = sync_token;
 
       // Run the output cb.
@@ -52,7 +53,8 @@ class PooledSharedImageVideoProviderTest : public testing::Test {
     mock_provider_raw_ = mock_provider.get();
 
     provider_ = base::WrapUnique(new PooledSharedImageVideoProvider(
-        std::move(mock_gpu_helper), std::move(mock_provider)));
+        std::move(mock_gpu_helper), std::move(mock_provider),
+        /*lock=*/nullptr));
   }
 
   // Return an ImageReadyCB that saves the ImageRecord in |image_records_|.

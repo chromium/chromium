@@ -49,11 +49,10 @@ public class ChromeNotificationWrapperCompatBuilder extends NotificationWrapperC
 
     @Override
     public NotificationWrapperBuilder addAction(NotificationCompat.Action action, int flags,
-            @NotificationUmaTracker.ActionType int actionType) {
-        // TODO(xingliu): Plumb requestCode from action intent.
+            @NotificationUmaTracker.ActionType int actionType, int requestCode) {
         PendingIntent pendingIntent = NotificationIntentInterceptor.createInterceptPendingIntent(
                 NotificationIntentInterceptor.IntentType.ACTION_INTENT, actionType, getMetadata(),
-                new PendingIntentProvider(action.actionIntent, flags, 0));
+                new PendingIntentProvider(action.actionIntent, flags, requestCode));
         action.actionIntent = pendingIntent;
         return addAction(action);
     }

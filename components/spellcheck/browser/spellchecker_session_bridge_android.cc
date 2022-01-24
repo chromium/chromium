@@ -9,7 +9,6 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/spellcheck/browser/android/jni_headers/SpellCheckerSessionBridge_jni.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "content/public/browser/browser_thread.h"
@@ -17,16 +16,8 @@
 
 using base::android::JavaParamRef;
 
-namespace {
-
-void RecordAvailabilityUMA(bool spellcheck_available) {
-  UMA_HISTOGRAM_BOOLEAN("Spellcheck.Android.Available", spellcheck_available);
-}
-
-}  // namespace
-
 SpellCheckerSessionBridge::SpellCheckerSessionBridge()
-    : java_object_initialization_failed_(false), active_session_(false) {}
+    : java_object_initialization_failed_(false) {}
 
 SpellCheckerSessionBridge::~SpellCheckerSessionBridge() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -47,10 +38,6 @@ void SpellCheckerSessionBridge::RequestTextCheck(
   // SpellCheckerSessionBridge#create() will return null if spell checker
   // service is unavailable.
   if (java_object_initialization_failed_) {
-    if (!active_session_) {
-      RecordAvailabilityUMA(false);
-      active_session_ = true;
-    }
     return;
   }
 
@@ -63,10 +50,6 @@ void SpellCheckerSessionBridge::RequestTextCheck(
     java_object_.Reset(Java_SpellCheckerSessionBridge_create(
         base::android::AttachCurrentThread(),
         reinterpret_cast<intptr_t>(this)));
-    if (!active_session_) {
-      RecordAvailabilityUMA(!java_object_.is_null());
-      active_session_ = true;
-    }
     if (java_object_.is_null()) {
       java_object_initialization_failed_ = true;
       return;
@@ -131,7 +114,6 @@ void SpellCheckerSessionBridge::DisconnectSession() {
 
   active_request_.reset();
   pending_request_.reset();
-  active_session_ = false;
 
   if (!java_object_.is_null()) {
     Java_SpellCheckerSessionBridge_disconnect(

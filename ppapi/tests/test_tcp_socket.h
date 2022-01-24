@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PAPPI_TESTS_TEST_TCP_SOCKET_H_
-#define PAPPI_TESTS_TEST_TCP_SOCKET_H_
+#ifndef PPAPI_TESTS_TEST_TCP_SOCKET_H_
+#define PPAPI_TESTS_TEST_TCP_SOCKET_H_
 
 #include <stddef.h>
 
@@ -104,4 +104,4 @@ class TestTCPSocket: public TestCase {
   const PPB_TCPSocket_1_0* socket_interface_1_0_;
 };
 
-#endif  // PAPPI_TESTS_TEST_TCP_SOCKET_H_
+#endif  // PPAPI_TESTS_TEST_TCP_SOCKET_H_

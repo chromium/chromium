@@ -55,6 +55,10 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
                    const HttpRequestInfo* request,
                    GrowableIOBuffer* read_buffer,
                    const NetLogWithSource& net_log);
+
+  HttpStreamParser(const HttpStreamParser&) = delete;
+  HttpStreamParser& operator=(const HttpStreamParser&) = delete;
+
   virtual ~HttpStreamParser();
 
   // These functions implement the interface described in HttpStream with
@@ -315,8 +319,6 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
 
   base::WeakPtrFactory<HttpStreamParser> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpStreamParser);
 };
 
 }  // namespace net

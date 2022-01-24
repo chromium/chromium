@@ -4,13 +4,20 @@
 
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 
+#include "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/constants.h"
+#import "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
@@ -35,7 +42,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @property(nonatomic, copy) NSString* userName;
 @property(nonatomic, copy) NSString* email;
 @property(nonatomic, copy) NSString* givenName;
-@property(nonatomic, strong) UIImage* userImage;
+@property(nonatomic, strong) UIImage* avatar;
+@property(nonatomic, assign) BOOL UIWasEnabled;
 
 @end
 
@@ -45,16 +53,18 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   self.hidden = YES;
 }
 
-- (void)setUserImage:(UIImage*)userImage {
-  _userImage = userImage;
-}
-
 - (void)setSelectedIdentityUserName:(NSString*)userName
                               email:(NSString*)email
-                          givenName:(NSString*)givenName {
+                          givenName:(NSString*)givenName
+                             avatar:(UIImage*)avatar {
   self.userName = userName;
   self.email = email;
   self.givenName = givenName;
+  self.avatar = avatar;
+}
+
+- (void)setUIEnabled:(BOOL)UIEnabled {
+  self.UIWasEnabled = UIEnabled;
 }
 
 @end
@@ -104,6 +114,8 @@ class SigninScreenMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+
   SigninScreenMediator* mediator_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   ios::FakeChromeIdentityService* identity_service_;
@@ -120,13 +132,11 @@ TEST_F(SigninScreenMediatorTest, TestSettingConsumerWithExistingIdentity) {
   EXPECT_EQ(identity_.userEmail, consumer_.email);
   EXPECT_EQ(identity_.userFullName, consumer_.userName);
   EXPECT_FALSE(consumer_.hidden);
-  // The image is added asynchronously.
-  EXPECT_EQ(nil, consumer_.userImage);
-
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    return identity_service_->GetCachedAvatarForIdentity(identity_) ==
-           consumer_.userImage;
-  }));
+  UIImage* avatar = consumer_.avatar;
+  EXPECT_NE(nil, avatar);
+  CGSize expected_size =
+      GetSizeForIdentityAvatarSize(IdentityAvatarSize::DefaultLarge);
+  EXPECT_TRUE(CGSizeEqualToSize(expected_size, avatar.size));
 }
 
 // Tests that the consumer is correctly updated when the selected identity is
@@ -138,7 +148,7 @@ TEST_F(SigninScreenMediatorTest, TestUpdatingSelectedIdentity) {
   EXPECT_EQ(nil, consumer_.userName);
   // True because the selected identity is nil.
   EXPECT_TRUE(consumer_.hidden);
-  EXPECT_EQ(nil, consumer_.userImage);
+  EXPECT_EQ(nil, consumer_.avatar);
 
   consumer_.hidden = NO;
   mediator_.selectedIdentity = identity_;
@@ -146,13 +156,11 @@ TEST_F(SigninScreenMediatorTest, TestUpdatingSelectedIdentity) {
   EXPECT_EQ(identity_.userEmail, consumer_.email);
   EXPECT_EQ(identity_.userFullName, consumer_.userName);
   EXPECT_FALSE(consumer_.hidden);
-  // The image is added asynchronously.
-  EXPECT_EQ(nil, consumer_.userImage);
-
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    return identity_service_->GetCachedAvatarForIdentity(identity_) ==
-           consumer_.userImage;
-  }));
+  UIImage* avatar = consumer_.avatar;
+  EXPECT_NE(nil, avatar);
+  CGSize expected_size =
+      GetSizeForIdentityAvatarSize(IdentityAvatarSize::DefaultLarge);
+  EXPECT_TRUE(CGSizeEqualToSize(expected_size, avatar.size));
 }
 
 // Tests IdentityService observations of the identity list.
@@ -163,7 +171,7 @@ TEST_F(SigninScreenMediatorTest, TestIdentityListChanged) {
   EXPECT_EQ(nil, consumer_.userName);
   // True because the selected identity is nil.
   EXPECT_TRUE(consumer_.hidden);
-  EXPECT_EQ(nil, consumer_.userImage);
+  EXPECT_EQ(nil, consumer_.avatar);
 
   consumer_.hidden = NO;
 
@@ -173,13 +181,11 @@ TEST_F(SigninScreenMediatorTest, TestIdentityListChanged) {
   EXPECT_EQ(identity_.userEmail, consumer_.email);
   EXPECT_EQ(identity_.userFullName, consumer_.userName);
   EXPECT_FALSE(consumer_.hidden);
-  // The image is added asynchronously.
-  EXPECT_EQ(nil, consumer_.userImage);
-
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    return identity_service_->GetCachedAvatarForIdentity(identity_) ==
-           consumer_.userImage;
-  }));
+  UIImage* avatar = consumer_.avatar;
+  EXPECT_NE(nil, avatar);
+  CGSize expected_size =
+      GetSizeForIdentityAvatarSize(IdentityAvatarSize::DefaultLarge);
+  EXPECT_TRUE(CGSizeEqualToSize(expected_size, avatar.size));
 
   // Removing all the identity is resetting the selected identity.
   __block bool callback_done = false;
@@ -191,7 +197,6 @@ TEST_F(SigninScreenMediatorTest, TestIdentityListChanged) {
   }));
 
   EXPECT_TRUE(consumer_.hidden);
-  EXPECT_EQ(nil, consumer_.userImage);
 }
 
 // Tests BrowserProvider observation of the identity service.
@@ -217,6 +222,12 @@ TEST_F(SigninScreenMediatorTest, TestProfileUpdate) {
 
   EXPECT_EQ(email, consumer_.email);
   EXPECT_EQ(name, consumer_.userName);
+  // Get the avatar before the fetch (the default avatar).
+  UIImage* default_avatar = consumer_.avatar;
+  EXPECT_NE(nil, default_avatar);
+
+  // Wait for the avatar to be fetched.
+  second_service->WaitForServiceCallbacksToComplete();
 
   NSString* updated_email = @"updated@email.com";
   NSString* updated_name = @"Second - Updated";
@@ -233,20 +244,75 @@ TEST_F(SigninScreenMediatorTest, TestProfileUpdate) {
 
   EXPECT_EQ(updated_email, consumer_.email);
   EXPECT_EQ(updated_name, consumer_.userName);
+  // With the notification the real avatar is expected instead of the default
+  // avatar.
+  UIImage* real_avatar = consumer_.avatar;
+  EXPECT_NE(default_avatar, real_avatar);
 }
 
 // Tests Signing In the selected identity.
 TEST_F(SigninScreenMediatorTest, TestSignIn) {
   mediator_.selectedIdentity = identity_;
+  identity_service_->AddIdentity(identity_);
+  mediator_.consumer = consumer_;
 
-  AuthenticationService* authenticationService =
+  // Set browser UI objects.
+  WebStateList* web_state_list = nullptr;
+  std::unique_ptr<Browser> browser =
+      std::make_unique<TestBrowser>(browser_state_.get(), web_state_list);
+  UIViewController* presenting_view_controller_mock =
+      OCMStrictClassMock([UIViewController class]);
+
+  AuthenticationFlowPerformer* performer_mock =
+      OCMStrictClassMock([AuthenticationFlowPerformer class]);
+
+  // Set the authenticaiton flow for testing.
+  AuthenticationFlow* authentication_flow = [[AuthenticationFlow alloc]
+               initWithBrowser:browser.get()
+                      identity:identity_
+               shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
+              postSignInAction:POST_SIGNIN_ACTION_NONE
+      presentingViewController:presenting_view_controller_mock];
+  [authentication_flow setPerformerForTesting:performer_mock];
+
+  AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
 
-  EXPECT_NSEQ(nil, authenticationService->GetPrimaryIdentity(
-                       signin::ConsentLevel::kSignin));
+  // Mock the performer.
+  OCMExpect([performer_mock fetchManagedStatus:browser_state_.get()
+                                   forIdentity:identity_])
+      .andDo(^(NSInvocation*) {
+        [authentication_flow didFetchManagedStatus:nil];
+      });
+  OCMExpect([performer_mock signInIdentity:identity_
+                          withHostedDomain:nil
+                            toBrowserState:browser_state_.get()])
+      .andDo(^(NSInvocation*) {
+        auth_service->SignIn(identity_);
+      });
+  OCMExpect([performer_mock
+                shouldHandleMergeCaseForIdentity:identity_
+                                    browserState:browser_state_.get()])
+      .andReturn(NO);
 
-  [mediator_ startSignIn];
+  // Verify that there is no primary identity already signed in.
+  EXPECT_NSEQ(nil,
+              auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin));
 
-  EXPECT_NSEQ(identity_, authenticationService->GetPrimaryIdentity(
-                             signin::ConsentLevel::kSignin));
+  // Sign-in asynchronously using the mediator.
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+  [mediator_ startSignInWithAuthenticationFlow:authentication_flow
+                                    completion:^() {
+                                      run_loop_ptr->QuitWhenIdle();
+                                    }];
+
+  EXPECT_FALSE(consumer_.UIWasEnabled);
+
+  run_loop.Run();
+
+  EXPECT_TRUE(consumer_.UIWasEnabled);
+
+  EXPECT_NSEQ(identity_,
+              auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin));
 }

@@ -22,6 +22,7 @@
 
 #include "base/auto_reset.h"
 #include "base/mac/scoped_mach_port.h"
+#include "base/macros.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
 #include "test/mac/mach_errors.h"

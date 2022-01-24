@@ -21,7 +21,7 @@
 #include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -179,7 +179,8 @@ IN_PROC_BROWSER_TEST_F(LazyLoadBrowserTest, CSSBackgroundImageDeferred) {
 
   base::RunLoop().RunUntilIdle();
   // Navigate away to finish the histogram recording.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Verify that nothing is recorded for the image bucket.
   EXPECT_GE(0, histogram_tester.GetBucketCount(
@@ -191,13 +192,14 @@ IN_PROC_BROWSER_TEST_F(LazyLoadBrowserTest, CSSPseudoBackgroundImageLoaded) {
   EnableDataSaver(true);
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histogram_tester;
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/lazyload/css-pseudo-background-image.html"));
+                     "/lazyload/css-pseudo-background-image.html")));
 
   base::RunLoop().RunUntilIdle();
   // Navigate away to finish the histogram recording.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Verify that the image bucket has substantial kilobytes recorded.
   EXPECT_GE(30 /* KB */, histogram_tester.GetBucketCount(
@@ -237,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(LazyLoadBrowserTest,
   SetUpLazyLoadFrameTestPage();
   GURL test_url(embedded_test_server()->GetURL("/mainpage.html"));
 
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   EXPECT_EQ(true, WaitForElementLoad(contents, "atf_auto"));
@@ -386,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(LazyLoadPrerenderBrowserTest, ImagesIgnored) {
           prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle =
-      GetNoStatePrefetchManager()->AddPrerenderFromOmnibox(
+      GetNoStatePrefetchManager()->StartPrefetchingFromOmnibox(
           src_server()->GetURL("/lazyload/img.html"),
           GetSessionStorageNamespace(), gfx::Size(640, 480));
 

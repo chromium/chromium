@@ -41,7 +41,7 @@ TimeTicks TimeTicksNowIgnoringOverride() {
 
 // static
 TimeDelta TimeDelta::FromZxDuration(zx_duration_t nanos) {
-  return TimeDelta::FromNanoseconds(nanos);
+  return Nanoseconds(nanos);
 }
 
 zx_duration_t TimeDelta::ToZxDuration() const {
@@ -50,7 +50,7 @@ zx_duration_t TimeDelta::ToZxDuration() const {
 
 // static
 Time Time::FromZxTime(zx_time_t nanos_since_unix_epoch) {
-  return UnixEpoch() + TimeDelta::FromNanoseconds(nanos_since_unix_epoch);
+  return UnixEpoch() + Nanoseconds(nanos_since_unix_epoch);
 }
 
 zx_time_t Time::ToZxTime() const {
@@ -74,7 +74,7 @@ bool TimeTicks::IsConsistentAcrossProcesses() {
 
 // static
 TimeTicks TimeTicks::FromZxTime(zx_time_t nanos_since_boot) {
-  return TimeTicks() + TimeDelta::FromNanoseconds(nanos_since_boot);
+  return TimeTicks() + Nanoseconds(nanos_since_boot);
 }
 
 zx_time_t TimeTicks::ToZxTime() const {
@@ -90,7 +90,7 @@ ThreadTicks ThreadTicksNowIgnoringOverride() {
                                           ZX_INFO_THREAD_STATS, &info,
                                           sizeof(info), nullptr, nullptr);
   ZX_CHECK(status == ZX_OK, status);
-  return ThreadTicks() + TimeDelta::FromNanoseconds(info.total_runtime);
+  return ThreadTicks() + Nanoseconds(info.total_runtime);
 }
 }  // namespace subtle
 

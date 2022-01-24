@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_TESTS_GL_TEST_SETUP_HELPER_H_
 #define GPU_COMMAND_BUFFER_TESTS_GL_TEST_SETUP_HELPER_H_
 
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -22,6 +23,9 @@ class GLTestSetupHelper : public testing::EmptyTestEventListener {
   // testing::EmptyTestEventListener:
   void OnTestStart(const testing::TestInfo& test_info) override;
   void OnTestEnd(const testing::TestInfo& test_info) override;
+
+ private:
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 };
 
 }  // namespace gpu

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_GCM_GCM_PROFILE_SERVICE_FACTORY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/gcm_driver/system_encryptor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -29,10 +28,17 @@ class GCMProfileServiceFactory : public BrowserContextKeyedServiceFactory {
   class ScopedTestingFactoryInstaller {
    public:
     explicit ScopedTestingFactoryInstaller(TestingFactory testing_factory);
-    ~ScopedTestingFactoryInstaller();
 
-    DISALLOW_COPY_AND_ASSIGN(ScopedTestingFactoryInstaller);
+    ScopedTestingFactoryInstaller(const ScopedTestingFactoryInstaller&) =
+        delete;
+    ScopedTestingFactoryInstaller& operator=(
+        const ScopedTestingFactoryInstaller&) = delete;
+
+    ~ScopedTestingFactoryInstaller();
   };
+
+  GCMProfileServiceFactory(const GCMProfileServiceFactory&) = delete;
+  GCMProfileServiceFactory& operator=(const GCMProfileServiceFactory&) = delete;
 
  private:
   friend base::NoDestructor<GCMProfileServiceFactory>;
@@ -45,8 +51,6 @@ class GCMProfileServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMProfileServiceFactory);
 };
 
 }  // namespace gcm

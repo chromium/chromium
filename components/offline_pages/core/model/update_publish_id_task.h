@@ -6,7 +6,6 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_UPDATE_PUBLISH_ID_TASK_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/model/get_pages_task.h"
 #include "components/offline_pages/core/offline_page_archive_publisher.h"
@@ -28,6 +27,10 @@ class UpdatePublishIdTask : public Task {
                       int64_t offline_id,
                       const PublishedArchiveId& publish_id,
                       base::OnceCallback<void(bool)> callback);
+
+  UpdatePublishIdTask(const UpdatePublishIdTask&) = delete;
+  UpdatePublishIdTask& operator=(const UpdatePublishIdTask&) = delete;
+
   ~UpdatePublishIdTask() override;
 
  private:
@@ -44,7 +47,6 @@ class UpdatePublishIdTask : public Task {
   base::OnceCallback<void(bool)> callback_;
 
   base::WeakPtrFactory<UpdatePublishIdTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UpdatePublishIdTask);
 };
 
 }  // namespace offline_pages

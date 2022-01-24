@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
+
 @protocol ApplicationCommands;
 class Browser;
 @protocol BrowserCommands;
@@ -23,7 +25,7 @@ class WebState;
 
 // The BookmarkInteractionController abstracts the management of the various
 // UIViewControllers used to create, remove and edit a bookmark.
-@interface BookmarkInteractionController : NSObject
+@interface BookmarkInteractionController : NSObject <BookmarksCommands>
 
 // This object's delegate.
 @property(nonatomic, weak) id<BookmarkInteractionControllerDelegate> delegate;

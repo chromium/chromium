@@ -68,6 +68,10 @@ class MojoConnectionServiceProvider
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
 
+  void BootstrapMojoConnectionForRollbackNetworkConfig(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
+
   void SendInvitation(mojo::PlatformChannel* platform_channel,
                       mojo::ScopedMessagePipeHandle* pipe);
 

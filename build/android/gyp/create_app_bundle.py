@@ -88,6 +88,9 @@ def _ParseArgs(args):
       '--compress-shared-libraries',
       action='store_true',
       help='Whether to store native libraries compressed.')
+  parser.add_argument('--compress-dex',
+                      action='store_true',
+                      help='Compress .dex files')
   parser.add_argument('--split-dimensions',
                       help="GN-list of split dimensions to support.")
   parser.add_argument(
@@ -162,13 +165,15 @@ def _MakeSplitDimension(value, enabled):
   return {'value': value, 'negate': not enabled}
 
 
-def _GenerateBundleConfigJson(uncompressed_assets, compress_shared_libraries,
-                              split_dimensions, base_master_resource_ids):
+def _GenerateBundleConfigJson(uncompressed_assets, compress_dex,
+                              compress_shared_libraries, split_dimensions,
+                              base_master_resource_ids):
   """Generate a dictionary that can be written to a JSON BuildConfig.
 
   Args:
     uncompressed_assets: A list or set of file paths under assets/ that always
       be stored uncompressed.
+    compressed_dex: Boolean, whether to compress .dex.
     compress_shared_libraries: Boolean, whether to compress native libs.
     split_dimensions: list of split dimensions.
     base_master_resource_ids: Optional list of 32-bit resource IDs to keep
@@ -195,6 +200,10 @@ def _GenerateBundleConfigJson(uncompressed_assets, compress_shared_libraries,
   uncompressed_globs.extend('assets/' + x for x in uncompressed_assets)
   # NOTE: Use '**' instead of '*' to work through directories!
   uncompressed_globs.extend('**.' + ext for ext in _UNCOMPRESSED_FILE_EXTS)
+  if not compress_dex:
+    # Explicit glob required only when using bundletool. Play Store looks for
+    # "uncompressDexFiles" set below.
+    uncompressed_globs.extend('classes*.dex')
 
   data = {
       'optimizations': {
@@ -482,9 +491,11 @@ def main(args):
       base_master_resource_ids = _GenerateBaseResourcesAllowList(
           options.base_module_rtxt_path, options.base_allowlist_rtxt_path)
 
-    bundle_config = _GenerateBundleConfigJson(
-        options.uncompressed_assets, options.compress_shared_libraries,
-        split_dimensions, base_master_resource_ids)
+    bundle_config = _GenerateBundleConfigJson(options.uncompressed_assets,
+                                              options.compress_dex,
+                                              options.compress_shared_libraries,
+                                              split_dimensions,
+                                              base_master_resource_ids)
 
     tmp_bundle = os.path.join(tmp_dir, 'tmp_bundle')
 

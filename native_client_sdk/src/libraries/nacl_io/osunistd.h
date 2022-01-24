@@ -18,4 +18,4 @@
 
 #endif
 
-#endif  /* LIBRARIES_NACL_IO_OSUNISTD_H_ */
+#endif  // LIBRARIES_NACL_IO_OSUNISTD_H_

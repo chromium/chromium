@@ -13,12 +13,17 @@ namespace sandbox {
 class SandboxTestRunnerFunctionPointer : public SandboxTestRunner {
  public:
   explicit SandboxTestRunnerFunctionPointer(void (*function_to_run)());
+
+  SandboxTestRunnerFunctionPointer(const SandboxTestRunnerFunctionPointer&) =
+      delete;
+  SandboxTestRunnerFunctionPointer& operator=(
+      const SandboxTestRunnerFunctionPointer&) = delete;
+
   ~SandboxTestRunnerFunctionPointer() override;
   void Run() override;
 
  private:
   void (*function_to_run_)(void);
-  DISALLOW_COPY_AND_ASSIGN(SandboxTestRunnerFunctionPointer);
 };
 
 }  // namespace sandbox

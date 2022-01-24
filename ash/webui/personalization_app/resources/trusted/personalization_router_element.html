@@ -1,0 +1,94 @@
+<style>
+  #container {
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+  #wallpaperContainer {
+    display: grid;
+    grid-template-areas:
+      '. leftspacer breadcrumb rightspacer .'
+      '. leftspacer selected   rightspacer .'
+      '. leftspacer .          rightspacer .'
+      '. leftspacer imagegrid  rightspacer .'
+      '. leftspacer .          rightspacer .';
+    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
+    grid-template-rows: 56px 172px 12px 1fr 12px;
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+  #leftspacer {
+    grid-area: leftspacer;
+  }
+  #rightspacer {
+    grid-area: rightspacer;
+  }
+  wallpaper-breadcrumb {
+    grid-area: breadcrumb;
+  }
+  wallpaper-selected {
+    grid-area: selected;
+  }
+  wallpaper-collections,
+  wallpaper-images,
+  google-photos,
+  local-images {
+    grid-area: imagegrid;
+  }
+  personalization-toast {
+    bottom: 16px;
+    left: 16px;
+    max-width: 380px;
+    position: absolute;
+  }
+  wallpaper-fullscreen {
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+</style>
+<div id="container">
+  <!-- dwell-time is set to 200ms to populate history state more quickly while
+       still respecting the grace period defined in iron-location.  -->
+  <iron-location path="{{path_}}" query="{{query_}}" dwell-time="200">
+  </iron-location>
+  <iron-query-params params-object="{{queryParams_}}"
+    params-string="{{query_}}">
+  </iron-query-params>
+  <template is="dom-if" if="[[shouldShowRootPage_(path_)]]">
+    <!-- TODO(b/202734180) replace this with real content -->
+    <h1>Personalization</h1>
+  </template>
+  <template is="dom-if" if="[[shouldShowWallpaperSubpage_(path_)]]">
+    <div id="wallpaperContainer">
+      <!-- Prevent left margin from collapsing on narrow window in RTL -->
+      <div id="leftspacer"></div>
+      <wallpaper-breadcrumb path="[[path_]]"
+          collection-id="[[queryParams_.id]]">
+      </wallpaper-breadcrumb>
+      <wallpaper-selected path="[[path_]]" collection-id="[[queryParams_.id]]">
+      </wallpaper-selected>
+      <!-- do not use hidden$ here - need to listen on property change in
+          these elements. -->
+      <wallpaper-collections hidden="[[!shouldShowCollections_(path_)]]">
+      </wallpaper-collections>
+      <wallpaper-images collection-id="[[queryParams_.id]]"
+        hidden="[[!shouldShowCollectionImages_(path_)]]"></wallpaper-images>
+      <template is="dom-if" if="[[isGooglePhotosIntegrationEnabled_()]]">
+        <google-photos hidden="[[!shouldShowGooglePhotosCollection_(path_)]]">
+        </google-photos>
+      </template>
+      <local-images hidden="[[!shouldShowLocalCollection_(path_)]]">
+      </local-images>
+      <!-- Prevent the right margin from collapsing when window gets very
+           narrow -->
+      <div id="rightspacer"></div>
+      <wallpaper-fullscreen></wallpaper-fullscreen>
+    </div>
+  </template>
+  <personalization-toast></personalization-toast>
+</div>

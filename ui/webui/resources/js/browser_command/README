@@ -1,0 +1,11 @@
+This directory contains the Mojo definitions for the NTP promo browser commands,
+i.e, the set of browser commands sent by the NTP promos and understood by the
+browser. These commands may trigger side-effect-free actions in the browser such
+as navigating to a chrome:// URL or initiating a helpful flow.
+
+These mojo definitions are accessible to Desktop and Android. The implementer of
+the handler interface in browser_command.mojom chooses which commands to
+handle and which ones to ignore depending on the platform or the milestone.
+
+The Desktop implementations for these commands are located at:
+//chrome/browser/ui/webui/new_tab_page/promo_browser_command/

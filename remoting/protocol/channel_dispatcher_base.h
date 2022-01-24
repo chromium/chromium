@@ -40,6 +40,9 @@ class ChannelDispatcherBase : public MessagePipe::EventHandler {
     virtual void OnChannelClosed(ChannelDispatcherBase* channel_dispatcher) = 0;
   };
 
+  ChannelDispatcherBase(const ChannelDispatcherBase&) = delete;
+  ChannelDispatcherBase& operator=(const ChannelDispatcherBase&) = delete;
+
   ~ChannelDispatcherBase() override;
 
   // Creates and connects the channel using |channel_factory|.
@@ -77,8 +80,6 @@ class ChannelDispatcherBase : public MessagePipe::EventHandler {
   bool is_connected_ = false;
 
   std::unique_ptr<MessagePipe> message_pipe_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelDispatcherBase);
 };
 
 }  // namespace protocol

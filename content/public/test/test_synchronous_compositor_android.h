@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/android/synchronous_compositor_client.h"
@@ -20,6 +19,11 @@ namespace content {
 class CONTENT_EXPORT TestSynchronousCompositor : public SynchronousCompositor {
  public:
   explicit TestSynchronousCompositor(const viz::FrameSinkId& frame_sink_id);
+
+  TestSynchronousCompositor(const TestSynchronousCompositor&) = delete;
+  TestSynchronousCompositor& operator=(const TestSynchronousCompositor&) =
+      delete;
+
   ~TestSynchronousCompositor() override;
 
   void SetClient(SynchronousCompositorClient* client);
@@ -36,7 +40,7 @@ class CONTENT_EXPORT TestSynchronousCompositor : public SynchronousCompositor {
   void SetMemoryPolicy(size_t bytes_limit) override {}
   void DidBecomeActive() override {}
   void DidChangeRootLayerScrollOffset(
-      const gfx::ScrollOffset& root_offset) override {}
+      const gfx::Vector2dF& root_offset) override {}
   void SynchronouslyZoomBy(float zoom_delta,
                            const gfx::Point& anchor) override {}
   void OnComputeScroll(base::TimeTicks animate_time) override {}
@@ -63,8 +67,6 @@ class CONTENT_EXPORT TestSynchronousCompositor : public SynchronousCompositor {
   viz::FrameSinkId frame_sink_id_;
   std::unique_ptr<Frame> hardware_frame_;
   FrameAckArray frame_ack_array_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSynchronousCompositor);
 };
 
 }  // namespace content

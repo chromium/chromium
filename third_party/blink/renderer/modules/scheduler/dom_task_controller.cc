@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/scheduler/dom_task_controller.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_task_controller_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
 
@@ -11,8 +12,8 @@ namespace blink {
 
 // static
 DOMTaskController* DOMTaskController::Create(ExecutionContext* context,
-                                             const AtomicString& priority) {
-  return MakeGarbageCollected<DOMTaskController>(context, priority);
+                                             TaskControllerInit* init) {
+  return MakeGarbageCollected<DOMTaskController>(context, init->priority());
 }
 
 DOMTaskController::DOMTaskController(ExecutionContext* context,

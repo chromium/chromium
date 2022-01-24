@@ -24,7 +24,7 @@
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/public/common/content_switches.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -106,6 +106,24 @@ void DelegatedFrameHost::WasShown(
   }
 }
 
+void DelegatedFrameHost::RequestPresentationTimeForNextFrame(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  DCHECK(visible_time_request);
+  if (!compositor_)
+    return;
+  // Tab was shown while widget was already painting, eg. due to being
+  // captured.
+  compositor_->RequestPresentationTimeForNextFrame(
+      tab_switch_time_recorder_.TabWasShown(true /* has_saved_frames */,
+                                            std::move(visible_time_request),
+                                            base::TimeTicks::Now()));
+}
+
+void DelegatedFrameHost::CancelPresentationTimeRequest() {
+  // Tab was hidden while widget keeps painting, eg. due to being captured.
+  tab_switch_time_recorder_.TabWasHidden();
+}
+
 bool DelegatedFrameHost::HasSavedFrame() const {
   return frame_evictor_->has_surface();
 }
@@ -126,8 +144,8 @@ void DelegatedFrameHost::CopyFromCompositingSurface(
     const gfx::Size& output_size,
     base::OnceCallback<void(const SkBitmap&)> callback) {
   CopyFromCompositingSurfaceInternal(
-      src_subrect, output_size,
-      viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      src_subrect, output_size, viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(
           [](base::OnceCallback<void(const SkBitmap&)> callback,
              std::unique_ptr<viz::CopyOutputResult> result) {
@@ -142,17 +160,19 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceAsTexture(
     const gfx::Size& output_size,
     viz::CopyOutputRequest::CopyOutputRequestCallback callback) {
   CopyFromCompositingSurfaceInternal(
-      src_subrect, output_size,
-      viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE, std::move(callback));
+      src_subrect, output_size, viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kNativeTextures,
+      std::move(callback));
 }
 
 void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
     viz::CopyOutputRequest::ResultFormat format,
+    viz::CopyOutputRequest::ResultDestination destination,
     viz::CopyOutputRequest::CopyOutputRequestCallback callback) {
-  auto request =
-      std::make_unique<viz::CopyOutputRequest>(format, std::move(callback));
+  auto request = std::make_unique<viz::CopyOutputRequest>(format, destination,
+                                                          std::move(callback));
 
   // It is possible for us to not have a valid surface to copy from. Such as
   // if a navigation fails to complete. In such a case do not attempt to request
@@ -378,17 +398,25 @@ void DelegatedFrameHost::DidCopyStaleContent(
   if (frame_evictor_->visible() || result->IsEmpty())
     return;
 
-  DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA_TEXTURE);
+  DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
+  DCHECK_EQ(result->destination(),
+            viz::CopyOutputResult::Destination::kNativeTextures);
 
+// TODO(crbug.com/1227661): Revert https://crrev.com/c/3222541 to re-enable this
+// DCHECK on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK_NE(frame_eviction_state_, FrameEvictionState::kNotStarted);
+#endif
   SetFrameEvictionStateAndNotifyObservers(FrameEvictionState::kNotStarted);
   ContinueDelegatedFrameEviction();
 
   auto transfer_resource = viz::TransferableResource::MakeGL(
-      result->GetTextureResult()->mailbox, GL_LINEAR, GL_TEXTURE_2D,
-      result->GetTextureResult()->sync_token, result->size(),
+      result->GetTextureResult()->planes[0].mailbox, GL_LINEAR, GL_TEXTURE_2D,
+      result->GetTextureResult()->planes[0].sync_token, result->size(),
       false /* is_overlay_candidate */);
-  viz::ReleaseCallback release_callback = result->TakeTextureOwnership();
+  viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
+      result->TakeTextureOwnership();
+  DCHECK_EQ(1u, release_callbacks.size());
 
   if (stale_content_layer_->parent() != client_->DelegatedFrameHostGetLayer())
     client_->DelegatedFrameHostGetLayer()->Add(stale_content_layer_.get());
@@ -397,7 +425,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
   stale_content_layer_->SetVisible(true);
   stale_content_layer_->SetBounds(gfx::Rect(surface_dip_size_));
   stale_content_layer_->SetTransferableResource(
-      transfer_resource, std::move(release_callback), surface_dip_size_);
+      transfer_resource, std::move(release_callbacks[0]), surface_dip_size_);
 }
 
 void DelegatedFrameHost::ContinueDelegatedFrameEviction() {

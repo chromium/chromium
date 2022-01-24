@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_STYLE_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_STYLE_H_
 
+#include "ash/system/tray/tray_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -42,6 +43,12 @@ constexpr SkColor kSwipeControlBackgroundColor =
 // The ratio to multiply with the swipe control width to get the width to
 // display at full opacity when swiping.
 constexpr float kSwipeControlFullOpacityRatio = 1.5f;
+
+constexpr int kMaxGroupedNotificationsInCollapsedState = 3;
+constexpr gfx::Insets kGroupedCollapsedCountViewInsets(0,
+                                                       0,
+                                                       16,
+                                                       kTrayMenuWidth - 100);
 
 }  // namespace message_center_style
 

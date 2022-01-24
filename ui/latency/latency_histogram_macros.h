@@ -36,9 +36,9 @@
 #define UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_MICROSECONDS(name, start, end) \
   CONFIRM_EVENT_TIMES_EXIST(start, end)                                   \
   base::TimeDelta frame_difference = end - start;                         \
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(                                \
-      name, frame_difference, base::TimeDelta::FromMicroseconds(1),       \
-      base::TimeDelta::FromMilliseconds(100), 100);
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(name, frame_difference,         \
+                                          base::Microseconds(1),          \
+                                          base::Milliseconds(100), 100);
 
 // Event latency that is mostly under 1 second. We should only use 100 buckets
 // when needed. This drops reports on clients with low-resolution clocks.
@@ -46,9 +46,9 @@
     name, start, end)                                                 \
   CONFIRM_EVENT_TIMES_EXIST(start, end)                               \
   base::TimeDelta frame_difference = end - start;                     \
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(                            \
-      name, frame_difference, base::TimeDelta::FromMicroseconds(1),   \
-      base::TimeDelta::FromMilliseconds(1000), 100);
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(name, frame_difference,     \
+                                          base::Microseconds(1),      \
+                                          base::Milliseconds(1000), 100);
 
 #define UMA_HISTOGRAM_INPUT_LATENCY_MILLISECONDS(name, start, end)             \
   CONFIRM_EVENT_TIMES_EXIST(start, end)                                        \

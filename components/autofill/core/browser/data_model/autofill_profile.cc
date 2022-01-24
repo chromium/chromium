@@ -24,7 +24,6 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
@@ -36,6 +35,7 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/geo/state_names.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -62,6 +62,16 @@ namespace autofill {
 using structured_address::VerificationStatus;
 
 namespace {
+
+// Stores the data types that are relevant for the structured address/name.
+const std::array<ServerFieldType, 7> kStructuredDataTypes = {
+    NAME_FIRST,
+    NAME_MIDDLE,
+    NAME_LAST,
+    NAME_LAST_FIRST,
+    NAME_LAST_SECOND,
+    ADDRESS_HOME_STREET_NAME,
+    ADDRESS_HOME_HOUSE_NUMBER};
 
 // Like |AutofillType::GetStorableType()|, but also returns |NAME_FULL| for
 // first, middle, and last name field types, and groups phone number types
@@ -474,9 +484,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
 
   // TODO(crbug.com/1130194): Remove feature check once structured addresses are
   // fully launched.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAddressEnhancementVotes) ||
-      structured_address::StructuredAddressesEnabled()) {
+  if (structured_address::StructuredAddressesEnabled()) {
     const ServerFieldType new_types[] = {
         ADDRESS_HOME_HOUSE_NUMBER,
         ADDRESS_HOME_STREET_NAME,
@@ -1101,7 +1109,8 @@ void AutofillProfile::UpdateServerValidityMap(
   server_validity_states_.clear();
   const auto& field_validity_states = validity_map.field_validity_states();
   for (const auto& current_pair : field_validity_states) {
-    const auto field_type = static_cast<ServerFieldType>(current_pair.first);
+    const auto field_type =
+        ToSafeServerFieldType(current_pair.first, UNKNOWN_TYPE);
     const auto field_validity = static_cast<ValidityState>(current_pair.second);
     server_validity_states_[field_type] = field_validity;
   }
@@ -1411,5 +1420,11 @@ bool AutofillProfile::FinalizeAfterImport() {
     success = false;
 
   return success;
+}
+
+bool AutofillProfile::HasStructuredData() {
+  return base::ranges::any_of(kStructuredDataTypes, [this](auto type) {
+    return !this->GetRawInfo(type).empty();
+  });
 }
 }  // namespace autofill

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_HEADER_MODIFICATION_DELEGATE_H_
 #define CHROME_BROWSER_SIGNIN_HEADER_MODIFICATION_DELEGATE_H_
 
-#include "base/macros.h"
-
 class GURL;
 
 namespace content {
@@ -21,6 +19,11 @@ class ResponseAdapter;
 class HeaderModificationDelegate {
  public:
   HeaderModificationDelegate() = default;
+
+  HeaderModificationDelegate(const HeaderModificationDelegate&) = delete;
+  HeaderModificationDelegate& operator=(const HeaderModificationDelegate&) =
+      delete;
+
   virtual ~HeaderModificationDelegate() = default;
 
   virtual bool ShouldInterceptNavigation(content::WebContents* contents) = 0;
@@ -28,9 +31,6 @@ class HeaderModificationDelegate {
                               const GURL& redirect_url) = 0;
   virtual void ProcessResponse(ResponseAdapter* response_adapter,
                                const GURL& redirect_url) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeaderModificationDelegate);
 };
 
 }  // namespace signin

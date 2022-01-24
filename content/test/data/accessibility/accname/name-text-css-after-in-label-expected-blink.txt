@@ -1,2 +1,1 @@
-# BUG: The expected result is 'text content'
-textField
+textField name='test content' nameFrom=relatedElement

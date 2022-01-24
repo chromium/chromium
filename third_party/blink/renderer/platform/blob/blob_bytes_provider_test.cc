@@ -25,17 +25,17 @@ class BlobBytesProviderTest : public testing::Test {
     Platform::SetMainThreadTaskRunnerForTesting();
 
     test_bytes1_.resize(128);
-    for (size_t i = 0; i < test_bytes1_.size(); ++i)
+    for (wtf_size_t i = 0; i < test_bytes1_.size(); ++i)
       test_bytes1_[i] = i % 191;
     test_data1_ = RawData::Create();
     test_data1_->MutableData()->AppendVector(test_bytes1_);
     test_bytes2_.resize(64);
-    for (size_t i = 0; i < test_bytes2_.size(); ++i)
+    for (wtf_size_t i = 0; i < test_bytes2_.size(); ++i)
       test_bytes2_[i] = i;
     test_data2_ = RawData::Create();
     test_data2_->MutableData()->AppendVector(test_bytes2_);
     test_bytes3_.resize(32);
-    for (size_t i = 0; i < test_bytes3_.size(); ++i)
+    for (wtf_size_t i = 0; i < test_bytes3_.size(); ++i)
       test_bytes3_[i] = (i + 10) % 137;
     test_data3_ = RawData::Create();
     test_data3_->MutableData()->AppendVector(test_bytes3_);

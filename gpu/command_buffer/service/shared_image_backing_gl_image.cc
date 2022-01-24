@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -189,10 +190,14 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaImpl::BeginWriteAccess(
 
   SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
       /*gpu_compositing=*/true, format());
+  // Gray is not a renderable single channel format, but alpha is.
+  if (sk_color_type == kGray_8_SkColorType)
+    sk_color_type = kAlpha_8_SkColorType;
   auto surface = SkSurface::MakeFromBackendTexture(
       context_state_->gr_context(), promise_texture_->backendTexture(),
       surface_origin(), final_msaa_count, sk_color_type,
-      backing()->color_space().ToSkColorSpace(), &surface_props);
+      backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
+      &surface_props);
   write_surface_ = surface.get();
   return surface;
 }
@@ -289,6 +294,40 @@ gl::GLImage* SharedImageRepresentationOverlayImpl::GetGLImage() {
 ///////////////////////////////////////////////////////////////////////////////
 // SharedImageBackingGLImage
 
+// static
+std::unique_ptr<SharedImageBackingGLImage>
+SharedImageBackingGLImage::CreateFromGLTexture(
+    scoped_refptr<gl::GLImage> image,
+    const Mailbox& mailbox,
+    viz::ResourceFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    GLenum texture_target,
+    scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture) {
+  DCHECK(!!wrapped_gl_texture);
+
+  // We don't expect the backing to allocate a new
+  // texture but it does need to know the texture target so we supply that
+  // one param.
+  InitializeGLTextureParams params;
+  params.target = texture_target;
+  UnpackStateAttribs attribs;
+
+  auto shared_image = std::make_unique<SharedImageBackingGLImage>(
+      std::move(image), mailbox, format, size, color_space, surface_origin,
+      alpha_type, usage, params, attribs, true);
+
+  shared_image->passthrough_texture_ = std::move(wrapped_gl_texture);
+  shared_image->gl_texture_retained_for_legacy_mailbox_ = true;
+  shared_image->gl_texture_retain_count_ = 1;
+  shared_image->image_bind_or_copy_needed_ = false;
+
+  return shared_image;
+}
+
 SharedImageBackingGLImage::SharedImageBackingGLImage(
     scoped_refptr<gl::GLImage> image,
     const Mailbox& mailbox,
@@ -374,8 +413,16 @@ void SharedImageBackingGLImage::ReleaseGLTexture(bool have_context) {
   }
   if (IsPassthrough()) {
     if (passthrough_texture_) {
-      if (!have_context)
+      if (have_context) {
+        if (!passthrough_texture_->is_bind_pending()) {
+          const GLenum target = GetGLTarget();
+          gl::ScopedTextureBinder binder(target,
+                                         passthrough_texture_->service_id());
+          image_->ReleaseTexImage(target);
+        }
+      } else {
         passthrough_texture_->MarkContextLost();
+      }
       passthrough_texture_.reset();
     }
   } else {
@@ -535,7 +582,9 @@ SharedImageBackingGLImage::ProduceSkia(
     } else {
       GrBackendTexture backend_texture;
       GetGrBackendTexture(context_state->feature_info(), GetGLTarget(), size(),
-                          GetGLServiceId(), format(), &backend_texture);
+                          GetGLServiceId(), format(),
+                          context_state->gr_context()->threadSafeProxy(),
+                          &backend_texture);
       cached_promise_texture_ = SkPromiseImageTexture::Make(backend_texture);
     }
   }
@@ -642,9 +691,14 @@ void SharedImageBackingGLImage::Update(
 
 bool SharedImageBackingGLImage::
     SharedImageRepresentationGLTextureBeginAccess() {
-  if (!release_fence_.is_null())
-    gl::GLFence::CreateFromGpuFence(gfx::GpuFence(std::move(release_fence_)))
-        ->ServerWait();
+  if (!release_fence_.is_null()) {
+    auto fence = gfx::GpuFence(std::move(release_fence_));
+    if (gl::GLFence::IsGpuFenceSupported()) {
+      gl::GLFence::CreateFromGpuFence(std::move(fence))->ServerWait();
+    } else {
+      fence.Wait();
+    }
+  }
   return BindOrCopyImageIfNeeded();
 }
 
@@ -671,6 +725,7 @@ void SharedImageBackingGLImage::SharedImageRepresentationGLTextureEndAccess(
     if (!passthrough_texture_->is_bind_pending()) {
       image_->ReleaseTexImage(target);
       image_bind_or_copy_needed_ = true;
+      passthrough_texture_->set_is_bind_pending(true);
     }
   }
 #else

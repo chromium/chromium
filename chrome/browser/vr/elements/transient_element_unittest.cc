@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/test/animation_utils.h"
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/ui_scene.h"
@@ -26,7 +25,7 @@ bool DoBeginFrame(UiElement* element, int time_milliseconds) {
 }  // namespace
 
 TEST(SimpleTransientElementTest, Visibility) {
-  SimpleTransientElement element(base::TimeDelta::FromSeconds(2));
+  SimpleTransientElement element(base::Seconds(2));
   element.SetOpacity(0.0f);
 
   EXPECT_EQ(0.0f, element.opacity());
@@ -69,7 +68,7 @@ TEST(SimpleTransientElementTest, Visibility) {
 // Test that refreshing the visibility resets the transience timeout if the
 // element is currently visible.
 TEST(SimpleTransientElementTest, RefreshVisibility) {
-  SimpleTransientElement element(base::TimeDelta::FromSeconds(2));
+  SimpleTransientElement element(base::Seconds(2));
   element.SetOpacity(0.0f);
 
   // Enable, and ensure that the element is visible.
@@ -106,7 +105,7 @@ TEST(SimpleTransientElementTest, VisibilityChildren) {
   UiScene scene;
   // Create transient root.
   auto transient_element =
-      std::make_unique<SimpleTransientElement>(base::TimeDelta::FromSeconds(2));
+      std::make_unique<SimpleTransientElement>(base::Seconds(2));
   SimpleTransientElement* parent = transient_element.get();
   transient_element->set_opacity_when_visible(0.5);
   scene.AddUiElement(kRoot, std::move(transient_element));

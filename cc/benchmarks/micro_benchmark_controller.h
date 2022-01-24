@@ -5,6 +5,7 @@
 #ifndef CC_BENCHMARKS_MICRO_BENCHMARK_CONTROLLER_H_
 #define CC_BENCHMARKS_MICRO_BENCHMARK_CONTROLLER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,7 @@ class Value;
 namespace cc {
 
 class LayerTreeHost;
-class LayerTreeHostImpl;
+
 class CC_EXPORT MicroBenchmarkController {
  public:
   explicit MicroBenchmarkController(LayerTreeHost* host);
@@ -32,12 +33,12 @@ class CC_EXPORT MicroBenchmarkController {
 
   // Returns the id of the benchmark on success, 0 otherwise.
   int ScheduleRun(const std::string& micro_benchmark_name,
-                  std::unique_ptr<base::Value> value,
+                  base::Value settings,
                   MicroBenchmark::DoneCallback callback);
   // Returns true if the message was successfully delivered and handled.
-  bool SendMessage(int id, std::unique_ptr<base::Value> value);
+  bool SendMessage(int id, base::Value message);
 
-  void ScheduleImplBenchmarks(LayerTreeHostImpl* host_impl);
+  std::vector<std::unique_ptr<MicroBenchmarkImpl>> CreateImplBenchmarks() const;
 
  private:
   void CleanUpFinishedBenchmarks();

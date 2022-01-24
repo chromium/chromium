@@ -12,20 +12,16 @@
 
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_key_pair.h"
 #include "base/component_export.h"
-#include "third_party/boringssl/src/include/openssl/aes.h"
-
-namespace {
-
-constexpr int kBlockByteSize = 16;
-
-}  // namespace
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {
 namespace fast_pair_encryption {
 
+constexpr int kBlockByteSize = 16;
+
 COMPONENT_EXPORT(QUICK_PAIR_PAIRING)
-KeyPair GenerateKeysWithEcdhKeyAgreement(
+absl::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
     const std::string& decoded_public_anti_spoofing);
 
 COMPONENT_EXPORT(QUICK_PAIR_PAIRING)

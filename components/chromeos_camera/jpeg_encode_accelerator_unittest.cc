@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
@@ -274,6 +273,10 @@ class JpegClient : public JpegEncodeAccelerator::Client {
              const std::vector<TestImage*>& test_images,
              media::test::ClientStateNotification<ClientState>* note,
              size_t exif_size);
+
+  JpegClient(const JpegClient&) = delete;
+  JpegClient& operator=(const JpegClient&) = delete;
+
   ~JpegClient() override;
   void CreateJpegEncoder();
   void DestroyJpegEncoder();
@@ -352,8 +355,6 @@ class JpegClient : public JpegEncodeAccelerator::Client {
   std::unique_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
 
   base::WeakPtrFactory<JpegClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(JpegClient);
 };
 
 JpegClient::JpegClient(const std::vector<TestImage*>& test_aligned_images,
@@ -706,6 +707,11 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
 }
 
 class JpegEncodeAcceleratorTest : public ::testing::Test {
+ public:
+  JpegEncodeAcceleratorTest(const JpegEncodeAcceleratorTest&) = delete;
+  JpegEncodeAcceleratorTest& operator=(const JpegEncodeAcceleratorTest&) =
+      delete;
+
  protected:
   JpegEncodeAcceleratorTest() {}
 
@@ -721,9 +727,6 @@ class JpegEncodeAcceleratorTest : public ::testing::Test {
   // owned by JpegEncodeAcceleratorTestEnvironment.
   std::vector<TestImage*> test_aligned_images_;
   std::vector<TestImage*> test_unaligned_images_;
-
- protected:
-  DISALLOW_COPY_AND_ASSIGN(JpegEncodeAcceleratorTest);
 };
 
 void JpegEncodeAcceleratorTest::TestEncode(size_t num_concurrent_encoders,

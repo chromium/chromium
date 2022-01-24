@@ -5,7 +5,8 @@
   "manifest_version": 2,
   "description": "Tests that the 'managed' namespace of the Storage API can be disabled.",
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": true
   },
   "storage": {
     "managed_schema": "schema.json"

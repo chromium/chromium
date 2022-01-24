@@ -19,8 +19,8 @@ namespace blink {
 
 class MockWebAudioDestinationConsumer : public WebAudioDestinationConsumer {
  public:
-  MOCK_METHOD2(SetFormat, void(size_t, float));
-  MOCK_METHOD2(ConsumeAudio, void(const Vector<const float*>&, size_t));
+  MOCK_METHOD2(SetFormat, void(int, float));
+  MOCK_METHOD2(ConsumeAudio, void(const Vector<const float*>&, int));
 };
 
 class MediaStreamSourceTest : public testing::Test {

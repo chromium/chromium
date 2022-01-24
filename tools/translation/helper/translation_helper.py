@@ -16,7 +16,7 @@ if sys.version_info.major != 2:
   basestring = str  # pylint: disable=redefined-builtin
 
 
-class GRDFile(object):
+class GRDFile:
   """Class representing a grd xml file.
 
   Attributes:

@@ -32,7 +32,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -55,8 +55,7 @@ constexpr float kMinimumDragToSnapDistanceDp = 96.f;
 // least the duration of the split view divider snap animation, or else issues
 // like crbug.com/946601, crbug.com/997764, and https://crbug.com/997765, which
 // all refer to dragging from overview, will apply to dragging from the top.
-constexpr base::TimeDelta kIsWindowMovedTimeoutMs =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kIsWindowMovedTimeoutMs = base::Milliseconds(300);
 
 constexpr char kSwipeDownDragWindowHistogram[] =
     "Ash.SwipeDownDrag.Window.PresentationTime.TabletMode";

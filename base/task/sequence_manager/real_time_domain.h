@@ -15,20 +15,22 @@ namespace internal {
 
 class BASE_EXPORT RealTimeDomain : public TimeDomain {
  public:
-  RealTimeDomain() = default;
+  explicit RealTimeDomain(const base::TickClock* clock);
   RealTimeDomain(const RealTimeDomain&) = delete;
   RealTimeDomain& operator=(const RealTimeDomain&) = delete;
   ~RealTimeDomain() override = default;
 
+  // TickClock implementation:
+  TimeTicks NowTicks() const override;
+
   // TimeDomain implementation:
-  LazyNow CreateLazyNow() const override;
-  TimeTicks Now() const override;
-  absl::optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override;
-  bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override;
+  base::TimeTicks GetNextDelayedTaskTime(
+      DelayedWakeUp next_wake_up,
+      sequence_manager::LazyNow* lazy_now) const override;
+  bool MaybeFastForwardToWakeUp(absl::optional<DelayedWakeUp> next_wake_up,
+                                bool quit_when_idle_requested) override;
 
  protected:
-  void OnRegisterWithSequenceManager(
-      SequenceManagerImpl* sequence_manager) override;
   const char* GetName() const override;
 
  private:

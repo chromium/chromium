@@ -8,10 +8,6 @@
 #include <memory>
 #include <string>
 
-// TODO(https://crbug.com/1164001): move TimeZoneResponseData to forward
-// declaration when moved to chrome/browser/ash/.
-#include "chromeos/timezone/timezone_request.h"
-
 class Profile;
 
 namespace base {
@@ -23,6 +19,9 @@ class User;
 }
 
 namespace ash {
+
+struct TimeZoneResponseData;
+
 namespace system {
 
 // Gets the current timezone's display name.
@@ -44,7 +43,7 @@ void ApplyTimeZone(const TimeZoneResponseData* timezone);
 bool IsTimezonePrefsManaged(const std::string& pref_name);
 
 // Updates system timezone from user profile data if needed.
-// This is called from chromeos::Preferences after updating profile
+// This is called from `Preferences` after updating profile
 // preferences to apply new value to system time zone.
 void UpdateSystemTimezone(Profile* profile);
 
@@ -57,7 +56,7 @@ bool SetSystemTimezone(const user_manager::User* user,
                        const std::string& timezone);
 
 // Updates Local State preference prefs::kSigninScreenTimezone AND
-// also immediately sets system timezone (chromeos::system::TimezoneSettings).
+// also immediately sets system timezone (ash::system::TimezoneSettings).
 // This is called when there is no user session (i.e. OOBE and signin screen),
 // or when device policies are updated.
 void SetSystemAndSigninScreenTimezone(const std::string& timezone);

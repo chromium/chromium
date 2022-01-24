@@ -23,7 +23,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.view.View;
 
@@ -57,6 +56,8 @@ import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -68,7 +69,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.FeatureStatus;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -114,7 +114,7 @@ public class TabGroupUiMediatorUnitTest {
     @Mock
     OverviewModeBehavior mOverviewModeBehavior;
     @Mock
-    ThemeColorProvider mThemeColorProvider;
+    IncognitoStateProvider mIncognitoStateProvider;
     @Mock
     TabModel mTabModel;
     @Mock
@@ -144,9 +144,7 @@ public class TabGroupUiMediatorUnitTest {
     @Captor
     ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverArgumentCaptor;
     @Captor
-    ArgumentCaptor<ThemeColorProvider.ThemeColorObserver> mThemeColorObserverArgumentCaptor;
-    @Captor
-    ArgumentCaptor<ThemeColorProvider.TintObserver> mTintObserverArgumentCaptor;
+    ArgumentCaptor<IncognitoStateObserver> mIncognitoStateObserverArgumentCaptor;
     @Captor
     ArgumentCaptor<TabGroupModelFilter.Observer> mTabGroupModelFilterObserverArgumentCaptor;
     @Captor
@@ -214,7 +212,7 @@ public class TabGroupUiMediatorUnitTest {
                                                                           : null;
         mTabGroupUiMediator = new TabGroupUiMediator(mContext, mVisibilityController, mResetHandler,
                 mModel, mTabModelSelector, mTabCreatorManager, mOverviewModeBehaviorSupplier,
-                mThemeColorProvider, controller, mActivityLifecycleDispatcher, mSnackbarManager,
+                mIncognitoStateProvider, controller, mActivityLifecycleDispatcher, mSnackbarManager,
                 mOmniboxFocusStateSupplier);
 
         if (currentTab == null) {
@@ -341,13 +339,11 @@ public class TabGroupUiMediatorUnitTest {
                 .addOverviewModeObserver(mOverviewModeObserverArgumentCaptor.capture());
         mOverviewModeBehaviorSupplier.set(mOverviewModeBehavior);
 
-        // Set up ThemeColorProvider
+        // Set up IncognitoStateProvider
         doNothing()
-                .when(mThemeColorProvider)
-                .addThemeColorObserver(mThemeColorObserverArgumentCaptor.capture());
-        doNothing()
-                .when(mThemeColorProvider)
-                .addTintObserver(mTintObserverArgumentCaptor.capture());
+                .when(mIncognitoStateProvider)
+                .addIncognitoStateObserverAndTrigger(
+                        mIncognitoStateObserverArgumentCaptor.capture());
 
         // Set up ResetHandler
         doNothing().when(mResetHandler).resetStripWithListOfTabs(any());
@@ -838,9 +834,8 @@ public class TabGroupUiMediatorUnitTest {
                 .removeTabModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
         verify(mOverviewModeBehavior)
                 .removeOverviewModeObserver(mOverviewModeObserverArgumentCaptor.capture());
-        verify(mThemeColorProvider)
-                .removeThemeColorObserver(mThemeColorObserverArgumentCaptor.capture());
-        verify(mThemeColorProvider).removeTintObserver(mTintObserverArgumentCaptor.capture());
+        verify(mIncognitoStateProvider)
+                .removeObserver(mIncognitoStateObserverArgumentCaptor.capture());
         verify(mTabModelSelector).removeObserver(mTabModelSelectorObserverArgumentCaptor.capture());
         verify(mTabGroupModelFilter, times(2))
                 .removeTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
@@ -911,24 +906,13 @@ public class TabGroupUiMediatorUnitTest {
     /*********************** Class common tests *************************/
 
     @Test
-    public void themeColorChange() {
+    public void incognitoChange() {
         initAndAssertProperties(mTab1);
-        mModel.set(TabGroupUiProperties.PRIMARY_COLOR, -1);
+        mModel.set(TabGroupUiProperties.IS_INCOGNITO, false);
 
-        mThemeColorObserverArgumentCaptor.getValue().onThemeColorChanged(1, false);
+        mIncognitoStateObserverArgumentCaptor.getValue().onIncognitoStateChanged(true);
 
-        assertThat(mModel.get(TabGroupUiProperties.PRIMARY_COLOR), equalTo(1));
-    }
-
-    @Test
-    public void tintChange() {
-        initAndAssertProperties(mTab1);
-        mModel.set(TabGroupUiProperties.TINT, null);
-        ColorStateList colorStateList = mock(ColorStateList.class);
-
-        mTintObserverArgumentCaptor.getValue().onTintChanged(colorStateList, true);
-
-        assertThat(mModel.get(TabGroupUiProperties.TINT), equalTo(colorStateList));
+        assertThat(mModel.get(TabGroupUiProperties.IS_INCOGNITO), equalTo(true));
     }
 
     @Test

@@ -1,0 +1,48 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(crbug.com/1226243): Implement default-browser & protocol-handler
+// integration.
+
+#include "chrome/browser/shell_integration.h"
+
+#include "base/notreached.h"
+
+namespace shell_integration {
+
+bool SetAsDefaultBrowser() {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+bool SetAsDefaultProtocolClient(const std::string& protocol) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
+  return SET_DEFAULT_UNATTENDED;
+}
+
+std::u16string GetApplicationNameForProtocol(const GURL& url) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return {};
+}
+
+DefaultWebClientState GetDefaultBrowser() {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return DefaultWebClientState::UNKNOWN_DEFAULT;
+}
+
+bool IsFirefoxDefaultBrowser() {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+DefaultWebClientState IsDefaultProtocolClient(const std::string& protocol) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return DefaultWebClientState::UNKNOWN_DEFAULT;
+}
+
+}  // namespace shell_integration

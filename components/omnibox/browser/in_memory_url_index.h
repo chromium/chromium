@@ -11,7 +11,6 @@
 #include <map>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
@@ -204,7 +203,7 @@ class InMemoryURLIndex : public KeyedService,
   // or rebuilding our private data from the history database. |succeeded|
   // will be true if the rebuild was successful. |data| will point to a new
   // instanceof the private data just rebuilt.
-  void DoneRebuidingPrivateDataFromHistoryDB(
+  void DoneRebuildingPrivateDataFromHistoryDB(
       bool succeeded,
       scoped_refptr<URLIndexPrivateData> private_data);
 

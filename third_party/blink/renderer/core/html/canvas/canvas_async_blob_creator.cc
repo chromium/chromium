@@ -38,9 +38,9 @@ namespace {
 
 // small slack period between deadline and current time for safety
 constexpr base::TimeDelta kCreateBlobSlackBeforeDeadline =
-    base::TimeDelta::FromMilliseconds(1);
+    base::Milliseconds(1);
 constexpr base::TimeDelta kEncodeRowSlackBeforeDeadline =
-    base::TimeDelta::FromMicroseconds(100);
+    base::Microseconds(100);
 
 /* The value is based on user statistics on Nov 2017. */
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
@@ -74,7 +74,7 @@ bool IsEncodeRowDeadlineNearOrPassed(base::TimeTicks deadline,
   int row_encode_time_us = 1000 * (kIdleTaskCompleteTimeoutDelayMs / 4000.0) *
                            (image_width / 4000.0);
   base::TimeDelta row_encode_time_delta =
-      base::TimeDelta::FromMicroseconds(row_encode_time_us);
+      base::Microseconds(row_encode_time_us);
   return base::TimeTicks::Now() >=
          deadline - row_encode_time_delta - kEncodeRowSlackBeforeDeadline;
 }
@@ -499,7 +499,7 @@ void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
 
   if (data_buffer) {
     blink::IdentifiabilityMetricBuilder(context_->UkmSourceID())
-        .Set(blink::IdentifiableSurface::FromTypeAndToken(
+        .Add(blink::IdentifiableSurface::FromTypeAndToken(
                  blink::IdentifiableSurface::Type::kCanvasReadback,
                  input_digest_),
              blink::IdentifiabilityDigestOfBytes(base::make_span(
@@ -638,7 +638,7 @@ void CanvasAsyncBlobCreator::PostDelayedTaskToCurrentThread(
     double delay_ms) {
   context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
       ->PostDelayedTask(location, std::move(task),
-                        base::TimeDelta::FromMillisecondsD(delay_ms));
+                        base::Milliseconds(delay_ms));
 }
 
 void CanvasAsyncBlobCreator::Trace(Visitor* visitor) const {

@@ -41,6 +41,11 @@
 
     [HighEntropy=Direct, Measure] readonly attribute double scale;
 
+
+    //  Segments API
+    // https://github.com/webscreens/window-segments
+    [RuntimeEnabled=ViewportSegments] readonly attribute FrozenArray<DOMRect>? segments;
+
     attribute EventHandler onresize;
     attribute EventHandler onscroll;
 };

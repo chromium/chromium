@@ -8,13 +8,16 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 // A handler which provides pluralized strings.
 class PluralStringHandler : public content::WebUIMessageHandler {
  public:
   PluralStringHandler();
+
+  PluralStringHandler(const PluralStringHandler&) = delete;
+  PluralStringHandler& operator=(const PluralStringHandler&) = delete;
+
   ~PluralStringHandler() override;
 
   void AddLocalizedString(const std::string& name, int id);
@@ -44,8 +47,6 @@ class PluralStringHandler : public content::WebUIMessageHandler {
                                                    int count);
 
   std::map<std::string, int> name_to_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluralStringHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PLURAL_STRING_HANDLER_H_

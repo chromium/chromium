@@ -31,6 +31,22 @@ BOOL LongPressCellAndDragToOffsetOf(NSString* src_accessibility_identifier,
                                     int dst_window_number,
                                     CGVector dst_normalized_offset);
 
+// Action (XCUI, hence local) to long press a link element in a webview with
+// |src_accessibility_identifier| in |src_window_number| and drag it to the
+// given normalized offset of the view with  |dst_accessibility_identifier| in
+// |dst_window_number| before dropping it. To target a window, pass nil as
+// |dst_accessibility_identifier|. Returns YES on success (finding both items).
+BOOL LongPressLinkAndDragToView(NSString* src_accessibility_identifier,
+                                int src_window_number,
+                                NSString* dst_accessibility_identifier,
+                                int dst_window_number,
+                                CGVector dst_normalized_offset);
+
+// Convenience helper for the above function, using the default window for both
+// elements, and an offset of (0.5, 0.5).
+BOOL LongPressLinkAndDragToView(NSString* src_accessibility_identifier,
+                                NSString* dst_accessibility_identifier);
+
 // Action (XCUI, hence local) to resize split windows by dragging the splitter.
 // This action requires two windows (|first_window_number| and
 // |second_window_number|, in any order) to find where the splitter is located.

@@ -7,12 +7,12 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
@@ -44,6 +44,10 @@ class CallbackLogger {
    public:
     Event(int chunk_length, bool has_more, base::File::Error result)
         : chunk_length_(chunk_length), has_more_(has_more), result_(result) {}
+
+    Event(const Event&) = delete;
+    Event& operator=(const Event&) = delete;
+
     virtual ~Event() {}
 
     int chunk_length() const { return chunk_length_; }
@@ -54,11 +58,13 @@ class CallbackLogger {
     int chunk_length_;
     bool has_more_;
     base::File::Error result_;
-
-    DISALLOW_COPY_AND_ASSIGN(Event);
   };
 
   CallbackLogger() {}
+
+  CallbackLogger(const CallbackLogger&) = delete;
+  CallbackLogger& operator=(const CallbackLogger&) = delete;
+
   virtual ~CallbackLogger() {}
 
   void OnReadFile(int chunk_length, bool has_more, base::File::Error result) {
@@ -69,8 +75,6 @@ class CallbackLogger {
 
  private:
   std::vector<std::unique_ptr<Event>> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackLogger);
 };
 
 }  // namespace
@@ -114,10 +118,10 @@ TEST_F(FileSystemProviderOperationsReadFileTest, Execute) {
       extensions::api::file_system_provider::OnReadFileRequested::kEventName,
       event->event_name);
   base::ListValue* event_args = event->event_args.get();
-  ASSERT_EQ(1u, event_args->GetSize());
+  ASSERT_EQ(1u, event_args->GetList().size());
 
-  const base::DictionaryValue* options_as_value = NULL;
-  ASSERT_TRUE(event_args->GetDictionary(0, &options_as_value));
+  const base::Value* options_as_value = &event_args->GetList()[0];
+  ASSERT_TRUE(options_as_value->is_dict());
 
   ReadFileRequestedOptions options;
   ASSERT_TRUE(ReadFileRequestedOptions::Populate(*options_as_value, &options));
@@ -164,15 +168,15 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnSuccess) {
   const bool has_more = false;
   const int execution_time = 0;
 
-  base::Value values_as_list(base::Value::Type::LIST);
-  values_as_list.Append(kFileSystemId);
-  values_as_list.Append(kRequestId);
-  values_as_list.Append(base::Value(base::as_bytes(base::make_span(data))));
-  values_as_list.Append(has_more);
-  values_as_list.Append(execution_time);
+  std::vector<base::Value> values_as_list;
+  values_as_list.emplace_back(kFileSystemId);
+  values_as_list.emplace_back(kRequestId);
+  values_as_list.emplace_back(
+      base::Value(base::as_bytes(base::make_span(data))));
+  values_as_list.emplace_back(has_more);
+  values_as_list.emplace_back(execution_time);
 
-  std::unique_ptr<Params> params(
-      Params::Create(base::Value::AsListValue(std::move(values_as_list))));
+  std::unique_ptr<Params> params(Params::Create(std::move(values_as_list)));
   ASSERT_TRUE(params.get());
   std::unique_ptr<RequestValue> request_value(
       RequestValue::CreateForReadFileSuccess(std::move(params)));

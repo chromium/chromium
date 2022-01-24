@@ -234,6 +234,13 @@ export class CrostiniImpl {
       return false;
     }
 
+    // Cannot share root of Shared with me since it represents 2 dirs:
+    // `.files-by-id` and `.shortcut-targets-by-id`.
+    if (root === VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME &&
+        entry.fullPath === '/') {
+      return false;
+    }
+
     return CrostiniImpl.VALID_ROOT_TYPES_FOR_SHARE.has(root);
   }
 }
@@ -263,6 +270,7 @@ CrostiniImpl.VALID_ROOT_TYPES_FOR_SHARE = new Map([
   [VolumeManagerCommon.RootType.DRIVE, 'MyDrive'],
   [VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT, 'TeamDrive'],
   [VolumeManagerCommon.RootType.SHARED_DRIVE, 'TeamDrive'],
+  [VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME, 'SharedWithMe'],
   [VolumeManagerCommon.RootType.CROSTINI, 'Crostini'],
   [VolumeManagerCommon.RootType.ARCHIVE, 'Archive'],
   [VolumeManagerCommon.RootType.SMB, 'SMB'],

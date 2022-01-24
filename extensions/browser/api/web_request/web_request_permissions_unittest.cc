@@ -200,7 +200,7 @@ TEST_F(ExtensionWebRequestPermissionsTest, TestHideRequestForURL) {
   // If the origin is labeled by the WebStoreAppId, it becomes protected.
   {
     const int kWebstoreProcessId = 42;
-    const int kSiteInstanceId = 23;
+    const content::SiteInstanceId kSiteInstanceId(23);
     ProcessMap::Get(browser_context())
         ->Insert(extensions::kWebStoreAppId, kWebstoreProcessId,
                  kSiteInstanceId);

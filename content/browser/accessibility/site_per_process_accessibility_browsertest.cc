@@ -20,6 +20,7 @@
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -87,8 +88,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Load same-site page into iframe.
   FrameTreeNode* child = root->child_at(0);
@@ -155,8 +156,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Load first cross-site page into iframe and wait for text from that
   // page to appear in the accessibility tree.
@@ -202,5 +203,101 @@ IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     MAYBE_All,
     MAYBE_SitePerProcessAccessibilityBrowserTest,
+    ::testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+
+class MAYBE_SitePerProcessAccessibilityDeviceScaleFactorBrowserTest
+    : public MAYBE_SitePerProcessAccessibilityBrowserTest {
+ public:
+  MAYBE_SitePerProcessAccessibilityDeviceScaleFactorBrowserTest() = default;
+
+  void SetUp() override {
+    EnablePixelOutput(device_scale_factor_);
+    MAYBE_SitePerProcessAccessibilityBrowserTest::SetUp();
+  }
+
+ protected:
+  static constexpr float device_scale_factor_ = 2.f;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    MAYBE_SitePerProcessAccessibilityDeviceScaleFactorBrowserTest,
+    CrossSiteIframeCoordinates) {
+  // Enable full accessibility for all current and future WebContents.
+  BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+
+  GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // Load cross-site page into iframe and wait for text from that
+  // page to appear in the accessibility tree.
+  FrameTreeNode* child = root->child_at(0);
+  LoadCrossSitePageIntoFrame(child, "/title2.html", "foo.com");
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Title Of Awesomeness");
+  child = root->child_at(0);
+
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  BrowserAccessibilityManager* main_frame_manager =
+      main_frame->browser_accessibility_manager();
+  VLOG(1) << "Main frame accessibility tree:\n"
+          << main_frame_manager->SnapshotAXTreeForTesting().ToString();
+
+  // Assert that we can walk from the main frame down into the child frame
+  // directly, getting correct roles and data along the way.
+  BrowserAccessibility* ax_root = main_frame_manager->GetRoot();
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, ax_root->GetRole());
+  ASSERT_EQ(1U, ax_root->PlatformChildCount());
+
+  BrowserAccessibility* ax_group = ax_root->PlatformGetChild(0);
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, ax_group->GetRole());
+  ASSERT_EQ(2U, ax_group->PlatformChildCount());
+
+  BrowserAccessibility* ax_iframe = ax_group->PlatformGetChild(0);
+  EXPECT_EQ(ax::mojom::Role::kIframe, ax_iframe->GetRole());
+  ASSERT_EQ(1U, ax_iframe->PlatformChildCount());
+
+  BrowserAccessibility* ax_child_frame_root = ax_iframe->PlatformGetChild(0);
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, ax_child_frame_root->GetRole());
+  ASSERT_EQ(1U, ax_child_frame_root->PlatformChildCount());
+
+  // Get the relative iframe rect in blink pixels, i.e. if use-zoom-for-dsf is
+  // enabled, this will be in physical pixels else we'll account for the device
+  // scale factor here.
+  gfx::Rect iframe_rect_root_relative_blink_pixels = ax_iframe->GetBoundsRect(
+      ui::AXCoordinateSystem::kRootFrame, ui::AXClippingBehavior::kUnclipped);
+  gfx::Rect iframe_rect_root_relative_physical_pixels;
+  if (IsUseZoomForDSFEnabled()) {
+    iframe_rect_root_relative_physical_pixels =
+        iframe_rect_root_relative_blink_pixels;
+  } else {
+    iframe_rect_root_relative_physical_pixels = gfx::ScaleToEnclosingRect(
+        iframe_rect_root_relative_blink_pixels, device_scale_factor_);
+  }
+
+  // Get the view bounds in screen coordinate DIPs, then ensure the offsetting
+  // done by ui::AXCoordinateSystem::kScreenPhysicalPixels produces the correct
+  // rect.
+  gfx::Rect view_bounds = main_frame->GetView()->GetViewBounds();
+  gfx::Rect iframe_rect_physical_screen_pixels =
+      iframe_rect_root_relative_physical_pixels +
+      gfx::ScaleToFlooredPoint(view_bounds.origin(), device_scale_factor_)
+          .OffsetFromOrigin();
+
+  EXPECT_EQ(iframe_rect_physical_screen_pixels.origin(),
+            ax_child_frame_root
+                ->GetBoundsRect(ui::AXCoordinateSystem::kScreenPhysicalPixels,
+                                ui::AXClippingBehavior::kUnclipped)
+                .origin());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    MAYBE_All,
+    MAYBE_SitePerProcessAccessibilityDeviceScaleFactorBrowserTest,
     ::testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 }  // namespace content

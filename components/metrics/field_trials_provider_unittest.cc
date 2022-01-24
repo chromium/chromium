@@ -5,6 +5,7 @@
 #include "components/metrics/field_trials_provider.h"
 
 #include "base/cxx17_backports.h"
+#include "base/threading/platform_thread.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,7 +74,7 @@ class FieldTrialsProviderTest : public ::testing::Test {
   // take between 1-15ms per the documented resolution of base::TimeTicks.
   void WaitUntilTimeChanges(const base::TimeTicks& value) {
     while (base::TimeTicks::Now() == value) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+      base::PlatformThread::Sleep(base::Milliseconds(1));
     }
   }
 

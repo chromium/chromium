@@ -26,6 +26,10 @@ class ScopedWebContentsTestHelper {
     web_contents_ = factory_.CreateWebContents(&profile_);
   }
 
+  ScopedWebContentsTestHelper(const ScopedWebContentsTestHelper&) = delete;
+  ScopedWebContentsTestHelper& operator=(const ScopedWebContentsTestHelper&) =
+      delete;
+
   Profile* profile() { return &profile_; }
   content::WebContents* web_contents() { return web_contents_; }
 
@@ -34,13 +38,16 @@ class ScopedWebContentsTestHelper {
   TestingProfile profile_;
   content::TestWebContentsFactory factory_;
   content::WebContents* web_contents_;  // Weak. Owned by factory_.
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedWebContentsTestHelper);
 };
 
 class SafetyTipPageInfoBubbleViewTest : public testing::Test {
  public:
   SafetyTipPageInfoBubbleViewTest() {}
+
+  SafetyTipPageInfoBubbleViewTest(const SafetyTipPageInfoBubbleViewTest&) =
+      delete;
+  SafetyTipPageInfoBubbleViewTest& operator=(
+      const SafetyTipPageInfoBubbleViewTest&) = delete;
 
   // testing::Test:
   void SetUp() override {
@@ -70,9 +77,6 @@ class SafetyTipPageInfoBubbleViewTest : public testing::Test {
 
   PageInfoBubbleViewBase* bubble_ = nullptr;
   views::Widget* parent_window_ = nullptr;  // Weak. Owned by the NativeWidget.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SafetyTipPageInfoBubbleViewTest);
 };
 
 }  // namespace

@@ -34,8 +34,6 @@ component("core") {
     "simple_keyed_service_factory.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   defines = [ "KEYED_SERVICE_IMPLEMENTATION" ]
 
   public_deps = [ "//base" ]

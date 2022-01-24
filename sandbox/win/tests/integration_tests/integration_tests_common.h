@@ -30,6 +30,8 @@ enum TestPolicy {
   TESTPOLICY_LOADPREFERSYS32,
   TESTPOLICY_RESTRICTINDIRECTBRANCHPREDICTION,
   TESTPOLICY_CETDISABLED,
+  TESTPOLICY_CETDYNAMICAPIS,
+  TESTPOLICY_CETSTRICT,
   TESTPOLICY_KTMCOMPONENTFILTER,
 };
 
@@ -47,15 +49,16 @@ public:
       ::WaitForSingleObject(mutex_, SboxTestEventTimeout()));
   }
 
+  ScopedTestMutex(const ScopedTestMutex&) = delete;
+  ScopedTestMutex& operator=(const ScopedTestMutex&) = delete;
+
   ~ScopedTestMutex() {
     EXPECT_TRUE(::ReleaseMutex(mutex_));
     EXPECT_TRUE(::CloseHandle(mutex_));
   }
 
 private:
-  HANDLE mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestMutex);
+ HANDLE mutex_;
 };
 
 }  // namespace sandbox

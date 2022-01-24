@@ -68,6 +68,12 @@ namespace blink {
 
 namespace {
 
+// The download attribute specifies a filename, and an excessively long one can
+// crash the browser process. Filepaths probably can't be longer than 4096
+// characters, but this is enough to prevent the browser process from becoming
+// unresponsive or crashing.
+const int kMaxDownloadAttrLength = 1000000;
+
 // Note: Here it covers download originated from clicking on <a download> link
 // that results in direct download. Features in this method can also be logged
 // from browser for download due to navigations to non-web-renderable content.
@@ -93,8 +99,7 @@ bool ShouldInterveneDownloadByFramePolicy(LocalFrame* frame) {
   if (frame->DomWindow()->IsSandboxed(
           network::mojom::blink::WebSandboxFlags::kDownloads)) {
     UseCounter::Count(document, WebFeature::kDownloadInSandbox);
-    if (RuntimeEnabledFeatures::BlockingDownloadsInSandboxEnabled())
-      should_intervene_download = true;
+    should_intervene_download = true;
   }
   if (!should_intervene_download)
     UseCounter::Count(document, WebFeature::kDownloadPostPolicyCheck);
@@ -182,13 +187,13 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
 
   // Negative coordinates are clamped to 0 such that clicks in the left and
   // top padding/border areas receive an X or Y coordinate of 0.
-  IntPoint clamped_point(RoundedIntPoint(map_point));
-  clamped_point.ClampNegativeToZero();
+  gfx::Point clamped_point = RoundedIntPoint(map_point);
+  clamped_point.SetToMax(gfx::Point());
 
   url.Append('?');
-  url.AppendNumber(clamped_point.X());
+  url.AppendNumber(clamped_point.x());
   url.Append(',');
-  url.AppendNumber(clamped_point.Y());
+  url.AppendNumber(clamped_point.y());
 }
 
 void HTMLAnchorElement::DefaultEventHandler(Event& event) {
@@ -446,16 +451,33 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     request.SetReferrerPolicy(policy);
   }
 
-  // Ignore the download attribute if we either can't read the content, or
-  // the event is an alt-click or similar.
   LocalFrame* frame = window->GetFrame();
+  request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));
+
+  // Respect the download attribute only if we can read the content, and the
+  // event is not an alt-click or similar.
   if (FastHasAttribute(html_names::kDownloadAttr) &&
       NavigationPolicyFromEvent(&event) != kNavigationPolicyDownload &&
       window->GetSecurityOrigin()->CanReadContent(completed_url)) {
     if (ShouldInterveneDownloadByFramePolicy(frame))
       return;
-    request.SetSuggestedFilename(
-        static_cast<String>(FastGetAttribute(html_names::kDownloadAttr)));
+
+    String download_attr =
+        static_cast<String>(FastGetAttribute(html_names::kDownloadAttr));
+    if (download_attr.length() > kMaxDownloadAttrLength) {
+      ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kError,
+          String::Format("Download attribute for anchor element is too long. "
+                         "Max: %d, given: %d",
+                         kMaxDownloadAttrLength, download_attr.length()));
+      console_message->SetNodes(GetDocument().GetFrame(),
+                                {DOMNodeIds::IdForNode(this)});
+      GetDocument().AddConsoleMessage(console_message);
+      return;
+    }
+
+    request.SetSuggestedFilename(download_attr);
     request.SetRequestContext(mojom::blink::RequestContextType::DOWNLOAD);
     request.SetRequestorOrigin(window->GetSecurityOrigin());
     network::mojom::ReferrerPolicy referrer_policy =
@@ -471,7 +493,6 @@ void HTMLAnchorElement::HandleClick(Event& event) {
   }
 
   request.SetRequestContext(mojom::blink::RequestContextType::HYPERLINK);
-  request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));
   const AtomicString& target = GetEffectiveTarget();
   FrameLoadRequest frame_request(window, request);
   frame_request.SetNavigationPolicy(NavigationPolicyFromEvent(&event));

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_VIEWS_WIDGET_ELEMENT_H_
 #define COMPONENTS_UI_DEVTOOLS_VIEWS_WIDGET_ELEMENT_H_
 
-#include "base/macros.h"
 #include "components/ui_devtools/ui_element.h"
 #include "components/ui_devtools/views/ui_element_with_metadata.h"
 #include "ui/gfx/geometry/rect.h"

@@ -11,7 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "content/browser/compute_pressure/compute_pressure_sample.h"
@@ -97,7 +97,7 @@ class CONTENT_EXPORT ComputePressureSampler {
   // on the differences observed between two Update() calls. For this reason,
   // the ComputePressureSample reported after a first Update() call is not
   // reported via `sampling_callback_`.
-  bool got_probe_baseline_ = false;
+  bool got_probe_baseline_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::WeakPtrFactory<ComputePressureSampler> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

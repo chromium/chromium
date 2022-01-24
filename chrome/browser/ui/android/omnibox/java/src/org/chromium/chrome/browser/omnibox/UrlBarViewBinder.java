@@ -4,18 +4,22 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.content.res.Resources;
+import android.os.Build;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextUtils;
 import android.view.ActionMode;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.RequiresApi;
 
-import org.chromium.base.ApiCompatibilityUtils;
+import com.google.android.material.color.MaterialColors;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -68,8 +72,15 @@ class UrlBarViewBinder {
                     view.setSelection(view.getText().length());
                 }
             }
-        } else if (UrlBarProperties.USE_DARK_TEXT_COLORS.equals(propertyKey)) {
-            updateTextColors(view, model.get(UrlBarProperties.USE_DARK_TEXT_COLORS));
+        } else if (UrlBarProperties.OMNIBOX_THEME.equals(propertyKey)) {
+            updateTextColors(view, model.get(UrlBarProperties.OMNIBOX_THEME));
+        } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {
+            final boolean incognitoColorsEnabled =
+                    model.get(UrlBarProperties.INCOGNITO_COLORS_ENABLED);
+            updateHighlightColor(view, incognitoColorsEnabled);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                updateCursorAndSelectHandleColor(view, incognitoColorsEnabled);
+            }
         } else if (UrlBarProperties.URL_DIRECTION_LISTENER.equals(propertyKey)) {
             view.setUrlDirectionListener(model.get(UrlBarProperties.URL_DIRECTION_LISTENER));
         } else if (UrlBarProperties.URL_TEXT_CHANGE_LISTENER.equals(propertyKey)) {
@@ -81,7 +92,18 @@ class UrlBarViewBinder {
         }
     }
 
-    private static void updateTextColors(UrlBar view, boolean useDarkTextColors) {
+    private static void updateTextColors(UrlBar view, @OmniboxTheme int omniboxTheme) {
+        final @ColorInt int textColor =
+                OmniboxResourceProvider.getUrlBarPrimaryTextColor(view.getContext(), omniboxTheme);
+
+        final @ColorInt int hintColor =
+                OmniboxResourceProvider.getUrlBarHintTextColor(view.getContext(), omniboxTheme);
+
+        view.setTextColor(textColor);
+        setHintTextColor(view, hintColor);
+    }
+
+    private static void updateHighlightColor(UrlBar view, boolean useIncognitoColors) {
         @ColorInt
         int originalHighlightColor;
         Object highlightColorObj = view.getTag(R.id.highlight_color);
@@ -92,29 +114,25 @@ class UrlBarViewBinder {
             originalHighlightColor = (Integer) highlightColorObj;
         }
 
-        Resources resources = view.getResources();
-        @ColorInt
-        int textColor;
-        @ColorInt
-        int hintColor;
-        @ColorInt
         int highlightColor;
-        if (useDarkTextColors) {
-            textColor = ApiCompatibilityUtils.getColor(resources, R.color.default_text_color_dark);
-            hintColor =
-                    ApiCompatibilityUtils.getColor(resources, R.color.locationbar_dark_hint_text);
-            highlightColor = originalHighlightColor;
+        if (useIncognitoColors) {
+            highlightColor = view.getResources().getColor(R.color.text_highlight_color_incognito);
         } else {
-            textColor = ApiCompatibilityUtils.getColor(resources, R.color.default_text_color_light);
-            hintColor =
-                    ApiCompatibilityUtils.getColor(resources, R.color.locationbar_light_hint_text);
-            highlightColor = ApiCompatibilityUtils.getColor(
-                    resources, R.color.highlight_color_on_light_text);
+            highlightColor = originalHighlightColor;
         }
 
-        view.setTextColor(textColor);
-        setHintTextColor(view, hintColor);
         view.setHighlightColor(highlightColor);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private static void updateCursorAndSelectHandleColor(UrlBar view, boolean useIncognitoColors) {
+        final int color = useIncognitoColors
+                ? view.getContext().getColor(R.color.default_control_color_active_dark)
+                : MaterialColors.getColor(view, R.attr.colorPrimary);
+        view.getTextCursorDrawable().mutate().setTint(color);
+        view.getTextSelectHandle().mutate().setTint(color);
+        view.getTextSelectHandleLeft().mutate().setTint(color);
+        view.getTextSelectHandleRight().mutate().setTint(color);
     }
 
     private static void setHintTextColor(UrlBar view, @ColorInt int textColor) {

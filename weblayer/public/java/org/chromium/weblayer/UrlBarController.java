@@ -45,4 +45,23 @@ public class UrlBarController {
             throw new APICallException(exception);
         }
     }
+
+    /**
+     * Shows the page-info dialog.
+     *
+     * @throws IllegalStateException if called and not attached.
+     *
+     * @since 95
+     */
+    public void showPageInfo(@NonNull PageInfoDisplayOptions options) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 95) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            mImpl.showPageInfo(options.getBundle());
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
 }

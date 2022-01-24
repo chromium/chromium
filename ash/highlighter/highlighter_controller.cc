@@ -145,7 +145,7 @@ void HighlighterController::UpdatePointerView(ui::TouchEvent* event) {
 
   interrupted_stroke_timer_ = std::make_unique<base::OneShotTimer>();
   interrupted_stroke_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kInterruptedStrokeTimeoutMs),
+      FROM_HERE, base::Milliseconds(kInterruptedStrokeTimeoutMs),
       base::BindOnce(&HighlighterController::RecognizeGesture,
                      base::Unretained(this)));
 }

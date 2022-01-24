@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WINDOWS_WINDOWS_WINDOW_H_
 #define UI_OZONE_PLATFORM_WINDOWS_WINDOWS_WINDOW_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -16,10 +15,11 @@ namespace ui {
 class WindowsWindow : public WinWindow {
  public:
   WindowsWindow(PlatformWindowDelegate* delegate, const gfx::Rect& bounds);
-  ~WindowsWindow() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowsWindow);
+  WindowsWindow(const WindowsWindow&) = delete;
+  WindowsWindow& operator=(const WindowsWindow&) = delete;
+
+  ~WindowsWindow() override;
 };
 
 }  // namespace ui

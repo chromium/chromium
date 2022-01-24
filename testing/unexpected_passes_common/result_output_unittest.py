@@ -11,6 +11,8 @@ import sys
 import tempfile
 import unittest
 
+import six
+
 from pyfakefs import fake_filesystem_unittest
 
 from unexpected_passes_common import data_types
@@ -100,9 +102,11 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
   def testSemiStaleMap(self):
     """Tests that everything functions when regular data is provided."""
     expectation_map = data_types.TestExpectationMap({
-        'foo':
+        'expectation_file':
         data_types.ExpectationBuilderMap({
-            data_types.Expectation('foo', ['win', 'intel'], ['RetryOnFailure']):
+            data_types.Expectation('foo/test', ['win', 'intel'], [
+                                       'RetryOnFailure'
+                                   ]):
             data_types.BuilderStepMap({
                 'builder':
                 data_types.StepBuildStatsMap({
@@ -114,7 +118,7 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
                     uu.CreateStatsWithPassFails(1, 1),
                 }),
             }),
-            data_types.Expectation('foo', ['linux', 'intel'], [
+            data_types.Expectation('foo/test', ['linux', 'intel'], [
                                        'RetryOnFailure'
                                    ]):
             data_types.BuilderStepMap({
@@ -124,7 +128,9 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
                     uu.CreateStatsWithPassFails(2, 0),
                 }),
             }),
-            data_types.Expectation('foo', ['mac', 'intel'], ['RetryOnFailure']):
+            data_types.Expectation('foo/test', ['mac', 'intel'], [
+                                       'RetryOnFailure'
+                                   ]):
             data_types.BuilderStepMap({
                 'builder':
                 data_types.StepBuildStatsMap({
@@ -136,36 +142,38 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
     })
     # TODO(crbug.com/1198237): Remove the Python 2 version once we are fully
     # switched to Python 3.
-    if sys.version_info[0] == 2:
+    if six.PY2:
       expected_output = {
-          'foo': {
-              '"RetryOnFailure" expectation on "win intel"': {
-                  'builder': {
-                      'Fully passed in the following': [
-                          'all_pass (2/2)',
-                      ],
-                      'Never passed in the following': [
-                          'all_fail (0/2)',
-                      ],
-                      'Partially passed in the following': {
-                          'some_pass (1/2)': [
-                              data_types.BuildLinkFromBuildId('build_id0'),
+          'expectation_file': {
+              'foo/test': {
+                  '"RetryOnFailure" expectation on "win intel"': {
+                      'builder': {
+                          'Fully passed in the following': [
+                              'all_pass (2/2 passed)',
+                          ],
+                          'Never passed in the following': [
+                              'all_fail (0/2 passed)',
+                          ],
+                          'Partially passed in the following': {
+                              'some_pass (1/2 passed)': [
+                                  data_types.BuildLinkFromBuildId('build_id0'),
+                              ],
+                          },
+                      },
+                  },
+                  '"RetryOnFailure" expectation on "intel linux"': {
+                      'builder': {
+                          'Fully passed in the following': [
+                              'all_pass (2/2 passed)',
                           ],
                       },
                   },
-              },
-              '"RetryOnFailure" expectation on "intel linux"': {
-                  'builder': {
-                      'Fully passed in the following': [
-                          'all_pass (2/2)',
-                      ],
-                  },
-              },
-              '"RetryOnFailure" expectation on "mac intel"': {
-                  'builder': {
-                      'Never passed in the following': [
-                          'all_fail (0/2)',
-                      ],
+                  '"RetryOnFailure" expectation on "mac intel"': {
+                      'builder': {
+                          'Never passed in the following': [
+                              'all_fail (0/2 passed)',
+                          ],
+                      },
                   },
               },
           },
@@ -178,34 +186,36 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
       win_tags = ' '.join(set(['win', 'intel']))
       mac_tags = ' '.join(set(['mac', 'intel']))
       expected_output = {
-          'foo': {
-              '"RetryOnFailure" expectation on "%s"' % linux_tags: {
-                  'builder': {
-                      'Fully passed in the following': [
-                          'all_pass (2/2)',
-                      ],
-                  },
-              },
-              '"RetryOnFailure" expectation on "%s"' % win_tags: {
-                  'builder': {
-                      'Fully passed in the following': [
-                          'all_pass (2/2)',
-                      ],
-                      'Partially passed in the following': {
-                          'some_pass (1/2)': [
-                              data_types.BuildLinkFromBuildId('build_id0'),
+          'expectation_file': {
+              'foo/test': {
+                  '"RetryOnFailure" expectation on "%s"' % linux_tags: {
+                      'builder': {
+                          'Fully passed in the following': [
+                              'all_pass (2/2 passed)',
                           ],
                       },
-                      'Never passed in the following': [
-                          'all_fail (0/2)',
-                      ],
                   },
-              },
-              '"RetryOnFailure" expectation on "%s"' % mac_tags: {
-                  'builder': {
-                      'Never passed in the following': [
-                          'all_fail (0/2)',
-                      ],
+                  '"RetryOnFailure" expectation on "%s"' % win_tags: {
+                      'builder': {
+                          'Fully passed in the following': [
+                              'all_pass (2/2 passed)',
+                          ],
+                          'Partially passed in the following': {
+                              'some_pass (1/2 passed)': [
+                                  data_types.BuildLinkFromBuildId('build_id0'),
+                              ],
+                          },
+                          'Never passed in the following': [
+                              'all_fail (0/2 passed)',
+                          ],
+                      },
+                  },
+                  '"RetryOnFailure" expectation on "%s"' % mac_tags: {
+                      'builder': {
+                          'Never passed in the following': [
+                              'all_fail (0/2 passed)',
+                          ],
+                      },
                   },
               },
           },
@@ -214,6 +224,54 @@ class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
     str_dict = result_output._ConvertTestExpectationMapToStringDict(
         expectation_map)
     self.assertEqual(str_dict, expected_output)
+
+
+class ConvertUnusedExpectationsToStringDictUnittest(unittest.TestCase):
+  def testEmptyDict(self):
+    """Tests that nothing blows up when given an empty dict."""
+    self.assertEqual(result_output._ConvertUnusedExpectationsToStringDict({}),
+                     {})
+
+  def testBasic(self):
+    """Basic functionality test."""
+    unused = {
+        'foo_file': [
+            data_types.Expectation('foo/test', ['win', 'nvidia'],
+                                   ['Failure', 'Timeout']),
+        ],
+        'bar_file': [
+            data_types.Expectation('bar/test', ['win'], ['Failure']),
+            data_types.Expectation('bar/test2', ['win'], ['RetryOnFailure'])
+        ],
+    }
+    if six.PY2:
+      expected_output = {
+          'foo_file': [
+              '[ win nvidia ] foo/test [ Failure Timeout ]',
+          ],
+          'bar_file': [
+              '[ win ] bar/test [ Failure ]',
+              '[ win ] bar/test2 [ RetryOnFailure ]',
+          ],
+      }
+    else:
+      # Set ordering does not appear to be stable between test runs, as we can
+      # get either order of tags. So, generate them now instead of hard coding
+      # them.
+      tags = ' '.join(set(['win', 'nvidia']))
+      results = ' '.join(set(['Failure', 'Timeout']))
+      expected_output = {
+          'foo_file': [
+              '[ %s ] foo/test [ %s ]' % (tags, results),
+          ],
+          'bar_file': [
+              '[ win ] bar/test [ Failure ]',
+              '[ win ] bar/test2 [ RetryOnFailure ]',
+          ],
+      }
+    self.assertEqual(
+        result_output._ConvertUnusedExpectationsToStringDict(unused),
+        expected_output)
 
 
 class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
@@ -260,7 +318,7 @@ class HtmlToFileUnittest(fake_filesystem_unittest.TestCase):
     # pylint: disable=line-too-long
     # TODO(crbug.com/1198237): Remove the Python 2 version once we've fully
     # switched to Python 3.
-    if sys.version_info[0] == 2:
+    if six.PY2:
       expected_output = """\
 <button type="button" class="collapsible_group">foo</button>
 <div class="content">
@@ -402,7 +460,7 @@ class PrintToFileUnittest(fake_filesystem_unittest.TestCase):
 
     # TODO(crbug.com/1198237): Keep the Python 3 version once we are fully
     # switched.
-    if sys.version_info[0] == 2:
+    if six.PY2:
       expected_output = """\
 foo
   "RetryOnFailure" expectation on "win intel"
@@ -483,7 +541,7 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
     with self.assertRaises(RuntimeError):
       result_output.OutputResults(data_types.TestExpectationMap(),
                                   data_types.TestExpectationMap(),
-                                  data_types.TestExpectationMap(), {}, [],
+                                  data_types.TestExpectationMap(), {}, {},
                                   'asdf')
 
   def testOutputResultsSmoketest(self):
@@ -527,16 +585,18 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
                               'build_id'),
         ],
     }
-    unmatched_expectations = [
-        data_types.Expectation('foo', ['linux'], 'RetryOnFailure')
-    ]
+    unmatched_expectations = {
+        'foo_file': [
+            data_types.Expectation('foo', ['linux'], 'RetryOnFailure'),
+        ],
+    }
 
     stale, semi_stale, active = expectation_map.SplitByStaleness()
 
-    result_output.OutputResults(stale, semi_stale, active, {}, [], 'print',
+    result_output.OutputResults(stale, semi_stale, active, {}, {}, 'print',
                                 self._file_handle)
     result_output.OutputResults(stale, semi_stale, active, unmatched_results,
-                                [], 'print', self._file_handle)
+                                {}, 'print', self._file_handle)
     result_output.OutputResults(stale, semi_stale, active, {},
                                 unmatched_expectations, 'print',
                                 self._file_handle)
@@ -544,10 +604,10 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
                                 unmatched_expectations, 'print',
                                 self._file_handle)
 
-    result_output.OutputResults(stale, semi_stale, active, {}, [], 'html',
+    result_output.OutputResults(stale, semi_stale, active, {}, {}, 'html',
                                 self._file_handle)
     result_output.OutputResults(stale, semi_stale, active, unmatched_results,
-                                [], 'html', self._file_handle)
+                                {}, 'html', self._file_handle)
     result_output.OutputResults(stale, semi_stale, active, {},
                                 unmatched_expectations, 'html',
                                 self._file_handle)
@@ -742,28 +802,28 @@ class ConvertBuilderMapToPassOrderedStringDictUnittest(unittest.TestCase):
     expected_output = collections.OrderedDict()
     expected_output[result_output.FULL_PASS] = {
         'fully pass': [
-            'step1 (1/1)',
+            'step1 (1/1 passed)',
         ],
         'mixed': [
-            'step7 (1/1)',
+            'step7 (1/1 passed)',
         ],
     }
     expected_output[result_output.NEVER_PASS] = {
         'never pass': [
-            'step3 (0/1)',
+            'step3 (0/1 passed)',
         ],
         'mixed': [
-            'step8 (0/1)',
+            'step8 (0/1 passed)',
         ],
     }
     expected_output[result_output.PARTIAL_PASS] = {
         'partial pass': {
-            'step5 (1/2)': [
+            'step5 (1/2 passed)': [
                 'http://ci.chromium.org/b/build_id0',
             ],
         },
         'mixed': {
-            'step9 (1/2)': [
+            'step9 (1/2 passed)': [
                 'http://ci.chromium.org/b/build_id0',
             ],
         },

@@ -27,8 +27,7 @@ void WaitForAnimatingLayoutManager(View* view) {
 }
 
 void ReduceAnimationDuration(AnimatingLayoutManager* layout_manager) {
-  static constexpr base::TimeDelta kSmallDuration =
-      base::TimeDelta::FromMilliseconds(1);
+  static constexpr base::TimeDelta kSmallDuration = base::Milliseconds(1);
   layout_manager->SetAnimationDuration(kSmallDuration);
 }
 

@@ -12,24 +12,24 @@
 
 namespace chromecast {
 
-class CastCrashStorageImplFuchsia : public CastCrashStorage {
+class CastCrashStorageImplFuchsia final : public CastCrashStorage {
  public:
   explicit CastCrashStorageImplFuchsia(
       const sys::ServiceDirectory* incoming_directory);
-  ~CastCrashStorageImplFuchsia() final;
+  ~CastCrashStorageImplFuchsia() override;
   CastCrashStorageImplFuchsia& operator=(const CastCrashStorageImplFuchsia&) =
       delete;
   CastCrashStorageImplFuchsia(const CastCrashStorageImplFuchsia&) = delete;
 
   // CastCrashStorage implementation:
-  void SetLastLaunchedApp(base::StringPiece app_id) final;
-  void ClearLastLaunchedApp() final;
-  void SetCurrentApp(base::StringPiece app_id) final;
-  void ClearCurrentApp() final;
-  void SetPreviousApp(base::StringPiece app_id) final;
-  void ClearPreviousApp() final;
-  void SetStadiaSessionId(base::StringPiece session_id) final;
-  void ClearStadiaSessionId() final;
+  void SetLastLaunchedApp(base::StringPiece app_id) override;
+  void ClearLastLaunchedApp() override;
+  void SetCurrentApp(base::StringPiece app_id) override;
+  void ClearCurrentApp() override;
+  void SetPreviousApp(base::StringPiece app_id) override;
+  void ClearPreviousApp() override;
+  void SetStadiaSessionId(base::StringPiece session_id) override;
+  void ClearStadiaSessionId() override;
 
  private:
   void UpsertAnnotations(

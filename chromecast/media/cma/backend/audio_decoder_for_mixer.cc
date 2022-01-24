@@ -17,9 +17,9 @@
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/audio/audio_clock_simulator.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/media/base/default_monotonic_clock.h"
 #include "chromecast/media/cma/backend/media_pipeline_backend_for_mixer.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
@@ -50,7 +50,7 @@ const int kInitialFillSizeFrames = 512;
 const double kPlaybackRateEpsilon = 0.001;
 
 const int64_t kDefaultInputQueueMs = 200;
-constexpr base::TimeDelta kFadeTime = base::TimeDelta::FromMilliseconds(5);
+constexpr base::TimeDelta kFadeTime = base::Milliseconds(5);
 const int kDefaultStartThresholdMs = 70;
 
 const CastAudioDecoder::OutputFormat kDecoderSampleFormat =
@@ -83,7 +83,7 @@ int MaxQueuedFrames(int sample_rate) {
       switches::kMixerSourceInputQueueMs, kDefaultInputQueueMs);
 
   return ::media::AudioTimestampHelper::TimeToFrames(
-      base::TimeDelta::FromMilliseconds(queue_ms), sample_rate);
+      base::Milliseconds(queue_ms), sample_rate);
 }
 
 int StartThreshold(int sample_rate) {
@@ -91,7 +91,7 @@ int StartThreshold(int sample_rate) {
       switches::kMixerSourceAudioReadyThresholdMs, kDefaultStartThresholdMs);
 
   return ::media::AudioTimestampHelper::TimeToFrames(
-      base::TimeDelta::FromMilliseconds(start_threshold_ms), sample_rate);
+      base::Milliseconds(start_threshold_ms), sample_rate);
 }
 
 }  // namespace
@@ -182,8 +182,8 @@ void AudioDecoderForMixer::CreateMixerInput(const AudioConfig& config,
           ? mixer_service::OutputStreamParams::STREAM_TYPE_DEFAULT
           : mixer_service::OutputStreamParams::STREAM_TYPE_SFX);
   params.set_content_type(
-      mixer_service::ConvertContentType(backend_->ContentType()));
-  params.set_sample_format(mixer_service::SAMPLE_FORMAT_FLOAT_P);
+      audio_service::ConvertContentType(backend_->ContentType()));
+  params.set_sample_format(audio_service::SAMPLE_FORMAT_FLOAT_P);
   params.set_device_id(backend_->DeviceId());
   params.set_sample_rate(config.samples_per_second);
   params.set_num_channels(config.channel_number);

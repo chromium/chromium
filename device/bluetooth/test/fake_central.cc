@@ -628,6 +628,11 @@ FakeCentral::StartLowEnergyScanSession(
   NOTREACHED();
   return nullptr;
 }
+
+device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+FakeCentral::GetLowEnergyScanSessionHardwareOffloadingStatus() {
+  return LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
+}
 #endif
 
 base::WeakPtr<device::BluetoothAdapter> FakeCentral::GetWeakPtr() {

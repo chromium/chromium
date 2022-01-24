@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORDS_PRIVATE_EVENT_ROUTER_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORDS_PRIVATE_EVENT_ROUTER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -19,6 +18,11 @@ class PasswordsPrivateEventRouter;
 class PasswordsPrivateEventRouterFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  PasswordsPrivateEventRouterFactory(
+      const PasswordsPrivateEventRouterFactory&) = delete;
+  PasswordsPrivateEventRouterFactory& operator=(
+      const PasswordsPrivateEventRouterFactory&) = delete;
+
   // Returns the PasswordsPrivateEventRouter for |profile|, creating it if
   // it is not yet created.
   static PasswordsPrivateEventRouter* GetForProfile(
@@ -44,8 +48,6 @@ class PasswordsPrivateEventRouterFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordsPrivateEventRouterFactory);
 };
 
 }  // namespace extensions

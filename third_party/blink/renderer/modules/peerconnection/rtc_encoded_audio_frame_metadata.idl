@@ -8,4 +8,5 @@
 dictionary RTCEncodedAudioFrameMetadata {
     unsigned long synchronizationSource;
     sequence<unsigned long> contributingSources;
+    short payloadType;
 };

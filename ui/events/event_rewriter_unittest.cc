@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -27,6 +26,10 @@ namespace {
 class TestEventRewriteSink : public EventSink {
  public:
   TestEventRewriteSink() {}
+
+  TestEventRewriteSink(const TestEventRewriteSink&) = delete;
+  TestEventRewriteSink& operator=(const TestEventRewriteSink&) = delete;
+
   ~TestEventRewriteSink() override { CheckAllReceived(); }
 
   void AddExpectedEvent(EventType type) { expected_events_.push_back(type); }
@@ -43,7 +46,6 @@ class TestEventRewriteSink : public EventSink {
 
  private:
   std::list<EventType> expected_events_;
-  DISALLOW_COPY_AND_ASSIGN(TestEventRewriteSink);
 };
 
 std::unique_ptr<Event> CreateEventForType(EventType type) {

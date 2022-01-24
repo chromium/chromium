@@ -15,8 +15,7 @@ namespace media {
 // idea is to prevent promoting on paused / background rendering.  Note that
 // this time is only enforced when transitioning from unpromotable to promotable
 // frames.  We don't unpromote later because of this.
-constexpr base::TimeDelta MaximumInterFrameTime =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta MaximumInterFrameTime = base::Milliseconds(100);
 
 // Minimum number of consecutive promotable frames before we actually start
 // promoting frames.
@@ -25,7 +24,7 @@ constexpr int MinimumPromotableFrames = 10;
 // Minimum time since the last unpromotable frame that we require before we will
 // promote new ones.
 constexpr base::TimeDelta MinimumUnpromotableFrameTime =
-    base::TimeDelta::FromMilliseconds(2000);
+    base::Milliseconds(2000);
 
 PromotionHintAggregatorImpl::PromotionHintAggregatorImpl(
     const base::TickClock* tick_clock) {

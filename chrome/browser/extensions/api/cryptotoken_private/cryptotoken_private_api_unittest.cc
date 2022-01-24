@@ -21,8 +21,11 @@
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "crypto/sha2.h"
+#include "device/fido/features.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/browser/pref_names.h"
+#include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_WIN)
@@ -40,16 +43,17 @@ bool GetSingleBooleanResult(ExtensionFunction* function, bool* result) {
     return false;
   }
 
-  if (result_list->GetSize() != 1u) {
+  if (result_list->GetList().size() != 1u) {
     ADD_FAILURE() << "Invalid number of results.";
     return false;
   }
 
-  if (!result_list->GetBoolean(0, result)) {
+  if (!result_list->GetList()[0].is_bool()) {
     ADD_FAILURE() << "Result is not boolean.";
     return false;
   }
 
+  *result = result_list->GetList()[0].GetBool();
   return true;
 }
 
@@ -67,8 +71,8 @@ class CryptoTokenPrivateApiTest : public extensions::ExtensionApiUnittest {
     function->set_has_callback(true);
 
     auto args = std::make_unique<base::ListValue>();
-    args->AppendString(origin);
-    args->AppendString(app_id);
+    args->Append(origin);
+    args->Append(app_id);
 
     if (!extension_function_test_utils::RunFunction(
             function.get(), std::move(args), browser(), api_test_utils::NONE)) {
@@ -176,12 +180,12 @@ TEST_F(CryptoTokenPrivateApiTest, RecordRegisterRequest) {
   auto function = base::MakeRefCounted<
       api::CryptotokenPrivateRecordRegisterRequestFunction>();
   auto args = std::make_unique<base::ListValue>();
-  args->AppendInteger(tab_id);
-  args->AppendInteger(0 /* top-level frame */);
+  args->Append(tab_id);
+  args->Append(0 /* top-level frame */);
   ASSERT_TRUE(extension_function_test_utils::RunFunction(
       function.get(), base::ListValue::From(std::move(args)), browser(),
       api_test_utils::NONE));
-  ASSERT_EQ(function->GetResultList()->GetSize(), 0u);
+  ASSERT_EQ(function->GetResultList()->GetList().size(), 0u);
 
   web_feature_waiter.Wait();
 }
@@ -202,12 +206,12 @@ TEST_F(CryptoTokenPrivateApiTest, RecordSignRequest) {
   auto function =
       base::MakeRefCounted<api::CryptotokenPrivateRecordSignRequestFunction>();
   auto args = std::make_unique<base::ListValue>();
-  args->AppendInteger(tab_id);
-  args->AppendInteger(0 /* top-level frame */);
+  args->Append(tab_id);
+  args->Append(0 /* top-level frame */);
   ASSERT_TRUE(extension_function_test_utils::RunFunction(
       function.get(), base::ListValue::From(std::move(args)), browser(),
       api_test_utils::NONE));
-  ASSERT_EQ(function->GetResultList()->GetSize(), 0u);
+  ASSERT_EQ(function->GetResultList()->GetList().size(), 0u);
 
   web_feature_waiter.Wait();
 }
@@ -216,13 +220,16 @@ TEST_F(CryptoTokenPrivateApiTest, RecordSignRequest) {
 class CryptoTokenPermissionTest : public ExtensionApiUnittest {
  public:
   CryptoTokenPermissionTest() = default;
+
+  CryptoTokenPermissionTest(const CryptoTokenPermissionTest&) = delete;
+  CryptoTokenPermissionTest& operator=(const CryptoTokenPermissionTest&) =
+      delete;
+
   ~CryptoTokenPermissionTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({features::kSecurityKeyAttestationPrompt},
-                                   {});
-
     ExtensionApiUnittest::SetUp();
+    feature_list_.InitAndEnableFeature(extensions_features::kU2FSecurityKeyAPI);
     const GURL url("http://example.com");
     AddTab(browser(), url);
 
@@ -265,6 +272,7 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
     base::Value::DictStorage dict;
     dict.emplace("appId", app_id);
     dict.emplace("tabId", tab_id_);
+    dict.emplace("frameId", -1);  // Ignored.
     dict.emplace("origin", app_id);
     auto args = std::make_unique<base::Value>(base::Value::Type::LIST);
     args->Append(base::Value(std::move(dict)));
@@ -276,15 +284,48 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
     return GetSingleBooleanResult(function.get(), out_result);
   }
 
+  // CanMakeU2fApiRequest calls the cryptotoken private API of the same name
+  // for |origin| and sets |*out_result| to the result. If |bubble_action| is
+  // not |NONE| then it waits for the permissions prompt to be shown and
+  // performs the given action. Otherwise, the call is expected to be
+  // synchronous.
+  bool CanMakeU2fApiRequest(
+      const std::string& origin,
+      permissions::PermissionRequestManager::AutoResponseType bubble_action,
+      bool* out_result) {
+    if (bubble_action != permissions::PermissionRequestManager::NONE) {
+      prompt_factory_->set_response_type(bubble_action);
+      auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+      prompt_factory_->DocumentOnLoadCompletedInMainFrame(
+          web_contents->GetMainFrame());
+    }
+
+    auto function = base::MakeRefCounted<
+        api::CryptotokenPrivateCanMakeU2fApiRequestFunction>();
+    function->set_has_callback(true);
+
+    base::Value::DictStorage dict;
+    dict.emplace("appId", origin);
+    dict.emplace("tabId", tab_id_);
+    dict.emplace("frameId", 0 /* main frame */);
+    dict.emplace("origin", origin);
+    auto args = std::make_unique<base::Value>(base::Value::Type::LIST);
+    args->Append(base::Value(std::move(dict)));
+    auto args_list = base::ListValue::From(std::move(args));
+
+    extension_function_test_utils::RunFunction(
+        function.get(), std::move(args_list), browser(), api_test_utils::NONE);
+
+    return GetSingleBooleanResult(function.get(), out_result);
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_;
   int tab_id_ = -1;
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptoTokenPermissionTest);
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(CryptoTokenPermissionTest, Prompt) {
+TEST_F(CryptoTokenPermissionTest, AttestationPrompt) {
 #if defined(OS_WIN)
   // TODO(crbug.com/1225335) This test is failing on WIN10_20H2.
   if (base::win::OSInfo::GetInstance()->version() >=
@@ -311,7 +352,7 @@ TEST_F(CryptoTokenPermissionTest, Prompt) {
   }
 }
 
-TEST_F(CryptoTokenPermissionTest, PolicyOverridesPrompt) {
+TEST_F(CryptoTokenPermissionTest, PolicyOverridesAttestationPrompt) {
   const std::string example_com("https://example.com");
   base::Value::ListStorage permitted_list;
   permitted_list.emplace_back(example_com);
@@ -324,6 +365,56 @@ TEST_F(CryptoTokenPermissionTest, PolicyOverridesPrompt) {
   ASSERT_TRUE(CanAppIdGetAttestation(
       example_com, permissions::PermissionRequestManager::NONE, &result));
   EXPECT_TRUE(result);
+}
+
+TEST_F(CryptoTokenPermissionTest, RequestPrompt) {
+  const std::vector<permissions::PermissionRequestManager::AutoResponseType>
+      actions = {
+          permissions::PermissionRequestManager::ACCEPT_ALL,
+          permissions::PermissionRequestManager::DENY_ALL,
+          permissions::PermissionRequestManager::DISMISS,
+      };
+
+  for (const auto& action : actions) {
+    SCOPED_TRACE(action);
+
+    bool result = false;
+    ASSERT_TRUE(CanMakeU2fApiRequest("https://test.com", action, &result));
+    // The result should only be positive if the user accepted the permissions
+    // prompt.
+    EXPECT_EQ(action == permissions::PermissionRequestManager::ACCEPT_ALL,
+              result);
+  }
+}
+
+TEST_F(CryptoTokenPermissionTest, FeatureFlagOverridesRequestPrompt) {
+  // Disabling the permission prompt feature flag should suppress it.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(device::kU2fPermissionPrompt);
+  bool result = false;
+  ASSERT_TRUE(CanMakeU2fApiRequest("https://test.com",
+                                   permissions::PermissionRequestManager::NONE,
+                                   &result));
+  EXPECT_TRUE(result);
+}
+
+TEST_F(CryptoTokenPermissionTest, EnterprisePolicyOverridesRequestPrompt) {
+  // Setting the deprecation override policy should cause the prompt to be
+  // suppressed. This should be true even when the API has been
+  // default-disabled, because the policy overrides that too.
+  for (bool api_enabled : {false, true}) {
+    SCOPED_TRACE(api_enabled);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(extensions_features::kU2FSecurityKeyAPI,
+                                      api_enabled);
+    browser()->profile()->GetPrefs()->Set(
+        extensions::pref_names::kU2fSecurityKeyApiEnabled, base::Value(true));
+    bool result = false;
+    ASSERT_TRUE(CanMakeU2fApiRequest(
+        "https://test.com", permissions::PermissionRequestManager::NONE,
+        &result));
+    EXPECT_TRUE(result);
+  }
 }
 
 }  // namespace extensions

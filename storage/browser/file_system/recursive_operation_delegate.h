@@ -31,6 +31,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) RecursiveOperationDelegate
   using FileEntryList = FileSystemOperation::FileEntryList;
   using ErrorBehavior = FileSystemOperation::ErrorBehavior;
 
+  RecursiveOperationDelegate(const RecursiveOperationDelegate&) = delete;
+  RecursiveOperationDelegate& operator=(const RecursiveOperationDelegate&) =
+      delete;
+
   virtual ~RecursiveOperationDelegate();
 
   // This is called when the consumer of this instance starts a non-recursive
@@ -149,8 +153,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) RecursiveOperationDelegate
   bool canceled_;
   ErrorBehavior error_behavior_;
   bool failed_some_operations_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecursiveOperationDelegate);
 };
 
 }  // namespace storage

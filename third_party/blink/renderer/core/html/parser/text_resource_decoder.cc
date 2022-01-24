@@ -85,7 +85,7 @@ static int Find(const char* subject, int subject_length, const char* target) {
       }
     }
     if (match)
-      return i;
+      return static_cast<int>(i);
   }
   return -1;
 }

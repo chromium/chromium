@@ -18,11 +18,11 @@ class LoaderLockSampler;
 // being held. This is a dedicated thread, instead of using the ThreadPool, so
 // that there's never a chance of the lock being sampled from a thread that
 // runs other code that takes the lock.
-class COMPONENT_EXPORT(TRACING_CPP) LoaderLockSamplingThread
+class COMPONENT_EXPORT(TRACING_CPP) LoaderLockSamplingThread final
     : public base::Thread {
  public:
   LoaderLockSamplingThread();
-  ~LoaderLockSamplingThread() final;
+  ~LoaderLockSamplingThread() override;
 
   LoaderLockSamplingThread(const LoaderLockSamplingThread& other) = delete;
   LoaderLockSamplingThread& operator=(const LoaderLockSamplingThread& other) =

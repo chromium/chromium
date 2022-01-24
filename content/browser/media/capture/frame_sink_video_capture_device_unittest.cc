@@ -12,6 +12,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -71,8 +72,8 @@ namespace {
 // Capture parameters.
 constexpr gfx::Size kResolution = gfx::Size(320, 180);
 constexpr int kMaxFrameRate = 25;  // It evenly divides 1 million usec.
-constexpr base::TimeDelta kMinCapturePeriod = base::TimeDelta::FromMicroseconds(
-    base::Time::kMicrosecondsPerSecond / kMaxFrameRate);
+constexpr base::TimeDelta kMinCapturePeriod =
+    base::Microseconds(base::Time::kMicrosecondsPerSecond / kMaxFrameRate);
 constexpr media::VideoPixelFormat kFormat = media::PIXEL_FORMAT_I420;
 
 // Video buffer parameters.
@@ -110,10 +111,15 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
                     bool use_fixed_aspect_ratio));
   MOCK_METHOD1(SetAutoThrottlingEnabled, void(bool));
   void ChangeTarget(const absl::optional<viz::FrameSinkId>& frame_sink_id,
-                    const viz::SubtreeCaptureId& subtree_capture_id) final {
+                    viz::mojom::SubTargetPtr sub_target) final {
     DCHECK_NOT_ON_DEVICE_THREAD();
-    MockChangeTarget(FrameSinkVideoCaptureDevice::VideoCaptureTarget{
-        frame_sink_id.value_or(viz::FrameSinkId{}), subtree_capture_id});
+    viz::SubtreeCaptureId subtree_id;
+    if (sub_target && sub_target->is_subtree_capture_id()) {
+      subtree_id = sub_target->get_subtree_capture_id();
+    }
+    MockChangeTarget(FrameSinkVideoCaptureDevice::VideoCaptureTarget(
+        frame_sink_id.value_or(viz::FrameSinkId{}), subtree_id,
+        /*crop_id=*/base::Token()));
   }
   MOCK_METHOD1(
       MockChangeTarget,
@@ -345,8 +351,9 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
     EXPECT_CALL(capturer_, SetMinCapturePeriod(kMinCapturePeriod));
     EXPECT_CALL(capturer_,
                 SetResolutionConstraints(kResolution, kResolution, _));
-    FrameSinkVideoCaptureDevice::VideoCaptureTarget target{
-        .frame_sink_id = {1, 1}};
+    FrameSinkVideoCaptureDevice::VideoCaptureTarget target(
+        viz::FrameSinkId{1, 1}, viz::SubtreeCaptureId(),
+        /*crop_id=*/base::Token());
     EXPECT_CALL(capturer_, MockChangeTarget(target));
     EXPECT_CALL(capturer_, MockStart(NotNull()));
 
@@ -597,7 +604,7 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, ShutsDownOnFatalError) {
   {
     EXPECT_CALL(
         capturer_,
-        MockChangeTarget(FrameSinkVideoCaptureDevice::VideoCaptureTarget{}));
+        MockChangeTarget(FrameSinkVideoCaptureDevice::VideoCaptureTarget()));
     EXPECT_CALL(capturer_, MockStop());
     POST_DEVICE_METHOD_CALL0(OnTargetPermanentlyLost);
     WAIT_FOR_DEVICE_TASKS();

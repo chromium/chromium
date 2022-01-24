@@ -131,7 +131,7 @@ TEST(TileUtilsTest, SortWithTilesNotClickedRecently) {
   TileGroup group;
   test::ResetTestGroup(&group);
 
-  base::Time past_time = base::Time::Now() - base::TimeDelta::FromDays(30);
+  base::Time past_time = base::Time::Now() - base::Days(30);
   std::map<std::string, TileStats> tile_stats;
   tile_stats["guid-1-1"] = TileStats(group.last_updated_ts, 0.5);
   tile_stats["guid-1-2"] = TileStats(past_time, 0.5);
@@ -169,15 +169,15 @@ TEST(TileUtilsTest, UnusedTilesCleared) {
 TEST(TileUtilsTest, CalculateTileScore) {
   base::Time now_time = base::Time::Now();
   EXPECT_EQ(CalculateTileScore(TileStats(now_time, 0.7), now_time), 0.7);
-  EXPECT_EQ(CalculateTileScore(TileStats(now_time, 1.0),
-                               now_time + base::TimeDelta::FromHours(18)),
-            1.0);
-  EXPECT_EQ(CalculateTileScore(TileStats(now_time, 1.0),
-                               now_time + base::TimeDelta::FromDays(1)),
-            exp(-0.099));
-  EXPECT_EQ(CalculateTileScore(TileStats(now_time, 1.0),
-                               now_time + base::TimeDelta::FromDays(30)),
-            0);
+  EXPECT_EQ(
+      CalculateTileScore(TileStats(now_time, 1.0), now_time + base::Hours(18)),
+      1.0);
+  EXPECT_EQ(
+      CalculateTileScore(TileStats(now_time, 1.0), now_time + base::Days(1)),
+      exp(-0.099));
+  EXPECT_EQ(
+      CalculateTileScore(TileStats(now_time, 1.0), now_time + base::Days(30)),
+      0);
 }
 
 TEST(TileUtilsTest, IsTrendingTile) {

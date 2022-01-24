@@ -47,6 +47,12 @@ struct UpdatesToSync {
 class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
  public:
   AutofillProfileSyncDifferenceTrackerTestBase() {}
+
+  AutofillProfileSyncDifferenceTrackerTestBase(
+      const AutofillProfileSyncDifferenceTrackerTestBase&) = delete;
+  AutofillProfileSyncDifferenceTrackerTestBase& operator=(
+      const AutofillProfileSyncDifferenceTrackerTestBase&) = delete;
+
   ~AutofillProfileSyncDifferenceTrackerTestBase() override {}
 
   void SetUp() override {
@@ -117,22 +123,24 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   AutofillTable table_;
   WebDatabase db_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncDifferenceTrackerTestBase);
 };
 
 class AutofillProfileSyncDifferenceTrackerTest
     : public AutofillProfileSyncDifferenceTrackerTestBase {
  public:
   AutofillProfileSyncDifferenceTrackerTest() : tracker_(table()) {}
+
+  AutofillProfileSyncDifferenceTrackerTest(
+      const AutofillProfileSyncDifferenceTrackerTest&) = delete;
+  AutofillProfileSyncDifferenceTrackerTest& operator=(
+      const AutofillProfileSyncDifferenceTrackerTest&) = delete;
+
   ~AutofillProfileSyncDifferenceTrackerTest() override {}
 
   AutofillProfileSyncDifferenceTracker* tracker() override { return &tracker_; }
 
  private:
   AutofillProfileSyncDifferenceTracker tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncDifferenceTrackerTest);
 };
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
@@ -405,6 +413,12 @@ class AutofillProfileInitialSyncDifferenceTrackerTest
  public:
   AutofillProfileInitialSyncDifferenceTrackerTest()
       : initial_tracker_(table()) {}
+
+  AutofillProfileInitialSyncDifferenceTrackerTest(
+      const AutofillProfileInitialSyncDifferenceTrackerTest&) = delete;
+  AutofillProfileInitialSyncDifferenceTrackerTest& operator=(
+      const AutofillProfileInitialSyncDifferenceTrackerTest&) = delete;
+
   ~AutofillProfileInitialSyncDifferenceTrackerTest() override {}
 
   void MergeSimilarEntriesForInitialSync() {
@@ -417,8 +431,6 @@ class AutofillProfileInitialSyncDifferenceTrackerTest
 
  private:
   AutofillProfileInitialSyncDifferenceTracker initial_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileInitialSyncDifferenceTrackerTest);
 };
 
 TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,

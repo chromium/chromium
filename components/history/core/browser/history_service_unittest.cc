@@ -26,13 +26,11 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -569,6 +567,9 @@ class HistoryDBTaskImpl : public HistoryDBTask {
   HistoryDBTaskImpl(int* invoke_count, bool* done_invoked)
       : invoke_count_(invoke_count), done_invoked_(done_invoked) {}
 
+  HistoryDBTaskImpl(const HistoryDBTaskImpl&) = delete;
+  HistoryDBTaskImpl& operator=(const HistoryDBTaskImpl&) = delete;
+
   bool RunOnDBThread(HistoryBackend* backend, HistoryDatabase* db) override {
     return (++*invoke_count_ == kWantInvokeCount);
   }
@@ -583,8 +584,6 @@ class HistoryDBTaskImpl : public HistoryDBTask {
 
  private:
   ~HistoryDBTaskImpl() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryDBTaskImpl);
 };
 
 // static
@@ -643,8 +642,7 @@ void AddPageAtTime(HistoryService* history,
 void AddPageInThePast(HistoryService* history,
                       const std::string& url_spec,
                       int days_back) {
-  base::Time time_in_the_past =
-      base::Time::Now() - base::TimeDelta::FromDays(days_back);
+  base::Time time_in_the_past = base::Time::Now() - base::Days(days_back);
   AddPageAtTime(history, url_spec, time_in_the_past);
 }
 
@@ -656,9 +654,8 @@ base::Time GetTimeInThePast(base::Time base_time,
                             int seconds = 0) {
   base::Time past_midnight = MidnightNDaysLater(base_time, -days_back);
 
-  return past_midnight + base::TimeDelta::FromHours(hours_since_midnight) +
-         base::TimeDelta::FromMinutes(minutes) +
-         base::TimeDelta::FromSeconds(seconds);
+  return past_midnight + base::Hours(hours_since_midnight) +
+         base::Minutes(minutes) + base::Seconds(seconds);
 }
 
 // Helper to contain a callback and run loop logic.
@@ -683,7 +680,7 @@ DomainDiversityResults GetDomainDiversityHelper(
     DomainMetricBitmaskType metric_type_bitmask,
     base::CancelableTaskTracker* tracker) {
   base::RunLoop run_loop;
-  base::TimeDelta dst_rounding_offset = base::TimeDelta::FromHours(4);
+  base::TimeDelta dst_rounding_offset = base::Hours(4);
 
   // Compute the number of days to report metrics for.
   int number_of_days = 0;
@@ -764,8 +761,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {
   // some domain visits can be inserted between `query_time` and midnight
   // for testing.
   query_time =
-      std::max(query_time.LocalMidnight() + base::TimeDelta::FromMinutes(10),
-               query_time);
+      std::max(query_time.LocalMidnight() + base::Minutes(10), query_time);
 
   AddPageAtTime(history, "http://www.google.com/",
                 GetTimeInThePast(query_time, /*days_back=*/2,
@@ -780,7 +776,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {
   // Domains visited on the query day will not be included in the result.
   AddPageAtTime(history, "http://www.youtube.com/", query_time.LocalMidnight());
   AddPageAtTime(history, "http://www.chromium.com/",
-                query_time.LocalMidnight() + base::TimeDelta::FromMinutes(5));
+                query_time.LocalMidnight() + base::Minutes(5));
   AddPageAtTime(history, "http://www.youtube.com/", query_time);
 
   // IP addresses, empty strings, non-TLD's should not be counted

@@ -105,7 +105,7 @@ void PageScaleConstraintsSet::AdjustFinalConstraintsToContentsSize() {
   if (page_->GetSettings().GetShrinksViewportContentToFit()) {
     final_constraints_.FitToContentsWidth(
         last_contents_width_,
-        icb_size_.Width() - last_vertical_scrollbar_width_);
+        icb_size_.width() - last_vertical_scrollbar_width_);
   }
 
   final_constraints_.ResolveAutoInitialScale();
@@ -124,7 +124,7 @@ void PageScaleConstraintsSet::DidChangeContentsSize(
   // If a large fixed-width element expanded the size of the document late in
   // loading and our initial scale is not set (or set to be less than the last
   // minimum scale), reset the page scale factor to the new initial scale.
-  if (contents_size.Width() > last_contents_width_ &&
+  if (contents_size.width() > last_contents_width_ &&
       page_scale_factor == FinalConstraints().minimum_scale &&
       ComputeConstraintsStack().initial_scale <
           FinalConstraints().minimum_scale)
@@ -132,7 +132,7 @@ void PageScaleConstraintsSet::DidChangeContentsSize(
 
   constraints_dirty_ = true;
   last_vertical_scrollbar_width_ = vertical_scrollbar_width;
-  last_contents_width_ = contents_size.Width();
+  last_contents_width_ = contents_size.width();
 }
 
 static float ComputeDeprecatedTargetDensityDPIFactor(
@@ -160,13 +160,13 @@ static float ComputeDeprecatedTargetDensityDPIFactor(
 
 static float GetLayoutWidthForNonWideViewport(const FloatSize& device_size,
                                               float initial_scale) {
-  return initial_scale == -1 ? device_size.Width()
-                             : device_size.Width() / initial_scale;
+  return initial_scale == -1 ? device_size.width()
+                             : device_size.width() / initial_scale;
 }
 
 static float ComputeHeightByAspectRatio(float width,
                                         const FloatSize& device_size) {
-  return width * (device_size.Height() / device_size.Width());
+  return width * (device_size.height() / device_size.width());
 }
 
 void PageScaleConstraintsSet::DidChangeInitialContainingBlockSize(
@@ -210,9 +210,9 @@ void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
   }
 
   float adjusted_layout_size_width =
-      page_defined_constraints_.layout_size.Width();
+      page_defined_constraints_.layout_size.width();
   float adjusted_layout_size_height =
-      page_defined_constraints_.layout_size.Height();
+      page_defined_constraints_.layout_size.height();
   float target_density_dpi_factor = 1.0f;
 
   if (support_target_density_dpi) {
@@ -284,14 +284,14 @@ void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(
         description.max_width.IsExtendToZoom() ||
         description.max_width.IsDeviceWidth()) {
       adjusted_layout_size_width =
-          icb_size_.Width() / target_density_dpi_factor;
+          icb_size_.width() / target_density_dpi_factor;
       adjusted_layout_size_height = ComputeHeightByAspectRatio(
           adjusted_layout_size_width, FloatSize(icb_size_));
     }
   }
 
-  page_defined_constraints_.layout_size.SetWidth(adjusted_layout_size_width);
-  page_defined_constraints_.layout_size.SetHeight(adjusted_layout_size_height);
+  page_defined_constraints_.layout_size.set_width(adjusted_layout_size_width);
+  page_defined_constraints_.layout_size.set_height(adjusted_layout_size_height);
 }
 
 }  // namespace blink

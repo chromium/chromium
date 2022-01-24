@@ -18,7 +18,7 @@
 #import "ios/net/protocol_handler_util.h"
 #include "net/base/net_errors.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/webui/jstemplate_builder.h"
 #include "url/gurl.h"
 
@@ -60,7 +60,7 @@ NSString* GetErrorPage(const GURL& url,
           /*is_blocked_by_extension=*/false);
 
   ui::ResourceScaleFactor scale_factor =
-      ui::ResourceBundle::GetSharedInstance().GetMaxScaleFactor();
+      ui::ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor();
 
   std::string extracted_string =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceStringForScale(

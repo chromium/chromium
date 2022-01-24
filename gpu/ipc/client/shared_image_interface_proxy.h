@@ -47,7 +47,9 @@ class SharedImageInterfaceProxy {
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
       uint32_t usage);
-#endif
+  void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
+                             const Mailbox& mailbox);
+#endif  // OS_WIN
 
 #if defined(OS_ANDROID)
   Mailbox CreateSharedImageWithAHB(const Mailbox& mailbox,

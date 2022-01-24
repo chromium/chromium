@@ -184,8 +184,8 @@ absl::optional<PasswordHashData> PasswordReuseDetector::CheckGaiaPasswordReuse(
   }
 
   // Skips password reuse check if |domain| matches Gaia origin.
-  const Origin gaia_origin =
-      Origin::Create(GaiaUrls::GetInstance()->gaia_url().GetOrigin());
+  const Origin gaia_origin = Origin::Create(
+      GaiaUrls::GetInstance()->gaia_url().DeprecatedGetOriginAsURL());
   if (Origin::Create(GURL(domain)).IsSameOriginWith(gaia_origin))
     return absl::nullopt;
 

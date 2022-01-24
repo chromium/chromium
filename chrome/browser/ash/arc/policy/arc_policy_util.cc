@@ -10,7 +10,7 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/handlers/configuration_policy_handler_chromeos.h"
+#include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/arc/arc_prefs.h"

@@ -340,6 +340,92 @@ NativeValueTraits<IDLNullable<DOMSharedArrayBuffer>>::ArgumentValue(
   return nullptr;
 }
 
+// [AllowShared] ArrayBuffer
+
+DOMArrayBufferBase* NativeValueTraits<DOMArrayBufferBase>::NativeValue(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
+  if (LIKELY(array_buffer))
+    return array_buffer;
+
+  DOMSharedArrayBuffer* shared_array_buffer =
+      ToDOMSharedArrayBuffer(isolate, value);
+  if (LIKELY(shared_array_buffer))
+    return shared_array_buffer;
+
+  exception_state.ThrowTypeError(
+      ExceptionMessages::FailedToConvertJSValue("[AllowShared] ArrayBuffer"));
+  return nullptr;
+}
+
+DOMArrayBufferBase* NativeValueTraits<DOMArrayBufferBase>::ArgumentValue(
+    v8::Isolate* isolate,
+    int argument_index,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
+  if (LIKELY(array_buffer))
+    return array_buffer;
+
+  DOMSharedArrayBuffer* shared_array_buffer =
+      ToDOMSharedArrayBuffer(isolate, value);
+  if (LIKELY(shared_array_buffer))
+    return shared_array_buffer;
+
+  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
+      argument_index, "[AllowShared] ArrayBuffer"));
+  return nullptr;
+}
+
+// Nullable [AllowShared] ArrayBuffer
+
+DOMArrayBufferBase*
+NativeValueTraits<IDLNullable<DOMArrayBufferBase>>::NativeValue(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
+  if (LIKELY(array_buffer))
+    return array_buffer;
+
+  DOMSharedArrayBuffer* shared_array_buffer =
+      ToDOMSharedArrayBuffer(isolate, value);
+  if (LIKELY(shared_array_buffer))
+    return shared_array_buffer;
+
+  if (LIKELY(value->IsNullOrUndefined()))
+    return nullptr;
+
+  exception_state.ThrowTypeError(
+      ExceptionMessages::FailedToConvertJSValue("[AllowShared] ArrayBuffer"));
+  return nullptr;
+}
+
+DOMArrayBufferBase*
+NativeValueTraits<IDLNullable<DOMArrayBufferBase>>::ArgumentValue(
+    v8::Isolate* isolate,
+    int argument_index,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state) {
+  DOMArrayBuffer* array_buffer = ToDOMArrayBuffer(isolate, value);
+  if (LIKELY(array_buffer))
+    return array_buffer;
+
+  DOMSharedArrayBuffer* shared_array_buffer =
+      ToDOMSharedArrayBuffer(isolate, value);
+  if (LIKELY(shared_array_buffer))
+    return shared_array_buffer;
+
+  if (LIKELY(value->IsNullOrUndefined()))
+    return nullptr;
+
+  exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(
+      argument_index, "[AllowShared] ArrayBuffer"));
+  return nullptr;
+}
+
 // ArrayBufferView
 
 template <typename T>

@@ -5,7 +5,7 @@
 import {Tab, TabData, TabGroup, TabGroupColor, TabItemType, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {assertDeepEquals, assertEquals, assertNotEquals} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.js';
 
 import {sampleToken} from './tab_search_test_data.js';
 import {typed} from './tab_search_test_helper.js';

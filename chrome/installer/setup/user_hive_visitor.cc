@@ -29,6 +29,10 @@ namespace {
 class ScopedUserHive {
  public:
   explicit ScopedUserHive(const base::FilePath& hive_file);
+
+  ScopedUserHive(const ScopedUserHive&) = delete;
+  ScopedUserHive& operator=(const ScopedUserHive&) = delete;
+
   ~ScopedUserHive();
 
   // Returns true if the hive file was loaded.
@@ -44,8 +48,6 @@ class ScopedUserHive {
 
   // The loaded key.
   base::win::RegKey key_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUserHive);
 };
 
 ScopedUserHive::ScopedUserHive(const base::FilePath& hive_file) {

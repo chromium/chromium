@@ -152,6 +152,9 @@ void PowerMetricsReporter::ReportHistograms(
   ReportCPUHistograms(metrics, suffixes);
   ReportBatteryHistograms(interval_duration, discharge_mode,
                           discharge_rate_during_interval, suffixes);
+#if defined(OS_MAC)
+  RecordCoalitionData(metrics, suffixes);
+#endif
 }
 
 void PowerMetricsReporter::ReportBatteryHistograms(
@@ -384,12 +387,21 @@ PowerMetricsReporter::GetBatteryDischargeRateDuringInterval(
   // The battery discharge rate is reported per minute with 1/10000 of full
   // charge resolution.
   static const int64_t kDischargeRateFactor =
-      10000 * base::TimeDelta::FromMinutes(1).InSecondsF();
+      10000 * base::Minutes(1).InSecondsF();
+
+#if defined(OS_MAC)
+  // On MacOS, empirical evidence has shown that right after a full charge, the
+  // current capacity stays equal to the maximum capacity for several minutes,
+  // despite the fact that power was definitely consumed. Reporting a zero
+  // discharge rate for this duration would be misleading.
+  if (previous_battery_state.charge_level.value() == 1.0)
+    return {BatteryDischargeMode::kMacFullyCharged, absl::nullopt};
+#endif
 
   auto discharge_rate = (previous_battery_state.charge_level.value() -
                          battery_state_.charge_level.value()) *
                         kDischargeRateFactor / interval_duration.InSeconds();
   if (discharge_rate < 0)
-    return {BatteryDischargeMode::kInvalidDischargeRate, absl::nullopt};
+    return {BatteryDischargeMode::kBatteryLevelIncreased, absl::nullopt};
   return {BatteryDischargeMode::kDischarging, discharge_rate};
 }

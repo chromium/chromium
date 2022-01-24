@@ -18,7 +18,7 @@ IdentifiabilityMetricBuilder::IdentifiabilityMetricBuilder(
 
 IdentifiabilityMetricBuilder::~IdentifiabilityMetricBuilder() = default;
 
-IdentifiabilityMetricBuilder& IdentifiabilityMetricBuilder::Set(
+IdentifiabilityMetricBuilder& IdentifiabilityMetricBuilder::Add(
     IdentifiableSurface surface,
     IdentifiableToken value) {
   metrics_.emplace_back(surface, value);

@@ -25,6 +25,10 @@ struct ReplyMessageContext;
 class PPAPI_HOST_EXPORT ResourceMessageHandler {
  public:
   ResourceMessageHandler();
+
+  ResourceMessageHandler(const ResourceMessageHandler&) = delete;
+  ResourceMessageHandler& operator=(const ResourceMessageHandler&) = delete;
+
   virtual ~ResourceMessageHandler();
 
   // Called when this handler should handle a particular message. This should
@@ -63,9 +67,6 @@ class PPAPI_HOST_EXPORT ResourceMessageHandler {
   // The default implementation just returns PP_ERROR_NOTSUPPORTED.
   virtual int32_t OnResourceMessageReceived(const IPC::Message& msg,
                                             HostMessageContext* context);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceMessageHandler);
 };
 
 }  // namespace host

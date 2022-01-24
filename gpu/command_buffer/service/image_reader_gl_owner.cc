@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -92,7 +93,7 @@ uint32_t NumRequiredMaxImages(TextureOwner::Mode mode) {
 class ImageReaderGLOwner::ScopedHardwareBufferImpl
     : public base::android::ScopedHardwareBufferFenceSync {
  public:
-  ScopedHardwareBufferImpl(base::WeakPtr<ImageReaderGLOwner> texture_owner,
+  ScopedHardwareBufferImpl(scoped_refptr<ImageReaderGLOwner> texture_owner,
                            AImage* image,
                            base::android::ScopedHardwareBufferHandle handle,
                            base::ScopedFD fence_fd)
@@ -101,23 +102,13 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
                                                      base::ScopedFD(),
                                                      true /* is_video */),
         texture_owner_(std::move(texture_owner)),
-        image_(image),
-        task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+        image_(image) {
     DCHECK(image_);
     texture_owner_->RegisterRefOnImageLocked(image_);
   }
 
   ~ScopedHardwareBufferImpl() override {
-    if (task_runner_->RunsTasksInCurrentSequence()) {
-      if (texture_owner_) {
-        texture_owner_->ReleaseRefOnImage(image_, std::move(read_fence_));
-      }
-    } else {
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&gpu::ImageReaderGLOwner::ReleaseRefOnImage,
-                         texture_owner_, image_, std::move(read_fence_)));
-    }
+    texture_owner_->ReleaseRefOnImage(image_, std::move(read_fence_));
   }
 
   void SetReadFence(base::ScopedFD fence_fd, bool has_context) final {
@@ -129,9 +120,8 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
 
  private:
   base::ScopedFD read_fence_;
-  base::WeakPtr<ImageReaderGLOwner> texture_owner_;
+  scoped_refptr<ImageReaderGLOwner> texture_owner_;
   AImage* image_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 ImageReaderGLOwner::ImageReaderGLOwner(
@@ -267,7 +257,6 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
 }
 
 void ImageReaderGLOwner::UpdateTexImage() {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   base::AutoLock auto_lock(lock_);
 
   // If we've lost the texture, then do nothing.
@@ -364,7 +353,7 @@ ImageReaderGLOwner::GetAHardwareBuffer() {
   base::AndroidHardwareBufferCompat::GetInstance().Release(buffer);
 
   return std::make_unique<ScopedHardwareBufferImpl>(
-      weak_factory_.GetWeakPtr(), current_image_ref_->image(),
+      this, current_image_ref_->image(),
       base::android::ScopedHardwareBufferHandle::Create(buffer),
       current_image_ref_->GetReadyFence());
 }
@@ -503,13 +492,13 @@ void ImageReaderGLOwner::RunWhenBufferIsAvailable(base::OnceClosure callback) {
     // and acquire updated image and hence will use FrameInfo of the previous
     // image which will result in wrong coded size for all future frames. To
     // avoid, this no other threads should try to UpdateTexImage() when this
-    // callback is run.
-    // TODO(vikassoni) : Fix this issue when MCVD path is made thread safe using
-    // global locks. For MediaPlayer path we never call this method.
+    // callback is run. lock held by the caller (GetFrameInfo()) of this
+    // method ensures that this never happens.
     std::move(callback).Run();
   } else {
     base::AutoLock auto_lock(lock_);
-    buffer_available_cb_ = std::move(callback);
+    buffer_available_cb_ = base::BindPostTask(
+        base::ThreadTaskRunnerHandle::Get(), std::move(callback));
   }
 }
 
@@ -591,6 +580,11 @@ void ImageReaderGLOwner::ScopedCurrentImageRef::EnsureBound(GLuint service_id) {
   // available.
   if (!InsertEglFenceAndWait(GetReadyFence()))
     return;
+
+  // CreateAndBindEglImage will bind texture with service_id to current unit. We
+  // never should alter gl binding without updating state tracking, which we
+  // can't do here, so restore previous after we done.
+  ScopedRestoreTextureBinding scoped_restore_texture;
 
   // Create EGL image from the AImage and bind it to the texture.
   if (!CreateAndBindEglImage(image_, service_id, &texture_owner_->loader_))

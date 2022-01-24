@@ -26,6 +26,10 @@ namespace win {
 class MessageWindow::WindowClass {
  public:
   WindowClass();
+
+  WindowClass(const WindowClass&) = delete;
+  WindowClass& operator=(const WindowClass&) = delete;
+
   ~WindowClass();
 
   ATOM atom() { return atom_; }
@@ -34,8 +38,6 @@ class MessageWindow::WindowClass {
  private:
   ATOM atom_ = 0;
   HINSTANCE instance_ = CURRENT_MODULE();
-
-  DISALLOW_COPY_AND_ASSIGN(WindowClass);
 };
 
 static LazyInstance<MessageWindow::WindowClass>::DestructorAtExit

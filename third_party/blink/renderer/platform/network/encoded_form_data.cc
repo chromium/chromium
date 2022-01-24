@@ -116,7 +116,8 @@ scoped_refptr<EncodedFormData> EncodedFormData::Create(const void* data,
 scoped_refptr<EncodedFormData> EncodedFormData::Create(
     base::span<const char> string) {
   scoped_refptr<EncodedFormData> result = Create();
-  result->AppendData(string.data(), string.size());
+  result->AppendData(string.data(),
+                     base::checked_cast<wtf_size_t>(string.size()));
   return result;
 }
 

@@ -16,8 +16,8 @@
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_file_system_instance.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -80,6 +80,11 @@ class ArcContentFileSystemFileStreamReaderTest : public testing::Test {
  public:
   ArcContentFileSystemFileStreamReaderTest() = default;
 
+  ArcContentFileSystemFileStreamReaderTest(
+      const ArcContentFileSystemFileStreamReaderTest&) = delete;
+  ArcContentFileSystemFileStreamReaderTest& operator=(
+      const ArcContentFileSystemFileStreamReaderTest&) = delete;
+
   ~ArcContentFileSystemFileStreamReaderTest() override = default;
 
   void SetUp() override {
@@ -114,11 +119,9 @@ class ArcContentFileSystemFileStreamReaderTest : public testing::Test {
   FakeFileSystemInstance fake_file_system_;
 
   // Use the same initialization/destruction order as
-  // ChromeBrowserMainPartsChromeos.
+  // `ChromeBrowserMainPartsAsh`.
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcContentFileSystemFileStreamReaderTest);
 };
 
 }  // namespace

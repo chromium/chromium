@@ -8,10 +8,10 @@
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/mask_filter_info.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace base {
 namespace trace_event {
@@ -20,6 +20,7 @@ class TracedValue;
 }  // namespace base
 
 namespace viz {
+
 
 // SharedQuadState holds a set of properties that are common across multiple
 // DrawQuads. It's purely an optimization - the properties behave in exactly the
@@ -32,15 +33,15 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   SharedQuadState(const SharedQuadState& other);
   ~SharedQuadState();
 
-  void SetAll(const gfx::Transform& quad_to_target_transform,
-              const gfx::Rect& quad_layer_rect,
+  void SetAll(const gfx::Transform& transform,
+              const gfx::Rect& layer_rect,
               const gfx::Rect& visible_layer_rect,
-              const gfx::MaskFilterInfo& mask_filter_info,
-              const absl::optional<gfx::Rect>& clip_rect,
-              bool are_contents_opaque,
-              float opacity,
-              SkBlendMode blend_mode,
-              int sorting_context_id);
+              const gfx::MaskFilterInfo& filter_info,
+              const absl::optional<gfx::Rect>& clip,
+              bool contents_opaque,
+              float opacity_f,
+              SkBlendMode blend,
+              int sorting_context);
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 
   // Transforms quad rects into the target content space.

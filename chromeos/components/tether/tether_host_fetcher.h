@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,6 +30,10 @@ class TetherHostFetcher {
   };
 
   TetherHostFetcher();
+
+  TetherHostFetcher(const TetherHostFetcher&) = delete;
+  TetherHostFetcher& operator=(const TetherHostFetcher&) = delete;
+
   virtual ~TetherHostFetcher();
 
   void AddObserver(Observer* observer);
@@ -62,8 +65,6 @@ class TetherHostFetcher {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TetherHostFetcher);
 };
 
 }  // namespace tether

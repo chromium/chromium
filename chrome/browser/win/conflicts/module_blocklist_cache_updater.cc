@@ -16,11 +16,11 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
@@ -49,7 +49,7 @@ static constexpr size_t kMaxModuleCount = 5000u;
 
 // The maximum amount of time a stale entry is kept in the cache before it is
 // deleted.
-static constexpr base::TimeDelta kMaxEntryAge = base::TimeDelta::FromDays(180);
+static constexpr base::TimeDelta kMaxEntryAge = base::Days(180);
 
 // This enum is used for UMA. Therefore, the values should never change.
 enum class BlocklistStatus {

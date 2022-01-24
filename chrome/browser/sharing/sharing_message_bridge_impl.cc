@@ -265,7 +265,7 @@ SharingMessageBridgeImpl::TimedCallback::TimedCallback(
     base::OnceClosure timeout_callback)
     : commit_callback_(std::move(commit_callback)) {
   const base::TimeDelta time_delta =
-      base::TimeDelta::FromSeconds(kSharingMessageBridgeTimeoutSeconds.Get());
+      base::Seconds(kSharingMessageBridgeTimeoutSeconds.Get());
   timer_.Start(FROM_HERE, time_delta, std::move(timeout_callback));
 }
 

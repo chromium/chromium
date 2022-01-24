@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
 #include "media/base/video_frame.h"

@@ -219,8 +219,7 @@ TEST_F(BorealisTasksTest,
       Call(BorealisStartupResult::kAwaitBorealisStartupFailed, StrNe("")));
 
   AwaitBorealisStartup task(context_->profile(), context_->vm_name());
-  task.GetWatcherForTesting().SetTimeoutForTesting(
-      base::TimeDelta::FromMilliseconds(0));
+  task.GetWatcherForTesting().SetTimeoutForTesting(base::Milliseconds(0));
   task.Run(context_.get(), callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 }

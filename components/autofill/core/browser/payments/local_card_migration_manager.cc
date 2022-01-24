@@ -16,9 +16,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -205,7 +205,7 @@ void LocalCardMigrationManager::OnDidGetUploadDetails(
   if (observer_for_testing_)
     observer_for_testing_->OnReceivedGetUploadDetailsResponse();
 
-  if (result == AutofillClient::SUCCESS) {
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     LegalMessageLine::Parse(*legal_message, &legal_message_lines_,
                             /*escape_apostrophes=*/true);
 
@@ -285,7 +285,7 @@ void LocalCardMigrationManager::OnDidMigrateLocalCards(
   if (!save_result)
     return;
 
-  if (result == AutofillClient::PaymentsRpcResult::SUCCESS) {
+  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     std::vector<CreditCard> migrated_cards;
     // Traverse the migratable credit cards to update each migrated card status.
     for (MigratableCreditCard& card : migratable_credit_cards_) {
@@ -328,7 +328,7 @@ void LocalCardMigrationManager::OnDidMigrateLocalCards(
   }
 
   client_->ShowLocalCardMigrationResults(
-      result != AutofillClient::PaymentsRpcResult::SUCCESS,
+      result != AutofillClient::PaymentsRpcResult::kSuccess,
       base::UTF8ToUTF16(display_text), migratable_credit_cards_,
       base::BindRepeating(
           &LocalCardMigrationManager::OnUserDeletedLocalCardViaMigrationDialog,

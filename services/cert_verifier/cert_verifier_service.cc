@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
@@ -120,6 +121,9 @@ void CertVerifierServiceImpl::EnableNetworkAccess(
 
 void CertVerifierServiceImpl::Verify(
     const net::CertVerifier::RequestParams& params,
+    uint32_t netlog_source_type,
+    uint32_t netlog_source_id,
+    base::TimeTicks netlog_source_start_time,
     mojo::PendingRemote<mojom::CertVerifierRequest> cert_verifier_request) {
   DVLOG(3) << "Received certificate validation request for hostname: "
            << params.hostname();
@@ -138,11 +142,24 @@ void CertVerifierServiceImpl::Verify(
       base::BindOnce(&CertVerifyResultHelper::CompleteCertVerifierRequest,
                      std::move(result_helper));
 
+  if (netlog_source_type >=
+      static_cast<uint32_t>(net::NetLogSourceType::COUNT)) {
+    // Note that netlog_source_id is not checked here. It is valid to pass a
+    // unbound NetLogWithSource into CertVerifier::Verify. If that occurs
+    // the netlog_source_id passed through mojo will be kInvalidId and the
+    // NetLogWithSource::Make below will in turn create an unbound
+    // NetLogWithSource.
+    receiver_.ReportBadMessage("invalid NetLogSource");
+    return;
+  }
   int net_err = verifier_->Verify(
       params, result.get(), std::move(callback),
       result_helper_ptr->local_request(),
-      net::NetLogWithSource::Make(net::NetLog::Get(),
-                                  net::NetLogSourceType::CERT_VERIFIER_JOB));
+      net::NetLogWithSource::Make(
+          net::NetLog::Get(),
+          net::NetLogSource(
+              static_cast<net::NetLogSourceType>(netlog_source_type),
+              netlog_source_id, netlog_source_start_time)));
   if (net_err == net::ERR_IO_PENDING) {
     // If this request is to be completely asynchronously, give the callback
     // ownership of our mojom::CertVerifierRequest and net::CertVerifyResult.

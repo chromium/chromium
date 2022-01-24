@@ -211,8 +211,7 @@ void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
           "order to sync user's password and update the token."
         data: "Access token and token_type."
         destination: GOOGLE_OWNED_SERVICE
-        }
-  })");
+      })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   switch (request_type_) {
     case RequestType::kCreateToken:

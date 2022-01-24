@@ -96,13 +96,12 @@ bool ExtractFormsData(NSString* forms_json,
     return false;
 
   // Returned data should be a list of forms.
-  const base::ListValue* forms_list = nullptr;
-  if (!forms_value->GetAsList(&forms_list))
+  if (!forms_value->is_list())
     return false;
 
   // Iterate through all the extracted forms and copy the data from JSON into
   // BrowserAutofillManager structures.
-  for (const auto& form_dict : forms_list->GetList()) {
+  for (const auto& form_dict : forms_value->GetList()) {
     autofill::FormData form;
     if (ExtractFormData(form_dict, filtered, form_name, main_frame_url,
                         frame_origin, &form))
@@ -136,7 +135,7 @@ bool ExtractFormData(const base::Value& form_value,
 
   // Use GURL object to verify origin of host frame URL.
   form_data->url = GURL(origin);
-  if (form_data->url.GetOrigin() != form_frame_origin)
+  if (form_data->url.DeprecatedGetOriginAsURL() != form_frame_origin)
     return false;
 
   // main_frame_origin is used for logging UKM.
@@ -158,7 +157,8 @@ bool ExtractFormData(const base::Value& form_value,
   // Optional fields.
   form_dictionary->GetString("name_attribute", &form_data->name_attribute);
   form_dictionary->GetString("id_attribute", &form_data->id_attribute);
-  form_dictionary->GetBoolean("is_form_tag", &form_data->is_form_tag);
+  form_data->is_form_tag = form_dictionary->FindBoolKey("is_form_tag")
+                               .value_or(form_data->is_form_tag);
   form_dictionary->GetString("frame_id", &form_data->frame_id);
 
   // Field list (mandatory) is extracted.
@@ -201,19 +201,22 @@ bool ExtractFormFieldData(const base::DictionaryValue& field,
   field.GetString("value", &field_data->value);
   field.GetString("autocomplete_attribute",
                   &field_data->autocomplete_attribute);
-  field.GetBoolean("is_autofilled", &field_data->is_autofilled);
+  field_data->is_autofilled =
+      field.FindBoolKey("is_autofilled").value_or(field_data->is_autofilled);
 
   int max_length = 0;
   if (field.GetInteger("max_length", &max_length))
     field_data->max_length = max_length;
 
   // TODO(crbug.com/427614): Extract |is_checked|.
-  bool is_checkable = false;
-  field.GetBoolean("is_checkable", &is_checkable);
+  bool is_checkable = field.FindBoolKey("is_checkable").value_or(false);
   autofill::SetCheckStatus(field_data, is_checkable, false);
 
-  field.GetBoolean("is_focusable", &field_data->is_focusable);
-  field.GetBoolean("should_autocomplete", &field_data->should_autocomplete);
+  field_data->is_focusable =
+      field.FindBoolKey("is_focusable").value_or(field_data->is_focusable);
+  field_data->should_autocomplete =
+      field.FindBoolKey("should_autocomplete")
+          .value_or(field_data->should_autocomplete);
 
   // RoleAttribute::kOther is the default value. The only other value as of this
   // writing is RoleAttribute::kPresentation.
@@ -287,7 +290,7 @@ void ExecuteJavaScriptFunction(const std::string& name,
         name, parameters, base::BindOnce(^(const base::Value* res) {
           std::move(cb).Run(res);
         }),
-        base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
+        base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
     if (!called) {
       std::move(cb).Run(nil);
     }
@@ -296,23 +299,22 @@ void ExecuteJavaScriptFunction(const std::string& name,
   }
 }
 
-bool ExtractIDs(NSString* json_string, std::vector<uint32_t>* ids) {
+bool ExtractIDs(NSString* json_string, std::vector<FieldRendererId>* ids) {
   DCHECK(ids);
   std::unique_ptr<base::Value> ids_value = ParseJson(json_string);
   if (!ids_value)
     return false;
 
-  const base::ListValue* ids_list = nullptr;
-  if (!ids_value->GetAsList(&ids_list))
+  if (!ids_value->is_list())
     return false;
 
-  for (const auto& unique_id : ids_list->GetList()) {
+  for (const auto& unique_id : ids_value->GetList()) {
     std::string id_string;
     if (!unique_id.GetAsString(&id_string))
       return false;
     uint32_t id_num = 0;
     StringToUint(id_string, &id_num);
-    ids->push_back(id_num);
+    ids->push_back(FieldRendererId(id_num));
   }
   return true;
 }

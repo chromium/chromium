@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PREFS_INCOGNITO_MODE_PREFS_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 
 class PrefService;
 class Profile;
@@ -24,21 +23,25 @@ class IncognitoModePrefs {
  public:
   // Possible values for Incognito mode availability. Please, do not change
   // the order of entries since numeric values are exposed to users.
-  enum Availability {
+  enum class Availability {
     // Incognito mode enabled. Users may open pages in both Incognito mode and
     // normal mode (usually the default behaviour).
-    ENABLED = 0,
+    kEnabled = 0,
     // Incognito mode disabled. Users may not open pages in Incognito mode.
     // Only normal mode is available for browsing.
-    DISABLED,
+    kDisabled,
     // Incognito mode forced. Users may open pages *ONLY* in Incognito mode.
     // Normal mode is not available for browsing.
-    FORCED,
+    kForced,
 
-    AVAILABILITY_NUM_TYPES
+    kNumTypes
   };
 
-  static constexpr Availability kDefaultAvailability = ENABLED;
+  static constexpr Availability kDefaultAvailability = Availability::kEnabled;
+
+  IncognitoModePrefs() = delete;
+  IncognitoModePrefs(const IncognitoModePrefs&) = delete;
+  IncognitoModePrefs& operator=(const IncognitoModePrefs&) = delete;
 
   // Register incognito related preferences.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -84,8 +87,6 @@ class IncognitoModePrefs {
   // to do - such as when checking for FORCED state).
   static Availability GetAvailabilityInternal(const PrefService* pref_service,
                                               GetAvailabilityMode mode);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(IncognitoModePrefs);
 };
 
 #endif  // CHROME_BROWSER_PREFS_INCOGNITO_MODE_PREFS_H_

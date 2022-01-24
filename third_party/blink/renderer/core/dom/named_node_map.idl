@@ -24,7 +24,7 @@
     LegacyUnenumerableNamedProperties,
     Exposed=Window
 ] interface NamedNodeMap {
-    [Affects=Nothing] readonly attribute unsigned long length;
+    readonly attribute unsigned long length;
     [Affects=Nothing, MeasureAs=NamedNodeMapItem] getter Attr? item(unsigned long index);
     [Affects=Nothing, MeasureAs=NamedNodeMapGetNamedItem] getter Attr? getNamedItem(DOMString name);
     [MeasureAs=NamedNodeMapGetNamedItemNS] Attr? getNamedItemNS(DOMString? namespaceURI, DOMString localName);

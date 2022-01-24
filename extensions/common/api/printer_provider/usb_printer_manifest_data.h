@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "extensions/common/extension.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"

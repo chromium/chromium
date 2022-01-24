@@ -7,10 +7,12 @@
 #include <stdlib.h>
 
 #include "base/allocator/buildflags.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif
 
@@ -18,15 +20,21 @@ namespace base {
 namespace internal {
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-NonScannableAllocator::NonScannableAllocator() = default;
-NonScannableAllocator::~NonScannableAllocator() = default;
+template <bool Quarantinable>
+NonScannableAllocatorImpl<Quarantinable>::NonScannableAllocatorImpl() = default;
+template <bool Quarantinable>
+NonScannableAllocatorImpl<Quarantinable>::~NonScannableAllocatorImpl() =
+    default;
 
-NonScannableAllocator& NonScannableAllocator::Instance() {
-  static base::NoDestructor<NonScannableAllocator> instance;
+template <bool Quarantinable>
+NonScannableAllocatorImpl<Quarantinable>&
+NonScannableAllocatorImpl<Quarantinable>::Instance() {
+  static base::NoDestructor<NonScannableAllocatorImpl> instance;
   return *instance;
 }
 
-void* NonScannableAllocator::Alloc(size_t size) {
+template <bool Quarantinable>
+void* NonScannableAllocatorImpl<Quarantinable>::Alloc(size_t size) {
   // TODO(bikineev): Change to LIKELY once PCScan is enabled by default.
   if (UNLIKELY(pcscan_enabled_.load(std::memory_order_acquire))) {
     PA_DCHECK(allocator_.get());
@@ -37,27 +45,42 @@ void* NonScannableAllocator::Alloc(size_t size) {
       0, size, PartitionPageSize());
 }
 
-void NonScannableAllocator::Free(void* ptr) {
+template <bool Quarantinable>
+void NonScannableAllocatorImpl<Quarantinable>::Free(void* ptr) {
   ThreadSafePartitionRoot::FreeNoHooks(ptr);
 }
 
-void NonScannableAllocator::EnablePCScan() {
+template <bool Quarantinable>
+void NonScannableAllocatorImpl<Quarantinable>::NotifyPCScanEnabled() {
+  base::PartitionOptions::LazyCommit lazy_commit =
+      base::FeatureList::IsEnabled(base::features::kPartitionAllocLazyCommit)
+          ? base::PartitionOptions::LazyCommit::kEnabled
+          : base::PartitionOptions::LazyCommit::kDisabled;
   allocator_.reset(MakePCScanMetadata<base::PartitionAllocator>());
-  allocator_->init(PartitionOptions(PartitionOptions::AlignedAlloc::kDisallowed,
-                                    PartitionOptions::ThreadCache::kDisabled,
-                                    PartitionOptions::Quarantine::kAllowed,
-                                    PartitionOptions::Cookies::kAllowed,
-                                    PartitionOptions::RefCount::kDisallowed));
-  PCScan::RegisterNonScannableRoot(allocator_->root());
+  allocator_->init(PartitionOptions(
+      PartitionOptions::AlignedAlloc::kDisallowed,
+      PartitionOptions::ThreadCache::kDisabled,
+      Quarantinable ? PartitionOptions::Quarantine::kAllowed
+                    : PartitionOptions::Quarantine::kDisallowed,
+      PartitionOptions::Cookie::kAllowed,
+      PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::UseConfigurablePool::kNo, lazy_commit));
+  if (Quarantinable)
+    PCScan::RegisterNonScannableRoot(allocator_->root());
   pcscan_enabled_.store(true, std::memory_order_release);
 }
+
+template class NonScannableAllocatorImpl<true>;
+template class NonScannableAllocatorImpl<false>;
+
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace internal
 
 void* AllocNonScannable(size_t size) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  return internal::NonScannableAllocator::Instance().Alloc(size);
+  return internal::NonScannableAllocatorImpl</*Quarantinable=*/true>::Instance()
+      .Alloc(size);
 #else
   return ::malloc(size);
 #endif
@@ -65,7 +88,25 @@ void* AllocNonScannable(size_t size) {
 
 void FreeNonScannable(void* ptr) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  internal::NonScannableAllocator::Free(ptr);
+  internal::NonScannableAllocatorImpl</*Quarantinable=*/true>::Free(ptr);
+#else
+  return ::free(ptr);
+#endif
+}
+
+void* AllocNonQuarantinable(size_t size) {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  return internal::NonScannableAllocatorImpl<
+             /*Quarantinable=*/false>::Instance()
+      .Alloc(size);
+#else
+  return ::malloc(size);
+#endif
+}
+
+void FreeNonQuarantinable(void* ptr) {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  internal::NonScannableAllocatorImpl</*Quarantinable=*/false>::Free(ptr);
 #else
   return ::free(ptr);
 #endif

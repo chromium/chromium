@@ -32,6 +32,9 @@ class PPAPI_PROXY_EXPORT FileRefResource
                                    PP_Instance instance,
                                    const FileRefCreateInfo& info);
 
+  FileRefResource(const FileRefResource&) = delete;
+  FileRefResource& operator=(const FileRefResource&) = delete;
+
   ~FileRefResource() override;
 
   // Resource implementation.
@@ -93,8 +96,6 @@ class PPAPI_PROXY_EXPORT FileRefResource
   scoped_refptr<StringVar> name_var_;
   scoped_refptr<StringVar> path_var_;
   scoped_refptr<StringVar> absolute_path_var_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileRefResource);
 };
 
 }  // namespace proxy

@@ -5,79 +5,98 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_TARGET_AUTO_ATTACHER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_TARGET_AUTO_ATTACHER_H_
 
+#include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "content/browser/devtools/service_worker_devtools_manager.h"
-#include "content/public/browser/devtools_agent_host.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
 
 namespace content {
 
+class DevToolsAgentHost;
 class DevToolsAgentHostImpl;
 class DevToolsRendererChannel;
+class NavigationHandle;
 class NavigationRequest;
-class RenderFrameHostImpl;
+class NavigationThrottle;
 
 namespace protocol {
 
 class TargetAutoAttacher {
  public:
-  class Delegate {
+  class Client : public base::CheckedObserver {
    public:
-    virtual bool AutoAttach(DevToolsAgentHost* host,
+    virtual bool AutoAttach(TargetAutoAttacher* source,
+                            DevToolsAgentHost* host,
                             bool waiting_for_debugger) = 0;
-    virtual void AutoDetach(DevToolsAgentHost* host) = 0;
+    virtual void AutoDetach(TargetAutoAttacher* source,
+                            DevToolsAgentHost* host) = 0;
     virtual void SetAttachedTargetsOfType(
+        TargetAutoAttacher* source,
         const base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,
         const std::string& type) = 0;
+    virtual void AutoAttacherDestroyed(TargetAutoAttacher* auto_attacher) = 0;
+    virtual std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
+        TargetAutoAttacher* auto_attacher,
+        NavigationHandle* navigation_handle) = 0;
 
    protected:
-    Delegate() = default;
-    virtual ~Delegate() = default;
+    Client() = default;
+    ~Client() override = default;
   };
 
-  static std::unique_ptr<TargetAutoAttacher> CreateForBrowser();
-  static std::unique_ptr<TargetAutoAttacher> CreateForServiceWorker(
-      DevToolsRendererChannel* channel);
-  static std::unique_ptr<TargetAutoAttacher> CreateForWorker(
-      DevToolsRendererChannel* channel);
-  static std::unique_ptr<TargetAutoAttacher> CreateForFrame(
-      DevToolsRendererChannel* channel);
+  TargetAutoAttacher(const TargetAutoAttacher&) = delete;
+  TargetAutoAttacher& operator=(const TargetAutoAttacher&) = delete;
 
   virtual ~TargetAutoAttacher();
 
-  void SetDelegate(Delegate* delegate);
-  virtual void SetRenderFrameHost(RenderFrameHostImpl* host);
-  void SetAutoAttach(bool auto_attach,
-                     bool wait_for_debugger_on_start,
-                     base::OnceClosure callback);
+  void AddClient(Client* client,
+                 bool wait_for_debugger_on_start,
+                 base::OnceClosure callback);
+  void RemoveClient(Client* client);
+  void UpdateWaitForDebuggerOnStart(Client* client,
+                                    bool wait_for_debugger_on_start,
+                                    base::OnceClosure callback);
 
-  DevToolsAgentHost* AutoAttachToFrame(NavigationRequest* navigation_request);
-  void ChildWorkerCreated(DevToolsAgentHostImpl* agent_host,
-                          bool waiting_for_debugger);
-  virtual void UpdatePortals();
-  virtual void DidFinishNavigation(NavigationRequest* navigation_handle);
-  bool auto_attach() const { return auto_attach_; }
-  bool wait_for_debugger_on_start() const {
-    return wait_for_debugger_on_start_;
-  }
+  void AppendNavigationThrottles(
+      NavigationHandle* navigation_handle,
+      std::vector<std::unique_ptr<NavigationThrottle>>* throttles);
+
+  DevToolsAgentHost* AutoAttachToFrame(NavigationRequest* navigation_request,
+                                       bool wait_for_debugger_on_start);
 
  protected:
   using Hosts = base::flat_set<scoped_refptr<DevToolsAgentHost>>;
 
   TargetAutoAttacher();
 
-  Delegate* delegate() { return delegate_; }
+  bool auto_attach() const;
+  bool wait_for_debugger_on_start() const;
 
-  DevToolsAgentHost* AutoAttachToFrame(NavigationRequest* navigation_request,
-                                       bool wait_for_debugger_on_start);
   virtual void UpdateAutoAttach(base::OnceClosure callback);
 
+  bool DispatchAutoAttach(DevToolsAgentHost* host, bool waiting_for_debugger);
+  void DispatchAutoDetach(DevToolsAgentHost* host);
+  void DispatchSetAttachedTargetsOfType(
+      const base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,
+      const std::string& type);
+
  private:
-  Delegate* delegate_ = nullptr;
+  base::ObserverList<Client, false, true> clients_;
+  base::flat_set<Client*> clients_requesting_wait_for_debugger_;
+};
 
-  bool auto_attach_ = false;
-  bool wait_for_debugger_on_start_ = false;
+class RendererAutoAttacherBase : public TargetAutoAttacher {
+ public:
+  explicit RendererAutoAttacherBase(DevToolsRendererChannel* renderer_channel);
+  ~RendererAutoAttacherBase() override;
 
-  DISALLOW_COPY_AND_ASSIGN(TargetAutoAttacher);
+ protected:
+  void UpdateAutoAttach(base::OnceClosure callback) override;
+  void ChildWorkerCreated(DevToolsAgentHostImpl* agent_host,
+                          bool waiting_for_debugger);
+
+ private:
+  DevToolsRendererChannel* const renderer_channel_;
 };
 
 }  // namespace protocol

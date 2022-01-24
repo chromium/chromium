@@ -43,7 +43,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
  public:
   TileManagerPerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   void InitializeFrameSink() override {
@@ -268,7 +268,7 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
 
     timer_.Reset();
     do {
-      host_impl()->AdvanceToNextFrame(base::TimeDelta::FromMilliseconds(1));
+      host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
       for (auto* layer : layers)
         layer->UpdateTiles();
 

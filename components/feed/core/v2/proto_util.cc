@@ -15,12 +15,17 @@
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
 #include "components/feed/core/proto/v2/wire/chrome_client_info.pb.h"
+#include "components/feed/core/proto/v2/wire/feed_entry_point_data.pb.h"
+#include "components/feed/core/proto/v2/wire/feed_entry_point_source.pb.h"
+#include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/reading_list/features/reading_list_switches.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
@@ -121,15 +126,15 @@ feedwire::Request CreateFeedQueryRequest(
   request.set_request_version(feedwire::Request::FEED_QUERY);
 
   feedwire::FeedRequest& feed_request = *request.mutable_feed_request();
-  feed_request.add_client_capability(feedwire::Capability::BASE_UI);
   feed_request.add_client_capability(feedwire::Capability::CARD_MENU);
   feed_request.add_client_capability(feedwire::Capability::LOTTIE_ANIMATIONS);
   feed_request.add_client_capability(
       feedwire::Capability::LONG_PRESS_CARD_MENU);
   feed_request.add_client_capability(feedwire::Capability::SHARE);
-  if (stream_type.IsWebFeed()) {
-    feed_request.add_client_capability(feedwire::Capability::WEB_FEEDS);
-  }
+
+  feed_request.add_client_capability(feedwire::Capability::OPEN_IN_TAB);
+  feed_request.add_client_capability(feedwire::Capability::OPEN_IN_INCOGNITO);
+
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
   if (base::FeatureList::IsEnabled(kInterestFeedV2Hearts)) {
@@ -142,9 +147,46 @@ feedwire::Request CreateFeedQueryRequest(
         feedwire::Capability::OPEN_VIDEO_COMMAND);
   }
 
+  if (base::FeatureList::IsEnabled(kFeedStamp)) {
+    feed_request.add_client_capability(
+        feedwire::Capability::SILK_AMP_OPEN_COMMAND);
+    feed_request.add_client_capability(feedwire::Capability::AMP_STORY_PLAYER);
+    feed_request.add_client_capability(
+        feedwire::Capability::AMP_GROUP_DATASTORE);
+  }
+
+  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+    feed_request.add_client_capability(feedwire::Capability::READ_LATER);
+  } else {
+    feed_request.add_client_capability(feedwire::Capability::DOWNLOAD_LINK);
+  }
+
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);
   feedwire::FeedQuery& query = *feed_request.mutable_feed_query();
   query.set_reason(request_reason);
+  switch (request_metadata.content_order) {
+    case ContentOrder::kReverseChron:
+      query.set_order_by(
+          feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT);
+      break;
+    case ContentOrder::kGrouped:
+      query.set_order_by(
+          feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED);
+      break;
+    case ContentOrder::kUnspecified:
+      break;
+  }
+
+  // Set the feed entry point based on the stream type.
+  feedwire::FeedEntryPointData& entry_point =
+      *query.mutable_feed_entry_point_data();
+  if (stream_type == kForYouStream) {
+    entry_point.set_feed_entry_point_source_value(
+        feedwire::FeedEntryPointSource::CHROME_DISCOVER_FEED);
+  } else if (stream_type == kWebFeedStream) {
+    entry_point.set_feed_entry_point_source_value(
+        feedwire::FeedEntryPointSource::CHROME_FOLLOWING_FEED);
+  }
 
   // |consistency_token|, for action reporting, is only applicable to signed-in
   // requests. The presence of |client_instance_id|, also signed-in only, can be
@@ -170,6 +212,17 @@ void SetNoticeCardAcknowledged(feedwire::Request* request,
         ->mutable_feed_query()
         ->mutable_chrome_fulfillment_info()
         ->set_notice_card_acknowledged(true);
+  }
+}
+
+void SetCardSpecificNoticeAcknowledged(
+    feedwire::Request* request,
+    const RequestMetadata& request_metadata) {
+  for (const auto& key : request_metadata.acknowledged_notice_keys) {
+    request->mutable_feed_request()
+        ->mutable_feed_query()
+        ->mutable_chrome_fulfillment_info()
+        ->add_acknowledged_notice_key(key);
   }
 }
 
@@ -245,6 +298,8 @@ feedwire::ClientInfo CreateClientInfo(const RequestMetadata& request_metadata) {
         request_metadata.session_id);
   }
 
+  client_info.mutable_chrome_client_info()->set_start_surface(
+      request_metadata.chrome_info.start_surface);
   return client_info;
 }
 
@@ -266,6 +321,7 @@ feedwire::Request CreateFeedQueryRefreshRequest(
         ->set_web_feed_token(kChromeFollowToken);
   }
   SetNoticeCardAcknowledged(&request, request_metadata);
+  SetCardSpecificNoticeAcknowledged(&request, request_metadata);
   return request;
 }
 

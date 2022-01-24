@@ -232,8 +232,7 @@ void AudioStreamMonitor::UpdateStreams() {
 
 void AudioStreamMonitor::MaybeToggle() {
   const base::TimeTicks off_time =
-      last_became_silent_time_ +
-      base::TimeDelta::FromMilliseconds(kHoldOnMilliseconds);
+      last_became_silent_time_ + base::Milliseconds(kHoldOnMilliseconds);
   const base::TimeTicks now = clock_->NowTicks();
   const bool should_stop_timer = is_audible_ || now >= off_time;
   const bool should_indicator_be_on = is_audible_ || !should_stop_timer;

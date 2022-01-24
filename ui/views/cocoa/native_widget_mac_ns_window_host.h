@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "components/remote_cocoa/browser/application_host.h"
@@ -75,6 +74,11 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   // Creates one side of the bridge. |owner| must not be NULL.
   explicit NativeWidgetMacNSWindowHost(NativeWidgetMac* owner);
+
+  NativeWidgetMacNSWindowHost(const NativeWidgetMacNSWindowHost&) = delete;
+  NativeWidgetMacNSWindowHost& operator=(const NativeWidgetMacNSWindowHost&) =
+      delete;
+
   ~NativeWidgetMacNSWindowHost() override;
 
   // The NativeWidgetMac that owns |this|.
@@ -146,9 +150,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void SetBoundsInScreen(const gfx::Rect& bounds);
 
   // Tell the window to transition to being fullscreen or not-fullscreen.
-  // If `delay` is true, this will set the target fullscreen state and then post
-  // a delayed task to request the window transition. See crbug.com/1210548
-  void SetFullscreen(bool fullscreen, bool delay = false);
+  // If `delay` is given, this sets the target fullscreen state and then posts
+  // a delayed task to request the window transition. See crbug.com/1210548.
+  void SetFullscreen(bool fullscreen, base::TimeDelta delay = {});
 
   // The ultimate fullscreen state that is being targeted (irrespective of any
   // active transitions).
@@ -235,6 +239,10 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void UpdateCompositorProperties();
   void DestroyCompositor();
 
+  // This is used to request a delayed fullscreen window transition after some
+  // other window placement occurs; see SetFullscreen() and crbug.com/1210548.
+  static void SetFullscreenAfterDelay(uint64_t bridged_native_widget_id);
+
   // Sort |attached_native_view_host_views_| by the order in which their
   // NSViews should appear as subviews. This does a recursive pre-order
   // traversal of the views::View tree starting at |view|.
@@ -258,6 +266,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
                  gfx::Point* baseline_point) override;
   remote_cocoa::DragDropClient* GetDragDropClient() override;
   ui::TextInputClient* GetTextInputClient() override;
+  bool MustPostTaskToRunModalSheetAnimation() const override;
 
   // remote_cocoa::ApplicationHost::Observer:
   void OnApplicationHostDestroying(
@@ -479,7 +488,6 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   mojo::AssociatedReceiver<remote_cocoa::mojom::NativeWidgetNSWindowHost>
       remote_ns_window_host_receiver_{this};
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetMacNSWindowHost);
 };
 
 }  // namespace views

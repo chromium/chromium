@@ -53,6 +53,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::base_internal
+    absl::core_headers
     absl::meta
   PUBLIC
 )

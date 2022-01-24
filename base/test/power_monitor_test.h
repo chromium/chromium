@@ -7,6 +7,7 @@
 
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/power_monitor/power_observer.h"
 
 namespace base {
 
@@ -48,6 +49,7 @@ class ScopedPowerMonitorTestSource {
   void GeneratePowerStateEvent(bool on_battery_power);
   void GenerateThermalThrottlingEvent(
       PowerThermalObserver::DeviceThermalState new_thermal_state);
+  void GenerateSpeedLimitEvent(int speed_limit);
 
  private:
   // Owned by PowerMonitor.
@@ -69,17 +71,20 @@ class PowerMonitorTestObserver : public PowerSuspendObserver,
   // PowerThermalObserver overrides.
   void OnThermalStateChange(
       PowerThermalObserver::DeviceThermalState new_state) override;
+  void OnSpeedLimitChange(int speed_limit) override;
 
   // Test status counts.
   int power_state_changes() const { return power_state_changes_; }
   int suspends() const { return suspends_; }
   int resumes() const { return resumes_; }
   int thermal_state_changes() const { return thermal_state_changes_; }
+  int speed_limit_changes() const { return speed_limit_changes_; }
 
   bool last_power_state() const { return last_power_state_; }
   PowerThermalObserver::DeviceThermalState last_thermal_state() const {
     return last_thermal_state_;
   }
+  int last_speed_limit() const { return last_speed_limit_; }
 
  private:
   // Count of OnPowerStateChange notifications.
@@ -90,12 +95,16 @@ class PowerMonitorTestObserver : public PowerSuspendObserver,
   int resumes_ = 0;
   // Count of OnThermalStateChange notifications.
   int thermal_state_changes_ = 0;
+  // Count of OnSpeedLimitChange notifications.
+  int speed_limit_changes_ = 0;
 
   // Last power state we were notified of.
   bool last_power_state_ = false;
   // Last power thermal we were notified of.
   PowerThermalObserver::DeviceThermalState last_thermal_state_ =
       PowerThermalObserver::DeviceThermalState::kUnknown;
+  // Last speed limit we were notified of.
+  int last_speed_limit_ = PowerThermalObserver::kSpeedLimitMax;
 };
 
 }  // namespace test

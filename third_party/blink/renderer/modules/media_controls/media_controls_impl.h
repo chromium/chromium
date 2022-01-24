@@ -81,6 +81,10 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   static MediaControlsImpl* Create(HTMLMediaElement&, ShadowRoot&);
 
   explicit MediaControlsImpl(HTMLMediaElement&);
+
+  MediaControlsImpl(const MediaControlsImpl&) = delete;
+  MediaControlsImpl& operator=(const MediaControlsImpl&) = delete;
+
   ~MediaControlsImpl() override = default;
 
   // Returns whether the event is considered a touch event.
@@ -439,8 +443,6 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   Member<MediaControlsTextTrackManager> text_track_manager_;
 
   bool is_test_mode_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControlsImpl);
 };
 }  // namespace blink
 

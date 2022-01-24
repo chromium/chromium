@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/test/content_browser_test.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/native_widget_types.h"
@@ -17,6 +16,10 @@ namespace content {
 class AccessibilityBrowserTest : public ContentBrowserTest {
  public:
   AccessibilityBrowserTest() = default;
+
+  AccessibilityBrowserTest(const AccessibilityBrowserTest&) = delete;
+  AccessibilityBrowserTest& operator=(const AccessibilityBrowserTest&) = delete;
+
   ~AccessibilityBrowserTest() override = default;
 
  protected:
@@ -35,9 +38,6 @@ class AccessibilityBrowserTest : public ContentBrowserTest {
 
   static std::string InputContentsString();
   static std::string TextAreaContentsString();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityBrowserTest);
 };
 
 }  // namespace content

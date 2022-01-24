@@ -8,10 +8,17 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/dbus/typecd/typecd_client.h"
+
+namespace device {
+namespace mojom {
+class UsbDeviceInfo;
+}  // namespace mojom
+}  // namespace device
 
 namespace ash {
 
@@ -41,6 +48,11 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
     // recently plugged in Thunderbolt/USB4 device is in the block list. The
     // block list is specified by the Pciguard Daemon.
     virtual void OnPeripheralBlockedReceived() = 0;
+
+    // Called to notify observers, primarily notification controllers, that the
+    // recently plugged in Thunderbolt/USB4 device is a billboard device that is
+    // not supported by the board.
+    virtual void OnBillboardDeviceConnected() = 0;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -52,7 +64,8 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
     kAltModeFallbackDueToPciguard = 3,
     kAltModeFallbackInGuestSession = 4,
     kPeripheralBlocked = 5,
-    kMaxValue = kPeripheralBlocked,
+    kBillboardDevice = 6,
+    kMaxValue = kBillboardDevice,
   };
 
   // Sets the global instance. Must be called before any calls to Get().
@@ -71,6 +84,8 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  void OnDeviceConnected(device::mojom::UsbDeviceInfo* device);
 
  private:
   friend class PciePeripheralManagerTest;
@@ -91,6 +106,11 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
   void NotifyLimitedPerformancePeripheralReceived();
   void NotifyGuestModeNotificationReceived(bool is_thunderbolt_only);
   void NotifyPeripheralBlockedReceived();
+  void OnBillboardDeviceConnected(bool billboard_is_supported);
+
+  // Called by unit tests to set up root_prefix_ for simulating the existence
+  // of a system folder.
+  void SetRootPrefixForTesting(const std::string& prefix);
 
   const bool is_guest_profile_;
   // Pcie tunneling refers to allowing Thunderbolt/USB4 peripherals to run at
@@ -100,6 +120,11 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
   // in a restricted state (e.g. certain devices are Thunderbolt only).
   bool is_pcie_tunneling_allowed_;
   base::ObserverList<Observer> observer_list_;
+
+  std::string root_prefix_ = "";
+
+  // Used for callbacks.
+  base::WeakPtrFactory<PciePeripheralManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

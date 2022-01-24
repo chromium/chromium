@@ -11,8 +11,8 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "media/audio/audio_sink_parameters.h"
@@ -53,6 +53,10 @@ class MODULES_EXPORT AudioRendererSinkCache {
       scoped_refptr<base::SequencedTaskRunner> cleanup_task_runner,
       CreateSinkCallback create_sink_callback,
       base::TimeDelta delete_timeout);
+
+  AudioRendererSinkCache(const AudioRendererSinkCache&) = delete;
+  AudioRendererSinkCache& operator=(const AudioRendererSinkCache&) = delete;
+
   ~AudioRendererSinkCache();
 
   // AudioRendererSinkCache implementation:
@@ -116,8 +120,6 @@ class MODULES_EXPORT AudioRendererSinkCache {
   // Cached sinks, protected by lock.
   base::Lock cache_lock_;
   CacheContainer cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererSinkCache);
 };
 
 }  // namespace blink

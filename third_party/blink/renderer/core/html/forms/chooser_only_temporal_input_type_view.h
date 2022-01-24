@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser_client.h"
 #include "third_party/blink/renderer/core/html/forms/keyboard_clickable_input_type_view.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 namespace blink {
 
@@ -55,6 +56,7 @@ class ChooserOnlyTemporalInputTypeView final
   void ValueAttributeChanged() override;
   void DidSetValue(const String&, bool value_changed) override;
   void HandleDOMActivateEvent(Event&) override;
+  void OpenPopupView() override;
   void UpdateView() override;
 
   // DateTimeChooserClient functions:

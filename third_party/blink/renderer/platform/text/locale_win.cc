@@ -51,7 +51,7 @@
 namespace blink {
 
 static String ExtractLanguageCode(const String& locale) {
-  size_t dash_position = locale.find('-');
+  wtf_size_t dash_position = locale.find('-');
   if (dash_position == kNotFound)
     return locale;
   return locale.Left(dash_position);
@@ -378,7 +378,7 @@ String LocaleWin::ShortTimeFormat() {
     StringBuilder builder;
     builder.Append(GetLocaleInfoString(LOCALE_STIME));
     builder.Append("ss");
-    size_t pos = format.ReverseFind(builder.ToString());
+    wtf_size_t pos = format.ReverseFind(builder.ToString());
     if (pos != kNotFound)
       format.Remove(pos, builder.length());
   }

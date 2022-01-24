@@ -24,6 +24,10 @@ class AppWindow;
 class ShellTestHelperAura {
  public:
   ShellTestHelperAura();
+
+  ShellTestHelperAura(const ShellTestHelperAura&) = delete;
+  ShellTestHelperAura& operator=(const ShellTestHelperAura&) = delete;
+
   ~ShellTestHelperAura();
 
   // Initializes common test dependencies.
@@ -37,8 +41,6 @@ class ShellTestHelperAura {
 
  private:
   std::unique_ptr<aura::test::AuraTestHelper> helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellTestHelperAura);
 };
 
 }  // namespace extensions

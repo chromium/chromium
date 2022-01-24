@@ -214,27 +214,32 @@ function setUpCursorChangeListener(
       chrome.automation.EventType.TEXT_SELECTION_CHANGED, checkActionFinished);
 }
 
-TEST_F('SwitchAccessTextNavigationManagerTest', 'JumpToBeginning', function() {
-  runTextNavigationTest(this, {
-    content: 'hi there',
-    initialIndex: 6,
-    targetIndex: 0,
-    navigationAction: () => {
-      TextNavigationManager.jumpToBeginning();
-    }
-  });
-});
+// TODO(crbug.com/1268230): Re-enable test.
+TEST_F(
+    'SwitchAccessTextNavigationManagerTest', 'DISABLED_JumpToBeginning',
+    function() {
+      runTextNavigationTest(this, {
+        content: 'hi there',
+        initialIndex: 6,
+        targetIndex: 0,
+        navigationAction: () => {
+          TextNavigationManager.jumpToBeginning();
+        }
+      });
+    });
 
-TEST_F('SwitchAccessTextNavigationManagerTest', 'JumpToEnd', function() {
-  runTextNavigationTest(this, {
-    content: 'hi there',
-    initialIndex: 3,
-    targetIndex: 8,
-    navigationAction: () => {
-      TextNavigationManager.jumpToEnd();
-    }
-  });
-});
+// TODO(crbug.com/1268230): Re-enable test.
+TEST_F(
+    'SwitchAccessTextNavigationManagerTest', 'DISABLED_JumpToEnd', function() {
+      runTextNavigationTest(this, {
+        content: 'hi there',
+        initialIndex: 3,
+        targetIndex: 8,
+        navigationAction: () => {
+          TextNavigationManager.jumpToEnd();
+        }
+      });
+    });
 
 // TODO(crbug.com/1177096) Renable test
 TEST_F(
@@ -250,8 +255,10 @@ TEST_F(
       });
     });
 
+// TODO(crbug.com/1268230): Re-enable test.
 TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'MoveBackwardOneWord', function() {
+    'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveBackwardOneWord',
+    function() {
       runTextNavigationTest(this, {
         content: 'more parrots!',
         initialIndex: 5,
@@ -262,8 +269,10 @@ TEST_F(
       });
     });
 
+// TODO(crbug.com/1268230): Re-enable test.
 TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'MoveForwardOneChar', function() {
+    'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveForwardOneChar',
+    function() {
       runTextNavigationTest(this, {
         content: 'hello',
         initialIndex: 0,
@@ -274,8 +283,10 @@ TEST_F(
       });
     });
 
+// TODO(crbug.com/1268230): Re-enable test.
 TEST_F(
-    'SwitchAccessTextNavigationManagerTest', 'MoveForwardOneWord', function() {
+    'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveForwardOneWord',
+    function() {
       runTextNavigationTest(this, {
         content: 'more parrots!',
         initialIndex: 4,
@@ -286,31 +297,37 @@ TEST_F(
       });
     });
 
-TEST_F('SwitchAccessTextNavigationManagerTest', 'MoveUpOneLine', function() {
-  runTextNavigationTest(this, {
-    content: 'more parrots!',
-    initialIndex: 7,
-    targetIndex: 2,
-    cols: 8,
-    wrap: 'hard',
-    navigationAction: () => {
-      TextNavigationManager.moveUpOneLine();
-    }
-  });
-});
+// TODO(crbug.com/1268230): Re-enable test.
+TEST_F(
+    'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveUpOneLine',
+    function() {
+      runTextNavigationTest(this, {
+        content: 'more parrots!',
+        initialIndex: 7,
+        targetIndex: 2,
+        cols: 8,
+        wrap: 'hard',
+        navigationAction: () => {
+          TextNavigationManager.moveUpOneLine();
+        }
+      });
+    });
 
-TEST_F('SwitchAccessTextNavigationManagerTest', 'MoveDownOneLine', function() {
-  runTextNavigationTest(this, {
-    content: 'more parrots!',
-    initialIndex: 3,
-    targetIndex: 8,
-    cols: 8,
-    wrap: 'hard',
-    navigationAction: () => {
-      TextNavigationManager.moveDownOneLine();
-    }
-  });
-});
+// TODO(crbug.com/1268230): Re-enable test.
+TEST_F(
+    'SwitchAccessTextNavigationManagerTest', 'DISABLED_MoveDownOneLine',
+    function() {
+      runTextNavigationTest(this, {
+        content: 'more parrots!',
+        initialIndex: 3,
+        targetIndex: 8,
+        cols: 8,
+        wrap: 'hard',
+        navigationAction: () => {
+          TextNavigationManager.moveDownOneLine();
+        }
+      });
+    });
 
 
 /**

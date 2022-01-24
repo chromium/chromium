@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -176,8 +177,9 @@ TEST_F(ScrollIntoViewTest, SmoothScroll) {
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(
       Window().scrollY(),
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 800
-                                                                        : 299),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations)
+           ? 800
+           : 299),
       1);
 
   // Finish scrolling the container
@@ -216,8 +218,9 @@ TEST_F(ScrollIntoViewTest, NestedContainer) {
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(
       Window().scrollY(),
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 800
-                                                                        : 299),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations)
+           ? 800
+           : 299),
       1);
   ASSERT_EQ(container->scrollTop(), 0);
 
@@ -231,8 +234,9 @@ TEST_F(ScrollIntoViewTest, NestedContainer) {
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(
       container->scrollTop(),
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 794
-                                                                        : 299),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations)
+           ? 794
+           : 299),
       1);
 
   // Finish scrolling the inner container
@@ -278,8 +282,9 @@ TEST_F(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(
       Window().scrollY(),
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 800
-                                                                        : 299),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations)
+           ? 800
+           : 299),
       1);
   ASSERT_EQ(container1->scrollTop(), 0);
 
@@ -289,8 +294,8 @@ TEST_F(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(
       Window().scrollY(),
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 171
-                                                                        : 61),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations) ? 171
+                                                                          : 61),
       1);
   ASSERT_EQ(container1->scrollTop(), 0);  // container1 should not scroll.
 
@@ -303,8 +308,9 @@ TEST_F(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(
       container2->scrollTop(),
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 952
-                                                                        : 300),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations)
+           ? 952
+           : 300),
       1);
 
   // Finish all the animation to make sure there is no another animation queued
@@ -349,8 +355,9 @@ TEST_F(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(
       Window().scrollY(),
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 800
-                                                                        : 299),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations)
+           ? 800
+           : 299),
       1);
   ASSERT_EQ(container->scrollTop(), 0);
 
@@ -364,8 +371,8 @@ TEST_F(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(
       Window().scrollY(),
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 165
-                                                                        : 58),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations) ? 165
+                                                                          : 58),
       1);
 
   Compositor().BeginFrame(1);
@@ -475,8 +482,9 @@ TEST_F(ScrollIntoViewTest, SmoothAndInstantInChain) {
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(
       container->scrollTop(),
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 794
-                                                                        : 299),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations)
+           ? 794
+           : 299),
       1);
 
   // Finish scrolling the container
@@ -512,8 +520,9 @@ TEST_F(ScrollIntoViewTest, SmoothScrollAnchor) {
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(
       container->scrollTop(),
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 794
-                                                                        : 299),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations)
+           ? 794
+           : 299),
       1);
 
   // Finish scrolling the container
@@ -569,8 +578,9 @@ TEST_F(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(
       Window().scrollY(),
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 800
-                                                                        : 299),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations)
+           ? 800
+           : 299),
       1);
 
   // Finish scrolling the container
@@ -744,8 +754,9 @@ TEST_F(ScrollIntoViewTest, SmoothUserScrollNotAbortedByProgrammaticScrolls) {
   Compositor().BeginFrame(0.2);
   ASSERT_NEAR(
       Window().scrollY(),
-      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 800
-                                                                        : 299),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations)
+           ? 800
+           : 299),
       1);
 
   // ProgrammaticScroll that could interrupt the current smooth scroll.
@@ -781,11 +792,12 @@ TEST_F(ScrollIntoViewTest, LongDistanceSmoothScrollFinishedInThreeSeconds) {
   Compositor().BeginFrame();  // update run_state_.
   Compositor().BeginFrame();  // Set start_time = now.
   Compositor().BeginFrame(0.2);
-  ASSERT_NEAR(Window().scrollY(),
-              (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations)
-                   ? 79389
-                   : 16971),
-              1);
+  ASSERT_NEAR(
+      Window().scrollY(),
+      (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations)
+           ? 79389
+           : 16971),
+      1);
 
   // Finish scrolling the container
   Compositor().BeginFrame(0.5);

@@ -12,7 +12,7 @@ class WebUI;
 }  // namespace content
 
 // Chrome browser FileManagerUIDelegate implementation.
-class ChromeFileManagerUIDelegate : public FileManagerUIDelegate {
+class ChromeFileManagerUIDelegate : public ash::FileManagerUIDelegate {
  public:
   explicit ChromeFileManagerUIDelegate(content::WebUI* web_ui);
 

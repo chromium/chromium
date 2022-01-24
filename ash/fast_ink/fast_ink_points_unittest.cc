@@ -14,10 +14,13 @@ const int kTestPointsLifetimeSeconds = 5;
 class FastInkPointsTest : public testing::Test {
  public:
   FastInkPointsTest()
-      : points_(base::TimeDelta::FromSeconds(kTestPointsLifetimeSeconds)),
-        predicted_(base::TimeDelta::FromSeconds(kTestPointsLifetimeSeconds)),
+      : points_(base::Seconds(kTestPointsLifetimeSeconds)),
+        predicted_(base::Seconds(kTestPointsLifetimeSeconds)),
         event_time_(base::TimeTicks()),
         screen_size_(1000, 1000) {}
+
+  FastInkPointsTest(const FastInkPointsTest&) = delete;
+  FastInkPointsTest& operator=(const FastInkPointsTest&) = delete;
 
   ~FastInkPointsTest() override = default;
 
@@ -75,9 +78,6 @@ class FastInkPointsTest : public testing::Test {
     Diff(velocity, position);
     Diff(acceleration, velocity);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FastInkPointsTest);
 };
 
 }  // namespace
@@ -138,27 +138,27 @@ TEST_F(FastInkPointsTest, FastInkPointsInternalCollectionDeletion) {
   // should get removed. The age of the point is a number between 0.0 and 1.0,
   // with 0.0 specifying a newly added point and 1.0 specifying the age of a
   // point added |kTestPointsLifetimeSeconds| ago.
-  AddPoint(gfx::PointF(), base::TimeDelta::FromSeconds(1));
+  AddPoint(gfx::PointF(), base::Seconds(1));
   EXPECT_EQ(1, points_.GetNumberOfPoints());
   EXPECT_FLOAT_EQ(0.0, points_.GetFadeoutFactor(0));
 
   // Verify when we move forward in time by one second, the age of the last
   // point, added one second ago is 1 / |kTestPointsLifetimeSeconds|.
-  AddPoint(gfx::PointF(), base::TimeDelta::FromSeconds(1));
+  AddPoint(gfx::PointF(), base::Seconds(1));
   EXPECT_EQ(2, points_.GetNumberOfPoints());
   EXPECT_FLOAT_EQ(0.2, points_.GetFadeoutFactor(0));
   EXPECT_FLOAT_EQ(0.0, points_.GetFadeoutFactor(1));
   // Verify adding a point 10 seconds later will clear all other points, since
   // they are older than 5 seconds.
-  AddPoint(gfx::PointF(), base::TimeDelta::FromSeconds(10));
+  AddPoint(gfx::PointF(), base::Seconds(10));
   EXPECT_EQ(1, points_.GetNumberOfPoints());
 
   // Verify adding 3 points one second apart each will add 3 points to the
   // collection, since all 4 points are younger than 5 seconds. All 4 points are
   // added 1 second apart so their age should be 0.2 apart.
-  AddPoint(gfx::PointF(), base::TimeDelta::FromSeconds(1));
-  AddPoint(gfx::PointF(), base::TimeDelta::FromSeconds(1));
-  AddPoint(gfx::PointF(), base::TimeDelta::FromSeconds(1));
+  AddPoint(gfx::PointF(), base::Seconds(1));
+  AddPoint(gfx::PointF(), base::Seconds(1));
+  AddPoint(gfx::PointF(), base::Seconds(1));
   EXPECT_EQ(4, points_.GetNumberOfPoints());
   EXPECT_FLOAT_EQ(0.6, points_.GetFadeoutFactor(0));
   EXPECT_FLOAT_EQ(0.4, points_.GetFadeoutFactor(1));
@@ -167,15 +167,15 @@ TEST_F(FastInkPointsTest, FastInkPointsInternalCollectionDeletion) {
 
   // Verify adding 1 point three seconds later will remove 2 points which are
   // older than 5 seconds.
-  AddPoint(gfx::PointF(), base::TimeDelta::FromSeconds(3));
+  AddPoint(gfx::PointF(), base::Seconds(3));
   EXPECT_EQ(3, points_.GetNumberOfPoints());
 }
 
 // Test the fast ink prediction.
 TEST_F(FastInkPointsTest, FastInkPointsPrediction) {
-  prediction_duration_ = base::TimeDelta::FromMilliseconds(18);
+  prediction_duration_ = base::Milliseconds(18);
 
-  const base::TimeDelta kTraceInterval = base::TimeDelta::FromMilliseconds(5);
+  const base::TimeDelta kTraceInterval = base::Milliseconds(5);
 
   const int kExpectedPredictionDepth = 3;
 

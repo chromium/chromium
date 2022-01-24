@@ -82,16 +82,22 @@ bool GetModifiedQuery(const GURL& url,
   // order of different params specified by the extension is respected. We use a
   // std::list to support fast removal from middle of the list. Note that the
   // key value pairs should already be escaped.
-  std::list<std::pair<base::StringPiece, base::StringPiece>>
-      add_or_replace_query_params;
+  struct QueryReplace {
+    base::StringPiece key;
+    base::StringPiece value;
+    bool replace_only = false;
+  };
+  std::list<QueryReplace> add_or_replace_query_params;
+
   if (!IsEmpty(transform.add_or_replace_query_params())) {
     for (const flat::QueryKeyValue* query_pair :
          *transform.add_or_replace_query_params()) {
       DCHECK(query_pair->key());
       DCHECK(query_pair->value());
       add_or_replace_query_params.emplace_back(
-          CreateString<base::StringPiece>(*query_pair->key()),
-          CreateString<base::StringPiece>(*query_pair->value()));
+          QueryReplace{CreateString<base::StringPiece>(*query_pair->key()),
+                       CreateString<base::StringPiece>(*query_pair->value()),
+                       query_pair->replace_only()});
     }
   }
 
@@ -114,9 +120,7 @@ bool GetModifiedQuery(const GURL& url,
 
     auto replace_iterator = std::find_if(
         add_or_replace_query_params.begin(), add_or_replace_query_params.end(),
-        [&key](const std::pair<base::StringPiece, base::StringPiece>& param) {
-          return param.first == key;
-        });
+        [&key](const QueryReplace& param) { return param.key == key; });
 
     // Nothing to do.
     if (replace_iterator == add_or_replace_query_params.end()) {
@@ -126,15 +130,17 @@ bool GetModifiedQuery(const GURL& url,
 
     // Replace query param.
     query_changed = true;
-    query_parts.push_back(create_query_part(key, replace_iterator->second));
+    query_parts.push_back(create_query_part(key, replace_iterator->value));
     add_or_replace_query_params.erase(replace_iterator);
   }
 
   // Append any remaining query params.
-  for (const auto& params : add_or_replace_query_params)
-    query_parts.push_back(create_query_part(params.first, params.second));
-
-  query_changed |= !add_or_replace_query_params.empty();
+  for (const auto& params : add_or_replace_query_params) {
+    if (!params.replace_only) {
+      query_parts.push_back(create_query_part(params.key, params.value));
+      query_changed = true;
+    }
+  }
 
   if (!query_changed)
     return false;

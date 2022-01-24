@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_UKM_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_UKM_PAGE_LOAD_METRICS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/site_instance_process_assignment.h"
 #include "net/http/http_response_info.h"
@@ -30,20 +28,6 @@ class PageLoad;
 }
 }  // namespace ukm
 
-// This enum represents the type of page load: abort, non-abort, or neither.
-// A page is of type NEVER_FOREGROUND if it was never in the foreground.
-// A page is of type ABORT if it was in the foreground at some point but did not
-// reach FCP. A page is of type REACHED_FCP if it was in the foreground at some
-// point and reached FCP. These values are persisted to logs. Entries should not
-// be renumbered and numeric values should never be reused. For any additions,
-// also update the corresponding enum in enums.xml.
-enum class PageLoadType {
-  kNeverForegrounded = 0,
-  kAborted = 1,
-  kReachedFCP = 2,
-  kMaxValue = kReachedFCP,
-};
-
 // If URL-Keyed-Metrics (UKM) is enabled in the system, this is used to
 // populate it with top-level page-load metrics.
 class UkmPageLoadMetricsObserver
@@ -55,6 +39,11 @@ class UkmPageLoadMetricsObserver
 
   explicit UkmPageLoadMetricsObserver(
       network::NetworkQualityTracker* network_quality_tracker);
+
+  UkmPageLoadMetricsObserver(const UkmPageLoadMetricsObserver&) = delete;
+  UkmPageLoadMetricsObserver& operator=(const UkmPageLoadMetricsObserver&) =
+      delete;
+
   ~UkmPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
@@ -105,9 +94,6 @@ class UkmPageLoadMetricsObserver
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::CpuTiming& timing) override;
 
-  void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
-                                 int behavior_flags) override;
-
   void DidActivatePortal(base::TimeTicks activation_time) override;
 
   void OnFirstContentfulPaintInPage(
@@ -128,9 +114,7 @@ class UkmPageLoadMetricsObserver
   // Records page load internal timing metrics, which are used for debugging.
   void RecordInternalTimingMetrics(
       const page_load_metrics::ContentfulPaintTimingInfo&
-          all_frames_largest_contentful_paint,
-      const page_load_metrics::ContentfulPaintTimingInfo&
-          all_frames_experimental_largest_contentful_paint);
+          all_frames_largest_contentful_paint);
 
   // Records metrics based on the page load information exposed by the observer
   // delegate, as well as updating the URL. |app_background_time| should be set
@@ -146,8 +130,6 @@ class UkmPageLoadMetricsObserver
   void ReportMainResourceTimingMetrics(ukm::builders::PageLoad& builder);
 
   void ReportLayoutStability();
-
-  void ReportPerfectHeuristicsMetrics();
 
   void RecordAbortMetrics(
       const page_load_metrics::mojom::PageLoadTiming& timing,
@@ -296,10 +278,6 @@ class UkmPageLoadMetricsObserver
   // Unique across the lifetime of the browser process.
   int main_document_sequence_number_ = -1;
 
-  // These are to capture observed LoadingBehaviorFlags.
-  bool delay_async_script_execution_before_finished_parsing_seen_ = false;
-  bool delay_competing_low_priority_requests_seen_ = false;
-
   bool currently_in_foreground_ = false;
   // The last time the page became foregrounded, or navigation start if the page
   // started in the foreground and has not been backgrounded.
@@ -312,8 +290,6 @@ class UkmPageLoadMetricsObserver
   base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
 
   base::WeakPtrFactory<UkmPageLoadMetricsObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UkmPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CORE_UKM_PAGE_LOAD_METRICS_OBSERVER_H_

@@ -861,6 +861,12 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 // have to do with preview, e.g. the ImageReader and its associated Surface.
                 configureCommonCaptureSettings(mPreviewRequestBuilder);
 
+                if (mOptions.fillLightMode != AndroidFillLightMode.NOT_SET) {
+                    // Run the precapture sequence for capturing a still image.
+                    mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+                            CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+                }
+
                 mPreviewRequest = mPreviewRequestBuilder.build();
 
                 try {

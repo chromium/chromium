@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_VIRTUAL_FILE_REQUEST_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_DBUS_VIRTUAL_FILE_REQUEST_SERVICE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
@@ -23,6 +22,12 @@ class VirtualFileRequestServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
   VirtualFileRequestServiceProvider();
+
+  VirtualFileRequestServiceProvider(const VirtualFileRequestServiceProvider&) =
+      delete;
+  VirtualFileRequestServiceProvider& operator=(
+      const VirtualFileRequestServiceProvider&) = delete;
+
   ~VirtualFileRequestServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -39,8 +44,6 @@ class VirtualFileRequestServiceProvider
   // beginning of destruction.
   base::WeakPtrFactory<VirtualFileRequestServiceProvider> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualFileRequestServiceProvider);
 };
 
 }  // namespace ash

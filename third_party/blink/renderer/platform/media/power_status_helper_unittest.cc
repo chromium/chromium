@@ -110,7 +110,7 @@ class PowerStatusHelperTest : public testing::Test {
     media::PipelineMetadata metadata;
     metadata.has_video = true;
     metadata.video_decoder_config = media::VideoDecoderConfig(
-        media::kCodecH264, media::H264PROFILE_MAIN,
+        media::VideoCodec::kH264, media::H264PROFILE_MAIN,
         media::VideoDecoderConfig::AlphaMode::kIsOpaque,
         media::VideoColorSpace(), media::VideoTransformation(),
         gfx::Size(0, 0),        /* coded_size */
@@ -206,7 +206,7 @@ TEST_F(PowerStatusHelperTest, BasicReportingWithFractionalAmounts) {
   monitor_.ProvidePowerUpdate(false, baseline_level);
 
   // This should trigger recording.
-  base::TimeDelta time_delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta time_delta = base::Seconds(1);
   FastForward(time_delta);
 
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
@@ -245,7 +245,7 @@ TEST_F(PowerStatusHelperTest, ChargingResetsBaseline) {
   monitor_.ProvidePowerUpdate(false, baseline_level);
 
   // This should trigger recording.
-  base::TimeDelta time_delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta time_delta = base::Seconds(1);
   FastForward(time_delta);
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
   monitor_.ProvidePowerUpdate(false, second_level);
@@ -292,7 +292,7 @@ TEST_F(PowerStatusHelperTest, ChangingBucketsWorks) {
   monitor_.ProvidePowerUpdate(false, baseline_level);
 
   // This should trigger recording.
-  base::TimeDelta time_delta = base::TimeDelta::FromSeconds(1);
+  base::TimeDelta time_delta = base::Seconds(1);
   FastForward(time_delta);
   EXPECT_CALL(monitor_, DidQueryNextStatus()).Times(1);
   monitor_.ProvidePowerUpdate(false, second_level);
@@ -365,17 +365,17 @@ TEST_P(PowerStatusHelperBucketTest, TestBucket) {
   media::VideoCodec codec;
   media::VideoCodecProfile profile;
   if (codec_bits == PowerStatusHelper::Bits::kCodecBitsH264) {
-    codec = media::kCodecH264;
+    codec = media::VideoCodec::kH264;
     profile = media::H264PROFILE_MAIN;
   } else if (codec_bits == PowerStatusHelper::Bits::kCodecBitsVP9Profile0) {
-    codec = media::kCodecVP9;
+    codec = media::VideoCodec::kVP9;
     profile = media::VP9PROFILE_PROFILE0;
   } else if (codec_bits == PowerStatusHelper::Bits::kCodecBitsVP9Profile2) {
-    codec = media::kCodecVP9;
+    codec = media::VideoCodec::kVP9;
     profile = media::VP9PROFILE_PROFILE2;
   } else {
     // Some unsupported codec.
-    codec = media::kCodecVP8;
+    codec = media::VideoCodec::kVP8;
     profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
     expect_bucket = false;
   }

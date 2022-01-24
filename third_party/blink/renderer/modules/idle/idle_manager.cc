@@ -80,7 +80,6 @@ ScriptPromise IdleManager::RequestPermission(ScriptState* script_state,
 }
 
 void IdleManager::AddMonitor(
-    base::TimeDelta threshold,
     mojo::PendingRemote<mojom::blink::IdleMonitor> monitor,
     mojom::blink::IdleManager::AddMonitorCallback callback) {
   if (!idle_service_.is_bound()) {
@@ -89,16 +88,25 @@ void IdleManager::AddMonitor(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         context->GetTaskRunner(TaskType::kMiscPlatformAPI);
     context->GetBrowserInterfaceBroker().GetInterface(
-        idle_service_.BindNewPipeAndPassReceiver(task_runner));
+        idle_service_.BindNewPipeAndPassReceiver(std::move(task_runner)));
   }
 
-  idle_service_->AddMonitor(threshold, std::move(monitor), std::move(callback));
+  idle_service_->AddMonitor(std::move(monitor), std::move(callback));
 }
 
 void IdleManager::Trace(Visitor* visitor) const {
   visitor->Trace(idle_service_);
   visitor->Trace(permission_service_);
   Supplement<ExecutionContext>::Trace(visitor);
+}
+
+void IdleManager::InitForTesting(
+    mojo::PendingRemote<mojom::blink::IdleManager> idle_service) {
+  ExecutionContext* context = GetSupplementable();
+  // See https://bit.ly/2S0zRAS for task types.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      context->GetTaskRunner(TaskType::kMiscPlatformAPI);
+  idle_service_.Bind(std::move(idle_service), std::move(task_runner));
 }
 
 void IdleManager::OnPermissionRequestComplete(

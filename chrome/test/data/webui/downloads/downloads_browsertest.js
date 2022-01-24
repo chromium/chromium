@@ -9,7 +9,8 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
-// eslint-disable-next-line no-var
+/* eslint-disable no-var */
+
 var DownloadsTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -17,11 +18,10 @@ var DownloadsTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var DownloadsItemTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/item_tests.js';
+    return 'chrome://downloads/test_loader.html?module=downloads/item_tests.js&host=webui-test';
   }
 };
 
@@ -29,11 +29,10 @@ TEST_F('DownloadsItemTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsManagerTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/manager_tests.js';
+    return 'chrome://downloads/test_loader.html?module=downloads/manager_tests.js&host=webui-test';
   }
 };
 
@@ -41,11 +40,10 @@ TEST_F('DownloadsManagerTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsToolbarTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/toolbar_tests.js';
+    return 'chrome://downloads/test_loader.html?module=downloads/toolbar_tests.js&host=webui-test';
   }
 };
 
@@ -53,7 +51,6 @@ TEST_F('DownloadsToolbarTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsUrlTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
@@ -70,7 +67,7 @@ var DownloadsUrlTest = class extends DownloadsTest {
 };
 
 TEST_F('DownloadsUrlTest', 'All', async function() {
-  await import('chrome://test/mojo_webui_test_support.js');
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   suite('loading a nonexistent URL of /a/b/', function() {
     test('should load main page with no console errors', function() {
       return customElements.whenDefined('downloads-manager').then(() => {
@@ -81,11 +78,10 @@ TEST_F('DownloadsUrlTest', 'All', async function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsSearchServiceTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/search_service_test.js';
+    return 'chrome://downloads/test_loader.html?module=downloads/search_service_test.js&host=webui-test';
   }
 };
 

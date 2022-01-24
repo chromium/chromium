@@ -40,6 +40,9 @@ class SecureChannelClientImpl : public SecureChannelClient {
     static Factory* test_factory_;
   };
 
+  SecureChannelClientImpl(const SecureChannelClientImpl&) = delete;
+  SecureChannelClientImpl& operator=(const SecureChannelClientImpl&) = delete;
+
   ~SecureChannelClientImpl() override;
 
  private:
@@ -87,12 +90,18 @@ class SecureChannelClientImpl : public SecureChannelClient {
   scoped_refptr<base::TaskRunner> task_runner_;
 
   base::WeakPtrFactory<SecureChannelClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelClientImpl);
 };
 
 }  // namespace secure_channel
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace secure_channel {
+using ::chromeos::secure_channel::SecureChannelClientImpl;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_SECURE_CHANNEL_CLIENT_IMPL_H_

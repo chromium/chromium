@@ -11,7 +11,6 @@
 
 #include <alsa/asoundlib.h>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -19,6 +18,10 @@ namespace media {
 class MEDIA_EXPORT AlsaWrapper {
  public:
   AlsaWrapper();
+
+  AlsaWrapper(const AlsaWrapper&) = delete;
+  AlsaWrapper& operator=(const AlsaWrapper&) = delete;
+
   virtual ~AlsaWrapper();
 
   virtual int DeviceNameHint(int card, const char* iface, void*** hints);
@@ -152,8 +155,6 @@ class MEDIA_EXPORT AlsaWrapper {
   virtual void MixerSelemIdFree(snd_mixer_selem_id_t* obj);
 
   virtual const char* StrError(int errnum);
-
-  DISALLOW_COPY_AND_ASSIGN(AlsaWrapper);
 };
 
 }  // namespace media

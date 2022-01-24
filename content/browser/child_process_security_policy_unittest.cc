@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/isolated_origin_util.h"
+#include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -86,9 +87,8 @@ void LockProcessIfNeeded(int process_id,
                          BrowserContext* browser_context,
                          const GURL& url) {
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForUrlInfo(
-          browser_context, UrlInfo::CreateForTesting(url),
-          WebExposedIsolationInfo::CreateNonIsolated());
+      SiteInstanceImpl::CreateForUrlInfo(browser_context,
+                                         UrlInfo::CreateForTesting(url));
   if (site_instance->RequiresDedicatedProcess() &&
       site_instance->GetSiteInfo().ShouldLockProcessToSite(
           site_instance->GetIsolationContext())) {
@@ -285,6 +285,14 @@ class ChildProcessSecurityPolicyTest : public testing::Test {
   ContentBrowserClient* old_browser_client_;
 };
 
+TEST_F(ChildProcessSecurityPolicyTest, ChildID) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  p->AddForTesting(kRendererID, browser_context());
+  auto handle = p->CreateHandle(kRendererID);
+  EXPECT_EQ(handle.child_id(), kRendererID);
+  p->Remove(kRendererID);
+}
 
 TEST_F(ChildProcessSecurityPolicyTest, IsWebSafeSchemeTest) {
   ChildProcessSecurityPolicyImpl* p =
@@ -292,9 +300,7 @@ TEST_F(ChildProcessSecurityPolicyTest, IsWebSafeSchemeTest) {
 
   EXPECT_TRUE(p->IsWebSafeScheme(url::kHttpScheme));
   EXPECT_TRUE(p->IsWebSafeScheme(url::kHttpsScheme));
-  EXPECT_TRUE(p->IsWebSafeScheme(url::kFtpScheme));
   EXPECT_TRUE(p->IsWebSafeScheme(url::kDataScheme));
-  EXPECT_TRUE(p->IsWebSafeScheme("feed"));
   EXPECT_TRUE(p->IsWebSafeScheme(url::kBlobScheme));
   EXPECT_TRUE(p->IsWebSafeScheme(url::kFileSystemScheme));
 
@@ -332,13 +338,11 @@ TEST_F(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   // Safe to request, redirect or commit.
   EXPECT_TRUE(p->CanRequestURL(kRendererID, GURL("http://www.google.com/")));
   EXPECT_TRUE(p->CanRequestURL(kRendererID, GURL("https://www.paypal.com/")));
-  EXPECT_TRUE(p->CanRequestURL(kRendererID, GURL("ftp://ftp.gnu.org/")));
   EXPECT_TRUE(p->CanRequestURL(kRendererID, GURL("data:text/html,<b>Hi</b>")));
   EXPECT_TRUE(p->CanRequestURL(
       kRendererID, GURL("filesystem:http://localhost/temporary/a.gif")));
   EXPECT_TRUE(p->CanRedirectToURL(GURL("http://www.google.com/")));
   EXPECT_TRUE(p->CanRedirectToURL(GURL("https://www.paypal.com/")));
-  EXPECT_TRUE(p->CanRedirectToURL(GURL("ftp://ftp.gnu.org/")));
   EXPECT_TRUE(p->CanRedirectToURL(GURL("data:text/html,<b>Hi</b>")));
   EXPECT_TRUE(
       p->CanRedirectToURL(GURL("filesystem:http://localhost/temporary/a.gif")));
@@ -346,7 +350,6 @@ TEST_F(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   const std::vector<std::string> kCommitURLs({
       "http://www.google.com/",
       "https://www.paypal.com/",
-      "ftp://ftp.gnu.org/",
       "data:text/html,<b>Hi</b>",
       "filesystem:http://localhost/temporary/a.gif",
   });
@@ -2676,21 +2679,18 @@ TEST_F(ChildProcessSecurityPolicyTest, ProcessLockMatching) {
       SetBrowserClientForTesting(&modified_client);
 
   IsolationContext isolation_context(browser_context());
-  const auto coi_info = WebExposedIsolationInfo::CreateNonIsolated();
 
   auto nonapp_urlinfo = UrlInfo::CreateForTesting(
       nonapp_url, CreateStoragePartitionConfigForTesting());
   auto ui_nonapp_url_siteinfo =
-      SiteInfo::Create(isolation_context, nonapp_urlinfo, coi_info);
+      SiteInfo::Create(isolation_context, nonapp_urlinfo);
   auto ui_nonapp_url_lock =
-      ProcessLock::Create(isolation_context, nonapp_urlinfo, coi_info);
+      ProcessLock::Create(isolation_context, nonapp_urlinfo);
 
   auto app_urlinfo = UrlInfo::CreateForTesting(
       app_url, CreateStoragePartitionConfigForTesting());
-  auto ui_app_url_lock =
-      ProcessLock::Create(isolation_context, app_urlinfo, coi_info);
-  auto ui_app_url_siteinfo =
-      SiteInfo::Create(isolation_context, app_urlinfo, coi_info);
+  auto ui_app_url_lock = ProcessLock::Create(isolation_context, app_urlinfo);
+  auto ui_app_url_siteinfo = SiteInfo::Create(isolation_context, app_urlinfo);
 
   SiteInfo io_nonapp_url_siteinfo(browser_context());
   ProcessLock io_nonapp_url_lock;
@@ -2703,15 +2703,14 @@ TEST_F(ChildProcessSecurityPolicyTest, ProcessLockMatching) {
   // IO thread.
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        io_nonapp_url_siteinfo = SiteInfo::CreateOnIOThread(
-            isolation_context, nonapp_urlinfo, coi_info);
+        io_nonapp_url_siteinfo =
+            SiteInfo::CreateOnIOThread(isolation_context, nonapp_urlinfo);
         io_nonapp_url_lock =
-            ProcessLock::Create(isolation_context, nonapp_urlinfo, coi_info);
+            ProcessLock::Create(isolation_context, nonapp_urlinfo);
 
-        io_app_url_siteinfo = SiteInfo::CreateOnIOThread(isolation_context,
-                                                         app_urlinfo, coi_info);
-        io_app_url_lock =
-            ProcessLock::Create(isolation_context, app_urlinfo, coi_info);
+        io_app_url_siteinfo =
+            SiteInfo::CreateOnIOThread(isolation_context, app_urlinfo);
+        io_app_url_lock = ProcessLock::Create(isolation_context, app_urlinfo);
 
         // Tell the UI thread have computed the locks.
         io_locks_set_event.Signal();

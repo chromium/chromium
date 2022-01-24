@@ -12,6 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
+
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;

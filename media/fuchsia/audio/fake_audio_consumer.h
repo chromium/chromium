@@ -26,7 +26,7 @@ namespace media {
 
 // Fake implementation of fuchsia::media::AudioConsumer interface. Used for
 // tests.
-class FakeAudioConsumer
+class FakeAudioConsumer final
     : public fuchsia::media::testing::AudioConsumer_TestBase,
       public fuchsia::media::testing::StreamSink_TestBase,
       public fuchsia::media::audio::testing::VolumeControl_TestBase {
@@ -38,7 +38,7 @@ class FakeAudioConsumer
   FakeAudioConsumer(
       uint64_t session_id,
       fidl::InterfaceRequest<fuchsia::media::AudioConsumer> request);
-  ~FakeAudioConsumer() final;
+  ~FakeAudioConsumer() override;
 
   FakeAudioConsumer(const FakeAudioConsumer&) = delete;
   FakeAudioConsumer& operator=(const FakeAudioConsumer&) = delete;
@@ -70,28 +70,28 @@ class FakeAudioConsumer
       final;
   void Start(fuchsia::media::AudioConsumerStartFlags flags,
              int64_t reference_time,
-             int64_t media_time) final;
-  void Stop() final;
-  void WatchStatus(WatchStatusCallback callback) final;
-  void SetRate(float rate) final;
+             int64_t media_time) override;
+  void Stop() override;
+  void WatchStatus(WatchStatusCallback callback) override;
+  void SetRate(float rate) override;
   void BindVolumeControl(
       fidl::InterfaceRequest<fuchsia::media::audio::VolumeControl>
-          volume_control_request) final;
+          volume_control_request) override;
 
   // fuchsia::media::StreamSink interface.
   void SendPacket(fuchsia::media::StreamPacket packet,
-                  SendPacketCallback callback) final;
-  void SendPacketNoReply(fuchsia::media::StreamPacket packet) final;
-  void EndOfStream() final;
-  void DiscardAllPackets(DiscardAllPacketsCallback callback) final;
-  void DiscardAllPacketsNoReply() final;
+                  SendPacketCallback callback) override;
+  void SendPacketNoReply(fuchsia::media::StreamPacket packet) override;
+  void EndOfStream() override;
+  void DiscardAllPackets(DiscardAllPacketsCallback callback) override;
+  void DiscardAllPacketsNoReply() override;
 
   // fuchsia::media::audio::VolumeControl interface.
-  void SetVolume(float volume) final;
-  void SetMute(bool mute) final;
+  void SetVolume(float volume) override;
+  void SetMute(bool mute) override;
 
   // Not-implemented handler for _TestBase parents.
-  void NotImplemented_(const std::string& name) final;
+  void NotImplemented_(const std::string& name) override;
 
   void ScheduleNextStreamPosUpdate();
 
@@ -134,11 +134,11 @@ class FakeAudioConsumer
   bool is_muted_ = false;
 };
 
-class FakeAudioConsumerService
+class FakeAudioConsumerService final
     : public fuchsia::media::testing::SessionAudioConsumerFactory_TestBase {
  public:
   explicit FakeAudioConsumerService(vfs::PseudoDir* pseudo_dir);
-  ~FakeAudioConsumerService() final;
+  ~FakeAudioConsumerService() override;
 
   FakeAudioConsumerService(const FakeAudioConsumerService&) = delete;
   FakeAudioConsumerService& operator=(const FakeAudioConsumerService&) = delete;
@@ -152,10 +152,10 @@ class FakeAudioConsumerService
   // fuchsia::media::SessionAudioConsumerFactory implementation.
   void CreateAudioConsumer(uint64_t session_id,
                            fidl::InterfaceRequest<fuchsia::media::AudioConsumer>
-                               audio_consumer_request) final;
+                               audio_consumer_request) override;
 
   // Not-implemented handler for SessionAudioConsumerFactory_TestBase.
-  void NotImplemented_(const std::string& name) final;
+  void NotImplemented_(const std::string& name) override;
 
   base::ScopedServiceBinding<fuchsia::media::SessionAudioConsumerFactory>
       binding_;

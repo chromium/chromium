@@ -60,7 +60,8 @@ void WebURLLoaderMock::ServeAsynchronousRequest(
   data.ForEachSegment([this, &delegate, &self](const char* segment,
                                                size_t segment_size,
                                                size_t segment_offset) {
-    delegate->DidReceiveData(client_, segment, segment_size);
+    delegate->DidReceiveData(client_, segment,
+                             base::checked_cast<int>(segment_size));
     // DidReceiveData() may clear the |self| weak ptr.  We stop iterating
     // when that happens.
     return self;
@@ -84,7 +85,8 @@ WebURL WebURLLoaderMock::ServeRedirect(
   bool follow = client_->WillFollowRedirect(
       redirect_url, net::SiteForCookies::FromUrl(redirect_url), WebString(),
       network::mojom::ReferrerPolicy::kDefault, method, redirect_response,
-      report_raw_headers, nullptr /* removed_headers */);
+      report_raw_headers, nullptr /* removed_headers */,
+      false /* insecure_scheme_was_upgraded */);
   // |this| might be deleted in willFollowRedirect().
   if (!self)
     return redirect_url;

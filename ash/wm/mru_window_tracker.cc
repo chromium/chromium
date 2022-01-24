@@ -13,15 +13,15 @@
 #include "ash/shell.h"
 #include "ash/wm/ash_focus_rules.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/full_restore/full_restore_controller.h"
 #include "ash/wm/switchable_windows.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "components/full_restore/features.h"
-#include "components/full_restore/full_restore_utils.h"
+#include "components/app_restore/features.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -42,6 +42,11 @@ class ScopedWindowClosingObserver : public aura::WindowObserver {
   explicit ScopedWindowClosingObserver(aura::Window* window) : window_(window) {
     window_->AddObserver(this);
   }
+
+  ScopedWindowClosingObserver(const ScopedWindowClosingObserver&) = delete;
+  ScopedWindowClosingObserver& operator=(const ScopedWindowClosingObserver&) =
+      delete;
+
   ~ScopedWindowClosingObserver() override {
     window_->RemoveObserver(this);
     window_ = nullptr;
@@ -52,8 +57,6 @@ class ScopedWindowClosingObserver : public aura::WindowObserver {
 
  private:
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedWindowClosingObserver);
 };
 
 bool IsNonSysModalWindowConsideredActivatable(aura::Window* window) {
@@ -199,7 +202,7 @@ MruWindowTracker::WindowList BuildWindowListInternal(
 bool CanIncludeWindowInMruList(aura::Window* window) {
   // If `window` was launched from Full Restore it won't be activatable
   // temporarily, but it should still be included in the MRU list.
-  if (window->GetProperty(full_restore::kLaunchedFromFullRestoreKey))
+  if (window->GetProperty(app_restore::kLaunchedFromFullRestoreKey))
     return true;
 
   return wm::CanActivateWindow(window) &&
@@ -300,7 +303,7 @@ void MruWindowTracker::OnWindowActivated(ActivationReason reason,
   SetActiveWindow(gained_active);
 
   if (gained_active && full_restore::features::IsFullRestoreEnabled())
-    FullRestoreController::Get()->OnWindowActivated(gained_active);
+    WindowRestoreController::Get()->OnWindowActivated(gained_active);
 }
 
 void MruWindowTracker::OnWindowDestroyed(aura::Window* window) {
@@ -315,7 +318,7 @@ void MruWindowTracker::OnWindowInitialized(aura::Window* window) {
   DCHECK(full_restore::features::IsFullRestoreEnabled());
 
   int32_t* activation_index =
-      window->GetProperty(full_restore::kActivationIndexKey);
+      window->GetProperty(app_restore::kActivationIndexKey);
   if (!activation_index)
     return;
 
@@ -324,7 +327,7 @@ void MruWindowTracker::OnWindowInitialized(aura::Window* window) {
   // their MRU order.
   window->AddObserver(this);
   mru_windows_.insert(
-      FullRestoreController::GetWindowToInsertBefore(window, mru_windows_),
+      WindowRestoreController::GetWindowToInsertBefore(window, mru_windows_),
       window);
 }
 

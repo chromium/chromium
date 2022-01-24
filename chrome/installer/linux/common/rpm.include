@@ -240,7 +240,7 @@ determine_rpm_package_manager() {
   fi
 
   # Fallback method using lsb_release(1)
-  LSB_RELEASE="$(which lsb_release 2> /dev/null)"
+  LSB_RELEASE="$(command -v lsb_release 2> /dev/null)"
   if [ -x "$LSB_RELEASE" ]; then
     RELEASE=$(lsb_release -i 2> /dev/null | sed 's/:\t/:/' | cut -d ':' -f 2-)
     case $RELEASE in

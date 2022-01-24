@@ -71,9 +71,24 @@ void ReportingContext::NotifyCachedReportsUpdated() {
     observer.OnReportsUpdated();
 }
 
+void ReportingContext::NotifyReportAdded(const ReportingReport* report) {
+  for (auto& observer : cache_observers_)
+    observer.OnReportAdded(report);
+}
+
+void ReportingContext::NotifyReportUpdated(const ReportingReport* report) {
+  for (auto& observer : cache_observers_)
+    observer.OnReportUpdated(report);
+}
+
 void ReportingContext::NotifyCachedClientsUpdated() {
   for (auto& observer : cache_observers_)
     observer.OnClientsUpdated();
+}
+
+void ReportingContext::NotifyEndpointsUpdated() {
+  for (auto& observer : cache_observers_)
+    observer.OnEndpointsUpdated();
 }
 
 bool ReportingContext::IsReportDataPersisted() const {

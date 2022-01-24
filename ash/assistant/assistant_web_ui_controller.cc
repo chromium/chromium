@@ -29,6 +29,11 @@ class AssistantWebContainerEventObserver : public ui::EventObserver {
                                                      widget->GetNativeWindow(),
                                                      {ui::ET_KEY_PRESSED})) {}
 
+  AssistantWebContainerEventObserver(
+      const AssistantWebContainerEventObserver&) = delete;
+  AssistantWebContainerEventObserver& operator=(
+      const AssistantWebContainerEventObserver&) = delete;
+
   ~AssistantWebContainerEventObserver() override = default;
 
   // ui::EventObserver:
@@ -58,8 +63,6 @@ class AssistantWebContainerEventObserver : public ui::EventObserver {
   views::Widget* widget_ = nullptr;
 
   std::unique_ptr<views::EventMonitor> event_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantWebContainerEventObserver);
 };
 
 // -----------------------------------------------------------------------------

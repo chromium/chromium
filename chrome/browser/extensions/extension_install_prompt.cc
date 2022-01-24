@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -623,10 +623,8 @@ void ExtensionInstallPrompt::LoadImageIfNeeded() {
 
   std::vector<extensions::ImageLoader::ImageRepresentation> images_list;
   images_list.push_back(extensions::ImageLoader::ImageRepresentation(
-      image,
-      extensions::ImageLoader::ImageRepresentation::NEVER_RESIZE,
-      gfx::Size(),
-      ui::SCALE_FACTOR_100P));
+      image, extensions::ImageLoader::ImageRepresentation::NEVER_RESIZE,
+      gfx::Size(), ui::k100Percent));
   loader->LoadImagesAsync(extension_.get(), images_list,
                           base::BindOnce(&ExtensionInstallPrompt::OnImageLoaded,
                                          weak_factory_.GetWeakPtr()));

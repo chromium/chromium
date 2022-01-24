@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -29,6 +28,12 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
   HttpsEngagementPageLoadMetricsBrowserTest()
       : metrics_provider_(new HttpsEngagementMetricsProvider()) {}
+
+  HttpsEngagementPageLoadMetricsBrowserTest(
+      const HttpsEngagementPageLoadMetricsBrowserTest&) = delete;
+  HttpsEngagementPageLoadMetricsBrowserTest& operator=(
+      const HttpsEngagementPageLoadMetricsBrowserTest&) = delete;
+
   ~HttpsEngagementPageLoadMetricsBrowserTest() override {}
 
   void StartHttpsServer(bool cert_error) {
@@ -52,7 +57,7 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
   // for how long the URL was open in the foreground.
   base::TimeDelta NavigateInForegroundAndCloseWithTiming(GURL target_url) {
     base::TimeTicks start = base::TimeTicks::Now();
-    ui_test_utils::NavigateToURL(browser(), target_url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), target_url));
 
     TabStripModel* tab_strip_model = browser()->tab_strip_model();
     content::WebContentsDestroyedWatcher destroyed_watcher(
@@ -64,8 +69,8 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   // Navigate to two URLs in the same foreground tab, and close it.
   void NavigateTwiceInTabAndClose(GURL first_url, GURL second_url) {
-    ui_test_utils::NavigateToURL(browser(), first_url);
-    ui_test_utils::NavigateToURL(browser(), second_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), second_url));
 
     TabStripModel* tab_strip_model = browser()->tab_strip_model();
     EXPECT_EQ(1, tab_strip_model->count());
@@ -80,7 +85,7 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
   // foreground.
   base::TimeDelta NavigateInForegroundAndCloseInBackgroundWithTiming(GURL url) {
     base::TimeTicks start = base::TimeTicks::Now();
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(chrome::kChromeUIVersionURL),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -104,7 +109,8 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   // Open and close a tab without ever bringing it to the foreground.
   void NavigateInBackgroundAndClose(GURL url) {
-    ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIVersionURL));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(chrome::kChromeUIVersionURL)));
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -125,7 +131,8 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
   // Open a tab in the background, then bring it to the foreground. Return the
   // upper bound for how long the URL was open in the foreground.
   base::TimeDelta NavigateInBackgroundAndCloseInForegroundWithTiming(GURL url) {
-    ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIVersionURL));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(chrome::kChromeUIVersionURL)));
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -164,8 +171,6 @@ class HttpsEngagementPageLoadMetricsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
   std::unique_ptr<net::EmbeddedTestServer> http_test_server_;
   std::unique_ptr<HttpsEngagementMetricsProvider> metrics_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpsEngagementPageLoadMetricsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(HttpsEngagementPageLoadMetricsBrowserTest,
@@ -274,8 +279,8 @@ IN_PROC_BROWSER_TEST_F(HttpsEngagementPageLoadMetricsBrowserTest,
                        UncommittedLoadWithError) {
   StartHttpsServer(true);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  ui_test_utils::NavigateToURL(browser(),
-                               https_test_server_->GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_->GetURL("/simple.html")));
   content::WebContentsDestroyedWatcher destroyed_watcher(
       tab_strip_model->GetActiveWebContents());
   EXPECT_TRUE(

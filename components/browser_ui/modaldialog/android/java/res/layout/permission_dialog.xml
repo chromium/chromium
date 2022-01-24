@@ -18,5 +18,5 @@
         android:paddingBottom="24dp"
         android:drawablePadding="8dp"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-        app:chromeDrawableTint="@color/default_icon_color_blue" />
+        app:chromeDrawableTint="@macro/default_icon_color_accent1" />
 </LinearLayout>

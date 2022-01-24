@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -31,6 +30,10 @@ class Rect;
 class BrowserLiveTabContext : public sessions::LiveTabContext {
  public:
   explicit BrowserLiveTabContext(Browser* browser) : browser_(browser) {}
+
+  BrowserLiveTabContext(const BrowserLiveTabContext&) = delete;
+  BrowserLiveTabContext& operator=(const BrowserLiveTabContext&) = delete;
+
   ~BrowserLiveTabContext() override {}
 
   // Overridden from LiveTabContext:
@@ -102,8 +105,6 @@ class BrowserLiveTabContext : public sessions::LiveTabContext {
 
  private:
   Browser* const browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserLiveTabContext);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_LIVE_TAB_CONTEXT_H_

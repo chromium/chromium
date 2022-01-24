@@ -11,16 +11,14 @@
 #include <string>
 #include <utility>
 
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -66,6 +64,10 @@ class Shell::DevToolsWebContentsObserver : public WebContentsObserver {
   DevToolsWebContentsObserver(Shell* shell, WebContents* web_contents)
       : WebContentsObserver(web_contents), shell_(shell) {}
 
+  DevToolsWebContentsObserver(const DevToolsWebContentsObserver&) = delete;
+  DevToolsWebContentsObserver& operator=(const DevToolsWebContentsObserver&) =
+      delete;
+
   // WebContentsObserver
   void WebContentsDestroyed() override {
     shell_->OnDevToolsWebContentsDestroyed();
@@ -73,8 +75,6 @@ class Shell::DevToolsWebContentsObserver : public WebContentsObserver {
 
  private:
   Shell* shell_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsWebContentsObserver);
 };
 
 Shell::Shell(std::unique_ptr<WebContents> web_contents,
@@ -202,7 +202,7 @@ void Shell::Shutdown() {
 
   for (auto it = RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
        it.Advance()) {
-    it.GetCurrentValue()->DisableKeepAliveRefCount();
+    it.GetCurrentValue()->DisableRefCounts();
   }
   if (*g_quit_main_message_loop)
     std::move(*g_quit_main_message_loop).Run();
@@ -643,9 +643,8 @@ void Shell::UpdateInspectedWebContentsIfNecessary(
   for (auto* shell_devtools_bindings :
        ShellDevToolsBindings::GetInstancesForWebContents(old_contents)) {
     shell_devtools_bindings->UpdateInspectedWebContents(
-        new_contents,
-        base::BindOnce(base::DoNothing::Once<scoped_refptr<PendingCallback>>(),
-                       pending_callback));
+        new_contents, base::BindOnce([](scoped_refptr<PendingCallback>) {},
+                                     pending_callback));
   }
 }
 

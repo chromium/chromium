@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -72,6 +71,9 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
                         {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
 
+  JsonPrefStore(const JsonPrefStore&) = delete;
+  JsonPrefStore& operator=(const JsonPrefStore&) = delete;
+
   // PrefStore overrides:
   bool GetValue(const std::string& key,
                 const base::Value** result) const override;
@@ -101,7 +103,6 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
       base::OnceClosure reply_callback = base::OnceClosure(),
       base::OnceClosure synchronous_done_callback =
           base::OnceClosure()) override;
-  void CommitPendingWriteSynchronously() override;
   void SchedulePendingLossyWrites() override;
   void ReportValueChanged(const std::string& key, uint32_t flags) override;
 
@@ -204,8 +205,6 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
   base::OnceClosure on_next_successful_write_reply_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(JsonPrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_JSON_PREF_STORE_H_

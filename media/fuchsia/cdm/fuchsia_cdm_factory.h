@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/cdm_factory.h"
@@ -19,11 +18,15 @@
 
 namespace media {
 
-class MEDIA_EXPORT FuchsiaCdmFactory : public CdmFactory {
+class MEDIA_EXPORT FuchsiaCdmFactory final : public CdmFactory {
  public:
   // |interface_provider| must outlive this class.
   explicit FuchsiaCdmFactory(std::unique_ptr<FuchsiaCdmProvider> provider);
-  ~FuchsiaCdmFactory() final;
+
+  FuchsiaCdmFactory(const FuchsiaCdmFactory&) = delete;
+  FuchsiaCdmFactory& operator=(const FuchsiaCdmFactory&) = delete;
+
+  ~FuchsiaCdmFactory() override;
 
   // CdmFactory implementation.
   void Create(const std::string& key_system,
@@ -32,7 +35,7 @@ class MEDIA_EXPORT FuchsiaCdmFactory : public CdmFactory {
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,
               const SessionExpirationUpdateCB& session_expiration_update_cb,
-              CdmCreatedCB cdm_created_cb) final;
+              CdmCreatedCB cdm_created_cb) override;
 
  private:
   void OnCdmReady(uint32_t creation_id,
@@ -48,8 +51,6 @@ class MEDIA_EXPORT FuchsiaCdmFactory : public CdmFactory {
       pending_cdms_;
 
   base::WeakPtrFactory<FuchsiaCdmFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FuchsiaCdmFactory);
 };
 
 }  // namespace media

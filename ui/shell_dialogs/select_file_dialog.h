@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/base_shell_dialog.h"
@@ -112,6 +111,9 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   static scoped_refptr<SelectFileDialog> Create(
       Listener* listener,
       std::unique_ptr<SelectFilePolicy> policy);
+
+  SelectFileDialog(const SelectFileDialog&) = delete;
+  SelectFileDialog& operator=(const SelectFileDialog&) = delete;
 
   // Holds information about allowed extensions on a file save dialog.
   struct SHELL_DIALOGS_EXPORT FileTypeInfo {
@@ -240,8 +242,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   virtual bool HasMultipleFileTypeChoicesImpl() = 0;
 
   std::unique_ptr<SelectFilePolicy> select_file_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialog);
 };
 
 SelectFileDialog* CreateSelectFileDialog(

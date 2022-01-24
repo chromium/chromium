@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/ime/win/imm32_manager.h"
 #include "ui/base/ime/win/input_method_win_base.h"
 
@@ -22,13 +21,17 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinImm32
  public:
   InputMethodWinImm32(internal::InputMethodDelegate* delegate,
                       HWND toplevel_window_handle);
+
+  InputMethodWinImm32(const InputMethodWinImm32&) = delete;
+  InputMethodWinImm32& operator=(const InputMethodWinImm32&) = delete;
+
   ~InputMethodWinImm32() override;
 
   // Overridden from InputMethodBase:
   void OnFocus() override;
 
   // Overridden from InputMethod:
-  bool OnUntranslatedIMEMessage(const MSG event,
+  bool OnUntranslatedIMEMessage(const CHROME_MSG event,
                                 NativeEventResult* result) override;
   void OnTextInputTypeChanged(const TextInputClient* client) override;
   void OnCaretBoundsChanged(const TextInputClient* client) override;
@@ -96,8 +99,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinImm32
   // Window handle where composition is on-going. NULL when there is no
   // composition.
   HWND composing_window_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodWinImm32);
 };
 
 }  // namespace ui

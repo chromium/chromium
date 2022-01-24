@@ -41,6 +41,9 @@ class PolicyBase final : public TargetPolicy {
  public:
   PolicyBase();
 
+  PolicyBase(const PolicyBase&) = delete;
+  PolicyBase& operator=(const PolicyBase&) = delete;
+
   // TargetPolicy:
   void AddRef() override;
   void Release() override;
@@ -80,6 +83,8 @@ class PolicyBase final : public TargetPolicy {
   scoped_refptr<AppContainer> GetAppContainer() override;
   void SetEffectiveToken(HANDLE token) override;
   std::unique_ptr<PolicyInfo> GetPolicyInfo() override;
+  void SetAllowNoSandboxJob() override;
+  bool GetAllowNoSandboxJob() override;
 
   // Get the AppContainer profile as its internal type.
   scoped_refptr<AppContainerBase> GetAppContainerBase();
@@ -192,8 +197,7 @@ class PolicyBase final : public TargetPolicy {
   scoped_refptr<AppContainerBase> app_container_;
 
   HANDLE effective_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyBase);
+  bool allow_no_sandbox_job_;
 };
 
 }  // namespace sandbox

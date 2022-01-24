@@ -21,10 +21,10 @@ public class ServiceNames {
             "org.chromium.android_webview.services.DeveloperUiService";
     public static final String METRICS_BRIDGE_SERVICE =
             "org.chromium.android_webview.services.MetricsBridgeService";
+    public static final String METRICS_UPLOAD_SERVICE =
+            "org.chromium.android_webview.services.MetricsUploadService";
     public static final String VARIATIONS_SEED_SERVER =
             "org.chromium.android_webview.services.VariationsSeedServer";
-    public static final String COMPONENTS_PROVIDER_SERVICE =
-            "org.chromium.android_webview.services.ComponentsProviderService";
     public static final String AW_COMPONENT_UPDATE_SERVICE =
             "org.chromium.android_webview.nonembedded.AwComponentUpdateService";
 

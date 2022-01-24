@@ -104,9 +104,9 @@ public class BottomSheetOnboardingCoordinatorTest {
         mScrimCoordinator = mCustomTabActivityTestRule.getActivity()
                                     .getRootUiCoordinatorForTesting()
                                     .getScrimCoordinator();
-        mOnboardingCoordinatorFactory =
-                new OnboardingCoordinatorFactory(mActivity, mBottomSheetController,
-                        mActivity.getBrowserControlsManager(), mActivity.getCompositorViewHolder());
+        mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(mActivity,
+                mBottomSheetController, mActivity.getBrowserControlsManager(),
+                mActivity.getCompositorViewHolderForTesting());
     }
 
     private BaseOnboardingCoordinator createCoordinator() {

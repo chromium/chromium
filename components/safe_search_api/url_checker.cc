@@ -60,8 +60,7 @@ URLChecker::URLChecker(std::unique_ptr<URLCheckerClient> async_checker,
                        size_t cache_size)
     : async_checker_(std::move(async_checker)),
       cache_(cache_size),
-      cache_timeout_(
-          base::TimeDelta::FromSeconds(kDefaultCacheTimeoutSeconds)) {}
+      cache_timeout_(base::Seconds(kDefaultCacheTimeoutSeconds)) {}
 
 URLChecker::~URLChecker() = default;
 

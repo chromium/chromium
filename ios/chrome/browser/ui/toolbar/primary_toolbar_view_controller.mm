@@ -78,6 +78,14 @@
 
 - (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
                                toState:(ViewRevealState)nextViewRevealState {
+  if (currentViewRevealState != ViewRevealState::Hidden ||
+      nextViewRevealState != ViewRevealState::Hidden) {
+    // Dismiss the edit menu if visible.
+    UIMenuController* menu = [UIMenuController sharedMenuController];
+    if ([menu isMenuVisible]) {
+      [menu hideMenu];
+    }
+  }
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
@@ -167,9 +175,7 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  if (@available(iOS 13, *)) {
-    [self updateLayoutForPreviousTraitCollection:nil];
-  }
+  [self updateLayoutForPreviousTraitCollection:nil];
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {

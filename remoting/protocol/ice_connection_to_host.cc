@@ -126,8 +126,7 @@ void IceConnectionToHost::OnSessionStateChange(Session::State state) {
       video_renderer_->OnSessionConfig(session_->config());
       monitored_video_stub_ = std::make_unique<MonitoredVideoStub>(
           video_renderer_->GetVideoStub(),
-          base::TimeDelta::FromSeconds(
-              MonitoredVideoStub::kConnectivityCheckDelaySeconds),
+          base::Seconds(MonitoredVideoStub::kConnectivityCheckDelaySeconds),
           base::BindRepeating(&IceConnectionToHost::OnVideoChannelStatus,
                               base::Unretained(this)));
       video_dispatcher_ = std::make_unique<ClientVideoDispatcher>(

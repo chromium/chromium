@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_observer.h"
@@ -41,6 +40,10 @@ class RequestManager;
 // Represents metadata for either a file or a directory.
 struct EntryMetadata {
   EntryMetadata();
+
+  EntryMetadata(const EntryMetadata&) = delete;
+  EntryMetadata& operator=(const EntryMetadata&) = delete;
+
   ~EntryMetadata();
 
   // All of the metadata fields are optional. All strings which are set, are
@@ -51,9 +54,6 @@ struct EntryMetadata {
   std::unique_ptr<base::Time> modification_time;
   std::unique_ptr<std::string> mime_type;
   std::unique_ptr<std::string> thumbnail;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EntryMetadata);
 };
 
 // Represents actions for either a file or a directory.

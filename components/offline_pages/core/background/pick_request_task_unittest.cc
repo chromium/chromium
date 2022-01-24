@@ -240,8 +240,7 @@ TEST_F(PickRequestTaskTest, ChooseRequestWithHigherRetryCount) {
 }
 
 TEST_F(PickRequestTaskTest, ChooseRequestWithSameRetryCountButEarlier) {
-  base::Time creation_time1 =
-      OfflineTimeNow() - base::TimeDelta::FromSeconds(10);
+  base::Time creation_time1 = OfflineTimeNow() - base::Seconds(10);
   base::Time creation_time2 = OfflineTimeNow();
   SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
                            creation_time1, kUserRequested);
@@ -265,8 +264,7 @@ TEST_F(PickRequestTaskTest, ChooseEarlierRequest) {
       kMaxCompletedTries, kBackgroundProcessingTimeBudgetSeconds);
   MakePickRequestTask();
 
-  base::Time creation_time1 =
-      OfflineTimeNow() - base::TimeDelta::FromSeconds(10);
+  base::Time creation_time1 = OfflineTimeNow() - base::Seconds(10);
   base::Time creation_time2 = OfflineTimeNow();
   SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
                            creation_time1, kUserRequested);
@@ -339,8 +337,7 @@ TEST_F(PickRequestTaskTest, ChooseLaterRequest) {
       kMaxCompletedTries, kBackgroundProcessingTimeBudgetSeconds);
   MakePickRequestTask();
 
-  base::Time creation_time1 =
-      OfflineTimeNow() - base::TimeDelta::FromSeconds(10);
+  base::Time creation_time1 = OfflineTimeNow() - base::Seconds(10);
   base::Time creation_time2 = OfflineTimeNow();
   SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
                            creation_time1, kUserRequested);
@@ -360,8 +357,8 @@ TEST_F(PickRequestTaskTest, ChooseLaterRequest) {
 TEST_F(PickRequestTaskTest, ChooseNonExpiredRequest) {
   base::Time creation_time = OfflineTimeNow();
   base::Time expired_time =
-      creation_time - base::TimeDelta::FromSeconds(
-                          policy_->GetRequestExpirationTimeInSeconds() + 60);
+      creation_time -
+      base::Seconds(policy_->GetRequestExpirationTimeInSeconds() + 60);
   SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
                            creation_time, kUserRequested);
   SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,
@@ -381,8 +378,7 @@ TEST_F(PickRequestTaskTest, ChooseNonExpiredRequest) {
 }
 
 TEST_F(PickRequestTaskTest, ChooseRequestThatHasNotExceededStartLimit) {
-  base::Time creation_time1 =
-      OfflineTimeNow() - base::TimeDelta::FromSeconds(1);
+  base::Time creation_time1 = OfflineTimeNow() - base::Seconds(1);
   base::Time creation_time2 = OfflineTimeNow();
   SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
                            creation_time1, kUserRequested);
@@ -407,8 +403,7 @@ TEST_F(PickRequestTaskTest, ChooseRequestThatHasNotExceededStartLimit) {
 }
 
 TEST_F(PickRequestTaskTest, ChooseRequestThatHasNotExceededCompletionLimit) {
-  base::Time creation_time1 =
-      OfflineTimeNow() - base::TimeDelta::FromSeconds(1);
+  base::Time creation_time1 = OfflineTimeNow() - base::Seconds(1);
   base::Time creation_time2 = OfflineTimeNow();
   SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
                            creation_time1, kUserRequested);
@@ -509,8 +504,7 @@ TEST_F(PickRequestTaskTest, ChooseFromTwoPrioritizedRequests) {
   // prioritizing issues with older creation time, fewer attempt count and it's
   // earlier in the request queue.
   base::Time creation_time = OfflineTimeNow();
-  base::Time older_creation_time =
-      creation_time - base::TimeDelta::FromMinutes(10);
+  base::Time older_creation_time = creation_time - base::Minutes(10);
   SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
                            older_creation_time, kUserRequested);
   SavePageRequest request2(kRequestId2, GURL("http://nytimes.com"), kClientId2,

@@ -22,7 +22,6 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_libevent.h"
 #include "base/metrics/field_trial_params.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
@@ -48,6 +47,10 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
                            const EventDeviceInfo& devinfo,
                            SharedPalmDetectionFilterState* shared_palm_state,
                            DeviceEventDispatcherEvdev* dispatcher);
+
+  TouchEventConverterEvdev(const TouchEventConverterEvdev&) = delete;
+  TouchEventConverterEvdev& operator=(const TouchEventConverterEvdev&) = delete;
+
   ~TouchEventConverterEvdev() override;
 
   static std::unique_ptr<TouchEventConverterEvdev> Create(
@@ -217,8 +220,6 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
 
   // Do we mark a touch as palm when the tool type is marked as TOOL_TYPE_PALM ?
   bool palm_on_tool_type_palm_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchEventConverterEvdev);
 };
 
 }  // namespace ui

@@ -379,6 +379,11 @@ class TouchTrackerWindowDelegate : public aura::test::TestWindowDelegate {
  public:
   TouchTrackerWindowDelegate()
       : received_touch_(false), last_event_type_(ui::ET_UNKNOWN) {}
+
+  TouchTrackerWindowDelegate(const TouchTrackerWindowDelegate&) = delete;
+  TouchTrackerWindowDelegate& operator=(const TouchTrackerWindowDelegate&) =
+      delete;
+
   ~TouchTrackerWindowDelegate() override = default;
 
   void reset() {
@@ -399,8 +404,6 @@ class TouchTrackerWindowDelegate : public aura::test::TestWindowDelegate {
 
   bool received_touch_;
   ui::EventType last_event_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchTrackerWindowDelegate);
 };
 
 // Modality should prevent events from being passed to transient window tree

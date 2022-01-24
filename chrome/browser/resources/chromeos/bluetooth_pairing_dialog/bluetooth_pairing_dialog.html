@@ -1,13 +1,18 @@
 <style include="cr-page-host-style cr-shared-style">
   bluetooth-dialog::part(dialog) {
     border-radius: 0;
+    box-shadow: none;
     height: 100%;
     width: 100%;
   }
 </style>
 <template is="dom-if" if="[[!isBluetoothRevampEnabled_]]" restamp>
-  <bluetooth-dialog id="deviceDialog" no-cancel on-close="onDialogClose_"
+  <bluetooth-dialog id="deviceDialog" no-cancel on-close="closeDialog_"
       pairing-device="[[pairingDevice_]]"
       dialog-title="$i18n{bluetoothPairDeviceTitle}">
   </bluetooth-dialog>
+</template>
+<template is="dom-if" if="[[isBluetoothRevampEnabled_]]" restamp>
+  <bluetooth-pairing-ui on-finished="closeDialog_">
+  </bluetooth-pairing-ui>
 </template>

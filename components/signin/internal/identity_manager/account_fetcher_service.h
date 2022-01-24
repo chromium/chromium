@@ -13,7 +13,6 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -58,6 +57,10 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   static const char kLastUpdatePref[];
 
   AccountFetcherService();
+
+  AccountFetcherService(const AccountFetcherService&) = delete;
+  AccountFetcherService& operator=(const AccountFetcherService&) = delete;
+
   ~AccountFetcherService() override;
 
   // Registers the preferences used by AccountFetcherService.
@@ -72,8 +75,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // there are still unfininshed fetchers.
   virtual bool IsAllUserInfoFetched() const;
   virtual bool AreAllAccountCapabilitiesFetched() const;
-
-  void ForceRefreshOfAccountInfo(const CoreAccountId& account_id);
 
   AccountTrackerService* account_tracker_service() const {
     return account_tracker_service_;
@@ -100,6 +101,9 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void EnableAccountCapabilitiesFetcherForTest(bool enabled);
 
 #if defined(OS_ANDROID)
+  // Refresh the AccountInfo if the existing one is stale
+  void RefreshAccountInfoIfStale(const CoreAccountId& account_id);
+
   // Called by ChildAccountInfoFetcherAndroid.
   void SetIsChildAccount(const CoreAccountId& account_id,
                          bool is_child_account);
@@ -196,8 +200,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   std::unique_ptr<image_fetcher::ImageDecoder> image_decoder_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AccountFetcherService);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_FETCHER_SERVICE_H_

@@ -29,6 +29,10 @@ class BASE_EXPORT ScopedBstr {
   // NOTE: Do not pass a BSTR to this constructor expecting ownership to
   // be transferred - even though it compiles! ;-)
   explicit ScopedBstr(WStringPiece non_bstr);
+
+  ScopedBstr(const ScopedBstr&) = delete;
+  ScopedBstr& operator=(const ScopedBstr&) = delete;
+
   ~ScopedBstr();
 
   BSTR Get() const { return bstr_; }
@@ -87,9 +91,6 @@ class BASE_EXPORT ScopedBstr {
 
  protected:
   BSTR bstr_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedBstr);
 };
 
 }  // namespace win

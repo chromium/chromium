@@ -20,6 +20,10 @@ class ListedElement;
 class AXValidationMessage final : public AXMockObject {
  public:
   explicit AXValidationMessage(AXObjectCacheImpl&);
+
+  AXValidationMessage(const AXValidationMessage&) = delete;
+  AXValidationMessage& operator=(const AXValidationMessage&) = delete;
+
   ~AXValidationMessage() override;
 
  private:
@@ -46,8 +50,6 @@ class AXValidationMessage final : public AXMockObject {
   ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
 
   ListedElement* RelatedFormControlIfVisible() const;
-
-  DISALLOW_COPY_AND_ASSIGN(AXValidationMessage);
 };
 
 }  // namespace blink

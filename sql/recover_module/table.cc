@@ -23,20 +23,20 @@ namespace recover {
 // Corrupted SQLite metadata can cause failures here.
 absl::optional<int> GetTableRootPageId(sqlite3* sqlite_db,
                                        const TargetTableSpec& table) {
-  if (table.table_name == "sqlite_master") {
-    // The sqlite_master table is always rooted at the first page.
+  if (table.table_name == "sqlite_schema") {
+    // The sqlite_schema table is always rooted at the first page.
     // SQLite page IDs use 1-based indexing.
     return absl::optional<int64_t>(1);
   }
 
   std::string select_sql =
       base::StrCat({"SELECT rootpage FROM ", table.db_name,
-                    ".sqlite_master WHERE type='table' AND tbl_name=?"});
+                    ".sqlite_schema WHERE type='table' AND tbl_name=?"});
   sqlite3_stmt* sqlite_statement;
   if (sqlite3_prepare_v3(sqlite_db, select_sql.c_str(), select_sql.size() + 1,
                          SQLITE_PREPARE_NO_VTAB, &sqlite_statement,
                          nullptr) != SQLITE_OK) {
-    // The sqlite_master table is missing or its schema is corrupted.
+    // The sqlite_schema table is missing or its schema is corrupted.
     return absl::nullopt;
   }
 

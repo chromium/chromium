@@ -49,6 +49,21 @@ void SaveIconToLocalOnBlockingPool(const base::FilePath& icon_path,
   }
 }
 
+void RemoveDictionaryPath(base::Value* dict, base::StringPiece path) {
+  DCHECK(dict->is_dict());
+  base::StringPiece current_path(path);
+  base::Value* current_dictionary = dict;
+  size_t delimiter_position = current_path.rfind('.');
+  if (delimiter_position != base::StringPiece::npos) {
+    current_dictionary =
+        dict->FindPath(current_path.substr(0, delimiter_position));
+    if (!current_dictionary)
+      return;
+    current_path = current_path.substr(delimiter_position + 1);
+  }
+  current_dictionary->RemoveKey(current_path);
+}
+
 }  // namespace
 
 // static
@@ -138,7 +153,7 @@ void KioskAppDataBase::ClearCache() {
 
   const std::string app_key =
       std::string(KioskAppDataBase::kKeyApps) + '.' + app_id_;
-  dict_update->Remove(app_key, nullptr);
+  RemoveDictionaryPath(dict_update.Get(), app_key);
 
   if (!icon_path_.empty()) {
     base::ThreadPool::PostTask(

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_features.h"
@@ -53,6 +54,11 @@ namespace content {
 class WheelEventListenerBrowserTest : public ContentBrowserTest {
  public:
   WheelEventListenerBrowserTest() = default;
+
+  WheelEventListenerBrowserTest(const WheelEventListenerBrowserTest&) = delete;
+  WheelEventListenerBrowserTest& operator=(
+      const WheelEventListenerBrowserTest&) = delete;
+
   ~WheelEventListenerBrowserTest() override = default;
 
  protected:
@@ -108,7 +114,6 @@ class WheelEventListenerBrowserTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(WheelEventListenerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WheelEventListenerBrowserTest,

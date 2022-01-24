@@ -20,7 +20,7 @@ namespace views {
 namespace corewm {
 namespace {
 
-constexpr auto kDelayForTooltipUpdate = base::TimeDelta::FromMilliseconds(500);
+constexpr auto kDelayForTooltipUpdate = base::Milliseconds(500);
 #if defined(OS_WIN)
 // Drawing a long word in tooltip is very slow on Windows. crbug.com/513693
 constexpr size_t kMaxTooltipLength = 1024;
@@ -105,8 +105,7 @@ void TooltipStateManager::UpdatePositionIfNeeded(const gfx::Point& position,
 }
 
 void TooltipStateManager::SetTooltipShowDelayedForTesting(bool is_delayed) {
-  tooltip_show_delay_ =
-      is_delayed ? kDelayForTooltipUpdate : base::TimeDelta::FromSeconds(0);
+  tooltip_show_delay_ = is_delayed ? kDelayForTooltipUpdate : base::Seconds(0);
 }
 
 void TooltipStateManager::ShowNow(const std::u16string& trimmed_text,

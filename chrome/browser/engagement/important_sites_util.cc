@@ -19,6 +19,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/installable/installable_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/url_and_title.h"
@@ -40,7 +41,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #else
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #endif
@@ -116,7 +117,7 @@ bool ShouldSuppressItem(base::Value* dict) {
   if (last_ignored_time) {
     base::TimeDelta diff =
         base::Time::Now() - base::Time::FromDoubleT(*last_ignored_time);
-    if (diff >= base::TimeDelta::FromDays(kSuppressionExpirationTimeDays)) {
+    if (diff >= base::Days(kSuppressionExpirationTimeDays)) {
       dict->SetIntKey(kNumTimesIgnoredName, 0);
       dict->RemoveKey(kTimeLastIgnored);
       return false;
@@ -329,7 +330,7 @@ void PopulateInfoMapWithBookmarks(
                  std::back_inserter(result_bookmarks),
                  [service](const UrlAndTitle& entry) {
                    return service->IsEngagementAtLeast(
-                       entry.url.GetOrigin(),
+                       entry.url.DeprecatedGetOriginAsURL(),
                        blink::mojom::EngagementLevel::LOW);
                  });
     // TODO(dmurph): Simplify this (and probably much more) once
@@ -338,8 +339,8 @@ void PopulateInfoMapWithBookmarks(
     std::sort(
         result_bookmarks.begin(), result_bookmarks.end(),
         [&engagement_map](const UrlAndTitle& a, const UrlAndTitle& b) {
-          auto a_it = engagement_map.find(a.url.GetOrigin());
-          auto b_it = engagement_map.find(b.url.GetOrigin());
+          auto a_it = engagement_map.find(a.url.DeprecatedGetOriginAsURL());
+          auto b_it = engagement_map.find(b.url.DeprecatedGetOriginAsURL());
           double a_score = a_it == engagement_map.end() ? 0 : a_it->second;
           double b_score = b_it == engagement_map.end() ? 0 : b_it->second;
           return a_score > b_score;
@@ -374,16 +375,18 @@ void PopulateInfoMapWithInstalledEngagedInTimePeriod(
 
   // Check with WebAppRegistrar to make sure the apps have not yet been
   // uninstalled.
-  const web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::Get(profile)->registrar();
-  auto app_ids = registrar.GetAppIds();
   std::map<std::string, std::string> installed_origins_map;
-  for (auto& app_id : app_ids) {
-    GURL scope = registrar.GetAppScope(app_id);
-    DCHECK(scope.is_valid());
-    auto app_name = registrar.GetAppShortName(app_id);
-    installed_origins_map.emplace(
-        std::make_pair(scope.GetOrigin().spec(), app_name));
+  if (web_app::AreWebAppsUserInstallable(profile)) {
+    const web_app::WebAppRegistrar& registrar =
+        web_app::WebAppProvider::GetForWebApps(profile)->registrar();
+    auto app_ids = registrar.GetAppIds();
+    for (auto& app_id : app_ids) {
+      GURL scope = registrar.GetAppScope(app_id);
+      DCHECK(scope.is_valid());
+      auto app_name = registrar.GetAppShortName(app_id);
+      installed_origins_map.emplace(
+          std::make_pair(scope.DeprecatedGetOriginAsURL().spec(), app_name));
+    }
   }
 
   for (const auto& detail : engagement_details) {

@@ -22,7 +22,7 @@ from .user_defined_type import UserDefinedType
 
 class Namespace(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
                 WithExposure, WithComponent, WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-namespaces"""
+    """https://webidl.spec.whatwg.org/#idl-namespaces"""
 
     class IR(IRMap.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
              WithExposure, WithComponent, WithDebugInfo):

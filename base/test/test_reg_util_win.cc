@@ -53,7 +53,7 @@ void DeleteStaleTestKeys(const base::Time& now,
     base::Time key_time = base::Time::FromInternalValue(key_name_as_number);
     base::TimeDelta age = now - key_time;
 
-    if (age > base::TimeDelta::FromHours(24))
+    if (age > base::Hours(24))
       test_root_key.DeleteKey(key_name.c_str());
   }
 }

@@ -24,10 +24,14 @@ public abstract class ImageFetcher {
     public static final String ANSWER_SUGGESTIONS_UMA_CLIENT_NAME = "AnswerSuggestions";
     public static final String ASSISTANT_DETAILS_UMA_CLIENT_NAME = "AssistantDetails";
     public static final String ASSISTANT_INFO_BOX_UMA_CLIENT_NAME = "AssistantInfoBox";
+    public static final String AUTOFILL_CARD_ART_UMA_CLIENT_NAME = "AutofillCardArt";
     public static final String CRYPTIDS_UMA_CLIENT_NAME = "Cryptids";
     public static final String ENTITY_SUGGESTIONS_UMA_CLIENT_NAME = "EntitySuggestions";
     public static final String FEED_UMA_CLIENT_NAME = "Feed";
+    public static final String LIGHTWEIGHT_REACTIONS_UMA_CLIENT_NAME = "LightweightReactions";
     public static final String NTP_ANIMATED_LOGO_UMA_CLIENT_NAME = "NewTabPageAnimatedLogo";
+    public static final String PRICE_DROP_NOTIFICATION = "PriceDropNotification";
+    public static final String POWER_BOOKMARKS_CLIENT_NAME = "PowerBookmarks";
     public static final String QUERY_TILE_UMA_CLIENT_NAME = "QueryTiles";
     public static final String VIDEO_TUTORIALS_IPH_UMA_CLIENT_NAME = "VideoTutorialsIPH";
     public static final String VIDEO_TUTORIALS_LIST_UMA_CLIENT_NAME = "VideoTutorialsList";

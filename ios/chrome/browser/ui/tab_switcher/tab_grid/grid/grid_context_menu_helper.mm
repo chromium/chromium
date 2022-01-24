@@ -9,10 +9,12 @@
 #import "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_menu_actions_data_source.h"
@@ -21,7 +23,12 @@
 #error "This file requires ARC support."
 #endif
 
-@interface GridContextMenuHelper () <GridContextMenuProvider>
+@interface GridContextMenuHelper () <BrowserObserving,
+                                     GridContextMenuProvider> {
+  // Observe BrowserObserver to prevent any access to Browser before its
+  // destroyed.
+  std::unique_ptr<BrowserObserverBridge> _browserObserver;
+}
 
 @property(nonatomic, assign) Browser* browser;
 @property(nonatomic, weak) id<TabContextMenuDelegate> contextMenuDelegate;
@@ -40,11 +47,19 @@
   self = [super init];
   if (self) {
     _browser = browser;
+    _browserObserver = std::make_unique<BrowserObserverBridge>(_browser, self);
     _contextMenuDelegate = tabContextMenuDelegate;
     _actionsDataSource = actionsDataSource;
     _incognito = _browser->GetBrowserState()->IsOffTheRecord();
   }
   return self;
+}
+
+- (void)dealloc {
+  if (self.browser) {
+    _browserObserver.reset();
+    self.browser = nullptr;
+  }
 }
 
 - (UIContextMenuConfiguration*)contextMenuConfigurationForGridCell:
@@ -53,87 +68,14 @@
 
   UIContextMenuActionProvider actionProvider =
       ^(NSArray<UIMenuElement*>* suggestedActions) {
-        if (!weakSelf) {
+        GridContextMenuHelper* strongSelf = weakSelf;
+        if (!strongSelf) {
           // Return an empty menu.
           return [UIMenu menuWithTitle:@"" children:@[]];
         }
 
-        GridContextMenuHelper* strongSelf = weakSelf;
-
-        // Record that this context menu was shown to the user.
-        RecordMenuShown(MenuScenario::kTabGridEntry);
-
-        ActionFactory* actionFactory = [[ActionFactory alloc]
-            initWithScenario:MenuScenario::kTabGridEntry];
-
-        GridItem* item = [weakSelf.actionsDataSource
-            gridItemForCellIdentifier:gridCell.itemIdentifier];
-
-        NSMutableArray<UIMenuElement*>* menuElements =
-            [[NSMutableArray alloc] init];
-
-        if (!IsURLNewTabPage(item.URL)) {
-          if ([weakSelf.contextMenuDelegate
-                  respondsToSelector:@selector(shareURL:
-                                                  title:scenario:fromView:)]) {
-            [menuElements addObject:[actionFactory actionToShareWithBlock:^{
-                            [weakSelf.contextMenuDelegate
-                                shareURL:item.URL
-                                   title:item.title
-                                scenario:ActivityScenario::TabGridItem
-                                fromView:gridCell];
-                          }]];
-          }
-
-          if (item.URL.SchemeIsHTTPOrHTTPS() &&
-              [weakSelf.contextMenuDelegate
-                  respondsToSelector:@selector(addToReadingListURL:title:)]) {
-            [menuElements
-                addObject:[actionFactory actionToAddToReadingListWithBlock:^{
-                  [weakSelf.contextMenuDelegate addToReadingListURL:item.URL
-                                                              title:item.title];
-                }]];
-          }
-
-          UIAction* bookmarkAction;
-          bool currentlyBookmarked =
-              [weakSelf.actionsDataSource isGridItemBookmarked:item];
-          if (currentlyBookmarked) {
-            if ([weakSelf.contextMenuDelegate
-                    respondsToSelector:@selector(editBookmarkWithURL:)]) {
-              bookmarkAction = [actionFactory actionToEditBookmarkWithBlock:^{
-                [weakSelf.contextMenuDelegate editBookmarkWithURL:item.URL];
-              }];
-            }
-          } else {
-            if ([weakSelf.contextMenuDelegate
-                    respondsToSelector:@selector(bookmarkURL:title:)]) {
-              bookmarkAction = [actionFactory actionToBookmarkWithBlock:^{
-                [weakSelf.contextMenuDelegate bookmarkURL:item.URL
-                                                    title:item.title];
-              }];
-            }
-          }
-          // Bookmarking can be disabled from prefs (from an enterprise policy),
-          // if that's the case grey out the option in the menu.
-          BOOL isEditBookmarksEnabled =
-              strongSelf.browser->GetBrowserState()->GetPrefs()->GetBoolean(
-                  bookmarks::prefs::kEditBookmarksEnabled);
-          if (!isEditBookmarksEnabled && bookmarkAction)
-            bookmarkAction.attributes = UIMenuElementAttributesDisabled;
-          if (bookmarkAction)
-            [menuElements addObject:bookmarkAction];
-        }
-
-        if ([weakSelf.contextMenuDelegate
-                respondsToSelector:@selector(closeTabWithIdentifier:
-                                                          incognito:)]) {
-          [menuElements addObject:[actionFactory actionToCloseTabWithBlock:^{
-                          [weakSelf.contextMenuDelegate
-                              closeTabWithIdentifier:gridCell.itemIdentifier
-                                           incognito:weakSelf.incognito];
-                        }]];
-        }
+        NSArray<UIMenuElement*>* menuElements =
+            [strongSelf menuElementsForGridCell:gridCell];
         return [UIMenu menuWithTitle:@"" children:menuElements];
       };
 
@@ -141,6 +83,97 @@
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:nil
                                                actionProvider:actionProvider];
+}
+
+- (NSArray<UIMenuElement*>*)menuElementsForGridCell:(GridCell*)gridCell {
+  // Record that this context menu was shown to the user.
+  RecordMenuShown(MenuScenario::kTabGridEntry);
+
+  ActionFactory* actionFactory =
+      [[ActionFactory alloc] initWithScenario:MenuScenario::kTabGridEntry];
+
+  GridItem* item = [self.actionsDataSource
+      gridItemForCellIdentifier:gridCell.itemIdentifier];
+
+  NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
+
+  if (!IsURLNewTabPage(item.URL)) {
+    if ([self.contextMenuDelegate
+            respondsToSelector:@selector(shareURL:title:scenario:fromView:)]) {
+      [menuElements addObject:[actionFactory actionToShareWithBlock:^{
+                      [self.contextMenuDelegate
+                          shareURL:item.URL
+                             title:item.title
+                          scenario:ActivityScenario::TabGridItem
+                          fromView:gridCell];
+                    }]];
+    }
+
+    if (item.URL.SchemeIsHTTPOrHTTPS() &&
+        [self.contextMenuDelegate
+            respondsToSelector:@selector(addToReadingListURL:title:)]) {
+      [menuElements
+          addObject:[actionFactory actionToAddToReadingListWithBlock:^{
+            [self.contextMenuDelegate addToReadingListURL:item.URL
+                                                    title:item.title];
+          }]];
+    }
+
+    UIAction* bookmarkAction;
+    bool currentlyBookmarked =
+        [self.actionsDataSource isGridItemBookmarked:item];
+    if (currentlyBookmarked) {
+      if ([self.contextMenuDelegate
+              respondsToSelector:@selector(editBookmarkWithURL:)]) {
+        bookmarkAction = [actionFactory actionToEditBookmarkWithBlock:^{
+          [self.contextMenuDelegate editBookmarkWithURL:item.URL];
+        }];
+      }
+    } else {
+      if ([self.contextMenuDelegate
+              respondsToSelector:@selector(bookmarkURL:title:)]) {
+        bookmarkAction = [actionFactory actionToBookmarkWithBlock:^{
+          [self.contextMenuDelegate bookmarkURL:item.URL title:item.title];
+        }];
+      }
+    }
+    // Bookmarking can be disabled from prefs (from an enterprise policy),
+    // if that's the case grey out the option in the menu.
+    if (self.browser) {
+      BOOL isEditBookmarksEnabled =
+          self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+              bookmarks::prefs::kEditBookmarksEnabled);
+      if (!isEditBookmarksEnabled && bookmarkAction)
+        bookmarkAction.attributes = UIMenuElementAttributesDisabled;
+      if (bookmarkAction)
+        [menuElements addObject:bookmarkAction];
+    }
+  }
+
+  if (IsTabsBulkActionsEnabled()) {
+    if ([self.contextMenuDelegate respondsToSelector:@selector(selectTabs)]) {
+      [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
+                      [self.contextMenuDelegate selectTabs];
+                    }]];
+    }
+  }
+
+  if ([self.contextMenuDelegate
+          respondsToSelector:@selector(closeTabWithIdentifier:incognito:)]) {
+    [menuElements addObject:[actionFactory actionToCloseTabWithBlock:^{
+                    [self.contextMenuDelegate
+                        closeTabWithIdentifier:gridCell.itemIdentifier
+                                     incognito:self.incognito];
+                  }]];
+  }
+  return menuElements;
+}
+
+#pragma mark - BrowserObserving
+
+- (void)browserDestroyed:(Browser*)browser {
+  DCHECK_EQ(browser, self.browser);
+  self.browser = nullptr;
 }
 
 @end

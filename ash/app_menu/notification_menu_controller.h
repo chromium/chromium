@@ -32,6 +32,10 @@ class APP_MENU_EXPORT NotificationMenuController
                              views::MenuItemView* root_menu,
                              AppMenuModelAdapter* app_menu_model_adapter);
 
+  NotificationMenuController(const NotificationMenuController&) = delete;
+  NotificationMenuController& operator=(const NotificationMenuController&) =
+      delete;
+
   ~NotificationMenuController() override;
 
   // message_center::MessageCenterObserver overrides:
@@ -72,8 +76,6 @@ class APP_MENU_EXPORT NotificationMenuController
   base::ScopedObservation<message_center::MessageCenter,
                           message_center::MessageCenterObserver>
       message_center_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationMenuController);
 };
 
 }  // namespace ash

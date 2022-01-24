@@ -117,9 +117,9 @@ void DeviceDescriptionService::GetDeviceDescriptions(
   // Start a clean up timer.
   if (!clean_up_timer_) {
     clean_up_timer_ = std::make_unique<base::RepeatingTimer>();
-    clean_up_timer_->Start(
-        FROM_HERE, base::TimeDelta::FromMinutes(kCacheCleanUpTimeoutMins), this,
-        &DeviceDescriptionService::CleanUpCacheEntries);
+    clean_up_timer_->Start(FROM_HERE, base::Minutes(kCacheCleanUpTimeoutMins),
+                           this,
+                           &DeviceDescriptionService::CleanUpCacheEntries);
   }
 }
 
@@ -213,7 +213,7 @@ void DeviceDescriptionService::OnParsedDeviceDescription(
 
   CacheEntry cached_description_data;
   cached_description_data.expire_time =
-      GetNow() + base::TimeDelta::FromHours(kDeviceDescriptionCacheTimeHours);
+      GetNow() + base::Hours(kDeviceDescriptionCacheTimeHours);
   cached_description_data.config_id = device_data.config_id();
   cached_description_data.description_data = device_description;
   description_cache_.insert(

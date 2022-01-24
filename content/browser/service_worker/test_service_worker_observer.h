@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_TEST_SERVICE_WORKER_OBSERVER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_TEST_SERVICE_WORKER_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -13,6 +12,10 @@
 namespace base {
 class TestSimpleTaskRunner;
 }
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 
@@ -24,6 +27,11 @@ class TestServiceWorkerObserver : public ServiceWorkerContextCoreObserver {
  public:
   explicit TestServiceWorkerObserver(
       scoped_refptr<ServiceWorkerContextWrapper> wrapper);
+
+  TestServiceWorkerObserver(const TestServiceWorkerObserver&) = delete;
+  TestServiceWorkerObserver& operator=(const TestServiceWorkerObserver&) =
+      delete;
+
   ~TestServiceWorkerObserver() override;
 
   // Returns when |version| reaches |status|.
@@ -42,6 +50,7 @@ class TestServiceWorkerObserver : public ServiceWorkerContextCoreObserver {
   // ServiceWorkerContextCoreObserver overrides:
   void OnVersionStateChanged(int64_t version_id,
                              const GURL& scope,
+                             const blink::StorageKey& key,
                              ServiceWorkerVersion::Status status) override;
 
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
@@ -50,8 +59,6 @@ class TestServiceWorkerObserver : public ServiceWorkerContextCoreObserver {
   ServiceWorkerVersion::Status status_for_status_change_ =
       ServiceWorkerVersion::NEW;
   base::OnceClosure quit_closure_for_status_change_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestServiceWorkerObserver);
 };
 
 }  // namespace content

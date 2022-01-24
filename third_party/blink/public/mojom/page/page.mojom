@@ -34,6 +34,12 @@ struct PageLifecycleState {
   // do not race with the restoration flow on the browser. For example, if set
   // to true the renderer must not evict the page if javascript is executed.
   bool eviction_enabled;
+  // TODO(https://crbug.com/1234634): Remove this, it's for temporary
+  // debugging to find when the renderer and browser disagree. It should not
+  // be used for any decision making and its value is not preserved in the
+  // renderer's copy of the state.
+  // True if changing to this state should trigger a pageshow event.
+  bool should_dispatch_pageshow_for_debugging;
 };
 
 // Additional parameters to send with SetPageLifecycleState calls when we're

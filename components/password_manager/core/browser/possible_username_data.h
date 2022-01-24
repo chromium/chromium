@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_POSSIBLE_USERNAME_DATA_H_
 
 #include <string>
-#include <vector>
 
 #include "base/time/time.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -18,8 +17,7 @@ namespace password_manager {
 // The maximum time between the user typed in a text field and subsequent
 // submission of the password form, such that the typed value is considered to
 // be a possible username.
-constexpr auto kPossibleUsernameExpirationTimeout =
-    base::TimeDelta::FromMinutes(1);
+constexpr auto kPossibleUsernameExpirationTimeout = base::Minutes(1);
 
 // Contains information that the user typed in a text field. It might be the
 // username during username first flow.

@@ -6,9 +6,9 @@
   </head>
   <body>
     <script>
-      async function runTestedFunction(testedFunction) {
+      async function runTestedFunction(constraints) {
         try {
-          await navigator.mediaDevices[testedFunction]();
+          await navigator.mediaDevices.getDisplayMedia(constraints);
           window.domAutomationController.send("embedded-capture-success");
         } catch (e) {
           window.domAutomationController.send("embedded-capture-failure");

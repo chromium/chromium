@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -43,6 +42,10 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
    private:
     static Factory* test_factory_;
   };
+
+  MultiDeviceSetupClientImpl(const MultiDeviceSetupClientImpl&) = delete;
+  MultiDeviceSetupClientImpl& operator=(const MultiDeviceSetupClientImpl&) =
+      delete;
 
   ~MultiDeviceSetupClientImpl() override;
 
@@ -103,12 +106,17 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
 
   HostStatusWithDevice host_status_with_device_;
   FeatureStatesMap feature_states_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupClientImpl);
 };
 
 }  // namespace multidevice_setup
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+namespace multidevice_setup {
+using ::chromeos::multidevice_setup::MultiDeviceSetupClientImpl;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_MULTIDEVICE_SETUP_CLIENT_IMPL_H_

@@ -27,7 +27,7 @@ void MediaInternalsMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   proxy_->Attach(this);
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getEverything",
       base::BindRepeating(&MediaInternalsMessageHandler::OnGetEverything,
                           base::Unretained(this)));

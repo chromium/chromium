@@ -4,55 +4,181 @@
 
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_utils.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/base64.h"
+#include "base/cxx17_backports.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
+#include "ui/accessibility/ax_text_utils.h"
 
 namespace ash {
 namespace enhanced_network_tts {
+namespace {
+
+// The offsets computed by |ui::GetSentenceEndOffsets| and
+// |ui::GetWordEndOffsets| are pointing to the index after the actual end. This
+// method converts the offsets to indexes.
+void ConvertOffsetsToIndexes(std::vector<int>& vect) {
+  for (int& end : vect)
+    end -= 1;
+}
+
+// The server requires the rate to be between 0.3 and 4.0, in steps of 0.1.
+float ClampRateToLimits(float rate) {
+  float clampped_rate = base::clamp(rate, kMinRate, kMaxRate);
+  // Set the precision to one significant digit.
+  return static_cast<float>(static_cast<int>(clampped_rate * 10) / 10.0f);
+}
+
+}  // namespace
 
 std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request) {
+  base::Value request(base::Value::Type::DICTIONARY);
+
   // utterance is sent as {'text': {'text_parts': [<utterance>]} }
   base::Value text_parts(base::Value::Type::LIST);
   text_parts.Append(std::move(tts_request->utterance));
-  base::Value text(base::Value::Type::DICTIONARY);
-  text.SetKey("text_parts", std::move(text_parts));
-  base::Value request(base::Value::Type::DICTIONARY);
-  request.SetKey("text", std::move(text));
+  request.SetPath(kTextPartsPath, std::move(text_parts));
 
-  // Voice and language are sent as
-  // {'voice_settings':
-  //   {'voice_criteria_and_selections':
-  //     [{
-  //        'selection': {'default_voice':<voice>}},
-  //        'criteria': {'language':<lang>}}
-  //     }]
+  // Speech rate, Voice and language are sent as
+  // {
+  //   {'advanced_options':
+  //     {
+  //       'audio_generation_options': {'speed_factor': <rate>},
+  //       'force_language':<lang>
+  //     }
+  //   },
+  //   {'voice_settings':
+  //     {'voice_criteria_and_selections':
+  //       [{
+  //          'selection': {'default_voice':<voice>}},
+  //          'criteria': {'language':<lang>}}
+  //       }]
+  //     }
   //   }
   // }
+  // See https://goto.google.com/readaloud-proto for more information.
+
+  // Add speech rate.
+  const float rate = ClampRateToLimits(tts_request->rate);
+  request.SetPath(kSpeechFactorPath, base::Value(rate));
+
   // The voice and language have to be set together to be valid.
   if (tts_request->voice.has_value() && tts_request->lang.has_value()) {
+    // Force the server to produce audio based on the current lang.
+    request.SetPath(kForceLanguagePath, base::Value(tts_request->lang.value()));
+
+    // Produce 'voice_criteria_and_selections'.
     base::Value selection(base::Value::Type::DICTIONARY);
-    selection.SetKey("default_voice",
+    selection.SetKey(kDefaultVoiceKey,
                      base::Value(std::move(tts_request->voice.value())));
     base::Value criteria(base::Value::Type::DICTIONARY);
-    criteria.SetKey("language",
-                    base::Value(std::move(tts_request->lang.value())));
+    criteria.SetKey(kLanguageKey, base::Value(tts_request->lang.value()));
     base::Value voice_selection(base::Value::Type::DICTIONARY);
-    voice_selection.SetKey("selection", std::move(selection));
-    voice_selection.SetKey("criteria", std::move(criteria));
+    voice_selection.SetKey(kSelectionKey, std::move(selection));
+    voice_selection.SetKey(kCriteriaKey, std::move(criteria));
     base::Value voice_criteria_and_selections(base::Value::Type::LIST);
     voice_criteria_and_selections.Append(std::move(voice_selection));
-    base::Value voice_settings(base::Value::Type::DICTIONARY);
-    voice_settings.SetKey("voice_criteria_and_selections",
-                          std::move(voice_criteria_and_selections));
-    request.SetKey("voice_settings", std::move(voice_settings));
+    request.SetPath(kVoiceCriteriaAndSelectionsPath,
+                    std::move(voice_criteria_and_selections));
   }
 
   std::string json_request;
   base::JSONWriter::Write(request, &json_request);
   return json_request;
+}
+
+std::vector<uint16_t> FindTextBreaks(const std::u16string& utterance,
+                                     const int length_limit) {
+  std::vector<uint16_t> breaks;
+  DCHECK_GT(length_limit, 0);
+
+  if (utterance.empty())
+    return breaks;
+
+  // The input utterance must be pre-trimmed so that it does not start with
+  // whitespaces. The ICU break iterator does not work well with text that
+  // has whitespaces at start.
+  DCHECK(!base::IsUnicodeWhitespace(utterance[0]));
+
+  const int utterance_length = utterance.length();
+  if (utterance_length <= length_limit) {
+    breaks.push_back(utterance_length - 1);
+    return breaks;
+  }
+
+  if (length_limit == 1) {
+    for (int i = 1; i < utterance_length; i++)
+      breaks.push_back(base::checked_cast<uint16_t>(i));
+    return breaks;
+  }
+
+  std::vector<int> sentence_ends = ui::GetSentenceEndOffsets(utterance);
+  ConvertOffsetsToIndexes(sentence_ends);
+  std::vector<int> word_ends = ui::GetWordEndOffsets(utterance);
+  ConvertOffsetsToIndexes(word_ends);
+
+  const int sentence_ends_length = sentence_ends.size();
+  const int word_ends_length = word_ends.size();
+  int cur_word_end_index = 0;
+  int cur_sentence_end_index = 0;
+
+  int text_start = 0;
+  int text_end = -1;
+
+  // Searching for the end of the text piece as long as the |text_end|
+  // (i.e., the end of last text piece) is smaller than the last index of the
+  // utterance.
+  while (text_end < utterance_length - 1) {
+    // The start of the current text piece is the end of last piece plus one.
+    text_start = text_end + 1;
+
+    // Find the sentence end that is within the |length_limit| distance from the
+    // |text_start|.
+    while (cur_sentence_end_index < sentence_ends_length &&
+           sentence_ends[cur_sentence_end_index] - text_start < length_limit) {
+      // Update the |text_end| if we find a sentence end bigger than the prior
+      // |text_end|.
+      text_end = std::max(text_end, sentence_ends[cur_sentence_end_index]);
+      cur_sentence_end_index++;
+    }
+    // If we have found a sentence end as the end of current text piece,
+    // continue to the next search.
+    if (text_end >= text_start) {
+      breaks.push_back(base::checked_cast<uint16_t>(text_end));
+      continue;
+    }
+
+    // If there is no qualified sentence end, this means the current sentence
+    // is longer than |length_limit|. We keep searching for a word end that is
+    // within the |length_limit| distance from the |text_start|.
+    while (cur_word_end_index < word_ends_length &&
+           word_ends[cur_word_end_index] - text_start < length_limit) {
+      // Update the |text_end| if we find a word end bigger than the prior
+      // |text_end|.
+      text_end = std::max(text_end, word_ends[cur_word_end_index]);
+      cur_word_end_index++;
+    }
+    // If we have found a word end as the end of current text piece, continue to
+    // the next search.
+    if (text_end >= text_start) {
+      breaks.push_back(base::checked_cast<uint16_t>(text_end));
+      continue;
+    }
+
+    // If there is no sentence end or word end, we just return the index
+    // corresponding to the |length_limit| or the end of the utterance. In
+    // practice, this means the current word is longer than |length_limit|.
+    text_end = std::min(text_start + length_limit - 1, utterance_length - 1);
+    breaks.push_back(base::checked_cast<uint16_t>(text_end));
+  }
+
+  return breaks;
 }
 
 mojom::TtsResponsePtr GetResultOnError(
@@ -61,7 +187,9 @@ mojom::TtsResponsePtr GetResultOnError(
   return mojom::TtsResponse::NewErrorCode(error_code);
 }
 
-mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data) {
+mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data,
+                                         const int start_index,
+                                         const bool is_last_request) {
   base::Value::ConstListView list_data = json_data.GetList();
 
   // Depending on the size of input text (n), the list size should be 1 + 2n.
@@ -105,17 +233,23 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data) {
         timing_info.FindStringPath("location.timeLocation.timeOffset");
     const std::string* timing_info_duration_ptr =
         timing_info.FindStringPath("location.timeLocation.duration");
-    // The first item in the timing_info_list does not have a text offset, we
-    // default that to 0.
-    const absl::optional<int> timing_info_text_offset =
-        i == 0 ? 0 : timing_info.FindIntPath("location.textLocation.offset");
+    // If the first item in the timing_info_list does not have a text offset,
+    // we default that to 0. If the first item starts with whitespaces, the
+    // server will send back the text offset for the item.
+    absl::optional<int> timing_info_text_offset =
+        timing_info.FindIntPath("location.textLocation.offset");
+    if (timing_info_text_offset == absl::nullopt && i == 0) {
+      timing_info_text_offset = 0;
+    }
 
     if (timing_info_text_offset == absl::nullopt || !timing_info_text_ptr ||
         !timing_info_timeoffset_ptr || !timing_info_duration_ptr) {
       continue;
     }
+    // The text offset needs to be compensated with the start index of this
+    // TtsData.
     timing_infos.push_back(mojom::TimingInfo::New(
-        *timing_info_text_ptr, timing_info_text_offset.value(),
+        *timing_info_text_ptr, timing_info_text_offset.value() + start_index,
         *timing_info_timeoffset_ptr, *timing_info_duration_ptr));
   }
 
@@ -135,8 +269,8 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data) {
 
   std::vector<uint8_t> audio =
       std::vector<uint8_t>(audio_bytes.begin(), audio_bytes.end());
-  mojom::TtsDataPtr tts_data =
-      mojom::TtsData::New(std::move(audio), std::move(timing_infos));
+  mojom::TtsDataPtr tts_data = mojom::TtsData::New(
+      std::move(audio), std::move(timing_infos), is_last_request);
   // Send the decoded data to the caller.
   return mojom::TtsResponse::NewData(std::move(tts_data));
 }

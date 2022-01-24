@@ -90,7 +90,7 @@ class FreezingTest : public PerformanceManagerTestHarness {
   FreezingTest& operator=(const FreezingTest&) = delete;
 
   void SetUp() override {
-    GetGraphFeaturesHelper().EnableFreezingVoteDecorator();
+    GetGraphFeatures().EnableFreezingVoteDecorator();
     PerformanceManagerTestHarness::SetUp();
     SetContents(CreateTestWebContents());
   }

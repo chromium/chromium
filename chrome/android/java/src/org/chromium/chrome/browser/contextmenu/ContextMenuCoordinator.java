@@ -21,6 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -102,7 +103,9 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             Callback<Integer> onItemClicked, final Runnable onMenuShown,
             final Runnable onMenuClosed, @Nullable ChipDelegate chipDelegate) {
         mOnMenuClosed = onMenuClosed;
-        final boolean isPopup = params.getSourceType() == MenuSourceType.MENU_SOURCE_MOUSE
+        final boolean isPopup =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE)
+                || params.getSourceType() == MenuSourceType.MENU_SOURCE_MOUSE
                 || params.getOpenedFromHighlight();
         Activity activity = window.getActivity().get();
         final float density = activity.getResources().getDisplayMetrics().density;

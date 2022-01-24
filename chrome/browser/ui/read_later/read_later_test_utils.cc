@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/read_later/read_later_test_utils.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "components/reading_list/core/reading_list_model.h"
 

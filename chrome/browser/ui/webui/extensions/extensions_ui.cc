@@ -19,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -58,13 +59,14 @@ namespace {
 constexpr char kInDevModeKey[] = "inDevMode";
 constexpr char kShowActivityLogKey[] = "showActivityLog";
 constexpr char kLoadTimeClassesKey[] = "loadTimeClasses";
+constexpr char kUseNewSiteAccessPage[] = "useNewSiteAccessPage";
 
 std::string GetLoadTimeClasses(bool in_dev_mode) {
   return in_dev_mode ? "in-dev-mode" : std::string();
 }
 
-content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
-                                                   bool in_dev_mode) {
+content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
+                                                 bool in_dev_mode) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIExtensionsHost);
   webui::SetupWebUIDataSource(
@@ -125,9 +127,15 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"hostPermissionsDescription", IDS_EXTENSIONS_HOST_PERMISSIONS_DESCRIPTION},
     {"hostPermissionsEdit", IDS_EXTENSIONS_HOST_PERMISSIONS_EDIT},
     {"hostPermissionsHeading", IDS_EXTENSIONS_ITEM_HOST_PERMISSIONS_HEADING},
+    {"newHostPermissionsHeading",
+     IDS_EXTENSIONS_NEW_ITEM_HOST_PERMISSIONS_HEADING},
     {"hostAccessOnClick", IDS_EXTENSIONS_HOST_ACCESS_ON_CLICK},
+    {"newHostAccessOnClick", IDS_EXTENSIONS_NEW_HOST_ACCESS_ON_CLICK},
     {"hostAccessOnSpecificSites", IDS_EXTENSIONS_HOST_ACCESS_ON_SPECIFIC_SITES},
+    {"hostAccessCustomizeForEachSite",
+     IDS_EXTENSIONS_HOST_CUSTOMIZE_FOR_EACH_SITE},
     {"hostAccessOnAllSites", IDS_EXTENSIONS_HOST_ACCESS_ON_ALL_SITES},
+    {"newHostAccessOnAllSites", IDS_EXTENSIONS_NEW_HOST_ACCESS_ON_ALL_SITES},
     {"hostAllowedHosts", IDS_EXTENSIONS_ITEM_ALLOWED_HOSTS},
     {"itemId", IDS_EXTENSIONS_ITEM_ID},
     {"itemInspectViews", IDS_EXTENSIONS_ITEM_INSPECT_VIEWS},
@@ -183,6 +191,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"itemPermissionsEmpty", IDS_EXTENSIONS_ITEM_PERMISSIONS_EMPTY},
     {"itemRemoveExtension", IDS_EXTENSIONS_ITEM_REMOVE_EXTENSION},
     {"itemSiteAccess", IDS_EXTENSIONS_ITEM_SITE_ACCESS},
+    {"itemSiteAccessSublabel", IDS_EXTENSIONS_ITEM_SITE_ACCESS_SUBLABEL},
     {"itemSiteAccessAddHost", IDS_EXTENSIONS_ITEM_SITE_ACCESS_ADD_HOST},
     {"itemSiteAccessEmpty", IDS_EXTENSIONS_ITEM_SITE_ACCESS_EMPTY},
     {"itemSource", IDS_EXTENSIONS_ITEM_SOURCE},
@@ -212,6 +221,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"loadErrorRetry", IDS_EXTENSIONS_LOAD_ERROR_RETRY},
     {"loadingActivities", IDS_EXTENSIONS_LOADING_ACTIVITIES},
     {"missingOrUninstalledExtension", IDS_MISSING_OR_UNINSTALLED_EXTENSION},
+    {"newItemSiteAccessTitle", IDS_EXTENSIONS_ITEM_SITE_ACCESS_NEW},
     {"noActivities", IDS_EXTENSIONS_NO_ACTIVITIES},
     {"noErrorsToShow", IDS_EXTENSIONS_ERROR_NO_ERRORS_CODE_MESSAGE},
     {"runtimeHostsDialogInputError",
@@ -314,7 +324,16 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
                      base::CommandLine::ForCurrentProcess()->HasSwitch(
                          ::switches::kEnableExtensionActivityLogging));
 
+  source->AddString("enableBrandingUpdateAttribute",
+                    base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
+                        ? "enable-branding-update"
+                        : "");
+
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
+
+  source->AddBoolean(
+      kUseNewSiteAccessPage,
+      base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl));
 
   return source;
 }
@@ -333,7 +352,7 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
                     base::BindRepeating(&ExtensionsUI::OnDevModeChanged,
                                         base::Unretained(this)));
 
-  source = CreateMdExtensionsSource(profile, *in_dev_mode_);
+  source = CreateExtensionsSource(profile, *in_dev_mode_);
   ManagedUIHandler::Initialize(web_ui, source);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

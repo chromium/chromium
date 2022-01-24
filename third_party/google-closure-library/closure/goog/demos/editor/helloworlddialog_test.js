@@ -1,5 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-// Use of this source code is governed by the Apache License, Version 2.0.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.demos.editor.HelloWorldDialogTest');
 goog.setTestOnly('goog.demos.editor.HelloWorldDialogTest');
@@ -30,6 +33,7 @@ testSuite({
   /**
    * Tests that when you show the dialog, the input field has the correct
    * sample text in it.
+   * @suppress {visibility} suppression added to enable type checking
    */
   testShow() {
     mockOkHandler.$replay();
@@ -43,12 +47,14 @@ testSuite({
 
   /**
    * Tests that clicking OK dispatches an event carying the entered message.
+   * @suppress {visibility} suppression added to enable type checking
    */
   testOk() {
     expectOk(CUSTOM_MESSAGE);
     mockOkHandler.$replay();
     createAndShow();
 
+    /** @suppress {visibility} suppression added to enable type checking */
     dialog.input_.value = CUSTOM_MESSAGE;
     googTestingEvents.fireClickSequence(dialog.getOkButtonElement());
 
@@ -58,6 +64,7 @@ testSuite({
 
 /**
  * Creates and shows the dialog to be tested.
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function createAndShow() {
   dialog = new HelloWorldDialog(new DomHelper());
@@ -70,6 +77,7 @@ function createAndShow() {
  * message.
  * @param {string} message Hello world message the OK event is expected to
  *     carry.
+ * @suppress {missingProperties} suppression added to enable type checking
  */
 function expectOk(message) {
   mockOkHandler.handleEvent(new ArgumentMatcher(function(arg) {

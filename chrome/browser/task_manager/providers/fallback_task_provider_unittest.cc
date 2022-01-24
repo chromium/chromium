@@ -182,7 +182,7 @@ class FallbackTaskProviderTest : public testing::Test,
 TEST_F(FallbackTaskProviderTest, BasicTest) {
   // The delay for showing a secondary source is 750ms; delay 1000ms to ensure
   // we see them.
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(1000);
+  base::TimeDelta delay = base::Milliseconds(1000);
   base::ScopedMockTimeMessageLoopTaskRunner mock_main_runner;
   StartUpdating();
 

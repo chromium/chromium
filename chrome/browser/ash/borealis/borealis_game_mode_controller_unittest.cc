@@ -4,15 +4,17 @@
 
 #include "chrome/browser/ash/borealis/borealis_game_mode_controller.h"
 
-#include "ash/test/test_widget_builder.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/borealis/testing/widgets.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/resourced/fake_resourced_client.h"
-#include "components/exo/shell_surface_util.h"
+#include "content/public/test/browser_task_environment.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -21,6 +23,12 @@ namespace borealis {
 namespace {
 
 class BorealisGameModeControllerTest : public ChromeAshTestBase {
+ public:
+  BorealisGameModeControllerTest()
+      : ChromeAshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
+            std::make_unique<content::BrowserTaskEnvironment>(
+                base::test::TaskEnvironment::TimeSource::MOCK_TIME))) {}
+
  protected:
   void SetUp() override {
     ChromeAshTestBase::SetUp();
@@ -32,25 +40,14 @@ class BorealisGameModeControllerTest : public ChromeAshTestBase {
     game_mode_controller_ = std::make_unique<BorealisGameModeController>();
     features_ = std::make_unique<BorealisFeatures>(profile_.get());
     service_fake_->SetFeaturesForTesting(features_.get());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
     game_mode_controller_.reset();
+    histogram_tester_.reset();
     chromeos::ResourcedClient::Shutdown();
     ChromeAshTestBase::TearDown();
-  }
-
-  std::unique_ptr<views::Widget> CreateTestWidget(std::string name,
-                                                  bool fullscreen = false) {
-    ash::TestWidgetBuilder builder;
-    builder.SetShow(false);
-    std::unique_ptr<views::Widget> widget = builder.BuildOwnsNativeWidget();
-    exo::SetShellApplicationId(widget->GetNativeWindow(), name);
-    if (fullscreen) {
-      widget->SetFullscreen(true);
-    }
-    widget->Show();
-    return widget;
   }
 
   std::unique_ptr<TestingProfile> profile_;
@@ -59,27 +56,22 @@ class BorealisGameModeControllerTest : public ChromeAshTestBase {
   std::unique_ptr<BorealisFeatures> features_;
   BorealisServiceFake* service_fake_;
   chromeos::FakeResourcedClient* fake_resourced_client_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 TEST_F(BorealisGameModeControllerTest, ChangingFullScreenTogglesGameMode) {
-  fake_resourced_client_->set_set_game_mode_response(
-      absl::optional<bool>(true));
   std::unique_ptr<views::Widget> test_widget =
-      CreateTestWidget("org.chromium.borealis.foo", true);
+      CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
   EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());
   EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
 
-  fake_resourced_client_->set_set_game_mode_response(
-      absl::optional<bool>(false));
   test_widget->SetFullscreen(false);
   EXPECT_FALSE(ash::WindowState::Get(window)->IsFullscreen());
   EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());
 }
 
 TEST_F(BorealisGameModeControllerTest, NonBorealisWindowDoesNotEnterGameMode) {
-  fake_resourced_client_->set_set_game_mode_response(
-      absl::optional<bool>(false));
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   views::Widget::GetTopLevelWidgetForNativeView(window.get())
       ->SetFullscreen(true);
@@ -88,25 +80,19 @@ TEST_F(BorealisGameModeControllerTest, NonBorealisWindowDoesNotEnterGameMode) {
 }
 
 TEST_F(BorealisGameModeControllerTest, SwitchingWindowsTogglesGameMode) {
-  fake_resourced_client_->set_set_game_mode_response(
-      absl::optional<bool>(true));
   std::unique_ptr<views::Widget> test_widget =
-      CreateTestWidget("org.chromium.borealis.foo", true);
+      CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
   EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());
   EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
 
-  fake_resourced_client_->set_set_game_mode_response(
-      absl::optional<bool>(false));
   std::unique_ptr<views::Widget> other_test_widget =
-      CreateTestWidget("org.chromium.borealis.bar");
+      CreateFakeWidget("org.chromium.borealis.bar");
   aura::Window* other_window = other_test_widget->GetNativeWindow();
 
   EXPECT_TRUE(other_window->HasFocus());
   EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());
 
-  fake_resourced_client_->set_set_game_mode_response(
-      absl::optional<bool>(true));
   window->Focus();
 
   EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());
@@ -114,31 +100,25 @@ TEST_F(BorealisGameModeControllerTest, SwitchingWindowsTogglesGameMode) {
 }
 
 TEST_F(BorealisGameModeControllerTest, DestroyingWindowExitsGameMode) {
-  fake_resourced_client_->set_set_game_mode_response(
-      absl::optional<bool>(true));
   std::unique_ptr<views::Widget> test_widget =
-      CreateTestWidget("org.chromium.borealis.foo", true);
+      CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
   EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());
   EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
 
-  fake_resourced_client_->set_set_game_mode_response(
-      absl::optional<bool>(false));
   test_widget.reset();
 
   EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());
 }
 
 TEST_F(BorealisGameModeControllerTest, SwitchingWindowsMaintainsGameMode) {
-  fake_resourced_client_->set_set_game_mode_response(
-      absl::optional<bool>(true));
   std::unique_ptr<views::Widget> test_widget =
-      CreateTestWidget("org.chromium.borealis.foo", true);
+      CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
   EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
 
   std::unique_ptr<views::Widget> other_test_widget =
-      CreateTestWidget("org.chromium.borealis.foo", true);
+      CreateFakeWidget("org.chromium.borealis.foo", true);
 
   EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
 
@@ -147,14 +127,73 @@ TEST_F(BorealisGameModeControllerTest, SwitchingWindowsMaintainsGameMode) {
 }
 
 TEST_F(BorealisGameModeControllerTest, SetGameModeFailureDoesNotCrash) {
-  fake_resourced_client_->set_set_game_mode_response(
+  fake_resourced_client_->set_set_game_mode_with_timeout_response(
       absl::optional<bool>(absl::nullopt));
   std::unique_ptr<views::Widget> test_widget =
-      CreateTestWidget("org.chromium.borealis.foo", true);
+      CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
   EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());
   test_widget->SetFullscreen(false);
   EXPECT_FALSE(ash::WindowState::Get(window)->IsFullscreen());
+}
+
+TEST_F(BorealisGameModeControllerTest, GameModeRefreshes) {
+  std::unique_ptr<views::Widget> test_widget =
+      CreateFakeWidget("org.chromium.borealis.foo", true);
+  aura::Window* window = test_widget->GetNativeWindow();
+  EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());
+  EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
+  task_environment()->FastForwardBy(base::Seconds(61));
+  EXPECT_EQ(2, fake_resourced_client_->get_enter_game_mode_count());
+}
+
+TEST_F(BorealisGameModeControllerTest, GameModeMetricsRecorded) {
+  std::unique_ptr<views::Widget> test_widget =
+      CreateFakeWidget("org.chromium.borealis.foo", true);
+  aura::Window* window = test_widget->GetNativeWindow();
+  EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());
+  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
+                                       BorealisGameModeResult::kAttempted, 1);
+  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
+                                       BorealisGameModeResult::kFailed, 0);
+
+  // Game mode refreshes
+  task_environment()->FastForwardBy(base::Seconds(61));
+  EXPECT_EQ(2, fake_resourced_client_->get_enter_game_mode_count());
+  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
+                                       BorealisGameModeResult::kAttempted, 1);
+  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
+                                       BorealisGameModeResult::kFailed, 0);
+
+  // Previous game mode timed out/failed followed by refresh.
+  fake_resourced_client_->set_set_game_mode_with_timeout_response(false);
+  task_environment()->FastForwardBy(base::Seconds(61));
+  EXPECT_EQ(3, fake_resourced_client_->get_enter_game_mode_count());
+  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
+                                       BorealisGameModeResult::kAttempted, 1);
+  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
+                                       BorealisGameModeResult::kFailed, 1);
+
+  // Previous game mode timed out/failed followed by exit.
+  // Should not record to histogram as it was already recorded above.
+  fake_resourced_client_->set_set_game_mode_with_timeout_response(false);
+  test_widget->SetFullscreen(false);
+  EXPECT_FALSE(ash::WindowState::Get(window)->IsFullscreen());
+  EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
+                                       BorealisGameModeResult::kAttempted, 1);
+  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
+                                       BorealisGameModeResult::kFailed, 1);
+
+  // Enter game mode again, should record attempted again.
+  test_widget->SetFullscreen(true);
+  EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());
+  EXPECT_EQ(4, fake_resourced_client_->get_enter_game_mode_count());
+  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
+                                       BorealisGameModeResult::kAttempted, 2);
+  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
+                                       BorealisGameModeResult::kFailed, 1);
 }
 
 }  // namespace

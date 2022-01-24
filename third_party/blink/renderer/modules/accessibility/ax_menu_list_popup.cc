@@ -196,7 +196,13 @@ AXObject* AXMenuListPopup::ActiveDescendant() {
   if (active_index_ < 0 || active_index_ >= ChildCountIncludingIgnored())
     return nullptr;
 
-  return children_[active_index_].Get();
+  auto* select = DynamicTo<HTMLSelectElement>(parent_->GetNode());
+  if (!select)
+    return nullptr;
+
+  HTMLOptionElement* option = select->item(active_index_);
+  DCHECK(option);
+  return AXObjectCache().Get(option);
 }
 
 }  // namespace blink

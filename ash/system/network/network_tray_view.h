@@ -12,7 +12,6 @@
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "base/macros.h"
 
 namespace ash {
 namespace tray {
@@ -25,6 +24,9 @@ class NetworkTrayView : public TrayItemView,
                         public SessionObserver,
                         public TrayNetworkStateObserver {
  public:
+  NetworkTrayView(const NetworkTrayView&) = delete;
+  NetworkTrayView& operator=(const NetworkTrayView&) = delete;
+
   ~NetworkTrayView() override;
 
   NetworkTrayView(Shelf* shelf, ActiveNetworkIcon::Type type);
@@ -40,6 +42,7 @@ class NetworkTrayView : public TrayItemView,
 
   // TrayItemView:
   void HandleLocaleChange() override;
+  void OnThemeChanged() override;
 
   // network_icon::AnimationObserver:
   void NetworkIconChanged() override;
@@ -72,8 +75,6 @@ class NetworkTrayView : public TrayItemView,
   // The tooltip for the icon. Includes the network name and signal strength
   // (for wireless networks).
   std::u16string tooltip_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkTrayView);
 };
 
 }  // namespace tray

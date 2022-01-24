@@ -52,7 +52,7 @@ struct NetworkSettings {
   PortRange port_range;
 
   // ICE Timeout.
-  base::TimeDelta ice_timeout = base::TimeDelta::FromSeconds(15);
+  base::TimeDelta ice_timeout = base::Seconds(15);
 
   // ICE reconnect attempts.
   int ice_reconnect_attempts = 2;

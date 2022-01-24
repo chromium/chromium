@@ -21,7 +21,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -135,7 +135,7 @@ DnsConfig GetFuzzedDnsConfig(FuzzedDataProvider* data_provider) {
   // Fallback periods don't really work for fuzzing. Even a period of 0
   // milliseconds will be increased after the first expiration, resulting in
   // inconsistent behavior.
-  config.fallback_period = base::TimeDelta::FromDays(10);
+  config.fallback_period = base::Days(10);
 
   config.rotate = data_provider->ConsumeBool();
 
@@ -156,6 +156,9 @@ class FuzzedHostResolverProc : public HostResolverProc {
       : HostResolverProc(nullptr),
         data_provider_(data_provider),
         network_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+
+  FuzzedHostResolverProc(const FuzzedHostResolverProc&) = delete;
+  FuzzedHostResolverProc& operator=(const FuzzedHostResolverProc&) = delete;
 
   int Resolve(const std::string& host,
               AddressFamily address_family,
@@ -215,8 +218,6 @@ class FuzzedHostResolverProc : public HostResolverProc {
 
   // Just used for thread-safety checks.
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzedHostResolverProc);
 };
 
 const Error kMdnsErrors[] = {ERR_FAILED,
@@ -393,6 +394,10 @@ class FuzzedHostResolverManager : public HostResolverManager {
     HostResolverManager::SetDnsClientForTesting(std::move(dns_client));
   }
 
+  FuzzedHostResolverManager(const FuzzedHostResolverManager&) = delete;
+  FuzzedHostResolverManager& operator=(const FuzzedHostResolverManager&) =
+      delete;
+
   ~FuzzedHostResolverManager() override = default;
 
   void SetDnsClientForTesting(std::unique_ptr<DnsClient> dns_client) {
@@ -424,8 +429,6 @@ class FuzzedHostResolverManager : public HostResolverManager {
   NetLog* const net_log_;
 
   base::WeakPtrFactory<FuzzedDataProvider> data_provider_weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzedHostResolverManager);
 };
 
 }  // namespace

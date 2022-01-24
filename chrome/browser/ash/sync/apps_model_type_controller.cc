@@ -30,7 +30,7 @@ std::unique_ptr<AppsModelTypeController> AppsModelTypeController::Create(
     const base::RepeatingClosure& dump_stack,
     syncer::SyncService* sync_service,
     Profile* profile) {
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled());
+  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   // Create the bridge here so it can be used to construct forwarding delegates
   // passed to the superclass constructor.
   auto bridge = std::make_unique<SyncableServiceBasedBridge>(

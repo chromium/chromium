@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
@@ -29,13 +28,14 @@ namespace ash {
 class ASH_EXPORT CursorManager : public ::wm::CursorManager {
  public:
   explicit CursorManager(std::unique_ptr<::wm::NativeCursorManager> delegate);
+
+  CursorManager(const CursorManager&) = delete;
+  CursorManager& operator=(const CursorManager&) = delete;
+
   ~CursorManager() override;
 
   // aura::client::CursorClient:
   bool ShouldHideCursorOnKeyEvent(const ui::KeyEvent& event) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CursorManager);
 };
 
 }  // namespace ash

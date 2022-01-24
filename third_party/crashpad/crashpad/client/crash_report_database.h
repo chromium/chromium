@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "util/file/file_io.h"
 #include "util/file/file_reader.h"
 #include "util/file/file_writer.h"
@@ -111,6 +110,10 @@ class CrashReportDatabase {
   class NewReport {
    public:
     NewReport();
+
+    NewReport(const NewReport&) = delete;
+    NewReport& operator=(const NewReport&) = delete;
+
     ~NewReport();
 
     //! \brief An open FileWriter with which to write the report.
@@ -152,8 +155,6 @@ class CrashReportDatabase {
     std::vector<ScopedRemoveFile> attachment_removers_;
     UUID uuid_;
     CrashReportDatabase* database_;
-
-    DISALLOW_COPY_AND_ASSIGN(NewReport);
   };
 
   //! \brief A crash report that is in the process of being uploaded.
@@ -162,6 +163,10 @@ class CrashReportDatabase {
   class UploadReport : public Report {
    public:
     UploadReport();
+
+    UploadReport(const UploadReport&) = delete;
+    UploadReport& operator=(const UploadReport&) = delete;
+
     virtual ~UploadReport();
 
     //! \brief An open FileReader with which to read the report.
@@ -189,8 +194,6 @@ class CrashReportDatabase {
     std::vector<std::unique_ptr<FileReader>> attachment_readers_;
     std::map<std::string, FileReader*> attachment_map_;
     bool report_metrics_;
-
-    DISALLOW_COPY_AND_ASSIGN(UploadReport);
   };
 
   //! \brief The result code for operations performed on a database.
@@ -232,6 +235,9 @@ class CrashReportDatabase {
     //!     been uploaded.
     kCannotRequestUpload,
   };
+
+  CrashReportDatabase(const CrashReportDatabase&) = delete;
+  CrashReportDatabase& operator=(const CrashReportDatabase&) = delete;
 
   virtual ~CrashReportDatabase() {}
 
@@ -422,8 +428,6 @@ class CrashReportDatabase {
   virtual OperationStatus RecordUploadAttempt(UploadReport* report,
                                               bool successful,
                                               const std::string& id) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashReportDatabase);
 };
 
 }  // namespace crashpad

@@ -82,12 +82,10 @@ constexpr int kArtworkCornerRadius = 4;
 
 constexpr int kDragVelocityThreshold = 6;
 constexpr int kDistanceDismissalThreshold = 20;
-constexpr base::TimeDelta kAnimationDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
 
 // How long to wait (in milliseconds) for a new media session to begin.
-constexpr base::TimeDelta kNextMediaDelay =
-    base::TimeDelta::FromMilliseconds(2500);
+constexpr base::TimeDelta kNextMediaDelay = base::Milliseconds(2500);
 
 // Scales |size| to fit |view_size| while preserving proportions.
 gfx::Size ScaleSizeToFitView(const gfx::Size& size,
@@ -134,6 +132,7 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kToggleCamera:
     case MediaSessionAction::kHangUp:
     case MediaSessionAction::kRaise:
+    case MediaSessionAction::kSetMute:
       NOTREACHED();
       break;
   }
@@ -187,6 +186,9 @@ class MediaActionButton : public views::ImageButton {
         this, views::FocusRing::Get(this), absl::nullopt);
   }
 
+  MediaActionButton(const MediaActionButton&) = delete;
+  MediaActionButton& operator=(const MediaActionButton&) = delete;
+
   ~MediaActionButton() override = default;
 
   void SetAction(MediaSessionAction action,
@@ -213,8 +215,6 @@ class MediaActionButton : public views::ImageButton {
   }
 
   int const icon_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaActionButton);
 };
 
 }  // namespace

@@ -88,8 +88,11 @@ crosapi::mojom::KeystoreService* GetKeystoreService(
 // extension. |context| is the browser context in which the extension is hosted.
 std::string ValidateCrosapi(int min_version, content::BrowserContext* context) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  int version = chromeos::LacrosService::Get()->GetInterfaceVersion(
-      KeystoreService::Uuid_);
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service || !service->IsAvailable<crosapi::mojom::KeystoreService>())
+    return kUnsupportedByAsh;
+
+  int version = service->GetInterfaceVersion(KeystoreService::Uuid_);
   if (version < min_version)
     return kUnsupportedByAsh;
 
@@ -149,13 +152,8 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::unique_ptr<api_pki::SelectClientCertificates::Params> params(
-      api_pki::SelectClientCertificates::Params::Create(*args_));
+      api_pki::SelectClientCertificates::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
-
-  chromeos::ExtensionPlatformKeysService* service =
-      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
-          browser_context());
-  DCHECK(service);
 
   chromeos::platform_keys::ClientCertificateRequest request;
   request.certificate_authorities =
@@ -209,6 +207,11 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
       return RespondNow(Error(kErrorInteractiveCallFromBackground));
     }
   }
+
+  chromeos::ExtensionPlatformKeysService* service =
+      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
+          browser_context());
+  DCHECK(service);
 
   service->SelectClientCertificates(
       request, std::move(client_certs), params->details.interactive,
@@ -274,7 +277,7 @@ PlatformKeysInternalGetPublicKeyFunction::
 ExtensionFunction::ResponseAction
 PlatformKeysInternalGetPublicKeyFunction::Run() {
   std::unique_ptr<api_pki::GetPublicKey::Params> params(
-      api_pki::GetPublicKey::Params::Create(*args_));
+      api_pki::GetPublicKey::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error = ValidateCrosapi(
@@ -332,7 +335,7 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::unique_ptr<api_pki::GetPublicKeyBySpki::Params> params(
-      api_pki::GetPublicKeyBySpki::Params::Create(*args_));
+      api_pki::GetPublicKeyBySpki::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const auto& public_key_spki_der = params->public_key_spki_der;
@@ -379,7 +382,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::unique_ptr<api_pki::Sign::Params> params(
-      api_pki::Sign::Params::Create(*args_));
+      api_pki::Sign::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   absl::optional<chromeos::platform_keys::TokenId> platform_keys_token_id;
@@ -471,7 +474,7 @@ PlatformKeysVerifyTLSServerCertificateFunction::Run() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<api_pk::VerifyTLSServerCertificate::Params> params(
-      api_pk::VerifyTLSServerCertificate::Params::Create(*args_));
+      api_pk::VerifyTLSServerCertificate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   VerifyTrustAPI::GetFactoryInstance()

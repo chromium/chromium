@@ -8,9 +8,7 @@
 #error "This file requires ARC support."
 #endif
 
-@implementation SigninCompletionInfo {
-  GURL _completionURL;
-}
+@implementation SigninCompletionInfo
 
 + (instancetype)signinCompletionInfoWithIdentity:(ChromeIdentity*)identity {
   return [[SigninCompletionInfo alloc]
@@ -27,18 +25,6 @@
     _signinCompletionAction = signinCompletionAction;
   }
   return self;
-}
-
-- (const GURL&)completionURL {
-  return _completionURL;
-}
-
-- (void)setCompletionURL:(const GURL&)completionURL {
-  if (_completionURL == completionURL)
-    return;
-  DCHECK(completionURL.is_valid());
-  DCHECK(_signinCompletionAction == SigninCompletionActionOpenCompletionURL);
-  _completionURL = completionURL;
 }
 
 @end

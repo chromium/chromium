@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/dwrite_font_lookup_table_builder_win.h"
@@ -32,6 +31,10 @@ class CONTENT_EXPORT DWriteFontProxyImpl
     : public blink::mojom::DWriteFontProxy {
  public:
   DWriteFontProxyImpl();
+
+  DWriteFontProxyImpl(const DWriteFontProxyImpl&) = delete;
+  DWriteFontProxyImpl& operator=(const DWriteFontProxyImpl&) = delete;
+
   ~DWriteFontProxyImpl() override;
 
   static void Create(
@@ -88,8 +91,6 @@ class CONTENT_EXPORT DWriteFontProxyImpl
 
   // Temp code to help track down crbug.com/561873
   std::vector<uint32_t> last_resort_fonts_;
-
-  DISALLOW_COPY_AND_ASSIGN(DWriteFontProxyImpl);
 };
 
 }  // namespace content

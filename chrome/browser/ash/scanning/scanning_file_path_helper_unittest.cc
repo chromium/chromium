@@ -44,6 +44,16 @@ TEST_F(ScanningFilePathHelperTest, BaseNameFromGenericPath) {
                              base::FilePath("/test/directory")));
 }
 
+// Validates that the correct base name is returned from a generic filepath
+// when the Google Drive path is empty.
+TEST_F(ScanningFilePathHelperTest,
+       BaseNameFromGenericPathWithGoogleDriveAbsent) {
+  drive_path_ = base::FilePath();
+  file_path_helper_ = ScanningFilePathHelper(drive_path_, my_files_path_);
+  EXPECT_EQ("directory", file_path_helper_.GetBaseNameFromPath(
+                             base::FilePath("/test/directory")));
+}
+
 // Validates that the correct base name is returned from the file paths under
 // the Google Drive root.
 TEST_F(ScanningFilePathHelperTest, BaseNameFromGoogleDrivePath) {
@@ -94,6 +104,15 @@ TEST_F(ScanningFilePathHelperTest, FilePathReferencesNotSupported) {
 TEST_F(ScanningFilePathHelperTest, FilePathSupportedRemovableMedia) {
   ASSERT_TRUE(file_path_helper_.IsFilePathSupported(
       base::FilePath("/media/removable/STATE/test_file.png")));
+}
+
+// Validates that passing a file path that is a child of the MyFiles path
+// returns true when Google Drive path is empty for IsFilePathSupported().
+TEST_F(ScanningFilePathHelperTest, FilePathSupportedGoogleDriveAbsent) {
+  drive_path_ = base::FilePath();
+  file_path_helper_ = ScanningFilePathHelper(drive_path_, my_files_path_);
+  EXPECT_TRUE(file_path_helper_.IsFilePathSupported(
+      my_files_path_.Append("test_file.png")));
 }
 
 }  // namespace ash

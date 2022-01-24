@@ -22,7 +22,6 @@
 
 [
     ActiveScriptWrappable,
-    ConstructorCallWith=Document,
     Exposed=Window,
     HTMLConstructor,
     NamedConstructor=Image(optional unsigned long width, optional unsigned long height),

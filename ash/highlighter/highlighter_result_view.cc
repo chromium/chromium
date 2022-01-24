@@ -59,6 +59,9 @@ class ResultLayer : public ui::Layer, public ui::LayerDelegate {
  public:
   ResultLayer(const gfx::Rect& bounds);
 
+  ResultLayer(const ResultLayer&) = delete;
+  ResultLayer& operator=(const ResultLayer&) = delete;
+
  private:
   // ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -75,8 +78,6 @@ class ResultLayer : public ui::Layer, public ui::LayerDelegate {
                          float y,
                          float width,
                          cc::PaintFlags& flags);
-
-  DISALLOW_COPY_AND_ASSIGN(ResultLayer);
 };
 
 ResultLayer::ResultLayer(const gfx::Rect& box) {
@@ -211,9 +212,8 @@ void HighlighterResultView::Animate(const gfx::RectF& bounds,
 
     layer->Add(result_layer_.get());
 
-    delay = base::TimeDelta::FromMilliseconds(kResultInPlaceFadeinDelayMs);
-    duration =
-        base::TimeDelta::FromMilliseconds(kResultInPlaceFadeinDurationMs);
+    delay = base::Milliseconds(kResultInPlaceFadeinDelayMs);
+    duration = base::Milliseconds(kResultInPlaceFadeinDurationMs);
   } else {
     DCHECK(gesture_type == HighlighterGestureType::kClosedShape);
     // The original stroke is fading out and inflating.
@@ -228,8 +228,8 @@ void HighlighterResultView::Animate(const gfx::RectF& bounds,
     transform.Scale(kInitialScale, kInitialScale);
     layer->SetTransform(transform);
 
-    delay = base::TimeDelta::FromMilliseconds(kResultFadeinDelayMs);
-    duration = base::TimeDelta::FromMilliseconds(kResultFadeinDurationMs);
+    delay = base::Milliseconds(kResultFadeinDelayMs);
+    duration = base::Milliseconds(kResultFadeinDurationMs);
   }
 
   layer->SetOpacity(0);
@@ -259,8 +259,7 @@ void HighlighterResultView::FadeIn(const base::TimeDelta& duration,
 
   animation_timer_ = std::make_unique<base::OneShotTimer>();
   animation_timer_->Start(
-      FROM_HERE,
-      duration + base::TimeDelta::FromMilliseconds(kResultFadeoutDelayMs),
+      FROM_HERE, duration + base::Milliseconds(kResultFadeoutDelayMs),
       base::BindOnce(&HighlighterResultView::FadeOut, base::Unretained(this),
                      std::move(done)));
 }
@@ -268,8 +267,7 @@ void HighlighterResultView::FadeIn(const base::TimeDelta& duration,
 void HighlighterResultView::FadeOut(base::OnceClosure done) {
   ui::Layer* layer = GetWidget()->GetLayer();
 
-  base::TimeDelta duration =
-      base::TimeDelta::FromMilliseconds(kResultFadeoutDurationMs);
+  base::TimeDelta duration = base::Milliseconds(kResultFadeoutDurationMs);
 
   ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
   settings.SetTransitionDuration(duration);

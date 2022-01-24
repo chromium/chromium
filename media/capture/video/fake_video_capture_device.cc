@@ -11,10 +11,9 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -859,10 +858,9 @@ void GpuMemoryBufferFrameDeliverer::PaintAndDeliverNextFrame(
 void FakeVideoCaptureDevice::BeepAndScheduleNextCapture(
     base::TimeTicks expected_execution_time) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  const base::TimeDelta beep_interval =
-      base::TimeDelta::FromMilliseconds(kBeepInterval);
+  const base::TimeDelta beep_interval = base::Milliseconds(kBeepInterval);
   const base::TimeDelta frame_interval =
-      base::TimeDelta::FromMicroseconds(1e6 / device_state_->format.frame_rate);
+      base::Microseconds(1e6 / device_state_->format.frame_rate);
   beep_time_ += frame_interval;
   elapsed_time_ += frame_interval;
 

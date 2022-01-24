@@ -14,6 +14,7 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/cart/cart_db_content.pb.h"
+#include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 #else
 #include "chrome/browser/commerce/merchant_viewer/merchant_signal_db_content.pb.h"
 #include "chrome/browser/commerce/subscriptions/commerce_subscription_db_content.pb.h"
@@ -24,6 +25,7 @@ const char kPersistedStateDBFolder[] = "persisted_state_db";
 const char kChromeCartDBFolder[] = "chrome_cart_db";
 const char kMerchantTrustSignalDBFolder[] = "merchant_signal_db";
 const char kCommerceSubscriptionDBFolder[] = "commerce_subscription_db";
+const char kCouponDBFolder[] = "coupon_db";
 }  // namespace
 
 ProfileProtoDBFactory<persisted_state_db::PersistedStateContentProto>*
@@ -32,6 +34,8 @@ GetPersistedStateProfileProtoDBFactory();
 #if !defined(OS_ANDROID)
 ProfileProtoDBFactory<cart_db::ChromeCartContentProto>*
 GetChromeCartProfileProtoDBFactory();
+ProfileProtoDBFactory<coupon_db::CouponContentProto>*
+GetCouponProfileProtoDBFactory();
 #else
 ProfileProtoDBFactory<
     commerce_subscription_db::CommerceSubscriptionContentProto>*
@@ -110,6 +114,11 @@ KeyedService* ProfileProtoDBFactory<T>::BuildServiceInstanceFor(
         context, proto_database_provider,
         context->GetPath().AppendASCII(kChromeCartDBFolder),
         leveldb_proto::ProtoDbType::CART_DATABASE);
+  } else if (std::is_base_of<coupon_db::CouponContentProto, T>::value) {
+    return new ProfileProtoDB<T>(
+        context, proto_database_provider,
+        context->GetPath().AppendASCII(kCouponDBFolder),
+        leveldb_proto::ProtoDbType::COUPON_DATABASE);
 #else
   } else if (std::is_base_of<
                  commerce_subscription_db::CommerceSubscriptionContentProto,

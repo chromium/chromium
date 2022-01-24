@@ -121,6 +121,9 @@ class SimpleActivityThread : public SimpleThread {
         exit_(false),
         exit_condition_(&lock_) {}
 
+  SimpleActivityThread(const SimpleActivityThread&) = delete;
+  SimpleActivityThread& operator=(const SimpleActivityThread&) = delete;
+
   ~SimpleActivityThread() override = default;
 
   void Run() override {
@@ -158,8 +161,6 @@ class SimpleActivityThread : public SimpleThread {
   std::atomic<bool> exit_;
   Lock lock_;
   ConditionVariable exit_condition_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleActivityThread);
 };
 
 }  // namespace

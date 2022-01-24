@@ -79,10 +79,10 @@ base::span<const OriginTrialFeature> origin_trials::FeaturesForTrial(
 
 base::span<const OriginTrialFeature> origin_trials::GetImpliedFeatures(
     OriginTrialFeature feature) {
-{% for implied_by_name, implied_list in implied_origin_trial_features.items() %}
+{% for implied_by_name, implied_set in implied_origin_trial_features.items() %}
   if (feature == OriginTrialFeature::k{{implied_by_name}}) {
     static constexpr OriginTrialFeature implied_features[] = {
-{%- for implied_name in implied_list %}
+{%- for implied_name in implied_set|sort %}
 OriginTrialFeature::k{{implied_name}},
 {%- endfor %}
 };

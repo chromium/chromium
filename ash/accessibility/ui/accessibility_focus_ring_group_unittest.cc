@@ -22,6 +22,12 @@ class TestableAccessibilityFocusRingGroup : public AccessibilityFocusRingGroup {
     // By default use an easy round number for testing.
     margin_ = 10;
   }
+
+  TestableAccessibilityFocusRingGroup(
+      const TestableAccessibilityFocusRingGroup&) = delete;
+  TestableAccessibilityFocusRingGroup& operator=(
+      const TestableAccessibilityFocusRingGroup&) = delete;
+
   ~TestableAccessibilityFocusRingGroup() override = default;
 
   void RectsToRings(const std::vector<gfx::Rect>& rects,
@@ -33,7 +39,6 @@ class TestableAccessibilityFocusRingGroup : public AccessibilityFocusRingGroup {
 
  private:
   int margin_;
-  DISALLOW_COPY_AND_ASSIGN(TestableAccessibilityFocusRingGroup);
 };
 
 class AccessibilityFocusRingGroupTest : public AshTestBase {

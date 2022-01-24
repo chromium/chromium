@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -29,6 +29,29 @@ void MockQuotaManagerProxy::RegisterClient(
     const std::vector<blink::mojom::StorageType>& storage_types) {
   DCHECK(!registered_client_);
   registered_client_.Bind(std::move(client));
+}
+
+void MockQuotaManagerProxy::GetOrCreateBucket(
+    const blink::StorageKey& storage_key,
+    const std::string& bucket_name,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  if (mock_quota_manager_) {
+    mock_quota_manager_->GetOrCreateBucket(storage_key, bucket_name,
+                                           std::move(callback));
+  }
+}
+
+void MockQuotaManagerProxy::GetBucket(
+    const blink::StorageKey& storage_key,
+    const std::string& bucket_name,
+    blink::mojom::StorageType type,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  if (mock_quota_manager_) {
+    mock_quota_manager_->GetBucket(storage_key, bucket_name, type,
+                                   std::move(callback));
+  }
 }
 
 void MockQuotaManagerProxy::GetUsageAndQuota(
@@ -68,21 +91,6 @@ void MockQuotaManagerProxy::NotifyStorageModified(
   }
   if (callback)
     callback_task_runner->PostTask(FROM_HERE, std::move(callback));
-}
-
-void MockQuotaManagerProxy::NotifyStorageKeyInUse(
-    const blink::StorageKey& storage_key) {
-  storage_keys_in_use_.insert(storage_key);
-}
-
-void MockQuotaManagerProxy::NotifyStorageKeyNoLongerInUse(
-    const blink::StorageKey& storage_key) {
-  storage_keys_in_use_.erase(storage_key);
-}
-
-bool MockQuotaManagerProxy::StorageKeyInUse(
-    const blink::StorageKey& storage_key) const {
-  return storage_keys_in_use_.contains(storage_key);
 }
 
 MockQuotaManagerProxy::~MockQuotaManagerProxy() = default;

@@ -9,4 +9,8 @@ namespace messages {
 MockMessageDispatcherBridge::MockMessageDispatcherBridge() = default;
 MockMessageDispatcherBridge::~MockMessageDispatcherBridge() = default;
 
+int MockMessageDispatcherBridge::MapToJavaDrawableId(int resource_id) {
+  return -1;
+}
+
 }  // namespace messages

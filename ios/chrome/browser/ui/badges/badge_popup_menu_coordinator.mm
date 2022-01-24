@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ui/badges/badges_histograms.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/infobar_commands.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_consumer.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter.h"
@@ -144,7 +143,6 @@
 
 // Adds a modal request for the Infobar of |infobarType|.
 - (void)addModalRequestForInfobarType:(InfobarType)infobarType {
-  if (base::FeatureList::IsEnabled(kInfobarOverlayUI)) {
     web::WebState* webState =
         self.browser->GetWebStateList()->GetActiveWebState();
     DCHECK(webState);
@@ -159,11 +157,6 @@
     params.source = InfobarOverlayInsertionSource::kBadge;
     InfobarOverlayRequestInserter::FromWebState(webState)->InsertOverlayRequest(
         params);
-  } else {
-    id<InfobarCommands> handler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), InfobarCommands);
-    [handler displayModalInfobar:infobarType];
-  }
 }
 
 // Retrieves the existing Infobar of |type|.

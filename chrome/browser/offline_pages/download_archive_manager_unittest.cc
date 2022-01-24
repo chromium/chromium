@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -27,6 +26,11 @@ const char* kChromePublicSdCardDir =
 class DownloadArchiveManagerTest : public testing::Test {
  public:
   DownloadArchiveManagerTest() = default;
+
+  DownloadArchiveManagerTest(const DownloadArchiveManagerTest&) = delete;
+  DownloadArchiveManagerTest& operator=(const DownloadArchiveManagerTest&) =
+      delete;
+
   ~DownloadArchiveManagerTest() override = default;
 
   void SetUp() override;
@@ -40,7 +44,6 @@ class DownloadArchiveManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<DownloadArchiveManager> archive_manager_;
-  DISALLOW_COPY_AND_ASSIGN(DownloadArchiveManagerTest);
 };
 
 void DownloadArchiveManagerTest::SetUp() {

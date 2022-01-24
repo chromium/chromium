@@ -13,11 +13,11 @@
 #include "base/cancelable_callback.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/pdf_to_pwg_raster_converter.mojom.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
 #include "components/cloud_devices/common/printer_description.h"
 #include "content/public/browser/browser_thread.h"
@@ -44,6 +44,9 @@ class PwgRasterConverterHelper
   PwgRasterConverterHelper(const PdfRenderSettings& settings,
                            const PwgRasterSettings& bitmap_settings);
 
+  PwgRasterConverterHelper(const PwgRasterConverterHelper&) = delete;
+  PwgRasterConverterHelper& operator=(const PwgRasterConverterHelper&) = delete;
+
   void Convert(const base::RefCountedMemory* data,
                PwgRasterConverter::ResultCallback callback);
 
@@ -60,8 +63,6 @@ class PwgRasterConverterHelper
   mojo::Remote<printing::mojom::PdfToPwgRasterConverter>
       pdf_to_pwg_raster_converter_remote_;
   PwgRasterConverter::ResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PwgRasterConverterHelper);
 };
 
 PwgRasterConverterHelper::PwgRasterConverterHelper(
@@ -125,6 +126,10 @@ void PwgRasterConverterHelper::RunCallback(
 class PwgRasterConverterImpl : public PwgRasterConverter {
  public:
   PwgRasterConverterImpl();
+
+  PwgRasterConverterImpl(const PwgRasterConverterImpl&) = delete;
+  PwgRasterConverterImpl& operator=(const PwgRasterConverterImpl&) = delete;
+
   ~PwgRasterConverterImpl() override;
 
   void Start(const base::RefCountedMemory* data,
@@ -138,8 +143,6 @@ class PwgRasterConverterImpl : public PwgRasterConverter {
   // Cancelable version of PwgRasterConverter::ResultCallback.
   base::CancelableOnceCallback<void(base::ReadOnlySharedMemoryRegion)>
       cancelable_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PwgRasterConverterImpl);
 };
 
 PwgRasterConverterImpl::PwgRasterConverterImpl() = default;

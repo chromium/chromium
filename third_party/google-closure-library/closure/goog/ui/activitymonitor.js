@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Activity Monitor.
@@ -30,6 +22,7 @@ goog.require('goog.dom');
 goog.require('goog.events.EventHandler');
 goog.require('goog.events.EventTarget');
 goog.require('goog.events.EventType');
+goog.requireType('goog.events.BrowserEvent');
 
 
 
@@ -50,6 +43,7 @@ goog.require('goog.events.EventType');
  * @extends {goog.events.EventTarget}
  */
 goog.ui.ActivityMonitor = function(opt_domHelper, opt_useBubble) {
+  'use strict';
   goog.events.EventTarget.call(this);
 
   /**
@@ -83,7 +77,7 @@ goog.ui.ActivityMonitor = function(opt_domHelper, opt_useBubble) {
 
   if (!opt_domHelper) {
     this.addDocument(goog.dom.getDomHelper().getDocument());
-  } else if (goog.isArray(opt_domHelper)) {
+  } else if (Array.isArray(opt_domHelper)) {
     for (var i = 0; i < opt_domHelper.length; i++) {
       this.addDocument(opt_domHelper[i].getDocument());
     }
@@ -96,11 +90,9 @@ goog.ui.ActivityMonitor = function(opt_domHelper, opt_useBubble) {
    * @type {number}
    * @private
    */
-  this.lastEventTime_ = goog.now();
-
+  this.lastEventTime_ = Date.now();
 };
 goog.inherits(goog.ui.ActivityMonitor, goog.events.EventTarget);
-goog.tagUnsealableClass(goog.ui.ActivityMonitor);
 
 
 /**
@@ -187,6 +179,7 @@ goog.ui.ActivityMonitor.Event = {
 
 /** @override */
 goog.ui.ActivityMonitor.prototype.disposeInternal = function() {
+  'use strict';
   goog.ui.ActivityMonitor.superClass_.disposeInternal.call(this);
   this.eventHandler_.dispose();
   this.eventHandler_ = null;
@@ -200,6 +193,7 @@ goog.ui.ActivityMonitor.prototype.disposeInternal = function() {
  * @param {Document} doc Document to monitor.
  */
 goog.ui.ActivityMonitor.prototype.addDocument = function(doc) {
+  'use strict';
   if (goog.array.contains(this.documents_, doc)) {
     return;
   }
@@ -231,6 +225,7 @@ goog.ui.ActivityMonitor.prototype.addDocument = function(doc) {
  * @param {Document} doc Document to monitor.
  */
 goog.ui.ActivityMonitor.prototype.removeDocument = function(doc) {
+  'use strict';
   if (this.isDisposed()) {
     return;
   }
@@ -258,6 +253,7 @@ goog.ui.ActivityMonitor.prototype.removeDocument = function(doc) {
  * @private
  */
 goog.ui.ActivityMonitor.prototype.handleEvent_ = function(e) {
+  'use strict';
   var update = false;
   switch (e.type) {
     case goog.events.EventType.MOUSEMOVE:
@@ -278,7 +274,7 @@ goog.ui.ActivityMonitor.prototype.handleEvent_ = function(e) {
 
   if (update) {
     var type = goog.asserts.assertString(e.type);
-    this.updateIdleTime(goog.now(), type);
+    this.updateIdleTime(Date.now(), type);
   }
 };
 
@@ -288,7 +284,8 @@ goog.ui.ActivityMonitor.prototype.handleEvent_ = function(e) {
  * events that should update idle time.
  */
 goog.ui.ActivityMonitor.prototype.resetTimer = function() {
-  this.updateIdleTime(goog.now(), 'manual');
+  'use strict';
+  this.updateIdleTime(Date.now(), 'manual');
 };
 
 
@@ -302,6 +299,7 @@ goog.ui.ActivityMonitor.prototype.resetTimer = function() {
  */
 goog.ui.ActivityMonitor.prototype.updateIdleTime = function(
     eventTime, eventType) {
+  'use strict';
   // update internal state noting whether the user was idle
   this.lastEventTime_ = eventTime;
   this.lastEventType_ = eventType;
@@ -321,7 +319,8 @@ goog.ui.ActivityMonitor.prototype.updateIdleTime = function(
  * @return {number} The amount of time in ms that the user has been idle.
  */
 goog.ui.ActivityMonitor.prototype.getIdleTime = function(opt_now) {
-  var now = opt_now || goog.now();
+  'use strict';
+  var now = opt_now || Date.now();
   return now - this.lastEventTime_;
 };
 
@@ -331,6 +330,7 @@ goog.ui.ActivityMonitor.prototype.getIdleTime = function(opt_now) {
  * @return {string} event type.
  */
 goog.ui.ActivityMonitor.prototype.getLastEventType = function() {
+  'use strict';
   return this.lastEventType_;
 };
 
@@ -340,5 +340,6 @@ goog.ui.ActivityMonitor.prototype.getLastEventType = function() {
  * @return {number} last event time.
  */
 goog.ui.ActivityMonitor.prototype.getLastEventTime = function() {
+  'use strict';
   return this.lastEventTime_;
 };

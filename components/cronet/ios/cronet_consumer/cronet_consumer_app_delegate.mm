@@ -31,22 +31,7 @@
   [Cronet start];
   [Cronet startNetLogToFile:[self currentNetLogFileName] logBytes:NO];
 
-  NSURLSessionConfiguration* config =
-      [NSURLSessionConfiguration ephemeralSessionConfiguration];
-  [Cronet installIntoSessionConfiguration:config];
-
-  // Just for fun, don't route chromium.org requests through Cronet.
-  //
-  // |chromiumPrefix| is declared outside the scope of the request block so that
-  // the block references something outside of its own scope, and cannot be
-  // declared as a global block. This makes sure the block is
-  // an __NSStackBlock__, and verifies the fix for http://crbug.com/436175 .
-  NSString* chromiumPrefix = @"www.chromium.org";
-  [Cronet setRequestFilterBlock:^BOOL(NSURLRequest* request) {
-    BOOL isChromiumSite = [[[request URL] host] hasPrefix:chromiumPrefix];
-    return !isChromiumSite;
-  }];
-
+  [Cronet registerHttpProtocolHandler];
   self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
   self.viewController =
       [[CronetConsumerViewController alloc] initWithNibName:nil bundle:nil];

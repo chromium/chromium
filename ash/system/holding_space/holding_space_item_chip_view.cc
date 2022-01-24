@@ -14,19 +14,23 @@
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_progress_ring.h"
+#include "ash/system/holding_space/holding_space_progress_ring_animation.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/paint_recorder.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
-#include "ui/gfx/transform_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -42,13 +46,25 @@ namespace {
 
 // Appearance.
 constexpr int kChildSpacing = 8;
-constexpr float kInProgressImageScaleFactor = 0.7f;
 constexpr int kLabelMaskGradientWidth = 16;
 constexpr gfx::Insets kLabelMargins(/*top=*/4, 0, /*bottom=*/4, /*right=*/2);
 constexpr gfx::Insets kPadding(0, /*left=*/8, 0, /*right=*/10);
 constexpr int kPreferredHeight = 40;
 constexpr int kPreferredWidth = 160;
 constexpr int kSecondaryActionIconSize = 16;
+
+// Animation.
+constexpr base::TimeDelta kInProgressImageScaleDuration =
+    base::Milliseconds(150);
+constexpr float kInProgressImageScaleFactor = 0.7f;
+
+// Helpers ---------------------------------------------------------------------
+
+template <typename... T>
+base::RepeatingCallback<void(T...)> IgnoreArgs(
+    base::RepeatingCallback<void()> callback) {
+  return base::BindRepeating([](T...) {}).Then(std::move(callback));
+}
 
 // ObservableRoundedImageView --------------------------------------------------
 
@@ -299,9 +315,18 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
       .BuildChildren();
 
   // Subscribe to be notified of changes to `item`'s image.
-  image_subscription_ =
+  image_skia_changed_subscription_ =
       item->image().AddImageSkiaChangedCallback(base::BindRepeating(
           &HoldingSpaceItemChipView::UpdateImage, base::Unretained(this)));
+
+  // Subscribe to be notified of changes to `item`'s progress ring animation.
+  progress_ring_animation_changed_subscription_ =
+      HoldingSpaceAnimationRegistry::GetInstance()
+          ->AddProgressRingAnimationChangedCallbackForKey(
+              item, IgnoreArgs<HoldingSpaceProgressRingAnimation*>(
+                        base::BindRepeating(
+                            &HoldingSpaceItemChipView::UpdateImageTransform,
+                            base::Unretained(this))));
 
   UpdateImage();
   UpdateLabels();
@@ -311,10 +336,40 @@ HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
 
 views::View* HoldingSpaceItemChipView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
-  // Tooltips for this view are handled by `primary_label_`, which will only
-  // show tooltips if the underlying text has been elided due to insufficient
-  // space.
-  return HitTestPoint(point) ? primary_label_ : nullptr;
+  // Tooltip events should be handled top level, not by descendents.
+  return HitTestPoint(point) ? this : nullptr;
+}
+
+std::u16string HoldingSpaceItemChipView::GetTooltipText(
+    const gfx::Point& point) const {
+  std::u16string primary_tooltip = primary_label_->GetTooltipText(point);
+  std::u16string secondary_tooltip = secondary_label_->GetTooltipText(point);
+
+  // If there is neither a primary nor a secondary tooltip which should be
+  // shown, then there is no tooltip to be shown at all.
+  if (primary_tooltip.empty() && secondary_tooltip.empty())
+    return base::EmptyString16();
+
+  // If there is no primary tooltip, fallback to using the primary text. This
+  // would occur if the `primary_label_` is not elided in same way.
+  if (primary_tooltip.empty())
+    primary_tooltip = primary_label_->GetText();
+
+  // If there is no secondary tooltip, fallback to using the secondary text.
+  // This would occur if the `secondary_label_` is not elided in some way.
+  if (secondary_tooltip.empty())
+    secondary_tooltip = secondary_label_->GetText();
+
+  // If there still is no secondary tooltip, only the primary tooltip should be
+  // shown. This would occur if there is no visible `secondary_label_`.
+  if (secondary_tooltip.empty())
+    return primary_tooltip;
+
+  // Otherwise, concatenate and return the primary and secondary tooltips. This
+  // will look something of the form: "filename.txt, Paused, 10/100 MB".
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_HOLDING_SPACE_ITEM_A11Y_NAME_AND_TOOLTIP, primary_tooltip,
+      secondary_tooltip);
 }
 
 void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
@@ -355,6 +410,7 @@ void HoldingSpaceItemChipView::OnMouseEvent(ui::MouseEvent* event) {
 
 void HoldingSpaceItemChipView::OnThemeChanged() {
   HoldingSpaceItemView::OnThemeChanged();
+
   UpdateImage();
   UpdateLabels();
 
@@ -406,6 +462,9 @@ void HoldingSpaceItemChipView::OnSecondaryActionPressed() {
   DCHECK_NE(secondary_action_pause_->GetVisible(),
             secondary_action_resume_->GetVisible());
 
+  if (delegate())
+    delegate()->OnHoldingSpaceItemViewSecondaryActionPressed(this);
+
   // Pause.
   if (secondary_action_pause_->GetVisible()) {
     HoldingSpaceController::Get()->client()->PauseItems({item()});
@@ -438,8 +497,20 @@ void HoldingSpaceItemChipView::UpdateImageTransform() {
   if (!item())
     return;
 
+  // Wait until `image_` has been laid out before updating transform. Once
+  // bounds have been set, `UpdateImageTransform()` will be invoked again.
+  if (image_->bounds().IsEmpty())
+    return;
+
+  const bool is_item_visibly_in_progress =
+      !item()->progress().IsHidden() && !item()->progress().IsComplete();
+
+  const HoldingSpaceProgressRingAnimation* progress_ring_animation =
+      HoldingSpaceAnimationRegistry::GetInstance()
+          ->GetProgressRingAnimationForKey(item());
+
   gfx::Transform transform;
-  if (!item()->progress().IsComplete() && !image_->bounds().IsEmpty()) {
+  if (is_item_visibly_in_progress || progress_ring_animation) {
     transform = gfx::GetScaleTransform(image_->bounds().CenterPoint(),
                                        kInProgressImageScaleFactor);
   }
@@ -449,6 +520,20 @@ void HoldingSpaceItemChipView::UpdateImageTransform() {
     image_->layer()->SetFillsBoundsOpaquely(false);
   }
 
+  if (image_->layer()->GetTargetTransform() == transform)
+    return;
+
+  // Non-identity transforms take effect immediately so as not to cause overlap
+  // between the `image_` and progress ring.
+  if (!transform.IsIdentity()) {
+    image_->layer()->SetTransform(transform);
+    return;
+  }
+
+  // Identify transforms are animated.
+  ui::ScopedLayerAnimationSettings settings(image_->layer()->GetAnimator());
+  settings.SetTransitionDuration(kInProgressImageScaleDuration);
+  settings.SetTweenType(gfx::Tween::Type::LINEAR_OUT_SLOW_IN);
   image_->layer()->SetTransform(transform);
 }
 
@@ -463,6 +548,7 @@ void HoldingSpaceItemChipView::UpdateLabels() {
                         HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
 
   // Primary.
+  const std::u16string last_primary_text = primary_label_->GetText();
   primary_label_->SetText(item()->GetText());
   primary_label_->SetEnabledColor(
       selected() && multiselect
@@ -471,6 +557,7 @@ void HoldingSpaceItemChipView::UpdateLabels() {
                 AshColorProvider::ContentLayerType::kTextColorPrimary));
 
   // Secondary.
+  const std::u16string last_secondary_text = secondary_label_->GetText();
   secondary_label_->SetText(
       item()->secondary_text().value_or(base::EmptyString16()));
   secondary_label_->SetEnabledColor(
@@ -479,6 +566,13 @@ void HoldingSpaceItemChipView::UpdateLabels() {
           : AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kTextColorSecondary));
   secondary_label_->SetVisible(!secondary_label_->GetText().empty());
+
+  // Tooltip.
+  // NOTE: Only necessary if the displayed text has changed.
+  if (primary_label_->GetText() != last_primary_text ||
+      secondary_label_->GetText() != last_secondary_text) {
+    TooltipTextChanged();
+  }
 }
 
 void HoldingSpaceItemChipView::UpdateSecondaryAction() {
@@ -487,9 +581,10 @@ void HoldingSpaceItemChipView::UpdateSecondaryAction() {
   if (!item())
     return;
 
-  const bool has_secondary_action = !checkmark()->GetVisible() &&
-                                    !item()->progress().IsComplete() &&
-                                    IsMouseHovered();
+  // NOTE: Only download type items currently support secondary actions.
+  const bool has_secondary_action =
+      !checkmark()->GetVisible() && !item()->progress().IsComplete() &&
+      HoldingSpaceItem::IsDownload(item()->type()) && IsMouseHovered();
 
   if (!has_secondary_action) {
     image_->SetVisible(!checkmark()->GetVisible());

@@ -11,6 +11,12 @@
 class SyncErrorInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
  public:
   SyncErrorInfoBarDelegateAndroid();
+
+  SyncErrorInfoBarDelegateAndroid(const SyncErrorInfoBarDelegateAndroid&) =
+      delete;
+  SyncErrorInfoBarDelegateAndroid& operator=(
+      const SyncErrorInfoBarDelegateAndroid&) = delete;
+
   ~SyncErrorInfoBarDelegateAndroid() override;
 
   // ConfirmInfoBarDelegate:
@@ -23,8 +29,6 @@ class SyncErrorInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncErrorInfoBarDelegateAndroid);
 };
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_ERROR_INFOBAR_DELEGATE_ANDROID_H_

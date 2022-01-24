@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_CLIENT_HINTS_PREFERENCES_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_FRAME_CLIENT_HINTS_PREFERENCES_CONTEXT_H_
 
+#include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"

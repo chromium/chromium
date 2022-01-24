@@ -10,9 +10,9 @@ namespace syncer {
 
 const size_t ProtocolEventBuffer::kBufferSize = 6;
 
-ProtocolEventBuffer::ProtocolEventBuffer() {}
+ProtocolEventBuffer::ProtocolEventBuffer() = default;
 
-ProtocolEventBuffer::~ProtocolEventBuffer() {}
+ProtocolEventBuffer::~ProtocolEventBuffer() = default;
 
 void ProtocolEventBuffer::RecordProtocolEvent(const ProtocolEvent& event) {
   buffer_.push_back(event.Clone());

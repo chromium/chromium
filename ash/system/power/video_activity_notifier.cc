@@ -62,8 +62,7 @@ void VideoActivityNotifier::UpdateTimer() {
   if (!should_notify_power_manager()) {
     notify_timer_.Stop();
   } else {
-    notify_timer_.Start(FROM_HERE,
-                        base::TimeDelta::FromSeconds(kNotifyIntervalSec), this,
+    notify_timer_.Start(FROM_HERE, base::Seconds(kNotifyIntervalSec), this,
                         &VideoActivityNotifier::MaybeNotifyPowerManager);
   }
 }

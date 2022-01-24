@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/macros.h"
 
 namespace zucchini {
 
@@ -425,8 +424,9 @@ class InducedSuffixSort {
                   suffix_array);
     }
 
-   private:
-    DISALLOW_IMPLICIT_CONSTRUCTORS(Implementation);
+    Implementation() = delete;
+    Implementation(const Implementation&) = delete;
+    const Implementation& operator=(const Implementation&) = delete;
   };
 };
 

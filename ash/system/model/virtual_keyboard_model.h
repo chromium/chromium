@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -24,6 +23,10 @@ class ASH_EXPORT VirtualKeyboardModel
   };
 
   VirtualKeyboardModel();
+
+  VirtualKeyboardModel(const VirtualKeyboardModel&) = delete;
+  VirtualKeyboardModel& operator=(const VirtualKeyboardModel&) = delete;
+
   ~VirtualKeyboardModel() override;
 
   void AddObserver(Observer* observer);
@@ -50,8 +53,6 @@ class ASH_EXPORT VirtualKeyboardModel
   gfx::Rect arc_keyboard_bounds_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardModel);
 };
 
 }  // namespace ash

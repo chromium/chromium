@@ -75,9 +75,6 @@ void FakeSyncEngine::SetEncryptionPassphrase(const std::string& passphrase) {}
 
 void FakeSyncEngine::SetDecryptionPassphrase(const std::string& passphrase) {}
 
-void FakeSyncEngine::SetKeystoreEncryptionBootstrapToken(
-    const std::string& token) {}
-
 void FakeSyncEngine::AddTrustedVaultDecryptionKeys(
     const std::vector<std::vector<uint8_t>>& keys,
     base::OnceClosure done_cb) {
@@ -98,11 +95,11 @@ void FakeSyncEngine::ConfigureDataTypes(ConfigureParams params) {
            /*failed_configuration_types=*/ModelTypeSet());
 }
 
-void FakeSyncEngine::ActivateDataType(
+void FakeSyncEngine::ConnectDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {}
 
-void FakeSyncEngine::DeactivateDataType(ModelType type) {}
+void FakeSyncEngine::DisconnectDataType(ModelType type) {}
 
 void FakeSyncEngine::SetProxyTabsDatatypeEnabled(bool enabled) {}
 

@@ -14,6 +14,10 @@ class CastQuotaPermissionContext : public content::QuotaPermissionContext {
  public:
   CastQuotaPermissionContext();
 
+  CastQuotaPermissionContext(const CastQuotaPermissionContext&) = delete;
+  CastQuotaPermissionContext& operator=(const CastQuotaPermissionContext&) =
+      delete;
+
   // content::QuotaPermissionContext implementation:
   void RequestQuotaPermission(const content::StorageQuotaParams& params,
                               int render_process_id,
@@ -21,8 +25,6 @@ class CastQuotaPermissionContext : public content::QuotaPermissionContext {
 
  private:
   ~CastQuotaPermissionContext() override;
-
-  DISALLOW_COPY_AND_ASSIGN(CastQuotaPermissionContext);
 };
 
 }  // namespace chromecast

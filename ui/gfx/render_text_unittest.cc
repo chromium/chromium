@@ -295,6 +295,10 @@ class TestSkiaTextRenderer : public internal::SkiaTextRenderer {
  public:
   explicit TestSkiaTextRenderer(Canvas* canvas)
       : internal::SkiaTextRenderer(canvas) {}
+
+  TestSkiaTextRenderer(const TestSkiaTextRenderer&) = delete;
+  TestSkiaTextRenderer& operator=(const TestSkiaTextRenderer&) = delete;
+
   ~TestSkiaTextRenderer() override {}
 
   void GetTextLogAndReset(std::vector<TextLog>* text_log) {
@@ -324,8 +328,6 @@ class TestSkiaTextRenderer : public internal::SkiaTextRenderer {
   }
 
   std::vector<TextLog> text_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSkiaTextRenderer);
 };
 
 class TestRenderTextCanvas : public SkCanvas {
@@ -376,6 +378,9 @@ class TestRectangleBuffer {
         stride_(stride),
         row_count_(row_count) {}
 
+  TestRectangleBuffer(const TestRectangleBuffer&) = delete;
+  TestRectangleBuffer& operator=(const TestRectangleBuffer&) = delete;
+
   // Test if any values in the rectangular area are anything other than |color|.
   void EnsureSolidRect(SkColor color,
                        int left,
@@ -411,8 +416,6 @@ class TestRectangleBuffer {
   const SkColor* buffer_;
   int stride_;
   int row_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRectangleBuffer);
 };
 
 }  // namespace
@@ -427,6 +430,9 @@ class RenderTextTest : public testing::Test {
         render_text_(std::make_unique<RenderTextHarfBuzz>()),
         test_api_(new test::RenderTextTestApi(render_text_.get())),
         renderer_(canvas()) {}
+
+  RenderTextTest(const RenderTextTest&) = delete;
+  RenderTextTest& operator=(const RenderTextTest&) = delete;
 
  protected:
   const cc::PaintFlags& GetRendererPaint() {
@@ -656,8 +662,6 @@ class RenderTextTest : public testing::Test {
   std::vector<TextLog> text_log_;
   Canvas canvas_;
   TestSkiaTextRenderer renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderTextTest);
 };
 
 TEST_F(RenderTextTest, DefaultStyles) {
@@ -3185,10 +3189,7 @@ TEST_F(RenderTextTest, MoveCursor_UpDown_EmptyLines) {
   // Test up/down movement at the end of the line.
   render_text->SelectRange(Range(3));
   expected_range.push_back(Range(4));
-  // TODO(crbug.com/1163587): This should actually be |8|, since |9| is the
-  // beginning of the next line. This assert is left in for now to allow testing
-  // the next expected position, which correctly ends up at |14|.
-  expected_range.push_back(Range(9));
+  expected_range.push_back(Range(8));
   expected_range.push_back(Range(14));
   RunMoveCursorTestAndClearExpectations(render_text, CHARACTER_BREAK,
                                         CURSOR_DOWN, SELECTION_NONE,
@@ -4005,6 +4006,128 @@ TEST_F(RenderTextTest, FindCursorPosition) {
   }
 }
 
+TEST_F(RenderTextTest, GetCursorBoundsMultilineLTR) {
+  const int kGlyphWidth = 5;
+  const int kGlyphHeight = 6;
+  SetGlyphWidth(kGlyphWidth);
+  SetGlyphHeight(kGlyphHeight);
+  RenderText* render_text = GetRenderText();
+  render_text->SetCursorEnabled(true);
+  render_text->SetDisplayRect(Rect(45, 100));
+  render_text->SetMultiline(true);
+  render_text->SetText(u"one\n\ntwo three");
+
+  const auto& text = render_text->GetDisplayText();
+  int expected_x = 0;
+  int current_line = 0;
+  for (size_t i = 0; i < text.size(); ++i) {
+    EXPECT_EQ(
+        expected_x,
+        render_text->GetCursorBounds(SelectionModel(i, CURSOR_FORWARD), true)
+            .x());
+    EXPECT_EQ(
+        render_text->GetLineOffset(current_line).y(),
+        render_text->GetCursorBounds(SelectionModel(i, CURSOR_FORWARD), true)
+            .y());
+
+    EXPECT_EQ(
+        expected_x,
+        render_text->GetCursorBounds(SelectionModel(i, CURSOR_BACKWARD), true)
+            .x());
+    EXPECT_EQ(
+        render_text->GetLineOffset(current_line).y(),
+        render_text->GetCursorBounds(SelectionModel(i, CURSOR_BACKWARD), true)
+            .y());
+
+    if (text[i] == '\n') {
+      expected_x = 0;
+      ++current_line;
+    } else {
+      expected_x += kGlyphWidth;
+    }
+  }
+}
+
+TEST_F(RenderTextTest, GetCursorBoundsMultilineCarriageReturn) {
+  const int kGlyphWidth = 5;
+  const int kGlyphHeight = 6;
+  SetGlyphWidth(kGlyphWidth);
+  SetGlyphHeight(kGlyphHeight);
+  RenderText* render_text = GetRenderText();
+  render_text->SetCursorEnabled(true);
+  render_text->SetDisplayRect(Rect(45, 100));
+  render_text->SetMultiline(true);
+  render_text->SetText(u"abc\n\n\ndef\r\n\r\n");
+
+  const auto& text = render_text->GetDisplayText();
+  int expected_x = 0;
+  int current_line = 0;
+  for (size_t i = 0; i < text.size(); ++i) {
+    EXPECT_EQ(
+        expected_x,
+        render_text->GetCursorBounds(SelectionModel(i, CURSOR_FORWARD), true)
+            .x());
+    EXPECT_EQ(
+        render_text->GetLineOffset(current_line).y(),
+        render_text->GetCursorBounds(SelectionModel(i, CURSOR_FORWARD), true)
+            .y());
+
+    if (text[i] == '\n') {
+      expected_x = 0;
+      ++current_line;
+    } else if (text[i] != '\r') {
+      // \r isn't a valid cursor position, since \r\n is a single 0-width glyph,
+      // everything else 5px
+      expected_x += kGlyphWidth;
+    }
+  }
+}
+
+TEST_F(RenderTextTest, GetCursorBoundsMultilineRTL) {
+  const int kGlyphWidth = 5;
+  const int kGlyphHeight = 6;
+  SetGlyphWidth(kGlyphWidth);
+  SetGlyphHeight(kGlyphHeight);
+  RenderText* render_text = GetRenderText();
+  render_text->SetCursorEnabled(true);
+  render_text->SetDisplayRect(Rect(45, 100));
+  render_text->SetMultiline(true);
+  render_text->SetText(u"אבג\n\nאבג אבגא");
+
+  // Line 1 is 3 codepoints, 5px wide each. Line 2 has 0 codepoints, and Line 3
+  // has 8 codepoints, 5px wide each.
+  const int kExpectedFirstGlyphInLineX[] = {15, 0, 40};
+  const auto& text = render_text->GetDisplayText();
+  int expected_x_offset = 0;
+  int current_line = 0;
+  for (size_t i = 0; i < text.size(); ++i) {
+    EXPECT_EQ(
+        kExpectedFirstGlyphInLineX[current_line] - expected_x_offset,
+        render_text->GetCursorBounds(SelectionModel(i, CURSOR_FORWARD), true)
+            .x());
+    EXPECT_EQ(
+        render_text->GetLineOffset(current_line).y(),
+        render_text->GetCursorBounds(SelectionModel(i, CURSOR_FORWARD), true)
+            .y());
+
+    EXPECT_EQ(
+        kExpectedFirstGlyphInLineX[current_line] - expected_x_offset,
+        render_text->GetCursorBounds(SelectionModel(i, CURSOR_BACKWARD), true)
+            .x());
+    EXPECT_EQ(
+        render_text->GetLineOffset(current_line).y(),
+        render_text->GetCursorBounds(SelectionModel(i, CURSOR_BACKWARD), true)
+            .y());
+
+    if (text[i] == '\n') {
+      expected_x_offset = 0;
+      ++current_line;
+    } else {
+      expected_x_offset += kGlyphWidth;
+    }
+  }
+}
+
 // Tests that FindCursorPosition behaves correctly for multi-line text.
 TEST_F(RenderTextTest, FindCursorPositionMultiline) {
   const char16_t* kTestStrings[] = {u"abc def", u"אבג דהו"};
@@ -4794,10 +4917,12 @@ TEST_F(RenderTextTest, StringSizeMultiline) {
 
   render_text->SetDisplayRect(Rect(30, 1000));
   render_text->SetMultiline(true);
-  EXPECT_EQ(55, render_text->TotalLineWidth());
+  // The newline glyph has width 0.
+  EXPECT_EQ(50, render_text->TotalLineWidth());
 
+  // The newline glyph has width 0.
   EXPECT_FLOAT_EQ(
-      30, render_text->GetLineSizeF(SelectionModel(0, CURSOR_FORWARD)).width());
+      25, render_text->GetLineSizeF(SelectionModel(0, CURSOR_FORWARD)).width());
   EXPECT_FLOAT_EQ(
       25, render_text->GetLineSizeF(SelectionModel(6, CURSOR_FORWARD)).width());
   // |GetStringSize()| of multi-line text does not include newline character.
@@ -4925,7 +5050,9 @@ TEST_F(RenderTextTest, TextSizeMultiline) {
     EXPECT_EQ(expected_ceiled_height, render_text->GetStringSize().height());
 
     const int total_glyphs = render_text->text().length();
-    EXPECT_FLOAT_EQ(total_glyphs * kGlyphWidth, render_text->TotalLineWidth());
+    // |total_glyphs| includes one \n glyph per line, which has width 0.
+    EXPECT_FLOAT_EQ((total_glyphs - line) * kGlyphWidth,
+                    render_text->TotalLineWidth());
 
     // With cursor disabled, the content width is the same as string width.
     render_text->SetCursorEnabled(false);
@@ -4948,8 +5075,10 @@ TEST_F(RenderTextTest, LineSizeMultiline) {
   render_text->SetMultiline(true);
   render_text->SetText(u"xx\nxxx\nxxxxx");
 
-  const float expected_line1_size = 3 * kGlyphWidth;
-  const float expected_line2_size = 4 * kGlyphWidth;
+  // \n doesn't have a width, so the expected sizes are only the visible
+  // characters
+  const float expected_line1_size = 2 * kGlyphWidth;
+  const float expected_line2_size = 3 * kGlyphWidth;
   const float expected_line3_size = 5 * kGlyphWidth;
 
   EXPECT_FLOAT_EQ(
@@ -5948,7 +6077,8 @@ TEST_F(RenderTextTest, Multiline_HorizontalAlignment) {
       EXPECT_EQ(1u, run_list->runs()[1]->shape.glyph_count);  // \n.
       EXPECT_EQ(lines[1].length(), run_list->runs()[2]->shape.glyph_count);
 
-      int difference = (lines[0].length() - lines[1].length() + 1) * kGlyphSize;
+      // The newline glyph itself has width 0.
+      int difference = (lines[0].length() - lines[1].length()) * kGlyphSize;
       EXPECT_EQ(test_api()->GetAlignmentOffset(0).x() + difference,
                 test_api()->GetAlignmentOffset(1).x());
     }

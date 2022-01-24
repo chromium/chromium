@@ -73,11 +73,6 @@ void BackgroundFetchRegistration::OnProgress(
   result_ = result;
   failure_reason_ = failure_reason;
 
-  ExecutionContext* context = GetExecutionContext();
-  if (!context || context->IsContextDestroyed())
-    return;
-
-  DCHECK(context->IsContextThread());
   DispatchEvent(*Event::Create(event_type_names::kProgress));
 }
 
@@ -345,7 +340,7 @@ const String BackgroundFetchRegistration::result() const {
 
 const String BackgroundFetchRegistration::failureReason() const {
   blink::IdentifiabilityMetricBuilder(GetExecutionContext()->UkmSourceID())
-      .Set(
+      .Add(
           blink::IdentifiableSurface::FromTypeAndToken(
               blink::IdentifiableSurface::Type::kWebFeature,
               WebFeature::

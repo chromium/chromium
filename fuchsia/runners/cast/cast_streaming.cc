@@ -4,14 +4,21 @@
 
 #include "fuchsia/runners/cast/cast_streaming.h"
 
+#include <string>
+
 #include "base/fuchsia/file_utils.h"
 #include "base/path_service.h"
+#include "fuchsia/base/config_reader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 constexpr char kCastStreamingAppUrl[] = "cast-streaming:receiver";
 constexpr char kCastDataDirectory[] = "fuchsia/runners/cast/data";
 constexpr char kCastStreamingContentDirectoryName[] = "cast-streaming";
+constexpr char kCastStreamingMessagePortOrigin[] = "cast-streaming:receiver";
+constexpr char kCastStreamingVideoOnlyMessagePortOrigin[] =
+    "cast-streaming:video-only-receiver";
 
 // Returns the content directories for the Cast Streaming application.
 std::vector<fuchsia::web::ContentDirectoryProvider>
@@ -35,8 +42,6 @@ GetCastStreamingContentDirectories() {
 const char kCastStreamingWebUrl[] =
     "fuchsia-dir://cast-streaming/receiver.html";
 
-const char kCastStreamingMessagePortOrigin[] = "cast-streaming:receiver";
-
 const char kCastStreamingMessagePortName[] = "cast.__platform__.cast_transport";
 
 bool IsAppConfigForCastStreaming(
@@ -50,4 +55,30 @@ void ApplyCastStreamingContextParams(
 
   // Set the content directory with the streaming app.
   params->set_content_directories(GetCastStreamingContentDirectories());
+}
+
+std::string GetMessagePortOriginForAppId(const std::string& app_id) {
+  const absl::optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  if (!config) {
+    return kCastStreamingMessagePortOrigin;
+  }
+
+  constexpr char kEnableVideoOnlyReceiverSwitch[] =
+      "enable-video-only-receiver-for-app-ids";
+  const base::Value* app_id_list =
+      config->FindListKey(kEnableVideoOnlyReceiverSwitch);
+  if (!app_id_list) {
+    return kCastStreamingMessagePortOrigin;
+  }
+
+  for (const base::Value& app_id_value : app_id_list->GetList()) {
+    if (!app_id_value.is_string()) {
+      continue;
+    }
+    if (app_id == app_id_value.GetString()) {
+      return kCastStreamingVideoOnlyMessagePortOrigin;
+    }
+  }
+
+  return kCastStreamingMessagePortOrigin;
 }

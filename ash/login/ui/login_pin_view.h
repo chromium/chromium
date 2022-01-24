@@ -13,7 +13,6 @@
 #include "ash/login/ui/non_accessible_view.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace base {
@@ -103,6 +102,9 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
                const OnPinBackspace& on_backspace,
                const OnPinSubmit& on_submit = base::NullCallback());
 
+  LoginPinView(const LoginPinView&) = delete;
+  LoginPinView& operator=(const LoginPinView&) = delete;
+
   ~LoginPinView() override;
 
   // Notify accessibility that location of rows and LoginPinView changed.
@@ -129,8 +131,6 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
 
   std::vector<NonAccessibleView*> rows_;
   std::vector<DigitPinButton*> digit_buttons_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginPinView);
 };
 
 }  // namespace ash

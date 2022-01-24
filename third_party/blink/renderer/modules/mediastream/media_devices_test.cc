@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -14,11 +15,13 @@
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -49,12 +52,12 @@ String MaxLengthCaptureHandle() {
   return maxHandle;
 }
 
-class MockMediaDevicesDispatcherHost
+class MockMediaDevicesDispatcherHost final
     : public mojom::blink::MediaDevicesDispatcherHost {
  public:
   MockMediaDevicesDispatcherHost() {}
 
-  ~MockMediaDevicesDispatcherHost() final {
+  ~MockMediaDevicesDispatcherHost() override {
     EXPECT_FALSE(expected_capture_handle_config_);
   }
 
@@ -193,11 +196,15 @@ class MockMediaDevicesDispatcherHost
               expected_config->all_origins_permitted);
     ASSERT_EQ(config->permitted_origins.size(),
               expected_config->permitted_origins.size());
-    for (size_t i = 0; i < config->permitted_origins.size(); ++i) {
+    for (wtf_size_t i = 0; i < config->permitted_origins.size(); ++i) {
       EXPECT_TRUE(config->permitted_origins[i]->IsSameOriginWith(
           expected_config->permitted_origins[i].get()));
     }
   }
+
+#if !defined(OS_ANDROID)
+  void CloseFocusWindowOfOpportunity(const String& label) override {}
+#endif
 
   void ExpectSetCaptureHandleConfig(
       mojom::blink::CaptureHandleConfigPtr config) {
@@ -229,7 +236,7 @@ class MockMediaDevicesDispatcherHost
   mojom::blink::CaptureHandleConfigPtr expected_capture_handle_config_;
 };
 
-class MediaDevicesTest : public testing::Test {
+class MediaDevicesTest : public PageTestBase {
  public:
   using MediaDeviceInfos = HeapVector<Member<MediaDeviceInfo>>;
 
@@ -697,6 +704,93 @@ TEST_F(MediaDevicesTest,
   ASSERT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(scope.GetExceptionState().Code(),
             ToExceptionCode(DOMExceptionCode::kNotSupportedError));
+}
+
+TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  ASSERT_TRUE(media_devices);
+
+  SetBodyContent(R"HTML(
+    <div id='test-div'></div>
+    <iframe id='test-iframe' src="about:blank" />
+  )HTML");
+
+  Document& document = GetDocument();
+  auto div = V8UnionHTMLDivElementOrHTMLIFrameElement(
+      reinterpret_cast<HTMLDivElement*>(document.getElementById("test-div")));
+  const ScriptPromise div_promise = media_devices->produceCropId(
+      scope.GetScriptState(), &div, scope.GetExceptionState());
+  platform()->RunUntilIdle();
+  EXPECT_FALSE(div_promise.IsEmpty());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  auto iframe = V8UnionHTMLDivElementOrHTMLIFrameElement(
+      reinterpret_cast<HTMLIFrameElement*>(
+          document.getElementById("test-iframe")));
+  const ScriptPromise iframe_promise = media_devices->produceCropId(
+      scope.GetScriptState(), &iframe, scope.GetExceptionState());
+  platform()->RunUntilIdle();
+  EXPECT_FALSE(iframe_promise.IsEmpty());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  ASSERT_TRUE(media_devices);
+
+  SetBodyContent(R"HTML(
+    <div id='test-div'></div>
+  )HTML");
+
+  Document& document = GetDocument();
+  auto div = V8UnionHTMLDivElementOrHTMLIFrameElement(
+      reinterpret_cast<HTMLDivElement*>(document.getElementById("test-div")));
+  const ScriptPromise first_promise = media_devices->produceCropId(
+      scope.GetScriptState(), &div, scope.GetExceptionState());
+  ScriptPromiseTester first_tester(scope.GetScriptState(), first_promise);
+  first_tester.WaitUntilSettled();
+  EXPECT_TRUE(first_tester.IsFulfilled());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  // The second call to |produceCropId| should return the same ID.
+  const ScriptPromise second_promise = media_devices->produceCropId(
+      scope.GetScriptState(), &div, scope.GetExceptionState());
+  ScriptPromiseTester second_tester(scope.GetScriptState(), second_promise);
+  second_tester.WaitUntilSettled();
+  EXPECT_TRUE(second_tester.IsFulfilled());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  WTF::String first_result, second_result;
+  first_tester.Value().ToString(first_result);
+  second_tester.Value().ToString(second_result);
+  EXPECT_EQ(first_result, second_result);
+}
+
+TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  ASSERT_TRUE(media_devices);
+
+  SetBodyContent(R"HTML(
+    <div id='test-div'></div>
+  )HTML");
+
+  Document& document = GetDocument();
+  auto div = V8UnionHTMLDivElementOrHTMLIFrameElement(
+      reinterpret_cast<HTMLDivElement*>(document.getElementById("test-div")));
+  const ScriptPromise promise = media_devices->produceCropId(
+      scope.GetScriptState(), &div, scope.GetExceptionState());
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  WTF::String result;
+  tester.Value().ToString(result);
+  EXPECT_TRUE(result.ContainsOnlyASCIIOrEmpty());
+  EXPECT_TRUE(base::GUID::ParseLowercase(result.Ascii()).is_valid());
 }
 
 }  // namespace blink

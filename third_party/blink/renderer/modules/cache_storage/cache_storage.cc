@@ -362,8 +362,11 @@ ScriptPromise CacheStorage::MatchImpl(ScriptState* script_state,
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   bool in_related_fetch_event = false;
-  if (auto* global_scope = DynamicTo<ServiceWorkerGlobalScope>(context))
+  bool in_range_fetch_event = false;
+  if (auto* global_scope = DynamicTo<ServiceWorkerGlobalScope>(context)) {
     in_related_fetch_event = global_scope->HasRelatedFetchEvent(request->url());
+    in_range_fetch_event = global_scope->HasRangeFetchEvent(request->url());
+  }
 
   TRACE_EVENT_WITH_FLOW2("CacheStorage", "CacheStorage::MatchImpl",
                          TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT,
@@ -401,7 +404,7 @@ ScriptPromise CacheStorage::MatchImpl(ScriptState* script_state,
   // callback from ever being executed.
   cache_storage_remote_->Match(
       std::move(mojo_request), std::move(mojo_options), in_related_fetch_event,
-      trace_id,
+      in_range_fetch_event, trace_id,
       WTF::Bind(
           [](ScriptPromiseResolver* resolver, base::TimeTicks start_time,
              const MultiCacheQueryOptions* options, int64_t trace_id,

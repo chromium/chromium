@@ -18,6 +18,12 @@ class ExternalVkImageDawnRepresentation : public SharedImageRepresentationDawn {
                                     WGPUDevice device,
                                     WGPUTextureFormat dawn_format,
                                     base::ScopedFD memory_fd);
+
+  ExternalVkImageDawnRepresentation(const ExternalVkImageDawnRepresentation&) =
+      delete;
+  ExternalVkImageDawnRepresentation& operator=(
+      const ExternalVkImageDawnRepresentation&) = delete;
+
   ~ExternalVkImageDawnRepresentation() override;
 
   WGPUTexture BeginAccess(WGPUTextureUsage usage) override;
@@ -39,8 +45,6 @@ class ExternalVkImageDawnRepresentation : public SharedImageRepresentationDawn {
   const DawnProcTable dawn_procs_;
 
   std::vector<ExternalSemaphore> begin_access_semaphores_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalVkImageDawnRepresentation);
 };
 
 }  // namespace gpu

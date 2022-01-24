@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 
 import android.content.res.ColorStateList;
-import android.graphics.drawable.Drawable;
 import android.view.View.AccessibilityDelegate;
 
 import androidx.annotation.IntDef;
@@ -49,7 +48,7 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<TabListMediator.TabActionListener>
             TAB_CLOSED_LISTENER = new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<Drawable> FAVICON =
+    public static final WritableObjectPropertyKey<TabListFaviconProvider.TabFavicon> FAVICON =
             new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<TabListMediator.ThumbnailFetcher>

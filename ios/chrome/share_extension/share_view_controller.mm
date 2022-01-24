@@ -84,7 +84,7 @@ const CGFloat kMediumAlpha = 0.5;
 
 + (void)initialize {
   if (self == [ShareViewController self]) {
-    if (crash_helper::common::CanCrashpadStart()) {
+    if (crash_helper::common::CanUseCrashpad()) {
       crash_helper::common::StartCrashpad();
     }
   }
@@ -100,9 +100,7 @@ const CGFloat kMediumAlpha = 0.5;
   self.maskView = maskView;
   // On iOS 13, the default share extension presentation style already has a
   // mask behind the view.
-  if (@available(iOS 13, *)) {
-    self.maskView.hidden = YES;
-  }
+  self.maskView.hidden = YES;
   [self.maskView
       setBackgroundColor:[UIColor colorWithWhite:0 alpha:kMediumAlpha]];
   [self.view addSubview:self.maskView];
@@ -154,6 +152,13 @@ const CGFloat kMediumAlpha = 0.5;
 }
 
 - (void)displayErrorView {
+  __weak ShareViewController* weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf displayErrorViewMainThread];
+  });
+}
+
+- (void)displayErrorViewMainThread {
   NSString* errorMessage =
       NSLocalizedString(@"IDS_IOS_ERROR_MESSAGE_SHARE_EXTENSION",
                         @"The error message to display to the user.");
@@ -244,8 +249,8 @@ const CGFloat kMediumAlpha = 0.5;
           NSItemProviderPreferredImageSizeKey : [NSValue
               valueWithCGSize:CGSizeMake(kScreenShotWidth, kScreenShotHeight)]
         };
-        ItemBlock imageCompletion = ^(id item, NSError* error) {
-          self->_image = base::mac::ObjCCast<UIImage>(item);
+        ItemBlock imageCompletion = ^(id imageData, NSError* error) {
+          self->_image = base::mac::ObjCCast<UIImage>(imageData);
           if (self->_image && self.shareView) {
             dispatch_async(dispatch_get_main_queue(), ^{
               [self.shareView setScreenshot:self->_image];

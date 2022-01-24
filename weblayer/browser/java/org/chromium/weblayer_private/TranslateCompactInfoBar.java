@@ -74,8 +74,6 @@ public class TranslateCompactInfoBar extends InfoBar
     private static final String INFOBAR_HISTOGRAM_NEVER_TRANSLATE_LANGUAGE =
             "Translate.CompactInfobar.Language.NeverTranslate";
     private static final String INFOBAR_HISTOGRAM = "Translate.CompactInfobar.Event";
-    private static final String INFOBAR_HISTOGRAM_TRANSLATION_COUNT =
-            "Translate.CompactInfobar.TranslationsPerPage";
 
     // Need 2 instances of TranslateMenuHelper to prevent a race condition bug which happens when
     // showing language menu after dismissing overflow menu.
@@ -144,7 +142,7 @@ public class TranslateCompactInfoBar extends InfoBar
                 (TranslateTabLayout) content.findViewById(R.id.weblayer_translate_infobar_tabs);
         if (mDefaultTextColor > 0) {
             mTabLayout.setTabTextColors(
-                    ContextCompat.getColor(getContext(), R.color.default_text_color),
+                    ContextCompat.getColor(getContext(), R.color.default_text_color_baseline),
                     ContextCompat.getColor(
                             getContext(), R.color.weblayer_tab_layout_selected_tab_color));
         }
@@ -235,7 +233,6 @@ public class TranslateCompactInfoBar extends InfoBar
 
     @CalledByNative
     private void onPageTranslated(int errorType) {
-        incrementAndRecordTranslationsPerPageCount();
         if (mTabLayout != null) {
             mTabLayout.hideProgressBar();
             if (errorType != 0) {
@@ -293,7 +290,6 @@ public class TranslateCompactInfoBar extends InfoBar
     public void onTabSelected(TabLayout.Tab tab) {
         switch (tab.getPosition()) {
             case SOURCE_TAB_INDEX:
-                incrementAndRecordTranslationsPerPageCount();
                 recordInfobarAction(InfobarEvent.INFOBAR_REVERT);
                 onButtonClicked(ActionType.TRANSLATE_SHOW_ORIGINAL);
                 return;
@@ -531,10 +527,6 @@ public class TranslateCompactInfoBar extends InfoBar
         }
     }
 
-    private void incrementAndRecordTranslationsPerPageCount() {
-        RecordHistogram.recordCountHistogram(
-                INFOBAR_HISTOGRAM_TRANSLATION_COUNT, ++mTotalTranslationCount);
-    }
 
     // Return the width of parent in pixels.  Return 0 if there is no parent.
     private int getParentWidth() {

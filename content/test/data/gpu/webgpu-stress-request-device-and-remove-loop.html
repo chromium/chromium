@@ -1,0 +1,58 @@
+<!--
+  This is a stress test for crbug.com/1242269.
+  In the bug, a flaky use-after-free could happen depending on the ordering of
+  the Javascript ExecutionContext ContextDestroyed notification and GC finalization
+  of the GPUDevice in the page. Repeatingly creating an iframe, initializing a GPUDevice,
+  and then destroying the iframe can sometimes hit this and crash. This test does this
+  repeatedly with many iframes at once for 90 seconds.
+-->
+<head>
+  <script>
+    const iframes = [];
+    function removeOneIframe() {
+      setTimeout(function () {
+        document.body.removeChild(iframes.shift());
+      }, Math.random() * 500);
+    }
+
+    async function run() {
+      if (window.domAutomationController) {
+        window.domAutomationController.send('LOADED');
+        setTimeout(() => {
+          // Succeed if don't crash within 90 seconds.
+          window.domAutomationController.send('SUCCESS');
+        }, 90 * 1000);
+      }
+
+      while (true) {
+        const iframe = document.createElement("iframe");
+        iframe.setAttribute("id", "iframe");
+        document.body.appendChild(iframe);
+
+        iframes.push(iframe);
+
+        const head = iframe.contentWindow.document.getElementsByTagName('head')[0];
+        const script = iframe.contentWindow.document.createElement('script');
+        script.type = 'text/javascript';
+        script.innerText = `
+          navigator.gpu.requestAdapter().then((adapter) => {
+            adapter.requestDevice().then((val) => {
+              parent.removeOneIframe();
+            });
+          });
+        `;
+        head.appendChild(script);
+
+        // Wait a bit to yield to the event loop.
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        // Avoid having too many iframes in flight.
+        while (iframes.length > 100) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+    }
+  </script>
+</head>
+
+<body onload="run()"></body>

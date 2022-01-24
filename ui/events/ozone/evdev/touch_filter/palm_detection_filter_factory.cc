@@ -109,9 +109,9 @@ std::unique_ptr<PalmDetectionFilter> CreatePalmDetectionFilter(
       HeuristicStylusPalmDetectionFilter::
           CompatibleWithHeuristicStylusPalmDetectionFilter(devinfo)) {
     const base::TimeDelta hold_time =
-        base::TimeDelta::FromSecondsD(kHeuristicHoldThresholdSeconds.Get());
+        base::Seconds(kHeuristicHoldThresholdSeconds.Get());
     const base::TimeDelta cancel_time =
-        base::TimeDelta::FromSecondsD(kHeuristicCancelThresholdSeconds.Get());
+        base::Seconds(kHeuristicCancelThresholdSeconds.Get());
     const int stroke_count = kHeuristicStrokeCount.Get();
     return std::make_unique<HeuristicStylusPalmDetectionFilter>(
         shared_palm_state, stroke_count, hold_time, cancel_time);

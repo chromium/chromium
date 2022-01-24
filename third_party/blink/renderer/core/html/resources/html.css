@@ -27,31 +27,6 @@ html {
     display: block;
 }
 
-/* children of the <head> element all have display:none */
-head {
-    display: none
-}
-
-meta {
-    display: none
-}
-
-title {
-    display: none
-}
-
-link {
-    display: none
-}
-
-style {
-    display: none
-}
-
-script {
-    display: none
-}
-
 /* generic block-level elements */
 
 body {
@@ -459,10 +434,6 @@ textarea {
   font-family: monospace;
 }
 
-input[type="hidden" i] {
-    display: none
-}
-
 input {
     appearance: auto;
     padding:1px 0;
@@ -801,20 +772,21 @@ option:-internal-spatial-navigation-focus {
     outline-offset: -1px;
 }
 
-datalist {
-    display: none
-}
-
+/* https://html.spec.whatwg.org/multipage/rendering.html#hidden-elements */
+/* TODO(crbug.com/1231263): <area> should be display:none. */
 area {
-    display: inline;
+  display: inline;
+}
+base, basefont, datalist, head, link, meta, noembed,
+noframes, param, rp, script, style, template, title {
+  display: none;
+}
+input[type="hidden" i] {
+  display: none !important;
 }
 
 area:-webkit-any-link {
     cursor: pointer;
-}
-
-param {
-    display: none
 }
 
 input[type="checkbox" i] {
@@ -841,7 +813,7 @@ input[type="color" i] {
 }
 
 input[type="color" i]::-webkit-color-swatch-wrapper {
-    display:flex;
+    display: flex;
     padding: 4px 2px;
     box-sizing: border-box;
     -webkit-user-modify: read-only !important;
@@ -850,6 +822,8 @@ input[type="color" i]::-webkit-color-swatch-wrapper {
 }
 
 input[type="color" i]::-webkit-color-swatch {
+    /* The swatch should not be affected by color scheme. */
+    color-scheme: only light;
     background-color: #000000;
     border: 1px solid #777777;
     flex: 1;
@@ -959,6 +933,8 @@ select:-internal-list-box optgroup {
 }
 
 /* option selected, list-box focused */
+/* TODO(crbug.com/1244986): We should be able to remove !important here, but
+   it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked,
 select:-internal-list-box:focus option:checked:hover {
     /* TODO(crbug.com/1129658): The dark mode color here should be handled
@@ -967,6 +943,8 @@ select:-internal-list-box:focus option:checked:hover {
     color: -internal-light-dark(-internal-active-list-box-selection-text, #3B3B3B) !important;
 }
 
+/* TODO(crbug.com/1244986): We should be able to remove !important here, but
+   it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked:disabled {
     /* TODO(crbug.com/1129658): The dark mode color here should be handled
        within LayoutTheme::ActiveListBoxSelectionBackgroundColor(). */
@@ -976,14 +954,14 @@ select:-internal-list-box:focus option:checked:disabled {
 /* option selected, list-box not focused */
 select:-internal-list-box option:checked,
 select:-internal-list-box option:checked:hover {
-    background-color: -internal-light-dark(#cecece, #545454) !important;
-    color: -internal-light-dark(#101010, #FFFFFF) !important;
+    background-color: -internal-light-dark(#cecece, #545454);
+    color: -internal-light-dark(#101010, #FFFFFF);
 }
 
 select:-internal-list-box:disabled option:checked,
 select:-internal-list-box option:checked:disabled,
 select:-internal-list-box option:checked:disabled:hover {
-    color: -internal-light-dark(gray, #aaa) !important;
+    color: -internal-light-dark(gray, #aaa);
 }
 
 select:-internal-list-box hr {
@@ -1020,15 +998,19 @@ selectmenu {
     display: inline-block;
 }
 
-/* TODO(crbug.com/1121840) It's deliberate for now that this provides styles
-for <option> but not other element types with part="option".  Could this
-be a mechanism for allowing authors to specify their own styles for
-option parts by using e.g. <div part="option">, while authors that
-want the default styles can instead just use <option>? */
 selectmenu option:hover {
     background-color: lightgray;
     cursor: default;
     user-select: none;
+}
+
+selectmenu popup {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
+  box-sizing: border-box;
+  overflow: auto;
+  padding: 4px;
 }
 
 output {
@@ -1348,15 +1330,7 @@ ruby > rt {
     text-align: start;
 }
 
-rp {
-    display: none;
-}
-
 /* other elements */
-
-noframes {
-    display: none
-}
 
 frameset, frame {
     display: block
@@ -1397,10 +1371,6 @@ details[open] > summary:first-of-type {
     list-style-type: disclosure-open;
 }
 
-template {
-    display: none
-}
-
 bdi, output {
     unicode-bidi: isolate;
 }
@@ -1414,7 +1384,7 @@ textarea[dir=auto i] {
 }
 
 dialog:not([open]) {
-    display: none
+    display: none;
 }
 
 dialog {

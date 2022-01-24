@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/viz_service_export.h"
@@ -33,6 +32,9 @@ struct TransferableResource;
 class VIZ_SERVICE_EXPORT SurfaceClient {
  public:
   SurfaceClient() = default;
+
+  SurfaceClient(const SurfaceClient&) = delete;
+  SurfaceClient& operator=(const SurfaceClient&) = delete;
 
   virtual ~SurfaceClient() = default;
 
@@ -90,9 +92,6 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
       base::TimeTicks expected_display_time) = 0;
 
   virtual bool IsVideoCaptureStarted() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SurfaceClient);
 };
 
 }  // namespace viz

@@ -1,0 +1,13 @@
+                            .-----------------------------.
+                           |     #[cxx::bridge]  mod       |
+                           |   description of boundary     |
+                            '--------------+--------------'
+                                           |
+                                           |
+                         "Macro expansion" |  "Code generation"
+                           +---------------+---------------+
+         Safe              |                               |
+    straightforward        v                               v      Straightforward
+       "Rust APIs".----------------. "Hidden C ABI".---------------.  "C++ APIs"
+Rust <----------->| "Rust bindings"|<~~~~~~~~~~~~~>| "C++ bindings"|<-----------> "C++"
+code              '----------------'               '---------------'              code

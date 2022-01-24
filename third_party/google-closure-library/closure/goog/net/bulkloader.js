@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Loads a list of URIs in bulk. All requests must be a success
@@ -26,6 +18,7 @@ goog.require('goog.log');
 goog.require('goog.net.BulkLoaderHelper');
 goog.require('goog.net.EventType');
 goog.require('goog.net.XhrIo');
+goog.requireType('goog.Uri');
 
 
 
@@ -37,6 +30,7 @@ goog.require('goog.net.XhrIo');
  * @final
  */
 goog.net.BulkLoader = function(uris) {
+  'use strict';
   goog.events.EventTarget.call(this);
 
   /**
@@ -70,6 +64,7 @@ goog.net.BulkLoader.prototype.logger_ =
  * @return {Array<string>} The response texts.
  */
 goog.net.BulkLoader.prototype.getResponseTexts = function() {
+  'use strict';
   return this.helper_.getResponseTexts();
 };
 
@@ -79,6 +74,7 @@ goog.net.BulkLoader.prototype.getResponseTexts = function() {
  * @return {Array<string>} The request URIs, in order.
  */
 goog.net.BulkLoader.prototype.getRequestUris = function() {
+  'use strict';
   return this.helper_.getUris();
 };
 
@@ -87,13 +83,14 @@ goog.net.BulkLoader.prototype.getRequestUris = function() {
  * Starts the process of loading the URIs.
  */
 goog.net.BulkLoader.prototype.load = function() {
-  var eventHandler = this.eventHandler_;
-  var uris = this.helper_.getUris();
+  'use strict';
+  const eventHandler = this.eventHandler_;
+  const uris = this.helper_.getUris();
   goog.log.info(
       this.logger_, 'Starting load of code with ' + uris.length + ' uris.');
 
-  for (var i = 0; i < uris.length; i++) {
-    var xhrIo = new goog.net.XhrIo();
+  for (let i = 0; i < uris.length; i++) {
+    const xhrIo = new goog.net.XhrIo();
     eventHandler.listen(
         xhrIo, goog.net.EventType.COMPLETE,
         goog.bind(this.handleEvent_, this, i));
@@ -110,10 +107,12 @@ goog.net.BulkLoader.prototype.load = function() {
  * @private
  */
 goog.net.BulkLoader.prototype.handleEvent_ = function(id, e) {
+  'use strict';
   goog.log.info(
-      this.logger_, 'Received event "' + e.type + '" for id ' + id +
-          ' with uri ' + this.helper_.getUri(id));
-  var xhrIo = /** @type {goog.net.XhrIo} */ (e.target);
+      this.logger_,
+      'Received event "' + e.type + '" for id ' + id + ' with uri ' +
+          this.helper_.getUri(id));
+  const xhrIo = /** @type {goog.net.XhrIo} */ (e.target);
   if (xhrIo.isSuccess()) {
     this.handleSuccess_(id, xhrIo);
   } else {
@@ -130,6 +129,7 @@ goog.net.BulkLoader.prototype.handleEvent_ = function(id, e) {
  * @private
  */
 goog.net.BulkLoader.prototype.handleSuccess_ = function(id, xhrIo) {
+  'use strict';
   // Save the response text.
   this.helper_.setResponseText(id, xhrIo.getResponseText());
 
@@ -149,6 +149,7 @@ goog.net.BulkLoader.prototype.handleSuccess_ = function(id, xhrIo) {
  * @private
  */
 goog.net.BulkLoader.prototype.handleError_ = function(id, xhrIo) {
+  'use strict';
   // TODO(user): Abort all pending requests.
 
   // Dispatch the ERROR event.
@@ -162,6 +163,7 @@ goog.net.BulkLoader.prototype.handleError_ = function(id, xhrIo) {
  * @private
  */
 goog.net.BulkLoader.prototype.finishLoad_ = function() {
+  'use strict';
   goog.log.info(this.logger_, 'All uris loaded.');
 
   // Dispatch the SUCCESS event.
@@ -171,6 +173,7 @@ goog.net.BulkLoader.prototype.finishLoad_ = function() {
 
 /** @override */
 goog.net.BulkLoader.prototype.disposeInternal = function() {
+  'use strict';
   goog.net.BulkLoader.superClass_.disposeInternal.call(this);
 
   this.eventHandler_.dispose();
@@ -189,6 +192,7 @@ goog.net.BulkLoader.prototype.disposeInternal = function() {
  * @protected
  */
 goog.net.BulkLoader.LoadErrorEvent = function(status) {
+  'use strict';
   goog.net.BulkLoader.LoadErrorEvent.base(
       this, 'constructor', goog.net.EventType.ERROR);
 

@@ -31,6 +31,12 @@
 class ActiveRenderWidgetHostBrowserTest : public InProcessBrowserTest {
  public:
   ActiveRenderWidgetHostBrowserTest() = default;
+
+  ActiveRenderWidgetHostBrowserTest(const ActiveRenderWidgetHostBrowserTest&) =
+      delete;
+  ActiveRenderWidgetHostBrowserTest& operator=(
+      const ActiveRenderWidgetHostBrowserTest&) = delete;
+
   ~ActiveRenderWidgetHostBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -45,9 +51,6 @@ class ActiveRenderWidgetHostBrowserTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveRenderWidgetHostBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest,
@@ -63,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest,
   //       B = http://b.com/
   //       C = http://c.com/
   //       D = http://d.com/
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -216,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest,
 // 'active' state maintains old value.
 IN_PROC_BROWSER_TEST_F(ActiveRenderWidgetHostBrowserTest, FocusOmniBox) {
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

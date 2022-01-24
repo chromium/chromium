@@ -17,7 +17,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
-#include "base/macros.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
@@ -249,7 +248,8 @@ WebContentsAccessibilityAndroid::~WebContentsAccessibilityAndroid() {
 }
 
 void WebContentsAccessibilityAndroid::UpdateBrowserAccessibilityManager() {
-  auto* manager = GetRootBrowserAccessibilityManager();
+  BrowserAccessibilityManagerAndroid* manager =
+      GetRootBrowserAccessibilityManager();
   if (manager)
     manager->set_web_contents_accessibility(GetWeakPtr());
 }
@@ -265,7 +265,7 @@ void WebContentsAccessibilityAndroid::DeleteEarly(JNIEnv* env) {
 jboolean WebContentsAccessibilityAndroid::IsEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  return GetRootBrowserAccessibilityManager() != nullptr;
+  return !!GetRootBrowserAccessibilityManager();
 }
 
 void WebContentsAccessibilityAndroid::Enable(JNIEnv* env,
@@ -273,8 +273,8 @@ void WebContentsAccessibilityAndroid::Enable(JNIEnv* env,
                                              jboolean screen_reader_mode) {
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
-  auto* manager = GetRootBrowserAccessibilityManager();
-
+  BrowserAccessibilityManagerAndroid* manager =
+      GetRootBrowserAccessibilityManager();
   // First check if we already have a BrowserAccessibilityManager that
   // that needs to be connected to this instance. This can happen if
   // BAM creation precedes render view updates for the associated
@@ -299,13 +299,14 @@ void WebContentsAccessibilityAndroid::Enable(JNIEnv* env,
     web_contents_->AddAccessibilityMode(ui::kAXModeComplete);
 }
 
-void WebContentsAccessibilityAndroid::SetIsRunningAsWebView(
+void WebContentsAccessibilityAndroid::SetAllowImageDescriptions(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    jboolean is_webview) {
-  auto* manager = GetRootBrowserAccessibilityManager();
+    jboolean allow_image_descriptions) {
+  BrowserAccessibilityManagerAndroid* manager =
+      GetRootBrowserAccessibilityManager();
   if (manager) {
-    manager->set_is_running_as_webview(is_webview);
+    manager->set_allow_image_descriptions(allow_image_descriptions);
   }
 }
 
@@ -372,7 +373,8 @@ void WebContentsAccessibilityAndroid::HandleContentChanged(int32_t unique_id) {
   } else if (content_changed_events_ == max_content_changed_events_to_fire_) {
     // If it's equal to the max event count, fire the event on the
     // root instead.
-    auto* root_manager = GetRootBrowserAccessibilityManager();
+    BrowserAccessibilityManagerAndroid* root_manager =
+        GetRootBrowserAccessibilityManager();
     if (root_manager) {
       auto* root_node =
           static_cast<BrowserAccessibilityAndroid*>(root_manager->GetRoot());
@@ -578,7 +580,8 @@ bool WebContentsAccessibilityAndroid::OnHoverEventNoRenderer(
     jfloat x,
     jfloat y) {
   gfx::PointF point = gfx::PointF(x, y);
-  if (auto* root_manager = GetRootBrowserAccessibilityManager()) {
+  if (BrowserAccessibilityManagerAndroid* root_manager =
+          GetRootBrowserAccessibilityManager()) {
     auto* hover_node = static_cast<BrowserAccessibilityAndroid*>(
         root_manager->GetRoot()->ApproximateHitTest(
             gfx::ToFlooredPoint(point)));
@@ -620,7 +623,8 @@ WebContentsAccessibilityAndroid::GetSupportedHtmlElementTypes(
 jint WebContentsAccessibilityAndroid::GetRootId(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  if (auto* root_manager = GetRootBrowserAccessibilityManager()) {
+  if (BrowserAccessibilityManagerAndroid* root_manager =
+          GetRootBrowserAccessibilityManager()) {
     auto* root =
         static_cast<BrowserAccessibilityAndroid*>(root_manager->GetRoot());
     if (root)
@@ -640,7 +644,8 @@ void WebContentsAccessibilityAndroid::HitTest(JNIEnv* env,
                                               const JavaParamRef<jobject>& obj,
                                               jint x,
                                               jint y) {
-  if (auto* root_manager = GetRootBrowserAccessibilityManager())
+  if (BrowserAccessibilityManagerAndroid* root_manager =
+          GetRootBrowserAccessibilityManager())
     root_manager->HitTest(gfx::Point(x, y));
 }
 
@@ -693,7 +698,8 @@ WebContentsAccessibilityAndroid::GetAbsolutePositionForNode(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint unique_id) {
-  auto* root_manager = GetRootBrowserAccessibilityManager();
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
   if (!root_manager)
     return nullptr;
 
@@ -729,26 +735,31 @@ void WebContentsAccessibilityAndroid::UpdateAccessibilityNodeInfoBoundsRect(
     const JavaParamRef<jobject>& info,
     jint unique_id,
     BrowserAccessibilityAndroid* node) {
-  auto* root_manager = GetRootBrowserAccessibilityManager();
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
   if (!root_manager)
     return;
 
+  ui::AXOffscreenResult offscreen_result = ui::AXOffscreenResult::kOnscreen;
   float dip_scale =
       use_zoom_for_dsf_enabled_ ? 1 / root_manager->device_scale_factor() : 1.0;
   gfx::Rect absolute_rect = gfx::ScaleToEnclosingRect(
-      node->GetUnclippedRootFrameBoundsRect(), dip_scale, dip_scale);
+      node->GetUnclippedRootFrameBoundsRect(&offscreen_result), dip_scale,
+      dip_scale);
   gfx::Rect parent_relative_rect = absolute_rect;
-  bool is_root = node->PlatformGetParent() == nullptr;
+  bool is_root = !node->PlatformGetParent();
   if (!is_root) {
     gfx::Rect parent_rect = gfx::ScaleToEnclosingRect(
         node->PlatformGetParent()->GetUnclippedRootFrameBoundsRect(), dip_scale,
         dip_scale);
     parent_relative_rect.Offset(-parent_rect.OffsetFromOrigin());
   }
+  bool is_offscreen = offscreen_result == ui::AXOffscreenResult::kOffscreen;
+
   Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoLocation(
       env, obj, info, unique_id, absolute_rect.x(), absolute_rect.y(),
       parent_relative_rect.x(), parent_relative_rect.y(), absolute_rect.width(),
-      absolute_rect.height(), is_root);
+      absolute_rect.height(), is_root, is_offscreen);
 }
 
 jboolean WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo(
@@ -756,7 +767,8 @@ jboolean WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& info,
     jint unique_id) {
-  auto* root_manager = GetRootBrowserAccessibilityManager();
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
   if (!root_manager)
     return false;
 
@@ -766,6 +778,17 @@ jboolean WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo(
 
   // Update cached nodes by providing new enclosing Rects
   UpdateAccessibilityNodeInfoBoundsRect(env, obj, info, unique_id, node);
+
+  // On Android L and M, there is a bug in the Android framework that could
+  // result in an incorrect RangeInfo object being returned from the pool, so
+  // update the cached node to work around this. This is not necessary on newer
+  // versions of Android that contain the fix, see: ag/930331
+  // TODO(mschillaci): Remove this when Android M is no longer supported.
+  if (node->IsRangeControlWithoutAriaValueText()) {
+    Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoRangeInfo(
+        env, obj, info, node->AndroidRangeType(), node->RangeMin(),
+        node->RangeMax(), node->RangeCurrentValue());
+  }
 
   return true;
 }
@@ -782,7 +805,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   if (!node)
     return false;
 
-  bool is_root = node->PlatformGetParent() == nullptr;
+  bool is_root = !node->PlatformGetParent();
   if (!is_root) {
     auto* android_node =
         static_cast<BrowserAccessibilityAndroid*>(node->PlatformGetParent());
@@ -820,16 +843,15 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->IsSeekControl(), node->IsFormDescendant());
 
   Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoBaseAttributes(
-      env, obj, info, is_root,
-      base::android::ConvertUTF8ToJavaString(env, node->GetClassName()),
-      base::android::ConvertUTF8ToJavaString(env, node->GetRoleString()),
-      base::android::ConvertUTF16ToJavaString(env, node->GetRoleDescription()),
+      env, obj, info, is_root, GetCanonicalJNIString(env, node->GetClassName()),
+      GetCanonicalJNIString(env, node->GetRoleString()),
+      GetCanonicalJNIString(env, node->GetRoleDescription()),
       base::android::ConvertUTF16ToJavaString(env, node->GetHint()),
       base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl()),
       node->CanOpenPopup(), node->IsDismissable(), node->IsMultiLine(),
       node->AndroidInputType(), node->AndroidLiveRegionType(),
-      base::android::ConvertUTF16ToJavaString(
-          env, node->GetContentInvalidErrorMessage()));
+      GetCanonicalJNIString(env, node->GetContentInvalidErrorMessage()),
+      node->ClickableScore());
 
   ScopedJavaLocalRef<jintArray> suggestion_starts_java;
   ScopedJavaLocalRef<jintArray> suggestion_ends_java;
@@ -854,9 +876,8 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       env, obj, info,
       base::android::ConvertUTF16ToJavaString(env, node->GetInnerText()),
       node->IsLink(), node->IsTextField(),
-      base::android::ConvertUTF16ToJavaString(
-          env, node->GetInheritedString16Attribute(
-                   ax::mojom::StringAttribute::kLanguage)),
+      GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
+                                     ax::mojom::StringAttribute::kLanguage)),
       suggestion_starts_java, suggestion_ends_java, suggestion_text_java,
       base::android::ConvertUTF16ToJavaString(env,
                                               node->GetStateDescription()));
@@ -884,7 +905,12 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         env, obj, info, node->RowIndex(), node->RowSpan(), node->ColumnIndex(),
         node->ColumnSpan(), node->IsHeading());
   }
-  if (node->GetData().IsRangeValueSupported()) {
+
+  // For sliders that are numeric, use the AccessibilityNodeInfo.RangeInfo
+  // object as expected. But for non-numeric ranges (e.g. "small", "medium",
+  // "large"), do not set the RangeInfo object and instead rely on announcing
+  // the aria-valuetext value, which will be included in the node's text value.
+  if (node->IsRangeControlWithoutAriaValueText()) {
     Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoRangeInfo(
         env, obj, info, node->AndroidRangeType(), node->RangeMin(),
         node->RangeMax(), node->RangeCurrentValue());
@@ -921,7 +947,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
       node->IsPasswordField(), node->IsScrollable(), node->GetItemIndex(),
       node->GetItemCount(), node->GetScrollX(), node->GetScrollY(),
       node->GetMaxScrollX(), node->GetMaxScrollY(),
-      base::android::ConvertUTF8ToJavaString(env, node->GetClassName()));
+      GetCanonicalJNIString(env, node->GetClassName()));
 
   switch (event_type) {
     case ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGED: {
@@ -982,7 +1008,8 @@ void WebContentsAccessibilityAndroid::Focus(JNIEnv* env,
 
 void WebContentsAccessibilityAndroid::Blur(JNIEnv* env,
                                            const JavaParamRef<jobject>& obj) {
-  if (auto* root_manager = GetRootBrowserAccessibilityManager())
+  if (BrowserAccessibilityManagerAndroid* root_manager =
+          GetRootBrowserAccessibilityManager())
     root_manager->SetFocus(*root_manager->GetRoot());
 }
 
@@ -1092,7 +1119,8 @@ jint WebContentsAccessibilityAndroid::FindElementType(
   if (!start_node)
     return 0;
 
-  auto* root_manager = GetRootBrowserAccessibilityManager();
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
   if (!root_manager)
     return 0;
 
@@ -1145,7 +1173,8 @@ jboolean WebContentsAccessibilityAndroid::NextAtGranularity(
     jboolean extend_selection,
     jint unique_id,
     jint cursor_index) {
-  auto* root_manager = GetRootBrowserAccessibilityManager();
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
   if (!root_manager)
     return false;
 
@@ -1214,7 +1243,8 @@ jboolean WebContentsAccessibilityAndroid::PreviousAtGranularity(
     jboolean extend_selection,
     jint unique_id,
     jint cursor_index) {
-  auto* root_manager = GetRootBrowserAccessibilityManager();
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
   if (!root_manager)
     return false;
 
@@ -1270,18 +1300,18 @@ bool WebContentsAccessibilityAndroid::IsSlider(JNIEnv* env,
 void WebContentsAccessibilityAndroid::OnAutofillPopupDisplayed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  auto* root_manager = GetRootBrowserAccessibilityManager();
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
   if (!root_manager)
     return;
 
   BrowserAccessibility* current_focus = root_manager->GetFocus();
-  if (current_focus == nullptr) {
+  if (!current_focus) {
     return;
   }
 
   DeleteAutofillPopupProxy();
 
-  g_autofill_popup_proxy_node = BrowserAccessibility::Create();
   g_autofill_popup_proxy_node_ax_node = new ui::AXNode(nullptr, nullptr, -1, 0);
   ui::AXNodeData ax_node_data;
   ax_node_data.role = ax::mojom::Role::kMenu;
@@ -1290,8 +1320,10 @@ void WebContentsAccessibilityAndroid::OnAutofillPopupDisplayed(
   ax_node_data.AddState(ax::mojom::State::kFocusable);
   ax_node_data.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
   g_autofill_popup_proxy_node_ax_node->SetData(ax_node_data);
-  g_autofill_popup_proxy_node->Init(root_manager,
-                                    g_autofill_popup_proxy_node_ax_node);
+  g_autofill_popup_proxy_node =
+      BrowserAccessibility::Create(root_manager,
+                                   g_autofill_popup_proxy_node_ax_node)
+          .release();
 
   auto* android_node = static_cast<BrowserAccessibilityAndroid*>(current_focus);
 
@@ -1311,8 +1343,8 @@ jint WebContentsAccessibilityAndroid::
         JNIEnv* env,
         const JavaParamRef<jobject>& obj) {
   if (g_element_after_element_hosting_autofill_popup_unique_id == -1 ||
-      GetAXFromUniqueID(
-          g_element_after_element_hosting_autofill_popup_unique_id) == nullptr)
+      !GetAXFromUniqueID(
+          g_element_after_element_hosting_autofill_popup_unique_id))
     return 0;
 
   return g_element_after_element_hosting_autofill_popup_unique_id;
@@ -1394,7 +1426,8 @@ WebContentsAccessibilityAndroid::GetCharacterBoundingBoxes(
     jint unique_id,
     jint start,
     jint len) {
-  auto* root_manager = GetRootBrowserAccessibilityManager();
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
   if (!root_manager)
     return nullptr;
 

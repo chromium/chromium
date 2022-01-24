@@ -31,7 +31,9 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/constants.h"
+#include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/services/credentials.h"
 #include "sandbox/linux/services/libc_interceptor.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
@@ -43,8 +45,10 @@
 #include "sandbox/linux/syscall_broker/broker_client.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
+#include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/policy/linux/bpf_broker_policy_linux.h"
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
@@ -99,7 +103,7 @@ base::ScopedFD OpenProc(int proc_fd) {
 bool UpdateProcessTypeAndEnableSandbox(
     SandboxLinux::PreSandboxHook broker_side_hook,
     SandboxLinux::Options options,
-    syscall_broker::BrokerCommandSet allowed_command_set) {
+    const syscall_broker::BrokerSandboxConfig& policy) {
   base::CommandLine::StringVector exec =
       base::CommandLine::ForCurrentProcess()->GetArgs();
   base::CommandLine::Reset();
@@ -123,7 +127,7 @@ bool UpdateProcessTypeAndEnableSandbox(
     CHECK(std::move(broker_side_hook).Run(options));
 
   return SandboxSeccompBPF::StartSandboxWithExternalPolicy(
-      std::make_unique<BrokerProcessPolicy>(allowed_command_set),
+      std::make_unique<BrokerProcessPolicy>(policy.allowed_command_set),
       base::ScopedFD());
 }
 
@@ -277,7 +281,7 @@ SetuidSandboxClient* SandboxLinux::setuid_sandbox_client() const {
 }
 
 // For seccomp-bpf, we use the SandboxSeccompBPF class.
-bool SandboxLinux::StartSeccompBPF(SandboxType sandbox_type,
+bool SandboxLinux::StartSeccompBPF(sandbox::mojom::Sandbox sandbox_type,
                                    PreSandboxHook hook,
                                    const Options& options) {
   CHECK(!seccomp_bpf_started_);
@@ -316,7 +320,7 @@ bool SandboxLinux::StartSeccompBPF(SandboxType sandbox_type,
 #endif
 }
 
-bool SandboxLinux::InitializeSandbox(SandboxType sandbox_type,
+bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
                                      SandboxLinux::PreSandboxHook hook,
                                      const Options& options) {
   DCHECK(!initialize_sandbox_ran_);
@@ -428,10 +432,10 @@ bool SandboxLinux::seccomp_bpf_with_tsync_supported() const {
   return seccomp_bpf_with_tsync_supported_;
 }
 
-rlim_t GetProcessDataSizeLimit(SandboxType sandbox_type) {
+rlim_t GetProcessDataSizeLimit(sandbox::mojom::Sandbox sandbox_type) {
 #if defined(ARCH_CPU_64_BITS)
-  if (sandbox_type == SandboxType::kGpu ||
-      sandbox_type == SandboxType::kRenderer) {
+  if (sandbox_type == sandbox::mojom::Sandbox::kGpu ||
+      sandbox_type == sandbox::mojom::Sandbox::kRenderer) {
     // Allow the GPU/RENDERER process's sandbox to access more physical memory
     // if it's available on the system.
     //
@@ -439,9 +443,11 @@ rlim_t GetProcessDataSizeLimit(SandboxType sandbox_type) {
     // to 64 GB.
     constexpr rlim_t GB = 1024 * 1024 * 1024;
     const rlim_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
-    if (sandbox_type == SandboxType::kGpu && physical_memory > 64 * GB) {
+    if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
+        physical_memory > 64 * GB) {
       return 64 * GB;
-    } else if (sandbox_type == SandboxType::kGpu && physical_memory > 32 * GB) {
+    } else if (sandbox_type == sandbox::mojom::Sandbox::kGpu &&
+               physical_memory > 32 * GB) {
       return 32 * GB;
     } else if (physical_memory > 16 * GB) {
       return 16 * GB;
@@ -458,8 +464,9 @@ bool SandboxLinux::LimitAddressSpace(int* error) {
 #if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER) && \
     !defined(THREAD_SANITIZER) && !defined(LEAK_SANITIZER)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  SandboxType sandbox_type = SandboxTypeFromCommandLine(*command_line);
-  if (sandbox_type == SandboxType::kNoSandbox) {
+  sandbox::mojom::Sandbox sandbox_type =
+      SandboxTypeFromCommandLine(*command_line);
+  if (sandbox_type == sandbox::mojom::Sandbox::kNoSandbox) {
     return false;
   }
 
@@ -489,26 +496,45 @@ void SandboxLinux::StartBrokerProcess(
     std::vector<syscall_broker::BrokerFilePermission> permissions,
     PreSandboxHook broker_side_hook,
     const Options& options) {
+  // Use EACCES as the policy's default error number to remain consistent with
+  // other LSMs like AppArmor and Landlock. Some userspace code, such as
+  // glibc's |dlopen|, expect to see EACCES rather than EPERM. See
+  // crbug.com/1233028 for an example.
+  auto policy = absl::make_optional<syscall_broker::BrokerSandboxConfig>(
+      allowed_command_set, std::move(permissions), EACCES);
   // Leaked at shutdown, so use bare |new|.
   broker_process_ = new syscall_broker::BrokerProcess(
-      BPFBasePolicy::GetFSDeniedErrno(), allowed_command_set, permissions,
+      std::move(policy),
       syscall_broker::BrokerProcess::BrokerType::SIGNAL_BASED);
 
   // The initialization callback will perform generic initialization and then
   // call broker_sandboxer_callback.
-  CHECK(broker_process_->Init(base::BindOnce(&UpdateProcessTypeAndEnableSandbox,
+  CHECK(broker_process_->Fork(base::BindOnce(&UpdateProcessTypeAndEnableSandbox,
                                              std::move(broker_side_hook),
-                                             options, allowed_command_set)));
+                                             options)));
 }
 
 bool SandboxLinux::ShouldBrokerHandleSyscall(int sysno) const {
   return broker_process_->IsSyscallAllowed(sysno);
 }
 
-sandbox::bpf_dsl::ResultExpr SandboxLinux::HandleViaBroker() const {
-  return sandbox::bpf_dsl::Trap(
-      sandbox::syscall_broker::BrokerClient::SIGSYS_Handler,
-      broker_process_->GetBrokerClientSignalBased());
+bpf_dsl::ResultExpr SandboxLinux::HandleViaBroker(int sysno) const {
+  const bpf_dsl::ResultExpr handle_via_broker =
+      bpf_dsl::Trap(syscall_broker::BrokerClient::SIGSYS_Handler,
+                    broker_process_->GetBrokerClientSignalBased());
+  if (sysno == __NR_fstatat_default) {
+    // This may be an fstatat(fd, "", stat_buf, AT_EMPTY_PATH), which should be
+    // rewritten as fstat(fd, stat_buf). This should be consistent with how the
+    // baseline policy handles fstatat().
+    // Note that this will cause some legitimate but strange invocations of
+    // fstatat() to fail, see https://crbug.com/1243290#c8 for details.
+    const bpf_dsl::Arg<int> flags(3);
+    return bpf_dsl::If((flags & AT_EMPTY_PATH) == AT_EMPTY_PATH,
+                       RewriteFstatatSIGSYS(BPFBasePolicy::GetFSDeniedErrno()))
+        .Else(handle_via_broker);
+  } else {
+    return handle_via_broker;
+  }
 }
 
 bool SandboxLinux::HasOpenDirectories() const {
@@ -523,9 +549,13 @@ void SandboxLinux::SealSandbox() {
   }
 }
 
-void SandboxLinux::CheckForBrokenPromises(SandboxType sandbox_type) {
-  if (sandbox_type != SandboxType::kRenderer &&
-      sandbox_type != SandboxType::kPpapi) {
+void SandboxLinux::CheckForBrokenPromises(
+    sandbox::mojom::Sandbox sandbox_type) {
+  if (sandbox_type != sandbox::mojom::Sandbox::kRenderer
+#if BUILDFLAG(ENABLE_PLUGINS)
+      && sandbox_type != sandbox::mojom::Sandbox::kPpapi
+#endif
+  ) {
     return;
   }
   // Make sure that any promise made with GetStatus() wasn't broken.

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
+#include "ui/display/display_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -50,8 +51,8 @@ Display Screen::GetDisplayNearestView(gfx::NativeView view) const {
   return GetDisplayNearestWindow(GetWindowForView(view));
 }
 
-display::Display Screen::GetDisplayForNewWindows() const {
-  display::Display display;
+Display Screen::GetDisplayForNewWindows() const {
+  Display display;
   // Scoped value can override if it is set.
   if (scoped_display_id_for_new_windows_ != kInvalidDisplayId &&
       GetDisplayWithDisplayId(scoped_display_id_for_new_windows_, &display)) {
@@ -70,17 +71,6 @@ void Screen::SetDisplayForNewWindows(int64_t display_id) {
   display_id_for_new_windows_ = display_id;
 }
 
-DisplayList Screen::GetDisplayListNearestViewWithFallbacks(
-    gfx::NativeView view) const {
-  return GetDisplayListNearestDisplayWithFallbacks(GetDisplayNearestView(view));
-}
-
-DisplayList Screen::GetDisplayListNearestWindowWithFallbacks(
-    gfx::NativeWindow window) const {
-  return GetDisplayListNearestDisplayWithFallbacks(
-      GetDisplayNearestWindow(window));
-}
-
 void Screen::SetScreenSaverSuspended(bool suspend) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
@@ -92,7 +82,7 @@ bool Screen::IsScreenSaverActive() const {
 
 base::TimeDelta Screen::CalculateIdleTime() const {
   NOTIMPLEMENTED_LOG_ONCE();
-  return base::TimeDelta::FromSeconds(0);
+  return base::Seconds(0);
 }
 
 gfx::Rect Screen::ScreenToDIPRectInWindow(gfx::NativeWindow window,
@@ -145,34 +135,61 @@ void Screen::SetScopedDisplayForNewWindows(int64_t display_id) {
   scoped_display_id_for_new_windows_ = display_id;
 }
 
-DisplayList Screen::GetDisplayListNearestDisplayWithFallbacks(
-    Display nearest) const {
-  DisplayList display_list;
-  const std::vector<Display>& displays = GetAllDisplays();
+ScreenInfos Screen::GetScreenInfosNearestDisplay(int64_t nearest_id) const {
+  ScreenInfos result;
+
+  // Determine the current and primary display ids.
+  std::vector<Display> displays = GetAllDisplays();
   Display primary = GetPrimaryDisplay();
+  // Note: displays being empty can happen in Fuchsia unit tests.
   if (displays.empty()) {
-    // The nearest display's metrics are of greater value to clients of this
-    // function than those of the primary display, so prefer to use that Display
-    // object as the fallback, if GetAllDisplays() returned an empty array.
-    if (nearest.id() == kInvalidDisplayId && primary.id() != kInvalidDisplayId)
-      display_list = DisplayList({primary}, primary.id(), primary.id());
-    else
-      display_list = DisplayList({nearest}, nearest.id(), nearest.id());
-  } else {
-    // Use the primary and nearest displays as fallbacks for each other, if the
-    // counterpart exists in `displays`. Otherwise, use `display[0]` for both.
-    int64_t primary_id = primary.id();
-    int64_t nearest_id = nearest.id();
-    const bool has_primary = base::Contains(displays, primary_id, &Display::id);
-    const bool has_nearest = base::Contains(displays, nearest_id, &Display::id);
-    if (!has_primary)
-      primary_id = has_nearest ? nearest_id : displays[0].id();
-    if (!has_nearest)
-      nearest_id = primary_id;
-    display_list = DisplayList(displays, primary_id, nearest_id);
+    if (primary.id() == kInvalidDisplayId) {
+      // If we are in a situation where we have no displays and so the primary
+      // display is invalid, then it's a logic error (elsewhere) to pass in a
+      // valid id, because where would it come from?
+      DCHECK_EQ(nearest_id, kInvalidDisplayId);
+      primary.set_id(kDefaultDisplayId);
+    }
+    displays = {primary};
   }
-  CHECK(display_list.IsValidAndHasPrimaryAndCurrentDisplays());
-  return display_list;
+
+  // Use the primary and nearest displays as fallbacks for each other, if the
+  // counterpart exists in `displays`. Otherwise, use `display[0]` for both.
+  int64_t primary_id = primary.id();
+  int64_t current_id = nearest_id;
+  const bool has_primary = base::Contains(displays, primary_id, &Display::id);
+  const bool has_nearest = base::Contains(displays, nearest_id, &Display::id);
+  if (!has_primary)
+    primary_id = has_nearest ? nearest_id : displays[0].id();
+  if (!has_nearest)
+    current_id = primary_id;
+
+  // Build ScreenInfos from discovered ids and set of all displays.
+  bool current_display_exists = false;
+  bool primary_display_exists = false;
+  for (const auto& display : displays) {
+    ScreenInfo screen_info;
+    DisplayUtil::DisplayToScreenInfo(&screen_info, display);
+
+    if (display.id() == current_id) {
+      result.current_display_id = display.id();
+      current_display_exists = true;
+    }
+
+    // TODO(enne): move DisplayToScreenInfo to be a private function here,
+    // so that we don't need to overwrite this.
+    screen_info.is_primary = display.id() == primary_id;
+    if (display.id() == primary_id)
+      primary_display_exists = true;
+
+    result.screen_infos.push_back(screen_info);
+  }
+
+  // This is a bit overkill, but verify that the logic above is correct
+  // because it will cause crashes elsewhere to not have a current display.
+  CHECK(current_display_exists);
+  CHECK(primary_display_exists);
+  return result;
 }
 
 }  // namespace display

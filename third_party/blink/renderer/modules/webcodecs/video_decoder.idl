@@ -13,6 +13,7 @@
 // encoders.
 [
     Exposed=(Window,DedicatedWorker),
+    SecureContext,
     RuntimeEnabled=WebCodecs,
     ActiveScriptWrappable
 ] interface VideoDecoder {

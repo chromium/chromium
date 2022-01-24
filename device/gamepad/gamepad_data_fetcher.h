@@ -5,7 +5,7 @@
 #ifndef DEVICE_GAMEPAD_GAMEPAD_DATA_FETCHER_H_
 #define DEVICE_GAMEPAD_GAMEPAD_DATA_FETCHER_H_
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/gamepad_data_fetcher_manager.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/gamepad_pad_state_provider.h"

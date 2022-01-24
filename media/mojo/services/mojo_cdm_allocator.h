@@ -11,7 +11,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/cdm/cdm_allocator.h"
@@ -24,6 +23,10 @@ namespace media {
 class MEDIA_MOJO_EXPORT MojoCdmAllocator final : public CdmAllocator {
  public:
   MojoCdmAllocator();
+
+  MojoCdmAllocator(const MojoCdmAllocator&) = delete;
+  MojoCdmAllocator& operator=(const MojoCdmAllocator&) = delete;
+
   ~MojoCdmAllocator() final;
 
   // CdmAllocator implementation.
@@ -63,8 +66,6 @@ class MEDIA_MOJO_EXPORT MojoCdmAllocator final : public CdmAllocator {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MojoCdmAllocator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoCdmAllocator);
 };
 
 }  // namespace media

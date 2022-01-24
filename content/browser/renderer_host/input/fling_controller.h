@@ -75,6 +75,9 @@ class CONTENT_EXPORT FlingController {
                   FlingControllerSchedulerClient* scheduler_client,
                   const Config& config);
 
+  FlingController(const FlingController&) = delete;
+  FlingController& operator=(const FlingController&) = delete;
+
   ~FlingController();
 
   // Used to progress an active fling on every begin frame.
@@ -191,8 +194,6 @@ class CONTENT_EXPORT FlingController {
   bool last_wheel_event_consumed_ = false;
 
   base::WeakPtrFactory<FlingController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FlingController);
 };
 
 }  // namespace content

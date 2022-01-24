@@ -44,6 +44,20 @@ constexpr char kAccelerometerChannels[][10] = {"accel_x", "accel_y", "accel_z"};
 constexpr char kGyroscopeChannels[][10] = {"anglvel_x", "anglvel_y",
                                            "anglvel_z"};
 
+class FakeClient : public PlatformSensor::Client {
+ public:
+  explicit FakeClient(PlatformSensor* platform_sensor)
+      : platform_sensor_(platform_sensor) {}
+  ~FakeClient() override {}
+
+  void OnSensorReadingChanged(mojom::SensorType type) override {}
+  void OnSensorError() override { platform_sensor_->RemoveClient(this); }
+  bool IsSuspended() override { return false; }
+
+ private:
+  PlatformSensor* platform_sensor_;
+};
+
 }  // namespace
 
 class PlatformSensorProviderChromeOSTest : public ::testing::Test {
@@ -365,17 +379,26 @@ TEST_F(PlatformSensorProviderChromeOSTest, SensorDeviceDisconnect) {
   int fake_id = 1;
   AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
             base::NumberToString(kScaleValue),
-            chromeos::sensors::mojom::kLocationLid);
+            chromeos::sensors::mojom::kLocationLid,
+            GetChannelsWithAxes(kAccelerometerChannels));
   AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationLid);
 
   RegisterSensorHalServer();
 
-  EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
+  auto accel_lid = CreateSensor(mojom::SensorType::ACCELEROMETER);
+  EXPECT_TRUE(accel_lid);
+
+  // Wait until all tasks are done and no failures occur in |provider_| or
+  // |accel_lid|.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(sensor_devices_.front()->HasReceivers());
 
   // Simulate a disconnection of an existing SensorDevice in |provider_|, which
-  // triggers PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect().
+  // triggers PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect(). The
+  // default reason is IIOSERVICE_CRASHED.
   sensor_devices_.back()->ClearReceivers();
 
   // Wait until the disconnection is done.
@@ -383,6 +406,81 @@ TEST_F(PlatformSensorProviderChromeOSTest, SensorDeviceDisconnect) {
   // PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect() resets the
   // SensorService Mojo channel.
   EXPECT_FALSE(sensor_hal_server_->GetSensorService()->HasReceivers());
+
+  // The existing PlatformSensors will also be reset.
+  EXPECT_FALSE(sensor_devices_.front()->HasReceivers());
+}
+
+TEST_F(PlatformSensorProviderChromeOSTest, SensorDeviceDisconnectWithReason) {
+  int fake_id = 1;
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid,
+            GetChannelsWithAxes(kAccelerometerChannels));
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid,
+            GetChannelsWithAxes(kGyroscopeChannels));
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase,
+            GetChannelsWithAxes(kAccelerometerChannels));
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+
+  RegisterSensorHalServer();
+
+  auto accel_lid = CreateSensor(mojom::SensorType::ACCELEROMETER);
+  EXPECT_TRUE(accel_lid);
+  base::RunLoop().RunUntilIdle();
+
+  // The accelerometer created is on the lid.
+  EXPECT_TRUE(sensor_devices_[0]->HasReceivers());
+  EXPECT_FALSE(sensor_devices_[2]->HasReceivers());
+
+  auto gyro_lid = CreateSensor(mojom::SensorType::GYROSCOPE);
+  EXPECT_TRUE(gyro_lid);
+  FakeClient client(gyro_lid.get());
+  gyro_lid->AddClient(&client);
+  PlatformSensorConfiguration config;
+  config.set_frequency(100);
+  gyro_lid->StartListening(&client, config);
+
+  // Wait until all tasks are done and |gyro_lid| is reading samples.
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate a disconnection of the gyro_lid in |provider_|, which triggers
+  // PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect(). As the mojo
+  // pipe is reset with reason: DEVICE_REMOVED, |provider_| will only remove the
+  // SensorDevice instead of the entire SensorService and the corresponding mojo
+  // pipes.
+  EXPECT_TRUE(sensor_devices_[1]->HasReceivers());
+  EXPECT_FALSE(sensor_devices_[3]->HasReceivers());
+  sensor_devices_[1]->ClearReceiversWithReason(
+      chromeos::sensors::mojom::SensorDeviceDisconnectReason::DEVICE_REMOVED,
+      "Device was removed");
+
+  // Wait until the disconnection is done.
+  base::RunLoop().RunUntilIdle();
+
+  // PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect() doesn't reset
+  // the SensorService Mojo channel with the reason: DEVICE_REMOVED.
+  EXPECT_TRUE(sensor_hal_server_->GetSensorService()->HasReceivers());
+
+  auto accel_base = CreateSensor(mojom::SensorType::ACCELEROMETER);
+  base::RunLoop().RunUntilIdle();
+
+  // The new accelerometer created is on the base, as there are more motion
+  // sensors on the base now.
+  EXPECT_FALSE(sensor_devices_[0]->HasReceivers());
+  EXPECT_TRUE(sensor_devices_[2]->HasReceivers());
+
+  EXPECT_FALSE(base::Contains(provider_->sensors_, 2 /* gyro_lid's id */));
+  EXPECT_EQ(provider_->sensor_id_by_type_[mojom::SensorType::ACCELEROMETER],
+            3 /* accel_base's id */);
+  EXPECT_EQ(provider_->sensor_id_by_type_[mojom::SensorType::GYROSCOPE],
+            4 /* accel_base's id */);
 }
 
 TEST_F(PlatformSensorProviderChromeOSTest, ReconnectClient) {

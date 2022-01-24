@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_line.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 
 namespace blink {
@@ -166,19 +167,12 @@ LayoutUnit FlexItem::MarginBoxAscent() const {
          NGBoxFragment(
              algorithm_->StyleRef().GetWritingDirection(),
              To<NGPhysicalBoxFragment>(layout_result_->PhysicalFragment()))
-             .BaselineOrSynthesize();
+             .BaselineOrSynthesize(algorithm_->StyleRef().GetFontBaseline());
 }
 
 LayoutUnit FlexItem::AvailableAlignmentSpace() const {
   LayoutUnit cross_extent = CrossAxisMarginExtent() + cross_axis_size_;
   return Line()->cross_axis_extent_ - cross_extent;
-}
-
-bool FlexItem::HasAutoMarginsInCrossAxis() const {
-  if (algorithm_->IsHorizontalFlow()) {
-    return style_.MarginTop().IsAuto() || style_.MarginBottom().IsAuto();
-  }
-  return style_.MarginLeft().IsAuto() || style_.MarginRight().IsAuto();
 }
 
 ItemPosition FlexItem::Alignment() const {
@@ -211,7 +205,7 @@ bool FlexItem::UpdateAutoMarginsInCrossAxis(
   const Length& bottom_or_right =
       is_horizontal ? style_.MarginBottom() : style_.MarginRight();
   if (top_or_left.IsAuto() && bottom_or_right.IsAuto()) {
-    desired_location_.Move(LayoutUnit(), available_alignment_space / 2);
+    offset_->Move(LayoutUnit(), available_alignment_space / 2);
     if (is_horizontal) {
       physical_margins_.top = available_alignment_space / 2;
       physical_margins_.bottom = available_alignment_space / 2;
@@ -237,7 +231,7 @@ bool FlexItem::UpdateAutoMarginsInCrossAxis(
 
   if (top_or_left.IsAuto()) {
     if (should_adjust_top_or_left)
-      desired_location_.Move(LayoutUnit(), available_alignment_space);
+      offset_->Move(LayoutUnit(), available_alignment_space);
 
     if (is_horizontal)
       physical_margins_.top = available_alignment_space;
@@ -247,7 +241,7 @@ bool FlexItem::UpdateAutoMarginsInCrossAxis(
   }
   if (bottom_or_right.IsAuto()) {
     if (!should_adjust_top_or_left)
-      desired_location_.Move(LayoutUnit(), available_alignment_space);
+      offset_->Move(LayoutUnit(), available_alignment_space);
 
     if (is_horizontal)
       physical_margins_.bottom = available_alignment_space;
@@ -280,6 +274,10 @@ void FlexItem::ComputeStretchedSize() {
     cross_axis_size_ =
         min_max_cross_sizes_->ClampSizeToMinAndMax(stretched_size);
   }
+}
+
+void FlexItem::Trace(Visitor* visitor) const {
+  visitor->Trace(box_);
 }
 
 // static
@@ -334,9 +332,19 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
   }
   return LayoutUnit();
 }
+
+bool FlexItem::HasAutoMarginsInCrossAxis(const ComputedStyle& item_style,
+                                         FlexLayoutAlgorithm* algorithm) {
+  if (algorithm->IsHorizontalFlow()) {
+    return item_style.MarginTop().IsAuto() ||
+           item_style.MarginBottom().IsAuto();
+  }
+  return item_style.MarginLeft().IsAuto() || item_style.MarginRight().IsAuto();
+}
+
 void FlexLine::FreezeViolations(ViolationsVector& violations) {
   const ComputedStyle& flex_box_style = algorithm_->StyleRef();
-  for (size_t i = 0; i < violations.size(); ++i) {
+  for (wtf_size_t i = 0; i < violations.size(); ++i) {
     DCHECK(!violations[i]->frozen_) << i;
     const ComputedStyle& child_style = violations[i]->style_;
     LayoutUnit child_size = violations[i]->flexed_content_size_;
@@ -366,7 +374,7 @@ void FlexLine::FreezeInflexibleItems() {
 
   ViolationsVector new_inflexible_items;
   const ComputedStyle& flex_box_style = algorithm_->StyleRef();
-  for (size_t i = 0; i < line_items_.size(); ++i) {
+  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
     FlexItem& flex_item = line_items_[i];
     DCHECK(!flex_item.frozen_) << i;
     float flex_factor =
@@ -406,7 +414,7 @@ bool FlexLine::ResolveFlexibleLengths() {
   }
 
   const ComputedStyle& flex_box_style = algorithm_->StyleRef();
-  for (size_t i = 0; i < line_items_.size(); ++i) {
+  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
     FlexItem& flex_item = line_items_[i];
 
     // This check also covers out-of-flow children.
@@ -460,7 +468,7 @@ LayoutUnit FlexLine::ApplyMainAxisAutoMarginAdjustment() {
 
   int number_of_auto_margins = 0;
   bool is_horizontal = algorithm_->IsHorizontalFlow();
-  for (size_t i = 0; i < line_items_.size(); ++i) {
+  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
     const ComputedStyle& style = line_items_[i].style_;
     if (is_horizontal) {
       if (style.MarginLeft().IsAuto())
@@ -493,7 +501,7 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
   // Recalculate the remaining free space. The adjustment for flex factors
   // between 0..1 means we can't just use remainingFreeSpace here.
   LayoutUnit total_item_size;
-  for (size_t i = 0; i < line_items_.size(); ++i)
+  for (wtf_size_t i = 0; i < line_items_.size(); ++i)
     total_item_size += line_items_[i].FlexedMarginBoxSize();
   remaining_free_space_ =
       container_main_inner_size_ - total_item_size -
@@ -534,14 +542,14 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
 
   LayoutUnit max_descent;  // Used when align-items: baseline.
   LayoutUnit max_child_cross_axis_extent;
-  for (size_t i = 0; i < line_items_.size(); ++i) {
+  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
     FlexItem& flex_item = line_items_[i];
 
     flex_item.UpdateAutoMarginsInMainAxis(auto_margin_offset);
 
     LayoutUnit child_cross_axis_margin_box_extent;
     if (flex_item.Alignment() == ItemPosition::kBaseline &&
-        !flex_item.HasAutoMarginsInCrossAxis()) {
+        !FlexItem::HasAutoMarginsInCrossAxis(flex_item.style_, algorithm_)) {
       LayoutUnit ascent = flex_item.MarginBoxAscent();
       LayoutUnit descent =
           (flex_item.CrossAxisMarginExtent() + flex_item.cross_axis_size_) -
@@ -564,7 +572,7 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
     // In an RTL column situation, this will apply the margin-right/margin-end
     // on the left. This will be fixed later in
     // LayoutFlexibleBox::FlipForRightToLeftColumn.
-    flex_item.desired_location_ = LayoutPoint(
+    *flex_item.offset_ = LayoutPoint(
         should_flip_main_axis
             ? container_logical_width_ - main_axis_offset - child_main_extent
             : main_axis_offset,
@@ -790,7 +798,9 @@ LayoutUnit FlexLayoutAlgorithm::IntrinsicContentBlockSize() const {
          (flex_lines_.size() - 1) * gap_between_lines_;
 }
 
-void FlexLayoutAlgorithm::AlignFlexLines(LayoutUnit cross_axis_content_extent) {
+void FlexLayoutAlgorithm::AlignFlexLines(
+    LayoutUnit cross_axis_content_extent,
+    Vector<NGFlexLine>* flex_line_outputs) {
   const StyleContentAlignmentData align_content = ResolvedAlignContent(*style_);
   if (align_content.GetPosition() == ContentPosition::kFlexStart &&
       gap_between_lines_ == 0) {
@@ -807,18 +817,22 @@ void FlexLayoutAlgorithm::AlignFlexLines(LayoutUnit cross_axis_content_extent) {
   LayoutUnit line_offset = InitialContentPositionOffset(
       StyleRef(), available_cross_axis_space, align_content, flex_lines_.size(),
       is_reversed);
-  for (FlexLine& line_context : flex_lines_) {
+  for (wtf_size_t i = 0; i < flex_lines_.size(); i++) {
+    FlexLine& line_context = flex_lines_[i];
     line_context.cross_axis_offset_ += line_offset;
 
     for (FlexItem& flex_item : line_context.line_items_) {
-      flex_item.desired_location_.SetY(flex_item.desired_location_.Y() +
-                                       line_offset);
+      flex_item.offset_->SetY(flex_item.offset_->Y() + line_offset);
     }
     if (align_content.Distribution() == ContentDistributionType::kStretch &&
         available_cross_axis_space > 0) {
       line_context.cross_axis_extent_ +=
           available_cross_axis_space /
           static_cast<unsigned>(flex_lines_.size());
+      if (flex_line_outputs) {
+        (*flex_line_outputs)[i].line_cross_size =
+            line_context.cross_axis_extent_;
+      }
     }
 
     line_offset +=
@@ -852,7 +866,7 @@ void FlexLayoutAlgorithm::AlignChildren() {
           available_space, position, flex_item.MarginBoxAscent(), max_ascent,
           StyleRef().FlexWrap() == EFlexWrap::kWrapReverse,
           StyleRef().IsDeprecatedWebkitBox());
-      flex_item.desired_location_.Move(LayoutUnit(), offset);
+      flex_item.offset_->Move(LayoutUnit(), offset);
       if (position == ItemPosition::kBaseline &&
           StyleRef().FlexWrap() == EFlexWrap::kWrapReverse) {
         min_margin_after_baseline =
@@ -875,9 +889,9 @@ void FlexLayoutAlgorithm::AlignChildren() {
         min_margin_after_baselines[line_number++];
     for (FlexItem& flex_item : line_context.line_items_) {
       if (flex_item.Alignment() == ItemPosition::kBaseline &&
-          !flex_item.HasAutoMarginsInCrossAxis() && min_margin_after_baseline) {
-        flex_item.desired_location_.Move(LayoutUnit(),
-                                         min_margin_after_baseline);
+          !FlexItem::HasAutoMarginsInCrossAxis(flex_item.style_, this) &&
+          min_margin_after_baseline) {
+        flex_item.offset_->Move(LayoutUnit(), min_margin_after_baseline);
       }
     }
   }
@@ -894,7 +908,7 @@ void FlexLayoutAlgorithm::FlipForWrapReverse(
                             line_context.cross_axis_extent_;
     LayoutUnit wrap_reverse_difference = new_offset - original_offset;
     for (FlexItem& flex_item : line_context.line_items_)
-      flex_item.desired_location_.Move(LayoutUnit(), wrap_reverse_difference);
+      flex_item.offset_->Move(LayoutUnit(), wrap_reverse_difference);
   }
 }
 
@@ -1147,10 +1161,10 @@ void FlexLayoutAlgorithm::LayoutColumnReverse(
       // We passed 0 as the initial main_axis offset to ComputeLineItemsPosition
       // for ColumnReverse containers so here we have to add the
       // border_scrollbar_padding of the container.
-      flex_item.desired_location_.SetX(
-          main_axis_content_size + border_scrollbar_padding_before -
-          flex_item.desired_location_.X() - item_main_size - margins.block_end +
-          margins.block_start);
+      flex_item.offset_->SetX(main_axis_content_size +
+                              border_scrollbar_padding_before -
+                              flex_item.offset_->X() - item_main_size -
+                              margins.block_end + margins.block_start);
     }
   }
 }
@@ -1161,6 +1175,18 @@ bool FlexLayoutAlgorithm::IsNGFlexBox() const {
   // The FlexItems created by legacy will have an empty ng_input_node. An NG
   // FlexItem's ng_input_node will have a LayoutBox.
   return all_items_.at(0).ng_input_node_.GetLayoutBox();
+}
+
+FlexItem* FlexLayoutAlgorithm::FlexItemAtIndex(wtf_size_t line_index,
+                                               wtf_size_t item_index) const {
+  DCHECK_LT(line_index, flex_lines_.size());
+  DCHECK_LT(item_index, flex_lines_[line_index].line_items_.size());
+  return const_cast<FlexItem*>(
+      &flex_lines_[line_index].line_items_[item_index]);
+}
+
+void FlexLayoutAlgorithm::Trace(Visitor* visitor) const {
+  visitor->Trace(all_items_);
 }
 
 }  // namespace blink

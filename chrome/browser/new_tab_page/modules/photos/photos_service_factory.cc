@@ -35,8 +35,8 @@ KeyedService* PhotosServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   auto url_loader_factory = context->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
-
+  auto* profile = Profile::FromBrowserContext(context);
   return new PhotosService(url_loader_factory,
-                           IdentityManagerFactory::GetForProfile(
-                               Profile::FromBrowserContext(context)));
+                           IdentityManagerFactory::GetForProfile(profile),
+                           profile->GetPrefs());
 }

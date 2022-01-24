@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SMS_TEST_MOCK_USER_CONSENT_HANDLER_H_
 #define CONTENT_BROWSER_SMS_TEST_MOCK_USER_CONSENT_HANDLER_H_
 
-#include "base/macros.h"
 #include "content/browser/sms/user_consent_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

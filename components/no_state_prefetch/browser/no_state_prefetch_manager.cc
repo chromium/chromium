@@ -19,14 +19,13 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -40,7 +39,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_utils.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/browser/prerender_history.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -66,13 +65,11 @@ namespace prerender {
 namespace {
 
 // Time interval at which periodic cleanups are performed.
-constexpr base::TimeDelta kPeriodicCleanupInterval =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kPeriodicCleanupInterval = base::Milliseconds(1000);
 
 // Time interval after which OnCloseWebContentsDeleter will schedule a
 // WebContents for deletion.
-constexpr base::TimeDelta kDeleteWithExtremePrejudice =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kDeleteWithExtremePrejudice = base::Seconds(3);
 
 // Length of prerender history, for display in chrome://net-internals
 constexpr int kHistoryLength = 100;
@@ -96,6 +93,10 @@ class NoStatePrefetchManager::OnCloseWebContentsDeleter
         kDeleteWithExtremePrejudice);
   }
 
+  OnCloseWebContentsDeleter(const OnCloseWebContentsDeleter&) = delete;
+  OnCloseWebContentsDeleter& operator=(const OnCloseWebContentsDeleter&) =
+      delete;
+
   void CloseContents(WebContents* source) override {
     DCHECK_EQ(tab_.get(), source);
     ScheduleWebContentsForDeletion(/*timeout=*/false);
@@ -111,8 +112,6 @@ class NoStatePrefetchManager::OnCloseWebContentsDeleter
 
   NoStatePrefetchManager* const manager_;
   std::unique_ptr<WebContents> tab_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnCloseWebContentsDeleter);
 };
 
 NoStatePrefetchManagerObserver::~NoStatePrefetchManagerObserver() = default;
@@ -140,8 +139,7 @@ NoStatePrefetchManager::NoStatePrefetchManager(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   last_prefetch_start_time_ =
-      GetCurrentTimeTicks() -
-      base::TimeDelta::FromMilliseconds(kMinTimeBetweenPrefetchesMs);
+      GetCurrentTimeTicks() - base::Milliseconds(kMinTimeBetweenPrefetchesMs);
 }
 
 NoStatePrefetchManager::~NoStatePrefetchManager() {
@@ -164,7 +162,7 @@ void NoStatePrefetchManager::Shutdown() {
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
-NoStatePrefetchManager::AddPrerenderFromLinkRelPrerender(
+NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
     int process_id,
     int route_id,
     const GURL& url,
@@ -180,9 +178,6 @@ NoStatePrefetchManager::AddPrerenderFromLinkRelPrerender(
     case blink::mojom::PrerenderTriggerType::kLinkRelNext:
       origin = ORIGIN_LINK_REL_NEXT;
       break;
-    case blink::mojom::PrerenderTriggerType::kSpeculationRule:
-      // SpeculationRule is not routed to NoStatePrefetchManager.
-      NOTREACHED();
   }
 
   SessionStorageNamespace* session_storage_namespace = nullptr;
@@ -204,27 +199,27 @@ NoStatePrefetchManager::AddPrerenderFromLinkRelPrerender(
     session_storage_namespace = source_web_contents->GetController()
                                     .GetDefaultSessionStorageNamespace();
   }
-  return AddPrerenderWithPreconnectFallback(origin, url, referrer,
-                                            initiator_origin, gfx::Rect(size),
-                                            session_storage_namespace);
+  return StartPrefetchingWithPreconnectFallback(
+      origin, url, referrer, initiator_origin, gfx::Rect(size),
+      session_storage_namespace);
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
-NoStatePrefetchManager::AddPrerenderFromOmnibox(
+NoStatePrefetchManager::StartPrefetchingFromOmnibox(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Size& size) {
-  return AddPrerenderWithPreconnectFallback(
+  return StartPrefetchingWithPreconnectFallback(
       ORIGIN_OMNIBOX, url, content::Referrer(), absl::nullopt, gfx::Rect(size),
       session_storage_namespace);
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
-NoStatePrefetchManager::AddPrerenderFromNavigationPredictor(
+NoStatePrefetchManager::StartPrefetchingFromNavigationPredictor(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Size& size) {
-  return AddPrerenderWithPreconnectFallback(
+  return StartPrefetchingWithPreconnectFallback(
       ORIGIN_NAVIGATION_PREDICTOR, url, content::Referrer(), absl::nullopt,
       gfx::Rect(size), session_storage_namespace);
 }
@@ -235,7 +230,7 @@ NoStatePrefetchManager::AddIsolatedPrerender(
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Size& size) {
   // The preconnect fallback won't happen.
-  return AddPrerenderWithPreconnectFallback(
+  return StartPrefetchingWithPreconnectFallback(
       ORIGIN_ISOLATED_PRERENDER, url, content::Referrer(), absl::nullopt,
       gfx::Rect(size), session_storage_namespace);
 }
@@ -247,20 +242,20 @@ NoStatePrefetchManager::AddSameOriginSpeculation(
     const gfx::Size& size,
     const url::Origin& initiator_origin) {
   // The preconnect fallback won't happen.
-  return AddPrerenderWithPreconnectFallback(
+  return StartPrefetchingWithPreconnectFallback(
       ORIGIN_SAME_ORIGIN_SPECULATION, url, content::Referrer(),
       initiator_origin, gfx::Rect(size), session_storage_namespace);
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
-NoStatePrefetchManager::AddPrerenderFromExternalRequest(
+NoStatePrefetchManager::StartPrefetchingFromExternalRequest(
     const GURL& url,
     const content::Referrer& referrer,
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Rect& bounds) {
-  return AddPrerenderWithPreconnectFallback(ORIGIN_EXTERNAL_REQUEST, url,
-                                            referrer, absl::nullopt, bounds,
-                                            session_storage_namespace);
+  return StartPrefetchingWithPreconnectFallback(ORIGIN_EXTERNAL_REQUEST, url,
+                                                referrer, absl::nullopt, bounds,
+                                                session_storage_namespace);
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
@@ -269,7 +264,7 @@ NoStatePrefetchManager::AddForcedPrerenderFromExternalRequest(
     const content::Referrer& referrer,
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Rect& bounds) {
-  return AddPrerenderWithPreconnectFallback(
+  return StartPrefetchingWithPreconnectFallback(
       ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER, url, referrer, absl::nullopt,
       bounds, session_storage_namespace);
 }
@@ -362,8 +357,8 @@ bool NoStatePrefetchManager::HasRecentlyBeenNavigatedTo(Origin origin,
                                                         const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  CleanUpOldNavigations(&navigations_, base::TimeDelta::FromMilliseconds(
-                                           kNavigationRecordWindowMs));
+  CleanUpOldNavigations(&navigations_,
+                        base::Milliseconds(kNavigationRecordWindowMs));
   for (auto it = navigations_.rbegin(); it != navigations_.rend(); ++it) {
     if (it->url == url)
       return true;
@@ -410,8 +405,8 @@ void NoStatePrefetchManager::RecordNavigation(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   navigations_.emplace_back(url, GetCurrentTimeTicks(), ORIGIN_NONE);
-  CleanUpOldNavigations(&navigations_, base::TimeDelta::FromMilliseconds(
-                                           kNavigationRecordWindowMs));
+  CleanUpOldNavigations(&navigations_,
+                        base::Milliseconds(kNavigationRecordWindowMs));
 }
 
 struct NoStatePrefetchManager::NoStatePrefetchData::OrderByExpiryTime {
@@ -515,7 +510,7 @@ void NoStatePrefetchManager::MaybePreconnect(Origin origin,
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
-NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
+NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
     Origin origin,
     const GURL& url_arg,
     const content::Referrer& referrer,
@@ -581,8 +576,7 @@ NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
   GetPrefetchInformation(url, &prefetch_age, nullptr /* final_status*/,
                          nullptr /* origin */);
   if (!prefetch_age.is_zero() &&
-      prefetch_age <
-          base::TimeDelta::FromMinutes(net::HttpCache::kPrefetchReuseMins)) {
+      prefetch_age < base::Minutes(net::HttpCache::kPrefetchReuseMins)) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin,
                                                   FINAL_STATUS_DUPLICATE);
     return nullptr;
@@ -719,7 +713,7 @@ void NoStatePrefetchManager::PeriodicCleanup() {
 
   DeleteToDeletePrerenders();
 
-  CleanUpOldNavigations(&prefetches_, base::TimeDelta::FromMinutes(30));
+  CleanUpOldNavigations(&prefetches_, base::Minutes(30));
 }
 
 void NoStatePrefetchManager::PostCleanupTask() {
@@ -833,8 +827,7 @@ bool NoStatePrefetchManager::DoesRateLimitAllowPrefetch(Origin origin) const {
       GetCurrentTimeTicks() - last_prefetch_start_time_;
   if (!config_.rate_limit_enabled)
     return true;
-  return elapsed_time >=
-         base::TimeDelta::FromMilliseconds(kMinTimeBetweenPrefetchesMs);
+  return elapsed_time >= base::Milliseconds(kMinTimeBetweenPrefetchesMs);
 }
 
 void NoStatePrefetchManager::DeleteOldWebContents() {
@@ -846,7 +839,7 @@ bool NoStatePrefetchManager::GetPrefetchInformation(
     base::TimeDelta* prefetch_age,
     FinalStatus* final_status,
     Origin* origin) {
-  CleanUpOldNavigations(&prefetches_, base::TimeDelta::FromMinutes(30));
+  CleanUpOldNavigations(&prefetches_, base::Minutes(30));
 
   if (prefetch_age)
     *prefetch_age = base::TimeDelta();
@@ -1025,11 +1018,11 @@ void NoStatePrefetchManager::ClearPrefetchInformationForTesting() {
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
-NoStatePrefetchManager::AddPrerenderWithPreconnectFallbackForTesting(
+NoStatePrefetchManager::StartPrefetchingWithPreconnectFallbackForTesting(
     Origin origin,
     const GURL& url,
     const absl::optional<url::Origin>& initiator_origin) {
-  return AddPrerenderWithPreconnectFallback(
+  return StartPrefetchingWithPreconnectFallback(
       origin, url, content::Referrer(), initiator_origin, gfx::Rect(), nullptr);
 }
 

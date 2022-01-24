@@ -5,8 +5,10 @@
 #include "extensions/common/manifest_handlers/csp_info.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/version_info/channel.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_test.h"
@@ -156,8 +158,39 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
                    errors::kInvalidCSPInsecureValueError,
                    keys::kContentSecurityPolicy_ExtensionPagesPath,
                    "'unsafe-eval'", "worker-src")),
+      Testcase("csp_dictionary_with_wasm.json",
+               ErrorUtils::FormatErrorMessage(
+                   errors::kInvalidCSPInsecureValueError,
+                   keys::kContentSecurityPolicy_ExtensionPagesPath,
+                   "'wasm-eval'", "worker-src")),
   };
   RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+}
+
+TEST_F(CSPInfoUnitTest, AllowWasmInMV3) {
+  base::test::ScopedFeatureList feature_list(
+      extensions_features::kAllowWasmInMV3);
+
+  const char kDefaultSecureCSPWithWasmAllowed[] =
+      "script-src 'self' 'wasm-eval'; object-src 'self';";
+
+  struct {
+    const char* file_name;
+    const char* csp;
+  } cases[] = {
+      {"csp_dictionary_with_wasm.json",
+       "worker-src 'self' 'wasm-eval'; default-src 'self'"},
+      {"csp_dictionary_empty_v3.json", kDefaultSecureCSPWithWasmAllowed},
+      {"csp_dictionary_valid_1.json", "default-src 'none'"},
+      {"csp_omitted_mv2.json", kDefaultExtensionPagesCSP}};
+
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(base::StringPrintf("Testing %s.", test_case.file_name));
+    scoped_refptr<Extension> extension =
+        LoadAndExpectSuccess(test_case.file_name);
+    ASSERT_TRUE(extension.get());
+    EXPECT_EQ(test_case.csp, CSPInfo::GetExtensionPagesCSP(extension.get()));
+  }
 }
 
 TEST_F(CSPInfoUnitTest, CSPDictionary_Sandbox) {

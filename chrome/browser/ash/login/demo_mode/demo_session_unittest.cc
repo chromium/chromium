@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
@@ -64,6 +63,9 @@ class DemoSessionTest : public testing::Test {
         browser_process_platform_part_test_api_(
             g_browser_process->platform_part()),
         scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
+
+  DemoSessionTest(const DemoSessionTest&) = delete;
+  DemoSessionTest& operator=(const DemoSessionTest&) = delete;
 
   ~DemoSessionTest() override = default;
 
@@ -151,8 +153,6 @@ class DemoSessionTest : public testing::Test {
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
   user_manager::ScopedUserManager scoped_user_manager_;
   chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionTest);
 };
 
 TEST_F(DemoSessionTest, StartForDeviceInDemoMode) {

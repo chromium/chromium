@@ -23,7 +23,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/mac/process_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 
@@ -78,6 +77,10 @@ bool IsMalformedCLKernelsModule(uint32_t mach_o_file_type,
 class MachOImageSegmentReader {
  public:
   MachOImageSegmentReader();
+
+  MachOImageSegmentReader(const MachOImageSegmentReader&) = delete;
+  MachOImageSegmentReader& operator=(const MachOImageSegmentReader&) = delete;
+
   ~MachOImageSegmentReader();
 
   //! \brief Reads the segment load command from another process.
@@ -291,8 +294,6 @@ class MachOImageSegmentReader {
 
   InitializationStateDcheck initialized_;
   InitializationStateDcheck initialized_slide_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachOImageSegmentReader);
 };
 
 }  // namespace crashpad

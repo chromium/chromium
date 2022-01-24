@@ -22,6 +22,7 @@ import org.chromium.base.Log;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -36,6 +37,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.NetError;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -205,6 +207,7 @@ public class ContinuousSearchTabHelperTest {
 
     @Test
     @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testContinuousSearchFakeResults() throws TimeoutException {
         WaitableContinuousNavigationUserDataObserver observer =
                 new WaitableContinuousNavigationUserDataObserver();
@@ -230,7 +233,7 @@ public class ContinuousSearchTabHelperTest {
                 "Timed out waiting for SearchResultUserDataObserver#onUpdate", 5000,
                 TimeUnit.MILLISECONDS);
 
-        // Check the retuned data.
+        // Check the returned data.
         Assert.assertEquals("cat dog", observer.mMetadata.getQuery());
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             ContinuousNavigationUserDataImpl continuousNavigationUserData =

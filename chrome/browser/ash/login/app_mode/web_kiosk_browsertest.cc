@@ -24,8 +24,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -52,8 +53,8 @@ class WebKioskTest : public OobeBaseTest {
     needs_background_networking_ = true;
     skip_splash_wait_override_ =
         KioskLaunchController::SkipSplashScreenWaitForTesting();
-    network_wait_override_ = KioskLaunchController::SetNetworkWaitForTesting(
-        base::TimeDelta::FromSeconds(0));
+    network_wait_override_ =
+        KioskLaunchController::SetNetworkWaitForTesting(base::Seconds(0));
   }
 
   WebKioskTest(const WebKioskTest&) = delete;
@@ -151,8 +152,7 @@ class WebKioskTest : public OobeBaseTest {
  private:
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
   DeviceStateMixin device_state_mixin_{
-      &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   const AccountId account_id_;
   std::unique_ptr<ScopedDeviceSettings> settings_;
 
@@ -215,8 +215,9 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, LaunchWithConfigureAcceleratorPressed) {
 
   // Block app launch after it is being installed.
   SetBlockAppLaunch(true);
-  test::ExecuteOobeJS(
-      "cr.ui.Oobe.handleAccelerator(\"app_launch_network_config\")");
+  OobeScreenWaiter(AppLaunchSplashScreenView::kScreenId).Wait();
+  ASSERT_TRUE(ash::LoginScreenTestApi::PressAccelerator(
+      ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN)));
   WaitNetworkConfigureScreenAndContinueWithOnlineState(
       /* require_network*/ true);
   SetBlockAppLaunch(false);
@@ -230,13 +231,22 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest,
                        AlreadyInstalledWithConfigureAcceleratorPressed) {
   SetOnline(false);
   PrepareAppLaunch();
+  // Set the threshold to a max value to disable the offline message screen,
+  // otherwise it would interfere with app launch.
+  LoginDisplayHost::default_host()
+      ->GetOobeUI()
+      ->signin_screen_handler()
+      ->SetOfflineTimeoutForTesting(base::TimeDelta::Max());
   MakeAppAlreadyInstalled();
   LaunchApp();
 
   // Block app launch after it is being installed.
   SetBlockAppLaunch(true);
-  test::ExecuteOobeJS(
-      "cr.ui.Oobe.handleAccelerator(\"app_launch_network_config\")");
+  OobeScreenWaiter(AppLaunchSplashScreenView::kScreenId).Wait();
+
+  ASSERT_TRUE(ash::LoginScreenTestApi::PressAccelerator(
+      ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN)));
+
   WaitNetworkConfigureScreenAndContinueWithOnlineState(
       /* require_network*/ false);
 
@@ -263,8 +273,8 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, HiddenShelf) {
       display_bounds.bottom() - ShelfConfig::Get()->shelf_size() / 2);
   gfx::Point end_point(start_point.x(), start_point.y() - 80);
   ui::test::EventGenerator event_generator(window);
-  event_generator.GestureScrollSequence(
-      start_point, end_point, base::TimeDelta::FromMilliseconds(500), 4);
+  event_generator.GestureScrollSequence(start_point, end_point,
+                                        base::Milliseconds(500), 4);
 
   // The shelf should be still hidden after the gesture.
   EXPECT_FALSE(ShelfTestApi().IsVisible());

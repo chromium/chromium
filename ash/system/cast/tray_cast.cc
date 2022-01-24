@@ -110,7 +110,7 @@ const char* CastDetailedView::GetClassName() const {
 void CastDetailedView::UpdateReceiverListFromCachedData() {
   // Remove all of the existing views.
   view_to_sink_map_.clear();
-  scroll_content()->RemoveAllChildViews(true);
+  scroll_content()->RemoveAllChildViews();
 
   // Add a view for each receiver.
   for (auto& it : sinks_and_routes_) {

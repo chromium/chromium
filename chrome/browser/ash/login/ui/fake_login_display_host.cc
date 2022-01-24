@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 
+#include "base/notreached.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "components/session_manager/core/session_manager.h"
 
@@ -11,8 +12,11 @@ namespace ash {
 
 class FakeLoginDisplayHost::FakeBaseScreen : public BaseScreen {
  public:
-  explicit FakeBaseScreen(chromeos::OobeScreenId screen_id)
+  explicit FakeBaseScreen(OobeScreenId screen_id)
       : BaseScreen(screen_id, OobeScreenPriority::DEFAULT) {}
+
+  FakeBaseScreen(const FakeBaseScreen&) = delete;
+  FakeBaseScreen& operator=(const FakeBaseScreen&) = delete;
 
   ~FakeBaseScreen() override = default;
 
@@ -20,12 +24,11 @@ class FakeLoginDisplayHost::FakeBaseScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override {}
   void HideImpl() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBaseScreen);
 };
 
 FakeLoginDisplayHost::FakeLoginDisplayHost()
-    : session_manager_(std::make_unique<session_manager::SessionManager>()) {}
+    : session_manager_(std::make_unique<session_manager::SessionManager>()),
+      wizard_context_(std::make_unique<WizardContext>()) {}
 
 FakeLoginDisplayHost::~FakeLoginDisplayHost() = default;
 
@@ -62,7 +65,8 @@ void FakeLoginDisplayHost::FinalizeImmediately() {}
 void FakeLoginDisplayHost::SetStatusAreaVisible(bool visible) {}
 
 void FakeLoginDisplayHost::StartWizard(OobeScreenId first_screen) {
-  wizard_controller_ = std::make_unique<WizardController>();
+  wizard_controller_ =
+      std::make_unique<WizardController>(wizard_context_.get());
 
   fake_screen_ = std::make_unique<FakeBaseScreen>(first_screen);
   wizard_controller_->SetCurrentScreenForTesting(fake_screen_.get());
@@ -73,6 +77,10 @@ WizardController* FakeLoginDisplayHost::GetWizardController() {
 }
 
 KioskLaunchController* FakeLoginDisplayHost::GetKioskLaunchController() {
+  return nullptr;
+}
+
+WizardContext* FakeLoginDisplayHost::GetWizardContext() {
   return nullptr;
 }
 
@@ -114,6 +122,8 @@ void FakeLoginDisplayHost::ShowGaiaDialog(const AccountId& prefilled_account) {}
 
 void FakeLoginDisplayHost::ShowOsInstallScreen() {}
 
+void FakeLoginDisplayHost::ShowGuestTosScreen() {}
+
 void FakeLoginDisplayHost::HideOobeDialog() {}
 
 void FakeLoginDisplayHost::SetShelfButtonsEnabled(bool enabled) {}
@@ -149,6 +159,26 @@ void FakeLoginDisplayHost::RemoveObserver(
 
 SigninUI* FakeLoginDisplayHost::GetSigninUI() {
   return nullptr;
+}
+
+void FakeLoginDisplayHost::AddWizardCreatedObserverForTests(
+    base::RepeatingClosure on_created) {
+  NOTREACHED();
+}
+
+bool FakeLoginDisplayHost::IsWizardControllerCreated() const {
+  return wizard_controller_.get();
+}
+
+WizardContext* FakeLoginDisplayHost::GetWizardContextForTesting() {
+  NOTREACHED();
+  return nullptr;
+}
+
+bool FakeLoginDisplayHost::GetKeyboardRemappedPrefValue(
+    const std::string& pref_name,
+    int* value) const {
+  return false;
 }
 
 }  // namespace ash

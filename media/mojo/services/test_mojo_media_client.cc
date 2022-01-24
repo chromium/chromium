@@ -76,8 +76,7 @@ std::unique_ptr<Renderer> TestMojoMediaClient::CreateRenderer(
   // RendererImpls. Thus create one for each Renderer creation.
   auto audio_sink = base::MakeRefCounted<AudioOutputStreamSink>();
   auto video_sink = std::make_unique<NullVideoSink>(
-      false, base::TimeDelta::FromSecondsD(1.0 / 60),
-      NullVideoSink::NewFrameCB(), task_runner);
+      false, base::Seconds(1.0 / 60), NullVideoSink::NewFrameCB(), task_runner);
   auto* video_sink_ptr = video_sink.get();
 
   // Hold created sinks since DefaultRendererFactory only takes raw pointers to

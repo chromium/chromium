@@ -26,10 +26,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 
@@ -192,7 +192,7 @@ public class WebappDataStorageTest {
         final String name = "name";
         final String shortName = "shortName";
         final String encodedIcon = BitmapHelper.encodeBitmapAsString(createBitmap());
-        final @WebDisplayMode int displayMode = WebDisplayMode.STANDALONE;
+        final @DisplayMode.EnumType int displayMode = DisplayMode.STANDALONE;
         final int orientation = 1;
         final long themeColor = 2;
         final long backgroundColor = 3;

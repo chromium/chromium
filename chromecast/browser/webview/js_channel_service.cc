@@ -18,6 +18,10 @@ namespace {
 class JsChannelImpl : public mojom::JsChannel {
  public:
   JsChannelImpl(const std::string& channel, JsChannelCallback callback);
+
+  JsChannelImpl(const JsChannelImpl&) = delete;
+  JsChannelImpl& operator=(const JsChannelImpl&) = delete;
+
   ~JsChannelImpl() override;
 
  private:
@@ -25,8 +29,6 @@ class JsChannelImpl : public mojom::JsChannel {
 
   std::string channel_;
   JsChannelCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsChannelImpl);
 };
 
 // The web contents and channel implementations don't know about each other

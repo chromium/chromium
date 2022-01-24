@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_PROMPT_TEST_HELPER_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_PROMPT_TEST_HELPER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 
 // A helper class to be used with ExtensionInstallPrompt that keeps track of the
@@ -14,6 +13,12 @@ class ExtensionInstallPromptTestHelper {
  public:
   ExtensionInstallPromptTestHelper();
   explicit ExtensionInstallPromptTestHelper(base::OnceClosure quit_closure);
+
+  ExtensionInstallPromptTestHelper(const ExtensionInstallPromptTestHelper&) =
+      delete;
+  ExtensionInstallPromptTestHelper& operator=(
+      const ExtensionInstallPromptTestHelper&) = delete;
+
   ~ExtensionInstallPromptTestHelper();
 
   // Returns a callback to be used with the ExtensionInstallPrompt.
@@ -42,8 +47,6 @@ class ExtensionInstallPromptTestHelper {
   // A closure to run once HandlePayload() has been called; used for exiting
   // run loops in tests.
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallPromptTestHelper);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_INSTALL_PROMPT_TEST_HELPER_H_

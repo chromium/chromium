@@ -11,10 +11,14 @@ source_set("test") {
   sources = [
     "test_api.cc",
     "test_api.h",
+    "test_api_observer.cc",
+    "test_api_observer.h",
+    "test_api_observer_registry.cc",
+    "test_api_observer_registry.h",
   ]
 
   deps = [
-    "//content/public/browser",
+    "//base",
     "//content/public/common",
     "//extensions/common",
     "//extensions/common/api",

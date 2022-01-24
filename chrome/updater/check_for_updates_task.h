@@ -16,19 +16,19 @@
 #include "chrome/updater/update_service.h"
 
 namespace update_client {
-class Configurator;
 class UpdateClient;
 enum class Error;
 }  // namespace update_client
 
 namespace updater {
+class Configurator;
 class PersistedData;
 
 class CheckForUpdatesTask
     : public base::RefCountedThreadSafe<CheckForUpdatesTask> {
  public:
   CheckForUpdatesTask(
-      scoped_refptr<update_client::Configurator> config,
+      scoped_refptr<Configurator> config,
       base::OnceCallback<void(UpdateService::Callback)> update_checker,
       base::OnceClosure callback);
   void Run();
@@ -97,7 +97,7 @@ class CheckForUpdatesTask
   void UnregisterMissingAppsDone();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  scoped_refptr<update_client::Configurator> config_;
+  scoped_refptr<Configurator> config_;
   base::OnceCallback<void(UpdateService::Callback)> update_checker_;
   scoped_refptr<updater::PersistedData> persisted_data_;
   scoped_refptr<update_client::UpdateClient> update_client_;

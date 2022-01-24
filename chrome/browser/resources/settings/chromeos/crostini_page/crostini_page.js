@@ -9,14 +9,43 @@
  * the user to run Linux apps on their Chromebook.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared_css.js';
+import '../guest_os/guest_os_shared_paths.js';
+import '../guest_os/guest_os_shared_usb_devices.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import './crostini_arc_adb.js';
+import './crostini_export_import.js';
+import './crostini_extra_containers.js';
+import './crostini_port_forwarding.js';
+import './crostini_subpage.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-crostini-page',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -32,34 +61,32 @@ Polymer({
       type: Object,
       value() {
         const map = new Map();
-        if (settings.routes.CROSTINI_DETAILS) {
+        if (routes.CROSTINI_DETAILS) {
+          map.set(routes.CROSTINI_DETAILS.path, '#crostini .subpage-arrow');
+        }
+        if (routes.CROSTINI_DISK_RESIZE) {
+          map.set(routes.CROSTINI_DISK_RESIZE.path, '#crostini .subpage-arrow');
+        }
+        if (routes.CROSTINI_EXPORT_IMPORT) {
           map.set(
-              settings.routes.CROSTINI_DETAILS.path,
+              routes.CROSTINI_EXPORT_IMPORT.path, '#crostini .subpage-arrow');
+        }
+        if (routes.CROSTINI_EXTRA_CONTAINERS) {
+          map.set(
+              routes.CROSTINI_EXTRA_CONTAINERS.path,
               '#crostini .subpage-arrow');
         }
-        if (settings.routes.CROSTINI_DISK_RESIZE) {
+        if (routes.CROSTINI_PORT_FORWARDING) {
           map.set(
-              settings.routes.CROSTINI_DISK_RESIZE.path,
-              '#crostini .subpage-arrow');
+              routes.CROSTINI_PORT_FORWARDING.path, '#crostini .subpage-arrow');
         }
-        if (settings.routes.CROSTINI_EXPORT_IMPORT) {
+        if (routes.CROSTINI_SHARED_PATHS) {
           map.set(
-              settings.routes.CROSTINI_EXPORT_IMPORT.path,
-              '#crostini .subpage-arrow');
+              routes.CROSTINI_SHARED_PATHS.path, '#crostini .subpage-arrow');
         }
-        if (settings.routes.CROSTINI_PORT_FORWARDING) {
+        if (routes.CROSTINI_SHARED_USB_DEVICES) {
           map.set(
-              settings.routes.CROSTINI_PORT_FORWARDING.path,
-              '#crostini .subpage-arrow');
-        }
-        if (settings.routes.CROSTINI_SHARED_PATHS) {
-          map.set(
-              settings.routes.CROSTINI_SHARED_PATHS.path,
-              '#crostini .subpage-arrow');
-        }
-        if (settings.routes.CROSTINI_SHARED_USB_DEVICES) {
-          map.set(
-              settings.routes.CROSTINI_SHARED_USB_DEVICES.path,
+              routes.CROSTINI_SHARED_USB_DEVICES.path,
               '#crostini .subpage-arrow');
         }
         return map;
@@ -93,17 +120,16 @@ Polymer({
         'crostini-installer-status-changed', (installerShowing) => {
           this.disableCrostiniInstall_ = installerShowing;
         });
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .requestCrostiniInstallerStatus();
+    CrostiniBrowserProxyImpl.getInstance().requestCrostiniInstallerStatus();
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.CROSTINI) {
+    if (route !== routes.CROSTINI) {
       return;
     }
 
@@ -115,8 +141,7 @@ Polymer({
    * @private
    */
   onEnableTap_(event) {
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .requestCrostiniInstallerView();
+    CrostiniBrowserProxyImpl.getInstance().requestCrostiniInstallerView();
     event.stopPropagation();
   },
 
@@ -129,8 +154,7 @@ Polymer({
     }
 
     if (this.getPref('crostini.enabled.value')) {
-      settings.Router.getInstance().navigateTo(
-          settings.routes.CROSTINI_DETAILS);
+      Router.getInstance().navigateTo(routes.CROSTINI_DETAILS);
     }
   },
 });

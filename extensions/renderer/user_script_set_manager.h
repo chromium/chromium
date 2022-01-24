@@ -47,6 +47,9 @@ class UserScriptSetManager {
 
   UserScriptSetManager();
 
+  UserScriptSetManager(const UserScriptSetManager&) = delete;
+  UserScriptSetManager& operator=(const UserScriptSetManager&) = delete;
+
   ~UserScriptSetManager();
 
   void AddObserver(Observer* observer);
@@ -102,8 +105,6 @@ class UserScriptSetManager {
 
   // The associated observers.
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserScriptSetManager);
 };
 
 }  // namespace extensions

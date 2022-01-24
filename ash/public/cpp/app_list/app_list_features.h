@@ -18,9 +18,6 @@ namespace app_list_features {
 // Please keep these features sorted.
 // TODO(newcomer|weidongg): Sort these features.
 
-// Enables in-app data search.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppDataSearch;
-
 // Enable app ranking models.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppRanker;
 
@@ -40,14 +37,14 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableZeroStateMixedTypesRanker;
 // zero-state.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppReinstallZeroState;
 
-// Enables file suggestions in the suggestion chips.
+// Enables Drive file suggestions in the suggestion chips.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableSuggestedFiles;
+
+// Enables local file suggestions in the suggestion chips.
+ASH_PUBLIC_EXPORT extern const base::Feature kEnableSuggestedLocalFiles;
 
 // Enables the Assistant search redirection in the app list.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAssistantSearch;
-
-// Enables ghosting in any AppsGridView (folder or root) when dragging an item.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppGridGhost;
 
 // Enables hashed recording of a app list launches.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppListLaunchRecording;
@@ -70,42 +67,38 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableAggregatedMlSearchRanking;
 // apps grid pages are scaled down and shown a background card.
 ASH_PUBLIC_EXPORT extern const base::Feature kNewDragSpecInLauncher;
 
-// Enables rich entity formatting for Omnibox results in the launcher.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableOmniboxRichEntities;
-
 // Enables normalization of search results in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableLauncherSearchNormalization;
 
 // Enables categorical search in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kCategoricalSearch;
 
-// Enables search query highlighting in the launcher.
-ASH_PUBLIC_EXPORT extern const base::Feature kLauncherQueryHighlighting;
+// Forces the launcher to show the continue section even if there are no file
+// suggestions.
+ASH_PUBLIC_EXPORT extern const base::Feature kForceShowContinueSection;
 
-bool ASH_PUBLIC_EXPORT IsAppDataSearchEnabled();
-bool ASH_PUBLIC_EXPORT IsAppRankerEnabled();
-bool ASH_PUBLIC_EXPORT IsZeroStateAppsRankerEnabled();
-bool ASH_PUBLIC_EXPORT IsQueryBasedMixedTypesRankerEnabled();
-bool ASH_PUBLIC_EXPORT IsZeroStateMixedTypesRankerEnabled();
-bool ASH_PUBLIC_EXPORT IsAppReinstallZeroStateEnabled();
-bool ASH_PUBLIC_EXPORT IsSuggestedFilesEnabled();
-bool ASH_PUBLIC_EXPORT IsAssistantSearchEnabled();
-bool ASH_PUBLIC_EXPORT IsAppGridGhostEnabled();
-bool ASH_PUBLIC_EXPORT IsAppListLaunchRecordingEnabled();
-bool ASH_PUBLIC_EXPORT IsFuzzyAppSearchEnabled();
-bool ASH_PUBLIC_EXPORT IsExactMatchForNonLatinLocaleEnabled();
-bool ASH_PUBLIC_EXPORT IsLauncherSettingsSearchEnabled();
-bool ASH_PUBLIC_EXPORT IsAggregatedMlSearchRankingEnabled();
-bool ASH_PUBLIC_EXPORT IsNewDragSpecInLauncherEnabled();
-bool ASH_PUBLIC_EXPORT IsOmniboxRichEntitiesEnabled();
-bool ASH_PUBLIC_EXPORT IsLauncherSearchNormalizationEnabled();
-bool ASH_PUBLIC_EXPORT IsCategoricalSearchEnabled();
-bool ASH_PUBLIC_EXPORT IsLauncherQueryHighlightingEnabled();
+ASH_PUBLIC_EXPORT bool IsAppRankerEnabled();
+ASH_PUBLIC_EXPORT bool IsZeroStateAppsRankerEnabled();
+ASH_PUBLIC_EXPORT bool IsQueryBasedMixedTypesRankerEnabled();
+ASH_PUBLIC_EXPORT bool IsZeroStateMixedTypesRankerEnabled();
+ASH_PUBLIC_EXPORT bool IsAppReinstallZeroStateEnabled();
+ASH_PUBLIC_EXPORT bool IsSuggestedFilesEnabled();
+ASH_PUBLIC_EXPORT bool IsSuggestedLocalFilesEnabled();
+ASH_PUBLIC_EXPORT bool IsAssistantSearchEnabled();
+ASH_PUBLIC_EXPORT bool IsAppListLaunchRecordingEnabled();
+ASH_PUBLIC_EXPORT bool IsFuzzyAppSearchEnabled();
+ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();
+ASH_PUBLIC_EXPORT bool IsForceShowContinueSectionEnabled();
+ASH_PUBLIC_EXPORT bool IsLauncherSettingsSearchEnabled();
+ASH_PUBLIC_EXPORT bool IsAggregatedMlSearchRankingEnabled();
+ASH_PUBLIC_EXPORT bool IsNewDragSpecInLauncherEnabled();
+ASH_PUBLIC_EXPORT bool IsLauncherSearchNormalizationEnabled();
+ASH_PUBLIC_EXPORT bool IsCategoricalSearchEnabled();
 
-std::string ASH_PUBLIC_EXPORT AnswerServerUrl();
-std::string ASH_PUBLIC_EXPORT AnswerServerQuerySuffix();
-std::string ASH_PUBLIC_EXPORT AppSearchResultRankerPredictorName();
-std::string ASH_PUBLIC_EXPORT CategoricalSearchType();
+ASH_PUBLIC_EXPORT std::string AnswerServerUrl();
+ASH_PUBLIC_EXPORT std::string AnswerServerQuerySuffix();
+ASH_PUBLIC_EXPORT std::string AppSearchResultRankerPredictorName();
+ASH_PUBLIC_EXPORT std::string CategoricalSearchType();
 
 }  // namespace app_list_features
 

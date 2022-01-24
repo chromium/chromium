@@ -5,6 +5,10 @@
 #include "components/sync/test/engine/single_type_mock_server.h"
 
 #include "components/sync/base/time.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 using google::protobuf::RepeatedPtrField;
 
@@ -15,7 +19,7 @@ SingleTypeMockServer::SingleTypeMockServer(ModelType type)
       type_root_id_(ModelTypeToRootTag(type)),
       progress_marker_token_("non_null_progress_token") {}
 
-SingleTypeMockServer::~SingleTypeMockServer() {}
+SingleTypeMockServer::~SingleTypeMockServer() = default;
 
 sync_pb::SyncEntity SingleTypeMockServer::TypeRootUpdate() {
   sync_pb::SyncEntity entity;
@@ -52,8 +56,8 @@ sync_pb::SyncEntity SingleTypeMockServer::UpdateFromServer(
   entity.mutable_specifics()->CopyFrom(specifics);
 
   // Unimportant fields, set for completeness only.
-  base::Time ctime = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  base::Time mtime = ctime + base::TimeDelta::FromSeconds(version);
+  base::Time ctime = base::Time::UnixEpoch() + base::Days(1);
+  base::Time mtime = ctime + base::Seconds(version);
   entity.set_ctime(TimeToProtoTime(ctime));
   entity.set_mtime(TimeToProtoTime(mtime));
   entity.set_name("Name: " + tag_hash.value());
@@ -80,8 +84,8 @@ sync_pb::SyncEntity SingleTypeMockServer::TombstoneFromServer(
   AddDefaultFieldValue(type_, entity.mutable_specifics());
 
   // Unimportant fields, set for completeness only.
-  base::Time ctime = base::Time::UnixEpoch() + base::TimeDelta::FromDays(1);
-  base::Time mtime = ctime + base::TimeDelta::FromSeconds(version);
+  base::Time ctime = base::Time::UnixEpoch() + base::Days(1);
+  base::Time mtime = ctime + base::Seconds(version);
   entity.set_ctime(TimeToProtoTime(ctime));
   entity.set_mtime(TimeToProtoTime(mtime));
   entity.set_name("Tombstone");

@@ -102,7 +102,9 @@ public final class PeriodicBackgroundSyncTest {
     @After
     public void tearDown() throws TimeoutException {
         if (mTestServer != null) mTestServer.stopAndDestroyServer();
-        BackgroundSyncBackgroundTaskScheduler.getInstance().removeObserver(mSchedulerObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BackgroundSyncBackgroundTaskScheduler.getInstance().removeObserver(mSchedulerObserver);
+        });
     }
 
     @Test
@@ -257,6 +259,8 @@ public final class PeriodicBackgroundSyncTest {
             }
         };
 
-        BackgroundSyncBackgroundTaskScheduler.getInstance().addObserver(mSchedulerObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BackgroundSyncBackgroundTaskScheduler.getInstance().addObserver(mSchedulerObserver);
+        });
     }
 }

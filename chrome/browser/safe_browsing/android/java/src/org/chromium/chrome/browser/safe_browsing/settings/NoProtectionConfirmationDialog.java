@@ -43,11 +43,13 @@ public class NoProtectionConfirmationDialog {
                         .with(ModalDialogProperties.CONTROLLER, makeController())
                         .with(ModalDialogProperties.TITLE, resources,
                                 R.string.safe_browsing_no_protection_confirmation_dialog_title)
-                        .with(ModalDialogProperties.MESSAGE, resources,
-                                R.string.safe_browsing_no_protection_confirmation_dialog_message)
+                        .with(ModalDialogProperties.MESSAGE,
+                                resources.getString(
+                                        R.string.safe_browsing_no_protection_confirmation_dialog_message))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                                 R.string.safe_browsing_no_protection_confirmation_dialog_confirm)
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.cancel);
         mModel = builder.build();

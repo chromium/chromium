@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_HUNG_RENDERER_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_ANDROID_HUNG_RENDERER_INFOBAR_DELEGATE_H_
 
-#include "base/macros.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace content {
@@ -29,6 +28,10 @@ class HungRendererInfoBarDelegate : public ConfirmInfoBarDelegate {
   // renderer process if the user so chooses.
   static void Create(infobars::ContentInfoBarManager* infobar_manager,
                      content::RenderProcessHost* render_process_host);
+
+  HungRendererInfoBarDelegate(const HungRendererInfoBarDelegate&) = delete;
+  HungRendererInfoBarDelegate& operator=(const HungRendererInfoBarDelegate&) =
+      delete;
 
   // Called if the renderer regains responsiveness before the infobar is
   // dismissed.
@@ -65,8 +68,6 @@ class HungRendererInfoBarDelegate : public ConfirmInfoBarDelegate {
   content::RenderProcessHost* render_process_host_;
 
   bool terminal_event_logged_for_uma_;
-
-  DISALLOW_COPY_AND_ASSIGN(HungRendererInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_HUNG_RENDERER_INFOBAR_DELEGATE_H_

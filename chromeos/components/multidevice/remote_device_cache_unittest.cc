@@ -14,6 +14,10 @@ namespace chromeos {
 namespace multidevice {
 
 class RemoteDeviceCacheTest : public testing::Test {
+ public:
+  RemoteDeviceCacheTest(const RemoteDeviceCacheTest&) = delete;
+  RemoteDeviceCacheTest& operator=(const RemoteDeviceCacheTest&) = delete;
+
  protected:
   RemoteDeviceCacheTest()
       : test_remote_device_list_(CreateRemoteDeviceListForTest(5)),
@@ -36,8 +40,6 @@ class RemoteDeviceCacheTest : public testing::Test {
   RemoteDeviceList test_remote_device_list_;
   const RemoteDeviceRefList test_remote_device_ref_list_;
   std::unique_ptr<RemoteDeviceCache> cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceCacheTest);
 };
 
 TEST_F(RemoteDeviceCacheTest, TestNoRemoteDevices) {

@@ -5,7 +5,6 @@
 #ifndef UI_ANDROID_DELEGATED_FRAME_HOST_ANDROID_H_
 #define UI_ANDROID_DELEGATED_FRAME_HOST_ANDROID_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
@@ -50,6 +49,10 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
                             Client* client,
                             const viz::FrameSinkId& frame_sink_id);
 
+  DelegatedFrameHostAndroid(const DelegatedFrameHostAndroid&) = delete;
+  DelegatedFrameHostAndroid& operator=(const DelegatedFrameHostAndroid&) =
+      delete;
+
   ~DelegatedFrameHostAndroid() override;
 
   static int64_t TimeDeltaToFrames(base::TimeDelta delta) {
@@ -61,7 +64,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // display a placeholder for a longer period of time is preferable to drawing
   // nothing, and the first frame can take a while on low-end systems.
   static constexpr base::TimeDelta FirstFrameTimeout() {
-    return base::TimeDelta::FromSeconds(5);
+    return base::Seconds(5);
   }
   static int64_t FirstFrameTimeoutFrames() {
     return TimeDeltaToFrames(FirstFrameTimeout());
@@ -73,7 +76,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // stops waiting. Otherwise a rotated version of the previous frame will be
   // displayed with a large black region where there is no content yet.
   static constexpr base::TimeDelta ResizeTimeout() {
-    return base::TimeDelta::FromMilliseconds(175);
+    return base::Milliseconds(175);
   }
   static int64_t ResizeTimeoutFrames() {
     return TimeDeltaToFrames(ResizeTimeout());
@@ -91,8 +94,8 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   const viz::FrameSinkId& GetFrameSinkId() const;
 
   // Should only be called when the host has a content layer. Use this for one-
-  // off screen capture, not for video. Always provides RGBA_BITMAP
-  // CopyOutputResults.
+  // off screen capture, not for video. Always provides ResultFormat::RGBA,
+  // ResultDestination::kSystemMemory CopyOutputResults.
   void CopyFromCompositingSurface(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
@@ -180,8 +183,6 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   gfx::Size surface_size_in_pixels_;
 
   std::unique_ptr<viz::FrameEvictor> frame_evictor_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegatedFrameHostAndroid);
 };
 
 }  // namespace ui

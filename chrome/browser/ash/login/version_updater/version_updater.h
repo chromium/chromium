@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -111,6 +110,10 @@ class VersionUpdater : public UpdateEngineClient::Observer,
       base::OnceCallback<void(const UpdateEngineClient::EolInfo& eol_info)>;
 
   explicit VersionUpdater(VersionUpdater::Delegate* delegate);
+
+  VersionUpdater(const VersionUpdater&) = delete;
+  VersionUpdater& operator=(const VersionUpdater&) = delete;
+
   ~VersionUpdater() override;
 
   // Resets `VersionUpdater` to initial state.
@@ -204,8 +207,6 @@ class VersionUpdater : public UpdateEngineClient::Observer,
   const base::TickClock* tick_clock_;
 
   base::WeakPtrFactory<VersionUpdater> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VersionUpdater);
 };
 
 }  // namespace ash

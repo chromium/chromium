@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
 #include "content/common/zygote/zygote_handle_impl_linux.h"
@@ -24,13 +24,12 @@ namespace content {
 class UtilitySandboxedProcessLauncherDelegate
     : public SandboxedProcessLauncherDelegate {
  public:
-  UtilitySandboxedProcessLauncherDelegate(
-      sandbox::policy::SandboxType sandbox_type,
-      const base::EnvironmentMap& env,
-      const base::CommandLine& cmd_line);
+  UtilitySandboxedProcessLauncherDelegate(sandbox::mojom::Sandbox sandbox_type,
+                                          const base::EnvironmentMap& env,
+                                          const base::CommandLine& cmd_line);
   ~UtilitySandboxedProcessLauncherDelegate() override;
 
-  sandbox::policy::SandboxType GetSandboxType() override;
+  sandbox::mojom::Sandbox GetSandboxType() override;
 
 #if defined(OS_WIN)
   bool GetAppContainerId(std::string* appcontainer_id) override;
@@ -53,7 +52,7 @@ class UtilitySandboxedProcessLauncherDelegate
 #if defined(OS_POSIX)
   base::EnvironmentMap env_;
 #endif  // OS_POSIX
-  sandbox::policy::SandboxType sandbox_type_;
+  sandbox::mojom::Sandbox sandbox_type_;
   base::CommandLine cmd_line_;
 };
 }  // namespace content

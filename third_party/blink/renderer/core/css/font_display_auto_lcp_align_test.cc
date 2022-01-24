@@ -119,7 +119,7 @@ TEST_F(FontDisplayAutoLCPAlignFailureModeTest, FontFinishesAfterLCPLimit) {
   EXPECT_TRUE(GetTargetFont().ShouldSkipDrawing());
 
   // Wait until we reach the LCP limit, and the relevant timeout fires.
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(
+  test::RunDelayedTasks(base::Milliseconds(
       features::kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam.Get()));
 
   // After reaching the LCP limit, the web font should enter the failure
@@ -146,7 +146,7 @@ TEST_F(FontDisplayAutoLCPAlignFailureModeTest, FontFaceAddedAfterLCPLimit) {
   main_resource.Write("<!doctype html>");
 
   // Wait until we reach the LCP limit, and the relevant timeout fires.
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(
+  test::RunDelayedTasks(base::Milliseconds(
       features::kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam.Get()));
 
   main_resource.Complete(R"HTML(
@@ -188,7 +188,7 @@ TEST_F(FontDisplayAutoLCPAlignFailureModeTest,
   font_resource.Complete(ReadAhemWoff2());
 
   // Wait until we reach the LCP limit, and the relevant timeout fires.
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(
+  test::RunDelayedTasks(base::Milliseconds(
       features::kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam.Get()));
 
   main_resource.Complete(R"HTML(
@@ -241,7 +241,7 @@ TEST_F(FontDisplayAutoLCPAlignFailureModeTest,
 
   // Wait until we reach the LCP limit, and the timeout for the previous
   // document fires. Shouldn't crash here.
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(
+  test::RunDelayedTasks(base::Milliseconds(
       features::kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam.Get()));
 
   next_page_resource.Finish();
@@ -296,7 +296,7 @@ TEST_F(FontDisplayAutoLCPAlignFailureModeTest, IconAndNonIconFonts) {
   EXPECT_TRUE(GetFont(non_icon_text).ShouldSkipDrawing());
 
   // Wait until we reach the LCP limit, and the relevant timeout fires.
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(
+  test::RunDelayedTasks(base::Milliseconds(
       features::kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam.Get()));
 
   icon_font_resource.Complete(ReadMaterialIconsWoff2());
@@ -381,7 +381,7 @@ TEST_F(FontDisplayAutoLCPAlignSwapModeTest, FontFinishesAfterLCPLimit) {
   EXPECT_TRUE(GetTargetFont().ShouldSkipDrawing());
 
   // Wait until we reach the LCP limit, and the relevant timeout fires.
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(
+  test::RunDelayedTasks(base::Milliseconds(
       features::kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam.Get()));
 
   // After reaching the LCP limit, the web font should enter the swap
@@ -407,7 +407,7 @@ TEST_F(FontDisplayAutoLCPAlignSwapModeTest, FontFaceAddedAfterLCPLimit) {
   main_resource.Write("<!doctype html>");
 
   // Wait until we reach the LCP limit, and the relevant timeout fires.
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(
+  test::RunDelayedTasks(base::Milliseconds(
       features::kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam.Get()));
 
   main_resource.Complete(R"HTML(
@@ -447,7 +447,7 @@ TEST_F(FontDisplayAutoLCPAlignSwapModeTest,
   font_resource.Complete(ReadAhemWoff2());
 
   // Wait until we reach the LCP limit, and the relevant timeout fires.
-  test::RunDelayedTasks(base::TimeDelta::FromMilliseconds(
+  test::RunDelayedTasks(base::Milliseconds(
       features::kAlignFontDisplayAutoTimeoutWithLCPGoalTimeoutParam.Get()));
 
   main_resource.Complete(R"HTML(

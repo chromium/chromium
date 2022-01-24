@@ -1,0 +1,12 @@
+Name: textwrap
+URL: https://crates.io/crates/textwrap
+Description: Textwrap is a small library for word wrapping, indenting, and
+dedenting strings.
+
+You can use it to format strings (such as help and error messages) for
+display in commandline applications. It is designed to be efficient
+and handle Unicode characters correctly.
+
+Version: 0.11.0
+Security Critical: no
+License: MIT

@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 OobeScreenExitWaiter::OobeScreenExitWaiter(OobeScreenId target_screen)
     : target_screen_(target_screen) {}
@@ -67,4 +67,4 @@ void OobeScreenExitWaiter::EndWait() {
   run_loop_->Quit();
 }
 
-}  // namespace chromeos
+}  // namespace ash

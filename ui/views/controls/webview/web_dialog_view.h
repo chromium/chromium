@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
@@ -126,7 +125,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
   bool ShouldCenterDialogTitleText() const override;
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
 
   // content::WebContentsDelegate:

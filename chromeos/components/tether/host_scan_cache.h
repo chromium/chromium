@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/components/tether/host_scan_cache_entry.h"
 
@@ -20,6 +19,10 @@ namespace tether {
 class HostScanCache {
  public:
   HostScanCache();
+
+  HostScanCache(const HostScanCache&) = delete;
+  HostScanCache& operator=(const HostScanCache&) = delete;
+
   virtual ~HostScanCache();
 
   class Observer {
@@ -59,8 +62,6 @@ class HostScanCache {
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostScanCache);
 };
 
 }  // namespace tether

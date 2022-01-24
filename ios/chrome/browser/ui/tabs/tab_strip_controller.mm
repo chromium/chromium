@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_long_press_delegate.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_constants.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
+#import "ios/chrome/browser/ui/tabs/tab_strip_constants.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_container_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_view.h"
@@ -56,8 +57,6 @@
 #include "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -151,9 +150,7 @@ UIColor* BackgroundColor() {
     self.titleLabel.minimumScaleFactor = 0.1;
     self.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
 
-    if (@available(iOS 13.4, *)) {
-        self.pointerInteractionEnabled = YES;
-    }
+    self.pointerInteractionEnabled = YES;
   }
   return self;
 }
@@ -469,7 +466,7 @@ UIColor* BackgroundColor() {
     _tabStripView.backgroundColor = _view.backgroundColor;
     _tabStripView.layoutDelegate = self;
     _tabStripView.accessibilityIdentifier =
-        style == INCOGNITO ? @"Incognito Tab Strip" : @"Tab Strip";
+        style == INCOGNITO ? kIncognitoTabStripId : kRegularTabStripId;
     [_view addSubview:_tabStripView];
     _view.tabStripView = _tabStripView;
 
@@ -505,9 +502,7 @@ UIColor* BackgroundColor() {
                       action:@selector(recordUserMetrics:)
             forControlEvents:UIControlEventTouchUpInside];
 
-    if (@available(iOS 13.4, *)) {
-        _buttonNewTab.pointerInteractionEnabled = YES;
-    }
+    _buttonNewTab.pointerInteractionEnabled = YES;
 
     [_tabStripView addSubview:_buttonNewTab];
 
@@ -522,18 +517,16 @@ UIColor* BackgroundColor() {
     self.highlightsSelectedTab = NO;
 
     // Register for VoiceOver notifications.
-    if (base::FeatureList::IsEnabled(kVoiceOverUnstackedTabstrip)) {
-      [[NSNotificationCenter defaultCenter]
-          addObserver:self
-             selector:@selector(voiceOverStatusDidChange)
-                 name:UIAccessibilityVoiceOverStatusDidChangeNotification
-               object:nil];
-    }
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(voiceOverStatusDidChange)
+               name:UIAccessibilityVoiceOverStatusDidChangeNotification
+             object:nil];
 
-      self.dragDropHandler = [[URLDragDropHandler alloc] init];
-      self.dragDropHandler.dropDelegate = self;
-      [_view addInteraction:[[UIDropInteraction alloc]
-                                initWithDelegate:self.dragDropHandler]];
+    self.dragDropHandler = [[URLDragDropHandler alloc] init];
+    self.dragDropHandler.dropDelegate = self;
+    [_view addInteraction:[[UIDropInteraction alloc]
+                              initWithDelegate:self.dragDropHandler]];
   }
   return self;
 }
@@ -819,6 +812,7 @@ UIColor* BackgroundColor() {
 - (void)insertNewItemAtIndex:(NSUInteger)index withURL:(const GURL&)newTabURL {
   UrlLoadParams params =
       UrlLoadParams::InNewTab(newTabURL, base::checked_cast<int>(index));
+  params.in_incognito = _browser->GetBrowserState()->IsOffTheRecord();
   UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
 }
 
@@ -1781,16 +1775,12 @@ UIColor* BackgroundColor() {
 #pragma mark - Tab Stacking
 
 - (BOOL)shouldUseTabStacking {
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    return NO;
+  }
   BOOL useTabStacking =
       (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) ||
       !IsCompactWidth(self.view);
-  if (base::FeatureList::IsEnabled(kVoiceOverUnstackedTabstrip) &&
-      UIAccessibilityIsVoiceOverRunning()) {
-    useTabStacking = NO;
-  }
-  if (base::FeatureList::IsEnabled(kForceUnstackedTabstrip)) {
-    useTabStacking = NO;
-  }
   return useTabStacking;
 }
 

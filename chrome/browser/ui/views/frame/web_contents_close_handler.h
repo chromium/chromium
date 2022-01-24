@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_WEB_CONTENTS_CLOSE_HANDLER_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_WEB_CONTENTS_CLOSE_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 
 class WebContentsCloseHandlerDelegate;
@@ -18,6 +17,10 @@ class WebContentsCloseHandlerTest;
 class WebContentsCloseHandler {
  public:
   explicit WebContentsCloseHandler(WebContentsCloseHandlerDelegate* delegate);
+
+  WebContentsCloseHandler(const WebContentsCloseHandler&) = delete;
+  WebContentsCloseHandler& operator=(const WebContentsCloseHandler&) = delete;
+
   ~WebContentsCloseHandler();
 
   // Invoked when a tab is inserted.
@@ -49,8 +52,6 @@ class WebContentsCloseHandler {
   bool tab_changed_after_clone_;
 
   base::OneShotTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsCloseHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_WEB_CONTENTS_CLOSE_HANDLER_H_

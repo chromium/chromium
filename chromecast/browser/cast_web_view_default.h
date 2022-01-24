@@ -38,7 +38,6 @@ class CastWebViewDefault : public CastWebView,
   // |cast_content_window| is not provided, an instance will be constructed from
   // |web_service|.
   CastWebViewDefault(
-      const CreateParams& create_params,
       mojom::CastWebViewParamsPtr params,
       CastWebService* web_service,
       content::BrowserContext* browser_context,
@@ -52,6 +51,7 @@ class CastWebViewDefault : public CastWebView,
   content::WebContents* web_contents() const override;
   CastWebContents* cast_web_contents() override;
   base::TimeDelta shutdown_delay() const override;
+  void OwnerDestroyed() override;
 
  private:
   // WebContentsDelegate implementation:
@@ -77,7 +77,6 @@ class CastWebViewDefault : public CastWebView,
                                          const url::Origin& origin,
                                          const GURL& resource_url) override;
 
-  base::WeakPtr<Delegate> delegate_;
   mojom::CastWebViewParamsPtr params_;
   CastWebService* const web_service_;
 

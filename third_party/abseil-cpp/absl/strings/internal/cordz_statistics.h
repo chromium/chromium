@@ -40,6 +40,8 @@ struct CordzStatistics {
     size_t substring = 0;  // #substring reps
     size_t concat = 0;     // #concat reps
     size_t ring = 0;       // #ring buffer reps
+    size_t btree = 0;      // #btree reps
+    size_t crc = 0;        // #crc reps
   };
 
   // The size of the cord in bytes. This matches the result of Cord::size().
@@ -61,6 +63,8 @@ struct CordzStatistics {
 
   // The total number of nodes referenced by this cord.
   // For ring buffer Cords, this includes the 'ring buffer' node.
+  // For btree Cords, this includes all 'CordRepBtree' tree nodes as well as all
+  // the substring, flat and external nodes referenced by the tree.
   // A value of 0 implies the property has not been recorded.
   int64_t node_count = 0;
 

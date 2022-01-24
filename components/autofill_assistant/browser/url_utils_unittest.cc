@@ -40,8 +40,8 @@ TEST(UrlUtilsTest, IsSamePublicSuffixDomain) {
                                        GURL("http://sub.example.com")));
   EXPECT_TRUE(IsSamePublicSuffixDomain(GURL("http://example.com"),
                                        GURL("http://sub.example.com")));
-  EXPECT_FALSE(IsSamePublicSuffixDomain(GURL("http://www.example.com"),
-                                        GURL("https://www.example.com")));
+  EXPECT_TRUE(IsSamePublicSuffixDomain(GURL("http://www.example.com"),
+                                       GURL("https://www.example.com")));
   EXPECT_FALSE(IsSamePublicSuffixDomain(GURL("http://www.example.com"),
                                         GURL("http://www.other.com")));
   EXPECT_TRUE(IsSamePublicSuffixDomain(GURL("http://127.0.0.1/a"),
@@ -67,6 +67,17 @@ TEST(UrlUtilsTest, GetOrganizationIdentifyingDomain) {
       Eq("example.com"));
   EXPECT_THAT(GetOrganizationIdentifyingDomain(GURL("https://example.com")),
               Eq("example.com"));
+}
+
+TEST(UrlUtilsTest, IsAllowedSchemaTransition) {
+  EXPECT_TRUE(IsAllowedSchemaTransition(GURL("http://example.com"),
+                                        GURL("http://example.com")));
+  EXPECT_TRUE(IsAllowedSchemaTransition(GURL("https://example.com"),
+                                        GURL("https://example.com")));
+  EXPECT_TRUE(IsAllowedSchemaTransition(GURL("http://example.com"),
+                                        GURL("https://example.com")));
+  EXPECT_FALSE(IsAllowedSchemaTransition(GURL("https://example.com"),
+                                         GURL("http://example.com")));
 }
 
 }  // namespace

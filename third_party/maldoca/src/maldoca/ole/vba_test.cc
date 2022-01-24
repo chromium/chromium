@@ -18,39 +18,38 @@
 
 #include <memory>
 
-#include "absl/container/node_hash_map.h"
 #include "benchmark/benchmark.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/container/node_hash_map.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
 #include "maldoca/base/status.h"
 #include "maldoca/base/testing/status_matchers.h"
+#include "maldoca/base/testing/test_utils.h"
 #include "maldoca/ole/dir.h"
 #include "maldoca/ole/fat.h"
 #include "maldoca/ole/header.h"
 #include "maldoca/ole/stream.h"
 
-using maldoca::DirectoryStorageType;
-using maldoca::FAT;
-using maldoca::OLEDirectoryEntry;
-using maldoca::OLEHeader;
-using maldoca::OLEStream;
-using maldoca::VBACodeChunks;
-using maldoca::vba_code::ExtractVBA2;
-using maldoca::vba_code::InsertPathPrefix;
-using maldoca::vba_code::ParseCodeModules;
+using ::maldoca::DirectoryStorageType;
+using ::maldoca::FAT;
+using ::maldoca::OLEDirectoryEntry;
+using ::maldoca::OLEHeader;
+using ::maldoca::OLEStream;
+using ::maldoca::VBACodeChunks;
+using ::maldoca::vba_code::ExtractVBA2;
+using ::maldoca::vba_code::InsertPathPrefix;
+using ::maldoca::vba_code::ParseCodeModules;
 
 namespace {
 std::string TestFilename(absl::string_view filename) {
-  return maldoca::file::JoinPath(
-      maldoca::GetRunfilesDir(),
-      absl::StrCat("maldoca/ole/testdata/", filename));
+  return maldoca::testing::OleTestFilename(filename);
 }
 
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status =
+      maldoca::testing::GetTestContents(TestFilename(filename), &content);
   MALDOCA_CHECK_OK(status) << status;
   return content;
 }
@@ -58,7 +57,7 @@ std::string GetTestContent(absl::string_view filename) {
 class VBATest : public testing::Test {
  protected:
   void SetUp() override {
-    content = GetTestContent("vba1.bin");
+    content = GetTestContent("vba1_xor_0x42_encoded.bin");
     EXPECT_TRUE(OLEHeader::ParseHeader(content, &header));
     EXPECT_TRUE(header.IsInitialized());
     EXPECT_TRUE(FAT::Read(content, header, &fat));
@@ -87,7 +86,7 @@ TEST(SimpleVBATest, CodeModulesParsingTestErrors) {
   // Some input is needed for parsing to happen.
   std::string empty;
   ASSERT_DEATH(ParseCodeModules(empty, &code_modules),
-               "Check failed: !project_stream[.]empty[(][)]");
+               "Check failed: !project_stream\\.empty\\(\\)");
 
   // Various parsing attempts with bogus input. The method declares success
   // when it has found at least one entry.
@@ -105,7 +104,7 @@ TEST(SimpleVBATest, CodeModulesParsingTestErrors) {
   // You can't initialize code_modules twice.
   code_modules.insert(std::make_pair("key", "value"));
   ASSERT_DEATH(ParseCodeModules("foo=bar", &code_modules),
-               "Check failed: code_modules->empty[(][)]");
+               "Check failed: code_modules->empty\\(\\)");
 }
 
 TEST(SimpleVBATest, CodeModulesParsingTestOK) {
@@ -136,13 +135,13 @@ TEST_F(VBATest, CodeExtractionInitialFailures) {
   ASSERT_DEATH(ExtractVBA2("", header, code_modules, *vba_root, fat, "abcdef",
                            &extracted_indices, &dir_entries, &chunks,
                            continue_extraction_),
-               "Check failed: !main_input_string[.]empty[(][)]");
+               "Check failed: !main_input_string\\.empty\\(\\)");
   extracted_indices.clear();
   dir_entries.clear();
   ASSERT_DEATH(ExtractVBA2("abcdef", header, code_modules, *vba_root, fat, "",
                            &extracted_indices, &dir_entries, &chunks,
                            continue_extraction_),
-               "Check failed: !dir_input_string[.]empty[(][)]");
+               "Check failed: !dir_input_string\\.empty\\(\\)");
 
   // No non-empty code chunk.
   chunks.add_chunk();
@@ -151,7 +150,7 @@ TEST_F(VBATest, CodeExtractionInitialFailures) {
   ASSERT_DEATH(ExtractVBA2("abcdef", header, code_modules, *vba_root, fat,
                            "abcdef", &extracted_indices, &dir_entries, &chunks,
                            continue_extraction_),
-               "Check failed: code_chunks->chunk_size[(][)] == 0");
+               "Check failed: code_chunks->chunk_size\\(\\) == 0");
 }
 
 // Just testing failures to produce expected values reading the
@@ -232,6 +231,11 @@ TEST_F(VBATest, CodeExtractionSuccess) {
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
+#ifdef MALDOCA_CHROME
+  // mini_chromium needs InitLogging
+  maldoca::InitLogging();
+#else
   ::benchmark::RunSpecifiedBenchmarks();
+#endif
   return RUN_ALL_TESTS();
 }

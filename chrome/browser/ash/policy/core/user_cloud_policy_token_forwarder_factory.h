@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_TOKEN_FORWARDER_FACTORY_H_
 #define CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_TOKEN_FORWARDER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -23,6 +22,11 @@ class UserCloudPolicyTokenForwarderFactory
   // Returns an instance of the UserCloudPolicyTokenForwarderFactory singleton.
   static UserCloudPolicyTokenForwarderFactory* GetInstance();
 
+  UserCloudPolicyTokenForwarderFactory(
+      const UserCloudPolicyTokenForwarderFactory&) = delete;
+  UserCloudPolicyTokenForwarderFactory& operator=(
+      const UserCloudPolicyTokenForwarderFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       UserCloudPolicyTokenForwarderFactory>;
@@ -35,8 +39,6 @@ class UserCloudPolicyTokenForwarderFactory
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyTokenForwarderFactory);
 };
 
 }  // namespace policy

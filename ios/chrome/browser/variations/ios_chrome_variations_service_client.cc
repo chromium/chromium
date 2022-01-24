@@ -4,32 +4,20 @@
 
 #include "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
 
-#include "base/bind.h"
 #include "base/version.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/common/channel_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace {
+IOSChromeVariationsServiceClient::IOSChromeVariationsServiceClient() = default;
 
-// Gets the version number to use for variations seed simulation. Must be called
-// on a thread where IO is allowed.
-base::Version GetVersionForSimulation() {
+IOSChromeVariationsServiceClient::~IOSChromeVariationsServiceClient() = default;
+
+base::Version IOSChromeVariationsServiceClient::GetVersionForSimulation() {
   // TODO(asvitkine): Get the version that will be used on restart instead of
   // the current version.
   return version_info::GetVersion();
-}
-
-}  // namespace
-
-IOSChromeVariationsServiceClient::IOSChromeVariationsServiceClient() {}
-
-IOSChromeVariationsServiceClient::~IOSChromeVariationsServiceClient() {}
-
-IOSChromeVariationsServiceClient::VersionCallback
-IOSChromeVariationsServiceClient::GetVersionForSimulationCallback() {
-  return base::BindOnce(&GetVersionForSimulation);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

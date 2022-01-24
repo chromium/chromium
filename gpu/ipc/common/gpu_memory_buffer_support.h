@@ -32,6 +32,10 @@ class GpuMemoryBufferManager;
 class GPU_EXPORT GpuMemoryBufferSupport {
  public:
   GpuMemoryBufferSupport();
+
+  GpuMemoryBufferSupport(const GpuMemoryBufferSupport&) = delete;
+  GpuMemoryBufferSupport& operator=(const GpuMemoryBufferSupport&) = delete;
+
   virtual ~GpuMemoryBufferSupport();
 
   // Returns the native GPU memory buffer factory type. Returns EMPTY_BUFFER
@@ -42,7 +46,7 @@ class GPU_EXPORT GpuMemoryBufferSupport {
   bool IsNativeGpuMemoryBufferConfigurationSupported(gfx::BufferFormat format,
                                                      gfx::BufferUsage usage);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(USE_OZONE)
+#if defined(USE_OZONE)
   gfx::ClientNativePixmapFactory* client_native_pixmap_factory() {
     return client_native_pixmap_factory_.get();
   }
@@ -70,11 +74,9 @@ class GPU_EXPORT GpuMemoryBufferSupport {
       scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
 
  private:
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(USE_OZONE)
+#if defined(USE_OZONE)
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferSupport);
 };
 
 }  // namespace gpu

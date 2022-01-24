@@ -14,7 +14,7 @@
 #include "base/strings/strcat.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -49,7 +49,8 @@ HttpPasswordStoreMigrator::HttpPasswordStoreMigrator(
   rep.SetSchemeStr(url::kHttpScheme);
   GURL http_origin = https_origin.GetURL().ReplaceComponents(rep);
   PasswordFormDigest form(PasswordForm::Scheme::kHtml,
-                          http_origin.GetOrigin().spec(), http_origin);
+                          http_origin.DeprecatedGetOriginAsURL().spec(),
+                          http_origin);
   http_origin_domain_ = url::Origin::Create(http_origin);
   store_->GetLogins(form, this);
 

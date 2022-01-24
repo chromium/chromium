@@ -27,6 +27,15 @@ window.loadGuest = function(port) {
   chrome.test.sendMessage('GuestLoaded');
 };
 
+window.loadGuestUrl = function(url) {
+  window.console.log('embedder.loadGuest: ' + url);
+  webview.setAttribute('src', url);
+  webview.style.position = 'fixed';
+  webview.style.left = '0px';
+  webview.style.top = '0px';
+  chrome.test.sendMessage('GuestLoaded');
+};
+
 window.onload = function() {
   chrome.test.sendMessage('EmbedderLoaded');
 };

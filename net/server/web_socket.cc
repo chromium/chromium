@@ -96,6 +96,8 @@ void WebSocket::Accept(const HttpServerRequestInfo& request,
   server_->SendRaw(connection_->id(),
                    ValidResponseString(encoded_hash, response_extensions),
                    traffic_annotation);
+  traffic_annotation_ = std::make_unique<NetworkTrafficAnnotationTag>(
+      NetworkTrafficAnnotationTag(traffic_annotation));
 }
 
 WebSocket::ParseResult WebSocket::Read(std::string* message) {
@@ -113,23 +115,41 @@ WebSocket::ParseResult WebSocket::Read(std::string* message) {
     return FRAME_ERROR;
   }
 
+  ParseResult result = FRAME_OK_MIDDLE;
   HttpConnection::ReadIOBuffer* read_buf = connection_->read_buf();
   base::StringPiece frame(read_buf->StartOfBuffer(), read_buf->GetSize());
   int bytes_consumed = 0;
-  ParseResult result = encoder_->DecodeFrame(frame, &bytes_consumed, message);
-  if (result == FRAME_OK)
-    read_buf->DidConsume(bytes_consumed);
+  result = encoder_->DecodeFrame(frame, &bytes_consumed, message);
+  read_buf->DidConsume(bytes_consumed);
   if (result == FRAME_CLOSE)
     closed_ = true;
+  if (result == FRAME_PING) {
+    if (!traffic_annotation_)
+      return FRAME_ERROR;
+    Send(*message, WebSocketFrameHeader::kOpCodePong, *traffic_annotation_);
+  }
   return result;
 }
 
 void WebSocket::Send(base::StringPiece message,
+                     WebSocketFrameHeader::OpCodeEnum op_code,
                      const NetworkTrafficAnnotationTag traffic_annotation) {
   if (closed_)
     return;
   std::string encoded;
-  encoder_->EncodeFrame(message, 0, &encoded);
+  switch (op_code) {
+    case WebSocketFrameHeader::kOpCodeText:
+      encoder_->EncodeTextFrame(message, 0, &encoded);
+      break;
+
+    case WebSocketFrameHeader::kOpCodePong:
+      encoder_->EncodePongFrame(message, 0, &encoded);
+      break;
+
+    default:
+      // Only Pong and Text frame types are supported.
+      NOTREACHED();
+  }
   server_->SendRaw(connection_->id(), encoded, traffic_annotation);
 }
 

@@ -16,12 +16,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/test/task_environment.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
+#include "components/metrics/structured/event.h"
 #include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/storage.pb.h"
-#include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_features.h"
+#include "components/metrics/structured/structured_mojo_events.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -51,6 +53,8 @@ constexpr uint64_t kEventThreeHash = UINT64_C(5848687377041124372);
 constexpr uint64_t kEventFourHash = UINT64_C(1718797808092246258);
 // The name hash of "chrome::TestProjectFour::TestEventFive".
 constexpr uint64_t kEventFiveHash = UINT64_C(7045523601811399253);
+// The name hash of "chrome::TestProjectFour::TestEventSix".
+constexpr uint64_t kEventSixHash = UINT64_C(2873337042686447043);
 
 // The name hash of "TestMetricOne".
 constexpr uint64_t kMetricOneHash = UINT64_C(637929385654885975);
@@ -62,6 +66,8 @@ constexpr uint64_t kMetricThreeHash = UINT64_C(13469300759843809564);
 constexpr uint64_t kMetricFourHash = UINT64_C(2917855408523247722);
 // The name hash of "TestMetricFive".
 constexpr uint64_t kMetricFiveHash = UINT64_C(8665976921794972190);
+// The name hash of "TestMetricSix".
+constexpr uint64_t kMetricSixHash = UINT64_C(3431522567539822144);
 
 // The hex-encoded first 8 bytes of SHA256("aaa...a")
 constexpr char kProjectOneId[] = "3BA3F5F43B926026";
@@ -99,9 +105,10 @@ class StructuredMetricsProviderTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     Recorder::GetInstance()->SetUiTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
+    StructuredMetricsClient::Get()->SetDelegate(Recorder::GetInstance());
     // Move the mock date forward from day 0, because KeyData assumes that day 0
     // is a bug.
-    task_environment_.AdvanceClock(base::TimeDelta::FromDays(1000));
+    task_environment_.AdvanceClock(base::Days(1000));
   }
 
   base::FilePath TempDirPath() { return temp_dir_.GetPath(); }
@@ -158,6 +165,20 @@ class StructuredMetricsProviderTest : public testing::Test {
     Wait();
   }
 
+  KeyDataProto ReadKeys(const base::FilePath& filepath) {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    Wait();
+    CHECK(base::PathExists(filepath));
+
+    std::string proto_str;
+    CHECK(base::ReadFileToString(filepath, &proto_str));
+
+    KeyDataProto proto;
+    CHECK(proto.ParseFromString(proto_str));
+    return proto;
+  }
+
   // Simulates the three external events that the structure metrics system cares
   // about: the metrics service initializing and enabling its providers, and a
   // user logging in.
@@ -187,6 +208,10 @@ class StructuredMetricsProviderTest : public testing::Test {
 
   void OnRecordingDisabled() { provider_->OnRecordingDisabled(); }
 
+  void OnReportingStateChanged(bool enabled) {
+    provider_->OnReportingStateChanged(enabled);
+  }
+
   void OnProfileAdded(const base::FilePath& path) {
     provider_->OnProfileAdded(path);
   }
@@ -207,7 +232,7 @@ class StructuredMetricsProviderTest : public testing::Test {
     // Independent metrics are only reported at intervals. So advance time to
     // ensure HasIndependentMetrics will return true if there are recorded
     // metrics.
-    task_environment_.AdvanceClock(base::TimeDelta::FromHours(1));
+    task_environment_.AdvanceClock(base::Hours(1));
 
     ChromeUserMetricsExtension uma_proto;
     if (provider_->HasIndependentMetrics()) {
@@ -256,8 +281,8 @@ TEST_F(StructuredMetricsProviderTest, ProviderInitializesFromBlankSlate) {
 TEST_F(StructuredMetricsProviderTest, EventsNotReportedWhenRecordingDisabled) {
   Init();
   OnRecordingDisabled();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
   EXPECT_EQ(GetSessionData().events_size(), 0);
   ExpectNoErrors();
@@ -272,10 +297,43 @@ TEST_F(StructuredMetricsProviderTest, EventsNotReportedWhenFeatureDisabled) {
   // OnRecordingEnabled should not actually enable recording because the flag is
   // disabled.
   OnRecordingEnabled();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
   EXPECT_EQ(GetSessionData().events_size(), 0);
+  ExpectNoErrors();
+}
+
+// Ensure that keys and unsent logs are deleted when reporting is disabled, and
+// that reporting resumes when re-enabled.
+TEST_F(StructuredMetricsProviderTest, ReportingStateChangesHandledCorrectly) {
+  Init();
+
+  // Record an event and read the keys, there should be one.
+  events::v2::test_project_one::TestEventOne().Record();
+  EXPECT_EQ(GetIndependentMetrics().events_size(), 1);
+  const KeyDataProto enabled_proto = ReadKeys(ProfileKeyFilePath());
+  EXPECT_EQ(enabled_proto.keys_size(), 1);
+
+  // Record an event, disable reporting, then record another event. Both of
+  // these events should have been ignored.
+  events::v2::test_project_one::TestEventOne().Record();
+  OnReportingStateChanged(false);
+  events::v2::test_project_one::TestEventOne().Record();
+  EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
+
+  // Read the keys again, it should be empty.
+  const KeyDataProto disabled_proto = ReadKeys(ProfileKeyFilePath());
+  EXPECT_EQ(disabled_proto.keys_size(), 0);
+
+  // Enable reporting again, and record an event.
+  OnReportingStateChanged(true);
+  OnRecordingEnabled();
+  events::v2::test_project_one::TestEventOne().Record();
+  EXPECT_EQ(GetIndependentMetrics().events_size(), 1);
+  const KeyDataProto reenabled_proto = ReadKeys(ProfileKeyFilePath());
+  EXPECT_EQ(reenabled_proto.keys_size(), 1);
+
   ExpectNoErrors();
 }
 
@@ -287,8 +345,8 @@ TEST_F(StructuredMetricsProviderTest, DisableIndependentUploads) {
 
   Init();
   OnRecordingEnabled();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
   EXPECT_EQ(GetSessionData().events_size(), 2);
   ExpectNoErrors();
@@ -331,15 +389,15 @@ TEST_F(StructuredMetricsProviderTest, RecordingDisabledByDefault) {
 TEST_F(StructuredMetricsProviderTest, RecordedEventAppearsInReport) {
   Init();
 
-  events::test_project_one::TestEventOne()
+  events::v2::test_project_one::TestEventOne()
       .SetTestMetricOne("a string")
       .SetTestMetricTwo(12345)
       .Record();
-  events::test_project_one::TestEventOne()
+  events::v2::test_project_one::TestEventOne()
       .SetTestMetricOne("a string")
       .SetTestMetricTwo(12345)
       .Record();
-  events::test_project_one::TestEventOne()
+  events::v2::test_project_one::TestEventOne()
       .SetTestMetricOne("a string")
       .SetTestMetricTwo(12345)
       .Record();
@@ -354,8 +412,12 @@ TEST_F(StructuredMetricsProviderTest, UmaEventsReportedCorrectly) {
   WriteTestingProfileKeys();
   Init();
 
-  events::test_project_three::TestEventFour().SetTestMetricFour(12345).Record();
-  events::test_project_three::TestEventFour().SetTestMetricFour(67890).Record();
+  events::v2::test_project_three::TestEventFour()
+      .SetTestMetricFour(12345)
+      .Record();
+  events::v2::test_project_three::TestEventFour()
+      .SetTestMetricFour(67890)
+      .Record();
 
   const auto data = GetSessionData();
   ASSERT_EQ(data.events_size(), 2);
@@ -391,11 +453,11 @@ TEST_F(StructuredMetricsProviderTest, IndependentEventsReportedCorrectly) {
   WriteTestingProfileKeys();
   Init();
 
-  events::test_project_one::TestEventOne()
+  events::v2::test_project_one::TestEventOne()
       .SetTestMetricOne(kValueOne)
       .SetTestMetricTwo(12345)
       .Record();
-  events::test_project_two::TestEventTwo()
+  events::v2::test_project_two::TestEventTwo()
       .SetTestMetricThree(kValueTwo)
       .Record();
 
@@ -443,6 +505,30 @@ TEST_F(StructuredMetricsProviderTest, IndependentEventsReportedCorrectly) {
   histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.InternalError", 0);
 }
 
+// Ensure that events containing raw string metrics are reported correctly.
+TEST_F(StructuredMetricsProviderTest, RawStringMetricsReportedCorrectly) {
+  Init();
+
+  const std::string test_string = "a raw string value";
+  events::v2::test_project_five::TestEventSix()
+      .SetTestMetricSix(test_string)
+      .Record();
+
+  const auto data = GetIndependentMetrics();
+  ASSERT_EQ(data.events_size(), 1);
+
+  const auto& event = data.events(0);
+  EXPECT_EQ(event.event_name_hash(), kEventSixHash);
+  EXPECT_FALSE(event.has_profile_event_id());
+  EXPECT_EQ(event.event_type(), StructuredEventProto_EventType_RAW_STRING);
+
+  ASSERT_EQ(event.metrics_size(), 1);
+  const auto& metric = event.metrics(0);
+
+  EXPECT_EQ(metric.name_hash(), kMetricSixHash);
+  EXPECT_EQ(metric.value_string(), test_string);
+}
+
 TEST_F(StructuredMetricsProviderTest, DeviceKeysUsedForDeviceScopedProjects) {
   WriteTestingProfileKeys();
   WriteTestingDeviceKeys();
@@ -452,7 +538,7 @@ TEST_F(StructuredMetricsProviderTest, DeviceKeysUsedForDeviceScopedProjects) {
   // keys set by WriteTestingDeviceKeys. In this case the expected key is
   // "ddd...d", which we observe by checking the ID and HMAC have the correct
   // value given that key.
-  events::test_project_four::TestEventFive()
+  events::v2::test_project_four::TestEventFive()
       .SetTestMetricFive("value")
       .Record();
 
@@ -479,7 +565,7 @@ TEST_F(StructuredMetricsProviderTest, DeviceKeysUsedForDeviceScopedProjects) {
 TEST_F(StructuredMetricsProviderTest, Int64MetricsNotTruncated) {
   Init();
   const int64_t big = 1ll << 60;
-  events::test_project_one::TestEventOne().SetTestMetricTwo(big).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(big).Record();
 
   const auto data = GetIndependentMetrics();
   ASSERT_EQ(data.events_size(), 1);
@@ -493,9 +579,9 @@ TEST_F(StructuredMetricsProviderTest, EventsWithinProjectReportedWithSameID) {
   WriteTestingProfileKeys();
   Init();
 
-  events::test_project_one::TestEventOne().Record();
-  events::test_project_two::TestEventTwo().Record();
-  events::test_project_two::TestEventThree().Record();
+  events::v2::test_project_one::TestEventOne().Record();
+  events::v2::test_project_two::TestEventTwo().Record();
+  events::v2::test_project_two::TestEventThree().Record();
 
   const auto data = GetIndependentMetrics();
   // TestProjectOne is not UMA ID'd, so GetSessionData should be empty.
@@ -525,8 +611,8 @@ TEST_F(StructuredMetricsProviderTest, EventsWithinProjectReportedWithSameID) {
 TEST_F(StructuredMetricsProviderTest, EventsClearedAfterReport) {
   Init();
 
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(2).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(2).Record();
   // TestProjectOne is not UMA ID'd, so GetSessionData should be empty.
   EXPECT_EQ(GetSessionData().events_size(), 0);
   // Should provide both the previous events.
@@ -535,7 +621,7 @@ TEST_F(StructuredMetricsProviderTest, EventsClearedAfterReport) {
   // But the previous events shouldn't appear in the second report.
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
 
-  events::test_project_one::TestEventOne().SetTestMetricTwo(3).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(3).Record();
   // The third request should only contain the third event.
   EXPECT_EQ(GetIndependentMetrics().events_size(), 1);
 
@@ -547,7 +633,7 @@ TEST_F(StructuredMetricsProviderTest, EventsClearedAfterReport) {
 TEST_F(StructuredMetricsProviderTest, EventsFromPreviousSessionAreReported) {
   // Start first session and record one event.
   Init();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1234).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1234).Record();
 
   // Write events to disk, then destroy the provider.
   WriteNow();
@@ -576,7 +662,7 @@ TEST_F(StructuredMetricsProviderTest, ExternalMetricsAreReported) {
   OnProfileAdded(TempDirPath());
   OnRecordingEnabled();
   SetExternalMetricsDirForTest(events_dir);
-  task_environment_.AdvanceClock(base::TimeDelta::FromHours(10));
+  task_environment_.AdvanceClock(base::Hours(10));
   Wait();
   EXPECT_EQ(GetSessionData().events_size(), 3);
 }
@@ -586,15 +672,15 @@ TEST_F(StructuredMetricsProviderTest, ExternalMetricsAreReported) {
 TEST_F(StructuredMetricsProviderTest, EventsNotRecordedBeforeInitialization) {
   // Manually create and initialize the provider, adding recording calls between
   // each step. All of these events should be ignored.
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   provider_ = std::make_unique<StructuredMetricsProvider>();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   OnRecordingEnabled();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   OnProfileAdded(TempDirPath());
   // This one should still fail even though all of the initialization calls are
   // done, because the provider hasn't finished loading the keys from disk.
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   Wait();
   EXPECT_EQ(GetSessionData().events_size(), 0);
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
@@ -608,12 +694,12 @@ TEST_F(StructuredMetricsProviderTest, EventsNotRecordedBeforeInitialization) {
 TEST_F(StructuredMetricsProviderTest,
        ExistingEventsClearedWhenRecordingDisabled) {
   Init();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
   OnRecordingDisabled();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
   EXPECT_EQ(GetSessionData().events_size(), 0);
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
 
@@ -624,21 +710,19 @@ TEST_F(StructuredMetricsProviderTest,
 // and then enabled again.
 TEST_F(StructuredMetricsProviderTest, ReportingResumesWhenEnabled) {
   Init();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
 
   OnRecordingDisabled();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
-
   OnRecordingEnabled();
-  events::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
 
-  EXPECT_EQ(GetSessionData().events_size(), 1);
-  EXPECT_EQ(GetIndependentMetrics().events_size(), 2);
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
+  events::v2::test_project_three::TestEventFour().SetTestMetricFour(1).Record();
+
+  EXPECT_EQ(GetSessionData().events_size(), 2);
+  EXPECT_EQ(GetIndependentMetrics().events_size(), 4);
 
   ExpectNoErrors();
 }
@@ -656,6 +740,26 @@ TEST_F(StructuredMetricsProviderTest,
   OnProfileAdded(TempDirPath());
   EXPECT_EQ(GetSessionData().events_size(), 0);
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
+}
+
+// Check that LastKeyRotation returns a value in the correct range of possible
+// last rotations for a newly generated key.
+TEST_F(StructuredMetricsProviderTest, LastKeyRotation) {
+  Init();
+
+  events::v2::test_project_one::TestEventOne event;
+  auto event_base = EventBase::FromEvent(event);
+
+  // Record a metric so that the key is created.
+  event.Record();
+
+  const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
+  const absl::optional<int> last_rotation = event_base->LastKeyRotation();
+
+  // The last rotation should be a random day between today and 90 days in the
+  // past, ie. the rotation period for this project.
+  ASSERT_TRUE(last_rotation.has_value());
+  EXPECT_GE(last_rotation, today - 90);
 }
 
 }  // namespace structured

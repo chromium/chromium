@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -94,6 +95,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   Clipboard::ObjectMap objects_;
 
   std::vector<Clipboard::PlatformRepresentation> platform_representations_;
+  // Keeps track of the unique custom formats registered in the clipboard.
+  base::flat_map<std::string, std::string> registered_formats_;
+  int counter_ = 0;
 
   // The type is set at construction, and can be changed before committing.
   const ClipboardBuffer buffer_;

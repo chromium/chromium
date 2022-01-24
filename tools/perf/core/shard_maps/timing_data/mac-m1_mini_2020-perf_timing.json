@@ -3036,10 +3036,6 @@
         "name": "rendering.desktop/motionmark_ramp_design"
     },
     {
-        "duration": "30.0",
-        "name": "rendering.desktop/motionmark_ramp_focus"
-    },
-    {
         "duration": "31.0",
         "name": "rendering.desktop/motionmark_ramp_images"
     },

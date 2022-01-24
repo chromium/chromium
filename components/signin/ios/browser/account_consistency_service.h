@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -42,6 +41,11 @@ class AccountConsistencyService : public KeyedService,
       AccountReconcilor* account_reconcilor,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       signin::IdentityManager* identity_manager);
+
+  AccountConsistencyService(const AccountConsistencyService&) = delete;
+  AccountConsistencyService& operator=(const AccountConsistencyService&) =
+      delete;
+
   ~AccountConsistencyService() override;
 
   // Sets the handler for |web_state| that reacts on Gaia responses with the
@@ -139,8 +143,6 @@ class AccountConsistencyService : public KeyedService,
 
   // Record whether Shutdown has been called.
   bool is_shutdown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountConsistencyService);
 };
 
 #endif  // COMPONENTS_SIGNIN_IOS_BROWSER_ACCOUNT_CONSISTENCY_SERVICE_H_

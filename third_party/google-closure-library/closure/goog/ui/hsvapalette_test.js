@@ -1,16 +1,13 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * @fileoverview
+ * @suppress {missingRequire} Stubbing goog.dom
+ */
 
 goog.module('goog.ui.HsvaPaletteTest');
 goog.setTestOnly();
@@ -24,10 +21,8 @@ const classlist = goog.require('goog.dom.classlist');
 const colorAlpha = goog.require('goog.color.alpha');
 const style = goog.require('goog.style');
 const testSuite = goog.require('goog.testing.testSuite');
-const userAgent = goog.require('goog.userAgent');
 
 let samplePalette;
-const eventWasFired = false;
 const stubs = new PropertyReplacer();
 
 testSuite({
@@ -55,6 +50,7 @@ testSuite({
 
   testCustomClassName() {
     const customClassName = 'custom-plouf';
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const customClassPalette =
         new HsvaPalette(null, null, null, customClassName);
     customClassPalette.createDom();
@@ -81,26 +77,22 @@ testSuite({
     assertNotNull(elem);
     assertEquals(String(TagName.DIV), elem.tagName);
 
-    if (userAgent.IE && !userAgent.isVersionOrHigher('7')) {
-      assertSameElements(
-          'On IE6, the noalpha class must be present',
-          ['goog-hsva-palette', 'goog-hsva-palette-noalpha'],
-          classlist.get(elem));
-    } else {
-      assertEquals(
-          'The noalpha class must not be present', 'goog-hsva-palette',
-          elem.className);
-    }
+    assertEquals(
+        'The noalpha class must not be present', 'goog-hsva-palette',
+        elem.className);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testInputColor() {
     samplePalette.render(document.getElementById('sandbox'));
     const color = '#00112233';
+    /** @suppress {visibility} suppression added to enable type checking */
     samplePalette.inputElement.value = color;
     samplePalette.handleInput(null);
     assertEquals(color, colorAlpha.parse(samplePalette.getColorRgbaHex()).hex);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testHandleMouseMoveAlpha() {
     samplePalette.render(document.getElementById('sandbox'));
     stubs.set(goog.dom, 'getPageScroll', () => new Coordinate(0, 0));
@@ -110,15 +102,22 @@ testSuite({
     samplePalette.setColorRgbaHex('#630c0000');
     style.setPageOffset(samplePalette.aImageEl_, 0, 0);
     style.setSize(samplePalette.aImageEl_, 10, 100);
+    /** @suppress {visibility} suppression added to enable type checking */
     const boundaries = style.getBounds(samplePalette.aImageEl_);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const event = new GoogEvent();
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     event.clientY = boundaries.top;
     samplePalette.handleMouseMoveA_(boundaries, event);
 
     assertEquals('#630c00ff', samplePalette.getColorRgbaHex());
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testSwatchOpacity() {
     samplePalette.render(document.getElementById('sandbox'));
 
@@ -132,11 +131,14 @@ testSuite({
     assertEquals(0, style.getOpacity(samplePalette.swatchElement));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testNoTransparencyBehavior() {
     samplePalette.render(document.getElementById('sandbox'));
 
+    /** @suppress {visibility} suppression added to enable type checking */
     samplePalette.inputElement.value = '#abcdef22';
     samplePalette.handleInput(null);
+    /** @suppress {visibility} suppression added to enable type checking */
     samplePalette.inputElement.value = '#abcdef';
     samplePalette.handleInput(null);
     assertEquals(1, style.getOpacity(samplePalette.swatchElement));

@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
@@ -17,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -123,7 +123,8 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kNoPreference = 0,
     kMore = 1,
     kLess = 2,
-    kMaxValue = kLess,
+    kCustom = 3,
+    kMaxValue = kCustom,
   };
 
   // IMPORTANT!
@@ -328,6 +329,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
     TrackbarExtraParams trackbar;
   };
 
+  NativeTheme(const NativeTheme&) = delete;
+  NativeTheme& operator=(const NativeTheme&) = delete;
+
   // Return the size of the part.
   virtual gfx::Size GetPartSize(Part part,
                                 State state,
@@ -345,16 +349,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
                      const ExtraParams& extra,
                      ColorScheme color_scheme = ColorScheme::kDefault,
                      const absl::optional<SkColor>& accent_color = 0) const = 0;
-
-  // Paint part during state transition, used for overlay scrollbar state
-  // transition animation.
-  virtual void PaintStateTransition(cc::PaintCanvas* canvas,
-                                    Part part,
-                                    State startState,
-                                    State endState,
-                                    double progress,
-                                    const gfx::Rect& rect,
-                                    ScrollbarOverlayColorTheme theme) const {}
 
   // Returns whether the theme uses a nine-patch resource for the given part.
   // If true, calling code should always paint into a canvas the size of which
@@ -394,6 +388,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kMaxValue = kWindowText,
   };
 
+  // Returns the key corresponding to this native theme object.
+  ColorProviderManager::Key GetColorProviderKey(
+      scoped_refptr<ColorProviderManager::InitializerSupplier> custom_theme)
+      const;
+
   // Returns a color from the system theme.
   SkColor GetSystemColor(
       ColorId color_id,
@@ -431,14 +430,13 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // Notify observers of caption style changes.
   virtual void NotifyOnCaptionStyleUpdated();
 
-  // Returns whether the user has an explicit contrast preference, i.e. whether
-  // we are in forced colors mode or PreferredContrast is set.
+  // Returns whether the user has an explicit contrast preference.
   virtual bool UserHasContrastPreference() const;
 
   // Returns whether we are in forced colors mode, controlled by system
   // accessibility settings. Currently, Windows high contrast is the only system
   // setting that triggers forced colors mode.
-  virtual bool InForcedColorsMode() const;
+  bool InForcedColorsMode() const;
 
   // Returns the PlatformHighContrastColorScheme used by the OS. Returns a value
   // other than kNone only if the default system color scheme is
@@ -482,6 +480,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     preferred_contrast_ = preferred_contrast;
   }
   void set_system_colors(const std::map<SystemThemeColor, SkColor>& colors);
+  bool is_custom_system_theme() const { return is_custom_system_theme_; }
 
   // Updates the state of dark mode, forced colors mode, and the map of system
   // colors. Returns true if NativeTheme was updated as a result, or false if
@@ -498,12 +497,15 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // Assign the focus-ring-appropriate alpha value to the provided base_color.
   virtual SkColor FocusRingColorForBaseColor(SkColor base_color) const;
 
-  virtual float AdjustBorderRadiusByZoom(Part part,
-                                         float border_width,
-                                         float zoom_level) const;
+  float AdjustBorderWidthByZoom(float border_width, float zoom_level) const;
+
+  float AdjustBorderRadiusByZoom(Part part,
+                                 float border_width,
+                                 float zoom_level) const;
 
  protected:
-  explicit NativeTheme(bool should_only_use_dark_colors);
+  explicit NativeTheme(bool should_only_use_dark_colors,
+                       bool is_custom_system_theme = false);
   virtual ~NativeTheme();
 
   // Gets the color from the color provider if using a color provider is enable.
@@ -551,6 +553,12 @@ class NATIVE_THEME_EXPORT NativeTheme {
       : public NativeThemeObserver {
    public:
     ColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
+
+    ColorSchemeNativeThemeObserver(const ColorSchemeNativeThemeObserver&) =
+        delete;
+    ColorSchemeNativeThemeObserver& operator=(
+        const ColorSchemeNativeThemeObserver&) = delete;
+
     ~ColorSchemeNativeThemeObserver() override;
 
    private:
@@ -559,13 +567,15 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
     // The theme that gets updated when OnNativeThemeUpdated() is called.
     NativeTheme* const theme_to_update_;
-
-    DISALLOW_COPY_AND_ASSIGN(ColorSchemeNativeThemeObserver);
   };
 
   mutable std::map<SystemThemeColor, SkColor> system_colors_;
 
  private:
+  ColorProviderManager::Key GetColorProviderKeyForColorScheme(
+      scoped_refptr<ColorProviderManager::InitializerSupplier> custom_theme,
+      ColorScheme color_scheme) const;
+
   SkColor GetSystemColorCommon(ColorId color_id,
                                ColorScheme color_scheme,
                                bool apply_processing) const;
@@ -574,13 +584,12 @@ class NATIVE_THEME_EXPORT NativeTheme {
   base::ObserverList<NativeThemeObserver>::Unchecked native_theme_observers_;
 
   bool should_use_dark_colors_ = false;
+  const bool is_custom_system_theme_;
   bool forced_colors_ = false;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NativeTheme);
 };
 
 }  // namespace ui

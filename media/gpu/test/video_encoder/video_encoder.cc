@@ -39,8 +39,7 @@ const char* EventName(VideoEncoder::EncoderEvent event) {
 }
 
 // Default timeout used when waiting for events.
-constexpr base::TimeDelta kDefaultEventWaitTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kDefaultEventWaitTimeout = base::Seconds(30);
 
 // Default initial size used for |video_encoder_events_|.
 constexpr size_t kDefaultEventListSize = 512;

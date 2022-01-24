@@ -101,7 +101,9 @@ TEST(DeviceSyncMojomEnumTraitsTest, SoftwareFeature) {
           chromeos::multidevice::SoftwareFeature::kWifiSyncHost,
           chromeos::multidevice::SoftwareFeature::kWifiSyncClient,
           chromeos::multidevice::SoftwareFeature::kEcheHost,
-          chromeos::multidevice::SoftwareFeature::kEcheClient};
+          chromeos::multidevice::SoftwareFeature::kEcheClient,
+          chromeos::multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
+          chromeos::multidevice::SoftwareFeature::kPhoneHubCameraRollClient};
 
   for (auto feature_in : kTestSoftwareFeatures) {
     chromeos::multidevice::SoftwareFeature feature_out;

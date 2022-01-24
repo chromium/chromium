@@ -189,7 +189,8 @@ class AboutFlagsBrowserTest : public InProcessBrowserTest,
   }
 
   void NavigateToFlagsPage() {
-    ui_test_utils::NavigateToURL(browser(), GURL("chrome://flags"));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("chrome://flags")));
     WaitForExperimentalFeatures(
         browser()->tab_strip_model()->GetActiveWebContents());
   }

@@ -87,14 +87,8 @@ bool FileHandlerCanHandleFileWithMimeType(const apps::FileHandlerInfo& handler,
 bool WebAppFileHandlerCanHandleFileWithExtension(
     const apps::FileHandler& file_handler,
     const base::FilePath& path) {
-  // Build a list of file extensions supported by the handler.
-  //
-  // TODO(crbug.com/938103): Duplicates functionality from
-  // FileHandlerManager::GetFileExtensionsFromFileHandlers.
-  std::set<std::string> file_extensions;
-  for (const auto& accept_entry : file_handler.accept)
-    file_extensions.insert(accept_entry.file_extensions.begin(),
-                           accept_entry.file_extensions.end());
+  std::set<std::string> file_extensions =
+      apps::GetFileExtensionsFromFileHandler(file_handler);
 
   for (const auto& file_extension : file_extensions) {
     if (file_extension == "*")

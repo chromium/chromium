@@ -39,6 +39,10 @@ class ASH_EXPORT DisplayPrefs : public SessionObserver {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   explicit DisplayPrefs(PrefService* local_state);
+
+  DisplayPrefs(const DisplayPrefs&) = delete;
+  DisplayPrefs& operator=(const DisplayPrefs&) = delete;
+
   ~DisplayPrefs() override;
 
   // SessionObserver:
@@ -78,8 +82,6 @@ class ASH_EXPORT DisplayPrefs : public SessionObserver {
  private:
   PrefService* local_state_;  // Non-owned and must out-live this.
   bool store_requested_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayPrefs);
 };
 
 }  // namespace ash

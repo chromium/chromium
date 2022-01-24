@@ -124,7 +124,8 @@ void NGOffsetMappingUnit::AssertValid() const {
 }
 
 const Node* NGOffsetMappingUnit::AssociatedNode() const {
-  if (const auto* text_fragment = DynamicTo<LayoutTextFragment>(layout_object_))
+  if (const auto* text_fragment =
+          DynamicTo<LayoutTextFragment>(layout_object_.Get()))
     return text_fragment->AssociatedTextNode();
   return layout_object_->GetNode();
 }
@@ -146,7 +147,7 @@ bool NGOffsetMappingUnit::Concatenate(const NGOffsetMappingUnit& other) {
     return false;
   // Don't merge first letter and remaining text
   if (const auto* text_fragment =
-          DynamicTo<LayoutTextFragment>(layout_object_)) {
+          DynamicTo<LayoutTextFragment>(layout_object_.Get())) {
     // TODO(layout-dev): Fix offset calculation for text-transform
     if (text_fragment->IsRemainingTextLayoutObject() &&
         other.dom_start_ == text_fragment->TextStartOffset())
@@ -222,9 +223,14 @@ bool NGOffsetMapping::AcceptsPosition(const Position& position) {
 const NGOffsetMapping* NGOffsetMapping::GetFor(const Position& position) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return nullptr;
+  return ForceGetFor(position);
+}
+
+const NGOffsetMapping* NGOffsetMapping::ForceGetFor(const Position& position) {
   if (!NGOffsetMapping::AcceptsPosition(position))
     return nullptr;
-  LayoutBlockFlow* context = NGInlineFormattingContextOf(position);
+  LayoutBlockFlow* context =
+      NGOffsetMapping::GetInlineFormattingContextOf(position);
   if (!context)
     return nullptr;
   return NGInlineNode::GetOffsetMapping(context);
@@ -286,7 +292,9 @@ const NGOffsetMappingUnit* NGOffsetMapping::GetMappingUnitForPosition(
   const unsigned offset = node_and_offset.second;
   unsigned range_start;
   unsigned range_end;
-  std::tie(range_start, range_end) = ranges_.at(&node);
+  auto it = ranges_.find(&node);
+  std::tie(range_start, range_end) =
+      it != ranges_.end() ? it->value : std::pair<unsigned, unsigned>(0, 0);
   if (range_start == range_end || units_[range_start].DOMStart() > offset)
     return nullptr;
   // Find the last unit where unit.dom_start <= offset
@@ -311,7 +319,9 @@ NGOffsetMapping::UnitVector NGOffsetMapping::GetMappingUnitsForDOMRange(
   const unsigned end_offset = ToNodeOffsetPair(range.EndPosition()).second;
   unsigned range_start;
   unsigned range_end;
-  std::tie(range_start, range_end) = ranges_.at(&node);
+  auto it = ranges_.find(&node);
+  std::tie(range_start, range_end) =
+      it != ranges_.end() ? it->value : std::pair<unsigned, unsigned>(0, 0);
 
   if (range_start == range_end || units_[range_start].DOMStart() > end_offset ||
       units_[range_end - 1].DOMEnd() < start_offset)
@@ -332,7 +342,7 @@ NGOffsetMapping::UnitVector NGOffsetMapping::GetMappingUnitsForDOMRange(
                        });
 
   UnitVector result;
-  result.ReserveCapacity(result_end - result_begin);
+  result.ReserveCapacity(static_cast<unsigned>(result_end - result_begin));
   for (const auto& unit : base::make_span(result_begin, result_end)) {
     // If the unit isn't fully within the range, create a new unit that's
     // within the range.
@@ -586,6 +596,10 @@ bool NGOffsetMapping::HasBidiControlCharactersOnly(unsigned start,
       return false;
   }
   return true;
+}
+
+void NGOffsetMappingUnit::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_object_);
 }
 
 }  // namespace blink

@@ -31,7 +31,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalToggleAddedToHoldingSpaceFunction::Run() {
   using extensions::api::file_manager_private_internal::
       ToggleAddedToHoldingSpace::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   ash::HoldingSpaceKeyedService* const holding_space =
@@ -47,7 +47,7 @@ FileManagerPrivateInternalToggleAddedToHoldingSpaceFunction::Run() {
   std::vector<storage::FileSystemURL> file_system_urls;
   for (const auto& item_url : params->urls) {
     const storage::FileSystemURL file_system_url =
-        file_system_context->CrackURL(GURL(item_url));
+        file_system_context->CrackURLInFirstPartyContext(GURL(item_url));
     if (!file_system_url.is_valid())
       return RespondNow(Error("Invalid item URL " + item_url));
     file_system_urls.push_back(file_system_url);

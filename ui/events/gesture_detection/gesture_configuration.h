@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_GESTURE_DETECTION_GESTURE_CONFIGURATION_H_
 #define UI_EVENTS_GESTURE_DETECTION_GESTURE_CONFIGURATION_H_
 
-#include "base/macros.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/velocity_tracker.h"
 
@@ -15,6 +14,9 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
  public:
   // Returns the singleton GestureConfiguration.
   static GestureConfiguration* GetInstance();
+
+  GestureConfiguration(const GestureConfiguration&) = delete;
+  GestureConfiguration& operator=(const GestureConfiguration&) = delete;
 
   // Ordered alphabetically ignoring underscores.
   float default_radius() const { return default_radius_; }
@@ -256,8 +258,6 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
   bool swipe_enabled_;
   bool two_finger_tap_enabled_;
   VelocityTracker::Strategy velocity_tracker_strategy_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureConfiguration);
 };
 
 }  // namespace ui

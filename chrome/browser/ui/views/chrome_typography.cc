@@ -100,21 +100,14 @@ void ApplyCommonFontStyles(int context,
       details.size_delta = 15 - gfx::PlatformFont::kDefaultBaseFontSize;
       break;
 #endif
-    case CONTEXT_IPH_BUBBLE_TITLE: {
+    case CONTEXT_IPH_BUBBLE_TITLE:
       details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(18);
       break;
-    }
-    case CONTEXT_IPH_BUBBLE_BODY_WITH_TITLE: {
-      details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
-      break;
-    }
-    case CONTEXT_IPH_BUBBLE_BODY_WITHOUT_TITLE: {
+    case CONTEXT_IPH_BUBBLE_BODY:
       details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
       break;
-    }
-    case CONTEXT_IPH_BUBBLE_BUTTON: {
+    case CONTEXT_IPH_BUBBLE_BUTTON:
       details.size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
       break;
-    }
   }
 }

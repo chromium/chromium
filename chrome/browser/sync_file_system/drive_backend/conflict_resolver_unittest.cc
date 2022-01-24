@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_constants.h"
@@ -55,6 +54,10 @@ class ConflictResolverTest : public testing::Test {
 
   ConflictResolverTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
+
+  ConflictResolverTest(const ConflictResolverTest&) = delete;
+  ConflictResolverTest& operator=(const ConflictResolverTest&) = delete;
+
   ~ConflictResolverTest() override {}
 
   void SetUp() override {
@@ -268,8 +271,6 @@ class ConflictResolverTest : public testing::Test {
   std::unique_ptr<FakeRemoteChangeProcessor> remote_change_processor_;
 
   std::unique_ptr<SyncTaskManager> sync_task_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConflictResolverTest);
 };
 
 TEST_F(ConflictResolverTest, NoFileToBeResolved) {

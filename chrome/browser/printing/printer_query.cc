@@ -36,11 +36,11 @@ PrinterQuery::~PrinterQuery() {
 
 void PrinterQuery::GetSettingsDone(base::OnceClosure callback,
                                    std::unique_ptr<PrintSettings> new_settings,
-                                   PrintingContext::Result result) {
+                                   mojom::ResultCode result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   is_print_dialog_box_shown_ = false;
   last_status_ = result;
-  if (result != PrintingContext::FAILED) {
+  if (result == mojom::ResultCode::kSuccess) {
     settings_ = std::move(new_settings);
     cookie_ = PrintSettings::NewCookie();
   } else {
@@ -54,7 +54,7 @@ void PrinterQuery::GetSettingsDone(base::OnceClosure callback,
 void PrinterQuery::PostSettingsDoneToIO(
     base::OnceClosure callback,
     std::unique_ptr<PrintSettings> new_settings,
-    PrintingContext::Result result) {
+    mojom::ResultCode result) {
   // |this| is owned by |callback|, so |base::Unretained()| is safe.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

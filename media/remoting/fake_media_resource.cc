@@ -21,14 +21,14 @@ namespace remoting {
 FakeDemuxerStream::FakeDemuxerStream(bool is_audio) {
   type_ = is_audio ? DemuxerStream::AUDIO : DemuxerStream::VIDEO;
   if (is_audio) {
-    audio_config_.Initialize(kCodecAAC, kSampleFormatS16, CHANNEL_LAYOUT_STEREO,
-                             38400, std::vector<uint8_t>(),
-                             EncryptionScheme::kUnencrypted, base::TimeDelta(),
-                             0);
+    audio_config_.Initialize(
+        AudioCodec::kAAC, kSampleFormatS16, CHANNEL_LAYOUT_STEREO, 38400,
+        std::vector<uint8_t>(), EncryptionScheme::kUnencrypted,
+        base::TimeDelta(), 0);
   } else {
     gfx::Size size(640, 480);
     gfx::Rect rect(0, 0, 640, 480);
-    video_config_.Initialize(kCodecH264, H264PROFILE_BASELINE,
+    video_config_.Initialize(VideoCodec::kH264, H264PROFILE_BASELINE,
                              VideoDecoderConfig::AlphaMode::kIsOpaque,
                              VideoColorSpace::REC601(), kNoTransformation, size,
                              rect, size, std::vector<uint8_t>(),
@@ -79,7 +79,7 @@ void FakeDemuxerStream::CreateFakeFrame(size_t size,
   for (size_t i = 0; i < size; ++i) {
     buffer[i] = static_cast<uint8_t>(i & 0xFF);
   }
-  base::TimeDelta pts = base::TimeDelta::FromMilliseconds(pts_ms);
+  base::TimeDelta pts = base::Milliseconds(pts_ms);
 
   // To DecoderBuffer
   scoped_refptr<DecoderBuffer> input_buffer =

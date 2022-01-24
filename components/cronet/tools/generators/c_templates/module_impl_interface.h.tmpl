@@ -30,6 +30,10 @@
 {%- set interface_name = interface|get_name_for_kind %}
 struct {{interface_name}} {
   {{interface_name}}() = default;
+
+  {{interface_name}}(const {{interface_name}}&) = delete;
+  {{interface_name}}& operator=(const {{interface_name}}&) = delete;
+
   virtual ~{{interface_name}}() = default;
 
   void set_client_context(Cronet_ClientContext client_context) {
@@ -49,8 +53,6 @@ virtual void
 {%- endfor %}
  private:
   Cronet_ClientContext client_context_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN({{interface_name}});
 };
 
 {% endfor %}

@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -34,6 +33,10 @@ class MEDIA_EXPORT StreamProcessorHelper {
              base::TimeDelta timestamp,
              bool unit_end,
              base::OnceClosure destroy_cb);
+
+    IoPacket(const IoPacket&) = delete;
+    IoPacket& operator=(const IoPacket&) = delete;
+
     ~IoPacket();
 
     IoPacket(IoPacket&&);
@@ -60,8 +63,6 @@ class MEDIA_EXPORT StreamProcessorHelper {
     bool unit_end_;
     fuchsia::media::FormatDetails format_;
     std::forward_list<base::OnceClosure> destroy_callbacks_;
-
-    DISALLOW_COPY_AND_ASSIGN(IoPacket);
   };
 
   class Client {
@@ -96,6 +97,10 @@ class MEDIA_EXPORT StreamProcessorHelper {
 
   StreamProcessorHelper(fuchsia::media::StreamProcessorPtr processor,
                         Client* client);
+
+  StreamProcessorHelper(const StreamProcessorHelper&) = delete;
+  StreamProcessorHelper& operator=(const StreamProcessorHelper&) = delete;
+
   ~StreamProcessorHelper();
 
   // Process one packet. Caller can reuse the underlying buffer when the
@@ -163,8 +168,6 @@ class MEDIA_EXPORT StreamProcessorHelper {
 
   base::WeakPtr<StreamProcessorHelper> weak_this_;
   base::WeakPtrFactory<StreamProcessorHelper> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamProcessorHelper);
 };
 
 }  // namespace media

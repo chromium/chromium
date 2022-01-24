@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_CONTEXT_STUB_H_
 #define UI_GL_GL_CONTEXT_STUB_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_export.h"
@@ -19,6 +18,9 @@ class GL_EXPORT GLContextStub : public GLContextReal {
  public:
   GLContextStub();
   explicit GLContextStub(GLShareGroup* share_group);
+
+  GLContextStub(const GLContextStub&) = delete;
+  GLContextStub& operator=(const GLContextStub&) = delete;
 
   // Implement GLContext.
   bool Initialize(GLSurface* compatible_surface,
@@ -49,8 +51,6 @@ class GL_EXPORT GLContextStub : public GLContextReal {
   bool use_stub_api_;
   std::string version_str_;
   unsigned int graphics_reset_status_ = 0;  // GL_NO_ERROR
-
-  DISALLOW_COPY_AND_ASSIGN(GLContextStub);
 };
 
 }  // namespace gl

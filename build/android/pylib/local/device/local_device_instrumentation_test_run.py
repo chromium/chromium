@@ -104,6 +104,7 @@ _EXTRA_PACKAGE_UNDER_TEST = ('org.chromium.chrome.test.pagecontroller.rules.'
 FEATURE_ANNOTATION = 'Feature'
 RENDER_TEST_FEATURE_ANNOTATION = 'RenderTest'
 WPR_ARCHIVE_FILE_PATH_ANNOTATION = 'WPRArchiveDirectory'
+WPR_ARCHIVE_NAME_ANNOTATION = 'WPRArchiveDirectory$ArchiveName'
 WPR_RECORD_REPLAY_TEST_FEATURE_ANNOTATION = 'WPRRecordReplayTest'
 
 _DEVICE_GOLD_DIR = 'skia_gold'
@@ -111,7 +112,10 @@ _DEVICE_GOLD_DIR = 'skia_gold'
 RENDER_TEST_MODEL_SDK_CONFIGS = {
     # Android x86 emulator.
     'Android SDK built for x86': [23],
-    'Pixel 2': [28],
+    # We would like this to be supported, but it is currently too prone to
+    # introducing flakiness due to a combination of Gold and Chromium issues.
+    # See crbug.com/1233700 and skbug.com/12149 for more information.
+    # 'Pixel 2': [28],
 }
 
 _BATCH_SUFFIX = '_batch'
@@ -510,13 +514,21 @@ class LocalDeviceInstrumentationTestRun(
         # Feature flags won't work in instrumentation tests unless the activity
         # is restarted.
         # Tests with identical features are grouped to minimize restarts.
-        if 'Batch$SplitByFeature' in annotations:
+        # UnitTests that specify flags always use Features.JUnitProcessor, so
+        # they don't need to be split.
+        if batch_name != 'UnitTests':
           if 'Features$EnableFeatures' in annotations:
             batch_name += '|enabled:' + ','.join(
                 sorted(annotations['Features$EnableFeatures']['value']))
           if 'Features$DisableFeatures' in annotations:
             batch_name += '|disabled:' + ','.join(
                 sorted(annotations['Features$DisableFeatures']['value']))
+          if 'CommandLineFlags$Add' in annotations:
+            batch_name += '|cmd_line_add:' + ','.join(
+                sorted(annotations['CommandLineFlags$Add']['value']))
+          if 'CommandLineFlags$Remove' in annotations:
+            batch_name += '|cmd_line_remove:' + ','.join(
+                sorted(annotations['CommandLineFlags$Remove']['value']))
 
         if not batch_name in batched_tests:
           batched_tests[batch_name] = []
@@ -563,6 +575,16 @@ class LocalDeviceInstrumentationTestRun(
       coverage_device_file = os.path.join(coverage_directory, coverage_basename)
       coverage_device_file += '.exec'
       extras['coverageFile'] = coverage_device_file
+
+    if self._test_instance.enable_breakpad_dump:
+      # Use external storage directory so that the breakpad dump can be accessed
+      # by the test APK in addition to the apk_under_test.
+      breakpad_dump_directory = os.path.join(device.GetExternalStoragePath(),
+                                             'chromium_dumps')
+      if device.PathExists(breakpad_dump_directory):
+        device.RemovePath(breakpad_dump_directory, recursive=True)
+      flags_to_add.append('--breakpad-dump-location=' + breakpad_dump_directory)
+
     # Save screenshot if screenshot dir is specified (save locally) or if
     # a GS bucket is passed (save in cloud).
     screenshot_device_file = device_temp_file.DeviceTempFile(
@@ -642,10 +664,12 @@ class LocalDeviceInstrumentationTestRun(
                                wpr_archive_path,
                                os.path.exists(wpr_archive_path)))
 
+      file_name = _GetWPRArchiveFileName(
+          test) or self._GetUniqueTestName(test) + '.wprgo'
+
       # Some linux version does not like # in the name. Replaces it with __.
-      archive_path = os.path.join(
-          wpr_archive_path,
-          _ReplaceUncommonChars(self._GetUniqueTestName(test)) + '.wprgo')
+      archive_path = os.path.join(wpr_archive_path,
+                                  _ReplaceUncommonChars(file_name))
 
       if not os.path.exists(_WPR_GO_LINUX_X86_64_PATH):
         # If we got to this stage, then we should have
@@ -800,11 +824,18 @@ class LocalDeviceInstrumentationTestRun(
         for r in results:
           if r.GetType() == base_test_result.ResultType.UNKNOWN:
             r.SetType(base_test_result.ResultType.CRASH)
-      if (crashed_packages and len(results) == 1
-          and results[0].GetType() != base_test_result.ResultType.PASS):
+      elif (crashed_packages and len(results) == 1
+            and results[0].GetType() != base_test_result.ResultType.PASS):
+        # Add log message and set failure reason if:
+        #   1) The app crash was likely not caused by the test.
+        #   AND
+        #   2) The app crash possibly caused the test to fail.
+        # Crashes of the package under test are assumed to be the test's fault.
         _AppendToLogForResult(
             results[0], 'OS displayed error dialogs for {}'.format(
                 ', '.join(crashed_packages)))
+        results[0].SetFailureReason('{} Crashed'.format(
+            ','.join(crashed_packages)))
     except device_errors.CommandTimeoutError:
       logging.warning('timed out when detecting/dismissing error dialogs')
       # Attach screenshot to the test to help with debugging the dialog boxes.
@@ -833,14 +864,14 @@ class LocalDeviceInstrumentationTestRun(
       logging.info('detected failure in %s. raw output:', test_display_name)
       for l in output:
         logging.info('  %s', l)
-      if (not self._env.skip_clear_data
-          and self._test_instance.package_info):
-        permissions = (
-            self._test_instance.apk_under_test.GetPermissions()
-            if self._test_instance.apk_under_test
-            else None)
-        device.ClearApplicationState(self._test_instance.package_info.package,
-                                     permissions=permissions)
+      if not self._env.skip_clear_data:
+        if self._test_instance.package_info:
+          permissions = (self._test_instance.apk_under_test.GetPermissions()
+                         if self._test_instance.apk_under_test else None)
+          device.ClearApplicationState(self._test_instance.package_info.package,
+                                       permissions=permissions)
+        if self._test_instance.enable_breakpad_dump:
+          device.RemovePath(breakpad_dump_directory, recursive=True)
     else:
       logging.debug('raw output from %s:', test_display_name)
       for l in output:
@@ -1342,6 +1373,13 @@ def _GetWPRArchivePath(test):
   """Retrieves the archive path from the WPRArchiveDirectory annotation."""
   return test['annotations'].get(WPR_ARCHIVE_FILE_PATH_ANNOTATION,
                                  {}).get('value', ())
+
+
+def _GetWPRArchiveFileName(test):
+  """Retrieves the WPRArchiveDirectory.ArchiveName annotation."""
+  value = test['annotations'].get(WPR_ARCHIVE_NAME_ANNOTATION,
+                                  {}).get('value', None)
+  return value[0] if value else None
 
 
 def _ReplaceUncommonChars(original):

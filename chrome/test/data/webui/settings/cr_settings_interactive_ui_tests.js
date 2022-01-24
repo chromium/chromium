@@ -9,8 +9,9 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
+/* eslint-disable no-var */
+
 /** Test fixture for shared Polymer 3 elements. */
-// eslint-disable-next-line no-var
 var CrSettingsInteractiveUITest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
@@ -18,11 +19,10 @@ var CrSettingsInteractiveUITest = class extends PolymerInteractiveUITest {
   }
 };
 
-// eslint-disable-next-line no-var
 var CrSettingsAnimatedPagesTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/settings_animated_pages_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/settings_animated_pages_test.js&host=webui-test';
   }
 };
 
@@ -30,11 +30,10 @@ TEST_F('CrSettingsAnimatedPagesTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrSettingsPaymentsSectionTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/payments_section_interactive_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/payments_section_interactive_test.js&host=webui-test';
   }
 };
 
@@ -42,11 +41,10 @@ TEST_F('CrSettingsPaymentsSectionTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrSettingsSyncPageTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/people_page_sync_page_interactive_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/people_page_sync_page_interactive_test.js&host=webui-test';
   }
 };
 
@@ -54,11 +52,10 @@ TEST_F('CrSettingsSyncPageTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var CrSettingsSecureDnsTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/secure_dns_interactive_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/secure_dns_interactive_test.js&host=webui-test';
   }
 };
 
@@ -66,11 +63,10 @@ TEST_F('CrSettingsSecureDnsTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var SettingsUIInteractiveTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/settings_ui_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/settings_ui_tests.js&host=webui-test';
   }
 };
 
@@ -106,11 +102,10 @@ TEST_F('SettingsUIInteractiveTest', 'MAYBE_SettingsUISearch', function() {
   runMochaSuite('SettingsUISearch');
 });
 
-// eslint-disable-next-line no-var
 var CrSettingsMenuInteractiveTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/settings_menu_interactive_ui_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/settings_menu_interactive_ui_test.js&host=webui-test';
   }
 };
 

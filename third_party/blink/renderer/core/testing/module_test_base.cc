@@ -15,15 +15,15 @@
 namespace blink {
 
 v8::Local<v8::Module> ModuleTestBase::CompileModule(
-    v8::Isolate* isolate,
+    ScriptState* script_state,
     const char* source,
     const KURL& url,
     ExceptionState& exception_state) {
-  return CompileModule(isolate, String(source), url, exception_state);
+  return CompileModule(script_state, String(source), url, exception_state);
 }
 
 v8::Local<v8::Module> ModuleTestBase::CompileModule(
-    v8::Isolate* isolate,
+    ScriptState* script_state,
     String source,
     const KURL& url,
     ExceptionState& exception_state) {
@@ -31,7 +31,7 @@ v8::Local<v8::Module> ModuleTestBase::CompileModule(
       /*source_url=*/url, /*base_url=*/url,
       ScriptSourceLocationType::kExternalFile, ModuleType::kJavaScript,
       ParkableString(source.Impl()), nullptr);
-  return ModuleRecord::Compile(isolate, params, ScriptFetchOptions(),
+  return ModuleRecord::Compile(script_state, params, ScriptFetchOptions(),
                                TextPosition::MinimumPosition(),
                                exception_state);
 }

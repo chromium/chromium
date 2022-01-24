@@ -48,6 +48,10 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
   // as it internally handles RenderViewHost instances changing underneath us.
   AwRenderViewHostExt(
       AwRenderViewHostExtClient* client, content::WebContents* contents);
+
+  AwRenderViewHostExt(const AwRenderViewHostExt&) = delete;
+  AwRenderViewHostExt& operator=(const AwRenderViewHostExt&) = delete;
+
   ~AwRenderViewHostExt() override;
 
   // |result| will be invoked with the outcome of the request.
@@ -122,8 +126,6 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
   mojo::AssociatedRemote<mojom::LocalMainFrame> local_main_frame_remote_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AwRenderViewHostExt);
 };
 
 }  // namespace android_webview

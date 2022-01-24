@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<script>
+async function onLoad() {
+  const scope = self.origin + '/cookies/resources/postToParent.py?with-sw';
+  const reg = await navigator.serviceWorker.getRegistration(scope);
+  await reg.unregister();
+  window.opener.postMessage({ type: 'SW-UNREGISTERED' }, '*');
+}
+self.addEventListener('load', onLoad);
+</script>

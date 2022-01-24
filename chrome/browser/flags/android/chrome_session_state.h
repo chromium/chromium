@@ -26,9 +26,25 @@ enum class ActivityType {
   kMaxValue = kWebApk,
 };
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.flags
+enum class DarkModeState {
+  kUnknown,
+  // Both system and browser are in dark mode.
+  kDarkModeSystem,
+  // Browser is in dark mode, system is not/cannot be determined.
+  kDarkModeApp,
+  // Both system and browser are in light mode.
+  kLightModeSystem,
+  // Browser is in light mode, system is not/cannot be determined.
+  kLightModeApp,
+  kMaxValue = kLightModeApp,
+};
+
 CustomTabsVisibilityHistogram GetCustomTabsVisibleValue(ActivityType type);
 
 ActivityType GetActivityType();
+
+DarkModeState GetDarkModeState();
 
 bool GetIsInMultiWindowModeValue();
 

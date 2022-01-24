@@ -9,30 +9,27 @@
 
 namespace net {
 
-namespace {
-
-uint32_t GetExclusionBitmask(CookieInclusionStatus::ExclusionReason reason) {
-  return 1u << static_cast<uint32_t>(reason);
-}
-
-uint32_t GetWarningBitmask(CookieInclusionStatus::WarningReason reason) {
-  return 1u << static_cast<uint32_t>(reason);
-}
-
-}  // namespace
-
 CookieInclusionStatus::CookieInclusionStatus() = default;
 
-CookieInclusionStatus::CookieInclusionStatus(ExclusionReason reason)
-    : exclusion_reasons_(GetExclusionBitmask(reason)) {}
+CookieInclusionStatus::CookieInclusionStatus(ExclusionReason reason) {
+  exclusion_reasons_[reason] = true;
+}
 
 CookieInclusionStatus::CookieInclusionStatus(ExclusionReason reason,
-                                             WarningReason warning)
-    : exclusion_reasons_(GetExclusionBitmask(reason)),
-      warning_reasons_(GetWarningBitmask(warning)) {}
+                                             WarningReason warning) {
+  exclusion_reasons_[reason] = true;
+  warning_reasons_[warning] = true;
+}
 
-CookieInclusionStatus::CookieInclusionStatus(WarningReason warning)
-    : warning_reasons_(GetWarningBitmask(warning)) {}
+CookieInclusionStatus::CookieInclusionStatus(WarningReason warning) {
+  warning_reasons_[warning] = true;
+}
+
+CookieInclusionStatus::CookieInclusionStatus(
+    const CookieInclusionStatus& other) = default;
+
+CookieInclusionStatus& CookieInclusionStatus::operator=(
+    const CookieInclusionStatus& other) = default;
 
 bool CookieInclusionStatus::operator==(
     const CookieInclusionStatus& other) const {
@@ -46,27 +43,27 @@ bool CookieInclusionStatus::operator!=(
 }
 
 bool CookieInclusionStatus::IsInclude() const {
-  return exclusion_reasons_ == 0u;
+  return exclusion_reasons_.none();
 }
 
 bool CookieInclusionStatus::HasExclusionReason(ExclusionReason reason) const {
-  return exclusion_reasons_ & GetExclusionBitmask(reason);
+  return exclusion_reasons_[reason];
 }
 
 bool CookieInclusionStatus::HasOnlyExclusionReason(
     ExclusionReason reason) const {
-  return exclusion_reasons_ == GetExclusionBitmask(reason);
+  return exclusion_reasons_[reason] && exclusion_reasons_.count() == 1;
 }
 
 void CookieInclusionStatus::AddExclusionReason(ExclusionReason reason) {
-  exclusion_reasons_ |= GetExclusionBitmask(reason);
+  exclusion_reasons_[reason] = true;
   // If the cookie would be excluded for reasons other than the new SameSite
   // rules, don't bother warning about it.
   MaybeClearSameSiteWarning();
 }
 
 void CookieInclusionStatus::RemoveExclusionReason(ExclusionReason reason) {
-  exclusion_reasons_ &= ~(GetExclusionBitmask(reason));
+  exclusion_reasons_[reason] = false;
 }
 
 void CookieInclusionStatus::RemoveExclusionReasons(
@@ -74,13 +71,14 @@ void CookieInclusionStatus::RemoveExclusionReasons(
   exclusion_reasons_ = ExclusionReasonsWithout(reasons);
 }
 
-uint32_t CookieInclusionStatus::ExclusionReasonsWithout(
+CookieInclusionStatus::ExclusionReasonBitset
+CookieInclusionStatus::ExclusionReasonsWithout(
     const std::vector<ExclusionReason>& reasons) const {
-  uint32_t mask = 0u;
+  CookieInclusionStatus::ExclusionReasonBitset result(exclusion_reasons_);
   for (const ExclusionReason reason : reasons) {
-    mask |= GetExclusionBitmask(reason);
+    result[reason] = false;
   }
-  return exclusion_reasons_ & ~mask;
+  return result;
 }
 
 void CookieInclusionStatus::MaybeClearSameSiteWarning() {
@@ -113,11 +111,11 @@ bool CookieInclusionStatus::ShouldRecordDowngradeMetrics() const {
 }
 
 bool CookieInclusionStatus::ShouldWarn() const {
-  return warning_reasons_ != 0u;
+  return warning_reasons_.any();
 }
 
 bool CookieInclusionStatus::HasWarningReason(WarningReason reason) const {
-  return warning_reasons_ & GetWarningBitmask(reason);
+  return warning_reasons_[reason];
 }
 
 bool CookieInclusionStatus::HasDowngradeWarning(
@@ -147,11 +145,11 @@ bool CookieInclusionStatus::HasDowngradeWarning(
 }
 
 void CookieInclusionStatus::AddWarningReason(WarningReason reason) {
-  warning_reasons_ |= GetWarningBitmask(reason);
+  warning_reasons_[reason] = true;
 }
 
 void CookieInclusionStatus::RemoveWarningReason(WarningReason reason) {
-  warning_reasons_ &= ~(GetWarningBitmask(reason));
+  warning_reasons_[reason] = false;
 }
 
 CookieInclusionStatus::ContextDowngradeMetricValues
@@ -222,6 +220,10 @@ std::string CookieInclusionStatus::GetDebugString() const {
            {EXCLUDE_INVALID_PREFIX, "EXCLUDE_INVALID_PREFIX"},
            {EXCLUDE_INVALID_SAMEPARTY, "EXCLUDE_INVALID_SAMEPARTY"},
            {EXCLUDE_INVALID_PARTITIONED, "EXCLUDE_INVALID_PARTITIONED"},
+           {EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE,
+            "EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE"},
+           {EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE,
+            "EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE"},
        }) {
     if (HasExclusionReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});
@@ -256,8 +258,6 @@ std::string CookieInclusionStatus::GetDebugString() const {
             "WARN_SAMEPARTY_EXCLUSION_OVERRULED_SAMESITE"},
            {WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE,
             "WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE"},
-           {WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211,
-            "WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211"},
            {WARN_SAMESITE_NONE_REQUIRED, "WARN_SAMESITE_NONE_REQUIRED"},
            {WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE,
             "WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE"},
@@ -269,6 +269,8 @@ std::string CookieInclusionStatus::GetDebugString() const {
             "WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT"},
            {WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION,
             "WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION"},
+           {WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE,
+            "WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE"},
        }) {
     if (HasWarningReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});
@@ -278,14 +280,6 @@ std::string CookieInclusionStatus::GetDebugString() const {
   out.erase(out.end() - 2, out.end());
 
   return out;
-}
-
-bool CookieInclusionStatus::IsValid() const {
-  // Bit positions where there should not be any true bits.
-  uint32_t exclusion_mask = ~0u << static_cast<int>(NUM_EXCLUSION_REASONS);
-  uint32_t warning_mask = ~0u << static_cast<int>(NUM_WARNING_REASONS);
-  return (exclusion_mask & exclusion_reasons_) == 0u &&
-         (warning_mask & warning_reasons_) == 0u;
 }
 
 bool CookieInclusionStatus::HasExactlyExclusionReasonsForTesting(
@@ -301,6 +295,17 @@ bool CookieInclusionStatus::HasExactlyWarningReasonsForTesting(
 }
 
 // static
+bool CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
+    uint32_t exclusion_reasons,
+    uint32_t warning_reasons) {
+  uint32_t exclusion_mask =
+      static_cast<uint32_t>(~0ul << ExclusionReason::NUM_EXCLUSION_REASONS);
+  uint32_t warning_mask =
+      static_cast<uint32_t>(~0ul << WarningReason::NUM_WARNING_REASONS);
+  return (exclusion_reasons & exclusion_mask) == 0 &&
+         (warning_reasons & warning_mask) == 0;
+}
+
 CookieInclusionStatus CookieInclusionStatus::MakeFromReasonsForTesting(
     std::vector<ExclusionReason> reasons,
     std::vector<WarningReason> warnings) {

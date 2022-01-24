@@ -10,7 +10,7 @@
 #include "base/check_op.h"
 #include "base/debug/leak_annotations.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
@@ -28,6 +28,9 @@ class PostTaskAndReplyRelay {
         reply_(std::move(reply)),
         reply_task_runner_(std::move(reply_task_runner)) {}
   PostTaskAndReplyRelay(PostTaskAndReplyRelay&&) = default;
+
+  PostTaskAndReplyRelay(const PostTaskAndReplyRelay&) = delete;
+  PostTaskAndReplyRelay& operator=(const PostTaskAndReplyRelay&) = delete;
 
   // It is important that |reply_| always be deleted on the origin sequence
   // (|reply_task_runner_|) since its destructor can be affine to it. More
@@ -120,8 +123,6 @@ class PostTaskAndReplyRelay {
   OnceClosure reply_;
   // Not const to allow moving.
   scoped_refptr<SequencedTaskRunner> reply_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PostTaskAndReplyRelay);
 };
 
 }  // namespace

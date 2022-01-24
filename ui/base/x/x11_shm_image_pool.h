@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -33,6 +32,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XShmImagePool : public x11::EventObserver {
                 int depth,
                 std::size_t max_frames_pending,
                 bool enable_multibuffering);
+
+  XShmImagePool(const XShmImagePool&) = delete;
+  XShmImagePool& operator=(const XShmImagePool&) = delete;
 
   ~XShmImagePool() override;
 
@@ -95,8 +97,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XShmImagePool : public x11::EventObserver {
   std::list<SwapClosure> swap_closures_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(XShmImagePool);
 };
 
 }  // namespace ui

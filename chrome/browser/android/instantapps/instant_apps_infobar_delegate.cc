@@ -15,6 +15,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 
@@ -106,6 +107,8 @@ void InstantAppsInfoBarDelegate::InfoBarDismissed() {
 
 void InstantAppsInfoBarDelegate::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame())
+    return;
   if (!user_navigated_away_from_launch_url_ &&
       !GURL(url_).EqualsIgnoringRef(
           navigation_handle->GetWebContents()->GetURL())) {
@@ -114,11 +117,9 @@ void InstantAppsInfoBarDelegate::DidStartNavigation(
   }
 }
 
-void InstantAppsInfoBarDelegate::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsErrorPage()) {
+void InstantAppsInfoBarDelegate::PrimaryPageChanged(content::Page& page) {
+  if (page.GetMainDocument().IsErrorDocument())
     infobar()->RemoveSelf();
-  }
 }
 
 bool InstantAppsInfoBarDelegate::ShouldExpire(

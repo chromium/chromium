@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
     : public FidoAuthenticator {
  public:
   explicit FidoDeviceAuthenticator(std::unique_ptr<FidoDevice> device);
+
+  FidoDeviceAuthenticator(const FidoDeviceAuthenticator&) = delete;
+  FidoDeviceAuthenticator& operator=(const FidoDeviceAuthenticator&) = delete;
+
   ~FidoDeviceAuthenticator() override;
 
   // FidoAuthenticator:
@@ -89,6 +93,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void DeleteCredential(const pin::TokenResponse& pin_token,
                         const PublicKeyCredentialDescriptor& credential_id,
                         DeleteCredentialCallback callback) override;
+  void UpdateUserInformation(const pin::TokenResponse& pin_token,
+                             const PublicKeyCredentialDescriptor& credential_id,
+                             const PublicKeyCredentialUserEntity& updated_user,
+                             UpdateUserInformationCallback callback) override;
 
   void GetModality(BioEnrollmentCallback callback) override;
   void GetSensorInfo(BioEnrollmentCallback callback) override;
@@ -268,8 +276,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   absl::optional<PINUVAuthProtocol> chosen_pin_uv_auth_protocol_;
 
   base::WeakPtrFactory<FidoDeviceAuthenticator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoDeviceAuthenticator);
 };
 
 }  // namespace device

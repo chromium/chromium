@@ -43,8 +43,7 @@ static_assert(sizeof(kAuthentication) == 12,
 const int64_t kTestExpirationWindowInDays = 90;
 
 base::Time GetFutureTime() {
-  return base::Time::Now() +
-         base::TimeDelta::FromDays(kTestExpirationWindowInDays);
+  return base::Time::Now() + base::Days(kTestExpirationWindowInDays);
 }
 
 }  // anonymous namespace

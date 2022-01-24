@@ -7,6 +7,7 @@ module media.mojom;
 import "media/mojo/mojom/audio_decoder.mojom";
 import "media/mojo/mojom/decryptor.mojom";
 import "media/mojo/mojom/content_decryption_module.mojom";
+import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/renderer.mojom";
 import "media/mojo/mojom/renderer_extensions.mojom";
 import "media/mojo/mojom/video_decoder.mojom";
@@ -51,6 +52,7 @@ interface InterfaceFactory {
   // - |renderer_extension| is bound in MediaFoundationRenderer, and receives
   //   calls from MediaFoundationRendererClient.
   CreateMediaFoundationRenderer(
+      pending_remote<MediaLog> media_log,
       pending_receiver<Renderer> renderer,
       pending_receiver<MediaFoundationRendererExtension> renderer_extension);
 

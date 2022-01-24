@@ -7,8 +7,6 @@
 
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 
-class Profile;
-
 namespace sharesheet {
 
 // The SharesheetController allows ShareActions to request changes to the state
@@ -16,8 +14,6 @@ namespace sharesheet {
 class SharesheetController {
  public:
   virtual ~SharesheetController() = default;
-
-  virtual Profile* GetProfile() = 0;
 
   // When called will set the bubble size to |width| and |height|.
   // |width| and |height| must be set to a positive int.
@@ -27,6 +23,9 @@ class SharesheetController {
   // |result| indicates whether the share was successful, cancelled or closed
   // due to an error.
   virtual void CloseBubble(SharesheetResult result) = 0;
+
+  // Returns whether the bubble is visible.
+  virtual bool IsBubbleVisible() const = 0;
 };
 
 }  // namespace sharesheet

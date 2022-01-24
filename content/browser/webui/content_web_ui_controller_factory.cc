@@ -5,13 +5,13 @@
 #include "content/browser/webui/content_web_ui_controller_factory.h"
 
 #include "build/build_config.h"
-#include "content/browser/appcache/appcache_internals_ui.h"
-#include "content/browser/conversions/conversion_internals_ui.h"
+#include "content/browser/attribution_reporting/attribution_internals_ui.h"
 #include "content/browser/gpu/gpu_internals_ui.h"
 #include "content/browser/indexed_db/indexed_db_internals_ui.h"
 #include "content/browser/media/media_internals_ui.h"
 #include "content/browser/metrics/histograms_internals_ui.h"
 #include "content/browser/net/network_errors_listing_ui.h"
+#include "content/browser/prerender/prerender_internals_ui.h"
 #include "content/browser/process_internals/process_internals_ui.h"
 #include "content/browser/service_worker/service_worker_internals_ui.h"
 #include "content/browser/tracing/tracing_ui.h"
@@ -41,10 +41,10 @@ WebUI::TypeID ContentWebUIControllerFactory::GetWebUIType(
       url.host_piece() == kChromeUIIndexedDBInternalsHost ||
       url.host_piece() == kChromeUIMediaInternalsHost ||
       url.host_piece() == kChromeUIServiceWorkerInternalsHost ||
-      url.host_piece() == kChromeUIAppCacheInternalsHost ||
       url.host_piece() == kChromeUINetworkErrorsListingHost ||
+      url.host_piece() == kChromeUIPrerenderInternalsHost ||
       url.host_piece() == kChromeUIProcessInternalsHost ||
-      url.host_piece() == kChromeUIConversionInternalsHost ||
+      url.host_piece() == kChromeUIAttributionInternalsHost ||
       url.host_piece() == kChromeUIUkmHost) {
     return const_cast<ContentWebUIControllerFactory*>(this);
   }
@@ -63,8 +63,6 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
   if (!url.SchemeIs(kChromeUIScheme))
     return nullptr;
 
-  if (url.host_piece() == kChromeUIAppCacheInternalsHost)
-    return std::make_unique<AppCacheInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIGpuHost)
     return std::make_unique<GpuInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIHistogramHost)
@@ -81,10 +79,12 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
 #endif
   if (url.host_piece() == kChromeUIWebRTCInternalsHost)
     return std::make_unique<WebRTCInternalsUI>(web_ui);
+  if (url.host_piece() == kChromeUIPrerenderInternalsHost)
+    return std::make_unique<PrerenderInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIProcessInternalsHost)
     return std::make_unique<ProcessInternalsUI>(web_ui);
-  if (url.host_piece() == kChromeUIConversionInternalsHost)
-    return std::make_unique<ConversionInternalsUI>(web_ui);
+  if (url.host_piece() == kChromeUIAttributionInternalsHost)
+    return std::make_unique<AttributionInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIUkmHost)
     return std::make_unique<UkmInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIMediaInternalsHost) {

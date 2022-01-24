@@ -12,6 +12,7 @@
 #include "chromecast/browser/accessibility/accessibility_manager.h"
 #include "chromecast/browser/accessibility/flutter/flutter_semantics_node_wrapper.h"
 #include "chromecast/browser/cast_browser_process.h"
+#include "chromecast/browser/cast_web_contents_observer.h"
 #include "chromecast/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_utterance.h"
@@ -225,7 +226,7 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
               child_tree_observers_[contents->id()] = std::make_unique<
                   AXTreeSourceFlutter::AXTreeWebContentsObserver>(
                   contents->web_contents(), this);
-              CastWebContents::Observer::Observe(contents);
+              CastWebContentsObserver::Observe(contents);
               cast_web_contents_ = contents;
               break;
             }
@@ -739,7 +740,7 @@ void AXTreeSourceFlutter::UpdateTree() {
 
 void AXTreeSourceFlutter::PageStopped(PageState page_state, int error_code) {
   // Webview is gone. Stop observing.
-  CastWebContents::Observer::Observe(nullptr);
+  CastWebContentsObserver::Observe(nullptr);
   child_tree_observers_.erase(cast_web_contents_->id());
   cast_web_contents_ = nullptr;
 }

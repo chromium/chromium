@@ -1,10 +1,11 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import json
 import os
+import six
 import sys
 import unittest
 import zipfile
@@ -60,7 +61,7 @@ def verify_zip_file(path, *files):
       if f not in names:
         raise AssertionError(f + ' should be in zip file.')
       s = zf.read(f)
-      if s != f:
+      if six.ensure_str(s) != f:
         raise AssertionError('Expected ' + f + ', found ' + s)
 
 
@@ -351,7 +352,7 @@ class UpdateCTSTest(unittest.TestCase):
   @patch('devil.utils.cmd_helper.RunCmd')
   @patch('devil.utils.cmd_helper.GetCmdOutput')
   @patch.object(cts_utils.ChromiumRepoHelper, 'update_testing_json')
-  @patch('urllib.urlretrieve')
+  @patch('urllib.urlretrieve' if six.PY2 else 'urllib.request.urlretrieve')
   def testCompleteUpdate(self, retrieve_mock, update_json_mock, cmd_mock,
                          run_mock):
     with tempfile_ext.NamedTemporaryDirectory() as workDir,\

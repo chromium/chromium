@@ -101,7 +101,3 @@ and with subdirs after 'foo' to illustrate process, e.g. 'browser' or
 Code in a component should be placed in a namespace corresponding to the name of
 the component; e.g. for a component living in `//components/foo`, code in that
 component should be in the `foo::` namespace.
-
-## How does this differ from //base/util?
-
-See the explanation in [//base/util/README.md](https://chromium.googlesource.com/chromium/src/+/HEAD/base/util/README.md#how-does-this-differ-from-components).

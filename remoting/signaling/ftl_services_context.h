@@ -18,10 +18,8 @@ namespace remoting {
 class FtlServicesContext final {
  public:
   // Exposed for testing.
-  static constexpr base::TimeDelta kBackoffInitialDelay =
-      base::TimeDelta::FromSeconds(1);
-  static constexpr base::TimeDelta kBackoffMaxDelay =
-      base::TimeDelta::FromMinutes(1);
+  static constexpr base::TimeDelta kBackoffInitialDelay = base::Seconds(1);
+  static constexpr base::TimeDelta kBackoffMaxDelay = base::Minutes(1);
 
   static const net::BackoffEntry::Policy& GetBackoffPolicy();
   static std::string GetServerEndpoint();

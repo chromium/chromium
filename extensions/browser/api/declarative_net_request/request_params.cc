@@ -57,8 +57,12 @@ flat_rule::ElementType GetElementType(WebRequestResourceType web_request_type) {
       return flat_rule::ElementType_MEDIA;
     case WebRequestResourceType::FONT:
       return flat_rule::ElementType_FONT;
+    case WebRequestResourceType::WEBBUNDLE:
+      return flat_rule::ElementType_WEBBUNDLE;
     case WebRequestResourceType::WEB_SOCKET:
       return flat_rule::ElementType_WEBSOCKET;
+    case WebRequestResourceType::WEB_TRANSPORT:
+      return flat_rule::ElementType_WEBTRANSPORT;
   }
   NOTREACHED();
   return flat_rule::ElementType_OTHER;
@@ -82,7 +86,9 @@ flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
             flat_rule::RequestMethod_OPTIONS},
            {HttpRequestHeaders::kPatchMethod, flat_rule::RequestMethod_PATCH},
            {HttpRequestHeaders::kPostMethod, flat_rule::RequestMethod_POST},
-           {HttpRequestHeaders::kPutMethod, flat_rule::RequestMethod_PUT}});
+           {HttpRequestHeaders::kPutMethod, flat_rule::RequestMethod_PUT},
+           {HttpRequestHeaders::kConnectMethod,
+            flat_rule::RequestMethod_CONNECT}});
 
   DCHECK(std::all_of(kRequestMethods->begin(), kRequestMethods->end(),
                      [](const auto& key_value) {

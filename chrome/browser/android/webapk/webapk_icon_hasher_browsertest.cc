@@ -7,7 +7,6 @@
 #include <limits>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -35,6 +34,11 @@ class WebApkIconHasherBrowserTest : public PlatformBrowserTest {
     scoped_feature_list_.InitAndEnableFeature(
         net::features::kSplitCacheByNetworkIsolationKey);
   }
+
+  WebApkIconHasherBrowserTest(const WebApkIconHasherBrowserTest&) = delete;
+  WebApkIconHasherBrowserTest& operator=(const WebApkIconHasherBrowserTest&) =
+      delete;
+
   ~WebApkIconHasherBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -65,8 +69,6 @@ class WebApkIconHasherBrowserTest : public PlatformBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebApkIconHasherBrowserTest);
 };
 
 namespace {
@@ -115,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(WebApkIconHasherBrowserTest,
 
     base::RunLoop run_loop;
     webapps::WebApkIconHasher::DownloadAndComputeMurmur2Hash(
-        url_loader_factory.get(), url::Origin::Create(kIconUrl), {kIconUrl},
+        url_loader_factory.get(), web_contents->GetWeakPtr(),
+        url::Origin::Create(kIconUrl), {kIconUrl},
         base::BindOnce(&OnGotMurmur2Hash, run_loop.QuitClosure()));
     run_loop.Run();
   }

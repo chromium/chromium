@@ -37,7 +37,7 @@ function respondToShare(event) {
       headers: {'Content-Type': 'text/html'}
     };
 
-    const file_fields = ['records', 'graphs', 'notes'];
+    const file_fields = ['records', 'graphs', 'notes', 'audio', 'image', 'video'];
 
     let field_index = 0;
     let files = undefined;

@@ -5,6 +5,7 @@
 #include "ui/color/color_provider_utils.h"
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
@@ -35,15 +36,19 @@ base::StringPiece ContrastModeName(
   }
 }
 
-#define E1(enum_name) \
-  { enum_name, #enum_name }
-#define E2(enum_name, old_enum_name) \
-  { enum_name, #enum_name }
-#define E3(enum_name, old_enum_name, enum_value) \
-  { enum_name, #enum_name }
-#define E_CPONLY(...) E(__VA_ARGS__)
-#define GET_E(_1, _2, _3, macro_name, ...) macro_name
-#define E(...) GET_E(__VA_ARGS__, E3, E2, E1)(__VA_ARGS__),
+base::StringPiece SystemThemeName(
+    ColorProviderManager::SystemTheme system_theme) {
+  switch (system_theme) {
+    case ColorProviderManager::SystemTheme::kDefault:
+      return "kDefault";
+    case ColorProviderManager::SystemTheme::kCustom:
+      return "kCustom";
+    default:
+      return "<invalid>";
+  }
+}
+
+#include "ui/color/color_id_map_macros.inc"
 
 base::StringPiece ColorIdName(ColorId color_id) {
   static constexpr const auto color_id_map =
@@ -54,12 +59,7 @@ base::StringPiece ColorIdName(ColorId color_id) {
   return "<invalid>";
 }
 
-#undef E1
-#undef E2
-#undef E3
-#undef E_CPONLY
-#undef GET_E
-#undef E
+#include "ui/color/color_id_map_macros.inc"
 
 base::StringPiece ColorSetIdName(ColorSetId color_set_id) {
   // Since we're returning a StringPiece we need a stable location to store the
@@ -186,7 +186,7 @@ std::string SkColorName(SkColor color) {
           {SK_ColorGRAY, "SK_ColorGRAY"},
           {SK_ColorLTGRAY, "SK_ColorLTGRAY"},
           {SK_ColorWHITE, "SK_ColorWHITE"},
-          {SK_ColorRED, "kPlaceholderColor(SK_ColorRED)"},
+          {SK_ColorRED, "kPlaceholderColor"},
           {SK_ColorGREEN, "SK_ColorGREEN"},
           {SK_ColorBLUE, "SK_ColorBLUE"},
           {SK_ColorYELLOW, "SK_ColorYELLOW"},
@@ -203,6 +203,23 @@ std::string SkColorName(SkColor color) {
                               1.0 / SkColorGetA(color_with_alpha));
   }
   return color_utils::SkColorToRgbaString(color);
+}
+
+std::string ConvertColorProviderColorIdToCSSColorId(std::string color_id_name) {
+  color_id_name.replace(color_id_name.begin(), color_id_name.begin() + 1, "-");
+  std::string css_color_id_name;
+  for (char i : color_id_name) {
+    if (base::IsAsciiUpper(i))
+      css_color_id_name += std::string("-");
+    css_color_id_name += base::ToLowerASCII(i);
+  }
+  return css_color_id_name;
+}
+
+std::string ConvertSkColorToCSSColor(SkColor color) {
+  return base::StringPrintf("#%.2x%.2x%.2x%.2x", SkColorGetR(color),
+                            SkColorGetG(color), SkColorGetB(color),
+                            SkColorGetA(color));
 }
 
 }  // namespace ui

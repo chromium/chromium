@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsViewBinder.ViewHolder;
 import org.chromium.ui.base.WindowAndroid;
@@ -54,7 +53,6 @@ public class BottomControlsCoordinator {
      *                          height for the renderer.
      * @param fullscreenManager A {@link FullscreenManager} to listen for fullscreen changes.
      * @param stub The bottom controls {@link ViewStub} to inflate.
-     * @param themeColorProvider The {@link ThemeColorProvider} for the bottom toolbar.
      * @param contentDelegate Delegate for bottom controls UI operations.
      * @param overlayPanelVisibilitySupplier Notifies overlay panel visibility event.
      * @param resourceManager A {@link ResourceManager} for loading textures into the compositor.
@@ -64,7 +62,7 @@ public class BottomControlsCoordinator {
     public BottomControlsCoordinator(Activity activity, WindowAndroid windowAndroid,
             LayoutManager layoutManager, ResourceManager resourceManager,
             BrowserControlsSizer controlsSizer, FullscreenManager fullscreenManager,
-            ScrollingBottomViewResourceFrameLayout root, ThemeColorProvider themeColorProvider,
+            ScrollingBottomViewResourceFrameLayout root,
             BottomControlsContentDelegate contentDelegate,
             ObservableSupplier<Boolean> overlayPanelVisibilitySupplier) {
         PropertyModel model = new PropertyModel(BottomControlsProperties.ALL_KEYS);

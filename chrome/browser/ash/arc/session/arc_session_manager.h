@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -39,6 +38,7 @@ constexpr const char kGeneratedPropertyFilesPathVm[] =
 
 class ArcAndroidManagementChecker;
 class ArcDataRemover;
+class ArcDlcInstaller;
 class ArcFastAppReinstallStarter;
 class ArcPaiStarter;
 class ArcProvisioningResult;
@@ -122,6 +122,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   ArcSessionManager(std::unique_ptr<ArcSessionRunner> arc_session_runner,
                     std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
                         adb_sideloading_availability_delegate);
+
+  ArcSessionManager(const ArcSessionManager&) = delete;
+  ArcSessionManager& operator=(const ArcSessionManager&) = delete;
+
   ~ArcSessionManager() override;
 
   static ArcSessionManager* Get();
@@ -195,6 +199,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // data.
   // If it is already requested to disable, no-op.
   void RequestDisable();
+
+  // Requests to disable ARC session and remove ARC data.
+  // If it is already requested to disable, no-op.
+  void RequestDisableWithArcDataRemoval();
 
   // Requests to remove the ARC data.
   // If ARC is stopped, triggers to remove the data. Otherwise, queues to
@@ -322,6 +330,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
  private:
   // Reports statuses of OptIn flow to UMA.
   class ScopedOptInFlowTracker;
+
+  // Requests to disable ARC session and allows to optionally remove ARC data.
+  // If ARC is already disabled, no-op.
+  void RequestDisable(bool remove_arc_data);
 
   // RequestEnable() has a check in order not to trigger starting procedure
   // twice. This method can be called to bypass that check when restarting.
@@ -474,10 +486,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // transitioning to the managed state.
   base::OneShotTimer wait_for_policy_timer_;
 
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
+
   // Must be the last member.
   base::WeakPtrFactory<ArcSessionManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionManager);
 };
 
 // Outputs the stringified |state| to |os|. This is only for logging purposes.

@@ -50,10 +50,10 @@ String URLMediaSource::createObjectURL(ScriptState* script_state,
   // Since WebWorkers previously could not obtain MediaSource objects, we should
   // be on the main thread unless MediaSourceInWorkers is enabled and we're in a
   // dedicated worker execution context.
-  DCHECK(IsMainThread() ||
-         RuntimeEnabledFeatures::MediaSourceInWorkersEnabled());
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   DCHECK(execution_context);
+  DCHECK(IsMainThread() || RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
+                               execution_context));
   DCHECK(source);
 
   MediaSourceAttachment* attachment;
@@ -62,6 +62,8 @@ String URLMediaSource::createObjectURL(ScriptState* script_state,
 
     // PassKey usage here ensures that only we can call the constructor.
     attachment = new CrossThreadMediaSourceAttachment(source, PassKey());
+    UseCounter::Count(execution_context,
+                      WebFeature::kCreateObjectURLMediaSourceFromWorker);
   } else {
     // Other contexts outside of main window thread or conditionally a dedicated
     // worker thread are not supported (like Shared Worker and Service Worker).

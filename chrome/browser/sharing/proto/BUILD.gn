@@ -11,6 +11,7 @@ group("proto_lite") {
 proto_library("proto") {
   sources = [
     "click_to_call_message.proto",
+    "optimization_guide_push_notification.proto",
     "peer_connection_messages.proto",
     "remote_copy_message.proto",
     "shared_clipboard_message.proto",

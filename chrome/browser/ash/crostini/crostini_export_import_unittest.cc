@@ -130,6 +130,9 @@ class CrostiniExportImportTest : public testing::Test {
     fake_cicerone_client_ = chromeos::FakeCiceroneClient::Get();
   }
 
+  CrostiniExportImportTest(const CrostiniExportImportTest&) = delete;
+  CrostiniExportImportTest& operator=(const CrostiniExportImportTest&) = delete;
+
   ~CrostiniExportImportTest() override {
     chromeos::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
@@ -192,9 +195,6 @@ class CrostiniExportImportTest : public testing::Test {
   base::FilePath tarball_;
 
   content::BrowserTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrostiniExportImportTest);
 };
 
 TEST_F(CrostiniExportImportTest, TestNotAllowed) {

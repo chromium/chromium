@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_WARNING_BADGE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_WARNING_BADGE_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -15,6 +14,10 @@ class WarningBadgeService;
 
 class WarningBadgeServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  WarningBadgeServiceFactory(const WarningBadgeServiceFactory&) = delete;
+  WarningBadgeServiceFactory& operator=(const WarningBadgeServiceFactory&) =
+      delete;
+
   static WarningBadgeService* GetForBrowserContext(
       content::BrowserContext* context);
   static WarningBadgeServiceFactory* GetInstance();
@@ -31,8 +34,6 @@ class WarningBadgeServiceFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WarningBadgeServiceFactory);
 };
 
 }  // namespace extensions

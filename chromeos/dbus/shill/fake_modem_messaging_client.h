@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/shill/modem_messaging_client.h"
 
 namespace chromeos {
@@ -21,6 +20,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeModemMessagingClient
       public ModemMessagingClient::TestInterface {
  public:
   FakeModemMessagingClient();
+
+  FakeModemMessagingClient(const FakeModemMessagingClient&) = delete;
+  FakeModemMessagingClient& operator=(const FakeModemMessagingClient&) = delete;
+
   ~FakeModemMessagingClient() override;
 
   void SetSmsReceivedHandler(const std::string& service_name,
@@ -45,8 +48,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeModemMessagingClient
  private:
   std::map<dbus::ObjectPath, SmsReceivedHandler> sms_received_handlers_;
   std::map<dbus::ObjectPath, std::vector<dbus::ObjectPath>> message_paths_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeModemMessagingClient);
 };
 
 }  // namespace chromeos

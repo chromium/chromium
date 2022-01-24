@@ -29,6 +29,10 @@
 #include "third_party/crashpad/crashpad/test/process_type.h"
 #include "third_party/crashpad/crashpad/util/process/process_memory_native.h"
 
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "third_party/crashpad/crashpad/test/linux/fake_ptrace_connection.h"
+#endif
+
 namespace gwp_asan {
 namespace internal {
 
@@ -74,8 +78,13 @@ class CrashAnalyzerTest : public testing::Test {
         crashpad::CPUArchitecture::kCPUArchitectureX86;
 #endif
 
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+    ASSERT_TRUE(connection_.Initialize(getpid()));
+    auto memory = std::make_unique<crashpad::ProcessMemoryLinux>(&connection_);
+#else
     auto memory = std::make_unique<crashpad::ProcessMemoryNative>();
     ASSERT_TRUE(memory->Initialize(crashpad::test::GetSelfProcess()));
+#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
 
     process_snapshot_.AddModule(std::move(module));
     process_snapshot_.SetException(std::move(exception));
@@ -84,6 +93,10 @@ class CrashAnalyzerTest : public testing::Test {
 
   GuardedPageAllocator gpa_;
   crashpad::test::TestProcessSnapshot process_snapshot_;
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+  crashpad::test::FakePtraceConnection connection_;
+#endif
+
 };
 
 // Stack trace collection on Android builds with frame pointers enabled does

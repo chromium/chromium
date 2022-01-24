@@ -75,6 +75,8 @@ public class AppLaunchDrawBlockerUnitTest {
     public JniMocker mJniMocker = new JniMocker();
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     @Mock
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;

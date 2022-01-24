@@ -112,8 +112,8 @@ class TestSchemaValidatingPolicyHandler : public SchemaValidatingPolicyHandler {
 // sets the kTestPref pref to the filtered list.
 class StringListPolicyHandler : public ListPolicyHandler {
  public:
-  StringListPolicyHandler(const char* kPolicyName, const char* pref_path)
-      : ListPolicyHandler(kPolicyName, base::Value::Type::STRING) {}
+  StringListPolicyHandler(const char* policy_name, const char* pref_path)
+      : ListPolicyHandler(policy_name, base::Value::Type::STRING) {}
 
  protected:
   void ApplyList(base::Value filtered_list, PrefValueMap* prefs) override {

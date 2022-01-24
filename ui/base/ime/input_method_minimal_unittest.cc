@@ -4,7 +4,6 @@
 
 #include "ui/base/ime/input_method_minimal.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/init/input_method_initializer.h"
@@ -19,6 +18,11 @@ class InputMethodDelegateForTesting : public internal::InputMethodDelegate {
  public:
   InputMethodDelegateForTesting(bool propagation)
       : propagation_post_ime_(propagation) {}
+
+  InputMethodDelegateForTesting(const InputMethodDelegateForTesting&) = delete;
+  InputMethodDelegateForTesting& operator=(
+      const InputMethodDelegateForTesting&) = delete;
+
   ~InputMethodDelegateForTesting() override {}
 
   ui::EventDispatchDetails DispatchKeyEventPostIME(
@@ -30,11 +34,13 @@ class InputMethodDelegateForTesting : public internal::InputMethodDelegate {
 
  private:
   bool propagation_post_ime_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodDelegateForTesting);
 };
 
 class InputMethodMinimalTest : public testing::Test {
+ public:
+  InputMethodMinimalTest(const InputMethodMinimalTest&) = delete;
+  InputMethodMinimalTest& operator=(const InputMethodMinimalTest&) = delete;
+
  protected:
   InputMethodMinimalTest() = default;
   ~InputMethodMinimalTest() override = default;
@@ -48,8 +54,6 @@ class InputMethodMinimalTest : public testing::Test {
 
   std::unique_ptr<InputMethodMinimal> input_method_minimal_;
   std::unique_ptr<InputMethodDelegateForTesting> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodMinimalTest);
 };
 
 TEST_F(InputMethodMinimalTest, StopPropagationTest) {

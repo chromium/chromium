@@ -22,6 +22,10 @@
 <translation id="2168108852149185974">Disa përbërës shtesë shkaktojnë ndërprerje aksidentale të Chromium. Çinstalo:</translation>
 <translation id="2178608107313874732">Chromium nuk mund të përdorë kamerën tënde për momentin</translation>
 <translation id="2195025571279539885">Dëshiron që Chromium të ofrojë përkthimin e faqeve në <ph name="LANGUAGE_NAME" /> nga ky sajt herën tjetër?</translation>
+<translation id="2218146227246548550">Organizata jote kërkon që të identifikohesh për të përdorur Chromium. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="2426113998523353159">Organizata jote kërkon që të identifikohesh për të përdorur Chromium.</translation>
+<translation id="2450140762465183767">Tani mund të përdorësh Chromium sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
+<translation id="2478931088402984578">Zgjidh <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">Bëj më shumë me një Chromium të thjeshtë, të sigurt dhe më të shpejtë se kurrë</translation>
 <translation id="2590893390871230428">Sinkronizo të dhënat e Chromium</translation>
 <translation id="2650312721222849884">Për të parë skedat e tua nga çdo vend ku përdor Chromium, aktivizo sinkronizimin</translation>
@@ -38,7 +42,6 @@
 <translation id="3805899903892079518">Chromium nuk ka qasje te fotografitë apo videot e tua. Aktivizo qasjen te Cilësimet e iOS &gt; Privatësia &gt; Fotografitë.</translation>
 <translation id="3946918322491238254">Mund të shikosh ende të gjithë faqeshënuesit, historikun, fjalëkalimet dhe cilësime të tjera në këtë pajisjet. Nëse bën ndryshime, ato nuk do të sinkronizohen me llogarinë tënde.</translation>
 <translation id="4099085513035183040">Nuk mbështetet në Chromium Beta</translation>
-<translation id="4166206055865952171">Bëje Chromium shfletuesin tënd të parazgjedhur</translation>
 <translation id="4555020257205549924">Kur ky funksion është i aktivizuar, Chromium do të ofrojë që të përkthejë faqet e shkruara në gjuhë të tjera duke përdorur "Përkthe me Google". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Tani mund të përdorësh Chromium sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="4681781466797808448">Aktivizo skanerin e Chromium</translation>
@@ -54,8 +57,6 @@
 <translation id="5521125884468363740">Për të parë skedat e tua nga çdo vend ku përdor Chromium, identifikohu dhe aktivizo sinkronizimin</translation>
 <translation id="5573014823074921752">Këshillë për Chromium. Për më shumë opsione për skedat, shtyp dhe mbaj shtypur butonin "Shfaq skedat" në shiritin e veglave që ndodhet në fund ose në krye të ekranit tënd.</translation>
 <translation id="5700709190537129682">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua</translation>
-<translation id="5715349567881822785">Realizo më shumë me Chromium</translation>
-<translation id="5742135483959137648">Përdor Chromium për të hapur lidhjet</translation>
 <translation id="5777187867430702742">Faqe e Chromium</translation>
 <translation id="5862307444128926510">Mirë se vjen në Chromium</translation>
 <translation id="5945387852661427312">Po identifikohesh me një llogari të menaxhuar nga <ph name="DOMAIN" /> dhe po i jep administratorit të saj kontroll mbi të dhënat e tua të Chromium. Të dhënat e tua do të lidhen përgjithmonë me këtë llogari. Dalja nga Chromium do të bëjë që të fshihen të dhënat e tua nga kjo pajisje, por ato do të mbeten të ruajtura në llogarinë tënde të Google.</translation>
@@ -65,16 +66,17 @@
 2. Trokit tek "Aplikacioni i parazgjedhur i shfletuesit"
 3. Zgjidh Chromium.</translation>
 <translation id="6155422572367400359">Identifikohu në këtë sajt, "Llogarinë tënde të Google" dhe Chromium. Mund ta aktivizosh sinkronizmin më vonë.</translation>
+<translation id="6183442264225539303">Identifikohu në këtë sajt dhe në Chromium. Mund ta aktivizosh sinkronizmin më vonë.</translation>
 <translation id="6268381023930128611">Dëshiron të dalësh nga Chromium?</translation>
 <translation id="632825460376924298">Lejo identifikimin në Chromium</translation>
 <translation id="6337530241089703714">Zgjidh nëse do t'i pastrosh të dhënat e Chromium nga kjo pajisje apo do t'i mbash ato</translation>
 <translation id="6424492062988593837">Chromium sapo është përmirësuar! Ofrohet një version i ri.</translation>
 <translation id="6752854822223394465">Organizata jote po konfiguron Chromium...</translation>
 <translation id="6820823224820483452">Chromium nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish nesër.</translation>
-<translation id="6827294685447036764">Nëse lejon që Chromium të dijë vendndodhjen tënde, Chromium e dërgon atë te çdo sajt që ti lejon. Sajtet mund të kërkojnë për vendndodhjen tënde kur ato kanë informacione lokale për të të shfaqur, si dyqanet në afërsi ose lajme.</translation>
 <translation id="7018284295775193585">Chromium nuk mund të përditësohet</translation>
 <translation id="7045244423563602563">Bëje Chromium tëndin</translation>
 <translation id="7099326575020694068">Chromium nuk mund ta përdorë kamerën tënde në modalitetin e "Pamjes së ndarë"</translation>
+<translation id="7108914401277488191">Realizo më shumë me Chromium</translation>
 <translation id="7118091470949186573">Tani mund të përdorësh Chromium sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="7208566199746267865">Chromium të kursen kohë duke i sjellë llogaritë e tua në ueb. Mund të shtosh ose heqësh llogari te "Cilësimet".</translation>
 <translation id="725427773388857052">Chromium mund të të ndihmojë të qëndrosh i sigurt nga nxjerrjet e paautorizuara të të dhënave, faqet e pasigurta të internetit etj.</translation>
@@ -102,6 +104,7 @@
 <translation id="894437814105052438">Kur të dalësh, Chromium nuk do të sinkronizojë asnjë nga të dhënat e tua të reja me "Llogarinë tënde të Google". Të dhënat e sinkronizuara më herët qëndrojnë në llogari.</translation>
 <translation id="9022552996538154597">Identifikohu në Chromium</translation>
 <translation id="9089354809943900324">Chromium nuk është i përditësuar</translation>
+<translation id="9110075932708282655">Përdor Chromium me parazgjedhje</translation>
 <translation id="921174536258924340">Chromium nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo përsëri nesër ose <ph name="BEGIN_LINK" />kontrollo fjalëkalimet në "Llogarinë tënde të Google".<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Autorët e Chromium</translation>
 </translationbundle>

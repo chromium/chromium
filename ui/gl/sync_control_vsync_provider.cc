@@ -30,7 +30,7 @@ SyncControlVSyncProvider::SyncControlVSyncProvider() : gfx::VSyncProvider() {
   // On platforms where we can't get an accurate reading on the refresh
   // rate we fall back to the assumption that we're displaying 60 frames
   // per second.
-  last_good_interval_ = base::TimeDelta::FromSeconds(1) / 60;
+  last_good_interval_ = base::Seconds(1) / 60;
 #endif
 }
 
@@ -107,7 +107,7 @@ bool SyncControlVSyncProvider::GetVSyncParametersIfAvailable(
     return false;
 
   const base::TimeTicks timebase =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(system_time);
+      base::TimeTicks() + base::Microseconds(system_time);
 
   // Only need the previous calculated interval for our filtering.
   while (last_computed_intervals_.size() > 1)
@@ -115,8 +115,7 @@ bool SyncControlVSyncProvider::GetVSyncParametersIfAvailable(
 
   int32_t numerator, denominator;
   if (GetMscRate(&numerator, &denominator) && numerator) {
-    last_computed_intervals_.push(base::TimeDelta::FromSeconds(denominator) /
-                                  numerator);
+    last_computed_intervals_.push(base::Seconds(denominator) / numerator);
   } else if (!last_timebase_.is_null()) {
     base::TimeDelta timebase_diff = timebase - last_timebase_;
     int64_t counter_diff = media_stream_counter - last_media_stream_counter_;

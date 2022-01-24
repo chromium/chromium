@@ -19,7 +19,6 @@ class Button;
 namespace ash {
 
 class CollapseButton;
-class SignOutButton;
 class TopShortcutButton;
 class TopShortcutsViewTest;
 class UnifiedSystemTrayController;
@@ -30,6 +29,11 @@ class UnifiedSystemTrayController;
 class TopShortcutButtonContainer : public views::View {
  public:
   TopShortcutButtonContainer();
+
+  TopShortcutButtonContainer(const TopShortcutButtonContainer&) = delete;
+  TopShortcutButtonContainer& operator=(const TopShortcutButtonContainer&) =
+      delete;
+
   ~TopShortcutButtonContainer() override;
 
   // views::View:
@@ -44,14 +48,15 @@ class TopShortcutButtonContainer : public views::View {
  private:
   views::View* user_avatar_button_ = nullptr;
   views::View* sign_out_button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TopShortcutButtonContainer);
 };
 
 // Top shortcuts view shown on the top of UnifiedSystemTrayView.
 class ASH_EXPORT TopShortcutsView : public views::View {
  public:
   explicit TopShortcutsView(UnifiedSystemTrayController* controller);
+
+  TopShortcutsView(const TopShortcutsView&) = delete;
+  TopShortcutsView& operator=(const TopShortcutsView&) = delete;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
@@ -69,7 +74,7 @@ class ASH_EXPORT TopShortcutsView : public views::View {
 
   // Owned by views hierarchy.
   views::Button* user_avatar_button_ = nullptr;
-  SignOutButton* sign_out_button_ = nullptr;
+  views::Button* sign_out_button_ = nullptr;
   TopShortcutButtonContainer* container_ = nullptr;
   TopShortcutButton* lock_button_ = nullptr;
   TopShortcutButton* settings_button_ = nullptr;
@@ -77,8 +82,6 @@ class ASH_EXPORT TopShortcutsView : public views::View {
   CollapseButton* collapse_button_ = nullptr;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopShortcutsView);
 };
 
 }  // namespace ash

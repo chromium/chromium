@@ -39,7 +39,9 @@
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -112,8 +114,8 @@ inline WindRule SkFillTypeToWindRule(SkPathFillType fill_type) {
 }
 
 inline SkPoint FloatPointToSkPoint(const FloatPoint& point) {
-  return SkPoint::Make(WebCoreFloatToSkScalar(point.X()),
-                       WebCoreFloatToSkScalar(point.Y()));
+  return SkPoint::Make(WebCoreFloatToSkScalar(point.x()),
+                       WebCoreFloatToSkScalar(point.y()));
 }
 
 SkMatrix PLATFORM_EXPORT AffineTransformToSkMatrix(const AffineTransform&);
@@ -142,12 +144,15 @@ inline float BlurRadiusToStdDev(float radius) {
   return radius * 0.5f;
 }
 
-template <typename PrimitiveType>
-void DrawPlatformFocusRing(const PrimitiveType&,
-                           cc::PaintCanvas*,
-                           SkColor,
-                           float width,
-                           float border_radius);
+void PLATFORM_EXPORT DrawPlatformFocusRing(const SkRRect&,
+                                           cc::PaintCanvas*,
+                                           SkColor,
+                                           float width);
+void PLATFORM_EXPORT DrawPlatformFocusRing(const SkPath&,
+                                           cc::PaintCanvas*,
+                                           SkColor,
+                                           float width,
+                                           float corner_radius);
 
 inline SkCanvas::SrcRectConstraint WebCoreClampingModeToSkiaRectConstraint(
     Image::ImageClampingMode clamp_mode) {
@@ -196,5 +201,28 @@ PLATFORM_EXPORT sk_sp<SkData> TryAllocateSkData(size_t size);
 //     paint.setShader(shader);
 
 }  // namespace blink
+
+namespace WTF {
+
+// We define CrossThreadCopier<SKBitMap> here because we cannot include skia
+// headers in platform/wtf.
+template <>
+struct CrossThreadCopier<SkBitmap> {
+  STATIC_ONLY(CrossThreadCopier);
+
+  using Type = SkBitmap;
+  static SkBitmap Copy(const SkBitmap& bitmap) {
+    CHECK(bitmap.isImmutable() || bitmap.isNull())
+        << "Only immutable bitmaps can be transferred.";
+    return bitmap;
+  }
+  static SkBitmap Copy(SkBitmap&& bitmap) {
+    CHECK(bitmap.isImmutable() || bitmap.isNull())
+        << "Only immutable bitmaps can be transferred.";
+    return std::move(bitmap);
+  }
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_SKIA_UTILS_H_

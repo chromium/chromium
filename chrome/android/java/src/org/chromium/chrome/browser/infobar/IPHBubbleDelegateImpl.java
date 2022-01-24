@@ -69,8 +69,9 @@ class IPHBubbleDelegateImpl implements IPHInfoBarSupport.IPHBubbleDelegate {
                 Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
                         mTab.getWindowAndroid(), mTab.isIncognito());
                 DownloadInfoBarController controller =
-                        DownloadManagerService.getDownloadManagerService().getInfoBarController(
-                                profile.getOTRProfileID());
+                        (DownloadInfoBarController) DownloadManagerService
+                                .getDownloadManagerService()
+                                .getInfoBarController(profile.getOTRProfileID());
                 return controller != null ? controller.getTrackerParameters() : null;
             case InfoBarIdentifier.GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID:
                 if (PermissionSettingsBridge.shouldShowNotificationsPromo(mTab.getWebContents())) {

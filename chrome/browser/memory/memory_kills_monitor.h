@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -29,6 +30,10 @@ namespace memory {
 class MemoryKillsMonitor : public chromeos::LoginState::Observer {
  public:
   MemoryKillsMonitor();
+
+  MemoryKillsMonitor(const MemoryKillsMonitor&) = delete;
+  MemoryKillsMonitor& operator=(const MemoryKillsMonitor&) = delete;
+
   ~MemoryKillsMonitor() override;
 
   // Initializes the global instance, but do not start monitoring until user
@@ -86,8 +91,6 @@ class MemoryKillsMonitor : public chromeos::LoginState::Observer {
   unsigned long last_arc_oom_kills_count_ = 0;
 
   base::RepeatingTimer checking_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryKillsMonitor);
 };
 
 }  // namespace memory

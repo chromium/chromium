@@ -28,6 +28,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // gn check complains on Linux Ozone.
 #include "ash/public/cpp/shelf_model.h"  // nogncheck
+#include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #endif
@@ -147,10 +148,11 @@ void AppInfoFooterPanel::SetPinnedToShelf(bool value) {
       ChromeShelfController::instance()->shelf_model();
   DCHECK(shelf_model);
   ash::ShelfModel::ScopedUserTriggeredMutation user_triggered(shelf_model);
-  if (value)
-    shelf_model->PinAppWithID(app_->id());
-  else
-    shelf_model->UnpinAppWithID(app_->id());
+  if (value) {
+    PinAppWithIDToShelf(app_->id());
+  } else {
+    UnpinAppWithIDFromShelf(app_->id());
+  }
 
   UpdatePinButtons(true);
   Layout();

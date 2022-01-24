@@ -158,8 +158,8 @@ void CleanupTaskTest::MakeFactoryAndTask() {
 TEST_F(CleanupTaskTest, CleanupExpiredRequest) {
   base::Time creation_time = OfflineTimeNow();
   base::Time expired_time =
-      creation_time - base::TimeDelta::FromSeconds(
-                          policy()->GetRequestExpirationTimeInSeconds() + 10);
+      creation_time -
+      base::Seconds(policy()->GetRequestExpirationTimeInSeconds() + 10);
   // Request2 will be expired, request1 will be current.
   SavePageRequest request1(kRequestId1, GURL("https://google.com"), kClientId1,
                            creation_time, kUserRequested);

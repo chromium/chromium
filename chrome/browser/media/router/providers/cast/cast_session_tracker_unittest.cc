@@ -187,7 +187,8 @@ TEST_F(CastSessionTrackerTest, HandleMediaStatusMessageBasic) {
       {
         "playerState": "IDLE",
         "sessionId": "theSessionId"
-      }]})"),
+      }
+      ]})"),
                                               absl::optional<int>()));
 
   // This should call session_tracker_.HandleMediaStatusMessage(...).
@@ -201,6 +202,7 @@ TEST_F(CastSessionTrackerTest, HandleMediaStatusMessageBasic) {
       }, {
         "playerState": "IDLE",
       },
+      "not a dict; should be removed"
     ],
   })")));
 

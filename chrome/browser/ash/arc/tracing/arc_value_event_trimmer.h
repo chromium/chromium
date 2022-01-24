@@ -17,6 +17,10 @@ namespace arc {
 class ArcValueEventTrimmer {
  public:
   ArcValueEventTrimmer(ValueEvents* events, ArcValueEvent::Type type);
+
+  ArcValueEventTrimmer(const ArcValueEventTrimmer&) = delete;
+  ArcValueEventTrimmer& operator=(const ArcValueEventTrimmer&) = delete;
+
   ~ArcValueEventTrimmer();
 
   // May be add the next event, in case it is not trimmed out.
@@ -39,8 +43,6 @@ class ArcValueEventTrimmer {
   int64_t last_trimmed_timestamp_;
   // Value of the last event.
   int last_value_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcValueEventTrimmer);
 };
 
 }  // namespace arc

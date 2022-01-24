@@ -6,11 +6,12 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -127,6 +128,8 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
 
   Process process;
   if (BeforeLaunchOnLauncherThread(*files_to_register, &options)) {
+    base::FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
+        command_line(), &options);
     process =
         LaunchProcessOnLauncherThread(options, std::move(files_to_register),
 #if defined(OS_ANDROID)

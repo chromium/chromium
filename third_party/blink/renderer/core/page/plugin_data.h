@@ -36,7 +36,10 @@ class CORE_EXPORT MimeClassInfo final : public GarbageCollected<MimeClassInfo> {
  public:
   void Trace(Visitor*) const;
 
-  MimeClassInfo(const String& type, const String& desc, PluginInfo&);
+  MimeClassInfo(const String& type,
+                const String& description,
+                PluginInfo& plugin,
+                const Vector<String> extensions);
 
   const String& Type() const { return type_; }
   const String& Description() const { return description_; }

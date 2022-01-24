@@ -102,8 +102,10 @@ void PlatformThread::SetName(const std::string& name) {
 }
 
 // static
-bool PlatformThread::CanIncreaseThreadPriority(ThreadPriority priority) {
-  return true;
+bool PlatformThread::CanChangeThreadPriority(ThreadPriority from,
+                                             ThreadPriority to) {
+  return from == to || to == ThreadPriority::DISPLAY ||
+         to == ThreadPriority::REALTIME_AUDIO;
 }
 
 // static
@@ -111,9 +113,7 @@ void PlatformThread::SetCurrentThreadPriorityImpl(ThreadPriority priority) {
   switch (priority) {
     case ThreadPriority::BACKGROUND:
     case ThreadPriority::NORMAL:
-      DCHECK(GetThreadPriorityFromTls() != ThreadPriority::DISPLAY &&
-             GetThreadPriorityFromTls() != ThreadPriority::REALTIME_AUDIO);
-      break;
+      return;
 
     case ThreadPriority::DISPLAY:
       ScheduleAsMediaThread("chromium.base.threading.display",

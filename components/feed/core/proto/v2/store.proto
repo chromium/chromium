@@ -239,6 +239,7 @@ message WebFeedInfo {
     STATE_UNSPECIFIED = 0;
     INACTIVE = 1;
     ACTIVE = 2;
+    WAITING_FOR_CONTENT = 4;
   }
   string web_feed_id = 1;
   string title = 2;

@@ -15,41 +15,55 @@
 namespace mojo {
 
 template <>
-struct StructTraits<media::mojom::StatusDataView, media::Status> {
-  static media::StatusCode code(const media::Status& input) {
-    return input.code();
+struct StructTraits<media::mojom::StatusDataDataView,
+                    media::internal::StatusData> {
+  static media::StatusCodeType code(const media::internal::StatusData& input) {
+    return input.code;
   }
 
-  static absl::optional<std::string> message(const media::Status& input) {
-    if (input.is_ok())
-      return absl::nullopt;
-    DCHECK(input.data_);
-    return input.message();
+  static media::StatusGroupType group(
+      const media::internal::StatusData& input) {
+    return input.group;
   }
 
-  static base::span<base::Value> frames(const media::Status& input) {
-    if (input.is_ok())
-      return {};
-    DCHECK(input.data_);
-    return input.data_->frames;
+  static std::string message(const media::internal::StatusData& input) {
+    return input.message;
   }
 
-  static base::span<media::Status> causes(const media::Status& input) {
-    if (input.is_ok())
-      return {};
-    DCHECK(input.data_);
-    return input.data_->causes;
+  static base::span<base::Value> frames(media::internal::StatusData& input) {
+    return input.frames;
   }
 
-  static absl::optional<base::Value> data(const media::Status& input) {
-    if (!input.is_ok()) {
-      DCHECK(input.data_);
-      return input.data_->data.Clone();
-    }
+  static base::span<media::internal::StatusData> causes(
+      media::internal::StatusData& input) {
+    return input.causes;
+  }
+
+  static base::Value data(const media::internal::StatusData& input) {
+    return input.data.Clone();
+  }
+
+  static bool Read(media::mojom::StatusDataDataView data,
+                   media::internal::StatusData* output);
+};
+
+template <typename StatusEnum, typename DataView>
+struct StructTraits<DataView, media::TypedStatus<StatusEnum>> {
+  static absl::optional<media::internal::StatusData> internal(
+      const media::TypedStatus<StatusEnum>& input) {
+    if (input.data_)
+      return *input.data_;
     return absl::nullopt;
   }
 
-  static bool Read(media::mojom::StatusDataView data, media::Status* output);
+  static bool Read(DataView data, media::TypedStatus<StatusEnum>* output) {
+    absl::optional<media::internal::StatusData> internal;
+    if (!data.ReadInternal(&internal))
+      return false;
+    if (internal)
+      output->data_ = internal->copy();
+    return true;
+  }
 };
 
 }  // namespace mojo

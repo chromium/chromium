@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_FEED_STREAM_H_
 #define COMPONENTS_FEED_CORE_V2_FEED_STREAM_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,22 +13,25 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/version.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/launch_reliability_logger.h"
+#include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/persistent_key_value_store_impl.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/request_throttler.h"
 #include "components/feed/core/v2/scheduling.h"
-#include "components/feed/core/v2/stream/notice_card_tracker.h"
+#include "components/feed/core/v2/stream/privacy_notice_card_tracker.h"
 #include "components/feed/core/v2/stream/upload_criteria.h"
 #include "components/feed/core/v2/stream_model.h"
+#include "components/feed/core/v2/stream_surface_set.h"
 #include "components/feed/core/v2/tasks/load_more_task.h"
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
@@ -43,6 +47,7 @@ namespace feed {
 namespace feed_stream {
 class UnreadContentNotifier;
 }
+class NoticeCardTracker;
 class FeedNetwork;
 class FeedStore;
 class WebFeedSubscriptionCoordinator;
@@ -57,9 +62,10 @@ class SurfaceUpdater;
 // needed by other classes within the Feed component.
 class FeedStream : public FeedApi,
                    public offline_pages::TaskQueue::Delegate,
+                   public MetricsReporter::Delegate,
                    public StreamModel::StoreObserver {
  public:
-  class Delegate {
+  class Delegate : public WebFeedSubscriptionCoordinator::Delegate {
    public:
     virtual ~Delegate() = default;
     // Returns true if Chrome's EULA has been accepted.
@@ -110,7 +116,7 @@ class FeedStream : public FeedApi,
   PersistentKeyValueStoreImpl& GetPersistentKeyValueStore() override;
   void LoadMore(const FeedStreamSurface& surface,
                 base::OnceCallback<void(bool)> callback) override;
-  void ManualRefresh(const FeedStreamSurface& surface,
+  void ManualRefresh(const StreamType& stream_type,
                      base::OnceCallback<void(bool)> callback) override;
   void ExecuteOperations(
       const StreamType& stream_type,
@@ -129,7 +135,7 @@ class FeedStream : public FeedApi,
   void ProcessViewAction(base::StringPiece data) override;
   bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
   DebugStreamData GetDebugStreamData() override;
-  void ForceRefreshForDebugging() override;
+  void ForceRefreshForDebugging(const StreamType& stream_type) override;
   std::string DumpStateForDebugging() override;
   void SetForcedStreamUpdateForDebugging(
       const feedui::StreamUpdate& stream_update) override;
@@ -137,7 +143,8 @@ class FeedStream : public FeedApi,
   void ReportSliceViewed(SurfaceId surface_id,
                          const StreamType& stream_type,
                          const std::string& slice_id) override;
-  void ReportFeedViewed(SurfaceId surface_id) override;
+  void ReportFeedViewed(const StreamType& stream_type,
+                        SurfaceId surface_id) override;
   void ReportPageLoaded() override;
   void ReportOpenAction(const GURL& url,
                         const StreamType& stream_type,
@@ -151,10 +158,25 @@ class FeedStream : public FeedApi,
   void ReportStreamScrollStart() override;
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override;
+  void ReportNoticeCreated(const StreamType& stream_type,
+                           const std::string& key) override;
+  void ReportNoticeViewed(const StreamType& stream_type,
+                          const std::string& key) override;
+  void ReportNoticeOpenAction(const StreamType& stream_type,
+                              const std::string& key) override;
+  void ReportNoticeDismissed(const StreamType& stream_type,
+                             const std::string& key) override;
   base::Time GetLastFetchTime(const StreamType& stream_type) override;
+  void SetContentOrder(const StreamType& stream_type,
+                       ContentOrder content_order) override;
+  ContentOrder GetContentOrder(const StreamType& stream_type) override;
+  ContentOrder GetContentOrderFromPrefs(const StreamType& stream_type) override;
 
   // offline_pages::TaskQueue::Delegate.
   void OnTaskQueueIsIdle() override;
+
+  // MetricsReporter::Delegate.
+  void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override;
 
   // StreamModel::StoreObserver.
   void OnStoreChange(StreamModel::StoreUpdate update) override;
@@ -290,7 +312,7 @@ class FeedStream : public FeedApi,
   using UnreadContentNotifier = feed_stream::UnreadContentNotifier;
 
   struct Stream {
-    Stream();
+    explicit Stream(const StreamType& stream_type);
     ~Stream();
     Stream(const Stream&) = delete;
     Stream& operator=(const Stream&) = delete;
@@ -298,6 +320,7 @@ class FeedStream : public FeedApi,
     // Whether the model is being loaded. Used to prevent multiple simultaneous
     // attempts to load the model.
     bool model_loading_in_progress = false;
+    StreamSurfaceSet surfaces;
     std::unique_ptr<SurfaceUpdater> surface_updater;
     // The stream model. Null if not yet loaded.
     // Internally, this should only be changed by |LoadModel()| and
@@ -323,7 +346,8 @@ class FeedStream : public FeedApi,
 
   // A single function task to delete stored feed data and force a refresh.
   // To only be called from within a |Task|.
-  void ForceRefreshForDebuggingTask();
+  void ForceRefreshForDebuggingTask(const StreamType& stream_type);
+  void ForceRefreshTask(const StreamType& stream_type);
 
   void ScheduleModelUnloadIfNoSurfacesAttached(const StreamType& stream_type);
   void AddUnloadModelIfNoSurfacesAttachedTask(const StreamType& stream_type,
@@ -351,6 +375,8 @@ class FeedStream : public FeedApi,
   Stream* FindStream(const StreamType& type);
   const Stream* FindStream(const StreamType& type) const;
   void UpdateExperiments(Experiments experiments);
+
+  NoticeCardTracker& GetNoticeCardTracker(const std::string& key);
 
   // Unowned.
 
@@ -397,7 +423,9 @@ class FeedStream : public FeedApi,
   feedui::StreamUpdate forced_stream_update_for_debugging_;
 
   feed_stream::UploadCriteria upload_criteria_;
-  NoticeCardTracker notice_card_tracker_;
+  PrivacyNoticeCardTracker privacy_notice_card_tracker_;
+
+  std::map<std::string, NoticeCardTracker> notice_card_trackers_;
 
   bool clear_all_in_progress_ = false;
 

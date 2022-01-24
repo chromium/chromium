@@ -11,13 +11,14 @@
 class AuthenticationServiceDelegateFake : public AuthenticationServiceDelegate {
  public:
   AuthenticationServiceDelegateFake();
+
+  AuthenticationServiceDelegateFake& operator=(
+      const AuthenticationServiceDelegateFake&) = delete;
+
   ~AuthenticationServiceDelegateFake() override;
 
   // AuthenticationServiceDelegate implementation.
   void ClearBrowsingData(ProceduralBlock completion) override;
-
- private:
-  DISALLOW_ASSIGN(AuthenticationServiceDelegateFake);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_AUTHENTICATION_SERVICE_DELEGATE_FAKE_H_

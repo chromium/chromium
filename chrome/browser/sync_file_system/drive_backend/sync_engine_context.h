@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -39,6 +38,10 @@ class SyncEngineContext {
       TaskLogger* task_logger,
       const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
       const scoped_refptr<base::SequencedTaskRunner>& worker_task_runner);
+
+  SyncEngineContext(const SyncEngineContext&) = delete;
+  SyncEngineContext& operator=(const SyncEngineContext&) = delete;
+
   ~SyncEngineContext();
 
   void SetMetadataDatabase(std::unique_ptr<MetadataDatabase> metadata_database);
@@ -70,8 +73,6 @@ class SyncEngineContext {
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
 
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineContext);
 };
 
 }  // namespace drive_backend

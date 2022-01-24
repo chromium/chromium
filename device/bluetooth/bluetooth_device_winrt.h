@@ -43,6 +43,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWinrt : public BluetoothDevice {
   static constexpr uint8_t k128BitServiceDataSection = 0x21;
 
   BluetoothDeviceWinrt(BluetoothAdapterWinrt* adapter, uint64_t raw_address);
+
+  BluetoothDeviceWinrt(const BluetoothDeviceWinrt&) = delete;
+  BluetoothDeviceWinrt& operator=(const BluetoothDeviceWinrt&) = delete;
+
   ~BluetoothDeviceWinrt() override;
 
   // BluetoothDevice:
@@ -192,8 +196,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceWinrt : public BluetoothDevice {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothDeviceWinrt> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceWinrt);
 };
 
 }  // namespace device

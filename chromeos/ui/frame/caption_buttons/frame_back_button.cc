@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
 
+#include "base/macros.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"

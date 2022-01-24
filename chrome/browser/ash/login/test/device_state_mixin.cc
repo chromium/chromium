@@ -25,8 +25,7 @@
 #include "components/policy/proto/install_attributes.pb.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kFakeDomain[] = "example.com";
@@ -276,4 +275,4 @@ void DeviceStateMixin::SetCachedDeviceLocalAccountPolicy(
 
 DeviceStateMixin::~DeviceStateMixin() = default;
 
-}  // namespace chromeos
+}  // namespace ash

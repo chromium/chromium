@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
 #include "chromecast/device/bluetooth/le/remote_device.h"
 #include "chromecast/device/bluetooth/le/remote_service.h"
@@ -70,6 +70,9 @@ class GattClientManager {
       bluetooth_v2_shlib::GattClient* gatt_client,
       BluetoothManagerPlatform* bluetooth_manager,
       LeScanManager* le_scan_manager);
+
+  GattClientManager(const GattClientManager&) = delete;
+  GattClientManager& operator=(const GattClientManager&) = delete;
 
   virtual ~GattClientManager() = default;
 
@@ -130,9 +133,6 @@ class GattClientManager {
 
  protected:
   GattClientManager() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GattClientManager);
 };
 
 }  // namespace bluetooth

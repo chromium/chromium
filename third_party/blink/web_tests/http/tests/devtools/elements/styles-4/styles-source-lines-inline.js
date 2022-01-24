@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that elements panel shows proper inline style locations in the sidebar panel.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('resources/styles-source-lines-inline-helper.html');
 

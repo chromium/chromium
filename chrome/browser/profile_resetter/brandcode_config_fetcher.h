@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -35,6 +34,10 @@ class BrandcodeConfigFetcher {
                          FetchCallback callback,
                          const GURL& url,
                          const std::string& brandcode);
+
+  BrandcodeConfigFetcher(const BrandcodeConfigFetcher&) = delete;
+  BrandcodeConfigFetcher& operator=(const BrandcodeConfigFetcher&) = delete;
+
   ~BrandcodeConfigFetcher();
 
   bool IsActive() const { return !!simple_url_loader_; }
@@ -67,8 +70,6 @@ class BrandcodeConfigFetcher {
   std::unique_ptr<BrandcodedDefaultSettings> default_settings_;
 
   base::WeakPtrFactory<BrandcodeConfigFetcher> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrandcodeConfigFetcher);
 };
 
 #endif  // CHROME_BROWSER_PROFILE_RESETTER_BRANDCODE_CONFIG_FETCHER_H_

@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_LAYOUT_LAYOUT_PROVIDER_H_
 #define UI_VIEWS_LAYOUT_LAYOUT_PROVIDER_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/shadow_value.h"
@@ -135,6 +134,10 @@ enum class Emphasis {
 class VIEWS_EXPORT LayoutProvider {
  public:
   LayoutProvider();
+
+  LayoutProvider(const LayoutProvider&) = delete;
+  LayoutProvider& operator=(const LayoutProvider&) = delete;
+
   virtual ~LayoutProvider();
 
   // This should never return nullptr.
@@ -186,8 +189,6 @@ class VIEWS_EXPORT LayoutProvider {
 
  private:
   TypographyProvider typography_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutProvider);
 };
 
 }  // namespace views

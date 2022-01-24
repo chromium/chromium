@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MANAGEMENT_TRANSITION_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MANAGEMENT_TRANSITION_SCREEN_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +24,11 @@ class ManagementTransitionScreenView {
   // Renamed from "supervision-transition".
   constexpr static StaticOobeScreenId kScreenId{"management-transition"};
 
+  ManagementTransitionScreenView(const ManagementTransitionScreenView&) =
+      delete;
+  ManagementTransitionScreenView& operator=(
+      const ManagementTransitionScreenView&) = delete;
+
   virtual ~ManagementTransitionScreenView() {}
 
   virtual void Bind(ash::ManagementTransitionScreen* screen) = 0;
@@ -34,9 +38,6 @@ class ManagementTransitionScreenView {
 
  protected:
   ManagementTransitionScreenView() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManagementTransitionScreenView);
 };
 
 class ManagementTransitionScreenHandler
@@ -47,6 +48,12 @@ class ManagementTransitionScreenHandler
 
   explicit ManagementTransitionScreenHandler(
       JSCallsContainer* js_calls_container);
+
+  ManagementTransitionScreenHandler(const ManagementTransitionScreenHandler&) =
+      delete;
+  ManagementTransitionScreenHandler& operator=(
+      const ManagementTransitionScreenHandler&) = delete;
+
   ~ManagementTransitionScreenHandler() override;
 
   // BaseScreenHandler:
@@ -65,6 +72,9 @@ class ManagementTransitionScreenHandler
  private:
   // BaseScreenHandler:
   void Initialize() override;
+
+  // Shows a given step.
+  void ShowStep(const char* step);
 
   // Called when the max wait timeout is reached.
   void OnManagementTransitionFailed();
@@ -89,8 +99,6 @@ class ManagementTransitionScreenHandler
   PrefChangeRegistrar registrar_;
 
   base::WeakPtrFactory<ManagementTransitionScreenHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementTransitionScreenHandler);
 };
 
 }  // namespace chromeos

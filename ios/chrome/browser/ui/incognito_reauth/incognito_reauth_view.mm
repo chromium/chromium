@@ -81,9 +81,7 @@ const CGFloat kVerticalContentPadding = 70.0f;
     _tabSwitcherButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     _tabSwitcherButton.titleLabel.adjustsFontForContentSizeCategory = YES;
 
-    if (@available(iOS 13.4, *)) {
-      _tabSwitcherButton.pointerInteractionEnabled = YES;
-    }
+    _tabSwitcherButton.pointerInteractionEnabled = YES;
 
     UIView* authButtonContainer =
         [self buildAuthenticateButtonWithBlurEffect:blurEffect];
@@ -157,25 +155,17 @@ const CGFloat kVerticalContentPadding = 70.0f;
       base::SysNSStringToUTF16(biometricAuthenticationTypeString()));
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
-  if (@available(iOS 13.4, *)) {
-    button.pointerInteractionEnabled = YES;
-  }
+  button.pointerInteractionEnabled = YES;
 
   UIView* backgroundView = nil;
-  if (@available(iOS 13, *)) {
-    UIVisualEffectView* effectView = [[UIVisualEffectView alloc]
-        initWithEffect:[UIVibrancyEffect
-                           effectForBlurEffect:blurEffect
-                                         style:UIVibrancyEffectStyleFill]];
+  UIVisualEffectView* effectView = [[UIVisualEffectView alloc]
+      initWithEffect:[UIVibrancyEffect
+                         effectForBlurEffect:blurEffect
+                                       style:UIVibrancyEffectStyleFill]];
 
-    [button addSubview:titleLabel];
-    [effectView.contentView addSubview:button];
-    backgroundView = effectView;
-  } else {
-    backgroundView = [[UIView alloc] init];
-    [backgroundView addSubview:button];
-    [backgroundView addSubview:titleLabel];
-  }
+  [button addSubview:titleLabel];
+  [effectView.contentView addSubview:button];
+  backgroundView = effectView;
   AddSameConstraintsWithInsets(
 
       button, titleLabel,

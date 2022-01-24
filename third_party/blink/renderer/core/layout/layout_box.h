@@ -72,7 +72,7 @@ enum ShouldIncludeScrollbarGutter {
   kIncludeScrollbarGutter
 };
 
-using SnapAreaSet = HashSet<LayoutBox*>;
+using SnapAreaSet = HeapHashSet<Member<LayoutBox>>;
 
 struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
  public:
@@ -84,7 +84,7 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 
   // For spanners, the spanner placeholder that lays us out within the multicol
   // container.
-  LayoutMultiColumnSpannerPlaceholder* spanner_placeholder_;
+  Member<LayoutMultiColumnSpannerPlaceholder> spanner_placeholder_;
 
   LayoutUnit override_logical_width_;
   LayoutUnit override_logical_height_;
@@ -102,19 +102,12 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 
   LayoutUnit pagination_strut_;
 
-  LayoutBlock* percent_height_container_;
+  Member<LayoutBlock> percent_height_container_;
   // For snap area, the owning snap container.
-  LayoutBox* snap_container_;
+  Member<LayoutBox> snap_container_;
   // For snap container, the descendant snap areas that contribute snap
   // points.
-  std::unique_ptr<SnapAreaSet> snap_areas_;
-
-  SnapAreaSet& EnsureSnapAreas() {
-    if (!snap_areas_)
-      snap_areas_ = std::make_unique<SnapAreaSet>();
-
-    return *snap_areas_;
-  }
+  SnapAreaSet snap_areas_;
 
   // Used by BoxPaintInvalidator. Stores the previous content rect after the
   // last paint invalidation. It's valid if has_previous_content_box_rect_ is
@@ -223,6 +216,7 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
 class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
  public:
   explicit LayoutBox(ContainerNode*);
+  void Trace(Visitor*) const override;
 
   PaintLayerType LayerTypeRequired() const override;
 
@@ -483,7 +477,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // blocks writing mode.
   IntRect PixelSnappedBorderBoxRect() const {
     NOT_DESTROYED();
-    return IntRect(IntPoint(),
+    return IntRect(gfx::Point(),
                    PixelSnappedBorderBoxSize(PhysicalOffset(Location())));
   }
   // TODO(crbug.com/962299): This method is only correct when |offset| is the
@@ -981,7 +975,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void AbsoluteQuads(Vector<FloatQuad>&,
                      MapCoordinatesFlags mode = 0) const override;
-  FloatRect LocalBoundingBoxRectForAccessibility() const final;
+  FloatRect LocalBoundingBoxRectForAccessibility() const override;
 
   void SetBoxLayoutExtraInput(const BoxLayoutExtraInput* input) {
     NOT_DESTROYED();
@@ -1199,6 +1193,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                            const NGPhysicalBoxFragment& old_fragment);
 
   void ShrinkLayoutResults(wtf_size_t results_to_keep);
+  void RestoreLegacyLayoutResults(
+      scoped_refptr<const NGLayoutResult> measure_result,
+      scoped_refptr<const NGLayoutResult> layout_result);
   void ClearLayoutResults();
 
   const NGLayoutResult* GetCachedLayoutResult() const;
@@ -1562,8 +1559,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return false;
   }
 
-  bool HasUnsplittableScrollingOverflow() const;
-
   // Page / column breakability inside block-level objects.
   enum PaginationBreakability {
     kAllowAnyBreaks,  // No restrictions on breaking. May examine children to
@@ -1593,6 +1588,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return GetPaginationBreakability(kNGFragmentationEngine);
   }
+
+  bool HasUnsplittableScrollingOverflow(FragmentationEngine) const;
 
   LayoutRect LocalCaretRect(
       const InlineBox*,
@@ -1806,7 +1803,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // See README.md for an explanation of scroll origin.
   IntSize OriginAdjustmentForScrollbars() const;
-  IntPoint ScrollOrigin() const;
+  gfx::Point ScrollOrigin() const;
   PhysicalOffset ScrolledContentOffset() const;
 
   // Scroll offset as snapped to physical pixels. This value should be used in
@@ -1814,7 +1811,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // where the content is displayed, rather than what the ideal offset is. For
   // most other cases ScrolledContentOffset is probably more appropriate. This
   // is the offset that's actually drawn to the screen.
-  IntPoint PixelSnappedScrolledContentOffset() const;
+  // TODO(crbug.com/962299): Pixel-snapping before PrePaint (when we know the
+  // paint offset) is incorrect.
+  gfx::Vector2d PixelSnappedScrolledContentOffset() const;
 
   // Maps from scrolling contents space to box space and apply overflow
   // clip if needed. Returns true if no clipping applied or the flattened quad
@@ -2075,6 +2074,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Issues a paint invalidation on the layout viewport's vertical scrollbar
   // (which is responsible for painting the tickmarks).
   void InvalidatePaintForTickmarks();
+
+  // Returns which of the border box space and contents space (maybe both)
+  // the backgrounds should be painted into, if the LayoutBox is composited.
+  // The caller may adjust the value by considering LCD-text etc. if needed and
+  // call SetBackgroundPaintLocation() with the value to be used for painting.
+  BackgroundPaintLocation ComputeBackgroundPaintLocationIfComposited() const;
 
  protected:
   ~LayoutBox() override;
@@ -2377,17 +2382,16 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // laid out.
   const BoxLayoutExtraInput* extra_input_ = nullptr;
 
-  union {
-    // The inline box containing this LayoutBox, for atomic inline elements.
-    // Valid only when !IsInLayoutNGInlineFormattingContext().
-    InlineBox* inline_box_wrapper_;
-    // The index of the first fragment item associated with this object in
-    // |NGFragmentItems::Items()|. Zero means there are no such item.
-    // Valid only when IsInLayoutNGInlineFormattingContext().
-    wtf_size_t first_fragment_item_index_;
-  };
+  // The inline box containing this LayoutBox, for atomic inline elements.
+  // Valid only when !IsInLayoutNGInlineFormattingContext().
+  Member<InlineBox> inline_box_wrapper_;
 
-  Persistent<LayoutBoxRareData> rare_data_;
+  // The index of the first fragment item associated with this object in
+  // |NGFragmentItems::Items()|. Zero means there are no such item.
+  // Valid only when IsInLayoutNGInlineFormattingContext().
+  wtf_size_t first_fragment_item_index_ = 0u;
+
+  Member<LayoutBoxRareData> rare_data_;
 };
 
 template <>

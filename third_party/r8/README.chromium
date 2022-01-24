@@ -1,6 +1,6 @@
 Name: R8
 URL: https://r8.googlesource.com/r8
-Version: 3.1.13.alpha
+Version: unknown
 License: BSD 3-Clause
 License File: NOT_SHIPPED
 Security Critical: no
@@ -22,7 +22,14 @@ R8 is a proguard-like optimizer that also has the ability to dex.
 Local Modifications:
 * Refer to commit descriptions within "3pp/patches" directory.
 * Added "playground" directory for quick "how does this optimize" tests.
-* Removed references to ConcurrentHashMap and TimeZone#getTimeZone in desugar_jdk_libs.json.
+* desugar_jdk_libs.json:
+  * Removed references to ConcurrentHashMap to avoid bloat
+  * Removed references to TimeZone#getTimeZone to avoid desugaring of
+    an overload that does not require desugaring
+  * Removed references to synchronizedMap and synchronizedSortedMap because the
+    desugared version accesses the "dark greylisted"
+    SynchronizedCollection.mutex field, which caused modal dialogs to appear on
+    Android P instrumentation tests. https://crbug.com/1256614
 * Added "java/src/org/chromium/build/CustomD8.java", custom_d8.jar, and BUILD.gn.
   * Used in "build/android/gyp/dex.py" to enable desugar dependencies.
 
@@ -34,17 +41,22 @@ Update Instructions:
 autoninja -C out/Debug third_party/r8:custom_d8_java
 cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d8.jar
 
-* For a new version of r8:
-  * Find the latest instance from:
-    https://chrome-infra-packages.appspot.com/p/chromium/third_party/r8/+/
-    * These instances are uploaded by the build bot:
-      https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
-      * The bot autoruns every 6 hours. Ping a trooper or a clank build core dev to
-        trigger it if you need it sooner:
-        https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
-  * Copy this instance ID to the r8 entry in //DEPS.
-  * Update this file with the new version string for that instance and submit.
-    * Use the version after the @ sign.
+* For r8:
+  * R8 is now autorolled ~once a week.
+  * To lookup the latest version being used currently:
+    * Look up the cipd instance id from //DEPS, or run
+      `gclient getdep -r src/third_party/r8:chromium/third_party/r8`.
+    * Find the version tag at this url
+      https://chrome-infra-packages.appspot.com/p/chromium/third_party/r8/+/<instance id>
+    * Or, run `cipd describe chromium/third_party/r8 -version <instance id>` and look at the version tag.
+    * The version string appears after the @ symbol in the tag.
+  * New instances are uploaded by the packager bot:
+    https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
+  * The bot autoruns every 6 hours. Ping a trooper or a clank build core dev to
+    trigger it if you need it sooner:
+    https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+  * The autoroller runs automatically when a new cipd instance is uploaded, see
+    its status here: https://autoroll.skia.org/r/r8-chromium
 
 * If patching fails:
 git clone https://r8.googlesource.com/r8

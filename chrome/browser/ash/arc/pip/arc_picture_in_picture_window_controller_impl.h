@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_PIP_ARC_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_PIP_ARC_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 
-#include "base/macros.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -27,6 +26,12 @@ class ArcPictureInPictureWindowControllerImpl
  public:
   explicit ArcPictureInPictureWindowControllerImpl(
       arc::ArcPipBridge* arc_pip_bridge);
+
+  ArcPictureInPictureWindowControllerImpl(
+      const ArcPictureInPictureWindowControllerImpl&) = delete;
+  ArcPictureInPictureWindowControllerImpl& operator=(
+      const ArcPictureInPictureWindowControllerImpl&) = delete;
+
   ~ArcPictureInPictureWindowControllerImpl() override;
 
   // PictureInPictureWindowController:
@@ -49,8 +54,6 @@ class ArcPictureInPictureWindowControllerImpl
 
  private:
   arc::ArcPipBridge* const arc_pip_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPictureInPictureWindowControllerImpl);
 };
 
 }  // namespace arc

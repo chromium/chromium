@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_SHARED_IMPL_SCOPED_RESOURCE_H_
-#define PPAPI_SHARED_IMPL_SCOPED_RESOURCE_H_
+#ifndef PPAPI_SHARED_IMPL_SCOPED_PP_RESOURCE_H_
+#define PPAPI_SHARED_IMPL_SCOPED_PP_RESOURCE_H_
 
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
@@ -56,4 +56,4 @@ class PPAPI_SHARED_EXPORT ScopedPPResource {
 
 }  // namespace ppapi
 
-#endif  // PPAPI_SHARED_IMPL_SCOPED_RESOURCE_H_
+#endif  // PPAPI_SHARED_IMPL_SCOPED_PP_RESOURCE_H_

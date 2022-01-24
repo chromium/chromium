@@ -4,16 +4,20 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +25,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -31,12 +37,13 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.Pane
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.DummyUiActivity;
 
 import java.util.concurrent.TimeoutException;
 
@@ -44,8 +51,15 @@ import java.util.concurrent.TimeoutException;
  * Class responsible for testing the OverlayPanelManager.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class OverlayPanelManagerTest extends DummyUiChromeActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class OverlayPanelManagerTest {
     private static final int MOCK_TOOLBAR_HEIGHT = 100;
+
+    @ClassRule
+    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+    @ClassRule
+    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -59,6 +73,7 @@ public class OverlayPanelManagerTest extends DummyUiChromeActivityTestCase {
     @Mock
     private Tab mTab;
 
+    Activity mActivity;
     ActivityWindowAndroid mWindowAndroid;
 
     // --------------------------------------------------------------------------------------------
@@ -145,11 +160,17 @@ public class OverlayPanelManagerTest extends DummyUiChromeActivityTestCase {
         }
     }
 
+    @BeforeClass
+    public static void setupSuite() {
+        activityTestRule.launchActivity(null);
+    }
+
     @Before
-    public void setUp() {
+    public void setupTest() {
         mWindowAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true,
-                    IntentRequestTracker.createFromActivity(getActivity()));
+            mActivity = activityTestRule.getActivity();
+            return new ActivityWindowAndroid(mActivity, /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(mActivity));
         });
     }
 
@@ -180,7 +201,7 @@ public class OverlayPanelManagerTest extends DummyUiChromeActivityTestCase {
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
     public void testPanelClosed() {

@@ -41,6 +41,8 @@ class BaseClass : public base::RefCounted<BaseClass> {
 class Foo : public BaseClass {
  public:
   explicit Foo(int parameter) : BaseClass(FOO), parameter_(parameter) {}
+  Foo(const Foo&) = delete;
+  Foo& operator=(const Foo&) = delete;
   bool Equals(const BaseClass* other) const override {
     return other->type() == type() &&
            static_cast<const Foo*>(other)->parameter_ == parameter_;
@@ -55,7 +57,6 @@ class Foo : public BaseClass {
 
   // Note that this class must be immutable.
   const int parameter_;
-  DISALLOW_COPY_AND_ASSIGN(Foo);
 };
 
 scoped_refptr<const BaseClass> CreateFoo(const std::string& /*instance_type*/,
@@ -64,13 +65,13 @@ scoped_refptr<const BaseClass> CreateFoo(const std::string& /*instance_type*/,
                                          bool* bad_message) {
   const base::DictionaryValue* dict = nullptr;
   CHECK(value->GetAsDictionary(&dict));
-  int parameter = 0;
-  if (!dict->GetInteger("parameter", &parameter)) {
+  absl::optional<int> parameter = dict->FindIntKey("parameter");
+  if (!parameter) {
     *error = "No parameter";
     *bad_message = true;
     return nullptr;
   }
-  return scoped_refptr<const BaseClass>(new Foo(parameter));
+  return scoped_refptr<const BaseClass>(new Foo(*parameter));
 }
 
 std::unique_ptr<base::DictionaryValue> CreateDictWithParameter(int parameter) {

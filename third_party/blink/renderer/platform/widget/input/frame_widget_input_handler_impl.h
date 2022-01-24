@@ -46,7 +46,6 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
       base::WeakPtr<WidgetBase> widget,
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler,
-      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       scoped_refptr<MainThreadEventQueue> input_event_queue);
   FrameWidgetInputHandlerImpl(const FrameWidgetInputHandlerImpl&) = delete;
   FrameWidgetInputHandlerImpl& operator=(const FrameWidgetInputHandlerImpl&) =
@@ -125,13 +124,14 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
       const char* command,
       UpdateState state);
 
+  bool ThreadedCompositingEnabled() { return input_event_queue_ != nullptr; }
+
   // These should only be accessed on the main thread.
   base::WeakPtr<WidgetBase> widget_;
   base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
       main_thread_frame_widget_input_handler_;
 
   scoped_refptr<MainThreadEventQueue> input_event_queue_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 };
 
 }  // namespace blink

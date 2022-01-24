@@ -25,6 +25,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) EmptyURLLoaderClient
       public mojo::DataPipeDrainer::Client {
  public:
   EmptyURLLoaderClient();
+
+  EmptyURLLoaderClient(const EmptyURLLoaderClient&) = delete;
+  EmptyURLLoaderClient& operator=(const EmptyURLLoaderClient&) = delete;
+
   ~EmptyURLLoaderClient() override;
 
   // Calls |callback| when the request is done.
@@ -55,8 +59,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) EmptyURLLoaderClient
 
   absl::optional<URLLoaderCompletionStatus> done_status_;
   base::OnceCallback<void(const URLLoaderCompletionStatus&)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmptyURLLoaderClient);
 };
 
 // Self-owned helper class for using EmptyURLLoaderClient.

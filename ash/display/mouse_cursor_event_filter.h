@@ -11,7 +11,6 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -30,6 +29,10 @@ class ASH_EXPORT MouseCursorEventFilter
       public WindowTreeHostManager::Observer {
  public:
   MouseCursorEventFilter();
+
+  MouseCursorEventFilter(const MouseCursorEventFilter&) = delete;
+  MouseCursorEventFilter& operator=(const MouseCursorEventFilter&) = delete;
+
   ~MouseCursorEventFilter() override;
 
   bool mouse_warp_enabled() const { return mouse_warp_enabled_; }
@@ -65,8 +68,6 @@ class ASH_EXPORT MouseCursorEventFilter
   bool mouse_warp_enabled_;
 
   std::unique_ptr<MouseWarpController> mouse_warp_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseCursorEventFilter);
 };
 
 }  // namespace ash

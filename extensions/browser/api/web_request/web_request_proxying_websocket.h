@@ -29,6 +29,7 @@
 
 namespace net {
 class IPEndPoint;
+class SiteForCookies;
 }  // namespace net
 
 namespace extensions {
@@ -55,6 +56,11 @@ class WebRequestProxyingWebSocket
       content::BrowserContext* browser_context,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       WebRequestAPI::ProxySet* proxies);
+
+  WebRequestProxyingWebSocket(const WebRequestProxyingWebSocket&) = delete;
+  WebRequestProxyingWebSocket& operator=(const WebRequestProxyingWebSocket&) =
+      delete;
+
   ~WebRequestProxyingWebSocket() override;
 
   void Start();
@@ -86,7 +92,7 @@ class WebRequestProxyingWebSocket
   static void StartProxying(
       WebSocketFactory factory,
       const GURL& url,
-      const GURL& site_for_cookies,
+      const net::SiteForCookies& site_for_cookies,
       const absl::optional<std::string>& user_agent,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client,
@@ -163,7 +169,6 @@ class WebRequestProxyingWebSocket
   base::CallbackListSubscription shutdown_notifier_subscription_;
 
   base::WeakPtrFactory<WebRequestProxyingWebSocket> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(WebRequestProxyingWebSocket);
 };
 
 }  // namespace extensions

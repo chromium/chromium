@@ -22,9 +22,8 @@ namespace message_center {
 
 namespace {
 
-bool ShouldShowNotificationAsPopup(
-    const Notification& notification,
-    const NotificationBlockers& blockers) {
+bool ShouldShowNotificationAsPopup(const Notification& notification,
+                                   const NotificationBlockers& blockers) {
   for (auto* blocker : blockers) {
     if (!blocker->ShouldShowNotificationAsPopup(notification))
       return false;
@@ -62,9 +61,7 @@ bool NotificationList::NotificationState::operator!=(
 }
 
 NotificationList::NotificationList(MessageCenter* message_center)
-    : message_center_(message_center),
-      quiet_mode_(false) {
-}
+    : message_center_(message_center), quiet_mode_(false) {}
 
 NotificationList::~NotificationList() = default;
 
@@ -145,6 +142,17 @@ NotificationList::Notifications NotificationList::GetNotificationsByAppId(
   return notifications;
 }
 
+NotificationList::Notifications NotificationList::GetNotificationsByOriginUrl(
+    const GURL& source_url) const {
+  Notifications notifications;
+  for (const auto& tuple : notifications_) {
+    Notification* notification = tuple.first.get();
+    if (notification->origin_url() == source_url)
+      notifications.insert(notification);
+  }
+  return notifications;
+}
+
 bool NotificationList::SetNotificationIcon(const std::string& notification_id,
                                            const gfx::Image& image) {
   auto iter = GetNotification(notification_id);
@@ -186,9 +194,9 @@ bool NotificationList::HasPopupNotifications(
   return false;
 }
 
-NotificationList::PopupNotifications
-NotificationList::GetPopupNotifications(const NotificationBlockers& blockers,
-                                        std::list<std::string>* blocked) {
+NotificationList::PopupNotifications NotificationList::GetPopupNotifications(
+    const NotificationBlockers& blockers,
+    std::list<std::string>* blocked) {
   PopupNotifications result;
   size_t default_priority_popup_count = 0;
 
@@ -202,6 +210,10 @@ NotificationList::GetPopupNotifications(const NotificationBlockers& blockers,
 
     // No popups for LOW/MIN priority.
     if (notification->priority() < DEFAULT_PRIORITY)
+      continue;
+
+    // Group child notifications are shown in their parent's popup.
+    if (notification->group_child())
       continue;
 
     if (!ShouldShowNotificationAsPopup(*notification, blockers)) {
@@ -225,8 +237,8 @@ NotificationList::GetPopupNotifications(const NotificationBlockers& blockers,
   return result;
 }
 
-void NotificationList::MarkSinglePopupAsShown(
-    const std::string& id, bool mark_notification_as_read) {
+void NotificationList::MarkSinglePopupAsShown(const std::string& id,
+                                              bool mark_notification_as_read) {
   auto iter = GetNotification(id);
   DCHECK(iter != notifications_.end());
 

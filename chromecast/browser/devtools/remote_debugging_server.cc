@@ -52,6 +52,10 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
   explicit UnixDomainServerSocketFactory(const std::string& socket_name)
       : socket_name_(socket_name) {}
 
+  UnixDomainServerSocketFactory(const UnixDomainServerSocketFactory&) = delete;
+  UnixDomainServerSocketFactory& operator=(
+      const UnixDomainServerSocketFactory&) = delete;
+
  private:
   // content::DevToolsSocketFactory.
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
@@ -71,14 +75,15 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
   }
 
   std::string socket_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnixDomainServerSocketFactory);
 };
 #else
 class TCPServerSocketFactory : public content::DevToolsSocketFactory {
  public:
   explicit TCPServerSocketFactory(const net::IPEndPoint& endpoint)
       : endpoint_(endpoint) {}
+
+  TCPServerSocketFactory(const TCPServerSocketFactory&) = delete;
+  TCPServerSocketFactory& operator=(const TCPServerSocketFactory&) = delete;
 
  private:
   // content::DevToolsSocketFactory.
@@ -98,8 +103,6 @@ class TCPServerSocketFactory : public content::DevToolsSocketFactory {
   }
 
   const net::IPEndPoint endpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPServerSocketFactory);
 };
 #endif
 
@@ -147,6 +150,9 @@ class RemoteDebuggingServer::WebContentsObserver
     Observe(contents);
   }
 
+  WebContentsObserver(const WebContentsObserver&) = delete;
+  WebContentsObserver& operator=(const WebContentsObserver&) = delete;
+
   ~WebContentsObserver() override {}
 
   // content::WebContentsObserver implementation:
@@ -158,8 +164,6 @@ class RemoteDebuggingServer::WebContentsObserver
 
  private:
   RemoteDebuggingServer* const server_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsObserver);
 };
 
 RemoteDebuggingServer::RemoteDebuggingServer(bool start_immediately)

@@ -13,9 +13,11 @@ USE_PYTHON3 = True
 
 def CheckChangeOnUpload(input_api, output_api):
   return input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', files_to_check=FILE_PATTERN)
+      input_api, output_api, '.', files_to_check=FILE_PATTERN,
+      skip_shebang_check=True)
 
 
 def CheckChangeOnCommit(input_api, output_api):
   return input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', files_to_check=FILE_PATTERN)
+      input_api, output_api, '.', files_to_check=FILE_PATTERN,
+      skip_shebang_check=True)

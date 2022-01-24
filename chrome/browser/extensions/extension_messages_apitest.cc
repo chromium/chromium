@@ -25,7 +25,6 @@
 #include "base/task/post_task.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -41,8 +40,6 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -50,6 +47,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -70,12 +68,11 @@
 namespace extensions {
 namespace {
 
-class MessageSender : public content::NotificationObserver {
+class MessageSender : public ExtensionHostRegistry::Observer {
  public:
-  MessageSender() {
-    registrar_.Add(this,
-                   extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-                   content::NotificationService::AllSources());
+  explicit MessageSender(content::BrowserContext* browser_context) {
+    host_registry_observation_.Observe(
+        ExtensionHostRegistry::Get(browser_context));
   }
 
  private:
@@ -92,49 +89,47 @@ class MessageSender : public content::NotificationObserver {
 
   static std::unique_ptr<Event> BuildEvent(
       std::unique_ptr<base::ListValue> event_args,
-      Profile* profile,
+      content::BrowserContext* browser_context,
       GURL event_url) {
-    auto event =
-        std::make_unique<Event>(events::TEST_ON_MESSAGE, "test.onMessage",
-                                std::move(*event_args).TakeList(), profile);
-    event->event_url = event_url;
+    auto event = std::make_unique<Event>(
+        events::TEST_ON_MESSAGE, "test.onMessage",
+        std::move(*event_args).TakeList(), browser_context);
+    event->event_url = std::move(event_url);
     return event;
   }
 
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-              type);
-    EventRouter* event_router =
-        EventRouter::Get(content::Source<Profile>(source).ptr());
+  // ExtensionHostRegistry::Observer:
+  void OnExtensionHostCompletedFirstLoad(
+      content::BrowserContext* browser_context,
+      ExtensionHost* extension_host) override {
+    EventRouter* event_router = EventRouter::Get(browser_context);
 
     // Sends four messages to the extension. All but the third message sent
     // from the origin http://b.com/ are supposed to arrive.
     event_router->BroadcastEvent(BuildEvent(
-        BuildEventArguments(false, "no restriction"),
-        content::Source<Profile>(source).ptr(),
-        GURL()));
+        BuildEventArguments(false, "no restriction"), browser_context, GURL()));
+    event_router->BroadcastEvent(
+        BuildEvent(BuildEventArguments(false, "http://a.com/"), browser_context,
+                   GURL("http://a.com/")));
+    event_router->BroadcastEvent(
+        BuildEvent(BuildEventArguments(false, "http://b.com/"), browser_context,
+                   GURL("http://b.com/")));
     event_router->BroadcastEvent(BuildEvent(
-        BuildEventArguments(false, "http://a.com/"),
-        content::Source<Profile>(source).ptr(),
-        GURL("http://a.com/")));
-    event_router->BroadcastEvent(BuildEvent(
-        BuildEventArguments(false, "http://b.com/"),
-        content::Source<Profile>(source).ptr(),
-        GURL("http://b.com/")));
-    event_router->BroadcastEvent(BuildEvent(
-        BuildEventArguments(true, "last message"),
-        content::Source<Profile>(source).ptr(),
-        GURL()));
+        BuildEventArguments(true, "last message"), browser_context, GURL()));
   }
 
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<ExtensionHostRegistry,
+                          ExtensionHostRegistry::Observer>
+      host_registry_observation_{this};
 };
 
 class MessagingApiTest : public ExtensionApiTest {
  public:
   MessagingApiTest() {}
+
+  MessagingApiTest(const MessagingApiTest&) = delete;
+  MessagingApiTest& operator=(const MessagingApiTest&) = delete;
+
   ~MessagingApiTest() override {}
 
   void SetUpOnMainThread() override {
@@ -142,9 +137,6 @@ class MessagingApiTest : public ExtensionApiTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessagingApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, Messaging) {
@@ -155,8 +147,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingCrash) {
   ExtensionTestMessageListener ready_to_crash("ready_to_crash", false);
   ASSERT_TRUE(LoadExtension(
           test_data_dir_.AppendASCII("messaging/connect_crash")));
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(ready_to_crash.WaitUntilSatisfied());
@@ -187,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingNoBackground) {
 // Tests that messages with event_urls are only passed to extensions with
 // appropriate permissions.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingEventURL) {
-  MessageSender sender;
+  MessageSender sender(profile());
   ASSERT_TRUE(RunExtensionTest("messaging/event_url")) << message_;
 }
 
@@ -235,7 +227,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
   Result CanConnectAndSendMessagesToIFrame(const Extension* extension,
                                            const char* message = NULL) {
     content::RenderFrameHost* frame = content::FrameMatchingPredicate(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->tab_strip_model()->GetActiveWebContents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameIsChildOfMainFrame));
     return CanConnectAndSendMessagesToFrame(frame, extension, message);
   }
@@ -260,7 +252,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
 
   testing::AssertionResult AreAnyNonWebApisDefinedForIFrame() {
     content::RenderFrameHost* frame = content::FrameMatchingPredicate(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->tab_strip_model()->GetActiveWebContents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameIsChildOfMainFrame));
     return AreAnyNonWebApisDefinedForFrame(frame);
   }
@@ -525,12 +517,12 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, NotInstalled) {
                            .Build())
           .Build();
 
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
   EXPECT_EQ(NAMESPACE_NOT_DEFINED,
             CanConnectAndSendMessagesToMainFrame(extension.get()));
   EXPECT_FALSE(AreAnyNonWebApisDefinedForMainFrame());
 
-  ui_test_utils::NavigateToURL(browser(), google_com_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), google_com_url()));
   EXPECT_EQ(NAMESPACE_NOT_DEFINED,
             CanConnectAndSendMessagesToMainFrame(extension.get()));
   EXPECT_FALSE(AreAnyNonWebApisDefinedForMainFrame());
@@ -548,12 +540,12 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   scoped_refptr<const Extension> chromium_connectable =
       LoadChromiumConnectableExtension();
 
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
   EXPECT_EQ(OK,
             CanConnectAndSendMessagesToMainFrame(chromium_connectable.get()));
   EXPECT_FALSE(AreAnyNonWebApisDefinedForMainFrame());
 
-  ui_test_utils::NavigateToURL(browser(), google_com_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), google_com_url()));
   EXPECT_EQ(NAMESPACE_NOT_DEFINED,
             CanConnectAndSendMessagesToMainFrame(chromium_connectable.get()));
   EXPECT_FALSE(AreAnyNonWebApisDefinedForMainFrame());
@@ -562,14 +554,14 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   scoped_refptr<const Extension> not_connectable =
       LoadNotConnectableExtension();
 
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
   // Namespace will be defined here because |chromium_connectable| can connect
   // to it - so this will be the "cannot establish connection" error.
   EXPECT_EQ(COULD_NOT_ESTABLISH_CONNECTION_ERROR,
             CanConnectAndSendMessagesToMainFrame(not_connectable.get()));
   EXPECT_FALSE(AreAnyNonWebApisDefinedForMainFrame());
 
-  ui_test_utils::NavigateToURL(browser(), google_com_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), google_com_url()));
   EXPECT_EQ(NAMESPACE_NOT_DEFINED,
             CanConnectAndSendMessagesToMainFrame(not_connectable.get()));
   EXPECT_FALSE(AreAnyNonWebApisDefinedForMainFrame());
@@ -582,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   scoped_refptr<const Extension> chromium_connectable =
       LoadChromiumConnectableExtension();
 
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
   // If the background page closes after receipt of the message, it will still
   // reply to this message...
   EXPECT_EQ(OK,
@@ -602,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
       LoadChromiumConnectableExtension();
   ASSERT_TRUE(chromium_connectable.get());
 
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
   // The web connectable extension doesn't request the TLS channel ID, so it
   // doesn't get it, whether or not the page asks for it.
   EXPECT_EQ(std::string(),
@@ -623,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
       LoadChromiumConnectableExtensionWithTlsChannelId();
   ASSERT_TRUE(chromium_connectable.get());
 
-  ui_test_utils::NavigateToURL(browser(), google_com_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), google_com_url()));
   // The extension requests the TLS channel ID, but it doesn't get it for a
   // site that can't connect to it, regardless of whether the page asks for it.
   EXPECT_EQ(base::NumberToString(NAMESPACE_NOT_DEFINED),
@@ -644,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
       LoadChromiumConnectableExtensionWithTlsChannelId();
   ASSERT_TRUE(chromium_connectable.get());
 
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
 
   // Since the extension requests the TLS channel ID, it gets it for a site that
   // can connect to it, but only if the page also asks to include it.
@@ -669,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(
   scoped_refptr<const Extension> chromium_connectable =
       LoadChromiumConnectableExtensionWithTlsChannelId();
 
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
   // If the page does ask for it, it isn't empty, even if the background page
   // closes upon receipt of the connect.
   std::string tls_channel_id = GetTlsChannelIdFromPortConnect(
@@ -697,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   scoped_refptr<const Extension> not_connectable =
       LoadNotConnectableExtension();
 
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
   EXPECT_EQ(OK,
             CanConnectAndSendMessagesToMainFrame(chromium_connectable.get()));
   EXPECT_EQ(COULD_NOT_ESTABLISH_CONNECTION_ERROR,
@@ -917,7 +909,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
   EXPECT_EQ(1U, infobar_manager2->infobar_count());
 
   // Navigating away will dismiss the infobar on the active tab only.
-  ui_test_utils::NavigateToURL(incognito_browser, google_com_url());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(incognito_browser, google_com_url()));
   EXPECT_EQ(1U, infobar_manager1->infobar_count());
   EXPECT_EQ(0U, infobar_manager2->infobar_count());
 
@@ -926,7 +919,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
     IncognitoConnectability::ScopedAlertTracker alert_tracker(
         IncognitoConnectability::ScopedAlertTracker::ALWAYS_ALLOW);
 
-    ui_test_utils::NavigateToURL(incognito_browser, chromium_org_url());
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(incognito_browser, chromium_org_url()));
     incognito_frame2 = incognito_browser->tab_strip_model()
                            ->GetActiveWebContents()
                            ->GetMainFrame();
@@ -944,7 +938,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, IllegalArguments) {
   // Tests that malformed arguments to connect() don't crash.
   // Regression test for crbug.com/472700.
   LoadChromiumConnectableExtension();
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
   bool result;
   CHECK(content::ExecuteScriptAndExtractBool(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -1002,7 +996,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        FromIframeWithPermission) {
   scoped_refptr<const Extension> extension = LoadChromiumConnectableExtension();
 
-  ui_test_utils::NavigateToURL(browser(), google_com_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), google_com_url()));
   EXPECT_EQ(NAMESPACE_NOT_DEFINED,
             CanConnectAndSendMessagesToMainFrame(extension.get()));
   EXPECT_FALSE(AreAnyNonWebApisDefinedForMainFrame());
@@ -1019,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        FromIframeWithoutPermission) {
   scoped_refptr<const Extension> extension = LoadChromiumConnectableExtension();
 
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
   EXPECT_EQ(OK, CanConnectAndSendMessagesToMainFrame(extension.get()));
   EXPECT_FALSE(AreAnyNonWebApisDefinedForMainFrame());
 
@@ -1041,7 +1035,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, FromPopup) {
       chromium_org_url(), content::NotificationService::AllSources());
 
   // The page at popup_opener_url() should open chromium_org_url() as a popup.
-  ui_test_utils::NavigateToURL(browser(), popup_opener_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), popup_opener_url()));
   url_observer.Wait();
 
   // Find the WebContents that committed the chromium_org_url().
@@ -1071,14 +1065,17 @@ class ExternallyConnectableMessagingTestNoChannelID
     : public ExternallyConnectableMessagingTest {
  public:
   ExternallyConnectableMessagingTestNoChannelID() {}
+
+  ExternallyConnectableMessagingTestNoChannelID(
+      const ExternallyConnectableMessagingTestNoChannelID&) = delete;
+  ExternallyConnectableMessagingTestNoChannelID& operator=(
+      const ExternallyConnectableMessagingTestNoChannelID&) = delete;
+
   ~ExternallyConnectableMessagingTestNoChannelID() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExternallyConnectableMessagingTest::SetUpCommandLine(command_line);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExternallyConnectableMessagingTestNoChannelID);
 };
 
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTestNoChannelID,
@@ -1089,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTestNoChannelID,
       LoadChromiumConnectableExtensionWithTlsChannelId();
   ASSERT_TRUE(chromium_connectable.get());
 
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
 
   // Check that both connect and sendMessage don't report a Channel ID.
   std::string tls_channel_id_from_port_connect =
@@ -1112,7 +1109,7 @@ IN_PROC_BROWSER_TEST_F(
   scoped_refptr<const Extension> chromium_connectable =
       LoadChromiumConnectableExtensionWithTlsChannelId();
 
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
   // If the page does ask for it, it isn't empty, even if the background page
   // closes upon receipt of the connect.
   std::string tls_channel_id = GetTlsChannelIdFromPortConnect(
@@ -1178,13 +1175,100 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingUserGesture) {
           "});", receiver->id().c_str())));
 }
 
+IN_PROC_BROWSER_TEST_F(MessagingApiTest,
+                       RestrictedActivationTriggerBetweenExtensions) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      embedder_support::kDisablePopupBlocking);
+
+  const char kManifest[] = R"({
+    "name": "activation_state_thru_send_reply",
+    "version": "1.0",
+    "background": {
+      "scripts": ["background.js"]
+    },
+    "manifest_version": 2
+  })";
+
+  // The receiver replies back with its transient activation state after a
+  // delay.
+  TestExtensionDir receiver_dir;
+  receiver_dir.WriteManifest(kManifest);
+  receiver_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                         R"(
+        chrome.runtime.onMessageExternal.addListener(
+          (msg, sender, callback) => {
+            setTimeout(() =>
+              callback({active:navigator.userActivation.isActive}), 200);
+          });
+      )");
+  const Extension* receiver = LoadExtension(receiver_dir.UnpackedPath());
+  ASSERT_TRUE(receiver);
+
+  TestExtensionDir sender_dir;
+  sender_dir.WriteManifest(kManifest);
+  sender_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  const Extension* sender = LoadExtension(sender_dir.UnpackedPath());
+  ASSERT_TRUE(sender);
+
+  const char send_script_template[] = R"(
+    log = [];
+    log.push('sender-initial:' + navigator.userActivation.isActive);
+    chrome.runtime.sendMessage('%s', {}, response => {
+      log.push('receiver:' + response.active);
+      log.push('sender-received:' + navigator.userActivation.isActive);
+      window.domAutomationController.send(log.toString());
+    });
+    log.push('sender-sent:' + navigator.userActivation.isActive);
+  )";
+  std::string send_script =
+      base::StringPrintf(send_script_template, receiver->id().c_str());
+
+  // Without any user activation, neither the sender nor the receiver should be
+  // in active state at any moment.
+  EXPECT_EQ(
+      "sender-initial:false,sender-sent:false,receiver:false,"
+      "sender-received:false",
+      ExecuteScriptInBackgroundPage(
+          sender->id(), send_script,
+          extensions::browsertest_util::ScriptUserActivation::kDontActivate));
+
+  // With user activation before sending, the sender should be in active state
+  // all the time, and the receiver should be in active state.
+  //
+  // TODO(crbug.com/957633): The receiver should be inactive here.
+  EXPECT_EQ(
+      "sender-initial:true,sender-sent:true,receiver:true,"
+      "sender-received:true",
+      ExecuteScriptInBackgroundPage(
+          sender->id(), send_script,
+          extensions::browsertest_util::ScriptUserActivation::kActivate));
+
+  std::string send_and_consume_script = send_script + R"(
+    setTimeout(() => {
+      open().close();
+      log.push('sender-consumed:' + navigator.userActivation.isActive);
+    }, 0);
+  )";
+
+  // With user activation consumed right after sending, the sender should be in
+  // active state until consumption, and the receiver should be in active state.
+  //
+  // TODO(crbug.com/957633): The receiver should be inactive here.
+  EXPECT_EQ(
+      "sender-initial:true,sender-sent:true,sender-consumed:false,"
+      "receiver:true,sender-received:false",
+      ExecuteScriptInBackgroundPage(
+          sender->id(), send_and_consume_script,
+          extensions::browsertest_util::ScriptUserActivation::kActivate));
+}
+
 // Tests that a hosted app on a connectable site doesn't interfere with the
 // connectability of that site.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, HostedAppOnWebsite) {
   scoped_refptr<const Extension> app = LoadChromiumHostedApp();
 
   // The presence of the hosted app shouldn't give the ability to send messages.
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
   EXPECT_EQ(NAMESPACE_NOT_DEFINED,
             CanConnectAndSendMessagesToMainFrame(app.get()));
   EXPECT_FALSE(AreAnyNonWebApisDefinedForMainFrame());
@@ -1216,7 +1300,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                            .Build())
           .Build();
 
-  ui_test_utils::NavigateToURL(browser(), chromium_org_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
   EXPECT_EQ(COULD_NOT_ESTABLISH_CONNECTION_ERROR,
             CanConnectAndSendMessagesToMainFrame(invalid.get()));
 }

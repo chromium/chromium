@@ -63,14 +63,12 @@ void DoCriticalPolicySectionMeasurement() {
     const auto delta = stop_ticks - start_ticks;
     base::UmaHistogramCustomTimes(
         section ? scope.success_delay : scope.failure_delay, delta,
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromMinutes(10),
-        50);
+        base::Milliseconds(1), base::Minutes(10), 50);
     total_ticks += delta;
   }
   base::UmaHistogramCustomTimes(
       "Enterprise.EnterCriticalPolicySectionDelay.Total", total_ticks,
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromMinutes(20),
-      50);
+      base::Milliseconds(1), base::Minutes(20), 50);
 }
 
 }  // namespace

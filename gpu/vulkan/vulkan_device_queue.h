@@ -5,7 +5,7 @@
 #ifndef GPU_VULKAN_VULKAN_DEVICE_QUEUE_H_
 #define GPU_VULKAN_VULKAN_DEVICE_QUEUE_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include <memory>
 
@@ -15,13 +15,13 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vma_wrapper.h"
+#include "gpu/vulkan/vulkan_instance.h"
 #include "ui/gfx/extension_set.h"
 
 namespace gpu {
 
 class VulkanCommandPool;
 class VulkanFenceHelper;
-class VulkanInfo;
 struct GPUInfo;
 
 class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
@@ -32,6 +32,11 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   };
 
   explicit VulkanDeviceQueue(VkInstance vk_instance);
+  explicit VulkanDeviceQueue(VulkanInstance* instance);
+
+  VulkanDeviceQueue(const VulkanDeviceQueue&) = delete;
+  VulkanDeviceQueue& operator=(const VulkanDeviceQueue&) = delete;
+
   ~VulkanDeviceQueue();
 
   using GetPresentationSupportCallback =
@@ -41,18 +46,30 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   bool Initialize(
       uint32_t options,
       const GPUInfo* gpu_info,
-      const VulkanInfo& info,
       const std::vector<const char*>& required_extensions,
       const std::vector<const char*>& optional_extensions,
       bool allow_protected_memory,
       const GetPresentationSupportCallback& get_presentation_support,
       uint32_t heap_memory_limit);
 
+  bool InitializeFromANGLE();
+
   bool InitializeForWebView(VkPhysicalDevice vk_physical_device,
                             VkDevice vk_device,
                             VkQueue vk_queue,
                             uint32_t vk_queue_index,
                             gfx::ExtensionSet enabled_extensions);
+
+  // To be used by CompositorGpuThread when DrDc is enabled. CompositorGpuThread
+  // will use same |vk_device| and |vk_queue| as the gpu main thread but will
+  // have its own instance of VulkanFenceHelper and VmaAllocator. Also note that
+  // this CompositorGpuThread does not own the |vk_device| and |vk_queue| and
+  // hence will not destroy them.
+  bool InitializeForCompositorGpuThread(VkPhysicalDevice vk_physical_device,
+                                        VkDevice vk_device,
+                                        VkQueue vk_queue,
+                                        uint32_t vk_queue_index,
+                                        gfx::ExtensionSet enabled_extensions);
 
   const gfx::ExtensionSet& enabled_extensions() const {
     return enabled_extensions_;
@@ -96,16 +113,27 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   VulkanFenceHelper* GetFenceHelper() const { return cleanup_helper_.get(); }
 
   const VkPhysicalDeviceFeatures2& enabled_device_features_2() const {
+    if (enabled_device_features_2_from_angle_)
+      return *enabled_device_features_2_from_angle_;
     return enabled_device_features_2_;
   }
 
   const VkPhysicalDeviceFeatures& enabled_device_features() const {
+    if (enabled_device_features_2_from_angle_)
+      return enabled_device_features_2_from_angle_->features;
     return enabled_device_features_2_.features;
   }
 
   bool allow_protected_memory() const { return allow_protected_memory_; }
 
  private:
+  // Common Init method to be used by both webview and compositor gpu thread.
+  bool InitCommon(VkPhysicalDevice vk_physical_device,
+                  VkDevice vk_device,
+                  VkQueue vk_queue,
+                  uint32_t vk_queue_index,
+                  gfx::ExtensionSet enabled_extensions);
+
   gfx::ExtensionSet enabled_extensions_;
   VkPhysicalDevice vk_physical_device_ = VK_NULL_HANDLE;
   VkPhysicalDeviceProperties vk_physical_device_properties_;
@@ -114,21 +142,25 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   VkDevice vk_device_ = VK_NULL_HANDLE;
   VkQueue vk_queue_ = VK_NULL_HANDLE;
   uint32_t vk_queue_index_ = 0;
-  const VkInstance vk_instance_;
+  VkInstance vk_instance_ = VK_NULL_HANDLE;
+  VulkanInstance* instance_ = nullptr;
   VmaAllocator vma_allocator_ = VK_NULL_HANDLE;
   std::unique_ptr<VulkanFenceHelper> cleanup_helper_;
-  VkPhysicalDeviceFeatures2 enabled_device_features_2_;
+  VkPhysicalDeviceFeatures2 enabled_device_features_2_{
+      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
+  const VkPhysicalDeviceFeatures2* enabled_device_features_2_from_angle_ =
+      nullptr;
 
   bool allow_protected_memory_ = false;
 
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if defined(OS_ANDROID) || defined(OS_FUCHSIA) || defined(OS_LINUX)
   VkPhysicalDeviceSamplerYcbcrConversionFeatures
-      sampler_ycbcr_conversion_features_;
-#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
+      sampler_ycbcr_conversion_features_{
+          VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES};
+#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA) || defined(OS_LINUX)
 
-  VkPhysicalDeviceProtectedMemoryFeatures protected_memory_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanDeviceQueue);
+  VkPhysicalDeviceProtectedMemoryFeatures protected_memory_features_{
+      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES};
 };
 
 }  // namespace gpu

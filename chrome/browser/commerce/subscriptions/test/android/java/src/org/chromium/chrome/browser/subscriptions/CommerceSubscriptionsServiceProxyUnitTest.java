@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.subscriptions;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -239,14 +240,14 @@ public class CommerceSubscriptionsServiceProxyUnitTest {
         verify(mEndpointFetcherJniMock, times(numTimes))
                 .nativeFetchOAuth(any(Profile.class), any(String.class), eq(expectedUrl),
                         eq(expectedMethod), eq(EXPECTED_CONTENT_TYPE), eq(EXPECTED_OAUTH_SCOPES),
-                        eq(expectedPayload), anyLong(), any(Callback.class));
+                        eq(expectedPayload), anyLong(), anyInt(), any(Callback.class));
     }
 
     private void mockEndpointResponse(String response) {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                Callback callback = (Callback) invocation.getArguments()[8];
+                Callback callback = (Callback) invocation.getArguments()[9];
                 callback.onResult(new EndpointResponse(response));
                 return null;
             }
@@ -254,6 +255,6 @@ public class CommerceSubscriptionsServiceProxyUnitTest {
                 .when(mEndpointFetcherJniMock)
                 .nativeFetchOAuth(any(Profile.class), any(String.class), any(String.class),
                         any(String.class), eq(EXPECTED_CONTENT_TYPE), eq(EXPECTED_OAUTH_SCOPES),
-                        any(String.class), anyLong(), any(Callback.class));
+                        any(String.class), anyLong(), anyInt(), any(Callback.class));
     }
 }

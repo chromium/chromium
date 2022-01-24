@@ -11,18 +11,18 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/sync/base/invalidation_adapter.h"
 #include "components/sync/base/legacy_directory_deletion.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/glue/sync_engine_impl.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
@@ -215,8 +215,7 @@ void SyncEngineBackend::DoInitialize(
       std::move(nigori_processor),
       std::make_unique<NigoriStorageImpl>(
           sync_data_folder_.Append(kNigoriStorageFilename)),
-      params.encryption_bootstrap_token,
-      restored_local_transport_data.keystore_encryption_bootstrap_token);
+      params.encryption_bootstrap_token);
 
   sync_manager_ = params.sync_manager_factory->CreateSyncManager(name_);
   sync_manager_->AddObserver(this);
@@ -405,8 +404,8 @@ void SyncEngineBackend::DoFinishConfigureDataTypes(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Update the enabled types for the bridge and sync manager.
-  const ModelTypeSet enabled_types = sync_manager_->GetEnabledTypes();
-  DCHECK(Intersection(enabled_types, ProxyTypes()).Empty());
+  const ModelTypeSet enabled_types = sync_manager_->GetConnectedTypes();
+  DCHECK(Difference(enabled_types, ProtocolTypes()).Empty());
 
   const ModelTypeSet failed_types =
       Difference(types_to_download, sync_manager_->InitialSyncEndedTypes());
@@ -453,11 +452,6 @@ void SyncEngineBackend::DoOnCookieJarChanged(bool account_mismatch,
 
 void SyncEngineBackend::DoOnInvalidatorClientIdChange(
     const std::string& client_id) {
-  if (base::FeatureList::IsEnabled(switches::kSyncE2ELatencyMeasurement)) {
-    // Don't populate the ID, if client participates in latency measurement
-    // experiment.
-    return;
-  }
   sync_manager_->UpdateInvalidationClientId(client_id);
 }
 
@@ -518,7 +512,7 @@ void SyncEngineBackend::LoadAndConnectNigoriController() {
   DCHECK_EQ(nigori_controller_->state(), DataTypeController::MODEL_LOADED);
   // TODO(crbug.com/922900): Do we need to call RegisterDataType() for Nigori?
   sync_manager_->GetModelTypeConnector()->ConnectDataType(
-      NIGORI, nigori_controller_->ActivateManuallyForNigori());
+      NIGORI, nigori_controller_->Connect());
 }
 
 }  // namespace syncer

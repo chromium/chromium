@@ -189,7 +189,7 @@ bool WebAXObject::CheckValidity() {
   // is handled as a special case inside of accessibility code.
   Document* document = private_->GetDocument();
   DCHECK(!document->NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*node) ||
-         DisplayLockUtilities::NearestLockedExclusiveAncestor(*node))
+         DisplayLockUtilities::LockedAncestorPreventingPaint(*node))
       << "Node needs layout update and is not display locked";
 #endif  // DCHECK_IS_ON()
 
@@ -201,14 +201,6 @@ ax::mojom::DefaultActionVerb WebAXObject::Action() const {
     return ax::mojom::DefaultActionVerb::kNone;
 
   return private_->Action();
-}
-
-bool WebAXObject::CanPress() const {
-  if (IsDetached())
-    return false;
-
-  return private_->ActionElement() || private_->IsButton() ||
-         private_->IsMenuRelated();
 }
 
 bool WebAXObject::CanSetValueAttribute() const {
@@ -272,7 +264,13 @@ bool WebAXObject::IsClickable() const {
   if (IsDetached())
     return false;
 
-  return private_->IsClickable();
+  // Filter out any action = kClickAncestor.
+  // Explanation: although elements are technically clickable if an ancestor is
+  // clickable, we do not expose them as such unless they have a widget role,
+  // otherwise there would often be an overwhelming number of clickable nodes.
+  ax::mojom::blink::DefaultActionVerb action = Action();
+  return action != ax::mojom::blink::DefaultActionVerb::kNone &&
+         action != ax::mojom::blink::DefaultActionVerb::kClickAncestor;
 }
 
 bool WebAXObject::IsControl() const {
@@ -514,9 +512,9 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
 
   ScopedActionAnnotator annotater(private_.Get(),
                                   ax::mojom::blink::Action::kHitTest);
-  IntPoint contents_point =
+  gfx::Point contents_point =
       private_->DocumentFrameView()->SoonToBeRemovedUnscaledViewportToContents(
-          IntPoint(point));
+          point);
 
   Document* document = private_->GetDocument();
   if (!document || !document->View())
@@ -542,7 +540,7 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
 
 gfx::Rect WebAXObject::GetBoundsInFrameCoordinates() const {
   LayoutRect rect = private_->GetBoundsInFrameCoordinates();
-  return EnclosingIntRect(rect);
+  return ToGfxRect(EnclosingIntRect(rect));
 }
 
 WebString WebAXObject::KeyboardShortcut() const {
@@ -1159,7 +1157,7 @@ void WebAXObject::SetScrollOffset(const gfx::Point& offset) const {
   if (IsDetached())
     return;
 
-  private_->SetScrollOffset(IntPoint(offset));
+  private_->SetScrollOffset(offset);
 }
 
 void WebAXObject::Dropeffects(
@@ -1193,7 +1191,7 @@ void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,
   private_->GetRelativeBounds(&container, bounds, container_transform,
                               clips_children);
   offset_container = WebAXObject(container);
-  bounds_in_container = gfx::RectF(bounds);
+  bounds_in_container = ToGfxRectF(bounds);
 }
 
 void WebAXObject::GetAllObjectsWithChangedBounds(

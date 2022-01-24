@@ -12,7 +12,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf_metrics.h"
 #include "ash/wm/splitview/split_view_controller.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -81,6 +80,11 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
 
   DragWindowFromShelfController(aura::Window* window,
                                 const gfx::PointF& location_in_screen);
+
+  DragWindowFromShelfController(const DragWindowFromShelfController&) = delete;
+  DragWindowFromShelfController& operator=(
+      const DragWindowFromShelfController&) = delete;
+
   ~DragWindowFromShelfController() override;
 
   // Called during swiping up on the shelf.
@@ -216,8 +220,6 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
 
   base::WeakPtrFactory<DragWindowFromShelfController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DragWindowFromShelfController);
 };
 
 }  // namespace ash

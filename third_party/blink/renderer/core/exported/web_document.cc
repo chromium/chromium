@@ -37,6 +37,7 @@
 #include "third_party/blink/public/web/web_dom_event.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/renderer/core/css/css_selector_watch.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -50,6 +51,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/html_all_collection.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -59,9 +61,6 @@
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/plugin_document.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -177,8 +176,21 @@ WebString WebDocument::ContentAsTextForTesting() const {
   return document_element->innerText();
 }
 
-WebElementCollection WebDocument::All() {
-  return WebElementCollection(Unwrap<Document>()->all());
+WebElementCollection WebDocument::All() const {
+  return WebElementCollection(
+      const_cast<Document*>(ConstUnwrap<Document>())->all());
+}
+
+WebVector<WebFormControlElement> WebDocument::UnassociatedFormControls() const {
+  Vector<WebFormControlElement> unassociated_form_controls;
+  for (const auto& element :
+       ConstUnwrap<Document>()->UnassociatedListedElements()) {
+    if (auto* form_control =
+            blink::DynamicTo<HTMLFormControlElement>(element.Get())) {
+      unassociated_form_controls.push_back(form_control);
+    }
+  }
+  return unassociated_form_controls;
 }
 
 WebVector<WebFormElement> WebDocument::Forms() const {
@@ -240,7 +252,8 @@ void WebDocument::WatchCSSSelectors(const WebVector<WebString>& web_selectors) {
   if (!watch && web_selectors.empty())
     return;
   Vector<String> selectors;
-  selectors.Append(web_selectors.Data(), web_selectors.size());
+  selectors.Append(web_selectors.Data(),
+                   base::checked_cast<wtf_size_t>(web_selectors.size()));
   CSSSelectorWatch::From(*document).WatchCSSSelectors(selectors);
 }
 
@@ -250,21 +263,14 @@ WebVector<WebDraggableRegion> WebDocument::DraggableRegions() const {
   if (document->HasAnnotatedRegions()) {
     const Vector<AnnotatedRegionValue>& regions = document->AnnotatedRegions();
     draggable_regions = WebVector<WebDraggableRegion>(regions.size());
-    for (size_t i = 0; i < regions.size(); i++) {
+    for (wtf_size_t i = 0; i < regions.size(); i++) {
       const AnnotatedRegionValue& value = regions[i];
       draggable_regions[i].draggable = value.draggable;
-      draggable_regions[i].bounds = PixelSnappedIntRect(value.bounds);
+      draggable_regions[i].bounds =
+          ToGfxRect(PixelSnappedIntRect(value.bounds));
     }
   }
   return draggable_regions;
-}
-
-WebURL WebDocument::CanonicalUrlForSharing() const {
-  const Document* document = ConstUnwrap<Document>();
-  HTMLLinkElement* link_element = document->LinkCanonical();
-  if (!link_element)
-    return WebURL();
-  return link_element->Href();
 }
 
 WebDistillabilityFeatures WebDocument::DistillabilityFeatures() {
@@ -303,6 +309,12 @@ void WebDocument::AddPostPrerenderingActivationStep(
     base::OnceClosure callback) {
   return Unwrap<Document>()->AddPostPrerenderingActivationStep(
       std::move(callback));
+}
+
+void WebDocument::SetCookieManager(
+    CrossVariantMojoRemote<network::mojom::RestrictedCookieManagerInterfaceBase>
+        cookie_manager) {
+  Unwrap<Document>()->SetCookieManager(std::move(cookie_manager));
 }
 
 WebDocument::WebDocument(Document* elem) : WebNode(elem) {}

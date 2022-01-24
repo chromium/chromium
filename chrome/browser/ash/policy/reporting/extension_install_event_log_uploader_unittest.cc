@@ -42,8 +42,8 @@ namespace policy {
 
 namespace {
 
-constexpr base::TimeDelta kMinRetryBackoff = base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kMaxRetryBackoff = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kMinRetryBackoff = base::Seconds(10);
+constexpr base::TimeDelta kMaxRetryBackoff = base::Days(1);
 
 static const char kExtensionId[] = "abcdefghabcdefghabcdefghabcdefgh";
 
@@ -207,7 +207,7 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
     Mock::VerifyAndClearExpectations(mock_report_queue_);
 
     // A task is enqueued with zero delay and needs to be processed.
-    base::TimeDelta zero_delay = base::TimeDelta::FromSeconds(0);
+    base::TimeDelta zero_delay = base::Seconds(0);
 
     // Expect and throwaway task.
     EXPECT_EQ(task_environment_.NextMainThreadPendingTaskDelay(), zero_delay);

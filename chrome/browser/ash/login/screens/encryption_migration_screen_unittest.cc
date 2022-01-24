@@ -67,9 +67,6 @@ class TestEncryptionMigrationScreen : public EncryptionMigrationScreen {
  public:
   explicit TestEncryptionMigrationScreen(EncryptionMigrationScreenView* view)
       : EncryptionMigrationScreen(view) {
-    set_free_disk_space_fetcher_for_testing(base::BindRepeating(
-        &TestEncryptionMigrationScreen::FreeDiskSpaceFetcher,
-        base::Unretained(this)));
   }
 
   // Sets the free disk space seen by EncryptionMigrationScreen.

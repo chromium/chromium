@@ -6,9 +6,13 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 
 namespace blink {
+
+using css_parsing_utils::AtIdent;
+using css_parsing_utils::ConsumeIfIdent;
 
 scoped_refptr<MediaQuerySet> MediaQueryParser::ParseMediaQuerySet(
     const String& query_string,
@@ -42,69 +46,22 @@ scoped_refptr<MediaQuerySet> MediaQueryParser::ParseMediaCondition(
       .ParseImpl(range);
 }
 
-const MediaQueryParser::State MediaQueryParser::kReadRestrictor =
-    &MediaQueryParser::ReadRestrictor;
-const MediaQueryParser::State MediaQueryParser::kReadMediaNot =
-    &MediaQueryParser::ReadMediaNot;
-const MediaQueryParser::State MediaQueryParser::kReadMediaType =
-    &MediaQueryParser::ReadMediaType;
-const MediaQueryParser::State MediaQueryParser::kReadAnd =
-    &MediaQueryParser::ReadAnd;
-const MediaQueryParser::State MediaQueryParser::kReadFeatureStart =
-    &MediaQueryParser::ReadFeatureStart;
-const MediaQueryParser::State MediaQueryParser::kReadFeature =
-    &MediaQueryParser::ReadFeature;
-const MediaQueryParser::State MediaQueryParser::kReadFeatureColon =
-    &MediaQueryParser::ReadFeatureColon;
-const MediaQueryParser::State MediaQueryParser::kReadFeatureValue =
-    &MediaQueryParser::ReadFeatureValue;
-const MediaQueryParser::State MediaQueryParser::kReadFeatureEnd =
-    &MediaQueryParser::ReadFeatureEnd;
-const MediaQueryParser::State MediaQueryParser::kSkipUntilComma =
-    &MediaQueryParser::SkipUntilComma;
-const MediaQueryParser::State MediaQueryParser::kSkipUntilBlockEnd =
-    &MediaQueryParser::SkipUntilBlockEnd;
-const MediaQueryParser::State MediaQueryParser::kDone = &MediaQueryParser::Done;
-
 MediaQueryParser::MediaQueryParser(ParserType parser_type,
                                    CSSParserMode mode,
                                    const ExecutionContext* execution_context)
     : parser_type_(parser_type),
       query_set_(MediaQuerySet::Create()),
       mode_(mode),
-      execution_context_(execution_context) {
-  if (parser_type == kMediaQuerySetParser)
-    state_ = &MediaQueryParser::ReadRestrictor;
-  else  // MediaConditionParser
-    state_ = &MediaQueryParser::ReadMediaNot;
-}
+      execution_context_(execution_context),
+      fake_context_(*MakeGarbageCollected<CSSParserContext>(
+          kHTMLStandardMode,
+          SecureContextMode::kInsecureContext)) {}
 
 MediaQueryParser::~MediaQueryParser() = default;
 
-void MediaQueryParser::SetStateAndRestrict(
-    State state,
-    MediaQuery::RestrictorType restrictor) {
-  media_query_data_.SetRestrictor(restrictor);
-  state_ = state;
-}
+namespace {
 
-// State machine member functions start here
-void MediaQueryParser::ReadRestrictor(CSSParserTokenType type,
-                                      const CSSParserToken& token,
-                                      CSSParserTokenRange& range) {
-  ReadMediaType(type, token, range);
-}
-
-void MediaQueryParser::ReadMediaNot(CSSParserTokenType type,
-                                    const CSSParserToken& token,
-                                    CSSParserTokenRange& range) {
-  if (type == kIdentToken && EqualIgnoringASCIICase(token.Value(), "not"))
-    SetStateAndRestrict(kReadFeatureStart, MediaQuery::kNot);
-  else
-    ReadFeatureStart(type, token, range);
-}
-
-static bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
+bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
   // FIXME: it would be more efficient to use lower-case always for tokenValue.
   return EqualIgnoringASCIICase(token.Value(), "not") ||
          EqualIgnoringASCIICase(token.Value(), "and") ||
@@ -112,182 +69,163 @@ static bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
          EqualIgnoringASCIICase(token.Value(), "only");
 }
 
-void MediaQueryParser::ReadMediaType(CSSParserTokenType type,
-                                     const CSSParserToken& token,
-                                     CSSParserTokenRange& range) {
-  if (type == kLeftParenthesisToken) {
-    if (media_query_data_.Restrictor() != MediaQuery::kNone)
-      state_ = kSkipUntilComma;
-    else
-      state_ = kReadFeature;
-  } else if (type == kIdentToken) {
-    if (state_ == kReadRestrictor &&
-        EqualIgnoringASCIICase(token.Value(), "not")) {
-      SetStateAndRestrict(kReadMediaType, MediaQuery::kNot);
-    } else if (state_ == kReadRestrictor &&
-               EqualIgnoringASCIICase(token.Value(), "only")) {
-      SetStateAndRestrict(kReadMediaType, MediaQuery::kOnly);
-    } else if (media_query_data_.Restrictor() != MediaQuery::kNone &&
-               IsRestrictorOrLogicalOperator(token)) {
-      state_ = kSkipUntilComma;
-    } else {
-      media_query_data_.SetMediaType(token.Value().ToString());
-      state_ = kReadAnd;
+bool ConsumeUntilCommaInclusive(CSSParserTokenRange& range) {
+  while (!range.AtEnd()) {
+    if (range.Peek().GetType() == kCommaToken) {
+      range.ConsumeIncludingWhitespace();
+      return true;
     }
-  } else if (type == kEOFToken &&
-             (!query_set_->QueryVector().size() || state_ != kReadRestrictor)) {
-    state_ = kDone;
-  } else {
-    state_ = kSkipUntilComma;
-    if (type == kCommaToken)
-      SkipUntilComma(type, token, range);
+    range.ConsumeComponentValue();
   }
+  return false;
 }
 
-void MediaQueryParser::ReadAnd(CSSParserTokenType type,
-                               const CSSParserToken& token,
-                               CSSParserTokenRange& range) {
-  if (type == kIdentToken && EqualIgnoringASCIICase(token.Value(), "and")) {
-    state_ = kReadFeatureStart;
-  } else if (type == kCommaToken && parser_type_ != kMediaConditionParser) {
-    query_set_->AddMediaQuery(media_query_data_.TakeMediaQuery());
-    state_ = kReadRestrictor;
-  } else if (type == kEOFToken) {
-    state_ = kDone;
-  } else {
-    state_ = kSkipUntilComma;
+}  // namespace
+
+MediaQuery::RestrictorType MediaQueryParser::ConsumeRestrictor(
+    CSSParserTokenRange& range) {
+  if (ConsumeIfIdent(range, "not"))
+    return MediaQuery::kNot;
+  if (ConsumeIfIdent(range, "only"))
+    return MediaQuery::kOnly;
+  return MediaQuery::kNone;
+}
+
+String MediaQueryParser::ConsumeType(CSSParserTokenRange& range) {
+  if (range.Peek().GetType() != kIdentToken)
+    return g_null_atom;
+  if (IsRestrictorOrLogicalOperator(range.Peek()))
+    return g_null_atom;
+  return range.ConsumeIncludingWhitespace().Value().ToString();
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeFeature(
+    CSSParserTokenRange& range) {
+  if (range.Peek().GetType() != kLeftParenthesisToken)
+    return nullptr;
+
+  CSSParserTokenRange block = range.ConsumeBlock();
+  block.ConsumeWhitespace();
+  range.ConsumeWhitespace();
+
+  if (block.Peek().GetType() != kIdentToken)
+    return nullptr;
+
+  String feature_name = block.ConsumeIncludingWhitespace().Value().ToString();
+
+  if (!IsMediaFeatureAllowedInMode(feature_name))
+    return nullptr;
+
+  // <mf-boolean> = <mf-name>
+  if (block.AtEnd()) {
+    auto exp = MediaQueryExp::Create(feature_name, block, fake_context_,
+                                     execution_context_);
+    if (!exp.IsValid())
+      return nullptr;
+    return std::make_unique<MediaQueryFeatureExpNode>(exp);
   }
+
+  // <mf-plain> = <mf-name> : <mf-value>
+  if (block.Peek().GetType() != kColonToken)
+    return nullptr;
+  block.ConsumeIncludingWhitespace();
+
+  if (block.AtEnd())
+    return nullptr;
+
+  auto exp = MediaQueryExp::Create(feature_name, block, fake_context_,
+                                   execution_context_);
+  if (!exp.IsValid() || !block.AtEnd())
+    return nullptr;
+
+  return std::make_unique<MediaQueryFeatureExpNode>(exp);
 }
 
-void MediaQueryParser::ReadFeatureStart(CSSParserTokenType type,
-                                        const CSSParserToken& token,
-                                        CSSParserTokenRange& range) {
-  if (type == kLeftParenthesisToken)
-    state_ = kReadFeature;
-  else
-    state_ = kSkipUntilComma;
-}
+std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeCondition(
+    CSSParserTokenRange& range) {
+  std::unique_ptr<MediaQueryExpNode> result = ConsumeFeature(range);
+  if (!result)
+    return nullptr;
 
-void MediaQueryParser::ReadFeature(CSSParserTokenType type,
-                                   const CSSParserToken& token,
-                                   CSSParserTokenRange& range) {
-  if (type == kIdentToken) {
-    String media_feature = token.Value().ToString();
-    if (IsMediaFeatureAllowedInMode(media_feature)) {
-      media_query_data_.SetMediaFeature(media_feature);
-      state_ = kReadFeatureColon;
-    } else {
-      state_ = kSkipUntilComma;
-    }
-  } else {
-    state_ = kSkipUntilComma;
+  while (ConsumeIfIdent(range, "and")) {
+    std::unique_ptr<MediaQueryExpNode> feature = ConsumeFeature(range);
+    if (!feature)
+      return nullptr;
+    result = std::make_unique<MediaQueryAndExpNode>(std::move(result),
+                                                    std::move(feature));
   }
+
+  return result;
 }
 
-void MediaQueryParser::ReadFeatureColon(CSSParserTokenType type,
-                                        const CSSParserToken& token,
-                                        CSSParserTokenRange& range) {
-  if (type == kColonToken) {
-    while (range.Peek().GetType() == kWhitespaceToken)
-      range.Consume();
-    if (range.Peek().GetType() == kRightParenthesisToken || type == kEOFToken)
-      state_ = kSkipUntilBlockEnd;
-    else
-      state_ = kReadFeatureValue;
-  } else if (type == kRightParenthesisToken || type == kEOFToken) {
-    media_query_data_.AddExpression(range, execution_context_);
-    ReadFeatureEnd(type, token, range);
-  } else {
-    state_ = kSkipUntilBlockEnd;
-  }
-}
+scoped_refptr<MediaQuerySet> MediaQueryParser::ConsumeSingleCondition(
+    CSSParserTokenRange range) {
+  DCHECK_EQ(parser_type_, kMediaConditionParser);
+  DCHECK(!range.AtEnd());
 
-void MediaQueryParser::ReadFeatureValue(CSSParserTokenType type,
-                                        const CSSParserToken& token,
-                                        CSSParserTokenRange& range) {
-  if (type == kDimensionToken &&
-      token.GetUnitType() == CSSPrimitiveValue::UnitType::kUnknown) {
-    range.Consume();
-    state_ = kSkipUntilComma;
-  } else {
-    media_query_data_.AddExpression(range, execution_context_);
-    state_ = kReadFeatureEnd;
-  }
-}
+  MediaQuery::RestrictorType restrictor =
+      ConsumeIfIdent(range, "not") ? MediaQuery::kNot : MediaQuery::kNone;
+  std::unique_ptr<MediaQueryExpNode> node = ConsumeCondition(range);
 
-void MediaQueryParser::ReadFeatureEnd(CSSParserTokenType type,
-                                      const CSSParserToken& token,
-                                      CSSParserTokenRange& range) {
-  if (type == kRightParenthesisToken || type == kEOFToken) {
-    if (media_query_data_.LastExpressionValid())
-      state_ = kReadAnd;
-    else
-      state_ = kSkipUntilComma;
-  } else {
-    media_query_data_.RemoveLastExpression();
-    state_ = kSkipUntilBlockEnd;
-  }
-}
-
-void MediaQueryParser::SkipUntilComma(CSSParserTokenType type,
-                                      const CSSParserToken& token,
-                                      CSSParserTokenRange& range) {
-  if ((type == kCommaToken && !block_watcher_.BlockLevel()) ||
-      type == kEOFToken) {
-    state_ = kReadRestrictor;
-    media_query_data_.Clear();
+  if (!node || !range.AtEnd()) {
     query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
-  }
-}
-
-void MediaQueryParser::SkipUntilBlockEnd(CSSParserTokenType type,
-                                         const CSSParserToken& token,
-                                         CSSParserTokenRange& range) {
-  if (token.GetBlockType() == CSSParserToken::kBlockEnd &&
-      !block_watcher_.BlockLevel())
-    state_ = kSkipUntilComma;
-}
-
-void MediaQueryParser::Done(CSSParserTokenType type,
-                            const CSSParserToken& token,
-                            CSSParserTokenRange& range) {}
-
-void MediaQueryParser::HandleBlocks(const CSSParserToken& token) {
-  if (token.GetBlockType() == CSSParserToken::kBlockStart &&
-      (token.GetType() != kLeftParenthesisToken || block_watcher_.BlockLevel()))
-    state_ = kSkipUntilBlockEnd;
-}
-
-void MediaQueryParser::ProcessToken(const CSSParserToken& token,
-                                    CSSParserTokenRange& range) {
-  CSSParserTokenType type = token.GetType();
-
-  if (state_ != kReadFeatureValue || type == kWhitespaceToken) {
-    HandleBlocks(token);
-    block_watcher_.HandleToken(token);
-    range.Consume();
+  } else {
+    query_set_->AddMediaQuery(std::make_unique<MediaQuery>(
+        restrictor, media_type_names::kAll, std::move(node)));
   }
 
-  // Call the function that handles current state
-  if (type != kWhitespaceToken)
-    ((this)->*(state_))(type, token, range);
+  return query_set_;
 }
 
-// The state machine loop
+std::unique_ptr<MediaQuery> MediaQueryParser::ConsumeQuery(
+    CSSParserTokenRange& range) {
+  DCHECK_EQ(parser_type_, kMediaQuerySetParser);
+
+  MediaQuery::RestrictorType restrictor = ConsumeRestrictor(range);
+  String type = ConsumeType(range);
+
+  // If present, a restrictor *must* be followed by a type.
+  if (restrictor != MediaQuery::kNone) {
+    if (type.IsNull())
+      return nullptr;
+  }
+
+  if (!type.IsNull()) {
+    if (!ConsumeIfIdent(range, "and"))
+      return std::make_unique<MediaQuery>(restrictor, type, nullptr);
+  } else {
+    type = media_type_names::kAll;
+  }
+
+  std::unique_ptr<MediaQueryExpNode> node = ConsumeCondition(range);
+  if (!node)
+    return nullptr;
+
+  return std::make_unique<MediaQuery>(restrictor, type, std::move(node));
+}
+
 scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
     CSSParserTokenRange range) {
-  while (!range.AtEnd())
-    ProcessToken(range.Peek(), range);
+  range.ConsumeWhitespace();
 
-  // FIXME: Can we get rid of this special case?
-  if (parser_type_ == kMediaQuerySetParser)
-    ProcessToken(CSSParserToken(kEOFToken), range);
+  // Note that we currently expect an empty input to evaluate to an empty
+  // MediaQuerySet, rather than "not all".
+  if (range.AtEnd())
+    return query_set_;
 
-  if (state_ != kReadAnd && state_ != kReadRestrictor && state_ != kDone &&
-      state_ != kReadMediaNot)
-    query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
-  else if (media_query_data_.CurrentMediaQueryChanged())
-    query_set_->AddMediaQuery(media_query_data_.TakeMediaQuery());
+  if (parser_type_ == kMediaConditionParser)
+    return ConsumeSingleCondition(range);
+
+  DCHECK_EQ(parser_type_, kMediaQuerySetParser);
+
+  do {
+    std::unique_ptr<MediaQuery> query = ConsumeQuery(range);
+    bool ok = query && (range.AtEnd() || range.Peek().GetType() == kCommaToken);
+    if (!ok)
+      query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
+    else
+      query_set_->AddMediaQuery(std::move(query));
+  } while (!range.AtEnd() && ConsumeUntilCommaInclusive(range));
 
   return query_set_;
 }
@@ -296,48 +234,6 @@ bool MediaQueryParser::IsMediaFeatureAllowedInMode(
     const String& media_feature) const {
   return mode_ == kUASheetMode ||
          media_feature != media_feature_names::kImmersiveMediaFeature;
-}
-
-MediaQueryData::MediaQueryData()
-    : restrictor_(MediaQuery::kNone),
-      media_type_(media_type_names::kAll),
-      media_type_set_(false),
-      fake_context_(*MakeGarbageCollected<CSSParserContext>(
-          kHTMLStandardMode,
-          SecureContextMode::kInsecureContext)) {}
-
-void MediaQueryData::Clear() {
-  restrictor_ = MediaQuery::kNone;
-  media_type_ = media_type_names::kAll;
-  media_type_set_ = false;
-  media_feature_ = String();
-  expressions_.clear();
-}
-
-std::unique_ptr<MediaQuery> MediaQueryData::TakeMediaQuery() {
-  std::unique_ptr<MediaQuery> media_query = std::make_unique<MediaQuery>(
-      restrictor_, std::move(media_type_), std::move(expressions_));
-  Clear();
-  return media_query;
-}
-
-void MediaQueryData::AddExpression(CSSParserTokenRange& range,
-                                   const ExecutionContext* execution_context) {
-  expressions_.push_back(MediaQueryExp::Create(
-      media_feature_, range, fake_context_, execution_context));
-}
-
-bool MediaQueryData::LastExpressionValid() {
-  return expressions_.back().IsValid();
-}
-
-void MediaQueryData::RemoveLastExpression() {
-  expressions_.pop_back();
-}
-
-void MediaQueryData::SetMediaType(const String& media_type) {
-  media_type_ = media_type;
-  media_type_set_ = true;
 }
 
 }  // namespace blink

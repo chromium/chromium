@@ -11,7 +11,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_handle.h"
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LogoutTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LogoutTabHelper);
 
 LogoutTabHelper::LogoutTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}

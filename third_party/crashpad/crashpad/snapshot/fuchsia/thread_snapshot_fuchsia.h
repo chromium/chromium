@@ -18,7 +18,6 @@
 #include <stdint.h>
 #include <zircon/types.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/fuchsia/process_reader_fuchsia.h"
@@ -34,6 +33,10 @@ namespace internal {
 class ThreadSnapshotFuchsia final : public ThreadSnapshot {
  public:
   ThreadSnapshotFuchsia();
+
+  ThreadSnapshotFuchsia(const ThreadSnapshotFuchsia&) = delete;
+  ThreadSnapshotFuchsia& operator=(const ThreadSnapshotFuchsia&) = delete;
+
   ~ThreadSnapshotFuchsia() override;
 
   //! \brief Initializes the object.
@@ -71,8 +74,6 @@ class ThreadSnapshotFuchsia final : public ThreadSnapshot {
   zx_koid_t thread_id_;
   zx_vaddr_t thread_specific_data_address_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSnapshotFuchsia);
 };
 
 }  // namespace internal

@@ -8,7 +8,7 @@
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/components/policy/web_app_policy_constants.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -38,6 +38,9 @@ const char kConfigurationData2[] = R"(
   "key2" : "value_2"
 }
 )";
+const char kConfigurationData3[] = R"(
+[1]
+)";
 const char kKey1[] = "key1";
 const char kKey2[] = "key2";
 const char kKey3[] = "key3";
@@ -61,7 +64,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response;
   if (response_template.should_post_task) {
     http_response = std::make_unique<net::test_server::DelayedHttpResponse>(
-        base::TimeDelta::FromSeconds(0));
+        base::Seconds(0));
   } else {
     http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   }
@@ -264,4 +267,13 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   WaitForUpdate();
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                               {{kKey1, kValue1}, {kKey2, kValue2}}));
+}
+
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       NonDictionaryConfiguration) {
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData3}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}), {}));
 }

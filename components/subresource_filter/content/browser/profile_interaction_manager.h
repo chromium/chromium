@@ -9,9 +9,9 @@
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
+class Page;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
@@ -20,24 +20,21 @@ namespace subresource_filter {
 
 class SubresourceFilterProfileContext;
 
-// Class that manages interaction between interaction between the
-// per-navigation/per-tab subresource filter objects (i.e., the throttles and
-// throttle manager) and the per-profile objects (e.g., content settings).
+// Class that manages interaction between the per-navigation/per-page
+// subresource filter objects (i.e., the throttles and throttle manager) and
+// the per-profile objects (e.g., content settings).
 class ProfileInteractionManager
-    : public content::WebContentsObserver,
-      public SubresourceFilterSafeBrowsingActivationThrottle::Delegate {
+    : public SubresourceFilterSafeBrowsingActivationThrottle::Delegate {
  public:
-  ProfileInteractionManager(content::WebContents* web_contents,
-                            SubresourceFilterProfileContext* profile_context);
+  explicit ProfileInteractionManager(
+      SubresourceFilterProfileContext* profile_context);
   ~ProfileInteractionManager() override;
 
   ProfileInteractionManager(const ProfileInteractionManager&) = delete;
   ProfileInteractionManager& operator=(const ProfileInteractionManager&) =
       delete;
 
-  // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void DidCreatePage(content::Page& page);
 
   // Invoked when the user has requested a reload of a page with blocked ads
   // (e.g., via an infobar).
@@ -61,6 +58,14 @@ class ProfileInteractionManager
       ActivationDecision* decision) override;
 
  private:
+  content::WebContents* GetWebContents();
+
+  // Tracks the current page in the frame tree the owning
+  // ContentSubresourceFilterThrottleManager is associated with. This will be
+  // nullptr initially until the main frame navigation commits and a Page is
+  // created, at which point the throttle manager will set this member.
+  content::Page* page_ = nullptr;
+
   // Unowned and must outlive this object.
   SubresourceFilterProfileContext* profile_context_ = nullptr;
 

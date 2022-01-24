@@ -50,6 +50,10 @@ class DemoSetupScreenHandler : public BaseScreenHandler,
   using TView = DemoSetupScreenView;
 
   explicit DemoSetupScreenHandler(JSCallsContainer* js_calls_container);
+
+  DemoSetupScreenHandler(const DemoSetupScreenHandler&) = delete;
+  DemoSetupScreenHandler& operator=(const DemoSetupScreenHandler&) = delete;
+
   ~DemoSetupScreenHandler() override;
 
   // DemoSetupScreenView:
@@ -71,8 +75,6 @@ class DemoSetupScreenHandler : public BaseScreenHandler,
 
  private:
   ash::DemoSetupScreen* screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupScreenHandler);
 };
 
 }  // namespace chromeos

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_CLIENT_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -24,6 +23,11 @@ namespace password_manager {
 class StubPasswordManagerClient : public PasswordManagerClient {
  public:
   StubPasswordManagerClient();
+
+  StubPasswordManagerClient(const StubPasswordManagerClient&) = delete;
+  StubPasswordManagerClient& operator=(const StubPasswordManagerClient&) =
+      delete;
+
   ~StubPasswordManagerClient() override;
 
   // PasswordManagerClient:
@@ -55,9 +59,10 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   void AutomaticPasswordSave(
       std::unique_ptr<PasswordFormManagerForUI> saved_manager) override;
   PrefService* GetPrefs() const override;
-  PasswordStore* GetProfilePasswordStore() const override;
-  PasswordStore* GetAccountPasswordStore() const override;
+  PasswordStoreInterface* GetProfilePasswordStore() const override;
+  PasswordStoreInterface* GetAccountPasswordStore() const override;
   PasswordReuseManager* GetPasswordReuseManager() const override;
+  PasswordScriptsFetcher* GetPasswordScriptsFetcher() override;
   const GURL& GetLastCommittedURL() const override;
   url::Origin GetLastCommittedOrigin() const override;
   const CredentialsFilter* GetStoreResultFilter() const override;
@@ -97,8 +102,6 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   autofill::StubLogManager log_manager_;
   ukm::SourceId ukm_source_id_;
   absl::optional<PasswordManagerMetricsRecorder> metrics_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubPasswordManagerClient);
 };
 
 }  // namespace password_manager

@@ -181,6 +181,10 @@ net::NetworkIsolationKey CreateNetworkIsolationKey(const GURL& main_frame_url) {
 class PreconnectManagerTest : public testing::Test {
  public:
   PreconnectManagerTest();
+
+  PreconnectManagerTest(const PreconnectManagerTest&) = delete;
+  PreconnectManagerTest& operator=(const PreconnectManagerTest&) = delete;
+
   ~PreconnectManagerTest() override;
 
   void VerifyAndClearExpectations() const {
@@ -195,9 +199,6 @@ class PreconnectManagerTest : public testing::Test {
   std::unique_ptr<StrictMock<MockNetworkContext>> mock_network_context_;
   std::unique_ptr<StrictMock<MockPreconnectManagerDelegate>> mock_delegate_;
   std::unique_ptr<PreconnectManager> preconnect_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PreconnectManagerTest);
 };
 
 PreconnectManagerTest::PreconnectManagerTest()
@@ -787,15 +788,17 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHost) {
 TEST_F(PreconnectManagerTest, TestStartPreresolveHosts) {
   GURL cdn("http://cdn.google.com");
   GURL fonts("http://fonts.google.com");
+  net::NetworkIsolationKey network_isolation_key =
+      CreateNetworkIsolationKey(cdn);
 
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(cdn.host()));
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(fonts.host()));
   preconnect_manager_->StartPreresolveHosts({cdn.host(), fonts.host()},
-                                            net::NetworkIsolationKey());
-  mock_network_context_->CompleteHostLookup(
-      cdn.host(), net::NetworkIsolationKey(), net::OK);
-  mock_network_context_->CompleteHostLookup(
-      fonts.host(), net::NetworkIsolationKey(), net::OK);
+                                            network_isolation_key);
+  mock_network_context_->CompleteHostLookup(cdn.host(), network_isolation_key,
+                                            net::OK);
+  mock_network_context_->CompleteHostLookup(fonts.host(), network_isolation_key,
+                                            net::OK);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {

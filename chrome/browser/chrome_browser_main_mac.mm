@@ -52,9 +52,9 @@
 // ChromeBrowserMainPartsMac ---------------------------------------------------
 
 ChromeBrowserMainPartsMac::ChromeBrowserMainPartsMac(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     StartupData* startup_data)
-    : ChromeBrowserMainPartsPosix(parameters, startup_data) {}
+    : ChromeBrowserMainPartsPosix(std::move(parameters), startup_data) {}
 
 ChromeBrowserMainPartsMac::~ChromeBrowserMainPartsMac() {
 }

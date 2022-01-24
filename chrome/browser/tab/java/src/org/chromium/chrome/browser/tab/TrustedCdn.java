@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
@@ -91,6 +92,11 @@ public class TrustedCdn extends TabWebContentsUserData {
         return trustedCdn;
     }
 
+    @VisibleForTesting
+    public static void setPublisherUrlForTesting(@NonNull Tab tab, @Nullable String publisherUrl) {
+        from(tab).setPublisherUrl(publisherUrl);
+    }
+
     private static TrustedCdn get(@Nullable Tab tab) {
         return tab != null ? tab.getUserDataHost().getUserData(USER_DATA_KEY) : null;
     }
@@ -139,7 +145,7 @@ public class TrustedCdn extends TabWebContentsUserData {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(TrustedCdn caller);
         void onDestroyed(long nativeTrustedCdn, TrustedCdn caller);
         void setWebContents(long nativeTrustedCdn, TrustedCdn caller, WebContents webContents);

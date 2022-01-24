@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_OBSERVER_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_OBSERVER_H_
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/task.h"
 
 namespace task_manager {

@@ -5,7 +5,6 @@
 #ifndef BASE_DEBUG_LEAK_ANNOTATIONS_H_
 #define BASE_DEBUG_LEAK_ANNOTATIONS_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
 // This file defines macros which can be used to annotate intentional memory
@@ -26,9 +25,12 @@
 class ScopedLeakSanitizerDisabler {
  public:
   ScopedLeakSanitizerDisabler() { __lsan_disable(); }
+
+  ScopedLeakSanitizerDisabler(const ScopedLeakSanitizerDisabler&) = delete;
+  ScopedLeakSanitizerDisabler& operator=(const ScopedLeakSanitizerDisabler&) =
+      delete;
+
   ~ScopedLeakSanitizerDisabler() { __lsan_enable(); }
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedLeakSanitizerDisabler);
 };
 
 #define ANNOTATE_SCOPED_MEMORY_LEAK \

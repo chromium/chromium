@@ -21,14 +21,14 @@ luci.console_view(
             short_name = "64",
         ),
         luci.console_view_entry(
-            builder = "webrtc.fyi/WebRTC Chromium FYI Android Tests (dbg) (L Nexus5)",
-            category = "android|debug|tester",
-            short_name = "L",
-        ),
-        luci.console_view_entry(
             builder = "webrtc.fyi/WebRTC Chromium FYI Android Tests (dbg) (M Nexus5X)",
             category = "android|debug|tester",
             short_name = "M",
+        ),
+        luci.console_view_entry(
+            builder = "webrtc.fyi/WebRTC Chromium FYI Android Tests (dbg) (N Nexus5X)",
+            category = "android|debug|tester",
+            short_name = "N",
         ),
         luci.console_view_entry(
             builder = "webrtc.fyi/WebRTC Chromium FYI Android Builder",

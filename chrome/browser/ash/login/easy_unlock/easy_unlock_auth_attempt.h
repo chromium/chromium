@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
@@ -26,6 +25,10 @@ class EasyUnlockAuthAttempt {
   enum Type { TYPE_UNLOCK, TYPE_SIGNIN };
 
   EasyUnlockAuthAttempt(const AccountId& account_id, Type type);
+
+  EasyUnlockAuthAttempt(const EasyUnlockAuthAttempt&) = delete;
+  EasyUnlockAuthAttempt& operator=(const EasyUnlockAuthAttempt&) = delete;
+
   ~EasyUnlockAuthAttempt();
 
   // Ensures the device is currently locked and the unlock process is being
@@ -56,8 +59,6 @@ class EasyUnlockAuthAttempt {
   State state_;
   const AccountId account_id_;
   Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockAuthAttempt);
 };
 
 }  // namespace ash

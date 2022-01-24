@@ -6,7 +6,6 @@
 #define CONTENT_SHELL_BROWSER_SHELL_PERMISSION_MANAGER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "content/public/browser/permission_controller_delegate.h"
 
 namespace content {
@@ -14,6 +13,10 @@ namespace content {
 class ShellPermissionManager : public PermissionControllerDelegate {
  public:
   ShellPermissionManager();
+
+  ShellPermissionManager(const ShellPermissionManager&) = delete;
+  ShellPermissionManager& operator=(const ShellPermissionManager&) = delete;
+
   ~ShellPermissionManager() override;
 
   // PermissionManager implementation.
@@ -51,9 +54,6 @@ class ShellPermissionManager : public PermissionControllerDelegate {
       override;
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellPermissionManager);
 };
 
 }  // namespace content

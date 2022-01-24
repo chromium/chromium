@@ -22,7 +22,7 @@ const char kSAMLUserEmail[] = "alice@corp.example.com";
 
 const char kSyncToken[] = "sync-token-1";
 
-constexpr base::TimeDelta kSamlTokenDelay = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kSamlTokenDelay = base::Seconds(60);
 
 class FakeUserManagerWithLocalState : public FakeChromeUserManager {
  public:

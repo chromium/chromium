@@ -7,11 +7,16 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback.h"
+#include "base/check.h"
+#include "base/logging.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
@@ -29,30 +34,131 @@ namespace blink {
 
 namespace {
 
+// A helper class that aggregates the result of multiple values, including
+// waiting for the results if those values are promises (or otherwise
+// then-able).
+class PromiseAggregator : public GarbageCollected<PromiseAggregator> {
+ public:
+  using Callback =
+      base::OnceCallback<void(const Vector<v8::Local<v8::Value>>&)>;
+
+  PromiseAggregator(ScriptState* script_state,
+                    const Vector<v8::Local<v8::Value>>& values,
+                    Callback callback);
+
+  void Trace(Visitor* visitor) const { visitor->Trace(results_); }
+
+ private:
+  // A helper class that handles a result from a single promise value.
+  class OnSettled : public NewScriptFunction::Callable {
+   public:
+    OnSettled(PromiseAggregator* aggregator,
+              wtf_size_t index,
+              bool was_fulfilled)
+        : aggregator_(aggregator),
+          index_(index),
+          was_fulfilled_(was_fulfilled) {}
+    OnSettled(const OnSettled&) = delete;
+    OnSettled& operator=(const OnSettled&) = delete;
+    ~OnSettled() override = default;
+
+    static NewScriptFunction* New(ScriptState* script_state,
+                                  PromiseAggregator* aggregator,
+                                  wtf_size_t index,
+                                  bool was_fulfilled) {
+      return MakeGarbageCollected<NewScriptFunction>(
+          script_state,
+          MakeGarbageCollected<OnSettled>(aggregator, index, was_fulfilled));
+    }
+
+    ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+      DCHECK_GT(aggregator_->outstanding_, 0u);
+
+      if (was_fulfilled_) {
+        aggregator_->results_[index_].Reset(script_state->GetIsolate(),
+                                            value.V8Value());
+      }
+
+      if (--aggregator_->outstanding_ == 0) {
+        aggregator_->OnAllSettled(script_state->GetIsolate());
+      }
+
+      return ScriptValue();
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(aggregator_);
+      NewScriptFunction::Callable::Trace(visitor);
+    }
+
+   private:
+    Member<PromiseAggregator> aggregator_;
+    const wtf_size_t index_;
+    const bool was_fulfilled_;
+  };
+
+  // Called when all results have been settled.
+  void OnAllSettled(v8::Isolate* isolate);
+
+  // The accumulated vector of results from the promises.
+  HeapVector<TraceWrapperV8Reference<v8::Value>> results_;
+  // The number of outstanding promises we're waiting on.
+  wtf_size_t outstanding_ = 0;
+  // The callback to invoke when all promises are settled.
+  Callback callback_;
+};
+
+PromiseAggregator::PromiseAggregator(ScriptState* script_state,
+                                     const Vector<v8::Local<v8::Value>>& values,
+                                     Callback callback)
+    : results_(values.size()), callback_(std::move(callback)) {
+  for (wtf_size_t i = 0; i < values.size(); ++i) {
+    if (values[i].IsEmpty())
+      continue;
+
+    ++outstanding_;
+    // ScriptPromise::Cast() will turn any non-promise into a promise that
+    // resolves to the value. Calling ScriptPromise::Cast().Then() will either
+    // wait for the promise (or then-able) to settle, or will immediately finish
+    // with the value. Thus, it's safe to just do this for every value.
+    ScriptPromise::Cast(script_state, values[i])
+        .Then(OnSettled::New(script_state, this, i, /*was_fulfilled=*/true),
+              OnSettled::New(script_state, this, i, /*was_fulfilled=*/false));
+  }
+
+  if (outstanding_ == 0)
+    OnAllSettled(script_state->GetIsolate());
+}
+
+void PromiseAggregator::OnAllSettled(v8::Isolate* isolate) {
+  DCHECK_EQ(0u, outstanding_);
+  Vector<v8::Local<v8::Value>> converted_results(results_.size());
+  for (wtf_size_t i = 0; i < results_.size(); ++i)
+    converted_results[i] = results_[i].Get(isolate);
+
+  std::move(callback_).Run(std::move(converted_results));
+}
+
 class WebScriptExecutor : public PausableScriptExecutor::Executor {
  public:
-  WebScriptExecutor(const HeapVector<ScriptSourceCode>& sources,
+  WebScriptExecutor(Vector<WebScriptSource>,
                     int32_t world_id,
                     bool user_gesture);
 
   Vector<v8::Local<v8::Value>> Execute(LocalDOMWindow*) override;
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(sources_);
-    PausableScriptExecutor::Executor::Trace(visitor);
-  }
-
  private:
-  HeapVector<ScriptSourceCode> sources_;
+  Vector<WebScriptSource> sources_;
   int32_t world_id_;
   bool user_gesture_;
 };
 
-WebScriptExecutor::WebScriptExecutor(
-    const HeapVector<ScriptSourceCode>& sources,
-    int32_t world_id,
-    bool user_gesture)
-    : sources_(sources), world_id_(world_id), user_gesture_(user_gesture) {}
+WebScriptExecutor::WebScriptExecutor(Vector<WebScriptSource> sources,
+                                     int32_t world_id,
+                                     bool user_gesture)
+    : sources_(std::move(sources)),
+      world_id_(world_id),
+      user_gesture_(user_gesture) {}
 
 Vector<v8::Local<v8::Value>> WebScriptExecutor::Execute(
     LocalDOMWindow* window) {
@@ -117,11 +223,11 @@ Vector<v8::Local<v8::Value>> V8FunctionExecutor::Execute(
   Vector<v8::Local<v8::Value>> args;
   args.ReserveCapacity(args_.size());
   for (wtf_size_t i = 0; i < args_.size(); ++i)
-    args.push_back(args_[i].NewLocal(isolate));
+    args.push_back(args_[i].Get(isolate));
 
   {
-    if (V8ScriptRunner::CallFunction(function_.NewLocal(isolate), window,
-                                     receiver_.NewLocal(isolate), args.size(),
+    if (V8ScriptRunner::CallFunction(function_.Get(isolate), window,
+                                     receiver_.Get(isolate), args.size(),
                                      args.data(), window->GetIsolate())
             .ToLocal(&single_result)) {
       results.push_back(single_result);
@@ -176,14 +282,14 @@ void PausableScriptExecutor::ContextDestroyed() {
 PausableScriptExecutor::PausableScriptExecutor(
     LocalDOMWindow* window,
     scoped_refptr<DOMWrapperWorld> world,
-    const HeapVector<ScriptSourceCode>& sources,
+    Vector<WebScriptSource> sources,
     bool user_gesture,
     WebScriptExecutionCallback* callback)
     : PausableScriptExecutor(
           window,
           ToScriptState(window, *world),
           callback,
-          MakeGarbageCollected<WebScriptExecutor>(sources,
+          MakeGarbageCollected<WebScriptExecutor>(std::move(sources),
                                                   world->GetWorldId(),
                                                   user_gesture)) {}
 
@@ -246,6 +352,32 @@ void PausableScriptExecutor::ExecuteAndDestroySelf() {
   if (!script_state_->ContextIsValid())
     return;
 
+  if (wait_for_promise_) {
+    // Use a SelfKeepAlive to extend the lifetime of the PausableScriptExecutor
+    // while we wait for promises to settle. We don't just use a reference in
+    // the callback to PromiseAggregator to avoid a cycle with a GC root.
+    // Cleared in Dispose(), which is called when all promises settle or when
+    // the ExecutionContext is invalidated.
+    keep_alive_ = this;
+    MakeGarbageCollected<PromiseAggregator>(
+        script_state_, results,
+        WTF::Bind(&PausableScriptExecutor::HandleResults,
+                  WrapWeakPersistent(this)));
+    return;
+  }
+
+  HandleResults(results);
+}
+
+void PausableScriptExecutor::HandleResults(
+    const Vector<v8::Local<v8::Value>>& results) {
+  // The script may have removed the frame, in which case ContextDestroyed()
+  // will have handled the disposal/callback.
+  if (!script_state_->ContextIsValid())
+    return;
+
+  auto* window = To<LocalDOMWindow>(GetExecutionContext());
+
   if (blocking_option_ == kOnloadBlocking)
     window->document()->DecrementLoadEventDelayCount();
 
@@ -265,6 +397,7 @@ void PausableScriptExecutor::Dispose() {
     SetExecutionContext(nullptr);
   }
   task_handle_.Cancel();
+  keep_alive_.Clear();
 }
 
 void PausableScriptExecutor::Trace(Visitor* visitor) const {

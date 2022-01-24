@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 
 namespace ui {
 
@@ -22,6 +21,9 @@ class DomKeyboardLayout;
 // information from the underlying operating system.
 class DomKeyboardLayoutMapBase {
  public:
+  DomKeyboardLayoutMapBase(const DomKeyboardLayoutMapBase&) = delete;
+  DomKeyboardLayoutMapBase& operator=(const DomKeyboardLayoutMapBase&) = delete;
+
   virtual ~DomKeyboardLayoutMapBase();
 
   // Generates a KeyboardLayoutMap based on the keyboard layouts provided by the
@@ -50,8 +52,6 @@ class DomKeyboardLayoutMapBase {
   // corresponding dom key.
   void PopulateLayout(uint32_t keyboard_layout_index,
                       ui::DomKeyboardLayout* keyboard_layout);
-
-  DISALLOW_COPY_AND_ASSIGN(DomKeyboardLayoutMapBase);
 };
 
 }  // namespace ui

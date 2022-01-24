@@ -246,7 +246,8 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
 }
 
 // Tests that CWVAutofillController can fetch, fill, and clear suggestions.
-TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
+// TODO(crbug.com/1259114): Figure out why this is test is flaky.
+TEST_F(WebViewAutofillTest, DISABLED_TestSuggestionFetchFillClear) {
   ASSERT_TRUE(test_server_->Start());
   ASSERT_TRUE(LoadTestPage());
   ASSERT_TRUE(SetFormFieldValue(kTestNameFieldID, kTestNameFieldValue));

@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -34,9 +33,10 @@
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/eol_notification.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/u2f_notification.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_notification_controller.h"
-#include "chrome/browser/chromeos/eol_notification.h"
-#include "chrome/browser/chromeos/u2f_notification.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -50,14 +50,14 @@
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
+class AshTurnSyncOnHelper;
 class GURL;
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
-class TurnSyncOnHelper;
 
 namespace user_manager {
 class User;
@@ -162,6 +162,9 @@ class UserSessionManager
 
   // Returns UserSessionManager instance.
   static UserSessionManager* GetInstance();
+
+  UserSessionManager(const UserSessionManager&) = delete;
+  UserSessionManager& operator=(const UserSessionManager&) = delete;
 
   // Called when user is logged in to override base::DIR_HOME path.
   static void OverrideHomedir();
@@ -296,9 +299,6 @@ class UserSessionManager
   // and show the message accordingly.
   void CheckEolInfo(Profile* profile);
 
-  // Starts migrating accounts to Chrome OS Account Manager.
-  void StartAccountManagerMigration(Profile* profile);
-
   // Note this could return NULL if not enabled.
   EasyUnlockKeyManager* GetEasyUnlockKeyManager();
 
@@ -404,7 +404,7 @@ class UserSessionManager
 
   void CreateUserSession(const UserContext& user_context,
                          bool has_auth_cookies);
-  void PreStartSession();
+  void PreStartSession(StartSessionType start_session_type);
 
   // Store any useful UserContext data early on when profile has not been
   // created yet and user services were not yet initialized. Can store
@@ -428,7 +428,6 @@ class UserSessionManager
 
   // Callback for asynchronous profile creation.
   void OnProfileCreated(const UserContext& user_context,
-                        bool is_incognito_profile,
                         Profile* profile,
                         Profile::CreateStatus status);
 
@@ -442,7 +441,6 @@ class UserSessionManager
   // Callback for Profile::CREATE_STATUS_INITIALIZED profile state.
   // Profile is created, extensions and promo resources are initialized.
   void UserProfileInitialized(Profile* profile,
-                              bool is_incognito_profile,
                               const AccountId& account_id);
 
   // Callback to resume profile creation after transferring auth data from
@@ -666,7 +664,7 @@ class UserSessionManager
 
   std::unique_ptr<arc::AlwaysOnVpnManager> always_on_vpn_manager_;
 
-  std::unique_ptr<net::SecureDnsManager> secure_dns_manager_;
+  std::unique_ptr<SecureDnsManager> secure_dns_manager_;
 
   std::unique_ptr<ChildPolicyObserver> child_policy_observer_;
 
@@ -675,7 +673,7 @@ class UserSessionManager
   std::unique_ptr<HelpAppNotificationController>
       help_app_notification_controller_;
 
-  std::unique_ptr<TurnSyncOnHelper> turn_sync_on_helper_;
+  std::unique_ptr<AshTurnSyncOnHelper> ash_turn_sync_on_helper_;
 
   bool token_handle_backfill_tried_for_testing_ = false;
 
@@ -683,8 +681,6 @@ class UserSessionManager
       onboarding_user_activity_counter_;
 
   base::WeakPtrFactory<UserSessionManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserSessionManager);
 };
 
 }  // namespace ash

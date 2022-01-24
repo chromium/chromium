@@ -7,13 +7,17 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace content {
 
 class ManifestIconDownloaderTest : public testing::TestWithParam<bool> {
+ public:
+  ManifestIconDownloaderTest(const ManifestIconDownloaderTest&) = delete;
+  ManifestIconDownloaderTest& operator=(const ManifestIconDownloaderTest&) =
+      delete;
+
  protected:
   ManifestIconDownloaderTest() : selects_square_only_(GetParam()) {}
   ~ManifestIconDownloaderTest() override = default;
@@ -43,8 +47,6 @@ class ManifestIconDownloaderTest : public testing::TestWithParam<bool> {
 
  private:
   bool selects_square_only_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestIconDownloaderTest);
 };
 
 TEST_P(ManifestIconDownloaderTest, NoIcons) {

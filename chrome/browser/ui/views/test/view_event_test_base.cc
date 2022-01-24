@@ -22,10 +22,6 @@
 #include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 
-#if defined(USE_X11)
-#include "ui/views/test/test_desktop_screen_x11.h"
-#endif  // defined(USE_X11)
-
 #if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
 #include "ui/views/test/test_desktop_screen_ozone.h"
 #endif  // (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
@@ -102,10 +98,6 @@ ViewEventTestBase::ViewEventTestBase() {
   // insufficient for these tests, then either bolster/replace it or fix the
   // tests.
   DCHECK(!display::Screen::GetScreen());
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    views::test::TestDesktopScreenX11::GetInstance();
-#endif  // defined(USE_X11)
 #if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
   if (!display::Screen::GetScreen())
     display::Screen::SetScreenInstance(

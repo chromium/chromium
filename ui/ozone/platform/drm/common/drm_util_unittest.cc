@@ -24,113 +24,26 @@ class DrmUtilTest : public testing::Test {};
 TEST_F(DrmUtilTest, TestDisplayModesExtraction) {
   // Initialize a list of display modes.
   constexpr size_t kNumModes = 5;
-  drmModeModeInfo modes[kNumModes] = {
-      {0,
-       640 /* hdisplay */,
-       0,
-       0,
-       0,
-       0,
-       400 /* vdisplay */,
-       0,
-       0,
-       0,
-       0,
-       0,
-       0,
-       0,
-       {}},
-      {0,
-       640 /* hdisplay */,
-       0,
-       0,
-       0,
-       0,
-       480 /* vdisplay */,
-       0,
-       0,
-       0,
-       0,
-       0,
-       0,
-       0,
-       {}},
-      {0,
-       800 /* hdisplay */,
-       0,
-       0,
-       0,
-       0,
-       600 /* vdisplay */,
-       0,
-       0,
-       0,
-       0,
-       0,
-       0,
-       0,
-       {}},
-      {0,
-       1024 /* hdisplay */,
-       0,
-       0,
-       0,
-       0,
-       768 /* vdisplay */,
-       0,
-       0,
-       0,
-       0,
-       0,
-       0,
-       0,
-       {}},
-      {0,
-       1280 /* hdisplay */,
-       0,
-       0,
-       0,
-       0,
-       768 /* vdisplay */,
-       0,
-       0,
-       0,
-       0,
-       0,
-       0,
-       0,
-       {}},
-  };
+  drmModeModeInfo modes[kNumModes] = {{.hdisplay = 640, .vdisplay = 400},
+                                      {.hdisplay = 640, .vdisplay = 480},
+                                      {.hdisplay = 800, .vdisplay = 600},
+                                      {.hdisplay = 1024, .vdisplay = 768},
+                                      {.hdisplay = 1280, .vdisplay = 768}};
   drmModeModeInfoPtr modes_ptr = static_cast<drmModeModeInfoPtr>(
       drmMalloc(kNumModes * sizeof(drmModeModeInfo)));
   std::memcpy(modes_ptr, &modes[0], kNumModes * sizeof(drmModeModeInfo));
 
   // Initialize a connector.
-  drmModeConnector connector = {
-      0,
-      0,
-      0,
-      0,
-      DRM_MODE_CONNECTED,
-      0,
-      0,
-      DRM_MODE_SUBPIXEL_UNKNOWN,
-      5 /* count_modes */,
-      modes_ptr,
-      0,
-      nullptr,
-      nullptr,
-      0,
-      nullptr,
-  };
+  drmModeConnector connector = {.connection = DRM_MODE_CONNECTED,
+                                .subpixel = DRM_MODE_SUBPIXEL_UNKNOWN,
+                                .count_modes = 5,
+                                .modes = modes_ptr};
   drmModeConnector* connector_ptr =
       static_cast<drmModeConnector*>(drmMalloc(sizeof(drmModeConnector)));
   *connector_ptr = connector;
 
   // Initialize a CRTC.
-  drmModeCrtc crtc = {
-      0, 0, 0, 0, 0, 0, 1 /* mode_valid */, modes[0], 0,
-  };
+  drmModeCrtc crtc = {.mode_valid = 1, .mode = modes[0]};
   drmModeCrtcPtr crtc_ptr =
       static_cast<drmModeCrtcPtr>(drmMalloc(sizeof(drmModeCrtc)));
   *crtc_ptr = crtc;

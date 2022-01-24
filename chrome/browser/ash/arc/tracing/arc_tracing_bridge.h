@@ -11,10 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/containers/ring_buffer.h"
-#include "base/files/file_descriptor_watcher_posix.h"
-#include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -39,9 +35,15 @@ class ArcTracingBridge : public KeyedService,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcTracingBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcTracingBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcTracingBridge(content::BrowserContext* context,
                    ArcBridgeService* bridge_service);
+
+  ArcTracingBridge(const ArcTracingBridge&) = delete;
+  ArcTracingBridge& operator=(const ArcTracingBridge&) = delete;
+
   ~ArcTracingBridge() override;
 
   void GetCategories(std::set<std::string>* category_set);
@@ -53,16 +55,15 @@ class ArcTracingBridge : public KeyedService,
   enum class State { kDisabled, kStarting, kEnabled, kStopping };
   State state() const { return state_; }
 
-  using SuccessCallback = base::OnceCallback<void(bool)>;
-  using TraceDataCallback = base::OnceCallback<void(const std::string& data)>;
+  using StartCallback = base::OnceCallback<void(bool)>;
+  using StopCallback = base::OnceCallback<void()>;
 
   // Starts tracing and calls |callback| when started indicating whether tracing
   // was started successfully via its parameter.
-  void StartTracing(const std::string& config, SuccessCallback callback);
+  void StartTracing(const std::string& config, StartCallback callback);
 
-  // Stops tracing and calls |callback| with the recorded trace data once
-  // stopped. If unsuccessful, calls |callback| with an empty data string.
-  void StopAndFlush(TraceDataCallback callback);
+  // Stops tracing and calls |callback| when stopped.
+  void StopTracing(StopCallback callback);
 
  private:
   // TODO(crbug.com/839086): Remove once we have replaced the legacy tracing
@@ -70,6 +71,10 @@ class ArcTracingBridge : public KeyedService,
   class ArcTracingAgent : public tracing::BaseAgent {
    public:
     explicit ArcTracingAgent(ArcTracingBridge* bridge);
+
+    ArcTracingAgent(const ArcTracingAgent&) = delete;
+    ArcTracingAgent& operator=(const ArcTracingAgent&) = delete;
+
     ~ArcTracingAgent() override;
 
    private:
@@ -77,35 +82,6 @@ class ArcTracingBridge : public KeyedService,
     void GetCategories(std::set<std::string>* category_set) override;
 
     ArcTracingBridge* const bridge_;
-
-    DISALLOW_COPY_AND_ASSIGN(ArcTracingAgent);
-  };
-
-  // A helper class for reading trace data from the client side. We separate
-  // this from |ArcTracingAgentImpl| to isolate the logic that runs on browser's
-  // IO thread. All the functions in this class except for constructor are
-  // expected to be run on browser's IO thread.
-  class ArcTracingReader {
-   public:
-    ArcTracingReader();
-    ~ArcTracingReader();
-
-    // Starts reading trace data from the given file descriptor.
-    void StartTracing(base::ScopedFD read_fd);
-    // Stops reading and returns the collected trace data.
-    std::string StopTracing();
-
-   private:
-    void OnTraceDataAvailable();
-
-    // Number of events for the ring buffer.
-    static constexpr size_t kTraceEventBufferSize = 64000;
-
-    base::ScopedFD read_fd_;
-    std::unique_ptr<base::FileDescriptorWatcher::Controller> fd_watcher_;
-    base::RingBuffer<std::string, kTraceEventBufferSize> ring_buffer_;
-
-    DISALLOW_COPY_AND_ASSIGN(ArcTracingReader);
   };
 
   struct Category;
@@ -113,11 +89,8 @@ class ArcTracingBridge : public KeyedService,
   // Callback for QueryAvailableCategories.
   void OnCategoriesReady(const std::vector<std::string>& categories);
 
-  void OnArcTracingStarted(SuccessCallback callback, bool success);
-  void OnArcTracingStopped(TraceDataCallback tracing_stopped_callback,
-                           bool success);
-  void OnTracingReaderStopped(TraceDataCallback tracing_stopped_callback,
-                              const std::string& data);
+  void OnArcTracingStarted(StartCallback callback, bool success);
+  void OnArcTracingStopped(StopCallback callback, bool success);
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
@@ -127,15 +100,11 @@ class ArcTracingBridge : public KeyedService,
 
   ArcTracingAgent agent_;
 
-  std::unique_ptr<ArcTracingReader> reader_;
-
   State state_ = State::kDisabled;
 
   // NOTE: Weak pointers must be invalidated before all other member variables
   // so it must be the last member.
   base::WeakPtrFactory<ArcTracingBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingBridge);
 };
 
 }  // namespace arc

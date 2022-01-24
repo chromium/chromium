@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/decoder_client.h"
@@ -31,6 +31,10 @@ class GPU_GLES2_EXPORT MemoryProgramCache : public ProgramCache {
                      bool disable_gpu_shader_disk_cache,
                      bool disable_program_caching_for_transform_feedback,
                      GpuProcessActivityFlags* activity_flags);
+
+  MemoryProgramCache(const MemoryProgramCache&) = delete;
+  MemoryProgramCache& operator=(const MemoryProgramCache&) = delete;
+
   ~MemoryProgramCache() override;
 
   ProgramLoadResult LoadLinkedProgram(
@@ -77,6 +81,9 @@ class GPU_GLES2_EXPORT MemoryProgramCache : public ProgramCache {
                       const OutputVariableList& output_variable_list_1,
                       const InterfaceBlockMap& interface_block_map_1,
                       MemoryProgramCache* program_cache);
+
+    ProgramCacheValue(const ProgramCacheValue&) = delete;
+    ProgramCacheValue& operator=(const ProgramCacheValue&) = delete;
 
     GLenum format() const {
       return format_;
@@ -159,23 +166,19 @@ class GPU_GLES2_EXPORT MemoryProgramCache : public ProgramCache {
     const OutputVariableList output_variable_list_1_;
     const InterfaceBlockMap interface_block_map_1_;
     MemoryProgramCache* const program_cache_;
-
-    DISALLOW_COPY_AND_ASSIGN(ProgramCacheValue);
   };
 
   friend class ProgramCacheValue;
 
-  typedef base::MRUCache<std::string,
-                         scoped_refptr<ProgramCacheValue> > ProgramMRUCache;
+  typedef base::LRUCache<std::string, scoped_refptr<ProgramCacheValue>>
+      ProgramLRUCache;
 
   const bool disable_gpu_shader_disk_cache_;
   const bool disable_program_caching_for_transform_feedback_;
   const bool compress_program_binaries_;
   size_t curr_size_bytes_;
-  ProgramMRUCache store_;
+  ProgramLRUCache store_;
   GpuProcessActivityFlags* activity_flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryProgramCache);
 };
 
 }  // namespace gles2

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_SITE_DATA_RECORDER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_SITE_DATA_RECORDER_H_
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"

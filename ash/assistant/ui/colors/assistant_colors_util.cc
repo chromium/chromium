@@ -27,13 +27,18 @@ SkColor ResolveAssistantColor(assistant_colors::ColorName color_name) {
   // Delete this utility class and call assistant_colors::ResolveColor directly
   // once dark and light mode has launched and features::IsDarkLightModeEnabled
   // gets removed.
-  if (!features::IsDarkLightModeEnabled())
+  if (!UseDarkLightModeColors())
     return GetDarkLightModeFlagOffColor(color_name);
 
   return assistant_colors::ResolveColor(
       color_name, ColorProvider::Get()->IsDarkModeEnabled(),
       base::FeatureList::IsEnabled(
           ash::features::kSemanticColorsDebugOverride));
+}
+
+bool UseDarkLightModeColors() {
+  return features::IsDarkLightModeEnabled() ||
+         features::IsProductivityLauncherEnabled();
 }
 
 }  // namespace assistant

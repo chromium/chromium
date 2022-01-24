@@ -142,6 +142,12 @@ class LogoElement extends mixinBehaviors
 
       /** @private */
       showShareDialog_: Boolean,
+
+      /** @private */
+      imageDoodleTabIndex_: {
+        type: Number,
+        computed: 'computeImageDoodleTabIndex_(doodle_, showAnimation_)',
+      },
     };
   }
 
@@ -286,6 +292,9 @@ class LogoElement extends mixinBehaviors
    * @private
    */
   onImageClick_() {
+    if ($$(this, '#imageDoodle').tabIndex < 0) {
+      return;
+    }
     if (this.isCtaImageShown_()) {
       this.showAnimation_ = true;
       this.pageHandler_.onDoodleImageClicked(
@@ -301,8 +310,13 @@ class LogoElement extends mixinBehaviors
           /** @type {!url.mojom.Url} */
           (this.imageDoodle_.animationImpressionLogUrl));
 
+      if (!this.doodle_.image.onClickUrl) {
+        $$(this, '#imageDoodle').blur();
+      }
+
       return;
     }
+    assert(this.doodle_.image.onClickUrl);
     this.pageHandler_.onDoodleImageClicked(
         this.showAnimation_ ? newTabPage.mojom.DoodleImageType.kAnimation :
                               newTabPage.mojom.DoodleImageType.kStatic,
@@ -442,6 +456,17 @@ class LogoElement extends mixinBehaviors
       '--height': this.height_,
       '--width': this.width_,
     });
+  }
+
+  /**
+   * @private
+   * @return {number}
+   */
+  computeImageDoodleTabIndex_() {
+    return (this.doodle_ && this.doodle_.image &&
+            (this.isCtaImageShown_() || this.doodle_.image.onClickUrl)) ?
+        0 :
+        -1;
   }
 }
 

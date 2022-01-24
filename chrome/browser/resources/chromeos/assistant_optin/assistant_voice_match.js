@@ -45,14 +45,6 @@ Polymer({
       type: String,
       value: '',
     },
-
-    /**
-     * The name of the Chrome device.
-     */
-    deviceName_: {
-      type: String,
-      value: '',
-    }
   },
 
   /**
@@ -143,7 +135,6 @@ Polymer({
   reloadContent(data) {
     this.equalWeightButtons_ = data['equalWeightButtons'];
     this.childName_ = data['childName'];
-    this.deviceName_ = data['deviceName'];
   },
 
   /**
@@ -204,10 +195,10 @@ Polymer({
       this.setUIStep(VoiceMatchUIState.COMPLETED);
     }
 
-    window.setTimeout(function() {
+    window.setTimeout(() => {
       this.$['voice-match-lottie'].setPlay(false);
       this.browserProxy_.userActed(VOICE_MATCH_SCREEN_ID, ['voice-match-done']);
-    }.bind(this), this.doneActionDelayMs_);
+    }, this.doneActionDelayMs_);
   },
 
   /**
@@ -218,9 +209,7 @@ Polymer({
       // If voice match is the first screen, slightly delay showing the content
       // for the lottie animations to load.
       this.fire('loading');
-      window.setTimeout(function() {
-        this.fire('loaded');
-      }.bind(this), 100);
+      window.setTimeout(() => this.fire('loaded'), 100);
     }
 
     this.browserProxy_.screenShown(VOICE_MATCH_SCREEN_ID);
@@ -249,13 +238,15 @@ Polymer({
   /**
    * Returns the text for subtitle.
    */
-  getSubtitleMessage_(locale, uiStep, childName, deviceName) {
+  getSubtitleMessage_(locale, uiStep, childName) {
     if (uiStep == VoiceMatchUIState.INTRO) {
       return childName ? this.i18nAdvanced(
                              'assistantVoiceMatchMessageForChild',
-                             {substitutions: [deviceName, childName]}) :
+                             {substitutions: [childName]}) :
                          this.i18nAdvanced('assistantVoiceMatchMessage');
-    } else if (uiStep === VoiceMatchUIState.RECORDING) {
+    } else if (
+        uiStep === VoiceMatchUIState.RECORDING ||
+        uiStep === VoiceMatchUIState.COMPLETED) {
       return this.i18nAdvanced(
           'assistantVoiceMatchFooterForChild', {substitutions: [childName]});
     }

@@ -66,6 +66,7 @@ generate_grd("build_apps_grd") {
     "apps_page.js",
     "card_slider.js",
     "dot_list.js",
+    "images/error_yellow900.svg",
     "images/trash.png",
     "nav_dot.css",
     "nav_dot.js",

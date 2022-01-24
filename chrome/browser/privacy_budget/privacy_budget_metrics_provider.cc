@@ -13,10 +13,6 @@ PrivacyBudgetMetricsProvider::PrivacyBudgetMetricsProvider(
   DCHECK(study_state_);
 }
 
-void PrivacyBudgetMetricsProvider::Init() {
-  study_state_->InitFromPrefs();
-}
-
 void PrivacyBudgetMetricsProvider::OnClientStateCleared() {
-  study_state_->ResetClientState();
+  study_state_->ResetPersistedState();
 }

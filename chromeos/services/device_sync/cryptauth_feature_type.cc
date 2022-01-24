@@ -33,6 +33,10 @@ const char kWifiSyncHostSupportedString[] = "WIFI_SYNC_HOST_SUPPORTED";
 const char kWifiSyncClientSupportedString[] = "WIFI_SYNC_CLIENT_SUPPORTED";
 const char kEcheHostSupportedString[] = "EXO_HOST_SUPPORTED";
 const char kEcheClientSupportedString[] = "EXO_CLIENT_SUPPORTED";
+const char kPhoneHubCameraRollHostSupportedString[] =
+    "PHONE_HUB_CAMERA_ROLL_HOST_SUPPORTED";
+const char kPhoneHubCameraRollClientSupportedString[] =
+    "PHONE_HUB_CAMERA_ROLL_CLIENT_SUPPORTED";
 
 const char kBetterTogetherHostEnabledString[] = "BETTER_TOGETHER_HOST";
 const char kBetterTogetherClientEnabledString[] = "BETTER_TOGETHER_CLIENT";
@@ -48,6 +52,10 @@ const char kWifiSyncHostEnabledString[] = "WIFI_SYNC_HOST";
 const char kWifiSyncClientEnabledString[] = "WIFI_SYNC_CLIENT";
 const char kEcheHostEnabledString[] = "EXO_HOST";
 const char kEcheClientEnabledString[] = "EXO_CLIENT";
+const char kPhoneHubCameraRollHostEnabledString[] =
+    "PHONE_HUB_CAMERA_ROLL_HOST";
+const char kPhoneHubCameraRollClientEnabledString[] =
+    "PHONE_HUB_CAMERA_ROLL_CLIENT";
 
 }  // namespace
 
@@ -89,6 +97,16 @@ const base::flat_set<CryptAuthFeatureType>& GetAllCryptAuthFeatureTypes() {
           feature_set.insert(CryptAuthFeatureType::kEcheHostSupported);
           feature_set.insert(CryptAuthFeatureType::kEcheHostEnabled);
         }
+        if (features::IsPhoneHubCameraRollEnabled()) {
+          feature_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollClientSupported);
+          feature_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled);
+          feature_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollHostSupported);
+          feature_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled);
+        }
         return feature_set;
       }());
 
@@ -120,6 +138,12 @@ GetSupportedCryptAuthFeatureTypes() {
           supported_set.insert(CryptAuthFeatureType::kEcheHostSupported);
           supported_set.insert(CryptAuthFeatureType::kEcheClientSupported);
         }
+        if (features::IsPhoneHubCameraRollEnabled()) {
+          supported_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollHostSupported);
+          supported_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollClientSupported);
+        }
         return supported_set;
       }());
 
@@ -149,6 +173,12 @@ const base::flat_set<CryptAuthFeatureType>& GetEnabledCryptAuthFeatureTypes() {
         if (features::IsEcheSWAEnabled()) {
           enabled_set.insert(CryptAuthFeatureType::kEcheHostEnabled);
           enabled_set.insert(CryptAuthFeatureType::kEcheClientEnabled);
+        }
+        if (features::IsPhoneHubCameraRollEnabled()) {
+          enabled_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled);
+          enabled_set.insert(
+              CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled);
         }
         return enabled_set;
       }());
@@ -226,6 +256,14 @@ const char* CryptAuthFeatureTypeToString(CryptAuthFeatureType feature_type) {
       return kEcheClientSupportedString;
     case CryptAuthFeatureType::kEcheClientEnabled:
       return kEcheClientEnabledString;
+    case CryptAuthFeatureType::kPhoneHubCameraRollHostSupported:
+      return kPhoneHubCameraRollHostSupportedString;
+    case CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled:
+      return kPhoneHubCameraRollHostEnabledString;
+    case CryptAuthFeatureType::kPhoneHubCameraRollClientSupported:
+      return kPhoneHubCameraRollClientSupportedString;
+    case CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled:
+      return kPhoneHubCameraRollClientEnabledString;
   }
 }
 
@@ -287,6 +325,14 @@ absl::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromString(
     return CryptAuthFeatureType::kEcheClientSupported;
   if (feature_type_string == kEcheClientEnabledString)
     return CryptAuthFeatureType::kEcheClientEnabled;
+  if (feature_type_string == kPhoneHubCameraRollHostSupportedString)
+    return CryptAuthFeatureType::kPhoneHubCameraRollHostSupported;
+  if (feature_type_string == kPhoneHubCameraRollHostEnabledString)
+    return CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled;
+  if (feature_type_string == kPhoneHubCameraRollClientSupportedString)
+    return CryptAuthFeatureType::kPhoneHubCameraRollClientSupported;
+  if (feature_type_string == kPhoneHubCameraRollClientEnabledString)
+    return CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled;
 
   return absl::nullopt;
 }
@@ -402,6 +448,16 @@ multidevice::SoftwareFeature CryptAuthFeatureTypeToSoftwareFeature(
       FALLTHROUGH;
     case CryptAuthFeatureType::kEcheClientEnabled:
       return multidevice::SoftwareFeature::kEcheClient;
+
+    case CryptAuthFeatureType::kPhoneHubCameraRollHostSupported:
+      FALLTHROUGH;
+    case CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled:
+      return multidevice::SoftwareFeature::kPhoneHubCameraRollHost;
+
+    case CryptAuthFeatureType::kPhoneHubCameraRollClientSupported:
+      FALLTHROUGH;
+    case CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled:
+      return multidevice::SoftwareFeature::kPhoneHubCameraRollClient;
   }
 }
 
@@ -436,6 +492,10 @@ CryptAuthFeatureType CryptAuthFeatureTypeFromSoftwareFeature(
       return CryptAuthFeatureType::kEcheHostEnabled;
     case multidevice::SoftwareFeature::kEcheClient:
       return CryptAuthFeatureType::kEcheClientEnabled;
+    case multidevice::SoftwareFeature::kPhoneHubCameraRollHost:
+      return CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled;
+    case multidevice::SoftwareFeature::kPhoneHubCameraRollClient:
+      return CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled;
   }
 }
 

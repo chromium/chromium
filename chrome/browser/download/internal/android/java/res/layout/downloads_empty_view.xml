@@ -15,7 +15,7 @@
         android:layout_marginEnd="@dimen/default_list_row_padding"
         android:layout_marginStart="@dimen/default_list_row_padding"
         android:gravity="center"
-        app:contentPadding="@dimen/card_padding"
+        android:padding="@dimen/card_padding"
         style="@style/MaterialCardStyle">
 
         <org.chromium.ui.widget.TextViewWithLeading

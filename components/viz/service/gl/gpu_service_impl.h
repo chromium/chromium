@@ -13,10 +13,10 @@
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -100,6 +100,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
                  gpu::VulkanImplementation* vulkan_implementation,
                  base::OnceCallback<void(ExitCode)> exit_callback);
 
+  GpuServiceImpl(const GpuServiceImpl&) = delete;
+  GpuServiceImpl& operator=(const GpuServiceImpl&) = delete;
+
   ~GpuServiceImpl() override;
 
   void UpdateGPUInfo();
@@ -151,6 +154,14 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
       mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
           jea_receiver) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_WIN)
+  void RegisterDCOMPSurfaceHandle(
+      mojo::PlatformHandle surface_handle,
+      RegisterDCOMPSurfaceHandleCallback callback) override;
+  void UnregisterDCOMPSurfaceHandle(
+      const base::UnguessableToken& token) override;
+#endif  // defined(OS_WIN)
 
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
@@ -461,8 +472,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
 
   base::WeakPtr<GpuServiceImpl> weak_ptr_;
   base::WeakPtrFactory<GpuServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GpuServiceImpl);
 };
 
 }  // namespace viz

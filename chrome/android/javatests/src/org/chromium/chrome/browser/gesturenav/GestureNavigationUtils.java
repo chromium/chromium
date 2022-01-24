@@ -55,6 +55,15 @@ public final class GestureNavigationUtils {
         swipe(leftEdge, startx, endx, yMiddle);
     }
 
+    public void swipeFromEdgeAndHold(boolean leftEdge) {
+        Point size = new Point();
+        mActivityTestRule.getActivity().getWindowManager().getDefaultDisplay().getSize(size);
+        final float startx = leftEdge ? mEdgeWidthPx / 2 : size.x - mEdgeWidthPx / 2;
+        final float endx = size.x / 2;
+        final float yMiddle = size.y / 2;
+        swipeAndHold(leftEdge, startx, endx, yMiddle);
+    }
+
     // Make an edge swipe too short to trigger the navigation.
     public void shortSwipeFromEdge(boolean leftEdge) {
         Point size = new Point();
@@ -66,6 +75,11 @@ public final class GestureNavigationUtils {
     }
 
     private void swipe(boolean leftEdge, float startx, float endx, float y) {
+        swipeAndHold(leftEdge, startx, endx, y);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mNavigationHandler.release(true); });
+    }
+
+    private void swipeAndHold(boolean leftEdge, float startx, float endx, float y) {
         // # of pixels (of reasonally small value) which a finger moves across
         // per one motion event.
         final float distancePx = 6.0f;
@@ -78,7 +92,6 @@ public final class GestureNavigationUtils {
             for (int i = 0; i < eventCounts; i++, nextx += step) {
                 mNavigationHandler.onScroll(startx, -step, 0, nextx, y);
             }
-            mNavigationHandler.release(true);
         });
     }
 

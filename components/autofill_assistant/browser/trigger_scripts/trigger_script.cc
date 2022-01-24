@@ -63,6 +63,13 @@ bool EvaluateTriggerCondition(
     case TriggerScriptConditionProto::kDomainWithScheme:
       return dynamic_trigger_conditions.GetDomainAndSchemeMatches(
           GURL(proto.domain_with_scheme()));
+    case TriggerScriptConditionProto::kDocumentReadyState: {
+      absl::optional<DocumentReadyState> state =
+          dynamic_trigger_conditions.GetDocumentReadyState(
+              Selector(proto.document_ready_state().frame()));
+      return state.has_value() &&
+             *state >= proto.document_ready_state().min_document_ready_state();
+    }
     case TriggerScriptConditionProto::TYPE_NOT_SET:
       return true;
   }

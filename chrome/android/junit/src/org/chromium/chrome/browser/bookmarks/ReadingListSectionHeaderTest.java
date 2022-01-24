@@ -44,7 +44,7 @@ public class ReadingListSectionHeaderTest {
         BookmarkId bookmarkId = new BookmarkId(id, BookmarkType.READING_LIST);
         BookmarkItem bookmarkItem = new BookmarkItem(
                 bookmarkId, null, null, false, null, false, false, dateAdded, read);
-        return BookmarkListEntry.createBookmarkEntry(bookmarkItem);
+        return BookmarkListEntry.createBookmarkEntry(bookmarkItem, /*powerBookmarkMeta=*/null);
     }
 
     private BookmarkListEntry createReadingListEntry(long id, boolean read) {

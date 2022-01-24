@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/keep_alive_handle_factory.h"
 
+#include <atomic>
 #include <memory>
 #include <utility>
 
@@ -22,24 +23,31 @@ namespace content {
 
 namespace {
 
+std::atomic_uint64_t handle_sequence_id{0};
+
+inline uint64_t GetNextHandleId() {
+  return handle_sequence_id.fetch_add(1, std::memory_order_relaxed);
+}
+
 class KeepAliveHandleImpl final : public blink::mojom::KeepAliveHandle {
  public:
-  explicit KeepAliveHandleImpl(int process_id) : process_id_(process_id) {
+  explicit KeepAliveHandleImpl(int process_id)
+      : process_id_(process_id), handle_id_(GetNextHandleId()) {
     RenderProcessHost* process_host = RenderProcessHost::FromID(process_id_);
     GetContentClient()->browser()->OnKeepaliveRequestStarted(
         process_host ? process_host->GetBrowserContext() : nullptr);
-    if (!process_host || process_host->IsKeepAliveRefCountDisabled()) {
+    if (!process_host || process_host->AreRefCountsDisabled()) {
       return;
     }
-    process_host->IncrementKeepAliveRefCount();
+    process_host->IncrementKeepAliveRefCount(handle_id_);
   }
   ~KeepAliveHandleImpl() override {
     GetContentClient()->browser()->OnKeepaliveRequestFinished();
     RenderProcessHost* process_host = RenderProcessHost::FromID(process_id_);
-    if (!process_host || process_host->IsKeepAliveRefCountDisabled()) {
+    if (!process_host || process_host->AreRefCountsDisabled()) {
       return;
     }
-    process_host->DecrementKeepAliveRefCount();
+    process_host->DecrementKeepAliveRefCount(handle_id_);
   }
 
   KeepAliveHandleImpl(const KeepAliveHandleImpl&) = delete;
@@ -47,6 +55,11 @@ class KeepAliveHandleImpl final : public blink::mojom::KeepAliveHandle {
 
  private:
   const int process_id_;
+  // A unique identifier for this KeepAliveHandle that can be recorded in
+  // Increment/DecrementKeepAliveRefCount for debugging purposes.
+  // TODO(wjmaclean): Once we understand the root causes of
+  // https://crbug.com/1148542, we can remove this.
+  uint64_t handle_id_;
 };
 
 }  // namespace

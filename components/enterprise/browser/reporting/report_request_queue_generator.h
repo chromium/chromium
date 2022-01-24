@@ -8,11 +8,9 @@
 #include <memory>
 #include <queue>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 #include "components/enterprise/browser/reporting/report_request_definition.h"
-#include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace enterprise_reporting {
@@ -44,14 +42,12 @@ class ReportRequestQueueGenerator {
 
   // Generate a queue of requests including full profile info based on given
   // basic request.
-  ReportRequests Generate(ReportType report_type,
-                          const ReportRequest& basic_request);
+  ReportRequests Generate(const ReportRequest& basic_request);
 
  private:
   // Generate request with full profile info at |profile_index| according to
   // |basic_request|, then store it into |requests|.
   void GenerateProfileReportWithIndex(int profile_index,
-                                      ReportType report_type,
                                       const ReportRequest& basic_request,
                                       ReportRequests* requests);
 

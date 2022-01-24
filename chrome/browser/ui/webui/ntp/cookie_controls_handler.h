@@ -19,6 +19,10 @@ class CookieControlsHandler : public content::WebUIMessageHandler,
                               public CookieControlsService::Observer {
  public:
   explicit CookieControlsHandler(Profile* profile);
+
+  CookieControlsHandler(const CookieControlsHandler&) = delete;
+  CookieControlsHandler& operator=(const CookieControlsHandler&) = delete;
+
   ~CookieControlsHandler() override;
 
   // WebUIMessageHandler
@@ -40,8 +44,6 @@ class CookieControlsHandler : public content::WebUIMessageHandler,
   void SendCookieControlsUIChanges();
 
   CookieControlsService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieControlsHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NTP_COOKIE_CONTROLS_HANDLER_H_

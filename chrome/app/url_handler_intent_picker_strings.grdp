@@ -10,9 +10,6 @@
   <message name="IDS_URL_HANDLER_INTENT_PICKER_OK_BUTTON_TEXT" desc="Label for the button in the URL handler intent picker dialog that dismisses the dialog and launches an application or the browser.">
     Open
   </message>
-  <message name="IDS_URL_HANDLER_INTENT_PICKER_CANCEL_BUTTON_TEXT" desc="Label for the button in the URL handler intent picker dialog that dismisses the dialog and does not launch an application.">
-    Cancel
-  </message>
   <message name="IDS_URL_HANDLER_INTENT_PICKER_APP_TITLE" desc="Title for an appplication with profile name as an option in the URL handler intent picker dialog.">
     <ph name="APP_NAME">$1<ex>Demo App</ex></ph> (<ph name="PROFILE_NAME">$2<ex>Work</ex></ph>)
   </message>

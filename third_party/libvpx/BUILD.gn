@@ -5,7 +5,6 @@
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/ios/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/libvpx/libvpx_srcs.gni")
 import("//third_party/nasm/nasm_assemble.gni")
@@ -81,16 +80,6 @@ config("libvpx_config") {
       # libvpx has many static functions in header, which trigger this warning.
       "-Wno-unused-function",
     ]
-
-    # Fixes a mac / ios simulator link error for vpx_scaled_2d:
-    # Undefined symbols for architecture x86_64:
-    # "_vpx_scaled_2d", referenced from:
-    # _vp9_scale_and_extend_frame_c in libvpx.a(vp9_frame_scale.o)
-    # (maybe you meant: _vpx_scaled_2d_ssse3)
-    # ld: symbol(s) not found for architecture x86_64
-    if (is_mac || (is_ios && (current_cpu == "x86" || current_cpu == "x64"))) {
-      cflags += [ "-fno-common" ]
-    }
   } else if (!is_win) {
     cflags = [
       "-Wno-unused-function",
@@ -371,15 +360,7 @@ static_library("libvpx") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  # As "nasm" does not embed the required LC_BUILD_VERSION section in object
-  # files, it is not possible to build optimised version of the code if the
-  # target is iOS under "catalyst" environment. This version is not shipped,
-  # so there is no concern about performance.
-  # TODO(crbug.com/1145197): Remove this exception once "nasm" has support
-  # for embedding the correct LD_BUILD_VERSION section.
-  _force_generic_srcs = is_ios && target_environment == "catalyst"
-
-  if (is_nacl || _force_generic_srcs) {
+  if (is_nacl) {
     sources = libvpx_srcs_generic
     public_deps = [ ":libvpx_generic_headers" ]
   } else if (current_cpu == "x86") {
@@ -424,19 +405,17 @@ static_library("libvpx") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
   configs += [ ":libvpx_config" ]
   deps = []
-  if (!_force_generic_srcs) {
-    if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
-      deps += [
-        ":libvpx_asm",
-        ":libvpx_intrinsics_avx",
-        ":libvpx_intrinsics_avx2",
-        ":libvpx_intrinsics_avx512",
-        ":libvpx_intrinsics_mmx",
-        ":libvpx_intrinsics_sse2",
-        ":libvpx_intrinsics_sse4_1",
-        ":libvpx_intrinsics_ssse3",
-      ]
-    }
+  if (current_cpu == "x86" || (current_cpu == "x64" && !is_msan)) {
+    deps += [
+      ":libvpx_asm",
+      ":libvpx_intrinsics_avx",
+      ":libvpx_intrinsics_avx2",
+      ":libvpx_intrinsics_avx512",
+      ":libvpx_intrinsics_mmx",
+      ":libvpx_intrinsics_sse2",
+      ":libvpx_intrinsics_sse4_1",
+      ":libvpx_intrinsics_ssse3",
+    ]
   }
   if (cpu_arch_full == "arm-neon-cpu-detect") {
     deps += [ ":libvpx_intrinsics_neon" ]
@@ -451,15 +430,18 @@ static_library("libvpx") {
   public_configs = [ ":libvpx_external_config" ]
 }
 
-static_library("libvp9rc") {
+static_library("libvpxrc") {
   if (!is_debug && is_win) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
   sources = [
+    "//third_party/libvpx/source/libvpx/vp8/vp8_ratectrl_rtc.cc",
+    "//third_party/libvpx/source/libvpx/vp8/vp8_ratectrl_rtc.h",
     "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.cc",
     "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h",
+    "//third_party/libvpx/source/libvpx/vpx/internal/vpx_ratectrl_rtc.h",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]

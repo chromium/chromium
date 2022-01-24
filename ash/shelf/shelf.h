@@ -70,6 +70,10 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   };
 
   Shelf();
+
+  Shelf(const Shelf&) = delete;
+  Shelf& operator=(const Shelf&) = delete;
+
   ~Shelf() override;
 
   // Returns the shelf for the display that |window| is on. Note that the shelf
@@ -322,8 +326,6 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   int auto_hide_lock_ = 0;
 
   std::unique_ptr<ShelfTooltipManager> tooltip_;
-
-  DISALLOW_COPY_AND_ASSIGN(Shelf);
 };
 
 }  // namespace ash

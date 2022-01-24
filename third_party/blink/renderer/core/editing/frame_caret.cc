@@ -49,7 +49,7 @@ FrameCaret::FrameCaret(LocalFrame& frame,
                        const SelectionEditor& selection_editor)
     : selection_editor_(&selection_editor),
       frame_(frame),
-      display_item_client_(new CaretDisplayItemClient()),
+      display_item_client_(MakeGarbageCollected<CaretDisplayItemClient>()),
       caret_blink_timer_(frame.GetTaskRunner(TaskType::kInternalDefault),
                          this,
                          &FrameCaret::CaretBlinkTimerFired) {}
@@ -59,6 +59,7 @@ FrameCaret::~FrameCaret() = default;
 void FrameCaret::Trace(Visitor* visitor) const {
   visitor->Trace(selection_editor_);
   visitor->Trace(frame_);
+  visitor->Trace(display_item_client_);
   visitor->Trace(caret_blink_timer_);
 }
 

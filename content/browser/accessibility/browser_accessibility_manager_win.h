@@ -12,7 +12,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
@@ -29,6 +28,11 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   BrowserAccessibilityManagerWin(const ui::AXTreeUpdate& initial_tree,
                                  BrowserAccessibilityDelegate* delegate);
 
+  BrowserAccessibilityManagerWin(const BrowserAccessibilityManagerWin&) =
+      delete;
+  BrowserAccessibilityManagerWin& operator=(
+      const BrowserAccessibilityManagerWin&) = delete;
+
   ~BrowserAccessibilityManagerWin() override;
 
   static ui::AXTreeUpdate GetEmptyDocument();
@@ -42,7 +46,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   BrowserAccessibility* GetFocus() const override;
   bool IsIgnoredChangedNode(const BrowserAccessibility* node) const;
   bool CanFireEvents() const override;
-  gfx::Rect GetViewBoundsInScreenCoordinates() const override;
 
   void FireFocusEvent(BrowserAccessibility* node) override;
   void FireBlinkEvent(ax::mojom::Event event_type,
@@ -160,8 +163,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   // the map is cleared in |FinalizeAccessibilityEvents|.
   SelectionEventsMap ia2_selection_events_;
   SelectionEventsMap uia_selection_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerWin);
 };
 
 }  // namespace content

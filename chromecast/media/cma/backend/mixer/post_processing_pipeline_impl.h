@@ -31,6 +31,11 @@ class PostProcessingPipelineImpl : public PostProcessingPipeline {
   PostProcessingPipelineImpl(const std::string& name,
                              const base::Value* filter_description_list,
                              int channels);
+
+  PostProcessingPipelineImpl(const PostProcessingPipelineImpl&) = delete;
+  PostProcessingPipelineImpl& operator=(const PostProcessingPipelineImpl&) =
+      delete;
+
   ~PostProcessingPipelineImpl() override;
 
   double ProcessFrames(float* data,
@@ -83,8 +88,6 @@ class PostProcessingPipelineImpl : public PostProcessingPipeline {
   PostProcessorFactory factory_;
 
   std::vector<PostProcessorInfo> processors_;
-
-  DISALLOW_COPY_AND_ASSIGN(PostProcessingPipelineImpl);
 };
 
 class PostProcessingPipelineFactoryImpl : public PostProcessingPipelineFactory {

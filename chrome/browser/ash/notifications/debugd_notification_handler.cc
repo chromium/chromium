@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/notifications/debugd_notification_handler.h"
 
+#include <utility>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -18,12 +20,10 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-#include <utility>
+namespace ash {
 
-using message_center::MessageCenter;
-using message_center::Notification;
-
-namespace chromeos {
+using ::message_center::MessageCenter;
+using ::message_center::Notification;
 
 constexpr char kPacketCaptureNotificationId[] = "debugd-packetcapture";
 constexpr char kNotifierPacketCapture[] = "ash.debugd-packetcapture";
@@ -60,7 +60,7 @@ std::unique_ptr<Notification> DebugdNotificationHandler::CreateNotification() {
           base::BindRepeating(&DebugdNotificationHandler::OnButtonClick,
                               weak_ptr_factory_.GetWeakPtr());
 
-  std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
+  std::unique_ptr<Notification> notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kPacketCaptureNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_DEBUG_PACKET_CAPTURE_STARTED),
       l10n_util::GetStringUTF16(IDS_ASH_DEBUG_PACKET_CAPTURE_DESCRIPTION),
@@ -70,7 +70,7 @@ std::unique_ptr<Notification> DebugdNotificationHandler::CreateNotification() {
       optional_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           callback_wrapper),
-      ash::kSystemMenuInfoIcon,
+      kSystemMenuInfoIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
   notification->set_pinned(true);
@@ -99,4 +99,4 @@ void DebugdNotificationHandler::OnButtonClick(
   debug_daemon_client_->StopPacketCapture(std::string());
 }
 
-}  // namespace chromeos
+}  // namespace ash

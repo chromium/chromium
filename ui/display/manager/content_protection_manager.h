@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -70,6 +69,10 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
 
   ContentProtectionManager(DisplayLayoutManager*,
                            ConfigurationDisabledCallback);
+
+  ContentProtectionManager(const ContentProtectionManager&) = delete;
+  ContentProtectionManager& operator=(const ContentProtectionManager&) = delete;
+
   ~ContentProtectionManager() override;
 
   void set_native_display_delegate(NativeDisplayDelegate* delegate) {
@@ -179,8 +182,6 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
   base::RepeatingTimer security_timer_;
 
   base::WeakPtrFactory<ContentProtectionManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentProtectionManager);
 };
 
 }  // namespace display

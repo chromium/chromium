@@ -1,4 +1,1 @@
-monorail: {
-  component: "UI>Browser>Offline"
-}
-team_email: "offline-dev@chromium.org"
+mixins: "//components/offline_pages/COMMON_METADATA"

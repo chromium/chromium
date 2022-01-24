@@ -32,6 +32,10 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) MessageQueue {
  public:
   explicit MessageQueue();
   explicit MessageQueue(uint64_t next_sequence_num);
+
+  MessageQueue(const MessageQueue&) = delete;
+  MessageQueue& operator=(const MessageQueue&) = delete;
+
   ~MessageQueue();
 
   void set_signalable(bool value) { signalable_ = value; }
@@ -75,8 +79,6 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) MessageQueue {
   uint64_t next_sequence_num_;
   bool signalable_ = true;
   size_t total_queued_bytes_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageQueue);
 };
 
 }  // namespace ports

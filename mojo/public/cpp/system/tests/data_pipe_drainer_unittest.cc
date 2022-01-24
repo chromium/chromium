@@ -21,6 +21,10 @@ base::RepeatingClosure BindLambda(Functor callable) {
 
 class DataPipeDrainerTest : public testing::Test,
                             public DataPipeDrainer::Client {
+ public:
+  DataPipeDrainerTest(const DataPipeDrainerTest&) = delete;
+  DataPipeDrainerTest& operator=(const DataPipeDrainerTest&) = delete;
+
  protected:
   DataPipeDrainerTest() {
     ScopedDataPipeProducerHandle producer_handle;
@@ -44,8 +48,6 @@ class DataPipeDrainerTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::string data_;
   std::unique_ptr<DataPipeDrainer> drainer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeDrainerTest);
 };
 
 TEST_F(DataPipeDrainerTest, TestCompleteIsCalledOnce) {

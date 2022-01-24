@@ -23,9 +23,6 @@ component("init") {
   ]
 
   deps = []
-  if (use_x11) {
-    deps += [ "//gpu/vulkan/x" ]
-  }
   if (is_android) {
     deps += [ "//gpu/vulkan/android" ]
   }

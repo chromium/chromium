@@ -272,6 +272,11 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
     }
   }
 
+  // This study has no randomized experiments and none of its experiments were
+  // forced by flags so don't create a field trial.
+  if (processed_study.total_probability() <= 0)
+    return;
+
   uint32_t randomization_seed = 0;
   base::FieldTrial::RandomizationType randomization_type =
       base::FieldTrial::SESSION_RANDOMIZED;

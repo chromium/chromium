@@ -13,54 +13,44 @@
 
 namespace device {
 
+using ::testing::Return;
+using ::testing::ReturnPointee;
+
 MockBluetoothDevice::MockBluetoothDevice(MockBluetoothAdapter* adapter,
                                          uint32_t bluetooth_class,
                                          const char* name,
                                          const std::string& address,
-                                         bool paired,
+                                         bool initially_paired,
                                          bool connected)
     : BluetoothDevice(adapter),
       bluetooth_class_(bluetooth_class),
       name_(name ? absl::optional<std::string>(name) : absl::nullopt),
       address_(address),
-      connected_(connected) {
-  ON_CALL(*this, GetBluetoothClass())
-      .WillByDefault(testing::Return(bluetooth_class_));
+      connected_(connected),
+      paired_(initially_paired) {
+  ON_CALL(*this, GetBluetoothClass()).WillByDefault(Return(bluetooth_class_));
   ON_CALL(*this, GetIdentifier())
-      .WillByDefault(testing::Return(address_ + "-Identifier"));
-  ON_CALL(*this, GetAddress())
-      .WillByDefault(testing::Return(address_));
-  ON_CALL(*this, GetVendorIDSource())
-      .WillByDefault(testing::Return(VENDOR_ID_UNKNOWN));
-  ON_CALL(*this, GetVendorID())
-      .WillByDefault(testing::Return(0));
-  ON_CALL(*this, GetProductID())
-      .WillByDefault(testing::Return(0));
-  ON_CALL(*this, GetDeviceID())
-      .WillByDefault(testing::Return(0));
-  ON_CALL(*this, GetName()).WillByDefault(testing::Return(name_));
+      .WillByDefault(Return(address_ + "-Identifier"));
+  ON_CALL(*this, GetAddress()).WillByDefault(Return(address_));
+  ON_CALL(*this, GetVendorIDSource()).WillByDefault(Return(VENDOR_ID_UNKNOWN));
+  ON_CALL(*this, GetVendorID()).WillByDefault(Return(0));
+  ON_CALL(*this, GetProductID()).WillByDefault(Return(0));
+  ON_CALL(*this, GetDeviceID()).WillByDefault(Return(0));
+  ON_CALL(*this, GetName()).WillByDefault(Return(name_));
   ON_CALL(*this, GetNameForDisplay())
-      .WillByDefault(testing::Return(
-          base::UTF8ToUTF16(name_ ? name_.value() : "Unnamed Device")));
+      .WillByDefault(
+          Return(base::UTF8ToUTF16(name_ ? name_.value() : "Unnamed Device")));
   ON_CALL(*this, GetDeviceType())
-      .WillByDefault(testing::Return(BluetoothDeviceType::UNKNOWN));
-  ON_CALL(*this, IsPaired())
-      .WillByDefault(testing::Return(paired));
-  ON_CALL(*this, IsConnected())
-      .WillByDefault(testing::ReturnPointee(&connected_));
-  ON_CALL(*this, IsGattConnected())
-      .WillByDefault(testing::ReturnPointee(&connected_));
-  ON_CALL(*this, IsConnectable())
-      .WillByDefault(testing::Return(false));
-  ON_CALL(*this, IsConnecting())
-      .WillByDefault(testing::Return(false));
-  ON_CALL(*this, GetUUIDs()).WillByDefault(testing::ReturnPointee(&uuids_));
-  ON_CALL(*this, ExpectingPinCode())
-      .WillByDefault(testing::Return(false));
-  ON_CALL(*this, ExpectingPasskey())
-      .WillByDefault(testing::Return(false));
-  ON_CALL(*this, ExpectingConfirmation())
-      .WillByDefault(testing::Return(false));
+      .WillByDefault(Return(BluetoothDeviceType::UNKNOWN));
+  ON_CALL(*this, IsPaired()).WillByDefault(ReturnPointee(&paired_));
+  ON_CALL(*this, IsConnected()).WillByDefault(ReturnPointee(&connected_));
+  ON_CALL(*this, IsGattConnected()).WillByDefault(ReturnPointee(&connected_));
+  ON_CALL(*this, IsConnectable()).WillByDefault(Return(false));
+  ON_CALL(*this, IsConnecting()).WillByDefault(Return(false));
+  ON_CALL(*this, GetUUIDs()).WillByDefault(ReturnPointee(&uuids_));
+  ON_CALL(*this, ExpectingPinCode()).WillByDefault(Return(false));
+  ON_CALL(*this, ExpectingPasskey()).WillByDefault(Return(false));
+  ON_CALL(*this, ExpectingConfirmation()).WillByDefault(Return(false));
 }
 
 MockBluetoothDevice::~MockBluetoothDevice() = default;

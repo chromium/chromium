@@ -77,7 +77,7 @@
 }
 
 - (void)shutdown {
-  [_signinPromoViewMediator signinPromoViewIsRemoved];
+  [_signinPromoViewMediator disconnect];
   _signinPromoViewMediator = nil;
 
   _identityManagerObserverBridge.reset();

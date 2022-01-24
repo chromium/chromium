@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -37,6 +36,10 @@ class AddUniqueUrlsTask : public Task {
                     PrefetchStore* prefetch_store,
                     const std::string& name_space,
                     const std::vector<PrefetchURL>& prefetch_urls);
+
+  AddUniqueUrlsTask(const AddUniqueUrlsTask&) = delete;
+  AddUniqueUrlsTask& operator=(const AddUniqueUrlsTask&) = delete;
+
   ~AddUniqueUrlsTask() override;
  private:
   void Run() override;
@@ -50,7 +53,6 @@ class AddUniqueUrlsTask : public Task {
   std::vector<PrefetchURL> prefetch_urls_;
 
   base::WeakPtrFactory<AddUniqueUrlsTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AddUniqueUrlsTask);
 };
 
 }  // namespace offline_pages

@@ -18,11 +18,9 @@ class SkPixmap;
 
 namespace blink {
 
-class GraphicsContext;
 class DarkModeColorClassifier;
 class DarkModeImageClassifier;
 class DarkModeColorFilter;
-class ScopedDarkModeElementRoleOverride;
 class DarkModeInvertedColorCache;
 
 class PLATFORM_EXPORT DarkModeFilter {
@@ -36,6 +34,8 @@ class PLATFORM_EXPORT DarkModeFilter {
   // invert shadows, but we may need to do some other kind of processing for
   // them.
   enum class ElementRole { kText, kListSymbol, kBackground, kSVG };
+
+  DarkModeImagePolicy GetDarkModeImagePolicy() const;
 
   SkColor InvertColorIfNeeded(SkColor color, ElementRole element_role);
   absl::optional<cc::PaintFlags> ApplyToFlagsIfNeeded(
@@ -51,33 +51,32 @@ class PLATFORM_EXPORT DarkModeFilter {
   // DarkModeResult::kNotClassified - Dark mode filter should be applied and to
   // get the color filter ApplyToImage() should be called. This API is
   // thread-safe.
-  DarkModeResult AnalyzeShouldApplyToImage(const SkIRect& src,
-                                           const SkIRect& dst) const;
+  bool ImageShouldHaveFilterAppliedBasedOnSizes(const SkIRect& src,
+                                                const SkIRect& dst) const;
 
   // Returns dark mode color filter based on the classification done on
   // |pixmap|. The image cannot be classified if pixmap is empty or |src| is
   // empty or |src| is larger than pixmap bounds. Before calling this function
-  // AnalyzeShouldApplyToImage() must be called for early out or deciding
-  // appropriate function call. This function should be called only if image
-  // policy is set to DarkModeImagePolicy::kFilterSmart. This API is
+  // ImageShouldHaveFilterAppliedBasedOnSizes() must be called for early out or
+  // deciding appropriate function call. This function should be called only if
+  // image policy is set to DarkModeImagePolicy::kFilterSmart. This API is
   // thread-safe.
   sk_sp<SkColorFilter> ApplyToImage(const SkPixmap& pixmap,
                                     const SkIRect& src) const;
 
   // Returns dark mode color filter for images. Before calling this function
-  // AnalyzeShouldApplyToImage() must be called for early out or deciding
-  // appropriate function call. This function should be called only if image
-  // policy is set to DarkModeImagePolicy::kFilterAll. This API is thread-safe.
+  // ImageShouldHaveFilterAppliedBasedOnSizes() must be called for early out or
+  // deciding appropriate function call. This function should be called only if
+  // image policy is set to DarkModeImagePolicy::kFilterAll. This API is
+  // thread-safe.
   sk_sp<SkColorFilter> GetImageFilter() const;
 
  private:
-  friend class ScopedDarkModeElementRoleOverride;
-
   struct ImmutableData {
     explicit ImmutableData(const DarkModeSettings& settings);
 
     DarkModeSettings settings;
-    std::unique_ptr<DarkModeColorClassifier> text_classifier;
+    std::unique_ptr<DarkModeColorClassifier> foreground_classifier;
     std::unique_ptr<DarkModeColorClassifier> background_classifier;
     std::unique_ptr<DarkModeImageClassifier> image_classifier;
     std::unique_ptr<DarkModeColorFilter> color_filter;
@@ -89,24 +88,9 @@ class PLATFORM_EXPORT DarkModeFilter {
   // This is read-only data and is thread-safe.
   const ImmutableData immutable_;
 
-  // Following two members used for color classifications are not thread-safe.
-  // TODO(prashant.n): Remove element override concept.
-  absl::optional<ElementRole> role_override_;
+  // Following member is used for color classifications and is not thread-safe.
   // TODO(prashant.n): Move cache out of dark mode filter.
   std::unique_ptr<DarkModeInvertedColorCache> inverted_color_cache_;
-};
-
-// Temporarily override the element role for the scope of this object's
-// lifetime - for example when drawing symbols that play the role of text.
-class PLATFORM_EXPORT ScopedDarkModeElementRoleOverride {
- public:
-  ScopedDarkModeElementRoleOverride(GraphicsContext* graphics_context,
-                                    DarkModeFilter::ElementRole role);
-  ~ScopedDarkModeElementRoleOverride();
-
- private:
-  GraphicsContext* graphics_context_;
-  absl::optional<DarkModeFilter::ElementRole> previous_role_override_;
 };
 
 }  // namespace blink

@@ -51,8 +51,9 @@ bool IsInProcessNetworkService() {
 #if defined(OS_ANDROID)
   return base::SysInfo::AmountOfPhysicalMemoryMB() <=
          kNetworkServiceOutOfProcessThresholdMb.Get();
-#endif
+#else
   return false;
+#endif
 }
 
 void ForceInProcessNetworkService(bool is_forced) {

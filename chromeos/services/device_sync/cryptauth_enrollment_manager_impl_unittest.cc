@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_move_support.h"
@@ -58,6 +57,10 @@ const double kLastExpiredEnrollmentTimeSeconds =
 class MockCryptAuthEnroller : public CryptAuthEnroller {
  public:
   MockCryptAuthEnroller() {}
+
+  MockCryptAuthEnroller(const MockCryptAuthEnroller&) = delete;
+  MockCryptAuthEnroller& operator=(const MockCryptAuthEnroller&) = delete;
+
   ~MockCryptAuthEnroller() override {}
 
   MOCK_METHOD5(Enroll,
@@ -66,9 +69,6 @@ class MockCryptAuthEnroller : public CryptAuthEnroller {
                     const cryptauth::GcmDeviceInfo& device_info,
                     cryptauth::InvocationReason invocation_reason,
                     EnrollmentFinishedCallback callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCryptAuthEnroller);
 };
 
 // Creates MockCryptAuthEnroller instances, and allows expecations to be set
@@ -77,6 +77,11 @@ class MockCryptAuthEnrollerFactory : public CryptAuthEnrollerFactory {
  public:
   MockCryptAuthEnrollerFactory()
       : next_cryptauth_enroller_(new NiceMock<MockCryptAuthEnroller>()) {}
+
+  MockCryptAuthEnrollerFactory(const MockCryptAuthEnrollerFactory&) = delete;
+  MockCryptAuthEnrollerFactory& operator=(const MockCryptAuthEnrollerFactory&) =
+      delete;
+
   ~MockCryptAuthEnrollerFactory() override {}
 
   // CryptAuthEnrollerFactory:
@@ -95,8 +100,6 @@ class MockCryptAuthEnrollerFactory : public CryptAuthEnrollerFactory {
   // Stores the next CryptAuthEnroller to be created.
   // Ownership is passed to the caller of |CreateInstance()|.
   std::unique_ptr<MockCryptAuthEnroller> next_cryptauth_enroller_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCryptAuthEnrollerFactory);
 };
 
 // Harness for testing CryptAuthEnrollmentManager.
@@ -121,6 +124,11 @@ class TestCryptAuthEnrollmentManager : public CryptAuthEnrollmentManagerImpl {
     SetSyncSchedulerForTest(base::WrapUnique(scoped_sync_scheduler_));
   }
 
+  TestCryptAuthEnrollmentManager(const TestCryptAuthEnrollmentManager&) =
+      delete;
+  TestCryptAuthEnrollmentManager& operator=(
+      const TestCryptAuthEnrollmentManager&) = delete;
+
   ~TestCryptAuthEnrollmentManager() override {}
 
   base::WeakPtr<MockSyncScheduler> GetSyncScheduler() {
@@ -137,8 +145,6 @@ class TestCryptAuthEnrollmentManager : public CryptAuthEnrollmentManagerImpl {
   // This should be safe because the life-time this SyncScheduler will always be
   // within the life of the TestCryptAuthEnrollmentManager object.
   base::WeakPtrFactory<MockSyncScheduler> weak_sync_scheduler_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCryptAuthEnrollmentManager);
 };
 
 }  // namespace
@@ -146,6 +152,12 @@ class TestCryptAuthEnrollmentManager : public CryptAuthEnrollmentManagerImpl {
 class DeviceSyncCryptAuthEnrollmentManagerImplTest
     : public testing::Test,
       public CryptAuthEnrollmentManager::Observer {
+ public:
+  DeviceSyncCryptAuthEnrollmentManagerImplTest(
+      const DeviceSyncCryptAuthEnrollmentManagerImplTest&) = delete;
+  DeviceSyncCryptAuthEnrollmentManagerImplTest& operator=(
+      const DeviceSyncCryptAuthEnrollmentManagerImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthEnrollmentManagerImplTest()
       : public_key_(kUserPublicKey),
@@ -252,8 +264,6 @@ class DeviceSyncCryptAuthEnrollmentManagerImplTest
   FakeCryptAuthGCMManager gcm_manager_;
 
   TestCryptAuthEnrollmentManager enrollment_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthEnrollmentManagerImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthEnrollmentManagerImplTest, RegisterPrefs) {
@@ -277,7 +287,7 @@ TEST_F(DeviceSyncCryptAuthEnrollmentManagerImplTest, GetEnrollmentState) {
       .WillByDefault(Return(SyncScheduler::Strategy::AGGRESSIVE_RECOVERY));
   EXPECT_TRUE(enrollment_manager_.IsRecoveringFromFailure());
 
-  base::TimeDelta time_to_next_sync = base::TimeDelta::FromMinutes(60);
+  base::TimeDelta time_to_next_sync = base::Minutes(60);
   ON_CALL(*sync_scheduler(), GetTimeToNextSync())
       .WillByDefault(Return(time_to_next_sync));
   EXPECT_EQ(time_to_next_sync, enrollment_manager_.GetTimeToNextAttempt());

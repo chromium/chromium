@@ -13,7 +13,7 @@ namespace content {
 // ready to commit. See commit_deferring_condition_runner.h for more details.
 class CommitDeferringCondition {
  public:
-  enum NavigationType {
+  enum class NavigationType {
     kPrerenderedPageActivation,
 
     // Other navigations including same-document navigations and restores from
@@ -23,7 +23,7 @@ class CommitDeferringCondition {
     kOther,
   };
 
-  enum Result {
+  enum class Result {
     // Returned when the condition is satisfied and the client can
     // synchronously proceed to commit the navigation.
     kProceed,

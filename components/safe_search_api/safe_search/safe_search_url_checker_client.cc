@@ -52,16 +52,21 @@ bool ParseResponse(const std::string& response, bool* is_porn) {
     DLOG(WARNING) << "ParseResponse failed to parse classifications list";
     return false;
   }
-  if (classifications_list->GetSize() != 1) {
+  if (classifications_list->GetList().size() != 1) {
     DLOG(WARNING) << "ParseResponse expected exactly one result";
     return false;
   }
-  const base::DictionaryValue* classification_dict = nullptr;
-  if (!classifications_list->GetDictionary(0, &classification_dict)) {
+  const base::Value& classification_value = classifications_list->GetList()[0];
+  if (!classification_value.is_dict()) {
     DLOG(WARNING) << "ParseResponse failed to parse classification dict";
     return false;
   }
-  classification_dict->GetBoolean("pornography", is_porn);
+  const base::DictionaryValue& classification_dict =
+      base::Value::AsDictionaryValue(classification_value);
+  absl::optional<bool> is_porn_opt =
+      classification_dict.FindBoolKey("pornography");
+  if (is_porn_opt.has_value())
+    *is_porn = is_porn_opt.value();
   return true;
 }
 

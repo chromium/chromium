@@ -388,7 +388,7 @@ bool DecodeExternalObjects(const std::string& data,
           return false;
         ret.emplace_back(blob_number, type, file_name,
                          base::Time::FromDeltaSinceWindowsEpoch(
-                             base::TimeDelta::FromMicroseconds(last_modified)),
+                             base::Microseconds(last_modified)),
                          size);
         break;
       }
@@ -1134,8 +1134,8 @@ bool IndexedDBBackingStore::RecordCorruptionInfo(
   if (IsPathTooLong(filesystem.get(), info_path))
     return false;
 
-  base::DictionaryValue root_dict;
-  root_dict.SetString("message", message);
+  base::Value root_dict(base::Value::Type::DICTIONARY);
+  root_dict.SetStringKey("message", message);
   std::string output_js;
 
   base::JSONWriter::Write(root_dict, &output_js);
@@ -1723,7 +1723,7 @@ void IndexedDBBackingStore::StartJournalCleaningTimer() {
   base::TimeDelta delay =
       std::min(kInitialJournalCleaningWindowTime, time_until_max);
 
-  if (delay <= base::TimeDelta::FromSeconds(0)) {
+  if (delay <= base::Seconds(0)) {
     journal_cleaning_timer_.AbandonAndStop();
     CleanRecoveryJournalIgnoreReturn();
     return;
@@ -3542,10 +3542,10 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
   auto write_result_callback = base::BindRepeating(
       [](base::WeakPtr<Transaction> transaction,
          storage::mojom::WriteBlobToFileResult result) {
-        DCHECK_CALLED_ON_VALID_SEQUENCE(transaction->sequence_checker_);
-
         if (!transaction)
           return;
+        DCHECK_CALLED_ON_VALID_SEQUENCE(transaction->sequence_checker_);
+
         // This can be null if Rollback() is called.
         if (!transaction->write_state_)
           return;
@@ -3727,7 +3727,7 @@ void IndexedDBBackingStore::Transaction::PutExternalObjects(
     database_id_ = database_id;
   DCHECK_EQ(database_id_, database_id);
 
-  const auto& it = external_object_change_map_.find(object_store_data_key);
+  auto it = external_object_change_map_.find(object_store_data_key);
   IndexedDBExternalObjectChangeRecord* record = nullptr;
   if (it == external_object_change_map_.end()) {
     std::unique_ptr<IndexedDBExternalObjectChangeRecord> new_record =

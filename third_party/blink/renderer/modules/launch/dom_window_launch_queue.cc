@@ -28,6 +28,12 @@ void DOMWindowLaunchQueue::UpdateLaunchFiles(
       MakeGarbageCollected<LaunchParams>(std::move(files)));
 }
 
+void DOMWindowLaunchQueue::EnqueueLaunchParams(LocalDOMWindow* window,
+                                               const KURL& launch_url) {
+  FromState(window)->launch_queue_->Enqueue(
+      MakeGarbageCollected<LaunchParams>(launch_url));
+}
+
 void DOMWindowLaunchQueue::Trace(Visitor* visitor) const {
   visitor->Trace(launch_queue_);
   Supplement<LocalDOMWindow>::Trace(visitor);

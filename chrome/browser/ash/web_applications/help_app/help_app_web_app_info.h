@@ -18,6 +18,8 @@
 struct WebApplicationInfo;
 class Browser;
 
+namespace ash {
+
 class HelpAppSystemAppDelegate : public web_app::SystemWebAppDelegate {
  public:
   explicit HelpAppSystemAppDelegate(Profile* profile);
@@ -37,5 +39,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForHelpWebApp();
 
 // Returns the default bounds.
 gfx::Rect GetDefaultBoundsForHelpApp(Browser*);
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_WEB_APP_INFO_H_

@@ -6,7 +6,7 @@
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_DISPLAY_ROTATION_OBSERVER_H_
 
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
@@ -28,6 +28,10 @@ class ScreenObserverDelegate
   static scoped_refptr<ScreenObserverDelegate> Create(
       DisplayRotationObserver* observer,
       scoped_refptr<base::SingleThreadTaskRunner> display_task_runner);
+
+  ScreenObserverDelegate() = delete;
+  ScreenObserverDelegate(const ScreenObserverDelegate&) = delete;
+  ScreenObserverDelegate& operator=(const ScreenObserverDelegate&) = delete;
 
   // The user must call RemoveObserver() to drop the reference to |observer_| in
   // ScreenObserverDelegate before deleting |observer_|.
@@ -60,8 +64,6 @@ class ScreenObserverDelegate
   const scoped_refptr<base::SingleThreadTaskRunner> display_task_runner_;
   // The task runner on which the ScreenObserverDelegate is created.
   const scoped_refptr<base::SingleThreadTaskRunner> delegate_task_runner_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ScreenObserverDelegate);
 };
 
 }  // namespace media

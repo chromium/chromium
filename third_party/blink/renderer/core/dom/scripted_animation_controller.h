@@ -88,7 +88,8 @@ class CORE_EXPORT ScriptedAnimationController
 
   // Invokes callbacks, dispatches events, etc. The order is defined by HTML:
   // https://html.spec.whatwg.org/C/#event-loop-processing-model
-  void ServiceScriptedAnimations(base::TimeTicks monotonic_time_now);
+  void ServiceScriptedAnimations(base::TimeTicks monotonic_time_now,
+                                 bool can_throttle = false);
 
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) final;
   void ContextDestroyed() final {}
@@ -99,8 +100,9 @@ class CORE_EXPORT ScriptedAnimationController
   void ScheduleAnimationIfNeeded();
 
   void RunTasks();
+  typedef absl::optional<bool (*)(const Event*)> DispatchFilter;
   void DispatchEvents(
-      const AtomicString& event_interface_filter = AtomicString());
+      const DispatchFilter& filter = DispatchFilter(absl::nullopt));
   void ExecuteFrameCallbacks();
   void ExecuteVideoFrameCallbacks();
   void CallMediaQueryListListeners();

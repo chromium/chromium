@@ -27,6 +27,34 @@ suite('NearbyShare', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
+  test('renders progress bar', async function() {
+    nearbyShareConfirmPage.set(
+        'transferStatus', nearbyShare.mojom.TransferStatus['kConnecting']);
+    await flushAsync();
+
+    const isAnimationHidden = !!nearbyShareConfirmPage.$$('cr-lottie[style]');
+
+    if (nearbyShareConfirmPage.$$('#errorTitle')) {
+      assertTrue(isAnimationHidden);
+    } else {
+      assertFalse(isAnimationHidden);
+    }
+  });
+
+  test('hide progress bar when error', async function() {
+    nearbyShareConfirmPage.set(
+        'transferStatus', nearbyShare.mojom.TransferStatus['kRejected']);
+    await flushAsync();
+
+    const isAnimationHidden = !!nearbyShareConfirmPage.$$('cr-lottie[style]');
+
+    if (nearbyShareConfirmPage.$$('#errorTitle')) {
+      assertTrue(isAnimationHidden);
+    } else {
+      assertFalse(isAnimationHidden);
+    }
+  });
+
   test('Ensure all final transfer states explicitly handled', async () => {
     // Transfer states that do not result in an error message.
     const nonErrorStates = {

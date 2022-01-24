@@ -5,7 +5,7 @@
 ++++[static] name='Heading'
 ++[push button] name='Button' actions=(press)
 ++[link] name='Link' actions=(jump)
-++++[static] name='Link' actions=(clickAncestor)
+++++[static] name='Link'
 ++[entry] selectable-text actions=(activate)
 ++[entry] selectable-text actions=(activate)
 ++[entry] selectable-text actions=(activate)
@@ -21,10 +21,10 @@
 ++++[menu]
 ++++++[menu item] name='Pop-up button' selectable selected actions=(select)
 ++[section] actions=(click)
-++++[static] name='Div with click handler' actions=(clickAncestor)
+++++[static] name='Div with click handler'
 ++[panel] actions=(click)
 ++++[paragraph] actions=(clickAncestor)
-++++++[static] name='Paragraph with click handler on parent' actions=(clickAncestor)
+++++++[static] name='Paragraph with click handler on parent'
 ++[menu]
 ++++[menu item] name='Menu item 1' actions=(select)
 ++++[check menu item] name='Menu item 2' checked actions=(uncheck) checkable:true
@@ -32,5 +32,9 @@
 ++[push button] name='ARIA Button' actions=(click)
 ++[push button] name='ARIA button with tab index' actions=(press)
 ++[push button] name='ARIA button with negative tab index' actions=(press)
-++[section]
+++[section] actions=(click)
 ++++[push button] name='ARIA button that is an active descendant' actions=(press)
+++[section] actions=(click)
+++++[toggle button] name='ARIA switch in clickable container' actions=(check) checkable:true
+++++[section] actions=(clickAncestor)
+++++++[static] name='Generic in clickable container'

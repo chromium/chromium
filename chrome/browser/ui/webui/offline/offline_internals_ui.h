@@ -5,17 +5,17 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OFFLINE_OFFLINE_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_OFFLINE_OFFLINE_INTERNALS_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 // The WebUI for chrome://offline-internals.
 class OfflineInternalsUI : public content::WebUIController {
  public:
   explicit OfflineInternalsUI(content::WebUI* web_ui);
-  ~OfflineInternalsUI() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(OfflineInternalsUI);
+  OfflineInternalsUI(const OfflineInternalsUI&) = delete;
+  OfflineInternalsUI& operator=(const OfflineInternalsUI&) = delete;
+
+  ~OfflineInternalsUI() override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_OFFLINE_OFFLINE_INTERNALS_UI_H_

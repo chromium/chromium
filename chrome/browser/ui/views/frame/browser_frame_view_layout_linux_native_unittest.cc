@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/linux_ui/nav_button_provider.h"
+#include "ui/views/linux_ui/window_frame_provider.h"
 
 namespace {
 
@@ -122,6 +122,21 @@ class TestNavButtonProvider : public views::NavButtonProvider {
   }
 };
 
+class TestFrameProvider : public views::WindowFrameProvider {
+ public:
+  TestFrameProvider() = default;
+
+  ~TestFrameProvider() override = default;
+
+  // views::WindowFrameProvider:
+  int GetTopCornerRadiusDip() override { return 0; }
+  gfx::Insets GetFrameThicknessDip() override { return {}; }
+  void PaintWindowFrame(gfx::Canvas* canvas,
+                        const gfx::Rect& rect,
+                        int top_area_height,
+                        bool focused) override {}
+};
+
 }  // namespace
 
 class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
@@ -140,8 +155,9 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
 
     delegate_ = std::make_unique<TestLayoutDelegate>();
     nav_button_provider_ = std::make_unique<::TestNavButtonProvider>();
+    frame_provider_ = std::make_unique<::TestFrameProvider>();
     auto layout = std::make_unique<BrowserFrameViewLayoutLinuxNative>(
-        nav_button_provider_.get());
+        nav_button_provider_.get(), frame_provider_.get());
     layout->set_delegate(delegate_.get());
     layout->set_forced_window_caption_spacing_for_test(0);
     widget_ = CreateTestWidget();
@@ -195,6 +211,7 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
   BrowserFrameViewLayoutLinuxNative* layout_manager_ = nullptr;
   std::unique_ptr<TestLayoutDelegate> delegate_;
   std::unique_ptr<views::NavButtonProvider> nav_button_provider_;
+  std::unique_ptr<views::WindowFrameProvider> frame_provider_;
 
   // Widgets:
   views::ImageButton* minimize_button_ = nullptr;

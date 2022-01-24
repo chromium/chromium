@@ -48,11 +48,9 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
-#include "third_party/blink/renderer/platform/heap/heap_stats_collector.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -94,26 +92,10 @@ v8::EmbedderGraph::Node::Detachedness V8GCController::DetachednessFromWrapper(
   return v8::EmbedderGraph::Node::Detachedness::kDetached;
 }
 
-#if !BUILDFLAG(USE_V8_OILPAN)
-namespace {
-bool IsNestedInV8GC(ThreadState* thread_state, v8::GCType type) {
-  return thread_state && (type == v8::kGCTypeMarkSweepCompact ||
-                          type == v8::kGCTypeIncrementalMarking);
-}
-}  // namespace
-#endif  // !USE_V8_OILPAN
-
 void V8GCController::GcPrologue(v8::Isolate* isolate,
                                 v8::GCType type,
                                 v8::GCCallbackFlags flags) {
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcPrologue);
-#if !BUILDFLAG(USE_V8_OILPAN)
-  ThreadHeapStatsCollector::BlinkGCInV8Scope nested_scope(
-      IsNestedInV8GC(ThreadState::Current(), type)
-          ? ThreadState::Current()->Heap().stats_collector()
-          : nullptr);
-#endif  // !USE_V8_OILPAN
-
   auto* per_isolate_data = V8PerIsolateData::From(isolate);
   per_isolate_data->EnterGC();
 
@@ -152,12 +134,6 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
                                 v8::GCType type,
                                 v8::GCCallbackFlags flags) {
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcEpilogue);
-#if !BUILDFLAG(USE_V8_OILPAN)
-  ThreadHeapStatsCollector::BlinkGCInV8Scope nested_scope(
-      IsNestedInV8GC(ThreadState::Current(), type)
-          ? ThreadState::Current()->Heap().stats_collector()
-          : nullptr);
-#endif  // !USE_V8_OILPAN
 
   V8PerIsolateData::From(isolate)->LeaveGC();
 

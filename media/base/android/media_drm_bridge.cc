@@ -20,11 +20,11 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/android/android_util.h"
 #include "media/base/android/media_codec_util.h"
@@ -165,6 +165,10 @@ CdmKeyInformation::KeyStatus ConvertKeyStatus(KeyStatus key_status,
 class KeySystemManager {
  public:
   KeySystemManager();
+
+  KeySystemManager(const KeySystemManager&) = delete;
+  KeySystemManager& operator=(const KeySystemManager&) = delete;
+
   UUID GetUUID(const std::string& key_system);
   std::vector<std::string> GetPlatformKeySystemNames();
 
@@ -172,8 +176,6 @@ class KeySystemManager {
   using KeySystemUuidMap = MediaDrmBridgeClient::KeySystemUuidMap;
 
   KeySystemUuidMap key_system_uuid_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeySystemManager);
 };
 
 KeySystemManager::KeySystemManager() {

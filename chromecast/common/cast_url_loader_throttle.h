@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -20,7 +21,7 @@ class CastURLLoaderThrottle : public blink::URLLoaderThrottle {
   // An interface for CastURLLoaderThrottle to modify the resource request,
   // possibly also defer the request (by returning net::IO_PENDING) in some
   // scenarios where blocking operations are needed.
-  class Delegate {
+  class Delegate : public base::RefCountedThreadSafe<Delegate> {
    public:
     virtual int WillStartResourceRequest(
         network::ResourceRequest* request,
@@ -30,10 +31,12 @@ class CastURLLoaderThrottle : public blink::URLLoaderThrottle {
                                 net::HttpRequestHeaders)> callback) = 0;
 
    protected:
+    friend class base::RefCountedThreadSafe<Delegate>;
     virtual ~Delegate() = default;
   };
 
-  CastURLLoaderThrottle(Delegate* delegate, const std::string& session_id);
+  CastURLLoaderThrottle(scoped_refptr<Delegate> delegate,
+                        const std::string& session_id);
   CastURLLoaderThrottle(const CastURLLoaderThrottle&) = delete;
   CastURLLoaderThrottle& operator=(const CastURLLoaderThrottle&) = delete;
   ~CastURLLoaderThrottle() override;
@@ -50,7 +53,7 @@ class CastURLLoaderThrottle : public blink::URLLoaderThrottle {
                      net::HttpRequestHeaders cors_exempt_headers);
 
   bool deferred_ = false;
-  Delegate* const settings_delegate_;
+  const scoped_refptr<Delegate> settings_delegate_;
   const std::string session_id_;
 
   base::WeakPtr<CastURLLoaderThrottle> weak_this_;

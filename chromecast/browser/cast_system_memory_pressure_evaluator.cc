@@ -12,8 +12,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_metrics.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
@@ -59,8 +59,8 @@ int GetSystemReservedKb() {
 }  // namespace
 
 CastSystemMemoryPressureEvaluator::CastSystemMemoryPressureEvaluator(
-    std::unique_ptr<util::MemoryPressureVoter> voter)
-    : util::SystemMemoryPressureEvaluator(std::move(voter)),
+    std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)
+    : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
       critical_memory_fraction_command_line_(
           GetSwitchValueDouble(switches::kCastMemoryPressureCriticalFraction,
                                -1.0f)),
@@ -134,7 +134,7 @@ void CastSystemMemoryPressureEvaluator::PollPressureLevel() {
       FROM_HERE,
       base::BindOnce(&CastSystemMemoryPressureEvaluator::PollPressureLevel,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kPollingIntervalMS));
+      base::Milliseconds(kPollingIntervalMS));
 }
 
 void CastSystemMemoryPressureEvaluator::UpdateMemoryPressureLevel(

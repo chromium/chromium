@@ -71,8 +71,7 @@ class POLICY_EXPORT DesktopCloudPolicyStore : public UserCloudPolicyStoreBase {
       const base::FilePath& key_file,
       PolicyLoadFilter policy_load_filter,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      PolicyScope policy_scope,
-      PolicySource policy_source);
+      PolicyScope policy_scope);
   DesktopCloudPolicyStore(const DesktopCloudPolicyStore&) = delete;
   DesktopCloudPolicyStore& operator=(const DesktopCloudPolicyStore&) = delete;
   ~DesktopCloudPolicyStore() override;

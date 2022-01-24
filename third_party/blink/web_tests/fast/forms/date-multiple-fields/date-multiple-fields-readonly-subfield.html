@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <body>
-<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <script>
+'use strict';
+
 function createDateInput(min, max, value) {
-    var input = document.createElement('input');
+    let input = document.createElement('input');
     input.type = 'date';
     if (min)
         input.min = min;
@@ -16,53 +19,66 @@ function createDateInput(min, max, value) {
 
 // FIXME: Rename this function and the test file.
 function isReadOnlyField(input, pseudo) {
-    var node = internals.shadowRoot(input).querySelector('*[pseudo="' + pseudo + '"]');
+    if(!window.internals)
+        assert_unreached('This requires window.internals.');
+
+    let node = internals.shadowRoot(input).querySelector('*[pseudo="' + pseudo + '"]');
     if (!node)
-        testFailed('Requested node is missing.');
-    return node && node.hasAttribute('disabled');
+        assert_unreached('Requested node is missing.');
+    return node.hasAttribute('disabled')  && (node.getAttribute('aria-disabled') == "true");
 }
 
-var pseudoDay = '-webkit-datetime-edit-day-field';
-var pseudoMonth = '-webkit-datetime-edit-month-field';
-var pseudoYear = '-webkit-datetime-edit-year-field';
+function assertReadOnly(field, input) {
+    let pseudo = `-webkit-datetime-edit-${field}-field`;
+    assert_true(isReadOnlyField(input, pseudo), `The ${field} spinbutton should be read-only`)
+}
 
-description('Sub-fields in input[type=date] should be read-only in some cases. This requires window.internals.');
-debug('createDateInput argument order: min, max, value');
-debug('');
+function assertNotReadOnly(field, input) {
+    let pseudo = `-webkit-datetime-edit-${field}-field`;
+    assert_false(isReadOnlyField(input, pseudo), `The ${field} spinbutton should not be read-only`)
+}
 
-debug('Year field:');
-shouldBeFalse('isReadOnlyField(createDateInput("", "", ""), pseudoYear)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-12-17", "", ""), pseudoYear)');
-shouldBeFalse('isReadOnlyField(createDateInput("", "2012-12-17", ""), pseudoYear)');
-shouldBeFalse('isReadOnlyField(createDateInput("", "", "2012-12-17"), pseudoYear)');
-shouldBeTrue('isReadOnlyField(createDateInput("2012-01-01", "2012-12-31", ""), pseudoYear)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-01-01", "2013-12-31", ""), pseudoYear)');
-shouldBeTrue('isReadOnlyField(createDateInput("2012-01-01", "2012-12-31", "2012-05-30"), pseudoYear)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-01-01", "2012-12-31", "2013-01-01"), pseudoYear)');
+test(()=>{
 
-debug('Month field:');
-shouldBeFalse('isReadOnlyField(createDateInput("", "", ""), pseudoMonth)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-12-17", "", ""), pseudoMonth)');
-shouldBeFalse('isReadOnlyField(createDateInput("", "2012-12-17", ""), pseudoMonth)');
-shouldBeFalse('isReadOnlyField(createDateInput("", "", "2012-12-17"), pseudoMonth)');
-shouldBeTrue('isReadOnlyField(createDateInput("2012-12-01", "2012-12-31", ""), pseudoMonth)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-11-01", "2013-12-31", ""), pseudoMonth)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-12-01", "2013-12-31", ""), pseudoMonth)');
-shouldBeTrue('isReadOnlyField(createDateInput("2012-12-01", "2012-12-31", "2012-12-15"), pseudoMonth)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-12-01", "2012-12-31", "2012-11-30"), pseudoMonth)');
+    assertNotReadOnly('year', createDateInput("", "", ""));
+    assertNotReadOnly('year', createDateInput("2012-12-17", "", ""));
+    assertNotReadOnly('year', createDateInput("", "2012-12-17", ""));
+    assertNotReadOnly('year', createDateInput("", "", "2012-12-17"));
+    assertReadOnly('year', createDateInput("2012-01-01", "2012-12-31", ""))
+    assertNotReadOnly('year', createDateInput("2012-01-01", "2013-12-31", ""));
+    assertReadOnly('year', createDateInput("2012-01-01", "2012-12-31", "2012-05-30"))
+    assertNotReadOnly('year', createDateInput("2012-01-01", "2012-12-31", "2013-01-01"));
 
-debug('Day field:');
-debug('We should not make all the fields readonly by min/max, so day field is always editable.');
-shouldBeFalse('isReadOnlyField(createDateInput("", "", ""), pseudoDay)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-12-17", "", ""), pseudoDay)');
-shouldBeFalse('isReadOnlyField(createDateInput("", "2012-12-17", ""), pseudoDay)');
-shouldBeFalse('isReadOnlyField(createDateInput("", "", "2012-12-17"), pseudoDay)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-12-17", "2012-12-17", ""), pseudoDay)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-12-17", "2013-12-18", ""), pseudoDay)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-11-17", "2012-12-17", ""), pseudoDay)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-12-17", "2013-12-17", ""), pseudoDay)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-12-17", "2012-12-17", "2012-12-17"), pseudoDay)');
-shouldBeFalse('isReadOnlyField(createDateInput("2012-12-17", "2012-12-17", "2012-12-18"), pseudoDay)');
+}, 'The year spinbutton in input[type=date] should be read-only in some cases.')
+
+test(()=>{
+
+    assertNotReadOnly('month', createDateInput("", "", ""));
+    assertNotReadOnly('month', createDateInput("2012-12-17", "", ""));
+    assertNotReadOnly('month', createDateInput("", "2012-12-17", ""));
+    assertNotReadOnly('month', createDateInput("", "", "2012-12-17"));
+    assertReadOnly('month', createDateInput("2012-12-01", "2012-12-31", ""))
+    assertNotReadOnly('month', createDateInput("2012-11-01", "2013-12-31", ""));
+    assertNotReadOnly('month', createDateInput("2012-12-01", "2013-12-31", ""));
+    assertReadOnly('month', createDateInput("2012-12-01", "2012-12-31", "2012-12-15"))
+    assertNotReadOnly('month', createDateInput("2012-12-01", "2012-12-31", "2012-11-30"));
+
+}, 'The month spinbutton in input[type=date] should be read-only in some cases.')
+
+test(()=>{
+
+    assertNotReadOnly('day', createDateInput("", "", ""));
+    assertNotReadOnly('day', createDateInput("2012-12-17", "", ""));
+    assertNotReadOnly('day', createDateInput("", "2012-12-17", ""));
+    assertNotReadOnly('day', createDateInput("", "", "2012-12-17"));
+    assertNotReadOnly('day', createDateInput("2012-12-17", "2012-12-17", ""));
+    assertNotReadOnly('day', createDateInput("2012-12-17", "2013-12-18", ""));
+    assertNotReadOnly('day', createDateInput("2012-11-17", "2012-12-17", ""));
+    assertNotReadOnly('day', createDateInput("2012-12-17", "2013-12-17", ""));
+    assertNotReadOnly('day', createDateInput("2012-12-17", "2012-12-17", "2012-12-17"));
+    assertNotReadOnly('day', createDateInput("2012-12-17", "2012-12-17", "2012-12-18"));
+
+}, 'The day spinbutton in input[type=date] should be always editable.')
 
 </script>
 </body>

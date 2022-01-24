@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
 #include "chrome/common/extensions/api/platform_keys_internal.h"
@@ -60,10 +59,10 @@ class VerifyTrustAPI::IOPart {
   struct RequestState {
     RequestState() {}
 
-    std::unique_ptr<net::CertVerifier::Request> request;
+    RequestState(const RequestState&) = delete;
+    RequestState& operator=(const RequestState&) = delete;
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(RequestState);
+    std::unique_ptr<net::CertVerifier::Request> request;
   };
 
   // Calls back |callback| with the result and no error.

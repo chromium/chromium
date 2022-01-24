@@ -35,6 +35,11 @@ class DebugRecordingSession : public media::AudioDebugRecordingSession {
     DebugRecordingFileProvider(
         mojo::PendingReceiver<mojom::DebugRecordingFileProvider> receiver,
         const base::FilePath& file_name_base);
+
+    DebugRecordingFileProvider(const DebugRecordingFileProvider&) = delete;
+    DebugRecordingFileProvider& operator=(const DebugRecordingFileProvider&) =
+        delete;
+
     ~DebugRecordingFileProvider() override;
 
     // Creates file with name "|file_name_base_|.<stream_type_str>.|id|.wav",
@@ -47,20 +52,20 @@ class DebugRecordingSession : public media::AudioDebugRecordingSession {
    private:
     mojo::Receiver<mojom::DebugRecordingFileProvider> receiver_;
     base::FilePath file_name_base_;
-
-    DISALLOW_COPY_AND_ASSIGN(DebugRecordingFileProvider);
   };
 
   DebugRecordingSession(
       const base::FilePath& file_name_base,
       mojo::PendingRemote<mojom::DebugRecording> debug_recording);
+
+  DebugRecordingSession(const DebugRecordingSession&) = delete;
+  DebugRecordingSession& operator=(const DebugRecordingSession&) = delete;
+
   ~DebugRecordingSession() override;
 
  private:
   std::unique_ptr<DebugRecordingFileProvider> file_provider_;
   mojo::Remote<mojom::DebugRecording> debug_recording_;
-
-  DISALLOW_COPY_AND_ASSIGN(DebugRecordingSession);
 };
 
 }  // namespace audio

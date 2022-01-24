@@ -1,7 +1,9 @@
 This is a testharness.js-based test.
-Found 94 tests; 75 PASS, 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 143 tests; 77 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
+PASS Partial interface FontFace: original interface defined
+PASS Partial interface FontFace: member names are unique
 PASS Partial interface Document: member names are unique
 PASS Partial interface Document[2]: member names are unique
 PASS Document includes FontFaceSource: member names are unique
@@ -33,6 +35,9 @@ PASS FontFace interface: attribute lineGapOverride
 PASS FontFace interface: attribute status
 PASS FontFace interface: operation load()
 PASS FontFace interface: attribute loaded
+FAIL FontFace interface: attribute features assert_true: The prototype object must have a property "features" expected true got false
+FAIL FontFace interface: attribute variations assert_true: The prototype object must have a property "variations" expected true got false
+FAIL FontFace interface: attribute palettes assert_true: The prototype object must have a property "palettes" expected true got false
 PASS FontFace must be primary interface of fontFace
 PASS Stringification of fontFace
 PASS FontFace interface: fontFace must inherit property "family" with the proper type
@@ -50,6 +55,50 @@ PASS FontFace interface: fontFace must inherit property "lineGapOverride" with t
 PASS FontFace interface: fontFace must inherit property "status" with the proper type
 PASS FontFace interface: fontFace must inherit property "load()" with the proper type
 PASS FontFace interface: fontFace must inherit property "loaded" with the proper type
+FAIL FontFace interface: fontFace must inherit property "features" with the proper type assert_inherits: property "features" not found in prototype chain
+FAIL FontFace interface: fontFace must inherit property "variations" with the proper type assert_inherits: property "variations" not found in prototype chain
+FAIL FontFace interface: fontFace must inherit property "palettes" with the proper type assert_inherits: property "palettes" not found in prototype chain
+FAIL FontFaceFeatures interface: existence and properties of interface object assert_own_property: self does not have own property "FontFaceFeatures" expected property "FontFaceFeatures" missing
+FAIL FontFaceFeatures interface object length assert_own_property: self does not have own property "FontFaceFeatures" expected property "FontFaceFeatures" missing
+FAIL FontFaceFeatures interface object name assert_own_property: self does not have own property "FontFaceFeatures" expected property "FontFaceFeatures" missing
+FAIL FontFaceFeatures interface: existence and properties of interface prototype object assert_own_property: self does not have own property "FontFaceFeatures" expected property "FontFaceFeatures" missing
+FAIL FontFaceFeatures interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "FontFaceFeatures" expected property "FontFaceFeatures" missing
+FAIL FontFaceFeatures interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "FontFaceFeatures" expected property "FontFaceFeatures" missing
+FAIL FontFaceVariationAxis interface: existence and properties of interface object assert_own_property: self does not have own property "FontFaceVariationAxis" expected property "FontFaceVariationAxis" missing
+FAIL FontFaceVariationAxis interface object length assert_own_property: self does not have own property "FontFaceVariationAxis" expected property "FontFaceVariationAxis" missing
+FAIL FontFaceVariationAxis interface object name assert_own_property: self does not have own property "FontFaceVariationAxis" expected property "FontFaceVariationAxis" missing
+FAIL FontFaceVariationAxis interface: existence and properties of interface prototype object assert_own_property: self does not have own property "FontFaceVariationAxis" expected property "FontFaceVariationAxis" missing
+FAIL FontFaceVariationAxis interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "FontFaceVariationAxis" expected property "FontFaceVariationAxis" missing
+FAIL FontFaceVariationAxis interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "FontFaceVariationAxis" expected property "FontFaceVariationAxis" missing
+FAIL FontFaceVariationAxis interface: attribute name assert_own_property: self does not have own property "FontFaceVariationAxis" expected property "FontFaceVariationAxis" missing
+FAIL FontFaceVariationAxis interface: attribute axisTag assert_own_property: self does not have own property "FontFaceVariationAxis" expected property "FontFaceVariationAxis" missing
+FAIL FontFaceVariationAxis interface: attribute minimumValue assert_own_property: self does not have own property "FontFaceVariationAxis" expected property "FontFaceVariationAxis" missing
+FAIL FontFaceVariationAxis interface: attribute maximumValue assert_own_property: self does not have own property "FontFaceVariationAxis" expected property "FontFaceVariationAxis" missing
+FAIL FontFaceVariationAxis interface: attribute defaultValue assert_own_property: self does not have own property "FontFaceVariationAxis" expected property "FontFaceVariationAxis" missing
+FAIL FontFaceVariations interface: existence and properties of interface object assert_own_property: self does not have own property "FontFaceVariations" expected property "FontFaceVariations" missing
+FAIL FontFaceVariations interface object length assert_own_property: self does not have own property "FontFaceVariations" expected property "FontFaceVariations" missing
+FAIL FontFaceVariations interface object name assert_own_property: self does not have own property "FontFaceVariations" expected property "FontFaceVariations" missing
+FAIL FontFaceVariations interface: existence and properties of interface prototype object assert_own_property: self does not have own property "FontFaceVariations" expected property "FontFaceVariations" missing
+FAIL FontFaceVariations interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "FontFaceVariations" expected property "FontFaceVariations" missing
+FAIL FontFaceVariations interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "FontFaceVariations" expected property "FontFaceVariations" missing
+FAIL FontFacePalette interface: existence and properties of interface object assert_own_property: self does not have own property "FontFacePalette" expected property "FontFacePalette" missing
+FAIL FontFacePalette interface object length assert_own_property: self does not have own property "FontFacePalette" expected property "FontFacePalette" missing
+FAIL FontFacePalette interface object name assert_own_property: self does not have own property "FontFacePalette" expected property "FontFacePalette" missing
+FAIL FontFacePalette interface: existence and properties of interface prototype object assert_own_property: self does not have own property "FontFacePalette" expected property "FontFacePalette" missing
+FAIL FontFacePalette interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "FontFacePalette" expected property "FontFacePalette" missing
+FAIL FontFacePalette interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "FontFacePalette" expected property "FontFacePalette" missing
+FAIL FontFacePalette interface: iterable<DOMString> Cannot read properties of undefined (reading 'prototype')
+FAIL FontFacePalette interface: attribute length assert_own_property: self does not have own property "FontFacePalette" expected property "FontFacePalette" missing
+FAIL FontFacePalette interface: attribute usableWithLightBackground assert_own_property: self does not have own property "FontFacePalette" expected property "FontFacePalette" missing
+FAIL FontFacePalette interface: attribute usableWithDarkBackground assert_own_property: self does not have own property "FontFacePalette" expected property "FontFacePalette" missing
+FAIL FontFacePalettes interface: existence and properties of interface object assert_own_property: self does not have own property "FontFacePalettes" expected property "FontFacePalettes" missing
+FAIL FontFacePalettes interface object length assert_own_property: self does not have own property "FontFacePalettes" expected property "FontFacePalettes" missing
+FAIL FontFacePalettes interface object name assert_own_property: self does not have own property "FontFacePalettes" expected property "FontFacePalettes" missing
+FAIL FontFacePalettes interface: existence and properties of interface prototype object assert_own_property: self does not have own property "FontFacePalettes" expected property "FontFacePalettes" missing
+FAIL FontFacePalettes interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "FontFacePalettes" expected property "FontFacePalettes" missing
+FAIL FontFacePalettes interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "FontFacePalettes" expected property "FontFacePalettes" missing
+FAIL FontFacePalettes interface: iterable<FontFacePalette> Cannot read properties of undefined (reading 'prototype')
+FAIL FontFacePalettes interface: attribute length assert_own_property: self does not have own property "FontFacePalettes" expected property "FontFacePalettes" missing
 PASS FontFaceSetLoadEvent interface: existence and properties of interface object
 PASS FontFaceSetLoadEvent interface object length
 PASS FontFaceSetLoadEvent interface object name

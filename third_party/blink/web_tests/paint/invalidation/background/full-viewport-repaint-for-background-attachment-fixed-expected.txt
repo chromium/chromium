@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 5016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -9,11 +9,6 @@
         [0, 0, 800, 5016]
       ],
       "transform": 1
-    },
-    {
-      "name": "Vertical Scrollbar Layer",
-      "position": [800, 0],
-      "bounds": [0, 600]
     }
   ],
   "transforms": [

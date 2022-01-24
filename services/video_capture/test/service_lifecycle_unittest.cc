@@ -33,6 +33,12 @@ using testing::InvokeWithoutArgs;
 class VideoCaptureServiceLifecycleTest : public ::testing::Test {
  public:
   VideoCaptureServiceLifecycleTest() = default;
+
+  VideoCaptureServiceLifecycleTest(const VideoCaptureServiceLifecycleTest&) =
+      delete;
+  VideoCaptureServiceLifecycleTest& operator=(
+      const VideoCaptureServiceLifecycleTest&) = delete;
+
   ~VideoCaptureServiceLifecycleTest() override = default;
 
   void SetUp() override {
@@ -57,8 +63,6 @@ class VideoCaptureServiceLifecycleTest : public ::testing::Test {
 
  private:
   void OnServiceIdle() { service_idle_wait_loop_.Quit(); }
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureServiceLifecycleTest);
 };
 
 // Tests that the service quits when the only client disconnects after not

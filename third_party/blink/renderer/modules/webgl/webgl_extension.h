@@ -42,17 +42,22 @@ class WebGLExtensionScopedContext final {
  public:
   explicit WebGLExtensionScopedContext(WebGLExtension*);
 
+  WebGLExtensionScopedContext(const WebGLExtensionScopedContext&) = delete;
+  WebGLExtensionScopedContext& operator=(const WebGLExtensionScopedContext&) =
+      delete;
+
   bool IsLost() const { return !context_; }
   WebGLRenderingContextBase* Context() const { return context_; }
 
  private:
   WebGLRenderingContextBase* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGLExtensionScopedContext);
 };
 
 class WebGLExtension : public ScriptWrappable {
  public:
+  WebGLExtension(const WebGLExtension&) = delete;
+  WebGLExtension& operator=(const WebGLExtension&) = delete;
+
   virtual WebGLExtensionName GetName() const = 0;
 
   // Lose this extension. Passing true = force loss. Some extensions
@@ -71,8 +76,6 @@ class WebGLExtension : public ScriptWrappable {
   friend WebGLExtensionScopedContext;
 
   WeakMember<WebGLRenderingContextBase> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGLExtension);
 };
 
 }  // namespace blink

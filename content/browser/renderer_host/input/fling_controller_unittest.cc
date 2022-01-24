@@ -50,6 +50,9 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
       : needs_begin_frame_for_fling_progress_(GetParam()),
         task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
+  FlingControllerTest(const FlingControllerTest&) = delete;
+  FlingControllerTest& operator=(const FlingControllerTest&) = delete;
+
   ~FlingControllerTest() override {}
 
   void SetUp() override {
@@ -167,7 +170,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   bool FlingInProgress() { return fling_controller_->fling_in_progress(); }
 
   void AdvanceTime(double time_delta_ms = kFrameDelta) {
-    mock_clock_.Advance(base::TimeDelta::FromMillisecondsD(time_delta_ms));
+    mock_clock_.Advance(base::Milliseconds(time_delta_ms));
   }
 
   base::TimeTicks NowTicks() const { return mock_clock_.NowTicks(); }
@@ -226,7 +229,6 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   // https://crrev.com/c/1181521.
   bool needs_begin_frame_for_fling_progress_;
   base::test::TaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(FlingControllerTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, FlingControllerTest, testing::Bool());
@@ -760,11 +762,15 @@ class FlingControllerWithPhysicsBasedFlingTest : public FlingControllerTest {
         features::kExperimentalFlingAnimation);
   }
 
+  FlingControllerWithPhysicsBasedFlingTest(
+      const FlingControllerWithPhysicsBasedFlingTest&) = delete;
+  FlingControllerWithPhysicsBasedFlingTest& operator=(
+      const FlingControllerWithPhysicsBasedFlingTest&) = delete;
+
   ~FlingControllerWithPhysicsBasedFlingTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(FlingControllerWithPhysicsBasedFlingTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

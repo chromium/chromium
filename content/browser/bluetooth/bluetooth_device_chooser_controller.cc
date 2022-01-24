@@ -81,6 +81,9 @@ const int k40thPercentileRSSI = -69;
 const int k60thPercentileRSSI = -61;
 const int k80thPercentileRSSI = -52;
 
+// Client name for logging in BLE scanning.
+constexpr char kScanClientName[] = "Web Bluetooth Device Chooser";
+
 }  // namespace
 
 namespace content {
@@ -225,10 +228,9 @@ BluetoothDeviceChooserController::BluetoothDeviceChooserController(
     : adapter_(std::move(adapter)),
       web_bluetooth_service_(web_bluetooth_service),
       render_frame_host_(render_frame_host),
-      web_contents_(WebContents::FromRenderFrameHost(render_frame_host_)),
       discovery_session_timer_(
           FROM_HERE,
-          base::TimeDelta::FromSeconds(scan_duration_),
+          base::Seconds(scan_duration_),
           base::BindRepeating(
               &BluetoothDeviceChooserController::StopDeviceDiscovery,
               // base::Timer guarantees it won't call back after its
@@ -273,7 +275,7 @@ void BluetoothDeviceChooserController::GetDevice(
         break;
       case WebBluetoothResult::CHOOSER_NOT_SHOWN_API_GLOBALLY_DISABLED: {
         // Log to the developer console.
-        web_contents_->GetMainFrame()->AddMessageToConsole(
+        render_frame_host_->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kInfo,
             "Bluetooth permission has been blocked.");
         // Block requests.
@@ -430,7 +432,7 @@ void BluetoothDeviceChooserController::StartDeviceDiscovery() {
 
   chooser_->ShowDiscoveryState(BluetoothChooser::DiscoveryState::DISCOVERING);
   adapter_->StartDiscoverySessionWithFilter(
-      ComputeScanFilter(options_->filters),
+      ComputeScanFilter(options_->filters), kScanClientName,
       base::BindOnce(
           &BluetoothDeviceChooserController::OnStartDiscoverySessionSuccess,
           weak_ptr_factory_.GetWeakPtr()),

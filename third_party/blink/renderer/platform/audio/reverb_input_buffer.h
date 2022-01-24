@@ -63,7 +63,7 @@ class PLATFORM_EXPORT ReverbInputBuffer {
   // The assumption is that the buffer's length is evenly divisible by
   // numberOfFrames.
   // FIXME: remove numberOfFrames restriction...
-  float* DirectReadFrom(int* read_index, size_t number_of_frames);
+  float* DirectReadFrom(size_t* read_index, size_t number_of_frames);
 
   void Reset();
 

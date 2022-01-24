@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
@@ -22,6 +21,10 @@ class WrongHWIDScreen : public BaseScreen {
  public:
   WrongHWIDScreen(WrongHWIDScreenView* view,
                   const base::RepeatingClosure& exit_callback);
+
+  WrongHWIDScreen(const WrongHWIDScreen&) = delete;
+  WrongHWIDScreen& operator=(const WrongHWIDScreen&) = delete;
+
   ~WrongHWIDScreen() override;
 
   // This method is called, when view is being destroyed. Note, if Delegate
@@ -47,8 +50,6 @@ class WrongHWIDScreen : public BaseScreen {
 
   WrongHWIDScreenView* view_;
   base::RepeatingClosure exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrongHWIDScreen);
 };
 
 }  // namespace ash

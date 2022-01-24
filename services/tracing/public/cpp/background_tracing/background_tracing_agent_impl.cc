@@ -16,8 +16,7 @@
 namespace tracing {
 namespace {
 
-constexpr base::TimeDelta kMinTimeBetweenHistogramChanges =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMinTimeBetweenHistogramChanges = base::Seconds(10);
 
 }  // namespace
 

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 #include "extensions/common/url_pattern.h"
@@ -19,7 +18,12 @@ namespace extensions {
 
 struct UrlHandlerInfo {
   UrlHandlerInfo();
+
+  UrlHandlerInfo(const UrlHandlerInfo&) = delete;
+  UrlHandlerInfo& operator=(const UrlHandlerInfo&) = delete;
+
   UrlHandlerInfo(UrlHandlerInfo&& other);
+
   ~UrlHandlerInfo();
 
   // ID identifying this handler in the manifest.
@@ -28,8 +32,6 @@ struct UrlHandlerInfo {
   std::string title;
   // URL patterns associated with this handler.
   URLPatternSet patterns;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlHandlerInfo);
 };
 
 struct UrlHandlers : public Extension::ManifestData {
@@ -60,6 +62,10 @@ struct UrlHandlers : public Extension::ManifestData {
 class UrlHandlersParser : public ManifestHandler {
  public:
   UrlHandlersParser();
+
+  UrlHandlersParser(const UrlHandlersParser&) = delete;
+  UrlHandlersParser& operator=(const UrlHandlersParser&) = delete;
+
   ~UrlHandlersParser() override;
 
   // ManifestHandler API
@@ -67,8 +73,6 @@ class UrlHandlersParser : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlHandlersParser);
 };
 
 }  // namespace extensions

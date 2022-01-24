@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "storage/browser/file_system/async_file_util.h"
 
 namespace ash {
@@ -32,6 +31,10 @@ namespace internal {
 class ProviderAsyncFileUtil : public storage::AsyncFileUtil {
  public:
   ProviderAsyncFileUtil();
+
+  ProviderAsyncFileUtil(const ProviderAsyncFileUtil&) = delete;
+  ProviderAsyncFileUtil& operator=(const ProviderAsyncFileUtil&) = delete;
+
   ~ProviderAsyncFileUtil() override;
 
   // storage::AsyncFileUtil overrides.
@@ -71,14 +74,14 @@ class ProviderAsyncFileUtil : public storage::AsyncFileUtil {
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& src_url,
       const storage::FileSystemURL& dest_url,
-      CopyOrMoveOption option,
+      CopyOrMoveOptionSet options,
       CopyFileProgressCallback progress_callback,
       StatusCallback callback) override;
   void MoveFileLocal(
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& src_url,
       const storage::FileSystemURL& dest_url,
-      CopyOrMoveOption option,
+      CopyOrMoveOptionSet options,
       StatusCallback callback) override;
   void CopyInForeignFile(
       std::unique_ptr<storage::FileSystemOperationContext> context,
@@ -100,9 +103,6 @@ class ProviderAsyncFileUtil : public storage::AsyncFileUtil {
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& url,
       CreateSnapshotFileCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProviderAsyncFileUtil);
 };
 
 }  // namespace internal

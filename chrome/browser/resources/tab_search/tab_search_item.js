@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './strings.m.js';
 
 import {MouseHoverableMixin, MouseHoverableMixinInterface} from 'chrome://resources/cr_elements/mouse_hoverable_mixin.js';
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
+import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {get as deepGet, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

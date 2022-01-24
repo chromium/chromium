@@ -25,6 +25,11 @@ class PermissionDelegationBrowserTest : public InProcessBrowserTest {
       : geolocation_overrider_(
             std::make_unique<device::ScopedGeolocationOverrider>(0, 0)) {}
 
+  PermissionDelegationBrowserTest(const PermissionDelegationBrowserTest&) =
+      delete;
+  PermissionDelegationBrowserTest& operator=(
+      const PermissionDelegationBrowserTest&) = delete;
+
   ~PermissionDelegationBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -71,8 +76,6 @@ class PermissionDelegationBrowserTest : public InProcessBrowserTest {
       mock_permission_prompt_factory_;
   std::unique_ptr<net::EmbeddedTestServer> https_embedded_test_server_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionDelegationBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
@@ -87,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
   GURL iframe_url_2 =
       https_embedded_test_server()->GetURL("c.com", "/simple.html");
 
-  ui_test_utils::NavigateToURL(browser(), main_frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
   content::RenderFrameHost* main_frame = GetWebContents()->GetMainFrame();
 
   // Delegate permission to both frames.
@@ -105,11 +108,11 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
       content::NavigateIframeToURL(GetWebContents(), "iframe2", iframe_url_2));
 
   content::RenderFrameHost* frame_1 = content::FrameMatchingPredicate(
-      GetWebContents(),
+      GetWebContents()->GetPrimaryPage(),
       base::BindRepeating(&content::FrameMatchesName, "iframe1"));
   EXPECT_NE(nullptr, frame_1);
   content::RenderFrameHost* frame_2 = content::FrameMatchingPredicate(
-      GetWebContents(),
+      GetWebContents()->GetPrimaryPage(),
       base::BindRepeating(&content::FrameMatchesName, "iframe2"));
   EXPECT_NE(nullptr, frame_2);
 
@@ -125,9 +128,12 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
   // A prompt should have been shown with the top level origin rather than the
   // iframe origin.
   EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
-  EXPECT_TRUE(prompt_factory()->RequestOriginSeen(main_frame_url.GetOrigin()));
-  EXPECT_FALSE(prompt_factory()->RequestOriginSeen(iframe_url_1.GetOrigin()));
-  EXPECT_FALSE(prompt_factory()->RequestOriginSeen(iframe_url_2.GetOrigin()));
+  EXPECT_TRUE(prompt_factory()->RequestOriginSeen(
+      main_frame_url.DeprecatedGetOriginAsURL()));
+  EXPECT_FALSE(prompt_factory()->RequestOriginSeen(
+      iframe_url_1.DeprecatedGetOriginAsURL()));
+  EXPECT_FALSE(prompt_factory()->RequestOriginSeen(
+      iframe_url_2.DeprecatedGetOriginAsURL()));
 
   // Request permission from the second iframe. Because it was granted to the
   // top level frame, it should also be granted to this iframe and there should

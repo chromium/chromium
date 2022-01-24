@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ARC_TRACING_ARC_APP_PERFORMANCE_TRACING_CUSTOM_SESSION_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 
 namespace arc {
@@ -25,6 +24,12 @@ class ArcAppPerformanceTracingCustomSession
 
   explicit ArcAppPerformanceTracingCustomSession(
       ArcAppPerformanceTracing* owner);
+
+  ArcAppPerformanceTracingCustomSession(
+      const ArcAppPerformanceTracingCustomSession&) = delete;
+  ArcAppPerformanceTracingCustomSession& operator=(
+      const ArcAppPerformanceTracingCustomSession&) = delete;
+
   ~ArcAppPerformanceTracingCustomSession() override;
 
   // ArcAppPerformanceTracingSession:
@@ -42,8 +47,6 @@ class ArcAppPerformanceTracingCustomSession
 
  private:
   ResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppPerformanceTracingCustomSession);
 };
 
 }  // namespace arc

@@ -16,7 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message.h"
@@ -37,12 +37,10 @@ namespace {
 
 enum Messages {
   kMessageCrash = ChromotingDaemonMsg_Crash::ID,
-  kMessageConfiguration = ChromotingDaemonNetworkMsg_Configuration::ID,
   kMessageConnectTerminal = ChromotingNetworkHostMsg_ConnectTerminal::ID,
   kMessageDisconnectTerminal = ChromotingNetworkHostMsg_DisconnectTerminal::ID,
   kMessageTerminalDisconnected =
       ChromotingDaemonNetworkMsg_TerminalDisconnected::ID,
-  kMessageReportProcessStats = ChromotingAnyToNetworkMsg_ReportProcessStats::ID,
 };
 
 // Provides a public constructor allowing the test to create instances of
@@ -50,12 +48,13 @@ enum Messages {
 class FakeDesktopSession : public DesktopSession {
  public:
   FakeDesktopSession(DaemonProcess* daemon_process, int id);
+
+  FakeDesktopSession(const FakeDesktopSession&) = delete;
+  FakeDesktopSession& operator=(const FakeDesktopSession&) = delete;
+
   ~FakeDesktopSession() override;
 
   void SetScreenResolution(const ScreenResolution& resolution) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDesktopSession);
 };
 
 class MockDaemonProcess : public DaemonProcess {
@@ -63,6 +62,10 @@ class MockDaemonProcess : public DaemonProcess {
   MockDaemonProcess(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
                     base::OnceClosure stopped_callback);
+
+  MockDaemonProcess(const MockDaemonProcess&) = delete;
+  MockDaemonProcess& operator=(const MockDaemonProcess&) = delete;
+
   ~MockDaemonProcess() override;
 
   std::unique_ptr<DesktopSession> DoCreateDesktopSession(
@@ -73,18 +76,21 @@ class MockDaemonProcess : public DaemonProcess {
   bool OnMessageReceived(const IPC::Message& message) override;
   void SendToNetwork(IPC::Message* message) override;
 
-  MOCK_METHOD1(Received, void(const IPC::Message&));
-  MOCK_METHOD1(Sent, void(const IPC::Message&));
+  MOCK_METHOD(void, Received, (const IPC::Message&));
+  MOCK_METHOD(void, Sent, (const IPC::Message&));
 
-  MOCK_METHOD3(OnDesktopSessionAgentAttached,
-               bool(int, int, const IPC::ChannelHandle&));
+  MOCK_METHOD(bool,
+              OnDesktopSessionAgentAttached,
+              (int, int, const IPC::ChannelHandle&),
+              (override));
 
-  MOCK_METHOD1(DoCreateDesktopSessionPtr, DesktopSession*(int));
-  MOCK_METHOD1(DoCrashNetworkProcess, void(const base::Location&));
-  MOCK_METHOD0(LaunchNetworkProcess, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDaemonProcess);
+  MOCK_METHOD(DesktopSession*, DoCreateDesktopSessionPtr, (int));
+  MOCK_METHOD(void, DoCrashNetworkProcess, (const base::Location&), (override));
+  MOCK_METHOD(void, LaunchNetworkProcess, (), (override));
+  MOCK_METHOD(void,
+              SendHostConfigToNetworkProcess,
+              (const std::string&),
+              (override));
 };
 
 FakeDesktopSession::FakeDesktopSession(DaemonProcess* daemon_process, int id)
@@ -228,7 +234,7 @@ MATCHER_P(Message, type, "") {
 
 TEST_F(DaemonProcessTest, OpenClose) {
   InSequence s;
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
   EXPECT_CALL(*daemon_process_, Sent(Message(kMessageTerminalDisconnected)));
@@ -250,7 +256,7 @@ TEST_F(DaemonProcessTest, OpenClose) {
 
 TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
   InSequence s;
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Sent(Message(kMessageTerminalDisconnected)));
 
@@ -272,7 +278,7 @@ TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
 // ignored.
 TEST_F(DaemonProcessTest, DoubleDisconnectTerminal) {
   InSequence s;
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
   EXPECT_CALL(*daemon_process_, Sent(Message(kMessageTerminalDisconnected)));
@@ -301,12 +307,12 @@ TEST_F(DaemonProcessTest, DoubleDisconnectTerminal) {
 // restarted.
 TEST_F(DaemonProcessTest, InvalidDisconnectTerminal) {
   InSequence s;
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
   EXPECT_CALL(*daemon_process_, Sent(Message(kMessageCrash)))
       .WillOnce(InvokeWithoutArgs(this,
                                   &DaemonProcessTest::LaunchNetworkProcess));
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
 
   StartDaemonProcess();
 
@@ -322,13 +328,13 @@ TEST_F(DaemonProcessTest, InvalidDisconnectTerminal) {
 // restarted.
 TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
   InSequence s;
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Sent(Message(kMessageCrash)))
       .WillOnce(InvokeWithoutArgs(this,
                                   &DaemonProcessTest::LaunchNetworkProcess));
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
 
   StartDaemonProcess();
 
@@ -344,59 +350,6 @@ TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
       ChromotingNetworkHostMsg_ConnectTerminal(id, resolution, false)));
   EXPECT_TRUE(desktop_sessions().empty());
   EXPECT_EQ(0, terminal_id_);
-}
-
-TEST_F(DaemonProcessTest, StartProcessStatsReport) {
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)));
-  daemon_process_->OnMessageReceived(
-      ChromotingNetworkToAnyMsg_StartProcessStatsReport(
-          base::TimeDelta::FromMilliseconds(1)));
-  base::RunLoop run_loop;
-  ON_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)))
-      .WillByDefault(testing::Invoke(
-          [&run_loop](const IPC::Message& message) {
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-}
-
-TEST_F(DaemonProcessTest, StartProcessStatsReportWithDifferentDelta) {
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)))
-      .Times(AnyNumber());
-  int received = 0;
-  daemon_process_->OnMessageReceived(
-      ChromotingNetworkToAnyMsg_StartProcessStatsReport(
-          base::TimeDelta::FromHours(1)));
-  daemon_process_->OnMessageReceived(
-      ChromotingNetworkToAnyMsg_StartProcessStatsReport(
-          base::TimeDelta::FromMilliseconds(1)));
-  base::RunLoop run_loop;
-  ON_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)))
-      .WillByDefault(testing::Invoke(
-          [&run_loop, &received](const IPC::Message& message) {
-            received++;
-            if (received == 5) {
-              run_loop.Quit();
-            }
-          }));
-  run_loop.Run();
-}
-
-TEST_F(DaemonProcessTest, StopProcessStatsReportWhenTheWorkerProcessDied) {
-  daemon_process_->OnMessageReceived(
-      ChromotingNetworkToAnyMsg_StartProcessStatsReport(
-          base::TimeDelta::FromMilliseconds(1)));
-  base::RunLoop run_loop;
-  ON_CALL(*daemon_process_, Sent(Message(kMessageReportProcessStats)))
-      .WillByDefault(testing::Invoke(
-          [](const IPC::Message& message) {
-            ASSERT_TRUE(false);
-          }));
-  static_cast<WorkerProcessIpcDelegate*>(daemon_process_.get())
-      ->OnWorkerProcessStopped();
-  task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(10));
-  run_loop.Run();
 }
 
 }  // namespace remoting

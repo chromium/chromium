@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -37,6 +36,10 @@ class ActiveDirectoryPolicyManager
       public CloudPolicyStore::Observer,
       public ComponentActiveDirectoryPolicyService::Delegate {
  public:
+  ActiveDirectoryPolicyManager(const ActiveDirectoryPolicyManager&) = delete;
+  ActiveDirectoryPolicyManager& operator=(const ActiveDirectoryPolicyManager&) =
+      delete;
+
   ~ActiveDirectoryPolicyManager() override;
 
   // ConfigurationPolicyProvider:
@@ -134,8 +137,6 @@ class ActiveDirectoryPolicyManager
 
   // Must be last member.
   base::WeakPtrFactory<ActiveDirectoryPolicyManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryPolicyManager);
 };
 
 // Manages user policy for Active Directory managed devices.
@@ -156,6 +157,11 @@ class UserActiveDirectoryPolicyManager : public ActiveDirectoryPolicyManager {
       base::OnceClosure exit_session,
       std::unique_ptr<CloudPolicyStore> store,
       std::unique_ptr<CloudExternalDataManager> external_data_manager);
+
+  UserActiveDirectoryPolicyManager(const UserActiveDirectoryPolicyManager&) =
+      delete;
+  UserActiveDirectoryPolicyManager& operator=(
+      const UserActiveDirectoryPolicyManager&) = delete;
 
   ~UserActiveDirectoryPolicyManager() override;
 
@@ -204,8 +210,6 @@ class UserActiveDirectoryPolicyManager : public ActiveDirectoryPolicyManager {
   // Must be last member.
   base::WeakPtrFactory<UserActiveDirectoryPolicyManager> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserActiveDirectoryPolicyManager);
 };
 
 // Manages device policy for Active Directory managed devices.
@@ -213,6 +217,12 @@ class DeviceActiveDirectoryPolicyManager : public ActiveDirectoryPolicyManager {
  public:
   explicit DeviceActiveDirectoryPolicyManager(
       std::unique_ptr<CloudPolicyStore> store);
+
+  DeviceActiveDirectoryPolicyManager(
+      const DeviceActiveDirectoryPolicyManager&) = delete;
+  DeviceActiveDirectoryPolicyManager& operator=(
+      const DeviceActiveDirectoryPolicyManager&) = delete;
+
   ~DeviceActiveDirectoryPolicyManager() override;
 
   // ConfigurationPolicyProvider:
@@ -234,8 +244,6 @@ class DeviceActiveDirectoryPolicyManager : public ActiveDirectoryPolicyManager {
   // it is passed to this class.
   std::unique_ptr<ForwardingSchemaRegistry>
       signin_profile_forwarding_schema_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceActiveDirectoryPolicyManager);
 };
 
 }  // namespace policy

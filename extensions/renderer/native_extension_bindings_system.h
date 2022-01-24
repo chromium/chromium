@@ -14,7 +14,8 @@
 #include "extensions/renderer/bindings/event_emitter.h"
 #include "extensions/renderer/feature_cache.h"
 #include "extensions/renderer/native_renderer_messaging_service.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace extensions {
 class IPCMessageSender;
@@ -34,6 +35,11 @@ class NativeExtensionBindingsSystem {
  public:
   explicit NativeExtensionBindingsSystem(
       std::unique_ptr<IPCMessageSender> ipc_message_sender);
+
+  NativeExtensionBindingsSystem(const NativeExtensionBindingsSystem&) = delete;
+  NativeExtensionBindingsSystem& operator=(
+      const NativeExtensionBindingsSystem&) = delete;
+
   ~NativeExtensionBindingsSystem();
 
   // Called when a new ScriptContext is created.
@@ -147,8 +153,6 @@ class NativeExtensionBindingsSystem {
   v8::Eternal<v8::FunctionTemplate> get_internal_api_;
 
   base::WeakPtrFactory<NativeExtensionBindingsSystem> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeExtensionBindingsSystem);
 };
 
 }  // namespace extensions

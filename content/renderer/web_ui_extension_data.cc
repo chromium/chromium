@@ -4,18 +4,22 @@
 
 #include "content/renderer/web_ui_extension_data.h"
 
+#include <utility>
+
+#include "base/memory/ptr_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
 namespace content {
 
+// static
 void WebUIExtensionData::Create(
     RenderFrame* render_frame,
     mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
     mojo::PendingAssociatedRemote<mojom::WebUIHost> remote) {
   mojo::MakeSelfOwnedAssociatedReceiver(
-      std::make_unique<WebUIExtensionData>(render_frame, std::move(remote)),
+      base::WrapUnique(new WebUIExtensionData(render_frame, std::move(remote))),
       std::move(receiver));
 }
 
@@ -44,5 +48,7 @@ void WebUIExtensionData::SetProperty(const std::string& name,
                                      const std::string& value) {
   variable_map_[name] = value;
 }
+
+void WebUIExtensionData::OnDestruct() {}
 
 }  // namespace content

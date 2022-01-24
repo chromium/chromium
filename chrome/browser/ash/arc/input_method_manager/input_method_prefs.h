@@ -9,7 +9,7 @@
 #include <string>
 
 #include "chrome/browser/profiles/profile.h"
-#include "ui/base/ime/chromeos/input_method_descriptor.h"
+#include "ui/base/ime/ash/input_method_descriptor.h"
 
 namespace arc {
 
@@ -25,7 +25,7 @@ class InputMethodPrefs {
   // Updates input method related prefs according to the passed enabled ARC IME
   // list.
   void UpdateEnabledImes(
-      chromeos::input_method::InputMethodDescriptors enabled_arc_imes);
+      ash::input_method::InputMethodDescriptors enabled_arc_imes);
 
   // Returns the list of IMEs on the pref.
   std::set<std::string> GetEnabledImes() const;

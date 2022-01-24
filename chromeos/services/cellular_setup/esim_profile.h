@@ -41,8 +41,6 @@ class ESimProfile : public mojom::ESimProfile {
   void InstallProfile(const std::string& confirmation_code,
                       InstallProfileCallback callback) override;
   void UninstallProfile(UninstallProfileCallback callback) override;
-  void EnableProfile(EnableProfileCallback callback) override;
-  void DisableProfile(DisableProfileCallback callback) override;
   void SetProfileNickname(const std::u16string& nickname,
                           SetProfileNicknameCallback callback) override;
 
@@ -63,10 +61,6 @@ class ESimProfile : public mojom::ESimProfile {
   // Type of callback for profile installation methods.
   using ProfileInstallResultCallback =
       base::OnceCallback<void(mojom::ProfileInstallResult)>;
-
-  // Type of callback for other esim manager methods.
-  using ESimOperationResultCallback =
-      base::OnceCallback<void(mojom::ESimOperationResult)>;
 
   // Type of callback to be passed to EnsureProfileExists method. The callback
   // receives a boolean indicating request profile succeess status and inhibit
@@ -105,13 +99,12 @@ class ESimProfile : public mojom::ESimProfile {
       const std::string& service_path,
       const std::string& error_name);
   void OnProfileUninstallResult(bool success);
-  void OnESimOperationResult(ESimOperationResultCallback callback,
-                             HermesResponseStatus status);
   void OnProfileNicknameSet(
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
-      bool success);
+      HermesResponseStatus status);
   bool ProfileExistsOnEuicc();
   bool IsProfileInstalled();
+  bool IsProfileManaged();
 
   // Reference to Euicc that owns this profile.
   Euicc* euicc_;

@@ -16,12 +16,13 @@
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
@@ -110,9 +111,12 @@ class FakeArcCertInstaller : public ArcCertInstaller {
       std::vector<CertDescription> certs,
       InstallArcCertsCallback callback) override {
     certs_.clear();
+    cert_ids_.clear();
     for (const auto& cert : certs) {
-      certs_[x509_certificate_model::GetCertNameOrNickname(
-          cert.nss_cert.get())] = GetDerCert64(cert.nss_cert.get());
+      std::string cert_name =
+          x509_certificate_model::GetCertNameOrNickname(cert.nss_cert.get());
+      certs_[cert_name] = GetDerCert64(cert.nss_cert.get());
+      cert_ids_[cert_name] = cert.id;
     }
 
     callback_ = std::move(callback);
@@ -136,9 +140,12 @@ class FakeArcCertInstaller : public ArcCertInstaller {
 
   std::map<std::string, std::string> certs() const { return certs_; }
 
+  std::map<std::string, std::string> cert_ids() const { return cert_ids_; }
+
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   std::map<std::string, std::string> certs_;
+  std::map<std::string, std::string> cert_ids_;
   InstallArcCertsCallback callback_;
 };
 
@@ -193,7 +200,7 @@ std::unique_ptr<KeyedService> BuildCertStoreService(
 //                 |
 //       run_loop.QuitClosure
 //                 |
-//     CreateNSSCertDatabaseGetter
+//   NssService::CreateNSSCertDatabaseGetterForIOThread
 //                 |
 //                 \--------------------------------v
 //                                 IsSystemSlotAvailableWithDbGetterOnIO
@@ -240,7 +247,8 @@ bool IsSystemSlotAvailable(Profile* profile) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(IsSystemSlotAvailableWithDbGetterOnIO,
-                     CreateNSSCertDatabaseGetter(profile),
+                     NssServiceFactory::GetForContext(profile)
+                         ->CreateNSSCertDatabaseGetterForIOThread(),
                      &system_slot_available, run_loop.QuitClosure()));
   run_loop.Run();
   return system_slot_available;
@@ -329,9 +337,9 @@ class CertStoreServiceTest
 
   std::vector<InstalledTestCert> installed_certs_;
 
-  chromeos::DeviceStateMixin device_state_{
+  ash::DeviceStateMixin device_state_{
       &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   policy::DevicePolicyCrosTestHelper device_policy_helper_;
   policy::AffiliationMixin affiliation_mixin_{&mixin_host_,
                                               &device_policy_helper_};
@@ -356,8 +364,6 @@ class CertStoreServiceTest
   // Initializes |test_system_slot_|.
   void SetUpTestSystemSlot();
 
-  void SetUpTestSystemSlotOnIO(bool* out_system_slot_constructed_successfully);
-
   // Destroys |test_system_slot_|.
   void TearDownTestSystemSlot();
 
@@ -378,8 +384,11 @@ void CertStoreServiceTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 void CertStoreServiceTest::SetUpInProcessBrowserTestFixture() {
   MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-  chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
-      ->SetTestingMode(true);
+  ash::platform_keys::PlatformKeysServiceFactory::GetInstance()->SetTestingMode(
+      true);
+
+  // Set up a system slot so tests can access device certs.
+  ASSERT_NO_FATAL_FAILURE(SetUpTestSystemSlot());
 }
 
 void CertStoreServiceTest::SetUpOnMainThread() {
@@ -405,8 +414,6 @@ void CertStoreServiceTest::SetUpOnMainThread() {
       profile(), base::BindRepeating(&BuildCertStoreService,
                                      base::Passed(std::move(installer))));
 
-  // Set up a system slot so tests can access device certs.
-  ASSERT_NO_FATAL_FAILURE(SetUpTestSystemSlot());
   ASSERT_TRUE(IsSystemSlotAvailable(profile()));
 }
 
@@ -416,8 +423,8 @@ void CertStoreServiceTest::TearDownOnMainThread() {
 }
 
 void CertStoreServiceTest::TearDownInProcessBrowserTestFixture() {
-  chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
-      ->SetTestingMode(false);
+  ash::platform_keys::PlatformKeysServiceFactory::GetInstance()->SetTestingMode(
+      false);
   MixinBasedInProcessBrowserTest::TearDownInProcessBrowserTestFixture();
 }
 
@@ -428,10 +435,10 @@ void CertStoreServiceTest::SetUpCerts(
 
   // Read certs from files.
   base::RunLoop loop;
-  GetNSSCertDatabaseForProfile(
-      profile(), base::BindOnce(&CertStoreServiceTest::SetUpTestClientCerts,
-                                base::Unretained(this), certs_to_setup,
-                                loop.QuitClosure()));
+  NssServiceFactory::GetForContext(profile())
+      ->UnsafelyGetNSSCertDatabaseForTesting(base::BindOnce(
+          &CertStoreServiceTest::SetUpTestClientCerts, base::Unretained(this),
+          certs_to_setup, loop.QuitClosure()));
   loop.Run();
 
   // Verify |certs_to_setup.size()| new certs have been installed.
@@ -445,10 +452,10 @@ void CertStoreServiceTest::SetUpCerts(
       RegisterCorporateKey(cert.nss_cert.get());
     // Import cert to NSS cert database.
     base::RunLoop loop;
-    GetNSSCertDatabaseForProfile(
-        profile(), base::BindOnce(&CertStoreServiceTest::ImportCert,
-                                  base::Unretained(this), cert.nss_cert.get(),
-                                  loop.QuitClosure()));
+    NssServiceFactory::GetForContext(profile())
+        ->UnsafelyGetNSSCertDatabaseForTesting(base::BindOnce(
+            &CertStoreServiceTest::ImportCert, base::Unretained(this),
+            cert.nss_cert.get(), loop.QuitClosure()));
     loop.Run();
     // Wait till new cert event is processed by CertStoreService.
     installer_->Wait();
@@ -468,8 +475,9 @@ void CertStoreServiceTest::RegisterCorporateKey(CERTCertificate* cert) {
 
 void CertStoreServiceTest::DeleteCert(CERTCertificate* cert) {
   base::RunLoop loop;
-  GetNSSCertDatabaseForProfile(
-      profile(), base::BindOnce(&DeleteCertAndKey, cert, loop.QuitClosure()));
+  NssServiceFactory::GetForContext(profile())
+      ->UnsafelyGetNSSCertDatabaseForTesting(
+          base::BindOnce(&DeleteCertAndKey, cert, loop.QuitClosure()));
   loop.Run();
   installed_certs_.pop_back();
   // Wait till deleted cert event is processed by CertStoreService.
@@ -508,20 +516,15 @@ void CertStoreServiceTest::CheckInstalledCerts(
       EXPECT_EQ(x509_certificate_model::GetCertNameOrNickname(nss_cert.get()),
                 cert_name);
       found = true;
-      // Check KeyInfo.
-      auto key_info =
-          service->GetKeyInfoForDummySpki(installer_->certs()[cert_name]);
-      EXPECT_TRUE(key_info.has_value());
-      EXPECT_EQ(key_info.value().nickname, cert_name);
+      std::string cert_id = installer_->cert_ids()[cert_name];
       // Check CKA_ID and slot.
       int slot_id;
-      std::string hex_encoded_id = base::HexEncode(key_info.value().id.data(),
-                                                   key_info.value().id.size());
+      std::string hex_encoded_id =
+          base::HexEncode(cert_id.data(), cert_id.size());
       EXPECT_EQ(hex_encoded_id,
                 chromeos::NetworkCertLoader::GetPkcs11IdAndSlotForCert(
                     nss_cert.get(), &slot_id));
-      EXPECT_TRUE(PlaceholdersContainIdAndSlot(key_info.value().id,
-                                               cert.test_data.slot));
+      EXPECT_TRUE(PlaceholdersContainIdAndSlot(cert_id, cert.test_data.slot));
       break;
     }
     // Check the required cert was found.
@@ -579,24 +582,9 @@ bool CertStoreServiceTest::PlaceholdersContainIdAndSlot(
 }
 
 void CertStoreServiceTest::SetUpTestSystemSlot() {
-  bool system_slot_constructed_successfully = false;
-  base::RunLoop loop;
-  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&CertStoreServiceTest::SetUpTestSystemSlotOnIO,
-                     base::Unretained(this),
-                     &system_slot_constructed_successfully),
-      loop.QuitClosure());
-  loop.Run();
-  ASSERT_TRUE(system_slot_constructed_successfully);
-}
-
-void CertStoreServiceTest::SetUpTestSystemSlotOnIO(
-    bool* out_system_slot_constructed_successfully) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>();
-  *out_system_slot_constructed_successfully =
-      test_system_slot_->ConstructedSuccessfully();
+  test_system_slot_ = std::make_unique<crypto::ScopedTestSystemNSSKeySlot>(
+      /*simulate_token_loader=*/false);
+  ASSERT_TRUE(test_system_slot_->ConstructedSuccessfully());
 }
 
 void CertStoreServiceTest::TearDownTestSystemSlot() {

@@ -83,8 +83,13 @@ const CGFloat kGridCellCloseTapTargetWidthHeight = 44.0f;
 const CGFloat kGridCellCloseButtonContentInset = 8.5f;
 const CGFloat kGridCellTitleLabelContentInset = 4.0f;
 const CGFloat kGridCellIconDiameter = 16.0f;
+const CGFloat kGridCellSelectIconContentInset = 4.0f;
+const CGFloat kGridCellSelectIconSize = 25.0f;
 const CGFloat kGridCellSelectionRingGapWidth = 2.0f;
 const CGFloat kGridCellSelectionRingTintWidth = 5.0f;
+
+const CGFloat kGridCellPriceDropTopSpacing = 10.0f;
+const CGFloat kGridCellPriceDropLeadingSpacing = 10.0f;
 
 const CGFloat kPlusSignImageTrailingCenterDistance = 55.5;
 // The threshold is set so that the hide transition starts at the moment the
@@ -97,5 +102,7 @@ const CGFloat kScrollThresholdForPlusSignButtonHide =
 const CGFloat kPlusSignImageYCenterConstant =
     kGridLayoutLineSpacingCompactCompactLimitedWidth +
     kGridCellSelectionRingGapWidth + kGridCellSelectionRingTintWidth +
-    kGridCellSizeSmall.height / 2 + 2;
+    kGridCellSizeSmall.height / 2 - 2;
 const CGFloat kPlusSignButtonWidth = 156;
+
+const CGFloat kGridExpectedTopContentInset = 20.0f;

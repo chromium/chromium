@@ -11,6 +11,7 @@ import collections
 import json
 import logging
 import re
+import six
 
 from blinkpy.common.checkout.git import Git
 from blinkpy.common.net.results_fetcher import Build, filter_latest_builds
@@ -24,7 +25,7 @@ _COMMANDS_THAT_TAKE_REFRESH_TOKEN = ('try', )
 
 # These characters always appear at the beginning of the SearchBuilds response
 # from BuildBucket.
-SEARCHBUILDS_RESPONSE_PREFIX = ")]}'"
+SEARCHBUILDS_RESPONSE_PREFIX = b")]}'"
 
 
 class CLStatus(
@@ -345,7 +346,10 @@ class GitCL(object):
             'builds.*.builder.builder,builds.*.status,builds.*.tags,builds.*.number'
         }
         url = 'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/SearchBuilds'
-        req_body = json.dumps(data)
+        if six.PY3:
+            req_body = json.dumps(data).encode("utf-8")
+        else:
+            req_body = json.dumps(data)
         _log.debug("Sending SearchBuilds request. Url: %s with Body: %s" %
                    (url, req_body))
         response = self._host.web.request(

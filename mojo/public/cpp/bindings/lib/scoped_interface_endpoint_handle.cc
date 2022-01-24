@@ -25,6 +25,9 @@ class ScopedInterfaceEndpointHandle::State
         scoped_refptr<AssociatedGroupController> group_controller)
       : id_(id), group_controller_(group_controller) {}
 
+  State(const State&) = delete;
+  State& operator=(const State&) = delete;
+
   void InitPendingState(scoped_refptr<State> peer) {
     DCHECK(!lock_);
     DCHECK(!pending_association_);
@@ -276,8 +279,6 @@ class ScopedInterfaceEndpointHandle::State
 
   InterfaceId id_ = kInvalidInterfaceId;
   scoped_refptr<AssociatedGroupController> group_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(State);
 };
 
 // ScopedInterfaceEndpointHandle -----------------------------------------------

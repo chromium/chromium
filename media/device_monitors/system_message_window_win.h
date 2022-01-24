@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -17,6 +16,9 @@ namespace media {
 class MEDIA_EXPORT SystemMessageWindowWin {
  public:
   SystemMessageWindowWin();
+
+  SystemMessageWindowWin(const SystemMessageWindowWin&) = delete;
+  SystemMessageWindowWin& operator=(const SystemMessageWindowWin&) = delete;
 
   virtual ~SystemMessageWindowWin();
 
@@ -45,8 +47,6 @@ class MEDIA_EXPORT SystemMessageWindowWin {
   HWND window_;
   class DeviceNotifications;
   std::unique_ptr<DeviceNotifications> device_notifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMessageWindowWin);
 };
 
 }  // namespace media

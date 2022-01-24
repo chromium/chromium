@@ -61,12 +61,12 @@ class TestImageDecoder : public ImageDecoder {
           FindRequiredPreviousFrame(i, known_opaque));
   }
 
-  void InitFrames(size_t num_frames,
+  void InitFrames(wtf_size_t num_frames,
                   unsigned width = 100,
                   unsigned height = 100) {
     SetSize(width, height);
     frame_buffer_cache_.resize(num_frames);
-    for (size_t i = 0; i < num_frames; ++i)
+    for (wtf_size_t i = 0; i < num_frames; ++i)
       frame_buffer_cache_[i].SetOriginalFrameRect(IntRect(0, 0, width, height));
   }
 
@@ -76,7 +76,7 @@ class TestImageDecoder : public ImageDecoder {
  private:
   bool image_is_high_bit_depth_ = false;
   void DecodeSize() override {}
-  void Decode(size_t index) override {}
+  void Decode(wtf_size_t index) override {}
 };
 
 TEST(ImageDecoderTest, sizeCalculationMayOverflow) {
@@ -283,7 +283,7 @@ TEST(ImageDecoderTest, clearCacheExceptFrameAll) {
 }
 
 TEST(ImageDecoderTest, clearCacheExceptFramePreverveClearExceptFrame) {
-  const size_t kNumFrames = 10;
+  const wtf_size_t kNumFrames = 10;
   std::unique_ptr<TestImageDecoder> decoder(
       std::make_unique<TestImageDecoder>());
   decoder->InitFrames(kNumFrames);
@@ -293,7 +293,7 @@ TEST(ImageDecoderTest, clearCacheExceptFramePreverveClearExceptFrame) {
 
   decoder->ResetRequiredPreviousFrames();
   decoder->ClearCacheExceptFrame(5);
-  for (size_t i = 0; i < kNumFrames; ++i) {
+  for (wtf_size_t i = 0; i < kNumFrames; ++i) {
     SCOPED_TRACE(testing::Message() << i);
     if (i == 5)
       EXPECT_EQ(ImageFrame::kFrameComplete, frame_buffers[i].GetStatus());

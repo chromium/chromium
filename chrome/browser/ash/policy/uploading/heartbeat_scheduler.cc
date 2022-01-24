@@ -11,19 +11,17 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/gcm_driver/gcm_driver.h"
 
 namespace {
 
-constexpr base::TimeDelta kMinHeartbeatInterval =
-    base::TimeDelta::FromSeconds(30);
-constexpr base::TimeDelta kMaxHeartbeatInterval = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kMinHeartbeatInterval = base::Seconds(30);
+constexpr base::TimeDelta kMaxHeartbeatInterval = base::Days(1);
 
 // Our sender ID we send up with all of our GCM messages.
 const char kHeartbeatGCMAppID[] = "com.google.chromeos.monitoring";
@@ -49,8 +47,7 @@ const char kUpstreamNotificationNotifyKey[] = "notify";
 const char kUpstreamNotificationRegIdKey[] = "registration_id";
 
 // If we get an error registering with GCM, try again in two minutes.
-constexpr base::TimeDelta kRegistrationRetryDelay =
-    base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kRegistrationRetryDelay = base::Minutes(2);
 
 const char kHeartbeatSchedulerScope[] =
     "policy.heartbeat_scheduler.upstream_notification";
@@ -72,7 +69,7 @@ namespace policy {
 
 // static
 const base::TimeDelta HeartbeatScheduler::kDefaultHeartbeatInterval =
-    base::TimeDelta::FromMinutes(2);
+    base::Minutes(2);
 
 // Helper class used to manage GCM registration (handles retrying after
 // errors, etc).
@@ -84,6 +81,10 @@ class HeartbeatRegistrationHelper {
   HeartbeatRegistrationHelper(
       gcm::GCMDriver* gcm_driver,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  HeartbeatRegistrationHelper(const HeartbeatRegistrationHelper&) = delete;
+  HeartbeatRegistrationHelper& operator=(const HeartbeatRegistrationHelper&) =
+      delete;
 
   void Register(RegistrationHelperCallback callback);
 
@@ -106,8 +107,6 @@ class HeartbeatRegistrationHelper {
   // Should remain the last member so it will be destroyed first and
   // invalidate all weak pointers.
   base::WeakPtrFactory<HeartbeatRegistrationHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HeartbeatRegistrationHelper);
 };
 
 HeartbeatRegistrationHelper::HeartbeatRegistrationHelper(
@@ -191,13 +190,13 @@ HeartbeatScheduler::HeartbeatScheduler(
 
   heartbeat_frequency_subscription_ =
       ash::CrosSettings::Get()->AddSettingsObserver(
-          chromeos::kHeartbeatFrequency,
+          ash::kHeartbeatFrequency,
           base::BindRepeating(&HeartbeatScheduler::RefreshHeartbeatSettings,
                               base::Unretained(this)));
 
   heartbeat_enabled_subscription_ =
       ash::CrosSettings::Get()->AddSettingsObserver(
-          chromeos::kHeartbeatEnabled,
+          ash::kHeartbeatEnabled,
           base::BindRepeating(&HeartbeatScheduler::RefreshHeartbeatSettings,
                               base::Unretained(this)));
 
@@ -215,7 +214,7 @@ void HeartbeatScheduler::RefreshHeartbeatSettings() {
   // If trusted values are not available, register this function to be called
   // back when they are available.
   ash::CrosSettings* settings = ash::CrosSettings::Get();
-  if (chromeos::CrosSettingsProvider::TRUSTED !=
+  if (ash::CrosSettingsProvider::TRUSTED !=
       settings->PrepareTrustedValues(
           base::BindOnce(&HeartbeatScheduler::RefreshHeartbeatSettings,
                          weak_factory_.GetWeakPtr()))) {
@@ -226,16 +225,16 @@ void HeartbeatScheduler::RefreshHeartbeatSettings() {
   // value because CrosSettings can become untrusted at arbitrary times and we
   // want to use the last trusted value).
   int frequency;
-  if (settings->GetInteger(chromeos::kHeartbeatFrequency, &frequency)) {
-    heartbeat_interval_ = EnsureValidHeartbeatInterval(
-        base::TimeDelta::FromMilliseconds(frequency));
+  if (settings->GetInteger(ash::kHeartbeatFrequency, &frequency)) {
+    heartbeat_interval_ =
+        EnsureValidHeartbeatInterval(base::Milliseconds(frequency));
   }
 
   gcm_driver_->AddHeartbeatInterval(kHeartbeatSchedulerScope,
                                     heartbeat_interval_.InMilliseconds());
 
   bool enabled;
-  if (settings->GetBoolean(chromeos::kHeartbeatEnabled, &enabled))
+  if (settings->GetBoolean(ash::kHeartbeatEnabled, &enabled))
     heartbeat_enabled_ = enabled;
 
   if (!heartbeat_enabled_) {

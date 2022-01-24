@@ -14,6 +14,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -68,8 +69,7 @@ namespace {
 // will be clipped by the border and not visible.
 constexpr int kOffscreenLabelDistance = 16;
 
-constexpr base::TimeDelta kFirstPartDuration =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kFirstPartDuration = base::Milliseconds(100);
 
 // Returns whether |change| to |tab_strip_mode| should start the tab counter
 // throbber animation.
@@ -251,15 +251,15 @@ TabCounterAnimator::TabCounterAnimator(views::Label* appearing_label,
           // Stay in place.
           gfx::MultiAnimation::Part(kFirstPartDuration, gfx::Tween::Type::ZERO),
           // Swap out to the new label.
-          gfx::MultiAnimation::Part(base::TimeDelta::FromMilliseconds(200),
+          gfx::MultiAnimation::Part(base::Milliseconds(200),
                                     gfx::Tween::Type::EASE_IN_OUT)}),
       border_view_(border_view),
       border_animation_(std::vector<gfx::MultiAnimation::Part>{
           gfx::MultiAnimation::Part(kFirstPartDuration,
                                     gfx::Tween::Type::EASE_OUT),
-          gfx::MultiAnimation::Part(base::TimeDelta::FromMilliseconds(150),
+          gfx::MultiAnimation::Part(base::Milliseconds(150),
                                     gfx::Tween::Type::EASE_IN_OUT),
-          gfx::MultiAnimation::Part(base::TimeDelta::FromMilliseconds(50),
+          gfx::MultiAnimation::Part(base::Milliseconds(50),
                                     gfx::Tween::Type::EASE_IN_OUT)}),
       throbber_(throbber) {
   label_animation_.set_delegate(this);
@@ -290,8 +290,8 @@ void TabCounterAnimator::MaybeStartPendingAnimation() {
     // of the throbber is just to indicate to the user that some activity has
     // happened in the background, which may not otherwise have been obvious
     // because the tab strip is hidden in this mode.
-    throbber_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1000),
-                          throbber_, &views::Throbber::Stop);
+    throbber_timer_.Start(FROM_HERE, base::Milliseconds(1000), throbber_,
+                          &views::Throbber::Stop);
 
     pending_throbber_ = false;
   }
@@ -499,6 +499,7 @@ WebUITabCounterButton::WebUITabCounterButton(PressedCallback pressed_callback,
   ConfigureInkDropForToolbar(this);
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  SetProperty(views::kElementIdentifierKey, kTabCounterButtonElementId);
 }
 
 WebUITabCounterButton::~WebUITabCounterButton() {

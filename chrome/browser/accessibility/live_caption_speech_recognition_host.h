@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_H_
 #define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_H_
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -16,6 +18,7 @@ class RenderFrameHost;
 
 namespace captions {
 
+class CaptionBubbleContextBrowser;
 class LiveCaptionController;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,10 +54,6 @@ class LiveCaptionSpeechRecognitionHost
       media::mojom::LanguageIdentificationEventPtr event) override;
   void OnSpeechRecognitionError() override;
 
-  // Returns the WebContents if it exists. If it does not exist, sets the
-  // RenderFrameHost reference to nullptr and returns nullptr.
-  content::WebContents* GetWebContents();
-
  protected:
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
@@ -67,11 +66,17 @@ class LiveCaptionSpeechRecognitionHost
 #endif
 
  private:
+  // Returns the WebContents if it exists. If it does not exist, sets the
+  // RenderFrameHost reference to nullptr and returns nullptr.
+  content::WebContents* GetWebContents();
+
   // Returns the LiveCaptionController for frame_host_. Returns nullptr if it
   // does not exist.
   LiveCaptionController* GetLiveCaptionController();
 
   content::RenderFrameHost* frame_host_;
+
+  std::unique_ptr<CaptionBubbleContextBrowser> context_;
 };
 
 }  // namespace captions

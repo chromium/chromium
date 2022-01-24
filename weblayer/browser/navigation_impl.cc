@@ -46,16 +46,6 @@ NavigationImpl::~NavigationImpl() {
 #endif
 }
 
-void NavigationImpl::SetParamsToLoadWhenSafe(
-    std::unique_ptr<content::NavigationController::LoadURLParams> params) {
-  scheduled_load_params_ = std::move(params);
-}
-
-std::unique_ptr<content::NavigationController::LoadURLParams>
-NavigationImpl::TakeParamsToLoadWhenSafe() {
-  return std::move(scheduled_load_params_);
-}
-
 #if defined(OS_ANDROID)
 ScopedJavaLocalRef<jstring> NavigationImpl::GetUri(JNIEnv* env) {
   return ScopedJavaLocalRef<jstring>(
@@ -111,6 +101,13 @@ jboolean NavigationImpl::DisableNetworkErrorAutoReload(JNIEnv* env) {
   if (!safe_to_disable_network_error_auto_reload_)
     return false;
   DisableNetworkErrorAutoReload();
+  return true;
+}
+
+jboolean NavigationImpl::DisableIntentProcessing(JNIEnv* env) {
+  if (!safe_to_disable_intent_processing_)
+    return false;
+  disable_intent_processing_ = true;
   return true;
 }
 
@@ -192,7 +189,8 @@ const std::vector<GURL>& NavigationImpl::GetRedirectChain() {
 }
 
 NavigationState NavigationImpl::GetState() {
-  if (navigation_handle_->IsErrorPage() || navigation_handle_->IsDownload())
+  if (navigation_handle_->IsErrorPage() || navigation_handle_->IsDownload() ||
+      (finished_ && !navigation_handle_->HasCommitted()))
     return NavigationState::kFailed;
   if (navigation_handle_->HasCommitted())
     return NavigationState::kComplete;

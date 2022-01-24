@@ -21,7 +21,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "util/stream/output_stream_interface.h"
 
 namespace crashpad {
@@ -51,6 +50,10 @@ class LogOutputStream : public OutputStreamInterface {
   };
 
   explicit LogOutputStream(std::unique_ptr<Delegate> delegate);
+
+  LogOutputStream(const LogOutputStream&) = delete;
+  LogOutputStream& operator=(const LogOutputStream&) = delete;
+
   ~LogOutputStream() override;
 
   // OutputStreamInterface:
@@ -68,8 +71,6 @@ class LogOutputStream : public OutputStreamInterface {
   size_t output_count_;
   bool flush_needed_;
   bool flushed_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogOutputStream);
 };
 
 }  // namespace crashpad

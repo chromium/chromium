@@ -154,6 +154,9 @@ class BASE_EXPORT ThreadCollisionWarner {
         counter_(0),
         asserter_(asserter) {}
 
+  ThreadCollisionWarner(const ThreadCollisionWarner&) = delete;
+  ThreadCollisionWarner& operator=(const ThreadCollisionWarner&) = delete;
+
   ~ThreadCollisionWarner() {
     delete asserter_;
   }
@@ -170,12 +173,13 @@ class BASE_EXPORT ThreadCollisionWarner {
       warner_->EnterSelf();
     }
 
+    Check(const Check&) = delete;
+    Check& operator=(const Check&) = delete;
+
     ~Check() = default;
 
    private:
     ThreadCollisionWarner* warner_;
-
-    DISALLOW_COPY_AND_ASSIGN(Check);
   };
 
   // This class is meant to be used through the macro
@@ -187,14 +191,15 @@ class BASE_EXPORT ThreadCollisionWarner {
       warner_->Enter();
     }
 
+    ScopedCheck(const ScopedCheck&) = delete;
+    ScopedCheck& operator=(const ScopedCheck&) = delete;
+
     ~ScopedCheck() {
       warner_->Leave();
     }
 
    private:
     ThreadCollisionWarner* warner_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedCheck);
   };
 
   // This class is meant to be used through the macro
@@ -206,14 +211,15 @@ class BASE_EXPORT ThreadCollisionWarner {
       warner_->EnterSelf();
     }
 
+    ScopedRecursiveCheck(const ScopedRecursiveCheck&) = delete;
+    ScopedRecursiveCheck& operator=(const ScopedRecursiveCheck&) = delete;
+
     ~ScopedRecursiveCheck() {
       warner_->Leave();
     }
 
    private:
     ThreadCollisionWarner* warner_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedRecursiveCheck);
   };
 
  private:
@@ -240,8 +246,6 @@ class BASE_EXPORT ThreadCollisionWarner {
   // Here only for class unit tests purpose, during the test I need to not
   // DCHECK but notify the collision with something else.
   AsserterBase* asserter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadCollisionWarner);
 };
 
 }  // namespace base

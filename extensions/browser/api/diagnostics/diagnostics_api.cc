@@ -42,8 +42,10 @@ bool ParseResult(const std::string& status, std::string* ip, double* latency) {
   if (!iterator.value().GetAsDictionary(&info))
     return false;
 
-  if (!info->GetDouble("avg", latency))
+  absl::optional<double> avg = info->FindDoubleKey("avg");
+  if (!avg)
     return false;
+  *latency = *avg;
 
   *ip = iterator.key();
   return true;
@@ -57,7 +59,7 @@ DiagnosticsSendPacketFunction::DiagnosticsSendPacketFunction() = default;
 DiagnosticsSendPacketFunction::~DiagnosticsSendPacketFunction() = default;
 
 ExtensionFunction::ResponseAction DiagnosticsSendPacketFunction::Run() {
-  auto params = api::diagnostics::SendPacket::Params::Create(*args_);
+  auto params = api::diagnostics::SendPacket::Params::Create(args());
 
   std::map<std::string, std::string> config;
   config[kCount] = kDefaultCount;

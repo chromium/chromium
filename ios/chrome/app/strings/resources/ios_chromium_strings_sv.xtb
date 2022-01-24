@@ -22,6 +22,10 @@
 <translation id="2168108852149185974">Några tillägg har fått Chromium att krascha. Avinstallera följande:</translation>
 <translation id="2178608107313874732">Chromium kan inte använda kameran just nu</translation>
 <translation id="2195025571279539885">Vill du att Chromium ska översätta sidor skrivna på <ph name="LANGUAGE_NAME" /> på den här webbplatsen nästa gång?</translation>
+<translation id="2218146227246548550">Organisationen kräver att du loggar in för att använda Chromium. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="2426113998523353159">Organisationen kräver att du loggar in för att använda Chromium.</translation>
+<translation id="2450140762465183767">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
+<translation id="2478931088402984578">Välj <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">Få mer gjort med Chromium, som är enklare, säkrare och snabbare än någonsin</translation>
 <translation id="2590893390871230428">Synkronisera data i Chromium</translation>
 <translation id="2650312721222849884">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
@@ -35,10 +39,9 @@
 <translation id="3344973607274501920">Chromium kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
 <translation id="3472200483164753384">Stöds inte på Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
-<translation id="3805899903892079518">Chromium har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Sekretess &gt; Foton.</translation>
+<translation id="3805899903892079518">Chromium har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Integritet &gt; Foton.</translation>
 <translation id="3946918322491238254">Bokmärken, lösenord, historik och andra inställningar finns fortfarande kvar på enheten. Om du ändrar något synkroniseras inte detta med kontot.</translation>
 <translation id="4099085513035183040">Stöds inte på Chromium Beta</translation>
-<translation id="4166206055865952171">Använd Chromium som standard</translation>
 <translation id="4555020257205549924">När den här funktionen har aktiverats visas alternativet i Chromium att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="4681781466797808448">Aktivera Chromium som skanner</translation>
@@ -54,8 +57,6 @@
 <translation id="5521125884468363740">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
 <translation id="5573014823074921752">Tips för Chromium. Tryck länge på Visa flikar i verktygsfältet så visas fler flikalternativ. Du hittar verktygsfältet längst ned eller högst upp på skärmen.</translation>
 <translation id="5700709190537129682">Chromium kan inte kontrollera dina lösenord</translation>
-<translation id="5715349567881822785">Få mer gjort med Chromium</translation>
-<translation id="5742135483959137648">Öppna länkar i Chromium</translation>
 <translation id="5777187867430702742">Chromium-sida</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
 <translation id="5945387852661427312">Du håller på att logga in med ett konto som hanteras av <ph name="DOMAIN" /> vilket ger administratören kontroll över data i Chromium. Din data kopplas permanent till det här kontot. Om du loggar ut från Chromium raderas all din data från enheten, men den lagras fortfarande på Google-kontot.</translation>
@@ -65,16 +66,17 @@
 2. Tryck på Standardwebbläsarapp
 3. Välj Chromium.</translation>
 <translation id="6155422572367400359">Logga in på den här webbplatsen, i ditt Google-konto och i Chromium. Du kan aktivera synkronisering senare.</translation>
+<translation id="6183442264225539303">Logga in på den här webbplatsen och i Chromium. Du kan aktivera synkronisering senare.</translation>
 <translation id="6268381023930128611">Vill du logga ut från Chromium?</translation>
 <translation id="632825460376924298">Tillåt inloggning i Chromium</translation>
 <translation id="6337530241089703714">Välj om din data i Chromium ska raderas från den här enheten eller vara kvar</translation>
 <translation id="6424492062988593837">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
 <translation id="6752854822223394465">Organisationen konfigurerar Chromium …</translation>
 <translation id="6820823224820483452">Chromium kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
-<translation id="6827294685447036764">När du ger Chromium åtkomst till din plats skickas den från Chromium till alla webbplatser som du ger behörighet. Webbplatser kan fråga efter din plats när det finns lokal information att visa, till exempel butiker i närheten eller nyheter.</translation>
 <translation id="7018284295775193585">Chromium kan inte uppdateras</translation>
 <translation id="7045244423563602563">Anpassa Chromium</translation>
 <translation id="7099326575020694068">Chromium kan inte använda kameran i delad vy</translation>
+<translation id="7108914401277488191">Få mer gjort med Chromium</translation>
 <translation id="7118091470949186573">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="7208566199746267865">Med Chromium sparar du tid genom att dina konton blir tillgängliga på nätet. Du kan lägga till och ta bort konton i inställningarna.</translation>
 <translation id="725427773388857052">Chromium kan skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
@@ -84,7 +86,7 @@
 <translation id="7357211569052832586">Den data som markerades har tagits bort från Chromium och från synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på history.google.com, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
 <translation id="7400689562045506105">Använd Chromium överallt</translation>
 <translation id="766897673682622022">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas att ändra lösenordet nu.</translation>
-<translation id="7674213385180944843">Öppna Inställningar &gt; Sekretess &gt; Kamera &gt; Chromium och aktivera kameran.</translation>
+<translation id="7674213385180944843">Öppna Inställningar &gt; Integritet &gt; Kamera &gt; Chromium och aktivera kameran.</translation>
 <translation id="7746854981345936341">Tips för Chromium. Vissa knappar finns nu längst ned på skärmen, till exempel bakåtknappen, framåtknappen och Sök.</translation>
 <translation id="7763454117143368771">Använd Chromium som standardwebbläsare med skydd mot skadliga webbplatser och skydd av dina lösenord</translation>
 <translation id="786327964234957808">Du håller på att byta synkroniseringskonto från <ph name="USER_EMAIL1" /> till <ph name="USER_EMAIL2" />. Befintlig data i Chromium hanteras av <ph name="DOMAIN" />. Åtgärden raderar din data från den här enheten men den finns kvar på <ph name="USER_EMAIL1" />.</translation>
@@ -102,6 +104,7 @@
 <translation id="894437814105052438">När du har loggat ut synkroniseras ingen mer data med ditt Google-konto i Chromium. Data som redan har synkroniserats finns kvar i kontot.</translation>
 <translation id="9022552996538154597">Logga in i Chromium</translation>
 <translation id="9089354809943900324">Den här versionen av Chromium är inaktuell</translation>
+<translation id="9110075932708282655">Använd Chromium som standard</translation>
 <translation id="921174536258924340">Chromium kunde inte kontrollera alla lösenord. Försök igen i morgon eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

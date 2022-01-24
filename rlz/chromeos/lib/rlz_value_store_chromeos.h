@@ -26,6 +26,10 @@ class RlzValueStoreChromeOS : public RlzValueStore {
 
   // Creates new instance and synchronously reads data from file.
   explicit RlzValueStoreChromeOS(const base::FilePath& store_path);
+
+  RlzValueStoreChromeOS(const RlzValueStoreChromeOS&) = delete;
+  RlzValueStoreChromeOS& operator=(const RlzValueStoreChromeOS&) = delete;
+
   ~RlzValueStoreChromeOS() override;
 
   // RlzValueStore overrides:
@@ -89,8 +93,6 @@ class RlzValueStoreChromeOS : public RlzValueStore {
   bool read_only_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RlzValueStoreChromeOS);
 };
 
 }  // namespace rlz_lib

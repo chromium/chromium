@@ -14,6 +14,10 @@ namespace chromeos {
 class PasswordChangeHandler : public content::WebUIMessageHandler {
  public:
   explicit PasswordChangeHandler(const std::string& password_change_url);
+
+  PasswordChangeHandler(const PasswordChangeHandler&) = delete;
+  PasswordChangeHandler& operator=(const PasswordChangeHandler&) = delete;
+
   ~PasswordChangeHandler() override;
 
   // content::WebUIMessageHandler:
@@ -26,7 +30,6 @@ class PasswordChangeHandler : public content::WebUIMessageHandler {
   const std::string password_change_url_;
 
   base::WeakPtrFactory<PasswordChangeHandler> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PasswordChangeHandler);
 };
 
 }  // namespace chromeos

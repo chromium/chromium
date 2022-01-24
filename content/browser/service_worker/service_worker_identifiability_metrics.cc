@@ -62,7 +62,7 @@ void ServiceWorkerIdentifiabilityMetrics::OnClientIsExecutionReady(
     ukm::SourceId client_source_id,
     const GURL& url,
     blink::mojom::ServiceWorkerClientType type) {
-  GURL client_origin = url.GetOrigin();
+  GURL client_origin = url.DeprecatedGetOriginAsURL();
 
   // Don't track dedicated workers as they simply inherit the source id of their
   // parents.
@@ -88,7 +88,7 @@ void ServiceWorkerIdentifiabilityMetrics::OnClientDestroyed(
     ukm::SourceId client_source_id,
     const GURL& url,
     blink::mojom::ServiceWorkerClientType type) {
-  GURL client_origin = url.GetOrigin();
+  GURL client_origin = url.DeprecatedGetOriginAsURL();
 
   // Don't track dedicated workers as they simply inherit the source id of their
   // parents.

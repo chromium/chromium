@@ -30,6 +30,9 @@ class OutputDevice {
       media::AudioRendererSink::RenderCallback* callback,
       const std::string& device_id);
 
+  OutputDevice(const OutputDevice&) = delete;
+  OutputDevice& operator=(const OutputDevice&) = delete;
+
   // Blocking call; see base/threading/thread_restrictions.h.
   ~OutputDevice();
 
@@ -52,8 +55,6 @@ class OutputDevice {
   mojo::Remote<media::mojom::AudioStreamFactory> stream_factory_;
 
   base::WeakPtrFactory<OutputDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OutputDevice);
 };
 
 }  // namespace audio

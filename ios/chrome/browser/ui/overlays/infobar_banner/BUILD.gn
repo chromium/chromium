@@ -14,6 +14,17 @@ source_set("infobar_banner") {
   ]
 }
 
+source_set("feature_flags") {
+  sources = [
+    "infobar_banner_features.h",
+    "infobar_banner_features.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [ "//base" ]
+}
+
 source_set("coordinators") {
   sources = [
     "infobar_banner_overlay_coordinator.h",
@@ -23,6 +34,7 @@ source_set("coordinators") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    ":feature_flags",
     ":mediators",
     "//base",
     "//ios/chrome/browser/overlays",

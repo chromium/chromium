@@ -1,8 +1,0 @@
-include_rules = [
-  # Tests run in browser_tests, so can access things under chrome/test/base*.
-  "+chrome/test/base",
-  "+content/public/browser",
-  "+content/public/common",
-  "+content/public/test",
-  "+ui/webui",
-]

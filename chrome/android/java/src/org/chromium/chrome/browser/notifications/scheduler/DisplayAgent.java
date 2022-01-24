@@ -236,8 +236,7 @@ public class DisplayAgent {
 
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        true /* preferCompat */, platformData.channel,
-                        null /* remoteAppPackageName */,
+                        platformData.channel,
                         new NotificationMetadata(platformData.systemNotificationType,
                                 DISPLAY_AGENT_TAG, systemData.guid.hashCode()));
         builder.setContentTitle(notificationData.title);

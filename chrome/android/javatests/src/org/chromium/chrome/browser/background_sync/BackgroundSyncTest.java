@@ -91,7 +91,9 @@ public final class BackgroundSyncTest {
     @After
     public void tearDown() {
         if (mTestServer != null) mTestServer.stopAndDestroyServer();
-        BackgroundSyncBackgroundTaskScheduler.getInstance().removeObserver(mSchedulerObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BackgroundSyncBackgroundTaskScheduler.getInstance().removeObserver(mSchedulerObserver);
+        });
     }
 
     @Test
@@ -186,6 +188,8 @@ public final class BackgroundSyncTest {
             }
         };
 
-        BackgroundSyncBackgroundTaskScheduler.getInstance().addObserver(mSchedulerObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BackgroundSyncBackgroundTaskScheduler.getInstance().addObserver(mSchedulerObserver);
+        });
     }
 }

@@ -21,6 +21,15 @@ void TestImageDownloader::Download(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     DownloadCallback callback) {
+  Download(url, annotation_tag, /*additional_headers=*/{}, std::move(callback));
+}
+
+void TestImageDownloader::Download(
+    const GURL& url,
+    const net::NetworkTrafficAnnotationTag& annotation_tag,
+    const net::HttpRequestHeaders& additional_headers,
+    DownloadCallback callback) {
+  last_request_headers_ = additional_headers;
   // Pretend to respond asynchronously.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,

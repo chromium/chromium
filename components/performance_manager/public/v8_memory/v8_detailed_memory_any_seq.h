@@ -90,7 +90,7 @@ namespace v8_memory {
 //       // Creating a V8DetailedMemoryRequest with the |graph| parameter
 //       // automatically starts measurements.
 //       request_ = std::make_unique<V8DetailedMemoryRequestAnySeq>(
-//           base::TimeDelta::FromMinutes(2));
+//           base::Minutes(2));
 //       observer_ = std::make_unique<Observer>();
 //       request_->AddObserver(observer_.get());
 //     }

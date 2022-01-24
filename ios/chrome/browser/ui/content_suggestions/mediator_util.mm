@@ -6,8 +6,6 @@
 
 #include "base/callback.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/ntp_snippets/category.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
@@ -35,78 +33,6 @@ ContentSuggestionsSectionInformation* EmptySectionInfo(
 }
 }  // namespace
 
-ContentSuggestionsSectionID SectionIDForCategory(
-    ntp_snippets::Category category) {
-  if (category.IsKnownCategory(ntp_snippets::KnownCategories::ARTICLES))
-    return ContentSuggestionsSectionArticles;
-  if (category.IsKnownCategory(ntp_snippets::KnownCategories::READING_LIST))
-    return ContentSuggestionsSectionReadingList;
-
-  return ContentSuggestionsSectionUnknown;
-}
-
-ContentSuggestionsItem* ConvertSuggestion(
-    const ntp_snippets::ContentSuggestion& contentSuggestion,
-    ContentSuggestionsSectionInformation* sectionInfo,
-    ntp_snippets::Category category) {
-  ContentSuggestionsItem* suggestion = [[ContentSuggestionsItem alloc]
-      initWithType:0
-             title:base::SysUTF16ToNSString(contentSuggestion.title())
-               url:contentSuggestion.url()];
-  suggestion.metricsRecorded = NO;
-
-  suggestion.publisher =
-      base::SysUTF16ToNSString(contentSuggestion.publisher_name());
-  suggestion.publishDate = contentSuggestion.publish_date();
-
-  suggestion.suggestionIdentifier = [[ContentSuggestionIdentifier alloc] init];
-  suggestion.suggestionIdentifier.IDInSection =
-      contentSuggestion.id().id_within_category();
-  suggestion.suggestionIdentifier.sectionInfo = sectionInfo;
-
-  suggestion.score = contentSuggestion.score();
-  suggestion.fetchDate = contentSuggestion.fetch_date();
-
-  if (category.IsKnownCategory(ntp_snippets::KnownCategories::READING_LIST)) {
-    suggestion.faviconURL =
-        contentSuggestion.reading_list_suggestion_extra()->favicon_page_url;
-  }
-  if (category.IsKnownCategory(ntp_snippets::KnownCategories::ARTICLES)) {
-    suggestion.hasImage = contentSuggestion.salient_image_url().is_valid();
-    suggestion.readLaterAction = YES;
-  }
-
-  return suggestion;
-}
-
-ContentSuggestionsSectionInformation* SectionInformationFromCategoryInfo(
-    const absl::optional<ntp_snippets::CategoryInfo>& categoryInfo,
-    const ntp_snippets::Category& category,
-    const BOOL expanded) {
-  ContentSuggestionsSectionInformation* sectionInfo =
-      [[ContentSuggestionsSectionInformation alloc]
-          initWithSectionID:SectionIDForCategory(category)];
-  if (categoryInfo) {
-    sectionInfo.layout = ContentSuggestionsSectionLayoutCard;
-    sectionInfo.showIfEmpty = categoryInfo->show_if_empty();
-    sectionInfo.emptyText =
-        base::SysUTF16ToNSString(categoryInfo->no_suggestions_message());
-    if (categoryInfo->additional_action() !=
-        ntp_snippets::ContentSuggestionsAdditionalAction::NONE) {
-      sectionInfo.footerTitle =
-          l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_FOOTER_TITLE);
-    }
-    sectionInfo.title = base::SysUTF16ToNSString(categoryInfo->title());
-    sectionInfo.expanded = expanded;
-  }
-  return sectionInfo;
-}
-
-ntp_snippets::ContentSuggestion::ID SuggestionIDForSectionID(
-    ContentSuggestionsCategoryWrapper* category,
-    const std::string& id_in_category) {
-  return ntp_snippets::ContentSuggestion::ID(category.category, id_in_category);
-}
 
 ContentSuggestionsSectionInformation* LogoSectionInformation() {
   ContentSuggestionsSectionInformation* sectionInfo =
@@ -130,10 +56,6 @@ ContentSuggestionsSectionInformation* PromoSectionInformation() {
 
 ContentSuggestionsSectionInformation* MostVisitedSectionInformation() {
   return EmptySectionInfo(ContentSuggestionsSectionMostVisited);
-}
-
-ContentSuggestionsSectionInformation* LearnMoreSectionInformation() {
-  return EmptySectionInfo(ContentSuggestionsSectionLearnMore);
 }
 
 ContentSuggestionsSectionInformation* DiscoverSectionInformation(
@@ -175,13 +97,10 @@ content_suggestions::StatusCode ConvertStatusCode(ntp_snippets::Status status) {
   switch (status.code) {
     case ntp_snippets::StatusCode::SUCCESS:
       return content_suggestions::StatusCodeSuccess;
-      break;
     case ntp_snippets::StatusCode::TEMPORARY_ERROR:
       return content_suggestions::StatusCodeError;
-      break;
     case ntp_snippets::StatusCode::PERMANENT_ERROR:
       return content_suggestions::StatusCodePermanentError;
-      break;
     case ntp_snippets::StatusCode::STATUS_CODE_COUNT:
       NOTREACHED();
       return content_suggestions::StatusCodeError;

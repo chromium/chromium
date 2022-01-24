@@ -94,6 +94,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void ChromeDestroyed() override {}
   void SetWindowRect(const IntRect&, LocalFrame&) override {}
   IntRect RootWindowRect(LocalFrame&) override { return IntRect(); }
+  void DidAccessInitialMainDocument() override {}
   void FocusPage() override {}
   void DidFocusPage() override {}
   bool CanTakeFocus(mojom::blink::FocusType) override { return false; }
@@ -192,6 +193,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
                                  const String&,
                                  TextDirection,
                                  const gfx::Rect&) override {}
+  void ClearKeyboardTriggeredTooltip(LocalFrame&) override {}
   void PrintDelegate(LocalFrame*) override {}
   ColorChooser* OpenColorChooser(LocalFrame*,
                                  ColorChooserClient*,
@@ -212,11 +214,6 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void SetEventListenerProperties(LocalFrame*,
                                   cc::EventListenerClass,
                                   cc::EventListenerProperties) override {}
-  cc::EventListenerProperties EventListenerProperties(
-      LocalFrame*,
-      cc::EventListenerClass event_class) const override {
-    return cc::EventListenerProperties::kNone;
-  }
   void SetHasScrollEventHandlers(LocalFrame*, bool) override {}
   void SetNeedsLowLatencyInput(LocalFrame*, bool) override {}
   void SetNeedsUnbufferedInputForDebugger(LocalFrame*, bool) override {}
@@ -271,7 +268,7 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       override {}
   void DispatchDidFailLoad(const ResourceError&,
                            WebHistoryCommitType) override {}
-  void DispatchDidFinishDocumentLoad() override {}
+  void DispatchDidDispatchDOMContentLoadedEvent() override {}
   void DispatchDidFinishLoad() override {}
 
   void BeginNavigation(
@@ -312,6 +309,7 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override {}
 
   String UserAgent() override { return ""; }
+  String ReducedUserAgent() override { return ""; }
   absl::optional<blink::UserAgentMetadata> UserAgentMetadata() override {
     return blink::UserAgentMetadata();
   }
@@ -331,7 +329,10 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       mojo::PendingAssociatedRemote<mojom::blink::PortalClient>) override;
   RemoteFrame* AdoptPortal(HTMLPortalElement*) override;
 
-  RemoteFrame* CreateFencedFrame(HTMLFencedFrameElement*) override;
+  RemoteFrame* CreateFencedFrame(
+      HTMLFencedFrameElement*,
+      mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>)
+      override;
 
   WebPluginContainerImpl* CreatePlugin(HTMLPlugInElement&,
                                        const KURL&,

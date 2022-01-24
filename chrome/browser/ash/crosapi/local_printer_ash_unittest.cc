@@ -22,8 +22,6 @@
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/test_printer_configurer.h"
-#include "chrome/browser/printing/print_backend_service_manager.h"
-#include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/printing/printer_capabilities.h"
@@ -42,11 +40,19 @@
 #include "printing/backend/print_backend.h"
 #include "printing/backend/printing_restrictions.h"
 #include "printing/backend/test_print_backend.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/printing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/print_backend_service_manager.h"
+#include "chrome/browser/printing/print_backend_service_test_impl.h"
+#else
+#include "base/notreached.h"
+#endif
 
 using chromeos::CupsPrintersManager;
 using chromeos::Printer;
@@ -225,9 +231,11 @@ class LocalPrinterAshTestBase : public testing::Test {
   void SetUp() override {
     chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(&user_);
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     // Choose between running with local test runner or via a service.
     feature_list_.InitWithFeatureState(features::kEnableOopPrintDrivers,
                                        UseService());
+#endif
 
     sandboxed_test_backend_ = base::MakeRefCounted<TestPrintBackend>();
     ppd_provider_ = base::MakeRefCounted<FakePpdProvider>();
@@ -246,6 +254,7 @@ class LocalPrinterAshTestBase : public testing::Test {
             &profile_, ppd_provider_, printers_manager_);
 
     if (UseService()) {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
       sandboxed_print_backend_service_ =
           PrintBackendServiceTestImpl::LaunchForTesting(sandboxed_test_remote_,
                                                         sandboxed_test_backend_,
@@ -259,6 +268,9 @@ class LocalPrinterAshTestBase : public testing::Test {
                 unsandboxed_test_remote_, unsandboxed_test_backend_,
                 /*sandboxed=*/false);
       }
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
     } else {
       // Use of task runners will call `PrintBackend::CreateInstance()`, which
       // needs a test backend registered for it to use.
@@ -267,7 +279,9 @@ class LocalPrinterAshTestBase : public testing::Test {
   }
 
   void TearDown() override {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     PrintBackendServiceManager::ResetForTesting();
+#endif
     chromeos::ProfileHelper::Get()->RemoveUserFromListForTesting(
         user_.GetAccountId());
   }
@@ -284,6 +298,7 @@ class LocalPrinterAshTestBase : public testing::Test {
         id, display_name, description, /*printer_status=*/0, is_default,
         PrinterBasicInfoOptions{});
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (SupportFallback()) {
       // Need to populate same values into a second print backend.
       // For fallback they will always be treated as valid.
@@ -294,6 +309,7 @@ class LocalPrinterAshTestBase : public testing::Test {
       unsandboxed_print_backend()->AddValidPrinter(
           id, std::move(caps_unsandboxed), std::move(basic_info_unsandboxed));
     }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
     if (requires_elevated_permissions) {
       sandboxed_print_backend()->AddAccessDeniedPrinter(id);
@@ -303,6 +319,7 @@ class LocalPrinterAshTestBase : public testing::Test {
     }
   }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   void SetTerminateServiceOnNextInteraction() {
     if (SupportFallback()) {
       unsandboxed_print_backend_service_
@@ -311,6 +328,7 @@ class LocalPrinterAshTestBase : public testing::Test {
 
     sandboxed_print_backend_service_->SetTerminateReceiverOnNextInteraction();
   }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
@@ -335,6 +353,7 @@ class LocalPrinterAshTestBase : public testing::Test {
   scoped_refptr<FakePpdProvider> ppd_provider_;
   std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Support for testing via a service instead of with a local task runner.
   base::test::ScopedFeatureList feature_list_;
   mojo::Remote<mojom::PrintBackendService> sandboxed_test_remote_;
@@ -342,6 +361,7 @@ class LocalPrinterAshTestBase : public testing::Test {
   std::unique_ptr<PrintBackendServiceTestImpl> sandboxed_print_backend_service_;
   std::unique_ptr<PrintBackendServiceTestImpl>
       unsandboxed_print_backend_service_;
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   FakeUser user_;
 };
@@ -378,6 +398,8 @@ class LocalPrinterAshProcessScopeTest
   bool SupportFallback() override { return false; }
 };
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+
 // Testing class to cover `LocalPrinterAsh` handling using only a
 // service.  This can check different behavior for whether fallback is enabled,
 // Mojom data validation conditions, or service termination.
@@ -394,6 +416,15 @@ class LocalPrinterAshServiceTest : public LocalPrinterAshTestBase {
 };
 
 INSTANTIATE_TEST_SUITE_P(All, LocalPrinterAshProcessScopeTest, testing::Bool());
+
+#else
+
+// Without OOP printing we only test local test runner configuration.
+INSTANTIATE_TEST_SUITE_P(/*no prefix */,
+                         LocalPrinterAshProcessScopeTest,
+                         testing::Values(false));
+
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 TEST_F(LocalPrinterAshTest, GetStatus) {
   chromeos::CupsPrinterStatus printer1("printer1");
@@ -437,37 +468,27 @@ TEST_F(LocalPrinterAshTest, GetPrinters) {
   EXPECT_EQ("saved", printers[0]->name);
   EXPECT_EQ("description1", printers[0]->description);
   EXPECT_FALSE(printers[0]->configured_via_policy);
+  ASSERT_TRUE(printers[0]->uri);
+  EXPECT_EQ(kPrinterUri, *printers[0]->uri);
 
   EXPECT_EQ("printer2", printers[1]->id);
   EXPECT_EQ("enterprise", printers[1]->name);
   EXPECT_EQ("description2", printers[1]->description);
   EXPECT_TRUE(printers[1]->configured_via_policy);
+  ASSERT_TRUE(printers[1]->uri);
+  EXPECT_EQ(kPrinterUri, *printers[1]->uri);
 
   EXPECT_EQ("printer3", printers[2]->id);
   EXPECT_EQ("automatic", printers[2]->name);
   EXPECT_EQ("description3", printers[2]->description);
   EXPECT_FALSE(printers[2]->configured_via_policy);
+  ASSERT_TRUE(printers[2]->uri);
+  EXPECT_EQ(kPrinterUri, *printers[2]->uri);
 }
 
 // Tests that fetching capabilities for an existing installed printer is
 // successful.
 TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityValidPrinter) {
-  auto* prefs = GetPrefs();
-  // printing::mojom::ColorModeRestriction::kMonochrome |
-  // printing::mojom::ColorModeRestriction::kColor
-  prefs->SetInteger(prefs::kPrintingAllowedColorModes, 3);
-  // printing::mojom::DuplexModeRestriction::kSimplex |
-  // printing::mojom::DuplexModeRestriction::kDuplex
-  prefs->SetInteger(prefs::kPrintingAllowedDuplexModes, 7);
-  // printing::mojom::PinModeRestriction::kPin
-  prefs->SetInteger(prefs::kPrintingAllowedPinModes, 1);
-  // printing::mojom::ColorModeRestriction::kColor
-  prefs->SetInteger(prefs::kPrintingColorDefault, 2);
-  // printing::mojom::DuplexModeRestriction::kSimplex
-  prefs->SetInteger(prefs::kPrintingDuplexDefault, 1);
-  // printing::mojom::PinModeRestriction::kNoPin
-  prefs->SetInteger(prefs::kPrintingPinDefault, 2);
-
   Printer saved_printer =
       CreateTestPrinter("printer1", "saved", "description1");
   printers_manager().AddPrinter(saved_printer, PrinterClass::kSaved);
@@ -490,21 +511,8 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityValidPrinter) {
   EXPECT_EQ("saved", fetched_caps->basic_info->name);
   EXPECT_EQ("description1", fetched_caps->basic_info->description);
   EXPECT_FALSE(fetched_caps->basic_info->configured_via_policy);
-
-  // printing::mojom::ColorModeRestriction::kMonochrome |
-  // printing::mojom::ColorModeRestriction::kColor
-  EXPECT_EQ(3, fetched_caps->allowed_color_modes);
-  // printing::mojom::DuplexModeRestriction::kSimplex |
-  // printing::mojom::DuplexModeRestriction::kDuplex
-  EXPECT_EQ(7, fetched_caps->allowed_duplex_modes);
-  EXPECT_EQ(printing::mojom::PinModeRestriction::kPin,
-            fetched_caps->allowed_pin_modes);
-  EXPECT_EQ(printing::mojom::ColorModeRestriction::kColor,
-            fetched_caps->default_color_mode);
-  EXPECT_EQ(printing::mojom::DuplexModeRestriction::kSimplex,
-            fetched_caps->default_duplex_mode);
-  EXPECT_EQ(printing::mojom::PinModeRestriction::kNoPin,
-            fetched_caps->default_pin_mode);
+  ASSERT_TRUE(fetched_caps->basic_info->uri);
+  EXPECT_EQ(kPrinterUri, *fetched_caps->basic_info->uri);
 
   ASSERT_TRUE(fetched_caps->capabilities);
   EXPECT_EQ(kPapers, fetched_caps->capabilities->papers);
@@ -576,6 +584,8 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityUnreachablePrinter) {
   EXPECT_FALSE(fetched_caps->capabilities);
 }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+
 // Tests that fetching capabilities fails if the print backend service
 // terminates early, such as it would from a crash.
 TEST_F(LocalPrinterAshServiceTest, GetCapabilityTerminatedService) {
@@ -604,6 +614,8 @@ TEST_F(LocalPrinterAshServiceTest, GetCapabilityTerminatedService) {
   EXPECT_FALSE(fetched_caps->capabilities);
 }
 
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
+
 // Test that installed printers to which the user does not have permission to
 // access will receive a dictionary for the capabilities but will not have any
 // settings in that.
@@ -628,6 +640,8 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityAccessDenied) {
   EXPECT_EQ("printer1", fetched_caps->basic_info->id);
   EXPECT_FALSE(fetched_caps->capabilities);
 }
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
 
 TEST_F(LocalPrinterAshServiceTest, GetCapabilityElevatedPermissionsSucceeds) {
   Printer saved_printer =
@@ -660,6 +674,8 @@ TEST_F(LocalPrinterAshServiceTest, GetCapabilityElevatedPermissionsSucceeds) {
   ASSERT_TRUE(fetched_caps->capabilities);
   EXPECT_EQ(kPapers, fetched_caps->capabilities->papers);
 }
+
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 // Test that fetching a PPD license will return a license if the printer has one
 // available.
@@ -849,6 +865,55 @@ TEST_F(LocalPrinterAshTest, GetPolicies_PrintHeaderFooter_ManagedEnabled) {
             policies->print_header_footer_allowed);
   EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kUnset,
             policies->print_header_footer_default);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_Color) {
+  const uint32_t expected_allowed_color_modes = static_cast<uint32_t>(
+      static_cast<int32_t>(printing::mojom::ColorModeRestriction::kMonochrome) |
+      static_cast<int32_t>(printing::mojom::ColorModeRestriction::kColor));
+  auto* prefs = GetPrefs();
+  prefs->SetInteger(prefs::kPrintingAllowedColorModes, 3);
+  prefs->SetInteger(prefs::kPrintingColorDefault, 2);
+
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+
+  EXPECT_EQ(expected_allowed_color_modes, policies->allowed_color_modes);
+  EXPECT_EQ(printing::mojom::ColorModeRestriction::kColor,
+            policies->default_color_mode);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_Duplex) {
+  const uint32_t expected_allowed_duplex_modes = static_cast<uint32_t>(
+      static_cast<int32_t>(printing::mojom::DuplexModeRestriction::kSimplex) |
+      static_cast<int32_t>(printing::mojom::DuplexModeRestriction::kDuplex));
+  auto* prefs = GetPrefs();
+  prefs->SetInteger(prefs::kPrintingAllowedDuplexModes, 7);
+  prefs->SetInteger(prefs::kPrintingDuplexDefault, 1);
+
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+
+  EXPECT_EQ(expected_allowed_duplex_modes, policies->allowed_duplex_modes);
+  EXPECT_EQ(printing::mojom::DuplexModeRestriction::kSimplex,
+            policies->default_duplex_mode);
+}
+
+TEST_F(LocalPrinterAshTest, GetPolicies_Pin) {
+  auto* prefs = GetPrefs();
+  prefs->SetInteger(prefs::kPrintingAllowedPinModes, 1);
+  prefs->SetInteger(prefs::kPrintingPinDefault, 2);
+
+  crosapi::mojom::PoliciesPtr policies;
+  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+
+  EXPECT_EQ(printing::mojom::PinModeRestriction::kPin,
+            policies->allowed_pin_modes);
+  EXPECT_EQ(printing::mojom::PinModeRestriction::kNoPin,
+            policies->default_pin_mode);
 }
 
 TEST_F(LocalPrinterAshTest, GetUsernamePerPolicy_Allowed) {

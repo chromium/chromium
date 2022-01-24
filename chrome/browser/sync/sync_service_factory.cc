@@ -73,14 +73,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/chromeos/printing/synced_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
+#include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -158,10 +154,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
     // TODO(https://crbug.com/1194983): Figure out how split sync settings will
     // work here. For now, we will mimic Ash's behaviour of having sync turned
     // on by default.
-    if (chromeos::LacrosService::Get()
-            ->init_params()
-            ->use_new_account_manager &&
-        profile->IsMainProfile()) {
+    if (profile->IsMainProfile()) {
       is_auto_start = true;
     }
 #endif
@@ -257,7 +250,8 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  DependsOn(chromeos::SyncedPrintersManagerFactory::GetInstance());
+  DependsOn(ash::SyncedPrintersManagerFactory::GetInstance());
+  DependsOn(DeskSyncServiceFactory::GetInstance());
   DependsOn(WifiConfigurationSyncServiceFactory::GetInstance());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

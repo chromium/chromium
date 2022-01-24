@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 
@@ -25,6 +24,12 @@ class AffiliatedRemoteCommandsInvalidator
       CloudPolicyCore* core,
       AffiliatedInvalidationServiceProvider* invalidation_service_provider,
       PolicyInvalidationScope scope);
+
+  AffiliatedRemoteCommandsInvalidator(
+      const AffiliatedRemoteCommandsInvalidator&) = delete;
+  AffiliatedRemoteCommandsInvalidator& operator=(
+      const AffiliatedRemoteCommandsInvalidator&) = delete;
+
   ~AffiliatedRemoteCommandsInvalidator() override;
 
   // AffiliatedInvalidationServiceProvider::Consumer:
@@ -38,8 +43,6 @@ class AffiliatedRemoteCommandsInvalidator
   std::unique_ptr<RemoteCommandsInvalidatorImpl> invalidator_;
 
   const PolicyInvalidationScope scope_;
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliatedRemoteCommandsInvalidator);
 };
 
 }  // namespace policy

@@ -20,7 +20,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/capture/capture_export.h"
@@ -47,6 +46,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   static VideoCaptureControlSupport GetControlSupport(
       Microsoft::WRL::ComPtr<IMFMediaSource> source);
 
+  VideoCaptureDeviceMFWin() = delete;
+
   explicit VideoCaptureDeviceMFWin(
       const VideoCaptureDeviceDescriptor& device_descriptor,
       Microsoft::WRL::ComPtr<IMFMediaSource> source,
@@ -56,6 +57,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
       Microsoft::WRL::ComPtr<IMFMediaSource> source,
       scoped_refptr<DXGIDeviceManager> dxgi_device_manager,
       Microsoft::WRL::ComPtr<IMFCaptureEngine> engine);
+
+  VideoCaptureDeviceMFWin(const VideoCaptureDeviceMFWin&) = delete;
+  VideoCaptureDeviceMFWin& operator=(const VideoCaptureDeviceMFWin&) = delete;
 
   ~VideoCaptureDeviceMFWin() override;
 
@@ -179,8 +183,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   media::VideoCaptureFeedback last_feedback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceMFWin);
 };
 
 }  // namespace media

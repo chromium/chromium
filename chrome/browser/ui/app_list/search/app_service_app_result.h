@@ -36,6 +36,10 @@ class AppServiceAppResult : public AppResult {
                       AppListControllerDelegate* controller,
                       bool is_recommendation,
                       apps::IconLoader* icon_loader);
+
+  AppServiceAppResult(const AppServiceAppResult&) = delete;
+  AppServiceAppResult& operator=(const AppServiceAppResult&) = delete;
+
   ~AppServiceAppResult() override;
 
  private:
@@ -94,8 +98,6 @@ class AppServiceAppResult : public AppResult {
   favicon::LargeIconService* large_icon_service_ = nullptr;
 
   base::WeakPtrFactory<AppServiceAppResult> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceAppResult);
 };
 
 }  // namespace app_list

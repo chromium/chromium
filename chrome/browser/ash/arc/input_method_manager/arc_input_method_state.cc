@@ -13,12 +13,12 @@
 #include "components/arc/mojom/input_method_manager.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace arc {
 
-using InputMethodDescriptor = ::chromeos::input_method::InputMethodDescriptor;
-using InputMethodDescriptors = ::chromeos::input_method::InputMethodDescriptors;
+using InputMethodDescriptor = ::ash::input_method::InputMethodDescriptor;
+using InputMethodDescriptors = ::ash::input_method::InputMethodDescriptors;
 
 ArcInputMethodState::ArcInputMethodState(const Delegate* const delegate)
     : delegate_(delegate) {}
@@ -42,7 +42,7 @@ void ArcInputMethodState::DisableInputMethod(const std::string& ime_id) {
   SetInputMethodEnabled(ime_id, false);
 }
 
-InputMethodDescriptors ArcInputMethodState::GetActiveInputMethods() const {
+InputMethodDescriptors ArcInputMethodState::GetAvailableInputMethods() const {
   const bool all_allowed = delegate_->ShouldArcIMEAllowed();
 
   InputMethodDescriptors result;

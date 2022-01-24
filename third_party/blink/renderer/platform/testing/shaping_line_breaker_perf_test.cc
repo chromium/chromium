@@ -71,7 +71,7 @@ class ShapingLineBreakerPerfTest : public testing::Test {
  public:
   ShapingLineBreakerPerfTest()
       : timer_(kWarmupRuns,
-               base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+               base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
   void SetUp() override {

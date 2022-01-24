@@ -34,17 +34,21 @@ class TestCertificateSelector : public chrome::CertificateSelector {
     InitWithText(std::move(label));
   }
 
+  TestCertificateSelector(const TestCertificateSelector&) = delete;
+  TestCertificateSelector& operator=(const TestCertificateSelector&) = delete;
+
   // chrome::CertificateSelector:
   void AcceptCertificate(
       std::unique_ptr<net::ClientCertIdentity> identity) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestCertificateSelector);
 };
 
 class CertificateSelectorDialogTest : public DialogBrowserTest {
  public:
   CertificateSelectorDialogTest() {}
+
+  CertificateSelectorDialogTest(const CertificateSelectorDialogTest&) = delete;
+  CertificateSelectorDialogTest& operator=(
+      const CertificateSelectorDialogTest&) = delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -63,8 +67,6 @@ class CertificateSelectorDialogTest : public DialogBrowserTest {
  private:
   scoped_refptr<net::X509Certificate> cert_1_;
   scoped_refptr<net::X509Certificate> cert_2_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateSelectorDialogTest);
 };
 
 // Invokes a dialog that allows the user select a certificate.

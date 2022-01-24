@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_MOCK_REMOTE_CHANGE_PROCESSOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/file_change.h"
 #include "chrome/browser/sync_file_system/remote_change_processor.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
@@ -25,6 +24,11 @@ namespace sync_file_system {
 class MockRemoteChangeProcessor : public RemoteChangeProcessor {
  public:
   MockRemoteChangeProcessor();
+
+  MockRemoteChangeProcessor(const MockRemoteChangeProcessor&) = delete;
+  MockRemoteChangeProcessor& operator=(const MockRemoteChangeProcessor&) =
+      delete;
+
   ~MockRemoteChangeProcessor() override;
 
   // RemoteChangeProcessor overrides.
@@ -44,9 +48,6 @@ class MockRemoteChangeProcessor : public RemoteChangeProcessor {
                void(const storage::FileSystemURL& url,
                     const FileChange& change,
                     SyncStatusCallback callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockRemoteChangeProcessor);
 };
 
 }  // namespace sync_file_system

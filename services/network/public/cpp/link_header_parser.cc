@@ -36,6 +36,8 @@ absl::optional<mojom::LinkRelAttribute> ParseRelAttribute(
     return absl::nullopt;
 
   std::string value = base::ToLowerASCII(attr.value());
+  if (value == "preconnect")
+    return mojom::LinkRelAttribute::kPreconnect;
   if (value == "preload")
     return mojom::LinkRelAttribute::kPreload;
   else if (value == "modulepreload")
@@ -57,7 +59,8 @@ absl::optional<mojom::LinkAsAttribute> ParseAsAttribute(
     return mojom::LinkAsAttribute::kImage;
   else if (value == "script")
     return mojom::LinkAsAttribute::kScript;
-  else if (value == "stylesheet")
+  // TODO(crbug.com/671310): Disallow "stylesheet", it was allowed accidentally.
+  else if (value == "style" || value == "stylesheet")
     return mojom::LinkAsAttribute::kStyleSheet;
   return absl::nullopt;
 }

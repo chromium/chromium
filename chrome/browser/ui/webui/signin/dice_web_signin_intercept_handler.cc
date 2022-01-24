@@ -8,7 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -19,7 +19,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/management/management_service.h"
-#include "components/policy/core/common/management/platform_management_service.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -47,18 +46,18 @@ DiceWebSigninInterceptHandler::DiceWebSigninInterceptHandler(
 DiceWebSigninInterceptHandler::~DiceWebSigninInterceptHandler() = default;
 
 void DiceWebSigninInterceptHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "accept",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandleAccept,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "cancel",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandleCancel,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "guest", base::BindRepeating(&DiceWebSigninInterceptHandler::HandleGuest,
                                    base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "pageLoaded",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandlePageLoaded,
                           base::Unretained(this)));
@@ -201,12 +200,10 @@ bool DiceWebSigninInterceptHandler::ShouldShowManagedDeviceVersion() {
   // - or anticipating that the user may enable Sync in the new profile and
   //   check the cloud policies attached to the intercepted account (requires
   //   network requests).
-  return policy::PlatformManagementService::GetInstance()
-                 .GetManagementAuthorityTrustworthiness() >
-             policy::ManagementAuthorityTrustworthiness::NONE ||
-         policy::BrowserManagementService(Profile::FromWebUI(web_ui()))
-                 .GetManagementAuthorityTrustworthiness() >
-             policy::ManagementAuthorityTrustworthiness::NONE;
+  return policy::ManagementServiceFactory::GetForProfile(
+             Profile::FromWebUI(web_ui()))
+             ->IsManaged() ||
+         policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
 }
 
 std::string DiceWebSigninInterceptHandler::GetHeaderText() {

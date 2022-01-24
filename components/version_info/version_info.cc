@@ -17,8 +17,10 @@
 
 namespace version_info {
 
-std::string GetProductNameAndVersionForUserAgent() {
-  return "Chrome/" + GetVersionNumber();
+const std::string& GetProductNameAndVersionForUserAgent() {
+  static const base::NoDestructor<std::string> product_and_version(
+      "Chrome/" + GetVersionNumber());
+  return *product_and_version;
 }
 
 std::string GetProductName() {
@@ -29,9 +31,13 @@ std::string GetVersionNumber() {
   return PRODUCT_VERSION;
 }
 
+int GetMajorVersionNumberAsInt() {
+  DCHECK(GetVersion().IsValid());
+  return GetVersion().components()[0];
+}
+
 std::string GetMajorVersionNumber() {
-  DCHECK(version_info::GetVersion().IsValid());
-  return base::NumberToString(version_info::GetVersion().components()[0]);
+  return base::NumberToString(GetMajorVersionNumberAsInt());
 }
 
 const base::Version& GetVersion() {
@@ -70,6 +76,8 @@ std::string GetOSType() {
   return "OpenBSD";
 #elif defined(OS_SOLARIS)
   return "Solaris";
+#elif defined(OS_FUCHSIA)
+  return "Fuchsia";
 #else
   return "Unknown";
 #endif

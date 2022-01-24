@@ -24,6 +24,10 @@ class NetworkListResource
  public:
   NetworkListResource(PP_Instance instance,
                       const SerializedNetworkList& list);
+
+  NetworkListResource(const NetworkListResource&) = delete;
+  NetworkListResource& operator=(const NetworkListResource&) = delete;
+
   ~NetworkListResource() override;
 
   // Resource override.
@@ -40,8 +44,6 @@ class NetworkListResource
 
  private:
   SerializedNetworkList list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkListResource);
 };
 
 }  // namespace proxy

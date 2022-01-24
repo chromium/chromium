@@ -26,6 +26,11 @@ class VariationsCrashKeysChromeOsTest : public ::testing::Test {
     crash_reporter::InitializeCrashKeysForTesting();
   }
 
+  VariationsCrashKeysChromeOsTest(const VariationsCrashKeysChromeOsTest&) =
+      delete;
+  VariationsCrashKeysChromeOsTest& operator=(
+      const VariationsCrashKeysChromeOsTest&) = delete;
+
   ~VariationsCrashKeysChromeOsTest() override {
     SyntheticTrialsActiveGroupIdProvider::GetInstance()->ResetForTesting();
     ClearCrashKeysInstanceForTesting();
@@ -34,9 +39,6 @@ class VariationsCrashKeysChromeOsTest : public ::testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VariationsCrashKeysChromeOsTest);
 };
 
 TEST_F(VariationsCrashKeysChromeOsTest, WritesVariationsList) {

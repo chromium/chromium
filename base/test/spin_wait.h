@@ -30,9 +30,8 @@
 // typically used to get the padding needed on a given test platform to assure
 // that the test passes, even if load varies, and external events vary.
 
-#define SPIN_FOR_1_SECOND_OR_UNTIL_TRUE(expression)                 \
-  SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(base::TimeDelta::FromSeconds(1), \
-                                   (expression))
+#define SPIN_FOR_1_SECOND_OR_UNTIL_TRUE(expression) \
+  SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(base::Seconds(1), (expression))
 
 #define SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(delta, expression)                    \
   do {                                                                         \
@@ -45,7 +44,7 @@
             << "Timed out";                                                    \
         break;                                                                 \
       }                                                                        \
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));      \
+      base::PlatformThread::Sleep(base::Milliseconds(50));                     \
     }                                                                          \
   } while (0)
 

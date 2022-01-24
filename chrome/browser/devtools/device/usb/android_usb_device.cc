@@ -14,9 +14,9 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/devtools/device/usb/android_rsa.h"
 #include "chrome/browser/devtools/device/usb/android_usb_socket.h"
@@ -496,8 +496,9 @@ void AndroidUsbDevice::Terminate() {
 
   // Iterate over copy.
   AndroidUsbSockets sockets(sockets_);
-  for (auto it = sockets.begin(); it != sockets.end(); ++it) {
-    it->second->Terminated(true);
+  for (auto socket_it = sockets.begin(); socket_it != sockets.end();
+       ++socket_it) {
+    socket_it->second->Terminated(true);
   }
   DCHECK(sockets_.empty());
 

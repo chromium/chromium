@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/strings/string_util.h"
 #include "net/base/escape.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
@@ -36,7 +37,7 @@ FileSystemURL::~FileSystemURL() = default;
 
 // static
 FileSystemURL FileSystemURL::CreateForTest(const GURL& url) {
-  return FileSystemURL(url);
+  return FileSystemURL(url, blink::StorageKey(url::Origin::Create(url)));
 }
 
 FileSystemURL FileSystemURL::CreateForTest(const blink::StorageKey& storage_key,
@@ -59,17 +60,20 @@ FileSystemURL FileSystemURL::CreateForTest(
                        filesystem_id, mount_option);
 }
 
-FileSystemURL::FileSystemURL(const GURL& url)
+FileSystemURL::FileSystemURL(const GURL& url,
+                             const blink::StorageKey& storage_key)
     : is_null_(false),
       mount_type_(kFileSystemTypeUnknown),
       type_(kFileSystemTypeUnknown),
       mount_option_(FlushPolicy::NO_FLUSH_ON_COMPLETION) {
   GURL origin_url;
+  // URL should be able to be parsed and the parsed origin should match the
+  // StorageKey's origin member.
   is_valid_ =
-      ParseFileSystemSchemeURL(url, &origin_url, &mount_type_, &virtual_path_);
-  // TODO(https://crbug.com/1221308): function will have StorageKey param in
-  // future CL; conversion from url::Origin is temporary
-  storage_key_ = blink::StorageKey(url::Origin::Create(origin_url));
+      ParseFileSystemSchemeURL(url, &origin_url, &mount_type_,
+                               &virtual_path_) &&
+      storage_key.origin().IsSameOriginWith(url::Origin::Create(origin_url));
+  storage_key_ = storage_key;
   path_ = virtual_path_;
   type_ = mount_type_;
 }
@@ -131,7 +135,20 @@ std::string FileSystemURL::DebugString() const {
   if (!is_valid_)
     return "invalid filesystem: URL";
   std::ostringstream ss;
-  ss << GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_);
+  switch (mount_type_) {
+    // Include GURL if GURL serialization is possible.
+    case kFileSystemTypeTemporary:
+    case kFileSystemTypePersistent:
+    case kFileSystemTypeExternal:
+    case kFileSystemTypeIsolated:
+    case kFileSystemTypeTest:
+      ss << "{ uri: ";
+      ss << GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_);
+      break;
+    // Otherwise list the origin and path separately.
+    default:
+      ss << "{ path: ";
+  }
 
   // filesystem_id_ will be non empty for (and only for) cracked URLs.
   if (!filesystem_id_.empty()) {
@@ -143,6 +160,8 @@ std::string FileSystemURL::DebugString() const {
   } else {
     ss << path_.value();
   }
+  ss << ", storage key: " << storage_key_.GetDebugString();
+  ss << " }";
   return ss.str();
 }
 

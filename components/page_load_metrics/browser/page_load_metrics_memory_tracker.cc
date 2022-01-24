@@ -47,9 +47,8 @@ PageLoadMetricsMemoryTracker::PageLoadMetricsMemoryTracker() {
   if (base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring)) {
     memory_request_ = std::make_unique<
         performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>(
-        base::TimeDelta::FromSeconds(60),
-        performance_manager::v8_memory::V8DetailedMemoryRequest::
-            MeasurementMode::kLazy);
+        base::Seconds(60), performance_manager::v8_memory::
+                               V8DetailedMemoryRequest::MeasurementMode::kLazy);
     memory_request_->AddObserver(this);
   }
 }

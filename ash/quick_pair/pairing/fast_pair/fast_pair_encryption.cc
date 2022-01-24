@@ -7,7 +7,12 @@
 
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_encryption.h"
 
+#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_key_pair.h"
+#include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
+#include "base/check.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -16,6 +21,8 @@
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace {
+
+using ash::quick_pair::fast_pair_encryption::kBlockByteSize;
 
 // Converts the public anti-spoofing key into an EC_Point.
 bssl::UniquePtr<EC_POINT> GetEcPointFromPublicAntiSpoofingKey(
@@ -27,8 +34,11 @@ bssl::UniquePtr<EC_POINT> GetEcPointFromPublicAntiSpoofingKey(
             decoded_public_anti_spoofing.end(), buffer.begin() + 1);
 
   bssl::UniquePtr<EC_POINT> new_ec_point(EC_POINT_new(ec_group.get()));
-  EC_POINT_oct2point(ec_group.get(), new_ec_point.get(), buffer.data(),
-                     buffer.size(), nullptr);
+
+  if (!EC_POINT_oct2point(ec_group.get(), new_ec_point.get(), buffer.data(),
+                          buffer.size(), nullptr)) {
+    return nullptr;
+  }
 
   return new_ec_point;
 }
@@ -48,42 +58,68 @@ namespace ash {
 namespace quick_pair {
 namespace fast_pair_encryption {
 
-KeyPair GenerateKeysWithEcdhKeyAgreement(
+absl::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
     const std::string& decoded_public_anti_spoofing) {
+  if (decoded_public_anti_spoofing.size() != kPublicKeyByteSize) {
+    QP_LOG(WARNING) << "Expected " << kPublicKeyByteSize
+                    << " byte value for anti-spoofing key. Got:"
+                    << decoded_public_anti_spoofing.size();
+    return absl::nullopt;
+  }
+
   // Generate the secp256r1 key-pair.
   bssl::UniquePtr<EC_GROUP> ec_group(
       EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
   bssl::UniquePtr<EC_KEY> ec_key(
       EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  EC_KEY_generate_key(ec_key.get());
+
+  if (!EC_KEY_generate_key(ec_key.get())) {
+    QP_LOG(WARNING) << __func__ << ": Failed to generate ec key";
+    return absl::nullopt;
+  }
 
   // The ultimate goal here is to get a 64-byte public key. We accomplish this
   // by converting the generated public key into the uncompressed X9.62 format,
   // which is 0x04 followed by padded x and y coordinates.
   std::array<uint8_t, kPublicKeyByteSize + 1> uncompressed_private_key;
-  EC_POINT_point2oct(ec_group.get(), EC_KEY_get0_public_key(ec_key.get()),
-                     POINT_CONVERSION_UNCOMPRESSED,
-                     uncompressed_private_key.data(),
-                     uncompressed_private_key.size(), nullptr);
+  int point_bytes_written = EC_POINT_point2oct(
+      ec_group.get(), EC_KEY_get0_public_key(ec_key.get()),
+      POINT_CONVERSION_UNCOMPRESSED, uncompressed_private_key.data(),
+      uncompressed_private_key.size(), nullptr);
 
-  // Generate the secret for use during encryption. Cannot use std::array
-  // because size is determined by variable |secret_len|.
-  size_t secret_len = (EC_GROUP_get_degree(ec_group.get()) + 7) / 8;
-  uint8_t secret[secret_len];
+  if (point_bytes_written != uncompressed_private_key.size()) {
+    QP_LOG(WARNING) << __func__
+                    << ": EC_POINT_point2oct failed to convert public key to "
+                       "uncompressed x9.62 format.";
+    return absl::nullopt;
+  }
 
-  ECDH_compute_key(secret, secret_len,
-                   GetEcPointFromPublicAntiSpoofingKey(
-                       ec_group, decoded_public_anti_spoofing)
-                       .get(),
-                   ec_key.get(), &KDF);
+  bssl::UniquePtr<EC_POINT> public_anti_spoofing_point =
+      GetEcPointFromPublicAntiSpoofingKey(ec_group,
+                                          decoded_public_anti_spoofing);
 
-  // Ensure that the secret is 16 bytes. Cannot use std::copy since |secret| is
-  // a variably modified type, thus template is not fixed at compile time.
+  if (!public_anti_spoofing_point) {
+    QP_LOG(WARNING)
+        << __func__
+        << ": Failed to convert Public Anti-Spoofing key to EC_POINT";
+    return absl::nullopt;
+  }
+
+  uint8_t secret[SHA256_DIGEST_LENGTH];
+  int computed_key_size =
+      ECDH_compute_key(secret, SHA256_DIGEST_LENGTH,
+                       public_anti_spoofing_point.get(), ec_key.get(), &KDF);
+
+  if (computed_key_size != kPrivateKeyByteSize) {
+    QP_LOG(WARNING) << __func__ << ": ECDH_compute_key failed.";
+    return absl::nullopt;
+  }
+
+  // Take first 16 bytes from secret as the private key.
   std::array<uint8_t, kPrivateKeyByteSize> private_key;
-  for (int i = 0; i < kPrivateKeyByteSize; ++i)
-    private_key[i] = secret[i];
+  std::copy(secret, secret + kPrivateKeyByteSize, std::begin(private_key));
 
-  // Ignore the first byte since it is 0x04, from the above uncompressed X9.62
+  // Ignore the first byte since it is 0x04, from the above uncompressed X9 .62
   // format.
   std::array<uint8_t, kPublicKeyByteSize> public_key;
   std::copy(uncompressed_private_key.begin() + 1,
@@ -96,7 +132,9 @@ const std::array<uint8_t, kBlockByteSize> EncryptBytes(
     const std::array<uint8_t, kBlockByteSize>& aes_key_bytes,
     const std::array<uint8_t, kBlockByteSize>& bytes_to_encrypt) {
   AES_KEY aes_key;
-  AES_set_encrypt_key(aes_key_bytes.data(), aes_key_bytes.size() * 8, &aes_key);
+  int aes_key_was_set = AES_set_encrypt_key(aes_key_bytes.data(),
+                                            aes_key_bytes.size() * 8, &aes_key);
+  DCHECK(aes_key_was_set == 0) << "Invalid AES key size.";
   std::array<uint8_t, kBlockByteSize> encrypted_bytes;
   AES_encrypt(bytes_to_encrypt.data(), encrypted_bytes.data(), &aes_key);
   return encrypted_bytes;

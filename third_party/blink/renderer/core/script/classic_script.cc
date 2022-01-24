@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/script/classic_script.h"
 
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
@@ -13,11 +14,46 @@
 
 namespace blink {
 
+namespace {
+
+KURL SanitizeBaseUrl(const KURL& raw_base_url,
+                     SanitizeScriptErrors sanitize_script_errors) {
+  // https://html.spec.whatwg.org/C/#creating-a-classic-script
+  // 2. If muted errors is true, then set baseURL to about:blank.
+  // [spec text]
+  if (sanitize_script_errors == SanitizeScriptErrors::kSanitize) {
+    return BlankURL();
+  }
+
+  return raw_base_url;
+}
+
+}  // namespace
+
+ClassicScript::ClassicScript(const ScriptSourceCode& script_source_code,
+                             const KURL& base_url,
+                             const ScriptFetchOptions& fetch_options,
+                             SanitizeScriptErrors sanitize_script_errors)
+    : Script(fetch_options, SanitizeBaseUrl(base_url, sanitize_script_errors)),
+      script_source_code_(script_source_code),
+      sanitize_script_errors_(sanitize_script_errors) {}
+
 ClassicScript* ClassicScript::CreateUnspecifiedScript(
     const ScriptSourceCode& script_source_code,
     SanitizeScriptErrors sanitize_script_errors) {
   return MakeGarbageCollected<ClassicScript>(
       script_source_code, KURL(), ScriptFetchOptions(), sanitize_script_errors);
+}
+
+ClassicScript* ClassicScript::CreateUnspecifiedScript(
+    const WebScriptSource& source,
+    SanitizeScriptErrors sanitize_script_errors) {
+  TextPosition position(OrdinalNumber::FromOneBasedInt(source.start_line),
+                        OrdinalNumber::First());
+  return ClassicScript::CreateUnspecifiedScript(
+      ScriptSourceCode(source.code, ScriptSourceLocationType::kUnknown,
+                       nullptr /* cache_handler */, source.url, position),
+      sanitize_script_errors);
 }
 
 void ClassicScript::Trace(Visitor* visitor) const {

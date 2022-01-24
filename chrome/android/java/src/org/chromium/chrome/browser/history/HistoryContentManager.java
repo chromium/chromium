@@ -37,8 +37,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewHolder;
@@ -99,7 +98,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final boolean mIsScrollToLoadDisabled;
     private final boolean mShouldShowClearData;
     private final String mHostName;
-    private final TabCreatorManager mTabCreatorManager;
     private final Supplier<Tab> mTabSupplier;
     private HistoryAdapter mHistoryAdapter;
     private RecyclerView mRecyclerView;
@@ -122,8 +120,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param hostName The hostName to retrieve history entries for, or null for all hosts.
      * @param selectionDelegate A class responsible for handling list item selection, null for
      *         unselectable items.
-     * @param tabCreatorManager Allows creation of tabs in different models, null if the history UI
-     *                          will be shown in a separate activity.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
      *                    separate activity.
      */
@@ -131,7 +127,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             boolean isSeparateActivity, boolean isIncognito, boolean shouldShowPrivacyDisclaimers,
             boolean shouldShowClearData, @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
-            @Nullable TabCreatorManager tabCreatorManager, @Nullable Supplier<Tab> tabSupplier) {
+            @Nullable Supplier<Tab> tabSupplier) {
         mActivity = activity;
         mObserver = observer;
         mIsSeparateActivity = isSeparateActivity;
@@ -160,7 +156,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                           return false;
                       }
                   };
-        mTabCreatorManager = tabCreatorManager;
         mTabSupplier = tabSupplier;
 
         // History service is not keyed for Incognito profiles and {@link HistoryServiceFactory}
@@ -352,16 +347,14 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             return;
         }
 
-        assert mTabCreatorManager != null;
         assert mTabSupplier != null;
-
         Tab tab = mTabSupplier.get();
         assert tab != null;
+
         if (createNewTab) {
-            TabCreator tabCreator =
-                    mTabCreatorManager.getTabCreator(isIncognito != null && isIncognito);
-            tabCreator.createNewTab(
-                    new LoadUrlParams(url, PAGE_TRANSITION_TYPE), TabLaunchType.FROM_LINK, tab);
+            new TabDelegate(isIncognito != null ? isIncognito : mIsIncognito)
+                    .createNewTab(new LoadUrlParams(url, PAGE_TRANSITION_TYPE),
+                            TabLaunchType.FROM_LINK, tab);
         } else {
             tab.loadUrl(new LoadUrlParams(url, PAGE_TRANSITION_TYPE));
         }
@@ -430,10 +423,10 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param item The item that has been removed.
      */
     public void onItemRemoved(HistoryItem item) {
-        mObserver.onItemRemoved(item);
         mHistoryAdapter.markItemForRemoval(item);
         mHistoryAdapter.removeItems();
         announceItemRemoved(item);
+        mObserver.onItemRemoved(item);
     }
 
     void announceItemRemoved(HistoryItem item) {

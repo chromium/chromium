@@ -41,12 +41,11 @@ void PrerenderControllerImpl::Prerender(const GURL& url) {
   DCHECK(no_state_prefetch_manager);
 
   // The referrer parameter results in a header being set that lets the server
-  // serving the URL being prerendered see where the request originated. It's
-  // an optional header, it's okay to skip setting it here.
-  // SessionStorageNamespace isn't necessary for NoStatePrefetch, so it's okay
-  // to pass in a nullptr.
+  // serving the URL being prefetched see where the request originated. It's an
+  // optional header, it's okay to skip setting it here. SessionStorageNamespace
+  // isn't necessary for NoStatePrefetch, so it's okay to pass in a nullptr.
   // NoStatePrefetchManager uses default bounds  if the one provided is empty.
-  no_state_prefetch_manager->AddPrerenderFromExternalRequest(
+  no_state_prefetch_manager->StartPrefetchingFromExternalRequest(
       url, content::Referrer(), /* session_storage_namespace= */ nullptr,
       /* bounds= */ gfx::Rect());
 }

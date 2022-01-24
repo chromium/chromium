@@ -11,18 +11,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
+import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -35,13 +33,10 @@ import java.util.HashSet;
  * These tests initialize the native part of the service.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Features.DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class IdentityManagerIntegrationTest {
     @Rule
-    public final TestRule mProcessor = new Features.InstrumentationProcessor();
-
-    @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    public final AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(new FakeAccountInfoService());
 
     private static final String TEST_ACCOUNT1 = "foo@gmail.com";
     private static final String TEST_ACCOUNT2 = "bar@gmail.com";

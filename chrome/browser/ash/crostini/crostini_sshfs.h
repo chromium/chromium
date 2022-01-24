@@ -9,7 +9,6 @@
 #include <set>
 #include <utility>
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -22,6 +21,10 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
                       ContainerShutdownObserver {
  public:
   explicit CrostiniSshfs(Profile* profile);
+
+  CrostiniSshfs(const CrostiniSshfs&) = delete;
+  CrostiniSshfs& operator=(const CrostiniSshfs&) = delete;
+
   ~CrostiniSshfs() override;
   using MountCrostiniFilesCallback = base::OnceCallback<void(bool succeeded)>;
 
@@ -125,8 +128,6 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<CrostiniSshfs> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniSshfs);
 };
 }  // namespace crostini
 

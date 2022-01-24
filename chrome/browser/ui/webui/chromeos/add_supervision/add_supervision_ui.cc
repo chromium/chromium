@@ -59,7 +59,7 @@ const char kAddSupervisionSwitch[] = "add-supervision-url";
 // AddSupervisionDialog implementations.
 
 // static
-void AddSupervisionDialog::Show(gfx::NativeView parent) {
+void AddSupervisionDialog::Show() {
   // Get the system singleton instance of the AddSupervisionDialog.
   SystemWebDialogDelegate* current_instance = GetInstance();
   if (current_instance) {
@@ -75,7 +75,7 @@ void AddSupervisionDialog::Show(gfx::NativeView parent) {
   current_instance = new AddSupervisionDialog();
 
   current_instance->ShowSystemDialogForBrowserContext(
-      ProfileManager::GetPrimaryUserProfile(), parent);
+      ProfileManager::GetPrimaryUserProfile());
 
   // Record UMA metric that user has initiated the Add Supervision process.
   AddSupervisionMetricsRecorder::GetInstance()->RecordAddSupervisionEnrollment(
@@ -204,8 +204,6 @@ void AddSupervisionUI::SetUpResources() {
   source->EnableReplaceI18nInJS();
 
   // Forward data to the WebUI.
-  source->AddResourcePath("post_message_api.js",
-                          IDR_ADD_SUPERVISION_POST_MESSAGE_API_JS);
   source->AddResourcePath("add_supervision_api_server.js",
                           IDR_ADD_SUPERVISION_API_SERVER_JS);
   source->AddResourcePath("add_supervision_ui.js", IDR_ADD_SUPERVISION_UI_JS);
@@ -229,7 +227,8 @@ void AddSupervisionUI::SetUpResources() {
   source->UseStringsJs();
   source->SetDefaultResource(IDR_ADD_SUPERVISION_HTML);
   source->AddString("webviewUrl", supervision_url_.spec());
-  source->AddString("eventOriginFilter", supervision_url_.GetOrigin().spec());
+  source->AddString("eventOriginFilter",
+                    supervision_url_.DeprecatedGetOriginAsURL().spec());
   source->AddString("platformVersion", base::SysInfo::OperatingSystemVersion());
   source->AddString("flowType", kAddSupervisionFlowType);
 

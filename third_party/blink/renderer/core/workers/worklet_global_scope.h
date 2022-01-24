@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKLET_GLOBAL_SCOPE_H_
 
 #include <memory>
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -74,6 +75,7 @@ class CORE_EXPORT WorkletGlobalScope
   WorkerThread* GetThread() const final;
   const base::UnguessableToken& GetDevToolsToken() const override;
   bool IsInitialized() const final { return true; }
+  CodeCacheHost* GetCodeCacheHost() override;
 
   virtual LocalFrame* GetFrame() const;
 
@@ -197,6 +199,11 @@ class CORE_EXPORT WorkletGlobalScope
   //
   // TODO(mkwst): We need a spec for this capability.
   const bool parent_direct_socket_capability_;
+
+  // This is the interface that handles generated code cache
+  // requests both to fetch code cache when loading resources
+  // and to store generated code cache to disk.
+  std::unique_ptr<CodeCacheHost> code_cache_host_;
 };
 
 template <>

@@ -15,33 +15,31 @@ flags.DEFINE_string('extension_id', None,
 flags.mark_flag_as_required('extension_id')
 
 
-def getShadowDom(driver, root, selector):
-  el = root.find_element_by_css_selector(selector)
-  return driver.execute_script("return arguments[0].shadowRoot", el)
-
-
-def getNestedShadowDom(driver, selectors):
-  el = driver
-  for selector in selectors:
-    el = getShadowDom(driver, el, selector)
-    if el == None:
-      return None
-  return el
+def getElementFromShadowRoot(driver, element, selector):
+  if element is None:
+    return None
+  else:
+    return driver.execute_script(
+        "return arguments[0].shadowRoot.querySelector(arguments[1])", element,
+        selector)
 
 
 def RunTest(driver):
   # The extension must be visible on the extensions page.
   driver.get("chrome://extensions")
-
   # It's nested within a couple of shadow doms on the page - extract it.
   print("Looking for extension on extensions page: %s" % FLAGS.extension_id)
   extension_page = False
   try:
-    selectors = ["extensions-manager", "extensions-item-list"]
-    el = getNestedShadowDom(driver, selectors)
-    el = el.find_element_by_css_selector(
+    extension_manager_el = driver.find_element_by_css_selector(
+        "extensions-manager")
+    extension_item_list_el = getElementFromShadowRoot(driver,
+                                                      extension_manager_el,
+                                                      "extensions-item-list")
+    extension_item_el = getElementFromShadowRoot(
+        driver, extension_item_list_el,
         "extensions-item#%s" % FLAGS.extension_id)
-    extension_page = (el != None)
+    extension_page = (extension_item_el != None)
   except:
     print(traceback.format_exc())
 
@@ -60,7 +58,7 @@ def main(argv):
     driver = test_util.create_chrome_webdriver(chrome_options=chrome_options)
 
     # Wait for the extension to install on this new profile.
-    time.sleep(10)
+    time.sleep(20)
 
     RunTest(driver)
   finally:

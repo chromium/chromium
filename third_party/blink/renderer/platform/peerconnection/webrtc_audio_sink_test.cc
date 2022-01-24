@@ -88,8 +88,7 @@ TEST(WebRtcAudioSinkTest, CaptureTimestamp) {
     ScopedFakeClock clock(kStartRtcTimestampMs);
 
     base::TimeTicks capture_time =
-        base::TimeTicks() +
-        base::TimeDelta::FromMilliseconds(kStartCaptureTimestampMs);
+        base::TimeTicks() + base::Milliseconds(kStartCaptureTimestampMs);
 
     // The first time to the call OnData(), the TimestampAligner should have no
     // effect work. So expected capture timestamp is from fake_clock.
@@ -104,7 +103,7 @@ TEST(WebRtcAudioSinkTest, CaptureTimestamp) {
 
     web_media_stream_audio_sink->OnData(*bus, capture_time);
 
-    capture_time += base::TimeDelta::FromMilliseconds(kCaptureIntervalMs);
+    capture_time += base::Milliseconds(kCaptureIntervalMs);
     clock.AdvanceTimeMilliseconds(kCaptureIntervalMs);
 
     constexpr int64_t kExpectedTimestampMs =

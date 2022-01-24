@@ -42,6 +42,10 @@ class TestKeyboardUIFactory : public KeyboardUIFactory {
   };
 
   explicit TestKeyboardUIFactory(ui::InputMethod* input_method);
+
+  TestKeyboardUIFactory(const TestKeyboardUIFactory&) = delete;
+  TestKeyboardUIFactory& operator=(const TestKeyboardUIFactory&) = delete;
+
   ~TestKeyboardUIFactory() override;
 
   // Overridden from KeyboardUIFactory:
@@ -49,8 +53,6 @@ class TestKeyboardUIFactory : public KeyboardUIFactory {
 
  private:
   ui::InputMethod* input_method_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestKeyboardUIFactory);
 };
 
 }  // namespace keyboard

@@ -23,6 +23,10 @@ template <typename T>
 class ScopedCoMem {
  public:
   ScopedCoMem() : mem_ptr_(nullptr) {}
+
+  ScopedCoMem(const ScopedCoMem&) = delete;
+  ScopedCoMem& operator=(const ScopedCoMem&) = delete;
+
   ~ScopedCoMem() { Reset(nullptr); }
 
   T** operator&() {               // NOLINT
@@ -52,8 +56,6 @@ class ScopedCoMem {
 
  private:
   T* mem_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCoMem);
 };
 
 }  // namespace win

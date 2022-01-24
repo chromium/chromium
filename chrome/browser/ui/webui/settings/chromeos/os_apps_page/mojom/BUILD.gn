@@ -7,5 +7,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "app_notification_handler.mojom" ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//components/services/app_service/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
 }

@@ -24,6 +24,8 @@ extern const char kCrostiniTerminalSettings[];
 extern const char kVmKey[];
 extern const char kContainerKey[];
 extern const char kContainerOsVersionKey[];
+extern const char kContainerOsPrettyNameKey[];
+extern const char kContainerColorKey[];
 extern const char kCrostiniMicAllowed[];
 
 extern const char kUserCrostiniAllowedByPolicy[];

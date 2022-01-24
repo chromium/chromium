@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/test/test_content_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,6 +46,12 @@ class MockContentClient : public TestContentClient {
 class BrowserAccessibilityAndroidTest : public testing::Test {
  public:
   BrowserAccessibilityAndroidTest();
+
+  BrowserAccessibilityAndroidTest(const BrowserAccessibilityAndroidTest&) =
+      delete;
+  BrowserAccessibilityAndroidTest& operator=(
+      const BrowserAccessibilityAndroidTest&) = delete;
+
   ~BrowserAccessibilityAndroidTest() override;
 
  protected:
@@ -56,7 +63,6 @@ class BrowserAccessibilityAndroidTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   MockContentClient client_;
   ui::testing::ScopedAxModeSetter ax_mode_setter_;
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityAndroidTest);
 };
 
 BrowserAccessibilityAndroidTest::BrowserAccessibilityAndroidTest()
@@ -92,13 +98,13 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetTextOnly) {
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_obj = manager->GetRoot();
-  EXPECT_FALSE(root_obj->PlatformIsLeaf());
+  EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
   BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
-  EXPECT_TRUE(para_obj->PlatformIsLeaf());
+  EXPECT_TRUE(para_obj->IsLeaf());
   EXPECT_TRUE(para_obj->CanFireEvents());
   BrowserAccessibility* text_obj = manager->GetFromID(111);
-  EXPECT_TRUE(text_obj->PlatformIsLeaf());
+  EXPECT_TRUE(text_obj->IsLeaf());
   EXPECT_FALSE(text_obj->CanFireEvents());
   BrowserAccessibility* updated = manager->RetargetForEvents(
       text_obj, BrowserAccessibilityManager::RetargetEventType::
@@ -131,13 +137,13 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetHeading) {
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_obj = manager->GetRoot();
-  EXPECT_FALSE(root_obj->PlatformIsLeaf());
+  EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
   BrowserAccessibility* heading_obj = root_obj->PlatformGetChild(0);
-  EXPECT_TRUE(heading_obj->PlatformIsLeaf());
+  EXPECT_TRUE(heading_obj->IsLeaf());
   EXPECT_TRUE(heading_obj->CanFireEvents());
   BrowserAccessibility* text_obj = manager->GetFromID(111);
-  EXPECT_TRUE(text_obj->PlatformIsLeaf());
+  EXPECT_TRUE(text_obj->IsLeaf());
   EXPECT_FALSE(text_obj->CanFireEvents());
   BrowserAccessibility* updated = manager->RetargetForEvents(
       text_obj, BrowserAccessibilityManager::RetargetEventType::
@@ -171,13 +177,13 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetFocusable) {
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_obj = manager->GetRoot();
-  EXPECT_FALSE(root_obj->PlatformIsLeaf());
+  EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
   BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
-  EXPECT_TRUE(para_obj->PlatformIsLeaf());
+  EXPECT_TRUE(para_obj->IsLeaf());
   EXPECT_TRUE(para_obj->CanFireEvents());
   BrowserAccessibility* text_obj = manager->GetFromID(111);
-  EXPECT_TRUE(text_obj->PlatformIsLeaf());
+  EXPECT_TRUE(text_obj->IsLeaf());
   EXPECT_FALSE(text_obj->CanFireEvents());
   BrowserAccessibility* updated = manager->RetargetForEvents(
       text_obj, BrowserAccessibilityManager::RetargetEventType::
@@ -259,13 +265,13 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_obj = manager->GetRoot();
-  EXPECT_FALSE(root_obj->PlatformIsLeaf());
+  EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
   BrowserAccessibility* label_obj = manager->GetFromID(label.id);
-  EXPECT_TRUE(label_obj->PlatformIsLeaf());
+  EXPECT_TRUE(label_obj->IsLeaf());
   EXPECT_TRUE(label_obj->CanFireEvents());
   BrowserAccessibility* label_text_obj = manager->GetFromID(label_text.id);
-  EXPECT_TRUE(label_text_obj->PlatformIsLeaf());
+  EXPECT_TRUE(label_text_obj->IsLeaf());
   EXPECT_FALSE(label_text_obj->CanFireEvents());
   BrowserAccessibility* updated = manager->RetargetForEvents(
       label_text_obj, BrowserAccessibilityManager::RetargetEventType::
@@ -274,11 +280,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
   EXPECT_TRUE(updated->CanFireEvents());
 
   BrowserAccessibility* input_time_obj = manager->GetFromID(input_time.id);
-  EXPECT_TRUE(input_time_obj->PlatformIsLeaf());
+  EXPECT_TRUE(input_time_obj->IsLeaf());
   EXPECT_TRUE(input_time_obj->CanFireEvents());
   BrowserAccessibility* input_time_container_obj =
       manager->GetFromID(input_container.id);
-  EXPECT_TRUE(input_time_container_obj->PlatformIsLeaf());
+  EXPECT_TRUE(input_time_container_obj->IsLeaf());
   EXPECT_FALSE(input_time_container_obj->CanFireEvents());
   updated = manager->RetargetForEvents(
       input_time_container_obj, BrowserAccessibilityManager::RetargetEventType::
@@ -286,7 +292,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
   EXPECT_EQ(input_time.id, updated->GetId());
   EXPECT_TRUE(updated->CanFireEvents());
   BrowserAccessibility* input_text_obj = manager->GetFromID(input_text.id);
-  EXPECT_TRUE(input_text_obj->PlatformIsLeaf());
+  EXPECT_TRUE(input_text_obj->IsLeaf());
   EXPECT_FALSE(input_text_obj->CanFireEvents());
   updated = manager->RetargetForEvents(
       input_text_obj, BrowserAccessibilityManager::RetargetEventType::
@@ -295,10 +301,10 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
   EXPECT_TRUE(updated->CanFireEvents());
 
   BrowserAccessibility* button_obj = manager->GetFromID(button.id);
-  EXPECT_TRUE(button_obj->PlatformIsLeaf());
+  EXPECT_TRUE(button_obj->IsLeaf());
   EXPECT_TRUE(button_obj->CanFireEvents());
   BrowserAccessibility* button_text_obj = manager->GetFromID(button_text.id);
-  EXPECT_TRUE(button_text_obj->PlatformIsLeaf());
+  EXPECT_TRUE(button_text_obj->IsLeaf());
   EXPECT_FALSE(button_text_obj->CanFireEvents());
   updated = manager->RetargetForEvents(
       button_text_obj, BrowserAccessibilityManager::RetargetEventType::
@@ -345,6 +351,10 @@ TEST_F(BrowserAccessibilityAndroidTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityManagerAndroid* android_manager =
+      manager->ToBrowserAccessibilityManagerAndroid();
+  android_manager->set_allow_image_descriptions(true);
 
   for (int child_index = 0;
        child_index < static_cast<int>(tree.nodes[0].child_ids.size());
@@ -394,6 +404,10 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageRoleDescription_Empty) {
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
+  BrowserAccessibilityManagerAndroid* android_manager =
+      manager->ToBrowserAccessibilityManagerAndroid();
+  android_manager->set_allow_image_descriptions(true);
+
   for (int child_index = 0;
        child_index < static_cast<int>(tree.nodes[0].child_ids.size());
        ++child_index) {
@@ -432,6 +446,10 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityManagerAndroid* android_manager =
+      manager->ToBrowserAccessibilityManagerAndroid();
+  android_manager->set_allow_image_descriptions(true);
 
   BrowserAccessibilityAndroid* image_ltr =
       static_cast<BrowserAccessibilityAndroid*>(
@@ -483,6 +501,10 @@ TEST_F(BrowserAccessibilityAndroidTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityManagerAndroid* android_manager =
+      manager->ToBrowserAccessibilityManagerAndroid();
+  android_manager->set_allow_image_descriptions(true);
 
   BrowserAccessibilityAndroid* image_pending =
       static_cast<BrowserAccessibilityAndroid*>(
@@ -539,6 +561,10 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
 
+  BrowserAccessibilityManagerAndroid* android_manager =
+      manager->ToBrowserAccessibilityManagerAndroid();
+  android_manager->set_allow_image_descriptions(true);
+
   BrowserAccessibilityAndroid* image_none =
       static_cast<BrowserAccessibilityAndroid*>(
           manager->GetRoot()->PlatformGetChild(0));
@@ -587,6 +613,10 @@ TEST_F(BrowserAccessibilityAndroidTest,
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           tree, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityManagerAndroid* android_manager =
+      manager->ToBrowserAccessibilityManagerAndroid();
+  android_manager->set_allow_image_descriptions(true);
 
   BrowserAccessibilityAndroid* image_succeeded =
       static_cast<BrowserAccessibilityAndroid*>(

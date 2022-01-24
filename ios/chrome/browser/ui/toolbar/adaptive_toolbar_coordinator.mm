@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,9 +61,6 @@
   self.mediator.incognito = self.browser->GetBrowserState()->IsOffTheRecord();
   self.mediator.consumer = self.viewController;
   self.mediator.webStateList = self.browser->GetWebStateList();
-  self.mediator.bookmarkModel = ios::BookmarkModelFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
-  self.mediator.prefService = self.browser->GetBrowserState()->GetPrefs();
   self.mediator.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
 }

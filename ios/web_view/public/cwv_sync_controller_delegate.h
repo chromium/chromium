@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Called when sync has started. Check |syncController|'s |passphraseNeeded|
 // property to see if |unlockWithPassphrase:| is necessary.
+// Deprecated: Use |syncControllerDidUpdateSyncState:| instead.
 - (void)syncControllerDidStartSync:(CWVSyncController*)syncController;
 
 // Called when sync fails. |error| details are described in cwv_sync_errors.h.
@@ -26,7 +27,14 @@ NS_ASSUME_NONNULL_BEGIN
       didFailWithError:(NSError*)error;
 
 // Called after sync has stopped.
+// Deprecated: Use |syncControllerDidUpdateSyncState:| instead.
 - (void)syncControllerDidStopSync:(CWVSyncController*)syncController;
+
+// Called whenever the state of sync internals updates.
+// Specifically, CWVSyncController properties like |syncing|, |currentIdentity|,
+// |passphraseNeeded|, |trustedVaultKeysRequired|, and
+// |trustedVaultRecoverabilityDegraded| may have changed.
+- (void)syncControllerDidUpdateState:(CWVSyncController*)syncController;
 
 @end
 

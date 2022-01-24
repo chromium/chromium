@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/media_galleries/mac/mtp_device_delegate_impl_mac.h"
@@ -156,6 +155,10 @@ class MTPDeviceDelegateImplMacTest : public testing::Test {
  public:
   MTPDeviceDelegateImplMacTest() : camera_(NULL), delegate_(NULL) {}
 
+  MTPDeviceDelegateImplMacTest(const MTPDeviceDelegateImplMacTest&) = delete;
+  MTPDeviceDelegateImplMacTest& operator=(const MTPDeviceDelegateImplMacTest&) =
+      delete;
+
   void SetUp() override {
     storage_monitor::TestStorageMonitor* monitor =
         storage_monitor::TestStorageMonitor::CreateAndInstall();
@@ -286,9 +289,6 @@ class MTPDeviceDelegateImplMacTest : public testing::Test {
 
   base::File::Error overlapped_error_;
   storage::AsyncFileUtil::EntryList overlapped_file_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MTPDeviceDelegateImplMacTest);
 };
 
 TEST_F(MTPDeviceDelegateImplMacTest, TestGetRootFileInfo) {

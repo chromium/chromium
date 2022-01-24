@@ -31,6 +31,10 @@ class JsChannelService : public mojom::JsChannelBindingProvider {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   explicit JsChannelService(int process_id);
+
+  JsChannelService(const JsChannelService&) = delete;
+  JsChannelService& operator=(const JsChannelService&) = delete;
+
   ~JsChannelService() override;
 
  private:
@@ -39,8 +43,6 @@ class JsChannelService : public mojom::JsChannelBindingProvider {
                 mojo::PendingRemote<mojom::JsChannelClient> client) override;
 
   int process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsChannelService);
 };
 
 class JsClientInstance {
@@ -57,6 +59,9 @@ class JsClientInstance {
 
   static JsClientInstance* Find(int process_id, int routing_id);
 
+  JsClientInstance(const JsClientInstance&) = delete;
+  JsClientInstance& operator=(const JsClientInstance&) = delete;
+
   static void AddObserver(Observer* observer);
   static void RemoveObserver(Observer* observer);
 
@@ -71,8 +76,6 @@ class JsClientInstance {
 
   mojo::Remote<mojom::JsChannelClient> client_;
   mojo::UniqueReceiverSet<mojom::JsChannel> channels_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsClientInstance);
 };
 
 }  // namespace chromecast

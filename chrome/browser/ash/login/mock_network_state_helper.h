@@ -8,8 +8,7 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace login {
 
 class MockNetworkStateHelper : public NetworkStateHelper {
@@ -22,7 +21,6 @@ class MockNetworkStateHelper : public NetworkStateHelper {
 };
 
 }  // namespace login
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_MOCK_NETWORK_STATE_HELPER_H_

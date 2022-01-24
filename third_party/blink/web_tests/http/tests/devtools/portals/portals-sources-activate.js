@@ -5,7 +5,7 @@
 
 (async function () {
   TestRunner.addResult(`Checks that breakpoint set inside a portalactivate event handler is hit on activation`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.navigatePromise('resources/append-predecessor-host.html');

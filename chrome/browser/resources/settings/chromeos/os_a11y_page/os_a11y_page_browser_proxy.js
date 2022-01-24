@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 /** @interface */
-/* #export */ class OsA11yPageBrowserProxy {
+export class OsA11yPageBrowserProxy {
   /**
    * Requests whether screen reader state changed. Result
    * is returned by the 'screen-reader-state-changed' WebUI listener event.
@@ -23,7 +23,7 @@
 /**
  * @implements {OsA11yPageBrowserProxy}
  */
-/* #export */ class OsA11yPageBrowserProxyImpl {
+export class OsA11yPageBrowserProxyImpl {
   /** @override */
   a11yPageReady() {
     chrome.send('a11yPageReady');
@@ -37,4 +37,4 @@
 
 // The singleton instance_ is replaced with a test version of this wrapper
 // during testing.
-cr.addSingletonGetter(OsA11yPageBrowserProxyImpl);
+addSingletonGetter(OsA11yPageBrowserProxyImpl);

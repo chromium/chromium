@@ -5,15 +5,16 @@
 #include "components/viz/service/display/overlay_processor_interface.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
+#include "ui/gfx/overlay_priority_hint.h"
 
 #if defined(OS_APPLE)
 #include "components/viz/service/display/overlay_processor_mac.h"
@@ -25,7 +26,6 @@
 #elif defined(USE_OZONE)
 #include "components/viz/service/display/overlay_processor_delegated.h"
 #include "components/viz/service/display/overlay_processor_ozone.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
@@ -75,6 +75,16 @@ void OverlayProcessorInterface::RecordOverlayDamageRectHistograms(
   }
 }
 
+OverlayProcessorInterface::OutputSurfaceOverlayPlane::
+    OutputSurfaceOverlayPlane() = default;
+OverlayProcessorInterface::OutputSurfaceOverlayPlane::OutputSurfaceOverlayPlane(
+    const OutputSurfaceOverlayPlane&) = default;
+OverlayProcessorInterface::OutputSurfaceOverlayPlane&
+OverlayProcessorInterface::OutputSurfaceOverlayPlane::operator=(
+    const OutputSurfaceOverlayPlane&) = default;
+OverlayProcessorInterface::OutputSurfaceOverlayPlane::
+    ~OutputSurfaceOverlayPlane() = default;
+
 std::unique_ptr<OverlayProcessorInterface>
 OverlayProcessorInterface::CreateOverlayProcessor(
     OutputSurface* output_surface,
@@ -106,9 +116,6 @@ OverlayProcessorInterface::CreateOverlayProcessor(
                               ? 2
                               : 1));
 #elif defined(USE_OZONE)
-  if (!features::IsUsingOzonePlatform())
-    return std::make_unique<OverlayProcessorStub>();
-
 #if !BUILDFLAG(IS_CHROMECAST)
   // In tests and Ozone/X11, we do not expect surfaceless surface support.
   // For chromecast, we always need OverlayProcessorOzone.
@@ -179,6 +186,7 @@ OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
     const gfx::BufferFormat& buffer_format,
     const gfx::ColorSpace& color_space,
     bool has_alpha,
+    float opacity,
     const gpu::Mailbox& mailbox) {
   OutputSurfaceOverlayPlane overlay_plane;
   overlay_plane.transform = gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE;
@@ -190,7 +198,10 @@ OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
   overlay_plane.format = buffer_format;
   overlay_plane.color_space = color_space;
   overlay_plane.enable_blending = has_alpha;
+  overlay_plane.opacity = opacity;
   overlay_plane.mailbox = mailbox;
+  overlay_plane.priority_hint = gfx::OverlayPriorityHint::kRegular;
+  overlay_plane.rounded_corners = gfx::RRectF();
 
   // Adjust transformation and display_rect based on display rotation.
   overlay_plane.display_rect =

@@ -28,8 +28,8 @@ class FastPairScannerImpl
       public device::BluetoothLowEnergyScanSession::Delegate {
  public:
   FastPairScannerImpl();
-  FastPairScannerImpl(const FastPairScanner&) = delete;
-  FastPairScannerImpl& operator=(const FastPairScanner&) = delete;
+  FastPairScannerImpl(const FastPairScannerImpl&) = delete;
+  FastPairScannerImpl& operator=(const FastPairScannerImpl&) = delete;
 
   // FastPairScanner::Observer
   void AddObserver(FastPairScanner::Observer* observer) override;

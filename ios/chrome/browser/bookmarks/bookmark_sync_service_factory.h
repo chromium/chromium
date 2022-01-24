@@ -27,6 +27,10 @@ class BookmarkSyncServiceFactory : public BrowserStateKeyedServiceFactory {
   // Returns an instance of the BookmarkSyncServiceFactory singleton.
   static BookmarkSyncServiceFactory* GetInstance();
 
+  BookmarkSyncServiceFactory(const BookmarkSyncServiceFactory&) = delete;
+  BookmarkSyncServiceFactory& operator=(const BookmarkSyncServiceFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<BookmarkSyncServiceFactory>;
 
@@ -38,8 +42,6 @@ class BookmarkSyncServiceFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkSyncServiceFactory);
 };
 
 }  // namespace ios

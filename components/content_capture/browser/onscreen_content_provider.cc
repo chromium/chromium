@@ -27,10 +27,14 @@ const void* const kUserDataKey = &kUserDataKey;
 OnscreenContentProvider::OnscreenContentProvider(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {
-  const std::vector<content::RenderFrameHost*> frames =
-      web_contents->GetAllFrames();
-  for (content::RenderFrameHost* frame : frames)
-    RenderFrameCreated(frame);
+  web_contents->ForEachRenderFrameHost(base::BindRepeating(
+      [](OnscreenContentProvider* provider,
+         content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsRenderFrameLive()) {
+          provider->RenderFrameCreated(render_frame_host);
+        }
+      },
+      this));
 
   web_contents->SetUserData(kUserDataKey, base::WrapUnique(this));
 }
@@ -227,10 +231,7 @@ void OnscreenContentProvider::DidUpdateFaviconURL(
 void OnscreenContentProvider::NotifyFaviconURLUpdated(
     content::RenderFrameHost* render_frame_host,
     const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
-  // Only set the favicons for the mainframe.
-  if (render_frame_host != web_contents()->GetMainFrame())
-    return;
-
+  DCHECK(render_frame_host->IsInPrimaryMainFrame());
   if (auto* receiver = ContentCaptureReceiverForFrame(render_frame_host)) {
     receiver->UpdateFaviconURL(candidates);
   }

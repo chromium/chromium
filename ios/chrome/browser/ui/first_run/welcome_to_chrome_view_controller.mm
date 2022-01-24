@@ -15,13 +15,17 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/web_resource/web_resource_pref_names.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/first_run/first_run_configuration.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
@@ -30,7 +34,6 @@
 #include "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #include "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
 #include "ios/chrome/browser/ui/first_run/static_file_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -39,7 +42,6 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/common/string_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -229,9 +231,15 @@ const BOOL kDefaultStatsCheckboxValue = YES;
           self.mainBrowser->GetBrowserState());
   self.firstRunConfig.hasSSOAccount = accountManagerService->HasIdentities();
 
-  if (!signin::IsSigninAllowedByPolicy(
-          self.mainBrowser->GetBrowserState()->GetPrefs())) {
-    // Sign-in is disabled by policy. Skip the sign-in flow.
+  syncer::SyncService* syncService = SyncServiceFactory::GetForBrowserState(
+      self.mainBrowser->GetBrowserState());
+  BOOL shouldSkipSignInFlow =
+      syncService->GetDisableReasons().Has(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+      !signin::IsSigninAllowedByPolicy();
+
+  if (shouldSkipSignInFlow) {
+    // Sign-in or sync is disabled by policy. Skip the sign-in flow.
     self.firstRunConfig.signInAttemptStatus =
         first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
     SigninCompletionInfo* completionInfo =
@@ -298,25 +306,17 @@ const BOOL kDefaultStatsCheckboxValue = YES;
                                      (SigninCompletionInfo*)completionInfo {
   FirstRunDismissed();
   switch (completionInfo.signinCompletionAction) {
-    case SigninCompletionActionShowAdvancedSettingsSignin:
-      DCHECK(!self.interruptCompletion);
-      [self.dispatcher showAdvancedSigninSettingsFromViewController:
-                           presentingViewController];
-      break;
-    case SigninCompletionActionOpenCompletionURL: {
-      // The user asked to create a new account.
-      DCHECK(completionInfo.completionURL.is_valid());
-      OpenNewTabCommand* command = [OpenNewTabCommand
-          commandWithURLFromChrome:completionInfo.completionURL];
-      [self.dispatcher closeSettingsUIAndOpenURL:command];
-      break;
-    }
     case SigninCompletionActionNone:
+    case SigninCompletionActionShowManagedLearnMore:
       if (self.interruptCompletion) {
         self.interruptCompletion();
-      } else if (location_permissions_field_trial::IsInFirstRunModalGroup()) {
-        [self.dispatcher
-            showLocationPermissionsFromViewController:presentingViewController];
+      }
+      if (completionInfo.signinCompletionAction ==
+          SigninCompletionActionShowManagedLearnMore) {
+        OpenNewTabCommand* command = [OpenNewTabCommand
+            commandWithURLFromChrome:GURL(kChromeUIManagementURL)];
+        command.userInitiated = YES;
+        [self.dispatcher openURLInNewTab:command];
       }
       break;
   }

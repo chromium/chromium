@@ -15,7 +15,6 @@
 #include "content/browser/android/gesture_listener_manager.h"
 #include "content/browser/android/select_popup.h"
 #include "content/browser/android/selection/selection_popup_controller.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
@@ -31,6 +30,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/display/display_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/android/drag_event_android.h"
 #include "ui/events/android/gesture_event_android.h"
@@ -224,7 +224,7 @@ void WebContentsViewAndroid::RenderViewReady() {
     return;
   auto* rwhva = GetRenderWidgetHostViewAndroid();
   if (rwhva)
-    rwhva->UpdateScreenInfo(GetNativeView());
+    rwhva->UpdateScreenInfo();
 
   web_contents_->OnScreenOrientationChange();
 }
@@ -260,14 +260,16 @@ void WebContentsViewAndroid::SetFocus(bool focused) {
 void WebContentsViewAndroid::SetOverscrollControllerEnabled(bool enabled) {
 }
 
-void WebContentsViewAndroid::ShowContextMenu(
-    RenderFrameHost* render_frame_host, const ContextMenuParams& params) {
+void WebContentsViewAndroid::OnCapturerCountChanged() {}
+
+void WebContentsViewAndroid::ShowContextMenu(RenderFrameHost& render_frame_host,
+                                             const ContextMenuParams& params) {
   auto* rwhv = static_cast<RenderWidgetHostViewAndroid*>(
       web_contents_->GetRenderWidgetHostView());
 
   // See if context menu is handled by SelectionController as a selection menu.
   // If not, use the delegate to show it.
-  if (rwhv && rwhv->ShowSelectionMenu(render_frame_host, params))
+  if (rwhv && rwhv->ShowSelectionMenu(&render_frame_host, params))
     return;
 
   if (delegate_)

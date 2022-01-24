@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace content {
@@ -21,6 +20,11 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
   static int GetHttpHandlerPort();
 
   explicit ShellDevToolsManagerDelegate(BrowserContext* browser_context);
+
+  ShellDevToolsManagerDelegate(const ShellDevToolsManagerDelegate&) = delete;
+  ShellDevToolsManagerDelegate& operator=(const ShellDevToolsManagerDelegate&) =
+      delete;
+
   ~ShellDevToolsManagerDelegate() override;
 
   // DevToolsManagerDelegate implementation.
@@ -36,7 +40,6 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
  private:
   BrowserContext* browser_context_;
   base::flat_set<content::DevToolsAgentHostClient*> clients_;
-  DISALLOW_COPY_AND_ASSIGN(ShellDevToolsManagerDelegate);
 };
 
 }  // namespace content

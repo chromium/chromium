@@ -13,7 +13,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 #include "base/values.h"
 #include "components/metrics/log_store.h"
@@ -55,7 +54,11 @@ class UnsentLogStore : public LogStore {
                  size_t min_log_bytes,
                  size_t max_log_size,
                  const std::string& signing_key);
-  ~UnsentLogStore();
+
+  UnsentLogStore(const UnsentLogStore&) = delete;
+  UnsentLogStore& operator=(const UnsentLogStore&) = delete;
+
+  ~UnsentLogStore() override;
 
   // LogStore:
   bool has_unsent_logs() const override;
@@ -196,8 +199,6 @@ class UnsentLogStore : public LogStore {
 
   // The total number of samples that have been sent from this LogStore.
   base::HistogramBase::Count total_samples_sent_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(UnsentLogStore);
 };
 
 }  // namespace metrics

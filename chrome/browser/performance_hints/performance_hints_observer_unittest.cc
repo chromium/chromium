@@ -68,6 +68,11 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
         {// Need to disable model downloading for these tests.
          optimization_guide::features::kOptimizationGuideModelDownloading});
   }
+
+  PerformanceHintsObserverTest(const PerformanceHintsObserverTest&) = delete;
+  PerformanceHintsObserverTest& operator=(const PerformanceHintsObserverTest&) =
+      delete;
+
   ~PerformanceHintsObserverTest() override = default;
 
   virtual void SetUpCommandLine() {
@@ -144,8 +149,6 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
       mock_optimization_guide_keyed_service_ = nullptr;
   MockOptimizationGuideKeyedService*
       mock_otr_optimization_guide_keyed_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceHintsObserverTest);
 };
 
 TEST_F(PerformanceHintsObserverTest, IncognitoDoesNotRegisterPerformanceHints) {

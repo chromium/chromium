@@ -75,7 +75,7 @@ std::unique_ptr<AudioFloatArray> MakeKernel(size_t size) {
 
 }  // namespace
 
-UpSampler::UpSampler(size_t input_block_size)
+UpSampler::UpSampler(unsigned input_block_size)
     : input_block_size_(input_block_size),
       temp_buffer_(input_block_size),
       input_buffer_(input_block_size * 2) {
@@ -96,7 +96,7 @@ UpSampler::UpSampler(size_t input_block_size)
 
 void UpSampler::Process(const float* source_p,
                         float* dest_p,
-                        size_t source_frames_to_process) {
+                        uint32_t source_frames_to_process) {
   const size_t convolution_kernel_size =
       direct_convolver_ ? direct_convolver_->ConvolutionKernelSize()
                         : simple_fft_convolver_->ConvolutionKernelSize();

@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

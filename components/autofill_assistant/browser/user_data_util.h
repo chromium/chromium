@@ -25,37 +25,37 @@ std::vector<std::string> GetContactValidationErrors(
     const autofill::AutofillProfile* profile,
     const CollectUserDataOptions& collect_user_data_options);
 
-// Sorts the given autofill profiles based on completeness, and returns a
-// vector of profile indices in sorted order. Full profiles will be ordered
-// before empty ones, and for equally complete profiles, this falls back to
-// sorting based on the profile names.
+// Sorts the given contacts based on completeness, and returns a vector of
+// indices in sorted order. Full contacts will be ordered before empty ones,
+// and for equally complete contacts, this falls back to sorting based on last
+// used.
 std::vector<int> SortContactsByCompleteness(
     const CollectUserDataOptions& collect_user_data_options,
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles);
+    const std::vector<std::unique_ptr<Contact>>& contacts);
 
-// Get the default selection for the current list of profiles. Returns -1 if no
+// Get the default selection for the current list of contacts. Returns -1 if no
 // default selection is possible.
-int GetDefaultContactProfile(
-    const CollectUserDataOptions& collect_user_data_options,
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles);
+int GetDefaultContact(const CollectUserDataOptions& collect_user_data_options,
+                      const std::vector<std::unique_ptr<Contact>>& contacts);
 
+// Validate the completeness of a shipping address.
 std::vector<std::string> GetShippingAddressValidationErrors(
     const autofill::AutofillProfile* profile,
     const CollectUserDataOptions& collect_user_data_options);
 
-// Sorts the given autofill profiles based on completeness, and returns a
-// vector of profile indices in sorted order. Full profiles will be ordered
-// before empty ones, and for equally complete profiles, this falls back to
-// sorting based on the profile names.
+// Sorts the given addresses based on completeness, and returns a vector of
+// indices in sorted order. Full addresses will be ordered before empty ones,
+// and for equally complete profiles, this falls back to sorting based on
+// last used.
 std::vector<int> SortShippingAddressesByCompleteness(
     const CollectUserDataOptions& collect_user_data_options,
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles);
+    const std::vector<std::unique_ptr<Address>>& addresses);
 
-// Get the default selection for the current list of profiles. Returns -1 if no
-// default selection is possible.
-int GetDefaultShippingAddressProfile(
+// Get the default selection for the current list of addresses. Returns -1 if no
+// no default selection is possible.
+int GetDefaultShippingAddress(
     const CollectUserDataOptions& collect_user_data_options,
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles);
+    const std::vector<std::unique_ptr<Address>>& addresses);
 
 std::vector<std::string> GetPaymentInstrumentValidationErrors(
     const autofill::CreditCard* credit_card,
@@ -87,17 +87,24 @@ bool CompareContactDetails(
     const autofill::AutofillProfile* a,
     const autofill::AutofillProfile* b);
 
-// Get a formatted autofill value. The replacement is treated as strict,
-// meaning a missing value will lead to a failed ClientStatus. If the value
-// or the profile is empty, fails with |INVALID_ACTION|. If the requested
-// profile does not exist, fails with |PRECONDITION FAILED|. If the value
-// cannot be fully resolved, fails with |AUTOFILL_INFO_NOT_AVAILABLE|.
-ClientStatus GetFormattedAutofillValue(const AutofillValue& autofill_value,
-                                       const UserData* user_data,
-                                       std::string* out_value);
-ClientStatus GetFormattedAutofillValue(
+// Get a formatted client value. The replacement is treated as strict,
+// meaning a missing value will lead to a failed ClientStatus.
+// This method returns:
+// - INVALID_ACTION, if the value is empty.
+// - INVALID_ACTION, if a profile is provided and it is empty.
+// - PRECONDITION_FAILED, if the requested profile is not found.
+// - AUTOFILL_INFO_NOT_AVAILABLE, if a key from  an AUtofill source cannot be
+//   resolved.
+// - CLIENT_MEMORY_KEY_NOT_AVAILABLE, if a key from the client memory cannot be
+//   resolved.
+// - EMPTY_VALUE_EXPRESSION_RESULT, if the result is an empty string.
+// - ACTION_APPLIED otherwise.
+ClientStatus GetFormattedClientValue(const AutofillValue& autofill_value,
+                                     const UserData& user_data,
+                                     std::string* out_value);
+ClientStatus GetFormattedClientValue(
     const AutofillValueRegexp& autofill_value_regexp,
-    const UserData* user_data,
+    const UserData& user_data,
     std::string* out_value);
 
 // Get a password manager value from the |UserData|. Returns the user name

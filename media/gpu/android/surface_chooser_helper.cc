@@ -25,7 +25,7 @@ enum { kFrameDelayForFullscreenLayout = 15 };
 // there's plenty of state that we don't know about (e.g., power efficiency,
 // memory pressure => cancelling an old overlay, etc.).  We just let the chooser
 // retry every once in a while for those things.
-constexpr base::TimeDelta RetryChooserTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta RetryChooserTimeout = base::Seconds(5);
 
 }  // namespace
 

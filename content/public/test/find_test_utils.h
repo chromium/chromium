@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_FIND_TEST_UTILS_H_
 #define CONTENT_PUBLIC_TEST_FIND_TEST_UTILS_H_
 
+#include "build/build_config.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_utils.h"
 
@@ -29,6 +30,11 @@ struct FindResults {
 class FindTestWebContentsDelegate : public WebContentsDelegate {
  public:
   FindTestWebContentsDelegate();
+
+  FindTestWebContentsDelegate(const FindTestWebContentsDelegate&) = delete;
+  FindTestWebContentsDelegate& operator=(const FindTestWebContentsDelegate&) =
+      delete;
+
   ~FindTestWebContentsDelegate() override;
 
   // Returns the current find results.
@@ -90,6 +96,7 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
                  const gfx::Rect& selection_rect,
                  int active_match_ordinal,
                  bool final_update) override;
+  bool IsBackForwardCacheSupported() override;
 
   // Uses |message_loop_runner_| to wait for various things.
   void WaitFor(WaitingFor wait_for);
@@ -133,8 +140,6 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
   WaitingFor waiting_for_;
 
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindTestWebContentsDelegate);
 };
 
 // Finds the set of all RenderFrameHosts that the FindRequestManager associated

@@ -91,7 +91,6 @@ class BrowserTabStripController : public TabStripController,
   void OnDropIndexUpdate(int index, bool drop_before) override;
   void CreateNewTab() override;
   void CreateNewTabWithLocation(const std::u16string& loc) override;
-  void StackedLayoutMaybeChanged() override;
   void OnStartedDragging(bool dragging_window) override;
   void OnStoppedDragging() override;
   void OnKeyboardFocusedTabChanged(absl::optional<int> index) override;
@@ -157,9 +156,6 @@ class BrowserTabStripController : public TabStripController,
 
   // Adds a tab.
   void AddTab(content::WebContents* contents, int index, bool is_active);
-
-  // Resets the tabstrips stacked layout (true or false) from prefs.
-  void UpdateStackedLayout();
 
   TabStripModel* model_;
 

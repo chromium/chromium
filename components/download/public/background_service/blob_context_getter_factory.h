@@ -6,7 +6,6 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_BLOB_CONTEXT_GETTER_FACTORY_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace storage {
@@ -25,13 +24,13 @@ class BlobContextGetterFactory {
   virtual void RetrieveBlobContextGetter(
       BlobContextGetterCallback callback) = 0;
 
+  BlobContextGetterFactory(const BlobContextGetterFactory&) = delete;
+  BlobContextGetterFactory& operator=(const BlobContextGetterFactory&) = delete;
+
   virtual ~BlobContextGetterFactory() = default;
 
  protected:
   BlobContextGetterFactory() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlobContextGetterFactory);
 };
 
 using BlobContextGetterFactoryPtr = std::unique_ptr<BlobContextGetterFactory>;

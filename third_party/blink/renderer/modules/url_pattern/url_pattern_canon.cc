@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern_component.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
@@ -36,6 +37,22 @@ String StringFromCanonOutput(const url::CanonOutput& output,
 std::string StdStringFromCanonOutput(const url::CanonOutput& output,
                                      const url::Component& component) {
   return std::string(output.data() + component.begin, component.len);
+}
+
+bool ContainsForbiddenHostnameCodePoint(absl::string_view input) {
+  for (auto c : input) {
+    // The full list of forbidden code points is defined at:
+    //
+    //  https://url.spec.whatwg.org/#forbidden-host-code-point
+    //
+    // We only check the code points the chromium URL parser incorrectly
+    // permits.  See: crbug.com/1065667#c18
+    if (c == ' ' || c == '#' || c == ':' || c == '<' || c == '>' || c == '@' ||
+        c == '[' || c == ']' || c == '|') {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // anonymous namespace
@@ -105,6 +122,18 @@ absl::StatusOr<std::string> HostnameEncodeCallback(absl::string_view input) {
   if (input.empty())
     return std::string();
 
+  // Due to crbug.com/1065667 the url::CanonicalizeHost() call below will
+  // permit and possibly encode some illegal code points.  Since we want
+  // to ultimately fix that in the future we don't want to encourage more
+  // use of these characters in URLPattern.  Therefore we apply an additional
+  // restrictive check for these forbidden code points.
+  //
+  // TODO(crbug.com/1065667): Remove this check after the URL parser is fixed.
+  if (ContainsForbiddenHostnameCodePoint(input)) {
+    return absl::InvalidArgumentError("Invalid hostname pattern '" +
+                                      std::string(input) + "'.");
+  }
+
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
 
@@ -118,6 +147,30 @@ absl::StatusOr<std::string> HostnameEncodeCallback(absl::string_view input) {
   }
 
   return StdStringFromCanonOutput(canon_output, component);
+}
+
+absl::StatusOr<std::string> IPv6HostnameEncodeCallback(
+    absl::string_view input) {
+  std::string result;
+  result.reserve(input.size());
+  // This implements a light validation and canonicalization of IPv6 hostname
+  // content.  Ideally we would use the URL parser's hostname canonicalizer
+  // here, but that is too strict for the encoding callback.  The callback may
+  // see only bits and pieces of the hostname pattern; e.g. for `[:address]` it
+  // sees the `[` and `]` strings as separate calls.  Since the full URL
+  // hostname parser wants to completely parse IPv6 hostnames, this will always
+  // trigger an error.  Therefore, to allow pattern syntax within IPv6 brackets
+  // we simply check for valid characters and lowercase any hex digits.
+  for (size_t i = 0; i < input.size(); ++i) {
+    char c = input[i];
+    if (!IsASCIIHexDigit(c) && c != '[' && c != ']' && c != ':') {
+      return absl::InvalidArgumentError(
+          std::string("Invalid IPv6 hostname character '") + c + "' in '" +
+          std::string(input) + "'.");
+    }
+    result += ToASCIILower(c);
+  }
+  return result;
 }
 
 absl::StatusOr<std::string> PortEncodeCallback(absl::string_view input) {

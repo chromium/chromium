@@ -22,10 +22,10 @@ namespace web_app {
 namespace {
 
 int BucketedDailySeconds(base::TimeDelta delta) {
-  int64_t sample = base::clamp(delta.InSeconds(), int64_t(0),
-                               base::TimeDelta::FromDays(1).InSeconds());
+  int64_t sample =
+      base::clamp(delta.InSeconds(), int64_t(0), base::Days(1).InSeconds());
   // Result between 1 sec and 1 day, in 50 linear buckets per day.
-  int32_t bucket_size = base::TimeDelta::FromDays(1).InSeconds() / 50;
+  int32_t bucket_size = base::Days(1).InSeconds() / 50;
   int result = ukm::GetLinearBucketMin(sample, bucket_size);
   return std::max(1, result);
 }
@@ -62,7 +62,6 @@ namespace {
 
 using absl::optional;
 using base::DictionaryValue;
-using base::TimeDelta;
 using base::Value;
 
 bool skip_origin_check_for_testing_ = false;
@@ -103,15 +102,13 @@ optional<DailyInteraction> DictToRecord(const std::string& url,
   optional<int> foreground_duration_sec =
       record_dict.FindIntKey(kForegroundDurationSec);
   if (foreground_duration_sec) {
-    record.foreground_duration =
-        TimeDelta::FromSeconds(*foreground_duration_sec);
+    record.foreground_duration = base::Seconds(*foreground_duration_sec);
   }
 
   optional<int> background_duration_sec =
       record_dict.FindIntKey(kBackgroundDurationSec);
   if (background_duration_sec) {
-    record.background_duration =
-        TimeDelta::FromSeconds(*background_duration_sec);
+    record.background_duration = base::Seconds(*background_duration_sec);
   }
 
   optional<int> num_sessions = record_dict.FindIntKey(kNumSessions);

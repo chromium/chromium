@@ -120,6 +120,8 @@ void InputTypeView::HandleBlurEvent() {}
 
 void InputTypeView::HandleFocusInEvent(Element*, mojom::blink::FocusType) {}
 
+void InputTypeView::OpenPopupView() {}
+
 void InputTypeView::ClosePopupView() {}
 
 bool InputTypeView::HasOpenedPopup() const {
@@ -201,8 +203,7 @@ FormControlState InputTypeView::SaveFormControlState() const {
 }
 
 void InputTypeView::RestoreFormControlState(const FormControlState& state) {
-  GetElement().setValue(state[0],
-                        TextFieldEventBehavior::kDispatchInputAndChangeEvent);
+  GetElement().setValue(state[0]);
 }
 
 bool InputTypeView::IsDraggedSlider() const {

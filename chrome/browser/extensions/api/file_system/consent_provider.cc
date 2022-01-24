@@ -32,9 +32,8 @@ namespace {
 // List of allowlisted component apps and extensions by their ids for
 // chrome.fileSystem.requestFileSystem.
 const char* const kRequestFileSystemComponentAllowlist[] = {
-    file_manager::kFileManagerAppId, file_manager::kVideoPlayerAppId,
-    file_manager::kAudioPlayerAppId, file_manager::kImageLoaderExtensionId,
-    file_manager::kZipArchiverId,
+    file_manager::kFileManagerAppId, file_manager::kAudioPlayerAppId,
+    file_manager::kImageLoaderExtensionId,
     // TODO(henryhsu,b/110126438): Remove this extension id, and add it only
     // for tests.
     "pkplfbidichfdicaijlchgnapepdginl"  // Testing extensions.

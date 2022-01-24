@@ -22,6 +22,10 @@ typedef base::RepeatingCallback<void(KeySystemPropertiesVector*)>
 class ChromeKeySystemsProvider {
  public:
   ChromeKeySystemsProvider();
+
+  ChromeKeySystemsProvider(const ChromeKeySystemsProvider&) = delete;
+  ChromeKeySystemsProvider& operator=(const ChromeKeySystemsProvider&) = delete;
+
   ~ChromeKeySystemsProvider();
 
   // Adds properties for supported key systems.
@@ -56,8 +60,6 @@ class ChromeKeySystemsProvider {
   // For unit tests to inject their own key systems. Will bypass adding default
   // Chrome key systems when set.
   KeySystemsProviderDelegate test_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeKeySystemsProvider);
 };
 
 #endif  // CHROME_RENDERER_MEDIA_CHROME_KEY_SYSTEMS_PROVIDER_H_

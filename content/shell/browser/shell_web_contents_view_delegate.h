@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
@@ -23,10 +22,15 @@ namespace content {
 class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
  public:
   explicit ShellWebContentsViewDelegate(WebContents* web_contents);
+
+  ShellWebContentsViewDelegate(const ShellWebContentsViewDelegate&) = delete;
+  ShellWebContentsViewDelegate& operator=(const ShellWebContentsViewDelegate&) =
+      delete;
+
   ~ShellWebContentsViewDelegate() override;
 
   // Overridden from WebContentsViewDelegate:
-  void ShowContextMenu(RenderFrameHost* render_frame_host,
+  void ShowContextMenu(RenderFrameHost& render_frame_host,
                        const ContextMenuParams& params) override;
 
 #if defined(OS_MAC)
@@ -46,8 +50,6 @@ class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ShellWebContentsViewDelegate);
 };
 
 }  // namespace content

@@ -3,13 +3,27 @@
 # found in the LICENSE file.
 """Module for interacting with expectation files."""
 
+import base64
 import os
+import posixpath
+
+import six
+
+# This script is Python 3-only, but some presubmit stuff still tries to parse
+# it in Python 2, and this module does not exist in Python 2.
+if six.PY3:
+  import urllib.request
+
+import flake_suppressor
 
 from typ import expectations_parser
 
-EXPECTATION_FILE_DIRECTORY = os.path.realpath(
-    os.path.join(os.path.dirname(__file__), '..', 'gpu_tests',
-                 'test_expectations'))
+CHROMIUM_SRC_DIR = flake_suppressor.CHROMIUM_SRC_DIR
+RELATIVE_EXPECTATION_FILE_DIRECTORY = os.path.join('content', 'test', 'gpu',
+                                                   'gpu_tests',
+                                                   'test_expectations')
+ABSOLUTE_EXPECTATION_FILE_DIRECTORY = os.path.join(
+    CHROMIUM_SRC_DIR, RELATIVE_EXPECTATION_FILE_DIRECTORY)
 # For most test suites reported to ResultDB, we can chop off "_integration_test"
 # and get the name used for the expectation file. However, there are a few
 # special cases, so map those there.
@@ -17,6 +31,8 @@ EXPECTATION_FILE_OVERRIDE = {
     'info_collection_test': 'info_collection',
     'trace': 'trace_test',
 }
+GITILES_URL = 'https://chromium.googlesource.com/chromium/src/+/refs/heads/main'
+TEXT_FORMAT_ARG = '?format=TEXT'
 
 
 def IterateThroughResultsForUser(result_map, group_by_tags):
@@ -35,11 +51,10 @@ def IterateThroughResultsForUser(result_map, group_by_tags):
         expectation whose tags are the largest subset of the produced tags. If
         False, new expectations will be appended to the end of the file.
   """
+  typ_tag_ordered_result_map = _ReorderMapByTypTags(result_map)
   for suite, test_map in result_map.items():
     for test, tag_map in test_map.items():
-      for _, unique_result in tag_map.items():
-        typ_tags = unique_result['typ_tags']
-        build_url_list = unique_result['build_url_list']
+      for typ_tags, build_url_list in tag_map.items():
 
         print('')
         print('Suite: %s' % suite)
@@ -55,7 +70,7 @@ def IterateThroughResultsForUser(result_map, group_by_tags):
             print('    %d failures on %s' % (failure_count, ' '.join(tags)))
 
         other_failures_for_config = FindFailuresInSameConfig(
-            result_map, suite, test, typ_tags)
+            typ_tag_ordered_result_map, suite, test, typ_tags)
         if other_failures_for_config:
           print('Other failures on same configuration found in other tests')
           for (name, failure_count) in other_failures_for_config:
@@ -88,23 +103,25 @@ def FindFailuresInSameTest(result_map, target_suite, target_test,
     times the test failed on that configuration.
   """
   other_failures = []
+  target_typ_tags = tuple(target_typ_tags)
   tag_map = result_map.get(target_suite, {}).get(target_test, {})
-  for _, unique_result in tag_map.items():
-    typ_tags = unique_result['typ_tags']
+  for typ_tags, build_url_list in tag_map.items():
     if typ_tags == target_typ_tags:
       continue
-    other_failures.append((typ_tags, len(unique_result['build_url_list'])))
+    other_failures.append((typ_tags, len(build_url_list)))
   return other_failures
 
 
-def FindFailuresInSameConfig(result_map, target_suite, target_test,
-                             target_typ_tags):
+def FindFailuresInSameConfig(typ_tag_ordered_result_map, target_suite,
+                             target_test, target_typ_tags):
   """Finds all other failures that occurred on the given configuration.
 
   Ignores the failures for the given test on the given configuration.
 
   Args:
-    result_map: Aggregated query results from results.AggregateResults.
+    typ_tag_ordered_result_map: Aggregated query results from
+        results.AggregateResults that have been reordered using
+        _ReorderMapByTypTags.
     target_suite: A string containing the test suite the original failure was
         found in.
     target_test: A string containing the test case the original failure was
@@ -117,21 +134,43 @@ def FindFailuresInSameConfig(result_map, target_suite, target_test,
     test suite and test case concatenated together. |count| is how many times
     |full_name| failed on the configuration specified by |target_typ_tags|.
   """
-  # TODO(crbug.com/1192733): Maybe create a typ_tags -> suite -> test_map dict
-  # elsewhere once and use that instead of looping through everything every
-  # time.
+  target_typ_tags = tuple(target_typ_tags)
   other_failures = []
-  for suite, test_map in result_map.items():
-    for test, tag_map in test_map.items():
+  suite_map = typ_tag_ordered_result_map.get(target_typ_tags, {})
+  for suite, test_map in suite_map.items():
+    for test, build_url_list in test_map.items():
       if suite == target_suite and test == target_test:
         continue
-      for _, unique_result in tag_map.items():
-        typ_tags = unique_result['typ_tags']
-        if typ_tags != target_typ_tags:
-          continue
-        full_name = '%s.%s' % (suite, test)
-        other_failures.append((full_name, len(unique_result['build_url_list'])))
+      full_name = '%s.%s' % (suite, test)
+      other_failures.append((full_name, len(build_url_list)))
   return other_failures
+
+
+def _ReorderMapByTypTags(result_map):
+  """Rearranges|result_map| to use typ tags as the top level keys.
+
+  Args:
+    result_map: Aggregated query results from results.AggregateResults
+
+  Returns:
+    A dict containing the same contents as |result_map|, but in the following
+    format:
+    {
+      typ_tags (tuple of str): {
+        suite (str): {
+          test (str): build_url_list (list of str),
+        },
+      },
+    }
+  """
+  reordered_map = {}
+  for suite, test_map in result_map.items():
+    for test, tag_map in test_map.items():
+      for typ_tags, build_url_list in tag_map.items():
+        reordered_map.setdefault(typ_tags,
+                                 {}).setdefault(suite,
+                                                {})[test] = build_url_list
+  return reordered_map
 
 
 def PromptUserForExpectationAction():
@@ -232,7 +271,8 @@ def GetExpectationFileForSuite(suite, typ_tags):
   expectation_file = EXPECTATION_FILE_OVERRIDE.get(truncated_suite,
                                                    truncated_suite)
   expectation_file += '_expectations.txt'
-  expectation_file = os.path.join(EXPECTATION_FILE_DIRECTORY, expectation_file)
+  expectation_file = os.path.join(ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                                  expectation_file)
   return expectation_file
 
 
@@ -268,3 +308,59 @@ def FindBestInsertionLineForExpectation(typ_tags, expectation_file):
       if best_insertion_line < e.lineno:
         best_insertion_line = e.lineno
   return best_insertion_line, best_matching_tags
+
+
+def GetExpectationFilesFromOrigin():
+  """Gets expectation file contents from origin/main.
+
+  Returns:
+    A dict of expectation file name (str) -> expectation file contents (str)
+    that are available on origin/main.
+  """
+  # Get the path to the expectation file directory in gitiles, i.e. the POSIX
+  # path relative to the Chromium src directory.
+  origin_dir = RELATIVE_EXPECTATION_FILE_DIRECTORY.replace(os.sep, '/')
+
+  origin_dir_url = posixpath.join(GITILES_URL, origin_dir) + TEXT_FORMAT_ARG
+  response = urllib.request.urlopen(origin_dir_url).read()
+  # Response is a base64 encoded, newline-separated list of files in the
+  # directory in the format: `mode file_type hash name`
+  files = []
+  decoded_text = base64.b64decode(response).decode('utf-8')
+  for line in decoded_text.splitlines():
+    files.append(line.split()[-1])
+
+  origin_file_contents = {}
+  for f in files:
+    origin_filepath = posixpath.join(origin_dir, f)
+    origin_filepath_url = posixpath.join(GITILES_URL,
+                                         origin_filepath) + TEXT_FORMAT_ARG
+    response = urllib.request.urlopen(origin_filepath_url).read()
+    decoded_text = base64.b64decode(response).decode('utf-8')
+    origin_file_contents[f] = decoded_text
+
+  return origin_file_contents
+
+
+def GetExpectationFilesFromLocalCheckout():
+  """Gets expectaiton file contents from the local checkout.
+
+  Returns:
+    A dict of expectation file name (str) -> expectation file contents (str)
+    that are available from the local checkout.
+  """
+  local_file_contents = {}
+  for f in os.listdir(ABSOLUTE_EXPECTATION_FILE_DIRECTORY):
+    with open(os.path.join(ABSOLUTE_EXPECTATION_FILE_DIRECTORY, f)) as infile:
+      local_file_contents[f] = infile.read()
+  return local_file_contents
+
+
+def AssertCheckoutIsUpToDate():
+  """Confirms that the local checkout's expectations are up to date."""
+  origin_file_contents = GetExpectationFilesFromOrigin()
+  local_file_contents = GetExpectationFilesFromLocalCheckout()
+  if origin_file_contents != local_file_contents:
+    raise RuntimeError(
+        'Local Chromium checkout expectations are out of date. Please perform '
+        'a `git pull`.')

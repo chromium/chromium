@@ -64,6 +64,28 @@ public class NativeTest {
                 Log.w(TAG, "failed to set LLVM_PROFILE_FILE", e);
             }
         }
+        // To use Os.setenv, need to check Android API level, because
+        // it requires API level 21 and Kitkat(API 19) doesn't match.
+        // See crbug.com/1042122.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // Set TMPDIR to make perfetto_unittests not to use /data/local/tmp
+            // as temporary directory.
+            try {
+                Os.setenv(
+                        "TMPDIR", activity.getApplicationContext().getCacheDir().getPath(), false);
+            } catch (Exception e) {
+                // Need to use Exception for Android Kitkat, because
+                // Kitkat doesn't know ErrnoException is an exception class.
+                // When dalvikvm(Kitkat) verifies preCreate method, it finds
+                // that unknown method:Os.setenv is used without any exception
+                // class. So dalvikvm rejects preCreate method and also rejects
+                // NativeClass. All native tests will crash.
+                // The verification is executed before running preCreate.
+                // The above Build.VERSION check doesn't work to avoid
+                // the crash.
+                Log.w(TAG, "failed to set TMPDIR", e);
+            }
+        }
     }
 
     public void postCreate(Activity activity) {

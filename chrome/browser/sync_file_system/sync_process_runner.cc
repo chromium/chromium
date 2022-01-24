@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/logger.h"
 
 namespace sync_file_system {
@@ -41,12 +40,13 @@ class BaseTimerHelper : public SyncProcessRunner::TimerHelper {
 
   base::TimeTicks Now() const override { return base::TimeTicks::Now(); }
 
+  BaseTimerHelper(const BaseTimerHelper&) = delete;
+  BaseTimerHelper& operator=(const BaseTimerHelper&) = delete;
+
   ~BaseTimerHelper() override {}
 
  private:
   base::OneShotTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseTimerHelper);
 };
 
 bool WasSuccessfulSync(SyncStatusCode status) {
@@ -125,10 +125,9 @@ void SyncProcessRunner::ThrottleSync(int64_t base_delay) {
   // doesn't grow exponentially.  If the backoff happens on the end of
   // throttling period, it causes another throttling period that is twice as
   // long as previous.
-  base::TimeDelta base_delay_delta =
-      base::TimeDelta::FromMilliseconds(base_delay);
+  base::TimeDelta base_delay_delta = base::Milliseconds(base_delay);
   const base::TimeDelta max_delay =
-      base::TimeDelta::FromMilliseconds(kSyncDelayMaxInMilliseconds);
+      base::Milliseconds(kSyncDelayMaxInMilliseconds);
   throttle_until_ =
       std::min(now + max_delay,
                std::max(now + base_delay_delta, throttle_until_ + 2 * elapsed));
@@ -210,13 +209,12 @@ void SyncProcessRunner::ScheduleInternal(int64_t delay) {
   base::TimeTicks next_scheduled;
 
   if (timer_helper_->IsRunning()) {
-    next_scheduled = last_run_ + base::TimeDelta::FromMilliseconds(delay);
+    next_scheduled = last_run_ + base::Milliseconds(delay);
     if (next_scheduled < now) {
-      next_scheduled =
-          now + base::TimeDelta::FromMilliseconds(kSyncDelayFastInMilliseconds);
+      next_scheduled = now + base::Milliseconds(kSyncDelayFastInMilliseconds);
     }
   } else {
-    next_scheduled = now + base::TimeDelta::FromMilliseconds(delay);
+    next_scheduled = now + base::Milliseconds(delay);
   }
 
   if (next_scheduled < throttle_until_)

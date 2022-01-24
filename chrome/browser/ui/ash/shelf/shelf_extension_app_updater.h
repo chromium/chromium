@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHELF_SHELF_EXTENSION_APP_UPDATER_H_
 #define CHROME_BROWSER_UI_ASH_SHELF_SHELF_EXTENSION_APP_UPDATER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_app_updater.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -17,6 +16,10 @@ class ShelfExtensionAppUpdater : public ShelfAppUpdater,
   ShelfExtensionAppUpdater(Delegate* delegate,
                            content::BrowserContext* browser_context,
                            bool extensions_only);
+
+  ShelfExtensionAppUpdater(const ShelfExtensionAppUpdater&) = delete;
+  ShelfExtensionAppUpdater& operator=(const ShelfExtensionAppUpdater&) = delete;
+
   ~ShelfExtensionAppUpdater() override;
 
   // ExtensionRegistryObserver:
@@ -51,8 +54,6 @@ class ShelfExtensionAppUpdater : public ShelfAppUpdater,
   // Handles life-cycle events for extensions only if true, otherwise handles
   // life-cycle events for both Chrome apps and extensions.
   const bool extensions_only_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfExtensionAppUpdater);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_SHELF_EXTENSION_APP_UPDATER_H_

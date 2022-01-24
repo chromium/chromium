@@ -26,14 +26,15 @@ class Input;
 class NET_EXPORT CertErrorParams {
  public:
   CertErrorParams();
+
+  CertErrorParams(const CertErrorParams&) = delete;
+  CertErrorParams& operator=(const CertErrorParams&) = delete;
+
   virtual ~CertErrorParams();
 
   // Creates a representation of this parameter as a string, which may be
   // used for pretty printing the error.
   virtual std::string ToDebugString() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CertErrorParams);
 };
 
 // Creates a parameter object that holds a copy of |der|, and names it |name|

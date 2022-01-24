@@ -21,7 +21,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -46,10 +45,6 @@ class PrefServiceAndroid;
 
 namespace base {
 class FilePath;
-}
-
-namespace metrics {
-class CleanExitBeacon;
 }
 
 namespace prefs {
@@ -184,6 +179,10 @@ class COMPONENTS_PREFS_EXPORT PrefService {
               base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
                   read_error_callback,
               bool async);
+
+  PrefService(const PrefService&) = delete;
+  PrefService& operator=(const PrefService&) = delete;
+
   virtual ~PrefService();
 
   // Lands pending writes to disk. This should only be used if we need to save
@@ -423,10 +422,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   friend class PrefChangeRegistrar;
   friend class subtle::PrefMemberBase;
 
-  // Give access to CommitPendingWriteSynchronously().
-  // TODO(crbug/1218908): Maybe limit CleanExitBeacon's access.
-  friend class metrics::CleanExitBeacon;
-
   // These are protected so they can only be accessed by the friend
   // classes listed above.
   //
@@ -473,12 +468,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   const base::Value* GetPreferenceValue(const std::string& path) const;
   const base::Value* GetPreferenceValueChecked(const std::string& path) const;
 
-  // Like CommitPendingWrite(), but writes to disk on this thread synchronously
-  // rather than scheduling a write. CommitPendingWriteSynchronously() is
-  // appropriate to call only in the exceptional situation in which you need to
-  // write to disk early on during startup before threads have been started.
-  void CommitPendingWriteSynchronously();
-
   const scoped_refptr<PrefRegistry> pref_registry_;
 
   // Local cache of registered Preference objects. The pref_registry_
@@ -493,8 +482,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
 #endif
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PrefService);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_SERVICE_H_

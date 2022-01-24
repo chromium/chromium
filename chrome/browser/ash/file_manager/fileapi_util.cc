@@ -7,11 +7,15 @@
 #include <stddef.h>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/webui/file_manager/url_constants.h"
 #include "base/bind.h"
 #include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,13 +28,15 @@
 #include "content/public/common/url_utils.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
-#include "google_apis/drive/task_util.h"
+#include "google_apis/common/task_util.h"
 #include "net/base/escape.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/file_system/open_file_system_mode.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -147,7 +153,8 @@ void FileDefinitionListConverter::ConvertNextIterator(
   }
 
   storage::FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
-      origin_, storage::kFileSystemTypeExternal, iterator->virtual_path);
+      blink::StorageKey(origin_), storage::kFileSystemTypeExternal,
+      iterator->virtual_path);
 
   if (!url.is_valid()) {
     OnIteratorConverted(
@@ -197,7 +204,8 @@ void FileDefinitionListConverter::OnResolvedURL(
 
   // Construct a target Entry.fullPath value from the virtual path and the
   // root URL. Eg. Downloads/A/b.txt -> A/b.txt.
-  storage::FileSystemURL fs_url = file_system_context_->CrackURL(info.root_url);
+  storage::FileSystemURL fs_url =
+      file_system_context_->CrackURLInFirstPartyContext(info.root_url);
   if (!fs_url.is_valid()) {
     OnIteratorConverted(
         std::move(self_deleter), iterator,
@@ -239,7 +247,7 @@ bool IsUnderNonNativeLocalPath(const storage::FileSystemContext& context,
     return false;
 
   const storage::FileSystemURL url = context.CreateCrackedFileSystemURL(
-      url::Origin(), storage::kFileSystemTypeExternal, virtual_path);
+      blink::StorageKey(), storage::kFileSystemTypeExternal, virtual_path);
   if (!url.is_valid())
     return false;
 
@@ -333,11 +341,16 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
     NotifyComplete(std::move(lifetime));
   }
 
+  ConvertSelectedFileInfoListToFileChooserFileInfoListImpl(
+      const ConvertSelectedFileInfoListToFileChooserFileInfoListImpl&) = delete;
+  ConvertSelectedFileInfoListToFileChooserFileInfoListImpl& operator=(
+      const ConvertSelectedFileInfoListToFileChooserFileInfoListImpl&) = delete;
+
   ~ConvertSelectedFileInfoListToFileChooserFileInfoListImpl() {
     for (const auto& info : chooser_info_list_) {
       if (info && info->is_file_system()) {
         storage::IsolatedContext::GetInstance()->RevokeFileSystem(
-            context_->CrackURL(info->get_file_system()->url)
+            context_->CrackURLInFirstPartyContext(info->get_file_system()->url)
                 .mount_filesystem_id());
       }
     }
@@ -365,7 +378,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
     }
 
     context_->operation_runner()->GetMetadata(
-        context_->CrackURL((*it)->get_file_system()->url),
+        context_->CrackURLInFirstPartyContext((*it)->get_file_system()->url),
         storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
             storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
             storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
@@ -415,9 +428,6 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
   scoped_refptr<storage::FileSystemContext> context_;
   FileChooserFileInfoList chooser_info_list_;
   FileChooserFileInfoListCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      ConvertSelectedFileInfoListToFileChooserFileInfoListImpl);
 };
 
 void CheckIfDirectoryExistsOnIoThread(
@@ -439,6 +449,57 @@ void GetMetadataForPathOnIoThread(
                                                        std::move(callback));
 }
 
+// Helper struct used to store the current file url being checked when trying to
+// find an unused filename.
+struct GenerateUnusedFilenameState {
+  scoped_refptr<storage::FileSystemContext> file_system_context;
+  storage::FileSystemURL destination_folder;
+
+  // The filename without the counter and extension.
+  std::string prefix;
+
+  // The number to check.
+  int counter = 0;
+
+  // The extension of the given filename, including the "." at the start.
+  std::string extension;
+};
+
+// Helper callback function for GetUnusedFilename().
+void GenerateUnusedFilenameOnGotMetadata(
+    storage::FileSystemURL trial_url,
+    GenerateUnusedFilenameState state,
+    base::OnceCallback<void(base::FileErrorOr<storage::FileSystemURL>)>
+        callback,
+    base::File::Error error,
+    const base::File::Info& file_info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  if (error == base::File::FILE_ERROR_NOT_FOUND) {
+    std::move(callback).Run(std::move(trial_url));
+    return;
+  } else if (error != base::File::FILE_OK) {
+    std::move(callback).Run(error);
+    return;
+  }
+
+  // File at |trial_url| exists, so try the next number up.
+  auto file_system_context = state.file_system_context;
+  state.counter++;
+  std::string filename =
+      base::StringPrintf("%s (%d)%s", state.prefix.c_str(), state.counter,
+                         state.extension.c_str());
+  auto filesystem_url = file_system_context->CreateCrackedFileSystemURL(
+      state.destination_folder.storage_key(),
+      state.destination_folder.mount_type(),
+      state.destination_folder.virtual_path().Append(
+          base::FilePath::FromUTF8Unsafe(filename)));
+  GetMetadataForPathOnIoThread(
+      file_system_context, filesystem_url,
+      storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
+      base::BindOnce(&GenerateUnusedFilenameOnGotMetadata, filesystem_url,
+                     std::move(state), std::move(callback)));
+}
+
 }  // namespace
 
 EntryDefinition::EntryDefinition() = default;
@@ -448,7 +509,14 @@ EntryDefinition::EntryDefinition(const EntryDefinition& other) = default;
 EntryDefinition::~EntryDefinition() = default;
 
 const GURL GetFileManagerURL() {
+  if (ash::features::IsFileManagerSwaEnabled()) {
+    return GURL(ash::file_manager::kChromeUIFileManagerURL);
+  }
   return extensions::Extension::GetBaseURLFromExtensionId(kFileManagerAppId);
+}
+
+bool IsFileManagerURL(const GURL& source_url) {
+  return GetFileManagerURL() == source_url.DeprecatedGetOriginAsURL();
 }
 
 storage::FileSystemContext* GetFileManagerFileSystemContext(Profile* profile) {
@@ -604,9 +672,9 @@ FileSystemURLAndHandle CreateIsolatedURLFromVirtualPath(
     const GURL& origin,
     const base::FilePath& virtual_path) {
   const storage::FileSystemURL original_url =
-      context.CreateCrackedFileSystemURL(url::Origin::Create(origin),
-                                         storage::kFileSystemTypeExternal,
-                                         virtual_path);
+      context.CreateCrackedFileSystemURL(
+          blink::StorageKey(url::Origin::Create(origin)),
+          storage::kFileSystemTypeExternal, virtual_path);
 
   std::string register_name;
   storage::IsolatedContext::ScopedFSHandle file_system =
@@ -614,9 +682,46 @@ FileSystemURLAndHandle CreateIsolatedURLFromVirtualPath(
           original_url.type(), original_url.filesystem_id(),
           original_url.path(), &register_name);
   storage::FileSystemURL isolated_url = context.CreateCrackedFileSystemURL(
-      url::Origin::Create(origin), storage::kFileSystemTypeIsolated,
+      blink::StorageKey(url::Origin::Create(origin)),
+      storage::kFileSystemTypeIsolated,
       base::FilePath(file_system.id()).Append(register_name));
   return {isolated_url, file_system};
+}
+
+void GenerateUnusedFilename(
+    storage::FileSystemURL destination_folder,
+    base::FilePath filename,
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    base::OnceCallback<void(base::FileErrorOr<storage::FileSystemURL>)>
+        callback) {
+  if (filename.empty() || filename != filename.BaseName()) {
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
+    return;
+  }
+
+  auto trial_url = file_system_context->CreateCrackedFileSystemURL(
+      destination_folder.storage_key(), destination_folder.mount_type(),
+      destination_folder.virtual_path().Append(filename));
+
+  GenerateUnusedFilenameState state;
+  state.destination_folder = std::move(destination_folder);
+  state.file_system_context = file_system_context;
+  state.extension = filename.Extension();
+  // Extracts the filename without extension or existing counter.
+  // E.g. "foo (3).txt" -> "foo".
+  bool res = RE2::FullMatch(filename.RemoveExtension().value(),
+                            R"((.*?)(?: \(\d+\))?)", &state.prefix);
+  DCHECK(res);
+
+  auto get_metadata_callback = base::BindOnce(
+      &GenerateUnusedFilenameOnGotMetadata, trial_url, std::move(state),
+      google_apis::CreateRelayCallback(std::move(callback)));
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GetMetadataForPathOnIoThread, file_system_context,
+                     std::move(trial_url),
+                     storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
+                     std::move(get_metadata_callback)));
 }
 
 }  // namespace util

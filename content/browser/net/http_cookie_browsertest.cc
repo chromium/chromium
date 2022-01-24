@@ -223,6 +223,50 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
+  // is_user_initiated_navigation - true if user initiates navigation to 404,
+  //                              - false script initiates this navigation
+  // is_cross_site_navigation - true if testing in a cross-site context,
+  //                          - false if testing in a same-site context
+  // is_user_initiated_reload - true if user initates the reload,
+  //                            false if the reload via script
+  std::string Test404ReloadCookie(bool is_user_initiated_navigation,
+                                  bool is_cross_site_navigation,
+                                  bool is_user_initiated_reload) {
+    WebContentsImpl* web_contents =
+        static_cast<WebContentsImpl*>(shell()->web_contents());
+
+    // Set target as A or B and cookies based on cross_site param
+    const char* target = is_cross_site_navigation ? kHostB : kHostA;
+    GURL target_URL =
+        https_server()->GetURL(target, "/echo-cookie-with-status?status=404");
+    SetSameSiteCookies(target);
+
+    // Start at a website A
+    EXPECT_TRUE(
+        NavigateToURL(web_contents, EchoCookiesUrl(https_server(), kHostA)));
+
+    // Navigate method based on whether user or script initiated
+    if (is_user_initiated_navigation) {
+      EXPECT_TRUE(NavigateToURL(web_contents, target_URL));
+    } else {
+      EXPECT_TRUE(NavigateToURLFromRenderer(web_contents, target_URL));
+    }
+
+    // Trigger either user or script reload
+    TestNavigationObserver nav_observer(web_contents);
+    if (is_user_initiated_reload) {
+      shell()->Reload();
+    } else {
+      ExecuteScriptAsync(
+          web_contents->GetMainFrame(),
+          content::JsReplace("window.location.reload($1);", true));
+    }
+    nav_observer.Wait();
+
+    // Return the cookies rendered on frame
+    return ExtractFrameContent(web_contents->GetMainFrame());
+  }
+
  private:
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList feature_list_;
@@ -680,6 +724,93 @@ IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest, SetSamePartyCookies) {
                   net::MatchesCookieWithName(kSamePartyNoneCookieName),
                   net::MatchesCookieWithName(kSamePartyUnspecifiedCookieName)));
   ASSERT_EQ(3U, ClearCookies());
+}
+
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
+                       ScriptNavigationSameSite404ScriptReload) {
+  EXPECT_THAT(
+      Test404ReloadCookie(/* is_user_initiated_navigation= */ false,
+                          /* is_cross_site_navigation= */ false,
+                          /* is_user_initiated_reload= */ false),
+      net::CookieStringIs(UnorderedElementsAre(
+          Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
+          Key(kSameSiteNoneCookieName), Key(kSameSiteUnspecifiedCookieName))));
+}
+
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
+                       ScriptNavigationSameSite404UserReload) {
+  EXPECT_THAT(
+      Test404ReloadCookie(/* is_user_initiated_navigation= */ false,
+                          /* is_cross_site_navigation= */ false,
+                          /* is_user_initiated_reload= */ true),
+      net::CookieStringIs(UnorderedElementsAre(
+          Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
+          Key(kSameSiteNoneCookieName), Key(kSameSiteUnspecifiedCookieName))));
+}
+
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
+                       ScriptNavigationCrossSite404ScriptReload) {
+  EXPECT_THAT(
+      Test404ReloadCookie(/* is_user_initiated_navigation= */ false,
+                          /* is_cross_site_navigation= */ true,
+                          /* is_user_initiated_reload= */ false),
+      net::CookieStringIs(UnorderedElementsAre(
+          Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
+          Key(kSameSiteNoneCookieName), Key(kSameSiteUnspecifiedCookieName))));
+}
+
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
+                       ScriptNavigationCrossSite404UserReload) {
+  EXPECT_THAT(Test404ReloadCookie(/* is_user_initiated_navigation= */ false,
+                                  /* is_cross_site_navigation= */ true,
+                                  /* is_user_initiated_reload= */ true),
+              net::CookieStringIs(UnorderedElementsAre(
+                  Key(kSameSiteLaxCookieName), Key(kSameSiteNoneCookieName),
+                  Key(kSameSiteUnspecifiedCookieName))));
+}
+
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
+                       UserNavigationSameSite404ScriptReload) {
+  EXPECT_THAT(
+      Test404ReloadCookie(/* is_user_initiated_navigation= */ true,
+                          /* is_cross_site_navigation= */ false,
+                          /* is_user_initiated_reload= */ false),
+      net::CookieStringIs(UnorderedElementsAre(
+          Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
+          Key(kSameSiteNoneCookieName), Key(kSameSiteUnspecifiedCookieName))));
+}
+
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
+                       UserNavigationSameSite404UserReload) {
+  EXPECT_THAT(
+      Test404ReloadCookie(/* is_user_initiated_navigation= */ true,
+                          /* is_cross_site_navigation= */ false,
+                          /* is_user_initiated_reload= */ true),
+      net::CookieStringIs(UnorderedElementsAre(
+          Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
+          Key(kSameSiteNoneCookieName), Key(kSameSiteUnspecifiedCookieName))));
+}
+
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
+                       UserNavigationCrossSite404ScriptReload) {
+  EXPECT_THAT(
+      Test404ReloadCookie(/* is_user_initiated_navigation= */ true,
+                          /* is_cross_site_navigation= */ true,
+                          /* is_user_initiated_reload= */ false),
+      net::CookieStringIs(UnorderedElementsAre(
+          Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
+          Key(kSameSiteNoneCookieName), Key(kSameSiteUnspecifiedCookieName))));
+}
+
+IN_PROC_BROWSER_TEST_P(HttpCookieBrowserTest,
+                       UserNavigationCrossSite404UserReload) {
+  EXPECT_THAT(
+      Test404ReloadCookie(/* is_user_initiated_navigation= */ true,
+                          /* is_cross_site_navigation= */ true,
+                          /* is_user_initiated_reload= */ true),
+      net::CookieStringIs(UnorderedElementsAre(
+          Key(kSameSiteStrictCookieName), Key(kSameSiteLaxCookieName),
+          Key(kSameSiteNoneCookieName), Key(kSameSiteUnspecifiedCookieName))));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no label */,

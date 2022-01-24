@@ -44,13 +44,9 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace ash {
-
-// TODO(https://crbug.com/1164001): remove when migrated to ash::
-namespace extension_ime_util = ::chromeos::extension_ime_util;
-
 namespace {
 
 const char kStartupManifestEnglish[] =
@@ -167,16 +163,15 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, WelcomeScreenElements) {
   test::OobeJS().ExpectHiddenPath({"connect", "accessibilityScreen"});
   test::OobeJS().ExpectHiddenPath({"connect", "languageScreen"});
   test::OobeJS().ExpectHiddenPath({"connect", "timezoneScreen"});
-  test::OobeJS().ExpectVisiblePath(
-      {"connect", "welcomeScreen", "welcomeNextButton"});
+  test::OobeJS().ExpectVisiblePath({"connect", "welcomeScreen", "getStarted"});
   test::OobeJS().ExpectVisiblePath(
       {"connect", "welcomeScreen", "languageSelectionButton"});
   test::OobeJS().ExpectVisiblePath(
       {"connect", "welcomeScreen", "accessibilitySettingsButton"});
   test::OobeJS().ExpectHiddenPath(
       {"connect", "welcomeScreen", "timezoneSettingsButton"});
-  test::OobeJS().ExpectVisiblePath(
-      {"connect", "welcomeScreen", "enableDebuggingLink"});
+  test::OobeJS().ExpectHiddenPath(
+      {"connect", "welcomeScreen", "enableDebuggingButton"});
 }
 
 // This is a minimal possible test for OOBE. It is used as reference test
@@ -189,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, OobeStartupTime) {
 
 IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, WelcomeScreenNext) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "welcomeNextButton"});
+  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
   WaitForScreenExit();
 }
 
@@ -200,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, WelcomeScreenLanguageFlow) {
       {"connect", "welcomeScreen", "languageSelectionButton"});
 
   test::OobeJS().TapOnPath({"connect", "ok-button-language"});
-  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "welcomeNextButton"});
+  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
   WaitForScreenExit();
 }
 
@@ -276,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest,
       {"connect", "welcomeScreen", "accessibilitySettingsButton"});
 
   test::OobeJS().TapOnPath({"connect", "ok-button-accessibility"});
-  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "welcomeNextButton"});
+  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
   WaitForScreenExit();
 }
 
@@ -429,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, PRE_SelectedLanguage) {
 
   // We need to proceed otherwise welcome screen would reset language on the
   // next show.
-  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "welcomeNextButton"});
+  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
   WaitForScreenExit();
 }
 
@@ -519,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenTimezone, ChangeTimezoneFlow) {
                                      {"connect", "timezoneSelect", "select"});
   CheckTimezone(kTestTimezone);
   test::OobeJS().TapOnPath({"connect", "ok-button-timezone"});
-  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "welcomeNextButton"});
+  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
   WaitForScreenExit();
 
   // Must not change.

@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/test/receiver/frame_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13,6 +12,10 @@ namespace media {
 namespace cast {
 
 class FrameBufferTest : public ::testing::Test {
+ public:
+  FrameBufferTest(const FrameBufferTest&) = delete;
+  FrameBufferTest& operator=(const FrameBufferTest&) = delete;
+
  protected:
   FrameBufferTest() {
     payload_.assign(kMaxIpPacketSize, 0);
@@ -25,8 +28,6 @@ class FrameBufferTest : public ::testing::Test {
   FrameBuffer buffer_;
   std::vector<uint8_t> payload_;
   RtpCastHeader rtp_header_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameBufferTest);
 };
 
 TEST_F(FrameBufferTest, OnePacketInsertSanity) {

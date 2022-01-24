@@ -3,59 +3,37 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../../../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   closure_flags = os_settings_closure_flags
   deps = [
-    ":plugin_vm_browser_proxy.m",
-    ":plugin_vm_detail_view.m",
+    ":plugin_vm_browser_proxy",
+    ":plugin_vm_detail_view",
   ]
 }
 
-js_library("plugin_vm_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.m.js" ]
+js_library("plugin_vm_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("plugin_vm_detail_view.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.m.js" ]
+js_library("plugin_vm_detail_view") {
   deps = [
-    ":plugin_vm_browser_proxy.m",
-    "../:constants.m",
-    "../:permission_item.m",
-    "../:store_client.m",
-    "../:util.m",
+    ":plugin_vm_browser_proxy",
+    "../:constants",
+    "../:permission_item",
+    "../:store_client",
+    "../:util",
     "../../..:os_route.m",
     "../../../..:router",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  extra_deps = [ ":plugin_vm_detail_view_module" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":modulize",
-    ":plugin_vm_detail_view_module",
-  ]
-}
-
-polymer_modulizer("plugin_vm_detail_view") {
-  js_file = "plugin_vm_detail_view.js"
-  html_file = "plugin_vm_detail_view.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-js_modulizer("modulize") {
-  input_files = [ "plugin_vm_browser_proxy.js" ]
-  namespace_rewrites = os_settings_namespace_rewrites
+html_to_js("web_components") {
+  js_files = [ "plugin_vm_detail_view.js" ]
 }

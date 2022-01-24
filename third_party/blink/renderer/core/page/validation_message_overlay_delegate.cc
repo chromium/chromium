@@ -102,7 +102,7 @@ void ValidationMessageOverlayDelegate::PaintFrameOverlay(
                                                   DisplayItem::kFrameOverlay))
     return;
   DrawingRecorder recorder(context, overlay, DisplayItem::kFrameOverlay,
-                           IntRect(IntPoint(), view_size));
+                           gfx::Rect(ToGfxSize(view_size)));
 
   const_cast<ValidationMessageOverlayDelegate*>(this)->UpdateFrameViewState(
       overlay, view_size);
@@ -113,10 +113,11 @@ void ValidationMessageOverlayDelegate::PaintFrameOverlay(
     // The overlay frame is has a standalone paint property tree. Paint it in
     // its root space into a paint record, then draw the record into the proper
     // target space in the overlaid frame.
-    PaintRecordBuilder paint_record_builder(context);
-    FrameView().PaintOutsideOfLifecycle(paint_record_builder.Context(),
+    auto* paint_record_builder =
+        MakeGarbageCollected<PaintRecordBuilder>(context);
+    FrameView().PaintOutsideOfLifecycle(paint_record_builder->Context(),
                                         kGlobalPaintNormalPhase);
-    context.DrawRecord(paint_record_builder.EndRecording());
+    context.DrawRecord(paint_record_builder->EndRecording());
   }
 }
 
@@ -133,7 +134,7 @@ void ValidationMessageOverlayDelegate::UpdateFrameViewState(
     page_->GetVisualViewport().SetSize(view_size);
   }
   IntRect intersection = overlay.Frame().RemoteViewportIntersection();
-  AdjustBubblePosition(intersection.IsEmpty() ? IntRect(IntPoint(), view_size)
+  AdjustBubblePosition(intersection.IsEmpty() ? IntRect(gfx::Point(), view_size)
                                               : intersection);
 
   // This manual invalidation is necessary to avoid a DCHECK failure in
@@ -194,12 +195,12 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   // Get the size to decide position later.
   // TODO(schenney): This says get size, so we only need to update to layout.
   FrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kOverlay);
-  bubble_size_ = container.VisibleBoundsInVisualViewport().Size();
+  bubble_size_ = container.VisibleBoundsInVisualViewport().size();
   // Add one because the content sometimes exceeds the exact width due to
   // rounding errors.
-  bubble_size_.Expand(1, 0);
+  bubble_size_.Enlarge(1, 0);
   container.SetInlineStyleProperty(CSSPropertyID::kMinWidth,
-                                   bubble_size_.Width() / zoom_factor,
+                                   bubble_size_.width() / zoom_factor,
                                    CSSPrimitiveValue::UnitType::kPixels);
   container.setAttribute(html_names::kClassAttr, "shown-initially");
   FrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kOverlay);
@@ -254,17 +255,17 @@ void ValidationMessageOverlayDelegate::AdjustBubblePosition(
   float zoom_factor = To<LocalFrame>(page_->MainFrame())->PageZoomFactor();
   IntRect anchor_rect = anchor_->VisibleBoundsInVisualViewport();
   bool show_bottom_arrow = false;
-  double bubble_y = anchor_rect.MaxY();
-  if (view_rect.MaxY() - anchor_rect.MaxY() < bubble_size_.Height()) {
-    bubble_y = anchor_rect.Y() - bubble_size_.Height();
+  double bubble_y = anchor_rect.bottom();
+  if (view_rect.bottom() - anchor_rect.bottom() < bubble_size_.height()) {
+    bubble_y = anchor_rect.y() - bubble_size_.height();
     show_bottom_arrow = true;
   }
   double bubble_x =
-      anchor_rect.X() + anchor_rect.Width() / 2 - bubble_size_.Width() / 2;
-  if (bubble_x < view_rect.X())
-    bubble_x = view_rect.X();
-  else if (bubble_x + bubble_size_.Width() > view_rect.MaxX())
-    bubble_x = view_rect.MaxX() - bubble_size_.Width();
+      anchor_rect.x() + anchor_rect.width() / 2 - bubble_size_.width() / 2;
+  if (bubble_x < view_rect.x())
+    bubble_x = view_rect.x();
+  else if (bubble_x + bubble_size_.width() > view_rect.right())
+    bubble_x = view_rect.right() - bubble_size_.width();
 
   Element& container = GetElementById("container");
   container.SetInlineStyleProperty(CSSPropertyID::kLeft, bubble_x / zoom_factor,
@@ -277,13 +278,13 @@ void ValidationMessageOverlayDelegate::AdjustBubblePosition(
   const int kArrowMargin = 10;
   const int kMinArrowAnchorX = kArrowSize + kArrowMargin;
   double max_arrow_anchor_x =
-      bubble_size_.Width() - (kArrowSize + kArrowMargin) * zoom_factor;
+      bubble_size_.width() - (kArrowSize + kArrowMargin) * zoom_factor;
   double arrow_anchor_x;
   const int kOffsetToAnchorRect = 8;
-  double anchor_rect_center = anchor_rect.X() + anchor_rect.Width() / 2;
+  double anchor_rect_center = anchor_rect.x() + anchor_rect.width() / 2;
   if (!Locale::DefaultLocale().IsRTL()) {
     double anchor_rect_left =
-        anchor_rect.X() + kOffsetToAnchorRect * zoom_factor;
+        anchor_rect.x() + kOffsetToAnchorRect * zoom_factor;
     if (anchor_rect_left > anchor_rect_center)
       anchor_rect_left = anchor_rect_center;
 
@@ -295,7 +296,7 @@ void ValidationMessageOverlayDelegate::AdjustBubblePosition(
     }
   } else {
     double anchor_rect_right =
-        anchor_rect.MaxX() - kOffsetToAnchorRect * zoom_factor;
+        anchor_rect.right() - kOffsetToAnchorRect * zoom_factor;
     if (anchor_rect_right < anchor_rect_center)
       anchor_rect_right = anchor_rect_center;
 
@@ -307,7 +308,7 @@ void ValidationMessageOverlayDelegate::AdjustBubblePosition(
     }
   }
   double arrow_x = arrow_anchor_x / zoom_factor - kArrowSize;
-  double arrow_anchor_percent = arrow_anchor_x * 100 / bubble_size_.Width();
+  double arrow_anchor_percent = arrow_anchor_x * 100 / bubble_size_.width();
   if (show_bottom_arrow) {
     GetElementById("outer-arrow-bottom")
         .SetInlineStyleProperty(CSSPropertyID::kLeft, arrow_x,

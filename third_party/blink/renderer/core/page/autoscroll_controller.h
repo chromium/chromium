@@ -105,14 +105,15 @@ class CORE_EXPORT AutoscrollController final
 
   // Selection and drag-and-drop autoscroll.
   void ScheduleMainThreadAnimation();
-  LayoutBox* autoscroll_layout_object_ = nullptr;
-  LayoutBox* pressed_layout_object_ = nullptr;
+  Member<LayoutBox> autoscroll_layout_object_ = nullptr;
+  Member<LayoutBox> pressed_layout_object_ = nullptr;
+
   PhysicalOffset drag_and_drop_autoscroll_reference_position_;
   base::TimeTicks drag_and_drop_autoscroll_start_time_;
 
   // Middle-click autoscroll.
-  LayoutBox* horizontal_autoscroll_layout_box_ = nullptr;
-  LayoutBox* vertical_autoscroll_layout_box_ = nullptr;
+  Member<LayoutBox> horizontal_autoscroll_layout_box_ = nullptr;
+  Member<LayoutBox> vertical_autoscroll_layout_box_ = nullptr;
   FloatPoint middle_click_autoscroll_start_pos_global_;
   gfx::Vector2dF last_velocity_;
   MiddleClickMode middle_click_mode_ = kMiddleClickInitial;

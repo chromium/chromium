@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ARC_KEYMASTER_ARC_KEYMASTER_BRIDGE_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/keymaster/cert_store_bridge.h"
 #include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
@@ -40,6 +39,10 @@ class ArcKeymasterBridge : public KeyedService, public mojom::KeymasterHost {
 
   ArcKeymasterBridge(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);
+
+  ArcKeymasterBridge(const ArcKeymasterBridge&) = delete;
+  ArcKeymasterBridge& operator=(const ArcKeymasterBridge&) = delete;
+
   ~ArcKeymasterBridge() override;
 
   // Return the factory instance for this class.
@@ -79,8 +82,6 @@ class ArcKeymasterBridge : public KeyedService, public mojom::KeymasterHost {
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcKeymasterBridge> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcKeymasterBridge);
 };
 
 }  // namespace arc

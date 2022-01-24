@@ -149,7 +149,7 @@ TCPClientSocket::TCPClientSocket(
     : socket_(std::move(socket)),
       bind_address_(std::move(bind_address)),
       addresses_(addresses),
-      current_address_index_(-1),
+      current_address_index_(current_address_index),
       next_connect_state_(CONNECT_STATE_NONE),
       previously_disconnected_(false),
       total_received_bytes_(0),
@@ -567,8 +567,7 @@ void TCPClientSocket::EmitTCPMetricsHistogramsOnDisconnect() {
   base::TimeDelta rtt;
   if (socket_->GetEstimatedRoundTripTime(&rtt)) {
     UMA_HISTOGRAM_CUSTOM_TIMES("Net.TcpRtt.AtDisconnect", rtt,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(10), 100);
+                               base::Milliseconds(1), base::Minutes(10), 100);
   }
 }
 

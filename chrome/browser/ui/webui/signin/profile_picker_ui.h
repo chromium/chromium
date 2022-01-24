@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_PICKER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_PICKER_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/geometry/size.h"

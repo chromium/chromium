@@ -8,6 +8,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/stl_util.h"
+#include "cc/paint/image_provider.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_record.h"

@@ -24,6 +24,9 @@ class GPUCompilationMessage : public ScriptWrappable {
       uint64_t offset = 0,
       uint64_t length = 0);
 
+  GPUCompilationMessage(const GPUCompilationMessage&) = delete;
+  GPUCompilationMessage& operator=(const GPUCompilationMessage&) = delete;
+
   const String& message() const { return message_; }
   const String& type() const { return type_string_; }
   uint64_t lineNum() const { return line_num_; }
@@ -38,8 +41,6 @@ class GPUCompilationMessage : public ScriptWrappable {
   const uint64_t line_pos_;
   const uint64_t offset_;
   const uint64_t length_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUCompilationMessage);
 };
 
 }  // namespace blink

@@ -23,15 +23,15 @@
 
 namespace content {
 class RenderFrameHost;
-}
+}  // namespace content
 
 namespace safe_browsing {
 class UrlCheckerDelegate;
-}
+}  // namespace safe_browsing
 
 namespace net {
 class IsolationInfo;
-}
+}  // namespace net
 
 namespace android_webview {
 
@@ -55,6 +55,10 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   // |aw_feature_list_creator| should not be null.
   explicit AwContentBrowserClient(
       AwFeatureListCreator* aw_feature_list_creator);
+
+  AwContentBrowserClient(const AwContentBrowserClient&) = delete;
+  AwContentBrowserClient& operator=(const AwContentBrowserClient&) = delete;
+
   ~AwContentBrowserClient() override;
 
   // Allows AwBrowserMainParts to initialize a BrowserContext at the right
@@ -72,7 +76,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params) override;
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      const content::MainFunctionParams& parameters) override;
+      content::MainFunctionParams parameters) override;
   content::WebContentsViewDelegate* GetWebContentsViewDelegate(
       content::WebContents* web_contents) override;
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
@@ -84,10 +88,6 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   std::string GetApplicationLocale() override;
   std::string GetAcceptLangs(content::BrowserContext* context) override;
   gfx::ImageSkia GetDefaultFavicon() override;
-  bool AllowAppCache(const GURL& manifest_url,
-                     const GURL& site_for_cookies,
-                     const absl::optional<url::Origin>& top_frame_origin,
-                     content::BrowserContext* context) override;
   scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
       override;
   content::GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
@@ -172,7 +172,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
       const content::GlobalRequestID& request_id,
-      bool is_main_frame,
+      bool is_request_for_primary_main_frame,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
@@ -184,6 +184,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       int frame_tree_node_id,
       content::NavigationUIData* navigation_data,
       bool is_main_frame,
+      network::mojom::WebSandboxFlags sandbox_flags,
       ui::PageTransition page_transition,
       bool has_user_gesture,
       const absl::optional<url::Origin>& initiating_origin,
@@ -193,11 +194,14 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       int render_process_id,
       int render_frame_id,
       NonNetworkURLLoaderFactoryMap* factories) override;
+  bool ShouldAllowNoLongerUsedProcessToExit() override;
   bool ShouldIsolateErrorPage(bool in_main_frame) override;
   bool ShouldEnableStrictSiteIsolation() override;
-  bool ShouldDisableSiteIsolation() override;
+  bool ShouldDisableSiteIsolation(
+      content::SiteIsolationMode site_isolation_mode) override;
   bool ShouldLockProcessToSite(content::BrowserContext* browser_context,
                                const GURL& effective_url) override;
+  size_t GetMaxRendererProcessCountOverride() override;
   bool WillCreateURLLoaderFactory(
       content::BrowserContext* browser_context,
       content::RenderFrameHost* frame,
@@ -229,8 +233,9 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       override;
   void LogWebFeatureForCurrentPage(content::RenderFrameHost* render_frame_host,
                                    blink::mojom::WebFeature feature) override;
-  bool IsOriginTrialRequiredForAppCache(
-      content::BrowserContext* browser_text) override;
+  bool ShouldAllowInsecurePrivateNetworkRequests(
+      content::BrowserContext* browser_context,
+      const url::Origin& origin) override;
   content::SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate() override;
   bool HasErrorPage(int http_status_code) override;
@@ -258,8 +263,6 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
 
   // The AwFeatureListCreator is owned by AwMainDelegate.
   AwFeatureListCreator* const aw_feature_list_creator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwContentBrowserClient);
 };
 
 }  // namespace android_webview

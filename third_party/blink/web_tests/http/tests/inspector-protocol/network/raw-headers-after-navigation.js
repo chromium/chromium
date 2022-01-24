@@ -5,8 +5,11 @@
 
   async function fetchAndLogResponseStatus() {
     session.evaluate(`fetch('http://devtools.test:8000/devtools/network/resources/resource.php?cached=1')`);
-    const response = (await dp.Network.onceResponseReceived()).params.response;
-    testRunner.log('Response status: ' + response.status);
+    const [responseReceived, responseReceivedExtraInfo] = await Promise.all([
+      dp.Network.onceResponseReceived(),
+      dp.Network.onceResponseReceivedExtraInfo()]);
+    testRunner.log('responseRecevied status: ' + responseReceived.params.response.status);
+    testRunner.log('responseReceviedExtraInfo status: ' + responseReceivedExtraInfo.params.statusCode);
   }
 
   await dp.Page.enable();

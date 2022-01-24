@@ -117,4 +117,34 @@ TEST_F(LayoutSVGContainerTest,
   EXPECT_TRUE(use->SlowFirstChild()->TransformAffectsVectorEffect());
 }
 
+TEST_F(LayoutSVGContainerTest, PatternWithContentVisibility) {
+  SetBodyInnerHTML(R"HTML(
+    <svg viewBox="0 0 230 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="pattern" viewBox="0,0,10,10" width="10%" height="10%">
+          <polygon id="polygon" points="0,0 2,5 0,10 5,8 10,10 8,5 10,0 5,2"/>
+        </pattern>
+      </defs>
+
+      <circle id="circle" cx="50"  cy="50" r="50" fill="url(#pattern)"/>
+    </svg>
+  )HTML");
+
+  auto* pattern = GetDocument().getElementById("pattern");
+  auto* polygon = GetDocument().getElementById("polygon");
+
+  pattern->setAttribute("style", "contain: strict; content-visibility: hidden");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  polygon->setAttribute("points", "0,0 2,5 0,10");
+
+  // This shouldn't cause a DCHECK, even though the pattern needs layout because
+  // it's under a content-visibility: hidden subtree.
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(pattern->GetLayoutObject()->NeedsLayout());
+  EXPECT_FALSE(pattern->GetLayoutObject()->SelfNeedsLayout());
+}
+
 }  // namespace blink

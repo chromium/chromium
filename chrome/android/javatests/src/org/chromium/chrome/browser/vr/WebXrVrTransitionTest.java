@@ -36,10 +36,10 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.NativeUiUtils;
@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
 import org.chromium.chrome.browser.vr.util.VrTransitionUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 
 import java.io.File;
 import java.util.List;
@@ -162,6 +161,7 @@ public class WebXrVrTransitionTest {
     @Restriction({RESTRICTION_TYPE_DEVICE_DAYDREAM, RESTRICTION_TYPE_VR_DON_ENABLED})
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    @DisabledTest(message = "https://crbug.com/1236093")
     public void testPresentationPromiseUnresolvedDuringDon_WebXr() {
         presentationPromiseUnresolvedDuringDonImpl(
 
@@ -183,6 +183,7 @@ public class WebXrVrTransitionTest {
     @Restriction({RESTRICTION_TYPE_DEVICE_DAYDREAM, RESTRICTION_TYPE_VR_DON_ENABLED})
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    @DisabledTest(message = "https://crbug.com/1246405")
     public void testPresentationPromiseRejectedIfDonCanceled_WebXr() {
         presentationPromiseRejectedIfDonCanceledImpl(
 
@@ -312,7 +313,6 @@ public class WebXrVrTransitionTest {
     @MediumTest
             @CommandLineFlags.Add({"enable-features=WebXR"})
             @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF)
             public void testNonImmersiveStopsDuringImmersive() {
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
                 "test_non_immersive_stops_during_immersive", PAGE_LOAD_TIMEOUT_S);
@@ -347,9 +347,11 @@ public class WebXrVrTransitionTest {
      */
     @Test
     @MediumTest
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            public void testConsentDialogIsDismissedWhenPageNavigatesAwayInMainFrame() {
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    // TODO(crbug.com/1250492): Re-enable this test on all activity types once
+    // WAA/CCT versions no longer fail consistently.
+    // @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    public void testConsentDialogIsDismissedWhenPageNavigatesAwayInMainFrame() {
         mWebXrVrTestFramework.setPermissionPromptAction(
                 WebXrVrTestFramework.PERMISSION_PROMPT_ACTION_DO_NOTHING);
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(

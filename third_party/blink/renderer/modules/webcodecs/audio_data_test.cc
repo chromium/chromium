@@ -8,11 +8,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -43,19 +43,23 @@ class AudioDataTest : public testing::Test {
       ASSERT_NEAR(data[i], start_value + i * kIncrement, kEpsilon) << "i=" << i;
   }
 
-  V8BufferSource* CreateDefaultData() {
-    auto* buffer = DOMArrayBuffer::Create(kChannels * kFrames, sizeof(float));
-    for (int ch = 0; ch < kChannels; ++ch) {
-      float* plane_start =
-          reinterpret_cast<float*>(buffer->Data()) + ch * kFrames;
-      for (int i = 0; i < kFrames; ++i) {
-        plane_start[i] = static_cast<float>((i + ch * kFrames) * kIncrement);
-      }
-    }
-    return MakeGarbageCollected<V8BufferSource>(buffer);
+  AllowSharedBufferSource* CreateDefaultData() {
+    return CreateCustomData(kChannels, kFrames);
   }
 
-  AudioDataInit* CreateDefaultAudioDataInit(V8BufferSource* data) {
+  AllowSharedBufferSource* CreateCustomData(int channels, int frames) {
+    auto* buffer = DOMArrayBuffer::Create(channels * frames, sizeof(float));
+    for (int ch = 0; ch < channels; ++ch) {
+      float* plane_start =
+          reinterpret_cast<float*>(buffer->Data()) + ch * frames;
+      for (int i = 0; i < frames; ++i) {
+        plane_start[i] = static_cast<float>((i + ch * frames) * kIncrement);
+      }
+    }
+    return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
+  }
+
+  AudioDataInit* CreateDefaultAudioDataInit(AllowSharedBufferSource* data) {
     auto* audio_data_init = AudioDataInit::Create();
     audio_data_init->setData(data);
     audio_data_init->setTimestamp(kTimestampInMicroSeconds);
@@ -113,13 +117,13 @@ TEST_F(AudioDataTest, ConstructFromMediaBuffer) {
       media::ChannelLayout::CHANNEL_LAYOUT_STEREO;
   const int channels = ChannelLayoutToChannelCount(channel_layout);
   constexpr base::TimeDelta timestamp =
-      base::TimeDelta::FromMicroseconds(kTimestampInMicroSeconds);
-  constexpr int kStart = 1;
-  constexpr int kIncrement = 1;
+      base::Microseconds(kTimestampInMicroSeconds);
+  constexpr int kValueStart = 1;
+  constexpr int kValueIncrement = 1;
   scoped_refptr<media::AudioBuffer> media_buffer =
-      media::MakeAudioBuffer<int16_t>(media::SampleFormat::kSampleFormatS16,
-                                      channel_layout, channels, kSampleRate,
-                                      kStart, kIncrement, kFrames, timestamp);
+      media::MakeAudioBuffer<int16_t>(
+          media::SampleFormat::kSampleFormatS16, channel_layout, channels,
+          kSampleRate, kValueStart, kValueIncrement, kFrames, timestamp);
 
   auto* frame = MakeGarbageCollected<AudioData>(media_buffer);
 
@@ -162,6 +166,26 @@ TEST_F(AudioDataTest, ConstructFromAudioDataInit) {
   EXPECT_EQ(frame->timestamp(), kTimestampInMicroSeconds);
 }
 
+TEST_F(AudioDataTest, ConstructFromAudioDataInit_HighChannelCount) {
+  V8TestingScope scope;
+  constexpr int kHighChannelCount = 25;
+  auto* buffer_source = CreateCustomData(kHighChannelCount, kFrames);
+
+  auto* audio_data_init = CreateDefaultAudioDataInit(buffer_source);
+  audio_data_init->setNumberOfChannels(kHighChannelCount);
+
+  auto* frame = MakeGarbageCollected<AudioData>(audio_data_init,
+                                                scope.GetExceptionState());
+
+  EXPECT_EQ(frame->format(), "f32-planar");
+  EXPECT_EQ(frame->sampleRate(), static_cast<uint32_t>(kSampleRate));
+  EXPECT_EQ(frame->numberOfFrames(), static_cast<uint32_t>(kFrames));
+  EXPECT_EQ(frame->numberOfChannels(),
+            static_cast<uint32_t>(kHighChannelCount));
+  EXPECT_EQ(frame->duration(), kExpectedDuration);
+  EXPECT_EQ(frame->timestamp(), kTimestampInMicroSeconds);
+}
+
 TEST_F(AudioDataTest, AllocationSize) {
   // We only support the "FLTP" format for now.
   constexpr int kTotalSizeInBytes = kFrames * sizeof(float);
@@ -199,8 +223,9 @@ TEST_F(AudioDataTest, CopyTo_DestinationTooSmall) {
   auto* options = CreateCopyToOptions(/*index=*/0, /*offset=*/absl::nullopt,
                                       /*count=*/absl::nullopt);
 
-  V8BufferSource* small_dest = MakeGarbageCollected<V8BufferSource>(
-      DOMArrayBuffer::Create(kFrames - 1, sizeof(float)));
+  AllowSharedBufferSource* small_dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(
+          DOMArrayBuffer::Create(kFrames - 1, sizeof(float)));
 
   frame->copyTo(small_dest, options, scope.GetExceptionState());
 
@@ -214,7 +239,8 @@ TEST_F(AudioDataTest, CopyTo_FullFrames) {
                                       /*count=*/absl::nullopt);
 
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(kFrames, sizeof(float));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(data_copy);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
   // All frames should have been copied.
   frame->copyTo(dest, options, scope.GetExceptionState());
@@ -231,7 +257,8 @@ TEST_F(AudioDataTest, CopyTo_PlaneIndex) {
                                       /*count=*/absl::nullopt);
 
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(kFrames, sizeof(float));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(data_copy);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
   // All frames should have been copied.
   frame->copyTo(dest, options, scope.GetExceptionState());
@@ -252,7 +279,8 @@ TEST_F(AudioDataTest, CopyTo_Offset) {
 
   // |data_copy| is bigger than what we need, and that's ok.
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(kFrames, sizeof(float));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(data_copy);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
   // All frames should have been copied.
   frame->copyTo(dest, options, scope.GetExceptionState());
@@ -272,7 +300,8 @@ TEST_F(AudioDataTest, CopyTo_PartialFrames) {
 
   DOMArrayBuffer* data_copy =
       DOMArrayBuffer::Create(kPartialFrameCount, sizeof(float));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(data_copy);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
   // All frames should have been copied.
   frame->copyTo(dest, options, scope.GetExceptionState());
@@ -290,7 +319,8 @@ TEST_F(AudioDataTest, CopyTo_PartialFramesAndOffset) {
 
   DOMArrayBuffer* data_copy =
       DOMArrayBuffer::Create(kPartialFrameCount, sizeof(float));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(data_copy);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
   // All frames should have been copied.
   frame->copyTo(dest, options, scope.GetExceptionState());
@@ -329,10 +359,23 @@ TEST_F(AudioDataTest, Interleaved) {
 
   EXPECT_EQ("s16", frame->format());
 
-  // Verify we get the expected allocation size.
-  auto* options = CreateCopyToOptions(/*index=*/0, kOffset, kPartialFrameCount);
+  // Verify that plane indexes > 1 throw, for interleaved formats.
+  auto* options = CreateCopyToOptions(/*index=*/1, kOffset, kPartialFrameCount);
   int allocations_size =
       frame->allocationSize(options, scope.GetExceptionState());
+
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  scope.GetExceptionState().ClearException();
+
+  // Verify that copy conversion to a planar format supports indexes > 1,
+  // even if the source is interleaved.
+  options->setFormat(V8AudioSampleFormat::Enum::kF32Planar);
+  allocations_size = frame->allocationSize(options, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  // Verify we get the expected allocation size, for valid formats.
+  options = CreateCopyToOptions(/*index=*/0, kOffset, kPartialFrameCount);
+  allocations_size = frame->allocationSize(options, scope.GetExceptionState());
 
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
@@ -342,7 +385,8 @@ TEST_F(AudioDataTest, Interleaved) {
 
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(
       kPartialFrameCount * kInterleavedChannels, sizeof(uint16_t));
-  V8BufferSource* dest = MakeGarbageCollected<V8BufferSource>(data_copy);
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
   // All frames should have been copied.
   frame->copyTo(dest, options, scope.GetExceptionState());

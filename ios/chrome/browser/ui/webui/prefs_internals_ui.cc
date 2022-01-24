@@ -23,6 +23,10 @@ class PrefsInternalsSource : public web::URLDataSourceIOS {
  public:
   explicit PrefsInternalsSource(ChromeBrowserState* browser_state)
       : browser_state_(browser_state) {}
+
+  PrefsInternalsSource(const PrefsInternalsSource&) = delete;
+  PrefsInternalsSource& operator=(const PrefsInternalsSource&) = delete;
+
   ~PrefsInternalsSource() override = default;
 
   // content::URLDataSource:
@@ -53,8 +57,6 @@ class PrefsInternalsSource : public web::URLDataSourceIOS {
 
  private:
   ChromeBrowserState* browser_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefsInternalsSource);
 };
 
 }  // namespace

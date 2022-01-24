@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.system;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
@@ -97,14 +98,14 @@ public class StatusBarColorController
      *
      * @param window The Android app window, used to access decor view and set the status color.
      * @param isTablet Whether the current context is on a tablet.
-     * @param resources An Android resources object, used to load colors.
+     * @param context The Android context used to load colors.
      * @param statusBarColorProvider An implementation of {@link StatusBarColorProvider}.
      * @param overviewModeBehaviorSupplier Supplies the overview mode behavior.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param topUiThemeColorProvider The {@link ThemeColorProvider} for top UI.
      */
-    public StatusBarColorController(Window window, boolean isTablet, Resources resources,
+    public StatusBarColorController(Window window, boolean isTablet, Context context,
             StatusBarColorProvider statusBarColorProvider,
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -113,10 +114,10 @@ public class StatusBarColorController
         mIsTablet = isTablet;
         mStatusBarColorProvider = statusBarColorProvider;
 
-        mStandardPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(resources, false);
-        mIncognitoPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(resources, true);
-        mStandardDefaultThemeColor = ChromeColors.getDefaultThemeColor(resources, false);
-        mIncognitoDefaultThemeColor = ChromeColors.getDefaultThemeColor(resources, true);
+        mStandardPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(context, false);
+        mIncognitoPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(context, true);
+        mStandardDefaultThemeColor = ChromeColors.getDefaultThemeColor(context, false);
+        mIncognitoDefaultThemeColor = ChromeColors.getDefaultThemeColor(context, true);
 
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
 

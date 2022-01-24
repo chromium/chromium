@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/system/file_data_source.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
 
 namespace content {
@@ -94,6 +95,9 @@ class WebBundleReader::SharedFileDataSource final
     }
   }
 
+  SharedFileDataSource(const SharedFileDataSource&) = delete;
+  SharedFileDataSource& operator=(const SharedFileDataSource&) = delete;
+
  private:
   // Implements mojo::DataPipeProducer::DataSource. Following methods are called
   // on a blockable sequenced task runner.
@@ -129,8 +133,6 @@ class WebBundleReader::SharedFileDataSource final
   MojoResult error_;
   const uint64_t offset_;
   const uint64_t length_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedFileDataSource);
 };
 
 WebBundleReader::WebBundleReader(std::unique_ptr<WebBundleSource> source)

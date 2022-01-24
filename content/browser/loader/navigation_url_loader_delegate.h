@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -31,6 +30,7 @@ struct URLLoaderCompletionStatus;
 namespace content {
 
 class NavigationEarlyHintsManager;
+struct NavigationEarlyHintsManagerParams;
 struct GlobalRequestID;
 struct SubresourceLoaderParams;
 
@@ -48,12 +48,16 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
     EarlyHints(const EarlyHints& other) = delete;
     EarlyHints& operator=(const EarlyHints& other) = delete;
 
-    // True when at least one preload Link header was received during a
-    // main frame navigation.
-    bool was_preload_link_header_received = false;
+    // True when at least one preload or preconnect Link header was received
+    // during a main frame navigation.
+    bool was_resource_hints_received = false;
     // Non-null when at least one preload is actually requested.
     std::unique_ptr<NavigationEarlyHintsManager> manager;
   };
+
+  NavigationURLLoaderDelegate(const NavigationURLLoaderDelegate&) = delete;
+  NavigationURLLoaderDelegate& operator=(const NavigationURLLoaderDelegate&) =
+      delete;
 
   // Called when the request is redirected. Call FollowRedirect to continue
   // processing the request.
@@ -102,19 +106,15 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
   virtual void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) = 0;
 
-  // Creates a URLLoaderFactory for Early Hints preloads. On success returns the
-  // calculated origin to be used for network::ResourceRequest.
-  virtual absl::optional<url::Origin>
-  CreateURLLoaderFactoryForEarlyHintsPreload(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+  // Creates parameters to construct NavigationEarlyHintsManager. Returns
+  // absl::nullopt when this delegate cannot create parameters.
+  virtual absl::optional<NavigationEarlyHintsManagerParams>
+  CreateNavigationEarlyHintsManagerParams(
       const network::mojom::EarlyHints& early_hints) = 0;
 
  protected:
   NavigationURLLoaderDelegate() {}
   virtual ~NavigationURLLoaderDelegate() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NavigationURLLoaderDelegate);
 };
 
 }  // namespace content

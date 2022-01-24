@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_callbacks.h"
@@ -35,6 +35,10 @@ class PushProvider final : public GarbageCollected<PushProvider>,
   static const char kSupplementName[];
 
   explicit PushProvider(ServiceWorkerRegistration& registration);
+
+  PushProvider(const PushProvider&) = delete;
+  PushProvider& operator=(const PushProvider&) = delete;
+
   ~PushProvider() = default;
 
   static PushProvider* From(ServiceWorkerRegistration* registration);
@@ -66,8 +70,6 @@ class PushProvider final : public GarbageCollected<PushProvider>,
                           mojom::blink::PushSubscriptionPtr subscription);
 
   HeapMojoRemote<mojom::blink::PushMessaging> push_messaging_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PushProvider);
 };
 
 }  // namespace blink

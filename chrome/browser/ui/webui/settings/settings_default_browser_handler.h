@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_DEFAULT_BROWSER_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_DEFAULT_BROWSER_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
@@ -28,6 +27,10 @@ namespace settings {
 class DefaultBrowserHandler : public SettingsPageUIHandler {
  public:
   DefaultBrowserHandler();
+
+  DefaultBrowserHandler(const DefaultBrowserHandler&) = delete;
+  DefaultBrowserHandler& operator=(const DefaultBrowserHandler&) = delete;
+
   ~DefaultBrowserHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -62,8 +65,6 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
 
   // Used to invalidate the DefaultBrowserWorker callback.
   base::WeakPtrFactory<DefaultBrowserHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultBrowserHandler);
 };
 
 }  // namespace settings

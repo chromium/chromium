@@ -11,9 +11,8 @@
 #include "base/cancelable_callback.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -27,6 +26,9 @@ class FakeAudioWorker::Worker
  public:
   Worker(const scoped_refptr<base::SingleThreadTaskRunner>& worker_task_runner,
          const AudioParameters& params);
+
+  Worker(const Worker&) = delete;
+  Worker& operator=(const Worker&) = delete;
 
   bool IsStopped();
   void Start(FakeAudioWorker::Callback worker_cb);
@@ -60,8 +62,6 @@ class FakeAudioWorker::Worker
   base::CancelableRepeatingClosure worker_task_cb_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Worker);
 };
 
 FakeAudioWorker::FakeAudioWorker(

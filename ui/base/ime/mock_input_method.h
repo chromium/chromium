@@ -8,7 +8,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/base/ime/input_method.h"
@@ -27,6 +26,10 @@ class TextInputClient;
 class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
  public:
   explicit MockInputMethod(internal::InputMethodDelegate* delegate);
+
+  MockInputMethod(const MockInputMethod&) = delete;
+  MockInputMethod& operator=(const MockInputMethod&) = delete;
+
   ~MockInputMethod() override;
 
   // Overriden from InputMethod.
@@ -35,7 +38,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
   void OnBlur() override;
 
 #if defined(OS_WIN)
-  bool OnUntranslatedIMEMessage(const MSG event,
+  bool OnUntranslatedIMEMessage(const CHROME_MSG event,
                                 NativeEventResult* result) override;
   void OnInputLocaleChanged() override;
   bool IsInputLocaleCJK() const override;
@@ -63,8 +66,6 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
   internal::InputMethodDelegate* delegate_;
 
   VirtualKeyboardControllerStub keyboard_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethod);
 };
 
 }  // namespace ui

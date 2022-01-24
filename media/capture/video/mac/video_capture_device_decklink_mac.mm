@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -51,6 +51,9 @@ class DeckLinkCaptureDelegate
   DeckLinkCaptureDelegate(
       const media::VideoCaptureDeviceDescriptor& device_descriptor,
       media::VideoCaptureDeviceDeckLinkMac* frame_receiver);
+
+  DeckLinkCaptureDelegate(const DeckLinkCaptureDelegate&) = delete;
+  DeckLinkCaptureDelegate& operator=(const DeckLinkCaptureDelegate&) = delete;
 
   void AllocateAndStart(const media::VideoCaptureParams& params);
   void StopAndDeAllocate();
@@ -104,8 +107,6 @@ class DeckLinkCaptureDelegate
   friend class base::RefCountedThreadSafe<DeckLinkCaptureDelegate>;
 
   ~DeckLinkCaptureDelegate() override;
-
-  DISALLOW_COPY_AND_ASSIGN(DeckLinkCaptureDelegate);
 };
 
 static float GetDisplayModeFrameRate(
@@ -289,7 +290,7 @@ HRESULT DeckLinkCaptureDelegate::VideoInputFrameArrived(
     base::TimeDelta timestamp;
     if (SUCCEEDED(video_frame->GetStreamTime(&frame_time, &frame_duration,
                                              micros_time_scale))) {
-      timestamp = base::TimeDelta::FromMicroseconds(frame_time);
+      timestamp = base::Microseconds(frame_time);
     } else {
       timestamp = now - first_ref_time_;
     }
@@ -385,6 +386,7 @@ void VideoCaptureDeviceDeckLinkMac::EnumerateDevices(
     DVLOG_IF(1, hr != S_OK) << "Error reading Blackmagic device display name";
     DVLOG_IF(1, hr == S_OK) << "Blackmagic device found with name: "
                             << base::SysCFStringRefToUTF8(device_display_name);
+    ALLOW_UNUSED_LOCAL(hr);
 
     if (!device_model_name && !device_display_name)
       continue;

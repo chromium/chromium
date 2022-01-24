@@ -93,6 +93,16 @@ std::vector<std::string> LoadFlagNeverExpireList() {
 }
 
 bool IsValidLookingOwner(base::StringPiece owner) {
+  // Never allow ',' or ' ' in owner names, regardless of all other constraints.
+  // It is otherwise too easy to accidentally do this:
+  //   "owners": [ "foo@chromium.org,bar@chromium.org" ]
+  // or this:
+  //   "owners": [ "foo@chromium.org bar@chromium.org" ]
+  // Apologies to those who have spaces in their email addresses or OWNERS file
+  // path names :)
+  if (owner.find_first_of(", ") != std::string::npos)
+    return false;
+
   // Per the specification at the top of flag-metadata.json, an owner is one of:
   // 1) A string containing '@', which is treated as a full email address
   // 2) A string beginning with '//', which is a path to an OWNERS file
@@ -188,11 +198,6 @@ bool IsUnexpireFlagFor(const flags_ui::FeatureEntry& entry, int milestone) {
 namespace flags_ui {
 
 namespace testing {
-
-void EnsureEveryFlagHasMetadata(const flags_ui::FeatureEntry* entries,
-                                size_t count) {
-  EnsureEveryFlagHasMetadata(base::make_span(entries, count));
-}
 
 void EnsureEveryFlagHasMetadata(
     const base::span<const flags_ui::FeatureEntry>& entries) {
@@ -291,7 +296,8 @@ void EnsureFlagsAreListedInAlphabeticalOrder() {
                              FlagFile::kFlagNeverExpire);
 }
 
-// TODO(ellyjones): Does this / should this run on iOS as well?
+// TODO(https://crbug.com/1241068): Call this from the iOS flags unittests once
+// flag expiration is supported there.
 void EnsureRecentUnexpireFlagsArePresent(
     const base::span<const flags_ui::FeatureEntry>& entries,
     int current_milestone) {

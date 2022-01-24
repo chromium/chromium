@@ -24,6 +24,10 @@ class AwWebSocketHandshakeThrottleProvider final
  public:
   explicit AwWebSocketHandshakeThrottleProvider(
       blink::ThreadSafeBrowserInterfaceBrokerProxy* broker);
+
+  AwWebSocketHandshakeThrottleProvider& operator=(
+      const AwWebSocketHandshakeThrottleProvider&) = delete;
+
   ~AwWebSocketHandshakeThrottleProvider() override;
 
   // Implements blink::WebSocketHandshakeThrottleProvider.
@@ -43,8 +47,6 @@ class AwWebSocketHandshakeThrottleProvider final
   mojo::Remote<safe_browsing::mojom::SafeBrowsing> safe_browsing_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_ASSIGN(AwWebSocketHandshakeThrottleProvider);
 };
 
 }  // namespace android_webview

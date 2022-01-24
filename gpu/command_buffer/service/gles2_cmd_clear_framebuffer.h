@@ -20,6 +20,12 @@ class GLES2Decoder;
 class GPU_GLES2_EXPORT ClearFramebufferResourceManager {
  public:
   ClearFramebufferResourceManager(const gles2::GLES2Decoder* decoder);
+
+  ClearFramebufferResourceManager(const ClearFramebufferResourceManager&) =
+      delete;
+  ClearFramebufferResourceManager& operator=(
+      const ClearFramebufferResourceManager&) = delete;
+
   ~ClearFramebufferResourceManager();
 
   void Destroy();
@@ -44,8 +50,6 @@ class GPU_GLES2_EXPORT ClearFramebufferResourceManager {
   GLuint depth_handle_;
   GLuint color_handle_;
   GLuint buffer_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClearFramebufferResourceManager);
 };
 
 }  // namespace gles2

@@ -157,7 +157,13 @@ bool ChromeTestExtensionLoader::WaitForExtensionReady(
       IncognitoInfo::IsSplitMode(&extension)
           ? browser_context_
           : Profile::FromBrowserContext(browser_context_)->GetOriginalProfile();
-  ExtensionBackgroundPageWaiter(context_to_use, extension).Wait();
+
+  // If possible, wait for the extension's background context to be loaded.
+  std::string reason_unused;
+  if (ExtensionBackgroundPageWaiter::CanWaitFor(extension, reason_unused)) {
+    ExtensionBackgroundPageWaiter(context_to_use, extension)
+        .WaitForBackgroundInitialized();
+  }
 
   // TODO(devlin): Should this use |context_to_use|? Or should
   // WaitForExtensionViewsToLoad check both contexts if one is OTR?

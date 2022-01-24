@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_INSECURE_FORM_TAB_STORAGE_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_INSECURE_FORM_TAB_STORAGE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -34,7 +33,7 @@ class InsecureFormTabStorage
   bool IsProceeding() const { return is_proceeding_; }
 
  private:
-  explicit InsecureFormTabStorage(content::WebContents* contents) {}
+  explicit InsecureFormTabStorage(content::WebContents* contents);
   friend class content::WebContentsUserData<InsecureFormTabStorage>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

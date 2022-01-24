@@ -3,6 +3,7 @@ set(plugin_sources
   FindBadConstructsAction.cpp
   FindBadConstructsConsumer.cpp
   CheckIPCVisitor.cpp
+  CheckLayoutObjectMethodsVisitor.cpp
   Util.cpp
 )
 

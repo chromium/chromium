@@ -40,7 +40,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
  protected:
   NewTabPageCoordinatorTest()
       : scoped_browser_state_manager_(
-            std::make_unique<TestChromeBrowserStateManager>(base::FilePath())) {
+            std::make_unique<TestChromeBrowserStateManager>(base::FilePath())),
+        base_view_controller_([[UIViewController alloc] init]) {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
@@ -66,15 +67,14 @@ class NewTabPageCoordinatorTest : public PlatformTest {
       ChromeBrowserState* otr_state =
           browser_state_->GetOffTheRecordChromeBrowserState();
       browser_ = std::make_unique<TestBrowser>(otr_state);
-      coordinator_ =
-          [[NewTabPageCoordinator alloc] initWithBrowser:browser_.get()];
     } else {
       browser_ = std::make_unique<TestBrowser>(browser_state_.get());
       scene_state_ = OCMClassMock([SceneState class]);
       SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
-      coordinator_ =
-          [[NewTabPageCoordinator alloc] initWithBrowser:browser_.get()];
     }
+    coordinator_ = [[NewTabPageCoordinator alloc]
+        initWithBaseViewController:base_view_controller_
+                           browser:browser_.get()];
     coordinator_.toolbarDelegate = toolbar_delegate_;
     coordinator_.webState = &web_state_;
   }
@@ -88,6 +88,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   id scene_state_;
   NewTabPageCoordinator* coordinator_;
+  UIViewController* base_view_controller_;
 };
 
 // Tests that the coordinator doesn't vend an IncognitoViewController VC on the
@@ -106,6 +107,7 @@ TEST_F(NewTabPageCoordinatorTest, StartOnTheRecord) {
   UIViewController* viewController = [coordinator_ viewController];
   EXPECT_FALSE([viewController isKindOfClass:[IncognitoViewController class]]);
   [coordinator_ stop];
+  [coordinator_ disconnect];
 }
 
 // Tests that the coordinator vends an incognito VC off the record.

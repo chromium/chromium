@@ -58,11 +58,6 @@ PasswordForm CreatePasswordForm() {
   form.password_value = u"test";
   form.signon_realm = "http://www.example.com/";
   form.in_store = PasswordForm::Store::kProfileStore;
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues =
-      base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
   return form;
 }
 
@@ -147,7 +142,7 @@ TEST_F(PasswordsMediatorTest, ElapsedTimeSinceLastCheck) {
   EXPECT_NSEQ(@"Check never run.",
               [mediator() formatElapsedTimeSinceLastCheck]);
 
-  base::Time expected1 = base::Time::Now() - base::TimeDelta::FromSeconds(10);
+  base::Time expected1 = base::Time::Now() - base::Seconds(10);
   browserState()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       expected1.ToDoubleT());
@@ -155,7 +150,7 @@ TEST_F(PasswordsMediatorTest, ElapsedTimeSinceLastCheck) {
   EXPECT_NSEQ(@"Last checked just now.",
               [mediator() formatElapsedTimeSinceLastCheck]);
 
-  base::Time expected2 = base::Time::Now() - base::TimeDelta::FromMinutes(5);
+  base::Time expected2 = base::Time::Now() - base::Minutes(5);
   browserState()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       expected2.ToDoubleT());

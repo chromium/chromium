@@ -5,6 +5,7 @@
 package org.chromium.components.webauthn;
 
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -21,8 +22,8 @@ public class MockFido2ApiHandler extends Fido2ApiHandler {
 
     @Override
     protected void getAssertion(PublicKeyCredentialRequestOptions options,
-            RenderFrameHost frameHost, Origin origin, GetAssertionResponseCallback callback,
-            FidoErrorResponseCallback errorCallback) {
+            RenderFrameHost frameHost, Origin origin, PaymentOptions payment,
+            GetAssertionResponseCallback callback, FidoErrorResponseCallback errorCallback) {
         errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
     }
 

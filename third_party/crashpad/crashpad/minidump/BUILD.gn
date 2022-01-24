@@ -75,7 +75,7 @@ crashpad_static_library("minidump") {
 
   deps = [
     "../snapshot",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 
@@ -101,7 +101,7 @@ static_library("format") {
 
   deps = [
     "../snapshot:context",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 }
@@ -136,7 +136,7 @@ static_library("test_support") {
     "../snapshot:test_support",
     "../test",
     "../third_party/googletest:googletest",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 
@@ -179,7 +179,7 @@ source_set("minidump_test") {
     "../snapshot:test_support",
     "../test",
     "../third_party/googletest:googletest",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 

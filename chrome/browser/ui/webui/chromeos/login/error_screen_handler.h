@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ERROR_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ERROR_SCREEN_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
@@ -72,6 +71,10 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   using TView = ErrorScreenView;
 
   explicit ErrorScreenHandler(JSCallsContainer* js_calls_container);
+
+  ErrorScreenHandler(const ErrorScreenHandler&) = delete;
+  ErrorScreenHandler& operator=(const ErrorScreenHandler&) = delete;
+
   ~ErrorScreenHandler() override;
 
  private:
@@ -109,8 +112,6 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   bool showing_ = false;
 
   base::WeakPtrFactory<ErrorScreenHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorScreenHandler);
 };
 
 }  // namespace chromeos

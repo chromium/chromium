@@ -191,10 +191,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   bool UsesCompositedScrolling() const;
 
-  // Returns which layers backgrounds should be painted into for a overflow
-  // scrolling box if it uses composited scrolling.
-  BackgroundPaintLocation ComputeBackgroundPaintLocationIfComposited() const;
-
   // These return the CSS computed padding values.
   LayoutUnit ComputedCSSPaddingTop() const {
     NOT_DESTROYED();
@@ -397,7 +393,12 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return StyleRef().IsHorizontalWritingMode() ? BorderLeft() + PaddingLeft()
                                                 : BorderTop() + PaddingTop();
   }
-
+  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingLogicalRight() const {
+    NOT_DESTROYED();
+    return StyleRef().IsHorizontalWritingMode()
+               ? BorderRight() + PaddingRight()
+               : BorderBottom() + PaddingBottom();
+  }
   LayoutUnit BorderLogicalLeft() const {
     NOT_DESTROYED();
     return LayoutUnit(StyleRef().IsHorizontalWritingMode() ? BorderLeft()

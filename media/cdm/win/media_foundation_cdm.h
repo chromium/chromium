@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -20,12 +21,28 @@
 
 namespace media {
 
+// Key to the client token. The same value is also used in MediaFoundation CDMs.
+// Do NOT change this value!
+DEFINE_PROPERTYKEY(EME_CONTENTDECRYPTIONMODULE_CLIENT_TOKEN,
+                   0xa4abc308,
+                   0xd249,
+                   0x4150,
+                   0x90,
+                   0x37,
+                   0xc9,
+                   0x97,
+                   0xf8,
+                   0xcf,
+                   0x8d,
+                   0x0f,
+                   PID_FIRST_USABLE);
+
 class MediaFoundationCdmSession;
 
 // A CDM implementation based on Media Foundation IMFContentDecryptionModule on
 // Windows.
-class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
-                                        public CdmContext {
+class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
+                                              public CdmContext {
  public:
   // Checks whether MediaFoundationCdm is available based on OS version. Further
   // checks need to be made to determine the usability and the capabilities.
@@ -36,19 +53,25 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
   using CreateMFCdmCB = base::RepeatingCallback<
       void(HRESULT&, Microsoft::WRL::ComPtr<IMFContentDecryptionModule>&)>;
 
-  // Callback to MediaFoundationCDM to resolve the promise.
+  // Callback for `IsTypeSupportedCB` below.
   using IsTypeSupportedResultCB = base::OnceCallback<void(bool is_supported)>;
 
   // Callback to IMFMediaFoundataionCdmFactory's IsTypeSupported.
   using IsTypeSupportedCB =
-      base::RepeatingCallback<void(const std::string&,
+      base::RepeatingCallback<void(const std::string& content_type,
                                    IsTypeSupportedResultCB)>;
+
+  // Callback to MediaFoundationCdmFactory::StoreClientToken
+  using StoreClientTokenCB =
+      base::RepeatingCallback<void(const std::vector<uint8_t>&)>;
 
   // Constructs `MediaFoundationCdm`. Note that `Initialize()` must be called
   // before calling any other methods.
   MediaFoundationCdm(
+      const std::string& uma_prefix,
       const CreateMFCdmCB& create_mf_cdm_cb,
       const IsTypeSupportedCB& is_type_supported_cb,
+      const StoreClientTokenCB& store_client_token_cb,
       const SessionMessageCB& session_message_cb,
       const SessionClosedCB& session_closed_cb,
       const SessionKeysChangeCB& session_keys_change_cb,
@@ -62,33 +85,34 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
 
   // ContentDecryptionModule implementation.
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
-                            std::unique_ptr<SimpleCdmPromise> promise) final;
-  void GetStatusForPolicy(HdcpVersion min_hdcp_version,
-                          std::unique_ptr<KeyStatusCdmPromise> promise) final;
+                            std::unique_ptr<SimpleCdmPromise> promise) override;
+  void GetStatusForPolicy(
+      HdcpVersion min_hdcp_version,
+      std::unique_ptr<KeyStatusCdmPromise> promise) override;
   void CreateSessionAndGenerateRequest(
       CdmSessionType session_type,
       EmeInitDataType init_data_type,
       const std::vector<uint8_t>& init_data,
-      std::unique_ptr<NewSessionCdmPromise> promise) final;
+      std::unique_ptr<NewSessionCdmPromise> promise) override;
   void LoadSession(CdmSessionType session_type,
                    const std::string& session_id,
-                   std::unique_ptr<NewSessionCdmPromise> promise) final;
+                   std::unique_ptr<NewSessionCdmPromise> promise) override;
   void UpdateSession(const std::string& session_id,
                      const std::vector<uint8_t>& response,
-                     std::unique_ptr<SimpleCdmPromise> promise) final;
+                     std::unique_ptr<SimpleCdmPromise> promise) override;
   void CloseSession(const std::string& session_id,
-                    std::unique_ptr<SimpleCdmPromise> promise) final;
+                    std::unique_ptr<SimpleCdmPromise> promise) override;
   void RemoveSession(const std::string& session_id,
-                     std::unique_ptr<SimpleCdmPromise> promise) final;
-  CdmContext* GetCdmContext() final;
+                     std::unique_ptr<SimpleCdmPromise> promise) override;
+  CdmContext* GetCdmContext() override;
 
   // CdmContext implementation.
-  bool RequiresMediaFoundationRenderer() final;
+  bool RequiresMediaFoundationRenderer() override;
   bool GetMediaFoundationCdmProxy(
-      GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb) final;
+      GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb) override;
 
  private:
-  ~MediaFoundationCdm() final;
+  ~MediaFoundationCdm() override;
 
   // Returns whether the |session_id| is accepted by the |this|.
   bool OnSessionId(int session_token,
@@ -108,11 +132,19 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
   void OnIsTypeSupportedResult(std::unique_ptr<KeyStatusCdmPromise> promise,
                                bool is_supported);
 
+  void StoreClientTokenIfNeeded();
+
+  // Prefix for UMA reported in `this` and the `sessions_`.
+  const std::string uma_prefix_;
+
   // Callback to create `mf_cdm_`.
   CreateMFCdmCB create_mf_cdm_cb_;
 
   // Callback to MFCdmFactory's IsTypeSupported().
   IsTypeSupportedCB is_type_supported_cb_;
+
+  // Callback to MFCdmFactory's StoreClientToken().
+  StoreClientTokenCB store_client_token_cb_;
 
   // Callbacks for firing session events.
   SessionMessageCB session_message_cb_;
@@ -133,6 +165,9 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
   std::map<std::string, std::unique_ptr<MediaFoundationCdmSession>> sessions_;
 
   scoped_refptr<MediaFoundationCdmProxy> cdm_proxy_;
+
+  // Copy of the last client token we stored.
+  std::vector<uint8_t> cached_client_token_;
 
   // This must be the last member.
   base::WeakPtrFactory<MediaFoundationCdm> weak_factory_{this};

@@ -242,4 +242,9 @@ public interface ExternalNavigationDelegate {
      */
     boolean handleWithAutofillAssistant(ExternalNavigationParams params, Intent targetIntent,
             GURL browserFallbackUrl, boolean isGoogleReferrer);
+
+    /**
+     * Whether WebAPKs should be launched even on the initial Intent.
+     */
+    boolean shouldLaunchWebApksOnInitialIntent();
 }

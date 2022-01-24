@@ -19,15 +19,14 @@ struct ExternalInstallInfo {
   ExternalInstallInfo(const std::string& extension_id,
                       int creation_flags,
                       bool mark_acknowledged);
+  ExternalInstallInfo(const ExternalInstallInfo&) = delete;
+  ExternalInstallInfo& operator=(const ExternalInstallInfo&) = delete;
   ExternalInstallInfo(ExternalInstallInfo&& other);
   virtual ~ExternalInstallInfo() {}
 
   std::string extension_id;
   int creation_flags;
   bool mark_acknowledged;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExternalInstallInfo);
 };
 
 struct ExternalInstallInfoFile : public ExternalInstallInfo {

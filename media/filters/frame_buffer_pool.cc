@@ -9,10 +9,10 @@
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/process/memory.h"
-#include "base/sequenced_task_runner.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -141,9 +141,13 @@ bool FrameBufferPool::OnMemoryDump(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::trace_event::MemoryAllocatorDump* memory_dump =
-      pmd->CreateAllocatorDump("media/frame_buffers/memory_pool");
+      pmd->CreateAllocatorDump(
+          base::StringPrintf("media/frame_buffers/memory_pool/0x%" PRIXPTR,
+                             reinterpret_cast<uintptr_t>(this)));
   base::trace_event::MemoryAllocatorDump* used_memory_dump =
-      pmd->CreateAllocatorDump("media/frame_buffers/memory_pool/used");
+      pmd->CreateAllocatorDump(
+          base::StringPrintf("media/frame_buffers/memory_pool/used/0x%" PRIXPTR,
+                             reinterpret_cast<uintptr_t>(this)));
 
   pmd->AddSuballocation(memory_dump->guid(),
                         base::trace_event::MemoryDumpManager::GetInstance()
@@ -222,8 +226,7 @@ void FrameBufferPool::OnVideoFrameDestroyed(
 
   base::EraseIf(frame_buffers_, [now](const std::unique_ptr<FrameBuffer>& buf) {
     return !IsUsed(buf.get()) &&
-           now - buf->last_use_time >
-               base::TimeDelta::FromSeconds(kStaleFrameLimitSecs);
+           now - buf->last_use_time > base::Seconds(kStaleFrameLimitSecs);
   });
 }
 

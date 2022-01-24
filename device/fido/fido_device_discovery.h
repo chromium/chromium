@@ -67,6 +67,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceDiscovery
     kStopped,
   };
 
+  FidoDeviceDiscovery(const FidoDeviceDiscovery&) = delete;
+  FidoDeviceDiscovery& operator=(const FidoDeviceDiscovery&) = delete;
+
   ~FidoDeviceDiscovery() override;
 
   bool is_start_requested() const { return state_ != State::kIdle; }
@@ -110,8 +113,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceDiscovery
 
   State state_ = State::kIdle;
   base::WeakPtrFactory<FidoDeviceDiscovery> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoDeviceDiscovery);
 };
 
 }  // namespace device

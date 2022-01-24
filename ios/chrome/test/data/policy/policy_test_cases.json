@@ -7,11 +7,22 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "autofill.profile_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AutofillAddressEnabled": false
         },
         "prefs": {
-          "autofill.profile_enabled": {}
+          "autofill.profile_enabled": {
+            "value": false
+          }
         }
       }
     ]
@@ -23,11 +34,22 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "autofill.credit_card_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AutofillCreditCardEnabled": false
         },
         "prefs": {
-          "autofill.credit_card_enabled": {}
+          "autofill.credit_card_enabled": {
+            "value": false
+          }
         }
       }
     ]
@@ -42,8 +64,31 @@
           "BrowserSignin": 0
         },
         "prefs": {
-          "signin.allowed_by_policy": {
-            "value": false
+          "signin.browser_signin_policy": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "BrowserSignin": 1
+        },
+        "prefs": {
+          "signin.browser_signin_policy": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "BrowserSignin": 2
+        },
+        "prefs": {
+          "signin.browser_signin_policy": {
+            "location": "local_state",
+            "value": 2
           }
         }
       }
@@ -87,7 +132,7 @@
     ]
   },
   "CloudPolicyOverridesPlatformPolicy": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
   },
   "DefaultPopupsSetting": {
     "os": [
@@ -173,11 +218,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "bookmarks.editing_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "EditBookmarksEnabled": false
         },
         "prefs": {
-          "bookmarks.editing_enabled": {}
+          "bookmarks.editing_enabled": {
+            "value": false
+          }
         }
       }
     ]
@@ -581,7 +637,83 @@
     ]
   },
   "ManagedBookmarks": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "bookmarks.managed_bookmarks_folder_name": {
+            "default_value": ""
+          },
+          "bookmarks.managed_bookmarks": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Managed bookmarks together with folder name.",
+        "policies": {
+          "ManagedBookmarks": [
+            {
+              "toplevel_name": "My managed bookmarks folder"
+            },
+            {
+              "name": "Google",
+              "url": "google.com"
+            },
+            {
+              "name": "Youtube",
+              "url": "youtube.com"
+            },
+            {
+              "name": "Chrome links",
+              "children": [
+                {
+                  "name": "Chromium",
+                  "url": "chromium.org"
+                },
+                {
+                  "name": "Chromium Developers",
+                  "url": "dev.chromium.org"
+                }
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "bookmarks.managed_bookmarks_folder_name": {
+            "value": "My managed bookmarks folder"
+          },
+          "bookmarks.managed_bookmarks": {
+            "value": [
+              {
+                "name": "Google",
+                "url": "http://google.com/"
+              },
+              {
+                "name": "Youtube",
+                "url": "http://youtube.com/"
+              },
+              {
+                "name": "Chrome links",
+                "children": [
+                  {
+                    "name": "Chromium",
+                    "url": "http://chromium.org/"
+                  },
+                  {
+                    "name": "Chromium Developers",
+                    "url": "http://dev.chromium.org/"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
   },
   "EnableExperimentalPolicies": {
     "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."

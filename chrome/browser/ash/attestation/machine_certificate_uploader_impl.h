@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_ASH_ATTESTATION_MACHINE_CERTIFICATE_UPLOADER_IMPL_H_
 
 #include <string>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): forward declare AttestatoinFlow
+// TODO(https://crbug.com/1164001): forward declare AttestationFlow
 // after //chromeos/attestation is moved to ash.
 #include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
@@ -35,12 +37,19 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   MachineCertificateUploaderImpl(policy::CloudPolicyClient* policy_client,
                                  AttestationFlow* attestation_flow);
 
+  MachineCertificateUploaderImpl(const MachineCertificateUploaderImpl&) =
+      delete;
+  MachineCertificateUploaderImpl& operator=(
+      const MachineCertificateUploaderImpl&) = delete;
+
   ~MachineCertificateUploaderImpl() override;
 
   // Sets the retry limit in number of tries; useful in testing.
-  void set_retry_limit(int limit) { retry_limit_ = limit; }
-  // Sets the retry delay in seconds; useful in testing.
-  void set_retry_delay(int retry_delay) { retry_delay_ = retry_delay; }
+  void set_retry_limit_for_testing(int limit) { retry_limit_ = limit; }
+  // Sets the retry delay; useful in testing.
+  void set_retry_delay_for_testing(base::TimeDelta retry_delay) {
+    retry_delay_ = std::move(retry_delay);
+  }
 
   using UploadCallback =
       base::OnceCallback<void(bool /*certificate_uploaded*/)>;
@@ -104,16 +113,14 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
   bool refresh_certificate_ = false;
   std::vector<UploadCallback> callbacks_;
-  int num_retries_ = {};
-  int retry_limit_ = {};
-  int retry_delay_ = {};
+  int num_retries_ = 0;
+  int retry_limit_ = 0;
+  base::TimeDelta retry_delay_;
   absl::optional<bool> certificate_uploaded_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<MachineCertificateUploaderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MachineCertificateUploaderImpl);
 };
 
 }  // namespace attestation

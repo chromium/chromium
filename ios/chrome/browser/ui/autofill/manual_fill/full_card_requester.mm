@@ -36,7 +36,7 @@ void FullCardRequester::GetFullCard(
   DCHECK(autofill_manager);
   DCHECK(result_delegate);
   autofill_manager->GetOrCreateFullCardRequest()->GetFullCard(
-      card, autofill::AutofillClient::UNMASK_FOR_PAYMENT_REQUEST,
+      card, autofill::AutofillClient::UnmaskCardReason::kPaymentRequest,
       result_delegate, AsWeakPtr());
 }
 

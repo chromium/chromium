@@ -7,7 +7,6 @@
 
 #include <set>
 #include <string>
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/gl_export.h"
@@ -18,6 +17,9 @@ struct GL_EXPORT GLVersionInfo {
   GLVersionInfo(const char* version_str,
                 const char* renderer_str,
                 const gfx::ExtensionSet& exts);
+
+  GLVersionInfo(const GLVersionInfo&) = delete;
+  GLVersionInfo& operator=(const GLVersionInfo&) = delete;
 
   bool IsAtLeastGL(unsigned major, unsigned minor) const {
     return !is_es && (major_version > major ||
@@ -87,8 +89,6 @@ struct GL_EXPORT GLVersionInfo {
   void ParseDriverInfo(const char* version_str);
   void ExtractDriverVendorANGLE(const char* renderer_str);
   bool IsES3Capable(const gfx::ExtensionSet& extensions) const;
-
-  DISALLOW_COPY_AND_ASSIGN(GLVersionInfo);
 };
 
 }  // namespace gl

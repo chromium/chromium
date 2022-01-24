@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_FAKE_TETHER_COMPONENT_H_
 #define CHROMEOS_COMPONENTS_TETHER_FAKE_TETHER_COMPONENT_H_
 
-#include "base/macros.h"
 #include "chromeos/components/tether/tether_component.h"
 #include "chromeos/components/tether/tether_disconnector.h"
 
@@ -17,6 +16,10 @@ namespace tether {
 class FakeTetherComponent : public TetherComponent {
  public:
   explicit FakeTetherComponent(bool has_asynchronous_shutdown);
+
+  FakeTetherComponent(const FakeTetherComponent&) = delete;
+  FakeTetherComponent& operator=(const FakeTetherComponent&) = delete;
+
   ~FakeTetherComponent() override;
 
   void set_has_asynchronous_shutdown(bool has_asynchronous_shutdown) {
@@ -34,8 +37,6 @@ class FakeTetherComponent : public TetherComponent {
  private:
   bool has_asynchronous_shutdown_;
   std::unique_ptr<ShutdownReason> last_shutdown_reason_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTetherComponent);
 };
 
 }  // namespace tether

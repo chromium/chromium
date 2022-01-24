@@ -6,7 +6,6 @@
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ITEM_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
@@ -68,6 +67,12 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationItem {
 
   // Hides the media notification.
   virtual void Dismiss() = 0;
+
+  // Called by MediaNotificationView when volume is set.
+  virtual void SetVolume(float volume) = 0;
+
+  // Called by MediaNotificationView when mute button is clicked.
+  virtual void SetMute(bool mute) = 0;
 
   // Returns the type of source.
   virtual media_message_center::SourceType SourceType() = 0;

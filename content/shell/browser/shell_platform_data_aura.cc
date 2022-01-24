@@ -4,7 +4,6 @@
 
 #include "content/shell/browser/shell_platform_data_aura.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/shell/browser/shell.h"
 #include "ui/aura/client/default_capture_client.h"
@@ -27,7 +26,6 @@
 
 #if defined(USE_OZONE)
 #include "ui/aura/screen_ozone.h"
-#include "ui/base/ui_base_features.h"
 #endif
 
 namespace content {
@@ -38,6 +36,9 @@ class FillLayout : public aura::LayoutManager {
  public:
   explicit FillLayout(aura::Window* root)
       : root_(root), has_bounds_(!root->bounds().IsEmpty()) {}
+
+  FillLayout(const FillLayout&) = delete;
+  FillLayout& operator=(const FillLayout&) = delete;
 
   ~FillLayout() override {}
 
@@ -71,8 +72,6 @@ class FillLayout : public aura::LayoutManager {
 
   aura::Window* root_;
   bool has_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(FillLayout);
 };
 
 }
@@ -82,8 +81,12 @@ ShellPlatformDataAura::ShellPlatformDataAura(const gfx::Size& initial_size) {
 
 #if defined(USE_OZONE)
   // Setup global display::Screen singleton.
-  if (features::IsUsingOzonePlatform() && !display::Screen::GetScreen())
-    screen_ = std::make_unique<aura::ScreenOzone>();
+  if (!display::Screen::GetScreen()) {
+    std::unique_ptr<aura::ScreenOzone> screen_ozone =
+        std::make_unique<aura::ScreenOzone>();
+    screen_ozone.get()->Initialize();
+    screen_ = std::move(screen_ozone);
+  }
 #endif  // defined(USE_OZONE)
 
   ui::PlatformWindowInitProperties properties;

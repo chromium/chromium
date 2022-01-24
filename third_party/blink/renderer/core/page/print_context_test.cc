@@ -124,20 +124,20 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GetDocument().SetPrinting(Document::kBeforePrinting);
     Event* event = MakeGarbageCollected<BeforePrintEvent>();
     GetPrintContext().GetFrame()->DomWindow()->DispatchEvent(*event);
-    GetPrintContext().BeginPrintMode(page_rect.Width(), page_rect.Height());
+    GetPrintContext().BeginPrintMode(page_rect.width(), page_rect.height());
     UpdateAllLifecyclePhasesForTest();
-    PaintRecordBuilder builder;
-    GraphicsContext& context = builder.Context();
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+    GraphicsContext& context = builder->Context();
     context.SetPrinting(true);
     GetDocument().View()->PaintContentsOutsideOfLifecycle(
-        context, kGlobalPaintAddUrlMetadata, CullRect(page_rect));
+        context, kGlobalPaintAddUrlMetadata, CullRect(ToGfxRect(page_rect)));
     {
       DrawingRecorder recorder(
           context, *GetDocument().GetLayoutView(),
           DisplayItem::kPrintedContentDestinationLocations);
       GetPrintContext().OutputLinkedDestinations(context, page_rect);
     }
-    builder.EndRecording()->Playback(&canvas);
+    builder->EndRecording()->Playback(&canvas);
     GetPrintContext().EndPrintMode();
   }
 
@@ -378,6 +378,18 @@ TEST_P(PrintContextTest, LinkTargetBoundingBox) {
   ASSERT_EQ(1u, operations.size());
   EXPECT_EQ(MockPageContextCanvas::kDrawRect, operations[0].type);
   EXPECT_SKRECT_EQ(50, 60, 200, 100, operations[0].rect);
+}
+
+TEST_P(PrintContextTest, ScaledVerticalRL) {
+  SetBodyInnerHTML(R"HTML(
+    <style>html { writing-mode:vertical-rl; }</style>
+    <div style="break-after:page;">x</div>
+    <div style="inline-size:10000px; block-size:10px;"></div>
+  )HTML");
+
+  int page_count = PrintContext::NumberOfPages(GetDocument().GetFrame(),
+                                               FloatSize(500, 500));
+  EXPECT_EQ(2, page_count);
 }
 
 INSTANTIATE_PAINT_TEST_SUITE_P(PrintContextFrameTest);

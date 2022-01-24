@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_PERFORMANCE_MANAGER_RENDERER_RESOURCE_COORDINATOR_IMPL_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-blink.h"
 #include "components/performance_manager/public/mojom/v8_contexts.mojom-blink.h"
 #include "mojo/public/cpp/bindings/remote.h"

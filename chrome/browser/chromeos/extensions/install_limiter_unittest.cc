@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/extensions/install_limiter.h"
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -29,14 +28,16 @@ class InstallLimiterTest
  public:
   InstallLimiterTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
+
+  InstallLimiterTest(const InstallLimiterTest&) = delete;
+  InstallLimiterTest& operator=(const InstallLimiterTest&) = delete;
+
   ~InstallLimiterTest() override = default;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   chromeos::ScopedStubInstallAttributes test_install_attributes_;
   user_manager::ScopedUserManager scoped_user_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallLimiterTest);
 };
 
 TEST_P(InstallLimiterTest, ShouldDeferInstall) {

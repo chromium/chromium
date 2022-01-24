@@ -130,11 +130,11 @@ using chrome_test_util::WindowWithNumber;
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
-  [self openClearBrowsingDataDialogInWindowWithNumber:0];
-
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
+  [self openClearBrowsingDataDialogInWindowWithNumber:0];
   [self openClearBrowsingDataDialogInWindowWithNumber:1];
 
   // Grab start states.

@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -224,7 +225,7 @@ void CookieControlsBubbleView::AddedToWidget() {
   auto header_view = std::make_unique<NonAccessibleImageView>();
   header_view_ = header_view.get();
   header_view_->SetBackground(views::CreateThemedSolidBackground(
-      header_view_, ui::NativeTheme::kColorId_BubbleFooterBackground));
+      header_view_, ui::kColorBubbleFooterBackground));
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
 }
 

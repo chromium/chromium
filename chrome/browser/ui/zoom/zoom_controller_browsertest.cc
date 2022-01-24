@@ -4,10 +4,11 @@
 
 #include "components/zoom/zoom_controller.h"
 
-#include "base/macros.h"
 #include "base/process/kill.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -20,11 +21,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/zoom/test/zoom_test_utils.h"
 #include "components/zoom/zoom_observer.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
@@ -42,6 +45,12 @@ class ZoomControllerBrowserTest : public InProcessBrowserTest {
  public:
   ZoomControllerBrowserTest() {}
   ~ZoomControllerBrowserTest() override {}
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("a.com", "127.0.0.1");
+    host_resolver()->AddRule("b.com", "127.0.0.1");
+  }
 
   void TestResetOnNavigation(ZoomController::ZoomMode zoom_mode) {
     DCHECK(zoom_mode == ZoomController::ZOOM_MODE_ISOLATED ||
@@ -63,7 +72,8 @@ class ZoomControllerBrowserTest : public InProcessBrowserTest {
         false);
     ZoomChangedWatcher zoom_change_watcher(web_contents, zoom_change_data);
 
-    ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(chrome::kChromeUISettingsURL)));
     zoom_change_watcher.Wait();
   }
 };  // ZoomControllerBrowserTest
@@ -124,7 +134,8 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest, OnPreferenceChanged) {
 }
 
 IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest, ErrorPagesCanZoom) {
-  ui_test_utils::NavigateToURL(browser(), GURL("http://kjfhkjsdf.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("http://kjfhkjsdf.com")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -248,6 +259,86 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest, NavigationResetsManualMode) {
   TestResetOnNavigation(ZoomController::ZOOM_MODE_MANUAL);
 }
 
+// Mac does not have touchscreen pinch.
+#if !defined(OS_MAC)
+// Ensure that when a history navigation restores the page scale factor from a
+// previous pinch zoom, the browser is notified of the page scale restoration.
+IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
+                       RestoredPageScaleFromNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  content::RenderFrameHostWrapper rfh_a(
+      ui_test_utils::NavigateToURL(browser(), url_a));
+  ASSERT_TRUE(rfh_a);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  zoom::ZoomController* zoom_controller =
+      zoom::ZoomController::FromWebContents(web_contents);
+  EXPECT_TRUE(zoom_controller->PageScaleFactorIsOne());
+  EXPECT_FALSE(chrome::CanResetZoom(web_contents));
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_ZOOM_NORMAL));
+
+  // Perform a pinch zoom to change the page scale factor.
+  // The anchor is not important for this test, but we can't have it near the
+  // edge of the contents, otherwise the simulated pinch's touch events wouldn't
+  // be within the contents' bounds.
+  const gfx::Rect contents_rect = web_contents->GetContainerBounds();
+  const gfx::PointF anchor(contents_rect.width() / 2,
+                           contents_rect.height() / 2);
+  const float scale_change = 1.5;
+  base::RunLoop run_loop;
+  content::SimulateTouchscreenPinch(web_contents, anchor, scale_change,
+                                    run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The page scale factor propagates from the compositor thread to the main
+  // thread to the browser process, so we'll roundtrip before checking the page
+  // scale from the browser side in order to avoid flakiness.
+  base::RepeatingClosure synchronize_threads =
+      base::BindLambdaForTesting([web_contents]() {
+        content::MainThreadFrameObserver observer(
+            web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
+        observer.Wait();
+      });
+
+  synchronize_threads.Run();
+  EXPECT_FALSE(zoom_controller->PageScaleFactorIsOne());
+  EXPECT_TRUE(chrome::CanResetZoom(web_contents));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_ZOOM_NORMAL));
+
+  // Navigate to a different page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+
+  // If the previous page was bfcached, evict it, in order to test the
+  // conditions that were the cause of https://crbug.com/1264958 (the page scale
+  // needs to apply to a new RenderFrameHost).
+  if (rfh_a) {
+    ASSERT_TRUE(rfh_a->IsInactiveAndDisallowActivation(
+        content::DisallowActivationReasonId::kForTesting));
+  }
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  synchronize_threads.Run();
+  EXPECT_TRUE(zoom_controller->PageScaleFactorIsOne());
+  EXPECT_FALSE(chrome::CanResetZoom(web_contents));
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_ZOOM_NORMAL));
+
+  // Navigate to the previous page which was pinch zoomed. The page scale will
+  // be restored in the renderer and the browser should be made aware of this.
+  ASSERT_TRUE(web_contents->GetController().CanGoBack());
+  web_contents->GetController().GoBack();
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+
+  synchronize_threads.Run();
+  EXPECT_FALSE(zoom_controller->PageScaleFactorIsOne());
+  EXPECT_TRUE(chrome::CanResetZoom(web_contents));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_ZOOM_NORMAL));
+}
+#endif  // !defined(OS_MAC)
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Regression test: crbug.com/438979.
 IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
@@ -274,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
       ZoomController::FromWebContents(web_contents);
 
   GURL settings_url(chrome::kChromeUISettingsURL);
-  ui_test_utils::NavigateToURL(browser(), settings_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), settings_url));
   EXPECT_NE(
       content::PAGE_TYPE_ERROR,
       web_contents->GetController().GetLastCommittedEntry()->GetPageType());
@@ -313,8 +404,12 @@ class ZoomControllerForPrerenderingTest : public ZoomControllerBrowserTest,
             base::Unretained(this))) {}
   ~ZoomControllerForPrerenderingTest() override = default;
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    ZoomControllerBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
 

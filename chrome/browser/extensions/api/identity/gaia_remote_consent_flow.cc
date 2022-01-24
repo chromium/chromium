@@ -28,7 +28,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager_util.h"
+#include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace extensions {

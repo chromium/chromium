@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,14 +18,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.metrics.UmaRecorder;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -41,24 +36,8 @@ import org.chromium.ui.base.WindowAndroid;
  * JUnit tests for the class {@link SigninBridge}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {SigninBridgeTest.ShadowChromeFeatureList.class})
 public class SigninBridgeTest {
     private static final String CONTINUE_URL = "https://test-continue-url.com";
-
-    @Implements(ChromeFeatureList.class)
-    static class ShadowChromeFeatureList {
-        private static final String PARAM_NAME = "consecutive_active_dismissal_limit";
-        static final int PARAM_VALUE = 3;
-
-        @Implementation
-        public static int getFieldTrialParamByFeatureAsInt(
-                String featureName, String paramName, int defaultValue) {
-            Assert.assertEquals(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_VAR, featureName);
-            Assert.assertEquals(PARAM_NAME, paramName);
-            Assert.assertEquals(Integer.MAX_VALUE, defaultValue);
-            return PARAM_VALUE;
-        }
-    }
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
@@ -92,7 +71,7 @@ public class SigninBridgeTest {
 
     @After
     public void tearDown() {
-        SigninPreferencesManager.getInstance().clearAccountPickerBottomSheetActiveDismissalCount();
+        SigninPreferencesManager.getInstance().clearWebSigninAccountPickerActiveDismissalCount();
     }
 
     @Test
@@ -117,8 +96,8 @@ public class SigninBridgeTest {
         when(mSigninManagerMock.isSignInAllowed()).thenReturn(true);
         mAccountManagerTestRule.addAccount("account@test.com");
         SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT,
-                ShadowChromeFeatureList.PARAM_VALUE);
+                ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
+                SigninBridge.ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT);
         SigninBridge.openAccountPickerBottomSheet(mWindowAndroidMock, CONTINUE_URL);
         checkHistogramRecording(AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS);
     }

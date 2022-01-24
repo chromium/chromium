@@ -42,14 +42,14 @@ SVGElementResourceClient* SVGResources::GetClient(const LayoutObject& object) {
   return To<SVGElement>(object.GetNode())->GetSVGResourceClient();
 }
 
-FloatRect SVGResources::ReferenceBoxForEffects(
+gfx::RectF SVGResources::ReferenceBoxForEffects(
     const LayoutObject& layout_object) {
   // For SVG foreign objects, remove the position part of the bounding box. The
   // position is already baked into the transform, and we don't want to re-apply
   // the offset when, e.g., using "objectBoundingBox" for clipPathUnits.
   // Use the frame size since it should have the proper zoom applied.
   if (auto* foreign = DynamicTo<LayoutSVGForeignObject>(layout_object))
-    return FloatRect(FloatPoint::Zero(), FloatSize(foreign->Size()));
+    return gfx::RectF(gfx::SizeF(foreign->Size()));
 
   // Text "sub-elements" (<tspan>, <textpath>, <a>) should use the entire
   // <text>s object bounding box rather then their own.
@@ -305,7 +305,7 @@ void SVGElementResourceClient::UpdateFilterData(
     CompositorFilterOperations& operations) {
   DCHECK(element_->GetLayoutObject());
   const LayoutObject& object = *element_->GetLayoutObject();
-  FloatRect reference_box = SVGResources::ReferenceBoxForEffects(object);
+  FloatRect reference_box(SVGResources::ReferenceBoxForEffects(object));
   if (!operations.IsEmpty() && !filter_data_dirty_ &&
       reference_box == operations.ReferenceBox())
     return;

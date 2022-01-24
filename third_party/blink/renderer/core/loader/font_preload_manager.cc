@@ -74,7 +74,7 @@ FontPreloadManager::FontPreloadManager(Document& document)
           document.GetTaskRunner(TaskType::kInternalFrameLifecycleControl),
           this,
           &FontPreloadManager::FontPreloadingDelaysRenderingTimerFired),
-      render_delay_timeout_(base::TimeDelta::FromMilliseconds(
+      render_delay_timeout_(base::Milliseconds(
           features::kFontPreloadingDelaysRenderingParam.Get())) {}
 
 bool FontPreloadManager::HasPendingRenderBlockingFonts() const {

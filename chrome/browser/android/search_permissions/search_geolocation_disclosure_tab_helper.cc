@@ -32,6 +32,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/variations_associated_data.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/origin.h"
@@ -45,7 +46,7 @@ bool gIgnoreUrlChecksForTesting = false;
 int gDayOffsetForTesting = 0;
 
 base::Time GetTimeNow() {
-  return base::Time::Now() + base::TimeDelta::FromDays(gDayOffsetForTesting);
+  return base::Time::Now() + base::Days(gDayOffsetForTesting);
 }
 
 }  // namespace
@@ -56,17 +57,34 @@ SearchGeolocationDisclosureTabHelper::SearchGeolocationDisclosureTabHelper(
 
 SearchGeolocationDisclosureTabHelper::~SearchGeolocationDisclosureTabHelper() {}
 
-void SearchGeolocationDisclosureTabHelper::NavigationEntryCommitted(
-    const content::LoadCommittedDetails& load_details) {
-  MaybeShowDisclosureForNavigation(web_contents()->GetVisibleURL());
+void SearchGeolocationDisclosureTabHelper::PrimaryPageChanged(
+    content::Page& page) {
+  content::RenderFrameHost* rfh = &page.GetMainDocument();
+  const GURL& gurl = rfh->GetLastCommittedURL();
+
+  if (!ShouldShowDisclosureForNavigation(gurl))
+    return;
+
+  MaybeShowDisclosureForValidUrl(rfh, gurl);
 }
 
 void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForAPIAccess(
-    const GURL& gurl) {
-  if (!ShouldShowDisclosureForAPIAccess(gurl))
+    content::RenderFrameHost* rfh,
+    const GURL& requesting_origin) {
+  if (!rfh->GetPage().IsPrimary())
     return;
 
-  MaybeShowDisclosureForValidUrl(gurl);
+  // On Android, it is possible for a cross-origin navigation to reuse the
+  // same RFH and as a result, the origin of the RFH at the time the request
+  // was made might be different from the current origin. We don't want to
+  // consider this an API access by the primary page, so we return early.
+  if (rfh->GetLastCommittedOrigin().GetURL() != requesting_origin)
+    return;
+
+  if (!ShouldShowDisclosureForAPIAccess(requesting_origin))
+    return;
+
+  MaybeShowDisclosureForValidUrl(rfh, requesting_origin);
 }
 
 // static
@@ -106,15 +124,8 @@ void SearchGeolocationDisclosureTabHelper::RegisterProfilePrefs(
       prefs::kSearchGeolocationPostDisclosureMetricsRecorded, false);
 }
 
-void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForNavigation(
-    const GURL& gurl) {
-  if (!ShouldShowDisclosureForNavigation(gurl))
-    return;
-
-  MaybeShowDisclosureForValidUrl(gurl);
-}
-
 void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForValidUrl(
+    content::RenderFrameHost* rfh,
     const GURL& gurl) {
   // Don't show the infobar if the user has dismissed it, or they've seen it
   // enough times already.
@@ -136,7 +147,7 @@ void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForValidUrl(
   // Or if it has been shown too recently.
   base::Time last_shown = base::Time::FromInternalValue(
       prefs->GetInt64(prefs::kSearchGeolocationDisclosureLastShowDate));
-  if (GetTimeNow() - last_shown < base::TimeDelta::FromDays(kDaysPerShow)) {
+  if (GetTimeNow() - last_shown < base::Days(kDaysPerShow)) {
     return;
   }
 
@@ -146,7 +157,8 @@ void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForValidUrl(
 
   // Only show disclosure if the DSE geolocation setting is on.
   if (PermissionManagerFactory::GetForProfile(GetProfile())
-          ->GetPermissionStatus(ContentSettingsType::GEOLOCATION, gurl, gurl)
+          ->GetPermissionStatusForCurrentDocument(
+              ContentSettingsType::GEOLOCATION, rfh)
           .content_setting != CONTENT_SETTING_ALLOW) {
     return;
   }
@@ -262,4 +274,4 @@ void JNI_SearchGeolocationDisclosureTabHelper_SetDayOffsetForTesting(
   gDayOffsetForTesting = days;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchGeolocationDisclosureTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchGeolocationDisclosureTabHelper);

@@ -175,6 +175,9 @@ class ComponentBase {
     virtual ~Observer() {}
   };
 
+  ComponentBase(const ComponentBase&) = delete;
+  ComponentBase& operator=(const ComponentBase&) = delete;
+
   virtual ~ComponentBase();
 
   // Enables this component if possible. Attempts to enable all strong
@@ -266,8 +269,6 @@ class ComponentBase {
   bool async_call_in_progress_;
   int pending_dependency_count_;
   const scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentBase);
 };
 
 template <typename C>
@@ -276,13 +277,13 @@ class StrongDependency : public subtle::DependencyBase {
   StrongDependency(const WeakReference<C>& dependency, ComponentBase* dependent)
       : subtle::DependencyBase(dependency, dependent) {}
 
+  StrongDependency(const StrongDependency&) = delete;
+  StrongDependency& operator=(const StrongDependency&) = delete;
+
   C* operator->() const {
     DCHECK(dependency_);
     return static_cast<C*>(dependency_);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StrongDependency);
 };
 
 template <typename C>
@@ -316,10 +317,10 @@ class Component : public ComponentBase {
 
   Component() = default;
 
-  WeakRef GetRef() { return WeakRef(*static_cast<C*>(this)); }
+  Component(const Component&) = delete;
+  Component& operator=(const Component&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(Component);
+  WeakRef GetRef() { return WeakRef(*static_cast<C*>(this)); }
 };
 
 }  // namespace chromecast

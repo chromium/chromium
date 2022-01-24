@@ -11,7 +11,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 

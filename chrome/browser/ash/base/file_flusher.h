@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -20,6 +19,10 @@ namespace ash {
 class FileFlusher {
  public:
   FileFlusher();
+
+  FileFlusher(const FileFlusher&) = delete;
+  FileFlusher& operator=(const FileFlusher&) = delete;
+
   ~FileFlusher();
 
   // Flush files under |path|.
@@ -59,8 +62,6 @@ class FileFlusher {
   bool paused_for_test_ = false;
 
   base::WeakPtrFactory<FileFlusher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileFlusher);
 };
 
 }  // namespace ash

@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/platform/web_callbacks.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
@@ -128,6 +128,10 @@ using ImageCaptureGrabFrameCallbacks =
 class ImageCaptureFrameGrabber final : public MediaStreamVideoSink {
  public:
   ImageCaptureFrameGrabber();
+
+  ImageCaptureFrameGrabber(const ImageCaptureFrameGrabber&) = delete;
+  ImageCaptureFrameGrabber& operator=(const ImageCaptureFrameGrabber&) = delete;
+
   ~ImageCaptureFrameGrabber() override;
 
   void GrabFrame(MediaStreamComponent* component,
@@ -146,8 +150,6 @@ class ImageCaptureFrameGrabber final : public MediaStreamVideoSink {
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ImageCaptureFrameGrabber> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageCaptureFrameGrabber);
 };
 
 }  // namespace blink

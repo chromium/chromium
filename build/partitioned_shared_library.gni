@@ -62,7 +62,7 @@ template("partitioned_shared_library") {
     }
     ldflags += [
       "-Wl,-soname,lib${_output_name}.so",
-      "--link-only",
+      "--partitioned-library",
     ]
 
     # This shared library is an intermediate artifact that should not packaged
@@ -101,8 +101,7 @@ template("partitioned_shared_library") {
       }
 
       if (use_debug_fission) {
-        _dwp = rebase_path("${android_tool_prefix}dwp", root_build_dir)
-        args += [ "--dwp=${_dwp}" ]
+        args += [ "--split-dwarf" ]
         outputs += [ invoker.unstripped_output + ".dwp" ]
       }
       args += [ rebase_path(sources[0], root_build_dir) ]

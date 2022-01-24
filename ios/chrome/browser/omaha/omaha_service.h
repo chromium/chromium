@@ -47,6 +47,9 @@ class OmahaService {
                         pending_url_loader_factory,
                     const UpgradeRecommendedCallback& callback);
 
+  OmahaService(const OmahaService&) = delete;
+  OmahaService& operator=(const OmahaService&) = delete;
+
   // Performs an immediate check to see if the device is up to date. Start must
   // have been previously called.
   static void CheckNow(OneOffCallback callback);
@@ -232,8 +235,6 @@ class OmahaService {
 
   // Stores the callback for one off Omaha checks.
   OneOffCallback one_off_check_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmahaService);
 };
 
 #endif  // IOS_CHROME_BROWSER_OMAHA_OMAHA_SERVICE_H_

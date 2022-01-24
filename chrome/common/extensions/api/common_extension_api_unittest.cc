@@ -11,13 +11,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind_post_task.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -58,6 +58,10 @@ struct FeatureSessionTypesTestData {
 class TestExtensionAPI : public ExtensionAPI {
  public:
   TestExtensionAPI() {}
+
+  TestExtensionAPI(const TestExtensionAPI&) = delete;
+  TestExtensionAPI& operator=(const TestExtensionAPI&) = delete;
+
   ~TestExtensionAPI() override {}
 
   void add_fake_schema(const std::string& name) { fake_schemas_.insert(name); }
@@ -68,7 +72,6 @@ class TestExtensionAPI : public ExtensionAPI {
   }
 
   std::set<std::string> fake_schemas_;
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionAPI);
 };
 
 }  // namespace

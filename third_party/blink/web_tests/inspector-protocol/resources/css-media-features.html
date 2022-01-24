@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <style>
-  p { width: 1px; height: 1px; }
+  p { width: 1px; height: 1px; color: red; }
   @media (prefers-color-scheme: no-preference) { p { width: 2px; } }
   @media (prefers-color-scheme: light) { p { width: 3px; } }
   @media (prefers-color-scheme: dark) { p { width: 4px; } }
   @media (prefers-reduced-motion: no-preference) { p { height: 2px; } }
   @media (prefers-reduced-motion: reduce) { p { height: 3px; } }
+  @media (prefers-contrast: no-preference) { p { color: blue; } }
+  @media (prefers-contrast: more) { p { color: green; } }
+  @media (prefers-contrast: less) { p { color: yellow; } }
+  @media (prefers-contrast: custom) { p { color: orange; } }
   @media (prefers-color-scheme: dark) and (prefers-reduced-motion: reduce) { p { width: 999px; height: 999px; } }
   @media (color-gamut: p3) { p { width: 6px; height: 6px; } }
   @media (color-gamut: rec2020) { p { width: 7px; height: 7px; } }

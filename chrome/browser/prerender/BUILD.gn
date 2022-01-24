@@ -7,7 +7,10 @@ import("//build/config/chromeos/ui_mode.gni")
 source_set("browser_tests") {
   testonly = true
 
-  sources = [ "payment_request_for_prerender_browsertest.cc" ]
+  sources = [
+    "payment_request_for_prerender_browsertest.cc",
+    "prerender_browsertest.cc",
+  ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
@@ -17,4 +20,6 @@ source_set("browser_tests") {
     "//chrome/test/payments:test_support",
     "//components/payments/content:utils",
   ]
+
+  data = [ "//chrome/test/data/" ]
 }

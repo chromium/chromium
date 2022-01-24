@@ -28,6 +28,11 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
     client_native_pixmap_factory_ = ui::CreateClientNativePixmapFactoryOzone();
   }
 
+  GLImageNativePixmapTestDelegate(const GLImageNativePixmapTestDelegate&) =
+      delete;
+  GLImageNativePixmapTestDelegate& operator=(
+      const GLImageNativePixmapTestDelegate&) = delete;
+
   ~GLImageNativePixmapTestDelegate() override = default;
 
   scoped_refptr<GLImage> CreateSolidColorImage(const gfx::Size& size,
@@ -78,8 +83,6 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
 
  private:
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageNativePixmapTestDelegate);
 };
 
 using GLImageScanoutType = testing::Types<

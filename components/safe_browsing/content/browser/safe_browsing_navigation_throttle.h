@@ -15,21 +15,32 @@ namespace safe_browsing {
 
 class SafeBrowsingUIManager;
 
-// This throttle monitors failed requests, and if a request failed due to it
-// being blocked by Safe Browsing, it creates and displays an interstitial.
-// This throttle is only created when Safe Browsing committed interstitials are
-// enabled.
+// This throttle monitors failed requests in an outer-most main frame (i.e.
+// doesn't apply for fenced-frames or portals), and if a request failed due to
+// it being blocked by Safe Browsing, it creates and displays an interstitial.
+// For other kinds of loads, the interstitial is navigated at the same time the
+// load is canceled in BaseUIManager::DisplayBlockingPage
+//
+// This NavigationThrottle doesn't actually perform a SafeBrowsing check nor
+// block the navigation.  That happens in SafeBrowsing's
+// BrowserURLLoaderThrottle and RendererURLLoaderThrottles and related code.
+// Those cause the navigation to fail which invokes this throttle to show the
+// interstitial.
 class SafeBrowsingNavigationThrottle : public content::NavigationThrottle {
  public:
-  // |ui_manager| may be null, in which case no interstitials are created.
-  SafeBrowsingNavigationThrottle(content::NavigationHandle* handle,
-                                 SafeBrowsingUIManager* ui_manager);
+  // |ui_manager| may be null, in which case no throttle is created.
+  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
+      content::NavigationHandle* handle,
+      SafeBrowsingUIManager* ui_manager);
   ~SafeBrowsingNavigationThrottle() override = default;
   const char* GetNameForLogging() override;
 
   content::NavigationThrottle::ThrottleCheckResult WillFailRequest() override;
 
  private:
+  SafeBrowsingNavigationThrottle(content::NavigationHandle* handle,
+                                 SafeBrowsingUIManager* ui_manager);
+
   SafeBrowsingUIManager* manager_;
 };
 

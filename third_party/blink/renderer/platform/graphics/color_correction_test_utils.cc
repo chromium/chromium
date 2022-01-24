@@ -71,7 +71,7 @@ sk_sp<SkColorSpace> ColorCorrectionTestUtils::ColorSpinSkColorSpace() {
 void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
     const void* actual_pixels,
     const void* expected_pixels,
-    int num_pixels,
+    size_t num_pixels,
     PixelFormat pixel_format,
     PixelsAlphaMultiply alpha_multiplied,
     UnpremulRoundTripTolerance premul_unpremul_tolerance) {
@@ -94,12 +94,12 @@ void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
             static_cast<const uint8_t*>(actual_pixels);
         const uint8_t* expected_pixels_u8 =
             static_cast<const uint8_t*>(expected_pixels);
-        for (int i = 0; test_passed && i < num_pixels; i++) {
+        for (size_t i = 0; test_passed && i < num_pixels; i++) {
           test_passed &=
               (actual_pixels_u8[i * 4 + 3] == expected_pixels_u8[i * 4 + 3]);
           int alpha_multiplier =
               alpha_multiplied ? 1 : expected_pixels_u8[i * 4 + 3];
-          for (int j = 0; j < 3; j++) {
+          for (size_t j = 0; j < 3; j++) {
             test_passed &= IsNearlyTheSame(
                 actual_pixels_u8[i * 4 + j] * alpha_multiplier,
                 expected_pixels_u8[i * 4 + j] * alpha_multiplier,
@@ -118,7 +118,7 @@ void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
           static_cast<const uint16_t*>(actual_pixels);
       const uint16_t* expected_pixels_u16 =
           static_cast<const uint16_t*>(expected_pixels);
-      for (int i = 0; test_passed && i < num_pixels * 4; i++) {
+      for (size_t i = 0; test_passed && i < num_pixels * 4; i++) {
         test_passed &=
             IsNearlyTheSame(actual_pixels_u16[i], expected_pixels_u16[i],
                             _16161616_color_correction_tolerance);
@@ -140,7 +140,7 @@ void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
                           expected_pixels_f32, skcms_PixelFormat_BGRA_ffff,
                           skcms_AlphaFormat_Unpremul, nullptr, num_pixels));
 
-      for (int i = 0; test_passed && i < num_pixels * 4; i++) {
+      for (size_t i = 0; test_passed && i < num_pixels * 4; i++) {
         test_passed &=
             IsNearlyTheSame(actual_pixels_f32[i], expected_pixels_f32[i],
                             floating_point_color_correction_tolerance);
@@ -152,7 +152,7 @@ void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
       const float* actual_pixels_f32 = static_cast<const float*>(actual_pixels);
       const float* expected_pixels_f32 =
           static_cast<const float*>(expected_pixels);
-      for (int i = 0; test_passed && i < num_pixels * 4; i++) {
+      for (size_t i = 0; test_passed && i < num_pixels * 4; i++) {
         test_passed &=
             IsNearlyTheSame(actual_pixels_f32[i], expected_pixels_f32[i],
                             floating_point_color_correction_tolerance);

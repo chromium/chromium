@@ -8,13 +8,14 @@
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/fake_raster_source.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/trees/clip_node.h"
+#include "cc/trees/debug_rect_history.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace cc {
 namespace {
@@ -25,8 +26,7 @@ std::pair<gfx::PointF, gfx::PointF> GetVisibleSelectionEndPoints(
     const gfx::PointF& bottom) {
   gfx::PointF start(base::clamp(top.x(), rect.x(), rect.right()),
                     base::clamp(top.y(), rect.y(), rect.bottom()));
-  gfx::PointF end =
-      start + gfx::Vector2dF(bottom.x() - top.x(), bottom.y() - top.y());
+  gfx::PointF end = start + (bottom - top);
   return {start, end};
 }
 
@@ -1351,7 +1351,7 @@ TEST_F(LayerTreeImplTest,
       gfx::Rect(scaled_bounds_for_root));
 
   host_impl().active_tree()->SetDeviceScaleFactor(device_scale_factor);
-  LayerTreeImpl::ViewportPropertyIds viewport_property_ids;
+  ViewportPropertyIds viewport_property_ids;
   viewport_property_ids.page_scale_transform =
       page_scale_layer->transform_tree_index();
   host_impl().active_tree()->SetViewportPropertyIds(viewport_property_ids);
@@ -1710,7 +1710,7 @@ TEST_F(LayerTreeImplTest, HitTestingTouchHandlerRegionsForLayerThatIsNotDrawn) {
           test_point);
   EXPECT_FALSE(result_layer);
   EXPECT_FALSE(test_layer->contributes_to_drawn_render_surface());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       expected_screen_space_transform,
       draw_property_utils::ScreenSpaceTransform(
           test_layer,
@@ -1730,7 +1730,7 @@ TEST_F(LayerTreeImplTest, HitTestingTouchHandlerRegionsForLayerThatIsNotDrawn) {
   ASSERT_TRUE(result_layer);
   ASSERT_EQ(test_layer, result_layer);
   EXPECT_FALSE(result_layer->contributes_to_drawn_render_surface());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       expected_screen_space_transform,
       draw_property_utils::ScreenSpaceTransform(
           test_layer,
@@ -2004,7 +2004,7 @@ TEST_F(LayerTreeImplTest, SelectionBoundsForScaledLayers) {
   gfx::Size scaled_bounds_for_root = gfx::ScaleToCeiledSize(
       root->bounds(), device_scale_factor * page_scale_factor);
 
-  LayerTreeImpl::ViewportPropertyIds viewport_property_ids;
+  ViewportPropertyIds viewport_property_ids;
   viewport_property_ids.page_scale_transform =
       page_scale_layer->transform_tree_index();
   host_impl().active_tree()->SetViewportPropertyIds(viewport_property_ids);
@@ -2253,6 +2253,17 @@ TEST_F(LayerTreeImplTest, HitTestingCorrectLayerWheelListener) {
       host_impl().active_tree()->FindLayerThatIsHitByPoint(test_point);
 
   EXPECT_EQ(left_child, result_layer);
+}
+
+TEST_F(LayerTreeImplTest, DebugRectHistoryLayoutShiftWithoutHud) {
+  LayerTreeDebugState state;
+  state.show_layout_shift_regions = true;
+
+  auto history = DebugRectHistory::Create();
+  history->SaveDebugRectsForCurrentFrame(host_impl().active_tree(), nullptr,
+                                         RenderSurfaceList{}, state);
+
+  EXPECT_EQ(0u, history->debug_rects().size());
 }
 
 namespace {

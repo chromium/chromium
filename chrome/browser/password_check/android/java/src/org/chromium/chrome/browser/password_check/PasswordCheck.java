@@ -34,12 +34,6 @@ public interface PasswordCheck extends PasswordCheckComponentUi.Delegate {
         void onPasswordCheckStatusChanged(@PasswordCheckUIStatus int status);
 
         /**
-         * Invoked whenever a running check finds another leaked credential.
-         * @param leakedCredential The newly found leaked credential.
-         */
-        void onCompromisedCredentialFound(CompromisedCredential leakedCredential);
-
-        /**
          * Called during a check when a credential has finished being processed.
          * @param alreadyProcessed Number of credentials that the check already processed.
          * @param remainingInQueue Number of credentials that still need to be processed.

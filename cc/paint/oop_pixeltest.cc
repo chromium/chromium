@@ -46,7 +46,7 @@
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_implementation.h"
 
 #if defined(OS_ANDROID)
@@ -74,10 +74,11 @@ class OopPixelTest : public testing::Test,
 
   void SetUp() override {
     InitializeOOPContext();
+    // Needs RasterInterface for ScopedRasterContextLock
     gles2_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            /*enable_gpu_rasterization=*/false,
-            /*enable_oop_rasterization=*/false, /*support_locking=*/true);
+            /*enable_gles2_interface=*/true, /*support_locking=*/true,
+            viz::RasterInterfaceType::GPU);
     gpu::ContextResult result = gles2_context_provider_->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     const int gles2_max_texture_size =
@@ -102,9 +103,9 @@ class OopPixelTest : public testing::Test,
 
     raster_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            /*enable_gpu_rasterization=*/false,
-            /*enable_oop_rasterization=*/true, /*support_locking=*/true,
-            &gr_shader_cache_, &activity_flags_);
+            /*enable_gles2_interface=*/false, /*support_locking=*/true,
+            viz::RasterInterfaceType::OOPR, &gr_shader_cache_,
+            &activity_flags_);
     gpu::ContextResult result = raster_context_provider_->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     const int raster_max_texture_size =
@@ -529,6 +530,51 @@ TEST_F(OopPixelTest, DrawRect) {
       SkImageInfo::MakeN32Premul(rect.width(), rect.height()),
       expected_pixels.data(), rect.width() * sizeof(SkPMColor));
   ExpectEquals(actual, expected);
+}
+
+TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
+  gfx::Size output_size(10, 10);
+
+  // The paint record filter's ops would fill the right half of the image with
+  // green, but its record bounds are configured to clip it to the bottom right
+  // quarter of the output.
+  PaintFlags internal_flags;
+  internal_flags.setColor(SK_ColorGREEN);
+  sk_sp<PaintOpBuffer> filter_buffer(new PaintOpBuffer);
+  filter_buffer->push<DrawRectOp>(
+      SkRect::MakeLTRB(output_size.width() / 2.f, 0.f, output_size.width(),
+                       output_size.height()),
+      internal_flags);
+  sk_sp<RecordPaintFilter> record_filter = sk_make_sp<RecordPaintFilter>(
+      filter_buffer,
+      SkRect::MakeLTRB(output_size.width() / 2.f, output_size.height() / 2.f,
+                       output_size.width(), output_size.height()));
+
+  PaintFlags record_flags;
+  record_flags.setImageFilter(record_filter);
+
+  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+  display_item_list->StartPaint();
+  display_item_list->push<DrawColorOp>(SK_ColorWHITE, SkBlendMode::kSrc);
+  display_item_list->push<SaveLayerOp>(nullptr, &record_flags);
+  display_item_list->push<RestoreOp>();
+  display_item_list->EndPaintOfUnpaired(gfx::Rect(output_size));
+  display_item_list->Finalize();
+
+  SkImageInfo ii =
+      SkImageInfo::MakeN32Premul(output_size.width(), output_size.height());
+  SkBitmap expected;
+  expected.allocPixels(ii, ii.minRowBytes());
+  expected.eraseColor(SK_ColorWHITE);
+  expected.erase(
+      SK_ColorGREEN,
+      SkIRect::MakeLTRB(output_size.width() / 2, output_size.height() / 2,
+                        output_size.width(), output_size.height()));
+
+  auto actual_oop = Raster(display_item_list, output_size);
+  auto actual_gpu = RasterExpectedBitmap(display_item_list, output_size);
+  ExpectEquals(actual_oop, expected);
+  ExpectEquals(actual_gpu, expected);
 }
 
 TEST_P(OopImagePixelTest, DrawImage) {

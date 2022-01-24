@@ -27,7 +27,7 @@ void MockAffiliationConsumer::ExpectFailure() {
       .Times(1);
 }
 
-AndroidAffiliationService::ResultCallback
+AffiliationService::ResultCallback
 MockAffiliationConsumer::GetResultCallback() {
   return base::BindOnce(&MockAffiliationConsumer::OnResultCallback,
                         base::Unretained(this));

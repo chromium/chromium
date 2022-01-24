@@ -6,7 +6,6 @@
 #define UI_AURA_TEST_TEST_SCREEN_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"
@@ -29,6 +28,10 @@ class TestScreen : public display::ScreenBase, public WindowObserver {
   // Creates a display::Screen of the specified size. If no size is specified,
   // then creates a 800x600 screen. |size| is in physical pixels.
   static TestScreen* Create(const gfx::Size& size);
+
+  TestScreen(const TestScreen&) = delete;
+  TestScreen& operator=(const TestScreen&) = delete;
+
   ~TestScreen() override;
 
   WindowTreeHost* CreateHostForPrimaryDisplay();
@@ -69,8 +72,6 @@ class TestScreen : public display::ScreenBase, public WindowObserver {
   aura::WindowTreeHost* host_ = nullptr;
 
   float ui_scale_ = 1.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(TestScreen);
 };
 
 }  // namespace aura

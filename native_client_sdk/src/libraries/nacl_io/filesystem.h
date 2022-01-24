@@ -45,6 +45,10 @@ struct FsInitArgs {
 // NOTE: The KernelProxy is the only class that should be setting errno. All
 // other classes should return Error (as defined by nacl_io/error.h).
 class Filesystem : public sdk_util::RefObject {
+ public:
+  Filesystem(const Filesystem&) = delete;
+  Filesystem& operator=(const Filesystem&) = delete;
+
  protected:
   // The protected functions are only used internally and will not
   // acquire or release the filesystem's lock.
@@ -111,7 +115,6 @@ class Filesystem : public sdk_util::RefObject {
   // lock is held, so we make it private.
   friend class KernelObject;
   friend class KernelProxy;
-  DISALLOW_COPY_AND_ASSIGN(Filesystem);
 };
 
 }  // namespace nacl_io

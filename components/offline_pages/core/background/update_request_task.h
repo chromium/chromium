@@ -21,6 +21,10 @@ class UpdateRequestTask : public Task {
   UpdateRequestTask(RequestQueueStore* store,
                     int64_t request_id,
                     RequestQueueStore::UpdateCallback callback);
+
+  UpdateRequestTask(const UpdateRequestTask&) = delete;
+  UpdateRequestTask& operator=(const UpdateRequestTask&) = delete;
+
   ~UpdateRequestTask() override;
 
  protected:
@@ -54,7 +58,6 @@ class UpdateRequestTask : public Task {
   RequestQueueStore::UpdateCallback callback_;
 
   base::WeakPtrFactory<UpdateRequestTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UpdateRequestTask);
 };
 
 }  // namespace offline_pages

@@ -37,6 +37,8 @@ class ASH_PUBLIC_EXPORT ShelfModelObserver {
 
   // Invoked after a delegate changes, but before the old one is destroyed.
   // |delegate| is the new value and |old_delegate| is the previous value.
+  // This is not called when the item is first inserted into the shelf. Note
+  // that both |old_delegate| and |delegate| are guaranteed to be non-null.
   virtual void ShelfItemDelegateChanged(const ShelfID& id,
                                         ShelfItemDelegate* old_delegate,
                                         ShelfItemDelegate* delegate) {}

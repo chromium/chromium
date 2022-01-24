@@ -10,8 +10,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/storage.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_module_interface.h"
@@ -51,10 +51,10 @@ class StorageModule : public StorageModuleInterface {
 
   // Once a record has been successfully uploaded, the sequencing information
   // can be passed back to the StorageModule here for record deletion.
-  // If |force| is false (which is used in most cases), |sequencing_information|
-  // only affects Storage if no higher sequeincing was confirmed before;
+  // If |force| is false (which is used in most cases), |sequence_information|
+  // only affects Storage if no higher sequencing was confirmed before;
   // otherwise it is accepted unconditionally.
-  void ReportSuccess(SequencingInformation sequencing_information,
+  void ReportSuccess(SequenceInformation sequence_information,
                      bool force) override;
 
   // If the server attached signed encryption key to the response, it needs to

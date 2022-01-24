@@ -2,7 +2,7 @@
 
 [Rendered](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/dom/README.md)
 
-Author: hayato@chromium.org
+Author: hayato@chromium.org, some edits by masonf@chromium.org
 
 The `renderer/core/dom` directory contains the implementation of [DOM].
 
@@ -533,7 +533,7 @@ document
 ```
 
 We can't explain the exact algorithm how to flatten a composed tree into a flat
-tree until I explain the concept of _slots_ and _node distribution_ If we are
+tree until I explain the concept of _slots_ and _slot assignment_ If we are
 ignoring the effect of `<slot>`, we can have the following simple definition. A
 flat tree can be defined as:
 
@@ -716,25 +716,6 @@ e.g. in the above example 3,
 The APIs which `FlatTreeTraversal` provides are very similar to ones other
 traversal utility classes provide, such as `NodeTraversal` and
 `ElementTraversal`.
-
-## Warning
-
-For historical reasons, Blink still supports Shadow DOM v0, where the different
-node distribution mechanism is still used. To support v0, you need to call
-`Node::UpdateDistributionForFlatTreeTraversal` before calling any function of
-`FlatTreeTraversal`.
-
-If you use `FlatTreeTraversal` without updating distribution, you would hit
-DCHECK. :(
-
-Since `Node::UpdateDistributionForFlatTreeTraversal` can take O(N) in the worst
-case (_even if the distribution flag is clean!_), you should be careful not to
-call it in hot code paths. If you are not sure, please contact
-dom-dev@chromium.org, or add masonf@chromium.org to reviewers.
-
-Once Blink removes Shadow DOM v0 in the future, you don't need to call
-`Node::UpdateDistributionForFlatTreeTraversal` before using `FlatTreeTraversal`
-beforehand in most cases, however, that wouldn't happen soon.
 
 # Event path and Event Retargeting
 

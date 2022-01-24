@@ -20,7 +20,7 @@ std::unique_ptr<ThreadProfiler> CreateThreadProfiler() {
       GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess());
 
   // TODO(wittman): Do this for other process types too.
-  if (process == metrics::CallStackProfileParams::BROWSER_PROCESS) {
+  if (process == metrics::CallStackProfileParams::Process::kBrowser) {
     ThreadProfiler::SetBrowserProcessReceiverCallback(base::BindRepeating(
         &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
     return ThreadProfiler::CreateAndStartOnMainThread();

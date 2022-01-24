@@ -5,8 +5,7 @@
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_DECODER_FACTORY_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_DECODER_FACTORY_H_
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/decoder_factory.h"
 
 namespace media {
@@ -19,6 +18,10 @@ class MojoDecoderFactory final : public DecoderFactory {
  public:
   explicit MojoDecoderFactory(
       media::mojom::InterfaceFactory* interface_factory);
+
+  MojoDecoderFactory(const MojoDecoderFactory&) = delete;
+  MojoDecoderFactory& operator=(const MojoDecoderFactory&) = delete;
+
   ~MojoDecoderFactory() final;
 
   void CreateAudioDecoders(
@@ -38,8 +41,6 @@ class MojoDecoderFactory final : public DecoderFactory {
 
  private:
   media::mojom::InterfaceFactory* interface_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDecoderFactory);
 };
 
 }  // namespace media

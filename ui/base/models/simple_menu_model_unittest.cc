@@ -4,10 +4,10 @@
 
 #include "ui/base/models/simple_menu_model.h"
 
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -24,6 +24,9 @@ constexpr int kAlertedCommandId = 2;
 class DelegateBase : public SimpleMenuModel::Delegate {
  public:
   DelegateBase() : SimpleMenuModel::Delegate() {}
+
+  DelegateBase(const DelegateBase&) = delete;
+  DelegateBase& operator=(const DelegateBase&) = delete;
 
   ~DelegateBase() override = default;
 
@@ -60,8 +63,6 @@ class DelegateBase : public SimpleMenuModel::Delegate {
 
  private:
   absl::optional<int> item_with_icon_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegateBase);
 };
 
 TEST(SimpleMenuModelTest, SetLabel) {
@@ -218,7 +219,7 @@ TEST(SimpleMenuModelTest, HasIconsViaVectorIcon) {
 
   simple_menu_model.AddItemWithIcon(
       /*command_id*/ 11, u"menu item",
-      ui::ImageModel::FromVectorIcon(circle_icon, -1, 16));
+      ui::ImageModel::FromVectorIcon(circle_icon, ui::kColorMenuIcon, 16));
   EXPECT_TRUE(simple_menu_model.HasIcons());
 }
 

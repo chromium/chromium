@@ -17,7 +17,7 @@
 namespace password_manager {
 
 HttpCredentialCleaner::HttpCredentialCleaner(
-    scoped_refptr<PasswordStore> store,
+    scoped_refptr<PasswordStoreInterface> store,
     base::RepeatingCallback<network::mojom::NetworkContext*()>
         network_context_getter,
     PrefService* prefs)

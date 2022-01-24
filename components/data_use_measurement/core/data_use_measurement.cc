@@ -129,9 +129,10 @@ DataUseUserData::AppState DataUseMeasurement::CurrentAppState() const {
 #if defined(OS_ANDROID)
   return IsInForeground(app_state_) ? DataUseUserData::FOREGROUND
                                     : DataUseUserData::BACKGROUND;
-#endif
+#else
   // If the OS is not Android, all the requests are considered Foreground.
   return DataUseUserData::FOREGROUND;
+#endif
 }
 
 // static

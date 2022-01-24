@@ -561,7 +561,9 @@ class TermsOfServicePage {
     this.fastLocation_ = undefined;
     this.state_ = LoadState.ABORTED;
     showErrorPage(
-        appWindow.contentWindow.loadTimeData.getString('serverError'));
+        appWindow.contentWindow.loadTimeData.getString('serverError'),
+        true /*opt_shouldShowSendFeedback*/,
+        true /*opt_shouldShowNetworkTests*/);
   }
 
   /** Called when the terms-view's load request is completed. */
@@ -895,8 +897,8 @@ function showErrorPage(
 
   // If the error is not network-related, position send feedback after the flex
   // div.
-  if (!opt_shouldShowNetworkTests)
-    doc.getElementById('div-error-separating-buttons').style.order = -1;
+  var feedbackSeparator = doc.getElementById('div-error-separating-buttons');
+  feedbackSeparator.style.order = opt_shouldShowNetworkTests ? 'initial' : -1;
 }
 
 /**

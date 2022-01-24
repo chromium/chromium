@@ -16,9 +16,8 @@ namespace extensions {
 namespace {
 
 constexpr base::TimeDelta kDefaultSlowOperationThreshold =
-    base::TimeDelta::FromMilliseconds(500);
-constexpr base::TimeDelta kDefaultVerySlowOperationThreshold =
-    base::TimeDelta::FromSeconds(5);
+    base::Milliseconds(500);
+constexpr base::TimeDelta kDefaultVerySlowOperationThreshold = base::Seconds(5);
 
 }  // namespace
 

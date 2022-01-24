@@ -4,6 +4,7 @@
 
 #include "net/socket/websocket_transport_client_socket_pool.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -13,8 +14,8 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -29,7 +30,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
-#include "net/log/test_net_log.h"
+#include "net/log/net_log.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connect_job_test_util.h"
@@ -78,8 +79,11 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
                   NetworkIsolationKey(),
                   SecureDnsPolicy::kAllow),
         params_(ClientSocketPool::SocketParams::CreateForHttpForTesting()),
-        host_resolver_(new MockHostResolver),
-        client_socket_factory_(&net_log_),
+        host_resolver_(std::make_unique<
+                       MockHostResolver>(/*default_result=*/
+                                         MockHostResolverBase::RuleResolver::
+                                             GetLocalhostResult())),
+        client_socket_factory_(NetLog::Get()),
         common_connect_job_params_(
             &client_socket_factory_,
             host_resolver_.get(),
@@ -102,6 +106,11 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
     websocket_endpoint_lock_manager_.SetUnlockDelayForTesting(
         base::TimeDelta());
   }
+
+  WebSocketTransportClientSocketPoolTest(
+      const WebSocketTransportClientSocketPoolTest&) = delete;
+  WebSocketTransportClientSocketPoolTest& operator=(
+      const WebSocketTransportClientSocketPoolTest&) = delete;
 
   ~WebSocketTransportClientSocketPoolTest() override {
     RunUntilIdle();
@@ -138,7 +147,6 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
   }
   size_t completion_count() const { return test_base_.completion_count(); }
 
-  RecordingTestNetLog net_log_;
   // |group_id_| and |params_| correspond to the same socket parameters.
   const ClientSocketPool::GroupId group_id_;
   scoped_refptr<ClientSocketPool::SocketParams> params_;
@@ -148,9 +156,6 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
   const CommonConnectJobParams common_connect_job_params_;
   WebSocketTransportClientSocketPool pool_;
   ClientSocketPoolTest test_base_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketTransportClientSocketPoolTest);
 };
 
 TEST_F(WebSocketTransportClientSocketPoolTest, Basic) {
@@ -622,8 +627,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
       MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET};
 
   client_socket_factory_.set_client_socket_types(case_types, 2);
-  client_socket_factory_.set_delay(base::TimeDelta::FromMilliseconds(
-      TransportConnectJob::kIPv6FallbackTimerInMs + 50));
+  client_socket_factory_.set_delay(
+      base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs + 50));
 
   // Resolve an AddressList with an IPv6 address first and then an IPv4 address.
   host_resolver_->rules()->AddIPLiteralRule(
@@ -769,8 +774,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, IPv6RapidFail) {
   base::TimeTicks start(base::TimeTicks::Now());
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_LT(base::TimeTicks::Now() - start,
-            base::TimeDelta::FromMilliseconds(
-                TransportConnectJob::kIPv6FallbackTimerInMs));
+            base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs));
   ASSERT_TRUE(handle.socket());
 
   IPEndPoint endpoint;
@@ -819,8 +823,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest, FirstSuccessWins) {
 TEST_F(WebSocketTransportClientSocketPoolTest, LastFailureWins) {
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::MOCK_DELAYED_FAILING_CLIENT_SOCKET);
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(
-      TransportConnectJob::kIPv6FallbackTimerInMs / 3);
+  base::TimeDelta delay =
+      base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs / 3);
   client_socket_factory_.set_delay(delay);
 
   // Resolve an AddressList with 4 IPv6 addresses and 2 IPv4 addresses.
@@ -861,8 +865,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, DISABLED_OverallTimeoutApplies) {
 
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::MOCK_DELAYED_FAILING_CLIENT_SOCKET);
-  client_socket_factory_.set_delay(base::TimeDelta::FromSeconds(1) +
-                                   connect_job_timeout / 6);
+  client_socket_factory_.set_delay(base::Seconds(1) + connect_job_timeout / 6);
 
   // Resolve an AddressList with 6 IPv6 addresses and 6 IPv4 addresses.
   host_resolver_->rules()->AddIPLiteralRule("*",
@@ -1053,8 +1056,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   }
   // Now we have |kMaxSockets| IPv6 sockets stalled in connect. No IPv4 sockets
   // are started yet.
-  RunLoopForTimePeriod(base::TimeDelta::FromMilliseconds(
-      TransportConnectJob::kIPv6FallbackTimerInMs));
+  RunLoopForTimePeriod(
+      base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs));
   // Now we have |kMaxSockets| IPv6 sockets and one IPv4 socket stalled in
   // connect, and |kMaxSockets - 1| IPv4 sockets waiting for the endpoint lock.
   pool_.FlushWithError(ERR_FAILED, "Very good reason");

@@ -15,6 +15,10 @@ class BookmarkModelLoadedObserver
  public:
   explicit BookmarkModelLoadedObserver(ChromeBrowserState* browser_state);
 
+  BookmarkModelLoadedObserver(const BookmarkModelLoadedObserver&) = delete;
+  BookmarkModelLoadedObserver& operator=(const BookmarkModelLoadedObserver&) =
+      delete;
+
  private:
   void BookmarkModelChanged() override;
   void BookmarkModelLoaded(bookmarks::BookmarkModel* model,
@@ -22,8 +26,6 @@ class BookmarkModelLoadedObserver
   void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
 
   ChromeBrowserState* browser_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelLoadedObserver);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_BOOKMARK_MODEL_LOADED_OBSERVER_H_

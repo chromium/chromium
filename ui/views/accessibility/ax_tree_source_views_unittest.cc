@@ -12,6 +12,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
+#include "ui/aura/client/focus_client.h"
+#include "ui/aura/test/test_window_delegate.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
@@ -166,6 +168,42 @@ TEST_F(AXTreeSourceViewsTest, ViewWithChildTreeHasNoChildren) {
   EXPECT_TRUE(children.empty());
   EXPECT_EQ(nullptr, cache.GetOrCreate(textfield_)->GetParent());
 }
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+class AXTreeSourceViewsDesktopWidgetTest : public AXTreeSourceViewsTest {
+ public:
+  AXTreeSourceViewsDesktopWidgetTest() {
+    set_native_widget_type(ViewsTestBase::NativeWidgetType::kDesktop);
+  }
+};
+
+// Tests that no use-after-free when a focused child window is destroyed in
+// desktop aura widget.
+TEST_F(AXTreeSourceViewsDesktopWidgetTest, FocusedChildWindowDestroyed) {
+  AXAuraObjCache cache;
+  AXAuraObjWrapper* root_wrapper =
+      cache.GetOrCreate(widget_->GetNativeWindow()->GetRootWindow());
+  EXPECT_NE(nullptr, root_wrapper);
+
+  aura::test::TestWindowDelegate child_delegate;
+  aura::Window* child = new aura::Window(&child_delegate);
+  child->Init(ui::LAYER_NOT_DRAWN);
+  widget_->GetNativeView()->AddChild(child);
+  aura::client::GetFocusClient(widget_->GetNativeView())->FocusWindow(child);
+
+  AXAuraObjWrapper* child_wrapper = cache.GetOrCreate(child);
+  EXPECT_NE(nullptr, child_wrapper);
+
+  // GetFocus() reflects the focused child window.
+  EXPECT_NE(nullptr, cache.GetFocus());
+
+  // Close the widget to destroy the child.
+  widget_.reset();
+
+  // GetFocus() should return null and no use-after-free to call it.
+  EXPECT_EQ(nullptr, cache.GetFocus());
+}
+#endif  // defined(USE_AURA)
 
 }  // namespace
 }  // namespace views

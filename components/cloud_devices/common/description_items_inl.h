@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/values.h"

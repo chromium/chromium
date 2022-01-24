@@ -322,9 +322,9 @@ unsigned InitialColumnHeightFinder::ContentRunIndexWithTallestColumns() const {
   unsigned index_with_largest_height = 0;
   LayoutUnit largest_height;
   LayoutUnit previous_offset = LogicalTopInFlowThread();
-  size_t run_count = content_runs_.size();
+  wtf_size_t run_count = content_runs_.size();
   DCHECK(run_count);
-  for (size_t i = FirstContentRunIndexInLastRow(); i < run_count; i++) {
+  for (unsigned i = FirstContentRunIndexInLastRow(); i < run_count; i++) {
     const ContentRun& run = content_runs_[i];
     LayoutUnit height = run.ColumnLogicalHeight(previous_offset);
     if (largest_height < height) {

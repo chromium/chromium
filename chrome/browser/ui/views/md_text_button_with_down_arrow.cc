@@ -23,7 +23,7 @@ MdTextButtonWithDownArrow::MdTextButtonWithDownArrow(PressedCallback callback,
   SetDropArrowImage();
 
   // Reduce padding between the drop arrow and the right border.
-  const gfx::Insets original_padding = border()->GetInsets();
+  const gfx::Insets original_padding = GetInsets();
   SetBorder(CreateEmptyBorder(original_padding.top(), original_padding.left(),
                               original_padding.bottom(),
                               LayoutProvider::Get()->GetDistanceMetric(

@@ -25,6 +25,7 @@ mojom_component("base") {
     "read_only_buffer.mojom",
     "read_only_file.mojom",
     "ref_counted_memory.mojom",
+    "safe_base_name.mojom",
     "shared_memory.mojom",
     "string16.mojom",
     "text_direction.mojom",
@@ -51,6 +52,21 @@ mojom_component("base") {
   macro_prefix = "MOJO_BASE_MOJOM"
 
   common_typemaps = [
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.SafeBasename"
+          cpp = "::base::SafeBasename"
+        },
+      ]
+      traits_headers =
+          [ "//mojo/public/cpp/base/safe_base_name_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
     {
       types = [
         {

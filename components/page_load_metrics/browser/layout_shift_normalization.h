@@ -17,6 +17,10 @@ namespace page_load_metrics {
 class LayoutShiftNormalization {
  public:
   LayoutShiftNormalization();
+
+  LayoutShiftNormalization(const LayoutShiftNormalization&) = delete;
+  LayoutShiftNormalization& operator=(const LayoutShiftNormalization&) = delete;
+
   ~LayoutShiftNormalization();
   const NormalizedCLSData& normalized_cls_data() const {
     return normalized_cls_data_;
@@ -60,8 +64,6 @@ class LayoutShiftNormalization {
   std::vector<std::pair<base::TimeTicks, double>> recent_layout_shifts_;
 
   SessionWindow session_gap1000ms_max5000ms_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutShiftNormalization);
 };
 
 }  // namespace page_load_metrics

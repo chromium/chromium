@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTERNAL_PROTOCOL_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTERNAL_PROTOCOL_DIALOG_H_
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
@@ -25,8 +24,7 @@ namespace views {
 class MessageBoxView;
 }
 
-class ExternalProtocolDialog : public views::DialogDelegateView,
-                               public content::WebContentsObserver {
+class ExternalProtocolDialog : public views::DialogDelegateView {
  public:
   METADATA_HEADER(ExternalProtocolDialog);
   // Show by calling ExternalProtocolHandler::RunExternalProtocolDialog().
@@ -51,6 +49,8 @@ class ExternalProtocolDialog : public views::DialogDelegateView,
 
   void SetRememberSelectionCheckboxCheckedForTesting(bool checked);
   void OnDialogAccepted();
+
+  base::WeakPtr<content::WebContents> web_contents_;
 
   const GURL url_;
   const std::u16string program_name_;

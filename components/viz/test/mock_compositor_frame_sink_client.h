@@ -20,6 +20,11 @@ namespace viz {
 class MockCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
  public:
   MockCompositorFrameSinkClient();
+
+  MockCompositorFrameSinkClient(const MockCompositorFrameSinkClient&) = delete;
+  MockCompositorFrameSinkClient& operator=(
+      const MockCompositorFrameSinkClient&) = delete;
+
   ~MockCompositorFrameSinkClient() override;
 
   void set_disconnect_handler(base::OnceClosure error_handler) {
@@ -43,8 +48,6 @@ class MockCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
 
  private:
   mojo::Receiver<mojom::CompositorFrameSinkClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockCompositorFrameSinkClient);
 };
 
 }  // namespace viz

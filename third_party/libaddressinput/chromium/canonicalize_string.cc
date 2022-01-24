@@ -31,6 +31,10 @@ class ChromeStringCanonicalizer : public StringCanonicalizer {
     DCHECK(U_SUCCESS(error_code_));
   }
 
+  ChromeStringCanonicalizer(const ChromeStringCanonicalizer&) = delete;
+  ChromeStringCanonicalizer& operator=(const ChromeStringCanonicalizer&) =
+      delete;
+
   virtual ~ChromeStringCanonicalizer() {}
 
   // StringCanonicalizer implementation.
@@ -57,8 +61,6 @@ class ChromeStringCanonicalizer : public StringCanonicalizer {
  private:
   UErrorCode error_code_;
   scoped_ptr<icu::Collator> collator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeStringCanonicalizer);
 };
 
 }  // namespace

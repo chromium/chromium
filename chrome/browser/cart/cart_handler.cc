@@ -6,35 +6,11 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
+#include "chrome/browser/cart/cart_features.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "components/search/ntp_features.h"
-#include "third_party/re2/src/re2/re2.h"
-
-namespace {
-constexpr base::FeatureParam<std::string> kPartnerMerchantPattern{
-    &ntp_features::kNtpChromeCartModule, "partner-merchant-pattern",
-    // This regex does not match anything.
-    "\\b\\B"};
-
-const re2::RE2& GetPartnerMerchantPattern() {
-  re2::RE2::Options options;
-  options.set_case_sensitive(false);
-  static base::NoDestructor<re2::RE2> instance(kPartnerMerchantPattern.Get(),
-                                               options);
-  return *instance;
-}
-
-bool IsPartnerMerchant(const GURL& url) {
-  const std::string& url_string = url.spec();
-  return RE2::PartialMatch(
-      re2::StringPiece(url_string.data(), url_string.size()),
-      GetPartnerMerchantPattern());
-}
-
-}  // namespace
 
 CartHandler::CartHandler(
     mojo::PendingReceiver<chrome_cart::mojom::CartHandler> handler,
@@ -95,7 +71,8 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
     auto cart = chrome_cart::mojom::MerchantCart::New();
     cart->merchant = std::move(proto_pair.second.merchant());
 
-    if (IsPartnerMerchant(GURL(proto_pair.second.merchant_cart_url()))) {
+    if (cart_features::IsRuleDiscountPartnerMerchant(
+            GURL(proto_pair.second.merchant_cart_url()))) {
       cart->cart_url = CartService::AppendUTM(
           GURL(std::move(proto_pair.second.merchant_cart_url())),
           show_discount);
@@ -109,7 +86,9 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
       for (std::string image_url : proto_pair.second.product_image_urls()) {
         cart->product_image_urls.emplace_back(std::move(image_url));
       }
-      if (show_discount) {
+      if (show_discount &&
+          (proto_pair.second.discount_info().rule_discount_info_size() > 0 ||
+           proto_pair.second.discount_info().has_coupons())) {
         cart->discount_text =
             std::move(proto_pair.second.discount_info().discount_text());
       }

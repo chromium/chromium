@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/nine_piece_image_grid.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/nine_piece_image.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
@@ -87,6 +88,7 @@ bool ShouldTile(const NinePieceImageGrid::NinePieceDrawInfo& draw_info) {
 void PaintPieces(GraphicsContext& context,
                  const PhysicalRect& border_image_rect,
                  const ComputedStyle& style,
+                 const Document& document,
                  const NinePieceImage& nine_piece_image,
                  Image* image,
                  const FloatSize& unzoomed_image_size,
@@ -99,8 +101,8 @@ void PaintPieces(GraphicsContext& context,
   // should match any DPR scale while for generated images it should match the
   // effective zoom. (Modulo imprecisions introduced by the computation.) This
   // scale should in theory be uniform.
-  FloatSize slice_scale(image_size.Width() / unzoomed_image_size.Width(),
-                        image_size.Height() / unzoomed_image_size.Height());
+  FloatSize slice_scale(image_size.width() / unzoomed_image_size.width(),
+                        image_size.height() / unzoomed_image_size.height());
 
   IntRectOutsets border_widths(
       style.BorderTopWidth().ToInt(), style.BorderRightWidth().ToInt(),
@@ -108,6 +110,9 @@ void PaintPieces(GraphicsContext& context,
   NinePieceImageGrid grid(
       nine_piece_image, image_size, slice_scale, style.EffectiveZoom(),
       PixelSnappedIntRect(border_image_rect), border_widths, sides_to_include);
+
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
 
   ScopedInterpolationQuality interpolation_quality_scope(
       context, style.GetInterpolationQuality());
@@ -120,18 +125,18 @@ void PaintPieces(GraphicsContext& context,
     if (!ShouldTile(draw_info)) {
       // Since there is no way for the developer to specify decode behavior,
       // use kSync by default.
-      context.DrawImage(image, Image::kSyncDecode, draw_info.destination,
-                        &draw_info.source, style.DisableForceDark());
+      context.DrawImage(image, Image::kSyncDecode, auto_dark_mode,
+                        draw_info.destination, &draw_info.source);
       continue;
     }
 
     // TODO(cavalcantii): see crbug.com/662513.
     absl::optional<TileParameters> h_tile = ComputeTileParameters(
-        draw_info.tile_rule.horizontal, draw_info.destination.Width(),
-        draw_info.source.Width(), draw_info.tile_scale.Width());
+        draw_info.tile_rule.horizontal, draw_info.destination.width(),
+        draw_info.source.width(), draw_info.tile_scale.width());
     absl::optional<TileParameters> v_tile = ComputeTileParameters(
-        draw_info.tile_rule.vertical, draw_info.destination.Height(),
-        draw_info.source.Height(), draw_info.tile_scale.Height());
+        draw_info.tile_rule.vertical, draw_info.destination.height(),
+        draw_info.source.height(), draw_info.tile_scale.height());
     if (!h_tile || !v_tile)
       continue;
 
@@ -147,15 +152,16 @@ void PaintPieces(GraphicsContext& context,
     // The phase defines the origin of the whole image - not the image
     // rect (see ImageTilingInfo) - so we need to adjust it to account
     // for that.
-    FloatPoint tile_origin_in_dest_space = draw_info.source.Location();
-    tile_origin_in_dest_space.Scale(tiling_info.scale.Width(),
-                                    tiling_info.scale.Height());
+    FloatPoint tile_origin_in_dest_space = draw_info.source.origin();
+    tile_origin_in_dest_space.Scale(tiling_info.scale.width(),
+                                    tiling_info.scale.height());
     tiling_info.phase =
-        draw_info.destination.Location() +
+        draw_info.destination.origin() +
         (FloatPoint(h_tile->phase, v_tile->phase) - tile_origin_in_dest_space);
     tiling_info.spacing = FloatSize(h_tile->spacing, v_tile->spacing);
 
-    context.DrawImageTiled(image, draw_info.destination, tiling_info);
+    context.DrawImageTiled(image, draw_info.destination, tiling_info,
+                           auto_dark_mode);
   }
 }
 
@@ -210,8 +216,9 @@ bool NinePieceImagePainter::Paint(GraphicsContext& graphics_context,
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
       inspector_paint_image_event::Data, node, *style_image,
       FloatRect(image->Rect()), FloatRect(border_image_rect));
-  PaintPieces(graphics_context, border_image_rect, style, nine_piece_image,
-              image.get(), unzoomed_image_size, sides_to_include);
+  PaintPieces(graphics_context, border_image_rect, style, document,
+              nine_piece_image, image.get(), unzoomed_image_size,
+              sides_to_include);
   return true;
 }
 

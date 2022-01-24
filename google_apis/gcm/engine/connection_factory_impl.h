@@ -39,6 +39,10 @@ class GCM_EXPORT ConnectionFactoryImpl
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder,
       network::NetworkConnectionTracker* network_connection_tracker);
+
+  ConnectionFactoryImpl(const ConnectionFactoryImpl&) = delete;
+  ConnectionFactoryImpl& operator=(const ConnectionFactoryImpl&) = delete;
+
   ~ConnectionFactoryImpl() override;
 
   // ConnectionFactory implementation.
@@ -196,8 +200,6 @@ class GCM_EXPORT ConnectionFactoryImpl
   ConnectionListener* listener_;
 
   base::WeakPtrFactory<ConnectionFactoryImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionFactoryImpl);
 };
 
 }  // namespace gcm

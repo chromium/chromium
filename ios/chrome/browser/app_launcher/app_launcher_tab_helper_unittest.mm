@@ -81,10 +81,11 @@ class FakeNavigationManager : public web::FakeNavigationManager {
  public:
   FakeNavigationManager() = default;
 
+  FakeNavigationManager(const FakeNavigationManager&) = delete;
+  FakeNavigationManager& operator=(const FakeNavigationManager&) = delete;
+
   // web::NavigationManager implementation.
   void DiscardNonCommittedItems() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNavigationManager);
 };
 
 std::unique_ptr<KeyedService> BuildReadingListModel(
@@ -123,7 +124,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
                                   ui::PageTransition::PAGE_TRANSITION_LINK)
       WARN_UNUSED_RESULT {
     NSURL* url = [NSURL URLWithString:url_string];
-    web::WebStatePolicyDecider::RequestInfo request_info(
+    const web::WebStatePolicyDecider::RequestInfo request_info(
         transition_type, target_frame_is_main, target_frame_is_cross_origin,
         has_user_gesture);
     __block bool callback_called = false;
@@ -181,7 +182,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
 
     NSURL* url = [NSURL
         URLWithString:@"itms-apps://itunes.apple.com/us/app/appname/id123"];
-    web::WebStatePolicyDecider::RequestInfo request_info(
+    const web::WebStatePolicyDecider::RequestInfo request_info(
         transition_type,
         /*target_frame_is_main=*/true, /*target_frame_is_cross_origin=*/false,
         /*has_user_gesture=*/true);

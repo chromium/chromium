@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/color/color_mixers.h"
+#include "ui/color/core_default_color_mixer.h"
 
 #include "base/logging.h"
 #include "third_party/skia/include/core/SkColor.h"

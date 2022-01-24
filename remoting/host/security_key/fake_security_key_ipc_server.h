@@ -41,6 +41,10 @@ class FakeSecurityKeyIpcServer : public SecurityKeyIpcServer,
       const SecurityKeyAuthHandler::SendMessageCallback& send_message_callback,
       base::OnceClosure connect_callback,
       base::OnceClosure channel_closed_callback);
+
+  FakeSecurityKeyIpcServer(const FakeSecurityKeyIpcServer&) = delete;
+  FakeSecurityKeyIpcServer& operator=(const FakeSecurityKeyIpcServer&) = delete;
+
   ~FakeSecurityKeyIpcServer() override;
 
   // SecurityKeyIpcServer interface.
@@ -105,8 +109,6 @@ class FakeSecurityKeyIpcServer : public SecurityKeyIpcServer,
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<FakeSecurityKeyIpcServer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyIpcServer);
 };
 
 // Used to create FakeSecurityKeyIpcServer instances for testing.
@@ -116,6 +118,12 @@ class FakeSecurityKeyIpcServer : public SecurityKeyIpcServer,
 class FakeSecurityKeyIpcServerFactory : public SecurityKeyIpcServerFactory {
  public:
   FakeSecurityKeyIpcServerFactory();
+
+  FakeSecurityKeyIpcServerFactory(const FakeSecurityKeyIpcServerFactory&) =
+      delete;
+  FakeSecurityKeyIpcServerFactory& operator=(
+      const FakeSecurityKeyIpcServerFactory&) = delete;
+
   ~FakeSecurityKeyIpcServerFactory() override;
 
   // SecurityKeyIpcServerFactory implementation.
@@ -135,8 +143,6 @@ class FakeSecurityKeyIpcServerFactory : public SecurityKeyIpcServerFactory {
   // Tracks each FakeSecurityKeyIpcServer instance created by this
   // factory which allows them to be retrieved and queried for tests.
   std::map<int, base::WeakPtr<FakeSecurityKeyIpcServer>> ipc_server_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyIpcServerFactory);
 };
 
 }  // namespace remoting

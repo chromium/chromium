@@ -36,7 +36,7 @@ constexpr IncognitoModePrefs::Availability
 // static
 bool IncognitoModePrefs::IntToAvailability(int in_value,
                                            Availability* out_value) {
-  if (in_value < 0 || in_value >= AVAILABILITY_NUM_TYPES) {
+  if (in_value < 0 || in_value >= static_cast<int>(Availability::kNumTypes)) {
     *out_value = kDefaultAvailability;
     return false;
   }
@@ -53,14 +53,19 @@ IncognitoModePrefs::Availability IncognitoModePrefs::GetAvailability(
 // static
 void IncognitoModePrefs::SetAvailability(PrefService* prefs,
                                          const Availability availability) {
-  prefs->SetInteger(prefs::kIncognitoModeAvailability, availability);
+  prefs->SetInteger(prefs::kIncognitoModeAvailability,
+                    static_cast<int>(availability));
 }
 
 // static
 void IncognitoModePrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kIncognitoModeAvailability,
-                                kDefaultAvailability);
+                                static_cast<int>(kDefaultAvailability));
+#if defined(OS_ANDROID)
+  registry->RegisterBooleanPref(prefs::kIncognitoReauthenticationForAndroid,
+                                false);
+#endif
 }
 
 // static
@@ -74,7 +79,7 @@ bool IncognitoModePrefs::ShouldLaunchIncognito(
   bool should_use_incognito =
       command_line.HasSwitch(switches::kIncognito) ||
       GetAvailabilityInternal(prefs, DONT_CHECK_PARENTAL_CONTROLS) ==
-          IncognitoModePrefs::FORCED;
+          IncognitoModePrefs::Availability::kForced;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* init_params = chromeos::LacrosService::Get()->init_params();
   // TODO(https://crbug.com/1194304): Remove in M93.
@@ -85,19 +90,19 @@ bool IncognitoModePrefs::ShouldLaunchIncognito(
 #endif
   return should_use_incognito &&
          GetAvailabilityInternal(prefs, CHECK_PARENTAL_CONTROLS) !=
-             IncognitoModePrefs::DISABLED;
+             IncognitoModePrefs::Availability::kDisabled;
 }
 
 // static
 bool IncognitoModePrefs::CanOpenBrowser(Profile* profile) {
   switch (GetAvailability(profile->GetPrefs())) {
-    case IncognitoModePrefs::ENABLED:
+    case IncognitoModePrefs::Availability::kEnabled:
       return true;
 
-    case IncognitoModePrefs::DISABLED:
+    case IncognitoModePrefs::Availability::kDisabled:
       return !profile->IsIncognitoProfile();
 
-    case IncognitoModePrefs::FORCED:
+    case IncognitoModePrefs::Availability::kForced:
       return profile->IsIncognitoProfile();
 
     default:
@@ -126,11 +131,11 @@ IncognitoModePrefs::Availability IncognitoModePrefs::GetAvailabilityInternal(
   Availability result = kDefaultAvailability;
   bool valid = IntToAvailability(pref_value, &result);
   DCHECK(valid);
-  if (result != IncognitoModePrefs::DISABLED &&
+  if (result != IncognitoModePrefs::Availability::kDisabled &&
       mode == CHECK_PARENTAL_CONTROLS && ArePlatformParentalControlsEnabled()) {
-    if (result == IncognitoModePrefs::FORCED)
+    if (result == IncognitoModePrefs::Availability::kForced)
       LOG(ERROR) << "Ignoring FORCED incognito. Parental control logging on";
-    return IncognitoModePrefs::DISABLED;
+    return IncognitoModePrefs::Availability::kDisabled;
   }
   return result;
 }

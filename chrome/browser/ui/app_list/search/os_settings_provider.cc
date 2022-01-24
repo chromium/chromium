@@ -11,7 +11,6 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -25,7 +24,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager_factory.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_handler.h"
-#include "chrome/browser/web_applications/components/web_app_id_constants.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "ui/gfx/image/image_skia.h"
@@ -120,13 +119,14 @@ OsSettingsResult::OsSettingsResult(
     const std::u16string& query)
     : profile_(profile), url_path_(result->url_path_with_parameters) {
   set_id(kOsSettingsResultPrefix + url_path_);
+  SetCategory(Category::kSettings);
   set_relevance(relevance_score);
   SetTitle(result->canonical_result_text);
   SetTitleTags(CalculateTags(query, result->canonical_result_text));
   SetResultType(ResultType::kOsSettings);
   SetDisplayType(DisplayType::kList);
   SetMetricsType(ash::OS_SETTINGS);
-  SetIcon(icon);
+  SetIcon(IconInfo(icon));
 
   // If the result is not a top-level section, set the display text with
   // information about the result's 'parent' category. This is the last element
@@ -194,10 +194,7 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
   DCHECK(app_service_proxy_);
 
   Observe(&app_service_proxy_->AppRegistryCache());
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   apps::mojom::AppType app_type =
       app_service_proxy_->AppRegistryCache().GetAppType(
           web_app::kOsSettingsAppId);
@@ -271,18 +268,30 @@ void OsSettingsProvider::OnSearchReturned(
     const std::u16string& query,
     const base::TimeTicks& start_time,
     std::vector<chromeos::settings::mojom::SearchResultPtr> sorted_results) {
-  // TODO(crbug.com/1068851): We are currently not ranking settings results.
-  // Instead, we are gluing at most two to the top of the search box. Consider
-  // ranking these with other results in the next version of the feature.
   DCHECK_LE(sorted_results.size(), kNumRequestedResults);
 
   SearchProvider::Results search_results;
-  int i = 0;
-  for (const auto& result : FilterResults(query, sorted_results, hierarchy_)) {
-    const float score = 1.0f - i * kScoreEps;
-    search_results.emplace_back(std::make_unique<OsSettingsResult>(
-        profile_, result, score, icon_, last_query_));
-    ++i;
+
+  // Categorical search doesn't pin settings to the top of the results, but old
+  // search does. Handle both cases.
+  //
+  // TODO(crbug.com/1199206): This can be cleaned up once categorical search is
+  // launched.
+  if (app_list_features::IsCategoricalSearchEnabled()) {
+    for (const auto& result :
+         FilterResults(query, sorted_results, hierarchy_)) {
+      search_results.emplace_back(std::make_unique<OsSettingsResult>(
+          profile_, result, result->relevance_score, icon_, last_query_));
+    }
+  } else {
+    int i = 0;
+    for (const auto& result :
+         FilterResults(query, sorted_results, hierarchy_)) {
+      const float score = 1.0f - i * kScoreEps;
+      search_results.emplace_back(std::make_unique<OsSettingsResult>(
+          profile_, result, score, icon_, last_query_));
+      ++i;
+    }
   }
 
   UMA_HISTOGRAM_TIMES("Apps.AppList.OsSettingsProvider.QueryTime",
@@ -302,10 +311,7 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
   // Request the Settings app icon when either the readiness or the icon has
   // changed.
   if (update.ReadinessChanged() || update.IconKeyChanged()) {
-    auto icon_type =
-        (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-            ? apps::mojom::IconType::kStandard
-            : apps::mojom::IconType::kUncompressed;
+    auto icon_type = apps::mojom::IconType::kStandard;
     app_service_proxy_->LoadIcon(
         update.AppType(), web_app::kOsSettingsAppId, icon_type,
         ash::SharedAppListConfig::instance().search_list_icon_dimension(),
@@ -384,8 +390,16 @@ OsSettingsProvider::FilterResults(
     }
   }
 
-  if (clean_results.size() > static_cast<size_t>(kMaxShownResults))
+  // Categorical search has its own maximum-results mechanisms, so only cap
+  // results if it is not enabled.
+  //
+  // TODO(crbug.com/1199206): This can be cleaned up once categorical search is
+  // launched.
+  if (clean_results.size() > static_cast<size_t>(kMaxShownResults) &&
+      !app_list_features::IsCategoricalSearchEnabled()) {
     clean_results.resize(kMaxShownResults);
+  }
+
   return clean_results;
 }
 
@@ -393,13 +407,9 @@ void OsSettingsProvider::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
   if (icon_value.is_null())
     return;
 
-  auto icon_type =
-      (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
-          ? apps::mojom::IconType::kStandard
-          : apps::mojom::IconType::kUncompressed;
+  auto icon_type = apps::mojom::IconType::kStandard;
   if (icon_value->icon_type == icon_type) {
     icon_ = icon_value->uncompressed;
   }
 }
-
 }  // namespace app_list

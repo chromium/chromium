@@ -4,8 +4,9 @@
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/mwb_element_shared_style.js';
 
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
+import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.js';
@@ -13,7 +14,7 @@ import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.
 import {BookmarksApiProxy} from './bookmarks_api_proxy.js';
 
 /** Event interface for dom-repeat. */
-interface RepeaterMouseEvent extends CustomEvent {
+interface RepeaterMouseEvent extends MouseEvent {
   clientX: number;
   clientY: number;
   model: {
@@ -73,28 +74,87 @@ export class BookmarkFolderElement extends PolymerElement {
   openFolders: string[];
   private bookmarksApi_: BookmarksApiProxy = BookmarksApiProxy.getInstance();
 
+  static get observers() {
+    return [
+      'onChildrenLengthChanged_(folder.children.length)',
+    ];
+  }
+
+  private getAriaExpanded_(): string|undefined {
+    if (!this.folder.children || this.folder.children.length === 0) {
+      // Remove the attribute for empty folders that cannot be expanded.
+      return undefined;
+    }
+
+    return this.open_ ? 'true' : 'false';
+  }
+
+  private onBookmarkAuxClick_(event: RepeaterMouseEvent) {
+    if (event.button !== 1) {
+      // Not a middle click.
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    this.bookmarksApi_.openBookmark(event.model.item.url!, this.depth, {
+      middleButton: true,
+      altKey: event.altKey,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      shiftKey: event.shiftKey,
+    });
+  }
+
   private onBookmarkClick_(event: RepeaterMouseEvent) {
     event.preventDefault();
-    this.bookmarksApi_.openBookmark(event.model.item.url!, this.depth);
+    event.stopPropagation();
+    this.bookmarksApi_.openBookmark(event.model.item.url!, this.depth, {
+      middleButton: false,
+      altKey: event.altKey,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      shiftKey: event.shiftKey,
+    });
   }
 
   private onBookmarkContextMenu_(event: RepeaterMouseEvent) {
     event.preventDefault();
+    event.stopPropagation();
     this.bookmarksApi_.showContextMenu(
         event.model.item.id, event.clientX, event.clientY);
+  }
+
+  private onFolderContextMenu_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.bookmarksApi_.showContextMenu(
+        this.folder.id, event.clientX, event.clientY);
   }
 
   private getBookmarkIcon_(url: string): string {
     return getFaviconForPageURL(url, false);
   }
 
+  private onChildrenLengthChanged_() {
+    if (this.folder.children) {
+      this.style.setProperty(
+          '--child-count', this.folder.children!.length.toString());
+    } else {
+      this.style.setProperty('--child-count', '0');
+    }
+  }
+
   private onDepthChanged_() {
     this.childDepth_ = this.depth + 1;
     this.style.setProperty('--node-depth', `${this.depth}`);
-    this.$.children.style.setProperty('--node-depth', `${this.childDepth_}`);
+    this.style.setProperty('--child-depth', `${this.childDepth_}`);
   }
 
-  private onFolderClick_() {
+  private onFolderClick_(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (!this.folder.children || this.folder.children.length === 0) {
       // No reason to open if there are no children to show.
       return;
@@ -160,3 +220,19 @@ export class BookmarkFolderElement extends PolymerElement {
 }
 
 customElements.define(BookmarkFolderElement.is, BookmarkFolderElement);
+
+interface DraggableElement extends HTMLElement {
+  dataBookmark: chrome.bookmarks.BookmarkTreeNode;
+}
+
+export function getBookmarkFromElement(element: HTMLElement) {
+  return (element as DraggableElement).dataBookmark;
+}
+
+export function isValidDropTarget(element: HTMLElement) {
+  return element.id === 'folder' || element.classList.contains('bookmark');
+}
+
+export function isBookmarkFolderElement(element: HTMLElement): boolean {
+  return element.id === 'folder';
+}

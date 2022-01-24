@@ -58,10 +58,10 @@ void InsecureCredentialsHelper::AddPhishedCredentials(
   PasswordFormDigest digest = {PasswordForm::Scheme::kHtml,
                                credential.signon_realm,
                                GURL(credential.signon_realm)};
-  store_->GetLogins(digest, this);
   operation_ =
       base::BindOnce(&InsecureCredentialsHelper::AddPhishedCredentialsInternal,
                      base::Owned(this), credential);
+  store_->GetLogins(digest, this);
 }
 
 void InsecureCredentialsHelper::RemovePhishedCredentials(
@@ -69,10 +69,10 @@ void InsecureCredentialsHelper::RemovePhishedCredentials(
   PasswordFormDigest digest = {PasswordForm::Scheme::kHtml,
                                credential.signon_realm,
                                GURL(credential.signon_realm)};
-  store_->GetLogins(digest, this);
   operation_ = base::BindOnce(
       &InsecureCredentialsHelper::RemovePhishedCredentialsInternal,
       base::Owned(this), credential);
+  store_->GetLogins(digest, this);
 }
 
 void InsecureCredentialsHelper::OnGetPasswordStoreResults(
@@ -85,10 +85,9 @@ void InsecureCredentialsHelper::AddPhishedCredentialsInternal(
     LoginsResult results) {
   for (auto& form : results) {
     if (form->username_value == credential.username) {
-      DCHECK(form->password_issues.has_value());
-      if (form->password_issues->find(InsecureType::kPhished) ==
-          form->password_issues->end()) {
-        form->password_issues->insert(
+      if (form->password_issues.find(InsecureType::kPhished) ==
+          form->password_issues.end()) {
+        form->password_issues.insert(
             {InsecureType::kPhished,
              InsecurityMetadata(base::Time::Now(), IsMuted(false))});
         store_->UpdateLogin(*form);
@@ -102,10 +101,9 @@ void InsecureCredentialsHelper::RemovePhishedCredentialsInternal(
     LoginsResult results) {
   for (auto& form : results) {
     if (form->username_value == credential.username) {
-      DCHECK(form->password_issues.has_value());
-      if (form->password_issues->find(InsecureType::kPhished) !=
-          form->password_issues->end()) {
-        form->password_issues->erase(InsecureType::kPhished);
+      if (form->password_issues.find(InsecureType::kPhished) !=
+          form->password_issues.end()) {
+        form->password_issues.erase(InsecureType::kPhished);
         store_->UpdateLogin(*form);
       }
     }

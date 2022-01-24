@@ -9,7 +9,8 @@ import "mojo/public/mojom/base/time.mojom";
 import "services/media_session/public/mojom/media_session.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Implemented by HTMLMediaElement in the renderer process.
+// Implemented by HTMLMediaElement in the renderer process to allow the
+// browser to control media playback.
 interface MediaPlayer {
   // Requests the media player to start or resume media playback.
   RequestPlay();
@@ -32,6 +33,9 @@ interface MediaPlayer {
   // Requests the media player to exit the Picture-in-Picture mode.
   RequestExitPictureInPicture();
 
+  // Requests the media player to mute or unmute.
+  RequestMute(bool mute);
+
   // Set the volume multiplier to control audio ducking.
   // Output volume should be set to |player_volume| * |multiplier|. The range
   // of |multiplier| is [0, 1], where 1 indicates normal (non-ducked) playback.
@@ -50,6 +54,13 @@ interface MediaPlayer {
 
   // Suspends the media player when the host frame is closed.
   SuspendForFrameClosed();
+};
+
+// Implemented by the MediaWebContentsObserver. The remote lives in the renderer
+// process and the receiver lives in the browser process.
+interface MediaPlayerObserverClient {
+  // Gets a flag indicating whether media has been played before.
+  GetHasPlayedBefore() => (bool has_played_before);
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerObserverHostImpl in the

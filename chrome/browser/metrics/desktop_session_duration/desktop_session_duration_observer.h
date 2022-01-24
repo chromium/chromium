@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_DESKTOP_SESSION_DURATION_OBSERVER_H_
 #define CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_DESKTOP_SESSION_DURATION_OBSERVER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -25,6 +24,12 @@ class DesktopSessionDurationObserver
  public:
   DesktopSessionDurationObserver(content::WebContents* web_contents,
                                  DesktopSessionDurationTracker* service);
+
+  DesktopSessionDurationObserver(const DesktopSessionDurationObserver&) =
+      delete;
+  DesktopSessionDurationObserver& operator=(
+      const DesktopSessionDurationObserver&) = delete;
+
   ~DesktopSessionDurationObserver() override;
 
   static DesktopSessionDurationObserver* CreateForWebContents(
@@ -47,8 +52,6 @@ class DesktopSessionDurationObserver
   DesktopSessionDurationTracker* service_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopSessionDurationObserver);
 };
 
 }  // namespace metrics

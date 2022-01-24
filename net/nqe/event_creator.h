@@ -26,6 +26,10 @@ namespace internal {
 class NET_EXPORT_PRIVATE EventCreator {
  public:
   explicit EventCreator(NetLogWithSource net_log);
+
+  EventCreator(const EventCreator&) = delete;
+  EventCreator& operator=(const EventCreator&) = delete;
+
   ~EventCreator();
 
   // May add network quality changed event to the net-internals log if there
@@ -47,8 +51,6 @@ class NET_EXPORT_PRIVATE EventCreator {
   NetworkQuality past_network_quality_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(EventCreator);
 };
 
 }  // namespace internal

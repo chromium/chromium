@@ -27,12 +27,9 @@ namespace {
 constexpr int kUpdateIconIntervalMs = 40;  // 40ms for 25 frames per second.
 
 // Controls the spinner animation. See crbug.com/922977 for details.
-constexpr base::TimeDelta kFadeInDuration =
-    base::TimeDelta::FromMilliseconds(200);
-constexpr base::TimeDelta kFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(200);
-constexpr base::TimeDelta kMinimumShowDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kFadeInDuration = base::Milliseconds(200);
+constexpr base::TimeDelta kFadeOutDuration = base::Milliseconds(200);
+constexpr base::TimeDelta kMinimumShowDuration = base::Milliseconds(200);
 
 constexpr int kSpinningGapPercent = 25;
 constexpr color_utils::HSL kInactiveHslShift = {-1, 0, 0.25};
@@ -115,6 +112,9 @@ class SpinningEffectSource : public gfx::CanvasImageSource {
                                                             kInactiveHslShift),
             kInactiveTransparency)) {}
 
+  SpinningEffectSource(const SpinningEffectSource&) = delete;
+  SpinningEffectSource& operator=(const SpinningEffectSource&) = delete;
+
   ~SpinningEffectSource() override {}
 
   // gfx::CanvasImageSource override.
@@ -152,8 +152,6 @@ class SpinningEffectSource : public gfx::CanvasImageSource {
   ShelfSpinnerController::ShelfSpinnerData data_;
   const gfx::ImageSkia active_image_;
   const gfx::ImageSkia inactive_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpinningEffectSource);
 };
 
 }  // namespace
@@ -213,7 +211,7 @@ void ShelfSpinnerController::CloseSpinner(const std::string& app_id) {
   if (!RemoveSpinnerFromControllerMap(app_id))
     return;
 
-  owner_->CloseItem(ash::ShelfID(app_id));
+  owner_->ReplaceWithAppShortcutOrRemove(ash::ShelfID(app_id));
   UpdateShelfItemIcon(app_id);
 }
 
@@ -333,7 +331,7 @@ void ShelfSpinnerController::RegisterNextUpdate() {
       FROM_HERE,
       base::BindOnce(&ShelfSpinnerController::UpdateApps,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kUpdateIconIntervalMs));
+      base::Milliseconds(kUpdateIconIntervalMs));
 }
 
 void ShelfSpinnerController::AddSpinnerToShelf(
@@ -351,8 +349,8 @@ void ShelfSpinnerController::AddSpinnerToShelf(
   if (!item) {
     owner_->CreateAppItem(std::move(controller), ash::STATUS_RUNNING);
   } else {
-    owner_->shelf_model()->SetShelfItemDelegate(shelf_id,
-                                                std::move(controller));
+    owner_->shelf_model()->ReplaceShelfItemDelegate(shelf_id,
+                                                    std::move(controller));
     owner_->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
   }
 

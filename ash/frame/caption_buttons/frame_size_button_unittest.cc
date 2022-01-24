@@ -9,14 +9,18 @@
 #include "ash/wm/window_state.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
@@ -38,6 +42,10 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
     SetCanMinimize(true);
     SetCanResize(resizable);
   }
+
+  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
+  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
+
   ~TestWidgetDelegate() override = default;
 
   FrameCaptionButtonContainerView* caption_button_container() {
@@ -62,16 +70,27 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
       caption_button_container_ =
           new FrameCaptionButtonContainerView(GetWidget());
 
-      // Set arbitrary images for the button icons and assign the default
-      // caption button size.
+      // Set images for the button icons and assign the default caption button
+      // size.
       caption_button_container_->SetButtonSize(
           views::GetCaptionButtonLayoutSize(
               views::CaptionButtonLayoutSize::kNonBrowserCaption));
-      for (int icon = 0; icon < views::CAPTION_BUTTON_ICON_COUNT; ++icon) {
-        caption_button_container_->SetButtonImage(
-            static_cast<views::CaptionButtonIcon>(icon),
-            views::kWindowControlCloseIcon);
-      }
+      caption_button_container_->SetButtonImage(
+          views::CAPTION_BUTTON_ICON_MINIMIZE,
+          views::kWindowControlMinimizeIcon);
+      caption_button_container_->SetButtonImage(
+          views::CAPTION_BUTTON_ICON_MENU, chromeos::kWindowControlMenuIcon);
+      caption_button_container_->SetButtonImage(
+          views::CAPTION_BUTTON_ICON_CLOSE, views::kWindowControlCloseIcon);
+      caption_button_container_->SetButtonImage(
+          views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
+          chromeos::kWindowControlLeftSnappedIcon);
+      caption_button_container_->SetButtonImage(
+          views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
+          chromeos::kWindowControlRightSnappedIcon);
+      caption_button_container()->SetButtonImage(
+          views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
+          views::kWindowControlMaximizeIcon);
 
       AddChildView(caption_button_container_);
     }
@@ -79,14 +98,16 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 
   // Not owned.
   FrameCaptionButtonContainerView* caption_button_container_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWidgetDelegate);
 };
 
 class FrameSizeButtonTest : public AshTestBase {
  public:
   FrameSizeButtonTest() = default;
   explicit FrameSizeButtonTest(bool resizable) : resizable_(resizable) {}
+
+  FrameSizeButtonTest(const FrameSizeButtonTest&) = delete;
+  FrameSizeButtonTest& operator=(const FrameSizeButtonTest&) = delete;
+
   ~FrameSizeButtonTest() override = default;
 
   // Returns the center point of |view| in screen coordinates.
@@ -110,8 +131,7 @@ class FrameSizeButtonTest : public AshTestBase {
   // |delegate|.
   views::Widget* CreateWidget(views::WidgetDelegate* delegate) {
     views::Widget* widget = new views::Widget;
-    views::Widget::InitParams params(
-        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
     params.delegate = delegate;
     params.bounds = gfx::Rect(10, 10, 100, 100);
     params.context = GetContext();
@@ -125,11 +145,12 @@ class FrameSizeButtonTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    TestWidgetDelegate* delegate = new TestWidgetDelegate(resizable_);
-    window_state_ = WindowState::Get(CreateWidget(delegate)->GetNativeWindow());
+    widget_delegate_ = new TestWidgetDelegate(resizable_);
+    widget_ = CreateWidget(widget_delegate_);
+    window_state_ = WindowState::Get(widget_->GetNativeWindow());
 
     FrameCaptionButtonContainerView::TestApi test(
-        delegate->caption_button_container());
+        widget_delegate_->caption_button_container());
 
     minimize_button_ = test.minimize_button();
     size_button_ = test.size_button();
@@ -140,20 +161,22 @@ class FrameSizeButtonTest : public AshTestBase {
 
   WindowState* window_state() { return window_state_; }
   const WindowState* window_state() const { return window_state_; }
+  views::Widget* GetWidget() const { return widget_; }
 
   views::FrameCaptionButton* minimize_button() { return minimize_button_; }
   views::FrameCaptionButton* size_button() { return size_button_; }
   views::FrameCaptionButton* close_button() { return close_button_; }
+  TestWidgetDelegate* widget_delegate() { return widget_delegate_; }
 
  private:
   // Not owned.
   WindowState* window_state_;
+  views::Widget* widget_;
   views::FrameCaptionButton* minimize_button_;
   views::FrameCaptionButton* size_button_;
   views::FrameCaptionButton* close_button_;
+  TestWidgetDelegate* widget_delegate_;
   bool resizable_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSizeButtonTest);
 };
 
 }  // namespace
@@ -229,14 +252,14 @@ TEST_F(FrameSizeButtonTest, ButtonDrag) {
   // Snap right.
   generator->GestureScrollSequence(CenterPointInScreen(size_button()),
                                    CenterPointInScreen(close_button()),
-                                   base::TimeDelta::FromMilliseconds(100), 3);
+                                   base::Milliseconds(100), 3);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(HasStateType(WindowStateType::kSecondarySnapped));
 
   // Snap left.
   generator->GestureScrollSequence(CenterPointInScreen(size_button()),
                                    CenterPointInScreen(minimize_button()),
-                                   base::TimeDelta::FromMilliseconds(100), 3);
+                                   base::Milliseconds(100), 3);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(HasStateType(WindowStateType::kPrimarySnapped));
 
@@ -341,10 +364,14 @@ TEST_F(FrameSizeButtonTest, ResetButtonsAfterClick) {
   EXPECT_EQ(views::Button::STATE_NORMAL, minimize_button()->GetState());
   EXPECT_EQ(views::Button::STATE_PRESSED, size_button()->GetState());
   EXPECT_EQ(views::Button::STATE_NORMAL, close_button()->GetState());
-  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_SNAPPED,
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
             minimize_button()->GetIcon());
-  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED,
+  EXPECT_TRUE(chromeos::kWindowControlLeftSnappedIcon.name ==
+              minimize_button()->icon_definition_for_test()->name);
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
             close_button()->GetIcon());
+  EXPECT_TRUE(chromeos::kWindowControlRightSnappedIcon.name ==
+              close_button()->icon_definition_for_test()->name);
 
   // Dragging the mouse over the minimize button should hover the minimize
   // button and the minimize and close button icons should stay changed.
@@ -352,9 +379,9 @@ TEST_F(FrameSizeButtonTest, ResetButtonsAfterClick) {
   EXPECT_EQ(views::Button::STATE_HOVERED, minimize_button()->GetState());
   EXPECT_EQ(views::Button::STATE_PRESSED, size_button()->GetState());
   EXPECT_EQ(views::Button::STATE_NORMAL, close_button()->GetState());
-  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_SNAPPED,
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
             minimize_button()->GetIcon());
-  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED,
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
             close_button()->GetIcon());
 
   // Release the mouse, snapping the window left.
@@ -375,9 +402,9 @@ TEST_F(FrameSizeButtonTest, ResetButtonsAfterClick) {
   EXPECT_EQ(views::Button::STATE_NORMAL, minimize_button()->GetState());
   EXPECT_EQ(views::Button::STATE_PRESSED, size_button()->GetState());
   EXPECT_EQ(views::Button::STATE_NORMAL, close_button()->GetState());
-  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_SNAPPED,
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
             minimize_button()->GetIcon());
-  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED,
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
             close_button()->GetIcon());
 
   const gfx::Rect work_area_bounds_in_screen =
@@ -388,9 +415,9 @@ TEST_F(FrameSizeButtonTest, ResetButtonsAfterClick) {
   // any of the caption buttons. The minimize and close button icons should
   // be changed because the mouse is pressed.
   EXPECT_TRUE(AllButtonsInNormalState());
-  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_SNAPPED,
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
             minimize_button()->GetIcon());
-  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED,
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
             close_button()->GetIcon());
 
   // Release the mouse. The window should stay snapped left.
@@ -420,9 +447,9 @@ TEST_F(FrameSizeButtonTest, SizeButtonPressedWhenSnapButtonHovered) {
   EXPECT_EQ(views::Button::STATE_NORMAL, minimize_button()->GetState());
   EXPECT_EQ(views::Button::STATE_PRESSED, size_button()->GetState());
   EXPECT_EQ(views::Button::STATE_NORMAL, close_button()->GetState());
-  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_SNAPPED,
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
             minimize_button()->GetIcon());
-  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED,
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
             close_button()->GetIcon());
 
   // Dragging the mouse over the minimize button (snap left button) should hover
@@ -448,6 +475,10 @@ TEST_F(FrameSizeButtonTest, SizeButtonPressedWhenSnapButtonHovered) {
 class FrameSizeButtonTestRTL : public FrameSizeButtonTest {
  public:
   FrameSizeButtonTestRTL() = default;
+
+  FrameSizeButtonTestRTL(const FrameSizeButtonTestRTL&) = delete;
+  FrameSizeButtonTestRTL& operator=(const FrameSizeButtonTestRTL&) = delete;
+
   ~FrameSizeButtonTestRTL() override = default;
 
   void SetUp() override {
@@ -464,8 +495,6 @@ class FrameSizeButtonTestRTL : public FrameSizeButtonTest {
 
  private:
   std::string original_locale_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSizeButtonTestRTL);
 };
 
 // Test that clicking + dragging to a button adjacent to the size button presses
@@ -492,9 +521,10 @@ TEST_F(FrameSizeButtonTestRTL, ButtonDrag) {
   EXPECT_EQ(views::Button::STATE_NORMAL, minimize_button()->GetState());
   EXPECT_EQ(views::Button::STATE_PRESSED, size_button()->GetState());
   EXPECT_EQ(views::Button::STATE_NORMAL, close_button()->GetState());
-  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED,
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
             minimize_button()->GetIcon());
-  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_SNAPPED, close_button()->GetIcon());
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
+            close_button()->GetIcon());
 
   // Dragging over to the minimize button should press it.
   generator->MoveMouseTo(CenterPointInScreen(minimize_button()));
@@ -519,10 +549,13 @@ namespace {
 class FrameSizeButtonNonResizableTest : public FrameSizeButtonTest {
  public:
   FrameSizeButtonNonResizableTest() : FrameSizeButtonTest(false) {}
-  ~FrameSizeButtonNonResizableTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameSizeButtonNonResizableTest);
+  FrameSizeButtonNonResizableTest(const FrameSizeButtonNonResizableTest&) =
+      delete;
+  FrameSizeButtonNonResizableTest& operator=(
+      const FrameSizeButtonNonResizableTest&) = delete;
+
+  ~FrameSizeButtonNonResizableTest() override {}
 };
 
 }  // namespace
@@ -544,5 +577,102 @@ TEST_F(FrameSizeButtonNonResizableTest, NoSnap) {
   EXPECT_EQ(views::CAPTION_BUTTON_ICON_MINIMIZE, minimize_button()->GetIcon());
   EXPECT_EQ(views::CAPTION_BUTTON_ICON_CLOSE, close_button()->GetIcon());
 }
+
+// FrameSizeButtonPortraitDisplayTest is parameterized to run with and without
+// the feature |features::kVerticalSnap|, which allows users to snap top and
+// bottom in portrait layout, affecting snap icons.
+class FrameSizeButtonPortraitDisplayTest
+    : public FrameSizeButtonTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  FrameSizeButtonPortraitDisplayTest() = default;
+
+  FrameSizeButtonPortraitDisplayTest(
+      const FrameSizeButtonPortraitDisplayTest&) = delete;
+  FrameSizeButtonPortraitDisplayTest& operator=(
+      const FrameSizeButtonPortraitDisplayTest&) = delete;
+
+  ~FrameSizeButtonPortraitDisplayTest() override = default;
+
+  // FrameSizeButtonTest:
+  void SetUp() override {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          chromeos::wm::features::kVerticalSnap);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          chromeos::wm::features::kVerticalSnap);
+    }
+    FrameSizeButtonTest::SetUp();
+    UpdateDisplay("600x800");
+  }
+
+ protected:
+  bool IsVerticalSnapEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that upon pressed the size button should show left and right arrows for
+// horizontal snap and upward and downward arrow for vertical snap.
+TEST_P(FrameSizeButtonPortraitDisplayTest, SnapButtons) {
+  FrameCaptionButtonContainerView* container =
+      widget_delegate()->caption_button_container();
+  views::Widget* widget = widget_delegate()->GetWidget();
+  chromeos::DefaultFrameHeader frame_header(
+      widget, widget->non_client_view()->frame_view(), container);
+  frame_header.LayoutHeader();
+
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_MINIMIZE, minimize_button()->GetIcon());
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_CLOSE, close_button()->GetIcon());
+  EXPECT_TRUE(AllButtonsInNormalState());
+
+  // Pressing the size button should result in the size button being pressed and
+  // the minimize and close button icons changing.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(CenterPointInScreen(size_button()));
+  generator->PressLeftButton();
+  EXPECT_EQ(views::Button::STATE_NORMAL, minimize_button()->GetState());
+  EXPECT_EQ(views::Button::STATE_PRESSED, size_button()->GetState());
+  EXPECT_EQ(views::Button::STATE_NORMAL, close_button()->GetState());
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
+            minimize_button()->GetIcon());
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
+            close_button()->GetIcon());
+
+  const gfx::VectorIcon* left_icon =
+      IsVerticalSnapEnabled() ? &chromeos::kWindowControlTopSnappedIcon
+                              : &chromeos::kWindowControlLeftSnappedIcon;
+  const gfx::VectorIcon* right_icon =
+      IsVerticalSnapEnabled() ? &chromeos::kWindowControlBottomSnappedIcon
+                              : &chromeos::kWindowControlRightSnappedIcon;
+
+  EXPECT_TRUE(left_icon->name ==
+              minimize_button()->icon_definition_for_test()->name);
+  EXPECT_TRUE(right_icon->name ==
+              close_button()->icon_definition_for_test()->name);
+
+  // Dragging the mouse over the minimize button should hover the minimize
+  // button (snap top/left). The minimize and close button icons should stay
+  // changed.
+  generator->MoveMouseTo(CenterPointInScreen(minimize_button()));
+  EXPECT_EQ(views::Button::STATE_HOVERED, minimize_button()->GetState());
+  EXPECT_EQ(views::Button::STATE_PRESSED, size_button()->GetState());
+  EXPECT_EQ(views::Button::STATE_NORMAL, close_button()->GetState());
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
+            minimize_button()->GetIcon());
+  EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
+            close_button()->GetIcon());
+
+  // Release the mouse, snapping the window to the primary position.
+  generator->ReleaseLeftButton();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HasStateType(WindowStateType::kPrimarySnapped));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FrameSizeButtonPortraitDisplayTest,
+                         ::testing::Bool());
 
 }  // namespace ash

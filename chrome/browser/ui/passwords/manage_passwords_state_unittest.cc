@@ -172,7 +172,7 @@ void ManagePasswordsStateTest::TestAllUpdates() {
   GURL::Replacements replace_path;
   replace_path.SetPathStr("absolutely_different_path");
   form.url = origin.GetURL().ReplaceComponents(replace_path);
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = u"user15";
   form.password_value = u"12345";
   PasswordStoreChange change(PasswordStoreChange::ADD, form);
@@ -544,6 +544,7 @@ TEST_F(ManagePasswordsStateTest, AndroidPasswordUpdateSubmitted) {
   android_form.url = GURL(android_form.signon_realm);
   android_form.username_value = u"username";
   android_form.password_value = u"old pass";
+  android_form.is_affiliation_based_match = true;
   std::vector<const PasswordForm*> best_matches = {&android_form};
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {}));

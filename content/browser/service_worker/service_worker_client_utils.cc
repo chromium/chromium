@@ -12,8 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -71,6 +70,9 @@ class OpenURLObserver : public WebContentsObserver {
         frame_tree_node_id_(frame_tree_node_id),
         callback_(std::move(callback)) {}
 
+  OpenURLObserver(const OpenURLObserver&) = delete;
+  OpenURLObserver& operator=(const OpenURLObserver&) = delete;
+
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
     if (navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_) {
       // This navigation is not for the frame this observer is interested in,
@@ -89,7 +91,8 @@ class OpenURLObserver : public WebContentsObserver {
     RunCallback(render_frame_host->GetGlobalId());
   }
 
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     RunCallback(GlobalRenderFrameHostId());
   }
 
@@ -116,8 +119,6 @@ class OpenURLObserver : public WebContentsObserver {
 
   int frame_tree_node_id_;
   OpenURLCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenURLObserver);
 };
 
 blink::mojom::ServiceWorkerClientInfoPtr GetWindowClientInfo(
@@ -266,8 +267,10 @@ void GetNonWindowClients(
       }
     }
   } else {
-    for (const auto& controllee : controller->controllee_map())
-      AddNonWindowClient(controllee.second, options->client_type, &clients);
+    for (const auto& controllee : controller->controllee_map()) {
+      AddNonWindowClient(controllee.second.get(), options->client_type,
+                         &clients);
+    }
   }
   DidGetClients(std::move(callback), std::move(clients));
 }
@@ -310,8 +313,9 @@ void GetWindowClients(
       }
     }
   } else {
-    for (const auto& controllee : controller->controllee_map())
-      AddWindowClient(controllee.second, &clients_info);
+    for (const auto& controllee : controller->controllee_map()) {
+      AddWindowClient(controllee.second.get(), &clients_info);
+    }
   }
 
   if (clients_info.empty()) {
@@ -335,7 +339,8 @@ void GetWindowClients(
     // We can get info for a frame that was navigating end ended up with a
     // different URL than expected. In such case, we should make sure to not
     // expose cross-origin WindowClient.
-    if (info->url.GetOrigin() != controller->script_url().GetOrigin())
+    if (info->url.DeprecatedGetOriginAsURL() !=
+        controller->script_url().DeprecatedGetOriginAsURL())
       continue;
 
     clients.push_back(std::move(info));
@@ -370,7 +375,7 @@ void DidGetExecutionReadyClient(
     return;
   }
 
-  CHECK_EQ(container_host->url().GetOrigin(), sane_origin);
+  CHECK_EQ(container_host->url().DeprecatedGetOriginAsURL(), sane_origin);
 
   blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfo(
       container_host->GetRenderFrameHostId(), container_host->create_time(),
@@ -391,6 +396,16 @@ void FocusWindowClient(ServiceWorkerContainerHost* container_host,
       WebContents::FromRenderFrameHost(render_frame_host));
 
   if (!render_frame_host || !web_contents) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  // Avoid focusing on inactive pages.
+  // TODO(https://crbug.com/1239553): Running the callback with nullptr
+  // results in NotFoundError whereas TypeError should be invoked
+  // according to the specification.
+  // https://w3c.github.io/ServiceWorker/#client-focus
+  if (!render_frame_host->IsActive()) {
     std::move(callback).Run(nullptr);
     return;
   }
@@ -425,8 +440,8 @@ void OpenWindow(const GURL& url,
   RenderProcessHost* render_process_host =
       RenderProcessHost::FromID(worker_process_id);
   if (render_process_host->IsForGuestsOnly()) {
-    DidNavigate(context, script_url.GetOrigin(), key, std::move(callback),
-                GlobalRenderFrameHostId());
+    DidNavigate(context, script_url.DeprecatedGetOriginAsURL(), key,
+                std::move(callback), GlobalRenderFrameHostId());
     return;
   }
 
@@ -436,8 +451,8 @@ void OpenWindow(const GURL& url,
       context_wrapper->process_manager()->GetSiteInstanceForWorker(worker_id);
   if (!site_instance) {
     // Worker isn't running anymore. Fail.
-    DidNavigate(context, script_url.GetOrigin(), key, std::move(callback),
-                GlobalRenderFrameHostId());
+    DidNavigate(context, script_url.DeprecatedGetOriginAsURL(), key,
+                std::move(callback), GlobalRenderFrameHostId());
     return;
   }
 
@@ -454,15 +469,17 @@ void OpenWindow(const GURL& url,
           : WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, true /* is_renderer_initiated */);
   params.open_app_window_if_possible = type == WindowType::NEW_TAB_WINDOW;
-  params.initiator_origin = url::Origin::Create(script_url.GetOrigin());
+  params.initiator_origin =
+      url::Origin::Create(script_url.DeprecatedGetOriginAsURL());
 
   // End of RequestOpenURL copy.
 
   GetContentClient()->browser()->OpenURL(
       site_instance, params,
-      base::BindOnce(&DidOpenURL, base::BindOnce(&DidNavigate, context,
-                                                 script_url.GetOrigin(), key,
-                                                 std::move(callback))));
+      base::BindOnce(&DidOpenURL,
+                     base::BindOnce(&DidNavigate, context,
+                                    script_url.DeprecatedGetOriginAsURL(), key,
+                                    std::move(callback))));
 }
 
 void NavigateClient(const GURL& url,
@@ -477,8 +494,8 @@ void NavigateClient(const GURL& url,
   WebContents* web_contents = WebContents::FromRenderFrameHost(rfhi);
 
   if (!rfhi || !web_contents) {
-    DidNavigate(context, script_url.GetOrigin(), key, std::move(callback),
-                GlobalRenderFrameHostId());
+    DidNavigate(context, script_url.DeprecatedGetOriginAsURL(), key,
+                std::move(callback), GlobalRenderFrameHostId());
     return;
   }
 
@@ -486,11 +503,9 @@ void NavigateClient(const GURL& url,
   // navigation. We can't proceed with the navigation and rely on the usual
   // mechanism to disallow (PrerenderNavigationThrottle), because
   // RequestOpenURL() crashes if called by a prerendering main frame.
-  if (rfhi->frame_tree_node()->IsMainFrame() &&
-      rfhi->frame_tree()->is_prerendering()) {
-    DCHECK(blink::features::IsPrerender2Enabled());
-    DidNavigate(context, script_url.GetOrigin(), key, std::move(callback),
-                GlobalRenderFrameHostId());
+  if (rfhi->is_main_frame() && rfhi->frame_tree()->is_prerendering()) {
+    DidNavigate(context, script_url.DeprecatedGetOriginAsURL(), key,
+                std::move(callback), GlobalRenderFrameHostId());
     return;
   }
 
@@ -501,8 +516,8 @@ void NavigateClient(const GURL& url,
       rfhi->frame_tree()->root()->navigation_request();
   if (ongoing_navigation_request &&
       ongoing_navigation_request->browser_initiated()) {
-    DidNavigate(context, script_url.GetOrigin(), key, std::move(callback),
-                GlobalRenderFrameHostId());
+    DidNavigate(context, script_url.DeprecatedGetOriginAsURL(), key,
+                std::move(callback), GlobalRenderFrameHostId());
     return;
   }
 
@@ -520,10 +535,10 @@ void NavigateClient(const GURL& url,
       blink::mojom::TriggeringEventInfo::kUnknown,
       std::string() /* href_translate */, nullptr /* blob_url_loader_factory */,
       absl::nullopt);
-  new OpenURLObserver(
-      web_contents, frame_tree_node_id,
-      base::BindOnce(&DidNavigate, context, script_url.GetOrigin(), key,
-                     std::move(callback)));
+  new OpenURLObserver(web_contents, frame_tree_node_id,
+                      base::BindOnce(&DidNavigate, context,
+                                     script_url.DeprecatedGetOriginAsURL(), key,
+                                     std::move(callback)));
 }
 
 void GetClient(ServiceWorkerContainerHost* container_host,

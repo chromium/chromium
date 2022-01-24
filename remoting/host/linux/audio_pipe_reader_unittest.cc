@@ -29,6 +29,9 @@ class AudioPipeReaderTest : public testing::Test,
     : stop_at_position_(-1) {
   }
 
+  AudioPipeReaderTest(const AudioPipeReaderTest&) = delete;
+  AudioPipeReaderTest& operator=(const AudioPipeReaderTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
     pipe_path_ = test_dir_.GetPath().AppendASCII("test_pipe");
@@ -86,8 +89,6 @@ class AudioPipeReaderTest : public testing::Test,
 
   std::string read_data_;
   int stop_at_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPipeReaderTest);
 };
 
 // Verify that the reader can detect when the pipe is created and destroyed.
@@ -117,7 +118,7 @@ TEST_F(AudioPipeReaderTest, Pacing) {
   base::TimeDelta time_passed = base::TimeTicks::Now() - start_time;
 
   EXPECT_EQ(test_data, read_data_);
-  EXPECT_GE(time_passed, base::TimeDelta::FromMilliseconds(500));
+  EXPECT_GE(time_passed, base::Milliseconds(500));
 }
 
 }  // namespace remoting

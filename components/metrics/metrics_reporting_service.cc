@@ -60,7 +60,7 @@ void MetricsReportingService::LogActualUploadInterval(
     base::TimeDelta interval) {
   UMA_HISTOGRAM_CUSTOM_COUNTS("UMA.ActualLogUploadInterval",
                               interval.InMinutes(), 1,
-                              base::TimeDelta::FromHours(12).InMinutes(), 50);
+                              base::Hours(12).InMinutes(), 50);
 }
 
 void MetricsReportingService::LogCellularConstraint(bool upload_canceled) {

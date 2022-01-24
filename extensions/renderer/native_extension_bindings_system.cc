@@ -53,6 +53,11 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-template.h"
 
 namespace extensions {
 
@@ -78,9 +83,8 @@ bool IsPrefixedAPI(base::StringPiece api, base::StringPiece root_api) {
 // 'cast.streaming.session' and a reference of 'cast', this returns
 // 'cast.streaming'. If reference is empty, this simply returns the first layer;
 // so given 'app.runtime' and no reference, this returns 'app'.
-base::StringPiece GetFirstDifferentAPIName(
-    base::StringPiece api_name,
-    base::StringPiece reference) {
+base::StringPiece GetFirstDifferentAPIName(base::StringPiece api_name,
+                                           base::StringPiece reference) {
   base::StringPiece::size_type dot =
       api_name.find('.', reference.empty() ? 0 : reference.size() + 1);
   if (dot == base::StringPiece::npos)
@@ -123,9 +127,8 @@ v8::Local<v8::Object> GetOrCreateChrome(v8::Local<v8::Context> context) {
   v8::Local<v8::Object> chrome_object;
   if (chrome_value->IsUndefined()) {
     chrome_object = v8::Object::New(context->GetIsolate());
-    v8::Maybe<bool> success =
-        context->Global()->CreateDataProperty(context, chrome_string,
-                                              chrome_object);
+    v8::Maybe<bool> success = context->Global()->CreateDataProperty(
+        context, chrome_string, chrome_object);
     if (!success.IsJust() || !success.FromJust())
       return v8::Local<v8::Object>();
   } else if (chrome_value->IsObject()) {
@@ -353,7 +356,10 @@ std::string GetContextOwner(v8::Local<v8::Context> context) {
   const std::string& extension_id = script_context->GetExtensionID();
   bool id_is_valid = crx_file::id_util::IdIsValid(extension_id);
   CHECK(id_is_valid || script_context->url().is_valid());
-  return id_is_valid ? extension_id : script_context->url().spec();
+  // Use only origin for URLs to match browser logic in EventListener::ForURL().
+  return id_is_valid
+             ? extension_id
+             : url::Origin::Create(script_context->url()).GetURL().spec();
 }
 
 // Returns true if any portion of the runtime API is available to the given
@@ -366,8 +372,9 @@ bool IsRuntimeAvailableToContext(ScriptContext* context) {
        *RendererExtensionRegistry::Get()->GetMainThreadExtensionSet()) {
     ExternallyConnectableInfo* info = static_cast<ExternallyConnectableInfo*>(
         extension->GetManifestData(manifest_keys::kExternallyConnectable));
-    if (info && info->matches.MatchesURL(context->url()))
+    if (info && info->matches.MatchesURL(context->url())) {
       return true;
+    }
   }
   return false;
 }
@@ -746,9 +753,8 @@ void NativeExtensionBindingsSystem::GetInternalAPI(
   std::string api_name = gin::V8ToString(isolate, info[0]);
   const Feature* feature = FeatureProvider::GetAPIFeature(api_name);
   ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
-  if (!feature ||
-      !script_context->IsAnyFeatureAvailableToContext(
-          *feature, CheckAliasStatus::NOT_ALLOWED)) {
+  if (!feature || !script_context->IsAnyFeatureAvailableToContext(
+                      *feature, CheckAliasStatus::NOT_ALLOWED)) {
     NOTREACHED();
     return;
   }

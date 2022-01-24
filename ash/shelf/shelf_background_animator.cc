@@ -178,7 +178,7 @@ void ShelfBackgroundAnimator::CreateAnimator(
     case ShelfBackgroundType::kAppList:
     case ShelfBackgroundType::kHomeLauncher:
     case ShelfBackgroundType::kMaximizedWithAppList:
-      duration = base::TimeDelta::FromMilliseconds(500);
+      duration = base::Milliseconds(500);
       break;
     case ShelfBackgroundType::kMaximized:
     case ShelfBackgroundType::kOobe:
@@ -186,7 +186,7 @@ void ShelfBackgroundAnimator::CreateAnimator(
     case ShelfBackgroundType::kLoginNonBlurredWallpaper:
     case ShelfBackgroundType::kOverview:
     case ShelfBackgroundType::kInApp:
-      duration = base::TimeDelta::FromMilliseconds(250);
+      duration = base::Milliseconds(250);
       break;
   }
 

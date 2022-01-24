@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_FRAGMENT_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_FRAGMENT_ITEM_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
@@ -27,9 +28,12 @@ struct NGLogicalLineItem;
 
 // Data for SVG text in addition to NGFragmentItem.
 struct NGSvgFragmentData {
+  USING_FAST_MALLOC(NGSvgFragmentData);
+
+ public:
   scoped_refptr<const ShapeResultView> shape_result;
   NGTextOffset text_offset;
-  FloatRect rect;
+  gfx::RectF rect;
   float length_adjust_scale;
   float angle;
   float baseline_shift;
@@ -106,6 +110,7 @@ class CORE_EXPORT NGFragmentItem {
   bool IsContainer() const { return Type() == kBox || Type() == kLine; }
   bool IsInlineBox() const;
   bool IsAtomicInline() const;
+  bool IsBlockInInline() const;
   bool IsFloating() const;
   bool IsEmptyLineBox() const;
   bool IsHiddenForPaint() const { return is_hidden_for_paint_; }
@@ -163,7 +168,7 @@ class CORE_EXPORT NGFragmentItem {
   }
   const LayoutObject* GetLayoutObject() const { return layout_object_; }
   LayoutObject* GetMutableLayoutObject() const {
-    return const_cast<LayoutObject*>(layout_object_);
+    return const_cast<LayoutObject*>(layout_object_.Get());
   }
   bool IsLayoutObjectDestroyedOrMoved() const { return !layout_object_; }
   void LayoutObjectWillBeDestroyed() const;
@@ -182,20 +187,24 @@ class CORE_EXPORT NGFragmentItem {
   void SetDeltaToNextForSameLayoutObject(wtf_size_t delta) const;
 
   const PhysicalRect& RectInContainerFragment() const { return rect_; }
-  // This function returns a transformed unscaled FloatRect for kSvgText
-  // type, and returns a FloatRect just converted from
-  // RectInContainerFragment() for other types.
-  FloatRect ObjectBoundingBox() const;
+  // This function returns a transformed unscaled glyph bounds for kSvgText
+  // type.
+  // Do not call this for other types.
+  gfx::RectF ObjectBoundingBox(const NGFragmentItems& items) const;
 
   // Returns a point transformed by the inverse of
   // BuildSvgTransformForBoundingBox(). The return value can be compared with
   // untransformed RectInContainerFragment().
   PhysicalOffset MapPointInContainer(const PhysicalOffset& point) const;
 
+  // For kSvgText type, convert the specified inline offset in this item so
+  // that the result can be used with ShapeResult.
+  float ScaleInlineOffset(LayoutUnit inline_offset) const;
+
   // Returns true if |position|, which is a point in the IFC's coordinate
-  // system, is in the transformed rectangle of this item.
+  // system, is in the transformed rectangle (including the edges) of this item.
   // This works only for kSvgText type.
-  bool Contains(const FloatPoint& position) const;
+  bool InclusiveContains(const gfx::PointF& position) const;
 
   const PhysicalOffset& OffsetInContainerFragment() const {
     return rect_.offset;
@@ -242,6 +251,9 @@ class CORE_EXPORT NGFragmentItem {
       return box_.PostLayout();
     return nullptr;
   }
+
+  // Returns block of block-in-inline.
+  LayoutBlock& BlockInInline() const;
 
   bool HasNonVisibleOverflow() const;
   bool IsScrollContainer() const;
@@ -453,6 +465,11 @@ class CORE_EXPORT NGFragmentItem {
   // This returns 1 for an NGFragmentItem not for LayoutSVGInlineText.
   float SvgScalingFactor() const;
 
+  // Return a scaled font for SVG <text>.
+  // This returns Style().GetFont() for an NGFragmentItem not for
+  // LayoutSVGInlineText.
+  const Font& ScaledFont() const;
+
   // Get a description of |this| for the debug purposes.
   String ToString() const;
 
@@ -513,7 +530,7 @@ class CORE_EXPORT NGFragmentItem {
       const AffineTransform& length_adjust) const;
   AffineTransform BuildSvgTransformForLengthAdjust() const;
 
-  const LayoutObject* layout_object_;
+  UntracedMember<const LayoutObject> layout_object_;
 
   // TODO(kojii): We can make them sub-classes if we need to make the vector of
   // pointers. Sub-classing from DisplayItemClient prohibits copying and that we

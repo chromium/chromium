@@ -139,7 +139,6 @@ void DirectoryImpl::OpenDirectory(
       return;
     }
 
-    base::File::Error error;
     if (!base::CreateDirectoryAndGetError(path, &error)) {
       std::move(callback).Run(error);
       return;

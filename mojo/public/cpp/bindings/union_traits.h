@@ -21,11 +21,10 @@ namespace mojo {
 //   1. Getters for each field in the Mojom type.
 //   2. Read() method.
 //   3. [Optional] IsNull() and SetToNull().
-//   4. [Optional] SetUpContext() and TearDownContext().
 // Please see the documentation of StructTraits for details of these methods.
 //
 // Unlike StructTraits, there is one more method to implement:
-//   5. A static GetTag() method indicating which field is the current active
+//   4. A static GetTag() method indicating which field is the current active
 //      field for serialization:
 //
 //        static DataViewType::Tag GetTag(const T& input);

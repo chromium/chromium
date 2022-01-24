@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
+#include "third_party/blink/renderer/core/css/css_container_values.h"
+#include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/core/css/style_recalc.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -55,25 +58,49 @@ double ContainerQueryEvaluator::Height() const {
 
 bool ContainerQueryEvaluator::Eval(
     const ContainerQuery& container_query) const {
+  return Eval(container_query, MediaQueryEvaluator::Results());
+}
+
+bool ContainerQueryEvaluator::Eval(const ContainerQuery& container_query,
+                                   MediaQueryEvaluator::Results results) const {
   if (container_query.QueriedAxes() == PhysicalAxes(kPhysicalAxisNone))
     return false;
   if (!IsSufficientlyContained(contained_axes_, container_query.QueriedAxes()))
     return false;
   DCHECK(media_query_evaluator_);
-  return media_query_evaluator_->Eval(*container_query.media_queries_);
+  return media_query_evaluator_->Eval(*container_query.media_queries_, results);
 }
 
 void ContainerQueryEvaluator::Add(const ContainerQuery& query, bool result) {
   results_.Set(&query, result);
 }
 
+bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
+                                         MatchResult& match_result) {
+  MediaQueryResultList viewport_dependent;
+  unsigned unit_flags = MediaQueryExpValue::UnitFlags::kNone;
+
+  bool result = Eval(query, {&viewport_dependent, nullptr, &unit_flags});
+  if (!viewport_dependent.IsEmpty())
+    match_result.SetDependsOnViewportContainerQueries();
+  if (unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative)
+    match_result.SetDependsOnRemContainerQueries();
+  if (unit_flags & MediaQueryExpValue::UnitFlags::kFontRelative)
+    depends_on_font_ = true;
+  Add(query, result);
+  return result;
+}
+
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ContainerChanged(
+    Document& document,
+    const ComputedStyle& style,
     PhysicalSize size,
     PhysicalAxes contained_axes) {
-  if (size_ == size && contained_axes_ == contained_axes)
+  if (size_ == size && contained_axes_ == contained_axes && !font_dirty_)
     return Change::kNone;
 
-  SetData(size, contained_axes);
+  SetData(document, style, size, contained_axes);
+  font_dirty_ = false;
 
   Change change = ComputeChange();
 
@@ -92,20 +119,23 @@ void ContainerQueryEvaluator::Trace(Visitor* visitor) const {
   visitor->Trace(results_);
 }
 
-void ContainerQueryEvaluator::SetData(PhysicalSize size,
+void ContainerQueryEvaluator::SetData(Document& document,
+                                      const ComputedStyle& style,
+                                      PhysicalSize size,
                                       PhysicalAxes contained_axes) {
   size_ = size;
   contained_axes_ = contained_axes;
 
-  auto* cached_values = MakeGarbageCollected<MediaValuesCached>();
-  cached_values->OverrideViewportDimensions(size_.width, size_.height);
+  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
+      document, style, size.width.ToDouble(), size.height.ToDouble());
   media_query_evaluator_ =
-      MakeGarbageCollected<MediaQueryEvaluator>(*cached_values);
+      MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
 
 void ContainerQueryEvaluator::ClearResults() {
   results_.clear();
   referenced_by_unit_ = false;
+  depends_on_font_ = false;
 }
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
@@ -123,6 +153,14 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
   }
 
   return change;
+}
+
+void ContainerQueryEvaluator::MarkFontDirtyIfNeeded(
+    const ComputedStyle& old_style,
+    const ComputedStyle& new_style) {
+  if (!depends_on_font_ || font_dirty_)
+    return;
+  font_dirty_ = old_style.GetFont() != new_style.GetFont();
 }
 
 }  // namespace blink

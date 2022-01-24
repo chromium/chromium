@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CONSOLE_LOGGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CONSOLE_LOGGER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -21,18 +22,22 @@ class PLATFORM_EXPORT ConsoleLogger : public GarbageCollectedMixin {
   ConsoleLogger() = default;
   virtual ~ConsoleLogger() = default;
 
-  void AddConsoleMessage(mojom::ConsoleMessageSource source,
-                         mojom::ConsoleMessageLevel level,
+  void AddConsoleMessage(mojom::blink::ConsoleMessageSource source,
+                         mojom::blink::ConsoleMessageLevel level,
                          const String& message,
-                         bool discard_duplicates = false) {
-    AddConsoleMessageImpl(source, level, message, discard_duplicates);
+                         bool discard_duplicates = false,
+                         absl::optional<mojom::blink::ConsoleMessageCategory>
+                             category = absl::nullopt) {
+    AddConsoleMessageImpl(source, level, message, discard_duplicates, category);
   }
 
  private:
-  virtual void AddConsoleMessageImpl(mojom::ConsoleMessageSource,
-                                     mojom::ConsoleMessageLevel,
-                                     const String& message,
-                                     bool discard_duplicates) = 0;
+  virtual void AddConsoleMessageImpl(
+      mojom::blink::ConsoleMessageSource,
+      mojom::blink::ConsoleMessageLevel,
+      const String& message,
+      bool discard_duplicates,
+      absl::optional<mojom::blink::ConsoleMessageCategory> category) = 0;
 };
 
 // A ConsoleLogger subclass which has Detach() method. An instance of
@@ -57,14 +62,17 @@ class PLATFORM_EXPORT DetachableConsoleLogger final
   Member<ConsoleLogger> logger_;
 
  private:
-  void AddConsoleMessageImpl(mojom::ConsoleMessageSource source,
-                             mojom::ConsoleMessageLevel level,
-                             const String& message,
-                             bool discard_duplicates) override {
+  void AddConsoleMessageImpl(
+      mojom::blink::ConsoleMessageSource source,
+      mojom::blink::ConsoleMessageLevel level,
+      const String& message,
+      bool discard_duplicates,
+      absl::optional<mojom::blink::ConsoleMessageCategory> category) override {
     if (!logger_) {
       return;
     }
-    logger_->AddConsoleMessage(source, level, message, discard_duplicates);
+    logger_->AddConsoleMessage(source, level, message, discard_duplicates,
+                               category);
   }
 };
 

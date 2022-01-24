@@ -37,16 +37,6 @@ const char* PassphraseTypeToString(PassphraseType type) {
   return "INVALID_PASSPHRASE_TYPE";
 }
 
-const char* BootstrapTokenTypeToString(BootstrapTokenType type) {
-  switch (type) {
-    ENUM_CASE(PASSPHRASE_BOOTSTRAP_TOKEN);
-    ENUM_CASE(KEYSTORE_BOOTSTRAP_TOKEN);
-  }
-
-  NOTREACHED();
-  return "INVALID_BOOTSTRAP_TOKEN_TYPE";
-}
-
 const char* KeyDerivationMethodToString(KeyDerivationMethod method) {
   switch (method) {
     ENUM_CASE(KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003);

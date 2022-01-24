@@ -5,31 +5,18 @@
 
 """Runs a script that can run as an isolate (or not).
 
-The main requirement is that
+If optional argument --isolated-script-test-output=[FILENAME] is passed
+to the script, json is written to that file in the format detailed in
+//docs/testing/json-test-results-format.md.
 
-  --isolated-script-test-output=[FILENAME]
-
-is passed on the command line to run_isolated_script_tests. This gets
-remapped to the command line argument --write-full-results-to.
-
-json is written to that file in the format produced by
-common.parse_common_test_results.
-
-Optional argument:
-
-  --isolated-script-test-filter=[TEST_NAMES]
-
-is a double-colon-separated ("::") list of test names, to run just that subset
-of tests. This list is parsed by this harness and sent down via the --test-list
-argument.
+If optional argument --isolated-script-test-filter=[TEST_NAMES] is passed to
+the script, it should be a  double-colon-separated ("::") list of test names,
+to run just that subset of tests.
 
 This script is intended to be the base command invoked by the isolate,
 followed by a subsequent Python script. It could be generalized to
 invoke an arbitrary executable.
 """
-
-# TODO(tansell): Remove this script once LayoutTests can accept the isolated
-# arguments and start xvfb itself.
 
 import argparse
 import json

@@ -62,11 +62,9 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/info_map.h"
-#include "extensions/browser/media_router_extension_access_logger.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/process_map_factory.h"
 #include "extensions/browser/url_request_util.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/file_util.h"
@@ -91,6 +89,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -238,12 +237,12 @@ void ReadResourceFilePathAndLastModifiedTime(
   int64_t delta_seconds = (*last_modified_time - dir_creation_time).InSeconds();
   if (delta_seconds >= 0) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ResourceLastModifiedDelta",
-                                delta_seconds, 1,
-                                base::TimeDelta::FromDays(30).InSeconds(), 50);
+                                delta_seconds, 1, base::Days(30).InSeconds(),
+                                50);
   } else {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ResourceLastModifiedNegativeDelta",
-                                -delta_seconds, 1,
-                                base::TimeDelta::FromDays(30).InSeconds(), 50);
+                                -delta_seconds, 1, base::Days(30).InSeconds(),
+                                50);
   }
 }
 
@@ -449,8 +448,14 @@ scoped_refptr<net::HttpResponseHeaders> BuildHttpHeaders(
 
 void AddCacheHeaders(net::HttpResponseHeaders& headers,
                      base::Time last_modified_time) {
-  if (last_modified_time.is_null())
+  // On Fuchsia, some resources are served from read-only filesystems which
+  // don't manage creation timestamps. Cache-control headers should still
+  // be generated for those resources.
+#if !defined(OS_FUCHSIA)
+  if (last_modified_time.is_null()) {
     return;
+  }
+#endif  // !defined(OS_FUCHSIA)
 
   // Hash the time and make an etag to avoid exposing the exact
   // user installation time of the extension.
@@ -470,6 +475,10 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
  public:
   explicit FileLoaderObserver(scoped_refptr<ContentVerifyJob> verify_job)
       : verify_job_(std::move(verify_job)) {}
+
+  FileLoaderObserver(const FileLoaderObserver&) = delete;
+  FileLoaderObserver& operator=(const FileLoaderObserver&) = delete;
+
   ~FileLoaderObserver() override {
     base::AutoLock auto_lock(lock_);
     UMA_HISTOGRAM_COUNTS_1M("ExtensionUrlRequest.TotalKbRead",
@@ -525,12 +534,14 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
   scoped_refptr<ContentVerifyJob> verify_job_;
   // To synchronize access to all members.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileLoaderObserver);
 };
 
 class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
  public:
+  ExtensionURLLoaderFactory(const ExtensionURLLoaderFactory&) = delete;
+  ExtensionURLLoaderFactory& operator=(const ExtensionURLLoaderFactory&) =
+      delete;
+
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
       content::BrowserContext* browser_context,
       ukm::SourceIdObj ukm_source_id,
@@ -659,6 +670,24 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     bool follow_symlinks_anywhere = false;
     bool include_allow_service_worker_header = false;
 
+    // Log if loading an extension resource not listed as a web accessible
+    // resource from a sandboxed page.
+    if (request.request_initiator.has_value() &&
+        request.request_initiator->opaque() &&
+        request.request_initiator->GetTupleOrPrecursorTupleIfOpaque()
+                .scheme() == kExtensionScheme) {
+      // Surface opaque origin for web accessible resource verification.
+      auto origin = url::Origin::Create(
+          request.request_initiator->GetTupleOrPrecursorTupleIfOpaque()
+              .GetURL());
+      bool is_web_accessible_resource =
+          WebAccessibleResourcesInfo::IsResourceWebAccessible(
+              extension.get(), request.url.path(), origin);
+      base::UmaHistogramBoolean(
+          "Extensions.SandboxedPageLoad.IsWebAccessibleResource",
+          is_web_accessible_resource);
+    }
+
     if (extension) {
       GetSecurityPolicyForURL(
           request, *extension, is_web_view_request_, &content_security_policy,
@@ -672,20 +701,6 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
                                BackgroundInfo::GetBackgroundServiceWorkerScript(
                                    extension.get()));
       }
-    }
-
-    // If the extension is the Media Router Component Extension used to support
-    // Casting scenarios, log metrics needed to track migration away from this
-    // extension.
-    // TODO(crbug.com/1097594): Remove this metric logging once migration away
-    // from the Media Router Component Extension completes.
-    const MediaRouterExtensionAccessLogger* media_router_access_logger =
-        ExtensionsBrowserClient::Get()->GetMediaRouterAccessLogger();
-    if (media_router_access_logger && request.request_initiator.has_value() &&
-        (extension.get()->id() == extension_misc::kCastExtensionIdRelease ||
-         extension.get()->id() == extension_misc::kCastExtensionIdDev)) {
-      media_router_access_logger->LogMediaRouterComponentExtensionUse(
-          request.request_initiator.value(), browser_context_);
     }
 
     if (IsBackgroundPageURL(request.url)) {
@@ -890,8 +905,6 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
   scoped_refptr<extensions::InfoMap> extension_info_map_;
 
   base::CallbackListSubscription browser_context_shutdown_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionURLLoaderFactory);
 };
 
 }  // namespace

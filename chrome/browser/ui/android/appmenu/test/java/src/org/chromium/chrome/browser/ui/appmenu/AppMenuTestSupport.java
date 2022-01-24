@@ -5,13 +5,13 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Utility methods for performing operations on the app menu needed for testing.
@@ -19,22 +19,33 @@ import org.chromium.chrome.browser.ui.appmenu.internal.R;
 public class AppMenuTestSupport {
     /**
      * @param coordinator The {@link AppMenuCoordinator} associated with the app menu being tested.
-     * @return The {@link Menu} held by the app menu.
+     * @return The {@link ModelList} held by the app menu.
      */
-    public static Menu getMenu(AppMenuCoordinator coordinator) {
+    public static ModelList getMenuModelList(AppMenuCoordinator coordinator) {
         return ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
                 .getAppMenu()
-                .getMenu();
+                .getMenuModelList();
     }
 
     /**
-     * See {@link AppMenuHandlerImpl#onOptionsItemSelected(MenuItem)}.
+     * See {@link AppMenu#getMenuItemPropertyModel}
      */
-    public static void onOptionsItemSelected(AppMenuCoordinator coordinator, MenuItem item) {
+    public static PropertyModel getMenuItemPropertyModel(
+            AppMenuCoordinator coordinator, int itemId) {
+        return ((AppMenuCoordinatorImpl) coordinator)
+                .getAppMenuHandlerImplForTesting()
+                .getAppMenu()
+                .getMenuItemPropertyModel(itemId);
+    }
+
+    /**
+     * See {@link AppMenuHandlerImpl#onOptionsItemSelected(int)}.
+     */
+    public static void onOptionsItemSelected(AppMenuCoordinator coordinator, int itemId) {
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
-                .onOptionsItemSelected(item, false);
+                .onOptionsItemSelected(itemId, false);
     }
 
     /**
@@ -43,15 +54,15 @@ public class AppMenuTestSupport {
      * @param menuItemId The id of the menu item to click.
      */
     public static void callOnItemClick(AppMenuCoordinator coordinator, int menuItemId) {
-        MenuItem item = ((AppMenuCoordinatorImpl) coordinator)
-                                .getAppMenuHandlerImplForTesting()
-                                .getAppMenu()
-                                .getMenu()
-                                .findItem(menuItemId);
+        PropertyModel model = ((AppMenuCoordinatorImpl) coordinator)
+                                      .getAppMenuHandlerImplForTesting()
+                                      .getAppMenu()
+                                      .getMenuItemPropertyModel(menuItemId);
+
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
                 .getAppMenu()
-                .onItemClick(item);
+                .onItemClick(model);
     }
 
     /**
@@ -104,7 +115,7 @@ public class AppMenuTestSupport {
      *         method.
      */
     public static void overrideOnOptionItemSelectedListener(
-            AppMenuCoordinator coordinator, Callback<MenuItem> onOptionsItemSelectedListener) {
+            AppMenuCoordinator coordinator, Callback<Integer> onOptionsItemSelectedListener) {
         ((AppMenuCoordinatorImpl) coordinator)
                 .getAppMenuHandlerImplForTesting()
                 .overrideOnOptionItemSelectedListenerForTests(onOptionsItemSelectedListener);

@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "ios/web/common/user_agent.h"
-#include "ios/web/public/deprecated/navigation_item_list.h"
 #include "ios/web/public/navigation/browser_url_rewriter.h"
 #include "ios/web/public/navigation/referrer.h"
 #include "ios/web/public/navigation/reload_type.h"
@@ -166,8 +165,8 @@ class NavigationManager {
 
   // Returns a list of all non-redirected NavigationItems whose index precedes
   // or follows the current index.
-  virtual NavigationItemList GetBackwardItems() const = 0;
-  virtual NavigationItemList GetForwardItems() const = 0;
+  virtual std::vector<NavigationItem*> GetBackwardItems() const = 0;
+  virtual std::vector<NavigationItem*> GetForwardItems() const = 0;
 
   // Initializes this NavigationManager with the given saved navigations, using
   // |last_committed_item_index| as the currently loaded item. Before this call

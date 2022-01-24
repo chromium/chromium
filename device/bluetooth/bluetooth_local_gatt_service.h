@@ -180,6 +180,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
       BluetoothLocalGattService* included_service,
       BluetoothLocalGattService::Delegate* delegate);
 
+  BluetoothLocalGattService(const BluetoothLocalGattService&) = delete;
+  BluetoothLocalGattService& operator=(const BluetoothLocalGattService&) =
+      delete;
+
   // Registers this GATT service. Calling Register will make this service and
   // all of its associated attributes available on the local adapters GATT
   // database. Call Unregister to make this service no longer available.
@@ -204,9 +208,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
  protected:
   BluetoothLocalGattService();
   ~BluetoothLocalGattService() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLocalGattService);
 };
 
 }  // namespace device

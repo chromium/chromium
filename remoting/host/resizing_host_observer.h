@@ -35,6 +35,10 @@ class ResizingHostObserver : public ScreenControls {
   explicit ResizingHostObserver(
       std::unique_ptr<DesktopResizer> desktop_resizer,
       bool restore);
+
+  ResizingHostObserver(const ResizingHostObserver&) = delete;
+  ResizingHostObserver& operator=(const ResizingHostObserver&) = delete;
+
   ~ResizingHostObserver() override;
 
   // ScreenControls interface.
@@ -58,8 +62,6 @@ class ResizingHostObserver : public ScreenControls {
   const base::TickClock* clock_;
 
   base::WeakPtrFactory<ResizingHostObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResizingHostObserver);
 };
 
 }  // namespace remoting

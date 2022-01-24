@@ -31,8 +31,7 @@ TEST_F(PresentationTimeRecorderTest, Histogram) {
   // Flush pending draw callbask by waiting for presentation until it times out.
   // We assume if the new frame wasn't generated for 100ms (6 frames worth
   // time) there is no pending draw request.
-  while (ui::WaitForNextFrameToBePresented(
-      compositor, base::TimeDelta::FromMilliseconds(100)))
+  while (ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(100)))
     ;
 
   compositor->ScheduleFullRedraw();
@@ -76,7 +75,7 @@ TEST_F(PresentationTimeRecorderTest, NoSuccessNoHistogram) {
   auto test_recorder = CreatePresentationTimeHistogramRecorder(
       compositor, kName, kMaxLatencyName);
   PresentationTimeRecorder::TestApi test_api(test_recorder.get());
-  base::TimeDelta interval_not_used = base::TimeDelta::FromMilliseconds(0);
+  base::TimeDelta interval_not_used = base::Milliseconds(0);
   gfx::PresentationFeedback failure(base::TimeTicks::FromUptimeMillis(2000),
                                     interval_not_used,
                                     gfx::PresentationFeedback::kFailure);
@@ -115,7 +114,7 @@ TEST_F(PresentationTimeRecorderTest, Failure) {
   PresentationTimeRecorder::TestApi test_api(test_recorder.get());
   test_recorder->RequestNext();
   test_api.OnCompositingDidCommit(compositor);
-  base::TimeDelta interval_not_used = base::TimeDelta::FromMilliseconds(0);
+  base::TimeDelta interval_not_used = base::Milliseconds(0);
   base::TimeTicks start = base::TimeTicks::FromUptimeMillis(1000);
   gfx::PresentationFeedback success(base::TimeTicks::FromUptimeMillis(1100),
                                     interval_not_used, /*flags=*/0);

@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace network {
 class TestNetworkConnectionTracker;
 }
@@ -28,6 +26,11 @@ class TestRenderViewHostFactory;
 class TestContentClientInitializer {
  public:
   TestContentClientInitializer();
+
+  TestContentClientInitializer(const TestContentClientInitializer&) = delete;
+  TestContentClientInitializer& operator=(const TestContentClientInitializer&) =
+      delete;
+
   ~TestContentClientInitializer();
 
   // Enables switching RenderViewHost creation to use the test version instead
@@ -44,8 +47,6 @@ class TestContentClientInitializer {
   std::unique_ptr<MockRenderProcessHostFactory> rph_factory_;
   std::unique_ptr<MockAgentSchedulingGroupHostFactory> asgh_factory_;
   std::unique_ptr<TestRenderViewHostFactory> test_render_view_host_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContentClientInitializer);
 };
 
 }  // namespace content

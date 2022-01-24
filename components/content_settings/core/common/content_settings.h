@@ -79,6 +79,7 @@ struct RendererContentSettingRules {
   ContentSettingsForOneType script_rules;
   ContentSettingsForOneType popup_redirect_rules;
   ContentSettingsForOneType mixed_content_rules;
+  ContentSettingsForOneType auto_dark_content_rules;
 };
 
 namespace content_settings {

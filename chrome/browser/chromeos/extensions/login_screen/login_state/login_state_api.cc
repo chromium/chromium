@@ -4,63 +4,119 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/login_state_api.h"
 
-#include <memory>
-
-#include "base/values.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "base/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/session_manager/core/session_manager.h"
+#include "chrome/common/extensions/api/login_state.h"
+#include "chromeos/crosapi/mojom/login_state.mojom.h"
 #include "content/public/browser/browser_context.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#else
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/login_state_ash.h"
+#include "chrome/common/chrome_constants.h"
+#endif
+
+namespace {
+
+bool IsSigninProfile(const Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return profile && profile->GetBaseName().value() == chrome::kInitialProfile;
+#else
+  return false;
+#endif
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kUnsupportedByAsh[] = "Not implemented.";
+
+// Performs common crosapi validation. These errors are not caused by the
+// extension so they are considered recoverable. Returns an error message on
+// error, or nullopt on success.
+absl::optional<std::string> ValidateCrosapi() {
+  if (!chromeos::LacrosService::Get()
+           ->IsAvailable<crosapi::mojom::LoginState>()) {
+    return kUnsupportedByAsh;
+  }
+  return absl::nullopt;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+}  // namespace
 
 namespace extensions {
 
-// Not all session states are exposed to the extension. Session states which
-// are not exposed will be mapped to the nearest logical state. The mapping is
-// as follows:
-// UNKNOWN              -> UNKNOWN
-// OOBE                 -> IN_OOBE_SCREEN
-// LOGIN_PRIMARY        -> IN_LOGIN_SCREEN
-// LOGIN_SECONDARY      -> IN_LOGIN_SCREEN
-// LOGGED_IN_NOT_ACTIVE -> IN_LOGIN_SCREEN
-// ACTIVE               -> IN_SESSION
-// LOCKED               -> IN_LOCK_SCREEN
-api::login_state::SessionState SessionStateToApiEnum(
-    session_manager::SessionState state) {
+api::login_state::SessionState ToApiEnum(crosapi::mojom::SessionState state) {
   switch (state) {
-    case session_manager::SessionState::UNKNOWN:
+    case crosapi::mojom::SessionState::kUnknown:
       return api::login_state::SessionState::SESSION_STATE_UNKNOWN;
-    case session_manager::SessionState::OOBE:
+    case crosapi::mojom::SessionState::kInOobeScreen:
       return api::login_state::SessionState::SESSION_STATE_IN_OOBE_SCREEN;
-    case session_manager::SessionState::LOGIN_PRIMARY:
-    case session_manager::SessionState::LOGIN_SECONDARY:
-    case session_manager::SessionState::LOGGED_IN_NOT_ACTIVE:
+    case crosapi::mojom::SessionState::kInLoginScreen:
       return api::login_state::SessionState::SESSION_STATE_IN_LOGIN_SCREEN;
-    case session_manager::SessionState::ACTIVE:
+    case crosapi::mojom::SessionState::kInSession:
       return api::login_state::SessionState::SESSION_STATE_IN_SESSION;
-    case session_manager::SessionState::LOCKED:
+    case crosapi::mojom::SessionState::kInLockScreen:
       return api::login_state::SessionState::SESSION_STATE_IN_LOCK_SCREEN;
   }
   NOTREACHED();
   return api::login_state::SessionState::SESSION_STATE_UNKNOWN;
 }
 
+crosapi::mojom::LoginState* GetLoginStateApi() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::LoginState>()
+      .get();
+#else
+  return crosapi::CrosapiManager::Get()->crosapi_ash()->login_state_ash();
+#endif
+}
+
 ExtensionFunction::ResponseAction LoginStateGetProfileTypeFunction::Run() {
-  bool is_signin_profile = chromeos::ProfileHelper::IsSigninProfile(
-      Profile::FromBrowserContext(browser_context()));
+  bool is_signin_profile =
+      IsSigninProfile(Profile::FromBrowserContext(browser_context()));
   api::login_state::ProfileType profile_type =
       is_signin_profile
           ? api::login_state::ProfileType::PROFILE_TYPE_SIGNIN_PROFILE
           : api::login_state::ProfileType::PROFILE_TYPE_USER_PROFILE;
-  return RespondNow(ArgumentList(
-      api::login_state::GetProfileType::Results::Create(profile_type)));
+  return RespondNow(
+      OneArgument(base::Value(api::login_state::ToString(profile_type))));
 }
 
 ExtensionFunction::ResponseAction LoginStateGetSessionStateFunction::Run() {
-  session_manager::SessionState state =
-      session_manager::SessionManager::Get()->session_state();
-  return RespondNow(
-      ArgumentList(api::login_state::GetSessionState::Results::Create(
-          SessionStateToApiEnum(state))));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<std::string> error = ValidateCrosapi();
+  if (error.has_value()) {
+    return RespondNow(Error(error.value()));
+  }
+#endif
+
+  auto callback = base::BindOnce(&LoginStateGetSessionStateFunction::OnResult,
+                                 base::Unretained(this));
+
+  GetLoginStateApi()->GetSessionState(std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void LoginStateGetSessionStateFunction::OnResult(
+    crosapi::mojom::GetSessionStateResultPtr result) {
+  using Result = crosapi::mojom::GetSessionStateResult;
+  switch (result->which()) {
+    case Result::Tag::ERROR_MESSAGE:
+      Respond(Error(result->get_error_message()));
+      return;
+    case Result::Tag::SESSION_STATE:
+      api::login_state::SessionState session_state =
+          ToApiEnum(result->get_session_state());
+      Respond(
+          OneArgument(base::Value(api::login_state::ToString(session_state))));
+      return;
+  }
 }
 
 }  // namespace extensions

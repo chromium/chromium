@@ -65,8 +65,7 @@ void KeepAliveScheduler::OnActiveHostChanged(
   if (change_info.new_status == ActiveHost::ActiveHostStatus::CONNECTED) {
     DCHECK(change_info.new_active_host);
     active_host_device_ = change_info.new_active_host;
-    timer_->Start(FROM_HERE,
-                  base::TimeDelta::FromMinutes(kKeepAliveIntervalMinutes),
+    timer_->Start(FROM_HERE, base::Minutes(kKeepAliveIntervalMinutes),
                   base::BindRepeating(&KeepAliveScheduler::SendKeepAliveTickle,
                                       weak_ptr_factory_.GetWeakPtr()));
     SendKeepAliveTickle();

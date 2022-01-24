@@ -27,6 +27,8 @@ class BorealisDiskManager {
     uint64_t available_bytes = 0;
     // The number of bytes that the VM disk can be expanded by.
     uint64_t expandable_bytes = 0;
+    // The current size of the disk in bytes.
+    uint64_t disk_size = 0;
   };
 
   BorealisDiskManager() = default;

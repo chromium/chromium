@@ -14,7 +14,8 @@
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync/base/time.h"
 #include "components/sync/model/sync_change.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 #include "components/sync_sessions/test_matchers.h"
@@ -27,6 +28,7 @@ namespace {
 
 using sessions::SerializedNavigationEntry;
 using sessions::SerializedNavigationEntryTestHelper;
+using testing::_;
 using testing::ByMove;
 using testing::Eq;
 using testing::IsEmpty;
@@ -35,7 +37,6 @@ using testing::Pointee;
 using testing::Return;
 using testing::SizeIs;
 using testing::StrictMock;
-using testing::_;
 
 const char kFoo1[] = "http://foo1/";
 const char kBar1[] = "http://bar1/";

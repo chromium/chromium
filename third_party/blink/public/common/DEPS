@@ -15,6 +15,7 @@ include_rules = [
     "+media",
     "+mojo",
     "+services/device/public/mojom",
+    "+services/network/public/cpp/resource_request.h",
     "+services/network/public/cpp/resource_request_body.h",
     "+services/network/public/cpp/shared_url_loader_factory.h",
     "+services/network/public/mojom",

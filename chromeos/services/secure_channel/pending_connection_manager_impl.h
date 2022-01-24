@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
@@ -62,6 +61,10 @@ class PendingConnectionManagerImpl : public PendingConnectionManager,
    private:
     static Factory* test_factory_;
   };
+
+  PendingConnectionManagerImpl(const PendingConnectionManagerImpl&) = delete;
+  PendingConnectionManagerImpl& operator=(const PendingConnectionManagerImpl&) =
+      delete;
 
   ~PendingConnectionManagerImpl() override;
 
@@ -144,8 +147,6 @@ class PendingConnectionManagerImpl : public PendingConnectionManager,
   BleConnectionManager* ble_connection_manager_;
   NearbyConnectionManager* nearby_connection_manager_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingConnectionManagerImpl);
 };
 
 }  // namespace secure_channel

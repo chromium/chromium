@@ -28,8 +28,8 @@ class MultiColumnFragmentainerGroupTest : public RenderingTest {
   static int GroupCount(const MultiColumnFragmentainerGroupList&);
 
  private:
-  LayoutMultiColumnFlowThread* flow_thread_;
-  LayoutMultiColumnSet* column_set_;
+  Persistent<LayoutMultiColumnFlowThread> flow_thread_;
+  Persistent<LayoutMultiColumnSet> column_set_;
 };
 
 void MultiColumnFragmentainerGroupTest::SetUp() {

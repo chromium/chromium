@@ -163,7 +163,7 @@
       },
       {
         "id": "UninstallOptions",
-        "description": "Information about an icon belonging to an extension, app, or theme.",
+        "description": "Options for how to handle the extension's uninstallation.",
         "type": "object",
         "properties": {
           "showConfirmDialog": {

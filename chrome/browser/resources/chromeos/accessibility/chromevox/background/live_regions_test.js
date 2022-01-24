@@ -202,7 +202,7 @@ TEST_F('ChromeVoxLiveRegionsTest', 'FocusThenLiveRegion', function() {
           document.getElementById('focus').focus();
    window.setTimeout(function() {
             document.getElementById('live').textContent = 'Live';
-          }, 50);
+          }, 200);
         }, false);
       </script>
     `,
@@ -210,8 +210,12 @@ TEST_F('ChromeVoxLiveRegionsTest', 'FocusThenLiveRegion', function() {
         const go = rootNode.find({role: RoleType.BUTTON});
         mockFeedback.call(this.simulateUserInteraction.bind(this))
             .call(go.doDefault.bind(go))
-            .expectFlushingSpeech('Focus')
-            .expectCategoryFlushSpeech('Live');
+            .expectSpeech('Focus')
+            .expectSpeech((candidate) => {
+              return candidate.text === 'Live' &&
+                  (candidate.queueMode === QueueMode.CATEGORY_FLUSH ||
+                   candidate.queueMode === QueueMode.QUEUE);
+            });
         mockFeedback.replay();
       });
 });

@@ -33,11 +33,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModelObserver
   // update operation, as notified through `OnHoldingSpaceItemUpdated()`. Note
   // that these values are used in a bitfield.
   enum UpdatedField : uint32_t {
-    kBackingFile = 1u << 1u,
-    kPaused = 1u << 2u,
-    kProgress = 1u << 3u,
-    kSecondaryText = 1u << 4u,
-    kText = 1u << 5u,
+    kAccessibleName = 1u,
+    kBackingFile = kAccessibleName << 1u,
+    kPaused = kBackingFile << 1u,
+    kProgress = kPaused << 1u,
+    kSecondaryText = kProgress << 1u,
+    kText = kSecondaryText << 1u,
   };
 
   // Called when an `item` gets updated within the holding space model. The

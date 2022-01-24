@@ -137,7 +137,7 @@ TEST_F(MemoryInfoTest, Bucketized) {
 
   // Advance the clock for a minute. Not enough to make bucketized value
   // recalculate. Also allocate some memory.
-  mock_time.AdvanceClock(base::TimeDelta::FromMinutes(1));
+  mock_time.AdvanceClock(base::Minutes(1));
   objects.push_back(v8::ArrayBuffer::New(isolate, 100));
 
   MemoryInfo* bucketized_memory2 =
@@ -157,7 +157,7 @@ TEST_F(MemoryInfoTest, Bucketized) {
   for (int i = 0; i < 10; i++) {
     // Advance the clock for another thirty minutes, enough to make the
     // bucketized value recalculate.
-    mock_time.AdvanceClock(base::TimeDelta::FromMinutes(30));
+    mock_time.AdvanceClock(base::Minutes(30));
     objects.push_back(v8::ArrayBuffer::New(isolate, 100));
     MemoryInfo* bucketized_memory3 =
         MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::Bucketized);
@@ -181,7 +181,7 @@ TEST_F(MemoryInfoTest, Precise) {
 
   // Advance the clock for a nanosecond, which should not be enough to make the
   // precise value recalculate.
-  mock_time.AdvanceClock(base::TimeDelta::FromNanoseconds(1));
+  mock_time.AdvanceClock(base::Nanoseconds(1));
   // Allocate an object in heap and keep it in a vector to make sure that it
   // does not get accidentally GC'd. This single ArrayBuffer should be enough to
   // be noticed by the used heap size in the precise MemoryInfo case.
@@ -194,7 +194,7 @@ TEST_F(MemoryInfoTest, Precise) {
   for (int i = 0; i < 10; i++) {
     // Advance the clock for another thirty seconds, enough to make the precise
     // values be recalculated. Also allocate another object.
-    mock_time.AdvanceClock(base::TimeDelta::FromSeconds(30));
+    mock_time.AdvanceClock(base::Seconds(30));
     objects.push_back(v8::ArrayBuffer::New(isolate, 100));
 
     MemoryInfo* new_precise_memory =
@@ -243,7 +243,7 @@ TEST_F(MemoryInfoTest, ZeroTime) {
   // is very close to 0, we still obtain memory information from the first call
   // to MemoryInfo::Create.
   MemoryInfoTestScopedMockTime mock_time(MemoryInfo::Precision::Precise);
-  mock_time.AdvanceClock(base::TimeDelta::FromMicroseconds(100));
+  mock_time.AdvanceClock(base::Microseconds(100));
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
   Vector<v8::Local<v8::ArrayBuffer>> objects;

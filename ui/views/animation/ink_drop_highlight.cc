@@ -10,13 +10,11 @@
 
 #include "base/bind.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animation_sequence.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop_highlight_observer.h"
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
 #include "ui/views/animation/ink_drop_util.h"
@@ -87,7 +85,7 @@ InkDropHighlight::InkDropHighlight(const gfx::SizeF& size, SkColor base_color)
 InkDropHighlight::~InkDropHighlight() {
   // Explicitly aborting all the animations ensures all callbacks are invoked
   // while this instance still exists.
-  layer_->GetAnimator()->AbortAllAnimations();
+  animation_abort_handle_.reset();
 }
 
 bool InkDropHighlight::IsFadingInOrVisible() const {
@@ -110,40 +108,34 @@ test::InkDropHighlightTestApi* InkDropHighlight::GetTestApi() {
 
 void InkDropHighlight::AnimateFade(AnimationType animation_type,
                                    const base::TimeDelta& duration) {
-  const base::TimeDelta effective_duration =
-      gfx::Animation::ShouldRenderRichAnimation() ? duration
-                                                  : base::TimeDelta();
   last_animation_initiated_was_fade_in_ =
       animation_type == AnimationType::kFadeIn;
 
   layer_->SetTransform(CalculateTransform());
 
-  // The |animation_observer| will be destroyed when the
-  // AnimationStartedCallback() returns true.
-  ui::CallbackLayerAnimationObserver* animation_observer =
-      new ui::CallbackLayerAnimationObserver(
-          base::BindRepeating(&InkDropHighlight::AnimationStartedCallback,
-                              base::Unretained(this), animation_type),
-          base::BindRepeating(&InkDropHighlight::AnimationEndedCallback,
-                              base::Unretained(this), animation_type));
-
-  ui::LayerAnimator* animator = layer_->GetAnimator();
-  ui::ScopedLayerAnimationSettings animation(animator);
-  animation.SetTweenType(gfx::Tween::EASE_IN_OUT);
-  animation.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-
-  std::unique_ptr<ui::LayerAnimationElement> opacity_element =
-      ui::LayerAnimationElement::CreateOpacityElement(
-          animation_type == AnimationType::kFadeIn ? visible_opacity_
-                                                   : kHiddenOpacity,
-          effective_duration);
-  ui::LayerAnimationSequence* opacity_sequence =
-      new ui::LayerAnimationSequence(std::move(opacity_element));
-  opacity_sequence->AddObserver(animation_observer);
-  animator->StartAnimation(opacity_sequence);
-
-  animation_observer->SetActive();
+  const base::TimeDelta effective_duration =
+      gfx::Animation::ShouldRenderRichAnimation() ? duration
+                                                  : base::TimeDelta();
+  const float opacity = animation_type == AnimationType::kFadeIn
+                            ? visible_opacity_
+                            : kHiddenOpacity;
+  views::AnimationBuilder builder;
+  if (effective_duration.is_positive())
+    animation_abort_handle_ = builder.GetAbortHandle();
+  builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnStarted(base::BindOnce(&InkDropHighlight::AnimationStartedCallback,
+                                base::Unretained(this), animation_type))
+      .OnEnded(base::BindOnce(&InkDropHighlight::AnimationEndedCallback,
+                              base::Unretained(this), animation_type,
+                              InkDropAnimationEndedReason::SUCCESS))
+      .OnAborted(base::BindOnce(&InkDropHighlight::AnimationEndedCallback,
+                                base::Unretained(this), animation_type,
+                                InkDropAnimationEndedReason::PRE_EMPTED))
+      .Once()
+      .SetDuration(effective_duration)
+      .SetOpacity(layer_.get(), opacity, gfx::Tween::EASE_IN_OUT);
 }
 
 gfx::Transform InkDropHighlight::CalculateTransform() const {
@@ -163,28 +155,21 @@ gfx::Transform InkDropHighlight::CalculateTransform() const {
   return transform;
 }
 
-void InkDropHighlight::AnimationStartedCallback(
-    AnimationType animation_type,
-    const ui::CallbackLayerAnimationObserver& observer) {
+void InkDropHighlight::AnimationStartedCallback(AnimationType animation_type) {
   if (observer_)
     observer_->AnimationStarted(animation_type);
 }
 
-bool InkDropHighlight::AnimationEndedCallback(
+void InkDropHighlight::AnimationEndedCallback(
     AnimationType animation_type,
-    const ui::CallbackLayerAnimationObserver& observer) {
+    InkDropAnimationEndedReason reason) {
   // AnimationEndedCallback() may be invoked when this is being destroyed and
   // |layer_| may be null.
   if (animation_type == AnimationType::kFadeOut && layer_)
     layer_->SetVisible(false);
 
-  if (observer_) {
-    observer_->AnimationEnded(animation_type,
-                              observer.aborted_count()
-                                  ? InkDropAnimationEndedReason::PRE_EMPTED
-                                  : InkDropAnimationEndedReason::SUCCESS);
-  }
-  return true;
+  if (observer_)
+    observer_->AnimationEnded(animation_type, reason);
 }
 
 }  // namespace views

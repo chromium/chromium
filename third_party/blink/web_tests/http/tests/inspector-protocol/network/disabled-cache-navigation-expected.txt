@@ -1,5 +1,16 @@
 Tests that browser-initiated navigation honors Network.setCacheDisabled
-Original navigation, should not be cached: 200
-Second navigation, should be cached: 304 cached: true
-Navigation with cache disabled: 200 cached: false
+
+Original navigation, should not be cached:
+  responseReceived status: 200
+  responseReceivedExtraInfo status: 200
+
+Second navigation, should be cached:
+  responseReceived status: 200
+  responseReceivedExtraInfo status: 304
+  cached: true
+
+Navigation with cache disabled:
+  responseReceived status: 200
+  responseReceivedExtraInfo status: 200
+  cached: false
 

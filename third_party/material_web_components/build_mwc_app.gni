@@ -45,13 +45,23 @@ template("build_mwc_app") {
       args += [ "--exclude" ] + invoker.excludes
     }
 
+    polymer_path =
+        rebase_path("//third_party/polymer/v3_0/components-chromium/",
+                    root_build_dir)
+
+    cros_elements_path =
+        rebase_path("//chromeos/components/cros_elements", root_build_dir)
     resources_path =
         rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/",
                     root_build_dir)
 
     # Rewrite chrome://resources to the generated preprocessed WebUI resources
     # directory.
-    external_paths = [ "chrome://resources/|$resources_path" ]
+    external_paths = [
+      "chrome://resources/cros_elements/|$cros_elements_path",
+      "chrome://resources/polymer/v3_0/|$polymer_path",
+      "chrome://resources/|$resources_path",
+    ]
     if (defined(invoker.external_paths)) {
       external_paths += invoker.external_paths
     }

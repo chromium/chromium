@@ -259,12 +259,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           {
             icon: '../test-media/third-party/screen-share-button.png',
             callback: (success, fail) => {
-              let promise = null;
-              if (navigator.mediaDevices.getCurrentBrowsingContextMedia == null) {
-                promise = navigator.mediaDevices.getDisplayMedia();
-              } else {
-                promise = navigator.mediaDevices.getCurrentBrowsingContextMedia({video:true});
-              }
+              let promise = navigator.mediaDevices.getDisplayMedia({video: true, preferCurrentTab: true});
 
               promise.then(device => {
                   // Assign the device to a temp variable to keep it from

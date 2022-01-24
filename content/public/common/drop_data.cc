@@ -41,6 +41,15 @@ DropData::Metadata DropData::Metadata::CreateForFileSystemUrl(
   return metadata;
 }
 
+// static
+DropData::Metadata DropData::Metadata::CreateForBinary(
+    const GURL& file_contents_url) {
+  Metadata metadata;
+  metadata.kind = Kind::BINARY;
+  metadata.file_contents_url = file_contents_url;
+  return metadata;
+}
+
 DropData::Metadata::Metadata(const DropData::Metadata& other) = default;
 
 DropData::Metadata::~Metadata() {}

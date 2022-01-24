@@ -85,11 +85,16 @@ void PerformanceMonitor::Subscribe(Violation violation,
                                    base::TimeDelta threshold,
                                    Client* client) {
   DCHECK(violation < kAfterLast);
-  ClientThresholds* client_thresholds = subscriptions_.at(violation);
-  if (!client_thresholds) {
+  ClientThresholds* client_thresholds = nullptr;
+
+  auto it = subscriptions_.find(violation);
+  if (it == subscriptions_.end()) {
     client_thresholds = MakeGarbageCollected<ClientThresholds>();
     subscriptions_.Set(violation, client_thresholds);
+  } else {
+    client_thresholds = it->value;
   }
+
   client_thresholds->Set(client, threshold);
   UpdateInstrumentation();
 }
@@ -300,13 +305,18 @@ void PerformanceMonitor::DidProcessTask(base::TimeTicks start_time,
   if (!thresholds_[kLongTask].is_zero()) {
     base::TimeDelta task_time = end_time - start_time;
     if (task_time > thresholds_[kLongTask]) {
-      ClientThresholds* client_thresholds = subscriptions_.at(kLongTask);
-      for (const auto& it : *client_thresholds) {
-        if (it.value < task_time) {
-          it.key->ReportLongTask(
-              start_time, end_time,
-              task_has_multiple_contexts_ ? nullptr : task_execution_context_,
-              task_has_multiple_contexts_);
+      auto subscriptions_it = subscriptions_.find(kLongTask);
+      if (subscriptions_it != subscriptions_.end()) {
+        ClientThresholds* client_thresholds = subscriptions_it->value;
+        DCHECK(client_thresholds);
+
+        for (const auto& it : *client_thresholds) {
+          if (it.value < task_time) {
+            it.key->ReportLongTask(
+                start_time, end_time,
+                task_has_multiple_contexts_ ? nullptr : task_execution_context_,
+                task_has_multiple_contexts_);
+          }
         }
       }
     }
@@ -333,11 +343,14 @@ void PerformanceMonitor::InnerReportGenericViolation(
     const String& text,
     base::TimeDelta time,
     std::unique_ptr<SourceLocation> location) {
-  ClientThresholds* client_thresholds = subscriptions_.at(violation);
-  if (!client_thresholds)
+  auto subscriptions_it = subscriptions_.find(violation);
+  if (subscriptions_it == subscriptions_.end())
     return;
+
   if (!location)
     location = SourceLocation::Capture(context);
+
+  ClientThresholds* client_thresholds = subscriptions_it->value;
   for (const auto& it : *client_thresholds) {
     if (it.value < time)
       it.key->ReportGenericViolation(violation, text, time, location.get());

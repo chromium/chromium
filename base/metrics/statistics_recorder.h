@@ -29,8 +29,9 @@
 #include "base/metrics/record_histogram_checker.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/strings/string_piece.h"
-#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 
 namespace base {
 
@@ -97,6 +98,9 @@ class BASE_EXPORT StatisticsRecorder {
   };
 
   typedef std::vector<HistogramBase*> Histograms;
+
+  StatisticsRecorder(const StatisticsRecorder&) = delete;
+  StatisticsRecorder& operator=(const StatisticsRecorder&) = delete;
 
   // Restores the previous global recorder.
   //
@@ -173,11 +177,12 @@ class BASE_EXPORT StatisticsRecorder {
   // This method must be called on the UI thread.
   static void ImportProvidedHistograms();
 
-  // Snapshots all histograms via |snapshot_manager|. |flags_to_set| is used to
-  // set flags for each histogram. |required_flags| is used to select
-  // histograms to be recorded. Only histograms that have all the flags
-  // specified by the argument will be chosen. If all histograms should be
-  // recorded, set it to |Histogram::kNoFlags|.
+  // Snapshots all histograms via |snapshot_manager|. |include_persistent|
+  // determines whether histograms held in persistent storage are
+  // snapshotted. |flags_to_set| is used to set flags for each histogram.
+  // |required_flags| is used to select which histograms to record. Only
+  // histograms with all required flags are selected. If all histograms should
+  // be recorded, use |Histogram::kNoFlags| as the required flag.
   static void PrepareDeltas(bool include_persistent,
                             HistogramBase::Flags flags_to_set,
                             HistogramBase::Flags required_flags,
@@ -319,9 +324,8 @@ class BASE_EXPORT StatisticsRecorder {
 
   // Initializes the global recorder if it doesn't already exist. Safe to call
   // multiple times.
-  //
-  // Precondition: The global lock is already acquired.
-  static void EnsureGlobalRecorderWhileLocked();
+  static void EnsureGlobalRecorderWhileLocked()
+      EXCLUSIVE_LOCKS_REQUIRED(lock_.Pointer());
 
   // Gets histogram providers.
   //
@@ -331,19 +335,21 @@ class BASE_EXPORT StatisticsRecorder {
   // Imports histograms from global persistent memory.
   //
   // Precondition: The global lock must not be held during this call.
-  static void ImportGlobalPersistentHistograms();
+  static void ImportGlobalPersistentHistograms()
+      LOCKS_EXCLUDED(lock_.Pointer());
 
   // Constructs a new StatisticsRecorder and sets it as the current global
   // recorder.
   //
-  // Precondition: The global lock is already acquired.
-  StatisticsRecorder();
+  // This singleton instance should be started during the single-threaded
+  // portion of startup and hence it is not thread safe. It initializes globals
+  // to provide support for all future calls.
+  StatisticsRecorder() EXCLUSIVE_LOCKS_REQUIRED(lock_.Pointer());
 
   // Initialize implementation but without lock. Caller should guard
   // StatisticsRecorder by itself if needed (it isn't in unit tests).
-  //
-  // Precondition: The global lock is already acquired.
-  static void InitLogOnShutdownWhileLocked();
+  static void InitLogOnShutdownWhileLocked()
+      EXCLUSIVE_LOCKS_REQUIRED(lock_.Pointer());
 
   HistogramMap histograms_;
   ObserverMap observers_;
@@ -354,13 +360,14 @@ class BASE_EXPORT StatisticsRecorder {
   // Previous global recorder that existed when this one was created.
   StatisticsRecorder* previous_ = nullptr;
 
-  // Global lock for internal synchronization.
-  static LazyInstance<Lock>::Leaky lock_;
+  // Global lock for internal synchronization. Uses an absl::Mutex to
+  // support read/write lock semantics.
+  static LazyInstance<absl::Mutex>::Leaky lock_;
 
   // Current global recorder. This recorder is used by static methods. When a
   // new global recorder is created by CreateTemporaryForTesting(), then the
   // previous global recorder is referenced by top_->previous_.
-  static StatisticsRecorder* top_;
+  static StatisticsRecorder* top_ GUARDED_BY(lock_.Pointer());
 
   // Tracks whether InitLogOnShutdownWhileLocked() has registered a logging
   // function that will be called when the program finishes.
@@ -372,8 +379,6 @@ class BASE_EXPORT StatisticsRecorder {
   // Stores a raw callback which should be called on any every histogram sample
   // which gets added.
   static std::atomic<GlobalSampleCallback> global_sample_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatisticsRecorder);
 };
 
 }  // namespace base

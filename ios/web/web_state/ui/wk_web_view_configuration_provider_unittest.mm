@@ -7,7 +7,6 @@
 #import <WebKit/WebKit.h>
 
 #include "base/memory/ptr_util.h"
-#import "ios/web/js_messaging/crw_wk_script_message_router.h"
 #import "ios/web/js_messaging/page_script_util.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
@@ -133,30 +132,18 @@ TEST_F(WKWebViewConfigurationProviderTest, ConfigurationProtection) {
             provider.GetWebViewConfiguration().userContentController);
 }
 
-// Tests that script message router is bound to correct user content controller.
-TEST_F(WKWebViewConfigurationProviderTest, ScriptMessageRouter) {
-  ASSERT_TRUE(GetProvider().GetWebViewConfiguration().userContentController);
-  EXPECT_EQ(GetProvider().GetWebViewConfiguration().userContentController,
-            GetProvider().GetScriptMessageRouter().userContentController);
-}
-
-// Tests that both configuration and script message router are deallocated after
-// |Purge| call.
+// Tests that the configuration are deallocated after |Purge| call.
 TEST_F(WKWebViewConfigurationProviderTest, Purge) {
   __weak id config;
-  __weak id router;
   @autoreleasepool {  // Make sure that resulting copy is deallocated.
     id strong_config = GetProvider().GetWebViewConfiguration();
     config = strong_config;
-    router = GetProvider().GetScriptMessageRouter();
     ASSERT_TRUE(config);
-    ASSERT_TRUE(router);
   }
 
-  // No configuration and router after |Purge| call.
+  // No configuration after |Purge| call.
   GetProvider().Purge();
   EXPECT_FALSE(config);
-  EXPECT_FALSE(router);
 }
 
 // Tests that configuration's userContentController has only one script with the
@@ -176,12 +163,6 @@ TEST_F(WKWebViewConfigurationProviderTest, UserScript) {
       GetDocumentStartScriptForMainFrame(&browser_state_));
   ASSERT_TRUE(main_frame_script);
   EXPECT_TRUE(main_frame_script.isForMainFrameOnly);
-
-  WKUserScript* late_all_frames_script = FindWKUserScriptContaining(
-      user_content_controller.userScripts,
-      GetDocumentEndScriptForAllFrames(&browser_state_));
-  ASSERT_TRUE(late_all_frames_script);
-  EXPECT_FALSE(late_all_frames_script.isForMainFrameOnly);
 }
 
 // Tests that configuration's userContentController has different scripts after

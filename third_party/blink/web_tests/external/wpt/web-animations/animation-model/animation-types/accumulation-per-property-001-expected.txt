@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 301 tests; 299 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 304 tests; 302 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS align-content (type: discrete) has testAccumulation function
 PASS align-content: "flex-end" onto "flex-start"
@@ -252,6 +252,9 @@ PASS font-feature-settings: ""liga" 5" onto "normal"
 PASS font-kerning (type: discrete) has testAccumulation function
 PASS font-kerning: "normal" onto "auto"
 PASS font-kerning: "auto" onto "normal"
+PASS font-synthesis (type: discrete) has testAccumulation function
+PASS font-synthesis: "weight style" onto "none"
+PASS font-synthesis: "none" onto "weight style"
 PASS font-variant-caps (type: discrete) has testAccumulation function
 PASS font-variant-caps: "unicase" onto "small-caps"
 PASS font-variant-caps: "small-caps" onto "unicase"

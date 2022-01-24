@@ -104,7 +104,7 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
 
   InitializeDefaultStyles();
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   default_html_style_->CompactRulesIfNeeded();
   default_mathml_style_->CompactRulesIfNeeded();
   default_svg_style_->CompactRulesIfNeeded();
@@ -289,7 +289,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
       AddTextTrackCSSProperties(&builder, CSSPropertyID::kFontSize,
                                 settings->GetTextTrackTextSize());
       builder.Append(" } ");
-      text_track_style_sheet_ = ParseUASheet(builder.ToString());
+      text_track_style_sheet_ = ParseUASheet(builder.ReleaseString());
       AddRulesToDefaultStyleSheets(text_track_style_sheet_,
                                    NamespaceType::kMediaControls);
       changed_default_style = true;

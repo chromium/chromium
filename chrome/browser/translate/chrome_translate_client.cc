@@ -89,7 +89,8 @@ TranslateEventProto::EventType BubbleResultToTranslateEvent(
 }  // namespace
 
 ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ChromeTranslateClient>(*web_contents) {
   DCHECK(web_contents);
   if (translate::IsSubFrameTranslationEnabled()) {
     per_frame_translate_driver_ =
@@ -102,9 +103,8 @@ ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
         *web_contents, &web_contents->GetController(),
         UrlLanguageHistogramFactory::GetForBrowserContext(
             web_contents->GetBrowserContext()),
-        TranslateModelServiceFactory::GetOrBuildForKey(
-            Profile::FromBrowserContext(web_contents->GetBrowserContext())
-                ->GetProfileKey()));
+        TranslateModelServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents->GetBrowserContext())));
   }
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       this,
@@ -205,6 +205,14 @@ void ChromeTranslateClient::GetTranslateLanguages(
   *source = translate::TranslateDownloadManager::GetLanguageCode(
       GetLanguageState().source_language());
 
+  // If the page is translated, always return the current target language. This
+  // ensures that reshowing the UI on a translated page maintains the correct
+  // target language that the page is currently translated into.
+  if (GetLanguageState().IsPageTranslated()) {
+    *target = GetLanguageState().current_language();
+    return;
+  }
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
@@ -300,7 +308,6 @@ ChromeTranslateClient::GetTranslateAcceptLanguages() {
 int ChromeTranslateClient::GetInfobarIconID() const {
   return IDR_ANDROID_INFOBAR_TRANSLATE;
 }
-#endif
 
 void ChromeTranslateClient::ManualTranslateWhenReady() {
   if (GetLanguageState().source_language().empty()) {
@@ -311,6 +318,7 @@ void ChromeTranslateClient::ManualTranslateWhenReady() {
                              /*triggered_from_menu=*/true);
   }
 }
+#endif
 
 void ChromeTranslateClient::SetPredefinedTargetLanguage(
     const std::string& translate_language_code) {
@@ -360,11 +368,13 @@ void ChromeTranslateClient::OnLanguageDetermined(
     GetTranslateManager()->NotifyLanguageDetected(details);
   }
 
+#if defined(OS_ANDROID)
+  // See ChromeTranslateClient::ManualTranslateOnReady
   if (manual_translate_on_ready_) {
-    GetTranslateManager()->ShowTranslateUI(/*auto_translate=*/true,
-                                           /*triggered_from_menu=*/true);
+    GetTranslateManager()->ShowTranslateUI(/*auto_translate=*/true);
     manual_translate_on_ready_ = false;
   }
+#endif
 }
 
 // The bubble is implemented only on the desktop platforms.
@@ -410,4 +420,4 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
 }
 #endif
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeTranslateClient)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeTranslateClient);

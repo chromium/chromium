@@ -47,7 +47,7 @@ TEST_F(PerformOnSingleElementActionTest, EmptyClientIdFails) {
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, INVALID_ACTION))));
-  EXPECT_CALL(perform_, Run(_, _)).Times(0);
+  EXPECT_CALL(perform_, Run).Times(0);
 
   ClientIdProto client_id;
   auto action = PerformOnSingleElementAction::WithClientId(
@@ -59,8 +59,7 @@ TEST_F(PerformOnSingleElementActionTest, OptionalEmptyClientIdDoesNotFail) {
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
-  EXPECT_CALL(perform_, Run(_, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(perform_, Run).WillOnce(RunOnceCallback<1>(OkClientStatus()));
 
   ClientIdProto client_id;
   auto action = PerformOnSingleElementAction::WithOptionalClientId(
@@ -71,10 +70,9 @@ TEST_F(PerformOnSingleElementActionTest, OptionalEmptyClientIdDoesNotFail) {
 TEST_F(PerformOnSingleElementActionTest,
        OptionalEmptyClientIdDoesNotFailForTimed) {
   ProcessedActionProto capture;
-  EXPECT_CALL(callback_, Run(_)).WillOnce(testing::SaveArgPointee<0>(&capture));
-  EXPECT_CALL(perform_timed_, Run(_, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(1)));
+  EXPECT_CALL(callback_, Run).WillOnce(testing::SaveArgPointee<0>(&capture));
+  EXPECT_CALL(perform_timed_, Run)
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(1)));
 
   ClientIdProto client_id;
   auto action = PerformOnSingleElementAction::WithOptionalClientIdTimed(
@@ -88,7 +86,7 @@ TEST_F(PerformOnSingleElementActionTest,
 TEST_F(PerformOnSingleElementActionTest, FailsIfElementDoesNotExist) {
   EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
                                               CLIENT_ID_RESOLUTION_FAILED))));
-  EXPECT_CALL(perform_, Run(_, _)).Times(0);
+  EXPECT_CALL(perform_, Run).Times(0);
 
   auto action = PerformOnSingleElementAction::WithClientId(
       &mock_action_delegate_, action_proto_, client_id_, perform_.Get());
@@ -119,10 +117,9 @@ TEST_F(PerformOnSingleElementActionTest, PerformsTimedAndEnds) {
                                                       element.dom_object);
 
   ProcessedActionProto capture;
-  EXPECT_CALL(callback_, Run(_)).WillOnce(testing::SaveArgPointee<0>(&capture));
+  EXPECT_CALL(callback_, Run).WillOnce(testing::SaveArgPointee<0>(&capture));
   EXPECT_CALL(perform_timed_, Run(EqualsElement(element), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(1)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(1)));
 
   auto action = PerformOnSingleElementAction::WithClientIdTimed(
       &mock_action_delegate_, action_proto_, client_id_, perform_timed_.Get());

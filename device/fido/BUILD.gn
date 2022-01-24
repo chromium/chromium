@@ -265,6 +265,8 @@ component("fido") {
     ]
 
     deps += [
+      "//chromeos/dbus/tpm_manager",
+      "//chromeos/dbus/tpm_manager:tpm_manager_proto",
       "//chromeos/dbus/u2f",
       "//chromeos/dbus/u2f:u2f_proto",
       "//dbus",

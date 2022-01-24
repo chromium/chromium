@@ -1,140 +1,112 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared md-select">
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
 
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_slider/cr_slider.html">
-<link rel="import" href="../../controls/settings_slider.html">
-<link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="../../prefs/prefs_behavior.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="switch_access_action_assignment_dialog.html">
-<link rel="import" href="switch_access_constants.html">
-<link rel="import" href="switch_access_setup_guide_dialog.html">
-<link rel="import" href="switch_access_setup_guide_warning_dialog.html">
-<link rel="import" href="switch_access_subpage_browser_proxy.html">
-
-<dom-module id="settings-switch-access-subpage">
-  <template>
-    <style include="settings-shared md-select">
-      h2 {
-        padding-inline-start: var(--cr-section-padding);
-      }
-
-      ul {
-        list-style-type: none;
-        text-align: end;
-      }
-    </style>
-    <cr-link-row hidden="[[!showSetupGuide_()]]"
-        on-click="onSetupGuideRerunClick_"
-        label="$i18n{switchAccessSetupGuideLabel}" id="setupGuideLink">
+  ul {
+    list-style-type: none;
+    text-align: end;
+  }
+</style>
+<cr-link-row hidden="[[!showSetupGuide_()]]"
+    on-click="onSetupGuideRerunClick_"
+    label="$i18n{switchAccessSetupGuideLabel}" id="setupGuideLink">
+</cr-link-row>
+<template is="dom-if"
+    if="[[showSwitchAccessSetupGuideWarningDialog_]]" restamp>
+  <settings-switch-access-setup-guide-warning-dialog
+      on-close="onSetupGuideWarningDialogClose_"
+      on-cancel="onSetupGuideWarningDialogCancel_">
+</template>
+<template is="dom-if"
+    if="[[showSwitchAccessSetupGuideDialog_]]" restamp>
+  <settings-switch-access-setup-guide-dialog
+      id="switchAccessSetupGuideDialog"
+      prefs="{{prefs}}"
+      on-close="onSwitchAccessSetupGuideDialogClose_">
+  </settings-switch-access-setup-guide-dialog>
+</template>
+<h2>$i18n{switchAssignmentHeading}</h2>
+<div class="list-frame">
+    <cr-link-row on-click="onSelectAssignClick_"
+        id="selectLinkRow"
+        label="$i18n{assignSelectSwitchLabel}"
+        sub-label="[[getAssignSwitchSubLabel_(selectAssignments_)]]"
+        deep-link-focus-id$="[[Setting.kSwitchActionAssignment]]">
     </cr-link-row>
-    <template is="dom-if"
-        if="[[showSwitchAccessSetupGuideWarningDialog_]]" restamp>
-      <settings-switch-access-setup-guide-warning-dialog
-          on-close="onSetupGuideWarningDialogClose_"
-          on-cancel="onSetupGuideWarningDialogCancel_">
-    </template>
-    <template is="dom-if"
-        if="[[showSwitchAccessSetupGuideDialog_]]" restamp>
-      <settings-switch-access-setup-guide-dialog
-          id="switchAccessSetupGuideDialog"
-          prefs="{{prefs}}"
-          on-close="onSwitchAccessSetupGuideDialogClose_">
-      </settings-switch-access-setup-guide-dialog>
-    </template>
-    <h2>$i18n{switchAssignmentHeading}</h2>
-    <div class="list-frame">
-        <cr-link-row on-click="onSelectAssignClick_"
-            id="selectLinkRow"
-            label="$i18n{assignSelectSwitchLabel}"
-            sub-label="[[getAssignSwitchSubLabel_(selectAssignments_)]]"
-            deep-link-focus-id$="[[Setting.kSwitchActionAssignment]]">
-        </cr-link-row>
-        <cr-link-row on-click="onNextAssignClick_"
-            id="nextLinkRow"
-            label="$i18n{assignNextSwitchLabel}"
-            sub-label="[[getAssignSwitchSubLabel_(nextAssignments_)]]">
-        </cr-link-row>
-        <cr-link-row on-click="onPreviousAssignClick_"
-            id="previousLinkRow"
-            label="$i18n{assignPreviousSwitchLabel}"
-            sub-label="[[getAssignSwitchSubLabel_(previousAssignments_)]]">
-        </cr-link-row>
+    <cr-link-row on-click="onNextAssignClick_"
+        id="nextLinkRow"
+        label="$i18n{assignNextSwitchLabel}"
+        sub-label="[[getAssignSwitchSubLabel_(nextAssignments_)]]">
+    </cr-link-row>
+    <cr-link-row on-click="onPreviousAssignClick_"
+        id="previousLinkRow"
+        label="$i18n{assignPreviousSwitchLabel}"
+        sub-label="[[getAssignSwitchSubLabel_(previousAssignments_)]]">
+    </cr-link-row>
+</div>
+<template is="dom-if"
+    if="[[showSwitchAccessActionAssignmentDialog_]]" restamp>
+  <settings-switch-access-action-assignment-dialog
+      id="switchAccessActionAssignmentDialog"
+      on-close="onSwitchAccessActionAssignmentDialogClose_"
+      action="[[action_]]">
+  </settings-switch-access-action-assignment-dialog>
+</template>
+<h2>$i18n{switchAccessAutoScanHeading}</h2>
+<div class="list-frame">
+  <settings-toggle-button class="list-item"
+      pref="{{prefs.settings.a11y.switch_access.auto_scan.enabled}}"
+      label="$i18n{switchAccessAutoScanLabel}"
+      deep-link-focus-id$="[[Setting.kSwitchActionAutoScan]]">
+  </settings-toggle-button>
+  <div class="settings-box continuation list-item" hidden$="[[
+      !prefs.settings.a11y.switch_access.auto_scan.enabled.value]]">
+    <div class="start sub-item settings-box-text" id="scanSpeed"
+        aria-hidden="true">
+      $i18n{switchAccessAutoScanSpeedLabel}
     </div>
-    <template is="dom-if"
-        if="[[showSwitchAccessActionAssignmentDialog_]]" restamp>
-      <settings-switch-access-action-assignment-dialog
-          id="switchAccessActionAssignmentDialog"
-          on-close="onSwitchAccessActionAssignmentDialogClose_"
-          action="[[action_]]">
-      </settings-switch-access-action-assignment-dialog>
-    </template>
-    <h2>$i18n{switchAccessAutoScanHeading}</h2>
-    <div class="list-frame">
-      <settings-toggle-button class="list-item"
-          pref="{{prefs.settings.a11y.switch_access.auto_scan.enabled}}"
-          label="$i18n{switchAccessAutoScanLabel}"
-          deep-link-focus-id$="[[Setting.kSwitchActionAutoScan]]">
-      </settings-toggle-button>
-      <div class="settings-box continuation list-item" hidden$="[[
-          !prefs.settings.a11y.switch_access.auto_scan.enabled.value]]">
-        <div class="start sub-item settings-box-text" id="scanSpeed"
-            aria-hidden="true">
-          $i18n{switchAccessAutoScanSpeedLabel}
-        </div>
-        <settings-slider id="scanSpeedSlider"
-            pref="{{prefs.settings.a11y.switch_access.auto_scan.speed_ms}}"
-            ticks="[[autoScanSpeedRangeMs_]]"
-            min="[[minScanSpeedMs_]]"
-            max="[[maxScanSpeedMs_]]"
-            label-aria="$i18n{switchAccessAutoScanSpeedLabel}"
-            label-min="[[minScanSpeedLabelSec_]]"
-            label-max="[[maxScanSpeedLabelSec_]]">
-        </settings-slider>
-      </div>
-      <div class="settings-box continuation list-item"
-          hidden$="[[!showKeyboardScanSettings_(
-              prefs.settings.a11y.switch_access.auto_scan.enabled.value)]]">
-        <div class="start sub-item settings-box-text" id="keyboardScanSpeed"
-            aria-hidden="true">
-          $i18n{switchAccessAutoScanKeyboardSpeedLabel}
-        </div>
-        <settings-slider id="keyboardScanSpeedSlider"
-            pref="{{prefs.settings.a11y.switch_access.auto_scan.keyboard.speed_ms}}"
-            ticks="[[autoScanSpeedRangeMs_]]"
-            min="[[minScanSpeedMs_]]"
-            max="[[maxScanSpeedMs_]]"
-            label-aria="$i18n{switchAccessAutoScanKeyboardSpeedLabel}"
-            label-min="[[minScanSpeedLabelSec_]]"
-            label-max="[[maxScanSpeedLabelSec_]]"
-            deep-link-focus-id$="[[Setting.kSwitchActionAutoScanKeyboard]]">
-        </settings-slider>
-      </div>
-      <template is="dom-if"
-          if="[[isSwitchAccessPointScanningEnabled_]]" restamp>
-        <div class="settings-box continuation list-item">
-          <div class="start sub-item settings-box-text" id="pointScanSpeed"
-              aria-hidden="true">
-            $i18n{switchAccessPointScanSpeedLabel}
-          </div>
-          <settings-slider id="pointScanSpeedSlider"
-              pref="{{prefs.settings.a11y.switch_access.point_scan.speed_dips_per_second}}"
-              ticks="[[pointScanSpeedRangeDipsPerSecond_]]"
-              min="[[minPointScanSpeed_]]"
-              max="[[maxPointScanSpeed_]]"
-              label-aria="$i18n{switchAccessPointScanSpeedLabel}"
-              label-min="[[minPointScanSpeed_]]"
-              label-max="[[maxPointScanSpeed_]]">
-          </settings-slider>
-        </div>
-      </template>
+    <settings-slider id="scanSpeedSlider"
+        pref="{{prefs.settings.a11y.switch_access.auto_scan.speed_ms}}"
+        ticks="[[autoScanSpeedRangeMs_]]"
+        min="[[minScanSpeedMs_]]"
+        max="[[maxScanSpeedMs_]]"
+        label-aria="$i18n{switchAccessAutoScanSpeedLabel}"
+        label-min="[[minScanSpeedLabelSec_]]"
+        label-max="[[maxScanSpeedLabelSec_]]">
+    </settings-slider>
+  </div>
+  <div class="settings-box continuation list-item"
+      hidden$="[[!showKeyboardScanSettings_(
+          prefs.settings.a11y.switch_access.auto_scan.enabled.value)]]">
+    <div class="start sub-item settings-box-text" id="keyboardScanSpeed"
+        aria-hidden="true">
+      $i18n{switchAccessAutoScanKeyboardSpeedLabel}
     </div>
-  </template>
-  <script src="switch_access_subpage.js"></script>
-</dom-module>
+    <settings-slider id="keyboardScanSpeedSlider"
+        pref="{{prefs.settings.a11y.switch_access.auto_scan.keyboard.speed_ms}}"
+        ticks="[[autoScanSpeedRangeMs_]]"
+        min="[[minScanSpeedMs_]]"
+        max="[[maxScanSpeedMs_]]"
+        label-aria="$i18n{switchAccessAutoScanKeyboardSpeedLabel}"
+        label-min="[[minScanSpeedLabelSec_]]"
+        label-max="[[maxScanSpeedLabelSec_]]"
+        deep-link-focus-id$="[[Setting.kSwitchActionAutoScanKeyboard]]">
+    </settings-slider>
+  </div>
+  <div class="settings-box continuation list-item">
+    <div class="start sub-item settings-box-text" id="pointScanSpeed"
+        aria-hidden="true">
+      $i18n{switchAccessPointScanSpeedLabel}
+    </div>
+    <settings-slider id="pointScanSpeedSlider"
+        pref="{{prefs.settings.a11y.switch_access.point_scan.speed_dips_per_second}}"
+        ticks="[[pointScanSpeedRangeDipsPerSecond_]]"
+        min="[[minPointScanSpeed_]]"
+        max="[[maxPointScanSpeed_]]"
+        label-aria="$i18n{switchAccessPointScanSpeedLabel}"
+        label-min="[[minPointScanSpeed_]]"
+        label-max="[[maxPointScanSpeed_]]">
+    </settings-slider>
+  </div>
+</div>

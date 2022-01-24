@@ -28,6 +28,10 @@ class FileFlusher::Job {
       bool recursive,
       const FileFlusher::OnFlushCallback& on_flush_callback,
       base::OnceClosure callback);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job() = default;
 
   void Start();
@@ -55,8 +59,6 @@ class FileFlusher::Job {
   bool started_ = false;
   base::AtomicFlag cancel_flag_;
   bool finish_scheduled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 FileFlusher::Job::Job(const base::WeakPtr<FileFlusher>& flusher,

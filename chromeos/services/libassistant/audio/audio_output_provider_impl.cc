@@ -56,6 +56,9 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
                                   weak_ptr_factory_.GetWeakPtr(), device_id));
   }
 
+  AudioOutputImpl(const AudioOutputImpl&) = delete;
+  AudioOutputImpl& operator=(const AudioOutputImpl&) = delete;
+
   ~AudioOutputImpl() override {
     main_task_runner_->DeleteSoon(FROM_HERE, device_owner_.release());
     main_task_runner_->DeleteSoon(FROM_HERE, audio_stream_handler_.release());
@@ -149,8 +152,6 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
   SEQUENCE_CHECKER(main_sequence_checker_);
 
   base::WeakPtrFactory<AudioOutputImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputImpl);
 };
 
 }  // namespace
@@ -165,8 +166,6 @@ void AudioOutputProviderImpl::Bind(
     mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
     mojom::PlatformDelegate* platform_delegate) {
   platform_delegate_ = platform_delegate;
-  platform_delegate_->BindAudioDecoderFactory(
-      audio_decoder_factory_.BindNewPipeAndPassReceiver());
 
   audio_output_delegate_.Bind(std::move(audio_output_delegate));
 
@@ -226,6 +225,15 @@ assistant_client::VolumeControl& AudioOutputProviderImpl::GetVolumeControl() {
 void AudioOutputProviderImpl::RegisterAudioEmittingStateCallback(
     AudioEmittingStateCallback callback) {
   // TODO(muyuanli): implement.
+}
+
+void AudioOutputProviderImpl::BindAudioDecoderFactory() {
+  platform_delegate_->BindAudioDecoderFactory(
+      audio_decoder_factory_.BindNewPipeAndPassReceiver());
+}
+
+void AudioOutputProviderImpl::UnBindAudioDecoderFactory() {
+  audio_decoder_factory_.reset();
 }
 
 void AudioOutputProviderImpl::BindStreamFactory(

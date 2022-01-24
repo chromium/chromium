@@ -52,7 +52,6 @@
 #include "chrome/browser/ui/browser.h"
 #endif
 
-using base::TimeDelta;
 using download::DownloadItem;
 using MixedContentStatus = download::DownloadItem::MixedContentStatus;
 using safe_browsing::DownloadFileType;
@@ -271,6 +270,10 @@ bool DownloadItemModel::IsMalicious() const {
 
 bool DownloadItemModel::IsMixedContent() const {
   return download_->IsMixedContent();
+}
+
+bool DownloadItemModel::ShouldShowIncognitoWarning() const {
+  return download_->ShouldShowIncognitoWarning();
 }
 
 bool DownloadItemModel::ShouldAllowDownloadFeedback() const {
@@ -580,6 +583,9 @@ bool DownloadItemModel::IsCommandEnabled(
     const DownloadCommands* download_commands,
     DownloadCommands::Command command) const {
   switch (command) {
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      break;
     case DownloadCommands::SHOW_IN_FOLDER:
       return download_->CanShowInFolder();
     case DownloadCommands::OPEN_WHEN_COMPLETE:
@@ -621,6 +627,9 @@ bool DownloadItemModel::IsCommandChecked(
     const DownloadCommands* download_commands,
     DownloadCommands::Command command) const {
   switch (command) {
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      break;
     case DownloadCommands::OPEN_WHEN_COMPLETE:
       return download_->GetOpenWhenComplete() ||
              download_crx_util::IsExtensionDownload(*download_);
@@ -687,6 +696,12 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 #endif
       FALLTHROUGH;
     case DownloadCommands::KEEP:
+      // Order of these warning validations should be same as the order that
+      // GetDesiredDownloadItemMode() method follows.
+      if (ShouldShowIncognitoWarning()) {
+        download_->AcceptIncognitoWarning();
+        break;
+      }
       if (IsMixedContent()) {
         download_->ValidateMixedContentDownload();
         break;
@@ -756,6 +771,9 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 #endif
       break;
     }
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      break;
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::CANCEL:
     case DownloadCommands::DISCARD:
@@ -792,7 +810,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
               delegate->GetWeakPtr(), download_->GetId()),
           safe_browsing::DeepScanningRequest::DeepScanTrigger::
               TRIGGER_APP_PROMPT,
-          std::move(settings));
+          safe_browsing::DownloadCheckResult::UNKNOWN, std::move(settings));
       break;
   }
 }
@@ -814,12 +832,18 @@ bool DownloadItemModel::IsExtensionDownload() const {
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 void DownloadItemModel::CompleteSafeBrowsingScan() {
-  ChromeDownloadManagerDelegate::SafeBrowsingState* state =
-      static_cast<ChromeDownloadManagerDelegate::SafeBrowsingState*>(
-          download_->GetUserData(
-              &ChromeDownloadManagerDelegate::SafeBrowsingState::
-                  kSafeBrowsingUserDataKey));
-  state->CompleteDownload();
+  if (download_->IsSavePackageDownload()) {
+    download_->OnAsyncScanningCompleted(
+        download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED);
+    enterprise_connectors::RunSavePackageScanningCallback(download_, true);
+  } else {
+    ChromeDownloadManagerDelegate::SafeBrowsingState* state =
+        static_cast<ChromeDownloadManagerDelegate::SafeBrowsingState*>(
+            download_->GetUserData(
+                &ChromeDownloadManagerDelegate::SafeBrowsingState::
+                    kSafeBrowsingUserDataKey));
+    state->CompleteDownload();
+  }
 }
 #endif
 

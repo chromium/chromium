@@ -19,6 +19,9 @@ typedef std::vector<api::system_storage::StorageUnitInfo> StorageUnitInfoList;
 
 class StorageInfoProvider : public SystemInfoProvider {
  public:
+  StorageInfoProvider(const StorageInfoProvider&) = delete;
+  StorageInfoProvider& operator=(const StorageInfoProvider&) = delete;
+
   // Get the single shared instance of StorageInfoProvider.
   static StorageInfoProvider* Get();
 
@@ -58,8 +61,6 @@ class StorageInfoProvider : public SystemInfoProvider {
 
   static base::LazyInstance<
       scoped_refptr<StorageInfoProvider>>::DestructorAtExit provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageInfoProvider);
 };
 
 }  // namespace extensions

@@ -9,7 +9,7 @@
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.h"
-#include "third_party/blink/renderer/modules/webcodecs/dom_rect_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_rect_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -24,23 +24,9 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
   // Parse rect.
   rect = default_rect;
   if (options->hasRect()) {
-    rect = ToGfxRect(options->rect(), "rect", exception_state);
+    rect = ToGfxRect(options->rect(), coded_size, "rect", exception_state);
     if (exception_state.HadException())
       return;
-
-    if (rect.right() > coded_size.width()) {
-      exception_state.ThrowTypeError(
-          String::Format("rect.right %i exceeds codedWidth %i.", rect.right(),
-                         coded_size.width()));
-      return;
-    }
-
-    if (rect.bottom() > coded_size.height()) {
-      exception_state.ThrowTypeError(
-          String::Format("rect.bottom %u exceeds codedHeight %u.",
-                         rect.bottom(), coded_size.height()));
-      return;
-    }
   }
 
   // Rect must be non-empty.
@@ -64,27 +50,9 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
   //     per-plane.
   //   - Enforce this restriction on media::VideoFrame and see if anything
   //     breaks.
-  for (wtf_size_t i = 0; i < num_planes; i++) {
-    gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
-    if (rect.x() % sample_size.width() != 0) {
-      exception_state.ThrowTypeError(String::Format(
-          "rect.x %d is not sample-aligned in plane %u.", rect.x(), i));
-      return;
-    } else if (rect.width() % sample_size.width() != 0) {
-      exception_state.ThrowTypeError(String::Format(
-          "rect.width %d is not sample-aligned in plane %u.", rect.width(), i));
-      return;
-    } else if (rect.y() % sample_size.height() != 0) {
-      exception_state.ThrowTypeError(String::Format(
-          "rect.y %d is not sample-aligned in plane %u.", rect.y(), i));
-      return;
-    } else if (rect.height() % sample_size.height() != 0) {
-      exception_state.ThrowTypeError(
-          String::Format("rect.height %d is not sample-aligned in plane %u.",
-                         rect.height(), i));
-      return;
-    }
-  }
+  VerifyRectSampleAlignment(rect, format, exception_state);
+  if (exception_state.HadException())
+    return;
 
   // Parse |layout|.
   bool has_explicit_layout = options->hasLayout();
@@ -108,10 +76,12 @@ ParsedCopyToOptions::ParsedCopyToOptions(VideoFrameCopyToOptions* options,
     gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
     uint32_t sample_bytes = media::VideoFrame::BytesPerElement(format, i);
 
+    planes[i].left = rect.x() / sample_size.width();
     planes[i].top = rect.y() / sample_size.height();
+    planes[i].width = rect.width() / sample_size.width();
     planes[i].height = rect.height() / sample_size.height();
-    planes[i].left_bytes = rect.x() / sample_size.width() * sample_bytes;
-    planes[i].width_bytes = rect.width() / sample_size.width() * sample_bytes;
+    planes[i].left_bytes = planes[i].left * sample_bytes;
+    planes[i].width_bytes = planes[i].width * sample_bytes;
 
     // If an explicit layout was not provided, planes and rows are tightly
     // packed.

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/common/cloud_print_utility.mojom.h"
 #include "printing/buildflags/buildflags.h"

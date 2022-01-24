@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.PaletteRendererTest');
 goog.setTestOnly();
@@ -22,7 +14,6 @@ const State = goog.require('goog.a11y.aria.State');
 const TagName = goog.require('goog.dom.TagName');
 const aria = goog.require('goog.a11y.aria');
 const dom = goog.require('goog.dom');
-const googArray = goog.require('goog.array');
 const testSuite = goog.require('goog.testing.testSuite');
 const testing = goog.require('goog.html.testing');
 
@@ -40,8 +31,7 @@ let palette;
 /** @param {!Array<string>} items */
 function createPalette(items) {
   sandbox = dom.getElement('sandbox');
-  itemEls = googArray.map(
-      items,
+  itemEls = items.map(
       (item, index, a) => dom.safeHtmlToNode(testing.newSafeHtmlForTest(item)));
   renderer = new PaletteRenderer();
   palette = new Palette(itemEls, renderer);
@@ -58,8 +48,8 @@ testSuite({
   testGridA11yRoles() {
     createPalette(items);
     const grid = renderer.createDom(palette);
-    assertEquals(Role.GRID, aria.getRole(grid));
     const table = dom.getElementsByTagName(TagName.TABLE, grid)[0];
+    assertEquals(Role.GRID, aria.getRole(table));
     const row = dom.getElementsByTagName(TagName.TR, table)[0];
     assertEquals(Role.ROW, aria.getRole(row));
     const cell = dom.getElementsByTagName(TagName.TD, row)[0];
@@ -106,9 +96,9 @@ testSuite({
   },
 
   testSetContentIncremental() {
-    const items = googArray.repeat('<div class="item">item</div>', 6);
-    const itemEls = googArray.map(
-        items, (item) => dom.safeHtmlToNode(testing.newSafeHtmlForTest(item)));
+    const items = (new Array(6)).fill('<div class="item">item</div>');
+    const itemEls =
+        items.map(item => dom.safeHtmlToNode(testing.newSafeHtmlForTest(item)));
 
     createPalette([]);
     palette.render();
@@ -136,8 +126,7 @@ testSuite({
   },
 
   testA11yLabelsSetContentIncremental() {
-    const itemEls = googArray.map(
-        items,
+    const itemEls = items.map(
         (item, index, a) =>
             dom.safeHtmlToNode(testing.newSafeHtmlForTest(item)));
 
@@ -177,8 +166,7 @@ testSuite({
       '<div aria-label="newlabel-2" title="title-2"></div>',
       '<div><span></span></div>',
     ];
-    const newItemEls = googArray.map(
-        newItems,
+    const newItemEls = newItems.map(
         (item, index, a) =>
             dom.safeHtmlToNode(testing.newSafeHtmlForTest(item)));
 

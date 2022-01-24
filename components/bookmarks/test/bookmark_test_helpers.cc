@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
@@ -27,6 +26,10 @@ class BookmarkLoadObserver : public BaseBookmarkModelObserver {
  public:
   explicit BookmarkLoadObserver(base::OnceClosure quit_task)
       : quit_task_(std::move(quit_task)) {}
+
+  BookmarkLoadObserver(const BookmarkLoadObserver&) = delete;
+  BookmarkLoadObserver& operator=(const BookmarkLoadObserver&) = delete;
+
   ~BookmarkLoadObserver() override = default;
 
  private:
@@ -37,8 +40,6 @@ class BookmarkLoadObserver : public BaseBookmarkModelObserver {
   }
 
   base::OnceClosure quit_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkLoadObserver);
 };
 
 // Helper function which does the actual work of creating the nodes for

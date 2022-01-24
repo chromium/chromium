@@ -5,7 +5,6 @@
 #include "ui/gfx/font_fallback_win.h"
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,12 +19,13 @@ class FontFallbackWinTest : public testing::Test {
  public:
   FontFallbackWinTest() = default;
 
+  FontFallbackWinTest(const FontFallbackWinTest&) = delete;
+  FontFallbackWinTest& operator=(const FontFallbackWinTest&) = delete;
+
  private:
   // Needed to bypass DCHECK in GetFallbackFont.
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-
-  DISALLOW_COPY_AND_ASSIGN(FontFallbackWinTest);
 };
 
 }  // namespace

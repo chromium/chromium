@@ -276,6 +276,7 @@ struct MEDIA_EXPORT ColorParameterInformation : Box {
   uint16_t transfer_characteristics;
   uint16_t matrix_coefficients;
   bool full_range;
+  bool fully_parsed;
 };
 
 struct MEDIA_EXPORT MasteringDisplayColorVolume : Box {

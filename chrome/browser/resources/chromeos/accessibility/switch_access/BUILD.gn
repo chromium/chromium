@@ -27,6 +27,7 @@ run_jsbundler("switch_access_copied_files") {
   dest_dir = switch_access_dir
   sources = [
     "action_manager.js",
+    "action_recorder.js",
     "auto_scan_manager.js",
     "background.html",
     "background.js",
@@ -65,6 +66,7 @@ run_jsbundler("switch_access_copied_files") {
     "metrics.js",
     "navigator.js",
     "navigator_interface.js",
+    "node_identifier.js",
     "nodes/back_button_node.js",
     "nodes/basic_node.js",
     "nodes/combo_box_node.js",
@@ -115,6 +117,7 @@ js2gtest("switch_access_extjs_tests") {
     "nodes/group_node_test.js",
     "nodes/tab_node_test.js",
     "point_scan_manager_test.js",
+    "saatlite/gen/saatlite_tests.js",
     "switch_access_predicate_test.js",
     "switch_access_test.js",
     "text_navigation_manager_test.js",
@@ -123,6 +126,7 @@ js2gtest("switch_access_extjs_tests") {
     "../common/testing/assert_additions.js",
     "../common/testing/callback_helper.js",
     "switch_access_e2e_test_base.js",
+    "test_utility.js",
   ]
 
   # The test base classes generate C++ code with these deps.
@@ -140,6 +144,7 @@ js2gtest("switch_access_extjs_tests") {
 js_type_check("closure_compile") {
   deps = [
     ":action_manager",
+    ":action_recorder",
     ":auto_scan_manager",
     ":back_button_node",
     ":background",
@@ -159,6 +164,7 @@ js_type_check("closure_compile") {
     ":modal_dialog_node",
     ":navigator",
     ":navigator_interface",
+    ":node_identifier",
     ":point_scan_manager",
     ":preference_manager",
     ":slider_node",
@@ -492,5 +498,21 @@ js_library("window_node") {
     ":switch_access_constants",
     ":switch_access_node",
   ]
+  externs_list = [ "$externs_path/automation.js" ]
+}
+
+# Accessibility sprint: Classes that assist in multistep automation.
+js_library("action_recorder") {
+  sources = [ "action_recorder.js" ]
+  deps = [
+    ":focus_ring_manager",
+    ":node_identifier",
+    ":switch_access",
+  ]
+  externs_list = [ "$externs_path/automation.js" ]
+}
+
+js_library("node_identifier") {
+  sources = [ "node_identifier.js" ]
   externs_list = [ "$externs_path/automation.js" ]
 }

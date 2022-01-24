@@ -50,7 +50,11 @@ std::string EventToString(const SessionServiceEvent& event) {
       return base::StrCat(
           {EventTimeToString(event), " exit (shutdown) windows=",
            base::NumberToString(event.data.exit.window_count),
-           " tabs=", base::NumberToString(event.data.exit.tab_count)});
+           " tabs=", base::NumberToString(event.data.exit.tab_count),
+           " is_first_service=",
+           base::NumberToString(event.data.exit.is_first_session_service),
+           " did_schedule_command=",
+           base::NumberToString(event.data.exit.did_schedule_command)});
     case SessionServiceEventLogType::kWriteError:
       return base::StrCat(
           {EventTimeToString(event), " write errors (",

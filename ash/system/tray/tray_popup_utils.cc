@@ -284,21 +284,21 @@ std::unique_ptr<views::InkDrop> TrayPopupUtils::CreateInkDrop(
 std::unique_ptr<views::InkDropRipple> TrayPopupUtils::CreateInkDropRipple(
     TrayPopupInkDropStyle ink_drop_style,
     const views::Button* host) {
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
+  const std::pair<SkColor, float> base_color_and_opacity =
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
   return std::make_unique<views::FloodFillInkDropRipple>(
       host->size(), GetInkDropInsets(ink_drop_style),
       views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-      ripple_attributes.base_color, ripple_attributes.inkdrop_opacity);
+      base_color_and_opacity.first, base_color_and_opacity.second);
 }
 
 std::unique_ptr<views::InkDropHighlight> TrayPopupUtils::CreateInkDropHighlight(
     const views::View* host) {
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
+  const std::pair<SkColor, float> base_color_and_opacity =
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
   auto highlight = std::make_unique<views::InkDropHighlight>(
-      gfx::SizeF(host->size()), ripple_attributes.base_color);
-  highlight->set_visible_opacity(ripple_attributes.highlight_opacity);
+      gfx::SizeF(host->size()), base_color_and_opacity.first);
+  highlight->set_visible_opacity(base_color_and_opacity.second);
   return highlight;
 }
 
@@ -307,6 +307,15 @@ void TrayPopupUtils::InstallHighlightPathGenerator(
     TrayPopupInkDropStyle ink_drop_style) {
   views::HighlightPathGenerator::Install(
       host, std::make_unique<HighlightPathGenerator>(ink_drop_style));
+}
+
+views::Separator* TrayPopupUtils::CreateListSubHeaderSeparator() {
+  views::Separator* separator = new views::Separator();
+  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor));
+  separator->SetBorder(views::CreateEmptyBorder(
+      kMenuSeparatorVerticalPadding - views::Separator::kThickness, 0, 0, 0));
+  return separator;
 }
 
 views::Separator* TrayPopupUtils::CreateListItemSeparator(bool left_inset) {

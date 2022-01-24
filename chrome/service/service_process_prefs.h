@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/prefs/json_pref_store.h"
 
 namespace base {
@@ -24,6 +23,10 @@ class ServiceProcessPrefs {
   // |sequenced_task_runner| must be a shutdown-blocking task runner.
   ServiceProcessPrefs(const base::FilePath& pref_filename,
                       base::SequencedTaskRunner* task_runner);
+
+  ServiceProcessPrefs(const ServiceProcessPrefs&) = delete;
+  ServiceProcessPrefs& operator=(const ServiceProcessPrefs&) = delete;
+
   ~ServiceProcessPrefs();
 
   // Read preferences from the backing file.
@@ -65,8 +68,6 @@ class ServiceProcessPrefs {
 
  private:
   scoped_refptr<JsonPrefStore> prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessPrefs);
 };
 
 #endif  // CHROME_SERVICE_SERVICE_PROCESS_PREFS_H_

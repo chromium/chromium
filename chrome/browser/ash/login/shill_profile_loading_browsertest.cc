@@ -36,13 +36,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::ElementsAre;
-
-namespace chromeos {
-
-namespace em = enterprise_management;
-
+namespace ash {
 namespace {
+
+namespace em = ::enterprise_management;
+
+using ::testing::ElementsAre;
 
 constexpr char kUnmanagedUser[] = "unmanaged@gmail.com";
 constexpr char kUnmanagedGaiaID[] = "33333";
@@ -107,18 +106,17 @@ class ShillProfileLoadingTest : public LoginManagerTest {
     chromeos::SessionManagerClient::InitializeFakeInMemory();
   }
 
-  const chromeos::LoginManagerMixin::TestUserInfo unmanaged_user_{
+  const LoginManagerMixin::TestUserInfo unmanaged_user_{
       AccountId::FromUserEmailGaiaId(kUnmanagedUser, kUnmanagedGaiaID)};
-  const chromeos::LoginManagerMixin::TestUserInfo secondary_unmanaged_user_{
+  const LoginManagerMixin::TestUserInfo secondary_unmanaged_user_{
       AccountId::FromUserEmailGaiaId(kSecondaryUnmanagedUser,
                                      kSecondaryUnmanagedGaiaID)};
-  const chromeos::LoginManagerMixin::TestUserInfo managed_user_{
+  const LoginManagerMixin::TestUserInfo managed_user_{
       AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
 
-  chromeos::UserPolicyMixin user_policy_mixin_{&mixin_host_,
-                                               managed_user_.account_id};
-  chromeos::LoginManagerMixin login_manager_{&mixin_host_,
-                                             {managed_user_, unmanaged_user_}};
+  UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
+  LoginManagerMixin login_manager_{&mixin_host_,
+                                   {managed_user_, unmanaged_user_}};
 };
 
 // Verifies that the LoadShillProfile method call is invoked on
@@ -235,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(ShillProfileLoadingGuestLoginTest, GuestLogin) {
 
   LoadShillProfileWaiter load_shill_profile_waiter(
       FakeSessionManagerClient::Get());
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickGuestButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
   restart_job_waiter.Run();
 
@@ -247,4 +245,4 @@ IN_PROC_BROWSER_TEST_F(ShillProfileLoadingGuestLoginTest, GuestLogin) {
           user_manager::GuestAccountId()))));
 }
 
-}  // namespace chromeos
+}  // namespace ash

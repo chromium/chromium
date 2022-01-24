@@ -29,6 +29,11 @@ class PermissionPromptAndroid;
 // permission requests and has nothing to do with grouped permissions anymore.
 class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  GroupedPermissionInfoBarDelegate(const GroupedPermissionInfoBarDelegate&) =
+      delete;
+  GroupedPermissionInfoBarDelegate& operator=(
+      const GroupedPermissionInfoBarDelegate&) = delete;
+
   // Public so we can have std::unique_ptr<GroupedPermissionInfoBarDelegate>.
   ~GroupedPermissionInfoBarDelegate() override;
 
@@ -84,8 +89,6 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   base::WeakPtr<permissions::PermissionPromptAndroid> permission_prompt_;
   infobars::ContentInfoBarManager* infobar_manager_;
   bool details_expanded_;
-
-  DISALLOW_COPY_AND_ASSIGN(GroupedPermissionInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID_H_

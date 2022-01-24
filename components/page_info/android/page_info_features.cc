@@ -15,8 +15,8 @@ namespace {
 // in other locations in the code base (e.g. content_features.h), and must be
 // replicated in the same order in PageInfoFeatures.java.
 const base::Feature* kFeaturesExposedToJava[] = {
-    &kPageInfoDiscoverability,
     &kPageInfoHistory,
+    &kPageInfoStoreInfo,
 };
 
 }  // namespace

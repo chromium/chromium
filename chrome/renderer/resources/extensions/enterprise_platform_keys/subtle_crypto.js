@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 var utils = require('utils');
-var internalAPI = require('enterprise.platformKeys.internalAPI');
+var internalAPI = getInternalApi('enterprise.platformKeysInternal');
 var intersect = require('platformKeys.utils').intersect;
 var subtleCryptoModule = require('platformKeys.SubtleCrypto');
 var SubtleCryptoImpl = subtleCryptoModule.SubtleCryptoImpl;
@@ -89,10 +89,12 @@ function equalsStandardPublicExponent(array) {
  * Implementation of WebCrypto.SubtleCrypto used in enterprise.platformKeys.
  * Derived from platformKeys.SubtleCrypto.
  * @param {string} tokenId The id of the backing Token.
+ * @param {boolean} softwareBacked Whether the key operations should be executed
+ *     in software.
  * @constructor
  */
-function EnterpriseSubtleCryptoImpl(tokenId) {
-  $Function.call(SubtleCryptoImpl, this, tokenId);
+function EnterpriseSubtleCryptoImpl(tokenId, softwareBacked) {
+  $Function.call(SubtleCryptoImpl, this, tokenId, softwareBacked);
 }
 
 EnterpriseSubtleCryptoImpl.prototype =
@@ -134,7 +136,8 @@ EnterpriseSubtleCryptoImpl.prototype.generateKey =
     }
 
     internalAPI.generateKey(
-        subtleCrypto.tokenId, normalizedAlgorithmParameters, function(spki) {
+        subtleCrypto.tokenId, normalizedAlgorithmParameters,
+        subtleCrypto.softwareBacked, function(spki) {
           if (catchInvalidTokenError(reject))
             return;
           if (chrome.runtime.lastError) {

@@ -4,7 +4,6 @@
 
 #include "content/browser/metrics/histograms_monitor.h"
 
-#include "base/macros.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "content/browser/metrics/histogram_synchronizer.h"

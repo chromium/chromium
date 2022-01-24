@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_management_policy_provider.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -53,6 +52,11 @@ class PublicSessionPermissionHelper {
  public:
   PublicSessionPermissionHelper();
   PublicSessionPermissionHelper(PublicSessionPermissionHelper&& other);
+
+  PublicSessionPermissionHelper(const PublicSessionPermissionHelper&) = delete;
+  PublicSessionPermissionHelper& operator=(
+      const PublicSessionPermissionHelper&) = delete;
+
   ~PublicSessionPermissionHelper();
 
   bool HandlePermissionRequestImpl(const Extension& extension,
@@ -89,8 +93,6 @@ class PublicSessionPermissionHelper {
   PermissionIDSet allowed_permission_set_;
   PermissionIDSet denied_permission_set_;
   RequestCallbackList callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(PublicSessionPermissionHelper);
 };
 
 PublicSessionPermissionHelper::PublicSessionPermissionHelper() {}

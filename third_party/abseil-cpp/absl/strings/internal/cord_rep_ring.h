@@ -383,8 +383,8 @@ class CordRepRing : public CordRep {
 
   // Destroys the provided ring buffer, decrementing the reference count of all
   // contained child CordReps. The provided 1\`rep` should have a ref count of
-  // one (pre decrement destroy call observing `refcount.IsOne()`) or zero (post
-  // decrement destroy call observing `!refcount.Decrement()`).
+  // one (pre decrement destroy call observing `refcount.IsOne()`) or zero
+  // (post decrement destroy call observing `!refcount.Decrement()`).
   static void Destroy(CordRepRing* rep);
 
   // Returns a mutable reference to the logical end position array.
@@ -570,12 +570,12 @@ inline CordRepRing::Position CordRepRing::FindTail(index_type head,
 
 // Now that CordRepRing is defined, we can define CordRep's helper casts:
 inline CordRepRing* CordRep::ring() {
-  assert(tag == RING);
+  assert(IsRing());
   return static_cast<CordRepRing*>(this);
 }
 
 inline const CordRepRing* CordRep::ring() const {
-  assert(tag == RING);
+  assert(IsRing());
   return static_cast<const CordRepRing*>(this);
 }
 

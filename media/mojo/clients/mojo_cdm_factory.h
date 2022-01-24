@@ -5,7 +5,6 @@
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_CDM_FACTORY_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_CDM_FACTORY_H_
 
-#include "base/macros.h"
 #include "media/base/cdm_factory.h"
 
 namespace media {
@@ -17,6 +16,10 @@ class InterfaceFactory;
 class MojoCdmFactory final : public CdmFactory {
  public:
   explicit MojoCdmFactory(media::mojom::InterfaceFactory* interface_factory);
+
+  MojoCdmFactory(const MojoCdmFactory&) = delete;
+  MojoCdmFactory& operator=(const MojoCdmFactory&) = delete;
+
   ~MojoCdmFactory() final;
 
   // CdmFactory implementation.
@@ -30,8 +33,6 @@ class MojoCdmFactory final : public CdmFactory {
 
  private:
   media::mojom::InterfaceFactory* interface_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoCdmFactory);
 };
 
 }  // namespace media

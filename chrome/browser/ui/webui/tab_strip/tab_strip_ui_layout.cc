@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "base/values.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace {
@@ -49,20 +48,19 @@ int TabStripUILayout::GetContainerHeight() {
   return 2 * kPaddingAroundTabList + kTabTitleHeight + kThumbnailHeight;
 }
 
-base::Value TabStripUILayout::AsDictionary() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("--tabstrip-tab-list-vertical-padding",
-                    base::NumberToString(kPaddingAroundTabList) + "px");
-  dict.SetStringKey("--tabstrip-tab-title-height",
-                    base::NumberToString(kTabTitleHeight) + "px");
-  dict.SetStringKey("--tabstrip-tab-thumbnail-width",
-                    base::NumberToString(tab_thumbnail_size.width()) + "px");
-  dict.SetStringKey("--tabstrip-tab-thumbnail-height",
-                    base::NumberToString(tab_thumbnail_size.height()) + "px");
-  dict.SetStringKey("--tabstrip-tab-thumbnail-aspect-ratio",
-                    base::NumberToString(tab_thumbnail_aspect_ratio));
-  dict.SetStringKey("--tabstrip-viewport-width",
-                    base::NumberToString(viewport_width) + "px");
-  return dict;
+base::flat_map<std::string, std::string> TabStripUILayout::AsDictionary()
+    const {
+  return base::flat_map<std::string, std::string>(
+      {{"--tabstrip-tab-list-vertical-padding",
+        base::NumberToString(kPaddingAroundTabList) + "px"},
+       {"--tabstrip-tab-title-height",
+        base::NumberToString(kTabTitleHeight) + "px"},
+       {"--tabstrip-tab-thumbnail-width",
+        base::NumberToString(tab_thumbnail_size.width()) + "px"},
+       {"--tabstrip-tab-thumbnail-height",
+        base::NumberToString(tab_thumbnail_size.height()) + "px"},
+       {"--tabstrip-tab-thumbnail-aspect-ratio",
+        base::NumberToString(tab_thumbnail_aspect_ratio)},
+       {"--tabstrip-viewport-width",
+        base::NumberToString(viewport_width) + "px"}});
 }
-

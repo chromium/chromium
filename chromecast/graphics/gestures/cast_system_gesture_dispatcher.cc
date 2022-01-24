@@ -10,7 +10,7 @@
 namespace chromecast {
 
 namespace {
-const base::TimeDelta kExpirationTime = base::TimeDelta::FromSeconds(3);
+const base::TimeDelta kExpirationTime = base::Seconds(3);
 const size_t kMaxSwipes = 3;
 }  // namespace
 

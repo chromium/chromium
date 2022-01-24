@@ -54,6 +54,9 @@ namespace android_webview {
 class AwAutofillClient : public autofill::AutofillClient,
                          public content::WebContentsUserData<AwAutofillClient> {
  public:
+  AwAutofillClient(const AwAutofillClient&) = delete;
+  AwAutofillClient& operator=(const AwAutofillClient&) = delete;
+
   ~AwAutofillClient() override;
 
   void SetSaveFormData(bool enabled);
@@ -161,8 +164,6 @@ class AwAutofillClient : public autofill::AutofillClient,
   base::WeakPtr<autofill::AutofillPopupDelegate> delegate_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AwAutofillClient);
 };
 
 }  // namespace android_webview

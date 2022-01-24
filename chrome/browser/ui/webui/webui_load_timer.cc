@@ -16,8 +16,7 @@ namespace {
 // call this frequently.
 void CallUmaHistogramTimes(const std::string& name, base::TimeDelta duration) {
   base::HistogramBase* histogram = base::Histogram::FactoryTimeGet(
-      name, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromSeconds(10), 50,
+      name, base::Milliseconds(1), base::Seconds(10), 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   DCHECK(histogram);
   histogram->AddTime(duration);
@@ -40,9 +39,6 @@ WebuiLoadTimer::~WebuiLoadTimer() = default;
 
 void WebuiLoadTimer::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;

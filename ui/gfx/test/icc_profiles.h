@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef UI_GFX_TEST_ICC_PROFILES_H_
+#define UI_GFX_TEST_ICC_PROFILES_H_
+
 #include "ui/gfx/icc_profile.h"
 
 namespace gfx {
@@ -21,3 +24,5 @@ ICCProfile ICCProfileForTestingA2BOnly();
 ICCProfile ICCProfileForTestingOvershoot();
 
 }  // namespace gfx
+
+#endif  // UI_GFX_TEST_ICC_PROFILES_H_

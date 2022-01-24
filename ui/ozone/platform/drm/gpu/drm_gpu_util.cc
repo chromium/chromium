@@ -140,4 +140,13 @@ bool IsDriverName(const char* device_file_name, const char* driver) {
   return false;
 }
 
+void DrmAsValueIntoHelper(const drmModeModeInfo& mode_info,
+                          base::trace_event::TracedValue* value) {
+  value->SetString("name", mode_info.name);
+  value->SetInteger("type", mode_info.type);
+  value->SetInteger("flags", mode_info.flags);
+  value->SetInteger("clock", mode_info.clock);
+  value->SetInteger("hdisplay", mode_info.hdisplay);
+  value->SetInteger("vdisplay", mode_info.vdisplay);
+}
 }  // namespace ui

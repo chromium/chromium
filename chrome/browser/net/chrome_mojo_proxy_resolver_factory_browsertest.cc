@@ -8,7 +8,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -26,8 +25,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kServiceShutdownTimeout =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kServiceShutdownTimeout = base::Seconds(3);
 
 constexpr char kPacScript[] =
     "function FindProxyForURL(url, host) { return 'PROXY proxy.example.com:1; "
@@ -89,6 +87,10 @@ class ProxyResolverProcessObserver
     content::ServiceProcessHost::AddObserver(this);
   }
 
+  ProxyResolverProcessObserver(const ProxyResolverProcessObserver&) = delete;
+  ProxyResolverProcessObserver& operator=(const ProxyResolverProcessObserver&) =
+      delete;
+
   ~ProxyResolverProcessObserver() override {
     content::ServiceProcessHost::RemoveObserver(this);
   }
@@ -124,8 +126,6 @@ class ProxyResolverProcessObserver
   bool is_service_running_ = false;
   base::RunLoop launch_loop_;
   base::RunLoop death_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverProcessObserver);
 };
 
 // Ensures the proxy resolver service is started correctly and stopped when no

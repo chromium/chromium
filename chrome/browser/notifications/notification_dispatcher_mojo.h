@@ -57,6 +57,7 @@ class NotificationDispatcherMojo
  private:
   void CheckIfNotificationsRemaining();
   void OnServiceDisconnectedGracefully(bool gracefully);
+  bool HasNoDisplayedNotifications() const;
 
   mac_notifications::mojom::MacNotificationService* GetOrCreateService();
 
@@ -76,6 +77,8 @@ class NotificationDispatcherMojo
       handler_{this};
   base::CancelableOnceClosure no_notifications_checker_;
   base::TimeTicks service_start_time_;
+  base::OneShotTimer service_restart_timer_;
+  base::TimeDelta next_service_restart_timer_delay_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPATCHER_MOJO_H_

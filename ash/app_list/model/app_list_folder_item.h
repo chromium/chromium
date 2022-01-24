@@ -19,7 +19,6 @@
 #include "ash/app_list/model/folder_image.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 
 namespace gfx {
@@ -30,6 +29,7 @@ namespace ash {
 
 class AppListConfig;
 class AppListItemList;
+class AppListModelDelegate;
 
 // AppListFolderItem implements the model/controller for folders.
 class APP_LIST_MODEL_EXPORT AppListFolderItem
@@ -47,7 +47,12 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
 
   static const char kItemType[];
 
-  explicit AppListFolderItem(const std::string& id);
+  AppListFolderItem(const std::string& id,
+                    AppListModelDelegate* app_list_model_delegate);
+
+  AppListFolderItem(const AppListFolderItem&) = delete;
+  AppListFolderItem& operator=(const AppListFolderItem&) = delete;
+
   ~AppListFolderItem() override;
 
   // Returns the target icon bounds for |item| to fly back to its parent folder
@@ -118,8 +123,6 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   base::ScopedObservation<AppListConfigProvider,
                           AppListConfigProvider::Observer>
       config_provider_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppListFolderItem);
 };
 
 }  // namespace ash

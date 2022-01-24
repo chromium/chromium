@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_TEST_SUPPORT_MOCK_FILTERED_OFFLINE_ITEM_OBSERVER_H_
 #define COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_TEST_SUPPORT_MOCK_FILTERED_OFFLINE_ITEM_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/offline_items_collection/core/filtered_offline_item_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,21 +28,26 @@ class MockFilteredOfflineItemObserver {
    public:
     ScopedMockObserver(FilteredOfflineItemObserver* observer,
                        const ContentId& id);
+
+    ScopedMockObserver(const ScopedMockObserver&) = delete;
+    ScopedMockObserver& operator=(const ScopedMockObserver&) = delete;
+
     ~ScopedMockObserver() override;
 
    private:
     ContentId id_;
     FilteredOfflineItemObserver* observer_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedMockObserver);
   };
+
+  MockFilteredOfflineItemObserver(const MockFilteredOfflineItemObserver&) =
+      delete;
+  MockFilteredOfflineItemObserver& operator=(
+      const MockFilteredOfflineItemObserver&) = delete;
 
  private:
   // Do not allow instantiation.
   MockFilteredOfflineItemObserver() = default;
   ~MockFilteredOfflineItemObserver() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFilteredOfflineItemObserver);
 };
 
 }  // namespace offline_items_collection

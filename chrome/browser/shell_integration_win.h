@@ -85,6 +85,10 @@ using IsPinnedToTaskbarCallback = base::OnceCallback<void(bool, bool, bool)>;
 void GetIsPinnedToTaskbarState(ConnectionErrorCallback on_error_callback,
                                IsPinnedToTaskbarCallback result_callback);
 
+// Unpins `shortcuts` from the taskbar, and run `completion_callback` when done.
+void UnpinShortcuts(const std::vector<base::FilePath>& shortcuts,
+                    base::OnceClosure completion_callback);
+
 // Migrates existing chrome taskbar pins by tagging them with correct app id.
 // see http://crbug.com/28104. Migrates taskbar pins via a task and runs
 // |completion_callback| on the calling sequence when done.

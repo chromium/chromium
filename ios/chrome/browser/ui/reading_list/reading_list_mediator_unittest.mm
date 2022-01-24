@@ -67,10 +67,10 @@ class ReadingListMediatorTest
     model_->SetReadStatus(GURL("http://chromium.org/read1"), true);
     model_->AddEntry(GURL("http://chromium.org/unread2"), "unread2",
                      reading_list::ADDED_VIA_CURRENT_APP);
-    clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+    clock_.Advance(base::Milliseconds(10));
     model_->AddEntry(no_title_entry_url_, "",
                      reading_list::ADDED_VIA_CURRENT_APP);
-    clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+    clock_.Advance(base::Milliseconds(10));
     model_->AddEntry(GURL("http://chromium.org/read2"), "read2",
                      reading_list::ADDED_VIA_CURRENT_APP);
     model_->SetReadStatus(GURL("http://chromium.org/read2"), true);
@@ -88,6 +88,9 @@ class ReadingListMediatorTest
         listItemFactory:[[ReadingListListItemFactory alloc] init]];
   }
 
+  ReadingListMediatorTest(const ReadingListMediatorTest&) = delete;
+  ReadingListMediatorTest& operator=(const ReadingListMediatorTest&) = delete;
+
  protected:
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<ReadingListModelImpl> model_;
@@ -99,7 +102,6 @@ class ReadingListMediatorTest
 
  private:
   web::WebTaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(ReadingListMediatorTest);
 };
 
 TEST_P(ReadingListMediatorTest, fillItems) {

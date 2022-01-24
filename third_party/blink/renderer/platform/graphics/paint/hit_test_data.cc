@@ -18,7 +18,7 @@ static String RectsAsString(const Vector<T>& rects) {
       sb.Append(", ");
     first = false;
     sb.Append("(");
-    sb.Append(rect.ToString());
+    sb.Append(String(rect.ToString()));
     sb.Append(")");
   }
   sb.Append("]");
@@ -38,7 +38,7 @@ String HitTestData::ToString() const {
 
   if (!wheel_event_rects.IsEmpty()) {
     sb.Append("wheel_event_rects: ");
-    sb.Append(RectsAsString<IntRect>(wheel_event_rects));
+    sb.Append(RectsAsString<gfx::Rect>(wheel_event_rects));
     printed_top_level_field = true;
   }
 
@@ -46,7 +46,7 @@ String HitTestData::ToString() const {
     if (printed_top_level_field)
       sb.Append(", ");
     sb.Append("scroll_hit_test_rect: ");
-    sb.Append(scroll_hit_test_rect.ToString());
+    sb.Append(String(scroll_hit_test_rect.ToString()));
     printed_top_level_field = true;
   }
 

@@ -39,6 +39,7 @@ class FirstLetterPseudoElement;
 // node.
 class CORE_EXPORT LayoutTextFragment : public LayoutText {
  public:
+  LayoutTextFragment(Node*, StringImpl*, int start_offset, int length);
   ~LayoutTextFragment() override;
 
   static LayoutTextFragment* Create(Node*,
@@ -122,7 +123,6 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
 
  protected:
   friend class LayoutObjectFactory;
-  LayoutTextFragment(Node*, StringImpl*, int start_offset, int length);
   void WillBeDestroyed() override;
 
  private:

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, NativeLayer, NativeLayerImpl} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationStoreEventType, DestinationType, NativeLayerImpl, PrintPreviewDestinationDialogElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertNotEquals} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.m.js';
+import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getCddTemplate, setupTestListenerElement} from './print_preview_test_utils.js';
@@ -41,7 +41,7 @@ suite(destination_search_test.suiteName, function() {
   setup(function() {
     // Create data classes
     nativeLayer = new NativeLayerStub();
-    NativeLayerImpl.instance_ = nativeLayer;
+    NativeLayerImpl.setInstance(nativeLayer);
     destinationStore = createDestinationStore();
     nativeLayer.setLocalDestinationCapabilities(
         getCddTemplate('FooDevice', 'FooName'));
@@ -76,8 +76,10 @@ suite(destination_search_test.suiteName, function() {
     item.destination = destination;
 
     // Get print list and fire event.
-    const list = dialog.$$('print-preview-destination-list');
-    list.fire('destination-selected', item);
+    const list =
+        dialog.shadowRoot.querySelector('print-preview-destination-list');
+    list.dispatchEvent(new CustomEvent(
+        'destination-selected', {bubbles: true, composed: true, detail: item}));
   }
 
   /**
@@ -100,15 +102,10 @@ suite(destination_search_test.suiteName, function() {
       assert(destination_search_test.TestNames.GetCapabilitiesSucceeds),
       function() {
         const destId = '00112233DEADBEEF';
-        const response = {
-          printerId: destId,
-          capabilities: getCddTemplate(destId).capabilities,
-          success: true,
-        };
         nativeLayer.setLocalDestinationCapabilities(getCddTemplate(destId));
 
         const waiter = eventToPromise(
-            DestinationStore.EventType.DESTINATION_SELECT,
+            DestinationStoreEventType.DESTINATION_SELECT,
             /** @type {!EventTarget} */ (destinationStore));
         requestSetup(destId);
         return Promise

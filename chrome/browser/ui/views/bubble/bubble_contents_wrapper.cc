@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 
+#include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -38,8 +39,10 @@ BubbleContentsWrapper::BubbleContentsWrapper(
     content::BrowserContext* browser_context,
     int task_manager_string_id,
     bool enable_extension_apis,
-    bool webui_resizes_host)
+    bool webui_resizes_host,
+    bool esc_closes_ui)
     : webui_resizes_host_(webui_resizes_host),
+      esc_closes_ui_(esc_closes_ui),
       web_contents_(content::WebContents::Create(
           GetWebContentsCreateParams(browser_context))) {
   web_contents_->SetDelegate(this);
@@ -51,6 +54,7 @@ BubbleContentsWrapper::BubbleContentsWrapper(
     extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
         web_contents_.get());
   }
+  PrefsTabHelper::CreateForWebContents(web_contents_.get());
   task_manager::WebContentsTags::CreateForToolContents(web_contents_.get(),
                                                        task_manager_string_id);
 }
@@ -73,7 +77,7 @@ BubbleContentsWrapper::PreHandleKeyboardEvent(
   DCHECK_EQ(web_contents(), source);
   // Close the bubble if an escape event is detected. Handle this here to
   // prevent the renderer from capturing the event and not propagating it up.
-  if (host_ && IsEscapeEvent(event)) {
+  if (host_ && IsEscapeEvent(event) && esc_closes_ui_) {
     host_->CloseUI();
     return content::KeyboardEventProcessingResult::HANDLED;
   }
@@ -88,7 +92,7 @@ bool BubbleContentsWrapper::HandleKeyboardEvent(
 }
 
 bool BubbleContentsWrapper::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Ignores context menu.
   return true;
@@ -106,7 +110,8 @@ void BubbleContentsWrapper::RenderViewHostChanged(
                                             gfx::Size(INT_MAX, INT_MAX));
 }
 
-void BubbleContentsWrapper::RenderProcessGone(base::TerminationStatus status) {
+void BubbleContentsWrapper::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   CloseUI();
 }
 

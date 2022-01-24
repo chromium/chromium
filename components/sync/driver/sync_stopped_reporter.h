@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "url/gurl.h"
 
@@ -32,6 +31,10 @@ class SyncStoppedReporter {
       const std::string& user_agent,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       ResultCallback callback);
+
+  SyncStoppedReporter(const SyncStoppedReporter&) = delete;
+  SyncStoppedReporter& operator=(const SyncStoppedReporter&) = delete;
+
   ~SyncStoppedReporter();
 
   // Inform the sync server that sync was stopped on this device.
@@ -68,8 +71,6 @@ class SyncStoppedReporter {
 
   // A callback for request completion or timeout.
   ResultCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncStoppedReporter);
 };
 
 }  // namespace syncer

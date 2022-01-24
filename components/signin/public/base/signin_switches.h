@@ -26,9 +26,6 @@ extern const base::Feature kAccountIdMigration;
 #endif
 
 #if defined(OS_ANDROID)
-// This feature flag is for the deprecating of the Android profile data
-// Menagerie API.
-extern const base::Feature kDeprecateMenagerieAPI;
 // This feature flag is used to wipe device data on child account signin.
 extern const base::Feature kWipeDataOnChildAccountSignin;
 #endif  // defined(OS_ANDROID)
@@ -37,9 +34,6 @@ extern const base::Feature kWipeDataOnChildAccountSignin;
 // Features to trigger the startup sign-in promo at boot.
 extern const base::Feature kForceStartupSigninPromo;
 #endif
-
-// Support for the minor mode.
-extern const base::Feature kMinorModeSupport;
 
 // This feature disables all extended sync promos.
 extern const base::Feature kForceDisableExtendedSyncPromos;

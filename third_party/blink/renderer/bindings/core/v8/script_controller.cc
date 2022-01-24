@@ -183,7 +183,7 @@ void ScriptController::ExecuteJavaScriptURL(
   // implemented for isolated worlds.
   const bool should_bypass_trusted_type_check =
       csp_disposition == network::mojom::CSPDisposition::DO_NOT_CHECK ||
-      ContentSecurityPolicy::ShouldBypassMainWorld(world_for_csp);
+      ContentSecurityPolicy::ShouldBypassMainWorldDeprecated(world_for_csp);
   script_source = script_source.Substring(kJavascriptSchemeLength);
   if (!should_bypass_trusted_type_check) {
     script_source = TrustedTypesCheckForJavascriptURLinNavigation(

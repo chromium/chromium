@@ -55,8 +55,7 @@ base::TimeDelta GetTimeToLive(const std::string& sender_id) {
       return base::TimeDelta();
     }
 
-    return base::TimeDelta::FromSeconds(
-        switches::kSyncInstanceIDTokenTTLSeconds.Get());
+    return base::Seconds(switches::kSyncInstanceIDTokenTTLSeconds.Get());
   }
 
   // This magic value is identical to kPolicyFCMInvalidationSenderID, i.e. the
@@ -66,8 +65,7 @@ base::TimeDelta GetTimeToLive(const std::string& sender_id) {
       return base::TimeDelta();
     }
 
-    return base::TimeDelta::FromSeconds(
-        switches::kPolicyInstanceIDTokenTTLSeconds.Get());
+    return base::Seconds(switches::kPolicyInstanceIDTokenTTLSeconds.Get());
   }
 
   // The default for all other FCM clients is no TTL.
@@ -238,8 +236,7 @@ void FCMNetworkHandler::ScheduleNextTokenValidation() {
   DCHECK(IsListening());
 
   token_validation_timer_->Start(
-      FROM_HERE,
-      base::TimeDelta::FromMinutes(kTokenValidationPeriodMinutesDefault),
+      FROM_HERE, base::Minutes(kTokenValidationPeriodMinutesDefault),
       base::BindOnce(&FCMNetworkHandler::StartTokenValidation,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -30,21 +30,16 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.translate.TranslateBridge;
-import org.chromium.chrome.browser.util.VoiceRecognitionUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -152,6 +147,7 @@ public class VoiceRecognitionHandler {
     @VisibleForTesting
     static final String EXTRA_VOICE_ENTRYPOINT = "com.android.chrome.voice.VOICE_ENTRYPOINT";
 
+    private static Boolean sIsRecognitionIntentPresentForTesting;
     private final Delegate mDelegate;
     private Long mQueryStartTimeMs;
     private WebContentsObserver mVoiceSearchWebContentsObserver;
@@ -270,6 +266,9 @@ public class VoiceRecognitionHandler {
 
         /** Clears omnibox focus, used to display the dialog when the keyboard is shown. */
         void clearOmniboxFocus();
+
+        /** Notifies the delegate that voice recognition could not complete. */
+        void notifyVoiceRecognitionCanceled();
     }
 
     /** Interface for observers interested in updates to the voice state. */
@@ -393,10 +392,6 @@ public class VoiceRecognitionHandler {
         }
     }
 
-    public void setActiveProfile(Profile profile) {
-        notifyVoiceAvailabilityImpacted();
-    }
-
     /**
      * Instantiated when a voice search is performed to monitor the web contents for a navigation
      * to be started so we can notify the render frame that a user gesture has been performed. This
@@ -455,7 +450,7 @@ public class VoiceRecognitionHandler {
 
         // WindowAndroid.IntentCallback implementation:
         @Override
-        public void onIntentCompleted(WindowAndroid window, int resultCode, Intent data) {
+        public void onIntentCompleted(int resultCode, Intent data) {
             if (mCallbackComplete) {
                 recordVoiceSearchUnexpectedResult(mSource, mTarget);
                 return;
@@ -464,10 +459,12 @@ public class VoiceRecognitionHandler {
             mCallbackComplete = true;
             if (resultCode == Activity.RESULT_CANCELED) {
                 recordVoiceSearchDismissedEvent(mSource, mTarget);
+                mDelegate.notifyVoiceRecognitionCanceled();
                 return;
             }
             if (resultCode != Activity.RESULT_OK || data.getExtras() == null) {
                 recordVoiceSearchFailureEvent(mSource, mTarget);
+                mDelegate.notifyVoiceRecognitionCanceled();
                 return;
             }
 
@@ -544,11 +541,13 @@ public class VoiceRecognitionHandler {
                 }
             }
 
-            AutocompleteMatch match =
-                    AutocompleteCoordinator.classify(mProfileSupplier.get(), topResultQuery);
+            AutocompleteMatch match = null;
+            if (mProfileSupplier.hasValue()) {
+                match = AutocompleteCoordinator.classify(mProfileSupplier.get(), topResultQuery);
+            }
 
-            String url = match.getUrl().getSpec();
-            if (match.isSearchSuggestion()) {
+            String url;
+            if (match == null || match.isSearchSuggestion()) {
                 url = TemplateUrlServiceFactory.get()
                               .getUrlForVoiceSearchQuery(topResultQuery)
                               .getSpec();
@@ -561,6 +560,8 @@ public class VoiceRecognitionHandler {
                     assert !url.contains("#") : "URL must not contain a fragment.";
                     url += "&hl=" + topResult.getLanguage();
                 }
+            } else {
+                url = match.getUrl().getSpec();
             }
 
             mDelegate.loadUrlFromVoice(url);
@@ -686,23 +687,23 @@ public class VoiceRecognitionHandler {
             // If the string appears to be a URL, then use it instead of the string returned from
             // the voice engine.
             String culledString = strings.get(i).replaceAll(" ", "");
-            AutocompleteMatch match =
-                    AutocompleteCoordinator.classify(mProfileSupplier.get(), culledString);
-            String url = match.isSearchSuggestion() ? null : match.getUrl().getSpec();
+
+            AutocompleteMatch match = null;
+            if (mProfileSupplier.hasValue()) {
+                match = AutocompleteCoordinator.classify(mProfileSupplier.get(), culledString);
+            }
+
+            String urlOrSearchQuery;
+            if (match == null || match.isSearchSuggestion()) {
+                urlOrSearchQuery = strings.get(i);
+            } else {
+                urlOrSearchQuery = culledString;
+            }
+
             String language = languages == null ? null : languages.get(i);
-            results.add(new VoiceResult(
-                    url == null ? strings.get(i) : culledString, confidences[i], language));
+            results.add(new VoiceResult(urlOrSearchQuery, confidences[i], language));
         }
         return results;
-    }
-
-    /** Returns the PrefService for the active Profile, or null if no profile has been loaded. */
-    private @Nullable PrefService getPrefService() {
-        if (!ProfileManager.isInitialized()) {
-            return null;
-        }
-
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
     /**
@@ -715,22 +716,20 @@ public class VoiceRecognitionHandler {
         startTrackingQueryDuration();
 
         WindowAndroid windowAndroid = mDelegate.getWindowAndroid();
-        if (windowAndroid == null) return;
-        Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) return;
+        if (windowAndroid == null) {
+            mDelegate.notifyVoiceRecognitionCanceled();
+            return;
+        }
 
-        if (FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY)) {
-            // TODO(crbug.com/1161022): Rather than checking here we should instead hide the mics
-            // when disabled via policy. Since the policy isn't available at layout time, we'll need
-            // to add observers that can notify the different mic surfaces of voice search being
-            // disabled.
-            @Nullable
-            PrefService prefService = getPrefService();
-            if (prefService == null || !prefService.getBoolean(Pref.AUDIO_CAPTURE_ALLOWED)) {
-                return;
-            }
+        Activity activity = windowAndroid.getActivity().get();
+        if (activity == null) {
+            mDelegate.notifyVoiceRecognitionCanceled();
+            return;
+        }
+
+        if (!VoiceRecognitionUtil.isVoiceSearchPermittedByPolicy(/* strictPolicyCheck=*/true)) {
+            mDelegate.notifyVoiceRecognitionCanceled();
+            return;
         }
 
         if (mAssistantVoiceSearchServiceSupplier.hasValue()) {
@@ -774,6 +773,7 @@ public class VoiceRecognitionHandler {
         PermissionCallback callback = (permissions, grantResults) -> {
             if (grantResults.length != 1) {
                 recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CAN_ASK_AGAIN);
+                mDelegate.notifyVoiceRecognitionCanceled();
                 return;
             }
 
@@ -784,8 +784,10 @@ public class VoiceRecognitionHandler {
             } else if (!windowAndroid.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
                 recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CANNOT_ASK_AGAIN);
                 notifyVoiceAvailabilityImpacted();
+                mDelegate.notifyVoiceRecognitionCanceled();
             } else {
                 recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CAN_ASK_AGAIN);
+                mDelegate.notifyVoiceRecognitionCanceled();
             }
         };
         windowAndroid.requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, callback);
@@ -798,7 +800,10 @@ public class VoiceRecognitionHandler {
             Activity activity, WindowAndroid windowAndroid, @VoiceInteractionSource int source) {
         // Check if we need to request audio permissions. If we don't, then trigger a permissions
         // prompt will appear and startVoiceRecognition will be called again.
-        if (!ensureAudioPermissionGranted(activity, windowAndroid, source)) return false;
+        if (!ensureAudioPermissionGranted(activity, windowAndroid, source)) {
+            mDelegate.notifyVoiceRecognitionCanceled();
+            return false;
+        }
 
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(
@@ -999,37 +1004,16 @@ public class VoiceRecognitionHandler {
                 >= 0;
     }
 
-    /**
-     * @return Whether or not voice search is enabled.
-     */
+    /** Returns whether voice search is enabled on the current tab. */
     public boolean isVoiceSearchEnabled() {
         LocationBarDataProvider locationBarDataProvider = mDelegate.getLocationBarDataProvider();
         if (locationBarDataProvider == null) return false;
-
-        boolean isIncognito = locationBarDataProvider.isIncognito();
+        if (locationBarDataProvider.isIncognito()) return false;
         WindowAndroid windowAndroid = mDelegate.getWindowAndroid();
-        if (windowAndroid == null || isIncognito) return false;
-
-        if (!windowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)
-                && !windowAndroid.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
-            return false;
-        }
-
-        if (FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY)) {
-            @Nullable
-            PrefService prefService = getPrefService();
-            // If the PrefService isn't initialized yet we won't know here whether or not voice
-            // search is allowed by policy. In that case, treat voice search as enabled but check
-            // again when a Profile is set and PrefService becomes available.
-            if (prefService != null && !prefService.getBoolean(Pref.AUDIO_CAPTURE_ALLOWED)) {
-                return false;
-            }
-        }
-
-        Activity activity = windowAndroid.getActivity().get();
-        return activity != null && isRecognitionIntentPresent(true);
+        if (windowAndroid == null) return false;
+        if (windowAndroid.getActivity().get() == null) return false;
+        if (!VoiceRecognitionUtil.isVoiceSearchEnabled(windowAndroid)) return false;
+        return true;
     }
 
     /** Start tracking query duration by capturing when it started */
@@ -1260,8 +1244,17 @@ public class VoiceRecognitionHandler {
      * @return {@code true} if recognition is supported.  {@code false} otherwise.
      */
     @VisibleForTesting
-    protected boolean isRecognitionIntentPresent(boolean useCachedValue) {
+    protected static boolean isRecognitionIntentPresent(boolean useCachedValue) {
+        if (sIsRecognitionIntentPresentForTesting != null) {
+            return sIsRecognitionIntentPresentForTesting;
+        }
         return VoiceRecognitionUtil.isRecognitionIntentPresent(useCachedValue);
+    }
+
+    @VisibleForTesting
+    /*package*/ static void setIsRecognitionIntentPresentForTesting(
+            Boolean isRecognitionIntentPresent) {
+        sIsRecognitionIntentPresentForTesting = isRecognitionIntentPresent;
     }
 
     /** Sets the start time for testing. */

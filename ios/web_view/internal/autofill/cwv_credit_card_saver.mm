@@ -83,7 +83,7 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
   // If the user did not choose, the decision should be marked as ignored.
   if (_saveCardCallback) {
     std::move(_saveCardCallback)
-        .Run(autofill::AutofillClient::IGNORED,
+        .Run(autofill::AutofillClient::SaveCardOfferUserDecision::kIgnored,
              /*user_provided_card_details=*/{});
   }
 }
@@ -104,7 +104,7 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
   _saveCompletionHandler = completionHandler;
   DCHECK(_saveCardCallback);
   std::move(_saveCardCallback)
-      .Run(autofill::AutofillClient::ACCEPTED,
+      .Run(autofill::AutofillClient::SaveCardOfferUserDecision::kAccepted,
            {
                .cardholder_name = base::SysNSStringToUTF16(cardHolderFullName),
                .expiration_date_month =
@@ -120,7 +120,7 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
          "-decline: once per instance.";
   DCHECK(_saveCardCallback);
   std::move(_saveCardCallback)
-      .Run(autofill::AutofillClient::DECLINED,
+      .Run(autofill::AutofillClient::SaveCardOfferUserDecision::kDeclined,
            /*user_provided_card_details=*/{});
   _decisionMade = YES;
 }

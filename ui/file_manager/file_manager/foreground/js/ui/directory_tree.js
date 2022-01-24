@@ -167,15 +167,14 @@ Object.freeze(DirectoryItemTreeBaseMethods);
  * Create tree rowElement content: returns a string of HTML used to innerHTML
  * a tree item rowElement.
  * @param {string} id The tree rowElement label Id.
- * @param {string} label The tree rowElement label.
  * @return {string}
  */
-directorytree.createRowElementContent = (id, label) => {
+directorytree.createRowElementContent = (id) => {
   return `
     <div class='file-row'>
      <span class='expand-icon'></span>
      <span class='icon'></span>
-     <span class='label entry-name' id='${id}'>${label}</span>
+     <span class='label entry-name' id='${id}'></span>
     </div>`;
 };
 
@@ -217,8 +216,9 @@ class FilesTreeItem extends TreeItem {
 
     this.parentTree_ = tree;
 
-    const innerHTML = directorytree.createRowElementContent(id, label);
+    const innerHTML = directorytree.createRowElementContent(id);
     this.rowElement.innerHTML = innerHTML;
+    this.label = label;
   }
 
   /**

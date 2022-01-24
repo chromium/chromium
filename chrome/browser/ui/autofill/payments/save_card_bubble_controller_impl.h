@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
@@ -19,8 +18,6 @@
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-
-class PrefService;
 
 namespace autofill {
 
@@ -42,6 +39,9 @@ class SaveCardBubbleControllerImpl
     virtual void OnIconShown() = 0;
   };
 
+  SaveCardBubbleControllerImpl(const SaveCardBubbleControllerImpl&) = delete;
+  SaveCardBubbleControllerImpl& operator=(const SaveCardBubbleControllerImpl&) =
+      delete;
   ~SaveCardBubbleControllerImpl() override;
 
   // Sets up the controller and offers to save the |card| locally.
@@ -174,9 +174,6 @@ class SaveCardBubbleControllerImpl
   // be shown when the save card icon is clicked.
   BubbleType current_bubble_type_ = BubbleType::INACTIVE;
 
-  // Weak reference to read & write |kAutofillAcceptSaveCreditCardPromptState|.
-  PrefService* pref_service_;
-
   // Callback to run once the user makes a decision with respect to the credit
   // card upload offer-to-save prompt. Will return the cardholder name
   // provided/confirmed by the user if it was requested. Will also return the
@@ -223,8 +220,6 @@ class SaveCardBubbleControllerImpl
   ObserverForTest* observer_for_testing_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleControllerImpl);
 };
 
 }  // namespace autofill

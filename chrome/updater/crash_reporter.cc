@@ -40,7 +40,8 @@ std::vector<std::string> MakeCrashHandlerArgs(UpdaterScope updater_scope) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitch(kCrashHandlerSwitch);
   command_line.AppendSwitch(kEnableLoggingSwitch);
-  command_line.AppendSwitchASCII(kLoggingModuleSwitch, "*/updater/*=2");
+  command_line.AppendSwitchASCII(kLoggingModuleSwitch,
+                                 kLoggingModuleSwitchValue);
   if (updater_scope == UpdaterScope::kSystem) {
     command_line.AppendSwitch(kSystemSwitch);
   }

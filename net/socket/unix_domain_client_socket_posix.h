@@ -34,6 +34,9 @@ class NET_EXPORT UnixDomainClientSocket : public StreamSocket {
   // UnixDomainServerSocket uses this after it accepts a connection.
   explicit UnixDomainClientSocket(std::unique_ptr<SocketPosix> socket);
 
+  UnixDomainClientSocket(const UnixDomainClientSocket&) = delete;
+  UnixDomainClientSocket& operator=(const UnixDomainClientSocket&) = delete;
+
   ~UnixDomainClientSocket() override;
 
   // Fills |address| with |socket_path| and its length. For Android or Linux
@@ -83,8 +86,6 @@ class NET_EXPORT UnixDomainClientSocket : public StreamSocket {
   // This net log is just to comply StreamSocket::NetLog(). It throws away
   // everything.
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnixDomainClientSocket);
 };
 
 }  // namespace net

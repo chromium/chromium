@@ -43,6 +43,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -121,8 +122,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -154,8 +154,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -188,8 +187,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         startAutofillAssistantOnTab(TEST_PAGE_A, script);
@@ -218,8 +216,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript scriptA = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 listA);
 
@@ -233,8 +230,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript scriptB = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_B)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 listB);
 
@@ -261,6 +257,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1237330")
     public void switchingTabsRestoresBottomSheetState() {
         ArrayList<ActionProto> listA = new ArrayList<>();
         listA.add(ActionProto.newBuilder()
@@ -283,8 +280,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript scriptA = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 listA);
         ArrayList<ActionProto> listB = new ArrayList<>();
@@ -298,8 +294,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript scriptB = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_B)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 listB);
 
@@ -361,8 +356,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript scriptA = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 listA);
         ArrayList<ActionProto> listB = new ArrayList<>();
@@ -376,8 +370,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript scriptB = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_B)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 listB);
 
@@ -435,8 +428,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript scriptA = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 listA);
 
@@ -450,8 +442,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript scriptB = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_B)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 listB);
         startAutofillAssistantOnTab(TEST_PAGE_A, scriptA);
@@ -483,8 +474,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         startAutofillAssistantOnTab(TEST_PAGE_A, script);
@@ -535,8 +525,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         startAutofillAssistantOnTab(TEST_PAGE_A, script);
@@ -575,8 +564,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 

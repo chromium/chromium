@@ -10,9 +10,9 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_device_handle_win.h"
@@ -51,7 +51,9 @@ void UsbDeviceWin::Open(OpenCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), std::move(device_handle)));
 }
 
-void UsbDeviceWin::ReadDescriptors(base::OnceCallback<void(bool)> callback) {
+void UsbDeviceWin::ReadDescriptors(
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+    base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   scoped_refptr<UsbDeviceHandle> device_handle;
@@ -59,7 +61,8 @@ void UsbDeviceWin::ReadDescriptors(base::OnceCallback<void(bool)> callback) {
       CreateFile(hub_path_.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, nullptr,
                  OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr));
   if (handle.IsValid()) {
-    device_handle = new UsbDeviceHandleWin(this, std::move(handle));
+    device_handle = new UsbDeviceHandleWin(this, std::move(handle),
+                                           std::move(blocking_task_runner));
   } else {
     USB_PLOG(ERROR) << "Failed to open " << hub_path_;
     std::move(callback).Run(false);

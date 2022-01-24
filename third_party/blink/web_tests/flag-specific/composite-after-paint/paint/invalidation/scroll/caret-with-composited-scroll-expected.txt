@@ -24,7 +24,7 @@
       "bounds": [205, 1022],
       "contentsOpaqueForText": true,
       "invalidations": [
-        [0, 998, 205, 24]
+        [0, 999, 205, 23]
       ],
       "transform": 2
     }

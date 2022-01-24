@@ -13,6 +13,8 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/fullscreen_notification_blocker.h"
+#include "ash/system/message_center/message_center_constants.h"
+#include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
@@ -144,6 +146,7 @@ void AshMessagePopupCollection::ConfigureWidgetInitParamsForContainer(
   // windows (i.e. pressing ctrl + forward/back).
   init_params->activatable = views::Widget::InitParams::Activatable::kYes;
   init_params->name = kMessagePopupWidgetName;
+  init_params->corner_radius = kMessagePopupCornerRadius;
   Shell::Get()->focus_cycler()->AddWidget(widget);
   widget->AddObserver(this);
   tracked_widgets_.insert(widget);
@@ -197,6 +200,17 @@ void AshMessagePopupCollection::AnimationFinished() {
     animation_tracker_->Stop();
     animation_tracker_.reset();
   }
+}
+
+message_center::MessagePopupView* AshMessagePopupCollection::CreatePopup(
+    const message_center::Notification& notification) {
+  bool a11_feedback_on_init =
+      notification.rich_notification_data()
+          .should_make_spoken_feedback_for_popup_updates;
+  return new message_center::MessagePopupView(
+      MessageViewFactory::Create(notification, /*shown_in_popup=*/true)
+          .release(),
+      this, a11_feedback_on_init);
 }
 
 void AshMessagePopupCollection::OnSlideOut(const std::string& notification_id) {

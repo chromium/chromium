@@ -69,7 +69,7 @@ base::TimeTicks ThreadManager::NowTicks() {
 }
 
 base::TimeDelta ThreadManager::NextPendingTaskDelay() {
-  return std::max(base::TimeDelta::FromMilliseconds(0),
+  return std::max(base::Milliseconds(0),
                   test_task_runner_->NextPendingTaskDelay());
 }
 
@@ -212,7 +212,7 @@ void ThreadManager::PostDelayedTask(
       FROM_HERE,
       BindOnce(&Task::Execute, pending_task->weak_ptr_factory_.GetWeakPtr(),
                task),
-      base::TimeDelta::FromMilliseconds(delay_ms));
+      base::Milliseconds(delay_ms));
 
   {
     AutoLock lock(lock_);
@@ -251,7 +251,7 @@ void ThreadManager::ExecuteSetQueueEnabledAction(
         chosen_task_queue->queue.get()->CreateQueueEnabledVoter());
   }
 
-  size_t voter_index = action.voter_id() % chosen_task_queue->voters.size();
+  wtf_size_t voter_index = action.voter_id() % chosen_task_queue->voters.size();
   chosen_task_queue->voters[voter_index]->SetVoteToEnable(action.enabled());
 }
 
@@ -280,7 +280,7 @@ void ThreadManager::ExecuteShutdownTaskQueueAction(
                                   NowTicks());
 
   TestTaskQueue* chosen_task_queue = nullptr;
-  size_t queue_index;
+  wtf_size_t queue_index;
   {
     AutoLock lock(lock_);
 
@@ -309,7 +309,7 @@ void ThreadManager::ExecuteCancelTaskAction(
 
   AutoLock lock(lock_);
   if (!pending_tasks_.IsEmpty()) {
-    size_t task_index = action.task_id() % pending_tasks_.size();
+    wtf_size_t task_index = action.task_id() % pending_tasks_.size();
     pending_tasks_[task_index]->weak_ptr_factory_.InvalidateWeakPtrs();
 
     // If it is already running, it is a parent task and will be deleted when
@@ -371,9 +371,8 @@ void ThreadManager::ExecuteTask(
 
   base::TimeTicks next_time =
       start_time +
-      std::max(base::TimeDelta(),
-               base::TimeDelta::FromMilliseconds(task.duration_ms()) -
-                   (end_time - start_time));
+      std::max(base::TimeDelta(), base::Milliseconds(task.duration_ms()) -
+                                      (end_time - start_time));
 
   while (NowTicks() != next_time) {
     processor_->thread_pool_manager()->AdvanceClockSynchronouslyToTime(
@@ -386,7 +385,7 @@ void ThreadManager::ExecuteTask(
 
 void ThreadManager::DeleteTask(Task* task) {
   AutoLock lock(lock_);
-  size_t i = 0;
+  wtf_size_t i = 0;
   while (i < pending_tasks_.size() && task != pending_tasks_[i].get()) {
     i++;
   }

@@ -48,13 +48,13 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.signin.ui.SignOutDialogFragment;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogFragment;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -63,7 +63,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.ModelType;
-import org.chromium.components.sync.PassphraseType;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -536,19 +535,16 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
     /** Callback for PassphraseTypeDialogFragment.Listener */
     @Override
-    public void onPassphraseTypeSelected(@PassphraseType int type) {
+    public void onChooseCustomPassphraseRequested() {
         if (!mSyncService.isEngineInitialized()) {
             // If the engine was shut down since the dialog was opened, do nothing.
             return;
         }
 
-        boolean isAllDataEncrypted = mSyncService.isEncryptEverythingEnabled();
-        boolean isUsingExplicitPassphrase = mSyncService.isUsingExplicitPassphrase();
-
         // The passphrase type should only ever be selected if the account doesn't have
         // full encryption enabled. Otherwise both options should be disabled.
-        assert !isAllDataEncrypted;
-        assert !isUsingExplicitPassphrase;
+        assert !mSyncService.isEncryptEverythingEnabled();
+        assert !mSyncService.isUsingExplicitPassphrase();
         displayCustomPassphraseDialog();
     }
 
@@ -561,7 +557,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private void onTurnOffSyncClicked() {
         if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount()) {
+                        .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return;
         }
         SigninMetricsUtils.logProfileAccountManagementMenu(
@@ -753,7 +749,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         final Profile profile = Profile.getLastUsedRegularProfile();
         // In case sign-out happened while the dialog was displayed, we guard the sign out so
         // we do not hit a native crash.
-        if (!IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount()) return;
+        if (!IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount(
+                    ConsentLevel.SYNC)) {
+            return;
+        }
 
         final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
         IdentityServicesProvider.get().getSigninManager(profile).signOut(

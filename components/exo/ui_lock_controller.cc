@@ -4,6 +4,8 @@
 
 #include "components/exo/ui_lock_controller.h"
 
+#include <memory>
+
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/wm/window_state.h"
@@ -46,11 +48,11 @@ namespace {
 //   mouse moves below 150px.
 
 // Duration to show the 'Press and hold Esc' notification.
-constexpr auto kEscNotificationDuration = base::TimeDelta::FromSeconds(4);
+constexpr auto kEscNotificationDuration = base::Seconds(4);
 // Position of Esc notification from top of screen.
 const int kEscNotificationTopPx = 45;
 // Duration to show the exit 'X' popup.
-constexpr auto kExitPopupDuration = base::TimeDelta::FromSeconds(3);
+constexpr auto kExitPopupDuration = base::Seconds(3);
 // Display the exit popup if mouse is above this height.
 constexpr float kExitPopupDisplayHeight = 3.f;
 // Hide the exit popup if mouse is below this height.
@@ -218,7 +220,7 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(EscHoldNotifier,
                                    nullptr)
 }
 
-constexpr auto kLongPressEscapeDuration = base::TimeDelta::FromSeconds(2);
+constexpr auto kLongPressEscapeDuration = base::Seconds(2);
 constexpr auto kExcludedFlags = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
                                 ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN |
                                 ui::EF_ALTGR_DOWN | ui::EF_IS_REPEAT;
@@ -270,7 +272,8 @@ void UILockController::OnSurfaceFocused(Surface* gained_focus) {
   }
 
   // Object is owned as a window property.
-  window->SetProperty(kEscHoldNotifierKey, new EscHoldNotifier(window));
+  window->SetProperty(kEscHoldNotifierKey,
+                      std::make_unique<EscHoldNotifier>(window));
 }
 
 views::Widget* UILockController::GetEscNotificationForTesting(

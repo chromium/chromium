@@ -100,10 +100,14 @@ void DropdownBarHost::StopAnimation() {
 }
 
 void DropdownBarHost::Show(bool animate) {
-  // Stores the currently focused view, and tracks focus changes so that we can
-  // restore focus when the dropdown widget is closed.
-  focus_tracker_ =
-      std::make_unique<views::ExternalFocusTracker>(view_, focus_manager_);
+  if (!focus_tracker_) {
+    // Stores the currently focused view, and tracks focus changes so that we
+    // can restore focus when the dropdown widget is closed.
+    // One may already be set if this Show() call is part of restoring this
+    // DropdownBarHost visibility to a specific tab.
+    focus_tracker_ =
+        std::make_unique<views::ExternalFocusTracker>(view_, focus_manager_);
+  }
 
   SetDialogPosition(GetDialogPosition(gfx::Rect()));
 
@@ -233,6 +237,16 @@ void DropdownBarHost::UnregisterAccelerators() {
 }
 
 void DropdownBarHost::OnVisibilityChanged() {}
+
+void DropdownBarHost::SetFocusTracker(
+    std::unique_ptr<views::ExternalFocusTracker> focus_tracker) {
+  focus_tracker_ = std::move(focus_tracker);
+}
+
+std::unique_ptr<views::ExternalFocusTracker>
+DropdownBarHost::TakeFocusTracker() {
+  return std::move(focus_tracker_);
+}
 
 void DropdownBarHost::ResetFocusTracker() {
   focus_tracker_.reset();

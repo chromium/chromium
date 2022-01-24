@@ -32,8 +32,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scrollbar_size.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace {
@@ -147,7 +147,8 @@ class ThumbnailTabHelper::TabStateTracker
 
   void RenderViewReady() override { capture_driver_.SetCanCapture(true); }
 
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     // TODO(crbug.com/1073141): determine if there are other ways to
     // lose the view.
     capture_driver_.SetCanCapture(false);
@@ -206,14 +207,6 @@ ThumbnailTabHelper::~ThumbnailTabHelper() {
   StopVideoCapture();
 }
 
-// Called when a thumbnail is published to observers. Records what
-// method was used to capture the thumbnail.
-//
-// static
-void ThumbnailTabHelper::RecordCaptureType(CaptureType type) {
-  UMA_HISTOGRAM_ENUMERATION("Tab.Preview.CaptureType", type);
-}
-
 // static
 ThumbnailScheduler& ThumbnailTabHelper::GetScheduler() {
   static base::NoDestructor<ThumbnailSchedulerImpl> instance;
@@ -252,8 +245,7 @@ void ThumbnailTabHelper::StoreThumbnailForTabSwitch(base::TimeTicks start_time,
                                                     const SkBitmap& bitmap) {
   UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Preview.TimeToStoreAfterTabSwitch",
                              base::TimeTicks::Now() - start_time,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromSeconds(1), 50);
+                             base::Milliseconds(1), base::Seconds(1), 50);
   StoreThumbnail(CaptureType::kCopyFromView, bitmap, absl::nullopt);
 }
 
@@ -273,7 +265,6 @@ void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  RecordCaptureType(type);
   state_->OnFrameCaptured(type);
   thumbnail_->AssignSkBitmap(bitmap, frame_id);
 }
@@ -363,4 +354,4 @@ ThumbnailCaptureInfo ThumbnailTabHelper::GetInitialCaptureInfo(
   return capture_info;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ThumbnailTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ThumbnailTabHelper);

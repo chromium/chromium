@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,11 +38,12 @@ class ShortcutInfoTest : public testing::Test {
  public:
   ShortcutInfoTest() : info_(GURL()) {}
 
+  ShortcutInfoTest(const ShortcutInfoTest&) = delete;
+  ShortcutInfoTest& operator=(const ShortcutInfoTest&) = delete;
+
  protected:
   ShortcutInfo info_;
-  blink::Manifest manifest_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShortcutInfoTest);
+  blink::mojom::Manifest manifest_;
 };
 
 TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
@@ -63,9 +63,11 @@ TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
   manifest_.display = blink::mojom::DisplayMode::kFullscreen;
 
   info_.theme_color = 0xffff0000;
+  manifest_.has_theme_color = true;
   manifest_.theme_color = 0xffcc0000;
 
   info_.background_color = 0xffaa0000;
+  manifest_.has_background_color = true;
   manifest_.background_color = 0xffbb0000;
 
   info_.icon_urls.push_back("https://old.com/icon.png");

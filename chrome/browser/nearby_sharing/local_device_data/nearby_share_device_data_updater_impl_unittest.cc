@@ -28,7 +28,7 @@ const char kTestContactEmail2[] = "test2@gmail.com";
 const char kTestCertificateId1[] = "cert_id_1";
 const char kTestCertificateId2[] = "cert_id_2";
 const char kTestPersonName[] = "person_name";
-constexpr base::TimeDelta kTestTimeout = base::TimeDelta::FromMinutes(123);
+constexpr base::TimeDelta kTestTimeout = base::Minutes(123);
 
 const std::vector<nearbyshare::proto::Contact>& TestContactList() {
   static const base::NoDestructor<std::vector<nearbyshare::proto::Contact>>

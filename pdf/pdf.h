@@ -48,6 +48,9 @@ enum PrintingMode {
   // Values 4 and 5 are similar to `kPostScript2` and `kPostScript3`, but are
   // not intended for use in sandboxed environments like Chromium's.
   kEmfWithReducedRasterization = 6,
+  kPostScript3WithType42Fonts = 7,
+  // Value 8 is similar to `kPostScript3WithType42Fonts`, but is not intended
+  // for use in sandboxed environments like Chromium's.
 };
 
 // `pdf_buffer` is the buffer that contains the entire PDF document to be

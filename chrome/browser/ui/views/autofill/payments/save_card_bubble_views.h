@@ -33,6 +33,9 @@ class SaveCardBubbleViews : public AutofillBubbleBase,
                       content::WebContents* web_contents,
                       SaveCardBubbleController* controller);
 
+  SaveCardBubbleViews(const SaveCardBubbleViews&) = delete;
+  SaveCardBubbleViews& operator=(const SaveCardBubbleViews&) = delete;
+
   void Show(DisplayReason reason);
 
   // AutofillBubbleBase:
@@ -80,8 +83,6 @@ class SaveCardBubbleViews : public AutofillBubbleBase,
 
   PaymentsBubbleClosedReason closed_reason_ =
       PaymentsBubbleClosedReason::kUnknown;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleViews);
 };
 
 }  // namespace autofill

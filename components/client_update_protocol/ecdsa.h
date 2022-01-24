@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace client_update_protocol {
@@ -30,6 +29,10 @@ namespace client_update_protocol {
 // ValidateResponse().
 class Ecdsa {
  public:
+  Ecdsa() = delete;
+  Ecdsa(const Ecdsa&) = delete;
+  Ecdsa& operator=(const Ecdsa&) = delete;
+
   ~Ecdsa();
 
   // Initializes this instance of CUP-ECDSA with a versioned public key.
@@ -60,7 +63,8 @@ class Ecdsa {
                         const base::StringPiece& signature);
 
   // Sets the key and nonce that were used to generate a signature that is baked
-  // into a unit test.
+  // into a unit test. Note this function encodes |nonce| in decimal, while
+  // non-test paths use a base64url-encoded, 256-bit string.
   void OverrideNonceForTesting(int key_version, uint32_t nonce);
 
  private:
@@ -80,8 +84,6 @@ class Ecdsa {
   // The query string containing key version and nonce in UTF-8 form.  This is
   // modified on each call to SignRequest(), and checked by ValidateResponse().
   std::string request_query_cup2key_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Ecdsa);
 };
 
 }  // namespace client_update_protocol

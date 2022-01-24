@@ -9,15 +9,14 @@
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
-#include "chrome/browser/ui/views/frame/windows_10_tab_search_caption_button.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
 
 Windows10CaptionButton::Windows10CaptionButton(
     PressedCallback callback,
@@ -31,6 +30,7 @@ Windows10CaptionButton::Windows10CaptionButton(
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetAccessibleName(accessible_name);
+  SetID(button_type);
 }
 
 gfx::Size Windows10CaptionButton::CalculatePreferredSize() const {
@@ -54,17 +54,14 @@ gfx::Size Windows10CaptionButton::CalculatePreferredSize() const {
 SkColor Windows10CaptionButton::GetBaseColor() const {
   // Get the theme's calculated custom control button background color
   // (as it takes into account images, etc).  If none is specified (likely when
-  // there is no theme active), fall back to the titlebar color.
+  // there is no theme active), the ThemeProvider will fall back to the titlebar
+  // color.
   const int control_button_bg_color_id =
       (frame_view_->ShouldPaintAsActive()
            ? ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE
            : ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE);
   const ui::ThemeProvider* theme_provider = GetThemeProvider();
-  const bool has_custom_color =
-      theme_provider->HasCustomColor(control_button_bg_color_id);
-  const SkColor bg_color =
-      (has_custom_color ? theme_provider->GetColor(control_button_bg_color_id)
-                        : frame_view_->GetTitlebarColor());
+  const SkColor bg_color = theme_provider->GetColor(control_button_bg_color_id);
 
   return GlassBrowserFrameView::GetReadableFeatureColor(bg_color);
 }
@@ -147,8 +144,8 @@ int Windows10CaptionButton::GetBetweenButtonSpacing() const {
 int Windows10CaptionButton::GetButtonDisplayOrderIndex() const {
   int button_display_order = 0;
   const bool tab_search_enabled =
-      Windows10TabSearchCaptionButton::IsTabSearchCaptionButtonEnabled(
-          frame_view_);
+      WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(
+          frame_view_->browser_view()->browser());
   switch (button_type_) {
     case VIEW_ID_TAB_SEARCH_BUTTON:
       button_display_order = 0;

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.history;
 
+import org.chromium.base.Callback;
+
 import java.util.List;
 
 /**
@@ -64,6 +66,14 @@ public interface HistoryProvider {
      * after queryHistory is called.
      */
     void queryHistoryContinuation();
+
+    /**
+     * Gets the last time any webpage on the given host was visited, excluding the last navigation
+     * and with an internal time buffer.
+     * @param hostName The hostname of the query.
+     * @param callback The Callback to call with the last visit timestamp in milliseconds.
+     */
+    void getLastVisitToHostBeforeRecentNavigations(String hostName, Callback<Long> callback);
 
     /**
      * Adds the HistoryItem to the list of items being removed. The removal will not be committed

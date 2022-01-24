@@ -42,6 +42,6 @@ void WebContentsSetBackgroundColor::RenderFrameCreated(
     render_frame_host->GetView()->SetBackgroundColor(color_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsSetBackgroundColor)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsSetBackgroundColor);
 
 }  // namespace views

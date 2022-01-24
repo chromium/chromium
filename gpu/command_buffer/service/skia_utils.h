@@ -15,7 +15,10 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
+
+#if BUILDFLAG(ENABLE_VULKAN)
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#endif
 
 // Forwardly declare a few GL types to avoid including GL header files.
 typedef int GLint;
@@ -49,9 +52,10 @@ GPU_GLES2_EXPORT GrContextOptions
 GetDefaultGrContextOptions(GrContextType type);
 
 // Returns internal gl format of texture for Skia
-GPU_GLES2_EXPORT GLuint
-GetGrGLBackendTextureFormat(const gles2::FeatureInfo* feature_info,
-                            viz::ResourceFormat resource_format);
+GPU_GLES2_EXPORT GLuint GetGrGLBackendTextureFormat(
+    const gles2::FeatureInfo* feature_info,
+    viz::ResourceFormat resource_format,
+    sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe);
 
 // Creates a GrBackendTexture from a service ID. Skia does not take ownership.
 // Returns true on success.
@@ -61,6 +65,7 @@ GPU_GLES2_EXPORT bool GetGrBackendTexture(
     const gfx::Size& size,
     GLuint service_id,
     viz::ResourceFormat resource_format,
+    sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe,
     GrBackendTexture* gr_texture);
 
 // Adds a task to be executed when the flush in |flush_info| is complete.

@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
-#include "third_party/blink/renderer/core/inspector/protocol/DOM.h"
+#include "third_party/blink/renderer/core/inspector/protocol/dom.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -122,6 +122,7 @@ struct CORE_EXPORT InspectorContainerQueryContainerHighlightConfig {
   InspectorContainerQueryContainerHighlightConfig() = default;
 
   absl::optional<LineStyle> container_border;
+  absl::optional<LineStyle> descendant_border;
 };
 
 struct CORE_EXPORT InspectorFlexItemHighlightConfig {
@@ -133,6 +134,17 @@ struct CORE_EXPORT InspectorFlexItemHighlightConfig {
   absl::optional<BoxStyle> base_size_box;
   absl::optional<LineStyle> base_size_border;
   absl::optional<LineStyle> flexibility_arrow;
+};
+
+struct CORE_EXPORT InspectorIsolationModeHighlightConfig {
+  USING_FAST_MALLOC(InspectorIsolationModeHighlightConfig);
+
+ public:
+  InspectorIsolationModeHighlightConfig() = default;
+
+  Color resizer_color;
+  Color resizer_handle_color;
+  Color mask_color;
 };
 
 struct CORE_EXPORT InspectorHighlightConfig {
@@ -286,6 +298,11 @@ std::unique_ptr<protocol::DictionaryValue> InspectorContainerQueryHighlight(
     Node* node,
     const InspectorContainerQueryContainerHighlightConfig& config);
 
+std::unique_ptr<protocol::DictionaryValue> InspectorIsolatedElementHighlight(
+    Element* element,
+    const InspectorIsolationModeHighlightConfig& config,
+    int highlight_index);
+
 // CORE_EXPORT is required to make these functions available for unit tests.
 std::unique_ptr<protocol::DictionaryValue> CORE_EXPORT
 BuildSnapContainerInfo(Node* node);
@@ -296,6 +313,11 @@ BuildContainerQueryContainerInfo(
     const InspectorContainerQueryContainerHighlightConfig&
         container_query_container_highlight_config,
     float scale);
+
+std::unique_ptr<protocol::DictionaryValue> CORE_EXPORT
+BuildIsolatedElementInfo(Element& element,
+                         const InspectorIsolationModeHighlightConfig& config,
+                         float scale);
 
 }  // namespace blink
 

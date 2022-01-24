@@ -15,6 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 
+namespace ash {
+namespace test {
 namespace {
 
 std::string WrapSend(const std::string& expression) {
@@ -23,14 +25,14 @@ std::string WrapSend(const std::string& expression) {
 
 bool CheckOobeCondition(content::WebContents* web_contents,
                         const std::string& js_condition) {
-  return chromeos::test::JSChecker(web_contents).GetBool(js_condition);
+  return JSChecker(web_contents).GetBool(js_condition);
 }
 
 bool IsFocused(content::WebContents* web_contents,
                const std::initializer_list<base::StringPiece>& path) {
   if (!web_contents->GetContentNativeView()->HasFocus())
     return false;
-  auto js_checker = chromeos::test::JSChecker(web_contents);
+  auto js_checker = JSChecker(web_contents);
   std::string current_active = "document.activeElement";
   for (const auto& it : path) {
     if (js_checker.GetString(current_active + ".id") != it) {
@@ -46,8 +48,8 @@ std::string ElementHasClassCondition(
     std::initializer_list<base::StringPiece> element_ids) {
   std::string js = "$Element.classList.contains('$ClassName')";
   base::ReplaceSubstringsAfterOffset(&js, 0, "$ClassName", css_class);
-  base::ReplaceSubstringsAfterOffset(
-      &js, 0, "$Element", chromeos::test::GetOobeElementPath(element_ids));
+  base::ReplaceSubstringsAfterOffset(&js, 0, "$Element",
+                                     GetOobeElementPath(element_ids));
   return js;
 }
 
@@ -56,8 +58,8 @@ std::string ElementHasAttributeCondition(
     std::initializer_list<base::StringPiece> element_ids) {
   std::string js = "$Element.hasAttribute('$Attribute')";
   base::ReplaceSubstringsAfterOffset(&js, 0, "$Attribute", attribute);
-  base::ReplaceSubstringsAfterOffset(
-      &js, 0, "$Element", chromeos::test::GetOobeElementPath(element_ids));
+  base::ReplaceSubstringsAfterOffset(&js, 0, "$Element",
+                                     GetOobeElementPath(element_ids));
   return js;
 }
 
@@ -74,9 +76,6 @@ std::string DescribePath(std::initializer_list<base::StringPiece> element_ids) {
 }
 
 }  // namespace
-
-namespace chromeos {
-namespace test {
 
 JSChecker::JSChecker() = default;
 
@@ -538,15 +537,14 @@ void ExecuteOobeJSAsync(const std::string& script) {
 
 std::string GetOobeElementPath(
     std::initializer_list<base::StringPiece> element_ids) {
-  std::string result;
+  const char kGetElement[] = "document.getElementById('%s')";
+  const char kShadowRoot[] = ".shadowRoot.querySelector('#%s')";
   CHECK(element_ids.size() > 0);
   std::initializer_list<base::StringPiece>::const_iterator it =
       element_ids.begin();
-  result.append("document.getElementById('")
-      .append(std::string(*it))
-      .append("')");
+  auto result = base::StringPrintf(kGetElement, std::string(*it).c_str());
   for (it++; it < element_ids.end(); it++) {
-    result.append(".$$('#").append(std::string(*it)).append("')");
+      result.append(base::StringPrintf(kShadowRoot, std::string(*it).c_str()));
   }
   return result;
 }
@@ -565,8 +563,8 @@ std::unique_ptr<TestConditionWaiter> CreateOobeScreenWaiter(
   std::string js = "Oobe.getInstance().currentScreen.id=='$ScreenId'";
   base::ReplaceSubstringsAfterOffset(&js, 0, "$ScreenId", oobe_screen_id);
   std::string description = "OOBE Screen is " + oobe_screen_id;
-  return test::OobeJS().CreateWaiterWithDescription(js, description);
+  return OobeJS().CreateWaiterWithDescription(js, description);
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

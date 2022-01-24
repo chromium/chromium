@@ -28,7 +28,7 @@ namespace ui {
 
 namespace {
 NSString* kRunLoopMode = @"Chrome CATransactionCoordinator commit handler";
-constexpr auto kPostCommitTimeout = base::TimeDelta::FromMilliseconds(50);
+constexpr auto kPostCommitTimeout = base::Milliseconds(50);
 }  // namespace
 
 CATransactionCoordinator& CATransactionCoordinator::Get() {
@@ -78,7 +78,7 @@ void CATransactionCoordinator::PreCommitHandler() {
       break;  // success
 
     base::TimeDelta time_left = deadline - clock->NowTicks();
-    if (time_left <= base::TimeDelta::FromSeconds(0))
+    if (time_left <= base::Seconds(0))
       break;  // timeout
 
     ui::WindowResizeHelperMac::Get()->WaitForSingleTaskToRun(time_left);
@@ -101,7 +101,7 @@ void CATransactionCoordinator::PostCommitHandler() {
       break;  // success
 
     base::TimeDelta time_left = deadline - clock->NowTicks();
-    if (time_left <= base::TimeDelta::FromSeconds(0))
+    if (time_left <= base::Seconds(0))
       break;  // timeout
 
     ui::WindowResizeHelperMac::Get()->WaitForSingleTaskToRun(time_left);

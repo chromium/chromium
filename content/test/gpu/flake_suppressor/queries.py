@@ -11,8 +11,6 @@ MAX_ROWS = (2**31) - 1
 
 # Gets all failures from the past X days that did not already have an associated
 # test suppression when the test ran.
-# TODO(crbug.com/1192733): Update the query to also omit results for a test if
-# a suppression was added sometime between the failure and now.
 # TODO(crbug.com/1192733): Look into updating this to also check try results
 # once crbug.com/1217300 is complete.
 QUERY = """\
@@ -20,7 +18,6 @@ WITH
   failed_tests AS (
     SELECT
       exported.id,
-      status,
       test_metadata.name,
       ARRAY(
         SELECT value
@@ -30,7 +27,7 @@ WITH
         SELECT value
         FROM tr.tags
         WHERE key = "raw_typ_expectation") as typ_expectations
-    FROM `luci-resultdb.chromium.gpu_ci_test_results` tr
+    FROM `chrome-luci-data.chromium.gpu_ci_test_results` tr
     WHERE
       status = "FAIL"
       AND exported.realm = "chromium:ci"

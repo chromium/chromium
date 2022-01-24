@@ -5,14 +5,13 @@
 package org.chromium.components.paintpreview.player;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UnguessableToken;
-import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.url.GURL;
 
@@ -28,9 +27,9 @@ public interface PlayerCompositorDelegate {
                 @NonNull CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback);
 
-        PlayerCompositorDelegate createForProto(NativePaintPreviewServiceProvider service,
-                @Nullable PaintPreviewProto proto, GURL url, String directoryKey,
-                boolean mainFrameMode, @NonNull CompositorListener compositorListener,
+        PlayerCompositorDelegate createForCaptureResult(NativePaintPreviewServiceProvider service,
+                long nativeCaptureResultPtr, GURL url, String directoryKey, boolean mainFrameMode,
+                @NonNull CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback);
     }
 
@@ -127,6 +126,14 @@ public interface PlayerCompositorDelegate {
      * @return The URL that was clicked on. Null if there are no URLs.
      */
     GURL onClick(UnguessableToken frameGuid, int x, int y);
+
+    /**
+     * Gets the Root Frame Offsets for scroll matching.
+     * @return The coordinates of the root frame offset.
+     */
+    default Point getRootFrameOffsets() {
+        return new Point();
+    }
 
     /**
      * Sets whether to compress the directory when closing the player.

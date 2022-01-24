@@ -17,8 +17,20 @@ class BackgroundTracingHelperTest : public testing::Test {
   BackgroundTracingHelperTest() = default;
   ~BackgroundTracingHelperTest() override = default;
 
+  static size_t GetSequenceNumberPos(base::StringPiece string) {
+    return BackgroundTracingHelper::GetSequenceNumberPos(string);
+  }
+
   static uint32_t MD5Hash32(base::StringPiece string) {
     return BackgroundTracingHelper::MD5Hash32(string);
+  }
+
+  static void GetMarkHashAndSequenceNumber(base::StringPiece mark_name,
+                                           uint32_t sequence_number_offset,
+                                           uint32_t* mark_hash,
+                                           uint32_t* sequence_number) {
+    return BackgroundTracingHelper::GetMarkHashAndSequenceNumber(
+        mark_name, sequence_number_offset, mark_hash, sequence_number);
   }
 
   static bool ParseBackgroundTracingPerformanceMarkHashes(
@@ -28,6 +40,22 @@ class BackgroundTracingHelperTest : public testing::Test {
         allow_list, allow_listed_hashes);
   }
 };
+
+TEST_F(BackgroundTracingHelperTest, GetSequenceNumberPos) {
+  static constexpr char kFailNoSuffix[] = "nosuffixatall";
+  static constexpr char kFailNoUnderscore[] = "missingunderscore123";
+  static constexpr char kFailUnderscoreOnly[] = "underscoreonly_";
+  static constexpr char kFailNoPrefix[] = "_123";
+  EXPECT_EQ(0u, GetSequenceNumberPos(kFailNoSuffix));
+  EXPECT_EQ(0u, GetSequenceNumberPos(kFailNoUnderscore));
+  EXPECT_EQ(0u, GetSequenceNumberPos(kFailUnderscoreOnly));
+  EXPECT_EQ(0u, GetSequenceNumberPos(kFailNoPrefix));
+
+  static constexpr char kSuccess0[] = "success_1";
+  static constexpr char kSuccess1[] = "thisworks_123";
+  EXPECT_EQ(7u, GetSequenceNumberPos(kSuccess0));
+  EXPECT_EQ(9u, GetSequenceNumberPos(kSuccess1));
+}
 
 TEST_F(BackgroundTracingHelperTest, MD5Hash32) {
   static constexpr char kFoo[] = "foo";
@@ -41,6 +69,39 @@ TEST_F(BackgroundTracingHelperTest, MD5Hash32) {
   static_assert(kQuickFoxHash == base::MD5Hash32Constexpr(kQuickFox),
                 "unexpected hash");
   EXPECT_EQ(kQuickFoxHash, MD5Hash32(kQuickFox));
+}
+
+TEST_F(BackgroundTracingHelperTest, GetMarkHashAndSequenceNumber) {
+  static constexpr char kNoSuffix[] = "foo";
+  static constexpr char kInvalidSuffix0[] = "foo_";
+  static constexpr char kInvalidSuffix1[] = "foo123";
+  static constexpr char kHasSuffix[] = "foo_123";
+
+  uint32_t mark_hash = 0;
+  uint32_t sequence_number = 0;
+
+  GetMarkHashAndSequenceNumber(kNoSuffix, 0, &mark_hash, &sequence_number);
+  EXPECT_EQ(0xacbd18dbu, mark_hash);
+  EXPECT_EQ(0u, sequence_number);
+
+  GetMarkHashAndSequenceNumber(kInvalidSuffix0, 0, &mark_hash,
+                               &sequence_number);
+  EXPECT_EQ(0x2023d768u, mark_hash);
+  EXPECT_EQ(0u, sequence_number);
+
+  GetMarkHashAndSequenceNumber(kInvalidSuffix1, 0, &mark_hash,
+                               &sequence_number);
+  EXPECT_EQ(0xef238ea0u, mark_hash);
+  EXPECT_EQ(0u, sequence_number);
+
+  GetMarkHashAndSequenceNumber(kHasSuffix, 0, &mark_hash, &sequence_number);
+  EXPECT_EQ(0xacbd18db, mark_hash);
+  EXPECT_EQ(123u, sequence_number);
+
+  // Ensure that capping and offset logic works.
+  GetMarkHashAndSequenceNumber(kHasSuffix, 7457, &mark_hash, &sequence_number);
+  EXPECT_EQ(0xacbd18dbu, mark_hash);
+  EXPECT_EQ(580u, sequence_number);
 }
 
 TEST_F(BackgroundTracingHelperTest,

@@ -238,6 +238,7 @@ def read_actions_file(
             action = Action(name, action_base_name, short_name, cpp_method,
                             type, fully_supported_platforms,
                             partially_supported_platforms)
+            all_short_name.add(short_name)
             if output_action_names_with_mode:
                 action._output_action_names = output_action_names_with_mode
             actions_by_name[action.name] = action
@@ -384,6 +385,8 @@ def get_tests_in_browsertest(file: str) -> Dict[str, Set[TestPlatform]]:
             if re.search(fr"{macro_for_regex}[^{{}}]+DISABLED_{test_name}",
                          file):
                 enabled_platforms.remove(platform)
+        if len(enabled_platforms) == len(TestPlatform):
+            enabled_platforms.clear()
     return tests
 
 

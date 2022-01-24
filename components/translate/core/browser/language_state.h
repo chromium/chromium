@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace translate {
 
 class TranslateDriver;
@@ -24,6 +22,10 @@ class TranslateDriver;
 class LanguageState {
  public:
   explicit LanguageState(TranslateDriver* driver);
+
+  LanguageState(const LanguageState&) = delete;
+  LanguageState& operator=(const LanguageState&) = delete;
+
   ~LanguageState();
 
   // Should be called when the page did a new navigation (whether it is a main
@@ -86,14 +88,21 @@ class LanguageState {
   // language.
   bool HasLanguageChanged() const;
 
-  std::string href_translate() const { return href_translate_; }
+  const std::string& href_translate() const { return href_translate_; }
   bool navigation_from_google() const { return navigation_from_google_; }
 
-  std::string GetPredefinedTargetLanguage() const {
+  const std::string& GetPredefinedTargetLanguage() const {
     return predefined_target_language_;
   }
-  void SetPredefinedTargetLanguage(const std::string& language) {
+  void SetPredefinedTargetLanguage(const std::string& language,
+                                   bool should_auto_translate) {
     predefined_target_language_ = language;
+    should_auto_translate_to_predefined_target_language_ =
+        should_auto_translate;
+  }
+
+  bool should_auto_translate_to_predefined_target_language() const {
+    return should_auto_translate_to_predefined_target_language_;
   }
 
  private:
@@ -157,7 +166,9 @@ class LanguageState {
   // Target language set by client.
   std::string predefined_target_language_;
 
-  DISALLOW_COPY_AND_ASSIGN(LanguageState);
+  // Indicates that the page should be automatically translated to
+  // |predefined_target_language_| if possible.
+  bool should_auto_translate_to_predefined_target_language_ = false;
 };
 
 }  // namespace translate

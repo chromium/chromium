@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/client_native_pixmap.h"
 #include "ui/gfx/geometry/size.h"
@@ -27,6 +26,9 @@ class GFX_EXPORT NativePixmapDmaBuf : public gfx::NativePixmap {
                      gfx::BufferFormat format,
                      gfx::NativePixmapHandle handle);
 
+  NativePixmapDmaBuf(const NativePixmapDmaBuf&) = delete;
+  NativePixmapDmaBuf& operator=(const NativePixmapDmaBuf&) = delete;
+
   // NativePixmap:
   bool AreDmaBufFdsValid() const override;
   int GetDmaBufFd(size_t plane) const override;
@@ -39,11 +41,7 @@ class GFX_EXPORT NativePixmapDmaBuf : public gfx::NativePixmap {
   gfx::Size GetBufferSize() const override;
   uint32_t GetUniqueId() const override;
   bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int plane_z_order,
-                            gfx::OverlayTransform plane_transform,
-                            const gfx::Rect& display_bounds,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
+                            const gfx::OverlayPlaneData& overlay_plane_data,
                             std::vector<gfx::GpuFence> acquire_fences,
                             std::vector<gfx::GpuFence> release_fences) override;
   gfx::NativePixmapHandle ExportHandle() override;
@@ -55,8 +53,6 @@ class GFX_EXPORT NativePixmapDmaBuf : public gfx::NativePixmap {
   gfx::Size size_;
   gfx::BufferFormat format_;
   gfx::NativePixmapHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativePixmapDmaBuf);
 };
 
 }  // namespace gfx

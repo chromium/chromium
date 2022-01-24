@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
@@ -41,6 +41,13 @@ FontHeight NGBoxFragment::BaselineMetrics(const NGLineBoxStrut& margins,
   if (baseline_type == kAlphabeticBaseline)
     return FontHeight(block_size, LayoutUnit());
   return FontHeight(block_size - block_size / 2, block_size / 2);
+}
+
+bool NGBoxFragment::HasBlockLayoutOverflow() const {
+  WritingModeConverter converter(writing_direction_, physical_fragment_.Size());
+  LogicalRect overflow =
+      converter.ToLogical(PhysicalBoxFragment().LayoutOverflow());
+  return overflow.BlockEndOffset() > BlockSize();
 }
 
 }  // namespace blink

@@ -44,6 +44,7 @@ source_set("unit_tests") {
 
   sources = [
     "note_service_unittest.cc",
+    "server/note_data_unittest.cc",
     "server/notes_repository_unittest.cc",
     "templates/template_store_unittest.cc",
   ]

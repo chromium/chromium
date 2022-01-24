@@ -110,10 +110,6 @@ void SearchPrefetchFromStringURLLoader::BindAndStart(
     return;
   }
 
-  if (!request.report_raw_headers) {
-    head_->raw_request_response_info = nullptr;
-  }
-
   client_->OnReceiveResponse(std::move(head_));
   client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 

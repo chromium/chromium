@@ -16,7 +16,7 @@ ForwardingModelTypeControllerDelegate::ForwardingModelTypeControllerDelegate(
 }
 
 ForwardingModelTypeControllerDelegate::
-    ~ForwardingModelTypeControllerDelegate() {}
+    ~ForwardingModelTypeControllerDelegate() = default;
 
 void ForwardingModelTypeControllerDelegate::OnSyncStarting(
     const DataTypeActivationRequest& request,

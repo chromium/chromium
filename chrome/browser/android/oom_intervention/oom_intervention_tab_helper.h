@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/android/oom_intervention/near_oom_monitor.h"
+#include "chrome/browser/android/oom_intervention/near_oom_reduction_message_delegate.h"
 #include "chrome/browser/ui/interventions/intervention_delegate.h"
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -55,7 +56,8 @@ class OomInterventionTabHelper
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
@@ -124,6 +126,9 @@ class OomInterventionTabHelper
   base::ScopedObservation<crash_reporter::CrashMetricsReporter,
                           crash_reporter::CrashMetricsReporter::Observer>
       scoped_observation_{this};
+
+  oom_intervention::NearOomReductionMessageDelegate
+      near_oom_reduction_message_delegate_;
 
   base::WeakPtrFactory<OomInterventionTabHelper> weak_ptr_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();

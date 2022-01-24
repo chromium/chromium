@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/share/share_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -24,6 +25,14 @@ bool IsEnterprisePolicyEnabled(content::BrowserContext* context) {
 #endif
 }
 
+// Whether screenshots-related features should be disabled by policy.
+// Currently used by desktop.
+// TODO(crbug.com/1261244): possibly apply to Android features.
+bool ScreenshotsDisabledByPolicy(content::BrowserContext* context) {
+  const PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
+  return prefs->GetBoolean(prefs::kDisableScreenshots);
+}
+
 }  // namespace
 
 bool SharingHubAppMenuEnabled(content::BrowserContext* context) {
@@ -32,12 +41,15 @@ bool SharingHubAppMenuEnabled(content::BrowserContext* context) {
 }
 
 bool SharingHubOmniboxEnabled(content::BrowserContext* context) {
-  return base::FeatureList::IsEnabled(kSharingHubDesktopOmnibox) &&
+  return (base::FeatureList::IsEnabled(kSharingHubDesktopOmnibox) ||
+          share::AreUpcomingSharingFeaturesEnabled()) &&
          IsEnterprisePolicyEnabled(context);
 }
 
-bool DesktopScreenshotsFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kDesktopScreenshots);
+bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context) {
+  return (base::FeatureList::IsEnabled(kDesktopScreenshots) ||
+          share::AreUpcomingSharingFeaturesEnabled()) &&
+         !ScreenshotsDisabledByPolicy(context);
 }
 
 const base::Feature kSharingHubDesktopAppMenu{

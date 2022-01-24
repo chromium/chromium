@@ -5,7 +5,7 @@
 #include "ui/gfx/geometry/axis_transform2d.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/test/gfx_util.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace gfx {
 namespace {

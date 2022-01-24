@@ -236,6 +236,9 @@ class ArcAppListPrefs : public KeyedService,
     // Notifies that App instance connection is ready.
     virtual void OnAppConnectionReady() {}
 
+    // Notifies that App instance connection is closed.
+    virtual void OnAppConnectionClosed() {}
+
    protected:
     ~Observer() override;
   };
@@ -410,7 +413,7 @@ class ArcAppListPrefs : public KeyedService,
   bool IsDefaultPackage(const std::string& package_name) const;
 
  private:
-  friend class ChromeShelfControllerTest;
+  friend class ChromeShelfControllerTestBase;
   friend class ArcAppModelBuilderTest;
   friend class app_list::ArcAppShortcutsSearchProviderTest;
 

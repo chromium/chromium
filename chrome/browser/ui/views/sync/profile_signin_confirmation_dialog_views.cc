@@ -144,7 +144,7 @@ void ProfileSigninConfirmationDialogViews::ViewHierarchyChanged(
 void ProfileSigninConfirmationDialogViews::BuildDefaultView() {
   DCHECK(!use_work_profile_wording_);
   const SkColor kPromptBarBackgroundColor =
-      ui::GetSigninConfirmationPromptBarColor(GetNativeTheme(), 0x0A);
+      ui::GetSigninConfirmationPromptBarColor(GetColorProvider(), 0x0A);
 
   // Create business icon.
   int business_icon_size = 20;
@@ -172,7 +172,7 @@ void ProfileSigninConfirmationDialogViews::BuildDefaultView() {
   auto prompt_bar = std::make_unique<views::View>();
   prompt_bar->SetBorder(views::CreateSolidSidedBorder(
       1, 0, 1, 0,
-      ui::GetSigninConfirmationPromptBarColor(GetNativeTheme(), 0x1F)));
+      ui::GetSigninConfirmationPromptBarColor(GetColorProvider(), 0x1F)));
   prompt_bar->SetBackground(
       views::CreateSolidBackground(kPromptBarBackgroundColor));
 

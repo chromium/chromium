@@ -9,7 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/webapps/browser/android/webapps_jni_headers/WebappsUtils_jni.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
 namespace webapps {
@@ -45,7 +45,7 @@ bool WebappsUtils::IsWebApkInstalled(content::BrowserContext* browser_context,
 
 // static
 bool WebappsUtils::AreWebManifestUrlsWebApkCompatible(
-    const blink::Manifest& manifest) {
+    const blink::mojom::Manifest& manifest) {
   for (const auto& icon : manifest.icons) {
     if (!IsUrlWebApkCompatible(icon.src))
       return false;

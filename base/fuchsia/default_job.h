@@ -25,11 +25,14 @@ BASE_EXPORT void SetDefaultJob(zx::job job);
 class BASE_EXPORT ScopedDefaultJobForTest {
  public:
   ScopedDefaultJobForTest(zx::job new_default_job);
+
+  ScopedDefaultJobForTest(const ScopedDefaultJobForTest&) = delete;
+  ScopedDefaultJobForTest& operator=(const ScopedDefaultJobForTest&) = delete;
+
   ~ScopedDefaultJobForTest();
 
  private:
   zx::job old_default_job_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedDefaultJobForTest);
 };
 
 }  // namespace base

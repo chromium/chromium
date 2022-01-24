@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.fx.AbstractDragDropTest');
 goog.setTestOnly('goog.fx.AbstractDragDropTest');
@@ -112,9 +104,14 @@ function boxOverlaps(box1, box2) {
  * @return {boolean} Whether the box overlaps any of the target boxes.
  */
 function boxOverlapsTargets(box, targets) {
-  return array.some(targets, function(target) {
-    return boxOverlaps(box, target.box_);
-  });
+  return array.some(
+      targets, /**
+                  @suppress {strictMissingProperties} suppression added to
+                  enable type checking
+                */
+      function(target) {
+        return boxOverlaps(box, target.box_);
+      });
 }
 
 
@@ -129,6 +126,10 @@ function drawTargets(targets, multiplier) {
   const cont = document.getElementById('cont');
   cont.innerHTML = '';
   for (let i = 0; i < targets.length; i++) {
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     const box = targets[i].box_;
     const el = dom.createElement(TagName.DIV);
     el.style.top = (box.top * multiplier) + 'px';
@@ -224,71 +225,102 @@ testSuite({
   },
 
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testMaybeCreateDummyTargetForPosition() {
     const testGroup = new AbstractDragDrop();
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetList_ = targets;
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetBox_ = new Box(0, 9, 10, 1);
 
+    /** @suppress {visibility} suppression added to enable type checking */
     let target = testGroup.maybeCreateDummyTargetForPosition_(3, 3);
     assertFalse(boxOverlapsTargets(target.box_, testGroup.targetList_));
     assertTrue(testGroup.isInside(3, 3, target.box_));
 
+    /** @suppress {visibility} suppression added to enable type checking */
     target = testGroup.maybeCreateDummyTargetForPosition_(2, 4);
     assertFalse(boxOverlapsTargets(target.box_, testGroup.targetList_));
     assertTrue(testGroup.isInside(2, 4, target.box_));
 
+    /** @suppress {visibility} suppression added to enable type checking */
     target = testGroup.maybeCreateDummyTargetForPosition_(2, 7);
     assertFalse(boxOverlapsTargets(target.box_, testGroup.targetList_));
     assertTrue(testGroup.isInside(2, 7, target.box_));
 
     testGroup.targetList_.push({box_: new Box(5, 6, 6, 0)});
 
+    /** @suppress {visibility} suppression added to enable type checking */
     target = testGroup.maybeCreateDummyTargetForPosition_(3, 3);
     assertFalse(boxOverlapsTargets(target.box_, testGroup.targetList_));
     assertTrue(testGroup.isInside(3, 3, target.box_));
 
+    /** @suppress {visibility} suppression added to enable type checking */
     target = testGroup.maybeCreateDummyTargetForPosition_(2, 7);
     assertFalse(boxOverlapsTargets(target.box_, testGroup.targetList_));
     assertTrue(testGroup.isInside(2, 7, target.box_));
 
+    /** @suppress {visibility} suppression added to enable type checking */
     target = testGroup.maybeCreateDummyTargetForPosition_(6, 3);
     assertFalse(boxOverlapsTargets(target.box_, testGroup.targetList_));
     assertTrue(testGroup.isInside(6, 3, target.box_));
 
+    /** @suppress {visibility} suppression added to enable type checking */
     target = testGroup.maybeCreateDummyTargetForPosition_(0, 3);
     assertNull(target);
+    /** @suppress {visibility} suppression added to enable type checking */
     target = testGroup.maybeCreateDummyTargetForPosition_(9, 0);
     assertNull(target);
   },
 
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testMaybeCreateDummyTargetForPosition2() {
     const testGroup = new AbstractDragDrop();
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetList_ = targets2;
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetBox_ = new Box(10, 50, 80, 10);
 
+    /** @suppress {visibility} suppression added to enable type checking */
     let target = testGroup.maybeCreateDummyTargetForPosition_(30, 40);
     assertFalse(boxOverlapsTargets(target.box_, testGroup.targetList_));
     assertTrue(testGroup.isInside(30, 40, target.box_));
 
+    /** @suppress {visibility} suppression added to enable type checking */
     target = testGroup.maybeCreateDummyTargetForPosition_(45, 40);
     assertFalse(boxOverlapsTargets(target.box_, testGroup.targetList_));
     assertTrue(testGroup.isInside(45, 40, target.box_));
 
     testGroup.targetList_.push({box_: new Box(40, 50, 50, 40)});
 
+    /** @suppress {visibility} suppression added to enable type checking */
     target = testGroup.maybeCreateDummyTargetForPosition_(30, 40);
     assertFalse(boxOverlapsTargets(target.box_, testGroup.targetList_));
+    /** @suppress {visibility} suppression added to enable type checking */
     target = testGroup.maybeCreateDummyTargetForPosition_(45, 35);
     assertFalse(boxOverlapsTargets(target.box_, testGroup.targetList_));
   },
 
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testMaybeCreateDummyTargetForPosition3BoxHasDecentSize() {
     const testGroup = new AbstractDragDrop();
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetList_ = targets3;
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetBox_ = new Box(0, 6, 6, 0);
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const target = testGroup.maybeCreateDummyTargetForPosition_(3, 3);
     assertFalse(boxOverlapsTargets(target.box_, testGroup.targetList_));
     assertTrue(testGroup.isInside(3, 3, target.box_));
@@ -296,14 +328,24 @@ testSuite({
   },
 
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testMaybeCreateDummyTargetForPosition4() {
     const testGroup = new AbstractDragDrop();
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetList_ = targets;
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetBox_ = new Box(0, 9, 10, 1);
 
-    for (let x = testGroup.targetBox_.left; x < testGroup.targetBox_.right;
+    for (/** @suppress {visibility} suppression added to enable type checking */
+         let x = testGroup.targetBox_.left; x < testGroup.targetBox_.right;
          x++) {
-      for (let y = testGroup.targetBox_.top; y < testGroup.targetBox_.bottom;
+      for (/**
+              @suppress {visibility} suppression added to enable type checking
+            */
+           let y = testGroup.targetBox_.top; y < testGroup.targetBox_.bottom;
            y++) {
         let inRealTarget = false;
         for (let i = 0; i < testGroup.targetList_.length; i++) {
@@ -313,6 +355,9 @@ testSuite({
           }
         }
         if (!inRealTarget) {
+          /**
+           * @suppress {visibility} suppression added to enable type checking
+           */
           const target = testGroup.maybeCreateDummyTargetForPosition_(x, y);
           if (target) {
             assertFalse(
@@ -326,35 +371,51 @@ testSuite({
     }
   },
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testMaybeCreateDummyTargetForPosition_NegativePositions() {
     const negTargets =
         [{box_: new Box(-20, 10, -5, 1)}, {box_: new Box(20, 10, 30, 1)}];
 
     const testGroup = new AbstractDragDrop();
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetList_ = negTargets;
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetBox_ = new Box(-20, 10, 30, 1);
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const target = testGroup.maybeCreateDummyTargetForPosition_(1, 5);
     assertFalse(boxOverlapsTargets(target.box_, testGroup.targetList_));
     assertTrue(testGroup.isInside(1, 5, target.box_));
   },
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testMaybeCreateDummyTargetOutsideScrollableContainer() {
     const targets =
         [{box_: new Box(0, 3, 10, 1)}, {box_: new Box(20, 3, 30, 1)}];
     const target = targets[0];
 
     const testGroup = new AbstractDragDrop();
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetList_ = targets;
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetBox_ = new Box(0, 3, 30, 1);
 
     testGroup.addScrollableContainer(document.getElementById('container1'));
+    /** @suppress {visibility} suppression added to enable type checking */
     const container = testGroup.scrollableContainers_[0];
     container.containedTargets_.push(target);
+    /** @suppress {visibility} suppression added to enable type checking */
     container.box_ = new Box(0, 3, 5, 1);  // shorter than target
     target.scrollableContainer_ = container;
 
     // mouse cursor is below scrollable target but not the actual target
+    /** @suppress {visibility} suppression added to enable type checking */
     const dummyTarget = testGroup.maybeCreateDummyTargetForPosition_(2, 7);
     // dummy target should not overlap the scrollable container
     assertFalse(boxOverlaps(dummyTarget.box_, container.box_));
@@ -362,22 +423,31 @@ testSuite({
     assertTrue(boxOverlaps(dummyTarget.box_, target.box_));
   },
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testMaybeCreateDummyTargetInsideScrollableContainer() {
     const targets =
         [{box_: new Box(0, 3, 10, 1)}, {box_: new Box(20, 3, 30, 1)}];
     const target = targets[0];
 
     const testGroup = new AbstractDragDrop();
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetList_ = targets;
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetBox_ = new Box(0, 3, 30, 1);
 
     testGroup.addScrollableContainer(document.getElementById('container1'));
+    /** @suppress {visibility} suppression added to enable type checking */
     const container = testGroup.scrollableContainers_[0];
     container.containedTargets_.push(target);
+    /** @suppress {visibility} suppression added to enable type checking */
     container.box_ = new Box(0, 3, 20, 1);  // longer than target
     target.scrollableContainer_ = container;
 
     // mouse cursor is below both the scrollable and the actual target
+    /** @suppress {visibility} suppression added to enable type checking */
     const dummyTarget = testGroup.maybeCreateDummyTargetForPosition_(2, 15);
     // dummy target should overlap the scrollable container
     assertTrue(boxOverlaps(dummyTarget.box_, container.box_));
@@ -385,33 +455,53 @@ testSuite({
     assertFalse(boxOverlaps(dummyTarget.box_, target.box_));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testCalculateTargetBox() {
     let testGroup = new AbstractDragDrop();
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetList_ = [];
-    array.forEach(targets, function(target) {
-      testGroup.targetList_.push(target);
-      testGroup.calculateTargetBox_(target.box_);
-    });
+    array.forEach(
+        targets, /**
+                    @suppress {visibility} suppression added to enable type
+                    checking
+                  */
+        function(target) {
+          testGroup.targetList_.push(target);
+          testGroup.calculateTargetBox_(target.box_);
+        });
     assertTrue(Box.equals(testGroup.targetBox_, new Box(0, 9, 10, 1)));
 
     testGroup = new AbstractDragDrop();
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetList_ = [];
-    array.forEach(targets2, function(target) {
-      testGroup.targetList_.push(target);
-      testGroup.calculateTargetBox_(target.box_);
-    });
+    array.forEach(
+        targets2, /**
+                     @suppress {visibility} suppression added to enable type
+                     checking
+                   */
+        function(target) {
+          testGroup.targetList_.push(target);
+          testGroup.calculateTargetBox_(target.box_);
+        });
     assertTrue(Box.equals(testGroup.targetBox_, new Box(10, 50, 80, 10)));
 
     testGroup = new AbstractDragDrop();
+    /** @suppress {visibility} suppression added to enable type checking */
     testGroup.targetList_ = [];
-    array.forEach(targets3, function(target) {
-      testGroup.targetList_.push(target);
-      testGroup.calculateTargetBox_(target.box_);
-    });
+    array.forEach(
+        targets3, /**
+                     @suppress {visibility} suppression added to enable type
+                     checking
+                   */
+        function(target) {
+          testGroup.targetList_.push(target);
+          testGroup.calculateTargetBox_(target.box_);
+        });
     assertTrue(Box.equals(testGroup.targetBox_, new Box(0, 6, 6, 0)));
   },
 
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testIsInside() {
     const add = new AbstractDragDrop();
     // The box in question.
@@ -460,6 +550,7 @@ testSuite({
   },
 
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAddingRemovingScrollableContainers() {
     const group = new AbstractDragDrop();
     const el1 = dom.createElement(TagName.DIV);
@@ -478,12 +569,14 @@ testSuite({
   },
 
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testScrollableContainersCalculation() {
     const group = new AbstractDragDrop();
     const target = new AbstractDragDrop();
 
     group.addTarget(target);
     group.addScrollableContainer(document.getElementById('container1'));
+    /** @suppress {visibility} suppression added to enable type checking */
     const container = group.scrollableContainers_[0];
 
     const item1 = new DragDropItem(document.getElementById('child1'));
@@ -507,6 +600,7 @@ testSuite({
   },
 
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testMouseDownEventDefaultAction() {
     const group = new AbstractDragDrop();
     const target = new AbstractDragDrop();
@@ -526,6 +620,10 @@ testSuite({
 
 
   // See http://b/7494613.
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testMouseUpOutsideElement() {
     const group = new AbstractDragDrop();
     const target = new AbstractDragDrop();
@@ -548,6 +646,10 @@ testSuite({
   },
 
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testScrollBeforeMoveDrag() {
     const group = new AbstractDragDrop();
     const target = new AbstractDragDrop();
@@ -558,6 +660,7 @@ testSuite({
 
     const childEl = document.getElementById('child1');
     const item = new DragDropItem(childEl);
+    /** @suppress {visibility} suppression added to enable type checking */
     item.currentDragElement_ = childEl;
 
     target.items_.push(item);
@@ -581,6 +684,10 @@ testSuite({
   },
 
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testMouseMove_mouseOutBeforeThreshold() {
     // Setup dragdrop and item
     const itemEl = dom.createElement(TagName.DIV);
@@ -592,7 +699,9 @@ testSuite({
     add.items_.push(item);
 
     // Simulate maybeStartDrag
+    /** @suppress {visibility} suppression added to enable type checking */
     item.startPosition_ = new Coordinate(10, 10);
+    /** @suppress {visibility} suppression added to enable type checking */
     item.currentDragElement_ = itemEl;
 
     // Test
@@ -627,6 +736,7 @@ testSuite({
     document.body.appendChild(sourceEl);
 
     let pageOffset = style.getPageOffset(sourceEl);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     let pos = testGroup.getDragElementPosition(sourceEl);
     assertEquals(
         'Drag element position should be source element page offset',
@@ -638,6 +748,7 @@ testSuite({
     sourceEl.style.marginLeft = '5px';
     sourceEl.style.marginTop = '7px';
     pageOffset = style.getPageOffset(sourceEl);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     pos = testGroup.getDragElementPosition(sourceEl);
     assertEquals(
         'Drag element position should be adjusted for source element ' +
@@ -651,11 +762,16 @@ testSuite({
 
 
   testDragEndEvent() {
+    /**
+     * @suppress {visibility,checkTypes} suppression added to enable type
+     * checking
+     */
     function testDragEndEventInternal(shouldContainItemData) {
       const testGroup = new AbstractDragDrop();
 
       const childEl = document.getElementById('child1');
       const item = new DragDropItem(childEl);
+      /** @suppress {visibility} suppression added to enable type checking */
       item.currentDragElement_ = childEl;
 
       testGroup.items_.push(item);
@@ -671,6 +787,10 @@ testSuite({
       };
       testGroup.startDrag(startEvent, item);
 
+      /**
+       * @suppress {visibility,checkTypes} suppression added to enable type
+       * checking
+       */
       testGroup.activeTarget_ =
           new ActiveDropTarget(new Box(0, 0, 0, 0), testGroup, item, childEl);
 
@@ -711,11 +831,16 @@ testSuite({
   },
 
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testDropEventHasBrowserEvent() {
     const testGroup = new AbstractDragDrop();
 
     const childEl = document.getElementById('child1');
     const item = new DragDropItem(childEl);
+    /** @suppress {visibility} suppression added to enable type checking */
     item.currentDragElement_ = childEl;
 
     testGroup.items_.push(item);
@@ -731,6 +856,10 @@ testSuite({
     };
     testGroup.startDrag(startBrowserEvent, item);
 
+    /**
+     * @suppress {visibility,checkTypes} suppression added to enable type
+     * checking
+     */
     testGroup.activeTarget_ =
         new ActiveDropTarget(new Box(0, 0, 0, 0), testGroup, item, childEl);
 

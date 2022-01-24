@@ -17,29 +17,21 @@ Polymer({
       value: '',
     },
 
-    isNewLayout_: {
+    /*
+     * If true loading step can be canceled by pressing a cancel button.
+     */
+    canCancel: {
       type: Boolean,
-      value() {
-        return loadTimeData.valueExists('newLayoutEnabled') &&
-            loadTimeData.getBoolean('newLayoutEnabled');
-      },
-      readOnly: true,
-    }
+      value: false,
+    },
   },
 
   onBeforeShow() {
-    if (this.isNewLayout_) {
-      this.$.dialog.onBeforeShow();
-      this.$.spinner.setPlay(true);
-    } else {
-      this.$.dialogOld.onBeforeShow();
-    }
+    this.$.spinner.setPlay(true);
   },
 
   onBeforeHide() {
-    if (this.isNewLayout_) {
-      this.$.spinner.setPlay(false);
-    }
+    this.$.spinner.setPlay(false);
   },
 
   /**
@@ -50,5 +42,10 @@ Polymer({
    */
   localizeSubtitle_(locale, messageId) {
     return messageId ? this.i18nDynamic(locale, messageId) : '';
+  },
+
+  cancel() {
+    assert(this.canCancel);
+    this.fire('cancel-loading');
   },
 });

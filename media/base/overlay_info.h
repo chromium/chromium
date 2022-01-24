@@ -6,7 +6,6 @@
 #define MEDIA_BASE_OVERLAY_INFO_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "media/base/media_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -49,6 +49,10 @@ class NET_EXPORT_PRIVATE Stats {
   };
 
   Stats();
+
+  Stats(const Stats&) = delete;
+  Stats& operator=(const Stats&) = delete;
+
   ~Stats();
 
   // Initializes this object with |data| from disk.
@@ -89,8 +93,6 @@ class NET_EXPORT_PRIVATE Stats {
   Addr storage_addr_;
   int data_sizes_[kDataSizesLength];
   int64_t counters_[MAX_COUNTER];
-
-  DISALLOW_COPY_AND_ASSIGN(Stats);
 };
 
 }  // namespace disk_cache

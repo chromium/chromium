@@ -129,6 +129,9 @@ class SyncDifferenceTracker {
  public:
   explicit SyncDifferenceTracker(AutofillTable* table) : table_(table) {}
 
+  SyncDifferenceTracker(const SyncDifferenceTracker&) = delete;
+  SyncDifferenceTracker& operator=(const SyncDifferenceTracker&) = delete;
+
   optional<ModelError> IncorporateRemoteSpecifics(
       const std::string& storage_key,
       const AutofillSpecifics& specifics) {
@@ -273,8 +276,6 @@ class SyncDifferenceTracker {
   // Contains merged data for entries that existed on both sync and local sides
   // and need to be saved back to sync.
   std::vector<AutofillEntry> save_to_sync_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncDifferenceTracker);
 };
 
 }  // namespace
@@ -336,7 +337,7 @@ optional<syncer::ModelError> AutocompleteSyncBridge::MergeSyncData(
 
   RETURN_IF_ERROR(tracker.FlushToLocal(web_data_backend_));
   RETURN_IF_ERROR(tracker.FlushToSync(true, std::move(metadata_change_list),
-                                change_processor()));
+                                      change_processor()));
 
   web_data_backend_->CommitChanges();
   web_data_backend_->NotifyThatSyncHasStarted(syncer::AUTOFILL);

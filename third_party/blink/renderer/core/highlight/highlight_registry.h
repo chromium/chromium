@@ -51,7 +51,7 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
 
   const HighlightRegistryMap& GetHighlights() const { return highlights_; }
   void ValidateHighlightMarkers();
-  void ScheduleRepaint() const;
+  void ScheduleRepaint();
 
   enum OverlayStackingPosition {
     kOverlayStackingPositionBelow = -1,
@@ -84,6 +84,9 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
  private:
   HighlightRegistryMap highlights_;
   Member<LocalFrame> frame_;
+  uint64_t dom_tree_version_for_validate_highlight_markers_ = 0;
+  uint64_t style_version_for_validate_highlight_markers_ = 0;
+  bool force_markers_validation_ = true;
 
   HighlightRegistryMap::iterator GetMapIterator(const AtomicString& key) {
     return highlights_.find(

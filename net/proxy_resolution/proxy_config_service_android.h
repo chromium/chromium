@@ -62,6 +62,10 @@ class NET_EXPORT ProxyConfigServiceAndroid : public ProxyConfigService {
       const scoped_refptr<base::SequencedTaskRunner>& main_task_runner,
       const scoped_refptr<base::SequencedTaskRunner>& jni_task_runner);
 
+  ProxyConfigServiceAndroid(const ProxyConfigServiceAndroid&) = delete;
+  ProxyConfigServiceAndroid& operator=(const ProxyConfigServiceAndroid&) =
+      delete;
+
   ~ProxyConfigServiceAndroid() override;
 
   // Android provides a local HTTP proxy that does PAC resolution. When this
@@ -127,8 +131,6 @@ class NET_EXPORT ProxyConfigServiceAndroid : public ProxyConfigService {
                               const std::vector<std::string>& exclusion_list);
 
   scoped_refptr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyConfigServiceAndroid);
 };
 
 } // namespace net

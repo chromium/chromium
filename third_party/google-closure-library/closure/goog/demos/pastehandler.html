@@ -2,7 +2,7 @@
     "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <!--
-Copyright 2010 The Closure Library Authors. All Rights Reserved.
+Copyright The Closure Library Authors. All Rights Reserved.
 
 Use of this source code is governed by the Apache License, Version 2.0.
 See the COPYING file for details.
@@ -13,7 +13,6 @@ See the COPYING file for details.
   <script src="../base.js"></script>
   <script>
     goog.require('goog.debug.DivConsole');
-    goog.require('goog.debug.LogManager');
     goog.require('goog.dom');
     goog.require('goog.events.PasteHandler');
     goog.require('goog.log');
@@ -46,7 +45,7 @@ See the COPYING file for details.
           goog.log.log(logger, goog.log.Level.SHOUT, 'pasted!');
         });
 
-    goog.debug.LogManager.getRoot().setLevel(goog.log.Level.SEVERE);
+    goog.log.setLevel(goog.log.getRootLogger(), goog.log.Level.SEVERE);
     var logconsole = new goog.debug.DivConsole(goog.dom.getElement('log'));
     logconsole.setCapturing(true);
   </script>

@@ -1,0 +1,37 @@
+digraph graphname {
+    graph [fontname = "helvetica", fontsize=11, compound=true];
+    node [shape="box", fontname = "helvetica", fontsize=11];
+    edge [fontname = "helvetica", fontsize=11];
+    rankdir="TB";
+
+    subgraph cluster_renderer1 {
+        label = "Render Process 1";
+
+	click1 [label="User clicks on button to open dialog"];
+	dialog1 [label="Dialog opens"];
+	focus1 [label="Button in dialog gets focused"];
+
+	click1 -> dialog1;
+	dialog1 -> focus1;
+    }
+
+    subgraph cluster_renderer2 {
+        label = "Render Process 2";
+
+	click2 [label="User activates window 2"];
+	focus2 [label="Text field in window 2 gets focus"];
+
+	click2 -> focus2;
+    }
+
+    click1 -> click2;
+    focus2 -> browser_focus_2;
+    focus1 -> browser_focus_1;
+
+    subgraph cluster_browser {
+        label = "Browser Process";
+
+        browser_focus_1 [label="Focus event from window 1 button"];
+        browser_focus_2 [label="Focus event from window 2 text field"];
+    }
+}

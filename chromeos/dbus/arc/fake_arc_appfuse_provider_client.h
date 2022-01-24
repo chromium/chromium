@@ -14,6 +14,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcAppfuseProviderClient
     : public ArcAppfuseProviderClient {
  public:
   FakeArcAppfuseProviderClient();
+
+  FakeArcAppfuseProviderClient(const FakeArcAppfuseProviderClient&) = delete;
+  FakeArcAppfuseProviderClient& operator=(const FakeArcAppfuseProviderClient&) =
+      delete;
+
   ~FakeArcAppfuseProviderClient() override;
 
   // DBusClient override.
@@ -31,9 +36,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) FakeArcAppfuseProviderClient
                 int32_t file_id,
                 int32_t flags,
                 DBusMethodCallback<base::ScopedFD> callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeArcAppfuseProviderClient);
 };
 
 }  // namespace chromeos

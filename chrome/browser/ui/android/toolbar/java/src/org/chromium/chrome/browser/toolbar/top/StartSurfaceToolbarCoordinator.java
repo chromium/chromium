@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -14,10 +15,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -56,7 +55,6 @@ public class StartSurfaceToolbarCoordinator {
 
     StartSurfaceToolbarCoordinator(ViewStub startSurfaceToolbarStub,
             UserEducationHelper userEducationHelper,
-            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
             MenuButtonCoordinator menuButtonCoordinator,
             Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
@@ -67,19 +65,16 @@ public class StartSurfaceToolbarCoordinator {
             BooleanSupplier isIncognitoModeEnabledSupplier) {
         mStub = startSurfaceToolbarStub;
 
-        layoutStateProviderSupplier.onAvailable(
-                mCallbackController.makeCancelable(this::setLayoutStateProvider));
-
         mPropertyModel =
                 new PropertyModel.Builder(StartSurfaceToolbarProperties.ALL_KEYS)
                         .with(StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE,
                                 !StartSurfaceConfiguration
                                          .START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue())
-                        .with(StartSurfaceToolbarProperties.IN_START_SURFACE_MODE, false)
                         .with(StartSurfaceToolbarProperties.MENU_IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED,
                                 isGridTabSwitcherEnabled)
+                        .with(StartSurfaceToolbarProperties.LOGO_IMAGE, null)
                         .build();
 
         mToolbarMediator = new StartSurfaceToolbarMediator(mPropertyModel,
@@ -96,11 +91,11 @@ public class StartSurfaceToolbarCoordinator {
                 menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
                 homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
                 homepageManagedByPolicySupplier, homeButtonOnClickHandler,
-                StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton(),
+                StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),
                 isTabGroupsAndroidContinuationEnabled, userEducationHelper,
                 isIncognitoModeEnabledSupplier,
                 StartSurfaceConfiguration.shouldShowAnimationsForFinale()
-                        && !DeviceClassManager.enableAccessibilityLayout());
+                        && !DeviceClassManager.enableAccessibilityLayout(mStub.getContext()));
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -146,17 +141,6 @@ public class StartSurfaceToolbarCoordinator {
     }
 
     /**
-     * Called when Start Surface mode is entered or exited.
-     * @param inStartSurfaceMode Whether or not start surface mode should be shown or hidden.
-     */
-    void setStartSurfaceMode(boolean inStartSurfaceMode) {
-        if (!isInflated()) {
-            inflate();
-        }
-        mToolbarMediator.setStartSurfaceMode(inStartSurfaceMode);
-    }
-
-    /**
      * @param provider The provider used to determine incognito state.
      */
     void setIncognitoStateProvider(IncognitoStateProvider provider) {
@@ -169,14 +153,6 @@ public class StartSurfaceToolbarCoordinator {
      */
     void onAccessibilityStatusChanged(boolean enabled) {
         mToolbarMediator.onAccessibilityStatusChanged(enabled);
-    }
-
-    /**
-     * @param layoutStateProvider The {@link LayoutStateProvider} to observe layout state changes.
-     */
-    private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
-        assert layoutStateProvider != null;
-        mToolbarMediator.setLayoutStateProvider(layoutStateProvider);
     }
 
     /**
@@ -220,6 +196,7 @@ public class StartSurfaceToolbarCoordinator {
      */
     void onStartSurfaceStateChanged(
             @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
+        if (shouldShowStartSurfaceToolbar && !isInflated()) inflate();
         mToolbarMediator.onStartSurfaceStateChanged(newState, shouldShowStartSurfaceToolbar);
     }
 
@@ -229,6 +206,16 @@ public class StartSurfaceToolbarCoordinator {
      */
     void onStartSurfaceHeaderOffsetChanged(int verticalOffset) {
         mToolbarMediator.onStartSurfaceHeaderOffsetChanged(verticalOffset);
+    }
+
+    /**
+     * This method should be called when there is a possibility that logo image became available or
+     * was changed.
+     * @param logoImage The logo image.
+     * @param contentDescription The accessibility text describing the logo.
+     */
+    void onLogoImageAvailable(Bitmap logoImage, String contentDescription) {
+        mToolbarMediator.onLogoImageAvailable(logoImage, contentDescription);
     }
 
     /**
@@ -242,10 +229,6 @@ public class StartSurfaceToolbarCoordinator {
     /** Returns whether it's on the start surface homepage.*/
     boolean isOnHomepage() {
         return mToolbarMediator.isOnHomepage();
-    }
-
-    void onNativeLibraryReady() {
-        mToolbarMediator.onNativeLibraryReady();
     }
 
     /**
@@ -266,7 +249,7 @@ public class StartSurfaceToolbarCoordinator {
 
         mToolbarMediator.setHomeButtonView(mView.findViewById(R.id.home_button_on_tab_switcher));
 
-        if (StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton()) {
+        if (StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue()) {
             mTabSwitcherButtonView = mView.findViewById(R.id.start_tab_switcher_button);
             if (mTabSwitcherLongClickListener != null) {
                 mTabSwitcherButtonView.setOnLongClickListener(mTabSwitcherLongClickListener);

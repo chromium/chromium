@@ -10,7 +10,6 @@
 #include "base/containers/flat_set.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 namespace net {
@@ -133,59 +132,6 @@ bool SSLClientSessionCache::IsExpired(SSL_SESSION* session, time_t now) {
   return now_u64 < SSL_SESSION_get_time(session) - 1 ||
          now_u64 >=
              SSL_SESSION_get_time(session) + SSL_SESSION_get_timeout(session);
-}
-
-void SSLClientSessionCache::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_absolute_name) const {
-  std::string name = parent_absolute_name + "/ssl_client_session_cache";
-  base::trace_event::MemoryAllocatorDump* cache_dump =
-      pmd->CreateAllocatorDump(name);
-  size_t cert_size = 0;
-  size_t cert_count = 0;
-  size_t undeduped_cert_size = 0;
-  size_t undeduped_cert_count = 0;
-  for (const auto& pair : cache_) {
-    for (const auto& session : pair.second.sessions) {
-      if (!session)
-        continue;
-      undeduped_cert_count += sk_CRYPTO_BUFFER_num(
-          SSL_SESSION_get0_peer_certificates(session.get()));
-    }
-  }
-  // Use a flat_set here to avoid malloc upon insertion.
-  base::flat_set<const CRYPTO_BUFFER*> crypto_buffer_set;
-  crypto_buffer_set.reserve(undeduped_cert_count);
-  for (const auto& pair : cache_) {
-    for (const auto& session : pair.second.sessions) {
-      if (!session)
-        continue;
-      for (const CRYPTO_BUFFER* cert :
-           SSL_SESSION_get0_peer_certificates(session.get())) {
-        undeduped_cert_size += CRYPTO_BUFFER_len(cert);
-        auto result = crypto_buffer_set.insert(cert);
-        if (!result.second)
-          continue;
-        cert_size += CRYPTO_BUFFER_len(cert);
-        cert_count++;
-      }
-    }
-  }
-  cache_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                        cert_size);
-  cache_dump->AddScalar("cert_size",
-                        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                        cert_size);
-  cache_dump->AddScalar("cert_count",
-                        base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-                        cert_count);
-  cache_dump->AddScalar("undeduped_cert_size",
-                        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                        undeduped_cert_size);
-  cache_dump->AddScalar("undeduped_cert_count",
-                        base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-                        undeduped_cert_count);
 }
 
 SSLClientSessionCache::Entry::Entry() = default;

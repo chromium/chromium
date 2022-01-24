@@ -30,6 +30,11 @@ class SendTabToSelfSyncServiceFactory : public BrowserStateKeyedServiceFactory {
   // registered with SetTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
+  SendTabToSelfSyncServiceFactory(const SendTabToSelfSyncServiceFactory&) =
+      delete;
+  SendTabToSelfSyncServiceFactory& operator=(
+      const SendTabToSelfSyncServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<SendTabToSelfSyncServiceFactory>;
 
@@ -39,8 +44,6 @@ class SendTabToSelfSyncServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfSyncServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_SEND_TAB_TO_SELF_SYNC_SERVICE_FACTORY_H_

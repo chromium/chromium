@@ -4,7 +4,9 @@
 
 #include "components/safe_browsing/core/common/visual_utils.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
@@ -655,6 +657,27 @@ TEST_F(VisualUtilsTest, IsVisualMatchMultipleFloatColorRanges) {
   EXPECT_FALSE(IsVisualMatch(bitmap_, GetBlurredBitmapHash(),
                              GetBitmapHistogram(), target)
                    .has_value());
+}
+
+TEST_F(VisualUtilsTest, NonSquareBlurredImage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kVisualFeaturesSizes, {{"phash_width", "108"}, {"phash_height", "192"}});
+
+  VisualFeatures::BlurredImage blurred;
+
+  // Draw white over the image
+  bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 1000, 1000));
+
+  ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
+  ASSERT_EQ(18, blurred.width());
+  ASSERT_EQ(32, blurred.height());
+  ASSERT_EQ(3u * 18u * 32u, blurred.data().size());
+  for (size_t i = 0; i < 18u * 32u; i++) {
+    EXPECT_EQ('\xff', blurred.data()[3 * i]);
+    EXPECT_EQ('\xff', blurred.data()[3 * i + 1]);
+    EXPECT_EQ('\xff', blurred.data()[3 * i + 2]);
+  }
 }
 
 }  // namespace visual_utils

@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -52,6 +51,10 @@ class MEDIA_EXPORT ContentEncoding {
   };
 
   ContentEncoding();
+
+  ContentEncoding(const ContentEncoding&) = delete;
+  ContentEncoding& operator=(const ContentEncoding&) = delete;
+
   ~ContentEncoding();
 
   int64_t order() const { return order_; }
@@ -81,8 +84,6 @@ class MEDIA_EXPORT ContentEncoding {
   EncryptionAlgo encryption_algo_;
   std::string encryption_key_id_;
   CipherMode cipher_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentEncoding);
 };
 
 }  // namespace media

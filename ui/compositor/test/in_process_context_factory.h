@@ -9,7 +9,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id_allocator.h"
@@ -42,6 +41,10 @@ class InProcessContextFactory : public ContextFactory {
   InProcessContextFactory(viz::HostFrameSinkManager* host_frame_sink_manager,
                           viz::FrameSinkManagerImpl* frame_sink_manager,
                           bool use_skia_renderer);
+
+  InProcessContextFactory(const InProcessContextFactory&) = delete;
+  InProcessContextFactory& operator=(const InProcessContextFactory&) = delete;
+
   ~InProcessContextFactory() override;
 
   viz::FrameSinkManagerImpl* GetFrameSinkManager() {
@@ -104,8 +107,6 @@ class InProcessContextFactory : public ContextFactory {
   using PerCompositorDataMap =
       std::unordered_map<Compositor*, std::unique_ptr<PerCompositorData>>;
   PerCompositorDataMap per_compositor_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessContextFactory);
 };
 
 }  // namespace ui

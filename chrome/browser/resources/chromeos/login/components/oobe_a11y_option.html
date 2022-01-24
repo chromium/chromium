@@ -1,0 +1,52 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+
+<link rel="import" href="./common_styles/common_styles.html">
+
+<dom-module id="oobe-a11y-option">
+  <template>
+    <style include="oobe-common-styles">
+      :host {
+        display: flex;
+        min-height: 0;
+        width: 100%;
+      }
+
+      #elementBox {
+        width: inherit;
+      }
+
+      cr-toggle {
+        align-self: center;
+        margin-inline-end: 12px;
+      }
+
+      #titleContainer ::slotted(*) {
+        color: var(--google-grey-900);
+      }
+
+      .display-value ::slotted(*) {
+        color: var(--google-grey-700);
+      }
+    </style>
+    <div id="elementBox" class="layout horizontal">
+      <div class="flex layout vertical center-justified">
+        <div id="titleContainer" aria-hidden="true">
+          <slot name="title"></slot>
+        </div>
+        <div class="display-value" hidden="[[!checked]]" aria-hidden="true">
+          <slot name="checked-value"></slot>
+        </div>
+        <div class="display-value" hidden="[[checked]]" aria-hidden="true">
+          <slot  name="unchecked-value"></slot>
+        </div>
+      </div>
+      <cr-toggle id="button" checked="{{checked}}"
+          aria-labeledby="titleContainer"
+          aria-label$="[[labelForAria]]">
+      </cr-toggle>
+    </div>
+  </template>
+  <script src="oobe_a11y_option.js"></script>
+</dom-module>

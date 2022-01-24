@@ -293,7 +293,7 @@ HRESULT UpdateProfilePicturesForWindows8AndNewer(
   }
 
   if (!base::PathExists(account_picture_path)) {
-    HRESULT hr = CreateDirectoryWithRestrictedAccess(account_picture_path);
+    hr = CreateDirectoryWithRestrictedAccess(account_picture_path);
     if (FAILED(hr)) {
       LOGFN(ERROR) << "Failed to create profile picture directory="
                    << account_picture_path << " hr=" << putHR(hr);
@@ -318,11 +318,11 @@ HRESULT UpdateProfilePicturesForWindows8AndNewer(
       // Update the reg string for the image if it is not up to date.
       wchar_t old_picture_path[MAX_PATH];
       ULONG path_size = base::size(old_picture_path);
-      HRESULT hr = GetAccountPictureRegString(sid, image_size, old_picture_path,
-                                              &path_size);
+      hr = GetAccountPictureRegString(sid, image_size, old_picture_path,
+                                      &path_size);
       if (FAILED(hr) || target_picture_path.value() != old_picture_path) {
-        HRESULT hr = SetAccountPictureRegString(sid, image_size,
-                                                target_picture_path.value());
+        hr = SetAccountPictureRegString(sid, image_size,
+                                        target_picture_path.value());
         if (FAILED(hr))
           LOGFN(ERROR) << "SetAccountPictureRegString(pic) hr=" << putHR(hr);
       }
@@ -346,7 +346,7 @@ HRESULT UpdateProfilePicturesForWindows8AndNewer(
     }
 
     std::vector<char> response;
-    HRESULT hr = fetcher->Fetch(&response);
+    hr = fetcher->Fetch(&response);
     if (FAILED(hr)) {
       LOGFN(ERROR) << "fetcher.Fetch hr=" << putHR(hr);
       continue;
@@ -542,14 +542,14 @@ HRESULT ScopedUserProfile::SaveAccountInfo(const base::Value& properties) {
     base::win::RegKey key;
     LONG sts = key.Create(HKEY_USERS, key_name, KEY_READ | KEY_WRITE);
     if (sts != ERROR_SUCCESS) {
-      HRESULT hr = HRESULT_FROM_WIN32(sts);
+      hr = HRESULT_FROM_WIN32(sts);
       LOGFN(ERROR) << "key.Create(" << id << ") hr=" << putHR(hr);
       return hr;
     }
 
     sts = key.WriteValue(base::ASCIIToWide(kKeyEmail).c_str(), email.c_str());
     if (sts != ERROR_SUCCESS) {
-      HRESULT hr = HRESULT_FROM_WIN32(sts);
+      hr = HRESULT_FROM_WIN32(sts);
       LOGFN(ERROR) << "key.WriteValue(" << sid << ", email) hr=" << putHR(hr);
       return hr;
     }
@@ -566,7 +566,7 @@ HRESULT ScopedUserProfile::SaveAccountInfo(const base::Value& properties) {
         base::ASCIIToWide(kKeyRefreshToken).c_str(), encrypted_data.c_str(),
         static_cast<ULONG>(encrypted_data.length()), REG_BINARY);
     if (sts != ERROR_SUCCESS) {
-      HRESULT hr = HRESULT_FROM_WIN32(sts);
+      hr = HRESULT_FROM_WIN32(sts);
       LOGFN(ERROR) << "key.WriteValue(" << sid << ", RT) hr=" << putHR(hr);
       return hr;
     }
@@ -575,7 +575,7 @@ HRESULT ScopedUserProfile::SaveAccountInfo(const base::Value& properties) {
     sts = key.WriteValue(kAllowImportOnlyOnFirstRun,
                          GetGlobalFlagOrDefault(kAllowImportOnlyOnFirstRun, 0));
     if (sts != ERROR_SUCCESS) {
-      HRESULT hr = HRESULT_FROM_WIN32(sts);
+      hr = HRESULT_FROM_WIN32(sts);
       LOGFN(ERROR) << "key.WriteValue(" << sid
                    << ", import_on_first_run) hr=" << putHR(hr);
       return hr;
@@ -585,7 +585,7 @@ HRESULT ScopedUserProfile::SaveAccountInfo(const base::Value& properties) {
         kAllowImportWhenPrimaryAccountExists,
         GetGlobalFlagOrDefault(kAllowImportWhenPrimaryAccountExists, 1));
     if (sts != ERROR_SUCCESS) {
-      HRESULT hr = HRESULT_FROM_WIN32(sts);
+      hr = HRESULT_FROM_WIN32(sts);
       LOGFN(ERROR) << "key.WriteValue(" << sid
                    << ", import_on_no_primary_account) hr=" << putHR(hr);
       return hr;

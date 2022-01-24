@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CHROME_TYPOGRAPHY_H_
 #define CHROME_BROWSER_UI_VIEWS_CHROME_TYPOGRAPHY_H_
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font.h"
@@ -61,11 +60,8 @@ enum ChromeTextContext {
   // Title label in the IPH bubble. Usually 18pt.
   CONTEXT_IPH_BUBBLE_TITLE,
 
-  // Body text label in the IPH bubble when a title exists. Usually 13pt.
-  CONTEXT_IPH_BUBBLE_BODY_WITH_TITLE,
-
-  // Body text label in the IPH bubble when no title exists. Usually 14pt.
-  CONTEXT_IPH_BUBBLE_BODY_WITHOUT_TITLE,
+  // Body text label in the IPH bubble. Usually 14pt.
+  CONTEXT_IPH_BUBBLE_BODY,
 
   // Button label in the IPH bubble. Usually 13pt.
   CONTEXT_IPH_BUBBLE_BUTTON

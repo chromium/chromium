@@ -36,13 +36,11 @@ void RunClosureIfNotSwappedOut(base::WeakPtr<WidgetBase> widget,
 
 WidgetInputHandlerImpl::WidgetInputHandlerImpl(
     scoped_refptr<WidgetInputHandlerManager> manager,
-    scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     scoped_refptr<MainThreadEventQueue> input_event_queue,
     base::WeakPtr<WidgetBase> widget,
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
         frame_widget_input_handler)
-    : main_thread_task_runner_(main_thread_task_runner),
-      input_handler_manager_(manager),
+    : input_handler_manager_(manager),
       input_event_queue_(input_event_queue),
       widget_(std::move(widget)),
       frame_widget_input_handler_(std::move(frame_widget_input_handler)) {}
@@ -76,15 +74,30 @@ void WidgetInputHandlerImpl::CursorVisibilityChanged(bool visible) {
       base::BindOnce(&WidgetBase::CursorVisibilityChange, widget_, visible));
 }
 
+static void ImeSetCompositionOnMainThread(
+    base::WeakPtr<WidgetBase> widget,
+    scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner,
+    const String& text,
+    const Vector<ui::ImeTextSpan>& ime_text_spans,
+    const gfx::Range& range,
+    int32_t start,
+    int32_t end,
+    WidgetInputHandlerImpl::ImeSetCompositionCallback callback) {
+  widget->ImeSetComposition(text, ime_text_spans, range, start, end);
+  callback_task_runner->PostTask(FROM_HERE, std::move(callback));
+}
+
 void WidgetInputHandlerImpl::ImeSetComposition(
     const String& text,
     const Vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& range,
     int32_t start,
-    int32_t end) {
-  RunOnMainThread(base::BindOnce(&WidgetBase::ImeSetComposition, widget_,
+    int32_t end,
+    WidgetInputHandlerImpl::ImeSetCompositionCallback callback) {
+  RunOnMainThread(base::BindOnce(&ImeSetCompositionOnMainThread, widget_,
+                                 base::ThreadTaskRunnerHandle::Get(),
                                  text.IsolatedCopy(), ime_text_spans, range,
-                                 start, end));
+                                 start, end, std::move(callback)));
 }
 
 static void ImeCommitTextOnMainThread(
@@ -178,13 +191,12 @@ void WidgetInputHandlerImpl::GetFrameWidgetInputHandler(
         frame_receiver) {
   mojo::MakeSelfOwnedAssociatedReceiver(
       std::make_unique<FrameWidgetInputHandlerImpl>(
-          widget_, frame_widget_input_handler_, main_thread_task_runner_,
-          input_event_queue_),
+          widget_, frame_widget_input_handler_, input_event_queue_),
       std::move(frame_receiver));
 }
 
 void WidgetInputHandlerImpl::RunOnMainThread(base::OnceClosure closure) {
-  if (input_event_queue_) {
+  if (ThreadedCompositingEnabled()) {
     input_event_queue_->QueueClosure(base::BindOnce(
         &RunClosureIfNotSwappedOut, widget_, std::move(closure)));
   } else {
@@ -202,16 +214,17 @@ void WidgetInputHandlerImpl::Release() {
   if (input_processed_ack_)
     std::move(input_processed_ack_).Run();
 
-  if (!main_thread_task_runner_->BelongsToCurrentThread()) {
-    // Close the binding on the compositor thread first before telling the main
-    // thread to delete this object.
-    receiver_.reset();
-    main_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&WidgetInputHandlerImpl::Release,
-                                  base::Unretained(this)));
+  if (!ThreadedCompositingEnabled()) {
+    delete this;
     return;
   }
-  delete this;
+
+  // Close the binding on the compositor thread first before telling the main
+  // thread to delete this object.
+  receiver_.reset();
+  input_event_queue_->QueueClosure(base::BindOnce(
+      [](const WidgetInputHandlerImpl* handler) { delete handler; },
+      base::Unretained(this)));
 }
 
 }  // namespace blink

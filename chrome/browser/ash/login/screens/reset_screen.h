@@ -11,12 +11,11 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
@@ -36,6 +35,10 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   ResetScreen(ResetView* view,
               ErrorScreen* error_screen,
               const base::RepeatingClosure& exit_callback);
+
+  ResetScreen(const ResetScreen&) = delete;
+  ResetScreen& operator=(const ResetScreen&) = delete;
+
   ~ResetScreen() override;
 
   // Called when view is destroyed so there's no dead reference to it.
@@ -97,8 +100,6 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   std::unique_ptr<ScopedGuestButtonBlocker> scoped_guest_button_blocker_;
 
   base::WeakPtrFactory<ResetScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResetScreen);
 };
 
 }  // namespace ash

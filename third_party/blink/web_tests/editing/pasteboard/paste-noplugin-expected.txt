@@ -11,7 +11,6 @@ Original contents:
 |   src="http://localhost:8000/evil.swf"
 |   <shadow:root>
 |     <slot>
-|       name="user-agent-default-slot"
 | "
 "
 | <object>
@@ -23,10 +22,8 @@ Original contents:
 |     src="http://localhost:8000/evil.swf"
 |     <shadow:root>
 |       <slot>
-|         name="user-agent-default-slot"
 |   <shadow:root>
 |     <slot>
-|       name="user-agent-default-slot"
 | "
 "
 

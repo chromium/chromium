@@ -2,7 +2,7 @@
 <html>
   <head>
     <script>
-      const SCRIPT_COUNT = 250;
+      const SCRIPT_COUNT = 50;
       var elementArray = [];
 
       function expandComboboxes() {
@@ -10,6 +10,8 @@
           node.setAttribute("aria-expanded", true);
           node.getElementsByTagName('div')[0].removeAttribute('hidden');
         });
+        var button = document.getElementsByTagName('button')[0];
+        button.innerHTML = "Done";
       }
 
       function createComboboxes() {

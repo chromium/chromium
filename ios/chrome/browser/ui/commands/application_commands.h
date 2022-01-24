@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/ios/block_types.h"
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
 class GURL;
@@ -82,6 +83,10 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Dismisses all modal dialogs.
 - (void)dismissModalDialogs;
 
+// Dismisses all modal dialogs with a completion block that is called when
+// modals are dismissed (animations done).
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion;
+
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the Settings UI, presenting from |baseViewController|.
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController;
@@ -89,9 +94,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the advanced sign-in settings.
 - (void)showAdvancedSigninSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
-- (void)showLocationPermissionsFromViewController:
     (UIViewController*)baseViewController;
 
 // Presents the Trusted Vault reauth dialog.

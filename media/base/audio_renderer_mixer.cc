@@ -15,7 +15,7 @@
 
 namespace media {
 
-constexpr base::TimeDelta kPauseDelay = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kPauseDelay = base::Seconds(10);
 
 AudioRendererMixer::AudioRendererMixer(const AudioParameters& output_params,
                                        scoped_refptr<AudioRendererSink> sink)
@@ -135,7 +135,7 @@ int AudioRendererMixer::Render(base::TimeDelta delay,
 
   // Since AudioConverter uses uint32_t for delay calculations, we must drop
   // negative delay values (which are incorrect anyways).
-  if (delay < base::TimeDelta())
+  if (delay.is_negative())
     delay = base::TimeDelta();
 
   uint32_t frames_delayed =

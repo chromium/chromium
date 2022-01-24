@@ -10,6 +10,11 @@
  *
  */
 
+@provide 'goog.css.editor.linkdialog';
+
+@require './dialog';
+@require '../linkbutton';
+
 
 .tr-link-dialog-explanation-text {
   font-size: 83%;
@@ -17,9 +22,10 @@
 }
 
 .tr-link-dialog-target-input {
-  width: 98%; /* 98% prevents scroll bars in standards mode. */
+  width: 100%;
   /* Input boxes for URLs and email address should always be LTR. */
   direction: ltr;
+  box-sizing: border-box;
 }
 
 .tr-link-dialog-email-warning {

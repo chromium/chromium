@@ -6,10 +6,9 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_
 
-#include "base/macros.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/message_center/message_center_export.h"
+#include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/padded_button.h"
 #include "ui/views/view.h"
 
@@ -22,7 +21,7 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
  public:
   METADATA_HEADER(NotificationControlButtonsView);
 
-  explicit NotificationControlButtonsView(MessageView* message_view);
+  explicit NotificationControlButtonsView(MessageView* message_view = nullptr);
   NotificationControlButtonsView(const NotificationControlButtonsView&) =
       delete;
   NotificationControlButtonsView& operator=(
@@ -49,14 +48,12 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   // Sets the background color to ensure proper readability.
   void SetBackgroundColor(SkColor color);
 
+  void SetMessageView(MessageView* message_view);
+
   // Methods for retrieving the control buttons directly.
   PaddedButton* close_button() { return close_button_; }
   PaddedButton* settings_button() { return settings_button_; }
   PaddedButton* snooze_button() { return snooze_button_; }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnThemeChanged() override;
-#endif
 
  private:
   // Updates the button icon colors to the value of DetermineButtonIconColor().
@@ -78,6 +75,16 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   SkColor background_color_ = SK_ColorTRANSPARENT;
 };
 
+BEGIN_VIEW_BUILDER(MESSAGE_CENTER_EXPORT,
+                   NotificationControlButtonsView,
+                   views::View)
+VIEW_BUILDER_PROPERTY(MessageView*, MessageView)
+VIEW_BUILDER_PROPERTY(SkColor, ButtonIconColors)
+END_VIEW_BUILDER
+
 }  // namespace message_center
+
+DEFINE_VIEW_BUILDER(MESSAGE_CENTER_EXPORT,
+                    message_center::NotificationControlButtonsView)
 
 #endif  // UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_

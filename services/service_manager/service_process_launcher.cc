@@ -23,8 +23,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -32,6 +32,8 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/core.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
+#include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "services/service_manager/public/cpp/service_executable/switches.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
@@ -57,9 +59,12 @@ class ServiceProcessLauncher::ProcessState
  public:
   ProcessState() { DETACH_FROM_SEQUENCE(sequence_checker_); }
 
+  ProcessState(const ProcessState&) = delete;
+  ProcessState& operator=(const ProcessState&) = delete;
+
   base::ProcessId LaunchInBackground(
       const Identity& target,
-      sandbox::policy::SandboxType sandbox_type,
+      sandbox::mojom::Sandbox sandbox_type,
       std::unique_ptr<base::CommandLine> child_command_line,
       mojo::PlatformChannel::HandlePassingInfo handle_passing_info,
       mojo::PlatformChannel channel,
@@ -74,8 +79,6 @@ class ServiceProcessLauncher::ProcessState
 
   base::Process child_process_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessState);
 };
 
 ServiceProcessLauncher::ServiceProcessLauncher(
@@ -98,7 +101,7 @@ ServiceProcessLauncher::~ServiceProcessLauncher() {
 
 mojo::PendingRemote<mojom::Service> ServiceProcessLauncher::Start(
     const Identity& target,
-    sandbox::policy::SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     ProcessReadyCallback callback) {
   DCHECK(!state_);
 
@@ -132,10 +135,10 @@ mojo::PendingRemote<mojom::Service> ServiceProcessLauncher::Start(
                                         target.instance_group().ToString());
 #endif
 
-  if (!IsUnsandboxedSandboxType(sandbox_type)) {
+  if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type)) {
     child_command_line->AppendSwitchASCII(
         sandbox::policy::switches::kServiceSandboxType,
-        StringFromUtilitySandboxType(sandbox_type));
+        sandbox::policy::StringFromUtilitySandboxType(sandbox_type));
   }
 
   mojo::PlatformChannel::HandlePassingInfo handle_passing_info;
@@ -177,7 +180,7 @@ ServiceProcessLauncher::PassServiceRequestOnCommandLine(
 
 base::ProcessId ServiceProcessLauncher::ProcessState::LaunchInBackground(
     const Identity& target,
-    sandbox::policy::SandboxType sandbox_type,
+    sandbox::mojom::Sandbox sandbox_type,
     std::unique_ptr<base::CommandLine> child_command_line,
     mojo::PlatformChannel::HandlePassingInfo handle_passing_info,
     mojo::PlatformChannel channel,
@@ -211,7 +214,7 @@ base::ProcessId ServiceProcessLauncher::ProcessState::LaunchInBackground(
   }
 #elif defined(OS_FUCHSIA)
   // LaunchProcess will share stdin/out/err with the child process by default.
-  if (!IsUnsandboxedSandboxType(sandbox_type))
+  if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type))
     NOTIMPLEMENTED();
   options.handles_to_transfer = std::move(handle_passing_info);
 #elif defined(OS_POSIX)
@@ -232,7 +235,7 @@ base::ProcessId ServiceProcessLauncher::ProcessState::LaunchInBackground(
   DVLOG(2) << "Launching child with command line: "
            << child_command_line->GetCommandLineString();
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  if (!IsUnsandboxedSandboxType(sandbox_type)) {
+  if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type)) {
     child_process_ =
         sandbox::NamespaceSandbox::LaunchProcess(*child_command_line, options);
     if (!child_process_.IsValid())

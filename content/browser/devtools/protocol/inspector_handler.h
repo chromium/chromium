@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_INSPECTOR_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_INSPECTOR_HANDLER_H_
 
-#include "base/macros.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/inspector.h"
 
@@ -20,6 +19,10 @@ class InspectorHandler : public DevToolsDomainHandler,
                          public Inspector::Backend {
  public:
   InspectorHandler();
+
+  InspectorHandler(const InspectorHandler&) = delete;
+  InspectorHandler& operator=(const InspectorHandler&) = delete;
+
   ~InspectorHandler() override;
 
   static std::vector<InspectorHandler*> ForAgentHost(
@@ -40,8 +43,6 @@ class InspectorHandler : public DevToolsDomainHandler,
   std::unique_ptr<Inspector::Frontend> frontend_;
   RenderFrameHostImpl* host_ = nullptr;
   bool target_crashed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectorHandler);
 };
 
 }  // namespace protocol

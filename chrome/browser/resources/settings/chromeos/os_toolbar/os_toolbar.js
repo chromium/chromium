@@ -2,7 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_icons_css.m.js';
+import '//resources/cr_elements/hidden_style_css.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import '../os_settings_search_box/os_settings_search_box.js';
+
+import {CrToolbarSearchFieldElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   // Not "toolbar" because element names must contain a hyphen.
   is: 'os-toolbar',
 

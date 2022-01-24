@@ -13,12 +13,13 @@ namespace login_views_utils {
 namespace {
 
 class ViewsUtilsUnittest : public testing::Test {
+ public:
+  ViewsUtilsUnittest(const ViewsUtilsUnittest&) = delete;
+  ViewsUtilsUnittest& operator=(const ViewsUtilsUnittest&) = delete;
+
  protected:
   ViewsUtilsUnittest() = default;
   ~ViewsUtilsUnittest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewsUtilsUnittest);
 };
 
 }  // namespace

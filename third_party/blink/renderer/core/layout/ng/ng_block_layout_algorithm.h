@@ -61,8 +61,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
 
   void SetBoxType(NGPhysicalFragment::NGBoxType type);
 
-  MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) const override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
   scoped_refptr<const NGLayoutResult> Layout() override;
 
  private:
@@ -148,7 +147,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   bool TryReuseFragmentsFromCache(
       NGInlineNode child,
       NGPreviousInflowPosition*,
-      scoped_refptr<const NGInlineBreakToken>* inline_break_token_out);
+      const NGInlineBreakToken** inline_break_token_out);
 
   void HandleOutOfFlowPositioned(const NGPreviousInflowPosition&, NGBlockNode);
   void HandleFloat(const NGPreviousInflowPosition&,
@@ -195,7 +194,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       const NGBreakToken* child_break_token,
       NGPreviousInflowPosition*,
       NGInlineChildLayoutContext*,
-      scoped_refptr<const NGInlineBreakToken>* previous_inline_break_token);
+      const NGInlineBreakToken** previous_inline_break_token);
 
   NGLayoutResult::EStatus FinishInflow(
       NGLayoutInputNode child,
@@ -206,7 +205,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       NGInflowChildData*,
       NGPreviousInflowPosition*,
       NGInlineChildLayoutContext*,
-      scoped_refptr<const NGInlineBreakToken>* previous_inline_break_token);
+      const NGInlineBreakToken** previous_inline_break_token);
 
   // Performs any final adjustments for table-cells.
   void FinalizeForTableCell(LayoutUnit unconstrained_intrinsic_block_size);
@@ -246,6 +245,8 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // Propagates the baseline from the given |child| if needed.
   void PropagateBaselineFromChild(const NGPhysicalFragment& child,
                                   LayoutUnit block_offset);
+  void PropagateBaselineFromBlockChild(const NGPhysicalFragment& child,
+                                       LayoutUnit block_offset);
 
   // If still unresolved, resolve the fragment's BFC block offset.
   //

@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 

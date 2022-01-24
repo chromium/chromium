@@ -138,7 +138,8 @@ DownloadsSection::DownloadsSection(HoldingSpaceViewDelegate* delegate)
            HoldingSpaceItem::Type::kDownload,
            HoldingSpaceItem::Type::kLacrosDownload,
            HoldingSpaceItem::Type::kNearbyShare,
-           HoldingSpaceItem::Type::kPrintedPdf, HoldingSpaceItem::Type::kScan},
+           HoldingSpaceItem::Type::kPrintedPdf, HoldingSpaceItem::Type::kScan,
+           HoldingSpaceItem::Type::kPhoneHubCameraRoll},
           /*max_count=*/
           features::IsHoldingSpaceInProgressDownloadsIntegrationEnabled()
               ? kMaxDownloadsWithInProgressDownloadIntegration

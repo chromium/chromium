@@ -17,6 +17,9 @@ struct InterestGroupAd {
   string? metadata;
 };
 
+// The maximum size of a valid interest group in bytes.
+const uint32 kMaxInterestGroupSize = 51200; // 50 * 1024
+
 // Interest group description, passed to JoinInterestGroup(). If an entry keyed
 // by (owner, name) already exists, we "merge" by overwriting specified fields,
 // leaving other existing fields intact.
@@ -39,6 +42,7 @@ struct InterestGroup {
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string?        user_bidding_signals;
   array<InterestGroupAd>? ads;
+  array<InterestGroupAd>? ad_components;
 };
 
 // Represents all buyers, the "*" wildcard in JavaScript.

@@ -59,6 +59,10 @@ TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote() {
 class MockFrameHost : public mojom::FrameHost {
  public:
   MockFrameHost() {}
+
+  MockFrameHost(const MockFrameHost&) = delete;
+  MockFrameHost& operator=(const MockFrameHost&) = delete;
+
   ~MockFrameHost() override = default;
 
   mojom::DidCommitProvisionalLoadParamsPtr TakeLastCommitParams() {
@@ -134,7 +138,7 @@ class MockFrameHost : public mojom::FrameHost {
       bool is_created_by_script,
       const blink::FramePolicy& frame_policy,
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
-      blink::mojom::FrameOwnerElementType owner_type) override {
+      blink::FrameOwnerElementType owner_type) override {
     MockPolicyContainerHost mock_policy_container_host;
     mock_policy_container_host.BindWithNewEndpoint(
         std::move(policy_container_bind_params->receiver));
@@ -159,6 +163,13 @@ class MockFrameHost : public mojom::FrameHost {
     std::move(callback).Run(
         MSG_ROUTING_NONE, blink::mojom::FrameReplicationState::New(),
         blink::RemoteFrameToken(), base::UnguessableToken());
+  }
+
+  void CreateFencedFrame(
+      mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>,
+      CreateFencedFrameCallback) override {
+    NOTREACHED() << "At the moment, content::FencedFrame is not used in any "
+                    "unit tests, so this path should not be hit";
   }
 
   void DidCommitSameDocumentNavigation(
@@ -216,8 +227,6 @@ class MockFrameHost : public mojom::FrameHost {
   bool is_page_state_updated_ = false;
 
   bool is_url_opened_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFrameHost);
 };
 
 // static
@@ -267,7 +276,7 @@ void TestRenderFrame::Navigate(
       blink::mojom::PolicyContainer::New(
           blink::mojom::PolicyContainerPolicies::New(),
           mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote()),
-      mojo::NullRemote() /* code_cache_host */,
+      mojo::NullRemote() /* code_cache_host */, nullptr, nullptr,
       base::BindOnce(&MockFrameHost::DidCommitProvisionalLoad,
                      base::Unretained(mock_frame_host_.get())));
 }

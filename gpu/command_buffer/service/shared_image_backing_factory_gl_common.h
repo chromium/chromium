@@ -26,13 +26,7 @@ struct GpuPreferences;
 // SharedImageBackingFactoryGLTexture and SharedImageBackingFactoryGLImage.
 class GPU_GLES2_EXPORT SharedImageBackingFactoryGLCommon
     : public SharedImageBackingFactory {
- protected:
-  SharedImageBackingFactoryGLCommon(const GpuPreferences& gpu_preferences,
-                                    const GpuDriverBugWorkarounds& workarounds,
-                                    const GpuFeatureInfo& gpu_feature_info,
-                                    gl::ProgressReporter* progress_reporter);
-  ~SharedImageBackingFactoryGLCommon() override;
-
+ public:
   struct FormatInfo {
     FormatInfo();
     FormatInfo(const FormatInfo& other);
@@ -60,6 +54,13 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryGLCommon
     // used when calling TexStorage2D
     GLuint storage_internal_format = 0;
   };
+
+ protected:
+  SharedImageBackingFactoryGLCommon(const GpuPreferences& gpu_preferences,
+                                    const GpuDriverBugWorkarounds& workarounds,
+                                    const GpuFeatureInfo& gpu_feature_info,
+                                    gl::ProgressReporter* progress_reporter);
+  ~SharedImageBackingFactoryGLCommon() override;
 
   bool CanCreateSharedImage(const gfx::Size& size,
                             base::span<const uint8_t> pixel_data,

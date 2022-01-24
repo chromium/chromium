@@ -6,14 +6,15 @@
 
 #include <sys/file.h>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/metrics/structured/storage.pb.h"
@@ -28,7 +29,7 @@ void MaybeFilterBluetoothEvents(
     google::protobuf::RepeatedPtrField<metrics::StructuredEventProto>* events) {
   // Event name hashes of all bluetooth events listed in
   // src/platform2/metrics/structured/structured.xml.
-  static constexpr uint64_t kBluetoothEventHashes[] = {
+  static constexpr auto kBluetoothEventHashes = base::MakeFixedFlatSet<uint64_t>({
       // BluetoothAdapterStateChanged
       UINT64_C(959829856916771459),
       // BluetoothPairingStateChanged
@@ -38,26 +39,19 @@ void MaybeFilterBluetoothEvents(
       // BluetoothProfileConnectionStateChanged
       UINT64_C(7217682640379679663),
       // BluetoothDeviceInfoReport
-      UINT64_C(1506471670382892394),
-  };
+      UINT64_C(1506471670382892394)
+  });
 
   if (base::FeatureList::IsEnabled(kBluetoothSessionizedMetrics))
     return;
 
-  for (int i = 0; i < events->size();) {
-    bool is_bluetooth = false;
-    const uint64_t event_hash = events->Get(i).event_name_hash();
-    for (const uint64_t bt_hash : kBluetoothEventHashes) {
-      if (event_hash == bt_hash) {
-        is_bluetooth = true;
-        break;
-      }
-    }
-
-    if (is_bluetooth) {
-      events->erase(events->begin() + i);
+  // Remove all bluetooth events.
+  auto it = events->begin();
+  while (it != events->end()) {
+    if (kBluetoothEventHashes.contains(it->event_name_hash())) {
+      it = events->erase(it);
     } else {
-      ++i;
+      ++it;
     }
   }
 }
@@ -76,19 +70,8 @@ EventsProto ReadAndDeleteEvents(const base::FilePath& directory) {
     std::string proto_str;
     EventsProto proto;
 
-    // We may try to read a file as it's being written by cros. To avoid this,
-    // cros locks each file exclusively before writing. Check we can get a
-    // shared lock for reading, and otherwise ignore the file. Note these are
-    // advisory POSIX locks. We don't actually use the file object for reading.
-    static const uint32_t open_flags =
-        base::File::FLAG_OPEN | base::File::FLAG_READ;
-    base::File file(path, open_flags);
-    if (file.Lock(base::File::LockMode::kShared) != base::File::FILE_OK)
-      continue;
-
     bool read_ok = base::ReadFileToString(path, &proto_str) &&
                    proto.ParseFromString(proto_str);
-    file.Unlock();
     base::DeleteFile(path);
 
     if (!read_ok)

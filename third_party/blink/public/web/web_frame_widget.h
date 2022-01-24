@@ -41,7 +41,6 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_touch_action.h"
-#include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 
@@ -132,11 +131,11 @@ class WebFrameWidget : public WebWidget {
       const cc::ApplyViewportChangesArgs& args) = 0;
 
   // The |callback| will be fired when the corresponding renderer frame is
-  // submitted (still called "swapped") to the display compositor (either with
-  // DidSwap or DidNotSwap).
-  virtual void NotifySwapAndPresentationTime(
-      WebReportTimeCallback swap_callback,
-      WebReportTimeCallback presentation_callback) = 0;
+  // presented to the user. If the presentation is successful, the argument
+  // passed to the callback is the presentation timestamp; otherwise, it would
+  // be timestamp of when the failure is detected.
+  virtual void NotifyPresentationTime(
+      base::OnceCallback<void(base::TimeTicks)> callback) = 0;
 
   // Instructs devtools to pause loading of the frame as soon as it's shown
   // until explicit command from the devtools client.

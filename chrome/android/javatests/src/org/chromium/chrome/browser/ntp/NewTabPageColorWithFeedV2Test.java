@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.graphics.Color;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -93,8 +92,8 @@ public class NewTabPageColorWithFeedV2Test {
         // clang-format on
         RecyclerView recycleView = (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
 
-        Resources resources = mActivityTestRule.getActivity().getResources();
-        Assert.assertEquals(ChromeColors.getPrimaryBackgroundColor(resources, false),
+        Context context = mActivityTestRule.getActivity();
+        Assert.assertEquals(ChromeColors.getPrimaryBackgroundColor(context, false),
                 mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
 
         // Wait for the test feed items to be available in the feed.
@@ -106,8 +105,9 @@ public class NewTabPageColorWithFeedV2Test {
         RecyclerViewTestUtils.waitForStableRecyclerView(recycleView);
 
         Assert.assertTrue(mNtp.isLocationBarScrolledToTopInNtp());
+        final int expectedTextBoxBackground =
+                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
         Assert.assertEquals(
-                ApiCompatibilityUtils.getColor(resources, R.color.toolbar_text_box_background),
-                mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
+                expectedTextBoxBackground, mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
     }
 }

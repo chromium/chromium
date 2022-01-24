@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -30,6 +29,9 @@ class TabScrubber : public ui::EventHandler,
                     public TabStripObserver {
  public:
   enum Direction { LEFT, RIGHT };
+
+  TabScrubber(const TabScrubber&) = delete;
+  TabScrubber& operator=(const TabScrubber&) = delete;
 
   // Returns a the single instance of a TabScrubber.
   static TabScrubber* GetInstance();
@@ -110,8 +112,6 @@ class TabScrubber : public ui::EventHandler,
   // when clashing interactions can occur, like window cycle list scrolling
   // gesture.
   bool enabled_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TabScrubber);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TAB_SCRUBBER_H_

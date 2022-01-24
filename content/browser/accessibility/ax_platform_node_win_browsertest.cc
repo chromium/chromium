@@ -587,9 +587,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
   BrowserAccessibilityComWin* fake_lang_node_com_win =
       ToBrowserAccessibilityWin(node)->GetCOM();
   ASSERT_NE(nullptr, fake_lang_node_com_win);
-  base::win::ScopedVariant actual;
+  base::win::ScopedVariant actual_value;
   EXPECT_HRESULT_FAILED(fake_lang_node_com_win->GetPropertyValue(
-      UIA_CulturePropertyId, actual.Receive()));
+      UIA_CulturePropertyId, actual_value.Receive()));
 
   // No lang should default to the page's default language (en-us).
   node = FindNodeAfter(node, "no lang");

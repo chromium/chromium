@@ -19,7 +19,7 @@ if (is_android) {
 
 group("v8_context_snapshot") {
   if (use_v8_context_snapshot) {
-    public_deps = [ ":generate_v8_context_snapshot" ]
+    public_deps = [ ":generate_v8_context_snapshot($v8_snapshot_toolchain)" ]
     if (!is_android) {
       data = [ "$root_out_dir/$v8_context_snapshot_filename" ]
     }
@@ -27,9 +27,16 @@ group("v8_context_snapshot") {
 }
 
 config("use_v8_context_snapshot") {
+  defines = []
+  if (include_both_v8_snapshots) {
+    defines += [ "INCLUDE_BOTH_V8_SNAPSHOTS" ]
+  }
   if (use_v8_context_snapshot) {
-    defines = [
+    defines += [
       "USE_V8_CONTEXT_SNAPSHOT",
+
+      # NOTE: android builds may include both 64 and 32 bit snapshot files. For
+      # this reason, android code generally does not use this define.
       "V8_CONTEXT_SNAPSHOT_FILENAME=\"$v8_context_snapshot_filename\"",
     ]
   }
@@ -39,52 +46,82 @@ if (use_v8_context_snapshot) {
   if (is_android && enable_java_templates) {
     android_assets("v8_context_snapshot_assets") {
       deps = [ ":v8_context_snapshot" ]
-      renaming_sources = [ "$root_out_dir/$v8_context_snapshot_filename" ]
-      if (current_cpu == "arm" || current_cpu == "x86" ||
-          current_cpu == "mipsel") {
-        renaming_destinations = [ "v8_context_snapshot_32.bin" ]
-      } else {
-        renaming_destinations = [ "v8_context_snapshot_64.bin" ]
-      }
+      default_toolchain_root_out_dir =
+          get_label_info(":v8_context_snapshot_generator($default_toolchain)",
+                         "root_out_dir")
+      snapshot_file =
+          "$default_toolchain_root_out_dir/$v8_context_snapshot_filename"
+      renaming_sources = [ snapshot_file ]
+      renaming_destinations = [ "$v8_context_snapshot_filename" ]
       disable_compression = true
     }
   }
 
-  action("generate_v8_context_snapshot") {
-    script = "//build/gn_run_binary.py"
-    output_file = "$root_out_dir/$v8_context_snapshot_filename"
-    output_path = rebase_path(output_file, root_build_dir)
+  if (v8_snapshot_toolchain == current_toolchain) {
+    action("generate_v8_context_snapshot") {
+      script = "//build/gn_run_binary.py"
 
-    args = [
-      "./" + rebase_path(
-              get_label_info(
-                      ":v8_context_snapshot_generator($v8_snapshot_toolchain)",
-                      "root_out_dir") + "/v8_context_snapshot_generator",
-              root_build_dir),
-      "--output_file=$output_path",
-    ]
+      # When cross compiling this target runs in a toolchain other than the
+      # default_toolchain. Code depending on this expect the snapshot to be
+      # generated in root_out_dir for the default toolchain.
+      default_toolchain_root_out_dir =
+          get_label_info(":v8_context_snapshot_generator($default_toolchain)",
+                         "root_out_dir")
+      output_file =
+          "$default_toolchain_root_out_dir/$v8_context_snapshot_filename"
+      output_path = rebase_path(output_file, root_build_dir)
 
-    deps = [ ":v8_context_snapshot_generator($v8_snapshot_toolchain)" ]
-
-    if (is_component_build) {
-      # In the component build mode, the snapshot should be updated when any of
-      # the generator executable or the shared libraries get updated.  Note that
-      # it's possible that some of the shared libraries are updated without
-      # having the executable updated.
-      inputs = [
-        "$root_out_dir/${shlib_prefix}blink_core${shlib_extension}",
-        "$root_out_dir/${shlib_prefix}blink_modules${shlib_extension}",
-        "$root_out_dir/${shlib_prefix}blink_platform${shlib_extension}",
-        "$root_out_dir/${shlib_prefix}v8${shlib_extension}",
+      args = [
+        "./" + rebase_path(get_label_info(":v8_context_snapshot_generator",
+                                          "root_out_dir") +
+                               "/v8_context_snapshot_generator",
+                           root_build_dir),
+        "--output_file=$output_path",
       ]
 
-      deps += [
-        "//third_party/blink/renderer/bindings:v8_context_snapshot_influential_libs",
-        "//v8",
-      ]
+      deps = [ ":v8_context_snapshot_generator" ]
+
+      # TODO(sky): figure out why this doesn't work on android cross compile.
+      # In the case of compiling for the snapshot `shlib_extension` is ".so"
+      # (which is expected), but on disk ".cr.so" is generate, which ends up
+      # causing gn to fail.
+      if (is_component_build && target_os != "android") {
+        # In the component build mode, the snapshot should be updated when any
+        # of the generator executable or the shared libraries get updated. Note
+        # that it's possible that some of the shared libraries are updated
+        # without having the executable updated.
+        inputs = [
+          "$root_out_dir/${shlib_prefix}blink_core${shlib_extension}",
+          "$root_out_dir/${shlib_prefix}blink_modules${shlib_extension}",
+          "$root_out_dir/${shlib_prefix}blink_platform${shlib_extension}",
+          "$root_out_dir/${shlib_prefix}v8${shlib_extension}",
+        ]
+
+        deps += [
+          "//third_party/blink/renderer/bindings:v8_context_snapshot_influential_libs",
+          "//v8",
+        ]
+      }
+
+      outputs = [ output_file ]
     }
 
-    outputs = [ output_file ]
+    executable("v8_context_snapshot_generator") {
+      sources = [ "v8_context_snapshot_generator.cc" ]
+
+      deps = [
+        "//gin:gin",
+        "//mojo/core/embedder",
+        "//services/service_manager/public/cpp",
+        "//third_party/blink/public:blink",
+        "//v8",
+      ]
+
+      configs += [
+        "//v8:external_startup_data",
+        ":disable_icf",
+      ]
+    }
   }
 
   # This config disables a link time optimization "ICF", which may merge
@@ -97,27 +134,10 @@ if (use_v8_context_snapshot) {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
     if (is_win) {
       ldflags = [ "/OPT:NOICF" ]  # link.exe, but also lld-link.exe.
-    } else if (is_apple) {
-      ldflags = [ "-Wl,-no_deduplicate" ]  # ld64, and ld64.lld.
+    } else if (is_apple && !use_lld) {
+      ldflags = [ "-Wl,-no_deduplicate" ]  # ld64.
     } else if (use_gold || use_lld) {
       ldflags = [ "-Wl,--icf=none" ]
     }
-  }
-
-  executable("v8_context_snapshot_generator") {
-    sources = [ "v8_context_snapshot_generator.cc" ]
-
-    deps = [
-      "//gin:gin",
-      "//mojo/core/embedder",
-      "//services/service_manager/public/cpp",
-      "//third_party/blink/public:blink",
-      "//v8",
-    ]
-
-    configs += [
-      "//v8:external_startup_data",
-      ":disable_icf",
-    ]
   }
 }

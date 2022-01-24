@@ -37,7 +37,7 @@ def CommonChecks(input_api, output_api):
   with input_api.temporary_directory() as temp_dir:
     commands = []
     if generating_files:
-      python_executable = input_api.python_executable
+      python_executable = input_api.python3_executable
       commands.append(input_api.Command(name='generate_bindings',
                                         cmd=[python_executable,
                                              'generate_bindings.py',

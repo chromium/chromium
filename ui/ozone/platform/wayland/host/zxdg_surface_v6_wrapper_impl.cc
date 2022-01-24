@@ -18,7 +18,11 @@ ZXDGSurfaceV6WrapperImpl::ZXDGSurfaceV6WrapperImpl(
     WaylandConnection* connection)
     : wayland_window_(wayland_window), connection_(connection) {}
 
-ZXDGSurfaceV6WrapperImpl::~ZXDGSurfaceV6WrapperImpl() = default;
+ZXDGSurfaceV6WrapperImpl::~ZXDGSurfaceV6WrapperImpl() {
+  is_configured_ = false;
+  connection_->wayland_window_manager()->NotifyWindowConfigured(
+      wayland_window_);
+}
 
 bool ZXDGSurfaceV6WrapperImpl::Initialize() {
   if (!connection_->shell_v6()) {
@@ -26,8 +30,8 @@ bool ZXDGSurfaceV6WrapperImpl::Initialize() {
     return false;
   }
 
-  static const zxdg_surface_v6_listener zxdg_surface_v6_listener = {
-      &ZXDGSurfaceV6WrapperImpl::Configure,
+  static constexpr zxdg_surface_v6_listener zxdg_surface_v6_listener = {
+      &Configure,
   };
 
   zxdg_surface_v6_.reset(zxdg_shell_v6_get_xdg_surface(
@@ -46,9 +50,9 @@ bool ZXDGSurfaceV6WrapperImpl::Initialize() {
 void ZXDGSurfaceV6WrapperImpl::AckConfigure(uint32_t serial) {
   DCHECK(zxdg_surface_v6_);
   zxdg_surface_v6_ack_configure(zxdg_surface_v6_.get(), serial);
+  is_configured_ = true;
   connection_->wayland_window_manager()->NotifyWindowConfigured(
       wayland_window_);
-  is_configured_ = true;
 }
 
 bool ZXDGSurfaceV6WrapperImpl::IsConfigured() {

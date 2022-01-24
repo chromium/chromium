@@ -42,8 +42,8 @@ public class MockPersistedTabData extends PersistedTabData {
      * @param callback callback {@link MockPersistedTabData} will be passed back in
      */
     public static void from(Tab tab, Callback<MockPersistedTabData> callback) {
-        PersistedTabData.from(tab, (data, storage, id) -> {
-            return new MockPersistedTabData(tab, data, storage, id);
+        PersistedTabData.from(tab, (data, storage, id, factoryCallback) -> {
+            factoryCallback.onResult(new MockPersistedTabData(tab, data, storage, id));
         }, null, MockPersistedTabData.class, callback);
     }
 

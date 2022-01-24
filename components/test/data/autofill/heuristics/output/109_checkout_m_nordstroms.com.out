@@ -16,7 +16,7 @@ UNKNOWN_TYPE |  | Access Code |  | _1-default
 UNKNOWN_TYPE |  | Gift Card Number |  | _1-default
 UNKNOWN_TYPE |  | Access Code |  | _1-default
 UNKNOWN_TYPE |  | Please do not fill out the next field, it is a security measure to insure that this page is being visited by a human. |  | _1-default
-UNKNOWN_TYPE |  | Enter a Promotion Code |  | _1-default
+MERCHANT_PROMO_CODE |  | Enter a Promotion Code |  | _1-default
 UNKNOWN_TYPE |  | Employee Number |  | _1-default
 UNKNOWN_TYPE | discount | % |  | _1-default
 UNKNOWN_TYPE | discount | % |  | _1-default

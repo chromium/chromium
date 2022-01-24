@@ -32,6 +32,9 @@ class TraceBufferRingBuffer : public TraceBuffer {
       recyclable_chunks_queue_[i] = i;
   }
 
+  TraceBufferRingBuffer(const TraceBufferRingBuffer&) = delete;
+  TraceBufferRingBuffer& operator=(const TraceBufferRingBuffer&) = delete;
+
   std::unique_ptr<TraceBufferChunk> GetChunk(size_t* index) override {
     HEAP_PROFILER_SCOPED_IGNORE;
 
@@ -148,8 +151,6 @@ class TraceBufferRingBuffer : public TraceBuffer {
 
   size_t current_iteration_index_;
   uint32_t current_chunk_seq_;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceBufferRingBuffer);
 };
 
 class TraceBufferVector : public TraceBuffer {
@@ -160,6 +161,9 @@ class TraceBufferVector : public TraceBuffer {
         max_chunks_(max_chunks) {
     chunks_.reserve(max_chunks_);
   }
+
+  TraceBufferVector(const TraceBufferVector&) = delete;
+  TraceBufferVector& operator=(const TraceBufferVector&) = delete;
 
   std::unique_ptr<TraceBufferChunk> GetChunk(size_t* index) override {
     HEAP_PROFILER_SCOPED_IGNORE;
@@ -239,8 +243,6 @@ class TraceBufferVector : public TraceBuffer {
   size_t current_iteration_index_;
   size_t max_chunks_;
   std::vector<std::unique_ptr<TraceBufferChunk>> chunks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceBufferVector);
 };
 
 }  // namespace

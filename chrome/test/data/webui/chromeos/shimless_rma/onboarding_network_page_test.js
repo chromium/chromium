@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {fakeNetworks} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setNetworkConfigServiceForTesting, setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingNetworkPage} from 'chrome://shimless-rma/onboarding_network_page.js';
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.js';
 import {FakeNetworkConfig} from '../fake_network_config_mojom.m.js';
 
 export function onboardingNetworkPageTest() {
-  /** @type {?OnboardingNetworkPageElement} */
+  /** @type {?OnboardingNetworkPage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -46,7 +45,7 @@ export function onboardingNetworkPageTest() {
   function initializeChooseDestinationPage() {
     assertFalse(!!component);
 
-    component = /** @type {!OnboardingNetworkPageElement} */ (
+    component = /** @type {!OnboardingNetworkPage} */ (
         document.createElement('onboarding-network-page'));
     assertTrue(!!component);
     document.body.appendChild(component);

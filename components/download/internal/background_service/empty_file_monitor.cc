@@ -20,7 +20,8 @@ void EmptyFileMonitor::Initialize(InitCallback callback) {
 
 void EmptyFileMonitor::DeleteUnknownFiles(
     const Model::EntryList& known_entries,
-    const std::vector<DriverEntry>& known_driver_entries) {}
+    const std::vector<DriverEntry>& known_driver_entries,
+    base::OnceClosure completion_callback) {}
 
 void EmptyFileMonitor::CleanupFilesForCompletedEntries(
     const Model::EntryList& entries,

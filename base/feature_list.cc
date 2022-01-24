@@ -315,13 +315,13 @@ void FeatureList::RegisterFieldTrialOverride(const std::string& feature_name,
   DCHECK(field_trial);
   DCHECK(!Contains(overrides_, feature_name) ||
          !overrides_.find(feature_name)->second.field_trial)
-      << "Feature " << feature_name
-      << " has conflicting field trial overrides: "
+      << "Feature " << feature_name << " is overriden multiple times in these "
+      << "trials: "
       << overrides_.find(feature_name)->second.field_trial->trial_name()
-      << " / " << field_trial->trial_name()
-      << ". Please make sure that the trial (study) name is consistent across:"
-      << " (1)The server config, (2)The fieldtrial_testing_config, and"
-      << " (3) The about_flags.cc";
+      << " and " << field_trial->trial_name() << ". "
+      << "Check the trial (study) in (1) the server config, "
+      << "(2) fieldtrial_testing_config.json, (3) about_flags.cc, and "
+      << "(4) client-side field trials.";
 
   RegisterOverride(feature_name, override_state, field_trial);
 }

@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "components/arc/mojom/input_method_manager.mojom-forward.h"
-#include "ui/base/ime/chromeos/input_method_descriptor.h"
+#include "ui/base/ime/ash/input_method_descriptor.h"
 
 namespace arc {
 
@@ -22,8 +22,8 @@ class ArcInputMethodState {
    public:
     virtual ~Delegate() = default;
     virtual bool ShouldArcIMEAllowed() const = 0;
-    virtual chromeos::input_method::InputMethodDescriptor
-    BuildInputMethodDescriptor(const mojom::ImeInfoPtr& info) const = 0;
+    virtual ash::input_method::InputMethodDescriptor BuildInputMethodDescriptor(
+        const mojom::ImeInfoPtr& info) const = 0;
   };
 
   explicit ArcInputMethodState(const Delegate* const delegate);
@@ -39,9 +39,9 @@ class ArcInputMethodState {
   void DisableInputMethod(const std::string& ime_id);
 
   // Return the InputMethodDescriptors which are installed and allowed.
-  chromeos::input_method::InputMethodDescriptors GetActiveInputMethods() const;
+  ash::input_method::InputMethodDescriptors GetAvailableInputMethods() const;
   // Return the InputMethodDescriptors which are enabled and allowed.
-  chromeos::input_method::InputMethodDescriptors GetEnabledInputMethods() const;
+  ash::input_method::InputMethodDescriptors GetEnabledInputMethods() const;
 
  private:
   class InputMethodEntry {
@@ -49,7 +49,7 @@ class ArcInputMethodState {
     std::string ime_id_;
     bool enabled_{false};
     bool always_allowed_{false};
-    chromeos::input_method::InputMethodDescriptor descriptor_;
+    ash::input_method::InputMethodDescriptor descriptor_;
   };
 
   void SetInputMethodEnabled(const std::string& ime_id, bool enabled);

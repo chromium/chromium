@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 10: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 This tests performs a sequence of actions that result in a GBK converter with substitution enabled being destroyed.
 
 PASS if there is no assertion failure.

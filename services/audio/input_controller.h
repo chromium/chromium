@@ -128,6 +128,9 @@ class InputController final : public StreamMonitor {
     FAKE = 3,
   };
 
+  InputController(const InputController&) = delete;
+  InputController& operator=(const InputController&) = delete;
+
   ~InputController() final;
 
   media::AudioInputStream* stream_for_testing() { return stream_; }
@@ -300,8 +303,6 @@ class InputController final : public StreamMonitor {
   // InputController that has already been closed.
   // All outstanding weak pointers, are invalidated at the end of DoClose.
   base::WeakPtrFactory<InputController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputController);
 };
 
 }  // namespace audio

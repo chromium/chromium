@@ -105,6 +105,10 @@ class TabImpl : public Tab,
   explicit TabImpl(ProfileImpl* profile,
                    std::unique_ptr<content::WebContents> web_contents,
                    const std::string& guid = std::string());
+
+  TabImpl(const TabImpl&) = delete;
+  TabImpl& operator=(const TabImpl&) = delete;
+
   ~TabImpl() override;
 
   // Returns the TabImpl from the specified WebContents (which may be null), or
@@ -226,6 +230,8 @@ class TabImpl : public Tab,
       const std::u16string& js_object_name) override;
   std::unique_ptr<FaviconFetcher> CreateFaviconFetcher(
       FaviconFetcherDelegate* delegate) override;
+  void SetTranslateTargetLanguage(
+      const std::string& translate_target_lang) override;
 #if !defined(OS_ANDROID)
   void AttachToView(views::WebView* web_view) override;
 #endif
@@ -323,7 +329,8 @@ class TabImpl : public Tab,
 #endif
 
   // content::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void DidChangeVisibleSecurityState() override;
 
   // find_in_page::FindResultObserver:
@@ -407,8 +414,6 @@ class TabImpl : public Tab,
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
 
   base::WeakPtrFactory<TabImpl> weak_ptr_factory_for_fullscreen_exit_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabImpl);
 };
 
 }  // namespace weblayer

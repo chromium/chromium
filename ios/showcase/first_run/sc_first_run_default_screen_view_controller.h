@@ -7,11 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 // A view controller to showcase an example default screen for the new first run
 // experience.
-@interface SCFirstRunDefaultScreenViewController : FirstRunScreenViewController
+@interface SCFirstRunDefaultScreenViewController : PromoStyleViewController
 @end
 
 #endif  // IOS_SHOWCASE_FIRST_RUN_SC_FIRST_RUN_DEFAULT_SCREEN_VIEW_CONTROLLER_H_

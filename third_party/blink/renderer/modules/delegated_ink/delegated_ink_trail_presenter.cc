@@ -65,24 +65,26 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   }
 
   LayoutView* layout_view = local_frame_->ContentLayoutObject();
-  DCHECK(layout_view);
+  LayoutBox* layout_box = nullptr;
+  if (presentation_area_) {
+    layout_box = presentation_area_->GetLayoutBox();
+  } else {
+    // If presentation_area_ wasn't provided, then default to the layout
+    // viewport.
+    layout_box = layout_view;
+  }
+  // The layout might not be initialized or the associated element deleted from
+  // the DOM.
+  if (!layout_box || !layout_view)
+    return;
+
   const float effective_zoom = layout_view->StyleRef().EffectiveZoom();
 
   PhysicalOffset physical_point(LayoutUnit(evt->x()), LayoutUnit(evt->y()));
   physical_point.Scale(effective_zoom);
   physical_point = layout_view->LocalToAbsolutePoint(
       physical_point, kTraverseDocumentBoundaries);
-  gfx::PointF point = FloatPoint(physical_point);
-
-  LayoutBox* layout_box = nullptr;
-  if (presentation_area_) {
-    layout_box = presentation_area_->GetLayoutBox();
-    DCHECK(layout_box);
-  } else {
-    // If presentation_area_ wasn't provided, then default to the layout
-    // viewport.
-    layout_box = layout_view;
-  }
+  gfx::PointF point = ToGfxPointF(FloatPoint(physical_point));
 
   // Intersect with the visible viewport so that the presentation area can't
   // extend beyond the edges of the window or over the scrollbars. The frame
@@ -113,7 +115,7 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   border_box_rect_absolute.Intersect(PhysicalRect(
       local_frame_->GetPage()->GetVisualViewport().VisibleContentRect()));
 
-  gfx::RectF area = FloatRect(border_box_rect_absolute);
+  gfx::RectF area = ToGfxRectF(FloatRect(border_box_rect_absolute));
 
   // This is used to know if the user starts inking with the pointer down or
   // not, so that we can stop drawing delegated ink trails as quickly as

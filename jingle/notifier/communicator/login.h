@@ -73,6 +73,10 @@ class Login
         const std::string& auth_mechanism,
         const net::NetworkTrafficAnnotationTag& traffic_annotation,
         network::NetworkConnectionTracker* network_connection_tracker);
+
+  Login(const Login&) = delete;
+  Login& operator=(const Login&) = delete;
+
   ~Login() override;
 
   // Starts connecting (or forces a reconnection if we're backed off).
@@ -120,8 +124,6 @@ class Login
   // reconnection state.
   base::TimeDelta reconnect_interval_;
   base::OneShotTimer reconnect_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Login);
 };
 
 }  // namespace notifier

@@ -96,6 +96,10 @@ void IterateAndReportPerf(const char* test_name,
 class BadMessageObserver {
  public:
   BadMessageObserver();
+
+  BadMessageObserver(const BadMessageObserver&) = delete;
+  BadMessageObserver& operator=(const BadMessageObserver&) = delete;
+
   ~BadMessageObserver();
 
   // Waits for the bad message and returns the error string.
@@ -110,8 +114,6 @@ class BadMessageObserver {
   std::string last_error_for_bad_message_;
   bool got_bad_message_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(BadMessageObserver);
 };
 
 }  // namespace test

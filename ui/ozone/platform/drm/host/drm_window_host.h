@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/rect.h"
@@ -47,6 +46,10 @@ class DrmWindowHost : public PlatformWindow,
                 DrmCursor* cursor,
                 DrmWindowHostManager* window_manager,
                 DrmDisplayHostManager* display_manager);
+
+  DrmWindowHost(const DrmWindowHost&) = delete;
+  DrmWindowHost& operator=(const DrmWindowHost&) = delete;
+
   ~DrmWindowHost() override;
 
   void Initialize();
@@ -110,8 +113,6 @@ class DrmWindowHost : public PlatformWindow,
   const gfx::AcceleratedWidget widget_;
 
   gfx::Rect cursor_confined_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmWindowHost);
 };
 
 }  // namespace ui

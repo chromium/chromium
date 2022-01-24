@@ -26,6 +26,8 @@ mojom("mojom") {
     "//ui/gfx/geometry/mojom",
   ]
 
+  public_deps = [ "//sandbox/policy/mojom" ]
+
   if (is_chromeos_ash) {
     deps += [
       "//components/chromeos_camera/common",

@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "ui/gfx/native_widget_types.h"
@@ -105,6 +104,10 @@ class ProcessSingleton {
 
   ProcessSingleton(const base::FilePath& user_data_dir,
                    const NotificationCallback& notification_callback);
+
+  ProcessSingleton(const ProcessSingleton&) = delete;
+  ProcessSingleton& operator=(const ProcessSingleton&) = delete;
+
   ~ProcessSingleton();
 
   // Notify another process, if available. Otherwise sets ourselves as the
@@ -232,8 +235,6 @@ class ProcessSingleton {
 #endif
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSingleton);
 };
 
 #endif  // CHROME_BROWSER_PROCESS_SINGLETON_H_

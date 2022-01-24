@@ -12,8 +12,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
@@ -54,8 +54,10 @@ using gpu::gles2::AbstractTexture;
 
 DirectSharedImageVideoProvider::DirectSharedImageVideoProvider(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-    GetStubCB get_stub_cb)
-    : gpu_factory_(gpu_task_runner, std::move(get_stub_cb)),
+    GetStubCB get_stub_cb,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock)
+    : gpu::RefCountedLockHelperDrDc(std::move(drdc_lock)),
+      gpu_factory_(gpu_task_runner, std::move(get_stub_cb)),
       gpu_task_runner_(std::move(gpu_task_runner)) {}
 
 DirectSharedImageVideoProvider::~DirectSharedImageVideoProvider() = default;
@@ -84,7 +86,7 @@ void DirectSharedImageVideoProvider::RequestImage(ImageReadyCB cb,
   // Note: `cb` is only run on successful creation, so this does not use
   // `AsyncCall()` + `Then()` to chain the callbacks.
   gpu_factory_.AsyncCall(&GpuSharedImageVideoFactory::CreateImage)
-      .WithArgs(BindToCurrentLoop(std::move(cb)), spec);
+      .WithArgs(BindToCurrentLoop(std::move(cb)), spec, GetDrDcLock());
 }
 
 GpuSharedImageVideoFactory::GpuSharedImageVideoFactory(
@@ -139,16 +141,18 @@ void GpuSharedImageVideoFactory::Initialize(
 
 void GpuSharedImageVideoFactory::CreateImage(
     FactoryImageReadyCB image_ready_cb,
-    const SharedImageVideoProvider::ImageSpec& spec) {
+    const SharedImageVideoProvider::ImageSpec& spec,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Generate a shared image mailbox.
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
-  auto codec_image = base::MakeRefCounted<CodecImage>(spec.coded_size);
+  auto codec_image =
+      base::MakeRefCounted<CodecImage>(spec.coded_size, drdc_lock);
 
   TRACE_EVENT0("media", "GpuSharedImageVideoFactory::CreateVideoFrame");
 
-  if (!CreateImageInternal(spec, mailbox, codec_image)) {
+  if (!CreateImageInternal(spec, mailbox, codec_image, std::move(drdc_lock))) {
     return;
   }
 
@@ -185,7 +189,8 @@ void GpuSharedImageVideoFactory::CreateImage(
 bool GpuSharedImageVideoFactory::CreateImageInternal(
     const SharedImageVideoProvider::ImageSpec& spec,
     gpu::Mailbox mailbox,
-    scoped_refptr<CodecImage> image) {
+    scoped_refptr<CodecImage> image,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!MakeContextCurrent(stub_))
     return false;
@@ -206,14 +211,12 @@ bool GpuSharedImageVideoFactory::CreateImageInternal(
   }
 
   // Create a shared image.
-  // TODO(vikassoni): Hardcoding colorspace to SRGB. Figure how if media has a
-  // colorspace and wire it here.
   // TODO(vikassoni): This shared image need to be thread safe eventually for
   // webview to work with shared images.
-  auto shared_image = std::make_unique<gpu::SharedImageVideo>(
-      mailbox, coded_size, gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, std::move(image),
-      std::move(shared_context), false /* is_thread_safe */);
+  auto shared_image = gpu::SharedImageVideo::Create(
+      mailbox, coded_size, spec.color_space, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, std::move(image), std::move(shared_context),
+      std::move(drdc_lock));
 
   // Register it with shared image mailbox as well as legacy mailbox. This
   // keeps |shared_image| around until its destruction cb is called.

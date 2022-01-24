@@ -12,11 +12,11 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/login_manager/arc.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -44,6 +44,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   FakeSessionManagerClient();
 
   explicit FakeSessionManagerClient(PolicyStorageType policy_storage);
+
+  FakeSessionManagerClient(const FakeSessionManagerClient&) = delete;
+  FakeSessionManagerClient& operator=(const FakeSessionManagerClient&) = delete;
 
   ~FakeSessionManagerClient() override;
 
@@ -294,6 +297,10 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
 
   const std::string& login_password() const { return login_password_; }
 
+  const absl::optional<std::string>& primary_user_id() const {
+    return primary_user_id_;
+  }
+
  private:
   // Called in response to writing owner key file specified in new device
   // policy - used for in-memory fake only.
@@ -382,8 +389,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   };
   std::map<cryptohome::AccountIdentifier, FlagsState> flags_for_user_;
 
+  absl::optional<std::string> primary_user_id_;
+
   base::WeakPtrFactory<FakeSessionManagerClient> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FakeSessionManagerClient);
 };
 
 class COMPONENT_EXPORT(SESSION_MANAGER) ScopedFakeSessionManagerClient {

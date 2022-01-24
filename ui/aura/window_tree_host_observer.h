@@ -10,6 +10,8 @@
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
 
+class SkRegion;
+
 namespace gfx {
 class Point;
 }
@@ -35,7 +37,8 @@ class AURA_EXPORT WindowTreeHostObserver {
   // Called when the occlusion status of the native window changes, iff
   // occlusion tracking is enabled for a descendant of the root.
   virtual void OnOcclusionStateChanged(WindowTreeHost* host,
-                                       Window::OcclusionState new_state) {}
+                                       Window::OcclusionState new_state,
+                                       const SkRegion& occluded_region) {}
 
   // Called before processing a bounds change. The bounds change may result in
   // one or both of OnHostResized() and OnHostMovedInPixels() being called.

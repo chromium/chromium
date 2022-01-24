@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/compiler_specific.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"

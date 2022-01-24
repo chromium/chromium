@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_readablestream.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared_readablestream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
@@ -46,8 +46,7 @@ class ImageDecoderTest : public testing::Test {
 
     auto data = ReadFile(file_name);
     DCHECK(!data->IsEmpty()) << "Missing file: " << file_name;
-    init->setData(MakeGarbageCollected<
-                  V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
+    init->setData(MakeGarbageCollected<V8ImageBufferSource>(
         DOMArrayBuffer::Create(std::move(data))));
     return ImageDecoderExternal::Create(v8_scope->GetScriptState(), init,
                                         v8_scope->GetExceptionState());
@@ -121,9 +120,8 @@ TEST_F(ImageDecoderTest, DecodeEmpty) {
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType("image/png");
-  init->setData(
-      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
-          DOMArrayBuffer::Create(SharedBuffer::Create())));
+  init->setData(MakeGarbageCollected<V8ImageBufferSource>(
+      DOMArrayBuffer::Create(SharedBuffer::Create())));
   auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
                                                v8_scope.GetExceptionState());
   EXPECT_FALSE(decoder);
@@ -137,9 +135,7 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtConstruction) {
   auto* buffer = DOMArrayBuffer::Create(SharedBuffer::Create());
 
   init->setType("image/png");
-  init->setData(
-      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
-          buffer));
+  init->setData(MakeGarbageCollected<V8ImageBufferSource>(buffer));
 
   ArrayBufferContents contents;
   ASSERT_TRUE(buffer->Transfer(v8_scope.GetIsolate(), contents));
@@ -165,9 +161,7 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtDecodeTime) {
 
   auto* buffer = DOMArrayBuffer::Create(std::move(data));
 
-  init->setData(
-      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
-          buffer));
+  init->setData(MakeGarbageCollected<V8ImageBufferSource>(buffer));
 
   auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
                                                v8_scope.GetExceptionState());
@@ -468,9 +462,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType(kImageType);
-  init->setData(
-      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
-          stream));
+  init->setData(MakeGarbageCollected<V8ImageBufferSource>(stream));
 
   Persistent<ImageDecoderExternal> decoder = ImageDecoderExternal::Create(
       v8_scope.GetScriptState(), init, IGNORE_EXCEPTION_FOR_TESTING);
@@ -482,9 +474,15 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
   const size_t chunk_size = (data->size() + 1) / kNumChunks;
 
   const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
-  underlying_source->Enqueue(ScriptValue(
-      v8_scope.GetIsolate(), ToV8(DOMUint8Array::Create(data_ptr, chunk_size),
-                                  v8_scope.GetScriptState())));
+
+  v8::Local<v8::Value> v8_data_array;
+  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
+                  v8_scope.GetScriptState(),
+                  DOMUint8Array::Create(data_ptr, chunk_size))
+                  .ToLocal(&v8_data_array));
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
 
   // Ensure we have metadata.
   {
@@ -499,11 +497,14 @@ TEST_F(ImageDecoderTest, DecoderReadableStream) {
   decoder->tracks().selectedTrack().value()->setSelected(false);
 
   // Enqueue remaining data.
-  underlying_source->Enqueue(
-      ScriptValue(v8_scope.GetIsolate(),
-                  ToV8(DOMUint8Array::Create(data_ptr + chunk_size,
-                                             data->size() - chunk_size),
-                       v8_scope.GetScriptState())));
+  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
+                  v8_scope.GetScriptState(),
+                  DOMUint8Array::Create(data_ptr + chunk_size,
+                                        data->size() - chunk_size))
+                  .ToLocal(&v8_data_array));
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
   underlying_source->Close();
 
   // Completed will not resolve while we have no selected track.
@@ -570,9 +571,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType(kImageType);
-  init->setData(
-      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
-          stream));
+  init->setData(MakeGarbageCollected<V8ImageBufferSource>(stream));
 
   Persistent<ImageDecoderExternal> decoder = ImageDecoderExternal::Create(
       v8_scope.GetScriptState(), init, IGNORE_EXCEPTION_FOR_TESTING);
@@ -582,9 +581,13 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
 
   // Enqueue a single byte and ensure nothing breaks.
   const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
-  underlying_source->Enqueue(ScriptValue(
-      v8_scope.GetIsolate(),
-      ToV8(DOMUint8Array::Create(data_ptr, 1), v8_scope.GetScriptState())));
+  v8::Local<v8::Value> v8_data_array;
+  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
+                  v8_scope.GetScriptState(), DOMUint8Array::Create(data_ptr, 1))
+                  .ToLocal(&v8_data_array));
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
 
   auto metadata_promise = decoder->tracks().ready(v8_scope.GetScriptState());
   auto decode_promise = decoder->decode();
@@ -602,10 +605,13 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
   EXPECT_FALSE(decode_tester.IsRejected());
 
   // Append the rest of the data.
-  underlying_source->Enqueue(
-      ScriptValue(v8_scope.GetIsolate(),
-                  ToV8(DOMUint8Array::Create(data_ptr + 1, data->size() - 1),
-                       v8_scope.GetScriptState())));
+  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
+                  v8_scope.GetScriptState(),
+                  DOMUint8Array::Create(data_ptr + 1, data->size() - 1))
+                  .ToLocal(&v8_data_array));
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
 
   // Ensure we have metadata.
   metadata_tester.WaitUntilSettled();
@@ -639,9 +645,7 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType(kImageType);
-  init->setData(
-      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
-          stream));
+  init->setData(MakeGarbageCollected<V8ImageBufferSource>(stream));
 
   Persistent<ImageDecoderExternal> decoder = ImageDecoderExternal::Create(
       v8_scope.GetScriptState(), init, IGNORE_EXCEPTION_FOR_TESTING);
@@ -651,9 +655,15 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
 
   // Append all data, but don't mark the stream as complete yet.
   const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
-  underlying_source->Enqueue(ScriptValue(
-      v8_scope.GetIsolate(), ToV8(DOMUint8Array::Create(data_ptr, data->size()),
-                                  v8_scope.GetScriptState())));
+
+  v8::Local<v8::Value> v8_data_array;
+  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
+                  v8_scope.GetScriptState(),
+                  DOMUint8Array::Create(data_ptr, data->size()))
+                  .ToLocal(&v8_data_array));
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
 
   // Wait for metadata so we know the append has occurred.
   {
@@ -707,9 +717,7 @@ TEST_F(ImageDecoderTest, DecodePartialImage) {
   auto* array_buffer = DOMArrayBuffer::Create(128, 1);
   ASSERT_TRUE(data->GetBytes(array_buffer->Data(), array_buffer->ByteLength()));
 
-  init->setData(
-      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
-          array_buffer));
+  init->setData(MakeGarbageCollected<V8ImageBufferSource>(array_buffer));
   auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
                                                v8_scope.GetExceptionState());
   ASSERT_TRUE(decoder);
@@ -754,9 +762,7 @@ TEST_F(ImageDecoderTest, DecodeClosedDuringReadableStream) {
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType(kImageType);
-  init->setData(
-      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
-          stream));
+  init->setData(MakeGarbageCollected<V8ImageBufferSource>(stream));
 
   Persistent<ImageDecoderExternal> decoder = ImageDecoderExternal::Create(
       v8_scope.GetScriptState(), init, IGNORE_EXCEPTION_FOR_TESTING);
@@ -765,10 +771,15 @@ TEST_F(ImageDecoderTest, DecodeClosedDuringReadableStream) {
   EXPECT_EQ(decoder->type(), kImageType);
 
   const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
-  underlying_source->Enqueue(
-      ScriptValue(v8_scope.GetIsolate(),
-                  ToV8(DOMUint8Array::Create(data_ptr, data->size() / 2),
-                       v8_scope.GetScriptState())));
+
+  v8::Local<v8::Value> v8_data_array;
+  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
+                  v8_scope.GetScriptState(),
+                  DOMUint8Array::Create(data_ptr, data->size() / 2))
+                  .ToLocal(&v8_data_array));
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
 
   // Ensure we have metadata.
   {
@@ -803,9 +814,7 @@ TEST_F(ImageDecoderTest, DecodeInvalidFileViaReadableStream) {
 
   auto* init = MakeGarbageCollected<ImageDecoderInit>();
   init->setType(kImageType);
-  init->setData(
-      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrReadableStream>(
-          stream));
+  init->setData(MakeGarbageCollected<V8ImageBufferSource>(stream));
 
   Persistent<ImageDecoderExternal> decoder = ImageDecoderExternal::Create(
       v8_scope.GetScriptState(), init, IGNORE_EXCEPTION_FOR_TESTING);
@@ -814,10 +823,15 @@ TEST_F(ImageDecoderTest, DecodeInvalidFileViaReadableStream) {
   EXPECT_EQ(decoder->type(), kImageType);
 
   const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(data->Data());
-  underlying_source->Enqueue(
-      ScriptValue(v8_scope.GetIsolate(),
-                  ToV8(DOMUint8Array::Create(data_ptr, data->size() / 2),
-                       v8_scope.GetScriptState())));
+
+  v8::Local<v8::Value> v8_data_array;
+  ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
+                  v8_scope.GetScriptState(),
+                  DOMUint8Array::Create(data_ptr, data->size() / 2))
+                  .ToLocal(&v8_data_array));
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  underlying_source->Enqueue(ScriptValue(v8_scope.GetIsolate(), v8_data_array));
 
   // Ensure we have metadata.
   {

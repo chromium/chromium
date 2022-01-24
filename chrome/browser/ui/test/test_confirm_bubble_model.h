@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_TEST_TEST_CONFIRM_BUBBLE_MODEL_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 
 // A test version of the model for confirmation bubbles.
@@ -17,6 +16,10 @@ class TestConfirmBubbleModel : public ConfirmBubbleModel {
                          bool* accept_clicked,
                          bool* cancel_clicked,
                          bool* link_clicked);
+
+  TestConfirmBubbleModel(const TestConfirmBubbleModel&) = delete;
+  TestConfirmBubbleModel& operator=(const TestConfirmBubbleModel&) = delete;
+
   ~TestConfirmBubbleModel() override;
 
   // ConfirmBubbleModel overrides:
@@ -33,8 +36,6 @@ class TestConfirmBubbleModel : public ConfirmBubbleModel {
   bool* accept_clicked_;
   bool* cancel_clicked_;
   bool* link_clicked_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConfirmBubbleModel);
 };
 
 #endif  // CHROME_BROWSER_UI_TEST_TEST_CONFIRM_BUBBLE_MODEL_H_

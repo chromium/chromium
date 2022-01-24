@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/language/core/browser/language_model.h"
@@ -23,10 +22,14 @@ class LanguageModelManager : public KeyedService {
     BASELINE,
     FLUENT,
     GEO,
-    HEURISTIC,
   };
 
+  LanguageModelManager() = delete;
+
   LanguageModelManager(PrefService* prefs, const std::string& ui_lang);
+
+  LanguageModelManager(const LanguageModelManager&) = delete;
+  LanguageModelManager& operator=(const LanguageModelManager&) = delete;
 
   ~LanguageModelManager() override;
 
@@ -43,8 +46,6 @@ class LanguageModelManager : public KeyedService {
   std::map<ModelType, std::unique_ptr<LanguageModel>> models_;
 
   ModelType primary_model_type_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LanguageModelManager);
 };
 
 }  // namespace language

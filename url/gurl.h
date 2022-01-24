@@ -197,7 +197,13 @@ class COMPONENT_EXPORT(URL) GURL {
   //
   // It is an error to get the origin of an invalid URL. The result
   // will be the empty URL.
-  GURL GetOrigin() const;
+  //
+  // WARNING: Please avoid converting urls into origins if at all possible!
+  // //docs/security/origin-vs-url.md is a list of gotchas that can result. Such
+  // conversions will likely return a wrong result for about:blank and/or
+  // in the presence of iframe.sandbox attribute. Prefer to get origins directly
+  // from the source (e.g. RenderFrameHost::GetLastCommittedOrigin).
+  GURL DeprecatedGetOriginAsURL() const;
 
   // A helper function to return a GURL stripped from the elements that are not
   // supposed to be sent as HTTP referrer: username, password and ref fragment.
@@ -468,7 +474,7 @@ class COMPONENT_EXPORT(URL) GURL {
     return base::StringPiece(&spec_[comp.begin], comp.len);
   }
 
-  void ProcessFileOrFileSystemURLAfterReplaceComponents(GURL& url) const;
+  void ProcessFileSystemURLAfterReplaceComponents();
 
   // The actual text of the URL, in canonical ASCII form.
   std::string spec_;

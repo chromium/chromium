@@ -95,8 +95,7 @@ public class TabThemeTest {
 
     private static int getDefaultThemeColor(Tab tab) throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            return ChromeColors.getDefaultThemeColor(
-                    tab.getContext().getResources(), tab.isIncognito());
+            return ChromeColors.getDefaultThemeColor(tab.getContext(), tab.isIncognito());
         });
     }
 
@@ -115,10 +114,12 @@ public class TabThemeTest {
 
         ThemeColorWebContentsObserver colorObserver = new ThemeColorWebContentsObserver();
         CallbackHelper themeColorHelper = colorObserver.getCallbackHelper();
-        mActivityTestRule.getActivity()
-                .getRootUiCoordinatorForTesting()
-                .getTopUiThemeColorProvider()
-                .addThemeColorObserver(colorObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity()
+                    .getRootUiCoordinatorForTesting()
+                    .getTopUiThemeColorProvider()
+                    .addThemeColorObserver(colorObserver);
+        });
 
         // Navigate to a themed page.
         int curCallCount = themeColorHelper.getCallCount();

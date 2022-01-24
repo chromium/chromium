@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -21,6 +20,10 @@ class FakeClientCertificateDelegate
   FakeClientCertificateDelegate(SSLClientAuthRequestorMock* requestor,
                                 base::OnceClosure done_callback)
       : requestor_(requestor), done_callback_(std::move(done_callback)) {}
+
+  FakeClientCertificateDelegate(const FakeClientCertificateDelegate&) = delete;
+  FakeClientCertificateDelegate& operator=(
+      const FakeClientCertificateDelegate&) = delete;
 
   ~FakeClientCertificateDelegate() override {
     if (requestor_) {
@@ -40,8 +43,6 @@ class FakeClientCertificateDelegate
  private:
   scoped_refptr<SSLClientAuthRequestorMock> requestor_;
   base::OnceClosure done_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClientCertificateDelegate);
 };
 
 }  // namespace

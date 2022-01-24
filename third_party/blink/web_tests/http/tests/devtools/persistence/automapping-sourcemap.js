@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Verify that sourcemap sources are mapped with non-exact match.\n`);
   await TestRunner.loadTestModule('bindings_test_runner');
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addStylesheetTag('./resources/s.css');
 

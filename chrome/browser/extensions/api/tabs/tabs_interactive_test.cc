@@ -4,20 +4,29 @@
 
 #include <stddef.h>
 
+#include "apps/test/app_window_waiter.h"
+#include "base/run_loop.h"
+#include "base/strings/pattern.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace extensions {
 
@@ -56,10 +65,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
 
   function = new extensions::WindowsGetLastFocusedFunction();
   function->set_extension(extension.get());
-  result.reset(utils::ToDictionary(
-      utils::RunFunctionAndReturnSingleResult(function.get(),
-                                              "[{\"populate\": true}]",
-                                              browser())));
+  result = utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+      function.get(), "[{\"populate\": true}]", browser()));
 
   // The id should always match the last focused window and does not depend
   // on what was passed to RunFunctionAndReturnSingleResult.
@@ -100,8 +107,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
 
   base::ListValue* result_tabs = result.get();
   // We should have one initial tab and one added tab.
-  EXPECT_EQ(2u, result_tabs->GetSize());
-  for (size_t i = 0; i < result_tabs->GetSize(); ++i) {
+  EXPECT_EQ(2u, result_tabs->GetList().size());
+  for (size_t i = 0; i < result_tabs->GetList().size(); ++i) {
     base::DictionaryValue* result_tab = NULL;
     EXPECT_TRUE(result_tabs->GetDictionary(i, &result_tab));
     EXPECT_EQ(focused_window_id,
@@ -111,15 +118,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
   // Get tabs NOT in the 'last focused' window called from the focused browser.
   function = new extensions::TabsQueryFunction();
   function->set_extension(extension.get());
-  result.reset(utils::ToList(
-      utils::RunFunctionAndReturnSingleResult(function.get(),
-                                              "[{\"lastFocusedWindow\":false}]",
-                                              browser())));
+  result = utils::ToList(utils::RunFunctionAndReturnSingleResult(
+      function.get(), "[{\"lastFocusedWindow\":false}]", browser()));
 
   result_tabs = result.get();
   // We should get one tab for each extra window and one for the initial window.
-  EXPECT_EQ(kExtraWindows + 1, result_tabs->GetSize());
-  for (size_t i = 0; i < result_tabs->GetSize(); ++i) {
+  EXPECT_EQ(kExtraWindows + 1, result_tabs->GetList().size());
+  for (size_t i = 0; i < result_tabs->GetList().size(); ++i) {
     base::DictionaryValue* result_tab = NULL;
     EXPECT_TRUE(result_tabs->GetDictionary(i, &result_tab));
     EXPECT_NE(focused_window_id,
@@ -131,26 +136,19 @@ class NonPersistentExtensionTabsTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  NonPersistentExtensionTabsTest() = default;
+  NonPersistentExtensionTabsTest() : ExtensionApiTest(GetParam()) {}
   ~NonPersistentExtensionTabsTest() override = default;
   NonPersistentExtensionTabsTest(const NonPersistentExtensionTabsTest&) =
       delete;
   NonPersistentExtensionTabsTest& operator=(
       const NonPersistentExtensionTabsTest&) = delete;
-
- protected:
-  const Extension* LoadNonPersistentExtension(const char* relative_path) {
-    return LoadExtension(
-        test_data_dir_.AppendASCII(relative_path),
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
-  }
 };
 
 // Crashes on Lacros only. http://crbug.com/1150133
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TabCurrentWindow DISABLED_TabCurrentWindow
-// Flakes on Linux Tests (Release Only). http://crbug.com/1162432
-#elif defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(NDEBUG)
+// Flakes on Linux Tests. http://crbug.com/1162432
+#elif defined(OS_LINUX)
 #define MAYBE_TabCurrentWindow DISABLED_TabCurrentWindow
 #else
 #define MAYBE_TabCurrentWindow TabCurrentWindow
@@ -160,10 +158,7 @@ class NonPersistentExtensionTabsTest
 // TODO(crbug.com/984350): Expand the test to verify that setSelfAsOpener
 // param is ignored from Service Worker extension scripts.
 IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
-  ASSERT_TRUE(RunExtensionTest(
-      "tabs/current_window", {},
-      {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/current_window")) << message_;
 }
 
 // Crashes on Lacros and Linux-ozone-rel. http://crbug.com/1196709
@@ -176,10 +171,7 @@ IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
 // Tests chrome.windows.getLastFocused.
 IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest,
                        MAYBE_TabGetLastFocusedWindow) {
-  ASSERT_TRUE(RunExtensionTest(
-      "tabs/last_focused_window", {},
-      {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("tabs/last_focused_window")) << message_;
 }
 
 INSTANTIATE_TEST_SUITE_P(EventPage,
@@ -189,5 +181,233 @@ INSTANTIATE_TEST_SUITE_P(EventPage,
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          NonPersistentExtensionTabsTest,
                          ::testing::Values(ContextType::kServiceWorker));
+
+// TODO(llandwerlin): Activating a browser window and waiting for the
+// action to happen requires views::Widget which is not available on
+// MacOSX. Deactivate for now.
+#if !defined(OS_MAC)
+class ExtensionWindowLastFocusedTest : public PlatformAppBrowserTest {
+ public:
+  void SetUpOnMainThread() override;
+
+  void ActivateBrowserWindow(Browser* browser);
+
+  Browser* CreateBrowserWithEmptyTab(bool as_popup);
+
+  int GetTabId(const base::DictionaryValue* value) const;
+
+  std::unique_ptr<base::Value> RunFunction(ExtensionFunction* function,
+                                           const std::string& params);
+
+  const Extension* extension() { return extension_.get(); }
+
+ private:
+  // A helper class to wait for an views::Widget to become activated.
+  class WidgetActivatedWaiter : public views::WidgetObserver {
+   public:
+    explicit WidgetActivatedWaiter(views::Widget* widget)
+        : widget_(widget), waiting_(false) {
+      widget_->AddObserver(this);
+    }
+    ~WidgetActivatedWaiter() override { widget_->RemoveObserver(this); }
+
+    void ActivateAndWait() {
+      widget_->Activate();
+      if (!widget_->IsActive()) {
+        waiting_ = true;
+        base::RunLoop nested_run_loop(
+            base::RunLoop::Type::kNestableTasksAllowed);
+        quit_closure_ = nested_run_loop.QuitWhenIdleClosure();
+        nested_run_loop.Run();
+      }
+    }
+
+    // views::WidgetObserver:
+    void OnWidgetActivationChanged(views::Widget* widget,
+                                   bool active) override {
+      if (widget_ == widget && waiting_) {
+        waiting_ = false;
+        std::move(quit_closure_).Run();
+      }
+    }
+
+   private:
+    views::Widget* widget_;
+    bool waiting_;
+    base::RepeatingClosure quit_closure_;
+  };
+
+  scoped_refptr<const Extension> extension_;
+};
+
+void ExtensionWindowLastFocusedTest::SetUpOnMainThread() {
+  PlatformAppBrowserTest::SetUpOnMainThread();
+  extension_ = ExtensionBuilder("Test").Build();
+}
+
+void ExtensionWindowLastFocusedTest::ActivateBrowserWindow(Browser* browser) {
+  BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser);
+  EXPECT_NE(nullptr, view);
+  views::Widget* widget = view->frame();
+  EXPECT_NE(nullptr, widget);
+  WidgetActivatedWaiter waiter(widget);
+  waiter.ActivateAndWait();
+}
+
+Browser* ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(
+    bool as_popup) {
+  Browser* new_browser;
+  if (as_popup) {
+    new_browser = Browser::Create(
+        Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
+  } else {
+    new_browser =
+        Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  }
+  AddBlankTabAndShow(new_browser);
+  return new_browser;
+}
+
+int ExtensionWindowLastFocusedTest::GetTabId(
+    const base::DictionaryValue* value) const {
+  const base::ListValue* tabs = nullptr;
+  if (!value->GetList(keys::kTabsKey, &tabs))
+    return -2;
+  const base::Value* tab = nullptr;
+  if (!tabs->Get(0, &tab))
+    return -2;
+  const base::DictionaryValue* tab_dict = nullptr;
+  if (!tab->GetAsDictionary(&tab_dict))
+    return -2;
+  absl::optional<int> tab_id = tab_dict->FindIntKey(keys::kIdKey);
+  if (!tab_id)
+    return -2;
+  return *tab_id;
+}
+
+std::unique_ptr<base::Value> ExtensionWindowLastFocusedTest::RunFunction(
+    ExtensionFunction* function,
+    const std::string& params) {
+  function->set_extension(extension_.get());
+  return utils::RunFunctionAndReturnSingleResult(function, params, browser());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
+                       NoDevtoolsAndAppWindows) {
+  DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
+      browser()->tab_strip_model()->GetWebContentsAt(0), false /* is_docked */);
+  {
+    int devtools_window_id = ExtensionTabUtil::GetWindowId(
+        DevToolsWindowTesting::Get(devtools)->browser());
+    ActivateBrowserWindow(DevToolsWindowTesting::Get(devtools)->browser());
+
+    scoped_refptr<WindowsGetLastFocusedFunction> function =
+        new WindowsGetLastFocusedFunction();
+    std::unique_ptr<base::DictionaryValue> result(utils::ToDictionary(
+        RunFunction(function.get(), "[{\"populate\": true}]")));
+    EXPECT_NE(devtools_window_id,
+              api_test_utils::GetInteger(result.get(), "id"));
+  }
+
+  AppWindow* app_window = CreateTestAppWindow(
+      "{\"outerBounds\": "
+      "{\"width\": 300, \"height\": 300,"
+      " \"minWidth\": 200, \"minHeight\": 200,"
+      " \"maxWidth\": 400, \"maxHeight\": 400}}");
+  {
+    apps::AppWindowWaiter waiter(AppWindowRegistry::Get(browser()->profile()),
+                                 app_window->extension_id());
+    waiter.WaitForActivated();
+
+    scoped_refptr<WindowsGetLastFocusedFunction> get_current_app_function =
+        new WindowsGetLastFocusedFunction();
+    std::unique_ptr<base::DictionaryValue> result(utils::ToDictionary(
+        RunFunction(get_current_app_function.get(), "[{\"populate\": true}]")));
+    int app_window_id = app_window->session_id().id();
+    EXPECT_NE(app_window_id, api_test_utils::GetInteger(result.get(), "id"));
+  }
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
+  CloseAppWindow(app_window);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
+                       NoTabIdForDevToolsAndAppWindows) {
+  Browser* normal_browser = CreateBrowserWithEmptyTab(false);
+  {
+    ActivateBrowserWindow(normal_browser);
+
+    scoped_refptr<WindowsGetLastFocusedFunction> function =
+        new WindowsGetLastFocusedFunction();
+    std::unique_ptr<base::DictionaryValue> result(utils::ToDictionary(
+        RunFunction(function.get(), "[{\"populate\": true}]")));
+    int normal_browser_window_id =
+        ExtensionTabUtil::GetWindowId(normal_browser);
+    EXPECT_EQ(normal_browser_window_id,
+              api_test_utils::GetInteger(result.get(), "id"));
+    EXPECT_NE(-1, GetTabId(result.get()));
+    EXPECT_EQ("normal", api_test_utils::GetString(result.get(), "type"));
+  }
+
+  Browser* popup_browser = CreateBrowserWithEmptyTab(true);
+  {
+    ActivateBrowserWindow(popup_browser);
+
+    scoped_refptr<WindowsGetLastFocusedFunction> function =
+        new WindowsGetLastFocusedFunction();
+    std::unique_ptr<base::DictionaryValue> result = utils::ToDictionary(
+        RunFunction(function.get(), "[{\"populate\": true}]"));
+    int popup_browser_window_id = ExtensionTabUtil::GetWindowId(popup_browser);
+    EXPECT_EQ(popup_browser_window_id,
+              api_test_utils::GetInteger(result.get(), "id"));
+    EXPECT_NE(-1, GetTabId(result.get()));
+    EXPECT_EQ("popup", api_test_utils::GetString(result.get(), "type"));
+  }
+
+  DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
+      browser()->tab_strip_model()->GetWebContentsAt(0), false /* is_docked */);
+  {
+    ActivateBrowserWindow(DevToolsWindowTesting::Get(devtools)->browser());
+
+    scoped_refptr<WindowsGetLastFocusedFunction> function =
+        new WindowsGetLastFocusedFunction();
+    std::unique_ptr<base::DictionaryValue> result =
+        utils::ToDictionary(RunFunction(
+            function.get(),
+            "[{\"populate\": true, \"windowTypes\": [ \"devtools\" ]}]"));
+    int devtools_window_id = ExtensionTabUtil::GetWindowId(
+        DevToolsWindowTesting::Get(devtools)->browser());
+    EXPECT_EQ(devtools_window_id,
+              api_test_utils::GetInteger(result.get(), "id"));
+    EXPECT_EQ(-1, GetTabId(result.get()));
+    EXPECT_EQ("devtools", api_test_utils::GetString(result.get(), "type"));
+  }
+
+  AppWindow* app_window = CreateTestAppWindow(
+      "{\"outerBounds\": "
+      "{\"width\": 300, \"height\": 300,"
+      " \"minWidth\": 200, \"minHeight\": 200,"
+      " \"maxWidth\": 400, \"maxHeight\": 400}}");
+  {
+    apps::AppWindowWaiter waiter(AppWindowRegistry::Get(browser()->profile()),
+                                 app_window->extension_id());
+    waiter.WaitForActivated();
+
+    scoped_refptr<WindowsGetLastFocusedFunction> get_current_app_function =
+        new WindowsGetLastFocusedFunction();
+    get_current_app_function->set_extension(extension());
+    EXPECT_EQ(
+        tabs_constants::kNoLastFocusedWindowError,
+        extension_function_test_utils::RunFunctionAndReturnError(
+            get_current_app_function.get(),
+            "[{\"populate\": true, \"windowTypes\": [ \"app\" ]}]", browser()));
+  }
+
+  chrome::CloseWindow(normal_browser);
+  chrome::CloseWindow(popup_browser);
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
+  CloseAppWindow(app_window);
+}
+#endif  // !defined(OS_MAC)
 
 }  // namespace extensions

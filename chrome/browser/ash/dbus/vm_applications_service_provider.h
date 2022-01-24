@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
@@ -26,6 +25,11 @@ class VmApplicationsServiceProvider
       public ui::SelectFileDialog::Listener {
  public:
   VmApplicationsServiceProvider();
+
+  VmApplicationsServiceProvider(const VmApplicationsServiceProvider&) = delete;
+  VmApplicationsServiceProvider& operator=(
+      const VmApplicationsServiceProvider&) = delete;
+
   ~VmApplicationsServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -66,8 +70,6 @@ class VmApplicationsServiceProvider
   void FileSelectionCanceled(void* params) override;
 
   base::WeakPtrFactory<VmApplicationsServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VmApplicationsServiceProvider);
 };
 
 }  // namespace ash

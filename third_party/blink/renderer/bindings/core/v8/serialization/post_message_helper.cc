@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/messaging/user_activation_snapshot.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_structured_serialize_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window_post_message_options.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -18,7 +19,7 @@ namespace blink {
 scoped_refptr<SerializedScriptValue> PostMessageHelper::SerializeMessageByMove(
     v8::Isolate* isolate,
     const ScriptValue& message,
-    const PostMessageOptions* options,
+    const StructuredSerializeOptions* options,
     Transferables& transferables,
     ExceptionState& exception_state) {
   if (options->hasTransfer() && !options->transfer().IsEmpty()) {
@@ -43,7 +44,7 @@ scoped_refptr<SerializedScriptValue> PostMessageHelper::SerializeMessageByMove(
 scoped_refptr<SerializedScriptValue> PostMessageHelper::SerializeMessageByCopy(
     v8::Isolate* isolate,
     const ScriptValue& message,
-    const PostMessageOptions* options,
+    const StructuredSerializeOptions* options,
     Transferables& transferables,
     ExceptionState& exception_state) {
   if (options->hasTransfer() && !options->transfer().IsEmpty()) {

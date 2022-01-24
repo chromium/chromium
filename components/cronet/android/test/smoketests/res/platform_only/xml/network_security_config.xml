@@ -6,4 +6,12 @@
      found in the LICENSE file.
 -->
 
-<network-security-config/>
+<network-security-config>
+  <!-- See components/cronet/android/test/res/xml/network_security_config.xml
+       as to why this is needed. -->
+  <domain-config cleartextTrafficPermitted="true">
+    <!-- Used by PlatformOnlyEngineTest#testSuccessfulResponse -->
+    <domain includeSubdomains="true">127.0.0.1</domain>
+  </domain-config>
+
+</network-security-config>

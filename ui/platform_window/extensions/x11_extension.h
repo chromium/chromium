@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11Extension {
   // |override_redirect| is true.
   virtual void SetOverrideRedirect(bool override_redirect) = 0;
 
+  // Returns true if SetOverrideRedirect() would be compatible with the WM.
+  virtual bool CanResetOverrideRedirect() const = 0;
+
   virtual void SetX11ExtensionDelegate(X11ExtensionDelegate* delegate) = 0;
 
  protected:

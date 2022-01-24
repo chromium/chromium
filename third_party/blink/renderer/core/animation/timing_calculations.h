@@ -54,7 +54,7 @@ static inline double TimingCalculationEpsilon() {
 }
 
 static inline AnimationTimeDelta TimeTolerance() {
-  return AnimationTimeDelta::FromSecondsD(0.000001 /*one microsecond*/);
+  return ANIMATION_TIME_DELTA_FROM_SECONDS(0.000001 /*one microsecond*/);
 }
 
 static inline bool IsWithinAnimationTimeEpsilon(double a, double b) {
@@ -112,6 +112,7 @@ static inline Timing::Phase CalculatePhase(
     const Timing::NormalizedTiming& normalized,
     absl::optional<AnimationTimeDelta> local_time,
     absl::optional<Timing::Phase> timeline_phase,
+    bool at_progress_timeline_boundary,
     Timing::AnimationDirection direction) {
   DCHECK(GreaterThanOrEqualToWithinTimeTolerance(normalized.active_duration,
                                                  AnimationTimeDelta()));
@@ -121,22 +122,27 @@ static inline Timing::Phase CalculatePhase(
   AnimationTimeDelta before_active_boundary_time =
       std::max(std::min(normalized.start_delay, normalized.end_time),
                AnimationTimeDelta());
-  if (local_time.value() < before_active_boundary_time ||
-      (local_time.value() == before_active_boundary_time && timeline_phase &&
-       timeline_phase.value() == Timing::kPhaseBefore) ||
-      (local_time.value() == before_active_boundary_time &&
-       direction == Timing::AnimationDirection::kBackwards)) {
+
+  if ((timeline_phase && timeline_phase.value() == Timing::kPhaseBefore) ||
+      ((!timeline_phase ||
+        (timeline_phase && timeline_phase.value() == Timing::kPhaseActive)) &&
+       (local_time.value() < before_active_boundary_time ||
+        (direction == Timing::AnimationDirection::kBackwards &&
+         local_time.value() == before_active_boundary_time &&
+         !at_progress_timeline_boundary)))) {
     return Timing::kPhaseBefore;
   }
   AnimationTimeDelta active_after_boundary_time =
       std::max(std::min(normalized.start_delay + normalized.active_duration,
                         normalized.end_time),
                AnimationTimeDelta());
-  if (local_time > active_after_boundary_time ||
-      (local_time.value() == active_after_boundary_time && timeline_phase &&
-       timeline_phase.value() == Timing::kPhaseAfter) ||
-      (local_time == active_after_boundary_time &&
-       direction == Timing::AnimationDirection::kForwards)) {
+  if ((timeline_phase && timeline_phase.value() == Timing::kPhaseAfter) ||
+      ((!timeline_phase ||
+        (timeline_phase && timeline_phase.value() == Timing::kPhaseActive)) &&
+       (local_time.value() > active_after_boundary_time ||
+        (direction == Timing::AnimationDirection::kForwards &&
+         local_time.value() == active_after_boundary_time &&
+         !at_progress_timeline_boundary)))) {
     return Timing::kPhaseAfter;
   }
   return Timing::kPhaseActive;
@@ -427,7 +433,7 @@ static inline absl::optional<AnimationTimeDelta> CalculateIterationTime(
     return absl::make_optional(iteration_duration);
 
   DCHECK(!offset_active_time->is_max());
-  AnimationTimeDelta iteration_time = AnimationTimeDelta::FromSecondsD(
+  AnimationTimeDelta iteration_time = ANIMATION_TIME_DELTA_FROM_SECONDS(
       fmod(offset_active_time->InSecondsF(), iteration_duration.InSecondsF()));
 
   // This implements step 3 of

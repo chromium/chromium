@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
@@ -29,6 +28,9 @@ class GroupMapAccessor {
   static GroupMapAccessor* GetInstance() {
     return base::Singleton<GroupMapAccessor>::get();
   }
+
+  GroupMapAccessor(const GroupMapAccessor&) = delete;
+  GroupMapAccessor& operator=(const GroupMapAccessor&) = delete;
 
   // Ensures that |group_identifier| is associated with only one non-trigger,
   // trigger, or signed-in key.
@@ -111,8 +113,6 @@ class GroupMapAccessor {
 
   base::Lock lock_;
   std::vector<GroupToIDMap> group_to_id_maps_;
-
-  DISALLOW_COPY_AND_ASSIGN(GroupMapAccessor);
 };
 }  // namespace
 

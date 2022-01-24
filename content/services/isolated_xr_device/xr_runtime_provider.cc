@@ -26,8 +26,7 @@ enum class IsolatedXRRuntimeProvider::RuntimeStatus {
 
 namespace {
 // Poll for device add/remove every 5 seconds.
-constexpr base::TimeDelta kTimeBetweenPollingEvents =
-    base::TimeDelta::FromSecondsD(5);
+constexpr base::TimeDelta kTimeBetweenPollingEvents = base::Seconds(5);
 
 template <typename VrDeviceT>
 std::unique_ptr<VrDeviceT> CreateDevice() {
@@ -127,8 +126,8 @@ void IsolatedXRRuntimeProvider::SetupPollingForDeviceChanges() {
 #if BUILDFLAG(ENABLE_OPENXR)
   if (IsEnabled(command_line, device::features::kOpenXR,
                 switches::kWebXrRuntimeOpenXr)) {
-    openxr_statics_ = std::make_unique<device::OpenXrStatics>();
-    should_check_openxr_ = openxr_statics_->IsApiAvailable();
+    should_check_openxr_ =
+        device::OpenXrStatics::GetInstance()->IsApiAvailable();
     any_runtimes_available |= should_check_openxr_;
   }
 #endif
@@ -150,7 +149,8 @@ void IsolatedXRRuntimeProvider::RequestDevices(
 
 #if BUILDFLAG(ENABLE_OPENXR)
 bool IsolatedXRRuntimeProvider::IsOpenXrHardwareAvailable() {
-  return should_check_openxr_ && openxr_statics_->IsHardwareAvailable();
+  return should_check_openxr_ &&
+         device::OpenXrStatics::GetInstance()->IsHardwareAvailable();
 }
 
 void IsolatedXRRuntimeProvider::SetOpenXrRuntimeStatus(RuntimeStatus status) {
@@ -159,16 +159,11 @@ void IsolatedXRRuntimeProvider::SetOpenXrRuntimeStatus(RuntimeStatus status) {
       weak_ptr_factory_.GetWeakPtr());
   SetRuntimeStatus(client_.get(), status,
                    base::BindOnce(
-                       [](device::OpenXrStatics* openxr_statics,
-                          VizContextProviderFactoryAsync factory_async) {
-                         // This does not give any ownership of the
-                         // OpenXrStatics object to OpenXrDevice. OpenXrStatics
-                         // is only used in the constructor and a reference is
-                         // not kept.
+                       [](VizContextProviderFactoryAsync factory_async) {
                          return std::make_unique<device::OpenXrDevice>(
-                             openxr_statics, std::move(factory_async));
+                             std::move(factory_async));
                        },
-                       openxr_statics_.get(), std::move(factory_async)),
+                       std::move(factory_async)),
                    &openxr_device_);
 }
 

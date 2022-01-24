@@ -30,6 +30,10 @@ class HomeLauncherStateWaiter {
             &HomeLauncherStateWaiter::OnHomeLauncherAnimationCompleted,
             base::Unretained(this)));
   }
+
+  HomeLauncherStateWaiter(const HomeLauncherStateWaiter&) = delete;
+  HomeLauncherStateWaiter& operator=(const HomeLauncherStateWaiter&) = delete;
+
   ~HomeLauncherStateWaiter() {
     Shell::Get()
         ->app_list_controller()
@@ -48,8 +52,6 @@ class HomeLauncherStateWaiter {
 
   bool target_shown_;
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(HomeLauncherStateWaiter);
 };
 
 // A waiter that waits until the animation ended with the target state, and
@@ -63,6 +65,10 @@ class LauncherStateWaiter {
         ->SetStateTransitionAnimationCallbackForTesting(base::BindRepeating(
             &LauncherStateWaiter::OnStateChanged, base::Unretained(this)));
   }
+
+  LauncherStateWaiter(const LauncherStateWaiter&) = delete;
+  LauncherStateWaiter& operator=(const LauncherStateWaiter&) = delete;
+
   ~LauncherStateWaiter() {
     Shell::Get()
         ->app_list_controller()
@@ -79,8 +85,6 @@ class LauncherStateWaiter {
  private:
   ash::AppListViewState target_state_;
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(LauncherStateWaiter);
 };
 
 class LauncherAnimationWaiter : public ui::LayerAnimationObserver {

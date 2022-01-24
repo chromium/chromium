@@ -45,7 +45,7 @@ class ReinterpretedNonTrivialClass3 {
   // This field should not be emitted as a candidate for --field-filter-file,
   // because we only want to exclude cases where a `reinterpret_cast` is 1)
   // valid before the rewrite and 2) invalid after the rewrite (e.g. because it
-  // skips CheckedPtr's constructors).  A reinterpret_cast of a pointer to
+  // skips raw_ptr's constructors).  A reinterpret_cast of a pointer to
   // non-trivial type would have been invalid before the rewrite if it skipped
   // the (non-trivial) constructors.  See also the discussion in
   // https://groups.google.com/a/google.com/g/chrome-memory-safety/c/MwnBj_EuILg/m/1cVmcBOMBAAJ

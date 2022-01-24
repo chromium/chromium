@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_CHROMEOS_H_
 #define CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_CHROMEOS_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
@@ -25,6 +24,11 @@ class TtsEngineExtensionObserverChromeOS
       public extensions::ExtensionRegistryObserver {
  public:
   static TtsEngineExtensionObserverChromeOS* GetInstance(Profile* profile);
+
+  TtsEngineExtensionObserverChromeOS(
+      const TtsEngineExtensionObserverChromeOS&) = delete;
+  TtsEngineExtensionObserverChromeOS& operator=(
+      const TtsEngineExtensionObserverChromeOS&) = delete;
 
   // Gets the currently loaded TTS extension ids.
   const std::set<std::string>& engine_extension_ids() {
@@ -81,8 +85,6 @@ class TtsEngineExtensionObserverChromeOS
   mojo::Remote<chromeos::tts::mojom::TtsService> tts_service_;
 
   friend class TtsEngineExtensionObserverChromeOSFactory;
-
-  DISALLOW_COPY_AND_ASSIGN(TtsEngineExtensionObserverChromeOS);
 };
 
 #endif  // CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_CHROMEOS_H_

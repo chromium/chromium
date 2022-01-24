@@ -4,7 +4,6 @@
 
 #include "ui/gfx/font_render_params.h"
 
-#include "base/macros.h"
 #include "base/notreached.h"
 
 namespace gfx {

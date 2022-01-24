@@ -18,6 +18,12 @@ class TestBluetoothAdvertisementObserver
  public:
   explicit TestBluetoothAdvertisementObserver(
       scoped_refptr<BluetoothAdvertisement> advertisement);
+
+  TestBluetoothAdvertisementObserver(
+      const TestBluetoothAdvertisementObserver&) = delete;
+  TestBluetoothAdvertisementObserver& operator=(
+      const TestBluetoothAdvertisementObserver&) = delete;
+
   ~TestBluetoothAdvertisementObserver() override;
 
   // BluetoothAdvertisement::Observer:
@@ -30,8 +36,6 @@ class TestBluetoothAdvertisementObserver
   bool released_ = false;
   size_t released_count_ = 0;
   scoped_refptr<BluetoothAdvertisement> advertisement_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBluetoothAdvertisementObserver);
 };
 
 }  // namespace device

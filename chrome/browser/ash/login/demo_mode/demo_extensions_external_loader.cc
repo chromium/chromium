@@ -95,7 +95,8 @@ void DemoExtensionsExternalLoader::LoadApp(const std::string& app_id) {
         cache_dir_, g_browser_process->shared_url_loader_factory(),
         extensions::GetExtensionFileTaskRunner(), this,
         true /* always_check_updates */,
-        false /* wait_for_cache_initialization */);
+        false /* wait_for_cache_initialization */,
+        false /* allow_scheduled_updates */);
   }
 
   // TODO(crbug.com/991453): In offline Demo Mode, this would overwrite the

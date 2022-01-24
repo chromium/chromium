@@ -12,6 +12,7 @@
 
 #include "base/time/time.h"
 #include "components/query_parser/snippet.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace history {
@@ -170,43 +171,62 @@ enum VisitContentAnnotationFlag : uint64_t {
 
 using VisitContentAnnotationFlags = uint64_t;
 
-// A structure containing the annotations made by the ML model to page content
+// A structure containing annotations computed by ML models to page content
 // for a visit. Be cautious when changing the default values as they may already
 // have been written to the storage.
 struct VisitContentModelAnnotations {
   struct Category {
     Category();
-    Category(int id, int weight);
+    Category(const std::string& id, int weight);
+    // |vector| is expected to be of size 2 with the first entry being an ID of
+    // string or int type and the second entry indicating an integer weight.
+    static absl::optional<Category> FromStringVector(
+        const std::vector<std::string>& vector);
+    std::string ToString() const;
     bool operator==(const Category& other) const;
     bool operator!=(const Category& other) const;
 
-    int id = 0;
+    std::string id;
     int weight = 0;
   };
 
   VisitContentModelAnnotations();
-  VisitContentModelAnnotations(float floc_protected_score,
+  VisitContentModelAnnotations(float visibility_score,
                                const std::vector<Category>& categories,
-                               int64_t page_topics_model_version);
+                               int64_t page_topics_model_version,
+                               const std::vector<Category>& entities);
   VisitContentModelAnnotations(const VisitContentModelAnnotations& other);
   ~VisitContentModelAnnotations();
 
-  // A value from 0 to 1 that represents whether the page content is
-  // FLoC-protected.
-  float floc_protected_score = -1.0;
+  // A value from 0 to 1 that represents how prominent, or visible, the page
+  // might be considered on UI surfaces.
+  float visibility_score = -1.0;
   // A vector that contains category IDs and their weights. It is guaranteed
   // that there will not be duplicates in the category IDs contained in this
   // field.
   std::vector<Category> categories;
   // The version of the page topics model that was used to annotate content.
   int64_t page_topics_model_version = -1;
+  // A vector that contains entity IDs and their weights. It is guaranteed
+  // that there will not be duplicates in the category IDs contained in this
+  // field.
+  std::vector<Category> entities;
 };
 
 // A structure containing the annotations made to page content for a visit.
 struct VisitContentAnnotations {
+  VisitContentAnnotations();
+  VisitContentAnnotations(VisitContentAnnotationFlags annotation_flags,
+                          VisitContentModelAnnotations model_annotations,
+                          const std::vector<std::string>& related_searches);
+  VisitContentAnnotations(const VisitContentAnnotations& other);
+  ~VisitContentAnnotations();
+
   VisitContentAnnotationFlags annotation_flags =
       VisitContentAnnotationFlag::kNone;
   VisitContentModelAnnotations model_annotations;
+  // A vector that contains related searches for a Google SRP visit.
+  std::vector<std::string> related_searches;
 };
 
 class URLResult : public URLRow {

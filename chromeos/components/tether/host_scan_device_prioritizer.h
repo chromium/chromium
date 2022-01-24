@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_HOST_SCAN_DEVICE_PRIORITIZER_H_
 #define CHROMEOS_COMPONENTS_TETHER_HOST_SCAN_DEVICE_PRIORITIZER_H_
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
 namespace chromeos {
@@ -23,14 +22,16 @@ namespace tether {
 class HostScanDevicePrioritizer {
  public:
   HostScanDevicePrioritizer() {}
+
+  HostScanDevicePrioritizer(const HostScanDevicePrioritizer&) = delete;
+  HostScanDevicePrioritizer& operator=(const HostScanDevicePrioritizer&) =
+      delete;
+
   virtual ~HostScanDevicePrioritizer() {}
 
   // Prioritizes |remote_devices| using the rules described above.
   virtual void SortByHostScanOrder(
       multidevice::RemoteDeviceRefList* remote_devices) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostScanDevicePrioritizer);
 };
 
 }  // namespace tether

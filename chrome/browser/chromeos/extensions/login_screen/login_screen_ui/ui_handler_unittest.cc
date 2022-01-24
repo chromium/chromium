@@ -54,6 +54,10 @@ namespace login_screen_extension_ui {
 class FakeWindowFactory : public WindowFactory {
  public:
   FakeWindowFactory() = default;
+
+  FakeWindowFactory(const FakeWindowFactory&) = delete;
+  FakeWindowFactory& operator=(const FakeWindowFactory&) = delete;
+
   ~FakeWindowFactory() override = default;
 
   std::unique_ptr<Window> Create(CreateOptions* create_options) override {
@@ -90,8 +94,6 @@ class FakeWindowFactory : public WindowFactory {
   bool last_can_be_closed_by_user_;
   base::OnceClosure last_close_callback_;
   bool create_was_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWindowFactory);
 };
 
 class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
@@ -99,6 +101,12 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
   LoginScreenExtensionUiHandlerUnittest()
       : scoped_current_channel_(version_info::Channel::DEV),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  LoginScreenExtensionUiHandlerUnittest(
+      const LoginScreenExtensionUiHandlerUnittest&) = delete;
+  LoginScreenExtensionUiHandlerUnittest& operator=(
+      const LoginScreenExtensionUiHandlerUnittest&) = delete;
+
   ~LoginScreenExtensionUiHandlerUnittest() override = default;
 
   void SetUp() override {
@@ -211,8 +219,6 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
   FakeWindowFactory* fake_window_factory_ = nullptr;
 
   std::unique_ptr<UiHandler> ui_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenExtensionUiHandlerUnittest);
 };
 
 using LoginScreenExtensionUiHandlerDeathUnittest =

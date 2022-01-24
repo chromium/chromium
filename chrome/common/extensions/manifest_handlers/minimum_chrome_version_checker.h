@@ -5,7 +5,6 @@
 #ifndef CHROME_COMMON_EXTENSIONS_MANIFEST_HANDLERS_MINIMUM_CHROME_VERSION_CHECKER_H_
 #define CHROME_COMMON_EXTENSIONS_MANIFEST_HANDLERS_MINIMUM_CHROME_VERSION_CHECKER_H_
 
-#include "base/macros.h"
 #include "extensions/common/manifest_handler.h"
 
 namespace extensions {
@@ -14,6 +13,11 @@ namespace extensions {
 class MinimumChromeVersionChecker : public ManifestHandler {
  public:
   MinimumChromeVersionChecker();
+
+  MinimumChromeVersionChecker(const MinimumChromeVersionChecker&) = delete;
+  MinimumChromeVersionChecker& operator=(const MinimumChromeVersionChecker&) =
+      delete;
+
   ~MinimumChromeVersionChecker() override;
 
   // Validate minimum Chrome version. We don't need to store this, since the
@@ -22,8 +26,6 @@ class MinimumChromeVersionChecker : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(MinimumChromeVersionChecker);
 };
 
 }  // namespace extensions

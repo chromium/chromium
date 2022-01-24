@@ -66,4 +66,4 @@ android.webkit.WebView focusable focused scrollable
 ++++++android.view.View collection_item name='A' row_index=1 row_span=1 column_span=1
 ++++android.view.View
 ++++++android.view.View collection_item name='B' row_index=2 row_span=1 column_span=1
-++android.view.View name='Alphabet'
+++android.widget.TextView name='Alphabet'

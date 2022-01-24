@@ -7,9 +7,9 @@
 
 /*
  * Editor toolbar styles.
- *
- * @provide {goog.css.editortoolbar}
  */
+
+@provide 'goog.css.editortoolbar';
 
 /* Common base style for all icons. */
 .tr-icon {

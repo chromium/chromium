@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.math.AffineTransformTest');
 goog.setTestOnly();
@@ -68,15 +60,27 @@ testSuite({
   },
 
   testConstructor() {
-    assertThrows(() => {
-      new AffineTransform([0, 0]);
-    });
-    assertThrows(() => {
-      new AffineTransform({});
-    });
-    assertThrows(() => {
-      new AffineTransform(0, 0, 0, 'a', 0, 0);
-    });
+    assertThrows(/**
+                    @suppress {checkTypes} suppression added to enable type
+                    checking
+                  */
+                 () => {
+                   new AffineTransform([0, 0]);
+                 });
+    assertThrows(/**
+                    @suppress {checkTypes} suppression added to enable type
+                    checking
+                  */
+                 () => {
+                   new AffineTransform({});
+                 });
+    assertThrows(/**
+                    @suppress {checkTypes} suppression added to enable type
+                    checking
+                  */
+                 () => {
+                   new AffineTransform(0, 0, 0, 'a', 0, 0);
+                 });
 
     let tx = new AffineTransform(1, 2, 3, 4, 5, 6);
     assertEquals(1, tx.getScaleX());
@@ -110,12 +114,20 @@ testSuite({
 
   testSetTransform() {
     const tx = new AffineTransform();
-    assertThrows(() => {
-      tx.setTransform(1, 2, 3, 4, 6);
-    });
-    assertThrows(() => {
-      tx.setTransform('a', 2, 3, 4, 5, 6);
-    });
+    assertThrows(/**
+                    @suppress {checkTypes} suppression added to enable type
+                    checking
+                  */
+                 () => {
+                   tx.setTransform(1, 2, 3, 4, 6);
+                 });
+    assertThrows(/**
+                    @suppress {checkTypes} suppression added to enable type
+                    checking
+                  */
+                 () => {
+                   tx.setTransform('a', 2, 3, 4, 5, 6);
+                 });
 
     tx.setTransform(1, 2, 3, 4, 5, 6);
     assertEquals(1, tx.getScaleX());

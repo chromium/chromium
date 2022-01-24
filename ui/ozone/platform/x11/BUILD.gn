@@ -78,12 +78,8 @@ source_set("x11") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//ui/base/ime/chromeos" ]
+    deps += [ "//ui/base/ime/ash" ]
   } else {
-    sources += [
-      "x11_os_exchange_data_provider_ozone.cc",
-      "x11_os_exchange_data_provider_ozone.h",
-    ]
     deps += [ "//ui/base/ime/linux" ]
   }
 

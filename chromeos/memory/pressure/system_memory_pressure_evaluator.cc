@@ -18,20 +18,20 @@ SystemMemoryPressureEvaluator* g_system_evaluator = nullptr;
 // We try not to re-notify on moderate too frequently, this time
 // controls how frequently we will notify after our first notification.
 constexpr base::TimeDelta kModerateMemoryPressureCooldownTime =
-    base::TimeDelta::FromSeconds(10);
+    base::Seconds(10);
 
 }  // namespace
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
-    std::unique_ptr<util::MemoryPressureVoter> voter)
+    std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)
     : SystemMemoryPressureEvaluator(
           /*for_testing*/ false,
           std::move(voter)) {}
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     bool for_testing,
-    std::unique_ptr<util::MemoryPressureVoter> voter)
-    : util::SystemMemoryPressureEvaluator(std::move(voter)),
+    std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)
+    : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
       weak_ptr_factory_(this) {
   DCHECK(g_system_evaluator == nullptr);
   g_system_evaluator = this;

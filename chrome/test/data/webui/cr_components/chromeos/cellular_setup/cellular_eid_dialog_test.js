@@ -11,8 +11,8 @@
 // #import {assertTrue, assertEquals, assertDeepEquals} from '../../../chai_assert.js';
 // #import {FakeESimManagerRemote} from './fake_esim_manager_remote.m.js';
 // #import {FakeCanvasContext} from "./fake_canvas_context.m.js";
-// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 suite('CrComponentsCellularEidDialogTest', function() {

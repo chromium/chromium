@@ -17,6 +17,8 @@ namespace chromeos {
 
 class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
  public:
+  static void CreateWithState();
+
   FakeRmadClient();
   FakeRmadClient(const FakeRmadClient&) = delete;
   FakeRmadClient& operator=(const FakeRmadClient&) = delete;
@@ -32,7 +34,7 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
 
   void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) override;
 
-  void GetLogPath(DBusMethodCallback<std::string> callback) override;
+  void GetLog(DBusMethodCallback<std::string> callback) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -44,13 +46,22 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
 
   void TriggerErrorObservation(rmad::RmadErrorCode error);
   void TriggerCalibrationProgressObservation(
-      rmad::CalibrateComponentsState::CalibrationComponent component,
+      rmad::RmadComponent component,
+      rmad::CalibrationComponentStatus::CalibrationStatus status,
       double progress);
+  void TriggerCalibrationOverallProgressObservation(
+      rmad::CalibrationOverallStatus status);
   void TriggerProvisioningProgressObservation(
-      rmad::ProvisionDeviceState::ProvisioningStep step,
+      rmad::ProvisionStatus::Status status,
       double progress);
   void TriggerHardwareWriteProtectionStateObservation(bool enabled);
   void TriggerPowerCableStateObservation(bool plugged_in);
+  void TriggerHardwareVerificationResultObservation(
+      bool is_compliant,
+      const std::string& error_str);
+  void TriggerFinalizationProgressObservation(
+      rmad::FinalizeStatus::Status status,
+      double progress);
 
  private:
   const rmad::GetStateReply& GetStateReply() const;
@@ -61,7 +72,8 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   std::vector<rmad::GetStateReply> state_replies_;
   size_t state_index_;
   rmad::AbortRmaReply abort_rma_reply_;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
+      observers_;
 };
 
 }  // namespace chromeos

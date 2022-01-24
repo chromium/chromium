@@ -24,6 +24,11 @@ class PasswordGenerationDialogViewAndroid
   explicit PasswordGenerationDialogViewAndroid(
       PasswordGenerationController* controller);
 
+  PasswordGenerationDialogViewAndroid(
+      const PasswordGenerationDialogViewAndroid&) = delete;
+  PasswordGenerationDialogViewAndroid& operator=(
+      const PasswordGenerationDialogViewAndroid&) = delete;
+
   ~PasswordGenerationDialogViewAndroid() override;
 
   // Called to show the dialog. |password| is the generated password.
@@ -57,7 +62,6 @@ class PasswordGenerationDialogViewAndroid
   // Whether the dialog was shown for manual generation or not. Used for
   // metrics.
   autofill::password_generation::PasswordGenerationType generation_type_;
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationDialogViewAndroid);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_PASSWORDS_PASSWORD_GENERATION_DIALOG_VIEW_ANDROID_H_

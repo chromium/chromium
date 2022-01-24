@@ -31,8 +31,8 @@ public class AssistantLoginChoice extends EditableOption {
      * @param editButtonContentDescription Optional content description for the edit button.
      */
     public AssistantLoginChoice(String identifier, String label, String sublabel,
-            String sublabelAccessibilityHint, int priority, @Nullable AssistantInfoPopup infoPopup,
-            @Nullable String editButtonContentDescription) {
+            @Nullable String sublabelAccessibilityHint, int priority,
+            @Nullable AssistantInfoPopup infoPopup, @Nullable String editButtonContentDescription) {
         super(identifier, label, sublabel, null);
         mPriority = priority;
         mSublabelAccessibilityHint = sublabelAccessibilityHint;
@@ -48,7 +48,7 @@ public class AssistantLoginChoice extends EditableOption {
         return mInfoPopup;
     }
 
-    public String getSublabelAccessibilityHint() {
+    public @Nullable String getSublabelAccessibilityHint() {
         return mSublabelAccessibilityHint;
     }
 

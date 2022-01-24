@@ -31,6 +31,7 @@ typedef long LONG;
 typedef int INT;
 typedef unsigned int UINT;
 typedef unsigned int* PUINT;
+typedef unsigned __int64 UINT64;
 typedef void* LPVOID;
 typedef void* PVOID;
 typedef void* HANDLE;
@@ -78,19 +79,11 @@ typedef LONG NTSTATUS;
 
 // Forward declare Windows compatible handles.
 
-#define CHROME_DECLARE_HANDLE(name) \
-  struct name##__;                  \
-  typedef struct name##__* name
-CHROME_DECLARE_HANDLE(HDESK);
-CHROME_DECLARE_HANDLE(HGLRC);
-CHROME_DECLARE_HANDLE(HICON);
-CHROME_DECLARE_HANDLE(HINSTANCE);
-CHROME_DECLARE_HANDLE(HKEY);
-CHROME_DECLARE_HANDLE(HKL);
-CHROME_DECLARE_HANDLE(HMENU);
-CHROME_DECLARE_HANDLE(HWINSTA);
-CHROME_DECLARE_HANDLE(HWND);
-#undef CHROME_DECLARE_HANDLE
+#define CHROME_WINDOWS_HANDLE_TYPE(name) \
+  struct name##__;                       \
+  typedef struct name##__* name;
+#include "base/win/win_handle_types_list.inc"
+#undef CHROME_WINDOWS_HANDLE_TYPE
 
 typedef LPVOID HINTERNET;
 typedef HICON HCURSOR;
@@ -102,6 +95,8 @@ typedef PVOID HDEVINFO;
 
 typedef struct _OVERLAPPED OVERLAPPED;
 typedef struct tagMSG MSG, *PMSG, *NPMSG, *LPMSG;
+typedef struct tagTOUCHINPUT TOUCHINPUT;
+typedef struct tagPOINTER_INFO POINTER_INFO;
 
 typedef struct _RTL_SRWLOCK RTL_SRWLOCK;
 typedef RTL_SRWLOCK SRWLOCK, *PSRWLOCK;
@@ -168,6 +163,20 @@ struct CHROME_FORMATETC {
   DWORD dwAspect;
   LONG lindex;
   DWORD tymed;
+};
+
+struct CHROME_POINT {
+  LONG x;
+  LONG y;
+};
+
+struct CHROME_MSG {
+  HWND hwnd;
+  UINT message;
+  WPARAM wParam;
+  LPARAM lParam;
+  DWORD time;
+  CHROME_POINT pt;
 };
 
 // Define some commonly used Windows constants. Note that the layout of these
@@ -313,17 +322,22 @@ inline const FORMATETC* ChromeToWindowsType(const CHROME_FORMATETC* p) {
   return reinterpret_cast<const FORMATETC*>(p);
 }
 
+inline MSG* ChromeToWindowsType(CHROME_MSG* p) {
+  return reinterpret_cast<MSG*>(p);
+}
+
 #endif
 
 // These macros are all defined by windows.h and are also used as the names of
-// functions in the Chromium code base. Add to this list as needed whenever
-// there is a Windows macro which causes a function call to be renamed. This
-// ensures that the same renaming will happen everywhere. Includes of this file
-// can be added wherever needed to ensure this consistent renaming.
+// functions in the Chromium code base. Having these macros consistently defined
+// or undefined can be critical to avoid mismatches between the functions
+// defined and functions called. Macros need to be added to this list in those
+// cases where it is easier to have the macro defined everywhere rather than
+// undefined everywhere. As windows.h is removed from more source files we may
+// be able to shorten this list.
 
 #define CopyFile CopyFileW
 #define CreateDirectory CreateDirectoryW
-#define CreateEvent CreateEventW
 #define CreateFile CreateFileW
 #define CreateService CreateServiceW
 #define DeleteFile DeleteFileW
@@ -332,22 +346,15 @@ inline const FORMATETC* ChromeToWindowsType(const CHROME_FORMATETC* p) {
 #define FindFirstFile FindFirstFileW
 #define FindNextFile FindNextFileW
 #define GetClassName GetClassNameW
-#define GetComputerName GetComputerNameW
 #define GetCurrentDirectory GetCurrentDirectoryW
 #define GetCurrentTime() GetTickCount()
 #define GetFileAttributes GetFileAttributesW
 #define GetMessage GetMessageW
-#define GetUserName GetUserNameW
 #define LoadIcon LoadIconW
-#define LoadImage LoadImageW
 #define PostMessage PostMessageW
-#define RemoveDirectory RemoveDirectoryW
 #define ReplaceFile ReplaceFileW
-#define ReportEvent ReportEventW
 #define SendMessage SendMessageW
 #define SendMessageCallback SendMessageCallbackW
 #define SetCurrentDirectory SetCurrentDirectoryW
-#define StartService StartServiceW
-#define UpdateResource UpdateResourceW
 
 #endif  // BASE_WIN_WINDOWS_TYPES_H_

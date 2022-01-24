@@ -21,6 +21,7 @@ def CheckPythonUnittestsPass(input_api, output_api):
             files_to_check=['.*unittest.py$'],
             env=None,
             run_on_python2=False,
-            run_on_python3=True))
+            run_on_python3=True,
+            skip_shebang_check=True))
 
     return results

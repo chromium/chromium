@@ -9,10 +9,9 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -36,10 +35,10 @@ class OSCryptTest : public testing::Test {
  public:
   OSCryptTest() { OSCryptMocker::SetUp(); }
 
-  ~OSCryptTest() override { OSCryptMocker::TearDown(); }
+  OSCryptTest(const OSCryptTest&) = delete;
+  OSCryptTest& operator=(const OSCryptTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(OSCryptTest);
+  ~OSCryptTest() override { OSCryptMocker::TearDown(); }
 };
 
 TEST_F(OSCryptTest, String16EncryptionDecryption) {
@@ -159,10 +158,10 @@ class OSCryptConcurrencyTest : public testing::Test {
  public:
   OSCryptConcurrencyTest() { OSCryptMocker::SetUp(); }
 
-  ~OSCryptConcurrencyTest() override { OSCryptMocker::TearDown(); }
+  OSCryptConcurrencyTest(const OSCryptConcurrencyTest&) = delete;
+  OSCryptConcurrencyTest& operator=(const OSCryptConcurrencyTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(OSCryptConcurrencyTest);
+  ~OSCryptConcurrencyTest() override { OSCryptMocker::TearDown(); }
 };
 
 // Flaky on Win 7 (dbg) and win-asan, see https://crbug.com/1066699
@@ -205,10 +204,10 @@ class OSCryptTestWin : public testing::Test {
  public:
   OSCryptTestWin() {}
 
-  ~OSCryptTestWin() override { OSCryptMocker::ResetState(); }
+  OSCryptTestWin(const OSCryptTestWin&) = delete;
+  OSCryptTestWin& operator=(const OSCryptTestWin&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(OSCryptTestWin);
+  ~OSCryptTestWin() override { OSCryptMocker::ResetState(); }
 };
 
 // This test verifies that the header of the data returned from CryptProtectData

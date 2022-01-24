@@ -22,10 +22,6 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
-namespace ui {
-class ClipboardData;
-}  // namespace ui
-
 namespace ash {
 class ScopedClipboardHistoryPause;
 
@@ -90,9 +86,6 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
 
   // Deletes the clipboard item specified by the item id.
   virtual bool DeleteClipboardItemById(const std::string& item_id) = 0;
-
-  // Deletes the clipboard item that matches `data`.
-  virtual bool DeleteClipboardItemByClipboardData(ui::ClipboardData* data) = 0;
 
  protected:
   ClipboardHistoryController();

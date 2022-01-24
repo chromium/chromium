@@ -4,15 +4,17 @@
 
 #include "cc/trees/swap_promise_manager.h"
 
+#include <utility>
+
+#include "cc/trees/latency_info_swap_promise_monitor.h"
 #include "cc/trees/swap_promise.h"
-#include "cc/trees/swap_promise_monitor.h"
 
 namespace cc {
 
 SwapPromiseManager::SwapPromiseManager() = default;
 
 SwapPromiseManager::~SwapPromiseManager() {
-  DCHECK(swap_promise_monitors_.empty());
+  DCHECK(latency_info_swap_promise_monitors_.empty());
   BreakSwapPromises(SwapPromise::COMMIT_FAILS);
 }
 
@@ -22,18 +24,19 @@ void SwapPromiseManager::QueueSwapPromise(
   swap_promise_list_.push_back(std::move(swap_promise));
 }
 
-void SwapPromiseManager::InsertSwapPromiseMonitor(SwapPromiseMonitor* monitor) {
-  swap_promise_monitors_.insert(monitor);
+void SwapPromiseManager::InsertLatencyInfoSwapPromiseMonitor(
+    LatencyInfoSwapPromiseMonitor* monitor) {
+  latency_info_swap_promise_monitors_.insert(monitor);
 }
 
-void SwapPromiseManager::RemoveSwapPromiseMonitor(SwapPromiseMonitor* monitor) {
-  swap_promise_monitors_.erase(monitor);
+void SwapPromiseManager::RemoveLatencyInfoSwapPromiseMonitor(
+    LatencyInfoSwapPromiseMonitor* monitor) {
+  latency_info_swap_promise_monitors_.erase(monitor);
 }
 
-void SwapPromiseManager::NotifySwapPromiseMonitorsOfSetNeedsCommit() {
-  for (auto* swap_promise_monitor : swap_promise_monitors_) {
-    swap_promise_monitor->OnSetNeedsCommitOnMain();
-  }
+void SwapPromiseManager::NotifyLatencyInfoSwapPromiseMonitors() {
+  for (auto* monitor : latency_info_swap_promise_monitors_)
+    monitor->OnSetNeedsCommitOnMain();
 }
 
 void SwapPromiseManager::WillCommit() {

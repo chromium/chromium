@@ -11,6 +11,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #define FPL(x) FILE_PATH_LITERAL(x)
 
@@ -50,6 +51,9 @@ class IsolatedContextTest : public testing::Test {
       fileset_.insert(path.NormalizePathSeparators());
   }
 
+  IsolatedContextTest(const IsolatedContextTest&) = delete;
+  IsolatedContextTest& operator=(const IsolatedContextTest&) = delete;
+
   void SetUp() override {
     IsolatedContext::FileInfoSet files;
     for (const auto& path : kTestPaths) {
@@ -74,9 +78,6 @@ class IsolatedContextTest : public testing::Test {
   std::string id_;
   std::multiset<base::FilePath> fileset_;
   std::vector<std::string> names_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolatedContextTest);
 };
 
 TEST_F(IsolatedContextTest, RegisterAndRevokeTest) {
@@ -254,7 +255,7 @@ TEST_F(IsolatedContextTest, CrackURLWithRelativePaths) {
                                         .Append(relatives[j].path);
 
       FileSystemURL cracked = isolated_context()->CreateCrackedFileSystemURL(
-          url::Origin::Create(GURL("http://chromium.org")),
+          blink::StorageKey::CreateFromStringForTesting("http://chromium.org"),
           kFileSystemTypeIsolated, virtual_path);
 
       ASSERT_EQ(relatives[j].valid, cracked.is_valid());

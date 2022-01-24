@@ -6,18 +6,16 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -34,10 +32,12 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_response_headers.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -115,19 +115,29 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     remote_endpoint_ = navigation_handle->GetSocketAddress();
   }
 
+  ShouldClassifyUrlRequest(const ShouldClassifyUrlRequest&) = delete;
+  ShouldClassifyUrlRequest& operator=(const ShouldClassifyUrlRequest&) = delete;
+
   void Start() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
     // We start by doing some simple checks that can run on the UI thread.
     base::UmaHistogramBoolean("SBClientPhishing.ClassificationStart", true);
 
+    if (url_.SchemeIs(content::kChromeUIScheme)) {
+      DontClassifyForPhishing(NO_CLASSIFY_CHROME_UI_PAGE);
+    }
+
+    if (csd_service_->IsLocalResource(remote_endpoint_.address())) {
+      DontClassifyForPhishing(NO_CLASSIFY_LOCAL_RESOURCE);
+    }
+
     // Only classify [X]HTML documents.
     if (mime_type_ != "text/html" && mime_type_ != "application/xhtml+xml") {
       DontClassifyForPhishing(NO_CLASSIFY_UNSUPPORTED_MIME_TYPE);
     }
 
-    if (csd_service_->IsPrivateIPAddress(
-            remote_endpoint_.ToStringWithoutPort())) {
+    if (csd_service_->IsPrivateIPAddress(remote_endpoint_.address())) {
       DontClassifyForPhishing(NO_CLASSIFY_PRIVATE_IP);
     }
 
@@ -197,6 +207,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     NO_CLASSIFY_ALLOWLISTED_BY_POLICY = 12,
     CLASSIFY = 13,
     NO_CLASSIFY_HAS_DELAYED_WARNING = 14,
+    NO_CLASSIFY_LOCAL_RESOURCE = 15,
+    NO_CLASSIFY_CHROME_UI_PAGE = 16,
 
     NO_CLASSIFY_MAX  // Always add new values before this one.
   };
@@ -323,8 +335,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   ClientSideDetectionHost* host_;
 
   ShouldClassifyUrlCallback start_phishing_classification_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShouldClassifyUrlRequest);
 };
 
 // static
@@ -579,6 +589,9 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
   if (is_phishing) {
     DCHECK(web_contents());
     if (ui_manager_.get()) {
+      const content::GlobalRenderFrameHostId primary_main_frame_id =
+          web_contents()->GetMainFrame()->GetGlobalId();
+
       security_interstitials::UnsafeResource resource;
       resource.url = phishing_url;
       resource.original_url = phishing_url;
@@ -586,10 +599,8 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
       resource.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
       resource.threat_source =
           safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
-      resource.web_contents_getter =
-          security_interstitials::GetWebContentsGetter(
-              web_contents()->GetMainFrame()->GetProcess()->GetID(),
-              web_contents()->GetMainFrame()->GetRoutingID());
+      resource.render_process_id = primary_main_frame_id.child_id;
+      resource.render_frame_id = primary_main_frame_id.frame_routing_id;
       if (!ui_manager_->IsAllowlisted(resource)) {
         // We need to stop any pending navigations, otherwise the interstitial
         // might not get created properly.
@@ -641,10 +652,8 @@ bool ClientSideDetectionHost::CanGetAccessToken() {
   if (is_off_the_record_)
     return false;
 
-  // Return true if the finch feature is enabled for an ESB user, and if the
-  // primary user account is signed in.
-  return base::FeatureList::IsEnabled(kClientSideDetectionWithToken) &&
-         IsEnhancedProtectionEnabled(*pref_service_) &&
+  // Return true if the primary user account of an ESB user is signed in.
+  return IsEnhancedProtectionEnabled(*pref_service_) &&
          !account_signed_in_callback_.is_null() &&
          account_signed_in_callback_.Run();
 }

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_NOTIFICATIONS_EXTENSION_NOTIFICATION_HANDLER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_NOTIFICATIONS_EXTENSION_NOTIFICATION_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "extensions/browser/event_router.h"
 
@@ -18,6 +17,11 @@ namespace extensions {
 class ExtensionNotificationHandler : public NotificationHandler {
  public:
   ExtensionNotificationHandler();
+
+  ExtensionNotificationHandler(const ExtensionNotificationHandler&) = delete;
+  ExtensionNotificationHandler& operator=(const ExtensionNotificationHandler&) =
+      delete;
+
   ~ExtensionNotificationHandler() override;
 
   // Extracts an extension ID from the URL for an app window, or an empty string
@@ -46,8 +50,6 @@ class ExtensionNotificationHandler : public NotificationHandler {
                          const std::string& name,
                          EventRouter::UserGestureState user_gesture,
                          std::unique_ptr<base::ListValue> args);
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionNotificationHandler);
 };
 
 }  // namespace extensions

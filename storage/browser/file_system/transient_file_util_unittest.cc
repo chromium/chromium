@@ -19,14 +19,18 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace storage {
 
 class TransientFileUtilTest : public testing::Test {
  public:
   TransientFileUtilTest() = default;
+
+  TransientFileUtilTest(const TransientFileUtilTest&) = delete;
+  TransientFileUtilTest& operator=(const TransientFileUtilTest&) = delete;
+
   ~TransientFileUtilTest() override = default;
 
   void SetUp() override {
@@ -57,8 +61,8 @@ class TransientFileUtilTest : public testing::Test {
         isolated_context->CreateVirtualRootPath(filesystem->id())
             .AppendASCII(name);
     *file_url = file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL("http://foo")), kFileSystemTypeIsolated,
-        virtual_path);
+        blink::StorageKey::CreateFromStringForTesting("http://foo"),
+        kFileSystemTypeIsolated, virtual_path);
   }
 
   std::unique_ptr<FileSystemOperationContext> NewOperationContext() {
@@ -73,8 +77,6 @@ class TransientFileUtilTest : public testing::Test {
   base::ScopedTempDir data_dir_;
   scoped_refptr<FileSystemContext> file_system_context_;
   std::unique_ptr<TransientFileUtil> transient_file_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransientFileUtilTest);
 };
 
 TEST_F(TransientFileUtilTest, TransientFile) {

@@ -7,7 +7,8 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 #include "third_party/blink/public/web/web_script_controller.h"
 
 namespace content {
@@ -215,6 +217,10 @@ blink::WebString MockRenderThread::GetUserAgent() {
   return blink::WebString();
 }
 
+blink::WebString MockRenderThread::GetReducedUserAgent() {
+  return blink::WebString();
+}
+
 const blink::UserAgentMetadata& MockRenderThread::GetUserAgentMetadata() {
   return kUserAgentMetadata;
 }
@@ -236,6 +242,12 @@ void MockRenderThread::SetFieldTrialGroup(const std::string& trial_name,
 
 void MockRenderThread::SetUseZoomForDSFEnabled(bool zoom_for_dsf) {
   zoom_for_dsf_ = zoom_for_dsf;
+}
+
+void MockRenderThread::WriteIntoTrace(
+    perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {
+  // Unlike RenderThreadImpl, MockRenderThread is not aware of its render
+  // process ID.
 }
 
 int32_t MockRenderThread::GetNextRoutingID() {

@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/test/scoped_path_override.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chromecast/app/linux/cast_crash_reporter_client.h"
@@ -40,6 +41,11 @@ int WriteFakeDumpStateFile(const std::string& path) {
 }  // namespace
 
 class CastCrashReporterClientTest : public testing::Test {
+ public:
+  CastCrashReporterClientTest(const CastCrashReporterClientTest&) = delete;
+  CastCrashReporterClientTest& operator=(const CastCrashReporterClientTest&) =
+      delete;
+
  protected:
   CastCrashReporterClientTest() {}
   ~CastCrashReporterClientTest() override {}
@@ -73,9 +79,6 @@ class CastCrashReporterClientTest : public testing::Test {
   }
 
   void TearDown() override {
-    // Remove IO restrictions in order to examine the state of the filesystem.
-    base::ThreadRestrictions::SetIOAllowed(true);
-
     // Assert that the original file has been moved.
     ASSERT_FALSE(base::PathExists(minidump_path()));
 
@@ -119,35 +122,32 @@ class CastCrashReporterClientTest : public testing::Test {
   base::ScopedTempDir fake_home_dir_;
   ScopedTempFile minidump_;
   std::unique_ptr<base::ScopedPathOverride> home_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastCrashReporterClientTest);
 };
 
-#if DCHECK_IS_ON()
-// This test shall only be run when thread restricitons are enabled. Otherwise,
-// the thread will not actually be IO-restricted, and the final ASSERT will
-// fail.
 TEST_F(CastCrashReporterClientTest, EndToEndTestOnIORestrictedThread) {
   // Handle a "crash" on an IO restricted thread.
-  base::ThreadRestrictions::SetIOAllowed(false);
+  base::ScopedDisallowBlocking disallow_blocking;
   CastCrashReporterClient client;
   ASSERT_TRUE(client.HandleCrashDump(minidump_path().value().c_str(), 0));
-
-  // Assert that the thread is IO restricted when the function exits.
-  // Note that SetIOAllowed returns the previous value.
-  ASSERT_FALSE(base::ThreadRestrictions::SetIOAllowed(true));
 }
-#endif  // DCHECK_IS_ON()
 
 TEST_F(CastCrashReporterClientTest, EndToEndTestOnNonIORestrictedThread) {
+  {
+    // ScopedBlockingCall will DCHECK if blocking isn't allowed at the beginning
+    // of this test.
+    base::ScopedBlockingCall test_blocking_allowed(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
+  }
+
   // Handle a crash on a non-IO restricted thread.
-  base::ThreadRestrictions::SetIOAllowed(true);
   CastCrashReporterClient client;
   ASSERT_TRUE(client.HandleCrashDump(minidump_path().value().c_str(), 0));
 
   // Assert that the thread is not IO restricted when the function exits.
-  // Note that SetIOAllowed returns the previous value.
-  ASSERT_TRUE(base::ThreadRestrictions::SetIOAllowed(true));
+  {
+    base::ScopedBlockingCall test_blocking_allowed(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
+  }
 }
 
 }  // namespace chromecast

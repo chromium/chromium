@@ -17,4 +17,9 @@ void NGInlineItemsData::GetOpenTagItems(wtf_size_t size,
   }
 }
 
+void NGInlineItemsData::Trace(Visitor* visitor) const {
+  visitor->Trace(items);
+  visitor->Trace(offset_mapping);
+}
+
 }  // namespace blink

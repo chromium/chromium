@@ -34,7 +34,7 @@ String CSSQuadValue::CustomCSSText() const {
       }
     }
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void CSSQuadValue::TraceAfterDispatch(blink::Visitor* visitor) const {

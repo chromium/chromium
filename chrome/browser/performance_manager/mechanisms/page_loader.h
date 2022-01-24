@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_PAGE_LOADER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_PAGE_LOADER_H_
 
-#include "base/macros.h"
-
 namespace performance_manager {
 
 class PageNode;

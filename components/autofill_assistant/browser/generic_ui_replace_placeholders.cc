@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/generic_ui_replace_placeholders.h"
+
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
 
@@ -10,12 +12,13 @@ namespace autofill_assistant {
 // Forward declaration to allow recursive calls.
 void ReplacePlaceholdersInGenericUi(
     GenericUserInterfaceProto* in_out_proto,
-    const std::map<std::string, std::string>& placeholders);
+    const base::flat_map<std::string, std::string>& placeholders);
 
 namespace {
 
-void ReplaceInPlace(std::string* in_out,
-                    const std::map<std::string, std::string>& placeholders) {
+void ReplaceInPlace(
+    std::string* in_out,
+    const base::flat_map<std::string, std::string>& placeholders) {
   auto formatted_string = field_formatter::FormatString(*in_out, placeholders,
                                                         /*strict = */ false);
   if (!formatted_string.has_value()) {
@@ -27,7 +30,7 @@ void ReplaceInPlace(std::string* in_out,
 
 void ReplacePlaceholdersInView(
     ViewProto* in_out_proto,
-    const std::map<std::string, std::string>& placeholders) {
+    const base::flat_map<std::string, std::string>& placeholders) {
   if (in_out_proto->has_identifier()) {
     ReplaceInPlace(in_out_proto->mutable_identifier(), placeholders);
   }
@@ -103,7 +106,7 @@ void ReplacePlaceholdersInView(
 
 void ReplacePlaceholdersInEvent(
     EventProto* in_out_proto,
-    const std::map<std::string, std::string>& placeholders) {
+    const base::flat_map<std::string, std::string>& placeholders) {
   switch (in_out_proto->kind_case()) {
     case EventProto::kOnValueChanged:
       if (in_out_proto->on_value_changed().has_model_identifier()) {
@@ -143,7 +146,7 @@ void ReplacePlaceholdersInEvent(
 
 void ReplacePlaceholdersInValue(
     ValueReferenceProto* in_out_proto,
-    const std::map<std::string, std::string>& placeholders) {
+    const base::flat_map<std::string, std::string>& placeholders) {
   switch (in_out_proto->kind_case()) {
     case ValueReferenceProto::kModelIdentifier:
       ReplaceInPlace(in_out_proto->mutable_model_identifier(), placeholders);
@@ -156,7 +159,7 @@ void ReplacePlaceholdersInValue(
 
 void ReplacePlaceholdersInInteraction(
     InteractionProto* in_out_proto,
-    const std::map<std::string, std::string>& placeholders) {
+    const base::flat_map<std::string, std::string>& placeholders) {
   for (auto& trigger_event : *in_out_proto->mutable_trigger_event()) {
     ReplacePlaceholdersInEvent(&trigger_event, placeholders);
   }
@@ -168,7 +171,7 @@ void ReplacePlaceholdersInInteraction(
 
 void ReplacePlaceholdersInModel(
     ModelProto* in_out_proto,
-    const std::map<std::string, std::string>& placeholders) {
+    const base::flat_map<std::string, std::string>& placeholders) {
   for (auto& value : *in_out_proto->mutable_values()) {
     if (value.has_identifier()) {
       ReplaceInPlace(value.mutable_identifier(), placeholders);
@@ -180,7 +183,7 @@ void ReplacePlaceholdersInModel(
 
 void ReplacePlaceholdersInGenericUi(
     GenericUserInterfaceProto* in_out_proto,
-    const std::map<std::string, std::string>& placeholders) {
+    const base::flat_map<std::string, std::string>& placeholders) {
   if (placeholders.empty()) {
     return;
   }
@@ -201,7 +204,7 @@ void ReplacePlaceholdersInGenericUi(
 
 void ReplacePlaceholdersInCallback(
     CallbackProto* in_out_proto,
-    const std::map<std::string, std::string>& placeholders) {
+    const base::flat_map<std::string, std::string>& placeholders) {
   if (in_out_proto->has_condition_model_identifier()) {
     ReplaceInPlace(in_out_proto->mutable_condition_model_identifier(),
                    placeholders);

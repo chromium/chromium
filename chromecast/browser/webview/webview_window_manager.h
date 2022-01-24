@@ -27,6 +27,10 @@ class WebviewWindowManager : public aura::EnvObserver,
   };
 
   explicit WebviewWindowManager();
+
+  WebviewWindowManager(const WebviewWindowManager&) = delete;
+  WebviewWindowManager& operator=(const WebviewWindowManager&) = delete;
+
   ~WebviewWindowManager() override;
 
   void AddObserver(Observer* observer);
@@ -43,8 +47,6 @@ class WebviewWindowManager : public aura::EnvObserver,
   std::vector<aura::Window*> observed_windows_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebviewWindowManager);
 };
 
 }  // namespace chromecast

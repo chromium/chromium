@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PREDICTORS_RESOLVE_HOST_CLIENT_IMPL_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/address_list.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
@@ -39,6 +38,10 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
                         const net::NetworkIsolationKey& network_isolation_key,
                         ResolveHostCallback callback,
                         network::mojom::NetworkContext* network_context);
+
+  ResolveHostClientImpl(const ResolveHostClientImpl&) = delete;
+  ResolveHostClientImpl& operator=(const ResolveHostClientImpl&) = delete;
+
   // Cancels the request if it hasn't been completed yet.
   ~ResolveHostClientImpl() override;
 
@@ -53,8 +56,6 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
  private:
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   ResolveHostCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResolveHostClientImpl);
 };
 
 }  // namespace predictors

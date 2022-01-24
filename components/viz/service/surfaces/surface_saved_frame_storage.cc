@@ -19,7 +19,7 @@ namespace {
 // Expire saved frames after 5 seconds.
 // TODO(vmpstr): Figure out if we need to change this for cross-origin
 // animations, since the network delay can cause us to wait longer.
-constexpr base::TimeDelta kExpiryTime = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kExpiryTime = base::Seconds(5);
 
 }  // namespace
 
@@ -59,6 +59,10 @@ std::unique_ptr<SurfaceSavedFrame> SurfaceSavedFrameStorage::TakeSavedFrame() {
   if (saved_frame_)
     saved_frame_->ReleaseSurface();
   return std::move(saved_frame_);
+}
+
+bool SurfaceSavedFrameStorage::HasValidFrame() const {
+  return saved_frame_ && saved_frame_->IsValid();
 }
 
 void SurfaceSavedFrameStorage::ExpireSavedFrame() {

@@ -184,13 +184,13 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     values.SetString(extensions::manifest_keys::kDescription, "something");
     values.SetString(extensions::manifest_keys::kShortName, "something else");
     base::ListValue permissions;
-    permissions.AppendString("alarms");
-    permissions.AppendString("background");
+    permissions.Append("alarms");
+    permissions.Append("background");
     values.SetKey(extensions::manifest_keys::kPermissions,
                   std::move(permissions));
     base::ListValue optional_permissions;
-    optional_permissions.AppendString("alarms");
-    optional_permissions.AppendString("background");
+    optional_permissions.Append("alarms");
+    optional_permissions.Append("background");
     values.SetKey(extensions::manifest_keys::kOptionalPermissions,
                   std::move(optional_permissions));
     extension = CreatePlatformAppWithExtraValues(
@@ -302,7 +302,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // installed.
   {
     base::ListValue permissions;
-    permissions.AppendString("not_whitelisted_permission");
+    permissions.Append("not_whitelisted_permission");
     base::DictionaryValue values;
     values.SetKey(extensions::manifest_keys::kPermissions,
                   std::move(permissions));
@@ -322,7 +322,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // is no significant advantage in testing all unsafe permissions individually.
   {
     base::ListValue permissions;
-    permissions.AppendString("experimental");
+    permissions.Append("experimental");
     base::DictionaryValue values;
     values.SetKey(extensions::manifest_keys::kPermissions,
                   std::move(permissions));
@@ -341,7 +341,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // be installed.
   {
     base::ListValue permissions;
-    permissions.AppendString("experimental");
+    permissions.Append("experimental");
     base::DictionaryValue values;
     values.SetKey(extensions::manifest_keys::kOptionalPermissions,
                   std::move(permissions));
@@ -360,7 +360,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // not installed through the web store cannot be installed.
   {
     base::ListValue matches;
-    matches.AppendString("https://example.com/*");
+    matches.Append("https://example.com/*");
     base::DictionaryValue values;
     values.SetPath("url_handlers.example_com.matches", std::move(matches));
     values.SetString("url_handlers.example_com.title", "example title");
@@ -379,7 +379,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // installed through the web store can be installed.
   {
     base::ListValue matches;
-    matches.AppendString("https://example.com/*");
+    matches.Append("https://example.com/*");
     base::DictionaryValue values;
     values.SetPath("url_handlers.example_com.matches", std::move(matches));
     values.SetString("url_handlers.example_com.title", "example title");
@@ -397,9 +397,9 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // Verify that a platform app with remote URL permissions can be installed.
   {
     base::ListValue permissions;
-    permissions.AppendString("https://example.com/");
-    permissions.AppendString("http://example.com/");
-    permissions.AppendString("ftp://example.com/");
+    permissions.Append("https://example.com/");
+    permissions.Append("http://example.com/");
+    permissions.Append("ftp://example.com/");
     base::DictionaryValue values;
     values.SetKey(extensions::manifest_keys::kPermissions,
                   std::move(permissions));
@@ -417,9 +417,9 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // Verify that an extension with remote URL permissions cannot be installed.
   {
     base::ListValue permissions;
-    permissions.AppendString("https://example.com/");
-    permissions.AppendString("http://example.com/");
-    permissions.AppendString("ftp://example.com/");
+    permissions.Append("https://example.com/");
+    permissions.Append("http://example.com/");
+    permissions.Append("ftp://example.com/");
     base::DictionaryValue values;
     values.SetKey(extensions::manifest_keys::kPermissions,
                   std::move(permissions));
@@ -437,7 +437,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // Verify that a platform app with a local URL permission cannot be installed.
   {
     base::ListValue permissions;
-    permissions.AppendString("file:///some/where");
+    permissions.Append("file:///some/where");
     base::DictionaryValue values;
     values.SetKey(extensions::manifest_keys::kPermissions,
                   std::move(permissions));
@@ -457,7 +457,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   {
     auto socket = std::make_unique<base::DictionaryValue>();
     base::ListValue tcp_list;
-    tcp_list.AppendString("tcp-connect");
+    tcp_list.Append("tcp-connect");
     socket->SetKey("socket", std::move(tcp_list));
     base::ListValue permissions;
     permissions.Append(std::move(socket));
@@ -480,7 +480,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   {
     auto socket = std::make_unique<base::DictionaryValue>();
     base::ListValue tcp_list;
-    tcp_list.AppendString("unknown_value");
+    tcp_list.Append("unknown_value");
     socket->SetKey("unknown_key", std::move(tcp_list));
     base::ListValue permissions;
     permissions.Append(std::move(socket));

@@ -22,9 +22,9 @@ TAG_HEADER = """\
 #             sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-9
-#             android-pixel-2 android-pixel-4 android-shield-android-tv
-#         chromeos-board-amd64-generic chromeos-board-kevin
+# tags: [ android-nexus-5 android-nexus-5x android-nexus-9 android-pixel-2
+#             android-pixel-4 android-shield-android-tv
+#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #         fuchsia-board-astro fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
@@ -68,6 +68,8 @@ TAG_HEADER = """\
 # tags: [ asan no-asan ]
 # Display Server
 # tags: [ display-server-wayland display-server-x ]
+# OOP-Canvas
+# tags: [ oop-c no-oop-c ]
 # results: [ Failure RetryOnFailure Skip ]
 """
 
@@ -83,7 +85,12 @@ def Validate():
   retval = 0
   for f in os.listdir(EXPECTATION_DIR):
     with open(os.path.join(EXPECTATION_DIR, f)) as infile:
-      if TAG_HEADER not in infile.read():
+      content = infile.read()
+      start_index = content.find(TAG_HEADER_BEGIN)
+      end_index = content.find(TAG_HEADER_END)
+      if (start_index < 0 or end_index < 0
+          or content[start_index + len(TAG_HEADER_BEGIN) + 1:end_index] !=
+          TAG_HEADER):
         retval = 1
         logging.error(
             'Expectation file %s does not have a tag/result header consistent '

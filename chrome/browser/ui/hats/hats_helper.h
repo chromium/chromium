@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_HATS_HATS_HELPER_H_
 #define CHROME_BROWSER_UI_HATS_HATS_HELPER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -20,6 +19,9 @@ class Profile;
 class HatsHelper : public content::WebContentsObserver,
                    public content::WebContentsUserData<HatsHelper> {
  public:
+  HatsHelper(const HatsHelper&) = delete;
+  HatsHelper& operator=(const HatsHelper&) = delete;
+
   ~HatsHelper() override;
 
  private:
@@ -34,8 +36,6 @@ class HatsHelper : public content::WebContentsObserver,
   Profile* profile() const;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(HatsHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_HATS_HATS_HELPER_H_

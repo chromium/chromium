@@ -46,6 +46,7 @@ content::WebUIDataSource* CreatePolicyUIHtmlSource() {
      IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DEVICE_ID},
     {"labelIsOffHoursActive", IDS_POLICY_LABEL_IS_OFFHOURS_ACTIVE},
     {"labelPoliciesPush", IDS_POLICY_LABEL_PUSH_POLICIES},
+    {"labelPrecedence", IDS_POLICY_LABEL_PRECEDENCE},
     {"labelRefreshInterval", IDS_POLICY_LABEL_REFRESH_INTERVAL},
     {"labelStatus", IDS_POLICY_LABEL_STATUS},
     {"labelTimeSinceLastRefresh", IDS_POLICY_LABEL_TIME_SINCE_LAST_REFRESH},

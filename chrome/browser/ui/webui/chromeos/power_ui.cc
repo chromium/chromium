@@ -75,19 +75,19 @@ PowerMessageHandler::~PowerMessageHandler() {
 }
 
 void PowerMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kRequestBatteryChargeDataCallback,
       base::BindRepeating(&PowerMessageHandler::OnGetBatteryChargeData,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kRequestCpuIdleDataCallback,
       base::BindRepeating(&PowerMessageHandler::OnGetCpuIdleData,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kRequestCpuFreqDataCallback,
       base::BindRepeating(&PowerMessageHandler::OnGetCpuFreqData,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       kRequestProcessUsageDataCallback,
       base::BindRepeating(&PowerMessageHandler::OnGetProcessUsageData,
                           base::Unretained(this)));
@@ -155,7 +155,7 @@ void PowerMessageHandler::OnGetCpuFreqData(const base::ListValue* value) {
 
 void PowerMessageHandler::OnGetProcessUsageData(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
 
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));

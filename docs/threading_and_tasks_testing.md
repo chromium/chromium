@@ -214,7 +214,7 @@ foo_storage.h
 class FooStorage {
  public:
   static constexpr base::TimeDelta::kFlushInterval =
-      base::TimeDelta::FromSeconds(30);
+      base::Seconds(30);
 
   // Sets |key| to |value|. Flushed to disk on the next flush interval.
   void Set(base::StringPiece key, base::StringPiece value);

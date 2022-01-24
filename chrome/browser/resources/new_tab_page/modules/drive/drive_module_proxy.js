@@ -10,22 +10,20 @@ import './drive.mojom-lite.js';
  * and receiving the browser response.
  */
 
-/** @type {DriveProxy} */
-let instance = null;
+/** @type {?drive.mojom.DriveHandlerRemote} */
+let handler = null;
 
 export class DriveProxy {
-  /** @return {!DriveProxy} */
-  static getInstance() {
-    return instance || (instance = new DriveProxy());
+  /** @return {!drive.mojom.DriveHandlerRemote} */
+  static getHandler() {
+    return handler || (handler = drive.mojom.DriveHandler.getRemote());
   }
 
-  /** @param {DriveProxy} newInstance */
-  static setInstance(newInstance) {
-    instance = newInstance;
+  /** @param {!drive.mojom.DriveHandlerRemote} newHandler */
+  static setHandler(newHandler) {
+    handler = newHandler;
   }
 
-  constructor() {
-    /** @type {!drive.mojom.DriveHandlerRemote} */
-    this.handler = drive.mojom.DriveHandler.getRemote();
-  }
+  /** @private */
+  constructor() {}
 }

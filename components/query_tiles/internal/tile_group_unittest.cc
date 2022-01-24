@@ -16,7 +16,7 @@ namespace query_tiles {
 namespace {
 
 TEST(TileGroupTest, CompareOperators) {
-  base::Time last_updated_ts = base::Time::Now() - base::TimeDelta::FromDays(7);
+  base::Time last_updated_ts = base::Time::Now() - base::Days(7);
   TileGroup lhs, rhs;
   test::ResetTestGroup(&lhs, last_updated_ts);
   test::ResetTestGroup(&rhs, last_updated_ts);
@@ -30,7 +30,7 @@ TEST(TileGroupTest, CompareOperators) {
   EXPECT_NE(lhs, rhs);
   test::ResetTestGroup(&rhs);
 
-  rhs.last_updated_ts += base::TimeDelta::FromDays(1);
+  rhs.last_updated_ts += base::Days(1);
   EXPECT_NE(lhs, rhs);
   test::ResetTestGroup(&rhs);
 
@@ -39,7 +39,7 @@ TEST(TileGroupTest, CompareOperators) {
 }
 
 TEST(TileGroupTest, DeepCompareOperators) {
-  base::Time last_updated_ts = base::Time::Now() - base::TimeDelta::FromDays(7);
+  base::Time last_updated_ts = base::Time::Now() - base::Days(7);
   TileGroup lhs, rhs;
   test::ResetTestGroup(&lhs, last_updated_ts);
   test::ResetTestGroup(&rhs, last_updated_ts);
@@ -64,7 +64,7 @@ TEST(TileGroupTest, CopyOperator) {
 
 TEST(TileGroupTest, MoveOperator) {
   TileGroup lhs;
-  base::Time last_updated_ts = base::Time::Now() - base::TimeDelta::FromDays(7);
+  base::Time last_updated_ts = base::Time::Now() - base::Days(7);
   test::ResetTestGroup(&lhs, last_updated_ts);
   TileGroup rhs = std::move(lhs);
   TileGroup expected;
@@ -76,8 +76,7 @@ TEST(TileGroupTest, OnTileClicked) {
   base::Time now_time = base::Time::Now();
   TileGroup group;
   group.tile_stats["guid-1-1"] = TileStats(now_time, 0);
-  group.tile_stats["guid-1-2"] =
-      TileStats(now_time + base::TimeDelta::FromHours(1), 0.5);
+  group.tile_stats["guid-1-2"] = TileStats(now_time + base::Hours(1), 0.5);
   group.OnTileClicked("guid-1-1");
   EXPECT_EQ(group.tile_stats["guid-1-1"].score, 1);
   group.OnTileClicked("guid-1-2");

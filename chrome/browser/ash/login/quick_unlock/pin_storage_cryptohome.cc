@@ -106,7 +106,7 @@ void OnCryptohomedServiceAvailable(int attempt,
         FROM_HERE,
         base::BindOnce(&CheckForCryptohomedService, attempt + 1,
                        std::move(result)),
-        base::TimeDelta::FromMilliseconds(retry_delay_in_milliseconds));
+        base::Milliseconds(retry_delay_in_milliseconds));
     return;
   }
 

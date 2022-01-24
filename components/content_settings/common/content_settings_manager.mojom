@@ -5,6 +5,7 @@
 module content_settings.mojom;
 
 import "components/content_settings/core/common/content_settings.mojom";
+import "services/network/public/mojom/site_for_cookies.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -36,7 +37,7 @@ interface ContentSettingsManager {
       int32 render_frame_id,
       StorageType storage_type,
       url.mojom.Origin origin,
-      url.mojom.Url site_for_cookies,
+      network.mojom.SiteForCookies site_for_cookies,
       url.mojom.Origin top_frame_origin) => (bool allowed);
 
   // Tells the browser that content in the current page was blocked due to the

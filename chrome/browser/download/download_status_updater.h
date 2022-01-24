@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/download_manager.h"
@@ -21,6 +20,10 @@ class DownloadStatusUpdater
     : public download::AllDownloadItemNotifier::Observer {
  public:
   DownloadStatusUpdater();
+
+  DownloadStatusUpdater(const DownloadStatusUpdater&) = delete;
+  DownloadStatusUpdater& operator=(const DownloadStatusUpdater&) = delete;
+
   ~DownloadStatusUpdater() override;
 
   // Fills in |*download_count| with the number of currently active downloads.
@@ -62,8 +65,6 @@ class DownloadStatusUpdater
   std::vector<std::unique_ptr<download::AllDownloadItemNotifier>> notifiers_;
   std::map<Profile*, std::unique_ptr<ScopedProfileKeepAlive>>
       profile_keep_alives_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadStatusUpdater);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_STATUS_UPDATER_H_

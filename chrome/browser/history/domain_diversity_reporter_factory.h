@@ -27,6 +27,11 @@ class DomainDiversityReporterFactory
   static std::unique_ptr<KeyedService> BuildInstanceFor(
       content::BrowserContext* profile);
 
+  DomainDiversityReporterFactory(const DomainDiversityReporterFactory&) =
+      delete;
+  DomainDiversityReporterFactory& operator=(
+      const DomainDiversityReporterFactory&) = delete;
+
  private:
   friend class base::NoDestructor<DomainDiversityReporterFactory>;
 
@@ -44,8 +49,6 @@ class DomainDiversityReporterFactory
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DomainDiversityReporterFactory);
 };
 
 #endif  // CHROME_BROWSER_HISTORY_DOMAIN_DIVERSITY_REPORTER_FACTORY_H_

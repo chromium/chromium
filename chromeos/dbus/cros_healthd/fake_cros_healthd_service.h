@@ -8,14 +8,13 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/macros.h"
+#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "ash/services/network_health/public/mojom/network_health.mojom.h"
 #include "base/time/time.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
-#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -48,6 +47,10 @@ class FakeCrosHealthdService final
   };
 
   FakeCrosHealthdService();
+
+  FakeCrosHealthdService(const FakeCrosHealthdService&) = delete;
+  FakeCrosHealthdService& operator=(const FakeCrosHealthdService&) = delete;
+
   ~FakeCrosHealthdService() override;
 
   // CrosHealthdServiceFactory overrides:
@@ -59,11 +62,11 @@ class FakeCrosHealthdService final
   void GetEventService(
       mojo::PendingReceiver<mojom::CrosHealthdEventService> service) override;
   void SendNetworkHealthService(
-      mojo::PendingRemote<chromeos::network_health::mojom::NetworkHealthService>
+      mojo::PendingRemote<ash::network_health::mojom::NetworkHealthService>
           remote) override;
   void SendNetworkDiagnosticsRoutines(
       mojo::PendingRemote<
-          chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+          ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
           network_diagnostics_routines) override;
   void GetSystemService(
       mojo::PendingReceiver<mojom::CrosHealthdSystemService> service) override;
@@ -134,6 +137,10 @@ class FakeCrosHealthdService final
   void RunVideoConferencingRoutine(
       const absl::optional<std::string>& stun_server_hostname,
       RunVideoConferencingRoutineCallback callback) override;
+  void RunArcHttpRoutine(RunArcHttpRoutineCallback callback) override;
+  void RunArcPingRoutine(RunArcPingRoutineCallback callback) override;
+  void RunArcDnsResolutionRoutine(
+      RunArcDnsResolutionRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(
@@ -144,11 +151,13 @@ class FakeCrosHealthdService final
   void AddPowerObserver(
       mojo::PendingRemote<mojom::CrosHealthdPowerObserver> observer) override;
   void AddNetworkObserver(
-      mojo::PendingRemote<
-          chromeos::network_health::mojom::NetworkEventsObserver> observer)
-      override;
+      mojo::PendingRemote<ash::network_health::mojom::NetworkEventsObserver>
+          observer) override;
   void AddAudioObserver(
       mojo::PendingRemote<mojom::CrosHealthdAudioObserver> observer) override;
+  void AddThunderboltObserver(
+      mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver> observer)
+      override;
 
   // CrosHealthdProbeService overrides:
   void ProbeTelemetryInfo(
@@ -231,27 +240,33 @@ class FakeCrosHealthdService final
   // Calls the audio event OnUnderrun for all registered audio observers.
   void EmitAudioUnderrunEventForTesting();
 
+  // Calls the Thunderbolt event OnAdd on all registered Thunderbolt observers.
+  void EmitThunderboltAddEventForTesting();
+
   // Calls the network event OnConnectionStateChangedEvent on all registered
   // network observers.
   void EmitConnectionStateChangedEventForTesting(
       const std::string& network_guid,
-      chromeos::network_health::mojom::NetworkState state);
+      ash::network_health::mojom::NetworkState state);
 
   // Calls the network event OnSignalStrengthChangedEvent on all registered
   // network observers.
   void EmitSignalStrengthChangedEventForTesting(
       const std::string& network_guid,
-      chromeos::network_health::mojom::UInt32ValuePtr signal_strength);
+      ash::network_health::mojom::UInt32ValuePtr signal_strength);
 
   // Requests the network health state using the network_health_remote_.
   void RequestNetworkHealthForTesting(
-      chromeos::network_health::mojom::NetworkHealthService::
+      ash::network_health::mojom::NetworkHealthService::
           GetHealthSnapshotCallback callback);
 
   // Calls the LanConnectivity routine on |network_diagnostics_routines_|.
   void RunLanConnectivityRoutineForTesting(
-      chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
-          LanConnectivityCallback callback);
+      ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
+          RunLanConnectivityCallback callback);
+
+  // Returns the last created routine by any Run*Routine method.
+  absl::optional<mojom::DiagnosticRoutineEnum> GetLastRunRoutine() const;
 
   // Returns the parameters passed for the most recent call to
   // `GetRoutineUpdate`.
@@ -260,6 +275,8 @@ class FakeCrosHealthdService final
  private:
   // Used as the response to any GetAvailableRoutines IPCs received.
   std::vector<mojom::DiagnosticRoutineEnum> available_routines_;
+  // Used to store last created routine by any Run*Routine method.
+  absl::optional<mojom::DiagnosticRoutineEnum> last_run_routine_;
   // Used as the response to any RunSomeRoutine IPCs received.
   mojom::RunRoutineResponsePtr run_routine_response_{
       mojom::RunRoutineResponse::New()};
@@ -280,7 +297,7 @@ class FakeCrosHealthdService final
   mojo::ReceiverSet<mojom::CrosHealthdSystemService> system_receiver_set_;
 
   // NetworkHealthService remote.
-  mojo::Remote<chromeos::network_health::mojom::NetworkHealthService>
+  mojo::Remote<ash::network_health::mojom::NetworkHealthService>
       network_health_remote_;
 
   // Collection of registered Bluetooth observers.
@@ -290,10 +307,12 @@ class FakeCrosHealthdService final
   // Collection of registered power observers.
   mojo::RemoteSet<mojom::CrosHealthdPowerObserver> power_observers_;
   // Collection of registered network observers.
-  mojo::RemoteSet<chromeos::network_health::mojom::NetworkEventsObserver>
+  mojo::RemoteSet<ash::network_health::mojom::NetworkEventsObserver>
       network_observers_;
   // Collection of registered audio observers.
   mojo::RemoteSet<mojom::CrosHealthdAudioObserver> audio_observers_;
+  // Collection of registered Thunderbolt observers.
+  mojo::RemoteSet<mojom::CrosHealthdThunderboltObserver> thunderbolt_observers_;
 
   // Contains the most recent params passed to `GetRoutineUpdate`, if it has
   // been called.
@@ -301,12 +320,10 @@ class FakeCrosHealthdService final
 
   // Allow |this| to call the methods on the NetworkDiagnosticsRoutines
   // interface.
-  mojo::Remote<chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+  mojo::Remote<ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
       network_diagnostics_routines_;
 
   base::TimeDelta callback_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCrosHealthdService);
 };
 
 }  // namespace cros_healthd

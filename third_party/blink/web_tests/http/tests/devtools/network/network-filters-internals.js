@@ -35,7 +35,7 @@
 
     Network.NetworkPanel.revealAndFilter(filterArray);
 
-    var nodes = UI.panels.network._networkLogView.flatNodesList();
+    var nodes = UI.panels.network.networkLogView.flatNodesList();
     var foundNodesCount = 0;
     for (var i = 0; i < nodes.length; i++) {
       if (!Network.NetworkLogView.isRequestFilteredOut(nodes[i]))

@@ -46,23 +46,23 @@ enum WallpaperLayout {
 // Hence,
 //   (a) existing enumerated constants should never be deleted or reordered,
 //   (b) new constants should only be appended at the end of the enumeration.
-enum WallpaperType {
-  DAILY = 0,         // Surprise wallpaper. Changes once a day if enabled.
-  CUSTOMIZED = 1,    // Selected by user.
-  DEFAULT = 2,       // Default.
-  /* UNKNOWN = 3 */  // Removed.
-  ONLINE = 4,        // WallpaperInfo.location denotes an URL.
-  POLICY = 5,        // Controlled by policy, can't be changed by the user.
-  THIRDPARTY = 6,    // Current wallpaper is set by a third party app.
-  DEVICE = 7,        // Current wallpaper is the device policy controlled
-                     // wallpaper. It shows on the login screen if the device
-                     // is an enterprise managed device.
-  ONE_SHOT = 8,      // Current wallpaper is shown one-time only, which doesn't
-                     // belong to a particular user and isn't saved to file. It
-                     // goes away when another wallpaper is shown or the browser
-                     // process exits. Note: the image will never be blurred or
-                     // dimmed.
-  WALLPAPER_TYPE_COUNT = 9
+enum class WallpaperType {
+  kDaily = 0,         // Surprise wallpaper. Changes once a day if enabled.
+  kCustomized = 1,    // Selected by user.
+  kDefault = 2,       // Default.
+  /* kUnknown = 3 */  // Removed.
+  kOnline = 4,        // WallpaperInfo.location denotes an URL.
+  kPolicy = 5,        // Controlled by policy, can't be changed by the user.
+  kThirdParty = 6,    // Current wallpaper is set by a third party app.
+  kDevice = 7,        // Current wallpaper is the device policy controlled
+                      // wallpaper. It shows on the login screen if the device
+                      // is an enterprise managed device.
+  kOneShot = 8,       // Current wallpaper is shown one-time only, which doesn't
+                      // belong to a particular user and isn't saved to file. It
+                      // goes away when another wallpaper is shown or the
+                      // browser process exits. Note: the image will never be
+                      // blurred or dimmed.
+  kCount = 9
 };
 
 // The color profile type, ordered as the color profiles applied in

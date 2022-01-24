@@ -107,8 +107,6 @@ void CoreOobeHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
                base::Value(ash::TabletMode::Get()->InTabletMode()));
   dict->SetKey("isDemoModeEnabled",
                base::Value(DemoSetupController::IsDemoModeAllowed()));
-  dict->SetKey("newLayoutEnabled",
-               base::Value(features::IsNewOobeLayoutEnabled()));
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     dict->SetKey("flowType", base::Value("meet"));
   }
@@ -325,15 +323,13 @@ void CoreOobeHandler::OnTabletModeEnded() {
 void CoreOobeHandler::UpdateClientAreaSize(const gfx::Size& size) {
   SetClientAreaSize(size.width(), size.height());
   SetShelfHeight(ash::ShelfConfig::Get()->shelf_size());
-  if (features::IsNewOobeLayoutEnabled()) {
-    const gfx::Size display_size =
-        display::Screen::GetScreen()->GetPrimaryDisplay().size();
-    const bool is_horizontal = display_size.width() > display_size.height();
-    SetOrientation(is_horizontal);
-    const gfx::Size dialog_size = CalculateOobeDialogSize(
-        size, ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
-    SetDialogSize(dialog_size.width(), dialog_size.height());
-  }
+  const gfx::Size display_size =
+      display::Screen::GetScreen()->GetPrimaryDisplay().size();
+  const bool is_horizontal = display_size.width() > display_size.height();
+  SetOrientation(is_horizontal);
+  const gfx::Size dialog_size = CalculateOobeDialogSize(
+      size, ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
+  SetDialogSize(dialog_size.width(), dialog_size.height());
 }
 
 void CoreOobeHandler::SetDialogPaddingMode(
@@ -362,10 +358,9 @@ void CoreOobeHandler::SetDialogPaddingMode(
 
 void CoreOobeHandler::OnOobeConfigurationChanged() {
   base::Value configuration(base::Value::Type::DICTIONARY);
-  chromeos::configuration::FilterConfiguration(
+  configuration::FilterConfiguration(
       OobeConfiguration::Get()->GetConfiguration(),
-      chromeos::configuration::ConfigurationHandlerSide::HANDLER_JS,
-      configuration);
+      configuration::ConfigurationHandlerSide::HANDLER_JS, configuration);
   CallJS("cr.ui.Oobe.updateOobeConfiguration", configuration);
 }
 
@@ -386,7 +381,7 @@ void CoreOobeHandler::HandleRaiseTabKeyEvent(bool reverse) {
 
 void CoreOobeHandler::HandleGetPrimaryDisplayNameForTesting(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
 

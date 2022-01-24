@@ -10,7 +10,7 @@
 #include "ash/grit/ash_os_feedback_resources.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,7 +37,7 @@ CreateWebAppInfoForOSFeedbackSystemWebApp() {
        {"app_icon_256.png", 256, IDR_ASH_OS_FEEDBACK_APP_ICON_256_PNG}},
       *info);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->open_as_window = true;
+  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
   return info;
 }

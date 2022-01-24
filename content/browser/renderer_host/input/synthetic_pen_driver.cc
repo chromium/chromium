@@ -16,10 +16,13 @@ SyntheticPenDriver::~SyntheticPenDriver() {}
 
 void SyntheticPenDriver::Leave(int index) {
   DCHECK_EQ(index, 0);
+  int modifiers = last_modifiers_;
+  if (from_devtools_debugger_)
+    modifiers |= blink::WebInputEvent::kFromDebugger;
   mouse_event_ = blink::SyntheticWebMouseEventBuilder::Build(
       blink::WebInputEvent::Type::kMouseLeave,
       mouse_event_.PositionInWidget().x(), mouse_event_.PositionInWidget().y(),
-      last_modifiers_, mouse_event_.pointer_type);
+      modifiers, mouse_event_.pointer_type);
 }
 
 }  // namespace content

@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 
 namespace history {
@@ -45,9 +47,28 @@ size_t URLRow::EstimateMemoryUsage() const {
 
 // Annotations
 // ----------------------------------------------------------
-VisitContentModelAnnotations::Category::Category(int id, int weight)
+VisitContentModelAnnotations::Category::Category(const std::string& id,
+                                                 int weight)
     : id(id), weight(weight) {}
 VisitContentModelAnnotations::Category::Category() = default;
+
+// static
+absl::optional<VisitContentModelAnnotations::Category>
+VisitContentModelAnnotations::Category::FromStringVector(
+    const std::vector<std::string>& vector) {
+  if (vector.size() != 2)
+    return absl::nullopt;
+
+  VisitContentModelAnnotations::Category category;
+  category.id = vector[0];
+  if (!base::StringToInt(vector[1], &category.weight))
+    return absl::nullopt;
+  return category;
+}
+
+std::string VisitContentModelAnnotations::Category::ToString() const {
+  return base::StrCat({id, ":", base::NumberToString(weight)});
+}
 
 bool VisitContentModelAnnotations::Category::operator==(
     const VisitContentModelAnnotations::Category& other) const {
@@ -60,18 +81,32 @@ bool VisitContentModelAnnotations::Category::operator!=(
 }
 
 VisitContentModelAnnotations::VisitContentModelAnnotations(
-    float floc_protected_score,
+    float visibility_score,
     const std::vector<Category>& categories,
-    int64_t page_topics_model_version)
-    : floc_protected_score(floc_protected_score),
+    int64_t page_topics_model_version,
+    const std::vector<Category>& entities)
+    : visibility_score(visibility_score),
       categories(categories),
-      page_topics_model_version(page_topics_model_version) {}
+      page_topics_model_version(page_topics_model_version),
+      entities(entities) {}
 VisitContentModelAnnotations::VisitContentModelAnnotations() = default;
 VisitContentModelAnnotations::VisitContentModelAnnotations(
     const VisitContentModelAnnotations&) = default;
 VisitContentModelAnnotations::~VisitContentModelAnnotations() = default;
 
-URLResult::URLResult() {}
+VisitContentAnnotations::VisitContentAnnotations(
+    VisitContentAnnotationFlags annotation_flags,
+    VisitContentModelAnnotations model_annotations,
+    const std::vector<std::string>& related_searches)
+    : annotation_flags(annotation_flags),
+      model_annotations(model_annotations),
+      related_searches(related_searches) {}
+VisitContentAnnotations::VisitContentAnnotations() = default;
+VisitContentAnnotations::VisitContentAnnotations(
+    const VisitContentAnnotations&) = default;
+VisitContentAnnotations::~VisitContentAnnotations() = default;
+
+URLResult::URLResult() = default;
 
 URLResult::URLResult(const GURL& url, base::Time visit_time)
     : URLRow(url), visit_time_(visit_time) {}

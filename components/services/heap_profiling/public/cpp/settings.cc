@@ -102,7 +102,7 @@ uint32_t GetSamplingRateForStartup() {
     return rate_as_int;
   }
 
-  return 1;
+  return 1000000;
 }
 
 }  // namespace heap_profiling

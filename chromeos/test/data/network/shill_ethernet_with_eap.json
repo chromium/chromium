@@ -1,9 +1,6 @@
 {
-  "EAP.CertID": "",
   "EAP.EAP":"TLS",
   "EAP.Identity":"abc ${LOGIN_ID}@my.domain.com",
-  "EAP.KeyID": "",
-  "EAP.PIN": "",
   "EAP.UseSystemCAs":true,
   "GUID":"guid",
   "SaveCredentials":true,

@@ -13,7 +13,7 @@
 
 // Helper object that determines the availability of the voice search feature.
 // Voice search is only enabled if:
-// - the VoiceSearchProvider is enabled, and
+// - the `voice_search` API is enabled, and
 // - VoiceOver is disabled.
 class VoiceSearchAvailability {
  public:

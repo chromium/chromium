@@ -33,6 +33,7 @@
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/guest_view/extensions_guest_view_message_filter.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_map.h"
@@ -92,9 +93,9 @@ content::BrowserContext* ShellContentBrowserClient::GetBrowserContext() {
 
 std::unique_ptr<content::BrowserMainParts>
 ShellContentBrowserClient::CreateBrowserMainParts(
-    const content::MainFunctionParams& parameters) {
-  auto browser_main_parts =
-      CreateShellBrowserMainParts(parameters, browser_main_delegate_);
+    content::MainFunctionParams parameters) {
+  auto browser_main_parts = CreateShellBrowserMainParts(std::move(parameters),
+                                                        browser_main_delegate_);
 
   browser_main_parts_ = browser_main_parts.get();
 
@@ -234,6 +235,21 @@ void ShellContentBrowserClient::ExposeInterfacesToRenderer(
       &EventRouter::BindForRenderer, render_process_host->GetID()));
 }
 
+bool ShellContentBrowserClient::BindAssociatedReceiverFromFrame(
+    content::RenderFrameHost* render_frame_host,
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle* handle) {
+  if (interface_name == extensions::mojom::LocalFrameHost::Name_) {
+    ExtensionWebContentsObserver::BindLocalFrameHost(
+        mojo::PendingAssociatedReceiver<extensions::mojom::LocalFrameHost>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+
+  return false;
+}
+
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 ShellContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -333,6 +349,7 @@ bool ShellContentBrowserClient::HandleExternalProtocol(
     int frame_tree_node_id,
     content::NavigationUIData* navigation_data,
     bool is_main_frame,
+    network::mojom::WebSandboxFlags sandbox_flags,
     ui::PageTransition page_transition,
     bool has_user_gesture,
     const absl::optional<url::Origin>& initiating_origin,
@@ -362,9 +379,9 @@ std::string ShellContentBrowserClient::GetUserAgent() {
 
 std::unique_ptr<ShellBrowserMainParts>
 ShellContentBrowserClient::CreateShellBrowserMainParts(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     ShellBrowserMainDelegate* browser_main_delegate) {
-  return std::make_unique<ShellBrowserMainParts>(parameters,
+  return std::make_unique<ShellBrowserMainParts>(std::move(parameters),
                                                  browser_main_delegate);
 }
 
@@ -372,6 +389,7 @@ void ShellContentBrowserClient::AppendRendererSwitches(
     base::CommandLine* command_line) {
   static const char* const kSwitchNames[] = {
       switches::kAllowlistedExtensionID,
+      switches::kDEPRECATED_AllowlistedExtensionID,
       // TODO(jamescook): Should we check here if the process is in the
       // extension service process map, or can we assume all renderers are
       // extension renderers?

@@ -15,8 +15,8 @@ android_library("base_module_java") {
     "//base:base_java",
     "//chrome/browser/preferences:java",
     "//components/language/android:language_bridge_java",
+    "//third_party/android_deps:com_google_android_play_core_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/google_android_play_core:com_google_android_play_core_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
@@ -53,11 +53,11 @@ android_library("java") {
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
-    "//components/embedder_support/android:browser_context_java",
     "//components/language/android:language_bridge_java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
+    "//net/android:net_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -107,6 +107,7 @@ android_library("javatests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialogTest.java",
     "java/src/org/chromium/chrome/browser/language/AppLocaleUtilsTest.java",
     "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleControllerTest.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguageSettingsTest.java",
@@ -131,11 +132,11 @@ android_library("javatests") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",
-    "//components/embedder_support/android:browser_context_java",
     "//components/language/android:language_bridge_java",
     "//components/language/android:language_bridge_javatests",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_support_test_runner:rules_java",

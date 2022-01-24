@@ -32,7 +32,7 @@ namespace offline_pages {
 
 namespace {
 
-const base::TimeDelta kExpireThreshold = base::TimeDelta::FromDays(365);
+const base::TimeDelta kExpireThreshold = base::Days(365);
 
 std::vector<OfflinePageItem> GetPersistentPages(
     sql::Database* db) {

@@ -43,6 +43,11 @@ class TestBlobContextGetterFactory : public download::BlobContextGetterFactory {
  public:
   TestBlobContextGetterFactory(content::BrowserContext* browser_context)
       : browser_context_(browser_context) {}
+
+  TestBlobContextGetterFactory(const TestBlobContextGetterFactory&) = delete;
+  TestBlobContextGetterFactory& operator=(const TestBlobContextGetterFactory&) =
+      delete;
+
   ~TestBlobContextGetterFactory() override = default;
 
  private:
@@ -54,7 +59,6 @@ class TestBlobContextGetterFactory : public download::BlobContextGetterFactory {
   }
 
   content::BrowserContext* browser_context_;
-  DISALLOW_COPY_AND_ASSIGN(TestBlobContextGetterFactory);
 };
 
 // Implementation of a Download Service client that will be servicing
@@ -65,6 +69,11 @@ class WebTestBackgroundFetchDelegate::WebTestBackgroundFetchDownloadClient
   explicit WebTestBackgroundFetchDownloadClient(
       base::WeakPtr<content::BackgroundFetchDelegate::Client> client)
       : client_(std::move(client)) {}
+
+  WebTestBackgroundFetchDownloadClient(
+      const WebTestBackgroundFetchDownloadClient&) = delete;
+  WebTestBackgroundFetchDownloadClient& operator=(
+      const WebTestBackgroundFetchDownloadClient&) = delete;
 
   ~WebTestBackgroundFetchDownloadClient() override = default;
 
@@ -225,8 +234,6 @@ class WebTestBackgroundFetchDelegate::WebTestBackgroundFetchDownloadClient
 
   base::WeakPtrFactory<WebTestBackgroundFetchDownloadClient> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestBackgroundFetchDownloadClient);
 };
 
 WebTestBackgroundFetchDelegate::WebTestBackgroundFetchDelegate(
@@ -284,6 +291,7 @@ void WebTestBackgroundFetchDelegate::DownloadUrl(
     const std::string& download_guid,
     const std::string& method,
     const GURL& url,
+    ::network::mojom::CredentialsMode credentials_mode,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const net::HttpRequestHeaders& headers,
     bool has_request_body) {

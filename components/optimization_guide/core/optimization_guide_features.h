@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -29,8 +30,8 @@ extern const base::Feature kOptimizationTargetPrediction;
 extern const base::Feature kOptimizationGuideModelDownloading;
 extern const base::Feature kPageContentAnnotations;
 extern const base::Feature kPageTextExtraction;
-extern const base::Feature kLoadModelFileForEachExecution;
 extern const base::Feature kPushNotifications;
+extern const base::Feature kOptimizationGuideMetadataValidation;
 
 // The grace period duration for how long to give outstanding page text dump
 // requests to respond after DidFinishLoad.
@@ -88,12 +89,6 @@ bool IsPushNotificationsEnabled();
 // a bloom filter.
 int MaxServerBloomFilterByteSize();
 
-// Maximum effective connection type at which hints can be fetched for
-// navigations in real-time. Returns null if the hints fetching for navigations
-// is disabled.
-absl::optional<net::EffectiveConnectionType>
-GetMaxEffectiveConnectionTypeForNavigationHintsFetch();
-
 // Returns the duration of the time window before hints expiration during which
 // the hosts should be refreshed. Example: If the hints for a host expire at
 // time T, then they are eligible for refresh at T -
@@ -119,6 +114,12 @@ int ActiveTabsHintsFetchRandomMinDelaySecs();
 // Returns the maximum number of seconds to randomly delay before starting to
 // fetch for hints for active tabs.
 int ActiveTabsHintsFetchRandomMaxDelaySecs();
+
+// Returns whether fetching hints for active tabs should happen on deferred
+// startup. Otherwise active tabs hints will be fetched after a random interval
+// between ActiveTabsHintsFetchRandomMinDelaySecs() and
+// ActiveTabsHintsFetchRandomMaxDelaySecs().
+bool ShouldDeferStartupActiveTabsHintsFetch();
 
 // The amount of time host model features will be considered fresh enough
 // to be used and remain in the OptimizationGuideStore.
@@ -192,16 +193,44 @@ bool IsPageContentAnnotationEnabled();
 // Returns the max size that should be requested for a page content text dump.
 uint64_t MaxSizeForPageContentTextDump();
 
+// Returns whether the title should always be annotated instead of a page
+// content text dump.
+bool ShouldAnnotateTitleInsteadOfPageContent();
+
 // Whether we should write content annotations to History Service.
 bool ShouldWriteContentAnnotationsToHistoryService();
 
-// Whether the model files that use |OptimizationTargetModelExecutor| should be
-// loaded for each execution, and then unloaded once complete.
-bool LoadModelFileForEachExecution();
+// Returns the max size of the MRU Cache of content that has been requested
+// for annotation.
+size_t MaxContentAnnotationRequestsCached();
+
+// Returns whether or not related searches should be extracted from Google SRP
+// as part of page content annotations.
+bool ShouldExtractRelatedSearches();
+
+// Returns an ordered vector of models to execute on the page content for each
+// page load. It is guaranteed that an optimization target will only be present
+// at most once in the returned vector. However, it is not guaranteed that it
+// will only contain models that the current PageContentAnnotationsService
+// supports, so it is up to the caller to ensure that it can execute the
+// specified models.
+std::vector<optimization_guide::proto::OptimizationTarget>
+GetPageContentModelsToExecute();
 
 // The time to wait beyond the onload event before sending the hints request for
 // link predictions.
 base::TimeDelta GetOnloadDelayForHintsFetching();
+
+// The number of bits used for RAPPOR-style metrics reporting on content
+// annotation models. Must be at least 1 bit.
+int NumBitsForRAPPORMetrics();
+
+// The probability of a bit flip a score with RAPPOR-style metrics reporting.
+// Must be between 0 and 1.
+double NoiseProbabilityForRAPPORMetrics();
+
+// Returns whether the metadata validation fetch feature is host keyed.
+bool ShouldMetadataValidationFetchHostKeyed();
 
 }  // namespace features
 }  // namespace optimization_guide

@@ -205,6 +205,19 @@
                 "description": "Parameters containing an audio buffer and associated data."
               }
             ]
+          },
+          {
+            "name": "sendError",
+            "type": "function",
+            "description": "Call this function to indicate an error with rendering this utterance.",
+            "parameters": [
+              {
+                "type": "string",
+                "name": "errorMessage",
+                "description": "A string describing the error.",
+                "optional": true
+              }
+            ]
           }
         ],
         "platforms": ["chromeos"]

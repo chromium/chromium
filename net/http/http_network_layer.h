@@ -26,6 +26,10 @@ class NET_EXPORT HttpNetworkLayer : public HttpTransactionFactory,
   // contains a valid ProxyResolutionService. The HttpNetworkLayer must be
   // destroyed before |session|.
   explicit HttpNetworkLayer(HttpNetworkSession* session);
+
+  HttpNetworkLayer(const HttpNetworkLayer&) = delete;
+  HttpNetworkLayer& operator=(const HttpNetworkLayer&) = delete;
+
   ~HttpNetworkLayer() override;
 
   // HttpTransactionFactory methods:
@@ -43,8 +47,6 @@ class NET_EXPORT HttpNetworkLayer : public HttpTransactionFactory,
   bool suspended_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(HttpNetworkLayer);
 };
 
 }  // namespace net

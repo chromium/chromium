@@ -153,6 +153,10 @@ class SetTrueOnDestruction {
   SetTrueOnDestruction(bool* was_destroyed) : was_destroyed_(was_destroyed) {
     CHECK(was_destroyed != nullptr);
   }
+
+  SetTrueOnDestruction(const SetTrueOnDestruction&) = delete;
+  SetTrueOnDestruction& operator=(const SetTrueOnDestruction&) = delete;
+
   ~SetTrueOnDestruction() {
     EXPECT_FALSE(*was_destroyed_);
     *was_destroyed_ = true;
@@ -160,8 +164,6 @@ class SetTrueOnDestruction {
 
  private:
   bool* const was_destroyed_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetTrueOnDestruction);
 };
 
 }  // namespace

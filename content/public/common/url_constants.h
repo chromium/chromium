@@ -35,10 +35,9 @@ CONTENT_EXPORT extern const char kAndroidAppScheme[];
 CONTENT_EXPORT extern const char kGoogleChromeScheme[];
 
 CONTENT_EXPORT extern const char kChromeUIAccessibilityHost[];
-CONTENT_EXPORT extern const char kChromeUIAppCacheInternalsHost[];
+CONTENT_EXPORT extern const char kChromeUIAttributionInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIBlobInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIBrowserCrashHost[];
-CONTENT_EXPORT extern const char kChromeUIConversionInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIDinoHost[];
 CONTENT_EXPORT extern const char kChromeUIGpuHost[];
 CONTENT_EXPORT extern const char kChromeUIHistogramHost[];
@@ -47,11 +46,13 @@ CONTENT_EXPORT extern const char kChromeUIMediaInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIMemoryExhaustHost[];
 CONTENT_EXPORT extern const char kChromeUINetworkErrorHost[];
 CONTENT_EXPORT extern const char kChromeUINetworkErrorsListingHost[];
+CONTENT_EXPORT extern const char kChromeUIPrerenderInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIProcessInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIResourcesHost[];
 CONTENT_EXPORT extern const char kChromeUIServiceWorkerInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUITracingHost[];
 CONTENT_EXPORT extern const char kChromeUIUkmHost[];
+CONTENT_EXPORT extern const char kChromeUIUntrustedResourcesURL[];
 CONTENT_EXPORT extern const char kChromeUIWebRTCInternalsHost[];
 
 // Special URL used to start a navigation to an error page.

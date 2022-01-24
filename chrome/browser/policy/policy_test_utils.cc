@@ -4,8 +4,6 @@
 
 #include "chrome/browser/policy/policy_test_utils.h"
 
-#include "ash/public/cpp/capture_mode_api.h"
-#include "ash/public/cpp/capture_mode_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,10 +39,6 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/snapshot/screenshot_grabber.h"
-#endif
-
 using content::BrowserThread;
 using testing::_;
 using testing::Return;
@@ -67,39 +61,6 @@ void PolicyTest::SetUp() {
   InProcessBrowserTest::SetUp();
 }
 
-void PolicyTest::CheckURLIsBlockedInWebContents(
-    content::WebContents* web_contents,
-    const GURL& url) {
-  EXPECT_EQ(url, web_contents->GetURL());
-
-  std::u16string blocked_page_title;
-  if (url.has_host()) {
-    blocked_page_title = base::UTF8ToUTF16(url.host());
-  } else {
-    // Local file paths show the full URL.
-    blocked_page_title = base::UTF8ToUTF16(url.spec());
-  }
-  EXPECT_EQ(blocked_page_title, web_contents->GetTitle());
-
-  // Verify that the expected error page is being displayed.
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents,
-      "var textContent = document.body.textContent;"
-      "var hasError = textContent.indexOf('ERR_BLOCKED_BY_ADMINISTRATOR') >= 0;"
-      "domAutomationController.send(hasError);",
-      &result));
-  EXPECT_TRUE(result);
-}
-
-void PolicyTest::CheckURLIsBlocked(Browser* browser, const std::string& spec) {
-  GURL url(spec);
-  ui_test_utils::NavigateToURL(browser, url);
-  content::WebContents* contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  PolicyTest::CheckURLIsBlockedInWebContents(contents, url);
-}
-
 void PolicyTest::SetUpInProcessBrowserTestFixture() {
   base::CommandLine::ForCurrentProcess()->AppendSwitch("noerrdialogs");
   provider_.SetDefaultReturns(true /* is_initialization_complete_return */,
@@ -115,14 +76,6 @@ void PolicyTest::SetUpCommandLine(base::CommandLine* command_line) {
   variations::testing::VariationParamsManager::AppendVariationParams(
       "ReportCertificateErrors", "ShowAndPossiblySend",
       {{"sendingThreshold", "1.0"}}, command_line);
-}
-
-void PolicyTest::SetScreenshotPolicy(bool enabled) {
-  PolicyMap policies;
-  policies.Set(key::kDisableScreenshots, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(!enabled),
-               nullptr);
-  UpdateProviderPolicy(policies);
 }
 
 void PolicyTest::SetRequireCTForTesting(bool required) {
@@ -144,19 +97,6 @@ void PolicyTest::SetRequireCTForTesting(bool required) {
       base::BindOnce(&net::TransportSecurityState::SetRequireCTForTesting,
                      required));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void PolicyTest::TestScreenshotFile(bool enabled) {
-  base::RunLoop run_loop;
-  ash::CaptureModeTestApi().SetOnCaptureFileSavedCallback(
-      base::BindLambdaForTesting(
-          [&run_loop](const base::FilePath& path) { run_loop.Quit(); }));
-
-  SetScreenshotPolicy(enabled);
-  ash::CaptureScreenshotsOfAllDisplays();
-  run_loop.Run();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 scoped_refptr<const extensions::Extension> PolicyTest::LoadUnpackedExtension(
     const base::FilePath::StringType& name) {
@@ -336,8 +276,8 @@ void PolicyTest::SendInterstitialCommand(
   return;
 }
 
-void PolicyTest::FlushBlacklistPolicy() {
-  // Updates of the URLBlacklist are done on IO, after building the blacklist
+void PolicyTest::FlushBlocklistPolicy() {
+  // Updates of the URLBlocklist are done on IO, after building the blocklist
   // on the blocking pool, which is initiated from IO.
   content::RunAllPendingInMessageLoop(BrowserThread::IO);
   content::RunAllTasksUntilIdle();

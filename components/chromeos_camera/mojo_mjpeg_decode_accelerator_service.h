@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"
@@ -30,6 +29,11 @@ class MojoMjpegDecodeAcceleratorService
   static void Create(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           receiver);
+
+  MojoMjpegDecodeAcceleratorService(const MojoMjpegDecodeAcceleratorService&) =
+      delete;
+  MojoMjpegDecodeAcceleratorService& operator=(
+      const MojoMjpegDecodeAcceleratorService&) = delete;
 
   ~MojoMjpegDecodeAcceleratorService() override;
 
@@ -90,8 +94,6 @@ class MojoMjpegDecodeAcceleratorService
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<MojoMjpegDecodeAcceleratorService> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoMjpegDecodeAcceleratorService);
 };
 
 }  // namespace chromeos_camera

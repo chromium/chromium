@@ -82,10 +82,6 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
       weak_factory_.GetWeakPtr()));
   forwarding_client_.Bind(std::move(forwarding_client));
 
-  if (!resource_request.report_raw_headers) {
-    resource_response_->raw_request_response_info = nullptr;
-  }
-
   // We are serving, so if the request is complete before serving, mark the
   // request completion time as now.
   if (status_) {

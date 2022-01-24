@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 
@@ -29,6 +28,12 @@ class ChromeWebContentsViewDelegateViews
  public:
   explicit ChromeWebContentsViewDelegateViews(
       content::WebContents* web_contents);
+
+  ChromeWebContentsViewDelegateViews(
+      const ChromeWebContentsViewDelegateViews&) = delete;
+  ChromeWebContentsViewDelegateViews& operator=(
+      const ChromeWebContentsViewDelegateViews&) = delete;
+
   ~ChromeWebContentsViewDelegateViews() override;
 
   // Overridden from WebContentsViewDelegate:
@@ -39,14 +44,15 @@ class ChromeWebContentsViewDelegateViews
   void ResetStoredFocus() override;
   bool Focus() override;
   bool TakeFocus(bool reverse) override;
-  void ShowContextMenu(content::RenderFrameHost* render_frame_host,
+  void ShowContextMenu(content::RenderFrameHost& render_frame_host,
                        const content::ContextMenuParams& params) override;
+  void ExecuteCommandForTesting(int command_id, int event_flags) override;
   void OnPerformDrop(const content::DropData& drop_data,
                      DropCompletionCallback callback) override;
 
   // Overridden from ContextMenuDelegate.
   std::unique_ptr<RenderViewContextMenuBase> BuildMenu(
-      content::WebContents* web_contents,
+      content::RenderFrameHost& render_frame_host,
       const content::ContextMenuParams& params) override;
   void ShowMenu(std::unique_ptr<RenderViewContextMenuBase> menu) override;
 
@@ -61,8 +67,6 @@ class ChromeWebContentsViewDelegateViews
   content::WebContents* web_contents_;
 
   ChromeWebContentsViewFocusHelper* GetFocusHelper() const;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeWebContentsViewDelegateViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_CONTENTS_CHROME_WEB_CONTENTS_VIEW_DELEGATE_VIEWS_H_

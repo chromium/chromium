@@ -29,7 +29,7 @@ GURL UnescapeArcUrl(const std::string& escaped_arc_url) {
 GURL ArcUrlToExternalFileUrl(const GURL& arc_url) {
   // Return "externalfile:arc-content/<|arc_url| escaped>".
   base::FilePath virtual_path =
-      base::FilePath::FromUTF8Unsafe(kContentFileSystemMountPointName)
+      base::FilePath::FromASCII(kContentFileSystemMountPointName)
           .Append(base::FilePath::FromUTF8Unsafe(EscapeArcUrl(arc_url)));
   return chromeos::VirtualPathToExternalFileURL(virtual_path);
 }
@@ -38,7 +38,7 @@ GURL ExternalFileUrlToArcUrl(const GURL& external_file_url) {
   base::FilePath virtual_path =
       chromeos::ExternalFileURLToVirtualPath(external_file_url);
   base::FilePath path_after_root;
-  if (!base::FilePath::FromUTF8Unsafe(kContentFileSystemMountPointName)
+  if (!base::FilePath::FromASCII(kContentFileSystemMountPointName)
            .AppendRelativePath(virtual_path, &path_after_root)) {
     return GURL();
   }

@@ -24,7 +24,7 @@ namespace {
 // stop running the audio queue once all buffers have been transferred to the
 // supplier.
 
-constexpr base::TimeDelta kBufferLength = base::TimeDelta::FromMilliseconds(10);
+constexpr base::TimeDelta kBufferLength = base::Milliseconds(10);
 constexpr int kRequiredBufferCountForPlayback = 5;
 
 class AudioQueueGetDataRequest : public AsyncAudioDataSupplier::GetDataRequest {

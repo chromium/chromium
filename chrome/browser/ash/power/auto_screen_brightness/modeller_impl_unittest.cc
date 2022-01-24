@@ -78,6 +78,10 @@ class FakeTrainer : public Trainer {
     // If personal curve is valid, then the trainer must be configured.
     DCHECK(!is_personal_curve_valid_ || is_configured_);
   }
+
+  FakeTrainer(const FakeTrainer&) = delete;
+  FakeTrainer& operator=(const FakeTrainer&) = delete;
+
   ~FakeTrainer() override = default;
 
   // Trainer overrides:
@@ -129,13 +133,15 @@ class FakeTrainer : public Trainer {
 
   bool return_new_curve_ = false;
   double curve_error_ = 0.0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTrainer);
 };
 
 class TestObserver : public Modeller::Observer {
  public:
   TestObserver() {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   // Modeller::Observer overrides:
@@ -165,8 +171,6 @@ class TestObserver : public Modeller::Observer {
  private:
   bool model_initialized_ = false;
   Model model_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
@@ -189,6 +193,9 @@ class ModellerImplTest : public testing::Test {
     fake_light_provider_ =
         std::make_unique<FakeLightProvider>(als_reader_.get());
   }
+
+  ModellerImplTest(const ModellerImplTest&) = delete;
+  ModellerImplTest& operator=(const ModellerImplTest&) = delete;
 
   ~ModellerImplTest() override {
     base::ThreadPoolInstance::Get()->FlushForTesting();
@@ -283,9 +290,6 @@ class ModellerImplTest : public testing::Test {
   std::unique_ptr<ModellerImpl> modeller_;
   std::unique_ptr<TestObserver> test_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ModellerImplTest);
 };
 
 // AlsReader is |kDisabled| when Modeller is created.
@@ -494,7 +498,7 @@ TEST_F(ModellerImplTest, OnAmbientLightUpdated) {
   const int first_lux = 1000;
   double running_sum = 0.0;
   for (int i = 0; i < horizon_in_seconds; ++i) {
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment_.FastForwardBy(base::Seconds(1));
     const int lux = i == 0 ? first_lux : i;
     fake_light_provider_->ReportAmbientLightUpdate(lux);
     running_sum += ConvertToLog(lux);
@@ -506,7 +510,7 @@ TEST_F(ModellerImplTest, OnAmbientLightUpdated) {
   EXPECT_EQ(test_observer_->iteration_count(), 0);
 
   // Add another one should push the oldest |first_lux| out of the horizon.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   fake_light_provider_->ReportAmbientLightUpdate(100);
   running_sum = running_sum + ConvertToLog(100) - ConvertToLog(first_lux);
   EXPECT_DOUBLE_EQ(
@@ -533,7 +537,7 @@ TEST_F(ModellerImplTest, OnUserBrightnessChanged) {
   for (size_t i = 0; i < modeller_->GetMaxTrainingDataPointsForTesting() - 1;
        ++i) {
     EXPECT_EQ(i, modeller_->NumberTrainingDataPointsForTesting());
-    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+    task_environment_.FastForwardBy(base::Milliseconds(1));
     const base::TimeTicks now = task_environment_.NowTicks();
     const int lux = i * 20;
     fake_light_provider_->ReportAmbientLightUpdate(lux);
@@ -551,7 +555,7 @@ TEST_F(ModellerImplTest, OnUserBrightnessChanged) {
             modeller_->NumberTrainingDataPointsForTesting());
 
   // Add one more data point to trigger the training early.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   const base::TimeTicks now = task_environment_.NowTicks();
   const double brightness_old = 85;
   const double brightness_new = 95;
@@ -584,12 +588,12 @@ TEST_F(ModellerImplTest, MultipleUserActivities) {
   const Model expected_model(test_initial_global_curve_, absl::nullopt, 0);
   test_observer_->CheckStatus(true /* is_model_initialized */, expected_model);
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   fake_light_provider_->ReportAmbientLightUpdate(30);
   std::vector<TrainingDataPoint> expected_data;
   for (size_t i = 0; i < 10; ++i) {
     EXPECT_EQ(i, modeller_->NumberTrainingDataPointsForTesting());
-    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+    task_environment_.FastForwardBy(base::Milliseconds(1));
     const base::TimeTicks now = task_environment_.NowTicks();
     const int lux = i * 20;
     fake_light_provider_->ReportAmbientLightUpdate(lux);

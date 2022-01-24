@@ -8,12 +8,17 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 
 class IdentityInternalsUIBrowserTest : public WebUIBrowserTest {
  public:
   IdentityInternalsUIBrowserTest();
+
+  IdentityInternalsUIBrowserTest(const IdentityInternalsUIBrowserTest&) =
+      delete;
+  IdentityInternalsUIBrowserTest& operator=(
+      const IdentityInternalsUIBrowserTest&) = delete;
+
   ~IdentityInternalsUIBrowserTest() override;
 
  protected:
@@ -27,8 +32,6 @@ class IdentityInternalsUIBrowserTest : public WebUIBrowserTest {
                        const std::string& account_id,
                        const std::vector<std::string>& scopes,
                        int time_to_live);
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityInternalsUIBrowserTest);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_IDENTITY_INTERNALS_UI_BROWSERTEST_H_

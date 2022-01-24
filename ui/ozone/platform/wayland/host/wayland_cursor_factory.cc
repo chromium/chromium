@@ -7,10 +7,10 @@
 #include <wayland-cursor.h>
 
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/task_runner_util.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm.h"

@@ -22,13 +22,14 @@ VisitRow::VisitRow(URLID arg_url_id,
                    ui::PageTransition arg_transition,
                    SegmentID arg_segment_id,
                    bool arg_incremented_omnibox_typed_score,
-                   bool floc_allowed)
+                   VisitID arg_opener_visit)
     : url_id(arg_url_id),
       visit_time(arg_visit_time),
       referring_visit(arg_referring_visit),
       transition(arg_transition),
       segment_id(arg_segment_id),
-      incremented_omnibox_typed_score(arg_incremented_omnibox_typed_score) {}
+      incremented_omnibox_typed_score(arg_incremented_omnibox_typed_score),
+      opener_visit(arg_opener_visit) {}
 
 VisitRow::~VisitRow() = default;
 
@@ -168,7 +169,7 @@ QueryOptions& QueryOptions::operator=(QueryOptions&&) noexcept = default;
 
 void QueryOptions::SetRecentDayRange(int days_ago) {
   end_time = base::Time::Now();
-  begin_time = end_time - base::TimeDelta::FromDays(days_ago);
+  begin_time = end_time - base::Days(days_ago);
 }
 
 int64_t QueryOptions::EffectiveBeginTime() const {
@@ -239,6 +240,18 @@ TopSitesDelta::TopSitesDelta(const TopSitesDelta& other) = default;
 
 TopSitesDelta::~TopSitesDelta() = default;
 
+// Opener
+// -----------------------------------------------------------------------
+
+Opener::Opener() : Opener(nullptr, 0, GURL()) {}
+
+Opener::Opener(ContextID context_id, int nav_entry_id, const GURL& url)
+    : context_id(context_id), nav_entry_id(nav_entry_id), url(url) {}
+
+Opener::Opener(const Opener& other) = default;
+
+Opener::~Opener() = default;
+
 // HistoryAddPageArgs ---------------------------------------------------------
 
 HistoryAddPageArgs::HistoryAddPageArgs()
@@ -254,6 +267,7 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          false,
                          true,
                          false,
+                         absl::nullopt,
                          absl::nullopt) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
@@ -268,7 +282,8 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
                                        bool did_replace_entry,
                                        bool consider_for_ntp_most_visited,
                                        bool floc_allowed,
-                                       absl::optional<std::u16string> title)
+                                       absl::optional<std::u16string> title,
+                                       absl::optional<Opener> opener)
     : url(url),
       time(time),
       context_id(context_id),
@@ -280,7 +295,9 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
       visit_source(source),
       did_replace_entry(did_replace_entry),
       consider_for_ntp_most_visited(consider_for_ntp_most_visited),
-      title(title) {}
+      floc_allowed(floc_allowed),
+      title(title),
+      opener(opener) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const HistoryAddPageArgs& other) =
     default;
@@ -307,7 +324,7 @@ void ExpireHistoryArgs::SetTimeRangeForOneDay(base::Time time) {
 
   // Due to DST, leap seconds, etc., the next day at midnight may be more than
   // 24 hours away, so add 36 hours and round back down to midnight.
-  end_time = (begin_time + base::TimeDelta::FromHours(36)).LocalMidnight();
+  end_time = (begin_time + base::Hours(36)).LocalMidnight();
 }
 
 // DeletionTimeRange ----------------------------------------------------------
@@ -374,23 +391,37 @@ AnnotatedVisit::AnnotatedVisit() = default;
 AnnotatedVisit::AnnotatedVisit(URLRow url_row,
                                VisitRow visit_row,
                                VisitContextAnnotations context_annotations,
-                               VisitContentAnnotations content_annotations)
+                               VisitContentAnnotations content_annotations,
+                               VisitID referring_visit_of_redirect_chain_start,
+                               VisitID opener_visit_of_redirect_chain_start,
+                               VisitSource source)
     : url_row(url_row),
       visit_row(visit_row),
       context_annotations(context_annotations),
-      content_annotations(content_annotations) {}
+      content_annotations(content_annotations),
+      referring_visit_of_redirect_chain_start(
+          referring_visit_of_redirect_chain_start),
+      opener_visit_of_redirect_chain_start(
+          opener_visit_of_redirect_chain_start),
+      source(source) {}
 AnnotatedVisit::AnnotatedVisit(const AnnotatedVisit&) = default;
 AnnotatedVisit& AnnotatedVisit::operator=(const AnnotatedVisit&) = default;
 AnnotatedVisit::~AnnotatedVisit() = default;
 
+ClusterVisit::ClusterVisit() = default;
+ClusterVisit::~ClusterVisit() = default;
+ClusterVisit::ClusterVisit(const ClusterVisit&) = default;
+
 Cluster::Cluster() = default;
-Cluster::Cluster(
-    int64_t cluster_id,
-    const std::vector<ScoredAnnotatedVisit>& scored_annotated_visits,
-    const std::vector<std::u16string>& keywords)
+Cluster::Cluster(int64_t cluster_id,
+                 const std::vector<ClusterVisit>& visits,
+                 const std::vector<std::u16string>& keywords,
+                 bool should_show_on_prominent_ui_surfaces)
     : cluster_id(cluster_id),
-      scored_annotated_visits(scored_annotated_visits),
-      keywords(keywords) {}
+      visits(visits),
+      keywords(keywords),
+      should_show_on_prominent_ui_surfaces(
+          should_show_on_prominent_ui_surfaces) {}
 Cluster::Cluster(const Cluster&) = default;
 Cluster& Cluster::operator=(const Cluster&) = default;
 Cluster::~Cluster() = default;

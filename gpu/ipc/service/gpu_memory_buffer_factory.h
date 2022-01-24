@@ -26,6 +26,9 @@ class ImageFactory;
 
 class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
  public:
+  GpuMemoryBufferFactory(const GpuMemoryBufferFactory&) = delete;
+  GpuMemoryBufferFactory& operator=(const GpuMemoryBufferFactory&) = delete;
+
   virtual ~GpuMemoryBufferFactory() = default;
 
   // Creates a new factory instance for native GPU memory buffers. Returns null
@@ -78,9 +81,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
 
  protected:
   GpuMemoryBufferFactory() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferFactory);
 };
 
 }  // namespace gpu

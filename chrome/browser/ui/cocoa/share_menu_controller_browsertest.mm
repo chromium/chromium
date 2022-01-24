@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, SharingDelegate) {
 
 IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, Histograms) {
   base::HistogramTester tester;
-  const std::string histogram_name = "OSX.NativeShare";
+  const std::string histogram_name = "Mac.FileMenuNativeShare";
 
   tester.ExpectTotalCount(histogram_name, 0);
 

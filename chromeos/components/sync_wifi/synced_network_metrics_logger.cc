@@ -195,8 +195,7 @@ void SyncedNetworkMetricsLogger::NetworkConnectionStateChanged(
   // skipped when this class was recently created since 'connecting' may have
   // happened before we were tracking.
   if (!connecting_guids_.contains(network->guid()) &&
-      (base::Time::Now() - initialized_timestamp_) >
-          base::TimeDelta::FromSeconds(5)) {
+      (base::Time::Now() - initialized_timestamp_) > base::Seconds(5)) {
     return;
   }
 

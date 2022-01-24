@@ -38,9 +38,9 @@ void DiscardMetricsLifecycleUnitObserver::OnLifecycleUnitDestroyed(
       lifecycle_unit->GetState() != LifecycleUnitState::DISCARDED &&
       !reload_time_.is_null()) {
     auto reload_to_close_time = NowTicks() - reload_time_;
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "TabManager.Discarding.ReloadToCloseTime", reload_to_close_time,
-        base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(1), 100);
+    UMA_HISTOGRAM_CUSTOM_TIMES("TabManager.Discarding.ReloadToCloseTime",
+                               reload_to_close_time, base::Seconds(1),
+                               base::Days(1), 100);
   }
 
   // This is a self-owned object that destroys itself with the LifecycleUnit
@@ -69,14 +69,14 @@ void DiscardMetricsLifecycleUnitObserver::OnReload() {
   UMA_HISTOGRAM_CUSTOM_COUNTS("TabManager.Discarding.ReloadCount",
                               ++reload_count, 1, 1000, 50);
   auto discard_to_reload_time = reload_time_ - discard_time_;
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "TabManager.Discarding.DiscardToReloadTime", discard_to_reload_time,
-      base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(1), 100);
+  UMA_HISTOGRAM_CUSTOM_TIMES("TabManager.Discarding.DiscardToReloadTime",
+                             discard_to_reload_time, base::Seconds(1),
+                             base::Days(1), 100);
   auto inactive_to_reload_time =
       reload_time_ - last_focused_time_before_discard_;
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "TabManager.Discarding.InactiveToReloadTime", inactive_to_reload_time,
-      base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(1), 100);
+  UMA_HISTOGRAM_CUSTOM_TIMES("TabManager.Discarding.InactiveToReloadTime",
+                             inactive_to_reload_time, base::Seconds(1),
+                             base::Days(1), 100);
 }
 
 }  // namespace resource_coordinator

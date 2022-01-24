@@ -22,13 +22,12 @@ class SaveCardInfobarBannerInteractionHandlerTest : public PlatformTest {
  public:
   SaveCardInfobarBannerInteractionHandlerTest()
       : delegate_factory_(),
-        prefs_(autofill::test::PrefServiceForTesting()),
         card_(base::GenerateGUID(), "https://www.example.com/") {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveCard,
         MockAutofillSaveCardInfoBarDelegateMobileFactory::
-            CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
-                false, prefs_.get(), card_));
+            CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(false,
+                                                                   card_));
   }
 
   MockAutofillSaveCardInfoBarDelegateMobile& mock_delegate() {
@@ -39,7 +38,6 @@ class SaveCardInfobarBannerInteractionHandlerTest : public PlatformTest {
  protected:
   SaveCardInfobarBannerInteractionHandler handler_;
   MockAutofillSaveCardInfoBarDelegateMobileFactory delegate_factory_;
-  std::unique_ptr<PrefService> prefs_;
   autofill::CreditCard card_;
   std::unique_ptr<InfoBarIOS> infobar_;
 };

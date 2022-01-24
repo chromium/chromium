@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/secure_channel/data_with_timestamp.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
@@ -27,6 +26,9 @@ namespace secure_channel {
 // device for use in Bluetooth Classic connections.
 class BluetoothHelper {
  public:
+  BluetoothHelper(const BluetoothHelper&) = delete;
+  BluetoothHelper& operator=(const BluetoothHelper&) = delete;
+
   virtual ~BluetoothHelper();
 
   // Generates service data to be used in a foreground BLE advertisement from
@@ -61,8 +63,6 @@ class BluetoothHelper {
   virtual absl::optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
       const std::string& service_data,
       const DeviceIdPairSet& device_id_pair_set) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothHelper);
 };
 
 }  // namespace secure_channel

@@ -36,9 +36,6 @@ _NON_BRANCHED_TESTERS = {
     # These Android testers are triggered by 'Android arm Builder (dbg)', but we
     # don't have sufficient capacity of devices with older Android versions, so
     # we do not run them on the branches
-    "Android WebView L (dbg)": branches.STANDARD_MILESTONE,
-    "Lollipop Phone Tester": branches.STANDARD_MILESTONE,
-    "Lollipop Tablet Tester": branches.STANDARD_MILESTONE,
     "Marshmallow Tablet Tester": branches.STANDARD_MILESTONE,
 }
 
@@ -56,7 +53,7 @@ _TESTER_NOOP_JOBS = [scheduler_pb.Job(
 def _add_noop_jobs(ctx):
     if settings.is_main:
         return
-    cfg = ctx.output["luci-scheduler.cfg"]
+    cfg = ctx.output["luci/luci-scheduler.cfg"]
     for j in _TESTER_NOOP_JOBS:
         cfg.job.append(j)
 

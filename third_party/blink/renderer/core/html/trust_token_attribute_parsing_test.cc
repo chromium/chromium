@@ -88,7 +88,7 @@ TEST_P(TrustTokenAttributeParsingSuccess, Roundtrip) {
             expectation->include_timestamp_header);
 
   EXPECT_EQ(result->issuers.size(), expectation->issuers.size());
-  for (size_t i = 0; i < result->issuers.size(); ++i) {
+  for (wtf_size_t i = 0; i < result->issuers.size(); ++i) {
     EXPECT_EQ(!!result->issuers.at(i), !!expectation->issuers.at(i));
     if (result->issuers.at(i)) {
       EXPECT_EQ(result->issuers.at(i)->ToString(),

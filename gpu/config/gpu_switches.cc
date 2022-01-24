@@ -42,7 +42,6 @@ const char kDisableGpuProcessForDX12InfoCollection[] =
     "disable-gpu-process-for-dx12-info-collection";
 
 const char kEnableUnsafeWebGPU[] = "enable-unsafe-webgpu";
-const char kEnableUnsafeWebGPUService[] = "enable-unsafe-webgpu-service";
 
 // Enable validation layers in Dawn backends.
 const char kEnableDawnBackendValidation[] = "enable-dawn-backend-validation";

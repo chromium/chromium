@@ -171,4 +171,4 @@ class PaintAggregator {
 
 }  // namespace pp
 
-#endif  // PPAPI_UTILITY_PAINT_AGGREGATOR_H_
+#endif  // PPAPI_UTILITY_GRAPHICS_PAINT_AGGREGATOR_H_

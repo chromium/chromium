@@ -38,10 +38,8 @@ class BrowserContextImpl : public content::BrowserContext {
   static base::FilePath GetDefaultDownloadDirectory();
 
   // BrowserContext implementation:
-#if !defined(OS_ANDROID)
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath&) override;
-#endif  // !defined(OS_ANDROID)
   base::FilePath GetPath() override;
   bool IsOffTheRecord() override;
   variations::VariationsClient* GetVariationsClient() override;
@@ -50,6 +48,8 @@ class BrowserContextImpl : public content::BrowserContext {
   content::ResourceContext* GetResourceContext() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
+  content::PlatformNotificationService* GetPlatformNotificationService()
+      override;
   content::PushMessagingService* GetPushMessagingService() override;
   content::StorageNotificationService* GetStorageNotificationService() override;
   content::SSLHostStateDelegate* GetSSLHostStateDelegate() override;

@@ -17,6 +17,7 @@
 #include "dbus/object_manager.h"
 #include "dbus/object_proxy.h"
 #include "device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h"
+#include "device/bluetooth/dbus/bluetooth_metrics_helper.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
@@ -224,6 +225,10 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
  public:
   BluetoothDeviceClientImpl() : object_manager_(nullptr) {}
 
+  BluetoothDeviceClientImpl(const BluetoothDeviceClientImpl&) = delete;
+  BluetoothDeviceClientImpl& operator=(const BluetoothDeviceClientImpl&) =
+      delete;
+
   ~BluetoothDeviceClientImpl() override {
     // There is an instance of this client that is created but not initialized
     // on Linux. See 'Alternate D-Bus Client' note in bluez_dbus_manager.h.
@@ -418,9 +423,10 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
 
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothDeviceClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothDeviceClientImpl::OnError,
+        base::BindOnce(&BluetoothDeviceClientImpl::OnDisconnectProfileSuccess,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       /*start_time=*/base::Time::Now()),
+        base::BindOnce(&BluetoothDeviceClientImpl::OnDisconnectProfileError,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(error_callback)));
   }
@@ -559,8 +565,9 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&BluetoothDeviceClientImpl::OnGetServiceRecordsSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothDeviceClientImpl::OnError,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       /*start_time=*/base::Time::Now()),
+        base::BindOnce(&BluetoothDeviceClientImpl::OnGetServiceRecordsError,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(error_callback)));
   }
@@ -656,6 +663,20 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
     std::move(callback).Run();
   }
 
+  void OnDisconnectProfileSuccess(base::OnceClosure callback,
+                                  base::Time time_started,
+                                  dbus::Response* response) {
+    DCHECK(response);
+    RecordSuccess(kDisconnectProfileMethod, time_started);
+    std::move(callback).Run();
+  }
+
+  void OnDisconnectProfileError(ErrorCallback error_callback,
+                                dbus::ErrorResponse* response) {
+    RecordFailure(kDisconnectProfileMethod, response);
+    OnError(std::move(error_callback), response);
+  }
+
   // Called when a response for the GetConnInfo method is received.
   void OnGetConnInfoSuccess(ConnInfoCallback callback,
                             dbus::Response* response) {
@@ -678,7 +699,9 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
   }
 
   void OnGetServiceRecordsSuccess(ServiceRecordsCallback callback,
+                                  base::Time start_time,
                                   dbus::Response* response) {
+    RecordSuccess(kGetServiceRecordsMethod, start_time);
     ServiceRecordList records;
     if (!response) {
       LOG(ERROR) << "GetServiceRecords succeeded, but no response received.";
@@ -693,6 +716,12 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
     }
 
     std::move(callback).Run(records);
+  }
+
+  void OnGetServiceRecordsError(ErrorCallback error_callback,
+                                dbus::ErrorResponse* response) {
+    RecordFailure(kGetServiceRecordsMethod, response);
+    OnError(std::move(error_callback), response);
   }
 
   // Called when a response for a failed method call is received.
@@ -721,8 +750,6 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothDeviceClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceClientImpl);
 };
 
 BluetoothDeviceClient::BluetoothDeviceClient() = default;

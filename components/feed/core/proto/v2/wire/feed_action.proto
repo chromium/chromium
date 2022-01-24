@@ -7,6 +7,7 @@ syntax = "proto2";
 package feedwire;
 
 import "components/feed/core/proto/v2/wire/action_payload.proto";
+import "components/feed/core/proto/v2/wire/action_surface.proto";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -16,11 +17,6 @@ message FeedAction {
       UNKNOWN_ORIGIN = 0;
       CLIENT_SESSION = 1;
       CLIENT_CACHE = 2;
-    }
-    enum ActionSurface {
-      UNKNOWN_SURFACE = 0;
-      ANDROID_CHROME_NEW_TAB = 7;
-      IOS_CHROME_NEW_TAB = 8;
     }
     optional int64 timestamp_seconds = 1;
     optional int64 sequence_number = 2;

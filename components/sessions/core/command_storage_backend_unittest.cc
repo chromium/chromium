@@ -538,7 +538,7 @@ TEST_F(CommandStorageBackendTest, TimestampFromPathWithRestoreType) {
   EXPECT_TRUE(
       CommandStorageBackend::TimestampFromPath(test_path_2, result_time_2));
   EXPECT_EQ(base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromMicroseconds(13234316721694577)),
+                base::Microseconds(13234316721694577)),
             result_time_2);
 
   // Test attempting to parse invalid file names.
@@ -564,7 +564,7 @@ TEST_F(CommandStorageBackendTest, FilePathFromTimeWithRestoreType) {
   EXPECT_EQ(base_dir.Append(FILE_PATH_LITERAL("Session_0")), result_path_1);
 
   const auto test_time_2 = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(13234316721694577));
+      base::Microseconds(13234316721694577));
   const auto result_path_2 =
       FilePathFromTime(CommandStorageManager::SessionType::kTabRestore,
                        base::FilePath(), test_time_2);

@@ -23,7 +23,7 @@ absl::optional<IntRect> CSSMaskPainter::MaskBoundingBox(
       auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
           *client, style.MaskerResource());
       if (masker) {
-        const FloatRect reference_box =
+        const gfx::RectF reference_box =
             SVGResources::ReferenceBoxForEffects(object);
         const float reference_box_zoom =
             object.IsSVGForeignObject() ? object.StyleRef().EffectiveZoom() : 1;

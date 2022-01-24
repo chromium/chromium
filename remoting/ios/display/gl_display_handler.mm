@@ -39,6 +39,10 @@ namespace GlDisplayHandler {
 class Core : public protocol::CursorShapeStub, public GlRendererDelegate {
  public:
   Core();
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() override;
 
   void Initialize();
@@ -87,8 +91,6 @@ class Core : public protocol::CursorShapeStub, public GlRendererDelegate {
   // Used on display thread.
   base::WeakPtr<Core> weak_ptr_;
   base::WeakPtrFactory<Core> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 Core::Core() : weak_factory_(this) {

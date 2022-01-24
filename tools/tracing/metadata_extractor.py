@@ -86,10 +86,18 @@ class MetadataExtractor:
   def trace_file(self):
     return self._trace_file
 
+  def GetModuleIds(self):
+    """Returns set of all module IDs in |modules| field.
+    """
+    self.Initialize()
+    if self.modules is None:
+      return None
+    return set(self.modules.values())
+
   def Initialize(self):
     """Extracts metadata from perfetto system trace.
     """
-    # TODO(rhuckleberry): Implement Trace Processor method to run multiple
+    # TODO(crbug/1239694): Implement Trace Processor method to run multiple
     # SQL queries without processing trace for every query.
 
     if self._initialized:
@@ -105,6 +113,9 @@ class MetadataExtractor:
       self.version_number = version_number.split('/')[1]
     else:
       self.version_number = version_number
+    # Mac 64 traces add '-64' after the version number.
+    if self.version_number is not None and self.version_number.endswith('-64'):
+      self.version_number = self.version_number[:-3]
 
     raw_os_name = self._GetStringValueFromQuery(OS_NAME_QUERY)
     self.os_name = self._ParseOSName(raw_os_name)
@@ -174,7 +185,7 @@ class MetadataExtractor:
     try:
       return trace_processor.RunQuery(self._trace_processor_path,
                                       self._trace_file, sql)[0]['str_value']
-    except:
+    except Exception:
       return None
 
   def _GetIntValueFromQuery(self, sql):
@@ -183,7 +194,7 @@ class MetadataExtractor:
     try:
       return trace_processor.RunQuery(self._trace_processor_path,
                                       self._trace_file, sql)[0]['int_value']
-    except:
+    except Exception:
       return None
 
   def _ExtractValidModuleMap(self):
@@ -200,11 +211,11 @@ class MetadataExtractor:
         if ((row_name is None or row_name == '/missing')
             or (row_debug_id is None or row_debug_id == '/missing')):
           continue
-        module_map[row_name] = row_debug_id
+        module_map[row_name] = row_debug_id.upper()
 
       if not module_map:
         return None
       return module_map
 
-    except:
+    except Exception:
       return None

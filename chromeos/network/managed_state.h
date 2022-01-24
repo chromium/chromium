@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace base {
 class Value;
@@ -36,6 +35,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedState {
     MANAGED_TYPE_NETWORK,
     MANAGED_TYPE_DEVICE
   };
+
+  ManagedState(const ManagedState&) = delete;
+  ManagedState& operator=(const ManagedState&) = delete;
 
   virtual ~ManagedState();
 
@@ -141,8 +143,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedState {
 
   // Tracks when an update has been requested.
   bool update_requested_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedState);
 };
 
 }  // namespace chromeos

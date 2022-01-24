@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_HISTORY_CHROME_HISTORY_BACKEND_CLIENT_H_
 #define CHROME_BROWSER_HISTORY_CHROME_HISTORY_BACKEND_CLIENT_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/history/core/browser/history_backend_client.h"
 
@@ -19,6 +18,11 @@ class ChromeHistoryBackendClient : public history::HistoryBackendClient {
  public:
   explicit ChromeHistoryBackendClient(
       scoped_refptr<bookmarks::ModelLoader> model_loader);
+
+  ChromeHistoryBackendClient(const ChromeHistoryBackendClient&) = delete;
+  ChromeHistoryBackendClient& operator=(const ChromeHistoryBackendClient&) =
+      delete;
+
   ~ChromeHistoryBackendClient() override;
 
   // history::HistoryBackendClient implementation.
@@ -29,8 +33,6 @@ class ChromeHistoryBackendClient : public history::HistoryBackendClient {
  private:
   // ModelLoader is used to access bookmarks. May be null during testing.
   scoped_refptr<bookmarks::ModelLoader> model_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeHistoryBackendClient);
 };
 
 #endif  // CHROME_BROWSER_HISTORY_CHROME_HISTORY_BACKEND_CLIENT_H_

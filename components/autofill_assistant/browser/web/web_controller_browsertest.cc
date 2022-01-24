@@ -16,6 +16,10 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
+#include "components/autofill_assistant/browser/actions/wait_for_dom_action.h"
+#include "components/autofill_assistant/browser/mock_script_executor_delegate.h"
+#include "components/autofill_assistant/browser/script.h"
+#include "components/autofill_assistant/browser/script_executor.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/top_padding.h"
@@ -37,6 +41,7 @@ namespace autofill_assistant {
 
 using ::testing::AnyOf;
 using ::testing::IsEmpty;
+using ::testing::Return;
 
 // Flag to enable site per process to enforce OOPIFs.
 const char* kSitePerProcess = "site-per-process";
@@ -46,6 +51,10 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
                                  public content::WebContentsObserver {
  public:
   WebControllerBrowserTest() {}
+
+  WebControllerBrowserTest(const WebControllerBrowserTest&) = delete;
+  WebControllerBrowserTest& operator=(const WebControllerBrowserTest&) = delete;
+
   ~WebControllerBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -74,7 +83,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ASSERT_TRUE(
         NavigateToURL(shell(), http_server_->GetURL(kTargetWebsitePath)));
     web_controller_ = WebController::CreateForWebContents(
-        shell()->web_contents(), &user_data_);
+        shell()->web_contents(), &user_data_, &log_info_);
     Observe(shell()->web_contents());
   }
 
@@ -87,8 +96,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
       {
         base::RunLoop heart_beat;
         base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-            FROM_HERE, heart_beat.QuitClosure(),
-            base::TimeDelta::FromSeconds(3));
+            FROM_HERE, heart_beat.QuitClosure(), base::Seconds(3));
         heart_beat.Run();
       }
       bool page_is_loading =
@@ -184,6 +192,14 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     std::move(done_callback).Run();
   }
 
+  void OnProcessedAction(
+      base::OnceClosure done_callback,
+      ClientStatus* status_output,
+      std::unique_ptr<ProcessedActionProto> processed_action) {
+    *status_output = ClientStatus(processed_action->status());
+    std::move(done_callback).Run();
+  }
+
   void OnClientStatusAndReadyState(base::OnceClosure done_callback,
                                    ClientStatus* result_output,
                                    DocumentReadyState* ready_state_out,
@@ -217,7 +233,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
 
   ClientStatus FindElementAndGetString(
       const Selector& selector,
-      element_action_util::ElementActionGetCallback<std::string>
+      element_action_util::ElementActionGetCallback<const std::string&>
           perform_and_get,
       std::string* get_output) {
     base::RunLoop run_loop;
@@ -226,8 +242,8 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     web_controller_->FindElement(
         selector, /* strict_mode= */ true,
         base::BindOnce(
-            &element_action_util::TakeElementAndGetProperty<std::string>,
-            std::move(perform_and_get),
+            &element_action_util::TakeElementAndGetProperty<const std::string&>,
+            std::move(perform_and_get), std::string(),
             base::BindOnce(&WebControllerBrowserTest::OnPerformAndGetString,
                            base::Unretained(this), run_loop.QuitClosure(),
                            &status, get_output)));
@@ -358,25 +374,20 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     return result;
   }
 
-  ClientStatus HighlightElement(const Selector& selector) {
-    auto actions = std::make_unique<element_action_util::ElementActionVector>();
-    actions->emplace_back(base::BindOnce(&WebController::HighlightElement,
-                                         web_controller_->GetWeakPtr()));
-    return FindElementAndPerformAll(selector, std::move(actions));
-  }
-
   ClientStatus GetOuterHtml(const Selector& selector,
+                            bool include_all_inner_text,
                             std::string* html_output) {
-    const ClientStatus& result =
-        FindElementAndGetString(selector,
-                                base::BindOnce(&WebController::GetOuterHtml,
-                                               web_controller_->GetWeakPtr()),
-                                html_output);
+    const ClientStatus& result = FindElementAndGetString(
+        selector,
+        base::BindOnce(&WebController::GetOuterHtml,
+                       web_controller_->GetWeakPtr(), include_all_inner_text),
+        html_output);
     EXPECT_EQ(ACTION_APPLIED, result.proto_status());
     return result;
   }
 
   ClientStatus GetOuterHtmls(const Selector& selector,
+                             bool include_all_inner_text,
                              std::vector<std::string>* htmls_output) {
     base::RunLoop run_loop;
     ClientStatus result;
@@ -386,7 +397,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
         base::BindOnce(
             &WebControllerBrowserTest::OnFindAllElementsForGetOuterHtmls,
             base::Unretained(this), run_loop.QuitClosure(), &result,
-            htmls_output));
+            htmls_output, include_all_inner_text));
 
     run_loop.Run();
     return result;
@@ -396,6 +407,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
       base::OnceClosure done_callback,
       ClientStatus* client_status_output,
       std::vector<std::string>* htmls_output,
+      bool include_all_inner_text,
       const ClientStatus& client_status,
       std::unique_ptr<ElementFinder::Result> elements) {
     EXPECT_EQ(ACTION_APPLIED, client_status.proto_status());
@@ -403,7 +415,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
 
     const ElementFinder::Result* elements_ptr = elements.get();
     web_controller_->GetOuterHtmls(
-        *elements_ptr,
+        include_all_inner_text, *elements_ptr,
         base::BindOnce(&WebControllerBrowserTest::OnGetOuterHtmls,
                        base::Unretained(this), std::move(elements),
                        std::move(done_callback), client_status_output,
@@ -811,7 +823,7 @@ document.getElementById("overlay").style.visibility='visible';
   // Show the overlay in the first iframe, which covers the content
   // of that frame.
   void ShowOverlayInFrame() {
-    EXPECT_TRUE(ExecJs(shell()->web_contents()->GetAllFrames()[1],
+    EXPECT_TRUE(ExecJs(ChildFrameAt(shell()->web_contents(), 0),
                        R"(
 document.getElementById("overlay_in_frame").style.visibility='visible';
 )"));
@@ -827,7 +839,7 @@ document.getElementById("overlay").style.visibility='hidden';
 
   // Hide the overlay in the first iframe.
   void HideOverlayInFrame() {
-    EXPECT_TRUE(ExecJs(shell()->web_contents()->GetAllFrames()[1],
+    EXPECT_TRUE(ExecJs(ChildFrameAt(shell()->web_contents(), 0),
                        R"(
 document.getElementById("overlay_in_frame").style.visibility='hidden';
 )"));
@@ -907,12 +919,11 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
   std::unique_ptr<WebController> web_controller_;
   UserData user_data_;
   UserModel user_model_;
+  ProcessedActionStatusDetailsProto log_info_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> http_server_;
   std::unique_ptr<net::EmbeddedTestServer> http_server_iframe_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebControllerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ElementExistenceCheck) {
@@ -1455,7 +1466,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
                        DISABLED_TapElementAfterPageIsIdle) {
   // Set a very long timeout to make sure either the page is idle or the test
   // timeout.
-  WaitTillPageIsIdle(base::TimeDelta::FromHours(1));
+  WaitTillPageIsIdle(base::Hours(1));
 
   Selector selector({"#touch_area_one"});
   ClickOrTapElement(selector, ClickType::TAP);
@@ -1706,6 +1717,13 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectOption) {
                          /* strict= */ true)
                 .proto_status());
 
+  // Selecting with an invalid regular expression.
+  EXPECT_EQ(INVALID_ACTION,
+            SelectOption(selector, "*",
+                         /* case_sensitive= */ false, SelectOptionProto::LABEL,
+                         /* strict= */ true)
+                .proto_status());
+
   // Fails if no comparison attribute is set.
   EXPECT_EQ(INVALID_ACTION,
             SelectOption(selector, "one", /* case_sensitive= */ false,
@@ -1802,20 +1820,28 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetOuterHtml) {
 
   // Div.
   Selector div_selector({"#testOuterHtml"});
-  ASSERT_EQ(ACTION_APPLIED, GetOuterHtml(div_selector, &html).proto_status());
+  ASSERT_EQ(ACTION_APPLIED,
+            GetOuterHtml(div_selector,
+                         /* include_all_inner_text*/ true, &html)
+                .proto_status());
   EXPECT_EQ(
       R"(<div id="testOuterHtml"><span>Span</span><p>Paragraph</p></div>)",
       html);
 
   // IFrame.
   Selector iframe_selector({"#iframe", "#input"});
-  ASSERT_EQ(ACTION_APPLIED,
-            GetOuterHtml(iframe_selector, &html).proto_status());
+  ASSERT_EQ(
+      ACTION_APPLIED,
+      GetOuterHtml(iframe_selector, /* include_all_inner_text*/ true, &html)
+          .proto_status());
   EXPECT_EQ(R"(<input id="input" type="text">)", html);
 
   // OOPIF.
   Selector oopif_selector({"#iframeExternal", "#divToRemove"});
-  ASSERT_EQ(ACTION_APPLIED, GetOuterHtml(oopif_selector, &html).proto_status());
+  ASSERT_EQ(
+      ACTION_APPLIED,
+      GetOuterHtml(oopif_selector, /* include_all_inner_text*/ true, &html)
+          .proto_status());
   EXPECT_EQ(R"(<div id="divToRemove">Text</div>)", html);
 }
 
@@ -1823,12 +1849,58 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetOuterHtmls) {
   std::vector<std::string> htmls;
 
   Selector div_selector({".label"});
-  ASSERT_EQ(ACTION_APPLIED, GetOuterHtmls(div_selector, &htmls).proto_status());
+  ASSERT_EQ(
+      ACTION_APPLIED,
+      GetOuterHtmls(div_selector, /* include_all_inner_text*/ true, &htmls)
+          .proto_status());
 
   EXPECT_THAT(htmls,
               testing::ElementsAre(R"(<div class="label">Label 1</div>)",
                                    R"(<div class="label">Label 2</div>)",
                                    R"(<div class="label">Label 3</div>)"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       GetOuterHtmlWithRedactedInnerText) {
+  std::string html;
+
+  // Div.
+  Selector div_selector({"#testOuterHtml"});
+  ASSERT_EQ(ACTION_APPLIED,
+            GetOuterHtml(div_selector, /* include_all_inner_text*/ false, &html)
+                .proto_status());
+  EXPECT_EQ(R"(<div id="testOuterHtml"><span></span><p></p></div>)", html);
+
+  // IFrame.
+  Selector iframe_selector({"#iframe", "#input"});
+  ASSERT_EQ(
+      ACTION_APPLIED,
+      GetOuterHtml(iframe_selector, /* include_all_inner_text*/ false, &html)
+          .proto_status());
+  EXPECT_EQ(R"(<input id="input" type="text">)", html);
+
+  // OOPIF.
+  Selector oopif_selector({"#iframeExternal", "#divToRemove"});
+  ASSERT_EQ(
+      ACTION_APPLIED,
+      GetOuterHtml(oopif_selector, /* include_all_inner_text*/ false, &html)
+          .proto_status());
+  EXPECT_EQ(R"(<div id="divToRemove"></div>)", html);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       GetOuterHtmlsWithRedactedInnerText) {
+  std::vector<std::string> htmls;
+
+  Selector div_selector({".label"});
+  ASSERT_EQ(
+      ACTION_APPLIED,
+      GetOuterHtmls(div_selector, /* include_all_inner_text*/ false, &htmls)
+          .proto_status());
+
+  EXPECT_THAT(htmls, testing::ElementsAre(R"(<div class="label"></div>)",
+                                          R"(<div class="label"></div>)",
+                                          R"(<div class="label"></div>)"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetElementTag) {
@@ -2162,20 +2234,6 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, NavigateToUrl) {
             shell()->web_contents()->GetLastCommittedURL().spec());
 }
 
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, HighlightElement) {
-  Selector selector({"#select"});
-
-  const std::string javascript = R"(
-    let select = document.querySelector("#select");
-    select.style.boxShadow;
-  )";
-  EXPECT_EQ("", content::EvalJs(shell(), javascript));
-  EXPECT_EQ(ACTION_APPLIED, HighlightElement(selector).proto_status());
-  // We only make sure that the element has a non-empty boxShadow style without
-  // requiring an exact string match.
-  EXPECT_NE("", content::EvalJs(shell(), javascript));
-}
-
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForHeightChange) {
   base::RunLoop run_loop;
   ClientStatus result;
@@ -2444,7 +2502,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, CheckOnTopInFrame) {
 
   // Make sure the button is visible.
   EXPECT_TRUE(
-      ExecJs(shell()->web_contents()->GetAllFrames()[1],
+      ExecJs(ChildFrameAt(shell()->web_contents(), 0),
              "document.getElementById('button').scrollIntoViewIfNeeded();"));
 
   // The button is covered by an overlay in the main frame
@@ -2525,15 +2583,13 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForElementToBecomeStable) {
         }, 100);
       })())"));
   EXPECT_EQ(ELEMENT_UNSTABLE,
-            WaitUntilElementIsStable(element, 10,
-                                     base::TimeDelta::FromMilliseconds(100))
+            WaitUntilElementIsStable(element, 10, base::Milliseconds(100))
                 .proto_status());
 
   // Stop moving the element.
   EXPECT_TRUE(ExecJs(shell(), "clearInterval(document.browserTestInterval);"));
-  EXPECT_TRUE(WaitUntilElementIsStable(element, 10,
-                                       base::TimeDelta::FromMilliseconds(100))
-                  .ok());
+  EXPECT_TRUE(
+      WaitUntilElementIsStable(element, 10, base::Milliseconds(100)).ok());
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
@@ -2545,8 +2601,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   FindElement(Selector({"#emptydiv"}), &element_status, &empty_element);
   ASSERT_TRUE(element_status.ok());
   EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
-            WaitUntilElementIsStable(empty_element, 10,
-                                     base::TimeDelta::FromMilliseconds(10))
+            WaitUntilElementIsStable(empty_element, 10, base::Milliseconds(10))
                 .proto_status());
 
   // The element is always hidden and has no box model.
@@ -2554,8 +2609,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   FindElement(Selector({"#hidden"}), &element_status, &hidden_element);
   ASSERT_TRUE(element_status.ok());
   EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
-            WaitUntilElementIsStable(hidden_element, 10,
-                                     base::TimeDelta::FromMilliseconds(10))
+            WaitUntilElementIsStable(hidden_element, 10, base::Milliseconds(10))
                 .proto_status());
 }
 
@@ -2567,8 +2621,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   element.container_frame_host = web_contents()->GetMainFrame();
 
   EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
-            WaitUntilElementIsStable(element, 10,
-                                     base::TimeDelta::FromMilliseconds(100))
+            WaitUntilElementIsStable(element, 10, base::Milliseconds(100))
                 .proto_status());
 }
 
@@ -2918,6 +2971,158 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FocusAndBlur) {
   EXPECT_TRUE(
       content::EvalJs(shell(), R"(document.activeElement === document.body)")
           .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForDomForUniqueElement) {
+  MockScriptExecutorDelegate mock_script_executor_delegate;
+  ON_CALL(mock_script_executor_delegate, GetWebController)
+      .WillByDefault(Return(web_controller_.get()));
+  std::vector<std::unique_ptr<Script>> ordered_interrupts;
+  ScriptExecutor script_executor(
+      /* script_path= */ std::string(), /* additional_context= */ nullptr,
+      /* global_payload= */ std::string(), /* script_payload= */ std::string(),
+      /* listener= */ nullptr, &ordered_interrupts,
+      &mock_script_executor_delegate);
+
+  ActionProto action_proto;
+  auto* wait_for_dom = action_proto.mutable_wait_for_dom();
+  auto* condition = wait_for_dom->mutable_wait_condition();
+  condition->mutable_client_id()->set_identifier("e");
+  condition->set_require_unique_element(true);
+  // This element is unique.
+  *condition->mutable_match() = ToSelectorProto("#select");
+
+  WaitForDomAction action(&script_executor, action_proto);
+  base::RunLoop run_loop;
+  ClientStatus status;
+  action.ProcessAction(
+      base::BindOnce(&WebControllerBrowserTest::OnProcessedAction,
+                     base::Unretained(this), run_loop.QuitClosure(), &status));
+  run_loop.Run();
+  EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
+  EXPECT_TRUE(script_executor.GetElementStore()->HasElement("e"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       WaitForDomForNonUniqueElement) {
+  MockScriptExecutorDelegate mock_script_executor_delegate;
+  ON_CALL(mock_script_executor_delegate, GetWebController)
+      .WillByDefault(Return(web_controller_.get()));
+  std::vector<std::unique_ptr<Script>> ordered_interrupts;
+  ScriptExecutor script_executor(
+      /* script_path= */ std::string(), /* additional_context= */ nullptr,
+      /* global_payload= */ std::string(), /* script_payload= */ std::string(),
+      /* listener= */ nullptr, &ordered_interrupts,
+      &mock_script_executor_delegate);
+
+  ActionProto action_proto;
+  auto* wait_for_dom = action_proto.mutable_wait_for_dom();
+  auto* condition = wait_for_dom->mutable_wait_condition();
+  condition->mutable_client_id()->set_identifier("e");
+  condition->set_require_unique_element(true);
+  // This element is not unique.
+  *condition->mutable_match() = ToSelectorProto("div");
+
+  WaitForDomAction action(&script_executor, action_proto);
+  base::RunLoop run_loop;
+  ClientStatus status;
+  action.ProcessAction(
+      base::BindOnce(&WebControllerBrowserTest::OnProcessedAction,
+                     base::Unretained(this), run_loop.QuitClosure(), &status));
+  run_loop.Run();
+  EXPECT_EQ(status.proto_status(), ELEMENT_RESOLUTION_FAILED);
+  EXPECT_FALSE(script_executor.GetElementStore()->HasElement("e"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FindElementError) {
+  ClientStatus element_status;
+  ElementFinder::Result element;
+  Selector selector;
+  selector.proto.set_tracking_id(1);
+  selector.proto.add_filters()->set_css_selector("#select");
+  selector.proto.add_filters()->mutable_bounding_box()->set_require_nonempty(
+      true);
+  selector.proto.add_filters()->set_css_selector("option:nth-child(100)");
+  FindElement(selector, &element_status, &element);
+  EXPECT_EQ(element_status.proto_status(), ELEMENT_RESOLUTION_FAILED);
+  ASSERT_EQ(log_info_.element_finder_info().size(), 1);
+  EXPECT_EQ(log_info_.element_finder_info(0).tracking_id(), 1);
+  EXPECT_EQ(log_info_.element_finder_info(0).failed_filter_index_range_start(),
+            0);
+  EXPECT_EQ(log_info_.element_finder_info(0).failed_filter_index_range_end(),
+            3);
+  EXPECT_EQ(log_info_.element_finder_info(0).status(),
+            ELEMENT_RESOLUTION_FAILED);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       RunElementFinderFromFrameElement) {
+  ClientStatus frame_status;
+  ElementFinder::Result frame_element;
+  FindElement(Selector({"#iframe", "body"}), &frame_status, &frame_element);
+  ASSERT_EQ(ACTION_APPLIED, frame_status.proto_status());
+
+  ClientStatus button_status;
+  ElementFinder::Result button_element;
+  base::RunLoop button_run_loop;
+  web_controller_->RunElementFinder(
+      frame_element, Selector({"#shadowsection", "#shadowbutton"}),
+      ElementFinder::ResultType::kExactlyOneMatch,
+      base::BindOnce(&WebControllerBrowserTest::OnFindElement,
+                     base::Unretained(this), button_run_loop.QuitClosure(),
+                     &button_status, &button_element));
+  button_run_loop.Run();
+  ASSERT_EQ(ACTION_APPLIED, button_status.proto_status());
+
+  ClientStatus js_click_status;
+  base::RunLoop js_click_run_loop;
+  web_controller_->JsClickElement(
+      button_element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), js_click_run_loop.QuitClosure(),
+                     &js_click_status));
+  js_click_run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, js_click_status.proto_status());
+
+  WaitForElementRemove(Selector({"#iframe", "#button"}));
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunElementFinderFromOOPIF) {
+  ClientStatus frame_status;
+  ElementFinder::Result frame_element;
+  FindElement(Selector({"#iframeExternal", "body"}), &frame_status,
+              &frame_element);
+  ASSERT_EQ(ACTION_APPLIED, frame_status.proto_status());
+
+  // Create fake element without object id and frame information only.
+  ElementFinder::Result fake_frame_element;
+  fake_frame_element.container_frame_host = frame_element.container_frame_host;
+  fake_frame_element.dom_object.object_data.node_frame_id =
+      frame_element.container_frame_host->GetDevToolsFrameToken().ToString();
+
+  ClientStatus button_status;
+  ElementFinder::Result button_element;
+  base::RunLoop button_run_loop;
+  web_controller_->RunElementFinder(
+      fake_frame_element, Selector({"#button"}),
+      ElementFinder::ResultType::kExactlyOneMatch,
+      base::BindOnce(&WebControllerBrowserTest::OnFindElement,
+                     base::Unretained(this), button_run_loop.QuitClosure(),
+                     &button_status, &button_element));
+  button_run_loop.Run();
+  ASSERT_EQ(ACTION_APPLIED, button_status.proto_status());
+
+  ClientStatus js_click_status;
+  base::RunLoop js_click_run_loop;
+  web_controller_->JsClickElement(
+      button_element,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
+                     base::Unretained(this), js_click_run_loop.QuitClosure(),
+                     &js_click_status));
+  js_click_run_loop.Run();
+  EXPECT_EQ(ACTION_APPLIED, js_click_status.proto_status());
+
+  WaitForElementRemove(Selector({"#iframeExternal", "#div"}));
 }
 
 }  // namespace autofill_assistant

@@ -11,7 +11,6 @@
 
 #include "base/files/file.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -69,6 +68,10 @@ class DrmThread : public base::Thread,
                               const std::vector<OverlayStatus>&)>;
 
   DrmThread();
+
+  DrmThread(const DrmThread&) = delete;
+  DrmThread& operator=(const DrmThread&) = delete;
+
   ~DrmThread() override;
 
   void Start(base::OnceClosure receiver_completer,
@@ -227,8 +230,6 @@ class DrmThread : public base::Thread,
   std::unique_ptr<DrmDeviceGenerator> device_generator_;
 
   base::WeakPtrFactory<DrmThread> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DrmThread);
 };
 
 }  // namespace ui

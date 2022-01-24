@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
@@ -21,6 +20,9 @@ namespace optimization_guide {
 // OptimizationTargetDecision by evaluating a prediction model.
 class PredictionModel {
  public:
+  PredictionModel(const PredictionModel&) = delete;
+  PredictionModel& operator=(const PredictionModel&) = delete;
+
   virtual ~PredictionModel();
 
   // Creates an Prediction model of the correct ModelType specified in
@@ -61,8 +63,6 @@ class PredictionModel {
 
   // The version of the |model_|.
   const int64_t version_;
-
-  DISALLOW_COPY_AND_ASSIGN(PredictionModel);
 };
 
 }  // namespace optimization_guide

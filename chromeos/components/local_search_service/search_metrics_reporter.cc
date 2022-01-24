@@ -16,8 +16,7 @@ namespace local_search_service {
 namespace {
 
 // Interval for asking metrics::DailyEvent to check whether a day has passed.
-constexpr base::TimeDelta kCheckDailyEventInternal =
-    base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kCheckDailyEventInternal = base::Minutes(30);
 
 // Prefs corresponding to IndexId values.
 constexpr std::array<const char*, SearchMetricsReporter::kNumberIndexIds>

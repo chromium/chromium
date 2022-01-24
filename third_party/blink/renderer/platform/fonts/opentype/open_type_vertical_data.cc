@@ -284,8 +284,9 @@ void OpenTypeVerticalData::GetVerticalTranslationsForGlyphs(
     // For Y, try VORG first.
     if (use_vorg) {
       if (glyph) {
-        int16_t vert_origin_yf_unit = vert_origin_y_.at(glyph);
-        if (vert_origin_yf_unit) {
+        auto it = vert_origin_y_.find(glyph);
+        if (it != vert_origin_y_.end()) {
+          int16_t vert_origin_yf_unit = it->value;
           out_xy_array[1] = -vert_origin_yf_unit * size_per_unit_;
           continue;
         }
@@ -307,7 +308,7 @@ void OpenTypeVerticalData::GetVerticalTranslationsForGlyphs(
       SkRect skiaBounds;
       SkFontGetBoundsForGlyph(font, glyph, &skiaBounds);
       FloatRect bounds(skiaBounds);
-      out_xy_array[1] = bounds.Y() - top_side_bearing;
+      out_xy_array[1] = bounds.y() - top_side_bearing;
       continue;
     }
 

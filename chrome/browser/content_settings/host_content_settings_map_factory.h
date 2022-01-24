@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_HOST_CONTENT_SETTINGS_MAP_FACTORY_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_HOST_CONTENT_SETTINGS_MAP_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/refcounted_browser_context_keyed_service_factory.h"
@@ -19,6 +18,10 @@ class HostContentSettingsMapFactory
       content::BrowserContext* browser_context);
   static HostContentSettingsMapFactory* GetInstance();
 
+  HostContentSettingsMapFactory(const HostContentSettingsMapFactory&) = delete;
+  HostContentSettingsMapFactory& operator=(
+      const HostContentSettingsMapFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<HostContentSettingsMapFactory>;
 
@@ -30,8 +33,6 @@ class HostContentSettingsMapFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(HostContentSettingsMapFactory);
 };
 
 #endif // CHROME_BROWSER_CONTENT_SETTINGS_HOST_CONTENT_SETTINGS_MAP_FACTORY_H_

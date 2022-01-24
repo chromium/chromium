@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -67,6 +66,9 @@ class TestMetricCollector : public internal::MetricCollector {
   explicit TestMetricCollector(const CollectionParams& collection_params)
       : internal::MetricCollector("UMA.CWP.TestData", collection_params) {}
 
+  TestMetricCollector(const TestMetricCollector&) = delete;
+  TestMetricCollector& operator=(const TestMetricCollector&) = delete;
+
   const char* ToolName() const override { return "test"; }
   base::WeakPtr<internal::MetricCollector> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
@@ -85,13 +87,10 @@ class TestMetricCollector : public internal::MetricCollector {
 
  private:
   base::WeakPtrFactory<TestMetricCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricCollector);
 };
 
-const base::TimeDelta kPeriodicCollectionInterval =
-    base::TimeDelta::FromHours(1);
-const base::TimeDelta kMaxCollectionDelay = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kPeriodicCollectionInterval = base::Hours(1);
+const base::TimeDelta kMaxCollectionDelay = base::Seconds(1);
 
 // Allows access to some private methods for testing.
 class TestProfileProvider : public ProfileProvider {
@@ -122,8 +121,8 @@ class TestProfileProvider : public ProfileProvider {
   using ProfileProvider::OnSessionRestoreDone;
   using ProfileProvider::SuspendDone;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestProfileProvider);
+  TestProfileProvider(const TestProfileProvider&) = delete;
+  TestProfileProvider& operator=(const TestProfileProvider&) = delete;
 };
 
 template <SampledProfile_TriggerEvent TRIGGER_TYPE>
@@ -150,6 +149,9 @@ class ProfileProviderTest : public testing::Test {
   ProfileProviderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  ProfileProviderTest(const ProfileProviderTest&) = delete;
+  ProfileProviderTest& operator=(const ProfileProviderTest&) = delete;
+
   void SetUp() override {
     // ProfileProvider requires chromeos::LoginState and
     // chromeos::PowerManagerClient to be initialized.
@@ -173,8 +175,6 @@ class ProfileProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestProfileProvider> profile_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileProviderTest);
 };
 
 TEST_F(ProfileProviderTest, CheckSetup) {
@@ -223,7 +223,7 @@ TEST_F(ProfileProviderTest, UserLoginLogout) {
 
 TEST_F(ProfileProviderTest, SuspendDone_NoUserLoggedIn_NoCollection) {
   // No user is logged in, so no collection is done on resume from suspend.
-  profile_provider_->SuspendDone(base::TimeDelta::FromMinutes(10));
+  profile_provider_->SuspendDone(base::Minutes(10));
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -243,7 +243,7 @@ TEST_F(ProfileProviderTest, CanceledSuspend_NoCollection) {
   }
 
   // Trigger a canceled suspend (zero sleep duration).
-  profile_provider_->SuspendDone(base::TimeDelta::FromSeconds(0));
+  profile_provider_->SuspendDone(base::Seconds(0));
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -261,7 +261,7 @@ TEST_F(ProfileProviderTest, SuspendDone) {
       chromeos::LoginState::LOGGED_IN_USER_REGULAR);
 
   // Trigger a resume from suspend.
-  profile_provider_->SuspendDone(base::TimeDelta::FromMinutes(10));
+  profile_provider_->SuspendDone(base::Minutes(10));
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -274,7 +274,7 @@ TEST_F(ProfileProviderTest, SuspendDone) {
 
 TEST_F(ProfileProviderTest, OnSessionRestoreDone_NoUserLoggedIn_NoCollection) {
   // No user is logged in, so no collection is done on session restore.
-  profile_provider_->OnSessionRestoreDone(10);
+  profile_provider_->OnSessionRestoreDone(nullptr, 10);
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -294,7 +294,7 @@ TEST_F(ProfileProviderTest, OnSessionRestoreDone) {
   }
 
   // Trigger a session restore.
-  profile_provider_->OnSessionRestoreDone(10);
+  profile_provider_->OnSessionRestoreDone(nullptr, 10);
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -352,7 +352,7 @@ TEST_F(ProfileProviderTest, JankinessCollectionThrottled) {
   // Fast forward time to 1 second before the throttling duration is over.
   task_environment_.FastForwardBy(
       profile_provider_->jankiness_collection_min_interval() -
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 
   // This collection within the minimum interval should be throttled.
   profile_provider_->OnJankStarted();
@@ -363,7 +363,7 @@ TEST_F(ProfileProviderTest, JankinessCollectionThrottled) {
 
   // Move the clock forward past the throttling duration. The next JANKY_TASK
   // collection should succeed.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   profile_provider_->OnJankStarted();
   task_environment_.RunUntilIdle();
@@ -406,7 +406,7 @@ TEST_F(ProfileProviderJankinessTest, JankMonitor_UI) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         // This is a janky task that runs for 2 seconds.
-        task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+        task_environment_.FastForwardBy(base::Seconds(2));
       }));
   task_environment_.RunUntilIdle();
 
@@ -424,7 +424,7 @@ TEST_F(ProfileProviderJankinessTest, JankMonitor_IO) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         // This is a janky task that runs for 2 seconds.
-        task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+        task_environment_.FastForwardBy(base::Seconds(2));
       }));
   task_environment_.RunUntilIdle();
 
@@ -453,7 +453,7 @@ TEST(ProfileProviderJankinessParamTest, SetFeatureParam) {
 
   // Get default minimum interval is expected to be 30 minutes.
   EXPECT_EQ(profile_provider->jankiness_collection_min_interval(),
-            base::TimeDelta::FromMinutes(30));
+            base::Minutes(30));
 
   profile_provider.reset();
 
@@ -470,7 +470,7 @@ TEST(ProfileProviderJankinessParamTest, SetFeatureParam) {
   profile_provider = std::make_unique<TestProfileProvider>();
   profile_provider->Init();
   EXPECT_EQ(profile_provider->jankiness_collection_min_interval(),
-            base::TimeDelta::FromSeconds(180));
+            base::Seconds(180));
 
   profile_provider.reset();
 
@@ -486,8 +486,8 @@ class TestStockProfileProvider : public ProfileProvider {
 
   using ProfileProvider::collectors_;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestStockProfileProvider);
+  TestStockProfileProvider(const TestStockProfileProvider&) = delete;
+  TestStockProfileProvider& operator=(const TestStockProfileProvider&) = delete;
 };
 
 }  // namespace
@@ -495,6 +495,9 @@ class TestStockProfileProvider : public ProfileProvider {
 class ProfileProviderStockTest : public testing::Test {
  public:
   ProfileProviderStockTest() = default;
+
+  ProfileProviderStockTest(const ProfileProviderStockTest&) = delete;
+  ProfileProviderStockTest& operator=(const ProfileProviderStockTest&) = delete;
 
   void SetUp() override {
     // ProfileProvider requires chromeos::LoginState and
@@ -510,9 +513,6 @@ class ProfileProviderStockTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileProviderStockTest);
 };
 
 TEST_F(ProfileProviderStockTest, CheckSetup) {

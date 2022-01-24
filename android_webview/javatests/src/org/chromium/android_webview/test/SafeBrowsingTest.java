@@ -637,7 +637,7 @@ public class SafeBrowsingTest {
     @Feature({"AndroidWebView"})
     public void testSafeBrowsingShowsInterstitialForSubresource() throws Throwable {
         loadGreenPage();
-        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback = */ false);
+        loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback = */ true);
         assertGreenPageNotShowing();
         // Assume that we are rendering the interstitial, since we see neither the previous page
         // nor the target page

@@ -20,8 +20,4 @@
     <declare-styleable name="ExploreSitesTileView">
         <attr name="iconCornerRadius" format="dimension"/>
     </declare-styleable>
-
-    <declare-styleable name="SectionHeaderView">
-        <attr name="animatePaddingWhenDisabled" format="boolean"/>
-    </declare-styleable>
 </resources>

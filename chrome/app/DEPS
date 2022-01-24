@@ -39,6 +39,7 @@ include_rules = [
   "+content/public/common",
   "+extensions/common/constants.h",
   "+headless/public",
+  "+media/base/media_switches.h",
   "+native_client/src/trusted/service_runtime/osx",
   "+pdf/pdf_ppapi.h",
   "+sandbox",

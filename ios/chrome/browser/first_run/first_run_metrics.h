@@ -93,9 +93,15 @@ enum FirstRunStage {
   kSignInScreenCompletionWithSignIn,
   // SignIn screen is closed without sign in.
   kSignInScreenCompletionWithoutSignIn,
+  // Default browser screen is shown.
+  kDefaultBrowserScreenStart,
+  // Default browser screen is closed with opening Settings.app.
+  kDefaultBrowserScreenCompletionWithSettings,
+  // Default browser screen is closed without opening Settings.app.
+  kDefaultBrowserScreenCompletionWithoutSettings,
   // Max value of the first run experience stages.
   // kMaxValue should share the value of the highest enumerator.
-  kMaxValue = kSignInScreenCompletionWithoutSignIn,
+  kMaxValue = kDefaultBrowserScreenCompletionWithoutSettings,
 };
 
 }  // namespace first_run

@@ -1,28 +1,13 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_slider/cr_slider.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="crostini_browser_proxy.html">
-<link rel="import" href="../../settings_shared_css.html">
-
-<dom-module id="settings-crostini-disk-resize-confirmation-dialog">
-  <template>
-    <style include="settings-shared"></style>
-    <cr-dialog id="dialog" close-text="$i18n{close}">
-      <div slot="title">$i18n{crostiniDiskResizeConfirmationDialogTitle}</div>
-      <div slot="body">$i18n{crostiniDiskResizeConfirmationDialogMessage}</div>
-      <div slot="button-container">
-        <cr-button id="cancel" class="cancel-button"
-            on-click="onCancelTap_">$i18n{cancel}</cr-button>
-        <cr-button id="continue" class="action-button"
-            on-click="onReserveSizeTap_">
-            $i18n{crostiniDiskResizeConfirmationDialogButton}
-        </cr-button>
-      </div>
-    </cr-dialog>
-  </template>
-  <script src="crostini_disk_resize_confirmation_dialog.js"></script>
-</dom-module>
+<style include="settings-shared"></style>
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">$i18n{crostiniDiskResizeConfirmationDialogTitle}</div>
+  <div slot="body">$i18n{crostiniDiskResizeConfirmationDialogMessage}</div>
+  <div slot="button-container">
+    <cr-button id="cancel" class="cancel-button"
+        on-click="onCancelTap_">$i18n{cancel}</cr-button>
+    <cr-button id="continue" class="action-button"
+        on-click="onReserveSizeTap_">
+        $i18n{crostiniDiskResizeConfirmationDialogButton}
+    </cr-button>
+  </div>
+</cr-dialog>

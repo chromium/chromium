@@ -6,7 +6,6 @@
 <translation id="1124090076051167250">Ezzel törli azt a(z) <ph name="DATASIZE" />-nyi adatot és cookie-t, amelyeket a webhelyek és a kezdőképernyőn lévő alkalmazások tárolnak az eszközön.</translation>
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
-<translation id="1195941046451948919">Biztosan visszaállítja ennek a webhelynek az összes engedélyét?</translation>
 <translation id="1201402288615127009">Tovább</translation>
 <translation id="1242008676835033345">Beágyazva itt: <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Leállítás</translation>
@@ -19,7 +18,6 @@
 <translation id="1384959399684842514">A letöltés szünetel</translation>
 <translation id="1415402041810619267">URL csonkolva</translation>
 <translation id="1446450296470737166">MIDI-eszközök teljes vezérlése</translation>
-<translation id="1509960214886564027">Számos webhelyen nem működnek a funkciók</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="1647582022260550163">Biztosan visszaállítja az engedélyeket, és törölni szeretné cookie-kat és a webhelyadatokat?</translation>
@@ -31,6 +29,7 @@
 <translation id="1743802530341753419">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára egy adott eszközhöz való csatlakozást (ajánlott)</translation>
 <translation id="1779089405699405702">Képdekóder</translation>
 <translation id="1818308510395330587">Ahhoz, hogy a(z) <ph name="APP_NAME" /> használhassa az AR-t, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
+<translation id="1864927262126810325">Forrás: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">A helyhozzáférés ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
 <translation id="1919345977826869612">Hirdetések</translation>
 <translation id="1919950603503897840">Névjegyek kiválasztása</translation>
@@ -38,6 +37,7 @@
 <translation id="1984937141057606926">Engedélyezve, kivéve a harmadik felektől származó cookie-kat</translation>
 <translation id="1989112275319619282">Böngészés</translation>
 <translation id="1994173015038366702">Webhely URL-je</translation>
+<translation id="2004697686368036666">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően</translation>
 <translation id="2025115093177348061">Kiterjesztett valóság</translation>
 <translation id="2030769033451695672">Koppintson, hogy visszatérjen ide: <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Visszavonás</translation>
@@ -52,6 +52,7 @@
 <translation id="2289270750774289114">Kérdezzen rá, ha valamelyik webhely szeretné felfedezni a közeli Bluetooth-eszközöket (ajánlott)</translation>
 <translation id="2315043854645842844">Az ügyféloldali tanúsítványválasztást az operációs rendszer nem támogatja.</translation>
 <translation id="2359808026110333948">Tovább</translation>
+<translation id="2379925928934107488">A sötét téma alkalmazása a webhelyekre (amikor lehetséges), ha a Chrome-ban sötét téma van beállítva</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> engedélyezve}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> engedélyezve}}</translation>
 <translation id="2434158240863470628">Letöltés befejezve <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -64,12 +65,14 @@
 <translation id="2570922361219980984">A helyhozzáférés is ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
 <translation id="257931822824936280">Kibontva – kattintson az összecsukáshoz.</translation>
 <translation id="2586657967955657006">Vágólap</translation>
+<translation id="2597457036804169544">Ne használjon sötét témát a webhelyeknél</translation>
 <translation id="2621115761605608342">A JavaScript engedélyezése egy adott webhelyen.</translation>
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2687403674020088961">Az összes cookie letiltása (nem ajánlott)</translation>
 <translation id="2704606927547763573">Másolt</translation>
 <translation id="2717722538473713889">E-mail-címek</translation>
+<translation id="2785051990912111074">Ezzel törli a(z) <ph name="WEBSITE" /> webhelyhez tartozó cookie-kat.</translation>
 <translation id="2822354292072154809">Biztosan visszaállítja a(z) <ph name="CHOSEN_OBJECT_NAME" /> minden webhelyengedélyét?</translation>
 <translation id="2870560284913253234">Webhely</translation>
 <translation id="2874939134665556319">Előző szám</translation>
@@ -101,6 +104,7 @@
 <translation id="3600792891314830896">Elnémítja a hangot lejátszó webhelyeket</translation>
 <translation id="3744111561329211289">Szinkronizálás a háttérben</translation>
 <translation id="3763247130972274048">A videó jobb vagy bal oldalán duplán koppintva ugorhat előre vagy vissza 10 másodpercet</translation>
+<translation id="3797520601150691162">Ne használjon sötét témát bizonyos webhelyeknél</translation>
 <translation id="381841723434055211">Telefonszámok</translation>
 <translation id="3835233591525155343">Aktív eszközhasználat</translation>
 <translation id="385051799172605136">Vissza</translation>
@@ -130,7 +134,6 @@
 <translation id="4570913071927164677">Részletek</translation>
 <translation id="4645575059429386691">A szülő kezeli</translation>
 <translation id="4670064810192446073">Virtuális valóság</translation>
-<translation id="4708011789095599544">Biztosan törölni szeretné az ehhez a webhelyhez tartozó cookie-kat és egyéb webhelyadatokat?</translation>
 <translation id="4751476147751820511">Mozgás- és fényérzékelők</translation>
 <translation id="4836046166855586901">Kérdezzen rá, ha valamelyik webhely tudni szeretné, hogy Ön mikor használja aktívan ezt az eszközt.</translation>
 <translation id="4883854917563148705">A kezelt beállításokat nem lehet visszaállítani</translation>
@@ -140,6 +143,7 @@
 <translation id="4976702386844183910">Utolsó látogatás: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nem találhatók névjegyek</translation>
 <translation id="4996978546172906250">Megosztás itt:</translation>
+<translation id="5014906230196386306">Törli a cookie-kat?</translation>
 <translation id="5039804452771397117">Engedélyezés</translation>
 <translation id="5048398596102334565">A mozgásérzékelőkhöz való hozzáférés engedélyezése a webhelyek számára (ajánlott)</translation>
 <translation id="5050380848339752099">A webhely adatokat kíván megosztani az inkognitó módon kívüli alkalmazással.</translation>
@@ -157,15 +161,16 @@
 <translation id="5335288049665977812">Engedélyezze a webhelyek számára a JavaScript futtatását (ajánlott)</translation>
 <translation id="534295439873310000">NFC-eszközök</translation>
 <translation id="5354152178998424783">Ezzel <ph name="DATASIZE" />-nyi, webhelyek által tárolt adatot és cookie-t töröl.</translation>
-<translation id="5391532827096253100">Kapcsolata a webhellyel nem biztonságos. Webhelyadatok</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 további)}other{(+ # további)}}</translation>
 <translation id="5403592356182871684">Nevek</translation>
+<translation id="5438097262470833822">Ezzel visszaállítja a(z) <ph name="WEBSITE" /> webhelyhez tartozó engedélyeket.</translation>
 <translation id="5489227211564503167">Eltelt idő: <ph name="ELAPSED_TIME" />, ennyiből: <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Hirdetések letiltása a tolakodó és félrevezető hirdetéseket megjelenítő webhelyeken</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> engedélyezve, <ph name="PERMISSION_2" /> letiltva</translation>
 <translation id="5505264765875738116">A webhelyek nem kérdezhetnek rá, hogy küldjenek-e Önnek értesítéseket</translation>
 <translation id="5516455585884385570">Értesítési beállítások megnyitása</translation>
 <translation id="5527111080432883924">Kérdezzen rá, mielőtt engedélyezi a webhelyeknek, hogy megtekintsék a vágólapon található szövegeket és képeket (ajánlott)</translation>
+<translation id="5553374991681107062">Legutóbbi</translation>
 <translation id="5556459405103347317">Újratöltés</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="5649053991847567735">Automatikus letöltések</translation>
@@ -190,10 +195,10 @@
 <translation id="6064125863973209585">Befejezett letöltések</translation>
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6177111841848151710">Tiltott a jelenlegi keresőmotor számára</translation>
+<translation id="6177128806592000436">Kapcsolata a webhellyel nem biztonságos</translation>
 <translation id="6181444274883918285">Webhelykivétel hozzáadása</translation>
 <translation id="6192792657125177640">Kivételek</translation>
 <translation id="6196640612572343990">Harmadik féltől származó cookie-k letiltása</translation>
-<translation id="6206551242102657620">A kapcsolat biztonságos. Webhelyadatok</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – lehetőségek</translation>
 <translation id="6231752747840485235">Eltávolítja ezt az alkalmazást: <ph name="APP_NAME" />?</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" /> letiltva</translation>
@@ -202,7 +207,6 @@
 <translation id="6320088164292336938">Rezgés</translation>
 <translation id="6388207532828177975">Törlés és visszaállítás</translation>
 <translation id="6398765197997659313">Kilépés a teljes képernyős módból</translation>
-<translation id="6423924377271166037">Cookie-k törlése</translation>
 <translation id="6439114592976064011">A virtuálisvalóság-eszközök és -adatok használatának letiltása a webhelyek számára</translation>
 <translation id="6447842834002726250">Cookie-k</translation>
 <translation id="6527303717912515753">Megosztás</translation>
@@ -210,6 +214,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> letiltva}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> letiltva}}</translation>
 <translation id="6554732001434021288">Utolsó látogatás: <ph name="NUM_DAYS" /> napja</translation>
 <translation id="6561560012278703671">Csendesebb üzenetküldés használata (letiltja az értesítéseket, hogy ne zavarják meg Önt)</translation>
+<translation id="6593061639179217415">Asztali webhely</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Védett tartalom</translation>
 <translation id="662080504995468778">Mégse</translation>
@@ -217,6 +222,7 @@
 <translation id="6689172468748959065">Profilfotók</translation>
 <translation id="6697925417670533197">Aktív letöltések</translation>
 <translation id="6746124502594467657">Mozgatás lefelé</translation>
+<translation id="6749077623962119521">Visszaállítja az engedélyeket?</translation>
 <translation id="6766622839693428701">A bezáráshoz csúsztasson lefelé.</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6818926723028410516">Válasszon elemeket</translation>
@@ -224,15 +230,14 @@
 <translation id="6910211073230771657">Törölve</translation>
 <translation id="6912998170423641340">A vágólapon található szövegek és képek megtekintésének letiltása a webhelyek számára</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
-<translation id="6963642900430330478">Ez az oldal veszélyes. Webhelyadatok</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6992289844737586249">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára a mikrofon használatát (ajánlott)</translation>
 <translation id="7000754031042624318">Kikapcsolva az Android beállításaiban</translation>
 <translation id="7016516562562142042">Engedélyezett a jelenlegi keresőmotor számára</translation>
 <translation id="7053983685419859001">Letiltás</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elem kijelölve}other{# elem kijelölve}}</translation>
+<translation id="7070090581017165256">A webhelyről</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elem kiválasztva. A lehetőségek a képernyő tetején találhatók.</translation>
-<translation id="7128222689758636196">Engedélyezi a jelenlegi keresőmotor számára</translation>
 <translation id="7141896414559753902">Előugró ablakok és átirányítások letiltása a webhelyeken (ajánlott)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="723171743924126238">Képek kiválasztása</translation>
@@ -242,12 +247,12 @@
 <translation id="7302486331832100261">Ön általában letiltja az értesítéseket. Az engedélyezéshez koppintson a Részletek elemre.</translation>
 <translation id="7423098979219808738">Kérdezzen rá</translation>
 <translation id="7423538860840206698">Le van tiltva a vágólap megtekintése</translation>
+<translation id="7425915948813553151">Sötét téma a webhelyeknél</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Egy webhely használja az Ön mikrofonját</translation>
 <translation id="7561196759112975576">Mindig</translation>
 <translation id="7572498721684305250">Adatok küldésének és fogadásának letiltása a webhelyek számára, amikor NFC-eszközökre koppint</translation>
 <translation id="757524316907819857">Védett tartalom lejátszásának letiltása a webhelyeken</translation>
-<translation id="7589445247086920869">Tiltja a jelenlegi keresőmotor számára</translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7781829728241885113">Tegnap</translation>
@@ -261,19 +266,23 @@
 <translation id="7846076177841592234">Kijelölés törlése</translation>
 <translation id="7846621471902887024">Ki fog jelentkezni az összes webhelyről.</translation>
 <translation id="7882806643839505685">Egy adott webhely hangjának engedélyezése.</translation>
+<translation id="7940722705963108451">Emlékeztessen</translation>
 <translation id="7986741934819883144">Válasszon ki egy névjegyet</translation>
-<translation id="7993619969781047893">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek megfelelően</translation>
 <translation id="7999064672810608036">Biztosan törli a webhellyel kapcsolatos összes helyi adatot (a cookie-kkal együtt), és visszaállítja az összes engedélyt?</translation>
 <translation id="8007176423574883786">Kikapcsolva ezen az eszközön</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
+<translation id="8042586301629853791">Rendezés:</translation>
 <translation id="8067883171444229417">Videó lejátszása</translation>
 <translation id="8068648041423924542">A tanúsítvány kiválasztása nem sikerült.</translation>
 <translation id="8087000398470557479">Ez a Google által megjelenített tartalom a(z) <ph name="DOMAIN_NAME" /> domainről származik.</translation>
 <translation id="8116925261070264013">Némítva</translation>
+<translation id="813082847718468539">Az oldalinformációk megtekintése</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
+<translation id="8154912474061769055">Előfordulhat, hogy számos webhely funkciói nem működnek majd megfelelően</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> engedélyezve</translation>
 <translation id="8200772114523450471">Folytatás</translation>
 <translation id="8206354486702514201">Ezt a beállítást rendszergazdája lépteti életbe.</translation>
+<translation id="8211406090763984747">A kapcsolat biztonságos</translation>
 <translation id="8249310407154411074">Mozgatás az elejére</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8300705686683892304">Alkalmazás által kezelt</translation>
@@ -296,6 +305,7 @@
 <translation id="8676374126336081632">Beírt szöveg törlése</translation>
 <translation id="868929229000858085">Keresés a névjegyek között</translation>
 <translation id="8702612070107455751">Az offline adatok törlődnek.</translation>
+<translation id="8712637175834984815">Sikerült</translation>
 <translation id="8719283222052720129">A(z) <ph name="APP_NAME" /> alkalmazásra vonatkozó engedélyt az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között lehet aktiválni.</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>
 <translation id="8730621377337864115">Kész</translation>
@@ -315,7 +325,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">A(z) <ph name="APP_NAME" /> alkalmazásra vonatkozó engedélyeket az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között lehet aktiválni.</translation>
+<translation id="9162462602695099906">Ez az oldal veszélyes</translation>
 <translation id="930525582205581608">Szeretné a webhely elfelejtését kérni?</translation>
-<translation id="965817943346481315">Letiltás, ha a webhely tolakodó vagy félrevezető hirdetéseket jelenít meg (ajánlott)</translation>
 <translation id="967624055006145463">Tárolt adatok</translation>
 </translationbundle>

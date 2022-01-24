@@ -2,7 +2,7 @@ rootWebArea
 ++alert invisible containerLiveRelevant='additions' containerLiveStatus='assertive' liveRelevant='additions' liveStatus='assertive' containerLiveAtomic=true containerLiveBusy=false liveAtomic=true
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++form
+++++++section
 ++++++++labelText
 ++++++++++staticText name='Pet name:'
 ++++++++++++inlineTextBox name='Pet name:'

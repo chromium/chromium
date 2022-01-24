@@ -7,11 +7,11 @@
 
 #include <memory>
 
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_web_ui_controller_factory.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -32,7 +32,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
 
   std::vector<AppId> GetAppIdsToUninstallAndReplace() const override;
   gfx::Size GetMinimumWindowSize() const override;
-  bool ShouldBeSingleWindow() const override;
+  bool ShouldReuseExistingWindow() const override;
   bool ShouldShowNewWindowMenuOption() const override;
   bool ShouldIncludeLaunchDirectory() const override;
   std::vector<int> GetAdditionalSearchTerms() const override;
@@ -50,7 +50,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
 
   void SetAppIdsToUninstallAndReplace(const std::vector<AppId>&);
   void SetMinimumWindowSize(const gfx::Size&);
-  void SetShouldBeSingleWindow(bool);
+  void SetShouldReuseExistingWindow(bool);
   void SetShouldShowNewWindowMenuOption(bool);
   void SetShouldIncludeLaunchDirectory(bool);
   void SetEnabledOriginTrials(const OriginTrialsMap&);
@@ -65,6 +65,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetShouldAllowScriptsToCloseWindows(bool);
   void SetTimerInfo(const SystemAppBackgroundTaskInfo&);
   void SetDefaultBounds(base::RepeatingCallback<gfx::Rect(Browser*)>);
+  void SetUrlInSystemAppScope(const GURL& url);
 
  private:
   WebApplicationInfoFactory info_factory_;
@@ -152,6 +153,8 @@ class TestSystemWebAppInstallation {
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppWithNewWindowMenuItem();
 
+  static std::unique_ptr<TestSystemWebAppInstallation> SetUpAppWithShortcuts();
+
   // This creates 4 system web app types for testing context menu with
   // different windowing options:
   //
@@ -191,7 +194,7 @@ class TestSystemWebAppInstallation {
   Profile* profile_;
   SystemWebAppManager::UpdatePolicy update_policy_ =
       SystemWebAppManager::UpdatePolicy::kAlwaysUpdate;
-  std::unique_ptr<TestWebAppProviderCreator> test_web_app_provider_creator_;
+  std::unique_ptr<FakeWebAppProviderCreator> fake_web_app_provider_creator_;
   // nullopt if SetUpWithoutApps() was used.
   const absl::optional<SystemAppType> type_;
   std::vector<std::unique_ptr<TestSystemWebAppWebUIControllerFactory>>

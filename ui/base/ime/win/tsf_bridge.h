@@ -10,7 +10,6 @@
 #include <wrl/client.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace ui {
 class TextInputClient;
@@ -28,6 +27,9 @@ class TextInputClient;
 // All methods in this class must be used in UI thread.
 class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFBridge {
  public:
+  TSFBridge(const TSFBridge&) = delete;
+  TSFBridge& operator=(const TSFBridge&) = delete;
+
   virtual ~TSFBridge();
 
   // Returns the thread local TSFBridge instance. Initialize() must be called
@@ -98,9 +100,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFBridge {
  protected:
   // Uses GetInstance() instead.
   TSFBridge();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TSFBridge);
 };
 
 }  // namespace ui

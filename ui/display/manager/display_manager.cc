@@ -1355,6 +1355,13 @@ void DisplayManager::SetMirrorMode(
   if (num_connected_displays() < 2)
     return;
 
+  // If the user turned off mirror mode, disable
+  // `forced_mirror_mode_for_tablet`.
+  if (mode != MirrorMode::kNormal &&
+      layout_store_->forced_mirror_mode_for_tablet()) {
+    layout_store_->set_forced_mirror_mode_for_tablet(false);
+  }
+
   if (mode == MirrorMode::kMixed) {
     // Set mixed mirror mode parameters. This will be used to do two things:
     // 1. Set the specified source and destination displays in mirror mode
@@ -1560,7 +1567,7 @@ void DisplayManager::UpdateZoomFactor(int64_t display_id, float zoom_factor) {
         base::BindOnce(&OnInternalDisplayZoomChanged, zoom_factor));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, on_display_zoom_modify_timeout_.callback(),
-        base::TimeDelta::FromSeconds(kDisplayZoomModifyTimeoutSec));
+        base::Seconds(kDisplayZoomModifyTimeoutSec));
   }
 
   iter->second.set_zoom_factor(zoom_factor);

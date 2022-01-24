@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/image/image_skia.h"
@@ -25,6 +24,11 @@ class TestAppWindowIconObserver
       public aura::WindowObserver {
  public:
   explicit TestAppWindowIconObserver(content::BrowserContext* context);
+
+  TestAppWindowIconObserver(const TestAppWindowIconObserver&) = delete;
+  TestAppWindowIconObserver& operator=(const TestAppWindowIconObserver&) =
+      delete;
+
   ~TestAppWindowIconObserver() override;
 
   // Waits for one icon update.
@@ -57,8 +61,6 @@ class TestAppWindowIconObserver
   gfx::ImageSkia last_app_icon_;
   gfx::ImageSkia expected_image_skia_;
   base::OnceClosure icon_image_updated_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppWindowIconObserver);
 };
 
 #endif  // CHROME_BROWSER_UI_TEST_TEST_APP_WINDOW_ICON_OBSERVER_H_

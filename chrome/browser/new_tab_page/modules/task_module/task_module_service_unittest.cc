@@ -64,16 +64,13 @@ class TaskModuleServiceTest : public testing::Test {
 // Verifies correct parsing of well-formed JSON.
 TEST_F(TaskModuleServiceTest, GoodShoppingResponse) {
   auto fiveMonthsAgoTimestamp =
-      (base::Time::Now() - base::TimeDelta::FromDays(165) -
-       base::Time::UnixEpoch())
+      (base::Time::Now() - base::Days(165) - base::Time::UnixEpoch())
           .InSeconds();
-  auto twoDaysAgoTimestamp = (base::Time::Now() - base::TimeDelta::FromDays(2) -
-                              base::Time::UnixEpoch())
-                                 .InSeconds();
+  auto twoDaysAgoTimestamp =
+      (base::Time::Now() - base::Days(2) - base::Time::UnixEpoch()).InSeconds();
   auto nowTimestamp = (base::Time::Now() - base::Time::UnixEpoch()).InSeconds();
-  auto inTwoDaysTimestamp = (base::Time::Now() + base::TimeDelta::FromDays(2) -
-                             base::Time::UnixEpoch())
-                                .InSeconds();
+  auto inTwoDaysTimestamp =
+      (base::Time::Now() + base::Days(2) - base::Time::UnixEpoch()).InSeconds();
   test_url_loader_factory_.AddResponse(
       "https://www.google.com/async/newtab_shopping_tasks?hl=en-US",
       base::StringPrintf(R"()]}'

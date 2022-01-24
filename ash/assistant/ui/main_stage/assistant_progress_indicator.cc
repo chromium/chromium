@@ -47,6 +47,10 @@ bool AreAnimationsEnabled() {
 class DotBackground : public views::Background {
  public:
   DotBackground() = default;
+
+  DotBackground(const DotBackground&) = delete;
+  DotBackground& operator=(const DotBackground&) = delete;
+
   ~DotBackground() override = default;
 
   void Paint(gfx::Canvas* canvas, views::View* view) const override {
@@ -60,9 +64,6 @@ class DotBackground : public views::Background {
 
     canvas->DrawCircle(center, radius, flags);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DotBackground);
 };
 
 }  // namespace
@@ -145,21 +146,19 @@ void AssistantProgressIndicator::VisibilityChanged(views::View* starting_from,
           start_offset,
           ui::LayerAnimationElement::AnimatableProperty::TRANSFORM);
     }
-    start_offset += base::TimeDelta::FromMilliseconds(216);
+    start_offset += base::Milliseconds(216);
 
     // Schedule transformation animation.
     child->layer()->GetAnimator()->ScheduleAnimation(
         CreateLayerAnimationSequence(
             // Animate scale up.
-            CreateTransformElement(transform,
-                                   base::TimeDelta::FromMilliseconds(266)),
+            CreateTransformElement(transform, base::Milliseconds(266)),
             // Animate scale down.
-            CreateTransformElement(gfx::Transform(),
-                                   base::TimeDelta::FromMilliseconds(450)),
+            CreateTransformElement(gfx::Transform(), base::Milliseconds(450)),
             // Pause before next iteration.
             ui::LayerAnimationElement::CreatePauseElement(
                 ui::LayerAnimationElement::AnimatableProperty::TRANSFORM,
-                base::TimeDelta::FromMilliseconds(500)),
+                base::Milliseconds(500)),
             // Animation parameters.
             {/*is_cyclic=*/true}));
   }

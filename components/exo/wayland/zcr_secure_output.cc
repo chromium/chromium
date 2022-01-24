@@ -31,6 +31,10 @@ class Security : public SurfaceObserver {
     surface_->AddSurfaceObserver(this);
     surface_->SetProperty(kSurfaceHasSecurityKey, true);
   }
+
+  Security(const Security&) = delete;
+  Security& operator=(const Security&) = delete;
+
   ~Security() override {
     if (surface_) {
       surface_->RemoveSurfaceObserver(this);
@@ -52,8 +56,6 @@ class Security : public SurfaceObserver {
 
  private:
   Surface* surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(Security);
 };
 
 void security_destroy(wl_client* client, wl_resource* resource) {

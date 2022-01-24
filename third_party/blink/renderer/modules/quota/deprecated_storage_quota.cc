@@ -32,6 +32,7 @@
 
 #include "base/location.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_error_callback.h"
@@ -56,6 +57,11 @@ using mojom::blink::UsageBreakdownPtr;
 namespace {
 
 StorageType GetStorageType(DeprecatedStorageQuota::Type type) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPersistentQuotaIsTemporaryQuota)) {
+    DCHECK_EQ(type, DeprecatedStorageQuota::kTemporary);
+    return StorageType::kTemporary;
+  }
   switch (type) {
     case DeprecatedStorageQuota::kTemporary:
       return StorageType::kTemporary;

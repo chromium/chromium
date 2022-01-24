@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SetTimeBrowserProxyImpl} from 'chrome://set-time/set_time_browser_proxy.js';
 
-import {TestBrowserProxy} from './test_browser_proxy.m.js';
+import {TestBrowserProxy} from './test_browser_proxy.js';
 
 suite('SetTimeDialog', function() {
   let setTimeElement = null;

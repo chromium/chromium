@@ -15,7 +15,6 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "components/exo/buffer.h"
 #include "components/exo/keyboard_delegate.h"
@@ -497,34 +496,6 @@ TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
   generator.ReleaseKey(ui::VKEY_A, 0);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
-  // Any key event should be sent to a client if the focused window is marked as
-  // ImeBlocking.
-  WMHelper::GetInstance()->SetImeBlocked(surface->window()->GetToplevelWindow(),
-                                         true);
-  {
-    testing::InSequence s;
-    EXPECT_CALL(observer, OnKeyboardKey(testing::_, ui::DomCode::US_B, true));
-    EXPECT_CALL(*delegate_ptr,
-                OnKeyboardKey(testing::_, ui::DomCode::US_B, true));
-  }
-  seat.set_physical_code_for_currently_processing_event_for_testing(
-      ui::DomCode::US_B);
-  generator.PressKey(ui::VKEY_B, 0);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
-
-  {
-    testing::InSequence s;
-    EXPECT_CALL(observer, OnKeyboardKey(testing::_, ui::DomCode::US_B, false));
-    EXPECT_CALL(*delegate_ptr,
-                OnKeyboardKey(testing::_, ui::DomCode::US_B, false));
-  }
-  generator.ReleaseKey(ui::VKEY_B, 0);
-  WMHelper::GetInstance()->SetImeBlocked(surface->window()->GetToplevelWindow(),
-                                         false);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-  testing::Mock::VerifyAndClearExpectations(delegate_ptr);
-
   // Any key event should be sent to a client if a key event skips IME.
   surface->window()->SetProperty(aura::client::kSkipImeProcessing, true);
   {
@@ -791,10 +762,9 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged_AccessibilityKeyboard) {
   testing::Mock::VerifyAndClearExpectations(&configuration_delegate);
 }
 
-constexpr base::TimeDelta kDelta50Ms = base::TimeDelta::FromMilliseconds(50);
-constexpr base::TimeDelta kDelta500Ms = base::TimeDelta::FromMilliseconds(500);
-constexpr base::TimeDelta kDelta1000Ms =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kDelta50Ms = base::Milliseconds(50);
+constexpr base::TimeDelta kDelta500Ms = base::Milliseconds(500);
+constexpr base::TimeDelta kDelta1000Ms = base::Milliseconds(1000);
 
 TEST_F(KeyboardTest, KeyRepeatSettingsLoadDefaults) {
   auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
@@ -1183,8 +1153,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpired) {
   // Wait until |ProcessExpiredPendingKeyAcks| is fired.
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(1000));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
   run_loop.Run();
   base::RunLoop().RunUntilIdle();
 
@@ -1275,8 +1244,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpiredWithMovingFocusAccelerator) {
   // Wait until |ProcessExpiredPendingKeyAcks| is fired.
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(1000));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
   run_loop.Run();
   base::RunLoop().RunUntilIdle();
 

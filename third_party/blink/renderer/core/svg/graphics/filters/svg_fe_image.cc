@@ -63,16 +63,16 @@ void FEImage::Trace(Visitor* visitor) const {
 }
 
 static FloatRect GetLayoutObjectRepaintRect(const LayoutObject& layout_object) {
-  return layout_object.LocalToSVGParentTransform().MapRect(
-      layout_object.VisualRectInLocalSVGCoordinates());
+  return FloatRect(layout_object.LocalToSVGParentTransform().MapRect(
+      layout_object.VisualRectInLocalSVGCoordinates()));
 }
 
 static AffineTransform MakeMapBetweenRects(const FloatRect& source,
                                            const FloatRect& dest) {
   AffineTransform transform;
-  transform.Translate(dest.X() - source.X(), dest.Y() - source.Y());
-  transform.Scale(dest.Width() / source.Width(),
-                  dest.Height() / source.Height());
+  transform.Translate(dest.x() - source.x(), dest.y() - source.y());
+  transform.Scale(dest.width() / source.width(),
+                  dest.height() / source.height());
   return transform;
 }
 
@@ -86,10 +86,10 @@ static absl::optional<AffineTransform> ComputeViewportAdjustmentTransform(
   // TODO(crbug/260709): This fixes relative lengths but breaks non-relative
   // ones.
   SVGLengthContext length_context(element);
-  FloatSize viewport_size;
+  gfx::SizeF viewport_size;
   if (!length_context.DetermineViewport(viewport_size))
     return absl::nullopt;
-  return MakeMapBetweenRects(FloatRect(FloatPoint(), viewport_size),
+  return MakeMapBetweenRects(FloatRect(FloatPoint(), FloatSize(viewport_size)),
                              target_rect);
 }
 
@@ -105,7 +105,7 @@ FloatRect FEImage::MapInputs(const FloatRect&) const {
         src_rect = viewport_transform->MapRect(src_rect);
     } else {
       src_rect = GetFilter()->MapLocalRectToAbsoluteRect(src_rect);
-      src_rect.Move(dest_rect.X(), dest_rect.Y());
+      src_rect.Offset(dest_rect.x(), dest_rect.y());
     }
     dest_rect.Intersect(src_rect);
     return dest_rect;
@@ -131,12 +131,12 @@ WTF::TextStream& FEImage::ExternalRepresentation(WTF::TextStream& ts,
     image_size = image_->Size();
   } else if (const LayoutObject* layout_object = ReferencedLayoutObject()) {
     image_size =
-        EnclosingIntRect(GetLayoutObjectRepaintRect(*layout_object)).Size();
+        EnclosingIntRect(GetLayoutObjectRepaintRect(*layout_object)).size();
   }
   WriteIndent(ts, indent);
   ts << "[feImage";
   FilterEffect::ExternalRepresentation(ts);
-  ts << " image-size=\"" << image_size.Width() << "x" << image_size.Height()
+  ts << " image-size=\"" << image_size.width() << "x" << image_size.height()
      << "\"]\n";
   // FIXME: should this dump also object returned by SVGFEImage::image() ?
   return ts;
@@ -148,7 +148,8 @@ static FloatRect IntersectWithFilterRegion(const Filter* filter,
   // Workaround for crbug.com/512453.
   if (filter_region.IsEmpty())
     return rect;
-  return Intersection(rect, filter->MapLocalRectToAbsoluteRect(filter_region));
+  return IntersectRects(rect,
+                        filter->MapLocalRectToAbsoluteRect(filter_region));
 }
 
 sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
@@ -167,8 +168,8 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
     }
   } else {
     src_rect = GetFilter()->MapLocalRectToAbsoluteRect(src_rect);
-    src_rect.Move(dst_rect.X(), dst_rect.Y());
-    transform.Translate(dst_rect.X(), dst_rect.Y());
+    src_rect.Offset(dst_rect.x(), dst_rect.y());
+    transform.Translate(dst_rect.x(), dst_rect.y());
   }
   // Intersect with the (transformed) source rect to remove "empty" bits of the
   // image.
@@ -181,9 +182,9 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
   cc::PaintCanvas* canvas = paint_recorder.beginRecording(crop_rect);
   canvas->concat(AffineTransformToSkMatrix(transform));
   {
-    PaintRecordBuilder builder;
-    SVGObjectPainter(layout_object).PaintResourceSubtree(builder.Context());
-    builder.EndRecording(*canvas);
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+    SVGObjectPainter(layout_object).PaintResourceSubtree(builder->Context());
+    builder->EndRecording(*canvas);
   }
   return sk_make_sp<RecordPaintFilter>(
       paint_recorder.finishRecordingAsPicture(), crop_rect);

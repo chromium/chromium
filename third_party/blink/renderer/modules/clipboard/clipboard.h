@@ -27,6 +27,9 @@ class Clipboard : public EventTargetWithInlineData,
   static Clipboard* clipboard(Navigator&);
   explicit Clipboard(Navigator&);
 
+  Clipboard(const Clipboard&) = delete;
+  Clipboard& operator=(const Clipboard&) = delete;
+
   ScriptPromise read(ScriptState*);
   ScriptPromise read(ScriptState*, ClipboardItemOptions*);
   ScriptPromise readText(ScriptState*);
@@ -39,9 +42,6 @@ class Clipboard : public EventTargetWithInlineData,
   ExecutionContext* GetExecutionContext() const override;
 
   void Trace(Visitor*) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Clipboard);
 };
 
 }  // namespace blink

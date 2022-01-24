@@ -10,7 +10,6 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "chrome/test/base/testing_profile.h"
@@ -39,6 +38,10 @@ class DownloadManagerServiceTest : public testing::Test {
     coordinator_.SetSimpleDownloadManager(&manager_, false);
     service_->UpdateCoordinator(&coordinator_, profile_.GetProfileKey());
   }
+
+  DownloadManagerServiceTest(const DownloadManagerServiceTest&) = delete;
+  DownloadManagerServiceTest& operator=(const DownloadManagerServiceTest&) =
+      delete;
 
   void OnResumptionDone(bool success) {
     success_ = success;
@@ -83,8 +86,6 @@ class DownloadManagerServiceTest : public testing::Test {
   TestingProfile profile_;
   bool success_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerServiceTest);
 };
 
 // Test that resumption succeeds if the download item is found and can be

@@ -76,6 +76,6 @@ void ReceiverPresentationServiceDelegateImpl::
       receiver_available_callback, web_contents_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ReceiverPresentationServiceDelegateImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ReceiverPresentationServiceDelegateImpl);
 
 }  // namespace media_router

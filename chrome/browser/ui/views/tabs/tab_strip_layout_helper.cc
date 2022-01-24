@@ -269,33 +269,6 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
   return bounds.back().right();
 }
 
-void TabStripLayoutHelper::UpdateIdealBoundsForPinnedTabs() {
-  views::ViewModelT<Tab>* tabs = get_tabs_callback_.Run();
-  const int pinned_tab_count = GetPinnedTabCount();
-
-  first_non_pinned_tab_index_ = pinned_tab_count;
-  first_non_pinned_tab_x_ = 0;
-
-  TabLayoutConstants layout_constants = GetTabLayoutConstants();
-  if (pinned_tab_count > 0) {
-    std::vector<TabWidthConstraints> tab_widths;
-    for (int tab_index = 0; tab_index < pinned_tab_count; tab_index++) {
-      TabAnimationState ideal_animation_state =
-          TabAnimationState::ForIdealTabState(
-              TabOpen::kOpen, TabPinned::kPinned, TabActive::kInactive, 0);
-      TabSizeInfo size_info = tabs->view_at(tab_index)->GetTabSizeInfo();
-      tab_widths.push_back(TabWidthConstraints(ideal_animation_state,
-                                               layout_constants, size_info));
-    }
-
-    const std::vector<gfx::Rect> tab_bounds =
-        CalculatePinnedTabBounds(layout_constants, tab_widths);
-
-    for (int i = 0; i < pinned_tab_count; ++i)
-      tabs->set_ideal_bounds(i, tab_bounds[i]);
-  }
-}
-
 std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
     absl::optional<int> available_width) {
   absl::optional<int> tabstrip_width = tabstrip_width_override_.has_value()

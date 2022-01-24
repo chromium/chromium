@@ -508,7 +508,7 @@ public class TabUiTestHelper {
         }
 
         ChromeTabUtils.waitForTabPageLoaded(
-                rule.getActivity().getActivityTab(), null, null, WAIT_TIMEOUT_SECONDS * 10);
+                rule.getActivity().getActivityTab(), null, null, WAIT_TIMEOUT_SECONDS * 3);
 
         assertEquals(numTabs + previousTabCount,
                 rule.getActivity().getTabModelSelector().getModel(isIncognito).getCount());

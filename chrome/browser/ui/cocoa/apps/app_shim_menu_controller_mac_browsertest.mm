@@ -10,7 +10,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
@@ -41,6 +40,11 @@ class AppShimMenuControllerBrowserTest
         app_2_(nullptr),
         hosted_app_(nullptr),
         initial_menu_item_count_(0) {}
+
+  AppShimMenuControllerBrowserTest(const AppShimMenuControllerBrowserTest&) =
+      delete;
+  AppShimMenuControllerBrowserTest& operator=(
+      const AppShimMenuControllerBrowserTest&) = delete;
 
   // Start testing apps and wait for them to launch. |flags| is a bitmask of
   // AvailableApps.
@@ -126,9 +130,6 @@ class AppShimMenuControllerBrowserTest
   const extensions::Extension* app_2_;
   const extensions::Extension* hosted_app_;
   NSUInteger initial_menu_item_count_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppShimMenuControllerBrowserTest);
 };
 
 // Test that focusing an app window changes the menu bar.

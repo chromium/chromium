@@ -112,7 +112,7 @@ bool DecoderTemplate<Traits>::IsClosed() {
 template <typename Traits>
 HardwarePreference DecoderTemplate<Traits>::GetHardwarePreference(
     const ConfigType&) {
-  return HardwarePreference::kAllow;
+  return HardwarePreference::kNoPreference;
 }
 
 template <typename Traits>
@@ -147,6 +147,8 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
       // Good, lets proceed.
       break;
   }
+
+  MarkCodecActive();
 
   state_ = V8CodecState(V8CodecState::Enum::kConfigured);
   require_key_frame_ = true;
@@ -190,6 +192,8 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
     }
   }
 
+  MarkCodecActive();
+
   requests_.push_back(request);
   ++num_pending_decodes_;
   ProcessRequests();
@@ -203,6 +207,8 @@ ScriptPromise DecoderTemplate<Traits>::flush(ExceptionState& exception_state) {
 
   if (ThrowIfCodecStateUnconfigured(state_, "flush", exception_state))
     return ScriptPromise();
+
+  MarkCodecActive();
 
   require_key_frame_ = true;
 
@@ -222,6 +228,8 @@ void DecoderTemplate<Traits>::reset(ExceptionState& exception_state) {
   DVLOG(3) << __func__;
   if (ThrowIfCodecStateClosed(state_, "reset", exception_state))
     return;
+
+  MarkCodecActive();
 
   ResetAlgorithm();
 }
@@ -415,6 +423,7 @@ bool DecoderTemplate<Traits>::ProcessFlushRequest(Request* request) {
   DCHECK(!IsClosed());
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kFlush);
+  DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
 
   // flush() can only be called when state = "configured", in which case we
   // should always have a decoder.
@@ -481,6 +490,7 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
 
   // Abort all upcoming work.
   ResetAlgorithm();
+  PauseCodecReclamation();
 
   // Store the error callback so that we can use it after clearing state.
   V8WebCodecsErrorCallback* error_cb = error_cb_.Get();
@@ -701,6 +711,8 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
   output_cb_->InvokeAndReportException(nullptr, blink_output);
 
   TRACE_EVENT_END0(kCategory, GetTraceNames()->output.c_str());
+
+  MarkCodecActive();
 }
 
 template <typename Traits>
@@ -727,6 +739,24 @@ void DecoderTemplate<Traits>::Trace(Visitor* visitor) const {
   visitor->Trace(pending_decodes_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
+  ReclaimableCodec::Trace(visitor);
+}
+
+template <typename Traits>
+void DecoderTemplate<Traits>::OnCodecReclaimed(DOMException* exception) {
+  TRACE_EVENT0(kCategory, GetTraceNames()->reclaimed.c_str());
+
+  if (state_.AsEnum() == V8CodecState::Enum::kUnconfigured) {
+    decoder_.reset();
+
+    // This codec isn't holding on to any resources, and doesn't need to be
+    // reclaimed.
+    PauseCodecReclamation();
+    return;
+  }
+
+  DCHECK_EQ(state_.AsEnum(), V8CodecState::Enum::kConfigured);
+  Shutdown(exception);
 }
 
 template <typename Traits>

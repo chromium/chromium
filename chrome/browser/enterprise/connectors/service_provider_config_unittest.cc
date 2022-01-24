@@ -97,8 +97,9 @@ TEST(ServiceProviderConfigTest, CurrentConfig) {
             service_provider->fs_token_endpoint());
   ASSERT_EQ(20u * 1024 * 1024, service_provider->fs_max_direct_size());
   ASSERT_TRUE(service_provider->fs_scopes().empty());
-  ASSERT_EQ(1u, service_provider->fs_disable().size());
+  ASSERT_EQ(2u, service_provider->fs_disable().size());
   ASSERT_EQ("box.com", service_provider->fs_disable()[0]);
+  ASSERT_EQ("boxcloud.com", service_provider->fs_disable()[1]);
 }
 
 }  // namespace enterprise_connectors

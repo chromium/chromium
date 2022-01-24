@@ -462,7 +462,7 @@ class StringResourcesTest(unittest.TestCase):
     mock_input_api.files = [
         MockFile('ui/android/string/chrome_android_string.grd', xmlChanges)
     ]
-    result = checkxmlstyle._CheckStringResourcePunctuations(
+    result = checkxmlstyle._CheckStringResourceQuotesPunctuations(
         mock_input_api, MockOutputApi())
 
     self.assertEqual(1, len(result))
@@ -475,6 +475,33 @@ class StringResourcesTest(unittest.TestCase):
                      result[0].items[2].splitlines()[0])
     self.assertEqual('  ui/android/string/chrome_android_string.grd:14',
                      result[0].items[3].splitlines()[0])
+
+
+  def testInfavoredEllipsis(self):
+    xmlChanges = (u'''<grit><release><messages>
+      <message name="IDS_TEST_0">
+          <ph><ex>Hi</ex></ph>, file is downloading\u002E\u002E\u002E
+      </message>
+      <message name="IDS_TEST_1">
+          <ph><ex>Yes</ex></ph>, file is downloading\u2026
+      </message>
+      <message name="IDS_TEST_2">
+          <ph><ex>Oh</ex></ph>, file is downloaded\u002E
+      </message>
+        <part file="site_settings.grdp" />
+          </messages></release></grit>'''.encode('utf-8')).splitlines()
+
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockFile('ui/android/string/chrome_android_string.grd', xmlChanges)
+    ]
+    result = checkxmlstyle._CheckStringResourceEllipsisPunctuations(
+        mock_input_api, MockOutputApi())
+
+    self.assertEqual(1, len(result))
+    self.assertEqual(1, len(result[0].items))
+    self.assertEqual('  ui/android/string/chrome_android_string.grd:3',
+                     result[0].items[0].splitlines()[0])
 
 
 if __name__ == '__main__':

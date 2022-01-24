@@ -24,8 +24,7 @@ namespace {
 // Default end-to-end latency. Currently adaptive latency control is disabled
 // because of audio playout regressions (b/32876644).
 // TODO(openscreen/44): Re-enable in port to Open Screen.
-constexpr base::TimeDelta kDefaultPlayoutDelay =
-    base::TimeDelta::FromMilliseconds(400);
+constexpr base::TimeDelta kDefaultPlayoutDelay = base::Milliseconds(400);
 
 constexpr int kAudioTimebase = 48000;
 constexpr int kVidoTimebase = 90000;
@@ -65,7 +64,7 @@ base::TimeDelta GetPlayoutDelayImpl() {
 
   VLOG(1) << "Using custom mirroring playout delay value of: " << playout_delay
           << "ms...";
-  return base::TimeDelta::FromMilliseconds(playout_delay);
+  return base::Milliseconds(playout_delay);
 }
 
 base::TimeDelta GetPlayoutDelay() {

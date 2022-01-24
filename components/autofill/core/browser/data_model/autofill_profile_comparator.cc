@@ -17,10 +17,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/address_rewriter.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/state_names.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -194,19 +194,8 @@ int32_t NormalizingIterator::GetNextChar() {
 // |target|.
 void CopyAddressLineInformationFromProfile(const AutofillProfile& source,
                                            Address* target) {
-  ServerFieldTypeSet types_to_copy;
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillAddressEnhancementVotes)) {
-    types_to_copy = {
-        ADDRESS_HOME_STREET_ADDRESS,        ADDRESS_HOME_STREET_NAME,
-        ADDRESS_HOME_DEPENDENT_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER,
-        ADDRESS_HOME_PREMISE_NAME,          ADDRESS_HOME_SUBPREMISE};
-  } else {
-    types_to_copy = {ADDRESS_HOME_STREET_ADDRESS};
-  }
-
-  for (auto type : types_to_copy)
-    target->SetRawInfo(type, source.GetRawInfo(type));
+  target->SetRawInfo(ADDRESS_HOME_STREET_ADDRESS,
+                     source.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
 // Sorts |profiles| by frecency.

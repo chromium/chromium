@@ -22,7 +22,7 @@ class PLATFORM_EXPORT CompositorColorKeyframe : public CompositorKeyframe {
   ~CompositorColorKeyframe() override;
 
   // CompositorKeyframe implementation.
-  double Time() const override;
+  base::TimeDelta Time() const override;
   const gfx::TimingFunction* CcTimingFunction() const override;
 
   SkColor Value() { return color_keyframe_->Value(); }

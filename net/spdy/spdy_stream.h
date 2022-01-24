@@ -71,6 +71,9 @@ class NET_EXPORT_PRIVATE SpdyStream {
    public:
     Delegate() {}
 
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     // Called when the request headers have been sent. Never called
     // for push streams. Must not cause the stream to be closed.
     virtual void OnHeadersSent() = 0;
@@ -121,9 +124,6 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
    protected:
     virtual ~Delegate() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // SpdyStream constructor
@@ -135,6 +135,9 @@ class NET_EXPORT_PRIVATE SpdyStream {
              int32_t max_recv_window_size,
              const NetLogWithSource& net_log,
              const NetworkTrafficAnnotationTag& traffic_annotation);
+
+  SpdyStream(const SpdyStream&) = delete;
+  SpdyStream& operator=(const SpdyStream&) = delete;
 
   ~SpdyStream();
 
@@ -397,9 +400,6 @@ class NET_EXPORT_PRIVATE SpdyStream {
     return response_headers_;
   }
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
   const NetworkTrafficAnnotationTag traffic_annotation() const {
     return traffic_annotation_;
   }
@@ -558,8 +558,6 @@ class NET_EXPORT_PRIVATE SpdyStream {
   const NetworkTrafficAnnotationTag traffic_annotation_;
 
   base::WeakPtrFactory<SpdyStream> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpdyStream);
 };
 
 }  // namespace net

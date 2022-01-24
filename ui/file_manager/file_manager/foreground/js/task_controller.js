@@ -6,12 +6,12 @@ import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/
 import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {str, strf, util} from '../../common/js/util.js';
+import {DialogType} from '../../common/js/dialog_type.js';
+import {strf, util} from '../../common/js/util.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {DialogType} from './dialog_type.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
@@ -123,11 +123,6 @@ export class TaskController {
     this.canExecuteOpenActions_ = false;
 
     /**
-     * @private {boolean}
-     */
-    this.canExecuteMoreActions_ = false;
-
-    /**
      * @private {!Command}
      * @const
      */
@@ -142,23 +137,6 @@ export class TaskController {
      */
     this.openWithCommand_ =
         assertInstanceof(document.querySelector('#open-with'), Command);
-
-    /**
-     * More actions command that uses #open-with as selector due to the
-     * open-with command used previously for the same task.
-     * @private {!Command}
-     * @const
-     */
-    this.moreActionsCommand_ =
-        assertInstanceof(document.querySelector('#more-actions'), Command);
-
-    /**
-     * Show sub menu command that uses #show-submenu as selector.
-     * @private {!Command}
-     * @const
-     */
-    this.showSubMenuCommand_ =
-        assertInstanceof(document.querySelector('#show-submenu'), Command);
 
     /**
      * @private {Promise<!FileTasks>}
@@ -179,10 +157,6 @@ export class TaskController {
 
     ui.taskMenuButton.addEventListener(
         'select', this.onTaskItemClicked_.bind(this));
-    ui.shareMenuButton.menu.addEventListener(
-        'activate', this.onTaskItemClicked_.bind(this));
-    ui.shareSubMenu.addEventListener(
-        'activate', this.onTaskItemClicked_.bind(this));
     this.selectionHandler_.addEventListener(
         FileSelectionHandler.EventType.CHANGE,
         this.onSelectionChanged_.bind(this));
@@ -289,8 +263,7 @@ export class TaskController {
             this.tasks_ = null;
             this.getFileTasks()
                 .then(tasks => {
-                  tasks.display(
-                      this.ui_.taskMenuButton, this.ui_.shareMenuButton);
+                  tasks.display(this.ui_.taskMenuButton);
                 })
                 .catch(error => {
                   if (error) {
@@ -375,11 +348,11 @@ export class TaskController {
       // Compare entries while ignoring changes inside directories.
       if (!util.isSameEntries(this.lastSelectedEntries_, selection.entries)) {
         // Update the context menu if selection changed.
-        this.updateContextMenuTaskItems_([], []);
+        this.updateContextMenuTaskItems_([]);
       }
     } else {
       // Update context menu.
-      this.updateContextMenuTaskItems_([], []);
+      this.updateContextMenuTaskItems_([]);
     }
     this.lastSelectedEntries_ = selection.entries;
   }
@@ -394,9 +367,8 @@ export class TaskController {
         (selection.directoryCount > 0 || selection.fileCount > 0)) {
       this.getFileTasks()
           .then(tasks => {
-            tasks.display(this.ui_.taskMenuButton, this.ui_.shareMenuButton);
-            this.updateContextMenuTaskItems_(
-                tasks.getOpenTaskItems(), tasks.getNonOpenTaskItems());
+            tasks.display(this.ui_.taskMenuButton);
+            this.updateContextMenuTaskItems_(tasks.getOpenTaskItems());
           })
           .catch(error => {
             if (error) {
@@ -405,7 +377,6 @@ export class TaskController {
           });
     } else {
       this.ui_.taskMenuButton.hidden = true;
-      this.ui_.shareMenuButton.hidden = true;
     }
   }
 
@@ -463,32 +434,13 @@ export class TaskController {
   }
 
   /**
-   * Returns whether open with command can be executed or not.
-   * @return {boolean} True if open with command is executable.
-   */
-  canExecuteMoreActions() {
-    return this.canExecuteMoreActions_;
-  }
-
-  /**
-   * Returns whether show sub-menu command can be executed or not.
-   * @return {boolean} True if show-submenu command is executable.
-   */
-  canExecuteShowOverflow() {
-    // TODO (adanilo@) extend this for general sub-menu case
-    return this.ui_.shareMenuButton.overflow.firstChild !== null;
-  }
-
-  /**
    * Updates tasks menu item to match passed task items.
    *
    * @param {!Array<!chrome.fileManagerPrivate.FileTask>} openTasks List of OPEN
    *     tasks.
-   * @param {!Array<!chrome.fileManagerPrivate.FileTask>} nonOpenTasks List of
-   *     non-OPEN tasks.
    * @private
    */
-  updateContextMenuTaskItems_(openTasks, nonOpenTasks) {
+  updateContextMenuTaskItems_(openTasks) {
     const defaultTask = FileTasks.getDefaultTask(openTasks, this.taskHistory_);
     if (defaultTask) {
       this.ui_.defaultTaskMenuItem.removeAttribute('file-type-icon');
@@ -506,15 +458,8 @@ export class TaskController {
         this.ui_.defaultTaskMenuItem.style.marginInlineEnd = '';
       }
 
-      if (util.descriptorEqual(
-              defaultTask.descriptor,
-              FileTasks.ZIP_ARCHIVER_UNZIP_TASK_DESCRIPTOR)) {
-        this.ui_.defaultTaskMenuItem.label = str('TASK_OPEN');
-      } else {
-        this.ui_.defaultTaskMenuItem.label =
-            defaultTask.label || defaultTask.title;
-      }
-
+      this.ui_.defaultTaskMenuItem.label =
+          defaultTask.label || defaultTask.title;
       this.ui_.defaultTaskMenuItem.disabled = !!defaultTask.disabled;
       this.ui_.defaultTaskMenuItem.descriptor = defaultTask.descriptor;
     }
@@ -525,11 +470,7 @@ export class TaskController {
     this.canExecuteOpenActions_ = openTasks.length > 1;
     this.openWithCommand_.canExecuteChange(this.ui_.listContainer.element);
 
-    this.canExecuteMoreActions_ = nonOpenTasks.length >= 1;
-    this.moreActionsCommand_.canExecuteChange(this.ui_.listContainer.element);
-
-    this.ui_.tasksSeparator.hidden =
-        openTasks.length === 0 && nonOpenTasks.length == 0;
+    this.ui_.tasksSeparator.hidden = openTasks.length === 0;
   }
 
   /**

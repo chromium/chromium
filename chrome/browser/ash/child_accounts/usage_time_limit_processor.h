@@ -13,9 +13,8 @@
 #include <set>
 #include <unordered_map>
 
-#include "base/macros.h"
+#include "ash/components/settings/timezone_settings.h"
 #include "base/time/time.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -68,6 +67,10 @@ struct TimeWindowLimitEntry {
 class TimeWindowLimit {
  public:
   explicit TimeWindowLimit(const base::Value& window_limit_dict);
+
+  TimeWindowLimit(const TimeWindowLimit&) = delete;
+  TimeWindowLimit& operator=(const TimeWindowLimit&) = delete;
+
   ~TimeWindowLimit();
   TimeWindowLimit(TimeWindowLimit&&);
   TimeWindowLimit& operator=(TimeWindowLimit&&);
@@ -75,9 +78,6 @@ class TimeWindowLimit {
   bool operator!=(const TimeWindowLimit& rhs) const { return !(*this == rhs); }
 
   std::unordered_map<Weekday, absl::optional<TimeWindowLimitEntry>> entries;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TimeWindowLimit);
 };
 
 struct TimeUsageLimitEntry {
@@ -94,6 +94,10 @@ struct TimeUsageLimitEntry {
 class TimeUsageLimit {
  public:
   explicit TimeUsageLimit(const base::Value& usage_limit_dict);
+
+  TimeUsageLimit(const TimeUsageLimit&) = delete;
+  TimeUsageLimit& operator=(const TimeUsageLimit&) = delete;
+
   ~TimeUsageLimit();
   TimeUsageLimit(TimeUsageLimit&&);
   TimeUsageLimit& operator=(TimeUsageLimit&&);
@@ -102,9 +106,6 @@ class TimeUsageLimit {
 
   std::unordered_map<Weekday, absl::optional<TimeUsageLimitEntry>> entries;
   base::TimeDelta resets_at;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TimeUsageLimit);
 };
 }  // namespace internal
 

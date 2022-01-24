@@ -52,17 +52,21 @@ class AbortTask : public Task {
   explicit AbortTask(TaskParent *parent) : Task(parent) {
   }
 
+  AbortTask(const AbortTask&) = delete;
+  AbortTask& operator=(const AbortTask&) = delete;
+
   virtual int ProcessStart() {
     Abort();
     return STATE_NEXT;
   }
- private:
-  DISALLOW_COPY_AND_ASSIGN(AbortTask);
 };
 
 class TaskAbortTest : public sigslot::has_slots<> {
  public:
   TaskAbortTest() {}
+
+  TaskAbortTest(const TaskAbortTest&) = delete;
+  TaskAbortTest& operator=(const TaskAbortTest&) = delete;
 
   // no need to delete any tasks; the task runner owns them
   ~TaskAbortTest() {}
@@ -81,7 +85,6 @@ class TaskAbortTest : public sigslot::has_slots<> {
   }
 
   MyTaskRunner task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(TaskAbortTest);
 };
 
 TEST(start_task_test, Abort) {
@@ -101,6 +104,9 @@ class SetBoolOnDeleteTask : public Task {
     EXPECT_FALSE(*set_when_deleted);
   }
 
+  SetBoolOnDeleteTask(const SetBoolOnDeleteTask&) = delete;
+  SetBoolOnDeleteTask& operator=(const SetBoolOnDeleteTask&) = delete;
+
   virtual ~SetBoolOnDeleteTask() {
     *set_when_deleted_ = true;
   }
@@ -111,12 +117,14 @@ class SetBoolOnDeleteTask : public Task {
 
  private:
   bool* set_when_deleted_;
-  DISALLOW_COPY_AND_ASSIGN(SetBoolOnDeleteTask);
 };
 
 class AbortShouldWakeTest : public sigslot::has_slots<> {
  public:
   AbortShouldWakeTest() {}
+
+  AbortShouldWakeTest(const AbortShouldWakeTest&) = delete;
+  AbortShouldWakeTest& operator=(const AbortShouldWakeTest&) = delete;
 
   // no need to delete any tasks; the task runner owns them
   ~AbortShouldWakeTest() {}
@@ -144,7 +152,6 @@ class AbortShouldWakeTest : public sigslot::has_slots<> {
   }
 
   MyTaskRunner task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(AbortShouldWakeTest);
 };
 
 TEST(start_task_test, AbortShouldWake) {
@@ -156,9 +163,11 @@ class DeleteTestTaskRunner : public TaskRunner {
  public:
   DeleteTestTaskRunner() {
   }
+
+  DeleteTestTaskRunner(const DeleteTestTaskRunner&) = delete;
+  DeleteTestTaskRunner& operator=(const DeleteTestTaskRunner&) = delete;
+
   virtual void WakeTasks() { }
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeleteTestTaskRunner);
 };
 
 TEST(unstarted_task_test, DeleteTask) {

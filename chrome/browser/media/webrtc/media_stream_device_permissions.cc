@@ -29,7 +29,7 @@ MediaStreamDevicePolicy GetDevicePolicy(const Profile* profile,
 
   const base::ListValue* list = prefs->GetList(allowed_urls_pref_name);
   std::string value;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     if (list->GetString(i, &value)) {
       ContentSettingsPattern pattern =
           ContentSettingsPattern::FromString(value);

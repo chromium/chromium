@@ -1,0 +1,21 @@
+Verifies that CSP issue is created from a page with eval() usage.
+
+Inspector issue: {
+    issue : {
+        code : ContentSecurityPolicyIssue
+        details : {
+            contentSecurityPolicyIssueDetails : {
+                contentSecurityPolicyViolationType : kWasmEvalViolation
+                isReportOnly : false
+                sourceCodeLocation : {
+                    columnNumber : 19
+                    lineNumber : 7
+                    scriptId : <string>
+                    url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-wasm-eval.php
+                }
+                violatedDirective : script-src
+            }
+        }
+    }
+}
+

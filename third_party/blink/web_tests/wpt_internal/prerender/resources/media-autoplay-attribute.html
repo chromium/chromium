@@ -17,8 +17,7 @@ if (!isPrerendering) {
 } else {
   const mediaType = params.get('type');
   const media = document.getElementById(mediaType);
-  media.src =
-      mediaType === 'audio' ? "./bear-av1-opus.mp4" : "/media/movie_5.mp4";
+  media.src = "./bear-av1-opus.mp4";
 
   const prerenderEventCollector = new PrerenderEventCollector();
   const promise = new Promise((resolve, reject) => {

@@ -128,8 +128,12 @@ void GpuClient::OnEstablishGpuChannel(
   }
 }
 
-void GpuClient::OnCreateGpuMemoryBuffer(CreateGpuMemoryBufferCallback callback,
+void GpuClient::OnCreateGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                                         gfx::GpuMemoryBufferHandle handle) {
+  auto it = pending_create_callbacks_.find(id);
+  DCHECK(it != pending_create_callbacks_.end());
+  CreateGpuMemoryBufferCallback callback = std::move(it->second);
+  pending_create_callbacks_.erase(it);
   std::move(callback).Run(std::move(handle));
 }
 
@@ -207,15 +211,27 @@ void GpuClient::CreateGpuMemoryBuffer(
     mojom::GpuMemoryBufferFactory::CreateGpuMemoryBufferCallback callback) {
   auto* gpu_memory_buffer_manager = delegate_->GetGpuMemoryBufferManager();
 
-  if (!gpu_memory_buffer_manager || !IsSizeValid(size)) {
-    OnCreateGpuMemoryBuffer(std::move(callback), gfx::GpuMemoryBufferHandle());
+  if (pending_create_callbacks_.find(id) != pending_create_callbacks_.end()) {
+    gpu_memory_buffer_factory_receivers_.ReportBadMessage(
+        "GpuMemoryBufferId already in use");
     return;
   }
 
+  if (!IsSizeValid(size)) {
+    gpu_memory_buffer_factory_receivers_.ReportBadMessage("Invalid GMB size");
+    return;
+  }
+
+  if (!gpu_memory_buffer_manager) {
+    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
+    return;
+  }
+
+  pending_create_callbacks_[id] = std::move(callback);
   gpu_memory_buffer_manager->AllocateGpuMemoryBuffer(
       id, client_id_, size, format, usage, gpu::kNullSurfaceHandle,
       base::BindOnce(&GpuClient::OnCreateGpuMemoryBuffer,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), id));
 }
 
 void GpuClient::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,

@@ -22,10 +22,10 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lens.LensController;
-import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.SaveOfflineButtonState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
@@ -134,6 +134,9 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param exploreIconProvider The provider to get explore sites icon.
      * @param userEducationHelper Helper to show in product help UI. Can be null if an in product
      *         help shouldn't be shown, such as when called from a search activity.
+     * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
+     *         MerchantTrustSignalsCoordinator}. Can be null if a store icon shouldn't be shown,
+     *         such as when called from a search activity.
      */
     public LocationBarCoordinator(View locationBarLayout, View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
@@ -154,7 +157,9 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             @NonNull BookmarkState bookmarkState,
             @NonNull BooleanSupplier isToolbarMicEnabledSupplier, JankTracker jankTracker,
             @NonNull ExploreIconProvider exploreIconProvider,
-            @Nullable UserEducationHelper userEducationHelper) {
+            @Nullable UserEducationHelper userEducationHelper,
+            @Nullable Supplier<MerchantTrustSignalsCoordinator>
+                    merchantTrustSignalsCoordinatorSupplier) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -172,10 +177,12 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 isTablet() && isTabletLayout(), searchEngineLogoUtils, LensController.getInstance(),
                 launchAssistanceSettingsAction, saveOfflineButtonState, omniboxUma,
                 isToolbarMicEnabledSupplier);
+        final boolean isIncognito =
+                incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
-                        mLocationBarMediator, windowAndroid.getKeyboardDelegate());
+                        mLocationBarMediator, windowAndroid.getKeyboardDelegate(), isIncognito);
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(mLocationBarLayout, this, this, mUrlCoordinator,
                         modalDialogManagerSupplier, activityTabSupplier, shareDelegateSupplier,
@@ -185,7 +192,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider,
                 mTemplateUrlServiceSupplier, searchEngineLogoUtils, profileObservableSupplier,
-                windowAndroid, pageInfoAction, userEducationHelper);
+                windowAndroid, pageInfoAction, userEducationHelper,
+                merchantTrustSignalsCoordinatorSupplier);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
 
@@ -198,9 +206,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mMicButton = mLocationBarLayout.findViewById(R.id.mic_button);
         mMicButton.setOnClickListener(mLocationBarMediator::micButtonClicked);
 
-        mLensButton = LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH.getValue()
-                ? mLocationBarLayout.findViewById(R.id.lens_camera_button_start)
-                : mLocationBarLayout.findViewById(R.id.lens_camera_button_end);
+        mLensButton = mLocationBarLayout.findViewById(R.id.lens_camera_button);
         mLensButton.setOnClickListener(mLocationBarMediator::lensButtonClicked);
 
         mUrlBar.setOnKeyListener(mLocationBarMediator);

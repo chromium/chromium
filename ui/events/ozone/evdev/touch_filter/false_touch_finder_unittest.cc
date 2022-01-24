@@ -35,6 +35,10 @@ class FalseTouchFinderTest : public testing::Test {
   static constexpr gfx::Size kTouchscreenSize = gfx::Size(4000, 4000);
 
   FalseTouchFinderTest() {}
+
+  FalseTouchFinderTest(const FalseTouchFinderTest&) = delete;
+  FalseTouchFinderTest& operator=(const FalseTouchFinderTest&) = delete;
+
   ~FalseTouchFinderTest() override {}
 
   bool FilterAndCheck(const TouchEntry entries[], size_t count) {
@@ -55,8 +59,8 @@ class FalseTouchFinderTest : public testing::Test {
       touches.push_back(touch);
 
       if (i == count - 1 || entry.time_ms != entries[i + 1].time_ms) {
-        false_touch_finder_->HandleTouches(touches, base::TimeTicks() +
-            base::TimeDelta::FromMilliseconds(entry.time_ms));
+        false_touch_finder_->HandleTouches(
+            touches, base::TimeTicks() + base::Milliseconds(entry.time_ms));
 
         for (size_t j = 0; j < touches.size(); ++j) {
           bool expect_delay = entries[j + start_index].expect_delay;
@@ -88,8 +92,6 @@ class FalseTouchFinderTest : public testing::Test {
   }
 
   std::unique_ptr<FalseTouchFinder> false_touch_finder_;
-
-  DISALLOW_COPY_AND_ASSIGN(FalseTouchFinderTest);
 };
 
 constexpr gfx::Size FalseTouchFinderTest::kTouchscreenSize;

@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/partition_impl.h"
@@ -21,6 +20,12 @@ namespace storage {
 class StorageServicePartitionImplTest : public testing::Test {
  public:
   StorageServicePartitionImplTest() = default;
+
+  StorageServicePartitionImplTest(const StorageServicePartitionImplTest&) =
+      delete;
+  StorageServicePartitionImplTest& operator=(
+      const StorageServicePartitionImplTest&) = delete;
+
   ~StorageServicePartitionImplTest() override = default;
 
   void SetUp() override {
@@ -45,8 +50,6 @@ class StorageServicePartitionImplTest : public testing::Test {
                               /*io_task_runner=*/nullptr};
   mojo::Remote<mojom::Partition> remote_test_partition_;
   PartitionImpl* test_partition_impl_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageServicePartitionImplTest);
 };
 
 TEST_F(StorageServicePartitionImplTest, IndependentOriginContexts) {

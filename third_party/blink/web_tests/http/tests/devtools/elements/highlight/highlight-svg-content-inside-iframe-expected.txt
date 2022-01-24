@@ -33,7 +33,7 @@ svg-rect{
     "nodeHeight": "80",
     "isKeyboardFocusable": false,
     "accessibleName": "",
-    "accessibleRole": "generic",
+    "accessibleRole": "graphics-symbol",
     "layoutObjectName": "LayoutSVGRect",
     "showAccessibilityInfo": true
   }

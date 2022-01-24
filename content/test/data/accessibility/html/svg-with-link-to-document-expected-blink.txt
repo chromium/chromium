@@ -1,0 +1,5 @@
+rootWebArea htmlTag='#document'
+++genericContainer ignored htmlTag='html'
+++++genericContainer htmlTag='body'
+++++++svgRoot htmlTag='svg' name='svg'
+++++++++link htmlTag='a'

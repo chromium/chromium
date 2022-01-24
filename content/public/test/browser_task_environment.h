@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 
@@ -169,6 +168,9 @@ class BrowserTaskEnvironment : public base::test::TaskEnvironment {
   // RunLoop+QuitClosure() to await an async condition.
   void RunIOThreadUntilIdle();
 
+  BrowserTaskEnvironment(const BrowserTaskEnvironment&) = delete;
+  BrowserTaskEnvironment& operator=(const BrowserTaskEnvironment&) = delete;
+
   ~BrowserTaskEnvironment() override;
 
  private:
@@ -196,8 +198,6 @@ class BrowserTaskEnvironment : public base::test::TaskEnvironment {
 #if defined(OS_WIN)
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserTaskEnvironment);
 };
 
 }  // namespace content

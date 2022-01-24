@@ -36,7 +36,6 @@ VP9VaapiVideoDecoderDelegate::~VP9VaapiVideoDecoderDelegate() {
   DCHECK(!picture_params_);
   DCHECK(!slice_params_);
   DCHECK(!crypto_params_);
-  DCHECK(!proc_params_);
   DCHECK(!protected_params_);
 }
 
@@ -46,15 +45,7 @@ scoped_refptr<VP9Picture> VP9VaapiVideoDecoderDelegate::CreateVP9Picture() {
   if (!va_surface)
     return nullptr;
 
-  scoped_refptr<VP9Picture> pic = new VaapiVP9Picture(std::move(va_surface));
-  if (!vaapi_dec_->IsScalingDecode())
-    return pic;
-
-  // Setup the scaling buffer.
-  scoped_refptr<VASurface> scaled_surface = vaapi_dec_->CreateDecodeSurface();
-  CHECK(scaled_surface);
-  pic->AsVaapiVP9Picture()->SetDecodeSurface(std::move(scaled_surface));
-  return pic;
+  return new VaapiVP9Picture(std::move(va_surface));
 }
 
 DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
@@ -127,7 +118,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     auto ref_pic = ref_frames.GetFrame(i);
     if (ref_pic) {
       pic_param.reference_frames[i] =
-          ref_pic->AsVaapiVP9Picture()->GetVADecodeSurfaceID();
+          ref_pic->AsVaapiVP9Picture()->GetVASurfaceID();
     } else {
       pic_param.reference_frames[i] = VA_INVALID_SURFACE;
     }
@@ -218,6 +209,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
         {slice_params_->type(), slice_params_->size(), &slice_param}}};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<uint8_t[]> protected_vp9_data;
+  std::string amd_decrypt_params;
   if (IsTranscrypted()) {
     CHECK(decrypt_config);
     CHECK_EQ(decrypt_config->subsamples().size(), 1u);
@@ -228,35 +220,29 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
         return DecodeStatus::kFail;
     }
     DCHECK_EQ(decrypt_config->key_id().length(), protected_params_->size());
+    // For VP9 superframes, the IV may have been incremented, so copy that
+    // back into the decryption parameters. The decryption parameters struct has
+    // a uint32_t for the first parameter, and the second is the 128-bit IV and
+    // then various other fields. Total max structure size is 128 bytes. The
+    // structure definition is in ChromeOS internal code so we do not reference
+    // it directly here.
+    constexpr uint32_t dp_iv_offset = sizeof(uint32_t);
+    amd_decrypt_params = decrypt_config->key_id();
+    memcpy(&amd_decrypt_params[dp_iv_offset], decrypt_config->iv().data(),
+           DecryptConfig::kDecryptionKeySize);
     buffers.push_back({protected_params_->id(),
                        {protected_params_->type(), protected_params_->size(),
-                        decrypt_config->key_id().data()}});
-
-    // For transcrypted VP9 on AMD we need to send the UCH + cypher_bytes from
-    // the buffer as the slice data per AMD's instructions.
-    base::CheckedNumeric<size_t> protected_data_size =
-        decrypt_config->subsamples()[0].cypher_bytes;
-    protected_data_size += frame_hdr->uncompressed_header_size;
-    if (!protected_data_size.IsValid()) {
-      DVLOG(1) << "Invalid protected_data_size";
-      return DecodeStatus::kFail;
-    }
+                        amd_decrypt_params.data()}});
     encoded_data = vaapi_wrapper_->CreateVABuffer(
-        VASliceDataBufferType, protected_data_size.ValueOrDie());
+        VASliceDataBufferType,
+        base::strict_cast<size_t>(
+            decrypt_config->subsamples()[0].cypher_bytes));
     if (!encoded_data)
       return DecodeStatus::kFail;
-    protected_vp9_data =
-        std::make_unique<uint8_t[]>(protected_data_size.ValueOrDie());
-    // Copy the UCH.
-    memcpy(protected_vp9_data.get(), frame_hdr->data,
-           frame_hdr->uncompressed_header_size);
-    // Copy the transcrypted data.
-    memcpy(protected_vp9_data.get() + frame_hdr->uncompressed_header_size,
-           frame_hdr->data + decrypt_config->subsamples()[0].clear_bytes,
-           decrypt_config->subsamples()[0].cypher_bytes);
-    buffers.push_back({encoded_data->id(),
-                       {encoded_data->type(), encoded_data->size(),
-                        protected_vp9_data.get()}});
+    buffers.push_back(
+        {encoded_data->id(),
+         {encoded_data->type(), encoded_data->size(),
+          frame_hdr->data + decrypt_config->subsamples()[0].clear_bytes}});
   } else {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     encoded_data = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
@@ -276,25 +262,11 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const VaapiVP9Picture* vaapi_pic = pic->AsVaapiVP9Picture();
-  VAProcPipelineParameterBuffer proc_buffer;
-  if (vaapi_dec_->IsScalingDecode()) {
-    if (!proc_params_) {
-      proc_params_ = vaapi_wrapper_->CreateVABuffer(
-          VAProcPipelineParameterBufferType, sizeof(proc_buffer));
-      if (!proc_params_)
-        return DecodeStatus::kFail;
-    }
-    CHECK(gfx::Rect(vaapi_pic->GetDecodeSize()).Contains(pic->visible_rect()));
-    CHECK(FillDecodeScalingIfNeeded(
-        pic->visible_rect(), vaapi_pic->GetVADecodeSurfaceID(),
-        pic->AsVaapiVP9Picture()->va_surface(), &proc_buffer));
-    buffers.push_back(
-        {proc_params_->id(),
-         {proc_params_->type(), proc_params_->size(), &proc_buffer}});
-  }
+  CHECK(
+      gfx::Rect(vaapi_pic->va_surface()->size()).Contains(pic->visible_rect()));
 
   bool success = vaapi_wrapper_->MapAndCopyAndExecute(
-      vaapi_pic->GetVADecodeSurfaceID(), buffers);
+      vaapi_pic->GetVASurfaceID(), buffers);
   if (!success && NeedsProtectedSessionRecovery())
     return DecodeStatus::kTryAgain;
 
@@ -309,11 +281,9 @@ bool VP9VaapiVideoDecoderDelegate::OutputPicture(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const VaapiVP9Picture* vaapi_pic = pic->AsVaapiVP9Picture();
-  vaapi_dec_->SurfaceReady(
-      vaapi_pic->va_surface(), vaapi_pic->bitstream_id(),
-      vaapi_dec_->GetOutputVisibleRect(vaapi_pic->visible_rect(),
-                                       vaapi_pic->va_surface()->size()),
-      vaapi_pic->get_colorspace());
+  vaapi_dec_->SurfaceReady(vaapi_pic->va_surface(), vaapi_pic->bitstream_id(),
+                           vaapi_pic->visible_rect(),
+                           vaapi_pic->get_colorspace());
   return true;
 }
 
@@ -335,7 +305,6 @@ void VP9VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
   picture_params_.reset();
   slice_params_.reset();
   crypto_params_.reset();
-  proc_params_.reset();
   protected_params_.reset();
 }
 

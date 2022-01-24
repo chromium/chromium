@@ -30,8 +30,8 @@ void SuggestedContentInfoView::CloseButtonPressed() {
 void SuggestedContentInfoView::LinkClicked() {
   view_delegate_->MarkSuggestedContentInfoDismissed();
   constexpr char url[] = "chrome://os-settings/osPrivacy";
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      GURL(url), /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(GURL(url),
+                                            /*from_user_interaction=*/true);
 }
 
 }  // namespace ash

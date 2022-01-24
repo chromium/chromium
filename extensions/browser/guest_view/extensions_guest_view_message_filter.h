@@ -20,10 +20,6 @@ namespace content {
 class BrowserContext;
 }
 
-namespace gfx {
-class Size;
-}
-
 namespace guest_view {
 class GuestViewManager;
 }
@@ -50,21 +46,15 @@ class ExtensionsGuestViewMessageFilter
   ~ExtensionsGuestViewMessageFilter() override = default;
 
   // GuestViewMessageFilter implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
   guest_view::GuestViewManager* GetOrCreateGuestViewManager() override;
-
-  // Message handlers on the UI thread.
-  void OnCanExecuteContentScript(int render_view_id,
-                                 const std::string& script_id,
-                                 bool* allowed);
-  void OnCreateMimeHandlerViewGuest(int render_frame_id,
-                                    const std::string& view_id,
-                                    int element_instance_id,
-                                    const gfx::Size& element_size);
 
   // mojom::GuestView implementation.
   void ReadyToCreateMimeHandlerView(int32_t render_frame_id,
                                     bool success) override;
+  void CanExecuteContentScript(
+      int routing_id,
+      const std::string& script_id,
+      CanExecuteContentScriptCallback callback) override;
 
   static const uint32_t kFilteredMessageClasses[];
 };

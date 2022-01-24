@@ -24,7 +24,6 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -36,7 +35,7 @@ import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.sync.StopSource;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.ui.widget.Toast;
 
@@ -222,7 +221,7 @@ public class SyncSettingsUtils {
     public static String getSyncStatusSummary(Context context) {
         if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount()) {
+                        .hasPrimaryAccount(ConsentLevel.SYNC)) {
             // There is no account with sync consent available.
             return context.getString(R.string.sync_off);
         }
@@ -315,7 +314,7 @@ public class SyncSettingsUtils {
     public static @Nullable Drawable getSyncStatusIcon(Context context) {
         if (!IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount()) {
+                        .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
         }
 
@@ -332,24 +331,6 @@ public class SyncSettingsUtils {
         }
 
         return AppCompatResources.getDrawable(context, R.drawable.ic_sync_on_48dp);
-    }
-
-    /**
-     * Enables or disables {@link SyncService} and optionally records metrics that the sync
-     * was disabled from settings. Requires that {@link SyncService#get()} returns non-null
-     * reference.
-     */
-    public static void enableSync(boolean enable) {
-        SyncService syncService = SyncService.get();
-        if (enable == syncService.isSyncRequested()) return;
-
-        if (enable) {
-            syncService.setSyncRequested(true);
-        } else {
-            RecordHistogram.recordEnumeratedHistogram("Sync.StopSource",
-                    StopSource.CHROME_SYNC_SETTINGS, StopSource.STOP_SOURCE_LIMIT);
-            syncService.setSyncRequested(false);
-        }
     }
 
     /**
@@ -408,7 +389,7 @@ public class SyncSettingsUtils {
     public static void openGoogleMyAccount(Activity activity) {
         assert IdentityServicesProvider.get()
                 .getIdentityManager(Profile.getLastUsedRegularProfile())
-                .hasPrimaryAccount();
+                .hasPrimaryAccount(ConsentLevel.SYNC);
         RecordUserAction.record("SyncPreferences_ManageGoogleAccountClicked");
         openCustomTabWithURL(activity, MY_ACCOUNT_URL);
     }

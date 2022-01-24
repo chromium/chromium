@@ -121,9 +121,6 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
   // P2PSocketClientDelegate implementation.
   void OnOpen(const net::IPEndPoint& local_address,
               const net::IPEndPoint& remote_address) override;
-  void OnIncomingTcpConnection(
-      const net::IPEndPoint& address,
-      std::unique_ptr<blink::P2PSocketClient> client) override;
   void OnSendComplete(
       const network::P2PSendPacketMetrics& send_metrics) override;
   void OnError() override;
@@ -133,11 +130,11 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
 
  private:
   enum InternalState {
-    IS_UNINITIALIZED,
-    IS_OPENING,
-    IS_OPEN,
-    IS_CLOSED,
-    IS_ERROR,
+    kIsUninitialized,
+    kIsOpening,
+    kIsOpen,
+    kIsClosed,
+    kIsError,
   };
 
   // Increment the counter for consecutive bytes discarded as socket is running
@@ -201,8 +198,8 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
   size_t current_discard_bytes_sequence_;
 
   // Track the total number of packets and the number of packets discarded.
-  size_t packets_discarded_;
-  size_t total_packets_;
+  int packets_discarded_;
+  int total_packets_;
 };
 
 // Simple wrapper around P2PAsyncAddressResolver. The main purpose of this
@@ -234,7 +231,7 @@ class AsyncAddressResolverImpl : public rtc::AsyncResolverInterface {
 
 IpcPacketSocket::IpcPacketSocket()
     : type_(network::P2P_SOCKET_UDP),
-      state_(IS_UNINITIALIZED),
+      state_(kIsUninitialized),
       send_bytes_available_(kMaximumInFlightBytes),
       writable_signal_expected_(false),
       error_(0),
@@ -248,7 +245,7 @@ IpcPacketSocket::IpcPacketSocket()
 }
 
 IpcPacketSocket::~IpcPacketSocket() {
-  if (state_ == IS_OPENING || state_ == IS_OPEN || state_ == IS_ERROR) {
+  if (state_ == kIsOpening || state_ == kIsOpen || state_ == kIsError) {
     Close();
   }
 
@@ -281,14 +278,14 @@ bool IpcPacketSocket::Init(network::P2PSocketType type,
                            uint16_t max_port,
                            const rtc::SocketAddress& remote_address) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(state_, IS_UNINITIALIZED);
+  DCHECK_EQ(state_, kIsUninitialized);
 
   type_ = type;
   auto* client_ptr = client.get();
   client_ = std::move(client);
   local_address_ = local_address;
   remote_address_ = remote_address;
-  state_ = IS_OPENING;
+  state_ = kIsOpening;
 
   net::IPEndPoint local_endpoint;
   if (!jingle_glue::SocketAddressToIPEndPoint(local_address, &local_endpoint)) {
@@ -326,12 +323,12 @@ void IpcPacketSocket::InitAcceptedTcp(
     const rtc::SocketAddress& local_address,
     const rtc::SocketAddress& remote_address) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(state_, IS_UNINITIALIZED);
+  DCHECK_EQ(state_, kIsUninitialized);
 
   client_ = std::move(client);
   local_address_ = local_address;
   remote_address_ = remote_address;
-  state_ = IS_OPEN;
+  state_ = kIsOpen;
   TraceSendThrottlingState();
   client_->SetDelegate(this);
 }
@@ -361,19 +358,19 @@ int IpcPacketSocket::SendTo(const void* data,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   switch (state_) {
-    case IS_UNINITIALIZED:
+    case kIsUninitialized:
       NOTREACHED();
       error_ = EWOULDBLOCK;
       return -1;
-    case IS_OPENING:
+    case kIsOpening:
       error_ = EWOULDBLOCK;
       return -1;
-    case IS_CLOSED:
+    case kIsClosed:
       error_ = ENOTCONN;
       return -1;
-    case IS_ERROR:
+    case kIsError:
       return -1;
-    case IS_OPEN:
+    case kIsOpen:
       // Continue sending the packet.
       break;
   }
@@ -422,7 +419,8 @@ int IpcPacketSocket::SendTo(const void* data,
   send_bytes_available_ -= data_size;
 
   Vector<int8_t> data_vector;
-  data_vector.Append(reinterpret_cast<const int8_t*>(data), data_size);
+  data_vector.Append(reinterpret_cast<const int8_t*>(data),
+                     base::checked_cast<wtf_size_t>(data_size));
   uint64_t packet_id = client_->Send(address_chrome, data_vector, options);
 
   // Ensure packet_id is not 0. It can't be the case according to
@@ -434,14 +432,14 @@ int IpcPacketSocket::SendTo(const void* data,
   TraceSendThrottlingState();
 
   // Fake successful send. The caller ignores result anyway.
-  return data_size;
+  return base::checked_cast<int>(data_size);
 }
 
 int IpcPacketSocket::Close() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   client_->Close();
-  state_ = IS_CLOSED;
+  state_ = kIsClosed;
 
   return 0;
 }
@@ -450,22 +448,22 @@ rtc::AsyncPacketSocket::State IpcPacketSocket::GetState() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   switch (state_) {
-    case IS_UNINITIALIZED:
+    case kIsUninitialized:
       NOTREACHED();
       return STATE_CLOSED;
 
-    case IS_OPENING:
+    case kIsOpening:
       return STATE_BINDING;
 
-    case IS_OPEN:
+    case kIsOpen:
       if (IsTcpClientSocket(type_)) {
         return STATE_CONNECTED;
       } else {
         return STATE_BOUND;
       }
 
-    case IS_CLOSED:
-    case IS_ERROR:
+    case kIsClosed:
+    case kIsError:
       return STATE_CLOSED;
   }
 
@@ -495,8 +493,8 @@ int IpcPacketSocket::SetOption(rtc::Socket::Option option, int value) {
 
   options_[p2p_socket_option] = value;
 
-  if (state_ == IS_OPEN) {
-    // Options will be applied when state becomes IS_OPEN in OnOpen.
+  if (state_ == kIsOpen) {
+    // Options will be applied when state becomes kIsOPEN in OnOpen.
     return DoSetOption(p2p_socket_option, value);
   }
   return 0;
@@ -504,7 +502,7 @@ int IpcPacketSocket::SetOption(rtc::Socket::Option option, int value) {
 
 int IpcPacketSocket::DoSetOption(network::P2PSocketOption option, int value) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(state_, IS_OPEN);
+  DCHECK_EQ(state_, kIsOpen);
 
   client_->SetOption(option, value);
   return 0;
@@ -531,7 +529,7 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
     return;
   }
 
-  state_ = IS_OPEN;
+  state_ = kIsOpen;
   TraceSendThrottlingState();
 
   // Set all pending options if any.
@@ -561,22 +559,6 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
     // can get the resolved remote address.
     SignalConnect(this);
   }
-}
-
-void IpcPacketSocket::OnIncomingTcpConnection(
-    const net::IPEndPoint& address,
-    std::unique_ptr<blink::P2PSocketClient> client) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  std::unique_ptr<IpcPacketSocket> socket(new IpcPacketSocket());
-
-  rtc::SocketAddress remote_address;
-  if (!jingle_glue::IPEndPointToSocketAddress(address, &remote_address)) {
-    // Always expect correct IPv4 address to be allocated.
-    NOTREACHED();
-  }
-  socket->InitAcceptedTcp(std::move(client), local_address_, remote_address);
-  SignalNewConnection(this, socket.release());
 }
 
 void IpcPacketSocket::OnSendComplete(
@@ -614,8 +596,8 @@ void IpcPacketSocket::OnSendComplete(
 
 void IpcPacketSocket::OnError() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  bool was_closed = (state_ == IS_ERROR || state_ == IS_CLOSED);
-  state_ = IS_ERROR;
+  bool was_closed = (state_ == kIsError || state_ == kIsClosed);
+  state_ = kIsError;
   error_ = ECONNABORTED;
   if (!was_closed) {
     SignalClose(this, 0);
@@ -698,7 +680,7 @@ void AsyncAddressResolverImpl::Destroy(bool wait) {
 void AsyncAddressResolverImpl::OnAddressResolved(
     const Vector<net::IPAddress>& addresses) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  for (size_t i = 0; i < addresses.size(); ++i) {
+  for (wtf_size_t i = 0; i < addresses.size(); ++i) {
     rtc::SocketAddress socket_address;
     if (!jingle_glue::IPEndPointToSocketAddress(
             net::IPEndPoint(addresses[i], 0), &socket_address)) {
@@ -735,28 +717,13 @@ rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateUdpSocket(
   return socket.release();
 }
 
-rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
+rtc::AsyncListenSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
     const rtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port,
     int opts) {
-  // TODO(sergeyu): Implement SSL support.
-  if (opts & rtc::PacketSocketFactory::OPT_SSLTCP)
-    return nullptr;
-
-  network::P2PSocketType type = (opts & rtc::PacketSocketFactory::OPT_STUN)
-                                    ? network::P2P_SOCKET_STUN_TCP_SERVER
-                                    : network::P2P_SOCKET_TCP_SERVER;
-  auto socket_dispatcher = socket_dispatcher_.Lock();
-  DCHECK(socket_dispatcher);
-  auto socket_client = std::make_unique<P2PSocketClientImpl>(
-      socket_dispatcher, traffic_annotation_);
-  std::unique_ptr<IpcPacketSocket> socket(new IpcPacketSocket());
-  if (!socket->Init(type, std::move(socket_client), local_address, min_port,
-                    max_port, rtc::SocketAddress())) {
-    return nullptr;
-  }
-  return socket.release();
+  NOTREACHED();
+  return nullptr;
 }
 
 rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(

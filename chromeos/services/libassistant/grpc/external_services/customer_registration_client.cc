@@ -5,10 +5,10 @@
 #include "chromeos/services/libassistant/grpc/external_services/customer_registration_client.h"
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/customer_registration_service.grpc.pb.h"
@@ -28,8 +28,7 @@ using ::assistant::api::ServiceRegistrationResponse;
 
 // Period at which CustomerRegistrationClient sends requests to the assistant's
 // customer registration service until it receives the first heartbeat.
-constexpr base::TimeDelta kRegistrationPollingPeriod =
-    base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kRegistrationPollingPeriod = base::Seconds(3);
 
 chromeos::libassistant::StateConfig BuildCustomerRegistrationStateConfig() {
   StateConfig state_config;
@@ -95,7 +94,7 @@ void CustomerRegistrationClient::Start() {
 void CustomerRegistrationClient::RegisterWithCustomerService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  libassistant_client_->RegisterCustomer(
+  libassistant_client_->CallServiceMethod(
       customer_registration_request_,
       base::BindOnce(
           &CustomerRegistrationClient::OnCustomerRegistrationResponse,

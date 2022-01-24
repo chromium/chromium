@@ -9,10 +9,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/drivefs/drivefs_util.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/components/drivefs/drivefs_util.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_errors.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -574,7 +574,7 @@ base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
       util::GetFileSystemContextForRenderFrameHost(profile, render_frame_host);
 
   const storage::FileSystemURL filesystem_url(
-      file_system_context->CrackURL(url));
+      file_system_context->CrackURLInFirstPartyContext(url));
   base::FilePath path;
   if (!chromeos::FileSystemBackend::CanHandleURL(filesystem_url))
     return base::FilePath();
@@ -610,6 +610,8 @@ void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
 }
 
 drive::EventLogger* GetLogger(Profile* profile) {
+  if (!profile)
+    return nullptr;
   drive::DriveIntegrationService* service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   return service ? service->event_logger() : nullptr;

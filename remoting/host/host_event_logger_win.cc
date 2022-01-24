@@ -31,6 +31,9 @@ class HostEventLoggerWin : public HostEventLogger, public HostStatusObserver {
   HostEventLoggerWin(scoped_refptr<HostStatusMonitor> monitor,
                      const std::string& application_name);
 
+  HostEventLoggerWin(const HostEventLoggerWin&) = delete;
+  HostEventLoggerWin& operator=(const HostEventLoggerWin&) = delete;
+
   ~HostEventLoggerWin() override;
 
   // HostStatusObserver implementation.  These methods will be called from the
@@ -52,8 +55,6 @@ class HostEventLoggerWin : public HostEventLogger, public HostStatusObserver {
   scoped_refptr<HostStatusMonitor> monitor_;
 
   WindowsEventLogger event_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostEventLoggerWin);
 };
 
 }  // namespace

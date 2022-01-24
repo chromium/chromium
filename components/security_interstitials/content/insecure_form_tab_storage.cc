@@ -12,6 +12,9 @@ namespace security_interstitials {
 // Arbitrary but unique key required for SupportsUserData.
 const void* const kInsecureFormTabStorageKey = &kInsecureFormTabStorageKey;
 
+InsecureFormTabStorage::InsecureFormTabStorage(content::WebContents* contents)
+    : content::WebContentsUserData<InsecureFormTabStorage>(*contents) {}
+
 InsecureFormTabStorage::~InsecureFormTabStorage() = default;
 
 // static
@@ -25,6 +28,6 @@ InsecureFormTabStorage* InsecureFormTabStorage::GetOrCreate(
   return storage;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(InsecureFormTabStorage)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(InsecureFormTabStorage);
 
 }  // namespace security_interstitials

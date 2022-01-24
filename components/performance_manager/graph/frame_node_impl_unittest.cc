@@ -57,9 +57,9 @@ TEST_F(FrameNodeImplTest, AddFrameHierarchyBasic) {
   auto page = CreateNode<PageNodeImpl>();
   auto parent_node = CreateFrameNodeAutoId(process.get(), page.get());
   auto child2_node =
-      CreateFrameNodeAutoId(process.get(), page.get(), parent_node.get(), 1);
+      CreateFrameNodeAutoId(process.get(), page.get(), parent_node.get());
   auto child3_node =
-      CreateFrameNodeAutoId(process.get(), page.get(), parent_node.get(), 2);
+      CreateFrameNodeAutoId(process.get(), page.get(), parent_node.get());
 
   EXPECT_EQ(nullptr, parent_node->parent_frame_node());
   EXPECT_EQ(2u, parent_node->child_frame_nodes().size());
@@ -114,8 +114,8 @@ TEST_F(FrameNodeImplTest, RemoveChildFrame) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
   auto parent_frame_node = CreateFrameNodeAutoId(process.get(), page.get());
-  auto child_frame_node = CreateFrameNodeAutoId(process.get(), page.get(),
-                                                parent_frame_node.get(), 1);
+  auto child_frame_node =
+      CreateFrameNodeAutoId(process.get(), page.get(), parent_frame_node.get());
 
   // Ensure correct Parent-child relationships have been established.
   EXPECT_EQ(1u, parent_frame_node->child_frame_nodes().size());
@@ -469,7 +469,7 @@ TEST_F(FrameNodeImplTest, FirstContentfulPaint) {
   MockObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
-  base::TimeDelta fcp = base::TimeDelta::FromMilliseconds(1364);
+  base::TimeDelta fcp = base::Milliseconds(1364);
   EXPECT_CALL(obs, OnFirstContentfulPaint(frame_node.get(), fcp));
   frame_node->OnFirstContentfulPaint(fcp);
 
@@ -494,8 +494,6 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
             public_frame_node->GetPageNode());
   EXPECT_EQ(static_cast<const ProcessNode*>(frame_node->process_node()),
             public_frame_node->GetProcessNode());
-  EXPECT_EQ(frame_node->frame_tree_node_id(),
-            public_frame_node->GetFrameTreeNodeId());
   EXPECT_EQ(frame_node->frame_token(), public_frame_node->GetFrameToken());
   EXPECT_EQ(frame_node->browsing_instance_id(),
             public_frame_node->GetBrowsingInstanceId());
@@ -503,10 +501,8 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
             public_frame_node->GetSiteInstanceId());
 
   auto child_frame_nodes = public_frame_node->GetChildFrameNodes();
-  for (auto* child_frame_node : frame_node->child_frame_nodes()) {
-    const FrameNode* child = child_frame_node;
+  for (auto* child : frame_node->child_frame_nodes())
     EXPECT_TRUE(base::Contains(child_frame_nodes, child));
-  }
   EXPECT_EQ(child_frame_nodes.size(), frame_node->child_frame_nodes().size());
 
   EXPECT_EQ(frame_node->lifecycle_state(),

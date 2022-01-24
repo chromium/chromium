@@ -29,6 +29,10 @@ BASE_EXPORT bool BeingDebugged();
 
 // Break into the debugger, assumes a debugger is present.
 BASE_EXPORT void BreakDebugger();
+// Async-safe version of BreakDebugger(). In particular, this does not allocate
+// any memory. More broadly, must be safe to call from anywhere, including
+// signal handlers.
+BASE_EXPORT void BreakDebuggerAsyncSafe();
 
 // Used in test code, this controls whether showing dialogs and breaking into
 // the debugger is suppressed for debug errors, even in debug mode (normally

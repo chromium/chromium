@@ -23,13 +23,11 @@
 #include "services/device/usb/usb_service_android.h"
 #elif defined(USE_UDEV)
 #include "services/device/usb/usb_service_linux.h"
-#else
-#if defined(OS_MAC)
+#elif defined(OS_MAC)
+#include "services/device/usb/usb_service_impl.h"
 #include "services/device/usb/usb_service_mac.h"
 #elif defined(OS_WIN)
 #include "services/device/usb/usb_service_win.h"
-#endif
-#include "services/device/usb/usb_service_impl.h"
 #endif
 
 namespace device {
@@ -55,10 +53,7 @@ std::unique_ptr<UsbService> UsbService::Create() {
 #elif defined(USE_UDEV)
   return base::WrapUnique(new UsbServiceLinux());
 #elif defined(OS_WIN)
-  if (base::FeatureList::IsEnabled(kNewUsbBackend))
-    return base::WrapUnique(new UsbServiceWin());
-  else
-    return base::WrapUnique(new UsbServiceImpl());
+  return base::WrapUnique(new UsbServiceWin());
 #elif defined(OS_MAC)
   if (base::FeatureList::IsEnabled(kNewUsbBackend))
     return base::WrapUnique(new UsbServiceMac());

@@ -32,7 +32,7 @@ const char AXTreeFormatterBase::kChildrenDictAttr[] = "children";
 bool AXTreeFormatterBase::ShouldDumpNode(
     const AXPlatformNodeDelegate& node) const {
   for (const std::pair<ax::mojom::StringAttribute, std::string>&
-           string_attribute : node.GetData().string_attributes) {
+           string_attribute : node.GetStringAttributes()) {
     if (string_attribute.second.find(kSkipString) != std::string::npos)
       return false;
   }
@@ -42,7 +42,7 @@ bool AXTreeFormatterBase::ShouldDumpNode(
 bool AXTreeFormatterBase::ShouldDumpChildren(
     const AXPlatformNodeDelegate& node) const {
   for (const std::pair<ax::mojom::StringAttribute, std::string>&
-           string_attribute : node.GetData().string_attributes) {
+           string_attribute : node.GetStringAttributes()) {
     if (string_attribute.second.find(kSkipChildren) != std::string::npos)
       return false;
   }

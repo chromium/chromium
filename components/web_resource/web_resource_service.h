@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/web_resource/resource_request_allowed_notifier.h"
@@ -51,6 +50,9 @@ class WebResourceService : public ResourceRequestAllowedNotifier::Observer {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ResourceRequestAllowedNotifier::NetworkConnectionTrackerGetter
           network_connection_tracker_getter);
+
+  WebResourceService(const WebResourceService&) = delete;
+  WebResourceService& operator=(const WebResourceService&) = delete;
 
   ~WebResourceService() override;
 
@@ -136,8 +138,6 @@ class WebResourceService : public ResourceRequestAllowedNotifier::Observer {
   // So that we can delay our start so as not to affect start-up time; also,
   // so that we can schedule future cache updates.
   base::WeakPtrFactory<WebResourceService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebResourceService);
 };
 
 }  // namespace web_resource

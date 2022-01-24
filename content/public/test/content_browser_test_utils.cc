@@ -13,6 +13,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -98,7 +99,10 @@ bool NavigateToURL(Shell* window,
 bool NavigateToURLAndExpectNoCommit(Shell* window, const GURL& url) {
   NavigationEntry* old_entry =
       window->web_contents()->GetController().GetLastCommittedEntry();
-  NavigateToURLBlockUntilNavigationsComplete(window->web_contents(), url, 1);
+  NavigateToURLBlockUntilNavigationsComplete(
+      window->web_contents(), url,
+      /*number_of_navigations=*/1,
+      /*ignore_uncommitted_navigations=*/false);
   NavigationEntry* new_entry =
       window->web_contents()->GetController().GetLastCommittedEntry();
   return old_entry == new_entry;

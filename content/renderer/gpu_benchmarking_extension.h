@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_GPU_BENCHMARKING_EXTENSION_H_
 #define CONTENT_RENDERER_GPU_BENCHMARKING_EXTENSION_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/input/input_injector.mojom.h"
 #include "gin/wrappable.h"
@@ -28,6 +27,10 @@ class RenderFrameImpl;
 class GpuBenchmarking : public gin::Wrappable<GpuBenchmarking> {
  public:
   static gin::WrapperInfo kWrapperInfo;
+
+  GpuBenchmarking(const GpuBenchmarking&) = delete;
+  GpuBenchmarking& operator=(const GpuBenchmarking&) = delete;
+
   static void Install(base::WeakPtr<RenderFrameImpl> frame);
 
  private:
@@ -104,7 +107,6 @@ class GpuBenchmarking : public gin::Wrappable<GpuBenchmarking> {
 
   base::WeakPtr<RenderFrameImpl> render_frame_;
   mojo::Remote<mojom::InputInjector> input_injector_;
-  DISALLOW_COPY_AND_ASSIGN(GpuBenchmarking);
 };
 
 }  // namespace content

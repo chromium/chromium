@@ -26,6 +26,10 @@ class MockInputRouter : public InputRouter {
         send_touch_event_not_cancelled_(false),
         has_handlers_(false),
         client_(client) {}
+
+  MockInputRouter(const MockInputRouter&) = delete;
+  MockInputRouter& operator=(const MockInputRouter&) = delete;
+
   ~MockInputRouter() override {}
 
   // InputRouter:
@@ -41,7 +45,6 @@ class MockInputRouter : public InputRouter {
   void NotifySiteIsMobileOptimized(bool is_mobile_optimized) override {}
   bool HasPendingEvents() const override;
   void SetDeviceScaleFactor(float device_scale_factor) override {}
-  void SetFrameTreeNodeId(int frameTreeNodeId) override {}
   absl::optional<cc::TouchAction> AllowedTouchAction() override;
   absl::optional<cc::TouchAction> ActiveTouchAction() override;
   void SetForceEnableZoom(bool enabled) override {}
@@ -63,8 +66,6 @@ class MockInputRouter : public InputRouter {
 
  private:
   InputRouterClient* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInputRouter);
 };
 
 }  // namespace content

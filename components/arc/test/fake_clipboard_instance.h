@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_TEST_FAKE_CLIPBOARD_INSTANCE_H_
 #define COMPONENTS_ARC_TEST_FAKE_CLIPBOARD_INSTANCE_H_
 
-#include "base/macros.h"
 #include "components/arc/mojom/clipboard.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -14,6 +13,10 @@ namespace arc {
 class FakeClipboardInstance : public mojom::ClipboardInstance {
  public:
   FakeClipboardInstance();
+
+  FakeClipboardInstance(const FakeClipboardInstance&) = delete;
+  FakeClipboardInstance& operator=(const FakeClipboardInstance&) = delete;
+
   ~FakeClipboardInstance() override;
 
   int num_host_clipboard_updated() const { return num_host_clipboard_updated_; }
@@ -27,8 +30,6 @@ class FakeClipboardInstance : public mojom::ClipboardInstance {
 
  private:
   int num_host_clipboard_updated_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClipboardInstance);
 };
 
 }  // namespace arc

@@ -1,21 +1,12 @@
-// Copyright 2017 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 /**
  * @fileoverview Date interval formatting patterns for all locales.
  *
- * File generated from CLDR ver. 36
+ * File generated from CLDR ver. 39
  *
  * To reduce the file size (which may cause issues in some JS
  * developing environments), this file will only contain locales
@@ -225,29 +216,28 @@ exports.DateIntervalPatterns_am = {
 /** @const {!DateIntervalPatterns} */
 exports.DateIntervalPatterns_ar = {
   YEAR_FULL: {
-    'G': 'G y – G y',
+    'G': 'y G – y G',
     'y': 'y–y',
     '_': 'y'
   },
   YEAR_FULL_WITH_ERA: {
-    'G': 'G y – G y',
-    'y': 'G y–y',
+    'y': 'y – y G',
     '_': 'y G'
   },
   YEAR_MONTH_ABBR: {
-    'G': 'G y MMM – G y MMM',
+    'G': 'MMM y G – MMM y G',
     'M': 'MMM – MMM، y',
     'y': 'MMM، y – MMM، y',
     '_': 'MMM y'
   },
   YEAR_MONTH_FULL: {
-    'G': 'G y MMMM – G y MMMM',
+    'G': 'MMMM y G – MMMM y G',
     'M': 'MMMM – MMMM، y',
     'y': 'MMMM، y – MMMM، y',
     '_': 'MMMM y'
   },
   YEAR_MONTH_SHORT: {
-    'G': 'GGGGG y-MM – GGGGG y-MM',
+    'G': 'MM-y GGGG – MM-y GGGG',
     'My': 'M‏/y – M‏/y',
     '_': 'MM‏/y'
   },
@@ -263,7 +253,8 @@ exports.DateIntervalPatterns_ar = {
     '_': 'dd MMMM'
   },
   MONTH_DAY_SHORT: {
-    'Md': 'M/d – M/d',
+    'M': 'M/d – M/d',
+    'd': 'd-M – d-M',
     'y': 'd‏/M‏/y – d‏/M‏/y',
     '_': 'd/‏M'
   },
@@ -273,7 +264,7 @@ exports.DateIntervalPatterns_ar = {
     '_': 'd MMMM'
   },
   MONTH_DAY_YEAR_MEDIUM: {
-    'G': 'G y MMM d – G y MMM d',
+    'G': 'd MMM y G – d MMM y G',
     'M': 'd MMM – d MMM، y',
     'd': 'd–d MMM، y',
     'y': 'd MMM، y – d MMM، y',
@@ -286,7 +277,7 @@ exports.DateIntervalPatterns_ar = {
     '_': 'EEE، d MMM'
   },
   WEEKDAY_MONTH_DAY_YEAR_MEDIUM: {
-    'G': 'G y MMM d, E – G y MMM d, E',
+    'G': 'E, d MMM y G – E, d MMM y G',
     'M': 'E، d MMM – E، d MMM، y',
     'd': 'E، d – E، d MMM، y',
     'y': 'E، d MMM، y – E، d MMM، y',
@@ -1057,7 +1048,7 @@ exports.DateIntervalPatterns_da = {
     '_': 'MMMM y'
   },
   YEAR_MONTH_SHORT: {
-    'G': 'M/y GGGG–M/y GGGG',
+    'G': 'MM.y GGGGG–MM.y GGGGG',
     'My': 'MM.y–MM.y',
     '_': 'MM.y'
   },
@@ -1934,7 +1925,7 @@ exports.DateIntervalPatterns_es_419 = {
     'G': 'MMM y G – MMM y G',
     'M': 'MMM–MMM y',
     'y': 'MMM \'de\' y – MMM \'de\' y',
-    '_': 'MMMM \'de\' y'
+    '_': 'MMM \'de\' y'
   },
   YEAR_MONTH_FULL: {
     'G': 'MMMM y G – MMMM y G',
@@ -1971,7 +1962,7 @@ exports.DateIntervalPatterns_es_419 = {
     'M': 'd \'de\' MMM – d \'de\' MMM \'de\' y',
     'd': 'd – d \'de\' MMM \'de\' y',
     'y': 'd \'de\' MMM \'de\' y – d \'de\' MMM \'de\' y',
-    '_': 'd \'de\' MMMM \'de\' y'
+    '_': 'd \'de\' MMM \'de\' y'
   },
   WEEKDAY_MONTH_DAY_MEDIUM: {
     'Md': 'E, d \'de\' MMM – E, d \'de\' MMM',
@@ -2008,8 +1999,7 @@ exports.DateIntervalPatterns_es_MX = {
   YEAR_MONTH_ABBR: {
     'G': 'MMM \'de\' y G – MMM \'de\' y G',
     'M': 'MMM–MMM \'de\' y',
-    'y': 'MMM \'de\' y – MMM \'de\' y',
-    '_': 'MMMM \'de\' y'
+    '_': 'MMM \'de\' y'
   },
   YEAR_MONTH_FULL: {
     'G': 'MMMM \'de\' y G – MMMM \'de\' y G',
@@ -2047,8 +2037,7 @@ exports.DateIntervalPatterns_es_MX = {
     'G': 'd \'de\' MMM \'de\' y G – d \'de\' MMM \'de\' y G',
     'M': 'd \'de\' MMM – d \'de\' MMM y',
     'd': 'd–d \'de\' MMM \'de\' y',
-    'y': 'd \'de\' MMM \'de\' y – d \'de\' MMM \'de\' y',
-    '_': 'd \'de\' MMMM \'de\' y'
+    '_': 'd \'de\' MMM \'de\' y'
   },
   WEEKDAY_MONTH_DAY_MEDIUM: {
     'Md': 'E d \'de\' MMM – E d \'de\' MMM',
@@ -2059,7 +2048,7 @@ exports.DateIntervalPatterns_es_MX = {
     'G': 'E d \'de\' MMM \'de\' y G – E d \'de\' MMM \'de\' y G',
     'Md': 'E d \'de\' MMM – E d \'de\' MMM \'de\' y',
     'y': 'E d \'de\' MMM \'de\' y – E d \'de\' MMM \'de\' y',
-    '_': 'EEE, d \'de\' MMMM \'de\' y'
+    '_': 'EEE, d \'de\' MMM \'de\' y'
   },
   DAY_ABBR: {
     'M': 'd/M – d/M',
@@ -2083,8 +2072,7 @@ exports.DateIntervalPatterns_es_US = {
   YEAR_MONTH_ABBR: {
     'G': 'MMM y G – MMM y G',
     'M': 'MMM–MMM \'de\' y',
-    'y': 'MMM \'de\' y – MMM \'de\' y',
-    '_': 'MMMM \'de\' y'
+    '_': 'MMM \'de\' y'
   },
   YEAR_MONTH_FULL: {
     'G': 'MMMM y G – MMMM y G',
@@ -2123,11 +2111,10 @@ exports.DateIntervalPatterns_es_US = {
     'G': 'd MMM \'de\' y G – d MMM \'de\' y G',
     'M': 'd \'de\' MMM – d \'de\' MMM y',
     'd': 'd–d \'de\' MMM \'de\' y',
-    'y': 'd \'de\' MMM \'de\' y – d \'de\' MMM \'de\' y',
-    '_': 'd \'de\' MMMM \'de\' y'
+    '_': 'd \'de\' MMM \'de\' y'
   },
   WEEKDAY_MONTH_DAY_MEDIUM: {
-    'Md': 'E d \'de\' MMM – E d \'de\' MMM',
+    'Md': 'E, d \'de\' MMM – E, d \'de\' MMM',
     'y': 'E, d \'de\' MMM \'de\' y – E, d \'de\' MMM \'de\' y',
     '_': 'EEE, d \'de\' MMM'
   },
@@ -2135,7 +2122,7 @@ exports.DateIntervalPatterns_es_US = {
     'G': 'E d MMM \'de\' y G – E d MMM \'de\' y G',
     'Md': 'E, d \'de\' MMM – E, d \'de\' MMM \'de\' y',
     'y': 'E, d \'de\' MMM \'de\' y – E, d \'de\' MMM \'de\' y',
-    '_': 'EEE, d \'de\' MMMM \'de\' y'
+    '_': 'EEE, d \'de\' MMM \'de\' y'
   },
   DAY_ABBR: {
     'M': 'd/M–d/M',
@@ -2371,13 +2358,13 @@ exports.DateIntervalPatterns_fi = {
     '_': 'y G'
   },
   YEAR_MONTH_ABBR: {
-    'G': 'MMM y G – MMM y G',
+    'G': 'M.y G – M.y G',
     'M': 'LLL–LLLL y',
     'y': 'LLLL y – LLLL y',
     '_': 'LLL y'
   },
   YEAR_MONTH_FULL: {
-    'G': 'MMMM y G – MMMM y G',
+    'G': 'LLLL y G – LLLL y G',
     'M': 'LLL–LLLL y',
     'y': 'LLLL y – LLLL y',
     '_': 'LLLL y'
@@ -5138,7 +5125,7 @@ exports.DateIntervalPatterns_my = {
     '_': 'y MMMM'
   },
   YEAR_MONTH_SHORT: {
-    'G': 'GGGGG y-MM – GGGGG y-MM   ',
+    'G': 'GGGGG y-MM – GGGGG y-MM',
     'My': 'M/y – M/y',
     '_': 'MM/y'
   },
@@ -5164,7 +5151,7 @@ exports.DateIntervalPatterns_my = {
     '_': 'MMMM d'
   },
   MONTH_DAY_YEAR_MEDIUM: {
-    'G': 'G y MMM d – G y MMM d   ',
+    'G': 'G y MMM d – G y MMM d',
     'M': 'y၊ MMM d – MMM d',
     'd': 'y၊ MMM d – d',
     '_': 'y၊ MMM d'
@@ -5634,28 +5621,32 @@ exports.DateIntervalPatterns_pa = {
 exports.DateIntervalPatterns_pl = {
   YEAR_FULL: {
     'G': 'y G – y G',
+    'y': 'y–y',
     '_': 'y'
   },
   YEAR_FULL_WITH_ERA: {
-    'G': 'y G – y G',
     'y': 'y–y G',
     '_': 'y G'
   },
   YEAR_MONTH_ABBR: {
     'G': 'MMM y G – MMM y G',
     'M': 'LLL–LLL y',
+    'y': 'LLL y–LLL y',
     '_': 'LLL y'
   },
   YEAR_MONTH_FULL: {
     'G': 'MMMM y G – MMMM y G',
     'M': 'LLLL–LLLL y',
+    'y': 'LLLL y–LLLL y',
     '_': 'LLLL y'
   },
   YEAR_MONTH_SHORT: {
     'G': 'M.y GGGGG – M.y GGGGG',
+    'My': 'MM.y–MM.y',
     '_': 'MM.y'
   },
   MONTH_DAY_ABBR: {
+    'M': 'd MMM–d MMM',
     'd': 'd–d MMM',
     'y': 'd MMM y–d MMM y',
     '_': 'd MMM'
@@ -5672,7 +5663,6 @@ exports.DateIntervalPatterns_pl = {
     '_': 'd.MM'
   },
   MONTH_DAY_MEDIUM: {
-    'M': 'd MMMM – d MMMM',
     'd': 'd–d MMMM',
     'y': 'd MMMM y – d MMMM y',
     '_': 'd MMMM'
@@ -5681,6 +5671,7 @@ exports.DateIntervalPatterns_pl = {
     'G': 'd MMM y G – d MMM y G',
     'M': 'd MMM–d MMM y',
     'd': 'd–d MMM y',
+    'y': 'd MMM y–d MMM y',
     '_': 'd MMM y'
   },
   WEEKDAY_MONTH_DAY_MEDIUM: {
@@ -5696,6 +5687,7 @@ exports.DateIntervalPatterns_pl = {
   },
   DAY_ABBR: {
     'M': 'dd.MM–dd.MM',
+    'd': 'd–d',
     'y': 'dd.MM.y–dd.MM.y',
     '_': 'd'
   }
@@ -5704,29 +5696,29 @@ exports.DateIntervalPatterns_pl = {
 /** @const {!DateIntervalPatterns} */
 exports.DateIntervalPatterns_pt = {
   YEAR_FULL: {
-    'G': 'G y – G y',
+    'G': 'y G – y G',
     'y': 'y – y',
     '_': 'y'
   },
   YEAR_FULL_WITH_ERA: {
-    'G': 'G y – G y',
-    'y': 'G y – y',
+    'G': 'y G – y G',
+    'y': 'y – y G',
     '_': 'y G'
   },
   YEAR_MONTH_ABBR: {
-    'G': 'G MMM y – G MMM y',
+    'G': 'MMM y G – MMM y G',
     'M': 'MMM – MMM \'de\' y',
     'y': 'MMM \'de\' y – MMM \'de\' y',
     '_': 'MMM \'de\' y'
   },
   YEAR_MONTH_FULL: {
-    'G': 'G MMMM y – G MMMM y',
+    'G': 'MMMM y G – MMMM y G',
     'M': 'MMMM – MMMM \'de\' y',
     'y': 'MMMM \'de\' y – MMMM \'de\' y',
     '_': 'MMMM \'de\' y'
   },
   YEAR_MONTH_SHORT: {
-    'G': 'GGGGG MM/y – GGGGG MM/y',
+    'G': 'M/y GGGGG – M/y GGGGG',
     'My': 'MM/y – MM/y',
     '_': 'MM/y'
   },
@@ -5754,7 +5746,7 @@ exports.DateIntervalPatterns_pt = {
     '_': 'd \'de\' MMMM'
   },
   MONTH_DAY_YEAR_MEDIUM: {
-    'G': 'G d \'de\' MMM y – G d \'de\' MMM y',
+    'G': 'MMM d, y G – MMM d, y G',
     'M': 'd \'de\' MMM – d \'de\' MMM \'de\' y',
     'd': 'd – d \'de\' MMM \'de\' y',
     'y': 'd \'de\' MMM \'de\' y – d \'de\' MMM \'de\' y',
@@ -5767,7 +5759,7 @@ exports.DateIntervalPatterns_pt = {
     '_': 'EEE, d \'de\' MMM'
   },
   WEEKDAY_MONTH_DAY_YEAR_MEDIUM: {
-    'G': 'G E, d \'de\' MMM y – G E, d \'de\' MMM y',
+    'G': 'E, MMM d, y G – E, MMM d, y G',
     'M': 'E, d \'de\' MMM – E, d \'de\' MMM \'de\' y',
     'd': 'E, d – E, d \'de\' MMM \'de\' y',
     'y': 'E, d \'de\' MMM \'de\' y – E, d \'de\' MMM \'de\' y',
@@ -6479,7 +6471,7 @@ exports.DateIntervalPatterns_sv = {
     '_': 'MMMM y'
   },
   YEAR_MONTH_SHORT: {
-    'G': 'GGGGG y-MM – GGGGG y-MM',
+    'G': 'M/y GGGGG–M/y GGGGG',
     'M': 'y-MM – MM',
     '_': 'y-MM'
   },
@@ -7259,29 +7251,28 @@ exports.DateIntervalPatterns_vi = {
 /** @const {!DateIntervalPatterns} */
 exports.DateIntervalPatterns_zh = {
   YEAR_FULL: {
-    'G': 'G y – G y',
+    'G': 'Gy年 – Gy年',
     'y': 'y–y年',
     '_': 'y年'
   },
   YEAR_FULL_WITH_ERA: {
-    'G': 'G y – G y',
-    'y': 'G y–y',
+    'y': 'Gy年–y年',
     '_': 'Gy年'
   },
   YEAR_MONTH_ABBR: {
-    'G': 'G y MMM – G y MMM',
+    'G': 'Gy年MMM – Gy年MMM',
     'M': 'y年M月至M月',
     'y': 'y年M月至y年M月',
     '_': 'y年M月'
   },
   YEAR_MONTH_FULL: {
-    'G': 'G y MMMM – G y MMMM',
+    'G': 'Gy年MMMM – Gy年MMMM',
     'M': 'y年M月至M月',
     'y': 'y年M月至y年M月',
     '_': 'y年M月'
   },
   YEAR_MONTH_SHORT: {
-    'G': 'GGGGG y-MM – GGGGG y-MM',
+    'G': 'GGGGGy-MM – GGGGGy-MM',
     'M': 'y年M月至M月',
     'y': 'y年M月至y年M月',
     '_': 'y年M月'
@@ -7309,7 +7300,7 @@ exports.DateIntervalPatterns_zh = {
     '_': 'M月d日'
   },
   MONTH_DAY_YEAR_MEDIUM: {
-    'G': 'G y MMM d – G y MMM d',
+    'G': 'Gy年MMMd日 – Gy年MMMd日',
     'M': 'y年M月d日至M月d日',
     'd': 'y年M月d日至d日',
     'y': 'y年M月d日至y年M月d日',
@@ -7322,7 +7313,7 @@ exports.DateIntervalPatterns_zh = {
     '_': 'M月d日EEE'
   },
   WEEKDAY_MONTH_DAY_YEAR_MEDIUM: {
-    'G': 'G y MMM d, E – G y MMM d, E',
+    'G': 'Gy年MMMd日E – Gy年MMMd日E',
     'M': 'y年M月d日E至M月d日E',
     'd': 'y年M月d日E至d日E',
     'y': 'y年M月d日E至y年M月d日E',
@@ -7342,29 +7333,29 @@ exports.DateIntervalPatterns_zh_CN = exports.DateIntervalPatterns_zh;
 /** @const {!DateIntervalPatterns} */
 exports.DateIntervalPatterns_zh_HK = {
   YEAR_FULL: {
-    'G': 'G y – G y',
+    'G': 'Gy – Gy',
     'y': 'y至y',
     '_': 'y年'
   },
   YEAR_FULL_WITH_ERA: {
-    'G': 'G y – G y',
-    'y': 'G y–y',
+    'G': 'Gy – Gy',
+    'y': 'Gy–y',
     '_': 'Gy年'
   },
   YEAR_MONTH_ABBR: {
-    'G': 'G y MMM – G y MMM',
+    'G': 'Gy年MMM – Gy年MMM',
     'M': 'y年M月至M月',
     'y': 'y年M月至y年M月',
     '_': 'y年M月'
   },
   YEAR_MONTH_FULL: {
-    'G': 'G y MMMM – G y MMMM',
+    'G': 'Gy年MMMM – Gy年MMMM',
     'M': 'y年M月至M月',
     'y': 'y年M月至y年M月',
     '_': 'y年M月'
   },
   YEAR_MONTH_SHORT: {
-    'G': 'GGGGG y-MM – GGGGG y-MM',
+    'G': 'GGGGGy-MM – GGGGGy-MM',
     'My': 'M/y 至 M/y',
     '_': 'MM/y'
   },
@@ -7392,7 +7383,7 @@ exports.DateIntervalPatterns_zh_HK = {
     '_': 'M月d日'
   },
   MONTH_DAY_YEAR_MEDIUM: {
-    'G': 'G y MMM d – G y MMM d',
+    'G': 'Gy年MMMd日 – Gy年MMMd日',
     'M': 'y年M月d日至M月d日',
     'd': 'y年M月d日至d日',
     'y': 'y年M月d日至y年M月d日',
@@ -7405,7 +7396,7 @@ exports.DateIntervalPatterns_zh_HK = {
     '_': 'M月d日EEE'
   },
   WEEKDAY_MONTH_DAY_YEAR_MEDIUM: {
-    'G': 'G y MMM d, E – G y MMM d, E',
+    'G': 'Gy年MMMd日, E – Gy年MMMd日, E',
     'Md': 'y年M月d日E至M月d日E',
     'y': 'y年M月d日E至y年M月d日E',
     '_': 'y年M月d日EEE'
@@ -7421,29 +7412,29 @@ exports.DateIntervalPatterns_zh_HK = {
 /** @const {!DateIntervalPatterns} */
 exports.DateIntervalPatterns_zh_TW = {
   YEAR_FULL: {
-    'G': 'G y – G y',
+    'G': 'Gy – Gy',
     'y': 'y至y',
     '_': 'y年'
   },
   YEAR_FULL_WITH_ERA: {
-    'G': 'G y – G y',
-    'y': 'G y–y',
+    'G': 'Gy – Gy',
+    'y': 'Gy–y',
     '_': 'Gy年'
   },
   YEAR_MONTH_ABBR: {
-    'G': 'G y MMM – G y MMM',
+    'G': 'Gy年MMM – Gy年MMM',
     'M': 'y年M月至M月',
     'y': 'y年M月至y年M月',
     '_': 'y年M月'
   },
   YEAR_MONTH_FULL: {
-    'G': 'G y MMMM – G y MMMM',
+    'G': 'Gy年MMMM – Gy年MMMM',
     'M': 'y年M月至M月',
     'y': 'y年M月至y年M月',
     '_': 'y年M月'
   },
   YEAR_MONTH_SHORT: {
-    'G': 'GGGGG y-MM – GGGGG y-MM',
+    'G': 'GGGGGy-MM – GGGGGy-MM',
     'My': 'y/M至y/M',
     '_': 'y/MM'
   },
@@ -7471,7 +7462,7 @@ exports.DateIntervalPatterns_zh_TW = {
     '_': 'M月d日'
   },
   MONTH_DAY_YEAR_MEDIUM: {
-    'G': 'G y MMM d – G y MMM d',
+    'G': 'Gy年MMMd日 – Gy年MMMd日',
     'M': 'y年M月d日至M月d日',
     'd': 'y年M月d日至d日',
     'y': 'y年M月d日至y年M月d日',
@@ -7484,7 +7475,7 @@ exports.DateIntervalPatterns_zh_TW = {
     '_': 'M月d日 EEE'
   },
   WEEKDAY_MONTH_DAY_YEAR_MEDIUM: {
-    'G': 'G y MMM d, E – G y MMM d, E',
+    'G': 'Gy年MMMd日, E – Gy年MMMd日, E',
     'Md': 'y年M月d日E至M月d日E',
     'y': 'y年M月d日E至y年M月d日E',
     '_': 'y年M月d日 EEE'

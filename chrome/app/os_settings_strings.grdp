@@ -19,6 +19,9 @@
   <message name="IDS_SETTINGS_SHORTCUT_BANNER_DISMISSED" desc="The message spoken aloud by screen readers when the user dismisses a banner showing keyboard shortcuts.">
     Keyboard shortcut notice dismissed
   </message>
+  <message name="IDS_SETTINGS_LEARN_MORE" desc="The label in the settings UI if users can obtain more information.">
+    Learn more
+  </message>
 
   <!--Main Page-->
   <message name="IDS_SETTINGS_SECONDARY_USER_BANNER" desc="Banner displayed in settings page when the user is secondary in a multi-profile session.">
@@ -40,7 +43,7 @@
 
   <!-- About (OS Settings) -->
   <message name="IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS" desc="Label of the row button that clicks into Build details">
-    Build Details
+    Build details
   </message>
   <message name="IDS_OS_SETTINGS_ABOUT_PAGE_BUILD_DETAILS_COPY_TOOLTIP_LABEL" desc="Tooltip label that describes the build details copy button.">
     Copy build details to clipboard
@@ -147,14 +150,14 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_STABLE" desc="The stable label in the message about current channel.">
     stable
   </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_STABLE_TT" desc="The stable (trusted tester) label in the message about current channel.">
-    stable (trusted tester)
+  <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_LTS" desc="The LTS (long-term support) label in the message about current channel.">
+    long-term support
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_CHECK_FOR_UPDATES" desc="The button label to check for updates and apply (download and install) if found">
     Check for updates
   </message>
-  <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL" desc="The message about current channel.">
-    Currently on <ph name="CHANNEL_NAME">$1<ex>stable</ex></ph>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_CURRENT_CHANNEL_INFO" desc="The message about current channel.">
+    Currently on <ph name="CHANNEL_NAME">$1<ex>stable</ex></ph> channel
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_DETAILED_BUILD_INFO" desc="Label describing the section that shows detailed information about the current Chrome build.">
     Additional details
@@ -173,6 +176,24 @@
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS" desc="Label describing the requirements for the text of the device hostname.">
     Name can use letters, numbers, and hyphens (-)
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS_A11Y_DESCRIPTION" desc="Label describing the requirements for the text of the device hostname.">
+    Name can use letters, numbers, and hyphens (-), and must be between 1 and 15 characters inclusive.
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INPUT_COUNT" desc="Label for the dialog input for the device name, informing the user the number of characters they have inputted compared to the maximum number of characters allowed.">
+    <ph name="CURRENT_CHARACTER_COUNT">$1<ex>10</ex></ph>/<ph name="MAX_CHARACTER_COUNT">$2<ex>15</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INPUT_A11Y_LABEL" desc="The a11y label for the edit device name dialog input, informing the user that they are currently naming the device">
+    Name device
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_DONE_BTN_A11Y_LABEL" desc="The a11y label for the done button in the edit device name dialog">
+    Name device to <ph name="DEVICE_NAME">$1<ex>MyChromebook</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_EDIT_BTN_A11Y_LABEL" desc="The a11y label for the edit button for device name on the detailed build into page">
+    Change device name
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_EDIT_BTN_A11Y_DESCRIPTION" desc="The a11y description for the edit button for device name on the detailed build into page">
+    Current device name is <ph name="DEVICE_NAME">$1<ex>MyChromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_UPGRADE_TRY_AGAIN" desc="Status label: Update check error (ChromiumOS/ChromeOS)">
     Couldn't update your Chromebook. Please try again later.
@@ -203,20 +224,11 @@
   </message>
 
   <!-- People (OS settings) -->
-  <message name="IDS_OS_SETTINGS_PEOPLE" desc="Name of a section in the OS settings page." meaning="People and their accounts.">
-    People
-  </message>
   <message name="IDS_OS_SETTINGS_PEOPLE_V2" desc="Name of a section in the OS settings page." meaning="People and their accounts.">
     Accounts
   </message>
   <message name="IDS_OS_SETTINGS_PROFILE_NAME" desc="Label with device account first name, showing which user is currently signed in.">
     Currently signed in as <ph name="NAME">$1<ex>John</ex></ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_PROFILE_LABEL" desc="Label underneath the profile's real name, listing the email address and optionally the number of additional accounts">
-    {COUNT, plural,
-     =0 {<ph name="EMAIL">$1<ex>alice@example.com</ex></ph>}
-     =1 {<ph name="EMAIL">$1<ex>alice@example.com</ex></ph>, +1 more account}
-     other {<ph name="EMAIL">$1<ex>alice@example.com</ex></ph>, +<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> more accounts}}
   </message>
   <message name="IDS_OS_SETTINGS_PROFILE_LABEL_V2" desc="Label underneath the profile's real name, listing the number of accounts">
     {COUNT, plural,
@@ -480,6 +492,9 @@
   <message name="IDS_SETTINGS_LANGUAGES_SHOW_IME_MENU" desc="The label for the toggle button controlling showing the IME menu in the shelf.">
     Show input options in the shelf
   </message>
+  <message name="IDS_SETTINGS_LANGUAGES_LANGUAGE_PACKS_NOTICE" desc="The label for the toggle button controlling showing the IME menu in the shelf.">
+    Choose which languages to install on this device. Language files are shared among users to save disk space. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+  </message>
 
   <!-- Suggestions Section -->
   <message name="IDS_SETTINGS_SUGGESTIONS_TITLE" desc="The label for the suggestions section, which contains features to help users type faster or more expressively such as suggesting personal information or suggesting emoji to use.">
@@ -561,9 +576,6 @@
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_KOREAN_SYLLABLE_INPUT">
     Input a syllable at a time
-  </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_KOREAN_SHOW_HANGUL_CANDIDATE">
-    Show candidates in Hangul mode
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_PINYIN_CHINESE_PUNCTUATION" desc="The label for the pinyin input method option for whether to output full-width or half-with punctuation.">
     Initial punctuation width is Full
@@ -850,10 +862,13 @@
     Search
   </message>
   <message name="IDS_SETTINGS_QUICK_ANSWERS_ENABLE" desc="Title for a toggle that controls the Quick Answers feature.">
-    Quick Answers
+    Quick answers
   </message>
   <message name="IDS_SETTINGS_QUICK_ANSWERS_ENABLE_DESCRIPTION" desc="Sub label for the Quick Answers toggle.">
     With a right-click or long press, show related info for your text selection
+  </message>
+  <message name="IDS_SETTINGS_QUICK_ANSWERS_ENABLE_DESCRIPTION_WITH_LINK" desc="Sub label for the Quick Answers toggle with link to the website languages.">
+    Get definitions, translations, or unit conversions when you right-click or touch &amp; hold text. Customize translation languages in <ph name="LINK_BEGIN">&lt;a target="_blank" href="#"&gt;</ph>Website languages<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_SETTINGS_QUICK_ANSWERS_DEFINITION_ENABLE" desc="Title for a toggle that controls the Quick Answers definiton feature.">
     Definition
@@ -1096,23 +1111,23 @@ and Ctrl+Alt+Brightness down to zoom out.
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LABEL" desc="Label for checkbox which enables the ability to speak into text fields">
     Enable dictation (speak to type)
   </message>
-  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_COMPLETE" desc="Description explaining that the speech recognition library download has completed.">
-    Speech files downloaded
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_NEW_DESCRIPTION" desc="Description explaining what Dictation does and how to use it. Is only user-visible if the kEnableExperimentalAccessibilityDictationOffline flag is enabled.">
+    Type with your voice. Press Search + D, then start speaking.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_PROGRESS" desc="Description explaining the progress for the speech recognition library download.">
     Downloading speech recognition files... <ph name="PERCENT">$1<ex>17</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR" desc="Description explaining that there was an error with the speech recognition library download.">
-    Can't download speech files. Dictation will continue to work by sending your voice to Google.
+    Couldn’t download <ph name="language">$1<ex>English</ex></ph> speech files. Download will be attempted later. Speech is sent to Google for processing until download is completed.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_MENU_LABEL" desc="Description of a drop-down menu to select the language to use for Dictation's speech recognition.">
     Language
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_OFFLINE" desc="Sub-label for a drop-down menu to select the language to use for Dictation. Describes how that language can be processed offline with no network connection.">
-    <ph name="language">$1<ex>English</ex></ph> is processed locally and works offline.
+    <ph name="language">$1<ex>English</ex></ph> is processed locally and works offline
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_NETWORK" desc="Sub-label for a drop-down menu to select the language to use for Dictation. Describes how speech will be sent over the network to Google for processing to create text.">
-    <ph name="language">$1<ex>English</ex></ph> speech is sent to Google for processing.
+    <ph name="language">$1<ex>English</ex></ph> speech is sent to Google for processing
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_CHANGE_LANGUAGE_BUTTON" desc="Text on a button to open a dialog to change the Dictation language.">
     Change
@@ -1202,7 +1217,7 @@ and Ctrl+Alt+Brightness down to zoom out.
     Switch Access settings
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_GUIDE_LABEL" desc="Label for the button that opens the setup guide dialog for Switch Access.">
-    Rerun setup guide
+    Setup guide
   </message>
   <message name="IDS_SETTINGS_SWITCH_ASSIGNMENT_HEADING" desc="Heading for the settings section for Switch Access to assign switches to actions">
     Switch action assignment
@@ -1215,9 +1230,6 @@ and Ctrl+Alt+Brightness down to zoom out.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ASSIGN_OPTION_SPACE" desc="Label for the option to assign the spacebar as a switch.">
     Space
-  </message>
-  <message name="IDS_SETTINGS_SWITCH_ASSIGN_OPTION_ENTER" desc="Label for the option to assign the enter key as a switch.">
-    Enter
   </message>
   <message name="IDS_SETTINGS_ASSIGN_SELECT_SWITCH_LABEL" desc="Label for the setting to assign a switch to the action 'Select', which selects the currently focused element and begins an interaction (which varies depending on the element/other settings).">
     Select
@@ -1259,18 +1271,18 @@ and Ctrl+Alt+Brightness down to zoom out.
     <ph name="DURATION">$1<ex>1.5</ex></ph>s
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_TITLE" desc="A title for a dialog to assign a switch key to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Assign switch: <ph name="action">$1<ex>Select</ex></ph>
+    Assign switch for “<ph name="action">$1<ex>Select</ex></ph>”
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WAIT_FOR_KEY_PROMPT_NO_SWITCHES" desc="A message shown to ask a user to press a new key to be assigned to an action. No switches are currently assigned to this action. The user can assign multiple switches to this action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Press a switch to assign “<ph name="action">$1<ex>Select</ex></ph>”
-You can assign multiple switches to this action
+    Press a switch or keyboard key to assign it to “<ph name="action">$1<ex>Select</ex></ph>.”
+You can assign multiple switches to this action.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WAIT_FOR_KEY_PROMPT_NO_SWITCHES_SETUP_GUIDE" desc="A message shown in the setup flow to ask a user to press a new key or external switch to be assigned to an action. No switches are currently assigned to this action. The user can assign multiple switches to this action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Press a switch or key to assign "<ph name="action">$1<ex>Select</ex></ph>"
+    Press a switch or keyboard key to assign it to “<ph name="action">$1<ex>Select</ex></ph>”
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WAIT_FOR_KEY_PROMPT_AT_LEAST_ONE_SWITCH" desc="A message shown to ask a user to press a key to be assigned to an action, or press an assigned switch to remove assignment. One or more switches are currently assigned to this action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Press a new switch to start assignment
-Press an assigned switch to remove assignment
+    Press a new switch or keyboard key to start assignment.
+Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WAIT_FOR_CONFIRMATION_PROMPT" desc="A message shown to ask a user to confirm by pressing a switch key to be assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
       Press “<ph name="currentKey">$1<ex>backspace</ex></ph>” again to confirm assignment and <ph name="response">$2<ex>exit</ex></ph>
@@ -1288,10 +1300,10 @@ Press an assigned switch to remove assignment
       Press “<ph name="currentKey">$1<ex>backspace</ex></ph>” again to remove assignment and <ph name="response">$2<ex>exit</ex></ph>
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WARN_NOT_CONFIRMED_PROMPT" desc="A message warning the user that the switch key pressed during confirmation did not match the initial switch key pressed. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-      Keys do not match. Press any key to <ph name="response">$1<ex>exit</ex></ph>.
+      Keys don’t match. Press any key to <ph name="response">$1<ex>exit</ex></ph>.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH" desc="A message warning the user that they cannot remove the last switch for the Select action. The text for the 'Select' action should be the same as the text from IDS_SETTINGS_ASSIGN_SELECT_SWITCH_LABEL. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-      Can’t remove the only switch assigned to Select. Press any key to <ph name="response">$1<ex>exit</ex></ph>.
+      Can’t remove the only switch assigned to “Select.” Press any key to <ph name="response">$1<ex>exit</ex></ph>.
   </message>
   <message name="IDS_SETTINGS_SWITCH_AND_DEVICE_TYPE" desc="Label describing a switch key and the type of device where the switch key exists. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     <ph name="SWITCH">$1<ex>backspace</ex></ph> (<ph name="DEVICE_TYPE">$2<ex>USB</ex></ph>)
@@ -1324,16 +1336,16 @@ Press an assigned switch to remove assignment
     No switch has been assigned yet
   </message>
   <message name="IDS_SETTINGS_NO_SWITCHES_ASSIGNED_SETUP_GUIDE" desc="A label indicating no switches are assigned to an action, from within the setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    No switch or key has been assigned yet
+    Switch hasn’t been assigned yet
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_DIALOG_EXIT" desc="The label of the button to exit one of the switch access dialogs without making any changes. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Exit
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_GUIDE_WARNING_DIALOG_TITLE" desc="The title for the dialog explaining that re-running the setup guide will clear all switch assignments. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Clear all switch assignments
+    Start Switch Access setup?
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_GUIDE_WARNING_DIALOG_MESSAGE" desc="The message explaining that re-running the setup guide will clear all switch assignments. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Re-running the setup guide will clear your assigned switches. Do you want to continue?
+    Your currently assigned switches will be cleared
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_INTRO_TITLE" desc="The title for the first page of the Switch Access setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Switch Access setup guide
@@ -1342,34 +1354,34 @@ Press an assigned switch to remove assignment
     To get started, please make sure your USB or Bluetooth switch is connected to your Chromebook. You can also use keyboard keys.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_ASSIGN_SELECT_TITLE" desc="The title for the page of the Switch Access setup guide where the user assigns a switch to perform the action select, which selects the element onscreen currently surrounded by the focus ring. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Assign switch: Select
+    Assign switch for “Select”
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_ENABLED_TITLE" desc="The title for the page of the Switch Access setup guide that informs the user that auto-scan has been enabled, meaning that the focused item will change periodically with no additional input. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Auto-scan enabled
+    Move between items automatically
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_ENABLED_EXPLANATION" desc="The message displayed in the Switch Access setup guide explaining how the auto-scan behavior works. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Auto-scan will automatically cycle through and focus on items on the screen. When an item is focused, press the "Select" key you just assigned to activate it.
+    Auto-scan lets you move through items on the screen automatically. When an item is highlighted, press “Select” to activate it.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_ENABLED_DIRECTIONS" desc="The message displayed in the Switch Access setup guide after auto-scan has been enabled, informing them how to proceed. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Activate the Next button to continue the setup or the Previous button to change the "Select" switch assignment.
+    You can go back to change the assignment for “Select.” You can always turn off auto-scan in Settings.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CHOOSE_SWITCH_COUNT_TITLE" desc="The title for the page of the Switch Access setup guide where the user selects the number of switches they are going to use. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Do you want to assign additional switches?
+    Assign additional switches?
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CHOOSE_1_SWITCH" desc="The label for the option to use only one switch (already assigned), within the Switch Access setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    I only use one switch
+    No, stay with 1 switch
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CHOOSE_2_SWITCHES" desc="The label for the option to use two switches (with one already assigned), within the Switch Access setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Assign one more switch
+    Assign 1 more switch
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CHOOSE_2_SWITCHES_DESCRIPTION" desc="The description for the option to use two switches (with one already assigned), within the Switch Access setup guide. It details that the second switch will be 'next' and move focus to the next item onscreen. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Assign this switch to "Next" to move to the next item on the page
+    Use “Next” to move forward on the screen
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CHOOSE_3_SWITCHES" desc="The label for the option to use three switches (with one already assigned), within the Switch Access setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Assign two more switches
+    Assign 2 more switches
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CHOOSE_3_SWITCHES_DESCRIPTION" desc="The description for the option to use three switches (with one already assigned), within the Switch Access setup guide. It details that the switches will be 'next' and 'previous', and used for navigating the items onscreen. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Assign them to "Next" and "Previous" to move between items on the page
+    Use “Next” and “Previous” to move between items on the screen
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_SPEED_TITLE" desc="The title for the page of the Switch Access setup guide where the user sets the speed of auto-scan, which automatically advances the focus between elements at a fixed interval. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Auto-scan speed
@@ -1378,22 +1390,19 @@ Press an assigned switch to remove assignment
     Choose how long the highlight should stay on each item
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_ASSIGN_NEXT_TITLE" desc="The title for the page of the Switch Access setup guide where the user assigns a switch to perform the action next, which advances the focus ring to the next element onscreen. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Assign switch: Next
+    Assign switch for “Next”
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_ASSIGN_PREVIOUS_TITLE" desc="The title for the page of the Switch Access setup guide where the user assigns a switch to perform the action previous, which moves the focus ring to the previous element onscreen. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Assign switch: Previous
+    Assign switch for “Previous”
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_TITLE" desc="The title for the final page of the Switch Access setup guide, which informs the user that setup is complete and provides some final information. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    You're all set!
-  </message>
-  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_AUTO_SCAN_INSTRUCTIONS" desc="Instructions for how to close the Switch Access setup guide using Switch Access with auto-scan enabled. Switch Access is an alternative input method designed for users with limited mobility where the user has as little as one switch (for example, a button) to control the computer. Auto-scan is a feature of Switch Access where focus moves from one element to the next at a set interval automatically, so the user only has to select the element when it is highlighted.">
-    Press your switch when the focus is on the Done button to close the guide.
+    You’re all set!
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_MANUAL_SCAN_INSTRUCTIONS" desc="Instructions for how to close the Switch Access setup guide using Switch Access with at least one switch assigned to navigation. Switch Access is an alternative input method designed for users with limited mobility where the user has as little as one switch (for example, a button) to control the computer. Auto-scan is a feature of Switch Access where focus moves from one element to the next at a set interval automatically, so the user only has to select the element when it is highlighted.">
-    Now that you have more switches to navigate, auto-scan has been turned off. Navigate to the Done button and press the Select switch to close the guide.
+    Since you set up multiple switches, auto-scan has been turned off.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_INFO" desc="Final advice on changing the settings for Switch Access after the Switch Access setup guide has been closed. Switch Access is an alternative input method designed for users with limited mobility where the user has as little as one switch (for example, a button) to control the computer.">
-    You can always change additional settings or open the setup guide again from Switch Access settings.
+    You can always change your settings or open the setup guide again from Switch Access settings.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_AUTO_SCAN_SLOWER" desc="The label on the button which slows the speed of Switch Access' auto-scan, which automatically advances the focus between elements at a fixed interval. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Slower
@@ -1411,7 +1420,7 @@ Press an assigned switch to remove assignment
     Previous
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_START_OVER" desc="A button in the Switch Access setup guide to restart from the beginning, and reconfigure any/all of the settings. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Start over setup
+    Redo setup
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_DONE" desc="A button in the Switch Access setup guide to confirm that the user has finished configuring their settings and would like to close the dialog. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Done
@@ -1541,12 +1550,6 @@ Press an assigned switch to remove assignment
   </message>
 
   <!-- Account Manager (OS settings) -->
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION" desc="Description of the Account Manager Settings page. Shown just below the title of the page.">
-    Manage your signed-in accounts. Websites, apps, and extensions in Chrome and Google Play may use these accounts to customize your experience, depending on permissions. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION" desc="Description of the Account Manager Settings page for child users. Shown just below the title of the page.">
-    Manage your accounts here. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2" desc="Description of the Account Manager Settings page for child users. Shown just below the title of the page.">
     This page allows you to manage your signed-in Google Accounts. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
@@ -1583,9 +1586,6 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_ACCOUNT_LABEL" desc="Label of the Remove account button in Account Manager.">
     Remove this account
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL" desc="Label of the Add account button in Account Manager.">
-    Add account
-  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL_V2" desc="Label of the Add account button in Account Manager.">
     Add Google Account
   </message>
@@ -1594,9 +1594,6 @@ Press an assigned switch to remove assignment
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ADD_SCHOOL_ACCOUNT_LABEL_2" desc="Label of the button to add a school/EDU account in Account Manager.">
     School Account
-  </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT" desc="Text for 'secondary accounts disabled' message in Settings page.">
-    Your administrator has disabled the addition of more Google Accounts
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT_V2" desc="Tooltip text for 'secondary accounts disabled' message in Settings page.">
    Your administrator doesn’t allow additional Google Accounts.
@@ -1746,8 +1743,11 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_MESSAGE" desc="Message shown when an upgrade to Debian 10 (codenamed Buster) is available.">
     An upgrade to Debian 10 (Buster) is available
   </message>
+  <message name="IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BULLSEYE_MESSAGE" desc="Message shown when an upgrade to Debian 11 (codenamed Bullseye) is available.">
+    An upgrade to Debian 11 (Bullseye) is available
+  </message>
   <message name="IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_SUBTEXT" desc="The current version the user has.">
-    Current version is Debian 9 (Stretch)
+    Current version is <ph name="CURRENT_VERSION">$1<ex>Debian GNU/Linux 9 (stretch)</ex></ph>
   </message>
   <message name="IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BUTTON" desc="Label for the button that launches the upgrade to Debian 10 for Crostini.">
     Upgrade
@@ -1811,6 +1811,42 @@ Press an assigned switch to remove assignment
   </message>
   <message name="IDS_SETTINGS_CROSTINI_PORT_FORWARDING_SHOW_MORE_ACTIONS_ARIA_LABEL" desc="The aria label for the button that displays more actions to the user for an individual port i.e. the text that screen readers will read out for the button.">
     Show more actions for this port
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_LABEL" desc="Label for managing extra Linux containers in Chrome OS.">
+    Manage extra containers
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_DESCRIPTION" desc="Description for managing extra Linux containers.">
+    Create and delete extra containers.
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE" desc="Label for the button the user clicks to create a new container.">
+    Create
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_TABLE_TITLE" desc="Heading for the table of all containers and their associated virtual machines">
+    All containers
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_DELETE" desc="Menu item the user selects to delete Linux container.">
+    Delete this container
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_STOP" desc="Menu item the user selects to stop a running Linux container.">
+    Stop this container
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_VM_NAME_LABEL" desc="Column heading for virtual machine name.">
+    VM name
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CONTAINER_NAME_LABEL" desc="Column heading for container name.">
+    Container name
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CONTAINER_IP_LABEL" desc="Column heading for container IP address.">
+    IP
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_TITLE" desc="Title of the dialog for entering details to create a new Linux container.">
+    Create a new container
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_IMAGE_SERVER" desc="Heading for the input field for entering the image server URL when creating a new Linux container.">
+    Image Server
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_IMAGE_ALIAS" desc="Heading for the input field for entering the image alias string e.g. debian/buster when creating a new Linux container.">
+    Image Alias
   </message>
   <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_SHOW_BUTTON" desc="The label of the button/link the user clicks to open the disk resizing dialogue." meaning="The label of the button/link the user clicks to open the disk resizing dialogue.">
     Change
@@ -1989,6 +2025,66 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_BLUETOOTH_DISCONNECT" desc="Bluetooth pairing dialog: dropdown meny item to disconnect from a device.">
     Disconnect
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTED" desc="Bluetooth device details page: Text informing user the device is currently connected.">
+    Connected
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_DISCONNECTED" desc="Bluetooth device details page: Text informing user the device is currently disconnected.">
+    Disconnected
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_FORGET" desc="Bluetooth device details page: button label for button that forgets the Bluetooth device when clicked.">
+    Forget
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_NAME" desc="Bluetooth device details page: label informing user the text below is the device name.">
+    Device name
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CHANGE_DEVICE_NAME" desc="Bluetooth device details page: button label for button that prompts user to change the Bluetooth device's name when clicked.">
+    Change device name
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CHANGE_DEVICE_NAME_BTN_A11Y_LABEL" desc="Bluetooth device details page: a11y label for button that prompts user to change the Bluetooth device's name when clicked.">
+    Change device name for <ph name="DEVICE_NAME">$1<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage.">
+    Battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTED_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current device is connected.">
+    Connected to <ph name="DEVICE">$1<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTING_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing, the current device is being connected to.">
+    Connecting to <ph name="DEVICE">$1<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTION_FAILURE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing, the current device could not be connected to.">
+    Could not connect to <ph name="DEVICE">$1<ex>Beats</ex></ph>. Try again.
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTION_FAILURE_LABEL" desc="Bluetooth device details page: Message informing, the current device could not be connected to.">
+    Couldn't connect. Try again.
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_DISCONNECTED_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current device is disconnected.">
+    Disconnected from <ph name="DEVICE">$1<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_NEW_NAME" desc="Bluetooth device details page > Change name dialog: label informing user to enter a new device name in input below.">
+    New device name
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_CANCEL" desc="Bluetooth device details page > Change device name dialog: Label for button that cancels device's name change.">
+    Cancel
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_DONE" desc="Bluetooth device details page > Change device name dialog: Label for button that initiates device's name change.">
+    Done
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CHANGE_DEVICE_SETTINGS_MOUSE" desc="Bluetooth device details page: label for button that changes current mouse device settings.">
+    Change mouse settings
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CHANGE_DEVICE_SETTINGS_KEYBOARD" desc="Bluetooth device details page: label for button that changes current keyboard device settings.">
+    Change keyboard settings
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_INPUT_A11Y_LABEL" desc="Bluetooth device details page > Change device name dialog:  The a11y label for the dialog input that renames a Bluetooth device, informing the user that letters, numbers and special characters are allowed, as well as the maximum number of characters permitted.">
+    Name can use letters, numbers, and special characters, and must be <ph name="MAX_CHARACTER_COUNT">$1<ex>20</ex></ph> characters or fewer
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_INPUT_SUBTITLE" desc="Bluetooth device details page > Change device name dialog: The Label for the dialog input that renames a Bluetooth device, informing the user that letters, numbers and special characters are allowed.">
+    Name can use letters, numbers, and special characters
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_INPUT_CHARACTER_COUNT" desc="Bluetooth device details page > Change device name dialog: The Label for the dialog input that renames a Bluetooth device, informing the user the number of characters they have inputted compared to the maximum number of characters allowed.">
+    <ph name="CURRENT_CHARACTER_COUNT">$1<ex>15</ex></ph>/<ph name="MAX_CHARACTER_COUNT">$2<ex>20</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_TOGGLE_ACCESSIBILITY_LABEL" desc="Accessibility only label for Bluetooth enable/disable toggle.">
     Bluetooth enable
   </message>
@@ -2007,7 +2103,88 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_BLUETOOTH" desc="Name of the settings page which displays Bluetooth device settings.">
     Bluetooth
   </message>
-    <message name="IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE" desc="Title of the settings dialog for adding or pairing Bluetooth a device.">
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_CONNECTED_A11Y_ONE_DEVICE" desc="Accessibility only label for Bluetooth summary page, when connected to one device.">
+    Connected to Bluetooth device named <ph name="DEVICE">$1<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_CONNECTED_A11Y_TWO_DEVICES" desc="Accessibility only label for Bluetooth summary page, when connected to two devices.">
+    Connected to Bluetooth devices named <ph name="FIRST_DEVICE">$1<ex>Beats</ex></ph> and <ph name="SECOND_DEVICE">$2<ex>Mouse</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_CONNECTED_A11Y_TWO_OR_MORE_DEVICES" desc="Accessibility only label for Bluetooth summary page, when connected to two or more devices.">
+    Connected to <ph name="DEVICE">$1<ex>Beats</ex></ph> and <ph name="NUMBER_OF_DEVICES">$2<ex>2</ex></ph> other Bluetooth devices
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_TWO_OR_MORE_DEVICES_DESCRIPTION" desc="Label for Bluetooth summary page, when connected to two or more devices.">
+    <ph name="DEVICE">$1<ex>Beats</ex></ph> and <ph name="NUMBER_OF_DEVICES">$2<ex>2</ex></ph> others
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_TWO_DEVICES_DESCRIPTION" desc="Label for Bluetooth summary page, when connected to two devices.">
+    <ph name="FIRST_DEVICE">$1<ex>Beats</ex></ph>, <ph name="SECOND_DEVICE">$2<ex>Mouse</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_OFF" desc="Label for Bluetooth summary page, when Bluetooth is off.">
+    Off
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_ON" desc="Label for Bluetooth summary page, when Bluetooth is on but no devices are connected.">
+    On
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_UNKNOWN" desc="Accessibility label for paired Bluetooth device list item with a device type of unknown.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Unknown device type
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_UNKNOWN_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of unknown and available battery info.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Unknown device type, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_COMPUTER" desc="Accessibility label for paired Bluetooth device list item with a device type of computer.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Computer
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_COMPUTER_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of computer and available battery info.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Computer, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_PHONE" desc="Accessibility label for paired Bluetooth device list item with a device type of phone.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Phone
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_PHONE_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of phone and available battery info.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Phone, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_HEADSET" desc="Accessibility label for paired Bluetooth device list item with a device type of audio device.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Audio device
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_HEADSET_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of audio device and available battery info.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Audio device, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_VIDEO_CAMERA" desc="Accessibility label for paired Bluetooth device list item with a device type of video camera.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Video camera
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_VIDEO_CAMERA_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of video camera and available battery info.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Video camera, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_GAME_CONTROLLER" desc="Accessibility label for paired Bluetooth device list item with a device type of game controller.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Game controller
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_GAME_CONTROLLER_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of game controller and available battery info.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Game controller, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_KEYBOARD" desc="Accessibility label for paired Bluetooth device list item with a device type of keyboard.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Keyboard
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_KEYBOARD_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of keyboard and available battery info.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Keyboard, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_MOUSE" desc="Accessibility label for paired Bluetooth device list item with a device type of mouse.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Mouse
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_MOUSE_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of mouse and available battery info.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Mouse, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_TABLET" desc="Accessibility label for paired Bluetooth device list item with a device type of tablet.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Tablet
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_TABLET_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of tablet and available battery info.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Tablet, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_SUBPAGE_BUTTON_A11Y_LABEL" desc="Accessibility label for button in a paired Bluetooth device list item that routes to the detail page for the device.">
+    <ph name="DEVICE">$1<ex>Beats</ex></ph>, Details
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAILS" desc="Name of the settings page which displays Bluetooth device details.">
+    Bluetooth device details
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE" desc="Title of the settings dialog for adding or pairing Bluetooth a device.">
     Connect to Bluetooth device
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_REMOVE" desc="Label for removing (unpairing) a paired Bluetooth device">
@@ -2016,78 +2193,13 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_BLUETOOTH_MANAGED" desc="Tooltip description for icon notifying user that the Bluetooth device is managed by an enterprise policy and may have restricted functionality.">
     Your administrator has blocked some functionality for this device
   </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIR" desc="Label for the settings button to pair a previously paired Bluetooth device.">
-    Pair
+  <message name="IDS_BLUETOOTH_ENABLE_FAST_PAIR_LABEL" desc="Label for the toggle that enables Fast Pair on the Bluetooth settings page.">
+    Scan for new devices
   </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_ENTER_KEY" desc="Bluetooth pairing dialog: Text for enter key when pairing keyboard devices." >
-    enter
+  <message name="IDS_BLUETOOTH_ENABLE_FAST_PAIR_SUBTITLE" desc="Subtitle that describes the toggle that enables Fast Pair on the Bluetooth settings page.">
+    Easily connect and set up devices close by
   </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_ACCEPT_PASSKEY" desc="Bluetooth pairing dialog: Text for button to accept pairing code.">
-    Accept
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_REJECT_PASSKEY" desc="Bluetooth pairing dialog: Text for button to reject pairing a device.">
-    Reject
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_REQUEST_PINCODE" desc="Bluetooth pairing message typically displayed when the external Bluetooth 2.0 and older device has no display or means of input.">
-    Please enter the PIN for "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_DISPLAY_PINCODE" desc="Bluetooth pairing message typically displayed when pairing a Bluetooth 2.0 and older wireless keyboard.">
-    Please enter this PIN code on "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_REQUEST_PASSKEY" desc="Bluetooth pairing message typically displayed when the external Bluetooth 2.1 and later device has no display or means of input, and does not support SSP.">
-    Please enter the passkey for "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_DISPLAY_PASSKEY" desc="Bluetooth pairing message typically displayed when pairing a Bluetooth 2.1 and later wireless keyboard.">
-    Please enter this passkey on "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONFIRM_PASSKEY" desc="Bluetooth pairing message typically shown when pairing with a device that has a display.">
-    Please confirm this passkey is shown on "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_START_CONNECTING">
-    Connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>"
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_IN_PROGRESS">
-    Connection to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>" still in progress
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_FAILED">
-    Failed to connect to "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_AUTH_FAILED">
-    Authentication failed while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_AUTH_CANCELED">
-    Authentication canceled while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_AUTH_REJECTED">
-    Authentication code rejected while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_AUTH_TIMEOUT">
-    Authentication timeout while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_UNSUPPORTED_DEVICE">
-    Unsupported Bluetooth device: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_ATTRIBUTE_LENGTH_INVALID">
-    Write operation exceeds the maximum length of the attribute to: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_CONNECTION_CONGESTED">
-    Connection is congested to remote device: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_INSUFFICIENT_ENCRYPTION">
-    Insufficient encryption for a given operation on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_OFFSET_INVALID">
-    Read or write operation was requested with an invalid offset on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_READ_NOT_PERMITTED">
-    Read operation is not permitted on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_REQUEST_NOT_SUPPORTED">
-    The given request is not supported to: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_WRITE_NOT_PERMITTED">
-    Write operation is not permitted on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
+
 
   <!-- Parental Controls -->
   <message name="IDS_SETTINGS_PARENTAL_CONTROLS_PAGE_TITLE" desc="Name of the settings page which manages ChromeOS's parental controls.">
@@ -2175,6 +2287,18 @@ Press an assigned switch to remove assignment
   </message>
   <message name="IDS_SETTINGS_MOUSE_AND_TOUCHPAD_TITLE" desc="In Device Settings, the title of the mouse and touchpad settings subpage (when the user has both types of devices).">
     Mouse and touchpad
+  </message>
+  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FEEDBACK_LABEL" desc="In Device Settings, the text next to the toggle for enabling touchpad haptic feedback.">
+    Enable haptic feedback. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY_LABEL" translateable="false" desc="In Device Settings, the text next to the slider for setting the touchpad haptic click sensitivity.">
+    Click feedback
+  </message>
+  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_LIGHT_CLICK_LABEL" desc="In Device Settings, the text under the left (less sensitive) side of the slider for the touchpad haptic click sensitivity.">
+    Light
+  </message>
+  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FIRM_CLICK_LABEL" desc="In Device Settings, the text under the right (more sensitive) side of the slider for the touchpad haptic click sensitivity.">
+    Firm
   </message>
 
   <!-- Printing Page (OS Settings)-->
@@ -2292,7 +2416,7 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_ADVANCED_URI" desc="Label for the CUPS printer URI (uniform resource identifier) in the Advanced section in the printer details page.">
     URI
   </message>
-  <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_DETAILS_NAME" desc="Label for the CUPS printer name in the printer details page.">
+  <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_DETAILS_NAME" desc="Label for the CUPS printer name in the printer details page." meaning="Name of an inanimate object">
     Name
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_DETAILS_MODEL" desc="Label for the CUPS printer model in the printer details page.">
@@ -2513,12 +2637,6 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_INTERNET_DEVICE_ENABLING" desc="Settings > Internet > Message when a device (e.g a Cellular modem) is enabling.">
     Enabling
   </message>
-  <message name="IDS_SETTINGS_INTERNET_DEVICE_DISABLING" desc="Settings > Internet > Message when a Cellular modem is turning off (disabling).">
-    Turning off
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_DEVICE_INITIALIZING" desc="Settings > Internet > Message when a device (e.g a Cellular modem) is initializing.">
-    Initializing
-  </message>
   <message name="IDS_SETTINGS_INTERNET_DEVICE_BUSY" desc="Settings > Internet > Message when the cellular modem is busy applying updates (e.g., installing an eSIM profile).">
     Applying changes...
   </message>
@@ -2539,12 +2657,6 @@ Press an assigned switch to remove assignment
   </message>
   <message name="IDS_SETTINGS_INTERNET_TOGGLE_MOBILE_ACCESSIBILITY_LABEL" desc="Accessibility only label for mobile data enable/disable toggle .">
     Mobile data enable
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_TOGGLE_TETHER_LABEL" desc="Settings > Internet: Label for Tether enable/disable toggle .">
-    Get data connection
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_TOGGLE_TETHER_SUBTEXT" desc="Settings > Internet: Description for Tether enable/disable toggle .">
-    Let this device find other devices with your Google Account that have a mobile data connection
   </message>
   <message name="IDS_SETTINGS_INTERNET_TOGGLE_WIFI_ACCESSIBILITY_LABEL" desc="Accessibility only label for WiFi enable/disable toggle .">
     Wi-Fi enable
@@ -2572,6 +2684,9 @@ Press an assigned switch to remove assignment
   </message>
   <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING" desc="Settings > Internet > Network details: Toggle label to allow mobile data roaming.">
     Allow mobile data roaming
+  </message>
+  <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_REQUIRED" desc="Settings > Internet > Network details: Toggle sublabel when mobile data roaming is required by provider.">
+    Roaming required by provider
   </message>
   <message name="IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING_ENABLED_HOME" desc="Settings > Internet > Network details: Toggle sublabel when roaming is allowed and it's connected to the home network.">
     Not currently roaming
@@ -2955,20 +3070,38 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_LEARN_MORE_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to a page with more information about the 'Phone Hub' feature.">
     Phone Hub, Learn More
   </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SECTION_TITLE" desc="The title of the Phone Hub Recent Photo section on the settings page.">
+    Recent Photos
+  </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SECTION_TITLE" desc="The title of the Phone Hub Notifications section on the settings page.">
     Notifications
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SECTION_TITLE" desc="The title of the Phone Hub Task Continuation section on the settings page.">
     Recent Chrome tabs
   </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE" translateable="false" desc="The title of the Phone Hub Apps section on the settings page.">
+    Apps
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SECTION_TITLE" translateable="false" desc="The title of the Phone Hub Apps and Notifications section on the settings page.">
+    App streaming and notifications
+  </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SUMMARY" desc="Description of for the 'Phone Hub' setting. This feature lets the user stay productive on Chrome OS by ensuring that their phones' apps, content, and connectivity are available on their Chrome OS device.">
     Access your phone's capabilities from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll' setting. This feature populates most recent photos from a connected Android phone to Chrome OS devices.">
+    View photos from your phone's camera roll on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Notifications' setting. This feature mirrors notifications from a connected Android phone to Chrome OS devices.">
     View notifications from your chat apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SUMMARY" desc="Description of for the 'Phone Hub Task Continuation' setting. This feature lets users resume in-app actions and chrome tabs that are open on a connected Android phone from Chrome OS devices.">
     View recent Chrome tabs from your phone
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SUMMARY" translateable="false" desc="Description of for the 'Phone Hub Apps' setting. This feature lets users streaming apps from a Android phone to Chrome OS device.">
+    Temporarily use your phone apps right from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SUMMARY" translateable="false" desc="Description of for the 'Phone Hub Apps and Notifications' setting. This feature mirrors notifications and lets users streaming apps from a Android phone to Chrome OS device.">
+    View your phones notifications and open apps on the <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_DISABLED_SUMMARY" desc="Description of for the 'Phone Hub Task Continuation' setting when Chrome sync is not enabled. This feature lets users resume in-app actions and chrome tabs that are open on a connected Android phone from Chrome OS devices.">
     Turn on <ph name="LINK1_BEGIN">&lt;a id="chromeSyncLink"&gt;</ph>Chrome Sync<ph name="LINK1_END">&lt;/a&gt;</ph> to view recent Chrome tabs. <ph name="LINK2_BEGIN">&lt;a target="_blank" id="learnMoreLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn More<ph name="LINK2_END">&lt;/a&gt;</ph>
@@ -2990,6 +3123,15 @@ Press an assigned switch to remove assignment
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTING_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the feature that will mirror phone notifications to their Chromebook.">
     Connecting to your phone
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_TITLE" desc="The title of the screen lock dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the app stream that will stream phone to their Chromebook.">
+    Set a PIN or password to continue
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_SUBTITLE" desc="The subtitle of the screen lock dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the app stream that will stream phone to their Chromebook.">
+    Protect your phone's data when this Chromebook wakes from sleep.
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_INSTRUCTION" desc="The instruction message of the screen lock dialog containing the smart lock will log in when the phone is nearby.">
+    Smart lock will automatically log you in when your phone is nearby.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" desc="The second paragraph of text shown in the dialog containing the Phone Hub notification opt-in flow. Alerts the user that to enable notifications, they need to have their phone unlocked, nearby, and with Bluetooth/Wi-Fi on to complete setup.">
     Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on.
@@ -3413,13 +3555,13 @@ Press an assigned switch to remove assignment
     Google Assistant
   </message>
   <message name="IDS_SETTINGS_GOOGLE_ASSISTANT_ENABLE_HOTWORD" desc="Title for a toggle that lets the assistant detect hotword.">
-    "Ok Google"
+    "Hey Google"
   </message>
   <message name="IDS_SETTINGS_GOOGLE_ASSISTANT_ENABLE_HOTWORD_DESCRIPTION" desc="Sub label for hotword-enable toggle.">
-    Access your Assistant when you say "Ok Google."
+    Access your Assistant when you say "Hey Google."
   </message>
   <message name="IDS_SETTINGS_GOOGLE_ASSISTANT_ENABLE_HOTWORD_WITHOUT_DSP_DESCRIPTION" desc="Sub label for hotword-enable dropdown without DSP support.">
-    Access your Assistant when you say "Ok Google." To save battery, choose “On (Recommended.)” Your Assistant will respond only when your device is plugged in or charging.
+    Access your Assistant when you say "Hey Google." To save battery, choose “On (Recommended.)” Your Assistant will respond only when your device is plugged in or charging.
   </message>
   <message name="IDS_SETTINGS_GOOGLE_ASSISTANT_ENABLE_HOTWORD_WITHOUT_DSP_RECOMMENDED" desc="Default label for hotword-enable dropdown without DSP support.">
     On (Recommended)
@@ -3449,7 +3591,7 @@ Press an assigned switch to remove assignment
     Default to using voice instead of keyboard
   </message>
   <message name="IDS_SETTINGS_GOOGLE_ASSISTANT_SCREEN_CONTEXT_DESCRIPTION" desc="Sub label for context-enable toggle.">
-    To get responses that are more tailored to you, let Google Assistant use info on your screen when you ask questions. Your Assistant may also use info about songs or videos that are playing.
+    To get responses that are more tailored to you, let Google Assistant access a screenshot of what’s on your screen when you ask questions. Your Assistant may also use info about songs or videos that are playing.
   </message>
   <message name="IDS_SETTINGS_GOOGLE_ASSISTANT_SETTINGS" desc="Title for a button that opens the Google Assistant app settings.">
     Google Assistant settings
@@ -3500,12 +3642,6 @@ Press an assigned switch to remove assignment
   </message>
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_SUNSET_TO_SUNRISE" desc="In Device Settings > Displays, the label of the option to set the automatic schedule of the Night Light feature to turn on at sunset and off at sunrise.">
     Sunset to sunrise
-  </message>
-  <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_START_TIME" desc="In Device Settings > Displays, the label of the start time bubble.">
-    Start time
-  </message>
-  <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_STOP_TIME" desc="In Device Settings > Displays, the label of the end time bubble.">
-    End time
   </message>
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEXT" desc="In Device Settings > Displays, text describing the Night Light feature.">
     Make it easier to look at your screen or read in dim light
@@ -3665,9 +3801,6 @@ Press an assigned switch to remove assignment
   </message>
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_CONFIRM_PIN_TITLE" desc="Message shown below the title that tells the user to confirm their initial PIN entry.">
     Confirm your PIN
-  </message>
-  <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_TITLE" desc="Title of the password prompt dialog popup.">
-    Confirm your password
   </message>
 
   <!-- Setup fingerprint dialog (OS settings) -->
@@ -3830,11 +3963,17 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TEXT" desc="The label for the settings row button in the App section of OS Settings which links to the App Notifications page.">
     Notifications
   </message>
+  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating the number of Chrome OS apps installed.">
+    <ph name="APP_COUNT">$1<ex>3</ex></ph> apps
+  </message>
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE" desc="The label for the notfications DoNotDisturb toggle that lets the user silence all app notifications.">
     Do not disturb
   </message>
-   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESC" desc="The text description of the DoNotDisturb toggle within help icon tooltip.">
+   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION" desc="The text description of the DoNotDisturb toggle within help icon tooltip.">
     When turned on, all notifications will be silenced
+  </message>
+  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TO_BROWSER_SETTINGS_DESCRIPTION" desc="In notifications OS Settings subpage, explanatory text for website notifications link.">
+    For browser notifications, go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>Chrome browser Settings<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_ANDROID_APPS_TITLE" desc="The title of Google Play Store (Arc++ / Android Apps) section.">
     Google Play Store
@@ -3856,6 +3995,16 @@ Press an assigned switch to remove assignment
   </message>
   <message name="IDS_SETTINGS_APP_DETAILS_TITLE" desc="The title of app details subpage, which displays details about a specific app.">
     App details
+  </message>
+
+   <!-- Apps > Manage your apps > Borealis -->
+   <!-- TODO(b/194640944): Replace "borealis" string before launch -->
+  <message name="IDS_SETTINGS_APPS_BOREALIS_MAIN_PERMISSION_TEXT" translateable="false" desc="Describes how Borealis permissions are applied on main app with learn more link.">
+    Permission settings applied here are applied across all Borealis apps. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_APPS_BOREALIS_APP_PERMISSION_TEXT" translateable="false" desc="Link to main Borealis app from other borealis apps.">
+    Permissions for apps installed by Borealis are managed via the <ph name="LINK_BEGIN">&lt;a&gt;</ph>Borealis app settings<ph name="LINK_END">&lt;/a&gt;</ph>.
+    Borealis permission settings are applied across all Borealis applications.
   </message>
 
   <!-- Apps > Manage your apps > Parallels -->
@@ -3988,6 +4137,34 @@ Press an assigned switch to remove assignment
   <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL" desc="The label of the confirmation button to disable data access protection">
     Disable
   </message>
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_TITLE" desc="Do not translate (string not final). Text on the privacy page that opens up the smart privacy section.">
+    Smart privacy protections
+  </message>
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SUBTEXT" desc="Do not translate (string not final). The sub-label describing the purpose of the smart privacy section.">
+    Smart display lock and detect if others peeking from behind
+  </message>
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_DESC" desc="Do not translate (string not final). The text explaining to the user the manner in which their presence is sensed and data usage policy.">
+    This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.
+  </message>
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SCREEN_LOCK_TITLE" desc="Do not translate (string not final). The name of the smart screen lock feature shown as the label of a toggle in the smart privacy subpage.">
+    Smart screen lock
+  </message>
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SCREEN_LOCK_SUBTEXT" desc="Do not translate (string not final). Sub-label elaborating on the meaning of smart screen locking.">
+    Screen locks automatically if you walk off, and won't turn off if you're in front of it
+  </message>
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_TITLE" desc="Do not translate (string not final). Text in the smart privacy section which is the subheader for snooping protection options.">
+    Snooping protection
+  </message>
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_SUBTEXT" desc="Do not translate (string not final). Sub-label elaborating on the meaning of snooping protection.">
+    Notify you or temporary dim your screen when someone is snooping from behind
+  </message>
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_ICON" desc="Do not translate (string not final). The radio button option in the smart privacy section requesting an eye icon when a snooper is detected.">
+    Show me an eye icon in the status area
+  </message>
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_DIM" desc="Do not translate (string not final). The radio button option in the smart privacy section requesting screen dim when a snooper is detected.">
+    Temporary dim screen
+  </message>
+
 
   <!-- On Startup (OS settings) -->
   <message name="IDS_OS_SETTINGS_ON_STARTUP_TITLE" desc="The title of the dropdown menu that allows the user to configure the restore apps and pages options on startup.">

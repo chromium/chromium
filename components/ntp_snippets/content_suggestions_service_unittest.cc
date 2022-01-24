@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
@@ -37,6 +36,7 @@ using testing::Eq;
 using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::Mock;
+using testing::NiceMock;
 using testing::Property;
 using testing::Return;
 using testing::SizeIs;
@@ -50,6 +50,8 @@ namespace {
 class MockServiceObserver : public ContentSuggestionsService::Observer {
  public:
   MockServiceObserver() = default;
+  MockServiceObserver(const MockServiceObserver&) = delete;
+  MockServiceObserver& operator=(const MockServiceObserver&) = delete;
   ~MockServiceObserver() override = default;
 
   MOCK_METHOD1(OnNewSuggestions, void(Category category));
@@ -59,18 +61,16 @@ class MockServiceObserver : public ContentSuggestionsService::Observer {
                void(const ContentSuggestion::ID& suggestion_id));
   MOCK_METHOD0(OnFullRefreshRequired, void());
   MOCK_METHOD0(ContentSuggestionsServiceShutdown, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockServiceObserver);
 };
 
 }  // namespace
 
 class ContentSuggestionsServiceTest : public testing::Test {
  public:
-  ContentSuggestionsServiceTest()
-      : pref_service_(std::make_unique<TestingPrefServiceSimple>()),
-        category_ranker_(std::make_unique<ConstantCategoryRanker>()) {}
+  ContentSuggestionsServiceTest() = default;
+  ContentSuggestionsServiceTest(const ContentSuggestionsServiceTest&) = delete;
+  ContentSuggestionsServiceTest& operator=(
+      const ContentSuggestionsServiceTest&) = delete;
 
   void SetUp() override {
     RegisterPrefs();
@@ -86,9 +86,10 @@ class ContentSuggestionsServiceTest : public testing::Test {
   // returned by the service for the given |category|.
   void ExpectThatSuggestionsAre(Category category, std::vector<int> numbers) {
     std::vector<Category> categories = service()->GetCategories();
-    auto position = std::find(categories.begin(), categories.end(), category);
+    auto category_position =
+        std::find(categories.begin(), categories.end(), category);
     if (!numbers.empty()) {
-      EXPECT_NE(categories.end(), position);
+      EXPECT_NE(categories.end(), category_position);
     }
 
     for (const auto& suggestion :
@@ -96,11 +97,11 @@ class ContentSuggestionsServiceTest : public testing::Test {
       std::string id_within_category = suggestion.id().id_within_category();
       int id;
       ASSERT_TRUE(base::StringToInt(id_within_category, &id));
-      auto position = std::find(numbers.begin(), numbers.end(), id);
-      if (position == numbers.end()) {
+      auto number_position = std::find(numbers.begin(), numbers.end(), id);
+      if (number_position == numbers.end()) {
         ADD_FAILURE() << "Unexpected suggestion with ID " << id;
       } else {
-        numbers.erase(position);
+        numbers.erase(number_position);
       }
     }
     for (int number : numbers) {
@@ -192,10 +193,10 @@ class ContentSuggestionsServiceTest : public testing::Test {
 
  private:
   std::unique_ptr<ContentSuggestionsService> service_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  std::unique_ptr<CategoryRanker> category_ranker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSuggestionsServiceTest);
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_{
+      std::make_unique<TestingPrefServiceSimple>()};
+  std::unique_ptr<CategoryRanker> category_ranker_{
+      std::make_unique<ConstantCategoryRanker>()};
 };
 
 class ContentSuggestionsServiceDisabledTest
@@ -281,7 +282,7 @@ TEST_F(ContentSuggestionsServiceTest, ShouldRedirectSuggestionInvalidated) {
 
   MockContentSuggestionsProvider* provider =
       MakeRegisteredMockProvider(articles_category);
-  MockServiceObserver observer;
+  NiceMock<MockServiceObserver> observer;
   service()->AddObserver(&observer);
 
   provider->FireSuggestionsChanged(
@@ -446,7 +447,7 @@ TEST_F(ContentSuggestionsServiceTest, ShouldRemoveCategoryWhenNotProvided) {
       Category::FromKnownCategory(KnownCategories::READING_LIST);
   MockContentSuggestionsProvider* provider =
       MakeRegisteredMockProvider(category);
-  MockServiceObserver observer;
+  NiceMock<MockServiceObserver> observer;
   service()->AddObserver(&observer);
 
   provider->FireSuggestionsChanged(category,

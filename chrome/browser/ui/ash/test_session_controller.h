@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/session/session_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -17,6 +16,10 @@
 class TestSessionController : public ash::SessionController {
  public:
   TestSessionController();
+
+  TestSessionController(const TestSessionController&) = delete;
+  TestSessionController& operator=(const TestSessionController&) = delete;
+
   ~TestSessionController() override;
 
   const absl::optional<ash::SessionInfo>& last_session_info() const {
@@ -87,8 +90,6 @@ class TestSessionController : public ash::SessionController {
   int set_user_session_order_count_ = 0;
   bool is_screen_locked_ = false;
   base::ObserverList<ash::SessionObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionController);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TEST_SESSION_CONTROLLER_H_

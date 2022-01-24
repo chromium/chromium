@@ -402,6 +402,10 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
     SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   }
+
+  DelegateView(const DelegateView&) = delete;
+  DelegateView& operator=(const DelegateView&) = delete;
+
   ~DelegateView() override;
 
   // views::ViewTargetDelegate:
@@ -474,8 +478,6 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
   // The most recent color that the |translucent_background_| has been animated
   // to.
   SkColor target_color_ = SK_ColorTRANSPARENT;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegateView);
 };
 
 HotseatWidget::DelegateView::~DelegateView() {
@@ -935,7 +937,7 @@ void HotseatWidget::UpdateLayout(bool animate) {
         shelf_view_layer->GetAnimator());
     animation_setter.SetTransitionDuration(
         animate ? ShelfConfig::Get()->shelf_animation_duration()
-                : base::TimeDelta::FromMilliseconds(0));
+                : base::Milliseconds(0));
     animation_setter.SetTweenType(gfx::Tween::EASE_OUT);
     animation_setter.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);

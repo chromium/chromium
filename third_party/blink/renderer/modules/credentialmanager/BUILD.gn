@@ -26,8 +26,6 @@ blink_modules_sources("credentialmanager") {
     "otp_credential.h",
     "password_credential.cc",
     "password_credential.h",
-    "payment_credential.cc",
-    "payment_credential.h",
     "public_key_credential.cc",
     "public_key_credential.h",
     "scoped_promise_resolver.cc",

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
@@ -89,6 +90,10 @@ class GestureScrollEventWatcher : public RenderWidgetHost::InputEventObserver {
 class AutoscrollBrowserTest : public ContentBrowserTest {
  public:
   AutoscrollBrowserTest() {}
+
+  AutoscrollBrowserTest(const AutoscrollBrowserTest&) = delete;
+  AutoscrollBrowserTest& operator=(const AutoscrollBrowserTest&) = delete;
+
   ~AutoscrollBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -166,9 +171,6 @@ class AutoscrollBrowserTest : public ContentBrowserTest {
       observer.WaitForMetadataChange();
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutoscrollBrowserTest);
 };
 
 // We don't plan on supporting middle click autoscroll on Android.

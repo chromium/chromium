@@ -6,7 +6,7 @@
   'use strict';
   TestRunner.addResult(
       `Verify that a network file tab gets substituted with filesystem tab when persistence binding comes.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/foo.js');
@@ -39,8 +39,8 @@
   ]);
 
   function dumpEditorTabs() {
-    var editorContainer = UI.panels.sources._sourcesView._editorContainer;
-    var openedUISourceCodes = [...editorContainer._tabIds.keys()];
+    var editorContainer = UI.panels.sources.sourcesView().editorContainer;
+    var openedUISourceCodes = [...editorContainer.tabIds.keys()];
     openedUISourceCodes.sort((a, b) => a.url > b.url ? 1 : b.url > a.url ? -1 : 0);
     TestRunner.addResult('Opened tabs: ');
     for (const code of openedUISourceCodes)

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_ENTRY_BRIDGE_H_
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 
 namespace send_tab_to_self {
 class SendTabToSelfEntry;

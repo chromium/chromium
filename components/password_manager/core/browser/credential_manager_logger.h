@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "url/gurl.h"
 
@@ -22,6 +21,8 @@ namespace password_manager {
 class CredentialManagerLogger {
  public:
   explicit CredentialManagerLogger(const autofill::LogManager*);
+  CredentialManagerLogger(const CredentialManagerLogger&) = delete;
+  CredentialManagerLogger& operator=(const CredentialManagerLogger&) = delete;
   ~CredentialManagerLogger();
 
   void LogRequestCredential(const url::Origin& url,
@@ -34,8 +35,6 @@ class CredentialManagerLogger {
  private:
   // The LogManager to which logs can be sent for display.
   const autofill::LogManager* const log_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerLogger);
 };
 
 }  // namespace password_manager

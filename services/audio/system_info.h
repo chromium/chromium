@@ -24,6 +24,10 @@ namespace audio {
 class SystemInfo : public mojom::SystemInfo {
  public:
   explicit SystemInfo(media::AudioManager* audio_manager);
+
+  SystemInfo(const SystemInfo&) = delete;
+  SystemInfo& operator=(const SystemInfo&) = delete;
+
   ~SystemInfo() override;
 
   void Bind(mojo::PendingReceiver<mojom::SystemInfo> receiver);
@@ -55,8 +59,6 @@ class SystemInfo : public mojom::SystemInfo {
   // Validates thread-safe access to |bindings_| only. |helper_| takes care of
   // its thread safety/affinity itself.
   SEQUENCE_CHECKER(binding_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SystemInfo);
 };
 
 }  // namespace audio

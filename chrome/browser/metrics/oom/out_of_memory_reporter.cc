@@ -76,7 +76,8 @@ void OutOfMemoryReporter::DidFinishNavigation(
       handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
 }
 
-void OutOfMemoryReporter::RenderProcessGone(base::TerminationStatus status) {
+void OutOfMemoryReporter::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   // Don't record OOM metrics (especially not UKM) for unactivated portals
   // since the user didn't explicitly navigate to it.
   if (web_contents()->IsPortal())
@@ -130,4 +131,4 @@ void OutOfMemoryReporter::OnCrashDumpProcessed(
 }
 #endif  // defined(OS_ANDROID)
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OutOfMemoryReporter)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OutOfMemoryReporter);

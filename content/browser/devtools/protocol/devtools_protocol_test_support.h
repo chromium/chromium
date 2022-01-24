@@ -36,10 +36,6 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
                               int32_t line_no,
                               const std::u16string& source_id) override;
 
-  blink::SecurityStyle GetSecurityStyle(
-      content::WebContents* web_contents,
-      content::SecurityStyleExplanations* security_style_explanations) override;
-
   base::DictionaryValue* SendCommand(const std::string& method,
                                      std::unique_ptr<base::Value> params) {
     return SendCommand(method, std::move(params), true);
@@ -123,16 +119,14 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
   void ProcessNavigationsAnyOrder(
       std::vector<ExpectedNavigation> expected_navigations);
 
-  std::vector<std::string> GetAllFrameUrls();
-
   void set_agent_host_can_close() { agent_host_can_close_ = true; }
 
-  void SetSecurityExplanationCert(
-      const scoped_refptr<net::X509Certificate>& cert) {
-    cert_ = cert;
+  void SetAllowUnsafeOperations(bool allow) {
+    allow_unsafe_operations_ = allow;
   }
 
   std::unique_ptr<base::DictionaryValue> result_;
+  base::Value error_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
   int last_sent_id_;
   std::vector<int> result_ids_;
@@ -144,8 +138,8 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
   void RunLoopUpdatingQuitClosure();
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override;
-
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
+  bool AllowUnsafeOperations() override;
 
   std::string waiting_for_notification_;
   NotificationMatcher waiting_for_notification_matcher_;
@@ -153,8 +147,8 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
   int waiting_for_command_result_id_;
   bool in_dispatch_;
   bool agent_host_can_close_;
-  scoped_refptr<net::X509Certificate> cert_;
   base::OnceClosure run_loop_quit_closure_;
+  bool allow_unsafe_operations_ = true;
 };
 
 }  // namespace content

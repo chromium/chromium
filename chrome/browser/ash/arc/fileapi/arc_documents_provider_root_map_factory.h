@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_DOCUMENTS_PROVIDER_ROOT_MAP_FACTORY_H_
 #define CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_DOCUMENTS_PROVIDER_ROOT_MAP_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -16,6 +15,11 @@ class ArcDocumentsProviderRootMap;
 class ArcDocumentsProviderRootMapFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  ArcDocumentsProviderRootMapFactory(
+      const ArcDocumentsProviderRootMapFactory&) = delete;
+  ArcDocumentsProviderRootMapFactory& operator=(
+      const ArcDocumentsProviderRootMapFactory&) = delete;
+
   // Returns the ArcDocumentsProviderRootMap for |context|, creating it if not
   // created yet.
   static ArcDocumentsProviderRootMap* GetForBrowserContext(
@@ -36,8 +40,6 @@ class ArcDocumentsProviderRootMapFactory
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderRootMapFactory);
 };
 
 }  // namespace arc

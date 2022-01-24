@@ -36,9 +36,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/result_catcher.h"
-#include "google_apis/drive/test_util.h"
+#include "google_apis/common/test_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -258,28 +259,6 @@ bool InitializeLocalFileSystem(std::string mount_point_name,
   return TouchFile(test_dir, kTestDir.mtime, kTestDir.atime);
 }
 
-// Helper class to wait for a background page to load or close again.
-class BackgroundObserver {
- public:
-  BackgroundObserver()
-      : page_created_(extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-                      content::NotificationService::AllSources()),
-        page_closed_(extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-                     content::NotificationService::AllSources()) {}
-
-  void WaitUntilLoaded() {
-    page_created_.Wait();
-  }
-
-  void WaitUntilClosed() {
-    page_closed_.Wait();
-  }
-
- private:
-  content::WindowedNotificationObserver page_created_;
-  content::WindowedNotificationObserver page_closed_;
-};
-
 // Base class for FileSystemExtensionApi tests.
 class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
  public:
@@ -290,6 +269,12 @@ class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
   };
 
   FileSystemExtensionApiTestBase() = default;
+
+  FileSystemExtensionApiTestBase(const FileSystemExtensionApiTestBase&) =
+      delete;
+  FileSystemExtensionApiTestBase& operator=(
+      const FileSystemExtensionApiTestBase&) = delete;
+
   ~FileSystemExtensionApiTestBase() override = default;
 
   virtual std::vector<TestDirConfig> GetTestDirContents() {
@@ -354,7 +339,9 @@ class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
         extensions::ProcessManager::SetEventPageIdleTimeForTesting(1);
       }
 
-      BackgroundObserver page_complete;
+      extensions::ExtensionHostTestHelper host_helper(profile());
+      host_helper.RestrictToType(
+          extensions::mojom::ViewType::kExtensionBackgroundPage);
       const Extension* file_handler =
           LoadExtension(test_data_dir_.AppendASCII(filehandler_path));
       if (!file_handler) {
@@ -363,9 +350,9 @@ class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
       }
 
       if (flags & FLAGS_LAZY_FILE_HANDLER) {
-        page_complete.WaitUntilClosed();
+        host_helper.WaitForHostDestroyed();
       } else {
-        page_complete.WaitUntilLoaded();
+        host_helper.WaitForDocumentElementAvailable();
       }
     }
 
@@ -405,8 +392,6 @@ class FileSystemExtensionApiTestBase : public extensions::ExtensionApiTest {
 
  private:
   std::unique_ptr<media_router::MockMediaRouter> media_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemExtensionApiTestBase);
 };
 
 // Tests for a native local file system.
@@ -720,7 +705,7 @@ class FileSystemExtensionApiTestWithApps
   void SetUpOnMainThread() override {
     Profile* profile = browser()->profile();
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile);
-    web_app::WebAppProvider::Get(profile)
+    web_app::WebAppProvider::GetForTest(profile)
         ->system_web_app_manager()
         .InstallSystemAppsForTesting();
     LocalFileSystemExtensionApiTest::SetUpOnMainThread();

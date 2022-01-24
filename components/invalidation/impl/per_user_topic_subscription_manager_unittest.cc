@@ -262,9 +262,9 @@ TEST_F(PerUserTopicSubscriptionManagerTest, ShouldUpdateSubscribedTopics) {
       per_user_topic_subscription_manager->HaveAllRequestsFinishedForTest());
 
   for (const auto& topic : topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value =
-        topics->FindKeyOfType(topic.first, base::Value::Type::STRING);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value = subscribed_topics->FindKeyOfType(
+        topic.first, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
   }
 }
@@ -332,7 +332,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest, ShouldRepeatRequestsOnFailure) {
   // Initial backoff is 2 seconds with 20% jitter, so the minimum possible delay
   // is 1600ms. Advance time to just before that; nothing should have changed
   // yet.
-  FastForwardTimeBy(base::TimeDelta::FromMilliseconds(1500));
+  FastForwardTimeBy(base::Milliseconds(1500));
   EXPECT_TRUE(per_user_topic_subscription_manager->GetSubscribedTopicsForTest()
                   .empty());
   EXPECT_FALSE(
@@ -342,7 +342,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest, ShouldRepeatRequestsOnFailure) {
   // Access token should be refreshed in order to avoid requests with expired
   // access token.
   EXPECT_CALL(identity_observer, OnAccessTokenRequested(_, _, _));
-  FastForwardTimeBy(base::TimeDelta::FromMilliseconds(600));
+  FastForwardTimeBy(base::Milliseconds(600));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
   base::RunLoop().RunUntilIdle();
@@ -415,13 +415,13 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
   // UpdateSubscribedTopics() call shouldn't lead to backoff bypassing.
   per_user_topic_subscription_manager->UpdateSubscribedTopics(
       topics, kFakeInstanceIdToken);
-  FastForwardTimeBy(base::TimeDelta::FromMilliseconds(1500));
+  FastForwardTimeBy(base::Milliseconds(1500));
   testing::Mock::VerifyAndClearExpectations(&identity_observer);
 
   // The maximum backoff is 2 seconds; advance to just past that. Now access
   // token should be requested.
   EXPECT_CALL(identity_observer, OnAccessTokenRequested(_, _, _));
-  FastForwardTimeBy(base::TimeDelta::FromMilliseconds(600));
+  FastForwardTimeBy(base::Milliseconds(600));
   testing::Mock::VerifyAndClearExpectations(&identity_observer);
 
   // Add valid responses to access token and subscription requests and ensure
@@ -609,16 +609,17 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
 
   // Topics were disabled, check that they're not in the prefs.
   for (const auto& topic : disabled_topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value = topics->FindKey(topic.first);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value =
+        subscribed_topics->FindKey(topic.first);
     ASSERT_EQ(private_topic_value, nullptr);
   }
 
   // Check that enable topics are still in the prefs.
   for (const auto& topic : enabled_topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value =
-        topics->FindKeyOfType(topic.first, base::Value::Type::STRING);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value = subscribed_topics->FindKeyOfType(
+        topic.first, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
   }
 }
@@ -642,9 +643,9 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
             per_user_topic_subscription_manager->GetSubscribedTopicsForTest());
 
   for (const auto& topic : topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value =
-        topics->FindKeyOfType(topic.first, base::Value::Type::STRING);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value = subscribed_topics->FindKeyOfType(
+        topic.first, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
     ASSERT_TRUE(private_topic_value->is_string());
     EXPECT_EQ("old-token-topic", private_topic_value->GetString());
@@ -668,9 +669,9 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
             per_user_topic_subscription_manager->GetSubscribedTopicsForTest());
 
   for (const auto& topic : topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value =
-        topics->FindKeyOfType(topic.first, base::Value::Type::STRING);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value = subscribed_topics->FindKeyOfType(
+        topic.first, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
     ASSERT_TRUE(private_topic_value->is_string());
     EXPECT_EQ("new-token-topic", private_topic_value->GetString());
@@ -704,16 +705,17 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
 
   // Topics should still be removed from prefs.
   for (const auto& topic : disabled_topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value = topics->FindKey(topic.first);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value =
+        subscribed_topics->FindKey(topic.first);
     ASSERT_EQ(private_topic_value, nullptr);
   }
 
   // Check that enable topics are still in the prefs.
   for (const auto& topic : enabled_topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value =
-        topics->FindKeyOfType(topic.first, base::Value::Type::STRING);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value = subscribed_topics->FindKeyOfType(
+        topic.first, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
   }
 }

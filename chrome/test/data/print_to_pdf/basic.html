@@ -1,0 +1,27 @@
+<html>
+  <title>PrintToPdf Basic Test</title>
+  <style>
+    #centered {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 200px;
+      margin-top: -100px;
+      margin-left: -100px;
+      background-color: red;
+    }
+  </style>
+
+  <body onload="SetBodyStyle()">
+      <div id="centered"></div>
+  </body>
+
+  <script>
+    function SetBodyStyle() {
+      document.body.style.color = '#ffffff';
+      document.body.style.background = '#123456';
+      document.body.style.height = '50 in';
+    }
+  </script>
+</html>

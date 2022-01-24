@@ -78,7 +78,7 @@ String TextCodecUTF16::Decode(const char* bytes,
     if (really_flush && (have_lead_byte_ || have_lead_surrogate_)) {
       have_lead_byte_ = have_lead_surrogate_ = false;
       saw_error = true;
-      return String(&kReplacementCharacter, 1);
+      return String(&kReplacementCharacter, 1u);
     }
     return String();
   }

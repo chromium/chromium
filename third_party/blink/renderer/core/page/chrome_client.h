@@ -39,7 +39,6 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/blame_context.h"
-#include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/battery_savings.h"
@@ -163,6 +162,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // Calls CalculateWindowRectWithAdjustment, then SetWindowRect.
   void SetWindowRectWithAdjustment(const IntRect& pending_rect,
                                    LocalFrame& frame);
+
+  // Tells the browser that another page has accessed the DOM of the initial
+  // empty document of a main frame.
+  virtual void DidAccessInitialMainDocument() = 0;
 
   // This gives the rect of the top level window that the given LocalFrame is a
   // part of.
@@ -362,6 +365,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                          const String&,
                                          TextDirection,
                                          const gfx::Rect&) = 0;
+  virtual void ClearKeyboardTriggeredTooltip(LocalFrame&) = 0;
   void ClearToolTip(LocalFrame&);
   String GetLastToolTipTextForTesting() {
     return current_tool_tip_text_for_test_;
@@ -431,9 +435,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void SetEventListenerProperties(LocalFrame*,
                                           cc::EventListenerClass,
                                           cc::EventListenerProperties) = 0;
-  virtual cc::EventListenerProperties EventListenerProperties(
-      LocalFrame*,
-      cc::EventListenerClass) const = 0;
 
   virtual void SetHasScrollEventHandlers(LocalFrame*, bool) = 0;
   virtual void SetNeedsLowLatencyInput(LocalFrame*, bool) = 0;
@@ -517,11 +518,9 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   }
 
   // The |callback| will be fired when the corresponding renderer frame for the
-  // |frame| is presented in the display compositor. The reported time could
-  // sometimes be the swap time, as is the case when the swap is aborted. In
-  // this case, WebSwapResult will be DidNotSwap.
+  // |frame| is presented in the display compositor.
   using ReportTimeCallback =
-      WTF::CrossThreadOnceFunction<void(WebSwapResult, base::TimeTicks)>;
+      WTF::CrossThreadOnceFunction<void(base::TimeTicks)>;
   virtual void NotifyPresentationTime(LocalFrame& frame,
                                       ReportTimeCallback callback) {}
 

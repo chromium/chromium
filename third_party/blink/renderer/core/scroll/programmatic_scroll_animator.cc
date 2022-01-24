@@ -17,7 +17,7 @@ namespace blink {
 
 ProgrammaticScrollAnimator::ProgrammaticScrollAnimator(
     ScrollableArea* scrollable_area)
-    : scrollable_area_(scrollable_area), start_time_(0.0) {}
+    : scrollable_area_(scrollable_area) {}
 
 ProgrammaticScrollAnimator::~ProgrammaticScrollAnimator() {
   if (on_finish_)
@@ -27,7 +27,7 @@ ProgrammaticScrollAnimator::~ProgrammaticScrollAnimator() {
 void ProgrammaticScrollAnimator::ResetAnimationState() {
   ScrollAnimatorCompositorCoordinator::ResetAnimationState();
   animation_curve_.reset();
-  start_time_ = 0.0;
+  start_time_ = base::TimeTicks();
   if (on_finish_)
     std::move(on_finish_).Run();
 }
@@ -59,7 +59,7 @@ void ProgrammaticScrollAnimator::AnimateToOffset(
   if (run_state_ == RunState::kPostAnimationCleanup)
     ResetAnimationState();
 
-  start_time_ = 0.0;
+  start_time_ = base::TimeTicks();
   target_offset_ = offset;
   is_sequenced_scroll_ = is_sequenced_scroll;
   if (on_finish_)
@@ -84,16 +84,16 @@ void ProgrammaticScrollAnimator::CancelAnimation() {
     std::move(on_finish_).Run();
 }
 
-void ProgrammaticScrollAnimator::TickAnimation(double monotonic_time) {
+void ProgrammaticScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
   if (run_state_ != RunState::kRunningOnMainThread)
     return;
 
-  if (!start_time_)
+  if (start_time_ == base::TimeTicks())
     start_time_ = monotonic_time;
-  double elapsed_time = monotonic_time - start_time_;
+  base::TimeDelta elapsed_time = monotonic_time - start_time_;
   bool is_finished = (elapsed_time > animation_curve_->Duration());
-  ScrollOffset offset =
-      BlinkOffsetFromCompositorOffset(animation_curve_->GetValue(elapsed_time));
+  ScrollOffset offset = BlinkOffsetFromCompositorOffset(
+      animation_curve_->GetValue(elapsed_time.InSecondsF()));
   NotifyOffsetChanged(offset);
 
   if (is_finished) {
@@ -144,7 +144,9 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
     if (!scrollable_area_->ShouldScrollOnMainThread() &&
         !is_sequenced_scroll_) {
       auto animation = std::make_unique<CompositorKeyframeModel>(
-          *animation_curve_, compositor_target_property::SCROLL_OFFSET, 0, 0);
+          *animation_curve_, 0, 0,
+          CompositorKeyframeModel::TargetPropertyId(
+              compositor_target_property::SCROLL_OFFSET));
 
       if (AddAnimation(std::move(animation))) {
         sent_to_compositor = true;

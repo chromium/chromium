@@ -16,12 +16,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 class ReputationServiceTest : public ChromeRenderViewHostTestHarness {
+ public:
+  ReputationServiceTest(const ReputationServiceTest&) = delete;
+  ReputationServiceTest& operator=(const ReputationServiceTest&) = delete;
+
  protected:
   ReputationServiceTest() {}
   ~ReputationServiceTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReputationServiceTest);
 };
 
 // Test that the blocklist blocks patterns as expected.

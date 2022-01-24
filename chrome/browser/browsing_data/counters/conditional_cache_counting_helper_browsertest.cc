@@ -126,14 +126,14 @@ IN_PROC_BROWSER_TEST_F(ConditionalCacheCountingHelperBrowserTest, Count) {
   base::Time t1 = base::Time::Now();
   CreateCacheEntries(keys1);
 
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(kTimeoutMs));
+  base::PlatformThread::Sleep(base::Milliseconds(kTimeoutMs));
   base::Time t2 = base::Time::Now();
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(kTimeoutMs));
+  base::PlatformThread::Sleep(base::Milliseconds(kTimeoutMs));
 
   std::set<std::string> keys2 = {"6", "7"};
   CreateCacheEntries(keys2);
 
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(kTimeoutMs));
+  base::PlatformThread::Sleep(base::Milliseconds(kTimeoutMs));
   base::Time t3 = base::Time::Now();
 
   // Count all entries.

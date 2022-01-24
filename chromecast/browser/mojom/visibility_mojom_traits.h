@@ -21,6 +21,43 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<chromecast::mojom::VisibilityType,
+                  chromecast::VisibilityType> {
+  static chromecast::mojom::VisibilityType ToMojom(
+      chromecast::VisibilityType type) {
+    using InputType = chromecast::VisibilityType;
+    using OutputType = chromecast::mojom::VisibilityType;
+    switch (type) {
+      CASE_TRANSLATE_ENUM(UNKNOWN);
+      CASE_TRANSLATE_ENUM(FULL_SCREEN);
+      CASE_TRANSLATE_ENUM(PARTIAL_OUT);
+      CASE_TRANSLATE_ENUM(HIDDEN);
+      CASE_TRANSLATE_ENUM(TILE);
+      CASE_TRANSLATE_ENUM(TRANSIENTLY_HIDDEN);
+    }
+    NOTREACHED();
+    return chromecast::mojom::VisibilityType::UNKNOWN;
+  }
+
+  static bool FromMojom(chromecast::mojom::VisibilityType type,
+                        chromecast::VisibilityType* out) {
+    using InputType = chromecast::mojom::VisibilityType;
+    using OutputType = chromecast::VisibilityType;
+    switch (type) {
+      CASE_TRANSLATE_MOJOM_ENUM(UNKNOWN);
+      CASE_TRANSLATE_MOJOM_ENUM(FULL_SCREEN);
+      CASE_TRANSLATE_MOJOM_ENUM(PARTIAL_OUT);
+      CASE_TRANSLATE_MOJOM_ENUM(HIDDEN);
+      CASE_TRANSLATE_MOJOM_ENUM(TILE);
+      CASE_TRANSLATE_MOJOM_ENUM(TRANSIENTLY_HIDDEN);
+    }
+    NOTREACHED();
+    *out = chromecast::VisibilityType::UNKNOWN;
+    return false;
+  }
+};
+
+template <>
 struct EnumTraits<chromecast::mojom::VisibilityPriority,
                   chromecast::VisibilityPriority> {
   static chromecast::mojom::VisibilityPriority ToMojom(

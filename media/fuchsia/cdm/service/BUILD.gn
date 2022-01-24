@@ -13,12 +13,12 @@ source_set("service") {
   ]
 
   public_deps = [
+    "//base",
     "//media",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm",
   ]
 
   deps = [
-    "//fuchsia/base",
     "//media/fuchsia/mojom",
     "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
     "//url",
@@ -32,7 +32,6 @@ source_set("unittests") {
     ":service",
     "//base",
     "//base/test:test_support",
-    "//fuchsia/base",
     "//media",
     "//testing/gmock",
     "//testing/gtest",

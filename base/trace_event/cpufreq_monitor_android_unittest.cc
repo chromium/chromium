@@ -17,7 +17,7 @@
 namespace base {
 namespace trace_event {
 
-class TestTaskRunner : public SingleThreadTaskRunner {
+class TestTaskRunner final : public SingleThreadTaskRunner {
  public:
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
@@ -47,7 +47,7 @@ class TestTaskRunner : public SingleThreadTaskRunner {
   }
 
  private:
-  ~TestTaskRunner() final {}
+  ~TestTaskRunner() override {}
 
   std::list<std::pair<base::TimeDelta, OnceClosure>> delayed_tasks_;
 };

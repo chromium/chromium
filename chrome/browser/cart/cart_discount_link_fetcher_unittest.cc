@@ -20,8 +20,8 @@ cart_db::ChromeCartContentProto BuildProto(
   proto.set_merchant_cart_url(merchant_url);
   proto.set_timestamp(last_used_timestamp);
   proto.mutable_discount_info()->set_merchant_id(merchant_id);
-  cart_db::DiscountInfoProto* discount =
-      proto.mutable_discount_info()->add_discount_info();
+  cart_db::RuleDiscountInfoProto* discount =
+      proto.mutable_discount_info()->add_rule_discount_info();
   discount->set_rule_id(rule_id);
   discount->set_merchant_rule_id(merchant_rule_id);
   discount->set_raw_merchant_offer_id(raw_merchant_offer_id);
@@ -40,8 +40,8 @@ cart_db::ChromeCartContentProto BuildProtoWithPercentOff(
   auto proto =
       BuildProto(domain, merchant_url, merchant_id, last_used_timestamp,
                  rule_id, merchant_rule_id, raw_merchant_offer_id);
-  cart_db::DiscountInfoProto* discount =
-      proto.mutable_discount_info()->mutable_discount_info(0);
+  cart_db::RuleDiscountInfoProto* discount =
+      proto.mutable_discount_info()->mutable_rule_discount_info(0);
   discount->set_percent_off(percent_off);
 
   return proto;
@@ -61,8 +61,8 @@ cart_db::ChromeCartContentProto BuildProtoWithAmountOff(
   auto proto =
       BuildProto(domain, merchant_url, merchant_id, last_used_timestamp,
                  rule_id, merchant_rule_id, raw_merchant_offer_id);
-  cart_db::DiscountInfoProto* discount =
-      proto.mutable_discount_info()->mutable_discount_info(0);
+  cart_db::RuleDiscountInfoProto* discount =
+      proto.mutable_discount_info()->mutable_rule_discount_info(0);
 
   cart_db::MoneyProto* money = discount->mutable_amount_off();
   money->set_currency_code(currency_code);

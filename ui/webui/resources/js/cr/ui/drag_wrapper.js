@@ -5,9 +5,9 @@
 /**
  * @fileoverview DragWrapper
  * A class for simplifying HTML5 drag and drop. Classes should use this to
- * handle the nitty gritty of nested drag enters and leaves.
+ * handle the details of nested drag enters and leaves.
  */
-  /** @interface */
+/** @interface */
 export class DragWrapperDelegate {
   // TODO(devlin): The only method this "delegate" actually needs is
   // shouldAcceptDrag(); the rest can be events emitted by the DragWrapper.

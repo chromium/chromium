@@ -14,8 +14,6 @@ static_library("core") {
     "common_string_util.h",
     "controller_client.cc",
     "controller_client.h",
-    "features.cc",
-    "features.h",
     "legacy_tls_ui.cc",
     "legacy_tls_ui.h",
     "metrics_helper.cc",

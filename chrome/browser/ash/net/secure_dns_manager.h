@@ -11,7 +11,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
-namespace net {
+namespace ash {
 
 // Responds to changes in the SecureDNS preferences and generates and updates
 // the corresponding shill property which can then be used by downstream
@@ -46,6 +46,6 @@ class SecureDnsManager {
   base::flat_map<std::string, std::string> local_doh_providers_;
 };
 
-}  // namespace net
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_SECURE_DNS_MANAGER_H_

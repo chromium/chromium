@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_DOM_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_DOM_HANDLER_H_
 
-#include "base/macros.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/dom.h"
 
@@ -19,6 +18,10 @@ class DOMHandler : public DevToolsDomainHandler,
                    public DOM::Backend {
  public:
   explicit DOMHandler(bool allow_file_access);
+
+  DOMHandler(const DOMHandler&) = delete;
+  DOMHandler& operator=(const DOMHandler&) = delete;
+
   ~DOMHandler() override;
 
   void Wire(UberDispatcher* dispatcher) override;
@@ -35,7 +38,6 @@ class DOMHandler : public DevToolsDomainHandler,
  private:
   RenderFrameHostImpl* host_;
   bool allow_file_access_;
-  DISALLOW_COPY_AND_ASSIGN(DOMHandler);
 };
 
 }  // namespace protocol

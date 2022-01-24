@@ -16,6 +16,10 @@ namespace bpf_dsl {
 class SANDBOX_EXPORT Policy {
  public:
   Policy() {}
+
+  Policy(const Policy&) = delete;
+  Policy& operator=(const Policy&) = delete;
+
   virtual ~Policy() {}
 
   // User extension point for writing custom sandbox policies.
@@ -26,9 +30,6 @@ class SANDBOX_EXPORT Policy {
   // Optional overload for specifying alternate behavior for invalid
   // system calls.  The default is to return ENOSYS.
   virtual ResultExpr InvalidSyscall() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Policy);
 };
 
 }  // namespace bpf_dsl

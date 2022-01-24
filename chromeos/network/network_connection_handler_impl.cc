@@ -11,8 +11,8 @@
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
@@ -45,12 +45,10 @@ namespace {
 // If connection to a network that may require a client certificate is requested
 // when client certificates are not loaded yet, wait this long until
 // certificates have been loaded.
-constexpr base::TimeDelta kMaxCertLoadTimeSeconds =
-    base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kMaxCertLoadTimeSeconds = base::Seconds(15);
 
 // Timeout after which a pending cellular connect request is considered failed.
-constexpr base::TimeDelta kCellularConnectTimeout =
-    base::TimeDelta::FromSeconds(150);
+constexpr base::TimeDelta kCellularConnectTimeout = base::Seconds(150);
 
 bool IsAuthenticationError(const std::string& error) {
   return (error == shill::kErrorBadWEPKey ||

@@ -12,12 +12,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
 /**
  * Test for TranslateOptions.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class TranslateOptionsTest {
     private static final boolean NEVER_LANGUAGE = false;
     private static final boolean NEVER_DOMAIN = false;

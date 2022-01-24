@@ -32,6 +32,9 @@ struct UsbVendor {
 // mapping from a vendor/product ID pair to a product name.
 class UsbIds {
  public:
+  UsbIds(const UsbIds&) = delete;
+  UsbIds& operator=(const UsbIds&) = delete;
+
   // Gets the name of the vendor who owns |vendor_id|. Returns NULL if the
   // specified |vendor_id| does not exist.
   static const char* GetVendorName(uint16_t vendor_id);
@@ -54,8 +57,6 @@ class UsbIds {
   // more information on how they are generated.
   static const size_t vendor_size_;
   static const UsbVendor vendors_[];
-
-  DISALLOW_COPY_AND_ASSIGN(UsbIds);
 };
 
 }  // namespace device

@@ -7,7 +7,7 @@
 
 // #import {AppManagementStore, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {setupFakeHandler, replaceBody} from './test_util.m.js';
-// #import {flushTasks} from 'chrome://test/test_util.m.js';
+// #import {flushTasks} from 'chrome://test/test_util.js';
 // clang-format on
 
 'use strict';

@@ -4,6 +4,7 @@
 
 #include "components/browsing_data/content/database_helper.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "storage/common/database/database_identifier.h"
@@ -23,8 +24,7 @@ TEST_F(CannedDatabaseHelperTest, Empty) {
 
   const GURL origin("http://host1:1/");
 
-  scoped_refptr<CannedDatabaseHelper> helper(
-      new CannedDatabaseHelper(&browser_context));
+  auto helper = base::MakeRefCounted<CannedDatabaseHelper>(&browser_context);
 
   ASSERT_TRUE(helper->empty());
   helper->Add(url::Origin::Create(origin));
@@ -40,8 +40,7 @@ TEST_F(CannedDatabaseHelperTest, Delete) {
   const GURL origin2("http://example.com");
   const GURL origin3("http://foo.example.com");
 
-  scoped_refptr<CannedDatabaseHelper> helper(
-      new CannedDatabaseHelper(&browser_context));
+  auto helper = base::MakeRefCounted<CannedDatabaseHelper>(&browser_context);
 
   EXPECT_TRUE(helper->empty());
   helper->Add(url::Origin::Create(origin1));
@@ -60,8 +59,7 @@ TEST_F(CannedDatabaseHelperTest, IgnoreExtensionsAndDevTools) {
   const GURL origin1("chrome-extension://abcdefghijklmnopqrstuvwxyz/");
   const GURL origin2("devtools://abcdefghijklmnopqrstuvwxyz/");
 
-  scoped_refptr<CannedDatabaseHelper> helper(
-      new CannedDatabaseHelper(&browser_context));
+  auto helper = base::MakeRefCounted<CannedDatabaseHelper>(&browser_context);
 
   ASSERT_TRUE(helper->empty());
   helper->Add(url::Origin::Create(origin1));

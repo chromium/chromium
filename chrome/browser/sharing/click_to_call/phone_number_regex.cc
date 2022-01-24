@@ -34,12 +34,12 @@ void PrecompilePhoneNumberRegexes() {
 }  // namespace
 
 const re2::RE2& GetPhoneNumberRegex() {
-  static const re2::LazyRE2 kRegexSimple = {kPhoneNumberRegexPatternSimple};
-  return *kRegexSimple;
+  static const re2::LazyRE2 regex_simple = {kPhoneNumberRegexPatternSimple};
+  return *regex_simple;
 }
 
 void PrecompilePhoneNumberRegexesAsync() {
-  constexpr auto kParseDelay = base::TimeDelta::FromSeconds(15);
+  constexpr auto kParseDelay = base::Seconds(15);
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
       {base::TaskPriority::BEST_EFFORT,

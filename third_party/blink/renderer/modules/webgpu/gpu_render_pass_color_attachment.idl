@@ -5,10 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPURenderPassColorAttachment {
-    // view should be required, but we can't enforce that until the deprecated
-    // attachment property has been removed.
-    GPUTextureView view;
-    GPUTextureView attachment; // Deprecated
+    required GPUTextureView view;
     GPUTextureView resolveTarget;
 
     required (GPULoadOp or GPUColor) loadValue;

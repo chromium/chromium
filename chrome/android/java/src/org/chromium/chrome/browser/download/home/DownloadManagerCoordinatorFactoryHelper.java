@@ -37,15 +37,13 @@ public class DownloadManagerCoordinatorFactoryHelper {
                 ? Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
                         config.otrProfileID, /*createIfNeeded=*/true)
                 : Profile.getLastUsedRegularProfile();
-        LegacyDownloadProvider legacyProvider =
-                config.useNewDownloadPath ? null : new LegacyDownloadProviderImpl();
         Callback<Context> settingsLaunchHelper =
                 DownloadManagerCoordinatorFactoryHelper::settingsLaunchHelper;
         return DownloadManagerCoordinatorFactory.create(activity, config,
                 new PrefetchEnabledSupplier(), settingsLaunchHelper, snackbarManager,
                 modalDialogManager, UserPrefs.get(profile),
                 TrackerFactory.getTrackerForProfile(profile), new FaviconProviderImpl(profile),
-                OfflineContentAggregatorFactory.get(), legacyProvider,
+                OfflineContentAggregatorFactory.get(),
                 GlobalDiscardableReferencePool.getReferencePool());
     }
 

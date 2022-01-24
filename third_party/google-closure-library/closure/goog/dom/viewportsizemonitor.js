@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Utility class that monitors viewport size changes.
@@ -20,11 +12,13 @@
 
 goog.provide('goog.dom.ViewportSizeMonitor');
 
+goog.require('goog.dispose');
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.events.EventTarget');
 goog.require('goog.events.EventType');
 goog.require('goog.math.Size');
+goog.requireType('goog.events.Event');
 
 
 
@@ -57,6 +51,7 @@ goog.require('goog.math.Size');
  * @extends {goog.events.EventTarget}
  */
 goog.dom.ViewportSizeMonitor = function(opt_window) {
+  'use strict';
   goog.dom.ViewportSizeMonitor.base(this, 'constructor');
 
   /**
@@ -92,6 +87,7 @@ goog.inherits(goog.dom.ViewportSizeMonitor, goog.events.EventTarget);
  * @return {!goog.dom.ViewportSizeMonitor} Monitor for the given window.
  */
 goog.dom.ViewportSizeMonitor.getInstanceForWindow = function(opt_window) {
+  'use strict';
   var currentWindow = opt_window || window;
   var uid = goog.getUid(currentWindow);
 
@@ -108,6 +104,7 @@ goog.dom.ViewportSizeMonitor.getInstanceForWindow = function(opt_window) {
  *     defaults to the window in which this code is executing.
  */
 goog.dom.ViewportSizeMonitor.removeInstanceForWindow = function(opt_window) {
+  'use strict';
   var uid = goog.getUid(opt_window || window);
 
   goog.dispose(goog.dom.ViewportSizeMonitor.windowInstanceMap_[uid]);
@@ -130,6 +127,7 @@ goog.dom.ViewportSizeMonitor.windowInstanceMap_ = {};
  * @return {goog.math.Size} The viewport dimensions, in pixels.
  */
 goog.dom.ViewportSizeMonitor.prototype.getSize = function() {
+  'use strict';
   // Return a clone instead of the original to preserve encapsulation.
   return this.size_ ? this.size_.clone() : null;
 };
@@ -137,6 +135,7 @@ goog.dom.ViewportSizeMonitor.prototype.getSize = function() {
 
 /** @override */
 goog.dom.ViewportSizeMonitor.prototype.disposeInternal = function() {
+  'use strict';
   goog.dom.ViewportSizeMonitor.superClass_.disposeInternal.call(this);
 
   if (this.listenerKey_) {
@@ -157,6 +156,7 @@ goog.dom.ViewportSizeMonitor.prototype.disposeInternal = function() {
  * @private
  */
 goog.dom.ViewportSizeMonitor.prototype.handleResize_ = function(event) {
+  'use strict';
   var size = goog.dom.getViewportSize(this.window_);
   if (!goog.math.Size.equals(size, this.size_)) {
     this.size_ = size;

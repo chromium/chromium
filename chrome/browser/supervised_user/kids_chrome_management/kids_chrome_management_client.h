@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -47,6 +46,10 @@ class KidsChromeManagementClient : public KeyedService {
       ErrorCode error_code)>;
 
   explicit KidsChromeManagementClient(Profile* profile);
+
+  KidsChromeManagementClient(const KidsChromeManagementClient&) = delete;
+  KidsChromeManagementClient& operator=(const KidsChromeManagementClient&) =
+      delete;
 
   ~KidsChromeManagementClient() override;
 
@@ -107,8 +110,6 @@ class KidsChromeManagementClient : public KeyedService {
 
   // List of requests in execution.
   KidsChromeRequestList requests_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(KidsChromeManagementClient);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_CHROME_MANAGEMENT_CLIENT_H_

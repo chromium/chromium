@@ -1,8 +1,10 @@
 include_rules = [
   "+components/cdm/renderer",
+  "+components/memory_pressure",
   "+content/public/renderer",
   "+media",
   "+mojo/public/cpp/bindings",
+  "+services/network/public/cpp/features.h",
   "+services/service_manager/public/cpp",
   "+third_party/blink/public",
 ]

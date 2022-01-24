@@ -19,8 +19,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #import "third_party/google_toolbox_for_mac/src/AppKit/GTMCarbonEvent.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -45,6 +45,11 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       base::OnceClosure disconnect_callback);
+
+  LocalHotkeyInputMonitorMac(const LocalHotkeyInputMonitorMac&) = delete;
+  LocalHotkeyInputMonitorMac& operator=(const LocalHotkeyInputMonitorMac&) =
+      delete;
+
   ~LocalHotkeyInputMonitorMac() override;
 
  private:
@@ -53,8 +58,6 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
   scoped_refptr<Core> core_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalHotkeyInputMonitorMac);
 };
 
 }  // namespace
@@ -128,6 +131,9 @@ class LocalHotkeyInputMonitorMac::Core
        scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
        base::OnceClosure disconnect_callback);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   void Start();
   void Stop();
 
@@ -152,8 +158,6 @@ class LocalHotkeyInputMonitorMac::Core
   // Invoked in the |caller_task_runner_| thread to report session disconnect
   // requests.
   base::OnceClosure disconnect_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 LocalHotkeyInputMonitorMac::LocalHotkeyInputMonitorMac(

@@ -49,7 +49,7 @@ namespace {
 
 // Timeout after which the History.ClearBrowsingData.Duration.SlowTasks180s
 // histogram is recorded.
-const base::TimeDelta kSlowTaskTimeout = base::TimeDelta::FromSeconds(180);
+const base::TimeDelta kSlowTaskTimeout = base::Seconds(180);
 
 base::OnceClosure RunsOrPostOnCurrentTaskRunner(base::OnceClosure closure) {
   return base::BindOnce(
@@ -283,6 +283,16 @@ void BrowsingDataRemoverImpl::RemoveImpl(
       CreateTaskCompletionClosure(TracingDataType::kSynchronous));
 
   TRACE_EVENT0("browsing_data", "BrowsingDataRemoverImpl::RemoveImpl");
+
+  // Asynchronous removal tasks might end up finishing after an arbitrary
+  // delay - this can postpone when OnTaskComplete runs.  Therefore we need to
+  // check if destruction of our `browser_context_` might have started in the
+  // meantime.  See also https://crbug.com/1216406.
+  if (browser_context_->ShutdownStarted()) {
+    // Conservatively mark *all* data types as failures.
+    failed_data_types_ |= remove_mask_;
+    return;
+  }
 
   // crbug.com/140910: Many places were calling this with base::Time() as
   // delete_end, even though they should've used base::Time::Max().
@@ -625,6 +635,7 @@ bool BrowsingDataRemoverImpl::RemovalTask::IsSameDeletion(
 }
 
 StoragePartition* BrowsingDataRemoverImpl::GetStoragePartition() {
+  DCHECK(!browser_context_->ShutdownStarted());
   return storage_partition_for_testing_
              ? storage_partition_for_testing_
              : browser_context_->GetDefaultStoragePartition();
@@ -720,13 +731,25 @@ void BrowsingDataRemoverImpl::OnTaskComplete(TracingDataType data_type) {
         std::move(domains_for_deferred_cookie_deletion_);
     // Moving a vector is defined to empty this vector.
     DCHECK(domains_for_deferred_cookie_deletion_.empty());
-    GetStoragePartition()->ClearData(
-        StoragePartition::REMOVE_DATA_MASK_COOKIES,
-        /*quota_storage_remove_mask=*/0,
-        /*origin_matcher=*/base::NullCallback(), std::move(deletion_filter),
-        /*perform_storage_cleanup=*/false, delete_begin_, delete_end_,
-        CreateTaskCompletionClosure(TracingDataType::kDeferredCookies));
-    return;
+
+    // Asynchronous removal tasks might end up finishing after an arbitrary
+    // delay - this can postpone when OnTaskComplete runs.  Therefore we need to
+    // check if destruction of our `browser_context_` might have started in the
+    // meantime.  See also https://crbug.com/1216406.
+    if (browser_context_->ShutdownStarted()) {
+      // The tasks related to `domains_for_deferred_cookie_deletion_` and
+      // `deletion_filter` are implicitly dropped if we can't clear the data
+      // because the StoragePartition's destructor has already started running.
+      failed_data_types_ |= StoragePartition::REMOVE_DATA_MASK_COOKIES;
+    } else {
+      GetStoragePartition()->ClearData(
+          StoragePartition::REMOVE_DATA_MASK_COOKIES,
+          /*quota_storage_remove_mask=*/0,
+          /*origin_matcher=*/base::NullCallback(), std::move(deletion_filter),
+          /*perform_storage_cleanup=*/false, delete_begin_, delete_end_,
+          CreateTaskCompletionClosure(TracingDataType::kDeferredCookies));
+      return;
+    }
   }
 
   slow_pending_tasks_closure_.Cancel();

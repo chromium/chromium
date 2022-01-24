@@ -12,6 +12,16 @@
       }
     </style>
 
+<if expr="chromeos or lacros">
+    <!-- TODO(crbug.com/1231500): Remove this warning after Lacros side-by-side
+      rollout stage. -->
+    <template is="dom-if" if="[[shouldShowLacrosSideBySideWarning_()]]">
+      <div class="cr-row first cr-padded-text">
+        $i18n{syncSettingsLacrosSideBySideWarning}
+      </div>
+    </template>
+</if>
+
     <div id="sync-data-radio" class="cr-row first">
       <cr-radio-group
           selected="[[selectedSyncDataRadio_(syncPrefs)]]"

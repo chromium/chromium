@@ -81,19 +81,30 @@ void CheckFileContentsMimeType(const FileContents& file_contents,
   std::move(counter).Run();
 }
 
+void CheckWebCustomDataMimeType(const std::string& expected,
+                                base::OnceClosure counter,
+                                const std::string& mime_type,
+                                const std::vector<uint8_t>& data) {
+  EXPECT_FALSE(mime_type.empty());
+  EXPECT_EQ(expected, mime_type);
+  std::move(counter).Run();
+}
+
 void IncrementFailureCounter(std::atomic_int* failure_count,
                              base::RepeatingClosure counter) {
   ++(*failure_count);
   std::move(counter).Run();
 }
 
-void CheckMimeTypesReceived(DataSource* data_source,
-                            const std::string& text_mime,
-                            const std::string& rtf_mime,
-                            const std::string& html_mime,
-                            const std::string& image_mime,
-                            const std::string& filenames_mime,
-                            const FileContents& file_contents) {
+void CheckMimeTypesReceived(
+    DataSource* data_source,
+    const std::string& text_mime,
+    const std::string& rtf_mime,
+    const std::string& html_mime,
+    const std::string& image_mime,
+    const std::string& filenames_mime,
+    const FileContents& file_contents,
+    const std::string& web_custom_data_mime = std::string()) {
   base::RunLoop run_loop;
   base::RepeatingClosure counter =
       base::BarrierClosure(DataSource::kMaxDataTypes, run_loop.QuitClosure());
@@ -106,12 +117,15 @@ void CheckMimeTypesReceived(DataSource* data_source,
       base::BindOnce(&CheckMimeType, image_mime, counter),
       base::BindOnce(&CheckMimeType, filenames_mime, counter),
       base::BindOnce(&CheckFileContentsMimeType, file_contents, counter),
+      base::BindOnce(&CheckWebCustomDataMimeType, web_custom_data_mime,
+                     counter),
       base::BindRepeating(&IncrementFailureCounter, &failure_count, counter));
   run_loop.Run();
 
   int expected_failure_count = 0;
-  for (const auto& mime_type : {text_mime, rtf_mime, html_mime, image_mime,
-                                filenames_mime, file_contents.mime_type}) {
+  for (const auto& mime_type :
+       {text_mime, rtf_mime, html_mime, image_mime, filenames_mime,
+        file_contents.mime_type, web_custom_data_mime}) {
     if (mime_type.empty())
       ++expected_failure_count;
   }
@@ -337,6 +351,16 @@ TEST_F(DataSourceTest, OctetStreamWithQuotedName) {
   CheckMimeTypesReceived(
       &data_source, "", "", "", "", "",
       {"application/octet-stream;name=\"t\\\\est\\\".jpg\"", "t\\est\".jpg"});
+}
+
+TEST_F(DataSourceTest, WebCustomDataMime) {
+  TestDataSourceDelegate delegate;
+  DataSource data_source(&delegate);
+  std::string web_custom_data_mime("chromium/x-web-custom-data");
+  data_source.Offer(web_custom_data_mime);
+
+  CheckMimeTypesReceived(&data_source, "", "", "", "", "", {},
+                         web_custom_data_mime);
 }
 
 }  // namespace

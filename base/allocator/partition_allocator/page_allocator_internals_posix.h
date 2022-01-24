@@ -38,7 +38,7 @@
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 
 // SecTaskGetCodeSignStatus is marked as unavailable on macOS, although it’s
 // available on iOS and other Apple operating systems. It is, in fact, present
@@ -54,7 +54,7 @@ uint32_t SecTaskGetCodeSignStatus(SecTaskRef task)
     API_AVAILABLE(macos(10.12));
 #pragma clang diagnostic pop
 
-#endif  // OS_APPLE
+#endif  // OS_MAC
 
 namespace base {
 
@@ -84,7 +84,7 @@ const char* PageTagToName(PageTag tag) {
 }
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 // Tests whether the version of macOS supports the MAP_JIT flag and if the
 // current process is signed with the hardened runtime and the allow-jit
 // entitlement, returning whether MAP_JIT should be used to allocate regions
@@ -131,7 +131,7 @@ bool UseMapJit() {
 
   return mac::CFCast<CFBooleanRef>(jit_entitlement.get()) == kCFBooleanTrue;
 }
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_MAC)
 
 }  // namespace
 
@@ -158,7 +158,7 @@ void* SystemAllocPagesInternal(void* hint,
   int access_flag = GetAccessFlags(accessibility);
   int map_flags = MAP_ANONYMOUS | MAP_PRIVATE;
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // On macOS 10.14 and higher, executables that are code signed with the
   // "runtime" option cannot execute writable memory by default. They can opt
   // into this capability by specifying the "com.apple.security.cs.allow-jit"
@@ -282,6 +282,18 @@ void DecommitSystemPagesInternal(
   if (change_permissions) {
     SetSystemPagesAccess(address, length, PageInaccessible);
   }
+}
+
+void DecommitAndZeroSystemPagesInternal(void* address, size_t length) {
+  // https://pubs.opengroup.org/onlinepubs/9699919799/functions/mmap.html: "If
+  // a MAP_FIXED request is successful, then any previous mappings [...] for
+  // those whole pages containing any part of the address range [pa,pa+len)
+  // shall be removed, as if by an appropriate call to munmap(), before the
+  // new mapping is established." As a consequence, the memory will be
+  // zero-initialized on next access.
+  void* ptr = mmap(address, length, PROT_NONE,
+                   MAP_FIXED | MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+  PA_CHECK(ptr == address);
 }
 
 void RecommitSystemPagesInternal(

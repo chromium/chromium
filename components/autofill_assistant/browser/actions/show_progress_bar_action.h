@@ -7,7 +7,6 @@
 
 #include "components/autofill_assistant/browser/actions/action.h"
 
-#include "base/macros.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
 namespace autofill_assistant {
@@ -16,6 +15,10 @@ class ShowProgressBarAction : public Action {
  public:
   explicit ShowProgressBarAction(ActionDelegate* delegate,
                                  const ActionProto& proto);
+
+  ShowProgressBarAction(const ShowProgressBarAction&) = delete;
+  ShowProgressBarAction& operator=(const ShowProgressBarAction&) = delete;
+
   ~ShowProgressBarAction() override;
 
  private:
@@ -24,8 +27,6 @@ class ShowProgressBarAction : public Action {
 
   void EndAction(ProcessActionCallback callback,
                  ProcessedActionStatusProto status);
-
-  DISALLOW_COPY_AND_ASSIGN(ShowProgressBarAction);
 };
 
 }  // namespace autofill_assistant

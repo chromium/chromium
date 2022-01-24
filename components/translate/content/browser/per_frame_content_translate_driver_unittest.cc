@@ -5,6 +5,7 @@
 #include "components/translate/content/browser/per_frame_content_translate_driver.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/services/language_detection/public/mojom/language_detection.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"

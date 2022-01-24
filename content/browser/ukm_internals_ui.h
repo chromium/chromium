@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_UKM_INTERNALS_UI_H_
 #define CONTENT_BROWSER_UKM_INTERNALS_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 namespace content {
@@ -15,8 +14,8 @@ class UkmInternalsUI : public WebUIController {
  public:
   explicit UkmInternalsUI(WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UkmInternalsUI);
+  UkmInternalsUI(const UkmInternalsUI&) = delete;
+  UkmInternalsUI& operator=(const UkmInternalsUI&) = delete;
 };
 
 }  // namespace content

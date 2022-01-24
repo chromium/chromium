@@ -21,6 +21,10 @@ namespace gles2 {
 class GPU_GLES2_EXPORT IdManager {
  public:
   IdManager();
+
+  IdManager(const IdManager&) = delete;
+  IdManager& operator=(const IdManager&) = delete;
+
   ~IdManager();
 
   // Maps a client_id to a service_id. Return false if the client_id or
@@ -41,8 +45,6 @@ class GPU_GLES2_EXPORT IdManager {
  private:
   typedef std::unordered_map<GLuint, GLuint> MapType;
   MapType id_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdManager);
 };
 
 }  // namespace gles2

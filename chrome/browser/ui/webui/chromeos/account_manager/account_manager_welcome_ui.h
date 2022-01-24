@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_WELCOME_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_WELCOME_UI_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
@@ -15,11 +14,14 @@ namespace chromeos {
 class AccountManagerWelcomeUI : public ui::WebDialogUI {
  public:
   explicit AccountManagerWelcomeUI(content::WebUI* web_ui);
+
+  AccountManagerWelcomeUI(const AccountManagerWelcomeUI&) = delete;
+  AccountManagerWelcomeUI& operator=(const AccountManagerWelcomeUI&) = delete;
+
   ~AccountManagerWelcomeUI() override;
 
  private:
   base::WeakPtrFactory<AccountManagerWelcomeUI> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AccountManagerWelcomeUI);
 };
 
 }  // namespace chromeos

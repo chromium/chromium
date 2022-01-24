@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "media/base/renderer_factory.h"
+#include "media/mojo/mojom/renderer.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace media {
 namespace cast {
@@ -20,8 +22,9 @@ namespace cast {
 class CastStreamingRendererFactory : public RendererFactory {
  public:
   // |renderer_factory| is the RendererFactory to be used as described below.
-  explicit CastStreamingRendererFactory(
-      std::unique_ptr<RendererFactory> renderer_factory);
+  CastStreamingRendererFactory(
+      std::unique_ptr<RendererFactory> renderer_factory,
+      mojo::PendingReceiver<media::mojom::Renderer> pending_renderer_controls);
   CastStreamingRendererFactory(const CastStreamingRendererFactory& other) =
       delete;
   CastStreamingRendererFactory(CastStreamingRendererFactory&& other) = delete;
@@ -46,6 +49,8 @@ class CastStreamingRendererFactory : public RendererFactory {
       const gfx::ColorSpace& target_color_space) override;
 
  private:
+  mojo::PendingReceiver<media::mojom::Renderer> pending_renderer_controls_;
+
   std::unique_ptr<RendererFactory> real_renderer_factory_;
 };
 

@@ -10,7 +10,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace webrtc_event_logging {
@@ -27,6 +26,11 @@ class WebRtcEventLogHistoryFileWriter final {
   // unique_ptr is returned.
   static std::unique_ptr<WebRtcEventLogHistoryFileWriter> Create(
       const base::FilePath& path);
+
+  WebRtcEventLogHistoryFileWriter(const WebRtcEventLogHistoryFileWriter&) =
+      delete;
+  WebRtcEventLogHistoryFileWriter& operator=(
+      const WebRtcEventLogHistoryFileWriter&) = delete;
 
   // The capture time must be later than UNIX epoch start.
   bool WriteCaptureTime(base::Time capture_time);
@@ -60,8 +64,6 @@ class WebRtcEventLogHistoryFileWriter final {
   const base::FilePath path_;
   base::File file_;
   bool valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcEventLogHistoryFileWriter);
 };
 
 // Reads from disk a small history file and recovers the data from it.
@@ -72,6 +74,11 @@ class WebRtcEventLogHistoryFileReader final {
   // unique_ptr is returned.
   static std::unique_ptr<WebRtcEventLogHistoryFileReader> Create(
       const base::FilePath& path);
+
+  WebRtcEventLogHistoryFileReader(const WebRtcEventLogHistoryFileReader&) =
+      delete;
+  WebRtcEventLogHistoryFileReader& operator=(
+      const WebRtcEventLogHistoryFileReader&) = delete;
 
   WebRtcEventLogHistoryFileReader(WebRtcEventLogHistoryFileReader&& other);
 
@@ -112,8 +119,6 @@ class WebRtcEventLogHistoryFileReader final {
   std::string upload_id_;   // Empty string indicates "unset".
 
   bool valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcEventLogHistoryFileReader);
 };
 
 }  // namespace webrtc_event_logging

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -60,11 +59,14 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
     std::string device_id;
   };
 
+  OwnerSettingsServiceAsh(const OwnerSettingsServiceAsh&) = delete;
+  OwnerSettingsServiceAsh& operator=(const OwnerSettingsServiceAsh&) = delete;
+
   ~OwnerSettingsServiceAsh() override;
 
   static OwnerSettingsServiceAsh* FromWebUI(content::WebUI* web_ui);
 
-  void OnTPMTokenReady(bool tpm_token_enabled);
+  void OnTPMTokenReady();
 
   void OnEasyUnlockKeyOpsFinished();
 
@@ -193,8 +195,6 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
   base::WeakPtrFactory<OwnerSettingsServiceAsh> weak_factory_{this};
 
   base::WeakPtrFactory<OwnerSettingsServiceAsh> store_settings_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceAsh);
 };
 
 }  // namespace ash

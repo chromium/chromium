@@ -86,6 +86,9 @@ class PrefStoreReadObserver : public PrefStore::Observer {
     pref_store_->AddObserver(this);
   }
 
+  PrefStoreReadObserver(const PrefStoreReadObserver&) = delete;
+  PrefStoreReadObserver& operator=(const PrefStoreReadObserver&) = delete;
+
   ~PrefStoreReadObserver() override { pref_store_->RemoveObserver(this); }
 
   PersistentPrefStore::PrefReadError Read() {
@@ -108,8 +111,6 @@ class PrefStoreReadObserver : public PrefStore::Observer {
  private:
   scoped_refptr<PersistentPrefStore> pref_store_;
   base::OnceClosure stop_waiting_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefStoreReadObserver);
 };
 
 const char kUnprotectedPref[] = "unprotected_pref";

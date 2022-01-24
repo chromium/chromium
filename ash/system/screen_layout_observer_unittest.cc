@@ -36,6 +36,10 @@ namespace ash {
 class ScreenLayoutObserverTest : public AshTestBase {
  public:
   ScreenLayoutObserverTest();
+
+  ScreenLayoutObserverTest(const ScreenLayoutObserverTest&) = delete;
+  ScreenLayoutObserverTest& operator=(const ScreenLayoutObserverTest&) = delete;
+
   ~ScreenLayoutObserverTest() override;
 
   // AshTestBase:
@@ -64,8 +68,6 @@ class ScreenLayoutObserverTest : public AshTestBase {
 
  private:
   const message_center::Notification* GetDisplayNotification() const;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenLayoutObserverTest);
 };
 
 ScreenLayoutObserverTest::ScreenLayoutObserverTest() {
@@ -154,12 +156,12 @@ ScreenLayoutObserverTest::GetDisplayNotification() const {
 
 // This test is flaky. crbug.com/1222612
 TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   display::Display::SetInternalDisplayId(display_manager()->first_display_id());
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 
   // rotation.
-  UpdateDisplay("400x400/r");
+  UpdateDisplay("500x400/r");
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED, GetFirstDisplayName(),
                 l10n_util::GetStringUTF16(
@@ -168,7 +170,7 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 
   CloseNotification();
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED, GetFirstDisplayName(),
                 l10n_util::GetStringUTF16(
@@ -178,12 +180,12 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
 
   // No-update
   CloseNotification();
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   EXPECT_FALSE(IsNotificationShown());
 
   // Extended.
   CloseNotification();
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_EXTENDED,
                                        GetSecondDisplayName()),
             GetDisplayNotificationText());
@@ -202,18 +204,15 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
   display_info_list.push_back(second_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
-  // Simulate that device can support at most two displays and user
-  // connects it with three displays. Notification should be created to warn
-  // user of it. See issue 827406 (https://crbug.com/827406).
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
       .set_maximum_display(2u);
-  UpdateDisplay("400x400,200x200,100x100");
+  UpdateDisplay("500x400,300x200,200x100");
   EXPECT_TRUE(GetDisplayNotificationText().empty());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
             GetDisplayNotificationAdditionalText());
   EXPECT_TRUE(GetDisplayNotificationText().empty());
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   CloseNotification();
 
   // Start tablet mode and wait until display mode is updated.
@@ -231,7 +230,7 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
   // becomes mirror mode from extending mode. Under this circumstance, user is
   // still notified of connecting more displays than maximum. See issue 827406
   // (https://crbug.com/827406).
-  UpdateDisplay("400x400,200x200,100x100");
+  UpdateDisplay("500x400,300x200,200x100");
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
             GetDisplayNotificationAdditionalText());
@@ -279,7 +278,7 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
   EXPECT_TRUE(GetDisplayNotificationAdditionalText().empty());
 
   // Rotate the second.
-  UpdateDisplay("400x400@1.5,200x200/r");
+  UpdateDisplay("500x400@1.5,300x200/r");
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED, GetSecondDisplayName(),
                 l10n_util::GetStringUTF16(
@@ -288,12 +287,12 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 
   // Enters closed lid mode.
-  UpdateDisplay("400x400@1.5,200x200");
+  UpdateDisplay("500x400@1.5,300x200");
   display::Display::SetInternalDisplayId(
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay()
           .id());
-  UpdateDisplay("400x400@1.5");
+  UpdateDisplay("500x400@1.5");
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 }
 
@@ -302,16 +301,16 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kReduceDisplayNotifications);
 
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   display::Display::SetInternalDisplayId(display_manager()->first_display_id());
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 
   // Rotation.
-  UpdateDisplay("400x400/r");
+  UpdateDisplay("500x400/r");
   EXPECT_FALSE(IsNotificationShown());
 
   // Adding a display.
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   EXPECT_FALSE(IsNotificationShown());
 
   const int64_t first_display_id =
@@ -319,9 +318,9 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   const int64_t second_display_id =
       display::GetNextSynthesizedDisplayId(first_display_id);
   display::ManagedDisplayInfo first_display_info =
-      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 500));
+      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 400));
   display::ManagedDisplayInfo second_display_info =
-      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 500));
+      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 400));
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(first_display_info);
   display_info_list.push_back(second_display_info);
@@ -332,13 +331,13 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   // warn user of it. See issue 827406 (https://crbug.com/827406).
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
       .set_maximum_display(2u);
-  UpdateDisplay("400x400,200x200,100x100");
+  UpdateDisplay("500x400,300x200,200x100");
   EXPECT_TRUE(GetDisplayNotificationText().empty());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
             GetDisplayNotificationAdditionalText());
   EXPECT_TRUE(GetDisplayNotificationText().empty());
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   CloseNotification();
 
   // Start tablet mode and wait until display mode is updated.
@@ -354,13 +353,13 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   // becomes mirror mode from extending mode. Under this circumstance, user is
   // still notified of connecting more displays than maximum. See issue 827406
   // (https://crbug.com/827406). Notification should still be shown.
-  UpdateDisplay("400x400,200x200,100x100");
+  UpdateDisplay("500x400,300x200,200x100");
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
             GetDisplayNotificationAdditionalText());
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,
-                                       GetMirroringDisplayNames()),
-            GetDisplayNotificationText());
+  // The tablet should no longer be in mirror mode.
+  EXPECT_FALSE(display_manager()->IsInMirrorMode());
+  EXPECT_TRUE(GetDisplayNotificationText().empty());
   CloseNotification();
 }
 
@@ -368,7 +367,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
 // in the UI scales, in which case, we still want to show a notification when
 // the source of change is not the settings ui.
 TEST_F(ScreenLayoutObserverTest, ZoomingInUnifiedModeNotification) {
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
 
   // Enter unified mode.
   display_manager()->SetUnifiedDesktopEnabled(true);
@@ -380,7 +379,7 @@ TEST_F(ScreenLayoutObserverTest, ZoomingInUnifiedModeNotification) {
   EXPECT_TRUE(display_manager()->ZoomDisplay(display_id, false /* up */));
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED,
-                                 GetUnifiedDisplayName(), u"400x200"),
+                                 GetUnifiedDisplayName(), u"550x200"),
       GetDisplayNotificationAdditionalText());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED_TITLE),
@@ -390,7 +389,7 @@ TEST_F(ScreenLayoutObserverTest, ZoomingInUnifiedModeNotification) {
   EXPECT_TRUE(display_manager()->ZoomDisplay(display_id, true /* up */));
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED,
-                                 GetUnifiedDisplayName(), u"800x400"),
+                                 GetUnifiedDisplayName(), u"1100x400"),
       GetDisplayNotificationAdditionalText());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED_TITLE),
@@ -410,7 +409,7 @@ TEST_F(ScreenLayoutObserverTest, ZoomingInUnifiedModeNotification) {
 // Verify that notification shows up when display is switched from dock mode to
 // extend mode.
 TEST_F(ScreenLayoutObserverTest, DisplayConfigurationChangedTwice) {
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_EXTENDED_NO_INTERNAL),
             GetDisplayNotificationText());
@@ -424,7 +423,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayConfigurationChangedTwice) {
             GetDisplayNotificationText());
 
   // Back to the single display. It should show that a display was removed.
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   EXPECT_TRUE(base::StartsWith(
       GetDisplayNotificationText(),
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED, u""),
@@ -434,10 +433,10 @@ TEST_F(ScreenLayoutObserverTest, DisplayConfigurationChangedTwice) {
 // Verify the notification message content when one of the 2 displays that
 // connected to the device is rotated.
 TEST_F(ScreenLayoutObserverTest, UpdateAfterSuppressDisplayNotification) {
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
 
   // Rotate the second.
-  UpdateDisplay("400x400,200x200/r");
+  UpdateDisplay("500x400,300x200/r");
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_ROTATED, GetSecondDisplayName(),
                 l10n_util::GetStringUTF16(
@@ -447,13 +446,13 @@ TEST_F(ScreenLayoutObserverTest, UpdateAfterSuppressDisplayNotification) {
 
 // Verify that no notification is shown when overscan of a screen is changed.
 TEST_F(ScreenLayoutObserverTest, OverscanDisplay) {
-  UpdateDisplay("400x400, 300x300");
+  UpdateDisplay("500x400, 400x300");
   // Close the notification that is shown from initially adding a monitor.
   CloseNotification();
   display::Display::SetInternalDisplayId(display_manager()->first_display_id());
 
   // /o creates the default overscan.
-  UpdateDisplay("400x400, 300x300/o");
+  UpdateDisplay("500x400, 400x300/o");
   EXPECT_FALSE(IsNotificationShown());
 
   // Reset the overscan.
@@ -468,14 +467,14 @@ TEST_F(ScreenLayoutObserverTest, OverscanDisplay) {
 // Tests that exiting mirror mode by closing the lid shows the correct "exiting
 // mirror mode" message.
 TEST_F(ScreenLayoutObserverTest, ExitMirrorModeBecauseOfDockedModeMessage) {
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   display::Display::SetInternalDisplayId(
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay()
           .id());
 
   // Mirroring.
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,
                                        GetMirroringDisplayNames()),
@@ -484,7 +483,7 @@ TEST_F(ScreenLayoutObserverTest, ExitMirrorModeBecauseOfDockedModeMessage) {
   // Docked.
   CloseNotification();
   display::Display::SetInternalDisplayId(display_manager()->first_display_id());
-  UpdateDisplay("200x200");
+  UpdateDisplay("300x200");
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRROR_EXIT),
             GetDisplayNotificationText());
 }
@@ -493,14 +492,14 @@ TEST_F(ScreenLayoutObserverTest, ExitMirrorModeBecauseOfDockedModeMessage) {
 // correct message.
 TEST_F(ScreenLayoutObserverTest,
        ExitMirrorModeNoInternalDisplayBecauseOfDisplayRemovedMessage) {
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   display::Display::SetInternalDisplayId(
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay()
           .id());
 
   // Mirroring.
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,
                                        GetMirroringDisplayNames()),
@@ -508,7 +507,7 @@ TEST_F(ScreenLayoutObserverTest,
 
   // Removing one of the displays. We show that we exited mirror mode.
   CloseNotification();
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRROR_EXIT),
             GetDisplayNotificationText());
 }
@@ -516,18 +515,18 @@ TEST_F(ScreenLayoutObserverTest,
 // Tests notification messages shown when adding and removing displays in
 // extended mode.
 TEST_F(ScreenLayoutObserverTest, AddingRemovingDisplayExtendedModeMessage) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 
   // Adding a display in extended mode.
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_EXTENDED_NO_INTERNAL),
             GetDisplayNotificationText());
 
   // Removing a display.
   CloseNotification();
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   EXPECT_TRUE(base::StartsWith(
       GetDisplayNotificationText(),
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED, u""),
@@ -537,11 +536,11 @@ TEST_F(ScreenLayoutObserverTest, AddingRemovingDisplayExtendedModeMessage) {
 // Tests notification messages shown when entering and exiting unified desktop
 // mode.
 TEST_F(ScreenLayoutObserverTest, EnteringExitingUnifiedModeMessage) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 
   // Adding a display in extended mode.
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_EXTENDED_NO_INTERNAL),
             GetDisplayNotificationText());
@@ -565,7 +564,7 @@ TEST_F(ScreenLayoutObserverTest, EnteringExitingUnifiedModeMessage) {
 
   // Close the lid.
   display::Display::SetInternalDisplayId(display_manager()->first_display_id());
-  UpdateDisplay("200x200");
+  UpdateDisplay("300x200");
   display_manager()->SetUnifiedDesktopEnabled(false);
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_UNIFIED_EXITING),
@@ -575,7 +574,7 @@ TEST_F(ScreenLayoutObserverTest, EnteringExitingUnifiedModeMessage) {
 // Special case: Tests notification messages shown when entering docked mode
 // by closing the lid and the internal display is the secondary display.
 TEST_F(ScreenLayoutObserverTest, DockedModeWithExternalPrimaryDisplayMessage) {
-  UpdateDisplay("400x400,200x200");
+  UpdateDisplay("500x400,300x200");
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_EXTENDED_NO_INTERNAL),
             GetDisplayNotificationText());
@@ -591,14 +590,14 @@ TEST_F(ScreenLayoutObserverTest, DockedModeWithExternalPrimaryDisplayMessage) {
   EXPECT_TRUE(GetDisplayNotificationText().empty());
 
   // Close the lid. We go to docked mode, but we show no notifications.
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   EXPECT_FALSE(IsNotificationShown());
 }
 
 // Tests that rotation notifications are only shown when the rotation source is
 // a user action. The accelerometer source nevber produces any notifications.
 TEST_F(ScreenLayoutObserverTest, RotationNotification) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   const int64_t primary_id =
       display_manager()->GetPrimaryDisplayCandidate().id();
 
@@ -661,12 +660,12 @@ TEST_F(ScreenLayoutObserverTest, MirrorModeAddOrRemoveDisplayMessage) {
   constexpr int first_display_id = 11;
   constexpr int second_display_id = 12;
   display::ManagedDisplayInfo first_display_info =
-      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 500));
+      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 400));
   display::ManagedDisplayInfo second_display_info =
-      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 500));
+      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 400));
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(display::CreateDisplayInfo(
-      internal_display_id, gfx::Rect(0, 0, 100, 100)));
+      internal_display_id, gfx::Rect(0, 0, 200, 100)));
   display_info_list.push_back(first_display_info);
   display_info_list.push_back(second_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -722,7 +721,7 @@ TEST_F(ScreenLayoutObserverTest, MirrorModeAddOrRemoveDisplayMessage) {
 
 TEST_F(ScreenLayoutObserverTest, ClickNotification) {
   // Create notification.
-  UpdateDisplay("400x400/r");
+  UpdateDisplay("500x400/r");
   EXPECT_FALSE(GetDisplayNotificationAdditionalText().empty());
 
   // Click notification.

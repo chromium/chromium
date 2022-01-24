@@ -16,8 +16,8 @@ class TopLevelBlameContext : public base::trace_event::BlameContext {
  public:
   TopLevelBlameContext();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TopLevelBlameContext);
+  TopLevelBlameContext(const TopLevelBlameContext&) = delete;
+  TopLevelBlameContext& operator=(const TopLevelBlameContext&) = delete;
 };
 
 }  // namespace content

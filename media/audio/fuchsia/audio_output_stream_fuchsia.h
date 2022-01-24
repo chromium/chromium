@@ -23,6 +23,9 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
   AudioOutputStreamFuchsia(AudioManagerFuchsia* manager,
                            const AudioParameters& parameters);
 
+  AudioOutputStreamFuchsia(const AudioOutputStreamFuchsia&) = delete;
+  AudioOutputStreamFuchsia& operator=(const AudioOutputStreamFuchsia&) = delete;
+
   // AudioOutputStream interface.
   bool Open() override;
   void Start(AudioSourceCallback* callback) override;
@@ -96,8 +99,6 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
 
   // Timer that's scheduled to call PumpSamples().
   base::OneShotTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputStreamFuchsia);
 };
 
 }  // namespace media

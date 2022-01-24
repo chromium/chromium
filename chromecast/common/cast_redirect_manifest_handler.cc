@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 
 namespace chromecast {
 

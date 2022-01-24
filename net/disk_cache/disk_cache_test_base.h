@@ -75,6 +75,10 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   };
 
   DiskCacheTestWithCache();
+
+  DiskCacheTestWithCache(const DiskCacheTestWithCache&) = delete;
+  DiskCacheTestWithCache& operator=(const DiskCacheTestWithCache&) = delete;
+
   ~DiskCacheTestWithCache() override;
 
   void CreateBackend(uint32_t flags);
@@ -215,8 +219,6 @@ class DiskCacheTestWithCache : public DiskCacheTest {
  private:
   void InitMemoryCache();
   void InitDiskCache();
-
-  DISALLOW_COPY_AND_ASSIGN(DiskCacheTestWithCache);
 };
 
 #endif  // NET_DISK_CACHE_DISK_CACHE_TEST_BASE_H_

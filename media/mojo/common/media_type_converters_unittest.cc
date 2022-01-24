@@ -68,11 +68,10 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(
       reinterpret_cast<const uint8_t*>(&kData), kDataSize,
       reinterpret_cast<const uint8_t*>(&kSideData), kSideDataSize));
-  buffer->set_timestamp(base::TimeDelta::FromMilliseconds(123));
-  buffer->set_duration(base::TimeDelta::FromMilliseconds(456));
-  buffer->set_discard_padding(
-      DecoderBuffer::DiscardPadding(base::TimeDelta::FromMilliseconds(5),
-                                    base::TimeDelta::FromMilliseconds(6)));
+  buffer->set_timestamp(base::Milliseconds(123));
+  buffer->set_duration(base::Milliseconds(456));
+  buffer->set_discard_padding(DecoderBuffer::DiscardPadding(
+      base::Milliseconds(5), base::Milliseconds(6)));
 
   // Convert from and back.
   mojom::DecoderBufferPtr ptr(mojom::DecoderBuffer::From(*buffer));
@@ -234,7 +233,7 @@ TEST(MediaTypeConvertersTest, ConvertAudioBuffer_FLOAT) {
   // Original.
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_4_0;
   const int kSampleRate = 48000;
-  const base::TimeDelta start_time = base::TimeDelta::FromSecondsD(1000.0);
+  const base::TimeDelta start_time = base::Seconds(1000.0);
   scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<float>(
       kSampleFormatPlanarF32, kChannelLayout,
       ChannelLayoutToChannelCount(kChannelLayout), kSampleRate, 0.0f, 1.0f,

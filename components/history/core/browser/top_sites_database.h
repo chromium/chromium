@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/history/core/browser/history_types.h"
 #include "sql/meta_table.h"
 #include "sql/transaction.h"
@@ -26,6 +25,10 @@ namespace history {
 class TopSitesDatabase {
  public:
   TopSitesDatabase();
+
+  TopSitesDatabase(const TopSitesDatabase&) = delete;
+  TopSitesDatabase& operator=(const TopSitesDatabase&) = delete;
+
   ~TopSitesDatabase();
 
   // Must be called after creation but before any other methods are called.
@@ -94,8 +97,6 @@ class TopSitesDatabase {
 
   std::unique_ptr<sql::Database> db_;
   sql::MetaTable meta_table_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopSitesDatabase);
 };
 
 }  // namespace history

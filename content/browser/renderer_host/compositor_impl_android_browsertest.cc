@@ -46,6 +46,10 @@ class CompositorImplBrowserTest
  public:
   CompositorImplBrowserTest() {}
 
+  CompositorImplBrowserTest(const CompositorImplBrowserTest&) = delete;
+  CompositorImplBrowserTest& operator=(const CompositorImplBrowserTest&) =
+      delete;
+
   void SetUp() override {
     std::vector<base::Feature> features;
 
@@ -94,8 +98,6 @@ class CompositorImplBrowserTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorImplBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(P,
@@ -124,6 +126,10 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
       : context_provider_(context_provider) {
     context_provider_->AddObserver(this);
   }
+
+  ContextLostRunLoop(const ContextLostRunLoop&) = delete;
+  ContextLostRunLoop& operator=(const ContextLostRunLoop&) = delete;
+
   ~ContextLostRunLoop() override { context_provider_->RemoveObserver(this); }
 
   void RunUntilContextLost() {
@@ -141,7 +147,7 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
         FROM_HERE,
         base::BindOnce(&ContextLostRunLoop::CheckForContextLoss,
                        base::Unretained(this)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
   }
 
  private:
@@ -151,17 +157,21 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
   viz::ContextProvider* const context_provider_;
   bool did_lose_context_ = false;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextLostRunLoop);
 };
 
 // RunLoop implementation that runs until it observes a swap with size.
 class CompositorSwapRunLoop {
  public:
   CompositorSwapRunLoop(CompositorImpl* compositor) : compositor_(compositor) {
+    static_cast<Compositor*>(compositor_)
+        ->SetDidSwapBuffersCallbackEnabled(true);
     compositor_->SetSwapCompletedWithSizeCallbackForTesting(base::BindRepeating(
         &CompositorSwapRunLoop::DidSwap, base::Unretained(this)));
   }
+
+  CompositorSwapRunLoop(const CompositorSwapRunLoop&) = delete;
+  CompositorSwapRunLoop& operator=(const CompositorSwapRunLoop&) = delete;
+
   ~CompositorSwapRunLoop() {
     compositor_->SetSwapCompletedWithSizeCallbackForTesting(base::DoNothing());
   }
@@ -176,12 +186,10 @@ class CompositorSwapRunLoop {
 
   CompositorImpl* compositor_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorSwapRunLoop);
 };
 
 IN_PROC_BROWSER_TEST_P(CompositorImplLowEndBrowserTest,
-                       CompositorImplDropsResourcesOnBackground) {
+                       DISABLED_CompositorImplDropsResourcesOnBackground) {
   auto* rwhva = render_widget_host_view_android();
   auto* compositor = compositor_impl();
   auto context = GpuBrowsertestCreateContext(

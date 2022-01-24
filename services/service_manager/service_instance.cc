@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(OS_IOS)
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/service_process_launcher.h"
 #endif  // !defined(OS_IOS)
 
@@ -96,8 +97,8 @@ bool AllowsInterface(const Manifest::RequiredCapabilityMap& source_requirements,
   for (const auto& capability : required_capabilities) {
     auto it = target_capabilities.find(capability);
     if (it != target_capabilities.end()) {
-      for (const auto& interface_name : it->second)
-        allowed_interfaces.insert(interface_name);
+      for (const auto& interface : it->second)
+        allowed_interfaces.insert(interface);
     }
   }
 
@@ -156,7 +157,7 @@ void ServiceInstance::StartWithRemote(
 #if !defined(OS_IOS)
 bool ServiceInstance::StartWithProcessHost(
     std::unique_ptr<ServiceProcessHost> host,
-    sandbox::policy::SandboxType sandbox_type) {
+    sandbox::mojom::Sandbox sandbox_type) {
   DCHECK(!service_remote_);
   DCHECK(!process_host_);
 

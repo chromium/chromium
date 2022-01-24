@@ -97,7 +97,7 @@ constexpr char kDefaultConfig[] = R"([libdefaults]
 // A long time delta, used to fast forward the task environment until all
 // pending operations are completed. This value should be equal to the maximum
 // time to delay requests on |kBackoffPolicyForManagedAccounts|.
-const base::TimeDelta kLongTimeDelay = base::TimeDelta::FromMinutes(10);
+const base::TimeDelta kLongTimeDelay = base::Minutes(10);
 
 // Fake observer used to test notifications sent by KerberosCredentialsManager
 // on accounts changes.
@@ -179,6 +179,11 @@ class KerberosCredentialsManagerTest : public testing::Test {
 
     mgr_->AddObserver(&observer_);
   }
+
+  KerberosCredentialsManagerTest(const KerberosCredentialsManagerTest&) =
+      delete;
+  KerberosCredentialsManagerTest& operator=(
+      const KerberosCredentialsManagerTest&) = delete;
 
   ~KerberosCredentialsManagerTest() override {
     mgr_->RemoveObserver(&observer_);
@@ -376,7 +381,6 @@ class KerberosCredentialsManagerTest : public testing::Test {
 
  private:
   base::WeakPtrFactory<KerberosCredentialsManagerTest> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(KerberosCredentialsManagerTest);
 };
 
 // The default config sets strong crypto and allows forwardable tickets.
@@ -1319,9 +1323,6 @@ TEST_F(KerberosCredentialsManagerTest,
 // - ValidateConfig
 //     + Normalization like in AddAccountAndAuthenticate
 //     + Calls the ValidateConfig KerberosClient method
-// - AcquireKerberosTgt
-//     + Normalization like in AddAccountAndAuthenticate
-//     + Calls the AcquireKerberosTgt KerberosClient method
 // - SetActiveAccount
 //     + Calls OnAccountsChanged on observers
 // - GetKerberosFiles
@@ -1346,7 +1347,7 @@ TEST_F(KerberosCredentialsManagerTest,
 //   KerberosCredentialsManager, UpdateAccountsFromPref is called.
 //
 // See also
-//   https://analysis.chromium.org/p/chromium/coverage/dir?host=chromium.googlesource.com&project=chromium/src&ref=refs/heads/master&revision=8e25360b5986bc807eb05927b59cb698b120140c&path=//chrome/browser/ash/kerberos/&platform=linux-chromeos
+//   https://analysis.chromium.org/p/chromium/coverage/dir?host=chromium.googlesource.com&project=chromium/src&ref=refs/heads/main&path=//chrome/browser/ash/kerberos/&platform=linux-chromeos
 // for code coverage (try to get as high as possible!).
 
 }  // namespace ash

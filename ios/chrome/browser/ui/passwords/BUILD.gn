@@ -49,8 +49,7 @@ source_set("constants") {
   ]
 }
 
-source_set("app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
+source_set("eg_app_support+eg2") {
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -69,22 +68,24 @@ source_set("app_support+eg2") {
   ]
 }
 
-source_set("test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
+source_set("eg_test_support+eg2") {
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "password_breach_app_interface.h" ]
+  sources = [
+    "password_breach_app_interface.h",
+    "password_breach_app_interface_stub.mm",
+  ]
   deps = [
     ":constants",
     "//base",
+    "//ios/third_party/earl_grey2:test_lib",
   ]
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -93,7 +94,7 @@ source_set("eg2_tests") {
   sources = [ "password_breach_egtest.mm" ]
   deps = [
     ":constants",
-    ":test_support+eg2",
+    ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
     "//components/password_manager/core/common",

@@ -20,7 +20,7 @@ HttpAuthHandlerImpl::HttpAuthHandlerImpl(
     content::WebContents* web_contents,
     bool first_auth_attempt,
     LoginAuthRequiredCallback callback)
-    : WebContentsObserver(web_contents), callback_(std::move(callback)) {
+    : callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   url_ = auth_info.challenger.GetURL().Resolve(auth_info.path);

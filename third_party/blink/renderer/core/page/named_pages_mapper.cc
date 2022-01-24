@@ -20,7 +20,7 @@ void NamedPagesMapper::AddNamedPage(const AtomicString& page_name,
         break;
     }
 
-    entries_.Shrink(entries_.rend() - prev_it);
+    entries_.Shrink(static_cast<wtf_size_t>(entries_.rend() - prev_it));
 
     // Terminate the previous entry (now that we know its last page index)
     // before adding the new entry.

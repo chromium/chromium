@@ -78,13 +78,17 @@ void ReportServerLatency(const base::TimeDelta latency) {
   // Use a custom time histogram with ~10 buckets per order of magnitude between
   // 1ms and 30sec.
   UMA_HISTOGRAM_CUSTOM_TIMES(metrics_internal::kServerLatency, latency,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromSeconds(30), 50);
+                             base::Milliseconds(1), base::Seconds(30), 50);
 }
 
 void ReportImageRequestIncludesDesc(const bool includes_desc) {
   UMA_HISTOGRAM_BOOLEAN(metrics_internal::kImageRequestIncludesDesc,
                         includes_desc);
+}
+
+void ReportImageRequestIncludesIcon(const bool includes_icon) {
+  UMA_HISTOGRAM_BOOLEAN(metrics_internal::kImageRequestIncludesIcon,
+                        includes_icon);
 }
 
 void ReportServerRequestSizeKB(const size_t size_kb) {

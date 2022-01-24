@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
@@ -36,6 +35,9 @@ class TextAnalysisSource
   // are an error - it is only public because a WRL helper function creates the
   // objects.
   TextAnalysisSource();
+
+  TextAnalysisSource& operator=(const TextAnalysisSource&) = delete;
+
   // IDWriteTextAnalysisSource:
   HRESULT STDMETHODCALLTYPE GetLocaleName(UINT32 text_position,
                                           UINT32* text_length,
@@ -67,8 +69,6 @@ class TextAnalysisSource
   std::wstring locale_name_;
   Microsoft::WRL::ComPtr<IDWriteNumberSubstitution> number_substitution_;
   DWRITE_READING_DIRECTION reading_direction_;
-
-  DISALLOW_ASSIGN(TextAnalysisSource);
 };
 
 }  // namespace win

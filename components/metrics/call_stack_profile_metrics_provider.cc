@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -53,6 +52,9 @@ GetCpuInterceptorCallbackInstance() {
 class PendingProfiles {
  public:
   static PendingProfiles* GetInstance();
+
+  PendingProfiles(const PendingProfiles&) = delete;
+  PendingProfiles& operator=(const PendingProfiles&) = delete;
 
   // Retrieves all the pending profiles.
   std::vector<SampledProfile> RetrieveProfiles();
@@ -111,8 +113,6 @@ class PendingProfiles {
 
   // The set of completed serialized profiles that should be reported.
   std::vector<std::string> serialized_profiles_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(PendingProfiles);
 };
 
 // static

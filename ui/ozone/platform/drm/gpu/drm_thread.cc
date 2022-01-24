@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -138,10 +137,19 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
   uint32_t flags = ui::BufferUsageToGbmFlags(usage);
   uint32_t fourcc_format = ui::GetFourCCFormatFromBufferFormat(format);
 
+  // Some modifiers are incompatible with some gbm_bo_flags.  If we give
+  // modifiers to the GBM allocator, then GBM ignores the flags, and therefore
+  // may choose a modifier that's incompatible with the intended usage.
+  // Therefore, leave the modifier list empty for problematic flags.
+  //
+  // TODO(chadversary): Define GBM api that reports the modifiers compatible
+  // with a given set of use flags.
+  //
   // TODO(hoegsberg): We shouldn't really get here without a window,
   // but it happens during init. Need to figure out why.
   std::vector<uint64_t> modifiers;
   if (window && window->GetController() && !(flags & GBM_BO_USE_LINEAR) &&
+      !(flags & GBM_BO_USE_HW_VIDEO_DECODER) &&
       !(client_flags & GbmPixmap::kFlagNoModifiers)) {
     modifiers = window->GetController()->GetSupportedModifiers(fourcc_format);
   }

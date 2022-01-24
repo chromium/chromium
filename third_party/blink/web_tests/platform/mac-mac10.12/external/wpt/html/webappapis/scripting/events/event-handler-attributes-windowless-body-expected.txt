@@ -1,0 +1,218 @@
+This is a testharness.js-based test.
+Found 214 tests; 210 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Return null when getting the blur event handler of a windowless body
+PASS Ignore setting of blur window event handlers on windowless body
+PASS Return null when getting the error event handler of a windowless body
+PASS Ignore setting of error window event handlers on windowless body
+PASS Return null when getting the focus event handler of a windowless body
+PASS Ignore setting of focus window event handlers on windowless body
+PASS Return null when getting the load event handler of a windowless body
+PASS Ignore setting of load window event handlers on windowless body
+PASS Return null when getting the resize event handler of a windowless body
+PASS Ignore setting of resize window event handlers on windowless body
+PASS Return null when getting the scroll event handler of a windowless body
+PASS Ignore setting of scroll window event handlers on windowless body
+PASS Return null when getting the afterprint event handler of a windowless body
+PASS Ignore setting of afterprint window event handlers on windowless body
+PASS Return null when getting the beforeprint event handler of a windowless body
+PASS Ignore setting of beforeprint window event handlers on windowless body
+PASS Return null when getting the beforeunload event handler of a windowless body
+PASS Ignore setting of beforeunload window event handlers on windowless body
+PASS Return null when getting the hashchange event handler of a windowless body
+PASS Ignore setting of hashchange window event handlers on windowless body
+PASS Return null when getting the languagechange event handler of a windowless body
+PASS Ignore setting of languagechange window event handlers on windowless body
+PASS Return null when getting the message event handler of a windowless body
+PASS Ignore setting of message window event handlers on windowless body
+PASS Return null when getting the messageerror event handler of a windowless body
+PASS Ignore setting of messageerror window event handlers on windowless body
+PASS Return null when getting the offline event handler of a windowless body
+PASS Ignore setting of offline window event handlers on windowless body
+PASS Return null when getting the online event handler of a windowless body
+PASS Ignore setting of online window event handlers on windowless body
+PASS Return null when getting the pagehide event handler of a windowless body
+PASS Ignore setting of pagehide window event handlers on windowless body
+PASS Return null when getting the pageshow event handler of a windowless body
+PASS Ignore setting of pageshow window event handlers on windowless body
+PASS Return null when getting the popstate event handler of a windowless body
+PASS Ignore setting of popstate window event handlers on windowless body
+PASS Return null when getting the rejectionhandled event handler of a windowless body
+PASS Ignore setting of rejectionhandled window event handlers on windowless body
+PASS Return null when getting the storage event handler of a windowless body
+PASS Ignore setting of storage window event handlers on windowless body
+PASS Return null when getting the unhandledrejection event handler of a windowless body
+PASS Ignore setting of unhandledrejection window event handlers on windowless body
+PASS Return null when getting the unload event handler of a windowless body
+PASS Ignore setting of unload window event handlers on windowless body
+PASS abort is unaffected on a windowless body
+PASS auxclick is unaffected on a windowless body
+PASS cancel is unaffected on a windowless body
+PASS canplay is unaffected on a windowless body
+PASS canplaythrough is unaffected on a windowless body
+PASS change is unaffected on a windowless body
+PASS click is unaffected on a windowless body
+PASS close is unaffected on a windowless body
+PASS contextmenu is unaffected on a windowless body
+PASS cuechange is unaffected on a windowless body
+PASS dblclick is unaffected on a windowless body
+PASS drag is unaffected on a windowless body
+PASS dragend is unaffected on a windowless body
+PASS dragenter is unaffected on a windowless body
+PASS dragleave is unaffected on a windowless body
+PASS dragover is unaffected on a windowless body
+PASS dragstart is unaffected on a windowless body
+PASS drop is unaffected on a windowless body
+PASS durationchange is unaffected on a windowless body
+PASS emptied is unaffected on a windowless body
+PASS ended is unaffected on a windowless body
+PASS formdata is unaffected on a windowless body
+PASS input is unaffected on a windowless body
+PASS invalid is unaffected on a windowless body
+PASS keydown is unaffected on a windowless body
+PASS keypress is unaffected on a windowless body
+PASS keyup is unaffected on a windowless body
+PASS loadeddata is unaffected on a windowless body
+PASS loadedmetadata is unaffected on a windowless body
+PASS loadstart is unaffected on a windowless body
+PASS mousedown is unaffected on a windowless body
+PASS mouseenter is unaffected on a windowless body
+PASS mouseleave is unaffected on a windowless body
+PASS mousemove is unaffected on a windowless body
+PASS mouseout is unaffected on a windowless body
+PASS mouseover is unaffected on a windowless body
+PASS mouseup is unaffected on a windowless body
+PASS pause is unaffected on a windowless body
+PASS play is unaffected on a windowless body
+PASS playing is unaffected on a windowless body
+PASS progress is unaffected on a windowless body
+PASS ratechange is unaffected on a windowless body
+PASS reset is unaffected on a windowless body
+FAIL securitypolicyviolation is unaffected on a windowless body assert_equals: expected (object) null but got (undefined) undefined
+PASS seeked is unaffected on a windowless body
+PASS seeking is unaffected on a windowless body
+PASS select is unaffected on a windowless body
+FAIL slotchange is unaffected on a windowless body assert_equals: expected (object) null but got (undefined) undefined
+PASS stalled is unaffected on a windowless body
+PASS submit is unaffected on a windowless body
+PASS suspend is unaffected on a windowless body
+PASS timeupdate is unaffected on a windowless body
+PASS toggle is unaffected on a windowless body
+PASS volumechange is unaffected on a windowless body
+PASS waiting is unaffected on a windowless body
+PASS webkitanimationend is unaffected on a windowless body
+PASS webkitanimationiteration is unaffected on a windowless body
+PASS webkitanimationstart is unaffected on a windowless body
+PASS webkittransitionend is unaffected on a windowless body
+PASS wheel is unaffected on a windowless body
+PASS copy is unaffected on a windowless body
+PASS cut is unaffected on a windowless body
+PASS paste is unaffected on a windowless body
+PASS Return null when getting the blur event handler of a windowless frameset
+PASS Ignore setting of blur window event handlers on windowless frameset
+PASS Return null when getting the error event handler of a windowless frameset
+PASS Ignore setting of error window event handlers on windowless frameset
+PASS Return null when getting the focus event handler of a windowless frameset
+PASS Ignore setting of focus window event handlers on windowless frameset
+PASS Return null when getting the load event handler of a windowless frameset
+PASS Ignore setting of load window event handlers on windowless frameset
+PASS Return null when getting the resize event handler of a windowless frameset
+PASS Ignore setting of resize window event handlers on windowless frameset
+PASS Return null when getting the scroll event handler of a windowless frameset
+PASS Ignore setting of scroll window event handlers on windowless frameset
+PASS Return null when getting the afterprint event handler of a windowless frameset
+PASS Ignore setting of afterprint window event handlers on windowless frameset
+PASS Return null when getting the beforeprint event handler of a windowless frameset
+PASS Ignore setting of beforeprint window event handlers on windowless frameset
+PASS Return null when getting the beforeunload event handler of a windowless frameset
+PASS Ignore setting of beforeunload window event handlers on windowless frameset
+PASS Return null when getting the hashchange event handler of a windowless frameset
+PASS Ignore setting of hashchange window event handlers on windowless frameset
+PASS Return null when getting the languagechange event handler of a windowless frameset
+PASS Ignore setting of languagechange window event handlers on windowless frameset
+PASS Return null when getting the message event handler of a windowless frameset
+PASS Ignore setting of message window event handlers on windowless frameset
+PASS Return null when getting the messageerror event handler of a windowless frameset
+PASS Ignore setting of messageerror window event handlers on windowless frameset
+PASS Return null when getting the offline event handler of a windowless frameset
+PASS Ignore setting of offline window event handlers on windowless frameset
+PASS Return null when getting the online event handler of a windowless frameset
+PASS Ignore setting of online window event handlers on windowless frameset
+PASS Return null when getting the pagehide event handler of a windowless frameset
+PASS Ignore setting of pagehide window event handlers on windowless frameset
+PASS Return null when getting the pageshow event handler of a windowless frameset
+PASS Ignore setting of pageshow window event handlers on windowless frameset
+PASS Return null when getting the popstate event handler of a windowless frameset
+PASS Ignore setting of popstate window event handlers on windowless frameset
+PASS Return null when getting the rejectionhandled event handler of a windowless frameset
+PASS Ignore setting of rejectionhandled window event handlers on windowless frameset
+PASS Return null when getting the storage event handler of a windowless frameset
+PASS Ignore setting of storage window event handlers on windowless frameset
+PASS Return null when getting the unhandledrejection event handler of a windowless frameset
+PASS Ignore setting of unhandledrejection window event handlers on windowless frameset
+PASS Return null when getting the unload event handler of a windowless frameset
+PASS Ignore setting of unload window event handlers on windowless frameset
+PASS abort is unaffected on a windowless frameset
+PASS auxclick is unaffected on a windowless frameset
+PASS cancel is unaffected on a windowless frameset
+PASS canplay is unaffected on a windowless frameset
+PASS canplaythrough is unaffected on a windowless frameset
+PASS change is unaffected on a windowless frameset
+PASS click is unaffected on a windowless frameset
+PASS close is unaffected on a windowless frameset
+PASS contextmenu is unaffected on a windowless frameset
+PASS cuechange is unaffected on a windowless frameset
+PASS dblclick is unaffected on a windowless frameset
+PASS drag is unaffected on a windowless frameset
+PASS dragend is unaffected on a windowless frameset
+PASS dragenter is unaffected on a windowless frameset
+PASS dragleave is unaffected on a windowless frameset
+PASS dragover is unaffected on a windowless frameset
+PASS dragstart is unaffected on a windowless frameset
+PASS drop is unaffected on a windowless frameset
+PASS durationchange is unaffected on a windowless frameset
+PASS emptied is unaffected on a windowless frameset
+PASS ended is unaffected on a windowless frameset
+PASS formdata is unaffected on a windowless frameset
+PASS input is unaffected on a windowless frameset
+PASS invalid is unaffected on a windowless frameset
+PASS keydown is unaffected on a windowless frameset
+PASS keypress is unaffected on a windowless frameset
+PASS keyup is unaffected on a windowless frameset
+PASS loadeddata is unaffected on a windowless frameset
+PASS loadedmetadata is unaffected on a windowless frameset
+PASS loadstart is unaffected on a windowless frameset
+PASS mousedown is unaffected on a windowless frameset
+PASS mouseenter is unaffected on a windowless frameset
+PASS mouseleave is unaffected on a windowless frameset
+PASS mousemove is unaffected on a windowless frameset
+PASS mouseout is unaffected on a windowless frameset
+PASS mouseover is unaffected on a windowless frameset
+PASS mouseup is unaffected on a windowless frameset
+PASS pause is unaffected on a windowless frameset
+PASS play is unaffected on a windowless frameset
+PASS playing is unaffected on a windowless frameset
+PASS progress is unaffected on a windowless frameset
+PASS ratechange is unaffected on a windowless frameset
+PASS reset is unaffected on a windowless frameset
+FAIL securitypolicyviolation is unaffected on a windowless frameset assert_equals: expected (object) null but got (undefined) undefined
+PASS seeked is unaffected on a windowless frameset
+PASS seeking is unaffected on a windowless frameset
+PASS select is unaffected on a windowless frameset
+FAIL slotchange is unaffected on a windowless frameset assert_equals: expected (object) null but got (undefined) undefined
+PASS stalled is unaffected on a windowless frameset
+PASS submit is unaffected on a windowless frameset
+PASS suspend is unaffected on a windowless frameset
+PASS timeupdate is unaffected on a windowless frameset
+PASS toggle is unaffected on a windowless frameset
+PASS volumechange is unaffected on a windowless frameset
+PASS waiting is unaffected on a windowless frameset
+PASS webkitanimationend is unaffected on a windowless frameset
+PASS webkitanimationiteration is unaffected on a windowless frameset
+PASS webkitanimationstart is unaffected on a windowless frameset
+PASS webkittransitionend is unaffected on a windowless frameset
+PASS wheel is unaffected on a windowless frameset
+PASS copy is unaffected on a windowless frameset
+PASS cut is unaffected on a windowless frameset
+PASS paste is unaffected on a windowless frameset
+Harness: the test ran to completion.
+

@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -73,6 +72,9 @@ class BASE_EXPORT WaitableEvent {
   // deleted.
   explicit WaitableEvent(win::ScopedHandle event_handle);
 #endif
+
+  WaitableEvent(const WaitableEvent&) = delete;
+  WaitableEvent& operator=(const WaitableEvent&) = delete;
 
   ~WaitableEvent();
 
@@ -196,6 +198,9 @@ class BASE_EXPORT WaitableEvent {
    public:
     ReceiveRight(mach_port_t name, bool create_slow_watch_list);
 
+    ReceiveRight(const ReceiveRight&) = delete;
+    ReceiveRight& operator=(const ReceiveRight&) = delete;
+
     mach_port_t Name() const { return right_.get(); }
 
     // This structure is used iff UseSlowWatchList() is true. See the comment
@@ -222,8 +227,6 @@ class BASE_EXPORT WaitableEvent {
     // This is allocated iff UseSlowWatchList() is true. It is created on the
     // heap to avoid performing initialization when not using the slow path.
     std::unique_ptr<WatchList> slow_watch_list_;
-
-    DISALLOW_COPY_AND_ASSIGN(ReceiveRight);
   };
 
   const ResetPolicy policy_;
@@ -284,8 +287,6 @@ class BASE_EXPORT WaitableEvent {
   // Whether a thread invoking Wait() on this WaitableEvent should be considered
   // blocked as opposed to idle (and potentially replaced if part of a pool).
   bool waiting_is_blocking_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableEvent);
 };
 
 }  // namespace base

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "net/cert/cert_verifier.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"

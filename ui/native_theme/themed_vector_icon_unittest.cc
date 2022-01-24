@@ -4,7 +4,6 @@
 
 #include "ui/native_theme/themed_vector_icon.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"

@@ -66,8 +66,8 @@ class WebAuthUITest : public InProcessBrowserTest {
 // When a conditional UI WebAuthn request is made, the browser should show an
 // icon on the omnibar if the tab executing the request is focused.
 IN_PROC_BROWSER_TEST_F(WebAuthUITest, ConditionalUI) {
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsURL("www.example.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetHttpsURL("www.example.com", "/title1.html")));
   auto owned_virtual_device_factory =
       std::make_unique<device::test::VirtualFidoDeviceFactory>();
   auto* virtual_device_factory = owned_virtual_device_factory.get();

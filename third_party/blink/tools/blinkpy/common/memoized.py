@@ -45,9 +45,9 @@ class memoized(object):
             self._results_cache[args] = result
             return result
         except TypeError as error:
-            raise TypeError(
-                'Cannot call memoized function %s with unhashable '
-                'arguments: %s' % (self._function.__name__, error.message))
+            raise TypeError('Cannot call memoized function %s with unhashable '
+                            'arguments: %s' %
+                            (self._function.__name__, str(error)))
 
     # Use python "descriptor" protocol __get__ to appear
     # invisible during property access.

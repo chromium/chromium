@@ -9,6 +9,7 @@ mojom("mojom") {
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//ui/gfx/image/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
@@ -23,7 +24,7 @@ mojom("mojom") {
       ]
       traits_headers = [ "mac_notifications_mojom_traits.h" ]
       traits_sources = [ "mac_notifications_mojom_traits.cc" ]
-      traits_public_deps = [ "//chrome/services/mac_notifications/public/cpp" ]
+      traits_public_deps = [ "//chrome/common/notifications" ]
     },
   ]
 }

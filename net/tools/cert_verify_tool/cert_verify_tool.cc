@@ -36,6 +36,15 @@
 
 namespace {
 
+enum class RootStoreType {
+  // No roots other than those explicitly passed in on the command line.
+  kEmpty,
+  // Use the system root store.
+  kSystem,
+  // Use the Chrome Root Store.
+  kChrome
+};
+
 std::string GetUserAgent() {
   return "cert_verify_tool/0.1";
 }
@@ -173,22 +182,35 @@ class CertVerifyImplUsingPathBuilder : public CertVerifyImpl {
 };
 
 std::unique_ptr<net::SystemTrustStore> CreateSystemTrustStore(
-    bool use_system_roots) {
-  return use_system_roots ? net::CreateSslSystemTrustStore()
-                          : net::CreateEmptySystemTrustStore();
+    base::StringPiece impl_name,
+    RootStoreType root_store_type) {
+  switch (root_store_type) {
+    case RootStoreType::kSystem:
+      std::cerr << impl_name
+                << ": using system roots (--roots are in addition).\n";
+      return net::CreateSslSystemTrustStore();
+    case RootStoreType::kChrome:
+      std::cerr << impl_name
+                << ": using Chrome Root Store (--roots are in addition).\n";
+      return net::CreateSslSystemTrustStoreChromeRoot();
+    case RootStoreType::kEmpty:
+    default:
+      std::cerr << impl_name << ": only using --roots specified.\n";
+      return net::CreateEmptySystemTrustStore();
+  }
 }
 
 // Creates an subclass of CertVerifyImpl based on its name, or returns nullptr.
 std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
     base::StringPiece impl_name,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-    bool use_system_roots) {
+    RootStoreType root_store_type) {
 #if !(defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS))
   if (impl_name == "platform") {
-    if (!use_system_roots) {
+    if (root_store_type != RootStoreType::kSystem) {
       std::cerr << "WARNING: platform verifier not supported with "
-                   "--no-system-roots, skipping.\n";
-      return nullptr;
+                   "--no-system-roots and --use-chrome-root-store, using "
+                   "system roots (--roots are in addition).\n";
     }
 
     return std::make_unique<CertVerifyImplUsingProc>(
@@ -199,14 +221,16 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
 
   if (impl_name == "builtin") {
     return std::make_unique<CertVerifyImplUsingProc>(
-        "CertVerifyProcBuiltin", net::CreateCertVerifyProcBuiltin(
-                                     std::move(cert_net_fetcher),
-                                     CreateSystemTrustStore(use_system_roots)));
+        "CertVerifyProcBuiltin",
+        net::CreateCertVerifyProcBuiltin(
+            std::move(cert_net_fetcher),
+            CreateSystemTrustStore(impl_name, root_store_type)));
   }
 
   if (impl_name == "pathbuilder") {
     return std::make_unique<CertVerifyImplUsingPathBuilder>(
-        std::move(cert_net_fetcher), CreateSystemTrustStore(use_system_roots));
+        std::move(cert_net_fetcher),
+        CreateSystemTrustStore(impl_name, root_store_type));
   }
 
   std::cerr << "WARNING: Unrecognized impl: " << impl_name << "\n";
@@ -235,6 +259,11 @@ const char kUsage[] =
     "      Do not use system provided trust roots, only trust roots specified\n"
     "      by --roots or --trust-last-cert will be used. Only supported by\n"
     "      the builtin and pathbuilter impls.\n"
+    "\n"
+    " --use-chrome-root-store\n"
+    "      Use the Chrome Root Store. Only supported by the builtin and \n"
+    "      pathbuilder impls; if set will override the --no-system-roots \n"
+    "      flag.\n"
     "\n"
     " --intermediates=<certs path>\n"
     "      <certs path> is a file containing certificates [1] for use when\n"
@@ -319,7 +348,13 @@ int main(int argc, char** argv) {
     }
   }
 
-  bool use_system_roots = !command_line.HasSwitch("no-system-roots");
+  RootStoreType root_store_type = RootStoreType::kSystem;
+  if (command_line.HasSwitch("no-system-roots")) {
+    root_store_type = RootStoreType::kEmpty;
+  }
+  if (command_line.HasSwitch("use-chrome-root-store")) {
+    root_store_type = RootStoreType::kChrome;
+  }
 
   base::FilePath roots_path = command_line.GetSwitchValuePath("roots");
   base::FilePath intermediates_path =
@@ -397,7 +432,7 @@ int main(int argc, char** argv) {
   std::string impls_str = command_line.GetSwitchValueASCII("impls");
   if (impls_str.empty()) {
     // Default value.
-#if !defined(OS_FUCHSIA)
+#if !(defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS))
     impls_str = "platform,";
 #endif
     impls_str += "builtin,pathbuilder";
@@ -408,7 +443,7 @@ int main(int argc, char** argv) {
 
   for (const std::string& impl_name : impl_names) {
     auto verify_impl = CreateCertVerifyImplFromName(impl_name, cert_net_fetcher,
-                                                    use_system_roots);
+                                                    root_store_type);
     if (verify_impl)
       impls.push_back(std::move(verify_impl));
   }

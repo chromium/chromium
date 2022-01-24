@@ -42,6 +42,7 @@ bool VideoLayer::Update() {
 }
 
 void VideoLayer::StopUsingProvider() {
+  DCHECK(IsMutationAllowed());
   provider_ = nullptr;
 }
 

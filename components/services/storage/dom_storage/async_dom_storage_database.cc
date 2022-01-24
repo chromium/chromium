@@ -98,7 +98,6 @@ void AsyncDomStorageDatabase::DeletePrefixed(
 void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
   DCHECK(database_);
   database_.PostTaskWithThisObject(
-      FROM_HERE,
       base::BindOnce(
           [](StatusCallback callback,
              scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -174,7 +173,7 @@ void AsyncDomStorageDatabase::OnDatabaseOpened(
   std::swap(tasks, tasks_to_run_on_open_);
   if (status.ok()) {
     for (auto& task : tasks)
-      database_.PostTaskWithThisObject(FROM_HERE, std::move(task));
+      database_.PostTaskWithThisObject(std::move(task));
   }
   std::move(callback).Run(status);
 }

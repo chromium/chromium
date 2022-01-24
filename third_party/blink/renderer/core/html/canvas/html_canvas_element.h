@@ -31,7 +31,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/surface_layer_bridge.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 #define CanvasDefaultInterpolationQuality kInterpolationLow
 
@@ -70,10 +71,10 @@ class CanvasDrawListener;
 class CanvasRenderingContext;
 class CanvasRenderingContextFactory;
 class GraphicsContext;
-class HitTestCanvasResult;
 class HTMLCanvasElement;
 class ImageBitmapOptions;
 class IntSize;
+class StaticBitmapImageToVideoFrameCopier;
 
 class
     CanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext;
@@ -106,8 +107,8 @@ class CORE_EXPORT HTMLCanvasElement final
   ~HTMLCanvasElement() override;
 
   // Attributes and functions exposed to script
-  unsigned width() const { return Size().Width(); }
-  unsigned height() const { return Size().Height(); }
+  unsigned width() const { return Size().width(); }
+  unsigned height() const { return Size().height(); }
 
   const IntSize& Size() const override { return size_; }
 
@@ -261,11 +262,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void NotifyListenersCanvasChanged();
 
-  // For Canvas HitRegions
-  bool IsSupportedInteractiveCanvasFallback(const Element&);
-  HitTestCanvasResult* GetControlAndIdIfHitRegionExists(const PhysicalOffset&);
-  String GetIdFromControl(const Element*);
-
   // For OffscreenCanvas that controls this html canvas element
   ::blink::SurfaceLayerBridge* SurfaceLayerBridge() const {
     return surface_layer_bridge_.get();
@@ -322,6 +318,8 @@ class CORE_EXPORT HTMLCanvasElement final
   RespectImageOrientationEnum RespectImageOrientation() const;
 
   bool IsCanvasClear() { return canvas_is_clear_; }
+
+  bool IsPlaceholder() const override { return IsOffscreenCanvasRegistered(); }
 
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
@@ -415,6 +413,8 @@ class CORE_EXPORT HTMLCanvasElement final
   // Used for low latency mode.
   // TODO: rename to CanvasFrameDispatcher.
   std::unique_ptr<CanvasResourceDispatcher> frame_dispatcher_;
+
+  std::unique_ptr<StaticBitmapImageToVideoFrameCopier> copier_;
 
   bool did_notify_listeners_for_current_frame_ = false;
 

@@ -1,20 +1,20 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "invalidations": [
-        [150, 150, 100, 100],
-        [8, 102, 100, 100]
-      ]
+      "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixedTransformed'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='fixedOverlapping'",
       "position": [8, 102],
-      "contentsOpaque": true,
-      "drawsContent": false
+      "bounds": [792, 498],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [142, 48, 100, 100],
+        [0, 0, 100, 100]
+      ]
     }
   ]
 }

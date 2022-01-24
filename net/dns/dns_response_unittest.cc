@@ -1689,6 +1689,23 @@ TEST(DnsResponseWriteTest, WrittenResponseCanBeParsed) {
   EXPECT_EQ(additional_record.owned_rdata, parsed_record.rdata);
 }
 
+TEST(DnsResponseWriteTest, CreateEmptyNoDataResponse) {
+  DnsResponse response = DnsResponse::CreateEmptyNoDataResponse(
+      /*id=*/4,
+      /*is_authoritative=*/true, "\x04name\x04test\x00", dns_protocol::kTypeA);
+
+  EXPECT_TRUE(response.IsValid());
+  EXPECT_THAT(response.id(), testing::Optional(4));
+  EXPECT_TRUE(response.flags() & dns_protocol::kFlagAA);
+  EXPECT_EQ(response.question_count(), 1u);
+  EXPECT_EQ(response.answer_count(), 0u);
+  EXPECT_EQ(response.authority_count(), 0u);
+  EXPECT_EQ(response.additional_answer_count(), 0u);
+
+  EXPECT_THAT(response.qtypes(), testing::ElementsAre(dns_protocol::kTypeA));
+  EXPECT_THAT(response.dotted_qnames(), testing::ElementsAre("name.test"));
+}
+
 }  // namespace
 
 }  // namespace net

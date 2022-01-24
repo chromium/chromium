@@ -71,11 +71,10 @@ base::Value FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.SetKey("document", std::move(doc));
 
   // Frame node properties.
-  ret.SetIntKey("frame_tree_node_id", impl->frame_tree_node_id_);
   ret.SetIntKey("render_frame_id", impl->render_frame_id_);
   ret.SetStringKey("frame_token", impl->frame_token_.value().ToString());
   ret.SetIntKey("browsing_instance_id", impl->browsing_instance_id_.value());
-  ret.SetIntKey("site_instance_id", impl->site_instance_id_);
+  ret.SetIntKey("site_instance_id", impl->site_instance_id_.value());
   ret.SetStringKey("lifecycle_state",
                    MojoEnumToString(impl->lifecycle_state_.value()));
   ret.SetBoolKey("is_ad_frame", impl->is_ad_frame_.value());

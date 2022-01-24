@@ -19,7 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
@@ -107,6 +106,10 @@ class BookmarkFaviconFetcher : public base::SupportsUserData::Data {
   BookmarkFaviconFetcher(Profile* profile,
                          const base::FilePath& path,
                          BookmarksExportObserver* observer);
+
+  BookmarkFaviconFetcher(const BookmarkFaviconFetcher&) = delete;
+  BookmarkFaviconFetcher& operator=(const BookmarkFaviconFetcher&) = delete;
+
   ~BookmarkFaviconFetcher() override = default;
 
   // Executes bookmark export process.
@@ -146,8 +149,6 @@ class BookmarkFaviconFetcher : public base::SupportsUserData::Data {
   base::FilePath path_;
 
   BookmarksExportObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkFaviconFetcher);
 };
 
 // Class responsible for the actual writing. Takes ownership of favicons_map.
@@ -163,6 +164,9 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
         observer_(observer) {
     DCHECK(bookmarks_.is_dict());
   }
+
+  Writer(const Writer&) = delete;
+  Writer& operator=(const Writer&) = delete;
 
   // Writing bookmarks and favicons data to file.
   void DoWrite() {
@@ -434,8 +438,6 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   // How much we indent when writing a bookmark/folder. This is modified
   // via IncrementIndent and DecrementIndent.
   std::string indent_;
-
-  DISALLOW_COPY_AND_ASSIGN(Writer);
 };
 
 }  // namespace

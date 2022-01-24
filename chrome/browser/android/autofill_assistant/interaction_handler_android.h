@@ -12,7 +12,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/event_handler.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -43,6 +42,11 @@ class InteractionHandlerAndroid : public EventHandler::Observer {
       RadioButtonController* radio_button_controller,
       base::android::ScopedJavaGlobalRef<jobject> jcontext,
       base::android::ScopedJavaGlobalRef<jobject> jdelegate);
+
+  InteractionHandlerAndroid(const InteractionHandlerAndroid&) = delete;
+  InteractionHandlerAndroid& operator=(const InteractionHandlerAndroid&) =
+      delete;
+
   ~InteractionHandlerAndroid() override;
 
   base::WeakPtr<InteractionHandlerAndroid> GetWeakPtr();
@@ -111,7 +115,6 @@ class InteractionHandlerAndroid : public EventHandler::Observer {
       nested_ui_controllers_;
 
   base::WeakPtrFactory<InteractionHandlerAndroid> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(InteractionHandlerAndroid);
 };
 
 }  //  namespace autofill_assistant

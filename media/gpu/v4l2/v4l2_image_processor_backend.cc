@@ -18,7 +18,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -403,8 +402,7 @@ V4L2ImageProcessorBackend::CreateWithOutputMode(
     output_planes[i].size = pix_mp.plane_fmt[i].sizeimage;
   }
 
-  auto image_processor = std::unique_ptr<
-      V4L2ImageProcessorBackend, std::default_delete<ImageProcessorBackend>>(
+  std::unique_ptr<V4L2ImageProcessorBackend> image_processor(
       new V4L2ImageProcessorBackend(
           backend_task_runner, std::move(device),
           PortConfig(input_config.fourcc, negotiated_input_size, input_planes,
@@ -432,11 +430,7 @@ V4L2ImageProcessorBackend::CreateWithOutputMode(
   done.Wait();
   if (!success) {
     // This needs to be destroyed on |backend_task_runner|.
-    backend_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            base::DoNothing::Once<std::unique_ptr<ImageProcessorBackend>>(),
-            std::move(image_processor)));
+    backend_task_runner->DeleteSoon(FROM_HERE, std::move(image_processor));
     return nullptr;
   }
 

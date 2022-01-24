@@ -38,6 +38,13 @@ public class PrefService {
 
     /**
      * @param preference The name of the preference.
+     */
+    public boolean hasPrefPath(@NonNull String preference) {
+        return PrefServiceJni.get().hasPrefPath(mNativePrefServiceAndroid, preference);
+    }
+
+    /**
+     * @param preference The name of the preference.
      * @return Whether the specified preference is enabled.
      */
     public boolean getBoolean(@NonNull String preference) {
@@ -96,6 +103,7 @@ public class PrefService {
     @NativeMethods
     interface Natives {
         void clearPref(long nativePrefServiceAndroid, String preference);
+        boolean hasPrefPath(long nativePrefServiceAndroid, String preference);
         boolean getBoolean(long nativePrefServiceAndroid, String preference);
         void setBoolean(long nativePrefServiceAndroid, String preference, boolean value);
         int getInteger(long nativePrefServiceAndroid, String preference);

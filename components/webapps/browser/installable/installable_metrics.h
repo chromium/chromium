@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_METRICS_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_METRICS_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/public/browser/service_worker_context.h"
 
@@ -89,6 +88,9 @@ enum class WebappInstallSource {
   // Create shortcut item in menu
   MENU_CREATE_SHORTCUT = 17,
 
+  // Installed via the SubApps API.
+  SUB_APP = 18,
+
   // Add any new values above this one.
   COUNT,
 };
@@ -142,8 +144,15 @@ enum class WebappUninstallSource {
   // Externally managed Arc apps.
   kArc = 14,
 
+  // SubApp API.
+  kSubApp = 15,
+
+  // On system startup, any apps that are flagged as uninstalling but have not
+  // yet been fully uninstalled are re-uninstalled.
+  kStartupCleanup = 16,
+
   // Add any new values above this one.
-  kMaxValue = kArc,
+  kMaxValue = kStartupCleanup,
 };
 
 // This is the result of the promotability check that is recorded in the
@@ -163,6 +172,10 @@ enum class ServiceWorkerOfflineCapability {
 
 class InstallableMetrics {
  public:
+  InstallableMetrics() = delete;
+  InstallableMetrics(const InstallableMetrics&) = delete;
+  InstallableMetrics& operator=(const InstallableMetrics&) = delete;
+
   // Records |source| in the Webapp.Install.InstallEvent histogram.
   // IsReportableInstallSource(|source|) must be true.
   static void TrackInstallEvent(WebappInstallSource source);
@@ -197,9 +210,6 @@ class InstallableMetrics {
 
   // Records |source| in the Webapp.Install.UninstallEvent histogram.
   static void TrackUninstallEvent(WebappUninstallSource source);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InstallableMetrics);
 };
 
 }  // namespace webapps

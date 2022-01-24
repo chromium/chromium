@@ -6,6 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -80,17 +81,10 @@ const base::Feature kProactivelyThrottleLowPriorityRequests{
 
 // Enables Cross-Origin-Embedder-Policy: credentialless.
 // https://github.com/mikewest/credentiallessness
+// TODO(https://crbug.com/1175099): Remove one week after M96: 2021-11-25
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCrossOriginEmbedderPolicyCredentialless{
     "CrossOriginEmbedderPolicyCredentialless",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables Cross-Origin-Embedder-Policy credentialless origin trial. It will be
-// used as a kill switch during the experiment.
-// Intent-to-experiment:
-// https://groups.google.com/a/chromium.org/g/blink-dev/c/Sdc0G1bvKr0/m/YHR8RuWyAAAJ
-const base::Feature kCrossOriginEmbedderPolicyCredentiallessOriginTrial{
-    "CrossOriginEmbedderPolicyCredentiallessOriginTrial",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables Cross-Origin Opener Policy (COOP).
@@ -99,22 +93,6 @@ const base::Feature kCrossOriginEmbedderPolicyCredentiallessOriginTrial{
 // Currently this feature is enabled for all platforms except WebView.
 const base::Feature kCrossOriginOpenerPolicy{"CrossOriginOpenerPolicy",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables Cross-Origin-Opener-Policy reporting API origin trial. It will be
-// used as a kill switch during the experiment.
-const base::Feature kCrossOriginOpenerPolicyReportingOriginTrial{
-    "CrossOriginOpenerPolicyReportingOriginTrial",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables Cross-Origin Opener Policy (COOP) reporting.
-// https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
-const base::Feature kCrossOriginOpenerPolicyReporting{
-    "CrossOriginOpenerPolicyReporting", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables Cross-Origin Opener Policy (COOP) access reporting.
-// https://github.com/camillelamy/explainers/blob/master/coop_reporting.md#report-blocked-accesses-to-other-windows
-const base::Feature kCrossOriginOpenerPolicyAccessReporting{
-    "CrossOriginOpenerPolicyAccessReporting", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Shift's COOP's default from `unsafe-none` to `same-origin-allow-popups`.
 // https://github.com/mikewest/coop-by-default/
@@ -209,12 +187,7 @@ const base::Feature kWebSocketReassembleShortMessages{
 // See:
 // https://tools.ietf.org/html/draft-davidben-http-client-hint-reliability-02#section-4.3
 const base::Feature kAcceptCHFrame{"AcceptCHFrame",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables support for FTP URLs. When disabled FTP URLs will behave the same as
-// any other URL scheme that's unknown to the UA. See https://crbug.com/333943
-const base::Feature kFtpProtocol{"FtpProtocol",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSCTAuditingRetryAndPersistReports{
     "SCTAuditingRetryAndPersistReports", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -242,14 +215,57 @@ constexpr base::FeatureParam<int> kLoaderChunkSize{
 }  // namespace
 
 // static
-uint32_t GetDataPipeDefaultAllocationSize() {
-  return base::saturated_cast<uint32_t>(kDataPipeAllocationSize.Get());
+uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
+  // For low-memory devices, always use the (smaller) default buffer size.
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512)
+    return kDataPipeDefaultAllocationSize;
+  switch (option) {
+    case DataPipeAllocationSize::kDefaultSizeOnly:
+      return kDataPipeDefaultAllocationSize;
+    case DataPipeAllocationSize::kLargerSizeIfPossible:
+      return base::saturated_cast<uint32_t>(kDataPipeAllocationSize.Get());
+  }
 }
 
 // static
 uint32_t GetLoaderChunkSize() {
   return base::saturated_cast<uint32_t>(kLoaderChunkSize.Get());
 }
+
+// Enable recording UMAs for network activities which can wake-up radio on
+// Android.
+const base::Feature kRecordRadioWakeupTrigger{
+    "RecordRadioWakeupTrigger", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Check disk cache to see if the queued requests (especially those don't need
+// validation) have already been cached. If yes, start them as they may not
+// contend for network.
+const base::Feature kCheckCacheForQueuedRequests{
+    "CheckCacheForQueuedRequests", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// The time interval before checking the cache for queued request.
+constexpr base::FeatureParam<base::TimeDelta> kQueuedRequestsCacheCheckInterval{
+    &kCheckCacheForQueuedRequests, "queued_requests_cache_check_interval",
+    base::Milliseconds(100)};
+
+// Cache check is only valid for requests queued for long than this threshold.
+constexpr base::FeatureParam<base::TimeDelta>
+    kQueuedRequestsCacheCheckTimeThreshold{
+        &kCheckCacheForQueuedRequests,
+        "queued_requests_cache_check_time_threshold", base::Milliseconds(100)};
+
+// https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
+const base::Feature kCorsNonWildcardRequestHeadersSupport{
+    "CorsNonWildcardRequestHeadersSupport", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Whether the sync client optimization is used for communication between the
+// CorsURLLoader and URLLoader.
+const base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Warn developers via a DevTools issue if requested client hint is deprecated.
+const base::Feature kClientHintDeprecationIssue{
+    "ClientHintDeprecationIssue", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace network

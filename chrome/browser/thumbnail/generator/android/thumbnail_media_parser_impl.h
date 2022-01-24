@@ -11,10 +11,9 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/thumbnail/generator/android/stats.h"
 #include "chrome/browser/thumbnail/generator/android/thumbnail_media_parser.h"
@@ -42,6 +41,10 @@ class ThumbnailMediaParserImpl : public ThumbnailMediaParser,
  public:
   ThumbnailMediaParserImpl(const std::string& mime_type,
                            const base::FilePath& file_path);
+
+  ThumbnailMediaParserImpl(const ThumbnailMediaParserImpl&) = delete;
+  ThumbnailMediaParserImpl& operator=(const ThumbnailMediaParserImpl&) = delete;
+
   ~ThumbnailMediaParserImpl() override;
 
   // ThumbnailMediaParser implementation.
@@ -118,8 +121,6 @@ class ThumbnailMediaParserImpl : public ThumbnailMediaParser,
   bool decode_done_;
 
   base::WeakPtrFactory<ThumbnailMediaParserImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThumbnailMediaParserImpl);
 };
 
 #endif  // CHROME_BROWSER_THUMBNAIL_GENERATOR_ANDROID_THUMBNAIL_MEDIA_PARSER_IMPL_H_

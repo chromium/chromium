@@ -5,9 +5,11 @@
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/simple_sync_token_client.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
@@ -16,6 +18,7 @@
 #include "skia/ext/rgba_to_yuva.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace {
 
@@ -71,7 +74,7 @@ class ScopedAcceleratedSkImage {
       return nullptr;
     }
 
-    return absl::WrapUnique<ScopedAcceleratedSkImage>(
+    return base::WrapUnique<ScopedAcceleratedSkImage>(
         new ScopedAcceleratedSkImage(provider, texture_id,
                                      std::move(sk_image)));
   }
@@ -114,47 +117,92 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
                                  const gpu::MailboxHolder& src_mailbox_holder,
                                  VideoFrame* dst_video_frame,
                                  gpu::SyncToken& completion_sync_token) {
+  DCHECK_EQ(dst_video_frame->format(), PIXEL_FORMAT_NV12);
+
   auto* ri = provider->RasterInterface();
   DCHECK(ri);
 
-  // Create an accelerated SkImage for the source.
-  auto scoped_sk_image = ScopedAcceleratedSkImage::Create(
-      provider, src_format, src_size, src_color_space, src_surface_origin,
-      src_mailbox_holder);
-  if (!scoped_sk_image) {
-    DLOG(ERROR)
-        << "Failed to create accelerated SkImage for RGBA to YUVA conversion.";
-    return false;
+  if (!provider->GrContext()) {
+    SkYUVAInfo yuva_info =
+        VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(dst_video_frame);
+    gpu::Mailbox yuva_mailboxes[SkYUVAInfo::kMaxPlanes];
+    ri->WaitSyncTokenCHROMIUM(src_mailbox_holder.sync_token.GetConstData());
+    for (int plane = 0; plane < yuva_info.numPlanes(); ++plane) {
+      gpu::MailboxHolder dst_mailbox_holder =
+          dst_video_frame->mailbox_holder(plane);
+      ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
+      yuva_mailboxes[plane] = dst_mailbox_holder.mailbox;
+    }
+    ri->ConvertRGBAToYUVAMailboxes(
+        yuva_info.yuvColorSpace(), yuva_info.planeConfig(),
+        yuva_info.subsampling(), yuva_mailboxes, src_mailbox_holder.mailbox);
+  } else {
+    // Create an accelerated SkImage for the source.
+    auto scoped_sk_image = ScopedAcceleratedSkImage::Create(
+        provider, src_format, src_size, src_color_space, src_surface_origin,
+        src_mailbox_holder);
+    if (!scoped_sk_image) {
+      DLOG(ERROR) << "Failed to create accelerated SkImage for RGBA to YUVA "
+                     "conversion.";
+      return false;
+    }
+
+    // Create SkSurfaces for the destination planes.
+    sk_sp<SkSurface> sk_surfaces[SkYUVAInfo::kMaxPlanes];
+    SkSurface* sk_surface_ptrs[SkYUVAInfo::kMaxPlanes] = {nullptr};
+    VideoFrameYUVMailboxesHolder holder;
+    if (!holder.VideoFrameToPlaneSkSurfaces(dst_video_frame, provider,
+                                            sk_surfaces)) {
+      DLOG(ERROR) << "Failed to create SkSurfaces for VideoFrame.";
+      return false;
+    }
+
+    // Make GrContext wait for `dst_video_frame`. Waiting on the mailbox tokens
+    // here ensures that all writes are completed in cases where the underlying
+    // GpuMemoryBuffer and SharedImage resources have been reused.
+    ri->Flush();
+    WaitAndReplaceSyncTokenClient client(ri);
+    for (int plane = 0; plane < holder.yuva_info().numPlanes(); ++plane) {
+      sk_surface_ptrs[plane] = sk_surfaces[plane].get();
+      dst_video_frame->UpdateMailboxHolderSyncToken(plane, &client);
+    }
+
+    // Do the blit.
+    skia::BlitRGBAToYUVA(scoped_sk_image->sk_image().get(), sk_surface_ptrs,
+                         holder.yuva_info());
+    provider->GrContext()->flushAndSubmit(false);
+  }
+  ri->Flush();
+
+  const size_t num_planes = dst_video_frame->layout().num_planes();
+
+  // For shared memory GMBs on Windows we needed to explicitly request a copy
+  // from the shared image GPU texture to the GMB. Set `completion_sync_token`
+  // to mark the completion of the copy.
+  if (dst_video_frame->HasGpuMemoryBuffer() &&
+      dst_video_frame->GetGpuMemoryBuffer()->GetType() ==
+          gfx::SHARED_MEMORY_BUFFER) {
+    auto* sii = provider->SharedImageInterface();
+
+    gpu::SyncToken blit_done_sync_token;
+    ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
+
+    for (size_t plane = 0; plane < num_planes; ++plane) {
+      const auto& mailbox = dst_video_frame->mailbox_holder(plane).mailbox;
+      sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
+    }
+
+    completion_sync_token = sii->GenVerifiedSyncToken();
+  } else {
+    ri->GenSyncTokenCHROMIUM(completion_sync_token.GetData());
   }
 
-  // Create SkSurfaces for the destination planes.
-  sk_sp<SkSurface> sk_surfaces[SkYUVAInfo::kMaxPlanes];
-  VideoFrameYUVMailboxesHolder holder;
-  if (!holder.VideoFrameToPlaneSkSurfaces(dst_video_frame, provider,
-                                          sk_surfaces)) {
-    DLOG(ERROR) << "Failed to create SkSurfaces for VideoFrame.";
-    return false;
-  }
-
-  // Make GrContext wait for `dst_video_frame`.
-  ri->Flush();
-  WaitAndReplaceSyncTokenClient client(ri);
-  dst_video_frame->UpdateReleaseSyncToken(&client);
-
-  // Do the blit.
-  skia::BlitRGBAToYUVA(
-      scoped_sk_image->sk_image(),
-      SkRect::MakeWH(src_size.width(), src_size.height()), sk_surfaces,
-      holder.yuva_info(),
-      SkRect::MakeWH(holder.yuva_info().width(), holder.yuva_info().height()));
-  provider->GrContext()->flushAndSubmit(false);
-  ri->Flush();
-
-  // Set `completion_sync_token` to mark the completion of the copy.
-  ri->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
-
-  // Make `dst_video_frame` wait on the token.
+  // Make access to the `dst_video_frame` wait on copy completion. We also
+  // update the ReleaseSyncToken here since it's used when the underlying
+  // GpuMemoryBuffer and SharedImage resources are returned to the pool.
   SimpleSyncTokenClient simple_client(completion_sync_token);
+  for (size_t plane = 0; plane < num_planes; ++plane)
+    dst_video_frame->UpdateMailboxHolderSyncToken(plane, &simple_client);
   dst_video_frame->UpdateReleaseSyncToken(&simple_client);
   return true;
 }

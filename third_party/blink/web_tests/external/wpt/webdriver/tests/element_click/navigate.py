@@ -3,9 +3,8 @@ import pytest
 from webdriver.error import NoSuchElementException
 
 from tests.support.asserts import assert_success
+from tests.support.helpers import wait_for_new_handle
 from tests.support.sync import Poll
-
-from . import wait_for_new_handle
 
 
 def element_click(session, element):

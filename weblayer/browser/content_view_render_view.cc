@@ -143,16 +143,21 @@ void ContentViewRenderView::SurfaceChanged(
     jint width,
     jint height,
     jboolean transparent_background,
-    const JavaParamRef<jobject>& surface) {
+    const JavaParamRef<jobject>& new_surface) {
   use_transparent_background_ = transparent_background;
   UpdateWebContentsBaseBackgroundColor();
   compositor_->SetRequiresAlphaChannel(use_transparent_background_);
-  compositor_->SetSurface(surface, can_be_used_with_surface_control);
+  // Java side will pass a null `new_surface` if the surface did not change.
+  if (new_surface) {
+    compositor_->SetSurface(new_surface, can_be_used_with_surface_control);
+  }
   compositor_->SetWindowBounds(gfx::Size(width, height));
 }
 
 void ContentViewRenderView::SetNeedsRedraw(JNIEnv* env) {
-  compositor_->SetNeedsRedraw();
+  if (compositor_) {
+    compositor_->SetNeedsRedraw();
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>
@@ -174,6 +179,12 @@ void ContentViewRenderView::SetRequiresAlphaChannel(
     jboolean requires_alpha_channel) {
   requires_alpha_channel_ = requires_alpha_channel;
   UpdateBackgroundColor(env);
+}
+
+void ContentViewRenderView::SetDidSwapBuffersCallbackEnabled(JNIEnv* env,
+                                                             jboolean enable) {
+  InitCompositor();
+  compositor_->SetDidSwapBuffersCallbackEnabled(enable);
 }
 
 void ContentViewRenderView::UpdateLayerTreeHost() {

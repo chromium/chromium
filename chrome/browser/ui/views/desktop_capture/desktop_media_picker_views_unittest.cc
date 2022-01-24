@@ -57,11 +57,12 @@ class TestDialogObserver : public DesktopMediaPickerManager::DialogObserver {
   bool closed_ = false;
 };
 
-std::vector<DesktopMediaList::Type> GetSourceTypes(bool prefer_current_tab) {
+std::vector<DesktopMediaList::Type> GetSourceTypes(
+    bool should_prefer_current_tab) {
   std::vector<DesktopMediaList::Type> result{
       DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow,
       DesktopMediaList::Type::kWebContents};
-  if (prefer_current_tab) {
+  if (should_prefer_current_tab) {
     result.push_back(DesktopMediaList::Type::kCurrentTab);
   }
   return result;

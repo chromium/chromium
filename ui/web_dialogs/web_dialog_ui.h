@@ -5,9 +5,7 @@
 #ifndef UI_WEB_DIALOGS_WEB_DIALOG_UI_H_
 #define UI_WEB_DIALOGS_WEB_DIALOG_UI_H_
 
-
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/base/ui_base_types.h"
@@ -31,6 +29,9 @@ class WEB_DIALOGS_EXPORT WebDialogUIBase {
 
   WebDialogUIBase(content::WebUI* web_ui);
 
+  WebDialogUIBase(const WebDialogUIBase&) = delete;
+  WebDialogUIBase& operator=(const WebDialogUIBase&) = delete;
+
   // Close the dialog, passing the specified arguments to the close handler.
   void CloseDialog(const base::ListValue* args);
 
@@ -48,8 +49,6 @@ class WEB_DIALOGS_EXPORT WebDialogUIBase {
   void OnDialogClosed(const base::ListValue* args);
 
   content::WebUI* web_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDialogUIBase);
 };
 
 // Displays file URL contents inside a modal web dialog.

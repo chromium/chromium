@@ -24,6 +24,9 @@ class StrikeDatabaseFactory : public BrowserStateKeyedServiceFactory {
   static StrikeDatabase* GetForBrowserState(ChromeBrowserState* browser_state);
   static StrikeDatabaseFactory* GetInstance();
 
+  StrikeDatabaseFactory(const StrikeDatabaseFactory&) = delete;
+  StrikeDatabaseFactory& operator=(const StrikeDatabaseFactory&) = delete;
+
  private:
   friend class base::NoDestructor<StrikeDatabaseFactory>;
 
@@ -33,8 +36,6 @@ class StrikeDatabaseFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(StrikeDatabaseFactory);
 };
 
 }  // namespace autofill

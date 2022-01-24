@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -32,6 +31,9 @@ class TestCompositorHostWin : public TestCompositorHost,
     compositor_->SetScaleAndSize(1.0f, GetSize(),
                                  allocator_.GetCurrentLocalSurfaceId());
   }
+
+  TestCompositorHostWin(const TestCompositorHostWin&) = delete;
+  TestCompositorHostWin& operator=(const TestCompositorHostWin&) = delete;
 
   ~TestCompositorHostWin() override { DestroyWindow(hwnd()); }
 
@@ -62,8 +64,6 @@ class TestCompositorHostWin : public TestCompositorHost,
   viz::ParentLocalSurfaceIdAllocator allocator_;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(TestCompositorHostWin)
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompositorHostWin);
 };
 
 TestCompositorHost* TestCompositorHost::Create(

@@ -29,6 +29,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   // Returns the fake global instance if initialized. May return null.
   static FakeCiceroneClient* Get();
 
+  FakeCiceroneClient(const FakeCiceroneClient&) = delete;
+  FakeCiceroneClient& operator=(const FakeCiceroneClient&) = delete;
+
   // CiceroneClient:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -482,8 +485,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<FakeCiceroneClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCiceroneClient);
 };
 
 }  // namespace chromeos

@@ -14,6 +14,8 @@ component("u2f") {
     "//base",
     "//chromeos/dbus:common",
     "//chromeos/dbus/constants:constants",
+    "//chromeos/dbus/tpm_manager",
+    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//dbus",
   ]
   sources = [

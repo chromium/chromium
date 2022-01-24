@@ -56,6 +56,12 @@ default_args = {
   angle_vulkan_tools_dir = "//third_party/vulkan-deps/vulkan-tools/src"
   angle_vulkan_validation_layers_dir =
       "//third_party/vulkan-deps/vulkan-validation-layers/src"
+
+  # Overwrite default arg declared in the Fuchsia sdk
+  fuchsia_sdk_readelf_exec =
+      "//third_party/llvm-build/Release+Asserts/bin/llvm-readelf"
+
+  devtools_visibility = [ "*" ]
 }
 
 # These are the targets to skip header checking by default. The files in targets
@@ -63,17 +69,21 @@ default_args = {
 # their includes checked for proper dependencies when you run either
 # "gn check" or "gn gen --check".
 no_check_targets = [
-  "//extensions/browser:*",  # 20 errors
-  "//extensions:*",  # 28 errors
-  "//headless:*",  # 107 errors
-  "//ppapi/proxy:ipc_sources",  # 13 errors
-  "//ppapi/thunk:*",  # 1071 errors
-  "//remoting/host/security_key:*",  # 10 errors
-  "//remoting/host/win:*",  # 43 errors
-  "//sandbox/win:*",  # 7 errors
+  "//extensions:chrome_extensions_browsertests",  # 26 errors
+  "//extensions:chrome_extensions_interactive_uitests",  # 2 errors
 
-  "//third_party/icu/*",
-  "//third_party/libwebp:*",  # 80 errors, https://crbug.com/800762
+  "//headless:headless_browsertests",  # 47 errors
+  "//headless:headless_browsertests__exec",
+  "//headless:headless_example",  # 3 errors
+  "//headless:headless_non_renderer",  # 9 errors
+  "//headless:headless_renderer",  # 13 errors
+  "//headless:headless_shared_sources",  # 4 errors
+  "//headless:headless_shell_browser_lib",  # 10 errors
+  "//headless:headless_shell_lib",  # 10 errors
+  "//headless:headless_unittests",  # 6 errors
+  "//headless:headless_unittests__exec",
+
+  "//third_party/libwebp:*",  # 7 errors, https://crbug.com/800762
 
   # //v8, https://crbug.com/v8/7330
   "//v8/src/inspector:inspector",  # 20 errors

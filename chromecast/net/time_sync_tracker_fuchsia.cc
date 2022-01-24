@@ -1,3 +1,7 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #include "chromecast/net/time_sync_tracker_fuchsia.h"
 
 #include <lib/zx/clock.h>
@@ -6,7 +10,7 @@
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 
 namespace chromecast {
@@ -63,8 +67,8 @@ void TimeSyncTrackerFuchsia::Poll() {
 
   if (!is_time_synced_) {
     task_runner_->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&TimeSyncTrackerFuchsia::Poll, weak_this_),
-      base::TimeDelta::FromSeconds(kPollPeriodSeconds));
+        FROM_HERE, base::BindOnce(&TimeSyncTrackerFuchsia::Poll, weak_this_),
+        base::Seconds(kPollPeriodSeconds));
     return;
   }
 

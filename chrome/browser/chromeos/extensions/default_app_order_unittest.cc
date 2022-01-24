@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/scoped_path_override.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +29,10 @@ const base::FilePath::CharType kTestFile[] =
 class DefaultAppOrderTest : public testing::Test {
  public:
   DefaultAppOrderTest() {}
+
+  DefaultAppOrderTest(const DefaultAppOrderTest&) = delete;
+  DefaultAppOrderTest& operator=(const DefaultAppOrderTest&) = delete;
+
   ~DefaultAppOrderTest() override {}
 
   // testing::Test overrides:
@@ -65,8 +68,6 @@ class DefaultAppOrderTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::ScopedPathOverride> path_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultAppOrderTest);
 };
 
 // Tests that the built-in default order is returned when ExternalLoader is not

@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/common/extensions/api/omnibox.h"
@@ -39,6 +38,10 @@ namespace extensions {
 // Event router class for events related to the omnibox API.
 class ExtensionOmniboxEventRouter {
  public:
+  ExtensionOmniboxEventRouter(const ExtensionOmniboxEventRouter&) = delete;
+  ExtensionOmniboxEventRouter& operator=(const ExtensionOmniboxEventRouter&) =
+      delete;
+
   // The user has just typed the omnibox keyword. This is sent exactly once in
   // a given input session, before any OnInputChanged events.
   static void OnInputStarted(
@@ -68,9 +71,6 @@ class ExtensionOmniboxEventRouter {
   static void OnDeleteSuggestion(Profile* profile,
                                  const std::string& extension_id,
                                  const std::string& suggestion_text);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionOmniboxEventRouter);
 };
 
 class OmniboxSendSuggestionsFunction : public ExtensionFunction {
@@ -88,6 +88,10 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
                    public ExtensionRegistryObserver {
  public:
   explicit OmniboxAPI(content::BrowserContext* context);
+
+  OmniboxAPI(const OmniboxAPI&) = delete;
+  OmniboxAPI& operator=(const OmniboxAPI&) = delete;
+
   ~OmniboxAPI() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -139,8 +143,6 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
   ExtensionIconManager omnibox_icon_manager_;
 
   base::CallbackListSubscription template_url_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxAPI);
 };
 
 template <>

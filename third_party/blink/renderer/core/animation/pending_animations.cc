@@ -169,7 +169,7 @@ void PendingAnimations::NotifyCompositorAnimationStarted(
           animation->timeline()->CurrentTime().value_or(AnimationTimeDelta()));
     } else {
       animation->NotifyReady(
-          AnimationTimeDelta::FromSecondsD(monotonic_animation_start_time) -
+          ANIMATION_TIME_DELTA_FROM_SECONDS(monotonic_animation_start_time) -
           animation->timeline()->ZeroTime());
     }
   }

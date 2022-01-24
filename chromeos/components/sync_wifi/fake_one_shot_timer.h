@@ -6,8 +6,7 @@
 #define CHROMEOS_COMPONENTS_SYNC_WIFI_FAKE_ONE_SHOT_TIMER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/mock_timer.h"
 #include "base/unguessable_token.h"
 
@@ -21,6 +20,10 @@ class FakeOneShotTimer : public base::MockOneShotTimer {
  public:
   FakeOneShotTimer(base::OnceCallback<void(const base::UnguessableToken&)>
                        destructor_callback);
+
+  FakeOneShotTimer(const FakeOneShotTimer&) = delete;
+  FakeOneShotTimer& operator=(const FakeOneShotTimer&) = delete;
+
   ~FakeOneShotTimer() override;
 
   const base::UnguessableToken& id() const { return id_; }
@@ -28,8 +31,6 @@ class FakeOneShotTimer : public base::MockOneShotTimer {
  private:
   base::OnceCallback<void(const base::UnguessableToken&)> destructor_callback_;
   base::UnguessableToken id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeOneShotTimer);
 };
 
 }  // namespace sync_wifi

@@ -7,7 +7,7 @@
 namespace extensions {
 
 bool MimeHandlerViewGuestDelegate::HandleContextMenu(
-    content::WebContents* web_contents,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   return false;
 }

@@ -89,14 +89,14 @@ TEST_F(VisibilityMetricsLoggerTest, TestFractionalSecondAccumulation) {
   client->SetViewAttached(true);
   client->SetWindowVisible(true);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+  task_environment().FastForwardBy(base::Milliseconds(500));
 
   logger()->RecordMetrics();
   histogram_tester.ExpectBucketCount(
       "Android.WebView.Visibility.Global",
       VisibilityMetricsLogger::Visibility::kVisible, 0);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromMilliseconds(500));
+  task_environment().FastForwardBy(base::Milliseconds(500));
 
   logger()->RecordMetrics();
   histogram_tester.ExpectBucketCount(
@@ -109,16 +109,16 @@ TEST_F(VisibilityMetricsLoggerTest, TestFractionalSecondAccumulation) {
 TEST_F(VisibilityMetricsLoggerTest, TestSingleVisibleClient) {
   base::HistogramTester histogram_tester;
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment().FastForwardBy(base::Seconds(10));
   std::unique_ptr<TestClient> client = std::make_unique<TestClient>(logger());
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment().FastForwardBy(base::Seconds(30));
   client->SetViewVisible(true);
   client->SetViewAttached(true);
   client->SetWindowVisible(true);
   client->SetSchemeHttpOrHttps(true);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment().FastForwardBy(base::Seconds(10));
   client->SetWindowVisible(false);
 
   logger()->RecordMetrics();
@@ -143,7 +143,7 @@ TEST_F(VisibilityMetricsLoggerTest, TestSingleVisibleClient) {
   client->SetViewAttached(true);
   client->SetWindowVisible(true);
   client->SetSchemeHttpOrHttps(false);
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(90));
+  task_environment().FastForwardBy(base::Seconds(90));
 
   logger()->RecordMetrics();
   histogram_tester.ExpectBucketCount(
@@ -170,20 +170,20 @@ TEST_F(VisibilityMetricsLoggerTest, TestLongDurationVisibleClient) {
   std::unique_ptr<TestClient> client1 = std::make_unique<TestClient>(logger());
   std::unique_ptr<TestClient> client2 = std::make_unique<TestClient>(logger());
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(300));
+  task_environment().FastForwardBy(base::Seconds(300));
   client1->SetViewVisible(true);
   client1->SetViewAttached(true);
   client1->SetWindowVisible(true);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(50));
+  task_environment().FastForwardBy(base::Seconds(50));
   client2->SetViewVisible(true);
   client2->SetViewAttached(true);
   client2->SetWindowVisible(true);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(50));
+  task_environment().FastForwardBy(base::Seconds(50));
   client2.reset();
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(50));
+  task_environment().FastForwardBy(base::Seconds(50));
   client1.reset();
 
   logger()->RecordMetrics();
@@ -217,32 +217,32 @@ TEST_F(VisibilityMetricsLoggerTest, TestTwoVisibleClients) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<TestClient> client1 = std::make_unique<TestClient>(logger());
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment().FastForwardBy(base::Seconds(10));
   std::unique_ptr<TestClient> client2 = std::make_unique<TestClient>(logger());
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment().FastForwardBy(base::Seconds(30));
   // This queues delayed recording after 60 seconds (test-defined)
   client1->SetViewVisible(true);
   client1->SetViewAttached(true);
   client1->SetWindowVisible(true);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment().FastForwardBy(base::Seconds(10));
   // No additional task is queued
   client2->SetViewVisible(true);
   client2->SetViewAttached(true);
   client2->SetWindowVisible(true);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment().FastForwardBy(base::Seconds(10));
   // This does not cause metrics to be recorded because one client remains
   // visible.
   client1->SetWindowVisible(false);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment().FastForwardBy(base::Seconds(10));
   // The last client becoming invisible triggers immediate recording and the
   // cancellation of the queued task.
   client2->SetWindowVisible(false);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment().FastForwardBy(base::Seconds(30));
   client1.reset();
   client2.reset();
 
@@ -284,36 +284,36 @@ TEST_F(VisibilityMetricsLoggerTest, TestTwoVisibleWebContentClients) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<TestClient> client1 = std::make_unique<TestClient>(logger());
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment().FastForwardBy(base::Seconds(10));
   std::unique_ptr<TestClient> client2 = std::make_unique<TestClient>(logger());
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment().FastForwardBy(base::Seconds(30));
   // This queues delayed recording after 60 seconds (test-defined)
   client1->SetViewVisible(true);
   client1->SetViewAttached(true);
   client1->SetWindowVisible(true);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment().FastForwardBy(base::Seconds(10));
   // No additional task is queued
   client1->SetSchemeHttpOrHttps(true);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment().FastForwardBy(base::Seconds(10));
   // No additional task is queued
   client2->SetViewVisible(true);
   client2->SetViewAttached(true);
   client2->SetWindowVisible(true);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment().FastForwardBy(base::Seconds(10));
   // This does not cause metrics to be recorded because one client remains
   // visible.
   client1->SetWindowVisible(false);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(10));
+  task_environment().FastForwardBy(base::Seconds(10));
   // The last client becoming invisible triggers immediate recording and the
   // cancellation of the queued task.
   client2->SetWindowVisible(false);
 
-  task_environment().FastForwardBy(base::TimeDelta::FromSeconds(20));
+  task_environment().FastForwardBy(base::Seconds(20));
   client1.reset();
   client2.reset();
 

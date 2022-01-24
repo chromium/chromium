@@ -44,6 +44,7 @@ source_set("lib") {
     "//gpu/ipc:gl_in_process_context",
     "//media",
     "//media:media_buildflags",
+    "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/events:gesture_detection",
   ]

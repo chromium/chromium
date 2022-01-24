@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
 
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_table.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -74,7 +73,6 @@ void LayoutNGTableCaption::WillBeRemovedFromTree() {
 
 void LayoutNGTableCaption::UpdateBlockLayout(bool relayout_children) {
   NOT_DESTROYED();
-  LayoutAnalyzer::BlockScope analyzer(*this);
 
   DCHECK(!IsOutOfFlowPositioned()) << "Out of flow captions are blockified.";
 

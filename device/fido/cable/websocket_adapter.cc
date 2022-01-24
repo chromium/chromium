@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -65,6 +66,9 @@ void WebSocketAdapter::OnFailure(const std::string& message,
                                  int response_code) {
   LOG(ERROR) << "Tunnel server connection failed: " << message << " "
              << net_error << " " << response_code;
+
+  base::UmaHistogramSparse("WebAuthentication.CableV2.TunnelServerError",
+                           response_code > 0 ? response_code : net_error);
 
   if (response_code != net::HTTP_GONE) {
     // The callback will be cleaned up when the pipe disconnects.

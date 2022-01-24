@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that internal scripts unknown to front-end are processed correctly when appear in debugger call frames. Bug 64995\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <p>Tests that internal scripts unknown to front-end are processed correctly when appear in debugger call frames.

@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "ui_features.h"
 
 namespace features {
 
@@ -30,13 +31,17 @@ const base::Feature kChromeTipsInMainMenuNewBadge{
 const base::Feature kChromeWhatsNewUI{"ChromeWhatsNewUI",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether to show a feedback button in the What's New UI.
+const base::FeatureParam<bool> kChromeWhatsNewUIFeedbackButton{
+    &kChromeWhatsNewUI, "ChromeWhatsNewUIFeedbackButton", false};
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Enables "new" badge for "Chrome What's New" in Main Chrome Menu | Help.
 const base::Feature kChromeWhatsNewInMainMenuNewBadge{
     "ChromeWhatsNewInMainMenuNewBadge", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !defined(ANDROID)
 // Enables "Enterprise Casting" UI.
 const base::Feature kEnterpriseCastingUI{"EnterpriseCastingUI",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -45,6 +50,11 @@ const base::Feature kEnterpriseCastingUI{"EnterpriseCastingUI",
 // Enables showing the EV certificate details in the Page Info bubble.
 const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables showing the new extensions menu and toolbar that allows the user to
+// access control permissions.
+const base::Feature kExtensionsMenuAccessControl{
+    "ExtensionsMenuAccessControl", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables the hosting of an extension in the left aligned side panel of the
 // browser window. Currently used for a hosted extension experiment.
@@ -59,11 +69,6 @@ const base::FeatureParam<std::string> kExtensionsSidePanelId{
 const base::Feature kForceSignInReauth{"ForceSignInReauth",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables updated tabstrip animations, required for a scrollable tabstrip.
-// https://crbug.com/958173
-const base::Feature kNewTabstripAnimation{"NewTabstripAnimation",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables a more prominent active tab title in dark mode to aid with
 // accessibility.
 const base::Feature kProminentDarkModeActiveTabTitle{
@@ -75,7 +80,29 @@ const base::Feature kReadLaterNewBadgePromo{"ReadLaterNewBadgePromo",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kReadLaterAddFromDialog{"ReadLaterAddFromDialog",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+// Enables the side search feature for Google Search. Presents recent Google
+// search results in a browser side panel (crbug.com/1242730).
+const base::Feature kSideSearch{"SideSearch",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether the side contents for all tabs in a given window are cleared
+// away when the side panel is closed.
+const base::Feature kSideSearchClearCacheWhenClosed{
+    "SideSearchClearCacheWhenClosed", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether the state of side search is set at a per tab level.
+const base::Feature kSideSearchStatePerTab{"SideSearchStatePerTab",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
+const base::Feature kSidePanelBorder{"SidePanelBorder",
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kSidePanelDragAndDrop{"SidePanelDragAndDrop",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 const base::Feature kScrollableTabStrip{"ScrollableTabStrip",
@@ -87,25 +114,19 @@ const char kMinimumTabWidthFeatureParameterName[] = "minTabWidth";
 const base::Feature kScrollableTabStripButtons{
     "ScrollableTabStripButtons", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kForceDisableStackedTabs{"ForceDisableStackedTabs",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 #if !defined(ANDROID)
 // Changes the layout of the chrome://settings page to only show one section at
 // a time, crbug.com/1204457.
 const base::Feature kSettingsLandingPageRedesign{
-    "SettingsLandingPageRedesign", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SettingsLandingPageRedesign", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Updated managed profile sign-in popup. https://crbug.com/1141224
 const base::Feature kSyncConfirmationUpdatedText{
     "SyncConfirmationUpdatedText", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Sign-in functionality in the profile creation flow. https://crbug.com/1126913
-const base::Feature kSignInProfileCreation{"SignInProfileCreation",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Smoother enterprise experience in the sign-in profile creation flow.
-// https://crbug.com/1178494
-const base::Feature kSignInProfileCreationEnterprise{
-    "SignInProfileCreationEnterprise", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Automatically create groups for users based on domain.
 // https://crbug.com/1128703
@@ -114,7 +135,7 @@ const base::Feature kTabGroupsAutoCreate{"TabGroupsAutoCreate",
 
 // Enables tabs to be frozen when collapsed. https://crbug.com/1110108
 const base::Feature kTabGroupsCollapseFreezing{
-    "TabGroupsCollapseFreezing", base::FEATURE_DISABLED_BY_DEFAULT};
+    "TabGroupsCollapseFreezing", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the feedback through the tab group editor bubble.
 // https://crbug.com/1067062
@@ -132,6 +153,7 @@ const base::Feature kTabGroupsNewBadgePromo{"TabGroupsNewBadgePromo",
 // https://crbug.com/1223929
 const base::Feature kTabGroupsSave{"TabGroupsSave",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
+const char kTabGroupsSaveUIVariationsParameterName[] = "UI variation";
 
 // Enables preview images in tab-hover cards.
 // https://crbug.com/928954
@@ -152,34 +174,27 @@ const char kTabHoverCardAlternateFormat[] = "alternate_format";
 const base::Feature kTabOutlinesInLowContrastThemes{
     "TabOutlinesInLowContrastThemes", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables submenus under each tab group or window within the app menu history.
-const base::Feature kTabRestoreSubMenus{"TabRestoreSubMenus",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kTabSearchChevronIcon{"TabSearchChevronIcon",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Controls whether or not feature parameters should be used for Tab Search's
-// fuzzy search or if default values should be used.
-const base::Feature kTabSearchFuzzySearch{"kTabSearchFuzzySearch",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables the tab search submit feedback button.
 const base::Feature kTabSearchFeedback{"TabSearchFeedback",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls feature parameters for Tab Search's `Recently Closed` entries.
-const base::Feature kTabSearchRecentlyClosed{"TabSearchRecentlyClosed",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+// Controls whether or not to use fuzzy search for tab search.
+const base::Feature kTabSearchFuzzySearch{"TabSearchFuzzySearch",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const char kTabSearchSearchThresholdName[] = "TabSearchSearchThreshold";
 
 const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation{
-    &kTabSearchFuzzySearch, "TabSearchSearchIgnoreLocation", true};
+    &kTabSearchFuzzySearch, "TabSearchSearchIgnoreLocation", false};
 
 const base::FeatureParam<int> kTabSearchSearchDistance{
     &kTabSearchFuzzySearch, "TabSearchSearchDistance", 200};
 
 const base::FeatureParam<double> kTabSearchSearchThreshold{
-    &kTabSearchFuzzySearch, "TabSearchSearchThreshold", 0.0};
+    &kTabSearchFuzzySearch, kTabSearchSearchThresholdName, 0.6};
 
 const base::FeatureParam<double> kTabSearchTitleWeight{
     &kTabSearchFuzzySearch, "TabSearchTitleWeight", 2.0};
@@ -193,6 +208,10 @@ const base::FeatureParam<double> kTabSearchGroupTitleWeight{
 const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom{
     &kTabSearchFuzzySearch, "TabSearchMoveActiveTabToBottom", true};
 
+// Controls feature parameters for Tab Search's `Recently Closed` entries.
+const base::Feature kTabSearchRecentlyClosed{"TabSearchRecentlyClosed",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::FeatureParam<int> kTabSearchRecentlyClosedDefaultItemDisplayCount{
     &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedDefaultItemDisplayCount",
     8};
@@ -202,9 +221,6 @@ const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold{
 
 const base::Feature kToolbarUseHardwareBitmapDraw{
     "ToolbarUseHardwareBitmapDraw", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kUseRelaunchToUpdateString{
-    "UseRelaunchToUpdateString", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // This enables enables persistence of a WebContents in a 1-to-1 association
 // with the current Profile for WebUI bubbles. See https://crbug.com/1177048.
@@ -226,10 +242,17 @@ const base::Feature kWebUIDownloadShelf{"WebUIDownloadShelf",
 const base::Feature kWebUITabStrip{"WebUITabStrip",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Whether the new tab button is in the tab strip or the toolbar when WebUI tab
-// strip is enabled.
-const base::Feature kWebUITabStripNewTabButtonInTabStrip{
-    "WebUITabStripNewTabButtonInTabStrip", base::FEATURE_DISABLED_BY_DEFAULT};
+// The default value of this flag is aligned with platform behavior to handle
+// context menu with touch.
+// TODO(crbug.com/1257626): Enable this flag for all platforms after launch.
+const base::Feature kWebUITabStripContextMenuAfterTap{
+  "WebUITabStripContextMenuAfterTap",
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Enables a WebUI Feedback UI, as opposed to the Chrome App UI. See
 // https://crbug.com/1167223.

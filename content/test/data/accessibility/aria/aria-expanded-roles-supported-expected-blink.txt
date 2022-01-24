@@ -65,8 +65,8 @@ rootWebArea
 ++++++spinButton
 ++++++status
 ++++++strong
-++++++genericContainer
-++++++genericContainer
+++++++subscript
+++++++superscript
 ++++++switch expanded
 ++++++tab expanded
 ++++++table

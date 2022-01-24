@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,8 +38,9 @@ class InitiatorWebContentsObserver
   explicit InitiatorWebContentsObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(InitiatorWebContentsObserver);
+  InitiatorWebContentsObserver(const InitiatorWebContentsObserver&) = delete;
+  InitiatorWebContentsObserver& operator=(const InitiatorWebContentsObserver&) =
+      delete;
 };
 
 gfx::Size RestrictToPlatformMinimumSize(const gfx::Size& min_size) {
@@ -127,6 +127,12 @@ class WebDialogWebContentsDelegateViews
             std::make_unique<ChromeWebContentsHandler>()),
         initiator_observer_(observer),
         web_view_(web_view) {}
+
+  WebDialogWebContentsDelegateViews(const WebDialogWebContentsDelegateViews&) =
+      delete;
+  WebDialogWebContentsDelegateViews& operator=(
+      const WebDialogWebContentsDelegateViews&) = delete;
+
   ~WebDialogWebContentsDelegateViews() override = default;
 
   // ui::WebDialogWebContentsDelegate:
@@ -175,14 +181,11 @@ class WebDialogWebContentsDelegateViews
  private:
   InitiatorWebContentsObserver* const initiator_observer_;
   ConstrainedDialogWebView* web_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDialogWebContentsDelegateViews);
 };
 
 // Views implementation of ConstrainedWebDialogDelegate.
 class ConstrainedWebDialogDelegateViews
     : public ConstrainedWebDialogDelegate,
-      public content::WebContentsObserver,
       public ui::WebDialogWebContentsDelegate {
  public:
   ConstrainedWebDialogDelegateViews(
@@ -195,6 +198,12 @@ class ConstrainedWebDialogDelegateViews
       content::BrowserContext* browser_context,
       std::unique_ptr<ui::WebDialogDelegate> web_dialog_delegate,
       std::unique_ptr<WebDialogWebContentsDelegate> tab_delegate);
+
+  ConstrainedWebDialogDelegateViews(const ConstrainedWebDialogDelegateViews&) =
+      delete;
+  ConstrainedWebDialogDelegateViews& operator=(
+      const ConstrainedWebDialogDelegateViews&) = delete;
+
   ~ConstrainedWebDialogDelegateViews() override;
 
   bool closed_via_webui() const;
@@ -208,9 +217,6 @@ class ConstrainedWebDialogDelegateViews
   gfx::Size GetConstrainedWebDialogMinimumSize() const override;
   gfx::Size GetConstrainedWebDialogMaximumSize() const override;
   gfx::Size GetConstrainedWebDialogPreferredSize() const override;
-
-  // WebContentsObserver interface
-  void WebContentsDestroyed() override;
 
   // Resize the dialog to the given size.
   virtual void ResizeToGivenSize(const gfx::Size size);
@@ -239,10 +245,9 @@ class ConstrainedWebDialogDelegateViews
   // Holds the HTML to display in the constrained dialog.
   std::unique_ptr<content::WebContents> web_contents_holder_;
 
-  // Pointer to the WebContents in |web_contents_holder_| for the lifetime of
-  // that object, even if ReleaseWebContents() gets called. If the WebContents
-  // gets destroyed, |web_contents_| will be set to a nullptr.
-  content::WebContents* web_contents_;
+  // WeakPtr to the WebContents in |web_contents_holder_| for the lifetime of
+  // that object, even if ReleaseWebContents() gets called.
+  base::WeakPtr<content::WebContents> web_contents_;
 
   // Was the dialog closed from WebUI (in which case |web_dialog_delegate_|'s
   // OnDialogClosed() method has already been called)?
@@ -252,8 +257,6 @@ class ConstrainedWebDialogDelegateViews
   views::WebView* view_;
 
   std::unique_ptr<WebDialogWebContentsDelegate> override_tab_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConstrainedWebDialogDelegateViews);
 };
 
 using content::NativeWebKeyboardEvent;
@@ -280,9 +283,8 @@ ConstrainedWebDialogDelegateViews::ConstrainedWebDialogDelegateViews(
   DCHECK(web_dialog_delegate_);
   web_contents_holder_ =
       WebContents::Create(WebContents::CreateParams(browser_context));
-  web_contents_ = web_contents_holder_.get();
-  WebContentsObserver::Observe(web_contents_);
-  zoom::ZoomController::CreateForWebContents(web_contents_);
+  web_contents_ = web_contents_holder_->GetWeakPtr();
+  zoom::ZoomController::CreateForWebContents(web_contents_.get());
   web_contents_->SetDelegate(override_tab_delegate_.get());
   blink::RendererPreferences* prefs = web_contents_->GetMutableRendererPrefs();
   renderer_preferences_util::UpdateFromSystemSettings(
@@ -291,7 +293,7 @@ ConstrainedWebDialogDelegateViews::ConstrainedWebDialogDelegateViews(
   web_contents_->SyncRendererPrefs();
 
   // Set |this| as a delegate so the ConstrainedWebDialogUI can retrieve it.
-  ConstrainedWebDialogUI::SetConstrainedDelegate(web_contents_, this);
+  ConstrainedWebDialogUI::SetConstrainedDelegate(web_contents_.get(), this);
 
   web_contents_->GetController().LoadURL(
       web_dialog_delegate_->GetDialogContentURL(), content::Referrer(),
@@ -303,7 +305,7 @@ ConstrainedWebDialogDelegateViews::~ConstrainedWebDialogDelegateViews() {
     // Remove reference to |this| in the WebContent since it will becomes
     // invalid and the lifetime of the WebContent may exceed the one of this
     // object.
-    ConstrainedWebDialogUI::ClearConstrainedDelegate(web_contents_);
+    ConstrainedWebDialogUI::ClearConstrainedDelegate(web_contents_.get());
   }
 }
 
@@ -318,7 +320,7 @@ WebDialogDelegate* ConstrainedWebDialogDelegateViews::GetWebDialogDelegate() {
 
 void ConstrainedWebDialogDelegateViews::OnDialogCloseFromWebUI() {
   closed_via_webui_ = true;
-  CloseContents(web_contents_);
+  CloseContents(web_contents_.get());
 }
 
 bool ConstrainedWebDialogDelegateViews::closed_via_webui() const {
@@ -331,7 +333,7 @@ ConstrainedWebDialogDelegateViews::ReleaseWebContents() {
 }
 
 WebContents* ConstrainedWebDialogDelegateViews::GetWebContents() {
-  return web_contents_;
+  return web_contents_.get();
 }
 
 gfx::Size
@@ -351,10 +353,6 @@ ConstrainedWebDialogDelegateViews::GetConstrainedWebDialogPreferredSize()
     const {
   NOTREACHED();
   return gfx::Size();
-}
-
-void ConstrainedWebDialogDelegateViews::WebContentsDestroyed() {
-  web_contents_ = nullptr;
 }
 
 void ConstrainedWebDialogDelegateViews::ResizeToGivenSize(

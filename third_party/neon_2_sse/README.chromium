@@ -1,8 +1,8 @@
 Name: ARM_NEON_2_x86_SSE
 Short Name: neon_2_sse
 URL: https://github.com/intel/ARM_NEON_2_x86_SSE
-Version: 42b2bebacee25452e150095ef4480b3fa26e30f5
-Date: 2020/06/22
+Version: 8dbe2461c89760ac4b204aa0eafb72413a97957d
+Date: 2020/01/21
 License: Custom
 License File: LICENSE
 Security Critical: Yes

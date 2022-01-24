@@ -109,7 +109,7 @@ function createPrinterEntry(printerType) {
   };
 }
 
-suite('CupsPrintersEntry', function() {
+suite('CupsPrinterEntry', function() {
   /** A printer list entry created before each test. */
   let printerEntryTestElement = null;
 
@@ -167,32 +167,33 @@ suite('CupsPrintersEntry', function() {
     assertTrue(!!printerEntryTestElement.$$('.icon-more-vert'));
   });
 
-  test('disableButtonWhenSavingPrinter', function() {
-    printerEntryTestElement.printerEntry =
-        createPrinterEntry(PrinterType.DISCOVERED);
-    Polymer.dom.flush();
-    const setupButton = printerEntryTestElement.$$('#setupPrinterButton');
-    assertFalse(setupButton.disabled);
-    printerEntryTestElement.savingPrinter = true;
-    assertTrue(setupButton.disabled);
+  test('disableButtonWhenSavingPrinterOrDisallowedByPolicy', function() {
+    const printerTypes = [
+      PrinterType.DISCOVERED, PrinterType.AUTOMATIC, PrinterType.PRINTSERVER
+    ];
+    const printerIds = [
+      '#setupPrinterButton', '#automaticPrinterButton', '#savePrinterButton'
+    ];
+    for (let i = 0; i < printerTypes.length; i++) {
+      printerEntryTestElement.printerEntry =
+          createPrinterEntry(printerTypes[i]);
+      Polymer.dom.flush();
+      const actionButton = printerEntryTestElement.$$(printerIds[i]);
+      printerEntryTestElement.savingPrinter = true;
+      printerEntryTestElement.userPrintersAllowed = true;
+      assertTrue(actionButton.disabled);
 
-    printerEntryTestElement.savingPrinter = false;
-    printerEntryTestElement.printerEntry =
-        createPrinterEntry(PrinterType.AUTOMATIC);
-    Polymer.dom.flush();
-    const automaticButton =
-        printerEntryTestElement.$$('#automaticPrinterButton');
-    assertFalse(automaticButton.disabled);
-    printerEntryTestElement.savingPrinter = true;
-    assertTrue(automaticButton.disabled);
+      printerEntryTestElement.savingPrinter = true;
+      printerEntryTestElement.userPrintersAllowed = false;
+      assertTrue(actionButton.disabled);
 
-    printerEntryTestElement.savingPrinter = false;
-    printerEntryTestElement.printerEntry =
-        createPrinterEntry(PrinterType.PRINTSERVER);
-    Polymer.dom.flush();
-    const saveButton = printerEntryTestElement.$$('#savePrinterButton');
-    assertFalse(saveButton.disabled);
-    printerEntryTestElement.savingPrinter = true;
-    assertTrue(saveButton.disabled);
+      printerEntryTestElement.savingPrinter = false;
+      printerEntryTestElement.userPrintersAllowed = true;
+      assertFalse(actionButton.disabled);
+
+      printerEntryTestElement.savingPrinter = false;
+      printerEntryTestElement.userPrintersAllowed = false;
+      assertTrue(actionButton.disabled);
+    }
   });
 });

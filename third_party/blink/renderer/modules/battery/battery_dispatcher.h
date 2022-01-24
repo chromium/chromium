@@ -21,6 +21,9 @@ class MODULES_EXPORT BatteryDispatcher final
  public:
   explicit BatteryDispatcher(ExecutionContext*);
 
+  BatteryDispatcher(const BatteryDispatcher&) = delete;
+  BatteryDispatcher& operator=(const BatteryDispatcher&) = delete;
+
   const BatteryStatus* LatestData() const {
     return has_latest_data_ ? &battery_status_ : nullptr;
   }
@@ -39,8 +42,6 @@ class MODULES_EXPORT BatteryDispatcher final
   HeapMojoRemote<device::mojom::blink::BatteryMonitor> monitor_;
   BatteryStatus battery_status_;
   bool has_latest_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryDispatcher);
 };
 
 }  // namespace blink

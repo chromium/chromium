@@ -26,6 +26,9 @@ class ShutdownServiceApp : public Service, public mojom::ShutdownTestService {
         &ShutdownServiceApp::Create, base::Unretained(this)));
   }
 
+  ShutdownServiceApp(const ShutdownServiceApp&) = delete;
+  ShutdownServiceApp& operator=(const ShutdownServiceApp&) = delete;
+
   ~ShutdownServiceApp() override = default;
 
  private:
@@ -48,8 +51,6 @@ class ShutdownServiceApp : public Service, public mojom::ShutdownTestService {
   ServiceReceiver service_receiver_;
   BinderRegistry registry_;
   mojo::ReceiverSet<mojom::ShutdownTestService> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownServiceApp);
 };
 
 }  // namespace

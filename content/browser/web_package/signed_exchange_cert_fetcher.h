@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/signed_exchange_certificate_chain.h"
@@ -23,6 +24,7 @@
 
 namespace network {
 class SharedURLLoaderFactory;
+struct ResourceRequest;
 }  // namespace network
 
 namespace mojo {
@@ -63,6 +65,10 @@ class CONTENT_EXPORT SignedExchangeCertFetcher
       SignedExchangeDevToolsProxy* devtools_proxy,
       const absl::optional<base::UnguessableToken>& throttling_profile_id,
       net::IsolationInfo isolation_info);
+
+  SignedExchangeCertFetcher(const SignedExchangeCertFetcher&) = delete;
+  SignedExchangeCertFetcher& operator=(const SignedExchangeCertFetcher&) =
+      delete;
 
   ~SignedExchangeCertFetcher() override;
 
@@ -127,8 +133,6 @@ class CONTENT_EXPORT SignedExchangeCertFetcher
   absl::optional<base::UnguessableToken> cert_request_id_;
 
   net::IPAddress cert_server_ip_address_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeCertFetcher);
 };
 
 }  // namespace content

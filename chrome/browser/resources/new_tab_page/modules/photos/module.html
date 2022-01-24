@@ -1,8 +1,34 @@
 <style>
   :host {
+    /* Colors: */
+    --memory-background-color: var(--google-grey-200);
+    --memory-title-color: rgb(255, 255, 255);
+    --shape-blue-color: var(--google-blue-refresh-500);
+    --shape-green-color: var(--google-green-refresh-500);
+    --shape-yellow-color: var(--google-yellow-refresh-500);
+    /* Other: */
+    --memory-shadow: 0 1px 2px rgba(60, 64, 67, 0.3),
+        0 2px 6px 2px rgba(60, 64, 67, 0.15);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      /* Colors: */
+      --memory-background-color: var(--google-grey-800);
+      --shape-blue-color: var(--google-blue-refresh-400);
+      --shape-green-color: var(--google-green-refresh-400);
+      --shape-yellow-color: var(--google-yellow-refresh-400);
+      /* Other: */
+      --memory-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.15),
+          0px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  :host {
     display: block;
     height: 100%;
     width: 100%;
+    z-index: 0;
   }
 
   ntp-module-header {
@@ -13,29 +39,44 @@
     display: flex;
     flex: 1;
     flex-direction: row;
-    flex-wrap: nowrap;
-    margin: 16px;
-    margin-inline-end: 4px;
+    flex-wrap: wrap;
+    height: 164px;
     overflow: hidden;
+    padding: 16px;
+    padding-inline-end: 4px;
   }
 
-  .memory {
-    background: rgba(0, 0, 0, 0.1);
+  :host([show-opt-in-screen]) #memories {
+    height: 190px;
+    overflow: initial;
+    padding: 0;
+  }
+
+  .card {
     border-radius: 8px;
-    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3),
-                0 2px 6px 2px rgba(60, 64, 67, 0.15);
-    display: flex;
-    flex-grow: 1;
-    flex-shrink: 1;
     height: 164px;
-    margin-inline-end: 12px;
-    max-width: 258px;
-    min-width: 123px;
     overflow: hidden;
     position: relative;
   }
 
-  .memory::before {
+  #memories > .card {
+    border-radius: 8px;
+    display: flex;
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-bottom: 16px;
+    margin-inline-end: 12px;
+    max-width: 258px;
+    min-width: 123px;
+  }
+
+  .memory {
+    background: var(--memory-background-color);
+    box-shadow: var(--memory-shadow);
+  }
+
+  .memory:not(.no-title)::before {
     background: linear-gradient(180deg,
                               rgba(0, 0, 0, 0) 47.92%,
                               rgb(0, 0, 0) 100%);
@@ -46,12 +87,13 @@
     position: absolute;
     right: 0;
     top: 0;
+    z-index: 1;
   }
 
   .memory-title {
     align-items: flex-end;
     bottom: 0;
-    color: rgb(255, 255, 255);
+    color: var(--memory-title-color);
     display: flex;
     font-size: 16px;
     left: 0;
@@ -61,23 +103,294 @@
     position: absolute;
     right: 0;
     top: 0;
+    z-index: 2;
   }
 
   .memory-img {
     min-height: 100%;
     min-width: 100%;
     object-fit: cover;
+    pointer-events: none;
+    position: relative;
+  }
+
+  #exploreCard {
+    align-items: center;
+    border: 1px solid var(--ntp-border-color);
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: center;
+    text-decoration: none;
+  }
+
+  #exploreIconContainer {
+    align-content: center;
+    background: var(--ntp-selected-light-background-color);
+    border-radius: 4px;
+    display: grid;
+    height: 24px;
+    justify-content: center;
+    width: 24px;
+  }
+
+  #exploreIcon {
+    -webkit-mask-image: url(modules/photos/icons/explore_icon.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background: var(--ntp-selected-border-color);
+    height: 16px;
+    width: 16px;
+  }
+
+  #exploreText {
+    color: var(--cr-primary-text-color);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    margin: 8px 32px;
+    text-align: center;
+  }
+
+  #optInCard {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  #optInContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 16px;
+    max-width: 288px;
+  }
+
+  #optInTitleText {
+    color: var(--cr-primary-text-color);
+    font-size: 22px;
+    font-weight: normal;
+    line-height: 26px;
+    margin: 8px 0;
+  }
+
+  #optInTitleDesc {
+    color: var(--cr-secondary-text-color);
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  #optInButton {
+    margin-inline-end: 8px;
+  }
+
+  #optInArtwork {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+    height: 236px;
+    margin-top: -46px;
+    max-width: 240px;
+    overflow: hidden;
+    position: relative;
+    right: 0;
+  }
+
+  #yellowShape {
+    -webkit-mask-image: url(modules/photos/icons/shape_1.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background: var(--shape-yellow-color);
+    height: 40px;
+    left: 0;
+    position: absolute;
+    top: 16px;
+    width: 20px;
+  }
+
+  :host-context([dir='rtl']) #yellowShape {
+    left: auto;
+    right: 0;
+    transform: scaleX(-1);
+  }
+
+  #blueShape {
+    -webkit-mask-image: url(modules/photos/icons/shape_2.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background: var(--shape-blue-color);
+    height: 29px;
+    left: 110px;
+    position: absolute;
+    top: 0;
+    width: 80px;
+  }
+
+  :host-context([dir='rtl']) #blueShape {
+    left: auto;
+    right: 104px;
+  }
+
+  #greenShape {
+    -webkit-mask-image: url(modules/photos/icons/shape_3.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background: var(--shape-green-color);
+    bottom: 0;
+    height: 26px;
+    left: 108px;
+    position: absolute;
+    width: 40px;
+  }
+
+  :host-context([dir='rtl']) #greenShape {
+    left: auto;
+    right: 108px;
+    transform: scaleX(-1);
+  }
+
+  #memoryMain {
+    background: url(modules/photos/images/main_example_2x.webp);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 160px;
+    left: 40px;
+    position: absolute;
+    top: 38px;
+    width: 120px;
+  }
+
+  :host-context([dir='rtl']) #memoryMain {
+    left: auto;
+    right: 40px;
+  }
+
+  #memorySecond {
+    background: url(modules/photos/images/second_example_2x.webp);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 132px;
+    left: 176px;
+    position: absolute;
+    top: 126px;
+    width: 99px;
+  }
+
+  :host-context([dir='rtl'])  #memorySecond {
+    left: auto;
+    right: 176px;
+  }
+
+  #memoryThird {
+    background: url(modules/photos/images/third_example_2x.webp);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100px;
+    left: 192px;
+    position: absolute;
+    top: 10px;
+    width: 75px;
+  }
+
+  :host-context([dir='rtl']) #memoryThird {
+    left: auto;
+    right: 192px;
+  }
+
+  ntp-info-dialog a {
+    color: var(--cr-link-color);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  ntp-info-dialog a:focus {
+    border-radius: 2px;
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
   }
 </style>
-<ntp-module-header>
+<ntp-module-header
+    chip-text="[[headerChipText_]]"
+    hide-menu-button="[[showOptInScreen]]"
+    show-info-button="[[!showOptInScreen]]"
+    on-info-button-click="onInfoButtonClick_"
+    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+    dismiss-text="[[i18nRecursive('',
+                                  'modulesDismissButtonText',
+                                  'modulesPhotosMemoriesHideToday')]]"
+    on-disable-button-click="onDisableButtonClick_"
+    disable-text="[[i18nRecursive('',
+                                  'modulesDisableButtonText',
+                                  'modulesPhotosMemoriesDisable')]]">
   [[i18n('modulesPhotosTitle')]]
 </ntp-module-header>
 <div id="memories">
-  <template id="memoryRepeat" is="dom-repeat" items="[[memories]]">
-    <a class="memory" href="[[item.itemUrl.url]]">
-      <img class="memory-img" is="cr-auto-img" auto-src="[[item.coverUrl.url]]"
-          draggable="false"></img>
-      <div class="memory-title">[[item.title]]</div>
-    </a>
+  <template id="welcomeCardElement" is="dom-if" if="[[showOptInScreen]]">
+    <div id="optInCard">
+      <div id="optInContent">
+        <div>
+          <h1 id="optInTitleText">
+            [[i18n('modulesPhotosMemoriesWelcomeTitle')]]
+          </h1>
+          <span id="optInTitleDesc">
+            [[i18n('modulesPhotosMemoriesWelcomeText')]]
+          </span>
+        </div>
+        <div>
+          <cr-button id="optInButton" class="action-button"
+              on-click="onOptInClick_">
+            [[i18n('modulesPhotosMemoriesWelcomeButtonOptIn')]]
+          </cr-button>
+          <cr-button id="optOutButton" on-click="onOptOutClick_">
+            [[i18n('modulesPhotosMemoriesWelcomeButtonOptOut')]]
+          </cr-button>
+        </div>
+      </div>
+      <div id="optInArtwork">
+        <div id="yellowShape"></div>
+        <div id="blueShape"></div>
+        <div id="greenShape"></div>
+        <div id="memoryMain" class="memory card">
+          <div class="memory-title" dir="auto">
+            [[i18n('modulesPhotosMemoriesWelcomeExample')]]
+          </div>
+        </div>
+        <div id="memorySecond" class="memory card no-title"></div>
+        <div id="memoryThird" class="memory card no-title"></div>
+      </div>
+    </div>
+  </template>
+  <template id="memoriesElement" is="dom-if" if="[[!showOptInScreen]]">
+    <template id="memoryRepeat" is="dom-repeat" items="[[memories]]">
+      <a class="memory card" href="[[item.itemUrl.url]]"
+          on-click="onMemoryClick_">
+        <img class="memory-img" is="cr-auto-img"
+            on-load="onImageLoadSuccess_"
+            on-error="onImageLoadError_"
+            auto-src="[[resizeImageUrl_(item.coverUrl.url, memories.length)]]"
+            draggable="false"></img>
+        <div class="memory-title" dir="auto">[[item.title]]</div>
+      </a>
+    </template>
+    <template id="exploreCardElement" is="dom-if" if="[[showExploreMore_]]">
+      <a href="https://photos.google.com?referrer=CHROME_NTP" class="card"
+          on-click="onMemoryClick_" target="_blank" id="exploreCard">
+        <div id="exploreIconContainer">
+          <div id="exploreIcon"></div>
+        </div>
+        <div id="exploreText">
+          [[i18n('modulesPhotosMemoriesExplore')]]
+        </div>
+      </a>
+    </template>
   </template>
 </div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesPhotosInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>

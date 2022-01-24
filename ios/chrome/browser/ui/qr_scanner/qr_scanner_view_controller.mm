@@ -8,7 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/ui/commands/load_query_commands.h"
+#import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_camera_controller.h"
 #include "ios/chrome/browser/ui/qr_scanner/qr_scanner_view.h"
 #include "ios/chrome/browser/ui/scanner/scanner_alerts.h"

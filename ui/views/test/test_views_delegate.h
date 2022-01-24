@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/views_delegate.h"
@@ -17,6 +16,10 @@ namespace views {
 class TestViewsDelegate : public ViewsDelegate {
  public:
   TestViewsDelegate();
+
+  TestViewsDelegate(const TestViewsDelegate&) = delete;
+  TestViewsDelegate& operator=(const TestViewsDelegate&) = delete;
+
   ~TestViewsDelegate() override;
 
   // If set to |true|, forces widgets that do not provide a native widget to use
@@ -72,8 +75,6 @@ class TestViewsDelegate : public ViewsDelegate {
 #if defined(OS_CHROMEOS)
   gfx::NativeWindow context_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TestViewsDelegate);
 };
 
 }  // namespace views

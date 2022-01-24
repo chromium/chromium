@@ -189,11 +189,9 @@ absl::optional<std::vector<std::string>> ParseLocales(
 
   std::vector<std::string> locales;
   for (const auto& iter : as_value.value().GetList()) {
-    std::string locale;
-    if (!iter.GetAsString(&locale)) {
+    if (!iter.is_string())
       continue;
-    }
-    locales.push_back(locale);
+    locales.push_back(iter.GetString());
   }
 
   if (locales.empty()) {
@@ -211,16 +209,12 @@ absl::optional<ParsedManufacturers> ParseManufacturers(
   }
   ParsedManufacturers manufacturers;
   for (const auto iter : as_value.value().DictItems()) {
-    std::string printers_metadata_basename;
-    if (!iter.second.GetAsString(&printers_metadata_basename)) {
+    if (!iter.second.is_string())
       continue;
-    }
-    manufacturers[iter.first] = printers_metadata_basename;
+    manufacturers[iter.first] = iter.second.GetString();
   }
-  if (manufacturers.empty()) {
-    return absl::nullopt;
-  }
-  return manufacturers;
+  return manufacturers.empty() ? absl::nullopt
+                               : absl::make_optional(manufacturers);
 }
 
 absl::optional<ParsedIndex> ParseForwardIndex(

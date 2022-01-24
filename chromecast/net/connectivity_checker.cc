@@ -4,7 +4,7 @@
 
 #include "chromecast/net/connectivity_checker.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/net/connectivity_checker_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

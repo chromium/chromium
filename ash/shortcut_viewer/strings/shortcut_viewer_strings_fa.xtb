@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">باز کردن پنجره جدید در حالت ناشناس</translation>
 <translation id="152892567002884378">افزایش صدا</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> و سپس <ph name="ESC" /></translation>
-<translation id="1633761758045565086">انتقال تمرکز به کادر گفتگوی راهنما</translation>
 <translation id="1652741121070700329">رفتن به ابتدای کلمه قبل</translation>
 <translation id="1679841710523778799">زیاد کردن روشنایی</translation>
 <translation id="168356808214100546"><ph name="ALT" /> را فشار دهید و نگه‌دارید، روی <ph name="TAB" /> ضربه بزنید تا به پنجره‌ای که می‌خواهید باز شود برسید، سپس آن را رها کنید.</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">پیمایش به پایین صفحه وب</translation>
 <translation id="2530896289327917474">روشن یا خاموش کردن مرور با نشانگر نوشتار</translation>
 <translation id="2574014812750545982">بازنشانی میزان بزرگ‌نمایی صفحه</translation>
-<translation id="2596078834055697711">گرفتن عکس از پنجره صفحه‌نمایش</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> و سپس <ph name="TAB" /> یا <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">بارگیری مجدد صفحه کنونی</translation>
 <translation id="2764005613199379871">قرار دادن تمرکز روی نوار نشانی جستجو</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">میان‌برها</translation>
 <translation id="3084301071537457911">برجسته‌سازی مورد بعدی روی قفسه شما</translation>
 <translation id="309173601632226815">برجسته کردن دکمه راه‌انداز در قفسه</translation>
-<translation id="3105917916468784889">گرفتن نماگرفت</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">فوکوس نوار آدرس</translation>
 <translation id="3256109297135787951">حذف برجسته‌سازی از مورد روی قفسه</translation>
 <translation id="3288816184963444640">بستن پنجره فعلی</translation>
+<translation id="3350805006883559974">پنجره فعال شناور در بالا</translation>
 <translation id="3407560819924487926">باز کردن مدیر فعالیت‌ها</translation>
 <translation id="3417835166382867856">برگه‌های جستجو</translation>
 <translation id="3422679037938588196">رفتن به مورد منطبق قبلی با جستجویتان</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">مشاهده راهنمای میان‌برهای صفحه‌کلید</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> یا <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">باز کردن ناحیه نشانگر وضعیت (جایی که تصویر حسابتان نشان داده می‌شود)</translation>
-<translation id="4642092649622328492">گرفتن عکس از قسمتی از صفحه‌نمایش</translation>
 <translation id="4698850295812410683">نمایش ابزار قلم</translation>
 <translation id="4801989101741319327">رفتن به انتهای کلمه بعد</translation>
 <translation id="4866066940972151697">میز در سمت چپ فعال شود</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">پنجره فعال را به میز سمت راست ببرید</translation>
 <translation id="88986195241502842">صفحه پایین</translation>
 <translation id="8924883688469390268">جابه‌جا شدن به کاربر قبلی</translation>
+<translation id="8941626538514548667">کانونی کردن محتوای وب در مرورگر</translation>
 <translation id="8977648847395357314">انتخاب محتوا در نوار نشانی</translation>
 <translation id="8982190978301344584">‏نمایش منوی نشان‌دهنده فهرست ابزارهای IME موجود</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> ۱‏ تا ۸</translation>

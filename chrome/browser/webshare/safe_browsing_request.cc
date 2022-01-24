@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -19,8 +19,7 @@
 namespace {
 
 // The maximum amount of time to wait for the Safe Browsing response.
-constexpr base::TimeDelta kSafeBrowsingCheckTimeout =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kSafeBrowsingCheckTimeout = base::Seconds(2);
 
 }  // namespace
 

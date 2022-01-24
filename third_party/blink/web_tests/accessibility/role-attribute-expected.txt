@@ -45,19 +45,16 @@ AXRole: AXGenericContainer
         AXRole: AXListItem
             AXRole: AXListMarker "1. "
                 AXRole: AXStaticText "1. "
-                    AXRole: AXInlineTextBox "1. "
             AXRole: AXStaticText "Implicit Item 1"
                 AXRole: AXInlineTextBox "Implicit Item 1"
         AXRole: AXListItem
             AXRole: AXListMarker "2. "
                 AXRole: AXStaticText "2. "
-                    AXRole: AXInlineTextBox "2. "
             AXRole: AXStaticText "Implicit Item 2"
                 AXRole: AXInlineTextBox "Implicit Item 2"
         AXRole: AXListItem
             AXRole: AXListMarker "3. "
                 AXRole: AXStaticText "3. "
-                    AXRole: AXInlineTextBox "3. "
             AXRole: AXStaticText "Implicit Item 3"
                 AXRole: AXInlineTextBox "Implicit Item 3"
     AXRole: AXGroup

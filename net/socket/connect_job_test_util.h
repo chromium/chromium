@@ -31,6 +31,10 @@ class TestConnectJobDelegate : public ConnectJob::Delegate {
 
   explicit TestConnectJobDelegate(
       SocketExpected socket_expected = SocketExpected::ON_SUCCESS_ONLY);
+
+  TestConnectJobDelegate(const TestConnectJobDelegate&) = delete;
+  TestConnectJobDelegate& operator=(const TestConnectJobDelegate&) = delete;
+
   ~TestConnectJobDelegate() override;
 
   // ConnectJob::Delegate implementation.
@@ -84,8 +88,6 @@ class TestConnectJobDelegate : public ConnectJob::Delegate {
 
   base::RunLoop run_loop_;
   std::unique_ptr<base::RunLoop> auth_challenge_run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectJobDelegate);
 };
 
 }  // namespace net

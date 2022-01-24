@@ -37,7 +37,6 @@
 <translation id="174539241580958092">Google Chrome не можа да синхронизира данните ви поради грешка при влизането.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Проверете дали сте влезли в Chrome на устройството си <ph name="TARGET_DEVICE_NAME" /> и опитайте да изпратите отново.</translation>
-<translation id="1810203443153428607">При инсталирането на Chrome OS всички данни на устройството ви ще бъдат изтрити.</translation>
 <translation id="1812689907177901597">С изключването на тази функция можете да влизате в сайтовете на Google, като например Gmail, без да влизате в Chrome</translation>
 <translation id="1860536484129686729">Chrome се нуждае от разрешение за достъп до камерата ви за този сайт</translation>
 <translation id="1873233029667955273">Google Chrome не е браузърът ви по подразбиране</translation>
@@ -51,23 +50,14 @@
 <translation id="2121284319307530122">Повторно стартиране за актуализиране на &amp;Chrome</translation>
 <translation id="2123055963409958220">Помогнете за подобряването на Chrome, като подадете сигнал за <ph name="BEGIN_LINK" />текущите настройки<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Моля, рестартирайте Chrome сега</translation>
-<translation id="2246246234298806438">Google Chrome не може да покаже визуализацията за печат, когато вграденият визуализатор на PDF файлове липсва.</translation>
+<translation id="2189289170880510015">Персонализирайте някои от най-важните настройки за поверителност на Chrome</translation>
 <translation id="2290014774651636340">Ключовете на приложния програмен интерфейс (API) на Google липсват. Някои функции на Google Chrome ще бъдат деактивирани.</translation>
 <translation id="2290095356545025170">Наистина ли искате да деинсталирате Google Chrome?</translation>
 <translation id="2309047409763057870">Тази инсталация на Google Chrome е алтернативна и не може да се зададе като браузър по подразбиране.</translation>
+<translation id="2345992953227471816">Chrome установи, че следните разширения съдържат злонамерен софтуер:</translation>
 <translation id="2348335408836342058">Chrome се нуждае от разрешение за достъп до камерата и микрофона ви за този сайт</translation>
 <translation id="234869673307233423">Chrome не може да провери паролите ви. Опитайте пак по-късно.</translation>
 <translation id="235650106824528204">Данните в Chrome, които са генерирани при използването на този служебен потребителски профил (напр. създаването на отметки, историята, паролите и други настройки), могат да бъдат премахнати от администратора му. <ph name="LEARN_MORE" /></translation>
-<translation id="2409866122341731384">Изтриване на твърдия диск и инсталиране на Chrome OS</translation>
-<translation id="2417565246123344595"><ph name="BEGIN_PARAGRAPH1" />Готови сме да инсталираме Chrome OS! Когато продължите:
-          <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />файловете, данните и текущата ви операционна система ще бъдат изтрити;
-          <ph name="LIST_ITEM" />Chrome OS ще бъде инсталирана;
-          <ph name="LIST_ITEM" />устройството ви ще се изключи след завършване на инсталирането.
-          <ph name="END_LIST" />
-          <ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Последно напомняне: при инсталирането целият ви твърд диск ще бъде изтрит. Уверете се, че имате резервно копие на всичките си важни данни.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />След като инсталирането започне, не може да бъде отменено.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2429317896000329049">Google Chrome не можа да синхронизира данните ви, защото синхронизирането не е налице за домейна ви.</translation>
 <translation id="2467438592969358367">Google Chrome иска да експортира паролите ви. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="2485422356828889247">Деинсталиране</translation>
@@ -93,11 +83,13 @@
 <translation id="2885378588091291677">Диспечер на задачите</translation>
 <translation id="2888126860611144412">Всичко за Chrome</translation>
 <translation id="2926676257163822632">Ненадеждните пароли са лесни за отгатване. Използвайте Chrome <ph name="BEGIN_LINK" />за създаване и запомняне на надеждни пароли за профилите ви<ph name="END_LINK" />.</translation>
+<translation id="2926952073016206995">За този сайт Chrome се нуждае от разрешение за достъп до камерата</translation>
 <translation id="2929907241665500097">Chrome не се актуализира, защото нещо се обърка. <ph name="BEGIN_LINK" />Отстранете проблеми с актуализирането на Chrome и неуспешни актуализации<ph name="END_LINK" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Вход в мрежата – Chrome</translation>
 <translation id="3037838751736561277">Google Chrome работи на заден план.</translation>
 <translation id="3059710691562604940">Функцията „Безопасно сърфиране“ е изключена. Chrome препоръчва да я включите.</translation>
 <translation id="3065168410429928842">Раздел в Chrome</translation>
+<translation id="3069821012350118710">Сайтовете, които посещавате, помнят информацията ви, докато затворите Chrome</translation>
 <translation id="3080151273017101988">Изпълняване на приложения на заден план при затворен браузър Google Chrome</translation>
 <translation id="3089968997497233615">Налице е нова, по-сигурна версия на Google Chrome.</translation>
 <translation id="3100998948628680988">Наименуване на потребителския ви профил в Chrome</translation>
@@ -108,6 +100,7 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome ще се стартира отново сега}=1{Chrome ще се стартира отново след 1 секунда}other{Chrome ще се стартира отново след # секунди}}</translation>
 <translation id="3395323229510056640">Получаване на помощ за Chrome OS</translation>
 <translation id="3396977131400919238">По време на инсталирането възникна грешка в операционната система. Моля, изтеглете Google Chrome отново.</translation>
+<translation id="3428747202529429621">Осигурява безопасността ви в Chrome и може да се използва с цел подобряване на сигурността ви в други приложения на Google, докато сте в профила си.</translation>
 <translation id="3434246496373299699">Chrome може да проверява паролите ви, когато влезете с профила си в Google</translation>
 <translation id="3451115285585441894">Добавя се към Chrome...</translation>
 <translation id="345171907106878721">Добавяне на вас към Chrome</translation>
@@ -119,6 +112,8 @@
 <translation id="3582972582564653026">Синхронизирайте и персонализирайте Chrome на всичките си устройства</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Администраторът ви изисква да рестартирате Chrome, за да се приложи актуализация}=1{Администраторът ви изисква да рестартирате Chrome, за да се приложи актуализация. Прозорецът ви в режим „инкогнито“ няма да бъде отворен отново.}other{Администраторът ви изисква да рестартирате Chrome, за да се приложи актуализация. Вашите # прозореца в режим „инкогнито“ няма да бъдат отворени отново.}}</translation>
 <translation id="3622797965165704966">Вече е по-лесно да използвате Chrome с профила си в Google и на споделени компютри.</translation>
+<translation id="3673813398384385993">Chrome установи, че „<ph name="EXTENSION_NAME" />“ съдържа злонамерен софтуер</translation>
+<translation id="3678552270983184277">Настройките по подразбиране са подходящи за повечето хора, но можете да ги персонализирате според това, как искате да използвате Chrome</translation>
 <translation id="3718181793972440140">1 елемент ще се изтрие от това устройство. За да извлечете данните си по-късно, влезте в Chrome като <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Разширението „<ph name="EXTENSION_NAME" />“ промени страницата, която се показва при стартиране на Chrome.</translation>
 <translation id="3779473566290487688">За да получавате бъдещи актуализации на Google Chrome, трябва да използвате OS X 10.11 или по-нова версия. Компютърът ви работи с OS X 10.10.</translation>
@@ -135,11 +130,11 @@
 <translation id="4149882025268051530">Инсталационната програма не успя да декомпресира архива. Моля, изтеглете Google Chrome отново.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Повторно стартиране на Chrome до 1 ден}other{Повторно стартиране на Chrome до # дни}}</translation>
 <translation id="4205939740494406371">Chrome не може да провери паролите ви. Опитайте отново след 24 часа или <ph name="BEGIN_LINK" />ги проверете в профила си в Google<ph name="END_LINK" />.</translation>
+<translation id="4242034826641750751">За този сайт Chrome се нуждае от разрешения за достъп до камерата и микрофона</translation>
 <translation id="424864128008805179">Искате ли да излезете от Chrome?</translation>
 <translation id="4251615635259297716">Да се свържат ли данните ви в Chrome с този профил?</translation>
 <translation id="4281844954008187215">Условия за ползване</translation>
 <translation id="4293420128516039005">Влезте в профила си, за да синхронизирате и персонализирате Chrome на всичките си устройства</translation>
-<translation id="429583012151745428">Инсталирането е в ход. Не изключвайте устройството. Инсталирането не би трябвало да отнеме повече от 20 минути. Устройството ще се изключи автоматично след инсталирането.</translation>
 <translation id="4325083532956419387">Версия на Chrome OS</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -177,14 +172,10 @@
 <translation id="521447420733633466">Ако споделяте устройство, близките и приятелите ви могат да сърфират отделно и да настроят Chrome точно така, както искат</translation>
 <translation id="5251420635869119124">Гостите могат да използват Chrome, без да оставят следи.</translation>
 <translation id="5251679006894510177">Почти приключихме! Стартирайте повторно Chrome, за да завършите актуализирането. Прозорците в режим „инкогнито“ няма да бъдат отворени отново.</translation>
+<translation id="5334487786912937552">Chrome се нуждае от достъп до хранилището, за да изтегля файлове</translation>
 <translation id="5386244825306882791">То също контролира коя страница се показва при стартиране на Chrome или при търсене от полето за всичко.</translation>
 <translation id="5394833366792865639">Споделяне на раздел в Chrome</translation>
 <translation id="5430073640787465221">Файлът с предпочитанията ви е повреден или невалиден. Google Chrome не може да възстанови настройките ви.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Преди да започнете, уверете се, че имате актуално резервно копие на данните си. При инсталирането на Chrome OS всички данни на твърдия ви диск ще бъдат изтрити.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google не носи отговорност в случай на загуба на данни и не гарантира, че Chrome OS ще работи на модели устройства, които не са сертифицирани. Моля, отворете [TBD], за да научите повече за сертифицираните модели устройства.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Научете повече за инсталирането на Chrome OS и изтриването на данните тук: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Ако сте готови да продължите, кликнете върху „Инсталиране на Chrome OS“ и ще ви преведем през процеса на инсталиране в няколко лесни стъпки Ще имате още един шанс да потвърдите, преди да извършим промени в компютъра ви.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5486618155264784386">Инсталиране на Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome опитва да покаже паролите.</translation>
 <translation id="5566025111015594046">Google Chrome (входящ трафик за mDNS)</translation>
 <translation id="5657226924540934362">Ако дадена настройка не се показва на тази страница, потърсете в <ph name="LINK_BEGIN" />настройките на Chrome OS<ph name="LINK_END" /></translation>
@@ -193,12 +184,14 @@
 <translation id="5686916850681061684">Персонализиране и контролиране на Google Chrome. Трябва да обърнете внимание на нещо – кликнете за подробности.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ще се рестартира след 1 секунда}other{Google Chrome ще се рестартира след # секунди}}</translation>
+<translation id="5736850870166430177">Ако сайт се опита да открадне паролата ви или изтеглите опасен файл, Chrome може също да изпрати до Безопасно сърфиране URL адресите и част от съдържанието на страницата</translation>
 <translation id="573759479754913123">Всичко за Chrome OS</translation>
 <translation id="5756509061973259733">На това устройство вече съществува потребителски профил в Chrome за този профил</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome не можа да се стартира. Опитайте отново.</translation>
 <translation id="5867197326698922595">Google Chrome се опитва да редактира паролите.</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
+<translation id="5901850848447342934">Когато затворите Chrome, <ph name="BEGIN_BOLD" />ще излезете от повечето сайтове<ph name="END_BOLD" />. Ако синхронизирането е изключено, <ph name="BEGIN_BOLD" />ще излезете и от услугите на Google и Chrome<ph name="END_BOLD" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вход в мрежата</translation>
 <translation id="5940385492829620908">Тук ще намерите посещаваните от вас места в мрежата, отметките и другите си неща в Chrome.</translation>
 <translation id="5941830788786076944">Искам Google Chrome да бъде браузърът по подразбиране</translation>
@@ -208,17 +201,18 @@
 <translation id="6145313976051292476">Отваряне на PDF файловете в Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
-<translation id="61852838583753520">Актуализиране на &amp;Chrome OS</translation>
 <translation id="6235018212288296708">Правило за Google Chrome за допускане на входящия трафик за mDNS.</translation>
 <translation id="6291089322031436445">Приложения за Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome вече е инсталиран за всички потребители на компютъра ви.</translation>
 <translation id="6368958679917195344">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="6412673304250309937">Проверка на URL адресите в съхраняван в Chrome списък с опасни сайтове. Ако сайт се опита да открадне паролата ви или изтеглите опасен файл от сайт, Chrome може също така да изпрати до „Безопасно сърфиране“ URL адресите и част от съдържанието на страницата.</translation>
 <translation id="6418662306461808273">Искате ли да превключите към съществуващ потребителски профил в Chrome?</translation>
+<translation id="6506909944137591434">Chrome се нуждае от разрешение за достъп до камерата, за да създаде триизмерна карта на заобикалящата ви среда</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6568793831116033768">Система Chrome OS</translation>
-<translation id="664235759707825982">Chrome OS е готова за инсталиране</translation>
 <translation id="6676384891291319759">Достъп до интернет</translation>
 <translation id="6679975945624592337">Разрешаване на Google Chrome да се изпълнява на заден план</translation>
+<translation id="6696915334902295848">За този сайт Chrome се нуждае от разрешение за достъп до микрофона</translation>
 <translation id="6739177684496155661">Искате ли да продължите с нов потребителски профил в Chrome?</translation>
 <translation id="6750954913813541382">С цел поправка на правописни грешки Chrome изпраща до Google текста, който въвеждате в браузъра</translation>
 <translation id="677276454032249905">Искате ли да излезете от Chrome въпреки това?</translation>
@@ -237,7 +231,6 @@
 <translation id="7155997830309522122">Ако сте го направили, моля, редактирайте запазената си парола в Chrome, така че да съответства на новата.</translation>
 <translation id="7161904924553537242">Добре дошли в Google Chrome</translation>
 <translation id="7242029209006116544">Влизате с управляван профил и давате на администратора му контрол над потребителския си профил в Google Chrome. Данните ви в браузъра, като например приложения, отметки, история, пароли и други настройки, ще се свържат за постоянно с/ъс <ph name="USER_NAME" />. Ще можете да ги изтриете чрез таблото за управление на Google Профили, но не и да ги свържете с друг профил. По избор можете да създадете нов потребителски профил, за да отделите съществуващите си данни в Chrome. <ph name="LEARN_MORE" /></translation>
-<translation id="7275165473619697274">Chrome OS се инсталира</translation>
 <translation id="7295052994004373688">Този език служи за показване на ПИ на Google Chrome</translation>
 <translation id="7296210096911315575">Важна информация за използването и безопасността</translation>
 <translation id="7308322188646931570">Chrome се нуждае от достъп до хранилището, за да изтегля файлове</translation>
@@ -258,24 +251,28 @@
 <translation id="7761834446675418963">Кликнете върху името си, за да отворите Chrome и да започнете да сърфирате.</translation>
 <translation id="7777080907402804672">Ако няма полезно описание за дадено изображение, Chrome ще се опита да предостави такова. За да бъдат създадени описания, съответните изображения се изпращат до Google. По всяко време можете да изключите тази функция от настройките.</translation>
 <translation id="7781002470561365167">Налице е нова версия на Google Chrome.</translation>
+<translation id="778331955594035129">За този сайт Chrome се нуждае от разрешение за достъп до местоположението</translation>
 <translation id="7787950393032327779">Изглежда, че потребителският профил се използва от друг процес на Google Chrome (<ph name="PROCESS_ID" />) на друг компютър (<ph name="HOST_NAME" />). Chrome заключи потребителския профил, за да не се повреди. Ако сте сигурни, че нито един друг процес не го използва, можете да отключите потребителския профил и да стартирате Chrome повторно.</translation>
 <translation id="7801699035218095297">Google Chrome опитва да копира паролите. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="7808348361785373670">Премахване от Chrome...</translation>
 <translation id="7825851276765848807">Инсталацията не бе успешна поради неизвестна грешка. Моля, изтеглете отново Google Chrome.</translation>
 <translation id="7890208801193284374">Ако споделяте компютър, близките и приятелите ви могат да сърфират отделно и да настроят Chrome точно така, както искат.</translation>
 <translation id="7896673875602241923">По-рано някой влезе в Chrome на този компютър като <ph name="ACCOUNT_EMAIL_LAST" />. Моля, създайте нов потребител в браузъра, така че информацията ви да се съхранява отделно.</translation>
+<translation id="7917876797003313048">Можете да управлявате профилите си в Google, в които сте влезли. Те се използват за браузъра Chrome, Google Play Магазин, Gmail и др. Ако искате да добавите профил за друго лице, като например член на семейството, вместо това добавете нов човек към вашия <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome се опитва да копира паролите.</translation>
 <translation id="7962410387636238736">От сега нататък този компютър няма да получава актуализации на Google Chrome, тъй като Windows XP и Windows Vista вече не се поддържат</translation>
 <translation id="79947657522496226">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />. Това се отнася и за <ph name="BEGIN_LINK_LINUX_OSS" />базираната на Linux среда на програмиране<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="8008534537613507642">Повторно инсталиране на Chrome</translation>
 <translation id="8013993649590906847">Ако няма полезно описание за дадено изображение, Chrome ще се опита да предостави такова. За да бъдат създадени описания, съответните изображения се изпращат до Google.</translation>
 <translation id="8129812357326543296">Всичко за &amp;Google Chrome</translation>
+<translation id="822971176939352383">Следните профили не са част от потребителските профили в Chrome. Ако искате да използвате даден профил в друг потребителски профил, първо премахнете съответния потребителски профил.</translation>
 <translation id="8255190535488645436">Google Chrome използва камерата и микрофона ви.</translation>
 <translation id="8286862437124483331">Google Chrome опитва да покаже паролите. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="828798499196665338">Някой от родителите ви е изключил разрешенията за сайтове, приложения и разширения за Chrome. Активирането на <ph name="EXTENSION_TYPE_PARAMETER" /> не е разрешено.</translation>
 <translation id="8290100596633877290">О, не! Google Chrome претърпя срив. Да се стартира ли отново сега?</translation>
 <translation id="8342675569599923794">Chrome блокира този файл, тъй като е опасен.</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
+<translation id="8394720698884623075">URL адресите се проверяват в съхраняван в Chrome списък с опасни сайтове</translation>
 <translation id="840084489713044809">Google Chrome иска да експортира паролите ви.</translation>
 <translation id="8433638294851456451">За да изпратите номер от тук до телефона си с Android, влезте в Chrome и на двете устройства.</translation>
 <translation id="8498858610309223613">Току-що бе приложена специална актуализация за сигурност за Google Chrome. Рестартирайте сега – ще възстановим разделите ви.</translation>
@@ -286,11 +283,11 @@
 <translation id="8614913330719544658">Google Chrome блокира. Да се стартира ли отново сега?</translation>
 <translation id="861702415419836452">Chrome се нуждае от разрешение за достъп до камерата ви, за да създаде триизмерна карта на заобикалящата ви среда</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ще се стартира отново след 1 минута}other{Chrome ще се стартира отново след # минути}}</translation>
+<translation id="8629311577791198377">Когато затворите прозорците на Chrome, „бисквитките“ и данните за сайтовете автоматично се изчистват</translation>
 <translation id="8641606876632989680">Chrome ще ви уведоми, когато влизате в профил с компрометирана парола</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">То също контролира коя страница се показва при стартиране на Chrome.</translation>
 <translation id="8686817260976772516">С помощта на потребителските профили в Chromium можете да разделите данните си в браузъра. Създайте потребителски профили за близки и приятели или за разделяне на работата от забавленията.</translation>
-<translation id="870251953148363156">Актуализиране на &amp;Google Chrome</translation>
 <translation id="873133009373065397">Google Chrome не може да определи или зададе браузъра по подразбиране</translation>
 <translation id="8823341990149967727">Chrome не е актуален</translation>
 <translation id="8834965163890861871">Google Chrome опитва да редактира паролите. За да разрешите това, въведете паролата си за Windows.</translation>

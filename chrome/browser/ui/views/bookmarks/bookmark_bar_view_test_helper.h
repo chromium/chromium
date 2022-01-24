@@ -5,13 +5,17 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_TEST_HELPER_H_
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_TEST_HELPER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 
 // Used to access private state of BookmarkBarView for testing.
 class BookmarkBarViewTestHelper {
  public:
   explicit BookmarkBarViewTestHelper(BookmarkBarView* bbv) : bbv_(bbv) {}
+
+  BookmarkBarViewTestHelper(const BookmarkBarViewTestHelper&) = delete;
+  BookmarkBarViewTestHelper& operator=(const BookmarkBarViewTestHelper&) =
+      delete;
+
   ~BookmarkBarViewTestHelper() {}
 
   size_t GetBookmarkButtonCount() { return bbv_->bookmark_buttons_.size(); }
@@ -34,8 +38,6 @@ class BookmarkBarViewTestHelper {
 
  private:
   BookmarkBarView* bbv_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBarViewTestHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_TEST_HELPER_H_

@@ -24,6 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
@@ -34,6 +35,7 @@
 #include "components/omnibox/browser/in_memory_url_index_test_util.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/url_index_private_data.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -257,7 +259,7 @@ void InMemoryURLIndexTest::SetUp() {
   // Update [urls.last_visit_time] and [visits.visit_time] to represent a time
   // relative to 'now'.
   base::Time time_right_now = base::Time::NowFromSystemTime();
-  base::TimeDelta day_delta = base::TimeDelta::FromDays(1);
+  base::TimeDelta day_delta = base::Days(1);
   {
     sql::Statement s(db.GetUniqueStatement(
         "UPDATE urls SET last_visit_time = ? - ? * last_visit_time"));
@@ -697,8 +699,8 @@ TEST_F(InMemoryURLIndexTest, TrimHistoryIds) {
   constexpr int kLowVisitCount = 20;
   constexpr int kHighVisitCount = 200;
 
-  constexpr base::TimeDelta kOld = base::TimeDelta::FromDays(15);
-  constexpr base::TimeDelta kNew = base::TimeDelta::FromDays(2);
+  constexpr base::TimeDelta kOld = base::Days(15);
+  constexpr base::TimeDelta kNew = base::Days(2);
 
   constexpr int kMinRowId = 5000;
 
@@ -1213,6 +1215,11 @@ TEST_F(InMemoryURLIndexTest, DISABLED_CacheSaveRestore) {
 }
 
 TEST_F(InMemoryURLIndexTest, RebuildFromHistoryIfCacheOld) {
+  // Test specifically covers the flag-disabled behavior.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile);
+
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   set_history_dir(temp_dir_.GetPath());
 
@@ -1237,8 +1244,7 @@ TEST_F(InMemoryURLIndexTest, RebuildFromHistoryIfCacheOld) {
   // Overwrite the build time so that we'll think the data is too old
   // and rebuild the cache from history.
   const base::Time fake_rebuild_time =
-      private_data.last_time_rebuilt_from_history_ -
-      base::TimeDelta::FromDays(30);
+      private_data.last_time_rebuilt_from_history_ - base::Days(30);
   private_data.last_time_rebuilt_from_history_ = fake_rebuild_time;
 
   // Capture the current private data for later comparison to restored data.

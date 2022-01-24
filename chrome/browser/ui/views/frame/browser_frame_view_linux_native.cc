@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/linux_ui/linux_ui.h"
 #include "ui/views/window/frame_background.h"
 
 bool BrowserFrameViewLinuxNative::DrawFrameButtonParams::operator==(
@@ -18,11 +19,17 @@ BrowserFrameViewLinuxNative::BrowserFrameViewLinuxNative(
     BrowserFrame* frame,
     BrowserView* browser_view,
     BrowserFrameViewLayoutLinux* layout,
-    std::unique_ptr<views::NavButtonProvider> nav_button_provider)
+    std::unique_ptr<views::NavButtonProvider> nav_button_provider,
+    views::WindowFrameProvider* window_frame_provider)
     : BrowserFrameViewLinux(frame, browser_view, layout),
-      nav_button_provider_(std::move(nav_button_provider)) {}
+      nav_button_provider_(std::move(nav_button_provider)),
+      window_frame_provider_(window_frame_provider) {}
 
 BrowserFrameViewLinuxNative::~BrowserFrameViewLinuxNative() = default;
+
+float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {
+  return window_frame_provider_->GetTopCornerRadiusDip();
+}
 
 void BrowserFrameViewLinuxNative::Layout() {
   // Calling MaybeUpdateCachedFrameButtonImages() from Layout() is sufficient to
@@ -36,6 +43,12 @@ void BrowserFrameViewLinuxNative::Layout() {
 BrowserFrameViewLinuxNative::FrameButtonStyle
 BrowserFrameViewLinuxNative::GetFrameButtonStyle() const {
   return FrameButtonStyle::kImageButton;
+}
+
+void BrowserFrameViewLinuxNative::PaintRestoredFrameBorder(
+    gfx::Canvas* canvas) const {
+  window_frame_provider_->PaintWindowFrame(
+      canvas, GetLocalBounds(), GetTopAreaHeight(), ShouldPaintAsActive());
 }
 
 void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {

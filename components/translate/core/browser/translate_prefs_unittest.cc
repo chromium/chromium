@@ -36,19 +36,20 @@ namespace translate {
 
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAreArray;
 
 static void ExpectEqualLanguageLists(
-    const base::ListValue& language_values,
+    const base::Value& language_values,
     const std::vector<std::string>& languages) {
   const int input_size = languages.size();
-  ASSERT_EQ(input_size, static_cast<int>(language_values.GetSize()));
+  base::Value::ConstListView language_values_view = language_values.GetList();
+  ASSERT_EQ(input_size, static_cast<int>(language_values_view.size()));
   for (int i = 0; i < input_size; ++i) {
-    std::string value;
-    language_values.GetString(i, &value);
-    EXPECT_EQ(languages[i], value);
+    ASSERT_TRUE(language_values_view[i].is_string());
+    EXPECT_EQ(languages[i], language_values_view[i].GetString());
   }
 }
 
@@ -63,7 +64,7 @@ class TranslatePrefsTest : public testing::Test {
     accept_languages_tester_ =
         std::make_unique<language::test::LanguagePrefTester>(&prefs_);
     now_ = base::Time::Now();
-    two_days_ago_ = now_ - base::TimeDelta::FromDays(2);
+    two_days_ago_ = now_ - base::Days(2);
   }
 
   void SetUp() override {
@@ -78,8 +79,8 @@ class TranslatePrefsTest : public testing::Test {
 
   void ExpectBlockedLanguageListContent(
       const std::vector<std::string>& list) const {
-    const base::ListValue* const never_prompt_list =
-        prefs_.GetList(language::prefs::kFluentLanguages);
+    const base::Value* const never_prompt_list =
+        prefs_.GetList(prefs::kBlockedLanguages);
     ExpectEqualLanguageLists(*never_prompt_list, list);
   }
 
@@ -332,6 +333,41 @@ TEST_F(TranslatePrefsTest, UnblockLanguage) {
   translate_prefs_->BlockLanguage("zh-CN");
   translate_prefs_->UnblockLanguage("zh-CN");
   ExpectBlockedLanguageListContent({"en", "zh-TW"});
+}
+
+TEST_F(TranslatePrefsTest, ResetEmptyBlockedLanguagesToDefaultTest) {
+  ExpectBlockedLanguageListContent({"en"});
+
+  translate_prefs_->ResetEmptyBlockedLanguagesToDefaults();
+  ExpectBlockedLanguageListContent({"en"});
+
+  translate_prefs_->BlockLanguage("fr");
+  translate_prefs_->ResetEmptyBlockedLanguagesToDefaults();
+  ExpectBlockedLanguageListContent({"en", "fr"});
+
+  prefs_.Set(translate::prefs::kBlockedLanguages,
+             base::Value(base::Value::Type::LIST));
+  ExpectBlockedLanguageListContent({});
+  translate_prefs_->ResetEmptyBlockedLanguagesToDefaults();
+  ExpectBlockedLanguageListContent({"en"});
+}
+
+TEST_F(TranslatePrefsTest, GetNeverTranslateLanguagesTest) {
+  // Default Fluent language is "en".
+  EXPECT_THAT(translate_prefs_->GetNeverTranslateLanguages(),
+              ElementsAreArray({"en"}));
+
+  // Add two languages with the same base.
+  translate_prefs_->BlockLanguage("fr-FR");
+  translate_prefs_->BlockLanguage("fr-CA");
+  EXPECT_THAT(translate_prefs_->GetNeverTranslateLanguages(),
+              ElementsAreArray({"en", "fr"}));
+
+  // Add language that comes before English alphabetically. It should be
+  // appended to the list.
+  translate_prefs_->BlockLanguage("af");
+  EXPECT_THAT(translate_prefs_->GetNeverTranslateLanguages(),
+              ElementsAreArray({"en", "fr", "af"}));
 }
 
 TEST_F(TranslatePrefsTest, AddToLanguageList) {
@@ -894,6 +930,33 @@ TEST_F(TranslatePrefsTest, MoveLanguageDown) {
   translate_prefs_->RearrangeLanguage("fr", TranslatePrefs::kDown, 6,
                                       {"en", "fr", "it", "es", "zh"});
   accept_languages_tester_->ExpectAcceptLanguagePrefs("en,it,es,zh,fr");
+}
+
+TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
+  // Add two sites to the deprecated pref that need to be migrated.
+  translate_prefs_->AddValueToNeverPromptList(
+      TranslatePrefs::kPrefNeverPromptSitesDeprecated, "unmigrated.com");
+  translate_prefs_->AddValueToNeverPromptList(
+      TranslatePrefs::kPrefNeverPromptSitesDeprecated, "migratedWrong.com");
+  EXPECT_EQ(prefs_.Get(TranslatePrefs::kPrefNeverPromptSitesDeprecated)
+                ->GetList()
+                .size(),
+            2u);
+  // Also put one of those sites on the new pref but migrated incorrectly.
+  DictionaryPrefUpdate never_prompt_list_update(
+      &prefs_, TranslatePrefs::kPrefNeverPromptSitesWithTime);
+  base::Value* never_prompt_list = never_prompt_list_update.Get();
+  never_prompt_list->SetKey("migratedWrong.com", base::Value(0));
+
+  // Now migrate and fix the prefs.
+  translate_prefs_->MigrateNeverPromptSites();
+  EXPECT_THAT(translate_prefs_->GetNeverPromptSitesBetween(
+                  base::Time::Now() - base::Days(1), base::Time::Max()),
+              ElementsAre("migratedWrong.com", "unmigrated.com"));
+  EXPECT_EQ(prefs_.Get(TranslatePrefs::kPrefNeverPromptSitesDeprecated)
+                ->GetList()
+                .size(),
+            0u);
 }
 
 TEST_F(TranslatePrefsTest, SiteNeverPromptList) {

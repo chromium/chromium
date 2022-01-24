@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.testing.MockControlTest');
 goog.setTestOnly();
@@ -46,6 +38,7 @@ testSuite({
     const mock = new Mock(MockMock);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testAdd() {
     const mockMock = new MockMock();
 
@@ -53,6 +46,7 @@ testSuite({
     assertEquals(mockMock, control.addMock(mockMock));
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testReplayAll() {
     const mockMock1 = new MockMock();
     const mockMock2 = new MockMock();
@@ -68,6 +62,7 @@ testSuite({
     assertFalse(mockMockExcluded.replayCalled);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testResetAll() {
     const mockMock1 = new MockMock();
     const mockMock2 = new MockMock();
@@ -83,6 +78,7 @@ testSuite({
     assertFalse(mockMockExcluded.resetCalled);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testVerifyAll() {
     const mockMock1 = new MockMock();
     const mockMock2 = new MockMock();
@@ -98,15 +94,18 @@ testSuite({
     assertFalse(mockMockExcluded.verifyCalled);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testTearDownAll() {
     const mockMock1 = new MockMock();
     const mockMock2 = new MockMock();
     const mockMockExcluded = new MockMock();
 
     // $tearDown is optional.
+    /** @suppress {checkTypes} suppression added to enable type checking */
     mockMock2.$tearDown = function() {
       this.tearDownCalled = true;
     };
+    /** @suppress {checkTypes} suppression added to enable type checking */
     mockMockExcluded.$tearDown = function() {
       this.tearDownCalled = true;
     };

@@ -34,7 +34,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/core/core.h"
@@ -181,6 +181,10 @@ class EventFDNotifier : public DataAvailableNotifier,
                         public base::MessagePumpForIO::FdWatcher {
  public:
   EventFDNotifier(EventFDNotifier&& efd) = default;
+
+  EventFDNotifier(const EventFDNotifier&) = delete;
+  EventFDNotifier& operator=(const EventFDNotifier&) = delete;
+
   ~EventFDNotifier() override { reset(); }
 
   static constexpr int kEfdFlags = EFD_CLOEXEC | EFD_NONBLOCK;
@@ -318,8 +322,6 @@ class EventFDNotifier : public DataAvailableNotifier,
   base::ScopedFD fd_;
   std::unique_ptr<base::MessagePumpForIO::FdWatchController> watcher_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventFDNotifier);
 };
 
 }  // namespace
@@ -331,6 +333,10 @@ class EventFDNotifier : public DataAvailableNotifier,
 class ChannelLinux::SharedBuffer {
  public:
   SharedBuffer(SharedBuffer&& other) = default;
+
+  SharedBuffer(const SharedBuffer&) = delete;
+  SharedBuffer& operator=(const SharedBuffer&) = delete;
+
   ~SharedBuffer() { reset(); }
 
   enum class Error { kSuccess = 0, kGeneralError = 1, kControlCorruption = 2 };
@@ -602,8 +608,6 @@ class ChannelLinux::SharedBuffer {
 
   uint8_t* base_ptr_ = nullptr;
   size_t len_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedBuffer);
 };
 
 ChannelLinux::ChannelLinux(

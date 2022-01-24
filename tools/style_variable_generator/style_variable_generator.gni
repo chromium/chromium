@@ -44,7 +44,7 @@ template("style_variable_generator") {
                "//tools/style_variable_generator/css_generator.py",
                "//tools/style_variable_generator/css_generator.tmpl",
              ]
-    out_file = "$target_gen_dir/${original_target_name}.generated.css"
+    out_file = "$target_gen_dir/${original_target_name}.css"
     outputs = [ out_file ]
 
     args = [

@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidDiscovery
       device::mojom::HidManagerClient {
  public:
   explicit FidoHidDiscovery(base::flat_set<VidPid> ignore_list = {});
+
+  FidoHidDiscovery(const FidoHidDiscovery&) = delete;
+  FidoHidDiscovery& operator=(const FidoHidDiscovery&) = delete;
+
   ~FidoHidDiscovery() override;
 
   // Sets a callback for this class to use when binding a HidManager receiver.
@@ -61,8 +65,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidDiscovery
   HidDeviceFilter filter_;
   base::flat_set<VidPid> ignore_list_;
   base::WeakPtrFactory<FidoHidDiscovery> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoHidDiscovery);
 };
 
 }  // namespace device

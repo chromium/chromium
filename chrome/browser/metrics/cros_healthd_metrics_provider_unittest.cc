@@ -109,8 +109,7 @@ TEST_F(CrosHealthdMetricsProviderTest, EndToEnd) {
 
 TEST_F(CrosHealthdMetricsProviderTest, EndToEndTimeout) {
   chromeos::cros_healthd::FakeCrosHealthdClient::Get()->SetCallbackDelay(
-      CrosHealthdMetricsProvider::GetTimeout() +
-      base::TimeDelta::FromSeconds(5));
+      CrosHealthdMetricsProvider::GetTimeout() + base::Seconds(5));
 
   base::RunLoop run_loop;
   CrosHealthdMetricsProvider provider;

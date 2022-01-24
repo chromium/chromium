@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -439,6 +440,9 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // The individual bookmark buttons.
   std::vector<views::LabelButton*> bookmark_buttons_;
+
+  // The individual TAB GROUP bookmark buttons.
+  std::vector<views::LabelButton*> tab_group_buttons_;
 
   ButtonSeparatorView* bookmarks_separator_view_ = nullptr;
 

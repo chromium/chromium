@@ -5,9 +5,12 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_IN_PROCESS_LAUNCHED_VIDEO_CAPTURE_DEVICE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_IN_PROCESS_LAUNCHED_VIDEO_CAPTURE_DEVICE_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/callback_forward.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/token.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/public/browser/video_capture_device_launcher.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 
 namespace content {
@@ -28,6 +31,9 @@ class InProcessLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
       media::VideoCaptureDevice::TakePhotoCallback callback) override;
   void MaybeSuspendDevice() override;
   void ResumeDevice() override;
+  void Crop(const base::Token& crop_id,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
+      override;
   void RequestRefreshFrame() override;
 
   void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,

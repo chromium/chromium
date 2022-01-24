@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_LOGIN_LOGIN_PROFILE_POLICY_PROVIDER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_service.h"
@@ -21,6 +20,11 @@ class LoginProfilePolicyProvider : public ConfigurationPolicyProvider,
                                    public PolicyService::Observer {
  public:
   explicit LoginProfilePolicyProvider(PolicyService* device_policy_service);
+
+  LoginProfilePolicyProvider(const LoginProfilePolicyProvider&) = delete;
+  LoginProfilePolicyProvider& operator=(const LoginProfilePolicyProvider&) =
+      delete;
+
   ~LoginProfilePolicyProvider() override;
 
   // ConfigurationPolicyProvider:
@@ -44,8 +48,6 @@ class LoginProfilePolicyProvider : public ConfigurationPolicyProvider,
   bool waiting_for_device_policy_refresh_;
 
   base::WeakPtrFactory<LoginProfilePolicyProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginProfilePolicyProvider);
 };
 
 }  // namespace policy

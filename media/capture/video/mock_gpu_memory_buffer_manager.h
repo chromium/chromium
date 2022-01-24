@@ -17,6 +17,10 @@ class MockGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
  public:
   MockGpuMemoryBufferManager();
 
+  MockGpuMemoryBufferManager(const MockGpuMemoryBufferManager&) = delete;
+  MockGpuMemoryBufferManager& operator=(const MockGpuMemoryBufferManager&) =
+      delete;
+
   ~MockGpuMemoryBufferManager() override;
 
   MOCK_METHOD5(CreateGpuMemoryBuffer,
@@ -46,9 +50,6 @@ class MockGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
       base::WaitableEvent* shutdown_event);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockGpuMemoryBufferManager);
 };
 
 }  // namespace unittest_internal

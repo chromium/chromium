@@ -393,7 +393,7 @@ To<Longhand>(resolved_property).{{apply_call}};
   NamedGridLinesMap auto_repeat_named_grid_lines;
   OrderedNamedGridLines auto_repeat_ordered_named_grid_lines;
   AutoRepeatType autoRepeatType = ComputedStyleInitialValues::InitialGridAutoRepeatType();
-  size_t auto_repeat_insertion_point =
+  wtf_size_t auto_repeat_insertion_point =
       ComputedStyleInitialValues::InitialGridAutoRepeatInsertionPoint();
   StyleBuilderConverter::ConvertGridTrackList(
       value, track_sizes, named_grid_lines, ordered_named_grid_lines,

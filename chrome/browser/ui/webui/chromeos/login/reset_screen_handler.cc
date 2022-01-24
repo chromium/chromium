@@ -57,8 +57,6 @@ void ResetScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("resetScreenAccessibleTitle", IDS_RESET_SCREEN_TITLE);
   builder->Add("resetScreenIconTitle", IDS_RESET_SCREEN_ICON_TITLE);
-  builder->Add("resetScreenIllustrationTitle",
-               IDS_RESET_SCREEN_ILLUSTRATION_TITLE);
   builder->Add("cancelButton", IDS_CANCEL);
 
   builder->Add("resetButtonRestart", IDS_RELAUNCH_BUTTON);

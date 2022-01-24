@@ -22,7 +22,7 @@
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 
@@ -102,6 +102,9 @@ class ChannelWin : public Channel,
     CHECK(handle_.IsValid());
   }
 
+  ChannelWin(const ChannelWin&) = delete;
+  ChannelWin& operator=(const ChannelWin&) = delete;
+
   void Start() override {
     io_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ChannelWin::StartOnIOThread, this));
@@ -172,7 +175,7 @@ class ChannelWin : public Channel,
           base::win::Uint32ToHandle(extra_header_handles[i].handle);
       if (PlatformHandleInTransit::IsPseudoHandle(handle_value))
         return false;
-      if (remote_process().IsValid()) {
+      if (remote_process().IsValid() && handle_value != INVALID_HANDLE_VALUE) {
         // If we know the remote process's handle, we assume it doesn't know
         // ours; that means any handle values still belong to that process, and
         // we need to transfer them to this process.
@@ -420,8 +423,6 @@ class ChannelWin : public Channel,
   bool is_write_pending_ = false;
 
   bool leak_handle_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelWin);
 };
 
 }  // namespace

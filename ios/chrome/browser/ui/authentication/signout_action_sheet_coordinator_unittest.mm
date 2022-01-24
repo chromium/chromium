@@ -8,14 +8,18 @@
 
 #import "base/mac/foundation_util.h"
 #include "base/test/task_environment.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/driver/mock_sync_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
@@ -93,9 +97,13 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
     return signout_coordinator_;
   }
 
+  PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
+
  protected:
   // Needed for test browser state created by TestChromeBrowserState().
   base::test::TaskEnvironment task_environment_;
+
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   SignoutActionSheetCoordinator* signout_coordinator_ = nullptr;
   ScopedKeyWindow scoped_key_window_;
@@ -131,6 +139,24 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithoutSync) {
   [signout_coordinator start];
 
   ASSERT_EQ(nil, signout_coordinator.title);
+}
+
+// Tests that a signed-in user with the forced sign-in policy enabled will have
+// an action sheet with a title and a message.
+TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithForcedSignin) {
+  // Enable forced sign-in.
+  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
+                              static_cast<int>(BrowserSigninMode::kForced));
+
+  authentication_service()->SignIn(identity_);
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
+      .WillByDefault(testing::Return(false));
+
+  SignoutActionSheetCoordinator* signout_coordinator = CreateCoordinator();
+  [signout_coordinator start];
+
+  ASSERT_NE(nil, signout_coordinator.title);
+  ASSERT_NE(nil, signout_coordinator.message);
 }
 
 // Tests that a signed-in managed user with Sync enabled will have an action

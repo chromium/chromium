@@ -19,12 +19,11 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -51,7 +50,6 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #include "content/browser/renderer_host/delegated_frame_host_client_android.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/input/input_router.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_android.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_manager_android.h"
@@ -63,6 +61,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/ui_events_helper.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/android/content_jni_headers/RenderWidgetHostViewImpl_jni.h"
 #include "content/public/browser/android/compositor.h"
@@ -72,7 +71,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -87,6 +85,7 @@
 #include "ui/android/window_android_compositor.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/display_util.h"
 #include "ui/events/android/gesture_event_android.h"
 #include "ui/events/android/gesture_event_type.h"
 #include "ui/events/android/motion_event_android.h"
@@ -109,8 +108,7 @@ namespace content {
 namespace {
 
 static const char kAsyncReadBackString[] = "Compositing.CopyFromSurfaceTime";
-static const base::TimeDelta kClickCountInterval =
-    base::TimeDelta::FromSecondsD(0.5);
+static const base::TimeDelta kClickCountInterval = base::Seconds(0.5);
 static const float kClickCountRadiusSquaredDIP = 25;
 
 std::unique_ptr<ui::TouchSelectionController> CreateSelectionController(
@@ -119,8 +117,8 @@ std::unique_ptr<ui::TouchSelectionController> CreateSelectionController(
   DCHECK(client);
   DCHECK(has_view_tree);
   ui::TouchSelectionController::Config config;
-  config.max_tap_duration = base::TimeDelta::FromMilliseconds(
-      gfx::ViewConfiguration::GetLongPressTimeoutInMs());
+  config.max_tap_duration =
+      base::Milliseconds(gfx::ViewConfiguration::GetLongPressTimeoutInMs());
   config.tap_slop = gfx::ViewConfiguration::GetTouchSlopInDips();
   config.enable_adaptive_handle_orientation =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -332,24 +330,32 @@ void RenderWidgetHostViewAndroid::InitAsChild(gfx::NativeView parent_view) {
 }
 
 void RenderWidgetHostViewAndroid::InitAsPopup(
-    RenderWidgetHostView* parent_host_view, const gfx::Rect& pos) {
+    RenderWidgetHostView* parent_host_view,
+    const gfx::Rect& pos,
+    const gfx::Rect& anchor_rect) {
   NOTIMPLEMENTED();
 }
 
 void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
-  RenderFrameHostImpl* frame_host = static_cast<RenderFrameHostImpl*>(
-      RenderViewHost::From(host())->GetMainFrame());
-  if (frame_host && frame_host->ShouldVirtualKeyboardOverlayContent()) {
+  RenderFrameHostImpl* frame_host =
+      RenderViewHostImpl::From(host())->GetMainRenderFrameHost();
+  if (!frame_host || !frame_host->ShouldVirtualKeyboardOverlayContent())
+    return;
+  gfx::Rect keyboard_rect_with_scale;
+  if (!keyboard_rect.IsEmpty()) {
     float scale = IsUseZoomForDSFEnabled() ? 1 / view_.GetDipScale() : 1.f;
-    frame_host->NotifyVirtualKeyboardOverlayRect(
-        ScaleToEnclosedRect(keyboard_rect, scale));
+    keyboard_rect_with_scale = ScaleToEnclosedRect(keyboard_rect, scale);
+    // Intersect the keyboard rect with the `this` bounds which will be sent
+    // to the renderer.
+    keyboard_rect_with_scale.Intersect(GetViewBounds());
   }
+  frame_host->NotifyVirtualKeyboardOverlayRect(keyboard_rect_with_scale);
 }
 
 bool RenderWidgetHostViewAndroid::ShouldVirtualKeyboardOverlayContent() {
-  RenderFrameHostImpl* frame_host = static_cast<RenderFrameHostImpl*>(
-      RenderViewHost::From(host())->GetMainFrame());
+  RenderFrameHostImpl* frame_host =
+      RenderViewHostImpl::From(host())->GetMainRenderFrameHost();
   return frame_host && frame_host->ShouldVirtualKeyboardOverlayContent();
 }
 
@@ -362,6 +368,17 @@ bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(
     local_surface_id_allocator_.UpdateFromChild(*child_local_surface_id);
   } else {
     local_surface_id_allocator_.GenerateId();
+    // When a rotation begins while hidden, the Renderer will report the amount
+    // of time spent performing layout of the incremental surfaces. We cache the
+    // first viz::LocalSurfaceId sent, and then update |hidden_rotation_time_|
+    // for all subsequent cc::RenderFrameMetadata reported until the rotation
+    // completes.
+    if (!is_showing_ && in_rotation_ &&
+        !first_hidden_local_surface_id_.is_valid()) {
+      hidden_rotation_time_ = base::TimeDelta();
+      first_hidden_local_surface_id_ =
+          local_surface_id_allocator_.GetCurrentLocalSurfaceId();
+    }
   }
 
   // If we still have an invalid viz::LocalSurfaceId, then we are hidden and
@@ -427,6 +444,25 @@ void RenderWidgetHostViewAndroid::LostFocus() {
 
 void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
     const cc::RenderFrameMetadata& metadata) {
+  // If we began Surface Synchronization while hidden, the Renderer will report
+  // the time spent performing the incremental layouts. The record those here,
+  // to be included with the final time spend completing rotation in
+  // OnRenderFrameMetadataChangedAfterActivation.
+  if (first_hidden_local_surface_id_.is_valid() &&
+      metadata.local_surface_id->is_valid()) {
+    auto local_surface_id = metadata.local_surface_id.value();
+    // We stop recording layout times once the surface is expected as the final
+    // one for rotation. For that surface we are interested in the full time
+    // until activation. Which will include layout and rendering.
+    if (!rotation_metrics_.empty() &&
+        local_surface_id.IsSameOrNewerThan(rotation_metrics_.front().second)) {
+      first_hidden_local_surface_id_ = viz::LocalSurfaceId();
+    } else if (metadata.local_surface_id->IsSameOrNewerThan(
+                   first_hidden_local_surface_id_)) {
+      hidden_rotation_time_ += metadata.visual_properties_update_duration;
+    }
+  }
+
   bool is_transparent = metadata.has_transparent_background;
   SkColor root_background_color = metadata.root_background_color;
 
@@ -613,6 +649,10 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedAfterActivation(
       metadata.local_surface_id.value_or(viz::LocalSurfaceId());
 
   if (activated_local_surface_id.is_valid()) {
+    // We have received content, ensure that any subsequent navigation allocates
+    // a new surface.
+    pre_navigation_content_ = true;
+
     while (!rotation_metrics_.empty()) {
       auto rotation_target = rotation_metrics_.front();
       // Activation from a previous surface before the new rotation has set a
@@ -638,14 +678,36 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedAfterActivation(
       // We want to know of these long tail rotation times.
       if (activated_local_surface_id.IsSameOrNewerThan(
               rotation_target.second)) {
-        TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        // The duration for a rotation encompasses two separate spans of time,
+        // depending on whether or not we were `is_showing_` at the start of
+        // rotation.
+        //
+        // For a visible rotation `rotation_target.first` denotes the start of
+        // the rotation event handled in BeginRotationBatching.
+        //
+        // For a hidden rotation we ignore this initial event, as the Renderer
+        // can continue to be hidden for a long time. In these cases the
+        // `rotation_target.first` denotes when ShowInternal is called.
+        //
+        // From these, until `activation_time`, we can determine the length of
+        // time that the Renderer is visible, until the post rotation surface is
+        // first displayed.
+        //
+        // For hidden rotations, the Renderer may be doing additional, partial,
+        // layouts. This is tracked in `hidden_rotation_time_`. This extra work
+        // will be removed once `is_surface_sync_throttling_` is the default.
+        auto duration =
+            activation_time - rotation_target.first + hidden_rotation_time_;
+        TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
             "viz", "RenderWidgetHostViewAndroid::RotationEmbed",
-            TRACE_ID_LOCAL(rotation_target.second.hash()), activation_time);
+            TRACE_ID_LOCAL(rotation_target.second.hash()), activation_time,
+            "duration(ms)", duration.InMillisecondsF());
         // Report the total time from the first notification of rotation
         // beginning, until the Renderer has submitted and activated a
         // corresponding surface.
         UMA_HISTOGRAM_TIMES("Android.Rotation.BeginToRendererFrameActivation",
-                            activation_time - rotation_target.first);
+                            duration);
+        hidden_rotation_time_ = base::TimeDelta();
         rotation_metrics_.pop_front();
       } else {
         // The embedded surface may have updated the
@@ -663,6 +725,8 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedAfterActivation(
         break;
       }
     }
+    if (rotation_metrics_.empty())
+      in_rotation_ = false;
   }
   if (ime_adapter_android_) {
     // We need to first wait for Blink's viewport size to change such that we
@@ -713,7 +777,8 @@ bool RenderWidgetHostViewAndroid::IsSurfaceAvailableForCopy() {
           delegated_frame_host_->CanCopyFromCompositingSurface());
 }
 
-void RenderWidgetHostViewAndroid::Show() {
+void RenderWidgetHostViewAndroid::ShowWithVisibility(
+    PageVisibilityState /*page_visibility*/) {
   if (is_showing_)
     return;
 
@@ -863,12 +928,16 @@ void RenderWidgetHostViewAndroid::OnTextSelectionChanged(
 }
 
 viz::FrameSinkId RenderWidgetHostViewAndroid::GetRootFrameSinkId() {
+  if (sync_compositor_)
+    return sync_compositor_->GetFrameSinkId();
   if (view_.GetWindowAndroid() && view_.GetWindowAndroid()->GetCompositor())
     return view_.GetWindowAndroid()->GetCompositor()->GetFrameSinkId();
   return viz::FrameSinkId();
 }
 
 viz::SurfaceId RenderWidgetHostViewAndroid::GetCurrentSurfaceId() const {
+  if (sync_compositor_)
+    return sync_compositor_->GetSurfaceId();
   return delegated_frame_host_ ? delegated_frame_host_->SurfaceId()
                                : viz::SurfaceId();
 }
@@ -1042,9 +1111,13 @@ void RenderWidgetHostViewAndroid::ResetGestureDetection() {
 
 void RenderWidgetHostViewAndroid::OnDidNavigateMainFrameToNewPage() {
   // Move to front only if we are the primary page (we don't want to receive
-  // events in the Prerender)
+  // events in the Prerender). GetMainRenderFrameHost() may be null in
+  // tests.
   if (view_.parent() &&
-      RenderViewHost::From(host())->GetMainFrame()->GetLifecycleState() ==
+      RenderViewHostImpl::From(host())->GetMainRenderFrameHost() &&
+      RenderViewHostImpl::From(host())
+              ->GetMainRenderFrameHost()
+              ->GetLifecycleState() ==
           RenderFrameHost::LifecycleState::kActive) {
     view_.parent()->MoveToFront(&view_);
   }
@@ -1097,7 +1170,11 @@ void RenderWidgetHostViewAndroid::UpdateTooltipUnderCursor(
 void RenderWidgetHostViewAndroid::UpdateTooltipFromKeyboard(
     const std::u16string& tooltip_text,
     const gfx::Rect& bounds) {
-  // Tooltips don't makes sense on Android.
+  // Tooltips don't make sense on Android.
+}
+
+void RenderWidgetHostViewAndroid::ClearKeyboardTriggeredTooltip() {
+  // Tooltips don't make sense on Android.
 }
 
 void RenderWidgetHostViewAndroid::UpdateBackgroundColor() {
@@ -1211,10 +1288,9 @@ bool RenderWidgetHostViewAndroid::RequestRepaintForTesting() {
                                      absl::nullopt);
 }
 
-
 void RenderWidgetHostViewAndroid::FrameTokenChangedForSynchronousCompositor(
     uint32_t frame_token,
-    const gfx::ScrollOffset& root_scroll_offset) {
+    const gfx::Vector2dF& root_scroll_offset) {
   if (!viz::FrameTokenGT(frame_token, sync_compositor_last_frame_token_))
     return;
   sync_compositor_last_frame_token_ = frame_token;
@@ -1225,15 +1301,14 @@ void RenderWidgetHostViewAndroid::FrameTokenChangedForSynchronousCompositor(
     // we're currently in SynchronousCopyContents, as this can lead to
     // redundant copies.
     if (!in_sync_copy_contents_) {
-      RenderFrameHost* frame_host =
-          RenderViewHost::From(host())->GetMainFrame();
+      RenderFrameHostImpl* frame_host =
+          RenderViewHostImpl::From(host())->GetMainRenderFrameHost();
       if (frame_host && last_render_frame_metadata_) {
         // Update our |root_scroll_offset|, as changes to this value do not
         // trigger a new RenderFrameMetadata, and it may be out of date. This
         // is needed for devtools DOM node selection.
         cc::RenderFrameMetadata updated_metadata = *last_render_frame_metadata_;
-        updated_metadata.root_scroll_offset =
-            gfx::ScrollOffsetToVector2dF(root_scroll_offset);
+        updated_metadata.root_scroll_offset = root_scroll_offset;
         RenderFrameDevToolsAgentHost::SignalSynchronousSwapCompositorFrame(
             frame_host, updated_metadata);
       }
@@ -1249,8 +1324,8 @@ void RenderWidgetHostViewAndroid::SetSynchronousCompositorClient(
 
 void RenderWidgetHostViewAndroid::MaybeCreateSynchronousCompositor() {
   if (!sync_compositor_ && synchronous_compositor_client_) {
-    sync_compositor_ =
-        SynchronousCompositorHost::Create(this, host()->GetFrameSinkId());
+    sync_compositor_ = SynchronousCompositorHost::Create(
+        this, host()->GetFrameSinkId(), GetHostFrameSinkManager());
     view_.SetCopyOutputCallback(sync_compositor_->GetCopyViewCallback());
     if (renderer_widget_created_)
       sync_compositor_->InitMojo();
@@ -1489,6 +1564,9 @@ bool RenderWidgetHostViewAndroid::UpdateControls(
 
 void RenderWidgetHostViewAndroid::OnDidUpdateVisualPropertiesComplete(
     const cc::RenderFrameMetadata& metadata) {
+  // If the Renderer is updating visual properties, do not block merging and
+  // updating on rotation.
+  base::AutoReset<bool> in_rotation(&in_rotation_, false);
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                               metadata.local_surface_id);
   if (delegated_frame_host_) {
@@ -1526,6 +1604,11 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
   if (!host() || !host()->is_hidden())
     return;
 
+  // Whether evicted or not, we stop batching for rotation in order to get
+  // content ready for the new orientation.
+  bool rotation_override = in_rotation_;
+  base::AutoReset<bool> in_rotation(&in_rotation_, false);
+
   view_.GetLayer()->SetHideLayerAndSubtree(false);
 
   if (overscroll_controller_)
@@ -1551,9 +1634,21 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
       navigation_while_hidden_ = false;
       delegated_frame_host_->DidNavigate();
     }
+  } else if (rotation_override && is_surface_sync_throttling_) {
+    // If a rotation occurred while this was not visible, we need to allocate a
+    // new viz::LocalSurfaceId and send the current visual properties to the
+    // Renderer. Otherwise there will be no content at all to display.
+    //
+    // The rotation process will complete after this first surface is displayed.
+    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                                absl::nullopt);
   }
 
-  auto content_to_visible_start_state = TakeRecordContentToVisibleTimeRequest();
+  auto* visible_time_request_trigger = host()->GetVisibleTimeRequestTrigger();
+  // The only way this should be null is if there is no RenderWidgetHostView.
+  DCHECK(visible_time_request_trigger);
+  auto content_to_visible_start_state =
+      visible_time_request_trigger->TakeRequest();
 
   // Only when page is restored from back-forward cache, record content to
   // visible time and for this case no need to check for saved frames to
@@ -1567,17 +1662,6 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
                        : blink::mojom::RecordContentToVisibleTimeRequestPtr());
 
   if (delegated_frame_host_) {
-    // If a rotation occurred while this was not visible, we need to allocate a
-    // new viz::LocalSurfaceId and send the current visual properties to the
-    // Renderer. Otherwise there will be no content at all to display.
-    //
-    // The rotation process will complete after this first surface is displayed.
-    if (!local_surface_id_allocator_.HasValidLocalSurfaceId() &&
-        is_surface_sync_throttling_) {
-      base::AutoReset<bool> in_rotation(&in_rotation_, false);
-      SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                  absl::nullopt);
-    }
     delegated_frame_host_->WasShown(
         local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
         GetCompositorViewportPixelSize(), host()->delegate()->IsFullscreen());
@@ -1588,11 +1672,33 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
     if (sync_compositor_)
       sync_compositor_->RequestOneBeginFrame();
   }
+
+  if (rotation_override) {
+    // It's possible that several rotations were all enqueued while this view
+    // has hidden. We skip those and update to just the final state.
+    size_t skipped_rotations = rotation_metrics_.size() - 1;
+    if (skipped_rotations) {
+      rotation_metrics_.erase(rotation_metrics_.begin(),
+                              rotation_metrics_.begin() + skipped_rotations);
+    }
+    // If a rotation occurred while we were hidden, we do not want to include
+    // all of that idle time in the rotation metrics. However we do want to have
+    // the "RotationBegin" tracing event. So end the tracing event, before
+    // setting the starting time of the rotation.
+    EndRotationBatching();
+    rotation_metrics_.begin()->first = base::TimeTicks::Now();
+    BeginRotationEmbed();
+  }
 }
 
 void RenderWidgetHostViewAndroid::HideInternal() {
   DCHECK(!is_showing_ || !is_window_activity_started_ || !is_window_visible_)
       << "Hide called when the widget should be shown.";
+
+  // As we stop visual observations, we clear the current fullscreen state. Once
+  // ShowInternal() is invoked the most up to date visual properties will be
+  // used.
+  fullscreen_rotation_ = false;
 
   // Only preserve the frontbuffer if the activity was stopped while the
   // window is still visible. This avoids visual artifacts when transitioning
@@ -2096,6 +2202,11 @@ void RenderWidgetHostViewAndroid::UpdateNativeViewTree(
   // ensure SynchronousCompositor is recreated in this case.
   MaybeCreateSynchronousCompositor();
 
+  // Force an initial update of screen infos so the default RWHVBase value
+  // is not used.
+  // TODO(enne): figure out a more straightforward init path for screen infos.
+  UpdateScreenInfo();
+
   if (is_showing_ && view_.GetWindowAndroid())
     StartObservingRootWindow();
 
@@ -2207,38 +2318,24 @@ void RenderWidgetHostViewAndroid::OnPhysicalBackingSizeChanged(
                               deadline_override.value())
                         : ui::DelegatedFrameHostAndroid::ResizeTimeoutFrames();
 
-  // Cache the current rotation start for enabling tracing. While unlocking the
-  // rotation state for SynchronizeVisualProperties.
+  // Cache the current rotation state so that we can start embedding with the
+  // latest visual properties from SynchronizeVisualProperties().
   bool in_rotation = in_rotation_;
-  in_rotation_ = false;
-  if (in_rotation) {
-    DCHECK(!rotation_metrics_.empty());
-    const auto delta = rotation_metrics_.back().first - base::TimeTicks();
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "viz", "RenderWidgetHostViewAndroid::RotationBegin",
-        TRACE_ID_LOCAL(delta.InNanoseconds()));
-  }
-
+  if (in_rotation)
+    EndRotationBatching();
+  // When exiting fullscreen it is possible that
+  // OnSynchronizedDisplayPropertiesChanged is either called out-of-order, or
+  // not at all. If so we treat this as the start of the rotation.
+  //
+  // TODO(jonross): Build a unified screen state observer to replace all of the
+  // individual signals used by RenderWidgetHostViewAndroid.
+  if (fullscreen_rotation_ && !host()->delegate()->IsFullscreen())
+    BeginRotationBatching();
   SynchronizeVisualProperties(
       cc::DeadlinePolicy::UseSpecifiedDeadline(deadline_in_frames),
       absl::nullopt);
-  if (in_rotation) {
-    DCHECK(!rotation_metrics_.empty());
-    rotation_metrics_.back().second =
-        local_surface_id_allocator_.GetCurrentLocalSurfaceId();
-
-    // The full set of visual properties for a rotation is now known. This
-    // tracks the time it takes until the Renderer successfully submits a frame
-    // embedding the new viz::LocalSurfaceId. Tracking how long until a user
-    // sees the complete rotation and layout of the page. This completes in
-    // OnRenderFrameMetadataChangedAfterActivation.
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        "viz", "RenderWidgetHostViewAndroid::RotationEmbed",
-        TRACE_ID_LOCAL(
-            local_surface_id_allocator_.GetCurrentLocalSurfaceId().hash()),
-        base::TimeTicks::Now(), "LocalSurfaceId",
-        local_surface_id_allocator_.GetCurrentLocalSurfaceId().ToString());
-  }
+  if (in_rotation)
+    BeginRotationEmbed();
 }
 
 void RenderWidgetHostViewAndroid::OnRootWindowVisibilityChanged(bool visible) {
@@ -2448,16 +2545,21 @@ void RenderWidgetHostViewAndroid::TakeFallbackContentFrom(
 void RenderWidgetHostViewAndroid::OnSynchronizedDisplayPropertiesChanged(
     bool rotation) {
   if (rotation) {
-    in_rotation_ = true;
-    rotation_metrics_.emplace_back(
-        std::make_pair(base::TimeTicks::Now(), viz::LocalSurfaceId()));
-    // When a rotation begins, a series of calls update different aspects of
-    // visual properties. Completing in OnPhysicalBackingSizeChanged, where the
-    // full new set of properties is known. Trace the duration of that.
-    const auto delta = rotation_metrics_.back().first - base::TimeTicks();
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "viz", "RenderWidgetHostViewAndroid::RotationBegin",
-        TRACE_ID_LOCAL(delta.InNanoseconds()));
+    if (!in_rotation_) {
+      // If this is a new rotation confirm the rotation state to prepare for
+      // future exiting. As OnSynchronizedDisplayPropertiesChanged is not always
+      // called when exiting.
+      // TODO(jonross): Build a unified screen state observer to replace all of
+      // the individual signals used by RenderWidgetHostViewAndroid.
+      fullscreen_rotation_ = host()->delegate()->IsFullscreen() && is_showing_;
+      BeginRotationBatching();
+    } else if (fullscreen_rotation_) {
+      // If exiting fullscreen triggers a rotation, begin embedding now, as we
+      // have previously had OnPhysicalBackingSizeChanged called.
+      fullscreen_rotation_ = false;
+      EndRotationBatching();
+      BeginRotationEmbed();
+    }
   }
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                               absl::nullopt);
@@ -2479,7 +2581,17 @@ void RenderWidgetHostViewAndroid::DidNavigate() {
     local_surface_id_allocator_.Invalidate();
     navigation_while_hidden_ = true;
   } else {
-    if (is_first_navigation_) {
+    // TODO(jonross): This was a legacy optimization to not perform too many
+    // Surface Synchronization iterations for the first navigation. However we
+    // currently are performing 5 full synchornizations before navigation
+    // completes anyways. So we need to re-do RWHVA setup.
+    // (https://crbug.com/1245652)
+    //
+    // In the interim we will not allocate a new Surface as long as the Renderer
+    // has yet to produce any content. If we have existing content always
+    // allocate a new surface, as the content will be from a pre-navigation
+    // source.
+    if (!pre_navigation_content_) {
       SynchronizeVisualProperties(
           cc::DeadlinePolicy::UseExistingDeadline(),
           local_surface_id_allocator_.GetCurrentLocalSurfaceId());
@@ -2490,7 +2602,7 @@ void RenderWidgetHostViewAndroid::DidNavigate() {
     // Only notify of navigation once a surface has been embedded.
     delegated_frame_host_->DidNavigate();
   }
-  is_first_navigation_ = false;
+  pre_navigation_content_ = true;
 }
 
 WebContentsAccessibility*
@@ -2507,18 +2619,18 @@ RenderWidgetHostViewAndroid::DidUpdateVisualProperties(
   return viz::ScopedSurfaceIdAllocator(std::move(allocation_task));
 }
 
-void RenderWidgetHostViewAndroid::GetScreenInfo(
-    display::ScreenInfo* screen_info) {
+display::ScreenInfo RenderWidgetHostViewAndroid::GetScreenInfo() const {
   bool use_window_wide_color_gamut =
       GetContentClient()->browser()->GetWideColorGamutHeuristic() ==
       ContentBrowserClient::WideColorGamutHeuristic::kUseWindow;
   auto* window = view_.GetWindowAndroid();
   if (!window || !use_window_wide_color_gamut) {
-    RenderWidgetHostViewBase::GetScreenInfo(screen_info);
-    return;
+    return RenderWidgetHostViewBase::GetScreenInfo();
   }
-  DisplayUtil::DisplayToScreenInfo(screen_info,
-                                   window->GetDisplayWithWindowColorSpace());
+  display::ScreenInfo screen_info;
+  display::DisplayUtil::DisplayToScreenInfo(
+      &screen_info, window->GetDisplayWithWindowColorSpace());
+  return screen_info;
 }
 
 std::vector<std::unique_ptr<ui::TouchEvent>>
@@ -2585,6 +2697,30 @@ void RenderWidgetHostViewAndroid::SetDisplayFeatureForTesting(
     const DisplayFeature* display_feature) {
   // RenderWidgetHostViewAndroid display feature mocking should be done via
   // TestViewAndroidDelegate instead - see MockDisplayFeature.
+  NOTREACHED();
+}
+
+void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr) {
+  // ShowWithVisibility calls ShowInternal instead of
+  // RenderWidgetHostViewBase::OnShowWithPageVisibility so nothing should
+  // call this.
+  NOTREACHED();
+}
+
+void RenderWidgetHostViewAndroid::RequestPresentationTimeFromHostOrDelegate(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr) {
+  // ShowWithVisibility calls ShowInternal instead of
+  // RenderWidgetHostViewBase::OnShowWithPageVisibility so nothing should
+  // call this.
+  NOTREACHED();
+}
+
+void RenderWidgetHostViewAndroid::
+    CancelPresentationTimeRequestForHostAndDelegate() {
+  // ShowWithVisibility calls ShowInternal instead of
+  // RenderWidgetHostViewBase::OnShowWithPageVisibility so nothing should
+  // call this.
   NOTREACHED();
 }
 
@@ -2672,6 +2808,47 @@ void RenderWidgetHostViewAndroid::SetWebContentsAccessibility(
 void RenderWidgetHostViewAndroid::SetNeedsBeginFrameForFlingProgress() {
   if (sync_compositor_)
     sync_compositor_->RequestOneBeginFrame();
+}
+
+void RenderWidgetHostViewAndroid::BeginRotationBatching() {
+  in_rotation_ = true;
+  rotation_metrics_.emplace_back(
+      std::make_pair(base::TimeTicks::Now(), viz::LocalSurfaceId()));
+  // When a rotation begins, a series of calls update different aspects of
+  // visual properties. Completing in EndRotationBatching, where the full new
+  // set of properties is known. Trace the duration of that.
+  const auto delta = rotation_metrics_.back().first - base::TimeTicks();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "viz", "RenderWidgetHostViewAndroid::RotationBegin",
+      TRACE_ID_LOCAL(delta.InNanoseconds()), "visible", is_showing_);
+}
+
+void RenderWidgetHostViewAndroid::EndRotationBatching() {
+  in_rotation_ = false;
+  DCHECK(!rotation_metrics_.empty());
+  const auto delta = rotation_metrics_.back().first - base::TimeTicks();
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "viz", "RenderWidgetHostViewAndroid::RotationBegin",
+      TRACE_ID_LOCAL(delta.InNanoseconds()), "local_surface_id",
+      local_surface_id_allocator_.GetCurrentLocalSurfaceId().ToString());
+}
+
+void RenderWidgetHostViewAndroid::BeginRotationEmbed() {
+  DCHECK(!rotation_metrics_.empty());
+  rotation_metrics_.back().second =
+      local_surface_id_allocator_.GetCurrentLocalSurfaceId();
+
+  // The full set of visual properties for a rotation is now known. This
+  // tracks the time it takes until the Renderer successfully submits a frame
+  // embedding the new viz::LocalSurfaceId. Tracking how long until a user
+  // sees the complete rotation and layout of the page. This completes in
+  // OnRenderFrameMetadataChangedAfterActivation.
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+      "viz", "RenderWidgetHostViewAndroid::RotationEmbed",
+      TRACE_ID_LOCAL(
+          local_surface_id_allocator_.GetCurrentLocalSurfaceId().hash()),
+      base::TimeTicks::Now(), "LocalSurfaceId",
+      local_surface_id_allocator_.GetCurrentLocalSurfaceId().ToString());
 }
 
 }  // namespace content

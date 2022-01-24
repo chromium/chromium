@@ -27,6 +27,12 @@ class ChromeIdentityServiceObserverBridge
  public:
   explicit ChromeIdentityServiceObserverBridge(
       id<ChromeIdentityServiceObserver> observer);
+
+  ChromeIdentityServiceObserverBridge(
+      const ChromeIdentityServiceObserverBridge&) = delete;
+  ChromeIdentityServiceObserverBridge& operator=(
+      const ChromeIdentityServiceObserverBridge&) = delete;
+
   ~ChromeIdentityServiceObserverBridge() override;
 
  private:
@@ -41,8 +47,6 @@ class ChromeIdentityServiceObserverBridge
   base::ScopedObservation<ios::ChromeIdentityService,
                           ios::ChromeIdentityService::Observer>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeIdentityServiceObserverBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_CHROME_IDENTITY_SERVICE_OBSERVER_BRIDGE_H_

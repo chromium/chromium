@@ -38,6 +38,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -48,6 +50,7 @@
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -93,6 +96,7 @@
 #include "components/crash/core/app/run_as_crashpad_handler_win.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/installer/util/google_update_util.h"
@@ -107,7 +111,6 @@ namespace {
 
 const wchar_t kSystemPrincipalSid[] = L"S-1-5-18";
 const wchar_t kDisplayVersion[] = L"DisplayVersion";
-const wchar_t kMsiDisplayVersionOverwriteDelay[] = L"10";  // seconds as string
 const wchar_t kMsiProductIdPrefix[] = L"EnterpriseProduct";
 
 // Overwrite an existing DisplayVersion as written by the MSI installer
@@ -166,27 +169,140 @@ LONG OverwriteDisplayVersions(const std::wstring& product,
              : (result2 != ERROR_SUCCESS ? result3 : ERROR_SUCCESS);
 }
 
+// Launches a subprocess of `setup_exe` (the full path to this executable in the
+// target installation directory) that will wait for msiexec to finish its work
+// and then overwrite the DisplayVersion values in the Windows registry. `id` is
+// the MSI product ID and `version` is the new Chrome version. The child will
+// run with verbose logging enabled if `verbose_logging` is true.
 void DelayedOverwriteDisplayVersions(const base::FilePath& setup_exe,
                                      const std::string& id,
-                                     const base::Version& version) {
-  // This process has to be able to exit so we launch ourselves with
-  // instructions on what to do and then return.
+                                     const base::Version& version,
+                                     bool verbose_logging) {
+  DCHECK(install_static::IsSystemInstall());
+
+  // Create an event to be given to the child process that it will signal
+  // immediately before blocking on msiexec's mutex.
+  SECURITY_ATTRIBUTES attributes = {};
+  attributes.nLength = sizeof(attributes);
+  attributes.bInheritHandle = TRUE;
+  base::win::ScopedHandle start_event(::CreateEventW(
+      &attributes, /*bManualReset=*/TRUE, /*bInitialState=*/FALSE,
+      /*lpName=*/nullptr));
+  PLOG_IF(ERROR, !start_event.IsValid()) << "Failed to create child event";
+
   base::CommandLine command_line(setup_exe);
   command_line.AppendSwitchASCII(installer::switches::kSetDisplayVersionProduct,
                                  id);
   command_line.AppendSwitchASCII(installer::switches::kSetDisplayVersionValue,
                                  version.GetString());
-  command_line.AppendSwitchNative(installer::switches::kDelay,
-                                  kMsiDisplayVersionOverwriteDelay);
+  if (start_event.IsValid()) {
+    command_line.AppendSwitchNative(
+        installer::switches::kStartupEventHandle,
+        base::NumberToWString(base::win::HandleToUint32(start_event.Get())));
+  }
+  InstallUtil::AppendModeAndChannelSwitches(&command_line);
+  command_line.AppendSwitch(installer::switches::kSystemLevel);
+  if (verbose_logging)
+    command_line.AppendSwitch(installer::switches::kVerboseLogging);
 
   base::LaunchOptions launch_options;
+  if (start_event.IsValid())
+    launch_options.handles_to_inherit.push_back(start_event.Get());
   launch_options.force_breakaway_from_job_ = true;
   base::Process writer = base::LaunchProcess(command_line, launch_options);
   if (!writer.IsValid()) {
     PLOG(ERROR) << "Failed to set DisplayVersion: "
                 << "could not launch subprocess to make desired changes."
                 << " <<" << command_line.GetCommandLineString() << ">>";
+    return;
   }
+
+  if (!start_event.IsValid())
+    return;
+
+  // Wait up to 30 seconds for either the start event to be signaled or for the
+  // child process to terminate (i.e., in case it crashes).
+  constexpr DWORD kWaitForStartTimeoutMs = 30 * 1000;
+  const HANDLE handles[] = {start_event.Get(), writer.Handle()};
+  auto wait_result =
+      ::WaitForMultipleObjects(base::size(handles), &handles[0],
+                               /*bWaitAll=*/FALSE, kWaitForStartTimeoutMs);
+  if (wait_result == WAIT_OBJECT_0) {
+    VLOG(1) << "Proceeding after waiting for DisplayVersion overwrite child.";
+  } else if (wait_result == WAIT_OBJECT_0 + 1) {
+    LOG(ERROR) << "Proceeding after unexpected DisplayVersion overwrite "
+                  "child termination.";
+  } else if (wait_result == WAIT_TIMEOUT) {
+    LOG(ERROR) << "Proceeding after unexpected timeout waiting for "
+                  "DisplayVersion overwrite child.";
+  } else {
+    DCHECK_EQ(wait_result, WAIT_FAILED);
+    PLOG(ERROR) << "Proceeding after failing to wait for DisplayVersion "
+                   "overwrite child";
+  }
+}
+
+// Waits up to a minute for msiexec to release its mutex and then overwrites
+// DisplayVersion in the Windows registry.
+LONG OverwriteDisplayVersionsAfterMsiexec(base::win::ScopedHandle startup_event,
+                                          const std::wstring& product,
+                                          const std::wstring& value) {
+  bool adjusted_priority = false;
+  bool acquired_mutex = false;
+  base::win::ScopedHandle msi_handle(::OpenMutexW(
+      SYNCHRONIZE, /*bInheritHandle=*/FALSE, L"Global\\_MSIExecute"));
+  if (msi_handle.IsValid()) {
+    VLOG(1) << "Blocking to acquire MSI mutex.";
+
+    // Raise the priority class for the process so that it can do its work as
+    // soon as possible after acquiring the mutex.
+    adjusted_priority =
+        ::SetPriorityClass(::GetCurrentProcess(), REALTIME_PRIORITY_CLASS) != 0;
+
+    // Notify the parent process that this one is ready to go.
+    if (startup_event.IsValid()) {
+      ::SetEvent(startup_event.Get());
+      startup_event.Close();
+    }
+
+    auto wait_result = ::WaitForSingleObject(msi_handle.Get(), 60 * 1000);
+    if (wait_result == WAIT_FAILED) {
+      // The handle is valid and was opened with SYNCHRONIZE, so the wait should
+      // never fail. If it does, wait ten seconds and proceed with the overwrite
+      // to match the old behavior.
+      PLOG(ERROR) << "Overwriting DisplayVersion in 10s after failing to wait "
+                     "for the MSI mutex";
+      base::PlatformThread::Sleep(base::Seconds(10));
+    } else if (wait_result == WAIT_ABANDONED || wait_result == WAIT_OBJECT_0) {
+      VLOG(1) << "Acquired MSI mutex; overwriting DisplayVersion.";
+      acquired_mutex = true;
+    } else {
+      DCHECK_EQ(wait_result, static_cast<DWORD>(WAIT_TIMEOUT));
+      LOG(ERROR) << "Timed out waiting for MSI mutex.";
+    }
+  } else {
+    // The mutex should still be held by msiexec since the parent setup.exe
+    // (which is run in the context of a Windows Installer operation) is
+    // blocking on this process.
+    PLOG(ERROR) << "Overwriting DisplayVersion immediately after failing to "
+                   "open the MSI mutex";
+
+    // Notify the parent process that this one is ready to go.
+    if (startup_event.IsValid()) {
+      ::SetEvent(startup_event.Get());
+      startup_event.Close();
+    }
+  }
+
+  auto result = OverwriteDisplayVersions(product, value);
+
+  if (adjusted_priority)
+    ::SetPriorityClass(::GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+
+  if (acquired_mutex)
+    ::ReleaseMutex(msi_handle.Get());
+
+  return result;
 }
 
 // Returns nullptr if no compressed archive is available for processing,
@@ -364,9 +480,8 @@ installer::InstallStatus RepeatDeleteOldVersions(
     //   shutdown: old files can't be deleted because Chrome is still in use.
     // Wait 5 minutes after an unsuccessful attempt because retrying immediately
     // is likely to fail again.
-    const base::TimeDelta max_wait_time = num_attempts == 0
-                                              ? base::TimeDelta::FromSeconds(15)
-                                              : base::TimeDelta::FromMinutes(5);
+    const base::TimeDelta max_wait_time =
+        num_attempts == 0 ? base::Seconds(15) : base::Minutes(5);
     if (setup_singleton.WaitForInterrupt(max_wait_time)) {
       VLOG(1) << "Exiting --delete-old-versions process because another "
                  "process tries to acquire the SetupSingleton.";
@@ -793,18 +908,6 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
       &(modify_params.installation_state);
   const base::FilePath& setup_exe = modify_params.setup_path;
 
-  // This option is independent of all others so doesn't belong in the if/else
-  // block below.
-  if (cmd_line.HasSwitch(installer::switches::kDelay)) {
-    const std::string delay_seconds_string(
-        cmd_line.GetSwitchValueASCII(installer::switches::kDelay));
-    int delay_seconds;
-    if (base::StringToInt(delay_seconds_string, &delay_seconds) &&
-        delay_seconds > 0) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(delay_seconds));
-    }
-  }
-
   // TODO(gab): Add a local |status| variable which each block below sets;
   // only determine the |exit_code| from |status| at the end (this will allow
   // this method to validate that
@@ -1030,20 +1133,50 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
         installer::switches::kSetDisplayVersionProduct));
     const std::wstring registry_value(cmd_line.GetSwitchValueNative(
         installer::switches::kSetDisplayVersionValue));
-    *exit_code = OverwriteDisplayVersions(registry_product, registry_value);
+    uint32_t startup_event_handle_value = 0;
+    base::win::ScopedHandle startup_event;
+    if (base::StringToUint(cmd_line.GetSwitchValueNative(
+                               installer::switches::kStartupEventHandle),
+                           &startup_event_handle_value) &&
+        startup_event_handle_value) {
+      startup_event.Set(base::win::Uint32ToHandle(startup_event_handle_value));
+    }
+
+    *exit_code = OverwriteDisplayVersionsAfterMsiexec(
+        std::move(startup_event), registry_product, registry_value);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   } else if (cmd_line.HasSwitch(installer::switches::kStoreDMToken)) {
     // Write the specified token to the registry, overwriting any already
     // existing value.
     std::wstring token_switch_value =
         cmd_line.GetSwitchValueNative(installer::switches::kStoreDMToken);
-    absl::optional<std::string> token;
-    if (!(token = installer::DecodeDMTokenSwitchValue(token_switch_value)) ||
-        !installer::StoreDMToken(*token)) {
-      *exit_code = installer::STORE_DMTOKEN_FAILED;
-    } else {
-      *exit_code = installer::STORE_DMTOKEN_SUCCESS;
-    }
+    auto token = installer::DecodeDMTokenSwitchValue(token_switch_value);
+    *exit_code = token && installer::StoreDMToken(*token)
+                     ? installer::STORE_DMTOKEN_SUCCESS
+                     : installer::STORE_DMTOKEN_FAILED;
+  } else if (cmd_line.HasSwitch(installer::switches::kRotateDeviceTrustKey)) {
+    // The value of the command line arguments is a DM token.  This is used
+    // to send the public part of the signing key to DM server.
+    std::wstring token_switch_value = cmd_line.GetSwitchValueNative(
+        installer::switches::kRotateDeviceTrustKey);
+    auto token = installer::DecodeDMTokenSwitchValue(token_switch_value);
+    GURL dm_server_url(
+        cmd_line.GetSwitchValueASCII(installer::switches::kDmServerUrl));
+    auto nonce = installer::DecodeNonceSwitchValue(
+        cmd_line.GetSwitchValueASCII(installer::switches::kNonce));
+
+    // RotateDeviceTrustKey() expects a single threaded task runner so
+    // creating one here.
+    base::SingleThreadTaskExecutor executor;
+
+    *exit_code =
+        token && nonce && dm_server_url.is_valid() &&
+                dm_server_url.SchemeIsHTTPOrHTTPS() &&
+                installer::RotateDeviceTrustKey(
+                    enterprise_connectors::KeyRotationManager::Create(),
+                    dm_server_url, *token, *nonce)
+            ? installer::ROTATE_DTKEY_SUCCESS
+            : installer::ROTATE_DTKEY_FAILED;
 #endif
   } else {
     handled = false;
@@ -1263,8 +1396,8 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
       base::FilePath new_setup =
           installer_state.GetInstallerDirectory(*installer_version)
               .Append(kSetupExe);
-      DelayedOverwriteDisplayVersions(new_setup, install_id,
-                                      *installer_version);
+      DelayedOverwriteDisplayVersions(new_setup, install_id, *installer_version,
+                                      installer_state.verbose_logging());
     } else {
       // Only when called by the MSI installer do we need to delay setting
       // the DisplayVersion.  In other runs, such as those done by the auto-
@@ -1458,9 +1591,9 @@ int WINAPI wWinMain(HINSTANCE instance,
       if (!new_cmd.HasSwitch(installer::switches::kSystemLevel))
         new_cmd.AppendSwitch(installer::switches::kSystemLevel);
 
-      DWORD exit_code = installer::UNKNOWN_STATUS;
-      InstallUtil::ExecuteExeAsAdmin(new_cmd, &exit_code);
-      return exit_code;
+      DWORD exe_exit_code = installer::UNKNOWN_STATUS;
+      InstallUtil::ExecuteExeAsAdmin(new_cmd, &exe_exit_code);
+      return exe_exit_code;
     } else {
       LOG(ERROR) << "Non admin user can not install system level Chrome.";
       installer_state.WriteInstallerResult(installer::INSUFFICIENT_RIGHTS,

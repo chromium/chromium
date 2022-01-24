@@ -10,7 +10,6 @@
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "base/bind.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/config_source.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_test_utils.h"
@@ -66,6 +65,12 @@ class TestParentAccessServiceObserver : public ParentAccessService::Observer {
  public:
   explicit TestParentAccessServiceObserver(const AccountId& account_id)
       : account_id_(account_id) {}
+
+  TestParentAccessServiceObserver(const TestParentAccessServiceObserver&) =
+      delete;
+  TestParentAccessServiceObserver& operator=(
+      const TestParentAccessServiceObserver&) = delete;
+
   ~TestParentAccessServiceObserver() override = default;
 
   void OnAccessCodeValidation(ParentCodeValidationResult result,
@@ -81,8 +86,6 @@ class TestParentAccessServiceObserver : public ParentAccessService::Observer {
 
  private:
   const AccountId account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestParentAccessServiceObserver);
 };
 
 class ParentAccessServiceTest : public MixinBasedInProcessBrowserTest {
@@ -90,6 +93,10 @@ class ParentAccessServiceTest : public MixinBasedInProcessBrowserTest {
   ParentAccessServiceTest()
       : test_observer_(std::make_unique<TestParentAccessServiceObserver>(
             logged_in_user_mixin_.GetAccountId())) {}
+
+  ParentAccessServiceTest(const ParentAccessServiceTest&) = delete;
+  ParentAccessServiceTest& operator=(const ParentAccessServiceTest&) = delete;
+
   ~ParentAccessServiceTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -151,9 +158,6 @@ class ParentAccessServiceTest : public MixinBasedInProcessBrowserTest {
                                           absl::nullopt /*account_id*/,
                                           true /*include_initial_user*/};
   std::unique_ptr<TestParentAccessServiceObserver> test_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ParentAccessServiceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest, NoConfigAvailable) {

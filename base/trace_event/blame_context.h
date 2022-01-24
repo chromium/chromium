@@ -70,6 +70,10 @@ class BASE_EXPORT BlameContext
                const char* scope,
                int64_t id,
                const BlameContext* parent_context);
+
+  BlameContext(const BlameContext&) = delete;
+  BlameContext& operator=(const BlameContext&) = delete;
+
   ~BlameContext() override;
 
   // Initialize the blame context, automatically taking a snapshot if tracing is
@@ -132,8 +136,6 @@ class BASE_EXPORT BlameContext
 
   ThreadChecker thread_checker_;
   WeakPtrFactory<BlameContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlameContext);
 };
 
 }  // namespace trace_event

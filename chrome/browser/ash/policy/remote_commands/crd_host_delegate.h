@@ -6,90 +6,58 @@
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_HOST_DELEGATE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/time/time.h"
-#include "base/values.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
-#include "extensions/browser/api/messaging/native_message_host.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "remoting/host/chromeos/chromeos_enterprise_params.h"
+#include "remoting/host/mojom/remote_support.mojom-forward.h"
 
 namespace policy {
 
 // Delegate that will start a session with the CRD native host.
 // Will keep the session alive and active as long as this class lives.
 // Deleting this class object will forcefully interrupt the active CRD session.
-class CRDHostDelegate : public DeviceCommandStartCRDSessionJob::Delegate,
-                        public extensions::NativeMessageHost::Client {
+class CrdHostDelegate : public DeviceCommandStartCrdSessionJob::Delegate {
  public:
-  class NativeMessageHostFactory {
+  // Proxy class to establish a connection with the Remoting service.
+  // Overwritten in unittests to inject a test service.
+  class RemotingServiceProxy {
    public:
-    virtual ~NativeMessageHostFactory() = default;
+    virtual ~RemotingServiceProxy() = default;
 
-    virtual std::unique_ptr<extensions::NativeMessageHost>
-    CreateNativeMessageHostHost() = 0;
+    using StartSessionCallback = base::OnceCallback<void(
+        remoting::mojom::StartSupportSessionResponsePtr response)>;
+
+    // Start a new remote support session. |callback| is
+    // called with the result.
+    virtual void StartSession(
+        remoting::mojom::SupportSessionParamsPtr params,
+        const remoting::ChromeOsEnterpriseParams& enterprise_params,
+        StartSessionCallback callback) = 0;
   };
 
-  CRDHostDelegate();
-  explicit CRDHostDelegate(std::unique_ptr<NativeMessageHostFactory> factory);
-  ~CRDHostDelegate() override;
+  CrdHostDelegate();
+  explicit CrdHostDelegate(
+      std::unique_ptr<RemotingServiceProxy> remoting_service);
+  CrdHostDelegate(const CrdHostDelegate&) = delete;
+  CrdHostDelegate& operator=(const CrdHostDelegate&) = delete;
+  ~CrdHostDelegate() override;
 
-  // DeviceCommandStartCRDSessionJob::Delegate:
+  // DeviceCommandStartCrdSessionJob::Delegate implementation:
   bool HasActiveSession() const override;
   void TerminateSession(base::OnceClosure callback) override;
-  void StartCRDHostAndGetCode(
+  void StartCrdHostAndGetCode(
       const SessionParameters& parameters,
-      DeviceCommandStartCRDSessionJob::AccessCodeCallback success_callback,
-      DeviceCommandStartCRDSessionJob::ErrorCallback error_callback) override;
+      DeviceCommandStartCrdSessionJob::AccessCodeCallback success_callback,
+      DeviceCommandStartCrdSessionJob::ErrorCallback error_callback) override;
 
  private:
-  // extensions::NativeMessageHost::Client:
-  // Invoked when native host sends a message
-  void PostMessageFromNativeHost(const std::string& message) override;
-  void CloseChannel(const std::string& error_message) override;
+  class CrdHostSession;
 
-  // Sends message to host in separate task.
-  void SendMessageToHost(const std::string& type, base::Value& params);
-  // Actually sends message to host.
-  void DoSendMessage(const std::string& json);
-  void OnProtocolBroken(const std::string& message);
-  // Shuts down host in a separate task.
-  void ShutdownHost();
-  // Actually shuts down a host.
-  void DoShutdownHost();
-
-  // Handlers for messages from host
-  void OnHelloResponse();
-  void OnDisconnectResponse();
-
-  void OnStateError(const std::string& error_state, const base::Value& message);
-  void OnStateRemoteConnected(const base::Value& message);
-  void OnStateRemoteDisconnected();
-  void OnStateReceivedAccessCode(const base::Value& message);
-
-  std::unique_ptr<NativeMessageHostFactory> factory_;
-
-  DeviceCommandStartCRDSessionJob::AccessCodeCallback code_success_callback_;
-  DeviceCommandStartCRDSessionJob::ErrorCallback error_callback_;
-
-  std::unique_ptr<extensions::NativeMessageHost> host_;
-
-  // Filled structure with parameters for "connect" message.
-  base::Value connect_params_;
-
-  // Determines actions when receiving messages from CRD host,
-  // if command is still running (no error / access code), then
-  // callbacks have to be called.
-  bool command_awaiting_crd_access_code_;
-  // True if remote session was established.
-  bool remote_connected_;
-
-  base::WeakPtrFactory<CRDHostDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CRDHostDelegate);
+  std::unique_ptr<RemotingServiceProxy> remoting_service_;
+  std::unique_ptr<CrdHostSession> active_session_;
 };
-
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_HOST_DELEGATE_H_

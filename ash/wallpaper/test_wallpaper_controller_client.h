@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <unordered_map>
+
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "components/account_id/account_id.h"
 
@@ -33,11 +35,23 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
     return fetch_daily_refresh_wallpaper_param_;
   }
   AccountId get_save_wallpaper_to_drive_fs_account_id() const {
-    return save_wallpaper_to_drive_fs_account_id;
+    return save_wallpaper_to_drive_fs_account_id_;
+  }
+  AccountId get_wallpaper_path_from_drive_fs_account_id() const {
+    return get_wallpaper_path_from_drive_fs_account_id_;
   }
 
   void set_fetch_daily_refresh_info_fails(bool fails) {
     fetch_daily_refresh_info_fails_ = fails;
+  }
+
+  void set_fake_files_id_for_account_id(const AccountId& account_id,
+                                        std::string fake_files_id) {
+    fake_files_ids_[account_id] = fake_files_id;
+  }
+
+  void set_wallpaper_sync_enabled(bool sync_enabled) {
+    wallpaper_sync_enabled_ = sync_enabled;
   }
 
   void ResetCounts();
@@ -47,12 +61,18 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   void MaybeClosePreviewWallpaper() override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper) override;
-  void MigrateCollectionIdFromChromeApp() override;
+  void MigrateCollectionIdFromChromeApp(const AccountId& account_id) override;
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;
   bool SaveWallpaperToDriveFs(const AccountId& account_id,
                               const base::FilePath& origin) override;
+  base::FilePath GetWallpaperPathFromDriveFs(
+      const AccountId& account_id) override;
+  void GetFilesId(const AccountId& account_id,
+                  base::OnceCallback<void(const std::string&)>
+                      files_id_callback) const override;
+  bool IsWallpaperSyncEnabled(const AccountId& account_id) const override;
 
  private:
   size_t open_count_ = 0;
@@ -61,7 +81,10 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   size_t migrate_collection_id_from_chrome_app_count_ = 0;
   std::string fetch_daily_refresh_wallpaper_param_;
   bool fetch_daily_refresh_info_fails_ = false;
-  AccountId save_wallpaper_to_drive_fs_account_id;
+  AccountId get_wallpaper_path_from_drive_fs_account_id_;
+  AccountId save_wallpaper_to_drive_fs_account_id_;
+  std::unordered_map<AccountId, std::string> fake_files_ids_;
+  bool wallpaper_sync_enabled_ = true;
 };
 
 }  // namespace ash

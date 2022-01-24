@@ -20,7 +20,8 @@ namespace {
 
 const int kLastTitleSource = static_cast<int>(TileTitleSource::LAST);
 
-// Identifiers for the various tile sources.
+// Identifiers for the various tile sources. Should sync with
+// NewTabPageProviders in histogram_suffixes_list.xml.
 const char kHistogramClientName[] = "client";
 const char kHistogramPopularName[] = "popular_fetched";
 const char kHistogramBakedInName[] = "popular_baked_in";

@@ -35,6 +35,9 @@ class VariationsCrashKeysTest : public ::testing::Test {
     crash_reporter::InitializeCrashKeysForTesting();
   }
 
+  VariationsCrashKeysTest(const VariationsCrashKeysTest&) = delete;
+  VariationsCrashKeysTest& operator=(const VariationsCrashKeysTest&) = delete;
+
   ~VariationsCrashKeysTest() override {
     SyntheticTrialsActiveGroupIdProvider::GetInstance()->ResetForTesting();
     ClearCrashKeysInstanceForTesting();
@@ -43,8 +46,6 @@ class VariationsCrashKeysTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsCrashKeysTest);
 };
 
 }  // namespace

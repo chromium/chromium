@@ -8,8 +8,7 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 
 namespace media {
@@ -17,6 +16,10 @@ namespace media {
 class FakeSingleThreadTaskRunner final : public base::SingleThreadTaskRunner {
  public:
   explicit FakeSingleThreadTaskRunner(base::SimpleTestTickClock* clock);
+
+  FakeSingleThreadTaskRunner(const FakeSingleThreadTaskRunner&) = delete;
+  FakeSingleThreadTaskRunner& operator=(const FakeSingleThreadTaskRunner&) =
+      delete;
 
   void RunTasks();
 
@@ -52,8 +55,6 @@ class FakeSingleThreadTaskRunner final : public base::SingleThreadTaskRunner {
   std::map<TaskKey, base::OnceClosure> tasks_;
 
   bool fail_on_next_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSingleThreadTaskRunner);
 };
 
 }  // namespace media

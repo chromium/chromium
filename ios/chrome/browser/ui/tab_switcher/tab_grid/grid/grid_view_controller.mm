@@ -7,13 +7,17 @@
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/ios/block_types.h"
+#import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
+#import "ios/chrome/browser/commerce/price_alert_util.h"
 #include "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
+#import "ios/chrome/browser/ui/commerce/price_card/price_card_data_source.h"
+#import "ios/chrome/browser/ui/commerce/price_card/price_card_item.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
@@ -57,6 +61,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 }  // namespace
+
+@interface BidirectionalCollectionViewTransitionLayout
+    : UICollectionViewTransitionLayout
+@end
+
+@implementation BidirectionalCollectionViewTransitionLayout
+- (BOOL)flipsHorizontallyInOppositeLayoutDirection {
+  return UseRTLLayout() ? YES : NO;
+}
+@end
 
 @interface GridViewController () <GridCellDelegate,
                                   UICollectionViewDataSource,
@@ -175,10 +189,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   collectionView.dropDelegate = self;
   collectionView.dragInteractionEnabled = YES;
 
-  if (@available(iOS 13.4, *)) {
-      self.pointerInteractionCells =
-          [NSHashTable<UICollectionViewCell*> weakObjectsHashTable];
-  }
+  self.pointerInteractionCells =
+      [NSHashTable<UICollectionViewCell*> weakObjectsHashTable];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -238,13 +250,43 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)setMode:(TabGridMode)mode {
+  if (_mode == mode) {
+    return;
+  }
+
   _mode = mode;
+
+  // Reloading specific sections in a |performBatchUpdates| fades the changes in
+  // rather than reloads the collection view with a harsh flash.
+  __weak GridViewController* weakSelf = self;
+  [self.collectionView
+      performBatchUpdates:^{
+        GridViewController* strongSelf = weakSelf;
+        if (!strongSelf || !strongSelf.collectionView) {
+          return;
+        }
+
+        NSRange allSectionsRange = NSMakeRange(
+            /*location=*/0, strongSelf.collectionView.numberOfSections);
+        NSIndexSet* allSectionsIndexSet =
+            [NSIndexSet indexSetWithIndexesInRange:allSectionsRange];
+        [strongSelf.collectionView reloadSections:allSectionsIndexSet];
+      }
+               completion:nil];
+
   // Clear items when exiting selection mode.
   if (mode == TabGridModeNormal) {
     [self.selectedEditingItemIDs removeAllObjects];
     [self.selectedSharableEditingItemIDs removeAllObjects];
+    // After transition from the selection mode to the normal mode, the
+    // selection border doesn't show around the selection item. The collection
+    // view needs to be updated with the selected item again for it to appear
+    // correctly.
+    [self.collectionView
+        selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
+                     animated:NO
+               scrollPosition:UICollectionViewScrollPositionNone];
   }
-  [self.collectionView reloadData];
 }
 
 - (BOOL)isSelectedCellVisible {
@@ -377,14 +419,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // rows during transitions between grid and horizontal layouts.
   cell.layer.zPosition = self.items.count - itemIndex;
 
-  if (@available(iOS 13.4, *)) {
-      if (![self.pointerInteractionCells containsObject:cell]) {
-        [cell addInteraction:[[UIPointerInteraction alloc]
-                                 initWithDelegate:self]];
-        // |self.pointerInteractionCells| is only expected to get as large as
-        // the number of reusable cells in memory.
-        [self.pointerInteractionCells addObject:cell];
-      }
+  if (![self.pointerInteractionCells containsObject:cell]) {
+    [cell addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+    // |self.pointerInteractionCells| is only expected to get as large as
+    // the number of reusable cells in memory.
+    [self.pointerInteractionCells addObject:cell];
   }
   return cell;
 }
@@ -424,12 +463,26 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
                                          point:(CGPoint)point {
   // Context menu shouldn't appear in the selection mode.
-  if (!IsTabGridContextMenuEnabled() || _mode == TabGridModeSelection) {
+  if (_mode == TabGridModeSelection) {
     return nil;
   }
+  // No context menu on plus sign cell.
+  if ([self isIndexPathForPlusSignCell:indexPath]) {
+    return nil;
+  }
+
   GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
   return [self.menuProvider contextMenuConfigurationForGridCell:cell];
+}
+
+- (UICollectionViewTransitionLayout*)
+                  collectionView:(UICollectionView*)collectionView
+    transitionLayoutForOldLayout:(UICollectionViewLayout*)fromLayout
+                       newLayout:(UICollectionViewLayout*)toLayout {
+  return [[BidirectionalCollectionViewTransitionLayout alloc]
+      initWithCurrentLayout:fromLayout
+                 nextLayout:toLayout];
 }
 
 #pragma mark - UIPointerInteractionDelegate
@@ -451,6 +504,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 #pragma mark - UICollectionViewDragDelegate
+
+- (void)collectionView:(UICollectionView*)collectionView
+    dragSessionWillBegin:(id<UIDragSession>)session {
+  [self.delegate gridViewControllerDragSessionWillBegin:self];
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+     dragSessionDidEnd:(id<UIDragSession>)session {
+  [self.delegate gridViewControllerDragSessionDidEnd:self];
+}
 
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
            itemsForBeginningDragSession:(id<UIDragSession>)session
@@ -887,23 +950,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (CGFloat)offsetPastEndOfScrollView {
   CGFloat offset;
-  if (self.currentLayout == self.horizontalLayout) {
-    if (UseRTLLayout()) {
-      offset = -self.collectionView.contentOffset.x;
-    } else {
-      // Use collectionViewLayout.collectionViwContentSize because it has the
-      // correct size during a batch update.
-      offset = self.collectionView.contentOffset.x +
-               self.collectionView.frame.size.width -
-               self.collectionView.collectionViewLayout
-                   .collectionViewContentSize.width;
-    }
+  if (UseRTLLayout()) {
+    offset = -self.collectionView.contentOffset.x;
   } else {
-    DCHECK_EQ(self.gridLayout, self.currentLayout);
     // Use collectionViewLayout.collectionViwContentSize because it has the
     // correct size during a batch update.
-    offset = self.collectionView.contentOffset.y +
-             self.collectionView.frame.size.height -
+    offset = self.collectionView.contentOffset.x +
+             self.collectionView.frame.size.width -
              self.collectionView.collectionViewLayout.collectionViewContentSize
                  .width;
   }
@@ -915,13 +968,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     return;
   _fractionVisibleOfLastItem = fractionVisibleOfLastItem;
 
-  if (self.currentLayout == self.horizontalLayout) {
-    [self.delegate didChangeLastItemVisibilityInGridViewController:self];
-  } else {
-    DCHECK_EQ(self.gridLayout, self.currentLayout);
-    // No-op because behaviour of the tab grid's bottom toolbar when the plus
-    // sign cell is visible hasn't been decided yet. TODO(crbug.com/1146130)
-  }
+  // TODO(crbug.com/1146130): Behaviour of the tab grid's bottom toolbar when
+  // the plus sign cell is visible hasn't been decided yet.
+  [self.delegate didChangeLastItemVisibilityInGridViewController:self];
 }
 
 - (void)setCurrentLayout:(FlowLayout*)currentLayout {
@@ -1029,6 +1078,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                      if (cell.itemIdentifier == itemIdentifier)
                                        cell.snapshot = snapshot;
                                    }];
+  if (IsPriceAlertsEnabled()) {
+    [self.priceCardDataSource
+        priceCardForIdentifier:itemIdentifier
+                    completion:^(PriceCardItem* priceCardItem) {
+                      if (priceCardItem &&
+                          cell.itemIdentifier == itemIdentifier)
+                        [cell setPriceDrop:priceCardItem.price
+                             previousPrice:priceCardItem.previousPrice];
+                    }];
+  }
 }
 
 // Tells the delegate that the user tapped the item with identifier
@@ -1061,7 +1120,18 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     } else {
       [self selectItemWithIDForEditing:itemID];
     }
-    [self.collectionView reloadItemsAtIndexPaths:@[ indexPath ]];
+    // Dragging multiple tabs to reorder them is not supported. So there is no
+    // need to enable dragging when multiple items are selected in devices that
+    // don't support multiple windows.
+    if (self.selectedItemIDsForEditing.count > 1 &&
+        !base::ios::IsMultipleScenesSupported()) {
+      self.collectionView.dragInteractionEnabled = NO;
+    } else {
+      self.collectionView.dragInteractionEnabled = YES;
+    }
+    [UIView performWithoutAnimation:^{
+      [self.collectionView reloadItemsAtIndexPaths:@[ indexPath ]];
+    }];
   }
 
   [self.delegate gridViewController:self didSelectItemWithID:itemID];

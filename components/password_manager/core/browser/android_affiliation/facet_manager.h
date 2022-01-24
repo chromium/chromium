@@ -8,11 +8,10 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 
 namespace base {
 class Clock;
@@ -29,20 +28,24 @@ class FacetManagerHost;
 // interface to provide shared functionality needed by all FacetManagers.
 class FacetManager {
  public:
-  using StrategyOnCacheMiss = AndroidAffiliationService::StrategyOnCacheMiss;
+  using StrategyOnCacheMiss = AffiliationService::StrategyOnCacheMiss;
 
   // Both the |backend| and |clock| must outlive this object.
   FacetManager(const FacetURI& facet_uri,
                FacetManagerHost* backend,
                base::Clock* clock);
+
+  FacetManager(const FacetManager&) = delete;
+  FacetManager& operator=(const FacetManager&) = delete;
+
   ~FacetManager();
 
-  // Facet-specific implementations for methods in AndroidAffiliationService of
+  // Facet-specific implementations for methods in AffiliationService of
   // the same name. See documentation in android_affiliation_service.h for
   // details:
   void GetAffiliationsAndBranding(
       StrategyOnCacheMiss cache_miss_strategy,
-      AndroidAffiliationService::ResultCallback callback,
+      AffiliationService::ResultCallback callback,
       const scoped_refptr<base::TaskRunner>& callback_task_runner);
   void Prefetch(const base::Time& keep_fresh_until);
   void CancelPrefetch(const base::Time& keep_fresh_until);
@@ -130,8 +133,6 @@ class FacetManager {
   // of individual prefetches can be supported even if there are two requests
   // with the same |keep_fresh_until| threshold.
   std::multiset<base::Time> keep_fresh_until_thresholds_;
-
-  DISALLOW_COPY_AND_ASSIGN(FacetManager);
 };
 
 }  // namespace password_manager

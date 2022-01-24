@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/local_discovery/service_discovery_client_impl.h"
@@ -153,7 +153,7 @@ TEST_F(LocalDomainResolverTest, ResolveDomainAnyOneAvailable) {
 
   EXPECT_CALL(*this, AddressCallbackInternal(true, "", "a::1:2:3:4"));
 
-  RunFor(base::TimeDelta::FromMilliseconds(150));
+  RunFor(base::Milliseconds(150));
 }
 
 
@@ -188,7 +188,7 @@ TEST_F(LocalDomainResolverTest, ResolveDomainNone) {
 
   EXPECT_CALL(*this, AddressCallbackInternal(false, "", ""));
 
-  RunFor(base::TimeDelta::FromSeconds(4));
+  RunFor(base::Seconds(4));
 }
 
 }  // namespace

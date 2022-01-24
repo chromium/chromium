@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node_blame_context.h"
@@ -22,9 +21,9 @@
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
@@ -86,8 +85,11 @@ class CONTENT_EXPORT FrameTreeNode {
       bool is_created_by_script,
       const base::UnguessableToken& devtools_frame_token,
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
-      blink::mojom::FrameOwnerElementType owner_type,
+      blink::FrameOwnerElementType owner_type,
       const blink::FramePolicy& frame_owner);
+
+  FrameTreeNode(const FrameTreeNode&) = delete;
+  FrameTreeNode& operator=(const FrameTreeNode&) = delete;
 
   ~FrameTreeNode();
 
@@ -121,8 +123,6 @@ class CONTENT_EXPORT FrameTreeNode {
   }
 
   size_t child_count() const { return current_frame_host()->child_count(); }
-
-  unsigned int depth() const { return depth_; }
 
   RenderFrameHostImpl* parent() const { return parent_; }
 
@@ -165,30 +165,27 @@ class CONTENT_EXPORT FrameTreeNode {
     return current_frame_host()->GetLastCommittedURL();
   }
 
-  // Sets the last committed URL for this frame and updates
-  // has_committed_real_load accordingly.
+  // Sets the last committed URL for this frame.
   void SetCurrentURL(const GURL& url);
 
-  // Returns true if SetCurrentURL has been called with a non-blank URL.
-  // TODO(https://crbug.com/1215096): Migrate most usage of
-  // has_committed_real_load() to call
-  // is_on_initial_empty_document_or_subsequent_empty_documents() instead.
-  bool has_committed_real_load() const { return has_committed_real_load_; }
+  // The frame committed a document that is not the initial empty document.
+  // Update `has_committed_real_load_` and `is_on_initial_empty_document_`
+  // accordingly.
+  void DidCommitNonInitialEmptyDocument();
 
-  // Returns true if SetCurrentURL has been called with a non-blank URL or
-  // if the current document's input stream has been opened with
-  // document.open(). For more details, see the definition of
-  // `is_on_initial_empty_document_or_subsequent_empty_documents_`.
-  bool is_on_initial_empty_document_or_subsequent_empty_documents() const {
-    return is_on_initial_empty_document_or_subsequent_empty_documents_;
+  // Returns true if the frame has committed a document that is not the initial
+  // empty document, or if the current document's input stream has been opened
+  // with document.open(), causing the document to lose its "initial empty
+  // document" status. For more details, see the definition of
+  // `is_on_initial_empty_document_`.
+  bool is_on_initial_empty_document() const {
+    return is_on_initial_empty_document_;
   }
 
-  // Sets `is_on_initial_empty_document_or_subsequent_empty_documents_` to
+  // Sets `is_on_initial_empty_document_` to
   // false. Must only be called after the current document's input stream has
   // been opened with document.open().
-  void DidOpenDocumentInputStream() {
-    is_on_initial_empty_document_or_subsequent_empty_documents_ = false;
-  }
+  void DidOpenDocumentInputStream() { is_on_initial_empty_document_ = false; }
 
   // Returns whether the frame's owner element in the parent document is
   // collapsed, that is, removed from the layout as if it did not exist, as per
@@ -302,14 +299,6 @@ class CONTENT_EXPORT FrameTreeNode {
   RenderFrameHostImpl* current_frame_host() const {
     return render_manager_.current_frame_host();
   }
-
-  // Return the node immediately preceding this node in its parent's children,
-  // or nullptr if there is no such node.
-  FrameTreeNode* PreviousSibling() const;
-
-  // Return the node immediately following this node in its parent's children,
-  // or nullptr if there is no such node.
-  FrameTreeNode* NextSibling() const;
 
   // Returns true if this node is in a loading state.
   bool IsLoading() const;
@@ -444,7 +433,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // will never be reused - this saves memory.
   void PruneChildFrameNavigationEntries(NavigationEntryImpl* entry);
 
-  blink::mojom::FrameOwnerElementType frame_owner_element_type() const {
+  blink::FrameOwnerElementType frame_owner_element_type() const {
     return frame_owner_element_type_;
   }
 
@@ -481,24 +470,55 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
+  void WriteIntoTrace(
+      perfetto::TracedProto<perfetto::protos::pbzero::FrameTreeNodeInfo> proto);
 
   // Returns true the node is navigating, i.e. it has an associated
   // NavigationRequest.
   bool HasNavigation();
 
   // Fenced frames (meta-bug crbug.com/1111084):
+  // Note that these two functions cannot be invoked from a FrameTree's or
+  // its root node's constructor since they require the frame tree and the
+  // root node to be completely constructed.
+  //
   // Returns false if fenced frames are disabled. Returns true if the feature is
   // enabled and if |this| is a fenced frame. Returns false for
   // iframes embedded in a fenced frame. To clarify: for the MPArch
   // implementation this only returns true if |this| is the actual
   // root node of the inner FrameTree and not the proxy FrameTreeNode in the
   // outer FrameTree.
-  bool IsFencedFrame() const;
+  bool IsFencedFrameRoot() const;
 
   // Returns false if fenced frames are disabled. Returns true if the
   // feature is enabled and if |this| or any of its ancestor nodes is a
   // fenced frame.
   bool IsInFencedFrameTree() const;
+
+  // Returns a valid nonce if `IsInFencedFrameTree()` returns true for `this`.
+  // Returns nullopt otherwise. See comments on `fenced_frame_nonce_` for more
+  // details.
+  absl::optional<base::UnguessableToken> fenced_frame_nonce() {
+    return fenced_frame_nonce_;
+  }
+
+  // If applicable, set the fenced frame nonce. See comment on
+  // fenced_frame_nonce() for when it is set to a non-null value. Invoked
+  // by FrameTree::Init() or FrameTree::AddFrame().
+  void SetFencedFrameNonceIfNeeded();
+
+  // Sets the unique_name and name fields on replication_state_. To be used in
+  // prerender activation to make sure the FrameTreeNode replication state is
+  // correct after the RenderFrameHost is moved between FrameTreeNodes. The
+  // renderers should already have the correct value, so unlike
+  // FrameTreeNode::SetFrameName, we do not notify them here.
+  // TODO(https://crbug.com/1237091): Remove this once the Browsing Instance
+  // Frame State is implemented.
+  void set_frame_name_for_activation(const std::string& unique_name,
+                                     const std::string& name) {
+    replication_state_->unique_name = unique_name;
+    replication_state_->name = name;
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
@@ -507,8 +527,6 @@ class CONTENT_EXPORT FrameTreeNode {
                            ContainerPolicySandboxDynamic);
 
   class OpenerDestroyedObserver;
-
-  FrameTreeNode* GetSibling(int relative_offset) const;
 
   // The |notification_type| parameter is used for histograms only.
   bool NotifyUserActivation(
@@ -538,9 +556,6 @@ class CONTENT_EXPORT FrameTreeNode {
   // The RenderFrameHost owning this FrameTreeNode, which cannot change for the
   // life of this FrameTreeNode. |nullptr| if this node is the root.
   RenderFrameHostImpl* const parent_;
-
-  // Number of edges from this node to the root. 0 if this is the root.
-  const unsigned int depth_;
 
   // The frame that opened this frame, if any.  Will be set to null if the
   // opener is closed, or if this frame disowns its opener by setting its
@@ -574,35 +589,32 @@ class CONTENT_EXPORT FrameTreeNode {
   // Please refer to {Get,Set}PopupCreatorOrigin() documentation.
   url::Origin popup_creator_origin_;
 
-  // Returns true iff SetCurrentURL has been called with a non-blank URL.
-  // TODO(https://crbug.com/1215096): Migrate all current usage of this to
-  // use `is_on_initial_empty_document_or_subsequent_empty_documents_` instead.
-  bool has_committed_real_load_ = false;
-
-  // Whether this frame is still on the initial about:blank document or any
-  // subsequent about:blank documents committed after the initial about:blank
-  // document. This will be false if either of these has happened:
-  // - SetCurrentUrl() has been called with a non about:blank URL.
-  // - The document's input stream has been opened with document.open().
-  // See:
-  // https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#opening-the-input-stream:is-initial-about:blank
-  // TODO(https://crbug.com/1215096): Make this false after non-initial
-  // about:blank commits as well, making this only track whether the current
-  // document is the initial empty document or not. Currently we are still
-  // preserving most of the old behavior of `has_committed_real_load_` (except
-  // for the document.open() bit here) due to our current handling of initial
-  // empty document for session history and navigation (where we treat the
-  // the initial about:blank document and subsequent about:blank documents the
-  // same way).
-  bool is_on_initial_empty_document_or_subsequent_empty_documents_ = true;
+  // Whether this frame is still on the initial about:blank document or the
+  // synchronously committed about:blank document committed at frame creation,
+  // and its "initial empty document"-ness is still true.
+  // This will be false if either of these has happened:
+  // - SetCurrentUrl() was called after committing a document that is not the
+  //   initial about:blank document or the synchronously committed about:blank
+  //   document, per
+  //   https://html.spec.whatwg.org/multipage/browsers.html#creating-browsing-contexts:is-initial-about:blank
+  // - The document's input stream has been opened with document.open(), per
+  //   https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#opening-the-input-stream:is-initial-about:blank
+  // NOTE: we treat both the "initial about:blank document" and the
+  // "synchronously committed about:blank document" as the initial empty
+  // document. In the future, we plan to remove the synchronous about:blank
+  // commit so that this state will only be true if the frame is on the
+  // "initial about:blank document". See also:
+  // - https://github.com/whatwg/html/issues/6863
+  // - https://crbug.com/1215096
+  bool is_on_initial_empty_document_ = true;
 
   // Whether the frame's owner element in the parent document is collapsed.
   bool is_collapsed_ = false;
 
   // The type of frame owner for this frame. This is only relevant for non-main
   // frames.
-  const blink::mojom::FrameOwnerElementType frame_owner_element_type_ =
-      blink::mojom::FrameOwnerElementType::kNone;
+  const blink::FrameOwnerElementType frame_owner_element_type_ =
+      blink::FrameOwnerElementType::kNone;
 
   // The tree scope type of frame owner element, i.e. whether the element is in
   // the document tree (https://dom.spec.whatwg.org/#document-trees) or the
@@ -672,6 +684,22 @@ class CONTENT_EXPORT FrameTreeNode {
   // to the core logic of FrameTreeNode.
   FrameTreeNodeBlameContext blame_context_;
 
+  // Fenced Frames:
+  // Nonce used in the net::IsolationInfo and blink::StorageKey for a fenced
+  // frame and any iframes nested within it. Not set if this frame is not in a
+  // fenced frame's FrameTree. Note that this could be a field in FrameTree for
+  // the MPArch version but for the shadow DOM version we need to keep it here
+  // since the fenced frame root is not a main frame for the latter. The value
+  // of the nonce will be the same for all of the the frames inside a fenced
+  // frame tree. If there is a nested fenced frame it will have a different
+  // nonce than its parent fenced frame. The nonce will stay the same across
+  // navigations because it is always used in conjunction with other fields of
+  // the keys. If the navigation is same-origin/site then the same network stack
+  // partition/storage will be reused and if it's cross-origin/site then other
+  // parts of the key will change and so, even with the same nonce, another
+  // partition will be used.
+  absl::optional<base::UnguessableToken> fenced_frame_nonce_;
+
   // Manages creation and swapping of RenderFrameHosts for this frame.
   //
   // This field needs to be declared last, because destruction of
@@ -683,8 +711,6 @@ class CONTENT_EXPORT FrameTreeNode {
   // before the RenderFrameHostManager's destructor runs.  See also
   // https://crbug.com/1157988.
   RenderFrameHostManager render_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTreeNode);
 };
 
 }  // namespace content

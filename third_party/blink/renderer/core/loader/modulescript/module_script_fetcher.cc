@@ -109,7 +109,7 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
   error_messages->push_back(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kJavaScript,
       mojom::ConsoleMessageLevel::kError, message,
-      response.CurrentRequestUrl().GetString(), /*loader=*/nullptr,
+      response.ResponseUrl().GetString(), /*loader=*/nullptr,
       resource->InspectorId()));
   return false;
 }

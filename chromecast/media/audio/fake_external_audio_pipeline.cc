@@ -24,6 +24,10 @@ namespace {
 class TestMediaVolumeMute {
  public:
   TestMediaVolumeMute() = default;
+
+  TestMediaVolumeMute(const TestMediaVolumeMute&) = delete;
+  TestMediaVolumeMute& operator=(const TestMediaVolumeMute&) = delete;
+
   // Called by library.
   void AddExternalMediaVolumeChangeRequestObserver(
       ExternalAudioPipelineShlib::ExternalMediaVolumeChangeRequestObserver*
@@ -45,9 +49,6 @@ class TestMediaVolumeMute {
       volume_change_request_observer_ = nullptr;
   float volume_ = 0;
   bool muted_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMediaVolumeMute);
 };
 
 // Library implementation for loopback data testing part. It stores
@@ -55,6 +56,10 @@ class TestMediaVolumeMute {
 class TestLoopBack {
  public:
   TestLoopBack() = default;
+
+  TestLoopBack(const TestLoopBack&) = delete;
+  TestLoopBack& operator=(const TestLoopBack&) = delete;
+
   // Called from FakeMixerOutputStream.
   void OnData(const float* data,
               int data_size,
@@ -88,14 +93,14 @@ class TestLoopBack {
  protected:
   // Used by derived class for FakeExternalAudioPipelineSupport.
   std::vector<ExternalAudioPipelineShlib::LoopbackAudioObserver*> observers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLoopBack);
 };
 
 class TestMediaMetadata {
  public:
   TestMediaMetadata() = default;
+
+  TestMediaMetadata(const TestMediaMetadata&) = delete;
+  TestMediaMetadata& operator=(const TestMediaMetadata&) = delete;
 
   // Called from library.
   void AddExternalMediaMetadataChangeObserver(
@@ -111,7 +116,6 @@ class TestMediaMetadata {
  protected:
   ExternalAudioPipelineShlib::ExternalMediaMetadataChangeObserver*
       media_metadata_change_observer_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(TestMediaMetadata);
 };
 
 // Final class includes library implementation for testing media volume/mute
@@ -122,6 +126,9 @@ class TestMedia : public TestMediaVolumeMute,
                   public testing::FakeExternalAudioPipelineSupport {
  public:
   TestMedia() = default;
+
+  TestMedia(const TestMedia&) = delete;
+  TestMedia& operator=(const TestMedia&) = delete;
 
   bool supported() const { return supported_; }
 
@@ -158,8 +165,6 @@ class TestMedia : public TestMediaVolumeMute,
 
  private:
   bool supported_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMedia);
 };
 
 TestMedia* GetTestMedia() {
@@ -172,6 +177,9 @@ TestMedia* GetTestMedia() {
 class FakeMixerOutputStream : public MixerOutputStream {
  public:
   FakeMixerOutputStream() : test_loop_back_(GetTestMedia()) {}
+
+  FakeMixerOutputStream(const FakeMixerOutputStream&) = delete;
+  FakeMixerOutputStream& operator=(const FakeMixerOutputStream&) = delete;
 
   // MixerOutputStream implementation:
   bool Start(int requested_sample_rate, int channels) override {
@@ -206,8 +214,6 @@ class FakeMixerOutputStream : public MixerOutputStream {
   int sample_rate_ = 0;
   int channels_ = 0;
   TestLoopBack* const test_loop_back_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMixerOutputStream);
 };
 
 }  // namespace

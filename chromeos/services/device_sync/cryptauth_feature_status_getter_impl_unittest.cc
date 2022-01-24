@@ -10,7 +10,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/components/multidevice/software_feature.h"
@@ -107,6 +106,12 @@ cryptauthv2::DeviceFeatureStatus ConvertDeviceToDeviceFeatureStatus(
 class DeviceSyncCryptAuthFeatureStatusGetterImplTest
     : public testing::Test,
       public MockCryptAuthClientFactory::Observer {
+ public:
+  DeviceSyncCryptAuthFeatureStatusGetterImplTest(
+      const DeviceSyncCryptAuthFeatureStatusGetterImplTest&) = delete;
+  DeviceSyncCryptAuthFeatureStatusGetterImplTest& operator=(
+      const DeviceSyncCryptAuthFeatureStatusGetterImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthFeatureStatusGetterImplTest()
       : client_factory_(std::make_unique<MockCryptAuthClientFactory>(
@@ -253,8 +258,6 @@ class DeviceSyncCryptAuthFeatureStatusGetterImplTest
   base::MockOneShotTimer* timer_;
 
   std::unique_ptr<CryptAuthFeatureStatusGetter> feature_status_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthFeatureStatusGetterImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthFeatureStatusGetterImplTest, Success) {

@@ -11,7 +11,7 @@ import androidx.lifecycle.Observer;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordScriptsFetcherBridge;
-import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;

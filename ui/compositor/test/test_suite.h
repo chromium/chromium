@@ -18,6 +18,10 @@ namespace test {
 class CompositorTestSuite : public base::TestSuite {
  public:
   CompositorTestSuite(int argc, char** argv);
+
+  CompositorTestSuite(const CompositorTestSuite&) = delete;
+  CompositorTestSuite& operator=(const CompositorTestSuite&) = delete;
+
   ~CompositorTestSuite() override;
 
  protected:
@@ -28,8 +32,6 @@ class CompositorTestSuite : public base::TestSuite {
 #if defined(OS_WIN)
   base::win::ScopedCOMInitializer com_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorTestSuite);
 };
 
 }  // namespace test

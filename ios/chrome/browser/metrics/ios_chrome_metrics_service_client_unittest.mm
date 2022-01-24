@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/files/file_path.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
@@ -40,35 +41,26 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
         browser_state_(TestChromeBrowserState::Builder().Build()),
         enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {}
 
+  IOSChromeMetricsServiceClientTest(const IOSChromeMetricsServiceClientTest&) =
+      delete;
+  IOSChromeMetricsServiceClientTest& operator=(
+      const IOSChromeMetricsServiceClientTest&) = delete;
+
   void SetUp() override {
     PlatformTest::SetUp();
     metrics::MetricsService::RegisterPrefs(prefs_.registry());
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        &prefs_, &enabled_state_provider_, std::wstring(),
-        base::BindRepeating(
-            &IOSChromeMetricsServiceClientTest::FakeStoreClientInfoBackup,
-            base::Unretained(this)),
-        base::BindRepeating(
-            &IOSChromeMetricsServiceClientTest::LoadFakeClientInfoBackup,
-            base::Unretained(this)));
+        &prefs_, &enabled_state_provider_, std::wstring(), base::FilePath());
+    metrics_state_manager_->InstantiateFieldTrialList();
   }
 
  protected:
-  void FakeStoreClientInfoBackup(const metrics::ClientInfo& client_info) {}
-
-  std::unique_ptr<metrics::ClientInfo> LoadFakeClientInfoBackup() {
-    return std::make_unique<metrics::ClientInfo>();
-  }
-
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   metrics::TestEnabledStateProvider enabled_state_provider_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeMetricsServiceClientTest);
 };
 
 namespace {
@@ -100,7 +92,7 @@ TEST_F(IOSChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 
   // This is the number of metrics providers that are registered inside
   // IOSChromeMetricsServiceClient::Initialize().
-  expected_providers += 15;
+  expected_providers += 16;
 
   std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
       IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());
@@ -139,8 +131,7 @@ TEST_F(IOSChromeMetricsServiceClientTest,
   local_feature.InitAndDisableFeature(ukm::kUkmFeature);
 
   // Force metrics reporting using the commandline switch.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      metrics::switches::kForceEnableMetricsReporting);
+  metrics::ForceEnableMetricsReportingForTesting();
 
   std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
       IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());

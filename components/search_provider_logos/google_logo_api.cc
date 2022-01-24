@@ -240,8 +240,10 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
       if (logo->metadata.short_link.is_valid()) {
         share_button->GetInteger("offset_x", &logo->metadata.share_button_x);
         share_button->GetInteger("offset_y", &logo->metadata.share_button_y);
-        share_button->GetDouble("opacity",
-                                &logo->metadata.share_button_opacity);
+        if (absl::optional<double> opacity =
+                share_button->FindDoubleKey("opacity")) {
+          logo->metadata.share_button_opacity = *opacity;
+        }
         share_button->GetString("icon_image",
                                 &logo->metadata.share_button_icon);
         share_button->GetString("background_color",
@@ -255,8 +257,10 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
                                       &logo->metadata.dark_share_button_x);
         dark_share_button->GetInteger("offset_y",
                                       &logo->metadata.dark_share_button_y);
-        dark_share_button->GetDouble("opacity",
-                                     &logo->metadata.dark_share_button_opacity);
+        if (absl::optional<double> opacity =
+                dark_share_button->FindDoubleKey("opacity")) {
+          logo->metadata.dark_share_button_opacity = *opacity;
+        }
         dark_share_button->GetString("icon_image",
                                      &logo->metadata.dark_share_button_icon);
         dark_share_button->GetString("background_color",
@@ -328,12 +332,12 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
 
   base::TimeDelta time_to_live;
   // The JSON doesn't guarantee the number to fit into an int.
-  double ttl_ms = 0;  // Expires immediately if the parameter is missing.
-  if (ddljson->GetDouble("time_to_live_ms", &ttl_ms)) {
-    time_to_live = base::TimeDelta::FromMillisecondsD(ttl_ms);
+  if (absl::optional<double> ttl_ms =
+          ddljson->FindDoubleKey("time_to_live_ms")) {
+    time_to_live = base::Milliseconds(*ttl_ms);
     logo->metadata.can_show_after_expiration = false;
   } else {
-    time_to_live = base::TimeDelta::FromMilliseconds(kMaxTimeToLiveMS);
+    time_to_live = base::Milliseconds(kMaxTimeToLiveMS);
     logo->metadata.can_show_after_expiration = true;
   }
   logo->metadata.expiration_time = response_time + time_to_live;

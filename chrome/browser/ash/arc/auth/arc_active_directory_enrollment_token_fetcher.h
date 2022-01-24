@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/auth/arc_fetcher_base.h"
@@ -34,6 +33,12 @@ class ArcActiveDirectoryEnrollmentTokenFetcher
  public:
   explicit ArcActiveDirectoryEnrollmentTokenFetcher(
       ArcSupportHost* support_host);
+
+  ArcActiveDirectoryEnrollmentTokenFetcher(
+      const ArcActiveDirectoryEnrollmentTokenFetcher&) = delete;
+  ArcActiveDirectoryEnrollmentTokenFetcher& operator=(
+      const ArcActiveDirectoryEnrollmentTokenFetcher&) = delete;
+
   ~ArcActiveDirectoryEnrollmentTokenFetcher() override;
 
   enum class Status {
@@ -97,8 +102,6 @@ class ArcActiveDirectoryEnrollmentTokenFetcher
 
   base::WeakPtrFactory<ArcActiveDirectoryEnrollmentTokenFetcher>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcActiveDirectoryEnrollmentTokenFetcher);
 };
 
 }  // namespace arc

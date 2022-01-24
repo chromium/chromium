@@ -18,6 +18,12 @@ namespace multidevice_setup {
 
 class MultiDeviceSetupPrivilegedHostDeviceSetterImplTest
     : public testing::Test {
+ public:
+  MultiDeviceSetupPrivilegedHostDeviceSetterImplTest(
+      const MultiDeviceSetupPrivilegedHostDeviceSetterImplTest&) = delete;
+  MultiDeviceSetupPrivilegedHostDeviceSetterImplTest& operator=(
+      const MultiDeviceSetupPrivilegedHostDeviceSetterImplTest&) = delete;
+
  protected:
   MultiDeviceSetupPrivilegedHostDeviceSetterImplTest() = default;
   ~MultiDeviceSetupPrivilegedHostDeviceSetterImplTest() override = default;
@@ -59,8 +65,6 @@ class MultiDeviceSetupPrivilegedHostDeviceSetterImplTest
 
   std::unique_ptr<FakeMultiDeviceSetup> fake_multidevice_setup_;
   std::unique_ptr<PrivilegedHostDeviceSetterBase> host_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupPrivilegedHostDeviceSetterImplTest);
 };
 
 TEST_F(MultiDeviceSetupPrivilegedHostDeviceSetterImplTest, SetHostDevice) {

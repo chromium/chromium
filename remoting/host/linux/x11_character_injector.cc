@@ -11,8 +11,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kMappingExpireDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kMappingExpireDuration = base::Milliseconds(200);
 
 }  // namespace
 

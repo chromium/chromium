@@ -1,0 +1,16 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  disable_variants = true
+
+  sources = [ "shortcut_customization.mojom" ]
+
+  public_deps = [
+    "//ash/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
+}

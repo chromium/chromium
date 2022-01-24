@@ -128,6 +128,7 @@ class MockPeerConnectionHandler : public RTCPeerConnectionHandler {
             MakeGarbageCollected<MockPeerConnectionDependencyFactory>()) {}
   MOCK_METHOD0(CloseClientPeerConnection, void());
   MOCK_METHOD1(OnThermalStateChange, void(mojom::blink::DeviceThermalState));
+  MOCK_METHOD1(OnSpeedLimitChange, void(int));
 
  private:
   explicit MockPeerConnectionHandler(
@@ -224,6 +225,16 @@ TEST_F(PeerConnectionTrackerTest, OnThermalStateChange) {
               OnThermalStateChange(mojom::blink::DeviceThermalState::kCritical))
       .Times(1);
   tracker_->OnThermalStateChange(mojom::blink::DeviceThermalState::kCritical);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnSpeedLimitChange) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+
+  EXPECT_CALL(*mock_handler_, OnSpeedLimitChange(22));
+  tracker_->OnSpeedLimitChange(22);
+  EXPECT_CALL(*mock_handler_, OnSpeedLimitChange(33));
+  tracker_->OnSpeedLimitChange(33);
 }
 
 TEST_F(PeerConnectionTrackerTest, ReportInitialThermalState) {

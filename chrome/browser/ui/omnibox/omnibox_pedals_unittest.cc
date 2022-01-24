@@ -6,6 +6,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
@@ -24,9 +25,9 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
   MockAutocompleteProviderClient client;
   base::test::ScopedFeatureList feature_list;
   std::vector<base::Feature> features = {
-      omnibox::kOmniboxPedalsBatch2,
       omnibox::kOmniboxPedalsBatch2NonEnglish,
       omnibox::kOmniboxPedalsBatch3,
+      omnibox::kOmniboxPedalsBatch3NonEnglish,
   };
   if (with_translation_console) {
     // TODO(orinj): Consider loading sets of cover cases from translation
@@ -62,6 +63,22 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
           "علامة تبويب في وضع التصفّح المتخفي",
           "تغيير اللغة هذه الصفحة",
           "google chrome تثبيت",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
         }
       },
       { "bg",
@@ -122,6 +139,22 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
           "arbeiten inkognito fenster",
           "sprache ändern diese webseite",
           "google chrome aktualisieren",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
         }
       },
       { "el",
@@ -137,7 +170,7 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
       { "en",
         {
           "delete information",
-          "manager credentials",
+          "passwords",
           "change credit card information",
           "incognito window",
           "change language this page",
@@ -158,7 +191,16 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
           "new chrome features",
           "google account control",
           "google account password change",
-          "google chrome dinosaur",
+          "play chrome dino game",
+          "help me locate lost device",
+          "manage google privacy settings",
+          "control chrome browser settings",
+          "control chrome browser downloads",
+          "revisit google chrome browsing history",
+          "share link with qr code",
+          "google chrome font sizing",
+          "chrome backgrounds",
+          "custom search engines",
         }
       },
       { "en-GB",
@@ -185,6 +227,16 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
           "new chrome features",
           "google account control",
           "google account password change",
+          "play chrome dino game",
+          "help me locate lost device",
+          "manage google privacy settings",
+          "control chrome browser settings",
+          "control chrome browser downloads",
+          "revisit google chrome browsing history",
+          "share link with qr code",
+          "google chrome font sizing",
+          "chrome backgrounds",
+          "custom search engines",
         }
       },
       { "es",
@@ -205,6 +257,22 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
           "pestaña de incógnito",
           "cambiar idioma esta página",
           "google chrome actualización",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
         }
       },
       { "et",
@@ -255,6 +323,22 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
           "sélectionner navigation confidentielle",
           "sélectionner la langue cette page",
           "google chrome mettre à niveau dernière version",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
         }
       },
       { "gu",
@@ -335,6 +419,22 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
           "使い方プライベートブラウジング",
           "トランスレーションこのページ",
           "グーグルクロームアップグレード",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
         }
       },
       { "kn",
@@ -585,6 +685,22 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
           "启动无痕模式",
           "切换语言",
           "google chrome升级",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
         }
       },
       { "zh-TW",
@@ -595,6 +711,22 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
           "私密瀏覽模式",
           "變更語言 這個頁面",
           "google chrome 升級",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
+          "一時的踏板placeholder",
         }
       },
       // clang-format on
@@ -607,8 +739,11 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
 
     // Instantiating the provider loads concept data from shared ResourceBundle,
     // or from omnibox_pedal_synonyms.grd if using translation console.
-    OmniboxPedalProvider provider(client, true);
-    EXPECT_EQ(provider.FindPedalMatch(u""), nullptr);
+    // Note, pedals initialization must happen after features are enabled above,
+    // so that the full set of pedals will be created and loaded.
+    client.set_pedal_provider(std::make_unique<OmniboxPedalProvider>(
+        client, GetPedalImplementations(client.IsOffTheRecord(), true)));
+    EXPECT_EQ(client.GetPedalProvider()->FindPedalMatch(u""), nullptr);
 
     // Note, with translation console process, we don't have specific cover
     // cases to test, and there is no fallback to English. Skip the trigger
@@ -621,8 +756,10 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
       //  a soft failure so as to not block all other platforms. To ensure this
       //  is not going to cause failure in production, still test that English
       //  triggering functions. Data is there; it works; but warn about locale.
-      if (!provider.FindPedalMatch(base::UTF8ToUTF16(test_case.triggers[0]))) {
-        EXPECT_NE(provider.FindPedalMatch(u"clear history"), nullptr);
+      if (!client.GetPedalProvider()->FindPedalMatch(
+              base::UTF8ToUTF16(test_case.triggers[0]))) {
+        EXPECT_NE(client.GetPedalProvider()->FindPedalMatch(u"clear history"),
+                  nullptr);
         LOG(WARNING) << "ChromeOS using English for locale "
                      << test_case.locale;
         continue;
@@ -630,7 +767,9 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
 #endif
 
       for (const std::string& trigger : test_case.triggers) {
-        EXPECT_NE(provider.FindPedalMatch(base::UTF8ToUTF16(trigger)), nullptr)
+        EXPECT_NE(client.GetPedalProvider()->FindPedalMatch(
+                      base::UTF8ToUTF16(trigger)),
+                  nullptr)
             << "locale: " << test_case.locale << std::endl
             << "trigger: " << trigger;
       }

@@ -196,34 +196,34 @@ LocalFrameUkmAggregator::GetBeginMainFrameMetrics() {
   // metrics and would result in double counting.
   std::unique_ptr<cc::BeginMainFrameMetrics> metrics_data =
       std::make_unique<cc::BeginMainFrameMetrics>();
-  metrics_data->handle_input_events = base::TimeDelta::FromMicroseconds(
+  metrics_data->handle_input_events = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(
                                    MetricId::kHandleInputEvents)]
           .main_frame_count);
-  metrics_data->animate = base::TimeDelta::FromMicroseconds(
+  metrics_data->animate = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(MetricId::kAnimate)]
           .main_frame_count);
-  metrics_data->style_update = base::TimeDelta::FromMicroseconds(
+  metrics_data->style_update = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(MetricId::kStyle)]
           .main_frame_count);
-  metrics_data->layout_update = base::TimeDelta::FromMicroseconds(
+  metrics_data->layout_update = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(MetricId::kLayout)]
           .main_frame_count);
-  metrics_data->prepaint = base::TimeDelta::FromMicroseconds(
+  metrics_data->prepaint = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(MetricId::kPrePaint)]
           .main_frame_count);
-  metrics_data->compositing_assignments = base::TimeDelta::FromMicroseconds(
+  metrics_data->compositing_assignments = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(
                                    MetricId::kCompositingAssignments)]
           .main_frame_count);
-  metrics_data->compositing_inputs = base::TimeDelta::FromMicroseconds(
+  metrics_data->compositing_inputs = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(
                                    MetricId::kCompositingInputs)]
           .main_frame_count);
-  metrics_data->paint = base::TimeDelta::FromMicroseconds(
+  metrics_data->paint = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(MetricId::kPaint)]
           .main_frame_count);
-  metrics_data->composite_commit = base::TimeDelta::FromMicroseconds(
+  metrics_data->composite_commit = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(
                                    MetricId::kCompositingCommit)]
           .main_frame_count);

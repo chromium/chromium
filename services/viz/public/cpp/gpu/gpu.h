@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -36,6 +36,9 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
   static std::unique_ptr<Gpu> Create(
       mojo::PendingRemote<mojom::Gpu> remote,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  Gpu(const Gpu&) = delete;
+  Gpu& operator=(const Gpu&) = delete;
 
   ~Gpu() override;
 
@@ -86,8 +89,6 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
   scoped_refptr<EstablishRequest> pending_request_;
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
   std::vector<gpu::GpuChannelEstablishedCallback> establish_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(Gpu);
 };
 
 }  // namespace viz

@@ -152,6 +152,7 @@ TEST_F(SharedPasswordControllerTest,
 
   EXPECT_CALL(password_manager_, PropagateFieldDataManagerInfo);
   EXPECT_CALL(password_manager_, DidNavigateMainFrame(true));
+  OCMExpect([suggestion_helper_ resetForNewPage]);
   web_state_.OnNavigationFinished(&navigation_context);
 }
 
@@ -159,8 +160,6 @@ TEST_F(SharedPasswordControllerTest,
 TEST_F(SharedPasswordControllerTest, FormsArePropagatedOnHTMLPageLoad) {
   web_state_.SetCurrentURL(GURL("https://www.chromium.org/"));
   web_state_.SetContentIsHTML(true);
-
-  OCMExpect([suggestion_helper_ resetForNewPage]);
 
   auto web_frame = web::FakeWebFrame::Create("dummy-frame-id",
                                              /*is_main_frame=*/true, GURL());
@@ -192,8 +191,6 @@ TEST_F(SharedPasswordControllerTest, FormsArePropagatedOnHTMLPageLoad) {
 TEST_F(SharedPasswordControllerTest, NoFormsArePropagatedOnNonHTMLPageLoad) {
   web_state_.SetCurrentURL(GURL("https://www.chromium.org/"));
   web_state_.SetContentIsHTML(false);
-
-  OCMExpect([suggestion_helper_ resetForNewPage]);
 
   [[form_helper_ reject] findPasswordFormsWithCompletionHandler:[OCMArg any]];
   OCMExpect([suggestion_helper_ processWithNoSavedCredentials]);

@@ -135,7 +135,7 @@ void ThemeSource::StartDataRequest(
   // use 2x scale without 2x data packs, as well as omnibox requests for larger
   // (but still reasonable) scales (see below).
   const float max_scale = ui::GetScaleForResourceScaleFactor(
-      ui::ResourceBundle::GetSharedInstance().GetMaxScaleFactor());
+      ui::ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor());
   const float unreasonable_scale = max_scale * 32;
   // TODO(reveman): Add support frames beyond 0 (crbug.com/750064).
   if ((resource_id == -1) || (scale >= unreasonable_scale) || (frame > 0)) {

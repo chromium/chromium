@@ -44,10 +44,10 @@ base::Value GetFlocIdInformation(Profile* profile) {
 }  // namespace
 
 void PrivacySandboxHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getFlocId", base::BindRepeating(&PrivacySandboxHandler::HandleGetFlocId,
                                        base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "resetFlocId",
       base::BindRepeating(&PrivacySandboxHandler::HandleResetFlocId,
                           base::Unretained(this)));
@@ -56,11 +56,10 @@ void PrivacySandboxHandler::RegisterMessages() {
 void PrivacySandboxHandler::HandleGetFlocId(const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const base::Value& callback_id = args->GetList()[0];
 
-  ResolveJavascriptCallback(*callback_id,
+  ResolveJavascriptCallback(callback_id,
                             GetFlocIdInformation(Profile::FromWebUI(web_ui())));
 }
 
@@ -72,7 +71,7 @@ void PrivacySandboxHandler::HandleResetFlocId(const base::ListValue* args) {
       Profile::FromWebUI(web_ui()));
   DCHECK(privacy_sandbox_settings);
 
-  privacy_sandbox_settings->ResetFlocId();
+  privacy_sandbox_settings->ResetFlocId(/*user_initiated=*/true);
 
   // The identifier will have been immediately invalidated in response to
   // the clearing action, so synchronously retrieving the FLoC ID will retrieve

@@ -6,6 +6,7 @@
 #define MEDIA_BASE_SCOPEDFD_HELPER_H_
 
 #include "base/files/scoped_file.h"
+#include "build/build_config.h"
 #include "media/base/media_export.h"
 
 namespace media {

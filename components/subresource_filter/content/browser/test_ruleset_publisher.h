@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_TEST_RULESET_PUBLISHER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_TEST_RULESET_PUBLISHER_H_
 
-#include "base/macros.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 
 namespace subresource_filter {
@@ -19,6 +18,10 @@ namespace testing {
 class TestRulesetPublisher {
  public:
   explicit TestRulesetPublisher(RulesetService* ruleset_service);
+
+  TestRulesetPublisher(const TestRulesetPublisher&) = delete;
+  TestRulesetPublisher& operator=(const TestRulesetPublisher&) = delete;
+
   ~TestRulesetPublisher();
 
   // Indexes the |unindexed_ruleset| and publishes it to all renderers
@@ -27,8 +30,6 @@ class TestRulesetPublisher {
 
  private:
   RulesetService* ruleset_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRulesetPublisher);
 };
 
 }  // namespace testing

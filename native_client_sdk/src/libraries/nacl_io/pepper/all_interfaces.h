@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef LIBRARIES_NACL_IO_PEPPER_ALL_INTERFACES_H_
+#define LIBRARIES_NACL_IO_PEPPER_ALL_INTERFACES_H_
+
 /* Given an interface like this:
  *
  *   struct PPB_Frob_1_1 {
@@ -243,3 +246,5 @@ BEGIN_INTERFACE(UDPSocketInterface,
           PP_Resource,
           PP_CompletionCallback)
   END_INTERFACE(UDPSocketInterface, PPB_UDPSocket_1_2)
+
+#endif  // LIBRARIES_NACL_IO_PEPPER_ALL_INTERFACES_H_

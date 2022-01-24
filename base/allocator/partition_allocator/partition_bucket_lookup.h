@@ -185,6 +185,11 @@ class BucketIndexLookup final {
       }
       current_increment <<= 1;
     }
+
+    // The remaining buckets are invalid.
+    while (bucket_size < bucket_sizes_ + kNumBuckets) {
+      *(bucket_size++) = kInvalidBucketSize;
+    }
   }
 
   size_t bucket_sizes_[kNumBuckets]{};

@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"

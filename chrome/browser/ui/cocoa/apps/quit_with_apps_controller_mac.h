@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 class PrefRegistrySimple;
@@ -24,6 +23,9 @@ class QuitWithAppsController : public message_center::NotificationDelegate {
   static const char kQuitWithAppsNotificationID[];
 
   QuitWithAppsController();
+
+  QuitWithAppsController(const QuitWithAppsController&) = delete;
+  QuitWithAppsController& operator=(const QuitWithAppsController&) = delete;
 
   // NotificationDelegate interface.
   void Close(bool by_user) override;
@@ -49,8 +51,6 @@ class QuitWithAppsController : public message_center::NotificationDelegate {
 
   // Whether to suppress showing the notification for the rest of the session.
   bool suppress_for_session_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(QuitWithAppsController);
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_APPS_QUIT_WITH_APPS_CONTROLLER_MAC_H_

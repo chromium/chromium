@@ -10,14 +10,13 @@
 #include <map>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/shared_impl/host_resource.h"
 #include "ppapi/shared_impl/resource_tracker.h"
 #include "ppapi/shared_impl/var_tracker.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace ppapi {
 class ArrayBufferVar;
@@ -29,6 +28,10 @@ namespace content {
 class HostVarTracker : public ppapi::VarTracker {
  public:
   HostVarTracker();
+
+  HostVarTracker(const HostVarTracker&) = delete;
+  HostVarTracker& operator=(const HostVarTracker&) = delete;
+
   ~HostVarTracker() override;
 
   // Tracks all live V8ObjectVar. This is so we can map between instance +
@@ -102,8 +105,6 @@ class HostVarTracker : public ppapi::VarTracker {
   typedef std::map<int, SharedMemoryMapEntry> SharedMemoryMap;
   SharedMemoryMap shared_memory_map_;
   uint32_t last_shared_memory_map_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostVarTracker);
 };
 
 }  // namespace content

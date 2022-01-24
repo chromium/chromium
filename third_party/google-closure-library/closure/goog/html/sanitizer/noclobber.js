@@ -1,16 +1,8 @@
-// Copyright 2017 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Utility DOM functions resistant to DOM clobbering. Clobbering
@@ -106,7 +98,11 @@ var Methods = {
   SHEET_GETTER: getterOrNull('HTMLStyleElement', 'sheet'),
   GET_PROPERTY_VALUE:
       prototypeMethodOrNull('CSSStyleDeclaration', 'getPropertyValue'),
-  SET_PROPERTY: prototypeMethodOrNull('CSSStyleDeclaration', 'setProperty')
+  SET_PROPERTY: prototypeMethodOrNull('CSSStyleDeclaration', 'setProperty'),
+  NAMESPACE_URI_GETTER: getterOrNull('Element', 'namespaceURI') ||
+      // Edge and IE10 define this Element property on Node instead of
+      // Element.
+      getterOrNull('Node', 'namespaceURI'),
 };
 
 /**
@@ -441,6 +437,20 @@ function setCssProperty(cssStyle, propName, sanitizedValue) {
       [propName, sanitizedValue]);
 }
 
+/**
+ * Returns an element's namespace URI without falling prey to things like
+ * <form><input name="namespaceURI"></form>.
+ * @param {!Element} element
+ * @return {string}
+ */
+function getElementNamespaceURI(element) {
+  return genericPropertyGet(
+      Methods.NAMESPACE_URI_GETTER, element, 'namespaceURI',
+      function(namespaceURI) {
+        return typeof namespaceURI == 'string';
+      });
+}
+
 exports = {
   getElementAttributes: getElementAttributes,
   hasElementAttribute: hasElementAttribute,
@@ -461,6 +471,7 @@ exports = {
   appendNodeChild: appendNodeChild,
   getCssPropertyValue: getCssPropertyValue,
   setCssProperty: setCssProperty,
+  getElementNamespaceURI: getElementNamespaceURI,
   /** @package */
   Methods: Methods,
 };

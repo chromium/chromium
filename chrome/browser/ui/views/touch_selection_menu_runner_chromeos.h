@@ -24,6 +24,12 @@ class TouchSelectionMenuRunnerChromeOS
     : public views::TouchSelectionMenuRunnerViews {
  public:
   TouchSelectionMenuRunnerChromeOS();
+
+  TouchSelectionMenuRunnerChromeOS(const TouchSelectionMenuRunnerChromeOS&) =
+      delete;
+  TouchSelectionMenuRunnerChromeOS& operator=(
+      const TouchSelectionMenuRunnerChromeOS&) = delete;
+
   ~TouchSelectionMenuRunnerChromeOS() override;
 
  private:
@@ -50,8 +56,6 @@ class TouchSelectionMenuRunnerChromeOS
 
   base::WeakPtrFactory<TouchSelectionMenuRunnerChromeOS> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuRunnerChromeOS);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOUCH_SELECTION_MENU_RUNNER_CHROMEOS_H_

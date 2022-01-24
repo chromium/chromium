@@ -32,10 +32,7 @@ using content::test::PrerenderHostRegistryObserver;
 class BlockAllPluginServiceFilter : public content::PluginServiceFilter {
  public:
   bool IsPluginAvailable(int render_process_id,
-                         int render_view_id,
-                         const GURL& url,
-                         const url::Origin& main_frame_origin,
-                         content::WebPluginInfo* plugin) override {
+                         const content::WebPluginInfo& plugin) override {
     return false;
   }
 
@@ -56,10 +53,14 @@ class PDFIFrameNavigationThrottleBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
 
     content::PluginService* plugin_service =
@@ -87,7 +88,7 @@ class PDFIFrameNavigationThrottleBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PDFIFrameNavigationThrottleBrowserTest,
                        HTMLFallbackInPrerender) {
   const GURL kUrl(embedded_test_server()->GetURL("/empty.html"));
-  ui_test_utils::NavigateToURL(browser(), kUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
 
   const GURL kPrerenderUrl =
       embedded_test_server()->GetURL("/pdf/test-iframe.html");

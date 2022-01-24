@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,6 +22,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "printing/metafile.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 #include "ui/aura/window.h"
@@ -100,6 +100,10 @@ GtkPaperSize* FindPaperSizeMatch(GList* gtk_paper_sizes,
 class StickyPrintSettingGtk {
  public:
   StickyPrintSettingGtk() : last_used_settings_(gtk_print_settings_new()) {}
+
+  StickyPrintSettingGtk(const StickyPrintSettingGtk&) = delete;
+  StickyPrintSettingGtk& operator=(const StickyPrintSettingGtk&) = delete;
+
   ~StickyPrintSettingGtk() {
     NOTREACHED();  // Intended to be used with base::NoDestructor.
   }
@@ -114,8 +118,6 @@ class StickyPrintSettingGtk {
 
  private:
   GtkPrintSettings* last_used_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(StickyPrintSettingGtk);
 };
 
 StickyPrintSettingGtk& GetLastUsedSettings() {
@@ -515,12 +517,12 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
       settings->set_selection_only(print_selection_only);
       InitPrintSettingsGtk(gtk_settings_, page_setup_, settings.get());
       context_->InitWithSettings(std::move(settings));
-      std::move(callback_).Run(PrintingContextLinux::OK);
+      std::move(callback_).Run(printing::mojom::ResultCode::kSuccess);
       return;
     }
     case GTK_RESPONSE_DELETE_EVENT:  // Fall through.
     case GTK_RESPONSE_CANCEL: {
-      std::move(callback_).Run(PrintingContextLinux::CANCEL);
+      std::move(callback_).Run(printing::mojom::ResultCode::kCanceled);
       return;
     }
     case GTK_RESPONSE_APPLY:
@@ -586,5 +588,5 @@ void PrintDialogGtk::OnWindowDestroying(aura::Window* window) {
   gtk::ClearAuraTransientParent(dialog_, window);
   window->RemoveObserver(this);
   if (callback_)
-    std::move(callback_).Run(PrintingContextLinux::CANCEL);
+    std::move(callback_).Run(printing::mojom::ResultCode::kCanceled);
 }

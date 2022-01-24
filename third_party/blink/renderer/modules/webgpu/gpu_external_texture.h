@@ -26,11 +26,14 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
       GPUDevice* device,
       WGPUExternalTexture externalTexture,
       scoped_refptr<WebGPUMailboxTexture> mailbox_texture);
+
+  GPUExternalTexture(const GPUExternalTexture&) = delete;
+  GPUExternalTexture& operator=(const GPUExternalTexture&) = delete;
+
   void Destroy();
 
  private:
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture_;
-  DISALLOW_COPY_AND_ASSIGN(GPUExternalTexture);
 };
 
 }  // namespace blink

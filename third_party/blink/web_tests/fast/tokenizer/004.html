@@ -176,11 +176,11 @@
     <li>"bogus" language, "text/javascript" type <script type="text/javascript" language="bogus">document.write("executed");</script></li>
     <li>"livescript" language, "text/javascript" type <script type="text/javascript" language="livescript">document.write("executed");</script></li>
     <li>"javascript1.2" language, "text/javascript" type <script type="text/javascript" language="javascript1.2">document.write("executed");</script></li>
+    <li>empty string type, "bogus" language <script type="" language="bogus">document.write("executed");</script></li>
 </ol>
 <h4>These scripts should not execute</h4>
 <ol>
     <li>"javascript" language, "bogus" type <script type="bogus" language="javascript">document.write("executed");</script></li>
-    <li>empty string type, "bogus" language <script type="" language="bogus">document.write("executed");</script></li>
     <li>empty string language, "bogus" type <script type="bogus" language="">document.write("executed");</script></li>
 </ol>
 </body>

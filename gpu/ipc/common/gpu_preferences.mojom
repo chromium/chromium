@@ -69,7 +69,6 @@ struct GpuPreferences {
   bool disable_gpu_shader_disk_cache;
   bool enable_threaded_texture_mailboxes;
   bool gl_shader_interm_output;
-  bool emulate_shader_precision;
   bool enable_android_surface_control;
   bool enable_gpu_service_logging;
   bool enable_gpu_service_tracing;

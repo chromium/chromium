@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "ui/base/ime/chromeos/input_method_descriptor.h"
+#include "ui/base/ime/ash/input_method_descriptor.h"
 
 namespace ash {
 namespace {

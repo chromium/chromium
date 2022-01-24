@@ -9,13 +9,13 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -65,6 +65,23 @@ void BindWakeLockProvider(
   GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
+viz::mojom::SubTargetPtr ToSubTargetPtr(
+    const FrameSinkVideoCaptureDevice::VideoCaptureTarget& target) {
+  // Recall that either |subtree_capture_id| or |crop_id| is set,
+  // or neither, but never both. This was verified in |target|'s ctor,
+  // but is reiterated here for clarity's sake.
+  DCHECK(!target.subtree_capture_id.is_valid() || target.crop_id.is_zero());
+
+  if (target.subtree_capture_id.is_valid()) {
+    return viz::mojom::SubTarget::NewSubtreeCaptureId(
+        target.subtree_capture_id);
+  }
+  if (!target.crop_id.is_zero()) {
+    return viz::mojom::SubTarget::NewRegionCaptureCropId(target.crop_id);
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 #if !defined(OS_ANDROID)
@@ -112,7 +129,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
   capturer_->SetFormat(capture_params_.requested_format.pixel_format,
                        gfx::ColorSpace::CreateREC709());
   capturer_->SetMinCapturePeriod(
-      base::TimeDelta::FromMicroseconds(base::saturated_cast<int64_t>(
+      base::Microseconds(base::saturated_cast<int64_t>(
           base::Time::kMicrosecondsPerSecond /
           capture_params_.requested_format.frame_rate)));
   const auto& constraints = capture_params_.SuggestConstraints();
@@ -121,7 +138,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
                                       constraints.fixed_aspect_ratio);
 
   if (target_.frame_sink_id.is_valid()) {
-    capturer_->ChangeTarget(target_.frame_sink_id, target_.subtree_capture_id);
+    capturer_->ChangeTarget(target_.frame_sink_id, ToSubTargetPtr(target_));
   }
 
 #if !defined(OS_ANDROID)
@@ -172,6 +189,16 @@ void FrameSinkVideoCaptureDevice::Resume() {
 
   suspend_requested_ = false;
   MaybeStartConsuming();
+}
+
+void FrameSinkVideoCaptureDevice::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(callback);
+
+  std::move(callback).Run(
+      media::mojom::CropRequestResult::kUnsupportedCaptureDevice);
 }
 
 void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
@@ -306,14 +333,14 @@ void FrameSinkVideoCaptureDevice::OnTargetChanged(
         target_.frame_sink_id.is_valid()
             ? absl::make_optional<viz::FrameSinkId>(target_.frame_sink_id)
             : absl::nullopt,
-        target.subtree_capture_id);
+        ToSubTargetPtr(target_));
   }
 }
 
 void FrameSinkVideoCaptureDevice::OnTargetPermanentlyLost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  OnTargetChanged(VideoCaptureTarget{});
+  OnTargetChanged(VideoCaptureTarget());
   OnFatalError("Capture target has been permanently lost.");
 }
 

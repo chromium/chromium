@@ -14,13 +14,11 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
-import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.components.paintpreview.player.accessibility.PlayerAccessibilityDelegate;
 import org.chromium.components.paintpreview.player.frame.PlayerFrameCoordinator;
@@ -148,11 +146,15 @@ public class PlayerManager {
         mPlayerGestureListener = new PlayerGestureListener(
                 mListener::onLinkClick, mListener::onUserInteraction, mListener::onUserFrustration);
 
-        // Set up the HostView to avoid partial loads looking choppy.
+        // Set up the HostView to avoid partial loads looking choppy. Ensure it draws so that the
+        // container has a defined height immediately. Otherwise on emulators onDraw might not be
+        // called successfully.
         mHostView = new FrameLayout(mContext);
         mHostView.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mHostView.setBackgroundColor(backgroundColor);
+        mHostView.setWillNotDraw(false);
+        mHostView.postInvalidate();
 
         TraceEvent.end("PlayerManager");
     }
@@ -169,7 +171,10 @@ public class PlayerManager {
     public Point getScrollPosition() {
         if (mRootFrameCoordinator == null) return null;
 
-        return mRootFrameCoordinator.getScrollPosition();
+        Point rootScrollPosition = mRootFrameCoordinator.getScrollPosition();
+        Point rootOffset = mDelegate.getRootFrameOffsets();
+        rootOffset.offset(rootScrollPosition.x, rootScrollPosition.y);
+        return rootOffset;
     }
 
     /**
@@ -410,18 +415,18 @@ public class PlayerManager {
                 String directoryKey, boolean mainFrameMode,
                 @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
-            return new PlayerCompositorDelegateImpl(service, null, url, directoryKey, mainFrameMode,
+            return new PlayerCompositorDelegateImpl(service, 0, url, directoryKey, mainFrameMode,
                     compositorListener, compositorErrorCallback);
         }
 
         @Override
-        public PlayerCompositorDelegate createForProto(NativePaintPreviewServiceProvider service,
-                @Nullable PaintPreviewProto proto, GURL url, String directoryKey,
-                boolean mainFrameMode,
+        public PlayerCompositorDelegate createForCaptureResult(
+                NativePaintPreviewServiceProvider service, long nativeCaptureResultPtr, GURL url,
+                String directoryKey, boolean mainFrameMode,
                 @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
-            return new PlayerCompositorDelegateImpl(service, proto, url, directoryKey,
-                    mainFrameMode, compositorListener, compositorErrorCallback);
+            return new PlayerCompositorDelegateImpl(service, nativeCaptureResultPtr, url,
+                    directoryKey, mainFrameMode, compositorListener, compositorErrorCallback);
         }
     }
 

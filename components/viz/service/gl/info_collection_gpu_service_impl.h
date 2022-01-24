@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/config/device_perf_info.h"
@@ -30,6 +30,10 @@ class VIZ_SERVICE_EXPORT InfoCollectionGpuServiceImpl
       const gpu::DevicePerfInfo& device_perf_info,
       const gpu::GPUInfo::GPUDevice& gpu_device,
       mojo::PendingReceiver<mojom::InfoCollectionGpuService> pending_receiver);
+
+  InfoCollectionGpuServiceImpl(const InfoCollectionGpuServiceImpl&) = delete;
+  InfoCollectionGpuServiceImpl& operator=(const InfoCollectionGpuServiceImpl&) =
+      delete;
 
   ~InfoCollectionGpuServiceImpl() override;
 
@@ -66,8 +70,6 @@ class VIZ_SERVICE_EXPORT InfoCollectionGpuServiceImpl
 
   // Should only be accessed on the IO thread after creation.
   mojo::Receiver<mojom::InfoCollectionGpuService> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InfoCollectionGpuServiceImpl);
 };
 }  // namespace viz
 

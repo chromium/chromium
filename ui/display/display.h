@@ -234,6 +234,9 @@ class DISPLAY_EXPORT Display final {
     color_spaces_ = color_spaces;
   }
 
+  // Return true if the display orientation is landscape.
+  bool is_landscape() const { return bounds_.width() >= bounds_.height(); }
+
   // Default values for color_depth and depth_per_component.
   static constexpr int kDefaultBitsPerPixel = 24;
   static constexpr int kDefaultBitsPerComponent = 8;

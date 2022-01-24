@@ -22,6 +22,10 @@
 <translation id="2168108852149185974">Nagiging dahilan ng pag-crash ng Chromium ang ilang add-on. Paki-uninstall.</translation>
 <translation id="2178608107313874732">Di magamit ng Chromium ang camera mo ngayon</translation>
 <translation id="2195025571279539885">Gusto mo bang mag-alok ang Chromium na isalin ang mga <ph name="LANGUAGE_NAME" /> page mula sa site na ito sa susunod na pagkakataon?</translation>
+<translation id="2218146227246548550">Hinihiling sa iyo ng organisasyon mo na mag-sign in para magamit ang Chromium. <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
+<translation id="2426113998523353159">Hinihiling sa iyo ng organisasyon mo na mag-sign in para magamit ang Chromium.</translation>
+<translation id="2450140762465183767">Magagamit mo na ngayon ang Chromium sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
+<translation id="2478931088402984578">Piliin ang <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">Makagawa ng mas maraming bagay gamit ang simple, secure, at mas mabilis na ngayong Chromium</translation>
 <translation id="2590893390871230428">I-sync ang Iyong Data sa Chromium</translation>
 <translation id="2650312721222849884">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, i-on ang pag-sync</translation>
@@ -38,7 +42,6 @@
 <translation id="3805899903892079518">Walang access ang Chromium sa mga larawan o video mo. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
 <translation id="3946918322491238254">Makikita mo pa rin ang lahat ng iyong bookmark, history, password, at iba pang setting sa device na ito. Kung gagawa ka ng mga pagbabago, hindi masi-sync ang mga ito sa iyong account.</translation>
 <translation id="4099085513035183040">Hindi sinusuportahan sa Chromium Beta</translation>
-<translation id="4166206055865952171">Itakda ang Chromium bilang Iyong Default</translation>
 <translation id="4555020257205549924">Kapag naka-on ang feature na ito, mag-aalok ang Chromium na magsalin ng mga page na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Magagamit mo na ngayon ang Chromium sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="4681781466797808448">I-on ang scanner ng Chromium</translation>
@@ -54,8 +57,6 @@
 <translation id="5521125884468363740">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, mag-sign in at i-on ang pag-sync</translation>
 <translation id="5573014823074921752">Tip sa Chromium. Para sa higit pang opsyon sa tab, pindutin nang matagal ang button na Ipakita ang Mga Tab sa toolbar, na nasa ibaba o itaas ng iyong screen.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
-<translation id="5715349567881822785">Maging mas produktibo gamit ang Chromium</translation>
-<translation id="5742135483959137648">Gamitin ang Chromium para Magbukas ng Mga Link</translation>
 <translation id="5777187867430702742">Page ng Chromium</translation>
 <translation id="5862307444128926510">Maligayang Pagdating sa Chromium</translation>
 <translation id="5945387852661427312">Nag-sign in ka gamit ang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chromium. Permanenteng mauugnay ang data mo sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chromium, ngunit mananatili itong naka-store sa Google Account mo.</translation>
@@ -65,16 +66,17 @@
 2. I-tap ang Default Browser App
 3. Piliin ang Chromium.</translation>
 <translation id="6155422572367400359">Mag-sign in sa site na ito, sa iyong Google Account, at sa Chromium. Puwede mong i-on ang pag-sync sa ibang pagkakataon.</translation>
+<translation id="6183442264225539303">Mag-sign in sa site na ito at sa Chromium. Puwede mong i-on ang pag-sync sa ibang pagkakataon.</translation>
 <translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
 <translation id="632825460376924298">Payagan ang Pag-sign In sa Chromium</translation>
 <translation id="6337530241089703714">Piliin kung iki-clear ang iyong data sa Chromium sa device na ito o kung papanatilihin ito</translation>
 <translation id="6424492062988593837">Naging mas mahusay na ang Chromium! Available na ang bagong bersyon.</translation>
 <translation id="6752854822223394465">Sine-set up ng iyong organisasyon ang Chromium...</translation>
 <translation id="6820823224820483452">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit bukas.</translation>
-<translation id="6827294685447036764">Kung papayagan mo ang Chromium na alamin ang iyong lokasyon, ipapadala ito ng Chromium sa anumang site na papayagan mo. Posibleng hingin ng mga site ang iyong lokasyon kapag may lokal na impormasyong ipapakita sa iyo ang mga ito, tulad ng mga shop sa malapit o balita.</translation>
 <translation id="7018284295775193585">Hindi makapag-update ang Chromium</translation>
 <translation id="7045244423563602563">Gawing Iyo ang Chromium</translation>
 <translation id="7099326575020694068">Hindi magamit ng Chromium ang iyong camera sa Split View mode</translation>
+<translation id="7108914401277488191">Maging Mas Produktibo Gamit ang Chromium</translation>
 <translation id="7118091470949186573">Magagamit mo na ngayon ang Chromium sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="7208566199746267865">Nakakatipid ka ng oras sa Chromium sa pamamagitan ng pagdadala ng iyong mga account sa web. Maaari kang magdagdag o mag-alis ng mga account sa Mga Setting.</translation>
 <translation id="725427773388857052">Makakatulong ang Chromium na panatilihin kang ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa.</translation>
@@ -102,6 +104,7 @@
 <translation id="894437814105052438">Kapag nag-sign out ka, hindi magsi-sync ang Chromium ng anumang bagong data sa iyong Google Account. Mananatili sa account ang data na dati nang na-sync.</translation>
 <translation id="9022552996538154597">Mag-sign in sa Chromium</translation>
 <translation id="9089354809943900324">Luma na ang Chromium</translation>
+<translation id="9110075932708282655">Gamitin ang Chromium bilang Default</translation>
 <translation id="921174536258924340">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Ang Mga May-akda ng Chromium</translation>
 </translationbundle>

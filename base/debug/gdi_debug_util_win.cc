@@ -301,8 +301,7 @@ absl::optional<base::debug::GdiHandleCounts> CollectGdiHandleCountsImpl(
 // Returns the GDI Handle counts from the GDI Shared handle table. Empty on
 // failure.
 absl::optional<base::debug::GdiHandleCounts> CollectGdiHandleCounts(DWORD pid) {
-  if (base::win::OSInfo::GetInstance()->wow64_status() ==
-      base::win::OSInfo::WOW64_ENABLED) {
+  if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()) {
     return CollectGdiHandleCountsImpl<WowProcessTypes>(pid);
   }
 

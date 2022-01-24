@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_GMAIL_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APPS_GMAIL_H_
 
-#include "chrome/browser/web_applications/components/external_install_options.h"
+#include "chrome/browser/web_applications/external_install_options.h"
 
 namespace web_app {
 

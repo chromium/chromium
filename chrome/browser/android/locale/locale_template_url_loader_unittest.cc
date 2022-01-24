@@ -49,6 +49,10 @@ class LocaleTemplateUrlLoaderTest : public testing::Test {
  public:
   LocaleTemplateUrlLoaderTest() {}
 
+  LocaleTemplateUrlLoaderTest(const LocaleTemplateUrlLoaderTest&) = delete;
+  LocaleTemplateUrlLoaderTest& operator=(const LocaleTemplateUrlLoaderTest&) =
+      delete;
+
   void SetUp() override;
   void TearDown() override;
   LocaleTemplateUrlLoader* loader() { return loader_.get(); }
@@ -60,8 +64,6 @@ class LocaleTemplateUrlLoaderTest : public testing::Test {
       task_environment_;  // To set up BrowserThreads.
   std::unique_ptr<LocaleTemplateUrlLoader> loader_;
   std::unique_ptr<TemplateURLServiceTestUtil> test_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleTemplateUrlLoaderTest);
 };
 
 void LocaleTemplateUrlLoaderTest::SetUp() {

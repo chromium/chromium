@@ -64,12 +64,11 @@ public class TabSwitcherButtonCoordinator {
 
     public void setTabCountProvider(TabCountProvider tabCountProvider) {
         mTabCountProvider = tabCountProvider;
-        updateButtonState();
+        mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.IS_ENABLED, true);
         mTabCountObserver = new TabCountObserver() {
             @Override
             public void onTabCountChanged(int tabCount, boolean isIncognito) {
                 mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.NUMBER_OF_TABS, tabCount);
-                updateButtonState();
             }
         };
         mTabCountProvider.addObserverAndTrigger(mTabCountObserver);
@@ -84,11 +83,5 @@ public class TabSwitcherButtonCoordinator {
             mTabCountProvider.removeObserver(mTabCountObserver);
             mTabCountProvider = null;
         }
-    }
-
-    private void updateButtonState() {
-        boolean shouldEnable =
-                mTabSwitcherButtonModel.get(TabSwitcherButtonProperties.NUMBER_OF_TABS) >= 1;
-        mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.IS_ENABLED, shouldEnable);
     }
 }

@@ -22,9 +22,21 @@ class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
  public:
   explicit TestCreditCardFIDOAuthenticator(AutofillDriver* driver,
                                            AutofillClient* client);
+
+  TestCreditCardFIDOAuthenticator(const TestCreditCardFIDOAuthenticator&) =
+      delete;
+  TestCreditCardFIDOAuthenticator& operator=(
+      const TestCreditCardFIDOAuthenticator&) = delete;
+
   ~TestCreditCardFIDOAuthenticator() override;
 
   // CreditCardFIDOAuthenticator:
+  void Authenticate(const CreditCard* card,
+                    base::WeakPtr<Requester> requester,
+                    base::Value request_options,
+                    absl::optional<std::string> context_token) override;
+  void IsUserVerifiable(base::OnceCallback<void(bool)> callback) override;
+  bool IsUserOptedIn() override;
   void GetAssertion(
       PublicKeyCredentialRequestOptionsPtr request_options) override;
   void MakeCredential(
@@ -48,10 +60,17 @@ class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
     is_user_verifiable_ = is_user_verifiable;
   }
 
-  // CreditCardFIDOAuthenticator:
-  void IsUserVerifiable(base::OnceCallback<void(bool)> callback) override;
+  void set_is_user_opted_in(bool is_user_opted_in) {
+    is_user_opted_in_ = is_user_opted_in;
+  }
 
   bool IsOptOutCalled() { return opt_out_called_; }
+  bool authenticate_invoked() { return authenticate_invoked_; }
+  const CreditCard& card() { return card_; }
+  const absl::optional<std::string>& context_token() { return context_token_; }
+
+  // Resets all the testing related states.
+  void Reset();
 
  private:
   friend class BrowserAutofillManagerTest;
@@ -60,9 +79,11 @@ class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
   PublicKeyCredentialRequestOptionsPtr request_options_;
   PublicKeyCredentialCreationOptionsPtr creation_options_;
   bool is_user_verifiable_ = false;
+  absl::optional<bool> is_user_opted_in_;
   bool opt_out_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCreditCardFIDOAuthenticator);
+  bool authenticate_invoked_ = false;
+  CreditCard card_;
+  absl::optional<std::string> context_token_;
 };
 
 }  // namespace autofill

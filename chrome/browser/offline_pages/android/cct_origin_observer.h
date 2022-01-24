@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_ANDROID_CCT_ORIGIN_OBSERVER_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_ANDROID_CCT_ORIGIN_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/offline_pages/core/offline_page_model.h"
 
@@ -19,6 +18,10 @@ class CctOriginObserver : public OfflinePageModel::Observer,
  public:
   static void AttachToOfflinePageModel(OfflinePageModel* model);
   CctOriginObserver();
+
+  CctOriginObserver(const CctOriginObserver&) = delete;
+  CctOriginObserver& operator=(const CctOriginObserver&) = delete;
+
   ~CctOriginObserver() override;
 
   // OfflinePageModel::Observer implementation.
@@ -26,9 +29,6 @@ class CctOriginObserver : public OfflinePageModel::Observer,
   void OfflinePageAdded(OfflinePageModel* model,
                         const OfflinePageItem& added_page) override;
   void OfflinePageDeleted(const OfflinePageItem& item) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CctOriginObserver);
 };
 
 }  // namespace offline_pages

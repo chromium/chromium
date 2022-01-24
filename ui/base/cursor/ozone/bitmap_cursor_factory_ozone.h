@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -51,6 +50,9 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
                     void* platform_data,
                     float cursor_image_scale_factor);
 
+  BitmapCursorOzone(const BitmapCursorOzone&) = delete;
+  BitmapCursorOzone& operator=(const BitmapCursorOzone&) = delete;
+
   mojom::CursorType type() const { return type_; }
   const gfx::Point& hotspot();
   const SkBitmap& bitmap();
@@ -78,8 +80,6 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
   void* const platform_data_ = nullptr;
 
   float cursor_image_scale_factor_ = 1.f;
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapCursorOzone);
 };
 
 // CursorFactory implementation for bitmapped cursors.
@@ -90,6 +90,10 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorFactoryOzone
     : public CursorFactory {
  public:
   BitmapCursorFactoryOzone();
+
+  BitmapCursorFactoryOzone(const BitmapCursorFactoryOzone&) = delete;
+  BitmapCursorFactoryOzone& operator=(const BitmapCursorFactoryOzone&) = delete;
+
   ~BitmapCursorFactoryOzone() override;
 
   // CursorFactory:
@@ -110,8 +114,6 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorFactoryOzone
   std::map<mojom::CursorType, scoped_refptr<BitmapCursorOzone>>
       default_cursors_;
   float cursor_scale_factor_ = 1.f;
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapCursorFactoryOzone);
 };
 
 }  // namespace ui

@@ -48,11 +48,6 @@ StyleFetchedImageSet::StyleFetchedImageSet(ImageResourceContent* image,
 
 StyleFetchedImageSet::~StyleFetchedImageSet() = default;
 
-void StyleFetchedImageSet::Dispose() {
-  best_fit_image_->RemoveObserver(this);
-  best_fit_image_ = nullptr;
-}
-
 bool StyleFetchedImageSet::IsEqual(const StyleImage& other) const {
   if (!other.IsImageResourceSet())
     return false;
@@ -168,6 +163,7 @@ void StyleFetchedImageSet::Trace(Visitor* visitor) const {
   visitor->Trace(best_fit_image_);
   visitor->Trace(image_set_value_);
   StyleImage::Trace(visitor);
+  ImageResourceObserver::Trace(visitor);
 }
 
 }  // namespace blink

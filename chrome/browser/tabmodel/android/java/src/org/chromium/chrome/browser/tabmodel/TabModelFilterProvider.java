@@ -119,4 +119,11 @@ public class TabModelFilterProvider implements TabModelSelectorObserver {
     public void onTabStateInitialized() {
         markTabStateInitialized();
     }
+
+    /**
+     * Reset the internal filter list to allow initialization again.
+     */
+    public void resetTabModelFilterListForTesting() {
+        mTabModelFilterList = Collections.emptyList();
+    }
 }

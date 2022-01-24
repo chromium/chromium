@@ -8,7 +8,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/enterprise/enterprise_domain_observer.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -20,6 +19,11 @@ class ManagedDeviceTrayItemView : public TrayItemView,
                                   public EnterpriseDomainObserver {
  public:
   explicit ManagedDeviceTrayItemView(Shelf* shelf);
+
+  ManagedDeviceTrayItemView(const ManagedDeviceTrayItemView&) = delete;
+  ManagedDeviceTrayItemView& operator=(const ManagedDeviceTrayItemView&) =
+      delete;
+
   ~ManagedDeviceTrayItemView() override;
 
   // SessionObserver:
@@ -35,8 +39,6 @@ class ManagedDeviceTrayItemView : public TrayItemView,
 
  private:
   void Update();
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedDeviceTrayItemView);
 };
 
 }  // namespace ash

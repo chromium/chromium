@@ -9,7 +9,10 @@ import android.os.Bundle;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.theme.ColorDelegateImpl;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 
 /**
@@ -22,6 +25,10 @@ public class ChromeLauncherActivity extends Activity {
         // Third-party code adds disk access to Activity.onCreate. http://crbug.com/619824
         TraceEvent.begin("ChromeLauncherActivity.onCreate");
         super.onCreate(savedInstanceState);
+
+        // TODO(https://crbug.com/1225066): Figure out a scalable way to apply overlays to
+        // activities like this.
+        applyThemeOverlays();
 
         if (VrModuleProvider.getIntentDelegate().isVrIntent(getIntent())) {
             // We need to turn VR mode on as early as possible in the intent handling flow to
@@ -45,5 +52,15 @@ public class ChromeLauncherActivity extends Activity {
                 break;
         }
         TraceEvent.end("ChromeLauncherActivity.onCreate");
+    }
+
+    private void applyThemeOverlays() {
+        setTheme(R.style.ColorOverlay_ChromiumAndroid);
+
+        // The effect of this activity's theme is currently limited to CCTs, so we should only apply
+        // dynamic colors when we enable them everywhere.
+        if (ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS.getValue()) {
+            new ColorDelegateImpl().applyDynamicColorsIfAvailable(this);
+        }
     }
 }

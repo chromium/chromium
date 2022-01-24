@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_view.h"
 
 namespace content {

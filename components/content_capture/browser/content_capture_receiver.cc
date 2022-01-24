@@ -205,7 +205,7 @@ void ContentCaptureReceiver::SetTitle(const std::u16string& title) {
 
   title_update_task_runner_->PostDelayedTask(
       FROM_HERE, notify_title_update_callback_->callback(),
-      base::TimeDelta::FromSeconds(exponential_delay_));
+      base::Seconds(exponential_delay_));
 
   exponential_delay_ =
       exponential_delay_ < 256 ? exponential_delay_ * 2 : exponential_delay_;

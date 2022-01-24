@@ -152,6 +152,7 @@ void GetCookieListFromManager(
     const GURL& url,
     network::mojom::CookieManager::GetCookieListCallback callback) {
   manager->GetCookieList(url, net::CookieOptions::MakeAllInclusive(),
+                         net::CookiePartitionKeychain::Todo(),
                          std::move(callback));
 }
 
@@ -201,8 +202,7 @@ void AppendToTabIdList(Browser* browser, base::ListValue* tab_ids) {
   DCHECK(tab_ids);
   TabStripModel* tab_strip = browser->tab_strip_model();
   for (int i = 0; i < tab_strip->count(); ++i) {
-    tab_ids->AppendInteger(
-        ExtensionTabUtil::GetTabId(tab_strip->GetWebContentsAt(i)));
+    tab_ids->Append(ExtensionTabUtil::GetTabId(tab_strip->GetWebContentsAt(i)));
   }
 }
 

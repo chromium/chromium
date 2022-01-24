@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -156,6 +155,9 @@ ExtensionContextMenuModel::ContextMenuAction CommandIdToContextMenuAction(
 // base::OnceCallback, but that's a bunch of churn.
 class UninstallDialogHelper : public ExtensionUninstallDialog::Delegate {
  public:
+  UninstallDialogHelper(const UninstallDialogHelper&) = delete;
+  UninstallDialogHelper& operator=(const UninstallDialogHelper&) = delete;
+
   // Kicks off the asynchronous process to confirm and uninstall the given
   // |extension|.
   static void UninstallExtension(Browser* browser, const Extension* extension) {
@@ -183,8 +185,6 @@ class UninstallDialogHelper : public ExtensionUninstallDialog::Delegate {
   }
 
   std::unique_ptr<ExtensionUninstallDialog> uninstall_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(UninstallDialogHelper);
 };
 
 }  // namespace

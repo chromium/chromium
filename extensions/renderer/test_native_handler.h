@@ -8,7 +8,8 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "extensions/renderer/object_backed_native_handler.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-function-callback.h"
 
 namespace extensions {
 class ScriptContext;
@@ -18,13 +19,14 @@ class TestNativeHandler : public ObjectBackedNativeHandler {
  public:
   explicit TestNativeHandler(ScriptContext* context);
 
+  TestNativeHandler(const TestNativeHandler&) = delete;
+  TestNativeHandler& operator=(const TestNativeHandler&) = delete;
+
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
 
  private:
   void GetWakeEventPage(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  DISALLOW_COPY_AND_ASSIGN(TestNativeHandler);
 };
 
 }  // namespace extensions

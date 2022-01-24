@@ -143,6 +143,12 @@ void DriverEGL::InitializeClientExtensionBindings() {
         GetGLProcAddress("eglQueryDebugKHR"));
   }
 
+  if (ext.b_EGL_EXT_device_base || ext.b_EGL_EXT_device_query) {
+    fn.eglQueryDeviceAttribEXTFn =
+        reinterpret_cast<eglQueryDeviceAttribEXTProc>(
+            GetGLProcAddress("eglQueryDeviceAttribEXT"));
+  }
+
   if (ext.b_EGL_EXT_device_base || ext.b_EGL_EXT_device_enumeration) {
     fn.eglQueryDevicesEXTFn = reinterpret_cast<eglQueryDevicesEXTProc>(
         GetGLProcAddress("eglQueryDevicesEXT"));
@@ -158,6 +164,12 @@ void DriverEGL::InitializeClientExtensionBindings() {
     fn.eglQueryDisplayAttribANGLEFn =
         reinterpret_cast<eglQueryDisplayAttribANGLEProc>(
             GetGLProcAddress("eglQueryDisplayAttribANGLE"));
+  }
+
+  if (ext.b_EGL_EXT_device_base || ext.b_EGL_EXT_device_query) {
+    fn.eglQueryDisplayAttribEXTFn =
+        reinterpret_cast<eglQueryDisplayAttribEXTProc>(
+            GetGLProcAddress("eglQueryDisplayAttribEXT"));
   }
 
   if (ext.b_EGL_ANGLE_feature_control) {
@@ -724,6 +736,12 @@ EGLBoolean EGLApiBase::eglQueryDebugKHRFn(EGLint attribute, EGLAttrib* value) {
   return driver_->fn.eglQueryDebugKHRFn(attribute, value);
 }
 
+EGLBoolean EGLApiBase::eglQueryDeviceAttribEXTFn(EGLDeviceEXT device,
+                                                 EGLint attribute,
+                                                 EGLAttrib* value) {
+  return driver_->fn.eglQueryDeviceAttribEXTFn(device, attribute, value);
+}
+
 EGLBoolean EGLApiBase::eglQueryDevicesEXTFn(EGLint max_devices,
                                             EGLDeviceEXT* devices,
                                             EGLint* num_devices) {
@@ -739,6 +757,12 @@ EGLBoolean EGLApiBase::eglQueryDisplayAttribANGLEFn(EGLDisplay dpy,
                                                     EGLint attribute,
                                                     EGLAttrib* value) {
   return driver_->fn.eglQueryDisplayAttribANGLEFn(dpy, attribute, value);
+}
+
+EGLBoolean EGLApiBase::eglQueryDisplayAttribEXTFn(EGLDisplay dpy,
+                                                  EGLint attribute,
+                                                  EGLAttrib* value) {
+  return driver_->fn.eglQueryDisplayAttribEXTFn(dpy, attribute, value);
 }
 
 EGLBoolean EGLApiBase::eglQueryStreamKHRFn(EGLDisplay dpy,
@@ -1269,6 +1293,13 @@ EGLBoolean TraceEGLApi::eglQueryDebugKHRFn(EGLint attribute, EGLAttrib* value) {
   return egl_api_->eglQueryDebugKHRFn(attribute, value);
 }
 
+EGLBoolean TraceEGLApi::eglQueryDeviceAttribEXTFn(EGLDeviceEXT device,
+                                                  EGLint attribute,
+                                                  EGLAttrib* value) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglQueryDeviceAttribEXT");
+  return egl_api_->eglQueryDeviceAttribEXTFn(device, attribute, value);
+}
+
 EGLBoolean TraceEGLApi::eglQueryDevicesEXTFn(EGLint max_devices,
                                              EGLDeviceEXT* devices,
                                              EGLint* num_devices) {
@@ -1288,6 +1319,13 @@ EGLBoolean TraceEGLApi::eglQueryDisplayAttribANGLEFn(EGLDisplay dpy,
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "TraceEGLAPI::eglQueryDisplayAttribANGLE");
   return egl_api_->eglQueryDisplayAttribANGLEFn(dpy, attribute, value);
+}
+
+EGLBoolean TraceEGLApi::eglQueryDisplayAttribEXTFn(EGLDisplay dpy,
+                                                   EGLint attribute,
+                                                   EGLAttrib* value) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceEGLAPI::eglQueryDisplayAttribEXT");
+  return egl_api_->eglQueryDisplayAttribEXTFn(dpy, attribute, value);
 }
 
 EGLBoolean TraceEGLApi::eglQueryStreamKHRFn(EGLDisplay dpy,
@@ -2053,6 +2091,18 @@ EGLBoolean LogEGLApi::eglQueryDebugKHRFn(EGLint attribute, EGLAttrib* value) {
   return result;
 }
 
+EGLBoolean LogEGLApi::eglQueryDeviceAttribEXTFn(EGLDeviceEXT device,
+                                                EGLint attribute,
+                                                EGLAttrib* value) {
+  GL_SERVICE_LOG("eglQueryDeviceAttribEXT"
+                 << "(" << device << ", " << attribute << ", "
+                 << static_cast<const void*>(value) << ")");
+  EGLBoolean result =
+      egl_api_->eglQueryDeviceAttribEXTFn(device, attribute, value);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
 EGLBoolean LogEGLApi::eglQueryDevicesEXTFn(EGLint max_devices,
                                            EGLDeviceEXT* devices,
                                            EGLint* num_devices) {
@@ -2083,6 +2133,18 @@ EGLBoolean LogEGLApi::eglQueryDisplayAttribANGLEFn(EGLDisplay dpy,
                  << static_cast<const void*>(value) << ")");
   EGLBoolean result =
       egl_api_->eglQueryDisplayAttribANGLEFn(dpy, attribute, value);
+  GL_SERVICE_LOG("GL_RESULT: " << result);
+  return result;
+}
+
+EGLBoolean LogEGLApi::eglQueryDisplayAttribEXTFn(EGLDisplay dpy,
+                                                 EGLint attribute,
+                                                 EGLAttrib* value) {
+  GL_SERVICE_LOG("eglQueryDisplayAttribEXT"
+                 << "(" << dpy << ", " << attribute << ", "
+                 << static_cast<const void*>(value) << ")");
+  EGLBoolean result =
+      egl_api_->eglQueryDisplayAttribEXTFn(dpy, attribute, value);
   GL_SERVICE_LOG("GL_RESULT: " << result);
   return result;
 }

@@ -132,6 +132,9 @@ public class ListMenuButton
         mPopupMenu.setFocusable(true);
         mPopupMenu.setLayoutObserver(this);
         mPopupMenu.addOnDismissListener(() -> { mPopupMenu = null; });
+        // This should be called explicitly since it is not a default behavior on Android S
+        // in split-screen mode. See crbug.com/1246956.
+        mPopupMenu.setOutsideTouchable(true);
     }
 
     /**

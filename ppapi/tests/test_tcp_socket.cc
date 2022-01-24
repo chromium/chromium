@@ -138,11 +138,13 @@ std::string TestTCPSocket::TestConnect() {
 
 std::string TestTCPSocket::TestReadWrite() {
   pp::TCPSocket socket(instance_);
-  TestCompletionCallback cb(instance_->pp_instance(), callback_type());
+  {
+    TestCompletionCallback cb(instance_->pp_instance(), callback_type());
 
-  cb.WaitForResult(socket.Connect(test_server_addr_, cb.GetCallback()));
-  CHECK_CALLBACK_BEHAVIOR(cb);
-  ASSERT_EQ(PP_OK, cb.result());
+    cb.WaitForResult(socket.Connect(test_server_addr_, cb.GetCallback()));
+    CHECK_CALLBACK_BEHAVIOR(cb);
+    ASSERT_EQ(PP_OK, cb.result());
+  }
 
   ASSERT_SUBTEST_SUCCESS(WriteToSocket(&socket, "GET / HTTP/1.0\r\n\r\n"));
 
@@ -509,10 +511,12 @@ std::string TestTCPSocket::TestConnectHangs() {
 
 std::string TestTCPSocket::TestWriteFails() {
   pp::TCPSocket socket(instance_);
-  TestCompletionCallback cb(instance_->pp_instance(), callback_type());
-  cb.WaitForResult(socket.Connect(test_server_addr_, cb.GetCallback()));
-  CHECK_CALLBACK_BEHAVIOR(cb);
-  ASSERT_EQ(PP_OK, cb.result());
+  {
+    TestCompletionCallback cb(instance_->pp_instance(), callback_type());
+    cb.WaitForResult(socket.Connect(test_server_addr_, cb.GetCallback()));
+    CHECK_CALLBACK_BEHAVIOR(cb);
+    ASSERT_EQ(PP_OK, cb.result());
+  }
 
   // Write to the socket until there's an error. Some writes may succeed, since
   // Mojo writes complete before the socket tries to send data. As with the read

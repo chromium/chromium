@@ -13,11 +13,12 @@ class LSQPredictorTest : public InputPredictorTest {
  public:
   explicit LSQPredictorTest() {}
 
+  LSQPredictorTest(const LSQPredictorTest&) = delete;
+  LSQPredictorTest& operator=(const LSQPredictorTest&) = delete;
+
   void SetUp() override {
     predictor_ = std::make_unique<LeastSquaresPredictor>();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(LSQPredictorTest);
 };
 
 TEST_F(LSQPredictorTest, ShouldHasPrediction) {
@@ -98,8 +99,7 @@ TEST_F(LSQPredictorTest, TimeInterval) {
                                       FromMilliseconds(t[i])};
     predictor_->Update(data);
   }
-  EXPECT_EQ(predictor_->TimeInterval(),
-            base::TimeDelta::FromMillisecondsD((t[2] - t[0]) / 2));
+  EXPECT_EQ(predictor_->TimeInterval(), base::Milliseconds((t[2] - t[0]) / 2));
 }
 
 }  // namespace test

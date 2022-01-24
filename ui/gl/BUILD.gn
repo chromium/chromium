@@ -9,6 +9,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
 import("//third_party/angle/gni/angle.gni")
 import("//third_party/dawn/scripts/dawn_features.gni")
@@ -20,7 +21,7 @@ declare_args() {
   enable_gpu_service_logging = false
 }
 
-use_glx = use_x11 || ozone_platform_x11
+use_glx = ozone_platform_x11
 
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -213,6 +214,13 @@ component("gl") {
       "shared_gl_fence_egl.h",
     ]
 
+    if (enable_vulkan) {
+      sources += [
+        "gl_angle_util_vulkan.cc",
+        "gl_angle_util_vulkan.h",
+      ]
+    }
+
     if (is_linux || is_chromeos || use_ozone) {
       sources += [
         "gl_image_native_pixmap.cc",
@@ -263,7 +271,7 @@ component("gl") {
     }
   }
 
-  if (use_x11 || ozone_platform_x11) {
+  if (ozone_platform_x11) {
     sources += [
       "gl_image_egl_pixmap.cc",
       "gl_image_egl_pixmap.h",
@@ -314,6 +322,7 @@ component("gl") {
       "//ui/gfx/x",
     ]
   }
+
   if (is_win) {
     sources += [
       "child_window_win.cc",
@@ -406,11 +415,6 @@ component("gl") {
     }
   }
   if (is_android) {
-    sources += [
-      "gl_image_surface_texture.cc",
-      "gl_image_surface_texture.h",
-    ]
-
     defines += [
       "GL_GLEXT_PROTOTYPES",
       "EGL_EGLEXT_PROTOTYPES",
@@ -527,13 +531,6 @@ static_library("test_support") {
     deps += [ "//ui/platform_window/common" ]
   }
 
-  if (use_x11) {
-    deps += [
-      "//ui/gfx/x",
-      "//ui/platform_window/x11",
-    ]
-  }
-
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -641,7 +638,7 @@ test("gl_unittests") {
   data_deps = [ "//third_party/mesa_headers" ]
 
   # TODO(https://crbug.com/789065): this must be moved to Ozone.
-  if (use_x11) {
+  if (ozone_platform_x11) {
     sources += [ "gl_context_glx_unittest.cc" ]
     deps += [ "//ui/gfx/x" ]
   }

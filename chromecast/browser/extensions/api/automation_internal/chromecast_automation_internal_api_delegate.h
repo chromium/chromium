@@ -15,6 +15,12 @@ class ChromecastAutomationInternalApiDelegate
     : public AutomationInternalApiDelegate {
  public:
   ChromecastAutomationInternalApiDelegate();
+
+  ChromecastAutomationInternalApiDelegate(
+      const ChromecastAutomationInternalApiDelegate&) = delete;
+  ChromecastAutomationInternalApiDelegate& operator=(
+      const ChromecastAutomationInternalApiDelegate&) = delete;
+
   ~ChromecastAutomationInternalApiDelegate() override;
 
   bool CanRequestAutomation(const Extension* extension,
@@ -34,8 +40,6 @@ class ChromecastAutomationInternalApiDelegate
   void SetAutomationEventRouterInterface(
       AutomationEventRouterInterface* router) override;
   content::BrowserContext* GetActiveUserContext() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromecastAutomationInternalApiDelegate);
 };
 
 }  // namespace extensions

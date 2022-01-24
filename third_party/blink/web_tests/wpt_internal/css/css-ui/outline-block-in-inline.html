@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-ui-3/#outline-props">
+<link rel="match" href="outline-block-in-inline-ref.html">
+<meta name=fuzzy content="0-20;0-200">
+<link rel="author" title="Koji Ishii" href="mailto:kojii@chromium.org">
+<style>
+section {
+  margin-bottom: 10px;
+  /* Prevent merging outlines to create ref without block-in-inline. */
+  line-height: 2;
+}
+.outline {
+  outline: solid blue 3px;
+}
+.outline-auto {
+  outline: auto;
+}
+</style>
+<body>
+  <section>
+    <span class="outline">
+      test
+      <div>div</div>
+      test
+    </span>
+  </section>
+  <section>
+    <span class="outline-auto">
+      test
+      <div>div</div>
+      test
+    </span>
+  </section>
+  <section>
+    <span class="outline-auto">
+      test
+      <div style="width: 100px">div</div>
+      test
+    </span>
+  </section>
+  <section>
+    <span class="outline-auto">
+      test
+      <div style="width: 100px; margin-left: 100px">div</div>
+      test
+    </span>
+  </section>
+</body>

@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-#include "zlib.h"
+#include "third_party/zlib/zlib.h"
 
 class GZipHeader;
 

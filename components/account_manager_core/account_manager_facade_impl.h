@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
@@ -23,6 +24,8 @@ class OAuth2AccessTokenFetcher;
 class OAuth2AccessTokenConsumer;
 
 namespace account_manager {
+
+class AccountManager;
 
 // ChromeOS-specific implementation of |AccountManagerFacade| that talks to
 // |account_manager::AccountManager| over Mojo. Used by both Lacros and Ash.
@@ -38,6 +41,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   AccountManagerFacadeImpl(
       mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
       uint32_t remote_version,
+      AccountManager* account_manager_for_tests,
       base::OnceClosure init_finished = base::DoNothing());
   AccountManagerFacadeImpl(const AccountManagerFacadeImpl&) = delete;
   AccountManagerFacadeImpl& operator=(const AccountManagerFacadeImpl&) = delete;
@@ -52,18 +56,21 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
       const AccountKey& account,
       base::OnceCallback<void(const GoogleServiceAuthError&)> callback)
       override;
-  void ShowAddAccountDialog(const AccountAdditionSource& source) override;
+  void ShowAddAccountDialog(AccountAdditionSource source) override;
   void ShowAddAccountDialog(
-      const AccountAdditionSource& source,
+      AccountAdditionSource source,
       base::OnceCallback<void(const account_manager::AccountAdditionResult&
                                   result)> callback) override;
-  void ShowReauthAccountDialog(const AccountAdditionSource& source,
+  void ShowReauthAccountDialog(AccountAdditionSource source,
                                const std::string& email) override;
   void ShowManageAccountsSettings() override;
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const AccountKey& account,
       const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer) override;
+  void UpsertAccountForTesting(const Account& account,
+                               const std::string& token_value) override;
+  void RemoveAccountForTesting(const AccountKey& account) override;
 
   // crosapi::mojom::AccountManagerObserver overrides:
   void OnTokenUpserted(crosapi::mojom::AccountPtr account) override;
@@ -153,6 +160,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
       receiver_;
 
   base::ObserverList<Observer> observer_list_;
+
+  AccountManager* account_manager_for_tests_ = nullptr;
 
   base::WeakPtrFactory<AccountManagerFacadeImpl> weak_factory_{this};
 };

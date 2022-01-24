@@ -23,8 +23,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
@@ -43,20 +44,52 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/user_names.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+using password_manager::FakePasswordStoreBackend;
+using password_manager::PasswordForm;
+using password_manager::PasswordStoreInterface;
 using ::testing::_;
+using ::testing::ElementsAre;
 
 namespace {
 
-const char kGaiaPasswordChangeHistogramName[] =
-    "PasswordProtection.GaiaPasswordReusesBeforeGaiaPasswordChanged";
 const char kLoginPageUrl[] = "/safe_browsing/login_page.html";
 const char kChangePasswordUrl[] = "/safe_browsing/change_password_page.html";
+
+PasswordForm CreatePasswordFormWithPhishedEntry(std::string signon_realm,
+                                                std::u16string username) {
+  PasswordForm form;
+  form.signon_realm = signon_realm;
+  form.url = GURL(signon_realm);
+  form.username_value = username;
+  form.password_value = u"password";
+  form.in_store = PasswordForm::Store::kProfileStore;
+  form.password_issues = {
+      {password_manager::InsecureType::kPhished,
+       password_manager::InsecurityMetadata(base::Time::FromTimeT(1),
+                                            password_manager::IsMuted(false))}};
+
+  return form;
+}
+
+void AddFormToStore(PasswordStoreInterface* password_store,
+                    const PasswordForm& form) {
+  password_store->AddLogin(form);
+  base::RunLoop().RunUntilIdle();
+  FakePasswordStoreBackend* fake_backend =
+      static_cast<FakePasswordStoreBackend*>(
+          password_store->GetBackendForTesting());
+  ASSERT_THAT(fake_backend->stored_passwords().at(form.signon_realm),
+              ElementsAre(form));
+}
 
 }  // namespace
 
@@ -65,6 +98,11 @@ namespace safe_browsing {
 class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
  public:
   ChromePasswordProtectionServiceBrowserTest() {}
+
+  ChromePasswordProtectionServiceBrowserTest(
+      const ChromePasswordProtectionServiceBrowserTest&) = delete;
+  ChromePasswordProtectionServiceBrowserTest& operator=(
+      const ChromePasswordProtectionServiceBrowserTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -166,7 +204,6 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
-  DISALLOW_COPY_AND_ASSIGN(ChromePasswordProtectionServiceBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
@@ -193,8 +230,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Initialize and verify initial state.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kLoginPageUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   ASSERT_FALSE(
       ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
@@ -253,8 +290,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Initialize and verify initial state.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kLoginPageUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   ASSERT_FALSE(
       ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
@@ -276,17 +313,30 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
+class ChromePasswordProtectionServiceBrowserWithFakeBackendPasswordStoreTest
+    : public ChromePasswordProtectionServiceBrowserTest {
+  void SetUpInProcessBrowserTestFixture() override {
+    ChromePasswordProtectionServiceBrowserTest::
+        SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating([](content::BrowserContext* context) {
+                  PasswordStoreFactory::GetInstance()->SetTestingFactory(
+                      context,
+                      base::BindRepeating(
+                          &password_manager::BuildPasswordStoreWithFakeBackend<
+                              content::BrowserContext>));
+                }));
+  }
 
-// Disabled due to flakiness on Linux Asan/Msan https://crbug.com/1229592
-#if defined(OS_LINUX) && \
-    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER))
-#define MAYBE_SavedPassword DISABLED_SavedPassword
-#else
-#define MAYBE_SavedPassword SavedPassword
-#endif
+ private:
+  base::CallbackListSubscription create_services_subscription_;
+};
 
-IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
-                       MAYBE_SavedPassword) {
+IN_PROC_BROWSER_TEST_F(
+    ChromePasswordProtectionServiceBrowserWithFakeBackendPasswordStoreTest,
+    SavedPassword) {
   base::HistogramTester histograms;
   SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
@@ -294,8 +344,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Initialize and verify initial state.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kLoginPageUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   ASSERT_FALSE(
       ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
@@ -339,20 +389,22 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
 
   // Simulate removing the compromised credentials on mark site as legitimate
   // action.
-  scoped_refptr<password_manager::MockPasswordStore> password_store =
-      base::WrapRefCounted(static_cast<password_manager::MockPasswordStore*>(
-          PasswordStoreFactory::GetInstance()
-              ->SetTestingFactoryAndUse(
-                  browser()->profile(),
-                  base::BindRepeating(&password_manager::BuildPasswordStore<
-                                      content::BrowserContext,
-                                      password_manager::MockPasswordStore>))
-              .get()));
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+      PasswordStoreFactory::GetForProfile(browser()->profile(),
+                                          ServiceAccessType::EXPLICIT_ACCESS);
+
+  // In order to test removal, we need to make sure it was added first.
+  const std::string kSignonRealm = "https://example.test";
+  const std::u16string kUsername = u"username1";
+  password_manager::PasswordForm form =
+      CreatePasswordFormWithPhishedEntry(kSignonRealm, kUsername);
+  AddFormToStore(password_store.get(), form);
+
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"https://example.test", u"username1"}};
+      {kSignonRealm, kUsername}};
+
   service->set_saved_passwords_matching_reused_credentials({credentials});
 
-  EXPECT_CALL(*password_store, RemoveInsecureCredentialsImpl(_, _, _)).Times(1);
   // Simulates clicking on "Mark site legitimate". Site is no longer dangerous.
   service->OnUserAction(web_contents, account_type, RequestOutcome::UNKNOWN,
                         LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
@@ -365,6 +417,13 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   EXPECT_EQ(security_state::NONE, GetSecurityLevel(web_contents));
   EXPECT_EQ(security_state::MALICIOUS_CONTENT_STATUS_NONE,
             GetVisibleSecurityState(web_contents)->malicious_content_status);
+  FakePasswordStoreBackend* fake_backend =
+      static_cast<FakePasswordStoreBackend*>(
+          password_store->GetBackendForTesting());
+  EXPECT_TRUE(fake_backend->stored_passwords()
+                  .at(kSignonRealm)
+                  .at(0)
+                  .password_issues.empty());
 }
 #endif
 
@@ -376,8 +435,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Initialize and verify initial state.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kLoginPageUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   ASSERT_FALSE(
       ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
@@ -439,8 +498,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kLoginPageUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
 
   ReusedPasswordAccountType account_type;
   account_type.set_account_type(ReusedPasswordAccountType::GSUITE);
@@ -493,8 +552,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
   ASSERT_TRUE(service);
   Profile* profile = browser()->profile();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kLoginPageUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
   ASSERT_TRUE(
       profile->GetPrefs()
           ->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
@@ -523,7 +582,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   // Shows modal dialog on this new web_contents.
   content::WebContents* new_web_contents =
       browser2->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser2, GURL("data:text/html,<html></html>"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser2, GURL("data:text/html,<html></html>")));
   scoped_refptr<PasswordProtectionRequest> new_request =
       CreateDummyRequest(new_web_contents);
   service->ShowModalWarning(
@@ -544,8 +604,6 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
             profile->GetPrefs()
                 ->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
                 ->DictSize());
-  EXPECT_THAT(histograms.GetAllSamples(kGaiaPasswordChangeHistogramName),
-              testing::ElementsAre(base::Bucket(2, 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
@@ -561,7 +619,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       /*is_primary_account=*/true,
       password_manager::metrics_util::GaiaPasswordHashChange::
           CHANGED_IN_CONTENT_AREA);
-  ui_test_utils::NavigateToURL(browser(), embedded_test_server()->GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/")));
 
   ReusedPasswordAccountType account_type;
   account_type.set_account_type(ReusedPasswordAccountType::GSUITE);
@@ -603,8 +662,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   ConfigureEnterprisePasswordProtection(
       /*is_gsuite=*/false, PasswordProtectionTrigger::PASSWORD_REUSE);
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kLoginPageUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
 
   ReusedPasswordAccountType account_type;
   account_type.set_account_type(ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
@@ -647,8 +706,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kLoginPageUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
   ReusedPasswordAccountType account_type;
   account_type.set_account_type(ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
 
@@ -690,8 +749,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kLoginPageUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
 
   ReusedPasswordAccountType account_type;
   account_type.set_account_type(ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
@@ -729,8 +788,8 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kLoginPageUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
 
   ReusedPasswordAccountType account_type;
   account_type.set_account_type(ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
@@ -828,6 +887,161 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                     ->GetList(password_manager::prefs::kPasswordHashDataList)
                     ->GetList()
                     .size());
+}
+
+// Extends the test fixture with support for testing prerendered and
+// back/forward cached pages.
+class ChromePasswordProtectionServiceBrowserTestWithActivation
+    : public ChromePasswordProtectionServiceBrowserTest {
+ public:
+  ChromePasswordProtectionServiceBrowserTestWithActivation()
+      : prerender_helper_(base::BindRepeating(
+            &ChromePasswordProtectionServiceBrowserTestWithActivation::
+                GetWebContents,
+            base::Unretained(this))) {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {{"enable_same_site", "true"},
+           {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControls});
+  }
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    ChromePasswordProtectionServiceBrowserTest::SetUp();
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that activation of prerendered pages is disabled when there is a
+// pending PasswordProtectionRequest which might trigger a modal warning.
+// This tests the case where the prerender starts before the
+// PasswordProtectionRequest.
+// TODO(https://crbug.com/1234857): The activation should be deferred rather
+// than disallowed, like other navigations.
+IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTestWithActivation,
+                       DoNotActivatePrerenderStartedBeforeRequest) {
+  SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
+  // Prepare sync account will trigger a password change.
+  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
+  prerender_helper_.AddPrerender(prerender_url);
+
+  // Start a request for a PASSWORD_REUSE_EVENT. This disables activation
+  // navigations because the throttle responsible for deferring while the
+  // request is pending cannot see the activation navigation.
+  service->StartRequest(
+      GetWebContents(), GURL(), GURL(), GURL(), "",
+      PasswordType::PASSWORD_TYPE_UNKNOWN,
+      std::vector<password_manager::MatchingReusedCredential>(),
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true);
+
+  // Navigate to the prerendered URL. It will be loaded anew without an
+  // activation.
+  content::TestNavigationManager prerender_manager(GetWebContents(),
+                                                   prerender_url);
+  ASSERT_TRUE(
+      content::ExecJs(GetWebContents()->GetMainFrame(),
+                      content::JsReplace("location = $1", prerender_url)));
+  prerender_manager.WaitForNavigationFinished();
+  EXPECT_FALSE(prerender_manager.was_prerendered_page_activation());
+  EXPECT_TRUE(prerender_manager.was_successful());
+}
+
+// Tests that activation of prerendered pages is disabled when there is a
+// pending PasswordProtectionRequest which might trigger a modal warning.
+// This tests the case where the prerender starts after the
+// PasswordProtectionRequest.
+// TODO(https://crbug.com/1234857): The activation should be deferred rather
+// than disallowed, like other navigations.
+IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTestWithActivation,
+                       DoNotActivatePrerenderStartedAfterRequest) {
+  SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
+  // Prepare sync account will trigger a password change.
+  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
+
+  // Start a request for a PASSWORD_REUSE_EVENT. This disables activation
+  // navigations because the throttle responsible for deferring while the
+  // request is pending cannot see the activation navigation.
+  service->StartRequest(
+      GetWebContents(), GURL(), GURL(), GURL(), "",
+      PasswordType::PASSWORD_TYPE_UNKNOWN,
+      std::vector<password_manager::MatchingReusedCredential>(),
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true);
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
+  prerender_helper_.AddPrerender(prerender_url);
+
+  // Navigate to the prerendered URL. It will be loaded anew without an
+  // activation.
+  content::TestNavigationManager prerender_manager(GetWebContents(),
+                                                   prerender_url);
+  ASSERT_TRUE(
+      content::ExecJs(GetWebContents()->GetMainFrame(),
+                      content::JsReplace("location = $1", prerender_url)));
+  prerender_manager.WaitForNavigationFinished();
+  EXPECT_FALSE(prerender_manager.was_prerendered_page_activation());
+  EXPECT_TRUE(prerender_manager.was_successful());
+}
+
+// Tests that activation of back/forward cached pages is disabled when there is
+// a pending PasswordProtectionRequest which might trigger a modal warning.
+// TODO(https://crbug.com/1234857): The activation should be deferred rather
+// than disallowed, like other navigations.
+IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTestWithActivation,
+                       DoNotActivateBackForwardCache) {
+  SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
+
+  // Prepare sync account will trigger a password change.
+  ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
+  ASSERT_TRUE(service);
+
+  // Put a simple page in the back/forward cache.
+  GURL url_a = embedded_test_server()->GetURL("/simple.html");
+  content::RenderFrameHost* rfh_a_raw =
+      ui_test_utils::NavigateToURL(browser(), url_a);
+  content::RenderFrameHostWrapper rfh_a(rfh_a_raw);
+  content::RenderFrameHost* rfh_b_raw = ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kLoginPageUrl));
+  content::RenderFrameHostWrapper rfh_b(rfh_b_raw);
+
+  // Ensure that `rfh_a` is in the back/forward cache.
+  EXPECT_FALSE(rfh_a.IsRenderFrameDeleted());
+  EXPECT_NE(rfh_a.get(), rfh_b.get());
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Start a request for a PASSWORD_REUSE_EVENT. This disables activation
+  // navigations because the throttle responsible for deferring while the
+  // request is pending cannot see the activation navigation.
+  service->StartRequest(
+      GetWebContents(), GURL(), GURL(), GURL(), "",
+      PasswordType::PASSWORD_TYPE_UNKNOWN,
+      std::vector<password_manager::MatchingReusedCredential>(),
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true);
+
+  // Navigate back. It will be loaded anew without an activation.
+  GetWebContents()->GetController().GoBack();
+  EXPECT_TRUE(content::WaitForLoadStop(GetWebContents()));
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(), url_a);
 }
 
 }  // namespace safe_browsing

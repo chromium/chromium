@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
@@ -54,6 +53,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedSimulator {
   VariationsSeedSimulator(
       const base::FieldTrial::EntropyProvider& default_entropy_provider,
       const base::FieldTrial::EntropyProvider& low_entropy_provider);
+
+  VariationsSeedSimulator(const VariationsSeedSimulator&) = delete;
+  VariationsSeedSimulator& operator=(const VariationsSeedSimulator&) = delete;
+
   virtual ~VariationsSeedSimulator();
 
   // Computes differences between the current process' field trial state and
@@ -99,8 +102,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedSimulator {
 
   const base::FieldTrial::EntropyProvider& default_entropy_provider_;
   const base::FieldTrial::EntropyProvider& low_entropy_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsSeedSimulator);
 };
 
 }  // namespace variations

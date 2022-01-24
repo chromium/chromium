@@ -69,6 +69,10 @@ def main(argv, stderr):
         printer.cleanup()
         return exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
 
+    # Spawn ends up with pickle errors while creating workers on fuchsia.
+    if not six.PY2 and ("fuchsia" not in port.port_name):
+        multiprocessing.set_start_method('spawn')
+
     try:
         return run(port, options, args, printer).exit_code
 
@@ -150,8 +154,8 @@ def parse_args(args):
                              default=True,
                              help=('Do not log Zircon debug messages.')),
         optparse.make_option('--device',
-                             choices=['aemu', 'qemu', 'device'],
-                             default='aemu',
+                             choices=['aemu', 'qemu', 'device', 'fvdl'],
+                             default='fvdl',
                              help=('Choose device to launch Fuchsia with. '
                                    'Defaults to AEMU.')),
         optparse.make_option('--fuchsia-target-cpu',
@@ -551,6 +555,10 @@ def parse_args(args):
             optparse.make_option('--time-out-ms',
                                  help='Set the timeout for each test'),
             optparse.make_option(
+                '--initialize-webgpu-adapter-at-startup-timeout-ms',
+                type='float',
+                help='Initialize WebGPU adapter before running any tests.'),
+            optparse.make_option(
                 '--wrapper',
                 help=
                 ('wrapper command to insert before invocations of the driver; option '
@@ -738,6 +746,4 @@ def run(port, options, args, printer):
 
 
 if __name__ == '__main__':
-    if not six.PY2:
-        multiprocessing.set_start_method('spawn')
     sys.exit(main(sys.argv[1:], sys.stderr))

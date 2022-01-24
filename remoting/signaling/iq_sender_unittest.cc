@@ -122,7 +122,7 @@ TEST_F(IqSenderTest, Timeout) {
     SendTestMessage();
   });
 
-  request_->SetTimeout(base::TimeDelta::FromMilliseconds(2));
+  request_->SetTimeout(base::Milliseconds(2));
 
   base::RunLoop run_loop;
   EXPECT_CALL(callback_, Run(request_.get(), nullptr))

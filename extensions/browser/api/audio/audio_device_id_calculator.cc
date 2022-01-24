@@ -37,7 +37,7 @@ void AudioDeviceIdCalculator::LoadStableIdMap() {
       ExtensionsBrowserClient::Get()->GetPrefServiceForContext(context_);
   const base::ListValue* audio_service_stable_ids =
       pref_service->GetList(kAudioApiStableDeviceIds);
-  for (size_t i = 0; i < audio_service_stable_ids->GetSize(); ++i) {
+  for (size_t i = 0; i < audio_service_stable_ids->GetList().size(); ++i) {
     std::string audio_service_stable_id;
     if (!audio_service_stable_ids->GetString(i, &audio_service_stable_id)) {
       NOTREACHED() << "Non string stable device ID.";
@@ -57,7 +57,8 @@ std::string AudioDeviceIdCalculator::GenerateNewStableDeviceId(
       ExtensionsBrowserClient::Get()->GetPrefServiceForContext(context_),
       kAudioApiStableDeviceIds);
 
-  std::string api_stable_id = base::NumberToString(update.Get()->GetSize());
+  std::string api_stable_id =
+      base::NumberToString(update.Get()->GetList().size());
   stable_id_map_[audio_service_stable_id] = api_stable_id;
   update->Append(audio_service_stable_id);
   return api_stable_id;

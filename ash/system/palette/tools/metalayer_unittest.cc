@@ -15,7 +15,6 @@
 #include "ash/system/palette/tools/metalayer_mode.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
@@ -32,6 +31,10 @@ namespace {
 class MetalayerToolTest : public AshTestBase {
  public:
   MetalayerToolTest() = default;
+
+  MetalayerToolTest(const MetalayerToolTest&) = delete;
+  MetalayerToolTest& operator=(const MetalayerToolTest&) = delete;
+
   ~MetalayerToolTest() override = default;
 
   void SetUp() override {
@@ -60,9 +63,6 @@ class MetalayerToolTest : public AshTestBase {
   std::unique_ptr<HighlighterControllerTestApi> highlighter_test_api_;
   std::unique_ptr<MockPaletteToolDelegate> palette_tool_delegate_;
   std::unique_ptr<PaletteTool> tool_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetalayerToolTest);
 };
 
 }  // namespace

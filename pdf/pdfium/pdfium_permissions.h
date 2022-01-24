@@ -25,7 +25,7 @@ class PDFiumPermissions final {
 
   explicit PDFiumPermissions(FPDF_DOCUMENT doc);
 
-  bool HasPermission(PDFEngine::DocumentPermission permission) const;
+  bool HasPermission(DocumentPermission permission) const;
 
  private:
   // For unit tests.

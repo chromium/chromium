@@ -58,9 +58,9 @@ class ActivityLogApiTest : public ExtensionApiTest {
   base::CommandLine saved_cmdline_;
 };
 
-#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
-// TODO(crbug.com/299393): This test is very long and can time out in debug or
-// ASAN builds.
+#if !defined(NDEBUG)
+// TODO(crbug.com/299393): This test is very long and can time out in debug
+// builds.
 #define MAYBE_TriggerEvent DISABLED_TriggerEvent
 #else
 #define MAYBE_TriggerEvent TriggerEvent

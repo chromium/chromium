@@ -24,6 +24,10 @@ class TouchSelectionMenuChromeOS : public views::TouchSelectionMenuViews {
                              aura::Window* context,
                              arc::mojom::TextSelectionActionPtr action);
 
+  TouchSelectionMenuChromeOS(const TouchSelectionMenuChromeOS&) = delete;
+  TouchSelectionMenuChromeOS& operator=(const TouchSelectionMenuChromeOS&) =
+      delete;
+
   void SetActionsForTesting(
       std::vector<arc::mojom::TextSelectionActionPtr> actions);
 
@@ -40,8 +44,6 @@ class TouchSelectionMenuChromeOS : public views::TouchSelectionMenuViews {
 
   arc::mojom::TextSelectionActionPtr action_;
   int64_t display_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuChromeOS);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOUCH_SELECTION_MENU_CHROMEOS_H_

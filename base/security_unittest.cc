@@ -71,9 +71,10 @@ void OverflowTestsSoftExpectTrue(bool overflow_detected) {
   }
 }
 
-#if defined(OS_FUCHSIA) || defined(OS_APPLE) || defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) \
-    || defined(MEMORY_SANITIZER) || BUILDFLAG(IS_HWASAN) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#  define MAYBE_NewOverflow DISABLED_NewOverflow
+#if defined(OS_APPLE) || defined(ADDRESS_SANITIZER) ||        \
+    defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    BUILDFLAG(IS_HWASAN) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#define MAYBE_NewOverflow DISABLED_NewOverflow
 #else
 #  define MAYBE_NewOverflow NewOverflow
 #endif
@@ -86,9 +87,7 @@ void OverflowTestsSoftExpectTrue(bool overflow_detected) {
 // - XSan aborts when operator new returns nullptr.
 // - PartitionAlloc crashes by design when size_t overflows.
 //
-// TODO(https://crbug.com/828229): Fuchsia SDK exports an incorrect
-// new[] that gets picked up in Debug/component builds, breaking this
-// test.  Disabled on Mac for the same reason.
+// TODO(https://crbug.com/927179): Fix the test on Mac.
 TEST(SecurityTest, MAYBE_NewOverflow) {
   const size_t kArraySize = 4096;
   // We want something "dynamic" here, so that the compiler doesn't

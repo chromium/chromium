@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"

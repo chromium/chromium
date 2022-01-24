@@ -129,10 +129,6 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
-  // All other use cases should be already filtered out by manifest feature
-  // checks.
-  DCHECK(extension->is_platform_app());
-
   KioskModeInfo::KioskStatus kiosk_status = KioskModeInfo::NONE;
   if (kiosk_enabled)
     kiosk_status = kiosk_only ? KioskModeInfo::ONLY : KioskModeInfo::ENABLED;

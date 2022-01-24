@@ -20,7 +20,7 @@ class ExtensionInstallBlockedDialogViewTest : public DialogBrowserTest {
 
   void ShowUi(const std::string& name) override {
     chrome::ShowExtensionInstallBlockedDialog(
-        "extension_name", message_, CreateExtensionIcon(),
+        "extension_id", "extension_name", message_, CreateExtensionIcon(),
         browser()->tab_strip_model()->GetWebContentsAt(0), base::DoNothing());
   }
 

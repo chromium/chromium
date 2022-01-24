@@ -34,6 +34,6 @@ void TestAutofillProfileValidatorDelayed::LoadRulesForRegion(
       FROM_HERE,
       base::BindOnce(&TestAutofillProfileValidatorDelayed::LoadRulesInstantly,
                      base::Unretained(this), region_code),
-      base::TimeDelta::FromSeconds(kRulesDelayedLoadingTimeSeconds));
+      base::Seconds(kRulesDelayedLoadingTimeSeconds));
 }
 }  // namespace autofill

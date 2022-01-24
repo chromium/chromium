@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_client.h"
@@ -62,6 +61,10 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
   static TestPlugin* Create(const blink::WebPluginParams& params,
                             TestRunner* test_runner,
                             blink::WebLocalFrame* frame);
+
+  TestPlugin(const TestPlugin&) = delete;
+  TestPlugin& operator=(const TestPlugin&) = delete;
+
   ~TestPlugin() override;
 
   static const blink::WebString& MimeType();
@@ -193,8 +196,6 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
 
   bool is_persistent_;
   bool can_create_without_renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPlugin);
 };
 
 }  // namespace content

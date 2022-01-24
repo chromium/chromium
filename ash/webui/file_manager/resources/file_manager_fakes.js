@@ -5,9 +5,6 @@
 /** @suppress {checkTypes} */
 window.chrome.extension = {
   inIncognitoContext: false,
-  getViews() {
-    return [];
-  },
 };
 
 window.DriveSyncHandler = class extends EventTarget {
@@ -39,7 +36,7 @@ window.DriveSyncHandler = class extends EventTarget {
    * @param {DriveDialogControllerInterface} dialog Dialog to be controlled.
    */
   addDialog(appId, dialog) {}
-}
+};
 
 window.Crostini = class {
   /**
@@ -103,7 +100,7 @@ window.Crostini = class {
    * @param {boolean} persist If path is to be persisted.
    */
   canSharePath(vmName, entry, persist) {}
-}
+};
 
 window.ProgressCenter = class {
   /**
@@ -143,7 +140,7 @@ window.ProgressCenter = class {
    *     ID. Null if the item is not found.
    */
   getItemById(id) {}
-}
+};
 
 window.FileOperationManager = class extends EventTarget {
   /**
@@ -223,7 +220,7 @@ window.FileOperationManager = class extends EventTarget {
    * @return {string} New task ID.
    */
   generateTaskId() {}
-}
+};
 
 window.ImportHistory = class {
   /**
@@ -288,7 +285,7 @@ window.ImportHistory = class {
    * @param {!importer.ImportHistory.Observer} observer
    */
   removeObserver(observer) {}
-}
+};
 
 window.MediaScanner = class {
   /**
@@ -326,7 +323,7 @@ window.MediaScanner = class {
    * @param {!importer.ScanObserver} observer
    */
   removeObserver(observer) {}
-}
+};
 
 /**
  * Class representing the results of an {importer} scan operation.
@@ -400,7 +397,7 @@ window.ScanResult = class {
    * @return {!importer.ScanResult.Statistics}
    */
   getStatistics() {}
-}
+};
 
 window.MediaImportHandler = class {
   /**
@@ -413,7 +410,7 @@ window.MediaImportHandler = class {
       progressCenter, historyLoader, dispositionChecker, driveSyncHandler) {}
 
   importFromScanResult(scanResult, destination, directoryPromise) {}
-}
+};
 
 /**
  * Provider of lazy loaded importer.ImportHistory. This is the main
@@ -439,4 +436,4 @@ window.HistoryLoader = class {
    * @param {function(!importer.ImportHistory)} listener
    */
   addHistoryLoadedListener(listener) {}
-}
+};

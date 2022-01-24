@@ -28,7 +28,7 @@ expected before
 [mid-2021](https://blog.chromium.org/2020/01/moving-forward-from-chrome-apps.html).
 Additionally, some features of supported C++ versions remain forbidden. The
 status of Chromium's C++ support is covered in more detail in
-[Modern C++ use in Chromium](https://chromium-cpp.appspot.com/).
+[Modern C++ use in Chromium](c++11.md).
 
 ## Naming
 

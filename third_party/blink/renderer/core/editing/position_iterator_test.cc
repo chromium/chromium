@@ -116,4 +116,28 @@ TEST_F(PositionIteratorTest, incrementWithTextAreaElement) {
   TestIncrement("<textarea id=target>123</textarea>456");
 }
 
+// For http://crbug.com/1248744
+TEST_F(PositionIteratorTest, nullPosition) {
+  PositionIterator dom_iterator((Position()));
+  PositionIteratorInFlatTree flat_iterator((PositionInFlatTree()));
+
+  EXPECT_EQ(Position(), dom_iterator.ComputePosition());
+  EXPECT_EQ(PositionInFlatTree(), flat_iterator.ComputePosition());
+
+  EXPECT_EQ(Position(), dom_iterator.DeprecatedComputePosition());
+  EXPECT_EQ(PositionInFlatTree(), flat_iterator.DeprecatedComputePosition());
+
+  dom_iterator.Increment();
+  flat_iterator.Increment();
+
+  EXPECT_EQ(Position(), dom_iterator.ComputePosition());
+  EXPECT_EQ(PositionInFlatTree(), flat_iterator.ComputePosition());
+
+  dom_iterator.Decrement();
+  flat_iterator.Decrement();
+
+  EXPECT_EQ(Position(), dom_iterator.ComputePosition());
+  EXPECT_EQ(PositionInFlatTree(), flat_iterator.ComputePosition());
+}
+
 }  // namespace blink

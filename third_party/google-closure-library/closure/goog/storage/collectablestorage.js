@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Provides a convenient API for data persistence with data
@@ -19,12 +11,11 @@
 
 goog.provide('goog.storage.CollectableStorage');
 
-goog.forwardDeclare('goog.storage.mechanism.IterableMechanism');
-goog.require('goog.array');
 goog.require('goog.iter');
 goog.require('goog.storage.ErrorCode');
 goog.require('goog.storage.ExpiringStorage');
 goog.require('goog.storage.RichStorage');
+goog.requireType('goog.storage.mechanism.IterableMechanism');
 
 
 
@@ -38,6 +29,7 @@ goog.require('goog.storage.RichStorage');
  * @extends {goog.storage.ExpiringStorage}
  */
 goog.storage.CollectableStorage = function(mechanism) {
+  'use strict';
   goog.storage.CollectableStorage.base(this, 'constructor', mechanism);
 };
 goog.inherits(goog.storage.CollectableStorage, goog.storage.ExpiringStorage);
@@ -53,10 +45,12 @@ goog.inherits(goog.storage.CollectableStorage, goog.storage.ExpiringStorage);
  */
 goog.storage.CollectableStorage.prototype.getExpiredKeys_ = function(
     keys, opt_strict) {
-  var keysToRemove = [];
+  'use strict';
+  const keysToRemove = [];
   goog.iter.forEach(keys, function(key) {
+    'use strict';
     // Get the wrapper.
-    var wrapper;
+    let wrapper;
 
     try {
       wrapper = goog.storage.CollectableStorage.prototype.getWrapper.call(
@@ -114,8 +108,10 @@ goog.storage.CollectableStorage.prototype.getExpiredKeys_ = function(
  */
 goog.storage.CollectableStorage.prototype.collectInternal = function(
     keys, opt_strict) {
-  var keysToRemove = this.getExpiredKeys_(keys, opt_strict);
-  goog.array.forEach(keysToRemove, function(key) {
+  'use strict';
+  const keysToRemove = this.getExpiredKeys_(keys, opt_strict);
+  keysToRemove.forEach(function(key) {
+    'use strict';
     goog.storage.CollectableStorage.prototype.remove.call(this, key);
   }, this);
   return keysToRemove;
@@ -128,6 +124,7 @@ goog.storage.CollectableStorage.prototype.collectInternal = function(
  * @param {boolean=} opt_strict Also remove invalid keys.
  */
 goog.storage.CollectableStorage.prototype.collect = function(opt_strict) {
+  'use strict';
   this.collectInternal(
       /** @type {goog.storage.mechanism.IterableMechanism} */ (this.mechanism)
           .__iterator__(true),

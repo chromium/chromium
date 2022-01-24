@@ -119,6 +119,10 @@ CWVTranslationError CWVConvertTranslateError(
              targetLanguage:(const std::string&)targetLanguage
                   errorType:(translate::TranslateErrors::Type)errorType
           triggeredFromMenu:(bool)triggeredFromMenu {
+  if (_webState->IsBeingDestroyed()) {
+    return;
+  }
+
   CWVTranslationLanguage* source = [self languageWithCode:sourceLanguage];
   CWVTranslationLanguage* target = [self languageWithCode:targetLanguage];
 

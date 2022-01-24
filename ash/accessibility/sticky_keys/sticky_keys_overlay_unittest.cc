@@ -75,6 +75,6 @@ TEST_F(StickyKeysOverlayTest, OverlayNotDestroyedAfterDisplayRemoved) {
 }
 
 // Additional sticky key overlay tests that depend on ui::EventRewriterChromeOS
-// are now in chrome/browser/chromeos/events/event_rewriter_unittest.cc .
+// are now in chrome/browser/ash/events/event_rewriter_unittest.cc .
 
 }  // namespace ash

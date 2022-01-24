@@ -17,7 +17,7 @@ async_test(t => {
     t.step_timeout(finish, 0);
   });
   window.onpopstate = () => events.push("onpopstate");
-  appHistory.navigate("#1").then(
+  appHistory.navigate("#1").committed.then(
       () => events.push("promisefulfilled"), () => events.push("promiserejected"));
 }, "navigate() event ordering for same-document navigation");
 </script>

@@ -85,6 +85,9 @@ class EventMap {
     }
   }
 
+  EventMap(const EventMap&) = delete;
+  EventMap& operator=(const EventMap&) = delete;
+
   events::HistogramValue Get(const std::string& event_name) {
     auto value = values_.find(event_name);
     return value != values_.end() ? value->second : events::UNKNOWN;
@@ -92,8 +95,6 @@ class EventMap {
 
  private:
   std::map<std::string, events::HistogramValue> values_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventMap);
 };
 
 base::LazyInstance<EventMap>::DestructorAtExit g_event_map =

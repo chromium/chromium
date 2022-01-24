@@ -28,7 +28,7 @@ namespace fast_pair_encryption {
 struct COMPONENT_EXPORT(QUICK_PAIR_PAIRING) KeyPair {
   KeyPair(std::array<uint8_t, kPrivateKeyByteSize> private_key,
           std::array<uint8_t, kPublicKeyByteSize> public_key);
-  KeyPair(const KeyPair&) = delete;
+  KeyPair(const KeyPair&);
   KeyPair(KeyPair&&);
   KeyPair& operator=(const KeyPair&) = delete;
   KeyPair& operator=(KeyPair&&) = delete;

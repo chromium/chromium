@@ -11,7 +11,7 @@ declare_args() {
   # coding guidelines, etc. Only used when compiling with Chrome's Clang, not
   # Chrome OS's.
   clang_use_chrome_plugins =
-      is_clang && !is_nacl && !use_xcode_clang &&
+      is_clang && !is_nacl && current_os != "zos" &&
       default_toolchain != "//build/toolchain/cros:target"
 
   clang_base_path = default_clang_base_path

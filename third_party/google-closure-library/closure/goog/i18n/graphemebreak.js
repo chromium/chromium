@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Detect Grapheme Cluster Break in a pair of codepoints. Follows
@@ -82,6 +74,7 @@ goog.i18n.GraphemeBreak.inversions_ = null;
  * @private
  */
 goog.i18n.GraphemeBreak.applyBreakRules_ = function(a, b, extended) {
+  'use strict';
   var prop = goog.i18n.GraphemeBreak.property;
 
   var aCode = (typeof a === 'string') ?
@@ -225,6 +218,7 @@ goog.i18n.GraphemeBreak.applyBreakRules_ = function(a, b, extended) {
  * @private
  */
 goog.i18n.GraphemeBreak.getBreakProp_ = function(codePoint) {
+  'use strict';
   if (0xAC00 <= codePoint && codePoint <= 0xD7A3) {
     var prop = goog.i18n.GraphemeBreak.property;
     if (codePoint % 0x1C === 0x10) {
@@ -394,6 +388,7 @@ goog.i18n.GraphemeBreak.getBreakProp_ = function(codePoint) {
  * @private
  */
 goog.i18n.GraphemeBreak.getCodePoint_ = function(str, index) {
+  'use strict';
   var codePoint = goog.i18n.uChar.getCodePointAround(str, index);
   return (codePoint < 0) ? -codePoint : codePoint;
 };
@@ -418,6 +413,7 @@ goog.i18n.GraphemeBreak.getCodePoint_ = function(str, index) {
  *     a and b; False otherwise.
  */
 goog.i18n.GraphemeBreak.hasGraphemeBreak = function(a, b, opt_extended) {
+  'use strict';
   return goog.i18n.GraphemeBreak.applyBreakRules_(a, b, opt_extended !== false);
 };
 
@@ -436,6 +432,7 @@ goog.i18n.GraphemeBreak.hasGraphemeBreak = function(a, b, opt_extended) {
  *     a and b; False otherwise.
  */
 goog.i18n.GraphemeBreak.hasGraphemeBreakStrings = function(a, b, opt_extended) {
+  'use strict';
   goog.asserts.assert(a !== undefined, 'First string should be defined.');
   goog.asserts.assert(b !== undefined, 'Second string should be defined.');
 

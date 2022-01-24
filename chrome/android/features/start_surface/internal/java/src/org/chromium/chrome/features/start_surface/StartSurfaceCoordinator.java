@@ -5,6 +5,7 @@
 package org.chromium.chrome.features.start_surface;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -17,19 +18,21 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.jank_tracker.JankTracker;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.feed.FeedLaunchReliabilityLoggingState;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
+import org.chromium.chrome.browser.feed.ScrollListener;
+import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
-import org.chromium.chrome.browser.ntp.ScrollListener;
-import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -42,6 +45,7 @@ import org.chromium.chrome.browser.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
+import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.start_surface.R;
@@ -87,6 +91,11 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final TabCreatorManager mTabCreatorManager;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    private final Supplier<Toolbar> mToolbarSupplier;
+
+    @VisibleForTesting
+    static final String START_SHOWN_AT_STARTUP_UMA = "Startup.Android.StartSurfaceShownAtStartup";
+    private static final String TAG = "StartSurface";
 
     // Non-null in SurfaceMode.SINGLE_PANE mode.
     @Nullable
@@ -110,7 +119,7 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     // Non-null in SurfaceMode.SINGLE_PANE modes.
     @Nullable
-    private ExploreSurfaceCoordinator mExploreSurfaceCoordinator;
+    private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
 
     // Non-null in SurfaceMode.SINGLE_PANE modes.
     // TODO(crbug.com/982018): Get rid of this reference since the mediator keeps a reference to it.
@@ -201,6 +210,7 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      * @param jankTracker Measures jank while feed or tab switcher are visible.
+     * @param toolbarSupplier Supplies the {@link Toolbar}.
      */
     public StartSurfaceCoordinator(@NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator,
@@ -221,12 +231,12 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull JankTracker jankTracker) {
+            @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier) {
         mFeedLaunchReliabilityLoggingState =
                 new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, System.nanoTime());
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
-        mIsStartSurfaceEnabled = ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
+        mIsStartSurfaceEnabled = ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity);
         mBottomSheetController = sheetController;
         mParentTabSupplier = parentTabSupplier;
         mWindowAndroid = windowAndroid;
@@ -244,6 +254,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mTabCreatorManager = tabCreatorManager;
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
+        mToolbarSupplier = toolbarSupplier;
 
         boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
                 || !mIsStartSurfaceEnabled;
@@ -274,6 +285,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             mFeedPlaceholderCoordinator = new FeedPlaceholderCoordinator(
                     mActivity, mTasksSurface.getBodyViewContainer(), false);
             mFeedPlaceholderCoordinator.setUpPlaceholderView();
+            mStartSurfaceMediator.setFeedPlaceholderHasShown();
         }
         startSurfaceOneshotSupplier.set(this);
     }
@@ -308,8 +320,13 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public void onHide() {
-        if (mTasksSurface != null) {
-            mTasksSurface.onHide();
+        if (mIsInitializedWithNative) {
+            if (mTasksSurface != null) {
+                mTasksSurface.onHide();
+            }
+            if (mSecondaryTasksSurface != null) {
+                mSecondaryTasksSurface.onHide();
+            }
         }
         if (mFeedPlaceholderCoordinator != null) {
             mFeedPlaceholderCoordinator.destroy();
@@ -346,19 +363,20 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public void setOnTabSelectingListener(StartSurface.OnTabSelectingListener listener) {
+        mStartSurfaceMediator.setOnTabSelectingListener(listener);
         if (mTasksSurface != null) {
-            mTasksSurface.setOnTabSelectingListener(listener);
+            mTasksSurface.setOnTabSelectingListener(mStartSurfaceMediator);
         } else {
-            mTabSwitcher.setOnTabSelectingListener(listener);
+            mTabSwitcher.setOnTabSelectingListener(mStartSurfaceMediator);
         }
 
         // Set OnTabSelectingListener to the more tabs tasks surface as well if it has been
         // instantiated, otherwise remember it for the future instantiation.
         if (mIsStartSurfaceEnabled) {
             if (mSecondaryTasksSurface == null) {
-                mOnTabSelectingListener = listener;
+                mOnTabSelectingListener = mStartSurfaceMediator;
             } else {
-                mSecondaryTasksSurface.setOnTabSelectingListener(listener);
+                mSecondaryTasksSurface.setOnTabSelectingListener(mStartSurfaceMediator);
             }
         }
     }
@@ -369,18 +387,15 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mIsInitializedWithNative = true;
         if (mIsStartSurfaceEnabled) {
-            mExploreSurfaceCoordinator =
-                    new ExploreSurfaceCoordinator(mActivity, mTasksSurface.getBodyViewContainer(),
-                            mPropertyModel, true, mBottomSheetController, mParentTabSupplier,
-                            new ScrollableContainerDelegateImpl(), mSnackbarManager,
-                            mShareDelegateSupplier, mWindowAndroid, mTabModelSelector,
-                            mFeedLaunchReliabilityLoggingState, mSwipeRefreshLayout);
+            mExploreSurfaceCoordinatorFactory = new ExploreSurfaceCoordinatorFactory(mActivity,
+                    mTasksSurface.getBodyViewContainer(), mPropertyModel, mBottomSheetController,
+                    mParentTabSupplier, new ScrollableContainerDelegateImpl(), mSnackbarManager,
+                    mShareDelegateSupplier, mWindowAndroid, mTabModelSelector, mToolbarSupplier,
+                    mFeedLaunchReliabilityLoggingState, mSwipeRefreshLayout);
         }
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,
-                mExploreSurfaceCoordinator != null
-                        ? mExploreSurfaceCoordinator.getFeedSurfaceController()
-                        : null,
+                mExploreSurfaceCoordinatorFactory,
                 UserPrefs.get(Profile.getLastUsedRegularProfile()));
 
         if (mTabSwitcher != null) {
@@ -453,10 +468,24 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
-    public void onOverviewShownAtLaunch(long activityCreationTimeMs) {
-        mStartSurfaceMediator.onOverviewShownAtLaunch(activityCreationTimeMs);
-        if (mFeedPlaceholderCoordinator != null) {
-            mFeedPlaceholderCoordinator.onOverviewShownAtLaunch(activityCreationTimeMs);
+    public void onOverviewShownAtLaunch(
+            boolean isOverviewShownOnStartup, long activityCreationTimeMs) {
+        if (isOverviewShownOnStartup) {
+            mStartSurfaceMediator.onOverviewShownAtLaunch(activityCreationTimeMs);
+            if (mFeedPlaceholderCoordinator != null) {
+                mFeedPlaceholderCoordinator.onOverviewShownAtLaunch(activityCreationTimeMs);
+            }
+        }
+        if (StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP.getValue()) {
+            ReturnToChromeExperimentsUtil.cachePrimaryAccountSyncStatus();
+        }
+        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity)) {
+            Log.i(TAG, "Recorded %s = %b", START_SHOWN_AT_STARTUP_UMA, isOverviewShownOnStartup);
+            RecordHistogram.recordBooleanHistogram(
+                    START_SHOWN_AT_STARTUP_UMA, isOverviewShownOnStartup);
+        }
+        if (!TextUtils.isEmpty(StartSurfaceConfiguration.BEHAVIOURAL_TARGETING.getValue())) {
+            ReturnToChromeExperimentsUtil.cacheSegmentationResult();
         }
     }
 
@@ -584,7 +613,7 @@ public class StartSurfaceCoordinator implements StartSurface {
      */
     private void createSwipeRefreshLayout() {
         assert mSwipeRefreshLayout == null;
-        mSwipeRefreshLayout = FeedSwipeRefreshLayout.create(mActivity);
+        mSwipeRefreshLayout = FeedSwipeRefreshLayout.create(mActivity, R.id.toolbar_container);
 
         // If FeedSwipeRefreshLayout is not created because the feature is not enabled, don't create
         // another layer.
@@ -596,5 +625,10 @@ public class StartSurfaceCoordinator implements StartSurface {
         FrameLayout directChildHolder = new FrameLayout(mActivity);
         mSwipeRefreshLayout.addView(directChildHolder);
         mContainerView = directChildHolder;
+    }
+
+    @VisibleForTesting
+    boolean isSecondaryTasksSurfaceEmptyForTesting() {
+        return mSecondaryTasksSurface == null;
     }
 }

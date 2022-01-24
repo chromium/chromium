@@ -19,7 +19,7 @@ promise_test(async t => {
   const frame = makeI420_4x2();
   frame.close();
 
-  assert_equals(frame.allocationSize(), 0, 'allocationSize()');
+  assert_throws_dom('InvalidStateError', () => frame.allocationSize(), 'allocationSize()');
 
   let data = new Uint8Array(12);
   await promise_rejects_dom(t, 'InvalidStateError', frame.copyTo(data), 'copyTo()');

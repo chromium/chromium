@@ -40,8 +40,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
   base::Value request(base::Value::Type::DICTIONARY);
   request.SetStringKey("request-str-key", "request-str-value");
   request.SetIntKey("request-int-key", 1234);
-  base::TimeDelta request_timeout =
-      base::TimeDelta::FromMilliseconds(timeout_in_millis);
+  base::TimeDelta request_timeout = base::Milliseconds(timeout_in_millis);
   absl::optional<base::Value> request_result;
 
   base::Value expected_result(base::Value::Type::DICTIONARY);

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_client.h"
@@ -27,6 +26,10 @@ namespace instance_id {
 class InstanceIDImpl : public InstanceID {
  public:
   InstanceIDImpl(const std::string& app_id, gcm::GCMDriver* gcm_driver);
+
+  InstanceIDImpl(const InstanceIDImpl&) = delete;
+  InstanceIDImpl& operator=(const InstanceIDImpl&) = delete;
+
   ~InstanceIDImpl() override;
 
   // InstanceID:
@@ -88,8 +91,6 @@ class InstanceIDImpl : public InstanceID {
   base::Time creation_time_;
 
   base::WeakPtrFactory<InstanceIDImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDImpl);
 };
 
 }  // namespace instance_id

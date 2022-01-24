@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 
 class PrefService;
@@ -29,6 +28,10 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
     explicit FactoryImpl(
         const base::RepeatingCallback<void(FakeAutoEnrollmentClient*)>&
             fake_client_created_callback);
+
+    FactoryImpl(const FactoryImpl&) = delete;
+    FactoryImpl& operator=(const FactoryImpl&) = delete;
+
     ~FactoryImpl() override;
 
     std::unique_ptr<AutoEnrollmentClient> CreateForFRE(
@@ -49,16 +52,19 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
         const std::string& device_brand_code,
         int power_initial,
         int power_limit,
-        int power_outdated_server_detect) override;
+        policy::PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory)
+        override;
 
    private:
     base::RepeatingCallback<void(FakeAutoEnrollmentClient*)>
         fake_client_created_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(FactoryImpl);
   };
 
   explicit FakeAutoEnrollmentClient(const ProgressCallback& progress_callback);
+
+  FakeAutoEnrollmentClient(const FakeAutoEnrollmentClient&) = delete;
+  FakeAutoEnrollmentClient& operator=(const FakeAutoEnrollmentClient&) = delete;
+
   ~FakeAutoEnrollmentClient() override;
 
   void Start() override;
@@ -78,8 +84,6 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
  private:
   ProgressCallback progress_callback_;
   AutoEnrollmentState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAutoEnrollmentClient);
 };
 
 }  // namespace policy

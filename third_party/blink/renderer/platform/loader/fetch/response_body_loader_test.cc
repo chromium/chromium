@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,7 +77,7 @@ class ResponseBodyLoaderTest : public testing::Test {
     void DidReceiveData(base::span<const char> data) override {
       DCHECK(!finished_);
       DCHECK(!failed_);
-      data_.Append(data.data(), data.size());
+      data_.Append(data.data(), static_cast<wtf_size_t>(data.size()));
       switch (option_) {
         case Option::kNone:
           break;

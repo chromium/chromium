@@ -61,6 +61,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnExitPictureInPicture(int player_id) override {}
   void OnSetAudioSinkId(int player_id,
                         const std::string& raw_device_id) override {}
+  void OnSetMute(int player_id, bool mute) override {}
 
   absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {
@@ -78,6 +79,10 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
 
   bool SupportsAudioOutputDeviceSwitching(int player_id) const override {
     return false;
+  }
+
+  media::MediaContentType GetMediaContentType() const override {
+    return media::MediaContentType::Persistent;
   }
 
   RenderFrameHost* render_frame_host() const override {
@@ -131,8 +136,7 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
         shell()->web_contents()->GetMainFrame());
 
     MediaSessionImpl::Get(shell()->web_contents())
-        ->AddPlayer(player_.get(), kPlayerId,
-                    media::MediaContentType::Persistent);
+        ->AddPlayer(player_.get(), kPlayerId);
   }
 
   MediaSessionImpl* GetSession() {

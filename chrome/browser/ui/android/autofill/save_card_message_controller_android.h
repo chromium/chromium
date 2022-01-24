@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_SAVE_CARD_MESSAGE_CONTROLLER_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_SAVE_CARD_MESSAGE_CONTROLLER_ANDROID_H_
 
+#include "chrome/browser/ui/android/autofill/save_card_controller_metrics_android.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_controller.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_delegate.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -44,6 +45,8 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
             AutofillClient::LocalSaveCardPromptCallback
                 local_save_card_prompt_callback);
 
+  void OnWebContentsFocused();
+
  private:
   friend class SaveCardMessageControllerAndroidTest;
 
@@ -51,29 +54,25 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
   void HandleMessageAction();
   void DismissMessage();
 
-  void ConfirmDate(const int month, const int year);
-  void ConfirmDate();
-  void ConfirmName(const std::u16string& inferred_cardholder_name);
+  void MaybeShowDialog();
+
+  void FixName(const std::u16string& inferred_cardholder_name);
+  void FixDate();
+  void ConfirmSaveCard();
 
   // SaveCardMessageConfirmDelegate
   void OnNameConfirmed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& name) override;
   void OnDateConfirmed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& month,
       const base::android::JavaParamRef<jstring>& year) override;
-  void PromptDismissed(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj) override;
+  void OnSaveCardConfirmed(JNIEnv* env) override;
+  void DialogDismissed(JNIEnv* env) override;
   void OnLegalMessageLinkClicked(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& url) override;
-
-  void MaybeShowDialog();
 
   bool IsGooglePayBrandingEnabled() const;
 
@@ -83,12 +82,16 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
   // The cardholder name and expiration date portions of
   // |user_provided_details| are handled separately, so if either of them are
   // empty the current Card values will be used in their place.
-  void RunSaveCardPromptCallback(
+  void OnPromptCompleted(
       AutofillClient::SaveCardOfferUserDecision user_decision,
       AutofillClient::UserProvidedCardDetails user_provided_details);
 
   // Did the user ever explicitly accept or dismiss this message?
   bool HadUserInteraction();
+
+  // Reset pointers to message and dialog. Should be called when dismiss
+  // callback of message and dialog is executed.
+  void ResetInternal();
 
   // Whether the action is an upload or a local save.
   bool is_upload_;
@@ -101,9 +104,6 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
   // The callback to run once the user makes a decision with respect to the
   // local credit card offer-to-save prompt (if |upload_| is false).
   AutofillClient::LocalSaveCardPromptCallback local_save_card_prompt_callback_;
-
-  // Weak reference to read & write |kAutofillAcceptSaveCreditCardPromptState|.
-  PrefService* pref_service_;
 
   // If the cardholder name is missing, request the name from the user before
   // saving the card. If the expiration date is missing, request the missing
@@ -119,14 +119,17 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
       save_card_message_confirm_controller_;
 
   std::u16string inferred_name_;
+  std::u16string card_label_;
 
-  // Whether we need to request users to fill in more info
-  bool promo_continue_;
-  int expiration_date_year_;
-  int expiration_date_month_;
+  // Whether we need to request users to fill in more info.
+  bool request_more_info_ = false;
+
+  // Whether we should re-show the dialog to users when users return to the tab.
+  bool reprompt_required_ = false;
 
   bool is_name_confirmed_for_testing_ = false;
   bool is_date_confirmed_for_testing_ = false;
+  bool is_save_card_confirmed_for_testing_ = false;
 };
 
 }  // namespace autofill

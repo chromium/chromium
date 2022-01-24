@@ -27,67 +27,63 @@ NSAttributedString* PrimaryMessage(NSString* fullText) {
   DCHECK(fullText);
   NSDictionary* generalAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor],
-    NSFontAttributeName : [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
   };
 
   return [[NSAttributedString alloc] initWithString:fullText
                                          attributes:generalAttributes];
 }
 
-NSAttributedString* SecondaryMessage(NSString* enterpriseName) {
+NSAttributedString* SecondaryMessage(NSString* enterpriseName,
+                                     BOOL addLearnMoreLink) {
   // Create and format the text.
-  NSString* message;
-  if (enterpriseName) {
-    message = l10n_util::GetNSStringF(
-        IDS_IOS_ENTERPRISE_MANAGED_SETTING_DESC_WITH_COMPANY_NAME,
-        base::SysNSStringToUTF16(enterpriseName));
-  } else {
-    message = l10n_util::GetNSString(
-        IDS_IOS_ENTERPRISE_MANAGED_SETTING_DESC_WITHOUT_COMPANY_NAME);
-  }
-
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
   };
 
-  NSDictionary* linkAttributes = @{
-    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
-    NSLinkAttributeName :
-        [NSString stringWithUTF8String:kChromeUIManagementURL],
-  };
+  NSAttributedString* attributedString;
+  if (addLearnMoreLink) {
+    NSString* message;
+    if (enterpriseName) {
+      message = l10n_util::GetNSStringF(
+          IDS_IOS_ENTERPRISE_MANAGED_SETTING_DESC_WITH_COMPANY_NAME,
+          base::SysNSStringToUTF16(enterpriseName));
+    } else {
+      message = l10n_util::GetNSString(
+          IDS_IOS_ENTERPRISE_MANAGED_SETTING_DESC_WITHOUT_COMPANY_NAME);
+    }
 
-  // Add a space to have a distance with the leading icon.
-  NSAttributedString* attributedString = AttributedStringFromStringWithLink(
-      [@" " stringByAppendingString:message], textAttributes, linkAttributes);
+    NSDictionary* linkAttributes = @{
+      NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+      NSFontAttributeName :
+          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+      NSLinkAttributeName :
+          [NSString stringWithUTF8String:kChromeUIManagementURL],
+    };
 
-  // Create the leading enterprise icon.
-  NSTextAttachment* attachment = [[NSTextAttachment alloc] init];
-  attachment.image = [UIImage imageNamed:kEnterpriseIconName];
-  NSAttributedString* attachmentString =
-      [NSAttributedString attributedStringWithAttachment:attachment];
+    attributedString = AttributedStringFromStringWithLink(
+        message, textAttributes, linkAttributes);
+  } else {
+    attributedString = [[NSAttributedString alloc]
+        initWithString:l10n_util::GetNSString(
+                           IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION)
+            attributes:textAttributes];
+  }
 
-  // Making sure the image is well centered vertically relative to the text,
-  // and also that the image scales with the text size.
-  CGFloat height = attributedString.size.height;
-  CGFloat capHeight =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote].capHeight;
-  CGFloat verticalOffset = roundf(capHeight - height) / 2.f;
-  attachment.bounds = CGRectMake(0, verticalOffset, height, height);
-
-  // Combine the icon and the text, and set them to the secondary label.
-  NSMutableAttributedString* fullAtrributedString =
-      [[NSMutableAttributedString alloc] initWithString:@""];
-  [fullAtrributedString appendAttributedString:attachmentString];
-  [fullAtrributedString appendAttributedString:attributedString];
-
-  return fullAtrributedString;
+  return attributedString;
 }
 
 }  // namespace
+
+@interface EnterpriseInfoPopoverViewController ()
+
+// YES if it is presented by a UIButton.
+@property(nonatomic, assign) BOOL isPresentingFromButton;
+
+@end
 
 @implementation EnterpriseInfoPopoverViewController
 
@@ -99,9 +95,25 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName) {
 
 - (instancetype)initWithMessage:(NSString*)message
                  enterpriseName:(NSString*)enterpriseName {
-  return
-      [super initWithPrimaryAttributedString:PrimaryMessage(message)
-                   secondaryAttributedString:SecondaryMessage(enterpriseName)];
+  return [self initWithMessage:message
+                enterpriseName:enterpriseName
+        isPresentingFromButton:YES
+              addLearnMoreLink:YES];
+}
+
+- (instancetype)initWithMessage:(NSString*)message
+                 enterpriseName:(NSString*)enterpriseName
+         isPresentingFromButton:(BOOL)isPresentingFromButton
+               addLearnMoreLink:(BOOL)addLearnMoreLink {
+  self = [super
+      initWithPrimaryAttributedString:PrimaryMessage(message)
+            secondaryAttributedString:SecondaryMessage(enterpriseName,
+                                                       addLearnMoreLink)
+                                 icon:[UIImage imageNamed:kEnterpriseIconName]];
+  if (self) {
+    _isPresentingFromButton = isPresentingFromButton;
+  }
+  return self;
 }
 
 #pragma mark - UIViewController
@@ -115,9 +127,11 @@ NSAttributedString* SecondaryMessage(NSString* enterpriseName) {
 
 - (void)popoverPresentationControllerDidDismissPopover:
     (UIPopoverPresentationController*)popoverPresentationController {
-  UIButton* buttonView = base::mac::ObjCCastStrict<UIButton>(
-      popoverPresentationController.sourceView);
-  buttonView.enabled = YES;
+  if (self.isPresentingFromButton) {
+    UIButton* buttonView = base::mac::ObjCCastStrict<UIButton>(
+        popoverPresentationController.sourceView);
+    buttonView.enabled = YES;
+  }
 }
 
 @end

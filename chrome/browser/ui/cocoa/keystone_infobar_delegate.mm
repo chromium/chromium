@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
@@ -52,8 +51,7 @@ KeystonePromotionInfoBarDelegate::KeystonePromotionInfoBarDelegate(
       prefs_(prefs),
       can_expire_(false),
       weak_ptr_factory_(this) {
-  const base::TimeDelta kCanExpireOnNavigationAfterDelay =
-      base::TimeDelta::FromSeconds(8);
+  const base::TimeDelta kCanExpireOnNavigationAfterDelay = base::Seconds(8);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&KeystonePromotionInfoBarDelegate::SetCanExpire,

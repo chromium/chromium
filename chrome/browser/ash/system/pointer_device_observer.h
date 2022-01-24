@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_POINTER_DEVICE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_SYSTEM_POINTER_DEVICE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/events/devices/input_device_event_observer.h"
@@ -16,6 +15,10 @@ namespace system {
 class PointerDeviceObserver : public ui::InputDeviceEventObserver {
  public:
   PointerDeviceObserver();
+
+  PointerDeviceObserver(const PointerDeviceObserver&) = delete;
+  PointerDeviceObserver& operator=(const PointerDeviceObserver&) = delete;
+
   ~PointerDeviceObserver() override;
 
   // Start observing device hierarchy.
@@ -54,8 +57,6 @@ class PointerDeviceObserver : public ui::InputDeviceEventObserver {
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<PointerDeviceObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PointerDeviceObserver);
 };
 
 }  // namespace system

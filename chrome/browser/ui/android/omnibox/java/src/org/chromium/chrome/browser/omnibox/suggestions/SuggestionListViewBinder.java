@@ -63,8 +63,8 @@ class SuggestionListViewBinder {
                             view.dropdown.resetSelection();
                         }
                     });
-        } else if (SuggestionListProperties.IS_INCOGNITO.equals(propertyKey)) {
-            view.dropdown.refreshPopupBackground(model.get(SuggestionListProperties.IS_INCOGNITO));
+        } else if (SuggestionListProperties.OMNIBOX_THEME.equals(propertyKey)) {
+            view.dropdown.refreshPopupBackground(model.get(SuggestionListProperties.OMNIBOX_THEME));
         }
     }
 }

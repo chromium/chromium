@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -16,8 +15,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -62,6 +61,11 @@ class TestExtensionUninstallDialogDelegate
       base::RepeatingClosure quit_closure)
       : quit_closure_(quit_closure) {}
 
+  TestExtensionUninstallDialogDelegate(
+      const TestExtensionUninstallDialogDelegate&) = delete;
+  TestExtensionUninstallDialogDelegate& operator=(
+      const TestExtensionUninstallDialogDelegate&) = delete;
+
   ~TestExtensionUninstallDialogDelegate() override {}
 
   bool canceled() const { return canceled_; }
@@ -82,8 +86,6 @@ class TestExtensionUninstallDialogDelegate
   bool did_close_ = false;
   bool canceled_ = false;
   std::u16string error_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionUninstallDialogDelegate);
 };
 
 }  // namespace
@@ -195,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url;
-  web_app_info->open_as_window = true;
+  web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   web_app::AppId app_id = web_app::test::InstallWebApp(browser()->profile(),
                                                        std::move(web_app_info));
   Browser* app_browser =

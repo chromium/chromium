@@ -95,8 +95,8 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
     if (value) {
       DCHECK_EQ(1, data_decoder::GetXmlElementChildrenCount(*device_element,
                                                             kNodeNames[i]));
-      bool result = data_decoder::GetXmlElementText(*value, kFields[i]);
-      if (!result) {
+      bool parsed = data_decoder::GetXmlElementText(*value, kFields[i]);
+      if (!parsed) {
         NotifyParsingError(std::move(callback), kParsingErrors[i]);
         return;
       }

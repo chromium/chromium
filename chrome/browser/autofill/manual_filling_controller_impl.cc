@@ -128,8 +128,10 @@ void ManualFillingControllerImpl::RefreshSuggestions(
   view_->OnItemsAvailable(accessory_sheet_data);
   available_sheets_.insert_or_assign(GetSourceForTabType(accessory_sheet_data),
                                      accessory_sheet_data);
-  UpdateSourceAvailability(GetSourceForTabType(accessory_sheet_data),
-                           !accessory_sheet_data.user_info_list().empty());
+  UpdateSourceAvailability(
+      GetSourceForTabType(accessory_sheet_data),
+      !accessory_sheet_data.user_info_list().empty() ||
+          !accessory_sheet_data.promo_code_info_list().empty());
 }
 
 void ManualFillingControllerImpl::NotifyFocusedInputChanged(
@@ -199,7 +201,7 @@ void ManualFillingControllerImpl::Hide() {
 
 void ManualFillingControllerImpl::OnFillingTriggered(
     AccessoryTabType type,
-    const autofill::UserInfo::Field& selection) {
+    const autofill::AccessorySheetField& selection) {
   AccessoryController* controller = GetControllerForTabType(type);
   if (!controller)
     return;  // Controller not available anymore.
@@ -322,11 +324,7 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
           autofill::features::kAutofillManualFallbackAndroid)) {
     return last_focused_field_type_ ==
                FocusedFieldType::kFillablePasswordField ||
-           (last_focused_field_type_ ==
-                FocusedFieldType::kFillableUsernameField &&
-            (base::FeatureList::IsEnabled(
-                 password_manager::features::kFillingPasswordsFromAnyOrigin) ||
-             available_sources_.contains(FillingSource::PASSWORD_FALLBACKS)));
+           last_focused_field_type_ == FocusedFieldType::kFillableUsernameField;
   }
   switch (last_focused_field_type_) {
     // Always show on password fields to provide management and generation.
@@ -336,9 +334,8 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
     // If there are suggestions, show on usual form fields.
     case FocusedFieldType::kFillableUsernameField:
     case FocusedFieldType::kFillableNonSearchField:
-      return !available_sources_.empty() ||
-             base::FeatureList::IsEnabled(
-                 password_manager::features::kFillingPasswordsFromAnyOrigin);
+      // TODO(crbug/1242839): Hide the accessory if no fallback is available.
+      return true;
 
     // Fallbacks aren't really useful on search fields but autocomplete entries
     // justify showing the accessory.
@@ -462,4 +459,4 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForFillingSource(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ManualFillingControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ManualFillingControllerImpl);

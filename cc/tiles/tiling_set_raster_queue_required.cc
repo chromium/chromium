@@ -105,7 +105,7 @@ TilingSetRasterQueueRequired::TilingIterator::TilingIterator(
   if (tile && tile->draw_info().NeedsRaster() &&
       !tiling_->IsTileOccluded(tile)) {
     current_tile_ = tiling_->MakePrioritizedTile(
-        tile, tiling_->ComputePriorityRectTypeForTile(tile));
+        tile, tiling_->ComputePriorityRectTypeForTile(tile), false);
     return;
   }
   ++(*this);
@@ -143,7 +143,7 @@ TilingSetRasterQueueRequired::TilingIterator&
   }
 
   current_tile_ = tiling_->MakePrioritizedTile(
-      tile, tiling_->ComputePriorityRectTypeForTile(tile));
+      tile, tiling_->ComputePriorityRectTypeForTile(tile), false);
   return *this;
 }
 

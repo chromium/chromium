@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
@@ -32,7 +33,9 @@ namespace {
 enum class CpuAffinityModeForUma {
   kDefault = 0,
   kLittleCoresOnly = 1,
-  kMaxValue = kLittleCoresOnly,
+  kBigCoresOnly = 2,
+  kBiggerCoresOnly = 3,
+  kMaxValue = kBiggerCoresOnly,
 };
 
 CpuAffinityModeForUma GetCpuAffinityModeForUma(base::CpuAffinityMode affinity) {
@@ -41,6 +44,10 @@ CpuAffinityModeForUma GetCpuAffinityModeForUma(base::CpuAffinityMode affinity) {
       return CpuAffinityModeForUma::kDefault;
     case base::CpuAffinityMode::kLittleCoresOnly:
       return CpuAffinityModeForUma::kLittleCoresOnly;
+    case base::CpuAffinityMode::kBigCoresOnly:
+      return CpuAffinityModeForUma::kBigCoresOnly;
+    case base::CpuAffinityMode::kBiggerCoresOnly:
+      return CpuAffinityModeForUma::kBiggerCoresOnly;
   }
 }
 
@@ -51,6 +58,10 @@ perfetto::StaticString TraceEventNameForAffinityMode(
       return "ApplyCpuAffinityModeDefault";
     case base::CpuAffinityMode::kLittleCoresOnly:
       return "ApplyCpuAffinityModeLittleCoresOnly";
+    case base::CpuAffinityMode::kBigCoresOnly:
+      return "ApplyCpuAffinityModeBigCoresOnly";
+    case base::CpuAffinityMode::kBiggerCoresOnly:
+      return "ApplyCpuAffinityModeBiggerCoresOnly";
   }
 }
 
@@ -82,8 +93,8 @@ bool CpuAffinityApplicable() {
 // Default policy params for the PowerScheduler feature. Please update the
 // comment in power_scheduler_features.cc when changing these defaults.
 static constexpr SchedulingPolicyParams kDefaultParams{
-    SchedulingPolicy::kThrottleIdleAndNopAnimation,
-    base::TimeDelta::FromMilliseconds(500), 0.5f};
+    SchedulingPolicy::kThrottleIdleAndNopAnimation, base::Milliseconds(500),
+    0.5f};
 
 // Keys/values for the field trial params.
 static const char kPolicyKey[] = "policy";
@@ -229,7 +240,7 @@ void PowerScheduler::InitializePolicyFromFeatureList() {
     int min_time_ms = 0;
     if (base::StringToInt(field_trial_params[kMinTimeInModeMsKey],
                           &min_time_ms)) {
-      params.min_time_in_mode = base::TimeDelta::FromMilliseconds(min_time_ms);
+      params.min_time_in_mode = base::Milliseconds(min_time_ms);
     }
 
     double min_cputime_ratio = 0;
@@ -361,8 +372,7 @@ base::CpuAffinityMode PowerScheduler::GetTargetCpuAffinity() {
   // If we are in a throttleable mode, check if we've been in a throttleable
   // mode for long enough and consumed enough CPU. Otherwise, don't change
   // anything (yet) and schedule a follow-up check if needed.
-  if (is_throttleable_mode &&
-      current_policy_.min_time_in_mode > base::TimeDelta()) {
+  if (is_throttleable_mode && current_policy_.min_time_in_mode.is_positive()) {
     base::TimeTicks now = base::TimeTicks::Now();
     base::TimeDelta cumulative_cpu = GetProcessCpuTime();
 
@@ -421,9 +431,8 @@ void PowerScheduler::ApplyPolicyOnSequence() {
       !enforced_affinity_setup_time_.is_null()) {
     auto throttling_duration = now - enforced_affinity_setup_time_;
     UMA_HISTOGRAM_CUSTOM_TIMES("Power.PowerScheduler.ThrottlingDuration",
-                               throttling_duration,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(10), 100);
+                               throttling_duration, base::Milliseconds(1),
+                               base::Minutes(10), 100);
 
     UMA_HISTOGRAM_SCALED_ENUMERATION(
         "Power.PowerScheduler.ThrottlingDurationPerCpuAffinityMode",

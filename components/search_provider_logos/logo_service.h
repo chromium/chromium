@@ -23,6 +23,9 @@ class LogoObserver;
 //
 class LogoService : public KeyedService {
  public:
+  LogoService(const LogoService&) = delete;
+  LogoService& operator=(const LogoService&) = delete;
+
   // Gets the logo for the default search provider and calls the provided
   // callbacks with the encoded and decoded logos. The service will:
   //
@@ -47,9 +50,6 @@ class LogoService : public KeyedService {
 
  protected:
   LogoService();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LogoService);
 };
 
 }  // namespace search_provider_logos

@@ -33,6 +33,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -99,10 +100,8 @@ size_t CalculateRequiredCountsBytes(size_t bucket_count) {
 
 }  // namespace
 
-const Feature kPersistentHistogramsFeature{
-  "PersistentHistograms", FEATURE_DISABLED_BY_DEFAULT
-};
-
+const Feature kPersistentHistogramsFeature{"PersistentHistograms",
+                                           FEATURE_ENABLED_BY_DEFAULT};
 
 PersistentSparseHistogramDataManager::PersistentSparseHistogramDataManager(
     PersistentMemoryAllocator* allocator)
@@ -679,24 +678,26 @@ void GlobalHistogramAllocator::CreateWithLocalMemory(
 
 #if !defined(OS_NACL)
 // static
-bool GlobalHistogramAllocator::CreateWithFile(
-    const FilePath& file_path,
-    size_t size,
-    uint64_t id,
-    StringPiece name) {
-  bool exists = PathExists(file_path);
-  File file(
-      file_path, File::FLAG_OPEN_ALWAYS | File::FLAG_SHARE_DELETE |
-                 File::FLAG_READ | File::FLAG_WRITE);
+bool GlobalHistogramAllocator::CreateWithFile(const FilePath& file_path,
+                                              size_t size,
+                                              uint64_t id,
+                                              StringPiece name,
+                                              bool exclusive_write) {
+  uint32_t flags = File::FLAG_OPEN_ALWAYS | File::FLAG_SHARE_DELETE |
+                   File::FLAG_READ | File::FLAG_WRITE;
+  if (exclusive_write)
+    flags |= File::FLAG_EXCLUSIVE_WRITE;
+  File file(file_path, flags);
+  if (!file.IsValid())
+    return false;
 
   std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
   bool success = false;
-  if (exists) {
-    size = saturated_cast<size_t>(file.GetLength());
-    success = mmfile->Initialize(std::move(file), MemoryMappedFile::READ_WRITE);
-  } else {
+  if (file.created()) {
     success = mmfile->Initialize(std::move(file), {0, size},
                                  MemoryMappedFile::READ_WRITE_EXTEND);
+  } else {
+    success = mmfile->Initialize(std::move(file), MemoryMappedFile::READ_WRITE);
   }
   if (!success ||
       !FilePersistentMemoryAllocator::IsFileAcceptable(*mmfile, true)) {
@@ -704,8 +705,8 @@ bool GlobalHistogramAllocator::CreateWithFile(
   }
 
   Set(WrapUnique(new GlobalHistogramAllocator(
-      std::make_unique<FilePersistentMemoryAllocator>(std::move(mmfile), size,
-                                                      id, name, false))));
+      std::make_unique<FilePersistentMemoryAllocator>(std::move(mmfile), 0, id,
+                                                      name, false))));
   Get()->SetPersistentLocation(file_path);
   return true;
 }

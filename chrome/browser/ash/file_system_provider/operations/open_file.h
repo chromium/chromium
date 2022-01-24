@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -36,6 +35,10 @@ class OpenFile : public Operation {
            const base::FilePath& file_path,
            OpenFileMode mode,
            ProvidedFileSystemInterface::OpenFileCallback callback);
+
+  OpenFile(const OpenFile&) = delete;
+  OpenFile& operator=(const OpenFile&) = delete;
+
   ~OpenFile() override;
 
   // Operation overrides.
@@ -51,8 +54,6 @@ class OpenFile : public Operation {
   base::FilePath file_path_;
   OpenFileMode mode_;
   ProvidedFileSystemInterface::OpenFileCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenFile);
 };
 
 }  // namespace operations

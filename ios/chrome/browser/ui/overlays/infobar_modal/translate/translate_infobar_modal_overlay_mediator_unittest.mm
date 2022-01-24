@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_translate_modal_consumer.h"
 #import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_translate_modal_consumer.h"
-#import "ios/chrome/browser/ui/infobars/test/fake_infobar_ui_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -46,7 +45,7 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
       translate::TranslateStep step,
       translate::TranslateErrors::Type error_type)
       : infobar_(
-            [[FakeInfobarUIDelegate alloc] init],
+            InfobarType::kInfobarTypeTranslate,
             delegate_factory_.CreateFakeTranslateInfoBarDelegate("fr",
                                                                  "en",
                                                                  step,
@@ -138,10 +137,8 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, UpdateLanguageInfo) {
   if (![currentLanguage isEqual:@"en-US"])
     return;
 
-  // Language indexes are different on iOS 14.
-  // TODO(crbug.com/1102968): Avoid hard-coding indexes here.
-  const int portuguese_index = base::ios::IsRunningOnIOS14OrLater() ? 67 : 69;
-  const int spanish_index = base::ios::IsRunningOnIOS14OrLater() ? 81 : 83;
+  const int portuguese_index = 67;
+  const int spanish_index = 81;
 
   [mediator_ didSelectSourceLanguageIndex:portuguese_index
                                  withName:@"Portuguese"];

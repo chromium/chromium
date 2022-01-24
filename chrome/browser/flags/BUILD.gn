@@ -25,6 +25,7 @@ android_library("java") {
     "//build:chromeos_buildflags",
     "//chrome/browser/preferences:java",
     "//chrome/browser/version:java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   srcjar_deps = [

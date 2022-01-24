@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -17,6 +16,7 @@
 
 namespace base {
 class ListValue;
+class DictionaryValue;
 }  // namespace base
 
 namespace content {
@@ -53,6 +53,11 @@ class AccessibilityUIObserver : public content::WebContentsObserver {
 class AccessibilityUIMessageHandler : public content::WebUIMessageHandler {
  public:
   AccessibilityUIMessageHandler();
+
+  AccessibilityUIMessageHandler(const AccessibilityUIMessageHandler&) = delete;
+  AccessibilityUIMessageHandler& operator=(
+      const AccessibilityUIMessageHandler&) = delete;
+
   ~AccessibilityUIMessageHandler() override;
 
   void RegisterMessages() override;
@@ -65,7 +70,7 @@ class AccessibilityUIMessageHandler : public content::WebUIMessageHandler {
 
   void ToggleAccessibility(const base::ListValue* args);
   void SetGlobalFlag(const base::ListValue* args);
-  void GetRequestTypeAndFilters(const base::DictionaryValue* data,
+  void GetRequestTypeAndFilters(const base::DictionaryValue& data,
                                 std::string& request_type,
                                 std::string& allow,
                                 std::string& allow_empty,
@@ -76,8 +81,6 @@ class AccessibilityUIMessageHandler : public content::WebUIMessageHandler {
   void RequestAccessibilityEvents(const base::ListValue* args);
   void Callback(const std::string&);
   void StopRecording(content::WebContents* web_contents);
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityUIMessageHandler);
 };
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_UI_H_

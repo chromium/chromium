@@ -12,7 +12,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_skia.h"
@@ -38,6 +37,10 @@ namespace ash {
 class ASH_PUBLIC_EXPORT ShelfItemDelegate {
  public:
   explicit ShelfItemDelegate(const ShelfID& shelf_id);
+
+  ShelfItemDelegate(const ShelfItemDelegate&) = delete;
+  ShelfItemDelegate& operator=(const ShelfItemDelegate&) = delete;
+
   virtual ~ShelfItemDelegate();
 
   const ShelfID& shelf_id() const { return shelf_id_; }
@@ -118,8 +121,6 @@ class ASH_PUBLIC_EXPORT ShelfItemDelegate {
   bool image_set_by_controller_ = false;
 
   base::WeakPtrFactory<ShelfItemDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfItemDelegate);
 };
 
 }  // namespace ash

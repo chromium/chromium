@@ -87,8 +87,8 @@ class FakeTrustedVaultAccessTokenFetcher
     absl::optional<signin::AccessTokenInfo> access_token_info;
     if (access_token_) {
       access_token_info = signin::AccessTokenInfo(
-          *access_token_, /*expiration_time_param=*/base::Time::Now() +
-                              base::TimeDelta::FromHours(1),
+          *access_token_,
+          /*expiration_time_param=*/base::Time::Now() + base::Hours(1),
           /*id_token=*/std::string());
     }
     std::move(callback).Run(access_token_info);
@@ -404,9 +404,17 @@ TEST_F(TrustedVaultConnectionImplTest,
               Run(Eq(TrustedVaultRegistrationStatus::kAlreadyRegistered),
                   TrustedVaultKeyAndVersionEq(GetConstantTrustedVaultKey(),
                                               kServerConstantKeyVersion)));
-  sync_pb::JoinSecurityDomainsErrorDetail response;
-  *response.mutable_already_exists_response() = MakeJoinSecurityDomainsResponse(
-      /*current_epoch=*/kServerConstantKeyVersion);
+
+  sync_pb::JoinSecurityDomainsErrorDetail error_detail;
+  *error_detail.mutable_already_exists_response() =
+      MakeJoinSecurityDomainsResponse(
+          /*current_epoch=*/kServerConstantKeyVersion);
+
+  sync_pb::RPCStatus response;
+  sync_pb::Proto3Any* status_detail = response.add_details();
+  status_detail->set_type_url(kJoinSecurityDomainsErrorDetailTypeURL);
+  status_detail->set_value(error_detail.SerializeAsString());
+
   EXPECT_TRUE(RespondToJoinSecurityDomainsRequest(
       net::HTTP_CONFLICT, response.SerializeAsString()));
 }
@@ -548,7 +556,9 @@ TEST_F(
 
   // |callback| is called immediately after RegisterAuthenticationFactor(),
   // because there is no access token.
-  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kOtherError)));
+  EXPECT_CALL(
+      callback,
+      Run(Eq(TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure)));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection->RegisterAuthenticationFactor(
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
@@ -637,8 +647,10 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   // |callback| is called immediately after DownloadNewKeys(), because there is
   // no access token.
-  EXPECT_CALL(callback,
-              Run(Eq(TrustedVaultDownloadKeysStatus::kOtherError), _, _));
+  EXPECT_CALL(
+      callback,
+      Run(Eq(TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure), _,
+          _));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection->DownloadNewKeys(
           /*account_info=*/CoreAccountInfo(),

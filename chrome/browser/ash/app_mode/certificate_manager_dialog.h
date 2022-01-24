@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_CERTIFICATE_MANAGER_DIALOG_H_
 #define CHROME_BROWSER_ASH_APP_MODE_CERTIFICATE_MANAGER_DIALOG_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/ui/login_web_dialog.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -19,14 +18,13 @@ class CertificateManagerDialog : public LoginWebDialog {
   CertificateManagerDialog(Profile* profile,
                            LoginWebDialog::Delegate* delegate,
                            gfx::NativeWindow window);
+  CertificateManagerDialog(const CertificateManagerDialog&) = delete;
+  CertificateManagerDialog& operator=(const CertificateManagerDialog&) = delete;
   ~CertificateManagerDialog() override;
 
   // ui::WebDialogDelegate
   std::u16string GetDialogTitle() const override;
   void GetDialogSize(gfx::Size* size) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CertificateManagerDialog);
 };
 
 }  // namespace ash

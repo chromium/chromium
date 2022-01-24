@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -91,6 +90,10 @@ class TestObserver : public PowerManagerClient::Observer {
   explicit TestObserver(PowerManagerClient* client) : client_(client) {
     client_->AddObserver(this);
   }
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override { client_->RemoveObserver(this); }
 
   int num_suspend_imminent() const { return num_suspend_imminent_; }
@@ -168,7 +171,6 @@ class TestObserver : public PowerManagerClient::Observer {
 
   // Ambient color temperature
   int32_t ambient_color_temperature_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 // Stub implementation of PowerManagerClient::RenderProcessManagerDelegate.
@@ -177,6 +179,10 @@ class TestDelegate : public PowerManagerClient::RenderProcessManagerDelegate {
   explicit TestDelegate(PowerManagerClient* client) {
     client->SetRenderProcessManagerDelegate(weak_ptr_factory_.GetWeakPtr());
   }
+
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
+
   ~TestDelegate() override = default;
 
   int num_suspend_imminent() const { return num_suspend_imminent_; }
@@ -192,8 +198,6 @@ class TestDelegate : public PowerManagerClient::RenderProcessManagerDelegate {
   int num_suspend_done_ = 0;
 
   base::WeakPtrFactory<TestDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 // Local implementation of base::test::PowerMonitorTestObserver to add callback
@@ -203,21 +207,23 @@ class PowerMonitorTestObserverLocal
  public:
   using base::test::PowerMonitorTestObserver::PowerMonitorTestObserver;
 
+  PowerMonitorTestObserverLocal(const PowerMonitorTestObserverLocal&) = delete;
+  PowerMonitorTestObserverLocal& operator=(
+      const PowerMonitorTestObserverLocal&) = delete;
+
   void OnThermalStateChange(
       PowerThermalObserver::DeviceThermalState new_state) override {
-    ASSERT_TRUE(cb);
+    ASSERT_TRUE(cb_);
     base::test::PowerMonitorTestObserver::OnThermalStateChange(new_state);
-    std::move(cb).Run();
+    std::move(cb_).Run();
   }
 
   void set_cb_for_testing(base::OnceCallback<void()> cb) {
-    this->cb = std::move(cb);
+    cb_ = std::move(cb);
   }
 
  private:
-  base::OnceCallback<void()> cb;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorTestObserverLocal);
+  base::OnceCallback<void()> cb_;
 };
 
 }  // namespace
@@ -225,6 +231,10 @@ class PowerMonitorTestObserverLocal
 class PowerManagerClientTest : public testing::Test {
  public:
   PowerManagerClientTest() = default;
+
+  PowerManagerClientTest(const PowerManagerClientTest&) = delete;
+  PowerManagerClientTest& operator=(const PowerManagerClientTest&) = delete;
+
   ~PowerManagerClientTest() override = default;
 
   void SetUp() override {
@@ -392,8 +402,6 @@ class PowerManagerClientTest : public testing::Test {
         FROM_HERE, base::BindOnce(&RunResponseCallback, std::move(*callback),
                                   std::move(response)));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PowerManagerClientTest);
 };
 
 // Tests that suspend readiness is reported immediately when there are no

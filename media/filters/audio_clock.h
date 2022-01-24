@@ -10,7 +10,6 @@
 #include <cmath>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 
@@ -53,6 +52,10 @@ namespace media {
 class MEDIA_EXPORT AudioClock {
  public:
   AudioClock(base::TimeDelta start_timestamp, int sample_rate);
+
+  AudioClock(const AudioClock&) = delete;
+  AudioClock& operator=(const AudioClock&) = delete;
+
   ~AudioClock();
 
   // |frames_written| amount of audio data scaled to |playback_rate| written.
@@ -91,12 +94,10 @@ class MEDIA_EXPORT AudioClock {
   // media data has been played yet.             by AudioClock, which would be
   //                                             1000 + 500 + 250 = 1750 ms.
   base::TimeDelta front_timestamp() const {
-    return base::TimeDelta::FromMicroseconds(
-        std::round(front_timestamp_micros_));
+    return base::Microseconds(std::round(front_timestamp_micros_));
   }
   base::TimeDelta back_timestamp() const {
-    return base::TimeDelta::FromMicroseconds(
-        std::round(back_timestamp_micros_));
+    return base::Microseconds(std::round(back_timestamp_micros_));
   }
 
   // Returns the amount of wall time until |timestamp| will be played by the
@@ -140,8 +141,6 @@ class MEDIA_EXPORT AudioClock {
   // See http://crbug.com/564604.
   double front_timestamp_micros_;
   double back_timestamp_micros_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioClock);
 };
 
 }  // namespace media

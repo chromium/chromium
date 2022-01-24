@@ -9,8 +9,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_framerate_control.h"
@@ -49,7 +48,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   bool ApplyResolution(const gfx::Size& pic_size,
                        const gfx::Rect& visible_rect,
                        const size_t num_output_frames) override;
-  void OnChangeResolutionDone(bool success) override;
+  void OnChangeResolutionDone(CroStatus status) override;
   void ClearPendingRequests(DecodeStatus status) override;
   bool StopInputQueueOnResChange() const override;
 
@@ -71,6 +70,9 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
                   VideoDecoder::DecodeCB cb,
                   int32_t id);
 
+    DecodeRequest(const DecodeRequest&) = delete;
+    DecodeRequest& operator=(const DecodeRequest&) = delete;
+
     // Allow move, but not copy
     DecodeRequest(DecodeRequest&&);
     DecodeRequest& operator=(DecodeRequest&&);
@@ -78,8 +80,6 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
     ~DecodeRequest();
 
     bool IsCompleted() const;
-
-    DISALLOW_COPY_AND_ASSIGN(DecodeRequest);
   };
 
   bool IsSupportedProfile(VideoCodecProfile profile);
@@ -139,6 +139,9 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
 
   absl::optional<gfx::Rect> visible_rect_;
 
+  // Map of enqueuing timecodes to system timestamp, for histogramming purposes.
+  std::map<int64_t, base::TimeTicks> encoding_timestamps_;
+
   // Callback of the buffer that triggered a flush, to be called when the
   // flush completes.
   VideoDecoder::DecodeCB flush_cb_;
@@ -155,6 +158,13 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   // The venus driver is the only implementation that requires the client
   // to inform the driver of the framerate.
   std::unique_ptr<V4L2FrameRateControl> framerate_control_;
+
+  // If the resolution change is interrupted and aborted by reset, then V4L2
+  // stateful API won't send the resolution change event again when the decoder
+  // receives the input buffer with the same resolution after reset.
+  // Set |need_resume_resolution_change_| to true in this scenario to resume the
+  // resolution change after the reset is done.
+  bool need_resume_resolution_change_ = false;
 
   base::WeakPtr<V4L2StatefulVideoDecoderBackend> weak_this_;
   base::WeakPtrFactory<V4L2StatefulVideoDecoderBackend> weak_this_factory_{

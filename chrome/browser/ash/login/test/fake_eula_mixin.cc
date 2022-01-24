@@ -10,13 +10,12 @@
 #include "build/build_config.h"
 #include "url/gurl.h"
 
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
 
 constexpr char kFakeOnlineEulaPath[] = "/intl/en-US/chrome/eula_text.html";
 
@@ -74,4 +73,4 @@ std::unique_ptr<HttpResponse> FakeEulaMixin::HandleRequest(
   return std::move(http_response);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -45,6 +45,9 @@ class RunServerThread : public Thread {
                   ExceptionHandlerServer::Delegate* delegate)
       : server_(server), delegate_(delegate), join_sem_(0) {}
 
+  RunServerThread(const RunServerThread&) = delete;
+  RunServerThread& operator=(const RunServerThread&) = delete;
+
   ~RunServerThread() override {}
 
   bool JoinWithTimeout(double timeout) {
@@ -65,8 +68,6 @@ class RunServerThread : public Thread {
   ExceptionHandlerServer* server_;
   ExceptionHandlerServer::Delegate* delegate_;
   Semaphore join_sem_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunServerThread);
 };
 
 class ScopedStopServerAndJoinThread {
@@ -74,6 +75,10 @@ class ScopedStopServerAndJoinThread {
   ScopedStopServerAndJoinThread(ExceptionHandlerServer* server,
                                 RunServerThread* thread)
       : server_(server), thread_(thread) {}
+
+  ScopedStopServerAndJoinThread(const ScopedStopServerAndJoinThread&) = delete;
+  ScopedStopServerAndJoinThread& operator=(
+      const ScopedStopServerAndJoinThread&) = delete;
 
   ~ScopedStopServerAndJoinThread() {
     server_->Stop();
@@ -83,14 +88,15 @@ class ScopedStopServerAndJoinThread {
  private:
   ExceptionHandlerServer* server_;
   RunServerThread* thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedStopServerAndJoinThread);
 };
 
 class TestDelegate : public ExceptionHandlerServer::Delegate {
  public:
   TestDelegate()
       : Delegate(), last_exception_address_(0), last_client_(-1), sem_(0) {}
+
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
 
   ~TestDelegate() {}
 
@@ -159,14 +165,16 @@ class TestDelegate : public ExceptionHandlerServer::Delegate {
   VMAddress last_exception_address_;
   pid_t last_client_;
   Semaphore sem_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 class MockPtraceStrategyDecider : public PtraceStrategyDecider {
  public:
   MockPtraceStrategyDecider(PtraceStrategyDecider::Strategy strategy)
       : PtraceStrategyDecider(), strategy_(strategy) {}
+
+  MockPtraceStrategyDecider(const MockPtraceStrategyDecider&) = delete;
+  MockPtraceStrategyDecider& operator=(const MockPtraceStrategyDecider&) =
+      delete;
 
   ~MockPtraceStrategyDecider() {}
 
@@ -198,8 +206,6 @@ class MockPtraceStrategyDecider : public PtraceStrategyDecider {
 
  private:
   Strategy strategy_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPtraceStrategyDecider);
 };
 
 class ExceptionHandlerServerTest : public testing::TestWithParam<bool> {
@@ -210,6 +216,10 @@ class ExceptionHandlerServerTest : public testing::TestWithParam<bool> {
         server_thread_(&server_, &delegate_),
         sock_to_handler_(),
         use_multi_client_socket_(GetParam()) {}
+
+  ExceptionHandlerServerTest(const ExceptionHandlerServerTest&) = delete;
+  ExceptionHandlerServerTest& operator=(const ExceptionHandlerServerTest&) =
+      delete;
 
   ~ExceptionHandlerServerTest() = default;
 
@@ -227,6 +237,9 @@ class ExceptionHandlerServerTest : public testing::TestWithParam<bool> {
    public:
     CrashDumpTest(ExceptionHandlerServerTest* server_test, bool succeeds)
         : Multiprocess(), server_test_(server_test), succeeds_(succeeds) {}
+
+    CrashDumpTest(const CrashDumpTest&) = delete;
+    CrashDumpTest& operator=(const CrashDumpTest&) = delete;
 
     ~CrashDumpTest() = default;
 
@@ -267,8 +280,6 @@ class ExceptionHandlerServerTest : public testing::TestWithParam<bool> {
    private:
     ExceptionHandlerServerTest* server_test_;
     bool succeeds_;
-
-    DISALLOW_COPY_AND_ASSIGN(CrashDumpTest);
   };
 
   void ExpectCrashDumpUsingStrategy(PtraceStrategyDecider::Strategy strategy,
@@ -303,8 +314,6 @@ class ExceptionHandlerServerTest : public testing::TestWithParam<bool> {
   ScopedFileHandle sock_to_handler_;
   int sock_to_client_;
   bool use_multi_client_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionHandlerServerTest);
 };
 
 TEST_P(ExceptionHandlerServerTest, ShutdownWithNoClients) {

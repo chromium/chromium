@@ -11,14 +11,12 @@
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
 
 class SaveUPIBubbleControllerImpl
     : SaveUPIBubbleController,
-      public content::WebContentsObserver,
       public content::WebContentsUserData<SaveUPIBubbleControllerImpl> {
  public:
   ~SaveUPIBubbleControllerImpl() override;

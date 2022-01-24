@@ -17,6 +17,8 @@
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 
@@ -60,6 +62,10 @@ class LocalStorageArea final : public gin::Wrappable<LocalStorageArea> {
                       type_refs,
                       "local",
                       access_checker) {}
+
+  LocalStorageArea(const LocalStorageArea&) = delete;
+  LocalStorageArea& operator=(const LocalStorageArea&) = delete;
+
   ~LocalStorageArea() override = default;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -80,8 +86,6 @@ class LocalStorageArea final : public gin::Wrappable<LocalStorageArea> {
   DEFINE_STORAGE_AREA_HANDLERS()
 
   StorageArea storage_area_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalStorageArea);
 };
 
 gin::WrapperInfo LocalStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -97,6 +101,10 @@ class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
                       type_refs,
                       "sync",
                       access_checker) {}
+
+  SyncStorageArea(const SyncStorageArea&) = delete;
+  SyncStorageArea& operator=(const SyncStorageArea&) = delete;
+
   ~SyncStorageArea() override = default;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -127,8 +135,6 @@ class SyncStorageArea final : public gin::Wrappable<SyncStorageArea> {
   DEFINE_STORAGE_AREA_HANDLERS()
 
   StorageArea storage_area_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncStorageArea);
 };
 
 gin::WrapperInfo SyncStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -144,6 +150,10 @@ class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
                       type_refs,
                       "managed",
                       access_checker) {}
+
+  ManagedStorageArea(const ManagedStorageArea&) = delete;
+  ManagedStorageArea& operator=(const ManagedStorageArea&) = delete;
+
   ~ManagedStorageArea() override = default;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -163,8 +173,6 @@ class ManagedStorageArea final : public gin::Wrappable<ManagedStorageArea> {
   DEFINE_STORAGE_AREA_HANDLERS()
 
   StorageArea storage_area_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedStorageArea);
 };
 
 gin::WrapperInfo ManagedStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -180,6 +188,10 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
                       type_refs,
                       "session",
                       access_checker) {}
+
+  SessionStorageArea(const SessionStorageArea&) = delete;
+  SessionStorageArea& operator=(const SessionStorageArea&) = delete;
+
   ~SessionStorageArea() override = default;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -192,6 +204,9 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
         .SetMethod("remove", &SessionStorageArea::Remove)
         .SetMethod("clear", &SessionStorageArea::Clear)
         .SetMethod("getBytesInUse", &SessionStorageArea::GetBytesInUse)
+        // TODO(crbug.com/1227410): Only expose `setAccessLevel` in privileged
+        // contexts.
+        .SetMethod("setAccessLevel", &SessionStorageArea::SetAccessLevel)
         .SetProperty("onChanged", &SessionStorageArea::GetOnChangedEvent)
         .SetValue("QUOTA_BYTES", api::storage::session::QUOTA_BYTES);
   }
@@ -199,9 +214,11 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
  private:
   DEFINE_STORAGE_AREA_HANDLERS()
 
-  StorageArea storage_area_;
+  void SetAccessLevel(gin::Arguments* arguments) {
+    storage_area_.HandleFunctionCall("setAccessLevel", arguments);
+  }
 
-  DISALLOW_COPY_AND_ASSIGN(SessionStorageArea);
+  StorageArea storage_area_;
 };
 
 gin::WrapperInfo SessionStorageArea::kWrapperInfo = {gin::kEmbedderNativeGin};
@@ -288,9 +305,14 @@ void StorageArea::HandleFunctionCall(const std::string& method_name,
 
   parse_result.arguments_list->Insert(
       parse_result.arguments_list->GetList().begin(), base::Value(name_));
-  request_handler_->StartRequest(
+
+  v8::Local<v8::Promise> promise = request_handler_->StartRequest(
       context, full_method_name, std::move(parse_result.arguments_list),
-      parse_result.callback, v8::Local<v8::Function>());
+      parse_result.async_type, parse_result.callback,
+      v8::Local<v8::Function>());
+
+  if (!promise.IsEmpty())
+    arguments->Return(promise);
 }
 
 v8::Local<v8::Value> StorageArea::GetOnChangedEvent(

@@ -119,7 +119,7 @@ A bookmark app's `manifest.json` identifies it as a hosted app. However, in the
 C++ code, the `Extension` object will return true from its `from_bookmark()`
 method.
 
-*Bookmark apps based on Extensions are deprecated.*
+*Bookmark apps based on Extensions are retired.*
 
 ### Web App
 

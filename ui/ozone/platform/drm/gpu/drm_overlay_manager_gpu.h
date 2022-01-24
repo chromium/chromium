@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_manager.h"
 
@@ -21,6 +20,10 @@ class DrmOverlayManagerGpu : public DrmOverlayManager {
   explicit DrmOverlayManagerGpu(
       DrmThreadProxy* drm_thread_proxy,
       bool allow_sync_and_real_buffer_page_flip_testing);
+
+  DrmOverlayManagerGpu(const DrmOverlayManagerGpu&) = delete;
+  DrmOverlayManagerGpu& operator=(const DrmOverlayManagerGpu&) = delete;
+
   ~DrmOverlayManagerGpu() override;
 
  private:
@@ -44,8 +47,6 @@ class DrmOverlayManagerGpu : public DrmOverlayManager {
   bool has_set_clear_cache_callback_ = false;
 
   base::WeakPtrFactory<DrmOverlayManagerGpu> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DrmOverlayManagerGpu);
 };
 
 }  // namespace ui

@@ -22,6 +22,11 @@ namespace base {
 class BASE_EXPORT FieldTrialParamAssociator {
  public:
   FieldTrialParamAssociator();
+
+  FieldTrialParamAssociator(const FieldTrialParamAssociator&) = delete;
+  FieldTrialParamAssociator& operator=(const FieldTrialParamAssociator&) =
+      delete;
+
   ~FieldTrialParamAssociator();
 
   // Retrieve the singleton.
@@ -67,8 +72,6 @@ class BASE_EXPORT FieldTrialParamAssociator {
 
   Lock lock_;
   std::map<FieldTrialKey, FieldTrialParams> field_trial_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldTrialParamAssociator);
 };
 
 }  // namespace base

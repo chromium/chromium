@@ -51,6 +51,10 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
       NetworkConnectionHandler* network_connection_handler,
       NetworkCertificateHandler* network_certificate_handler,
       NetworkProfileHandler* network_profile_handler);
+
+  CrosNetworkConfig(const CrosNetworkConfig&) = delete;
+  CrosNetworkConfig& operator=(const CrosNetworkConfig&) = delete;
+
   ~CrosNetworkConfig() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::CrosNetworkConfig> receiver);
@@ -94,6 +98,7 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void GetNetworkCertificates(GetNetworkCertificatesCallback callback) override;
   void GetAlwaysOnVpn(GetAlwaysOnVpnCallback callback) override;
   void SetAlwaysOnVpn(mojom::AlwaysOnVpnPropertiesPtr properties) override;
+  void GetSupportedVpnTypes(GetSupportedVpnTypesCallback callback) override;
   void RequestTrafficCounters(const std::string& guid,
                               RequestTrafficCountersCallback callback) override;
   void ResetTrafficCounters(const std::string& guid) override;
@@ -160,8 +165,10 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void OnGetAlwaysOnVpn(GetAlwaysOnVpnCallback callback,
                         std::string mode,
                         std::string service_path);
+  void OnGetSupportedVpnTypes(GetSupportedVpnTypesCallback callback,
+                              absl::optional<base::Value> manager_properties);
   void PopulateTrafficCounters(RequestTrafficCountersCallback callback,
-                               const base::ListValue& traffic_counters);
+                               absl::optional<base::Value> traffic_counters);
 
   // NetworkStateHandlerObserver:
   void NetworkListChanged() override;
@@ -210,8 +217,6 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   std::vector<mojom::VpnProviderPtr> vpn_providers_;
 
   base::WeakPtrFactory<CrosNetworkConfig> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrosNetworkConfig);
 };
 
 }  // namespace network_config

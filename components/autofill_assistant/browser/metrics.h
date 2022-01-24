@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_METRICS_H_
 
 #include <ostream>
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/startup_util.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -54,8 +55,9 @@ class Metrics {
     UI_CLOSED_UNEXPECTEDLY = 25,  // This is a "should never happen" entry.
     ONBOARDING_NAVIGATION = 26,
     ONBOARDING_DIALOG_DISMISSED = 27,
+    MULTIPLE_AUTOSTARTABLE_SCRIPTS = 28,
 
-    kMaxValue = ONBOARDING_DIALOG_DISMISSED
+    kMaxValue = MULTIPLE_AUTOSTARTABLE_SCRIPTS
   };
 
   // The different ways that autofill assistant can stop. Note that this only
@@ -78,6 +80,36 @@ class Metrics {
     OB_NO_ANSWER = 4,
 
     kMaxValue = OB_NO_ANSWER
+  };
+
+  // The different actions that can be performed on TTS button click.
+  //
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantTextToSpeechButtonAction enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class TtsButtonAction {
+    PLAY_TTS = 0,
+    DISABLE_BUTTON = 1,
+    ENABLE_BUTTON_AND_PLAY_TTS = 2,
+
+    kMaxValue = ENABLE_BUTTON_AND_PLAY_TTS
+  };
+
+  // The different TTS engine events that are received by the autofill
+  // assistant TTS controller.
+  //
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantTextToSpeechEngineEvent enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class TtsEngineEvent {
+    TTS_EVENT_START = 0,
+    TTS_EVENT_END = 1,
+    TTS_EVENT_ERROR = 2,
+    TTS_EVENT_OTHER = 3,
+
+    kMaxValue = TTS_EVENT_OTHER
   };
 
   // The different ways for payment request to succeed or fail, broken down by
@@ -369,6 +401,26 @@ class Metrics {
     kMaxValue = TRIGGER_SCRIPT_REQUESTED
   };
 
+  // Used for logging when the platform-specific dependencies are invalidated.
+  // For example: When the activity is changed on Android.
+  //
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantWindowAttachmentChange enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class DependenciesInvalidated {
+    // The dependencies were invalidated while the starter existed but before
+    // Start() was called.
+    OUTSIDE_FLOW = 0,
+    // The dependencies were invalidated while the flow was trying to start. For
+    // example during onboarding or during the execution of the trigger script.
+    DURING_STARTUP = 1,
+    // The dependencies were invalidated during the execution of a flow.
+    DURING_FLOW = 2,
+
+    kMaxValue = DURING_FLOW
+  };
+
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(bool initially_complete,
                                                    bool success);
@@ -401,9 +453,18 @@ class Metrics {
                                           ukm::SourceId source_id,
                                           InChromeTriggerAction event);
   static void RecordOnboardingResult(OnBoarding event);
+  static void RecordTtsButtonAction(TtsButtonAction action);
+  static void RecordTtsEngineEvent(TtsEngineEvent event);
   static void RecordFeatureModuleInstallation(FeatureModuleInstallation event);
+  static void RecordTriggerConditionEvaluationTime(
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId source_id,
+      base::TimeDelta evaluation_time);
+  static void RecordDependenciesInvalidated(
+      DependenciesInvalidated dependencies_invalidated);
 
-  // Intended for debugging: writes string representation of |reason| to |out|.
+  // Intended for debugging: writes string representation of |reason| to
+  // |out|.
   friend std::ostream& operator<<(std::ostream& out,
                                   const DropOutReason& reason) {
 #ifdef NDEBUG
@@ -496,6 +557,9 @@ class Metrics {
         break;
       case DropOutReason::ONBOARDING_DIALOG_DISMISSED:
         out << "ONBOARDING_DIALOG_DISMISSED";
+        break;
+      case DropOutReason::MULTIPLE_AUTOSTARTABLE_SCRIPTS:
+        out << "MULTIPLE_AUTOSTARTABLE_SCRIPTS";
         break;
         // Do not add default case to force compilation error for new values.
     }

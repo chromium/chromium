@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!--
+http://nicolasgallagher.com/micro-clearfix-hack/
+"The clearfix hack is a popular way to contain floats without resorting to using
+presentational markup."
+Goal: avoid extra spaces added to the output for this, e.g. NVDA reading "blank".
+-->
+<html>
+<head>
+<style>
+.cf::before, .cf::after {
+  content: " ";
+  display: table;
+}
+.cf::after { clear: both; }
+
+.cf { background: lightgray; }
+.float {
+  float: left;
+  padding: 5px;
+  background: beige;
+}
+</style>
+</head>
+<body>
+
+<h1>Micro clearfix demo</h1>
+<div class="cf">
+  <div class="float">Float#1</div>
+  <div class="float">Float#2</div>
+</div>
+<h2>End of demo</h2>
+</body>
+</html>

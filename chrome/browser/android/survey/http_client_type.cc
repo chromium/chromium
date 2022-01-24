@@ -28,8 +28,8 @@ constexpr net::NetworkTrafficAnnotationTag kHatsTrafficAnnotation =
             "user can choose to take the survey or dismiss it."
           trigger:
             "If a signed-in user is eligible and selected for a survey, a "
-            "request will be sent to download the survey; requests will
-           " also be sent when the user chooses to take the survey and "
+            "request will be sent to download the survey; requests will "
+            "also be sent when the user chooses to take the survey and "
             "for responses to each question to record such user actions."
           data:
             "Survey questions to present to the user; subsequently, survey "
@@ -53,7 +53,7 @@ constexpr net::NetworkTrafficAnnotationTag kChimeTrafficAnnotation =
         semantics {
           sender: "Chrome Chime notification SDK"
           description:
-            "The custom network library used in Chime SDK".
+            "The custom network library used in Chime SDK."
           trigger:
             "when the user receives notification or interacts with the"
             "notification, and when Chrome is launched in the foreground."

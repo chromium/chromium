@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_ASH_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_ASH_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "ui/views/widget/native_widget_aura.h"
 
@@ -18,6 +17,9 @@ class BrowserFrameAsh : public views::NativeWidgetAura,
                         public NativeBrowserFrame {
  public:
   BrowserFrameAsh(BrowserFrame* browser_frame, BrowserView* browser_view);
+
+  BrowserFrameAsh(const BrowserFrameAsh&) = delete;
+  BrowserFrameAsh& operator=(const BrowserFrameAsh&) = delete;
 
  protected:
   ~BrowserFrameAsh() override;
@@ -46,8 +48,6 @@ class BrowserFrameAsh : public views::NativeWidgetAura,
 
   // The BrowserView is our ClientView. This is a pointer to it.
   BrowserView* browser_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserFrameAsh);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_ASH_H_

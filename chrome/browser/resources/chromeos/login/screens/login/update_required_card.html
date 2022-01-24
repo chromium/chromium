@@ -56,8 +56,8 @@
       <h1 slot="title">
         [[i18nDynamic(locale, 'updateRequiredTitle')]]
       </h1>
-      <div slot="subtitle">
-        [[i18nDynamic(locale,'updateRequiredMessage', enterpriseDomain,
+      <div id="update-subtitle" slot="subtitle">
+        [[i18nDynamic(locale,'updateRequiredMessage', enterpriseManager,
             deviceName)]]
       </div>
       <div slot="content" class="flex layout vertical center-justified center">
@@ -113,7 +113,7 @@
       </h1>
       <div slot="subtitle" class="update-subtitle">
         [[i18nDynamic(locale,'updateOverMeteredNetworkMessage',
-            enterpriseDomain)]]
+            enterpriseManager)]]
       </div>
       <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
@@ -136,7 +136,7 @@
       </h1>
       <div slot="subtitle" class="update-subtitle"
           id="no-network-message">
-        [[i18nDynamic(locale,'noNetworkMessage', enterpriseDomain)]]
+        [[i18nDynamic(locale,'noNetworkMessage', enterpriseManager)]]
       </div>
       <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
@@ -176,7 +176,7 @@
           <!-- Use lock image indicating that end-of-life has been reached and
              the device is disabled for further use  -->
           <img class="update-illustration oobe-illustration"
-              src="../../images/1x/device-disabled.svg">
+              src="../../images/device-disabled.svg">
         </div>
       </div>
     </oobe-adaptive-dialog>

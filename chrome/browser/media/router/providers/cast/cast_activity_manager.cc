@@ -585,8 +585,8 @@ void CastActivityManager::OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
   // This condition seems to always be true in practice, but if it's not, we
   // still try to handle them gracefully below.
   //
-  // TODO(jrw): Replace DCHECK with an UMA metric.
-  DCHECK(existing_session_id);
+  // TODO(jrw): Replace VLOG_IF with an UMA metric.
+  VLOG_IF(1, !existing_session_id) << "No existing_session_id.";
 
   // If |existing_session_id| is empty, then most likely it's due to a pending
   // launch. Check the app ID to see if the existing activity should be

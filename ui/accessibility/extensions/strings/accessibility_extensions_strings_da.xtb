@@ -38,7 +38,7 @@
 <translation id="5173942593318174089">Fremhæv markørens position med en animation.</translation>
 <translation id="5287723860611749454">&lt;p&gt;Brug piletasterne til at bevæge dig rundt i dokumentet. &lt;/p&gt;&lt;p&gt;Klik et tilfældigt sted for at flytte markøren til det sted. &lt;/p&gt; &lt;p&gt;   Tryk på &lt;span class='key'&gt;Shift&lt;/span&gt; + pilene for at vælge tekst.&lt;/p&gt;</translation>
 <translation id="5331422999063554397">Omvendt farve</translation>
-<translation id="5555153510860501336">Stor kontrast er deaktiveret</translation>
+<translation id="5555153510860501336">Høj kontrast er deaktiveret</translation>
 <translation id="5558600050691192317">Tastaturkommandoer</translation>
 <translation id="5594989420907487559">Kør kun animationer én gang, eller deaktiver animationer helt.</translation>
 <translation id="5631241868147802353">Standardfarvetema:</translation>
@@ -55,7 +55,7 @@
 <translation id="690628312087070417">Når tekstmarkøren springer med stor afstand:</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="7379645913608427028">Grad</translation>
-<translation id="7384431257964758081">Stor kontrast er aktiveret</translation>
+<translation id="7384431257964758081">Høj kontrast er aktiveret</translation>
 <translation id="7586636300921797327">Trin 2: Juster skyderen, indtil alle stjernerne er synlige i den
         valgte række</translation>
 <translation id="7658239707568436148">Annuller</translation>
@@ -63,7 +63,7 @@
 <translation id="7942349550061667556">Rød</translation>
 <translation id="8260673944985561857">Muligheder for Tastenavigation</translation>
 <translation id="8321034316479930120">Animationspolitik</translation>
-<translation id="8480209185614411573">Stor kontrast</translation>
+<translation id="8480209185614411573">Høj kontrast</translation>
 <translation id="8609925175482059018">Tryk på &lt;span class='key'&gt;F7&lt;/span&gt; for at aktivere tastenavigation. Tryk igen for at deaktivere.</translation>
 <translation id="894241283505723656">Lange beskrivelser i genvejsmenuen</translation>
 </translationbundle>

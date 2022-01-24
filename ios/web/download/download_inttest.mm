@@ -19,6 +19,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/url_request/url_fetcher_response_writer.h"
+#include "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -77,7 +78,7 @@ class DownloadTest : public WebTestWithWebState {
 };
 
 // Tests sucessfull download flow.
-TEST_F(DownloadTest, SucessfullDownload) {
+TEST_F(DownloadTest, SuccessfulDownload) {
   // Load download URL.
   ASSERT_TRUE(server_.Start());
   GURL url(server_.GetURL("/"));
@@ -103,7 +104,7 @@ TEST_F(DownloadTest, SucessfullDownload) {
   EXPECT_EQ("download.test", base::UTF16ToUTF8(task->GetSuggestedFilename()));
 
   // Start the download task and wait for completion.
-  task->Start(std::make_unique<net::URLFetcherStringWriter>());
+  task->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     base::RunLoop().RunUntilIdle();
     return task->IsDone();
@@ -114,7 +115,9 @@ TEST_F(DownloadTest, SucessfullDownload) {
   EXPECT_EQ(static_cast<int64_t>(strlen(kContent)), task->GetTotalBytes());
   EXPECT_EQ(100, task->GetPercentComplete());
   EXPECT_EQ(200, task->GetHttpCode());
-  EXPECT_EQ(kContent, task->GetResponseWriter()->AsStringWriter()->data());
+  EXPECT_NSEQ(@(kContent),
+              [[NSString alloc] initWithData:task->GetResponseData()
+                                    encoding:NSUTF8StringEncoding]);
 }
 
 }  // namespace web

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/services/device_sync/cryptauth_group_private_key_sharer.h"
@@ -26,6 +25,12 @@ class FakeCryptAuthGroupPrivateKeySharer
     : public CryptAuthGroupPrivateKeySharer {
  public:
   FakeCryptAuthGroupPrivateKeySharer();
+
+  FakeCryptAuthGroupPrivateKeySharer(
+      const FakeCryptAuthGroupPrivateKeySharer&) = delete;
+  FakeCryptAuthGroupPrivateKeySharer& operator=(
+      const FakeCryptAuthGroupPrivateKeySharer&) = delete;
+
   ~FakeCryptAuthGroupPrivateKeySharer() override;
 
   // The RequestContext passed to ShareGroupPrivateKey(). Returns null if
@@ -57,14 +62,18 @@ class FakeCryptAuthGroupPrivateKeySharer
   absl::optional<cryptauthv2::RequestContext> request_context_;
   std::unique_ptr<CryptAuthKey> group_key_;
   absl::optional<IdToEncryptingKeyMap> id_to_encrypting_key_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthGroupPrivateKeySharer);
 };
 
 class FakeCryptAuthGroupPrivateKeySharerFactory
     : public CryptAuthGroupPrivateKeySharerImpl::Factory {
  public:
   FakeCryptAuthGroupPrivateKeySharerFactory();
+
+  FakeCryptAuthGroupPrivateKeySharerFactory(
+      const FakeCryptAuthGroupPrivateKeySharerFactory&) = delete;
+  FakeCryptAuthGroupPrivateKeySharerFactory& operator=(
+      const FakeCryptAuthGroupPrivateKeySharerFactory&) = delete;
+
   ~FakeCryptAuthGroupPrivateKeySharerFactory() override;
 
   // Returns a vector of all FakeCryptAuthGroupPrivateKeySharer instances
@@ -86,8 +95,6 @@ class FakeCryptAuthGroupPrivateKeySharerFactory
 
   std::vector<FakeCryptAuthGroupPrivateKeySharer*> instances_;
   CryptAuthClientFactory* last_client_factory_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthGroupPrivateKeySharerFactory);
 };
 
 }  // namespace device_sync

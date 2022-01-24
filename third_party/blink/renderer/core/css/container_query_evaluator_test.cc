@@ -38,6 +38,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     DCHECK(container_query);
     auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
     evaluator->ContainerChanged(
+        GetDocument(), GetDocument().ComputedStyleRef(),
         PhysicalSize(LayoutUnit(width), LayoutUnit(height)), contained_axes);
     return evaluator->Eval(*container_query);
   }
@@ -45,7 +46,8 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
   bool ContainerChanged(ContainerQueryEvaluator* evaluator,
                         PhysicalSize size,
                         PhysicalAxes axes) {
-    return evaluator->ContainerChanged(size, axes) !=
+    return evaluator->ContainerChanged(
+               GetDocument(), GetDocument().ComputedStyleRef(), size, axes) !=
            ContainerQueryEvaluator::Change::kNone;
   }
 
@@ -95,27 +97,30 @@ TEST_F(ContainerQueryEvaluatorTest, ContainerChanged) {
   ASSERT_TRUE(container_query_200);
 
   auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
-  evaluator->ContainerChanged(size_100, horizontal);
+  evaluator->ContainerChanged(GetDocument(), GetDocument().ComputedStyleRef(),
+                              size_100, horizontal);
   ASSERT_TRUE(evaluator);
 
-  EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100));
-  EXPECT_FALSE(evaluator->EvalAndAdd(*container_query_200));
+  MatchResult dummy_result;
+
+  EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100, dummy_result));
+  EXPECT_FALSE(evaluator->EvalAndAdd(*container_query_200, dummy_result));
 
   EXPECT_FALSE(ContainerChanged(evaluator, size_100, horizontal));
-  EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100));
-  EXPECT_FALSE(evaluator->EvalAndAdd(*container_query_200));
+  EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100, dummy_result));
+  EXPECT_FALSE(evaluator->EvalAndAdd(*container_query_200, dummy_result));
 
   EXPECT_TRUE(ContainerChanged(evaluator, size_200, horizontal));
-  EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100));
-  EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_200));
+  EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100, dummy_result));
+  EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_200, dummy_result));
 
   EXPECT_FALSE(ContainerChanged(evaluator, size_200, horizontal));
-  EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100));
-  EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_200));
+  EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100, dummy_result));
+  EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_200, dummy_result));
 
   EXPECT_TRUE(ContainerChanged(evaluator, size_200, vertical));
-  EXPECT_FALSE(evaluator->EvalAndAdd(*container_query_100));
-  EXPECT_FALSE(evaluator->EvalAndAdd(*container_query_200));
+  EXPECT_FALSE(evaluator->EvalAndAdd(*container_query_100, dummy_result));
+  EXPECT_FALSE(evaluator->EvalAndAdd(*container_query_200, dummy_result));
 }
 
 TEST_F(ContainerQueryEvaluatorTest, SizeInvalidation) {
@@ -188,10 +193,13 @@ TEST_F(ContainerQueryEvaluatorTest, DependentQueries) {
   ASSERT_TRUE(query_min_200px);
 
   auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
-  evaluator->ContainerChanged(size_100, horizontal);
+  evaluator->ContainerChanged(GetDocument(), GetDocument().ComputedStyleRef(),
+                              size_100, horizontal);
 
-  evaluator->EvalAndAdd(*query_min_200px);
-  evaluator->EvalAndAdd(*query_max_300px);
+  MatchResult dummy_result;
+
+  evaluator->EvalAndAdd(*query_min_200px, dummy_result);
+  evaluator->EvalAndAdd(*query_max_300px, dummy_result);
   // Updating with the same size as we initially had should not invalidate
   // any query results.
   EXPECT_FALSE(ContainerChanged(evaluator, size_100, horizontal));
@@ -202,8 +210,8 @@ TEST_F(ContainerQueryEvaluatorTest, DependentQueries) {
   // (min-width: 200px) becomes true:
   EXPECT_TRUE(ContainerChanged(evaluator, size_200, horizontal));
 
-  evaluator->EvalAndAdd(*query_min_200px);
-  evaluator->EvalAndAdd(*query_max_300px);
+  evaluator->EvalAndAdd(*query_min_200px, dummy_result);
+  evaluator->EvalAndAdd(*query_max_300px, dummy_result);
   EXPECT_FALSE(ContainerChanged(evaluator, size_200, horizontal));
 
   // Makes no difference for either of (min-width: 200px), (max-width: 300px):

@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_libevent.h"
 #include "ui/events/event.h"
 #include "ui/events/event_modifiers.h"
@@ -31,6 +30,11 @@ class COMPONENT_EXPORT(EVDEV) TabletEventConverterEvdev
                             CursorDelegateEvdev* cursor,
                             const EventDeviceInfo& info,
                             DeviceEventDispatcherEvdev* dispatcher);
+
+  TabletEventConverterEvdev(const TabletEventConverterEvdev&) = delete;
+  TabletEventConverterEvdev& operator=(const TabletEventConverterEvdev&) =
+      delete;
+
   ~TabletEventConverterEvdev() override;
 
   // EventConverterEvdev:
@@ -89,8 +93,6 @@ class COMPONENT_EXPORT(EVDEV) TabletEventConverterEvdev
 
   // Pen has only one side button
   bool one_side_btn_pen_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletEventConverterEvdev);
 };
 
 }  // namespace ui

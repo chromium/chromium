@@ -24,6 +24,11 @@ class SyntheticGestureTargetAndroid : public SyntheticGestureTargetBase {
  public:
   SyntheticGestureTargetAndroid(RenderWidgetHostImpl* host,
                                 ui::ViewAndroid* view);
+
+  SyntheticGestureTargetAndroid(const SyntheticGestureTargetAndroid&) = delete;
+  SyntheticGestureTargetAndroid& operator=(
+      const SyntheticGestureTargetAndroid&) = delete;
+
   ~SyntheticGestureTargetAndroid() override;
 
   // SyntheticGestureTargetBase:
@@ -57,8 +62,6 @@ class SyntheticGestureTargetAndroid : public SyntheticGestureTargetBase {
 
   ui::ViewAndroid* const view_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticGestureTargetAndroid);
 };
 
 }  // namespace content

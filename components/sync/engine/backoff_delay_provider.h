@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace syncer {
@@ -27,6 +26,9 @@ class BackoffDelayProvider {
   // *** NOTE *** This should only be used if kSyncShortInitialRetryOverride
   // was passed to command line.
   static std::unique_ptr<BackoffDelayProvider> WithShortInitialRetryOverride();
+
+  BackoffDelayProvider(const BackoffDelayProvider&) = delete;
+  BackoffDelayProvider& operator=(const BackoffDelayProvider&) = delete;
 
   virtual ~BackoffDelayProvider();
 
@@ -52,8 +54,6 @@ class BackoffDelayProvider {
  private:
   const base::TimeDelta default_initial_backoff_;
   const base::TimeDelta short_initial_backoff_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackoffDelayProvider);
 };
 
 }  // namespace syncer

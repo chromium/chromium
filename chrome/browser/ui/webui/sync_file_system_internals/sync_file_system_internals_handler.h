@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/sync_event_observer.h"
 #include "chrome/browser/sync_file_system/task_logger.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -27,6 +26,12 @@ class SyncFileSystemInternalsHandler
       public sync_file_system::TaskLogger::Observer {
  public:
   explicit SyncFileSystemInternalsHandler(Profile* profile);
+
+  SyncFileSystemInternalsHandler(const SyncFileSystemInternalsHandler&) =
+      delete;
+  SyncFileSystemInternalsHandler& operator=(
+      const SyncFileSystemInternalsHandler&) = delete;
+
   ~SyncFileSystemInternalsHandler() override;
 
   // content::WebUIMessageHandler implementation.
@@ -55,8 +60,6 @@ class SyncFileSystemInternalsHandler
 
   Profile* profile_;
   bool observing_task_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncFileSystemInternalsHandler);
 };
 
 }  // namespace syncfs_internals

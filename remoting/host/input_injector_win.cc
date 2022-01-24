@@ -18,8 +18,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/win/windows_version.h"
 #include "remoting/base/util.h"
 #include "remoting/host/clipboard.h"
@@ -194,6 +194,10 @@ class InputInjectorWin : public InputInjector {
  public:
   InputInjectorWin(scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
                    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+  InputInjectorWin(const InputInjectorWin&) = delete;
+  InputInjectorWin& operator=(const InputInjectorWin&) = delete;
+
   ~InputInjectorWin() override;
 
   // ClipboardStub interface.
@@ -215,6 +219,9 @@ class InputInjectorWin : public InputInjector {
    public:
     Core(scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
          scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
 
     // Mirrors the ClipboardStub interface.
     void InjectClipboardEvent(const ClipboardEvent& event);
@@ -243,13 +250,9 @@ class InputInjectorWin : public InputInjector {
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
     std::unique_ptr<Clipboard> clipboard_;
     std::unique_ptr<TouchInjectorWin> touch_injector_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorWin);
 };
 
 InputInjectorWin::InputInjectorWin(

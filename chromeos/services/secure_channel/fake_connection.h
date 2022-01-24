@@ -5,8 +5,13 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_H_
 
-#include "base/macros.h"
+#include <vector>
+
+#include "base/callback.h"
 #include "chromeos/services/secure_channel/connection.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "chromeos/services/secure_channel/register_payload_file_request.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -21,6 +26,10 @@ class FakeConnection : public Connection {
   FakeConnection(multidevice::RemoteDeviceRef remote_device);
   FakeConnection(multidevice::RemoteDeviceRef remote_device,
                  bool should_auto_connect);
+
+  FakeConnection(const FakeConnection&) = delete;
+  FakeConnection& operator=(const FakeConnection&) = delete;
+
   ~FakeConnection() override;
 
   void set_rssi_to_return(const absl::optional<int32_t>& rssi_to_return) {
@@ -52,6 +61,11 @@ class FakeConnection : public Connection {
   // Returns the current message in progress of being sent.
   WireMessage* current_message() { return current_message_.get(); }
 
+  const std::vector<RegisterPayloadFileRequest>&
+  reigster_payload_file_requests() const {
+    return reigster_payload_file_requests_;
+  }
+
   std::vector<ConnectionObserver*>& observers() { return observers_; }
 
   using Connection::SetStatus;
@@ -59,6 +73,11 @@ class FakeConnection : public Connection {
  private:
   // Connection:
   void SendMessageImpl(std::unique_ptr<WireMessage> message) override;
+  void RegisterPayloadFileImpl(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) override;
   std::unique_ptr<WireMessage> DeserializeWireMessage(
       bool* is_incomplete_message) override;
 
@@ -71,12 +90,12 @@ class FakeConnection : public Connection {
   std::string pending_feature_;
   std::string pending_payload_;
 
+  std::vector<RegisterPayloadFileRequest> reigster_payload_file_requests_;
+
   std::vector<ConnectionObserver*> observers_;
 
   absl::optional<int32_t> rssi_to_return_;
   const bool should_auto_connect_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnection);
 };
 
 }  // namespace secure_channel

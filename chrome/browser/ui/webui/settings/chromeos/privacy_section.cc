@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/peripheral_data_access_handler.h"
@@ -46,8 +47,7 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
          {.section = mojom::Section::kPrivacyAndSecurity}},
     });
 
-    if (chromeos::features::IsAccountManagementFlowsV2Enabled() &&
-        !features::IsGuestModeActive()) {
+    if (!features::IsGuestModeActive()) {
       all_tags.insert(
           all_tags.end(),
           {{IDS_OS_SETTINGS_TAG_GUEST_BROWSING,
@@ -90,7 +90,7 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
             mojom::SearchResultIcon::kLock,
             mojom::SearchResultDefaultRank::kMedium,
             mojom::SearchResultType::kSetting,
-            {.setting = mojom::Setting::kChangeAuthPin},
+            {.setting = mojom::Setting::kChangeAuthPinV2},
             {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_PIN_OR_PASSWORD_ALT1,
              SearchConcept::kAltTagEnd}},
            {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING,
@@ -98,7 +98,7 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
             mojom::SearchResultIcon::kLock,
             mojom::SearchResultDefaultRank::kMedium,
             mojom::SearchResultType::kSetting,
-            {.setting = mojom::Setting::kLockScreen},
+            {.setting = mojom::Setting::kLockScreenV2},
             {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING_ALT1,
              SearchConcept::kAltTagEnd}},
            {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_V2,
@@ -106,8 +106,10 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
             mojom::SearchResultIcon::kLock,
             mojom::SearchResultDefaultRank::kMedium,
             mojom::SearchResultType::kSubpage,
-            {.subpage = mojom::Subpage::kSecurityAndSignIn}}});
+            {.subpage = mojom::Subpage::kSecurityAndSignInV2}}});
     }
+
+    // TODO(chromium:1262869): add smart privacy search concepts.
 
     return all_tags;
   }());
@@ -202,8 +204,7 @@ PrivacySection::PrivacySection(Profile* profile,
 
   // Fingerprint search tags are added if necessary. Remove fingerprint search
   // tags update dynamically during a user session.
-  if (!features::IsGuestModeActive() && AreFingerprintSettingsAllowed() &&
-      chromeos::features::IsAccountManagementFlowsV2Enabled()) {
+  if (!features::IsGuestModeActive() && AreFingerprintSettingsAllowed()) {
     updater.AddSearchTags(GetFingerprintSearchConcepts());
 
     fingerprint_pref_change_registrar_.Init(pref_service_);
@@ -252,15 +253,18 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_CANCEL_BUTTON_LABEL},
       {"peripheralDataAccessProtectionDisableButton",
        IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL},
+      {"privacyPageTitle", IDS_SETTINGS_PRIVACY_V2},
+      {"smartPrivacyTitle", IDS_OS_SETTINGS_SMART_PRIVACY_TITLE},
+      {"smartPrivacySubtext", IDS_OS_SETTINGS_SMART_PRIVACY_SUBTEXT},
+      {"smartPrivacySnoopingTitle",
+       IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_TITLE},
+      {"smartPrivacySnoopingSubtext",
+       IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_SUBTEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
-    html_source->AddLocalizedString("privacyPageTitle",
-                                    IDS_SETTINGS_PRIVACY_V2);
-  } else {
-    html_source->AddLocalizedString("privacyPageTitle", IDS_SETTINGS_PRIVACY);
-  }
+  html_source->AddBoolean("isSnoopingProtectionEnabled",
+                          ash::features::IsSnoopingProtectionEnabled());
 
   html_source->AddString("suggestedContentLearnMoreURL",
                          chrome::kSuggestedContentLearnMoreURL);
@@ -275,13 +279,14 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           chromeos::features::IsPciguardUiEnabled());
 
   html_source->AddBoolean("showSecureDnsSetting", IsSecureDnsAvailable());
+  html_source->AddBoolean("showSecureDnsOsSettingLink", false);
 
   ::settings::AddPersonalizationOptionsStrings(html_source);
   ::settings::AddSecureDnsStrings(html_source);
 }
 
 int PrivacySection::GetSectionNameMessageId() const {
-  return IDS_SETTINGS_PRIVACY;
+  return IDS_SETTINGS_PRIVACY_V2;
 }
 
 mojom::Section PrivacySection::GetSection() const {
@@ -331,7 +336,7 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Fingerprint.
   generator->RegisterNestedSubpage(
       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_SUBPAGE_TITLE,
-      mojom::Subpage::kFingerprintV2, mojom::Subpage::kSecurityAndSignIn,
+      mojom::Subpage::kFingerprintV2, mojom::Subpage::kSecurityAndSignInV2,
       mojom::SearchResultIcon::kFingerprint,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kFingerprintSubpagePathV2);
@@ -357,6 +362,12 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageOtherPeopleV2,
                             kManageOtherPeopleSettings, generator);
+
+  // Smart privacy.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_SMART_PRIVACY_TITLE, mojom::Subpage::kSmartPrivacy,
+      mojom::SearchResultIcon::kShield, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kSmartPrivacySubpagePath);
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {

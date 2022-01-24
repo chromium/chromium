@@ -51,8 +51,8 @@ GeneratedNotificationPref::~GeneratedNotificationPref() = default;
 void GeneratedNotificationPref::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  if (content_type == ContentSettingsType::NOTIFICATIONS) {
+    ContentSettingsTypeSet content_type_set) {
+  if (content_type_set.Contains(ContentSettingsType::NOTIFICATIONS)) {
     NotifyObservers(kGeneratedNotificationPref);
   }
 }

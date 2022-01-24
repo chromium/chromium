@@ -357,8 +357,20 @@ void Service::OnExtensionLoaded(content::BrowserContext* browser_context,
 void Service::RestoreFileSystems(const ProviderId& provider_id) {
   std::unique_ptr<RegistryInterface::RestoredFileSystems>
       restored_file_systems = registry_->RestoreFileSystems(provider_id);
+  // TODO(crbug.com/1258424): Remove this and conditional below around M108
+  bool is_smb_provider = provider_id.ToString().compare("@smb") == 0;
 
   for (const auto& restored_file_system : *restored_file_systems) {
+    // Remove unsupported smbprovider shares and drop a log so we can verify
+    // whether this correlates with fixing the bug in the field.
+    // See https://crbug.com/1254611
+    if (is_smb_provider) {
+      LOG(WARNING) << "Removing unsupported smbprovider share";
+      registry_->ForgetFileSystem(restored_file_system.provider_id,
+                                  restored_file_system.options.file_system_id);
+      continue;
+    }
+
     const base::File::Error result = MountFileSystemInternal(
         restored_file_system.provider_id, restored_file_system.options,
         MOUNT_CONTEXT_RESTORE);

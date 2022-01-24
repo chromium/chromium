@@ -5,7 +5,7 @@
 #include "device/vr/test/fake_vr_device.h"
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace device {
 
@@ -39,7 +39,7 @@ mojom::XRViewPtr FakeVRDevice::InitView(mojom::XREye eye,
 
   gfx::DecomposedTransform decomp;
   decomp.translate[0] = offset;
-  view->head_from_eye = gfx::ComposeTransform(decomp);
+  view->mojo_from_view = gfx::ComposeTransform(decomp);
 
   view->viewport = gfx::Size(size, size);
 

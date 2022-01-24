@@ -5,20 +5,21 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_PARAMETERS_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_PARAMETERS_H_
 
-#include <map>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
+class UserData;
 
 // Stores script parameters and provides access to the subset of client-relevant
 // parameters.
 class ScriptParameters {
  public:
   // TODO(arbesser): Expect properly typed parameters instead.
-  ScriptParameters(const std::map<std::string, std::string>& parameters);
+  ScriptParameters(const base::flat_map<std::string, std::string>& parameters);
   ScriptParameters();
   ~ScriptParameters();
   ScriptParameters(const ScriptParameters&) = delete;
@@ -36,6 +37,14 @@ class ScriptParameters {
   google::protobuf::RepeatedPtrField<ScriptParameterProto> ToProto(
       bool only_trigger_script_allowlisted = false) const;
 
+  // Update the device only parameters. New parameters always take precedence.
+  void UpdateDeviceOnlyParameters(
+      const base::flat_map<std::string, std::string>& parameters);
+
+  // Write parameters and device only parameters to |UserData|, by adding them
+  // to the additional values with a "param:" prefix.
+  void WriteToUserData(UserData* user_data) const;
+
   // Getters for specific parameters.
   absl::optional<std::string> GetOverlayColors() const;
   absl::optional<std::string> GetPasswordChangeUsername() const;
@@ -47,6 +56,7 @@ class ScriptParameters {
   absl::optional<bool> GetTriggerScriptExperiment() const;
   absl::optional<std::string> GetIntent() const;
   absl::optional<std::string> GetCallerEmail() const;
+  absl::optional<bool> GetEnableTts() const;
 
   // Details parameters.
   absl::optional<bool> GetDetailsShowInitial() const;
@@ -63,7 +73,7 @@ class ScriptParameters {
  private:
   absl::optional<std::string> GetParameter(const std::string& name) const;
 
-  std::map<std::string, std::string> parameters_;
+  base::flat_map<std::string, ValueProto> parameters_;
 };
 
 }  // namespace autofill_assistant

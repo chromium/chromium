@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
@@ -30,6 +29,10 @@ class CONTENT_EXPORT IndexedDBDatabaseCallbacks
           callbacks_remote,
       base::SequencedTaskRunner* idb_runner);
 
+  IndexedDBDatabaseCallbacks(const IndexedDBDatabaseCallbacks&) = delete;
+  IndexedDBDatabaseCallbacks& operator=(const IndexedDBDatabaseCallbacks&) =
+      delete;
+
   virtual void OnForcedClose();
   virtual void OnVersionChange(int64_t old_version, int64_t new_version);
 
@@ -49,8 +52,6 @@ class CONTENT_EXPORT IndexedDBDatabaseCallbacks
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   mojo::AssociatedRemote<blink::mojom::IDBDatabaseCallbacks> callbacks_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBDatabaseCallbacks);
 };
 
 }  // namespace content

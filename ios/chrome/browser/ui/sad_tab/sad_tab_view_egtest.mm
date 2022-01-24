@@ -48,11 +48,8 @@ id<GREYMatcher> incognitoHelpContainsText() {
 // visited within 60 seconds, for this reason this one test can not
 // be easily split up across multiple tests
 // as visiting Sad Tab may not be idempotent.
-- (void)testSadTabView {
-  // TODO(crbug.com/1047238): Test fails when run on iOS 13.
-  if (@available(iOS 13, *)) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 13.");
-  }
+// TODO(crbug.com/1047238): Test fails when run on iOS 13.
+- (void)DISABLED_testSadTabView {
   // Prepare a simple but known URL to avoid testing from the NTP.
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL simple_URL = self.testServer->GetURL("/destination.html");

@@ -21,5 +21,5 @@
     <org.chromium.chrome.browser.about_settings.HyperlinkPreference
         android:key="privacy_policy"
         android:title="@string/privacy_policy_title"
-        app:url="@string/chrome_privacy_policy_url" />
+        app:url="@string/google_privacy_policy_url" />
 </PreferenceScreen>

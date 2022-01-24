@@ -35,6 +35,10 @@ class ScopedTestDialogAutoConfirm {
   ScopedTestDialogAutoConfirm(AutoConfirm override_confirm_value,
                               int override_option_to_select);
 
+  ScopedTestDialogAutoConfirm(const ScopedTestDialogAutoConfirm&) = delete;
+  ScopedTestDialogAutoConfirm& operator=(const ScopedTestDialogAutoConfirm&) =
+      delete;
+
   ~ScopedTestDialogAutoConfirm();
 
   // Return whether the dialog should be showed, accepted, or cancelled.
@@ -61,8 +65,6 @@ class ScopedTestDialogAutoConfirm {
   // Preserve the old justification so it can be reset when the dialog goes out
   // of scope.
   std::string old_justification_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestDialogAutoConfirm);
 };
 
 }  // namespace extensions

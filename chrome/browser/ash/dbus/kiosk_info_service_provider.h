@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_KIOSK_INFO_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_DBUS_KIOSK_INFO_SERVICE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
@@ -24,6 +23,10 @@ namespace ash {
 class KioskInfoService : public CrosDBusService::ServiceProviderInterface {
  public:
   KioskInfoService();
+
+  KioskInfoService(const KioskInfoService&) = delete;
+  KioskInfoService& operator=(const KioskInfoService&) = delete;
+
   ~KioskInfoService() override;
 
   // CrosDBusService::ServiceProviderInterface
@@ -42,8 +45,6 @@ class KioskInfoService : public CrosDBusService::ServiceProviderInterface {
       dbus::ExportedObject::ResponseSender response_sender);
 
   base::WeakPtrFactory<KioskInfoService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskInfoService);
 };
 
 }  // namespace ash

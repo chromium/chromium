@@ -4,7 +4,8 @@
 
 #include "chromeos/components/multidevice/logging/log_buffer.h"
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
 
 namespace chromeos {
 
@@ -15,8 +16,10 @@ namespace {
 // The maximum number of logs that can be stored in the buffer.
 const size_t kMaxBufferSize = 1000;
 
-// The global instance returned by LogBuffer::GetInstance().
-base::LazyInstance<LogBuffer>::Leaky g_log_buffer = LAZY_INSTANCE_INITIALIZER;
+base::Lock& GetLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
 
 }  // namespace
 
@@ -33,7 +36,10 @@ LogBuffer::~LogBuffer() {}
 
 // static
 LogBuffer* LogBuffer::GetInstance() {
-  return &g_log_buffer.Get();
+  base::AutoLock guard(GetLock());
+
+  static base::NoDestructor<LogBuffer> log_buffer;
+  return log_buffer.get();
 }
 
 void LogBuffer::AddObserver(Observer* observer) {
@@ -45,6 +51,8 @@ void LogBuffer::RemoveObserver(Observer* observer) {
 }
 
 void LogBuffer::AddLogMessage(const LogMessage& log_message) {
+  base::AutoLock guard(GetLock());
+
   // Note: We may want to sort the messages by timestamp if there are cases
   // where logs are not added chronologically.
   log_messages_.push_back(log_message);
@@ -55,6 +63,8 @@ void LogBuffer::AddLogMessage(const LogMessage& log_message) {
 }
 
 void LogBuffer::Clear() {
+  base::AutoLock guard(GetLock());
+
   log_messages_.clear();
   for (auto& observer : observers_)
     observer.OnLogBufferCleared();

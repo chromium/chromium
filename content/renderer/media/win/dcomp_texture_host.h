@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "base/win/windows_types.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
@@ -37,8 +36,7 @@ class DCOMPTextureHost : public gpu::mojom::DCOMPTextureClient {
   class Listener {
    public:
     virtual void OnSharedImageMailboxBound(gpu::Mailbox mailbox) = 0;
-    virtual void OnDCOMPSurfaceHandleBound(bool success) = 0;
-    virtual void OnCompositionParamsReceived(gfx::Rect output_rect) = 0;
+    virtual void OnOutputRectChange(gfx::Rect output_rect) = 0;
   };
 
   DCOMPTextureHost(
@@ -52,15 +50,18 @@ class DCOMPTextureHost : public gpu::mojom::DCOMPTextureClient {
   ~DCOMPTextureHost() override;
 
   void SetTextureSize(const gfx::Size& size);
-  void SetDCOMPSurface(const base::UnguessableToken& surface_token);
+
+  using SetDCOMPSurfaceHandleCB = base::OnceCallback<void(bool)>;
+  void SetDCOMPSurfaceHandle(
+      const base::UnguessableToken& token,
+      SetDCOMPSurfaceHandleCB set_dcomp_surface_handle_cb);
 
  private:
   void OnDisconnectedFromGpuProcess();
 
   // gpu::mojom::DCOMPTextureClient:
   void OnSharedImageMailboxBound(const gpu::Mailbox& mailbox) override;
-  void OnDCOMPSurfaceHandleBound(bool success) override;
-  void OnCompositionParamsChanged(const gfx::Rect& output_rect) override;
+  void OnOutputRectChange(const gfx::Rect& output_rect) override;
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
   const int32_t route_id_;

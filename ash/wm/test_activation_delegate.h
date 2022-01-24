@@ -6,7 +6,6 @@
 #define ASH_WM_TEST_ACTIVATION_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_delegate.h"
@@ -24,6 +23,9 @@ class TestActivationDelegate : public ::wm::ActivationDelegate,
  public:
   TestActivationDelegate();
   explicit TestActivationDelegate(bool activate);
+
+  TestActivationDelegate(const TestActivationDelegate&) = delete;
+  TestActivationDelegate& operator=(const TestActivationDelegate&) = delete;
 
   // Associates this delegate with a Window.
   void SetWindow(aura::Window* window);
@@ -54,8 +56,6 @@ class TestActivationDelegate : public ::wm::ActivationDelegate,
   int activated_count_;
   int lost_active_count_;
   mutable int should_activate_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestActivationDelegate);
 };
 
 }  // namespace ash

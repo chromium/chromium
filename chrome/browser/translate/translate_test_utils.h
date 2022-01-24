@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/content/browser/translate_waiter.h"

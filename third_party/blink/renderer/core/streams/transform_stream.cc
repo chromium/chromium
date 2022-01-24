@@ -365,7 +365,7 @@ class TransformStream::DefaultSinkWriteAlgorithm final
           //    controller, chunk).
           return TransformStreamDefaultController::PerformTransform(
               script_state, stream_->transform_stream_controller_,
-              chunk_.NewLocal(isolate));
+              chunk_.Get(isolate));
         }
 
         void Trace(Visitor* visitor) const override {

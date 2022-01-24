@@ -246,6 +246,21 @@ RWBuffer::RWBuffer(size_t initial_capacity) {
   }
 }
 
+RWBuffer::RWBuffer(base::OnceCallback<size_t(void*, size_t)> writer,
+                   size_t initial_capacity) {
+  if (initial_capacity) {
+    head_ = RWBuffer::BufferHead::Alloc(initial_capacity);
+    tail_ = &head_->block_;
+  }
+
+  size_t written = std::move(writer).Run(const_cast<void*>(tail_->startData()),
+                                         initial_capacity);
+  total_used_ += written;
+  tail_->used_ += written;
+
+  Validate();
+}
+
 RWBuffer::~RWBuffer() {
   Validate();
   if (head_) {

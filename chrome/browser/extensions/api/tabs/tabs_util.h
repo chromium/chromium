@@ -20,7 +20,7 @@ namespace tabs_util {
 
 // Set up the browser in the locked fullscreen state, and do any additional
 // necessary adjustments.
-void SetLockedFullscreenState(Browser* browser, bool locked);
+void SetLockedFullscreenState(Browser* browser, bool pinned);
 
 // Checks whether screenshot of |web_contents| is restricted due to Data Leak
 // Prevention policy.

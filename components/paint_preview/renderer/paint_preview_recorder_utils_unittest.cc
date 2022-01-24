@@ -14,6 +14,7 @@
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/notreached.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/unguessable_token.h"
 #include "cc/paint/paint_canvas.h"
@@ -276,6 +277,9 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
   // Valid after SetUp() until SerializeAsSkPicture() is called.
   cc::PaintCanvas* canvas{};
 
+ protected:
+  base::test::TaskEnvironment task_environment_;
+
  private:
   base::TestDiscardableMemoryAllocator test_allocator_;
 };
@@ -300,9 +304,9 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest, Roundtrip) {
 
   absl::optional<SkpResult> result = std::move(recording.value()).Deserialize();
   ASSERT_TRUE(result.has_value());
-  for (auto& content_id : ctx) {
-    EXPECT_TRUE(result->ctx.contains(content_id));
-    result->ctx.erase(content_id);
+  for (auto& id : ctx) {
+    EXPECT_TRUE(result->ctx.contains(id));
+    result->ctx.erase(id);
   }
   EXPECT_TRUE(result->ctx.empty());
 }

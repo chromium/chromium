@@ -7,7 +7,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -15,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/cookie_helper.h"
@@ -30,14 +30,15 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/nigori/cryptographer_impl.h"
-#include "components/sync/nigori/nigori.h"
 #include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
 #include "components/sync/trusted_vault/fake_security_domains_server.h"
@@ -145,6 +146,9 @@ class TabClosedChecker : public StatusChangeChecker,
     DCHECK(web_contents);
   }
 
+  TabClosedChecker(const TabClosedChecker&) = delete;
+  TabClosedChecker& operator=(const TabClosedChecker&) = delete;
+
   ~TabClosedChecker() override = default;
 
   // StatusChangeChecker overrides.
@@ -161,8 +165,6 @@ class TabClosedChecker : public StatusChangeChecker,
 
  private:
   bool closed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TabClosedChecker);
 };
 
 // Used to wait until a page's title changes to a certain value (useful to
@@ -176,6 +178,9 @@ class PageTitleChecker : public StatusChangeChecker,
         expected_title_(base::UTF8ToUTF16(expected_title)) {
     DCHECK(web_contents);
   }
+
+  PageTitleChecker(const PageTitleChecker&) = delete;
+  PageTitleChecker& operator=(const PageTitleChecker&) = delete;
 
   ~PageTitleChecker() override = default;
 
@@ -195,8 +200,6 @@ class PageTitleChecker : public StatusChangeChecker,
 
  private:
   const std::u16string expected_title_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageTitleChecker);
 };
 
 // Used to wait until IsTrustedVaultKeyRequiredForPreferredDataTypes() returns
@@ -292,21 +295,29 @@ class FakeSecurityDomainsServerMemberStatusChecker
 class SingleClientNigoriSyncTest : public SyncTest {
  public:
   SingleClientNigoriSyncTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SingleClientNigoriSyncTest(const SingleClientNigoriSyncTest&) = delete;
+  SingleClientNigoriSyncTest& operator=(const SingleClientNigoriSyncTest&) =
+      delete;
+
   ~SingleClientNigoriSyncTest() override = default;
 
   bool WaitForPasswordForms(
       const std::vector<password_manager::PasswordForm>& forms) const {
     return PasswordFormsChecker(0, forms).Wait();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientNigoriSyncTest);
 };
 
 class SingleClientNigoriSyncTestWithNotAwaitQuiescence
     : public SingleClientNigoriSyncTest {
  public:
   SingleClientNigoriSyncTestWithNotAwaitQuiescence() = default;
+
+  SingleClientNigoriSyncTestWithNotAwaitQuiescence(
+      const SingleClientNigoriSyncTestWithNotAwaitQuiescence&) = delete;
+  SingleClientNigoriSyncTestWithNotAwaitQuiescence& operator=(
+      const SingleClientNigoriSyncTestWithNotAwaitQuiescence&) = delete;
+
   ~SingleClientNigoriSyncTestWithNotAwaitQuiescence() override = default;
 
   bool TestUsesSelfNotifications() override {
@@ -315,23 +326,6 @@ class SingleClientNigoriSyncTestWithNotAwaitQuiescence
     // achieved and isn't needed.
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientNigoriSyncTestWithNotAwaitQuiescence);
-};
-
-class SingleClientNigoriSyncTestWithFullKeystoreMigration
-    : public SingleClientNigoriSyncTest {
- public:
-  SingleClientNigoriSyncTestWithFullKeystoreMigration() {
-    override_features_.InitAndEnableFeature(
-        switches::kSyncTriggerFullKeystoreMigration);
-  }
-
-  ~SingleClientNigoriSyncTestWithFullKeystoreMigration() override = default;
-
- private:
-  base::test::ScopedFeatureList override_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
@@ -492,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest, ShouldRotateKeystoreKey) {
 }
 
 // Performs initial sync with backward compatible keystore Nigori.
-IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithFullKeystoreMigration,
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
                        PRE_ShouldCompleteKeystoreMigrationAfterRestart) {
   const std::vector<std::vector<uint8_t>>& keystore_keys =
       GetFakeServer()->GetKeystoreKeys();
@@ -515,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithFullKeystoreMigration,
 
 // After browser restart the client should commit full keystore Nigori (e.g. it
 // should use keystore key as encryption key).
-IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithFullKeystoreMigration,
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
                        ShouldCompleteKeystoreMigrationAfterRestart) {
   ASSERT_TRUE(SetupClients());
   const std::string expected_key_bag_key_name =
@@ -565,8 +559,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
       "password"));
   EXPECT_TRUE(WaitForPasswordForms({password_form}));
-  // TODO(crbug.com/1042251): verify that client fixes NigoriSpecifics once
-  // such behavior is supported.
 }
 
 // Performs initial sync for Nigori, but doesn't allow initialized Nigori to be
@@ -599,6 +591,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithNotAwaitQuiescence,
 class SingleClientNigoriWithWebApiTest : public SyncTest {
  public:
   SingleClientNigoriWithWebApiTest() : SyncTest(SINGLE_CLIENT) {}
+
+  SingleClientNigoriWithWebApiTest(const SingleClientNigoriWithWebApiTest&) =
+      delete;
+  SingleClientNigoriWithWebApiTest& operator=(
+      const SingleClientNigoriWithWebApiTest&) = delete;
+
   ~SingleClientNigoriWithWebApiTest() override = default;
 
   // InProcessBrowserTest:
@@ -641,8 +639,6 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
 
  private:
   std::unique_ptr<syncer::FakeSecurityDomainsServer> security_domains_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientNigoriWithWebApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
@@ -800,6 +796,14 @@ IN_PROC_BROWSER_TEST_F(
       TabClosedChecker(GetBrowser(0)->tab_strip_model()->GetActiveWebContents())
           .Wait());
   EXPECT_TRUE(keys_fetched_checker.Wait());
+
+  // TrustedVaultClient handles IdentityManager state changes after refresh
+  // tokens are loaded.
+  // TODO(crbug.com/1148328): |keys_cleared_checker| should be sufficient alone
+  // once test properly manipulates AccountsInCookieJarInfo (this likely
+  // involves using FakeGaia).
+  signin::WaitForRefreshTokensLoaded(
+      IdentityManagerFactory::GetForProfile(GetProfile(0)));
 
   // Mimic signin cookie clearing.
   TrustedVaultKeysChangedStateChecker keys_cleared_checker(GetSyncService(0));
@@ -1303,7 +1307,7 @@ class SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest
 
   // SetupClients() must have been already called.
   void SetupSyncTransport() {
-    secondary_account_helper::SignInSecondaryAccount(
+    secondary_account_helper::SignInUnconsentedAccount(
         GetProfile(0), &test_url_loader_factory_, kAccountEmail);
     ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
     ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());

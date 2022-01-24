@@ -41,10 +41,12 @@
 
 #include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_font_prewarmer.h"
 #include "third_party/blink/renderer/platform/fonts/bitmap_glyphs_block_list.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
@@ -53,6 +55,7 @@
 #include "third_party/blink/renderer/platform/fonts/win/font_fallback_win.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
@@ -61,6 +64,8 @@
 #include <windows.h>
 
 namespace blink {
+
+WebFontPrewarmer* FontCache::prewarmer_ = nullptr;
 
 HashMap<String, sk_sp<SkTypeface>, CaseFoldingHash>*
     FontCache::sideloaded_fonts_ = nullptr;
@@ -185,6 +190,35 @@ const LayoutLocale* FallbackLocaleForCharacter(
 }
 
 }  // namespace
+
+// static
+void FontCache::PrewarmFamily(const AtomicString& family_name) {
+  DCHECK(IsMainThread());
+
+  if (!prewarmer_)
+    return;
+
+  // Platform is initialized before |FeatureList| that we may have a prewarmer
+  // even when the feature is not enabled.
+  // TODO(crbug.com/1256946): Review if there is a better timing to set the
+  // prewarmer.
+  static bool is_initialized = false;
+  if (!is_initialized) {
+    is_initialized = true;
+    if (!base::FeatureList::IsEnabled(kAsyncFontAccess)) {
+      prewarmer_ = nullptr;
+      return;
+    }
+  }
+  DCHECK(base::FeatureList::IsEnabled(kAsyncFontAccess));
+
+  static HashSet<AtomicString> prewarmed_families;
+  const auto result = prewarmed_families.insert(family_name);
+  if (!result.is_new_entry)
+    return;
+
+  prewarmer_->PrewarmFamily(family_name);
+}
 
 // static
 void FontCache::AddSideloadedFontForTesting(sk_sp<SkTypeface> typeface) {
@@ -378,7 +412,7 @@ scoped_refptr<SimpleFontData> FontCache::GetDWriteFallbackFamily(
     }
     return FontDataFromFontPlatformData(data, kDoNotRetain);
   } else {
-    std::string family_name = font_description.Family().Family().Utf8();
+    std::string family_name = font_description.Family().FamilyName().Utf8();
 
     Bcp47Vector locales;
     locales.push_back(fallback_locale->LocaleForSkFontMgr());
@@ -504,7 +538,7 @@ static bool TypefacesHasWeightSuffix(const AtomicString& family,
                                      FontSelectionValue& variant_weight) {
   struct FamilyWeightSuffix {
     const UChar* suffix;
-    size_t length;
+    wtf_size_t length;
     FontSelectionValue weight;
   };
   // Mapping from suffix to weight from the DirectWrite documentation.
@@ -542,7 +576,7 @@ static bool TypefacesHasStretchSuffix(const AtomicString& family,
                                       FontSelectionValue& variant_stretch) {
   struct FamilyStretchSuffix {
     const UChar* suffix;
-    size_t length;
+    wtf_size_t length;
     FontSelectionValue stretch;
   };
   // Mapping from suffix to stretch value from the DirectWrite documentation.
@@ -658,13 +692,19 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
     }
   }
 
-  std::unique_ptr<FontPlatformData> result = std::make_unique<FontPlatformData>(
-      typeface, name.data(), font_size,
+  bool synthetic_bold_requested =
       (font_description.Weight() >= BoldThreshold() && !typeface->isBold()) ||
-          font_description.IsSyntheticBold(),
+      font_description.IsSyntheticBold();
+
+  bool synthetic_italic_requested =
       ((font_description.Style() == ItalicSlopeValue()) &&
        !typeface->isItalic()) ||
-          font_description.IsSyntheticItalic(),
+      font_description.IsSyntheticItalic();
+
+  std::unique_ptr<FontPlatformData> result = std::make_unique<FontPlatformData>(
+      typeface, name.data(), font_size,
+      synthetic_bold_requested && font_description.SyntheticBoldAllowed(),
+      synthetic_italic_requested && font_description.SyntheticItalicAllowed(),
       font_description.Orientation());
 
   result->SetAvoidEmbeddedBitmaps(

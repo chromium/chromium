@@ -11,7 +11,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/same_origin_observer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -50,6 +52,8 @@ const SkColor kContentsBorderColor = gfx::kGoogleBlue500;
 
 void InitContentsBorderWidget(WebContents* contents) {
   Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  if (!browser)
+    return;
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (browser_view->contents_border_widget())
     return;
@@ -109,12 +113,10 @@ void SetContentsBorderVisible(WebContents* contents, bool visible) {
 }
 
 std::u16string GetTabName(WebContents* tab) {
-  const GURL& url = tab->GetLastCommittedURL();
-  const std::u16string tab_name =
-      network::IsUrlPotentiallyTrustworthy(url)
-          ? base::UTF8ToUTF16(net::GetHostAndOptionalPort(url))
-          : url_formatter::FormatUrlForSecurityDisplay(url.GetOrigin());
-  return tab_name.empty() ? tab->GetTitle() : tab_name;
+  const std::u16string formatted_origin =
+      url_formatter::FormatOriginForSecurityDisplay(
+          tab->GetMainFrame()->GetLastCommittedOrigin());
+  return formatted_origin.empty() ? tab->GetTitle() : formatted_origin;
 }
 
 GlobalRenderFrameHostId GetGlobalId(WebContents* web_contents) {
@@ -136,16 +138,38 @@ uint32_t GetHash(const ui::ImageModel& image) {
       static_cast<uint8_t*>(bitmap->getPixels()), bitmap->computeByteSize()));
 }
 
+WebContents* WebContentsFromId(GlobalRenderFrameHostId rfh_id) {
+  // Note that both FromID() and FromRenderFrameHost() are robust to null
+  // input.
+  return content::WebContents::FromRenderFrameHost(
+      content::RenderFrameHost::FromID(rfh_id));
+}
+
+GURL GetOriginFromId(GlobalRenderFrameHostId rfh_id) {
+  WebContents* capturer = WebContentsFromId(rfh_id);
+  if (!capturer)
+    return {};
+
+  return capturer->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+}
+
 bool CanFocusCapturer(GlobalRenderFrameHostId capturer_id) {
-  // Note that both FromID() and FromRenderFrameHost() are robust to null input.
-  WebContents* const capturer =
-      WebContents::FromRenderFrameHost(RenderFrameHost::FromID(capturer_id));
+  WebContents* const capturer = WebContentsFromId(capturer_id);
   if (!capturer) {
     return false;
   }
 
   return !capturer->GetLastCommittedURL().SchemeIs(
       extensions::kExtensionScheme);
+}
+
+bool CapturerRestrictedToSameOrigin(GlobalRenderFrameHostId capturer_id) {
+  WebContents* capturer = WebContentsFromId(capturer_id);
+  if (!capturer)
+    return false;
+  return capture_policy::GetAllowedCaptureLevel(
+             capturer->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
+             capturer) == AllowedScreenCaptureLevel::kSameOrigin;
 }
 
 }  // namespace
@@ -166,7 +190,10 @@ TabSharingUIViews::TabSharingUIViews(
     std::u16string app_name,
     bool favicons_used_for_switch_to_tab_button)
     : capturer_(capturer),
+      capturer_origin_(GetOriginFromId(capturer)),
       can_focus_capturer_(CanFocusCapturer(capturer)),
+      capturer_restricted_to_same_origin_(
+          CapturerRestrictedToSameOrigin(capturer)),
       shared_tab_media_id_(media_id),
       app_name_(std::move(app_name)),
       favicons_used_for_switch_to_tab_button_(
@@ -181,6 +208,15 @@ TabSharingUIViews::TabSharingUIViews(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   InitContentsBorderWidget(shared_tab_);
 #endif
+
+  if (capturer_restricted_to_same_origin_) {
+    // base::Unretained is safe here because we own the origin observer, so it
+    // cannot outlive us.
+    shared_tab_origin_observer_ = std::make_unique<SameOriginObserver>(
+        shared_tab_, capturer_origin_,
+        base::BindRepeating(&TabSharingUIViews::StopCaptureDueToPolicy,
+                            base::Unretained(this)));
+  }
 }
 
 TabSharingUIViews::~TabSharingUIViews() {
@@ -192,7 +228,8 @@ TabSharingUIViews::~TabSharingUIViews() {
 
 gfx::NativeViewId TabSharingUIViews::OnStarted(
     base::OnceClosure stop_callback,
-    content::MediaStreamUI::SourceCallback source_callback) {
+    content::MediaStreamUI::SourceCallback source_callback,
+    const std::vector<content::DesktopMediaID>& media_ids) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   source_callback_ = std::move(source_callback);
   stop_callback_ = std::move(stop_callback);
@@ -279,8 +316,9 @@ void TabSharingUIViews::TabChangedAt(WebContents* contents,
   if (sad_tab_helper && sad_tab_helper->sad_tab())
     return;
 
-  if (infobars_.find(contents) == infobars_.end())
+  if (infobars_.find(contents) == infobars_.end()) {
     CreateInfobarForWebContents(contents);
+  }
 }
 
 void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
@@ -348,10 +386,25 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   const bool is_capturing_tab = (GetGlobalId(contents) == capturer_);
   const bool is_captured_tab = (contents == shared_tab_);
 
-  // Never show the [share this tab instead] button on either the capturing
-  // tab or the captured tab.
-  const bool can_share_instead =
+  // We may want to show the "Share this tab instead" button, but we can only do
+  // so if we have a |source_callback_| and if this tab is neither the capturing
+  // nor captured tab.
+  const bool is_share_instead_button_possible =
       !source_callback_.is_null() && !is_capturing_tab && !is_captured_tab;
+
+  // If sharing this tab instead of the currently captured tab is possible, it
+  // may still be blocked by enterprise policy. If the enterprise policy is
+  // active, create an observer that will inform us when it's compliance state
+  // changes.
+  if (capturer_restricted_to_same_origin_ && is_share_instead_button_possible &&
+      !base::Contains(same_origin_observers_, contents)) {
+    // We explicitly remove all infobars and clear all policy observers before
+    // destruction, so base::Unretained is safe here.
+    same_origin_observers_[contents] = std::make_unique<SameOriginObserver>(
+        contents, capturer_origin_,
+        base::BindRepeating(&TabSharingUIViews::CreateInfobarForWebContents,
+                            base::Unretained(this)));
+  }
 
   absl::optional<TabSharingInfoBarDelegate::FocusTarget> focus_target;
   if (can_focus_capturer_) {
@@ -368,10 +421,22 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
     }
   }
 
+  // Determine if we are currently allowed to share this tab by policy.
+  const bool is_sharing_allowed_by_policy =
+      !capturer_restricted_to_same_origin_ ||
+      url::IsSameOriginWith(
+          capturer_origin_,
+          contents->GetLastCommittedURL().DeprecatedGetOriginAsURL());
+
+  // Never show the [share this tab instead] if sharing is not possible or is
+  // blocked by policy.
+  const bool can_show_share_instead_button =
+      is_share_instead_button_possible && is_sharing_allowed_by_policy;
+
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
       infobar_manager, shared_tab_name_, app_name_,
-      shared_tab_ == contents /*shared_tab*/, can_share_instead, focus_target,
-      this, favicons_used_for_switch_to_tab_button_);
+      shared_tab_ == contents /*shared_tab*/, can_show_share_instead_button,
+      focus_target, this, favicons_used_for_switch_to_tab_button_);
 }
 
 void TabSharingUIViews::RemoveInfobarsForAllTabs() {
@@ -384,6 +449,7 @@ void TabSharingUIViews::RemoveInfobarsForAllTabs() {
   }
 
   infobars_.clear();
+  same_origin_observers_.clear();
 }
 
 void TabSharingUIViews::CreateTabCaptureIndicator() {
@@ -416,7 +482,7 @@ void TabSharingUIViews::FaviconPeriodicUpdate(size_t share_session_seq_num) {
       FROM_HERE,
       base::BindOnce(&TabSharingUIViews::FaviconPeriodicUpdate,
                      weak_factory_.GetWeakPtr(), share_session_seq_num),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 }
 
 void TabSharingUIViews::RefreshFavicons() {
@@ -424,8 +490,7 @@ void TabSharingUIViews::RefreshFavicons() {
     return;
   }
 
-  WebContents* const capturer =
-      WebContents::FromRenderFrameHost(RenderFrameHost::FromID(capturer_));
+  WebContents* const capturer = WebContentsFromId(capturer_);
   if (!capturer) {
     return;
   }
@@ -472,12 +537,19 @@ ui::ImageModel TabSharingUIViews::TabFavicon(WebContents* web_contents) const {
 
 ui::ImageModel TabSharingUIViews::TabFavicon(
     GlobalRenderFrameHostId rfh_id) const {
-  return TabFavicon(content::WebContents::FromRenderFrameHost(
-      content::RenderFrameHost::FromID(rfh_id)));
+  return TabFavicon(WebContentsFromId(rfh_id));
 }
 
 void TabSharingUIViews::SetTabFaviconForTesting(
     content::WebContents* web_contents,
     const ui::ImageModel& favicon) {
   favicon_overrides_for_testing_[web_contents] = favicon;
+}
+
+void TabSharingUIViews::StopCaptureDueToPolicy(content::WebContents* contents) {
+  DCHECK(shared_tab_ == contents);
+  StopSharing();
+  // We use |contents| rather than |shared_tab_| here because |shared_tab_| is
+  // cleared by the call to StopSharing().
+  capture_policy::ShowCaptureTerminatedDialog(contents);
 }

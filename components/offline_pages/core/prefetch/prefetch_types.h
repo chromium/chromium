@@ -86,7 +86,8 @@ enum class RenderStatus {
 // Information about the page rendered in the server.
 struct RenderPageInfo {
   RenderPageInfo();
-  RenderPageInfo(const RenderPageInfo& other);
+  RenderPageInfo(const RenderPageInfo&);
+  RenderPageInfo& operator=(const RenderPageInfo&);
 
   // The URL of the page that was rendered.
   std::string url;

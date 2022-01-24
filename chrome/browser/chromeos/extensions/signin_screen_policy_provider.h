@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension.h"
 
@@ -20,15 +19,17 @@ class SigninScreenPolicyProvider
     : public extensions::ManagementPolicy::Provider {
  public:
   SigninScreenPolicyProvider();
+
+  SigninScreenPolicyProvider(const SigninScreenPolicyProvider&) = delete;
+  SigninScreenPolicyProvider& operator=(const SigninScreenPolicyProvider&) =
+      delete;
+
   ~SigninScreenPolicyProvider() override;
 
   // extensions::ManagementPolicy::Provider:
   std::string GetDebugPolicyProviderName() const override;
   bool UserMayLoad(const extensions::Extension* extension,
                    std::u16string* error) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SigninScreenPolicyProvider);
 };
 
 std::unique_ptr<base::AutoReset<bool>>

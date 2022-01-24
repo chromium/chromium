@@ -13,12 +13,14 @@ namespace media_session {
 class MediaSessionImplTest : public testing::Test {
  public:
   MediaSessionImplTest() = default;
+
+  MediaSessionImplTest(const MediaSessionImplTest&) = delete;
+  MediaSessionImplTest& operator=(const MediaSessionImplTest&) = delete;
+
   ~MediaSessionImplTest() override = default;
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionImplTest);
 };
 
 TEST_F(MediaSessionImplTest, InstantiateService) {

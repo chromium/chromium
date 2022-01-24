@@ -210,7 +210,6 @@ void CloudSpeechRecognitionClientUnitTest::InitializeUpstreamPipeIfNecessary() {
 
 std::string CloudSpeechRecognitionClientUnitTest::ConsumeChunkedUploadData(
     uint32_t expected_num_bytes) {
-  std::string result;
   InitializeUpstreamPipeIfNecessary();
 
   EXPECT_TRUE(upstream_data_pipe_.is_valid());
@@ -478,7 +477,7 @@ TEST_F(CloudSpeechRecognitionClientUnitTest, StreamReset) {
   // Fast forward by 325 total seconds to trigger a reset.
   for (int i = 0; i < 13; i++) {
     InjectDummyAudio();
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(25));
+    task_environment_.FastForwardBy(base::Seconds(25));
   }
 
   ASSERT_EQ(2, speech_recognition_service_impl_->GetNumPending());
@@ -506,7 +505,7 @@ TEST_F(CloudSpeechRecognitionClientUnitTest, StreamResetAfterPause) {
       GetDownstreamRequest()->request.url.spec();
 
   // Fast forward by 35 seconds to trigger a reset.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(35));
+  task_environment_.FastForwardBy(base::Seconds(35));
   InjectDummyAudio();
   ASSERT_EQ(2, speech_recognition_service_impl_->GetNumPending());
 

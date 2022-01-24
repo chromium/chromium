@@ -29,19 +29,16 @@ ci.defaults.set(
     bucket = "reclient",
     build_numbers = True,
     builder_group = "chromium.reclient.fyi",
-    configure_kitchen = True,
     cores = 8,
     cpu = cpu.X86_64,
     executable = "recipe:chromium",
     execution_timeout = 3 * time.hour,
     goma_backend = None,
-    kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
     pool = "luci.chromium.ci",
     service_account = (
         "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
     ),
-    swarming_tags = ["vpython:native-python-wrapper"],
     triggered_by = ["chromium-gitiles-trigger"],
 )
 
@@ -60,6 +57,7 @@ def fyi_reclient_staging_builder(
     return ci.builder(
         name = name,
         reclient_instance = reclient_instance,
+        reclient_fail_early = True,
         console_view_entry = consoles.console_view_entry(
             category = "rbe|linux",
             short_name = "rcs",
@@ -67,6 +65,20 @@ def fyi_reclient_staging_builder(
         **kwargs
     )
 
+def fyi_reclient_test_builder(
+        *,
+        name,
+        **kwargs):
+    return fyi_reclient_staging_builder(
+        name = name,
+        reclient_instance = "goma-foundry-experiments",
+        **kwargs
+    )
+
 fyi_reclient_staging_builder(
-    name = "Linux Builder Re-Client Staging",
+    name = "Linux Builder reclient staging",
+)
+
+fyi_reclient_test_builder(
+    name = "Linux Builder reclient test",
 )

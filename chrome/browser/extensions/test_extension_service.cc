@@ -76,3 +76,7 @@ bool TestExtensionService::UserCanDisableInstalledExtension(
   ADD_FAILURE();
   return false;
 }
+
+void TestExtensionService::ReinstallProviderExtensions() {
+  ADD_FAILURE();
+}

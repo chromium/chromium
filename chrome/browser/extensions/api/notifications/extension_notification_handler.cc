@@ -38,7 +38,7 @@ std::unique_ptr<base::ListValue> CreateBaseEventArgs(
       scoped_notification_id.substr(index_of_separator);
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendString(unscoped_notification_id);
+  args->Append(unscoped_notification_id);
   return args;
 }
 
@@ -52,7 +52,7 @@ ExtensionNotificationHandler::~ExtensionNotificationHandler() = default;
 std::string ExtensionNotificationHandler::GetExtensionId(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIs(extensions::kExtensionScheme))
     return "";
-  return std::string(url.GetOrigin().host_piece());
+  return std::string(url.DeprecatedGetOriginAsURL().host_piece());
 }
 
 void ExtensionNotificationHandler::OnClose(
@@ -69,7 +69,7 @@ void ExtensionNotificationHandler::OnClose(
 
   std::unique_ptr<base::ListValue> args(
       CreateBaseEventArgs(extension_id, notification_id));
-  args->AppendBoolean(by_user);
+  args->Append(by_user);
   SendEvent(profile, extension_id, events::NOTIFICATIONS_ON_CLOSED,
             api::notifications::OnClosed::kEventName, gesture, std::move(args));
 
@@ -94,7 +94,7 @@ void ExtensionNotificationHandler::OnClick(
   std::unique_ptr<base::ListValue> args(
       CreateBaseEventArgs(extension_id, notification_id));
   if (action_index.has_value())
-    args->AppendInteger(action_index.value());
+    args->Append(action_index.value());
   events::HistogramValue histogram_value =
       action_index.has_value() ? events::NOTIFICATIONS_ON_BUTTON_CLICKED
                                : events::NOTIFICATIONS_ON_CLICKED;

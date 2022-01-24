@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -58,6 +57,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
 #include "google_apis/drive/drive_api_url_generator.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
@@ -100,7 +100,7 @@ SyncEngine::DriveServiceFactory::CreateDriveService(
     base::SequencedTaskRunner* blocking_task_runner) {
   return std::make_unique<drive::DriveAPIService>(
       identity_manager, url_loader_factory, blocking_task_runner,
-      GURL(google_apis::DriveApiUrlGenerator::kBaseUrlForProduction),
+      GaiaUrls::GetInstance()->google_apis_origin_url(),
       GURL(google_apis::DriveApiUrlGenerator::kBaseThumbnailUrlForProduction),
       std::string(), /* custom_user_agent */
       kSyncFileSystemTrafficAnnotation);
@@ -114,6 +114,9 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
         sync_engine_(sync_engine) {
     sequence_checker_.DetachFromSequence();
   }
+
+  WorkerObserver(const WorkerObserver&) = delete;
+  WorkerObserver& operator=(const WorkerObserver&) = delete;
 
   ~WorkerObserver() override {
     DCHECK(sequence_checker_.CalledOnValidSequence());
@@ -174,8 +177,6 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
   base::WeakPtr<SyncEngine> sync_engine_;
 
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerObserver);
 };
 
 std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(

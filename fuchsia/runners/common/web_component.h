@@ -46,6 +46,9 @@ class WebComponent : public fuchsia::sys::ComponentController,
                fidl::InterfaceRequest<fuchsia::sys::ComponentController>
                    controller_request);
 
+  WebComponent(const WebComponent&) = delete;
+  WebComponent& operator=(const WebComponent&) = delete;
+
   ~WebComponent() override;
 
   // Enables remote debugging on this WebComponent. Must be called before
@@ -84,6 +87,7 @@ class WebComponent : public fuchsia::sys::ComponentController,
   void CreateViewWithViewRef(zx::eventpair view_token,
                              fuchsia::ui::views::ViewRefControl control_ref,
                              fuchsia::ui::views::ViewRef view_ref) override;
+  void CreateView2(fuchsia::ui::app::CreateView2Args view_args) override;
 
   // fuchsia::web::NavigationEventListener implementation.
   // Used to detect when the Frame enters an error state (e.g. the top-level
@@ -137,8 +141,6 @@ class WebComponent : public fuchsia::sys::ComponentController,
   // process crashes.
   fidl::Binding<fuchsia::web::NavigationEventListener>
       navigation_listener_binding_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebComponent);
 };
 
 #endif  // FUCHSIA_RUNNERS_COMMON_WEB_COMPONENT_H_

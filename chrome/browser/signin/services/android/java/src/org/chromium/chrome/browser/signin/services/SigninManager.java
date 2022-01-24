@@ -10,7 +10,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -33,22 +33,17 @@ public interface SigninManager {
         /**
          * Invoked when the user has signed in to Chrome.
          */
-        void onSignedIn();
+        default void onSignedIn() {}
 
         /**
          * Invoked when the user has signed out of Chrome.
          */
-        void onSignedOut();
-    }
+        default void onSignedOut() {}
 
-    /**
-     * SignInAllowedObservers will be notified once signing-in becomes allowed or disallowed.
-     */
-    interface SignInAllowedObserver {
         /**
          * Invoked once all startup checks are done and signing-in becomes allowed, or disallowed.
          */
-        void onSignInAllowedChanged();
+        default void onSignInAllowedChanged() {}
     }
 
     /**
@@ -130,16 +125,6 @@ public interface SigninManager {
     void removeSignInStateObserver(SignInStateObserver observer);
 
     /**
-     * Adds a {@link SignInAllowedObserver}.
-     */
-    void addSignInAllowedObserver(SignInAllowedObserver observer);
-
-    /**
-     * Removes a {@link SignInAllowedObserver}.
-     */
-    void removeSignInAllowedObserver(SignInAllowedObserver observer);
-
-    /**
      * Starts the sign-in flow, and executes the callback when finished.
      *
      * The sign-in flow goes through the following steps:
@@ -148,10 +133,10 @@ public interface SigninManager {
      *   - Complete sign-in with the native IdentityManager.
      *   - Call the callback if provided.
      *
-     * @param accountInfo The account to sign in to.
+     * @param account The account to sign in to.
      * @param callback Optional callback for when the sign-in process is finished.
      */
-    void signin(CoreAccountInfo accountInfo, @Nullable SignInCallback callback);
+    void signin(Account account, @Nullable SignInCallback callback);
 
     /**
      * Starts the sign-in flow, and executes the callback when finished.
@@ -214,4 +199,10 @@ public interface SigninManager {
      *                 otherwise.
      */
     void isAccountManaged(String email, Callback<Boolean> callback);
+
+    /**
+     * Reloads all the accounts from the system within the {@link IdentityManager}.
+     * @param primaryAccountId {@link CoreAccountId} of the primary account.
+     */
+    void reloadAllAccountsFromSystem(CoreAccountId primaryAccountId);
 }

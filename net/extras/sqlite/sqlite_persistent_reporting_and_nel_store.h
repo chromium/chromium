@@ -35,6 +35,11 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentReportingAndNelStore
       const scoped_refptr<base::SequencedTaskRunner>& client_task_runner,
       const scoped_refptr<base::SequencedTaskRunner>& background_task_runner);
 
+  SQLitePersistentReportingAndNelStore(
+      const SQLitePersistentReportingAndNelStore&) = delete;
+  SQLitePersistentReportingAndNelStore& operator=(
+      const SQLitePersistentReportingAndNelStore&) = delete;
+
   ~SQLitePersistentReportingAndNelStore() override;
 
   // NetworkErrorLoggingService::PersistentNelStore implementation
@@ -84,8 +89,6 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentReportingAndNelStore
 
   base::WeakPtrFactory<SQLitePersistentReportingAndNelStore> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(SQLitePersistentReportingAndNelStore);
 };
 
 }  // namespace net

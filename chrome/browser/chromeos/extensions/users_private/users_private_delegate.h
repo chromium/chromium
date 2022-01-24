@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/common/extensions/api/users_private.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -23,6 +22,10 @@ namespace extensions {
 class UsersPrivateDelegate : public KeyedService {
  public:
   explicit UsersPrivateDelegate(Profile* profile);
+
+  UsersPrivateDelegate(const UsersPrivateDelegate&) = delete;
+  UsersPrivateDelegate& operator=(const UsersPrivateDelegate&) = delete;
+
   ~UsersPrivateDelegate() override;
 
   // Gets a PrefsUtil object used for persisting settings.
@@ -32,9 +35,6 @@ class UsersPrivateDelegate : public KeyedService {
  protected:
   Profile* profile_;  // weak; not owned by us
   std::unique_ptr<PrefsUtil> prefs_util_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateDelegate);
 };
 
 }  // namespace extensions

@@ -37,9 +37,9 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace crostini {
 
@@ -209,7 +209,8 @@ class CrostiniPackageServiceTest : public testing::Test {
         storage::FileSystemMountOption(),
         file_manager::util::GetDownloadsFolderForProfile(profile_.get()));
     package_file_url_ = mount_points->CreateExternalFileSystemURL(
-        url::Origin(), mount_point_name, base::FilePath(kPackageFilePath));
+        blink::StorageKey(), mount_point_name,
+        base::FilePath(kPackageFilePath));
 
     auto* crostini_manager = CrostiniManager::GetForProfile(profile_.get());
     ASSERT_TRUE(crostini_manager);

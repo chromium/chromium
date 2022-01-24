@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/delegated_ink_prediction_configuration.h"
@@ -20,6 +21,14 @@
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
 #endif
+
+namespace {
+
+// FieldTrialParams for `DynamicSchedulerForDraw` and
+// `kDynamicSchedulerForClients`.
+const char kDynamicSchedulerPercentile[] = "percentile";
+
+}  // namespace
 
 namespace features {
 
@@ -110,12 +119,6 @@ const base::Feature kUseSetPresentDuration{"UseSetPresentDuration",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // OS_WIN
 
-#if defined(USE_X11)
-// Uses X11 Present Extensions instead of the Vulkan swapchain for presenting.
-const base::Feature kUseX11Present{"UseX11Present",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 // Enables platform supported delegated ink trails instead of Skia backed
 // delegated ink trails.
 const base::Feature kUsePlatformDelegatedInk{"UsePlatformDelegatedInk",
@@ -131,6 +134,12 @@ const base::Feature kWebViewVulkanIntermediateBuffer{
 // UseSurfaceLayerForVideo from chrome.
 const base::Feature kUseSurfaceLayerForVideoDefault{
     "UseSurfaceLayerForVideoDefault", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Historically media on android hardcoded SRGB color space because of lack of
+// color space support in surface control. This controls if we want to use real
+// color space in DisplayCompositor.
+const base::Feature kUseRealVideoColorSpaceForDisplay{
+    "UseRealVideoColorSpaceForDisplay", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Used by CC to throttle frame production of older surfaces. Used by the
@@ -139,9 +148,45 @@ const base::Feature kUseSurfaceLayerForVideoDefault{
 const base::Feature kSurfaceSyncThrottling{"SurfaceSyncThrottling",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDrawPredictedInkPoint{"DrawPredictedInkPoint",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+const char kDraw1Point12Ms[] = "1-pt-12ms";
+const char kDraw2Points6Ms[] = "2-pt-6ms";
+const char kDraw1Point6Ms[] = "1-pt-6ms";
+const char kDraw2Points3Ms[] = "2-pt-3ms";
+const char kPredictorKalman[] = "kalman";
+const char kPredictorLinearResampling[] = "linear-resampling";
+const char kPredictorLinear1[] = "linear-1";
+const char kPredictorLinear2[] = "linear-2";
+const char kPredictorLsq[] = "lsq";
+
+// Used by Viz to parameterize adjustments to scheduler deadlines.
+const base::Feature kDynamicSchedulerForDraw{"DynamicSchedulerForDraw",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+// User to parameterize adjustments to clients' deadlines.
+const base::Feature kDynamicSchedulerForClients{
+    "DynamicSchedulerForClients", base::FEATURE_DISABLED_BY_DEFAULT};
+
+#if defined(OS_MAC)
+const base::Feature kMacCAOverlayQuad{"MacCAOverlayQuads",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+// The maximum supported overlay quad number on Mac CALayerOverlay.
+// The default is set to -1. When MaxNum is < 0, the default in CALayerOverlay
+// will be used instead.
+const base::FeatureParam<int> kMacCAOverlayQuadMaxNum{
+    &kMacCAOverlayQuad, "MacCAOverlayQuadMaxNum", -1};
+#endif
+
 bool IsAdpfEnabled() {
   // TODO(crbug.com/1157620): Limit this to correct android version.
   return base::FeatureList::IsEnabled(kAdpf);
+}
+
+bool IsClipPrewalkDamageEnabled() {
+  static constexpr base::Feature kClipPrewalkDamage{
+      "ClipPrewalkDamage", base::FEATURE_DISABLED_BY_DEFAULT};
+
+  return base::FeatureList::IsEnabled(kClipPrewalkDamage);
 }
 
 bool IsOverlayPrioritizationEnabled() {
@@ -230,23 +275,29 @@ bool ShouldUseSetPresentDuration() {
 #endif  // OS_WIN
 
 absl::optional<int> ShouldDrawPredictedInkPoints() {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kDrawPredictedInkPoint))
+  if (!base::FeatureList::IsEnabled(kDrawPredictedInkPoint))
     return absl::nullopt;
 
-  std::string predicted_points =
-      command_line->GetSwitchValueASCII(switches::kDrawPredictedInkPoint);
-  if (predicted_points == switches::kDraw1Point12Ms)
+  std::string predicted_points = GetFieldTrialParamValueByFeature(
+      kDrawPredictedInkPoint, "predicted_points");
+  if (predicted_points == kDraw1Point12Ms)
     return viz::PredictionConfig::k1Point12Ms;
-  else if (predicted_points == switches::kDraw2Points6Ms)
+  else if (predicted_points == kDraw2Points6Ms)
     return viz::PredictionConfig::k2Points6Ms;
-  else if (predicted_points == switches::kDraw1Point6Ms)
+  else if (predicted_points == kDraw1Point6Ms)
     return viz::PredictionConfig::k1Point6Ms;
-  else if (predicted_points == switches::kDraw2Points3Ms)
+  else if (predicted_points == kDraw2Points3Ms)
     return viz::PredictionConfig::k2Points3Ms;
 
   NOTREACHED();
   return absl::nullopt;
+}
+
+std::string InkPredictor() {
+  if (!base::FeatureList::IsEnabled(kDrawPredictedInkPoint))
+    return "";
+
+  return GetFieldTrialParamValueByFeature(kDrawPredictedInkPoint, "predictor");
 }
 
 bool ShouldUsePlatformDelegatedInk() {
@@ -261,10 +312,46 @@ bool UseSurfaceLayerForVideo() {
   }
   return base::FeatureList::IsEnabled(kUseSurfaceLayerForVideoDefault);
 }
+
+bool UseRealVideoColorSpaceForDisplay() {
+  // We need Android S for proper color space support in SurfaceControl.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_S)
+    return false;
+
+  return base::FeatureList::IsEnabled(
+      features::kUseRealVideoColorSpaceForDisplay);
+}
 #endif
 
 bool IsSurfaceSyncThrottling() {
   return base::FeatureList::IsEnabled(kSurfaceSyncThrottling);
+}
+
+// Used by Viz to determine if viz::DisplayScheduler should dynamically adjust
+// its frame deadline. Returns the percentile of historic draw times to base the
+// deadline on. Or absl::nullopt if the feature is disabled.
+absl::optional<double> IsDynamicSchedulerEnabledForDraw() {
+  if (!base::FeatureList::IsEnabled(kDynamicSchedulerForDraw))
+    return absl::nullopt;
+  double result = base::GetFieldTrialParamByFeatureAsDouble(
+      kDynamicSchedulerForDraw, kDynamicSchedulerPercentile, -1.0);
+  if (result < 0.0)
+    return absl::nullopt;
+  return result;
+}
+
+// Used by Viz to determine if the frame deadlines provided to CC should be
+// dynamically adjusted. Returns the percentile of historic draw times to base
+// the deadline on. Or absl::nullopt if the feature is disabled.
+absl::optional<double> IsDynamicSchedulerEnabledForClients() {
+  if (!base::FeatureList::IsEnabled(kDynamicSchedulerForClients))
+    return absl::nullopt;
+  double result = base::GetFieldTrialParamByFeatureAsDouble(
+      kDynamicSchedulerForClients, kDynamicSchedulerPercentile, -1.0);
+  if (result < 0.0)
+    return absl::nullopt;
+  return result;
 }
 
 }  // namespace features

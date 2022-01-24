@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
@@ -19,6 +18,20 @@
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {
+
+// This is used for logging, so do not remove or reorder existing entries.
+enum class IconLoadingMethod {
+  kFromCache = 0,
+  kViaMojomCall = 1,
+  kViaNonMojomCall = 2,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kViaNonMojomCall,
+};
+
+// Records metrics when loading icons.
+void RecordAppLaunchMetrics(IconLoadingMethod icon_loading_method);
 
 // An IconLoader that caches the apps::mojom::IconType::kUncompressed
 // results of another (wrapped) IconLoader.
@@ -67,6 +80,10 @@ class IconCache : public IconLoader {
   };
 
   IconCache(IconLoader* wrapped_loader, GarbageCollectionPolicy gc_policy);
+
+  IconCache(const IconCache&) = delete;
+  IconCache& operator=(const IconCache&) = delete;
+
   ~IconCache() override;
 
   // IconLoader overrides.
@@ -111,8 +128,6 @@ class IconCache : public IconLoader {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<IconCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IconCache);
 };
 
 }  // namespace apps

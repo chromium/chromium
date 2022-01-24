@@ -10,118 +10,73 @@ namespace policy {
 
 class TestManagementStatusProvider : public ManagementStatusProvider {
  public:
-  TestManagementStatusProvider(EnterpriseManagementAuthority authority,
-                               bool managed)
-      : authority_(authority), managed_(managed) {}
+  explicit TestManagementStatusProvider(EnterpriseManagementAuthority authority)
+      : authority_(authority) {}
   ~TestManagementStatusProvider() override = default;
-
-  // Returns |true| if the service or component is managed.
-  bool IsManaged() override { return managed_; }
 
   // Returns the authority responsible for the management.
   EnterpriseManagementAuthority GetAuthority() override { return authority_; }
 
  private:
   EnterpriseManagementAuthority authority_;
-  bool managed_;
 };
 
 class TestManagementService : public ManagementService {
  public:
-  TestManagementService() : ManagementService(ManagementTarget::kMaxValue) {}
-  explicit TestManagementService(ManagementTarget target)
-      : ManagementService(target) {}
+  TestManagementService() : ManagementService({}) {}
+  explicit TestManagementService(
+      std::vector<std::unique_ptr<ManagementStatusProvider>> providers)
+      : ManagementService(std::move(providers)) {}
   void SetManagementStatusProviderForTesting(
       std::vector<std::unique_ptr<ManagementStatusProvider>> providers) {
     SetManagementStatusProvider(std::move(providers));
   }
-
- protected:
-  // Initializes the management status providers.
-  void InitManagementStatusProviders() override {}
 };
 
 TEST(ManagementService, ScopedManagementServiceOverrideForTesting) {
-  TestManagementService platform_management_service(ManagementTarget::PLATFORM);
-  TestManagementService browser_management_service(ManagementTarget::BROWSER);
-  std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
-  providers.emplace_back(std::make_unique<TestManagementStatusProvider>(
-      EnterpriseManagementAuthority::CLOUD, true));
-  providers.emplace_back(std::make_unique<TestManagementStatusProvider>(
-      EnterpriseManagementAuthority::CLOUD_DOMAIN, true));
-  providers.emplace_back(std::make_unique<TestManagementStatusProvider>(
-      EnterpriseManagementAuthority::COMPUTER_LOCAL, true));
-  providers.emplace_back(std::make_unique<TestManagementStatusProvider>(
-      EnterpriseManagementAuthority::DOMAIN_LOCAL, true));
-  platform_management_service.SetManagementStatusProviderForTesting(
-      std::move(providers));
-  auto platform_authorities =
-      platform_management_service.GetManagementAuthorities();
-  EXPECT_TRUE(browser_management_service.GetManagementAuthorities().empty());
-  EXPECT_EQ(platform_authorities.size(), 4u);
-  EXPECT_NE(platform_authorities.find(EnterpriseManagementAuthority::CLOUD),
-            platform_authorities.end());
-  EXPECT_NE(
-      platform_authorities.find(EnterpriseManagementAuthority::CLOUD_DOMAIN),
-      platform_authorities.end());
-  EXPECT_NE(
-      platform_authorities.find(EnterpriseManagementAuthority::COMPUTER_LOCAL),
-      platform_authorities.end());
-  EXPECT_NE(
-      platform_authorities.find(EnterpriseManagementAuthority::DOMAIN_LOCAL),
-      platform_authorities.end());
-  {
-    ScopedManagementServiceOverrideForTesting
-        scoped_management_service_override(
-            ManagementTarget::PLATFORM,
-            base::flat_set<EnterpriseManagementAuthority>(
-                {EnterpriseManagementAuthority::CLOUD,
-                 EnterpriseManagementAuthority::DOMAIN_LOCAL}));
-    auto platform_authorities =
-        platform_management_service.GetManagementAuthorities();
-    EXPECT_TRUE(browser_management_service.GetManagementAuthorities().empty());
-    EXPECT_EQ(platform_authorities.size(), 2u);
-    EXPECT_NE(platform_authorities.find(EnterpriseManagementAuthority::CLOUD),
-              platform_authorities.end());
-    EXPECT_NE(
-        platform_authorities.find(EnterpriseManagementAuthority::DOMAIN_LOCAL),
-        platform_authorities.end());
-  }
-  {
-    ScopedManagementServiceOverrideForTesting
-        scoped_management_service_override(
-            ManagementTarget::PLATFORM,
-            base::flat_set<EnterpriseManagementAuthority>());
-    EXPECT_TRUE(browser_management_service.GetManagementAuthorities().empty());
-    EXPECT_TRUE(platform_management_service.GetManagementAuthorities().empty());
-  }
-}
-
-// Tests that only the authorities that are actively managing are returned.
-TEST(ManagementService, GetManagementAuthorities) {
   TestManagementService management_service;
-  auto authorities = management_service.GetManagementAuthorities();
-  EXPECT_TRUE(authorities.empty());
-  std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
-  providers.emplace_back(std::make_unique<TestManagementStatusProvider>(
-      EnterpriseManagementAuthority::CLOUD, true));
-  providers.emplace_back(std::make_unique<TestManagementStatusProvider>(
-      EnterpriseManagementAuthority::CLOUD_DOMAIN, false));
-  providers.emplace_back(std::make_unique<TestManagementStatusProvider>(
-      EnterpriseManagementAuthority::COMPUTER_LOCAL, false));
-  providers.emplace_back(std::make_unique<TestManagementStatusProvider>(
-      EnterpriseManagementAuthority::DOMAIN_LOCAL, true));
-  management_service.SetManagementStatusProviderForTesting(
-      std::move(providers));
-  authorities = management_service.GetManagementAuthorities();
-  EXPECT_EQ(authorities.size(), 2u);
-  EXPECT_NE(authorities.find(EnterpriseManagementAuthority::CLOUD),
-            authorities.end());
-  EXPECT_NE(authorities.find(EnterpriseManagementAuthority::DOMAIN_LOCAL),
-            authorities.end());
-  ManagementAuthorityTrustworthiness trustworthyness =
-      management_service.GetManagementAuthorityTrustworthiness();
-  EXPECT_EQ(trustworthyness, ManagementAuthorityTrustworthiness::TRUSTED);
+  EXPECT_FALSE(management_service.IsManaged());
+  EXPECT_FALSE(management_service.HasManagementAuthority(
+      EnterpriseManagementAuthority::COMPUTER_LOCAL));
+  EXPECT_FALSE(management_service.HasManagementAuthority(
+      EnterpriseManagementAuthority::DOMAIN_LOCAL));
+  EXPECT_FALSE(management_service.HasManagementAuthority(
+      EnterpriseManagementAuthority::CLOUD));
+  EXPECT_EQ(ManagementAuthorityTrustworthiness::NONE,
+            management_service.GetManagementAuthorityTrustworthiness());
+
+  {
+    ScopedManagementServiceOverrideForTesting override_1(
+        &management_service, EnterpriseManagementAuthority::CLOUD_DOMAIN);
+    EXPECT_TRUE(management_service.IsManaged());
+    EXPECT_TRUE(management_service.HasManagementAuthority(
+        EnterpriseManagementAuthority::CLOUD_DOMAIN));
+    EXPECT_EQ(ManagementAuthorityTrustworthiness::FULLY_TRUSTED,
+              management_service.GetManagementAuthorityTrustworthiness());
+    {
+      ScopedManagementServiceOverrideForTesting override_2(
+          &management_service, EnterpriseManagementAuthority::CLOUD);
+      EXPECT_TRUE(management_service.IsManaged());
+      EXPECT_TRUE(management_service.HasManagementAuthority(
+          EnterpriseManagementAuthority::CLOUD));
+      EXPECT_EQ(ManagementAuthorityTrustworthiness::TRUSTED,
+                management_service.GetManagementAuthorityTrustworthiness());
+    }
+    EXPECT_TRUE(management_service.IsManaged());
+    EXPECT_TRUE(management_service.HasManagementAuthority(
+        EnterpriseManagementAuthority::CLOUD_DOMAIN));
+    EXPECT_EQ(ManagementAuthorityTrustworthiness::FULLY_TRUSTED,
+              management_service.GetManagementAuthorityTrustworthiness());
+  }
+  EXPECT_FALSE(management_service.IsManaged());
+  EXPECT_FALSE(management_service.HasManagementAuthority(
+      EnterpriseManagementAuthority::COMPUTER_LOCAL));
+  EXPECT_FALSE(management_service.HasManagementAuthority(
+      EnterpriseManagementAuthority::DOMAIN_LOCAL));
+  EXPECT_FALSE(management_service.HasManagementAuthority(
+      EnterpriseManagementAuthority::CLOUD));
+  EXPECT_EQ(ManagementAuthorityTrustworthiness::NONE,
+            management_service.GetManagementAuthorityTrustworthiness());
 }
 
 }  // namespace policy

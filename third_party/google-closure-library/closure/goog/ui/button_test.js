@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.ButtonTest');
 goog.setTestOnly();
@@ -57,6 +49,7 @@ testSuite({
         NativeButtonRenderer.getInstance(), button.getRenderer());
 
     const fakeDomHelper = {};
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const testButton =
         new Button('Hello', ButtonRenderer.getInstance(), fakeDomHelper);
     assertEquals(
@@ -70,6 +63,7 @@ testSuite({
     testButton.dispose();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testGetSetValue() {
     assertUndefined(
         'Button\'s value must default to undefined', button.getValue());
@@ -90,6 +84,7 @@ testSuite({
         'Button element must be unchanged', 'foo', button.getElement().value);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testGetSetTooltip() {
     assertUndefined(
         'Button\'s tooltip must default to undefined', button.getTooltip());
@@ -168,6 +163,10 @@ testSuite({
 
     dispatchedActionCount = 0;
     let e = new GoogEvent(KeyHandler.EventType.KEY, button);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.keyCode = KeyCodes.ENTER;
     button.handleKeyEvent(e);
     assertEquals(
@@ -176,6 +175,10 @@ testSuite({
 
     dispatchedActionCount = 0;
     e = new GoogEvent(EventType.KEYUP, button);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.keyCode = KeyCodes.SPACE;
     button.handleKeyEvent(e);
     assertEquals(
@@ -218,18 +221,26 @@ testSuite({
 
     dispatchedActionCount = 0;
     let e = new GoogEvent(KeyHandler.EventType.KEY, button);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.keyCode = KeyCodes.SPACE;
     button.handleKeyEvent(e);
     assertEquals(
         'Button must not have dispatched ACTION on Space keypress', 0,
         dispatchedActionCount);
-    assertEquals(
+    assertTrue(
         'The default action (scrolling) must have been prevented ' +
             'for Space keypress',
-        false, e.returnValue_);
+        e.defaultPrevented);
 
     dispatchedActionCount = 0;
     e = new GoogEvent(EventType.KEYUP, button);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.keyCode = KeyCodes.SPACE;
     button.handleKeyEvent(e);
     assertEquals(
@@ -248,6 +259,10 @@ testSuite({
 
     dispatchedActionCount = 0;
     let e = new GoogEvent(KeyHandler.EventType.KEY, button);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.keyCode = KeyCodes.ENTER;
     button.handleKeyEvent(e);
     assertEquals(
@@ -256,6 +271,10 @@ testSuite({
 
     dispatchedActionCount = 0;
     e = new GoogEvent(EventType.KEYUP, button);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.keyCode = KeyCodes.ENTER;
     button.handleKeyEvent(e);
     assertEquals(

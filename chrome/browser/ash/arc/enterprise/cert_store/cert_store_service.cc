@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 
 #include <algorithm>
-#include <map>
 #include <set>
 #include <string>
 #include <utility>
@@ -21,11 +20,12 @@
 #include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_impl.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_impl.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
@@ -65,7 +65,9 @@ class CertStoreServiceFactory : public BrowserContextKeyedServiceFactory {
   CertStoreServiceFactory()
       : BrowserContextKeyedServiceFactory(
             "CertStoreService",
-            BrowserContextDependencyManager::GetInstance()) {}
+            BrowserContextDependencyManager::GetInstance()) {
+    DependsOn(NssServiceFactory::GetInstance());
+  }
 
   // BrowserContextKeyedServiceFactory overrides:
   content::BrowserContext* GetBrowserContextToUse(
@@ -98,7 +100,7 @@ class CertStoreServiceFactory : public BrowserContextKeyedServiceFactory {
 //
 //                    ListCerts
 //                        |
-//            CreateNSSCertDatabaseGetter
+//       NssService::CreateNSSCertDatabaseGetterForIOThread
 //                        |
 //                        \----------------------------v
 //                                          ListCertsWithDbGetterOnIO
@@ -130,7 +132,7 @@ class CertStoreServiceFactory : public BrowserContextKeyedServiceFactory {
 //
 //                    ListCerts
 //                        |
-//            CreateNSSCertDatabaseGetter
+//       NssService::CreateNSSCertDatabaseGetterForIOThread
 //                        |
 //                        \----------------------------v
 //                                          ListCertsWithDbGetterOnIO
@@ -213,10 +215,12 @@ void ListCerts(content::BrowserContext* const context,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // The NssCertDatabaseGetter must be posted to the IO thread immediately.
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ListCertsWithDbGetterOnIO,
-                                base::ThreadTaskRunnerHandle::Get(), slot,
-                                std::move(callback),
-                                CreateNSSCertDatabaseGetter(context)));
+      FROM_HERE,
+      base::BindOnce(&ListCertsWithDbGetterOnIO,
+                     base::ThreadTaskRunnerHandle::Get(), slot,
+                     std::move(callback),
+                     NssServiceFactory::GetForContext(context)
+                         ->CreateNSSCertDatabaseGetterForIOThread()));
 }
 
 using IsCertificateAllowedCallback = base::OnceCallback<void(bool allowed)>;
@@ -249,7 +253,7 @@ void IsCertificateAllowed(IsCertificateAllowedCallback callback,
       chromeos::platform_keys::GetSubjectPublicKeyInfo(cert);
 
   // Check if the key is marked for corporate usage.
-  chromeos::platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
+  ash::platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
       context)
       ->IsCorporateKey(
           public_key_spki_der,
@@ -379,11 +383,6 @@ CertStoreService::~CertStoreService() {
 
 void CertStoreService::OnCertDBChanged() {
   UpdateCertificates();
-}
-
-absl::optional<CertStoreService::KeyInfo>
-CertStoreService::GetKeyInfoForDummySpki(const std::string& dummy_spki) {
-  return certificate_cache_.GetKeyInfoForDummySpki(dummy_spki);
 }
 
 void CertStoreService::UpdateCertificates() {
@@ -522,26 +521,19 @@ void CertStoreService::OnUpdatedKeymasterKeys(
     return;
   }
 
-  certificate_cache_.clear_need_policy_update();
-  certificate_cache_.Update(certificate_descriptions);
+  bool updated = certificate_cache_.Update(certificate_descriptions);
 
-  // Maps cert name to dummy SPKI.
-  std::map<std::string, std::string> installed_keys =
-      installer_->InstallArcCerts(
-          std::move(certificate_descriptions),
-          base::BindOnce(&CertStoreService::OnArcCertsInstalled,
-                         weak_ptr_factory_.GetWeakPtr()));
-
-  certificate_cache_.Update(installed_keys);
+  installer_->InstallArcCerts(
+      std::move(certificate_descriptions),
+      base::BindOnce(&CertStoreService::OnArcCertsInstalled,
+                     weak_ptr_factory_.GetWeakPtr(), updated));
 }
 
 CertStoreService::CertificateCache::CertificateCache() = default;
 CertStoreService::CertificateCache::~CertificateCache() = default;
 
-void CertStoreService::CertificateCache::Update(
+bool CertStoreService::CertificateCache::Update(
     const std::vector<CertDescription>& cert_descriptions) {
-  // Map cert name to real SPKI.
-  key_info_by_name_cache_.clear();
   std::set<std::string> new_required_cert_names;
   for (const auto& certificate : cert_descriptions) {
     CERTCertificate* nss_cert = certificate.nss_cert.get();
@@ -551,44 +543,18 @@ void CertStoreService::CertificateCache::Update(
     std::string cert_name =
         x509_certificate_model::GetCertNameOrNickname(nss_cert);
 
-    key_info_by_name_cache_[cert_name] = {cert_name, certificate.id};
     new_required_cert_names.insert(cert_name);
   }
-  need_policy_update_ = (required_cert_names_ != new_required_cert_names);
-  for (auto cert_name : required_cert_names_) {
-    if (!new_required_cert_names.count(cert_name)) {
-      key_info_by_dummy_spki_cache_.erase(dummy_spki_by_name_cache_[cert_name]);
-      dummy_spki_by_name_cache_.erase(cert_name);
-    }
-  }
+  bool need_policy_update = (required_cert_names_ != new_required_cert_names);
   required_cert_names_ = new_required_cert_names;
+  return need_policy_update;
 }
 
-void CertStoreService::CertificateCache::Update(
-    std::map<std::string, std::string> dummy_spki_by_name) {
-  if (required_cert_names_.size() != dummy_spki_by_name.size())
-    return;
-  for (const auto& cert : dummy_spki_by_name) {
-    const std::string& name = cert.first;
-    if (!required_cert_names_.count(name)) {
-      VLOG(1) << "An attempt to add a non-required key " << name;
-      continue;
-    }
-
-    std::string dummy_spki = cert.second;
-    if (dummy_spki.empty() && dummy_spki_by_name_cache_.count(name))
-      dummy_spki = dummy_spki_by_name_cache_[name];
-    if (!dummy_spki.empty()) {
-      dummy_spki_by_name_cache_[name] = dummy_spki;
-      key_info_by_dummy_spki_cache_[dummy_spki] = key_info_by_name_cache_[name];
-    }
-  }
-}
-
-void CertStoreService::OnArcCertsInstalled(bool success) {
+void CertStoreService::OnArcCertsInstalled(bool need_policy_update,
+                                           bool success) {
   VLOG(1) << "ARC certificates installation has finished with result="
           << success;
-  if (certificate_cache_.need_policy_update()) {
+  if (need_policy_update) {
     ArcPolicyBridge* const policy_bridge =
         ArcPolicyBridge::GetForBrowserContext(context_);
     if (policy_bridge) {
@@ -596,14 +562,6 @@ void CertStoreService::OnArcCertsInstalled(bool success) {
                                      policy::PolicyMap(), policy::PolicyMap());
     }
   }
-}
-
-absl::optional<CertStoreService::KeyInfo>
-CertStoreService::CertificateCache::GetKeyInfoForDummySpki(
-    const std::string& dummy_spki) {
-  if (key_info_by_dummy_spki_cache_.count(dummy_spki))
-    return key_info_by_dummy_spki_cache_[dummy_spki];
-  return absl::nullopt;
 }
 
 }  // namespace arc

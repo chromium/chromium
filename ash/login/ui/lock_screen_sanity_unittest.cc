@@ -38,6 +38,10 @@ class LockScreenAppFocuser {
  public:
   explicit LockScreenAppFocuser(views::Widget* lock_screen_app_widget)
       : lock_screen_app_widget_(lock_screen_app_widget) {}
+
+  LockScreenAppFocuser(const LockScreenAppFocuser&) = delete;
+  LockScreenAppFocuser& operator=(const LockScreenAppFocuser&) = delete;
+
   ~LockScreenAppFocuser() = default;
 
   bool reversed_tab_order() const { return reversed_tab_order_; }
@@ -50,8 +54,6 @@ class LockScreenAppFocuser {
  private:
   bool reversed_tab_order_ = false;
   views::Widget* lock_screen_app_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenAppFocuser);
 };
 
 testing::AssertionResult VerifyFocused(views::View* view) {

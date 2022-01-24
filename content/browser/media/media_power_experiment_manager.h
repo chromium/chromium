@@ -10,10 +10,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/media_player_id.h"
 #include "media/base/video_codecs.h"
@@ -40,6 +39,11 @@ class CONTENT_EXPORT MediaPowerExperimentManager {
   };
 
   MediaPowerExperimentManager();
+
+  MediaPowerExperimentManager(const MediaPowerExperimentManager&) = delete;
+  MediaPowerExperimentManager& operator=(const MediaPowerExperimentManager&) =
+      delete;
+
   virtual ~MediaPowerExperimentManager();
 
   // May return nullptr if experiments aren't enabled.
@@ -71,8 +75,6 @@ class CONTENT_EXPORT MediaPowerExperimentManager {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPowerExperimentManager);
 };
 
 }  // namespace content

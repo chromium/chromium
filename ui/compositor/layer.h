@@ -22,7 +22,6 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rect.h"
@@ -447,8 +446,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Invoked when scrolling performed by the cc::InputHandler is committed. This
   // will only occur if the Layer has set scroll container bounds.
   void SetDidScrollCallback(
-      base::RepeatingCallback<void(const gfx::ScrollOffset&,
-                                   const cc::ElementId&)> callback);
+      base::RepeatingCallback<void(const gfx::Vector2dF&, const cc::ElementId&)>
+          callback);
 
   cc::ElementId element_id() const { return cc_layer_->element_id(); }
 
@@ -458,8 +457,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetScrollable(const gfx::Size& container_bounds);
 
   // Gets and sets the current scroll offset of the layer.
-  gfx::ScrollOffset CurrentScrollOffset() const;
-  void SetScrollOffset(const gfx::ScrollOffset& offset);
+  gfx::Vector2dF CurrentScrollOffset() const;
+  void SetScrollOffset(const gfx::Vector2dF& offset);
 
   // ContentLayerClient implementation.
   gfx::Rect PaintableRegion() const override;

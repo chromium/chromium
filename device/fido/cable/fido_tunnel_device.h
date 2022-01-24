@@ -48,6 +48,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
                    std::unique_ptr<Pairing> pairing,
                    base::OnceClosure pairing_is_invalid);
 
+  FidoTunnelDevice(const FidoTunnelDevice&) = delete;
+  FidoTunnelDevice& operator=(const FidoTunnelDevice&) = delete;
+
   ~FidoTunnelDevice() override;
 
   // MatchAdvert is only valid for a pairing-initiated connection. It returns
@@ -127,7 +130,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     std::array<uint8_t, 32> psk;
     base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback;
     std::array<uint8_t, kQRSeedSize> local_identity_seed;
-    uint32_t tunnel_server_domain;
+    tunnelserver::KnownDomainID tunnel_server_domain;
   };
 
   struct PairedInfo {
@@ -164,8 +167,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   DeviceCallback callback_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FidoTunnelDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoTunnelDevice);
 };
 
 }  // namespace cablev2

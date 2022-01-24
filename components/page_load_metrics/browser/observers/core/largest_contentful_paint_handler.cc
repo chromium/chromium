@@ -8,6 +8,9 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_instance.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 
 namespace page_load_metrics {
 
@@ -47,11 +50,12 @@ void MergeForSubframesWithAdjustedTime(
     const uint64_t& candidate_new_size) {
   DCHECK(inout_timing);
   const ContentfulPaintTimingInfo new_candidate(
-      candidate_new_time, candidate_new_size, inout_timing->Type(),
-      inout_timing->InMainFrame());
+      candidate_new_time, candidate_new_size, inout_timing->TextOrImage(),
+      inout_timing->InMainFrame(), inout_timing->Type());
   const ContentfulPaintTimingInfo& merged_candidate =
       MergeTimingsBySizeAndTime(new_candidate, *inout_timing);
-  inout_timing->Reset(merged_candidate.Time(), merged_candidate.Size());
+  inout_timing->Reset(merged_candidate.Time(), merged_candidate.Size(),
+                      merged_candidate.Type());
 }
 
 bool IsSubframe(content::RenderFrameHost* subframe_rfh) {
@@ -59,23 +63,40 @@ bool IsSubframe(content::RenderFrameHost* subframe_rfh) {
 }
 
 void Reset(ContentfulPaintTimingInfo& timing) {
-  timing.Reset(absl::nullopt, 0u);
+  timing.Reset(absl::nullopt, 0u, 0 /*type*/);
 }
 
+bool IsSameSite(const GURL& url1, const GURL& url2) {
+  // We can't use SiteInstance::IsSameSiteWithURL() because both mainframe and
+  // subframe are under default SiteInstance on low-end Android environment, and
+  // it treats them as same-site even though the passed url is actually not a
+  // same-site.
+  return url1.SchemeIs(url2.scheme()) &&
+         net::registry_controlled_domains::SameDomainOrHost(
+             url1, url2,
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
 }  // namespace
 
-ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(LargestContentType type,
-                                                     bool in_main_frame)
-    : time_(absl::optional<base::TimeDelta>()),
-      size_(0),
+ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(
+    LargestContentTextOrImage text_or_image,
+    bool in_main_frame,
+    uint32_t type)
+    : size_(0),
+      text_or_image_(text_or_image),
       type_(type),
       in_main_frame_(in_main_frame) {}
 ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(
     const absl::optional<base::TimeDelta>& time,
     const uint64_t& size,
-    const LargestContentType type,
-    bool in_main_frame)
-    : time_(time), size_(size), type_(type), in_main_frame_(in_main_frame) {}
+    const LargestContentTextOrImage text_or_image,
+    bool in_main_frame,
+    uint32_t type)
+    : time_(time),
+      size_(size),
+      text_or_image_(text_or_image),
+      type_(type),
+      in_main_frame_(in_main_frame) {}
 
 ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(
     const ContentfulPaintTimingInfo& other) = default;
@@ -86,16 +107,19 @@ ContentfulPaintTimingInfo::DataAsTraceValue() const {
       std::make_unique<base::trace_event::TracedValue>();
   data->SetInteger("durationInMilliseconds", time_.value().InMilliseconds());
   data->SetInteger("size", size_);
-  data->SetString("type", TypeInString());
+  data->SetString("type", TextOrImageInString());
   data->SetBoolean("inMainFrame", InMainFrame());
+  data->SetBoolean(
+      "isAnimated",
+      Type() & blink::LargestContentfulPaintType::kLCPTypeAnimatedImage);
   return data;
 }
 
-std::string ContentfulPaintTimingInfo::TypeInString() const {
-  switch (Type()) {
-    case LargestContentType::kText:
+std::string ContentfulPaintTimingInfo::TextOrImageInString() const {
+  switch (TextOrImage()) {
+    case LargestContentTextOrImage::kText:
       return "text";
-    case LargestContentType::kImage:
+    case LargestContentTextOrImage::kImage:
       return "image";
     default:
       NOTREACHED();
@@ -110,15 +134,19 @@ void LargestContentfulPaintHandler::SetTestMode(bool enabled) {
 
 void ContentfulPaintTimingInfo::Reset(
     const absl::optional<base::TimeDelta>& time,
-    const uint64_t& size) {
+    const uint64_t& size,
+    uint32_t type) {
   size_ = size;
   time_ = time;
+  type_ = type;
 }
-ContentfulPaint::ContentfulPaint(bool in_main_frame)
-    : text_(ContentfulPaintTimingInfo::LargestContentType::kText,
-            in_main_frame),
-      image_(ContentfulPaintTimingInfo::LargestContentType::kImage,
-             in_main_frame) {}
+ContentfulPaint::ContentfulPaint(bool in_main_frame, uint32_t type)
+    : text_(ContentfulPaintTimingInfo::LargestContentTextOrImage::kText,
+            in_main_frame,
+            type),
+      image_(ContentfulPaintTimingInfo::LargestContentTextOrImage::kImage,
+             in_main_frame,
+             type) {}
 
 const ContentfulPaintTimingInfo& ContentfulPaint::MergeTextAndImageTiming()
     const {
@@ -131,7 +159,8 @@ bool LargestContentfulPaintHandler::AssignTimeAndSizeForLargestContentfulPaint(
         largest_contentful_paint,
     absl::optional<base::TimeDelta>* largest_content_paint_time,
     uint64_t* largest_content_paint_size,
-    ContentfulPaintTimingInfo::LargestContentType* largest_content_type) {
+    ContentfulPaintTimingInfo::LargestContentTextOrImage*
+        largest_content_type) {
   // Size being 0 means the paint time is not recorded.
   if (!largest_contentful_paint.largest_text_paint_size &&
       !largest_contentful_paint.largest_image_paint_size)
@@ -147,20 +176,22 @@ bool LargestContentfulPaintHandler::AssignTimeAndSizeForLargestContentfulPaint(
     *largest_content_paint_size =
         largest_contentful_paint.largest_text_paint_size;
     *largest_content_type =
-        ContentfulPaintTimingInfo::LargestContentType::kText;
+        ContentfulPaintTimingInfo::LargestContentTextOrImage::kText;
   } else {
     *largest_content_paint_time = largest_contentful_paint.largest_image_paint;
     *largest_content_paint_size =
         largest_contentful_paint.largest_image_paint_size;
     *largest_content_type =
-        ContentfulPaintTimingInfo::LargestContentType::kImage;
+        ContentfulPaintTimingInfo::LargestContentTextOrImage::kImage;
   }
   return true;
 }
 
 LargestContentfulPaintHandler::LargestContentfulPaintHandler()
-    : main_frame_contentful_paint_(true /*in_main_frame*/),
-      subframe_contentful_paint_(false /*in_main_frame*/) {}
+    : main_frame_contentful_paint_(true /*in_main_frame*/, 0 /*type*/),
+      subframe_contentful_paint_(false /*in_main_frame*/, 0 /*type*/),
+      cross_site_subframe_contentful_paint_(false /*in_main_frame*/,
+                                            0 /*type*/) {}
 
 LargestContentfulPaintHandler::~LargestContentfulPaintHandler() = default;
 
@@ -184,6 +215,10 @@ void LargestContentfulPaintHandler::RecordTiming(
   }
   RecordSubframeTiming(largest_contentful_paint,
                        first_input_or_scroll_notified_timestamp, it->second);
+  if (!IsSameSite(subframe_rfh->GetLastCommittedURL(),
+                  subframe_rfh->GetMainFrame()->GetLastCommittedURL())) {
+    RecordCrossSiteSubframeTiming(largest_contentful_paint, it->second);
+  }
 }
 
 const ContentfulPaintTimingInfo&
@@ -221,6 +256,20 @@ void LargestContentfulPaintHandler::RecordSubframeTiming(
                     navigation_start_offset);
 }
 
+void LargestContentfulPaintHandler::RecordCrossSiteSubframeTiming(
+    const page_load_metrics::mojom::LargestContentfulPaintTiming&
+        largest_contentful_paint,
+    const base::TimeDelta& navigation_start_offset) {
+  MergeForSubframes(&cross_site_subframe_contentful_paint_.Text(),
+                    largest_contentful_paint.largest_text_paint,
+                    largest_contentful_paint.largest_text_paint_size,
+                    navigation_start_offset);
+  MergeForSubframes(&cross_site_subframe_contentful_paint_.Image(),
+                    largest_contentful_paint.largest_image_paint,
+                    largest_contentful_paint.largest_image_paint_size,
+                    navigation_start_offset);
+}
+
 void LargestContentfulPaintHandler::RecordMainFrameTiming(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
@@ -232,12 +281,13 @@ void LargestContentfulPaintHandler::RecordMainFrameTiming(
   if (IsValid(largest_contentful_paint.largest_text_paint)) {
     main_frame_contentful_paint_.Text().Reset(
         largest_contentful_paint.largest_text_paint,
-        largest_contentful_paint.largest_text_paint_size);
+        largest_contentful_paint.largest_text_paint_size, 0 /*type*/);
   }
   if (IsValid(largest_contentful_paint.largest_image_paint)) {
     main_frame_contentful_paint_.Image().Reset(
         largest_contentful_paint.largest_image_paint,
-        largest_contentful_paint.largest_image_paint_size);
+        largest_contentful_paint.largest_image_paint_size,
+        largest_contentful_paint.type);
   }
 }
 
@@ -263,6 +313,10 @@ void LargestContentfulPaintHandler::UpdateFirstInputOrScrollNotified(
       Reset(subframe_contentful_paint_.Text());
     if (!IsValid(subframe_contentful_paint_.Image().Time()))
       Reset(subframe_contentful_paint_.Image());
+    if (!IsValid(cross_site_subframe_contentful_paint_.Text().Time()))
+      Reset(cross_site_subframe_contentful_paint_.Text());
+    if (!IsValid(cross_site_subframe_contentful_paint_.Image().Time()))
+      Reset(cross_site_subframe_contentful_paint_.Image());
   }
 }
 
@@ -292,7 +346,7 @@ void LargestContentfulPaintHandler::OnDidFinishSubFrameNavigation(
       navigation_handle->GetFrameTreeNodeId(), navigation_delta));
 }
 
-void LargestContentfulPaintHandler::OnFrameDeleted(int frame_tree_node_id) {
+void LargestContentfulPaintHandler::OnSubFrameDeleted(int frame_tree_node_id) {
   subframe_navigation_start_offset_.erase(frame_tree_node_id);
 }
 
@@ -306,7 +360,7 @@ void LargestContentfulPaintHandler::MergeForSubframes(
     // If |candidate_new_time| is TimeDelta(), this means that the candidate is
     // an image that has not finished loading. Preserve its meaning by not
     // adding the |navigation_start_offset|.
-    new_time = *candidate_new_time > base::TimeDelta()
+    new_time = candidate_new_time->is_positive()
                    ? navigation_start_offset + candidate_new_time.value()
                    : base::TimeDelta();
   }

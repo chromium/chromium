@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/nine_image_painter_factory.h"
@@ -39,6 +38,10 @@ class View;
 class VIEWS_EXPORT Painter {
  public:
   Painter();
+
+  Painter(const Painter&) = delete;
+  Painter& operator=(const Painter&) = delete;
+
   virtual ~Painter();
 
   // A convenience method for painting a Painter in a particular region.
@@ -106,9 +109,6 @@ class VIEWS_EXPORT Painter {
 
   // Paints the painter in the specified region.
   virtual void Paint(gfx::Canvas* canvas, const gfx::Size& size) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Painter);
 };
 
 }  // namespace views

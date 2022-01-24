@@ -4,7 +4,7 @@
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {createHistoryInfo} from 'chrome://test/history/test_util.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 export class TestBrowserService extends TestBrowserProxy {
   constructor() {

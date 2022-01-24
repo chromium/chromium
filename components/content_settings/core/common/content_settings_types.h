@@ -146,11 +146,11 @@ enum class ContentSettingsType : int32_t {
   WAKE_LOCK_SCREEN,
   WAKE_LOCK_SYSTEM,
 
-  // Legacy SameSite cookie behavior. This disables SameSiteByDefaultCookies,
-  // CookiesWithoutSameSiteMustBeSecure, and SchemefulSameSite, forcing the
-  // legacy behavior wherein cookies that don't specify SameSite are treated as
-  // SameSite=None, SameSite=None cookies are not required to be Secure, and
-  // schemeful same-site is not active.
+  // Legacy SameSite cookie behavior. This disables SameSite=Lax-by-default,
+  // SameSite=None requires Secure, and Schemeful Same-Site, forcing the
+  // legacy behavior wherein 1) cookies that don't specify SameSite are treated
+  // as SameSite=None, 2) SameSite=None cookies are not required to be Secure,
+  // and 3) schemeful same-site is not active.
   //
   // This will also be used to revert to legacy behavior when future changes
   // in cookie handling are introduced.
@@ -230,8 +230,10 @@ enum class ContentSettingsType : int32_t {
   // by the File System Access API.
   FILE_SYSTEM_LAST_PICKED_DIRECTORY,
 
-  // Capture the current tab using getCurrentBrowsingContextMedia().
-  // TODO(crbug.com/1150788): Apply this to getDisplayMedia() as well.
+  // Controls access to the getDisplayMedia API when {preferCurrentTab: true}
+  // is specified.
+  // TODO(crbug.com/1150788): Also apply this when getDisplayMedia() is called
+  // without specifying {preferCurrentTab: true}.
   // No values are stored for this type, this is solely needed to be able to
   // register the PermissionContext.
   DISPLAY_CAPTURE,
@@ -263,6 +265,32 @@ enum class ContentSettingsType : int32_t {
 
   // Whether to use the v8 optimized JIT for running JavaScript on the page.
   JAVASCRIPT_JIT,
+
+  // Content setting which stores user decisions to allow loading a site over
+  // HTTP. Entries are added by hostname when a user bypasses the HTTPS-First
+  // Mode interstitial warning when a site does not support HTTPS. Allowed hosts
+  // are exact hostname matches -- subdomains of a host on the allowlist must be
+  // separately allowlisted.
+  HTTP_ALLOWED,
+
+  // Stores metadata related to form fill, such as e.g. whether user data was
+  // autofilled on a specific website.
+  FORMFILL_METADATA,
+
+  // Setting to indicate that there is an active federated sign-in session
+  // between a specified relying party and a specified identity provider for
+  // a specified account. When this is present it allows access to session
+  // management capabilities between the sites. This setting is associated
+  // with the relying party's origin.
+  FEDERATED_IDENTITY_ACTIVE_SESSION,
+
+  // Setting to indicate whether Chrome should automatically apply darkening to
+  // web content.
+  AUTO_DARK_WEB_CONTENT,
+
+  // Setting to indicate whether Chrome should request the desktop view of a
+  // site instead of the mobile one.
+  REQUEST_DESKTOP_SITE,
 
   NUM_TYPES,
 };

@@ -136,7 +136,7 @@ public class CastWebContentsIntentUtilsTest {
     @Test
     public void testRequestStartCastActivity() {
         Intent in = CastWebContentsIntentUtils.requestStartCastActivity(
-                mActivity, mWebContents, true, false, true, true, SESSION_ID);
+                mActivity, mWebContents, true, false, true, SESSION_ID);
         Assert.assertFalse(CastWebContentsIntentUtils.isRemoteControlMode(in));
         Assert.assertNull(in.getData());
         String uri = CastWebContentsIntentUtils.getUriString(in);
@@ -209,14 +209,14 @@ public class CastWebContentsIntentUtilsTest {
     @Test
     public void testShouldTurnOnScreenActivityTrue() {
         Intent intent = CastWebContentsIntentUtils.requestStartCastActivity(
-                mActivity, mWebContents, true, false, true, true, SESSION_ID);
+                mActivity, mWebContents, true, false, true, SESSION_ID);
         Assert.assertTrue(CastWebContentsIntentUtils.shouldTurnOnScreen(intent));
     }
 
     @Test
     public void testShouldTurnOnScreenActivityFalse() {
         Intent intent = CastWebContentsIntentUtils.requestStartCastActivity(
-                mActivity, mWebContents, true, false, false, true, SESSION_ID);
+                mActivity, mWebContents, true, false, false, SESSION_ID);
         Assert.assertFalse(CastWebContentsIntentUtils.shouldTurnOnScreen(intent));
     }
 

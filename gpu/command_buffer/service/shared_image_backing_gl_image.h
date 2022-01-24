@@ -167,6 +167,21 @@ class GPU_GLES2_EXPORT SharedImageBackingGLImage
     : public SharedImageBacking,
       public SharedImageRepresentationGLTextureClient {
  public:
+  // Used when SharedImageBackingGLImage is serving as a temporary SharedImage
+  // wrapper to an already-allocated texture. The returned backing will not
+  // create any new textures.
+  static std::unique_ptr<SharedImageBackingGLImage> CreateFromGLTexture(
+      scoped_refptr<gl::GLImage> image,
+      const Mailbox& mailbox,
+      viz::ResourceFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      GLenum texture_target,
+      scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture);
+
   SharedImageBackingGLImage(
       scoped_refptr<gl::GLImage> image,
       const Mailbox& mailbox,

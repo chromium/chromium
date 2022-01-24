@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 16: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 Test for bug 34653: XMLHttpRequest should force to send content-type as charset equals UTF-8.
 
 Test1 (setRequestHeader was not called): FAILURE: 'text/plain;charset=UTF-8 '

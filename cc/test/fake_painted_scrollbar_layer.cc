@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "cc/test/fake_painted_scrollbar_layer.h"
 
 #include "base/auto_reset.h"
@@ -56,8 +58,10 @@ bool FakePaintedScrollbarLayer::Update() {
   return updated;
 }
 
-void FakePaintedScrollbarLayer::PushPropertiesTo(LayerImpl* layer) {
-  PaintedScrollbarLayer::PushPropertiesTo(layer);
+void FakePaintedScrollbarLayer::PushPropertiesTo(
+    LayerImpl* layer,
+    const CommitState& commit_state) {
+  PaintedScrollbarLayer::PushPropertiesTo(layer, commit_state);
   ++push_properties_count_;
 }
 

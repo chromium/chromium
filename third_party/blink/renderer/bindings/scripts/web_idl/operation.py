@@ -23,7 +23,7 @@ from .make_copy import make_copy
 class Operation(FunctionLike, WithExtendedAttributes, WithCodeGeneratorInfo,
                 WithExposure, WithOwner, WithOwnerMixin, WithComponent,
                 WithDebugInfo):
-    """https://heycam.github.io/webidl/#idl-operations"""
+    """https://webidl.spec.whatwg.org/#idl-operations"""
 
     class IR(FunctionLike.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
              WithExposure, WithOwnerMixin, WithComponent, WithDebugInfo):

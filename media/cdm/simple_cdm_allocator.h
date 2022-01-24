@@ -9,23 +9,23 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "media/cdm/cdm_allocator.h"
 
 namespace media {
 
 // This is a simple CdmAllocator for testing.
-class SimpleCdmAllocator : public CdmAllocator {
+class SimpleCdmAllocator final : public CdmAllocator {
  public:
   SimpleCdmAllocator();
-  ~SimpleCdmAllocator() final;
+
+  SimpleCdmAllocator(const SimpleCdmAllocator&) = delete;
+  SimpleCdmAllocator& operator=(const SimpleCdmAllocator&) = delete;
+
+  ~SimpleCdmAllocator() override;
 
   // CdmAllocator implementation.
-  cdm::Buffer* CreateCdmBuffer(size_t capacity) final;
-  std::unique_ptr<VideoFrameImpl> CreateCdmVideoFrame() final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SimpleCdmAllocator);
+  cdm::Buffer* CreateCdmBuffer(size_t capacity) override;
+  std::unique_ptr<VideoFrameImpl> CreateCdmVideoFrame() override;
 };
 
 }  // namespace media

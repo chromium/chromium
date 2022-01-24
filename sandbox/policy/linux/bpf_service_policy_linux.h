@@ -29,4 +29,4 @@ class ServiceProcessPolicy : public BPFBasePolicy {
 }  // namespace policy
 }  // namespace sandbox
 
-#endif  // SERVICES_SERVICE_MANAGER_SANDBOX_LINUX_BPF_SERVICE_POLICY_LINUX_H_
+#endif  // SANDBOX_POLICY_LINUX_BPF_SERVICE_POLICY_LINUX_H_

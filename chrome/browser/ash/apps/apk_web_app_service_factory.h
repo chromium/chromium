@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_APPS_APK_WEB_APP_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_APPS_APK_WEB_APP_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -26,6 +25,9 @@ class ApkWebAppService;
 // ApkWebAppService may be created for any profile that supports ARC.
 class ApkWebAppServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ApkWebAppServiceFactory(const ApkWebAppServiceFactory&) = delete;
+  ApkWebAppServiceFactory& operator=(const ApkWebAppServiceFactory&) = delete;
+
   static ApkWebAppService* GetForProfile(Profile* profile);
 
   static ApkWebAppServiceFactory* GetInstance();
@@ -41,8 +43,6 @@ class ApkWebAppServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ApkWebAppServiceFactory);
 };
 
 }  // namespace ash

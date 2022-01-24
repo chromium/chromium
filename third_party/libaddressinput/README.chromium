@@ -20,6 +20,8 @@ Local Modifications:
 - Use Chrome's version of loose string comparison in chromium/string_compare.cc.
 - fuzz/: Added fuzz targets.
 - Use base/check_op.h in chromium/input_suggester.cc.
+- Use base::Value::is_string() and base::Value::GetString instead of
+  base::Value::GetAsString() in chromium/chrome_storage_impl.cc.
 
 Note:
 

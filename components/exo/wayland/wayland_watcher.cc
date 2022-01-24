@@ -18,7 +18,9 @@ WaylandWatcher::WaylandWatcher(wayland::Server* server)
       base::MessagePumpForUI::WATCH_READ, &controller_, this);
 }
 
-WaylandWatcher::~WaylandWatcher() {}
+WaylandWatcher::~WaylandWatcher() {
+  controller_.StopWatchingFileDescriptor();
+}
 
 void WaylandWatcher::OnFileCanReadWithoutBlocking(int fd) {
   server_->Dispatch(base::TimeDelta());

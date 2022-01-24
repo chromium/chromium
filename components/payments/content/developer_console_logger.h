@@ -5,9 +5,8 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_DEVELOPER_CONSOLE_LOGGER_H_
 #define COMPONENTS_PAYMENTS_CONTENT_DEVELOPER_CONSOLE_LOGGER_H_
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "components/payments/core/error_logger.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
@@ -16,18 +15,24 @@ class WebContents;
 namespace payments {
 
 // Logs messages for web developers to the developer console.
-class DeveloperConsoleLogger : public ErrorLogger,
-                               public content::WebContentsObserver {
+class DeveloperConsoleLogger : public ErrorLogger {
  public:
   explicit DeveloperConsoleLogger(content::WebContents* web_contents);
+
+  DeveloperConsoleLogger(const DeveloperConsoleLogger&) = delete;
+  DeveloperConsoleLogger& operator=(const DeveloperConsoleLogger&) = delete;
+
   ~DeveloperConsoleLogger() override;
+
+  // Gets the WebContents being logged to.
+  content::WebContents* web_contents() { return web_contents_.get(); }
 
   // ErrorLogger;
   void Warn(const std::string& warning_message) const override;
   void Error(const std::string& error_message) const override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(DeveloperConsoleLogger);
+  base::WeakPtr<content::WebContents> web_contents_;
 };
 
 }  // namespace payments

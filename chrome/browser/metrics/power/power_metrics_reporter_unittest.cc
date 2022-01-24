@@ -32,7 +32,7 @@ constexpr const char* kMainScreenBrightnessAvailableHistogramName =
     "Power.MainScreenBrightnessAvailable";
 
 constexpr base::TimeDelta kExpectedMetricsCollectionInterval =
-    base::TimeDelta::FromSeconds(120);
+    base::Seconds(120);
 constexpr double kTolerableTimeElapsedRatio = 0.10;
 constexpr double kTolerablePositiveDrift = 1 + kTolerableTimeElapsedRatio;
 constexpr double kTolerableNegativeDrift = 1 - kTolerableTimeElapsedRatio;
@@ -140,9 +140,9 @@ class PowerMetricsReporterUnitTest : public testing::Test {
   ~PowerMetricsReporterUnitTest() override = default;
 
   void SetUp() override {
-    // Start with a full battery.
+    // Start with a half-full battery.
     battery_states_.push(BatteryLevelProvider::BatteryState{
-        1, 1, 1.0, true, base::TimeTicks::Now()});
+        1, 1, 0.5, true, base::TimeTicks::Now()});
     std::unique_ptr<BatteryLevelProvider> battery_provider =
         std::make_unique<FakeBatteryLevelProvider>(&battery_states_);
     battery_provider_ = battery_provider.get();
@@ -181,38 +181,35 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   UsageScenarioDataStore::IntervalData fake_interval_data;
 
   int fake_value = 42;
-  fake_interval_data.uptime_at_interval_end =
-      base::TimeDelta::FromHours(++fake_value);
+  fake_interval_data.uptime_at_interval_end = base::Hours(++fake_value);
   fake_interval_data.max_tab_count = ++fake_value;
   fake_interval_data.max_visible_window_count = ++fake_value;
   fake_interval_data.top_level_navigation_count = ++fake_value;
   fake_interval_data.tabs_closed_during_interval = ++fake_value;
   fake_interval_data.user_interaction_count = ++fake_value;
   fake_interval_data.time_playing_video_full_screen_single_monitor =
-      base::TimeDelta::FromSeconds(++fake_value);
+      base::Seconds(++fake_value);
   fake_interval_data.time_with_open_webrtc_connection =
-      base::TimeDelta::FromSeconds(++fake_value);
+      base::Seconds(++fake_value);
   fake_interval_data.source_id_for_longest_visible_origin =
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
   fake_interval_data.source_id_for_longest_visible_origin_duration =
-      base::TimeDelta::FromSeconds(++fake_value);
+      base::Seconds(++fake_value);
   fake_interval_data.time_playing_video_in_visible_tab =
-      base::TimeDelta::FromSeconds(++fake_value);
+      base::Seconds(++fake_value);
   fake_interval_data.time_since_last_user_interaction_with_browser =
-      base::TimeDelta::FromSeconds(++fake_value);
-  fake_interval_data.time_capturing_video =
-      base::TimeDelta::FromSeconds(++fake_value);
-  fake_interval_data.time_playing_audio =
-      base::TimeDelta::FromSeconds(++fake_value);
+      base::Seconds(++fake_value);
+  fake_interval_data.time_capturing_video = base::Seconds(++fake_value);
+  fake_interval_data.time_playing_audio = base::Seconds(++fake_value);
   fake_interval_data.longest_visible_origin_duration =
-      base::TimeDelta::FromSeconds(++fake_value);
+      base::Seconds(++fake_value);
   fake_interval_data.sleep_events = 0;
 
   task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
-  // Pretend that the battery has dropped by 50% in 2 minutes, for a rate of
-  // 25% per minute.
+  // Pretend that the battery has dropped by 20% in 2 minutes, for a rate of
+  // 10% per minute.
   battery_states_.push(BatteryLevelProvider::BatteryState{
-      1, 1, 0.50, true, base::TimeTicks::Now()});
+      1, 1, 0.30, true, base::TimeTicks::Now()});
 
   data_store_.SetIntervalDataToReturn(fake_interval_data);
 
@@ -237,7 +234,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       ukm::GetExponentialBucketMinForUserTiming(
           fake_interval_data.uptime_at_interval_end.InSeconds()));
   test_ukm_recorder_.ExpectEntryMetric(
-      entries[0], UkmEntry::kBatteryDischargeRateName, 2500);
+      entries[0], UkmEntry::kBatteryDischargeRateName, 1000);
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
       static_cast<int64_t>(
@@ -477,14 +474,49 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
       PowerMetricsReporterAccess::BatteryDischargeMode::kNoBattery, 1);
 }
 
+#if defined(OS_MAC)
+// Tests that on MacOS, a full |charge_level| while not plugged does not result
+// in a kDischarging value emitted. See https://crbug.com/1249830.
+TEST_F(PowerMetricsReporterUnitTest, UKMsMacFullyCharged) {
+  // Set the initial battery level at 100%.
+  power_metrics_reporter_->battery_state_for_testing().charge_level = 1.0;
+  
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      0, 1, 1.0, true, base::TimeTicks::Now()});
+
+  UsageScenarioDataStore::IntervalData fake_interval_data;
+  fake_interval_data.source_id_for_longest_visible_origin =
+      ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
+  data_store_.SetIntervalDataToReturn(fake_interval_data);
+
+  WaitForNextSample({});
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  EXPECT_FALSE(test_ukm_recorder_.EntryHasMetric(
+      entries[0], UkmEntry::kBatteryDischargeRateName));
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kBatteryDischargeModeName,
+      static_cast<int64_t>(
+          PowerMetricsReporterAccess::BatteryDischargeMode::kMacFullyCharged));
+
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
+  histogram_tester_.ExpectUniqueSample(
+      kBatteryDischargeModeHistogramName,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kMacFullyCharged, 1);
+}
+#endif  // defined(OS_MAC)
+
 TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
   // Set the initial battery level at 50%.
   power_metrics_reporter_->battery_state_for_testing().charge_level = 0.5;
 
   task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
-  // Set the new battery state at 100%.
+  // Set the new battery state at 75%.
   battery_states_.push(BatteryLevelProvider::BatteryState{
-      1, 1, 1.0, true, base::TimeTicks::Now()});
+      1, 1, 0.75, true, base::TimeTicks::Now()});
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin =
@@ -502,12 +534,12 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBatteryDischargeModeName,
       static_cast<int64_t>(PowerMetricsReporterAccess::BatteryDischargeMode::
-                               kInvalidDischargeRate));
+                               kBatteryLevelIncreased));
 
   histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
   histogram_tester_.ExpectUniqueSample(
       kBatteryDischargeModeHistogramName,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kInvalidDischargeRate,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kBatteryLevelIncreased,
       1);
 }
 
@@ -546,12 +578,11 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_AllTabsHidden) {
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 0;
   // Values below should be ignored.
-  interval_data.time_capturing_video = base::TimeDelta::FromSeconds(1);
+  interval_data.time_capturing_video = base::Seconds(1);
   interval_data.time_playing_video_full_screen_single_monitor =
-      base::TimeDelta::FromSeconds(1);
-  interval_data.time_playing_video_in_visible_tab =
-      base::TimeDelta::FromSeconds(1);
-  interval_data.time_playing_audio = base::TimeDelta::FromSeconds(1);
+      base::Seconds(1);
+  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  interval_data.time_playing_audio = base::Seconds(1);
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
@@ -585,13 +616,12 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_VideoCapture) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
   interval_data.max_visible_window_count = 1;
-  interval_data.time_capturing_video = base::TimeDelta::FromSeconds(1);
+  interval_data.time_capturing_video = base::Seconds(1);
   // Values below should be ignored.
   interval_data.time_playing_video_full_screen_single_monitor =
-      base::TimeDelta::FromSeconds(1);
-  interval_data.time_playing_video_in_visible_tab =
-      base::TimeDelta::FromSeconds(1);
-  interval_data.time_playing_audio = base::TimeDelta::FromSeconds(1);
+      base::Seconds(1);
+  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  interval_data.time_playing_audio = base::Seconds(1);
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
@@ -627,11 +657,10 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_FullscreenVideo) {
   interval_data.max_visible_window_count = 1;
   interval_data.time_capturing_video = base::TimeDelta();
   interval_data.time_playing_video_full_screen_single_monitor =
-      base::TimeDelta::FromSeconds(1);
+      base::Seconds(1);
   // Values below should be ignored.
-  interval_data.time_playing_video_in_visible_tab =
-      base::TimeDelta::FromSeconds(1);
-  interval_data.time_playing_audio = base::TimeDelta::FromSeconds(1);
+  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
+  interval_data.time_playing_audio = base::Seconds(1);
   interval_data.top_level_navigation_count = 1;
   interval_data.user_interaction_count = 1;
 
@@ -670,10 +699,9 @@ TEST_F(PowerMetricsReporterUnitTest,
   interval_data.time_playing_video_full_screen_single_monitor =
       base::TimeDelta();
   interval_data.top_level_navigation_count = 0;
-  interval_data.time_playing_video_in_visible_tab =
-      base::TimeDelta::FromSeconds(1);
+  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
   // Values below should be ignored.
-  interval_data.time_playing_audio = base::TimeDelta::FromSeconds(1);
+  interval_data.time_playing_audio = base::Seconds(1);
   interval_data.user_interaction_count = 1;
 
   PowerMetricsReporterAccess::ReportHistograms(
@@ -712,10 +740,9 @@ TEST_F(PowerMetricsReporterUnitTest,
   interval_data.time_playing_video_full_screen_single_monitor =
       base::TimeDelta();
   interval_data.top_level_navigation_count = 1;
-  interval_data.time_playing_video_in_visible_tab =
-      base::TimeDelta::FromSeconds(1);
+  interval_data.time_playing_video_in_visible_tab = base::Seconds(1);
   // Values below should be ignored.
-  interval_data.time_playing_audio = base::TimeDelta::FromSeconds(1);
+  interval_data.time_playing_audio = base::Seconds(1);
   interval_data.user_interaction_count = 1;
 
   PowerMetricsReporterAccess::ReportHistograms(
@@ -753,7 +780,7 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Audio) {
   interval_data.time_playing_video_full_screen_single_monitor =
       base::TimeDelta();
   interval_data.time_playing_video_in_visible_tab = base::TimeDelta();
-  interval_data.time_playing_audio = base::TimeDelta::FromSeconds(1);
+  interval_data.time_playing_audio = base::Seconds(1);
   // Values below should be ignored.
   interval_data.user_interaction_count = 1;
   interval_data.top_level_navigation_count = 1;
@@ -904,7 +931,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooEarly) {
 
   PowerMetricsReporterAccess::ReportBatteryHistograms(
       (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) -
-          base::TimeDelta::FromSeconds(1),
+          base::Seconds(1),
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
       PowerMetricsReporter::GetSuffixesForTesting(interval_data));
 
@@ -919,7 +946,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsEarly) {
 
   PowerMetricsReporterAccess::ReportBatteryHistograms(
       (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) +
-          base::TimeDelta::FromSeconds(1),
+          base::Seconds(1),
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
       PowerMetricsReporter::GetSuffixesForTesting(interval_data));
 
@@ -935,7 +962,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooLate) {
 
   PowerMetricsReporterAccess::ReportBatteryHistograms(
       (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) +
-          base::TimeDelta::FromSeconds(1),
+          base::Seconds(1),
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
       PowerMetricsReporter::GetSuffixesForTesting(interval_data));
 
@@ -950,7 +977,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
 
   PowerMetricsReporterAccess::ReportBatteryHistograms(
       (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) -
-          base::TimeDelta::FromSeconds(1),
+          base::Seconds(1),
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
       PowerMetricsReporter::GetSuffixesForTesting(interval_data));
 

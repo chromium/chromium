@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom.h"
 
 namespace media {
@@ -28,6 +27,12 @@ class COMPONENT_EXPORT(MEDIA_LEARNING_MOJO) MojoLearningTaskControllerService
       const LearningTask& task,
       ukm::SourceId source_id,
       std::unique_ptr<::media::learning::LearningTaskController> impl);
+
+  MojoLearningTaskControllerService(const MojoLearningTaskControllerService&) =
+      delete;
+  MojoLearningTaskControllerService& operator=(
+      const MojoLearningTaskControllerService&) = delete;
+
   ~MojoLearningTaskControllerService() override;
 
   // mojom::LearningTaskController
@@ -53,8 +58,6 @@ class COMPONENT_EXPORT(MEDIA_LEARNING_MOJO) MojoLearningTaskControllerService
   std::unique_ptr<::media::learning::LearningTaskController> impl_;
 
   std::set<base::UnguessableToken> in_flight_observations_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoLearningTaskControllerService);
 };
 
 }  // namespace learning

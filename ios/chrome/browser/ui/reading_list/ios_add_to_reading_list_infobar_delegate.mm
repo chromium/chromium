@@ -36,11 +36,15 @@ IOSAddToReadingListInfobarDelegate::IOSAddToReadingListInfobarDelegate(
     const GURL& URL,
     const std::u16string& title,
     int estimated_read_time,
+    double score,
+    double long_score,
     ReadingListModel* model,
     web::WebState* web_state)
     : url_(URL),
       title_(title),
       estimated_read_time_(estimated_read_time),
+      distilibility_score_(score),
+      length_score_(long_score),
       model_(model),
       web_state_(web_state) {
   DCHECK(model_);
@@ -57,14 +61,52 @@ std::u16string IOSAddToReadingListInfobarDelegate::GetMessageText() const {
   return std::u16string();
 }
 
+void IOSAddToReadingListInfobarDelegate::InfoBarDismissed() {
+  ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(web_state_);
+  if (sourceID != ukm::kInvalidSourceId) {
+    // Round to the nearest tenth, and additionally round to a .5 level of
+    // granularity if <0.5 or > 1.5. Get accuracy to the tenth digit in UKM by
+    // multiplying by 10.
+    int score_minimization = (int)(round(distilibility_score_ * 10));
+    int long_score_minimization = (int)(round(length_score_ * 10));
+    if (score_minimization > 15 || score_minimization < 5) {
+      score_minimization = ((score_minimization + 2.5) / 5) * 5;
+    }
+    if (long_score_minimization > 15 || long_score_minimization < 5) {
+      long_score_minimization = ((long_score_minimization + 2.5) / 5) * 5;
+    }
+    ukm::builders::IOS_PageReadability(sourceID)
+        .SetDidAccept(false)
+        .SetDistilibilityScore(score_minimization)
+        .SetDistilibilityLongScore(long_score_minimization)
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
 bool IOSAddToReadingListInfobarDelegate::Accept() {
   model_->AddEntry(url_, base::UTF16ToUTF8(title_),
                    reading_list::ADDED_VIA_CURRENT_APP,
-                   base::TimeDelta::FromMinutes(estimated_read_time_));
+                   base::Minutes(estimated_read_time_));
   ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(web_state_);
   if (sourceID != ukm::kInvalidSourceId) {
     ukm::builders::IOS_PageAddedToReadingList(sourceID)
         .SetAddedFromMessages(true)
+        .Record(ukm::UkmRecorder::Get());
+    // Round to the nearest tenth, and additionally round to a .5 level of
+    // granularity if <0.5 or > 1.5. Get accuracy to the tenth digit in UKM by
+    // multiplying by 10.
+    int score_minimization = (int)(round(distilibility_score_ * 10));
+    int long_score_minimization = (int)(round(length_score_ * 10));
+    if (score_minimization > 15 || score_minimization < 5) {
+      score_minimization = ((score_minimization + 2.5) / 5) * 5;
+    }
+    if (long_score_minimization > 15 || long_score_minimization < 5) {
+      long_score_minimization = ((long_score_minimization + 2.5) / 5) * 5;
+    }
+    ukm::builders::IOS_PageReadability(sourceID)
+        .SetDidAccept(true)
+        .SetDistilibilityScore(score_minimization)
+        .SetDistilibilityLongScore(long_score_minimization)
         .Record(ukm::UkmRecorder::Get());
   }
   [[NSUserDefaults standardUserDefaults]

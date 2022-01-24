@@ -32,6 +32,8 @@ def main(argv):
                     'gpu_integration_test_adapter.py',
                     'PRESUBMIT.py',
                     'sizes_common.py',
+                    'variations_seed_access_helper.py',
+                    'wpt_android_lib.py',
                     'wpt_common.py',
                     'wpt_common_unittest.py',
                     'run_performance_tests_unittest.py'):

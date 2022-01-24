@@ -22,12 +22,13 @@ namespace password_manager {
 // for Android).
 class PasswordAccessAuthenticator {
  public:
-  using ReauthCallback = base::RepeatingCallback<bool(ReauthPurpose)>;
+  using AuthResultCallback = base::OnceCallback<void(bool)>;
+  using ReauthCallback =
+      base::RepeatingCallback<void(ReauthPurpose, AuthResultCallback)>;
 
   // For how long after the last successful authentication a user is considered
   // authenticated without repeating the challenge.
-  constexpr static base::TimeDelta kAuthValidityPeriod =
-      base::TimeDelta::FromSeconds(60);
+  constexpr static base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
 
   // |os_reauth_call| is passed to |os_reauth_call_|, see the latter for
   // explanation.
@@ -39,15 +40,18 @@ class PasswordAccessAuthenticator {
 
   ~PasswordAccessAuthenticator();
 
-  // Returns whether the user is able to pass the authentication challenge,
+  // Determines whether the user is able to pass the authentication challenge,
   // which is represented by |os_reauth_call_| returning true. A successful
-  // result of |os_reauth_call_| is cached for kAuthValidityPeriod.
-  bool EnsureUserIsAuthenticated(ReauthPurpose purpose);
+  // result of |os_reauth_call_| is cached for kAuthValidityPeriod. The result
+  // is passed to |callback|.
+  void EnsureUserIsAuthenticated(ReauthPurpose purpose,
+                                 AuthResultCallback callback);
 
   // Presents the reauthentication challenge to the user and returns whether
   // the user passed the challenge. This call is guaranteed to present the
-  // challenge to the user.
-  bool ForceUserReauthentication(ReauthPurpose purpose);
+  // challenge to the user. The result is passed to |callback|.
+  void ForceUserReauthentication(ReauthPurpose purpose,
+                                 AuthResultCallback callback);
 
 #if defined(UNIT_TEST)
   // Use this in tests to mock the OS-level reauthentication.
@@ -57,6 +61,10 @@ class PasswordAccessAuthenticator {
 #endif  // defined(UNIT_TEST)
 
  private:
+  // Callback for ForceUserReauthentication().
+  void OnUserReauthenticationResult(AuthResultCallback callback,
+                                    bool authenticated);
+
   // The last time the user was successfully authenticated.
   base::Time last_authentication_time_;
 

@@ -4,7 +4,6 @@ Network agent enabled
 Request interception enabled
 Page agent enabled
 Runtime agent enabled
-Response.requestHeadersText present: true
 Connection raw header present: true
 Network.requestIntercepted ID 1 GET simple-iframe.html type: Document
 allowRequest ID 1

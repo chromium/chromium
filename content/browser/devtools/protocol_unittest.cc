@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/devtools/protocol/base_string_adapter.h"
-
 #include <vector>
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
 
 namespace content {
 namespace protocol {
 namespace {
+
+using crdtp::Binary;
+
 TEST(ProtocolBinaryTest, base64EmptyArgs) {
-  EXPECT_EQ(protocol::String(), Binary().toBase64());
+  EXPECT_EQ(std::string(), Binary().toBase64());
 
   bool success = false;
   Binary decoded = Binary::fromBase64("", &success);
@@ -39,7 +41,7 @@ TEST(ProtocolStringTest, HelloWorldBase64Roundtrip) {
   std::vector<uint8_t> msg(kMsg, kMsg + strlen(kMsg));
   EXPECT_EQ(strlen(kMsg), msg.size());
 
-  protocol::String encoded = Binary::fromVector(msg).toBase64();
+  auto encoded = Binary::fromVector(msg).toBase64();
   EXPECT_EQ("SGVsbG8sIHdvcmxkLg==", encoded);
   bool success = false;
   Binary decoded_binary = Binary::fromBase64(encoded, &success);

@@ -59,9 +59,9 @@ class SitePerProcessBrowserTestWithoutSadFrameTabReload
   base::test::ScopedFeatureList feature_list_;
 };
 
-// This test is flaky on Win7.
+// This test is flaky on Win7 and Android.
 // TODO(crbug.com/1179074): Deflake it and enable this test back.
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_ANDROID)
 #define MAYBE_ChildFrameCrashMetrics_KilledWhileHiddenThenShown \
   DISABLED_ChildFrameCrashMetrics_KilledWhileHiddenThenShown
 #else
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_P(
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(b,c),b,b,b,b,b,b,b,b,b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // Hide the web contents (UpdateWebContentsVisibility is called twice to avoid
   // hitting the |!did_first_set_visible_| case).  Make sure all subframes are
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithoutSadFrameTabReload,
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/iframe_out_of_view.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   EXPECT_TRUE(NavigateToURLFromRenderer(
       root->child_at(0),
       embedded_test_server()->GetURL("b.com", "/title1.html")));
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // Hide the WebContents (UpdateWebContentsVisibility is called twice to avoid
   // hitting the |!did_first_set_visible_| case).
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b,c)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   // Hide the WebContents (UpdateWebContentsVisibility is called twice to avoid
   // hitting the |!did_first_set_visible_| case).
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   FrameTreeNode* child = root->child_at(0);
   FrameTreeNode* grandchild = child->child_at(0);
 
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
 
   // This will ensure that the layout has completed and visibility of the OOPIF
   // has been updated in the browser process.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   EXPECT_EQ(true,
             EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "true"));
 
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
   // Ensure that the parent frame has propagated the OOPIF's hidden visibility
   // to the browser process by forcing requestAnimationFrame and
   // waiting for layout to finish.
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   EXPECT_EQ(true,
             EvalJsAfterLifecycleUpdate(root->current_frame_host(), "", "true"));
 
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   base::HistogramTester histograms;
   CrashProcess(root->child_at(0));
   histograms.ExpectUniqueSample("Stability.ChildFrameCrash.TabMarkedForReload",
@@ -538,7 +538,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(b,c(b)),b,b,b,b,b,b,b,b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
 
   std::vector<std::unique_ptr<SadFrameShownObserver>> observers;
   for (size_t i = 0U; i < root->child_count(); i++) {

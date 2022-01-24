@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "extensions/renderer/source_map.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 
@@ -18,6 +19,10 @@ namespace extensions {
 class StringSourceMap : public SourceMap {
  public:
   StringSourceMap();
+
+  StringSourceMap(const StringSourceMap&) = delete;
+  StringSourceMap& operator=(const StringSourceMap&) = delete;
+
   ~StringSourceMap() override;
 
   // Adds a new string to be used in the source map.
@@ -32,8 +37,6 @@ class StringSourceMap : public SourceMap {
 
  private:
   std::map<std::string, std::string> sources_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringSourceMap);
 };
 
 }  // namespace extensions

@@ -148,6 +148,10 @@ struct PrintParams {
   mojo_base.mojom.String16 footer_template;
   // Whether to rasterize a PDF for printing
   bool rasterize_pdf = false;
+  // Override of the DPI to use if `rasterize_pdf` is true.  A non-positive
+  // value would be an invalid choice of a DPI, and indicates no override
+  // should be applied.
+  int32 rasterize_pdf_dpi = 0;
   // True if print backgrounds is requested by the user.
   bool should_print_backgrounds = false;
   // The document type of printed page(s) from render.

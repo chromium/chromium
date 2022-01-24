@@ -26,6 +26,7 @@ include_rules = [
     "+base/threading",
     "+base/time/time.h",
     "+base/tuple.h",
+    "+base/win/windows_types.h",
     # To avoid recursive dependency, we impose a blanket ban on using other
     # platform files. Think carefully if you want to relax this restriction.
     "-third_party/blink/renderer/platform",

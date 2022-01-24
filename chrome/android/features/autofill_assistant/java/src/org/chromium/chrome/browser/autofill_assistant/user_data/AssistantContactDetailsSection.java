@@ -100,7 +100,7 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
 
     @Override
     protected boolean canEditOption(ContactModel model) {
-        return true;
+        return model.canEdit();
     }
 
     @Override

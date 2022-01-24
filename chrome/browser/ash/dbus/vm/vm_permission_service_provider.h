@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
@@ -97,6 +96,11 @@ class VmPermissionServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
   VmPermissionServiceProvider();
+
+  VmPermissionServiceProvider(const VmPermissionServiceProvider&) = delete;
+  VmPermissionServiceProvider& operator=(const VmPermissionServiceProvider&) =
+      delete;
+
   ~VmPermissionServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -104,7 +108,7 @@ class VmPermissionServiceProvider
 
  private:
   struct VmInfo {
-    enum VmType { CrostiniVm = 0, PluginVm = 1 };
+    enum VmType { CrostiniVm = 0, PluginVm = 1, Borealis = 2 };
     enum PermissionType { PermissionCamera = 0, PermissionMicrophone = 1 };
 
     const std::string owner_id;
@@ -141,6 +145,7 @@ class VmPermissionServiceProvider
 
   void UpdateVmPermissions(VmInfo* vm);
   void UpdatePluginVmPermissions(VmInfo* vm);
+  void UpdateBorealisPermissions(VmInfo* vm);
 
   // Returns an iterator to a vm with given |owner_id| and |name|).
   VmMap::iterator FindVm(const std::string& owner_id, const std::string& name);
@@ -152,8 +157,6 @@ class VmPermissionServiceProvider
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<VmPermissionServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VmPermissionServiceProvider);
 };
 
 }  // namespace ash

@@ -34,6 +34,7 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   bool ShouldUploadMetricsForUserId(uint64_t user_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
+  const network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   bool GetBrand(std::string* brand_code) override;
   SystemProfileProto::Channel GetChannel() override;
   bool IsExtendedStableChannel() override;

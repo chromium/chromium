@@ -24,14 +24,14 @@ namespace segmentation_platform {
 
 class MockUserActionSignalHandler : public UserActionSignalHandler {
  public:
-  MockUserActionSignalHandler() : UserActionSignalHandler(nullptr, nullptr) {}
+  MockUserActionSignalHandler() : UserActionSignalHandler(nullptr) {}
   MOCK_METHOD(void, SetRelevantUserActions, (std::set<uint64_t>));
   MOCK_METHOD(void, EnableMetrics, (bool));
 };
 
 class MockHistogramSignalHandler : public HistogramSignalHandler {
  public:
-  MockHistogramSignalHandler() : HistogramSignalHandler(nullptr, nullptr) {}
+  MockHistogramSignalHandler() : HistogramSignalHandler(nullptr) {}
   using HistogramAndSignalTypeSet =
       const std::set<std::pair<std::string, proto::SignalType>>&;
   MOCK_METHOD(void, SetRelevantHistograms, (HistogramAndSignalTypeSet));

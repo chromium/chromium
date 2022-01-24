@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/components/tether/gms_core_notifications_state_tracker.h"
 
 namespace chromeos {
@@ -20,6 +19,12 @@ class FakeGmsCoreNotificationsStateTracker
     : public GmsCoreNotificationsStateTracker {
  public:
   FakeGmsCoreNotificationsStateTracker();
+
+  FakeGmsCoreNotificationsStateTracker(
+      const FakeGmsCoreNotificationsStateTracker&) = delete;
+  FakeGmsCoreNotificationsStateTracker& operator=(
+      const FakeGmsCoreNotificationsStateTracker&) = delete;
+
   ~FakeGmsCoreNotificationsStateTracker() override;
 
   void set_device_names(const std::vector<std::string>& device_names) {
@@ -34,8 +39,6 @@ class FakeGmsCoreNotificationsStateTracker
 
  private:
   std::vector<std::string> device_names_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGmsCoreNotificationsStateTracker);
 };
 
 }  // namespace tether

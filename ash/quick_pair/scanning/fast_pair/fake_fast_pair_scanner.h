@@ -16,7 +16,7 @@ class BluetoothDevice;
 namespace ash {
 namespace quick_pair {
 
-class FakeFastPairScanner : public FastPairScanner {
+class FakeFastPairScanner final : public FastPairScanner {
  public:
   FakeFastPairScanner();
   FakeFastPairScanner(const FakeFastPairScanner&) = delete;
@@ -28,7 +28,7 @@ class FakeFastPairScanner : public FastPairScanner {
   void NotifyDeviceLost(device::BluetoothDevice* device);
 
  private:
-  ~FakeFastPairScanner() final;
+  ~FakeFastPairScanner() override;
 
   base::ObserverList<Observer> observers_;
 };

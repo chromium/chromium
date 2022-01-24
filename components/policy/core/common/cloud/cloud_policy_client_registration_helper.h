@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
@@ -28,6 +27,8 @@ class SharedURLLoaderFactory;
 }
 
 namespace policy {
+
+class ClientDataDelegate;
 
 // Helper class that registers a CloudPolicyClient. It fetches an OAuth2 token
 // for the DM service if needed, and checks with Gaia if the account has policy
@@ -56,9 +57,11 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
 
   // Starts the device registration with an token enrollment process.
   // |callback| is invoked when the registration is complete.
-  void StartRegistrationWithEnrollmentToken(const std::string& token,
-                                            const std::string& client_id,
-                                            base::OnceClosure callback);
+  void StartRegistrationWithEnrollmentToken(
+      const std::string& token,
+      const std::string& client_id,
+      const ClientDataDelegate& client_data_delegate,
+      base::OnceClosure callback);
 
  private:
   class IdentityManagerHelper;

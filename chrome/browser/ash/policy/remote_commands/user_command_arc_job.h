@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 class Profile;
@@ -17,6 +16,10 @@ namespace policy {
 class UserCommandArcJob : public RemoteCommandJob {
  public:
   explicit UserCommandArcJob(Profile* profile);
+
+  UserCommandArcJob(const UserCommandArcJob&) = delete;
+  UserCommandArcJob& operator=(const UserCommandArcJob&) = delete;
+
   ~UserCommandArcJob() override;
 
   // RemoteCommandJob:
@@ -32,8 +35,6 @@ class UserCommandArcJob : public RemoteCommandJob {
  private:
   Profile* const profile_;
   std::string command_payload_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCommandArcJob);
 };
 
 }  // namespace policy

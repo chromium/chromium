@@ -18,6 +18,8 @@
 @property(nonatomic, readwrite, strong) NSString* subtitleText;
 // Determines the direction of the disclosure view.
 @property(nonatomic, readwrite, assign) BOOL collapsed;
+// Determines if the header is shown has disabled.
+@property(nonatomic, readwrite, assign) BOOL disabled;
 @end
 
 // UITableViewHeaderFooterView that displays a text label, subtitle, and a
@@ -32,6 +34,8 @@ typedef NS_ENUM(NSInteger, DisclosureDirection) {
 @property(nonatomic, readwrite, strong) UILabel* titleLabel;
 // Shows the subtitleText of the TableViewDisclosureHeaderFooterItem.
 @property(nonatomic, readwrite, strong) UILabel* subtitleLabel;
+// Determines if the header is shown has disabled.
+@property(nonatomic, readwrite, assign) BOOL disabled;
 // Determines if disclosureImageView should be pointing down or to the right.
 @property(nonatomic, assign) DisclosureDirection disclosureDirection;
 // Color used on the highlight animation.

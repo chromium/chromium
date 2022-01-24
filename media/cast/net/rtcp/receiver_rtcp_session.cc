@@ -109,8 +109,7 @@ bool ReceiverRtcpSession::GetLatestLipSyncTimes(
       local_clock_ahead_by_.Current();
 
   // Sanity-check: Getting regular lip sync updates?
-  DCHECK((clock_->NowTicks() - local_reference_time) <
-         base::TimeDelta::FromMinutes(1));
+  DCHECK((clock_->NowTicks() - local_reference_time) < base::Minutes(1));
 
   *rtp_timestamp = lip_sync_rtp_timestamp_;
   *reference_time = local_reference_time;

@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

@@ -18,8 +18,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input.h"
@@ -68,6 +68,10 @@ class StreamMixer {
  public:
   StreamMixer(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner = nullptr);
+
+  StreamMixer(const StreamMixer&) = delete;
+  StreamMixer& operator=(const StreamMixer&) = delete;
+
   ~StreamMixer();
 
   int num_output_channels() const { return num_output_channels_; }
@@ -251,8 +255,6 @@ class StreamMixer {
   base::SequenceBound<MixerServiceReceiver> receiver_;
 
   base::WeakPtrFactory<StreamMixer> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamMixer);
 };
 
 }  // namespace media

@@ -11,7 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -36,6 +36,9 @@ class TestChromeBrowserState final : public ChromeBrowserState {
       std::pair<RefcountedBrowserStateKeyedServiceFactory*,
                 RefcountedBrowserStateKeyedServiceFactory::TestingFactory>>
       RefcountedTestingFactories;
+
+  TestChromeBrowserState(const TestChromeBrowserState&) = delete;
+  TestChromeBrowserState& operator=(const TestChromeBrowserState&) = delete;
 
   ~TestChromeBrowserState() override;
 
@@ -93,6 +96,10 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   class Builder {
    public:
     Builder();
+
+    Builder(const Builder&) = delete;
+    Builder& operator=(const Builder&) = delete;
+
     ~Builder();
 
     // Adds a testing factory to the TestChromeBrowserState. These testing
@@ -131,8 +138,6 @@ class TestChromeBrowserState final : public ChromeBrowserState {
 
     TestingFactories testing_factories_;
     RefcountedTestingFactories refcounted_testing_factories_;
-
-    DISALLOW_COPY_AND_ASSIGN(Builder);
   };
 
  protected:
@@ -174,8 +179,6 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // non-incognito ChromeBrowserState instance.
   std::unique_ptr<TestChromeBrowserState> otr_browser_state_;
   TestChromeBrowserState* original_browser_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChromeBrowserState);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_TEST_CHROME_BROWSER_STATE_H_

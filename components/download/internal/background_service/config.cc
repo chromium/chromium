@@ -16,8 +16,7 @@ namespace download {
 namespace {
 
 // Default value for battery query interval.
-const base::TimeDelta kDefaultBatteryQueryInterval =
-    base::TimeDelta::FromSeconds(120);
+const base::TimeDelta kDefaultBatteryQueryInterval = base::Seconds(120);
 
 // Default minimum battery percentage to start download or background task when
 // battery requirement is sensitive.
@@ -40,54 +39,45 @@ const uint32_t kDefaultMaxResumptionCount = 15;
 
 // Default value for file keep alive time, keep the file alive for 12 hours by
 // default.
-const base::TimeDelta kDefaultFileKeepAliveTime =
-    base::TimeDelta::FromHours(12);
+const base::TimeDelta kDefaultFileKeepAliveTime = base::Hours(12);
 
 // Default value for maximum duration that the file can be kept alive time,
 // default is 7 days.
-const base::TimeDelta kDefaultMaxFileKeepAliveTime =
-    base::TimeDelta::FromDays(7);
+const base::TimeDelta kDefaultMaxFileKeepAliveTime = base::Days(7);
 
 // Default value for file cleanup window, the system will schedule a cleanup
 // task within this window.
-const base::TimeDelta kDefaultFileCleanupWindow =
-    base::TimeDelta::FromHours(24);
+const base::TimeDelta kDefaultFileCleanupWindow = base::Hours(24);
 
 // Default value for the start window time for OS to schedule background task.
-const base::TimeDelta kDefaultWindowStartTime = base::TimeDelta::FromMinutes(5);
+const base::TimeDelta kDefaultWindowStartTime = base::Minutes(5);
 
 // Default value for the end window time for OS to schedule background task.
-const base::TimeDelta kDefaultWindowEndTime = base::TimeDelta::FromHours(8);
+const base::TimeDelta kDefaultWindowEndTime = base::Hours(8);
 
 // Default value for start up delay to wait for network stack ready.
-const base::TimeDelta kDefaultNetworkStartupDelay =
-    base::TimeDelta::FromSeconds(2);
+const base::TimeDelta kDefaultNetworkStartupDelay = base::Seconds(2);
 
 // Default value for start up delay to wait for network stack ready when
 // triggered from a background task.
 const base::TimeDelta kDefaultNetworkStartupDelayBackgroundTask =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 // The default delay to notify the observer when network changes from
 // disconnected to connected.
-const base::TimeDelta kDefaultNetworkChangeDelay =
-    base::TimeDelta::FromSeconds(5);
+const base::TimeDelta kDefaultNetworkChangeDelay = base::Seconds(5);
 
 // The default delay to notify the observer after a navigation completes.
-const base::TimeDelta kDefaultNavigationCompletionDelay =
-    base::TimeDelta::FromSeconds(30);
+const base::TimeDelta kDefaultNavigationCompletionDelay = base::Seconds(30);
 
 // The default timeout for a navigation.
-const base::TimeDelta kDefaultNavigationTimeoutDelay =
-    base::TimeDelta::FromSeconds(300);
+const base::TimeDelta kDefaultNavigationTimeoutDelay = base::Seconds(300);
 
 // The default timeout for a pending upload.
-const base::TimeDelta kDefaultPendingUploadTimeoutDelay =
-    base::TimeDelta::FromSeconds(30);
+const base::TimeDelta kDefaultPendingUploadTimeoutDelay = base::Seconds(30);
 
 // The default value of download retry delay when the download is failed.
-const base::TimeDelta kDefaultDownloadRetryDelay =
-    base::TimeDelta::FromSeconds(20);
+const base::TimeDelta kDefaultDownloadRetryDelay = base::Seconds(20);
 
 // Helper routine to get Finch experiment parameter. If no Finch seed was found,
 // use the |default_value|. The |name| should match an experiment
@@ -104,10 +94,9 @@ uint32_t GetFinchConfigUInt(const std::string& name, uint32_t default_value) {
 // static
 std::unique_ptr<Configuration> Configuration::CreateFromFinch() {
   std::unique_ptr<Configuration> config(new Configuration());
-  config->battery_query_interval =
-      base::TimeDelta::FromSeconds(base::saturated_cast<int>(
-          GetFinchConfigUInt(kBatteryQueryIntervalConfig,
-                             kDefaultBatteryQueryInterval.InSeconds())));
+  config->battery_query_interval = base::Seconds(base::saturated_cast<int>(
+      GetFinchConfigUInt(kBatteryQueryIntervalConfig,
+                         kDefaultBatteryQueryInterval.InSeconds())));
   config->download_battery_percentage =
       base::saturated_cast<int>(GetFinchConfigUInt(
           kDownloadBatteryPercentageConfig, kDefaultDownloadBatteryPercentage));
@@ -121,55 +110,46 @@ std::unique_ptr<Configuration> Configuration::CreateFromFinch() {
       GetFinchConfigUInt(kMaxRetryCountConfig, kDefaultMaxRetryCount);
   config->max_resumption_count =
       GetFinchConfigUInt(kMaxResumptionCountConfig, kDefaultMaxResumptionCount);
-  config->file_keep_alive_time =
-      base::TimeDelta::FromMinutes(base::saturated_cast<int>(
-          GetFinchConfigUInt(kFileKeepAliveTimeMinutesConfig,
-                             kDefaultFileKeepAliveTime.InMinutes())));
-  config->max_file_keep_alive_time =
-      base::TimeDelta::FromMinutes(base::saturated_cast<int>(
-          GetFinchConfigUInt(kMaxFileKeepAliveTimeMinutesConfig,
-                             kDefaultMaxFileKeepAliveTime.InMinutes())));
-  config->file_cleanup_window =
-      base::TimeDelta::FromMinutes(base::saturated_cast<int>(
-          GetFinchConfigUInt(kFileCleanupWindowMinutesConfig,
-                             kDefaultFileCleanupWindow.InMinutes())));
+  config->file_keep_alive_time = base::Minutes(base::saturated_cast<int>(
+      GetFinchConfigUInt(kFileKeepAliveTimeMinutesConfig,
+                         kDefaultFileKeepAliveTime.InMinutes())));
+  config->max_file_keep_alive_time = base::Minutes(base::saturated_cast<int>(
+      GetFinchConfigUInt(kMaxFileKeepAliveTimeMinutesConfig,
+                         kDefaultMaxFileKeepAliveTime.InMinutes())));
+  config->file_cleanup_window = base::Minutes(base::saturated_cast<int>(
+      GetFinchConfigUInt(kFileCleanupWindowMinutesConfig,
+                         kDefaultFileCleanupWindow.InMinutes())));
   config->window_start_time =
-      base::TimeDelta::FromSeconds(base::saturated_cast<int>(GetFinchConfigUInt(
+      base::Seconds(base::saturated_cast<int>(GetFinchConfigUInt(
           kWindowStartTimeSecondsConfig, kDefaultWindowStartTime.InSeconds())));
   config->window_end_time =
-      base::TimeDelta::FromSeconds(base::saturated_cast<int>(GetFinchConfigUInt(
+      base::Seconds(base::saturated_cast<int>(GetFinchConfigUInt(
           kWindowEndTimeSecondsConfig, kDefaultWindowEndTime.InSeconds())));
-  config->network_startup_delay =
-      base::TimeDelta::FromMilliseconds(base::saturated_cast<int>(
-          GetFinchConfigUInt(kNetworkStartupDelayMsConfig,
-                             kDefaultNetworkStartupDelay.InMilliseconds())));
+  config->network_startup_delay = base::Milliseconds(base::saturated_cast<int>(
+      GetFinchConfigUInt(kNetworkStartupDelayMsConfig,
+                         kDefaultNetworkStartupDelay.InMilliseconds())));
   config->network_startup_delay_backgroud_task =
-      base::TimeDelta::FromMilliseconds(
-          base::saturated_cast<int>(GetFinchConfigUInt(
-              kNetworkStartupDelayBackgroundTaskMsConfig,
-              kDefaultNetworkStartupDelayBackgroundTask.InMilliseconds())));
+      base::Milliseconds(base::saturated_cast<int>(GetFinchConfigUInt(
+          kNetworkStartupDelayBackgroundTaskMsConfig,
+          kDefaultNetworkStartupDelayBackgroundTask.InMilliseconds())));
 
-  config->network_change_delay =
-      base::TimeDelta::FromMilliseconds(base::saturated_cast<int>(
-          GetFinchConfigUInt(kNetworkChangeDelayMsConfig,
-                             kDefaultNetworkChangeDelay.InMilliseconds())));
-  config->navigation_completion_delay =
-      base::TimeDelta::FromSeconds(base::saturated_cast<int>(
-          GetFinchConfigUInt(kNavigationCompletionDelaySecondsConfig,
-                             kDefaultNavigationCompletionDelay.InSeconds())));
-  config->navigation_timeout_delay =
-      base::TimeDelta::FromSeconds(base::saturated_cast<int>(
-          GetFinchConfigUInt(kNavigationTimeoutDelaySecondsConfig,
-                             kDefaultNavigationTimeoutDelay.InSeconds())));
+  config->network_change_delay = base::Milliseconds(base::saturated_cast<int>(
+      GetFinchConfigUInt(kNetworkChangeDelayMsConfig,
+                         kDefaultNetworkChangeDelay.InMilliseconds())));
+  config->navigation_completion_delay = base::Seconds(base::saturated_cast<int>(
+      GetFinchConfigUInt(kNavigationCompletionDelaySecondsConfig,
+                         kDefaultNavigationCompletionDelay.InSeconds())));
+  config->navigation_timeout_delay = base::Seconds(base::saturated_cast<int>(
+      GetFinchConfigUInt(kNavigationTimeoutDelaySecondsConfig,
+                         kDefaultNavigationTimeoutDelay.InSeconds())));
   config->pending_upload_timeout_delay =
-      base::TimeDelta::FromSeconds(base::saturated_cast<int>(
+      base::Seconds(base::saturated_cast<int>(
           GetFinchConfigUInt(kPendingUploadTimeoutDelaySecondsConfig,
                              kDefaultPendingUploadTimeoutDelay.InSeconds())));
 
-  config->download_retry_delay =
-      base::TimeDelta::FromMilliseconds(base::saturated_cast<int>(
-          GetFinchConfigUInt(kDownloadRetryDelayMsConfig,
-                             kDefaultDownloadRetryDelay.InMilliseconds())));
+  config->download_retry_delay = base::Milliseconds(base::saturated_cast<int>(
+      GetFinchConfigUInt(kDownloadRetryDelayMsConfig,
+                         kDefaultDownloadRetryDelay.InMilliseconds())));
   return config;
 }
 

@@ -34,7 +34,7 @@ constexpr char kOemAppId[] = "emfkafnhnpcmabnnkckkchdilgeoekbo";
 
 }  // namespace
 
-class OemAppPositionTest : public chromeos::LoginManagerTest {
+class OemAppPositionTest : public ash::LoginManagerTest {
  public:
   OemAppPositionTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(1);
@@ -68,7 +68,7 @@ class OemAppPositionTest : public chromeos::LoginManagerTest {
     return true;
   }
 
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
 class AppPositionReorderingTest : public extensions::ExtensionBrowserTest {

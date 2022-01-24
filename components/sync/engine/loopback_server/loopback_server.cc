@@ -16,12 +16,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
@@ -29,6 +29,12 @@
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/loopback_server.pb.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
+#include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 
@@ -118,7 +124,7 @@ class UpdateSieve {
   UpdateSieve(const sync_pb::GetUpdatesMessage& message,
               const std::map<ModelType, int>& server_migration_versions)
       : UpdateSieve(MessageToVersionMap(message, server_migration_versions)) {}
-  ~UpdateSieve() {}
+  ~UpdateSieve() = default;
 
   // Verifies if MIGRATION_DONE should be exercised. It intentionally returns
   // migrations in the order that they were triggered.  Doing it this way
@@ -764,7 +770,7 @@ LoopbackServer::GetEntitiesAsDictionaryValue() {
     // TODO(pvalenzuela): Store more data for each entity so additional
     // verification can be performed. One example of additional verification
     // is checking the correctness of the bookmark hierarchy.
-    list_value->AppendString(entity.GetName());
+    list_value->Append(entity.GetName());
   }
 
   return dictionary;

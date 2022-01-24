@@ -17,7 +17,7 @@ DataTypeErrorHandlerImpl::DataTypeErrorHandlerImpl(
       dump_stack_(dump_stack),
       sync_callback_(sync_callback) {}
 
-DataTypeErrorHandlerImpl::~DataTypeErrorHandlerImpl() {}
+DataTypeErrorHandlerImpl::~DataTypeErrorHandlerImpl() = default;
 
 void DataTypeErrorHandlerImpl::OnUnrecoverableError(const SyncError& error) {
   if (!dump_stack_.is_null())

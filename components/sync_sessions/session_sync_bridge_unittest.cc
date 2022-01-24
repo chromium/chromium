@@ -20,6 +20,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -27,8 +28,10 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/sync_metadata_store.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "components/sync/test/model/model_type_store_test_util.h"
 #include "components/sync/test/model/test_matchers.h"
@@ -43,7 +46,6 @@
 namespace sync_sessions {
 namespace {
 
-using sync_pb::EntityMetadata;
 using sync_pb::SessionSpecifics;
 using syncer::CommitResponseDataList;
 using syncer::DataBatch;
@@ -182,7 +184,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
     EXPECT_CALL(mock_processor_, ReportError).Times(0);
   }
 
-  ~SessionSyncBridgeTest() override {}
+  ~SessionSyncBridgeTest() override = default;
 
   void InitializeBridge() {
     real_processor_ =
@@ -1529,10 +1531,8 @@ TEST_F(SessionSyncBridgeTest, ShouldNotBroadcastUpdatesIfEmpty) {
 TEST_F(SessionSyncBridgeTest, ShouldDoGarbageCollection) {
   // We construct two identical sessions, one modified recently, one modified
   // more than |kStaleSessionThreshold| ago (14 days ago).
-  const base::Time stale_mtime =
-      base::Time::Now() - base::TimeDelta::FromDays(15);
-  const base::Time recent_mtime =
-      base::Time::Now() - base::TimeDelta::FromDays(13);
+  const base::Time stale_mtime = base::Time::Now() - base::Days(15);
+  const base::Time recent_mtime = base::Time::Now() - base::Days(13);
   const std::string kStaleSessionTag = "stalesessiontag";
   const std::string kRecentSessionTag = "recentsessiontag";
   const int kWindowId = 2000001;

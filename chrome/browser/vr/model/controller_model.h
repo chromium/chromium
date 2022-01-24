@@ -8,7 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/vr/vr_base_export.h"
 #include "ui/gfx/geometry/point3_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 

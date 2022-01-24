@@ -382,6 +382,9 @@ class CounterThread : public SimpleThread {
         count_(0),
         wake_up_(wake_up) {}
 
+  CounterThread(const CounterThread&) = delete;
+  CounterThread& operator=(const CounterThread&) = delete;
+
   void Run() override {
     // Wait so all threads can start at approximately the same time.
     // Best performance comes from releasing a single worker which then
@@ -415,8 +418,6 @@ class CounterThread : public SimpleThread {
   ConditionVariable* condition_;
   unsigned count_;
   bool* wake_up_;
-
-  DISALLOW_COPY_AND_ASSIGN(CounterThread);
 };
 
 // Ensure that parallel iteration returns the same number of objects as

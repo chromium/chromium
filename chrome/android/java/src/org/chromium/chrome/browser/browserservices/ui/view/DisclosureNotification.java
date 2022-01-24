@@ -114,12 +114,6 @@ public class DisclosureNotification
                 UrlFormatter.formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(scope);
         String text = mResources.getString(R.string.twa_running_in_chrome_v2, scopeForDisplay);
 
-        // We're using setStyle, which can't be handled by compat mode.
-        // TODO(crbug.com/697104): setStyle is now supported, consider using compat mode.
-        boolean preferCompat = false;
-        // The notification is being displayed by Chrome, so we don't need to provide a
-        // remoteAppPackageName.
-        String remoteAppPackageName = null;
         PendingIntentProvider intent = DisclosureAcceptanceBroadcastReceiver.createPendingIntent(
                 mContext, scope, notificationId, packageName);
 
@@ -127,8 +121,7 @@ public class DisclosureNotification
         int icon = 0;
 
         return NotificationWrapperBuilderFactory
-                .createNotificationWrapperBuilder(
-                        preferCompat, channelId, remoteAppPackageName, metadata)
+                .createNotificationWrapperBuilder(channelId, metadata)
                 .setSmallIcon(R.drawable.ic_chrome)
                 .setContentTitle(title)
                 .setContentText(text)

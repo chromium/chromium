@@ -23,6 +23,12 @@ namespace {
 class TranslateAcceptLanguagesService : public KeyedService {
  public:
   explicit TranslateAcceptLanguagesService(PrefService* prefs);
+
+  TranslateAcceptLanguagesService(const TranslateAcceptLanguagesService&) =
+      delete;
+  TranslateAcceptLanguagesService& operator=(
+      const TranslateAcceptLanguagesService&) = delete;
+
   ~TranslateAcceptLanguagesService() override;
 
   // Returns the associated TranslateAcceptLanguages.
@@ -32,8 +38,6 @@ class TranslateAcceptLanguagesService : public KeyedService {
 
  private:
   translate::TranslateAcceptLanguages accept_languages_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateAcceptLanguagesService);
 };
 
 TranslateAcceptLanguagesService::TranslateAcceptLanguagesService(

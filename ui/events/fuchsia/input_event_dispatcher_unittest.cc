@@ -7,7 +7,6 @@
 #include <fuchsia/ui/input/cpp/fidl.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/fuchsia/input_event_sink.h"
@@ -23,6 +22,10 @@ namespace {
 class InputEventDispatcherTest : public testing::Test, public InputEventSink {
  public:
   InputEventDispatcherTest() : dispatcher_(this) {}
+
+  InputEventDispatcherTest(const InputEventDispatcherTest&) = delete;
+  InputEventDispatcherTest& operator=(const InputEventDispatcherTest&) = delete;
+
   ~InputEventDispatcherTest() override = default;
 
   void DispatchEvent(Event* event) override {
@@ -38,9 +41,6 @@ class InputEventDispatcherTest : public testing::Test, public InputEventSink {
     DCHECK(captured_event_);
     captured_event_.reset();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputEventDispatcherTest);
 };
 
 TEST_F(InputEventDispatcherTest, MouseEventButtons) {

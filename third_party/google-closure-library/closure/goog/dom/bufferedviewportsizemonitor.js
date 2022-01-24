@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A viewport size monitor that buffers RESIZE events until the
@@ -32,6 +24,8 @@ goog.require('goog.async.Delay');
 goog.require('goog.events');
 goog.require('goog.events.EventTarget');
 goog.require('goog.events.EventType');
+goog.requireType('goog.dom');
+goog.requireType('goog.math.Size');
 
 
 
@@ -47,6 +41,7 @@ goog.require('goog.events.EventType');
  */
 goog.dom.BufferedViewportSizeMonitor = function(
     viewportSizeMonitor, opt_bufferMs) {
+  'use strict';
   goog.dom.BufferedViewportSizeMonitor.base(this, 'constructor');
 
   /**
@@ -111,6 +106,7 @@ goog.dom.BufferedViewportSizeMonitor.RESIZE_EVENT_DELAY_MS_ = 100;
 
 /** @override */
 goog.dom.BufferedViewportSizeMonitor.prototype.disposeInternal = function() {
+  'use strict';
   goog.events.unlistenByKey(this.listenerKey_);
   goog.dom.BufferedViewportSizeMonitor.base(this, 'disposeInternal');
 };
@@ -121,6 +117,7 @@ goog.dom.BufferedViewportSizeMonitor.prototype.disposeInternal = function() {
  * @private
  */
 goog.dom.BufferedViewportSizeMonitor.prototype.handleResize_ = function() {
+  'use strict';
   // Lazily create when needed.
   if (!this.resizeDelay_) {
     this.resizeDelay_ =
@@ -136,6 +133,7 @@ goog.dom.BufferedViewportSizeMonitor.prototype.handleResize_ = function() {
  * @private
  */
 goog.dom.BufferedViewportSizeMonitor.prototype.onWindowResize_ = function() {
+  'use strict';
   if (this.viewportSizeMonitor_.isDisposed()) {
     return;
   }
@@ -186,5 +184,6 @@ goog.dom.BufferedViewportSizeMonitor.prototype.onWindowResize_ = function() {
  * @return {goog.math.Size?} The current viewport size.
  */
 goog.dom.BufferedViewportSizeMonitor.prototype.getSize = function() {
+  'use strict';
   return this.currentSize_ ? this.currentSize_.clone() : null;
 };

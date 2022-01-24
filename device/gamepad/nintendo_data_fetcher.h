@@ -50,6 +50,10 @@ class DEVICE_GAMEPAD_EXPORT NintendoDataFetcher : public GamepadDataFetcher,
       std::unordered_map<int, std::unique_ptr<NintendoController>>;
 
   NintendoDataFetcher();
+
+  NintendoDataFetcher(const NintendoDataFetcher&) = delete;
+  NintendoDataFetcher& operator=(const NintendoDataFetcher&) = delete;
+
   ~NintendoDataFetcher() override;
 
   // Add the newly-connected HID device described by |device_info|. Returns
@@ -115,8 +119,6 @@ class DEVICE_GAMEPAD_EXPORT NintendoDataFetcher : public GamepadDataFetcher,
   mojo::Remote<mojom::HidManager> hid_manager_;
   mojo::AssociatedReceiver<mojom::HidManagerClient> receiver_{this};
   base::WeakPtrFactory<NintendoDataFetcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NintendoDataFetcher);
 };
 
 }  // namespace device

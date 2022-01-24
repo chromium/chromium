@@ -59,6 +59,11 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
     MarkServiceRequestsInProgress();
   }
 
+  ProcessMemoryMetricsEmitterFake(const ProcessMemoryMetricsEmitterFake&) =
+      delete;
+  ProcessMemoryMetricsEmitterFake& operator=(
+      const ProcessMemoryMetricsEmitterFake&) = delete;
+
   void ReceivedMemoryDump(bool success,
                           std::unique_ptr<GlobalMemoryDump> ptr) override {
     ProcessMemoryMetricsEmitter::ReceivedMemoryDump(success, std::move(ptr));
@@ -84,9 +89,9 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
       base::ProcessId pid) override {
     switch (pid) {
       case 401:
-        return base::TimeDelta::FromSeconds(21);
+        return base::Seconds(21);
       default:
-        return base::TimeDelta::FromSeconds(42);
+        return base::Seconds(42);
     }
   }
 
@@ -94,7 +99,6 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
   ~ProcessMemoryMetricsEmitterFake() override {}
 
   ukm::UkmRecorder* ukm_recorder_;
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitterFake);
 };
 
 void SetAllocatorDumpMetric(ProcessMemoryDumpPtr& pmd,
@@ -592,9 +596,8 @@ ProcessInfoVector GetProcessInfo(ukm::TestUkmRecorder& ukm_recorder) {
     page_info.tab_id = 201;
     page_info.hosts_main_frame = true;
     page_info.is_visible = true;
-    page_info.time_since_last_visibility_change =
-        base::TimeDelta::FromSeconds(15);
-    page_info.time_since_last_navigation = base::TimeDelta::FromSeconds(20);
+    page_info.time_since_last_visibility_change = base::Seconds(15);
+    page_info.time_since_last_navigation = base::Seconds(20);
     process_info.page_infos.push_back(page_info);
     process_infos.push_back(std::move(process_info));
   }
@@ -613,16 +616,14 @@ ProcessInfoVector GetProcessInfo(ukm::TestUkmRecorder& ukm_recorder) {
     page_info1.ukm_source_id = first_source_id;
     page_info1.tab_id = 2021;
     page_info1.hosts_main_frame = true;
-    page_info1.time_since_last_visibility_change =
-        base::TimeDelta::FromSeconds(11);
-    page_info1.time_since_last_navigation = base::TimeDelta::FromSeconds(21);
+    page_info1.time_since_last_visibility_change = base::Seconds(11);
+    page_info1.time_since_last_navigation = base::Seconds(21);
     PageInfo page_info2;
     page_info2.ukm_source_id = second_source_id;
     page_info2.tab_id = 2022;
     page_info2.hosts_main_frame = true;
-    page_info2.time_since_last_visibility_change =
-        base::TimeDelta::FromSeconds(12);
-    page_info2.time_since_last_navigation = base::TimeDelta::FromSeconds(22);
+    page_info2.time_since_last_visibility_change = base::Seconds(12);
+    page_info2.time_since_last_navigation = base::Seconds(22);
     process_info.page_infos.push_back(std::move(page_info1));
     process_info.page_infos.push_back(std::move(page_info2));
 
@@ -637,6 +638,12 @@ class ProcessMemoryMetricsEmitterTest
     : public testing::TestWithParam<HistogramProcessType> {
  public:
   ProcessMemoryMetricsEmitterTest() {}
+
+  ProcessMemoryMetricsEmitterTest(const ProcessMemoryMetricsEmitterTest&) =
+      delete;
+  ProcessMemoryMetricsEmitterTest& operator=(
+      const ProcessMemoryMetricsEmitterTest&) = delete;
+
   ~ProcessMemoryMetricsEmitterTest() override {}
 
  protected:
@@ -666,9 +673,6 @@ class ProcessMemoryMetricsEmitterTest
 
   content::BrowserTaskEnvironment task_environment_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitterTest);
 };
 
 TEST_P(ProcessMemoryMetricsEmitterTest, CollectsSingleProcessUKMs) {

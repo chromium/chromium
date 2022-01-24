@@ -44,10 +44,6 @@ void WebEngineBrowserTest::PreRunTestOnMainThread() {
   }
 }
 
-void WebEngineBrowserTest::TearDownOnMainThread() {
-  navigation_listener_bindings_.CloseAll();
-}
-
 void WebEngineBrowserTest::PostRunTestOnMainThread() {
   // Unbind the Context while the message loops are still alive.
   context_.Unbind();
@@ -73,30 +69,6 @@ sys::ServiceDirectory& WebEngineBrowserTest::published_services() {
                 svc_request.TakeChannel());
   }
   return *published_services_;
-}
-
-fuchsia::web::FramePtr WebEngineBrowserTest::CreateFrame(
-    fuchsia::web::NavigationEventListener* listener) {
-  return CreateFrameWithParams(listener, {});
-}
-
-fuchsia::web::FramePtr WebEngineBrowserTest::CreateFrameWithParams(
-    fuchsia::web::NavigationEventListener* listener,
-    fuchsia::web::CreateFrameParams params) {
-  fuchsia::web::FramePtr frame;
-
-  context_->CreateFrameWithParams(std::move(params), frame.NewRequest());
-
-  if (listener) {
-    frame->SetNavigationEventListener(
-        navigation_listener_bindings_.AddBinding(listener));
-  }
-
-  // Pump the messages so that the caller can use the Frame instance
-  // immediately after this function returns.
-  base::RunLoop().RunUntilIdle();
-
-  return frame;
 }
 
 void WebEngineBrowserTest::SetHeadlessInCommandLine(

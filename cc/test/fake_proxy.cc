@@ -41,4 +41,8 @@ bool FakeProxy::MainFrameWillHappenForTesting() {
   return false;
 }
 
+uint32_t FakeProxy::GetAverageThroughput() const {
+  return 0u;
+}
+
 }  // namespace cc

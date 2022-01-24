@@ -22,6 +22,10 @@ class AXEventServer final {
   // or tree selector.
   explicit AXEventServer(base::ProcessId pid,
                          const ui::AXTreeSelector& selector);
+
+  AXEventServer(const AXEventServer&) = delete;
+  AXEventServer& operator=(const AXEventServer&) = delete;
+
   ~AXEventServer();
 
  private:
@@ -32,8 +36,6 @@ class AXEventServer final {
   base::win::ScopedCOMInitializer com_initializer_;
 #endif
   std::unique_ptr<ui::AXEventRecorder> recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXEventServer);
 };
 
 }  // namespace tools

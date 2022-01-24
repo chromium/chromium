@@ -87,4 +87,10 @@
 #define __MAC_11_0 110000
 #endif
 
+// 12.0 SDK
+
+#ifndef __MAC_12_0
+#define __MAC_12_0 120000
+#endif
+
 #endif  // CRASHPAD_COMPAT_MAC_AVAILABILITYVERSIONS_H_

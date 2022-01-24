@@ -61,8 +61,10 @@ namespace enterprise_connectors {
 FileSystemSigninDialogDelegate::FileSystemSigninDialogDelegate(
     content::BrowserContext* browser_context,
     const FileSystemSettings& settings,
+    absl::optional<std::string> account_login,
     AuthorizationCompletedCallback callback)
     : settings_(settings),
+      account_login_(std::move(account_login)),
       web_view_(std::make_unique<views::WebView>(browser_context)),
       callback_(std::move(callback)) {
   SetHasWindowSizeControls(true);
@@ -204,32 +206,53 @@ void FileSystemSigninDialogDelegate::OnGotOAuthTokens(
 
   // Otherwise check enterprise ID.
   current_api_call_ = std::make_unique<BoxGetCurrentUserApiCallFlow>(
-      base::BindOnce(&FileSystemSigninDialogDelegate::OnGetCurrentUserResponse,
+      base::BindOnce(&FileSystemSigninDialogDelegate::OnGotCurrentUserResponse,
                      weak_factory_.GetWeakPtr()));
   current_api_call_->Start(GetURLLoaderFactory(), access_token);
 }
 
-void FileSystemSigninDialogDelegate::OnGetCurrentUserResponse(
+void FileSystemSigninDialogDelegate::OnGotCurrentUserResponse(
     BoxApiCallResponse response,
     base::Value user_info) {
   current_api_call_.reset();
   auto state = GoogleServiceAuthError::NONE;  // Assume success.
-  if (response.success) {
+
+  if (settings_.enterprise_id.empty()) {
+    NOTREACHED() << "enterprise_id is required field in policy but it's empty";
+    state = GoogleServiceAuthError::REQUEST_CANCELED;
+  } else if (!response.success) {
+    // Request for Box user's enterprise_id failed.
+    // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
+    // This is handled as case 1c (other errors) by FileSystemRenameHandler.
+    state = GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE;
+  } else {
     DCHECK_EQ(response.net_or_http_code, net::HTTP_OK);
     const std::string* enterprise_id =
-        user_info.FindStringPath("enterprise.id");
-    DCHECK(enterprise_id);
+        user_info.FindStringPath(kBoxEnterpriseIdFieldName);
+    if (!settings_.enterprise_id.empty()) {
+      DLOG_IF(ERROR, !enterprise_id)
+          << "Policy enforces account to have enterprise_id = "
+          << settings_.enterprise_id
+          << " but this account to be linked has none: " << user_info;
+    }
     if (settings_.enterprise_id.compare(*enterprise_id) != 0) {
       // User is logged in to wrong account which doesn't match enterprise_id.
       // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
       // This is handled as case 1c (other errors) by FileSystemRenameHandler.
       state = GoogleServiceAuthError::USER_NOT_SIGNED_UP;
+      DLOG(ERROR) << "Enterprise ID mismatch. Policy: "
+                  << settings_.enterprise_id
+                  << " [vs] Account: " << *enterprise_id;
+    } else {
+      // Enterprise IDs match, save the info to prefs.
+      PrefService* prefs =
+          Profile::FromBrowserContext(web_view_->GetBrowserContext())
+              ->GetPrefs();
+      DCHECK_EQ(settings_.service_provider,
+                kFileSystemServiceProviderPrefNameBox);
+      SetFileSystemAccountInfo(prefs, kFileSystemServiceProviderPrefNameBox,
+                               std::move(user_info));
     }
-  } else {
-    // Request for Box user's enterprise_id failed.
-    // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
-    // This is handled as case 1c (other errors) by FileSystemRenameHandler.
-    state = GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE;
   }
 
   OnAuthFlowDone(GoogleServiceAuthError(state));
@@ -237,11 +260,13 @@ void FileSystemSigninDialogDelegate::OnGetCurrentUserResponse(
 
 void FileSystemSigninDialogDelegate::OnAuthFlowDone(
     const GoogleServiceAuthError& status) {
-  // The tokens must be empty iff it's status is in an error state
-  DCHECK(access_token_.empty() ==
-         (status.state() != GoogleServiceAuthError::NONE));
-  DCHECK(refresh_token_.empty() ==
-         (status.state() != GoogleServiceAuthError::NONE));
+  if (status.state() == GoogleServiceAuthError::NONE) {
+    DCHECK(!access_token_.empty());
+    DCHECK(!refresh_token_.empty());
+  } else {
+    access_token_ = std::string();
+    refresh_token_ = std::string();
+  }
   std::move(callback_).Run(status, access_token_, refresh_token_);
   GetWidget()->Close();
 }
@@ -250,7 +275,9 @@ std::string FileSystemSigninDialogDelegate::GetProviderSpecificUrlParameters() {
   // If an email domain is specified, use it as a hint in the box authn URL.
   // Make sure the domain has an @ prefix.
   if (settings_.service_provider == kFileSystemServiceProviderPrefNameBox) {
-    if (!settings_.email_domain.empty()) {
+    if (account_login_ && !account_login_->empty()) {
+      return base::StringPrintf("box_login=%s", account_login_->c_str());
+    } else if (!settings_.email_domain.empty()) {
       // If the domain does not already start with an @ sign, prepend the
       // escaped version of it.
       return base::StringPrintf(

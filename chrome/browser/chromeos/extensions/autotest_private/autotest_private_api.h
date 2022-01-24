@@ -16,7 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom-forward.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -914,6 +914,18 @@ class AutotestPrivateWaitForOverviewStateFunction : public ExtensionFunction {
   void Done(bool success);
 };
 
+// Gets the default pinned app IDs for the shelf.
+class AutotestPrivateGetDefaultPinnedAppIdsFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateGetDefaultPinnedAppIdsFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getDefaultPinnedAppIds",
+                             AUTOTESTPRIVATE_GETDEFAULTPINNEDAPPIDS)
+
+ private:
+  ~AutotestPrivateGetDefaultPinnedAppIdsFunction() override;
+  ResponseAction Run() override;
+};
+
 // Returns the overview mode state.
 class AutotestPrivateSetOverviewModeStateFunction : public ExtensionFunction {
  public:
@@ -1241,32 +1253,6 @@ class AutotestPrivateSetMetricsEnabledFunction : public ExtensionFunction {
   bool target_value_ = false;
 };
 
-class AutotestPrivateStartTracingFunction : public ExtensionFunction {
- public:
-  AutotestPrivateStartTracingFunction();
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.startTracing",
-                             AUTOTESTPRIVATE_STARTTRACING)
-
- private:
-  ~AutotestPrivateStartTracingFunction() override;
-  ResponseAction Run() override;
-
-  void OnStartTracing();
-};
-
-class AutotestPrivateStopTracingFunction : public ExtensionFunction {
- public:
-  AutotestPrivateStopTracingFunction();
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.stopTracing",
-                             AUTOTESTPRIVATE_STOPTRACING)
-
- private:
-  ~AutotestPrivateStopTracingFunction() override;
-  ResponseAction Run() override;
-
-  void OnTracingComplete(std::unique_ptr<std::string> trace);
-};
-
 class AutotestPrivateSetArcTouchModeFunction : public ExtensionFunction {
  public:
   AutotestPrivateSetArcTouchModeFunction();
@@ -1361,6 +1347,9 @@ class AutotestPrivateStopSmoothnessTrackingFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   void OnReportData(const cc::FrameSequenceMetrics::CustomReportData& data);
+  void OnTimeOut(int64_t display_id);
+
+  base::OneShotTimer timeout_timer_;
 };
 
 class AutotestPrivateWaitForAmbientPhotoAnimationFunction
@@ -1428,6 +1417,17 @@ class AutotestPrivateStopThroughputTrackerDataCollectionFunction
 
  private:
   ~AutotestPrivateStopThroughputTrackerDataCollectionFunction() override;
+  ResponseAction Run() override;
+};
+
+class AutotestPrivateGetDisplaySmoothnessFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateGetDisplaySmoothnessFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getDisplaySmoothness",
+                             AUTOTESTPRIVATE_GETDISPLAYSMOOTHNESS)
+
+ private:
+  ~AutotestPrivateGetDisplaySmoothnessFunction() override;
   ResponseAction Run() override;
 };
 

@@ -27,6 +27,8 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
@@ -290,6 +292,26 @@ base::Value GetNetConstants() {
     dict.SetIntKey("ADDRESS_FAMILY_IPV6", ADDRESS_FAMILY_IPV6);
 
     constants_dict.SetKey("addressFamily", std::move(dict));
+  }
+
+  // Information about the relationship between DnsQueryType enums and their
+  // symbolic names.
+  {
+    base::Value dict(base::Value::Type::DICTIONARY);
+    for (const auto& type : kDnsQueryTypes) {
+      dict.SetIntKey(type.second, static_cast<int>(type.first));
+    }
+    constants_dict.SetKey("dnsQueryType", std::move(dict));
+  }
+
+  // Information about the relationship between SecureDnsMode enums and their
+  // symbolic names.
+  {
+    base::Value dict(base::Value::Type::DICTIONARY);
+    for (const auto& mode : kSecureDnsModes) {
+      dict.SetIntKey(mode.second, static_cast<int>(mode.first));
+    }
+    constants_dict.SetKey("secureDnsMode", std::move(dict));
   }
 
   // Information about how the "time ticks" values we have given it relate to

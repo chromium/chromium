@@ -44,7 +44,7 @@ HostMappingRules& HostMappingRules::operator=(
 
 bool HostMappingRules::RewriteHost(HostPortPair* host_port) const {
   // Check if the hostname was remapped.
-  for (const auto& rule : map_rules_) {
+  for (const auto& map_rule : map_rules_) {
     // The rule's hostname_pattern will be something like:
     //     www.foo.com
     //     *.foo.com
@@ -52,21 +52,22 @@ bool HostMappingRules::RewriteHost(HostPortPair* host_port) const {
     //     *.foo.com:1234
     // First, we'll check for a match just on hostname.
     // If that fails, we'll check for a match with both hostname and port.
-    if (!base::MatchPattern(host_port->host(), rule.hostname_pattern)) {
+    if (!base::MatchPattern(host_port->host(), map_rule.hostname_pattern)) {
       std::string host_port_string = host_port->ToString();
-      if (!base::MatchPattern(host_port_string, rule.hostname_pattern))
+      if (!base::MatchPattern(host_port_string, map_rule.hostname_pattern))
         continue;  // This rule doesn't apply.
     }
 
     // Check if the hostname was excluded.
-    for (const auto& rule : exclusion_rules_) {
-      if (base::MatchPattern(host_port->host(), rule.hostname_pattern))
+    for (const auto& exclusion_rule : exclusion_rules_) {
+      if (base::MatchPattern(host_port->host(),
+                             exclusion_rule.hostname_pattern))
         return false;
     }
 
-    host_port->set_host(rule.replacement_hostname);
-    if (rule.replacement_port != -1)
-      host_port->set_port(static_cast<uint16_t>(rule.replacement_port));
+    host_port->set_host(map_rule.replacement_hostname);
+    if (map_rule.replacement_port != -1)
+      host_port->set_port(static_cast<uint16_t>(map_rule.replacement_port));
     return true;
   }
 

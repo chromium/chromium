@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
@@ -61,6 +60,10 @@ class ElementFinder : public WebControllerWorker {
     ~Result();
     Result(const Result&);
 
+    // Create an instance that is deemed to be empty. This can be used for
+    // optional Elements (e.g. optional an frame).
+    static Result EmptyResult();
+
     DomObjectFrameStack dom_object;
 
     // The render frame host contains the element.
@@ -77,6 +80,10 @@ class ElementFinder : public WebControllerWorker {
     const std::vector<JsObjectIdentifier>& frame_stack() const {
       return dom_object.frame_stack;
     }
+
+    bool IsEmpty() const {
+      return object_id().empty() && node_frame_id().empty();
+    }
   };
 
   // |web_contents|, |devtools_client| and |user_data| must be valid for the
@@ -84,6 +91,7 @@ class ElementFinder : public WebControllerWorker {
   ElementFinder(content::WebContents* web_contents,
                 DevtoolsClient* devtools_client,
                 const UserData* user_data,
+                ProcessedActionStatusDetailsProto* log_info,
                 const Selector& selector,
                 ResultType result_type);
   ~ElementFinder() override;
@@ -91,8 +99,9 @@ class ElementFinder : public WebControllerWorker {
   using Callback =
       base::OnceCallback<void(const ClientStatus&, std::unique_ptr<Result>)>;
 
-  // Finds the element and calls the callback.
-  void Start(Callback callback);
+  // Finds the element and calls the callback starting from the |start_element|.
+  // If it is empty, it will start looking for the Document of the main frame.
+  void Start(const Result& start_element, Callback callback);
 
  private:
   // Helper for building JavaScript functions.
@@ -166,19 +175,15 @@ class ElementFinder : public WebControllerWorker {
     void DefineQueryAllDeduplicated();
   };
 
-  // Finds the element, starting at |frame| and calls |callback|.
-  //
-  // |document_object_id| might be empty, in which case we first look for the
-  // frame's document.
-  void StartInternal(Callback callback,
-                     content::RenderFrameHost* frame,
-                     const std::string& frame_id,
-                     const std::string& document_object_id);
+  // Update the log info with details about the current run.
+  void UpdateLogInfo(const ClientStatus& status);
 
-  // Sends a result with the given status and no data.
-  void SendResult(const ClientStatus& status);
+  // Sends a result with the given status and no data. This expects an error
+  // status and will add details to |log_info_|.
+  void SendErrorResult(const ClientStatus& status);
 
-  // Builds a result from the current state of the finder and returns it.
+  // Builds a result from the current state of the finder and returns it. This
+  // will add details to |log_info_|.
   void SendSuccessResult(const std::string& object_id);
 
   // Report |object_id| as result in |result| and initialize the frame-related
@@ -320,6 +325,7 @@ class ElementFinder : public WebControllerWorker {
   content::WebContents* const web_contents_;
   DevtoolsClient* const devtools_client_;
   const UserData* const user_data_;
+  ProcessedActionStatusDetailsProto* const log_info_;
   const Selector selector_;
   const ResultType result_type_;
   Callback callback_;
@@ -331,6 +337,12 @@ class ElementFinder : public WebControllerWorker {
   // The index of the next filter to process, in selector__proto_.filters.
   int next_filter_index_ = 0;
 
+  // Getting the document failed. Used for error reporting.
+  bool get_document_failed_ = false;
+
+  // The currently worked on filters are starting at this index..
+  int current_filter_index_range_start_ = -1;
+
   // Pointer to the current frame
   content::RenderFrameHost* current_frame_ = nullptr;
 
@@ -338,9 +350,6 @@ class ElementFinder : public WebControllerWorker {
   // context of the frame. Might be empty if no frame id needs to be
   // specified.
   std::string current_frame_id_;
-
-  // Object ID of the root of |current_frame_|.
-  std::string current_frame_root_;
 
   // Object IDs of the current set matching elements. Cleared once it's used to
   // query or filter.

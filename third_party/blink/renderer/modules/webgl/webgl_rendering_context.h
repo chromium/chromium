@@ -69,19 +69,21 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
   class Factory : public CanvasRenderingContextFactory {
    public:
     Factory() = default;
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     ~Factory() override = default;
 
     CanvasRenderingContext* Create(
         CanvasRenderingContextHost*,
         const CanvasContextCreationAttributesCore&) override;
 
-    CanvasRenderingContext::ContextType GetContextType() const override {
-      return CanvasRenderingContext::kContextWebgl;
+    CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI()
+        const override {
+      return CanvasRenderingContext::CanvasRenderingAPI::kWebgl;
     }
     void OnError(HTMLCanvasElement*, const String& error) override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
   WebGLRenderingContext(CanvasRenderingContextHost*,
@@ -89,9 +91,6 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
                         const Platform::GraphicsInfo&,
                         const CanvasContextCreationAttributesCore&);
 
-  CanvasRenderingContext::ContextType GetContextType() const override {
-    return CanvasRenderingContext::kContextWebgl;
-  }
   ImageBitmap* TransferToImageBitmap(ScriptState*) final;
   String ContextName() const override { return "WebGLRenderingContext"; }
   void RegisterContextExtensions() override;

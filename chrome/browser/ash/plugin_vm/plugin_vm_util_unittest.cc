@@ -25,6 +25,9 @@ class PluginVmUtilTest : public testing::Test {
  public:
   PluginVmUtilTest() = default;
 
+  PluginVmUtilTest(const PluginVmUtilTest&) = delete;
+  PluginVmUtilTest& operator=(const PluginVmUtilTest&) = delete;
+
   MOCK_METHOD(void, OnPolicyChanged, (bool));
 
  protected:
@@ -48,9 +51,6 @@ class PluginVmUtilTest : public testing::Test {
     testing_profile_ = std::make_unique<TestingProfile>();
     test_helper_ = std::make_unique<PluginVmTestHelper>(testing_profile_.get());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PluginVmUtilTest);
 };
 
 TEST_F(PluginVmUtilTest, PluginVmShouldBeAllowedOnceAllConditionsAreMet) {
@@ -99,12 +99,12 @@ TEST_F(PluginVmUtilTest, AddPluginVmPolicyObserver) {
 
   EXPECT_CALL(*this, OnPolicyChanged(false));
   testing_profile_->ScopedCrosSettingsTestHelper()->SetBoolean(
-      chromeos::kPluginVmAllowed, false);
+      ash::kPluginVmAllowed, false);
   testing::Mock::VerifyAndClearExpectations(this);
 
   EXPECT_CALL(*this, OnPolicyChanged(true));
   testing_profile_->ScopedCrosSettingsTestHelper()->SetBoolean(
-      chromeos::kPluginVmAllowed, true);
+      ash::kPluginVmAllowed, true);
   testing::Mock::VerifyAndClearExpectations(this);
 
   EXPECT_CALL(*this, OnPolicyChanged(false));

@@ -5,7 +5,6 @@
 #include "components/mirroring/service/captured_audio_input.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_capturer_source.h"
@@ -55,6 +54,9 @@ class MockDelegate final : public media::AudioInputIPCDelegate {
 class CapturedAudioInputTest : public ::testing::Test {
  public:
   CapturedAudioInputTest() {}
+
+  CapturedAudioInputTest(const CapturedAudioInputTest&) = delete;
+  CapturedAudioInputTest& operator=(const CapturedAudioInputTest&) = delete;
 
   ~CapturedAudioInputTest() override { task_environment_.RunUntilIdle(); }
 
@@ -155,8 +157,6 @@ class CapturedAudioInputTest : public ::testing::Test {
   MockStream* stream_ = nullptr;
   mojo::Remote<media::mojom::AudioInputStreamClient> stream_client_;
   base::CancelableSyncSocket socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(CapturedAudioInputTest);
 };
 
 TEST_F(CapturedAudioInputTest, CreateStream) {

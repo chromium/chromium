@@ -3,7 +3,7 @@
 <style>
   div::before { content: counter(n, simp-chinese-informal); }
 </style>
-<!-- This test assumes that we clamp absolute values to not be larger than 2^31. -->
-<p>The string "负二十一亿四千七百四十八万三千六百四十七" (-2147483647 in
+<!-- This test assumes that we clamp values to the int range. -->
+<p>The string "负二十一亿四千七百四十八万三千六百四十八" (-2147483648 in
   Chinese) should be seen below.</p>
 <div style="counter-reset: n -10000000000;"></div>

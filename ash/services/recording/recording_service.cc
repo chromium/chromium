@@ -159,7 +159,7 @@ RecordingService::~RecordingService() {
   // because the muxer writes directly to the file and does not rely on this
   // instance.
   encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::FlushAndFinalize)
-      .WithArgs(base::DoNothing::Once());
+      .WithArgs(base::DoNothing());
   SignalRecordingEndedToClient(mojom::RecordingStatus::kServiceClosing);
 }
 

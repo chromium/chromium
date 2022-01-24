@@ -61,9 +61,8 @@ will run the suite in its own batch. This will reduce the complexity of managing
 and leaking state from these tests as you only have to think about tests within
 the suite. For smaller and less complex test suites, see Custom below.
 
-If you use different @Features annotations on test methods, you can use the
-@Batch.SplitByFeature annotation to run tests with different features in
-separate batches.
+Tests with different @Features annotations (@EnableFeatures and
+@DisableFeatures) will be run in separate batches.
 
 ### Custom
 

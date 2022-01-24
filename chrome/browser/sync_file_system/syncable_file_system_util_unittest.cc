@@ -10,6 +10,8 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 
 using storage::ExternalMountPoints;
 using storage::FileSystemURL;
@@ -29,7 +31,8 @@ const char kOrigin[] = "http://www.example.com/";
 const base::FilePath::CharType kPath[] = FILE_PATH_LITERAL("dir/file");
 
 FileSystemURL CreateFileSystemURL(const std::string& url) {
-  return ExternalMountPoints::GetSystemInstance()->CrackURL(GURL(url));
+  return ExternalMountPoints::GetSystemInstance()->CrackURL(
+      GURL(url), blink::StorageKey::CreateFromStringForTesting(url));
 }
 
 base::FilePath CreateNormalizedFilePath(const base::FilePath::CharType* path) {

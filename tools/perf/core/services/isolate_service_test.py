@@ -16,11 +16,11 @@ from core.services import isolate_service
 
 
 def ContentResponse(content):
-  return [{'content': base64.b64encode(zlib.compress(content))}]
+  return [{'content': base64.b64encode(zlib.compress(content.encode('utf-8')))}]
 
 
 def UrlResponse(url, content):
-  return [{'url': url}, zlib.compress(content)]
+  return [{'url': url}, zlib.compress(content.encode('utf-8'))]
 
 
 class TestIsolateApi(unittest.TestCase):
@@ -36,28 +36,28 @@ class TestIsolateApi(unittest.TestCase):
 
   def testRetrieve_content(self):
     self.mock_request.side_effect = ContentResponse('OK!')
-    self.assertEqual(isolate_service.Retrieve('hash'), 'OK!')
+    self.assertEqual(isolate_service.Retrieve('hash'), b'OK!')
 
   def testRetrieve_fromUrl(self):
     self.mock_request.side_effect = UrlResponse('http://get/response', 'OK!')
-    self.assertEqual(isolate_service.Retrieve('hash'), 'OK!')
+    self.assertEqual(isolate_service.Retrieve('hash'), b'OK!')
 
   def testRetrieveCompressed_content(self):
     self.mock_request.side_effect = ContentResponse('OK!')
-    self.assertEqual(
-        isolate_service.RetrieveCompressed('hash'), zlib.compress('OK!'))
+    self.assertEqual(isolate_service.RetrieveCompressed('hash'),
+                     zlib.compress(b'OK!'))
 
   def testRetrieveCompressed_fromUrl(self):
     self.mock_request.side_effect = UrlResponse('http://get/response', 'OK!')
-    self.assertEqual(
-        isolate_service.RetrieveCompressed('hash'), zlib.compress('OK!'))
+    self.assertEqual(isolate_service.RetrieveCompressed('hash'),
+                     zlib.compress(b'OK!'))
 
   def testRetrieveCompressed_usesCache(self):
     self.mock_request.side_effect = ContentResponse('OK!')
-    self.assertEqual(
-        isolate_service.RetrieveCompressed('hash'), zlib.compress('OK!'))
-    self.assertEqual(
-        isolate_service.RetrieveCompressed('hash'), zlib.compress('OK!'))
+    self.assertEqual(isolate_service.RetrieveCompressed('hash'),
+                     zlib.compress(b'OK!'))
+    self.assertEqual(isolate_service.RetrieveCompressed('hash'),
+                     zlib.compress(b'OK!'))
     # We retrieve the same hash twice, but the request is only made once.
     self.assertEqual(self.mock_request.call_count, 1)
 
@@ -66,7 +66,7 @@ class TestIsolateApi(unittest.TestCase):
         ContentResponse(json.dumps({'files': {'foo': {'h': 'hash2'}}})) +
         UrlResponse('http://get/file/contents', 'nice!'))
 
-    self.assertEqual(isolate_service.RetrieveFile('hash1', 'foo'), 'nice!')
+    self.assertEqual(isolate_service.RetrieveFile('hash1', 'foo'), b'nice!')
 
   def testRetrieveFile_fails(self):
     self.mock_request.side_effect = (

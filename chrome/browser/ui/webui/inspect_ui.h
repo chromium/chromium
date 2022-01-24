@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -19,7 +18,6 @@
 
 namespace base {
 class Value;
-class ListValue;
 }
 
 namespace content {
@@ -87,7 +85,7 @@ class InspectUI : public content::WebUIController,
       const std::string& target_id);
 
   void PopulateTargets(const std::string& source_id,
-                       const base::ListValue& targets);
+                       const base::Value& targets);
 
   void PopulatePortStatus(base::Value status);
 

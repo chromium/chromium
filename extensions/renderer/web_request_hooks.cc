@@ -16,6 +16,10 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "gin/converter.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-object.h"
 
 namespace extensions {
 

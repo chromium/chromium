@@ -8,6 +8,8 @@ static_library("browser") {
   sources = [
     "autofill_log_router_factory.cc",
     "autofill_log_router_factory.h",
+    "bad_message.cc",
+    "bad_message.h",
     "content_autofill_driver.cc",
     "content_autofill_driver.h",
     "content_autofill_driver_factory.cc",
@@ -16,6 +18,7 @@ static_library("browser") {
     "content_autofill_router.h",
     "form_forest.cc",
     "form_forest.h",
+    "form_forest_util_inl.h",
     "risk/fingerprint.cc",
     "risk/fingerprint.h",
   ]
@@ -71,6 +74,8 @@ proto_library("risk_proto") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "content_autofill_driver_factory_test_api.cc",
+    "content_autofill_driver_factory_test_api.h",
     "content_autofill_driver_test_api.h",
     "content_autofill_router_test_api.h",
     "form_forest_test_api.cc",
@@ -86,6 +91,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "autofill_internals_log_router_unittest.cc",
+    "content_autofill_driver_factory_unittest.cc",
     "content_autofill_driver_unittest.cc",
     "form_forest_unittest.cc",
   ]

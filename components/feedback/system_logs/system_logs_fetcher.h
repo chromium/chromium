@@ -13,10 +13,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/redaction_tool.h"
 #include "components/feedback/system_logs/system_logs_source.h"
@@ -50,6 +50,10 @@ class SystemLogsFetcher {
   // that value if it's OK to redact those URLs or they won't be present.
   explicit SystemLogsFetcher(bool scrub_data,
                              const char* const first_party_extension_ids[]);
+
+  SystemLogsFetcher(const SystemLogsFetcher&) = delete;
+  SystemLogsFetcher& operator=(const SystemLogsFetcher&) = delete;
+
   ~SystemLogsFetcher();
 
   // Adds a source to use when fetching.
@@ -94,8 +98,6 @@ class SystemLogsFetcher {
   std::unique_ptr<feedback::RedactionTool> redactor_;
 
   base::WeakPtrFactory<SystemLogsFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemLogsFetcher);
 };
 
 }  // namespace system_logs

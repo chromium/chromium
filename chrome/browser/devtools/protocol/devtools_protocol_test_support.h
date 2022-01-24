@@ -22,6 +22,10 @@ class DevToolsProtocolTestBase : public InProcessBrowserTest,
   DevToolsProtocolTestBase();
   ~DevToolsProtocolTestBase() override;
 
+  void SetAllowUnsafeOperations(bool allow) {
+    allow_unsafe_operations_ = allow;
+  }
+
  protected:
   using NotificationMatcher = base::RepeatingCallback<bool(const base::Value&)>;
 
@@ -62,6 +66,7 @@ class DevToolsProtocolTestBase : public InProcessBrowserTest,
 
   // DevToolsAgentHostClient interface
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override;
+  bool AllowUnsafeOperations() override;
 
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   int last_sent_id_ = 0;
@@ -74,6 +79,7 @@ class DevToolsProtocolTestBase : public InProcessBrowserTest,
   std::string waiting_for_notification_;
   NotificationMatcher waiting_for_notification_matcher_;
   base::Value waiting_for_notification_params_;
+  bool allow_unsafe_operations_ = true;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_PROTOCOL_TEST_SUPPORT_H_

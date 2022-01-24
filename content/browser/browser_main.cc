@@ -32,7 +32,7 @@ class ScopedBrowserMainEvent {
 }  // namespace
 
 // Main routine for running as the Browser process.
-int BrowserMain(const MainFunctionParams& parameters) {
+int BrowserMain(MainFunctionParams parameters) {
   ScopedBrowserMainEvent scoped_browser_main_event;
 
   base::trace_event::TraceLog::GetInstance()->set_process_name("Browser");
@@ -42,7 +42,7 @@ int BrowserMain(const MainFunctionParams& parameters) {
   std::unique_ptr<BrowserMainRunnerImpl> main_runner(
       BrowserMainRunnerImpl::Create());
 
-  int exit_code = main_runner->Initialize(parameters);
+  int exit_code = main_runner->Initialize(std::move(parameters));
   if (exit_code >= 0)
     return exit_code;
 

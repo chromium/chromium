@@ -127,8 +127,8 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void ResendVisualProperties();
   void SetViewportIntersection(const mojom::blink::ViewportIntersectionState&);
 
-  // Called when the local root's screen info changes.
-  void DidChangeScreenInfo(const display::ScreenInfo& screen_info);
+  // Called when the local root's screen infos change.
+  void DidChangeScreenInfos(const display::ScreenInfos& screen_info);
   // Called when the main frame's zoom level is changed and should be propagated
   // to the remote's associated view.
   void ZoomLevelChanged(double zoom_level);
@@ -207,7 +207,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   // Called only when this frame has a local frame owner.
   IntSize GetMainFrameViewportSize() const override;
-  IntPoint GetMainFrameScrollOffset() const override;
+  gfx::Point GetMainFrameScrollOffset() const override;
 
   void SetOpener(Frame* opener) override;
 

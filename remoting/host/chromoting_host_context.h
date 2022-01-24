@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -56,6 +57,9 @@ class ChromotingHostContext {
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  ChromotingHostContext(const ChromotingHostContext&) = delete;
+  ChromotingHostContext& operator=(const ChromotingHostContext&) = delete;
+
   ~ChromotingHostContext();
 
   std::unique_ptr<ChromotingHostContext> Copy();
@@ -94,6 +98,8 @@ class ChromotingHostContext {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory();
 
+  policy::ManagementService* management_service();
+
  private:
   ChromotingHostContext(
       scoped_refptr<AutoThreadTaskRunner> ui_task_runner,
@@ -129,11 +135,11 @@ class ChromotingHostContext {
   // Serves URLRequestContexts that use the network and UI task runners.
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter_;
 
+  policy::PlatformManagementService platform_management_service_;
+
   // Makes a SharedURLLoaderFactory out of |url_request_context_getter_|
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingHostContext);
 };
 
 }  // namespace remoting

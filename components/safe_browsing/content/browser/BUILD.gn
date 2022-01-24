@@ -38,8 +38,6 @@ if (safe_browsing_mode > 0) {
       "safe_browsing_blocking_page_factory.h",
       "safe_browsing_navigation_throttle.cc",
       "safe_browsing_navigation_throttle.h",
-      "safe_browsing_subresource_tab_helper.cc",
-      "safe_browsing_subresource_tab_helper.h",
       "ui_manager.cc",
       "ui_manager.h",
     ]
@@ -51,6 +49,7 @@ if (safe_browsing_mode > 0) {
       "//components/prefs",
       "//components/safe_browsing/content/browser/triggers",
       "//components/safe_browsing/core/browser",
+      "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//components/security_interstitials/content:security_interstitial_page",
@@ -73,8 +72,6 @@ source_set("browser") {
     "mojo_safe_browsing_impl.h",
     "safe_browsing_controller_client.cc",
     "safe_browsing_controller_client.h",
-    "safe_browsing_metrics_collector.cc",
-    "safe_browsing_metrics_collector.h",
     "safe_browsing_network_context.cc",
     "safe_browsing_network_context.h",
     "threat_details.cc",
@@ -93,7 +90,6 @@ source_set("browser") {
     "//components/history/core/browser",
     "//components/prefs",
     "//components/safe_browsing/content/browser/web_ui:web_ui",
-    "//components/safe_browsing/content/common",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
@@ -109,6 +105,8 @@ source_set("browser") {
     "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",
     "//components/signin/public/identity_manager",
+    "//components/unified_consent",
+    "//components/version_info",
     "//content/public/browser:browser",
     "//content/public/common",
     "//net",
@@ -121,6 +119,8 @@ source_set("browser") {
       "safe_browsing_navigation_observer.h",
       "safe_browsing_navigation_observer_manager.cc",
       "safe_browsing_navigation_observer_manager.h",
+      "safe_browsing_navigation_observer_manager_util.cc",
+      "safe_browsing_navigation_observer_manager_util.h",
     ]
 
     deps += [
@@ -132,37 +132,15 @@ source_set("browser") {
   }
 }
 
-source_set("client_side_model_loader") {
-  sources = [
-    "client_side_model_loader.cc",
-    "client_side_model_loader.h",
-  ]
-  deps = [
-    "//base:base",
-    "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
-    "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/common/proto:client_model_proto",
-    "//components/safe_browsing/core/common/proto:csd_proto",
-    "//components/variations",
-    "//net:net",
-    "//net/traffic_annotation:traffic_annotation",
-    "//services/network/public/cpp",
-    "//url:url",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "client_side_model_loader_unittest.cc",
     "client_side_phishing_model_unittest.cc",
     "web_api_handshake_checker_unittest.cc",
   ]
 
   deps = [
     ":client_side_detection",
-    ":client_side_model_loader",
     "//base:base",
     "//base/test:test_support",
     "//components/safe_browsing:buildflags",
@@ -170,11 +148,14 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser:browser",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/fbs:client_model",
     "//components/safe_browsing/core/common/proto:client_model_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/core:unsafe_resource",
+    "//components/unified_consent",
     "//components/variations",
+    "//components/version_info",
     "//content/test:test_support",
     "//services/network:test_support",
     "//testing/gmock",
@@ -182,15 +163,11 @@ source_set("unit_tests") {
   ]
 
   if (safe_browsing_mode > 0) {
-    sources += [
-      "safe_browsing_metrics_collector_unittest.cc",
-      "ui_manager_unittest.cc",
-    ]
+    sources += [ "ui_manager_unittest.cc" ]
     deps += [
       "//components/prefs",
       "//components/prefs:test_support",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
-      "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_interstitials/core",
     ]
@@ -198,7 +175,10 @@ source_set("unit_tests") {
 
   # TODO(sgurun): enable tests for safe_browsing==2.
   if (safe_browsing_mode == 1) {
-    sources += [ "safe_browsing_navigation_observer_unittest.cc" ]
+    sources += [
+      "safe_browsing_navigation_observer_manager_util_unittest.cc",
+      "safe_browsing_navigation_observer_unittest.cc",
+    ]
   }
 
   deps += [
@@ -216,9 +196,10 @@ source_set("client_side_detection") {
     "client_side_detection_service.h",
     "client_side_phishing_model.cc",
     "client_side_phishing_model.h",
+    "safe_browsing_tab_observer.cc",
+    "safe_browsing_tab_observer.h",
   ]
   deps = [
-    ":client_side_model_loader",
     "//base:base",
     "//components/prefs",
     "//components/safe_browsing:buildflags",

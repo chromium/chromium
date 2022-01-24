@@ -93,6 +93,12 @@ class WebRtcImageCaptureBrowserTestBase
     : public UsingRealWebcam_WebRtcWebcamBrowserTest {
  public:
   WebRtcImageCaptureBrowserTestBase() = default;
+
+  WebRtcImageCaptureBrowserTestBase(const WebRtcImageCaptureBrowserTestBase&) =
+      delete;
+  WebRtcImageCaptureBrowserTestBase& operator=(
+      const WebRtcImageCaptureBrowserTestBase&) = delete;
+
   ~WebRtcImageCaptureBrowserTestBase() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -134,9 +140,6 @@ class WebRtcImageCaptureBrowserTestBase
     DLOG_IF(ERROR, result != "OK") << result;
     return result == "OK";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRtcImageCaptureBrowserTestBase);
 };
 
 // Test fixture for setting up a capture device (real or fake) that successfully
@@ -167,6 +170,11 @@ class WebRtcImageCaptureSucceedsBrowserTest
                                           features_to_disable);
   }
 
+  WebRtcImageCaptureSucceedsBrowserTest(
+      const WebRtcImageCaptureSucceedsBrowserTest&) = delete;
+  WebRtcImageCaptureSucceedsBrowserTest& operator=(
+      const WebRtcImageCaptureSucceedsBrowserTest&) = delete;
+
   ~WebRtcImageCaptureSucceedsBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -182,8 +190,6 @@ class WebRtcImageCaptureSucceedsBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcImageCaptureSucceedsBrowserTest);
 };
 
 // TODO(crbug.com/998305): Flaky on Linux.
@@ -333,6 +339,11 @@ class WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest
     }
   }
 
+  WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest(
+      const WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest&) = delete;
+  WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest& operator=(
+      const WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest&) = delete;
+
   ~WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -345,8 +356,6 @@ class WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest);
 };
 
 struct GetPhotoStateFailsConfigTraits {

@@ -6,7 +6,7 @@
 
 #include <ostream>
 
-namespace chromeos {
+namespace ash {
 
 OobeScreenId::OobeScreenId(const std::string& name) : name(name) {}
 
@@ -42,9 +42,7 @@ OobeScreenId StaticOobeScreenId::AsId() const {
 // TODO(crbug.com/958905): Reduce this list to only special or helper screens
 
 // static
-constexpr StaticOobeScreenId
-    OobeScreen::SCREEN_CREATE_SUPERVISED_USER_FLOW_DEPRECATED;
 constexpr StaticOobeScreenId OobeScreen::SCREEN_CONFIRM_PASSWORD;
 constexpr StaticOobeScreenId OobeScreen::SCREEN_UNKNOWN;
 
-}  // namespace chromeos
+}  // namespace ash

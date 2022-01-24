@@ -6,7 +6,6 @@
 #define UI_BASE_IME_VIRTUAL_KEYBOARD_CONTROLLER_STUB_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 
 namespace ui {
@@ -16,6 +15,11 @@ class COMPONENT_EXPORT(UI_BASE_IME) VirtualKeyboardControllerStub final
     : public VirtualKeyboardController {
  public:
   VirtualKeyboardControllerStub();
+
+  VirtualKeyboardControllerStub(const VirtualKeyboardControllerStub&) = delete;
+  VirtualKeyboardControllerStub& operator=(
+      const VirtualKeyboardControllerStub&) = delete;
+
   ~VirtualKeyboardControllerStub() override;
 
   // VirtualKeyboardController overrides.
@@ -24,9 +28,6 @@ class COMPONENT_EXPORT(UI_BASE_IME) VirtualKeyboardControllerStub final
   void AddObserver(VirtualKeyboardControllerObserver* observer) override;
   void RemoveObserver(VirtualKeyboardControllerObserver* observer) override;
   bool IsKeyboardVisible() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardControllerStub);
 };
 
 }  // namespace ui

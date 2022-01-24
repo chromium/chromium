@@ -93,14 +93,15 @@ class AbstractRebaseliningCommand(Command):
               'should be used to retrieve results from.'))
     flag_specific_option = optparse.make_option(
         '--flag-specific',
+        # TODO: build the list from builders.json
+        choices=["composite-after-paint", "disable-layout-ng", "highdpi"],
         default=None,
         action='store',
         help=(
             'Name of a flag-specific configuration defined in '
             'FlagSpecificConfig. This option will rebaseline '
             'results for the given FlagSpecificConfig while ignoring results '
-            'from other builders. Highdpi is the only suported config '
-            'at this time.'))
+            'from other builders.'))
 
     def __init__(self, options=None):
         super(AbstractRebaseliningCommand, self).__init__(options=options)
@@ -206,7 +207,7 @@ class TestBaselineSet(object):
 
     def _iter_combinations(self):
         """Iterates through (test, build, port) combinations."""
-        for test_prefix, build_port_pairs in self._test_prefix_map.iteritems():
+        for test_prefix, build_port_pairs in self._test_prefix_map.items():
             if not self._prefix_mode:
                 for build, port_name in build_port_pairs:
                     yield (test_prefix, build, port_name)
@@ -311,7 +312,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             if not self._tool.builders.is_wpt_builder(builder):
                 port = self._tool.port_factory.get_from_builder_name(builder)
                 fallback_path = port.baseline_search_path()
-                if fallback_path not in builders_to_fallback_paths.values():
+                if fallback_path not in list(
+                        builders_to_fallback_paths.values()):
                     builders_to_fallback_paths[builder] = fallback_path
             else:
                 wpt_builders.add(builder)
@@ -330,7 +332,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             if build.builder_name not in builders_to_fetch_from:
                 continue
 
-            suffixes = self._suffixes_for_actual_failures(test, build)
+            suffixes = list(self._suffixes_for_actual_failures(test, build))
+            # Sorting it here so we can have a deterministic order for comparing
+            # the suffixes in unit tests.
+            suffixes.sort()
             if not suffixes:
                 # Only try to remove the expectation if the test
                 #   1. ran and passed ([ Skip ], [ WontFix ] should be kept)
@@ -404,7 +409,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         change_set = ChangeSet()
         for _, stdout, _ in command_results:
             updated = False
-            for line in filter(None, stdout.splitlines()):
+            for line in stdout.splitlines():
+                if not line:
+                    continue
                 try:
                     parsed_line = json.loads(line)
                     change_set.update(ChangeSet.from_dict(parsed_line))
@@ -430,7 +437,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             if self._tool.builders.is_wpt_builder(build.builder_name):
                 continue
 
-            # For flag_specific(highdpi) we skip both 'copy existing baselines'
+            # For flag_specific we skip both 'copy existing baselines'
             # and  optimizer.
             if self._tool.builders.is_flag_specific_builder(
                     build.builder_name):
@@ -440,7 +447,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 self._suffixes_for_actual_failures(test, build))
 
         optimize_commands = []
-        for test, suffixes in tests_to_suffixes.iteritems():
+        for test, suffixes in tests_to_suffixes.items():
             # No need to optimize baselines for a test with no failures.
             if not suffixes:
                 continue
@@ -450,7 +457,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             args = ['--no-manifest-update']
             if verbose:
                 args.append('--verbose')
-            args.extend(['--suffixes', ','.join(suffixes), test])
+            suffixes_list = list(suffixes)
+            suffixes_list.sort()
+            args.extend(['--suffixes', ','.join(suffixes_list), test])
             path_to_blink_tool = self._tool.path()
             cwd = self._tool.git().checkout_root
             command = [
@@ -461,7 +470,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         return optimize_commands
 
     def _update_expectations_files(self, lines_to_remove):
-        tests = lines_to_remove.keys()
+        tests = list(lines_to_remove.keys())
         to_remove = collections.defaultdict(set)
         all_versions = frozenset([
             config.version.lower() for config in self._tool.port_factory.get().
@@ -493,7 +502,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             expectations_dict={
                 path: self._tool.filesystem.read_text_file(path)
             })
-        system_remover = SystemConfigurationRemover(test_expectations)
+        system_remover = SystemConfigurationRemover(self._tool.filesystem, test_expectations)
         for test, versions in to_remove.items():
             system_remover.remove_os_versions(test, versions)
         system_remover.update_expectations()

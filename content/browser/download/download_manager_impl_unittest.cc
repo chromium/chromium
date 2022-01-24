@@ -18,7 +18,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -112,6 +111,10 @@ class MockDownloadItemFactory
       public base::SupportsWeakPtr<MockDownloadItemFactory> {
  public:
   MockDownloadItemFactory();
+
+  MockDownloadItemFactory(const MockDownloadItemFactory&) = delete;
+  MockDownloadItemFactory& operator=(const MockDownloadItemFactory&) = delete;
+
   ~MockDownloadItemFactory() override;
 
   // Access to map of created items.
@@ -157,8 +160,8 @@ class MockDownloadItemFactory
       bool opened,
       base::Time last_access_time,
       bool transient,
-      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices)
-      override;
+      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+      const download::DownloadItemRerouteInfo& reroute_info) override;
   download::DownloadItemImpl* CreateActiveItem(
       download::DownloadItemImplDelegate* delegate,
       uint32_t download_id,
@@ -180,8 +183,6 @@ class MockDownloadItemFactory
   std::map<uint32_t, download::MockDownloadItemImpl*> items_;
   download::DownloadItemImplDelegate item_delegate_;
   bool is_download_persistent_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDownloadItemFactory);
 };
 
 MockDownloadItemFactory::MockDownloadItemFactory()
@@ -237,7 +238,8 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreatePersistedItem(
     bool opened,
     base::Time last_access_time,
     bool transient,
-    const std::vector<download::DownloadItem::ReceivedSlice>& received_slices) {
+    const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+    const download::DownloadItemRerouteInfo& reroute_info) {
   DCHECK(items_.find(download_id) == items_.end());
   download::MockDownloadItemImpl* result =
       new StrictMock<download::MockDownloadItemImpl>(&item_delegate_);
@@ -409,6 +411,9 @@ class DownloadManagerTest : public testing::Test {
         interrupt_reason_(download::DOWNLOAD_INTERRUPT_REASON_NONE),
         next_download_id_(0) {}
 
+  DownloadManagerTest(const DownloadManagerTest&) = delete;
+  DownloadManagerTest& operator=(const DownloadManagerTest&) = delete;
+
   // We tear down everything in TearDown().
   ~DownloadManagerTest() override {}
 
@@ -499,7 +504,8 @@ class DownloadManagerTest : public testing::Test {
             download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
             download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED, false,
             base::Time::Now(), true,
-            std::vector<download::DownloadItem::ReceivedSlice>());
+            std::vector<download::DownloadItem::ReceivedSlice>(),
+            download::DownloadItemRerouteInfo());
     return download_item;
   }
 
@@ -585,8 +591,6 @@ class DownloadManagerTest : public testing::Test {
   std::unique_ptr<MockDownloadManagerObserver> observer_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   uint32_t next_download_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerTest);
 };
 
 // Confirm the appropriate invocations occur when you start a download.
@@ -782,7 +786,8 @@ TEST_F(DownloadManagerTest, OnInProgressDownloadsLoaded) {
       download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED, false, false, false,
       base::Time::Now(), true,
       std::vector<download::DownloadItem::ReceivedSlice>(),
-      absl::nullopt /*download_schedule*/, nullptr /* download_entry */);
+      download::DownloadItemRerouteInfo(), absl::nullopt /*download_schedule*/,
+      nullptr /* download_entry */);
   in_progress_manager->AddDownloadItem(std::move(in_progress_item));
   SetInProgressDownloadManager(std::move(in_progress_manager));
   EXPECT_CALL(GetMockObserver(), OnDownloadCreated(download_manager_.get(), _))
@@ -825,7 +830,7 @@ class DownloadManagerWithExpirationTest : public DownloadManagerTest {
 TEST_F(DownloadManagerWithExpirationTest, DeleteExpiredDownload) {
   std::vector<GURL> url_chain;
   url_chain.emplace_back("http://example.com/1.zip");
-  auto expired_start_time = base::Time::Now() - base::TimeDelta::FromDays(10);
+  auto expired_start_time = base::Time::Now() - base::Days(10);
   download::DownloadItem* download_item = CreateDownloadItem(
       expired_start_time, url_chain, download::DownloadItem::INTERRUPTED);
   EXPECT_FALSE(download_item)

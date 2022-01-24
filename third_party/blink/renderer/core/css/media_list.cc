@@ -141,6 +141,15 @@ void MediaQuerySet::AddMediaQuery(std::unique_ptr<MediaQuery> media_query) {
   queries_.push_back(std::move(media_query));
 }
 
+PhysicalAxes MediaQuerySet::QueriedAxes() const {
+  PhysicalAxes axes(kPhysicalAxisNone);
+
+  for (const auto& media_query : QueryVector())
+    axes |= media_query->QueriedAxes();
+
+  return axes;
+}
+
 String MediaQuerySet::MediaText() const {
   StringBuilder text;
 
@@ -152,7 +161,7 @@ String MediaQuerySet::MediaText() const {
       first = false;
     text.Append(queries_[i]->CssText());
   }
-  return text.ToString();
+  return text.ReleaseString();
 }
 
 MediaList::MediaList(scoped_refptr<MediaQuerySet> media_queries,

@@ -18,6 +18,7 @@
 #include "base/threading/thread_checker.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/proxy_resolver.h"
@@ -100,6 +101,11 @@ class SynchronizedRunLoopObserver final {
   // Creates the instance of an observer that will synchronize the sources
   // using a given |lock|.
   SynchronizedRunLoopObserver(base::Lock& lock);
+
+  SynchronizedRunLoopObserver(const SynchronizedRunLoopObserver&) = delete;
+  SynchronizedRunLoopObserver& operator=(const SynchronizedRunLoopObserver&) =
+      delete;
+
   // Destructor.
   ~SynchronizedRunLoopObserver();
   // Adds the observer to the current run loop for a given run loop mode.
@@ -122,7 +128,6 @@ class SynchronizedRunLoopObserver final {
   base::ScopedCFTypeRef<CFRunLoopObserverRef> observer_;
   // Validates that all methods of this class are executed on the same thread.
   base::ThreadChecker thread_checker_;
-  DISALLOW_COPY_AND_ASSIGN(SynchronizedRunLoopObserver);
 };
 
 SynchronizedRunLoopObserver::SynchronizedRunLoopObserver(base::Lock& lock)
@@ -333,10 +338,8 @@ int ProxyResolverMac::GetProxyForURL(
 
     CFStringRef proxy_type = base::mac::GetValueFromDictionary<CFStringRef>(
         proxy_dictionary, kCFProxyTypeKey);
-    ProxyServer proxy_server = ProxyServer::FromDictionary(
-        GetProxyServerScheme(proxy_type),
-        proxy_dictionary,
-        kCFProxyHostNameKey,
+    ProxyServer proxy_server = ProxyDictionaryToProxyServer(
+        GetProxyServerScheme(proxy_type), proxy_dictionary, kCFProxyHostNameKey,
         kCFProxyPortNumberKey);
     if (!proxy_server.is_valid())
       continue;

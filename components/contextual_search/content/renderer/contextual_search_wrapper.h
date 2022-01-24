@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CONTEXTUAL_SEARCH_CONTENT_RENDERER_CONTEXTUAL_SEARCH_WRAPPER_H_
 #define COMPONENTS_CONTEXTUAL_SEARCH_CONTENT_RENDERER_CONTEXTUAL_SEARCH_WRAPPER_H_
 
-#include "base/macros.h"
 #include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -26,6 +25,9 @@ class ContextualSearchWrapper : public gin::Wrappable<ContextualSearchWrapper>,
  public:
   // Installs Contextual Search JavaScript.
   static void Install(content::RenderFrame* render_frame);
+
+  ContextualSearchWrapper(const ContextualSearchWrapper&) = delete;
+  ContextualSearchWrapper& operator=(const ContextualSearchWrapper&) = delete;
 
   // RenderFrameObserver implementation.
   void OnDestruct() override;
@@ -59,8 +61,6 @@ class ContextualSearchWrapper : public gin::Wrappable<ContextualSearchWrapper>,
   // The service to notify when API calls are made.
   mojo::Remote<mojom::ContextualSearchJsApiService>
       contextual_search_js_api_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchWrapper);
 };
 
 }  // namespace contextual_search

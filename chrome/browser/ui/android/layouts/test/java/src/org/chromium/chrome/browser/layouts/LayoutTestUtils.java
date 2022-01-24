@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.layouts;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -20,8 +21,6 @@ public class LayoutTestUtils {
      */
     public static void waitForLayout(LayoutManager layoutManager, @LayoutType int type)
             throws TimeoutException {
-        if (layoutManager.isLayoutVisible(type)) return;
-
         CallbackHelper finishedShowingCallbackHelper = new CallbackHelper();
         LayoutStateObserver observer = new LayoutStateObserver() {
             @Override
@@ -29,9 +28,15 @@ public class LayoutTestUtils {
                 finishedShowingCallbackHelper.notifyCalled();
             }
         };
-        layoutManager.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (layoutManager.isLayoutVisible(type)) {
+                finishedShowingCallbackHelper.notifyCalled();
+                return;
+            }
+            layoutManager.addObserver(observer);
+        });
 
         finishedShowingCallbackHelper.waitForFirst();
-        layoutManager.removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.removeObserver(observer));
     }
 }

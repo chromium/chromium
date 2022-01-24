@@ -26,12 +26,12 @@ void ShellAppDelegate::InitWebContents(content::WebContents* web_contents) {
 
 void ShellAppDelegate::RenderFrameCreated(
     content::RenderFrameHost* frame_host) {
-  content::WebContents* contents =
-      content::WebContents::FromRenderFrameHost(frame_host);
-  // Only do this for the initial main frame.
-  if (frame_host == contents->GetMainFrame()) {
+  // Only do this for the primary main frame.
+  if (frame_host->IsInPrimaryMainFrame()) {
     // The views implementation of AppWindow takes focus via SetInitialFocus()
     // and views::WebView but app_shell is aura-only and must do it manually.
+    content::WebContents* contents =
+        content::WebContents::FromRenderFrameHost(frame_host);
     contents->Focus();
   }
 }

@@ -54,8 +54,8 @@ void ImgIoUtilCopyPlane(const uint8_t* src, int src_stride,
 
 //------------------------------------------------------------------------------
 
-// Returns 0 in case of overflow of nmemb * size.
-int ImgIoUtilCheckSizeArgumentsOverflow(uint64_t nmemb, size_t size);
+// Returns 0 in case of overflow, memory over-allocation or excessive dimension.
+int ImgIoUtilCheckSizeArgumentsOverflow(uint64_t stride, size_t height);
 
 #ifdef __cplusplus
 }    // extern "C"

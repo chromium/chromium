@@ -10,6 +10,8 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "chrome/browser/ui/webui/bookmarks/bookmarks_browsertest.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
+/* eslint-disable no-var */
+
 const BookmarksBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -22,11 +24,10 @@ const BookmarksBrowserTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var BookmarksActionsTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/actions_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/actions_test.js&host=webui-test';
   }
 };
 
@@ -34,11 +35,10 @@ TEST_F('BookmarksActionsTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksAppTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/app_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/app_test.js&host=webui-test';
   }
 };
 
@@ -46,11 +46,10 @@ TEST_F('BookmarksAppTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksCommandManagerTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/command_manager_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/command_manager_test.js&host=webui-test';
   }
 };
 
@@ -59,11 +58,10 @@ TEST_F('BookmarksCommandManagerTest', 'DISABLED_All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksDNDManagerTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/dnd_manager_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/dnd_manager_test.js&host=webui-test';
   }
 };
 
@@ -78,11 +76,10 @@ TEST_F('BookmarksDNDManagerTest', 'MAYBE_All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksEditDialogTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/edit_dialog_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/edit_dialog_test.js&host=webui-test';
   }
 };
 
@@ -90,11 +87,10 @@ TEST_F('BookmarksEditDialogTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksItemTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/item_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/item_test.js&host=webui-test';
   }
 };
 
@@ -102,11 +98,10 @@ TEST_F('BookmarksItemTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksListTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/list_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/list_test.js&host=webui-test';
   }
 };
 
@@ -114,11 +109,10 @@ TEST_F('BookmarksListTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksReducersTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/reducers_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/reducers_test.js&host=webui-test';
   }
 };
 
@@ -126,11 +120,10 @@ TEST_F('BookmarksReducersTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksRouterTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/router_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/router_test.js&host=webui-test';
   }
 };
 
@@ -138,11 +131,10 @@ TEST_F('BookmarksRouterTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksFolderNodeTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/folder_node_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/folder_node_test.js&host=webui-test';
   }
 };
 
@@ -150,11 +142,10 @@ TEST_F('BookmarksFolderNodeTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksPolicyTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/policy_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/policy_test.js&host=webui-test';
   }
 };
 
@@ -162,11 +153,10 @@ TEST_F('BookmarksPolicyTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksStoreTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/store_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/store_test.js&host=webui-test';
   }
 };
 
@@ -174,11 +164,10 @@ TEST_F('BookmarksStoreTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksToolbarTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/toolbar_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/toolbar_test.js&host=webui-test';
   }
 };
 
@@ -186,11 +175,10 @@ TEST_F('BookmarksToolbarTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksUtilTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/util_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/util_test.js&host=webui-test';
   }
 };
 
@@ -198,11 +186,10 @@ TEST_F('BookmarksUtilTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksExtensionAPITest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/extension_api_test.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/extension_api_test.js&host=webui-test';
   }
 
   /** @override */
@@ -215,11 +202,10 @@ TEST_F('BookmarksExtensionAPITest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksExtensionAPIEditDisabledTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/extension_api_test_edit_disabled.js';
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/extension_api_test_edit_disabled.js&host=webui-test';
   }
 
   /** @override */

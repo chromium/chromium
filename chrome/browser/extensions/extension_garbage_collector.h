@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/install_gate.h"
 #include "chrome/browser/extensions/install_observer.h"
@@ -31,6 +30,11 @@ class ExtensionGarbageCollector : public KeyedService,
                                   public InstallGate {
  public:
   explicit ExtensionGarbageCollector(content::BrowserContext* context);
+
+  ExtensionGarbageCollector(const ExtensionGarbageCollector&) = delete;
+  ExtensionGarbageCollector& operator=(const ExtensionGarbageCollector&) =
+      delete;
+
   ~ExtensionGarbageCollector() override;
 
   static ExtensionGarbageCollector* Get(content::BrowserContext* context);
@@ -89,8 +93,6 @@ class ExtensionGarbageCollector : public KeyedService,
   // Generate weak pointers for safely posting to the file thread for garbage
   // collection.
   base::WeakPtrFactory<ExtensionGarbageCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionGarbageCollector);
 };
 
 }  // namespace extensions

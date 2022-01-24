@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -39,10 +38,11 @@ class TestWebContentsDelegate : public WebDialogWebContentsDelegate {
       : WebDialogWebContentsDelegate(
             context,
             std::make_unique<ChromeWebContentsHandler>()) {}
-  ~TestWebContentsDelegate() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsDelegate);
+  TestWebContentsDelegate(const TestWebContentsDelegate&) = delete;
+  TestWebContentsDelegate& operator=(const TestWebContentsDelegate&) = delete;
+
+  ~TestWebContentsDelegate() override = default;
 };
 
 class WebDialogWebContentsDelegateTest : public BrowserWithTestWindowTest {

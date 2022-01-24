@@ -25,12 +25,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/throughput_tracker.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"
@@ -41,7 +42,7 @@ namespace {
 
 // The duration of the back button opacity animation.
 constexpr base::TimeDelta kButtonOpacityAnimationDuration =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 // Returns the bounds for the first button shown in this view (the back
 // button in tablet mode, the home button otherwise).
@@ -247,6 +248,10 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
                                         public views::WidgetDelegate {
  public:
   Delegate(Shelf* shelf, ShelfView* shelf_view);
+
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
   ~Delegate() override;
 
   // Initializes the view.
@@ -288,8 +293,6 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
   ui::Layer opaque_background_;
 
   Shelf* shelf_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
@@ -566,7 +569,7 @@ void ShelfNavigationWidget::UpdateLayout(bool animate) {
   // Use the same duration for all parts of the upcoming animation.
   const base::TimeDelta animation_duration =
       animate ? ShelfConfig::Get()->shelf_animation_duration()
-              : base::TimeDelta::FromMilliseconds(0);
+              : base::Milliseconds(0);
 
   const HotseatState target_hotseat_state =
       layout_manager->CalculateHotseatState(layout_manager->visibility_state(),

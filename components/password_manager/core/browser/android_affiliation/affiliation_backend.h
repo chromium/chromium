@@ -10,18 +10,16 @@
 #include <map>
 #include <memory>
 #include <unordered_map>
-#include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetch_throttler_delegate.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_delegate.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
 #include "components/password_manager/core/browser/android_affiliation/facet_manager_host.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 
 namespace base {
 class Clock;
@@ -35,6 +33,7 @@ class Time;
 namespace network {
 class NetworkConnectionTracker;
 class PendingSharedURLLoaderFactory;
+class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace password_manager {
@@ -45,10 +44,10 @@ class AffiliationFetcherFactory;
 class AffiliationFetchThrottler;
 class FacetManager;
 
-// The AffiliationBackend is the part of the AndroidAffiliationService that
+// The AffiliationBackend is the part of the AffiliationService that
 // lives on a background thread suitable for performing blocking I/O. As most
 // tasks require I/O, the backend ends up doing most of the work for the
-// AndroidAffiliationService; the latter being just a thin layer that delegates
+// AffiliationService; the latter being just a thin layer that delegates
 // most tasks to the backend.
 //
 // This class is not thread-safe, but it is fine to construct it on one thread
@@ -58,7 +57,7 @@ class AffiliationBackend : public FacetManagerHost,
                            public AffiliationFetcherDelegate,
                            public AffiliationFetchThrottlerDelegate {
  public:
-  using StrategyOnCacheMiss = AndroidAffiliationService::StrategyOnCacheMiss;
+  using StrategyOnCacheMiss = AffiliationService::StrategyOnCacheMiss;
 
   // Constructs an instance that will use |url_loader_factory| for all
   // network requests, use |task_runner| for asynchronous tasks, and will rely
@@ -68,6 +67,8 @@ class AffiliationBackend : public FacetManagerHost,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       base::Clock* time_source,
       const base::TickClock* time_tick_source);
+  AffiliationBackend(const AffiliationBackend&) = delete;
+  AffiliationBackend& operator=(const AffiliationBackend&) = delete;
   ~AffiliationBackend() override;
 
   // Performs the I/O-heavy part of initialization. The database used to cache
@@ -77,13 +78,13 @@ class AffiliationBackend : public FacetManagerHost,
                   network::NetworkConnectionTracker* network_connection_tracker,
                   const base::FilePath& db_path);
 
-  // Implementations for methods of the same name in AndroidAffiliationService.
+  // Implementations for methods of the same name in AffiliationService.
   // They are not documented here again. See android_affiliation_service.h for
   // details:
   void GetAffiliationsAndBranding(
       const FacetURI& facet_uri,
       StrategyOnCacheMiss cache_miss_strategy,
-      AndroidAffiliationService::ResultCallback callback,
+      AffiliationService::ResultCallback callback,
       const scoped_refptr<base::TaskRunner>& callback_task_runner);
   void Prefetch(const FacetURI& facet_uri, const base::Time& keep_fresh_until);
   void CancelPrefetch(const FacetURI& facet_uri,
@@ -172,8 +173,6 @@ class AffiliationBackend : public FacetManagerHost,
       facet_managers_;
 
   base::WeakPtrFactory<AffiliationBackend> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AffiliationBackend);
 };
 
 }  // namespace password_manager

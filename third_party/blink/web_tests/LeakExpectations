@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10.20h2 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
@@ -13,7 +13,7 @@
 # ask hajimehoshi@ or yuzus@.                                             #
 ###########################################################################
 
-crbug.com/786995 virtual/threaded/http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Failure Pass ]
+crbug.com/786995 virtual/threaded/http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Skip ]
 
 # Requests with keepalive specified will be kept alive even when the frame is
 # detached, which means leaks reported by the leak detector are by design.
@@ -44,7 +44,6 @@ crbug.com/1151861 [ Linux ] external/wpt/workers/semantics/multiple-workers/003.
 # Flakily leaks
 # -----------------------------------------------------------------
 crbug.com/780386 external/wpt/html/dom/reflection-grouping.html [ Failure Pass ]
-crbug.com/835943 [ Linux ] http/tests/appcache/non-html.xhtml [ Failure Pass ]
 
 crbug.com/860117 [ Linux ] editing/pasteboard/drag-drop-iframe-refresh-crash.html [ Pass Failure ]
 
@@ -55,9 +54,6 @@ crbug.com/809609 [ Linux ] editing/inserting/insert_div_with_style.html [ Pass F
 # Sheriff 2018-04-23
 # -----------------------------------------------------------------
 crbug.com/836278 [ Linux ] external/wpt/html/canvas/offscreen/manual/convert-to-blob/offscreencanvas.convert.to.blob.html [ Pass Failure ]
-
-# Moved from TestExpectations (Sheriff 2018-05-31)
-crbug.com/848354 [ Linux ] plugins/fullscreen-plugins-dont-reload.html [ Pass Failure ]
 
 # Sheriff 2018-08-17
 crbug.com/847114 [ Linux ] http/tests/devtools/tracing/decode-resize.js [ Pass Failure ]
@@ -140,9 +136,6 @@ crbug.com/1103082 [ Linux ] fast/forms/select/select-change-layout-object-crash.
 
 # Sheriff 2020-10-08
 crbug.com/1136690 [ Linux ] http/tests/inspector-protocol/service-worker/service-worker-fetch-async-stacks.js [ Pass Timeout ]
-
-# Sheriff 2021-02-18
-crbug.com/1180251 [ Linux ] virtual/wheel-event-regions/fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Pass Failure ]
 
 # Sheriff 2021-03-02
 crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Pass Failure ]

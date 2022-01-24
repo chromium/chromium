@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
-#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 
@@ -76,9 +75,7 @@
   self.historyTableViewController.browser = self.browser;
   self.historyTableViewController.loadStrategy = self.loadStrategy;
 
-  if (@available(iOS 13.0, *)) {
-    self.historyTableViewController.menuProvider = self;
-  }
+  self.historyTableViewController.menuProvider = self;
 
   DCHECK(!_browserObserver);
   _browserObserver =
@@ -109,15 +106,11 @@
       self.presentationDelegate;
 
   BOOL useCustomPresentation = YES;
-  if (IsCollectionsCardPresentationStyleEnabled()) {
-    if (@available(iOS 13, *)) {
       [self.historyNavigationController
           setModalPresentationStyle:UIModalPresentationFormSheet];
       self.historyNavigationController.presentationController.delegate =
           self.historyTableViewController;
       useCustomPresentation = NO;
-    }
-  }
 
   if (useCustomPresentation) {
     self.historyTransitioningDelegate =

@@ -107,10 +107,7 @@ class NetworkChangeNotifier::NetworkChangeCalculator
       : params_(params),
         have_announced_(false),
         last_announced_connection_type_(CONNECTION_NONE),
-        pending_connection_type_(CONNECTION_NONE) {}
-
-  void Init() {
-    DCHECK(thread_checker_.CalledOnValidThread());
+        pending_connection_type_(CONNECTION_NONE) {
     DCHECK(g_network_change_notifier);
     AddConnectionTypeObserver(this);
     AddIPAddressObserver(this);
@@ -183,6 +180,69 @@ class NetworkChangeNotifier::NetworkChangeCalculator
   base::ThreadChecker thread_checker_;
 };
 
+// Holds the collection of observer lists used by NetworkChangeNotifier.
+class NetworkChangeNotifier::ObserverList {
+ public:
+  ObserverList()
+      : ip_address_observer_list_(new base::ObserverListThreadSafe<
+                                  NetworkChangeNotifier::IPAddressObserver>(
+            base::ObserverListPolicy::EXISTING_ONLY)),
+        connection_type_observer_list_(
+            new base::ObserverListThreadSafe<
+                NetworkChangeNotifier::ConnectionTypeObserver>(
+                base::ObserverListPolicy::EXISTING_ONLY)),
+        resolver_state_observer_list_(new base::ObserverListThreadSafe<
+                                      NetworkChangeNotifier::DNSObserver>(
+            base::ObserverListPolicy::EXISTING_ONLY)),
+        network_change_observer_list_(
+            new base::ObserverListThreadSafe<
+                NetworkChangeNotifier::NetworkChangeObserver>(
+                base::ObserverListPolicy::EXISTING_ONLY)),
+        max_bandwidth_observer_list_(
+            new base::ObserverListThreadSafe<
+                NetworkChangeNotifier::MaxBandwidthObserver>(
+                base::ObserverListPolicy::EXISTING_ONLY)),
+        network_observer_list_(new base::ObserverListThreadSafe<
+                               NetworkChangeNotifier::NetworkObserver>(
+            base::ObserverListPolicy::EXISTING_ONLY)),
+        connection_cost_observer_list_(
+            new base::ObserverListThreadSafe<
+                NetworkChangeNotifier::ConnectionCostObserver>(
+                base::ObserverListPolicy::EXISTING_ONLY)),
+        connection_cost_observers_added_(false) {}
+
+  ObserverList(const ObserverList&) = delete;
+  ObserverList& operator=(const ObserverList&) = delete;
+  ~ObserverList() = default;
+
+  const scoped_refptr<
+      base::ObserverListThreadSafe<NetworkChangeNotifier::IPAddressObserver>>
+      ip_address_observer_list_;
+  const scoped_refptr<base::ObserverListThreadSafe<
+      NetworkChangeNotifier::ConnectionTypeObserver>>
+      connection_type_observer_list_;
+  const scoped_refptr<
+      base::ObserverListThreadSafe<NetworkChangeNotifier::DNSObserver>>
+      resolver_state_observer_list_;
+  const scoped_refptr<base::ObserverListThreadSafe<
+      NetworkChangeNotifier::NetworkChangeObserver>>
+      network_change_observer_list_;
+  const scoped_refptr<
+      base::ObserverListThreadSafe<NetworkChangeNotifier::MaxBandwidthObserver>>
+      max_bandwidth_observer_list_;
+  const scoped_refptr<
+      base::ObserverListThreadSafe<NetworkChangeNotifier::NetworkObserver>>
+      network_observer_list_;
+  const scoped_refptr<base::ObserverListThreadSafe<
+      NetworkChangeNotifier::ConnectionCostObserver>>
+      connection_cost_observer_list_;
+
+  // Indicates if connection cost observer was added before
+  // network_change_notifier was initialized, if so ConnectionCostObserverAdded
+  // is invoked from constructor.
+  std::atomic_bool connection_cost_observers_added_;
+};
+
 class NetworkChangeNotifier::SystemDnsConfigObserver
     : public SystemDnsConfigChangeNotifier::Observer {
  public:
@@ -223,9 +283,11 @@ void NetworkChangeNotifier::SetFactory(
 std::unique_ptr<NetworkChangeNotifier> NetworkChangeNotifier::CreateIfNeeded(
     NetworkChangeNotifier::ConnectionType initial_type,
     NetworkChangeNotifier::ConnectionSubtype initial_subtype) {
-  base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
-  if (g_network_change_notifier)
-    return nullptr;
+  {
+    base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
+    if (g_network_change_notifier)
+      return nullptr;
+  }
 
   if (g_network_change_notifier_factory)
     return g_network_change_notifier_factory->CreateInstance();
@@ -517,10 +579,11 @@ NetworkChangeNotifier::ConnectionTypeFromInterfaceList(
 // static
 std::unique_ptr<NetworkChangeNotifier>
 NetworkChangeNotifier::CreateMockIfNeeded() {
-  base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
-  if (g_network_change_notifier)
-    return nullptr;
-
+  {
+    base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
+    if (g_network_change_notifier)
+      return nullptr;
+  }
   // Use an empty noop SystemDnsConfigChangeNotifier to disable actual system
   // DNS configuration notifications.
   return std::make_unique<MockNetworkChangeNotifier>(
@@ -555,70 +618,54 @@ NetworkChangeNotifier::ConnectionCostObserver::~ConnectionCostObserver() =
     default;
 
 void NetworkChangeNotifier::AddIPAddressObserver(IPAddressObserver* observer) {
-  if (g_network_change_notifier &&
-      g_network_change_notifier->can_add_observers_) {
-    observer->observer_list_ =
-        g_network_change_notifier->ip_address_observer_list_;
-    observer->observer_list_->AddObserver(observer);
-  }
+  DCHECK(!observer->observer_list_);
+  observer->observer_list_ = GetObserverList().ip_address_observer_list_;
+  observer->observer_list_->AddObserver(observer);
 }
 
 void NetworkChangeNotifier::AddConnectionTypeObserver(
     ConnectionTypeObserver* observer) {
-  if (g_network_change_notifier &&
-      g_network_change_notifier->can_add_observers_) {
-    observer->observer_list_ =
-        g_network_change_notifier->connection_type_observer_list_;
-    observer->observer_list_->AddObserver(observer);
-  }
+  DCHECK(!observer->observer_list_);
+  observer->observer_list_ = GetObserverList().connection_type_observer_list_;
+  observer->observer_list_->AddObserver(observer);
 }
 
 void NetworkChangeNotifier::AddDNSObserver(DNSObserver* observer) {
-  if (g_network_change_notifier &&
-      g_network_change_notifier->can_add_observers_) {
-    observer->observer_list_ =
-        g_network_change_notifier->resolver_state_observer_list_;
-    observer->observer_list_->AddObserver(observer);
-  }
+  DCHECK(!observer->observer_list_);
+  observer->observer_list_ = GetObserverList().resolver_state_observer_list_;
+  observer->observer_list_->AddObserver(observer);
 }
 
 void NetworkChangeNotifier::AddNetworkChangeObserver(
     NetworkChangeObserver* observer) {
-  if (g_network_change_notifier &&
-      g_network_change_notifier->can_add_observers_) {
-    observer->observer_list_ =
-        g_network_change_notifier->network_change_observer_list_;
-    observer->observer_list_->AddObserver(observer);
-  }
+  DCHECK(!observer->observer_list_);
+  observer->observer_list_ = GetObserverList().network_change_observer_list_;
+  observer->observer_list_->AddObserver(observer);
 }
 
 void NetworkChangeNotifier::AddMaxBandwidthObserver(
     MaxBandwidthObserver* observer) {
-  if (g_network_change_notifier &&
-      g_network_change_notifier->can_add_observers_) {
-    observer->observer_list_ =
-        g_network_change_notifier->max_bandwidth_observer_list_;
-    observer->observer_list_->AddObserver(observer);
-  }
+  DCHECK(!observer->observer_list_);
+  observer->observer_list_ = GetObserverList().max_bandwidth_observer_list_;
+  observer->observer_list_->AddObserver(observer);
 }
 
 void NetworkChangeNotifier::AddNetworkObserver(NetworkObserver* observer) {
+  base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
   DCHECK(AreNetworkHandlesSupported());
-  if (g_network_change_notifier &&
-      g_network_change_notifier->can_add_observers_) {
-    observer->observer_list_ =
-        g_network_change_notifier->network_observer_list_;
-    observer->observer_list_->AddObserver(observer);
-  }
+  DCHECK(!observer->observer_list_);
+  observer->observer_list_ = GetObserverList().network_observer_list_;
+  observer->observer_list_->AddObserver(observer);
 }
 
 void NetworkChangeNotifier::AddConnectionCostObserver(
     ConnectionCostObserver* observer) {
-  if (g_network_change_notifier &&
-      g_network_change_notifier->can_add_observers_) {
-    observer->observer_list_ =
-        g_network_change_notifier->connection_cost_observer_list_;
-    observer->observer_list_->AddObserver(observer);
+  DCHECK(!observer->observer_list_);
+  GetObserverList().connection_cost_observers_added_ = true;
+  observer->observer_list_ = GetObserverList().connection_cost_observer_list_;
+  observer->observer_list_->AddObserver(observer);
+  base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
+  if (g_network_change_notifier) {
     g_network_change_notifier->ConnectionCostObserverAdded();
   }
 }
@@ -735,42 +782,27 @@ NetworkChangeNotifier::NetworkChangeNotifier(
     /*= NetworkChangeCalculatorParams()*/,
     SystemDnsConfigChangeNotifier* system_dns_config_notifier /*= nullptr */,
     bool omit_observers_in_constructor_for_testing /*= false */)
-    : ip_address_observer_list_(
-          new base::ObserverListThreadSafe<IPAddressObserver>(
-              base::ObserverListPolicy::EXISTING_ONLY)),
-      connection_type_observer_list_(
-          new base::ObserverListThreadSafe<ConnectionTypeObserver>(
-              base::ObserverListPolicy::EXISTING_ONLY)),
-      resolver_state_observer_list_(
-          new base::ObserverListThreadSafe<DNSObserver>(
-              base::ObserverListPolicy::EXISTING_ONLY)),
-      network_change_observer_list_(
-          new base::ObserverListThreadSafe<NetworkChangeObserver>(
-              base::ObserverListPolicy::EXISTING_ONLY)),
-      max_bandwidth_observer_list_(
-          new base::ObserverListThreadSafe<MaxBandwidthObserver>(
-              base::ObserverListPolicy::EXISTING_ONLY)),
-      network_observer_list_(new base::ObserverListThreadSafe<NetworkObserver>(
-          base::ObserverListPolicy::EXISTING_ONLY)),
-      connection_cost_observer_list_(
-          new base::ObserverListThreadSafe<ConnectionCostObserver>(
-              base::ObserverListPolicy::EXISTING_ONLY)),
-      system_dns_config_notifier_(system_dns_config_notifier),
-      system_dns_config_observer_(std::make_unique<SystemDnsConfigObserver>()),
-      network_change_calculator_(new NetworkChangeCalculator(params)),
-      can_add_observers_(!omit_observers_in_constructor_for_testing) {
-  if (!system_dns_config_notifier_) {
-    static base::NoDestructor<SystemDnsConfigChangeNotifier> singleton{};
-    system_dns_config_notifier_ = singleton.get();
+    : system_dns_config_notifier_(system_dns_config_notifier),
+      system_dns_config_observer_(std::make_unique<SystemDnsConfigObserver>()) {
+  {
+    base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
+    if (!system_dns_config_notifier_) {
+      static base::NoDestructor<SystemDnsConfigChangeNotifier> singleton{};
+      system_dns_config_notifier_ = singleton.get();
+    }
+
+    DCHECK(!g_network_change_notifier);
+    g_network_change_notifier = this;
+
+    system_dns_config_notifier_->AddObserver(system_dns_config_observer_.get());
+    if (GetObserverList().connection_cost_observers_added_) {
+      g_network_change_notifier->ConnectionCostObserverAdded();
+    }
   }
-
-  DCHECK(!g_network_change_notifier);
-  g_network_change_notifier = this;
-  network_change_calculator_->Init();
-
-  system_dns_config_notifier_->AddObserver(system_dns_config_observer_.get());
-
-  can_add_observers_ = true;
+  if (!omit_observers_in_constructor_for_testing) {
+    network_change_calculator_ =
+        std::make_unique<NetworkChangeCalculator>(params);
+  }
 }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -910,30 +942,31 @@ void NetworkChangeNotifier::StopSystemDnsConfigNotifier() {
 }
 
 void NetworkChangeNotifier::NotifyObserversOfIPAddressChangeImpl() {
-  ip_address_observer_list_->Notify(FROM_HERE,
-                                    &IPAddressObserver::OnIPAddressChanged);
+  GetObserverList().ip_address_observer_list_->Notify(
+      FROM_HERE, &IPAddressObserver::OnIPAddressChanged);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfConnectionTypeChangeImpl(
     ConnectionType type) {
-  connection_type_observer_list_->Notify(
+  GetObserverList().connection_type_observer_list_->Notify(
       FROM_HERE, &ConnectionTypeObserver::OnConnectionTypeChanged, type);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfNetworkChangeImpl(
     ConnectionType type) {
-  network_change_observer_list_->Notify(
+  GetObserverList().network_change_observer_list_->Notify(
       FROM_HERE, &NetworkChangeObserver::OnNetworkChanged, type);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfDNSChangeImpl() {
-  resolver_state_observer_list_->Notify(FROM_HERE, &DNSObserver::OnDNSChanged);
+  GetObserverList().resolver_state_observer_list_->Notify(
+      FROM_HERE, &DNSObserver::OnDNSChanged);
 }
 
 void NetworkChangeNotifier::NotifyObserversOfMaxBandwidthChangeImpl(
     double max_bandwidth_mbps,
     ConnectionType type) {
-  max_bandwidth_observer_list_->Notify(
+  GetObserverList().max_bandwidth_observer_list_->Notify(
       FROM_HERE, &MaxBandwidthObserver::OnMaxBandwidthChanged,
       max_bandwidth_mbps, type);
 }
@@ -942,20 +975,20 @@ void NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChangeImpl(
     NetworkChangeType type,
     NetworkHandle network) {
   switch (type) {
-    case CONNECTED:
-      network_observer_list_->Notify(
+    case NetworkChangeType::kConnected:
+      GetObserverList().network_observer_list_->Notify(
           FROM_HERE, &NetworkObserver::OnNetworkConnected, network);
       break;
-    case DISCONNECTED:
-      network_observer_list_->Notify(
+    case NetworkChangeType::kDisconnected:
+      GetObserverList().network_observer_list_->Notify(
           FROM_HERE, &NetworkObserver::OnNetworkDisconnected, network);
       break;
-    case SOON_TO_DISCONNECT:
-      network_observer_list_->Notify(
+    case NetworkChangeType::kSoonToDisconnect:
+      GetObserverList().network_observer_list_->Notify(
           FROM_HERE, &NetworkObserver::OnNetworkSoonToDisconnect, network);
       break;
-    case MADE_DEFAULT:
-      network_observer_list_->Notify(
+    case NetworkChangeType::kMadeDefault:
+      GetObserverList().network_observer_list_->Notify(
           FROM_HERE, &NetworkObserver::OnNetworkMadeDefault, network);
       break;
   }
@@ -963,7 +996,7 @@ void NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChangeImpl(
 
 void NetworkChangeNotifier::NotifyObserversOfConnectionCostChangeImpl(
     ConnectionCost cost) {
-  connection_cost_observer_list_->Notify(
+  GetObserverList().connection_cost_observer_list_->Notify(
       FROM_HERE, &ConnectionCostObserver::OnConnectionCostChanged, cost);
 }
 
@@ -976,6 +1009,12 @@ NetworkChangeNotifier::DisableForTest::DisableForTest()
 NetworkChangeNotifier::DisableForTest::~DisableForTest() {
   DCHECK(!g_network_change_notifier);
   g_network_change_notifier = network_change_notifier_;
+}
+
+// static
+NetworkChangeNotifier::ObserverList& NetworkChangeNotifier::GetObserverList() {
+  static base::NoDestructor<NetworkChangeNotifier::ObserverList> observers;
+  return *observers;
 }
 
 }  // namespace net

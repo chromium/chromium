@@ -23,7 +23,7 @@ constexpr char kWildcardSendDownloadToCloudPref[] = R"([
     "enable": [
       {
         "url_list": ["*"],
-        "mime_types": ["text/plain", "image/png", "application/zip"]
+        "mime_types": ["*"]
       }
     ]
   }

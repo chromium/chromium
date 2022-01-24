@@ -5,7 +5,9 @@
 #include "components/mirroring/browser/single_client_video_capture_host.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/token.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "media/capture/video/video_capture_buffer_pool.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +24,9 @@ class DeviceLauncherCallbacks final
   explicit DeviceLauncherCallbacks(
       base::WeakPtr<SingleClientVideoCaptureHost> host)
       : video_capture_host_(host) {}
+
+  DeviceLauncherCallbacks(const DeviceLauncherCallbacks&) = delete;
+  DeviceLauncherCallbacks& operator=(const DeviceLauncherCallbacks&) = delete;
 
   ~DeviceLauncherCallbacks() override {}
 
@@ -44,8 +49,6 @@ class DeviceLauncherCallbacks final
 
  private:
   base::WeakPtr<SingleClientVideoCaptureHost> video_capture_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLauncherCallbacks);
 };
 
 }  // namespace
@@ -138,6 +141,14 @@ void SingleClientVideoCaptureHost::Resume(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (launched_device_)
     launched_device_->ResumeDevice();
+}
+
+void SingleClientVideoCaptureHost::Crop(const base::UnguessableToken& device_id,
+                                        const base::Token& crop_id,
+                                        CropCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/1247761): Implement.
+  std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
 }
 
 void SingleClientVideoCaptureHost::RequestRefreshFrame(

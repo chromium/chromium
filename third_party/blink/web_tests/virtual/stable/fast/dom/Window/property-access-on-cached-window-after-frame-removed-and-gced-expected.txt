@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 151: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
 Tests property access on a cached DOMWindow after the associated frame is removed from a web page and garbage collected. Test should not crash and properties should be set to sane defaults.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -25,6 +24,7 @@ PASS childWindow.navigator.hardwareConcurrency is window.navigator.hardwareConcu
 PASS childWindow.navigator.language is window.navigator.language
 PASS childWindow.navigator.maxTouchPoints is 0
 PASS childWindow.navigator.onLine is window.navigator.onLine
+PASS childWindow.navigator.pdfViewerEnabled is false
 PASS childWindow.navigator.platform is window.navigator.platform
 PASS childWindow.navigator.product is window.navigator.product
 PASS childWindow.navigator.productSub is window.navigator.productSub
@@ -118,11 +118,13 @@ PASS childWindow.onreset is null
 PASS childWindow.onresize is null
 PASS childWindow.onscroll is null
 PASS childWindow.onsearch is null
+PASS childWindow.onsecuritypolicyviolation is null
 PASS childWindow.onseeked is null
 PASS childWindow.onseeking is null
 PASS childWindow.onselect is null
 PASS childWindow.onselectionchange is null
 PASS childWindow.onselectstart is null
+PASS childWindow.onslotchange is null
 PASS childWindow.onstalled is null
 PASS childWindow.onstorage is null
 PASS childWindow.onsubmit is null

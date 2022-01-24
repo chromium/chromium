@@ -17,11 +17,10 @@ CastWebViewFactory::CastWebViewFactory(content::BrowserContext* browser_context)
 CastWebViewFactory::~CastWebViewFactory() = default;
 
 std::unique_ptr<CastWebView> CastWebViewFactory::CreateWebView(
-    const CastWebView::CreateParams& create_params,
     mojom::CastWebViewParamsPtr params,
     CastWebService* web_service) {
-  return std::make_unique<CastWebViewDefault>(create_params, std::move(params),
-                                              web_service, browser_context_);
+  return std::make_unique<CastWebViewDefault>(std::move(params), web_service,
+                                              browser_context_);
 }
 
 }  // namespace chromecast

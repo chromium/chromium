@@ -13,11 +13,11 @@
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -281,7 +281,8 @@ MediaFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return NULL;
 }
 
-storage::FileSystemOperation* MediaFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<storage::FileSystemOperation>
+MediaFileSystemBackend::CreateFileSystemOperation(
     const FileSystemURL& url,
     FileSystemContext* context,
     base::File::Error* error_code) const {

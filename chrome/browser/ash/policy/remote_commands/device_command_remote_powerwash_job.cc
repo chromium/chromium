@@ -22,12 +22,11 @@ namespace {
 // to be a security feature where the device gets wiped even if it's turned on
 // again only after several years of being powered off.
 constexpr base::TimeDelta kRemotePowerwashCommandExpirationTime =
-    base::TimeDelta::FromDays(5 * 365);  // 5 years.
+    base::Days(5 * 365);  // 5 years.
 
 // The time that we wait for the server to get the ACK, if that passes we
 // immediately start the powerwash process.
-constexpr base::TimeDelta kFailsafeTimerTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kFailsafeTimerTimeout = base::Seconds(10);
 
 void StartPowerwash(enterprise_management::SignedData signed_command) {
   chromeos::SessionManagerClient::Get()->StartRemoteDeviceWipe(signed_command);

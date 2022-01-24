@@ -13,7 +13,7 @@
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/util/xr_standard_gamepad_builder.h"
 #include "ui/gfx/geometry/quaternion.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace device {
 

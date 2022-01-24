@@ -78,6 +78,6 @@ IN_PROC_BROWSER_TEST_F(TestChromeWebUIControllerFactoryTest,
   EXPECT_CALL(mock_provider_,
               NewWebUI(_, Eq(kChromeTestChromeWebUIControllerFactoryURL)))
       .WillOnce(ReturnNewWebUI());
-  ui_test_utils::NavigateToURL(browser(),
-                               kChromeTestChromeWebUIControllerFactoryURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), kChromeTestChromeWebUIControllerFactoryURL));
 }

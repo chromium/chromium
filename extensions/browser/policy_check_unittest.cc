@@ -108,7 +108,7 @@ TEST_F(PolicyCheckTest, PolicyFailure) {
   runner_.Run(&policy_check);
   EXPECT_TRUE(runner_.called());
   EXPECT_THAT(runner_.errors(), testing::UnorderedElementsAre(
-                                    PreloadCheck::DISALLOWED_BY_POLICY));
+                                    PreloadCheck::Error::kDisallowedByPolicy));
   EXPECT_EQ(kDummyPolicyError, policy_check.GetErrorMessage());
 }
 

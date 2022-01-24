@@ -37,11 +37,21 @@ public interface Tracker {
      * happens. Returns true iff the display of the in-product help must happen.
      * If {@code true} is returned, the caller *must* call {@link #dismissed(String)} when display
      * of feature enlightenment ends.
-     *
-     * @return whether feature enlightenment should be displayed.
+     * @param feature The name of the feature requesting in-product help.
+     * @return Whether feature enlightenment should be displayed.
      */
     @CheckResult
     boolean shouldTriggerHelpUI(String feature);
+
+    /**
+     * For callers interested in showing a snooze button. For other callers, use the
+     * ShouldTriggerHelpUI(..) method.
+     * @param feature The name of the feature requesting in-product help.
+     * @return Whether feature enlightenment should be displayed and whether snooze button should be
+     *         shown.
+     */
+    @CheckResult
+    TriggerDetails shouldTriggerHelpUIWithSnooze(String feature);
 
     /**
      * Invoking this is basically the same as being allowed to invoke {@link
@@ -56,7 +66,7 @@ public interface Tracker {
      * would yield the same result. The state might change in-between the calls because time has
      * passed, other events might have been triggered, and other state might have changed.
      *
-     * @return whether feature enlightenment would be displayed if {@link
+     * @return Whether feature enlightenment would be displayed if {@link
      * #shouldTriggerHelpUI(String)} had been invoked instead.
      */
     boolean wouldTriggerHelpUI(String feature);
@@ -91,8 +101,17 @@ public interface Tracker {
 
     /**
      * Must be called after display of feature enlightenment finishes for a particular feature.
+     * @param  feature  the name of the feature dismissing in-product help.
      */
     void dismissed(String feature);
+
+    /**
+     * For callers interested in showing a snooze button. For other callers, use the Dismissed(..)
+     * method.
+     * @param feature The name of the feature dismissing in-product help.
+     * @param snoozeAction The action taken by the user on the snooze UI.
+     */
+    void dismissedWithSnooze(String feature, int snoozeAction);
 
     /**
      * Acquiring a display lock means that no in-product help can be displayed while it is held. To

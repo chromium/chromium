@@ -10,7 +10,6 @@
 #include "ash/login/ui/login_display_style.h"
 #include "ash/login/ui/login_remove_account_dialog.h"
 #include "ash/public/cpp/login_types.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/views/view.h"
@@ -63,6 +62,10 @@ class ASH_EXPORT LoginUserView : public views::View,
                 const OnTap& on_tap,
                 const OnRemoveWarningShown& on_remove_warning_shown,
                 const OnRemove& on_remove);
+
+  LoginUserView(const LoginUserView&) = delete;
+  LoginUserView& operator=(const LoginUserView&) = delete;
+
   ~LoginUserView() override;
 
   // Update the user view to display the given user information.
@@ -106,6 +109,8 @@ class ASH_EXPORT LoginUserView : public views::View,
   void SetLargeLayout();
   void SetSmallishLayout();
 
+  void DeleteDialog();
+
   // Executed when the user view is pressed.
   OnTap on_tap_;
   // Executed when the user has seen the remove user warning.
@@ -141,8 +146,6 @@ class ASH_EXPORT LoginUserView : public views::View,
   base::ScopedObservation<display::DisplayConfigurator,
                           display::DisplayConfigurator::Observer>
       display_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoginUserView);
 };
 
 }  // namespace ash

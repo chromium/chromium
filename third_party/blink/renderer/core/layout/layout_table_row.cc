@@ -28,7 +28,6 @@
 
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_state.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
@@ -230,7 +229,6 @@ void LayoutTableRow::AddChild(LayoutObject* child, LayoutObject* before_child) {
 void LayoutTableRow::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  LayoutAnalyzer::Scope analyzer(*this);
   bool paginated = View()->GetLayoutState()->IsPaginated();
 
   for (LayoutTableCell* cell = FirstCell(); cell; cell = cell->NextCell()) {
@@ -318,7 +316,7 @@ void LayoutTableRow::Paint(const PaintInfo& paint_info) const {
 }
 
 LayoutTableRow* LayoutTableRow::CreateAnonymous(Document* document) {
-  LayoutTableRow* layout_object = new LayoutTableRow(nullptr);
+  LayoutTableRow* layout_object = MakeGarbageCollected<LayoutTableRow>(nullptr);
   layout_object->SetDocumentForAnonymous(document);
   return layout_object;
 }

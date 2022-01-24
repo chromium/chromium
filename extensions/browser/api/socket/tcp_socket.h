@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/api/socket/socket.h"
 #include "extensions/common/api/socket.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -52,6 +52,9 @@ class TCPSocket : public Socket {
             mojo::ScopedDataPipeProducerHandle send_stream,
             const absl::optional<net::IPEndPoint>& remote_addr,
             const std::string& owner_extension_id);
+
+  TCPSocket(const TCPSocket&) = delete;
+  TCPSocket& operator=(const TCPSocket&) = delete;
 
   ~TCPSocket() override;
 
@@ -161,8 +164,6 @@ class TCPSocket : public Socket {
   // WeakPtr is used when posting tasks to |task_runner_| which might outlive
   // |this|.
   base::WeakPtrFactory<TCPSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TCPSocket);
 };
 
 // TCP Socket instances from the "sockets.tcp" namespace. These are regular

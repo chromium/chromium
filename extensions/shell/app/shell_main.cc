@@ -21,7 +21,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
   params.instance = instance;
   params.sandbox_info = &sandbox_info;
 
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }
 #else
 int main(int argc, const char** argv) {
@@ -31,6 +31,6 @@ int main(int argc, const char** argv) {
   params.argc = argc;
   params.argv = argv;
 
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }
 #endif

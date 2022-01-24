@@ -9,7 +9,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -54,8 +53,7 @@ using captured_sites_test_utils::GetCapturedSites;
 
 namespace {
 
-const base::TimeDelta autofill_wait_for_action_interval =
-    base::TimeDelta::FromSeconds(5);
+const base::TimeDelta autofill_wait_for_action_interval = base::Seconds(5);
 
 base::FilePath GetReplayFilesRootDirectory() {
   base::FilePath src_dir;
@@ -241,7 +239,9 @@ class AutofillCapturedSitesInteractiveTest
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAcrossIframes,
-                              features::kAutofillShowTypePredictions},
+                              features::kAutofillDisplaceRemovedForms,
+                              features::kAutofillShowTypePredictions,
+                              features::kAutofillUseUnassociatedListedElements},
         /*disabled_features=*/{});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
@@ -259,9 +259,9 @@ class AutofillCapturedSitesInteractiveTest
     return recipe_replayer_.get();
   }
 
-  const CreditCard credit_card() { return card_; }
+  const CreditCard& credit_card() { return card_; }
 
-  const AutofillProfile profile() { return profile_; }
+  const AutofillProfile& profile() { return profile_; }
 
  private:
   bool ShowAutofillSuggestion(const std::string& target_element_xpath,

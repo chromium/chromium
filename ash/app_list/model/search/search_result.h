@@ -32,6 +32,7 @@ class SearchResultObserver;
 // default style.
 class APP_LIST_MODEL_EXPORT SearchResult {
  public:
+  using Category = ash::AppListSearchResultCategory;
   using ResultType = ash::AppListSearchResultType;
   using DisplayType = ash::SearchResultDisplayType;
   using MetricsType = ash::SearchResultType;
@@ -41,14 +42,18 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   using Actions = ash::SearchResultActions;
   using DisplayIndex = ash::SearchResultDisplayIndex;
   using OmniboxType = ash::SearchResultOmniboxDisplayType;
+  using IconInfo = ash::SearchResultIconInfo;
+  using IconShape = ash::SearchResultIconShape;
 
   SearchResult();
   SearchResult(const SearchResult&) = delete;
   SearchResult& operator=(const SearchResult&) = delete;
   virtual ~SearchResult();
 
-  const gfx::ImageSkia& icon() const { return metadata_->icon; }
-  void SetIcon(const gfx::ImageSkia& icon);
+  const IconInfo& icon() const { return metadata_->icon; }
+  void SetIcon(const IconInfo& icon);
+
+  size_t IconDimension() const;
 
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
   void SetChipIcon(const gfx::ImageSkia& chip_icon);
@@ -101,6 +106,12 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   void set_display_score(double display_score) {
     metadata_->display_score = display_score;
   }
+
+  Category category() const { return metadata_->category; }
+  void set_category(Category category) { metadata_->category = category; }
+
+  bool best_match() const { return metadata_->best_match; }
+  void set_best_match(bool best_match) { metadata_->best_match = best_match; }
 
   DisplayType display_type() const { return metadata_->display_type; }
   void set_display_type(DisplayType display_type) {

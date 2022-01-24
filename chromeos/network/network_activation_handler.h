@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/network/network_handler_callbacks.h"
 
 namespace chromeos {
@@ -17,6 +16,9 @@ namespace chromeos {
 // calls required for activation on mobile networks.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandler {
  public:
+  NetworkActivationHandler(const NetworkActivationHandler&) = delete;
+  NetworkActivationHandler& operator=(const NetworkActivationHandler&) = delete;
+
   virtual ~NetworkActivationHandler() = default;
 
   // CompleteActivation() will start an asynchronous activation completion
@@ -32,9 +34,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandler {
 
  protected:
   NetworkActivationHandler() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkActivationHandler);
 };
 
 }  // namespace chromeos

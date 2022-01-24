@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/speech/speech_recognizer.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
@@ -24,6 +23,10 @@ class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
  public:
   SpeechRecognizerImplAndroid(SpeechRecognitionEventListener* listener,
                               int session_id);
+
+  SpeechRecognizerImplAndroid(const SpeechRecognizerImplAndroid&) = delete;
+  SpeechRecognizerImplAndroid& operator=(const SpeechRecognizerImplAndroid&) =
+      delete;
 
   // SpeechRecognizer methods.
   void StartRecognition(const std::string& device_id) override;
@@ -68,8 +71,6 @@ class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
 
   base::android::ScopedJavaGlobalRef<jobject> j_recognition_;
   State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizerImplAndroid);
 };
 
 }  // namespace content

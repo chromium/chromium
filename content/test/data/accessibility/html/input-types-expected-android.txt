@@ -21,14 +21,14 @@ android.webkit.WebView focusable focused scrollable
 ++++++android.widget.Button role_description='button' clickable focusable name='Image:'
 ++++android.view.View
 ++++++android.widget.TextView name='Number: '
-++++++android.widget.EditText role_description='spin button' clickable focusable range name='Number:' item_count=100 input_type=2
+++++++android.widget.EditText role_description='spin button' clickable editable_text focusable range name='Number:' input_type=2
 ++++android.view.View
 ++++++android.widget.TextView name='Password: '
 ++++++android.widget.EditText clickable editable_text focusable password hint='Password:' input_type=225
 ++++android.widget.RadioButton role_description='radio button' checkable clickable focusable name='Radio:'
 ++++android.view.View
 ++++++android.widget.TextView name='Range: '
-++++++android.widget.SeekBar role_description='slider' clickable focusable range name='Range:' item_index=50 item_count=100 range_max=100 range_current_value=50
+++++++android.widget.SeekBar role_description='slider' clickable focusable range name='50, Range:' item_index=50 item_count=100 range_max=100 range_current_value=50
 ++++android.view.View
 ++++++android.widget.TextView name='Reset: '
 ++++++android.widget.Button role_description='button' clickable focusable name='Reset:'

@@ -56,7 +56,7 @@ void BackoffEntry::InformOfRequest(bool succeeded) {
     // failures.
     base::TimeDelta delay;
     if (policy_->always_use_initial_delay)
-      delay = base::TimeDelta::FromMilliseconds(policy_->initial_delay_ms);
+      delay = base::Milliseconds(policy_->initial_delay_ms);
     exponential_backoff_release_time_ = std::max(
         GetTimeTicksNow() + delay, exponential_backoff_release_time_);
   }
@@ -148,8 +148,8 @@ base::TimeTicks BackoffEntry::CalculateReleaseTime() const {
   // Do overflow checking in microseconds, the internal unit of TimeTicks.
   base::internal::CheckedNumeric<int64_t> backoff_duration_us = delay_ms + 0.5;
   backoff_duration_us *= base::Time::kMicrosecondsPerMillisecond;
-  base::TimeDelta backoff_duration = base::TimeDelta::FromMicroseconds(
-      backoff_duration_us.ValueOrDefault(std::numeric_limits<int64_t>::max()));
+  base::TimeDelta backoff_duration = base::Microseconds(int64_t{
+      backoff_duration_us.ValueOrDefault(std::numeric_limits<int64_t>::max())});
   base::TimeTicks release_time = BackoffDurationToReleaseTime(backoff_duration);
 
   // Never reduce previously set release horizon, e.g. due to Retry-After
@@ -181,7 +181,7 @@ base::TimeTicks BackoffEntry::BackoffDurationToReleaseTime(
                                      maximum_release_time_us.ValueOrDefault(
                                          std::numeric_limits<int64_t>::max()));
 
-  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(release_time_us);
+  return base::TimeTicks() + base::Microseconds(release_time_us);
 }
 
 }  // namespace net

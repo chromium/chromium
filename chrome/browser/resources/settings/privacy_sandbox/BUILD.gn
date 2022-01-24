@@ -2,63 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("../settings.gni")
+import("//ui/webui/webui_features.gni")
 
-preprocess_folder = "$root_gen_dir/chrome/browser/resources/settings/preprocessed/privacy_sandbox"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-
-generate_grd("build_grdp") {
-  grd_prefix = "privacy_sandbox"
-  out_grd = "$target_gen_dir/resources.grdp"
-  manifest_files = [
-    "$target_gen_dir/$preprocess_manifest",
-    "$target_gen_dir/$preprocess_gen_manifest",
-  ]
-  resource_path_prefix = "privacy_sandbox"
-  deps = [
-    ":preprocess",
-    ":preprocess_gen",
-  ]
-}
-
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = preprocess_folder
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [ "privacy_sandbox_browser_proxy.js" ]
-}
-
-preprocess_if_expr("preprocess_gen") {
-  in_folder = target_gen_dir
-  out_folder = preprocess_folder
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [ "app.js" ]
-  deps = [ ":web_components" ]
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [ ":app" ]
-}
-
-js_library("app") {
-  deps = [
-    ":privacy_sandbox_browser_proxy",
-    "..:settings",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("privacy_sandbox_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+# The privacy sandbox page lives outside the regular settings bundle, hence
+# needs to be separately included in the build when optimize_webui=true.
+if (optimize_webui) {
+  generate_grd("build_grdp") {
+    grd_prefix = "settings_privacy_sandbox"
+    out_grd = "$target_gen_dir/resources.grdp"
+    input_files = [
+      "privacy_sandbox/app.js",
+      "privacy_sandbox/privacy_sandbox_browser_proxy.js",
+    ]
+    input_files_base_dir = rebase_path("$target_gen_dir/../tsc", root_build_dir)
+    deps = [ "..:build_ts" ]
+  }
 }
 
 html_to_js("web_components") {
-  js_files = [ "app.js" ]
+  js_files = [ "app.ts" ]
 }

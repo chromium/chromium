@@ -6,11 +6,13 @@
 
 #include <string>
 
+#include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "storage/browser/quota/quota_database.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -32,7 +34,12 @@ bool QuotaDatabaseMigrations::UpgradeSchema(QuotaDatabase& quota_database) {
       return false;
   }
 
-  return quota_database.meta_table_->GetVersionNumber() == 7;
+  if (quota_database.meta_table_->GetVersionNumber() == 7) {
+    if (!MigrateFromVersion7ToVersion8(quota_database))
+      return false;
+  }
+
+  return quota_database.meta_table_->GetVersionNumber() == 8;
 }
 
 bool QuotaDatabaseMigrations::MigrateFromVersion5ToVersion7(
@@ -42,21 +49,39 @@ bool QuotaDatabaseMigrations::MigrateFromVersion5ToVersion7(
   if (!transaction.Begin())
     return false;
 
-  // Create tables with latest schema.
-  for (size_t i = 0; i < QuotaDatabase::kTableCount; ++i) {
-    if (!quota_database.CreateTable(QuotaDatabase::kTables[i]))
-      return false;
-  }
+  // Create host quota table version 7.
+  // clang-format off
+  static constexpr char kQuotaTableSql[] =
+      "CREATE TABLE IF NOT EXISTS quota("
+         "host TEXT NOT NULL, "
+         "type INTEGER NOT NULL, "
+         "quota INTEGER NOT NULL, "
+         "PRIMARY KEY(host, type)) "
+         "WITHOUT ROWID";
+  // clang-format on
+  if (!db->Execute(kQuotaTableSql))
+    return false;
 
-  // Create all indexes for tables.
-  for (size_t i = 0; i < QuotaDatabase::kIndexCount; ++i) {
-    if (!quota_database.CreateIndex(QuotaDatabase::kIndexes[i]))
-      return false;
-  }
+  // Create buckets table version 7.
+  // clang-format off
+  static constexpr char kBucketsTableSql[] =
+      "CREATE TABLE IF NOT EXISTS buckets("
+        "id INTEGER PRIMARY KEY, "
+        "origin TEXT NOT NULL, "
+        "type INTEGER NOT NULL, "
+        "name TEXT NOT NULL, "
+        "use_count INTEGER NOT NULL, "
+        "last_accessed INTEGER NOT NULL, "
+        "last_modified INTEGER NOT NULL, "
+        "expiration INTEGER NOT NULL, "
+        "quota INTEGER NOT NULL)";
+  // clang-format on
+  if (!db->Execute(kBucketsTableSql))
+    return false;
 
-  // Copy OriginInfoTable data into new bucket table.
-  const char kImportOriginInfoSql[] =
-      // clang-format off
+  // Copy OriginInfoTable data into new buckets table.
+  // clang-format off
+  static constexpr char kImportOriginInfoSql[] =
       "INSERT INTO buckets("
           "origin,"
           "type,"
@@ -85,13 +110,14 @@ bool QuotaDatabaseMigrations::MigrateFromVersion5ToVersion7(
     return false;
 
   // Delete OriginInfoTable.
-  const char kDeleteOriginInfoTableSql[] = "DROP TABLE OriginInfoTable";
+  static constexpr char kDeleteOriginInfoTableSql[] =
+      "DROP TABLE OriginInfoTable";
   if (!db->Execute(kDeleteOriginInfoTableSql))
     return false;
 
   // Copy HostQuotaTable data into the new quota table.
-  const char kImportQuotaSql[] =
-      // clang-format off
+  // clang-format off
+  static constexpr char kImportQuotaSql[] =
       "INSERT INTO quota(host, type, quota) "
         "SELECT host, type, quota "
         "FROM HostQuotaTable";
@@ -102,12 +128,14 @@ bool QuotaDatabaseMigrations::MigrateFromVersion5ToVersion7(
     return false;
 
   // Delete HostQuotaTable.
-  const char kDeleteQuotaHostTableSql[] = "DROP TABLE HostQuotaTable";
+  static constexpr char kDeleteQuotaHostTableSql[] =
+      "DROP TABLE HostQuotaTable";
   if (!db->Execute(kDeleteQuotaHostTableSql))
     return false;
 
   // Delete EvictionInfoTable.
-  const char kDeleteEvictionInfoTableSql[] = "DROP TABLE EvictionInfoTable";
+  static constexpr char kDeleteEvictionInfoTableSql[] =
+      "DROP TABLE EvictionInfoTable";
   if (!db->Execute(kDeleteEvictionInfoTableSql))
     return false;
 
@@ -124,12 +152,146 @@ bool QuotaDatabaseMigrations::MigrateFromVersion6ToVersion7(
   if (!transaction.Begin())
     return false;
 
-  const char kDeleteEvictionInfoTableSql[] = "DROP TABLE eviction_info";
+  static constexpr char kDeleteEvictionInfoTableSql[] =
+      "DROP TABLE eviction_info";
   if (!db->Execute(kDeleteEvictionInfoTableSql))
     return false;
 
   quota_database.meta_table_->SetVersionNumber(7);
   quota_database.meta_table_->SetCompatibleVersionNumber(7);
+  return transaction.Commit();
+}
+
+bool QuotaDatabaseMigrations::MigrateFromVersion7ToVersion8(
+    QuotaDatabase& quota_database) {
+  sql::Database* db = quota_database.db_.get();
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  // Create new buckets table.
+  // clang-format off
+  static constexpr char kNewBucketsTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_buckets("
+        "id INTEGER PRIMARY KEY, "
+        "storage_key TEXT NOT NULL, "
+        "host TEXT NOT NULL, "
+        "type INTEGER NOT NULL, "
+        "name TEXT NOT NULL, "
+        "use_count INTEGER NOT NULL, "
+        "last_accessed INTEGER NOT NULL, "
+        "last_modified INTEGER NOT NULL, "
+        "expiration INTEGER NOT NULL, "
+        "quota INTEGER NOT NULL)";
+  // clang-format on
+  if (!db->Execute(kNewBucketsTableSql))
+    return false;
+
+  // clang-format off
+  static constexpr char kSelectBucketSql[] =
+      "SELECT "
+          "id,origin,type,name,use_count,last_accessed,last_modified,"
+          "expiration, quota "
+        "FROM buckets "
+        "WHERE id > ? "
+        "ORDER BY id "
+        "LIMIT 1";
+  // clang-format on
+  sql::Statement select_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kSelectBucketSql));
+
+  // clang-format off
+  static constexpr char kInsertBucketSql[] =
+      "INSERT into new_buckets("
+          "id,storage_key,host,type,name,use_count,last_accessed,"
+          "last_modified,expiration,quota) "
+        "VALUES(?,?,?,?,?,?,?,?,?,?)";
+  // clang-format on
+  sql::Statement insert_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kInsertBucketSql));
+
+  // Transfer bucket data to the new table one at a time with new host data.
+  BucketId lastBucketId(0);
+  while (true) {
+    select_statement.BindInt64(0, lastBucketId.value());
+    if (!select_statement.Step())
+      break;
+
+    // Populate bucket id.
+    BucketId bucket_id(select_statement.ColumnInt64(0));
+    insert_statement.BindInt64(0, bucket_id.value());
+
+    // Populate storage key and host.
+    std::string storage_key_string = select_statement.ColumnString(1);
+    insert_statement.BindString(1, storage_key_string);
+
+    absl::optional<blink::StorageKey> storage_key =
+        blink::StorageKey::Deserialize(storage_key_string);
+    const std::string& host = storage_key.has_value()
+                                  ? storage_key.value().origin().host()
+                                  : std::string();
+    insert_statement.BindString(2, host);
+
+    // Populate type, name, use_count, last_accessed, last_modified,
+    // expiration and quota.
+    insert_statement.BindInt(3, select_statement.ColumnInt(2));
+    insert_statement.BindString(4, select_statement.ColumnString(3));
+    insert_statement.BindInt(5, select_statement.ColumnInt(4));
+    insert_statement.BindTime(6, select_statement.ColumnTime(5));
+    insert_statement.BindTime(7, select_statement.ColumnTime(6));
+    insert_statement.BindTime(8, select_statement.ColumnTime(7));
+    insert_statement.BindInt(9, select_statement.ColumnInt(8));
+
+    if (!insert_statement.Run())
+      return false;
+
+    select_statement.Reset(/*clear_bound_vars=*/true);
+    insert_statement.Reset(/*clear_bound_vars=*/true);
+    lastBucketId = bucket_id;
+  }
+
+  // Replace buckets table with new table.
+  static constexpr char kDeleteBucketTableSql[] = "DROP TABLE buckets";
+  if (!db->Execute(kDeleteBucketTableSql))
+    return false;
+
+  static constexpr char kRenameBucketTableSql[] =
+      "ALTER TABLE new_buckets RENAME to buckets";
+  if (!db->Execute(kRenameBucketTableSql))
+    return false;
+
+  // Create indices on new table.
+  // clang-format off
+  static constexpr char kStorageKeyIndexSql[] =
+      "CREATE UNIQUE INDEX buckets_by_storage_key "
+        "ON buckets(storage_key, type, name)";
+  // clang-format on
+  if (!db->Execute(kStorageKeyIndexSql))
+    return false;
+
+  static constexpr char kHostIndexSql[] =
+      "CREATE INDEX buckets_by_host ON buckets(host, type)";
+  if (!db->Execute(kHostIndexSql))
+    return false;
+
+  static constexpr char kLastAccessedIndexSql[] =
+      "CREATE INDEX buckets_by_last_accessed ON buckets(type, last_accessed)";
+  if (!db->Execute(kLastAccessedIndexSql))
+    return false;
+
+  static constexpr char kLastModifiedIndexSql[] =
+      "CREATE INDEX buckets_by_last_modified ON buckets(type, last_modified)";
+  if (!db->Execute(kLastModifiedIndexSql))
+    return false;
+
+  static constexpr char kExpirationIndexSql[] =
+      "CREATE INDEX buckets_by_expiration ON buckets(expiration)";
+  if (!db->Execute(kExpirationIndexSql))
+    return false;
+
+  // Mark database as up to date.
+  quota_database.meta_table_->SetVersionNumber(8);
+  quota_database.meta_table_->SetCompatibleVersionNumber(8);
   return transaction.Commit();
 }
 

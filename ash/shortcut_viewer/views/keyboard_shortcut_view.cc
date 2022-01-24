@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/ash_typography.h"
@@ -45,6 +46,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/presentation_feedback.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -104,18 +106,18 @@ class ShortcutsListScrollView : public views::ScrollView {
     GetViewAccessibility().OverrideRole(ax::mojom::Role::kScrollView);
   }
 
+  ShortcutsListScrollView(const ShortcutsListScrollView&) = delete;
+  ShortcutsListScrollView& operator=(const ShortcutsListScrollView&) = delete;
+
   ~ShortcutsListScrollView() override = default;
 
   // views::View:
   void OnFocus() override {
     SetHasFocusIndicator(true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+    views::ScrollView::OnFocus();
   }
 
   void OnBlur() override { SetHasFocusIndicator(false); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShortcutsListScrollView);
 };
 
 std::unique_ptr<ShortcutsListScrollView> CreateScrollView(
@@ -125,6 +127,10 @@ std::unique_ptr<ShortcutsListScrollView> CreateScrollView(
   scroller->ClipHeightTo(0, 0);
   scroller->SetContents(std::move(content_view));
   scroller->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks. This crashes if fetching a11y node
+  // data during paint because message_view_ is null.
+  scroller->SetProperty(views::kSkipAccessibilityPaintChecks, true);
   return scroller;
 }
 
@@ -147,6 +153,8 @@ bool ShouldExcludeItem(const ash::KeyboardShortcutItem& item) {
       return ui::DeviceKeyboardHasAssistantKey();
     case IDS_KSV_DESCRIPTION_PRIVACY_SCREEN_TOGGLE:
       return !ash::Shell::Get()->privacy_screen_controller()->IsSupported();
+    case IDS_KSV_DESCRIPTION_FLOAT:
+      return !ash::features::IsWindowControlMenuEnabled();
   }
 
   return false;
@@ -234,10 +242,6 @@ views::Widget* KeyboardShortcutView::Toggle(aura::Window* context) {
 
 const char* KeyboardShortcutView::GetClassName() const {
   return "KeyboardShortcutView";
-}
-
-ax::mojom::Role KeyboardShortcutView::GetAccessibleWindowRole() {
-  return ax::mojom::Role::kWindow;
 }
 
 std::u16string KeyboardShortcutView::GetAccessibleWindowTitle() const {
@@ -328,7 +332,7 @@ void KeyboardShortcutView::QueryChanged(ash::SearchBoxViewBase* sender) {
 
   // TODO(wutao): This timeout value is chosen based on subjective search
   // latency tests on Minnie. Objective method or UMA is desired.
-  constexpr base::TimeDelta kTimeOut(base::TimeDelta::FromMilliseconds(250));
+  constexpr base::TimeDelta kTimeOut(base::Milliseconds(250));
   debounce_timer_.Start(
       FROM_HERE, kTimeOut,
       base::BindOnce(&KeyboardShortcutView::ShowSearchResults,
@@ -512,7 +516,7 @@ void KeyboardShortcutView::UpdateViewsLayout(bool is_search_box_active) {
   if (!should_show_search_results) {
     // Remove all child views, including horizontal separator lines, to prepare
     // for showing search results next time.
-    search_results_container_->RemoveAllChildViews(true);
+    search_results_container_->RemoveAllChildViews();
     if (!categories_tabbed_pane_->GetVisible()) {
       // Repopulate |categories_tabbed_pane_| child views, which were removed
       // when they were added to |search_results_container_|.
@@ -528,7 +532,7 @@ void KeyboardShortcutView::UpdateViewsLayout(bool is_search_box_active) {
 
 void KeyboardShortcutView::ShowSearchResults(
     const std::u16string& search_query) {
-  search_results_container_->RemoveAllChildViews(true);
+  search_results_container_->RemoveAllChildViews();
   auto* search_container_content_view = search_no_result_view_.get();
   auto found_items_list_view = std::make_unique<KeyboardShortcutItemListView>();
   base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents finder(

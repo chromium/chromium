@@ -5,10 +5,17 @@
 import subprocess
 import unittest
 
-import mock
+import six
+
+if six.PY2:
+  import mock
+else:
+  import unittest.mock as mock  # pylint: disable=no-name-in-module,import-error,wrong-import-order
 
 from core import cli_helpers
 from telemetry import decorators
+
+BUILTIN_MODULE = '__builtin__' if six.PY2 else 'builtins'
 
 
 class CLIHelpersTest(unittest.TestCase):
@@ -16,29 +23,29 @@ class CLIHelpersTest(unittest.TestCase):
     with self.assertRaises(AssertionError):
       cli_helpers.Colored('message', 'pink')
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   def testPrintsInfo(self, print_mock):
     cli_helpers.Info('foo {sval} {ival}', sval='s', ival=42)
     print_mock.assert_called_once_with('foo s 42')
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   def testPrintsComment(self, print_mock):
     cli_helpers.Comment('foo')
     print_mock.assert_called_once_with('\033[93mfoo\033[0m')
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch('sys.exit')
   def testFatal(self, sys_exit_mock, print_mock):
     cli_helpers.Fatal('foo')
     print_mock.assert_called_once_with('\033[91mfoo\033[0m')
     sys_exit_mock.assert_called_once()
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   def testPrintsError(self, print_mock):
     cli_helpers.Error('foo')
     print_mock.assert_called_once_with('\033[91mfoo\033[0m')
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   def testPrintsStep(self, print_mock):
     long_step_name = 'foobar' * 15
     cli_helpers.Step(long_step_name)
@@ -48,7 +55,7 @@ class CLIHelpersTest(unittest.TestCase):
         mock.call('\033[92m' + ('=' * 90) + '\033[0m'),
     ])
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch('core.cli_helpers.input')
   # https://crbug.com/938575.
   @decorators.Disabled('chromeos')
@@ -61,7 +68,7 @@ class CLIHelpersTest(unittest.TestCase):
       mock.call('\033[96mReady? [no/YES] \033[0m', end=' ')
     ])
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch('core.cli_helpers.input')
   # https://crbug.com/938575.
   @decorators.Disabled('chromeos')
@@ -72,7 +79,7 @@ class CLIHelpersTest(unittest.TestCase):
     print_mock.assert_called_once_with(
         '\033[96mReady? [BAR/foo] \033[0m', end=' ')
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch('core.cli_helpers.input')
   # https://crbug.com/938575.
   @decorators.Disabled('chromeos')
@@ -89,9 +96,9 @@ class CLIHelpersTest(unittest.TestCase):
     with self.assertRaises(ValueError):
       cli_helpers.Ask('Ready?', ['foo', 'bar'], 'baz')
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch('subprocess.check_call')
-  @mock.patch('__builtin__.open')
+  @mock.patch(BUILTIN_MODULE + '.open')
   @mock.patch('datetime.datetime')
   def testCheckLog(
       self, dt_mock, open_mock, check_call_mock, print_mock):
@@ -114,11 +121,11 @@ class CLIHelpersTest(unittest.TestCase):
       mock.call('\033[94mLogging stdout & stderr to /tmp/tmpXYZ.tmp\033[0m'),
     ])
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch('core.cli_helpers.Error')
   @mock.patch('subprocess.check_call')
   @mock.patch('subprocess.call')
-  @mock.patch('__builtin__.open')
+  @mock.patch(BUILTIN_MODULE + '.open')
   def testCheckLogError(
       self, open_mock, call_mock, check_call_mock, error_mock, print_mock):
     del print_mock, open_mock  # Unused.
@@ -135,7 +142,7 @@ class CLIHelpersTest(unittest.TestCase):
       mock.call('=' * 80),
     ])
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch('subprocess.check_call')
   def testRun(self, check_call_mock, print_mock):
     check_call_mock.side_effect = [subprocess.CalledProcessError(87, ['cmd'])]
@@ -145,7 +152,7 @@ class CLIHelpersTest(unittest.TestCase):
         ['cmd', 'arg with space'], env={'a': 'b'})
     print_mock.assert_called_once_with('\033[94mcmd \'arg with space\'\033[0m')
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch('subprocess.check_call')
   def testRunOkFail(self, check_call_mock, print_mock):
     del print_mock  # Unused.
@@ -156,7 +163,7 @@ class CLIHelpersTest(unittest.TestCase):
     with self.assertRaises(ValueError):
       cli_helpers.Run('cmd with args')
 
-  @mock.patch('__builtin__.print')
+  @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch('core.cli_helpers.input')
   def testPrompt(self, input_mock, print_mock):
     input_mock.side_effect = ['', '42']

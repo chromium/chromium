@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /**
@@ -27,13 +28,16 @@ public class SuggestionListProperties {
     public static final WritableObjectPropertyKey<ModelList> SUGGESTION_MODELS =
             new WritableObjectPropertyKey<>(true);
 
-    /** Whether the suggestion list should have a dark background. */
-    public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
+    /**
+     * Specifies the omnibox theme. It can be light or dark because of a publisher defined color,
+     * incognito, or the default theme that follows dynamic colors.
+     */
+    public static final WritableIntPropertyKey OMNIBOX_THEME = new WritableIntPropertyKey();
 
     /** Observer that will receive notifications and callbacks from Suggestion List. */
     public static final WritableObjectPropertyKey<OmniboxSuggestionsDropdown.Observer> OBSERVER =
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {VISIBLE, EMBEDDER, SUGGESTION_MODELS, IS_INCOGNITO, OBSERVER};
+            new PropertyKey[] {VISIBLE, EMBEDDER, SUGGESTION_MODELS, OMNIBOX_THEME, OBSERVER};
 }

@@ -91,7 +91,7 @@ AlarmsCreateFunction::~AlarmsCreateFunction() {}
 
 ExtensionFunction::ResponseAction AlarmsCreateFunction::Run() {
   std::unique_ptr<alarms::Create::Params> params(
-      alarms::Create::Params::Create(*args_));
+      alarms::Create::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   const std::string& alarm_name =
       params->name.get() ? *params->name : kDefaultAlarmName;
@@ -107,10 +107,9 @@ ExtensionFunction::ResponseAction AlarmsCreateFunction::Run() {
 
   const int kSecondsPerMinute = 60;
   base::TimeDelta granularity =
-      base::TimeDelta::FromSecondsD(
-          (Manifest::IsUnpackedLocation(extension()->location())
-               ? alarms_api_constants::kDevDelayMinimum
-               : alarms_api_constants::kReleaseDelayMinimum)) *
+      base::Seconds((Manifest::IsUnpackedLocation(extension()->location())
+                         ? alarms_api_constants::kDevDelayMinimum
+                         : alarms_api_constants::kReleaseDelayMinimum)) *
       kSecondsPerMinute;
 
   std::unique_ptr<Alarm> alarm(
@@ -129,7 +128,7 @@ void AlarmsCreateFunction::Callback() {
 
 ExtensionFunction::ResponseAction AlarmsGetFunction::Run() {
   std::unique_ptr<alarms::Get::Params> params(
-      alarms::Get::Params::Create(*args_));
+      alarms::Get::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::string name = params->name.get() ? *params->name : kDefaultAlarmName;
@@ -169,7 +168,7 @@ void AlarmsGetAllFunction::Callback(const AlarmList* alarms) {
 
 ExtensionFunction::ResponseAction AlarmsClearFunction::Run() {
   std::unique_ptr<alarms::Clear::Params> params(
-      alarms::Clear::Params::Create(*args_));
+      alarms::Clear::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::string name = params->name.get() ? *params->name : kDefaultAlarmName;

@@ -70,6 +70,9 @@
     <message name="IDS_PRINT_MEDIA_INPUT_TRAY_CHECK" desc="PWG5100.3 (3.14) media-input-tray-check">
       Check input tray media
     </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE" desc="Option presented while a user is printing. The chosen option decides the tray from which the printer sources paper. Specified in PWG5100.7 (5.5.47) media-source-supported">
+      Input Tray
+    </message>
     <message name="IDS_PRINT_MULTIPLE_DOCUMENT_HANDLING" desc="RFC8011 (5.2.4) multiple-document-hand">
       Multiple documents handling
     </message>
@@ -687,6 +690,156 @@
     </message>
     <message name="IDS_PRINT_PRINT_QUALITY_HIGH" desc="RFC 8011 (5.2.13) print-quality: high">
       High
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ALTERNATE" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: alternate">
+      Alternate
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ALTERNATE_ROLL" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: alternate-roll">
+      Alternate Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_AUTO" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: auto">
+      Auto
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_BOTTOM" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: bottom">
+      Bottom
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_BY_PASS_TRAY" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: by-pass-tray">
+      Multifunction Tray
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_CENTER" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: center">
+      Middle Tray
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_DISC" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: disc">
+      Disc
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ENVELOPE" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: envelope">
+      Envelope
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_HAGAKI" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: hagaki">
+      Hagaki
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_LARGE_CAPACITY" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: large-capacity">
+      Large Capacity
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_LEFT" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: left">
+      Left Tray
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_MAIN" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: main">
+      Primary Tray
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_MAIN_ROLL" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: main-roll">
+      Primary Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_MANUAL" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: manual">
+      Manual Slot
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_MIDDLE" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: middle">
+      Middle Tray
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_PHOTO" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: photo">
+      Photo Tray
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_REAR" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: rear">
+      Rear Tray
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_RIGHT" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: right">
+      Right Tray
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ROLL_1" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: roll-1">
+      First Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ROLL_2" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: roll-2">
+      Second Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ROLL_3" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: roll-3">
+      Third Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ROLL_4" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: roll-4">
+      Fourth Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ROLL_5" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: roll-5">
+      Fifth Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ROLL_6" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: roll-6">
+      Sixth Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ROLL_7" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: roll-7">
+      Seventh Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ROLL_8" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: roll-8">
+      Eighth Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ROLL_9" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: roll-9">
+      Ninth Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_ROLL_10" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: roll-10">
+      Tenth Roll
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_SIDE" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: side">
+      Side Tray
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TOP" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: top">
+      Top Tray
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_1" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-1">
+      Tray 1
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_2" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-2">
+      Tray 2
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_3" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-3">
+      Tray 3
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_4" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-4">
+      Tray 4
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_5" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-5">
+      Tray 5
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_6" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-6">
+      Tray 6
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_7" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-7">
+      Tray 7
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_8" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-8">
+      Tray 8
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_9" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-9">
+      Tray 9
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_10" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-10">
+      Tray 10
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_11" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-11">
+      Tray 11
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_12" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-12">
+      Tray 12
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_13" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-13">
+      Tray 13
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_14" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-14">
+      Tray 14
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_15" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-15">
+      Tray 15
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_16" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-16">
+      Tray 16
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_17" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-17">
+      Tray 17
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_18" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-18">
+      Tray 18
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_19" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-19">
+      Tray 19
+    </message>
+    <message name="IDS_PRINT_MEDIA_SOURCE_TRAY_20" desc="Options for the Input Tray printing attribute as specified in PWG 5100.7-2019 media-source: tray-20">
+      Tray 20
     </message>
   </if>
 </grit-part>

@@ -13,16 +13,14 @@
 
 #if defined(OS_WIN)
 #include "base/win/win_util.h"
-#include "chrome/test/base/test_switches.h"
 #endif  // defined(OS_WIN)
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   size_t parallel_jobs = base::NumParallelJobs(/*cores_per_job=*/2);
-  if (parallel_jobs == 0U)
+  if (parallel_jobs == 0U) {
     return 1;
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  }
 
 #if defined(OS_WIN)
   // Many tests validate code that requires user32.dll to be loaded. Loading it,
@@ -32,10 +30,10 @@ int main(int argc, char** argv) {
   // issue.
   base::win::PinUser32();
 
-  if (command_line->HasSwitch(switches::kEnableHighDpiSupport)) {
-    base::win::EnableHighDPISupport();
-  }
+  base::win::EnableHighDPISupport();
 #endif  // defined(OS_WIN)
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   // Adjust switches for interactive tests where the user is expected to
   // manually verify results.
